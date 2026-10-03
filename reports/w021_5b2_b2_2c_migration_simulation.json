@@ -1,0 +1,32 @@
+{
+  "simulatedAt": "2026-10-03T13:09:06.725Z",
+  "milestone": "W021.5-B2.2-C Migration Simulation",
+  "simulationVerdict": "IDEMPOTENCY_CONFIRMED",
+  "run1": {
+    "run": 1,
+    "inserts": 108,
+    "updates": 0,
+    "conflicts": 0,
+    "totalOrgsInDb": 107
+  },
+  "run2": {
+    "run": 2,
+    "inserts": 0,
+    "updates": 107,
+    "conflicts": 108,
+    "totalOrgsInDb": 107
+  },
+  "run3": {
+    "run": 3,
+    "inserts": 0,
+    "updates": 107,
+    "conflicts": 108,
+    "totalOrgsInDb": 107
+  },
+  "invariantsVerified": {
+    "run1InsertsExpected": true,
+    "run2ZeroDuplicateOrgs": true,
+    "run3ZeroDuplicateOrgs": true,
+    "idempotentRowStability": true
+  }
+}

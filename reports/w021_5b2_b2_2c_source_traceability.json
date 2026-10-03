@@ -1,0 +1,2478 @@
+{
+  "auditedAt": "2026-10-03T13:08:47.710Z",
+  "milestone": "W021.5-B2.2-C Source Traceability",
+  "totalTracedOrganizations": 107,
+  "traceabilityMatrix": [
+    {
+      "canonicalOrgId": "ORG-PARTY-BJP",
+      "partyCode": "BJP",
+      "totalOccurrences": 5837,
+      "resolutionRules": [
+        "EXACT_MATCH",
+        "COMPOUND_CANDIDATE_STRING",
+        "FULL_NAME_MATCH"
+      ],
+      "confidences": [
+        "VERIFIED"
+      ],
+      "sourcesCount": 86,
+      "sourcesSample": [
+        "data/seed/andhra-pradesh-constituencies.ts",
+        "data/seed/andhra-pradesh-election-history.ts",
+        "data/seed/andhra-pradesh-mla-profiles.ts"
+      ],
+      "rawStringsSample": [
+        "BJP",
+        "BJP - Suniti Satyanand Rathiya",
+        "BJP - Shivkumari Saradhan Chouhan",
+        "BJP - Mahesh Sahu",
+        "BJP - Harishchandra Rathia"
+      ],
+      "provenanceRecord": "0215b22c-0000-0000-0000-000000000001"
+    },
+    {
+      "canonicalOrgId": "ORG-PARTY-INC",
+      "partyCode": "INC",
+      "totalOccurrences": 2969,
+      "resolutionRules": [
+        "EXACT_MATCH",
+        "COMPOUND_CANDIDATE_STRING",
+        "STANDARD_ALIAS"
+      ],
+      "confidences": [
+        "VERIFIED"
+      ],
+      "sourcesCount": 71,
+      "sourcesSample": [
+        "data/seed/andhra-pradesh-election-history.ts",
+        "data/seed/arunachal-pradesh-constituencies.ts",
+        "data/seed/arunachal-pradesh-mla-profiles.ts"
+      ],
+      "rawStringsSample": [
+        "INC",
+        "INC - Neeraj Sharma",
+        "INC - Gulab Kamro",
+        "INC - Ramesh Singh Vakil",
+        "INC - Ambika Singh Deo"
+      ],
+      "provenanceRecord": "0215b22c-0000-0000-0000-000000000001"
+    },
+    {
+      "canonicalOrgId": "ORG-PARTY-AITC",
+      "partyCode": "AITC",
+      "totalOccurrences": 642,
+      "resolutionRules": [
+        "EXACT_MATCH",
+        "STANDARD_ALIAS"
+      ],
+      "confidences": [
+        "VERIFIED"
+      ],
+      "sourcesCount": 8,
+      "sourcesSample": [
+        "data/seed/meghalaya-constituencies.ts",
+        "data/seed/meghalaya-mla-profiles.ts",
+        "data/seed/mp-profiles.ts"
+      ],
+      "rawStringsSample": [
+        "AITC",
+        "All India Trinamool Congress",
+        "TMC"
+      ],
+      "provenanceRecord": "0215b22c-0000-0000-0000-000000000001"
+    },
+    {
+      "canonicalOrgId": "ORG-PARTY-TDP",
+      "partyCode": "TDP",
+      "totalOccurrences": 461,
+      "resolutionRules": [
+        "EXACT_MATCH",
+        "FULL_NAME_MATCH"
+      ],
+      "confidences": [
+        "VERIFIED"
+      ],
+      "sourcesCount": 8,
+      "sourcesSample": [
+        "data/seed/andhra-pradesh-constituencies.ts",
+        "data/seed/andhra-pradesh-election-history.ts",
+        "data/seed/andhra-pradesh-historical-results.ts"
+      ],
+      "rawStringsSample": [
+        "TDP",
+        "Telugu Desam Party"
+      ],
+      "provenanceRecord": "0215b22c-0000-0000-0000-000000000001"
+    },
+    {
+      "canonicalOrgId": "ORG-PARTY-YSRCP",
+      "partyCode": "YSRCP",
+      "totalOccurrences": 378,
+      "resolutionRules": [
+        "EXACT_MATCH",
+        "FULL_NAME_MATCH"
+      ],
+      "confidences": [
+        "VERIFIED"
+      ],
+      "sourcesCount": 7,
+      "sourcesSample": [
+        "data/seed/andhra-pradesh-constituencies.ts",
+        "data/seed/andhra-pradesh-election-history.ts",
+        "data/seed/andhra-pradesh-historical-results.ts"
+      ],
+      "rawStringsSample": [
+        "YSRCP",
+        "YSR Congress Party"
+      ],
+      "provenanceRecord": "0215b22c-0000-0000-0000-000000000001"
+    },
+    {
+      "canonicalOrgId": "ORG-PARTY-DMK",
+      "partyCode": "DMK",
+      "totalOccurrences": 354,
+      "resolutionRules": [
+        "EXACT_MATCH",
+        "FULL_NAME_MATCH"
+      ],
+      "confidences": [
+        "VERIFIED"
+      ],
+      "sourcesCount": 8,
+      "sourcesSample": [
+        "data/seed/mp-profiles.ts",
+        "data/seed/puducherry-constituencies.ts",
+        "data/seed/puducherry-mla-profiles.ts"
+      ],
+      "rawStringsSample": [
+        "DMK",
+        "Dravida Munnetra Kazhagam"
+      ],
+      "provenanceRecord": "0215b22c-0000-0000-0000-000000000001"
+    },
+    {
+      "canonicalOrgId": "ORG-PARTY-AAP",
+      "partyCode": "AAP",
+      "totalOccurrences": 345,
+      "resolutionRules": [
+        "EXACT_MATCH",
+        "FULL_NAME_MATCH"
+      ],
+      "confidences": [
+        "VERIFIED"
+      ],
+      "sourcesCount": 14,
+      "sourcesSample": [
+        "data/seed/delhi-constituencies.ts",
+        "data/seed/delhi-election-history.ts",
+        "data/seed/delhi-mla-profiles.ts"
+      ],
+      "rawStringsSample": [
+        "AAP",
+        "Aam Aadmi Party"
+      ],
+      "provenanceRecord": "0215b22c-0000-0000-0000-000000000001"
+    },
+    {
+      "canonicalOrgId": "ORG-PARTY-SP",
+      "partyCode": "SP",
+      "totalOccurrences": 304,
+      "resolutionRules": [
+        "EXACT_MATCH",
+        "FULL_NAME_MATCH"
+      ],
+      "confidences": [
+        "VERIFIED"
+      ],
+      "sourcesCount": 9,
+      "sourcesSample": [
+        "data/seed/gujarat-constituencies.ts",
+        "data/seed/gujarat-mla-profiles.ts",
+        "data/seed/maharashtra-historical-results.ts"
+      ],
+      "rawStringsSample": [
+        "SP",
+        "Samajwadi Party"
+      ],
+      "provenanceRecord": "0215b22c-0000-0000-0000-000000000001"
+    },
+    {
+      "canonicalOrgId": "ORG-PARTY-AIADMK",
+      "partyCode": "AIADMK",
+      "totalOccurrences": 286,
+      "resolutionRules": [
+        "EXACT_MATCH",
+        "FULL_NAME_MATCH"
+      ],
+      "confidences": [
+        "VERIFIED"
+      ],
+      "sourcesCount": 6,
+      "sourcesSample": [
+        "data/seed/puducherry-constituencies.ts",
+        "data/seed/puducherry-mla-profiles.ts",
+        "data/seed/tamil-nadu-constituencies.ts"
+      ],
+      "rawStringsSample": [
+        "AIADMK",
+        "All India Anna Dravida Munnetra Kazhagam"
+      ],
+      "provenanceRecord": "0215b22c-0000-0000-0000-000000000001"
+    },
+    {
+      "canonicalOrgId": "ORG-PARTY-CPIM",
+      "partyCode": "CPIM",
+      "totalOccurrences": 286,
+      "resolutionRules": [
+        "EXACT_MATCH",
+        "STANDARD_ALIAS",
+        "FULL_NAME_MATCH",
+        "COMPOUND_CANDIDATE_STRING"
+      ],
+      "confidences": [
+        "VERIFIED"
+      ],
+      "sourcesCount": 24,
+      "sourcesSample": [
+        "data/seed/assam-constituencies.ts",
+        "data/seed/bihar-constituencies.ts",
+        "data/seed/kerala-constituencies.ts"
+      ],
+      "rawStringsSample": [
+        "CPIM",
+        "CPI(M)",
+        "Communist Party of India (Marxist)",
+        "CPIM - Om Prakash",
+        "CPIM - Balwan Poonia"
+      ],
+      "provenanceRecord": "0215b22c-0000-0000-0000-000000000001"
+    },
+    {
+      "canonicalOrgId": "ORG-PARTY-SHS",
+      "partyCode": "SHS",
+      "totalOccurrences": 249,
+      "resolutionRules": [
+        "EXACT_MATCH",
+        "FULL_NAME_MATCH"
+      ],
+      "confidences": [
+        "VERIFIED"
+      ],
+      "sourcesCount": 6,
+      "sourcesSample": [
+        "data/seed/maharashtra-constituencies.ts",
+        "data/seed/maharashtra-election-history.ts",
+        "data/seed/maharashtra-historical-results.ts"
+      ],
+      "rawStringsSample": [
+        "SHS",
+        "Shiv Sena"
+      ],
+      "provenanceRecord": "0215b22c-0000-0000-0000-000000000001"
+    },
+    {
+      "canonicalOrgId": "ORG-PARTY-BJD",
+      "partyCode": "BJD",
+      "totalOccurrences": 247,
+      "resolutionRules": [
+        "EXACT_MATCH",
+        "COMPOUND_CANDIDATE_STRING",
+        "FULL_NAME_MATCH"
+      ],
+      "confidences": [
+        "VERIFIED"
+      ],
+      "sourcesCount": 4,
+      "sourcesSample": [
+        "data/seed/mp-profiles.ts",
+        "data/seed/odisha-constituencies.ts",
+        "data/seed/odisha-mla-profiles.ts"
+      ],
+      "rawStringsSample": [
+        "BJD",
+        "BJD - Rita Sahu",
+        "BJD - Debesh Acharjya]]",
+        "BJD - Snehangini Chhuria",
+        "BJD - Susanta Sing]]"
+      ],
+      "provenanceRecord": "0215b22c-0000-0000-0000-000000000001"
+    },
+    {
+      "canonicalOrgId": "ORG-PARTY-NCP",
+      "partyCode": "NCP",
+      "totalOccurrences": 218,
+      "resolutionRules": [
+        "EXACT_MATCH",
+        "FULL_NAME_MATCH"
+      ],
+      "confidences": [
+        "VERIFIED"
+      ],
+      "sourcesCount": 13,
+      "sourcesSample": [
+        "data/seed/arunachal-pradesh-constituencies.ts",
+        "data/seed/arunachal-pradesh-mla-profiles.ts",
+        "data/seed/kerala-constituencies.ts"
+      ],
+      "rawStringsSample": [
+        "NCP",
+        "Nationalist Congress Party"
+      ],
+      "provenanceRecord": "0215b22c-0000-0000-0000-000000000001"
+    },
+    {
+      "canonicalOrgId": "ORG-PARTY-TVK",
+      "partyCode": "TVK",
+      "totalOccurrences": 202,
+      "resolutionRules": [
+        "EXACT_MATCH",
+        "FULL_NAME_MATCH"
+      ],
+      "confidences": [
+        "VERIFIED"
+      ],
+      "sourcesCount": 6,
+      "sourcesSample": [
+        "data/seed/puducherry-constituencies.ts",
+        "data/seed/puducherry-mla-profiles.ts",
+        "data/seed/tamil-nadu-constituencies.ts"
+      ],
+      "rawStringsSample": [
+        "TVK",
+        "Tamilaga Vettri Kazhagam"
+      ],
+      "provenanceRecord": "0215b22c-0000-0000-0000-000000000001"
+    },
+    {
+      "canonicalOrgId": "ORG-PARTY-RJD",
+      "partyCode": "RJD",
+      "totalOccurrences": 169,
+      "resolutionRules": [
+        "EXACT_MATCH",
+        "COMPOUND_CANDIDATE_STRING",
+        "FULL_NAME_MATCH"
+      ],
+      "confidences": [
+        "VERIFIED"
+      ],
+      "sourcesCount": 10,
+      "sourcesSample": [
+        "data/seed/bihar-constituencies.ts",
+        "data/seed/bihar-mla-profiles.ts",
+        "data/seed/jharkhand-constituencies.ts"
+      ],
+      "rawStringsSample": [
+        "RJD",
+        "RJD - Subhash Prasad Yadav",
+        "RJD - Rashmi Prakash",
+        "Rashtriya Janata Dal"
+      ],
+      "provenanceRecord": "0215b22c-0000-0000-0000-000000000001"
+    },
+    {
+      "canonicalOrgId": "ORG-PARTY-NPP",
+      "partyCode": "NPP",
+      "totalOccurrences": 159,
+      "resolutionRules": [
+        "EXACT_MATCH",
+        "FULL_NAME_MATCH"
+      ],
+      "confidences": [
+        "VERIFIED"
+      ],
+      "sourcesCount": 10,
+      "sourcesSample": [
+        "data/seed/arunachal-pradesh-constituencies.ts",
+        "data/seed/arunachal-pradesh-mla-profiles.ts",
+        "data/seed/manipur-constituencies.ts"
+      ],
+      "rawStringsSample": [
+        "NPP",
+        "National People's Party"
+      ],
+      "provenanceRecord": "0215b22c-0000-0000-0000-000000000001"
+    },
+    {
+      "canonicalOrgId": "ORG-PARTY-TRS",
+      "partyCode": "TRS",
+      "totalOccurrences": 151,
+      "resolutionRules": [
+        "EXACT_MATCH"
+      ],
+      "confidences": [
+        "VERIFIED"
+      ],
+      "sourcesCount": 1,
+      "sourcesSample": [
+        "data/seed/telangana-historical-results.ts"
+      ],
+      "rawStringsSample": [
+        "TRS"
+      ],
+      "provenanceRecord": "0215b22c-0000-0000-0000-000000000001"
+    },
+    {
+      "canonicalOrgId": "ORG-PARTY-BRS",
+      "partyCode": "BRS",
+      "totalOccurrences": 146,
+      "resolutionRules": [
+        "EXACT_MATCH",
+        "FULL_NAME_MATCH"
+      ],
+      "confidences": [
+        "VERIFIED"
+      ],
+      "sourcesCount": 5,
+      "sourcesSample": [
+        "data/seed/mp-profiles.ts",
+        "data/seed/telangana-constituencies.ts",
+        "data/seed/telangana-election-history.ts"
+      ],
+      "rawStringsSample": [
+        "BRS",
+        "Bharat Rashtra Samithi"
+      ],
+      "provenanceRecord": "0215b22c-0000-0000-0000-000000000001"
+    },
+    {
+      "canonicalOrgId": "ORG-PARTY-JKNC",
+      "partyCode": "JKNC",
+      "totalOccurrences": 141,
+      "resolutionRules": [
+        "EXACT_MATCH",
+        "FULL_NAME_MATCH"
+      ],
+      "confidences": [
+        "VERIFIED"
+      ],
+      "sourcesCount": 5,
+      "sourcesSample": [
+        "data/seed/jammu-kashmir-constituencies.ts",
+        "data/seed/jammu-kashmir-election-history.ts",
+        "data/seed/jammu-kashmir-mla-profiles.ts"
+      ],
+      "rawStringsSample": [
+        "JKNC",
+        "Jammu & Kashmir National Conference"
+      ],
+      "provenanceRecord": "0215b22c-0000-0000-0000-000000000001"
+    },
+    {
+      "canonicalOrgId": "ORG-PARTY-SHSUBT",
+      "partyCode": "SHSUBT",
+      "totalOccurrences": 141,
+      "resolutionRules": [
+        "EXACT_MATCH",
+        "STANDARD_ALIAS"
+      ],
+      "confidences": [
+        "VERIFIED"
+      ],
+      "sourcesCount": 5,
+      "sourcesSample": [
+        "data/seed/maharashtra-constituencies.ts",
+        "data/seed/maharashtra-election-history.ts",
+        "data/seed/maharashtra-mla-profiles.ts"
+      ],
+      "rawStringsSample": [
+        "SHSUBT",
+        "SUBT",
+        "Shiv Sena (Uddhav Balasaheb Thackeray)",
+        "SHS(UBT)"
+      ],
+      "provenanceRecord": "0215b22c-0000-0000-0000-000000000001"
+    },
+    {
+      "canonicalOrgId": "ORG-PARTY-SKM",
+      "partyCode": "SKM",
+      "totalOccurrences": 130,
+      "resolutionRules": [
+        "EXACT_MATCH",
+        "FULL_NAME_MATCH"
+      ],
+      "confidences": [
+        "VERIFIED"
+      ],
+      "sourcesCount": 5,
+      "sourcesSample": [
+        "data/seed/mp-profiles.ts",
+        "data/seed/sikkim-constituencies.ts",
+        "data/seed/sikkim-election-history.ts"
+      ],
+      "rawStringsSample": [
+        "SKM",
+        "Sikkim Krantikari Morcha"
+      ],
+      "provenanceRecord": "0215b22c-0000-0000-0000-000000000001"
+    },
+    {
+      "canonicalOrgId": "ORG-PARTY-JDU",
+      "partyCode": "JDU",
+      "totalOccurrences": 121,
+      "resolutionRules": [
+        "EXACT_MATCH",
+        "STANDARD_ALIAS",
+        "FULL_NAME_MATCH",
+        "COMPOUND_CANDIDATE_STRING"
+      ],
+      "confidences": [
+        "VERIFIED"
+      ],
+      "sourcesCount": 10,
+      "sourcesSample": [
+        "data/seed/arunachal-pradesh-constituencies.ts",
+        "data/seed/bihar-constituencies.ts",
+        "data/seed/jharkhand-constituencies.ts"
+      ],
+      "rawStringsSample": [
+        "JDU",
+        "JD(U)",
+        "Janata Dal (United)",
+        "JDU - Gopal Krishna Patar"
+      ],
+      "provenanceRecord": "0215b22c-0000-0000-0000-000000000001"
+    },
+    {
+      "canonicalOrgId": "ORG-PARTY-JDS",
+      "partyCode": "JDS",
+      "totalOccurrences": 118,
+      "resolutionRules": [
+        "EXACT_MATCH",
+        "STANDARD_ALIAS",
+        "FULL_NAME_MATCH"
+      ],
+      "confidences": [
+        "VERIFIED"
+      ],
+      "sourcesCount": 9,
+      "sourcesSample": [
+        "data/seed/arunachal-pradesh-constituencies.ts",
+        "data/seed/karnataka-constituencies.ts",
+        "data/seed/karnataka-election-history.ts"
+      ],
+      "rawStringsSample": [
+        "JDS",
+        "JD(S)",
+        "Janata Dal (Secular)"
+      ],
+      "provenanceRecord": "0215b22c-0000-0000-0000-000000000001"
+    },
+    {
+      "canonicalOrgId": "ORG-PARTY-JMM",
+      "partyCode": "JMM",
+      "totalOccurrences": 113,
+      "resolutionRules": [
+        "EXACT_MATCH",
+        "COMPOUND_CANDIDATE_STRING",
+        "FULL_NAME_MATCH"
+      ],
+      "confidences": [
+        "VERIFIED"
+      ],
+      "sourcesCount": 4,
+      "sourcesSample": [
+        "data/seed/jharkhand-constituencies.ts",
+        "data/seed/jharkhand-election-history.ts",
+        "data/seed/jharkhand-mla-profiles.ts"
+      ],
+      "rawStringsSample": [
+        "JMM",
+        "JMM - Janki Prasad Yadav",
+        "JMM - Manoj Kumar Chandra",
+        "JMM - Nizam Uddin Ansari",
+        "JMM - Kedar Hazra"
+      ],
+      "provenanceRecord": "0215b22c-0000-0000-0000-000000000001"
+    },
+    {
+      "canonicalOrgId": "ORG-PARTY-NDPP",
+      "partyCode": "NDPP",
+      "totalOccurrences": 92,
+      "resolutionRules": [
+        "EXACT_MATCH",
+        "FULL_NAME_MATCH"
+      ],
+      "confidences": [
+        "VERIFIED"
+      ],
+      "sourcesCount": 4,
+      "sourcesSample": [
+        "data/seed/nagaland-constituencies.ts",
+        "data/seed/nagaland-election-history.ts",
+        "data/seed/nagaland-mla-profiles.ts"
+      ],
+      "rawStringsSample": [
+        "NDPP",
+        "Nationalist Democratic Progressive Party"
+      ],
+      "provenanceRecord": "0215b22c-0000-0000-0000-000000000001"
+    },
+    {
+      "canonicalOrgId": "ORG-PARTY-ZPM",
+      "partyCode": "ZPM",
+      "totalOccurrences": 82,
+      "resolutionRules": [
+        "EXACT_MATCH",
+        "FULL_NAME_MATCH"
+      ],
+      "confidences": [
+        "VERIFIED"
+      ],
+      "sourcesCount": 5,
+      "sourcesSample": [
+        "data/seed/mizoram-constituencies.ts",
+        "data/seed/mizoram-election-history.ts",
+        "data/seed/mizoram-mla-profiles.ts"
+      ],
+      "rawStringsSample": [
+        "ZPM",
+        "Zoram People's Movement"
+      ],
+      "provenanceRecord": "0215b22c-0000-0000-0000-000000000001"
+    },
+    {
+      "canonicalOrgId": "ORG-PARTY-IUML",
+      "partyCode": "IUML",
+      "totalOccurrences": 81,
+      "resolutionRules": [
+        "EXACT_MATCH",
+        "FULL_NAME_MATCH"
+      ],
+      "confidences": [
+        "VERIFIED"
+      ],
+      "sourcesCount": 8,
+      "sourcesSample": [
+        "data/seed/kerala-constituencies.ts",
+        "data/seed/kerala-historical-results.ts",
+        "data/seed/kerala-mla-profiles.ts"
+      ],
+      "rawStringsSample": [
+        "IUML",
+        "Indian Union Muslim League"
+      ],
+      "provenanceRecord": "0215b22c-0000-0000-0000-000000000001"
+    },
+    {
+      "canonicalOrgId": "ORG-PARTY-JSP",
+      "partyCode": "JSP",
+      "totalOccurrences": 74,
+      "resolutionRules": [
+        "EXACT_MATCH",
+        "STANDARD_ALIAS",
+        "FULL_NAME_MATCH"
+      ],
+      "confidences": [
+        "VERIFIED"
+      ],
+      "sourcesCount": 6,
+      "sourcesSample": [
+        "data/seed/andhra-pradesh-constituencies.ts",
+        "data/seed/andhra-pradesh-election-history.ts",
+        "data/seed/andhra-pradesh-historical-results.ts"
+      ],
+      "rawStringsSample": [
+        "JSP",
+        "JP",
+        "Jana Sena Party"
+      ],
+      "provenanceRecord": "0215b22c-0000-0000-0000-000000000001"
+    },
+    {
+      "canonicalOrgId": "ORG-PARTY-MNF",
+      "partyCode": "MNF",
+      "totalOccurrences": 72,
+      "resolutionRules": [
+        "EXACT_MATCH",
+        "FULL_NAME_MATCH"
+      ],
+      "confidences": [
+        "VERIFIED"
+      ],
+      "sourcesCount": 4,
+      "sourcesSample": [
+        "data/seed/mizoram-constituencies.ts",
+        "data/seed/mizoram-election-history.ts",
+        "data/seed/mizoram-mla-profiles.ts"
+      ],
+      "rawStringsSample": [
+        "MNF",
+        "Mizo National Front"
+      ],
+      "provenanceRecord": "0215b22c-0000-0000-0000-000000000001"
+    },
+    {
+      "canonicalOrgId": "ORG-PARTY-CPI",
+      "partyCode": "CPI",
+      "totalOccurrences": 71,
+      "resolutionRules": [
+        "EXACT_MATCH",
+        "FULL_NAME_MATCH"
+      ],
+      "confidences": [
+        "VERIFIED"
+      ],
+      "sourcesCount": 13,
+      "sourcesSample": [
+        "data/seed/bihar-constituencies.ts",
+        "data/seed/bihar-mla-profiles.ts",
+        "data/seed/kerala-constituencies.ts"
+      ],
+      "rawStringsSample": [
+        "CPI",
+        "Communist Party of India"
+      ],
+      "provenanceRecord": "0215b22c-0000-0000-0000-000000000001"
+    },
+    {
+      "canonicalOrgId": "ORG-PARTY-NCPSP",
+      "partyCode": "NCPSP",
+      "totalOccurrences": 66,
+      "resolutionRules": [
+        "EXACT_MATCH",
+        "STANDARD_ALIAS"
+      ],
+      "confidences": [
+        "VERIFIED"
+      ],
+      "sourcesCount": 5,
+      "sourcesSample": [
+        "data/seed/maharashtra-constituencies.ts",
+        "data/seed/maharashtra-election-history.ts",
+        "data/seed/mp-profiles.ts"
+      ],
+      "rawStringsSample": [
+        "NCPSP",
+        "NCP-Sharad",
+        "Nationalist Congress Party (Sharad Pawar)",
+        "NCP(SP)"
+      ],
+      "provenanceRecord": "0215b22c-0000-0000-0000-000000000001"
+    },
+    {
+      "canonicalOrgId": "ORG-PARTY-AIMIM",
+      "partyCode": "AIMIM",
+      "totalOccurrences": 58,
+      "resolutionRules": [
+        "EXACT_MATCH",
+        "CORRUPTED_TRUNCATED_STRING",
+        "FULL_NAME_MATCH"
+      ],
+      "confidences": [
+        "VERIFIED"
+      ],
+      "sourcesCount": 11,
+      "sourcesSample": [
+        "data/seed/bihar-constituencies.ts",
+        "data/seed/maharashtra-constituencies.ts",
+        "data/seed/maharashtra-historical-results.ts"
+      ],
+      "rawStringsSample": [
+        "AIMIM",
+        "AIMM",
+        "All India Majlis-e-Ittehadul Muslimeen"
+      ],
+      "provenanceRecord": "0215b22c-0000-0000-0000-000000000001"
+    },
+    {
+      "canonicalOrgId": "ORG-PARTY-TMP",
+      "partyCode": "TMP",
+      "totalOccurrences": 48,
+      "resolutionRules": [
+        "EXACT_MATCH",
+        "FULL_NAME_MATCH"
+      ],
+      "confidences": [
+        "VERIFIED"
+      ],
+      "sourcesCount": 3,
+      "sourcesSample": [
+        "data/seed/tripura-constituencies.ts",
+        "data/seed/tripura-mla-profiles.ts",
+        "packages/shared/src/constants/parties.ts"
+      ],
+      "rawStringsSample": [
+        "TMP",
+        "Tipra Motha Party"
+      ],
+      "provenanceRecord": "0215b22c-0000-0000-0000-000000000001"
+    },
+    {
+      "canonicalOrgId": "ORG-PARTY-BSP",
+      "partyCode": "BSP",
+      "totalOccurrences": 47,
+      "resolutionRules": [
+        "EXACT_MATCH",
+        "COMPOUND_CANDIDATE_STRING",
+        "FULL_NAME_MATCH"
+      ],
+      "confidences": [
+        "VERIFIED"
+      ],
+      "sourcesCount": 16,
+      "sourcesSample": [
+        "data/seed/bihar-constituencies.ts",
+        "data/seed/bihar-mla-profiles.ts",
+        "data/seed/mp-profiles.ts"
+      ],
+      "rawStringsSample": [
+        "BSP",
+        "BSP - Attar Lal",
+        "BSP - Kuldeep Singh Sikarwar",
+        "BSP - Balveer Dandotiya",
+        "BSP - Yadvendra Singh"
+      ],
+      "provenanceRecord": "0215b22c-0000-0000-0000-000000000001"
+    },
+    {
+      "canonicalOrgId": "ORG-PARTY-UDP",
+      "partyCode": "UDP",
+      "totalOccurrences": 45,
+      "resolutionRules": [
+        "EXACT_MATCH",
+        "FULL_NAME_MATCH"
+      ],
+      "confidences": [
+        "VERIFIED"
+      ],
+      "sourcesCount": 3,
+      "sourcesSample": [
+        "data/seed/meghalaya-constituencies.ts",
+        "data/seed/meghalaya-mla-profiles.ts",
+        "packages/shared/src/constants/parties.ts"
+      ],
+      "rawStringsSample": [
+        "UDP",
+        "United Democratic Party"
+      ],
+      "provenanceRecord": "0215b22c-0000-0000-0000-000000000001"
+    },
+    {
+      "canonicalOrgId": "ORG-PARTY-AINRC",
+      "partyCode": "AINRC",
+      "totalOccurrences": 41,
+      "resolutionRules": [
+        "EXACT_MATCH",
+        "FULL_NAME_MATCH"
+      ],
+      "confidences": [
+        "VERIFIED"
+      ],
+      "sourcesCount": 4,
+      "sourcesSample": [
+        "data/seed/puducherry-constituencies.ts",
+        "data/seed/puducherry-election-history.ts",
+        "data/seed/puducherry-mla-profiles.ts"
+      ],
+      "rawStringsSample": [
+        "AINRC",
+        "All India N.R. Congress"
+      ],
+      "provenanceRecord": "0215b22c-0000-0000-0000-000000000001"
+    },
+    {
+      "canonicalOrgId": "ORG-PARTY-SDF",
+      "partyCode": "SDF",
+      "totalOccurrences": 37,
+      "resolutionRules": [
+        "EXACT_MATCH",
+        "FULL_NAME_MATCH"
+      ],
+      "confidences": [
+        "VERIFIED"
+      ],
+      "sourcesCount": 3,
+      "sourcesSample": [
+        "data/seed/sikkim-constituencies.ts",
+        "data/seed/sikkim-mla-profiles.ts",
+        "packages/shared/src/constants/parties.ts"
+      ],
+      "rawStringsSample": [
+        "SDF",
+        "Sikkim Democratic Front"
+      ],
+      "provenanceRecord": "0215b22c-0000-0000-0000-000000000001"
+    },
+    {
+      "canonicalOrgId": "ORG-PARTY-ADAL",
+      "partyCode": "ADAL",
+      "totalOccurrences": 34,
+      "resolutionRules": [
+        "EXACT_MATCH",
+        "CORRUPTED_TRUNCATED_STRING"
+      ],
+      "confidences": [
+        "VERIFIED"
+      ],
+      "sourcesCount": 3,
+      "sourcesSample": [
+        "data/seed/uttar-pradesh-constituencies.ts",
+        "data/seed/uttar-pradesh-historical-results.ts",
+        "data/seed/uttar-pradesh-mla-profiles.ts"
+      ],
+      "rawStringsSample": [
+        "ADAL",
+        "Apna Dal ("
+      ],
+      "provenanceRecord": "0215b22c-0000-0000-0000-000000000001"
+    },
+    {
+      "canonicalOrgId": "ORG-PARTY-CPIML",
+      "partyCode": "CPIML",
+      "totalOccurrences": 34,
+      "resolutionRules": [
+        "EXACT_MATCH",
+        "CORRUPTED_TRUNCATED_STRING",
+        "COMPOUND_CANDIDATE_STRING",
+        "STANDARD_ALIAS"
+      ],
+      "confidences": [
+        "VERIFIED"
+      ],
+      "sourcesCount": 5,
+      "sourcesSample": [
+        "data/seed/bihar-constituencies.ts",
+        "data/seed/jharkhand-constituencies.ts",
+        "data/seed/bihar-mla-profiles.ts"
+      ],
+      "rawStringsSample": [
+        "CPIML",
+        "CPI(ML",
+        "CPIML - Vinod Kumar Singh",
+        "CPI (Marxist-Leninist) Liberation",
+        "CPI(ML)"
+      ],
+      "provenanceRecord": "0215b22c-0000-0000-0000-000000000001"
+    },
+    {
+      "canonicalOrgId": "ORG-PARTY-AGP",
+      "partyCode": "AGP",
+      "totalOccurrences": 33,
+      "resolutionRules": [
+        "EXACT_MATCH",
+        "FULL_NAME_MATCH"
+      ],
+      "confidences": [
+        "VERIFIED"
+      ],
+      "sourcesCount": 4,
+      "sourcesSample": [
+        "data/seed/assam-constituencies.ts",
+        "data/seed/assam-mla-profiles.ts",
+        "data/seed/mp-profiles.ts"
+      ],
+      "rawStringsSample": [
+        "AGP",
+        "Asom Gana Parishad"
+      ],
+      "provenanceRecord": "0215b22c-0000-0000-0000-000000000001"
+    },
+    {
+      "canonicalOrgId": "ORG-PARTY-JKPDP",
+      "partyCode": "JKPDP",
+      "totalOccurrences": 33,
+      "resolutionRules": [
+        "EXACT_MATCH",
+        "STANDARD_ALIAS"
+      ],
+      "confidences": [
+        "VERIFIED"
+      ],
+      "sourcesCount": 3,
+      "sourcesSample": [
+        "data/seed/jammu-kashmir-constituencies.ts",
+        "data/seed/jammu-kashmir-mla-profiles.ts",
+        "packages/shared/src/constants/parties.ts"
+      ],
+      "rawStringsSample": [
+        "JKPDP",
+        "J&K Peoples Democratic Party",
+        "PDP"
+      ],
+      "provenanceRecord": "0215b22c-0000-0000-0000-000000000001"
+    },
+    {
+      "canonicalOrgId": "ORG-PARTY-LJPRV",
+      "partyCode": "LJPRV",
+      "totalOccurrences": 28,
+      "resolutionRules": [
+        "EXACT_MATCH",
+        "STANDARD_ALIAS"
+      ],
+      "confidences": [
+        "VERIFIED"
+      ],
+      "sourcesCount": 6,
+      "sourcesSample": [
+        "data/seed/jharkhand-constituencies.ts",
+        "data/seed/nagaland-constituencies.ts",
+        "packages/shared/src/constants/parties.ts"
+      ],
+      "rawStringsSample": [
+        "LJPRV",
+        "LJPV",
+        "Lok Janshakti Party (Ram Vilas)",
+        "LJP(RV)"
+      ],
+      "provenanceRecord": "0215b22c-0000-0000-0000-000000000001"
+    },
+    {
+      "canonicalOrgId": "ORG-PARTY-KCM",
+      "partyCode": "KCM",
+      "totalOccurrences": 27,
+      "resolutionRules": [
+        "STANDARD_ALIAS",
+        "EXACT_MATCH"
+      ],
+      "confidences": [
+        "VERIFIED"
+      ],
+      "sourcesCount": 4,
+      "sourcesSample": [
+        "data/seed/kerala-constituencies.ts",
+        "data/seed/kerala-mla-profiles.ts",
+        "packages/shared/src/constants/parties.ts"
+      ],
+      "rawStringsSample": [
+        "KC(M)",
+        "KECM",
+        "KCM",
+        "Kerala Congress (M)"
+      ],
+      "provenanceRecord": "0215b22c-0000-0000-0000-000000000001"
+    },
+    {
+      "canonicalOrgId": "ORG-PARTY-NPF",
+      "partyCode": "NPF",
+      "totalOccurrences": 26,
+      "resolutionRules": [
+        "EXACT_MATCH",
+        "FULL_NAME_MATCH"
+      ],
+      "confidences": [
+        "VERIFIED"
+      ],
+      "sourcesCount": 5,
+      "sourcesSample": [
+        "data/seed/manipur-constituencies.ts",
+        "data/seed/manipur-mla-profiles.ts",
+        "data/seed/nagaland-constituencies.ts"
+      ],
+      "rawStringsSample": [
+        "NPF",
+        "Naga People's Front"
+      ],
+      "provenanceRecord": "0215b22c-0000-0000-0000-000000000001"
+    },
+    {
+      "canonicalOrgId": "ORG-PARTY-BPF",
+      "partyCode": "BPF",
+      "totalOccurrences": 25,
+      "resolutionRules": [
+        "EXACT_MATCH",
+        "FULL_NAME_MATCH"
+      ],
+      "confidences": [
+        "VERIFIED"
+      ],
+      "sourcesCount": 3,
+      "sourcesSample": [
+        "data/seed/assam-constituencies.ts",
+        "data/seed/assam-mla-profiles.ts",
+        "packages/shared/src/constants/parties.ts"
+      ],
+      "rawStringsSample": [
+        "BPF",
+        "Bodoland People's Front"
+      ],
+      "provenanceRecord": "0215b22c-0000-0000-0000-000000000001"
+    },
+    {
+      "canonicalOrgId": "ORG-PARTY-RLD",
+      "partyCode": "RLD",
+      "totalOccurrences": 24,
+      "resolutionRules": [
+        "EXACT_MATCH",
+        "FULL_NAME_MATCH"
+      ],
+      "confidences": [
+        "VERIFIED"
+      ],
+      "sourcesCount": 7,
+      "sourcesSample": [
+        "data/seed/mp-profiles.ts",
+        "data/seed/rajasthan-constituencies.ts",
+        "data/seed/rajasthan-mla-profiles.ts"
+      ],
+      "rawStringsSample": [
+        "RLD",
+        "Rashtriya Lok Dal"
+      ],
+      "provenanceRecord": "0215b22c-0000-0000-0000-000000000001"
+    },
+    {
+      "canonicalOrgId": "ORG-PARTY-BAP",
+      "partyCode": "BAP",
+      "totalOccurrences": 21,
+      "resolutionRules": [
+        "EXACT_MATCH",
+        "COMPOUND_CANDIDATE_STRING",
+        "FULL_NAME_MATCH"
+      ],
+      "confidences": [
+        "VERIFIED"
+      ],
+      "sourcesCount": 6,
+      "sourcesSample": [
+        "data/seed/madhya-pradesh-constituencies.ts",
+        "data/seed/madhya-pradesh-mla-profiles.ts",
+        "data/seed/mp-profiles.ts"
+      ],
+      "rawStringsSample": [
+        "BAP",
+        "BAP - Kantilal Roat",
+        "BAP - Mohanlal Roat",
+        "BAP - Ashok Kumar",
+        "BAP - Jaikrishn Patel"
+      ],
+      "provenanceRecord": "0215b22c-0000-0000-0000-000000000001"
+    },
+    {
+      "canonicalOrgId": "ORG-PARTY-AIUDF",
+      "partyCode": "AIUDF",
+      "totalOccurrences": 20,
+      "resolutionRules": [
+        "EXACT_MATCH"
+      ],
+      "confidences": [
+        "VERIFIED"
+      ],
+      "sourcesCount": 2,
+      "sourcesSample": [
+        "data/seed/assam-constituencies.ts",
+        "data/seed/assam-mla-profiles.ts"
+      ],
+      "rawStringsSample": [
+        "AIUDF"
+      ],
+      "provenanceRecord": "0215b22c-0000-0000-0000-000000000001"
+    },
+    {
+      "canonicalOrgId": "ORG-PARTY-SBSP",
+      "partyCode": "SBSP",
+      "totalOccurrences": 17,
+      "resolutionRules": [
+        "EXACT_MATCH",
+        "FULL_NAME_MATCH"
+      ],
+      "confidences": [
+        "VERIFIED"
+      ],
+      "sourcesCount": 4,
+      "sourcesSample": [
+        "data/seed/uttar-pradesh-constituencies.ts",
+        "data/seed/uttar-pradesh-historical-results.ts",
+        "data/seed/uttar-pradesh-mla-profiles.ts"
+      ],
+      "rawStringsSample": [
+        "SBSP",
+        "Suheldev Bharatiya Samaj Party"
+      ],
+      "provenanceRecord": "0215b22c-0000-0000-0000-000000000001"
+    },
+    {
+      "canonicalOrgId": "ORG-PARTY-AJSU",
+      "partyCode": "AJSU",
+      "totalOccurrences": 17,
+      "resolutionRules": [
+        "EXACT_MATCH",
+        "SYNTHETIC_CODE_ALIAS",
+        "COMPOUND_CANDIDATE_STRING",
+        "FULL_NAME_MATCH"
+      ],
+      "confidences": [
+        "VERIFIED",
+        "RECONCILED"
+      ],
+      "sourcesCount": 4,
+      "sourcesSample": [
+        "data/seed/jharkhand-constituencies.ts",
+        "packages/shared/src/constants/parties.ts",
+        "data/seed/jharkhand-mla-profiles.ts"
+      ],
+      "rawStringsSample": [
+        "AJSU",
+        "AP",
+        "AJSU - Azhar Islam",
+        "AJSU - Sunita Choudhary",
+        "AJSU - Ram Chandra Sahis"
+      ],
+      "provenanceRecord": "0215b22c-0000-0000-0000-000000000001"
+    },
+    {
+      "canonicalOrgId": "ORG-PARTY-PMK",
+      "partyCode": "PMK",
+      "totalOccurrences": 15,
+      "resolutionRules": [
+        "EXACT_MATCH",
+        "FULL_NAME_MATCH"
+      ],
+      "confidences": [
+        "VERIFIED"
+      ],
+      "sourcesCount": 3,
+      "sourcesSample": [
+        "data/seed/tamil-nadu-constituencies.ts",
+        "data/seed/tamil-nadu-mla-profiles.ts",
+        "packages/shared/src/constants/parties.ts"
+      ],
+      "rawStringsSample": [
+        "PMK",
+        "Pattali Makkal Katchi"
+      ],
+      "provenanceRecord": "0215b22c-0000-0000-0000-000000000001"
+    },
+    {
+      "canonicalOrgId": "ORG-PARTY-JKPC",
+      "partyCode": "JKPC",
+      "totalOccurrences": 15,
+      "resolutionRules": [
+        "EXACT_MATCH",
+        "SYNTHETIC_CODE_ALIAS"
+      ],
+      "confidences": [
+        "VERIFIED",
+        "RECONCILED"
+      ],
+      "sourcesCount": 5,
+      "sourcesSample": [
+        "data/seed/jammu-kashmir-constituencies.ts",
+        "data/seed/jammu-kashmir-mla-profiles.ts",
+        "packages/shared/src/constants/parties.ts"
+      ],
+      "rawStringsSample": [
+        "JKPC",
+        "JKC",
+        "J&K regional",
+        "J&K People's Conference"
+      ],
+      "provenanceRecord": "0215b22c-0000-0000-0000-000000000001"
+    },
+    {
+      "canonicalOrgId": "ORG-PARTY-NISHAD",
+      "partyCode": "NISHAD",
+      "totalOccurrences": 14,
+      "resolutionRules": [
+        "EXACT_MATCH"
+      ],
+      "confidences": [
+        "VERIFIED"
+      ],
+      "sourcesCount": 4,
+      "sourcesSample": [
+        "data/seed/uttar-pradesh-constituencies.ts",
+        "data/seed/uttar-pradesh-historical-results.ts",
+        "data/seed/uttar-pradesh-mla-profiles.ts"
+      ],
+      "rawStringsSample": [
+        "NISHAD"
+      ],
+      "provenanceRecord": "0215b22c-0000-0000-0000-000000000001"
+    },
+    {
+      "canonicalOrgId": "ORG-PARTY-VCK",
+      "partyCode": "VCK",
+      "totalOccurrences": 14,
+      "resolutionRules": [
+        "EXACT_MATCH",
+        "FULL_NAME_MATCH"
+      ],
+      "confidences": [
+        "VERIFIED"
+      ],
+      "sourcesCount": 4,
+      "sourcesSample": [
+        "data/seed/mp-profiles.ts",
+        "data/seed/tamil-nadu-constituencies.ts",
+        "data/seed/tamil-nadu-mla-profiles.ts"
+      ],
+      "rawStringsSample": [
+        "VCK",
+        "Viduthalai Chiruthaigal Katchi"
+      ],
+      "provenanceRecord": "0215b22c-0000-0000-0000-000000000001"
+    },
+    {
+      "canonicalOrgId": "ORG-PARTY-VPP",
+      "partyCode": "VPP",
+      "totalOccurrences": 13,
+      "resolutionRules": [
+        "EXACT_MATCH",
+        "FULL_NAME_MATCH"
+      ],
+      "confidences": [
+        "VERIFIED"
+      ],
+      "sourcesCount": 2,
+      "sourcesSample": [
+        "data/seed/meghalaya-constituencies.ts",
+        "packages/shared/src/constants/parties.ts"
+      ],
+      "rawStringsSample": [
+        "VPP",
+        "Voice of the People Party"
+      ],
+      "provenanceRecord": "0215b22c-0000-0000-0000-000000000001"
+    },
+    {
+      "canonicalOrgId": "ORG-PARTY-RPIA",
+      "partyCode": "RPIA",
+      "totalOccurrences": 13,
+      "resolutionRules": [
+        "EXACT_MATCH",
+        "CORRUPTED_TRUNCATED_STRING",
+        "STANDARD_ALIAS"
+      ],
+      "confidences": [
+        "VERIFIED"
+      ],
+      "sourcesCount": 3,
+      "sourcesSample": [
+        "data/seed/nagaland-constituencies.ts",
+        "packages/shared/src/constants/parties.ts",
+        "data/seed/nagaland-mla-profiles.ts"
+      ],
+      "rawStringsSample": [
+        "RPIA",
+        "RPI(",
+        "Republican Party of India (Athawale)",
+        "RPI(A)"
+      ],
+      "provenanceRecord": "0215b22c-0000-0000-0000-000000000001"
+    },
+    {
+      "canonicalOrgId": "ORG-PARTY-HAMS",
+      "partyCode": "HAMS",
+      "totalOccurrences": 13,
+      "resolutionRules": [
+        "EXACT_MATCH",
+        "STANDARD_ALIAS"
+      ],
+      "confidences": [
+        "VERIFIED"
+      ],
+      "sourcesCount": 4,
+      "sourcesSample": [
+        "data/seed/bihar-mla-profiles.ts",
+        "data/seed/mp-profiles.ts",
+        "packages/shared/src/constants/parties.ts"
+      ],
+      "rawStringsSample": [
+        "HAMS",
+        "HAM",
+        "Hindustani Awam Morcha (Secular)",
+        "HAM(S)"
+      ],
+      "provenanceRecord": "0215b22c-0000-0000-0000-000000000001"
+    },
+    {
+      "canonicalOrgId": "ORG-PARTY-RSP",
+      "partyCode": "RSP",
+      "totalOccurrences": 12,
+      "resolutionRules": [
+        "EXACT_MATCH",
+        "FULL_NAME_MATCH"
+      ],
+      "confidences": [
+        "VERIFIED"
+      ],
+      "sourcesCount": 6,
+      "sourcesSample": [
+        "data/seed/kerala-constituencies.ts",
+        "data/seed/kerala-mla-profiles.ts",
+        "data/seed/mp-profiles.ts"
+      ],
+      "rawStringsSample": [
+        "RSP",
+        "Revolutionary Socialist Party"
+      ],
+      "provenanceRecord": "0215b22c-0000-0000-0000-000000000001"
+    },
+    {
+      "canonicalOrgId": "ORG-PARTY-AIFB",
+      "partyCode": "AIFB",
+      "totalOccurrences": 12,
+      "resolutionRules": [
+        "EXACT_MATCH",
+        "SYNTHETIC_CODE_ALIAS",
+        "FULL_NAME_MATCH"
+      ],
+      "confidences": [
+        "VERIFIED",
+        "RECONCILED"
+      ],
+      "sourcesCount": 6,
+      "sourcesSample": [
+        "data/seed/telangana-historical-results.ts",
+        "data/seed/tripura-constituencies.ts",
+        "data/seed/west-bengal-historical-results.ts"
+      ],
+      "rawStringsSample": [
+        "AIFB",
+        "AJU",
+        "All India Forward Bloc",
+        "regional (West Bengal)"
+      ],
+      "provenanceRecord": "0215b22c-0000-0000-0000-000000000001"
+    },
+    {
+      "canonicalOrgId": "ORG-PARTY-PPA",
+      "partyCode": "PPA",
+      "totalOccurrences": 11,
+      "resolutionRules": [
+        "EXACT_MATCH",
+        "FULL_NAME_MATCH"
+      ],
+      "confidences": [
+        "VERIFIED"
+      ],
+      "sourcesCount": 3,
+      "sourcesSample": [
+        "data/seed/arunachal-pradesh-constituencies.ts",
+        "data/seed/arunachal-pradesh-mla-profiles.ts",
+        "packages/shared/src/constants/parties.ts"
+      ],
+      "rawStringsSample": [
+        "PPA",
+        "People's Party of Arunachal"
+      ],
+      "provenanceRecord": "0215b22c-0000-0000-0000-000000000001"
+    },
+    {
+      "canonicalOrgId": "ORG-PARTY-VIP",
+      "partyCode": "VIP",
+      "totalOccurrences": 11,
+      "resolutionRules": [
+        "EXACT_MATCH",
+        "FULL_NAME_MATCH"
+      ],
+      "confidences": [
+        "VERIFIED"
+      ],
+      "sourcesCount": 3,
+      "sourcesSample": [
+        "data/seed/bihar-constituencies.ts",
+        "data/seed/bihar-mla-profiles.ts",
+        "packages/shared/src/constants/parties.ts"
+      ],
+      "rawStringsSample": [
+        "VIP",
+        "Vikassheel Insaan Party"
+      ],
+      "provenanceRecord": "0215b22c-0000-0000-0000-000000000001"
+    },
+    {
+      "canonicalOrgId": "ORG-PARTY-HSPDP",
+      "partyCode": "HSPDP",
+      "totalOccurrences": 11,
+      "resolutionRules": [
+        "EXACT_MATCH",
+        "FULL_NAME_MATCH"
+      ],
+      "confidences": [
+        "VERIFIED"
+      ],
+      "sourcesCount": 3,
+      "sourcesSample": [
+        "data/seed/meghalaya-constituencies.ts",
+        "data/seed/meghalaya-mla-profiles.ts",
+        "packages/shared/src/constants/parties.ts"
+      ],
+      "rawStringsSample": [
+        "HSPDP",
+        "Hill State People's Democratic Party"
+      ],
+      "provenanceRecord": "0215b22c-0000-0000-0000-000000000001"
+    },
+    {
+      "canonicalOrgId": "ORG-PARTY-INLD",
+      "partyCode": "INLD",
+      "totalOccurrences": 10,
+      "resolutionRules": [
+        "EXACT_MATCH",
+        "COMPOUND_CANDIDATE_STRING",
+        "FULL_NAME_MATCH"
+      ],
+      "confidences": [
+        "VERIFIED"
+      ],
+      "sourcesCount": 3,
+      "sourcesSample": [
+        "data/seed/haryana-constituencies.ts",
+        "data/seed/haryana-mla-profiles.ts",
+        "packages/shared/src/constants/parties.ts"
+      ],
+      "rawStringsSample": [
+        "INLD",
+        "INLD - Abhay Singh Chautala",
+        "INLD - Tahir Hussain",
+        "Indian National Lok Dal"
+      ],
+      "provenanceRecord": "0215b22c-0000-0000-0000-000000000001"
+    },
+    {
+      "canonicalOrgId": "ORG-PARTY-PDF",
+      "partyCode": "PDF",
+      "totalOccurrences": 9,
+      "resolutionRules": [
+        "EXACT_MATCH"
+      ],
+      "confidences": [
+        "VERIFIED"
+      ],
+      "sourcesCount": 3,
+      "sourcesSample": [
+        "data/seed/meghalaya-constituencies.ts",
+        "data/seed/meghalaya-mla-profiles.ts",
+        "packages/shared/src/constants/parties.ts"
+      ],
+      "rawStringsSample": [
+        "PDF"
+      ],
+      "provenanceRecord": "0215b22c-0000-0000-0000-000000000001"
+    },
+    {
+      "canonicalOrgId": "ORG-PARTY-SAD",
+      "partyCode": "SAD",
+      "totalOccurrences": 9,
+      "resolutionRules": [
+        "EXACT_MATCH",
+        "FULL_NAME_MATCH"
+      ],
+      "confidences": [
+        "VERIFIED"
+      ],
+      "sourcesCount": 4,
+      "sourcesSample": [
+        "data/seed/mp-profiles.ts",
+        "data/seed/punjab-constituencies.ts",
+        "data/seed/punjab-mla-profiles.ts"
+      ],
+      "rawStringsSample": [
+        "SAD",
+        "Shiromani Akali Dal"
+      ],
+      "provenanceRecord": "0215b22c-0000-0000-0000-000000000001"
+    },
+    {
+      "canonicalOrgId": "ORG-PARTY-IPFT",
+      "partyCode": "IPFT",
+      "totalOccurrences": 8,
+      "resolutionRules": [
+        "EXACT_MATCH",
+        "FULL_NAME_MATCH"
+      ],
+      "confidences": [
+        "VERIFIED"
+      ],
+      "sourcesCount": 3,
+      "sourcesSample": [
+        "data/seed/tripura-constituencies.ts",
+        "data/seed/tripura-mla-profiles.ts",
+        "packages/shared/src/constants/parties.ts"
+      ],
+      "rawStringsSample": [
+        "IPFT",
+        "Indigenous People's Front of Tripura"
+      ],
+      "provenanceRecord": "0215b22c-0000-0000-0000-000000000001"
+    },
+    {
+      "canonicalOrgId": "ORG-PARTY-UPPL",
+      "partyCode": "UPPL",
+      "totalOccurrences": 7,
+      "resolutionRules": [
+        "EXACT_MATCH"
+      ],
+      "confidences": [
+        "VERIFIED"
+      ],
+      "sourcesCount": 2,
+      "sourcesSample": [
+        "data/seed/assam-constituencies.ts",
+        "data/seed/mp-profiles.ts"
+      ],
+      "rawStringsSample": [
+        "UPPL"
+      ],
+      "provenanceRecord": "0215b22c-0000-0000-0000-000000000001"
+    },
+    {
+      "canonicalOrgId": "ORG-PARTY-KC",
+      "partyCode": "KC",
+      "totalOccurrences": 7,
+      "resolutionRules": [
+        "EXACT_MATCH"
+      ],
+      "confidences": [
+        "VERIFIED"
+      ],
+      "sourcesCount": 4,
+      "sourcesSample": [
+        "data/seed/kerala-constituencies.ts",
+        "data/seed/kerala-mla-profiles.ts",
+        "data/seed/mp-profiles.ts"
+      ],
+      "rawStringsSample": [
+        "KC"
+      ],
+      "provenanceRecord": "0215b22c-0000-0000-0000-000000000001"
+    },
+    {
+      "canonicalOrgId": "ORG-PARTY-RD",
+      "partyCode": "RD",
+      "totalOccurrences": 7,
+      "resolutionRules": [
+        "EXACT_MATCH",
+        "FULL_NAME_MATCH"
+      ],
+      "confidences": [
+        "VERIFIED"
+      ],
+      "sourcesCount": 2,
+      "sourcesSample": [
+        "data/seed/assam-mla-profiles.ts",
+        "packages/shared/src/constants/parties.ts"
+      ],
+      "rawStringsSample": [
+        "RD",
+        "Raijor Dal"
+      ],
+      "provenanceRecord": "0215b22c-0000-0000-0000-000000000001"
+    },
+    {
+      "canonicalOrgId": "ORG-PARTY-KPA",
+      "partyCode": "KPA",
+      "totalOccurrences": 7,
+      "resolutionRules": [
+        "EXACT_MATCH",
+        "FULL_NAME_MATCH"
+      ],
+      "confidences": [
+        "VERIFIED"
+      ],
+      "sourcesCount": 3,
+      "sourcesSample": [
+        "data/seed/manipur-constituencies.ts",
+        "data/seed/manipur-mla-profiles.ts",
+        "packages/shared/src/constants/parties.ts"
+      ],
+      "rawStringsSample": [
+        "KPA",
+        "Kuki People's Alliance"
+      ],
+      "provenanceRecord": "0215b22c-0000-0000-0000-000000000001"
+    },
+    {
+      "canonicalOrgId": "ORG-PARTY-MGP",
+      "partyCode": "MGP",
+      "totalOccurrences": 7,
+      "resolutionRules": [
+        "EXACT_MATCH",
+        "STANDARD_ALIAS"
+      ],
+      "confidences": [
+        "VERIFIED"
+      ],
+      "sourcesCount": 3,
+      "sourcesSample": [
+        "data/seed/goa-constituencies.ts",
+        "packages/shared/src/constants/parties.ts",
+        "data/seed/goa-mla-profiles.ts"
+      ],
+      "rawStringsSample": [
+        "MGP",
+        "MG",
+        "Maharashtrawadi Gomantak Party"
+      ],
+      "provenanceRecord": "0215b22c-0000-0000-0000-000000000001"
+    },
+    {
+      "canonicalOrgId": "ORG-PARTY-LJK",
+      "partyCode": "LJK",
+      "totalOccurrences": 6,
+      "resolutionRules": [
+        "EXACT_MATCH",
+        "FULL_NAME_MATCH"
+      ],
+      "confidences": [
+        "VERIFIED"
+      ],
+      "sourcesCount": 3,
+      "sourcesSample": [
+        "data/seed/puducherry-constituencies.ts",
+        "data/seed/puducherry-mla-profiles.ts",
+        "packages/shared/src/constants/parties.ts"
+      ],
+      "rawStringsSample": [
+        "LJK",
+        "Lok Jananayaga Katchi"
+      ],
+      "provenanceRecord": "0215b22c-0000-0000-0000-000000000001"
+    },
+    {
+      "canonicalOrgId": "ORG-PARTY-NTK",
+      "partyCode": "NTK",
+      "totalOccurrences": 6,
+      "resolutionRules": [
+        "SYNTHETIC_CODE_ALIAS"
+      ],
+      "confidences": [
+        "RECONCILED"
+      ],
+      "sourcesCount": 3,
+      "sourcesSample": [
+        "data/seed/puducherry-constituencies.ts",
+        "data/seed/puducherry-mla-profiles.ts",
+        "packages/shared/src/constants/parties.ts"
+      ],
+      "rawStringsSample": [
+        "NMK",
+        "Nam Tamilar / regional (Puducherry)"
+      ],
+      "provenanceRecord": "0215b22c-0000-0000-0000-000000000001"
+    },
+    {
+      "canonicalOrgId": "ORG-PARTY-GGP",
+      "partyCode": "GGP",
+      "totalOccurrences": 6,
+      "resolutionRules": [
+        "EXACT_MATCH",
+        "STANDARD_ALIAS",
+        "FULL_NAME_MATCH"
+      ],
+      "confidences": [
+        "VERIFIED"
+      ],
+      "sourcesCount": 3,
+      "sourcesSample": [
+        "data/seed/chhattisgarh-mla-profiles.ts",
+        "packages/shared/src/constants/parties.ts",
+        "data/seed/chhattisgarh-constituencies.ts"
+      ],
+      "rawStringsSample": [
+        "GGP",
+        "GONDWANA",
+        "Gondwana Gantantra Party"
+      ],
+      "provenanceRecord": "0215b22c-0000-0000-0000-000000000001"
+    },
+    {
+      "canonicalOrgId": "ORG-PARTY-VTPP",
+      "partyCode": "VTPP",
+      "totalOccurrences": 5,
+      "resolutionRules": [
+        "EXACT_MATCH"
+      ],
+      "confidences": [
+        "VERIFIED"
+      ],
+      "sourcesCount": 2,
+      "sourcesSample": [
+        "data/seed/meghalaya-mla-profiles.ts",
+        "data/seed/mp-profiles.ts"
+      ],
+      "rawStringsSample": [
+        "VTPP"
+      ],
+      "provenanceRecord": "0215b22c-0000-0000-0000-000000000001"
+    },
+    {
+      "canonicalOrgId": "ORG-PARTY-RGP",
+      "partyCode": "RGP",
+      "totalOccurrences": 5,
+      "resolutionRules": [
+        "EXACT_MATCH",
+        "FULL_NAME_MATCH"
+      ],
+      "confidences": [
+        "VERIFIED"
+      ],
+      "sourcesCount": 3,
+      "sourcesSample": [
+        "data/seed/goa-constituencies.ts",
+        "data/seed/goa-mla-profiles.ts",
+        "packages/shared/src/constants/parties.ts"
+      ],
+      "rawStringsSample": [
+        "RGP",
+        "Revolutionary Goans Party"
+      ],
+      "provenanceRecord": "0215b22c-0000-0000-0000-000000000001"
+    },
+    {
+      "canonicalOrgId": "ORG-PARTY-GFP",
+      "partyCode": "GFP",
+      "totalOccurrences": 5,
+      "resolutionRules": [
+        "EXACT_MATCH",
+        "FULL_NAME_MATCH"
+      ],
+      "confidences": [
+        "VERIFIED"
+      ],
+      "sourcesCount": 3,
+      "sourcesSample": [
+        "data/seed/goa-constituencies.ts",
+        "data/seed/goa-mla-profiles.ts",
+        "packages/shared/src/constants/parties.ts"
+      ],
+      "rawStringsSample": [
+        "GFP",
+        "Goa Forward Party"
+      ],
+      "provenanceRecord": "0215b22c-0000-0000-0000-000000000001"
+    },
+    {
+      "canonicalOrgId": "ORG-PARTY-RMPI",
+      "partyCode": "RMPI",
+      "totalOccurrences": 5,
+      "resolutionRules": [
+        "EXACT_MATCH",
+        "FULL_NAME_MATCH"
+      ],
+      "confidences": [
+        "VERIFIED"
+      ],
+      "sourcesCount": 3,
+      "sourcesSample": [
+        "data/seed/kerala-constituencies.ts",
+        "data/seed/kerala-mla-profiles.ts",
+        "packages/shared/src/constants/parties.ts"
+      ],
+      "rawStringsSample": [
+        "RMPI",
+        "Revolutionary Marxist Party of India"
+      ],
+      "provenanceRecord": "0215b22c-0000-0000-0000-000000000001"
+    },
+    {
+      "canonicalOrgId": "ORG-PARTY-RLP",
+      "partyCode": "RLP",
+      "totalOccurrences": 5,
+      "resolutionRules": [
+        "EXACT_MATCH",
+        "COMPOUND_CANDIDATE_STRING"
+      ],
+      "confidences": [
+        "VERIFIED"
+      ],
+      "sourcesCount": 2,
+      "sourcesSample": [
+        "data/seed/mp-profiles.ts",
+        "data/seed/rajasthan-constituencies.ts"
+      ],
+      "rawStringsSample": [
+        "RLP",
+        "RLP - Pukhraj Garg",
+        "RLP - Ummeda Ram Beniwal"
+      ],
+      "provenanceRecord": "0215b22c-0000-0000-0000-000000000001"
+    },
+    {
+      "canonicalOrgId": "ORG-PARTY-JLKM",
+      "partyCode": "JLKM",
+      "totalOccurrences": 5,
+      "resolutionRules": [
+        "EXACT_MATCH",
+        "COMPOUND_CANDIDATE_STRING"
+      ],
+      "confidences": [
+        "VERIFIED"
+      ],
+      "sourcesCount": 1,
+      "sourcesSample": [
+        "data/seed/jharkhand-constituencies.ts"
+      ],
+      "rawStringsSample": [
+        "JLKM",
+        "JLKM - Puja Kumari",
+        "JLKM - Jairam Kumar Mahato",
+        "JLKM - Arjun Rajwar"
+      ],
+      "provenanceRecord": "0215b22c-0000-0000-0000-000000000001"
+    },
+    {
+      "canonicalOrgId": "ORG-PARTY-CS",
+      "partyCode": "CS",
+      "totalOccurrences": 5,
+      "resolutionRules": [
+        "SYNTHETIC_CODE_ALIAS",
+        "EXACT_MATCH",
+        "CORRUPTED_TRUNCATED_STRING"
+      ],
+      "confidences": [
+        "RECONCILED",
+        "VERIFIED"
+      ],
+      "sourcesCount": 3,
+      "sourcesSample": [
+        "packages/shared/src/constants/parties.ts",
+        "data/seed/kerala-historical-results.ts",
+        "data/seed/kerala-mla-profiles.ts"
+      ],
+      "rawStringsSample": [
+        "CONS",
+        "CS",
+        "CONGRESS(",
+        "Conservative / regional"
+      ],
+      "provenanceRecord": "0215b22c-0000-0000-0000-000000000001"
+    },
+    {
+      "canonicalOrgId": "ORG-PARTY-ASPKR",
+      "partyCode": "ASPKR",
+      "totalOccurrences": 5,
+      "resolutionRules": [
+        "EXACT_MATCH",
+        "COMPOUND_CANDIDATE_STRING",
+        "STANDARD_ALIAS"
+      ],
+      "confidences": [
+        "VERIFIED",
+        "RECONCILED"
+      ],
+      "sourcesCount": 3,
+      "sourcesSample": [
+        "data/seed/mp-profiles.ts",
+        "data/seed/rajasthan-constituencies.ts",
+        "packages/shared/src/constants/parties.ts"
+      ],
+      "rawStringsSample": [
+        "ASPKR",
+        "AAZADSAM - Rohitash Kumar",
+        "AAZADSAM - Sukhavant Singh",
+        "Azad Samaj Party (Kanshi Ram)",
+        "ASP"
+      ],
+      "provenanceRecord": "0215b22c-0000-0000-0000-000000000001"
+    },
+    {
+      "canonicalOrgId": "ORG-PARTY-JKNPP",
+      "partyCode": "JKNPP",
+      "totalOccurrences": 4,
+      "resolutionRules": [
+        "EXACT_MATCH"
+      ],
+      "confidences": [
+        "VERIFIED"
+      ],
+      "sourcesCount": 2,
+      "sourcesSample": [
+        "data/seed/jammu-kashmir-constituencies.ts",
+        "packages/shared/src/constants/parties.ts"
+      ],
+      "rawStringsSample": [
+        "JKNPP"
+      ],
+      "provenanceRecord": "0215b22c-0000-0000-0000-000000000001"
+    },
+    {
+      "canonicalOrgId": "ORG-PARTY-AMMK",
+      "partyCode": "AMMK",
+      "totalOccurrences": 4,
+      "resolutionRules": [
+        "EXACT_MATCH"
+      ],
+      "confidences": [
+        "VERIFIED"
+      ],
+      "sourcesCount": 3,
+      "sourcesSample": [
+        "data/seed/tamil-nadu-constituencies.ts",
+        "data/seed/tamil-nadu-mla-profiles.ts",
+        "packages/shared/src/constants/parties.ts"
+      ],
+      "rawStringsSample": [
+        "AMMK"
+      ],
+      "provenanceRecord": "0215b22c-0000-0000-0000-000000000001"
+    },
+    {
+      "canonicalOrgId": "ORG-ALLIANCE-NDA",
+      "partyCode": null,
+      "totalOccurrences": 4,
+      "resolutionRules": [
+        "ALLIANCE_ENTITY"
+      ],
+      "confidences": [
+        "VERIFIED"
+      ],
+      "sourcesCount": 2,
+      "sourcesSample": [
+        "data/seed/bihar-election-history.ts",
+        "packages/shared/src/constants/parties.ts"
+      ],
+      "rawStringsSample": [
+        "NDA",
+        "National Democratic Alliance"
+      ],
+      "provenanceRecord": "0215b22c-0000-0000-0000-000000000001"
+    },
+    {
+      "canonicalOrgId": "ORG-PARTY-INL",
+      "partyCode": "INL",
+      "totalOccurrences": 4,
+      "resolutionRules": [
+        "EXACT_MATCH",
+        "FULL_NAME_MATCH"
+      ],
+      "confidences": [
+        "VERIFIED"
+      ],
+      "sourcesCount": 2,
+      "sourcesSample": [
+        "data/seed/kerala-constituencies.ts",
+        "packages/shared/src/constants/parties.ts"
+      ],
+      "rawStringsSample": [
+        "INL",
+        "Indian National League"
+      ],
+      "provenanceRecord": "0215b22c-0000-0000-0000-000000000001"
+    },
+    {
+      "canonicalOrgId": "ORG-PARTY-NSC",
+      "partyCode": "NSC",
+      "totalOccurrences": 4,
+      "resolutionRules": [
+        "EXACT_MATCH",
+        "CORRUPTED_TRUNCATED_STRING"
+      ],
+      "confidences": [
+        "VERIFIED"
+      ],
+      "sourcesCount": 3,
+      "sourcesSample": [
+        "data/seed/kerala-historical-results.ts",
+        "packages/shared/src/constants/parties.ts",
+        "data/seed/kerala-mla-profiles.ts"
+      ],
+      "rawStringsSample": [
+        "NSC",
+        "NATIONALS"
+      ],
+      "provenanceRecord": "0215b22c-0000-0000-0000-000000000001"
+    },
+    {
+      "canonicalOrgId": "ORG-PARTY-GNC",
+      "partyCode": "GNC",
+      "totalOccurrences": 4,
+      "resolutionRules": [
+        "EXACT_MATCH",
+        "FULL_NAME_MATCH"
+      ],
+      "confidences": [
+        "VERIFIED"
+      ],
+      "sourcesCount": 2,
+      "sourcesSample": [
+        "data/seed/meghalaya-constituencies.ts",
+        "packages/shared/src/constants/parties.ts"
+      ],
+      "rawStringsSample": [
+        "GNC",
+        "Garo National Council"
+      ],
+      "provenanceRecord": "0215b22c-0000-0000-0000-000000000001"
+    },
+    {
+      "canonicalOrgId": "ORG-PARTY-CMPJ",
+      "partyCode": "CMPJ",
+      "totalOccurrences": 4,
+      "resolutionRules": [
+        "STANDARD_ALIAS"
+      ],
+      "confidences": [
+        "VERIFIED"
+      ],
+      "sourcesCount": 2,
+      "sourcesSample": [
+        "packages/shared/src/constants/parties.ts",
+        "data/seed/kerala-historical-results.ts"
+      ],
+      "rawStringsSample": [
+        "CMP(J)",
+        "CMP",
+        "Communist Marxist Party (John)"
+      ],
+      "provenanceRecord": "0215b22c-0000-0000-0000-000000000001"
+    },
+    {
+      "canonicalOrgId": "ORG-PARTY-ISF",
+      "partyCode": "ISF",
+      "totalOccurrences": 4,
+      "resolutionRules": [
+        "EXACT_MATCH",
+        "CORRUPTED_TRUNCATED_STRING",
+        "FULL_NAME_MATCH"
+      ],
+      "confidences": [
+        "VERIFIED"
+      ],
+      "sourcesCount": 2,
+      "sourcesSample": [
+        "packages/shared/src/constants/parties.ts",
+        "data/seed/west-bengal-mla-profiles.ts"
+      ],
+      "rawStringsSample": [
+        "ISF",
+        "RASHTRIYA",
+        "Indian Secular Front"
+      ],
+      "provenanceRecord": "0215b22c-0000-0000-0000-000000000001"
+    },
+    {
+      "canonicalOrgId": "ORG-PARTY-KCB",
+      "partyCode": "KCB",
+      "totalOccurrences": 4,
+      "resolutionRules": [
+        "STANDARD_ALIAS"
+      ],
+      "confidences": [
+        "VERIFIED"
+      ],
+      "sourcesCount": 2,
+      "sourcesSample": [
+        "packages/shared/src/constants/parties.ts",
+        "data/seed/kerala-historical-results.ts"
+      ],
+      "rawStringsSample": [
+        "KC(B)",
+        "KECB",
+        "Kerala Congress (B)"
+      ],
+      "provenanceRecord": "0215b22c-0000-0000-0000-000000000001"
+    },
+    {
+      "canonicalOrgId": "ORG-PARTY-KCJ",
+      "partyCode": "KCJ",
+      "totalOccurrences": 4,
+      "resolutionRules": [
+        "EXACT_MATCH",
+        "STANDARD_ALIAS"
+      ],
+      "confidences": [
+        "VERIFIED"
+      ],
+      "sourcesCount": 2,
+      "sourcesSample": [
+        "packages/shared/src/constants/parties.ts",
+        "data/seed/kerala-historical-results.ts"
+      ],
+      "rawStringsSample": [
+        "KCJ",
+        "KECJ",
+        "Kerala Congress (Jacob)"
+      ],
+      "provenanceRecord": "0215b22c-0000-0000-0000-000000000001"
+    },
+    {
+      "canonicalOrgId": "ORG-PARTY-GJM",
+      "partyCode": "GJM",
+      "totalOccurrences": 3,
+      "resolutionRules": [
+        "EXACT_MATCH"
+      ],
+      "confidences": [
+        "VERIFIED"
+      ],
+      "sourcesCount": 1,
+      "sourcesSample": [
+        "data/seed/west-bengal-historical-results.ts"
+      ],
+      "rawStringsSample": [
+        "GJM"
+      ],
+      "provenanceRecord": "0215b22c-0000-0000-0000-000000000001"
+    },
+    {
+      "canonicalOrgId": "ORG-PARTY-JSD",
+      "partyCode": "JSD",
+      "totalOccurrences": 3,
+      "resolutionRules": [
+        "STANDARD_ALIAS",
+        "CORRUPTED_TRUNCATED_STRING"
+      ],
+      "confidences": [
+        "VERIFIED"
+      ],
+      "sourcesCount": 2,
+      "sourcesSample": [
+        "data/seed/uttar-pradesh-constituencies.ts",
+        "data/seed/uttar-pradesh-mla-profiles.ts"
+      ],
+      "rawStringsSample": [
+        "JDL",
+        "Jansatta D"
+      ],
+      "provenanceRecord": "0215b22c-0000-0000-0000-000000000001"
+    },
+    {
+      "canonicalOrgId": "ORG-PARTY-LJD",
+      "partyCode": "LJD",
+      "totalOccurrences": 3,
+      "resolutionRules": [
+        "EXACT_MATCH",
+        "CORRUPTED_TRUNCATED_STRING"
+      ],
+      "confidences": [
+        "VERIFIED"
+      ],
+      "sourcesCount": 2,
+      "sourcesSample": [
+        "packages/shared/src/constants/parties.ts",
+        "data/seed/kerala-mla-profiles.ts"
+      ],
+      "rawStringsSample": [
+        "LJD",
+        "LOKTANTRIK"
+      ],
+      "provenanceRecord": "0215b22c-0000-0000-0000-000000000001"
+    },
+    {
+      "canonicalOrgId": "ORG-PARTY-MNM",
+      "partyCode": "MNM",
+      "totalOccurrences": 3,
+      "resolutionRules": [
+        "EXACT_MATCH",
+        "FULL_NAME_MATCH"
+      ],
+      "confidences": [
+        "VERIFIED"
+      ],
+      "sourcesCount": 1,
+      "sourcesSample": [
+        "packages/shared/src/constants/parties.ts"
+      ],
+      "rawStringsSample": [
+        "MNM",
+        "Makkal Needhi Maiam"
+      ],
+      "provenanceRecord": "0215b22c-0000-0000-0000-000000000001"
+    },
+    {
+      "canonicalOrgId": "ORG-PARTY-UJP",
+      "partyCode": "UJP",
+      "totalOccurrences": 3,
+      "resolutionRules": [
+        "EXACT_MATCH",
+        "FULL_NAME_MATCH"
+      ],
+      "confidences": [
+        "VERIFIED"
+      ],
+      "sourcesCount": 1,
+      "sourcesSample": [
+        "packages/shared/src/constants/parties.ts"
+      ],
+      "rawStringsSample": [
+        "UJP",
+        "Uttarakhand Janata Party"
+      ],
+      "provenanceRecord": "0215b22c-0000-0000-0000-000000000001"
+    },
+    {
+      "canonicalOrgId": "ORG-PARTY-UKD",
+      "partyCode": "UKD",
+      "totalOccurrences": 3,
+      "resolutionRules": [
+        "EXACT_MATCH",
+        "FULL_NAME_MATCH"
+      ],
+      "confidences": [
+        "VERIFIED"
+      ],
+      "sourcesCount": 1,
+      "sourcesSample": [
+        "packages/shared/src/constants/parties.ts"
+      ],
+      "rawStringsSample": [
+        "UKD",
+        "Uttarakhand Kranti Dal"
+      ],
+      "provenanceRecord": "0215b22c-0000-0000-0000-000000000001"
+    },
+    {
+      "canonicalOrgId": "ORG-PARTY-JSS",
+      "partyCode": "JSS",
+      "totalOccurrences": 2,
+      "resolutionRules": [
+        "CORRUPTED_TRUNCATED_STRING"
+      ],
+      "confidences": [
+        "VERIFIED"
+      ],
+      "sourcesCount": 1,
+      "sourcesSample": [
+        "data/seed/maharashtra-mla-profiles.ts"
+      ],
+      "rawStringsSample": [
+        "Jan Surajy"
+      ],
+      "provenanceRecord": "0215b22c-0000-0000-0000-000000000001"
+    },
+    {
+      "canonicalOrgId": "ORG-PARTY-LJP",
+      "partyCode": "LJP",
+      "totalOccurrences": 1,
+      "resolutionRules": [
+        "EXACT_MATCH"
+      ],
+      "confidences": [
+        "VERIFIED"
+      ],
+      "sourcesCount": 1,
+      "sourcesSample": [
+        "data/seed/bihar-constituencies.ts"
+      ],
+      "rawStringsSample": [
+        "LJP"
+      ],
+      "provenanceRecord": "0215b22c-0000-0000-0000-000000000001"
+    },
+    {
+      "canonicalOrgId": "ORG-PARTY-HLP",
+      "partyCode": "HLP",
+      "totalOccurrences": 1,
+      "resolutionRules": [
+        "COMPOUND_CANDIDATE_STRING"
+      ],
+      "confidences": [
+        "VERIFIED"
+      ],
+      "sourcesCount": 1,
+      "sourcesSample": [
+        "data/seed/haryana-constituencies.ts"
+      ],
+      "rawStringsSample": [
+        "HLP - Gopal Kanda"
+      ],
+      "provenanceRecord": "0215b22c-0000-0000-0000-000000000001"
+    },
+    {
+      "canonicalOrgId": "ORG-PARTY-HJSP",
+      "partyCode": "HJSP",
+      "totalOccurrences": 1,
+      "resolutionRules": [
+        "COMPOUND_CANDIDATE_STRING"
+      ],
+      "confidences": [
+        "VERIFIED"
+      ],
+      "sourcesCount": 1,
+      "sourcesSample": [
+        "data/seed/haryana-constituencies.ts"
+      ],
+      "rawStringsSample": [
+        "Haryana Jan Sevak Party - Balraj Kundu"
+      ],
+      "provenanceRecord": "0215b22c-0000-0000-0000-000000000001"
+    },
+    {
+      "canonicalOrgId": "ORG-PARTY-KJP",
+      "partyCode": "KJP",
+      "totalOccurrences": 1,
+      "resolutionRules": [
+        "EXACT_MATCH"
+      ],
+      "confidences": [
+        "VERIFIED"
+      ],
+      "sourcesCount": 1,
+      "sourcesSample": [
+        "data/seed/karnataka-election-history.ts"
+      ],
+      "rawStringsSample": [
+        "KJP"
+      ],
+      "provenanceRecord": "0215b22c-0000-0000-0000-000000000001"
+    },
+    {
+      "canonicalOrgId": "ORG-PARTY-KRPP",
+      "partyCode": "KRPP",
+      "totalOccurrences": 1,
+      "resolutionRules": [
+        "CORRUPTED_TRUNCATED_STRING"
+      ],
+      "confidences": [
+        "VERIFIED"
+      ],
+      "sourcesCount": 1,
+      "sourcesSample": [
+        "data/seed/karnataka-mla-profiles.ts"
+      ],
+      "rawStringsSample": [
+        "Kalyana Ra"
+      ],
+      "provenanceRecord": "0215b22c-0000-0000-0000-000000000001"
+    },
+    {
+      "canonicalOrgId": "ORG-PARTY-MNS",
+      "partyCode": "MNS",
+      "totalOccurrences": 1,
+      "resolutionRules": [
+        "EXACT_MATCH"
+      ],
+      "confidences": [
+        "VERIFIED"
+      ],
+      "sourcesCount": 1,
+      "sourcesSample": [
+        "data/seed/maharashtra-election-history.ts"
+      ],
+      "rawStringsSample": [
+        "MNS"
+      ],
+      "provenanceRecord": "0215b22c-0000-0000-0000-000000000001"
+    },
+    {
+      "canonicalOrgId": "ORG-PARTY-PWPI",
+      "partyCode": "PWPI",
+      "totalOccurrences": 1,
+      "resolutionRules": [
+        "CORRUPTED_TRUNCATED_STRING"
+      ],
+      "confidences": [
+        "VERIFIED"
+      ],
+      "sourcesCount": 1,
+      "sourcesSample": [
+        "data/seed/maharashtra-mla-profiles.ts"
+      ],
+      "rawStringsSample": [
+        "Peasants A"
+      ],
+      "provenanceRecord": "0215b22c-0000-0000-0000-000000000001"
+    },
+    {
+      "canonicalOrgId": "ORG-PARTY-MDMK",
+      "partyCode": "MDMK",
+      "totalOccurrences": 1,
+      "resolutionRules": [
+        "EXACT_MATCH"
+      ],
+      "confidences": [
+        "VERIFIED"
+      ],
+      "sourcesCount": 1,
+      "sourcesSample": [
+        "data/seed/mp-profiles.ts"
+      ],
+      "rawStringsSample": [
+        "MDMK"
+      ],
+      "provenanceRecord": "0215b22c-0000-0000-0000-000000000001"
+    }
+  ]
+}

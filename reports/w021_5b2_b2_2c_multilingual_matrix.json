@@ -1,0 +1,305 @@
+{
+  "auditedAt": "2026-10-03T13:08:32.752Z",
+  "milestone": "W021.5-B2.2-C Multilingual Matrix",
+  "totalIdentitiesAudited": 27,
+  "languagesCovered": [
+    "as",
+    "bn",
+    "hi",
+    "kn",
+    "ml",
+    "mr",
+    "or",
+    "pa",
+    "ta",
+    "te",
+    "ur"
+  ],
+  "scriptsCovered": [
+    "Arab",
+    "Beng",
+    "Deva",
+    "Guru",
+    "Knda",
+    "Mlym",
+    "Orya",
+    "Taml",
+    "Telu"
+  ],
+  "representationTypes": [
+    "HISTORICAL",
+    "OFFICIAL"
+  ],
+  "identities": [
+    {
+      "orgId": "ORG-PARTY-BJP",
+      "lang": "hi",
+      "script": "Deva",
+      "type": "OFFICIAL",
+      "name": "भारतीय जनता पार्टी",
+      "short": "भाजपा",
+      "isOfficial": true,
+      "isPreferred": true
+    },
+    {
+      "orgId": "ORG-PARTY-BJP",
+      "lang": "te",
+      "script": "Telu",
+      "type": "OFFICIAL",
+      "name": "భారతీయ జనతా పార్టీ",
+      "short": "భాజపా",
+      "isOfficial": true,
+      "isPreferred": true
+    },
+    {
+      "orgId": "ORG-PARTY-BJP",
+      "lang": "ta",
+      "script": "Taml",
+      "type": "OFFICIAL",
+      "name": "பாரதிய ஜனதா கட்சி",
+      "short": "பாஜக",
+      "isOfficial": true,
+      "isPreferred": true
+    },
+    {
+      "orgId": "ORG-PARTY-INC",
+      "lang": "hi",
+      "script": "Deva",
+      "type": "OFFICIAL",
+      "name": "भारतीय राष्ट्रीय कांग्रेस",
+      "short": "कांग्रेस",
+      "isOfficial": true,
+      "isPreferred": true
+    },
+    {
+      "orgId": "ORG-PARTY-INC",
+      "lang": "te",
+      "script": "Telu",
+      "type": "OFFICIAL",
+      "name": "భారత జాతీయ కాంగ్రెస్",
+      "short": "కాంగ్రెస్",
+      "isOfficial": true,
+      "isPreferred": true
+    },
+    {
+      "orgId": "ORG-PARTY-INC",
+      "lang": "ta",
+      "script": "Taml",
+      "type": "OFFICIAL",
+      "name": "இந்திய தேசிய காங்கிரசு",
+      "short": "காங்கிரஸ்",
+      "isOfficial": true,
+      "isPreferred": true
+    },
+    {
+      "orgId": "ORG-PARTY-BRS",
+      "lang": "te",
+      "script": "Telu",
+      "type": "OFFICIAL",
+      "name": "భారత్ రాష్ట్ర సమితి",
+      "short": "బీఆర్ఎస్",
+      "isOfficial": true,
+      "isPreferred": true
+    },
+    {
+      "orgId": "ORG-PARTY-TRS",
+      "lang": "te",
+      "script": "Telu",
+      "type": "HISTORICAL",
+      "name": "తెలంగాణ రాష్ట్ర సమితి",
+      "short": "తెరాస",
+      "isOfficial": true,
+      "isPreferred": true
+    },
+    {
+      "orgId": "ORG-PARTY-TDP",
+      "lang": "te",
+      "script": "Telu",
+      "type": "OFFICIAL",
+      "name": "తెలుగుదేశం పార్టీ",
+      "short": "తెదేపా",
+      "isOfficial": true,
+      "isPreferred": true
+    },
+    {
+      "orgId": "ORG-PARTY-YSRCP",
+      "lang": "te",
+      "script": "Telu",
+      "type": "OFFICIAL",
+      "name": "వైఎస్సార్ కాంగ్రెస్ పార్టీ",
+      "short": "వైసీపీ",
+      "isOfficial": true,
+      "isPreferred": true
+    },
+    {
+      "orgId": "ORG-PARTY-JSP",
+      "lang": "te",
+      "script": "Telu",
+      "type": "OFFICIAL",
+      "name": "జనసేన పార్టీ",
+      "short": "జనసేన",
+      "isOfficial": true,
+      "isPreferred": true
+    },
+    {
+      "orgId": "ORG-PARTY-AIMIM",
+      "lang": "ur",
+      "script": "Arab",
+      "type": "OFFICIAL",
+      "name": "کل ہند مجلس اتحاد المسلمین",
+      "short": "مجلس",
+      "isOfficial": true,
+      "isPreferred": true
+    },
+    {
+      "orgId": "ORG-PARTY-DMK",
+      "lang": "ta",
+      "script": "Taml",
+      "type": "OFFICIAL",
+      "name": "திராவிட முன்னேற்றக் கழகம்",
+      "short": "திமுக",
+      "isOfficial": true,
+      "isPreferred": true
+    },
+    {
+      "orgId": "ORG-PARTY-AIADMK",
+      "lang": "ta",
+      "script": "Taml",
+      "type": "OFFICIAL",
+      "name": "அனைத்திந்திய அண்ணா திராவிட முன்னேற்றக் கழகம்",
+      "short": "அதிமுக",
+      "isOfficial": true,
+      "isPreferred": true
+    },
+    {
+      "orgId": "ORG-PARTY-AITC",
+      "lang": "bn",
+      "script": "Beng",
+      "type": "OFFICIAL",
+      "name": "সর্বভারতীয় তৃণমূল কংগ্রেস",
+      "short": "তৃণমূল",
+      "isOfficial": true,
+      "isPreferred": true
+    },
+    {
+      "orgId": "ORG-PARTY-CPIM",
+      "lang": "bn",
+      "script": "Beng",
+      "type": "OFFICIAL",
+      "name": "ভারতের কমিউনিস্ট পার্টি (মার্ক্সবাদী)",
+      "short": "সিপিআই(এম)",
+      "isOfficial": true,
+      "isPreferred": true
+    },
+    {
+      "orgId": "ORG-PARTY-CPIM",
+      "lang": "ml",
+      "script": "Mlym",
+      "type": "OFFICIAL",
+      "name": "കമ്യൂണിസ്റ്റ് പാർട്ടി ഓഫ് ഇന്ത്യ (മാർക്സിസ്റ്റ്)",
+      "short": "സിപിഐ(എം)",
+      "isOfficial": true,
+      "isPreferred": true
+    },
+    {
+      "orgId": "ORG-PARTY-SHS",
+      "lang": "mr",
+      "script": "Deva",
+      "type": "OFFICIAL",
+      "name": "शिवसेना",
+      "short": "शिवसेना",
+      "isOfficial": true,
+      "isPreferred": true
+    },
+    {
+      "orgId": "ORG-PARTY-SHSUBT",
+      "lang": "mr",
+      "script": "Deva",
+      "type": "OFFICIAL",
+      "name": "शिवसेना (उद्धव बाळासाहेब ठाकरे)",
+      "short": "शिवसेना (उबाठा)",
+      "isOfficial": true,
+      "isPreferred": true
+    },
+    {
+      "orgId": "ORG-PARTY-NCP",
+      "lang": "mr",
+      "script": "Deva",
+      "type": "OFFICIAL",
+      "name": "राष्ट्रवादी काँग्रेस पक्ष",
+      "short": "राकाँप",
+      "isOfficial": true,
+      "isPreferred": true
+    },
+    {
+      "orgId": "ORG-PARTY-NCPSP",
+      "lang": "mr",
+      "script": "Deva",
+      "type": "OFFICIAL",
+      "name": "राष्ट्रवादी काँग्रेस पक्ष (शरदचंद्र पवार)",
+      "short": "राकाँप (शप)",
+      "isOfficial": true,
+      "isPreferred": true
+    },
+    {
+      "orgId": "ORG-PARTY-AAP",
+      "lang": "hi",
+      "script": "Deva",
+      "type": "OFFICIAL",
+      "name": "आम आदमी पार्टी",
+      "short": "आप",
+      "isOfficial": true,
+      "isPreferred": true
+    },
+    {
+      "orgId": "ORG-PARTY-AAP",
+      "lang": "pa",
+      "script": "Guru",
+      "type": "OFFICIAL",
+      "name": "ਆਮ ਆਦਮੀ ਪਾਰਟੀ",
+      "short": "ਆਪ",
+      "isOfficial": true,
+      "isPreferred": true
+    },
+    {
+      "orgId": "ORG-PARTY-SAD",
+      "lang": "pa",
+      "script": "Guru",
+      "type": "OFFICIAL",
+      "name": "ਸ਼੍ਰੋਮਣੀ ਅਕਾਲੀ ਦਲ",
+      "short": "ਅਕਾਲੀ ਦਲ",
+      "isOfficial": true,
+      "isPreferred": true
+    },
+    {
+      "orgId": "ORG-PARTY-JDS",
+      "lang": "kn",
+      "script": "Knda",
+      "type": "OFFICIAL",
+      "name": "ಜನತಾ ದಳ (ಜಾತ್ಯತೀತ)",
+      "short": "ಜೆಡಿಎಸ್",
+      "isOfficial": true,
+      "isPreferred": true
+    },
+    {
+      "orgId": "ORG-PARTY-BJD",
+      "lang": "or",
+      "script": "Orya",
+      "type": "OFFICIAL",
+      "name": "ବିଜୁ ଜନତା ଦଳ",
+      "short": "ବିଜେଡି",
+      "isOfficial": true,
+      "isPreferred": true
+    },
+    {
+      "orgId": "ORG-PARTY-AGP",
+      "lang": "as",
+      "script": "Beng",
+      "type": "OFFICIAL",
+      "name": "অসম গণ পৰিষদ",
+      "short": "অগপ",
+      "isOfficial": true,
+      "isPreferred": true
+    }
+  ]
+}

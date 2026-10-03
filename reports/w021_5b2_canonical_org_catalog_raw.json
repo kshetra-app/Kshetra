@@ -1,0 +1,1346 @@
+[
+  {
+    "id": "ORG-PARTY-BJP",
+    "partyCode": "BJP",
+    "isAlliance": false,
+    "occurrences": 5837,
+    "rawStringsCount": 292,
+    "sourcesCount": 86,
+    "sampleRawStrings": [
+      "BJP",
+      "BJP - Suniti Satyanand Rathiya",
+      "BJP - Shivkumari Saradhan Chouhan",
+      "BJP - Mahesh Sahu",
+      "BJP - Harishchandra Rathia"
+    ]
+  },
+  {
+    "id": "ORG-PARTY-INC",
+    "partyCode": "INC",
+    "isAlliance": false,
+    "occurrences": 2969,
+    "rawStringsCount": 392,
+    "sourcesCount": 71,
+    "sampleRawStrings": [
+      "INC",
+      "INC - Neeraj Sharma",
+      "INC - Gulab Kamro",
+      "INC - Ramesh Singh Vakil",
+      "INC - Ambika Singh Deo"
+    ]
+  },
+  {
+    "id": "ORG-PARTY-AITC",
+    "partyCode": "AITC",
+    "isAlliance": false,
+    "occurrences": 642,
+    "rawStringsCount": 3,
+    "sourcesCount": 8,
+    "sampleRawStrings": [
+      "AITC",
+      "All India Trinamool Congress",
+      "TMC"
+    ]
+  },
+  {
+    "id": "ORG-PARTY-TDP",
+    "partyCode": "TDP",
+    "isAlliance": false,
+    "occurrences": 461,
+    "rawStringsCount": 2,
+    "sourcesCount": 8,
+    "sampleRawStrings": [
+      "TDP",
+      "Telugu Desam Party"
+    ]
+  },
+  {
+    "id": "ORG-PARTY-YSRCP",
+    "partyCode": "YSRCP",
+    "isAlliance": false,
+    "occurrences": 378,
+    "rawStringsCount": 2,
+    "sourcesCount": 7,
+    "sampleRawStrings": [
+      "YSRCP",
+      "YSR Congress Party"
+    ]
+  },
+  {
+    "id": "ORG-PARTY-DMK",
+    "partyCode": "DMK",
+    "isAlliance": false,
+    "occurrences": 354,
+    "rawStringsCount": 2,
+    "sourcesCount": 8,
+    "sampleRawStrings": [
+      "DMK",
+      "Dravida Munnetra Kazhagam"
+    ]
+  },
+  {
+    "id": "ORG-PARTY-AAP",
+    "partyCode": "AAP",
+    "isAlliance": false,
+    "occurrences": 345,
+    "rawStringsCount": 2,
+    "sourcesCount": 14,
+    "sampleRawStrings": [
+      "AAP",
+      "Aam Aadmi Party"
+    ]
+  },
+  {
+    "id": "ORG-PARTY-SP",
+    "partyCode": "SP",
+    "isAlliance": false,
+    "occurrences": 304,
+    "rawStringsCount": 2,
+    "sourcesCount": 9,
+    "sampleRawStrings": [
+      "SP",
+      "Samajwadi Party"
+    ]
+  },
+  {
+    "id": "ORG-PARTY-AIADMK",
+    "partyCode": "AIADMK",
+    "isAlliance": false,
+    "occurrences": 286,
+    "rawStringsCount": 2,
+    "sourcesCount": 6,
+    "sampleRawStrings": [
+      "AIADMK",
+      "All India Anna Dravida Munnetra Kazhagam"
+    ]
+  },
+  {
+    "id": "ORG-PARTY-CPIM",
+    "partyCode": "CPIM",
+    "isAlliance": false,
+    "occurrences": 286,
+    "rawStringsCount": 7,
+    "sourcesCount": 24,
+    "sampleRawStrings": [
+      "CPIM",
+      "CPI(M)",
+      "Communist Party of India (Marxist)",
+      "CPIM - Om Prakash",
+      "CPIM - Balwan Poonia"
+    ]
+  },
+  {
+    "id": "ORG-PARTY-SHS",
+    "partyCode": "SHS",
+    "isAlliance": false,
+    "occurrences": 249,
+    "rawStringsCount": 2,
+    "sourcesCount": 6,
+    "sampleRawStrings": [
+      "SHS",
+      "Shiv Sena"
+    ]
+  },
+  {
+    "id": "ORG-PARTY-BJD",
+    "partyCode": "BJD",
+    "isAlliance": false,
+    "occurrences": 247,
+    "rawStringsCount": 92,
+    "sourcesCount": 4,
+    "sampleRawStrings": [
+      "BJD",
+      "BJD - Rita Sahu",
+      "BJD - Debesh Acharjya]]",
+      "BJD - Snehangini Chhuria",
+      "BJD - Susanta Sing]]"
+    ]
+  },
+  {
+    "id": "ORG-PARTY-NCP",
+    "partyCode": "NCP",
+    "isAlliance": false,
+    "occurrences": 218,
+    "rawStringsCount": 2,
+    "sourcesCount": 13,
+    "sampleRawStrings": [
+      "NCP",
+      "Nationalist Congress Party"
+    ]
+  },
+  {
+    "id": "ORG-PARTY-TVK",
+    "partyCode": "TVK",
+    "isAlliance": false,
+    "occurrences": 202,
+    "rawStringsCount": 2,
+    "sourcesCount": 6,
+    "sampleRawStrings": [
+      "TVK",
+      "Tamilaga Vettri Kazhagam"
+    ]
+  },
+  {
+    "id": "ORG-PARTY-RJD",
+    "partyCode": "RJD",
+    "isAlliance": false,
+    "occurrences": 169,
+    "rawStringsCount": 4,
+    "sourcesCount": 10,
+    "sampleRawStrings": [
+      "RJD",
+      "RJD - Subhash Prasad Yadav",
+      "RJD - Rashmi Prakash",
+      "Rashtriya Janata Dal"
+    ]
+  },
+  {
+    "id": "ORG-PARTY-NPP",
+    "partyCode": "NPP",
+    "isAlliance": false,
+    "occurrences": 159,
+    "rawStringsCount": 2,
+    "sourcesCount": 10,
+    "sampleRawStrings": [
+      "NPP",
+      "National People's Party"
+    ]
+  },
+  {
+    "id": "ORG-PARTY-TRS",
+    "partyCode": "TRS",
+    "isAlliance": false,
+    "occurrences": 151,
+    "rawStringsCount": 1,
+    "sourcesCount": 1,
+    "sampleRawStrings": [
+      "TRS"
+    ]
+  },
+  {
+    "id": "ORG-PARTY-BRS",
+    "partyCode": "BRS",
+    "isAlliance": false,
+    "occurrences": 146,
+    "rawStringsCount": 2,
+    "sourcesCount": 5,
+    "sampleRawStrings": [
+      "BRS",
+      "Bharat Rashtra Samithi"
+    ]
+  },
+  {
+    "id": "ORG-PARTY-JKNC",
+    "partyCode": "JKNC",
+    "isAlliance": false,
+    "occurrences": 141,
+    "rawStringsCount": 2,
+    "sourcesCount": 5,
+    "sampleRawStrings": [
+      "JKNC",
+      "Jammu & Kashmir National Conference"
+    ]
+  },
+  {
+    "id": "ORG-PARTY-SHSUBT",
+    "partyCode": "SHSUBT",
+    "isAlliance": false,
+    "occurrences": 141,
+    "rawStringsCount": 4,
+    "sourcesCount": 5,
+    "sampleRawStrings": [
+      "SHSUBT",
+      "SUBT",
+      "Shiv Sena (Uddhav Balasaheb Thackeray)",
+      "SHS(UBT)"
+    ]
+  },
+  {
+    "id": "ORG-PARTY-SKM",
+    "partyCode": "SKM",
+    "isAlliance": false,
+    "occurrences": 130,
+    "rawStringsCount": 2,
+    "sourcesCount": 5,
+    "sampleRawStrings": [
+      "SKM",
+      "Sikkim Krantikari Morcha"
+    ]
+  },
+  {
+    "id": "ORG-PARTY-JDU",
+    "partyCode": "JDU",
+    "isAlliance": false,
+    "occurrences": 121,
+    "rawStringsCount": 4,
+    "sourcesCount": 10,
+    "sampleRawStrings": [
+      "JDU",
+      "JD(U)",
+      "Janata Dal (United)",
+      "JDU - Gopal Krishna Patar"
+    ]
+  },
+  {
+    "id": "ORG-PARTY-JDS",
+    "partyCode": "JDS",
+    "isAlliance": false,
+    "occurrences": 118,
+    "rawStringsCount": 3,
+    "sourcesCount": 9,
+    "sampleRawStrings": [
+      "JDS",
+      "JD(S)",
+      "Janata Dal (Secular)"
+    ]
+  },
+  {
+    "id": "ORG-PARTY-JMM",
+    "partyCode": "JMM",
+    "isAlliance": false,
+    "occurrences": 113,
+    "rawStringsCount": 11,
+    "sourcesCount": 4,
+    "sampleRawStrings": [
+      "JMM",
+      "JMM - Janki Prasad Yadav",
+      "JMM - Manoj Kumar Chandra",
+      "JMM - Nizam Uddin Ansari",
+      "JMM - Kedar Hazra"
+    ]
+  },
+  {
+    "id": "ORG-PARTY-NDPP",
+    "partyCode": "NDPP",
+    "isAlliance": false,
+    "occurrences": 92,
+    "rawStringsCount": 2,
+    "sourcesCount": 4,
+    "sampleRawStrings": [
+      "NDPP",
+      "Nationalist Democratic Progressive Party"
+    ]
+  },
+  {
+    "id": "ORG-PARTY-ZPM",
+    "partyCode": "ZPM",
+    "isAlliance": false,
+    "occurrences": 82,
+    "rawStringsCount": 2,
+    "sourcesCount": 5,
+    "sampleRawStrings": [
+      "ZPM",
+      "Zoram People's Movement"
+    ]
+  },
+  {
+    "id": "ORG-PARTY-IUML",
+    "partyCode": "IUML",
+    "isAlliance": false,
+    "occurrences": 81,
+    "rawStringsCount": 2,
+    "sourcesCount": 8,
+    "sampleRawStrings": [
+      "IUML",
+      "Indian Union Muslim League"
+    ]
+  },
+  {
+    "id": "ORG-PARTY-JSP",
+    "partyCode": "JSP",
+    "isAlliance": false,
+    "occurrences": 74,
+    "rawStringsCount": 3,
+    "sourcesCount": 6,
+    "sampleRawStrings": [
+      "JSP",
+      "JP",
+      "Jana Sena Party"
+    ]
+  },
+  {
+    "id": "ORG-PARTY-MNF",
+    "partyCode": "MNF",
+    "isAlliance": false,
+    "occurrences": 72,
+    "rawStringsCount": 2,
+    "sourcesCount": 4,
+    "sampleRawStrings": [
+      "MNF",
+      "Mizo National Front"
+    ]
+  },
+  {
+    "id": "ORG-PARTY-CPI",
+    "partyCode": "CPI",
+    "isAlliance": false,
+    "occurrences": 71,
+    "rawStringsCount": 2,
+    "sourcesCount": 13,
+    "sampleRawStrings": [
+      "CPI",
+      "Communist Party of India"
+    ]
+  },
+  {
+    "id": "ORG-PARTY-NCPSP",
+    "partyCode": "NCPSP",
+    "isAlliance": false,
+    "occurrences": 66,
+    "rawStringsCount": 4,
+    "sourcesCount": 5,
+    "sampleRawStrings": [
+      "NCPSP",
+      "NCP-Sharad",
+      "Nationalist Congress Party (Sharad Pawar)",
+      "NCP(SP)"
+    ]
+  },
+  {
+    "id": "ORG-PARTY-AIMIM",
+    "partyCode": "AIMIM",
+    "isAlliance": false,
+    "occurrences": 58,
+    "rawStringsCount": 3,
+    "sourcesCount": 11,
+    "sampleRawStrings": [
+      "AIMIM",
+      "AIMM",
+      "All India Majlis-e-Ittehadul Muslimeen"
+    ]
+  },
+  {
+    "id": "ORG-PARTY-TMP",
+    "partyCode": "TMP",
+    "isAlliance": false,
+    "occurrences": 48,
+    "rawStringsCount": 2,
+    "sourcesCount": 3,
+    "sampleRawStrings": [
+      "TMP",
+      "Tipra Motha Party"
+    ]
+  },
+  {
+    "id": "ORG-PARTY-BSP",
+    "partyCode": "BSP",
+    "isAlliance": false,
+    "occurrences": 47,
+    "rawStringsCount": 9,
+    "sourcesCount": 16,
+    "sampleRawStrings": [
+      "BSP",
+      "BSP - Attar Lal",
+      "BSP - Kuldeep Singh Sikarwar",
+      "BSP - Balveer Dandotiya",
+      "BSP - Yadvendra Singh"
+    ]
+  },
+  {
+    "id": "ORG-PARTY-UDP",
+    "partyCode": "UDP",
+    "isAlliance": false,
+    "occurrences": 45,
+    "rawStringsCount": 2,
+    "sourcesCount": 3,
+    "sampleRawStrings": [
+      "UDP",
+      "United Democratic Party"
+    ]
+  },
+  {
+    "id": "ORG-PARTY-AINRC",
+    "partyCode": "AINRC",
+    "isAlliance": false,
+    "occurrences": 41,
+    "rawStringsCount": 2,
+    "sourcesCount": 4,
+    "sampleRawStrings": [
+      "AINRC",
+      "All India N.R. Congress"
+    ]
+  },
+  {
+    "id": "ORG-PARTY-SDF",
+    "partyCode": "SDF",
+    "isAlliance": false,
+    "occurrences": 37,
+    "rawStringsCount": 2,
+    "sourcesCount": 3,
+    "sampleRawStrings": [
+      "SDF",
+      "Sikkim Democratic Front"
+    ]
+  },
+  {
+    "id": "ORG-PARTY-ADAL",
+    "partyCode": "ADAL",
+    "isAlliance": false,
+    "occurrences": 34,
+    "rawStringsCount": 2,
+    "sourcesCount": 3,
+    "sampleRawStrings": [
+      "ADAL",
+      "Apna Dal ("
+    ]
+  },
+  {
+    "id": "ORG-PARTY-CPIML",
+    "partyCode": "CPIML",
+    "isAlliance": false,
+    "occurrences": 34,
+    "rawStringsCount": 5,
+    "sourcesCount": 5,
+    "sampleRawStrings": [
+      "CPIML",
+      "CPI(ML",
+      "CPIML - Vinod Kumar Singh",
+      "CPI (Marxist-Leninist) Liberation",
+      "CPI(ML)"
+    ]
+  },
+  {
+    "id": "ORG-PARTY-AGP",
+    "partyCode": "AGP",
+    "isAlliance": false,
+    "occurrences": 33,
+    "rawStringsCount": 2,
+    "sourcesCount": 4,
+    "sampleRawStrings": [
+      "AGP",
+      "Asom Gana Parishad"
+    ]
+  },
+  {
+    "id": "ORG-PARTY-JKPDP",
+    "partyCode": "JKPDP",
+    "isAlliance": false,
+    "occurrences": 33,
+    "rawStringsCount": 3,
+    "sourcesCount": 3,
+    "sampleRawStrings": [
+      "JKPDP",
+      "J&K Peoples Democratic Party",
+      "PDP"
+    ]
+  },
+  {
+    "id": "ORG-PARTY-LJPRV",
+    "partyCode": "LJPRV",
+    "isAlliance": false,
+    "occurrences": 28,
+    "rawStringsCount": 4,
+    "sourcesCount": 6,
+    "sampleRawStrings": [
+      "LJPRV",
+      "LJPV",
+      "Lok Janshakti Party (Ram Vilas)",
+      "LJP(RV)"
+    ]
+  },
+  {
+    "id": "ORG-PARTY-KCM",
+    "partyCode": "KCM",
+    "isAlliance": false,
+    "occurrences": 27,
+    "rawStringsCount": 4,
+    "sourcesCount": 4,
+    "sampleRawStrings": [
+      "KC(M)",
+      "KECM",
+      "KCM",
+      "Kerala Congress (M)"
+    ]
+  },
+  {
+    "id": "ORG-PARTY-NPF",
+    "partyCode": "NPF",
+    "isAlliance": false,
+    "occurrences": 26,
+    "rawStringsCount": 2,
+    "sourcesCount": 5,
+    "sampleRawStrings": [
+      "NPF",
+      "Naga People's Front"
+    ]
+  },
+  {
+    "id": "ORG-PARTY-BPF",
+    "partyCode": "BPF",
+    "isAlliance": false,
+    "occurrences": 25,
+    "rawStringsCount": 2,
+    "sourcesCount": 3,
+    "sampleRawStrings": [
+      "BPF",
+      "Bodoland People's Front"
+    ]
+  },
+  {
+    "id": "ORG-PARTY-RLD",
+    "partyCode": "RLD",
+    "isAlliance": false,
+    "occurrences": 24,
+    "rawStringsCount": 2,
+    "sourcesCount": 7,
+    "sampleRawStrings": [
+      "RLD",
+      "Rashtriya Lok Dal"
+    ]
+  },
+  {
+    "id": "ORG-PARTY-BAP",
+    "partyCode": "BAP",
+    "isAlliance": false,
+    "occurrences": 21,
+    "rawStringsCount": 6,
+    "sourcesCount": 6,
+    "sampleRawStrings": [
+      "BAP",
+      "BAP - Kantilal Roat",
+      "BAP - Mohanlal Roat",
+      "BAP - Ashok Kumar",
+      "BAP - Jaikrishn Patel"
+    ]
+  },
+  {
+    "id": "ORG-PARTY-AIUDF",
+    "partyCode": "AIUDF",
+    "isAlliance": false,
+    "occurrences": 20,
+    "rawStringsCount": 1,
+    "sourcesCount": 2,
+    "sampleRawStrings": [
+      "AIUDF"
+    ]
+  },
+  {
+    "id": "ORG-PARTY-SBSP",
+    "partyCode": "SBSP",
+    "isAlliance": false,
+    "occurrences": 17,
+    "rawStringsCount": 2,
+    "sourcesCount": 4,
+    "sampleRawStrings": [
+      "SBSP",
+      "Suheldev Bharatiya Samaj Party"
+    ]
+  },
+  {
+    "id": "ORG-PARTY-AJSU",
+    "partyCode": "AJSU",
+    "isAlliance": false,
+    "occurrences": 17,
+    "rawStringsCount": 11,
+    "sourcesCount": 4,
+    "sampleRawStrings": [
+      "AJSU",
+      "AP",
+      "AJSU - Azhar Islam",
+      "AJSU - Sunita Choudhary",
+      "AJSU - Ram Chandra Sahis"
+    ]
+  },
+  {
+    "id": "ORG-PARTY-PMK",
+    "partyCode": "PMK",
+    "isAlliance": false,
+    "occurrences": 15,
+    "rawStringsCount": 2,
+    "sourcesCount": 3,
+    "sampleRawStrings": [
+      "PMK",
+      "Pattali Makkal Katchi"
+    ]
+  },
+  {
+    "id": "ORG-PARTY-JKPC",
+    "partyCode": "JKPC",
+    "isAlliance": false,
+    "occurrences": 15,
+    "rawStringsCount": 4,
+    "sourcesCount": 5,
+    "sampleRawStrings": [
+      "JKPC",
+      "JKC",
+      "J&K regional",
+      "J&K People's Conference"
+    ]
+  },
+  {
+    "id": "ORG-PARTY-NISHAD",
+    "partyCode": "NISHAD",
+    "isAlliance": false,
+    "occurrences": 14,
+    "rawStringsCount": 1,
+    "sourcesCount": 4,
+    "sampleRawStrings": [
+      "NISHAD"
+    ]
+  },
+  {
+    "id": "ORG-PARTY-VCK",
+    "partyCode": "VCK",
+    "isAlliance": false,
+    "occurrences": 14,
+    "rawStringsCount": 2,
+    "sourcesCount": 4,
+    "sampleRawStrings": [
+      "VCK",
+      "Viduthalai Chiruthaigal Katchi"
+    ]
+  },
+  {
+    "id": "ORG-PARTY-VPP",
+    "partyCode": "VPP",
+    "isAlliance": false,
+    "occurrences": 13,
+    "rawStringsCount": 2,
+    "sourcesCount": 2,
+    "sampleRawStrings": [
+      "VPP",
+      "Voice of the People Party"
+    ]
+  },
+  {
+    "id": "ORG-PARTY-RPIA",
+    "partyCode": "RPIA",
+    "isAlliance": false,
+    "occurrences": 13,
+    "rawStringsCount": 4,
+    "sourcesCount": 3,
+    "sampleRawStrings": [
+      "RPIA",
+      "RPI(",
+      "Republican Party of India (Athawale)",
+      "RPI(A)"
+    ]
+  },
+  {
+    "id": "ORG-PARTY-HAMS",
+    "partyCode": "HAMS",
+    "isAlliance": false,
+    "occurrences": 13,
+    "rawStringsCount": 4,
+    "sourcesCount": 4,
+    "sampleRawStrings": [
+      "HAMS",
+      "HAM",
+      "Hindustani Awam Morcha (Secular)",
+      "HAM(S)"
+    ]
+  },
+  {
+    "id": "ORG-PARTY-RSP",
+    "partyCode": "RSP",
+    "isAlliance": false,
+    "occurrences": 12,
+    "rawStringsCount": 2,
+    "sourcesCount": 6,
+    "sampleRawStrings": [
+      "RSP",
+      "Revolutionary Socialist Party"
+    ]
+  },
+  {
+    "id": "ORG-PARTY-AIFB",
+    "partyCode": "AIFB",
+    "isAlliance": false,
+    "occurrences": 12,
+    "rawStringsCount": 4,
+    "sourcesCount": 6,
+    "sampleRawStrings": [
+      "AIFB",
+      "AJU",
+      "All India Forward Bloc",
+      "regional (West Bengal)"
+    ]
+  },
+  {
+    "id": "ORG-PARTY-PPA",
+    "partyCode": "PPA",
+    "isAlliance": false,
+    "occurrences": 11,
+    "rawStringsCount": 2,
+    "sourcesCount": 3,
+    "sampleRawStrings": [
+      "PPA",
+      "People's Party of Arunachal"
+    ]
+  },
+  {
+    "id": "ORG-PARTY-VIP",
+    "partyCode": "VIP",
+    "isAlliance": false,
+    "occurrences": 11,
+    "rawStringsCount": 2,
+    "sourcesCount": 3,
+    "sampleRawStrings": [
+      "VIP",
+      "Vikassheel Insaan Party"
+    ]
+  },
+  {
+    "id": "ORG-PARTY-HSPDP",
+    "partyCode": "HSPDP",
+    "isAlliance": false,
+    "occurrences": 11,
+    "rawStringsCount": 2,
+    "sourcesCount": 3,
+    "sampleRawStrings": [
+      "HSPDP",
+      "Hill State People's Democratic Party"
+    ]
+  },
+  {
+    "id": "ORG-PARTY-INLD",
+    "partyCode": "INLD",
+    "isAlliance": false,
+    "occurrences": 10,
+    "rawStringsCount": 4,
+    "sourcesCount": 3,
+    "sampleRawStrings": [
+      "INLD",
+      "INLD - Abhay Singh Chautala",
+      "INLD - Tahir Hussain",
+      "Indian National Lok Dal"
+    ]
+  },
+  {
+    "id": "ORG-PARTY-PDF",
+    "partyCode": "PDF",
+    "isAlliance": false,
+    "occurrences": 9,
+    "rawStringsCount": 1,
+    "sourcesCount": 3,
+    "sampleRawStrings": [
+      "PDF"
+    ]
+  },
+  {
+    "id": "ORG-PARTY-SAD",
+    "partyCode": "SAD",
+    "isAlliance": false,
+    "occurrences": 9,
+    "rawStringsCount": 2,
+    "sourcesCount": 4,
+    "sampleRawStrings": [
+      "SAD",
+      "Shiromani Akali Dal"
+    ]
+  },
+  {
+    "id": "ORG-PARTY-IPFT",
+    "partyCode": "IPFT",
+    "isAlliance": false,
+    "occurrences": 8,
+    "rawStringsCount": 2,
+    "sourcesCount": 3,
+    "sampleRawStrings": [
+      "IPFT",
+      "Indigenous People's Front of Tripura"
+    ]
+  },
+  {
+    "id": "ORG-PARTY-UPPL",
+    "partyCode": "UPPL",
+    "isAlliance": false,
+    "occurrences": 7,
+    "rawStringsCount": 1,
+    "sourcesCount": 2,
+    "sampleRawStrings": [
+      "UPPL"
+    ]
+  },
+  {
+    "id": "ORG-PARTY-KC",
+    "partyCode": "KC",
+    "isAlliance": false,
+    "occurrences": 7,
+    "rawStringsCount": 1,
+    "sourcesCount": 4,
+    "sampleRawStrings": [
+      "KC"
+    ]
+  },
+  {
+    "id": "ORG-PARTY-RD",
+    "partyCode": "RD",
+    "isAlliance": false,
+    "occurrences": 7,
+    "rawStringsCount": 2,
+    "sourcesCount": 2,
+    "sampleRawStrings": [
+      "RD",
+      "Raijor Dal"
+    ]
+  },
+  {
+    "id": "ORG-PARTY-KPA",
+    "partyCode": "KPA",
+    "isAlliance": false,
+    "occurrences": 7,
+    "rawStringsCount": 2,
+    "sourcesCount": 3,
+    "sampleRawStrings": [
+      "KPA",
+      "Kuki People's Alliance"
+    ]
+  },
+  {
+    "id": "ORG-PARTY-MGP",
+    "partyCode": "MGP",
+    "isAlliance": false,
+    "occurrences": 7,
+    "rawStringsCount": 3,
+    "sourcesCount": 3,
+    "sampleRawStrings": [
+      "MGP",
+      "MG",
+      "Maharashtrawadi Gomantak Party"
+    ]
+  },
+  {
+    "id": "ORG-PARTY-LJK",
+    "partyCode": "LJK",
+    "isAlliance": false,
+    "occurrences": 6,
+    "rawStringsCount": 2,
+    "sourcesCount": 3,
+    "sampleRawStrings": [
+      "LJK",
+      "Lok Jananayaga Katchi"
+    ]
+  },
+  {
+    "id": "ORG-PARTY-NTK",
+    "partyCode": "NTK",
+    "isAlliance": false,
+    "occurrences": 6,
+    "rawStringsCount": 2,
+    "sourcesCount": 3,
+    "sampleRawStrings": [
+      "NMK",
+      "Nam Tamilar / regional (Puducherry)"
+    ]
+  },
+  {
+    "id": "ORG-PARTY-GGP",
+    "partyCode": "GGP",
+    "isAlliance": false,
+    "occurrences": 6,
+    "rawStringsCount": 3,
+    "sourcesCount": 3,
+    "sampleRawStrings": [
+      "GGP",
+      "GONDWANA",
+      "Gondwana Gantantra Party"
+    ]
+  },
+  {
+    "id": "ORG-PARTY-VTPP",
+    "partyCode": "VTPP",
+    "isAlliance": false,
+    "occurrences": 5,
+    "rawStringsCount": 1,
+    "sourcesCount": 2,
+    "sampleRawStrings": [
+      "VTPP"
+    ]
+  },
+  {
+    "id": "ORG-PARTY-RGP",
+    "partyCode": "RGP",
+    "isAlliance": false,
+    "occurrences": 5,
+    "rawStringsCount": 2,
+    "sourcesCount": 3,
+    "sampleRawStrings": [
+      "RGP",
+      "Revolutionary Goans Party"
+    ]
+  },
+  {
+    "id": "ORG-PARTY-GFP",
+    "partyCode": "GFP",
+    "isAlliance": false,
+    "occurrences": 5,
+    "rawStringsCount": 2,
+    "sourcesCount": 3,
+    "sampleRawStrings": [
+      "GFP",
+      "Goa Forward Party"
+    ]
+  },
+  {
+    "id": "ORG-PARTY-RMPI",
+    "partyCode": "RMPI",
+    "isAlliance": false,
+    "occurrences": 5,
+    "rawStringsCount": 2,
+    "sourcesCount": 3,
+    "sampleRawStrings": [
+      "RMPI",
+      "Revolutionary Marxist Party of India"
+    ]
+  },
+  {
+    "id": "ORG-PARTY-RLP",
+    "partyCode": "RLP",
+    "isAlliance": false,
+    "occurrences": 5,
+    "rawStringsCount": 3,
+    "sourcesCount": 2,
+    "sampleRawStrings": [
+      "RLP",
+      "RLP - Pukhraj Garg",
+      "RLP - Ummeda Ram Beniwal"
+    ]
+  },
+  {
+    "id": "ORG-PARTY-JLKM",
+    "partyCode": "JLKM",
+    "isAlliance": false,
+    "occurrences": 5,
+    "rawStringsCount": 4,
+    "sourcesCount": 1,
+    "sampleRawStrings": [
+      "JLKM",
+      "JLKM - Puja Kumari",
+      "JLKM - Jairam Kumar Mahato",
+      "JLKM - Arjun Rajwar"
+    ]
+  },
+  {
+    "id": "ORG-PARTY-CS",
+    "partyCode": "CS",
+    "isAlliance": false,
+    "occurrences": 5,
+    "rawStringsCount": 4,
+    "sourcesCount": 3,
+    "sampleRawStrings": [
+      "CONS",
+      "CS",
+      "CONGRESS(",
+      "Conservative / regional"
+    ]
+  },
+  {
+    "id": "ORG-PARTY-ASPKR",
+    "partyCode": "ASPKR",
+    "isAlliance": false,
+    "occurrences": 5,
+    "rawStringsCount": 5,
+    "sourcesCount": 3,
+    "sampleRawStrings": [
+      "ASPKR",
+      "AAZADSAM - Rohitash Kumar",
+      "AAZADSAM - Sukhavant Singh",
+      "Azad Samaj Party (Kanshi Ram)",
+      "ASP"
+    ]
+  },
+  {
+    "id": "ORG-PARTY-JKNPP",
+    "partyCode": "JKNPP",
+    "isAlliance": false,
+    "occurrences": 4,
+    "rawStringsCount": 1,
+    "sourcesCount": 2,
+    "sampleRawStrings": [
+      "JKNPP"
+    ]
+  },
+  {
+    "id": "ORG-PARTY-AMMK",
+    "partyCode": "AMMK",
+    "isAlliance": false,
+    "occurrences": 4,
+    "rawStringsCount": 1,
+    "sourcesCount": 3,
+    "sampleRawStrings": [
+      "AMMK"
+    ]
+  },
+  {
+    "id": "ORG-ALLIANCE-NDA",
+    "partyCode": null,
+    "isAlliance": true,
+    "occurrences": 4,
+    "rawStringsCount": 2,
+    "sourcesCount": 2,
+    "sampleRawStrings": [
+      "NDA",
+      "National Democratic Alliance"
+    ]
+  },
+  {
+    "id": "ORG-PARTY-INL",
+    "partyCode": "INL",
+    "isAlliance": false,
+    "occurrences": 4,
+    "rawStringsCount": 2,
+    "sourcesCount": 2,
+    "sampleRawStrings": [
+      "INL",
+      "Indian National League"
+    ]
+  },
+  {
+    "id": "ORG-PARTY-NSC",
+    "partyCode": "NSC",
+    "isAlliance": false,
+    "occurrences": 4,
+    "rawStringsCount": 2,
+    "sourcesCount": 3,
+    "sampleRawStrings": [
+      "NSC",
+      "NATIONALS"
+    ]
+  },
+  {
+    "id": "ORG-PARTY-GNC",
+    "partyCode": "GNC",
+    "isAlliance": false,
+    "occurrences": 4,
+    "rawStringsCount": 2,
+    "sourcesCount": 2,
+    "sampleRawStrings": [
+      "GNC",
+      "Garo National Council"
+    ]
+  },
+  {
+    "id": "ORG-PARTY-CMPJ",
+    "partyCode": "CMPJ",
+    "isAlliance": false,
+    "occurrences": 4,
+    "rawStringsCount": 3,
+    "sourcesCount": 2,
+    "sampleRawStrings": [
+      "CMP(J)",
+      "CMP",
+      "Communist Marxist Party (John)"
+    ]
+  },
+  {
+    "id": "ORG-PARTY-ISF",
+    "partyCode": "ISF",
+    "isAlliance": false,
+    "occurrences": 4,
+    "rawStringsCount": 3,
+    "sourcesCount": 2,
+    "sampleRawStrings": [
+      "ISF",
+      "RASHTRIYA",
+      "Indian Secular Front"
+    ]
+  },
+  {
+    "id": "ORG-PARTY-KCB",
+    "partyCode": "KCB",
+    "isAlliance": false,
+    "occurrences": 4,
+    "rawStringsCount": 3,
+    "sourcesCount": 2,
+    "sampleRawStrings": [
+      "KC(B)",
+      "KECB",
+      "Kerala Congress (B)"
+    ]
+  },
+  {
+    "id": "ORG-PARTY-KCJ",
+    "partyCode": "KCJ",
+    "isAlliance": false,
+    "occurrences": 4,
+    "rawStringsCount": 3,
+    "sourcesCount": 2,
+    "sampleRawStrings": [
+      "KCJ",
+      "KECJ",
+      "Kerala Congress (Jacob)"
+    ]
+  },
+  {
+    "id": "ORG-PARTY-GJM",
+    "partyCode": "GJM",
+    "isAlliance": false,
+    "occurrences": 3,
+    "rawStringsCount": 1,
+    "sourcesCount": 1,
+    "sampleRawStrings": [
+      "GJM"
+    ]
+  },
+  {
+    "id": "ORG-PARTY-JSD",
+    "partyCode": "JSD",
+    "isAlliance": false,
+    "occurrences": 3,
+    "rawStringsCount": 2,
+    "sourcesCount": 2,
+    "sampleRawStrings": [
+      "JDL",
+      "Jansatta D"
+    ]
+  },
+  {
+    "id": "ORG-PARTY-LJD",
+    "partyCode": "LJD",
+    "isAlliance": false,
+    "occurrences": 3,
+    "rawStringsCount": 2,
+    "sourcesCount": 2,
+    "sampleRawStrings": [
+      "LJD",
+      "LOKTANTRIK"
+    ]
+  },
+  {
+    "id": "ORG-PARTY-MNM",
+    "partyCode": "MNM",
+    "isAlliance": false,
+    "occurrences": 3,
+    "rawStringsCount": 2,
+    "sourcesCount": 1,
+    "sampleRawStrings": [
+      "MNM",
+      "Makkal Needhi Maiam"
+    ]
+  },
+  {
+    "id": "ORG-PARTY-UJP",
+    "partyCode": "UJP",
+    "isAlliance": false,
+    "occurrences": 3,
+    "rawStringsCount": 2,
+    "sourcesCount": 1,
+    "sampleRawStrings": [
+      "UJP",
+      "Uttarakhand Janata Party"
+    ]
+  },
+  {
+    "id": "ORG-PARTY-UKD",
+    "partyCode": "UKD",
+    "isAlliance": false,
+    "occurrences": 3,
+    "rawStringsCount": 2,
+    "sourcesCount": 1,
+    "sampleRawStrings": [
+      "UKD",
+      "Uttarakhand Kranti Dal"
+    ]
+  },
+  {
+    "id": "ORG-PARTY-JSS",
+    "partyCode": "JSS",
+    "isAlliance": false,
+    "occurrences": 2,
+    "rawStringsCount": 1,
+    "sourcesCount": 1,
+    "sampleRawStrings": [
+      "Jan Surajy"
+    ]
+  },
+  {
+    "id": "ORG-PARTY-LJP",
+    "partyCode": "LJP",
+    "isAlliance": false,
+    "occurrences": 1,
+    "rawStringsCount": 1,
+    "sourcesCount": 1,
+    "sampleRawStrings": [
+      "LJP"
+    ]
+  },
+  {
+    "id": "ORG-PARTY-HLP",
+    "partyCode": "HLP",
+    "isAlliance": false,
+    "occurrences": 1,
+    "rawStringsCount": 1,
+    "sourcesCount": 1,
+    "sampleRawStrings": [
+      "HLP - Gopal Kanda"
+    ]
+  },
+  {
+    "id": "ORG-PARTY-HJSP",
+    "partyCode": "HJSP",
+    "isAlliance": false,
+    "occurrences": 1,
+    "rawStringsCount": 1,
+    "sourcesCount": 1,
+    "sampleRawStrings": [
+      "Haryana Jan Sevak Party - Balraj Kundu"
+    ]
+  },
+  {
+    "id": "ORG-PARTY-KJP",
+    "partyCode": "KJP",
+    "isAlliance": false,
+    "occurrences": 1,
+    "rawStringsCount": 1,
+    "sourcesCount": 1,
+    "sampleRawStrings": [
+      "KJP"
+    ]
+  },
+  {
+    "id": "ORG-PARTY-KRPP",
+    "partyCode": "KRPP",
+    "isAlliance": false,
+    "occurrences": 1,
+    "rawStringsCount": 1,
+    "sourcesCount": 1,
+    "sampleRawStrings": [
+      "Kalyana Ra"
+    ]
+  },
+  {
+    "id": "ORG-PARTY-MNS",
+    "partyCode": "MNS",
+    "isAlliance": false,
+    "occurrences": 1,
+    "rawStringsCount": 1,
+    "sourcesCount": 1,
+    "sampleRawStrings": [
+      "MNS"
+    ]
+  },
+  {
+    "id": "ORG-PARTY-PWPI",
+    "partyCode": "PWPI",
+    "isAlliance": false,
+    "occurrences": 1,
+    "rawStringsCount": 1,
+    "sourcesCount": 1,
+    "sampleRawStrings": [
+      "Peasants A"
+    ]
+  },
+  {
+    "id": "ORG-PARTY-MDMK",
+    "partyCode": "MDMK",
+    "isAlliance": false,
+    "occurrences": 1,
+    "rawStringsCount": 1,
+    "sourcesCount": 1,
+    "sampleRawStrings": [
+      "MDMK"
+    ]
+  },
+  {
+    "id": "ORG-PARTY-RJS",
+    "partyCode": "RaJS",
+    "isAlliance": false,
+    "occurrences": 1,
+    "rawStringsCount": 1,
+    "sourcesCount": 1,
+    "sampleRawStrings": [
+      "SHORTNAM - Baljeet Yadav"
+    ]
+  }
+]
