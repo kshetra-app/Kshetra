@@ -1,0 +1,367 @@
+{
+  "auditedAt": "2026-10-03T13:27:25.433Z",
+  "totalRawStrings": 1096,
+  "mappedAliasesCount": 1043,
+  "provisionalQuarantinedCount": 14,
+  "unaccountedSetCount": 39,
+  "unaccountedCategorization": {
+    "independentCandidacies": 25,
+    "corruptedMpSingleLetters": 9,
+    "statutoryBallotOptionsNota": 2,
+    "genericBucketLabels": 2,
+    "nominatedRajyaSabhaCode": 1
+  },
+  "unaccountedStringsList": [
+    {
+      "rawString": "IND",
+      "disposition": "INDEPENDENT",
+      "resolutionType": "INDEPENDENT_REPRESENTATION",
+      "isIndependent": true,
+      "isNominated": false,
+      "isNota": false,
+      "notes": "Independent political status. NOT an organization; modeled via candidacy.is_independent = true."
+    },
+    {
+      "rawString": "J",
+      "disposition": "RECONCILED",
+      "resolutionType": "CORRUPTED_1LETTER_CODE",
+      "isIndependent": false,
+      "isNominated": false,
+      "isNota": false,
+      "notes": "Single letter truncated party code 'J' in mp-profiles.ts. Reconciled via individual candidate MP records."
+    },
+    {
+      "rawString": "OTH",
+      "disposition": "NON_ORGANIZATION",
+      "resolutionType": "GENERIC_BUCKET_LABEL",
+      "isIndependent": false,
+      "isNominated": false,
+      "isNota": false,
+      "notes": "Generic aggregator string for minor parties in seed summaries. Excluded from org insertion."
+    },
+    {
+      "rawString": "NOTA",
+      "disposition": "NON_ORGANIZATION",
+      "resolutionType": "STATUTORY_BALLOT_OPTION",
+      "isIndependent": false,
+      "isNominated": false,
+      "isNota": true,
+      "notes": "None of the Above. Statutory non-candidate ballot counter; modeled as election counter."
+    },
+    {
+      "rawString": "N",
+      "disposition": "NOMINATED",
+      "resolutionType": "CORRUPTED_1LETTER_CODE",
+      "isIndependent": false,
+      "isNominated": true,
+      "isNota": false,
+      "notes": "Letter 'N' indicates Nominated Rajya Sabha members (Sudha Murty, Harivansh, etc.). Modeled as nomination method."
+    },
+    {
+      "rawString": "I",
+      "disposition": "INDEPENDENT",
+      "resolutionType": "CORRUPTED_1LETTER_CODE",
+      "isIndependent": true,
+      "isNominated": false,
+      "isNota": false,
+      "notes": "Letter 'I' indicates Independent Rajya Sabha members (Sibal, Ray, Sharma). Modeled as is_independent = true."
+    },
+    {
+      "rawString": "C",
+      "disposition": "RECONCILED",
+      "resolutionType": "CORRUPTED_1LETTER_CODE",
+      "isIndependent": false,
+      "isNominated": false,
+      "isNota": false,
+      "notes": "Single letter truncated party code 'C' in mp-profiles.ts. Reconciled via individual candidate MP records."
+    },
+    {
+      "rawString": "Other",
+      "disposition": "NON_ORGANIZATION",
+      "resolutionType": "GENERIC_BUCKET_LABEL",
+      "isIndependent": false,
+      "isNominated": false,
+      "isNota": false,
+      "notes": "Generic aggregator string for minor parties in seed summaries. Excluded from org insertion."
+    },
+    {
+      "rawString": "IND - Chitra Sarwara",
+      "disposition": "INDEPENDENT",
+      "resolutionType": "COMPOUND_CANDIDATE_STRING",
+      "isIndependent": true,
+      "isNominated": false,
+      "isNota": false,
+      "notes": "Independent candidate: Chitra Sarwara. Map candidacy.is_independent = true."
+    },
+    {
+      "rawString": "IND - Satbir Bhana",
+      "disposition": "INDEPENDENT",
+      "resolutionType": "COMPOUND_CANDIDATE_STRING",
+      "isIndependent": true,
+      "isNominated": false,
+      "isNota": false,
+      "notes": "Independent candidate: Satbir Bhana. Map candidacy.is_independent = true."
+    },
+    {
+      "rawString": "IND - Kapoor Singh Narwal",
+      "disposition": "INDEPENDENT",
+      "resolutionType": "COMPOUND_CANDIDATE_STRING",
+      "isIndependent": true,
+      "isNominated": false,
+      "isNota": false,
+      "notes": "Independent candidate: Kapoor Singh Narwal. Map candidacy.is_independent = true."
+    },
+    {
+      "rawString": "IND - Naveen Goyal",
+      "disposition": "INDEPENDENT",
+      "resolutionType": "COMPOUND_CANDIDATE_STRING",
+      "isIndependent": true,
+      "isNominated": false,
+      "isNota": false,
+      "notes": "Independent candidate: Naveen Goyal. Map candidacy.is_independent = true."
+    },
+    {
+      "rawString": "IND - Rahish Khan",
+      "disposition": "INDEPENDENT",
+      "resolutionType": "COMPOUND_CANDIDATE_STRING",
+      "isIndependent": true,
+      "isNominated": false,
+      "isNota": false,
+      "notes": "Independent candidate: Rahish Khan. Map candidacy.is_independent = true."
+    },
+    {
+      "rawString": "IND - Sharda Rathore",
+      "disposition": "INDEPENDENT",
+      "resolutionType": "COMPOUND_CANDIDATE_STRING",
+      "isIndependent": true,
+      "isNominated": false,
+      "isNota": false,
+      "notes": "Independent candidate: Sharda Rathore. Map candidacy.is_independent = true."
+    },
+    {
+      "rawString": "IND - Lalit Nagar S/O Late Bharat Singh Nagar",
+      "disposition": "INDEPENDENT",
+      "resolutionType": "COMPOUND_CANDIDATE_STRING",
+      "isIndependent": true,
+      "isNominated": false,
+      "isNota": false,
+      "notes": "Independent candidate: Lalit Nagar S/O Late Bharat Singh Nagar. Map candidacy.is_independent = true."
+    },
+    {
+      "rawString": "IND - Devendra Kumar Singh",
+      "disposition": "INDEPENDENT",
+      "resolutionType": "COMPOUND_CANDIDATE_STRING",
+      "isIndependent": true,
+      "isNominated": false,
+      "isNota": false,
+      "notes": "Independent candidate: Devendra Kumar Singh. Map candidacy.is_independent = true."
+    },
+    {
+      "rawString": "IND - Antar Singh Darbar",
+      "disposition": "INDEPENDENT",
+      "resolutionType": "COMPOUND_CANDIDATE_STRING",
+      "isIndependent": true,
+      "isNominated": false,
+      "isNota": false,
+      "notes": "Independent candidate: Antar Singh Darbar. Map candidacy.is_independent = true."
+    },
+    {
+      "rawString": "IND - Premchand Guddu",
+      "disposition": "INDEPENDENT",
+      "resolutionType": "COMPOUND_CANDIDATE_STRING",
+      "isIndependent": true,
+      "isNominated": false,
+      "isNota": false,
+      "notes": "Independent candidate: Premchand Guddu. Map candidacy.is_independent = true."
+    },
+    {
+      "rawString": "IND - Shyam Lal Jokchand",
+      "disposition": "INDEPENDENT",
+      "resolutionType": "COMPOUND_CANDIDATE_STRING",
+      "isIndependent": true,
+      "isNominated": false,
+      "isNota": false,
+      "notes": "Independent candidate: Shyam Lal Jokchand. Map candidacy.is_independent = true."
+    },
+    {
+      "rawString": "K",
+      "disposition": "RECONCILED",
+      "resolutionType": "CORRUPTED_1LETTER_CODE",
+      "isIndependent": false,
+      "isNominated": false,
+      "isNota": false,
+      "notes": "Single letter truncated party code 'K' in mp-profiles.ts. Reconciled via individual candidate MP records."
+    },
+    {
+      "rawString": "U",
+      "disposition": "RECONCILED",
+      "resolutionType": "CORRUPTED_1LETTER_CODE",
+      "isIndependent": false,
+      "isNominated": false,
+      "isNota": false,
+      "notes": "Single letter truncated party code 'U' in mp-profiles.ts. Reconciled via individual candidate MP records."
+    },
+    {
+      "rawString": "P",
+      "disposition": "RECONCILED",
+      "resolutionType": "CORRUPTED_1LETTER_CODE",
+      "isIndependent": false,
+      "isNominated": false,
+      "isNota": false,
+      "notes": "Single letter truncated party code 'P' in mp-profiles.ts. Reconciled via individual candidate MP records."
+    },
+    {
+      "rawString": "S",
+      "disposition": "RECONCILED",
+      "resolutionType": "CORRUPTED_1LETTER_CODE",
+      "isIndependent": false,
+      "isNominated": false,
+      "isNota": false,
+      "notes": "Single letter truncated party code 'S' in mp-profiles.ts. Reconciled via individual candidate MP records."
+    },
+    {
+      "rawString": "D",
+      "disposition": "RECONCILED",
+      "resolutionType": "CORRUPTED_1LETTER_CODE",
+      "isIndependent": false,
+      "isNominated": false,
+      "isNota": false,
+      "notes": "Single letter truncated party code 'D' in mp-profiles.ts. Reconciled via individual candidate MP records."
+    },
+    {
+      "rawString": "A",
+      "disposition": "RECONCILED",
+      "resolutionType": "CORRUPTED_1LETTER_CODE",
+      "isIndependent": false,
+      "isNominated": false,
+      "isNota": false,
+      "notes": "Single letter truncated party code 'A' in mp-profiles.ts. Reconciled via individual candidate MP records."
+    },
+    {
+      "rawString": "M",
+      "disposition": "RECONCILED",
+      "resolutionType": "CORRUPTED_1LETTER_CODE",
+      "isIndependent": false,
+      "isNominated": false,
+      "isNota": false,
+      "notes": "Single letter truncated party code 'M' in mp-profiles.ts. Reconciled via individual candidate MP records."
+    },
+    {
+      "rawString": "IND - Soumya Ranjan Patnaik",
+      "disposition": "INDEPENDENT",
+      "resolutionType": "COMPOUND_CANDIDATE_STRING",
+      "isIndependent": true,
+      "isNominated": false,
+      "isNota": false,
+      "notes": "Independent candidate: Soumya Ranjan Patnaik. Map candidacy.is_independent = true."
+    },
+    {
+      "rawString": "IND - Ghasiram Majhi",
+      "disposition": "INDEPENDENT",
+      "resolutionType": "COMPOUND_CANDIDATE_STRING",
+      "isIndependent": true,
+      "isNominated": false,
+      "isNota": false,
+      "notes": "Independent candidate: Ghasiram Majhi. Map candidacy.is_independent = true."
+    },
+    {
+      "rawString": "IND - Om Bishnoi",
+      "disposition": "INDEPENDENT",
+      "resolutionType": "COMPOUND_CANDIDATE_STRING",
+      "isIndependent": true,
+      "isNominated": false,
+      "isNota": false,
+      "notes": "Independent candidate: Om Bishnoi. Map candidacy.is_independent = true."
+    },
+    {
+      "rawString": "IND - Karuna Ashok Chandak",
+      "disposition": "INDEPENDENT",
+      "resolutionType": "COMPOUND_CANDIDATE_STRING",
+      "isIndependent": true,
+      "isNominated": false,
+      "isNota": false,
+      "notes": "Independent candidate: Karuna Ashok Chandak. Map candidacy.is_independent = true."
+    },
+    {
+      "rawString": "IND - Rajakaran Choudhary",
+      "disposition": "INDEPENDENT",
+      "resolutionType": "COMPOUND_CANDIDATE_STRING",
+      "isIndependent": true,
+      "isNominated": false,
+      "isNota": false,
+      "notes": "Independent candidate: Rajakaran Choudhary. Map candidacy.is_independent = true."
+    },
+    {
+      "rawString": "IND - Alok Beniwal",
+      "disposition": "INDEPENDENT",
+      "resolutionType": "COMPOUND_CANDIDATE_STRING",
+      "isIndependent": true,
+      "isNominated": false,
+      "isNota": false,
+      "notes": "Independent candidate: Alok Beniwal. Map candidacy.is_independent = true."
+    },
+    {
+      "rawString": "IND - Mukhtyar Ahmed",
+      "disposition": "INDEPENDENT",
+      "resolutionType": "COMPOUND_CANDIDATE_STRING",
+      "isIndependent": true,
+      "isNominated": false,
+      "isNota": false,
+      "notes": "Independent candidate: Mukhtyar Ahmed. Map candidacy.is_independent = true."
+    },
+    {
+      "rawString": "IND - Suresh Tak",
+      "disposition": "INDEPENDENT",
+      "resolutionType": "COMPOUND_CANDIDATE_STRING",
+      "isIndependent": true,
+      "isNominated": false,
+      "isNota": false,
+      "notes": "Independent candidate: Suresh Tak. Map candidacy.is_independent = true."
+    },
+    {
+      "rawString": "IND - Fateh Khan",
+      "disposition": "INDEPENDENT",
+      "resolutionType": "COMPOUND_CANDIDATE_STRING",
+      "isIndependent": true,
+      "isNominated": false,
+      "isNota": false,
+      "notes": "Independent candidate: Fateh Khan. Map candidacy.is_independent = true."
+    },
+    {
+      "rawString": "IND - Sunil Parihar",
+      "disposition": "INDEPENDENT",
+      "resolutionType": "COMPOUND_CANDIDATE_STRING",
+      "isIndependent": true,
+      "isNominated": false,
+      "isNota": false,
+      "notes": "Independent candidate: Sunil Parihar. Map candidacy.is_independent = true."
+    },
+    {
+      "rawString": "IND - Kailash Chand",
+      "disposition": "INDEPENDENT",
+      "resolutionType": "COMPOUND_CANDIDATE_STRING",
+      "isIndependent": true,
+      "isNominated": false,
+      "isNota": false,
+      "notes": "Independent candidate: Kailash Chand. Map candidacy.is_independent = true."
+    },
+    {
+      "rawString": "None of the Above",
+      "disposition": "NON_ORGANIZATION",
+      "resolutionType": "STATUTORY_BALLOT_OPTION",
+      "isIndependent": false,
+      "isNominated": false,
+      "isNota": true,
+      "notes": "None of the Above. Statutory non-candidate ballot counter; modeled as election counter."
+    },
+    {
+      "rawString": "Independent",
+      "disposition": "INDEPENDENT",
+      "resolutionType": "INDEPENDENT_REPRESENTATION",
+      "isIndependent": true,
+      "isNominated": false,
+      "isNota": false,
+      "notes": "Independent political status. NOT an organization; modeled via candidacy.is_independent = true."
+    }
+  ]
+}

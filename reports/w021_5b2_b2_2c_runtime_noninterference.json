@@ -1,0 +1,136 @@
+{
+  "auditName": "W021.5-B2.2-C Runtime Non-Interference & Air-Gap Audit",
+  "generatedAt": "2026-10-03T13:27:31.315Z",
+  "airGapStatus": {
+    "productionHost": "ehfafcnimmjusyvplbah",
+    "productionDatabaseConnected": false,
+    "productionStateModified": false,
+    "isAirGapStrictlyMaintained": true
+  },
+  "codebaseMutationStatus": {
+    "dataSeedFilesMutated": false,
+    "personsTableMutated": false,
+    "candidaciesTableMutated": false,
+    "tenuresTableMutated": false,
+    "affiliationsTableMutated": false,
+    "publicPoliticalOrganizationsTableMutated": false
+  },
+  "runtimeRouteIntegrity": {
+    "totalRouteFilesScanned": 28,
+    "unmediatedRuntimeInsertsDetected": false,
+    "routesAudited": [
+      {
+        "file": "ai.ts",
+        "unmediatedInsertsFound": false
+      },
+      {
+        "file": "broadcast.ts",
+        "unmediatedInsertsFound": false
+      },
+      {
+        "file": "campaign.ts",
+        "unmediatedInsertsFound": false
+      },
+      {
+        "file": "civic.ts",
+        "unmediatedInsertsFound": false
+      },
+      {
+        "file": "config.ts",
+        "unmediatedInsertsFound": false
+      },
+      {
+        "file": "constituencies.ts",
+        "unmediatedInsertsFound": false
+      },
+      {
+        "file": "debug.ts",
+        "unmediatedInsertsFound": false
+      },
+      {
+        "file": "delimitation.ts",
+        "unmediatedInsertsFound": false
+      },
+      {
+        "file": "dm.ts",
+        "unmediatedInsertsFound": false
+      },
+      {
+        "file": "elections.ts",
+        "unmediatedInsertsFound": false
+      },
+      {
+        "file": "geo.ts",
+        "unmediatedInsertsFound": false
+      },
+      {
+        "file": "geoRuntime.ts",
+        "unmediatedInsertsFound": false
+      },
+      {
+        "file": "health.ts",
+        "unmediatedInsertsFound": false
+      },
+      {
+        "file": "journalist.ts",
+        "unmediatedInsertsFound": false
+      },
+      {
+        "file": "lmx.ts",
+        "unmediatedInsertsFound": false
+      },
+      {
+        "file": "manage.ts",
+        "unmediatedInsertsFound": false
+      },
+      {
+        "file": "metrics.ts",
+        "unmediatedInsertsFound": false
+      },
+      {
+        "file": "moderation.ts",
+        "unmediatedInsertsFound": false
+      },
+      {
+        "file": "news.ts",
+        "unmediatedInsertsFound": false
+      },
+      {
+        "file": "notifications.ts",
+        "unmediatedInsertsFound": false
+      },
+      {
+        "file": "pages.ts",
+        "unmediatedInsertsFound": false
+      },
+      {
+        "file": "policy.ts",
+        "unmediatedInsertsFound": false
+      },
+      {
+        "file": "politicalAds.ts",
+        "unmediatedInsertsFound": false
+      },
+      {
+        "file": "politicalEntities.ts",
+        "unmediatedInsertsFound": false
+      },
+      {
+        "file": "politician.ts",
+        "unmediatedInsertsFound": false
+      },
+      {
+        "file": "saasV1.ts",
+        "unmediatedInsertsFound": false
+      },
+      {
+        "file": "spatialAnalytics.ts",
+        "unmediatedInsertsFound": false
+      },
+      {
+        "file": "states.ts",
+        "unmediatedInsertsFound": false
+      }
+    ]
+  }
+}

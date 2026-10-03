@@ -1,0 +1,90 @@
+{
+  "auditName": "W021.5-B2.2-C Temporal Lineage, Splits, Mergers & Successor Integrity Audit",
+  "generatedAt": "2026-10-03T13:27:31.252Z",
+  "totalStatutoryRelationships": 10,
+  "lineageInvariantsVerified": {
+    "allSourceOrganizationsExist": true,
+    "allTargetOrganizationsExist": true,
+    "allEffectiveDatesValidIsoFormat": true,
+    "acyclicDirectedGraph": true,
+    "zeroSelfReferentialLineages": true
+  },
+  "statutoryCases": [
+    {
+      "sourceOrgId": "ORG-PARTY-TRS",
+      "relationshipType": "renamed_to",
+      "targetOrgId": "ORG-PARTY-BRS",
+      "effectiveDate": "2022-10-05",
+      "gazetteEvidence": "Telangana Rashtra Samithi officially changed its name to Bharat Rashtra Samithi with national expansion resolution."
+    },
+    {
+      "sourceOrgId": "ORG-PARTY-SHS",
+      "relationshipType": "split_from",
+      "targetOrgId": "ORG-PARTY-SHSUBT",
+      "effectiveDate": "2022-06-25",
+      "gazetteEvidence": "Shiv Sena split into original SHS (retained by Eknath Shinde faction) and Uddhav Thackeray faction (SHSUBT)."
+    },
+    {
+      "sourceOrgId": "ORG-PARTY-NCP",
+      "relationshipType": "split_from",
+      "targetOrgId": "ORG-PARTY-NCPSP",
+      "effectiveDate": "2023-07-02",
+      "gazetteEvidence": "NCP split into original NCP (Ajit Pawar faction) and Sharadchandra Pawar faction (NCPSP)."
+    },
+    {
+      "sourceOrgId": "ORG-PARTY-LJP",
+      "relationshipType": "split_from",
+      "targetOrgId": "ORG-PARTY-LJPRV",
+      "effectiveDate": "2021-10-05",
+      "gazetteEvidence": "LJP split into LJP(RV) led by Chirag Paswan and Rashtriya Lok Janshakti Party led by Pashupati Paras."
+    },
+    {
+      "sourceOrgId": "ORG-PARTY-LJD",
+      "relationshipType": "merged_into",
+      "targetOrgId": "ORG-PARTY-RJD",
+      "effectiveDate": "2022-03-20",
+      "gazetteEvidence": "Sharad Yadav merged Loktantrik Janata Dal with Lalu Prasad Yadav's Rashtriya Janata Dal."
+    },
+    {
+      "sourceOrgId": "ORG-PARTY-PDF",
+      "relationshipType": "merged_into",
+      "targetOrgId": "ORG-PARTY-NPP",
+      "effectiveDate": "2023-05-06",
+      "gazetteEvidence": "People's Democratic Front MLAs merged into National People's Party in Meghalaya."
+    },
+    {
+      "sourceOrgId": "ORG-PARTY-BJP",
+      "relationshipType": "coalition_partner",
+      "targetOrgId": "ORG-ALLIANCE-NDA",
+      "effectiveDate": "1998-05-01",
+      "gazetteEvidence": "BJP is the founding lead partner of the National Democratic Alliance."
+    },
+    {
+      "sourceOrgId": "ORG-PARTY-TDP",
+      "relationshipType": "coalition_partner",
+      "targetOrgId": "ORG-ALLIANCE-NDA",
+      "effectiveDate": "2024-03-09",
+      "gazetteEvidence": "TDP joined the National Democratic Alliance ahead of 2024 General/Assembly Elections."
+    },
+    {
+      "sourceOrgId": "ORG-PARTY-JSP",
+      "relationshipType": "coalition_partner",
+      "targetOrgId": "ORG-ALLIANCE-NDA",
+      "effectiveDate": "2020-01-16",
+      "gazetteEvidence": "JSP allied with NDA in Andhra Pradesh."
+    },
+    {
+      "sourceOrgId": "ORG-PARTY-JDU",
+      "relationshipType": "coalition_partner",
+      "targetOrgId": "ORG-ALLIANCE-NDA",
+      "effectiveDate": "2024-01-28",
+      "gazetteEvidence": "JD(U) re-joined the National Democratic Alliance in Bihar."
+    }
+  ],
+  "temporalQuerySimulation": {
+    "TRS_at_2018_Assembly_Election": "ORG-PARTY-TRS",
+    "BRS_at_2023_Assembly_Election": "ORG-PARTY-BRS",
+    "transitionDate": "2022-10-05",
+    "temporalResolutionSound": true
+  }
+}

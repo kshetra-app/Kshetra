@@ -1,0 +1,106 @@
+{
+  "auditName": "W021.5-B2.2-C Provisional Organization Quarantine Audit",
+  "generatedAt": "2026-10-03T13:27:31.258Z",
+  "quarantinePolicy": "STRICT FAIL-CLOSED. No provisional record shall be inserted into canonical public.political_organizations or public.organization_aliases.",
+  "totalQuarantinedRecords": 14,
+  "quarantinedRecords": [
+    {
+      "rawString": "Rashtriya",
+      "totalOccurrences": 2,
+      "quarantineReason": "Unresolved organization string 'Rashtriya'. Flagged PROVISIONAL.",
+      "migrationAction": "RETAIN_IN_PROVISIONAL_AUDIT_LOG_EXCLUDE_FROM_MIGRATION",
+      "requiresEciManualReconciliation": true
+    },
+    {
+      "rawString": "BSR",
+      "totalOccurrences": 1,
+      "quarantineReason": "Unresolved organization string 'BSR'. Flagged PROVISIONAL.",
+      "migrationAction": "RETAIN_IN_PROVISIONAL_AUDIT_LOG_EXCLUDE_FROM_MIGRATION",
+      "requiresEciManualReconciliation": true
+    },
+    {
+      "rawString": "Sarvodaya",
+      "totalOccurrences": 1,
+      "quarantineReason": "Unresolved organization string 'Sarvodaya'. Flagged PROVISIONAL.",
+      "migrationAction": "RETAIN_IN_PROVISIONAL_AUDIT_LOG_EXCLUDE_FROM_MIGRATION",
+      "requiresEciManualReconciliation": true
+    },
+    {
+      "rawString": "ADS",
+      "totalOccurrences": 1,
+      "quarantineReason": "Unresolved organization string 'ADS'. Flagged PROVISIONAL.",
+      "migrationAction": "RETAIN_IN_PROVISIONAL_AUDIT_LOG_EXCLUDE_FROM_MIGRATION",
+      "requiresEciManualReconciliation": true
+    },
+    {
+      "rawString": "SS",
+      "totalOccurrences": 1,
+      "quarantineReason": "Unresolved organization string 'SS'. Flagged PROVISIONAL.",
+      "migrationAction": "RETAIN_IN_PROVISIONAL_AUDIT_LOG_EXCLUDE_FROM_MIGRATION",
+      "requiresEciManualReconciliation": true
+    },
+    {
+      "rawString": "SHORTNAM - Baljeet Yadav",
+      "totalOccurrences": 1,
+      "quarantineReason": "Placeholder string SHORTNAM with candidate Baljeet Yadav in Behror AC-62. ECI candidate affidavit proves Rashtriya Janata Sena; flagged PROVISIONAL pending Form 21E historical gazette audit.",
+      "migrationAction": "RETAIN_IN_PROVISIONAL_AUDIT_LOG_EXCLUDE_FROM_MIGRATION",
+      "requiresEciManualReconciliation": true
+    },
+    {
+      "rawString": "ADSL",
+      "totalOccurrences": 1,
+      "quarantineReason": "Unresolved organization string 'ADSL'. Flagged PROVISIONAL.",
+      "migrationAction": "RETAIN_IN_PROVISIONAL_AUDIT_LOG_EXCLUDE_FROM_MIGRATION",
+      "requiresEciManualReconciliation": true
+    },
+    {
+      "rawString": "Amma Makkal Munnetra Kazhagam",
+      "totalOccurrences": 1,
+      "quarantineReason": "Unresolved organization string 'Amma Makkal Munnetra Kazhagam'. Flagged PROVISIONAL.",
+      "migrationAction": "RETAIN_IN_PROVISIONAL_AUDIT_LOG_EXCLUDE_FROM_MIGRATION",
+      "requiresEciManualReconciliation": true
+    },
+    {
+      "rawString": "J&K National Panthers Party",
+      "totalOccurrences": 1,
+      "quarantineReason": "Unresolved organization string 'J&K National Panthers Party'. Flagged PROVISIONAL.",
+      "migrationAction": "RETAIN_IN_PROVISIONAL_AUDIT_LOG_EXCLUDE_FROM_MIGRATION",
+      "requiresEciManualReconciliation": true
+    },
+    {
+      "rawString": "Kerala Congress",
+      "totalOccurrences": 1,
+      "quarantineReason": "Unresolved organization string 'Kerala Congress'. Flagged PROVISIONAL.",
+      "migrationAction": "RETAIN_IN_PROVISIONAL_AUDIT_LOG_EXCLUDE_FROM_MIGRATION",
+      "requiresEciManualReconciliation": true
+    },
+    {
+      "rawString": "Loktantrik Janata Dal",
+      "totalOccurrences": 1,
+      "quarantineReason": "Unresolved organization string 'Loktantrik Janata Dal'. Flagged PROVISIONAL.",
+      "migrationAction": "RETAIN_IN_PROVISIONAL_AUDIT_LOG_EXCLUDE_FROM_MIGRATION",
+      "requiresEciManualReconciliation": true
+    },
+    {
+      "rawString": "Nishad Party",
+      "totalOccurrences": 1,
+      "quarantineReason": "Unresolved organization string 'Nishad Party'. Flagged PROVISIONAL.",
+      "migrationAction": "RETAIN_IN_PROVISIONAL_AUDIT_LOG_EXCLUDE_FROM_MIGRATION",
+      "requiresEciManualReconciliation": true
+    },
+    {
+      "rawString": "Nationalist Party (Kerala)",
+      "totalOccurrences": 1,
+      "quarantineReason": "Unresolved organization string 'Nationalist Party (Kerala)'. Flagged PROVISIONAL.",
+      "migrationAction": "RETAIN_IN_PROVISIONAL_AUDIT_LOG_EXCLUDE_FROM_MIGRATION",
+      "requiresEciManualReconciliation": true
+    },
+    {
+      "rawString": "People's Democratic Front",
+      "totalOccurrences": 1,
+      "quarantineReason": "Unresolved organization string 'People's Democratic Front'. Flagged PROVISIONAL.",
+      "migrationAction": "RETAIN_IN_PROVISIONAL_AUDIT_LOG_EXCLUDE_FROM_MIGRATION",
+      "requiresEciManualReconciliation": true
+    }
+  ]
+}

@@ -1,0 +1,33 @@
+{
+  "simulatedAt": "2026-10-03T13:23:39.687Z",
+  "milestone": "W021.5-B2.2-C Complete Migration Simulation (C0-C7)",
+  "verdict": "FULL_PIPELINE_IDEMPOTENCY_CONFIRMED",
+  "stageCountsRun1": {
+    "C0": 1,
+    "C1": 107,
+    "C2": 10,
+    "C3": 27,
+    "C4": 19,
+    "C5": 1043,
+    "C6": 14,
+    "C7": 1096
+  },
+  "run1Inserts": 1221,
+  "run2NewInserts": 0,
+  "run3NewInserts": 0,
+  "run2FinalEntities": {
+    "provenance": 1,
+    "organizations": 107,
+    "relationships": 10,
+    "multilingual": 27,
+    "symbols": 19,
+    "aliases": 1043,
+    "provisionalQuarantine": 14
+  },
+  "invariants": {
+    "run1ExactCountsConfirmed": true,
+    "run2ZeroDuplicateRows": true,
+    "run3ZeroDuplicateRows": true,
+    "c7FkParity100Percent": true
+  }
+}
