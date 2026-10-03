@@ -1,0 +1,73 @@
+import fs from 'fs';
+
+const duplicates = [
+  {
+    feature: 'National Jurisdiction Registry (36 States & UTs)',
+    implementation_A: 'PostgreSQL public.states (Migrations 001, 040, 060) & packages/shared CANONICAL_NATIONAL_JURISDICTIONS',
+    implementation_B: 'data/seed/ states in stateData.ts (31 entries, missing 5 non-assembly UTs)',
+    which_is_authoritative: 'Implementation A (PostgreSQL + CANONICAL_NATIONAL_JURISDICTIONS)',
+    runtime_status: 'Implementation A is authoritative for national geography. Implementation B is LEGACY_COMPATIBILITY for unmigrated seed arrays.',
+    action: 'Preserve Implementation A as single national authority; enforce read path via canonical registry.',
+    reason: 'Implementation A covers all 36 jurisdictions (28 states + 8 UTs) with statutory LGD/Census codes, while legacy seed only covered 31 assembly states.'
+  },
+  {
+    feature: 'Assembly Constituency Registry (4,123 ACs)',
+    implementation_A: 'PostgreSQL public.constituencies & public.constituency_versions (Migrations 040, 060, 062)',
+    implementation_B: 'data/seed/*-constituencies.ts (31 state seed files in TypeScript)',
+    which_is_authoritative: 'Implementation A (PostgreSQL Relational DB)',
+    runtime_status: 'Implementation A is statutory source-of-truth. Implementation B is HISTORICAL_REFERENCE for initial seed baseline and legacy mobile screens.',
+    action: 'De-authoritize Implementation B as current geography authority; preserve as migration input only.',
+    reason: 'Implementation B contains static flattened winner columns from specific years without temporal intervals, whereas Implementation A provides full temporal validity, regime tracking, and statutory precision.'
+  },
+  {
+    feature: 'Parliamentary Constituency Registry (543 PCs)',
+    implementation_A: 'PostgreSQL public.parliamentary_constituencies (Migrations 040, 060, 062)',
+    implementation_B: 'data/seed/telangana-constituencies.ts (embedded pcName string)',
+    which_is_authoritative: 'Implementation A (PostgreSQL Relational DB)',
+    runtime_status: 'Implementation A is statutory source-of-truth. Implementation B is HISTORICAL_REFERENCE.',
+    action: 'Implementation A governs all 543 PCs across 36 jurisdictions. Implementation B pcName is ignored for current geography.',
+    reason: 'Implementation A provides unique canonical codes (e.g. IN-TS-PC-01), statutory seat numbering, and verified reservations.'
+  },
+  {
+    feature: 'AC to PC Geographic Mapping (4,123 Mappings)',
+    implementation_A: 'PostgreSQL public.constituency_parliamentary_mappings (Migrations 059, 060, 061, 062)',
+    implementation_B: 'Hardcoded pcName string in local state seed objects',
+    which_is_authoritative: 'Implementation A (PostgreSQL Relational DB)',
+    runtime_status: 'Implementation A is statutory source-of-truth. Implementation B is HISTORICAL_REFERENCE.',
+    action: 'Implementation A enforces zero unmapped ACs, zero duplicate current assignments, and temporal exclusion constraints.',
+    reason: 'Implementation B has no temporal boundaries, cannot handle redistricting (e.g. Assam 2023 Table B), and lacks statutory provenance.'
+  },
+  {
+    feature: 'Point-in-Polygon Location (Geographic Locate)',
+    implementation_A: 'Fastify /api/v1/geo/locate -> PostGIS ST_Intersects against public.entity_geometries',
+    implementation_B: 'Fastify /constituencies/locate -> in-memory Turf.js findConstituencyAtPoint on telangana-assembly.geojson',
+    which_is_authoritative: 'Implementation A (/api/v1/geo/locate via PostGIS)',
+    runtime_status: 'Implementation A is canonical runtime spatial authority. Implementation B is LEGACY_COMPATIBILITY for Telangana-only pilot testing.',
+    action: 'De-authoritize Implementation B; direct all clients and spatial queries to Implementation A.',
+    reason: 'Implementation B is strictly locked to Telangana single GeoJSON and fails closed for out-of-state coordinates. Implementation A is scalable and PostGIS backed.'
+  },
+  {
+    feature: 'Electoral Delimitation Allocation (Seat Modeling)',
+    implementation_A: 'Backend Delimitation Service (/api/v1/delimitation/simulate, Article 82/170 Statutory Model & PANIN Engine)',
+    implementation_B: 'Mobile client store apps/mobile/stores/delimitation.ts & seatCalculator.ts',
+    which_is_authoritative: 'Implementation A (Backend Delimitation Engine)',
+    runtime_status: 'Implementation A is authoritative simulation engine. Implementation B is interactive client-side presentation calculation.',
+    action: 'Classified Implementation B as SIMULATION / interactive UI presentation tool. Authoritative statutory seat orders reside on backend.',
+    reason: 'Client-side calculator allows user exploration of slider scenarios without backend round-trips; governed under W020-G5+ contracts as academic/scenario projection.'
+  }
+];
+
+fs.writeFileSync('reports/w021_5b1_final_duplicate_geography_implementations.json', JSON.stringify({
+  generatedAt: new Date().toISOString(),
+  totalDuplicates: duplicates.length,
+  duplicates
+}, null, 2));
+
+let md = '# W021.5-B1-FINAL: Duplicate Geography Implementation Register\n\n';
+md += '| Feature | Implementation A (Authoritative) | Implementation B (Legacy / Duplicate) | Authoritative Source | Runtime Status | Action |\n';
+md += '|---|---|---|---|---|---|\n';
+for (const d of duplicates) {
+  md += `| **${d.feature}** | ${d.implementation_A} | ${d.implementation_B} | ${d.which_is_authoritative} | ${d.runtime_status} | ${d.action} |\n`;
+}
+fs.writeFileSync('reports/w021_5b1_final_duplicate_geography_implementations.md', md);
+console.log('Saved reports/w021_5b1_final_duplicate_geography_implementations.md and .json');
