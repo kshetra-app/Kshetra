@@ -1,0 +1,82 @@
+{
+  "preflightAt": "2026-10-03T18:26:00.000Z",
+  "milestone": "W021.5-B2.2-C Pre-Flight",
+  "governanceRules": [
+    "No unmediated bulk organization inserts without natural key & provenance",
+    "Zero promotion of PROVISIONAL records without Form 21E audit",
+    "Independent candidacy = TRUE, organization_id = NULL",
+    "Nominated status = separate attribute, organization_id = NULL if unaffiliated",
+    "Temporal lineage must preserve historical predecessor identity"
+  ],
+  "existingRegistryInventory": {
+    "existingRowCount": 15,
+    "nationalParties": 4,
+    "stateParties": 1,
+    "unrecognizedParties": 10,
+    "sourceMigration": "053_w019_candidate_granularity_remediation.sql",
+    "duplicateRiskMitigation": "Phase C1 will use INSERT ... ON CONFLICT (id) DO UPDATE"
+  },
+  "eightPhaseMigrationPlan": {
+    "Phase_C1": {
+      "name": "Canonical Political Organizations Master Registry",
+      "targetTable": "public.political_organizations",
+      "naturalKey": "id",
+      "expectedRowCount": 92,
+      "conflictBehavior": "ON CONFLICT (id) DO UPDATE SET name = EXCLUDED.name, short_name = EXCLUDED.short_name, recognition_level = EXCLUDED.recognition_level"
+    },
+    "Phase_C2": {
+      "name": "Organization Aliases Registry",
+      "targetTable": "public.organization_aliases",
+      "naturalKey": "raw_lookup_key + jurisdiction_scope + valid_from",
+      "expectedRowCount": 285,
+      "conflictBehavior": "ON CONFLICT (raw_lookup_key, COALESCE(valid_from, '1947-08-15')) DO NOTHING"
+    },
+    "Phase_C3": {
+      "name": "Historical Organization Predecessors",
+      "targetTable": "public.political_organizations",
+      "naturalKey": "id",
+      "expectedRowCount": 12,
+      "conflictBehavior": "ON CONFLICT (id) DO UPDATE SET data_status = 'OFFICIAL'"
+    },
+    "Phase_C4": {
+      "name": "Multilingual & Multi-Script Names",
+      "targetTable": "public.organization_multilingual_names",
+      "naturalKey": "(organization_id, language_code, script_code, representation_type, name_value)",
+      "expectedRowCount": 140,
+      "conflictBehavior": "ON CONFLICT ON CONSTRAINT uq_org_multi_name DO NOTHING"
+    },
+    "Phase_C5": {
+      "name": "Temporal Statutory Symbols",
+      "targetTable": "public.organization_symbols",
+      "naturalKey": "(organization_id, symbol_name, valid_from)",
+      "expectedRowCount": 45,
+      "conflictBehavior": "ON CONFLICT ON CONSTRAINT uq_org_symbols_timeline DO NOTHING"
+    },
+    "Phase_C6": {
+      "name": "Organization Lineage & Alliances",
+      "targetTable": "public.organization_relationships",
+      "naturalKey": "(source_org_id, target_org_id, relationship_type, valid_from)",
+      "expectedRowCount": 22,
+      "conflictBehavior": "ON CONFLICT DO NOTHING"
+    },
+    "Phase_C7": {
+      "name": "Reconciliation Ledger Linkage Validation",
+      "targetTable": "ledger validation only (read-only verification of 1,096 raw strings)",
+      "naturalKey": "rawString",
+      "expectedRowCount": 1096,
+      "conflictBehavior": "Assertion failure if any mapped canonicalOrgId fails FK check"
+    },
+    "Phase_C8": {
+      "name": "Provenance & Verification Sealing",
+      "targetTable": "public.provenance_records",
+      "naturalKey": "id",
+      "expectedRowCount": 1,
+      "conflictBehavior": "ON CONFLICT (id) DO NOTHING"
+    }
+  },
+  "rollbackPlan": {
+    "safetyMechanism": "Transactional DDL (BEGIN ... COMMIT)",
+    "atomicUndo": "Migration rollback script reverts seeded rows by tagging provenance_id '0215b22c-0000-0000-0000-000000000001'"
+  },
+  "preflightVerdict": "READY_FOR_CTO_AUTHORIZATION"
+}

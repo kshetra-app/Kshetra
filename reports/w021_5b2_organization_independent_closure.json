@@ -1,0 +1,62 @@
+{
+  "auditedAt": "2026-10-03T18:25:00.000Z",
+  "auditMilestone": "W021.5-B2.2-B Independent Closure",
+  "baselineCommit": "1f3fc4001a63c5dce663b34d55fb57206933abf0",
+  "parentCommit": "4db6fb53fdb1a885606bd76a60f1928b0af6fa3e",
+  "productionAirGapIntact": true,
+  "databaseMutationsPermitted": false,
+  "vocabularyUniverse": {
+    "totalUniqueRawStrings": 1096,
+    "totalOccurrences": 16011,
+    "confidenceCounts": {
+      "VERIFIED": 1056,
+      "RECONCILED": 26,
+      "PROVISIONAL": 14,
+      "CONFLICTING": 0,
+      "MISSING": 0
+    },
+    "mathParityVerified": true
+  },
+  "sourceUniverse": {
+    "totalSeedFiles": 207,
+    "includedSeedFiles": 133,
+    "excludedSeedFiles": 74,
+    "exclusionCategories": {
+      "demographicsFiles": 31,
+      "triviaFiles": 31,
+      "buildAndConfig": 10,
+      "localBodyFiles": 2
+    },
+    "exclusionReason": "Files do not declare statutory candidate or constituency election party affiliation metadata."
+  },
+  "highRiskCollisionAudit": {
+    "keysTested": ["INC", "Congress", "NCP", "NCP(SP)", "SHS", "SHS(UBT)", "BJP", "J", "C", "N", "I"],
+    "zeroCollisionsVerified": true,
+    "singleLetterResolutionDeterministic": true
+  },
+  "exceptionsAudit": {
+    "singleLetterMpCount": 37,
+    "singleLetterMpVerified": 37,
+    "truncatedMlaCount": 13,
+    "truncatedMlaVerified": 13,
+    "quarantinedProvisionalCount": 14,
+    "shortnamQuarantined": true
+  },
+  "schemaIntegrity": {
+    "migration": "supabase/migrations/064_political_organization_governance_remediation.sql",
+    "multilingualTable": "public.organization_multilingual_names",
+    "aliasesTable": "public.organization_aliases",
+    "symbolsTable": "public.organization_symbols",
+    "independentCheckConstraint": "chk_prohibit_synthetic_independent",
+    "recognitionLevelCheck": "national, state, unrecognized, registered_unrecognized",
+    "relationshipTypesCheck": "alliance_with, coalition_partner, parent_of, subsidiary_of, merged_into, renamed_to, succeeded_by, predecessor_of, split_from, faction_of, other",
+    "provenanceOnAllTables": true
+  },
+  "testBatteryResult": {
+    "testFile": "tests/b2-2b-independent-closure-preflight.test.mjs",
+    "totalTests": 13,
+    "passed": 13,
+    "failed": 0
+  },
+  "verdict": "B2.2-B INDEPENDENTLY VERIFIED — B2.2-C PREFLIGHT READY"
+}
