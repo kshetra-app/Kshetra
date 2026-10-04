@@ -1,0 +1,52 @@
+{
+  "milestone": "W021.5-B2.2-F",
+  "reportType": "DUPLICATE_AND_COLLISION_AUDIT",
+  "timestamp": "2026-10-04T09:22:37.680Z",
+  "homonymCollisionClusters": {
+    "totalDiscoveredClusters": 102,
+    "unintendedMerges": 0,
+    "falseSplits": 0,
+    "disposition": "SEPARATE_CANONICAL_PERSONS_ENFORCED",
+    "verifiedExamples": [
+      {
+        "name": "Sanjay Kumar",
+        "states": [
+          "BR",
+          "JH",
+          "UP",
+          "HR"
+        ],
+        "canonicalPersonsCreated": 4,
+        "unintendedMerges": 0
+      },
+      {
+        "name": "Ramesh Kumar",
+        "states": [
+          "DL",
+          "PB",
+          "RJ",
+          "MP"
+        ],
+        "canonicalPersonsCreated": 4,
+        "unintendedMerges": 0
+      },
+      {
+        "name": "Ashok Kumar",
+        "states": [
+          "UP",
+          "BR",
+          "RJ",
+          "HR"
+        ],
+        "canonicalPersonsCreated": 4,
+        "unintendedMerges": 0
+      }
+    ]
+  },
+  "aliasCollisionDispositions": {
+    "totalRawAliases": 1043,
+    "collisionsResolved": 0,
+    "duplicateAliasKeys": 0,
+    "status": "ZERO_KEY_COLLISIONS"
+  }
+}

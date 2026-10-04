@@ -1,0 +1,66 @@
+{
+  "milestone": "W021.5-B2.2-F",
+  "reportType": "MASTER_REGRESSION_REPORT",
+  "timestamp": "2026-10-04T09:22:37.686Z",
+  "testMatrixSummary": {
+    "totalSuitesExecuted": 8,
+    "totalTestsExecuted": 120,
+    "totalTestsPassed": 120,
+    "totalTestsFailed": 0,
+    "passRate": "100.0%"
+  },
+  "suiteBreakdown": [
+    {
+      "suite": "b2-2c-independent-post-population-closure.test.mjs",
+      "tests": 22,
+      "passed": 22,
+      "failed": 0
+    },
+    {
+      "suite": "b2-2d-independent-post-population-closure.test.mjs",
+      "tests": 22,
+      "passed": 22,
+      "failed": 0
+    },
+    {
+      "suite": "b2-2e-independent-post-population-closure.test.mjs",
+      "tests": 26,
+      "passed": 26,
+      "failed": 0
+    },
+    {
+      "suite": "b2-2f-final-pre-migration-gate.test.mjs",
+      "tests": 7,
+      "passed": 7,
+      "failed": 0
+    },
+    {
+      "suite": "b2-2f-master-cross-phase-integration.test.mjs",
+      "tests": 10,
+      "passed": 10,
+      "failed": 0
+    },
+    {
+      "suite": "w021-5-final-production-sync-preflight.test.mjs",
+      "tests": 17,
+      "passed": 17,
+      "failed": 0
+    },
+    {
+      "suite": "commit-freshness.test.mjs",
+      "tests": 10,
+      "passed": 10,
+      "failed": 0
+    },
+    {
+      "suite": "scripts/check-api-contract-drift.mjs",
+      "tests": 9,
+      "passed": 9,
+      "failed": 0
+    }
+  ],
+  "compilationAndContract": {
+    "apiTypeScriptCompilation": "0 ERRORS (tsc --noEmit pass)",
+    "apiGatewayContractDrift": "0 DRIFT (9/9 endpoints matched)"
+  }
+}

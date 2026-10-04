@@ -1,0 +1,34 @@
+{
+  "milestone": "W021.5-B2.2-F",
+  "reportType": "TEMPORAL_INTEGRITY_AUDIT",
+  "timestamp": "2026-10-04T09:22:37.673Z",
+  "temporalBounds": {
+    "candidacyElectionYears": {
+      "min": 1952,
+      "max": 2024,
+      "valid": true
+    },
+    "electedTenures": {
+      "tenuresInspected": 9553,
+      "chronologicalViolations": 0,
+      "openEndedCurrentTenures": 4142,
+      "historicalConcludedTenures": 5411,
+      "valid": true
+    },
+    "delimitationSuccessionDates": {
+      "assamGazetteOrderDate": "2023-08-16",
+      "jkReorganizationDate": "2022-05-20",
+      "apTelanganaBifurcationDate": "2014-06-02",
+      "dnhDdMergerDate": "2020-01-26",
+      "epochViolations": 0,
+      "valid": true
+    },
+    "retrospectiveFalsificationCheck": {
+      "historicalCandidaciesAssam2021PinnedTo2008Delimitation": true,
+      "historicalCandidaciesJKPinnedToPriorDelimitation": true,
+      "retrospectiveAlterationCount": 0,
+      "valid": true
+    }
+  },
+  "disposition": "ZERO_TEMPORAL_CONTRADICTIONS_VERIFIED"
+}

@@ -1,0 +1,188 @@
+{
+  "planVersion": "1.0.0",
+  "milestone": "W021.5 — Final Production Synchronization Plan",
+  "generatedAt": "2026-10-04T06:17:18.748Z",
+  "targetProductionDatabase": {
+    "host": "ehfafcnimmjusyvplbah",
+    "url": "https://ehfafcnimmjusyvplbah.supabase.co",
+    "executionStatus": "NOT_AUTHORIZED_PENDING_EXPLICIT_CTO_DIRECTIVE",
+    "airGapEnforced": true
+  },
+  "stagingReferenceDatabase": {
+    "host": "fkpigozcqnmcvofuksar",
+    "url": "https://fkpigozcqnmcvofuksar.supabase.co",
+    "verifiedRowMutations": 58360
+  },
+  "migrationExecutionSequence": [
+    {
+      "order": 1,
+      "name": "050_political_entity_model.sql",
+      "type": "SCHEMA_DEFINITION",
+      "tables": [
+        "canonical_persons",
+        "political_organizations",
+        "candidacies",
+        "elected_tenures",
+        "person_party_affiliations",
+        "provenance_records"
+      ],
+      "idempotency": "IF NOT EXISTS / DO NOTHING",
+      "rollback": "Transactional DROP / reverse migration"
+    },
+    {
+      "order": 2,
+      "name": "059_canonical_national_constituency_registry.sql",
+      "type": "GEOGRAPHY_REGISTRY_AND_STATIC_SEED",
+      "tables": [
+        "constituencies",
+        "parliamentary_constituencies",
+        "states",
+        "dataset_versions"
+      ],
+      "idempotency": "ON CONFLICT (id) DO NOTHING",
+      "rollback": "Delete bounded by dataset_version"
+    },
+    {
+      "order": 3,
+      "name": "060_canonical_electoral_geography_remediation.sql",
+      "type": "GEOGRAPHY_REMEDIATION_AND_LINEAGE",
+      "tables": [
+        "delimitation_regimes",
+        "constituency_lineage",
+        "constituency_parliamentary_mappings"
+      ],
+      "idempotency": "ON CONFLICT (id) DO NOTHING",
+      "rollback": "Delete bounded by delimitation_regime"
+    },
+    {
+      "order": 4,
+      "name": "061_canonical_national_ac_pc_mappings.sql",
+      "type": "AC_PC_MAPPING_SEED",
+      "tables": [
+        "constituency_parliamentary_mappings"
+      ],
+      "idempotency": "ON CONFLICT DO NOTHING",
+      "rollback": "Delete bounded by mapping version"
+    },
+    {
+      "order": 5,
+      "name": "062_canonical_assam_2023_delimitation.sql",
+      "type": "ASSAM_2023_DELIMITATION_SEED",
+      "tables": [
+        "constituency_versions",
+        "constituency_parliamentary_mappings"
+      ],
+      "idempotency": "ON CONFLICT DO NOTHING",
+      "rollback": "Delete bounded by Assam 2023 regime"
+    },
+    {
+      "order": 6,
+      "name": "063_canonical_political_identity_foundation.sql",
+      "type": "SCHEMA_HARDENING_RLS",
+      "tables": [
+        "canonical_persons",
+        "candidacies",
+        "elected_tenures"
+      ],
+      "idempotency": "IF NOT EXISTS / ALTER TABLE",
+      "rollback": "Drop added columns / reverse RLS"
+    },
+    {
+      "order": 7,
+      "name": "064_political_organization_governance_remediation.sql",
+      "type": "ORGANIZATION_SCHEMA_AND_RLS",
+      "tables": [
+        "political_organizations",
+        "organization_aliases",
+        "organization_symbols"
+      ],
+      "idempotency": "IF NOT EXISTS / ALTER TABLE",
+      "rollback": "Reverse organization constraints"
+    },
+    {
+      "order": 8,
+      "name": "065_canonical_political_organization_registry.sql",
+      "type": "ORGANIZATION_DATA_PAYLOAD",
+      "tables": [
+        "provenance_records",
+        "political_organizations",
+        "organization_aliases",
+        "organization_multilingual_names",
+        "organization_symbols",
+        "organization_relationships"
+      ],
+      "idempotency": "ON CONFLICT DO NOTHING",
+      "rollback": "DELETE FROM target WHERE provenance_id = 0215b22c-0000-0000-0000-000000000001",
+      "expectedInserts": 1207
+    },
+    {
+      "order": 9,
+      "name": "066_downstream_civic_extensions.sql",
+      "type": "CIVIC_EXTENSIONS_SCHEMA_AND_DATA",
+      "tables": [
+        "dataset_versions",
+        "candidate_affidavits",
+        "constituency_demographics"
+      ],
+      "idempotency": "IF NOT EXISTS / ON CONFLICT DO UPDATE",
+      "rollback": "Reverse schema / delete bounded by provenance",
+      "expectedInserts": 3
+    }
+  ],
+  "applicationBatchPopulationSequence": [
+    {
+      "phase": "B2.2-D",
+      "name": "Canonical Persons, Candidacies, Elected Tenures, Affiliations & Switches",
+      "provenanceAnchor": "0215b22d-0000-0000-0000-000000000001",
+      "expectedInserts": 48284,
+      "tables": [
+        "canonical_persons",
+        "person_multilingual_identities",
+        "candidacies",
+        "elected_tenures",
+        "person_party_affiliations",
+        "tenure_party_switches",
+        "provenance_records"
+      ],
+      "idempotency": "Deterministic ID matching + ON CONFLICT DO NOTHING",
+      "rollbackProcedure": "DELETE FROM public.* WHERE provenance_id = 0215b22d-0000-0000-0000-000000000001"
+    },
+    {
+      "phase": "B2.2-E",
+      "name": "Candidate Affidavits, Demographics & Turnout Cycles",
+      "provenanceAnchor": "0215b22e-0000-0000-0000-000000000001",
+      "expectedInserts": 8869,
+      "tables": [
+        "candidate_affidavits",
+        "constituency_lineage",
+        "constituency_demographics",
+        "state_election_history_turnout",
+        "provenance_records"
+      ],
+      "idempotency": "Deterministic ID matching + ON CONFLICT DO NOTHING",
+      "rollbackProcedure": "DELETE FROM public.* WHERE provenance_id = 0215b22e-0000-0000-0000-000000000001"
+    }
+  ],
+  "expectedNetProductionDelta": {
+    "SQL_Migrations_Geography_And_Orgs": "4,685 geography entities + 1,207 org entities",
+    "Application_Batches_Persons_And_Civic": "48,284 person entities + 8,869 civic extension entities",
+    "totalCanonicalPayload": 58360
+  },
+  "preSyncGates": [
+    "Verify clean git repository state at canonical commit 896f026",
+    "Verify production database backup completed prior to migration",
+    "Verify target database identity is confirmed ehfafcnimmjusyvplbah",
+    "Verify zero active production database write locks > 5 seconds"
+  ],
+  "emergencyAbortConditions": [
+    "Lock contention > 30 seconds",
+    "Any foreign-key violation exception during execution",
+    "Any row-count discrepancy != 0 between manifest and database",
+    "Connection reset or network partitioning"
+  ],
+  "postSyncVerification": [
+    "Run tests/w021-5-final-production-sync-preflight.test.mjs against live target",
+    "Assert exact row count equality across all 15 tables",
+    "Assert 0 orphaned foreign keys across the entire entity graph"
+  ]
+}

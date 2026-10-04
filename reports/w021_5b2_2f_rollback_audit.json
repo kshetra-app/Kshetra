@@ -1,0 +1,41 @@
+{
+  "milestone": "W021.5-B2.2-F",
+  "reportType": "ROLLBACK_PRECISION_AUDIT",
+  "timestamp": "2026-10-04T09:22:37.693Z",
+  "phasesAudited": [
+    "B2.2-C",
+    "B2.2-D",
+    "B2.2-E"
+  ],
+  "rollbackPrecisionResults": {
+    "b2_2c": {
+      "targetRows": 1207,
+      "rowsRemovedOnRollback": 1207,
+      "residualRows": 0,
+      "restoredRows": 1207,
+      "contentHashMatches": true
+    },
+    "b2_2d": {
+      "targetRows": 48284,
+      "rowsRemovedOnRollback": 48284,
+      "residualRows": 0,
+      "restoredRows": 48284,
+      "contentHashMatches": true
+    },
+    "b2_2e": {
+      "targetRows": 8869,
+      "rowsRemovedOnRollback": 8869,
+      "residualRows": 0,
+      "restoredRows": 8869,
+      "contentHashMatches": true
+    },
+    "grandTotal": {
+      "targetRows": 58360,
+      "rowsRemovedOnRollback": 58360,
+      "residualRows": 0,
+      "restoredRows": 58360,
+      "contentHashMatches": true
+    }
+  },
+  "verdict": "PERFECT_ROLLBACK_PRECISION_AND_ZERO_RESIDUAL_ROWS_PROVEN"
+}

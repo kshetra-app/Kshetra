@@ -1,0 +1,59 @@
+{
+  "milestone": "W021.5-B2.2-F",
+  "reportType": "CROSS_PHASE_PARITY_AUDIT",
+  "timestamp": "2026-10-04T09:22:37.645Z",
+  "governance": "Master Execution Framework / Rule IV-001 Non-Self-Acceptance",
+  "authoritativeBaselineCommit": "896f026afcd9e7add9145cb5c7cfe9c0970b86e3",
+  "subsystemParity": {
+    "b2_2c_organizations": {
+      "provenanceRecords": 1,
+      "canonicalOrganizations": 107,
+      "organizationRelationships": 10,
+      "multilingualNames": 27,
+      "organizationSymbols": 19,
+      "organizationAliases": 1043,
+      "totalPhysicalInserts": 1207,
+      "dataRecords": 1206,
+      "provenanceAnchors": 1,
+      "status": "VERIFIED"
+    },
+    "b2_2d_persons_and_candidacies": {
+      "provenanceRecords": 1,
+      "canonicalPersons": 9083,
+      "multilingualPersonIdentities": 9172,
+      "candidacies": 11334,
+      "electedTenures": 9553,
+      "personPartyAffiliations": 9083,
+      "tenurePartySwitches": 58,
+      "totalPhysicalInserts": 48284,
+      "dataRecords": 48283,
+      "provenanceAnchors": 1,
+      "status": "VERIFIED"
+    },
+    "b2_2e_civic_extensions": {
+      "provenanceRecords": 1,
+      "candidateAffidavits": 4524,
+      "constituencyLineage": 154,
+      "constituencyDemographics": 4142,
+      "turnoutRecords": 48,
+      "dataRecords": 8868,
+      "provenanceAnchors": 1,
+      "totalPhysicalInserts": 8869,
+      "status": "VERIFIED",
+      "accountingDiscrepancyReconciliation": {
+        "rawSourceDataSum": 8868,
+        "provenanceAnchorE0": 1,
+        "totalPhysicalRows": 8869,
+        "explanation": "Data plane comprises exactly 4,524 affidavits + 154 lineage + 4,142 demographics + 48 turnout = 8,868 rows. Total physical database rows inserted include 1 E0 batch provenance anchor record (0215b22e-0000-0000-0000-000000000001), yielding exactly 8,869 database inserts. Both representations are mutually consistent and verified."
+      }
+    }
+  },
+  "grandTotals": {
+    "totalPhysicalInserts": 58360,
+    "totalDataRecords": 58357,
+    "totalProvenanceAnchors": 3,
+    "formula": "1,207 (B2.2-C) + 48,284 (B2.2-D) + 8,869 (B2.2-E) = 58,360",
+    "dataFormula": "1,206 + 48,283 + 8,868 = 58,357 data records + 3 provenance anchors = 58,360",
+    "status": "EXACT_PARITY"
+  }
+}

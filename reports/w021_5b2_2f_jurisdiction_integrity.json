@@ -1,0 +1,23 @@
+{
+  "milestone": "W021.5-B2.2-F",
+  "reportType": "JURISDICTION_INTEGRITY_AUDIT",
+  "timestamp": "2026-10-04T09:22:37.677Z",
+  "nationalCoverage": {
+    "totalStatesAndUTs": 36,
+    "statesCount": 28,
+    "unionTerritoriesCount": 8,
+    "stateAssembliesRepresented": 31,
+    "assembliesCoveragePercent": 100,
+    "assemblyConstituenciesCount": 4142,
+    "parliamentaryConstituenciesCount": 543,
+    "totalConstituencies": 4685,
+    "coverageVerified": true
+  },
+  "crossPhaseJurisdictionAlignment": {
+    "geographyConstituencies": 4685,
+    "demographicsConstituenciesMapped": 4142,
+    "lineageTransitionsMapped": 154,
+    "unmappedConstituencies": 0,
+    "boundaryIntegrity": "STRICT_ALIGNMENT_PASS"
+  }
+}

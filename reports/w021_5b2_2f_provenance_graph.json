@@ -1,0 +1,38 @@
+{
+  "milestone": "W021.5-B2.2-F",
+  "reportType": "PROVENANCE_GRAPH_AUDIT",
+  "timestamp": "2026-10-04T09:22:37.683Z",
+  "provenanceArchitecture": "SAFE_EXISTING_ARCHITECTURE",
+  "anchors": [
+    {
+      "phase": "B2.2-C",
+      "domain": "Canonical Political Organizations",
+      "anchorUuid": "0215b22c-0000-0000-0000-000000000001",
+      "sourceSystem": "ECI Political Party Registry",
+      "childTableCount": 5,
+      "recordsAnchored": 1206
+    },
+    {
+      "phase": "B2.2-D",
+      "domain": "Persons, Candidacies & Tenures",
+      "anchorUuid": "0215b22d-0000-0000-0000-000000000001",
+      "sourceSystem": "ECI Candidate Disclosures & Legislative Tenures",
+      "childTableCount": 6,
+      "recordsAnchored": 48283
+    },
+    {
+      "phase": "B2.2-E",
+      "domain": "Downstream Civic Extensions",
+      "anchorUuid": "0215b22e-0000-0000-0000-000000000001",
+      "sourceSystem": "ECI Candidate Affidavits, Delimitation Orders, Census & Turnout",
+      "childTableCount": 4,
+      "recordsAnchored": 8868
+    }
+  ],
+  "isolationIntegrity": {
+    "crossPhaseCollision": false,
+    "allAnchorsDistinct": true,
+    "allAnchorIds128BitUuids": true,
+    "zeroOrphanRecords": true
+  }
+}
