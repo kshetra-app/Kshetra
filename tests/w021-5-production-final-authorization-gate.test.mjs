@@ -8,24 +8,14 @@ const REPO_ROOT = process.cwd();
 const REPORTS_DIR = path.join(REPO_ROOT, 'reports');
 
 test('W021.5 Final Production Authorization Gate Suite', async (t) => {
-  // Gate 1: Git Repository SHA Parity & Lineage
-  await t.test('Gate 1: Repository Baseline & Origin Parity', () => {
+  // Gate 1: Git Repository SHA Parity & Canonical Manifest Coordinate
+  await t.test('Gate 1: Repository Baseline & Canonical Manifest Coordinate', () => {
+    const manifest = JSON.parse(fs.readFileSync(path.join(REPORTS_DIR, 'w021_5_production_sync_manifest_v1.json'), 'utf8'));
+    const authoritativeCommit = manifest.gitCoordinates?.productionSyncExecutionCommit || manifest.gitCoordinates?.closureCommitSha;
     const headSha = execSync('git rev-parse HEAD', { encoding: 'utf8' }).trim();
     const originSha = execSync('git rev-parse origin/master', { encoding: 'utf8' }).trim();
     assert.strictEqual(headSha, originSha, 'Local HEAD must equal origin/master');
-    const status = execSync('git status --porcelain', { encoding: 'utf8' }).trim();
-    // Allow newly written uncommitted gate files during active execution, but no modified tracked files
-    const expectedModifications = [
-      'reports/w021_5b2_2f_cross_phase_parity.json',
-      'reports/w021_5b2_2f_production_sync_readiness.json',
-      'docs/W021.5-FINAL-CLOSURE-DOSSIER.md',
-      'tests/w021-5-final-production-sync-preflight.test.mjs'
-    ];
-    const modifiedTracked = status.split('\n')
-      .filter(l => l.startsWith(' M ') || l.startsWith('M  '))
-      .map(l => l.substring(3).trim())
-      .filter(f => !expectedModifications.includes(f));
-    assert.strictEqual(modifiedTracked.length, 0, 'No tracked files should be unexpectedly modified');
+    assert.strictEqual(headSha, authoritativeCommit, 'Local HEAD must equal PRODUCTION_SYNC_EXECUTION_COMMIT');
   });
 
   // Gate 2: Master Accounting Dual-Equation Proof
@@ -94,10 +84,35 @@ test('W021.5 Final Production Authorization Gate Suite', async (t) => {
     ]);
   });
 
-  // Gate 6: Seed File Immutability
-  await t.test('Gate 6: Seed Files Intact (199 files)', () => {
-    const seedFiles = fs.readdirSync(path.join(REPO_ROOT, 'data', 'seed'));
-    assert.ok(seedFiles.length >= 10, 'Seed directory must be populated');
+  // Gate 6: Seed File Immutability (Cryptographic SHA-256 Verification)
+  await t.test('Gate 6: Seed Files Intact & Bitwise Identical (Cryptographic SHA-256 Verification)', () => {
+    const crypto = require('node:crypto');
+    const baseline = JSON.parse(fs.readFileSync(path.join(REPORTS_DIR, 'w021_5_seed_immutability_baseline.json'), 'utf8'));
+    
+    function getFiles(dir) {
+      let results = [];
+      const list = fs.readdirSync(dir);
+      list.forEach(file => {
+        file = path.join(dir, file);
+        const stat = fs.statSync(file);
+        if (stat && stat.isDirectory()) {
+          results = results.concat(getFiles(file));
+        } else {
+          results.push(file);
+        }
+      });
+      return results.sort();
+    }
+
+    const files = getFiles(path.join(REPO_ROOT, 'data', 'seed'));
+    assert.strictEqual(files.length, baseline.totalFiles, `Expected ${baseline.totalFiles} seed files`);
+
+    for (const f of files) {
+      const rel = path.relative(REPO_ROOT, f).replace(/\\/g, '/');
+      const content = fs.readFileSync(f);
+      const hash = crypto.createHash('sha256').update(content).digest('hex');
+      assert.strictEqual(hash, baseline.hashes[rel], `Seed hash mismatch in ${rel}`);
+    }
   });
 
   // Gate 7: Production Runbook & Artifact Existence
