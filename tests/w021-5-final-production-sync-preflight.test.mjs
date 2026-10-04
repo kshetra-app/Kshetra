@@ -18,11 +18,13 @@ const REPO_ROOT = process.cwd();
 const REPORTS_DIR = path.join(REPO_ROOT, 'reports');
 
 // 1. Repository coordinate
-test('Invariant 1: Repository Coordinate & Git Parity (6dbe601 == origin/master)', () => {
+test('Invariant 1: Repository Coordinate & Git Parity (Matches Authoritative Manifest)', () => {
+  const manifest = JSON.parse(fs.readFileSync(path.join(REPORTS_DIR, 'w021_5_production_sync_manifest_v1.json'), 'utf8'));
+  const authoritativeCommit = manifest.gitCoordinates?.productionSyncExecutionCommit || manifest.gitCoordinates?.closureCommitSha;
   const headSha = execSync('git rev-parse HEAD', { encoding: 'utf8' }).trim();
   const originSha = execSync('git rev-parse origin/master', { encoding: 'utf8' }).trim();
-  assert.strictEqual(headSha, '6dbe601a094a947194d24982412d42fe22fa805e');
   assert.strictEqual(headSha, originSha);
+  assert.strictEqual(headSha, authoritativeCommit);
 });
 
 // 2. Migration sequence
