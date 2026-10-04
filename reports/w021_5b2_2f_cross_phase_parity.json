@@ -1,10 +1,22 @@
 {
   "milestone": "W021.5-B2.2-F",
   "reportType": "CROSS_PHASE_PARITY_AUDIT",
-  "timestamp": "2026-10-04T09:22:37.645Z",
+  "timestamp": "2026-10-04T09:38:00.000Z",
   "governance": "Master Execution Framework / Rule IV-001 Non-Self-Acceptance",
-  "authoritativeBaselineCommit": "896f026afcd9e7add9145cb5c7cfe9c0970b86e3",
+  "authoritativeBaselineCommit": "6dbe601a094a947194d24982412d42fe22fa805e",
+  "accountingTaxonomy": {
+    "concept1_application_data_plane": "Represents the business application data records across B2.2-C, B2.2-D, and B2.2-E (58,357 data records + 3 provenance anchors = 58,360 physical rows).",
+    "concept2_total_production_sync_payload": "Represents the complete production synchronization scope including B1 Geography (4,685) + B2.2-C/D/E physical rows (58,360) = 63,045 physical entities/rows."
+  },
   "subsystemParity": {
+    "b1_geography": {
+      "assemblyConstituencies": 4142,
+      "parliamentaryConstituencies": 543,
+      "totalPhysicalEntities": 4685,
+      "dataRecords": 4685,
+      "provenanceAnchors": 0,
+      "status": "VERIFIED"
+    },
     "b2_2c_organizations": {
       "provenanceRecords": 1,
       "canonicalOrganizations": 107,
@@ -48,12 +60,20 @@
       }
     }
   },
+  "subtotals": {
+    "b2_2c_d_e_data_records": 58357,
+    "b2_2c_d_e_provenance_anchors": 3,
+    "b2_2c_d_e_physical_inserts": 58360,
+    "formula_cde_physical": "1,207 (B2.2-C) + 48,284 (B2.2-D) + 8,869 (B2.2-E) = 58,360 physical rows"
+  },
   "grandTotals": {
-    "totalPhysicalInserts": 58360,
-    "totalDataRecords": 58357,
+    "b1_geography_entities": 4685,
+    "b2_2c_d_e_physical_entities": 58360,
+    "totalProductionSyncPayload": 63045,
+    "totalDataRowsAllPlanes": 63042,
     "totalProvenanceAnchors": 3,
-    "formula": "1,207 (B2.2-C) + 48,284 (B2.2-D) + 8,869 (B2.2-E) = 58,360",
-    "dataFormula": "1,206 + 48,283 + 8,868 = 58,357 data records + 3 provenance anchors = 58,360",
-    "status": "EXACT_PARITY"
+    "formula_grand_sync_payload": "4,685 (B1) + 58,360 (B2.2-C/D/E) = 63,045",
+    "formula_data_plus_anchors": "58,357 (C/D/E data) + 3 (anchors) + 4,685 (B1) = 63,045",
+    "status": "EXACT_PARITY_VERIFIED"
   }
 }

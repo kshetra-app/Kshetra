@@ -1,0 +1,141 @@
+{
+  "manifestVersion": "1.0.0",
+  "milestone": "W021.5 Final Production Synchronization Readiness",
+  "generatedAt": "2026-10-04T09:37:30.000Z",
+  "gitCoordinates": {
+    "canonicalBranch": "master",
+    "closureCommitSha": "6dbe601a094a947194d24982412d42fe22fa805e",
+    "workingTreeState": "CLEAN"
+  },
+  "environmentTarget": {
+    "targetHost": "ehfafcnimmjusyvplbah",
+    "targetUrl": "https://ehfafcnimmjusyvplbah.supabase.co",
+    "connectivityStatus": "UNREACHABLE / ENOTFOUND (AIR-GAPPED)",
+    "mutationStatus": "ZERO_MUTATIONS_ISSUED",
+    "safetyClassification": "READ_ONLY_AIR_GAPPED_PROVEN"
+  },
+  "migrationRange": {
+    "startMigration": "050_political_entity_model.sql",
+    "endMigration": "066_downstream_civic_extensions.sql",
+    "totalMigrations": 9,
+    "migrationSequence": [
+      "050_political_entity_model.sql",
+      "059_canonical_national_constituency_registry.sql",
+      "060_canonical_electoral_geography_remediation.sql",
+      "061_canonical_national_ac_pc_mappings.sql",
+      "062_canonical_assam_2023_delimitation.sql",
+      "063_canonical_political_identity_foundation.sql",
+      "064_political_organization_governance_remediation.sql",
+      "065_canonical_political_organization_registry.sql",
+      "066_downstream_civic_extensions.sql"
+    ],
+    "destructiveDdlOperations": 0
+  },
+  "targetTables": [
+    "constituencies",
+    "parliamentary_constituencies",
+    "political_organizations",
+    "organization_aliases",
+    "organization_multilingual_identities",
+    "organization_symbols",
+    "organization_relationships",
+    "canonical_persons",
+    "multilingual_person_identities",
+    "candidacies",
+    "elected_tenures",
+    "person_party_affiliations",
+    "tenure_party_switches",
+    "candidate_affidavits",
+    "constituency_lineage",
+    "constituency_demographics",
+    "state_election_history_turnout",
+    "migration_provenance"
+  ],
+  "provenanceAnchors": [
+    {
+      "phase": "B2.2-C",
+      "anchorUuid": "0215b22c-0000-0000-0000-000000000001",
+      "domain": "Canonical Political Organizations"
+    },
+    {
+      "phase": "B2.2-D",
+      "anchorUuid": "0215b22d-0000-0000-0000-000000000001",
+      "domain": "Canonical Persons, Candidacies & Tenures"
+    },
+    {
+      "phase": "B2.2-E",
+      "anchorUuid": "0215b22e-0000-0000-0000-000000000001",
+      "domain": "Civic Extensions"
+    }
+  ],
+  "accountingReconciliation": {
+    "planes": {
+      "b1_geography": {
+        "assemblyConstituencies": 4142,
+        "parliamentaryConstituencies": 543,
+        "dataRows": 4685,
+        "provenanceAnchors": 0,
+        "physicalRows": 4685
+      },
+      "b2_2c_organizations": {
+        "canonicalOrganizations": 107,
+        "organizationAliases": 1043,
+        "multilingualNames": 27,
+        "organizationSymbols": 19,
+        "organizationRelationships": 10,
+        "dataRows": 1206,
+        "provenanceAnchors": 1,
+        "physicalRows": 1207
+      },
+      "b2_2d_persons_and_tenures": {
+        "canonicalPersons": 9083,
+        "multilingualNames": 9172,
+        "candidacies": 11334,
+        "electedTenures": 9553,
+        "partyAffiliations": 9083,
+        "partySwitches": 58,
+        "dataRows": 48283,
+        "provenanceAnchors": 1,
+        "physicalRows": 48284
+      },
+      "b2_2e_civic_extensions": {
+        "candidateAffidavits": 4524,
+        "constituencyLineage": 154,
+        "constituencyDemographics": 4142,
+        "turnoutRecords": 48,
+        "dataRows": 8868,
+        "provenanceAnchors": 1,
+        "physicalRows": 8869
+      }
+    },
+    "subTotals": {
+      "b2_2c_d_e_data_rows": 58357,
+      "b2_2c_d_e_provenance_anchors": 3,
+      "b2_2c_d_e_physical_payload": 58360,
+      "b1_geography_physical_payload": 4685
+    },
+    "grandTotals": {
+      "complete_w021_5_data_rows": 63042,
+      "complete_w021_5_provenance_anchors": 3,
+      "complete_w021_5_production_sync_payload": 63045,
+      "equations": {
+        "equation1_cde_physical": "1,207 + 48,284 + 8,869 = 58,360",
+        "equation2_grand_sync_payload": "4,685 + 58,360 = 63,045",
+        "equation3_data_plus_anchors": "58,357 + 3 + 4,685 = 63,045"
+      }
+    }
+  },
+  "topologicalDependencyOrder": [
+    "Step 1: B1 Base Electoral Geography (constituencies, parliamentary_constituencies)",
+    "Step 2: B2.2-C Canonical Political Organizations & Aliases",
+    "Step 3: B2.2-D Canonical Persons, Candidacies & Tenures",
+    "Step 4: B2.2-E Civic Extensions (Affidavits, Demographics, Lineage, Turnout)"
+  ],
+  "rollbackDependencyOrder": [
+    "Step 1: Rollback B2.2-E records matching provenance anchor 0215b22e-0000-0000-0000-000000000001",
+    "Step 2: Rollback B2.2-D records matching provenance anchor 0215b22d-0000-0000-0000-000000000001",
+    "Step 3: Rollback B2.2-C records matching provenance anchor 0215b22c-0000-0000-0000-000000000001",
+    "Step 4: Revert B1 Geography migration patches if necessary"
+  ],
+  "verificationStatus": "READY_FOR_FINAL_CTO_PRODUCTION_AUTHORIZATION"
+}

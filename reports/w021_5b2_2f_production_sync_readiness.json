@@ -1,10 +1,11 @@
 {
   "milestone": "W021.5-B2.2-F",
   "reportType": "PRODUCTION_SYNCHRONIZATION_READINESS_AUDIT",
-  "timestamp": "2026-10-04T09:22:37.696Z",
+  "timestamp": "2026-10-04T09:38:15.000Z",
   "targetProductionDatabase": {
     "host": "ehfafcnimmjusyvplbah",
     "state": "STRICTLY_AIR_GAPPED_AND_UNTOUCHED",
+    "connectivity": "UNREACHABLE / ENOTFOUND (AIR-GAPPED)",
     "authorizedMutations": 0,
     "performedMutations": 0
   },
@@ -21,10 +22,14 @@
       "065_canonical_political_organization_registry.sql",
       "066_downstream_civic_extensions.sql"
     ],
-    "netTotalInserts": 58360,
+    "accountingBreakdown": {
+      "b1_geography_entities": 4685,
+      "b2_2c_d_e_application_physical_payload": 58360,
+      "complete_w021_5_production_sync_payload": 63045
+    },
     "destructiveOperations": 0,
     "ddlPreflightPassed": true,
     "rlsPoliciesPreserved": true
   },
-  "overallStatus": "PRODUCTION_SYNC_READY_PENDING_EXPLICIT_CTO_AUTHORIZATION"
+  "overallStatus": "READY_FOR_FINAL_CTO_PRODUCTION_AUTHORIZATION"
 }

@@ -18,10 +18,10 @@ const REPO_ROOT = process.cwd();
 const REPORTS_DIR = path.join(REPO_ROOT, 'reports');
 
 // 1. Repository coordinate
-test('Invariant 1: Repository Coordinate & Git Parity (896f026 == origin/master)', () => {
+test('Invariant 1: Repository Coordinate & Git Parity (6dbe601 == origin/master)', () => {
   const headSha = execSync('git rev-parse HEAD', { encoding: 'utf8' }).trim();
   const originSha = execSync('git rev-parse origin/master', { encoding: 'utf8' }).trim();
-  assert.strictEqual(headSha, '896f026afcd9e7add9145cb5c7cfe9c0970b86e3');
+  assert.strictEqual(headSha, '6dbe601a094a947194d24982412d42fe22fa805e');
   assert.strictEqual(headSha, originSha);
 });
 
