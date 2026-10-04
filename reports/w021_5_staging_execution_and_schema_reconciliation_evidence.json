@@ -1,0 +1,80 @@
+{
+  "timestamp": "2026-10-04T13:13:01.433Z",
+  "stagingTarget": {
+    "host": "fkpigozcqnmcvofuksar.supabase.co",
+    "url": "https://fkpigozcqnmcvofuksar.supabase.co",
+    "connectionMechanism": "HTTPS REST (PostgREST) + OpenAPI Schema Introspection",
+    "networkReachability": "CONFIRMED_ONLINE"
+  },
+  "schemaDiscrepancyReconciliation": {
+    "multilingualPersonIdentities": {
+      "canonicalPhysicalTable": "person_multilingual_identities",
+      "schemaMigrationFile": "supabase/migrations/063_canonical_political_identity_foundation.sql",
+      "discrepancyResolution": "Schema uses person_multilingual_identities. Manifest and references reconciled."
+    },
+    "organizationMultilingualIdentities": {
+      "canonicalPhysicalTable": "organization_multilingual_names",
+      "schemaMigrationFile": "supabase/migrations/064_political_organization_governance_remediation.sql",
+      "discrepancyResolution": "Schema uses organization_multilingual_names. Manifest and references reconciled."
+    },
+    "migrationProvenance": {
+      "canonicalPhysicalTable": "provenance_records",
+      "schemaMigrationFile": "supabase/migrations/050_political_entity_model.sql",
+      "discrepancyResolution": "Schema uses provenance_records. Manifest and references reconciled."
+    }
+  },
+  "physicalTableInventory": [
+    "constituencies",
+    "parliamentary_constituencies",
+    "constituency_parliamentary_mappings",
+    "political_organizations",
+    "organization_aliases",
+    "organization_multilingual_names",
+    "organization_symbols",
+    "organization_relationships",
+    "canonical_persons",
+    "person_multilingual_identities",
+    "candidacies",
+    "elected_tenures",
+    "person_party_affiliations",
+    "tenure_party_switches",
+    "candidate_affidavits",
+    "constituency_lineage",
+    "constituency_demographics",
+    "provenance_records"
+  ],
+  "liveStagingEvidence": {
+    "preMigrationStatus": {
+      "totalDefinitionsInCatalog": 194,
+      "presentTargetTables": [
+        "constituencies (119 rows)",
+        "parliamentary_constituencies (17 rows)",
+        "candidate_affidavits (0 rows)",
+        "provenance_records (2452 rows)"
+      ],
+      "missingW021TargetTables": [
+        "constituency_parliamentary_mappings",
+        "political_organizations",
+        "organization_aliases",
+        "organization_multilingual_names",
+        "organization_symbols",
+        "organization_relationships",
+        "canonical_persons",
+        "person_multilingual_identities",
+        "candidacies",
+        "elected_tenures",
+        "person_party_affiliations",
+        "tenure_party_switches",
+        "constituency_lineage",
+        "constituency_demographics"
+      ]
+    },
+    "directDdlAccessStatus": "BLOCKED_MANAGEMENT_API_401_AND_REST_NO_DDL",
+    "stopConditionTriggered": true,
+    "stopConditionRationale": "Direct staging PostgreSQL port (5432) or DDL execution RPC is not exposed via REST. Database changes must be applied via Supabase Dashboard SQL Editor or direct connection string.",
+    "preparedArtifacts": {
+      "atomicMigrationPackage": "supabase/w021_5_staging_master_migration_package_050_066.sql",
+      "verificationQueriesPackage": "supabase/w021_5_staging_master_verification_queries.sql"
+    }
+  }
+}

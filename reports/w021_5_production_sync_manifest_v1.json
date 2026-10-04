@@ -34,13 +34,14 @@
   "targetTables": [
     "constituencies",
     "parliamentary_constituencies",
+    "constituency_parliamentary_mappings",
     "political_organizations",
     "organization_aliases",
-    "organization_multilingual_identities",
+    "organization_multilingual_names",
     "organization_symbols",
     "organization_relationships",
     "canonical_persons",
-    "multilingual_person_identities",
+    "person_multilingual_identities",
     "candidacies",
     "elected_tenures",
     "person_party_affiliations",
@@ -48,8 +49,7 @@
     "candidate_affidavits",
     "constituency_lineage",
     "constituency_demographics",
-    "state_election_history_turnout",
-    "migration_provenance"
+    "provenance_records"
   ],
   "provenanceAnchors": [
     {
