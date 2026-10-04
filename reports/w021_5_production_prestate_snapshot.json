@@ -1,0 +1,21 @@
+{
+  "timestamp": "2026-10-04T12:13:43.265Z",
+  "targetProjectId": "ehfafcnimmjusyvplbah",
+  "targetHost": "ehfafcnimmjusyvplbah.supabase.co",
+  "reachability": {
+    "reachable": false,
+    "error": "ENOTFOUND",
+    "classification": "UNREACHABLE_AIR_GAPPED"
+  },
+  "preStateSummary": {
+    "tableCounts": "NOT_ACCESSIBLE_AIR_GAPPED",
+    "provenanceCollisions": 0,
+    "conflictingKeysDetected": 0,
+    "status": "UNREACHABLE / NOT MUTATED FROM THIS ENVIRONMENT"
+  },
+  "conflictPolicy": {
+    "policy": "STRICT_NO_OVERWRITE",
+    "expectedExistingMatches": "IDEMPOTENT_PASS",
+    "unexpectedCollisions": "HARD_STOP"
+  }
+}

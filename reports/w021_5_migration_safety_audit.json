@@ -1,0 +1,92 @@
+{
+  "totalMigrationsAudited": 9,
+  "totalDropTable": 0,
+  "totalDropColumn": 0,
+  "totalTruncate": 0,
+  "totalUnscopedDelete": 0,
+  "totalDynamicSql": 0,
+  "verdict": "MIGRATION_SAFETY_PASSED",
+  "auditResults": [
+    {
+      "migration": "050_political_entity_model.sql",
+      "lineCount": 592,
+      "dropTables": 0,
+      "dropColumns": 0,
+      "truncates": 0,
+      "unscopedDeletes": 0,
+      "dynamicSql": 0
+    },
+    {
+      "migration": "059_canonical_national_constituency_registry.sql",
+      "lineCount": 5085,
+      "dropTables": 0,
+      "dropColumns": 0,
+      "truncates": 0,
+      "unscopedDeletes": 0,
+      "dynamicSql": 0
+    },
+    {
+      "migration": "060_canonical_electoral_geography_remediation.sql",
+      "lineCount": 441,
+      "dropTables": 0,
+      "dropColumns": 0,
+      "truncates": 0,
+      "unscopedDeletes": 0,
+      "dynamicSql": 0
+    },
+    {
+      "migration": "061_canonical_national_ac_pc_mappings.sql",
+      "lineCount": 5239,
+      "dropTables": 0,
+      "dropColumns": 0,
+      "truncates": 0,
+      "unscopedDeletes": 0,
+      "dynamicSql": 0
+    },
+    {
+      "migration": "062_canonical_assam_2023_delimitation.sql",
+      "lineCount": 493,
+      "dropTables": 0,
+      "dropColumns": 0,
+      "truncates": 0,
+      "unscopedDeletes": 0,
+      "dynamicSql": 0
+    },
+    {
+      "migration": "063_canonical_political_identity_foundation.sql",
+      "lineCount": 114,
+      "dropTables": 0,
+      "dropColumns": 0,
+      "truncates": 0,
+      "unscopedDeletes": 0,
+      "dynamicSql": 0
+    },
+    {
+      "migration": "064_political_organization_governance_remediation.sql",
+      "lineCount": 166,
+      "dropTables": 0,
+      "dropColumns": 0,
+      "truncates": 0,
+      "unscopedDeletes": 0,
+      "dynamicSql": 0
+    },
+    {
+      "migration": "065_canonical_political_organization_registry.sql",
+      "lineCount": 1277,
+      "dropTables": 0,
+      "dropColumns": 0,
+      "truncates": 0,
+      "unscopedDeletes": 0,
+      "dynamicSql": 0
+    },
+    {
+      "migration": "066_downstream_civic_extensions.sql",
+      "lineCount": 128,
+      "dropTables": 0,
+      "dropColumns": 0,
+      "truncates": 0,
+      "unscopedDeletes": 0,
+      "dynamicSql": 0
+    }
+  ]
+}
