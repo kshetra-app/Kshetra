@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
+import crypto from 'node:crypto';
 import { execSync } from 'node:child_process';
 
 const REPO_ROOT = process.cwd();
@@ -86,7 +87,6 @@ test('W021.5 Final Production Authorization Gate Suite', async (t) => {
 
   // Gate 6: Seed File Immutability (Cryptographic SHA-256 Verification)
   await t.test('Gate 6: Seed Files Intact & Bitwise Identical (Cryptographic SHA-256 Verification)', () => {
-    const crypto = require('node:crypto');
     const baseline = JSON.parse(fs.readFileSync(path.join(REPORTS_DIR, 'w021_5_seed_immutability_baseline.json'), 'utf8'));
     
     function getFiles(dir) {
