@@ -32,10 +32,12 @@ test('B2.2-F Production Synchronization Readiness Suite', async (t) => {
     }
   });
 
-  await t.test('Check 4: Production Sync Net Delta Is Exactly 58,360 Inserts', () => {
+  await t.test('Check 4: Production Sync Net Delta Is Exactly 58,360 Application and 63,045 Total Entities', () => {
     const ready = JSON.parse(fs.readFileSync(path.join(REPO_ROOT, 'reports/w021_5b2_2f_production_sync_readiness.json')));
-    assert.strictEqual(ready.syncPayloadSummary.netTotalInserts, 58360);
-    assert.strictEqual(ready.overallStatus, 'PRODUCTION_SYNC_READY_PENDING_EXPLICIT_CTO_AUTHORIZATION');
+    const breakdown = ready.syncPayloadSummary.accountingBreakdown;
+    assert.strictEqual(breakdown.b2_2c_d_e_application_physical_payload, 58360);
+    assert.strictEqual(breakdown.complete_w021_5_production_sync_payload, 63045);
+    assert.strictEqual(ready.overallStatus, 'READY_FOR_FINAL_CTO_PRODUCTION_AUTHORIZATION');
   });
 
   await t.test('Check 5: Seed File Immutability (199 files intact)', () => {

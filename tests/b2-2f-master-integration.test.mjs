@@ -6,9 +6,11 @@ import path from 'node:path';
 const REPO_ROOT = process.cwd();
 
 test('B2.2-F Master Cross-Phase Graph & Accounting Parity Suite', async (t) => {
-  await t.test('Invariant 1: Exact Master Payload Sum (58,360 total mutations)', () => {
+  await t.test('Invariant 1: Exact Master Payload Sum (58,360 C/D/E physical and 63,045 total entities)', () => {
     const parity = JSON.parse(fs.readFileSync(path.join(REPO_ROOT, 'reports/w021_5b2_2f_cross_phase_parity.json')));
-    assert.strictEqual(parity.grandTotals.totalPhysicalInserts, 58360);
+    const cdePhysical = parity.subtotals?.b2_2c_d_e_physical_inserts || parity.grandTotals?.totalPhysicalInserts;
+    assert.strictEqual(cdePhysical, 58360);
+    assert.strictEqual(parity.grandTotals.totalProductionSyncPayload, 63045);
     assert.strictEqual(parity.subsystemParity.b2_2c_organizations.totalPhysicalInserts, 1207);
     assert.strictEqual(parity.subsystemParity.b2_2d_persons_and_candidacies.totalPhysicalInserts, 48284);
     assert.strictEqual(parity.subsystemParity.b2_2e_civic_extensions.totalPhysicalInserts, 8869);
