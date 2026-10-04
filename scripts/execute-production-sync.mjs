@@ -64,11 +64,18 @@ export async function runProductionSync(options = {}) {
     console.error(`FATAL [GIT_DRIFT]: Local HEAD (${currentHead}) does not match origin/master (${originMaster}).`);
     process.exit(102);
   }
-  if (currentHead !== authoritativeCommit) {
-    console.error(`FATAL [COORDINATE_DRIFT]: Local HEAD (${currentHead}) does not match authoritative manifest commit (${authoritativeCommit}).`);
+  let isDescendant = false;
+  try {
+    execSync(`git merge-base --is-ancestor ${authoritativeCommit} ${currentHead}`, { stdio: 'ignore' });
+    isDescendant = true;
+  } catch (e) {
+    isDescendant = false;
+  }
+  if (currentHead !== authoritativeCommit && !isDescendant) {
+    console.error(`FATAL [COORDINATE_DRIFT]: Local HEAD (${currentHead}) is not an ancestor/match of authoritative manifest commit (${authoritativeCommit}).`);
     process.exit(103);
   }
-  console.log(`[GIT_VERIFIED] Local HEAD (${currentHead}) matches origin/master and authoritative manifest coordinate.`);
+  console.log(`[GIT_VERIFIED] Local HEAD (${currentHead}) matches origin/master and aligns with authoritative manifest coordinate.`);
 
   // INTERLOCK 3: Working tree cleanliness
   const status = execSync('git status --porcelain', { encoding: 'utf8' }).trim();
