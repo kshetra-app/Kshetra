@@ -3,7 +3,7 @@
   "reportType": "CROSS_PHASE_PARITY_AUDIT",
   "timestamp": "2026-10-04T09:38:00.000Z",
   "governance": "Master Execution Framework / Rule IV-001 Non-Self-Acceptance",
-  "authoritativeBaselineCommit": "6dbe601a094a947194d24982412d42fe22fa805e",
+  "authoritativeBaselineCommit": "6336330dc7b1266c3d0d18c82fc050814d5b0b09",
   "accountingTaxonomy": {
     "concept1_application_data_plane": "Represents the business application data records across B2.2-C, B2.2-D, and B2.2-E (58,357 data records + 3 provenance anchors = 58,360 physical rows).",
     "concept2_total_production_sync_payload": "Represents the complete production synchronization scope including B1 Geography (4,685) + B2.2-C/D/E physical rows (58,360) = 63,045 physical entities/rows."

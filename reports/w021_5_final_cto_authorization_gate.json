@@ -2,10 +2,10 @@
   "milestone": "W021.5",
   "reportType": "FINAL_CTO_AUTHORIZATION_GATE",
   "generatedAt": "2026-10-04T09:51:30.000Z",
-  "authoritativeCommit": "29ed78167d0ad9c6faec6b79ff5be1adbfc5f9a8",
+  "authoritativeCommit": "6336330dc7b1266c3d0d18c82fc050814d5b0b09",
   "gitCoordinates": {
-    "localHead": "29ed78167d0ad9c6faec6b79ff5be1adbfc5f9a8",
-    "originMaster": "29ed78167d0ad9c6faec6b79ff5be1adbfc5f9a8",
+    "localHead": "6336330dc7b1266c3d0d18c82fc050814d5b0b09",
+    "originMaster": "6336330dc7b1266c3d0d18c82fc050814d5b0b09",
     "parityStatus": "MATCHED",
     "workingTreeStatus": "CLEAN",
     "untrackedFiles": 0

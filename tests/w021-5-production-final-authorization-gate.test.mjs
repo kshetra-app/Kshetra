@@ -93,6 +93,7 @@ test('W021.5 Final Production Authorization Gate Suite', async (t) => {
       let results = [];
       const list = fs.readdirSync(dir);
       list.forEach(file => {
+        if (file === '.turbo' || file === '.git') return;
         file = path.join(dir, file);
         const stat = fs.statSync(file);
         if (stat && stat.isDirectory()) {
@@ -109,9 +110,11 @@ test('W021.5 Final Production Authorization Gate Suite', async (t) => {
 
     for (const f of files) {
       const rel = path.relative(REPO_ROOT, f).replace(/\\/g, '/');
+      const relWin = path.relative(REPO_ROOT, f).replace(/\//g, '\\');
       const content = fs.readFileSync(f);
       const hash = crypto.createHash('sha256').update(content).digest('hex');
-      assert.strictEqual(hash, baseline.hashes[rel], `Seed hash mismatch in ${rel}`);
+      const expectedHash = baseline.hashes[rel] || baseline.hashes[relWin];
+      assert.strictEqual(hash, expectedHash, `Seed hash mismatch in ${rel}`);
     }
   });
 
