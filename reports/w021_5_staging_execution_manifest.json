@@ -1,0 +1,146 @@
+{
+  "manifestVersion": "1.0.0",
+  "title": "W021.5 Sequential Staging Execution Manifest",
+  "specification": "CTO DIRECTIVE — W021.5 STAGING SQL-EDITOR SIZE-LIMIT REMEDIATION",
+  "generatedAt": "2026-10-05T06:18:48.727Z",
+  "executionStrategy": "SEQUENTIAL_DISCRETE_TRANSACTIONS",
+  "transactionBoundaryNotice": "CRITICAL NOTICE: The nine-query approach is staging-only to accommodate Supabase SQL Editor payload size limits. Each migration executes in its own distinct transaction block (BEGIN...COMMIT). This is NOT atomicity-equivalent to the single production BEGIN...COMMIT bundle.",
+  "targetEnvironment": {
+    "host": "fkpigozcqnmcvofuksar.supabase.co",
+    "name": "panIN-staging",
+    "targetDatabase": "fkpigozcqnmcvofuksar"
+  },
+  "migrations": [
+    {
+      "order": 1,
+      "migrationId": "050",
+      "filename": "050_political_entity_model.sql",
+      "packagePath": "supabase/staging_packages/050_political_entity_model.sql",
+      "byteSize": 29933,
+      "sha256": "d89442ff98217b67b3d1d89e657c9c956eb3d3b1447d2fb075b40dd322c00e5b",
+      "dependency": "Base Schema Prerequisites (001-049)",
+      "expectedEffect": "Creates public.data_status_enum, core political tables (canonical_persons, candidacies, elected_tenures, person_party_affiliations, tenure_party_switches, organization_relationships, pages, person_roles), and triggers",
+      "checkpoint": {
+        "path": "supabase/staging_checkpoints/checkpoint_050.sql",
+        "sha256": "3c21d3072a513ab38bbfafeef7562dcc98fe47b802ee9d6ef8f8b1b339dab5ea"
+      }
+    },
+    {
+      "order": 2,
+      "migrationId": "059",
+      "filename": "059_canonical_national_constituency_registry.sql",
+      "packagePath": "supabase/staging_packages/059_canonical_national_constituency_registry.sql",
+      "byteSize": 836237,
+      "sha256": "80285b808850f76391860de827e38b6722afb5d5b0a44727d9869f48a24cb03e",
+      "dependency": "Migration 050 & Base Geography",
+      "expectedEffect": "Populates national baseline of 4,142 Assembly Constituencies and 543 Parliamentary Constituencies with canonical codes and geometries",
+      "checkpoint": {
+        "path": "supabase/staging_checkpoints/checkpoint_059.sql",
+        "sha256": "d105f59634cfebb8475074b2c48b0ad03cd2326531307a04a42267176443b26f"
+      }
+    },
+    {
+      "order": 3,
+      "migrationId": "060",
+      "filename": "060_canonical_electoral_geography_remediation.sql",
+      "packagePath": "supabase/staging_packages/060_canonical_electoral_geography_remediation.sql",
+      "byteSize": 21045,
+      "sha256": "f3bbd84c02d48b5cf9b140aa92afb693e5fad0839a503dc33a17b9a8886e9d60",
+      "dependency": "Migration 059",
+      "expectedEffect": "Establishes public.constituency_parliamentary_mappings and reconciles territorial anomalies across delimitation regimes",
+      "checkpoint": {
+        "path": "supabase/staging_checkpoints/checkpoint_060.sql",
+        "sha256": "98fe4bba731b391cde5a4da03724b233b5333ee55009b554b3a249ff5215280f"
+      }
+    },
+    {
+      "order": 4,
+      "migrationId": "061",
+      "filename": "061_canonical_national_ac_pc_mappings.sql",
+      "packagePath": "supabase/staging_packages/061_canonical_national_ac_pc_mappings.sql",
+      "byteSize": 697065,
+      "sha256": "4d8eafa4c0c6d88854bd815227fbf81529ee9d2911c9ed9f44cc799f519726e9",
+      "dependency": "Migration 060",
+      "expectedEffect": "Seeds 4,142 canonical AC-to-PC relational mappings across all 36 States and Union Territories",
+      "checkpoint": {
+        "path": "supabase/staging_checkpoints/checkpoint_061.sql",
+        "sha256": "f223e9f6688ae571863c3dd2e70c2bbff222752ba2afd415b1556520e6593772"
+      }
+    },
+    {
+      "order": 5,
+      "migrationId": "062",
+      "filename": "062_canonical_assam_2023_delimitation.sql",
+      "packagePath": "supabase/staging_packages/062_canonical_assam_2023_delimitation.sql",
+      "byteSize": 24037,
+      "sha256": "b5747944360c44db20d3276119b3820e6e935df7896678c893f2140609670208",
+      "dependency": "Migration 061",
+      "expectedEffect": "Applies post-2023 statutory Assam Delimitation Order boundary and numbering transitions for 126 ACs",
+      "checkpoint": {
+        "path": "supabase/staging_checkpoints/checkpoint_062.sql",
+        "sha256": "765eea7f25f15b81c13fcf38df9872f9546da77d6f27f0775a2757347f8ff012"
+      }
+    },
+    {
+      "order": 6,
+      "migrationId": "063",
+      "filename": "063_canonical_political_identity_foundation.sql",
+      "packagePath": "supabase/staging_packages/063_canonical_political_identity_foundation.sql",
+      "byteSize": 5875,
+      "sha256": "f99ceb6d98a762784cc251eb4e6ea355be6e08c97949e084e1d61449b5129368",
+      "dependency": "Migration 050",
+      "expectedEffect": "Establishes public.person_multilingual_identities and public.person_identity_linkages with RLS and multi-script support",
+      "checkpoint": {
+        "path": "supabase/staging_checkpoints/checkpoint_063.sql",
+        "sha256": "e47310dcbd6945bdc4e3ae6e4e83dff12a003276ddd0dbebcbe8540c2ee80319"
+      }
+    },
+    {
+      "order": 7,
+      "migrationId": "064",
+      "filename": "064_political_organization_governance_remediation.sql",
+      "packagePath": "supabase/staging_packages/064_political_organization_governance_remediation.sql",
+      "byteSize": 9306,
+      "sha256": "71683a4aab0c6e329bf5739cc0bfdb3c04ac7769e1f26b7142532348c05da072",
+      "dependency": "Migration 050",
+      "expectedEffect": "Establishes public.organization_multilingual_names, public.organization_symbols, and public.organization_aliases",
+      "checkpoint": {
+        "path": "supabase/staging_checkpoints/checkpoint_064.sql",
+        "sha256": "7ca4857ffd5edfae417ab94427a02a5b2d59cdc4edfe4034f61bca267de1b0bd"
+      }
+    },
+    {
+      "order": 8,
+      "migrationId": "065",
+      "filename": "065_canonical_political_organization_registry.sql",
+      "packagePath": "supabase/staging_packages/065_canonical_political_organization_registry.sql",
+      "byteSize": 229244,
+      "sha256": "78ec752a92702bcc32e4aba6a0115d55c2a024c0165af8418f7cc41c598100e1",
+      "dependency": "Migration 064",
+      "expectedEffect": "Seeds national political party registry (107 parties, 1,043 aliases, 27 localized names, 19 symbols, 10 relationships, and B2.2-C provenance anchor)",
+      "checkpoint": {
+        "path": "supabase/staging_checkpoints/checkpoint_065.sql",
+        "sha256": "2871d55e9c065023e113ed93bfcc949f98052c076772612a799a018c21f28f9c"
+      }
+    },
+    {
+      "order": 9,
+      "migrationId": "066",
+      "filename": "066_downstream_civic_extensions.sql",
+      "packagePath": "supabase/staging_packages/066_downstream_civic_extensions.sql",
+      "byteSize": 6466,
+      "sha256": "74fbcd9a6303946eb2d6b9895a085ce0c6b8fcf6a405a65118fea6fdb24353a3",
+      "dependency": "Migrations 050-065",
+      "expectedEffect": "Creates public.constituency_demographics, public.constituency_lineage, registers dataset versions, and attaches foreign keys (person_id, candidacy_id, provenance_id) to public.candidate_affidavits",
+      "checkpoint": {
+        "path": "supabase/staging_checkpoints/checkpoint_066.sql",
+        "sha256": "fd07cddf93bef49b546ccd2fb8d0ad249d6eb45f4f2584817dd73833dd73043b"
+      }
+    }
+  ],
+  "finalVerificationPackage": {
+    "path": "supabase/w021_5_staging_master_verification_queries.sql",
+    "byteSize": 8553,
+    "sha256": "ae82be15e1833066385d3bc078de698014a892dab7de43778cee34e1fa6a5f51"
+  }
+}
