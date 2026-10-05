@@ -1,0 +1,56 @@
+{
+  "milestone": "W021.5",
+  "phase": "MIGRATION_060_PRE_EXECUTION",
+  "generated_at": "2026-10-05T18:28:02+05:30",
+  "governance": "Master Execution Framework Amendment v1.2 / Rule IV-001",
+  "staging_environment": {
+    "supabase_project": "fkpigozcqnmcvofuksar",
+    "project_name": "panIN-staging",
+    "certified_gate": "POST_059_PASS",
+    "gate_checks_passed": 17,
+    "gate_checks_total": 17
+  },
+  "production_environment": {
+    "supabase_project": "ehfafcnimmjusyvplbah",
+    "status": "STRICTLY AIR-GAPPED / ZERO ACCESS / ZERO MUTATIONS"
+  },
+  "source_migration": {
+    "path": "supabase/migrations/060_canonical_electoral_geography_remediation.sql",
+    "sha256": "f3bbd84c02d48b5cf9b140aa92afb693e5fad0839a503dc33a17b9a8886e9d60",
+    "byte_size": 21045,
+    "line_count": 441,
+    "status": "IMMUTABLE_FROZEN"
+  },
+  "staging_package": {
+    "path": "supabase/staging_packages/060_canonical_electoral_geography_remediation.sql",
+    "sha256": "f3bbd84c02d48b5cf9b140aa92afb693e5fad0839a503dc33a17b9a8886e9d60",
+    "byte_size": 21045,
+    "is_derived": false,
+    "byte_for_byte_identical_to_authoritative": true
+  },
+  "post_execution_gate_artifact": {
+    "path": "supabase/staging_checkpoints/w021_5_post_060_consolidated_gate.sql",
+    "sha256": "543aa30409652b27d7dbb736178b84da938a7a0c03f72335d3ab01efea30aaaf",
+    "mode": "STRICTLY_READ_ONLY",
+    "total_checks": 10
+  },
+  "preflight_verifications": {
+    "destructive_ddl_count": 0,
+    "production_references_found": 0,
+    "insert_statements_with_conflict_handling": "8/8",
+    "states_updated_at_invocations": 0,
+    "prerequisite_schemas_present": true
+  },
+  "expected_post_060_counts": {
+    "public.states": 36,
+    "public.state_versions": 36,
+    "public.parliamentary_constituencies": 543,
+    "public.parliamentary_constituency_versions": 543,
+    "public.constituencies": 4123,
+    "public.constituency_versions": 4123,
+    "public.delimitation_regimes": ">= 5",
+    "public.constituency_lineage": 0,
+    "public.constituency_parliamentary_mappings": 321,
+    "public.migration_conflicts": 3
+  }
+}
