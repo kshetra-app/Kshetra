@@ -9,6 +9,8 @@
  * 3. Contains all ten required checks (Checks 01 through 10) in a single consolidated CTE query.
  * 4. Yields a single executable SELECT statement with 6-column unified schema.
  * 5. Does not rely on zero-row pass semantics; asserts explicit PASS/FAIL rows.
+ * 6. Specifically asserts Check 06 tests the canonical non-assembly UT set ('AN', 'CH', 'DN', 'LA', 'LD')
+ *    and forbids the defective typographical acronym 'DH'.
  */
 
 import test from 'node:test';
@@ -25,7 +27,7 @@ test('Post-061 Consolidated Gate: File exists and has valid cryptographic hash',
   const content = fs.readFileSync(GATE_PATH, 'utf8');
   assert.ok(content.length > 5000, 'Artifact content must exceed 5KB');
   const hash = crypto.createHash('sha256').update(content).digest('hex');
-  assert.strictEqual(hash, '9ec0e84e16c5a3b5d1fd33c1e1bcdfcda4836a3beb67eaadb1ef5cdb89a8f4f4');
+  assert.strictEqual(hash, '731ac9ac49aee23fb659596744ae5355d917e3066aea165ed823f32469caa43b');
 });
 
 test('Post-061 Consolidated Gate: Strictly READ-ONLY with zero DDL or mutation operations', () => {
@@ -54,6 +56,23 @@ test('Post-061 Consolidated Gate: Strictly READ-ONLY with zero DDL or mutation o
       );
     }
   }
+});
+
+test('Post-061 Consolidated Gate: Check 06 uses canonical non-assembly UT set (AN, CH, DN, LA, LD)', () => {
+  const content = fs.readFileSync(GATE_PATH, 'utf8');
+
+  // Must contain canonical set
+  assert.ok(
+    content.includes("IN ('AN', 'CH', 'DN', 'LA', 'LD')"),
+    "Check 06 must query canonical non-assembly UT codes ('AN', 'CH', 'DN', 'LA', 'LD')"
+  );
+
+  // Must NOT contain defective code 'DH'
+  assert.strictEqual(
+    content.includes("'DH'"),
+    false,
+    "Check 06 must NOT contain defective typographical code 'DH'"
+  );
 });
 
 test('Post-061 Consolidated Gate: All 10 checks represented with explicit PASS/FAIL logic', () => {

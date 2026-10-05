@@ -108,7 +108,7 @@ check_6_non_assembly AS (
   SELECT s.code, count(c.id) AS ac_count
   FROM public.states s
   LEFT JOIN public.constituencies c ON s.code = c.state_code
-  WHERE s.code IN ('AN', 'CH', 'DH', 'LA', 'LD')
+  WHERE s.code IN ('AN', 'CH', 'DN', 'LA', 'LD')
   GROUP BY s.code
 ),
 check_6_cte AS (
@@ -123,7 +123,7 @@ check_6_cte AS (
       THEN 'PASS' 
       ELSE 'FAIL' 
     END AS status,
-    'All 5 non-assembly UTs (AN, CH, DH, LA, LD) correctly have 0 assembly constituencies' AS details
+    'All 5 non-assembly UTs (AN, CH, DN, LA, LD) correctly have 0 assembly constituencies' AS details
   FROM check_6_non_assembly
 ),
 
