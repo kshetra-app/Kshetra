@@ -1,0 +1,58 @@
+{
+  "milestone": "W021.5",
+  "phase": "MIGRATION_061_PRE_EXECUTION",
+  "generated_at": "2026-10-05T18:40:00+05:30",
+  "governance": "Master Execution Framework Amendment v1.2 / Rule IV-001",
+  "staging_environment": {
+    "supabase_project": "fkpigozcqnmcvofuksar",
+    "project_name": "panIN-staging",
+    "certified_gate": "POST_060_PASS",
+    "gate_checks_passed": 10,
+    "gate_checks_total": 10
+  },
+  "production_environment": {
+    "supabase_project": "ehfafcnimmjusyvplbah",
+    "status": "STRICTLY AIR-GAPPED / ZERO ACCESS / ZERO MUTATIONS"
+  },
+  "source_migration": {
+    "path": "supabase/migrations/061_canonical_national_ac_pc_mappings.sql",
+    "sha256": "4d8eafa4c0c6d88854bd815227fbf81529ee9d2911c9ed9f44cc799f519726e9",
+    "byte_size": 697065,
+    "line_count": 5238,
+    "status": "IMMUTABLE_FROZEN"
+  },
+  "staging_package": {
+    "path": "supabase/staging_packages/061_canonical_national_ac_pc_mappings.sql",
+    "sha256": "4d8eafa4c0c6d88854bd815227fbf81529ee9d2911c9ed9f44cc799f519726e9",
+    "byte_size": 697065,
+    "is_derived": false,
+    "byte_for_byte_identical_to_authoritative": true
+  },
+  "post_execution_gate_artifact": {
+    "path": "supabase/staging_checkpoints/w021_5_post_061_consolidated_gate.sql",
+    "sha256": "9ec0e84e16c5a3b5d1fd33c1e1bcdfcda4836a3beb67eaadb1ef5cdb89a8f4f4",
+    "mode": "STRICTLY_READ_ONLY",
+    "total_checks": 10
+  },
+  "preflight_verifications": {
+    "destructive_ddl_count": 0,
+    "production_references_found": 0,
+    "insert_statements_with_conflict_handling": "31/31",
+    "unique_ac_mappings": 4123,
+    "legislative_assembly_jurisdictions": 31,
+    "prerequisite_schemas_present": true,
+    "btree_gist_support": true
+  },
+  "expected_post_061_counts": {
+    "public.states": 36,
+    "public.state_versions": 36,
+    "public.parliamentary_constituencies": 543,
+    "public.parliamentary_constituency_versions": 543,
+    "public.constituencies": 4123,
+    "public.constituency_versions": 4123,
+    "public.delimitation_regimes": ">= 5",
+    "public.constituency_lineage": 0,
+    "public.constituency_parliamentary_mappings": 4123,
+    "public.migration_conflicts": 3
+  }
+}
