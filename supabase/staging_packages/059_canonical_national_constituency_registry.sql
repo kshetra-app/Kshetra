@@ -105,8 +105,7 @@ ON CONFLICT (code) DO UPDATE SET
   has_geojson = EXCLUDED.has_geojson,
   lgd_code = EXCLUDED.lgd_code,
   census_code_2011 = EXCLUDED.census_code_2011,
-  primary_dataset_version_id = EXCLUDED.primary_dataset_version_id,
-  updated_at = now();
+  primary_dataset_version_id = EXCLUDED.primary_dataset_version_id;
 
 -- ─── 4. CANONICAL STATE VERSIONS ──────────────────────────────────────────────
 

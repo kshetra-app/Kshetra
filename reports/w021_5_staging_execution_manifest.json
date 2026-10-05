@@ -30,14 +30,18 @@
       "migrationId": "059",
       "filename": "059_canonical_national_constituency_registry.sql",
       "packagePath": "supabase/staging_packages/059_canonical_national_constituency_registry.sql",
-      "byteSize": 836237,
-      "sha256": "80285b808850f76391860de827e38b6722afb5d5b0a44727d9869f48a24cb03e",
+      "byteSize": 836215,
+      "sha256": "766f51858a85e452e894d4621f8d3c0700f703623aa82196fb2094e7509b20a4",
       "dependency": "Migration 050 & Base Geography",
       "expectedEffect": "Populates national baseline of 4,142 Assembly Constituencies and 543 Parliamentary Constituencies with canonical codes and geometries",
       "checkpoint": {
         "path": "supabase/staging_checkpoints/checkpoint_059.sql",
         "sha256": "d105f59634cfebb8475074b2c48b0ad03cd2326531307a04a42267176443b26f"
-      }
+      },
+      "isDerivedStagingPackage": true,
+      "sourceMigrationPath": "supabase/migrations/059_canonical_national_constituency_registry.sql",
+      "sourceMigrationSha256": "80285b808850f76391860de827e38b6722afb5d5b0a44727d9869f48a24cb03e",
+      "transformationApplied": "Removed invalid line 109 assignment (updated_at = now();) in public.states ON CONFLICT (code) DO UPDATE SET block. Exact byte diff verified against authoritative source."
     },
     {
       "order": 3,
