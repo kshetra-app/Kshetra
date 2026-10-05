@@ -27,13 +27,13 @@
     },
     {
       "order": 2,
-      "migrationId": "059",
-      "filename": "059_canonical_national_constituency_registry.sql",
-      "packagePath": "supabase/staging_packages/059_canonical_national_constituency_registry.sql",
-      "byteSize": 836215,
-      "sha256": "766f51858a85e452e894d4621f8d3c0700f703623aa82196fb2094e7509b20a4",
+      "migrationId": "059-R1",
+      "filename": "059-R1_temporal_reconciliation.sql",
+      "packagePath": "supabase/staging_packages/059-R1_temporal_reconciliation.sql",
+      "byteSize": 838018,
+      "sha256": "12ea385a46b00c8455cedd099a9b7a682ba4de10421b4eb3c8fa1258707ab5ca",
       "dependency": "Migration 050 & Base Geography",
-      "expectedEffect": "Populates national baseline of 4,142 Assembly Constituencies and 543 Parliamentary Constituencies with canonical codes and geometries",
+      "expectedEffect": "Populates national baseline of 4,123 Assembly Constituencies and 543 Parliamentary Constituencies with canonical codes and geometries, harmonizing 36 jurisdiction versions without GiST exclusion constraint conflicts",
       "checkpoint": {
         "path": "supabase/staging_checkpoints/checkpoint_059.sql",
         "sha256": "d105f59634cfebb8475074b2c48b0ad03cd2326531307a04a42267176443b26f"
@@ -41,7 +41,7 @@
       "isDerivedStagingPackage": true,
       "sourceMigrationPath": "supabase/migrations/059_canonical_national_constituency_registry.sql",
       "sourceMigrationSha256": "80285b808850f76391860de827e38b6722afb5d5b0a44727d9869f48a24cb03e",
-      "transformationApplied": "Removed invalid line 109 assignment (updated_at = now();) in public.states ON CONFLICT (code) DO UPDATE SET block. Exact byte diff verified against authoritative source."
+      "transformationApplied": "Removed invalid states.updated_at assignment; omitted fabricated TS-STATE-2008 to prevent GiST exclusion overlap against pre-existing TS-STATE-2014; injected fail-closed pre-execution health assertions."
     },
     {
       "order": 3,
