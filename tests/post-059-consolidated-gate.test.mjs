@@ -25,7 +25,7 @@ test('Consolidated Gate: File exists and has valid cryptographic hash', () => {
   const content = fs.readFileSync(GATE_PATH, 'utf8');
   assert.ok(content.length > 5000, 'Artifact content must exceed 5KB');
   const hash = crypto.createHash('sha256').update(content).digest('hex');
-  assert.strictEqual(hash, '51d25dfc3f4e7d271dab358308e76e1ead76b9bd03382926b8240734c81fad43');
+  assert.strictEqual(hash, '490276b97d8449b194ae23ec2c69ad3cc1048a885c1c3cf2b40c5136f1c2f407');
 });
 
 test('Consolidated Gate: Strictly READ-ONLY with zero DDL or mutation operations', () => {

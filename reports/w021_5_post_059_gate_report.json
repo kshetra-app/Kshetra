@@ -15,8 +15,8 @@
   },
   "verificationArtifact": {
     "path": "supabase/staging_checkpoints/w021_5_post_059_consolidated_gate.sql",
-    "byteSize": 11603,
-    "sha256": "51d25dfc3f4e7d271dab358308e76e1ead76b9bd03382926b8240734c81fad43",
+    "byteSize": 11644,
+    "sha256": "490276b97d8449b194ae23ec2c69ad3cc1048a885c1c3cf2b40c5136f1c2f407",
     "mode": "STRICTLY READ-ONLY",
     "format": "SINGLE_CONSOLIDATED_RESULT_SET_17_ROWS"
   },

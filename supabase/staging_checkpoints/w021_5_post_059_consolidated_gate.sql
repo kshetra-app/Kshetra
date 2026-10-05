@@ -27,6 +27,24 @@ check_1_cte AS (
 ),
 
 -- ─── CHECK 2: Core relation row counts ────────────────────────────────────────
+check_2_counts AS (
+  SELECT 'states' AS table_name, count(*) AS actual_count, 36 AS expected_count FROM public.states
+  UNION ALL
+  SELECT 'state_versions', count(*), 36 FROM public.state_versions
+  UNION ALL
+  SELECT 'parliamentary_constituencies', count(*), 543 FROM public.parliamentary_constituencies
+  UNION ALL
+  SELECT 'parliamentary_constituency_versions', count(*), 543 FROM public.parliamentary_constituency_versions
+  UNION ALL
+  SELECT 'constituencies', count(*), 4123 FROM public.constituencies
+  UNION ALL
+  SELECT 'constituency_versions', count(*), 4123 FROM public.constituency_versions
+  UNION ALL
+  SELECT 'migration_conflicts', count(*), 3 FROM public.migration_conflicts
+  UNION ALL
+  SELECT 'dataset_versions (059 registered)', count(*), 3 FROM public.dataset_versions 
+  WHERE id IN ('mha_national_jurisdictions_2024_v1', 'eci_national_pc_2008_v1', 'eci_national_ac_2008_v1')
+),
 check_2_cte AS (
   SELECT
     'check_2.' || row_number() OVER () AS check_id,
@@ -35,24 +53,7 @@ check_2_cte AS (
     expected_count::text AS expected_value,
     CASE WHEN actual_count = expected_count THEN 'PASS' ELSE 'FAIL' END AS status,
     'Table public.' || table_name || ' count: actual ' || actual_count || ', expected ' || expected_count AS details
-  FROM (
-    SELECT 'states' AS table_name, count(*) AS actual_count, 36 AS expected_count FROM public.states
-    UNION ALL
-    SELECT 'state_versions', count(*), 36 FROM public.state_versions
-    UNION ALL
-    SELECT 'parliamentary_constituencies', count(*), 543 FROM public.parliamentary_constituencies
-    UNION ALL
-    SELECT 'parliamentary_constituency_versions', count(*), 543 FROM public.parliamentary_constituency_versions
-    UNION ALL
-    SELECT 'constituencies', count(*), 4123 FROM public.constituencies
-    UNION ALL
-    SELECT 'constituency_versions', count(*), 4123 FROM public.constituency_versions
-    UNION ALL
-    SELECT 'migration_conflicts', count(*), 3 FROM public.migration_conflicts
-    UNION ALL
-    SELECT 'dataset_versions (059 registered)', count(*), 3 FROM public.dataset_versions 
-    WHERE id IN ('mha_national_jurisdictions_2024_v1', 'eci_national_pc_2008_v1', 'eci_national_ac_2008_v1')
-  ) c
+  FROM check_2_counts
 ),
 
 -- ─── CHECK 3: Telangana temporal reconciliation ──────────────────────────────
@@ -82,6 +83,14 @@ check_3_cte AS (
 ),
 
 -- ─── CHECK 4: Temporal overlaps (uq_state_versions_no_overlap) ────────────────
+check_4_overlaps AS (
+  SELECT sv1.state_code
+  FROM public.state_versions sv1
+  JOIN public.state_versions sv2 
+    ON sv1.state_code = sv2.state_code 
+   AND sv1.id <> sv2.id
+   AND daterange(sv1.valid_from, sv1.valid_to, '[)') && daterange(sv2.valid_from, sv2.valid_to, '[)')
+),
 check_4_cte AS (
   SELECT
     'check_4' AS check_id,
@@ -93,17 +102,17 @@ check_4_cte AS (
       WHEN count(*) = 0 THEN 'Zero overlapping daterange([valid_from, valid_to)) across all jurisdictions'
       ELSE 'FAIL: ' || count(*) || ' overlapping temporal ranges detected in state_versions'
     END AS details
-  FROM (
-    SELECT sv1.state_code
-    FROM public.state_versions sv1
-    JOIN public.state_versions sv2 
-      ON sv1.state_code = sv2.state_code 
-     AND sv1.id <> sv2.id
-     AND daterange(sv1.valid_from, sv1.valid_to, '[)') && daterange(sv2.valid_from, sv2.valid_to, '[)')
-  ) overlaps
+  FROM check_4_overlaps
 ),
 
 -- ─── CHECK 5: Single current version per jurisdiction ─────────────────────────
+check_5_violations AS (
+  SELECT s.code, count(sv.id) AS current_count
+  FROM public.states s
+  LEFT JOIN public.state_versions sv ON s.code = sv.state_code AND sv.is_current = true
+  GROUP BY s.code
+  HAVING count(sv.id) <> 1
+),
 check_5_cte AS (
   SELECT
     'check_5' AS check_id,
@@ -115,13 +124,7 @@ check_5_cte AS (
       WHEN count(*) = 0 THEN 'All 36 jurisdictions have strictly one is_current=true version record'
       ELSE 'FAIL: ' || count(*) || ' jurisdictions violate the single current version invariant'
     END AS details
-  FROM (
-    SELECT s.code, count(sv.id) AS current_count
-    FROM public.states s
-    LEFT JOIN public.state_versions sv ON s.code = sv.state_code AND sv.is_current = true
-    GROUP BY s.code
-    HAVING count(sv.id) <> 1
-  ) v
+  FROM check_5_violations
 ),
 
 -- ─── CHECK 6: All 36 states current_version_id FK linkage ─────────────────────
