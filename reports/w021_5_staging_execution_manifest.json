@@ -30,8 +30,8 @@
       "migrationId": "059-R1",
       "filename": "059-R1_temporal_reconciliation.sql",
       "packagePath": "supabase/staging_packages/059-R1_temporal_reconciliation.sql",
-      "byteSize": 838018,
-      "sha256": "12ea385a46b00c8455cedd099a9b7a682ba4de10421b4eb3c8fa1258707ab5ca",
+      "byteSize": 838019,
+      "sha256": "ca83743d25839ae51632dd223263da2dfe8411f0bb109ee14052d8a8d1680446",
       "dependency": "Migration 050 & Base Geography",
       "expectedEffect": "Populates national baseline of 4,123 Assembly Constituencies and 543 Parliamentary Constituencies with canonical codes and geometries, harmonizing 36 jurisdiction versions without GiST exclusion constraint conflicts",
       "checkpoint": {

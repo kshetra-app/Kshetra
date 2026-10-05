@@ -6,47 +6,59 @@ const dstPath = 'supabase/staging_packages/059-R1_temporal_reconciliation.sql';
 
 let content = fs.readFileSync(srcPath, 'utf8');
 
-// 1. Add Fail-closed prechecks immediately after BEGIN;
-const precheckSql = `
--- ─── 0. FAIL-CLOSED PRE-EXECUTION HEALTH & DEPENDENCY ASSERTIONS ──────────
-DO $$$
-DECLARE
-  v_050_exists BOOLEAN;
-  v_ts_2014_exists BOOLEAN;
-  v_constituencies_count INT;
-BEGIN
-  -- 1. Assert Migration 050 tables exist
-  SELECT EXISTS (
-    SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'political_organizations'
-  ) INTO v_050_exists;
-  IF NOT v_050_exists THEN
-    RAISE EXCEPTION 'PRECONDITION FAILED: Migration 050 (political_organizations) must be applied before 059-R1.';
-  END IF;
+// Build Section 0 precheck string cleanly without regex replacement risks
+const precheckLines = [
+  '',
+  '-- ─── 0. FAIL-CLOSED PRE-EXECUTION HEALTH & DEPENDENCY ASSERTIONS ──────────',
+  'DO $$',
+  'DECLARE',
+  '  v_050_exists BOOLEAN;',
+  '  v_ts_2014_exists BOOLEAN;',
+  '  v_constituencies_count INT;',
+  'BEGIN',
+  '  -- 1. Assert Migration 050 tables exist',
+  '  SELECT EXISTS (',
+  '    SELECT 1 FROM information_schema.tables WHERE table_schema = \'public\' AND table_name = \'political_organizations\'',
+  '  ) INTO v_050_exists;',
+  '  IF NOT v_050_exists THEN',
+  '    RAISE EXCEPTION \'PRECONDITION FAILED: Migration 050 (political_organizations) must be applied before 059-R1.\';',
+  '  END IF;',
+  '',
+  '  -- 2. Assert TS-STATE-2014 version exists in state_versions',
+  '  SELECT EXISTS (',
+  '    SELECT 1 FROM public.state_versions WHERE version_code = \'TS-STATE-2014\' AND state_code = \'TS\'',
+  '  ) INTO v_ts_2014_exists;',
+  '  IF NOT v_ts_2014_exists THEN',
+  '    RAISE EXCEPTION \'PRECONDITION FAILED: Pre-existing TS-STATE-2014 must be present in public.state_versions.\';',
+  '  END IF;',
+  '',
+  '  -- 3. Assert 059 has not already populated national constituencies',
+  '  SELECT count(*) FROM public.constituencies INTO v_constituencies_count;',
+  '  IF v_constituencies_count > 500 THEN',
+  '    RAISE EXCEPTION \'PRECONDITION FAILED: public.constituencies already populated (% rows). Aborting.\', v_constituencies_count;',
+  '  END IF;',
+  'END $$;',
+  ''
+];
 
-  -- 2. Assert TS-STATE-2014 version exists in state_versions
-  SELECT EXISTS (
-    SELECT 1 FROM public.state_versions WHERE version_code = 'TS-STATE-2014' AND state_code = 'TS'
-  ) INTO v_ts_2014_exists;
-  IF NOT v_ts_2014_exists THEN
-    RAISE EXCEPTION 'PRECONDITION FAILED: Pre-existing TS-STATE-2014 must be present in public.state_versions.';
-  END IF;
+const precheckBlock = precheckLines.join('\n');
 
-  -- 3. Assert 059 has not already populated national constituencies
-  SELECT count(*) FROM public.constituencies INTO v_constituencies_count;
-  IF v_constituencies_count > 500 THEN
-    RAISE EXCEPTION 'PRECONDITION FAILED: public.constituencies already populated (% rows). Aborting.', v_constituencies_count;
-  END IF;
-END $$;
-`;
+// Insert after BEGIN;\n using index slice (avoids string.replace pattern escaping with $)
+const beginMarker = 'BEGIN;\n';
+const beginIndex = content.indexOf(beginMarker);
+if (beginIndex === -1) {
+  throw new Error('BEGIN; marker not found in source file');
+}
 
-content = content.replace('BEGIN;\n', 'BEGIN;\n' + precheckSql);
+content = content.slice(0, beginIndex + beginMarker.length) + precheckBlock + content.slice(beginIndex + beginMarker.length);
 
 // 2. Remove TS-STATE-2008 from Section 4 INSERT
 const tsLine = "  ('TS', 'TS-STATE-2008', 'Telangana', 'Hyderabad', 36, '36', '2008-02-19'::date, NULL, true, 'mha_national_jurisdictions_2024_v1'),\n";
-if (!content.includes(tsLine)) {
-  throw new Error('TS line not found in content!');
+const tsIndex = content.indexOf(tsLine);
+if (tsIndex === -1) {
+  throw new Error('TS-STATE-2008 insertion line not found in content!');
 }
-content = content.replace(tsLine, '');
+content = content.slice(0, tsIndex) + content.slice(tsIndex + tsLine.length);
 
 // 3. Update header comment to clearly document 059-R1
 const headerOld = `-- Migration 059: Canonical National Constituency Registry (W021.5-B1)
@@ -63,11 +75,15 @@ const headerNew = `-- Migration 059-R1: Temporal Reconciliation & Canonical Nati
 --   3. Injected fail-closed pre-execution health assertions (Migration 050 DDL presence, TS-STATE-2014 presence, unpopulated AC gate).
 --   4. Preserved 100% of all other statutory definitions, 543 PCs, 4,123 ACs, linkages, and conflict audits.`;
 
-content = content.replace(headerOld, headerNew);
+const headerIndex = content.indexOf(headerOld);
+if (headerIndex === -1) {
+  throw new Error('Header block not found in content!');
+}
+content = content.slice(0, headerIndex) + headerNew + content.slice(headerIndex + headerOld.length);
 
 fs.writeFileSync(dstPath, content, 'utf8');
 
 const hash = crypto.createHash('sha256').update(content).digest('hex');
-console.log(`Generated ${dstPath}`);
+console.log(`Successfully generated ${dstPath}`);
 console.log(`Byte size: ${Buffer.byteLength(content, 'utf8')}`);
 console.log(`SHA-256: ${hash}`);

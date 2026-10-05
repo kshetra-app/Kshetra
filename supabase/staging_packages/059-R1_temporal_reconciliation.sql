@@ -48,7 +48,7 @@ BEGIN
   IF v_constituencies_count > 500 THEN
     RAISE EXCEPTION 'PRECONDITION FAILED: public.constituencies already populated (% rows). Aborting.', v_constituencies_count;
   END IF;
-END $;
+END $$;
 
 -- ─── 1. AUTHORITATIVE NATIONAL DATASET VERSIONS ───────────────────────────────
 
