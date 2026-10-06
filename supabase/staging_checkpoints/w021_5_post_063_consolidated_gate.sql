@@ -114,88 +114,102 @@ check_4_cte AS (
 ),
 
 -- ─── CHECK 5: Row Level Security & policies on new tables ─────────────────────
-check_5_rls AS (
-  SELECT c.relname, c.relrowsecurity
-  FROM pg_class c
-  JOIN pg_namespace n ON n.oid = c.relnamespace
-  WHERE n.nspname = 'public' AND c.relname IN ('person_multilingual_identities', 'tenure_vacancies')
-),
-check_5_policies AS (
-  SELECT tablename, policyname
-  FROM pg_policies
-  WHERE schemaname = 'public' 
-    AND tablename IN ('person_multilingual_identities', 'tenure_vacancies')
-    AND policyname IN (
-      'person_multilingual_identities_select_policy', 'person_multilingual_identities_service_role_all',
-      'tenure_vacancies_select_policy', 'tenure_vacancies_service_role_all'
-    )
+check_5_metrics AS (
+  SELECT
+    (SELECT count(DISTINCT c.relname)
+     FROM pg_class c
+     JOIN pg_namespace n ON n.oid = c.relnamespace
+     WHERE n.nspname = 'public' 
+       AND c.relname IN ('person_multilingual_identities', 'tenure_vacancies')
+       AND c.relrowsecurity = true) AS rls_enabled_count,
+    (SELECT count(DISTINCT p.policyname)
+     FROM pg_policies p
+     WHERE p.schemaname = 'public' 
+       AND p.tablename IN ('person_multilingual_identities', 'tenure_vacancies')
+       AND p.policyname IN (
+         'person_multilingual_identities_select_policy', 'person_multilingual_identities_service_role_all',
+         'tenure_vacancies_select_policy', 'tenure_vacancies_service_role_all'
+       )) AS policy_count
 ),
 check_5_cte AS (
   SELECT
     'check_05' AS check_id,
     'RLS enabled and SELECT/service_role policies deployed' AS check_name,
-    'rls_enabled: ' || count(DISTINCT r.relname) FILTER (WHERE r.relrowsecurity = true) || '/2' ||
-    ', policies: ' || count(DISTINCT p.policyname) || '/4' AS actual_value,
+    'rls_enabled: ' || rls_enabled_count || '/2, policies: ' || policy_count || '/4' AS actual_value,
     'rls_enabled: 2/2, policies: 4/4' AS expected_value,
     CASE 
-      WHEN count(DISTINCT r.relname) FILTER (WHERE r.relrowsecurity = true) = 2 AND count(DISTINCT p.policyname) = 4 
+      WHEN rls_enabled_count = 2 AND policy_count = 4 
       THEN 'PASS' 
       ELSE 'FAIL' 
     END AS status,
     'RLS actively enabled and public SELECT / service_role ALL policies deployed on both tables' AS details
-  FROM check_5_rls r
-  CROSS JOIN check_5_policies p
+  FROM check_5_metrics
 ),
 
 -- ─── CHECK 6: elected_tenures composite key, tenure_status (NO DEFAULT), and jurisdiction expansion ─
-check_6_uq AS (
-  SELECT c.conname
-  FROM pg_constraint c
-  JOIN pg_namespace n ON n.oid = c.connamespace
-  WHERE n.nspname = 'public' 
-    AND c.conrelid = 'public.elected_tenures'::regclass
-    AND c.conname = 'uq_elected_tenures_id_person'
-),
-check_6_status_col AS (
-  SELECT column_name, column_default, is_nullable
-  FROM information_schema.columns
-  WHERE table_schema = 'public' 
-    AND table_name = 'elected_tenures' 
-    AND column_name = 'tenure_status'
-),
-check_6_jt_cc AS (
-  SELECT pg_get_constraintdef(c.oid) AS def
-  FROM pg_constraint c
-  JOIN pg_namespace n ON n.oid = c.connamespace
-  WHERE n.nspname = 'public' 
-    AND c.conrelid = 'public.elected_tenures'::regclass
-    AND c.conname = 'elected_tenures_jurisdiction_type_check'
+check_6_metrics AS (
+  SELECT
+    (SELECT count(*)
+     FROM pg_constraint c
+     JOIN pg_namespace n ON n.oid = c.connamespace
+     WHERE n.nspname = 'public' 
+       AND c.conrelid = 'public.elected_tenures'::regclass
+       AND c.conname = 'uq_elected_tenures_id_person') AS composite_uq_count,
+    (SELECT count(*)
+     FROM information_schema.columns
+     WHERE table_schema = 'public' 
+       AND table_name = 'elected_tenures' 
+       AND column_name = 'tenure_status') AS status_col_count,
+    (SELECT count(*)
+     FROM information_schema.columns
+     WHERE table_schema = 'public' 
+       AND table_name = 'elected_tenures' 
+       AND column_name = 'tenure_status'
+       AND column_default IS NULL) AS default_is_null_count,
+    (SELECT count(*)
+     FROM information_schema.columns
+     WHERE table_schema = 'public' 
+       AND table_name = 'elected_tenures' 
+       AND column_name = 'tenure_status'
+       AND is_nullable = 'NO') AS not_null_count,
+    (SELECT count(*)
+     FROM pg_constraint c
+     JOIN pg_namespace n ON n.oid = c.connamespace
+     WHERE n.nspname = 'public' 
+       AND c.conrelid = 'public.elected_tenures'::regclass
+       AND c.conname = 'elected_tenures_jurisdiction_type_check'
+       AND pg_get_constraintdef(c.oid) LIKE '%''state''%') AS has_state_count,
+    (SELECT count(*)
+     FROM pg_constraint c
+     JOIN pg_namespace n ON n.oid = c.connamespace
+     WHERE n.nspname = 'public' 
+       AND c.conrelid = 'public.elected_tenures'::regclass
+       AND c.conname = 'elected_tenures_jurisdiction_type_check'
+       AND pg_get_constraintdef(c.oid) LIKE '%''nominated''%') AS has_nominated_count
 ),
 check_6_cte AS (
   SELECT
     'check_06' AS check_id,
     'elected_tenures composite key, tenure_status (NO DEFAULT), and jurisdiction expansion' AS check_name,
-    'composite_uq: ' || count(DISTINCT u.conname) ||
-    ', status_col: ' || count(DISTINCT s.column_name) ||
-    ', default_is_null: ' || count(DISTINCT s.column_name) FILTER (WHERE s.column_default IS NULL) ||
-    ', not_null: ' || count(DISTINCT s.column_name) FILTER (WHERE s.is_nullable = 'NO') ||
-    ', has_state: ' || count(DISTINCT j.def) FILTER (WHERE j.def LIKE '%''state''%') ||
-    ', has_nominated: ' || count(DISTINCT j.def) FILTER (WHERE j.def LIKE '%''nominated''%') AS actual_value,
+    'composite_uq: ' || composite_uq_count ||
+    ', status_col: ' || status_col_count ||
+    ', default_is_null: ' || default_is_null_count ||
+    ', not_null: ' || not_null_count ||
+    ', has_state: ' || has_state_count ||
+    ', has_nominated: ' || has_nominated_count AS actual_value,
     'composite_uq: 1, status_col: 1, default_is_null: 1, not_null: 1, has_state: 1, has_nominated: 1' AS expected_value,
     CASE 
-      WHEN count(DISTINCT u.conname) = 1
-       AND count(DISTINCT s.column_name) = 1
-       AND count(DISTINCT s.column_name) FILTER (WHERE s.column_default IS NULL) = 1
-       AND count(DISTINCT s.column_name) FILTER (WHERE s.is_nullable = 'NO') = 1
-       AND count(DISTINCT j.def) FILTER (WHERE j.def LIKE '%''state''%') = 1
-       AND count(DISTINCT j.def) FILTER (WHERE j.def LIKE '%''nominated''%') = 1
+      WHEN composite_uq_count = 1
+       AND status_col_count = 1
+       AND default_is_null_count = 1
+       AND not_null_count = 1
+       AND has_state_count = 1
+       AND has_nominated_count = 1
       THEN 'PASS' 
       ELSE 'FAIL' 
     END AS status,
     'uq_elected_tenures_id_person present, tenure_status column NOT NULL with NO DEFAULT, jurisdiction_type includes state & nominated' AS details
-  FROM check_6_uq u
-  CROSS JOIN check_6_status_col s
-  CROSS JOIN check_6_jt_cc j
+  FROM check_6_metrics
 ),
 
 -- ─── CHECK 7: Bidirectional temporal integrity triggers & attachment verified ──

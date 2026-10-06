@@ -18,7 +18,7 @@ import crypto from 'node:crypto';
 
 const REPO_ROOT = process.cwd();
 const GATE_PATH = path.join(REPO_ROOT, 'supabase', 'staging_checkpoints', 'w021_5_post_063_consolidated_gate.sql');
-const EXPECTED_GATE_HASH = 'fbc4c14c5d9f06e5eb68d6bb8548c3ba08f9d518d2b770d55054a881e332b56a';
+const EXPECTED_GATE_HASH = '82bd5c32be46ae3a4fda2d262a027afc12d55f65f9b20d6f5af35b168cf182b4';
 
 test('Post-063 Consolidated Gate: File exists and has valid cryptographic hash', () => {
   assert.ok(fs.existsSync(GATE_PATH), 'Consolidated gate SQL artifact must exist');

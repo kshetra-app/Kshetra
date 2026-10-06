@@ -40,9 +40,9 @@
   },
   "post_execution_gate_artifact": {
     "path": "supabase/staging_checkpoints/w021_5_post_063_consolidated_gate.sql",
-    "sha256": "fbc4c14c5d9f06e5eb68d6bb8548c3ba08f9d518d2b770d55054a881e332b56a",
-    "byte_size": 15832,
-    "line_count": 302,
+    "sha256": "82bd5c32be46ae3a4fda2d262a027afc12d55f65f9b20d6f5af35b168cf182b4",
+    "byte_size": 16194,
+    "line_count": 368,
     "mode": "STRICTLY_READ_ONLY",
     "total_checks": 10
   },
