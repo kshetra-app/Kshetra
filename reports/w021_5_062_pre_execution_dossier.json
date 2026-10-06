@@ -59,5 +59,64 @@
     "byte_size": 25566,
     "is_derived": true,
     "derivation_reason": "Align Section 1 columns to live dataset_versions and evidence_records DDL; register provenance anchor node for record_provenance_linkages FK"
+  },
+  "post_execution_gate_results": {
+    "gate_certified": "POST_062_PASS",
+    "certified_at": "2026-10-06T10:00:26+05:30",
+    "total_checks": 10,
+    "passed_checks": 10,
+    "failed_checks": 0,
+    "checks": [
+      {
+        "check_id": "check_01",
+        "status": "PASS",
+        "actual": "dataset: 1, evidence: 1"
+      },
+      {
+        "check_id": "check_02",
+        "status": "PASS",
+        "actual": "pcs_aligned: 14/14, versions_linked: 14/14"
+      },
+      {
+        "check_id": "check_03",
+        "status": "PASS",
+        "actual": "current_2023: 14/14, archived_2008: 14/14"
+      },
+      {
+        "check_id": "check_04",
+        "status": "PASS",
+        "actual": "acs_aligned: 126/126, versions_linked: 126/126"
+      },
+      {
+        "check_id": "check_05",
+        "status": "PASS",
+        "actual": "current_2023: 126/126, archived_2008: 126/126"
+      },
+      {
+        "check_id": "check_06",
+        "status": "PASS",
+        "actual": "current_2023_mappings: 126/126, archived_2008_mappings: 126/126"
+      },
+      {
+        "check_id": "check_07",
+        "status": "PASS",
+        "actual": "violations: 0"
+      },
+      {
+        "check_id": "check_08",
+        "status": "PASS",
+        "actual": "current: 4123, archived: 126, total: 4249"
+      },
+      {
+        "check_id": "check_09",
+        "status": "PASS",
+        "actual": "acs_linked: 126/126, pcs_linked: 14/14"
+      },
+      {
+        "check_id": "check_10",
+        "status": "PASS",
+        "actual": "states: 36, state_versions: 36, pcs: 543, acs: 4123"
+      }
+    ]
   }
 }
