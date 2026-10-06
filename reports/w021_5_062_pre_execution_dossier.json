@@ -28,10 +28,11 @@
   },
   "post_execution_gate_artifact": {
     "path": "supabase/staging_checkpoints/w021_5_post_062_consolidated_gate.sql",
-    "sha256": "cb1d29371da8033ba9944bfdeccc31e4fe420c04ce49c51c0d2e806406b20c26",
-    "byte_size": 12175,
+    "sha256": "3925de1ee4da2c299c680bc88b315143748ae9fde486331278035d8ecc9bd36c",
+    "byte_size": 243,
     "mode": "STRICTLY_READ_ONLY",
-    "total_checks": 10
+    "total_checks": 10,
+    "notes": "Check 06 column references qualified with table alias cpm to eliminate ambiguity"
   },
   "preflight_verifications": {
     "destructive_ddl_count": 0,

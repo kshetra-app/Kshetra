@@ -108,12 +108,12 @@ check_6_cte AS (
   SELECT
     'check_06' AS check_id,
     'Assam AC-PC mappings transition (2008 archived, 2023 current)' AS check_name,
-    'current_2023_mappings: ' || count(*) FILTER (WHERE delimitation_regime_id = 'eci_delimitation_2023_as' AND is_current = true AND effective_from = '2023-08-16'::date AND effective_to IS NULL) || '/126' ||
-    ', archived_2008_mappings: ' || count(*) FILTER (WHERE delimitation_regime_id = 'eci_delimitation_2008' AND is_current = false AND effective_to = '2023-08-16'::date) || '/126' AS actual_value,
+    'current_2023_mappings: ' || count(*) FILTER (WHERE cpm.delimitation_regime_id = 'eci_delimitation_2023_as' AND cpm.is_current = true AND cpm.effective_from = '2023-08-16'::date AND cpm.effective_to IS NULL) || '/126' ||
+    ', archived_2008_mappings: ' || count(*) FILTER (WHERE cpm.delimitation_regime_id = 'eci_delimitation_2008' AND cpm.is_current = false AND cpm.effective_to = '2023-08-16'::date) || '/126' AS actual_value,
     'current_2023_mappings: 126/126, archived_2008_mappings: 126/126' AS expected_value,
     CASE 
-      WHEN count(*) FILTER (WHERE delimitation_regime_id = 'eci_delimitation_2023_as' AND is_current = true AND effective_from = '2023-08-16'::date AND effective_to IS NULL) = 126
-       AND count(*) FILTER (WHERE delimitation_regime_id = 'eci_delimitation_2008' AND is_current = false AND effective_to = '2023-08-16'::date) = 126
+      WHEN count(*) FILTER (WHERE cpm.delimitation_regime_id = 'eci_delimitation_2023_as' AND cpm.is_current = true AND cpm.effective_from = '2023-08-16'::date AND cpm.effective_to IS NULL) = 126
+       AND count(*) FILTER (WHERE cpm.delimitation_regime_id = 'eci_delimitation_2008' AND cpm.is_current = false AND cpm.effective_to = '2023-08-16'::date) = 126
       THEN 'PASS'
       ELSE 'FAIL'
     END AS status,
