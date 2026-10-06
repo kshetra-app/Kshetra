@@ -1,5 +1,5 @@
 -- ==============================================================================
--- W021.5: Post-064 Consolidated Gate Verification Suite (064-R8 Hardened)
+-- W021.5: Post-064 Consolidated Gate Verification Suite (064-R9 Hardened)
 -- Target: Staging Supabase (fkpigozcqnmcvofuksar / panIN-staging)
 -- Environment: Staging only
 -- Mode: Strictly READ-ONLY (ZERO mutations, ZERO DDL changes)
@@ -110,42 +110,45 @@ check_4_invariants AS (
      WHERE n.nspname = 'public' AND t.relname = 'organization_symbols'
        AND trg.tgname = 'trg_validate_org_symbol_temporal'
        AND p.proname = 'fn_validate_org_symbol_temporal_invariants') AS symbol_trigger,
-    -- Actual CHECK expressions
+    -- Actual CHECK expressions (format-resilient: valid_to IS NULL and valid_to >= valid_from)
     (SELECT count(*) FROM pg_constraint c
      JOIN pg_namespace n ON n.oid = c.connamespace
      WHERE n.nspname = 'public'
        AND c.conname = 'chk_org_alias_valid_dates'
-       AND pg_get_constraintdef(c.oid) LIKE '%valid_to IS NULL OR valid_to >= valid_from%') AS alias_date_check,
+       AND pg_get_constraintdef(c.oid) ~* 'valid_to\s+IS\s+NULL'
+       AND pg_get_constraintdef(c.oid) ~* 'valid_to\s*>=\s*valid_from') AS alias_date_check,
     (SELECT count(*) FROM pg_constraint c
      JOIN pg_namespace n ON n.oid = c.connamespace
      WHERE n.nspname = 'public'
        AND c.conname = 'chk_org_symbol_valid_dates'
-       AND pg_get_constraintdef(c.oid) LIKE '%valid_to IS NULL OR valid_to >= valid_from%') AS symbol_date_check,
+       AND pg_get_constraintdef(c.oid) ~* 'valid_to\s+IS\s+NULL'
+       AND pg_get_constraintdef(c.oid) ~* 'valid_to\s*>=\s*valid_from') AS symbol_date_check,
     (SELECT count(*) FROM pg_constraint c
      JOIN pg_namespace n ON n.oid = c.connamespace
      WHERE n.nspname = 'public'
        AND c.conname = 'chk_org_multi_name_valid_dates'
-       AND pg_get_constraintdef(c.oid) LIKE '%valid_to IS NULL OR valid_to >= valid_from%') AS multi_name_date_check,
+       AND pg_get_constraintdef(c.oid) ~* 'valid_to\s+IS\s+NULL'
+       AND pg_get_constraintdef(c.oid) ~* 'valid_to\s*>=\s*valid_from') AS multi_name_date_check,
     -- Function body inspection: Alias temporal function contains advisory lock, ordering, overlap check, open-ended valid_to, and exception
     (SELECT count(*) FROM pg_proc p
      JOIN pg_namespace n ON n.oid = p.pronamespace
      WHERE n.nspname = 'public'
        AND p.proname = 'fn_validate_org_alias_temporal_invariants'
-       AND p.prosrc LIKE '%pg_advisory_xact_lock%'
-       AND p.prosrc LIKE '%6401::bigint%'
-       AND p.prosrc LIKE '%v_lock_key_old < v_lock_key_new%'
-       AND p.prosrc LIKE '%TEMPORAL_INVARIANT_VIOLATION%'
-       AND p.prosrc LIKE '%9999-12-31%') AS alias_fn_body_ok,
+       AND p.prosrc ~* 'pg_advisory_xact_lock'
+       AND p.prosrc ~* '6401'
+       AND p.prosrc ~* 'v_lock_key_old\s*<\s*v_lock_key_new'
+       AND p.prosrc ~* 'TEMPORAL_INVARIANT_VIOLATION'
+       AND p.prosrc ~* '9999-12-31') AS alias_fn_body_ok,
     -- Function body inspection: Symbol temporal function contains advisory lock, ordering, current exclusivity, open-ended valid_to, and exception
     (SELECT count(*) FROM pg_proc p
      JOIN pg_namespace n ON n.oid = p.pronamespace
      WHERE n.nspname = 'public'
        AND p.proname = 'fn_validate_org_symbol_temporal_invariants'
-       AND p.prosrc LIKE '%pg_advisory_xact_lock%'
-       AND p.prosrc LIKE '%6402::bigint%'
-       AND p.prosrc LIKE '%is_current = true%'
-       AND p.prosrc LIKE '%TEMPORAL_INVARIANT_VIOLATION%'
-       AND p.prosrc LIKE '%9999-12-31%') AS symbol_fn_body_ok
+       AND p.prosrc ~* 'pg_advisory_xact_lock'
+       AND p.prosrc ~* '6402'
+       AND p.prosrc ~* 'is_current\s*=\s*true'
+       AND p.prosrc ~* 'TEMPORAL_INVARIANT_VIOLATION'
+       AND p.prosrc ~* '9999-12-31') AS symbol_fn_body_ok
 ),
 check_4_cte AS (
   SELECT
@@ -212,9 +215,19 @@ check_6_metrics AS (
      WHERE n.nspname = 'public'
        AND c.conrelid = 'public.political_organizations'::regclass
        AND c.conname = 'chk_prohibit_synthetic_independent'
-       AND pg_get_constraintdef(c.oid) LIKE '%''ORG-INDEPENDENT''%'
-       AND pg_get_constraintdef(c.oid) LIKE '%NOT ILIKE ''%indep%''%'
-       AND pg_get_constraintdef(c.oid) LIKE '%ec_party_code%') AS synth_clean
+       -- Semantic Check 1: exact prohibited IDs
+       AND pg_get_constraintdef(c.oid) ~* 'ORG-INDEPENDENT'
+       AND pg_get_constraintdef(c.oid) ~* 'ORG-PARTY-IND'
+       AND pg_get_constraintdef(c.oid) ~* 'ORG-PARTY-INDP'
+       AND pg_get_constraintdef(c.oid) ~* 'ORG-PARTY-INDEPENDENT'
+       -- Semantic Check 2: pattern id ILIKE %indep% (handles PostgreSQL text rendering: NOT ILIKE or !~~*)
+       AND pg_get_constraintdef(c.oid) ~* '(id\s+!\~\~\*\s+''%indep%''|id\s+NOT\s+ILIKE\s+''%indep%'')'
+       -- Semantic Check 3: exact prohibited EC party codes
+       AND pg_get_constraintdef(c.oid) ~* 'ec_party_code'
+       AND pg_get_constraintdef(c.oid) ~* '''IND'''
+       AND pg_get_constraintdef(c.oid) ~* '''IND-IND'''
+       -- Semantic Check 4: pattern ec_party_code ILIKE %indep% (handles NOT ILIKE or !~~*)
+       AND pg_get_constraintdef(c.oid) ~* '(ec_party_code\s+!\~\~\*\s+''%indep%''|ec_party_code\s+NOT\s+ILIKE\s+''%indep%'')') AS synth_clean
 ),
 check_6_cte AS (
   SELECT
@@ -264,21 +277,22 @@ check_7_cte AS (
 check_8_fks AS (
   SELECT
     c.conname,
-    c.conrelid::regclass::text AS source_table,
-    c.confrelid::regclass::text AS target_table,
-    a_src.attname AS source_col,
-    a_tgt.attname AS target_col,
-    c.confdeltype AS delete_action -- 'c' = CASCADE, 'r' = RESTRICT, 'a' = NO ACTION
+    n_src.nspname || '.' || t_src.relname AS source_table,
+    (SELECT a.attname FROM pg_attribute a WHERE a.attrelid = c.conrelid AND a.attnum = c.conkey[1]) AS source_col,
+    n_tgt.nspname || '.' || t_tgt.relname AS target_table,
+    (SELECT a.attname FROM pg_attribute a WHERE a.attrelid = c.confrelid AND a.attnum = c.confkey[1]) AS target_col,
+    c.confdeltype::text AS delete_action -- 'c' = CASCADE, 'r' = RESTRICT, 'a' = NO ACTION
   FROM pg_constraint c
-  JOIN pg_namespace n ON n.oid = c.connamespace
-  JOIN pg_attribute a_src ON a_src.attrelid = c.conrelid AND a_src.attnum = c.conkey[1]
-  JOIN pg_attribute a_tgt ON a_tgt.attrelid = c.confrelid AND a_tgt.attnum = c.confkey[1]
-  WHERE n.nspname = 'public'
+  JOIN pg_class t_src ON t_src.oid = c.conrelid
+  JOIN pg_namespace n_src ON n_src.oid = t_src.relnamespace
+  JOIN pg_class t_tgt ON t_tgt.oid = c.confrelid
+  JOIN pg_namespace n_tgt ON n_tgt.oid = t_tgt.relnamespace
+  WHERE n_src.nspname = 'public'
     AND c.contype = 'f'
-    AND c.conrelid IN (
-      'public.organization_multilingual_names'::regclass,
-      'public.organization_aliases'::regclass,
-      'public.organization_symbols'::regclass
+    AND t_src.relname IN (
+      'organization_multilingual_names',
+      'organization_aliases',
+      'organization_symbols'
     )
 ),
 check_8_metrics AS (

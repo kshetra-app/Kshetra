@@ -22,7 +22,7 @@ const STAG_064_PATH = path.join(REPO_ROOT, 'supabase', 'staging_packages', '064-
 const GATE_PATH = path.join(REPO_ROOT, 'supabase', 'staging_checkpoints', 'w021_5_post_064_consolidated_gate.sql');
 
 const EXPECTED_064_HASH = '51fc1addc090eb75fb0ef9dbe75727029ff455ed3e2d80a9a48d6c5c6e6e0be1';
-const EXPECTED_GATE_064_HASH = '74743a73dae2f3979ceb49ea34d2c5e771aba82fc442bc0b82fa2549630305e2';
+const EXPECTED_GATE_064_HASH = 'add6ff2d5343916cc341df77e6998ba09a6b9531e3a88bd04cef58ca65ebfccd';
 
 test('Migration 064 Integrity: Authoritative and Staging files are byte-for-byte identical', () => {
   assert.ok(fs.existsSync(AUTH_064_PATH), 'Authoritative migration 064 must exist');
