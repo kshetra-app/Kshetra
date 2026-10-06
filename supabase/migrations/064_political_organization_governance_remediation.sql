@@ -1,7 +1,7 @@
 -- ==============================================================================
--- Migration 064-R7: Political Organization Schema & Governance Remediation (W021.5-B2.2-B)
+-- Migration 064-R8: Political Organization Schema & Governance Remediation (W021.5-B2.2-B)
 -- Target: Staging Supabase & Local PostgreSQL (fkpigozcqnmcvofuksar)
--- Authority: CTO Master Execution Directive W021.5-B2.2-B / 064-R7 Hardening
+-- Authority: CTO Master Execution Directive W021.5-B2.2-B / 064-R8 Hardening
 -- Scope:
 --   1. Create public.organization_multilingual_names (GAP-ORG-001)
 --   2. Create public.organization_aliases with deterministic lookup keys,
@@ -13,7 +13,7 @@
 --      and fail-closed temporal non-overlap & current exclusivity triggers
 --      hardened with bidirectional (OLD & NEW) deterministic advisory locking (GAP-ORG-003)
 --   4. Hardening organization_relationships check constraints (Splits, Renamings, Mergers)
---   5. Hardening political_organizations recognition_level (Prohibit synthetic independents GAP-ORG-004)
+--   5. Hardening political_organizations recognition_level & complete synthetic independent prohibition (GAP-ORG-004)
 --   6. Row-Level Security (RLS) policies and security invariants across all 3 tables
 -- ==============================================================================
 
@@ -313,9 +313,16 @@ ALTER TABLE public.political_organizations DROP CONSTRAINT IF EXISTS political_o
 ALTER TABLE public.political_organizations ADD CONSTRAINT political_organizations_recognition_level_check
   CHECK (recognition_level IN ('national', 'state', 'unrecognized', 'registered_unrecognized'));
 
--- Add constraint explicitly prohibiting synthetic independent party IDs
+-- Add constraint explicitly prohibiting complete synthetic independent namespace
 ALTER TABLE public.political_organizations DROP CONSTRAINT IF EXISTS chk_prohibit_synthetic_independent;
 ALTER TABLE public.political_organizations ADD CONSTRAINT chk_prohibit_synthetic_independent
-  CHECK (id NOT IN ('ORG-INDEPENDENT', 'ORG-PARTY-IND', 'ORG-PARTY-INDP', 'ORG-PARTY-INDEPENDENT'));
+  CHECK (
+    id NOT IN ('ORG-INDEPENDENT', 'ORG-PARTY-IND', 'ORG-PARTY-INDP', 'ORG-PARTY-INDEPENDENT')
+    AND id NOT ILIKE '%indep%'
+    AND (ec_party_code IS NULL OR (
+      ec_party_code NOT IN ('IND', 'IND-IND')
+      AND ec_party_code NOT ILIKE '%indep%'
+    ))
+  );
 
 COMMIT;

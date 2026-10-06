@@ -50,18 +50,18 @@ try {
   fs.writeFileSync('scratch/dump1.sql', clean1);
   fs.writeFileSync('scratch/dump2.sql', clean2);
 
-  if (clean1 === clean2) {
-    console.log('PROVEN: Schema DDL after 1st and 2nd executions is 100% byte-for-byte identical!');
-  } else {
-    console.log('Diffing lines:');
+  if (clean1 !== clean2) {
+    console.error('FAIL: Schema mismatch detected between 1st and 2nd runs!');
     const lines1 = clean1.split('\n');
     const lines2 = clean2.split('\n');
     for (let i = 0; i < Math.max(lines1.length, lines2.length); i++) {
       if (lines1[i] !== lines2[i]) {
-        console.log(`Line ${i}: \n  D1: ${lines1[i]}\n  D2: ${lines2[i]}`);
+        console.error(`Line ${i}: \n  D1: ${lines1[i]}\n  D2: ${lines2[i]}`);
       }
     }
+    process.exit(1);
   }
+  console.log('PROVEN: Schema DDL after 1st and 2nd executions is 100% byte-for-byte identical!');
 
 } finally {
   console.log('5. Dropping test DB');

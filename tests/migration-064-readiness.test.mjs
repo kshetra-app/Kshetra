@@ -18,15 +18,15 @@ import crypto from 'node:crypto';
 
 const REPO_ROOT = process.cwd();
 const AUTH_064_PATH = path.join(REPO_ROOT, 'supabase', 'migrations', '064_political_organization_governance_remediation.sql');
-const STAG_064_PATH = path.join(REPO_ROOT, 'supabase', 'staging_packages', '064-R7_political_organization_governance_remediation.sql');
+const STAG_064_PATH = path.join(REPO_ROOT, 'supabase', 'staging_packages', '064-R8_political_organization_governance_remediation.sql');
 const GATE_PATH = path.join(REPO_ROOT, 'supabase', 'staging_checkpoints', 'w021_5_post_064_consolidated_gate.sql');
 
-const EXPECTED_064_HASH = '78cf41512338f9c6f55898367168982aaac92529e64af8c026b68bd3da7ead3d';
-const EXPECTED_GATE_064_HASH = '4afe64f4437f99f2d627c99dc198385d72ff7fa45505e8719e34dc6a820b7e56';
+const EXPECTED_064_HASH = '51fc1addc090eb75fb0ef9dbe75727029ff455ed3e2d80a9a48d6c5c6e6e0be1';
+const EXPECTED_GATE_064_HASH = '74743a73dae2f3979ceb49ea34d2c5e771aba82fc442bc0b82fa2549630305e2';
 
 test('Migration 064 Integrity: Authoritative and Staging files are byte-for-byte identical', () => {
   assert.ok(fs.existsSync(AUTH_064_PATH), 'Authoritative migration 064 must exist');
-  assert.ok(fs.existsSync(STAG_064_PATH), 'Staging package 064-R7 must exist');
+  assert.ok(fs.existsSync(STAG_064_PATH), 'Staging package 064-R8 must exist');
 
   const authContent = fs.readFileSync(AUTH_064_PATH);
   const stagContent = fs.readFileSync(STAG_064_PATH);
@@ -35,9 +35,9 @@ test('Migration 064 Integrity: Authoritative and Staging files are byte-for-byte
   const stagHash = crypto.createHash('sha256').update(stagContent).digest('hex');
 
   assert.strictEqual(authHash, EXPECTED_064_HASH, 'Authoritative migration 064 SHA-256 must match frozen coordinate');
-  assert.strictEqual(stagHash, EXPECTED_064_HASH, 'Staging package 064-R7 SHA-256 must match authoritative migration');
+  assert.strictEqual(stagHash, EXPECTED_064_HASH, 'Staging package 064-R8 SHA-256 must match authoritative migration');
   assert.strictEqual(authContent.length, stagContent.length, 'Byte size must be identical');
-  assert.strictEqual(authContent.length, 16641, 'Byte size must be exactly 16,641 bytes');
+  assert.strictEqual(authContent.length, 16835, 'Byte size must be exactly 16,835 bytes');
 });
 
 test('Migration 064 Safety: Zero destructive operations (DROP TABLE, TRUNCATE, DELETE)', () => {
@@ -94,12 +94,15 @@ test('Migration 064 Payload: Declares organization_multilingual_names, organizat
   assert.ok(content.includes('ALTER TABLE public.organization_symbols ENABLE ROW LEVEL SECURITY;'), 'Must enable RLS on organization_symbols');
 });
 
-test('Migration 064 Constraints: Prohibits independent recognition level and synthetic independent IDs', () => {
+test('Migration 064 Constraints: Prohibits independent recognition level and complete synthetic independent namespace', () => {
   const content = fs.readFileSync(AUTH_064_PATH, 'utf8');
 
   assert.ok(content.includes('CHECK (recognition_level IN (\'national\', \'state\', \'unrecognized\', \'registered_unrecognized\'))'), 'Must enforce recognition level check without independent');
   assert.ok(content.includes('chk_prohibit_synthetic_independent'), 'Must add chk_prohibit_synthetic_independent constraint');
   assert.ok(content.includes('\'ORG-INDEPENDENT\''), 'Must prohibit ORG-INDEPENDENT');
+  assert.ok(content.includes('id NOT ILIKE \'%indep%\''), 'Must prohibit id matching %indep%');
+  assert.ok(content.includes('ec_party_code NOT IN (\'IND\', \'IND-IND\')'), 'Must prohibit ec_party_code IND and IND-IND');
+  assert.ok(content.includes('ec_party_code NOT ILIKE \'%indep%\''), 'Must prohibit ec_party_code matching %indep%');
 });
 
 test('Migration 064 Constraints: Expands organization_relationships with split_from, renamed_to, merged_into', () => {

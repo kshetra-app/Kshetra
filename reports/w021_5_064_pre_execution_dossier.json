@@ -1,8 +1,8 @@
 {
   "milestone": "W021.5",
-  "phase": "MIGRATION_064_R7_PRE_EXECUTION",
-  "status": "064-R7 — FROZEN / AWAITING CTO AUTHORIZATION",
-  "generated_at": "2026-10-06T21:09:00+05:30",
+  "phase": "MIGRATION_064_R8_PRE_EXECUTION",
+  "status": "064-R8 — FROZEN / AWAITING CTO AUTHORIZATION",
+  "generated_at": "2026-10-06T22:26:00+05:30",
   "governance": "Master Execution Framework Amendment v1.2 / Rule IV-001 Non-Self-Acceptance",
   "staging_environment": {
     "supabase_project": "fkpigozcqnmcvofuksar",
@@ -18,35 +18,36 @@
   },
   "source_migration": {
     "path": "supabase/migrations/064_political_organization_governance_remediation.sql",
-    "sha256": "78cf41512338f9c6f55898367168982aaac92529e64af8c026b68bd3da7ead3d",
-    "byte_size": 16641,
-    "line_count": 322,
+    "sha256": "51fc1addc090eb75fb0ef9dbe75727029ff455ed3e2d80a9a48d6c5c6e6e0be1",
+    "byte_size": 16835,
+    "line_count": 329,
     "status": "IMMUTABLE_FROZEN"
   },
   "staging_package": {
-    "path": "supabase/staging_packages/064-R7_political_organization_governance_remediation.sql",
-    "sha256": "78cf41512338f9c6f55898367168982aaac92529e64af8c026b68bd3da7ead3d",
-    "byte_size": 16641,
-    "line_count": 322,
+    "path": "supabase/staging_packages/064-R8_political_organization_governance_remediation.sql",
+    "sha256": "51fc1addc090eb75fb0ef9dbe75727029ff455ed3e2d80a9a48d6c5c6e6e0be1",
+    "byte_size": 16835,
+    "line_count": 329,
     "is_derived": false,
     "byte_for_byte_identical_to_authoritative": true
   },
   "post_execution_gate_artifact": {
     "path": "supabase/staging_checkpoints/w021_5_post_064_consolidated_gate.sql",
-    "sha256": "4afe64f4437f99f2d627c99dc198385d72ff7fa45505e8719e34dc6a820b7e56",
-    "byte_size": 22152,
-    "line_count": 448,
+    "sha256": "74743a73dae2f3979ceb49ea34d2c5e771aba82fc442bc0b82fa2549630305e2",
+    "byte_size": 23662,
+    "line_count": 472,
     "mode": "STRICTLY_READ_ONLY",
     "total_checks": 11
   },
   "concurrency_integration_test_source": {
     "path": "scratch/test_postgres_concurrency.mjs",
-    "sha256": "ac780bd241f3296c22f0fa1a3119d4dbbe2ebbb919f0ac0fcd069f28f50e01aa",
-    "byte_size": 24952,
-    "line_count": 429,
-    "tested_objects": "ACTUAL_MIGRATION_064_R7_OBJECTS",
-    "disposable_database": "test_concurrency_064_r7",
+    "sha256": "69dc694288815e6d7049b51b2c434392ff7c2f08c5e6e0699c6c6577c35f6e5b",
+    "byte_size": 26787,
+    "line_count": 461,
+    "tested_objects": "ACTUAL_MIGRATION_064_R8_OBJECTS",
+    "disposable_database": "test_concurrency_064_r8",
     "results_breakdown": {
+      "synthetic_independent_prohibitions": "7 prohibition tests: all rejected by chk_prohibit_synthetic_independent (PASS)",
       "collision_scenarios": "7 collision scenarios: 1 commit + 1 expected rejection (PASS)",
       "isolation_scenario": "1 isolation scenario: 2 commits + 0 rejection (PASS)",
       "historical_reuse_scenario": "2 sequential non-overlapping windows: 2 commits + 0 rejection (PASS)"
@@ -54,11 +55,11 @@
   },
   "idempotency_test_source": {
     "path": "scratch/test_migration_idempotence.mjs",
-    "sha256": "6884fd120d0f006f5b4d5740155ee80f1e7ec9952d56f1453cd33b508de20c03",
-    "byte_size": 3098,
+    "sha256": "4dff725fb542d92c81f36a3fe73dfb5ac01908a2d5f18f2aea94e8fb5f20e4a8",
+    "byte_size": 3152,
     "line_count": 70,
     "tested_database": "test_idempotence",
-    "result": "Schema DDL after 1st and 2nd executions is 100% byte-for-byte identical (PASS)"
+    "result": "Schema DDL after 1st and 2nd executions is 100% byte-for-byte identical (PASS - FAIL-CLOSED)"
   },
   "concurrency_protection": {
     "mechanism": "pg_advisory_xact_lock",
@@ -67,6 +68,8 @@
     "scope_granularity": "key/org + jurisdiction_scope",
     "update_lock_ordering": "LEAST(old, new) THEN GREATEST(old, new) DETERMINISTIC ORDERING",
     "alias_temporal_architecture": "OPTION_A_FAIL_CLOSED_ADVISORY_LOCKED_TIMELINE_WINDOW_ENFORCEMENT",
+    "symbol_temporal_architecture": "FAIL_CLOSED_ADVISORY_LOCKED_TIMELINE_WINDOW_AND_CURRENT_EXCLUSIVITY",
+    "symbol_timeline_unique_key": "uq_org_symbols_timeline (organization_id, symbol_name, valid_from) PRESERVED - statutory election symbols are national for national parties, or state-specific for state parties. Same symbol cannot be allocated to the same organization starting on the same date twice across jurisdictions.",
     "static_unique_indexes_dropped": [
       "public.uq_org_alias_national",
       "public.uq_org_alias_jurisdictional"

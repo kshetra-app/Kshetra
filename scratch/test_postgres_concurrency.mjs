@@ -2,10 +2,17 @@ import { execSync, spawn } from 'node:child_process';
 import fs from 'node:fs';
 import assert from 'node:assert/strict';
 
-const DB_NAME = 'test_concurrency_064_r7';
+const DB_NAME = 'test_concurrency_064_r8';
 
 function execSql(sql, db = DB_NAME) {
-  return execSync(`docker exec -i supabase_db_Kshetra psql -U postgres -d ${db}`, { input: sql, encoding: 'utf8' });
+  try {
+    return execSync(`docker exec -i supabase_db_Kshetra psql -v ON_ERROR_STOP=1 -U postgres -d ${db}`, { input: sql, encoding: 'utf8' });
+  } catch (err) {
+    const msg = (err.message || '') + '\n' + (err.stderr ? err.stderr.toString() : '') + '\n' + (err.stdout ? err.stdout.toString() : '');
+    const e = new Error(msg);
+    e.code = err.status || err.code;
+    throw e;
+  }
 }
 
 function runSession(script, db = DB_NAME) {
@@ -61,7 +68,7 @@ function assertCollisionScenario({ r1, r2, scenarioName, expectedErrorSubstr = '
   );
 }
 
-// Specific assertion helper for Isolation Scenario: exactly 2 commits, 0 rejections, 0 unexpected
+// Specific assertion helper for Isolation Scenarios: exactly 2 commits, 0 rejections, 0 unexpected
 function assertIsolationScenario({ r1, r2, scenarioName }) {
   const results = [
     { session: 'A', ...r1 },
@@ -84,7 +91,7 @@ function assertIsolationScenario({ r1, r2, scenarioName }) {
 }
 
 async function main() {
-  console.log('=== REAL POSTGRESQL TWO-SESSION CONCURRENCY INTEGRATION TEST SUITE (MIGRATION 064-R7 ACTUAL OBJECTS) ===\n');
+  console.log('=== REAL POSTGRESQL TWO-SESSION CONCURRENCY INTEGRATION TEST SUITE (MIGRATION 064-R8 ACTUAL OBJECTS) ===\n');
 
   console.log('1. Setting up isolated disposable test database: ' + DB_NAME);
   execSync(`docker exec -i supabase_db_Kshetra psql -U postgres -d postgres -c "DROP DATABASE IF EXISTS ${DB_NAME};"`);
@@ -112,7 +119,7 @@ async function main() {
     `;
     execSql(prereqSql);
 
-    console.log('3. Executing Migration 064-R7 SQL into ' + DB_NAME);
+    console.log('3. Executing Migration 064-R8 SQL into ' + DB_NAME);
     const migSql = fs.readFileSync('supabase/migrations/064_political_organization_governance_remediation.sql', 'utf8');
     execSql(migSql);
 
@@ -139,6 +146,31 @@ async function main() {
         ('ORG-PARTY-TDP', 'Telugu Desam Party', 'TDP', 'TDP', 'state');
     `;
     execSql(seedSql);
+
+    console.log('\n--- VERIFYING SYNTHETIC INDEPENDENT PROHIBITIONS (BLOCKER A) ---');
+    const forbiddenInserts = [
+      { id: 'ORG-INDEPENDENT', ec: 'IND', reason: 'Exact ID ORG-INDEPENDENT' },
+      { id: 'ORG-PARTY-IND', ec: 'IND', reason: 'Exact ID ORG-PARTY-IND' },
+      { id: 'ORG-PARTY-INDEPENDENT', ec: 'IND', reason: 'Exact ID ORG-PARTY-INDEPENDENT' },
+      { id: 'ORG-PARTY-INDEPENDENTS-FRONT', ec: 'XYZ', reason: 'Pattern id ILIKE %indep%' },
+      { id: 'ORG-PARTY-VALID', ec: 'IND', reason: 'Exact ec_party_code IND' },
+      { id: 'ORG-PARTY-VALID2', ec: 'IND-IND', reason: 'Exact ec_party_code IND-IND' },
+      { id: 'ORG-PARTY-VALID3', ec: 'INDEPENDENT', reason: 'Pattern ec_party_code ILIKE %indep%' }
+    ];
+
+    for (const item of forbiddenInserts) {
+      let rejected = false;
+      try {
+        execSql(`INSERT INTO public.political_organizations (id, name, ec_party_code, recognition_level) VALUES ('${item.id}', 'Test Org', '${item.ec}', 'registered_unrecognized');`);
+      } catch (err) {
+        const fullErr = (err.message || '') + (err.stderr ? err.stderr.toString() : '') + (err.stdout ? err.stdout.toString() : '');
+        if (fullErr.includes('chk_prohibit_synthetic_independent') || fullErr.includes('violates check constraint') || fullErr.includes('ERROR:')) {
+          rejected = true;
+        }
+      }
+      assert.strictEqual(rejected, true, `Expected rejection for synthetic independent: ${item.reason} (${item.id}, ${item.ec})`);
+      console.log(`  Prohibition verified: ${item.reason} -> REJECTED ✅`);
+    }
 
     console.log('\n--- EXECUTING CONCURRENCY SCENARIOS ---');
 

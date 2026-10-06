@@ -1,5 +1,5 @@
 -- ==============================================================================
--- W021.5: Post-064 Consolidated Gate Verification Suite (064-R7 Hardened)
+-- W021.5: Post-064 Consolidated Gate Verification Suite (064-R8 Hardened)
 -- Target: Staging Supabase (fkpigozcqnmcvofuksar / panIN-staging)
 -- Environment: Staging only
 -- Mode: Strictly READ-ONLY (ZERO mutations, ZERO DDL changes)
@@ -125,14 +125,34 @@ check_4_invariants AS (
      JOIN pg_namespace n ON n.oid = c.connamespace
      WHERE n.nspname = 'public'
        AND c.conname = 'chk_org_multi_name_valid_dates'
-       AND pg_get_constraintdef(c.oid) LIKE '%valid_to IS NULL OR valid_to >= valid_from%') AS multi_name_date_check
+       AND pg_get_constraintdef(c.oid) LIKE '%valid_to IS NULL OR valid_to >= valid_from%') AS multi_name_date_check,
+    -- Function body inspection: Alias temporal function contains advisory lock, ordering, overlap check, open-ended valid_to, and exception
+    (SELECT count(*) FROM pg_proc p
+     JOIN pg_namespace n ON n.oid = p.pronamespace
+     WHERE n.nspname = 'public'
+       AND p.proname = 'fn_validate_org_alias_temporal_invariants'
+       AND p.prosrc LIKE '%pg_advisory_xact_lock%'
+       AND p.prosrc LIKE '%6401::bigint%'
+       AND p.prosrc LIKE '%v_lock_key_old < v_lock_key_new%'
+       AND p.prosrc LIKE '%TEMPORAL_INVARIANT_VIOLATION%'
+       AND p.prosrc LIKE '%9999-12-31%') AS alias_fn_body_ok,
+    -- Function body inspection: Symbol temporal function contains advisory lock, ordering, current exclusivity, open-ended valid_to, and exception
+    (SELECT count(*) FROM pg_proc p
+     JOIN pg_namespace n ON n.oid = p.pronamespace
+     WHERE n.nspname = 'public'
+       AND p.proname = 'fn_validate_org_symbol_temporal_invariants'
+       AND p.prosrc LIKE '%pg_advisory_xact_lock%'
+       AND p.prosrc LIKE '%6402::bigint%'
+       AND p.prosrc LIKE '%is_current = true%'
+       AND p.prosrc LIKE '%TEMPORAL_INVARIANT_VIOLATION%'
+       AND p.prosrc LIKE '%9999-12-31%') AS symbol_fn_body_ok
 ),
 check_4_cte AS (
   SELECT
     'check_04' AS check_id,
     'organization aliases and symbols temporal integrity constraints, functions and triggers' AS check_name,
-    'contradictory_alias_indexes: ' || contradictory_alias_indexes || '/0, alias_lookup_indexes: ' || alias_lookup_indexes || '/2, alias_trigger: ' || alias_trigger || '/1, symbol_trigger: ' || symbol_trigger || '/1, date_checks: ' || (alias_date_check + symbol_date_check + multi_name_date_check) || '/3' AS actual_value,
-    'contradictory_alias_indexes: 0/0, alias_lookup_indexes: 2/2, alias_trigger: 1/1, symbol_trigger: 1/1, date_checks: 3/3' AS expected_value,
+    'contradictory_alias_indexes: ' || contradictory_alias_indexes || '/0, alias_lookup_indexes: ' || alias_lookup_indexes || '/2, alias_trigger: ' || alias_trigger || '/1, symbol_trigger: ' || symbol_trigger || '/1, date_checks: ' || (alias_date_check + symbol_date_check + multi_name_date_check) || '/3, fn_bodies: ' || (alias_fn_body_ok + symbol_fn_body_ok) || '/2' AS actual_value,
+    'contradictory_alias_indexes: 0/0, alias_lookup_indexes: 2/2, alias_trigger: 1/1, symbol_trigger: 1/1, date_checks: 3/3, fn_bodies: 2/2' AS expected_value,
     CASE 
       WHEN contradictory_alias_indexes = 0
        AND alias_lookup_indexes = 2
@@ -141,10 +161,12 @@ check_4_cte AS (
        AND alias_date_check = 1 
        AND symbol_date_check = 1 
        AND multi_name_date_check = 1 
+       AND alias_fn_body_ok = 1
+       AND symbol_fn_body_ok = 1
       THEN 'PASS' 
       ELSE 'FAIL' 
     END AS status,
-    'Temporal non-overlap triggers bound to valid functions, definitions verified, lookup indexes present, and contradictory static unique indexes eliminated' AS details
+    'Temporal non-overlap triggers bound to valid functions with verified advisory locks and error invariants, lookup indexes present, and contradictory static unique indexes eliminated' AS details
   FROM check_4_invariants
 ),
 
@@ -190,7 +212,9 @@ check_6_metrics AS (
      WHERE n.nspname = 'public'
        AND c.conrelid = 'public.political_organizations'::regclass
        AND c.conname = 'chk_prohibit_synthetic_independent'
-       AND pg_get_constraintdef(c.oid) LIKE '%''ORG-INDEPENDENT''%') AS synth_clean
+       AND pg_get_constraintdef(c.oid) LIKE '%''ORG-INDEPENDENT''%'
+       AND pg_get_constraintdef(c.oid) LIKE '%NOT ILIKE ''%indep%''%'
+       AND pg_get_constraintdef(c.oid) LIKE '%ec_party_code%') AS synth_clean
 ),
 check_6_cte AS (
   SELECT
@@ -202,7 +226,7 @@ check_6_cte AS (
       WHEN recog_clean = 1 AND synth_clean = 1 THEN 'PASS' 
       ELSE 'FAIL' 
     END AS status,
-    'Independent excluded from recognition_level enum and synthetic independent party IDs prohibited by constraint' AS details
+    'Independent excluded from recognition_level enum and complete synthetic independent namespace prohibited by constraint' AS details
   FROM check_6_metrics
 ),
 
