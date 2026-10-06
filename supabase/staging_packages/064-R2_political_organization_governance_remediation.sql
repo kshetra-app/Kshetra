@@ -1,17 +1,13 @@
 -- ==============================================================================
--- Migration 064-R7: Political Organization Schema & Governance Remediation (W021.5-B2.2-B)
+-- Migration 064-R2: Political Organization Schema & Governance Remediation (W021.5-B2.2-B)
 -- Target: Staging Supabase & Local PostgreSQL (fkpigozcqnmcvofuksar)
--- Authority: CTO Master Execution Directive W021.5-B2.2-B / 064-R7 Hardening
+-- Authority: CTO Master Execution Directive W021.5-B2.2-B / 064-R2 Hardening
 -- Scope:
 --   1. Create public.organization_multilingual_names (GAP-ORG-001)
 --   2. Create public.organization_aliases with deterministic lookup keys,
---      validity date range checks, and fail-closed temporal non-overlap triggers
---      hardened with bidirectional (OLD & NEW) deterministic advisory locking (GAP-ORG-002)
---      Architecture: Sequential historical alias reuse is permitted across non-overlapping
---      windows via fail-closed advisory-locked temporal trigger enforcement.
+--      validity date range checks, and fail-closed temporal non-overlap triggers (GAP-ORG-002)
 --   3. Create public.organization_symbols with validity date range checks,
---      and fail-closed temporal non-overlap & current exclusivity triggers
---      hardened with bidirectional (OLD & NEW) deterministic advisory locking (GAP-ORG-003)
+--      and fail-closed temporal non-overlap & current exclusivity triggers (GAP-ORG-003)
 --   4. Hardening organization_relationships check constraints (Splits, Renamings, Mergers)
 --   5. Hardening political_organizations recognition_level (Prohibit synthetic independents GAP-ORG-004)
 --   6. Row-Level Security (RLS) policies and security invariants across all 3 tables
@@ -35,7 +31,7 @@ CREATE TABLE IF NOT EXISTS public.organization_multilingual_names (
   valid_to              DATE,
   source                TEXT,
   data_status           public.data_status_enum NOT NULL DEFAULT 'OFFICIAL',
-  provenance_id         UUID NOT NULL REFERENCES public.provenance_records(id) ON DELETE RESTRICT,
+  provenance_id         UUID REFERENCES public.provenance_records(id) ON DELETE RESTRICT,
   created_at            TIMESTAMPTZ NOT NULL DEFAULT now(),
   updated_at            TIMESTAMPTZ NOT NULL DEFAULT now(),
   CONSTRAINT uq_org_multi_name UNIQUE (organization_id, language_code, script_code, representation_type, name_value),
@@ -70,24 +66,27 @@ CREATE TABLE IF NOT EXISTS public.organization_aliases (
   valid_from            DATE NOT NULL DEFAULT '1947-08-15',
   valid_to              DATE,
   confidence            TEXT NOT NULL DEFAULT 'VERIFIED' CHECK (confidence IN ('VERIFIED', 'RECONCILED', 'PROVISIONAL', 'CONFLICTING')),
-  provenance_id         UUID NOT NULL REFERENCES public.provenance_records(id) ON DELETE RESTRICT,
+  provenance_id         UUID REFERENCES public.provenance_records(id) ON DELETE RESTRICT,
   created_at            TIMESTAMPTZ NOT NULL DEFAULT now(),
   updated_at            TIMESTAMPTZ NOT NULL DEFAULT now(),
   CONSTRAINT chk_org_alias_valid_dates CHECK (valid_to IS NULL OR valid_to >= valid_from)
 );
 
--- Drop legacy static unique indexes if present to ensure temporal validity windows operate cleanly
-DROP INDEX IF EXISTS public.uq_org_alias_national;
-DROP INDEX IF EXISTS public.uq_org_alias_jurisdictional;
+-- Partial unique indexes to prevent identical start dates within same jurisdiction scope
+CREATE UNIQUE INDEX IF NOT EXISTS uq_org_alias_national
+  ON public.organization_aliases (raw_lookup_key, COALESCE(valid_from, '1947-08-15'))
+  WHERE jurisdiction_scope IS NULL;
+
+CREATE UNIQUE INDEX IF NOT EXISTS uq_org_alias_jurisdictional
+  ON public.organization_aliases (raw_lookup_key, jurisdiction_scope, COALESCE(valid_from, '1947-08-15'))
+  WHERE jurisdiction_scope IS NOT NULL;
 
 COMMENT ON TABLE public.organization_aliases IS 'First-class deterministic lookup registry mapping raw party strings to canonical political organizations.';
 
 CREATE INDEX IF NOT EXISTS idx_org_aliases_key ON public.organization_aliases(raw_lookup_key);
 CREATE INDEX IF NOT EXISTS idx_org_aliases_org ON public.organization_aliases(organization_id);
-CREATE INDEX IF NOT EXISTS idx_org_aliases_dates ON public.organization_aliases(valid_from, valid_to);
 
 -- Fail-closed trigger: Enforce temporal non-overlap invariant for identical raw_lookup_key within same jurisdiction scope
--- Hardened with bidirectional (OLD & NEW) deterministic transaction-scoped advisory locking to eliminate concurrency races on INSERT and UPDATE
 CREATE OR REPLACE FUNCTION public.fn_validate_org_alias_temporal_invariants()
 RETURNS TRIGGER
 LANGUAGE plpgsql
@@ -97,27 +96,7 @@ AS $$
 DECLARE
   v_conflict_count INTEGER;
   v_new_end DATE;
-  v_lock_key_new BIGINT;
-  v_lock_key_old BIGINT;
 BEGIN
-  -- Concurrency Protection: Compute advisory lock keys for NEW and (if UPDATE) OLD business keys.
-  -- Namespace discriminator: 6401 (for organization_aliases)
-  v_lock_key_new := ((6401::bigint << 32) | (hashtext(NEW.raw_lookup_key || ':' || COALESCE(NEW.jurisdiction_scope, 'NATIONAL'))::bigint & 4294967295::bigint));
-
-  IF TG_OP = 'UPDATE' AND (OLD.raw_lookup_key <> NEW.raw_lookup_key OR (OLD.jurisdiction_scope IS DISTINCT FROM NEW.jurisdiction_scope)) THEN
-    v_lock_key_old := ((6401::bigint << 32) | (hashtext(OLD.raw_lookup_key || ':' || COALESCE(OLD.jurisdiction_scope, 'NATIONAL'))::bigint & 4294967295::bigint));
-    -- Deterministic lock acquisition order (smaller key first) prevents deadlocks
-    IF v_lock_key_old < v_lock_key_new THEN
-      PERFORM pg_advisory_xact_lock(v_lock_key_old);
-      PERFORM pg_advisory_xact_lock(v_lock_key_new);
-    ELSE
-      PERFORM pg_advisory_xact_lock(v_lock_key_new);
-      PERFORM pg_advisory_xact_lock(v_lock_key_old);
-    END IF;
-  ELSE
-    PERFORM pg_advisory_xact_lock(v_lock_key_new);
-  END IF;
-
   v_new_end := COALESCE(NEW.valid_to, '9999-12-31'::date);
 
   -- Check for temporal overlaps among aliases sharing identical raw_lookup_key and jurisdiction_scope
@@ -173,7 +152,7 @@ CREATE TABLE IF NOT EXISTS public.organization_symbols (
   is_current            BOOLEAN NOT NULL DEFAULT true,
   statutory_order_ref   TEXT, -- e.g. 'ECI Notification No. 56/Dispute/2022'
   data_status           public.data_status_enum NOT NULL DEFAULT 'OFFICIAL',
-  provenance_id         UUID NOT NULL REFERENCES public.provenance_records(id) ON DELETE RESTRICT,
+  provenance_id         UUID REFERENCES public.provenance_records(id) ON DELETE RESTRICT,
   created_at            TIMESTAMPTZ NOT NULL DEFAULT now(),
   updated_at            TIMESTAMPTZ NOT NULL DEFAULT now(),
   CONSTRAINT uq_org_symbols_timeline UNIQUE (organization_id, symbol_name, valid_from),
@@ -188,7 +167,6 @@ CREATE INDEX IF NOT EXISTS idx_org_symbols_dates ON public.organization_symbols(
 
 -- Fail-closed trigger: Enforce temporal non-overlap for same organization & symbol,
 -- and current exclusivity (at most one is_current=true symbol per organization per jurisdiction)
--- Hardened with bidirectional (OLD & NEW) deterministic transaction-scoped advisory locking to eliminate concurrency races on INSERT and UPDATE
 CREATE OR REPLACE FUNCTION public.fn_validate_org_symbol_temporal_invariants()
 RETURNS TRIGGER
 LANGUAGE plpgsql
@@ -199,27 +177,7 @@ DECLARE
   v_conflict_count INTEGER;
   v_current_count INTEGER;
   v_new_end DATE;
-  v_lock_key_new BIGINT;
-  v_lock_key_old BIGINT;
 BEGIN
-  -- Concurrency Protection: Compute advisory lock keys for NEW and (if UPDATE) OLD business keys.
-  -- Namespace discriminator: 6402 (for organization_symbols)
-  v_lock_key_new := ((6402::bigint << 32) | (hashtext(NEW.organization_id || ':' || COALESCE(NEW.jurisdiction_scope, 'NATIONAL'))::bigint & 4294967295::bigint));
-
-  IF TG_OP = 'UPDATE' AND (OLD.organization_id <> NEW.organization_id OR (OLD.jurisdiction_scope IS DISTINCT FROM NEW.jurisdiction_scope)) THEN
-    v_lock_key_old := ((6402::bigint << 32) | (hashtext(OLD.organization_id || ':' || COALESCE(OLD.jurisdiction_scope, 'NATIONAL'))::bigint & 4294967295::bigint));
-    -- Deterministic lock acquisition order (smaller key first) prevents deadlocks
-    IF v_lock_key_old < v_lock_key_new THEN
-      PERFORM pg_advisory_xact_lock(v_lock_key_old);
-      PERFORM pg_advisory_xact_lock(v_lock_key_new);
-    ELSE
-      PERFORM pg_advisory_xact_lock(v_lock_key_new);
-      PERFORM pg_advisory_xact_lock(v_lock_key_old);
-    END IF;
-  ELSE
-    PERFORM pg_advisory_xact_lock(v_lock_key_new);
-  END IF;
-
   v_new_end := COALESCE(NEW.valid_to, '9999-12-31'::date);
 
   -- Invariant 1: For the same organization_id, identical symbol_name, and jurisdiction_scope,

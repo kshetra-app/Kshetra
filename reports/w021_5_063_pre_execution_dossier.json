@@ -1,7 +1,7 @@
 {
   "milestone": "W021.5",
-  "phase": "MIGRATION_063_PRE_EXECUTION",
-  "generated_at": "2026-10-06T10:08:00+05:30",
+  "phase": "MIGRATION_063_R4_PRE_EXECUTION",
+  "generated_at": "2026-10-06T15:53:00+05:30",
   "governance": "Master Execution Framework Amendment v1.2 / Rule IV-001",
   "staging_environment": {
     "supabase_project": "fkpigozcqnmcvofuksar",
@@ -21,40 +21,34 @@
     "line_count": 114,
     "status": "IMMUTABLE_FROZEN"
   },
-  "staging_package": {
-    "path": "supabase/staging_packages/063_canonical_political_identity_foundation.sql",
-    "sha256": "f99ceb6d98a762784cc251eb4e6ea355be6e08c97949e084e1d61449b5129368",
-    "byte_size": 5875,
-    "is_derived": false,
-    "byte_for_byte_identical_to_authoritative": true
+  "staging_package_r4": {
+    "path": "supabase/staging_packages/063-R4_canonical_political_identity_foundation.sql",
+    "sha256": "3f7e6d11ea1e9622cde74df3f1e777365d06e3519f6ea0b0b825c66ef3c1f140",
+    "byte_size": 11444,
+    "line_count": 243,
+    "is_derived": true,
+    "architectural_improvements": [
+      "tenure_status is strictly NOT NULL with NO DEFAULT (blocks silent ACTIVE assignment on historical rows)",
+      "Bidirectional temporal invariants: forward check on tenure_vacancies and reverse update check in fn_prevent_tenure_history_mutation on elected_tenures",
+      "Explicit fail-closed trigger behavior for NULL term_start on elected_tenures",
+      "Explicit Approach B for tenure_status: backfill based strictly on factual is_current truth without synthetic vacancy events",
+      "Composite uniqueness key uq_elected_tenures_id_person on public.elected_tenures",
+      "Composite FK on tenure_vacancies (tenure_id, person_id) with ON DELETE RESTRICT",
+      "Single terminal event uniqueness on tenure_vacancies (tenure_id)",
+      "Single preferred & single official partial unique indexes on person_multilingual_identities"
+    ]
   },
   "post_execution_gate_artifact": {
     "path": "supabase/staging_checkpoints/w021_5_post_063_consolidated_gate.sql",
-    "sha256": "7e33783946818eb8f03180b438698abd247f581281b4dd3c53ba38f6a11cf98c",
-    "byte_size": 10751,
+    "sha256": "fbc4c14c5d9f06e5eb68d6bb8548c3ba08f9d518d2b770d55054a881e332b56a",
+    "byte_size": 15832,
+    "line_count": 302,
     "mode": "STRICTLY_READ_ONLY",
     "total_checks": 10
   },
-  "preflight_verifications": {
-    "destructive_ddl_count": 0,
-    "production_references_found": 0,
-    "new_tables_created": [
-      "public.person_multilingual_identities",
-      "public.tenure_vacancies"
-    ],
-    "altered_tables": [
-      "public.elected_tenures"
-    ],
-    "new_columns_added": [
-      "elected_tenures.tenure_status"
-    ],
-    "constraints_expanded": [
-      "elected_tenures.elected_tenures_jurisdiction_type_check"
-    ],
-    "rls_enabled": [
-      "public.person_multilingual_identities",
-      "public.tenure_vacancies"
-    ]
+  "preflight_script": {
+    "path": "supabase/staging_checkpoints/w021_5_preflight_063.sql",
+    "mode": "STRICTLY_READ_ONLY"
   },
   "expected_post_063_counts": {
     "public.states": 36,
@@ -64,6 +58,7 @@
     "public.constituencies": 4123,
     "public.constituency_versions": 4249,
     "public.constituency_parliamentary_mappings": 4249,
+    "public.elected_tenures": 0,
     "public.person_multilingual_identities": 0,
     "public.tenure_vacancies": 0
   }

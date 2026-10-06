@@ -92,13 +92,14 @@ test('Battery 2: Alias Collision Safety on Ambiguous & High-Risk Keys', () => {
 test('Battery 3: Temporal Alias Validity & Jurisdiction Boundaries', () => {
   const sql = fs.readFileSync(migration064Path, 'utf8');
 
-  // Verify national partial unique index
-  assert.ok(sql.includes('uq_org_alias_national'), 'Must contain national alias unique index');
-  assert.ok(sql.includes('WHERE jurisdiction_scope IS NULL'), 'National alias must filter by NULL jurisdiction_scope');
+  // Verify temporal non-overlap trigger and function exist
+  assert.ok(sql.includes('fn_validate_org_alias_temporal_invariants'), 'Must contain temporal alias trigger function');
+  assert.ok(sql.includes('trg_validate_org_alias_temporal'), 'Must attach temporal alias trigger');
 
-  // Verify jurisdictional partial unique index
-  assert.ok(sql.includes('uq_org_alias_jurisdictional'), 'Must contain jurisdictional alias unique index');
-  assert.ok(sql.includes('WHERE jurisdiction_scope IS NOT NULL'), 'Jurisdictional alias must filter by NOT NULL jurisdiction_scope');
+  // Verify Option A: static partial unique indexes dropped to allow sequential historical alias reuse
+  assert.ok(sql.includes('DROP INDEX IF EXISTS public.uq_org_alias_national;'), 'Legacy national unique index dropped');
+  assert.ok(sql.includes('DROP INDEX IF EXISTS public.uq_org_alias_jurisdictional;'), 'Legacy jurisdictional unique index dropped');
+  assert.ok(sql.includes('CREATE INDEX IF NOT EXISTS idx_org_aliases_dates'), 'Temporal lookup index present');
 });
 
 test('Battery 4: Multilingual Name Uniqueness Invariants', () => {

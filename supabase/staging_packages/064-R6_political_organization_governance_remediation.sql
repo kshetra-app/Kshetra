@@ -1,14 +1,12 @@
 -- ==============================================================================
--- Migration 064-R7: Political Organization Schema & Governance Remediation (W021.5-B2.2-B)
+-- Migration 064-R6: Political Organization Schema & Governance Remediation (W021.5-B2.2-B)
 -- Target: Staging Supabase & Local PostgreSQL (fkpigozcqnmcvofuksar)
--- Authority: CTO Master Execution Directive W021.5-B2.2-B / 064-R7 Hardening
+-- Authority: CTO Master Execution Directive W021.5-B2.2-B / 064-R6 Hardening
 -- Scope:
 --   1. Create public.organization_multilingual_names (GAP-ORG-001)
 --   2. Create public.organization_aliases with deterministic lookup keys,
 --      validity date range checks, and fail-closed temporal non-overlap triggers
 --      hardened with bidirectional (OLD & NEW) deterministic advisory locking (GAP-ORG-002)
---      Architecture: Sequential historical alias reuse is permitted across non-overlapping
---      windows via fail-closed advisory-locked temporal trigger enforcement.
 --   3. Create public.organization_symbols with validity date range checks,
 --      and fail-closed temporal non-overlap & current exclusivity triggers
 --      hardened with bidirectional (OLD & NEW) deterministic advisory locking (GAP-ORG-003)
@@ -76,15 +74,19 @@ CREATE TABLE IF NOT EXISTS public.organization_aliases (
   CONSTRAINT chk_org_alias_valid_dates CHECK (valid_to IS NULL OR valid_to >= valid_from)
 );
 
--- Drop legacy static unique indexes if present to ensure temporal validity windows operate cleanly
-DROP INDEX IF EXISTS public.uq_org_alias_national;
-DROP INDEX IF EXISTS public.uq_org_alias_jurisdictional;
+-- Partial unique indexes to prevent identical start dates within same jurisdiction scope
+CREATE UNIQUE INDEX IF NOT EXISTS uq_org_alias_national
+  ON public.organization_aliases (raw_lookup_key, COALESCE(valid_from, '1947-08-15'))
+  WHERE jurisdiction_scope IS NULL;
+
+CREATE UNIQUE INDEX IF NOT EXISTS uq_org_alias_jurisdictional
+  ON public.organization_aliases (raw_lookup_key, jurisdiction_scope, COALESCE(valid_from, '1947-08-15'))
+  WHERE jurisdiction_scope IS NOT NULL;
 
 COMMENT ON TABLE public.organization_aliases IS 'First-class deterministic lookup registry mapping raw party strings to canonical political organizations.';
 
 CREATE INDEX IF NOT EXISTS idx_org_aliases_key ON public.organization_aliases(raw_lookup_key);
 CREATE INDEX IF NOT EXISTS idx_org_aliases_org ON public.organization_aliases(organization_id);
-CREATE INDEX IF NOT EXISTS idx_org_aliases_dates ON public.organization_aliases(valid_from, valid_to);
 
 -- Fail-closed trigger: Enforce temporal non-overlap invariant for identical raw_lookup_key within same jurisdiction scope
 -- Hardened with bidirectional (OLD & NEW) deterministic transaction-scoped advisory locking to eliminate concurrency races on INSERT and UPDATE
