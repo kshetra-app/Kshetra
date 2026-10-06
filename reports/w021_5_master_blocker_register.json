@@ -1,0 +1,91 @@
+{
+  "directive_id": "W021.5-SURG-FIX-001",
+  "generated_at": "2026-10-06T23:15:00+05:30",
+  "governance": "Master Execution Framework Amendment v1.2 / Rule IV-001 Non-Self-Acceptance",
+  "blockers": [
+    {
+      "id": "B-064-001",
+      "component": "supabase/staging_checkpoints/w021_5_post_064_consolidated_gate.sql",
+      "phase": "064-R8 Gate / 064-R9 Gate Repair",
+      "category": "VERIFICATION_DEFECT",
+      "severity": "CRITICAL",
+      "summary": "Check 04, Check 06, and Check 08 failed due to gate verification expression defects rather than database non-conformance.",
+      "root_cause": "Check 04 matched brittle formatting rather than semantic patterns. Check 06 matched text 'NOT ILIKE' while PostgreSQL pg_get_constraintdef deparses to '!~~*'. Check 08 compared regclass::text string without schema qualification ('organization_aliases' instead of 'public.organization_aliases') and relied on brittle array joins.",
+      "remediation_status": "REPAIRED_IN_R9_GATE",
+      "resolution": "Check 04 refactored with format-resilient regex; Check 06 refactored to handle PostgreSQL deparsing (!~~* and array containment); Check 08 rewritten to inspect pg_constraint.confdeltype directly and join pg_class with pg_namespace.",
+      "verified_dry_run": "PASS (11/11 CHECKS PASS)"
+    },
+    {
+      "id": "B-063-001",
+      "component": "supabase/staging_checkpoints/w021_5_post_063_consolidated_gate.sql",
+      "phase": "063 Consolidated Gate",
+      "category": "VERIFICATION_DEFECT",
+      "severity": "HIGH",
+      "summary": "Check 05 (RLS) and Check 06 (tenures) utilized CROSS JOIN between CTEs, risking row multiplication and misleading aggregate outputs.",
+      "root_cause": "CROSS JOIN check_5_rls r CROSS JOIN check_5_policies p and CROSS JOIN check_6_uq u CROSS JOIN check_6_status_col s CROSS JOIN check_6_jt_cc j.",
+      "remediation_status": "REPAIRED",
+      "resolution": "Refactored Checks 5 and 6 into guaranteed single-row scalar metric subqueries without cartesian joins.",
+      "verified_dry_run": "PASS (10/10 CHECKS PASS)"
+    },
+    {
+      "id": "B-GEO-001",
+      "component": "Demographics Manifest & Spatial Data Pipeline",
+      "phase": "B2.2-E Demographics",
+      "category": "CANONICAL_DATA_DISCREPANCY",
+      "severity": "CRITICAL",
+      "summary": "Discrepancy between 4,123 statutory Assembly Constituencies and 4,142 reported in demographics manifest.",
+      "root_cause": "Spurious generation of 151 synthetic ACs for Delhi (DL-AC-071 through DL-AC-221) in seed demographics, where Delhi statutory AC count is strictly 70. Statutory universe is 4,123 ACs across 36 states/UTs.",
+      "remediation_status": "ROOT_CAUSE_ISOLATED_AND_DOCUMENTED",
+      "resolution": "Authoritative universe affirmed as 4,123 ACs / 543 PCs. Demographics pipeline must be bounded strictly to public.constituencies registry.",
+      "verified_dry_run": "DOCUMENTED"
+    },
+    {
+      "id": "B-DEMO-001",
+      "component": "supabase/migrations/066_canonical_constituency_demographics.sql",
+      "phase": "B2.2-E Demographics Schema",
+      "category": "SCHEMA_INTEGRITY_FLAW",
+      "severity": "CRITICAL",
+      "summary": "Demographics table lacked foreign key relationship to canonical constituency registry, allowing orphaned demographic records.",
+      "root_cause": "Table public.constituency_demographics relied solely on (state_code, ac_no, election_year) without FK to public.constituencies(id) or public.constituency_versions(id).",
+      "remediation_status": "REMEDIATION_SPECIFIED",
+      "resolution": "Require constituency_id UUID NOT NULL REFERENCES public.constituencies(id) ON DELETE RESTRICT in migration 066 specification.",
+      "verified_dry_run": "DOCUMENTED"
+    },
+    {
+      "id": "B-POP-001",
+      "component": "scripts/execute-b2-2c-population.mjs, scripts/execute-b2-2d-population.mjs, scripts/execute-b2-2e-population.mjs",
+      "phase": "B2.2-C, B2.2-D, B2.2-E Population",
+      "category": "EXECUTION_EVIDENCE_FLAW",
+      "severity": "CRITICAL",
+      "summary": "Population reports claimed 'Actual Database Inserts' (1,207 for C, 48,284 for D, 8,869 for E) but scripts used in-memory JavaScript Maps with zero database connections.",
+      "root_cause": "Builder scripts instantiated in-memory mock storage and wrote JSON reports claiming database insertion without executing any SQL against staging Supabase.",
+      "remediation_status": "RECLASSIFIED_AS_IN_MEMORY_SIMULATION",
+      "resolution": "Reports reclassified honestly as SIMULATED / IN-MEMORY ONLY. Staging execution marked UNPOPULATED / PENDING AUTHORIZATION.",
+      "verified_dry_run": "DOCUMENTED"
+    },
+    {
+      "id": "B-065-001",
+      "component": "supabase/migrations/065_canonical_political_organization_registry.sql",
+      "phase": "065 Political Organization Population",
+      "category": "DATA_OVERWRITE_RISK",
+      "severity": "HIGH",
+      "summary": "Migration 065 line 138 contains ON CONFLICT (id) DO UPDATE SET, creating silent mutation/overwrite risk for existing canonical data.",
+      "root_cause": "Permissive upsert logic silently updates canonical organizations instead of failing closed or executing DO NOTHING.",
+      "remediation_status": "REMEDIATION_SPECIFIED",
+      "resolution": "Replace ON CONFLICT (id) DO UPDATE with ON CONFLICT (id) DO NOTHING or strict fail-closed assertion before 065 staging execution.",
+      "verified_dry_run": "DOCUMENTED"
+    },
+    {
+      "id": "B-CLOSE-001",
+      "component": "W021.5 Milestone Closure Governance",
+      "phase": "Milestone Acceptance",
+      "category": "GOVERNANCE_INTEGRITY",
+      "severity": "BLOCKER",
+      "summary": "Premature claims of milestone completion prior to actual staging execution and gate verification.",
+      "root_cause": "Conflation of local unit test passing with staging deployment and verification acceptance.",
+      "remediation_status": "ENFORCED_FAIL_CLOSED",
+      "resolution": "Formal status held at FROZEN / AWAITING CTO REVIEW. Zero production access. Zero unapproved staging executions.",
+      "verified_dry_run": "ENFORCED"
+    }
+  ]
+}
