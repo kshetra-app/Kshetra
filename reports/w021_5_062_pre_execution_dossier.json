@@ -51,5 +51,12 @@
     "public.constituency_parliamentary_mappings_current": 4123,
     "public.constituency_parliamentary_mappings_archived": 126,
     "public.constituency_parliamentary_mappings_total": 4249
+  },
+  "derived_staging_package": {
+    "path": "supabase/staging_packages/062-R1_canonical_assam_2023_delimitation.sql",
+    "sha256": "2e19a10d286513c27c1d138104c369a1c7c22e317084319b036d8a0c6b1ef1e1",
+    "byte_size": 25566,
+    "is_derived": true,
+    "derivation_reason": "Align Section 1 columns to live dataset_versions and evidence_records DDL; register provenance anchor node for record_provenance_linkages FK"
   }
 }
