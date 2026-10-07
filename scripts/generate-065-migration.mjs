@@ -76,6 +76,43 @@ lines.push(`VALUES ('0215b22c-0000-0000-0000-000000000001', now())`);
 lines.push(`ON CONFLICT (id) DO NOTHING;`);
 lines.push('');
 
+// Pre-assertion: Fail-closed identity conflict detection (065-001 Remediation)
+lines.push('-- ─── PRE-EXECUTION IDENTITY CONFLICT ASSERTION (065-001) ─────────────────────');
+lines.push('DO $BODY$');
+lines.push('DECLARE');
+lines.push('  v_conflict RECORD;');
+lines.push('BEGIN');
+lines.push('  WITH incoming(id, org_type, name, short_name, recognition_level, headquarters_state) AS (');
+lines.push('    VALUES');
+const assertionValues = manifest.canonicalOrganizations.map(o => {
+  const hqState = o.headquartersState ? escapeSql(o.headquartersState) : 'NULL';
+  return `      (${escapeSql(o.id)}, ${escapeSql(o.orgType)}, ${escapeSql(o.name)}, ${escapeSql(o.shortName)}, ${escapeSql(o.recognitionLevel)}, ${hqState})`;
+});
+lines.push(assertionValues.join(',\n'));
+lines.push('  ),');
+lines.push('  conflicts AS (');
+lines.push('    SELECT ');
+lines.push('      e.id, ');
+lines.push('      e.name AS existing_name, i.name AS incoming_name,');
+lines.push('      e.short_name AS existing_short, i.short_name AS incoming_short,');
+lines.push('      e.recognition_level AS existing_recog, i.recognition_level AS incoming_recog,');
+lines.push('      e.headquarters_state AS existing_hq, i.headquarters_state AS incoming_hq');
+lines.push('    FROM public.political_organizations e');
+lines.push('    JOIN incoming i ON e.id = i.id');
+lines.push('    WHERE (e.org_type, e.name, e.short_name, e.recognition_level, COALESCE(e.headquarters_state, \'\'))');
+lines.push('       IS DISTINCT FROM ');
+lines.push('          (i.org_type, i.name, i.short_name, i.recognition_level, COALESCE(i.headquarters_state, \'\'))');
+lines.push('  )');
+lines.push('  SELECT * INTO v_conflict FROM conflicts LIMIT 1;');
+lines.push('');
+lines.push('  IF v_conflict.id IS NOT NULL THEN');
+lines.push('    RAISE EXCEPTION \'CANONICAL_IDENTITY_CONFLICT: Existing organization % has conflicting attributes (Existing: name=%, short=%, recog=%, hq=% | Incoming: name=%, short=%, recog=%, hq=%)\',');
+lines.push('      v_conflict.id, v_conflict.existing_name, v_conflict.existing_short, v_conflict.existing_recog, v_conflict.existing_hq,');
+lines.push('      v_conflict.incoming_name, v_conflict.incoming_short, v_conflict.incoming_recog, v_conflict.incoming_hq;');
+lines.push('  END IF;');
+lines.push('END $BODY$;');
+lines.push('');
+
 // C1: Political Organizations (107 rows)
 lines.push('-- ─── C1: CANONICAL POLITICAL ORGANIZATIONS (107 ROWS) ────────────────────────');
 lines.push(`INSERT INTO public.political_organizations (`);
@@ -89,12 +126,7 @@ const orgValueRows = manifest.canonicalOrganizations.map(o => {
   return `  (${escapeSql(o.id)}, ${escapeSql(o.orgType)}, ${escapeSql(o.name)}, ${escapeSql(o.shortName)}, ${escapeSql(o.recognitionLevel)}, ${hqState}, 'OFFICIAL', '0215b22c-0000-0000-0000-000000000001', now(), now())`;
 });
 lines.push(orgValueRows.join(',\n'));
-lines.push(`ON CONFLICT (id) DO UPDATE SET`);
-lines.push(`  name = EXCLUDED.name,`);
-lines.push(`  short_name = EXCLUDED.short_name,`);
-lines.push(`  recognition_level = EXCLUDED.recognition_level,`);
-lines.push(`  headquarters_state = EXCLUDED.headquarters_state,`);
-lines.push(`  updated_at = now();`);
+lines.push(`ON CONFLICT (id) DO NOTHING;`);
 lines.push('');
 
 // C2: Organization Relationships (10 rows)
@@ -134,29 +166,42 @@ lines.push(`ON CONFLICT ON CONSTRAINT uq_org_multi_name DO NOTHING;`);
 lines.push('');
 
 // C4: Organization Symbols (19 rows)
+// Uses CTE + WHERE NOT EXISTS to guarantee trigger-safe idempotency on repeat runs
 lines.push('-- ─── C4: STATUTORY ELECTION SYMBOLS (19 ROWS) ───────────────────────────────');
+lines.push(`WITH incoming_symbols (`);
+lines.push(`  organization_id, symbol_name, symbol_url, jurisdiction_scope, valid_from, valid_to,`);
+lines.push(`  is_current, statutory_order_ref, data_status, provenance_id, created_at, updated_at`);
+lines.push(`) AS (`);
+lines.push(`  VALUES`);
+
+const symbolValueRows = symbols.symbols.map(s => {
+  const jurVal = s.jurisdiction ? escapeSql(s.jurisdiction) : 'NULL::text';
+  const orderRef = s.authority ? escapeSql(s.authority) : 'NULL::text';
+  return `    (${escapeSql(s.orgId)}, ${escapeSql(s.symbolName)}, NULL::text, ${jurVal}, ${escapeSql(s.validFrom)}::date, NULL::date, ${s.isCurrent ? 'true' : 'false'}, ${orderRef}, 'OFFICIAL'::public.data_status_enum, '0215b22c-0000-0000-0000-000000000001'::uuid, now(), now())`;
+});
+lines.push(symbolValueRows.join(',\n'));
+lines.push(`)`);
 lines.push(`INSERT INTO public.organization_symbols (`);
 lines.push(`  organization_id, symbol_name, symbol_url, jurisdiction_scope, valid_from, valid_to,`);
 lines.push(`  is_current, statutory_order_ref, data_status, provenance_id, created_at, updated_at`);
 lines.push(`)`);
-lines.push(`VALUES`);
-
-const symbolValueRows = symbols.symbols.map(s => {
-  const jurVal = s.jurisdiction ? escapeSql(s.jurisdiction) : 'NULL';
-  const orderRef = s.authority ? escapeSql(s.authority) : 'NULL';
-  return `  (${escapeSql(s.orgId)}, ${escapeSql(s.symbolName)}, NULL, ${jurVal}, ${escapeSql(s.validFrom)}::date, NULL, ${s.isCurrent ? 'true' : 'false'}, ${orderRef}, 'OFFICIAL', '0215b22c-0000-0000-0000-000000000001', now(), now())`;
-});
-lines.push(symbolValueRows.join(',\n'));
-lines.push(`ON CONFLICT ON CONSTRAINT uq_org_symbols_timeline DO NOTHING;`);
+lines.push(`SELECT i.* FROM incoming_symbols i`);
+lines.push(`WHERE NOT EXISTS (`);
+lines.push(`  SELECT 1 FROM public.organization_symbols e`);
+lines.push(`  WHERE e.organization_id = i.organization_id`);
+lines.push(`    AND e.symbol_name = i.symbol_name`);
+lines.push(`    AND e.valid_from = i.valid_from`);
+lines.push(`);`);
 lines.push('');
 
 // C5: Organization Aliases (1,043 rows)
+// Uses CTE + WHERE NOT EXISTS to guarantee trigger-safe idempotency on repeat runs
 lines.push('-- ─── C5: DETERMINISTIC ORGANIZATION ALIASES (1,043 ROWS) ─────────────────────');
-lines.push(`INSERT INTO public.organization_aliases (`);
+lines.push(`WITH incoming_aliases (`);
 lines.push(`  raw_lookup_key, raw_original_string, organization_id, alias_type, jurisdiction_scope,`);
 lines.push(`  valid_from, valid_to, confidence, provenance_id, created_at, updated_at`);
-lines.push(`)`);
-lines.push(`VALUES`);
+lines.push(`) AS (`);
+lines.push(`  VALUES`);
 
 function mapAliasType(resolutionType) {
   switch (resolutionType) {
@@ -175,10 +220,22 @@ function mapAliasType(resolutionType) {
 const aliasValueRows = aliases.map(a => {
   const resType = reconTypeMap.get(a.raw_string) || 'STANDARD_ALIAS';
   const aliasType = mapAliasType(resType);
-  return `  (${escapeSql(a.normalized_key)}, ${escapeSql(a.raw_string)}, ${escapeSql(a.organization_id)}, ${escapeSql(aliasType)}, NULL, '1947-08-15'::date, NULL, ${escapeSql(a.confidence)}, '0215b22c-0000-0000-0000-000000000001', now(), now())`;
+  return `    (${escapeSql(a.normalized_key)}, ${escapeSql(a.raw_string)}, ${escapeSql(a.organization_id)}, ${escapeSql(aliasType)}, NULL::text, '1947-08-15'::date, NULL::date, ${escapeSql(a.confidence)}, '0215b22c-0000-0000-0000-000000000001'::uuid, now(), now())`;
 });
 lines.push(aliasValueRows.join(',\n'));
-lines.push(`ON CONFLICT DO NOTHING;`);
+lines.push(`)`);
+lines.push(`INSERT INTO public.organization_aliases (`);
+lines.push(`  raw_lookup_key, raw_original_string, organization_id, alias_type, jurisdiction_scope,`);
+lines.push(`  valid_from, valid_to, confidence, provenance_id, created_at, updated_at`);
+lines.push(`)`);
+lines.push(`SELECT i.* FROM incoming_aliases i`);
+lines.push(`WHERE NOT EXISTS (`);
+lines.push(`  SELECT 1 FROM public.organization_aliases e`);
+lines.push(`  WHERE e.raw_lookup_key = i.raw_lookup_key`);
+lines.push(`    AND ((e.jurisdiction_scope IS NULL AND i.jurisdiction_scope IS NULL) OR e.jurisdiction_scope = i.jurisdiction_scope)`);
+lines.push(`    AND e.organization_id = i.organization_id`);
+lines.push(`    AND e.valid_from = i.valid_from`);
+lines.push(`);`);
 lines.push('');
 
 lines.push('COMMIT;');
@@ -186,9 +243,12 @@ lines.push('');
 
 const sqlContent = lines.join('\n');
 const targetFile = path.join(REPO_ROOT, 'supabase', 'migrations', '065_canonical_political_organization_registry.sql');
+const stagingTargetFile = path.join(REPO_ROOT, 'supabase', 'staging_packages', '065_canonical_political_organization_registry.sql');
 
 fs.writeFileSync(targetFile, sqlContent, 'utf8');
+fs.writeFileSync(stagingTargetFile, sqlContent, 'utf8');
 
 console.log(`[MIGRATION 065 GENERATED] Target file: ${targetFile}`);
+console.log(`[STAGING PACKAGE 065 GENERATED] Target file: ${stagingTargetFile}`);
 console.log(`File size: ${Buffer.byteLength(sqlContent, 'utf8')} bytes`);
 console.log(`Rows: C0(1) + C1(107) + C2(10) + C3(27) + C4(19) + C5(1043) = 1,207`);
