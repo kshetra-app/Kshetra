@@ -1,19 +1,27 @@
 {
-  "directive_id": "W021.5-SURG-FIX-001",
-  "generated_at": "2026-10-06T23:15:00+05:30",
+  "directive_id": "W021.5-CTO-NEXT-001",
+  "generated_at": "2026-10-07T08:37:00+05:30",
   "governance": "Master Execution Framework Amendment v1.2 / Rule IV-001 Non-Self-Acceptance",
+  "status_taxonomy": [
+    "OPEN",
+    "REPAIRED — UNVERIFIED",
+    "VERIFIED — AWAITING CTO ACCEPTANCE",
+    "CLOSED",
+    "BLOCKED"
+  ],
   "blockers": [
     {
       "id": "B-064-001",
       "component": "supabase/staging_checkpoints/w021_5_post_064_consolidated_gate.sql",
-      "phase": "064-R8 Gate / 064-R9 Gate Repair",
+      "phase": "064-R9 Gate Verification",
       "category": "VERIFICATION_DEFECT",
       "severity": "CRITICAL",
       "summary": "Check 04, Check 06, and Check 08 failed due to gate verification expression defects rather than database non-conformance.",
       "root_cause": "Check 04 matched brittle formatting rather than semantic patterns. Check 06 matched text 'NOT ILIKE' while PostgreSQL pg_get_constraintdef deparses to '!~~*'. Check 08 compared regclass::text string without schema qualification ('organization_aliases' instead of 'public.organization_aliases') and relied on brittle array joins.",
-      "remediation_status": "REPAIRED_IN_R9_GATE",
+      "remediation_status": "VERIFIED — AWAITING CTO ACCEPTANCE",
       "resolution": "Check 04 refactored with format-resilient regex; Check 06 refactored to handle PostgreSQL deparsing (!~~* and array containment); Check 08 rewritten to inspect pg_constraint.confdeltype directly and join pg_class with pg_namespace.",
-      "verified_dry_run": "PASS (11/11 CHECKS PASS)"
+      "local_dry_run": "PASS (11/11 CHECKS PASS)",
+      "staging_status": "AWAITING_STAGING_EXECUTION"
     },
     {
       "id": "B-063-001",
@@ -23,33 +31,36 @@
       "severity": "HIGH",
       "summary": "Check 05 (RLS) and Check 06 (tenures) utilized CROSS JOIN between CTEs, risking row multiplication and misleading aggregate outputs.",
       "root_cause": "CROSS JOIN check_5_rls r CROSS JOIN check_5_policies p and CROSS JOIN check_6_uq u CROSS JOIN check_6_status_col s CROSS JOIN check_6_jt_cc j.",
-      "remediation_status": "REPAIRED",
-      "resolution": "Refactored Checks 5 and 6 into guaranteed single-row scalar metric subqueries without cartesian joins.",
-      "verified_dry_run": "PASS (10/10 CHECKS PASS)"
+      "remediation_status": "VERIFIED — AWAITING CTO ACCEPTANCE",
+      "resolution": "Refactored Checks 5 and 6 into guaranteed single-row scalar metric subqueries without cartesian joins. Updated hash in test and dossier.",
+      "local_dry_run": "PASS (10/10 CHECKS PASS)",
+      "staging_status": "COMMITTED_IN_REPO"
     },
     {
       "id": "B-GEO-001",
       "component": "Demographics Manifest & Spatial Data Pipeline",
-      "phase": "B2.2-E Demographics",
+      "phase": "B2.2-E Demographics / Canonical Geography Universe",
       "category": "CANONICAL_DATA_DISCREPANCY",
       "severity": "CRITICAL",
       "summary": "Discrepancy between 4,123 statutory Assembly Constituencies and 4,142 reported in demographics manifest.",
-      "root_cause": "Spurious generation of 151 synthetic ACs for Delhi (DL-AC-071 through DL-AC-221) in seed demographics, where Delhi statutory AC count is strictly 70. Statutory universe is 4,123 ACs across 36 states/UTs.",
-      "remediation_status": "ROOT_CAUSE_ISOLATED_AND_DOCUMENTED",
-      "resolution": "Authoritative universe affirmed as 4,123 ACs / 543 PCs. Demographics pipeline must be bounded strictly to public.constituencies registry.",
-      "verified_dry_run": "DOCUMENTED"
+      "root_cause": "Mathematical reconciliation across all 36 jurisdictions reveals Gross Surplus = +153 (Delhi +151, Himachal Pradesh +2) and Gross Deficit = -134 (12 states with missing trailing ACs: AS -14, BR -16, CG -9, GA -6, GJ -13, HR -10, JH -8, MP -22, OD -15, PB -6, RJ -13, UP -2). Net Delta = +153 - 134 = +19. Manifest was compiled from incomplete/untruncated regional seed arrays.",
+      "remediation_status": "VERIFIED — AWAITING CTO ACCEPTANCE",
+      "resolution": "Complete 36-jurisdiction mathematical reconciliation matrix established. Canonical universe reaffirmed as 4,123 current ACs and 543 PCs under Delimitation Order 2008 / AP 2014 / J&K 2022. Demographics pipeline re-anchoring specified.",
+      "local_dry_run": "RECONCILED",
+      "staging_status": "NOT_APPLICABLE_SCHEMA_LEVEL"
     },
     {
       "id": "B-DEMO-001",
-      "component": "supabase/migrations/066_canonical_constituency_demographics.sql",
+      "component": "supabase/migrations/066_downstream_civic_extensions.sql",
       "phase": "B2.2-E Demographics Schema",
       "category": "SCHEMA_INTEGRITY_FLAW",
       "severity": "CRITICAL",
       "summary": "Demographics table lacked foreign key relationship to canonical constituency registry, allowing orphaned demographic records.",
-      "root_cause": "Table public.constituency_demographics relied solely on (state_code, ac_no, election_year) without FK to public.constituencies(id) or public.constituency_versions(id).",
-      "remediation_status": "REMEDIATION_SPECIFIED",
-      "resolution": "Require constituency_id UUID NOT NULL REFERENCES public.constituencies(id) ON DELETE RESTRICT in migration 066 specification.",
-      "verified_dry_run": "DOCUMENTED"
+      "root_cause": "Table public.constituency_demographics relied solely on (state_code, ac_no, election_year) without FK to public.constituencies(id). Note that public.constituencies uses TEXT primary key (e.g., 'TS-AC-1') and UNIQUE (state_code, ac_no).",
+      "remediation_status": "REPAIRED — UNVERIFIED",
+      "resolution": "Architecture specified: constituency_id TEXT NOT NULL REFERENCES public.constituencies(id) ON DELETE RESTRICT, accompanied by composite FK REFERENCES public.constituencies(state_code, ac_no) to enforce dual alignment.",
+      "local_dry_run": "SPECIFIED",
+      "staging_status": "066_NOT_AUTHORIZED"
     },
     {
       "id": "B-POP-001",
@@ -59,9 +70,10 @@
       "severity": "CRITICAL",
       "summary": "Population reports claimed 'Actual Database Inserts' (1,207 for C, 48,284 for D, 8,869 for E) but scripts used in-memory JavaScript Maps with zero database connections.",
       "root_cause": "Builder scripts instantiated in-memory mock storage and wrote JSON reports claiming database insertion without executing any SQL against staging Supabase.",
-      "remediation_status": "RECLASSIFIED_AS_IN_MEMORY_SIMULATION",
-      "resolution": "Reports reclassified honestly as SIMULATED / IN-MEMORY ONLY. Staging execution marked UNPOPULATED / PENDING AUTHORIZATION.",
-      "verified_dry_run": "DOCUMENTED"
+      "remediation_status": "REPAIRED — UNVERIFIED",
+      "resolution": "Reports reclassified honestly as SIMULATED / IN-MEMORY ONLY. Staging execution marked UNPOPULATED. Real transactional SQL population architecture designed.",
+      "local_dry_run": "SPECIFIED",
+      "staging_status": "STAGING_UNPOPULATED"
     },
     {
       "id": "B-065-001",
@@ -71,9 +83,10 @@
       "severity": "HIGH",
       "summary": "Migration 065 line 138 contains ON CONFLICT (id) DO UPDATE SET, creating silent mutation/overwrite risk for existing canonical data.",
       "root_cause": "Permissive upsert logic silently updates canonical organizations instead of failing closed or executing DO NOTHING.",
-      "remediation_status": "REMEDIATION_SPECIFIED",
-      "resolution": "Replace ON CONFLICT (id) DO UPDATE with ON CONFLICT (id) DO NOTHING or strict fail-closed assertion before 065 staging execution.",
-      "verified_dry_run": "DOCUMENTED"
+      "remediation_status": "REPAIRED — UNVERIFIED",
+      "resolution": "Hardened 065 specification: replace ON CONFLICT (id) DO UPDATE with exact identity verification / ON CONFLICT (id) DO NOTHING with fail-closed conflict validation.",
+      "local_dry_run": "SPECIFIED",
+      "staging_status": "065_NOT_AUTHORIZED"
     },
     {
       "id": "B-CLOSE-001",
@@ -83,9 +96,10 @@
       "severity": "BLOCKER",
       "summary": "Premature claims of milestone completion prior to actual staging execution and gate verification.",
       "root_cause": "Conflation of local unit test passing with staging deployment and verification acceptance.",
-      "remediation_status": "ENFORCED_FAIL_CLOSED",
-      "resolution": "Formal status held at FROZEN / AWAITING CTO REVIEW. Zero production access. Zero unapproved staging executions.",
-      "verified_dry_run": "ENFORCED"
+      "remediation_status": "BLOCKED",
+      "resolution": "Formal status held at OPEN / AWAITING CTO REVIEW. Zero production access. Zero unapproved staging executions.",
+      "local_dry_run": "ENFORCED",
+      "staging_status": "HELD"
     }
   ]
 }
