@@ -17,9 +17,58 @@
 
 BEGIN;
 
--- ─── C0: PROVENANCE ANCHOR (1 ROW) ──────────────────────────────────────────
-INSERT INTO public.provenance_records (id, created_at)
-VALUES ('0215b22c-0000-0000-0000-000000000001', now())
+-- ─── C0: DATASET, DATASET VERSION & PROVENANCE ANCHOR ───────────────────────
+-- 1. Canonical Dataset Registration
+INSERT INTO public.datasets (id, name, domain, description, source_id, license)
+VALUES (
+  'eci_political_parties',
+  'ECI Registered Political Parties & Recognized State/National Formations',
+  'political_profiles',
+  'Statutory political party notification published by the Election Commission of India under Section 29A of the Representation of the People Act, 1951',
+  'eci',
+  'Government Open Data'
+)
+ON CONFLICT (id) DO UPDATE SET
+  name = EXCLUDED.name,
+  domain = EXCLUDED.domain,
+  description = EXCLUDED.description,
+  source_id = EXCLUDED.source_id,
+  license = EXCLUDED.license,
+  updated_at = now();
+
+-- 2. Authoritative Dataset Version Snapshot
+INSERT INTO public.dataset_versions (
+  id, dataset_id, version_tag, effective_from, default_status, record_count, metadata
+)
+VALUES (
+  'eci_political_parties_2024_v1',
+  'eci_political_parties',
+  '2024_national_parties_107',
+  '2024-03-15'::date,
+  'OFFICIAL',
+  107,
+  '{"milestone": "W021.5-B2.2-C", "statutory_authority": "Election Commission of India", "canonical_org_count": 107, "total_batch_inserts": 1207}'::jsonb
+)
+ON CONFLICT (id) DO UPDATE SET
+  version_tag = EXCLUDED.version_tag,
+  effective_from = EXCLUDED.effective_from,
+  default_status = EXCLUDED.default_status,
+  record_count = EXCLUDED.record_count,
+  metadata = EXCLUDED.metadata;
+
+-- 3. Batch Provenance Anchor Record
+INSERT INTO public.provenance_records (
+  id, dataset_version_id, status, transformation_type, operator, metadata, created_at
+)
+VALUES (
+  '0215b22c-0000-0000-0000-000000000001'::uuid,
+  'eci_political_parties_2024_v1',
+  'OFFICIAL',
+  'canonical_ingest',
+  'system:w021.5_b2.2c_pipeline',
+  '{"source": "ECI Political Party Notification 2023 / 2024 & Verified Seed Corpora", "milestone": "W021.5-B2.2-C", "record_count": 1207}'::jsonb,
+  now()
+)
 ON CONFLICT (id) DO NOTHING;
 
 -- ─── PRE-EXECUTION IDENTITY CONFLICT ASSERTION (065-001) ─────────────────────

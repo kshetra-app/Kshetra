@@ -185,7 +185,7 @@ test('Test 14: Runtime Non-Interference Audit', () => {
 
 test('Test 15: Provenance Completeness Across All Entities', () => {
   const sql = fs.readFileSync(migration064Path, 'utf8');
-  assert.ok(sql.includes('provenance_id         UUID REFERENCES public.provenance_records(id)'));
+  assert.ok(/provenance_id\s+UUID\s+(?:NOT\s+NULL\s+)?REFERENCES\s+public\.provenance_records\(id\)/.test(sql));
 });
 
 test('Test 16: Reconciliation Vocabulary Mathematical Parity', () => {

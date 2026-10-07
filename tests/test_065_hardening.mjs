@@ -25,13 +25,91 @@ try {
   execSync('docker exec -i supabase_db_Kshetra psql -U postgres -d postgres -c "DROP DATABASE IF EXISTS test_065_hardening;"');
   execSync('docker exec -i supabase_db_Kshetra psql -U postgres -d postgres -c "CREATE DATABASE test_065_hardening;"');
 
-  // Base schema
+  // Base schema mirroring Migration 039 Data Governance Foundation
   const setupSql = `
     CREATE EXTENSION IF NOT EXISTS "pgcrypto";
-    CREATE TYPE public.data_status_enum AS ENUM ('OFFICIAL', 'PROVISIONAL', 'DEPRECATED');
+    CREATE TYPE public.data_status_enum AS ENUM ('OFFICIAL', 'PROVISIONAL', 'UNVERIFIED', 'DEPRECATED', 'UNKNOWN');
+    CREATE TYPE public.source_authority_enum AS ENUM ('constitutional', 'statutory', 'academic', 'media_ngo', 'crowdsourced', 'synthetic_model');
+
     CREATE TABLE public.states (code TEXT PRIMARY KEY, name TEXT);
     INSERT INTO public.states (code, name) VALUES ('DL', 'Delhi'), ('TS', 'Telangana'), ('AP', 'Andhra Pradesh'), ('MH', 'Maharashtra'), ('BR', 'Bihar'), ('ML', 'Meghalaya'), ('UP', 'Uttar Pradesh');
-    CREATE TABLE public.provenance_records (id UUID PRIMARY KEY, created_at TIMESTAMPTZ DEFAULT now());
+
+    CREATE TABLE public.data_sources (
+      id TEXT PRIMARY KEY,
+      name TEXT NOT NULL,
+      publisher TEXT NOT NULL,
+      authority_level public.source_authority_enum NOT NULL,
+      canonical_url TEXT,
+      license TEXT,
+      retrieval_method TEXT,
+      refresh_frequency TEXT,
+      is_active BOOLEAN NOT NULL DEFAULT true,
+      metadata JSONB NOT NULL DEFAULT '{}'::jsonb,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+      updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+    );
+
+    INSERT INTO public.data_sources (id, name, publisher, authority_level, canonical_url, license, retrieval_method, refresh_frequency, is_active)
+    VALUES ('eci', 'Election Commission of India', 'Election Commission of India', 'constitutional', 'https://results.eci.gov.in', 'Government Open Data', 'automated_polling', 'event_driven', true)
+    ON CONFLICT (id) DO NOTHING;
+
+    CREATE TABLE public.datasets (
+      id TEXT PRIMARY KEY,
+      name TEXT NOT NULL,
+      domain TEXT NOT NULL CHECK (domain IN (
+        'geography', 'election', 'political_profiles', 'civic_governance', 'news', 'demographics', 'election_projection', 'other'
+      )),
+      description TEXT,
+      source_id TEXT NOT NULL REFERENCES public.data_sources(id) ON DELETE RESTRICT,
+      license TEXT,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+      updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+    );
+
+    CREATE TABLE public.evidence_records (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      dataset_version_id TEXT,
+      artifact_name TEXT NOT NULL,
+      artifact_sha256 TEXT NOT NULL,
+      verification_authority TEXT NOT NULL,
+      verified_by TEXT NOT NULL,
+      verification_notes TEXT,
+      verified_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+      created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+    );
+
+    CREATE TABLE public.dataset_versions (
+      id TEXT PRIMARY KEY,
+      dataset_id TEXT NOT NULL REFERENCES public.datasets(id) ON DELETE RESTRICT,
+      version_tag TEXT NOT NULL,
+      effective_from DATE,
+      effective_to DATE,
+      retrieved_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+      record_count INTEGER NOT NULL DEFAULT 0,
+      checksum_sha256 TEXT,
+      storage_path TEXT,
+      default_status public.data_status_enum NOT NULL DEFAULT 'UNKNOWN',
+      verification_evidence_id UUID REFERENCES public.evidence_records(id) ON DELETE RESTRICT,
+      metadata JSONB NOT NULL DEFAULT '{}'::jsonb,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+      UNIQUE(dataset_id, version_tag)
+    );
+
+    CREATE TABLE public.provenance_records (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      dataset_version_id TEXT NOT NULL REFERENCES public.dataset_versions(id) ON DELETE RESTRICT,
+      source_record_id TEXT,
+      parent_provenance_id UUID REFERENCES public.provenance_records(id) ON DELETE RESTRICT,
+      status public.data_status_enum NOT NULL DEFAULT 'UNKNOWN',
+      transformation_type TEXT NOT NULL DEFAULT 'raw_ingest',
+      transform_version TEXT,
+      operator TEXT NOT NULL DEFAULT 'system',
+      verified_by TEXT,
+      verification_evidence_id UUID REFERENCES public.evidence_records(id) ON DELETE RESTRICT,
+      metadata JSONB NOT NULL DEFAULT '{}'::jsonb,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+    );
+
     CREATE TABLE public.political_organizations (
       id TEXT PRIMARY KEY,
       org_type TEXT NOT NULL,
@@ -45,6 +123,7 @@ try {
       created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
       updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
     );
+
     CREATE TABLE public.organization_relationships (
       id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
       source_org_id TEXT NOT NULL REFERENCES public.political_organizations(id) ON DELETE RESTRICT,
@@ -170,8 +249,32 @@ try {
     throw new Error('Test E FAIL: Unrelated organization altered or missing!');
   }
 
+  // -------------------------------------------------------------
+  // Test F: Post-065 Consolidated Gate Execution
+  // -------------------------------------------------------------
+  console.log('\n--- TEST F: Post-065 Consolidated Gate Execution ---');
+  const gateSql = fs.readFileSync(path.join(REPO_ROOT, 'supabase', 'staging_checkpoints', 'w021_5_post_065_consolidated_gate.sql'), 'utf8');
+  const gateRawOutput = runPsql('test_065_hardening', gateSql);
+  console.log('Post-065 Consolidated Gate Output:');
+  console.log(gateRawOutput);
+
+  // Assert all 10 checks pass
+  const gateLines = gateRawOutput.split('\n');
+  const checkRows = gateLines.filter(l => /^\s*check_\d+/.test(l.trim()));
+  if (checkRows.length !== 10) {
+    throw new Error(`Test F FAIL: Expected exactly 10 gate check rows, got ${checkRows.length}`);
+  }
+  const failedRows = checkRows.filter(l => !l.includes('PASS'));
+  if (failedRows.length > 0) {
+    throw new Error(`Test F FAIL: Gate checks failed: ${failedRows.join('; ')}`);
+  }
+  if (!gateRawOutput.includes('POST_065_PASS')) {
+    throw new Error('Test F FAIL: Gate aggregate did not return POST_065_PASS');
+  }
+  console.log('Test F PASS: Post-065 consolidated gate returned exactly 10 rows, all PASS, aggregate POST_065_PASS.');
+
   console.log('\n=============================================================');
-  console.log('ALL TESTS A THROUGH E PASSED WITH ZERO CANONICAL MUTATIONS');
+  console.log('ALL TESTS A THROUGH F PASSED WITH ZERO CANONICAL MUTATIONS');
   console.log('=============================================================\n');
 
 } catch (err) {
