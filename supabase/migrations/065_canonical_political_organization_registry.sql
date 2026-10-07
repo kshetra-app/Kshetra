@@ -18,6 +18,30 @@
 BEGIN;
 
 -- ─── C0: DATASET, DATASET VERSION & PROVENANCE ANCHOR ───────────────────────
+-- C0.1 Pre-assertion: Fail-closed canonical dataset identity protection
+DO $BODY$
+DECLARE
+  v_ds RECORD;
+BEGIN
+  SELECT id, name, domain, description, source_id, license
+  INTO v_ds
+  FROM public.datasets
+  WHERE id = 'eci_political_parties';
+
+  IF FOUND THEN
+    IF (v_ds.name, v_ds.domain, v_ds.source_id, COALESCE(v_ds.description, ''), COALESCE(v_ds.license, ''))
+       IS DISTINCT FROM
+       ('ECI Registered Political Parties & Recognized State/National Formations',
+        'political_profiles',
+        'eci',
+        'Statutory political party notification published by the Election Commission of India under Section 29A of the Representation of the People Act, 1951',
+        'Government Open Data') THEN
+      RAISE EXCEPTION 'CANONICAL_DATASET_IDENTITY_CONFLICT: Existing dataset % has conflicting canonical attributes (name=%, domain=%, source=%, desc=%, lic=%)',
+        v_ds.id, v_ds.name, v_ds.domain, v_ds.source_id, v_ds.description, v_ds.license;
+    END IF;
+  END IF;
+END $BODY$;
+
 -- 1. Canonical Dataset Registration
 INSERT INTO public.datasets (id, name, domain, description, source_id, license)
 VALUES (
@@ -28,13 +52,32 @@ VALUES (
   'eci',
   'Government Open Data'
 )
-ON CONFLICT (id) DO UPDATE SET
-  name = EXCLUDED.name,
-  domain = EXCLUDED.domain,
-  description = EXCLUDED.description,
-  source_id = EXCLUDED.source_id,
-  license = EXCLUDED.license,
-  updated_at = now();
+ON CONFLICT (id) DO NOTHING;
+
+-- C0.2 Pre-assertion: Fail-closed canonical dataset version identity protection
+DO $BODY$
+DECLARE
+  v_ver RECORD;
+BEGIN
+  SELECT id, dataset_id, version_tag, effective_from, effective_to, record_count, default_status
+  INTO v_ver
+  FROM public.dataset_versions
+  WHERE id = 'eci_political_parties_2024_v1';
+
+  IF FOUND THEN
+    IF (v_ver.dataset_id, v_ver.version_tag, v_ver.effective_from, v_ver.effective_to, v_ver.record_count, v_ver.default_status::text)
+       IS DISTINCT FROM
+       ('eci_political_parties',
+        '2024_national_parties_107',
+        '2024-03-15'::date,
+        NULL::date,
+        107,
+        'OFFICIAL') THEN
+      RAISE EXCEPTION 'CANONICAL_DATASET_VERSION_CONFLICT: Existing dataset version % has conflicting canonical attributes (dataset=%, tag=%, from=%, to=%, records=%, status=%)',
+        v_ver.id, v_ver.dataset_id, v_ver.version_tag, v_ver.effective_from, v_ver.effective_to, v_ver.record_count, v_ver.default_status;
+    END IF;
+  END IF;
+END $BODY$;
 
 -- 2. Authoritative Dataset Version Snapshot
 INSERT INTO public.dataset_versions (
@@ -49,12 +92,7 @@ VALUES (
   107,
   '{"milestone": "W021.5-B2.2-C", "statutory_authority": "Election Commission of India", "canonical_org_count": 107, "total_batch_inserts": 1207}'::jsonb
 )
-ON CONFLICT (id) DO UPDATE SET
-  version_tag = EXCLUDED.version_tag,
-  effective_from = EXCLUDED.effective_from,
-  default_status = EXCLUDED.default_status,
-  record_count = EXCLUDED.record_count,
-  metadata = EXCLUDED.metadata;
+ON CONFLICT (id) DO NOTHING;
 
 -- 3. Batch Provenance Anchor Record
 INSERT INTO public.provenance_records (

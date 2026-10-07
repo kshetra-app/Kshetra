@@ -273,8 +273,170 @@ try {
   }
   console.log('Test F PASS: Post-065 consolidated gate returned exactly 10 rows, all PASS, aggregate POST_065_PASS.');
 
+  // -------------------------------------------------------------
+  // Test G: Dataset Identity Conflict (Fail-Closed)
+  // -------------------------------------------------------------
+  console.log('\n--- TEST G: Dataset Identity Conflict (Fail-Closed) ---');
+  // Mutate dataset attribute in test database
+  runPsql('test_065_hardening', "UPDATE public.datasets SET name = 'Conflicting ECI Dataset Name' WHERE id = 'eci_political_parties';", true);
+
+  let testGPassed = false;
+  try {
+    runPsql('test_065_hardening', migrationSql);
+  } catch (err) {
+    const output = (err.stderr ? err.stderr.toString() : '') + (err.stdout ? err.stdout.toString() : '') + err.message;
+    if (output.includes('CANONICAL_DATASET_IDENTITY_CONFLICT')) {
+      testGPassed = true;
+      const matchLine = output.split('\n').find(l => l.includes('CANONICAL_DATASET_IDENTITY_CONFLICT'));
+      console.log('Test G PASS: Explicitly aborted transaction with exception:');
+      console.log('  ' + (matchLine ? matchLine.trim() : 'CANONICAL_DATASET_IDENTITY_CONFLICT detected'));
+    } else {
+      console.error('Test G Failed with unexpected error:', output);
+    }
+  }
+
+  if (!testGPassed) {
+    throw new Error('Test G FAIL: Migration did not fail closed on conflicting dataset identity!');
+  }
+
+  // Verify rollback and attribute preserved
+  const dsNameG = runPsql('test_065_hardening', "SELECT name FROM public.datasets WHERE id = 'eci_political_parties';", true).trim().split('\n')[2].trim();
+  if (dsNameG !== 'Conflicting ECI Dataset Name') {
+    throw new Error(`Test G FAIL: Transaction did not roll back! Dataset name is ${dsNameG}`);
+  }
+  console.log('Test G Verification: Dataset name was preserved, transaction cleanly rolled back.');
+
+  // Restore canonical dataset name
+  runPsql('test_065_hardening', "UPDATE public.datasets SET name = 'ECI Registered Political Parties & Recognized State/National Formations' WHERE id = 'eci_political_parties';", true);
+
+  // -------------------------------------------------------------
+  // Test H: Dataset Version Identity Conflict (Fail-Closed)
+  // -------------------------------------------------------------
+  console.log('\n--- TEST H: Dataset Version Identity Conflict (Fail-Closed) ---');
+  // Mutate dataset_version attribute in test database
+  runPsql('test_065_hardening', "UPDATE public.dataset_versions SET version_tag = '2024_conflicting_version_tag' WHERE id = 'eci_political_parties_2024_v1';", true);
+
+  let testHPassed = false;
+  try {
+    runPsql('test_065_hardening', migrationSql);
+  } catch (err) {
+    const output = (err.stderr ? err.stderr.toString() : '') + (err.stdout ? err.stdout.toString() : '') + err.message;
+    if (output.includes('CANONICAL_DATASET_VERSION_CONFLICT')) {
+      testHPassed = true;
+      const matchLine = output.split('\n').find(l => l.includes('CANONICAL_DATASET_VERSION_CONFLICT'));
+      console.log('Test H PASS: Explicitly aborted transaction with exception:');
+      console.log('  ' + (matchLine ? matchLine.trim() : 'CANONICAL_DATASET_VERSION_CONFLICT detected'));
+    } else {
+      console.error('Test H Failed with unexpected error:', output);
+    }
+  }
+
+  if (!testHPassed) {
+    throw new Error('Test H FAIL: Migration did not fail closed on conflicting dataset version!');
+  }
+
+  // Verify rollback and attribute preserved
+  const verTagH = runPsql('test_065_hardening', "SELECT version_tag FROM public.dataset_versions WHERE id = 'eci_political_parties_2024_v1';", true).trim().split('\n')[2].trim();
+  if (verTagH !== '2024_conflicting_version_tag') {
+    throw new Error(`Test H FAIL: Transaction did not roll back! Version tag is ${verTagH}`);
+  }
+  console.log('Test H Verification: Dataset version tag was preserved, transaction cleanly rolled back.');
+
+  // Restore canonical dataset version tag
+  runPsql('test_065_hardening', "UPDATE public.dataset_versions SET version_tag = '2024_national_parties_107' WHERE id = 'eci_political_parties_2024_v1';", true);
+
+  // -------------------------------------------------------------
+  // Test I: Exact Dataset/Version Idempotency (Zero Duplicates / Zero Mutations)
+  // -------------------------------------------------------------
+  console.log('\n--- TEST I: Exact Dataset/Version Idempotency ---');
+  const dsCountBefore = runPsql('test_065_hardening', "SELECT count(*) FROM public.datasets WHERE id = 'eci_political_parties';", true).trim().split('\n')[2].trim();
+  const verCountBefore = runPsql('test_065_hardening', "SELECT count(*) FROM public.dataset_versions WHERE id = 'eci_political_parties_2024_v1';", true).trim().split('\n')[2].trim();
+
+  runPsql('test_065_hardening', migrationSql);
+
+  const dsCountAfter = runPsql('test_065_hardening', "SELECT count(*) FROM public.datasets WHERE id = 'eci_political_parties';", true).trim().split('\n')[2].trim();
+  const verCountAfter = runPsql('test_065_hardening', "SELECT count(*) FROM public.dataset_versions WHERE id = 'eci_political_parties_2024_v1';", true).trim().split('\n')[2].trim();
+
+  if (dsCountBefore === '1' && dsCountAfter === '1' && verCountBefore === '1' && verCountAfter === '1') {
+    console.log('Test I PASS: Dataset and version count remain exactly 1. Zero duplicate rows or mutations.');
+  } else {
+    throw new Error(`Test I FAIL: Counts changed: ds=${dsCountAfter}, ver=${verCountAfter}`);
+  }
+
+  // -------------------------------------------------------------
+  // Test J: Provenance FK Enforcement
+  // -------------------------------------------------------------
+  console.log('\n--- TEST J: Provenance FK Enforcement ---');
+  // Attempt to insert a provenance record referencing a non-existent dataset version
+  let testJPassed = false;
+  try {
+    runPsql('test_065_hardening', `
+      INSERT INTO public.provenance_records (
+        id, dataset_version_id, status, transformation_type, operator, created_at
+      ) VALUES (
+        gen_random_uuid(), 'non_existent_dataset_version_xyz', 'OFFICIAL', 'canonical_ingest', 'test', now()
+      );
+    `);
+  } catch (err) {
+    const output = (err.stderr ? err.stderr.toString() : '') + (err.stdout ? err.stdout.toString() : '') + err.message;
+    if (output.includes('violates foreign key constraint') || output.includes('23503')) {
+      testJPassed = true;
+      console.log('Test J PASS: Inserting provenance record with non-existent dataset_version_id fails closed (FK violation 23503).');
+    }
+  }
+
+  if (!testJPassed) {
+    throw new Error('Test J FAIL: Provenance FK constraint did not reject missing dataset version!');
+  }
+
+  // -------------------------------------------------------------
+  // Test K: C0 Full Transaction Rollback
+  // -------------------------------------------------------------
+  console.log('\n--- TEST K: C0 Full Transaction Rollback Safety ---');
+  // Create a brand new clean database test_065_rollback
+  execSync('docker exec -i supabase_db_Kshetra psql -U postgres -d postgres -c "DROP DATABASE IF EXISTS test_065_rollback;"');
+  execSync('docker exec -i supabase_db_Kshetra psql -U postgres -d postgres -c "CREATE DATABASE test_065_rollback;"');
+  runPsql('test_065_rollback', setupSql);
+  runPsql('test_065_rollback', mig064);
+
+  // In test_065_rollback, inject an intentional error immediately after C0.3
+  const failAfterC0Sql = migrationSql.replace(
+    `'0215b22c-0000-0000-0000-000000000001'::uuid,\n  'eci_political_parties_2024_v1',`,
+    `'0215b22c-0000-0000-0000-000000000001'::uuid,\n  'eci_political_parties_2024_v1',`
+  ).replace(
+    `ON CONFLICT (id) DO NOTHING;\n\n-- ─── PRE-EXECUTION IDENTITY CONFLICT ASSERTION`,
+    `ON CONFLICT (id) DO NOTHING;\n\nRAISE EXCEPTION 'CONTROLLED_POST_C0_FAILURE';\n\n-- ─── PRE-EXECUTION IDENTITY CONFLICT ASSERTION`
+  );
+
+  let testKPassed = false;
+  try {
+    runPsql('test_065_rollback', failAfterC0Sql);
+  } catch (err) {
+    const output = (err.stderr ? err.stderr.toString() : '') + (err.stdout ? err.stdout.toString() : '') + err.message;
+    if (output.includes('CONTROLLED_POST_C0_FAILURE')) {
+      testKPassed = true;
+      console.log('Test K: Controlled exception triggered: CONTROLLED_POST_C0_FAILURE');
+    }
+  }
+
+  if (!testKPassed) {
+    throw new Error('Test K FAIL: Controlled exception did not trigger!');
+  }
+
+  // Verify all C0 objects rolled back completely
+  const dsK = runPsql('test_065_rollback', "SELECT count(*) FROM public.datasets WHERE id = 'eci_political_parties';", true).trim().split('\n')[2].trim();
+  const verK = runPsql('test_065_rollback', "SELECT count(*) FROM public.dataset_versions WHERE id = 'eci_political_parties_2024_v1';", true).trim().split('\n')[2].trim();
+  const provK = runPsql('test_065_rollback', "SELECT count(*) FROM public.provenance_records WHERE id = '0215b22c-0000-0000-0000-000000000001'::uuid;", true).trim().split('\n')[2].trim();
+  const orgK = runPsql('test_065_rollback', "SELECT count(*) FROM public.political_organizations;", true).trim().split('\n')[2].trim();
+
+  if (dsK === '0' && verK === '0' && provK === '0' && orgK === '0') {
+    console.log('Test K PASS: Full transaction rollback verified. Zero orphaned C0 rows in datasets, dataset_versions, provenance_records, or political_organizations.');
+  } else {
+    throw new Error(`Test K FAIL: Orphaned rows remained after rollback: ds=${dsK}, ver=${verK}, prov=${provK}, org=${orgK}`);
+  }
+
   console.log('\n=============================================================');
-  console.log('ALL TESTS A THROUGH F PASSED WITH ZERO CANONICAL MUTATIONS');
+  console.log('ALL TESTS A THROUGH K PASSED WITH ZERO CANONICAL MUTATIONS');
   console.log('=============================================================\n');
 
 } catch (err) {

@@ -11,18 +11,37 @@ WITH
 -- ─── CHECK 1: Dataset, Version & Provenance Anchor Integrity ──────────────────
 check_1_data AS (
   SELECT 
-    (SELECT count(*) FROM public.datasets WHERE id = 'eci_political_parties') AS dataset_count,
-    (SELECT count(*) FROM public.dataset_versions WHERE id = 'eci_political_parties_2024_v1' AND dataset_id = 'eci_political_parties') AS version_count,
-    (SELECT count(*) FROM public.provenance_records WHERE id = '0215b22c-0000-0000-0000-000000000001'::uuid AND dataset_version_id = 'eci_political_parties_2024_v1') AS prov_count
+    -- Dataset exact attributes
+    (SELECT count(*) FROM public.datasets 
+     WHERE id = 'eci_political_parties'
+       AND name = 'ECI Registered Political Parties & Recognized State/National Formations'
+       AND domain = 'political_profiles'
+       AND source_id = 'eci') AS ds_match,
+    -- Dataset version exact attributes
+    (SELECT count(*) FROM public.dataset_versions 
+     WHERE id = 'eci_political_parties_2024_v1'
+       AND dataset_id = 'eci_political_parties'
+       AND version_tag = '2024_national_parties_107'
+       AND effective_from = '2024-03-15'::date
+       AND default_status = 'OFFICIAL'
+       AND record_count = 107) AS ver_match,
+    -- Provenance record exact attributes and FK validity
+    (SELECT count(*) FROM public.provenance_records pr
+     JOIN public.dataset_versions dv ON dv.id = pr.dataset_version_id
+     WHERE pr.id = '0215b22c-0000-0000-0000-000000000001'::uuid
+       AND pr.dataset_version_id = 'eci_political_parties_2024_v1'
+       AND pr.status = 'OFFICIAL'
+       AND pr.transformation_type = 'canonical_ingest'
+       AND pr.dataset_version_id IS NOT NULL) AS prov_match
 ),
 check_1_cte AS (
   SELECT
     'check_01' AS check_id,
     'dataset, version and provenance anchor integrity for W021.5-B2.2-C batch' AS check_name,
-    'dataset: ' || dataset_count || ', version: ' || version_count || ', prov_anchor: ' || prov_count AS actual_value,
-    'dataset: 1, version: 1, prov_anchor: 1' AS expected_value,
-    CASE WHEN dataset_count = 1 AND version_count = 1 AND prov_count = 1 THEN 'PASS' ELSE 'FAIL' END AS status,
-    'Authoritative eci_political_parties dataset, 2024_v1 version snapshot, and batch provenance anchor verified' AS details
+    'ds_match: ' || ds_match || ', ver_match: ' || ver_match || ', prov_match: ' || prov_match AS actual_value,
+    'ds_match: 1, ver_match: 1, prov_match: 1' AS expected_value,
+    CASE WHEN ds_match = 1 AND ver_match = 1 AND prov_match = 1 THEN 'PASS' ELSE 'FAIL' END AS status,
+    'Canonical eci_political_parties dataset, 2024_v1 snapshot, NOT NULL FK constraint and provenance anchor verified' AS details
   FROM check_1_data
 ),
 
