@@ -29,8 +29,8 @@ export interface MPProfile {
   /** For Rajya Sabha: term end year */
   termEndYear?: number;
   criminalCases?: number;
-  totalAssets?: number;
-  totalLiabilities?: number;
+  totalAssets?: number | null;
+  totalLiabilities?: number | null;
   maritalStatus?: 'Single' | 'Married' | 'Widowed' | 'Divorced';
   /** Whether this MP is a minister */
   isMinister?: boolean;

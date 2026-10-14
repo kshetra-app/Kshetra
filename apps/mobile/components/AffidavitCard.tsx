@@ -91,7 +91,7 @@ export default React.memo(function AffidavitCard({ stateCode, acNo, electionYear
           </Text>
           <Text style={styles.metricLabel}>{t('affidavit.cases')}</Text>
         </View>
-        {latestGrowth && (
+        {latestGrowth && latestGrowth.percentGrowth != null && (
           <View style={styles.metric}>
             <Ionicons name="trending-up" size={16} color="#8B5CF6" />
             <Text style={styles.metricValue}>{latestGrowth.percentGrowth.toFixed(0)}%</Text>

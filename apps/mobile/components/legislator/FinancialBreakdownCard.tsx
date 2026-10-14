@@ -6,17 +6,17 @@ import { useTheme } from '../../lib/theme';
 
 interface FinancialRecord {
   electionYear: number;
-  selfMovableAssets: number;
-  selfImmovableAssets: number;
-  spouseMovableAssets: number;
-  spouseImmovableAssets: number;
-  dependentsAssets: number;
-  totalAssets: number;
-  totalLiabilities: number;
-  netWorth: number;
-  selfIncome: number;
-  spouseIncome: number;
-  wealthGrowth?: { percentGrowth: number; annualizedGrowth: number };
+  selfMovableAssets?: number | null;
+  selfImmovableAssets?: number | null;
+  spouseMovableAssets?: number | null;
+  spouseImmovableAssets?: number | null;
+  dependentsAssets?: number | null;
+  totalAssets?: number | null;
+  totalLiabilities?: number | null;
+  netWorth?: number | null;
+  selfIncome?: number | null;
+  spouseIncome?: number | null;
+  wealthGrowth?: { percentGrowth: number | null; annualizedGrowth: number | null };
 }
 
 interface Props {
@@ -25,7 +25,7 @@ interface Props {
 }
 
 function formatINR(val: number | undefined | null): string {
-  if (val === undefined || val === null || isNaN(val) || typeof val !== 'number') return '—';
+  if (val === undefined || val === null || isNaN(val) || typeof val !== 'number') return 'Not Disclosed';
   if (val >= 1_00_00_000) return `₹${(val / 1_00_00_000).toFixed(1)} Cr`;
   if (val >= 1_00_000) return `₹${(val / 1_00_000).toFixed(1)} L`;
   if (val >= 1000) return `₹${(val / 1000).toFixed(0)}K`;
@@ -45,22 +45,28 @@ export default function FinancialBreakdownCard({ records, compact }: Props) {
 
   const latest = records[records.length - 1];
   const previous = records.length >= 2 ? records[records.length - 2] : null;
-  const totalAssets = latest.totalAssets || 0;
-  const isCrorepati = totalAssets >= 1_00_00_000;
+  const totalAssets = latest.totalAssets;
+  const isCrorepati = totalAssets != null ? totalAssets >= 1_00_00_000 : false;
 
-  // Compute growth
+  // Compute growth: only if both observations exist and previous is positive
   let growthPercent: number | null = null;
-  if (previous && previous.totalAssets > 0) {
+  if (previous && previous.totalAssets != null && totalAssets != null && previous.totalAssets > 0) {
     growthPercent = Math.round(((totalAssets - previous.totalAssets) / previous.totalAssets) * 100);
   }
 
-  // Asset breakdown percentages
-  const total = totalAssets || 1;
-  const selfMov = latest.selfMovableAssets || 0;
-  const selfImm = latest.selfImmovableAssets || 0;
-  const spouseMov = latest.spouseMovableAssets || 0;
-  const spouseImm = latest.spouseImmovableAssets || 0;
-  const dep = latest.dependentsAssets || 0;
+  // Component breakdown: only if itemized components are disclosed
+  const hasComponentBreakdown =
+    latest.selfMovableAssets != null ||
+    latest.selfImmovableAssets != null ||
+    latest.spouseMovableAssets != null ||
+    latest.spouseImmovableAssets != null;
+
+  const total = totalAssets && totalAssets > 0 ? totalAssets : 1;
+  const selfMov = latest.selfMovableAssets ?? 0;
+  const selfImm = latest.selfImmovableAssets ?? 0;
+  const spouseMov = latest.spouseMovableAssets ?? 0;
+  const spouseImm = latest.spouseImmovableAssets ?? 0;
+  const dep = latest.dependentsAssets ?? 0;
 
   const selfMovPct = Math.round((selfMov / total) * 100);
   const selfImmPct = Math.round((selfImm / total) * 100);
@@ -123,29 +129,39 @@ export default function FinancialBreakdownCard({ records, compact }: Props) {
         )}
       </View>
 
-      {/* Asset Breakdown Bars */}
+      {/* Asset Breakdown Section */}
       <View style={styles.breakdownSection}>
         <Text style={[styles.breakdownTitle, { color: colors.textSecondary }]}>Asset Breakdown</Text>
-        <View style={[styles.stackBar, { backgroundColor: colors.surfaceElevated }]}>
-          <View style={[styles.stackSegment, { flex: Math.max(1, selfMovPct), backgroundColor: colors.teal }]} />
-          <View style={[styles.stackSegment, { flex: Math.max(1, selfImmPct), backgroundColor: colors.success }]} />
-          <View style={[styles.stackSegment, { flex: Math.max(1, spousePct), backgroundColor: colors.gold }]} />
-          {depPct > 0 && <View style={[styles.stackSegment, { flex: depPct, backgroundColor: colors.primary }]} />}
-        </View>
-        <View style={styles.legendRow}>
-          <LegendItem color={colors.teal} label="Self Movable" value={formatINR(selfMov)} textSecondary={colors.textSecondary} textPrimary={colors.text} />
-          <LegendItem color={colors.success} label="Self Immovable" value={formatINR(selfImm)} textSecondary={colors.textSecondary} textPrimary={colors.text} />
-        </View>
-        <View style={styles.legendRow}>
-          <LegendItem color={colors.gold} label="Spouse" value={formatINR(spouseMov + spouseImm)} textSecondary={colors.textSecondary} textPrimary={colors.text} />
-          {dep > 0 && (
-            <LegendItem color={colors.primary} label="Dependents" value={formatINR(dep)} textSecondary={colors.textSecondary} textPrimary={colors.text} />
-          )}
-        </View>
+        {hasComponentBreakdown && totalAssets != null && totalAssets > 0 ? (
+          <>
+            <View style={[styles.stackBar, { backgroundColor: colors.surfaceElevated }]}>
+              <View style={[styles.stackSegment, { flex: Math.max(1, selfMovPct), backgroundColor: colors.teal }]} />
+              <View style={[styles.stackSegment, { flex: Math.max(1, selfImmPct), backgroundColor: colors.success }]} />
+              <View style={[styles.stackSegment, { flex: Math.max(1, spousePct), backgroundColor: colors.gold }]} />
+              {depPct > 0 && <View style={[styles.stackSegment, { flex: depPct, backgroundColor: colors.primary }]} />}
+            </View>
+            <View style={styles.legendRow}>
+              <LegendItem color={colors.teal} label="Self Movable" value={formatINR(latest.selfMovableAssets)} textSecondary={colors.textSecondary} textPrimary={colors.text} />
+              <LegendItem color={colors.success} label="Self Immovable" value={formatINR(latest.selfImmovableAssets)} textSecondary={colors.textSecondary} textPrimary={colors.text} />
+            </View>
+            <View style={styles.legendRow}>
+              <LegendItem color={colors.gold} label="Spouse" value={formatINR(spouseMov + spouseImm)} textSecondary={colors.textSecondary} textPrimary={colors.text} />
+              {dep > 0 && (
+                <LegendItem color={colors.primary} label="Dependents" value={formatINR(latest.dependentsAssets)} textSecondary={colors.textSecondary} textPrimary={colors.text} />
+              )}
+            </View>
+          </>
+        ) : (
+          <View style={[styles.netWorthRow, { backgroundColor: colors.surfaceElevated, borderColor: colors.border, borderWidth: 1 }]}>
+            <Text style={[styles.netWorthLabel, { color: colors.textMuted }]}>
+              {totalAssets == null ? 'Assets not disclosed' : 'Component breakdown not itemized in filing'}
+            </Text>
+          </View>
+        )}
       </View>
 
       {/* Income */}
-      {(latest.selfIncome > 0 || latest.spouseIncome > 0) && (
+      {((latest.selfIncome != null && latest.selfIncome > 0) || (latest.spouseIncome != null && latest.spouseIncome > 0)) && (
         <View style={[styles.incomeSection, { borderTopColor: colors.border }]}>
           <Text style={[styles.breakdownTitle, { color: colors.textSecondary }]}>Declared Income (ITR)</Text>
           <View style={styles.incomeRow}>
@@ -167,11 +183,22 @@ export default function FinancialBreakdownCard({ records, compact }: Props) {
           <Text style={[styles.breakdownTitle, { color: colors.textSecondary }]}>Wealth Timeline</Text>
           <View style={styles.timelineRow}>
             {records.map((r, idx) => {
-              const maxAsset = Math.max(...records.map(x => x.totalAssets || 0));
-              const barHeight = Math.max(8, ((r.totalAssets || 0) / (maxAsset || 1)) * 60);
+              const disclosedAssets = records.map(x => x.totalAssets).filter((a): a is number => a != null);
+              const maxAsset = disclosedAssets.length > 0 ? Math.max(...disclosedAssets) : 1;
+              const isDisclosed = r.totalAssets != null;
+              const barHeight = isDisclosed && maxAsset > 0 && r.totalAssets! > 0
+                ? Math.max(2, (r.totalAssets! / maxAsset) * 60)
+                : 2;
               return (
                 <View key={r.electionYear} style={styles.timelineItem}>
-                  <View style={[styles.timelineBar, { height: barHeight, backgroundColor: idx === records.length - 1 ? colors.primary : colors.border }]} />
+                  <View style={[
+                    styles.timelineBar,
+                    {
+                      height: barHeight,
+                      backgroundColor: !isDisclosed ? colors.border : (r.totalAssets === 0 ? colors.textMuted : (idx === records.length - 1 ? colors.primary : colors.teal)),
+                      borderStyle: !isDisclosed ? 'dashed' : 'solid',
+                    }
+                  ]} />
                   <Text style={[styles.timelineYear, { color: colors.textSecondary }]}>{r.electionYear}</Text>
                   <Text style={[styles.timelineVal, { color: colors.textMuted }]}>{formatINR(r.totalAssets)}</Text>
                 </View>

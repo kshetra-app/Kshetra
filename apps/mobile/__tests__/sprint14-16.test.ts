@@ -8,23 +8,23 @@ import {
   detectRedFlags,
   EDUCATION_LEVEL_CONFIG,
   RED_FLAG_CONFIG,
-  type CandidateAffidavit,
 } from '../lib/affidavitTypes';
+import type { CandidateAffidavit } from '../lib/affidavitTypes';
 import {
   computePDI,
   buildReportCard,
   PROMISE_STATUS_CONFIG,
   PROMISE_CATEGORY_CONFIG,
-  type ElectionPromise,
 } from '../lib/promiseTypes';
+import type { ElectionPromise } from '../lib/promiseTypes';
 import {
   computeCivicScore,
   getCivicLevel,
   BADGE_CONFIG,
   MODULE_CATEGORY_CONFIG,
   CIVIC_LEVEL_CONFIG,
-  type AspirantProfile,
 } from '../lib/aspirantTypes';
+import type { AspirantProfile } from '../lib/aspirantTypes';
 
 // ─── AFFIDAVIT TYPES TESTS ───
 
@@ -47,6 +47,10 @@ describe('Affidavit Types & Utilities', () => {
       expect(formatINR(10000000000)).toBe('₹10.0 Cr');
       // 1 billion → also hits first branch (equals threshold)
       expect(formatINR(1000000000)).toBe('₹1.0 Cr');
+    });
+    it('should return Not Disclosed for null and undefined', () => {
+      expect(formatINR(null)).toBe('Not Disclosed');
+      expect(formatINR(undefined)).toBe('Not Disclosed');
     });
   });
 
@@ -96,6 +100,23 @@ describe('Affidavit Types & Utilities', () => {
       expect(growth.absoluteGrowth).toBe(9000000);
       expect(growth.fromYear).toBe(2018);
       expect(growth.toYear).toBe(2023);
+      expect(growth.isAvailable).toBe(true);
+    });
+
+    it('should return isAvailable: false and null growths when either totalAssets is null', () => {
+      const nullPrev = { ...prev, totalAssets: null };
+      const nullCurr = { ...curr, totalAssets: null };
+      const res1 = computeWealthGrowth(nullPrev, curr);
+      expect(res1.isAvailable).toBe(false);
+      expect(res1.percentGrowth).toBeNull();
+      expect(res1.absoluteGrowth).toBeNull();
+      expect(res1.annualizedGrowth).toBeNull();
+
+      const res2 = computeWealthGrowth(prev, nullCurr);
+      expect(res2.isAvailable).toBe(false);
+      expect(res2.percentGrowth).toBeNull();
+      expect(res2.absoluteGrowth).toBeNull();
+      expect(res2.annualizedGrowth).toBeNull();
     });
   });
 
@@ -199,6 +220,90 @@ describe('Affidavit Types & Utilities', () => {
       };
       const flags = detectRedFlags(affidavit);
       expect(flags.length).toBe(0);
+    });
+
+    it('should not trigger zero_liability_anomaly when liabilities are null', () => {
+      const affidavit: CandidateAffidavit = {
+        id: 'r_null_liab',
+        candidateName: 'Test Null Liab',
+        constituencyName: 'Test',
+        stateCode: 'TS',
+        acNo: 1,
+        party: 'INC',
+        electionYear: 2023,
+        selfMovableAssets: null,
+        selfImmovableAssets: null,
+        spouseMovableAssets: null,
+        spouseImmovableAssets: null,
+        totalAssets: 20000000,
+        totalLiabilities: null,
+        criminalCases: 0,
+        seriousCriminalCases: 0,
+        education: 'graduate',
+        profession: 'Social Worker',
+        age: 40,
+        selfIncome: null,
+        spouseIncome: null,
+        isWinner: true,
+      };
+      const flags = detectRedFlags(affidavit);
+      expect(flags.some((f) => f.type === 'zero_liability_anomaly')).toBe(false);
+    });
+
+    it('should trigger zero_liability_anomaly when liabilities are affirmative 0 and assets > 5 Cr', () => {
+      const affidavit: CandidateAffidavit = {
+        id: 'r_zero_liab',
+        candidateName: 'Test Zero Liab',
+        constituencyName: 'Test',
+        stateCode: 'TS',
+        acNo: 1,
+        party: 'INC',
+        electionYear: 2023,
+        selfMovableAssets: 30000000,
+        selfImmovableAssets: 30000000,
+        spouseMovableAssets: 0,
+        spouseImmovableAssets: 0,
+        totalAssets: 60000000,
+        totalLiabilities: 0,
+        criminalCases: 0,
+        seriousCriminalCases: 0,
+        education: 'graduate',
+        profession: 'Social Worker',
+        age: 40,
+        selfIncome: 1000000,
+        spouseIncome: 500000,
+        isWinner: true,
+      };
+      const flags = detectRedFlags(affidavit);
+      expect(flags.some((f) => f.type === 'zero_liability_anomaly')).toBe(true);
+    });
+
+    it('should not trigger false income_asset_mismatch when totalAssets is null', () => {
+      const affidavit: CandidateAffidavit = {
+        id: 'r_null_assets',
+        candidateName: 'Test Null Assets',
+        constituencyName: 'Test',
+        stateCode: 'TS',
+        acNo: 1,
+        party: 'INC',
+        electionYear: 2023,
+        selfMovableAssets: null,
+        selfImmovableAssets: null,
+        spouseMovableAssets: null,
+        spouseImmovableAssets: null,
+        totalAssets: null,
+        totalLiabilities: null,
+        criminalCases: 0,
+        seriousCriminalCases: 0,
+        education: 'graduate',
+        profession: 'Social Worker',
+        age: 40,
+        selfIncome: 100000,
+        spouseIncome: 50000,
+        isWinner: true,
+      };
+      const flags = detectRedFlags(affidavit);
+      expect(flags.some((f) => f.type === 'income_asset_mismatch')).toBe(false);
     });
   });
 

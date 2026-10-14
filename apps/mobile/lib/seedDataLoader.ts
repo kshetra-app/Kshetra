@@ -32,8 +32,8 @@ export interface MLAProfileRow {
   education: string;
   profession: string;
   criminal_cases: number;
-  total_assets: number;
-  total_liabilities: number;
+  total_assets: number | null;
+  total_liabilities: number | null;
   marital_status: string;
   photo_url: string;
   constituency_name: string;

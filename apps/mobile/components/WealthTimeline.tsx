@@ -19,7 +19,8 @@ export default React.memo(function WealthTimeline({ affidavits, growths }: Wealt
   if (affidavits.length === 0) return null;
 
   const sorted = [...affidavits].sort((a, b) => a.electionYear - b.electionYear);
-  const maxAssets = Math.max(...sorted.map((a) => a.totalAssets), 1);
+  const validAssets = sorted.map((a) => a.totalAssets).filter((v): v is number => v != null);
+  const maxAssets = validAssets.length > 0 ? Math.max(...validAssets, 1) : 1;
 
   return (
     <View style={styles.container}>
@@ -30,13 +31,20 @@ export default React.memo(function WealthTimeline({ affidavits, growths }: Wealt
 
       <View style={styles.chart}>
         {sorted.map((a, idx) => {
-          const barHeight = Math.max((a.totalAssets / maxAssets) * 120, 8);
+          const isDisclosed = a.totalAssets != null;
+          const barHeight = isDisclosed
+            ? (a.totalAssets! > 0 ? Math.max((a.totalAssets! / maxAssets) * 120, 8) : 2)
+            : 2;
           const growth = growths.find((g) => g.toYear === a.electionYear);
+          const hasComponents = isDisclosed && a.totalAssets! > 0 &&
+            (a.selfMovableAssets != null || a.selfImmovableAssets != null || a.spouseMovableAssets != null || a.spouseImmovableAssets != null);
+          const selfPortion = ((a.selfMovableAssets ?? 0) + (a.selfImmovableAssets ?? 0));
+          const spousePortion = ((a.spouseMovableAssets ?? 0) + (a.spouseImmovableAssets ?? 0));
 
           return (
             <View key={a.electionYear} style={styles.barGroup}>
               {/* Growth arrow */}
-              {growth && (
+              {growth && growth.percentGrowth != null && (
                 <View style={[styles.growthBadge, growth.percentGrowth > 500 && styles.growthBadgeDanger]}>
                   <Ionicons
                     name={growth.percentGrowth >= 0 ? 'arrow-up' : 'arrow-down'}
@@ -53,9 +61,13 @@ export default React.memo(function WealthTimeline({ affidavits, growths }: Wealt
 
               {/* Bar */}
               <View style={styles.barWrapper}>
-                <View style={[styles.bar, { height: barHeight }]}>
-                  <View style={[styles.barFillSelf, { height: barHeight * (a.selfMovableAssets + a.selfImmovableAssets) / a.totalAssets }]} />
-                  <View style={[styles.barFillSpouse, { height: barHeight * (a.spouseMovableAssets + a.spouseImmovableAssets) / a.totalAssets }]} />
+                <View style={[styles.bar, { height: barHeight }, !isDisclosed && styles.barUndisclosed]}>
+                  {hasComponents && (
+                    <>
+                      <View style={[styles.barFillSelf, { height: (barHeight * selfPortion) / a.totalAssets! }]} />
+                      <View style={[styles.barFillSpouse, { height: (barHeight * spousePortion) / a.totalAssets! }]} />
+                    </>
+                  )}
                 </View>
               </View>
 
@@ -88,9 +100,9 @@ export default React.memo(function WealthTimeline({ affidavits, growths }: Wealt
             {t('wealthTimeline.totalGrowth')} {formatINR(sorted[0].totalAssets)} ({sorted[0].electionYear}) →{' '}
             {formatINR(sorted[sorted.length - 1].totalAssets)} ({sorted[sorted.length - 1].electionYear})
           </Text>
-          {growths.length > 0 && (
+          {growths[growths.length - 1].annualizedGrowth != null && (
             <Text style={styles.summaryAnnualized}>
-              {t('wealthTimeline.annualized')} {growths[growths.length - 1].annualizedGrowth.toFixed(1)}% {t('wealthTimeline.perYear')}
+              {t('wealthTimeline.annualized')} {growths[growths.length - 1].annualizedGrowth!.toFixed(1)}% {t('wealthTimeline.perYear')}
             </Text>
           )}
         </View>
@@ -156,6 +168,12 @@ const styles = StyleSheet.create({
     borderRadius: 6,
     overflow: 'hidden',
     backgroundColor: '#E8DED1',
+  },
+  barUndisclosed: {
+    backgroundColor: '#E5E7EB',
+    borderWidth: 1,
+    borderColor: '#9CA3AF',
+    borderStyle: 'dashed',
   },
   barFillSelf: {
     backgroundColor: '#4F8EF7',

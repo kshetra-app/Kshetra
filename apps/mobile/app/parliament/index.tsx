@@ -53,8 +53,9 @@ const POPULAR_STATES = [
   { code: 'DL', label: 'Delhi' },
 ];
 
-function formatINR(val?: number): string {
-  if (!val || val === 0) return '₹0';
+function formatINR(val?: number | null): string {
+  if (val === null || val === undefined) return 'Not Disclosed';
+  if (val === 0) return '₹0';
   if (val >= 1_00_00_000) return `₹${(val / 1_00_00_000).toFixed(2)} Cr`;
   if (val >= 1_00_000) return `₹${(val / 1_00_000).toFixed(1)} L`;
   return `₹${val.toLocaleString('en-IN')}`;

@@ -28,7 +28,7 @@ interface AffidavitState {
   getWealthGrowth: (candidateName: string) => WealthGrowth[];
   getRedFlags: (affidavitId: string) => AffidavitRedFlag[];
   getConstituencyIntegrity: (stateCode: string, acNo: number) => ConstituencyIntegrity | null;
-  getCrorepatiCount: (stateCode: string, year: number) => { total: number; crorepatis: number; percent: number };
+  getCrorepatiCount: (stateCode: string, year: number) => { total: number; disclosedCount: number; crorepatis: number; percent: number };
   getCriminalCandidates: (stateCode: string, year: number) => { total: number; withCases: number; withSerious: number };
 }
 
@@ -914,7 +914,10 @@ export const useAffidavitStore = create<AffidavitState>()((set, get) => ({
 
     const withCases = latest.filter((a) => a.criminalCases > 0).length;
     const withSerious = latest.filter((a) => a.seriousCriminalCases > 0).length;
-    const avgAssets = latest.reduce((s, a) => s + a.totalAssets, 0) / latest.length;
+    const disclosedAssets = latest.filter((a): a is typeof a & { totalAssets: number } => a.totalAssets != null);
+    const avgAssets = disclosedAssets.length > 0
+      ? disclosedAssets.reduce((s, a) => s + a.totalAssets, 0) / disclosedAssets.length
+      : null;
 
     // Simple integrity score: 100 minus penalties
     let score = 100;
@@ -930,6 +933,7 @@ export const useAffidavitStore = create<AffidavitState>()((set, get) => ({
       candidatesWithCases: withCases,
       candidatesWithSeriousCases: withSerious,
       averageAssets: avgAssets,
+      assetsDisclosedCandidatesCount: disclosedAssets.length,
       medianEducation: 'graduate',
       integrityScore: score,
     };
@@ -939,11 +943,13 @@ export const useAffidavitStore = create<AffidavitState>()((set, get) => ({
     const yearAffidavits = get().affidavits.filter(
       (a) => a.stateCode === stateCode && a.electionYear === year && a.isWinner,
     );
-    const crorepatis = yearAffidavits.filter((a) => a.totalAssets >= 1_00_00_000).length;
+    const disclosedAffidavits = yearAffidavits.filter((a) => a.totalAssets != null);
+    const crorepatis = disclosedAffidavits.filter((a) => a.totalAssets! >= 1_00_00_000).length;
     return {
       total: yearAffidavits.length,
+      disclosedCount: disclosedAffidavits.length,
       crorepatis,
-      percent: yearAffidavits.length > 0 ? Math.round((crorepatis / yearAffidavits.length) * 100) : 0,
+      percent: disclosedAffidavits.length > 0 ? Math.round((crorepatis / disclosedAffidavits.length) * 100) : 0,
     };
   },
 

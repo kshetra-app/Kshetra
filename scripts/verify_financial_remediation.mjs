@@ -143,9 +143,9 @@ export function safeCanonicalPath(filePath, repoRoot) {
     throw new Error('INVALID_REPO_ROOT: Repository root must be a non-empty string');
   }
 
-  // Check for obvious path traversal strings before resolution
-  if (filePath.includes('../') || filePath.includes('..\\')) {
-    // Check if after resolve it escapes
+  // Reject UNC paths (starts with // or \\)
+  if (filePath.startsWith('\\\\') || filePath.startsWith('//')) {
+    throw new Error(`PATH_OUTSIDE_REPO_ROOT: UNC paths are forbidden ('${filePath}')`);
   }
 
   let realRepoRoot;
@@ -155,16 +155,29 @@ export function safeCanonicalPath(filePath, repoRoot) {
     throw new Error(`CANNOT_RESOLVE_REPO_ROOT: ${err.message}`);
   }
 
+  // If filePath has a drive root, check drive match on Windows
+  const parsedFile = path.parse(filePath);
+  const parsedRepo = path.parse(realRepoRoot);
+  if (parsedFile.root && parsedRepo.root) {
+    const fileDrive = parsedFile.root.replace(/[\\\/]/g, '').toUpperCase();
+    const repoDrive = parsedRepo.root.replace(/[\\\/]/g, '').toUpperCase();
+    if (fileDrive && repoDrive && fileDrive !== repoDrive) {
+      throw new Error(`PATH_OUTSIDE_REPO_ROOT: Path '${filePath}' attempts drive hopping outside '${realRepoRoot}'`);
+    }
+  }
+
   const resolvedTarget = path.resolve(realRepoRoot, filePath);
+  const normalized = path.normalize(resolvedTarget);
+
+  // Check normalized path before symlink resolution
+  if (!normalized.startsWith(realRepoRoot + path.sep) && normalized !== realRepoRoot) {
+    throw new Error(`PATH_OUTSIDE_REPO_ROOT: Path '${filePath}' resolves outside repository root '${realRepoRoot}'`);
+  }
+
   let realTarget;
   try {
     realTarget = fs.realpathSync(resolvedTarget);
   } catch (err) {
-    // If file doesn't exist, check normalized path
-    const normalized = path.normalize(resolvedTarget);
-    if (!normalized.startsWith(realRepoRoot + path.sep) && normalized !== realRepoRoot) {
-      throw new Error(`PATH_TRAVERSAL_DETECTED: Path '${filePath}' resolves outside repository root '${realRepoRoot}'`);
-    }
     throw new Error(`FILE_NOT_FOUND: ${err.message}`);
   }
 
@@ -288,6 +301,58 @@ export function extractObjectLiteralAtLine(content, startLine) {
   return cleaned;
 }
 
+function commitProperty(rawKey, rawVal, result) {
+  let key = rawKey.trim();
+  if ((key.startsWith('"') && key.endsWith('"')) || (key.startsWith('\'') && key.endsWith('\''))) {
+    key = key.slice(1, -1);
+  }
+
+  let val = rawVal.trim();
+  if (val.endsWith(';') || val.endsWith(',')) {
+    val = val.slice(0, -1).trim();
+  }
+
+  result.rawProperties[key] = val;
+
+  // 1. String literal
+  if ((val.startsWith('"') && val.endsWith('"')) || (val.startsWith('\'') && val.endsWith('\''))) {
+    const unquoted = val.slice(1, -1)
+      .replace(/\\'/g, '\'')
+      .replace(/\\"/g, '"')
+      .replace(/\\\\/g, '\\');
+    if (key === 'candidateName' || key === 'name') result.candidateName = unquoted;
+    if (key === 'constituencyName') result.constituencyName = unquoted;
+    if (key === 'party') result.party = unquoted;
+    return;
+  }
+
+  // 2. null / undefined
+  if (val === 'null') {
+    if (key === 'totalAssets') result.totalAssets = null;
+    if (key === 'totalLiabilities') result.totalLiabilities = null;
+    return;
+  }
+  if (val === 'undefined') {
+    return;
+  }
+
+  // 3. Numeric values with optional underscore separators
+  const cleanVal = val.replace(/_/g, '');
+  const num = Number(cleanVal);
+  if (!isNaN(num) && cleanVal !== '' && !cleanVal.includes('{') && !cleanVal.includes('[')) {
+    if (!Number.isSafeInteger(num) || num < 0) {
+      throw new Error(`INVALID_NUMERIC_VALUE: Property '${key}' has invalid or unsafe integer value '${val}'`);
+    }
+    if (key === 'totalAssets') result.totalAssets = num;
+    if (key === 'totalLiabilities') result.totalLiabilities = num;
+    if (key === 'acNo') result.acNo = num;
+    if (key === 'selfMovableAssets') result.selfMovableAssets = num;
+    if (key === 'selfImmovableAssets') result.selfImmovableAssets = num;
+    if (key === 'spouseMovableAssets') result.spouseMovableAssets = num;
+    if (key === 'spouseImmovableAssets') result.spouseImmovableAssets = num;
+  }
+}
+
 export function parsePropertiesFromCleanedObject(cleaned) {
   const result = {
     rawProperties: {},
@@ -303,51 +368,152 @@ export function parsePropertiesFromCleanedObject(cleaned) {
     spouseImmovableAssets: undefined
   };
 
-  // Property extraction scanning
-  // Match key: value patterns while respecting quotes and numbers
-  const propRegex = /([a-zA-Z0-9_$]+)\s*:\s*([^,\n}]+)/g;
-  let match;
-  while ((match = propRegex.exec(cleaned)) !== null) {
-    const key = match[1].trim();
-    let rawVal = match[2].trim();
+  if (!cleaned || typeof cleaned !== 'string') {
+    return result;
+  }
 
-    // Remove trailing comma or semicolon if present
-    if (rawVal.endsWith(',') || rawVal.endsWith(';')) {
-      rawVal = rawVal.slice(0, -1).trim();
+  let idx = 0;
+  while (idx < cleaned.length && cleaned[idx] !== '{') idx++;
+  if (idx >= cleaned.length || cleaned[idx] !== '{') {
+    throw new Error('NO_OPENING_BRACE: Cleaned object does not begin with \'{\'');
+  }
+  idx++; // move past opening '{'
+
+  let depth = 1;
+  let bracketDepth = 0;
+  let parenDepth = 0;
+  let inSingle = false;
+  let inDouble = false;
+  let inTemplate = false;
+  let escaped = false;
+
+  let currentKey = '';
+  let currentValue = '';
+  let parsingKey = true;
+
+  while (idx < cleaned.length) {
+    const ch = cleaned[idx];
+
+    if (inSingle) {
+      if (parsingKey) currentKey += ch;
+      else currentValue += ch;
+      if (escaped) escaped = false;
+      else if (ch === '\\') escaped = true;
+      else if (ch === '\'') inSingle = false;
+      idx++;
+      continue;
+    }
+    if (inDouble) {
+      if (parsingKey) currentKey += ch;
+      else currentValue += ch;
+      if (escaped) escaped = false;
+      else if (ch === '\\') escaped = true;
+      else if (ch === '"') inDouble = false;
+      idx++;
+      continue;
+    }
+    if (inTemplate) {
+      if (parsingKey) currentKey += ch;
+      else currentValue += ch;
+      if (escaped) escaped = false;
+      else if (ch === '\\') escaped = true;
+      else if (ch === '`') inTemplate = false;
+      idx++;
+      continue;
     }
 
-    result.rawProperties[key] = rawVal;
+    if (ch === '\'') {
+      inSingle = true;
+      escaped = false;
+      if (parsingKey) currentKey += ch;
+      else currentValue += ch;
+      idx++;
+      continue;
+    }
+    if (ch === '"') {
+      inDouble = true;
+      escaped = false;
+      if (parsingKey) currentKey += ch;
+      else currentValue += ch;
+      idx++;
+      continue;
+    }
+    if (ch === '`') {
+      inTemplate = true;
+      escaped = false;
+      if (parsingKey) currentKey += ch;
+      else currentValue += ch;
+      idx++;
+      continue;
+    }
 
-    // Parse string literals
-    if ((rawVal.startsWith('"') && rawVal.endsWith('"')) || (rawVal.startsWith('\'') && rawVal.endsWith('\''))) {
-      const unquoted = rawVal.slice(1, -1)
-        .replace(/\\'/g, '\'')
-        .replace(/\\"/g, '"')
-        .replace(/\\\\/g, '\\');
-      if (key === 'candidateName') result.candidateName = unquoted;
-      if (key === 'constituencyName') result.constituencyName = unquoted;
-      if (key === 'party') result.party = unquoted;
-    } else if (rawVal === 'null') {
-      if (key === 'totalAssets') result.totalAssets = null;
-      if (key === 'totalLiabilities') result.totalLiabilities = null;
-    } else if (rawVal === 'undefined') {
-      // explicitly undefined
-    } else {
-      // Attempt numeric parsing
-      const num = Number(rawVal);
-      if (!isNaN(num)) {
-        if (!Number.isSafeInteger(num) || num < 0) {
-          throw new Error(`INVALID_NUMERIC_VALUE: Property '${key}' has invalid or unsafe integer value '${rawVal}'`);
+    if (ch === '{') {
+      depth++;
+      if (!parsingKey) currentValue += ch;
+      idx++;
+      continue;
+    }
+    if (ch === '}') {
+      depth--;
+      if (depth === 0) {
+        if (currentKey.trim() && currentValue.trim()) {
+          commitProperty(currentKey.trim(), currentValue.trim(), result);
         }
-        if (key === 'totalAssets') result.totalAssets = num;
-        if (key === 'totalLiabilities') result.totalLiabilities = num;
-        if (key === 'acNo') result.acNo = num;
-        if (key === 'selfMovableAssets') result.selfMovableAssets = num;
-        if (key === 'selfImmovableAssets') result.selfImmovableAssets = num;
-        if (key === 'spouseMovableAssets') result.spouseMovableAssets = num;
-        if (key === 'spouseImmovableAssets') result.spouseImmovableAssets = num;
+        break;
+      }
+      if (!parsingKey) currentValue += ch;
+      idx++;
+      continue;
+    }
+
+    if (ch === '[') {
+      bracketDepth++;
+      if (!parsingKey) currentValue += ch;
+      idx++;
+      continue;
+    }
+    if (ch === ']') {
+      bracketDepth--;
+      if (!parsingKey) currentValue += ch;
+      idx++;
+      continue;
+    }
+    if (ch === '(') {
+      parenDepth++;
+      if (!parsingKey) currentValue += ch;
+      idx++;
+      continue;
+    }
+    if (ch === ')') {
+      parenDepth--;
+      if (!parsingKey) currentValue += ch;
+      idx++;
+      continue;
+    }
+
+    if (depth === 1 && bracketDepth === 0 && parenDepth === 0) {
+      if (parsingKey && ch === ':') {
+        parsingKey = false;
+        currentValue = '';
+        idx++;
+        continue;
+      }
+      if (!parsingKey && ch === ',') {
+        commitProperty(currentKey.trim(), currentValue.trim(), result);
+        currentKey = '';
+        currentValue = '';
+        parsingKey = true;
+        idx++;
+        continue;
       }
     }
+
+    if (parsingKey) {
+      currentKey += ch;
+    } else {
+      currentValue += ch;
+    }
+    idx++;
   }
 
   return result;
@@ -360,17 +526,25 @@ export function parseSourceProfile(sourceFilePath, sourceLine, expectedCandidate
   const cleaned = extractObjectLiteralAtLine(content, sourceLine);
   const parsed = parsePropertiesFromCleanedObject(cleaned);
 
-  if (expectedCandidateName && parsed.candidateName !== expectedCandidateName) {
-    // Normalization check for names (whitespace/quote differences)
-    const normParsed = parsed.candidateName ? parsed.candidateName.replace(/\s+/g, ' ').trim() : '';
+  if (expectedCandidateName) {
+    const candName = parsed.candidateName;
+    if (!candName) {
+      throw new Error(`MISSING_REQUIRED_IDENTITY_FIELD: Candidate name property missing in source object at line ${sourceLine}`);
+    }
+    const normParsed = candName.replace(/\s+/g, ' ').trim();
     const normExpected = expectedCandidateName.replace(/\s+/g, ' ').trim();
     if (normParsed !== normExpected) {
-      throw new Error(`SOURCE_COORDINATE_MISMATCH: Candidate name at line ${sourceLine} is '${parsed.candidateName}', expected '${expectedCandidateName}'`);
+      throw new Error(`SOURCE_COORDINATE_MISMATCH: Candidate name at line ${sourceLine} is '${candName}', expected '${expectedCandidateName}'`);
     }
   }
 
-  if (expectedAcNo !== undefined && parsed.acNo !== undefined && parsed.acNo !== expectedAcNo) {
-    throw new Error(`SOURCE_COORDINATE_MISMATCH: acNo at line ${sourceLine} is ${parsed.acNo}, expected ${expectedAcNo}`);
+  if (expectedAcNo !== undefined) {
+    if (parsed.acNo === undefined) {
+      throw new Error(`MISSING_REQUIRED_IDENTITY_FIELD: Constituency number (acNo) missing in source object at line ${sourceLine}`);
+    }
+    if (parsed.acNo !== expectedAcNo) {
+      throw new Error(`SOURCE_COORDINATE_MISMATCH: acNo at line ${sourceLine} is ${parsed.acNo}, expected ${expectedAcNo}`);
+    }
   }
 
   return parsed;
@@ -561,6 +735,9 @@ export function validateExactMembership(manifestData, crosswalkData, ledgerData,
 
 export function validateCorrectionEligibility(manifestRecord, correction, fieldType, crosswalkMap, ledgerMap, repoRoot) {
   // Pre-condition 1: correction refers to exact manifest record
+  if (!manifestRecord || !correction) {
+    throw new Error('INVALID_ARGUMENTS: Both manifestRecord and correction are required');
+  }
   if (manifestRecord.id !== correction.affidavitId) {
     throw new Error(`CORRECTION_RECORD_MISMATCH: Record ID ${manifestRecord.id} does not match correction ID ${correction.affidavitId}`);
   }
@@ -572,7 +749,7 @@ export function validateCorrectionEligibility(manifestRecord, correction, fieldT
   }
 
   // Pre-condition 3: ledger entry consistency if present
-  const ledgerEntry = ledgerMap.get(manifestRecord.id);
+  const ledgerEntry = ledgerMap ? ledgerMap.get(manifestRecord.id) : null;
   if (ledgerEntry) {
     if (ledgerEntry.targetUuid !== crosswalkEntry.targetUuid) {
       throw new Error(`CROSSWALK_LEDGER_UUID_MISMATCH: Crosswalk UUID ${crosswalkEntry.targetUuid} != Ledger UUID ${ledgerEntry.targetUuid}`);
@@ -597,43 +774,56 @@ export function validateCorrectionEligibility(manifestRecord, correction, fieldT
     throw new Error(`UNRESOLVED_SOURCE_CONFLICT: Correction for ${manifestRecord.id} has unresolved source conflict`);
   }
 
-  // Pre-condition 7: Source verification if coordinate provided
-  if (correction.sourceFile && correction.sourceLocation && repoRoot) {
-    const parts = correction.sourceLocation.split(':');
-    const lineNum = parseInt(parts[parts.length - 1], 10);
-    if (!isNaN(lineNum)) {
-      try {
-        const parsedProfile = parseSourceProfile(
-          correction.sourceFile,
-          lineNum,
-          manifestRecord.candidate_name,
-          manifestRecord.ac_no,
-          repoRoot
-        );
+  // Pre-condition 7: Mandatory source coordinate existence and verification (§2 Req 8)
+  if (!correction.sourceFile || !correction.sourceLocation) {
+    throw new Error(`MISSING_SOURCE_COORDINATE: Correction for ${manifestRecord.id} lacks required sourceFile or sourceLocation`);
+  }
+  if (!repoRoot) {
+    throw new Error(`MISSING_REPO_ROOT: Repository root required for authoritative source coordinate verification`);
+  }
 
-        if (fieldType === 'ASSET') {
-          // If source had positive assets, cannot set intendedValue to null
-          if (parsedProfile.totalAssets !== undefined && parsedProfile.totalAssets > 0 && correction.intendedValue === null) {
-            throw new Error(`POSITIVE_TOTAL_MUTATION_FORBIDDEN: Source has positive assets ${parsedProfile.totalAssets}; cannot nullify`);
-          }
-          // If source had verified genuine zero, cannot set intendedValue to null
-          if (parsedProfile.totalAssets === 0 && correction.intendedValue === null) {
-            throw new Error(`GENUINE_ZERO_COERCION_FORBIDDEN: Source explicitly has 0 assets; cannot coerce genuine zero to null`);
-          }
-        }
+  const parts = correction.sourceLocation.split(':');
+  const lineNum = parseInt(parts[parts.length - 1], 10);
+  if (isNaN(lineNum) || lineNum < 1) {
+    throw new Error(`INVALID_SOURCE_COORDINATE: Invalid line number in sourceLocation: ${correction.sourceLocation}`);
+  }
 
-        if (fieldType === 'LIABILITY') {
-          if (parsedProfile.totalLiabilities !== undefined && parsedProfile.totalLiabilities > 0 && correction.intendedValue === null) {
-            throw new Error(`POSITIVE_TOTAL_MUTATION_FORBIDDEN: Source has positive liabilities ${parsedProfile.totalLiabilities}; cannot nullify`);
-          }
-          if (parsedProfile.totalLiabilities === 0 && correction.intendedValue === null) {
-            throw new Error(`GENUINE_ZERO_COERCION_FORBIDDEN: Source explicitly has 0 liabilities; cannot coerce genuine zero to null`);
-          }
-        }
-      } catch (err) {
-        // Re-throw specific errors
-        throw err;
+  const parsedProfile = parseSourceProfile(
+    correction.sourceFile,
+    lineNum,
+    manifestRecord.candidate_name,
+    manifestRecord.ac_no,
+    repoRoot
+  );
+
+  const sourceVal = fieldType === 'ASSET' ? parsedProfile.totalAssets : parsedProfile.totalLiabilities;
+
+  // Positive restoration verification (§2 Req 5):
+  if (correction.intendedValue !== null && correction.intendedValue > 0) {
+    if (sourceVal === undefined || sourceVal === null) {
+      throw new Error(`SOURCE_VALUE_UNAVAILABLE: Intended positive value ${correction.intendedValue} has no positive source disclosure`);
+    }
+    if (sourceVal !== correction.intendedValue) {
+      throw new Error(`SOURCE_RESTORED_VALUE_MISMATCH: Source value ${sourceVal} does not match intended restored value ${correction.intendedValue}`);
+    }
+    if (ledgerEntry) {
+      const ledgerAuthoritativeVal = fieldType === 'ASSET' ? ledgerEntry.authoritativeTotalAssets : ledgerEntry.authoritativeTotalLiabilities;
+      if (ledgerAuthoritativeVal !== undefined && ledgerAuthoritativeVal !== null && ledgerAuthoritativeVal !== correction.intendedValue) {
+        throw new Error(`LEDGER_RESTORED_VALUE_MISMATCH: Ledger authoritative value ${ledgerAuthoritativeVal} does not match intended value ${correction.intendedValue}`);
       }
+    }
+  }
+
+  // Missing disclosure verification (§2 Req 6 & 7):
+  if (correction.intendedValue === null) {
+    if (sourceVal !== undefined && sourceVal !== null && sourceVal > 0) {
+      throw new Error(`POSITIVE_TOTAL_MUTATION_FORBIDDEN: Source has positive ${fieldType.toLowerCase()} ${sourceVal}; cannot nullify`);
+    }
+    if (sourceVal === 0) {
+      throw new Error(`GENUINE_ZERO_COERCION_FORBIDDEN: Source explicitly has 0 ${fieldType.toLowerCase()}; cannot coerce genuine zero to null`);
+    }
+    if (sourceVal !== undefined && sourceVal !== null) {
+      throw new Error(`SOURCE_EVIDENCE_INSUFFICIENT: Source does not provide affirmative evidence of missing disclosure for ${fieldType.toLowerCase()}`);
     }
   }
 

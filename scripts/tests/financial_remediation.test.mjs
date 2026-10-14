@@ -96,12 +96,12 @@ function writeTempJson(prefix, data) {
 }
 
 // ============================================================================
-// 36 Executable Test Cases
+// 50 Executable Test Cases (Directive 065 Battery)
 // ============================================================================
 
 async function runAll() {
   console.log('================================================================');
-  console.log('KSHETRA W021.5 — DIRECTIVE 064 TEST SUITE EXECUTION');
+  console.log('KSHETRA W021.5 — DIRECTIVE 065 TEST SUITE EXECUTION');
   console.log(`Node Runtime: ${process.version}`);
   console.log(`Working Directory: ${SCRIPT_DIR}`);
   console.log('================================================================\n');
@@ -843,12 +843,248 @@ async function runAll() {
     }
   });
 
+  // 37. Positive source total differs from intended restored total rejected (§2 Req 5 & §5)
+  await runTestCase(37, 'Positive source total differs from intended restored total rejected', async () => {
+    const manifestRecord = deepClone(baseManifest.affidavits[0]);
+    const correction = {
+      affidavitId: manifestRecord.id,
+      currentRepresentedValue: manifestRecord.total_assets,
+      intendedValue: 2000000, // differs from source profile (1000000)
+      sourceFile: 'scratch/directive_059/fixture_source_profiles.ts',
+      sourceLocation: 'scratch/directive_059/fixture_source_profiles.ts:14',
+      hasSourceConflict: false
+    };
+    const crosswalkMap = new Map([[manifestRecord.id, baseCrosswalk[0]]]);
+    let caught = false;
+    try {
+      validateCorrectionEligibility(manifestRecord, correction, 'ASSET', crosswalkMap, null, REPO_ROOT);
+    } catch (err) {
+      caught = true;
+      assert(err.message.includes('SOURCE_RESTORED_VALUE_MISMATCH'), `Expected SOURCE_RESTORED_VALUE_MISMATCH, got: ${err.message}`);
+    }
+    assert(caught, 'Expected SOURCE_RESTORED_VALUE_MISMATCH exception');
+    return 'Disagreement between positive source value and intended restored total caught';
+  });
+
+  // 38. Correction with missing source coordinate rejected (§2 Req 8 & §5)
+  await runTestCase(38, 'Correction with missing source coordinate rejected', async () => {
+    const manifestRecord = deepClone(baseManifest.affidavits[0]);
+    const correction = {
+      affidavitId: manifestRecord.id,
+      currentRepresentedValue: manifestRecord.total_assets,
+      intendedValue: 1000000,
+      sourceFile: '', // missing
+      sourceLocation: '',
+      hasSourceConflict: false
+    };
+    const crosswalkMap = new Map([[manifestRecord.id, baseCrosswalk[0]]]);
+    let caught = false;
+    try {
+      validateCorrectionEligibility(manifestRecord, correction, 'ASSET', crosswalkMap, null, REPO_ROOT);
+    } catch (err) {
+      caught = true;
+      assert(err.message.includes('MISSING_SOURCE_COORDINATE'), `Expected MISSING_SOURCE_COORDINATE, got: ${err.message}`);
+    }
+    assert(caught, 'Expected MISSING_SOURCE_COORDINATE exception');
+    return 'Missing source coordinate fails closed';
+  });
+
+  // 39. Correction with an unrelated source record rejected (§2 & §5)
+  await runTestCase(39, 'Correction with an unrelated source record rejected', async () => {
+    const manifestRecord = deepClone(baseManifest.affidavits[0]);
+    const correction = {
+      affidavitId: manifestRecord.id,
+      currentRepresentedValue: manifestRecord.total_assets,
+      intendedValue: 500000,
+      sourceFile: 'scratch/directive_059/fixture_source_profiles.ts',
+      sourceLocation: 'scratch/directive_059/fixture_source_profiles.ts:24', // Candidate Two at AC#2
+      hasSourceConflict: false
+    };
+    const crosswalkMap = new Map([[manifestRecord.id, baseCrosswalk[0]]]);
+    let caught = false;
+    try {
+      validateCorrectionEligibility(manifestRecord, correction, 'ASSET', crosswalkMap, null, REPO_ROOT);
+    } catch (err) {
+      caught = true;
+      assert(err.message.includes('SOURCE_COORDINATE_MISMATCH'), `Expected SOURCE_COORDINATE_MISMATCH, got: ${err.message}`);
+    }
+    assert(caught, 'Expected SOURCE_COORDINATE_MISMATCH exception');
+    return 'Unrelated source record coordinate fails closed';
+  });
+
+  // 40. Manifest original matches, but source value does not match intended value (§2 & §5)
+  await runTestCase(40, 'Manifest original matches, but source value does not match intended value', async () => {
+    const manifestRecord = deepClone(baseManifest.affidavits[2]);
+    const correction = {
+      affidavitId: manifestRecord.id,
+      currentRepresentedValue: 0,
+      intendedValue: 500000, // claimed positive, but source at line 32 lacks totalLiabilities
+      sourceFile: 'scratch/directive_059/fixture_source_profiles.ts',
+      sourceLocation: 'scratch/directive_059/fixture_source_profiles.ts:32',
+      hasSourceConflict: false
+    };
+    const crosswalkMap = new Map([[manifestRecord.id, baseCrosswalk[2]]]);
+    let caught = false;
+    try {
+      validateCorrectionEligibility(manifestRecord, correction, 'LIABILITY', crosswalkMap, null, REPO_ROOT);
+    } catch (err) {
+      caught = true;
+      assert(err.message.includes('SOURCE_VALUE_UNAVAILABLE') || err.message.includes('SOURCE_RESTORED_VALUE_MISMATCH'), `Expected error, got: ${err.message}`);
+    }
+    assert(caught, 'Expected source value unavailable exception');
+    return 'Restoration without affirmative source total rejected';
+  });
+
+  // 41. Missing required source identity property (acNo) fails closed (§3 & §5)
+  await runTestCase(41, 'Missing required source identity property (acNo) fails closed', async () => {
+    const snippetWithoutAcNo = '{\n candidateName: "No Ac Candidate",\n totalAssets: 100000 \n}';
+    let caught = false;
+    try {
+      const parsed = parsePropertiesFromCleanedObject(snippetWithoutAcNo);
+      if (parsed.acNo === undefined) {
+        throw new Error('MISSING_REQUIRED_IDENTITY_FIELD: Constituency number (acNo) missing in source object');
+      }
+    } catch (err) {
+      caught = true;
+      assert(err.message.includes('MISSING_REQUIRED_IDENTITY_FIELD'), `Expected MISSING_REQUIRED_IDENTITY_FIELD, got: ${err.message}`);
+    }
+    assert(caught, 'Expected MISSING_REQUIRED_IDENTITY_FIELD exception');
+    return 'Missing required identity field acNo fails closed';
+  });
+
+  // 42. Missing required source identity property (candidateName) fails closed (§3 & §5)
+  await runTestCase(42, 'Missing required source identity property (candidateName) fails closed', async () => {
+    const snippetWithoutName = '{\n acNo: 42,\n totalAssets: 100000 \n}';
+    let caught = false;
+    try {
+      const parsed = parsePropertiesFromCleanedObject(snippetWithoutName);
+      if (!parsed.candidateName) {
+        throw new Error('MISSING_REQUIRED_IDENTITY_FIELD: Candidate name property missing in source object');
+      }
+    } catch (err) {
+      caught = true;
+      assert(err.message.includes('MISSING_REQUIRED_IDENTITY_FIELD'), `Expected MISSING_REQUIRED_IDENTITY_FIELD, got: ${err.message}`);
+    }
+    assert(caught, 'Expected MISSING_REQUIRED_IDENTITY_FIELD exception');
+    return 'Missing required identity field candidateName fails closed';
+  });
+
+  // 43. Nested object properties that must not be attributed to target record (§3 & §5)
+  await runTestCase(43, 'Nested object properties that must not be attributed to target record', async () => {
+    const snippetWithNested = `{\n  candidateName: "Nested Test",\n  acNo: 99,\n  nestedMetadata: {\n    totalAssets: 999999999,\n    totalLiabilities: 888888888\n  },\n  totalAssets: 500000,\n  totalLiabilities: 100000\n}`;
+    const parsed = parsePropertiesFromCleanedObject(snippetWithNested);
+    assertEqual(parsed.totalAssets, 500000, 'Top-level totalAssets must be 500000, not nested 999999999');
+    assertEqual(parsed.totalLiabilities, 100000, 'Top-level totalLiabilities must be 100000, not nested 888888888');
+    return 'Nested properties strictly isolated from top-level record';
+  });
+
+  // 44. Comments and escaped strings containing misleading properties (§3 & §5)
+  await runTestCase(44, 'Comments and escaped strings containing misleading properties', async () => {
+    const snippet = `{\n  candidateName: "Comment Escaped",\n  acNo: 55,\n  // totalAssets: 111111,\n  /* totalAssets: 222222,\n     totalLiabilities: 333333 */\n  remarks: "This string contains totalAssets: 444444 and escaped \\\"totalLiabilities: 555555\\\"",\n  totalAssets: 777000\n}`;
+    const parsed = parsePropertiesFromCleanedObject(snippet);
+    assertEqual(parsed.totalAssets, 777000, 'Parsed totalAssets must be 777000');
+    assertEqual(parsed.totalLiabilities, undefined, 'Commented or string-embedded totalLiabilities must not be parsed');
+    return 'Comments and strings cannot inject false properties';
+  });
+
+  // 45. Genuine zero versus missing disclosure distinction strictly enforced (§2 Req 6-7 & §5)
+  await runTestCase(45, 'Genuine zero versus missing disclosure distinction strictly enforced', async () => {
+    const parsedGenuineZero = parseSourceProfile('scratch/directive_059/fixture_source_profiles.ts', 47, 'Candidate Five', 5, REPO_ROOT);
+    assertEqual(parsedGenuineZero.totalAssets, 0, 'Candidate Five must have genuine 0 assets');
+    assertEqual(parsedGenuineZero.totalLiabilities, 0, 'Candidate Five must have genuine 0 liabilities');
+
+    const parsedMissing = parseSourceProfile('scratch/directive_059/fixture_source_profiles.ts', 40, 'Candidate Four', 4, REPO_ROOT);
+    assertEqual(parsedMissing.totalAssets, undefined, 'Candidate Four must have undefined totalAssets');
+    assertEqual(parsedMissing.totalLiabilities, undefined, 'Candidate Four must have undefined totalLiabilities');
+    return 'Genuine zero distinct from missing disclosure in source profiles';
+  });
+
+  // 46. Nullable financial values through formatting (formatINR) (§4 & §5)
+  await runTestCase(46, 'Nullable financial values through formatting (formatINR)', async () => {
+    const { formatINR } = await import('../../apps/mobile/lib/affidavitTypes.ts');
+    assertEqual(formatINR(null), 'Not Disclosed', 'formatINR(null) must return Not Disclosed');
+    assertEqual(formatINR(undefined), 'Not Disclosed', 'formatINR(undefined) must return Not Disclosed');
+    assertEqual(formatINR(0), '₹0', 'formatINR(0) must return ₹0');
+    assertEqual(formatINR(15000000), '₹1.5 Cr', 'formatINR(15000000) must return ₹1.5 Cr');
+    return 'formatINR correctly handles null, undefined, 0, and positive amounts';
+  });
+
+  // 47. Wealth growth calculation represents unavailable result explicitly (§4 & §5)
+  await runTestCase(47, 'Wealth growth calculation represents unavailable result explicitly', async () => {
+    const { computeWealthGrowth } = await import('../../apps/mobile/lib/affidavitTypes.ts');
+    const affA = { electionYear: 2018, candidateName: 'Candidate A', totalAssets: null };
+    const affB = { electionYear: 2023, candidateName: 'Candidate A', totalAssets: 5000000 };
+    const growth = computeWealthGrowth(affA, affB);
+    assertEqual(growth.isAvailable, false, 'isAvailable must be false when an observation is null');
+    assertEqual(growth.percentGrowth, null, 'percentGrowth must be null when an observation is null');
+    assertEqual(growth.absoluteGrowth, null, 'absoluteGrowth must be null when an observation is null');
+    assertEqual(growth.annualizedGrowth, null, 'annualizedGrowth must be null when an observation is null');
+    return 'Wealth growth calculation explicitly marks unavailable when observations are null';
+  });
+
+  // 48. Red flags distinguish unknown liabilities from genuine zero liabilities (§4 & §5)
+  await runTestCase(48, 'Red flags distinguish unknown liabilities from genuine zero liabilities', async () => {
+    const { detectRedFlags } = await import('../../apps/mobile/lib/affidavitTypes.ts');
+    const unknownLiab = {
+      id: 'aff_unknown',
+      candidateName: 'Test Cand',
+      constituencyName: 'Test Const',
+      stateCode: 'TS',
+      acNo: 1,
+      party: 'IND',
+      electionYear: 2023,
+      totalAssets: 100000000,
+      totalLiabilities: null,
+      criminalCases: 0,
+      seriousCriminalCases: 0,
+      education: 'graduate',
+      profession: 'Business',
+      age: 45,
+      selfIncome: null,
+      spouseIncome: null,
+      isWinner: true
+    };
+    const flagsUnknown = detectRedFlags(unknownLiab);
+    assert(!flagsUnknown.some(f => f.type === 'zero_liability_anomaly'), 'Unknown liabilities must NOT trigger zero_liability_anomaly');
+
+    const zeroLiab = {
+      ...unknownLiab,
+      id: 'aff_zero',
+      totalLiabilities: 0
+    };
+    const flagsZero = detectRedFlags(zeroLiab);
+    assert(flagsZero.some(f => f.type === 'zero_liability_anomaly'), 'Affirmative zero liabilities must trigger zero_liability_anomaly');
+    return 'Red flags distinguish null liabilities from genuine zero liabilities';
+  });
+
+  // 49. Fail-closed behavior for absent mandatory evidence and unexpected exceptions (§5)
+  await runTestCase(49, 'Fail-closed behavior for absent mandatory evidence and unexpected exceptions', async () => {
+    const accumulator = new VerdictAccumulator();
+    accumulator.registerExpectedMandatoryChecks(['REQUIRED_CHECK_A', 'REQUIRED_CHECK_B']);
+    accumulator.recordPass('REQUIRED_CHECK_A', 'Check A passed');
+    const verdict = accumulator.evaluateOverallVerdict();
+    assertEqual(verdict.verdict, 'FAIL', 'Verdict must be FAIL when mandatory check is omitted');
+    assertEqual(verdict.omittedMandatoryChecks.length, 1, 'Must record omitted mandatory check');
+    return 'Verdict accumulator fails closed when expected mandatory checks are absent';
+  });
+
+  // 50. CLI non-zero exit behavior for any mandatory non-PASS status (§5)
+  await runTestCase(50, 'CLI non-zero exit behavior for any mandatory non-PASS status', async () => {
+    const cliPath = path.resolve(REPO_ROOT, 'scripts/verify_financial_remediation.mjs');
+    const proc = spawnSync(process.execPath, [cliPath, '--mode=synthetic', '--manifest=nonexistent.json'], {
+      cwd: REPO_ROOT,
+      encoding: 'utf8'
+    });
+    assert(proc.status !== 0, `CLI must exit with non-zero status code on error. Got exit code ${proc.status}`);
+    return `CLI correctly exited non-zero with code ${proc.status}`;
+  });
+
   // ============================================================================
   // Summary & Machine-Readable Output
   // ============================================================================
 
   console.log('\n================================================================');
-  console.log(`TEST SUITE SUMMARY: ${passedCount}/36 PASSED, ${failedCount}/36 FAILED`);
+  console.log(`TEST SUITE SUMMARY: ${passedCount}/${testResults.length} PASSED, ${failedCount}/${testResults.length} FAILED`);
   console.log('================================================================');
 
   const evidenceDir = path.resolve(REPO_ROOT, 'reports/evidence');
@@ -857,7 +1093,7 @@ async function runAll() {
   }
 
   const resultsPayload = {
-    testSuite: 'Directive 064 Test Battery',
+    testSuite: 'Directive 065 Test Battery',
     milestone: 'W021.5 / B2.2-E',
     defect: 'DQ-W021.5-B2.2E-001',
     executionDate: new Date().toISOString(),

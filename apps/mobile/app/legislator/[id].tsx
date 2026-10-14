@@ -47,14 +47,19 @@ export default function LegislatorProfileScreen() {
       // Financial records
       let _financialRecords: any[] = [];
       if (_winnerAffidavit) {
+        const hasBoth = _winnerAffidavit.totalAssets != null && _winnerAffidavit.totalLiabilities != null;
         _financialRecords = [
           {
             year: electionYear,
-            movableAssets: (_winnerAffidavit.selfMovableAssets || 0) + (_winnerAffidavit.spouseMovableAssets || 0),
-            immovableAssets: (_winnerAffidavit.selfImmovableAssets || 0) + (_winnerAffidavit.spouseImmovableAssets || 0),
-            totalAssets: _winnerAffidavit.totalAssets || 0,
-            liabilities: _winnerAffidavit.totalLiabilities || 0,
-            netWorth: (_winnerAffidavit.totalAssets || 0) - (_winnerAffidavit.totalLiabilities || 0),
+            movableAssets: (_winnerAffidavit.selfMovableAssets != null || _winnerAffidavit.spouseMovableAssets != null)
+              ? (_winnerAffidavit.selfMovableAssets ?? 0) + (_winnerAffidavit.spouseMovableAssets ?? 0)
+              : null,
+            immovableAssets: (_winnerAffidavit.selfImmovableAssets != null || _winnerAffidavit.spouseImmovableAssets != null)
+              ? (_winnerAffidavit.selfImmovableAssets ?? 0) + (_winnerAffidavit.spouseImmovableAssets ?? 0)
+              : null,
+            totalAssets: _winnerAffidavit.totalAssets,
+            liabilities: _winnerAffidavit.totalLiabilities,
+            netWorth: hasBoth ? (_winnerAffidavit.totalAssets! - _winnerAffidavit.totalLiabilities!) : null,
           },
         ];
       }
@@ -76,7 +81,7 @@ export default function LegislatorProfileScreen() {
             description: `${_winnerAffidavit.seriousCriminalCases} serious IPC charge${_winnerAffidavit.seriousCriminalCases > 1 ? 's' : ''}`,
           });
         }
-        if ((_winnerAffidavit.totalLiabilities || 0) > (_winnerAffidavit.totalAssets || 0) && (_winnerAffidavit.totalAssets || 0) > 0) {
+        if (_winnerAffidavit.totalLiabilities != null && _winnerAffidavit.totalAssets != null && _winnerAffidavit.totalAssets > 0 && _winnerAffidavit.totalLiabilities > _winnerAffidavit.totalAssets) {
           _redFlags.push({
             type: 'zero_liability_anomaly',
             severity: 'warning',

@@ -35,15 +35,15 @@ export interface CandidateAffidavit {
   party: string;
   electionYear: number;
 
-  // Assets (in INR)
-  selfMovableAssets: number;
-  selfImmovableAssets: number;
-  spouseMovableAssets: number;
-  spouseImmovableAssets: number;
-  totalAssets: number;
+  // Assets (in INR) — null when undisclosed
+  selfMovableAssets: number | null;
+  selfImmovableAssets: number | null;
+  spouseMovableAssets: number | null;
+  spouseImmovableAssets: number | null;
+  totalAssets: number | null;
 
-  // Liabilities
-  totalLiabilities: number;
+  // Liabilities — null when undisclosed
+  totalLiabilities: number | null;
 
   // Criminal
   criminalCases: number;
@@ -54,8 +54,8 @@ export interface CandidateAffidavit {
   education: EducationLevel;
   profession: string;
   age: number;
-  selfIncome: number;
-  spouseIncome: number;
+  selfIncome: number | null;
+  spouseIncome: number | null;
 
   // Source
   sourceUrl?: string;
@@ -68,12 +68,13 @@ export interface WealthGrowth {
   candidateName: string;
   fromYear: number;
   toYear: number;
-  fromAssets: number;
-  toAssets: number;
-  absoluteGrowth: number;
-  percentGrowth: number;
+  fromAssets: number | null;
+  toAssets: number | null;
+  absoluteGrowth: number | null;
+  percentGrowth: number | null;
   years: number;
-  annualizedGrowth: number;
+  annualizedGrowth: number | null;
+  isAvailable: boolean;
 }
 
 /** Constituency-level integrity metrics */
@@ -84,7 +85,8 @@ export interface ConstituencyIntegrity {
   totalCandidates: number;
   candidatesWithCases: number;
   candidatesWithSeriousCases: number;
-  averageAssets: number;
+  averageAssets: number | null;
+  assetsDisclosedCandidatesCount?: number;
   medianEducation: EducationLevel;
   integrityScore: number; // 0-100
 }
@@ -142,10 +144,24 @@ export function formatINR(amount: number | null | undefined): string {
 /** Compute wealth growth between two affidavits of the same candidate */
 export function computeWealthGrowth(older: CandidateAffidavit, newer: CandidateAffidavit): WealthGrowth {
   const years = newer.electionYear - older.electionYear;
-  const hasValidAssets = older.totalAssets != null && newer.totalAssets != null;
-  const absoluteGrowth = hasValidAssets ? newer.totalAssets - older.totalAssets : 0;
-  const percentGrowth = hasValidAssets && older.totalAssets > 0 ? (absoluteGrowth / older.totalAssets) * 100 : 0;
-  const annualizedGrowth = hasValidAssets && years > 0 && older.totalAssets > 0
+  if (older.totalAssets == null || newer.totalAssets == null) {
+    return {
+      candidateName: newer.candidateName,
+      fromYear: older.electionYear,
+      toYear: newer.electionYear,
+      fromAssets: older.totalAssets,
+      toAssets: newer.totalAssets,
+      absoluteGrowth: null,
+      percentGrowth: null,
+      years,
+      annualizedGrowth: null,
+      isAvailable: false,
+    };
+  }
+
+  const absoluteGrowth = newer.totalAssets - older.totalAssets;
+  const percentGrowth = older.totalAssets > 0 ? (absoluteGrowth / older.totalAssets) * 100 : 0;
+  const annualizedGrowth = years > 0 && older.totalAssets > 0
     ? (Math.pow(newer.totalAssets / older.totalAssets, 1 / years) - 1) * 100
     : 0;
 
@@ -159,6 +175,7 @@ export function computeWealthGrowth(older: CandidateAffidavit, newer: CandidateA
     percentGrowth,
     years,
     annualizedGrowth,
+    isAvailable: true,
   };
 }
 
@@ -179,10 +196,10 @@ export function detectRedFlags(
     });
   }
 
-  // Extreme wealth growth
+  // Extreme wealth growth (only when both observations are available)
   if (previousAffidavit) {
     const growth = computeWealthGrowth(previousAffidavit, affidavit);
-    if (growth.percentGrowth > 500) {
+    if (growth.isAvailable && growth.percentGrowth !== null && growth.percentGrowth > 500) {
       flags.push({
         type: 'extreme_wealth_growth',
         severity: growth.percentGrowth > 1000 ? 'critical' : 'warning',
@@ -192,8 +209,8 @@ export function detectRedFlags(
     }
   }
 
-  // Zero liability anomaly
-  if (affidavit.totalAssets > 5_00_00_000 && affidavit.totalLiabilities === 0) {
+  // Zero liability anomaly (only if assets declared > 5 Cr AND liabilities are affirmative zero, NOT undisclosed/null)
+  if (affidavit.totalAssets != null && affidavit.totalAssets > 5_00_00_000 && affidavit.totalLiabilities === 0) {
     flags.push({
       type: 'zero_liability_anomaly',
       severity: 'warning',
@@ -201,9 +218,9 @@ export function detectRedFlags(
     });
   }
 
-  // Income-asset mismatch
-  const totalIncome = affidavit.selfIncome + affidavit.spouseIncome;
-  if (totalIncome > 0 && affidavit.totalAssets > totalIncome * 50) {
+  // Income-asset mismatch (only if assets are declared/non-null)
+  const totalIncome = (affidavit.selfIncome ?? 0) + (affidavit.spouseIncome ?? 0);
+  if (affidavit.totalAssets != null && totalIncome > 0 && affidavit.totalAssets > totalIncome * 50) {
     flags.push({
       type: 'income_asset_mismatch',
       severity: 'warning',

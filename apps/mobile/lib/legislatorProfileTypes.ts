@@ -130,23 +130,24 @@ export interface ElectionRecord {
 export interface FinancialRecord {
   electionYear: number;
   electionKey: string;
-  selfMovableAssets: number;
-  selfImmovableAssets: number;
-  spouseMovableAssets: number;
-  spouseImmovableAssets: number;
-  dependentsAssets: number;
-  totalAssets: number;
-  totalLiabilities: number;
-  netWorth: number;                       // totalAssets - totalLiabilities
-  selfIncome: number;
-  spouseIncome: number;
-  totalIncome: number;
-  isCrorepati: boolean;                   // totalAssets >= 1Cr
+  selfMovableAssets: number | null;
+  selfImmovableAssets: number | null;
+  spouseMovableAssets: number | null;
+  spouseImmovableAssets: number | null;
+  dependentsAssets: number | null;
+  totalAssets: number | null;
+  totalLiabilities: number | null;
+  netWorth: number | null;                       // totalAssets - totalLiabilities (null if either is undisclosed)
+  selfIncome: number | null;
+  spouseIncome: number | null;
+  totalIncome: number | null;
+  isCrorepati: boolean | null;                   // totalAssets >= 1Cr (null if undisclosed)
   wealthGrowth?: {
     fromYear: number;
     toYear: number;
-    percentGrowth: number;
-    annualizedGrowth: number;
+    percentGrowth: number | null;
+    annualizedGrowth: number | null;
+    isAvailable: boolean;
   };
   sourceUrl: string;
   affidavitFiledDate?: string;
@@ -360,8 +361,8 @@ export interface KeyContestant {
   age?: number;
   education?: EducationLevel;
   criminalCases?: number;
-  totalAssets?: number;
-  isCrorepati?: boolean;
+  totalAssets?: number | null;
+  isCrorepati?: boolean | null;
   mynetaUrl?: string;
 }
 
@@ -370,7 +371,9 @@ export interface KeyContestant {
 // ═══════════════════════════════════════════════════════════════════════
 
 /** Format INR in human-readable Indian notation */
-export function formatINR(amount: number): string {
+export function formatINR(amount: number | null | undefined): string {
+  if (amount === null || amount === undefined) return 'Not Disclosed';
+  if (amount >= 1_00_00_00_000) return `₹${(amount / 1_00_00_00_000).toFixed(1)} Cr`;
   if (amount >= 1_00_00_00_000) return `₹${(amount / 1_00_00_00_000).toFixed(1)} Cr`;
   if (amount >= 1_00_00_000) return `₹${(amount / 1_00_00_000).toFixed(1)} Cr`;
   if (amount >= 1_00_000) return `₹${(amount / 1_00_000).toFixed(1)} L`;
@@ -442,7 +445,7 @@ export function detectAllRedFlags(profile: LegislatorProfile): RedFlag[] {
   if (profile.financialHistory.length >= 2) {
     const sorted = [...profile.financialHistory].sort((a, b) => a.electionYear - b.electionYear);
     const older = sorted[0], newer = sorted[sorted.length - 1];
-    if (older.totalAssets > 0) {
+    if (older.totalAssets != null && newer.totalAssets != null && older.totalAssets > 0) {
       const pctGrowth = ((newer.totalAssets - older.totalAssets) / older.totalAssets) * 100;
       if (pctGrowth > 500) {
         flags.push({
@@ -455,9 +458,9 @@ export function detectAllRedFlags(profile: LegislatorProfile): RedFlag[] {
     }
   }
 
-  // Zero liability anomaly
+  // Zero liability anomaly (must NOT trigger if totalLiabilities is undisclosed/null)
   const latest = profile.financialHistory[profile.financialHistory.length - 1];
-  if (latest && latest.totalAssets > 5_00_00_000 && latest.totalLiabilities === 0) {
+  if (latest && latest.totalAssets != null && latest.totalAssets > 5_00_00_000 && latest.totalLiabilities === 0) {
     flags.push({
       type: 'zero_liability_anomaly',
       severity: 'warning',
@@ -465,8 +468,8 @@ export function detectAllRedFlags(profile: LegislatorProfile): RedFlag[] {
     });
   }
 
-  // Income-asset mismatch
-  if (latest && latest.totalIncome > 0 && latest.totalAssets > latest.totalIncome * 50) {
+  // Income-asset mismatch (must NOT trigger if totalAssets or totalIncome is undisclosed)
+  if (latest && latest.totalIncome != null && latest.totalIncome > 0 && latest.totalAssets != null && latest.totalAssets > latest.totalIncome * 50) {
     flags.push({
       type: 'income_asset_mismatch',
       severity: 'warning',

@@ -2,10 +2,10 @@
   "milestone": "W021.5 / B2.2-E",
   "defect": "DQ-W021.5-B2.2E-001",
   "defectStatus": "STRICTLY OPEN",
-  "directive": "W021.5-CTO-DIRECTIVE-064",
-  "generatedAt": "2026-10-14T15:27:30.000Z",
+  "directive": "W021.5-CTO-DIRECTIVE-065",
+  "generatedAt": "2026-10-14T16:36:32.540Z",
   "gitBaseline": {
-    "startingCommit": "4ad61386411ba6c159471cb0cc41a55eb7b9a2a0",
+    "startingCommit": "bfe2f799caecfffc929ad4ad5ea8980807ee66f6",
     "canonicalBranch": "master",
     "remoteRepository": "https://github.com/kshetra-app/Kshetra.git"
   },
@@ -47,22 +47,29 @@
       "missingAssetsCount": 72,
       "missingLiabilitiesCount": 893,
       "uncoveredMissingAssets": 0
+    },
+    "demographicsReconciliation": {
+      "staleDemographicsCount": 4142,
+      "canonicalBaselineCount": 4123,
+      "discrepancyCount": 19,
+      "status": "PARTIALLY_VERIFIED",
+      "note": "Reconciliation identified partial batch variances (MCD +151, HP +2, MP -22, BR -16, OD -15, AS -14, RJ -13, GJ -13). Detailed seed-reconciliation ledger pending delivery."
     }
   },
   "deliverables": [
     {
       "path": "scripts/verify_financial_remediation.mjs",
-      "byteLength": 39166,
-      "sha256": "0aae511b13098c5a6f91d381232d64c98a195641899f03461b869018b47fd3b2",
-      "gitBlobSha": "1067e3573db20e9f149869d5cdb5ed8643ad348d",
-      "description": "Production offline financial remediation verifier with 18 mandatory fail-closed checks"
+      "byteLength": 44185,
+      "sha256": "af04c8e594c2d0f15f5b7893af91ee00802fd646239838c1e161ee3071a34da4",
+      "gitBlobSha": "a13cf33caab6394fe4248a83f1e19d455ed3f066",
+      "description": "Production offline financial remediation verifier with lexical AST parser, path containment, and 10-point eligibility gate"
     },
     {
       "path": "scripts/tests/financial_remediation.test.mjs",
-      "byteLength": 38473,
-      "sha256": "eeb78197063941713dc2b06b00b8871edf91208ad874c9a5bb9b9a362e8d2c83",
-      "gitBlobSha": "2d39ea45a7fac9e668112e9e5070fb1bb0ebaa34",
-      "description": "36-test synthetic battery proving test isolation and tamper rejection"
+      "byteLength": 51938,
+      "sha256": "db97a3de42401c24e6631adc79691bf315d6a3208400b79aed9f1bfd94d00533",
+      "gitBlobSha": "755933bebbcaf0b56fc8d254344ddca936e4fa24",
+      "description": "50-test synthetic battery proving test isolation, tamper rejection, and AST containment"
     },
     {
       "path": "tests/financial_remediation.test.mjs",
@@ -104,77 +111,126 @@
       "byteLength": 1968,
       "sha256": "d84913c70e4cf292df2d792ab3338122a70d1c4c060bc84fb55ad2a908ba0b70",
       "gitBlobSha": "d8c2cb407a962a943816e38ca23c4b8f842b67a4",
-      "description": "Synthetic TypeScript source profile fixture for regex AST validation"
+      "description": "Synthetic TypeScript source profile fixture for regex and lexical AST validation"
     },
     {
       "path": "reports/w021_5_financial_remediation_requirements_matrix.json",
-      "byteLength": 14942,
-      "sha256": "c34c2faa284318ed32b16ce873f5c74c0052e5de201a03080b0e378e51b16878",
-      "gitBlobSha": "31c1f8f3149aebc6e734924f11338e2e221eda7c",
-      "description": "Traceability matrix mapping Directive 064 requirements to verifier and test battery"
+      "byteLength": 14199,
+      "sha256": "be492587573e3c6dc7f6b0c217d3d12b1d33e5453a6faf113c39a182965f2d6a",
+      "gitBlobSha": "2a381a6db094bd42d753979e47e3d6540b9d3099",
+      "description": "Traceability matrix mapping Directive 065 requirements to verifier and test battery"
     },
     {
       "path": "reports/w021_5_financial_remediation_test_isolation_matrix.json",
-      "byteLength": 17392,
-      "sha256": "ad47bfedfa2f902e69f71a6b602189edb2e232016ba1d0d0b7e4e79a6e0b74be",
-      "gitBlobSha": "d3fdeae541b04869329f315475f23816b51558a2",
-      "description": "Test isolation matrix documenting target invariants and failure classifications for all 36 tests"
+      "byteLength": 25256,
+      "sha256": "59d409f46c5359b3346c1052e34735424743007948101727111595b49cefa72f",
+      "gitBlobSha": "1209b17d22846c27b6867c7bd4803e11bcea62ad",
+      "description": "Test isolation matrix documenting target invariants and failure classifications for all 50 tests"
     },
     {
       "path": "reports/w021_5_application_consumer_compatibility_matrix.json",
-      "byteLength": 7047,
-      "sha256": "4294d78607af55f7e7434bf60bd1acf528564231f209247a11d9e8d64d699a1d",
-      "gitBlobSha": "cc3c34b70a695e75384c6dfd65a7b2ad0b7d79bb",
-      "description": "Application consumer audit and nullability compatibility matrix"
+      "byteLength": 6734,
+      "sha256": "b38b18d75871184b8306e9a2095cde52c91643d7beb939cb8fef335a15d6c6ed",
+      "gitBlobSha": "0260116f24df70bc385031abc7c6f38c976ea27a",
+      "description": "Application consumer audit and nullability compatibility matrix for 10 audited files"
     },
     {
       "path": "reports/evidence/financial_remediation_test_stdout.txt",
-      "byteLength": 3173,
-      "sha256": "beb0879efdc68fa7873faee05a634b3b750eb7d8ffd753b909692ece6ae6f3f2",
-      "gitBlobSha": "e992e39e9bbb4c1b8198d567fc840b713803465a",
-      "description": "Raw verbatim stdout output from local execution of 36-test suite"
+      "byteLength": 4447,
+      "sha256": "ea6f098a531892f28c1d16619518583d3ffffdc04dd87943a79e1e4a29a640e0",
+      "gitBlobSha": "1433a9c4662d1bb613298c9fd6165fc8410ee0d2",
+      "description": "Raw verbatim stdout output from local execution of 50-test suite"
     },
     {
       "path": "reports/evidence/financial_remediation_test_stderr.txt",
       "byteLength": 0,
       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "gitBlobSha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
-      "description": "Raw verbatim stderr output from local execution of 36-test suite (0 bytes, clean)"
+      "description": "Raw verbatim stderr output from local execution of 50-test suite (0 bytes, clean)"
     },
     {
       "path": "reports/evidence/financial_remediation_test_results.json",
-      "byteLength": 8878,
-      "sha256": "e18a601c2ad36b238d02d569904180855873d94bff03abba1464648a3a44a44a",
-      "gitBlobSha": "f05f39f7f01c886daab342bbaabdf865e0d1c46f",
-      "description": "Structured machine-readable test execution report for all 36 tests"
+      "byteLength": 12592,
+      "sha256": "dd85f35aba40ee4275c81fe5d0b6098b2a1e8083ce85b7744639da1c147b1879",
+      "gitBlobSha": "f48f4c3c6a70bd1904c921b1682b6f213ed67fcb",
+      "description": "Structured machine-readable test execution report for all 50 tests"
     },
     {
       "path": "apps/mobile/lib/affidavitTypes.ts",
-      "byteLength": 6951,
-      "sha256": "7962faffe121f3298fb8b04631cd29b948275ae64a91eaae75c8ee7efcbe86da",
-      "gitBlobSha": "676411db63647561eaf79626a8731bc786fb44ad",
-      "description": "Mobile affidavit types with null-safe formatINR and wealth growth computation"
+      "byteLength": 7760,
+      "sha256": "21f5382c45c89bfffd1a6bd87d71d749a9403c446421d31911dd02ffd6b24c3a",
+      "gitBlobSha": "f49dc9735d9b6425a9f766f6f54f580e0670248a",
+      "description": "Mobile affidavit types with nullable CandidateAffidavit, formatINR, and computeWealthGrowth"
     },
     {
-      "path": "apps/mobile/components/MLACard.tsx",
-      "byteLength": 7790,
-      "sha256": "fdab15aaa65b55417eda65f5b39e14219a408a79100c4129a2ac8595acd66757",
-      "gitBlobSha": "2cffc1c86a98528c73809661d760b1f48ff0f8e3",
-      "description": "MLA Card component with null-safe formatINR and null-guarded totalAssets rendering"
+      "path": "apps/mobile/lib/legislatorProfileTypes.ts",
+      "byteLength": 23587,
+      "sha256": "66963825c33eeef5d1343ec513e2ba77771433eafe9146647ce930a9088d84fa",
+      "gitBlobSha": "0784a4be97007e806d00d078adb8e4dd00832366",
+      "description": "Legislator profile types with nullable financial fields and null-safe formatINR"
     },
     {
-      "path": "apps/mobile/components/MPCard.tsx",
-      "byteLength": 8867,
-      "sha256": "c6371e2203ac7ab7bd6ed5ab91a96d14002fc297310126fd82f9d6d6ea6c65ea",
-      "gitBlobSha": "da17b99f0c3a7fc31e9c9037cc33d23c78ea3cab",
-      "description": "MP Card component with null-safe formatINR and null-guarded totalAssets rendering"
+      "path": "apps/mobile/components/legislator/FinancialBreakdownCard.tsx",
+      "byteLength": 16272,
+      "sha256": "a23b92f0c83d4201468d356f88517b37de4a3ffea738192b009c3b3290164411",
+      "gitBlobSha": "400f4109b98e55bb8b655fd8ebaa3c5a7a6e135d",
+      "description": "Financial breakdown card with removed || 0 fallbacks and undisclosed indicators"
     },
     {
-      "path": "reports/W021.5-CTO-DIRECTIVE-064-IMPLEMENTATION-REPORT.md",
-      "byteLength": 19035,
-      "sha256": "6dae13932fbcb5417074fbe59a1f0cbca09403b7094d34591abf72d518868f7d",
-      "gitBlobSha": "ca98d6a918fd0aca2e5766c303c16e8c41963268",
-      "description": "Comprehensive Directive 064 implementation report with bitwise evidence and consumer audit"
+      "path": "apps/mobile/components/AffidavitCard.tsx",
+      "byteLength": 6706,
+      "sha256": "0505696253353936535a9749cc9b52e4d26f6d876e3bb37311d86627ca3cf069",
+      "gitBlobSha": "096304cde13b82c8c3c3245f7a9c38995df70cf7",
+      "description": "Affidavit card with null growth percent guard and nullable formatINR badges"
+    },
+    {
+      "path": "apps/mobile/components/WealthTimeline.tsx",
+      "byteLength": 6996,
+      "sha256": "1c982e806ad32fb44c9b48d1cc7b4adbceb327864d5636f5d8e525afdadfa1a1",
+      "gitBlobSha": "4128f50ec0847f2f0079b2b42694883cdbbbc079",
+      "description": "Wealth timeline with non-null maxAssets calculation and dashed baseline for undisclosed years"
+    },
+    {
+      "path": "apps/mobile/app/legislator/[id].tsx",
+      "byteLength": 19214,
+      "sha256": "3d36eafad7ee252b4e1aa8d7f353495adf3164962f119c72cb3604c669e4e7da",
+      "gitBlobSha": "2d4f3c207bb1eaeed686f555cb5e275389e40432",
+      "description": "Legislator detail screen with null-safe netWorth calculation and liability anomaly guard"
+    },
+    {
+      "path": "apps/mobile/app/parliament/index.tsx",
+      "byteLength": 40041,
+      "sha256": "61a0feaefebbfc9dce13bab1ca79dccb730230c854ca2801cab9d6a8d5d000ec",
+      "gitBlobSha": "c5db883bb3ed0ab795a4bb27ef78705a6f66851f",
+      "description": "Parliament index screen with null-safe formatINR utility"
+    },
+    {
+      "path": "apps/mobile/stores/affidavits.ts",
+      "byteLength": 33588,
+      "sha256": "884f5d9638cfdd4e7f4de684985ad4e76ff788f1adb81974b0d855e9340e98ce",
+      "gitBlobSha": "9a52648a858d040214e0a5a05f993b642f142dc4",
+      "description": "Affidavits store with null-excluded average asset denominator and crorepati calculation"
+    },
+    {
+      "path": "data/seed/telangana-mla-profiles.ts",
+      "byteLength": 62716,
+      "sha256": "c5e1a68e3c9aa0c54a00347eeb61fd42e1b88f4fc1afcbfb1e7a73c85431e48b",
+      "gitBlobSha": "3a8a89dd8aae3d4fe8f96847e2b729e056d92980",
+      "description": "Telangana MLA seed profile interface with nullable financial fields"
+    },
+    {
+      "path": "apps/mobile/__tests__/sprint14-16.test.ts",
+      "byteLength": 16989,
+      "sha256": "b63e628b8b301db5ef937242ecc7feca936e19bde8887d7995029347f5cc751d",
+      "gitBlobSha": "9c9f63218e00cd401cc394e5785f34ceae714fdf",
+      "description": "Mobile unit and integration tests verifying formatINR, wealth growth, and red flags nullability"
+    },
+    {
+      "path": "reports/W021.5-CTO-DIRECTIVE-065-IMPLEMENTATION-REPORT.md",
+      "byteLength": 19065,
+      "sha256": "50b90101c14dd2f6e196e08169e762ff9887f30ebb8eab1d2b4322707e32db14",
+      "gitBlobSha": "53f2a7e76c83f28e63cbbe4f4c0dbc966ec6e28a",
+      "description": "Comprehensive Directive 065 implementation report documenting all 8 sections and lineage reconciliation"
     }
   ]
 }
