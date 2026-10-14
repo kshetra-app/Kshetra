@@ -1155,8 +1155,8 @@ const SCRAPED_PROFILES: Partial<MLAProfile>[] = [
   },
   {
     acNo: 61,
-    name: 'B C Janardhan Reddy',
-    party: 'Kalyana Ra',
+    name: 'G. Janardhan Reddy',
+    party: 'KRPP',
     age: 56,
     dob: '1967-01-01',
     dobEstimated: true,

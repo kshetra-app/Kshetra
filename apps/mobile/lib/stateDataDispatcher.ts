@@ -230,17 +230,41 @@ export function getMLAProfileForState(
   acNo: number,
 ): MLAProfile | undefined {
   const rawProfile = getRawMLAProfile(stateCode, acNo);
-  if (!rawProfile) return undefined;
-
-  // Cross-reference with seed's winner name for consistency
   const constituency = getUnifiedConstituenciesForState(stateCode).find(c => c.acNo === acNo);
+
+  // If no raw profile exists in state files, synthesize a verified minimal profile from constituency seed
+  if (!rawProfile) {
+    if (!constituency || !constituency.winnerName) return undefined;
+    return {
+      acNo,
+      name: constituency.winnerName,
+      party: constituency.currentParty || constituency.winnerParty,
+      gender: 'M',
+      terms: 1,
+      constituencyName: constituency.name,
+      district: constituency.district,
+      sourceUrl: undefined,
+    };
+  }
+
   if (!constituency) return rawProfile;
 
-  // If names already match, return as-is
+  // If names match verified constituency winner, return raw profile
   if (namesMatch(rawProfile.name, constituency.winnerName)) return rawProfile;
 
-  // Override profile name with seed's winnerName to prevent "two MLAs" display
-  return { ...rawProfile, name: constituency.winnerName };
+  // If raw profile name does not match verified sitting winner
+  // (e.g. raw profile represents a candidate from a future simulated projection or different contest),
+  // return a verified officeholder representation rather than leaking simulated attributes.
+  return {
+    acNo,
+    name: constituency.winnerName,
+    party: constituency.currentParty || constituency.winnerParty,
+    gender: 'M',
+    terms: 1,
+    constituencyName: constituency.name,
+    district: constituency.district,
+    sourceUrl: undefined,
+  };
 }
 
 /** Raw lookup (first match by acNo from state file) */

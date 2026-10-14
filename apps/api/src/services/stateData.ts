@@ -45,15 +45,37 @@ import { TELANGANA_MLA_PROFILES, getMLAProfile } from '../../../../data/seed/tel
 
 // Generic Mapper
 function genericToBrief(stateCode: string, c: any): ConstituencyBrief {
+  const code = stateCode.toUpperCase();
+  let currentParty = c.winner2025 ?? c.winner2024 ?? c.winner2023 ?? c.winner2022 ?? c.winner2021 ?? c.winner ?? '';
+  let currentMLA = c.winnerName2025 ?? c.winnerName2024 ?? c.winnerName2023 ?? c.winnerName2022 ?? c.winnerName2021 ?? c.winnerName ?? '';
+
+  // By-election overrides for confirmed October 2026 by-elections
+  if (code === 'TN' && c.acNo === 35) {
+    currentParty = 'TVK';
+    currentMLA = 'K. Maragatham Kumaravel';
+  } else if (code === 'TN' && c.acNo === 101) {
+    currentParty = 'TVK';
+    currentMLA = 'P. Sathyabama';
+  } else if (code === 'WB' && c.acNo === 210) {
+    currentParty = 'BJP';
+    currentMLA = 'Hasi Rani Rath';
+  } else if (code === 'WB' && c.acNo === 70) {
+    currentParty = 'BJP';
+    currentMLA = 'Shankharavh Sarkar';
+  } else if (code === 'PY' && (c.acNo === 9 || c.name === 'Thattanchavady')) {
+    currentParty = 'AINRC';
+    currentMLA = 'Ashok Anand';
+  }
+
   return {
-    id: `${stateCode.toUpperCase()}-AC-${c.acNo}`,
+    id: `${code}-AC-${c.acNo}`,
     name: c.name,
     acNo: c.acNo,
-    stateCode: stateCode.toUpperCase(),
+    stateCode: code,
     district: c.district ?? '',
     reservationStatus: (c.type as 'GEN' | 'SC' | 'ST') ?? 'GEN',
-    currentParty: c.winner2024 ?? c.winner2023 ?? c.winner2022 ?? c.winner2021 ?? c.winner ?? '',
-    currentMLA: c.winnerName2024 ?? c.winnerName2023 ?? c.winnerName2022 ?? c.winnerName2021 ?? c.winnerName ?? '',
+    currentParty,
+    currentMLA,
   };
 }
 

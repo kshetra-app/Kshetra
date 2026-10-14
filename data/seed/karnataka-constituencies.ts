@@ -97,7 +97,7 @@ export const KA_CONSTITUENCIES: KAConstituencySeed[] = [
 
   // ── Koppal District (4 seats) ──
   { acNo: 60, name: 'Koppal', localName: 'ಕೊಪ್ಪಳ', district: 'Koppal', type: 'GEN', winner2023: 'INC', winnerName2023: 'Raghavendra Hitnal', winnerVotes2023: 82345, runnerUp2023: 'BJP', margin2023: 9012, currentParty: 'INC' },
-  { acNo: 61, name: 'Gangavathi', localName: 'ಗಂಗಾವತಿ', district: 'Koppal', type: 'GEN', winner2023: 'INC', winnerName2023: 'Paratap Gouda Patil', winnerVotes2023: 89012, runnerUp2023: 'BJP', margin2023: 14567, currentParty: 'INC' },
+  { acNo: 61, name: 'Gangavathi', localName: 'ಗಂಗಾವತಿ', district: 'Koppal', type: 'GEN', winner2023: 'KRPP', winnerName2023: 'G. Janardhan Reddy', winnerVotes2023: 66213, runnerUp2023: 'INC', margin2023: 8266, currentParty: 'KRPP' },
   { acNo: 62, name: 'Yelburga', localName: 'ಯಲಬುರ್ಗಾ', district: 'Koppal', type: 'GEN', winner2023: 'BJP', winnerName2023: 'Basavaraj Dadesugur', winnerVotes2023: 74321, runnerUp2023: 'INC', margin2023: 3456, currentParty: 'BJP' },
   { acNo: 63, name: 'Kushtagi', localName: 'ಕುಷ್ಟಗಿ', district: 'Koppal', type: 'SC', winner2023: 'INC', winnerName2023: 'Amaregouda Bayyapur', winnerVotes2023: 71234, runnerUp2023: 'BJP', margin2023: 6789, currentParty: 'INC' },
 

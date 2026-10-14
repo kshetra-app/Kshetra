@@ -511,7 +511,6 @@ WITH expected_chunk_03_ids(id) AS (
     ('0215b22e-0001-0000-0000-000000001568'::uuid),
     ('0215b22e-0001-0000-0000-000000001569'::uuid),
     ('0215b22e-0001-0000-0000-000000001570'::uuid),
-    ('0215b22e-0001-0000-0000-000000001571'::uuid),
     ('0215b22e-0001-0000-0000-000000001572'::uuid),
     ('0215b22e-0001-0000-0000-000000001573'::uuid),
     ('0215b22e-0001-0000-0000-000000001574'::uuid),
@@ -2983,7 +2982,6 @@ authorized_cumulative_ids(id) AS (
     ('0215b22e-0001-0000-0000-000000001568'::uuid),
     ('0215b22e-0001-0000-0000-000000001569'::uuid),
     ('0215b22e-0001-0000-0000-000000001570'::uuid),
-    ('0215b22e-0001-0000-0000-000000001571'::uuid),
     ('0215b22e-0001-0000-0000-000000001572'::uuid),
     ('0215b22e-0001-0000-0000-000000001573'::uuid),
     ('0215b22e-0001-0000-0000-000000001574'::uuid),
@@ -3897,11 +3895,11 @@ SELECT
       'min_id_observed', min_affidavit_id_observed,
       'max_id_observed', max_affidavit_id_observed,
       'status', CASE 
-        WHEN chunk_03_expected_ids_count = 1273 
-         AND chunk_03_ids_present_count = 1273 
+        WHEN chunk_03_expected_ids_count = 1272 
+         AND chunk_03_ids_present_count = 1272 
          AND chunk_03_ids_missing_count = 0 
          AND unexpected_affidavits_count = 0
-         AND total_affidavits_in_table = 2469
+         AND total_affidavits_in_table = 2468
          AND duplicate_ids_count = 0
          AND non_namespace_affidavits_count = 0
          AND min_affidavit_id_observed = '0215b22e-0001-0000-0000-000000000001'
@@ -3927,7 +3925,7 @@ SELECT
          AND ap_count = 197 AND ar_count = 55 AND as_count = 126 AND br_count = 267
          AND cg_count = 92 AND dl_count = 228 AND ga_count = 36 AND gj_count = 195
          AND hr_count = 90 AND hp_count = 73 AND jk_count = 85 AND jh_count = 87
-         AND ka_count = 230 AND kl_count = 160 AND mp_count = 237 AND mh_count = 311
+         AND ka_count = 229 AND kl_count = 160 AND mp_count = 237 AND mh_count = 311
         THEN 'PASS' 
         ELSE 'FAIL' 
       END
@@ -3998,11 +3996,11 @@ SELECT
     ),
     'verdict', (
       CASE 
-        WHEN chunk_03_expected_ids_count = 1273
-         AND chunk_03_ids_present_count = 1273
+        WHEN chunk_03_expected_ids_count = 1272
+         AND chunk_03_ids_present_count = 1272
          AND chunk_03_ids_missing_count = 0
          AND unexpected_affidavits_count = 0
-         AND total_affidavits_in_table = 2469
+         AND total_affidavits_in_table = 2468
          AND duplicate_ids_count = 0
          AND non_namespace_affidavits_count = 0
          AND min_affidavit_id_observed = '0215b22e-0001-0000-0000-000000000001'
@@ -4012,7 +4010,7 @@ SELECT
          AND ap_count = 197 AND ar_count = 55 AND as_count = 126 AND br_count = 267
          AND cg_count = 92 AND dl_count = 228 AND ga_count = 36 AND gj_count = 195
          AND hr_count = 90 AND hp_count = 73 AND jk_count = 85 AND jh_count = 87
-         AND ka_count = 230 AND kl_count = 160 AND mp_count = 237 AND mh_count = 311
+         AND ka_count = 229 AND kl_count = 160 AND mp_count = 237 AND mh_count = 311
          AND orphan_candidacies_count = 0
          AND orphan_persons_count = 0
          AND orphan_provenance_count = 0

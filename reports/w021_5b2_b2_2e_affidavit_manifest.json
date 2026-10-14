@@ -4,8 +4,8 @@
   "target": "candidate_affidavits",
   "provenanceId": "0215b22e-0000-0000-0000-000000000001",
   "datasetVersion": "myneta_candidate_disclosures_2024_v1",
-  "totalAffidavits": 4524,
-  "mlaDisclosures": 3981,
+  "totalAffidavits": 4523,
+  "mlaDisclosures": 3980,
   "mpDisclosures": 543,
   "affidavits": [
     {
@@ -37686,30 +37686,6 @@
       "source_category": "MLA_PROFILE",
       "source_file": "data/seed/karnataka-mla-profiles.ts",
       "source_line": 3950
-    },
-    {
-      "id": "0215b22e-aff-00001571",
-      "candidate_name": "Basavaraj Bommai",
-      "person_id": "0215b22d-000000000212",
-      "candidacy_id": "0215b22d-cand-00002230",
-      "ac_no": 31,
-      "constituency_name": "SHIGGAON",
-      "state_code": "KA",
-      "party": "BJP",
-      "election_year": 2023,
-      "total_assets": 0,
-      "total_liabilities": 0,
-      "criminal_cases": 0,
-      "serious_criminal_cases": 0,
-      "education": "BE",
-      "profession": "Engineer / Politician",
-      "age": 63,
-      "is_winner": true,
-      "data_status": "OFFICIAL",
-      "provenance_id": "0215b22e-0000-0000-0000-000000000001",
-      "source_category": "MLA_PROFILE",
-      "source_file": "data/seed/karnataka-mla-profiles.ts",
-      "source_line": 3951
     },
     {
       "id": "0215b22e-aff-00001572",

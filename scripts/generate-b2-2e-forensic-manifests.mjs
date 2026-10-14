@@ -116,6 +116,7 @@ const stateElectionYearMap = {
 };
 
 const affidavitRecords = [];
+const affidavitByCandidacy = new Map();
 let affIndex = 1;
 
 // 2.1 MLA Profiles
@@ -160,8 +161,28 @@ for (const file of mlaFiles) {
       const assetsM = t.match(/\btotalAssets:\s*(\d+)/);
       const liabM = t.match(/\btotalLiabilities:\s*(\d+)/);
 
+      // Natural-key deduplication: prevent multiple affidavit rows for the same candidacy
+      if (affidavitByCandidacy.has(matchedCand.candId)) {
+        const existing = affidavitByCandidacy.get(matchedCand.candId);
+        const newAssets = assetsM ? parseInt(assetsM[1], 10) : null;
+        const newLiab = liabM ? parseInt(liabM[1], 10) : null;
+        if (existing.total_assets !== null && newAssets !== null && existing.total_assets !== newAssets) {
+          console.warn(`[INGESTION_CONFLICT] Conflicting total_assets for candidacy ${matchedCand.candId}: existing=${existing.total_assets}, new=${newAssets}`);
+        }
+        if (existing.total_liabilities !== null && newLiab !== null && existing.total_liabilities !== newLiab) {
+          console.warn(`[INGESTION_CONFLICT] Conflicting total_liabilities for candidacy ${matchedCand.candId}: existing=${existing.total_liabilities}, new=${newLiab}`);
+        }
+        // Safely merge missing auxiliary attributes without clobbering non-null financials
+        if (!existing.education && eduM) existing.education = eduM[1];
+        if (!existing.profession && profM) existing.profession = profM[1];
+        if (existing.total_assets === null && newAssets !== null) existing.total_assets = newAssets;
+        if (existing.total_liabilities === null && newLiab !== null) existing.total_liabilities = newLiab;
+        if (existing.age === null && ageM) existing.age = parseInt(ageM[1], 10);
+        continue;
+      }
+
       const affId = `0215b22e-aff-${String(affIndex++).padStart(8, '0')}`;
-      affidavitRecords.push({
+      const affRecord = {
         id: affId,
         candidate_name: name,
         person_id: matchedCand.personId,
@@ -171,8 +192,8 @@ for (const file of mlaFiles) {
         state_code: stateCode,
         party: party,
         election_year: electionYear,
-        total_assets: assetsM ? parseInt(assetsM[1], 10) : 0,
-        total_liabilities: liabM ? parseInt(liabM[1], 10) : 0,
+        total_assets: assetsM ? parseInt(assetsM[1], 10) : null,
+        total_liabilities: liabM ? parseInt(liabM[1], 10) : null,
         criminal_cases: crimM ? parseInt(crimM[1], 10) : 0,
         serious_criminal_cases: 0,
         education: eduM ? eduM[1] : null,
@@ -184,7 +205,9 @@ for (const file of mlaFiles) {
         source_category: 'MLA_PROFILE',
         source_file: relPath,
         source_line: obj.startLine
-      });
+      };
+      affidavitByCandidacy.set(matchedCand.candId, affRecord);
+      affidavitRecords.push(affRecord);
     }
   }
 }
@@ -221,8 +244,26 @@ for (const obj of mpObjs) {
     const assetsM = t.match(/\btotalAssets:\s*(\d+)/);
     const liabM = t.match(/\btotalLiabilities:\s*(\d+)/);
 
+    // Natural-key deduplication: prevent multiple affidavit rows for the same candidacy
+    if (affidavitByCandidacy.has(matchedCand.candId)) {
+      const existing = affidavitByCandidacy.get(matchedCand.candId);
+      const newAssets = assetsM ? parseInt(assetsM[1], 10) : null;
+      const newLiab = liabM ? parseInt(liabM[1], 10) : null;
+      if (existing.total_assets !== null && newAssets !== null && existing.total_assets !== newAssets) {
+        console.warn(`[INGESTION_CONFLICT] Conflicting total_assets for MP candidacy ${matchedCand.candId}: existing=${existing.total_assets}, new=${newAssets}`);
+      }
+      if (existing.total_liabilities !== null && newLiab !== null && existing.total_liabilities !== newLiab) {
+        console.warn(`[INGESTION_CONFLICT] Conflicting total_liabilities for MP candidacy ${matchedCand.candId}: existing=${existing.total_liabilities}, new=${newLiab}`);
+      }
+      if (!existing.education && eduM) existing.education = eduM[1];
+      if (existing.total_assets === null && newAssets !== null) existing.total_assets = newAssets;
+      if (existing.total_liabilities === null && newLiab !== null) existing.total_liabilities = newLiab;
+      if (existing.age === null && ageM) existing.age = parseInt(ageM[1], 10);
+      continue;
+    }
+
     const affId = `0215b22e-aff-${String(affIndex++).padStart(8, '0')}`;
-    affidavitRecords.push({
+    const affRecord = {
       id: affId,
       candidate_name: name,
       person_id: matchedCand.personId,
@@ -232,8 +273,8 @@ for (const obj of mpObjs) {
       state_code: stateCode,
       party: party,
       election_year: 2024,
-      total_assets: assetsM ? parseInt(assetsM[1], 10) : 0,
-      total_liabilities: liabM ? parseInt(liabM[1], 10) : 0,
+      total_assets: assetsM ? parseInt(assetsM[1], 10) : null,
+      total_liabilities: liabM ? parseInt(liabM[1], 10) : null,
       criminal_cases: crimM ? parseInt(crimM[1], 10) : 0,
       serious_criminal_cases: 0,
       education: eduM ? eduM[1] : null,
@@ -245,7 +286,9 @@ for (const obj of mpObjs) {
       source_category: 'MP_PROFILE',
       source_file: 'data/seed/mp-profiles.ts',
       source_line: obj.startLine
-    });
+    };
+    affidavitByCandidacy.set(matchedCand.candId, affRecord);
+    affidavitRecords.push(affRecord);
   }
 }
 

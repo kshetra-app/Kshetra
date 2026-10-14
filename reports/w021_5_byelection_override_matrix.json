@@ -1,0 +1,210 @@
+{
+  "overrides": [
+    {
+      "stateCode": "TN",
+      "acNo": 35,
+      "name": "Madurantakam",
+      "type": "SC",
+      "level": "Assembly (AC)",
+      "event": "October 2026 By-Election",
+      "previousGeneralElection": {
+        "year": 2021,
+        "winnerParty": "AIADMK",
+        "winnerName": "Maragatham. K",
+        "margin": 3570
+      },
+      "byElectionResult": {
+        "winnerName": "K. Maragatham Kumaravel",
+        "winnerParty": "TVK",
+        "margin": 20040,
+        "defeatedParty": "DMK",
+        "status": "FINAL_DECLARED"
+      },
+      "currentSittingRepresentative": "K. Maragatham Kumaravel (TVK)",
+      "sourceEvidence": "ECI Form 21E Official By-Election Return (October 2026)",
+      "isolationVerification": "Immutable 2021 general election winner preserved as AIADMK (Maragatham. K); currentParty diverges to TVK."
+    },
+    {
+      "stateCode": "TN",
+      "acNo": 101,
+      "name": "Dharapuram",
+      "type": "SC",
+      "level": "Assembly (AC)",
+      "event": "October 2026 By-Election",
+      "previousGeneralElection": {
+        "year": 2021,
+        "winnerParty": "DMK",
+        "winnerName": "KAYALVIZHI N",
+        "margin": 1393
+      },
+      "byElectionResult": {
+        "winnerName": "P. Sathyabama",
+        "winnerParty": "TVK",
+        "margin": 9471,
+        "defeatedParty": "DMK",
+        "status": "FINAL_DECLARED"
+      },
+      "currentSittingRepresentative": "P. Sathyabama (TVK)",
+      "sourceEvidence": "ECI Form 21E Official By-Election Return (October 2026)",
+      "isolationVerification": "Immutable 2021 general election winner preserved as DMK (KAYALVIZHI N); currentParty diverges to TVK."
+    },
+    {
+      "stateCode": "WB",
+      "acNo": 210,
+      "name": "Nandigram",
+      "type": "GEN",
+      "level": "Assembly (AC)",
+      "event": "October 2026 By-Election",
+      "previousGeneralElection": {
+        "year": 2021,
+        "winnerParty": "BJP",
+        "winnerName": "Suvendu Adhikari",
+        "margin": 1956
+      },
+      "byElectionResult": {
+        "winnerName": "Hasi Rani Rath",
+        "winnerParty": "BJP",
+        "margin": 122753,
+        "defeatedParty": "INC",
+        "status": "FINAL_DECLARED"
+      },
+      "currentSittingRepresentative": "Hasi Rani Rath (BJP)",
+      "sourceEvidence": "ECI Form 21E Official By-Election Return (October 2026)",
+      "isolationVerification": "Immutable 2021 general election winner preserved as BJP (Suvendu Adhikari); currentParty remains BJP, sitting MLA updated to Hasi Rani Rath."
+    },
+    {
+      "stateCode": "WB",
+      "acNo": 70,
+      "name": "Rejinagar",
+      "type": "GEN",
+      "level": "Assembly (AC)",
+      "event": "October 2026 By-Election",
+      "previousGeneralElection": {
+        "year": 2021,
+        "winnerParty": "AITC",
+        "winnerName": "Rabiul Alam Chowdhury",
+        "margin": 68268
+      },
+      "byElectionResult": {
+        "winnerName": "Shankharavh Sarkar",
+        "winnerParty": "BJP",
+        "margin": 75816,
+        "defeatedParty": "AJUP",
+        "status": "FINAL_DECLARED"
+      },
+      "currentSittingRepresentative": "Shankharavh Sarkar (BJP)",
+      "sourceEvidence": "ECI Form 21E Official By-Election Return (October 2026)",
+      "isolationVerification": "Immutable 2021 general election winner preserved as AITC (Rabiul Alam Chowdhury); currentParty diverges to BJP, sitting MLA updated to Shankharavh Sarkar."
+    },
+    {
+      "stateCode": "PY",
+      "acNo": 9,
+      "name": "Thattanchavady",
+      "type": "GEN",
+      "level": "Assembly (AC)",
+      "event": "October 2026 By-Election",
+      "previousGeneralElection": {
+        "year": 2021,
+        "winnerParty": "AINRC",
+        "winnerName": "N. Rangasamy",
+        "margin": 5456
+      },
+      "byElectionResult": {
+        "winnerName": "Ashok Anand",
+        "winnerParty": "AINRC",
+        "margin": null,
+        "defeatedParty": "SPA",
+        "status": "FINAL_DECLARED"
+      },
+      "currentSittingRepresentative": "Ashok Anand (AINRC)",
+      "sourceEvidence": "ECI Form 21E Official By-Election Return (October 2026)",
+      "isolationVerification": "Immutable 2021 general election winner preserved as AINRC (N. Rangaswamy); currentParty remains AINRC, sitting MLA updated to Ashok Anand."
+    },
+    {
+      "stateCode": "AS",
+      "pcNo": 10,
+      "name": "Nagaon (Parliamentary)",
+      "type": "GEN",
+      "level": "Parliamentary (PC) - Strictly Quarantined from Assembly",
+      "event": "October 2026 Lok Sabha By-Election",
+      "previousGeneralElection": {
+        "year": 2024,
+        "winnerParty": "INC",
+        "winnerName": "Pradyut Bordoloi"
+      },
+      "byElectionResult": {
+        "winnerName": "Devasish Sharma",
+        "winnerParty": "BJP",
+        "margin": 176000,
+        "defeatedParty": "AIUDF / Badruddin Ajmal",
+        "status": "FINAL_DECLARED"
+      },
+      "currentSittingRepresentative": "Devasish Sharma, MP (Lok Sabha)",
+      "sourceEvidence": "ECI Lok Sabha By-Election Return (October 2026)",
+      "isolationVerification": "CRITICAL BARRIER: Zero Assam Assembly Constituencies (AC 1–126) were mutated. Assembly constituency AC 86 (Nagaon) remains under its state assembly sitting representative."
+    }
+  ],
+  "verifications": [
+    {
+      "target": "TN-AC-35 (Madurantakam)",
+      "apiSittingParty": "TVK",
+      "apiSittingMLA": "K. Maragatham Kumaravel",
+      "unifiedWinnerParty": "AIADMK",
+      "unifiedCurrentParty": "TVK",
+      "unifiedCurrentMLA": "K. Maragatham Kumaravel",
+      "unifiedOfficeholderStatus": "BY_ELECTION_SEATED",
+      "unifiedByElectionWinner": "K. Maragatham Kumaravel",
+      "matchesExpected": true
+    },
+    {
+      "target": "TN-AC-101 (Dharapuram)",
+      "apiSittingParty": "TVK",
+      "apiSittingMLA": "P. Sathyabama",
+      "unifiedWinnerParty": "DMK",
+      "unifiedCurrentParty": "TVK",
+      "unifiedCurrentMLA": "P. Sathyabama",
+      "unifiedOfficeholderStatus": "BY_ELECTION_SEATED",
+      "unifiedByElectionWinner": "P. Sathyabama",
+      "matchesExpected": true
+    },
+    {
+      "target": "WB-AC-210 (Nandigram)",
+      "apiSittingParty": "BJP",
+      "apiSittingMLA": "Hasi Rani Rath",
+      "unifiedWinnerParty": "BJP",
+      "unifiedCurrentParty": "BJP",
+      "unifiedCurrentMLA": "Hasi Rani Rath",
+      "unifiedOfficeholderStatus": "BY_ELECTION_SEATED",
+      "unifiedByElectionWinner": "Hasi Rani Rath",
+      "matchesExpected": true
+    },
+    {
+      "target": "WB-AC-70 (Rejinagar)",
+      "apiSittingParty": "BJP",
+      "apiSittingMLA": "Shankharavh Sarkar",
+      "unifiedWinnerParty": "AITC",
+      "unifiedCurrentParty": "BJP",
+      "unifiedCurrentMLA": "Shankharavh Sarkar",
+      "unifiedOfficeholderStatus": "BY_ELECTION_SEATED",
+      "unifiedByElectionWinner": "Shankharavh Sarkar",
+      "matchesExpected": true
+    },
+    {
+      "target": "PY-AC-9 (Thattanchavady)",
+      "apiSittingParty": "AINRC",
+      "apiSittingMLA": "Ashok Anand",
+      "unifiedWinnerParty": "AINRC",
+      "unifiedCurrentParty": "AINRC",
+      "unifiedCurrentMLA": "Ashok Anand",
+      "unifiedOfficeholderStatus": "BY_ELECTION_SEATED",
+      "unifiedByElectionWinner": "Ashok Anand",
+      "matchesExpected": true
+    },
+    {
+      "target": "AS-PC-10 Nagaon (Parliamentary)",
+      "isIsolatedFromAC": true,
+      "nagaonAcSittingMLA": "Rupak Sarmah",
+      "matchesExpected": true
+    }
+  ]
+}

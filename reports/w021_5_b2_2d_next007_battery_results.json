@@ -1,0 +1,86 @@
+[
+  {
+    "test": "Test A: Exact 11,298 Canonical Rows",
+    "expected": "11,298 rows",
+    "actual": "11298 rows",
+    "status": "PASS"
+  },
+  {
+    "test": "Test B: 36 Duplicate Skips",
+    "expected": "36 skipped occurrences",
+    "actual": "36 skipped occurrences",
+    "status": "PASS"
+  },
+  {
+    "test": "Test C: Exact Replay Idempotency",
+    "expected": "INSERT 0 0, DB count remains 11,298",
+    "actual": "INSERT 0 0, DB count = 11298",
+    "status": "PASS"
+  },
+  {
+    "test": "Test D: Canonical-ID Conflict",
+    "expected": "duplicate key value violates unique constraint candidacies_pkey (23505)",
+    "actual": "Caught candidacies_pkey (23505)",
+    "status": "PASS"
+  },
+  {
+    "test": "Test E: Missing Person FK",
+    "expected": "violates foreign key constraint candidacies_person_id_fkey (23503)",
+    "actual": "Caught candidacies_person_id_fkey (23503)",
+    "status": "PASS"
+  },
+  {
+    "test": "Test F: Missing Organization FK",
+    "expected": "violates foreign key constraint candidacies_party_id_fkey (23503)",
+    "actual": "Caught candidacies_party_id_fkey (23503)",
+    "status": "PASS"
+  },
+  {
+    "test": "Test G: Constituency FK Existence in Catalog",
+    "expected": "0 database FK constraints (Unconstrained text column in SQL catalog)",
+    "actual": "0 database FK constraints",
+    "status": "PASS"
+  },
+  {
+    "test": "Test H: Invalid Constituency Type Check",
+    "expected": "violates check constraint candidacies_constituency_type_check (23514)",
+    "actual": "Caught candidacies_constituency_type_check (23514)",
+    "status": "PASS"
+  },
+  {
+    "test": "Test I: Invalid Provenance FK",
+    "expected": "violates foreign key constraint candidacies_provenance_id_fkey (23503)",
+    "actual": "Caught candidacies_provenance_id_fkey (23503)",
+    "status": "PASS"
+  },
+  {
+    "test": "Test J: Transaction Rollback Verification",
+    "expected": "Count remains 11,298",
+    "actual": "Count = 11298",
+    "status": "PASS"
+  },
+  {
+    "test": "Test K: Unrelated-Row Preservation",
+    "expected": "persons = 9,083, orgs = 107, states = 36",
+    "actual": "persons = 9083, orgs = 107, states = 36",
+    "status": "PASS"
+  },
+  {
+    "test": "Test L: Complete 36-Duplicate Reconciliation",
+    "expected": "36 duplicate natural keys documented with source coordinates",
+    "actual": "36 duplicates documented",
+    "status": "PASS"
+  },
+  {
+    "test": "Test M: B2.2-E Dependency Closure",
+    "expected": "0 missing B2.2-E candidacies in committed population",
+    "actual": "0 missing",
+    "status": "PASS"
+  },
+  {
+    "test": "Test N: Chunk 11 Consolidated Post-Population Gate",
+    "expected": "POST_B2_2D_PASS",
+    "actual": "POST_B2_2D_PASS",
+    "status": "PASS"
+  }
+]

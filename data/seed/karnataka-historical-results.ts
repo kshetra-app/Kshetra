@@ -92,7 +92,7 @@ export const KARNATAKA_2018_RESULTS: HistoricalResult[] = [
   { acNo: 59, name: 'Channagiri',           winner: 'Madal Virupakshappa',     party: 'INC' },
   // ── Bellary District ──
   { acNo: 60, name: 'Bellary City',         winner: 'Anand Aswathnarayana',    party: 'BJP' },
-  { acNo: 61, name: 'Bellary Rural',        winner: 'Nayak Shivappa',          party: 'INC' },
+  { acNo: 76, name: 'Bellary Rural',        winner: 'Nayak Shivappa',          party: 'INC' },
   { acNo: 62, name: 'Sandur',               winner: 'E Tukaram',               party: 'INC' },
   { acNo: 63, name: 'Siruguppa',            winner: 'Doddamani Ramesh',        party: 'INC' },
   { acNo: 64, name: 'Kampli',               winner: 'J N Ganesh',              party: 'BJP' },
@@ -109,7 +109,7 @@ export const KARNATAKA_2018_RESULTS: HistoricalResult[] = [
   { acNo: 74, name: 'Lingasugur',           winner: 'Somashekhar Reddy',       party: 'BJP' },
   // ── Koppal District ──
   { acNo: 75, name: 'Koppal',               winner: 'Rajasekhar Hitnal',       party: 'INC' },
-  { acNo: 76, name: 'Gangavathi',           winner: 'Paratap Gouda',           party: 'BJP' },
+  { acNo: 61, name: 'Gangavathi',           winner: 'Paranna Munavalli',       party: 'BJP' },
   { acNo: 77, name: 'Kanakagiri',           winner: 'Smt Thippamma',           party: 'INC' },
   { acNo: 78, name: 'Yelburga',             winner: 'Basavaraj Rayanareddi',   party: 'BJP' },
   // ── Bidar District ──

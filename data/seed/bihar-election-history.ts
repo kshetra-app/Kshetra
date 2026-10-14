@@ -12,6 +12,25 @@ export interface BRElectionResult {
 
 export const BR_ELECTION_HISTORY: BRElectionResult[] = [
   {
+    year: 2025,
+    partyResults: {
+      'BJP': 89,
+      'JDU': 85,
+      'RJD': 25,
+      'LJPRV': 19,
+      'INC': 6,
+      'HAMS': 5,
+      'AIMIM': 5,
+      'RLM': 4,
+      'CPIML': 2,
+      'CPIM': 1,
+      'BSP': 1,
+      'IIP': 1,
+    },
+    totalSeats: 243,
+    rulingParty: 'NDA',
+  },
+  {
     year: 2020,
     partyResults: {
       'RJD': 75,
