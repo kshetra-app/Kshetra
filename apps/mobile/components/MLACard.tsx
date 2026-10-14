@@ -7,7 +7,8 @@ import type { MLAProfile } from '../lib/data';
 import { useTheme } from '../lib/theme';
 
 /** Format INR amounts in lakhs/crores */
-function formatINR(amount: number): string {
+function formatINR(amount: number | null | undefined): string {
+  if (amount == null) return 'Not Disclosed';
   if (amount >= 10000000) {
     return `₹${(amount / 10000000).toFixed(1)} Cr`;
   }
@@ -118,7 +119,7 @@ export default function MLACard({ profile }: MLACardProps) {
           <Text style={[styles.statLabel, { color: colors.textMuted }]}>{t('mla.terms')}</Text>
         </View>
 
-        {profile.totalAssets !== undefined && (
+        {profile.totalAssets != null && (
           <View style={styles.statItem}>
             <Ionicons name="wallet" size={16} color={colors.gold} />
             <Text style={[styles.statValue, { color: colors.text }]}>

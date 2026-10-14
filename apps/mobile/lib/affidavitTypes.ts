@@ -129,8 +129,9 @@ export const RED_FLAG_CONFIG: Record<RedFlagType, { icon: string; color: string;
 
 // ─── UTILITY FUNCTIONS ───
 
-/** Format INR amount in human-readable form */
-export function formatINR(amount: number): string {
+/** Format INR amount in human-readable form (supports null/undefined for undisclosed records) */
+export function formatINR(amount: number | null | undefined): string {
+  if (amount === null || amount === undefined) return 'Not Disclosed';
   if (amount >= 1_00_00_00_000) return `₹${(amount / 1_00_00_00_000).toFixed(1)} Cr`;
   if (amount >= 1_00_00_000) return `₹${(amount / 1_00_00_000).toFixed(1)} Cr`;
   if (amount >= 1_00_000) return `₹${(amount / 1_00_000).toFixed(1)} L`;
@@ -141,9 +142,10 @@ export function formatINR(amount: number): string {
 /** Compute wealth growth between two affidavits of the same candidate */
 export function computeWealthGrowth(older: CandidateAffidavit, newer: CandidateAffidavit): WealthGrowth {
   const years = newer.electionYear - older.electionYear;
-  const absoluteGrowth = newer.totalAssets - older.totalAssets;
-  const percentGrowth = older.totalAssets > 0 ? (absoluteGrowth / older.totalAssets) * 100 : 0;
-  const annualizedGrowth = years > 0 && older.totalAssets > 0
+  const hasValidAssets = older.totalAssets != null && newer.totalAssets != null;
+  const absoluteGrowth = hasValidAssets ? newer.totalAssets - older.totalAssets : 0;
+  const percentGrowth = hasValidAssets && older.totalAssets > 0 ? (absoluteGrowth / older.totalAssets) * 100 : 0;
+  const annualizedGrowth = hasValidAssets && years > 0 && older.totalAssets > 0
     ? (Math.pow(newer.totalAssets / older.totalAssets, 1 / years) - 1) * 100
     : 0;
 

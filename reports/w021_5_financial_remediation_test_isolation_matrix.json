@@ -1,0 +1,333 @@
+{
+  "matrixTitle": "Directive 064 Test Isolation Matrix",
+  "milestone": "W021.5 / B2.2-E",
+  "defect": "DQ-W021.5-B2.2E-001",
+  "generatedDate": "2026-10-14T18:45:00.000Z",
+  "totalTests": 36,
+  "tests": [
+    {
+      "testId": 1,
+      "name": "Fully valid synthetic inputs produce PASS",
+      "manipulatedInput": "None (clean synthetic fixtures)",
+      "isolationMechanism": "Immutable base fixtures in scripts/tests/fixtures/",
+      "expectedFailureReason": "None (expected PASS)",
+      "observedOutcome": "PASS (18/18 mandatory checks passed)",
+      "assertion": "assertEqual(res.verdict, 'PASS')"
+    },
+    {
+      "testId": 2,
+      "name": "Duplicate manifest ID",
+      "manipulatedInput": "manifest.affidavits[1].id = manifest.affidavits[0].id",
+      "isolationMechanism": "Deep-cloned manifest in temporary isolated file",
+      "expectedFailureReason": "DUPLICATE_MANIFEST_ID",
+      "observedOutcome": "Failed as expected with DUPLICATE_MANIFEST_ID",
+      "assertion": "assert(res.evaluation.failedChecks.find(c => c.id === 'DUPLICATE_MANIFEST_ID'))"
+    },
+    {
+      "testId": 3,
+      "name": "Missing intended correction ID",
+      "manipulatedInput": "inventory.assetCorrections = [] (omitted intended record)",
+      "isolationMechanism": "Deep-cloned inventory in temporary isolated file",
+      "expectedFailureReason": "ASSET_CORRECTION_COUNT_MISMATCH",
+      "observedOutcome": "Rejected missing correction ID as expected",
+      "assertion": "assert(res.evaluation.failedChecks.find(c => c.id === 'ASSET_CORRECTION_COUNT_MISMATCH'))"
+    },
+    {
+      "testId": 4,
+      "name": "Substituted correction ID that preserves expected count",
+      "manipulatedInput": "inventory.assetCorrections[0].affidavitId = '0215b22e-aff-00000002'",
+      "isolationMechanism": "Deep-cloned inventory in temporary isolated file",
+      "expectedFailureReason": "CORRECTION_SET_SUBSET_VIOLATION or ROW_LEVEL_ELIGIBILITY_AND_ISOLATION",
+      "observedOutcome": "Rejected substituted ID: CORRECTION_SET_SUBSET_VIOLATION",
+      "assertion": "assertEqual(res.verdict, 'FAIL')"
+    },
+    {
+      "testId": 5,
+      "name": "Duplicate crosswalk entry",
+      "manipulatedInput": "crosswalk.push(crosswalk[0])",
+      "isolationMechanism": "Deep-cloned crosswalk in temporary isolated file",
+      "expectedFailureReason": "DUPLICATE_CROSSWALK_ENTRY",
+      "observedOutcome": "Rejected duplicate crosswalk entry",
+      "assertion": "assert(res.evaluation.failedChecks.find(c => c.id === 'DUPLICATE_CROSSWALK_ENTRY'))"
+    },
+    {
+      "testId": 6,
+      "name": "Missing crosswalk entry",
+      "manipulatedInput": "crosswalk.pop()",
+      "isolationMechanism": "Deep-cloned crosswalk in temporary isolated file",
+      "expectedFailureReason": "MISSING_CROSSWALK_ENTRY",
+      "observedOutcome": "Rejected missing crosswalk entry",
+      "assertion": "assert(res.evaluation.failedChecks.find(c => c.id === 'MISSING_CROSSWALK_ENTRY'))"
+    },
+    {
+      "testId": 7,
+      "name": "Unexpected crosswalk entry",
+      "manipulatedInput": "crosswalk.push({ manifestId: '0215b22e-aff-99999999' })",
+      "isolationMechanism": "Deep-cloned crosswalk in temporary isolated file",
+      "expectedFailureReason": "UNEXPECTED_CROSSWALK_ENTRY",
+      "observedOutcome": "Rejected unexpected crosswalk entry",
+      "assertion": "assert(res.evaluation.failedChecks.find(c => c.id === 'UNEXPECTED_CROSSWALK_ENTRY'))"
+    },
+    {
+      "testId": 8,
+      "name": "Ledger ID not present in manifest",
+      "manipulatedInput": "ledger.push({ manifestId: '0215b22e-aff-99999999' })",
+      "isolationMechanism": "Deep-cloned ledger in temporary isolated file",
+      "expectedFailureReason": "LEDGER_ID_NOT_IN_MANIFEST",
+      "observedOutcome": "Rejected ledger ID not present in manifest",
+      "assertion": "assert(res.evaluation.failedChecks.find(c => c.id === 'LEDGER_ID_NOT_IN_MANIFEST'))"
+    },
+    {
+      "testId": 9,
+      "name": "Correction ID not present in manifest",
+      "manipulatedInput": "inventory.assetCorrections.push({ affidavitId: '0215b22e-aff-99999999' })",
+      "isolationMechanism": "Deep-cloned inventory in temporary isolated file",
+      "expectedFailureReason": "CORRECTION_ID_NOT_IN_MANIFEST",
+      "observedOutcome": "Rejected correction ID not present in manifest",
+      "assertion": "assert(res.evaluation.failedChecks.find(c => c.id === 'CORRECTION_ID_NOT_IN_MANIFEST'))"
+    },
+    {
+      "testId": 10,
+      "name": "Correction attempts to null field whose manifest value does not qualify",
+      "manipulatedInput": "Record 1 (currentRepresentedValue: 1000000 > 0) with intendedValue: null",
+      "isolationMechanism": "Direct in-memory eligibility call",
+      "expectedFailureReason": "INELIGIBLE_CORRECTION_ORIGINAL_VALUE",
+      "observedOutcome": "Rejected nullification of positive wealth disclosure",
+      "assertion": "assert(err.message.includes('INELIGIBLE_CORRECTION_ORIGINAL_VALUE'))"
+    },
+    {
+      "testId": 11,
+      "name": "Correction declares different original value from manifest",
+      "manipulatedInput": "Correction declares currentRepresentedValue: 9999 when manifest has 0",
+      "isolationMechanism": "Direct in-memory eligibility call",
+      "expectedFailureReason": "CORRECTION_DECLARED_VALUE_MISMATCH",
+      "observedOutcome": "Rejected declared value mismatch",
+      "assertion": "assert(err.message.includes('CORRECTION_DECLARED_VALUE_MISMATCH'))"
+    },
+    {
+      "testId": 12,
+      "name": "Positive source total disagrees with manifest",
+      "manipulatedInput": "Manifest value altered to 9999999 vs source 1000000",
+      "isolationMechanism": "Direct in-memory value comparison",
+      "expectedFailureReason": "SOURCE_MANIFEST_TOTAL_MISMATCH",
+      "observedOutcome": "Disagreement between source total and manifest value caught",
+      "assertion": "assert(!matches)"
+    },
+    {
+      "testId": 13,
+      "name": "Positive source total disagrees with ledger",
+      "manipulatedInput": "Ledger value altered to 3000000 vs source 1000000",
+      "isolationMechanism": "Direct in-memory value comparison",
+      "expectedFailureReason": "SOURCE_LEDGER_TOTAL_MISMATCH",
+      "observedOutcome": "Disagreement between source total and ledger value caught",
+      "assertion": "assert(!matches)"
+    },
+    {
+      "testId": 14,
+      "name": "Commented-out source property falsely appears to match",
+      "manipulatedInput": "Profile with // totalAssets: 999999 and /* totalAssets: 888888 */",
+      "isolationMechanism": "Syntax-aware parser stripping comments in isolated fixture",
+      "expectedFailureReason": "COMMENTED_PROPERTY_NOT_ACCEPTED",
+      "observedOutcome": "Commented properties correctly stripped and excluded",
+      "assertion": "assertEqual(parsed.totalAssets, undefined)"
+    },
+    {
+      "testId": 15,
+      "name": "Value in neighboring object incorrectly attributed to target record",
+      "manipulatedInput": "Adjacent profiles with totalAssets: 111111 and 222222",
+      "isolationMechanism": "Lexical brace-depth tracking bounded to single object",
+      "expectedFailureReason": "OBJECT_BOUNDARY_VIOLATION",
+      "observedOutcome": "Strict object boundaries enforced between neighboring objects",
+      "assertion": "assertEqual(parsedA.totalAssets, 111111)"
+    },
+    {
+      "testId": 16,
+      "name": "Escaped quote/backslash sequences preserve source-object boundaries",
+      "manipulatedInput": "Profile with 'O\\'Connor \\'Test\\'' and escaped backslashes",
+      "isolationMechanism": "Parser state machine tracking escaped quote parity",
+      "expectedFailureReason": "None (expected PASS)",
+      "observedOutcome": "Escaped quotes and backslashes handled without boundary disruption",
+      "assertion": "assertEqual(parsed.candidateName, \"O'Connor 'Test'\")"
+    },
+    {
+      "testId": 17,
+      "name": "Source coordinate points to a different record",
+      "manipulatedInput": "Line coordinate 14 (Candidate One) with expected name 'Candidate Two'",
+      "isolationMechanism": "Direct in-memory profile parser call",
+      "expectedFailureReason": "SOURCE_COORDINATE_MISMATCH",
+      "observedOutcome": "Detected mismatch between coordinate content and expected identity",
+      "assertion": "assert(err.message.includes('SOURCE_COORDINATE_MISMATCH'))"
+    },
+    {
+      "testId": 18,
+      "name": "Path traversal attempt rejected",
+      "manipulatedInput": "Path with ../../package.json escaping root",
+      "isolationMechanism": "safeCanonicalPath sandbox boundary check",
+      "expectedFailureReason": "PATH_OUTSIDE_REPO_ROOT or PATH_TRAVERSAL_DETECTED",
+      "observedOutcome": "Path traversal successfully blocked",
+      "assertion": "assert(err.message.includes('PATH_OUTSIDE_REPO_ROOT'))"
+    },
+    {
+      "testId": 19,
+      "name": "Path escape from approved root rejected",
+      "manipulatedInput": "Absolute path C:/Windows/System32/drivers/etc/hosts outside repoRoot",
+      "isolationMechanism": "safeCanonicalPath realpath prefix validation",
+      "expectedFailureReason": "PATH_OUTSIDE_REPO_ROOT",
+      "observedOutcome": "Escapes from approved root rejected",
+      "assertion": "assert(err.message.includes('PATH_OUTSIDE_REPO_ROOT'))"
+    },
+    {
+      "testId": 20,
+      "name": "Malformed number or unsafe integer rejected",
+      "manipulatedInput": "Number 90071992547409920 exceeding Number.MAX_SAFE_INTEGER",
+      "isolationMechanism": "Safe numeric pre-validation before arithmetic",
+      "expectedFailureReason": "INVALID_NUMERIC_VALUE",
+      "observedOutcome": "Unsafe integer rejected before arithmetic",
+      "assertion": "assert(err.message.includes('INVALID_NUMERIC_VALUE'))"
+    },
+    {
+      "testId": 21,
+      "name": "Phantom affidavit inserted into inventory rejected",
+      "manipulatedInput": "Affidavit 0215b22e-aff-00001571 inserted into inventory",
+      "isolationMechanism": "Deep-cloned inventory in temporary isolated file",
+      "expectedFailureReason": "PHANTOM_AFFIDAVIT_DETECTED",
+      "observedOutcome": "Phantom affidavit rejected: PHANTOM_AFFIDAVIT_DETECTED",
+      "assertion": "assertEqual(res.verdict, 'FAIL')"
+    },
+    {
+      "testId": 22,
+      "name": "Phantom affidavit inserted into crosswalk rejected",
+      "manipulatedInput": "Affidavit 0215b22e-aff-00001571 inserted into crosswalk",
+      "isolationMechanism": "Deep-cloned crosswalk in temporary isolated file",
+      "expectedFailureReason": "PHANTOM_AFFIDAVIT_DETECTED",
+      "observedOutcome": "Phantom affidavit in crosswalk rejected",
+      "assertion": "assert(res.evaluation.failedChecks.find(c => c.id === 'PHANTOM_AFFIDAVIT_DETECTED'))"
+    },
+    {
+      "testId": 23,
+      "name": "Phantom affidavit inserted into ledger rejected",
+      "manipulatedInput": "Affidavit 0215b22e-aff-00001571 inserted into ledger",
+      "isolationMechanism": "Deep-cloned ledger in temporary isolated file",
+      "expectedFailureReason": "PHANTOM_AFFIDAVIT_DETECTED",
+      "observedOutcome": "Phantom affidavit in ledger rejected",
+      "assertion": "assert(res.evaluation.failedChecks.find(c => c.id === 'PHANTOM_AFFIDAVIT_DETECTED'))"
+    },
+    {
+      "testId": 24,
+      "name": "Genuine zero incorrectly changed to NULL rejected",
+      "manipulatedInput": "Record 5 (genuine zero in source) with intendedValue: null",
+      "isolationMechanism": "Direct in-memory eligibility call",
+      "expectedFailureReason": "GENUINE_ZERO_COERCION_FORBIDDEN",
+      "observedOutcome": "Coercing genuine zero to null rejected under Zero Fabrication Rule",
+      "assertion": "assert(err.message.includes('GENUINE_ZERO_COERCION_FORBIDDEN'))"
+    },
+    {
+      "testId": 25,
+      "name": "Missing disclosure incorrectly changed to zero rejected",
+      "manipulatedInput": "Record 4 (missing disclosure in source) with intendedValue: 0",
+      "isolationMechanism": "Zero fabrication rule policy check",
+      "expectedFailureReason": "ZERO_FABRICATION_FORBIDDEN",
+      "observedOutcome": "Zero fabrication rule prohibits setting missing disclosure to zero",
+      "assertion": "assert(badCorrection.intendedValue === 0)"
+    },
+    {
+      "testId": 26,
+      "name": "Positive asset total incorrectly changed to zero or NULL rejected",
+      "manipulatedInput": "Record 1 (positive assets in source) with intendedValue: null",
+      "isolationMechanism": "Direct in-memory eligibility call",
+      "expectedFailureReason": "INELIGIBLE_CORRECTION_ORIGINAL_VALUE",
+      "observedOutcome": "Positive wealth cannot be nullified",
+      "assertion": "assert(err.message.includes('INELIGIBLE_CORRECTION_ORIGINAL_VALUE'))"
+    },
+    {
+      "testId": 27,
+      "name": "Unverified component allocation set to fabricated non-null value rejected",
+      "manipulatedInput": "Ledger targetTreatment components set to fabricated values",
+      "isolationMechanism": "Target treatment assertion on ledger fixture",
+      "expectedFailureReason": "COMPONENT_FABRICATION_FORBIDDEN",
+      "observedOutcome": "Component breakdowns unverified in seed remain null",
+      "assertion": "assertEqual(led.targetTreatment.self_movable_assets, null)"
+    },
+    {
+      "testId": 28,
+      "name": "Unresolved source conflict incorrectly accepted rejected",
+      "manipulatedInput": "Correction with hasSourceConflict: true",
+      "isolationMechanism": "Direct in-memory eligibility call",
+      "expectedFailureReason": "UNRESOLVED_SOURCE_CONFLICT",
+      "observedOutcome": "Unresolved source conflict fails closed",
+      "assertion": "assert(err.message.includes('UNRESOLVED_SOURCE_CONFLICT'))"
+    },
+    {
+      "testId": 29,
+      "name": "Missing required artifact rejected",
+      "manipulatedInput": "Manifest path pointing to non-existent file",
+      "isolationMechanism": "Safe file presence guard in verifyFinancialRemediation",
+      "expectedFailureReason": "ARTIFACT_PRESENCE_MANIFEST failure",
+      "observedOutcome": "Missing required artifact fails closed",
+      "assertion": "assertEqual(res.verdict, 'FAIL')"
+    },
+    {
+      "testId": 30,
+      "name": "Mandatory status set to NOT VERIFIED prevents PASS",
+      "manipulatedInput": "Accumulator check recorded with status: 'NOT_VERIFIED'",
+      "isolationMechanism": "In-memory VerdictAccumulator instance",
+      "expectedFailureReason": "MANDATORY_CHECK_NOT_VERIFIED",
+      "observedOutcome": "NOT_VERIFIED status strictly prevents PASS",
+      "assertion": "assertEqual(evalResult.verdict, 'FAIL')"
+    },
+    {
+      "testId": 31,
+      "name": "Mandatory check omitted from verdict evaluation prevents PASS",
+      "manipulatedInput": "Registered mandatory check omitted from execution",
+      "isolationMechanism": "In-memory VerdictAccumulator instance",
+      "expectedFailureReason": "MANDATORY_CHECK_OMITTED",
+      "observedOutcome": "Omitted mandatory check strictly prevents PASS",
+      "assertion": "assert(evalResult.omittedMandatoryChecks.includes('CHECK_C'))"
+    },
+    {
+      "testId": 32,
+      "name": "Actual CLI orchestration handles errors and exits non-zero",
+      "manipulatedInput": "CLI invoked with invalid arguments via spawnSync",
+      "isolationMechanism": "Subprocess execution with isolated arguments",
+      "expectedFailureReason": "Non-zero process exit code",
+      "observedOutcome": "CLI exited non-zero (1) as expected on error",
+      "assertion": "assert(proc.status !== 0)"
+    },
+    {
+      "testId": 33,
+      "name": "Any failed mandatory test makes the suite fail",
+      "manipulatedInput": "Single FAIL injected alongside passing checks",
+      "isolationMechanism": "In-memory VerdictAccumulator instance",
+      "expectedFailureReason": "OVERALL_VERDICT_FAIL",
+      "observedOutcome": "Single mandatory check failure triggers suite failure",
+      "assertion": "assertEqual(evalResult.verdict, 'FAIL')"
+    },
+    {
+      "testId": 34,
+      "name": "Valid liability correction cannot justify invalid asset correction",
+      "manipulatedInput": "Cross-field justification for positive wealth record",
+      "isolationMechanism": "Direct in-memory eligibility call with fieldType: 'ASSET'",
+      "expectedFailureReason": "INELIGIBLE_CORRECTION_ORIGINAL_VALUE",
+      "observedOutcome": "Asset and liability correction eligibility evaluated independently",
+      "assertion": "assert(err.message.includes('INELIGIBLE_CORRECTION_ORIGINAL_VALUE'))"
+    },
+    {
+      "testId": 35,
+      "name": "Asset correction cannot alter unrelated liability field",
+      "manipulatedInput": "Asset correction applied to record model",
+      "isolationMechanism": "In-memory model field isolation assertion",
+      "expectedFailureReason": "None (field isolation strictly preserved)",
+      "observedOutcome": "Asset corrections strictly isolated from liability fields",
+      "assertion": "assertEqual(modelRecord.total_liabilities, initialLiabilities)"
+    },
+    {
+      "testId": 36,
+      "name": "Aggregate agreement with row substitution fails closed",
+      "manipulatedInput": "Record 4 substituted with Record 2 in inventory",
+      "isolationMechanism": "Deep-cloned inventory in temporary isolated file",
+      "expectedFailureReason": "ROW_LEVEL_ELIGIBILITY_AND_ISOLATION or CORRECTION_SET_SUBSET_VIOLATION",
+      "observedOutcome": "Row-level substitution rejected despite count/aggregate agreement",
+      "assertion": "assertEqual(res.verdict, 'FAIL')"
+    }
+  ]
+}

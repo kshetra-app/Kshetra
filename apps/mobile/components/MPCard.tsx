@@ -13,7 +13,8 @@ interface MPCardProps {
   onPress?: () => void;
 }
 
-function formatINR(val: number): string {
+function formatINR(val: number | null | undefined): string {
+  if (val == null) return 'Not Disclosed';
   if (val >= 1_00_00_000) return `₹${(val / 1_00_00_000).toFixed(1)} Cr`;
   if (val >= 1_00_000) return `₹${(val / 1_00_000).toFixed(1)} L`;
   return `₹${val.toLocaleString('en-IN')}`;
@@ -109,7 +110,7 @@ export default function MPCard({ profile, compact, onPress }: MPCardProps) {
                 <Text style={styles.statLabel}>{profile.gender === 'F' ? 'Female' : 'Male'}</Text>
               </View>
             )}
-            {profile.totalAssets !== undefined && (
+            {profile.totalAssets != null && (
               <View style={styles.statItem}>
                 <Text style={styles.statValue}>{formatINR(profile.totalAssets)}</Text>
                 <Text style={styles.statLabel}>{t('affidavit.totalAssets')}</Text>

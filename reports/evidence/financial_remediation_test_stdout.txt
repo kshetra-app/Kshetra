@@ -1,0 +1,46 @@
+================================================================
+KSHETRA W021.5 — DIRECTIVE 064 TEST SUITE EXECUTION
+Node Runtime: v24.13.0
+Working Directory: C:\Users\Laven\OneDrive\Desktop\Kshetra\scripts\tests
+================================================================
+
+[✓ PASS] Test 01: Fully valid synthetic inputs produce PASS (72ms)
+[✓ PASS] Test 02: Duplicate manifest ID (49ms)
+[✓ PASS] Test 03: Missing intended correction ID (74ms)
+[✓ PASS] Test 04: Substituted correction ID that preserves expected count (47ms)
+[✓ PASS] Test 05: Duplicate crosswalk entry (50ms)
+[✓ PASS] Test 06: Missing crosswalk entry (50ms)
+[✓ PASS] Test 07: Unexpected crosswalk entry (62ms)
+[✓ PASS] Test 08: Ledger ID not present in manifest (50ms)
+[✓ PASS] Test 09: Correction ID not present in manifest (60ms)
+[✓ PASS] Test 10: Correction attempts to null field whose manifest value does not qualify (1ms)
+[✓ PASS] Test 11: Correction declares different original value from manifest (0ms)
+[✓ PASS] Test 12: Positive source total disagrees with manifest (11ms)
+[✓ PASS] Test 13: Positive source total disagrees with ledger (8ms)
+[✓ PASS] Test 14: Commented-out source property falsely appears to match (10ms)
+[✓ PASS] Test 15: Value in neighboring object incorrectly attributed to target record (10ms)
+[✓ PASS] Test 16: Escaped quote/backslash sequences preserve source-object boundaries (10ms)
+[✓ PASS] Test 17: Source coordinate points to a different record (8ms)
+[✓ PASS] Test 18: Path traversal attempt rejected (6ms)
+[✓ PASS] Test 19: Path escape from approved root rejected (3ms)
+[✓ PASS] Test 20: Malformed number or unsafe integer rejected (1ms)
+[✓ PASS] Test 21: Phantom affidavit inserted into inventory rejected (55ms)
+[✓ PASS] Test 22: Phantom affidavit inserted into crosswalk rejected (46ms)
+[✓ PASS] Test 23: Phantom affidavit inserted into ledger rejected (39ms)
+[✓ PASS] Test 24: Genuine zero incorrectly changed to NULL rejected (7ms)
+[✓ PASS] Test 25: Missing disclosure incorrectly changed to zero rejected (1ms)
+[✓ PASS] Test 26: Positive asset total incorrectly changed to zero or NULL rejected (1ms)
+[✓ PASS] Test 27: Unverified component allocation set to fabricated non-null value rejected (0ms)
+[✓ PASS] Test 28: Unresolved source conflict incorrectly accepted rejected (1ms)
+[✓ PASS] Test 29: Missing required artifact rejected (6ms)
+[✓ PASS] Test 30: Mandatory status set to NOT VERIFIED prevents PASS (1ms)
+[✓ PASS] Test 31: Mandatory check omitted from verdict evaluation prevents PASS (1ms)
+[✓ PASS] Test 32: Actual CLI orchestration handles errors and exits non-zero (294ms)
+[✓ PASS] Test 33: Any failed mandatory test makes the suite fail (0ms)
+[✓ PASS] Test 34: Valid liability correction cannot justify invalid asset correction (1ms)
+[✓ PASS] Test 35: Asset correction cannot alter unrelated liability field (0ms)
+[✓ PASS] Test 36: Aggregate agreement with row substitution fails closed (44ms)
+
+================================================================
+TEST SUITE SUMMARY: 36/36 PASSED, 0/36 FAILED
+================================================================

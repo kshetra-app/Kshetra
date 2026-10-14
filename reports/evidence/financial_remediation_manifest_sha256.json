@@ -1,0 +1,180 @@
+{
+  "milestone": "W021.5 / B2.2-E",
+  "defect": "DQ-W021.5-B2.2E-001",
+  "defectStatus": "STRICTLY OPEN",
+  "directive": "W021.5-CTO-DIRECTIVE-064",
+  "generatedAt": "2026-10-14T15:27:30.000Z",
+  "gitBaseline": {
+    "startingCommit": "4ad61386411ba6c159471cb0cc41a55eb7b9a2a0",
+    "canonicalBranch": "master",
+    "remoteRepository": "https://github.com/kshetra-app/Kshetra.git"
+  },
+  "authoritativeAffidavitManifest": {
+    "path": "reports/w021_5b2_b2_2e_affidavit_manifest.json",
+    "expectedSha256": "315afd46758266898445c9ab1672d92e2b48893c86e242357cf5cdad1520340b",
+    "computedSha256": "315afd46758266898445c9ab1672d92e2b48893c86e242357cf5cdad1520340b",
+    "expectedByteLength": 3561533,
+    "computedByteLength": 3561533,
+    "gitBlobSha": "205f0909f970a88c1539e36380718c4ef2ecdfdc",
+    "matchStatus": "BITWISE_EXACT_MATCH",
+    "totalAffidavitCount": 4523
+  },
+  "populationReconciliation": {
+    "staleInventoryRawAffidavits": 4524,
+    "retiredPhantomAffidavitsCount": 1,
+    "retiredPhantomAffidavits": [
+      "0215b22e-aff-00001571"
+    ],
+    "reconciledAffidavitCount": 4523,
+    "fiveGroupClassification": {
+      "group1_positiveAssets_positiveLiabilities": 3334,
+      "group2_positiveAssets_zeroLiabilities": 185,
+      "group3_positiveAssets_missingLiabilities": 821,
+      "group4_missingAssets_missingLiabilities": 72,
+      "group5_zeroAssets_zeroLiabilities": 111,
+      "total": 4523
+    },
+    "totalsByDimension": {
+      "assetRestorationTotal": 4340,
+      "assetMissingTotal": 72,
+      "assetZeroTotal": 111,
+      "liabilityRestorationTotal": 3334,
+      "liabilityMissingTotal": 893,
+      "liabilityZeroTotal": 296
+    },
+    "subsetIntegrity": {
+      "missingAssetsIsSubsetOfMissingLiabilities": true,
+      "missingAssetsCount": 72,
+      "missingLiabilitiesCount": 893,
+      "uncoveredMissingAssets": 0
+    }
+  },
+  "deliverables": [
+    {
+      "path": "scripts/verify_financial_remediation.mjs",
+      "byteLength": 39166,
+      "sha256": "0aae511b13098c5a6f91d381232d64c98a195641899f03461b869018b47fd3b2",
+      "gitBlobSha": "1067e3573db20e9f149869d5cdb5ed8643ad348d",
+      "description": "Production offline financial remediation verifier with 18 mandatory fail-closed checks"
+    },
+    {
+      "path": "scripts/tests/financial_remediation.test.mjs",
+      "byteLength": 38473,
+      "sha256": "eeb78197063941713dc2b06b00b8871edf91208ad874c9a5bb9b9a362e8d2c83",
+      "gitBlobSha": "2d39ea45a7fac9e668112e9e5070fb1bb0ebaa34",
+      "description": "36-test synthetic battery proving test isolation and tamper rejection"
+    },
+    {
+      "path": "tests/financial_remediation.test.mjs",
+      "byteLength": 231,
+      "sha256": "aa3be8c7b1385d1c8e27406d491fd9ba1dcaba487da8e7571544287b93bc0175",
+      "gitBlobSha": "45d17722f54af78194168a6f268cec99942e1acf",
+      "description": "Top-level test delegator wrapper for standard test runner discovery"
+    },
+    {
+      "path": "scripts/tests/fixtures/fixture_manifest.json",
+      "byteLength": 3133,
+      "sha256": "207b47e08a50f972c618b251e26873cdd9f7413e8313d8334db6fdd7b1eef78e",
+      "gitBlobSha": "e787a1af406c4382fe9c9bdaa6fe775a59663d6b",
+      "description": "Synthetic manifest fixture covering all 5 cross-classification groups"
+    },
+    {
+      "path": "scripts/tests/fixtures/fixture_crosswalk.json",
+      "byteLength": 628,
+      "sha256": "78cf039e0b48c19ec19ebb923f661682e4dc973d6a5adc0594e93fd6099d550f",
+      "gitBlobSha": "db70733b91ec60950e548bb73debb155a352c936",
+      "description": "Synthetic crosswalk fixture mapping manifest IDs to target candidate UUIDs"
+    },
+    {
+      "path": "scripts/tests/fixtures/fixture_component_ledger.json",
+      "byteLength": 3749,
+      "sha256": "50c83519c4bee28b74ad3774d9a4d217aa8d9ebb6672989f15e2d92c22e23d13",
+      "gitBlobSha": "0bfe65f06b677dc73999a8c41b276a74f6aeffc4",
+      "description": "Synthetic component ledger fixture asserting 4-component asset breakdowns"
+    },
+    {
+      "path": "scripts/tests/fixtures/fixture_reconciled_inventory.json",
+      "byteLength": 2817,
+      "sha256": "e1177efe827821991e5aaba3d38bec4ece83353ab22b6ef7f933c1870d527b6a",
+      "gitBlobSha": "463cde90173fc1c4cb0e7cc790edf50c6f9b2e02",
+      "description": "Synthetic reconciled inventory fixture matching the manifest set"
+    },
+    {
+      "path": "scripts/tests/fixtures/fixture_source_profiles.ts",
+      "byteLength": 1968,
+      "sha256": "d84913c70e4cf292df2d792ab3338122a70d1c4c060bc84fb55ad2a908ba0b70",
+      "gitBlobSha": "d8c2cb407a962a943816e38ca23c4b8f842b67a4",
+      "description": "Synthetic TypeScript source profile fixture for regex AST validation"
+    },
+    {
+      "path": "reports/w021_5_financial_remediation_requirements_matrix.json",
+      "byteLength": 14942,
+      "sha256": "c34c2faa284318ed32b16ce873f5c74c0052e5de201a03080b0e378e51b16878",
+      "gitBlobSha": "31c1f8f3149aebc6e734924f11338e2e221eda7c",
+      "description": "Traceability matrix mapping Directive 064 requirements to verifier and test battery"
+    },
+    {
+      "path": "reports/w021_5_financial_remediation_test_isolation_matrix.json",
+      "byteLength": 17392,
+      "sha256": "ad47bfedfa2f902e69f71a6b602189edb2e232016ba1d0d0b7e4e79a6e0b74be",
+      "gitBlobSha": "d3fdeae541b04869329f315475f23816b51558a2",
+      "description": "Test isolation matrix documenting target invariants and failure classifications for all 36 tests"
+    },
+    {
+      "path": "reports/w021_5_application_consumer_compatibility_matrix.json",
+      "byteLength": 7047,
+      "sha256": "4294d78607af55f7e7434bf60bd1acf528564231f209247a11d9e8d64d699a1d",
+      "gitBlobSha": "cc3c34b70a695e75384c6dfd65a7b2ad0b7d79bb",
+      "description": "Application consumer audit and nullability compatibility matrix"
+    },
+    {
+      "path": "reports/evidence/financial_remediation_test_stdout.txt",
+      "byteLength": 3173,
+      "sha256": "beb0879efdc68fa7873faee05a634b3b750eb7d8ffd753b909692ece6ae6f3f2",
+      "gitBlobSha": "e992e39e9bbb4c1b8198d567fc840b713803465a",
+      "description": "Raw verbatim stdout output from local execution of 36-test suite"
+    },
+    {
+      "path": "reports/evidence/financial_remediation_test_stderr.txt",
+      "byteLength": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gitBlobSha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "description": "Raw verbatim stderr output from local execution of 36-test suite (0 bytes, clean)"
+    },
+    {
+      "path": "reports/evidence/financial_remediation_test_results.json",
+      "byteLength": 8878,
+      "sha256": "e18a601c2ad36b238d02d569904180855873d94bff03abba1464648a3a44a44a",
+      "gitBlobSha": "f05f39f7f01c886daab342bbaabdf865e0d1c46f",
+      "description": "Structured machine-readable test execution report for all 36 tests"
+    },
+    {
+      "path": "apps/mobile/lib/affidavitTypes.ts",
+      "byteLength": 6951,
+      "sha256": "7962faffe121f3298fb8b04631cd29b948275ae64a91eaae75c8ee7efcbe86da",
+      "gitBlobSha": "676411db63647561eaf79626a8731bc786fb44ad",
+      "description": "Mobile affidavit types with null-safe formatINR and wealth growth computation"
+    },
+    {
+      "path": "apps/mobile/components/MLACard.tsx",
+      "byteLength": 7790,
+      "sha256": "fdab15aaa65b55417eda65f5b39e14219a408a79100c4129a2ac8595acd66757",
+      "gitBlobSha": "2cffc1c86a98528c73809661d760b1f48ff0f8e3",
+      "description": "MLA Card component with null-safe formatINR and null-guarded totalAssets rendering"
+    },
+    {
+      "path": "apps/mobile/components/MPCard.tsx",
+      "byteLength": 8867,
+      "sha256": "c6371e2203ac7ab7bd6ed5ab91a96d14002fc297310126fd82f9d6d6ea6c65ea",
+      "gitBlobSha": "da17b99f0c3a7fc31e9c9037cc33d23c78ea3cab",
+      "description": "MP Card component with null-safe formatINR and null-guarded totalAssets rendering"
+    },
+    {
+      "path": "reports/W021.5-CTO-DIRECTIVE-064-IMPLEMENTATION-REPORT.md",
+      "byteLength": 19035,
+      "sha256": "6dae13932fbcb5417074fbe59a1f0cbca09403b7094d34591abf72d518868f7d",
+      "gitBlobSha": "ca98d6a918fd0aca2e5766c303c16e8c41963268",
+      "description": "Comprehensive Directive 064 implementation report with bitwise evidence and consumer audit"
+    }
+  ]
+}

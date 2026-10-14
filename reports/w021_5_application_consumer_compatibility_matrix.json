@@ -1,0 +1,105 @@
+{
+  "matrixTitle": "Kshetra Mobile Application Financial Consumer Compatibility Matrix",
+  "directive": "KSHETRA — CTO DIRECTIVE 064 Section 9",
+  "milestone": "W021.5 / B2.2-E",
+  "defect": "DQ-W021.5-B2.2E-001",
+  "auditDate": "2026-10-14T19:30:00.000Z",
+  "auditedCommit": "4ad61386411ba6c159471cb0cc41a55eb7b9a2a0",
+  "summary": {
+    "totalAuditedFiles": 8,
+    "criticalCrashVulnerabilities": 3,
+    "highRiskContractDriftOrNaN": 3,
+    "mediumRiskDistortion": 2,
+    "requiresSeparateCodeChange": true
+  },
+  "consumers": [
+    {
+      "file": "apps/mobile/lib/affidavitTypes.ts",
+      "lines": "39-46, 133, 142-160, 190-196",
+      "component": "CandidateAffidavit & Financial Utility Functions",
+      "currentType": "number (strictly non-nullable)",
+      "requiredType": "number | null",
+      "currentBehavior": "CandidateAffidavit interface enforces non-nullable number for all 4 asset components, totalAssets, and totalLiabilities. formatINR() lacks null check and falls through to null.toLocaleString('en-IN') which throws TypeError. computeWealthGrowth() performs arithmetic on null resulting in NaN. detectRedFlags() treats coerced null liabilities as genuine zero, flagging false-positive 'ZERO_LIABILITIES' anomalies.",
+      "requiredHandling": "Change interface fields to 'number | null'. In formatINR(), guard with 'if (amount === null || amount === undefined) return \"Not Disclosed\";'. In computeWealthGrowth(), return status 'UNKNOWN' if either newer or older totalAssets is null. In detectRedFlags(), only flag zero liability anomaly if totalLiabilities === 0 and NOT null.",
+      "riskLevel": "CRITICAL",
+      "codeChangeRequired": true
+    },
+    {
+      "file": "apps/mobile/components/AffidavitCard.tsx",
+      "lines": "75, 80",
+      "component": "AffidavitCard",
+      "currentType": "number (via CandidateAffidavit)",
+      "requiredType": "number | null",
+      "currentBehavior": "Calls formatINR(affidavit.totalAssets) and formatINR(affidavit.totalLiabilities) directly. If totalAssets is null, unhandled TypeError crashes component rendering.",
+      "requiredHandling": "Display 'Not Disclosed' badge when totalAssets or totalLiabilities is null; protect against calling unhardened formatINR.",
+      "riskLevel": "CRITICAL",
+      "codeChangeRequired": true
+    },
+    {
+      "file": "apps/mobile/components/MLACard.tsx",
+      "lines": "10-18, 121",
+      "component": "MLACard",
+      "currentType": "number (via profile.totalAssets)",
+      "requiredType": "number | null",
+      "currentBehavior": "Local formatINR helper executes amount.toLocaleString('en-IN'). Line 121 guards with 'profile.totalAssets !== undefined'. Because 'null !== undefined' evaluates to true in JavaScript, null is passed to formatINR, throwing 'TypeError: Cannot read properties of null (reading toLocaleString)'. Crashes the MLA list screen.",
+      "requiredHandling": "Change guard to 'profile.totalAssets != null' (or strict 'profile.totalAssets !== undefined && profile.totalAssets !== null'). Harden local formatINR to return 'Not Disclosed' on null/undefined.",
+      "riskLevel": "CRITICAL",
+      "codeChangeRequired": true
+    },
+    {
+      "file": "apps/mobile/components/MPCard.tsx",
+      "lines": "16-20, 112",
+      "component": "MPCard",
+      "currentType": "number (via profile.totalAssets)",
+      "requiredType": "number | null",
+      "currentBehavior": "Identical vulnerability to MLACard: Line 112 guards with 'profile.totalAssets !== undefined'. Evaluates true for null, calling val.toLocaleString('en-IN') on null. Throws unhandled TypeError and crashes MP directory screen.",
+      "requiredHandling": "Change guard to 'profile.totalAssets != null' and guard local formatINR function.",
+      "riskLevel": "CRITICAL",
+      "codeChangeRequired": true
+    },
+    {
+      "file": "apps/mobile/components/legislator/FinancialBreakdownCard.tsx",
+      "lines": "48, 54, 59-63",
+      "component": "FinancialBreakdownCard",
+      "currentType": "number (coerced with || 0)",
+      "requiredType": "number | null",
+      "currentBehavior": "Lines 48 & 59-63 use '|| 0' fallback (const totalAssets = latest.totalAssets || 0; const selfMovable = latest.selfMovableAssets || 0; ...). Coerces undisclosed assets to zero, misrepresenting missing disclosures as poverty/zero wealth. Line 54 calculates growth without guarding against null/0 in previous.totalAssets, resulting in Infinity or NaN.",
+      "requiredHandling": "Do not coerce null to 0. Render an 'Undisclosed Financial Data' notice if totalAssets is null. Omit asset component breakdown when component disclosures are unverified/null. Handle growth calculation with null-safety.",
+      "riskLevel": "HIGH",
+      "codeChangeRequired": true
+    },
+    {
+      "file": "apps/mobile/app/legislator/[id].tsx",
+      "lines": "53-57",
+      "component": "LegislatorDetailScreen",
+      "currentType": "number (coerced with || 0)",
+      "requiredType": "number | null",
+      "currentBehavior": "Computes netWorth as '(_winnerAffidavit.totalAssets || 0) - (_winnerAffidavit.totalLiabilities || 0)'. For an elected representative whose assets were not disclosed, computes net worth as ₹0, creating a false factual representation of net worth.",
+      "requiredHandling": "If totalAssets is null, netWorth must evaluate to null and display as 'Not Disclosed'.",
+      "riskLevel": "HIGH",
+      "codeChangeRequired": true
+    },
+    {
+      "file": "apps/mobile/components/WealthTimeline.tsx",
+      "lines": "22, 33, 57-58",
+      "component": "WealthTimeline",
+      "currentType": "number (array map)",
+      "requiredType": "number | null",
+      "currentBehavior": "Line 22 evaluates Math.max(...sorted.map(a => a.totalAssets), 1) which treats null as 0. Line 33 uses 'Math.max(Math.round((a.totalAssets / maxAssets) * MAX_BAR_HEIGHT), 8)'. For null totalAssets, forces a minimum 8px bar, visually displaying null as small positive wealth. Lines 57-58 divide by totalAssets, yielding NaN when null.",
+      "requiredHandling": "Filter out or separately style undisclosed years with dashed borders or distinct 'No Disclosure' labels. Do not render a minimum height bar for null values.",
+      "riskLevel": "MEDIUM",
+      "codeChangeRequired": true
+    },
+    {
+      "file": "apps/mobile/stores/affidavits.ts",
+      "lines": "917, 942",
+      "component": "AffidavitsStore (Constituency Aggregations)",
+      "currentType": "number (coerced with || 0)",
+      "requiredType": "number | null",
+      "currentBehavior": "Line 917 sums totalAssets with '|| 0' and divides by total constituency affidavits length, including undisclosed candidates in the denominator and depressing the average. Line 942 includes undisclosed records in the crorepati percentage denominator.",
+      "requiredHandling": "Exclude undisclosed (null) records from both numerator and denominator when computing average assets, or display statistics with explicit sample size N_disclosed.",
+      "riskLevel": "MEDIUM",
+      "codeChangeRequired": true
+    }
+  ]
+}

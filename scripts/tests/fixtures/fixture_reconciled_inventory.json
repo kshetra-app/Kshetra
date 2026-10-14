@@ -1,0 +1,68 @@
+{
+  "metadata": {
+    "title": "Directive 059 - Synthetic Fixture Reconciliation",
+    "directive": "W021.5-CTO-DIRECTIVE-059 Synthetic Fixture",
+    "totalAssetCorrections": 1,
+    "totalLiabilityCorrections": 2,
+    "totalRecordsReconciled": 2,
+    "reconciliationTimestamp": "2026-10-14T18:30:00.000Z"
+  },
+  "assetCorrections": [
+    {
+      "affidavitId": "0215b22e-aff-00000004",
+      "candidacyId": "0215b22d-cand-00000004",
+      "candidateName": "Candidate Four",
+      "stateCode": "KA",
+      "acNo": 4,
+      "chunk": "Chunk 01",
+      "sqlLineNum": 100,
+      "stagingExecutionState": "SYNTHETIC_FIXTURE",
+      "sourceFile": "scratch/directive_059/fixture_source_profiles.ts",
+      "sourceLocation": "scratch/directive_059/fixture_source_profiles.ts:40",
+      "authoritativeSourceValue": "UNDISCLOSED (Field omitted in seed file)",
+      "currentRepresentedValue": 0,
+      "intendedValue": null,
+      "disclosureClassification": "UNKNOWN_VALUE_MISSING_DISCLOSURE",
+      "hasSourceConflict": false,
+      "deterministicReason": "Candidate profile in TypeScript seed lacks totalAssets; generator coerced undefined to 0."
+    }
+  ],
+  "liabilityCorrections": [
+    {
+      "affidavitId": "0215b22e-aff-00000003",
+      "candidacyId": "0215b22d-cand-00000003",
+      "candidateName": "Candidate Three",
+      "stateCode": "KA",
+      "acNo": 3,
+      "chunk": "Chunk 01",
+      "sqlLineNum": 80,
+      "stagingExecutionState": "SYNTHETIC_FIXTURE",
+      "sourceFile": "scratch/directive_059/fixture_source_profiles.ts",
+      "sourceLocation": "scratch/directive_059/fixture_source_profiles.ts:32",
+      "authoritativeSourceValue": "UNDISCLOSED (Field omitted in seed file)",
+      "currentRepresentedValue": 0,
+      "intendedValue": null,
+      "disclosureClassification": "UNKNOWN_VALUE_MISSING_DISCLOSURE",
+      "hasSourceConflict": false,
+      "deterministicReason": "Candidate profile in TypeScript seed lacks totalLiabilities; generator coerced undefined to 0."
+    },
+    {
+      "affidavitId": "0215b22e-aff-00000004",
+      "candidacyId": "0215b22d-cand-00000004",
+      "candidateName": "Candidate Four",
+      "stateCode": "KA",
+      "acNo": 4,
+      "chunk": "Chunk 01",
+      "sqlLineNum": 100,
+      "stagingExecutionState": "SYNTHETIC_FIXTURE",
+      "sourceFile": "scratch/directive_059/fixture_source_profiles.ts",
+      "sourceLocation": "scratch/directive_059/fixture_source_profiles.ts:40",
+      "authoritativeSourceValue": "UNDISCLOSED (Field omitted in seed file)",
+      "currentRepresentedValue": 0,
+      "intendedValue": null,
+      "disclosureClassification": "UNKNOWN_VALUE_MISSING_DISCLOSURE",
+      "hasSourceConflict": false,
+      "deterministicReason": "Candidate profile in TypeScript seed lacks totalLiabilities; generator coerced undefined to 0."
+    }
+  ]
+}

@@ -1,0 +1,107 @@
+[
+  {
+    "manifestId": "0215b22e-aff-00000001",
+    "targetUuid": "0215b22e-0001-0000-0000-000000000001",
+    "candidateName": "Candidate One",
+    "stateCode": "AP",
+    "acNo": 1,
+    "constituencyName": "Constituency 1",
+    "electionYear": 2024,
+    "candidacyId": "0215b22d-cand-00000001",
+    "personId": "0215b22d-000000000001",
+    "sourceCategory": "MLA_PROFILE",
+    "sourceFile": "scratch/directive_059/fixture_source_profiles.ts",
+    "sourceLine": 14,
+    "sourceTotalAssets": 1000000,
+    "sourceTotalLiabilities": 200000,
+    "sourceAssetStatus": "POSITIVE",
+    "sourceLiabilityStatus": "POSITIVE",
+    "rawComponentFields": {
+      "selfMovableAssets": "0",
+      "selfImmovableAssets": "0",
+      "spouseMovableAssets": "ABSENT",
+      "spouseImmovableAssets": "ABSENT"
+    },
+    "classification": "SCRAPER_PLACEHOLDER_DEFAULT",
+    "classificationRationale": "Source seed contains scraper placeholder zeros while totalAssets > 0. Component breakdown unverified; set to NULL under Zero Fabrication Rule.",
+    "targetTreatment": {
+      "total_assets": 1000000,
+      "total_liabilities": 200000,
+      "self_movable_assets": null,
+      "self_immovable_assets": null,
+      "spouse_movable_assets": null,
+      "spouse_immovable_assets": null
+    },
+    "exceptions": "NONE"
+  },
+  {
+    "manifestId": "0215b22e-aff-00000004",
+    "targetUuid": "0215b22e-0001-0000-0000-000000000004",
+    "candidateName": "Candidate Four",
+    "stateCode": "KA",
+    "acNo": 4,
+    "constituencyName": "Constituency 4",
+    "electionYear": 2023,
+    "candidacyId": "0215b22d-cand-00000004",
+    "personId": "0215b22d-000000000004",
+    "sourceCategory": "MLA_PROFILE",
+    "sourceFile": "scratch/directive_059/fixture_source_profiles.ts",
+    "sourceLine": 40,
+    "sourceTotalAssets": null,
+    "sourceTotalLiabilities": null,
+    "sourceAssetStatus": "UNDISCLOSED_OMITTED",
+    "sourceLiabilityStatus": "UNDISCLOSED_OMITTED",
+    "rawComponentFields": {
+      "selfMovableAssets": "ABSENT",
+      "selfImmovableAssets": "ABSENT",
+      "spouseMovableAssets": "ABSENT",
+      "spouseImmovableAssets": "ABSENT"
+    },
+    "classification": "UNDISCLOSED_OMITTED",
+    "classificationRationale": "Profile lacks totalAssets and totalLiabilities; generator coerced to 0.",
+    "targetTreatment": {
+      "total_assets": null,
+      "total_liabilities": null,
+      "self_movable_assets": null,
+      "self_immovable_assets": null,
+      "spouse_movable_assets": null,
+      "spouse_immovable_assets": null
+    },
+    "exceptions": "SOURCE_OMISSION"
+  },
+  {
+    "manifestId": "0215b22e-aff-00000005",
+    "targetUuid": "0215b22e-0001-0000-0000-000000000005",
+    "candidateName": "Candidate Five",
+    "stateCode": "MH",
+    "acNo": 5,
+    "constituencyName": "Constituency 5",
+    "electionYear": 2024,
+    "candidacyId": "0215b22d-cand-00000005",
+    "personId": "0215b22d-000000000005",
+    "sourceCategory": "MLA_PROFILE",
+    "sourceFile": "scratch/directive_059/fixture_source_profiles.ts",
+    "sourceLine": 47,
+    "sourceTotalAssets": 0,
+    "sourceTotalLiabilities": 0,
+    "sourceAssetStatus": "VERIFIED_GENUINE_ZERO",
+    "sourceLiabilityStatus": "VERIFIED_GENUINE_ZERO",
+    "rawComponentFields": {
+      "selfMovableAssets": "0",
+      "selfImmovableAssets": "0",
+      "spouseMovableAssets": "0",
+      "spouseImmovableAssets": "0"
+    },
+    "classification": "VERIFIED_GENUINE_ZERO",
+    "classificationRationale": "Source seed explicitly declares 0 assets and 0 liabilities.",
+    "targetTreatment": {
+      "total_assets": 0,
+      "total_liabilities": 0,
+      "self_movable_assets": 0,
+      "self_immovable_assets": 0,
+      "spouse_movable_assets": 0,
+      "spouse_immovable_assets": 0
+    },
+    "exceptions": "NONE"
+  }
+]

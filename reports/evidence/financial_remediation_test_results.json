@@ -1,0 +1,301 @@
+{
+  "testSuite": "Directive 064 Test Battery",
+  "milestone": "W021.5 / B2.2-E",
+  "defect": "DQ-W021.5-B2.2E-001",
+  "executionDate": "2026-10-14T15:28:38.078Z",
+  "nodeVersion": "v24.13.0",
+  "totalTests": 36,
+  "passedCount": 36,
+  "failedCount": 0,
+  "allPassed": true,
+  "tests": [
+    {
+      "testId": 1,
+      "name": "Fully valid synthetic inputs produce PASS",
+      "status": "PASS",
+      "errorMsg": null,
+      "details": "All 18 mandatory checks passed",
+      "durationMs": 26
+    },
+    {
+      "testId": 2,
+      "name": "Duplicate manifest ID",
+      "status": "PASS",
+      "errorMsg": null,
+      "details": "Failed as expected with DUPLICATE_MANIFEST_ID: ID: 0215b22e-aff-00000001",
+      "durationMs": 13
+    },
+    {
+      "testId": 3,
+      "name": "Missing intended correction ID",
+      "status": "PASS",
+      "errorMsg": null,
+      "details": "Rejected missing correction ID as expected",
+      "durationMs": 13
+    },
+    {
+      "testId": 4,
+      "name": "Substituted correction ID that preserves expected count",
+      "status": "PASS",
+      "errorMsg": null,
+      "details": "Rejected substituted ID: CORRECTION_SET_SUBSET_VIOLATION",
+      "durationMs": 10
+    },
+    {
+      "testId": 5,
+      "name": "Duplicate crosswalk entry",
+      "status": "PASS",
+      "errorMsg": null,
+      "details": "Rejected duplicate crosswalk entry",
+      "durationMs": 17
+    },
+    {
+      "testId": 6,
+      "name": "Missing crosswalk entry",
+      "status": "PASS",
+      "errorMsg": null,
+      "details": "Rejected missing crosswalk entry",
+      "durationMs": 20
+    },
+    {
+      "testId": 7,
+      "name": "Unexpected crosswalk entry",
+      "status": "PASS",
+      "errorMsg": null,
+      "details": "Rejected unexpected crosswalk entry",
+      "durationMs": 17
+    },
+    {
+      "testId": 8,
+      "name": "Ledger ID not present in manifest",
+      "status": "PASS",
+      "errorMsg": null,
+      "details": "Rejected ledger ID not present in manifest",
+      "durationMs": 14
+    },
+    {
+      "testId": 9,
+      "name": "Correction ID not present in manifest",
+      "status": "PASS",
+      "errorMsg": null,
+      "details": "Rejected correction ID not present in manifest",
+      "durationMs": 25
+    },
+    {
+      "testId": 10,
+      "name": "Correction attempts to null field whose manifest value does not qualify",
+      "status": "PASS",
+      "errorMsg": null,
+      "details": "Rejected nullification of positive wealth disclosure",
+      "durationMs": 1
+    },
+    {
+      "testId": 11,
+      "name": "Correction declares different original value from manifest",
+      "status": "PASS",
+      "errorMsg": null,
+      "details": "Rejected declared value mismatch",
+      "durationMs": 0
+    },
+    {
+      "testId": 12,
+      "name": "Positive source total disagrees with manifest",
+      "status": "PASS",
+      "errorMsg": null,
+      "details": "Disagreement between source total and manifest value caught",
+      "durationMs": 2
+    },
+    {
+      "testId": 13,
+      "name": "Positive source total disagrees with ledger",
+      "status": "PASS",
+      "errorMsg": null,
+      "details": "Disagreement between source total and ledger value caught",
+      "durationMs": 1
+    },
+    {
+      "testId": 14,
+      "name": "Commented-out source property falsely appears to match",
+      "status": "PASS",
+      "errorMsg": null,
+      "details": "Commented properties correctly stripped and excluded",
+      "durationMs": 2
+    },
+    {
+      "testId": 15,
+      "name": "Value in neighboring object incorrectly attributed to target record",
+      "status": "PASS",
+      "errorMsg": null,
+      "details": "Strict object boundaries enforced between neighboring objects",
+      "durationMs": 3
+    },
+    {
+      "testId": 16,
+      "name": "Escaped quote/backslash sequences preserve source-object boundaries",
+      "status": "PASS",
+      "errorMsg": null,
+      "details": "Escaped quotes and backslashes handled without boundary disruption",
+      "durationMs": 5
+    },
+    {
+      "testId": 17,
+      "name": "Source coordinate points to a different record",
+      "status": "PASS",
+      "errorMsg": null,
+      "details": "Detected mismatch between coordinate content and expected identity",
+      "durationMs": 3
+    },
+    {
+      "testId": 18,
+      "name": "Path traversal attempt rejected",
+      "status": "PASS",
+      "errorMsg": null,
+      "details": "Path traversal successfully blocked",
+      "durationMs": 2
+    },
+    {
+      "testId": 19,
+      "name": "Path escape from approved root rejected",
+      "status": "PASS",
+      "errorMsg": null,
+      "details": "Escapes from approved root rejected",
+      "durationMs": 1
+    },
+    {
+      "testId": 20,
+      "name": "Malformed number or unsafe integer rejected",
+      "status": "PASS",
+      "errorMsg": null,
+      "details": "Unsafe integer rejected before arithmetic",
+      "durationMs": 1
+    },
+    {
+      "testId": 21,
+      "name": "Phantom affidavit inserted into inventory rejected",
+      "status": "PASS",
+      "errorMsg": null,
+      "details": "Phantom affidavit rejected: CORRECTION_ID_NOT_IN_MANIFEST",
+      "durationMs": 12
+    },
+    {
+      "testId": 22,
+      "name": "Phantom affidavit inserted into crosswalk rejected",
+      "status": "PASS",
+      "errorMsg": null,
+      "details": "Phantom affidavit in crosswalk rejected",
+      "durationMs": 13
+    },
+    {
+      "testId": 23,
+      "name": "Phantom affidavit inserted into ledger rejected",
+      "status": "PASS",
+      "errorMsg": null,
+      "details": "Phantom affidavit in ledger rejected",
+      "durationMs": 16
+    },
+    {
+      "testId": 24,
+      "name": "Genuine zero incorrectly changed to NULL rejected",
+      "status": "PASS",
+      "errorMsg": null,
+      "details": "Coercing genuine zero to null rejected under Zero Fabrication Rule",
+      "durationMs": 6
+    },
+    {
+      "testId": 25,
+      "name": "Missing disclosure incorrectly changed to zero rejected",
+      "status": "PASS",
+      "errorMsg": null,
+      "details": "Zero fabrication rule prohibits setting missing disclosure to zero",
+      "durationMs": 1
+    },
+    {
+      "testId": 26,
+      "name": "Positive asset total incorrectly changed to zero or NULL rejected",
+      "status": "PASS",
+      "errorMsg": null,
+      "details": "Positive wealth cannot be nullified",
+      "durationMs": 0
+    },
+    {
+      "testId": 27,
+      "name": "Unverified component allocation set to fabricated non-null value rejected",
+      "status": "PASS",
+      "errorMsg": null,
+      "details": "Component breakdowns unverified in seed remain null",
+      "durationMs": 0
+    },
+    {
+      "testId": 28,
+      "name": "Unresolved source conflict incorrectly accepted rejected",
+      "status": "PASS",
+      "errorMsg": null,
+      "details": "Unresolved source conflict fails closed",
+      "durationMs": 0
+    },
+    {
+      "testId": 29,
+      "name": "Missing required artifact rejected",
+      "status": "PASS",
+      "errorMsg": null,
+      "details": "Missing required artifact fails closed",
+      "durationMs": 3
+    },
+    {
+      "testId": 30,
+      "name": "Mandatory status set to NOT VERIFIED prevents PASS",
+      "status": "PASS",
+      "errorMsg": null,
+      "details": "NOT_VERIFIED status strictly prevents PASS",
+      "durationMs": 0
+    },
+    {
+      "testId": 31,
+      "name": "Mandatory check omitted from verdict evaluation prevents PASS",
+      "status": "PASS",
+      "errorMsg": null,
+      "details": "Omitted mandatory check strictly prevents PASS",
+      "durationMs": 1
+    },
+    {
+      "testId": 32,
+      "name": "Actual CLI orchestration handles errors and exits non-zero",
+      "status": "PASS",
+      "errorMsg": null,
+      "details": "CLI exited non-zero (1) as expected on error",
+      "durationMs": 90
+    },
+    {
+      "testId": 33,
+      "name": "Any failed mandatory test makes the suite fail",
+      "status": "PASS",
+      "errorMsg": null,
+      "details": "Single mandatory check failure triggers suite failure",
+      "durationMs": 0
+    },
+    {
+      "testId": 34,
+      "name": "Valid liability correction cannot justify invalid asset correction",
+      "status": "PASS",
+      "errorMsg": null,
+      "details": "Asset and liability correction eligibility evaluated independently",
+      "durationMs": 0
+    },
+    {
+      "testId": 35,
+      "name": "Asset correction cannot alter unrelated liability field",
+      "status": "PASS",
+      "errorMsg": null,
+      "details": "Asset corrections strictly isolated from liability fields",
+      "durationMs": 0
+    },
+    {
+      "testId": 36,
+      "name": "Aggregate agreement with row substitution fails closed",
+      "status": "PASS",
+      "errorMsg": null,
+      "details": "Row-level substitution rejected despite count/aggregate agreement",
+      "durationMs": 10
+    }
+  ]
+}
