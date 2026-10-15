@@ -1,11 +1,12 @@
 {
   "matrixTitle": "Kshetra Mobile Application Financial Consumer Compatibility Matrix",
-  "directive": "KSHETRA — W021.5 CTO DIRECTIVE 069 Section 3",
+  "directive": "KSHETRA — W021.5 CTO DIRECTIVE 070 Section 3",
   "milestone": "W021.5 / B2.2-E",
   "defect": "DQ-W021.5-B2.2E-001",
-  "auditDate": "2026-10-15T14:30:00.000Z",
+  "auditDate": "2026-10-15T14:55:00.000Z",
   "baselineCommit": "20d5ea575fa1595648fcceee07ddf0d45b4973a3",
   "verifiedCommit": "d766c9f9bb4eae8411fa539ac241134133dd0054",
+  "evidenceUpdateCommit": "ba2a44a1a80796984315ff762ce595184b352945",
   "auditedBaselineCommit": "20d5ea575fa1595648fcceee07ddf0d45b4973a3",
   "auditedPostFixCommit": "d766c9f9bb4eae8411fa539ac241134133dd0054",
   "summary": {
@@ -212,11 +213,12 @@
   "defectStatus": "STRICTLY OPEN — AWAITING INDEPENDENT CTO ADJUDICATION (under Rule IV-001 Non-Self-Acceptance)",
   "baselineCommit": "20d5ea575fa1595648fcceee07ddf0d45b4973a3",
   "verifiedCommit": "d766c9f9bb4eae8411fa539ac241134133dd0054",
+  "evidenceUpdateCommit": "ba2a44a1a80796984315ff762ce595184b352945",
   "auditedCommit": {
     "baselineAudit": "20d5ea575fa1595648fcceee07ddf0d45b4973a3",
     "postFixSourceInspection": "d766c9f9bb4eae8411fa539ac241134133dd0054"
   },
   "testedSourceRevision": "Directive 068 working tree rooted on baseline 20d5ea575fa1595648fcceee07ddf0d45b4973a3, committed bitwise as d766c9f9bb4eae8411fa539ac241134133dd0054",
   "testExecutionSummary": "105 verifier tests (105 passed, 0 failed), 34 mobile unit tests (34 passed, 0 failed), 15 RNTL component tests (15 passed, 0 failed), and TypeScript compiler (0 errors) were executed locally against the Directive 068 working tree prior to commit creation, binding directly to commit d766c9f9bb4eae8411fa539ac241134133dd0054 via exact file contents and hashes.",
-  "provenanceNotes": "verifiedCommit d766c9f9bb4eae8411fa539ac241134133dd0054 is the substantive implementation commit on master containing the fail-closed verifier hardening, 26 adversarial tests, and updated matrices. Directive 069 delivers a bounded evidence-and-provenance follow-up commit to reconcile exact commit coordinates and bind committed evidence to source without repeating or claiming unexecuted test runs."
+  "provenanceNotes": "verifiedCommit d766c9f9bb4eae8411fa539ac241134133dd0054 is the substantive implementation commit on master containing the fail-closed verifier hardening, 26 adversarial tests, and updated matrices. evidenceUpdateCommit ba2a44a1a80796984315ff762ce595184b352945 is the Directive 069 follow-up commit binding evidence and git blobs. Directive 070 closes the coordinate reference across all provenance artifacts."
 }
