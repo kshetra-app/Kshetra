@@ -28,7 +28,7 @@ interface AffidavitState {
   getWealthGrowth: (candidateName: string) => WealthGrowth[];
   getRedFlags: (affidavitId: string) => AffidavitRedFlag[];
   getConstituencyIntegrity: (stateCode: string, acNo: number) => ConstituencyIntegrity | null;
-  getCrorepatiCount: (stateCode: string, year: number) => { total: number; disclosedCount: number; crorepatis: number; percent: number };
+  getCrorepatiCount: (stateCode: string, year: number) => { total: number; disclosedCount: number; crorepatis: number; percent: number; disclosedPercent: number; overallPercent: number };
   getCriminalCandidates: (stateCode: string, year: number) => { total: number; withCases: number; withSerious: number };
 }
 
@@ -945,11 +945,15 @@ export const useAffidavitStore = create<AffidavitState>()((set, get) => ({
     );
     const disclosedAffidavits = yearAffidavits.filter((a) => a.totalAssets != null);
     const crorepatis = disclosedAffidavits.filter((a) => a.totalAssets! >= 1_00_00_000).length;
+    const disclosedPercent = disclosedAffidavits.length > 0 ? Math.round((crorepatis / disclosedAffidavits.length) * 100) : 0;
+    const overallPercent = yearAffidavits.length > 0 ? Math.round((crorepatis / yearAffidavits.length) * 100) : 0;
     return {
       total: yearAffidavits.length,
       disclosedCount: disclosedAffidavits.length,
       crorepatis,
-      percent: disclosedAffidavits.length > 0 ? Math.round((crorepatis / disclosedAffidavits.length) * 100) : 0,
+      percent: disclosedPercent,
+      disclosedPercent,
+      overallPercent,
     };
   },
 

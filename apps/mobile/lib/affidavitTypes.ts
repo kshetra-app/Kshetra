@@ -86,7 +86,7 @@ export interface ConstituencyIntegrity {
   candidatesWithCases: number;
   candidatesWithSeriousCases: number;
   averageAssets: number | null;
-  assetsDisclosedCandidatesCount?: number;
+  assetsDisclosedCandidatesCount: number;
   medianEducation: EducationLevel;
   integrityScore: number; // 0-100
 }

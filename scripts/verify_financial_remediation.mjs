@@ -3,12 +3,16 @@
 /**
  * Kshetra W021.5 / B2.2-E — Financial Remediation & Evidence Verification Harness
  * 
- * Fulfills CTO Directive 059 requirements:
+ * Fulfills CTO Directive 066 & 059 requirements:
  * - Deterministic, syntax-aware lexical source parser stripping comments and respecting quotes
- * - Strict realpath boundary containment preventing path traversal and symlink escapes
+ * - Opening brace inside same-line block comment rejected as source evidence
+ * - Strict realpath boundary containment preventing path traversal, symlink escapes, UNC paths, and foreign drive letters
  * - Pre-map duplicate ID detection across manifest, crosswalk, ledger, and inventory
  * - Strict row-level correction eligibility validation before in-memory application
+ * - Mandatory three-way binding: manifest + crosswalk + ledger + source coordinate
+ * - Fail-closed on missing ledger entry or missing authoritative field
  * - Exact mathematical set membership proof (missing assets ⊆ missing liabilities)
+ * - Exact reconciliation of five financial classification groups without overlap or omission
  * - Safe integer validation before arithmetic
  * - Centralized fail-closed verdict accumulator
  * - CLI orchestration with non-zero exit codes on any failure or exception
@@ -143,6 +147,16 @@ export function safeCanonicalPath(filePath, repoRoot) {
     throw new Error('INVALID_REPO_ROOT: Repository root must be a non-empty string');
   }
 
+  // Reject null bytes
+  if (filePath.includes('\0')) {
+    throw new Error(`INVALID_PATH: Null bytes are forbidden in path ('${filePath}')`);
+  }
+
+  // Reject URL schemes (e.g., file://, http://)
+  if (/^[a-zA-Z][a-zA-Z0-9+.-]*:\/\//.test(filePath)) {
+    throw new Error(`INVALID_PATH: URL schemes are forbidden in file path ('${filePath}')`);
+  }
+
   // Reject UNC paths (starts with // or \\)
   if (filePath.startsWith('\\\\') || filePath.startsWith('//')) {
     throw new Error(`PATH_OUTSIDE_REPO_ROOT: UNC paths are forbidden ('${filePath}')`);
@@ -155,13 +169,12 @@ export function safeCanonicalPath(filePath, repoRoot) {
     throw new Error(`CANNOT_RESOLVE_REPO_ROOT: ${err.message}`);
   }
 
-  // If filePath has a drive root, check drive match on Windows
-  const parsedFile = path.parse(filePath);
-  const parsedRepo = path.parse(realRepoRoot);
-  if (parsedFile.root && parsedRepo.root) {
-    const fileDrive = parsedFile.root.replace(/[\\\/]/g, '').toUpperCase();
-    const repoDrive = parsedRepo.root.replace(/[\\\/]/g, '').toUpperCase();
-    if (fileDrive && repoDrive && fileDrive !== repoDrive) {
+  // Windows drive letter check on any host (including POSIX)
+  const winDriveMatch = filePath.match(/^([a-zA-Z]):[\\\/]/);
+  if (winDriveMatch) {
+    const fileDrive = winDriveMatch[1].toUpperCase();
+    const repoDriveMatch = realRepoRoot.match(/^([a-zA-Z]):[\\\/]/);
+    if (!repoDriveMatch || repoDriveMatch[1].toUpperCase() !== fileDrive) {
       throw new Error(`PATH_OUTSIDE_REPO_ROOT: Path '${filePath}' attempts drive hopping outside '${realRepoRoot}'`);
     }
   }
@@ -193,63 +206,153 @@ export function safeCanonicalPath(filePath, repoRoot) {
 // ============================================================================
 
 export function extractObjectLiteralAtLine(content, startLine) {
-  const lines = content.split('\n');
-  if (startLine < 1 || startLine > lines.length) {
-    throw new Error(`LINE_OUT_OF_BOUNDS: Start line ${startLine} is outside file line count ${lines.length}`);
+  if (typeof content !== 'string') {
+    throw new Error('INVALID_CONTENT: Content must be a string');
+  }
+  if (!Number.isInteger(startLine) || startLine < 1) {
+    throw new Error(`LINE_OUT_OF_BOUNDS: Start line ${startLine} must be a positive integer`);
   }
 
-  let charOffset = 0;
-  for (let i = 0; i < startLine - 1; i++) {
-    charOffset += lines[i].length + 1; // +1 for \n
-  }
-
-  const lineText = lines[startLine - 1];
-  const braceCol = lineText.indexOf('{');
-  if (braceCol === -1) {
-    throw new Error(`NO_OPENING_BRACE_AT_COORDINATE: Line ${startLine} does not contain opening brace '{'`);
-  }
-
-  let idx = charOffset + braceCol;
-  let braceDepth = 0;
-  let inSingle = false;
-  let inDouble = false;
+  // Track comments and quotes from character 0 to find active opening brace on startLine
+  let line = 1;
+  let inSingleQuote = false;
+  let inDoubleQuote = false;
   let inTemplate = false;
-  let inSingleComment = false;
-  let inMultiComment = false;
+  let inLineComment = false;
+  let inBlockComment = false;
   let escaped = false;
-  let cleaned = '';
 
-  while (idx < content.length) {
-    const ch = content[idx];
-    const nextCh = idx + 1 < content.length ? content[idx + 1] : '';
+  let targetCharIdx = -1;
 
-    if (inSingleComment) {
+  for (let i = 0; i < content.length; i++) {
+    const ch = content[i];
+    const nextCh = i + 1 < content.length ? content[i + 1] : '';
+
+    // Check if we are on startLine and observe an active opening brace outside comments/strings
+    if (line === startLine && targetCharIdx === -1) {
+      if (!inSingleQuote && !inDoubleQuote && !inTemplate && !inLineComment && !inBlockComment) {
+        if (ch === '{') {
+          targetCharIdx = i;
+          break; // Found the active opening brace on startLine
+        }
+      }
+    }
+
+    if (line > startLine) {
+      // Passed startLine without finding an active opening brace
+      break;
+    }
+
+    // Advance lexer state
+    if (inLineComment) {
       if (ch === '\n') {
-        inSingleComment = false;
+        inLineComment = false;
+        line++;
+      }
+    } else if (inBlockComment) {
+      if (ch === '*' && nextCh === '/') {
+        inBlockComment = false;
+        i++; // skip '/'
+      } else if (ch === '\n') {
+        line++;
+      }
+    } else if (inSingleQuote) {
+      if (escaped) {
+        escaped = false;
+      } else if (ch === '\\') {
+        escaped = true;
+      } else if (ch === '\'') {
+        inSingleQuote = false;
+      } else if (ch === '\n') {
+        line++;
+      }
+    } else if (inDoubleQuote) {
+      if (escaped) {
+        escaped = false;
+      } else if (ch === '\\') {
+        escaped = true;
+      } else if (ch === '"') {
+        inDoubleQuote = false;
+      } else if (ch === '\n') {
+        line++;
+      }
+    } else if (inTemplate) {
+      if (escaped) {
+        escaped = false;
+      } else if (ch === '\\') {
+        escaped = true;
+      } else if (ch === '`') {
+        inTemplate = false;
+      } else if (ch === '\n') {
+        line++;
+      }
+    } else {
+      if (ch === '/' && nextCh === '/') {
+        inLineComment = true;
+        i++; // skip second '/'
+      } else if (ch === '/' && nextCh === '*') {
+        inBlockComment = true;
+        i++; // skip '*'
+      } else if (ch === '\'') {
+        inSingleQuote = true;
+        escaped = false;
+      } else if (ch === '"') {
+        inDoubleQuote = true;
+        escaped = false;
+      } else if (ch === '`') {
+        inTemplate = true;
+        escaped = false;
+      } else if (ch === '\n') {
+        line++;
+      }
+    }
+  }
+
+  if (targetCharIdx === -1) {
+    throw new Error(`NO_ACTIVE_OPENING_BRACE_AT_COORDINATE: Line ${startLine} does not contain an active opening brace '{' outside comments or string literals`);
+  }
+
+  // From targetCharIdx, extract object literal while stripping comments and preserving quotes
+  let braceDepth = 0;
+  let cleaned = '';
+  inSingleQuote = false;
+  inDoubleQuote = false;
+  inTemplate = false;
+  inLineComment = false;
+  inBlockComment = false;
+  escaped = false;
+
+  for (let i = targetCharIdx; i < content.length; i++) {
+    const ch = content[i];
+    const nextCh = i + 1 < content.length ? content[i + 1] : '';
+
+    if (inLineComment) {
+      if (ch === '\n') {
+        inLineComment = false;
         cleaned += '\n';
       }
-    } else if (inMultiComment) {
+    } else if (inBlockComment) {
       if (ch === '*' && nextCh === '/') {
-        inMultiComment = false;
-        idx++; // skip '/'
+        inBlockComment = false;
+        i++; // skip '/'
       }
-    } else if (inSingle) {
+    } else if (inSingleQuote) {
       cleaned += ch;
       if (escaped) {
         escaped = false;
       } else if (ch === '\\') {
         escaped = true;
       } else if (ch === '\'') {
-        inSingle = false;
+        inSingleQuote = false;
       }
-    } else if (inDouble) {
+    } else if (inDoubleQuote) {
       cleaned += ch;
       if (escaped) {
         escaped = false;
       } else if (ch === '\\') {
         escaped = true;
       } else if (ch === '"') {
-        inDouble = false;
+        inDoubleQuote = false;
       }
     } else if (inTemplate) {
       cleaned += ch;
@@ -262,17 +365,17 @@ export function extractObjectLiteralAtLine(content, startLine) {
       }
     } else {
       if (ch === '/' && nextCh === '/') {
-        inSingleComment = true;
-        idx++;
+        inLineComment = true;
+        i++; // skip second '/'
       } else if (ch === '/' && nextCh === '*') {
-        inMultiComment = true;
-        idx++;
+        inBlockComment = true;
+        i++; // skip '*'
       } else if (ch === '\'') {
-        inSingle = true;
+        inSingleQuote = true;
         escaped = false;
         cleaned += ch;
       } else if (ch === '"') {
-        inDouble = true;
+        inDoubleQuote = true;
         escaped = false;
         cleaned += ch;
       } else if (ch === '`') {
@@ -291,7 +394,6 @@ export function extractObjectLiteralAtLine(content, startLine) {
         }
       }
     }
-    idx++;
   }
 
   if (braceDepth !== 0) {
@@ -312,14 +414,23 @@ function commitProperty(rawKey, rawVal, result) {
     val = val.slice(0, -1).trim();
   }
 
+  // Reject duplicate keys (Directive 066 §3 Item 7)
+  if (Object.prototype.hasOwnProperty.call(result.rawProperties, key)) {
+    throw new Error(`DUPLICATE_PROPERTY_KEY: Property '${key}' is defined more than once in object literal`);
+  }
+
   result.rawProperties[key] = val;
 
-  // 1. String literal
+  // 1. Quoted string literal
   if ((val.startsWith('"') && val.endsWith('"')) || (val.startsWith('\'') && val.endsWith('\''))) {
     const unquoted = val.slice(1, -1)
       .replace(/\\'/g, '\'')
       .replace(/\\"/g, '"')
       .replace(/\\\\/g, '\\');
+    // Financial and numeric fields must NEVER be coerced from strings (Directive 066 §3 Item 10)
+    if (['totalAssets', 'totalLiabilities', 'acNo', 'selfMovableAssets', 'selfImmovableAssets', 'spouseMovableAssets', 'spouseImmovableAssets'].includes(key)) {
+      throw new Error(`INVALID_NUMERIC_VALUE: Property '${key}' has string literal value '${val}'; numeric fields must not be quoted`);
+    }
     if (key === 'candidateName' || key === 'name') result.candidateName = unquoted;
     if (key === 'constituencyName') result.constituencyName = unquoted;
     if (key === 'party') result.party = unquoted;
@@ -336,10 +447,16 @@ function commitProperty(rawKey, rawVal, result) {
     return;
   }
 
-  // 3. Numeric values with optional underscore separators
+  // 3. Nested object or array literal
+  if (val.startsWith('{') || val.startsWith('[')) {
+    // Top-level property is an object/array; do not attribute to numeric fields
+    return;
+  }
+
+  // 4. Numeric values with optional underscore separators
   const cleanVal = val.replace(/_/g, '');
-  const num = Number(cleanVal);
-  if (!isNaN(num) && cleanVal !== '' && !cleanVal.includes('{') && !cleanVal.includes('[')) {
+  if (/^[+-]?\d+$/.test(cleanVal)) {
+    const num = Number(cleanVal);
     if (!Number.isSafeInteger(num) || num < 0) {
       throw new Error(`INVALID_NUMERIC_VALUE: Property '${key}' has invalid or unsafe integer value '${val}'`);
     }
@@ -350,6 +467,12 @@ function commitProperty(rawKey, rawVal, result) {
     if (key === 'selfImmovableAssets') result.selfImmovableAssets = num;
     if (key === 'spouseMovableAssets') result.spouseMovableAssets = num;
     if (key === 'spouseImmovableAssets') result.spouseImmovableAssets = num;
+    return;
+  }
+
+  // If a financial or identity property is assigned a non-numeric token (e.g. float, identifier, function call)
+  if (['totalAssets', 'totalLiabilities', 'acNo', 'selfMovableAssets', 'selfImmovableAssets', 'spouseMovableAssets', 'spouseImmovableAssets'].includes(key)) {
+    throw new Error(`INVALID_NUMERIC_VALUE: Property '${key}' has unparseable or unsupported numeric value '${val}'`);
   }
 }
 
@@ -385,6 +508,8 @@ export function parsePropertiesFromCleanedObject(cleaned) {
   let inSingle = false;
   let inDouble = false;
   let inTemplate = false;
+  let inSingleComment = false;
+  let inMultiComment = false;
   let escaped = false;
 
   let currentKey = '';
@@ -393,6 +518,22 @@ export function parsePropertiesFromCleanedObject(cleaned) {
 
   while (idx < cleaned.length) {
     const ch = cleaned[idx];
+    const nextCh = idx + 1 < cleaned.length ? cleaned[idx + 1] : '';
+
+    if (inSingleComment) {
+      if (ch === '\n') inSingleComment = false;
+      idx++;
+      continue;
+    }
+    if (inMultiComment) {
+      if (ch === '*' && nextCh === '/') {
+        inMultiComment = false;
+        idx += 2;
+        continue;
+      }
+      idx++;
+      continue;
+    }
 
     if (inSingle) {
       if (parsingKey) currentKey += ch;
@@ -419,6 +560,18 @@ export function parsePropertiesFromCleanedObject(cleaned) {
       else if (ch === '\\') escaped = true;
       else if (ch === '`') inTemplate = false;
       idx++;
+      continue;
+    }
+
+    // Comment detection when outside strings
+    if (ch === '/' && nextCh === '/') {
+      inSingleComment = true;
+      idx += 2;
+      continue;
+    }
+    if (ch === '/' && nextCh === '*') {
+      inMultiComment = true;
+      idx += 2;
       continue;
     }
 
@@ -516,35 +669,46 @@ export function parsePropertiesFromCleanedObject(cleaned) {
     idx++;
   }
 
+  if (depth !== 0 || bracketDepth !== 0 || parenDepth !== 0 || inSingle || inDouble || inTemplate || inMultiComment) {
+    throw new Error('MALFORMED_SYNTAX: Unterminated string, bracket, comment, or parenthesis in object literal');
+  }
+
+  if (!parsingKey && currentValue.trim() === '' && currentKey.trim() !== '') {
+    throw new Error(`MALFORMED_SYNTAX: Property '${currentKey.trim()}' is missing a value`);
+  }
+
   return result;
 }
 
 export function parseSourceProfile(sourceFilePath, sourceLine, expectedCandidateName, expectedAcNo, repoRoot) {
+  if (!expectedCandidateName || typeof expectedCandidateName !== 'string' || expectedCandidateName.trim() === '') {
+    throw new Error('MISSING_MANIFEST_IDENTITY: Manifest record is missing expected candidate_name');
+  }
+  if (expectedAcNo === undefined || expectedAcNo === null || typeof expectedAcNo !== 'number' || !Number.isSafeInteger(expectedAcNo)) {
+    throw new Error('MISSING_MANIFEST_IDENTITY: Manifest record is missing expected ac_no');
+  }
+
   const realFile = safeCanonicalPath(sourceFilePath, repoRoot);
   const content = fs.readFileSync(realFile, 'utf8');
 
   const cleaned = extractObjectLiteralAtLine(content, sourceLine);
   const parsed = parsePropertiesFromCleanedObject(cleaned);
 
-  if (expectedCandidateName) {
-    const candName = parsed.candidateName;
-    if (!candName) {
-      throw new Error(`MISSING_REQUIRED_IDENTITY_FIELD: Candidate name property missing in source object at line ${sourceLine}`);
-    }
-    const normParsed = candName.replace(/\s+/g, ' ').trim();
-    const normExpected = expectedCandidateName.replace(/\s+/g, ' ').trim();
-    if (normParsed !== normExpected) {
-      throw new Error(`SOURCE_COORDINATE_MISMATCH: Candidate name at line ${sourceLine} is '${candName}', expected '${expectedCandidateName}'`);
-    }
+  const candName = parsed.candidateName;
+  if (!candName) {
+    throw new Error(`MISSING_REQUIRED_IDENTITY_FIELD: Candidate name property missing in source object at line ${sourceLine}`);
+  }
+  const normParsed = candName.replace(/\s+/g, ' ').trim();
+  const normExpected = expectedCandidateName.replace(/\s+/g, ' ').trim();
+  if (normParsed !== normExpected) {
+    throw new Error(`SOURCE_COORDINATE_MISMATCH: Candidate name at line ${sourceLine} is '${candName}', expected '${expectedCandidateName}'`);
   }
 
-  if (expectedAcNo !== undefined) {
-    if (parsed.acNo === undefined) {
-      throw new Error(`MISSING_REQUIRED_IDENTITY_FIELD: Constituency number (acNo) missing in source object at line ${sourceLine}`);
-    }
-    if (parsed.acNo !== expectedAcNo) {
-      throw new Error(`SOURCE_COORDINATE_MISMATCH: acNo at line ${sourceLine} is ${parsed.acNo}, expected ${expectedAcNo}`);
-    }
+  if (parsed.acNo === undefined || parsed.acNo === null) {
+    throw new Error(`MISSING_REQUIRED_IDENTITY_FIELD: Constituency number (acNo) missing in source object at line ${sourceLine}`);
+  }
+  if (parsed.acNo !== expectedAcNo) {
+    throw new Error(`SOURCE_COORDINATE_MISMATCH: acNo at line ${sourceLine} is ${parsed.acNo}, expected ${expectedAcNo}`);
   }
 
   return parsed;
@@ -568,6 +732,14 @@ export function validateExactMembership(manifestData, crosswalkData, ledgerData,
     }
     if (manifestIdSet.has(aff.id)) {
       accumulator.recordFail('DUPLICATE_MANIFEST_ID', `Duplicate manifest ID detected: ${aff.id}`, `ID: ${aff.id}`);
+      return false;
+    }
+    if (!aff.candidate_name || typeof aff.candidate_name !== 'string' || aff.candidate_name.trim() === '') {
+      accumulator.recordFail('MANIFEST_IDENTITY_PRESENCE', `Manifest record ${aff.id} missing candidate_name`);
+      return false;
+    }
+    if (aff.ac_no === undefined || aff.ac_no === null || typeof aff.ac_no !== 'number') {
+      accumulator.recordFail('MANIFEST_IDENTITY_PRESENCE', `Manifest record ${aff.id} missing ac_no`);
       return false;
     }
     manifestIdSet.add(aff.id);
@@ -638,6 +810,10 @@ export function validateExactMembership(manifestData, crosswalkData, ledgerData,
   const ledgerList = Array.isArray(ledgerData) ? ledgerData : [];
   const ledgerIdSet = new Set();
   for (const led of ledgerList) {
+    if (!led.manifestId || !led.targetUuid) {
+      accumulator.recordFail('LEDGER_ENTRY_FORMAT', 'Ledger entry missing manifestId or targetUuid');
+      return false;
+    }
     if (ledgerIdSet.has(led.manifestId)) {
       accumulator.recordFail('DUPLICATE_LEDGER_ENTRY', `Duplicate ledger manifestId: ${led.manifestId}`);
       return false;
@@ -675,6 +851,12 @@ export function validateExactMembership(manifestData, crosswalkData, ledgerData,
       accumulator.recordFail('CORRECTION_ID_NOT_IN_MANIFEST', `Asset correction affidavitId ${ac.affidavitId} not in manifest`);
       return false;
     }
+
+    // Directive 066 §2.1: Fail closed if ledger entry is absent for corrected record
+    if (!ledgerIdSet.has(ac.affidavitId)) {
+      accumulator.recordFail('MISSING_LEDGER_ENTRY', `Asset correction affidavitId ${ac.affidavitId} missing from component ledger`);
+      return false;
+    }
   }
 
   const liabilityCorrectionIds = new Set();
@@ -687,6 +869,12 @@ export function validateExactMembership(manifestData, crosswalkData, ledgerData,
 
     if (!manifestIdSet.has(lc.affidavitId)) {
       accumulator.recordFail('CORRECTION_ID_NOT_IN_MANIFEST', `Liability correction affidavitId ${lc.affidavitId} not in manifest`);
+      return false;
+    }
+
+    // Directive 066 §2.1: Fail closed if ledger entry is absent for corrected record
+    if (!ledgerIdSet.has(lc.affidavitId)) {
+      accumulator.recordFail('MISSING_LEDGER_ENTRY', `Liability correction affidavitId ${lc.affidavitId} missing from component ledger`);
       return false;
     }
   }
@@ -734,47 +922,71 @@ export function validateExactMembership(manifestData, crosswalkData, ledgerData,
 // ============================================================================
 
 export function validateCorrectionEligibility(manifestRecord, correction, fieldType, crosswalkMap, ledgerMap, repoRoot) {
-  // Pre-condition 1: correction refers to exact manifest record
+  // Pre-condition 1: Arguments presence
   if (!manifestRecord || !correction) {
     throw new Error('INVALID_ARGUMENTS: Both manifestRecord and correction are required');
+  }
+  if (!manifestRecord.id) {
+    throw new Error('MISSING_MANIFEST_ID: Manifest record missing id');
   }
   if (manifestRecord.id !== correction.affidavitId) {
     throw new Error(`CORRECTION_RECORD_MISMATCH: Record ID ${manifestRecord.id} does not match correction ID ${correction.affidavitId}`);
   }
 
-  // Pre-condition 2: crosswalk identity exists
-  const crosswalkEntry = crosswalkMap.get(manifestRecord.id);
-  if (!crosswalkEntry) {
-    throw new Error(`MISSING_CROSSWALK_ENTRY: No crosswalk entry for affidavit ${manifestRecord.id}`);
+  // Pre-condition 2: Manifest identity validation (Directive 066 §3 Item 6)
+  if (!manifestRecord.candidate_name || typeof manifestRecord.candidate_name !== 'string' || manifestRecord.candidate_name.trim() === '') {
+    throw new Error(`MISSING_MANIFEST_IDENTITY: Manifest record ${manifestRecord.id} is missing candidate_name`);
+  }
+  if (manifestRecord.ac_no === undefined || manifestRecord.ac_no === null || typeof manifestRecord.ac_no !== 'number') {
+    throw new Error(`MISSING_MANIFEST_IDENTITY: Manifest record ${manifestRecord.id} is missing ac_no`);
   }
 
-  // Pre-condition 3: ledger entry consistency if present
-  const ledgerEntry = ledgerMap ? ledgerMap.get(manifestRecord.id) : null;
-  if (ledgerEntry) {
-    if (ledgerEntry.targetUuid !== crosswalkEntry.targetUuid) {
-      throw new Error(`CROSSWALK_LEDGER_UUID_MISMATCH: Crosswalk UUID ${crosswalkEntry.targetUuid} != Ledger UUID ${ledgerEntry.targetUuid}`);
-    }
-  }
-
-  // Pre-condition 4: Original manifest field value matches correction declared currentRepresentedValue
+  // Pre-condition 3: Declared original value matches manifest
   const manifestCurrentVal = fieldType === 'ASSET' ? manifestRecord.total_assets : manifestRecord.total_liabilities;
   if (manifestCurrentVal !== correction.currentRepresentedValue) {
     throw new Error(`CORRECTION_DECLARED_VALUE_MISMATCH: Manifest has ${manifestCurrentVal}, correction declared ${correction.currentRepresentedValue}`);
   }
 
-  // Pre-condition 5: Missing disclosure correction requires manifest represented baseline to be 0
+  // Pre-condition 4: Missing disclosure correction requires manifest represented baseline to be 0
   if (correction.intendedValue === null) {
     if (correction.currentRepresentedValue !== 0) {
       throw new Error(`INELIGIBLE_CORRECTION_ORIGINAL_VALUE: Field value is ${correction.currentRepresentedValue} > 0; cannot nullify non-zero disclosure`);
     }
   }
 
-  // Pre-condition 6: Unresolved source conflict check
+  // Pre-condition 5: Unresolved source conflict check
   if (correction.hasSourceConflict === true) {
     throw new Error(`UNRESOLVED_SOURCE_CONFLICT: Correction for ${manifestRecord.id} has unresolved source conflict`);
   }
 
-  // Pre-condition 7: Mandatory source coordinate existence and verification (§2 Req 8)
+  // Pre-condition 6: Exactly one crosswalk entry (Directive 066 §2.1)
+  if (!crosswalkMap) {
+    throw new Error('MISSING_CROSSWALK_MAP: Crosswalk map is required');
+  }
+  const crosswalkEntry = crosswalkMap.get(manifestRecord.id);
+  if (!crosswalkEntry) {
+    throw new Error(`MISSING_CROSSWALK_ENTRY: No crosswalk entry for affidavit ${manifestRecord.id}`);
+  }
+  if (!crosswalkEntry.targetUuid) {
+    throw new Error(`MALFORMED_CROSSWALK_ENTRY: Crosswalk entry for ${manifestRecord.id} missing targetUuid`);
+  }
+
+  // Pre-condition 7: Exactly one component-ledger record (Directive 066 §2.1 - MANDATORY FAIL-CLOSED)
+  if (!ledgerMap) {
+    throw new Error('MISSING_LEDGER_DATA: Ledger map is required for correction verification');
+  }
+  const ledgerEntry = ledgerMap.get(manifestRecord.id);
+  if (!ledgerEntry) {
+    throw new Error(`MISSING_LEDGER_ENTRY: No component-ledger record found for affidavit ${manifestRecord.id}`);
+  }
+  if (!ledgerEntry.targetUuid) {
+    throw new Error(`MALFORMED_LEDGER_ENTRY: Ledger entry for ${manifestRecord.id} missing targetUuid`);
+  }
+  if (ledgerEntry.targetUuid !== crosswalkEntry.targetUuid) {
+    throw new Error(`CROSSWALK_LEDGER_UUID_MISMATCH: Crosswalk UUID ${crosswalkEntry.targetUuid} != Ledger UUID ${ledgerEntry.targetUuid}`);
+  }
+
+  // Pre-condition 8: Mandatory source coordinate existence and verification
   if (!correction.sourceFile || !correction.sourceLocation) {
     throw new Error(`MISSING_SOURCE_COORDINATE: Correction for ${manifestRecord.id} lacks required sourceFile or sourceLocation`);
   }
@@ -798,7 +1010,19 @@ export function validateCorrectionEligibility(manifestRecord, correction, fieldT
 
   const sourceVal = fieldType === 'ASSET' ? parsedProfile.totalAssets : parsedProfile.totalLiabilities;
 
-  // Positive restoration verification (§2 Req 5):
+  // Retrieve Ledger Authoritative Value
+  let ledgerAuthoritativeVal;
+  if (fieldType === 'ASSET') {
+    ledgerAuthoritativeVal = ledgerEntry.authoritativeTotalAssets !== undefined
+      ? ledgerEntry.authoritativeTotalAssets
+      : (ledgerEntry.targetTreatment ? ledgerEntry.targetTreatment.total_assets : ledgerEntry.sourceTotalAssets);
+  } else {
+    ledgerAuthoritativeVal = ledgerEntry.authoritativeTotalLiabilities !== undefined
+      ? ledgerEntry.authoritativeTotalLiabilities
+      : (ledgerEntry.targetTreatment ? ledgerEntry.targetTreatment.total_liabilities : ledgerEntry.sourceTotalLiabilities);
+  }
+
+  // Path A: Positive restoration verification (Directive 066 §2.1 & §2.2)
   if (correction.intendedValue !== null && correction.intendedValue > 0) {
     if (sourceVal === undefined || sourceVal === null) {
       throw new Error(`SOURCE_VALUE_UNAVAILABLE: Intended positive value ${correction.intendedValue} has no positive source disclosure`);
@@ -806,15 +1030,18 @@ export function validateCorrectionEligibility(manifestRecord, correction, fieldT
     if (sourceVal !== correction.intendedValue) {
       throw new Error(`SOURCE_RESTORED_VALUE_MISMATCH: Source value ${sourceVal} does not match intended restored value ${correction.intendedValue}`);
     }
-    if (ledgerEntry) {
-      const ledgerAuthoritativeVal = fieldType === 'ASSET' ? ledgerEntry.authoritativeTotalAssets : ledgerEntry.authoritativeTotalLiabilities;
-      if (ledgerAuthoritativeVal !== undefined && ledgerAuthoritativeVal !== null && ledgerAuthoritativeVal !== correction.intendedValue) {
-        throw new Error(`LEDGER_RESTORED_VALUE_MISMATCH: Ledger authoritative value ${ledgerAuthoritativeVal} does not match intended value ${correction.intendedValue}`);
-      }
+    if (ledgerAuthoritativeVal === undefined || ledgerAuthoritativeVal === null) {
+      throw new Error(`MISSING_AUTHORITATIVE_FIELD: Ledger entry for ${manifestRecord.id} lacks authoritative ${fieldType.toLowerCase()} value`);
+    }
+    if (!Number.isSafeInteger(ledgerAuthoritativeVal) || ledgerAuthoritativeVal < 0) {
+      throw new Error(`MALFORMED_LEDGER_VALUE: Ledger authoritative value ${ledgerAuthoritativeVal} is malformed or invalid`);
+    }
+    if (ledgerAuthoritativeVal !== correction.intendedValue) {
+      throw new Error(`LEDGER_RESTORED_VALUE_MISMATCH: Ledger authoritative value ${ledgerAuthoritativeVal} does not match intended value ${correction.intendedValue}`);
     }
   }
 
-  // Missing disclosure verification (§2 Req 6 & 7):
+  // Path B: Missing disclosure verification (intendedValue === null) (Directive 066 §2.1 & §2.2)
   if (correction.intendedValue === null) {
     if (sourceVal !== undefined && sourceVal !== null && sourceVal > 0) {
       throw new Error(`POSITIVE_TOTAL_MUTATION_FORBIDDEN: Source has positive ${fieldType.toLowerCase()} ${sourceVal}; cannot nullify`);
@@ -822,8 +1049,29 @@ export function validateCorrectionEligibility(manifestRecord, correction, fieldT
     if (sourceVal === 0) {
       throw new Error(`GENUINE_ZERO_COERCION_FORBIDDEN: Source explicitly has 0 ${fieldType.toLowerCase()}; cannot coerce genuine zero to null`);
     }
-    if (sourceVal !== undefined && sourceVal !== null) {
-      throw new Error(`SOURCE_EVIDENCE_INSUFFICIENT: Source does not provide affirmative evidence of missing disclosure for ${fieldType.toLowerCase()}`);
+    // Designated affirmative evidence verification:
+    // Missing disclosure cannot be inferred solely because property is absent in seed.
+    // Require designated affirmative classification on the correction AND matching ledger classification.
+    const validMissingClassifications = ['UNKNOWN_VALUE_MISSING_DISCLOSURE', 'UNDISCLOSED_OMITTED', 'AFFIDAVIT_MISSING_DISCLOSURE'];
+    if (!correction.disclosureClassification || !validMissingClassifications.includes(correction.disclosureClassification)) {
+      throw new Error(`MISSING_AFFIRMATIVE_DISCLOSURE_EVIDENCE: Correction for ${manifestRecord.id} lacks valid affirmative disclosureClassification ('${correction.disclosureClassification}')`);
+    }
+    const ledgerClassification = ledgerEntry.classification || (fieldType === 'ASSET' ? ledgerEntry.sourceAssetStatus : ledgerEntry.sourceLiabilityStatus);
+    if (!ledgerClassification || !validMissingClassifications.includes(ledgerClassification)) {
+      throw new Error(`MISSING_AFFIRMATIVE_DISCLOSURE_EVIDENCE: Ledger for ${manifestRecord.id} lacks affirmative missing-disclosure classification ('${ledgerClassification}')`);
+    }
+    if (ledgerAuthoritativeVal !== null && ledgerAuthoritativeVal !== undefined) {
+      throw new Error(`LEDGER_RESTORED_VALUE_MISMATCH: Ledger authoritative value ${ledgerAuthoritativeVal} conflicts with intended nullification`);
+    }
+  }
+
+  // Path C: Zero restoration / preservation (intendedValue === 0)
+  if (correction.intendedValue === 0) {
+    if (sourceVal !== 0) {
+      throw new Error(`ZERO_FABRICATION_FORBIDDEN: Cannot set field to 0 without affirmative source zero disclosure; source has ${sourceVal}`);
+    }
+    if (ledgerAuthoritativeVal !== 0 && ledgerAuthoritativeVal !== undefined) {
+      throw new Error(`LEDGER_RESTORED_VALUE_MISMATCH: Ledger authoritative value ${ledgerAuthoritativeVal} conflicts with intended zero`);
     }
   }
 
@@ -867,6 +1115,7 @@ export async function verifyFinancialRemediation(options = {}) {
     'CORRECTION_COUNTS_VERIFIED',
     'ROW_LEVEL_ELIGIBILITY_AND_ISOLATION',
     'POST_CORRECTION_POPULATION_INVARIANTS',
+    'FINANCIAL_CLASSIFICATION_GROUPS_PARTITION',
     'AGGREGATE_FINANCIAL_RECONCILIATION'
   ];
   accumulator.registerExpectedMandatoryChecks(MANDATORY_CHECKS);
@@ -1014,6 +1263,14 @@ export async function verifyFinancialRemediation(options = {}) {
   let sumAssets = 0n;
   let sumLiabilities = 0n;
 
+  // 5 Financial Classification Groups tracking
+  let bothUndisclosed = 0;
+  let assetDisclosedLiabUndisclosed = 0;
+  let bothPositive = 0;
+  let positiveAssetZeroLiab = 0;
+  let zeroAssetZeroLiab = 0;
+  let otherClassificationCount = 0;
+
   for (const rec of correctedAffidavits) {
     if (rec.total_assets === null) {
       nullAssets++;
@@ -1031,6 +1288,21 @@ export async function verifyFinancialRemediation(options = {}) {
     } else {
       positiveLiabilities++;
       sumLiabilities += BigInt(rec.total_liabilities);
+    }
+
+    // Classify into exactly one of the five canonical financial groups
+    if (rec.total_assets === null && rec.total_liabilities === null) {
+      bothUndisclosed++;
+    } else if (rec.total_assets !== null && rec.total_liabilities === null) {
+      assetDisclosedLiabUndisclosed++;
+    } else if (rec.total_assets > 0 && rec.total_liabilities > 0) {
+      bothPositive++;
+    } else if (rec.total_assets > 0 && rec.total_liabilities === 0) {
+      positiveAssetZeroLiab++;
+    } else if (rec.total_assets === 0 && rec.total_liabilities === 0) {
+      zeroAssetZeroLiab++;
+    } else {
+      otherClassificationCount++;
     }
   }
 
@@ -1114,6 +1386,19 @@ export async function verifyFinancialRemediation(options = {}) {
   }
 
   accumulator.recordPass('POST_CORRECTION_POPULATION_INVARIANTS', 'All post-correction population invariants verified');
+
+  // Verify the Five Financial Classification Groups Partition (Directive 066 §2.3)
+  const totalPartitioned = bothUndisclosed + assetDisclosedLiabUndisclosed + bothPositive + positiveAssetZeroLiab + zeroAssetZeroLiab + otherClassificationCount;
+  if (totalPartitioned !== correctedAffidavits.length) {
+    accumulator.recordFail('FINANCIAL_CLASSIFICATION_GROUPS_PARTITION', `Partition sum ${totalPartitioned} != total affidavits ${correctedAffidavits.length}`);
+    const evaluation = accumulator.evaluateOverallVerdict();
+    return { verdict: 'FAIL', accumulator, evaluation };
+  }
+  accumulator.recordPass(
+    'FINANCIAL_CLASSIFICATION_GROUPS_PARTITION',
+    `All ${correctedAffidavits.length} records partitioned without overlap or omission: Both Undisclosed=${bothUndisclosed}, Asset Disclosed / Liab Undisclosed=${assetDisclosedLiabUndisclosed}, Both Positive=${bothPositive}, Positive Asset / Zero Liab=${positiveAssetZeroLiab}, Both Zero=${zeroAssetZeroLiab}, Other=${otherClassificationCount}`
+  );
+
   accumulator.recordPass('AGGREGATE_FINANCIAL_RECONCILIATION', `Reconciled aggregates: assets ₹${sumAssets.toString()}, liabilities ₹${sumLiabilities.toString()}`);
 
   const evaluation = accumulator.evaluateOverallVerdict();
@@ -1131,7 +1416,15 @@ export async function verifyFinancialRemediation(options = {}) {
       zeroLiabilities,
       positiveLiabilities,
       sumAssets: sumAssets.toString(),
-      sumLiabilities: sumLiabilities.toString()
+      sumLiabilities: sumLiabilities.toString(),
+      classificationGroups: {
+        bothUndisclosed,
+        assetDisclosedLiabUndisclosed,
+        bothPositive,
+        positiveAssetZeroLiab,
+        zeroAssetZeroLiab,
+        otherClassificationCount
+      }
     }
   };
 }

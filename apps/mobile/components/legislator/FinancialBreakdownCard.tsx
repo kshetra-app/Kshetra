@@ -54,12 +54,19 @@ export default function FinancialBreakdownCard({ records, compact }: Props) {
     growthPercent = Math.round(((totalAssets - previous.totalAssets) / previous.totalAssets) * 100);
   }
 
-  // Component breakdown: only if itemized components are disclosed
-  const hasComponentBreakdown =
-    latest.selfMovableAssets != null ||
-    latest.selfImmovableAssets != null ||
-    latest.spouseMovableAssets != null ||
+  // Complete component breakdown: ALL 4 core components must be disclosed
+  const hasCompleteBreakdown =
+    latest.selfMovableAssets != null &&
+    latest.selfImmovableAssets != null &&
+    latest.spouseMovableAssets != null &&
     latest.spouseImmovableAssets != null;
+
+  const hasPartialBreakdown =
+    !hasCompleteBreakdown &&
+    (latest.selfMovableAssets != null ||
+     latest.selfImmovableAssets != null ||
+     latest.spouseMovableAssets != null ||
+     latest.spouseImmovableAssets != null);
 
   const total = totalAssets && totalAssets > 0 ? totalAssets : 1;
   const selfMov = latest.selfMovableAssets ?? 0;
@@ -132,7 +139,7 @@ export default function FinancialBreakdownCard({ records, compact }: Props) {
       {/* Asset Breakdown Section */}
       <View style={styles.breakdownSection}>
         <Text style={[styles.breakdownTitle, { color: colors.textSecondary }]}>Asset Breakdown</Text>
-        {hasComponentBreakdown && totalAssets != null && totalAssets > 0 ? (
+        {hasCompleteBreakdown && totalAssets != null && totalAssets > 0 ? (
           <>
             <View style={[styles.stackBar, { backgroundColor: colors.surfaceElevated }]}>
               <View style={[styles.stackSegment, { flex: Math.max(1, selfMovPct), backgroundColor: colors.teal }]} />
@@ -150,6 +157,27 @@ export default function FinancialBreakdownCard({ records, compact }: Props) {
                 <LegendItem color={colors.primary} label="Dependents" value={formatINR(latest.dependentsAssets)} textSecondary={colors.textSecondary} textPrimary={colors.text} />
               )}
             </View>
+          </>
+        ) : hasPartialBreakdown && totalAssets != null ? (
+          <>
+            <View style={[styles.netWorthRow, { backgroundColor: colors.surfaceElevated, borderColor: colors.border, borderWidth: 1, marginBottom: 8 }]}>
+              <Text style={[styles.netWorthLabel, { color: colors.textMuted }]}>
+                Partial itemization — complete component breakdown not disclosed in filing
+              </Text>
+            </View>
+            <View style={styles.legendRow}>
+              <LegendItem color={colors.teal} label="Self Movable" value={formatINR(latest.selfMovableAssets)} textSecondary={colors.textSecondary} textPrimary={colors.text} />
+              <LegendItem color={colors.success} label="Self Immovable" value={formatINR(latest.selfImmovableAssets)} textSecondary={colors.textSecondary} textPrimary={colors.text} />
+            </View>
+            <View style={styles.legendRow}>
+              <LegendItem color={colors.gold} label="Spouse Movable" value={formatINR(latest.spouseMovableAssets)} textSecondary={colors.textSecondary} textPrimary={colors.text} />
+              <LegendItem color={colors.gold} label="Spouse Immovable" value={formatINR(latest.spouseImmovableAssets)} textSecondary={colors.textSecondary} textPrimary={colors.text} />
+            </View>
+            {latest.dependentsAssets != null && (
+              <View style={styles.legendRow}>
+                <LegendItem color={colors.primary} label="Dependents" value={formatINR(latest.dependentsAssets)} textSecondary={colors.textSecondary} textPrimary={colors.text} />
+              </View>
+            )}
           </>
         ) : (
           <View style={[styles.netWorthRow, { backgroundColor: colors.surfaceElevated, borderColor: colors.border, borderWidth: 1 }]}>

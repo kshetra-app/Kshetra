@@ -1,11 +1,11 @@
 {
-  "testSuite": "Directive 065 Test Battery",
+  "testSuite": "Directive 066 Test Battery",
   "milestone": "W021.5 / B2.2-E",
   "defect": "DQ-W021.5-B2.2E-001",
-  "executionDate": "2026-10-14T16:37:02.433Z",
+  "executionDate": "2026-10-15T03:09:46.648Z",
   "nodeVersion": "v24.13.0",
-  "totalTests": 50,
-  "passedCount": 50,
+  "totalTests": 67,
+  "passedCount": 67,
   "failedCount": 0,
   "allPassed": true,
   "tests": [
@@ -14,8 +14,8 @@
       "name": "Fully valid synthetic inputs produce PASS",
       "status": "PASS",
       "errorMsg": null,
-      "details": "All 18 mandatory checks passed",
-      "durationMs": 19
+      "details": "All 19/19 mandatory checks passed",
+      "durationMs": 17
     },
     {
       "testId": 2,
@@ -23,7 +23,7 @@
       "status": "PASS",
       "errorMsg": null,
       "details": "Failed as expected with DUPLICATE_MANIFEST_ID: ID: 0215b22e-aff-00000001",
-      "durationMs": 14
+      "durationMs": 9
     },
     {
       "testId": 3,
@@ -39,7 +39,7 @@
       "status": "PASS",
       "errorMsg": null,
       "details": "Rejected substituted ID: CORRECTION_SET_SUBSET_VIOLATION",
-      "durationMs": 11
+      "durationMs": 9
     },
     {
       "testId": 5,
@@ -47,7 +47,7 @@
       "status": "PASS",
       "errorMsg": null,
       "details": "Rejected duplicate crosswalk entry",
-      "durationMs": 10
+      "durationMs": 9
     },
     {
       "testId": 6,
@@ -63,7 +63,7 @@
       "status": "PASS",
       "errorMsg": null,
       "details": "Rejected unexpected crosswalk entry",
-      "durationMs": 13
+      "durationMs": 10
     },
     {
       "testId": 8,
@@ -71,7 +71,7 @@
       "status": "PASS",
       "errorMsg": null,
       "details": "Rejected ledger ID not present in manifest",
-      "durationMs": 12
+      "durationMs": 9
     },
     {
       "testId": 9,
@@ -79,7 +79,7 @@
       "status": "PASS",
       "errorMsg": null,
       "details": "Rejected correction ID not present in manifest",
-      "durationMs": 11
+      "durationMs": 14
     },
     {
       "testId": 10,
@@ -95,14 +95,14 @@
       "status": "PASS",
       "errorMsg": null,
       "details": "Rejected declared value mismatch",
-      "durationMs": 1
+      "durationMs": 0
     },
     {
       "testId": 12,
       "name": "Positive source total disagrees with manifest",
       "status": "PASS",
       "errorMsg": null,
-      "details": "Disagreement between source total and manifest value caught",
+      "details": "Disagreement between source total and manifest caught via production validator",
       "durationMs": 1
     },
     {
@@ -110,7 +110,7 @@
       "name": "Positive source total disagrees with ledger",
       "status": "PASS",
       "errorMsg": null,
-      "details": "Disagreement between source total and ledger value caught",
+      "details": "Disagreement between source total and ledger value caught via production validator",
       "durationMs": 2
     },
     {
@@ -151,7 +151,7 @@
       "status": "PASS",
       "errorMsg": null,
       "details": "Path traversal successfully blocked",
-      "durationMs": 1
+      "durationMs": 2
     },
     {
       "testId": 19,
@@ -159,7 +159,7 @@
       "status": "PASS",
       "errorMsg": null,
       "details": "Escapes from approved root rejected",
-      "durationMs": 0
+      "durationMs": 1
     },
     {
       "testId": 20,
@@ -167,7 +167,7 @@
       "status": "PASS",
       "errorMsg": null,
       "details": "Unsafe integer rejected before arithmetic",
-      "durationMs": 1
+      "durationMs": 0
     },
     {
       "testId": 21,
@@ -175,7 +175,7 @@
       "status": "PASS",
       "errorMsg": null,
       "details": "Phantom affidavit rejected: CORRECTION_ID_NOT_IN_MANIFEST",
-      "durationMs": 14
+      "durationMs": 9
     },
     {
       "testId": 22,
@@ -183,7 +183,7 @@
       "status": "PASS",
       "errorMsg": null,
       "details": "Phantom affidavit in crosswalk rejected",
-      "durationMs": 10
+      "durationMs": 11
     },
     {
       "testId": 23,
@@ -191,7 +191,7 @@
       "status": "PASS",
       "errorMsg": null,
       "details": "Phantom affidavit in ledger rejected",
-      "durationMs": 10
+      "durationMs": 9
     },
     {
       "testId": 24,
@@ -207,7 +207,7 @@
       "status": "PASS",
       "errorMsg": null,
       "details": "Zero fabrication rule prohibits setting missing disclosure to zero",
-      "durationMs": 0
+      "durationMs": 2
     },
     {
       "testId": 26,
@@ -219,11 +219,11 @@
     },
     {
       "testId": 27,
-      "name": "Unverified component allocation set to fabricated non-null value rejected",
+      "name": "Positive source total rejected when a correction attempts to nullify it",
       "status": "PASS",
       "errorMsg": null,
-      "details": "Component breakdowns unverified in seed remain null",
-      "durationMs": 0
+      "details": "Positive source total cannot be coerced to null",
+      "durationMs": 3
     },
     {
       "testId": 28,
@@ -263,7 +263,7 @@
       "status": "PASS",
       "errorMsg": null,
       "details": "CLI exited non-zero (1) as expected on error",
-      "durationMs": 80
+      "durationMs": 84
     },
     {
       "testId": 33,
@@ -295,7 +295,7 @@
       "status": "PASS",
       "errorMsg": null,
       "details": "Row-level substitution rejected despite count/aggregate agreement",
-      "durationMs": 13
+      "durationMs": 10
     },
     {
       "testId": 37,
@@ -303,7 +303,7 @@
       "status": "PASS",
       "errorMsg": null,
       "details": "Disagreement between positive source value and intended restored total caught",
-      "durationMs": 3
+      "durationMs": 2
     },
     {
       "testId": 38,
@@ -334,16 +334,16 @@
       "name": "Missing required source identity property (acNo) fails closed",
       "status": "PASS",
       "errorMsg": null,
-      "details": "Missing required identity field acNo fails closed",
-      "durationMs": 0
+      "details": "Missing required identity field acNo fails closed in source parser",
+      "durationMs": 1
     },
     {
       "testId": 42,
       "name": "Missing required source identity property (candidateName) fails closed",
       "status": "PASS",
       "errorMsg": null,
-      "details": "Missing required identity field candidateName fails closed",
-      "durationMs": 0
+      "details": "Missing required identity field candidateName fails closed in source parser",
+      "durationMs": 2
     },
     {
       "testId": 43,
@@ -367,7 +367,7 @@
       "status": "PASS",
       "errorMsg": null,
       "details": "Genuine zero distinct from missing disclosure in source profiles",
-      "durationMs": 4
+      "durationMs": 3
     },
     {
       "testId": 46,
@@ -375,7 +375,7 @@
       "status": "PASS",
       "errorMsg": null,
       "details": "formatINR correctly handles null, undefined, 0, and positive amounts",
-      "durationMs": 60
+      "durationMs": 52
     },
     {
       "testId": 47,
@@ -407,7 +407,143 @@
       "status": "PASS",
       "errorMsg": null,
       "details": "CLI correctly exited non-zero with code 1",
-      "durationMs": 101
+      "durationMs": 86
+    },
+    {
+      "testId": 51,
+      "name": "Missing ledger entry for a corrected record fails closed",
+      "status": "PASS",
+      "errorMsg": null,
+      "details": "Absent ledger record for a corrected row strictly fails closed",
+      "durationMs": 1
+    },
+    {
+      "testId": 52,
+      "name": "Ledger entry with missing authoritative value fails closed",
+      "status": "PASS",
+      "errorMsg": null,
+      "details": "Missing authoritative field in ledger strictly fails closed",
+      "durationMs": 3
+    },
+    {
+      "testId": 53,
+      "name": "Ledger target UUID mismatch fails closed",
+      "status": "PASS",
+      "errorMsg": null,
+      "details": "Crosswalk and ledger UUID mismatch strictly fails closed",
+      "durationMs": 0
+    },
+    {
+      "testId": 54,
+      "name": "Source coordinate inside same-line block comment rejected",
+      "status": "PASS",
+      "errorMsg": null,
+      "details": "Opening brace inside block comment correctly rejected as source evidence",
+      "durationMs": 2
+    },
+    {
+      "testId": 55,
+      "name": "Missing candidate identity in manifest fails closed",
+      "status": "PASS",
+      "errorMsg": null,
+      "details": "Missing candidate identity in manifest fails closed",
+      "durationMs": 1
+    },
+    {
+      "testId": 56,
+      "name": "Missing constituency identity in manifest fails closed",
+      "status": "PASS",
+      "errorMsg": null,
+      "details": "Missing constituency identity in manifest fails closed",
+      "durationMs": 0
+    },
+    {
+      "testId": 57,
+      "name": "Duplicate financial properties in source object rejected",
+      "status": "PASS",
+      "errorMsg": null,
+      "details": "Duplicate financial property keys strictly rejected without silent override",
+      "durationMs": 0
+    },
+    {
+      "testId": 58,
+      "name": "Duplicate identity properties in source object rejected",
+      "status": "PASS",
+      "errorMsg": null,
+      "details": "Duplicate candidate identity property keys strictly rejected without silent override",
+      "durationMs": 0
+    },
+    {
+      "testId": 59,
+      "name": "Missing disclosure rejected when no affirmative evidence exists",
+      "status": "PASS",
+      "errorMsg": null,
+      "details": "Absence of affirmative evidence for missing disclosure fails closed",
+      "durationMs": 2
+    },
+    {
+      "testId": 60,
+      "name": "Genuine zero preserved as zero",
+      "status": "PASS",
+      "errorMsg": null,
+      "details": "Affirmative source-confirmed zero successfully preserved as zero",
+      "durationMs": 3
+    },
+    {
+      "testId": 61,
+      "name": "Five financial classification groups partition manifest population without overlap or omission",
+      "status": "PASS",
+      "errorMsg": null,
+      "details": "All 5 records partitioned into exact five canonical classification groups without overlap or omission",
+      "durationMs": 14
+    },
+    {
+      "testId": 62,
+      "name": "FinancialBreakdownCard requires all 4 components before rendering stacked bar",
+      "status": "PASS",
+      "errorMsg": null,
+      "details": "FinancialBreakdownCard rule verified: all 4 components required before stacked bar rendering",
+      "durationMs": 0
+    },
+    {
+      "testId": 63,
+      "name": "Crorepati calculation reports disclosed vs overall percentages",
+      "status": "PASS",
+      "errorMsg": null,
+      "details": "getCrorepatiCount contract and pure calculation verified",
+      "durationMs": 1
+    },
+    {
+      "testId": 64,
+      "name": "ConstituencyIntegrity requires assetsDisclosedCandidatesCount",
+      "status": "PASS",
+      "errorMsg": null,
+      "details": "ConstituencyIntegrity requires and verifies assetsDisclosedCandidatesCount denominator",
+      "durationMs": 1
+    },
+    {
+      "testId": 65,
+      "name": "Path security rejects null bytes and URL schemes",
+      "status": "PASS",
+      "errorMsg": null,
+      "details": "Path security rejects null bytes and URL schemes",
+      "durationMs": 0
+    },
+    {
+      "testId": 66,
+      "name": "Numeric values quoted as strings in source are not coerced",
+      "status": "PASS",
+      "errorMsg": null,
+      "details": "Quoted string numbers rejected without coercion",
+      "durationMs": 0
+    },
+    {
+      "testId": 67,
+      "name": "WealthTimeline handles all 4 timeline states without crash or coercion",
+      "status": "PASS",
+      "errorMsg": null,
+      "details": "All 4 timeline states handled cleanly without zero coercion",
+      "durationMs": 1
     }
   ]
 }

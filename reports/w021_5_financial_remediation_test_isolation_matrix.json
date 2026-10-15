@@ -1,10 +1,10 @@
 {
-  "matrixTitle": "Directive 065 Test Isolation Matrix",
-  "directive": "KSHETRA — W021.5 CTO DIRECTIVE 065 Section 5",
+  "matrixTitle": "Directive 066 Test Isolation Matrix",
+  "directive": "KSHETRA — W021.5 CTO DIRECTIVE 066 Section 4",
   "milestone": "W021.5 / B2.2-E",
   "defect": "DQ-W021.5-B2.2E-001",
-  "generatedDate": "2026-10-14T21:45:00.000Z",
-  "totalTests": 50,
+  "generatedDate": "2026-10-15T03:06:41.508Z",
+  "totalTests": 67,
   "tests": [
     {
       "testId": 1,
@@ -455,6 +455,159 @@
       "expectedFailureReason": "Process exit code must equal 1",
       "observedOutcome": "CLI process exited with code 1",
       "assertion": "assertEqual(status, 1)"
+    },
+    {
+      "testId": 51,
+      "name": "Missing ledger entry for a corrected record fails closed",
+      "manipulatedInput": "Base fixtures with component ledger record omitted for corrected candidate",
+      "isolationMechanism": "Deep-cloned synthetic ledger in temporary isolated file",
+      "expectedFailureReason": "MISSING_LEDGER_ENTRY",
+      "observedOutcome": "Rejected missing ledger entry with MISSING_LEDGER_ENTRY",
+      "assertion": "assert(res.evaluation.failedChecks.find(c => c.id === 'ROW_LEVEL_ELIGIBILITY_AND_ISOLATION'))"
+    },
+    {
+      "testId": 52,
+      "name": "Ledger entry with missing authoritative value fails closed",
+      "manipulatedInput": "Ledger record with authoritative asset value omitted / null",
+      "isolationMechanism": "Deep-cloned synthetic ledger in temporary isolated file",
+      "expectedFailureReason": "MISSING_AUTHORITATIVE_FIELD",
+      "observedOutcome": "Rejected missing authoritative field with MISSING_AUTHORITATIVE_FIELD",
+      "assertion": "assert(res.evaluation.failedChecks.find(c => c.id === 'ROW_LEVEL_ELIGIBILITY_AND_ISOLATION'))"
+    },
+    {
+      "testId": 53,
+      "name": "Ledger target UUID mismatch fails closed",
+      "manipulatedInput": "Ledger record with candidateUuid differing from crosswalk target UUID",
+      "isolationMechanism": "Deep-cloned synthetic ledger in temporary isolated file",
+      "expectedFailureReason": "CROSSWALK_LEDGER_UUID_MISMATCH",
+      "observedOutcome": "Rejected UUID mismatch with CROSSWALK_LEDGER_UUID_MISMATCH",
+      "assertion": "assert(res.evaluation.failedChecks.find(c => c.id === 'ROW_LEVEL_ELIGIBILITY_AND_ISOLATION'))"
+    },
+    {
+      "testId": 54,
+      "name": "Source coordinate inside same-line block comment rejected",
+      "manipulatedInput": "Source profile where opening brace is preceded by block comment on same line",
+      "isolationMechanism": "Synthetic fixture in scratch/directive_059/fixture_source_profiles.ts",
+      "expectedFailureReason": "NO_ACTIVE_OPENING_BRACE_AT_COORDINATE",
+      "observedOutcome": "Threw NO_ACTIVE_OPENING_BRACE_AT_COORDINATE",
+      "assertion": "assert(err.message.includes('NO_ACTIVE_OPENING_BRACE_AT_COORDINATE'))"
+    },
+    {
+      "testId": 55,
+      "name": "Missing candidate identity in manifest fails closed",
+      "manipulatedInput": "Manifest record with candidateName omitted or empty string",
+      "isolationMechanism": "Deep-cloned synthetic manifest in temporary isolated file",
+      "expectedFailureReason": "MISSING_MANIFEST_CANDIDATE_NAME",
+      "observedOutcome": "Rejected missing candidate identity with MISSING_MANIFEST_CANDIDATE_NAME",
+      "assertion": "assert(res.evaluation.failedChecks.find(c => c.id === 'ROW_LEVEL_ELIGIBILITY_AND_ISOLATION'))"
+    },
+    {
+      "testId": 56,
+      "name": "Missing constituency identity in manifest fails closed",
+      "manipulatedInput": "Manifest record with constituencyNumber omitted or null",
+      "isolationMechanism": "Deep-cloned synthetic manifest in temporary isolated file",
+      "expectedFailureReason": "MISSING_MANIFEST_CONSTITUENCY_NUMBER",
+      "observedOutcome": "Rejected missing constituency identity with MISSING_MANIFEST_CONSTITUENCY_NUMBER",
+      "assertion": "assert(res.evaluation.failedChecks.find(c => c.id === 'ROW_LEVEL_ELIGIBILITY_AND_ISOLATION'))"
+    },
+    {
+      "testId": 57,
+      "name": "Duplicate financial properties in source object rejected",
+      "manipulatedInput": "Source candidate object containing two totalAssets properties",
+      "isolationMechanism": "Direct parser call on fixture string",
+      "expectedFailureReason": "DUPLICATE_PROPERTY_KEY",
+      "observedOutcome": "Threw DUPLICATE_PROPERTY_KEY",
+      "assertion": "assert(err.message.includes('DUPLICATE_PROPERTY_KEY'))"
+    },
+    {
+      "testId": 58,
+      "name": "Duplicate identity properties in source object rejected",
+      "manipulatedInput": "Source candidate object containing two candidateName properties",
+      "isolationMechanism": "Direct parser call on fixture string",
+      "expectedFailureReason": "DUPLICATE_PROPERTY_KEY",
+      "observedOutcome": "Threw DUPLICATE_PROPERTY_KEY",
+      "assertion": "assert(err.message.includes('DUPLICATE_PROPERTY_KEY'))"
+    },
+    {
+      "testId": 59,
+      "name": "Missing disclosure rejected when no affirmative evidence exists",
+      "manipulatedInput": "Correction classifying record as missing disclosure without affirmative source evidence",
+      "isolationMechanism": "Direct eligibility validation call",
+      "expectedFailureReason": "MISSING_AFFIRMATIVE_DISCLOSURE_EVIDENCE",
+      "observedOutcome": "Threw MISSING_AFFIRMATIVE_DISCLOSURE_EVIDENCE",
+      "assertion": "assert(err.message.includes('MISSING_AFFIRMATIVE_DISCLOSURE_EVIDENCE'))"
+    },
+    {
+      "testId": 60,
+      "name": "Genuine zero preserved as zero",
+      "manipulatedInput": "Candidate filing with affirmative zero assets and zero liabilities",
+      "isolationMechanism": "Base synthetic fixtures (Group 5 record)",
+      "expectedFailureReason": "None (valid zero disclosure)",
+      "observedOutcome": "Eligibility verified; original 0 and intended 0 preserved without coercion",
+      "assertion": "assertEqual(res.eligible, true)"
+    },
+    {
+      "testId": 61,
+      "name": "Five financial classification groups partition manifest population without overlap or omission",
+      "manipulatedInput": "4,523 manifest records classified into 5 canonical groups",
+      "isolationMechanism": "Production verifyFinancialRemediation on manifest",
+      "expectedFailureReason": "None (exact partition)",
+      "observedOutcome": "All 4,523 records accounted for across the 5 groups; sum equals total with 0 overlap",
+      "assertion": "assertEqual(groupSum, 4523)"
+    },
+    {
+      "testId": 62,
+      "name": "FinancialBreakdownCard requires all 4 components before rendering stacked bar",
+      "manipulatedInput": "Incomplete breakdown (null spouse/dependents assets)",
+      "isolationMechanism": "In-memory component contract assertion",
+      "expectedFailureReason": "Incomplete breakdown cannot render stacked bar",
+      "observedOutcome": "Verified hasCompleteBreakdown is false; individual items displayed without coercion",
+      "assertion": "assertEqual(hasCompleteBreakdown, false)"
+    },
+    {
+      "testId": 63,
+      "name": "Crorepati calculation reports disclosed vs overall percentages",
+      "manipulatedInput": "Candidate dataset with mixed disclosed and undisclosed totalAssets",
+      "isolationMechanism": "In-memory store calculation",
+      "expectedFailureReason": "Undisclosed candidates must not depress disclosed crorepati ratio",
+      "observedOutcome": "Disclosed percent calculated from disclosed denominator (50%); overall percent from total (33.3%)",
+      "assertion": "assertEqual(result.disclosedPercent, 50)"
+    },
+    {
+      "testId": 64,
+      "name": "ConstituencyIntegrity requires assetsDisclosedCandidatesCount",
+      "manipulatedInput": "Integrity record created for constituency",
+      "isolationMechanism": "In-memory type and store validation",
+      "expectedFailureReason": "assetsDisclosedCandidatesCount cannot be undefined",
+      "observedOutcome": "Verified assetsDisclosedCandidatesCount is non-optional and correctly counted",
+      "assertion": "assertEqual(integrity.assetsDisclosedCandidatesCount, 2)"
+    },
+    {
+      "testId": 65,
+      "name": "Path security rejects null bytes and URL schemes",
+      "manipulatedInput": "Paths containing \\0 (null byte) or :// (URL scheme)",
+      "isolationMechanism": "safeCanonicalPath call",
+      "expectedFailureReason": "PATH_NULL_BYTE_DETECTED or FORBIDDEN_URL_SCHEME",
+      "observedOutcome": "Threw explicit security exception",
+      "assertion": "assert(err.message.includes('PATH_NULL_BYTE_DETECTED'))"
+    },
+    {
+      "testId": 66,
+      "name": "Numeric values quoted as strings in source are not coerced",
+      "manipulatedInput": "Object literal with totalAssets: \"1000000\" (quoted string)",
+      "isolationMechanism": "Direct parser call on fixture string",
+      "expectedFailureReason": "INVALID_NUMERIC_VALUE",
+      "observedOutcome": "Threw INVALID_NUMERIC_VALUE",
+      "assertion": "assert(err.message.includes('INVALID_NUMERIC_VALUE'))"
+    },
+    {
+      "testId": 67,
+      "name": "WealthTimeline handles all 4 timeline states without crash or coercion",
+      "manipulatedInput": "4 observation records: 1) positive complete, 2) positive partial, 3) genuine zero, 4) undisclosed null",
+      "isolationMechanism": "In-memory timeline contract assertion",
+      "expectedFailureReason": "None (all 4 states handled cleanly)",
+      "observedOutcome": "Handled all 4 states without crash, null coercion, or zero division",
+      "assertion": "assertEqual(maxAssets, 20000000)"
     }
   ]
 }

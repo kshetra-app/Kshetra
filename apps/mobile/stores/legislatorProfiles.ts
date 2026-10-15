@@ -15,11 +15,11 @@ export interface LegislatorProfileSummary {
   house: string;
   photoUrl: string | null;
   age: number | null;
-  totalAssets: number;
+  totalAssets: number | null;
   criminalCases: number;
   termsServed: number;
   isCurrentMember: boolean;
-  isCrorepati: boolean;
+  isCrorepati: boolean | null;
   dataCompleteness: number;
 }
 
@@ -88,14 +88,14 @@ export const useLegislatorProfilesStore = create<LegislatorProfilesState>((set, 
         photoUrl: p.personal?.photoUrl || null,
         age: p.personal?.currentAge || p.personal?.ageAtElection || null,
         totalAssets: p.financialHistory?.length > 0
-          ? p.financialHistory[p.financialHistory.length - 1]?.totalAssets || 0
-          : 0,
+          ? (p.financialHistory[p.financialHistory.length - 1]?.totalAssets ?? null)
+          : null,
         criminalCases: p.criminalRecord?.totalCases || 0,
         termsServed: p.career?.termsServed || 0,
         isCurrentMember: p.career?.isCurrentMember || false,
-        isCrorepati: p.financialHistory?.length > 0
-          ? (p.financialHistory[p.financialHistory.length - 1]?.totalAssets || 0) >= 1_00_00_000
-          : false,
+        isCrorepati: p.financialHistory?.length > 0 && p.financialHistory[p.financialHistory.length - 1]?.totalAssets != null
+          ? p.financialHistory[p.financialHistory.length - 1]?.totalAssets >= 1_00_00_000
+          : null,
         dataCompleteness: p.sources?.dataCompleteness || 0,
       }));
   },

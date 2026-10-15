@@ -32,14 +32,26 @@ export default React.memo(function WealthTimeline({ affidavits, growths }: Wealt
       <View style={styles.chart}>
         {sorted.map((a, idx) => {
           const isDisclosed = a.totalAssets != null;
-          const barHeight = isDisclosed
-            ? (a.totalAssets! > 0 ? Math.max((a.totalAssets! / maxAssets) * 120, 8) : 2)
+          const isGenuineZero = isDisclosed && a.totalAssets === 0;
+          const isPositive = isDisclosed && a.totalAssets! > 0;
+          const barHeight = isPositive
+            ? Math.max((a.totalAssets! / maxAssets) * 120, 8)
             : 2;
           const growth = growths.find((g) => g.toYear === a.electionYear);
-          const hasComponents = isDisclosed && a.totalAssets! > 0 &&
-            (a.selfMovableAssets != null || a.selfImmovableAssets != null || a.spouseMovableAssets != null || a.spouseImmovableAssets != null);
-          const selfPortion = ((a.selfMovableAssets ?? 0) + (a.selfImmovableAssets ?? 0));
-          const spousePortion = ((a.spouseMovableAssets ?? 0) + (a.spouseImmovableAssets ?? 0));
+
+          // All 4 core components must be disclosed for stacked breakdown
+          const hasCompleteComponents = isPositive &&
+            a.selfMovableAssets != null &&
+            a.selfImmovableAssets != null &&
+            a.spouseMovableAssets != null &&
+            a.spouseImmovableAssets != null;
+
+          const selfPortion = hasCompleteComponents
+            ? (a.selfMovableAssets! + a.selfImmovableAssets!)
+            : 0;
+          const spousePortion = hasCompleteComponents
+            ? (a.spouseMovableAssets! + a.spouseImmovableAssets!)
+            : 0;
 
           return (
             <View key={a.electionYear} style={styles.barGroup}>
@@ -61,13 +73,22 @@ export default React.memo(function WealthTimeline({ affidavits, growths }: Wealt
 
               {/* Bar */}
               <View style={styles.barWrapper}>
-                <View style={[styles.bar, { height: barHeight }, !isDisclosed && styles.barUndisclosed]}>
-                  {hasComponents && (
+                <View
+                  style={[
+                    styles.bar,
+                    { height: barHeight },
+                    !isDisclosed && styles.barUndisclosed,
+                    isGenuineZero && styles.barZero,
+                  ]}
+                >
+                  {hasCompleteComponents ? (
                     <>
                       <View style={[styles.barFillSelf, { height: (barHeight * selfPortion) / a.totalAssets! }]} />
                       <View style={[styles.barFillSpouse, { height: (barHeight * spousePortion) / a.totalAssets! }]} />
                     </>
-                  )}
+                  ) : isPositive ? (
+                    <View style={[styles.barFillSolid, { height: barHeight }]} />
+                  ) : null}
                 </View>
               </View>
 
@@ -96,10 +117,16 @@ export default React.memo(function WealthTimeline({ affidavits, growths }: Wealt
       {/* Summary */}
       {growths.length > 0 && (
         <View style={styles.summary}>
-          <Text style={styles.summaryText}>
-            {t('wealthTimeline.totalGrowth')} {formatINR(sorted[0].totalAssets)} ({sorted[0].electionYear}) →{' '}
-            {formatINR(sorted[sorted.length - 1].totalAssets)} ({sorted[sorted.length - 1].electionYear})
-          </Text>
+          {sorted[0].totalAssets != null && sorted[sorted.length - 1].totalAssets != null ? (
+            <Text style={styles.summaryText}>
+              {t('wealthTimeline.totalGrowth')} {formatINR(sorted[0].totalAssets)} ({sorted[0].electionYear}) →{' '}
+              {formatINR(sorted[sorted.length - 1].totalAssets)} ({sorted[sorted.length - 1].electionYear})
+            </Text>
+          ) : (
+            <Text style={styles.summaryText}>
+              {t('wealthTimeline.totalGrowth')} Growth timeline contains undisclosed observations
+            </Text>
+          )}
           {growths[growths.length - 1].annualizedGrowth != null && (
             <Text style={styles.summaryAnnualized}>
               {t('wealthTimeline.annualized')} {growths[growths.length - 1].annualizedGrowth!.toFixed(1)}% {t('wealthTimeline.perYear')}
@@ -174,6 +201,13 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#9CA3AF',
     borderStyle: 'dashed',
+  },
+  barZero: {
+    backgroundColor: '#94A3B8',
+  },
+  barFillSolid: {
+    backgroundColor: '#4F8EF7',
+    width: '100%',
   },
   barFillSelf: {
     backgroundColor: '#4F8EF7',

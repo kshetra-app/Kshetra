@@ -1,27 +1,27 @@
 {
   "matrixTitle": "Kshetra Mobile Application Financial Consumer Compatibility Matrix",
-  "directive": "KSHETRA — W021.5 CTO DIRECTIVE 065 Section 4",
+  "directive": "KSHETRA — W021.5 CTO DIRECTIVE 066 Section 5",
   "milestone": "W021.5 / B2.2-E",
   "defect": "DQ-W021.5-B2.2E-001",
-  "auditDate": "2026-10-14T21:45:00.000Z",
-  "auditedCommit": "bfe2f799caecfffc929ad4ad5ea8980807ee66f6",
+  "auditDate": "2026-10-15T08:35:00.000Z",
+  "auditedCommit": "6e23ee162b6a9e337d2336cdd19777b995b447a2",
   "summary": {
-    "totalAuditedFiles": 10,
-    "criticalCrashVulnerabilitiesPreFix": 3,
-    "highRiskContractDriftPreFix": 3,
-    "mediumRiskDistortionPreFix": 2,
+    "totalAuditedFiles": 17,
+    "criticalCrashVulnerabilitiesPreFix": 4,
+    "highRiskContractDriftPreFix": 4,
+    "mediumRiskDistortionPreFix": 3,
     "remediationStatus": "ALL_VULNERABILITIES_RESOLVED",
     "typeScriptCompilerErrors": 0,
-    "unitTestPassRate": "100% (34/34 Jest tests passing, 50/50 Verifier tests passing)"
+    "unitTestPassRate": "100% (34/34 Jest tests passing, 67/67 Verifier tests passing)"
   },
   "consumers": [
     {
       "file": "apps/mobile/lib/affidavitTypes.ts",
       "component": "CandidateAffidavit & Financial Utility Functions",
       "remediatedType": "number | null",
-      "preFixBehavior": "Non-nullable numbers, formatINR lacked null check throwing TypeError, computeWealthGrowth produced NaN on nulls, detectRedFlags falsely flagged zero liability anomaly on nulls.",
-      "implementedFix": "Updated CandidateAffidavit fields to 'number | null'. Hardened formatINR to return 'Not Disclosed' for null/undefined and '₹0' for 0. Added isAvailable: boolean to WealthGrowth and returned null growths when either totalAssets is null. Guarded detectRedFlags against null liabilities and null assets.",
-      "verificationMethod": "Jest sprint14-16.test.ts & Node test suite (Test 46, Test 47, Test 48)",
+      "preFixBehavior": "Non-nullable numbers on financial fields, formatINR lacked null check throwing TypeError, computeWealthGrowth produced NaN on nulls, detectRedFlags falsely flagged zero liability anomaly on nulls, ConstituencyIntegrity lacked assetsDisclosedCandidatesCount.",
+      "implementedFix": "Updated CandidateAffidavit fields to 'number | null'. Hardened formatINR to return 'Not Disclosed' for null/undefined and '₹0' for 0. Added isAvailable: boolean to WealthGrowth and returned null growths when either totalAssets is null. Guarded detectRedFlags against null liabilities and null assets. Added non-optional assetsDisclosedCandidatesCount: number to ConstituencyIntegrity.",
+      "verificationMethod": "Jest sprint14-16.test.ts (6 tests) & Node test suite (Tests 46, 47, 48, 64)",
       "status": "FIXED_AND_VERIFIED"
     },
     {
@@ -34,6 +34,33 @@
       "status": "FIXED_AND_VERIFIED"
     },
     {
+      "file": "apps/mobile/lib/stateDataDispatcher.refactored.ts",
+      "component": "State Data Dispatcher",
+      "remediatedType": "number | null",
+      "preFixBehavior": "Potential risk of coercing nullable values during state bundle dispatch.",
+      "implementedFix": "Audited: Passes through typed legislator profiles and affidavit data without performing arithmetic, formatting, or zero-coercion. Preserves number | null faithfully.",
+      "verificationMethod": "TypeScript compiler check (npx tsc --noEmit)",
+      "status": "AUDITED_NO_MUTATION_REQUIRED"
+    },
+    {
+      "file": "apps/mobile/components/FinancialBreakdownCard.tsx",
+      "component": "Legacy Root Financial Breakdown Card (Path Check)",
+      "remediatedType": "N/A (Redirected)",
+      "preFixBehavior": "File not present at root components directory.",
+      "implementedFix": "Documented canonical component location at apps/mobile/components/legislator/FinancialBreakdownCard.tsx. Zero phantom code at root.",
+      "verificationMethod": "File presence audit",
+      "status": "VERIFIED_CANONICAL_PATH_CONFIRMED"
+    },
+    {
+      "file": "apps/mobile/components/legislator/FinancialBreakdownCard.tsx",
+      "component": "FinancialBreakdownCard (Legislator Profile)",
+      "remediatedType": "number | null",
+      "preFixBehavior": "Used '|| 0' fallbacks coercing missing disclosures to zero wealth; rendered stacked breakdown bar even when some components were undisclosed.",
+      "implementedFix": "Removed all '|| 0' fallbacks. Added explicit 'Assets not disclosed' banner when totalAssets === null. Enforced complete breakdown rule: all 4 components (movable, immovable, spouse, dependents) must be non-null to render stacked bar; otherwise renders disclosed individual items with explicit unitemized notice. Timeline renders dashed 2px baseline for undisclosed years.",
+      "verificationMethod": "TypeScript compiler check (npx tsc --noEmit) & Node test suite (Test 62)",
+      "status": "FIXED_AND_VERIFIED"
+    },
+    {
       "file": "apps/mobile/components/AffidavitCard.tsx",
       "component": "AffidavitCard",
       "remediatedType": "number | null",
@@ -43,38 +70,29 @@
       "status": "FIXED_AND_VERIFIED"
     },
     {
-      "file": "apps/mobile/components/legislator/FinancialBreakdownCard.tsx",
-      "component": "FinancialBreakdownCard",
+      "file": "apps/mobile/components/MLACard.tsx",
+      "component": "MLACard",
       "remediatedType": "number | null",
-      "preFixBehavior": "Used '|| 0' fallbacks coercing missing disclosures to zero wealth; growth computation threw on nulls.",
-      "implementedFix": "Removed all '|| 0' fallbacks. Added explicit 'Assets not disclosed' banner when totalAssets === null. Displays 'Component breakdown not itemized in filing' when asset breakdown is null. Renders dashed 2px baseline for undisclosed timeline bars.",
+      "preFixBehavior": "Potential risk of unhandled null in wealth display.",
+      "implementedFix": "Audited: Uses hardened formatINR for net worth and asset displays; does not perform raw arithmetic or zero coercions.",
       "verificationMethod": "TypeScript compiler check (npx tsc --noEmit)",
-      "status": "FIXED_AND_VERIFIED"
+      "status": "AUDITED_NO_MUTATION_REQUIRED"
+    },
+    {
+      "file": "apps/mobile/components/MPCard.tsx",
+      "component": "MPCard",
+      "remediatedType": "number | null",
+      "preFixBehavior": "Potential risk of unhandled null in wealth display.",
+      "implementedFix": "Audited: Uses hardened formatINR for net worth and asset displays; does not perform raw arithmetic or zero coercions.",
+      "verificationMethod": "TypeScript compiler check (npx tsc --noEmit)",
+      "status": "AUDITED_NO_MUTATION_REQUIRED"
     },
     {
       "file": "apps/mobile/app/legislator/[id].tsx",
       "component": "LegislatorDetailScreen",
       "remediatedType": "number | null",
-      "preFixBehavior": "Computed netWorth using '|| 0' fallbacks, displaying false ₹0 net worth for undisclosed legislators.",
-      "implementedFix": "Removed '|| 0' fallbacks. Computes netWorth = (hasBoth ? totalAssets - liabilities : null). Renders 'Not Disclosed' when netWorth is null. Guarded zero liability anomaly against null liabilities.",
-      "verificationMethod": "TypeScript compiler check (npx tsc --noEmit)",
-      "status": "FIXED_AND_VERIFIED"
-    },
-    {
-      "file": "apps/mobile/components/WealthTimeline.tsx",
-      "component": "WealthTimeline",
-      "remediatedType": "number | null",
-      "preFixBehavior": "Forced 8px minimum bar height for null assets, visually fabricating positive wealth for undisclosed years.",
-      "implementedFix": "Filtered non-null assets when computing maxAssets. Undisclosed records render a dashed 2px baseline bar with zero height. Guarded percentGrowth and annualizedGrowth against null.",
-      "verificationMethod": "TypeScript compiler check (npx tsc --noEmit)",
-      "status": "FIXED_AND_VERIFIED"
-    },
-    {
-      "file": "apps/mobile/stores/affidavits.ts",
-      "component": "AffidavitsStore (Constituency Aggregations)",
-      "remediatedType": "number | null",
-      "preFixBehavior": "Summed assets with '|| 0' and divided by total candidates including undisclosed records, artificially depressing average assets and distorting crorepati percentages.",
-      "implementedFix": "Filtered disclosed candidates (a.totalAssets != null) for avgAssets denominator. Tracks assetsDisclosedCandidatesCount. getCrorepatiCount returns { total, disclosedCount, crorepatis, percent }.",
+      "preFixBehavior": "Computed netWorth using '|| 0' fallbacks, displaying false ₹0 net worth for undisclosed legislators; coerced movable/immovable assets with '|| 0'.",
+      "implementedFix": "Removed '|| 0' fallbacks. Computes netWorth = (hasBoth ? totalAssets - liabilities : null). Computes combined assets requiring both movable and immovable non-null. Renders 'Not Disclosed' when netWorth is null. Guarded zero liability anomaly against null liabilities.",
       "verificationMethod": "TypeScript compiler check (npx tsc --noEmit)",
       "status": "FIXED_AND_VERIFIED"
     },
@@ -88,6 +106,51 @@
       "status": "FIXED_AND_VERIFIED"
     },
     {
+      "file": "apps/mobile/app/representative/[id].tsx",
+      "component": "RepresentativeDetailScreen",
+      "remediatedType": "number | null",
+      "preFixBehavior": "Potential risk of arithmetic on nullable fields.",
+      "implementedFix": "Audited: Passes profile financials directly to hardened card components and formatINR; no raw arithmetic or zero coercion.",
+      "verificationMethod": "TypeScript compiler check (npx tsc --noEmit)",
+      "status": "AUDITED_NO_MUTATION_REQUIRED"
+    },
+    {
+      "file": "apps/mobile/components/WealthTimeline.tsx",
+      "component": "WealthTimeline",
+      "remediatedType": "number | null",
+      "preFixBehavior": "Forced 8px minimum bar height for null assets, visually fabricating positive wealth for undisclosed years.",
+      "implementedFix": "Explicitly handles all 4 states: 1) Disclosed positive total with complete breakdown (stacked bar); 2) Disclosed positive total with partial breakdown (solid bar); 3) Disclosed genuine zero (2px solid baseline bar); 4) Undisclosed / null (2px dashed baseline bar). Guarded percentGrowth and annualizedGrowth against null.",
+      "verificationMethod": "TypeScript compiler check (npx tsc --noEmit) & Node test suite (Test 67)",
+      "status": "FIXED_AND_VERIFIED"
+    },
+    {
+      "file": "apps/mobile/stores/affidavits.ts",
+      "component": "AffidavitsStore (Constituency Aggregations)",
+      "remediatedType": "number | null",
+      "preFixBehavior": "Summed assets with '|| 0' and divided by total candidates including undisclosed records, artificially depressing average assets and distorting crorepati percentages.",
+      "implementedFix": "Filtered disclosed candidates (a.totalAssets != null) for avgAssets denominator. Computes both disclosedPercent (crorepatis / disclosedCount) and overallPercent (crorepatis / total). Sets required assetsDisclosedCandidatesCount on ConstituencyIntegrity.",
+      "verificationMethod": "TypeScript compiler check (npx tsc --noEmit) & Node test suite (Tests 63, 64)",
+      "status": "FIXED_AND_VERIFIED"
+    },
+    {
+      "file": "apps/mobile/lib/mpTypes.ts",
+      "component": "MP Profile Types",
+      "remediatedType": "number | null",
+      "preFixBehavior": "Strict non-nullable number on MP financials.",
+      "implementedFix": "Updated MPProfile interface to allow number | null on totalAssets and totalLiabilities.",
+      "verificationMethod": "TypeScript compiler check (npx tsc --noEmit)",
+      "status": "FIXED_AND_VERIFIED"
+    },
+    {
+      "file": "apps/mobile/lib/seedDataLoader.ts",
+      "component": "Seed Data Loader",
+      "remediatedType": "number | null",
+      "preFixBehavior": "Risk of coercing nulls during data ingestion.",
+      "implementedFix": "Audited: Correctly passes through null values from JSON seed files into typed candidate/legislator objects without zero coercion.",
+      "verificationMethod": "TypeScript compiler check (npx tsc --noEmit)",
+      "status": "AUDITED_NO_MUTATION_REQUIRED"
+    },
+    {
       "file": "data/seed/telangana-mla-profiles.ts",
       "component": "Telangana MLA Seed Data",
       "remediatedType": "number | null",
@@ -97,11 +160,11 @@
       "status": "FIXED_AND_VERIFIED"
     },
     {
-      "file": "apps/mobile/lib/seedDataLoader.ts & mpTypes.ts",
-      "component": "MP Profiles & Seed Data Loader",
-      "remediatedType": "number | null",
-      "preFixBehavior": "Strict non-nullable number on MP financials.",
-      "implementedFix": "Updated MPProfile interface to allow number | null on totalAssets and totalLiabilities.",
+      "file": "apps/mobile/stores/legislatorProfiles.ts",
+      "component": "LegislatorProfilesStore",
+      "remediatedType": "number | null / boolean | null",
+      "preFixBehavior": "LegislatorProfileSummary defined totalAssets as number and isCrorepati as boolean; getSummaries used '|| 0' fallback coercing null assets to ₹0 and isCrorepati to false.",
+      "implementedFix": "Updated LegislatorProfileSummary: totalAssets is 'number | null', isCrorepati is 'boolean | null'. Removed '|| 0' in getSummaries; sets isCrorepati = (totalAssets != null ? totalAssets >= 10_000_000 : null).",
       "verificationMethod": "TypeScript compiler check (npx tsc --noEmit)",
       "status": "FIXED_AND_VERIFIED"
     }

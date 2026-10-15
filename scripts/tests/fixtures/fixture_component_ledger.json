@@ -35,6 +35,76 @@
     "exceptions": "NONE"
   },
   {
+    "manifestId": "0215b22e-aff-00000002",
+    "targetUuid": "0215b22e-0001-0000-0000-000000000002",
+    "candidateName": "Candidate Two",
+    "stateCode": "AP",
+    "acNo": 2,
+    "constituencyName": "Constituency 2",
+    "electionYear": 2024,
+    "candidacyId": "0215b22d-cand-00000002",
+    "personId": "0215b22d-000000000002",
+    "sourceCategory": "MLA_PROFILE",
+    "sourceFile": "scratch/directive_059/fixture_source_profiles.ts",
+    "sourceLine": 24,
+    "sourceTotalAssets": 500000,
+    "sourceTotalLiabilities": 0,
+    "sourceAssetStatus": "POSITIVE",
+    "sourceLiabilityStatus": "VERIFIED_GENUINE_ZERO",
+    "rawComponentFields": {
+      "selfMovableAssets": "0",
+      "selfImmovableAssets": "0",
+      "spouseMovableAssets": "ABSENT",
+      "spouseImmovableAssets": "ABSENT"
+    },
+    "classification": "VERIFIED_GENUINE_ZERO",
+    "classificationRationale": "Source seed explicitly declares 0 liabilities.",
+    "targetTreatment": {
+      "total_assets": 500000,
+      "total_liabilities": 0,
+      "self_movable_assets": null,
+      "self_immovable_assets": null,
+      "spouse_movable_assets": null,
+      "spouse_immovable_assets": null
+    },
+    "exceptions": "NONE"
+  },
+  {
+    "manifestId": "0215b22e-aff-00000003",
+    "targetUuid": "0215b22e-0001-0000-0000-000000000003",
+    "candidateName": "Candidate Three",
+    "stateCode": "KA",
+    "acNo": 3,
+    "constituencyName": "Constituency 3",
+    "electionYear": 2023,
+    "candidacyId": "0215b22d-cand-00000003",
+    "personId": "0215b22d-000000000003",
+    "sourceCategory": "MLA_PROFILE",
+    "sourceFile": "scratch/directive_059/fixture_source_profiles.ts",
+    "sourceLine": 32,
+    "sourceTotalAssets": 750000,
+    "sourceTotalLiabilities": null,
+    "sourceAssetStatus": "POSITIVE",
+    "sourceLiabilityStatus": "UNDISCLOSED_OMITTED",
+    "rawComponentFields": {
+      "selfMovableAssets": "ABSENT",
+      "selfImmovableAssets": "ABSENT",
+      "spouseMovableAssets": "ABSENT",
+      "spouseImmovableAssets": "ABSENT"
+    },
+    "classification": "UNDISCLOSED_OMITTED",
+    "classificationRationale": "Profile lacks totalLiabilities; generator coerced to 0.",
+    "targetTreatment": {
+      "total_assets": 750000,
+      "total_liabilities": null,
+      "self_movable_assets": null,
+      "self_immovable_assets": null,
+      "spouse_movable_assets": null,
+      "spouse_immovable_assets": null
+    },
+    "exceptions": "SOURCE_OMISSION"
+  },
+  {
     "manifestId": "0215b22e-aff-00000004",
     "targetUuid": "0215b22e-0001-0000-0000-000000000004",
     "candidateName": "Candidate Four",

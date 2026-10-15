@@ -51,11 +51,11 @@ export default function LegislatorProfileScreen() {
         _financialRecords = [
           {
             year: electionYear,
-            movableAssets: (_winnerAffidavit.selfMovableAssets != null || _winnerAffidavit.spouseMovableAssets != null)
-              ? (_winnerAffidavit.selfMovableAssets ?? 0) + (_winnerAffidavit.spouseMovableAssets ?? 0)
+            movableAssets: (_winnerAffidavit.selfMovableAssets != null && _winnerAffidavit.spouseMovableAssets != null)
+              ? (_winnerAffidavit.selfMovableAssets + _winnerAffidavit.spouseMovableAssets)
               : null,
-            immovableAssets: (_winnerAffidavit.selfImmovableAssets != null || _winnerAffidavit.spouseImmovableAssets != null)
-              ? (_winnerAffidavit.selfImmovableAssets ?? 0) + (_winnerAffidavit.spouseImmovableAssets ?? 0)
+            immovableAssets: (_winnerAffidavit.selfImmovableAssets != null && _winnerAffidavit.spouseImmovableAssets != null)
+              ? (_winnerAffidavit.selfImmovableAssets + _winnerAffidavit.spouseImmovableAssets)
               : null,
             totalAssets: _winnerAffidavit.totalAssets,
             liabilities: _winnerAffidavit.totalLiabilities,
