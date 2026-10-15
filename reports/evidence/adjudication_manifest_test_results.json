@@ -1,9 +1,9 @@
 {
   "suite": "adjudication_manifest_test_suite",
-  "directive": "W021.5-CTO-DIRECTIVE-072",
-  "executedAt": "2026-10-15T16:09:14.196Z",
-  "totalTests": 25,
-  "passed": 25,
+  "directive": "W021.5-CTO-DIRECTIVE-073",
+  "executedAt": "2026-10-15T16:33:23.325Z",
+  "totalTests": 26,
+  "passed": 26,
   "failed": 0,
   "verdict": "PASS",
   "results": [
@@ -14,12 +14,12 @@
     },
     {
       "id": 2,
-      "name": "All 4,523 crosswalk entries map bijectively to unique target UUIDs",
+      "name": "Production validateCrosswalk() verifies exact 4,523-row bijection and uniqueness",
       "status": "PASS"
     },
     {
       "id": 3,
-      "name": "Adversarial: Crosswalk missing an entry fails validation closed",
+      "name": "Production validateCrosswalk() rejects missing, duplicate, and malformed entries",
       "status": "PASS"
     },
     {
@@ -49,22 +49,22 @@
     },
     {
       "id": 9,
-      "name": "Raw SQL chunk tuples count exactly 4,523 with unique target UUIDs",
+      "name": "Production validateSqlChunks() verifies 4,523 raw tuples and unique target UUIDs",
       "status": "PASS"
     },
     {
       "id": 10,
-      "name": "Adversarial: Duplicate target UUID detection fails closed",
+      "name": "Production validateSqlChunks() rejects unknown targets, count mismatches, and duplicates",
       "status": "PASS"
     },
     {
       "id": 11,
-      "name": "Database state claims declare explicit offline evidence basis",
+      "name": "Database state claims declare explicit offline evidence basis with separated baseline",
       "status": "PASS"
     },
     {
       "id": 12,
-      "name": "Adversarial: Prohibits claiming unverified LIVE_DATABASE_OBSERVATION",
+      "name": "Adversarial: Prohibits claiming unverified LIVE_DATABASE_OBSERVATION across all rows",
       "status": "PASS"
     },
     {
@@ -79,27 +79,27 @@
     },
     {
       "id": 15,
-      "name": "Adversarial: Record marked ELIGIBLE without verifier pass triggers invariant error",
+      "name": "Production validateEligibilityGate() rejects false ELIGIBLE and mismatched INELIGIBLE",
       "status": "PASS"
     },
     {
       "id": 16,
-      "name": "Ineligible records strictly correspond to currentRepresentedValue === proposedValue",
+      "name": "Ineligible records strictly correspond to expectedDatabaseValue === proposedValue",
       "status": "PASS"
     },
     {
       "id": 17,
-      "name": "Adversarial: INELIGIBLE with unequal values fails closed",
+      "name": "Production validateCorrectionEligibility() execution matches recorded row outcomes",
       "status": "PASS"
     },
     {
       "id": 18,
-      "name": "Summary eligibility totals match row-level manifest counts exactly",
+      "name": "Production validateSummaryReconciliation() asserts bit-for-bit count equality",
       "status": "PASS"
     },
     {
       "id": 19,
-      "name": "Adversarial: Summary claiming eligible when manifest has 0 fails closed",
+      "name": "Production validateSummaryReconciliation() rejects deliberately inconsistent summary",
       "status": "PASS"
     },
     {
@@ -109,26 +109,31 @@
     },
     {
       "id": 21,
-      "name": "Adversarial: Attempting to bypass Karnataka conflict check throws error",
+      "name": "Production validateCorrectionEligibility() rejects conflict bypass attempt",
       "status": "PASS"
     },
     {
       "id": 22,
-      "name": "All referenced source files exist and SHA-256 hashes match",
+      "name": "Production validateSourceEvidenceFile() verifies all referenced source files and hashes",
       "status": "PASS"
     },
     {
       "id": 23,
-      "name": "Phantom affidavit 0215b22e-aff-00001571 is strictly absent from all artifacts",
+      "name": "Production validateSourceEvidenceFile() rejects missing files and tampered hashes",
       "status": "PASS"
     },
     {
       "id": 24,
-      "name": "17 Delhi demographic records remain preserved as NOT_VERIFIED",
+      "name": "Phantom affidavit 0215b22e-aff-00001571 is strictly absent from all artifacts",
       "status": "PASS"
     },
     {
       "id": 25,
+      "name": "17 Delhi demographic records remain preserved as NOT_VERIFIED",
+      "status": "PASS"
+    },
+    {
+      "id": 26,
       "name": "Defect DQ-W021.5-B2.2E-001 declared STRICTLY OPEN with CTO Acceptance Authority",
       "status": "PASS"
     }

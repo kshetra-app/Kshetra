@@ -1,11 +1,12 @@
 import fs from 'fs';
 import path from 'path';
+import { validateSummaryReconciliation } from './adjudication_validators.mjs';
 
 const REPO_ROOT = process.cwd();
 const manifestPath = path.join(REPO_ROOT, 'reports/w021_5_financial_remediation_adjudication_manifest.json');
 const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
 
-// Independently recompute counts directly from row-level entries
+// Recompute row-level counts and sample IDs
 const recomputedGroupCounts = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
 const recomputedAssetCounts = { ELIGIBLE: 0, INELIGIBLE: 0, REQUIRES_REVIEW: 0 };
 const recomputedLiabilityCounts = { ELIGIBLE: 0, INELIGIBLE: 0, REQUIRES_REVIEW: 0 };
@@ -44,28 +45,16 @@ for (const aff of manifest.affidavits) {
   }
 }
 
-// Assert recomputed counts match manifest population summary
-if (
-  recomputedAssetCounts.ELIGIBLE !== manifest.populationSummary.eligibilitySummary.assetDimension.eligibleCount ||
-  recomputedAssetCounts.INELIGIBLE !== manifest.populationSummary.eligibilitySummary.assetDimension.ineligibleCount ||
-  recomputedAssetCounts.REQUIRES_REVIEW !== manifest.populationSummary.eligibilitySummary.assetDimension.requiresReviewCount ||
-  recomputedLiabilityCounts.ELIGIBLE !== manifest.populationSummary.eligibilitySummary.liabilityDimension.eligibleCount ||
-  recomputedLiabilityCounts.INELIGIBLE !== manifest.populationSummary.eligibilitySummary.liabilityDimension.ineligibleCount ||
-  recomputedLiabilityCounts.REQUIRES_REVIEW !== manifest.populationSummary.eligibilitySummary.liabilityDimension.requiresReviewCount
-) {
-  throw new Error('COUNT_MISMATCH: Recomputed row-level counts disagree with manifest summary counts');
-}
-
 const summary = {
   manifestVersion: manifest.manifestVersion,
-  directive: 'W021.5-CTO-DIRECTIVE-072',
+  directive: 'W021.5-CTO-DIRECTIVE-073',
   milestone: manifest.milestone,
   defect: manifest.defect,
   defectStatus: manifest.defectStatus,
   governance: manifest.governance,
   generatedAt: new Date().toISOString(),
   gitBaseline: {
-    baselineCommit: 'fa971e62390f18cb1ccd69e81cb322bc2f9b3492',
+    directive072BaselineCommit: 'fc9992fa1aeb328bab7c414eb9d352aa406e23bb',
     canonicalBranch: 'master',
     remoteRepository: 'https://github.com/kshetra-app/Kshetra.git'
   },
@@ -129,9 +118,10 @@ const summary = {
   schemaFeasibilityAnalysis: {
     status: 'DESIGN_PROPOSAL_ONLY — NON_OPERATIONAL',
     currentTotalAssetsMechanic: 'PostgreSQL GENERATED ALWAYS AS (self_movable + self_immovable + spouse_movable + spouse_immovable) STORED',
-    currentEvaluatedValueOnStaging: 0,
+    schemaDerivedExpectedAssetValue: 0,
     evidenceBasis: 'SCHEMA_DERIVED_EXPECTATION',
-    evidenceBasisDetails: 'Chunks 02-05 omitted component columns during SQL ingestion, assigning DEFAULT 0 to each component (0+0+0+0=0)',
+    evidenceBasisDetails: 'Chunks 02-05 omitted component columns during SQL ingestion, assigning DEFAULT 0 to each component (0+0+0+0=0). Offline expectation only; live database was not queried.',
+    liveDatabaseObservationsObtained: false,
     limitationOfGeneratedColumn: 'Cannot represent source-backed positive totals when component breakdown is unavailable (evaluates to NULL or false 0)',
     proposedSchemaChange: 'ALTER TABLE candidate_affidavits ALTER COLUMN total_assets DROP EXPRESSION IF EXISTS (Method A DDL Normalization)',
     statesSupportedAfterConversion: [
@@ -160,10 +150,14 @@ const summary = {
     delhi17DemographicsPreservedNotVerified: true,
     productionSupabaseUntouched: true,
     stagingSupabaseUntouched: true,
-    zeroSqlOrMigrationsAuthoredOrExecuted: true
+    zeroSqlOrMigrationsAuthoredOrExecuted: true,
+    liveDatabaseObservationsObtained: false
   }
 };
 
+// Validate summary reconciliation against manifest using production validator
+validateSummaryReconciliation(manifest, summary);
+
 const summaryPath = path.join(REPO_ROOT, 'reports/w021_5_financial_remediation_adjudication_summary.json');
 fs.writeFileSync(summaryPath, JSON.stringify(summary, null, 2), 'utf8');
-console.log(`Wrote Directive 072 adjudication summary to ${summaryPath}`);
+console.log(`Wrote Directive 073 adjudication summary to ${summaryPath}`);

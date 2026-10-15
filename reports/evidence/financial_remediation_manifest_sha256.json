@@ -2,8 +2,8 @@
   "milestone": "W021.5 / B2.2-E",
   "defect": "DQ-W021.5-B2.2E-001",
   "defectStatus": "STRICTLY OPEN",
-  "directive": "W021.5-CTO-DIRECTIVE-072",
-  "generatedAt": "2026-10-15T16:09:22.174Z",
+  "directive": "W021.5-CTO-DIRECTIVE-073",
+  "generatedAt": "2026-10-15T16:33:00.107Z",
   "gitBaseline": {
     "startingCommit": "20d5ea575fa1595648fcceee07ddf0d45b4973a3",
     "canonicalBranch": "master",
@@ -12,7 +12,9 @@
     "evidenceUpdateCommit": "ba2a44a1a80796984315ff762ce595184b352945",
     "coordinateClosureCommit": "ab829a2e09892d03f94370d9f701ccef6a8dd9c2",
     "provenanceBaseline": "ab829a2e09892d03f94370d9f701ccef6a8dd9c2",
-    "directive072BaselineCommit": "fa971e62390f18cb1ccd69e81cb322bc2f9b3492"
+    "directive072BaselineCommit": "fa971e62390f18cb1ccd69e81cb322bc2f9b3492",
+    "directive072DeliveryCommit": "fc9992fa1aeb328bab7c414eb9d352aa406e23bb",
+    "directive073BaselineCommit": "fc9992fa1aeb328bab7c414eb9d352aa406e23bb"
   },
   "authoritativeAffidavitManifest": {
     "path": "reports/w021_5b2_b2_2e_affidavit_manifest.json",
@@ -273,24 +275,24 @@
     },
     {
       "path": "reports/w021_5_financial_remediation_adjudication_manifest.json",
-      "byteLength": 14474653,
-      "sha256": "d942e42cd19d84dbfb525ea975f3135c104b79e75d6b4871d97b7525c3046bb7",
-      "gitBlobSha": "5ecd33fd23ca3e659916c532fba5953d0abe2d27",
-      "description": "Row-level financial remediation adjudication manifest evaluating all 4,523 candidate affidavits with actual verifier execution"
+      "byteLength": 15234807,
+      "sha256": "832d501fb0fab0d7f5ac27828821afe5215a9242b2cca6bea3333fec945a9c5c",
+      "gitBlobSha": "2e14d06239b975512f27b11c57f00af8e81ab4ae",
+      "description": "Row-level financial remediation adjudication manifest evaluating all 4,523 candidate affidavits with separated manifestBaselineValue and expectedDatabaseValue"
     },
     {
       "path": "reports/w021_5_financial_remediation_adjudication_summary.json",
-      "byteLength": 6250,
-      "sha256": "3ade22be636026249404aff0c37bcbd4cf5fbb6f4383e66ee45ee54241ccc5f0",
-      "gitBlobSha": "6cca62ece235be945be5583432999bbca789567d",
-      "description": "Machine-readable validation summary exposing population counts, recomputed eligibility totals, verifier outcome breakdown, and stable review IDs"
+      "byteLength": 6456,
+      "sha256": "5c86c0d0e460497e881b08e29ad8dbc938cd1d16849e4928a482fa62db25acda",
+      "gitBlobSha": "4739e1eb5e07cb8093afe04f1a1a93419055b5ce",
+      "description": "Machine-readable validation summary exposing population counts, recomputed eligibility totals, schemaDerivedExpectedAssetValue, and declaration of no live DB observations"
     },
     {
       "path": "scripts/tests/adjudication_manifest.test.mjs",
-      "byteLength": 21831,
-      "sha256": "b2bb5d3ba5ca98619b56a7710fa676c8b0c5d23e62ecc8efd47cb81472ae298c",
-      "gitBlobSha": "b1125e32203926412d6567adc626f3bfa41ba73e",
-      "description": "25-test automated validation and adversarial test suite verifying population invariants, verifier gates, and fail-closed controls"
+      "byteLength": 24274,
+      "sha256": "145a2618c0cedea7d6fa9e14e4c3575799d2f69f215094fc31b0df09f98beac5",
+      "gitBlobSha": "b7cbc8eb4331eeb411362919d5811aebb95e87d0",
+      "description": "26-test production-path adversarial and invariant validation test suite verifying production validator functions and fail-closed controls"
     },
     {
       "path": "tests/adjudication_manifest.test.mjs",
@@ -308,45 +310,59 @@
     },
     {
       "path": "reports/W021.5-CTO-DIRECTIVE-072-IMPLEMENTATION-REPORT.md",
-      "byteLength": 20571,
-      "sha256": "7b1e6a33f2c1ca0bd1ba81591c56b188303559ea53366a2f2e365feedee7e52e",
-      "gitBlobSha": "f1ac6f7a668c5742efac209f840f998a4817a80d",
+      "byteLength": 20596,
+      "sha256": "6a83ded242edacf3dbe6ef960f505188fd8dbe227b660e91f41dbbd111d93dce",
+      "gitBlobSha": "9f036e4e4e0a2e04ecd5030be5be2808617dc028",
       "description": "Comprehensive Directive 072 implementation report covering adjudication evidence integrity, verifier integration, fail-closed validation, and database evidence taxonomy"
     },
     {
       "path": "reports/evidence/adjudication_manifest_test_stdout.txt",
-      "byteLength": 2652,
-      "sha256": "c8bec17020ccca241b69dff36d1da012ab46db95eeca338b9f9f517f6340ae86",
-      "gitBlobSha": "bcf282b405ca61fe63254e68e9a4f85f8834180a",
-      "description": "Raw stdout output from 25-test adjudication manifest test suite execution"
+      "byteLength": 2954,
+      "sha256": "f473d0dcd52852b92b83839555362fede4a26454a433ee5bab06f8311ad92750",
+      "gitBlobSha": "2c740a2e9241cec9af0ef40879a1ad5f8a29c352",
+      "description": "Raw stdout output from 26-test adjudication manifest test suite execution"
     },
     {
       "path": "reports/evidence/adjudication_manifest_test_results.json",
-      "byteLength": 3723,
-      "sha256": "ddc7a95860145314b06315010e721fdd77097b1a0c7462f531f5d2bba89e3d3c",
-      "gitBlobSha": "14935bc95139d4b0c83b5782612cfc9425ca2c29",
-      "description": "Machine-readable test results for all 25 tests in the Directive 072 adjudication test battery"
+      "byteLength": 4074,
+      "sha256": "d0939a8532580571185eec4c87944d98ad2da9e0fcbacb09777ffaeaa9442009",
+      "gitBlobSha": "595b48d8884999aaf8a37254c680649b47df8095",
+      "description": "Machine-readable test results for all 26 tests in the Directive 073 adjudication test battery"
     },
     {
       "path": "scripts/generate_adjudication_manifest.mjs",
-      "byteLength": 20399,
-      "sha256": "4f8b27c58b0d8e2395b68606a56a46cfec5b84a2e67ab1d0d126e9c744c4b045",
-      "gitBlobSha": "e8854b979b77945ea9e525d8d6ba5fe9af3320a3",
-      "description": "Manifest generator script with real validateCorrectionEligibility execution, raw SQL tuple accounting, and crosswalk bijection"
+      "byteLength": 15336,
+      "sha256": "252a7067973d0ec3ef4eac47d2bd1cfbcad2ba23fce9c821d7b07b03d1363414",
+      "gitBlobSha": "b96dc20bfffd777b428af4c071bff508441ab905",
+      "description": "Manifest generator script wired to production validators in scripts/adjudication_validators.mjs"
     },
     {
       "path": "scripts/audit_adjudication_reconciliation.mjs",
-      "byteLength": 20422,
-      "sha256": "87ea0aef99e27a42cdc56c8455a72730c4ba1ec458669cccbb2fa6b62fbc9d84",
-      "gitBlobSha": "35b12b3c4729a4032432cad720b9f5053434a1f3",
+      "byteLength": 14399,
+      "sha256": "e5639a224fd7f3f42bc8f4db10bf75ab11c387ae34a2900facf818a5cea7397b",
+      "gitBlobSha": "ae46a2957a23fd5bf0b848929820bdc23816afaa",
       "description": "Row-level audit script verifying exact mathematical invariants, SQL chunk coverage, and verifier integration"
     },
     {
       "path": "scripts/generate_adjudication_summary.mjs",
-      "byteLength": 8930,
-      "sha256": "1079c9b33568f2e151d6f2831c10ef69f013feb087947a3bcd2d229776739549",
-      "gitBlobSha": "ff3d0dbc65840393894e62f77b02b7457e5de281",
-      "description": "Summary generator recomputing eligibility totals directly from row-level entries and grouping review IDs"
+      "byteLength": 8356,
+      "sha256": "aadc1a7330534229b32b61210e00b8e15dfb6dedcc049c9e802543e1b508b40e",
+      "gitBlobSha": "b80a5c224f47d89940f23b6d2d7bab48103d9176",
+      "description": "Summary generator recomputing eligibility totals directly from row-level entries, validating summary reconciliation, and grouping review IDs"
+    },
+    {
+      "path": "reports/W021.5-CTO-DIRECTIVE-073-IMPLEMENTATION-REPORT.md",
+      "byteLength": 18753,
+      "sha256": "bcb66a4640b9b204b5ec3170dadecea93fa592cc4ae4a550e92590f2f79691e1",
+      "gitBlobSha": "8f177e87490c5f6f28523854115961051cecc2e6",
+      "description": "Comprehensive Directive 073 implementation report covering production-path adversarial testing, report-to-summary consistency reconciliation, verifier input semantics, and provenance closure"
+    },
+    {
+      "path": "scripts/adjudication_validators.mjs",
+      "byteLength": 11438,
+      "sha256": "f169d8d35dfc0f53ca940edb1c21347b47585f45c46deb85822399333d2ba374",
+      "gitBlobSha": "4211cdc96a749b19c2813e83f51ce032bff013a8",
+      "description": "Extracted reusable production validation functions for crosswalks, SQL chunks, eligibility gates, summary reconciliation, and evidence files"
     }
   ]
 }

@@ -1,11 +1,16 @@
 import fs from 'fs';
 import path from 'path';
 import crypto from 'crypto';
-import { parseSourceProfile, validateCorrectionEligibility, safeCanonicalPath } from './verify_financial_remediation.mjs';
+import { parseSourceProfile } from './verify_financial_remediation.mjs';
+import {
+  validateCrosswalk,
+  validateSqlChunks,
+  evaluateDimensionEligibility
+} from './adjudication_validators.mjs';
 
 const REPO_ROOT = process.cwd();
 
-console.log('=== KSHETRA W021.5 / DIRECTIVE 072 RECONCILIATION AUDIT ===');
+console.log('=== KSHETRA W021.5 / DIRECTIVE 073 RECONCILIATION AUDIT ===');
 console.log('Repository Root:', REPO_ROOT);
 
 // 1. Load Authoritative Affidavit Manifest
@@ -41,31 +46,13 @@ if (missingLiabilityMap.size !== 893) {
   throw new Error(`Expected 893 missing liabilities, found ${missingLiabilityMap.size}`);
 }
 
-// 3. Load and Validate Crosswalk (Strict Bijection - No Fallbacks)
+// 3. Load and Validate Crosswalk with Production Validator
 const crosswalkPath = path.join(REPO_ROOT, 'scratch/w021_5_directive_048_4523_manifest_to_target_crosswalk.json');
 if (!fs.existsSync(crosswalkPath)) {
   throw new Error(`MISSING_CROSSWALK_FILE: Crosswalk file not found at ${crosswalkPath}`);
 }
 const crosswalkData = JSON.parse(fs.readFileSync(crosswalkPath, 'utf8'));
-if (crosswalkData.length !== 4523) {
-  throw new Error(`CROSSWALK_POPULATION_MISMATCH: Expected 4523 crosswalk entries, found ${crosswalkData.length}`);
-}
-
-const crosswalkMap = new Map();
-const crosswalkTargetUuidSet = new Set();
-for (const entry of crosswalkData) {
-  if (!entry.manifestId || !entry.targetUuid) {
-    throw new Error(`MALFORMED_CROSSWALK_ENTRY: Missing manifestId or targetUuid`);
-  }
-  if (crosswalkMap.has(entry.manifestId)) {
-    throw new Error(`DUPLICATE_CROSSWALK_MANIFEST_ID: ${entry.manifestId}`);
-  }
-  if (crosswalkTargetUuidSet.has(entry.targetUuid)) {
-    throw new Error(`DUPLICATE_CROSSWALK_TARGET_UUID: ${entry.targetUuid}`);
-  }
-  crosswalkMap.set(entry.manifestId, entry);
-  crosswalkTargetUuidSet.add(entry.targetUuid);
-}
+const { crosswalkMap, crosswalkTargetUuidSet } = validateCrosswalk(crosswalkData, 4523);
 console.log(`Validated ${crosswalkMap.size} unique bijective crosswalk entries`);
 
 // 4. Load Component Ledger
@@ -83,7 +70,7 @@ for (const entry of ledgerData) {
 }
 console.log(`Loaded ${ledgerMap.size} component ledger entries`);
 
-// 5. Parse and Validate Raw SQL Chunks with Strict Tuple Accounting
+// 5. Parse and Validate Raw SQL Chunks with Production Validator
 const chunkFiles = [
   { file: '066_b2_2e_chunk_02_affidavits_part1.sql', expectedTuples: 1196 },
   { file: '066_b2_2e_chunk_03_affidavits_part2.sql', expectedTuples: 1272 },
@@ -91,92 +78,7 @@ const chunkFiles = [
   { file: '066_b2_2e_chunk_05_affidavits_part4.sql', expectedTuples: 905 }
 ];
 
-const sqlChunkRecordMap = new Map();
-let totalRawTuplesParsed = 0;
-
-for (const { file: chunkFile, expectedTuples } of chunkFiles) {
-  const chunkPath = path.join(REPO_ROOT, 'supabase/staging_packages/066_b2_2e_chunked', chunkFile);
-  const content = fs.readFileSync(chunkPath, 'utf8');
-  const lines = content.split('\n');
-  let chunkTuples = 0;
-  
-  for (let lineIdx = 0; lineIdx < lines.length; lineIdx++) {
-    const line = lines[lineIdx].trim();
-    if (!line.startsWith("('0215b22e-0001-0000-0000-")) continue;
-    
-    chunkTuples++;
-    totalRawTuplesParsed++;
-    
-    const tupleContent = line.slice(1, line.endsWith('),') ? -2 : line.endsWith(');') ? -2 : -1);
-    
-    const tokens = [];
-    let cur = '';
-    let inQuotes = false;
-    for (let i = 0; i < tupleContent.length; i++) {
-      const ch = tupleContent[i];
-      if (ch === "'" && tupleContent[i - 1] !== '\\') {
-        inQuotes = !inQuotes;
-        cur += ch;
-      } else if (ch === ',' && !inQuotes) {
-        tokens.push(cur.trim());
-        cur = '';
-      } else {
-        cur += ch;
-      }
-    }
-    tokens.push(cur.trim());
-    
-    const targetUuid = tokens[0].replace(/::uuid$/, '').replace(/^'|'$/g, '');
-    const candidateName = tokens[1].replace(/^'|'$/g, '');
-    const acNo = parseInt(tokens[2], 10);
-    const constituency = tokens[3].replace(/^'|'$/g, '');
-    const stateCode = tokens[4].replace(/^'|'$/g, '');
-    const party = tokens[5].replace(/^'|'$/g, '');
-    const electionYear = parseInt(tokens[6], 10);
-    const personId = tokens[7].replace(/::uuid$/, '').replace(/^'|'$/g, '');
-    const candidacyId = tokens[8].replace(/::uuid$/, '').replace(/^'|'$/g, '');
-    const provenanceId = tokens[9].replace(/::uuid$/, '').replace(/^'|'$/g, '');
-    const dataStatus = tokens[10].replace(/^'|'$/g, '');
-    const liabToken = tokens[11];
-    
-    const totalLiabilities = liabToken === 'NULL' ? null : parseInt(liabToken, 10);
-    const totalAssets = 0; // Evaluated generated column
-    
-    if (sqlChunkRecordMap.has(targetUuid)) {
-      throw new Error(`DUPLICATE_SQL_TARGET_UUID: Target UUID ${targetUuid} duplicated at ${chunkFile}:${lineIdx + 1}`);
-    }
-
-    if (!crosswalkTargetUuidSet.has(targetUuid)) {
-      throw new Error(`UNKNOWN_SQL_TARGET_UUID: Target UUID ${targetUuid} in ${chunkFile} not found in crosswalk`);
-    }
-
-    sqlChunkRecordMap.set(targetUuid, {
-      chunkFile,
-      sqlLineNum: lineIdx + 1,
-      targetUuid,
-      candidateName,
-      acNo,
-      constituency,
-      stateCode,
-      party,
-      electionYear,
-      personId,
-      candidacyId,
-      provenanceId,
-      dataStatus,
-      currentDbAssets: totalAssets,
-      currentDbLiabilities: totalLiabilities
-    });
-  }
-
-  if (chunkTuples !== expectedTuples) {
-    throw new Error(`CHUNK_TUPLE_COUNT_MISMATCH: ${chunkFile} expected ${expectedTuples} tuples, parsed ${chunkTuples}`);
-  }
-}
-
-if (totalRawTuplesParsed !== 4523 || sqlChunkRecordMap.size !== 4523) {
-  throw new Error(`SQL_RECONCILIATION_FAILED: Expected exactly 4523 unique SQL tuples, got ${sqlChunkRecordMap.size}`);
-}
+const { sqlMap: sqlChunkRecordMap, totalRawTuplesParsed } = validateSqlChunks(chunkFiles, crosswalkTargetUuidSet, REPO_ROOT);
 console.log(`Parsed and validated exactly ${sqlChunkRecordMap.size} unique records from SQL chunks`);
 
 // 6. Perform Row-Level Mathematical and Invariant Auditing
@@ -191,39 +93,23 @@ let positiveLiabilitiesCount = 0;
 let missingLiabilitiesCount = 0;
 let genuineZeroLiabilitiesCount = 0;
 
-const parseErrors = [];
-const sourceValidationFailures = [];
-
 const assetEligibilitySummary = { ELIGIBLE: 0, INELIGIBLE: 0, REQUIRES_REVIEW: 0 };
 const liabilityEligibilitySummary = { ELIGIBLE: 0, INELIGIBLE: 0, REQUIRES_REVIEW: 0 };
 
 for (const aff of affidavits) {
   const cw = crosswalkMap.get(aff.id);
-  if (!cw || !cw.targetUuid) {
-    throw new Error(`FAIL_CLOSED: Missing crosswalk entry for affidavit ${aff.id}`);
-  }
   const targetUuid = cw.targetUuid;
-  
   const sqlRecord = sqlChunkRecordMap.get(targetUuid);
-  if (!sqlRecord) {
-    throw new Error(`FAIL_CLOSED: Target UUID ${targetUuid} for affidavit ${aff.id} not found in SQL chunk records`);
-  }
   
   const isMissingAsset = missingAssetMap.has(aff.id);
   const isMissingLiability = missingLiabilityMap.has(aff.id);
   
-  // Parse source profile safely
+  // Safely parse source profile
   let parsedSource = null;
   try {
     parsedSource = parseSourceProfile(aff.source_file, aff.source_line, aff.candidate_name, aff.ac_no, REPO_ROOT);
   } catch (err) {
-    parseErrors.push({
-      id: aff.id,
-      candidateName: aff.candidate_name,
-      file: aff.source_file,
-      line: aff.source_line,
-      error: err.message
-    });
+    // Expected for Lok Sabha and conflicts
   }
   
   const sourceAssetsRaw = parsedSource ? parsedSource.totalAssets : undefined;
@@ -232,10 +118,6 @@ for (const aff of affidavits) {
   // Asset Dimension
   let proposedAssetValue;
   let proposedAssetClassification;
-  let assetEligibility;
-  let assetEligibilityReason;
-  let assetPassesVerifier = false;
-  let assetVerifierRejectionReason = null;
   
   if (isMissingAsset) {
     missingAssetsCount++;
@@ -253,47 +135,28 @@ for (const aff of affidavits) {
     throw new Error(`Unclassified asset status for affidavit ${aff.id}`);
   }
 
-  // Verifier execution for Asset
-  if (proposedAssetValue === 0 && !isMissingAsset) {
-    // Group 5: currentDbAssets (0) === proposedAssetValue (0)
-    assetEligibility = 'INELIGIBLE';
-    assetEligibilityReason = 'NO_CORRECTION_REQUIRED: Current database representation already evaluates to genuine zero matching Form 26 disclosure.';
-    assetEligibilitySummary.INELIGIBLE++;
-  } else {
-    // Mutation required: test with validateCorrectionEligibility
-    const assetCorrection = {
-      affidavitId: aff.id,
-      field: 'total_assets',
-      currentRepresentedValue: aff.total_assets,
-      intendedValue: proposedAssetValue,
-      disclosureClassification: proposedAssetClassification,
-      sourceFile: aff.source_file,
-      sourceLocation: `${aff.source_file}:${aff.source_line}`,
-      hasSourceConflict: (aff.id === '0215b22e-aff-00001430')
-    };
+  const hasSourceConflict = (aff.id === '0215b22e-aff-00001430');
 
-    try {
-      validateCorrectionEligibility(aff, assetCorrection, 'ASSET', crosswalkMap, ledgerMap, REPO_ROOT);
-      assetPassesVerifier = true;
-      assetEligibility = 'ELIGIBLE';
-      assetEligibilityReason = 'SOURCE_VERIFIED: Fully verified by existing offline verifier against component ledger and source coordinate.';
-      assetEligibilitySummary.ELIGIBLE++;
-    } catch (err) {
-      assetPassesVerifier = false;
-      assetVerifierRejectionReason = err.message;
-      assetEligibility = 'REQUIRES_REVIEW';
-      assetEligibilityReason = `VERIFIER_REJECTION: ${err.message}`;
-      assetEligibilitySummary.REQUIRES_REVIEW++;
-    }
-  }
+  // Evaluate Asset Dimension Gate
+  const assetEval = evaluateDimensionEligibility({
+    affidavitRecord: aff,
+    fieldType: 'ASSET',
+    manifestBaselineValue: aff.total_assets,
+    expectedDatabaseValue: sqlRecord.currentDbAssets, // 0
+    proposedValue: proposedAssetValue,
+    proposedClassification: proposedAssetClassification,
+    sourceFile: aff.source_file,
+    sourceLine: aff.source_line,
+    hasSourceConflict,
+    crosswalkMap,
+    ledgerMap,
+    repoRoot: REPO_ROOT
+  });
+  assetEligibilitySummary[assetEval.eligibility]++;
   
   // Liability Dimension
   let proposedLiabilityValue;
   let proposedLiabilityClassification;
-  let liabilityEligibility;
-  let liabilityEligibilityReason;
-  let liabilityPassesVerifier = false;
-  let liabilityVerifierRejectionReason = null;
   
   if (isMissingLiability) {
     missingLiabilitiesCount++;
@@ -311,39 +174,22 @@ for (const aff of affidavits) {
     throw new Error(`Unclassified liability status for affidavit ${aff.id}`);
   }
 
-  // Verifier execution for Liability
-  if (!isMissingLiability) {
-    // Groups 1, 2, 5: currentDbLiabilities matches proposedLiabilityValue
-    liabilityEligibility = 'INELIGIBLE';
-    liabilityEligibilityReason = 'NO_CORRECTION_REQUIRED: Current database representation already accurately stores the authoritative liability disclosure.';
-    liabilityEligibilitySummary.INELIGIBLE++;
-  } else {
-    // Mutation required (Groups 3, 4): test with validateCorrectionEligibility
-    const liabilityCorrection = missingLiabilityMap.get(aff.id) || {
-      affidavitId: aff.id,
-      field: 'total_liabilities',
-      currentRepresentedValue: aff.total_liabilities,
-      intendedValue: null,
-      disclosureClassification: proposedLiabilityClassification,
-      sourceFile: aff.source_file,
-      sourceLocation: `${aff.source_file}:${aff.source_line}`,
-      hasSourceConflict: (aff.id === '0215b22e-aff-00001430')
-    };
-
-    try {
-      validateCorrectionEligibility(aff, liabilityCorrection, 'LIABILITY', crosswalkMap, ledgerMap, REPO_ROOT);
-      liabilityPassesVerifier = true;
-      liabilityEligibility = 'ELIGIBLE';
-      liabilityEligibilityReason = 'SOURCE_VERIFIED: Fully verified by existing offline verifier against component ledger and source coordinate.';
-      liabilityEligibilitySummary.ELIGIBLE++;
-    } catch (err) {
-      liabilityPassesVerifier = false;
-      liabilityVerifierRejectionReason = err.message;
-      liabilityEligibility = 'REQUIRES_REVIEW';
-      liabilityEligibilityReason = `VERIFIER_REJECTION: ${err.message}`;
-      liabilityEligibilitySummary.REQUIRES_REVIEW++;
-    }
-  }
+  // Evaluate Liability Dimension Gate
+  const liabilityEval = evaluateDimensionEligibility({
+    affidavitRecord: aff,
+    fieldType: 'LIABILITY',
+    manifestBaselineValue: aff.total_liabilities,
+    expectedDatabaseValue: sqlRecord.currentDbLiabilities, // column 12 tuple value
+    proposedValue: proposedLiabilityValue,
+    proposedClassification: proposedLiabilityClassification,
+    sourceFile: aff.source_file,
+    sourceLine: aff.source_line,
+    hasSourceConflict,
+    crosswalkMap,
+    ledgerMap,
+    repoRoot: REPO_ROOT
+  });
+  liabilityEligibilitySummary[liabilityEval.eligibility]++;
   
   // Group Classification
   let group = 0;
@@ -381,31 +227,33 @@ for (const aff of affidavits) {
     sourceLine: aff.source_line,
     group,
     asset: {
-      currentDbValue: sqlRecord.currentDbAssets,
+      manifestBaselineValue: aff.total_assets,
+      expectedDatabaseValue: sqlRecord.currentDbAssets,
       evidenceBasis: 'SCHEMA_DERIVED_EXPECTATION',
       evidenceBasisDetails: 'Offline expectation derived from PostgreSQL schema: total_assets GENERATED ALWAYS AS (self_movable + self_immovable + spouse_movable + spouse_immovable) STORED. Chunks 02-05 omitted component columns during ingestion, defaulting to 0 (0+0+0+0=0). Live Supabase not accessed.',
       currentDbClassification: 'COERCED_SCHEMA_DEFAULT_ZERO',
       proposedValue: proposedAssetValue,
       proposedClassification: proposedAssetClassification,
       sourceRawValue: sourceAssetsRaw !== undefined ? sourceAssetsRaw : 'UNAVAILABLE_OR_NESTED',
-      passesExistingOfflineVerifier: assetPassesVerifier,
-      verifierRejectionReason: assetVerifierRejectionReason,
-      eligibility: assetEligibility,
-      eligibilityReason: assetEligibilityReason,
+      passesExistingOfflineVerifier: assetEval.passesExistingOfflineVerifier,
+      verifierRejectionReason: assetEval.verifierRejectionReason,
+      eligibility: assetEval.eligibility,
+      eligibilityReason: assetEval.eligibilityReason,
       requiresDbMutation: sqlRecord.currentDbAssets !== proposedAssetValue
     },
     liability: {
-      currentDbValue: sqlRecord.currentDbLiabilities,
+      manifestBaselineValue: aff.total_liabilities,
+      expectedDatabaseValue: sqlRecord.currentDbLiabilities,
       evidenceBasis: 'SQL_SOURCE_DERIVED_EXPECTATION',
       evidenceBasisDetails: 'Offline expectation derived from static source inspection of column 12 tuple values in accepted SQL files: supabase/staging_packages/066_b2_2e_chunked/066_b2_2e_chunk_02..05. Live Supabase not accessed.',
       currentDbClassification: sqlRecord.currentDbLiabilities === null ? 'MISSING_DISCLOSURE' : sqlRecord.currentDbLiabilities === 0 ? (isMissingLiability ? 'COERCED_ZERO' : 'GENUINE_ZERO') : 'POSITIVE',
       proposedValue: proposedLiabilityValue,
       proposedClassification: proposedLiabilityClassification,
       sourceRawValue: sourceLiabilitiesRaw !== undefined ? sourceLiabilitiesRaw : 'UNAVAILABLE_OR_NESTED',
-      passesExistingOfflineVerifier: liabilityPassesVerifier,
-      verifierRejectionReason: liabilityVerifierRejectionReason,
-      eligibility: liabilityEligibility,
-      eligibilityReason: liabilityEligibilityReason,
+      passesExistingOfflineVerifier: liabilityEval.passesExistingOfflineVerifier,
+      verifierRejectionReason: liabilityEval.verifierRejectionReason,
+      eligibility: liabilityEval.eligibility,
+      eligibilityReason: liabilityEval.eligibilityReason,
       requiresDbMutation: sqlRecord.currentDbLiabilities !== proposedLiabilityValue
     }
   });

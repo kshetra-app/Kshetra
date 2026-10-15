@@ -1,13 +1,13 @@
 {
   "manifestVersion": "1.0.0",
-  "directive": "W021.5-CTO-DIRECTIVE-072",
+  "directive": "W021.5-CTO-DIRECTIVE-073",
   "milestone": "W021.5 / B2.2-E — Candidate Affidavits and Civic Extensions",
   "defect": "DQ-W021.5-B2.2E-001",
   "defectStatus": "STRICTLY OPEN — AWAITING INDEPENDENT CTO ADJUDICATION",
   "governance": "Rule IV-001 — Non-Self-Acceptance",
-  "generatedAt": "2026-10-15T16:02:59.559Z",
+  "generatedAt": "2026-10-15T16:22:37.529Z",
   "gitBaseline": {
-    "baselineCommit": "fa971e62390f18cb1ccd69e81cb322bc2f9b3492",
+    "directive072BaselineCommit": "fc9992fa1aeb328bab7c414eb9d352aa406e23bb",
     "canonicalBranch": "master",
     "remoteRepository": "https://github.com/kshetra-app/Kshetra.git"
   },
@@ -55,7 +55,8 @@
       "ineligibleCount": 3630,
       "requiresReviewCount": 893,
       "verifierRejectionBreakdown": {
-        "MISSING_LEDGER_ENTRY": 849,
+        "MISSING_LEDGER_ENTRY": 848,
+        "UNRESOLVED_SOURCE_CONFLICT": 1,
         "MISSING_REQUIRED_IDENTITY_FIELD": 44
       }
     }
@@ -95,7 +96,7 @@
       }
     },
     "liabilityDimension": {
-      "missingLedgerEntryCount": 849,
+      "missingLedgerEntryCount": 848,
       "missingIdentityFieldCount": 44,
       "totalRequiresReview": 893,
       "sampleIdsByReason": {
@@ -129,9 +130,10 @@
   "schemaFeasibilityAnalysis": {
     "status": "DESIGN_PROPOSAL_ONLY — NON_OPERATIONAL",
     "currentTotalAssetsMechanic": "PostgreSQL GENERATED ALWAYS AS (self_movable + self_immovable + spouse_movable + spouse_immovable) STORED",
-    "currentEvaluatedValueOnStaging": 0,
+    "schemaDerivedExpectedAssetValue": 0,
     "evidenceBasis": "SCHEMA_DERIVED_EXPECTATION",
-    "evidenceBasisDetails": "Chunks 02-05 omitted component columns during SQL ingestion, assigning DEFAULT 0 to each component (0+0+0+0=0)",
+    "evidenceBasisDetails": "Chunks 02-05 omitted component columns during SQL ingestion, assigning DEFAULT 0 to each component (0+0+0+0=0). Offline expectation only; live database was not queried.",
+    "liveDatabaseObservationsObtained": false,
     "limitationOfGeneratedColumn": "Cannot represent source-backed positive totals when component breakdown is unavailable (evaluates to NULL or false 0)",
     "proposedSchemaChange": "ALTER TABLE candidate_affidavits ALTER COLUMN total_assets DROP EXPRESSION IF EXISTS (Method A DDL Normalization)",
     "statesSupportedAfterConversion": [
@@ -160,6 +162,7 @@
     "delhi17DemographicsPreservedNotVerified": true,
     "productionSupabaseUntouched": true,
     "stagingSupabaseUntouched": true,
-    "zeroSqlOrMigrationsAuthoredOrExecuted": true
+    "zeroSqlOrMigrationsAuthoredOrExecuted": true,
+    "liveDatabaseObservationsObtained": false
   }
 }
