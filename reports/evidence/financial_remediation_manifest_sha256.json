@@ -2,12 +2,13 @@
   "milestone": "W021.5 / B2.2-E",
   "defect": "DQ-W021.5-B2.2E-001",
   "defectStatus": "STRICTLY OPEN",
-  "directive": "W021.5-CTO-DIRECTIVE-068",
-  "generatedAt": "2026-10-15T04:21:46.715Z",
+  "directive": "W021.5-CTO-DIRECTIVE-069",
+  "generatedAt": "2026-10-15T14:31:45.239Z",
   "gitBaseline": {
     "startingCommit": "20d5ea575fa1595648fcceee07ddf0d45b4973a3",
     "canonicalBranch": "master",
-    "remoteRepository": "https://github.com/kshetra-app/Kshetra.git"
+    "remoteRepository": "https://github.com/kshetra-app/Kshetra.git",
+    "verifiedCommit": "d766c9f9bb4eae8411fa539ac241134133dd0054"
   },
   "authoritativeAffidavitManifest": {
     "path": "reports/w021_5b2_b2_2e_affidavit_manifest.json",
@@ -117,7 +118,7 @@
       "byteLength": 2864,
       "sha256": "84908a2d067fe0880f6c9b5bcfdcb4338479f6a62ea0356262229ad384724b77",
       "gitBlobSha": "ab4785bbf718c38cdc54051306a8947ba52f2b10",
-      "description": "Synthetic source profile fixtures testing same-line block comments, duplicate keys, and missing identities"
+      "description": "Synthetic source profile fixtures testing same-line block comments, duplicate keys, and missing identities (tracked in git)"
     },
     {
       "path": "apps/mobile/lib/affidavitTypes.ts",
@@ -205,10 +206,10 @@
     },
     {
       "path": "reports/w021_5_application_consumer_compatibility_matrix.json",
-      "byteLength": 13507,
-      "sha256": "c56260d4c35374ab1a71c4f1747238cb4a2c48cc5ececb886d44414326cd35a8",
-      "gitBlobSha": "d5dee3428526e38327af36c35a682ebd8c61c0a5",
-      "description": "Comprehensive audit matrix of all 17 application paths affected by nullable financial disclosures with 4-tier verification breakdown and Directive 068 provenance"
+      "byteLength": 14178,
+      "sha256": "5799f6ef0797f3f94cdec224a91f31a847b4a4544a10b2c9cee6ee540870dc6a",
+      "gitBlobSha": "630480c70d551b37e8080dc13d74011dd8ce578b",
+      "description": "Comprehensive audit matrix of all 17 application paths affected by nullable financial disclosures with 4-tier verification breakdown and Directive 069 reconciled provenance"
     },
     {
       "path": "reports/w021_5_financial_remediation_requirements_matrix.json",
@@ -254,10 +255,17 @@
     },
     {
       "path": "reports/W021.5-CTO-DIRECTIVE-068-IMPLEMENTATION-REPORT.md",
-      "byteLength": 13526,
-      "sha256": "baec84989f50dffca72bb389baa92a32dd637c1a2133814d0423f1426ab0442c",
-      "gitBlobSha": "fd8bd693ee63f89b31d4ae2091f1fe1bea90ebf0",
-      "description": "Comprehensive Directive 068 implementation report covering governance, fail-closed intended-value domain gate, adversarial tests, and commit provenance"
+      "byteLength": 13807,
+      "sha256": "b90c6bf5753556dc8bde8fd971985d6fcb82941852b03bbc5ba3ae5cc5ccd4cd",
+      "gitBlobSha": "3ebdb8bb9cd63e8416b8930ef6da5428634744ec",
+      "description": "Comprehensive Directive 068 implementation report covering governance, fail-closed intended-value domain gate, adversarial tests, and reconciled commit provenance"
+    },
+    {
+      "path": "reports/W021.5-CTO-DIRECTIVE-069-IMPLEMENTATION-REPORT.md",
+      "byteLength": 10912,
+      "sha256": "0d72b34398c2e04268576f564f9cc04b52f2079b78144a6b3d9aeaf9a2a4a22a",
+      "gitBlobSha": "0db868950e3138350b91fdb521856545c972c595",
+      "description": "Comprehensive Directive 069 implementation report covering final commit-provenance reconciliation and evidence-to-source binding"
     }
   ]
 }
