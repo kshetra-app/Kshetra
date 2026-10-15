@@ -2,14 +2,16 @@
   "milestone": "W021.5 / B2.2-E",
   "defect": "DQ-W021.5-B2.2E-001",
   "defectStatus": "STRICTLY OPEN",
-  "directive": "W021.5-CTO-DIRECTIVE-070",
-  "generatedAt": "2026-10-15T14:58:20.877Z",
+  "directive": "W021.5-CTO-DIRECTIVE-071",
+  "generatedAt": "2026-10-15T15:32:18.614Z",
   "gitBaseline": {
     "startingCommit": "20d5ea575fa1595648fcceee07ddf0d45b4973a3",
     "canonicalBranch": "master",
     "remoteRepository": "https://github.com/kshetra-app/Kshetra.git",
     "verifiedCommit": "d766c9f9bb4eae8411fa539ac241134133dd0054",
-    "evidenceUpdateCommit": "ba2a44a1a80796984315ff762ce595184b352945"
+    "evidenceUpdateCommit": "ba2a44a1a80796984315ff762ce595184b352945",
+    "coordinateClosureCommit": "ab829a2e09892d03f94370d9f701ccef6a8dd9c2",
+    "provenanceBaseline": "ab829a2e09892d03f94370d9f701ccef6a8dd9c2"
   },
   "authoritativeAffidavitManifest": {
     "path": "reports/w021_5b2_b2_2e_affidavit_manifest.json",
@@ -228,9 +230,9 @@
     },
     {
       "path": "reports/evidence/financial_remediation_test_stdout.txt",
-      "byteLength": 9079,
-      "sha256": "e6fb6822f780cb070b434fd4449f815f6b135ae71e5078fe6145f45b5bf86a28",
-      "gitBlobSha": "51380ef0b592c248e9260fa0919f1c0fa0826e8a",
+      "byteLength": 18408,
+      "sha256": "70e3d9dfef8fb345b556599aec16baec21584c36f13a49b4816a142597ada041",
+      "gitBlobSha": "dd126ca7ec2839fd14f2b58fa3c2074558f17220",
       "description": "Raw stdout output from 105-test execution battery"
     },
     {
@@ -242,9 +244,9 @@
     },
     {
       "path": "reports/evidence/financial_remediation_test_results.json",
-      "byteLength": 27521,
-      "sha256": "18fc49b632b8afee6bc2ea00784778d1ebb67ac15065f7be7f5e5fcc524d7858",
-      "gitBlobSha": "8c2dc1aa43aa080daccb62fd6af1dcc79ee9b31e",
+      "byteLength": 27519,
+      "sha256": "30c7582441ba90a9fa9b970fbd0170b0ca04bf470fd68d55c728413da5985d59",
+      "gitBlobSha": "4537655b790823df42e3e54b16290246c93574a6",
       "description": "Machine-readable test results for all 105 tests in the Directive 068 battery"
     },
     {
@@ -267,6 +269,41 @@
       "sha256": "5845f5310c8313eeaaedf7dea6b7c7493eb8de57984f357c5a5b9622dd43439b",
       "gitBlobSha": "b7fb3a528751ed64486a3bb2901a39593e9dd935",
       "description": "Comprehensive Directive 069 implementation report covering final commit-provenance reconciliation, evidence-to-source binding, and exact evidenceUpdateCommit closure"
+    },
+    {
+      "path": "reports/w021_5_financial_remediation_adjudication_manifest.json",
+      "description": "Row-level financial remediation adjudication manifest evaluating all 4,523 candidate affidavits across asset and liability dimensions",
+      "byteLength": 11508973,
+      "sha256": "2b2c7c88fe8f49666d6b4b0f322b77a846602a88c3efd414f093f1ab034e8b94",
+      "gitBlobSha": "f72f267b93163130727e41688c4b228e4899d4e3"
+    },
+    {
+      "path": "reports/w021_5_financial_remediation_adjudication_summary.json",
+      "description": "Machine-readable validation summary exposing population counts, eligibility counts, unresolved conflicts, schema feasibility, and test outcomes",
+      "byteLength": 4697,
+      "sha256": "05e96895440271ddc486ac3e9ce5b68db99ff1697b57114a39439feaaf85e70c",
+      "gitBlobSha": "39d6d1da3bc88cc6ae0c19150b964d129613355a"
+    },
+    {
+      "path": "scripts/tests/adjudication_manifest.test.mjs",
+      "description": "12-test automated validation suite verifying population invariants, group partition, zero/missing segregation, and conflict tracking",
+      "byteLength": 10936,
+      "sha256": "6d74c2f532365fc9f06c03bc0412ac45819c71c2b4b34a6520453db6acb6853d",
+      "gitBlobSha": "2fed6ebb47ef82ba78ce6775b1b70d5231f706cc"
+    },
+    {
+      "path": "tests/adjudication_manifest.test.mjs",
+      "description": "Top-level test delegator wrapper for adjudication manifest test discovery",
+      "byteLength": 231,
+      "sha256": "7e2c06f2de7f4da16a0858b22926e8d48a20cd20fc11be010121f61b88d28abf",
+      "gitBlobSha": "d99fdff3755780fc43f915d02ea00c8c888224cd"
+    },
+    {
+      "path": "reports/W021.5-CTO-DIRECTIVE-071-IMPLEMENTATION-REPORT.md",
+      "description": "Comprehensive Directive 071 implementation report covering financial remediation evidence, row-level reconciliation, schema feasibility, and test evidence",
+      "byteLength": 19894,
+      "sha256": "b18101ad7dce9418732cb4260b21f14e596d2541863f7a1e0e00a9d6dc01c5d2",
+      "gitBlobSha": "15ea4a00136e7a13abf6755d01ccd8263164076e"
     }
   ]
 }

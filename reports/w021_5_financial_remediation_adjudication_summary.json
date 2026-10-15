@@ -1,0 +1,119 @@
+{
+  "manifestVersion": "1.0.0",
+  "directive": "W021.5-CTO-DIRECTIVE-071",
+  "milestone": "W021.5 / B2.2-E — Candidate Affidavits and Civic Extensions",
+  "defect": "DQ-W021.5-B2.2E-001",
+  "defectStatus": "STRICTLY OPEN — AWAITING INDEPENDENT CTO ADJUDICATION",
+  "governance": "Rule IV-001 — Non-Self-Acceptance",
+  "generatedAt": "2026-10-15T15:26:59.926Z",
+  "gitBaseline": {
+    "provenanceBaselineCommit": "ab829a2e09892d03f94370d9f701ccef6a8dd9c2",
+    "canonicalBranch": "master",
+    "remoteRepository": "https://github.com/kshetra-app/Kshetra.git"
+  },
+  "populationReconciliation": {
+    "totalRetainedAffidavits": 4523,
+    "fiveGroupCounts": {
+      "group1_positiveAssets_positiveLiabilities": 3334,
+      "group2_positiveAssets_zeroLiabilities": 185,
+      "group3_positiveAssets_missingLiabilities": 821,
+      "group4_missingAssets_missingLiabilities": 72,
+      "group5_zeroAssets_zeroLiabilities": 111,
+      "total": 4523
+    },
+    "dimensionalTotals": {
+      "assetRestorationTotal": 4340,
+      "assetMissingTotal": 72,
+      "assetZeroTotal": 111,
+      "liabilityRestorationTotal": 3334,
+      "liabilityMissingTotal": 893,
+      "liabilityZeroTotal": 296
+    },
+    "subsetIntegrity": {
+      "missingAssetsIsSubsetOfMissingLiabilities": true,
+      "missingAssetsCount": 72,
+      "missingLiabilitiesCount": 893,
+      "uncoveredMissingAssets": 0
+    }
+  },
+  "eligibilityBreakdown": {
+    "assetDimension": {
+      "totalEvaluations": 4523,
+      "eligibleCount": 0,
+      "ineligibleCount": 111,
+      "requiresReviewCount": 4412
+    },
+    "liabilityDimension": {
+      "totalEvaluations": 4523,
+      "eligibleCount": 0,
+      "ineligibleCount": 3630,
+      "requiresReviewCount": 893
+    }
+  },
+  "unresolvedConflicts": {
+    "count": 1,
+    "items": [
+      {
+        "id": "0215b22e-aff-00001430",
+        "field": "ASSET",
+        "reason": "SOURCE_COORDINATE_MISMATCH: Candidate name at line 1156 is 'G. Janardhan Reddy', expected 'B C Janardhan Reddy'"
+      }
+    ]
+  },
+  "verifierFindings": {
+    "totalOnlyStatesLackingComponentLedger": 3403,
+    "mpProfilesLackingAcNoInParser": 543,
+    "nestedFinancialHistoryProfiles": 1120,
+    "sourceCoordinateMismatchCount": 1,
+    "sourceCoordinateMismatchId": "0215b22e-aff-00001430"
+  },
+  "schemaFeasibilityAnalysis": {
+    "currentTotalAssetsMechanic": "PostgreSQL GENERATED ALWAYS AS (self_movable + self_immovable + spouse_movable + spouse_immovable) STORED",
+    "currentEvaluatedValueOnStaging": 0,
+    "reasonEvaluatesToZero": "Chunks 02-05 omitted component columns during SQL ingestion, assigning DEFAULT 0 to each component",
+    "limitationOfGeneratedColumn": "Cannot represent source-backed positive totals when component breakdown is unavailable (evaluates to NULL or false 0)",
+    "proposedSchemaChange": "ALTER TABLE candidate_affidavits ALTER COLUMN total_assets DROP EXPRESSION IF EXISTS (Method A DDL Normalization)",
+    "statesSupportedAfterConversion": [
+      "Disclosed positive total with no authoritative component breakdown (total stored, components NULL)",
+      "Undisclosed total (total NULL, components NULL)",
+      "Genuine zero total (total 0, components 0)",
+      "Positive total with partial breakdown (total stored, disclosed components stored, absent components NULL)",
+      "Positive total with complete breakdown (total stored, all 4 components stored)"
+    ],
+    "zeroVsMissingSegregationPreserved": true,
+    "unverifiedAssumptions": [
+      "Exact production PostgreSQL version unverified due to air-gap (PostgreSQL 12+ required for DROP EXPRESSION)",
+      "Locking behavior and transaction concurrency during DDL on production Supabase",
+      "Presence of dependent views or triggers referencing total_assets"
+    ],
+    "migrationRisks": [
+      "Risk of leaving DEFAULT 0 on components re-introducing false zeros",
+      "Backfill consistency window between DROP EXPRESSION and batch UPDATE",
+      "Rollback complexity if DDL alteration needs reversion"
+    ]
+  },
+  "testOutcomes": {
+    "verifierTestSuite": {
+      "command": "node tests/financial_remediation.test.mjs",
+      "totalTests": 105,
+      "passed": 105,
+      "failed": 0,
+      "exitCode": 0
+    },
+    "adjudicationValidationSuite": {
+      "command": "node tests/adjudication_manifest.test.mjs",
+      "totalTests": 12,
+      "passed": 12,
+      "failed": 0,
+      "exitCode": 0
+    }
+  },
+  "governanceCompliance": {
+    "ruleIV001NonSelfAcceptance": true,
+    "defectRemainsStrictlyOpen": true,
+    "delhi17DemographicsPreservedNotVerified": true,
+    "productionSupabaseUntouched": true,
+    "stagingSupabaseUntouched": true,
+    "zeroSqlOrMigrationsAuthoredOrExecuted": true
+  }
+}
