@@ -102,12 +102,12 @@ function writeTempJson(prefix, data) {
 }
 
 // ============================================================================
-// 67 Executable Test Cases (Directive 066 Battery)
+// 79 Executable Test Cases (Directive 067 Battery)
 // ============================================================================
 
 async function runAll() {
   console.log('================================================================');
-  console.log('KSHETRA W021.5 — DIRECTIVE 066 TEST SUITE EXECUTION');
+  console.log('KSHETRA W021.5 — DIRECTIVE 067 TEST SUITE EXECUTION');
   console.log(`Node Runtime: ${process.version}`);
   console.log(`Working Directory: ${SCRIPT_DIR}`);
   console.log('================================================================\n');
@@ -1524,6 +1524,358 @@ async function runAll() {
   });
 
   // ============================================================================
+  // DIRECTIVE 067 MANDATORY PRODUCTION-PATH TESTS (Tests 68 - 79)
+  // ============================================================================
+
+  // 68. Missing authoritative asset value when intended value is null (Directive 067 §3.1)
+  await runTestCase(68, 'Missing authoritative asset value when intended value is null', async () => {
+    const cwMap = new Map(baseCrosswalk.map(c => [c.manifestId, c]));
+    const tamperedLedger = deepClone(baseLedger);
+    // Candidate Four (0215b22e-aff-00000004) has null assets
+    delete tamperedLedger[3].authoritativeTotalAssets;
+    if (tamperedLedger[3].targetTreatment) delete tamperedLedger[3].targetTreatment.total_assets;
+    delete tamperedLedger[3].sourceTotalAssets;
+    const ledMap = new Map(tamperedLedger.map(l => [l.manifestId, l]));
+
+    const manifestRecord = deepClone(baseManifest.affidavits[3]);
+    const correction = {
+      affidavitId: manifestRecord.id,
+      currentRepresentedValue: 0,
+      intendedValue: null,
+      disclosureClassification: 'UNDISCLOSED_OMITTED',
+      sourceFile: 'scratch/directive_059/fixture_source_profiles.ts',
+      sourceLocation: 'scratch/directive_059/fixture_source_profiles.ts:40',
+      hasSourceConflict: false
+    };
+
+    let caught = false;
+    try {
+      validateCorrectionEligibility(manifestRecord, correction, 'ASSET', cwMap, ledMap, REPO_ROOT);
+    } catch (err) {
+      caught = true;
+      assert(err.message.includes('MISSING_AUTHORITATIVE_FIELD'), `Expected MISSING_AUTHORITATIVE_FIELD, got: ${err.message}`);
+    }
+    assert(caught, 'Missing authoritative asset field for null correction must fail closed');
+    return 'Missing authoritative asset value for null correction rejected with MISSING_AUTHORITATIVE_FIELD';
+  });
+
+  // 69. Missing authoritative liability value when intended value is null (Directive 067 §3.2)
+  await runTestCase(69, 'Missing authoritative liability value when intended value is null', async () => {
+    const cwMap = new Map(baseCrosswalk.map(c => [c.manifestId, c]));
+    const tamperedLedger = deepClone(baseLedger);
+    // Candidate Three (0215b22e-aff-00000003) has null liabilities
+    delete tamperedLedger[2].authoritativeTotalLiabilities;
+    if (tamperedLedger[2].targetTreatment) delete tamperedLedger[2].targetTreatment.total_liabilities;
+    delete tamperedLedger[2].sourceTotalLiabilities;
+    const ledMap = new Map(tamperedLedger.map(l => [l.manifestId, l]));
+
+    const manifestRecord = deepClone(baseManifest.affidavits[2]);
+    const correction = {
+      affidavitId: manifestRecord.id,
+      currentRepresentedValue: 0,
+      intendedValue: null,
+      disclosureClassification: 'UNDISCLOSED_OMITTED',
+      sourceFile: 'scratch/directive_059/fixture_source_profiles.ts',
+      sourceLocation: 'scratch/directive_059/fixture_source_profiles.ts:32',
+      hasSourceConflict: false
+    };
+
+    let caught = false;
+    try {
+      validateCorrectionEligibility(manifestRecord, correction, 'LIABILITY', cwMap, ledMap, REPO_ROOT);
+    } catch (err) {
+      caught = true;
+      assert(err.message.includes('MISSING_AUTHORITATIVE_FIELD'), `Expected MISSING_AUTHORITATIVE_FIELD, got: ${err.message}`);
+    }
+    assert(caught, 'Missing authoritative liability field for null correction must fail closed');
+    return 'Missing authoritative liability value for null correction rejected with MISSING_AUTHORITATIVE_FIELD';
+  });
+
+  // 70. Missing authoritative asset value when intended value is zero (Directive 067 §3.3)
+  await runTestCase(70, 'Missing authoritative asset value when intended value is zero', async () => {
+    const cwMap = new Map(baseCrosswalk.map(c => [c.manifestId, c]));
+    const tamperedLedger = deepClone(baseLedger);
+    // Candidate Five (0215b22e-aff-00000005) has genuine 0 assets
+    delete tamperedLedger[4].authoritativeTotalAssets;
+    if (tamperedLedger[4].targetTreatment) delete tamperedLedger[4].targetTreatment.total_assets;
+    delete tamperedLedger[4].sourceTotalAssets;
+    const ledMap = new Map(tamperedLedger.map(l => [l.manifestId, l]));
+
+    const manifestRecord = deepClone(baseManifest.affidavits[4]);
+    const correction = {
+      affidavitId: manifestRecord.id,
+      currentRepresentedValue: 0,
+      intendedValue: 0,
+      disclosureClassification: 'VERIFIED_GENUINE_ZERO',
+      sourceFile: 'scratch/directive_059/fixture_source_profiles.ts',
+      sourceLocation: 'scratch/directive_059/fixture_source_profiles.ts:47',
+      hasSourceConflict: false
+    };
+
+    let caught = false;
+    try {
+      validateCorrectionEligibility(manifestRecord, correction, 'ASSET', cwMap, ledMap, REPO_ROOT);
+    } catch (err) {
+      caught = true;
+      assert(err.message.includes('MISSING_AUTHORITATIVE_FIELD'), `Expected MISSING_AUTHORITATIVE_FIELD, got: ${err.message}`);
+    }
+    assert(caught, 'Missing authoritative asset field for zero correction must fail closed');
+    return 'Missing authoritative asset value for zero correction rejected with MISSING_AUTHORITATIVE_FIELD';
+  });
+
+  // 71. Missing authoritative liability value when intended value is zero (Directive 067 §3.4)
+  await runTestCase(71, 'Missing authoritative liability value when intended value is zero', async () => {
+    const cwMap = new Map(baseCrosswalk.map(c => [c.manifestId, c]));
+    const tamperedLedger = deepClone(baseLedger);
+    // Candidate Two (0215b22e-aff-00000002) has genuine 0 liabilities
+    delete tamperedLedger[1].authoritativeTotalLiabilities;
+    if (tamperedLedger[1].targetTreatment) delete tamperedLedger[1].targetTreatment.total_liabilities;
+    delete tamperedLedger[1].sourceTotalLiabilities;
+    const ledMap = new Map(tamperedLedger.map(l => [l.manifestId, l]));
+
+    const manifestRecord = deepClone(baseManifest.affidavits[1]);
+    const correction = {
+      affidavitId: manifestRecord.id,
+      currentRepresentedValue: 0,
+      intendedValue: 0,
+      disclosureClassification: 'VERIFIED_GENUINE_ZERO',
+      sourceFile: 'scratch/directive_059/fixture_source_profiles.ts',
+      sourceLocation: 'scratch/directive_059/fixture_source_profiles.ts:24',
+      hasSourceConflict: false
+    };
+
+    let caught = false;
+    try {
+      validateCorrectionEligibility(manifestRecord, correction, 'LIABILITY', cwMap, ledMap, REPO_ROOT);
+    } catch (err) {
+      caught = true;
+      assert(err.message.includes('MISSING_AUTHORITATIVE_FIELD'), `Expected MISSING_AUTHORITATIVE_FIELD, got: ${err.message}`);
+    }
+    assert(caught, 'Missing authoritative liability field for zero correction must fail closed');
+    return 'Missing authoritative liability value for zero correction rejected with MISSING_AUTHORITATIVE_FIELD';
+  });
+
+  // 72. Explicit null authoritative value incorrectly used for zero preservation (Directive 067 §3.5)
+  await runTestCase(72, 'Explicit null authoritative value incorrectly used for zero preservation', async () => {
+    const cwMap = new Map(baseCrosswalk.map(c => [c.manifestId, c]));
+    const tamperedLedger = deepClone(baseLedger);
+    // Set authoritative value to null for Candidate Five (whose source is genuine 0)
+    tamperedLedger[4].authoritativeTotalAssets = null;
+    if (tamperedLedger[4].targetTreatment) tamperedLedger[4].targetTreatment.total_assets = null;
+    const ledMap = new Map(tamperedLedger.map(l => [l.manifestId, l]));
+
+    const manifestRecord = deepClone(baseManifest.affidavits[4]);
+    const correction = {
+      affidavitId: manifestRecord.id,
+      currentRepresentedValue: 0,
+      intendedValue: 0, // Zero preservation attempted with null ledger value
+      disclosureClassification: 'VERIFIED_GENUINE_ZERO',
+      sourceFile: 'scratch/directive_059/fixture_source_profiles.ts',
+      sourceLocation: 'scratch/directive_059/fixture_source_profiles.ts:47',
+      hasSourceConflict: false
+    };
+
+    let caught = false;
+    try {
+      validateCorrectionEligibility(manifestRecord, correction, 'ASSET', cwMap, ledMap, REPO_ROOT);
+    } catch (err) {
+      caught = true;
+      assert(err.message.includes('LEDGER_RESTORED_VALUE_MISMATCH'), `Expected LEDGER_RESTORED_VALUE_MISMATCH, got: ${err.message}`);
+    }
+    assert(caught, 'Null authoritative ledger value used for zero preservation must fail closed');
+    return 'Null authoritative value for zero preservation rejected with LEDGER_RESTORED_VALUE_MISMATCH';
+  });
+
+  // 73. Explicit zero authoritative value incorrectly used for missing disclosure (Directive 067 §3.6)
+  await runTestCase(73, 'Explicit zero authoritative value incorrectly used for missing disclosure', async () => {
+    const cwMap = new Map(baseCrosswalk.map(c => [c.manifestId, c]));
+    const tamperedLedger = deepClone(baseLedger);
+    // Set authoritative value to 0 for Candidate Four (intendedValue is null)
+    tamperedLedger[3].authoritativeTotalAssets = 0;
+    if (tamperedLedger[3].targetTreatment) tamperedLedger[3].targetTreatment.total_assets = 0;
+    const ledMap = new Map(tamperedLedger.map(l => [l.manifestId, l]));
+
+    const manifestRecord = deepClone(baseManifest.affidavits[3]);
+    const correction = {
+      affidavitId: manifestRecord.id,
+      currentRepresentedValue: 0,
+      intendedValue: null, // Missing disclosure attempted with 0 ledger value
+      disclosureClassification: 'UNDISCLOSED_OMITTED',
+      sourceFile: 'scratch/directive_059/fixture_source_profiles.ts',
+      sourceLocation: 'scratch/directive_059/fixture_source_profiles.ts:40',
+      hasSourceConflict: false
+    };
+
+    let caught = false;
+    try {
+      validateCorrectionEligibility(manifestRecord, correction, 'ASSET', cwMap, ledMap, REPO_ROOT);
+    } catch (err) {
+      caught = true;
+      assert(err.message.includes('LEDGER_RESTORED_VALUE_MISMATCH'), `Expected LEDGER_RESTORED_VALUE_MISMATCH, got: ${err.message}`);
+    }
+    assert(caught, 'Zero authoritative ledger value used for null correction must fail closed');
+    return 'Zero authoritative value for missing disclosure rejected with LEDGER_RESTORED_VALUE_MISMATCH';
+  });
+
+  // 74. Correct authoritative field with contradictory disclosure classification (Directive 067 §3.7)
+  await runTestCase(74, 'Correct authoritative field with contradictory disclosure classification', async () => {
+    const cwMap = new Map(baseCrosswalk.map(c => [c.manifestId, c]));
+    const tamperedLedger = deepClone(baseLedger);
+    // Candidate Four: authoritative value is null, but ledger classification is contradicted as POSITIVE
+    tamperedLedger[3].classification = 'POSITIVE';
+    tamperedLedger[3].sourceAssetStatus = 'POSITIVE';
+    const ledMap = new Map(tamperedLedger.map(l => [l.manifestId, l]));
+
+    const manifestRecord = deepClone(baseManifest.affidavits[3]);
+    const correction = {
+      affidavitId: manifestRecord.id,
+      currentRepresentedValue: 0,
+      intendedValue: null,
+      disclosureClassification: 'UNDISCLOSED_OMITTED',
+      sourceFile: 'scratch/directive_059/fixture_source_profiles.ts',
+      sourceLocation: 'scratch/directive_059/fixture_source_profiles.ts:40',
+      hasSourceConflict: false
+    };
+
+    let caught = false;
+    try {
+      validateCorrectionEligibility(manifestRecord, correction, 'ASSET', cwMap, ledMap, REPO_ROOT);
+    } catch (err) {
+      caught = true;
+      assert(err.message.includes('CONTRADICTORY_DISCLOSURE_CLASSIFICATION'), `Expected CONTRADICTORY_DISCLOSURE_CLASSIFICATION, got: ${err.message}`);
+    }
+    assert(caught, 'Contradictory disclosure classification in ledger must fail closed');
+    return 'Contradictory disclosure classification rejected with CONTRADICTORY_DISCLOSURE_CLASSIFICATION';
+  });
+
+  // 75. Genuine source zero with attempted nullification (Directive 067 §3.8)
+  await runTestCase(75, 'Genuine source zero with attempted nullification', async () => {
+    const cwMap = new Map(baseCrosswalk.map(c => [c.manifestId, c]));
+    const ledMap = new Map(baseLedger.map(l => [l.manifestId, l]));
+    const manifestRecord = deepClone(baseManifest.affidavits[4]); // Candidate Five has source 0
+
+    const badCorrection = {
+      affidavitId: manifestRecord.id,
+      currentRepresentedValue: 0,
+      intendedValue: null, // Attempting to nullify genuine zero
+      disclosureClassification: 'UNDISCLOSED_OMITTED',
+      sourceFile: 'scratch/directive_059/fixture_source_profiles.ts',
+      sourceLocation: 'scratch/directive_059/fixture_source_profiles.ts:47',
+      hasSourceConflict: false
+    };
+
+    let caught = false;
+    try {
+      validateCorrectionEligibility(manifestRecord, badCorrection, 'ASSET', cwMap, ledMap, REPO_ROOT);
+    } catch (err) {
+      caught = true;
+      assert(err.message.includes('GENUINE_ZERO_COERCION_FORBIDDEN'), `Expected GENUINE_ZERO_COERCION_FORBIDDEN, got: ${err.message}`);
+    }
+    assert(caught, 'Attempting to nullify genuine zero must throw GENUINE_ZERO_COERCION_FORBIDDEN');
+    return 'Genuine source zero attempted nullification rejected with GENUINE_ZERO_COERCION_FORBIDDEN';
+  });
+
+  // 76. Missing source field with fabricated zero (Directive 067 §3.9)
+  await runTestCase(76, 'Missing source field with fabricated zero', async () => {
+    const cwMap = new Map(baseCrosswalk.map(c => [c.manifestId, c]));
+    const tamperedLedger = deepClone(baseLedger);
+    tamperedLedger[3].authoritativeTotalAssets = 0;
+    if (tamperedLedger[3].targetTreatment) tamperedLedger[3].targetTreatment.total_assets = 0;
+    const ledMap = new Map(tamperedLedger.map(l => [l.manifestId, l]));
+
+    const manifestRecord = deepClone(baseManifest.affidavits[3]); // Candidate Four has missing/omitted assets in source
+    const badCorrection = {
+      affidavitId: manifestRecord.id,
+      currentRepresentedValue: 0,
+      intendedValue: 0, // Fabricating zero when source field is omitted
+      disclosureClassification: 'VERIFIED_GENUINE_ZERO',
+      sourceFile: 'scratch/directive_059/fixture_source_profiles.ts',
+      sourceLocation: 'scratch/directive_059/fixture_source_profiles.ts:40',
+      hasSourceConflict: false
+    };
+
+    let caught = false;
+    try {
+      validateCorrectionEligibility(manifestRecord, badCorrection, 'ASSET', cwMap, ledMap, REPO_ROOT);
+    } catch (err) {
+      caught = true;
+      assert(err.message.includes('ZERO_FABRICATION_FORBIDDEN'), `Expected ZERO_FABRICATION_FORBIDDEN, got: ${err.message}`);
+    }
+    assert(caught, 'Attempting to fabricate zero for omitted source field must throw ZERO_FABRICATION_FORBIDDEN');
+    return 'Missing source field fabricated zero rejected with ZERO_FABRICATION_FORBIDDEN';
+  });
+
+  // 77. Positive source total with attempted nullification (Directive 067 §3.10)
+  await runTestCase(77, 'Positive source total with attempted nullification', async () => {
+    const cwMap = new Map(baseCrosswalk.map(c => [c.manifestId, c]));
+    const ledMap = new Map(baseLedger.map(l => [l.manifestId, l]));
+    const tamperedManifest = deepClone(baseManifest.affidavits[0]); // Candidate One (source has 1,000,000)
+    tamperedManifest.total_assets = 0; // Baseline set to 0 to bypass pre-condition 4
+
+    const badCorrection = {
+      affidavitId: tamperedManifest.id,
+      currentRepresentedValue: 0,
+      intendedValue: null, // Attempting to nullify positive total
+      disclosureClassification: 'UNDISCLOSED_OMITTED',
+      sourceFile: 'scratch/directive_059/fixture_source_profiles.ts',
+      sourceLocation: 'scratch/directive_059/fixture_source_profiles.ts:14',
+      hasSourceConflict: false
+    };
+
+    let caught = false;
+    try {
+      validateCorrectionEligibility(tamperedManifest, badCorrection, 'ASSET', cwMap, ledMap, REPO_ROOT);
+    } catch (err) {
+      caught = true;
+      assert(err.message.includes('POSITIVE_TOTAL_MUTATION_FORBIDDEN'), `Expected POSITIVE_TOTAL_MUTATION_FORBIDDEN, got: ${err.message}`);
+    }
+    assert(caught, 'Attempting to nullify positive source total must throw POSITIVE_TOTAL_MUTATION_FORBIDDEN');
+    return 'Positive source total attempted nullification rejected with POSITIVE_TOTAL_MUTATION_FORBIDDEN';
+  });
+
+  // 78. Valid source-backed zero-preservation control case (Directive 067 §3.11)
+  await runTestCase(78, 'Valid source-backed zero-preservation control case', async () => {
+    const cwMap = new Map(baseCrosswalk.map(c => [c.manifestId, c]));
+    const ledMap = new Map(baseLedger.map(l => [l.manifestId, l]));
+    const manifestRecord = deepClone(baseManifest.affidavits[4]); // Candidate Five: genuine 0 in manifest, source, ledger
+
+    const validZeroCorrection = {
+      affidavitId: manifestRecord.id,
+      currentRepresentedValue: 0,
+      intendedValue: 0,
+      disclosureClassification: 'VERIFIED_GENUINE_ZERO',
+      sourceFile: 'scratch/directive_059/fixture_source_profiles.ts',
+      sourceLocation: 'scratch/directive_059/fixture_source_profiles.ts:47',
+      hasSourceConflict: false
+    };
+
+    const eligible = validateCorrectionEligibility(manifestRecord, validZeroCorrection, 'ASSET', cwMap, ledMap, REPO_ROOT);
+    assertEqual(eligible, true, 'Valid source-backed zero preservation must succeed');
+    return 'Valid source-backed zero preservation control case passed with true';
+  });
+
+  // 79. Valid source-backed missing-disclosure control case with explicit null authoritative value and qualifying evidence (Directive 067 §3.12)
+  await runTestCase(79, 'Valid source-backed missing-disclosure control case with explicit null authoritative value', async () => {
+    const cwMap = new Map(baseCrosswalk.map(c => [c.manifestId, c]));
+    const ledMap = new Map(baseLedger.map(l => [l.manifestId, l]));
+    const manifestRecord = deepClone(baseManifest.affidavits[3]); // Candidate Four: null in source, null in ledger
+
+    const validMissingCorrection = {
+      affidavitId: manifestRecord.id,
+      currentRepresentedValue: 0,
+      intendedValue: null,
+      disclosureClassification: 'UNDISCLOSED_OMITTED',
+      sourceFile: 'scratch/directive_059/fixture_source_profiles.ts',
+      sourceLocation: 'scratch/directive_059/fixture_source_profiles.ts:40',
+      hasSourceConflict: false
+    };
+
+    const eligible = validateCorrectionEligibility(manifestRecord, validMissingCorrection, 'ASSET', cwMap, ledMap, REPO_ROOT);
+    assertEqual(eligible, true, 'Valid source-backed missing disclosure must succeed');
+    return 'Valid source-backed missing disclosure control case passed with true';
+  });
+
+  // ============================================================================
   // Summary & Machine-Readable Output
   // ============================================================================
 
@@ -1537,7 +1889,7 @@ async function runAll() {
   }
 
   const resultsPayload = {
-    testSuite: 'Directive 066 Test Battery',
+    testSuite: 'Directive 067 Test Battery',
     milestone: 'W021.5 / B2.2-E',
     defect: 'DQ-W021.5-B2.2E-001',
     executionDate: new Date().toISOString(),

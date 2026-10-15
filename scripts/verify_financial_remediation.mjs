@@ -1012,17 +1012,41 @@ export function validateCorrectionEligibility(manifestRecord, correction, fieldT
 
   // Retrieve Ledger Authoritative Value
   let ledgerAuthoritativeVal;
+  let hasAuthoritativeField = false;
+
   if (fieldType === 'ASSET') {
-    ledgerAuthoritativeVal = ledgerEntry.authoritativeTotalAssets !== undefined
-      ? ledgerEntry.authoritativeTotalAssets
-      : (ledgerEntry.targetTreatment ? ledgerEntry.targetTreatment.total_assets : ledgerEntry.sourceTotalAssets);
+    if (ledgerEntry.authoritativeTotalAssets !== undefined) {
+      ledgerAuthoritativeVal = ledgerEntry.authoritativeTotalAssets;
+      hasAuthoritativeField = true;
+    } else if (ledgerEntry.targetTreatment && ledgerEntry.targetTreatment.total_assets !== undefined) {
+      ledgerAuthoritativeVal = ledgerEntry.targetTreatment.total_assets;
+      hasAuthoritativeField = true;
+    } else if (ledgerEntry.sourceTotalAssets !== undefined) {
+      ledgerAuthoritativeVal = ledgerEntry.sourceTotalAssets;
+      hasAuthoritativeField = true;
+    }
   } else {
-    ledgerAuthoritativeVal = ledgerEntry.authoritativeTotalLiabilities !== undefined
-      ? ledgerEntry.authoritativeTotalLiabilities
-      : (ledgerEntry.targetTreatment ? ledgerEntry.targetTreatment.total_liabilities : ledgerEntry.sourceTotalLiabilities);
+    if (ledgerEntry.authoritativeTotalLiabilities !== undefined) {
+      ledgerAuthoritativeVal = ledgerEntry.authoritativeTotalLiabilities;
+      hasAuthoritativeField = true;
+    } else if (ledgerEntry.targetTreatment && ledgerEntry.targetTreatment.total_liabilities !== undefined) {
+      ledgerAuthoritativeVal = ledgerEntry.targetTreatment.total_liabilities;
+      hasAuthoritativeField = true;
+    } else if (ledgerEntry.sourceTotalLiabilities !== undefined) {
+      ledgerAuthoritativeVal = ledgerEntry.sourceTotalLiabilities;
+      hasAuthoritativeField = true;
+    }
   }
 
-  // Path A: Positive restoration verification (Directive 066 §2.1 & §2.2)
+  // Pre-condition 9 (Directive 067 §2): Targeted authoritative field MUST exist explicitly
+  if (!hasAuthoritativeField || ledgerAuthoritativeVal === undefined) {
+    throw new Error(`MISSING_AUTHORITATIVE_FIELD: Ledger entry for ${manifestRecord.id} lacks authoritative ${fieldType.toLowerCase()} field`);
+  }
+
+  const validMissingClassifications = ['UNKNOWN_VALUE_MISSING_DISCLOSURE', 'UNDISCLOSED_OMITTED', 'AFFIDAVIT_MISSING_DISCLOSURE'];
+  const ledgerClassification = ledgerEntry.classification || (fieldType === 'ASSET' ? ledgerEntry.sourceAssetStatus : ledgerEntry.sourceLiabilityStatus);
+
+  // Path A: Positive restoration verification (Directive 066 & 067 §2.1 & §2.2)
   if (correction.intendedValue !== null && correction.intendedValue > 0) {
     if (sourceVal === undefined || sourceVal === null) {
       throw new Error(`SOURCE_VALUE_UNAVAILABLE: Intended positive value ${correction.intendedValue} has no positive source disclosure`);
@@ -1030,8 +1054,8 @@ export function validateCorrectionEligibility(manifestRecord, correction, fieldT
     if (sourceVal !== correction.intendedValue) {
       throw new Error(`SOURCE_RESTORED_VALUE_MISMATCH: Source value ${sourceVal} does not match intended restored value ${correction.intendedValue}`);
     }
-    if (ledgerAuthoritativeVal === undefined || ledgerAuthoritativeVal === null) {
-      throw new Error(`MISSING_AUTHORITATIVE_FIELD: Ledger entry for ${manifestRecord.id} lacks authoritative ${fieldType.toLowerCase()} value`);
+    if (ledgerAuthoritativeVal === null) {
+      throw new Error(`LEDGER_RESTORED_VALUE_MISMATCH: Ledger authoritative value is null; cannot use null authoritative value for positive restoration`);
     }
     if (!Number.isSafeInteger(ledgerAuthoritativeVal) || ledgerAuthoritativeVal < 0) {
       throw new Error(`MALFORMED_LEDGER_VALUE: Ledger authoritative value ${ledgerAuthoritativeVal} is malformed or invalid`);
@@ -1039,9 +1063,15 @@ export function validateCorrectionEligibility(manifestRecord, correction, fieldT
     if (ledgerAuthoritativeVal !== correction.intendedValue) {
       throw new Error(`LEDGER_RESTORED_VALUE_MISMATCH: Ledger authoritative value ${ledgerAuthoritativeVal} does not match intended value ${correction.intendedValue}`);
     }
+    if (validMissingClassifications.includes(correction.disclosureClassification) || validMissingClassifications.includes(ledgerClassification)) {
+      throw new Error(`CONTRADICTORY_DISCLOSURE_CLASSIFICATION: Positive restoration cannot have missing-disclosure classification (correction: '${correction.disclosureClassification}', ledger: '${ledgerClassification}')`);
+    }
+    if (correction.disclosureClassification === 'VERIFIED_GENUINE_ZERO' || ledgerClassification === 'VERIFIED_GENUINE_ZERO') {
+      throw new Error(`CONTRADICTORY_DISCLOSURE_CLASSIFICATION: Positive restoration cannot have zero disclosure classification`);
+    }
   }
 
-  // Path B: Missing disclosure verification (intendedValue === null) (Directive 066 §2.1 & §2.2)
+  // Path B: Missing disclosure verification (intendedValue === null) (Directive 067 §2.1)
   if (correction.intendedValue === null) {
     if (sourceVal !== undefined && sourceVal !== null && sourceVal > 0) {
       throw new Error(`POSITIVE_TOTAL_MUTATION_FORBIDDEN: Source has positive ${fieldType.toLowerCase()} ${sourceVal}; cannot nullify`);
@@ -1049,29 +1079,37 @@ export function validateCorrectionEligibility(manifestRecord, correction, fieldT
     if (sourceVal === 0) {
       throw new Error(`GENUINE_ZERO_COERCION_FORBIDDEN: Source explicitly has 0 ${fieldType.toLowerCase()}; cannot coerce genuine zero to null`);
     }
-    // Designated affirmative evidence verification:
-    // Missing disclosure cannot be inferred solely because property is absent in seed.
-    // Require designated affirmative classification on the correction AND matching ledger classification.
-    const validMissingClassifications = ['UNKNOWN_VALUE_MISSING_DISCLOSURE', 'UNDISCLOSED_OMITTED', 'AFFIDAVIT_MISSING_DISCLOSURE'];
+    // Directive 067 §2.1: Targeted authoritative field must be exactly null, not undefined or numeric
+    if (ledgerAuthoritativeVal !== null) {
+      throw new Error(`LEDGER_RESTORED_VALUE_MISMATCH: Ledger authoritative value ${ledgerAuthoritativeVal} conflicts with intended nullification; expected exact null`);
+    }
+    // Designated affirmative evidence verification
     if (!correction.disclosureClassification || !validMissingClassifications.includes(correction.disclosureClassification)) {
       throw new Error(`MISSING_AFFIRMATIVE_DISCLOSURE_EVIDENCE: Correction for ${manifestRecord.id} lacks valid affirmative disclosureClassification ('${correction.disclosureClassification}')`);
     }
-    const ledgerClassification = ledgerEntry.classification || (fieldType === 'ASSET' ? ledgerEntry.sourceAssetStatus : ledgerEntry.sourceLiabilityStatus);
     if (!ledgerClassification || !validMissingClassifications.includes(ledgerClassification)) {
+      if (ledgerClassification === 'POSITIVE' || ledgerClassification === 'VERIFIED_GENUINE_ZERO') {
+        throw new Error(`CONTRADICTORY_DISCLOSURE_CLASSIFICATION: Missing disclosure correction has contradictory ledger classification '${ledgerClassification}'`);
+      }
       throw new Error(`MISSING_AFFIRMATIVE_DISCLOSURE_EVIDENCE: Ledger for ${manifestRecord.id} lacks affirmative missing-disclosure classification ('${ledgerClassification}')`);
-    }
-    if (ledgerAuthoritativeVal !== null && ledgerAuthoritativeVal !== undefined) {
-      throw new Error(`LEDGER_RESTORED_VALUE_MISMATCH: Ledger authoritative value ${ledgerAuthoritativeVal} conflicts with intended nullification`);
     }
   }
 
-  // Path C: Zero restoration / preservation (intendedValue === 0)
+  // Path C: Zero restoration / preservation (intendedValue === 0) (Directive 067 §2.2)
   if (correction.intendedValue === 0) {
     if (sourceVal !== 0) {
       throw new Error(`ZERO_FABRICATION_FORBIDDEN: Cannot set field to 0 without affirmative source zero disclosure; source has ${sourceVal}`);
     }
-    if (ledgerAuthoritativeVal !== 0 && ledgerAuthoritativeVal !== undefined) {
+    // Directive 067 §2.2: Targeted authoritative field must exist explicitly and equal 0
+    if (ledgerAuthoritativeVal === null) {
+      throw new Error(`LEDGER_RESTORED_VALUE_MISMATCH: Ledger authoritative value is null; cannot use null authoritative value for zero preservation`);
+    }
+    if (ledgerAuthoritativeVal !== 0) {
       throw new Error(`LEDGER_RESTORED_VALUE_MISMATCH: Ledger authoritative value ${ledgerAuthoritativeVal} conflicts with intended zero`);
+    }
+    // Classification consistency
+    if (validMissingClassifications.includes(correction.disclosureClassification) || validMissingClassifications.includes(ledgerClassification)) {
+      throw new Error(`CONTRADICTORY_DISCLOSURE_CLASSIFICATION: Zero preservation cannot have missing-disclosure classification (correction: '${correction.disclosureClassification}', ledger: '${ledgerClassification}')`);
     }
   }
 

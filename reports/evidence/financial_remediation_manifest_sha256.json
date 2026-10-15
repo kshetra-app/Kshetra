@@ -2,10 +2,10 @@
   "milestone": "W021.5 / B2.2-E",
   "defect": "DQ-W021.5-B2.2E-001",
   "defectStatus": "STRICTLY OPEN",
-  "directive": "W021.5-CTO-DIRECTIVE-066",
-  "generatedAt": "2026-10-15T03:08:33.527Z",
+  "directive": "W021.5-CTO-DIRECTIVE-067",
+  "generatedAt": "2026-10-15T03:34:44.038Z",
   "gitBaseline": {
-    "startingCommit": "6e23ee162b6a9e337d2336cdd19777b995b447a2",
+    "startingCommit": "e7946803a317b9e33964c5d4be9e8d4ed47f10e9",
     "canonicalBranch": "master",
     "remoteRepository": "https://github.com/kshetra-app/Kshetra.git"
   },
@@ -65,17 +65,17 @@
   "deliverables": [
     {
       "path": "scripts/verify_financial_remediation.mjs",
-      "byteLength": 57287,
-      "sha256": "acfb888e23f047df9b5e8d4befb5e9fbef4f9b84fa9873fc6171e545765415b6",
-      "gitBlobSha": "1c38af5dad22b7aad9ae5c2afe92ee828544e3fe",
-      "description": "Production offline financial remediation verifier with lexical AST parser, path containment, 10-point eligibility gate, and fail-closed ledger-source binding"
+      "byteLength": 59713,
+      "sha256": "0554cc16241daad3864f0e1a88dd36f3ab02f6259bcf7af179ff727f4ce24ba4",
+      "gitBlobSha": "1257febd211a6dbd909124a13ead404f96956cae",
+      "description": "Production offline financial remediation verifier with authoritative value loophole closed, 10-point row-level gate, and lexical AST parser"
     },
     {
       "path": "scripts/tests/financial_remediation.test.mjs",
-      "byteLength": 74000,
-      "sha256": "c4ec01c6eed82716892fc5104ea8207d13219629cc787eadd186e67690c10a4c",
-      "gitBlobSha": "93fbd270cc26003a54e9a94799b4b5f123445ce3",
-      "description": "67-test synthetic battery proving test isolation, tamper rejection, same-line comment traps, duplicate keys, and mobile consumer nullability"
+      "byteLength": 92330,
+      "sha256": "150b4346d6382d5a482c0ad9e0ff9a44c4b83b9e938f6206b1b520de9c5b88f1",
+      "gitBlobSha": "fc9d5910ac2608666ce2c39d1ef24c3432916a0d",
+      "description": "79-test synthetic battery including 12 production-path negative/control tests for authoritative null and zero preservation"
     },
     {
       "path": "tests/financial_remediation.test.mjs",
@@ -142,10 +142,17 @@
     },
     {
       "path": "apps/mobile/components/legislator/FinancialBreakdownCard.tsx",
-      "byteLength": 18131,
-      "sha256": "f9cb9ad94988ecd737363d03b3555f2bc4a05e952b48a5111479c81a05565f50",
-      "gitBlobSha": "4f968151bbed70a643da2f4e051e37b8e6e7d5e5",
-      "description": "Legislator financial breakdown card enforcing 4-component completeness rule and dashed baseline for undisclosed wealth"
+      "byteLength": 21355,
+      "sha256": "396ff641e078f22fb9287a5c63f9609c587bafb6750569c583ea3f2996b5ff1f",
+      "gitBlobSha": "fd2a9e4c59e1885fd20b54617969f95187f7fe96",
+      "description": "Legislator financial breakdown card showing every disclosed component when totalAssets is null, labeling missing items Not Disclosed, and suppressing stacked bar on partial disclosures"
+    },
+    {
+      "path": "apps/mobile/__tests__/FinancialBreakdownCard.test.tsx",
+      "byteLength": 11284,
+      "sha256": "94cb067b984f92935a5c358f290d60b7e7cf581f34041ce6255771ba53ec7896",
+      "gitBlobSha": "8340441a540e0c83fbac38d06385e62f70623fa2",
+      "description": "Real consumer behavioral tests using React Native Testing Library covering all 8 mandatory scenarios (15 tests)"
     },
     {
       "path": "apps/mobile/components/WealthTimeline.tsx",
@@ -184,66 +191,66 @@
     },
     {
       "path": "reports/w021_5_demographic_seed_reconciliation_ledger.json",
-      "byteLength": 17270,
-      "sha256": "e495da2dd443b81c27819d94d2246eb693291df2a7a9d0f486d9ce7b499c4ea7",
-      "gitBlobSha": "6028c9b3ba26cc8bef8b9cd5b4040f183b729598",
-      "description": "Machine-readable demographic seed reconciliation ledger detailing all 19 net-discrepant records"
+      "byteLength": 21385,
+      "sha256": "60854ea992dc38d295a44917ebf580a2e470aa1f220b8c333149a5c20ead0454",
+      "gitBlobSha": "d398f9826c3a7807ffa3680b988ac6ac9dd6cba5",
+      "description": "Machine-readable demographic seed reconciliation ledger detailing all 19 net-discrepant records (17 NOT_VERIFIED preserved)"
     },
     {
       "path": "reports/w021_5_demographic_seed_reconciliation_ledger.md",
-      "byteLength": 7103,
-      "sha256": "5e768423a09ea8e8b09e26e91289f2f30b74212913bf0ffb651ae3e835ad4833",
-      "gitBlobSha": "34367c218962a6c50c04837333e65f8f564c3ad6",
-      "description": "Markdown companion report documenting demographic lineage, statutory baselines, and MCD variance"
+      "byteLength": 7708,
+      "sha256": "30da45de2c0b5b50167afde3a66f587a41ccbd88e57707a1a34a2be94cd44e2d",
+      "gitBlobSha": "a9f6cfbc52c2f852c1d128506c61a2a67726deb2",
+      "description": "Markdown companion report documenting demographic lineage, statutory baselines, MCD variance, and missing evidence required"
     },
     {
       "path": "reports/w021_5_application_consumer_compatibility_matrix.json",
-      "byteLength": 11273,
-      "sha256": "a1c7990025595561741fefe532e53a856b500fef696b72416226bf93f518e751",
-      "gitBlobSha": "1952f2898f1e342731b610cd9fed7a3b30878e8c",
-      "description": "Comprehensive audit matrix of all 17 application paths affected by nullable financial disclosures"
+      "byteLength": 12759,
+      "sha256": "9aa8b2793ea1becafcd550ab00daa2e9ebdf7a5f80b9f0041921a6613734944a",
+      "gitBlobSha": "8fbe3c09e4f2c35d912c67e7af9263b6fa4174a3",
+      "description": "Comprehensive audit matrix of all 17 application paths affected by nullable financial disclosures with 4-tier verification breakdown"
     },
     {
       "path": "reports/w021_5_financial_remediation_requirements_matrix.json",
-      "byteLength": 13285,
-      "sha256": "d0bbdccb82d2b05c4ed42fd1fd62711431ecb7916310970dd0f5e2527aae884a",
-      "gitBlobSha": "8e8872a07872fc6e6fa3e1da6122d2c8ad05ab86",
-      "description": "Requirements traceability matrix mapping all Directive 066 sections to implementation and tests"
+      "byteLength": 14285,
+      "sha256": "1e800184e912af1836f0b6fc18537c487370f0af361bb2483f1ccc98f12b17a0",
+      "gitBlobSha": "62eb228f4a49aa2a55c23578fdf27f64ad86afe5",
+      "description": "Requirements traceability matrix mapping all Directive 067 sections to implementation and tests"
     },
     {
       "path": "reports/w021_5_financial_remediation_test_isolation_matrix.json",
-      "byteLength": 34109,
-      "sha256": "636583467888817196a09e9347dfa165252f8c77155040f3ee1545f695aba910",
-      "gitBlobSha": "3122a09a0a733c34674639bd067a1efab9d71408",
-      "description": "67-test isolation matrix documenting manipulated inputs, isolation mechanisms, and observed outcomes"
+      "byteLength": 40958,
+      "sha256": "367f36c1f1000315bd64172111e012ad5baa432bc0bd0d05142121ffa8cc307c",
+      "gitBlobSha": "17c5e838173e2826112c1e22fdd778935548a44b",
+      "description": "79-test isolation matrix documenting manipulated inputs, isolation mechanisms, and observed outcomes"
     },
     {
       "path": "reports/evidence/financial_remediation_test_stdout.txt",
-      "byteLength": 5890,
-      "sha256": "789c97b7cb228e6f25617938e98c2c116edcf6965cb320b6c90d8c4f36ecffa0",
-      "gitBlobSha": "c8180e8fbc302a108fea77ea8c0e13e3b45b1d3b",
-      "description": "Raw stdout output from 67-test execution battery"
+      "byteLength": 6964,
+      "sha256": "20d87042385c41ba72afc09df79cc76798fa39dda7c2a4bf5a5386c943fa2333",
+      "gitBlobSha": "8e4eb54a70b1d6c7c1e1aa48feed4454deeb7536",
+      "description": "Raw stdout output from 79-test execution battery"
     },
     {
       "path": "reports/evidence/financial_remediation_test_stderr.txt",
       "byteLength": 0,
       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "gitBlobSha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
-      "description": "Raw stderr output from 67-test execution battery (empty indicating 0 runtime errors)"
+      "description": "Raw stderr output from 79-test execution battery (empty indicating 0 runtime errors)"
     },
     {
       "path": "reports/evidence/financial_remediation_test_results.json",
-      "byteLength": 17200,
-      "sha256": "d4cc7d44d99215697c0f79b40fdfe7b92fac31bf2a5aaa3b7bcd62fb4c5349cd",
-      "gitBlobSha": "80425f2a5d80ec767c865d633d7da907001a1289",
-      "description": "Machine-readable test results for all 67 tests in the Directive 066 battery"
+      "byteLength": 20710,
+      "sha256": "7e1246e63bf24e749f11d60ac2b6134ccdc67e6768f8237c1cb710bad6b37d13",
+      "gitBlobSha": "87ae5b5987bd633f1dcd2c9f389672998f06e531",
+      "description": "Machine-readable test results for all 79 tests in the Directive 067 battery"
     },
     {
-      "path": "reports/W021.5-CTO-DIRECTIVE-066-IMPLEMENTATION-REPORT.md",
-      "byteLength": 25413,
-      "sha256": "226d8ab719c1b93ca18dba6d4343c5b10b4f98426f1aa2accb961b6f523bee86",
-      "gitBlobSha": "54042647e7af2a8714e27943b9ec30f4264fee87",
-      "description": "Comprehensive Directive 066 implementation report covering governance, verifier hardening, mobile audit, demographic reconciliation, and open defect status"
+      "path": "reports/W021.5-CTO-DIRECTIVE-067-IMPLEMENTATION-REPORT.md",
+      "byteLength": 15356,
+      "sha256": "28e9c680bd4b8953faf2a3ec5dc5273c3662a197dbb0e512b7405b213839da9f",
+      "gitBlobSha": "731f0f77a8fda112a517d1aaa4388d1f17c51cc1",
+      "description": "Comprehensive Directive 067 implementation report covering governance, authoritative loophole closure, real behavioral tests, demographic status, and open defect status"
     }
   ]
 }

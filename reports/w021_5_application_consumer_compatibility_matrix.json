@@ -1,18 +1,55 @@
 {
   "matrixTitle": "Kshetra Mobile Application Financial Consumer Compatibility Matrix",
-  "directive": "KSHETRA — W021.5 CTO DIRECTIVE 066 Section 5",
+  "directive": "KSHETRA — W021.5 CTO DIRECTIVE 067 Section 6",
   "milestone": "W021.5 / B2.2-E",
   "defect": "DQ-W021.5-B2.2E-001",
-  "auditDate": "2026-10-15T08:35:00.000Z",
+  "auditDate": "2026-10-15T03:31:25.911Z",
   "auditedCommit": "6e23ee162b6a9e337d2336cdd19777b995b447a2",
   "summary": {
     "totalAuditedFiles": 17,
     "criticalCrashVulnerabilitiesPreFix": 4,
     "highRiskContractDriftPreFix": 4,
     "mediumRiskDistortionPreFix": 3,
-    "remediationStatus": "ALL_VULNERABILITIES_RESOLVED",
-    "typeScriptCompilerErrors": 0,
-    "unitTestPassRate": "100% (34/34 Jest tests passing, 67/67 Verifier tests passing)"
+    "remediationStatus": "REMEDIATION_IMPLEMENTED_AWAITING_INDEPENDENT_CTO_ADJUDICATION",
+    "verificationBreakdown": {
+      "staticTypeChecks": {
+        "command": "npx tsc --noEmit -p apps/mobile/tsconfig.json",
+        "compilerErrors": 0,
+        "exitCode": 0,
+        "status": "PASS"
+      },
+      "executableVerifierTests": {
+        "command": "node scripts/tests/financial_remediation.test.mjs",
+        "totalTests": 79,
+        "passedCount": 79,
+        "failedCount": 0,
+        "exitCode": 0,
+        "status": "PASS"
+      },
+      "mobileUnitTests": {
+        "command": "npm test --prefix apps/mobile -- sprint14-16.test.ts",
+        "totalTests": 34,
+        "passedCount": 34,
+        "failedCount": 0,
+        "exitCode": 0,
+        "status": "PASS"
+      },
+      "actualComponentRenderingTests": {
+        "command": "npm test --prefix apps/mobile -- FinancialBreakdownCard.test.tsx",
+        "totalTests": 15,
+        "passedCount": 15,
+        "failedCount": 0,
+        "exitCode": 0,
+        "status": "PASS"
+      }
+    },
+    "demographicEvidenceStatus": {
+      "totalNetDiscrepantRecords": 19,
+      "verifiedRecords": 2,
+      "notVerifiedRecords": 17,
+      "resolutionStatus": "DOCUMENTED_NOT_FULLY_RESOLVED",
+      "note": "17 Delhi MCD entries remain NOT_VERIFIED under fail-closed standard pending authoritative full-batch replacement seed ledger."
+    }
   },
   "consumers": [
     {
@@ -56,8 +93,8 @@
       "component": "FinancialBreakdownCard (Legislator Profile)",
       "remediatedType": "number | null",
       "preFixBehavior": "Used '|| 0' fallbacks coercing missing disclosures to zero wealth; rendered stacked breakdown bar even when some components were undisclosed.",
-      "implementedFix": "Removed all '|| 0' fallbacks. Added explicit 'Assets not disclosed' banner when totalAssets === null. Enforced complete breakdown rule: all 4 components (movable, immovable, spouse, dependents) must be non-null to render stacked bar; otherwise renders disclosed individual items with explicit unitemized notice. Timeline renders dashed 2px baseline for undisclosed years.",
-      "verificationMethod": "TypeScript compiler check (npx tsc --noEmit) & Node test suite (Test 62)",
+      "implementedFix": "Shows every individually disclosed asset component even when totalAssets is null. Clearly labels missing components as 'Not Disclosed' without zero inference. Complete stacked breakdown is only rendered when all 4 required components are disclosed and totalAssets > 0. Renders individual disclosed items when partially disclosed. Extracted resolveBreakdownState pure helper.",
+      "verificationMethod": "React Native Testing Library behavioral tests (FinancialBreakdownCard.test.tsx: 15 tests across 8 mandatory scenarios) & Node verifier suite (Test 62)",
       "status": "FIXED_AND_VERIFIED"
     },
     {
@@ -168,5 +205,8 @@
       "verificationMethod": "TypeScript compiler check (npx tsc --noEmit)",
       "status": "FIXED_AND_VERIFIED"
     }
-  ]
+  ],
+  "defectStatus": "STRICTLY OPEN (under Rule IV-001 Non-Self-Acceptance)",
+  "baselineCommit": "e7946803a317b9e33964c5d4be9e8d4ed47f10e9",
+  "verifiedCommit": "PENDING_DIRECTIVE_067_COMMIT"
 }

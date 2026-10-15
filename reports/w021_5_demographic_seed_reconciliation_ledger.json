@@ -1,9 +1,9 @@
 {
   "ledgerTitle": "Demographic Population Seed Reconciliation Ledger (4,142 → 4,123)",
-  "directive": "KSHETRA — W021.5 CTO DIRECTIVE 066 Section 7",
+  "directive": "KSHETRA — W021.5 CTO DIRECTIVE 067 Section 5",
   "milestone": "W021.5 / B2.2-E",
   "defect": "DQ-W021.5-B2.2E-001",
-  "generatedDate": "2026-10-15T02:45:00.000Z",
+  "generatedDate": "2026-10-15T03:31:07.426Z",
   "summary": {
     "historicalDemographicsInventoryCount": 4142,
     "canonicalStatutoryBaselineCount": 4123,
@@ -19,22 +19,122 @@
   },
   "regionalVarianceAccounting": {
     "additions": [
-      { "stateCode": "DL", "stateName": "Delhi", "statutoryCount": 70, "observedCount": 221, "variance": 151, "sourceBatch": "data/seed/delhi-demographics.ts", "note": "Ingested 151 Municipal Corporation of Delhi (MCD) wards (AC-71 through AC-221) under AC schema." },
-      { "stateCode": "HP", "stateName": "Himachal Pradesh", "statutoryCount": 68, "observedCount": 70, "variance": 2, "sourceBatch": "data/seed/himachal-pradesh-demographics.ts", "note": "Contains 2 non-statutory extra fixture records (AC-69 and AC-70)." }
+      {
+        "stateCode": "DL",
+        "stateName": "Delhi",
+        "statutoryCount": 70,
+        "observedCount": 221,
+        "variance": 151,
+        "sourceBatch": "data/seed/delhi-demographics.ts",
+        "note": "Ingested 151 Municipal Corporation of Delhi (MCD) wards (AC-71 through AC-221) under AC schema."
+      },
+      {
+        "stateCode": "HP",
+        "stateName": "Himachal Pradesh",
+        "statutoryCount": 68,
+        "observedCount": 70,
+        "variance": 2,
+        "sourceBatch": "data/seed/himachal-pradesh-demographics.ts",
+        "note": "Contains 2 non-statutory extra fixture records (AC-69 and AC-70)."
+      }
     ],
     "deficits": [
-      { "stateCode": "MP", "stateName": "Madhya Pradesh", "statutoryCount": 230, "observedCount": 208, "variance": -22, "note": "Partial initial seed batch omitted 22 ACs." },
-      { "stateCode": "BR", "stateName": "Bihar", "statutoryCount": 243, "observedCount": 227, "variance": -16, "note": "Partial initial seed batch omitted 16 ACs." },
-      { "stateCode": "OD", "stateName": "Odisha", "statutoryCount": 147, "observedCount": 132, "variance": -15, "note": "Partial initial seed batch omitted 15 ACs." },
-      { "stateCode": "AS", "stateName": "Assam", "statutoryCount": 126, "observedCount": 112, "variance": -14, "note": "Partial initial seed batch omitted 14 ACs." },
-      { "stateCode": "RJ", "stateName": "Rajasthan", "statutoryCount": 200, "observedCount": 187, "variance": -13, "note": "Partial initial seed batch omitted 13 ACs." },
-      { "stateCode": "GJ", "stateName": "Gujarat", "statutoryCount": 182, "observedCount": 169, "variance": -13, "note": "Partial initial seed batch omitted 13 ACs." },
-      { "stateCode": "HR", "stateName": "Haryana", "statutoryCount": 90, "observedCount": 80, "variance": -10, "note": "Partial initial seed batch omitted 10 ACs." },
-      { "stateCode": "CG", "stateName": "Chhattisgarh", "statutoryCount": 90, "observedCount": 81, "variance": -9, "note": "Partial initial seed batch omitted 9 ACs." },
-      { "stateCode": "JH", "stateName": "Jharkhand", "statutoryCount": 81, "observedCount": 73, "variance": -8, "note": "Partial initial seed batch omitted 8 ACs." },
-      { "stateCode": "GA", "stateName": "Goa", "statutoryCount": 40, "observedCount": 34, "variance": -6, "note": "Partial initial seed batch omitted 6 ACs." },
-      { "stateCode": "PB", "stateName": "Punjab", "statutoryCount": 117, "observedCount": 111, "variance": -6, "note": "Partial initial seed batch omitted 6 ACs." },
-      { "stateCode": "UP", "stateName": "Uttar Pradesh", "statutoryCount": 403, "observedCount": 401, "variance": -2, "note": "Partial initial seed batch omitted 2 ACs." }
+      {
+        "stateCode": "MP",
+        "stateName": "Madhya Pradesh",
+        "statutoryCount": 230,
+        "observedCount": 208,
+        "variance": -22,
+        "note": "Partial initial seed batch omitted 22 ACs."
+      },
+      {
+        "stateCode": "BR",
+        "stateName": "Bihar",
+        "statutoryCount": 243,
+        "observedCount": 227,
+        "variance": -16,
+        "note": "Partial initial seed batch omitted 16 ACs."
+      },
+      {
+        "stateCode": "OD",
+        "stateName": "Odisha",
+        "statutoryCount": 147,
+        "observedCount": 132,
+        "variance": -15,
+        "note": "Partial initial seed batch omitted 15 ACs."
+      },
+      {
+        "stateCode": "AS",
+        "stateName": "Assam",
+        "statutoryCount": 126,
+        "observedCount": 112,
+        "variance": -14,
+        "note": "Partial initial seed batch omitted 14 ACs."
+      },
+      {
+        "stateCode": "RJ",
+        "stateName": "Rajasthan",
+        "statutoryCount": 200,
+        "observedCount": 187,
+        "variance": -13,
+        "note": "Partial initial seed batch omitted 13 ACs."
+      },
+      {
+        "stateCode": "GJ",
+        "stateName": "Gujarat",
+        "statutoryCount": 182,
+        "observedCount": 169,
+        "variance": -13,
+        "note": "Partial initial seed batch omitted 13 ACs."
+      },
+      {
+        "stateCode": "HR",
+        "stateName": "Haryana",
+        "statutoryCount": 90,
+        "observedCount": 80,
+        "variance": -10,
+        "note": "Partial initial seed batch omitted 10 ACs."
+      },
+      {
+        "stateCode": "CG",
+        "stateName": "Chhattisgarh",
+        "statutoryCount": 90,
+        "observedCount": 81,
+        "variance": -9,
+        "note": "Partial initial seed batch omitted 9 ACs."
+      },
+      {
+        "stateCode": "JH",
+        "stateName": "Jharkhand",
+        "statutoryCount": 81,
+        "observedCount": 73,
+        "variance": -8,
+        "note": "Partial initial seed batch omitted 8 ACs."
+      },
+      {
+        "stateCode": "GA",
+        "stateName": "Goa",
+        "statutoryCount": 40,
+        "observedCount": 34,
+        "variance": -6,
+        "note": "Partial initial seed batch omitted 6 ACs."
+      },
+      {
+        "stateCode": "PB",
+        "stateName": "Punjab",
+        "statutoryCount": 117,
+        "observedCount": 111,
+        "variance": -6,
+        "note": "Partial initial seed batch omitted 6 ACs."
+      },
+      {
+        "stateCode": "UP",
+        "stateName": "Uttar Pradesh",
+        "statutoryCount": 403,
+        "observedCount": 401,
+        "variance": -2,
+        "note": "Partial initial seed batch omitted 2 ACs."
+      }
     ]
   },
   "entries": [
@@ -78,7 +178,8 @@
       "canonicalCountTreatment": "Provisional net surplus reconciliation candidate",
       "disposition": "attributable_to_partial_batch_coverage",
       "evidenceSupportingDisposition": "Delhi statutory Assembly size is exactly 70 (Government of National Capital Territory of Delhi Act, 1991). AC-71 represents non-statutory MCD ward ingestion. However, because 151 surplus MCD records exist in DL and 134 records were omitted across 12 other states, isolating this record as part of the net 17 surplus cannot be proven without an authoritative full-batch replacement ledger.",
-      "status": "NOT_VERIFIED"
+      "status": "NOT_VERIFIED",
+      "missingEvidenceRequired": "Authoritative full-batch replacement seed ledger or gazette confirmation isolating MCD ward from statutory AC."
     },
     {
       "entryNumber": 4,
@@ -92,7 +193,8 @@
       "canonicalCountTreatment": "Provisional net surplus reconciliation candidate",
       "disposition": "attributable_to_partial_batch_coverage",
       "evidenceSupportingDisposition": "Non-statutory Delhi MCD ingestion record (AC-72). Individual net disposition cannot be isolated deterministically from regional batch arithmetic.",
-      "status": "NOT_VERIFIED"
+      "status": "NOT_VERIFIED",
+      "missingEvidenceRequired": "Authoritative full-batch replacement seed ledger or gazette confirmation isolating MCD ward from statutory AC."
     },
     {
       "entryNumber": 5,
@@ -106,7 +208,8 @@
       "canonicalCountTreatment": "Provisional net surplus reconciliation candidate",
       "disposition": "attributable_to_partial_batch_coverage",
       "evidenceSupportingDisposition": "Non-statutory Delhi MCD ingestion record (AC-73). Individual net disposition cannot be isolated deterministically from regional batch arithmetic.",
-      "status": "NOT_VERIFIED"
+      "status": "NOT_VERIFIED",
+      "missingEvidenceRequired": "Authoritative full-batch replacement seed ledger or gazette confirmation isolating MCD ward from statutory AC."
     },
     {
       "entryNumber": 6,
@@ -120,7 +223,8 @@
       "canonicalCountTreatment": "Provisional net surplus reconciliation candidate",
       "disposition": "attributable_to_partial_batch_coverage",
       "evidenceSupportingDisposition": "Non-statutory Delhi MCD ingestion record (AC-74). Individual net disposition cannot be isolated deterministically from regional batch arithmetic.",
-      "status": "NOT_VERIFIED"
+      "status": "NOT_VERIFIED",
+      "missingEvidenceRequired": "Authoritative full-batch replacement seed ledger or gazette confirmation isolating MCD ward from statutory AC."
     },
     {
       "entryNumber": 7,
@@ -134,7 +238,8 @@
       "canonicalCountTreatment": "Provisional net surplus reconciliation candidate",
       "disposition": "attributable_to_partial_batch_coverage",
       "evidenceSupportingDisposition": "Non-statutory Delhi MCD ingestion record (AC-75). Individual net disposition cannot be isolated deterministically from regional batch arithmetic.",
-      "status": "NOT_VERIFIED"
+      "status": "NOT_VERIFIED",
+      "missingEvidenceRequired": "Authoritative full-batch replacement seed ledger or gazette confirmation isolating MCD ward from statutory AC."
     },
     {
       "entryNumber": 8,
@@ -148,7 +253,8 @@
       "canonicalCountTreatment": "Provisional net surplus reconciliation candidate",
       "disposition": "attributable_to_partial_batch_coverage",
       "evidenceSupportingDisposition": "Non-statutory Delhi MCD ingestion record (AC-76). Individual net disposition cannot be isolated deterministically from regional batch arithmetic.",
-      "status": "NOT_VERIFIED"
+      "status": "NOT_VERIFIED",
+      "missingEvidenceRequired": "Authoritative full-batch replacement seed ledger or gazette confirmation isolating MCD ward from statutory AC."
     },
     {
       "entryNumber": 9,
@@ -162,7 +268,8 @@
       "canonicalCountTreatment": "Provisional net surplus reconciliation candidate",
       "disposition": "attributable_to_partial_batch_coverage",
       "evidenceSupportingDisposition": "Non-statutory Delhi MCD ingestion record (AC-77). Individual net disposition cannot be isolated deterministically from regional batch arithmetic.",
-      "status": "NOT_VERIFIED"
+      "status": "NOT_VERIFIED",
+      "missingEvidenceRequired": "Authoritative full-batch replacement seed ledger or gazette confirmation isolating MCD ward from statutory AC."
     },
     {
       "entryNumber": 10,
@@ -176,7 +283,8 @@
       "canonicalCountTreatment": "Provisional net surplus reconciliation candidate",
       "disposition": "attributable_to_partial_batch_coverage",
       "evidenceSupportingDisposition": "Non-statutory Delhi MCD ingestion record (AC-78). Individual net disposition cannot be isolated deterministically from regional batch arithmetic.",
-      "status": "NOT_VERIFIED"
+      "status": "NOT_VERIFIED",
+      "missingEvidenceRequired": "Authoritative full-batch replacement seed ledger or gazette confirmation isolating MCD ward from statutory AC."
     },
     {
       "entryNumber": 11,
@@ -190,7 +298,8 @@
       "canonicalCountTreatment": "Provisional net surplus reconciliation candidate",
       "disposition": "attributable_to_partial_batch_coverage",
       "evidenceSupportingDisposition": "Non-statutory Delhi MCD ingestion record (AC-79). Individual net disposition cannot be isolated deterministically from regional batch arithmetic.",
-      "status": "NOT_VERIFIED"
+      "status": "NOT_VERIFIED",
+      "missingEvidenceRequired": "Authoritative full-batch replacement seed ledger or gazette confirmation isolating MCD ward from statutory AC."
     },
     {
       "entryNumber": 12,
@@ -204,7 +313,8 @@
       "canonicalCountTreatment": "Provisional net surplus reconciliation candidate",
       "disposition": "attributable_to_partial_batch_coverage",
       "evidenceSupportingDisposition": "Non-statutory Delhi MCD ingestion record (AC-80). Individual net disposition cannot be isolated deterministically from regional batch arithmetic.",
-      "status": "NOT_VERIFIED"
+      "status": "NOT_VERIFIED",
+      "missingEvidenceRequired": "Authoritative full-batch replacement seed ledger or gazette confirmation isolating MCD ward from statutory AC."
     },
     {
       "entryNumber": 13,
@@ -218,7 +328,8 @@
       "canonicalCountTreatment": "Provisional net surplus reconciliation candidate",
       "disposition": "attributable_to_partial_batch_coverage",
       "evidenceSupportingDisposition": "Non-statutory Delhi MCD ingestion record (AC-81). Individual net disposition cannot be isolated deterministically from regional batch arithmetic.",
-      "status": "NOT_VERIFIED"
+      "status": "NOT_VERIFIED",
+      "missingEvidenceRequired": "Authoritative full-batch replacement seed ledger or gazette confirmation isolating MCD ward from statutory AC."
     },
     {
       "entryNumber": 14,
@@ -232,7 +343,8 @@
       "canonicalCountTreatment": "Provisional net surplus reconciliation candidate",
       "disposition": "attributable_to_partial_batch_coverage",
       "evidenceSupportingDisposition": "Non-statutory Delhi MCD ingestion record (AC-82). Individual net disposition cannot be isolated deterministically from regional batch arithmetic.",
-      "status": "NOT_VERIFIED"
+      "status": "NOT_VERIFIED",
+      "missingEvidenceRequired": "Authoritative full-batch replacement seed ledger or gazette confirmation isolating MCD ward from statutory AC."
     },
     {
       "entryNumber": 15,
@@ -246,7 +358,8 @@
       "canonicalCountTreatment": "Provisional net surplus reconciliation candidate",
       "disposition": "attributable_to_partial_batch_coverage",
       "evidenceSupportingDisposition": "Non-statutory Delhi MCD ingestion record (AC-83). Individual net disposition cannot be isolated deterministically from regional batch arithmetic.",
-      "status": "NOT_VERIFIED"
+      "status": "NOT_VERIFIED",
+      "missingEvidenceRequired": "Authoritative full-batch replacement seed ledger or gazette confirmation isolating MCD ward from statutory AC."
     },
     {
       "entryNumber": 16,
@@ -260,7 +373,8 @@
       "canonicalCountTreatment": "Provisional net surplus reconciliation candidate",
       "disposition": "attributable_to_partial_batch_coverage",
       "evidenceSupportingDisposition": "Non-statutory Delhi MCD ingestion record (AC-84). Individual net disposition cannot be isolated deterministically from regional batch arithmetic.",
-      "status": "NOT_VERIFIED"
+      "status": "NOT_VERIFIED",
+      "missingEvidenceRequired": "Authoritative full-batch replacement seed ledger or gazette confirmation isolating MCD ward from statutory AC."
     },
     {
       "entryNumber": 17,
@@ -274,7 +388,8 @@
       "canonicalCountTreatment": "Provisional net surplus reconciliation candidate",
       "disposition": "attributable_to_partial_batch_coverage",
       "evidenceSupportingDisposition": "Non-statutory Delhi MCD ingestion record (AC-85). Individual net disposition cannot be isolated deterministically from regional batch arithmetic.",
-      "status": "NOT_VERIFIED"
+      "status": "NOT_VERIFIED",
+      "missingEvidenceRequired": "Authoritative full-batch replacement seed ledger or gazette confirmation isolating MCD ward from statutory AC."
     },
     {
       "entryNumber": 18,
@@ -288,7 +403,8 @@
       "canonicalCountTreatment": "Provisional net surplus reconciliation candidate",
       "disposition": "attributable_to_partial_batch_coverage",
       "evidenceSupportingDisposition": "Non-statutory Delhi MCD ingestion record (AC-86). Individual net disposition cannot be isolated deterministically from regional batch arithmetic.",
-      "status": "NOT_VERIFIED"
+      "status": "NOT_VERIFIED",
+      "missingEvidenceRequired": "Authoritative full-batch replacement seed ledger or gazette confirmation isolating MCD ward from statutory AC."
     },
     {
       "entryNumber": 19,
@@ -302,7 +418,14 @@
       "canonicalCountTreatment": "Provisional net surplus reconciliation candidate",
       "disposition": "attributable_to_partial_batch_coverage",
       "evidenceSupportingDisposition": "Non-statutory Delhi MCD ingestion record (AC-87). Individual net disposition cannot be isolated deterministically from regional batch arithmetic.",
-      "status": "NOT_VERIFIED"
+      "status": "NOT_VERIFIED",
+      "missingEvidenceRequired": "Authoritative full-batch replacement seed ledger or gazette confirmation isolating MCD ward from statutory AC."
     }
-  ]
+  ],
+  "reconciliationState": {
+    "status": "PARTIALLY_RESOLVED_DOCUMENTED_NOT_FULLY_RESOLVED",
+    "description": "The 4,142-to-4,123 discrepancy is documented across all 19 net-discrepant records, but is not fully resolved because 17 entries remain NOT_VERIFIED under fail-closed standards.",
+    "missingEvidenceRequiredForResolution": "An authoritative full-batch demographic replacement seed ledger for Delhi (separating statutory Assembly Constituencies AC 1-70 from Municipal Corporation of Delhi wards AC 71-221) or statutory gazette de-duplication confirmation. Individual status cannot be inferred from net regional discrepancy arithmetic.",
+    "historicalInventoryIntegrity": "The historical inventory reports/w021_5b2_b2_2e_source_inventory.json remains strictly unmodified byte-for-byte under Rule IV-001 governance boundaries."
+  }
 }

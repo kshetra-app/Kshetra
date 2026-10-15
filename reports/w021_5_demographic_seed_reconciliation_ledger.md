@@ -2,12 +2,13 @@
 ## Forensic Accounting of 4,142 Historical Seed Records vs 4,123 Canonical Baseline
 
 **Milestone:** W021.5 / B2.2-E — Candidate Affidavits and Civic Extensions  
-**Directive:** KSHETRA — W021.5 CTO DIRECTIVE 066 Section 7  
+**Directive:** KSHETRA — W021.5 CTO DIRECTIVE 067 Section 5  
 **Defect:** `DQ-W021.5-B2.2E-001` — STRICTLY OPEN  
 **Date:** 2026-10-15  
 **Canonical Statutory Assembly Baseline:** **4,123 seats** (28 States + 3 UT Assemblies)  
 **Historical Ingest Inventory Count:** **4,142 records**  
-**Net Population Variance:** **+19 records** ($4,142 - 4,123 = 19$)
+**Net Population Variance:** **+19 records** ($4,142 - 4,123 = 19$)  
+**Reconciliation Status:** **DOCUMENTED BUT NOT FULLY RESOLVED (17 Entries Remain NOT_VERIFIED)**
 
 ---
 
@@ -27,32 +28,35 @@ The observed population of 4,142 records in `reports/w021_5b2_b2_2e_demographics
 
 ## 2. Reconciled 19-Record Ledger
 
-In strict accordance with Directive 066 Section 7, the following ledger details all 19 net-discrepant records. Because regional arithmetic cannot deterministically isolate exactly 17 records out of 151 non-statutory Delhi MCD records without a full-batch seed replacement ledger, those 17 records are honestly and transparently marked `NOT_VERIFIED`.
+In strict accordance with Directive 067 Section 5, the following ledger details all 19 net-discrepant records. Because regional arithmetic cannot deterministically isolate exactly 17 records out of 151 non-statutory Delhi MCD records without an authoritative full-batch replacement seed ledger, those 17 records are honestly and transparently marked `NOT_VERIFIED`.
 
-| # | Record ID | Code | AC# | State | Batch File / Coordinate | Disposition | Status | Supporting Evidence & Forensic Rationale |
+> [!IMPORTANT]
+> The 4,142-to-4,123 discrepancy is documented across all 19 records, but is **not fully resolved** while any entries remain unverified. Status cannot be inferred from net counts balancing.
+
+| # | Record ID | Code | AC# | State | Batch File / Coordinate | Disposition | Status | Supporting Evidence & Missing Evidence Required |
 | :-: | :--- | :--- | :-: | :-: | :--- | :--- | :-: | :--- |
-| **1** | `0215b22e-dem-00001228` | `HP-AC-069` | 69 | HP | `data/seed/himachal-pradesh-demographics.ts:80` | extra | **VERIFIED** | RPA 1950 & Delimitation Order 2008 establish HP size as exactly 68. AC-69 is an artificial seed fixture. |
-| **2** | `0215b22e-dem-00001229` | `HP-AC-070` | 70 | HP | `data/seed/himachal-pradesh-demographics.ts:81` | extra | **VERIFIED** | RPA 1950 & Delimitation Order 2008 establish HP size as exactly 68. AC-70 is an artificial seed fixture. |
-| **3** | `0215b22e-dem-00000726` | `DL-AC-071` | 71 | DL | `data/seed/delhi-demographics.ts:82` | partial_batch | **NOT_VERIFIED** | GNCTD Act 1991 sets Delhi assembly at 70 seats. Record represents MCD ward. Net isolation cannot be proven from regional arithmetic alone. |
-| **4** | `0215b22e-dem-00000727` | `DL-AC-072` | 72 | DL | `data/seed/delhi-demographics.ts:83` | partial_batch | **NOT_VERIFIED** | Non-statutory Delhi MCD ward. Net isolation cannot be proven from regional arithmetic alone. |
-| **5** | `0215b22e-dem-00000728` | `DL-AC-073` | 73 | DL | `data/seed/delhi-demographics.ts:84` | partial_batch | **NOT_VERIFIED** | Non-statutory Delhi MCD ward. Net isolation cannot be proven from regional arithmetic alone. |
-| **6** | `0215b22e-dem-00000729` | `DL-AC-074` | 74 | DL | `data/seed/delhi-demographics.ts:85` | partial_batch | **NOT_VERIFIED** | Non-statutory Delhi MCD ward. Net isolation cannot be proven from regional arithmetic alone. |
-| **7** | `0215b22e-dem-00000730` | `DL-AC-075` | 75 | DL | `data/seed/delhi-demographics.ts:86` | partial_batch | **NOT_VERIFIED** | Non-statutory Delhi MCD ward. Net isolation cannot be proven from regional arithmetic alone. |
-| **8** | `0215b22e-dem-00000731` | `DL-AC-076` | 76 | DL | `data/seed/delhi-demographics.ts:87` | partial_batch | **NOT_VERIFIED** | Non-statutory Delhi MCD ward. Net isolation cannot be proven from regional arithmetic alone. |
-| **9** | `0215b22e-dem-00000732` | `DL-AC-077` | 77 | DL | `data/seed/delhi-demographics.ts:88` | partial_batch | **NOT_VERIFIED** | Non-statutory Delhi MCD ward. Net isolation cannot be proven from regional arithmetic alone. |
-| **10** | `0215b22e-dem-00000733` | `DL-AC-078` | 78 | DL | `data/seed/delhi-demographics.ts:89` | partial_batch | **NOT_VERIFIED** | Non-statutory Delhi MCD ward. Net isolation cannot be proven from regional arithmetic alone. |
-| **11** | `0215b22e-dem-00000734` | `DL-AC-079` | 79 | DL | `data/seed/delhi-demographics.ts:90` | partial_batch | **NOT_VERIFIED** | Non-statutory Delhi MCD ward. Net isolation cannot be proven from regional arithmetic alone. |
-| **12** | `0215b22e-dem-00000735` | `DL-AC-080` | 80 | DL | `data/seed/delhi-demographics.ts:91` | partial_batch | **NOT_VERIFIED** | Non-statutory Delhi MCD ward. Net isolation cannot be proven from regional arithmetic alone. |
-| **13** | `0215b22e-dem-00000736` | `DL-AC-081` | 81 | DL | `data/seed/delhi-demographics.ts:92` | partial_batch | **NOT_VERIFIED** | Non-statutory Delhi MCD ward. Net isolation cannot be proven from regional arithmetic alone. |
-| **14** | `0215b22e-dem-00000737` | `DL-AC-082` | 82 | DL | `data/seed/delhi-demographics.ts:93` | partial_batch | **NOT_VERIFIED** | Non-statutory Delhi MCD ward. Net isolation cannot be proven from regional arithmetic alone. |
-| **15** | `0215b22e-dem-00000738` | `DL-AC-083` | 83 | DL | `data/seed/delhi-demographics.ts:94` | partial_batch | **NOT_VERIFIED** | Non-statutory Delhi MCD ward. Net isolation cannot be proven from regional arithmetic alone. |
-| **16** | `0215b22e-dem-00000739` | `DL-AC-084` | 84 | DL | `data/seed/delhi-demographics.ts:95` | partial_batch | **NOT_VERIFIED** | Non-statutory Delhi MCD ward. Net isolation cannot be proven from regional arithmetic alone. |
-| **17** | `0215b22e-dem-00000740` | `DL-AC-085` | 85 | DL | `data/seed/delhi-demographics.ts:96` | partial_batch | **NOT_VERIFIED** | Non-statutory Delhi MCD ward. Net isolation cannot be proven from regional arithmetic alone. |
-| **18** | `0215b22e-dem-00000741` | `DL-AC-086` | 86 | DL | `data/seed/delhi-demographics.ts:97` | partial_batch | **NOT_VERIFIED** | Non-statutory Delhi MCD ward. Net isolation cannot be proven from regional arithmetic alone. |
-| **19** | `0215b22e-dem-00000742` | `DL-AC-087` | 87 | DL | `data/seed/delhi-demographics.ts:98` | partial_batch | **NOT_VERIFIED** | Non-statutory Delhi MCD ward. Net isolation cannot be proven from regional arithmetic alone. |
+| **1** | `0215b22e-dem-00001228` | `HP-AC-069` | 69 | HP | `data/seed/himachal-pradesh-demographics.ts:80` | extra | **VERIFIED** | RPA 1950 & Delimitation Order 2008 establish HP size as exactly 68. AC-69 is an artificial seed fixture. Preserved as VERIFIED. |
+| **2** | `0215b22e-dem-00001229` | `HP-AC-070` | 70 | HP | `data/seed/himachal-pradesh-demographics.ts:81` | extra | **VERIFIED** | RPA 1950 & Delimitation Order 2008 establish HP size as exactly 68. AC-70 is an artificial seed fixture. Preserved as VERIFIED. |
+| **3** | `0215b22e-dem-00000726` | `DL-AC-071` | 71 | DL | `data/seed/delhi-demographics.ts:82` | partial_batch | **NOT_VERIFIED** | Non-statutory Delhi MCD ward. **Missing evidence:** Authoritative full-batch replacement seed ledger separating MCD wards from statutory ACs. |
+| **4** | `0215b22e-dem-00000727` | `DL-AC-072` | 72 | DL | `data/seed/delhi-demographics.ts:83` | partial_batch | **NOT_VERIFIED** | Non-statutory Delhi MCD ward. **Missing evidence:** Authoritative full-batch replacement seed ledger. |
+| **5** | `0215b22e-dem-00000728` | `DL-AC-073` | 73 | DL | `data/seed/delhi-demographics.ts:84` | partial_batch | **NOT_VERIFIED** | Non-statutory Delhi MCD ward. **Missing evidence:** Authoritative full-batch replacement seed ledger. |
+| **6** | `0215b22e-dem-00000729` | `DL-AC-074` | 74 | DL | `data/seed/delhi-demographics.ts:85` | partial_batch | **NOT_VERIFIED** | Non-statutory Delhi MCD ward. **Missing evidence:** Authoritative full-batch replacement seed ledger. |
+| **7** | `0215b22e-dem-00000730` | `DL-AC-075` | 75 | DL | `data/seed/delhi-demographics.ts:86` | partial_batch | **NOT_VERIFIED** | Non-statutory Delhi MCD ward. **Missing evidence:** Authoritative full-batch replacement seed ledger. |
+| **8** | `0215b22e-dem-00000731` | `DL-AC-076` | 76 | DL | `data/seed/delhi-demographics.ts:87` | partial_batch | **NOT_VERIFIED** | Non-statutory Delhi MCD ward. **Missing evidence:** Authoritative full-batch replacement seed ledger. |
+| **9** | `0215b22e-dem-00000732` | `DL-AC-077` | 77 | DL | `data/seed/delhi-demographics.ts:88` | partial_batch | **NOT_VERIFIED** | Non-statutory Delhi MCD ward. **Missing evidence:** Authoritative full-batch replacement seed ledger. |
+| **10** | `0215b22e-dem-00000733` | `DL-AC-078` | 78 | DL | `data/seed/delhi-demographics.ts:89` | partial_batch | **NOT_VERIFIED** | Non-statutory Delhi MCD ward. **Missing evidence:** Authoritative full-batch replacement seed ledger. |
+| **11** | `0215b22e-dem-00000734` | `DL-AC-079` | 79 | DL | `data/seed/delhi-demographics.ts:90` | partial_batch | **NOT_VERIFIED** | Non-statutory Delhi MCD ward. **Missing evidence:** Authoritative full-batch replacement seed ledger. |
+| **12** | `0215b22e-dem-00000735` | `DL-AC-080` | 80 | DL | `data/seed/delhi-demographics.ts:91` | partial_batch | **NOT_VERIFIED** | Non-statutory Delhi MCD ward. **Missing evidence:** Authoritative full-batch replacement seed ledger. |
+| **13** | `0215b22e-dem-00000736` | `DL-AC-081` | 81 | DL | `data/seed/delhi-demographics.ts:92` | partial_batch | **NOT_VERIFIED** | Non-statutory Delhi MCD ward. **Missing evidence:** Authoritative full-batch replacement seed ledger. |
+| **14** | `0215b22e-dem-00000737` | `DL-AC-082` | 82 | DL | `data/seed/delhi-demographics.ts:93` | partial_batch | **NOT_VERIFIED** | Non-statutory Delhi MCD ward. **Missing evidence:** Authoritative full-batch replacement seed ledger. |
+| **15** | `0215b22e-dem-00000738` | `DL-AC-083` | 83 | DL | `data/seed/delhi-demographics.ts:94` | partial_batch | **NOT_VERIFIED** | Non-statutory Delhi MCD ward. **Missing evidence:** Authoritative full-batch replacement seed ledger. |
+| **16** | `0215b22e-dem-00000739` | `DL-AC-084` | 84 | DL | `data/seed/delhi-demographics.ts:95` | partial_batch | **NOT_VERIFIED** | Non-statutory Delhi MCD ward. **Missing evidence:** Authoritative full-batch replacement seed ledger. |
+| **17** | `0215b22e-dem-00000740` | `DL-AC-085` | 85 | DL | `data/seed/delhi-demographics.ts:96` | partial_batch | **NOT_VERIFIED** | Non-statutory Delhi MCD ward. **Missing evidence:** Authoritative full-batch replacement seed ledger. |
+| **18** | `0215b22e-dem-00000741` | `DL-AC-086` | 86 | DL | `data/seed/delhi-demographics.ts:97` | partial_batch | **NOT_VERIFIED** | Non-statutory Delhi MCD ward. **Missing evidence:** Authoritative full-batch replacement seed ledger. |
+| **19** | `0215b22e-dem-00000742` | `DL-AC-087` | 87 | DL | `data/seed/delhi-demographics.ts:98` | partial_batch | **NOT_VERIFIED** | Non-statutory Delhi MCD ward. **Missing evidence:** Authoritative full-batch replacement seed ledger. |
 
 ---
 
 ## 3. Preserved Historical Evidence
 
-The historical inventory `reports/w021_5b2_b2_2e_source_inventory.json` remains strictly unmodified byte-for-byte under Rule IV-001 governance boundaries. This ledger exists as an additive versioned document reconciling historical data to canonical statutory reality.
+The historical inventory `reports/w021_5b2_b2_2e_source_inventory.json` remains **strictly unmodified byte-for-byte** under Rule IV-001 governance boundaries. No historical records were altered or deleted to force agreement. This ledger exists as an additive, transparent accounting document reconciling historical data to canonical statutory reality.

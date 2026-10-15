@@ -1,10 +1,10 @@
 {
-  "matrixTitle": "Directive 066 Test Isolation Matrix",
-  "directive": "KSHETRA — W021.5 CTO DIRECTIVE 066 Section 4",
+  "matrixTitle": "Directive 067 Test Isolation Matrix",
+  "directive": "KSHETRA — W021.5 CTO DIRECTIVE 067 Section 3",
   "milestone": "W021.5 / B2.2-E",
   "defect": "DQ-W021.5-B2.2E-001",
-  "generatedDate": "2026-10-15T03:06:41.508Z",
-  "totalTests": 67,
+  "generatedDate": "2026-10-15T03:30:07.210Z",
+  "totalTests": 79,
   "tests": [
     {
       "testId": 1,
@@ -608,6 +608,114 @@
       "expectedFailureReason": "None (all 4 states handled cleanly)",
       "observedOutcome": "Handled all 4 states without crash, null coercion, or zero division",
       "assertion": "assertEqual(maxAssets, 20000000)"
+    },
+    {
+      "testId": 68,
+      "name": "Missing authoritative asset value when intended value is null",
+      "manipulatedInput": "delete ledgerEntry.authoritativeTotalAssets with intendedValue: null",
+      "isolationMechanism": "Deep-cloned in-memory fixture passed directly to production validateCorrectionEligibility()",
+      "expectedFailureReason": "MISSING_AUTHORITATIVE_FIELD",
+      "observedOutcome": "Threw MISSING_AUTHORITATIVE_FIELD as expected",
+      "assertion": "assert(err.message.includes(\"MISSING_AUTHORITATIVE_FIELD\"))"
+    },
+    {
+      "testId": 69,
+      "name": "Missing authoritative liability value when intended value is null",
+      "manipulatedInput": "delete ledgerEntry.authoritativeTotalLiabilities with intendedValue: null",
+      "isolationMechanism": "Deep-cloned in-memory fixture passed directly to production validateCorrectionEligibility()",
+      "expectedFailureReason": "MISSING_AUTHORITATIVE_FIELD",
+      "observedOutcome": "Threw MISSING_AUTHORITATIVE_FIELD as expected",
+      "assertion": "assert(err.message.includes(\"MISSING_AUTHORITATIVE_FIELD\"))"
+    },
+    {
+      "testId": 70,
+      "name": "Missing authoritative asset value when intended value is zero",
+      "manipulatedInput": "delete ledgerEntry.authoritativeTotalAssets with intendedValue: 0",
+      "isolationMechanism": "Deep-cloned in-memory fixture passed directly to production validateCorrectionEligibility()",
+      "expectedFailureReason": "MISSING_AUTHORITATIVE_FIELD",
+      "observedOutcome": "Threw MISSING_AUTHORITATIVE_FIELD as expected",
+      "assertion": "assert(err.message.includes(\"MISSING_AUTHORITATIVE_FIELD\"))"
+    },
+    {
+      "testId": 71,
+      "name": "Missing authoritative liability value when intended value is zero",
+      "manipulatedInput": "delete ledgerEntry.authoritativeTotalLiabilities with intendedValue: 0",
+      "isolationMechanism": "Deep-cloned in-memory fixture passed directly to production validateCorrectionEligibility()",
+      "expectedFailureReason": "MISSING_AUTHORITATIVE_FIELD",
+      "observedOutcome": "Threw MISSING_AUTHORITATIVE_FIELD as expected",
+      "assertion": "assert(err.message.includes(\"MISSING_AUTHORITATIVE_FIELD\"))"
+    },
+    {
+      "testId": 72,
+      "name": "Explicit null authoritative value incorrectly used for zero preservation",
+      "manipulatedInput": "ledgerEntry.authoritativeTotalAssets = null with intendedValue: 0",
+      "isolationMechanism": "Deep-cloned in-memory fixture passed directly to production validateCorrectionEligibility()",
+      "expectedFailureReason": "LEDGER_RESTORED_VALUE_MISMATCH",
+      "observedOutcome": "Threw LEDGER_RESTORED_VALUE_MISMATCH as expected",
+      "assertion": "assert(err.message.includes(\"LEDGER_RESTORED_VALUE_MISMATCH\"))"
+    },
+    {
+      "testId": 73,
+      "name": "Explicit zero authoritative value incorrectly used for missing disclosure",
+      "manipulatedInput": "ledgerEntry.authoritativeTotalAssets = 0 with intendedValue: null",
+      "isolationMechanism": "Deep-cloned in-memory fixture passed directly to production validateCorrectionEligibility()",
+      "expectedFailureReason": "LEDGER_RESTORED_VALUE_MISMATCH",
+      "observedOutcome": "Threw LEDGER_RESTORED_VALUE_MISMATCH as expected",
+      "assertion": "assert(err.message.includes(\"LEDGER_RESTORED_VALUE_MISMATCH\"))"
+    },
+    {
+      "testId": 74,
+      "name": "Correct authoritative field with contradictory disclosure classification",
+      "manipulatedInput": "Valid intendedValue: null with authoritativeTotalAssets: null but disclosureClassification: \"POSITIVE\"",
+      "isolationMechanism": "Deep-cloned in-memory fixture passed directly to production validateCorrectionEligibility()",
+      "expectedFailureReason": "CONTRADICTORY_DISCLOSURE_CLASSIFICATION",
+      "observedOutcome": "Threw CONTRADICTORY_DISCLOSURE_CLASSIFICATION as expected",
+      "assertion": "assert(err.message.includes(\"CONTRADICTORY_DISCLOSURE_CLASSIFICATION\"))"
+    },
+    {
+      "testId": 75,
+      "name": "Genuine source zero with attempted nullification",
+      "manipulatedInput": "Source profile has totalAssets: 0, correction attempts intendedValue: null",
+      "isolationMechanism": "Deep-cloned in-memory fixture passed directly to production validateCorrectionEligibility()",
+      "expectedFailureReason": "GENUINE_ZERO_COERCION_FORBIDDEN",
+      "observedOutcome": "Threw GENUINE_ZERO_COERCION_FORBIDDEN as expected",
+      "assertion": "assert(err.message.includes(\"GENUINE_ZERO_COERCION_FORBIDDEN\"))"
+    },
+    {
+      "testId": 76,
+      "name": "Missing source field with fabricated zero",
+      "manipulatedInput": "Source profile has totalAssets: null, correction attempts intendedValue: 0",
+      "isolationMechanism": "Deep-cloned in-memory fixture passed directly to production validateCorrectionEligibility()",
+      "expectedFailureReason": "ZERO_FABRICATION_FORBIDDEN",
+      "observedOutcome": "Threw ZERO_FABRICATION_FORBIDDEN as expected",
+      "assertion": "assert(err.message.includes(\"ZERO_FABRICATION_FORBIDDEN\"))"
+    },
+    {
+      "testId": 77,
+      "name": "Positive source total with attempted nullification",
+      "manipulatedInput": "Source profile has totalAssets: 50000000, correction attempts intendedValue: null",
+      "isolationMechanism": "Deep-cloned in-memory fixture passed directly to production validateCorrectionEligibility()",
+      "expectedFailureReason": "POSITIVE_TOTAL_MUTATION_FORBIDDEN",
+      "observedOutcome": "Threw POSITIVE_TOTAL_MUTATION_FORBIDDEN as expected",
+      "assertion": "assert(err.message.includes(\"POSITIVE_TOTAL_MUTATION_FORBIDDEN\"))"
+    },
+    {
+      "testId": 78,
+      "name": "Valid source-backed zero-preservation control case",
+      "manipulatedInput": "Valid Candidate Two (0215b22e-aff-00000002) with source=0, ledger=0, intended=0, classification=VERIFIED_GENUINE_ZERO",
+      "isolationMechanism": "Deep-cloned in-memory fixture passed directly to production validateCorrectionEligibility()",
+      "expectedFailureReason": "None (control case: valid zero preservation)",
+      "observedOutcome": "validateCorrectionEligibility returned true",
+      "assertion": "assertEqual(eligible, true)"
+    },
+    {
+      "testId": 79,
+      "name": "Valid source-backed missing-disclosure control case with explicit null authoritative value",
+      "manipulatedInput": "Valid Candidate Four (0215b22e-aff-00000004) with source=null, ledger=null, intended=null, classification=UNDISCLOSED_OMITTED",
+      "isolationMechanism": "Deep-cloned in-memory fixture passed directly to production validateCorrectionEligibility()",
+      "expectedFailureReason": "None (control case: valid missing disclosure)",
+      "observedOutcome": "validateCorrectionEligibility returned true",
+      "assertion": "assertEqual(eligible, true)"
     }
   ]
 }

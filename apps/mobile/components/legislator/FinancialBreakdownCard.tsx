@@ -24,12 +24,145 @@ interface Props {
   compact?: boolean;
 }
 
-function formatINR(val: number | undefined | null): string {
+export function formatINR(val: number | undefined | null): string {
   if (val === undefined || val === null || isNaN(val) || typeof val !== 'number') return 'Not Disclosed';
   if (val >= 1_00_00_000) return `₹${(val / 1_00_00_000).toFixed(1)} Cr`;
   if (val >= 1_00_000) return `₹${(val / 1_00_000).toFixed(1)} L`;
   if (val >= 1000) return `₹${(val / 1000).toFixed(0)}K`;
   return `₹${val.toLocaleString('en-IN')}`;
+}
+
+export interface BreakdownComponentItem {
+  key: string;
+  label: string;
+  value: number | null | undefined;
+  formattedValue: string;
+  isDisclosed: boolean;
+}
+
+export interface BreakdownState {
+  hasCompleteBreakdown: boolean;
+  hasAnyDisclosedComponent: boolean;
+  allComponentsUndisclosed: boolean;
+  totalAssetsDisclosed: boolean;
+  isZeroTotal: boolean;
+  statusNotice: string;
+  percentages: {
+    selfMovPct: number;
+    selfImmPct: number;
+    spousePct: number;
+    depPct: number;
+  } | null;
+  components: BreakdownComponentItem[];
+}
+
+export function resolveBreakdownState(record: FinancialRecord): BreakdownState {
+  const totalAssets = record.totalAssets;
+  const totalAssetsDisclosed = totalAssets != null;
+  const isZeroTotal = totalAssets === 0;
+
+  const hasCompleteBreakdown =
+    record.selfMovableAssets != null &&
+    record.selfImmovableAssets != null &&
+    record.spouseMovableAssets != null &&
+    record.spouseImmovableAssets != null &&
+    totalAssets != null &&
+    totalAssets > 0;
+
+  const hasAnyDisclosedComponent =
+    record.selfMovableAssets != null ||
+    record.selfImmovableAssets != null ||
+    record.spouseMovableAssets != null ||
+    record.spouseImmovableAssets != null ||
+    record.dependentsAssets != null;
+
+  const allComponentsUndisclosed = !hasAnyDisclosedComponent;
+
+  let statusNotice = '';
+  if (hasCompleteBreakdown) {
+    statusNotice = 'Complete itemization';
+  } else if (hasAnyDisclosedComponent) {
+    statusNotice = totalAssetsDisclosed
+      ? 'Partial itemization — complete component breakdown not disclosed in filing'
+      : 'Total assets not disclosed in filing — partial itemization shown as filed';
+  } else {
+    if (!totalAssetsDisclosed) {
+      statusNotice = 'Assets not disclosed in filing';
+    } else if (isZeroTotal) {
+      statusNotice = 'Affirmative zero assets disclosed';
+    } else {
+      statusNotice = 'Component breakdown not itemized in filing';
+    }
+  }
+
+  let percentages: BreakdownState['percentages'] = null;
+  if (hasCompleteBreakdown && totalAssets && totalAssets > 0) {
+    const total = totalAssets;
+    const selfMov = record.selfMovableAssets ?? 0;
+    const selfImm = record.selfImmovableAssets ?? 0;
+    const spouseMov = record.spouseMovableAssets ?? 0;
+    const spouseImm = record.spouseImmovableAssets ?? 0;
+    const dep = record.dependentsAssets ?? 0;
+
+    percentages = {
+      selfMovPct: Math.round((selfMov / total) * 100),
+      selfImmPct: Math.round((selfImm / total) * 100),
+      spousePct: Math.round(((spouseMov + spouseImm) / total) * 100),
+      depPct: dep > 0 ? Math.round((dep / total) * 100) : 0,
+    };
+  }
+
+  const components: BreakdownComponentItem[] = [
+    {
+      key: 'selfMovable',
+      label: 'Self Movable',
+      value: record.selfMovableAssets,
+      formattedValue: formatINR(record.selfMovableAssets),
+      isDisclosed: record.selfMovableAssets != null,
+    },
+    {
+      key: 'selfImmovable',
+      label: 'Self Immovable',
+      value: record.selfImmovableAssets,
+      formattedValue: formatINR(record.selfImmovableAssets),
+      isDisclosed: record.selfImmovableAssets != null,
+    },
+    {
+      key: 'spouseMovable',
+      label: 'Spouse Movable',
+      value: record.spouseMovableAssets,
+      formattedValue: formatINR(record.spouseMovableAssets),
+      isDisclosed: record.spouseMovableAssets != null,
+    },
+    {
+      key: 'spouseImmovable',
+      label: 'Spouse Immovable',
+      value: record.spouseImmovableAssets,
+      formattedValue: formatINR(record.spouseImmovableAssets),
+      isDisclosed: record.spouseImmovableAssets != null,
+    },
+  ];
+
+  if (record.dependentsAssets !== undefined) {
+    components.push({
+      key: 'dependents',
+      label: 'Dependents',
+      value: record.dependentsAssets,
+      formattedValue: formatINR(record.dependentsAssets),
+      isDisclosed: record.dependentsAssets != null,
+    });
+  }
+
+  return {
+    hasCompleteBreakdown,
+    hasAnyDisclosedComponent,
+    allComponentsUndisclosed,
+    totalAssetsDisclosed,
+    isZeroTotal,
+    statusNotice,
+    percentages,
+    components,
+  };
 }
 
 export default function FinancialBreakdownCard({ records, compact }: Props) {
@@ -54,31 +187,7 @@ export default function FinancialBreakdownCard({ records, compact }: Props) {
     growthPercent = Math.round(((totalAssets - previous.totalAssets) / previous.totalAssets) * 100);
   }
 
-  // Complete component breakdown: ALL 4 core components must be disclosed
-  const hasCompleteBreakdown =
-    latest.selfMovableAssets != null &&
-    latest.selfImmovableAssets != null &&
-    latest.spouseMovableAssets != null &&
-    latest.spouseImmovableAssets != null;
-
-  const hasPartialBreakdown =
-    !hasCompleteBreakdown &&
-    (latest.selfMovableAssets != null ||
-     latest.selfImmovableAssets != null ||
-     latest.spouseMovableAssets != null ||
-     latest.spouseImmovableAssets != null);
-
-  const total = totalAssets && totalAssets > 0 ? totalAssets : 1;
-  const selfMov = latest.selfMovableAssets ?? 0;
-  const selfImm = latest.selfImmovableAssets ?? 0;
-  const spouseMov = latest.spouseMovableAssets ?? 0;
-  const spouseImm = latest.spouseImmovableAssets ?? 0;
-  const dep = latest.dependentsAssets ?? 0;
-
-  const selfMovPct = Math.round((selfMov / total) * 100);
-  const selfImmPct = Math.round((selfImm / total) * 100);
-  const spousePct = Math.round(((spouseMov + spouseImm) / total) * 100);
-  const depPct = Math.round((dep / total) * 100);
+  const breakdownState = resolveBreakdownState(latest);
 
   if (compact) {
     return (
@@ -139,30 +248,30 @@ export default function FinancialBreakdownCard({ records, compact }: Props) {
       {/* Asset Breakdown Section */}
       <View style={styles.breakdownSection}>
         <Text style={[styles.breakdownTitle, { color: colors.textSecondary }]}>Asset Breakdown</Text>
-        {hasCompleteBreakdown && totalAssets != null && totalAssets > 0 ? (
+        {breakdownState.hasCompleteBreakdown && breakdownState.percentages ? (
           <>
             <View style={[styles.stackBar, { backgroundColor: colors.surfaceElevated }]}>
-              <View style={[styles.stackSegment, { flex: Math.max(1, selfMovPct), backgroundColor: colors.teal }]} />
-              <View style={[styles.stackSegment, { flex: Math.max(1, selfImmPct), backgroundColor: colors.success }]} />
-              <View style={[styles.stackSegment, { flex: Math.max(1, spousePct), backgroundColor: colors.gold }]} />
-              {depPct > 0 && <View style={[styles.stackSegment, { flex: depPct, backgroundColor: colors.primary }]} />}
+              <View style={[styles.stackSegment, { flex: Math.max(1, breakdownState.percentages.selfMovPct), backgroundColor: colors.teal }]} />
+              <View style={[styles.stackSegment, { flex: Math.max(1, breakdownState.percentages.selfImmPct), backgroundColor: colors.success }]} />
+              <View style={[styles.stackSegment, { flex: Math.max(1, breakdownState.percentages.spousePct), backgroundColor: colors.gold }]} />
+              {breakdownState.percentages.depPct > 0 && <View style={[styles.stackSegment, { flex: breakdownState.percentages.depPct, backgroundColor: colors.primary }]} />}
             </View>
             <View style={styles.legendRow}>
               <LegendItem color={colors.teal} label="Self Movable" value={formatINR(latest.selfMovableAssets)} textSecondary={colors.textSecondary} textPrimary={colors.text} />
               <LegendItem color={colors.success} label="Self Immovable" value={formatINR(latest.selfImmovableAssets)} textSecondary={colors.textSecondary} textPrimary={colors.text} />
             </View>
             <View style={styles.legendRow}>
-              <LegendItem color={colors.gold} label="Spouse" value={formatINR(spouseMov + spouseImm)} textSecondary={colors.textSecondary} textPrimary={colors.text} />
-              {dep > 0 && (
+              <LegendItem color={colors.gold} label="Spouse" value={formatINR((latest.spouseMovableAssets ?? 0) + (latest.spouseImmovableAssets ?? 0))} textSecondary={colors.textSecondary} textPrimary={colors.text} />
+              {latest.dependentsAssets != null && latest.dependentsAssets > 0 && (
                 <LegendItem color={colors.primary} label="Dependents" value={formatINR(latest.dependentsAssets)} textSecondary={colors.textSecondary} textPrimary={colors.text} />
               )}
             </View>
           </>
-        ) : hasPartialBreakdown && totalAssets != null ? (
+        ) : breakdownState.hasAnyDisclosedComponent ? (
           <>
             <View style={[styles.netWorthRow, { backgroundColor: colors.surfaceElevated, borderColor: colors.border, borderWidth: 1, marginBottom: 8 }]}>
               <Text style={[styles.netWorthLabel, { color: colors.textMuted }]}>
-                Partial itemization — complete component breakdown not disclosed in filing
+                {breakdownState.statusNotice}
               </Text>
             </View>
             <View style={styles.legendRow}>
@@ -173,7 +282,7 @@ export default function FinancialBreakdownCard({ records, compact }: Props) {
               <LegendItem color={colors.gold} label="Spouse Movable" value={formatINR(latest.spouseMovableAssets)} textSecondary={colors.textSecondary} textPrimary={colors.text} />
               <LegendItem color={colors.gold} label="Spouse Immovable" value={formatINR(latest.spouseImmovableAssets)} textSecondary={colors.textSecondary} textPrimary={colors.text} />
             </View>
-            {latest.dependentsAssets != null && (
+            {latest.dependentsAssets !== undefined && (
               <View style={styles.legendRow}>
                 <LegendItem color={colors.primary} label="Dependents" value={formatINR(latest.dependentsAssets)} textSecondary={colors.textSecondary} textPrimary={colors.text} />
               </View>
@@ -182,7 +291,7 @@ export default function FinancialBreakdownCard({ records, compact }: Props) {
         ) : (
           <View style={[styles.netWorthRow, { backgroundColor: colors.surfaceElevated, borderColor: colors.border, borderWidth: 1 }]}>
             <Text style={[styles.netWorthLabel, { color: colors.textMuted }]}>
-              {totalAssets == null ? 'Assets not disclosed' : 'Component breakdown not itemized in filing'}
+              {breakdownState.statusNotice}
             </Text>
           </View>
         )}
