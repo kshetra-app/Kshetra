@@ -2,8 +2,8 @@
   "milestone": "W021.5 / B2.2-E",
   "defect": "DQ-W021.5-B2.2E-001",
   "defectStatus": "STRICTLY OPEN",
-  "directive": "W021.5-CTO-DIRECTIVE-071",
-  "generatedAt": "2026-10-15T15:32:18.614Z",
+  "directive": "W021.5-CTO-DIRECTIVE-072",
+  "generatedAt": "2026-10-15T16:09:22.174Z",
   "gitBaseline": {
     "startingCommit": "20d5ea575fa1595648fcceee07ddf0d45b4973a3",
     "canonicalBranch": "master",
@@ -11,7 +11,8 @@
     "verifiedCommit": "d766c9f9bb4eae8411fa539ac241134133dd0054",
     "evidenceUpdateCommit": "ba2a44a1a80796984315ff762ce595184b352945",
     "coordinateClosureCommit": "ab829a2e09892d03f94370d9f701ccef6a8dd9c2",
-    "provenanceBaseline": "ab829a2e09892d03f94370d9f701ccef6a8dd9c2"
+    "provenanceBaseline": "ab829a2e09892d03f94370d9f701ccef6a8dd9c2",
+    "directive072BaselineCommit": "fa971e62390f18cb1ccd69e81cb322bc2f9b3492"
   },
   "authoritativeAffidavitManifest": {
     "path": "reports/w021_5b2_b2_2e_affidavit_manifest.json",
@@ -272,31 +273,31 @@
     },
     {
       "path": "reports/w021_5_financial_remediation_adjudication_manifest.json",
-      "description": "Row-level financial remediation adjudication manifest evaluating all 4,523 candidate affidavits across asset and liability dimensions",
-      "byteLength": 11508973,
-      "sha256": "2b2c7c88fe8f49666d6b4b0f322b77a846602a88c3efd414f093f1ab034e8b94",
-      "gitBlobSha": "f72f267b93163130727e41688c4b228e4899d4e3"
+      "byteLength": 14474653,
+      "sha256": "d942e42cd19d84dbfb525ea975f3135c104b79e75d6b4871d97b7525c3046bb7",
+      "gitBlobSha": "5ecd33fd23ca3e659916c532fba5953d0abe2d27",
+      "description": "Row-level financial remediation adjudication manifest evaluating all 4,523 candidate affidavits with actual verifier execution"
     },
     {
       "path": "reports/w021_5_financial_remediation_adjudication_summary.json",
-      "description": "Machine-readable validation summary exposing population counts, eligibility counts, unresolved conflicts, schema feasibility, and test outcomes",
-      "byteLength": 4697,
-      "sha256": "05e96895440271ddc486ac3e9ce5b68db99ff1697b57114a39439feaaf85e70c",
-      "gitBlobSha": "39d6d1da3bc88cc6ae0c19150b964d129613355a"
+      "byteLength": 6250,
+      "sha256": "3ade22be636026249404aff0c37bcbd4cf5fbb6f4383e66ee45ee54241ccc5f0",
+      "gitBlobSha": "6cca62ece235be945be5583432999bbca789567d",
+      "description": "Machine-readable validation summary exposing population counts, recomputed eligibility totals, verifier outcome breakdown, and stable review IDs"
     },
     {
       "path": "scripts/tests/adjudication_manifest.test.mjs",
-      "description": "12-test automated validation suite verifying population invariants, group partition, zero/missing segregation, and conflict tracking",
-      "byteLength": 10936,
-      "sha256": "6d74c2f532365fc9f06c03bc0412ac45819c71c2b4b34a6520453db6acb6853d",
-      "gitBlobSha": "2fed6ebb47ef82ba78ce6775b1b70d5231f706cc"
+      "byteLength": 21831,
+      "sha256": "b2bb5d3ba5ca98619b56a7710fa676c8b0c5d23e62ecc8efd47cb81472ae298c",
+      "gitBlobSha": "b1125e32203926412d6567adc626f3bfa41ba73e",
+      "description": "25-test automated validation and adversarial test suite verifying population invariants, verifier gates, and fail-closed controls"
     },
     {
       "path": "tests/adjudication_manifest.test.mjs",
-      "description": "Top-level test delegator wrapper for adjudication manifest test discovery",
       "byteLength": 231,
       "sha256": "7e2c06f2de7f4da16a0858b22926e8d48a20cd20fc11be010121f61b88d28abf",
-      "gitBlobSha": "d99fdff3755780fc43f915d02ea00c8c888224cd"
+      "gitBlobSha": "d99fdff3755780fc43f915d02ea00c8c888224cd",
+      "description": "Top-level test delegator wrapper for adjudication manifest test discovery"
     },
     {
       "path": "reports/W021.5-CTO-DIRECTIVE-071-IMPLEMENTATION-REPORT.md",
@@ -304,6 +305,48 @@
       "byteLength": 19894,
       "sha256": "b18101ad7dce9418732cb4260b21f14e596d2541863f7a1e0e00a9d6dc01c5d2",
       "gitBlobSha": "15ea4a00136e7a13abf6755d01ccd8263164076e"
+    },
+    {
+      "path": "reports/W021.5-CTO-DIRECTIVE-072-IMPLEMENTATION-REPORT.md",
+      "byteLength": 20571,
+      "sha256": "7b1e6a33f2c1ca0bd1ba81591c56b188303559ea53366a2f2e365feedee7e52e",
+      "gitBlobSha": "f1ac6f7a668c5742efac209f840f998a4817a80d",
+      "description": "Comprehensive Directive 072 implementation report covering adjudication evidence integrity, verifier integration, fail-closed validation, and database evidence taxonomy"
+    },
+    {
+      "path": "reports/evidence/adjudication_manifest_test_stdout.txt",
+      "byteLength": 2652,
+      "sha256": "c8bec17020ccca241b69dff36d1da012ab46db95eeca338b9f9f517f6340ae86",
+      "gitBlobSha": "bcf282b405ca61fe63254e68e9a4f85f8834180a",
+      "description": "Raw stdout output from 25-test adjudication manifest test suite execution"
+    },
+    {
+      "path": "reports/evidence/adjudication_manifest_test_results.json",
+      "byteLength": 3723,
+      "sha256": "ddc7a95860145314b06315010e721fdd77097b1a0c7462f531f5d2bba89e3d3c",
+      "gitBlobSha": "14935bc95139d4b0c83b5782612cfc9425ca2c29",
+      "description": "Machine-readable test results for all 25 tests in the Directive 072 adjudication test battery"
+    },
+    {
+      "path": "scripts/generate_adjudication_manifest.mjs",
+      "byteLength": 20399,
+      "sha256": "4f8b27c58b0d8e2395b68606a56a46cfec5b84a2e67ab1d0d126e9c744c4b045",
+      "gitBlobSha": "e8854b979b77945ea9e525d8d6ba5fe9af3320a3",
+      "description": "Manifest generator script with real validateCorrectionEligibility execution, raw SQL tuple accounting, and crosswalk bijection"
+    },
+    {
+      "path": "scripts/audit_adjudication_reconciliation.mjs",
+      "byteLength": 20422,
+      "sha256": "87ea0aef99e27a42cdc56c8455a72730c4ba1ec458669cccbb2fa6b62fbc9d84",
+      "gitBlobSha": "35b12b3c4729a4032432cad720b9f5053434a1f3",
+      "description": "Row-level audit script verifying exact mathematical invariants, SQL chunk coverage, and verifier integration"
+    },
+    {
+      "path": "scripts/generate_adjudication_summary.mjs",
+      "byteLength": 8930,
+      "sha256": "1079c9b33568f2e151d6f2831c10ef69f013feb087947a3bcd2d229776739549",
+      "gitBlobSha": "ff3d0dbc65840393894e62f77b02b7457e5de281",
+      "description": "Summary generator recomputing eligibility totals directly from row-level entries and grouping review IDs"
     }
   ]
 }

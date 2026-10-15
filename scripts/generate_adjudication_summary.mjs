@@ -5,44 +5,133 @@ const REPO_ROOT = process.cwd();
 const manifestPath = path.join(REPO_ROOT, 'reports/w021_5_financial_remediation_adjudication_manifest.json');
 const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
 
+// Independently recompute counts directly from row-level entries
+const recomputedGroupCounts = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
+const recomputedAssetCounts = { ELIGIBLE: 0, INELIGIBLE: 0, REQUIRES_REVIEW: 0 };
+const recomputedLiabilityCounts = { ELIGIBLE: 0, INELIGIBLE: 0, REQUIRES_REVIEW: 0 };
+
+const assetRejectionMap = {};
+const liabilityRejectionMap = {};
+
+const assetRequiresReviewIdsByReason = {};
+const liabilityRequiresReviewIdsByReason = {};
+
+for (const aff of manifest.affidavits) {
+  recomputedGroupCounts[aff.group]++;
+  
+  // Asset
+  const assetElig = aff.dimensions.asset.eligibility;
+  recomputedAssetCounts[assetElig]++;
+  if (assetElig === 'REQUIRES_REVIEW') {
+    const reasonKey = (aff.dimensions.asset.verifierRejectionReason || 'UNKNOWN').split(':')[0].trim();
+    assetRejectionMap[reasonKey] = (assetRejectionMap[reasonKey] || 0) + 1;
+    if (!assetRequiresReviewIdsByReason[reasonKey]) {
+      assetRequiresReviewIdsByReason[reasonKey] = [];
+    }
+    assetRequiresReviewIdsByReason[reasonKey].push(aff.affidavitId);
+  }
+  
+  // Liability
+  const liabElig = aff.dimensions.liability.eligibility;
+  recomputedLiabilityCounts[liabElig]++;
+  if (liabElig === 'REQUIRES_REVIEW') {
+    const reasonKey = (aff.dimensions.liability.verifierRejectionReason || 'UNKNOWN').split(':')[0].trim();
+    liabilityRejectionMap[reasonKey] = (liabilityRejectionMap[reasonKey] || 0) + 1;
+    if (!liabilityRequiresReviewIdsByReason[reasonKey]) {
+      liabilityRequiresReviewIdsByReason[reasonKey] = [];
+    }
+    liabilityRequiresReviewIdsByReason[reasonKey].push(aff.affidavitId);
+  }
+}
+
+// Assert recomputed counts match manifest population summary
+if (
+  recomputedAssetCounts.ELIGIBLE !== manifest.populationSummary.eligibilitySummary.assetDimension.eligibleCount ||
+  recomputedAssetCounts.INELIGIBLE !== manifest.populationSummary.eligibilitySummary.assetDimension.ineligibleCount ||
+  recomputedAssetCounts.REQUIRES_REVIEW !== manifest.populationSummary.eligibilitySummary.assetDimension.requiresReviewCount ||
+  recomputedLiabilityCounts.ELIGIBLE !== manifest.populationSummary.eligibilitySummary.liabilityDimension.eligibleCount ||
+  recomputedLiabilityCounts.INELIGIBLE !== manifest.populationSummary.eligibilitySummary.liabilityDimension.ineligibleCount ||
+  recomputedLiabilityCounts.REQUIRES_REVIEW !== manifest.populationSummary.eligibilitySummary.liabilityDimension.requiresReviewCount
+) {
+  throw new Error('COUNT_MISMATCH: Recomputed row-level counts disagree with manifest summary counts');
+}
+
 const summary = {
   manifestVersion: manifest.manifestVersion,
-  directive: manifest.directive,
+  directive: 'W021.5-CTO-DIRECTIVE-072',
   milestone: manifest.milestone,
   defect: manifest.defect,
   defectStatus: manifest.defectStatus,
   governance: manifest.governance,
-  generatedAt: manifest.generatedAt,
+  generatedAt: new Date().toISOString(),
   gitBaseline: {
-    provenanceBaselineCommit: 'ab829a2e09892d03f94370d9f701ccef6a8dd9c2',
+    baselineCommit: 'fa971e62390f18cb1ccd69e81cb322bc2f9b3492',
     canonicalBranch: 'master',
     remoteRepository: 'https://github.com/kshetra-app/Kshetra.git'
   },
   populationReconciliation: {
     totalRetainedAffidavits: manifest.populationSummary.totalAffidavits,
-    fiveGroupCounts: manifest.populationSummary.fiveGroupClassification,
+    fiveGroupCounts: {
+      group1_positiveAssets_positiveLiabilities: recomputedGroupCounts[1],
+      group2_positiveAssets_zeroLiabilities: recomputedGroupCounts[2],
+      group3_positiveAssets_missingLiabilities: recomputedGroupCounts[3],
+      group4_missingAssets_missingLiabilities: recomputedGroupCounts[4],
+      group5_zeroAssets_zeroLiabilities: recomputedGroupCounts[5],
+      total: recomputedGroupCounts[1] + recomputedGroupCounts[2] + recomputedGroupCounts[3] + recomputedGroupCounts[4] + recomputedGroupCounts[5]
+    },
     dimensionalTotals: manifest.populationSummary.totalsByDimension,
     subsetIntegrity: manifest.populationSummary.subsetIntegrity
   },
   eligibilityBreakdown: {
-    assetDimension: manifest.populationSummary.eligibilitySummary.assetDimension,
-    liabilityDimension: manifest.populationSummary.eligibilitySummary.liabilityDimension
+    assetDimension: {
+      totalEvaluations: manifest.affidavits.length,
+      eligibleCount: recomputedAssetCounts.ELIGIBLE,
+      ineligibleCount: recomputedAssetCounts.INELIGIBLE,
+      requiresReviewCount: recomputedAssetCounts.REQUIRES_REVIEW,
+      verifierRejectionBreakdown: assetRejectionMap
+    },
+    liabilityDimension: {
+      totalEvaluations: manifest.affidavits.length,
+      eligibleCount: recomputedLiabilityCounts.ELIGIBLE,
+      ineligibleCount: recomputedLiabilityCounts.INELIGIBLE,
+      requiresReviewCount: recomputedLiabilityCounts.REQUIRES_REVIEW,
+      verifierRejectionBreakdown: liabilityRejectionMap
+    }
+  },
+  requiresReviewClassification: {
+    assetDimension: {
+      missingLedgerEntryCount: (assetRequiresReviewIdsByReason['MISSING_LEDGER_ENTRY'] || []).length,
+      sourceValueUnavailableCount: (assetRequiresReviewIdsByReason['SOURCE_VALUE_UNAVAILABLE'] || []).length,
+      missingIdentityFieldCount: (assetRequiresReviewIdsByReason['MISSING_REQUIRED_IDENTITY_FIELD'] || []).length,
+      unresolvedSourceConflictCount: (assetRequiresReviewIdsByReason['UNRESOLVED_SOURCE_CONFLICT'] || []).length,
+      totalRequiresReview: recomputedAssetCounts.REQUIRES_REVIEW,
+      sampleIdsByReason: {
+        MISSING_LEDGER_ENTRY: (assetRequiresReviewIdsByReason['MISSING_LEDGER_ENTRY'] || []).slice(0, 5),
+        SOURCE_VALUE_UNAVAILABLE: (assetRequiresReviewIdsByReason['SOURCE_VALUE_UNAVAILABLE'] || []).slice(0, 5),
+        MISSING_REQUIRED_IDENTITY_FIELD: (assetRequiresReviewIdsByReason['MISSING_REQUIRED_IDENTITY_FIELD'] || []).slice(0, 5),
+        UNRESOLVED_SOURCE_CONFLICT: assetRequiresReviewIdsByReason['UNRESOLVED_SOURCE_CONFLICT'] || []
+      }
+    },
+    liabilityDimension: {
+      missingLedgerEntryCount: (liabilityRequiresReviewIdsByReason['MISSING_LEDGER_ENTRY'] || []).length,
+      missingIdentityFieldCount: (liabilityRequiresReviewIdsByReason['MISSING_REQUIRED_IDENTITY_FIELD'] || []).length,
+      totalRequiresReview: recomputedLiabilityCounts.REQUIRES_REVIEW,
+      sampleIdsByReason: {
+        MISSING_LEDGER_ENTRY: (liabilityRequiresReviewIdsByReason['MISSING_LEDGER_ENTRY'] || []).slice(0, 5),
+        MISSING_REQUIRED_IDENTITY_FIELD: (liabilityRequiresReviewIdsByReason['MISSING_REQUIRED_IDENTITY_FIELD'] || []).slice(0, 5)
+      }
+    }
   },
   unresolvedConflicts: {
     count: manifest.populationSummary.unresolvedConflictsCount,
     items: manifest.populationSummary.unresolvedConflicts
   },
-  verifierFindings: {
-    totalOnlyStatesLackingComponentLedger: 3403,
-    mpProfilesLackingAcNoInParser: 543,
-    nestedFinancialHistoryProfiles: 1120,
-    sourceCoordinateMismatchCount: 1,
-    sourceCoordinateMismatchId: '0215b22e-aff-00001430'
-  },
   schemaFeasibilityAnalysis: {
+    status: 'DESIGN_PROPOSAL_ONLY — NON_OPERATIONAL',
     currentTotalAssetsMechanic: 'PostgreSQL GENERATED ALWAYS AS (self_movable + self_immovable + spouse_movable + spouse_immovable) STORED',
     currentEvaluatedValueOnStaging: 0,
-    reasonEvaluatesToZero: 'Chunks 02-05 omitted component columns during SQL ingestion, assigning DEFAULT 0 to each component',
+    evidenceBasis: 'SCHEMA_DERIVED_EXPECTATION',
+    evidenceBasisDetails: 'Chunks 02-05 omitted component columns during SQL ingestion, assigning DEFAULT 0 to each component (0+0+0+0=0)',
     limitationOfGeneratedColumn: 'Cannot represent source-backed positive totals when component breakdown is unavailable (evaluates to NULL or false 0)',
     proposedSchemaChange: 'ALTER TABLE candidate_affidavits ALTER COLUMN total_assets DROP EXPRESSION IF EXISTS (Method A DDL Normalization)',
     statesSupportedAfterConversion: [
@@ -53,10 +142,10 @@ const summary = {
       'Positive total with complete breakdown (total stored, all 4 components stored)'
     ],
     zeroVsMissingSegregationPreserved: true,
-    unverifiedAssumptions: [
+    unverifiedAssumptionsDueToAirGap: [
       'Exact production PostgreSQL version unverified due to air-gap (PostgreSQL 12+ required for DROP EXPRESSION)',
       'Locking behavior and transaction concurrency during DDL on production Supabase',
-      'Presence of dependent views or triggers referencing total_assets'
+      'Presence of dependent views or triggers referencing total_assets in pg_catalog'
     ],
     migrationRisks: [
       'Risk of leaving DEFAULT 0 on components re-introducing false zeros',
@@ -64,25 +153,10 @@ const summary = {
       'Rollback complexity if DDL alteration needs reversion'
     ]
   },
-  testOutcomes: {
-    verifierTestSuite: {
-      command: 'node tests/financial_remediation.test.mjs',
-      totalTests: 105,
-      passed: 105,
-      failed: 0,
-      exitCode: 0
-    },
-    adjudicationValidationSuite: {
-      command: 'node tests/adjudication_manifest.test.mjs',
-      totalTests: 12,
-      passed: 12,
-      failed: 0,
-      exitCode: 0
-    }
-  },
   governanceCompliance: {
     ruleIV001NonSelfAcceptance: true,
     defectRemainsStrictlyOpen: true,
+    acceptanceAuthority: 'CTO only',
     delhi17DemographicsPreservedNotVerified: true,
     productionSupabaseUntouched: true,
     stagingSupabaseUntouched: true,
@@ -92,4 +166,4 @@ const summary = {
 
 const summaryPath = path.join(REPO_ROOT, 'reports/w021_5_financial_remediation_adjudication_summary.json');
 fs.writeFileSync(summaryPath, JSON.stringify(summary, null, 2), 'utf8');
-console.log(`Wrote adjudication summary to ${summaryPath}`);
+console.log(`Wrote Directive 072 adjudication summary to ${summaryPath}`);

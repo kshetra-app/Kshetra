@@ -1,13 +1,13 @@
 {
   "manifestVersion": "1.0.0",
-  "directive": "W021.5-CTO-DIRECTIVE-071",
+  "directive": "W021.5-CTO-DIRECTIVE-072",
   "milestone": "W021.5 / B2.2-E — Candidate Affidavits and Civic Extensions",
   "defect": "DQ-W021.5-B2.2E-001",
   "defectStatus": "STRICTLY OPEN — AWAITING INDEPENDENT CTO ADJUDICATION",
   "governance": "Rule IV-001 — Non-Self-Acceptance",
-  "generatedAt": "2026-10-15T15:26:59.926Z",
+  "generatedAt": "2026-10-15T16:02:59.559Z",
   "gitBaseline": {
-    "provenanceBaselineCommit": "ab829a2e09892d03f94370d9f701ccef6a8dd9c2",
+    "baselineCommit": "fa971e62390f18cb1ccd69e81cb322bc2f9b3492",
     "canonicalBranch": "master",
     "remoteRepository": "https://github.com/kshetra-app/Kshetra.git"
   },
@@ -41,13 +41,79 @@
       "totalEvaluations": 4523,
       "eligibleCount": 0,
       "ineligibleCount": 111,
-      "requiresReviewCount": 4412
+      "requiresReviewCount": 4412,
+      "verifierRejectionBreakdown": {
+        "SOURCE_VALUE_UNAVAILABLE": 868,
+        "MISSING_LEDGER_ENTRY": 3402,
+        "UNRESOLVED_SOURCE_CONFLICT": 1,
+        "MISSING_REQUIRED_IDENTITY_FIELD": 141
+      }
     },
     "liabilityDimension": {
       "totalEvaluations": 4523,
       "eligibleCount": 0,
       "ineligibleCount": 3630,
-      "requiresReviewCount": 893
+      "requiresReviewCount": 893,
+      "verifierRejectionBreakdown": {
+        "MISSING_LEDGER_ENTRY": 849,
+        "MISSING_REQUIRED_IDENTITY_FIELD": 44
+      }
+    }
+  },
+  "requiresReviewClassification": {
+    "assetDimension": {
+      "missingLedgerEntryCount": 3402,
+      "sourceValueUnavailableCount": 868,
+      "missingIdentityFieldCount": 141,
+      "unresolvedSourceConflictCount": 1,
+      "totalRequiresReview": 4412,
+      "sampleIdsByReason": {
+        "MISSING_LEDGER_ENTRY": [
+          "0215b22e-aff-00000173",
+          "0215b22e-aff-00000174",
+          "0215b22e-aff-00000175",
+          "0215b22e-aff-00000176",
+          "0215b22e-aff-00000177"
+        ],
+        "SOURCE_VALUE_UNAVAILABLE": [
+          "0215b22e-aff-00000001",
+          "0215b22e-aff-00000002",
+          "0215b22e-aff-00000003",
+          "0215b22e-aff-00000004",
+          "0215b22e-aff-00000005"
+        ],
+        "MISSING_REQUIRED_IDENTITY_FIELD": [
+          "0215b22e-aff-00003990",
+          "0215b22e-aff-00003991",
+          "0215b22e-aff-00003993",
+          "0215b22e-aff-00003997",
+          "0215b22e-aff-00004005"
+        ],
+        "UNRESOLVED_SOURCE_CONFLICT": [
+          "0215b22e-aff-00001430"
+        ]
+      }
+    },
+    "liabilityDimension": {
+      "missingLedgerEntryCount": 849,
+      "missingIdentityFieldCount": 44,
+      "totalRequiresReview": 893,
+      "sampleIdsByReason": {
+        "MISSING_LEDGER_ENTRY": [
+          "0215b22e-aff-00000173",
+          "0215b22e-aff-00000174",
+          "0215b22e-aff-00000175",
+          "0215b22e-aff-00000177",
+          "0215b22e-aff-00000178"
+        ],
+        "MISSING_REQUIRED_IDENTITY_FIELD": [
+          "0215b22e-aff-00003990",
+          "0215b22e-aff-00004008",
+          "0215b22e-aff-00004013",
+          "0215b22e-aff-00004051",
+          "0215b22e-aff-00004058"
+        ]
+      }
     }
   },
   "unresolvedConflicts": {
@@ -60,17 +126,12 @@
       }
     ]
   },
-  "verifierFindings": {
-    "totalOnlyStatesLackingComponentLedger": 3403,
-    "mpProfilesLackingAcNoInParser": 543,
-    "nestedFinancialHistoryProfiles": 1120,
-    "sourceCoordinateMismatchCount": 1,
-    "sourceCoordinateMismatchId": "0215b22e-aff-00001430"
-  },
   "schemaFeasibilityAnalysis": {
+    "status": "DESIGN_PROPOSAL_ONLY — NON_OPERATIONAL",
     "currentTotalAssetsMechanic": "PostgreSQL GENERATED ALWAYS AS (self_movable + self_immovable + spouse_movable + spouse_immovable) STORED",
     "currentEvaluatedValueOnStaging": 0,
-    "reasonEvaluatesToZero": "Chunks 02-05 omitted component columns during SQL ingestion, assigning DEFAULT 0 to each component",
+    "evidenceBasis": "SCHEMA_DERIVED_EXPECTATION",
+    "evidenceBasisDetails": "Chunks 02-05 omitted component columns during SQL ingestion, assigning DEFAULT 0 to each component (0+0+0+0=0)",
     "limitationOfGeneratedColumn": "Cannot represent source-backed positive totals when component breakdown is unavailable (evaluates to NULL or false 0)",
     "proposedSchemaChange": "ALTER TABLE candidate_affidavits ALTER COLUMN total_assets DROP EXPRESSION IF EXISTS (Method A DDL Normalization)",
     "statesSupportedAfterConversion": [
@@ -81,10 +142,10 @@
       "Positive total with complete breakdown (total stored, all 4 components stored)"
     ],
     "zeroVsMissingSegregationPreserved": true,
-    "unverifiedAssumptions": [
+    "unverifiedAssumptionsDueToAirGap": [
       "Exact production PostgreSQL version unverified due to air-gap (PostgreSQL 12+ required for DROP EXPRESSION)",
       "Locking behavior and transaction concurrency during DDL on production Supabase",
-      "Presence of dependent views or triggers referencing total_assets"
+      "Presence of dependent views or triggers referencing total_assets in pg_catalog"
     ],
     "migrationRisks": [
       "Risk of leaving DEFAULT 0 on components re-introducing false zeros",
@@ -92,25 +153,10 @@
       "Rollback complexity if DDL alteration needs reversion"
     ]
   },
-  "testOutcomes": {
-    "verifierTestSuite": {
-      "command": "node tests/financial_remediation.test.mjs",
-      "totalTests": 105,
-      "passed": 105,
-      "failed": 0,
-      "exitCode": 0
-    },
-    "adjudicationValidationSuite": {
-      "command": "node tests/adjudication_manifest.test.mjs",
-      "totalTests": 12,
-      "passed": 12,
-      "failed": 0,
-      "exitCode": 0
-    }
-  },
   "governanceCompliance": {
     "ruleIV001NonSelfAcceptance": true,
     "defectRemainsStrictlyOpen": true,
+    "acceptanceAuthority": "CTO only",
     "delhi17DemographicsPreservedNotVerified": true,
     "productionSupabaseUntouched": true,
     "stagingSupabaseUntouched": true,

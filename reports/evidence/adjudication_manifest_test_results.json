@@ -1,0 +1,136 @@
+{
+  "suite": "adjudication_manifest_test_suite",
+  "directive": "W021.5-CTO-DIRECTIVE-072",
+  "executedAt": "2026-10-15T16:09:14.196Z",
+  "totalTests": 25,
+  "passed": 25,
+  "failed": 0,
+  "verdict": "PASS",
+  "results": [
+    {
+      "id": 1,
+      "name": "All 4,523 retained records are accounted for exactly once",
+      "status": "PASS"
+    },
+    {
+      "id": 2,
+      "name": "All 4,523 crosswalk entries map bijectively to unique target UUIDs",
+      "status": "PASS"
+    },
+    {
+      "id": 3,
+      "name": "Adversarial: Crosswalk missing an entry fails validation closed",
+      "status": "PASS"
+    },
+    {
+      "id": 4,
+      "name": "Five group counts reconcile exactly to established controls (3334/185/821/72/111)",
+      "status": "PASS"
+    },
+    {
+      "id": 5,
+      "name": "Asset dimensional controls (4340 positive, 72 missing != 0, 111 genuine zero)",
+      "status": "PASS"
+    },
+    {
+      "id": 6,
+      "name": "Liability dimensional controls (3334 positive, 893 missing != 0, 296 genuine zero)",
+      "status": "PASS"
+    },
+    {
+      "id": 7,
+      "name": "Exact subset containment: 72 missing assets ⊆ 893 missing liabilities",
+      "status": "PASS"
+    },
+    {
+      "id": 8,
+      "name": "Missing disclosures strictly distinguished from genuine zeros",
+      "status": "PASS"
+    },
+    {
+      "id": 9,
+      "name": "Raw SQL chunk tuples count exactly 4,523 with unique target UUIDs",
+      "status": "PASS"
+    },
+    {
+      "id": 10,
+      "name": "Adversarial: Duplicate target UUID detection fails closed",
+      "status": "PASS"
+    },
+    {
+      "id": 11,
+      "name": "Database state claims declare explicit offline evidence basis",
+      "status": "PASS"
+    },
+    {
+      "id": 12,
+      "name": "Adversarial: Prohibits claiming unverified LIVE_DATABASE_OBSERVATION",
+      "status": "PASS"
+    },
+    {
+      "id": 13,
+      "name": "No record is marked ELIGIBLE without passesExistingOfflineVerifier === true",
+      "status": "PASS"
+    },
+    {
+      "id": 14,
+      "name": "Existing verifier yields exactly 0 ELIGIBLE records across both dimensions",
+      "status": "PASS"
+    },
+    {
+      "id": 15,
+      "name": "Adversarial: Record marked ELIGIBLE without verifier pass triggers invariant error",
+      "status": "PASS"
+    },
+    {
+      "id": 16,
+      "name": "Ineligible records strictly correspond to currentRepresentedValue === proposedValue",
+      "status": "PASS"
+    },
+    {
+      "id": 17,
+      "name": "Adversarial: INELIGIBLE with unequal values fails closed",
+      "status": "PASS"
+    },
+    {
+      "id": 18,
+      "name": "Summary eligibility totals match row-level manifest counts exactly",
+      "status": "PASS"
+    },
+    {
+      "id": 19,
+      "name": "Adversarial: Summary claiming eligible when manifest has 0 fails closed",
+      "status": "PASS"
+    },
+    {
+      "id": 20,
+      "name": "Karnataka conflict (0215b22e-aff-00001430) isolated as REQUIRES_REVIEW with conflict metadata",
+      "status": "PASS"
+    },
+    {
+      "id": 21,
+      "name": "Adversarial: Attempting to bypass Karnataka conflict check throws error",
+      "status": "PASS"
+    },
+    {
+      "id": 22,
+      "name": "All referenced source files exist and SHA-256 hashes match",
+      "status": "PASS"
+    },
+    {
+      "id": 23,
+      "name": "Phantom affidavit 0215b22e-aff-00001571 is strictly absent from all artifacts",
+      "status": "PASS"
+    },
+    {
+      "id": 24,
+      "name": "17 Delhi demographic records remain preserved as NOT_VERIFIED",
+      "status": "PASS"
+    },
+    {
+      "id": 25,
+      "name": "Defect DQ-W021.5-B2.2E-001 declared STRICTLY OPEN with CTO Acceptance Authority",
+      "status": "PASS"
+    }
+  ]
+}

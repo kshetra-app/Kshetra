@@ -1,0 +1,31 @@
+================================================================
+KSHETRA W021.5 — DIRECTIVE 072 ADJUDICATION MANIFEST TEST SUITE
+================================================================
+[✓ PASS] Test 01: All 4,523 retained records are accounted for exactly once
+[✓ PASS] Test 02: All 4,523 crosswalk entries map bijectively to unique target UUIDs
+[✓ PASS] Test 03: Adversarial: Crosswalk missing an entry fails validation closed
+[✓ PASS] Test 04: Five group counts reconcile exactly to established controls (3334/185/821/72/111)
+[✓ PASS] Test 05: Asset dimensional controls (4340 positive, 72 missing != 0, 111 genuine zero)
+[✓ PASS] Test 06: Liability dimensional controls (3334 positive, 893 missing != 0, 296 genuine zero)
+[✓ PASS] Test 07: Exact subset containment: 72 missing assets ⊆ 893 missing liabilities
+[✓ PASS] Test 08: Missing disclosures strictly distinguished from genuine zeros
+[✓ PASS] Test 09: Raw SQL chunk tuples count exactly 4,523 with unique target UUIDs
+[✓ PASS] Test 10: Adversarial: Duplicate target UUID detection fails closed
+[✓ PASS] Test 11: Database state claims declare explicit offline evidence basis
+[✓ PASS] Test 12: Adversarial: Prohibits claiming unverified LIVE_DATABASE_OBSERVATION
+[✓ PASS] Test 13: No record is marked ELIGIBLE without passesExistingOfflineVerifier === true
+[✓ PASS] Test 14: Existing verifier yields exactly 0 ELIGIBLE records across both dimensions
+[✓ PASS] Test 15: Adversarial: Record marked ELIGIBLE without verifier pass triggers invariant error
+[✓ PASS] Test 16: Ineligible records strictly correspond to currentRepresentedValue === proposedValue
+[✓ PASS] Test 17: Adversarial: INELIGIBLE with unequal values fails closed
+[✓ PASS] Test 18: Summary eligibility totals match row-level manifest counts exactly
+[✓ PASS] Test 19: Adversarial: Summary claiming eligible when manifest has 0 fails closed
+[✓ PASS] Test 20: Karnataka conflict (0215b22e-aff-00001430) isolated as REQUIRES_REVIEW with conflict metadata
+[✓ PASS] Test 21: Adversarial: Attempting to bypass Karnataka conflict check throws error
+[✓ PASS] Test 22: All referenced source files exist and SHA-256 hashes match
+[✓ PASS] Test 23: Phantom affidavit 0215b22e-aff-00001571 is strictly absent from all artifacts
+[✓ PASS] Test 24: 17 Delhi demographic records remain preserved as NOT_VERIFIED
+[✓ PASS] Test 25: Defect DQ-W021.5-B2.2E-001 declared STRICTLY OPEN with CTO Acceptance Authority
+================================================================
+TEST SUITE SUMMARY: 25/25 PASSED, 0/25 FAILED
+================================================================
