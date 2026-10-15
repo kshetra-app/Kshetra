@@ -1,141 +1,167 @@
 {
   "suite": "adjudication_manifest_test_suite",
-  "directive": "W021.5-CTO-DIRECTIVE-073",
-  "executedAt": "2026-10-15T16:33:23.325Z",
+  "directive": "W021.5-CTO-DIRECTIVE-074",
+  "executedAt": "2026-10-15T17:05:42.712Z",
   "totalTests": 26,
   "passed": 26,
   "failed": 0,
   "verdict": "PASS",
   "results": [
     {
-      "id": 1,
+      "id": "Test 01",
       "name": "All 4,523 retained records are accounted for exactly once",
-      "status": "PASS"
+      "status": "PASS",
+      "error": null
     },
     {
-      "id": 2,
-      "name": "Production validateCrosswalk() verifies exact 4,523-row bijection and uniqueness",
-      "status": "PASS"
+      "id": "Test 02",
+      "name": "Production validateCrosswalk() verifies exact 4,523-row bijection, uniqueness, and canonical formats",
+      "status": "PASS",
+      "error": null
     },
     {
-      "id": 3,
+      "id": "Test 03",
       "name": "Production validateCrosswalk() rejects missing, duplicate, and malformed entries",
-      "status": "PASS"
+      "status": "PASS",
+      "error": null
     },
     {
-      "id": 4,
+      "id": "Test 04",
       "name": "Five group counts reconcile exactly to established controls (3334/185/821/72/111)",
-      "status": "PASS"
+      "status": "PASS",
+      "error": null
     },
     {
-      "id": 5,
+      "id": "Test 05",
       "name": "Asset dimensional controls (4340 positive, 72 missing != 0, 111 genuine zero)",
-      "status": "PASS"
+      "status": "PASS",
+      "error": null
     },
     {
-      "id": 6,
+      "id": "Test 06",
       "name": "Liability dimensional controls (3334 positive, 893 missing != 0, 296 genuine zero)",
-      "status": "PASS"
+      "status": "PASS",
+      "error": null
     },
     {
-      "id": 7,
+      "id": "Test 07",
       "name": "Exact subset containment: 72 missing assets ⊆ 893 missing liabilities",
-      "status": "PASS"
+      "status": "PASS",
+      "error": null
     },
     {
-      "id": 8,
+      "id": "Test 08",
       "name": "Missing disclosures strictly distinguished from genuine zeros",
-      "status": "PASS"
+      "status": "PASS",
+      "error": null
     },
     {
-      "id": 9,
-      "name": "Production validateSqlChunks() verifies 4,523 raw tuples and unique target UUIDs",
-      "status": "PASS"
+      "id": "Test 09",
+      "name": "Production validateSqlChunks() verifies 4,523 raw tuples, 18-column schema, and bidirectional crosswalk coverage",
+      "status": "PASS",
+      "error": null
     },
     {
-      "id": 10,
-      "name": "Production validateSqlChunks() rejects unknown targets, count mismatches, and duplicates",
-      "status": "PASS"
+      "id": "Test 10",
+      "name": "Production validateSqlChunks() rejects duplicates, unknown targets, count mismatches, malformed tuples, and missing coverage",
+      "status": "PASS",
+      "error": null
     },
     {
-      "id": 11,
+      "id": "Test 11",
       "name": "Database state claims declare explicit offline evidence basis with separated baseline",
-      "status": "PASS"
+      "status": "PASS",
+      "error": null
     },
     {
-      "id": 12,
+      "id": "Test 12",
       "name": "Adversarial: Prohibits claiming unverified LIVE_DATABASE_OBSERVATION across all rows",
-      "status": "PASS"
+      "status": "PASS",
+      "error": null
     },
     {
-      "id": 13,
+      "id": "Test 13",
       "name": "No record is marked ELIGIBLE without passesExistingOfflineVerifier === true",
-      "status": "PASS"
+      "status": "PASS",
+      "error": null
     },
     {
-      "id": 14,
+      "id": "Test 14",
       "name": "Existing verifier yields exactly 0 ELIGIBLE records across both dimensions",
-      "status": "PASS"
+      "status": "PASS",
+      "error": null
     },
     {
-      "id": 15,
-      "name": "Production validateEligibilityGate() rejects false ELIGIBLE and mismatched INELIGIBLE",
-      "status": "PASS"
+      "id": "Test 15",
+      "name": "Production validateEligibilityGate() rejects boolean false, truthy strings, numbers, invalid domains, and invalid states",
+      "status": "PASS",
+      "error": null
     },
     {
-      "id": 16,
+      "id": "Test 16",
       "name": "Ineligible records strictly correspond to expectedDatabaseValue === proposedValue",
-      "status": "PASS"
+      "status": "PASS",
+      "error": null
     },
     {
-      "id": 17,
+      "id": "Test 17",
       "name": "Production validateCorrectionEligibility() execution matches recorded row outcomes",
-      "status": "PASS"
+      "status": "PASS",
+      "error": null
     },
     {
-      "id": 18,
-      "name": "Production validateSummaryReconciliation() asserts bit-for-bit count equality",
-      "status": "PASS"
+      "id": "Test 18",
+      "name": "Production validateSummaryReconciliation() asserts complete bit-for-bit reconciliation across all controls",
+      "status": "PASS",
+      "error": null
     },
     {
-      "id": 19,
-      "name": "Production validateSummaryReconciliation() rejects deliberately inconsistent summary",
-      "status": "PASS"
+      "id": "Test 19",
+      "name": "Production validateSummaryReconciliation() rejects independent alterations across all summary dimensions",
+      "status": "PASS",
+      "error": null
     },
     {
-      "id": 20,
+      "id": "Test 20",
       "name": "Karnataka conflict (0215b22e-aff-00001430) isolated as REQUIRES_REVIEW with conflict metadata",
-      "status": "PASS"
+      "status": "PASS",
+      "error": null
     },
     {
-      "id": 21,
+      "id": "Test 21",
       "name": "Production validateCorrectionEligibility() rejects conflict bypass attempt",
-      "status": "PASS"
+      "status": "PASS",
+      "error": null
     },
     {
-      "id": 22,
+      "id": "Test 22",
       "name": "Production validateSourceEvidenceFile() verifies all referenced source files and hashes",
-      "status": "PASS"
+      "status": "PASS",
+      "error": null
     },
     {
-      "id": 23,
-      "name": "Production validateSourceEvidenceFile() rejects missing files and tampered hashes",
-      "status": "PASS"
+      "id": "Test 23",
+      "name": "Production validateSourceEvidenceFile() rejects missing files, omitted hashes, malformed hashes, tampered hashes, and path traversal",
+      "status": "PASS",
+      "error": null
     },
     {
-      "id": 24,
+      "id": "Test 24",
       "name": "Phantom affidavit 0215b22e-aff-00001571 is strictly absent from all artifacts",
-      "status": "PASS"
+      "status": "PASS",
+      "error": null
     },
     {
-      "id": 25,
+      "id": "Test 25",
       "name": "17 Delhi demographic records remain preserved as NOT_VERIFIED",
-      "status": "PASS"
+      "status": "PASS",
+      "error": null
     },
     {
-      "id": 26,
+      "id": "Test 26",
       "name": "Defect DQ-W021.5-B2.2E-001 declared STRICTLY OPEN with CTO Acceptance Authority",
-      "status": "PASS"
+      "status": "PASS",
+      "error": null
     }
   ]
 }

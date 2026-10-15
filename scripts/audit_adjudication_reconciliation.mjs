@@ -10,7 +10,7 @@ import {
 
 const REPO_ROOT = process.cwd();
 
-console.log('=== KSHETRA W021.5 / DIRECTIVE 073 RECONCILIATION AUDIT ===');
+console.log('=== KSHETRA W021.5 / DIRECTIVE 074 RECONCILIATION AUDIT ===');
 console.log('Repository Root:', REPO_ROOT);
 
 // 1. Load Authoritative Affidavit Manifest
@@ -78,7 +78,7 @@ const chunkFiles = [
   { file: '066_b2_2e_chunk_05_affidavits_part4.sql', expectedTuples: 905 }
 ];
 
-const { sqlMap: sqlChunkRecordMap, totalRawTuplesParsed } = validateSqlChunks(chunkFiles, crosswalkTargetUuidSet, REPO_ROOT);
+const { sqlMap: sqlChunkRecordMap, totalRawTuplesParsed } = validateSqlChunks(chunkFiles, crosswalkTargetUuidSet, REPO_ROOT, { assertFullCoverage: true });
 console.log(`Parsed and validated exactly ${sqlChunkRecordMap.size} unique records from SQL chunks`);
 
 // 6. Perform Row-Level Mathematical and Invariant Auditing

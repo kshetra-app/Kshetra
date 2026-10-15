@@ -1,29 +1,29 @@
 ================================================================
-KSHETRA W021.5 — DIRECTIVE 073 ADJUDICATION MANIFEST TEST SUITE
+KSHETRA W021.5 — DIRECTIVE 074 ADJUDICATION MANIFEST TEST SUITE
 ================================================================
 [✓ PASS] Test 01: All 4,523 retained records are accounted for exactly once
-[✓ PASS] Test 02: Production validateCrosswalk() verifies exact 4,523-row bijection and uniqueness
+[✓ PASS] Test 02: Production validateCrosswalk() verifies exact 4,523-row bijection, uniqueness, and canonical formats
 [✓ PASS] Test 03: Production validateCrosswalk() rejects missing, duplicate, and malformed entries
 [✓ PASS] Test 04: Five group counts reconcile exactly to established controls (3334/185/821/72/111)
 [✓ PASS] Test 05: Asset dimensional controls (4340 positive, 72 missing != 0, 111 genuine zero)
 [✓ PASS] Test 06: Liability dimensional controls (3334 positive, 893 missing != 0, 296 genuine zero)
 [✓ PASS] Test 07: Exact subset containment: 72 missing assets ⊆ 893 missing liabilities
 [✓ PASS] Test 08: Missing disclosures strictly distinguished from genuine zeros
-[✓ PASS] Test 09: Production validateSqlChunks() verifies 4,523 raw tuples and unique target UUIDs
-[✓ PASS] Test 10: Production validateSqlChunks() rejects unknown targets, count mismatches, and duplicates
+[✓ PASS] Test 09: Production validateSqlChunks() verifies 4,523 raw tuples, 18-column schema, and bidirectional crosswalk coverage
+[✓ PASS] Test 10: Production validateSqlChunks() rejects duplicates, unknown targets, count mismatches, malformed tuples, and missing coverage
 [✓ PASS] Test 11: Database state claims declare explicit offline evidence basis with separated baseline
 [✓ PASS] Test 12: Adversarial: Prohibits claiming unverified LIVE_DATABASE_OBSERVATION across all rows
 [✓ PASS] Test 13: No record is marked ELIGIBLE without passesExistingOfflineVerifier === true
 [✓ PASS] Test 14: Existing verifier yields exactly 0 ELIGIBLE records across both dimensions
-[✓ PASS] Test 15: Production validateEligibilityGate() rejects false ELIGIBLE and mismatched INELIGIBLE
+[✓ PASS] Test 15: Production validateEligibilityGate() rejects boolean false, truthy strings, numbers, invalid domains, and invalid states
 [✓ PASS] Test 16: Ineligible records strictly correspond to expectedDatabaseValue === proposedValue
 [✓ PASS] Test 17: Production validateCorrectionEligibility() execution matches recorded row outcomes
-[✓ PASS] Test 18: Production validateSummaryReconciliation() asserts bit-for-bit count equality
-[✓ PASS] Test 19: Production validateSummaryReconciliation() rejects deliberately inconsistent summary
+[✓ PASS] Test 18: Production validateSummaryReconciliation() asserts complete bit-for-bit reconciliation across all controls
+[✓ PASS] Test 19: Production validateSummaryReconciliation() rejects independent alterations across all summary dimensions
 [✓ PASS] Test 20: Karnataka conflict (0215b22e-aff-00001430) isolated as REQUIRES_REVIEW with conflict metadata
 [✓ PASS] Test 21: Production validateCorrectionEligibility() rejects conflict bypass attempt
 [✓ PASS] Test 22: Production validateSourceEvidenceFile() verifies all referenced source files and hashes
-[✓ PASS] Test 23: Production validateSourceEvidenceFile() rejects missing files and tampered hashes
+[✓ PASS] Test 23: Production validateSourceEvidenceFile() rejects missing files, omitted hashes, malformed hashes, tampered hashes, and path traversal
 [✓ PASS] Test 24: Phantom affidavit 0215b22e-aff-00001571 is strictly absent from all artifacts
 [✓ PASS] Test 25: 17 Delhi demographic records remain preserved as NOT_VERIFIED
 [✓ PASS] Test 26: Defect DQ-W021.5-B2.2E-001 declared STRICTLY OPEN with CTO Acceptance Authority

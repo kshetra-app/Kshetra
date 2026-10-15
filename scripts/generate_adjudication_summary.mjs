@@ -47,14 +47,15 @@ for (const aff of manifest.affidavits) {
 
 const summary = {
   manifestVersion: manifest.manifestVersion,
-  directive: 'W021.5-CTO-DIRECTIVE-073',
+  directive: 'W021.5-CTO-DIRECTIVE-074',
   milestone: manifest.milestone,
   defect: manifest.defect,
   defectStatus: manifest.defectStatus,
   governance: manifest.governance,
   generatedAt: new Date().toISOString(),
   gitBaseline: {
-    directive072BaselineCommit: 'fc9992fa1aeb328bab7c414eb9d352aa406e23bb',
+    directive073DeliveryCommit: 'e323def374415767df8f5febc7114efc0f68d309',
+    directive074BaselineCommit: 'e323def374415767df8f5febc7114efc0f68d309',
     canonicalBranch: 'master',
     remoteRepository: 'https://github.com/kshetra-app/Kshetra.git'
   },
@@ -103,10 +104,12 @@ const summary = {
     },
     liabilityDimension: {
       missingLedgerEntryCount: (liabilityRequiresReviewIdsByReason['MISSING_LEDGER_ENTRY'] || []).length,
+      unresolvedSourceConflictCount: (liabilityRequiresReviewIdsByReason['UNRESOLVED_SOURCE_CONFLICT'] || []).length,
       missingIdentityFieldCount: (liabilityRequiresReviewIdsByReason['MISSING_REQUIRED_IDENTITY_FIELD'] || []).length,
       totalRequiresReview: recomputedLiabilityCounts.REQUIRES_REVIEW,
       sampleIdsByReason: {
         MISSING_LEDGER_ENTRY: (liabilityRequiresReviewIdsByReason['MISSING_LEDGER_ENTRY'] || []).slice(0, 5),
+        UNRESOLVED_SOURCE_CONFLICT: liabilityRequiresReviewIdsByReason['UNRESOLVED_SOURCE_CONFLICT'] || [],
         MISSING_REQUIRED_IDENTITY_FIELD: (liabilityRequiresReviewIdsByReason['MISSING_REQUIRED_IDENTITY_FIELD'] || []).slice(0, 5)
       }
     }
@@ -160,4 +163,4 @@ validateSummaryReconciliation(manifest, summary);
 
 const summaryPath = path.join(REPO_ROOT, 'reports/w021_5_financial_remediation_adjudication_summary.json');
 fs.writeFileSync(summaryPath, JSON.stringify(summary, null, 2), 'utf8');
-console.log(`Wrote Directive 073 adjudication summary to ${summaryPath}`);
+console.log(`Wrote Directive 074 adjudication summary to ${summaryPath}`);

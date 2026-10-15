@@ -10,7 +10,7 @@ import {
 
 const REPO_ROOT = process.cwd();
 
-console.log('=== GENERATING DIRECTIVE 073 ADJUDICATION MANIFEST ===');
+console.log('=== GENERATING DIRECTIVE 074 ADJUDICATION MANIFEST ===');
 
 // 1. Load Authoritative Affidavit Manifest
 const manifestPath = path.join(REPO_ROOT, 'reports/w021_5b2_b2_2e_affidavit_manifest.json');
@@ -75,7 +75,7 @@ const chunkFiles = [
   { file: '066_b2_2e_chunk_05_affidavits_part4.sql', chunkName: 'Chunk 05', expectedTuples: 905 }
 ];
 
-const { sqlMap, totalRawTuplesParsed } = validateSqlChunks(chunkFiles, crosswalkTargetUuidSet, REPO_ROOT);
+const { sqlMap, totalRawTuplesParsed } = validateSqlChunks(chunkFiles, crosswalkTargetUuidSet, REPO_ROOT, { assertFullCoverage: true });
 console.log(`Validated ${totalRawTuplesParsed} raw SQL tuples across 4 chunks`);
 
 // 7. Process all 4,523 records with Production Dimension Gate
@@ -289,14 +289,15 @@ for (const aff of manifest.affidavits) {
 
 const adjudicationManifest = {
   manifestVersion: '1.0.0',
-  directive: 'W021.5-CTO-DIRECTIVE-073',
+  directive: 'W021.5-CTO-DIRECTIVE-074',
   milestone: 'W021.5 / B2.2-E — Candidate Affidavits and Civic Extensions',
   defect: 'DQ-W021.5-B2.2E-001',
   defectStatus: 'STRICTLY OPEN — AWAITING INDEPENDENT CTO ADJUDICATION',
   governance: 'Rule IV-001 — Non-Self-Acceptance',
   generatedAt: new Date().toISOString(),
   gitBaseline: {
-    directive072BaselineCommit: 'fc9992fa1aeb328bab7c414eb9d352aa406e23bb',
+    directive073DeliveryCommit: 'e323def374415767df8f5febc7114efc0f68d309',
+    directive074BaselineCommit: 'e323def374415767df8f5febc7114efc0f68d309',
     canonicalBranch: 'master',
     remoteRepository: 'https://github.com/kshetra-app/Kshetra.git'
   },
@@ -349,7 +350,7 @@ const adjudicationManifest = {
 const outputPath = path.join(REPO_ROOT, 'reports/w021_5_financial_remediation_adjudication_manifest.json');
 fs.writeFileSync(outputPath, JSON.stringify(adjudicationManifest, null, 2), 'utf8');
 
-console.log(`Successfully generated Directive 073 adjudication manifest at ${outputPath}`);
+console.log(`Successfully generated Directive 074 adjudication manifest at ${outputPath}`);
 console.log('Group Counts:', groupCounts);
 console.log('Asset Eligibility:', assetEligibilityCounts);
 console.log('Asset Rejection Breakdown:', assetRejectionReasons);

@@ -1,55 +1,64 @@
-#!/usr/bin/env node
-
-/**
- * Kshetra W021.5 / B2.2-E — Directive 073 Adjudication Manifest Validation & Production-Path Adversarial Test Suite
- * 
- * Exercises actual production functions and validators from scripts/adjudication_validators.mjs
- * and scripts/verify_financial_remediation.mjs to prove fail-closed enforcement.
- */
-
 import fs from 'fs';
 import path from 'path';
 import assert from 'assert';
 import crypto from 'crypto';
-import { validateCorrectionEligibility } from '../verify_financial_remediation.mjs';
 import {
   validateCrosswalk,
   validateSqlChunks,
   validateEligibilityGate,
   evaluateDimensionEligibility,
   validateSummaryReconciliation,
-  validateSourceEvidenceFile
+  validateSourceEvidenceFile,
+  CANONICAL_UUID_REGEX,
+  CANONICAL_MANIFEST_ID_REGEX
 } from '../adjudication_validators.mjs';
+import {
+  validateCorrectionEligibility
+} from '../verify_financial_remediation.mjs';
+
+/**
+ * Kshetra W021.5 / B2.2-E — Adjudication Manifest Test Suite
+ * Hardened for CTO Directive 074:
+ * - Direct production-path adversarial testing
+ * - Strict crosswalk validation (canonical UUID, manifest ID, bijective uniqueness)
+ * - Strict SQL chunk tuple counting, 18-column schema, target UUID, and bidirectional coverage
+ * - Strict eligibility gate invariants and financial value domains
+ * - Complete summary reconciliation across all 5 groups, dimensions, and rejection reasons
+ * - Source evidence existence, safe pathing, and non-empty SHA-256 verification
+ * - Non-self-acceptance under Rule IV-001 (CTO acceptance authority only)
+ */
 
 const REPO_ROOT = process.cwd();
-const MANIFEST_PATH = path.join(REPO_ROOT, 'reports/w021_5_financial_remediation_adjudication_manifest.json');
-const SUMMARY_PATH = path.join(REPO_ROOT, 'reports/w021_5_financial_remediation_adjudication_summary.json');
-const CROSSWALK_PATH = path.join(REPO_ROOT, 'scratch/w021_5_directive_048_4523_manifest_to_target_crosswalk.json');
-const LEDGER_PATH = path.join(REPO_ROOT, 'scratch/w021_5_directive_047_1120_component_ledger.json');
 
 console.log('================================================================');
-console.log('KSHETRA W021.5 — DIRECTIVE 073 ADJUDICATION MANIFEST TEST SUITE');
+console.log('KSHETRA W021.5 — DIRECTIVE 074 ADJUDICATION MANIFEST TEST SUITE');
 console.log('================================================================');
 
-if (!fs.existsSync(MANIFEST_PATH)) {
-  console.error(`ERROR: Adjudication manifest not found at ${MANIFEST_PATH}`);
-  process.exit(1);
-}
+// Load master artifacts
+const manifestPath = path.join(REPO_ROOT, 'reports/w021_5_financial_remediation_adjudication_manifest.json');
+const summaryPath = path.join(REPO_ROOT, 'reports/w021_5_financial_remediation_adjudication_summary.json');
+const crosswalkPath = path.join(REPO_ROOT, 'scratch/w021_5_directive_048_4523_manifest_to_target_crosswalk.json');
+const ledgerPath = path.join(REPO_ROOT, 'scratch/w021_5_directive_047_1120_component_ledger.json');
 
-if (!fs.existsSync(SUMMARY_PATH)) {
-  console.error(`ERROR: Adjudication summary not found at ${SUMMARY_PATH}`);
-  process.exit(1);
-}
+const manifestData = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+const summaryData = JSON.parse(fs.readFileSync(summaryPath, 'utf8'));
+const crosswalkData = JSON.parse(fs.readFileSync(crosswalkPath, 'utf8'));
+const ledgerData = JSON.parse(fs.readFileSync(ledgerPath, 'utf8'));
 
-const manifestData = JSON.parse(fs.readFileSync(MANIFEST_PATH, 'utf8'));
-const summaryData = JSON.parse(fs.readFileSync(SUMMARY_PATH, 'utf8'));
 const affidavits = manifestData.affidavits;
 
-const crosswalkData = JSON.parse(fs.readFileSync(CROSSWALK_PATH, 'utf8'));
-const { crosswalkMap, crosswalkTargetUuidSet } = validateCrosswalk(crosswalkData, 4523);
+// Build lookup maps
+const crosswalkMap = new Map();
+const crosswalkTargetUuidSet = new Set();
+for (const c of crosswalkData) {
+  crosswalkMap.set(c.manifestId, c);
+  crosswalkTargetUuidSet.add(c.targetUuid);
+}
 
-const ledgerData = JSON.parse(fs.readFileSync(LEDGER_PATH, 'utf8'));
-const ledgerMap = new Map(ledgerData.map(l => [l.manifestId, l]));
+const ledgerMap = new Map();
+for (const l of ledgerData) {
+  ledgerMap.set(l.manifestId, l);
+}
 
 let passed = 0;
 let total = 0;
@@ -57,63 +66,111 @@ const testResults = [];
 
 function runTest(name, fn) {
   total++;
+  const testId = `Test ${String(total).padStart(2, '0')}`;
   try {
     fn();
-    console.log(`[✓ PASS] Test ${total.toString().padStart(2, '0')}: ${name}`);
     passed++;
-    testResults.push({ id: total, name, status: 'PASS' });
+    console.log(`[✓ PASS] ${testId}: ${name}`);
+    testResults.push({ id: testId, name, status: 'PASS', error: null });
   } catch (err) {
-    console.error(`[✗ FAIL] Test ${total.toString().padStart(2, '0')}: ${name} - ${err.message}`);
-    testResults.push({ id: total, name, status: 'FAIL', error: err.message });
+    console.error(`[✗ FAIL] ${testId}: ${name}`);
+    console.error(`         Error: ${err.message}`);
+    testResults.push({ id: testId, name, status: 'FAIL', error: err.message });
   }
 }
 
-// Test 01: Full Population Accounting
+// Test 01: Master Population Size Control
 runTest('All 4,523 retained records are accounted for exactly once', () => {
-  assert.strictEqual(affidavits.length, 4523, `Expected 4523 affidavits, got ${affidavits.length}`);
-  const idSet = new Set();
+  assert.strictEqual(affidavits.length, 4523);
+  const seenIds = new Set();
   for (const a of affidavits) {
-    assert.ok(a.affidavitId, 'Record must have affidavitId');
-    assert.ok(!idSet.has(a.affidavitId), `Duplicate affidavitId: ${a.affidavitId}`);
-    idSet.add(a.affidavitId);
+    assert.ok(a.affidavitId, 'Affidavit missing affidavitId');
+    assert.ok(!seenIds.has(a.affidavitId), `Duplicate affidavitId: ${a.affidavitId}`);
+    seenIds.add(a.affidavitId);
   }
-  assert.strictEqual(idSet.size, 4523);
+  assert.strictEqual(seenIds.size, 4523);
 });
 
-// Test 02: Production Crosswalk Validator — Exact 4,523 Bijection
-runTest('Production validateCrosswalk() verifies exact 4,523-row bijection and uniqueness', () => {
+// Test 02: Production Crosswalk Validator — Exact Bijection and Canonical Formats
+runTest('Production validateCrosswalk() verifies exact 4,523-row bijection, uniqueness, and canonical formats', () => {
   const result = validateCrosswalk(crosswalkData, 4523);
   assert.strictEqual(result.crosswalkMap.size, 4523);
   assert.strictEqual(result.crosswalkTargetUuidSet.size, 4523);
+
+  // Validate format of each entry
+  for (const [mId, cw] of result.crosswalkMap) {
+    assert.ok(CANONICAL_MANIFEST_ID_REGEX.test(mId), `Invalid manifestId: ${mId}`);
+    assert.ok(CANONICAL_UUID_REGEX.test(cw.targetUuid), `Invalid targetUuid: ${cw.targetUuid}`);
+  }
 });
 
 // Test 03: Production-Path Adversarial: Crosswalk Validator Rejections
 runTest('Production validateCrosswalk() rejects missing, duplicate, and malformed entries', () => {
-  // A. Truncated list (missing entries)
+  // A. Non-array input
+  assert.throws(() => {
+    validateCrosswalk('not-an-array', 4523);
+  }, /INVALID_CROSSWALK_ARRAY/);
+
+  // B. Truncated list (population mismatch)
   assert.throws(() => {
     validateCrosswalk(crosswalkData.slice(0, 4522), 4523);
   }, /CROSSWALK_POPULATION_MISMATCH/);
 
-  // B. Duplicate manifest ID
+  // C. Non-object entry
+  const nonObjectList = crosswalkData.slice(0, 4522);
+  nonObjectList.push('invalid-entry');
+  assert.throws(() => {
+    validateCrosswalk(nonObjectList, 4523);
+  }, /MALFORMED_CROSSWALK_ENTRY/);
+
+  // D. Missing manifestId
+  const missingManifest = crosswalkData.slice(0, 4522);
+  missingManifest.push({ targetUuid: '0215b22e-0001-0000-0000-999999999999' });
+  assert.throws(() => {
+    validateCrosswalk(missingManifest, 4523);
+  }, /MALFORMED_CROSSWALK_ENTRY/);
+
+  // E. Malformed manifestId format
+  const malformedManifest = crosswalkData.slice(0, 4522);
+  malformedManifest.push({ manifestId: 'bad-manifest-format', targetUuid: '0215b22e-0001-0000-0000-999999999999' });
+  assert.throws(() => {
+    validateCrosswalk(malformedManifest, 4523);
+  }, /INVALID_CROSSWALK_MANIFEST_ID/);
+
+  // F. Duplicate manifest ID
   const dupManifest = crosswalkData.slice(0, 4522);
   dupManifest.push({ manifestId: crosswalkData[0].manifestId, targetUuid: '0215b22e-0001-0000-0000-999999999999' });
   assert.throws(() => {
     validateCrosswalk(dupManifest, 4523);
   }, /DUPLICATE_CROSSWALK_MANIFEST_ID/);
 
-  // C. Duplicate target UUID
+  // G. Missing targetUuid (non-string)
+  const nonStringTarget = crosswalkData.slice(0, 4522);
+  nonStringTarget.push({ manifestId: '0215b22e-aff-99999999', targetUuid: 12345 });
+  assert.throws(() => {
+    validateCrosswalk(nonStringTarget, 4523);
+  }, /MALFORMED_CROSSWALK_ENTRY/);
+
+  // H. Empty targetUuid
+  const emptyTarget = crosswalkData.slice(0, 4522);
+  emptyTarget.push({ manifestId: '0215b22e-aff-99999999', targetUuid: '   ' });
+  assert.throws(() => {
+    validateCrosswalk(emptyTarget, 4523);
+  }, /EMPTY_CROSSWALK_TARGET_UUID/);
+
+  // I. Malformed non-empty target UUID (Directive 074 §2)
+  const malformedUuid = crosswalkData.slice(0, 4522);
+  malformedUuid.push({ manifestId: '0215b22e-aff-99999999', targetUuid: '0215b22e-0001-0000-0000-zzzzzzzzzzzz' });
+  assert.throws(() => {
+    validateCrosswalk(malformedUuid, 4523);
+  }, /INVALID_CROSSWALK_TARGET_UUID/);
+
+  // J. Duplicate target UUID
   const dupTarget = crosswalkData.slice(0, 4522);
   dupTarget.push({ manifestId: '0215b22e-aff-99999999', targetUuid: crosswalkData[0].targetUuid });
   assert.throws(() => {
     validateCrosswalk(dupTarget, 4523);
   }, /DUPLICATE_CROSSWALK_TARGET_UUID/);
-
-  // D. Malformed entry (missing targetUuid)
-  const malformed = crosswalkData.slice(0, 4522);
-  malformed.push({ manifestId: '0215b22e-aff-99999999', targetUuid: '' });
-  assert.throws(() => {
-    validateCrosswalk(malformed, 4523);
-  }, /MALFORMED_CROSSWALK_ENTRY/);
 });
 
 // Test 04: Five Group Reconciled Counts
@@ -218,21 +275,31 @@ runTest('Missing disclosures strictly distinguished from genuine zeros', () => {
   }
 });
 
-// Test 09: Production SQL Chunks Validator — Raw Tuple Counting
-runTest('Production validateSqlChunks() verifies 4,523 raw tuples and unique target UUIDs', () => {
+// Test 09: Production SQL Chunks Validator — Raw Tuple Counting and Bidirectional Coverage
+runTest('Production validateSqlChunks() verifies 4,523 raw tuples, 18-column schema, and bidirectional crosswalk coverage', () => {
   const chunkFiles = [
     { file: '066_b2_2e_chunk_02_affidavits_part1.sql', chunkName: 'Chunk 02', expectedTuples: 1196 },
     { file: '066_b2_2e_chunk_03_affidavits_part2.sql', chunkName: 'Chunk 03', expectedTuples: 1272 },
     { file: '066_b2_2e_chunk_04_affidavits_part3.sql', chunkName: 'Chunk 04', expectedTuples: 1150 },
     { file: '066_b2_2e_chunk_05_affidavits_part4.sql', chunkName: 'Chunk 05', expectedTuples: 905 }
   ];
-  const { sqlMap, totalRawTuplesParsed } = validateSqlChunks(chunkFiles, crosswalkTargetUuidSet, REPO_ROOT);
+  const { sqlMap, totalRawTuplesParsed } = validateSqlChunks(chunkFiles, crosswalkTargetUuidSet, REPO_ROOT, { assertFullCoverage: true });
   assert.strictEqual(totalRawTuplesParsed, 4523);
   assert.strictEqual(sqlMap.size, 4523);
+
+  // Verify all crosswalk targets are in SQL chunk map
+  for (const uuid of crosswalkTargetUuidSet) {
+    assert.ok(sqlMap.has(uuid), `Crosswalk target ${uuid} missing from parsed SQL chunks`);
+  }
 });
 
 // Test 10: Production-Path Adversarial: SQL Chunk Validator Rejections
-runTest('Production validateSqlChunks() rejects unknown targets, count mismatches, and duplicates', () => {
+runTest('Production validateSqlChunks() rejects duplicates, unknown targets, count mismatches, malformed tuples, and missing coverage', () => {
+  const scratchDir = path.join(REPO_ROOT, 'scratch');
+  if (!fs.existsSync(scratchDir)) {
+    fs.mkdirSync(scratchDir, { recursive: true });
+  }
+
   // A. Target UUID unknown to crosswalk
   const emptyTargetSet = new Set();
   const chunkFiles = [
@@ -249,6 +316,72 @@ runTest('Production validateSqlChunks() rejects unknown targets, count mismatche
   assert.throws(() => {
     validateSqlChunks(badExpectedChunk, crosswalkTargetUuidSet, REPO_ROOT);
   }, /CHUNK_TUPLE_COUNT_MISMATCH/);
+
+  // C. Real Duplicate Target Injection in SQL Chunk (Directive 074 §4.1)
+  const dupSqlFile = path.join(scratchDir, 'test_adv_dup_sql_chunk.sql');
+  const validUuid = crosswalkData[0].targetUuid;
+  const sampleTuple = `  ('${validUuid}'::uuid, 'Test Candidate', 1, 'AC', 'TS', 'INC', 2024, '0215b22d-0001-0000-0000-000000000001'::uuid, '0215b22d-0002-0000-0000-000000000001'::uuid, '0215b22e-0000-0000-0000-000000000001'::uuid, 'OFFICIAL', 10000, 0, 0, NULL, NULL, 50, true),\n`;
+  fs.writeFileSync(dupSqlFile, sampleTuple + sampleTuple, 'utf8');
+
+  try {
+    assert.throws(() => {
+      validateSqlChunks([{ file: dupSqlFile, expectedTuples: 2 }], crosswalkTargetUuidSet, REPO_ROOT);
+    }, /DUPLICATE_SQL_TARGET_UUID/);
+  } finally {
+    if (fs.existsSync(dupSqlFile)) fs.unlinkSync(dupSqlFile);
+  }
+
+  // D. Malformed Target UUID in SQL Chunk (Directive 074 §4.3)
+  const malformedSqlFile = path.join(scratchDir, 'test_adv_malformed_uuid_sql_chunk.sql');
+  const malformedTuple = `  ('not-a-canonical-uuid'::uuid, 'Test Candidate', 1, 'AC', 'TS', 'INC', 2024, '0215b22d-0001-0000-0000-000000000001'::uuid, '0215b22d-0002-0000-0000-000000000001'::uuid, '0215b22e-0000-0000-0000-000000000001'::uuid, 'OFFICIAL', 10000, 0, 0, NULL, NULL, 50, true),\n`;
+  fs.writeFileSync(malformedSqlFile, malformedTuple, 'utf8');
+
+  try {
+    assert.throws(() => {
+      validateSqlChunks([{ file: malformedSqlFile, expectedTuples: 1 }], crosswalkTargetUuidSet, REPO_ROOT);
+    }, /MALFORMED_SQL_TARGET_UUID/);
+  } finally {
+    if (fs.existsSync(malformedSqlFile)) fs.unlinkSync(malformedSqlFile);
+  }
+
+  // E. Invalid Financial Value in SQL Chunk (Directive 074 §4.3)
+  const invalidFinSqlFile = path.join(scratchDir, 'test_adv_invalid_fin_sql_chunk.sql');
+  const invalidFinTuple = `  ('${validUuid}'::uuid, 'Test Candidate', 1, 'AC', 'TS', 'INC', 2024, '0215b22d-0001-0000-0000-000000000001'::uuid, '0215b22d-0002-0000-0000-000000000001'::uuid, '0215b22e-0000-0000-0000-000000000001'::uuid, 'OFFICIAL', -50000, 0, 0, NULL, NULL, 50, true),\n`;
+  fs.writeFileSync(invalidFinSqlFile, invalidFinTuple, 'utf8');
+
+  try {
+    assert.throws(() => {
+      validateSqlChunks([{ file: invalidFinSqlFile, expectedTuples: 1 }], crosswalkTargetUuidSet, REPO_ROOT);
+    }, /INVALID_SQL_FINANCIAL_VALUE/);
+  } finally {
+    if (fs.existsSync(invalidFinSqlFile)) fs.unlinkSync(invalidFinSqlFile);
+  }
+
+  // F. Malformed Tuple Column Count (Directive 074 §4.3)
+  const badColumnsSqlFile = path.join(scratchDir, 'test_adv_bad_columns_sql_chunk.sql');
+  const badColumnTuple = `  ('${validUuid}'::uuid, 'Test Candidate', 1, 'AC', 'TS', 'INC', 2024),\n`;
+  fs.writeFileSync(badColumnsSqlFile, badColumnTuple, 'utf8');
+
+  try {
+    assert.throws(() => {
+      validateSqlChunks([{ file: badColumnsSqlFile, expectedTuples: 1 }], crosswalkTargetUuidSet, REPO_ROOT);
+    }, /MALFORMED_SQL_TUPLE/);
+  } finally {
+    if (fs.existsSync(badColumnsSqlFile)) fs.unlinkSync(badColumnsSqlFile);
+  }
+
+  // G. Bidirectional Coverage: Target in crosswalk absent from SQL chunks (Directive 074 §4.4)
+  const augmentedTargetSet = new Set(crosswalkTargetUuidSet);
+  augmentedTargetSet.add('0215b22e-ffff-ffff-ffff-ffffffffffff');
+  const fullChunkFiles = [
+    { file: '066_b2_2e_chunk_02_affidavits_part1.sql', expectedTuples: 1196 },
+    { file: '066_b2_2e_chunk_03_affidavits_part2.sql', expectedTuples: 1272 },
+    { file: '066_b2_2e_chunk_04_affidavits_part3.sql', expectedTuples: 1150 },
+    { file: '066_b2_2e_chunk_05_affidavits_part4.sql', expectedTuples: 905 }
+  ];
+  assert.throws(() => {
+    validateSqlChunks(fullChunkFiles, augmentedTargetSet, REPO_ROOT, { assertFullCoverage: true });
+  }, /CROSSWALK_TARGET_MISSING_IN_SQL/);
 });
 
 // Test 11: Database State Claims & Evidence Taxonomy
@@ -301,9 +434,9 @@ runTest('Existing verifier yields exactly 0 ELIGIBLE records across both dimensi
   assert.strictEqual(summaryLiab.requiresReviewCount, 893, `Expected 893 requires_review liabilities, got ${summaryLiab.requiresReviewCount}`);
 });
 
-// Test 15: Production-Path Adversarial: Eligibility Gate Invariant Violations
-runTest('Production validateEligibilityGate() rejects false ELIGIBLE and mismatched INELIGIBLE', () => {
-  // A. Invariant 1: ELIGIBLE without validator pass triggers VERIFIER_GATE_VIOLATION
+// Test 15: Production-Path Adversarial: Eligibility Gate Invariant Violations (Directive 074 §3)
+runTest('Production validateEligibilityGate() rejects boolean false, truthy strings, numbers, invalid domains, and invalid states', () => {
+  // A. ELIGIBLE with passesExistingOfflineVerifier = false
   assert.throws(() => {
     validateEligibilityGate({
       eligibility: 'ELIGIBLE',
@@ -313,7 +446,107 @@ runTest('Production validateEligibilityGate() rejects false ELIGIBLE and mismatc
     });
   }, /VERIFIER_GATE_VIOLATION/);
 
-  // B. Invariant 2: INELIGIBLE with unequal values triggers INELIGIBLE_VALUE_MISMATCH
+  // B. ELIGIBLE with passesExistingOfflineVerifier = undefined
+  assert.throws(() => {
+    validateEligibilityGate({
+      eligibility: 'ELIGIBLE',
+      passesExistingOfflineVerifier: undefined,
+      expectedDatabaseValue: 0,
+      proposedValue: 5000000
+    });
+  }, /VERIFIER_GATE_VIOLATION/);
+
+  // C. ELIGIBLE with passesExistingOfflineVerifier = null
+  assert.throws(() => {
+    validateEligibilityGate({
+      eligibility: 'ELIGIBLE',
+      passesExistingOfflineVerifier: null,
+      expectedDatabaseValue: 0,
+      proposedValue: 5000000
+    });
+  }, /VERIFIER_GATE_VIOLATION/);
+
+  // D. ELIGIBLE with truthy string 'true' (Directive 074 §3)
+  assert.throws(() => {
+    validateEligibilityGate({
+      eligibility: 'ELIGIBLE',
+      passesExistingOfflineVerifier: 'true',
+      expectedDatabaseValue: 0,
+      proposedValue: 5000000
+    });
+  }, /VERIFIER_GATE_VIOLATION/);
+
+  // E. ELIGIBLE with truthy number 1 (Directive 074 §3)
+  assert.throws(() => {
+    validateEligibilityGate({
+      eligibility: 'ELIGIBLE',
+      passesExistingOfflineVerifier: 1,
+      expectedDatabaseValue: 0,
+      proposedValue: 5000000
+    });
+  }, /VERIFIER_GATE_VIOLATION/);
+
+  // F. Unsupported eligibility state
+  assert.throws(() => {
+    validateEligibilityGate({
+      eligibility: 'UNKNOWN_STATE',
+      passesExistingOfflineVerifier: false,
+      expectedDatabaseValue: 0,
+      proposedValue: 0
+    });
+  }, /UNSUPPORTED_ELIGIBILITY_STATE/);
+
+  // G. Missing / undefined values
+  assert.throws(() => {
+    validateEligibilityGate({
+      eligibility: 'INELIGIBLE',
+      passesExistingOfflineVerifier: false,
+      expectedDatabaseValue: undefined,
+      proposedValue: undefined
+    });
+  }, /INVALID_FINANCIAL_VALUE_DOMAIN/);
+
+  // H. NaN values
+  assert.throws(() => {
+    validateEligibilityGate({
+      eligibility: 'INELIGIBLE',
+      passesExistingOfflineVerifier: false,
+      expectedDatabaseValue: NaN,
+      proposedValue: NaN
+    });
+  }, /INVALID_FINANCIAL_VALUE_DOMAIN/);
+
+  // I. Negative value
+  assert.throws(() => {
+    validateEligibilityGate({
+      eligibility: 'INELIGIBLE',
+      passesExistingOfflineVerifier: false,
+      expectedDatabaseValue: -1,
+      proposedValue: -1
+    });
+  }, /INVALID_FINANCIAL_VALUE_DOMAIN/);
+
+  // J. Fractional number
+  assert.throws(() => {
+    validateEligibilityGate({
+      eligibility: 'INELIGIBLE',
+      passesExistingOfflineVerifier: false,
+      expectedDatabaseValue: 12.34,
+      proposedValue: 12.34
+    });
+  }, /INVALID_FINANCIAL_VALUE_DOMAIN/);
+
+  // K. String numeric value
+  assert.throws(() => {
+    validateEligibilityGate({
+      eligibility: 'INELIGIBLE',
+      passesExistingOfflineVerifier: false,
+      expectedDatabaseValue: '100',
+      proposedValue: '100'
+    });
+  }, /INVALID_FINANCIAL_VALUE_DOMAIN/);
+
+  // L. INELIGIBLE with mismatched values
   assert.throws(() => {
     validateEligibilityGate({
       eligibility: 'INELIGIBLE',
@@ -323,23 +556,58 @@ runTest('Production validateEligibilityGate() rejects false ELIGIBLE and mismatc
     });
   }, /INELIGIBLE_VALUE_MISMATCH/);
 
-  // C. Unsupported field type in evaluateDimensionEligibility() triggers UNSUPPORTED_FIELD_TYPE
+  // M. INELIGIBLE with verifier true
   assert.throws(() => {
-    evaluateDimensionEligibility({
-      affidavitRecord: affidavits[0],
-      fieldType: 'INVALID_FIELD',
-      manifestBaselineValue: 0,
+    validateEligibilityGate({
+      eligibility: 'INELIGIBLE',
+      passesExistingOfflineVerifier: true,
       expectedDatabaseValue: 0,
-      proposedValue: 0,
-      proposedClassification: 'VERIFIED_GENUINE_ZERO',
-      sourceFile: affidavits[0].sourceCoordinates.file,
-      sourceLine: affidavits[0].sourceCoordinates.line,
-      hasSourceConflict: false,
-      crosswalkMap,
-      ledgerMap,
-      repoRoot: REPO_ROOT
+      proposedValue: 0
     });
-  }, /UNSUPPORTED_FIELD_TYPE/);
+  }, /ILLEGAL_INELIGIBLE_STATE/);
+
+  // N. REQUIRES_REVIEW with verifier true
+  assert.throws(() => {
+    validateEligibilityGate({
+      eligibility: 'REQUIRES_REVIEW',
+      passesExistingOfflineVerifier: true,
+      expectedDatabaseValue: 0,
+      proposedValue: 5000000
+    });
+  }, /ILLEGAL_REQUIRES_REVIEW_STATE/);
+
+  // O. REQUIRES_REVIEW with equal values (should be INELIGIBLE)
+  assert.throws(() => {
+    validateEligibilityGate({
+      eligibility: 'REQUIRES_REVIEW',
+      passesExistingOfflineVerifier: false,
+      expectedDatabaseValue: 0,
+      proposedValue: 0
+    });
+  }, /ILLEGAL_REQUIRES_REVIEW_STATE/);
+
+  // P. Valid control cases
+  assert.strictEqual(validateEligibilityGate({
+    eligibility: 'ELIGIBLE',
+    passesExistingOfflineVerifier: true,
+    expectedDatabaseValue: 0,
+    proposedValue: 5000000
+  }), true);
+
+  assert.strictEqual(validateEligibilityGate({
+    eligibility: 'INELIGIBLE',
+    passesExistingOfflineVerifier: false,
+    expectedDatabaseValue: 0,
+    proposedValue: 0
+  }), true);
+
+  assert.strictEqual(validateEligibilityGate({
+    eligibility: 'REQUIRES_REVIEW',
+    passesExistingOfflineVerifier: false,
+    expectedDatabaseValue: 0,
+    proposedValue: 5000000,
+    rejectionReason: 'MISSING_LEDGER_ENTRY'
+  }), true);
 });
 
 // Test 16: Ineligible Records Strictly Require Equal Database Expectation and Proposed Values
@@ -359,7 +627,6 @@ runTest('Ineligible records strictly correspond to expectedDatabaseValue === pro
 
 // Test 17: Production Verifier Invocation Consistency
 runTest('Production validateCorrectionEligibility() execution matches recorded row outcomes', () => {
-  // Test a real proposed correction from the inventory (0215b22e-aff-00001570, Siddaramaiah)
   const targetId = '0215b22e-aff-00001570';
   const manifestAff = affidavits.find(a => a.affidavitId === targetId);
   assert.ok(manifestAff, `Affidavit ${targetId} must exist`);
@@ -371,7 +638,6 @@ runTest('Production validateCorrectionEligibility() execution matches recorded r
   const assetCorr = inventoryData.assetCorrections.find(c => c.affidavitId === targetId);
   assert.ok(assetCorr, `Correction for ${targetId} must exist`);
 
-  // Direct production verifier execution
   let errorCaught = null;
   try {
     validateCorrectionEligibility(originalAff, assetCorr, 'ASSET', crosswalkMap, ledgerMap, REPO_ROOT);
@@ -387,29 +653,89 @@ runTest('Production validateCorrectionEligibility() execution matches recorded r
 });
 
 // Test 18: Production Summary Reconciliation Validator
-runTest('Production validateSummaryReconciliation() asserts bit-for-bit count equality', () => {
+runTest('Production validateSummaryReconciliation() asserts complete bit-for-bit reconciliation across all controls', () => {
   const result = validateSummaryReconciliation(manifestData, summaryData);
+  assert.strictEqual(result.recomputedPopulation, 4523);
   assert.strictEqual(result.recomputedAssetCounts.ELIGIBLE, 0);
   assert.strictEqual(result.recomputedAssetCounts.INELIGIBLE, 111);
   assert.strictEqual(result.recomputedAssetCounts.REQUIRES_REVIEW, 4412);
   assert.strictEqual(result.recomputedLiabilityCounts.ELIGIBLE, 0);
   assert.strictEqual(result.recomputedLiabilityCounts.INELIGIBLE, 3630);
   assert.strictEqual(result.recomputedLiabilityCounts.REQUIRES_REVIEW, 893);
+  assert.strictEqual(result.subsetContainmentVerified, true);
 });
 
-// Test 19: Production-Path Adversarial: Summary Validator Rejects Mismatches
-runTest('Production validateSummaryReconciliation() rejects deliberately inconsistent summary', () => {
-  const badSummary = JSON.parse(JSON.stringify(summaryData));
-  badSummary.eligibilityBreakdown.assetDimension.eligibleCount = 10;
+// Test 19: Production-Path Adversarial: Summary Reconciliation Invariant Rejections (Directive 074 §5)
+runTest('Production validateSummaryReconciliation() rejects independent alterations across all summary dimensions', () => {
+  // A. Tampered total population
+  const badPopSummary = JSON.parse(JSON.stringify(summaryData));
+  badPopSummary.populationReconciliation.totalRetainedAffidavits = 9999;
   assert.throws(() => {
-    validateSummaryReconciliation(manifestData, badSummary);
-  }, /SUMMARY_MANIFEST_DISCORD/);
+    validateSummaryReconciliation(manifestData, badPopSummary);
+  }, /SUMMARY_RECONCILIATION_MISMATCH/);
 
+  // B. Tampered group counts
+  const badGroupSummary = JSON.parse(JSON.stringify(summaryData));
+  badGroupSummary.populationReconciliation.fiveGroupCounts.group1_positiveAssets_positiveLiabilities = 3335;
+  assert.throws(() => {
+    validateSummaryReconciliation(manifestData, badGroupSummary);
+  }, /SUMMARY_RECONCILIATION_MISMATCH/);
+
+  // C. Tampered dimensional totals
+  const badDimSummary = JSON.parse(JSON.stringify(summaryData));
+  badDimSummary.populationReconciliation.dimensionalTotals.assetRestorationTotal = 9999;
+  assert.throws(() => {
+    validateSummaryReconciliation(manifestData, badDimSummary);
+  }, /SUMMARY_RECONCILIATION_MISMATCH/);
+
+  // D. Tampered subset integrity
+  const badSubsetSummary = JSON.parse(JSON.stringify(summaryData));
+  badSubsetSummary.populationReconciliation.subsetIntegrity.missingAssetsIsSubsetOfMissingLiabilities = false;
+  assert.throws(() => {
+    validateSummaryReconciliation(manifestData, badSubsetSummary);
+  }, /SUMMARY_RECONCILIATION_MISMATCH/);
+
+  // E. Tampered asset eligibility count
+  const badAssetSummary = JSON.parse(JSON.stringify(summaryData));
+  badAssetSummary.eligibilityBreakdown.assetDimension.eligibleCount = 10;
+  assert.throws(() => {
+    validateSummaryReconciliation(manifestData, badAssetSummary);
+  }, /SUMMARY_RECONCILIATION_MISMATCH/);
+
+  // F. Tampered liability eligibility count
   const badLiabSummary = JSON.parse(JSON.stringify(summaryData));
   badLiabSummary.eligibilityBreakdown.liabilityDimension.requiresReviewCount = 0;
   assert.throws(() => {
     validateSummaryReconciliation(manifestData, badLiabSummary);
-  }, /SUMMARY_MANIFEST_DISCORD/);
+  }, /SUMMARY_RECONCILIATION_MISMATCH/);
+
+  // G. Tampered rejection reason breakdown
+  const badRejSummary = JSON.parse(JSON.stringify(summaryData));
+  badRejSummary.eligibilityBreakdown.assetDimension.verifierRejectionBreakdown.MISSING_LEDGER_ENTRY = 9999;
+  assert.throws(() => {
+    validateSummaryReconciliation(manifestData, badRejSummary);
+  }, /SUMMARY_RECONCILIATION_MISMATCH/);
+
+  // H. Manifest with invalid group value
+  const badManifestGroup = JSON.parse(JSON.stringify(manifestData));
+  badManifestGroup.affidavits[0].group = 99;
+  assert.throws(() => {
+    validateSummaryReconciliation(badManifestGroup, summaryData);
+  }, /UNKNOWN_GROUP_VALUE/);
+
+  // I. Manifest with invalid eligibility value
+  const badManifestElig = JSON.parse(JSON.stringify(manifestData));
+  badManifestElig.affidavits[0].dimensions.asset.eligibility = 'PENDING_APPROVAL';
+  assert.throws(() => {
+    validateSummaryReconciliation(badManifestElig, summaryData);
+  }, /UNKNOWN_ELIGIBILITY_VALUE/);
+
+  // J. Manifest with unknown rejection reason
+  const badManifestReason = JSON.parse(JSON.stringify(manifestData));
+  badManifestReason.affidavits[0].dimensions.asset.verifierRejectionReason = 'FABRICATED_REASON: Details';
+  assert.throws(() => {
+    validateSummaryReconciliation(badManifestReason, summaryData);
+  }, /UNKNOWN_REJECTION_REASON/);
 });
 
 // Test 20: Karnataka Unresolved Conflict Isolation
@@ -454,18 +780,35 @@ runTest('Production validateSourceEvidenceFile() verifies all referenced source 
   }
 });
 
-// Test 23: Production-Path Adversarial: Source Evidence Validator Rejections
-runTest('Production validateSourceEvidenceFile() rejects missing files and tampered hashes', () => {
+// Test 23: Production-Path Adversarial: Source Evidence Validator Rejections (Directive 074 §6)
+runTest('Production validateSourceEvidenceFile() rejects missing files, omitted hashes, malformed hashes, tampered hashes, and path traversal', () => {
+  const sampleFile = affidavits[0].sourceCoordinates.file;
+  const validHash = affidavits[0].sourceCoordinates.fileSha256;
+
   // A. Missing file
   assert.throws(() => {
-    validateSourceEvidenceFile('data/seed/non_existent_seed_file.ts', null, REPO_ROOT);
+    validateSourceEvidenceFile('data/seed/non_existent_seed_file.ts', validHash, REPO_ROOT);
   }, /MISSING_SOURCE_FILE/);
 
-  // B. Tampered hash
-  const sampleFile = affidavits[0].sourceCoordinates.file;
+  // B. Omitted hash (Directive 074 §6.2)
   assert.throws(() => {
-    validateSourceEvidenceFile(sampleFile, 'tampered_sha256_hash_00000000000000000000000000000000000000000000', REPO_ROOT);
+    validateSourceEvidenceFile(sampleFile, '', REPO_ROOT);
+  }, /INVALID_EXPECTED_HASH/);
+
+  // C. Malformed hash (Directive 074 §6.2)
+  assert.throws(() => {
+    validateSourceEvidenceFile(sampleFile, 'not-a-valid-64-character-sha256-hash', REPO_ROOT);
+  }, /MALFORMED_EXPECTED_HASH/);
+
+  // D. Tampered hash (valid 64-hex string, but wrong hash)
+  assert.throws(() => {
+    validateSourceEvidenceFile(sampleFile, '0000000000000000000000000000000000000000000000000000000000000000', REPO_ROOT);
   }, /SOURCE_HASH_MISMATCH/);
+
+  // E. Path traversal attempt (Directive 074 §6.3)
+  assert.throws(() => {
+    validateSourceEvidenceFile('../../outside.ts', validHash, REPO_ROOT);
+  }, /(PATH_OUTSIDE_REPO_ROOT|PATH_ESCAPE_DETECTED|INVALID_PATH)/);
 });
 
 // Test 24: Phantom Affidavit Strict Absence
@@ -501,7 +844,7 @@ console.log('================================================================');
 // Write test results artifact
 const resultsArtifact = {
   suite: 'adjudication_manifest_test_suite',
-  directive: 'W021.5-CTO-DIRECTIVE-073',
+  directive: 'W021.5-CTO-DIRECTIVE-074',
   executedAt: new Date().toISOString(),
   totalTests: total,
   passed,
