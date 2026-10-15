@@ -1,10 +1,10 @@
 {
   "matrixTitle": "Kshetra Mobile Application Financial Consumer Compatibility Matrix",
-  "directive": "KSHETRA — W021.5 CTO DIRECTIVE 067 Section 6",
+  "directive": "KSHETRA — W021.5 CTO DIRECTIVE 068 Section 6",
   "milestone": "W021.5 / B2.2-E",
   "defect": "DQ-W021.5-B2.2E-001",
-  "auditDate": "2026-10-15T03:31:25.911Z",
-  "auditedCommit": "6e23ee162b6a9e337d2336cdd19777b995b447a2",
+  "auditDate": "2026-10-15T04:08:11.420Z",
+  "auditedCommit": "20d5ea575fa1595648fcceee07ddf0d45b4973a3",
   "summary": {
     "totalAuditedFiles": 17,
     "criticalCrashVulnerabilitiesPreFix": 4,
@@ -20,8 +20,8 @@
       },
       "executableVerifierTests": {
         "command": "node scripts/tests/financial_remediation.test.mjs",
-        "totalTests": 79,
-        "passedCount": 79,
+        "totalTests": 105,
+        "passedCount": 105,
         "failedCount": 0,
         "exitCode": 0,
         "status": "PASS"
@@ -206,7 +206,10 @@
       "status": "FIXED_AND_VERIFIED"
     }
   ],
-  "defectStatus": "STRICTLY OPEN (under Rule IV-001 Non-Self-Acceptance)",
-  "baselineCommit": "e7946803a317b9e33964c5d4be9e8d4ed47f10e9",
-  "verifiedCommit": "PENDING_DIRECTIVE_067_COMMIT"
+  "defectStatus": "STRICTLY OPEN — AWAITING INDEPENDENT CTO ADJUDICATION (under Rule IV-001 Non-Self-Acceptance)",
+  "baselineCommit": "20d5ea575fa1595648fcceee07ddf0d45b4973a3",
+  "verificationTarget": "W021.5-CTO-DIRECTIVE-068-DELIVERY",
+  "testedSourceRevision": "20d5ea575fa1595648fcceee07ddf0d45b4973a3 + Directive 068 working tree",
+  "testExecutionSummary": "105 verifier tests (105 passed, 0 failed), 34 mobile unit tests (34 passed, 0 failed), 15 RNTL component tests (15 passed, 0 failed), and TypeScript compiler (0 errors) all executed and passed against this source revision prior to final delivery commit creation.",
+  "provenanceNotes": "Tests were executed locally on the working tree rooted on baseline 20d5ea575fa1595648fcceee07ddf0d45b4973a3. The resulting single commit delivered to origin/master establishes the final verified commit SHA, which is reported directly in the CTO delivery report under Rule IV-001."
 }

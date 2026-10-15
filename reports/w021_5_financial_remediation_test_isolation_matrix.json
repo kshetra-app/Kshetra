@@ -1,10 +1,10 @@
 {
-  "matrixTitle": "Directive 067 Test Isolation Matrix",
-  "directive": "KSHETRA — W021.5 CTO DIRECTIVE 067 Section 3",
+  "matrixTitle": "Directive 068 Test Isolation Matrix",
+  "directive": "KSHETRA — W021.5 CTO DIRECTIVE 068 Section 4",
   "milestone": "W021.5 / B2.2-E",
   "defect": "DQ-W021.5-B2.2E-001",
-  "generatedDate": "2026-10-15T03:30:07.210Z",
-  "totalTests": 79,
+  "generatedDate": "2026-10-15T04:04:25.110Z",
+  "totalTests": 105,
   "tests": [
     {
       "testId": 1,
@@ -716,6 +716,240 @@
       "expectedFailureReason": "None (control case: valid missing disclosure)",
       "observedOutcome": "validateCorrectionEligibility returned true",
       "assertion": "assertEqual(eligible, true)"
+    },
+    {
+      "testId": 80,
+      "name": "Undefined intended value is rejected for ASSET",
+      "manipulatedInput": "correction.intendedValue = undefined",
+      "isolationMechanism": "Deep-cloned in-memory fixture passed directly to production validateCorrectionEligibility()",
+      "expectedFailureReason": "INVALID_INTENDED_VALUE",
+      "observedOutcome": "Threw INVALID_INTENDED_VALUE as expected",
+      "assertion": "assert(err.message.includes(\"INVALID_INTENDED_VALUE\"))"
+    },
+    {
+      "testId": 81,
+      "name": "Negative intended value is rejected for ASSET",
+      "manipulatedInput": "correction.intendedValue = -1",
+      "isolationMechanism": "Deep-cloned in-memory fixture passed directly to production validateCorrectionEligibility()",
+      "expectedFailureReason": "INVALID_INTENDED_VALUE",
+      "observedOutcome": "Threw INVALID_INTENDED_VALUE as expected",
+      "assertion": "assert(err.message.includes(\"INVALID_INTENDED_VALUE\"))"
+    },
+    {
+      "testId": 82,
+      "name": "NaN intended value is rejected for ASSET",
+      "manipulatedInput": "correction.intendedValue = NaN",
+      "isolationMechanism": "Deep-cloned in-memory fixture passed directly to production validateCorrectionEligibility()",
+      "expectedFailureReason": "INVALID_INTENDED_VALUE",
+      "observedOutcome": "Threw INVALID_INTENDED_VALUE as expected",
+      "assertion": "assert(err.message.includes(\"INVALID_INTENDED_VALUE\"))"
+    },
+    {
+      "testId": 83,
+      "name": "Positive infinity is rejected for ASSET",
+      "manipulatedInput": "correction.intendedValue = Infinity",
+      "isolationMechanism": "Deep-cloned in-memory fixture passed directly to production validateCorrectionEligibility()",
+      "expectedFailureReason": "INVALID_INTENDED_VALUE",
+      "observedOutcome": "Threw INVALID_INTENDED_VALUE as expected",
+      "assertion": "assert(err.message.includes(\"INVALID_INTENDED_VALUE\"))"
+    },
+    {
+      "testId": 84,
+      "name": "Negative infinity is rejected for ASSET",
+      "manipulatedInput": "correction.intendedValue = -Infinity",
+      "isolationMechanism": "Deep-cloned in-memory fixture passed directly to production validateCorrectionEligibility()",
+      "expectedFailureReason": "INVALID_INTENDED_VALUE",
+      "observedOutcome": "Threw INVALID_INTENDED_VALUE as expected",
+      "assertion": "assert(err.message.includes(\"INVALID_INTENDED_VALUE\"))"
+    },
+    {
+      "testId": 85,
+      "name": "Fractional intended value is rejected for ASSET",
+      "manipulatedInput": "correction.intendedValue = 12345.67",
+      "isolationMechanism": "Deep-cloned in-memory fixture passed directly to production validateCorrectionEligibility()",
+      "expectedFailureReason": "INVALID_INTENDED_VALUE",
+      "observedOutcome": "Threw INVALID_INTENDED_VALUE as expected",
+      "assertion": "assert(err.message.includes(\"INVALID_INTENDED_VALUE\"))"
+    },
+    {
+      "testId": 86,
+      "name": "Unsafe integer intended value is rejected for ASSET",
+      "manipulatedInput": "correction.intendedValue = Number.MAX_SAFE_INTEGER + 100",
+      "isolationMechanism": "Deep-cloned in-memory fixture passed directly to production validateCorrectionEligibility()",
+      "expectedFailureReason": "INVALID_INTENDED_VALUE",
+      "observedOutcome": "Threw INVALID_INTENDED_VALUE as expected",
+      "assertion": "assert(err.message.includes(\"INVALID_INTENDED_VALUE\"))"
+    },
+    {
+      "testId": 87,
+      "name": "String \"0\" is rejected for ASSET",
+      "manipulatedInput": "correction.intendedValue = \"0\"",
+      "isolationMechanism": "Deep-cloned in-memory fixture passed directly to production validateCorrectionEligibility()",
+      "expectedFailureReason": "INVALID_INTENDED_VALUE",
+      "observedOutcome": "Threw INVALID_INTENDED_VALUE as expected",
+      "assertion": "assert(err.message.includes(\"INVALID_INTENDED_VALUE\"))"
+    },
+    {
+      "testId": 88,
+      "name": "String containing a positive numeric value is rejected for ASSET",
+      "manipulatedInput": "correction.intendedValue = \"1000000\"",
+      "isolationMechanism": "Deep-cloned in-memory fixture passed directly to production validateCorrectionEligibility()",
+      "expectedFailureReason": "INVALID_INTENDED_VALUE",
+      "observedOutcome": "Threw INVALID_INTENDED_VALUE as expected",
+      "assertion": "assert(err.message.includes(\"INVALID_INTENDED_VALUE\"))"
+    },
+    {
+      "testId": 89,
+      "name": "Boolean, object, and array intended values are rejected for ASSET",
+      "manipulatedInput": "correction.intendedValue in [true, false, {}, { value: 1000 }, [], [0]]",
+      "isolationMechanism": "Deep-cloned in-memory fixture passed directly to production validateCorrectionEligibility()",
+      "expectedFailureReason": "INVALID_INTENDED_VALUE",
+      "observedOutcome": "Threw INVALID_INTENDED_VALUE as expected for all non-numeric types",
+      "assertion": "assert(err.message.includes(\"INVALID_INTENDED_VALUE\"))"
+    },
+    {
+      "testId": 90,
+      "name": "Undefined intended value is rejected for LIABILITY",
+      "manipulatedInput": "correction.intendedValue = undefined",
+      "isolationMechanism": "Deep-cloned in-memory fixture passed directly to production validateCorrectionEligibility()",
+      "expectedFailureReason": "INVALID_INTENDED_VALUE",
+      "observedOutcome": "Threw INVALID_INTENDED_VALUE as expected",
+      "assertion": "assert(err.message.includes(\"INVALID_INTENDED_VALUE\"))"
+    },
+    {
+      "testId": 91,
+      "name": "Negative intended value is rejected for LIABILITY",
+      "manipulatedInput": "correction.intendedValue = -50000",
+      "isolationMechanism": "Deep-cloned in-memory fixture passed directly to production validateCorrectionEligibility()",
+      "expectedFailureReason": "INVALID_INTENDED_VALUE",
+      "observedOutcome": "Threw INVALID_INTENDED_VALUE as expected",
+      "assertion": "assert(err.message.includes(\"INVALID_INTENDED_VALUE\"))"
+    },
+    {
+      "testId": 92,
+      "name": "NaN intended value is rejected for LIABILITY",
+      "manipulatedInput": "correction.intendedValue = NaN",
+      "isolationMechanism": "Deep-cloned in-memory fixture passed directly to production validateCorrectionEligibility()",
+      "expectedFailureReason": "INVALID_INTENDED_VALUE",
+      "observedOutcome": "Threw INVALID_INTENDED_VALUE as expected",
+      "assertion": "assert(err.message.includes(\"INVALID_INTENDED_VALUE\"))"
+    },
+    {
+      "testId": 93,
+      "name": "Positive and negative infinity are rejected for LIABILITY",
+      "manipulatedInput": "correction.intendedValue in [Infinity, -Infinity]",
+      "isolationMechanism": "Deep-cloned in-memory fixture passed directly to production validateCorrectionEligibility()",
+      "expectedFailureReason": "INVALID_INTENDED_VALUE",
+      "observedOutcome": "Threw INVALID_INTENDED_VALUE as expected",
+      "assertion": "assert(err.message.includes(\"INVALID_INTENDED_VALUE\"))"
+    },
+    {
+      "testId": 94,
+      "name": "Fractional intended value is rejected for LIABILITY",
+      "manipulatedInput": "correction.intendedValue = 500.25",
+      "isolationMechanism": "Deep-cloned in-memory fixture passed directly to production validateCorrectionEligibility()",
+      "expectedFailureReason": "INVALID_INTENDED_VALUE",
+      "observedOutcome": "Threw INVALID_INTENDED_VALUE as expected",
+      "assertion": "assert(err.message.includes(\"INVALID_INTENDED_VALUE\"))"
+    },
+    {
+      "testId": 95,
+      "name": "Unsafe integer intended value is rejected for LIABILITY",
+      "manipulatedInput": "correction.intendedValue = Number.MAX_SAFE_INTEGER + 50",
+      "isolationMechanism": "Deep-cloned in-memory fixture passed directly to production validateCorrectionEligibility()",
+      "expectedFailureReason": "INVALID_INTENDED_VALUE",
+      "observedOutcome": "Threw INVALID_INTENDED_VALUE as expected",
+      "assertion": "assert(err.message.includes(\"INVALID_INTENDED_VALUE\"))"
+    },
+    {
+      "testId": 96,
+      "name": "String \"0\" and positive numeric strings are rejected for LIABILITY",
+      "manipulatedInput": "correction.intendedValue in [\"0\", \"200000\", \"007\"]",
+      "isolationMechanism": "Deep-cloned in-memory fixture passed directly to production validateCorrectionEligibility()",
+      "expectedFailureReason": "INVALID_INTENDED_VALUE",
+      "observedOutcome": "Threw INVALID_INTENDED_VALUE as expected",
+      "assertion": "assert(err.message.includes(\"INVALID_INTENDED_VALUE\"))"
+    },
+    {
+      "testId": 97,
+      "name": "Boolean, object, and array intended values are rejected for LIABILITY",
+      "manipulatedInput": "correction.intendedValue in [true, false, {}, { liability: 0 }, [], [1000]]",
+      "isolationMechanism": "Deep-cloned in-memory fixture passed directly to production validateCorrectionEligibility()",
+      "expectedFailureReason": "INVALID_INTENDED_VALUE",
+      "observedOutcome": "Threw INVALID_INTENDED_VALUE as expected",
+      "assertion": "assert(err.message.includes(\"INVALID_INTENDED_VALUE\"))"
+    },
+    {
+      "testId": 98,
+      "name": "Missing field type is rejected",
+      "manipulatedInput": "fieldType in [undefined, null, \"\"]",
+      "isolationMechanism": "Direct validateCorrectionEligibility call with missing field type",
+      "expectedFailureReason": "UNSUPPORTED_FIELD_TYPE",
+      "observedOutcome": "Threw UNSUPPORTED_FIELD_TYPE as expected",
+      "assertion": "assert(err.message.includes(\"UNSUPPORTED_FIELD_TYPE\"))"
+    },
+    {
+      "testId": 99,
+      "name": "Unsupported field type is rejected",
+      "manipulatedInput": "fieldType in [\"EXPENSE\", \"NET_WORTH\", \"assets\", \"liabilities\", \"UNKNOWN\"]",
+      "isolationMechanism": "Direct validateCorrectionEligibility call with invalid field type strings",
+      "expectedFailureReason": "UNSUPPORTED_FIELD_TYPE",
+      "observedOutcome": "Threw UNSUPPORTED_FIELD_TYPE as expected",
+      "assertion": "assert(err.message.includes(\"UNSUPPORTED_FIELD_TYPE\"))"
+    },
+    {
+      "testId": 100,
+      "name": "Malformed field type does not enter the liability branch",
+      "manipulatedInput": "fieldType = \"MALFORMED_FIELD\" with valid liability-like fixture",
+      "isolationMechanism": "Direct call asserting error thrown before liability comparisons occur",
+      "expectedFailureReason": "UNSUPPORTED_FIELD_TYPE",
+      "observedOutcome": "Threw UNSUPPORTED_FIELD_TYPE and did not reach liability branch comparison",
+      "assertion": "assert(err.message.includes(\"UNSUPPORTED_FIELD_TYPE\"))"
+    },
+    {
+      "testId": 101,
+      "name": "Negative or malformed source asset values cannot bypass validation",
+      "manipulatedInput": "Source file with totalAssets: -500000; correction attempts intendedValue: null",
+      "isolationMechanism": "Temporary source file parsed through production validateCorrectionEligibility()",
+      "expectedFailureReason": "INVALID_NUMERIC_VALUE or INVALID_SOURCE_VALUE",
+      "observedOutcome": "Threw INVALID_NUMERIC_VALUE / INVALID_SOURCE_VALUE and rejected missing-disclosure qualification",
+      "assertion": "assert(err.message.includes(\"INVALID_NUMERIC_VALUE\") || err.message.includes(\"INVALID_SOURCE_VALUE\"))"
+    },
+    {
+      "testId": 102,
+      "name": "Negative or malformed source liability values cannot bypass validation",
+      "manipulatedInput": "Source file with totalLiabilities: -250000; correction attempts intendedValue: null",
+      "isolationMechanism": "Temporary source file parsed through production validateCorrectionEligibility()",
+      "expectedFailureReason": "INVALID_NUMERIC_VALUE or INVALID_SOURCE_VALUE",
+      "observedOutcome": "Threw INVALID_NUMERIC_VALUE / INVALID_SOURCE_VALUE and rejected missing-disclosure qualification",
+      "assertion": "assert(err.message.includes(\"INVALID_NUMERIC_VALUE\") || err.message.includes(\"INVALID_SOURCE_VALUE\"))"
+    },
+    {
+      "testId": 103,
+      "name": "Valid positive restoration still succeeds for both ASSET and LIABILITY",
+      "manipulatedInput": "Valid source-backed positive asset (1,000,000) and liability (200,000)",
+      "isolationMechanism": "Deep-cloned in-memory fixture with verified source and ledger match",
+      "expectedFailureReason": "None (positive control case)",
+      "observedOutcome": "validateCorrectionEligibility returned true for both ASSET and LIABILITY",
+      "assertion": "assertEqual(assetEligible, true); assertEqual(liabEligible, true)"
+    },
+    {
+      "testId": 104,
+      "name": "Valid explicit-null missing-disclosure control still succeeds for both ASSET and LIABILITY",
+      "manipulatedInput": "Valid source-backed missing asset (null) and liability (null)",
+      "isolationMechanism": "Deep-cloned in-memory fixture with explicit null ledger and matching classifications",
+      "expectedFailureReason": "None (missing disclosure control case)",
+      "observedOutcome": "validateCorrectionEligibility returned true for both ASSET and LIABILITY",
+      "assertion": "assertEqual(assetEligible, true); assertEqual(liabEligible, true)"
+    },
+    {
+      "testId": 105,
+      "name": "Valid source-backed genuine-zero control still succeeds for both ASSET and LIABILITY",
+      "manipulatedInput": "Valid source-backed zero asset (0) and liability (0)",
+      "isolationMechanism": "Deep-cloned in-memory fixture with verified source zero and ledger zero",
+      "expectedFailureReason": "None (genuine zero control case)",
+      "observedOutcome": "validateCorrectionEligibility returned true for both ASSET and LIABILITY",
+      "assertion": "assertEqual(assetEligible, true); assertEqual(liabEligible, true)"
     }
   ]
 }

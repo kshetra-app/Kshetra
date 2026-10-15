@@ -102,12 +102,12 @@ function writeTempJson(prefix, data) {
 }
 
 // ============================================================================
-// 79 Executable Test Cases (Directive 067 Battery)
+// 105 Executable Test Cases (Directive 068 Battery)
 // ============================================================================
 
 async function runAll() {
   console.log('================================================================');
-  console.log('KSHETRA W021.5 — DIRECTIVE 067 TEST SUITE EXECUTION');
+  console.log('KSHETRA W021.5 — DIRECTIVE 068 TEST SUITE EXECUTION');
   console.log(`Node Runtime: ${process.version}`);
   console.log(`Working Directory: ${SCRIPT_DIR}`);
   console.log('================================================================\n');
@@ -1876,6 +1876,732 @@ async function runAll() {
   });
 
   // ============================================================================
+  // Tests 80 - 105: Directive 068 Adversarial Regression & Domain Battery
+  // ============================================================================
+
+  // Helper setup for Tests 80 - 105
+  const getBaseMaps = () => ({
+    cwMap: new Map(baseCrosswalk.map(c => [c.manifestId, c])),
+    ledMap: new Map(baseLedger.map(l => [l.manifestId, l])),
+    manifestRecord: deepClone(baseManifest.affidavits[0]) // Candidate One: 50,000,000 assets, 10,000,000 liabilities
+  });
+
+  // 80. Undefined intended value is rejected for ASSET (Directive 068 §4.1)
+  await runTestCase(80, 'Undefined intended value is rejected for ASSET', async () => {
+    const { cwMap, ledMap, manifestRecord } = getBaseMaps();
+    const corr = {
+      affidavitId: manifestRecord.id,
+      currentRepresentedValue: manifestRecord.total_assets,
+      intendedValue: undefined,
+      disclosureClassification: 'POSITIVE',
+      sourceFile: 'scratch/directive_059/fixture_source_profiles.ts',
+      sourceLocation: 'scratch/directive_059/fixture_source_profiles.ts:14',
+      hasSourceConflict: false
+    };
+
+    let caught = false;
+    try {
+      validateCorrectionEligibility(manifestRecord, corr, 'ASSET', cwMap, ledMap, REPO_ROOT);
+    } catch (err) {
+      caught = true;
+      assert(err.message.includes('INVALID_INTENDED_VALUE'), `Expected INVALID_INTENDED_VALUE, got: ${err.message}`);
+    }
+    assert(caught, 'Must throw INVALID_INTENDED_VALUE for undefined intended value');
+    return 'Rejected undefined intended value with INVALID_INTENDED_VALUE';
+  });
+
+  // 81. Negative intended value is rejected for ASSET (Directive 068 §4.2)
+  await runTestCase(81, 'Negative intended value is rejected for ASSET', async () => {
+    const { cwMap, ledMap, manifestRecord } = getBaseMaps();
+    const corr = {
+      affidavitId: manifestRecord.id,
+      currentRepresentedValue: manifestRecord.total_assets,
+      intendedValue: -1,
+      disclosureClassification: 'POSITIVE',
+      sourceFile: 'scratch/directive_059/fixture_source_profiles.ts',
+      sourceLocation: 'scratch/directive_059/fixture_source_profiles.ts:14',
+      hasSourceConflict: false
+    };
+
+    let caught = false;
+    try {
+      validateCorrectionEligibility(manifestRecord, corr, 'ASSET', cwMap, ledMap, REPO_ROOT);
+    } catch (err) {
+      caught = true;
+      assert(err.message.includes('INVALID_INTENDED_VALUE'), `Expected INVALID_INTENDED_VALUE, got: ${err.message}`);
+    }
+    assert(caught, 'Must throw INVALID_INTENDED_VALUE for negative intended value');
+    return 'Rejected negative intended value with INVALID_INTENDED_VALUE';
+  });
+
+  // 82. NaN intended value is rejected for ASSET (Directive 068 §4.3)
+  await runTestCase(82, 'NaN intended value is rejected for ASSET', async () => {
+    const { cwMap, ledMap, manifestRecord } = getBaseMaps();
+    const corr = {
+      affidavitId: manifestRecord.id,
+      currentRepresentedValue: manifestRecord.total_assets,
+      intendedValue: NaN,
+      disclosureClassification: 'POSITIVE',
+      sourceFile: 'scratch/directive_059/fixture_source_profiles.ts',
+      sourceLocation: 'scratch/directive_059/fixture_source_profiles.ts:14',
+      hasSourceConflict: false
+    };
+
+    let caught = false;
+    try {
+      validateCorrectionEligibility(manifestRecord, corr, 'ASSET', cwMap, ledMap, REPO_ROOT);
+    } catch (err) {
+      caught = true;
+      assert(err.message.includes('INVALID_INTENDED_VALUE'), `Expected INVALID_INTENDED_VALUE, got: ${err.message}`);
+    }
+    assert(caught, 'Must throw INVALID_INTENDED_VALUE for NaN intended value');
+    return 'Rejected NaN intended value with INVALID_INTENDED_VALUE';
+  });
+
+  // 83. Positive infinity is rejected for ASSET (Directive 068 §4.4)
+  await runTestCase(83, 'Positive infinity is rejected for ASSET', async () => {
+    const { cwMap, ledMap, manifestRecord } = getBaseMaps();
+    const corr = {
+      affidavitId: manifestRecord.id,
+      currentRepresentedValue: manifestRecord.total_assets,
+      intendedValue: Infinity,
+      disclosureClassification: 'POSITIVE',
+      sourceFile: 'scratch/directive_059/fixture_source_profiles.ts',
+      sourceLocation: 'scratch/directive_059/fixture_source_profiles.ts:14',
+      hasSourceConflict: false
+    };
+
+    let caught = false;
+    try {
+      validateCorrectionEligibility(manifestRecord, corr, 'ASSET', cwMap, ledMap, REPO_ROOT);
+    } catch (err) {
+      caught = true;
+      assert(err.message.includes('INVALID_INTENDED_VALUE'), `Expected INVALID_INTENDED_VALUE, got: ${err.message}`);
+    }
+    assert(caught, 'Must throw INVALID_INTENDED_VALUE for positive infinity');
+    return 'Rejected positive infinity with INVALID_INTENDED_VALUE';
+  });
+
+  // 84. Negative infinity is rejected for ASSET (Directive 068 §4.5)
+  await runTestCase(84, 'Negative infinity is rejected for ASSET', async () => {
+    const { cwMap, ledMap, manifestRecord } = getBaseMaps();
+    const corr = {
+      affidavitId: manifestRecord.id,
+      currentRepresentedValue: manifestRecord.total_assets,
+      intendedValue: -Infinity,
+      disclosureClassification: 'POSITIVE',
+      sourceFile: 'scratch/directive_059/fixture_source_profiles.ts',
+      sourceLocation: 'scratch/directive_059/fixture_source_profiles.ts:14',
+      hasSourceConflict: false
+    };
+
+    let caught = false;
+    try {
+      validateCorrectionEligibility(manifestRecord, corr, 'ASSET', cwMap, ledMap, REPO_ROOT);
+    } catch (err) {
+      caught = true;
+      assert(err.message.includes('INVALID_INTENDED_VALUE'), `Expected INVALID_INTENDED_VALUE, got: ${err.message}`);
+    }
+    assert(caught, 'Must throw INVALID_INTENDED_VALUE for negative infinity');
+    return 'Rejected negative infinity with INVALID_INTENDED_VALUE';
+  });
+
+  // 85. Fractional intended value is rejected for ASSET (Directive 068 §4.6)
+  await runTestCase(85, 'Fractional intended value is rejected for ASSET', async () => {
+    const { cwMap, ledMap, manifestRecord } = getBaseMaps();
+    const corr = {
+      affidavitId: manifestRecord.id,
+      currentRepresentedValue: manifestRecord.total_assets,
+      intendedValue: 12345.67,
+      disclosureClassification: 'POSITIVE',
+      sourceFile: 'scratch/directive_059/fixture_source_profiles.ts',
+      sourceLocation: 'scratch/directive_059/fixture_source_profiles.ts:14',
+      hasSourceConflict: false
+    };
+
+    let caught = false;
+    try {
+      validateCorrectionEligibility(manifestRecord, corr, 'ASSET', cwMap, ledMap, REPO_ROOT);
+    } catch (err) {
+      caught = true;
+      assert(err.message.includes('INVALID_INTENDED_VALUE'), `Expected INVALID_INTENDED_VALUE, got: ${err.message}`);
+    }
+    assert(caught, 'Must throw INVALID_INTENDED_VALUE for fractional intended value');
+    return 'Rejected fractional intended value with INVALID_INTENDED_VALUE';
+  });
+
+  // 86. Unsafe integer intended value is rejected for ASSET (Directive 068 §4.7)
+  await runTestCase(86, 'Unsafe integer intended value is rejected for ASSET', async () => {
+    const { cwMap, ledMap, manifestRecord } = getBaseMaps();
+    const corr = {
+      affidavitId: manifestRecord.id,
+      currentRepresentedValue: manifestRecord.total_assets,
+      intendedValue: Number.MAX_SAFE_INTEGER + 100,
+      disclosureClassification: 'POSITIVE',
+      sourceFile: 'scratch/directive_059/fixture_source_profiles.ts',
+      sourceLocation: 'scratch/directive_059/fixture_source_profiles.ts:14',
+      hasSourceConflict: false
+    };
+
+    let caught = false;
+    try {
+      validateCorrectionEligibility(manifestRecord, corr, 'ASSET', cwMap, ledMap, REPO_ROOT);
+    } catch (err) {
+      caught = true;
+      assert(err.message.includes('INVALID_INTENDED_VALUE'), `Expected INVALID_INTENDED_VALUE, got: ${err.message}`);
+    }
+    assert(caught, 'Must throw INVALID_INTENDED_VALUE for unsafe integer');
+    return 'Rejected unsafe integer with INVALID_INTENDED_VALUE';
+  });
+
+  // 87. String "0" is rejected for ASSET (Directive 068 §4.8)
+  await runTestCase(87, 'String "0" is rejected for ASSET', async () => {
+    const { cwMap, ledMap, manifestRecord } = getBaseMaps();
+    const corr = {
+      affidavitId: manifestRecord.id,
+      currentRepresentedValue: manifestRecord.total_assets,
+      intendedValue: "0",
+      disclosureClassification: 'VERIFIED_GENUINE_ZERO',
+      sourceFile: 'scratch/directive_059/fixture_source_profiles.ts',
+      sourceLocation: 'scratch/directive_059/fixture_source_profiles.ts:14',
+      hasSourceConflict: false
+    };
+
+    let caught = false;
+    try {
+      validateCorrectionEligibility(manifestRecord, corr, 'ASSET', cwMap, ledMap, REPO_ROOT);
+    } catch (err) {
+      caught = true;
+      assert(err.message.includes('INVALID_INTENDED_VALUE'), `Expected INVALID_INTENDED_VALUE, got: ${err.message}`);
+    }
+    assert(caught, 'Must throw INVALID_INTENDED_VALUE for string "0"');
+    return 'Rejected string "0" with INVALID_INTENDED_VALUE';
+  });
+
+  // 88. String containing a positive numeric value is rejected for ASSET (Directive 068 §4.9)
+  await runTestCase(88, 'String containing a positive numeric value is rejected for ASSET', async () => {
+    const { cwMap, ledMap, manifestRecord } = getBaseMaps();
+    const corr = {
+      affidavitId: manifestRecord.id,
+      currentRepresentedValue: manifestRecord.total_assets,
+      intendedValue: "1000000",
+      disclosureClassification: 'POSITIVE',
+      sourceFile: 'scratch/directive_059/fixture_source_profiles.ts',
+      sourceLocation: 'scratch/directive_059/fixture_source_profiles.ts:14',
+      hasSourceConflict: false
+    };
+
+    let caught = false;
+    try {
+      validateCorrectionEligibility(manifestRecord, corr, 'ASSET', cwMap, ledMap, REPO_ROOT);
+    } catch (err) {
+      caught = true;
+      assert(err.message.includes('INVALID_INTENDED_VALUE'), `Expected INVALID_INTENDED_VALUE, got: ${err.message}`);
+    }
+    assert(caught, 'Must throw INVALID_INTENDED_VALUE for positive numeric string');
+    return 'Rejected positive numeric string with INVALID_INTENDED_VALUE';
+  });
+
+  // 89. Boolean, object, and array intended values are rejected for ASSET (Directive 068 §4.10)
+  await runTestCase(89, 'Boolean, object, and array intended values are rejected for ASSET', async () => {
+    const { cwMap, ledMap, manifestRecord } = getBaseMaps();
+    const nonNumericValues = [true, false, {}, { value: 1000 }, [], [0]];
+
+    for (const val of nonNumericValues) {
+      const corr = {
+        affidavitId: manifestRecord.id,
+        currentRepresentedValue: manifestRecord.total_assets,
+        intendedValue: val,
+        disclosureClassification: 'POSITIVE',
+        sourceFile: 'scratch/directive_059/fixture_source_profiles.ts',
+        sourceLocation: 'scratch/directive_059/fixture_source_profiles.ts:14',
+        hasSourceConflict: false
+      };
+
+      let caught = false;
+      try {
+        validateCorrectionEligibility(manifestRecord, corr, 'ASSET', cwMap, ledMap, REPO_ROOT);
+      } catch (err) {
+        caught = true;
+        assert(err.message.includes('INVALID_INTENDED_VALUE'), `Expected INVALID_INTENDED_VALUE for ${typeof val}, got: ${err.message}`);
+      }
+      assert(caught, `Must throw INVALID_INTENDED_VALUE for non-numeric value: ${JSON.stringify(val)}`);
+    }
+    return 'Rejected all boolean, object, and array intended values with INVALID_INTENDED_VALUE';
+  });
+
+  // 90. Undefined intended value is rejected for LIABILITY (Directive 068 §4.1)
+  await runTestCase(90, 'Undefined intended value is rejected for LIABILITY', async () => {
+    const { cwMap, ledMap, manifestRecord } = getBaseMaps();
+    const corr = {
+      affidavitId: manifestRecord.id,
+      currentRepresentedValue: manifestRecord.total_liabilities,
+      intendedValue: undefined,
+      disclosureClassification: 'POSITIVE',
+      sourceFile: 'scratch/directive_059/fixture_source_profiles.ts',
+      sourceLocation: 'scratch/directive_059/fixture_source_profiles.ts:14',
+      hasSourceConflict: false
+    };
+
+    let caught = false;
+    try {
+      validateCorrectionEligibility(manifestRecord, corr, 'LIABILITY', cwMap, ledMap, REPO_ROOT);
+    } catch (err) {
+      caught = true;
+      assert(err.message.includes('INVALID_INTENDED_VALUE'), `Expected INVALID_INTENDED_VALUE, got: ${err.message}`);
+    }
+    assert(caught, 'Must throw INVALID_INTENDED_VALUE for undefined liability');
+    return 'Rejected undefined liability with INVALID_INTENDED_VALUE';
+  });
+
+  // 91. Negative intended value is rejected for LIABILITY (Directive 068 §4.2)
+  await runTestCase(91, 'Negative intended value is rejected for LIABILITY', async () => {
+    const { cwMap, ledMap, manifestRecord } = getBaseMaps();
+    const corr = {
+      affidavitId: manifestRecord.id,
+      currentRepresentedValue: manifestRecord.total_liabilities,
+      intendedValue: -50000,
+      disclosureClassification: 'POSITIVE',
+      sourceFile: 'scratch/directive_059/fixture_source_profiles.ts',
+      sourceLocation: 'scratch/directive_059/fixture_source_profiles.ts:14',
+      hasSourceConflict: false
+    };
+
+    let caught = false;
+    try {
+      validateCorrectionEligibility(manifestRecord, corr, 'LIABILITY', cwMap, ledMap, REPO_ROOT);
+    } catch (err) {
+      caught = true;
+      assert(err.message.includes('INVALID_INTENDED_VALUE'), `Expected INVALID_INTENDED_VALUE, got: ${err.message}`);
+    }
+    assert(caught, 'Must throw INVALID_INTENDED_VALUE for negative liability');
+    return 'Rejected negative liability with INVALID_INTENDED_VALUE';
+  });
+
+  // 92. NaN intended value is rejected for LIABILITY (Directive 068 §4.3)
+  await runTestCase(92, 'NaN intended value is rejected for LIABILITY', async () => {
+    const { cwMap, ledMap, manifestRecord } = getBaseMaps();
+    const corr = {
+      affidavitId: manifestRecord.id,
+      currentRepresentedValue: manifestRecord.total_liabilities,
+      intendedValue: NaN,
+      disclosureClassification: 'POSITIVE',
+      sourceFile: 'scratch/directive_059/fixture_source_profiles.ts',
+      sourceLocation: 'scratch/directive_059/fixture_source_profiles.ts:14',
+      hasSourceConflict: false
+    };
+
+    let caught = false;
+    try {
+      validateCorrectionEligibility(manifestRecord, corr, 'LIABILITY', cwMap, ledMap, REPO_ROOT);
+    } catch (err) {
+      caught = true;
+      assert(err.message.includes('INVALID_INTENDED_VALUE'), `Expected INVALID_INTENDED_VALUE, got: ${err.message}`);
+    }
+    assert(caught, 'Must throw INVALID_INTENDED_VALUE for NaN liability');
+    return 'Rejected NaN liability with INVALID_INTENDED_VALUE';
+  });
+
+  // 93. Positive and negative infinity are rejected for LIABILITY (Directive 068 §4.4, §4.5)
+  await runTestCase(93, 'Positive and negative infinity are rejected for LIABILITY', async () => {
+    const { cwMap, ledMap, manifestRecord } = getBaseMaps();
+    for (const inf of [Infinity, -Infinity]) {
+      const corr = {
+        affidavitId: manifestRecord.id,
+        currentRepresentedValue: manifestRecord.total_liabilities,
+        intendedValue: inf,
+        disclosureClassification: 'POSITIVE',
+        sourceFile: 'scratch/directive_059/fixture_source_profiles.ts',
+        sourceLocation: 'scratch/directive_059/fixture_source_profiles.ts:14',
+        hasSourceConflict: false
+      };
+
+      let caught = false;
+      try {
+        validateCorrectionEligibility(manifestRecord, corr, 'LIABILITY', cwMap, ledMap, REPO_ROOT);
+      } catch (err) {
+        caught = true;
+        assert(err.message.includes('INVALID_INTENDED_VALUE'), `Expected INVALID_INTENDED_VALUE, got: ${err.message}`);
+      }
+      assert(caught, `Must throw INVALID_INTENDED_VALUE for infinity: ${inf}`);
+    }
+    return 'Rejected +/- Infinity for LIABILITY with INVALID_INTENDED_VALUE';
+  });
+
+  // 94. Fractional intended value is rejected for LIABILITY (Directive 068 §4.6)
+  await runTestCase(94, 'Fractional intended value is rejected for LIABILITY', async () => {
+    const { cwMap, ledMap, manifestRecord } = getBaseMaps();
+    const corr = {
+      affidavitId: manifestRecord.id,
+      currentRepresentedValue: manifestRecord.total_liabilities,
+      intendedValue: 500.25,
+      disclosureClassification: 'POSITIVE',
+      sourceFile: 'scratch/directive_059/fixture_source_profiles.ts',
+      sourceLocation: 'scratch/directive_059/fixture_source_profiles.ts:14',
+      hasSourceConflict: false
+    };
+
+    let caught = false;
+    try {
+      validateCorrectionEligibility(manifestRecord, corr, 'LIABILITY', cwMap, ledMap, REPO_ROOT);
+    } catch (err) {
+      caught = true;
+      assert(err.message.includes('INVALID_INTENDED_VALUE'), `Expected INVALID_INTENDED_VALUE, got: ${err.message}`);
+    }
+    assert(caught, 'Must throw INVALID_INTENDED_VALUE for fractional liability');
+    return 'Rejected fractional liability with INVALID_INTENDED_VALUE';
+  });
+
+  // 95. Unsafe integer intended value is rejected for LIABILITY (Directive 068 §4.7)
+  await runTestCase(95, 'Unsafe integer intended value is rejected for LIABILITY', async () => {
+    const { cwMap, ledMap, manifestRecord } = getBaseMaps();
+    const corr = {
+      affidavitId: manifestRecord.id,
+      currentRepresentedValue: manifestRecord.total_liabilities,
+      intendedValue: Number.MAX_SAFE_INTEGER + 50,
+      disclosureClassification: 'POSITIVE',
+      sourceFile: 'scratch/directive_059/fixture_source_profiles.ts',
+      sourceLocation: 'scratch/directive_059/fixture_source_profiles.ts:14',
+      hasSourceConflict: false
+    };
+
+    let caught = false;
+    try {
+      validateCorrectionEligibility(manifestRecord, corr, 'LIABILITY', cwMap, ledMap, REPO_ROOT);
+    } catch (err) {
+      caught = true;
+      assert(err.message.includes('INVALID_INTENDED_VALUE'), `Expected INVALID_INTENDED_VALUE, got: ${err.message}`);
+    }
+    assert(caught, 'Must throw INVALID_INTENDED_VALUE for unsafe integer liability');
+    return 'Rejected unsafe integer liability with INVALID_INTENDED_VALUE';
+  });
+
+  // 96. String "0" and positive numeric strings are rejected for LIABILITY (Directive 068 §4.8, §4.9)
+  await runTestCase(96, 'String "0" and positive numeric strings are rejected for LIABILITY', async () => {
+    const { cwMap, ledMap, manifestRecord } = getBaseMaps();
+    for (const strVal of ["0", "200000", "007"]) {
+      const corr = {
+        affidavitId: manifestRecord.id,
+        currentRepresentedValue: manifestRecord.total_liabilities,
+        intendedValue: strVal,
+        disclosureClassification: strVal === "0" ? 'VERIFIED_GENUINE_ZERO' : 'POSITIVE',
+        sourceFile: 'scratch/directive_059/fixture_source_profiles.ts',
+        sourceLocation: 'scratch/directive_059/fixture_source_profiles.ts:14',
+        hasSourceConflict: false
+      };
+
+      let caught = false;
+      try {
+        validateCorrectionEligibility(manifestRecord, corr, 'LIABILITY', cwMap, ledMap, REPO_ROOT);
+      } catch (err) {
+        caught = true;
+        assert(err.message.includes('INVALID_INTENDED_VALUE'), `Expected INVALID_INTENDED_VALUE, got: ${err.message}`);
+      }
+      assert(caught, `Must throw INVALID_INTENDED_VALUE for numeric string: ${strVal}`);
+    }
+    return 'Rejected numeric strings for LIABILITY with INVALID_INTENDED_VALUE';
+  });
+
+  // 97. Boolean, object, and array intended values are rejected for LIABILITY (Directive 068 §4.10)
+  await runTestCase(97, 'Boolean, object, and array intended values are rejected for LIABILITY', async () => {
+    const { cwMap, ledMap, manifestRecord } = getBaseMaps();
+    const nonNumericValues = [true, false, {}, { liability: 0 }, [], [1000]];
+
+    for (const val of nonNumericValues) {
+      const corr = {
+        affidavitId: manifestRecord.id,
+        currentRepresentedValue: manifestRecord.total_liabilities,
+        intendedValue: val,
+        disclosureClassification: 'POSITIVE',
+        sourceFile: 'scratch/directive_059/fixture_source_profiles.ts',
+        sourceLocation: 'scratch/directive_059/fixture_source_profiles.ts:14',
+        hasSourceConflict: false
+      };
+
+      let caught = false;
+      try {
+        validateCorrectionEligibility(manifestRecord, corr, 'LIABILITY', cwMap, ledMap, REPO_ROOT);
+      } catch (err) {
+        caught = true;
+        assert(err.message.includes('INVALID_INTENDED_VALUE'), `Expected INVALID_INTENDED_VALUE, got: ${err.message}`);
+      }
+      assert(caught, `Must throw INVALID_INTENDED_VALUE for non-numeric liability: ${JSON.stringify(val)}`);
+    }
+    return 'Rejected boolean, object, and array values for LIABILITY with INVALID_INTENDED_VALUE';
+  });
+
+  // 98. Missing field type is rejected (Directive 068 §4.11)
+  await runTestCase(98, 'Missing field type is rejected', async () => {
+    const { cwMap, ledMap, manifestRecord } = getBaseMaps();
+    const corr = {
+      affidavitId: manifestRecord.id,
+      currentRepresentedValue: manifestRecord.total_assets,
+      intendedValue: 1000000,
+      disclosureClassification: 'POSITIVE',
+      sourceFile: 'scratch/directive_059/fixture_source_profiles.ts',
+      sourceLocation: 'scratch/directive_059/fixture_source_profiles.ts:14',
+      hasSourceConflict: false
+    };
+
+    for (const missingField of [undefined, null, '']) {
+      let caught = false;
+      try {
+        validateCorrectionEligibility(manifestRecord, corr, missingField, cwMap, ledMap, REPO_ROOT);
+      } catch (err) {
+        caught = true;
+        assert(err.message.includes('UNSUPPORTED_FIELD_TYPE'), `Expected UNSUPPORTED_FIELD_TYPE, got: ${err.message}`);
+      }
+      assert(caught, `Must throw UNSUPPORTED_FIELD_TYPE for missing field type: ${missingField}`);
+    }
+    return 'Rejected missing/empty field types with UNSUPPORTED_FIELD_TYPE';
+  });
+
+  // 99. Unsupported field type is rejected (Directive 068 §4.12)
+  await runTestCase(99, 'Unsupported field type is rejected', async () => {
+    const { cwMap, ledMap, manifestRecord } = getBaseMaps();
+    const corr = {
+      affidavitId: manifestRecord.id,
+      currentRepresentedValue: manifestRecord.total_assets,
+      intendedValue: 1000000,
+      disclosureClassification: 'POSITIVE',
+      sourceFile: 'scratch/directive_059/fixture_source_profiles.ts',
+      sourceLocation: 'scratch/directive_059/fixture_source_profiles.ts:14',
+      hasSourceConflict: false
+    };
+
+    for (const invalidField of ['EXPENSE', 'NET_WORTH', 'assets', 'liabilities', 'UNKNOWN']) {
+      let caught = false;
+      try {
+        validateCorrectionEligibility(manifestRecord, corr, invalidField, cwMap, ledMap, REPO_ROOT);
+      } catch (err) {
+        caught = true;
+        assert(err.message.includes('UNSUPPORTED_FIELD_TYPE'), `Expected UNSUPPORTED_FIELD_TYPE, got: ${err.message}`);
+      }
+      assert(caught, `Must throw UNSUPPORTED_FIELD_TYPE for invalid field type: ${invalidField}`);
+    }
+    return 'Rejected unsupported field types with UNSUPPORTED_FIELD_TYPE';
+  });
+
+  // 100. Malformed field type does not enter the liability branch (Directive 068 §4.13)
+  await runTestCase(100, 'Malformed field type does not enter the liability branch', async () => {
+    const { cwMap, ledMap, manifestRecord } = getBaseMaps();
+    const corr = {
+      affidavitId: manifestRecord.id,
+      currentRepresentedValue: 1000000,
+      intendedValue: 1000000,
+      disclosureClassification: 'POSITIVE',
+      sourceFile: 'scratch/directive_059/fixture_source_profiles.ts',
+      sourceLocation: 'scratch/directive_059/fixture_source_profiles.ts:14',
+      hasSourceConflict: false
+    };
+
+    let caught = false;
+    try {
+      validateCorrectionEligibility(manifestRecord, corr, 'MALFORMED_FIELD', cwMap, ledMap, REPO_ROOT);
+    } catch (err) {
+      caught = true;
+      assert(err.message.includes('UNSUPPORTED_FIELD_TYPE'), `Expected UNSUPPORTED_FIELD_TYPE, got: ${err.message}`);
+      assert(!err.message.includes('CORRECTION_DECLARED_VALUE_MISMATCH'), 'Must not reach liability branch comparison');
+    }
+    assert(caught, 'Must throw UNSUPPORTED_FIELD_TYPE before entering liability branch');
+    return 'Confirmed malformed field type fails closed before liability branch evaluation';
+  });
+
+  // 101. Negative or malformed source asset values cannot bypass validation (Directive 068 §4.17)
+  await runTestCase(101, 'Negative or malformed source asset values cannot bypass validation', async () => {
+    const tempSrcPath = path.join(SCRIPT_DIR, 'temp_negative_asset_source.ts');
+    const tempSrcContent = `export const TEMP = [
+  {
+    candidateName: "Candidate One",
+    acNo: 1,
+    constituencyName: "Constituency 1",
+    totalAssets: -500000,
+    totalLiabilities: 0
+  }
+];`;
+    fs.writeFileSync(tempSrcPath, tempSrcContent, 'utf8');
+
+    const { cwMap, ledMap, manifestRecord } = getBaseMaps();
+    manifestRecord.total_assets = 0;
+    const corr = {
+      affidavitId: manifestRecord.id,
+      currentRepresentedValue: 0,
+      intendedValue: null,
+      disclosureClassification: 'UNDISCLOSED_OMITTED',
+      sourceFile: path.relative(REPO_ROOT, tempSrcPath).replace(/\\/g, '/'),
+      sourceLocation: `${path.relative(REPO_ROOT, tempSrcPath).replace(/\\/g, '/')}:2`,
+      hasSourceConflict: false
+    };
+
+    let caught = false;
+    try {
+      validateCorrectionEligibility(manifestRecord, corr, 'ASSET', cwMap, ledMap, REPO_ROOT);
+    } catch (err) {
+      caught = true;
+      assert(err.message.includes('INVALID_NUMERIC_VALUE') || err.message.includes('INVALID_SOURCE_VALUE'), `Expected INVALID_NUMERIC_VALUE or INVALID_SOURCE_VALUE, got: ${err.message}`);
+    } finally {
+      if (fs.existsSync(tempSrcPath)) fs.unlinkSync(tempSrcPath);
+    }
+    assert(caught, 'Must reject negative source asset value');
+    return 'Negative source asset value rejected and prevented from qualifying as missing disclosure';
+  });
+
+  // 102. Negative or malformed source liability values cannot bypass validation (Directive 068 §4.17)
+  await runTestCase(102, 'Negative or malformed source liability values cannot bypass validation', async () => {
+    const tempSrcPath = path.join(SCRIPT_DIR, 'temp_negative_liab_source.ts');
+    const tempSrcContent = `export const TEMP = [
+  {
+    candidateName: "Candidate One",
+    acNo: 1,
+    constituencyName: "Constituency 1",
+    totalAssets: 1000000,
+    totalLiabilities: -250000
+  }
+];`;
+    fs.writeFileSync(tempSrcPath, tempSrcContent, 'utf8');
+
+    const { cwMap, ledMap, manifestRecord } = getBaseMaps();
+    manifestRecord.total_liabilities = 0;
+    const corr = {
+      affidavitId: manifestRecord.id,
+      currentRepresentedValue: 0,
+      intendedValue: null,
+      disclosureClassification: 'UNDISCLOSED_OMITTED',
+      sourceFile: path.relative(REPO_ROOT, tempSrcPath).replace(/\\/g, '/'),
+      sourceLocation: `${path.relative(REPO_ROOT, tempSrcPath).replace(/\\/g, '/')}:2`,
+      hasSourceConflict: false
+    };
+
+    let caught = false;
+    try {
+      validateCorrectionEligibility(manifestRecord, corr, 'LIABILITY', cwMap, ledMap, REPO_ROOT);
+    } catch (err) {
+      caught = true;
+      assert(err.message.includes('INVALID_NUMERIC_VALUE') || err.message.includes('INVALID_SOURCE_VALUE'), `Expected INVALID_NUMERIC_VALUE or INVALID_SOURCE_VALUE, got: ${err.message}`);
+    } finally {
+      if (fs.existsSync(tempSrcPath)) fs.unlinkSync(tempSrcPath);
+    }
+    assert(caught, 'Must reject negative source liability value');
+    return 'Negative source liability value rejected and prevented from qualifying as missing disclosure';
+  });
+
+  // 103. Valid positive restoration still succeeds for both ASSET and LIABILITY (Directive 068 §4.14)
+  await runTestCase(103, 'Valid positive restoration still succeeds for both ASSET and LIABILITY', async () => {
+    const { cwMap, ledMap, manifestRecord } = getBaseMaps();
+    const assetManifest = deepClone(manifestRecord);
+    assetManifest.total_assets = 1000000;
+    const assetLedger = ledMap.get(assetManifest.id);
+    assetLedger.authoritativeTotalAssets = 1000000;
+
+    const validAssetCorr = {
+      affidavitId: assetManifest.id,
+      currentRepresentedValue: 1000000,
+      intendedValue: 1000000,
+      disclosureClassification: 'POSITIVE',
+      sourceFile: 'scratch/directive_059/fixture_source_profiles.ts',
+      sourceLocation: 'scratch/directive_059/fixture_source_profiles.ts:14',
+      hasSourceConflict: false
+    };
+
+    const assetEligible = validateCorrectionEligibility(assetManifest, validAssetCorr, 'ASSET', cwMap, ledMap, REPO_ROOT);
+    assertEqual(assetEligible, true, 'Valid positive asset restoration must succeed');
+
+    const liabManifest = deepClone(manifestRecord);
+    liabManifest.total_liabilities = 200000;
+    const liabLedger = ledMap.get(liabManifest.id);
+    liabLedger.authoritativeTotalLiabilities = 200000;
+
+    const validLiabCorr = {
+      affidavitId: liabManifest.id,
+      currentRepresentedValue: 200000,
+      intendedValue: 200000,
+      disclosureClassification: 'POSITIVE',
+      sourceFile: 'scratch/directive_059/fixture_source_profiles.ts',
+      sourceLocation: 'scratch/directive_059/fixture_source_profiles.ts:14',
+      hasSourceConflict: false
+    };
+
+    const liabEligible = validateCorrectionEligibility(liabManifest, validLiabCorr, 'LIABILITY', cwMap, ledMap, REPO_ROOT);
+    assertEqual(liabEligible, true, 'Valid positive liability restoration must succeed');
+
+    return 'Positive restoration controls passed with true for both ASSET and LIABILITY';
+  });
+
+  // 104. Valid explicit-null missing-disclosure control still succeeds for both ASSET and LIABILITY (Directive 068 §4.15)
+  await runTestCase(104, 'Valid explicit-null missing-disclosure control still succeeds for both ASSET and LIABILITY', async () => {
+    const { cwMap, ledMap } = getBaseMaps();
+    const candidateFour = deepClone(baseManifest.affidavits[3]);
+
+    const assetCorr = {
+      affidavitId: candidateFour.id,
+      currentRepresentedValue: 0,
+      intendedValue: null,
+      disclosureClassification: 'UNDISCLOSED_OMITTED',
+      sourceFile: 'scratch/directive_059/fixture_source_profiles.ts',
+      sourceLocation: 'scratch/directive_059/fixture_source_profiles.ts:40',
+      hasSourceConflict: false
+    };
+
+    const assetEligible = validateCorrectionEligibility(candidateFour, assetCorr, 'ASSET', cwMap, ledMap, REPO_ROOT);
+    assertEqual(assetEligible, true, 'Valid explicit-null asset disclosure must succeed');
+
+    const liabCorr = {
+      affidavitId: candidateFour.id,
+      currentRepresentedValue: 0,
+      intendedValue: null,
+      disclosureClassification: 'UNDISCLOSED_OMITTED',
+      sourceFile: 'scratch/directive_059/fixture_source_profiles.ts',
+      sourceLocation: 'scratch/directive_059/fixture_source_profiles.ts:40',
+      hasSourceConflict: false
+    };
+
+    const liabEligible = validateCorrectionEligibility(candidateFour, liabCorr, 'LIABILITY', cwMap, ledMap, REPO_ROOT);
+    assertEqual(liabEligible, true, 'Valid explicit-null liability disclosure must succeed');
+
+    return 'Explicit-null missing disclosure controls passed with true for both ASSET and LIABILITY';
+  });
+
+  // 105. Valid source-backed genuine-zero control still succeeds for both ASSET and LIABILITY (Directive 068 §4.16)
+  await runTestCase(105, 'Valid source-backed genuine-zero control still succeeds for both ASSET and LIABILITY', async () => {
+    const { cwMap, ledMap } = getBaseMaps();
+    const candidateFive = deepClone(baseManifest.affidavits[4]);
+
+    const ledFive = ledMap.get(candidateFive.id);
+    ledFive.authoritativeTotalAssets = 0;
+    ledFive.authoritativeTotalLiabilities = 0;
+    candidateFive.total_assets = 0;
+    candidateFive.total_liabilities = 0;
+
+    const zeroAssetCorr = {
+      affidavitId: candidateFive.id,
+      currentRepresentedValue: 0,
+      intendedValue: 0,
+      disclosureClassification: 'VERIFIED_GENUINE_ZERO',
+      sourceFile: 'scratch/directive_059/fixture_source_profiles.ts',
+      sourceLocation: 'scratch/directive_059/fixture_source_profiles.ts:47',
+      hasSourceConflict: false
+    };
+
+    const assetEligible = validateCorrectionEligibility(candidateFive, zeroAssetCorr, 'ASSET', cwMap, ledMap, REPO_ROOT);
+    assertEqual(assetEligible, true, 'Valid genuine-zero asset control must succeed');
+
+    const zeroLiabCorr = {
+      affidavitId: candidateFive.id,
+      currentRepresentedValue: 0,
+      intendedValue: 0,
+      disclosureClassification: 'VERIFIED_GENUINE_ZERO',
+      sourceFile: 'scratch/directive_059/fixture_source_profiles.ts',
+      sourceLocation: 'scratch/directive_059/fixture_source_profiles.ts:47',
+      hasSourceConflict: false
+    };
+
+    const liabEligible = validateCorrectionEligibility(candidateFive, zeroLiabCorr, 'LIABILITY', cwMap, ledMap, REPO_ROOT);
+    assertEqual(liabEligible, true, 'Valid genuine-zero liability control must succeed');
+
+    return 'Genuine-zero controls passed with true for both ASSET and LIABILITY';
+  });
+
+  // ============================================================================
   // Summary & Machine-Readable Output
   // ============================================================================
 
@@ -1889,7 +2615,7 @@ async function runAll() {
   }
 
   const resultsPayload = {
-    testSuite: 'Directive 067 Test Battery',
+    testSuite: 'Directive 068 Test Battery',
     milestone: 'W021.5 / B2.2-E',
     defect: 'DQ-W021.5-B2.2E-001',
     executionDate: new Date().toISOString(),

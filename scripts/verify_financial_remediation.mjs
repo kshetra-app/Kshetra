@@ -926,6 +926,19 @@ export function validateCorrectionEligibility(manifestRecord, correction, fieldT
   if (!manifestRecord || !correction) {
     throw new Error('INVALID_ARGUMENTS: Both manifestRecord and correction are required');
   }
+
+  // Pre-condition 1b (Directive 068 §3.3): Field type validation
+  if (fieldType !== 'ASSET' && fieldType !== 'LIABILITY') {
+    throw new Error(`UNSUPPORTED_FIELD_TYPE: Field type '${fieldType}' is invalid; must be 'ASSET' or 'LIABILITY'`);
+  }
+
+  // Pre-condition 1c (Directive 068 §3.2): Intended value domain validation
+  const isNullIntended = correction.intendedValue === null;
+  const isSafeIntended = typeof correction.intendedValue === 'number' && Number.isSafeInteger(correction.intendedValue) && correction.intendedValue >= 0;
+  if (!isNullIntended && !isSafeIntended) {
+    throw new Error(`INVALID_INTENDED_VALUE: Intended value '${correction.intendedValue}' is invalid; must be null or a non-negative safe integer`);
+  }
+
   if (!manifestRecord.id) {
     throw new Error('MISSING_MANIFEST_ID: Manifest record missing id');
   }
@@ -1009,6 +1022,13 @@ export function validateCorrectionEligibility(manifestRecord, correction, fieldT
   );
 
   const sourceVal = fieldType === 'ASSET' ? parsedProfile.totalAssets : parsedProfile.totalLiabilities;
+
+  // Pre-condition 8b (Directive 068 §3.4): Source financial value domain validation
+  if (sourceVal !== undefined && sourceVal !== null) {
+    if (typeof sourceVal !== 'number' || !Number.isSafeInteger(sourceVal) || sourceVal < 0) {
+      throw new Error(`INVALID_SOURCE_VALUE: Source ${fieldType.toLowerCase()} value '${sourceVal}' is malformed or invalid; must be undefined, null, or a non-negative safe integer`);
+    }
+  }
 
   // Retrieve Ledger Authoritative Value
   let ledgerAuthoritativeVal;
@@ -1111,6 +1131,17 @@ export function validateCorrectionEligibility(manifestRecord, correction, fieldT
     if (validMissingClassifications.includes(correction.disclosureClassification) || validMissingClassifications.includes(ledgerClassification)) {
       throw new Error(`CONTRADICTORY_DISCLOSURE_CLASSIFICATION: Zero preservation cannot have missing-disclosure classification (correction: '${correction.disclosureClassification}', ledger: '${ledgerClassification}')`);
     }
+  }
+
+  // Directive 068 §3.1: Terminal assertion guaranteeing every intended value was handled by Path A, B, or C
+  if (correction.intendedValue === null) {
+    // Handled in Path B
+  } else if (correction.intendedValue === 0) {
+    // Handled in Path C
+  } else if (correction.intendedValue > 0) {
+    // Handled in Path A
+  } else {
+    throw new Error(`INVALID_INTENDED_VALUE: Fall-through detected for unhandled intended value '${correction.intendedValue}'`);
   }
 
   return true;
