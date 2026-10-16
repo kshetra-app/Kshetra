@@ -38,7 +38,9 @@ import {
   validateIso8601Utc,
   atomicWriteFileSync,
   REQUIRED_EVIDENCE_SPECS,
+  POSIX_UNSUPPORTED_DIR_SYNC_CODES,
   UNSUPPORTED_DIR_SYNC_CODES,
+  classifyDirectorySyncError,
   PostRenameDurabilityError
 } from '../generate_checksum_manifest.mjs';
 
@@ -360,7 +362,7 @@ try {
     assert.ok(result.generatedAt, 'Generated timestamp must be defined');
     const onDiskRaw = fs.readFileSync(env.manifestPath, 'utf8');
     const parsed = JSON.parse(onDiskRaw);
-    assert.strictEqual(parsed.directive, 'W021.5-CTO-DIRECTIVE-081');
+    assert.strictEqual(parsed.directive, 'W021.5-CTO-DIRECTIVE-082');
     assert.strictEqual(parsed.generatedAt, result.generatedAt);
     assert.ok(Array.isArray(parsed.deliverables), 'Deliverables must be array');
 
@@ -518,7 +520,7 @@ try {
     assert.ok(result.durability, 'Durability object must be returned');
     assert.strictEqual(result.durability.fileSynced, true, 'File sync must be confirmed');
     assert.strictEqual(result.durability.directorySynced, true, 'Directory sync must be confirmed');
-    assert.strictEqual(result.durability.directorySyncStatus, 'SUPPORTED_AND_SYNCED');
+    assert.strictEqual(result.durability.directorySyncStatus, 'CONFIRMED_SYNCHRONIZATION');
 
     const manifestData = JSON.parse(fs.readFileSync(env.manifestPath, 'utf8'));
     assert.strictEqual(manifestData.generatedAt, result.generatedAt);
@@ -529,7 +531,7 @@ try {
   // Test 20: Recognized unsupported-directory-sync error following successful rename is non-fatal
   runTest('Recognized unsupported-directory-sync error following successful rename is non-fatal', () => {
     const env = setupFixtureEnv();
-    for (const code of ['ENOTSUP', 'EINVAL', 'EISDIR']) {
+    for (const code of ['ENOTSUP', 'EINVAL', 'EOPNOTSUPP', 'EISDIR']) {
       const result = generateChecksumManifest({
         repoRoot: env.tempRoot,
         manifestPath: env.manifestPath,
@@ -541,7 +543,7 @@ try {
       assert.ok(result.durability, 'Durability object must be returned');
       assert.strictEqual(result.durability.fileSynced, true, 'File sync must be true');
       assert.strictEqual(result.durability.directorySynced, false, 'Directory sync is false for unsupported operations');
-      assert.strictEqual(result.durability.directorySyncStatus, `UNSUPPORTED_OPERATION_${code}`);
+      assert.strictEqual(result.durability.directorySyncStatus, `EXPLICITLY_UNSUPPORTED_${code}`);
 
       const manifestData = JSON.parse(fs.readFileSync(env.manifestPath, 'utf8'));
       assert.strictEqual(manifestData.generatedAt, result.generatedAt);
@@ -606,7 +608,7 @@ try {
     const currentDiskRaw = fs.readFileSync(env.manifestPath, 'utf8');
     assert.notStrictEqual(currentDiskRaw, oldRaw, 'Manifest on disk was already replaced by the new version');
     const parsedCurrent = JSON.parse(currentDiskRaw);
-    assert.strictEqual(parsedCurrent.directive, 'W021.5-CTO-DIRECTIVE-081');
+    assert.strictEqual(parsedCurrent.directive, 'W021.5-CTO-DIRECTIVE-082');
   });
 
   // Test 23: No false claim that old manifest remains intact after rename has succeeded
@@ -733,8 +735,200 @@ try {
     const diskContent = fs.readFileSync(env.manifestPath, 'utf8');
     assert.ok(diskContent.length > 0, 'Target manifest must not be empty');
     const parsed = JSON.parse(diskContent);
-    assert.strictEqual(parsed.directive, 'W021.5-CTO-DIRECTIVE-081');
+    assert.strictEqual(parsed.directive, 'W021.5-CTO-DIRECTIVE-082');
     assert.ok(Array.isArray(parsed.deliverables), 'Deliverables array must be intact');
+  });
+
+  // Test 27: Standalone unit verification of classifyDirectorySyncError taxonomy
+  runTest('Standalone unit verification of classifyDirectorySyncError taxonomy', () => {
+    // POSIX standard capability refusal codes
+    for (const code of ['EINVAL', 'ENOTSUP', 'EOPNOTSUPP', 'EISDIR']) {
+      const resLinux = classifyDirectorySyncError({ code }, 'linux');
+      assert.strictEqual(resLinux.isFatal, false, `Code ${code} on Linux must be non-fatal`);
+      assert.strictEqual(resLinux.status, `EXPLICITLY_UNSUPPORTED_${code}`);
+
+      const resWin = classifyDirectorySyncError({ code }, 'win32');
+      assert.strictEqual(resWin.isFatal, false, `Code ${code} on Win32 must be non-fatal`);
+      assert.strictEqual(resWin.status, `EXPLICITLY_UNSUPPORTED_${code}`);
+    }
+
+    // EBADF is fatal on all platforms
+    const ebadfLinux = classifyDirectorySyncError({ code: 'EBADF' }, 'linux');
+    assert.strictEqual(ebadfLinux.isFatal, true, 'EBADF on Linux must be fatal');
+    assert.strictEqual(ebadfLinux.status, 'UNCONFIRMED_DURABILITY_ERROR');
+
+    const ebadfWin = classifyDirectorySyncError({ code: 'EBADF' }, 'win32');
+    assert.strictEqual(ebadfWin.isFatal, true, 'EBADF on Win32 must be fatal');
+    assert.strictEqual(ebadfWin.status, 'UNCONFIRMED_DURABILITY_ERROR');
+
+    // EPERM is fatal on POSIX, non-fatal on Windows
+    const epermLinux = classifyDirectorySyncError({ code: 'EPERM' }, 'linux');
+    assert.strictEqual(epermLinux.isFatal, true, 'EPERM on Linux must be fatal');
+    assert.strictEqual(epermLinux.status, 'UNCONFIRMED_DURABILITY_ERROR');
+
+    const epermDarwin = classifyDirectorySyncError({ code: 'EPERM' }, 'darwin');
+    assert.strictEqual(epermDarwin.isFatal, true, 'EPERM on macOS must be fatal');
+    assert.strictEqual(epermDarwin.status, 'UNCONFIRMED_DURABILITY_ERROR');
+
+    const epermWin = classifyDirectorySyncError({ code: 'EPERM' }, 'win32');
+    assert.strictEqual(epermWin.isFatal, false, 'EPERM on Win32 must be non-fatal (FlushFileBuffers limitation)');
+    assert.strictEqual(epermWin.status, 'SKIPPED_PLATFORM_WIN32_EPERM');
+
+    // Genuine I/O errors are fatal
+    for (const code of ['EIO', 'ENOSPC', 'EROFS', 'EACCES']) {
+      const res = classifyDirectorySyncError({ code }, 'linux');
+      assert.strictEqual(res.isFatal, true, `Code ${code} must be fatal`);
+      assert.strictEqual(res.status, 'UNCONFIRMED_DURABILITY_ERROR');
+    }
+
+    // Unknown or missing error code is fatal
+    const resUnknown = classifyDirectorySyncError(new Error('Unknown failure'), 'linux');
+    assert.strictEqual(resUnknown.isFatal, true, 'Unknown error must be fatal');
+    assert.strictEqual(resUnknown.status, 'UNCONFIRMED_DURABILITY_ERROR');
+  });
+
+  // Test 28: EBADF fails closed with PostRenameDurabilityError on both POSIX and Windows
+  runTest('EBADF fails closed with PostRenameDurabilityError on both POSIX and Windows', () => {
+    const env = setupFixtureEnv();
+    for (const plat of ['linux', 'win32']) {
+      let threw = false;
+      try {
+        generateChecksumManifest({
+          repoRoot: env.tempRoot,
+          manifestPath: env.manifestPath,
+          silent: true,
+          autoInjectRequiredDeliverables: false,
+          platform: plat,
+          faultHooks: { failAtDirSync: 'EBADF' }
+        });
+      } catch (err) {
+        threw = true;
+        assert.ok(err instanceof PostRenameDurabilityError, `Must throw PostRenameDurabilityError for EBADF on ${plat}`);
+        assert.strictEqual(err.cause.code, 'EBADF');
+        assert.strictEqual(err.renameSucceeded, true);
+      }
+      assert.strictEqual(threw, true, `EBADF must throw PostRenameDurabilityError on ${plat}`);
+    }
+  });
+
+  // Test 29: EPERM fails closed on POSIX but is classified as non-fatal on Windows
+  runTest('EPERM fails closed on POSIX but is recognized as non-fatal on Windows', () => {
+    const env = setupFixtureEnv();
+
+    // 1. POSIX (Linux): EPERM is fatal
+    let linuxThrew = false;
+    try {
+      generateChecksumManifest({
+        repoRoot: env.tempRoot,
+        manifestPath: env.manifestPath,
+        silent: true,
+        autoInjectRequiredDeliverables: false,
+        platform: 'linux',
+        faultHooks: { failAtDirSync: 'EPERM' }
+      });
+    } catch (err) {
+      linuxThrew = true;
+      assert.ok(err instanceof PostRenameDurabilityError, 'EPERM on Linux must throw PostRenameDurabilityError');
+      assert.strictEqual(err.cause.code, 'EPERM');
+      assert.strictEqual(err.renameSucceeded, true);
+    }
+    assert.strictEqual(linuxThrew, true, 'EPERM on Linux must fail closed');
+
+    // 2. Windows (win32): EPERM is recognized non-fatal platform limitation
+    const winResult = generateChecksumManifest({
+      repoRoot: env.tempRoot,
+      manifestPath: env.manifestPath,
+      silent: true,
+      autoInjectRequiredDeliverables: false,
+      platform: 'win32',
+      forceDirSync: true,
+      faultHooks: { failAtDirSync: 'EPERM' }
+    });
+
+    assert.ok(winResult.durability, 'Durability object must be returned');
+    assert.strictEqual(winResult.durability.fileSynced, true);
+    assert.strictEqual(winResult.durability.directorySynced, false, 'Directory sync is false on Windows EPERM');
+    assert.strictEqual(winResult.durability.directorySyncStatus, 'SKIPPED_PLATFORM_WIN32_EPERM');
+  });
+
+  // Test 30: Genuine I/O, storage, and permission errors all fail closed with PostRenameDurabilityError
+  runTest('Genuine I/O, storage, and permission errors all fail closed with PostRenameDurabilityError', () => {
+    const env = setupFixtureEnv();
+    for (const code of ['EIO', 'ENOSPC', 'EROFS', 'EACCES']) {
+      let threw = false;
+      try {
+        generateChecksumManifest({
+          repoRoot: env.tempRoot,
+          manifestPath: env.manifestPath,
+          silent: true,
+          autoInjectRequiredDeliverables: false,
+          platform: 'linux',
+          faultHooks: { failAtDirSync: code }
+        });
+      } catch (err) {
+        threw = true;
+        assert.ok(err instanceof PostRenameDurabilityError, `Must throw PostRenameDurabilityError for ${code}`);
+        assert.strictEqual(err.cause.code, code);
+        assert.strictEqual(err.renameSucceeded, true);
+      }
+      assert.strictEqual(threw, true, `Must fail closed for ${code}`);
+    }
+  });
+
+  // Test 31: Windows skipped directory sync returns explicit status and is not reported as confirmed
+  runTest('Windows skipped directory sync returns explicit status and is not reported as confirmed', () => {
+    const env = setupFixtureEnv();
+    const result = generateChecksumManifest({
+      repoRoot: env.tempRoot,
+      manifestPath: env.manifestPath,
+      silent: true,
+      autoInjectRequiredDeliverables: false,
+      platform: 'win32'
+    });
+
+    assert.ok(result.durability, 'Durability object must be returned');
+    assert.strictEqual(result.durability.fileSynced, true, 'File sync must be true');
+    assert.strictEqual(result.durability.directorySynced, false, 'Directory sync must be false when skipped on Windows');
+    assert.strictEqual(result.durability.directorySyncStatus, 'SKIPPED_PLATFORM_WIN32');
+    assert.notStrictEqual(result.durability.directorySyncStatus, 'CONFIRMED_SYNCHRONIZATION');
+  });
+
+  // Test 32: Successful rename followed by post-rename durability error preserves replaced manifest without full-success banner
+  runTest('Successful rename followed by post-rename durability error preserves replaced manifest without full-success banner', () => {
+    const env = setupFixtureEnv();
+    const stdoutCaptured = [];
+    const origLog = console.log;
+    console.log = (...args) => stdoutCaptured.push(args.join(' '));
+
+    let threw = false;
+    try {
+      generateChecksumManifest({
+        repoRoot: env.tempRoot,
+        manifestPath: env.manifestPath,
+        silent: false,
+        autoInjectRequiredDeliverables: false,
+        platform: 'linux',
+        faultHooks: { failAtDirSync: 'EROFS' }
+      });
+    } catch (err) {
+      threw = true;
+      assert.ok(err instanceof PostRenameDurabilityError);
+    } finally {
+      console.log = origLog;
+    }
+
+    assert.strictEqual(threw, true, 'Must throw PostRenameDurabilityError');
+    assert.ok(
+      !stdoutCaptured.some(line => line.includes('MANIFEST GENERATION: 100% COMPLETE')),
+      'Must not emit MANIFEST GENERATION: 100% COMPLETE'
+    );
+
+    // Target manifest on disk must be preserved and valid JSON
+    assert.strictEqual(fs.existsSync(env.manifestPath), true, 'Manifest on disk must exist');
+    const diskContent = fs.readFileSync(env.manifestPath, 'utf8');
+    const parsed = JSON.parse(diskContent);
+    assert.strictEqual(parsed.directive, 'W021.5-CTO-DIRECTIVE-082');
+    assert.ok(Array.isArray(parsed.deliverables));
   });
 
 } finally {

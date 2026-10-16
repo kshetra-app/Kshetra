@@ -284,6 +284,13 @@ const CATEGORIES = {
     paths: new Set([
       'reports/W021.5-CTO-DIRECTIVE-081-IMPLEMENTATION-REPORT.md'
     ])
+  },
+  'P_DIRECTIVE_082': {
+    name: 'Directive 082 Fail-Safe Directory Sync Deliverables',
+    expectedCount: 1,
+    paths: new Set([
+      'reports/W021.5-CTO-DIRECTIVE-082-IMPLEMENTATION-REPORT.md'
+    ])
   }
 };
 
@@ -370,7 +377,10 @@ const EXPECTED_COORDINATES = {
   directive080BaselineCommit: 'f64d13e36f2cf264dc059ce495547533cfae1f03',
   directive080DeliveryCommit: '1021102cca2dc71d718971ce6eb2c9b7090d65b1',
   directive080ImmediateParent: 'f64d13e36f2cf264dc059ce495547533cfae1f03',
-  directive081BaselineCommit: '1021102cca2dc71d718971ce6eb2c9b7090d65b1'
+  directive081BaselineCommit: '1021102cca2dc71d718971ce6eb2c9b7090d65b1',
+  directive081DeliveryCommit: '9ddb5c17af6830609ffdaf73565e391958d88393',
+  directive081ImmediateParent: '1021102cca2dc71d718971ce6eb2c9b7090d65b1',
+  directive082BaselineCommit: '9ddb5c17af6830609ffdaf73565e391958d88393'
 };
 
 for (const [key, expectedSha] of Object.entries(EXPECTED_COORDINATES)) {
@@ -430,6 +440,13 @@ try {
     process.exit(1);
   }
   console.log(`[PASS] Directive 080 delivery commit parent confirmed: ${d080CommitParent}`);
+
+  const d081CommitParent = execSync(`git rev-parse ${EXPECTED_COORDINATES.directive081DeliveryCommit}~1`, { encoding: 'utf8' }).trim();
+  if (d081CommitParent !== EXPECTED_COORDINATES.directive081BaselineCommit) {
+    console.error(`FAIL: Directive 081 delivery commit parent (${d081CommitParent}) does not match baseline (${EXPECTED_COORDINATES.directive081BaselineCommit})`);
+    process.exit(1);
+  }
+  console.log(`[PASS] Directive 081 delivery commit parent confirmed: ${d081CommitParent}`);
 } catch (err) {
   console.error(`FAIL: Could not verify commit parent via git: ${err.message}`);
   process.exit(1);

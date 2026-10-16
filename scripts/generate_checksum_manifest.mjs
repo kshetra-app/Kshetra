@@ -3,14 +3,20 @@
 /**
  * Kshetra W021.5 / B2.2-E — Master Checksum Manifest Generator / Refresher
  * 
- * Fulfills CTO Directive 080 requirements:
+ * Fulfills CTO Directive 080, 081 & 082 requirements:
  * 1. Implements genuine atomic replacement of master checksum manifest using temporary-file-and-rename.
  * 2. Serializes complete manifest in memory and flushes to stable storage (fsync) before replacement.
- * 3. Atomic rename guarantees target path remains intact byte-for-byte on failure.
+ * 3. Atomic rename guarantees target path remains intact byte-for-byte on pre-rename failure.
  * 4. Fails closed and cleans up temporary files on write/rename errors.
  * 5. Every successful invocation calculates and assigns a fresh monotonic generatedAt timestamp.
  * 6. Generated timestamp is valid ISO 8601 UTC and strictly later than all required evidence timestamps.
  * 7. Preserves non-recursive checksum integrity (excludes manifest itself).
+ * 8. Fails closed on genuine post-rename directory-sync failures with PostRenameDurabilityError.
+ * 9. Implements fail-safe directory-sync error classification (Directive 082):
+ *    - Standard POSIX capability refusal codes (EINVAL, ENOTSUP, EOPNOTSUPP, EISDIR) are non-fatal.
+ *    - EBADF fails closed on all platforms as an abnormal descriptor failure.
+ *    - EPERM fails closed on POSIX, but is recognized on Windows (win32 FlushFileBuffers limitation).
+ *    - Distinguishes CONFIRMED_SYNCHRONIZATION, EXPLICITLY_UNSUPPORTED, SKIPPED_PLATFORM, and UNCONFIRMED_DURABILITY_ERROR.
  */
 
 import fs from 'fs';
@@ -37,7 +43,7 @@ export const REQUIRED_EVIDENCE_SPECS = [
   }
 ];
 
-export const DIRECTIVE_081_COORDINATES = {
+export const DIRECTIVE_082_COORDINATES = {
   directive078BaselineCommit: 'e3359d35ca47700c0c65093122ab3c4cee2dc342',
   directive078DeliveryCommit: '8bb81d7382fe27f9095f61282d5d927c46dc571c',
   directive078ImmediateParent: 'e3359d35ca47700c0c65093122ab3c4cee2dc342',
@@ -47,11 +53,15 @@ export const DIRECTIVE_081_COORDINATES = {
   directive080BaselineCommit: 'f64d13e36f2cf264dc059ce495547533cfae1f03',
   directive080DeliveryCommit: '1021102cca2dc71d718971ce6eb2c9b7090d65b1',
   directive080ImmediateParent: 'f64d13e36f2cf264dc059ce495547533cfae1f03',
-  directive081BaselineCommit: '1021102cca2dc71d718971ce6eb2c9b7090d65b1'
+  directive081BaselineCommit: '1021102cca2dc71d718971ce6eb2c9b7090d65b1',
+  directive081DeliveryCommit: '9ddb5c17af6830609ffdaf73565e391958d88393',
+  directive081ImmediateParent: '1021102cca2dc71d718971ce6eb2c9b7090d65b1',
+  directive082BaselineCommit: '9ddb5c17af6830609ffdaf73565e391958d88393'
 };
 
-export const DIRECTIVE_080_COORDINATES = DIRECTIVE_081_COORDINATES;
-export const DIRECTIVE_079_COORDINATES = DIRECTIVE_081_COORDINATES;
+export const DIRECTIVE_081_COORDINATES = DIRECTIVE_082_COORDINATES;
+export const DIRECTIVE_080_COORDINATES = DIRECTIVE_082_COORDINATES;
+export const DIRECTIVE_079_COORDINATES = DIRECTIVE_082_COORDINATES;
 
 export const REQUIRED_DELIVERABLE_ENTRIES = [
   {
@@ -77,6 +87,10 @@ export const REQUIRED_DELIVERABLE_ENTRIES = [
   {
     path: 'reports/W021.5-CTO-DIRECTIVE-081-IMPLEMENTATION-REPORT.md',
     description: 'Comprehensive Directive 081 implementation report covering post-rename directory synchronization, durability reporting, and audit reconciliation'
+  },
+  {
+    path: 'reports/W021.5-CTO-DIRECTIVE-082-IMPLEMENTATION-REPORT.md',
+    description: 'Comprehensive Directive 082 implementation report covering fail-safe directory synchronization error classification, platform-specific durability taxonomy, and audit reconciliation'
   }
 ];
 
@@ -110,17 +124,91 @@ export function validateIso8601Utc(dateStr) {
 }
 
 /**
- * Known error codes indicating that directory synchronization is not supported
+ * Known error codes indicating that directory synchronization is explicitly not supported
  * by the operating system, kernel, or underlying filesystem implementation.
+ * 
+ * Standard POSIX capability refusal codes:
+ * - EINVAL: Invalid argument (filesystem or kernel rejects fsync on directory descriptor)
+ * - ENOTSUP: Operation not supported on directory descriptor
+ * - EOPNOTSUPP: Operation not supported on transport endpoint / filesystem
+ * - EISDIR: Is a directory (filesystem implementation restricts fsync to regular files)
  */
-export const UNSUPPORTED_DIR_SYNC_CODES = new Set([
-  'EINVAL',     // Invalid argument (e.g. Linux/FreeBSD when fs does not support dir fsync)
-  'ENOTSUP',    // Operation not supported
-  'EOPNOTSUPP', // Operation not supported on transport endpoint
-  'EISDIR',     // Is a directory (rejected by platforms where fsync is regular-file only)
-  'EPERM',      // Operation not permitted (sandbox policy or Win32 FlushFileBuffers on directory)
-  'EBADF'       // Bad file descriptor
+export const POSIX_UNSUPPORTED_DIR_SYNC_CODES = new Set([
+  'EINVAL',
+  'ENOTSUP',
+  'EOPNOTSUPP',
+  'EISDIR'
 ]);
+
+// Backwards-compatibility alias
+export const UNSUPPORTED_DIR_SYNC_CODES = POSIX_UNSUPPORTED_DIR_SYNC_CODES;
+
+/**
+ * Classifies an error encountered during directory synchronization after a successful atomic rename.
+ * 
+ * Under Directive 082:
+ * 1. Standard POSIX capability refusal codes (EINVAL, ENOTSUP, EOPNOTSUPP, EISDIR) are recognized
+ *    as non-fatal unsupported operations and return durability status EXPLICITLY_UNSUPPORTED_<CODE>.
+ * 2. EBADF is NEVER treated as benign on any platform. An invalid or corrupted file descriptor
+ *    is an abnormal runtime failure and must fail closed with PostRenameDurabilityError.
+ * 3. EPERM on POSIX indicates a permission, capability, or security sandbox restriction (not a
+ *    filesystem capability limitation) and must fail closed with PostRenameDurabilityError.
+ * 4. EPERM on Windows (win32) is uniquely justified: libuv invokes Win32 FlushFileBuffers on the
+ *    directory handle, which Windows explicitly rejects with ERROR_ACCESS_DENIED (error 5) mapped
+ *    to EPERM. In this platform-specific condition, it is classified as SKIPPED_PLATFORM_WIN32_EPERM.
+ * 5. Genuine filesystem, I/O, and storage errors (EIO, ENOSPC, EROFS, EACCES, etc.) fail closed
+ *    with PostRenameDurabilityError.
+ * 
+ * @param {Error|{code?: string}} dirErr
+ * @param {string} [platform=process.platform]
+ * @returns {{ isFatal: boolean, status: string, reason: string }}
+ */
+export function classifyDirectorySyncError(dirErr, platform = process.platform) {
+  const code = dirErr && dirErr.code ? String(dirErr.code).toUpperCase() : 'UNKNOWN';
+
+  // 1. Standard POSIX filesystem capability refusal codes
+  if (POSIX_UNSUPPORTED_DIR_SYNC_CODES.has(code)) {
+    return {
+      isFatal: false,
+      status: `EXPLICITLY_UNSUPPORTED_${code}`,
+      reason: `Filesystem capability refusal: directory synchronization is explicitly unsupported (${code})`
+    };
+  }
+
+  // 2. Platform-specific Windows EPERM handling (Win32 FlushFileBuffers on directory handles)
+  if (code === 'EPERM' && platform === 'win32') {
+    return {
+      isFatal: false,
+      status: 'SKIPPED_PLATFORM_WIN32_EPERM',
+      reason: 'Win32 FlushFileBuffers unsupported on directory handle (ERROR_ACCESS_DENIED / EPERM)'
+    };
+  }
+
+  // 3. EBADF is fatal on all platforms (bad/corrupted file descriptor)
+  if (code === 'EBADF') {
+    return {
+      isFatal: true,
+      status: 'UNCONFIRMED_DURABILITY_ERROR',
+      reason: 'Invalid or corrupted directory file descriptor (EBADF)'
+    };
+  }
+
+  // 4. POSIX EPERM is fatal (permission/sandbox failure)
+  if (code === 'EPERM') {
+    return {
+      isFatal: true,
+      status: 'UNCONFIRMED_DURABILITY_ERROR',
+      reason: 'Operation not permitted on POSIX directory (EPERM)'
+    };
+  }
+
+  // 5. Genuine filesystem or I/O failure (EIO, ENOSPC, EROFS, EACCES, etc.)
+  return {
+    isFatal: true,
+    status: 'UNCONFIRMED_DURABILITY_ERROR',
+    reason: `Genuine filesystem or I/O error during directory synchronization (${code})`
+  };
+}
 
 /**
  * Custom error thrown when directory synchronization fails after a successful atomic rename.
@@ -179,6 +267,7 @@ export class PostRenameDurabilityError extends Error {
  * @param {string|Buffer} content - Serialized data to persist.
  * @param {Object} [options] - Options and optional fault-injection hooks.
  * @param {boolean} [options.forceDirSync] - Force directory sync attempt even on Windows.
+ * @param {string} [options.platform] - Target OS platform override (e.g. 'win32', 'linux').
  * @param {Object} [options.faultHooks] - Deterministic fault-injection hooks for regression testing.
  * @returns {{ success: boolean, targetPath: string, bytesWritten: number, durability: Object }}
  */
@@ -189,6 +278,7 @@ export function atomicWriteFileSync(targetPath, content, options = {}) {
   const tempPath = path.join(targetDir, `.${fileName}.tmp.${process.pid}.${Date.now()}.${randomSuffix}`);
 
   const faultHooks = options.faultHooks || {};
+  const platform = options.platform || process.platform;
 
   let fd = null;
   let writeSucceeded = false;
@@ -244,7 +334,7 @@ export function atomicWriteFileSync(targetPath, content, options = {}) {
     let dirSyncStatus = 'NOT_ATTEMPTED';
     let dirSyncSuccess = false;
 
-    const shouldAttemptDirSync = (process.platform !== 'win32') ||
+    const shouldAttemptDirSync = (platform !== 'win32') ||
       Boolean(options.forceDirSync) ||
       Boolean(faultHooks.failAtDirSync) ||
       Boolean(faultHooks.failAtDirSyncUnsupported) ||
@@ -252,12 +342,14 @@ export function atomicWriteFileSync(targetPath, content, options = {}) {
 
     if (!shouldAttemptDirSync) {
       // On Windows/NTFS, Win32 FlushFileBuffers is not supported on directory handles
-      // (throws EINVAL/EPERM in libuv). NTFS provides journaled transaction durability.
-      dirSyncStatus = 'UNSUPPORTED_PLATFORM_WIN32';
+      // (throws ERROR_ACCESS_DENIED / EPERM in libuv). NTFS provides journaled transaction durability.
+      // Explicitly return SKIPPED_PLATFORM_WIN32 and directorySynced: false (never confirmed).
+      dirSyncStatus = 'SKIPPED_PLATFORM_WIN32';
+      dirSyncSuccess = false;
     } else {
       try {
         if (faultHooks.failAtDirSyncUnsupported) {
-          const err = new Error('FAULT_INJECTION: Directory synchronization not supported on this filesystem (ENOTSUP)');
+          const err = new Error('FAULT_INJECTION: Directory synchronization not supported on this filesystem');
           err.code = typeof faultHooks.failAtDirSyncUnsupported === 'string'
             ? faultHooks.failAtDirSyncUnsupported
             : 'ENOTSUP';
@@ -267,7 +359,7 @@ export function atomicWriteFileSync(targetPath, content, options = {}) {
         if (faultHooks.failAtDirSync) {
           const err = faultHooks.failAtDirSync instanceof Error
             ? faultHooks.failAtDirSync
-            : Object.assign(new Error('FAULT_INJECTION: Simulated genuine directory-sync I/O error'), {
+            : Object.assign(new Error('FAULT_INJECTION: Simulated directory synchronization error'), {
                 code: typeof faultHooks.failAtDirSync === 'string' ? faultHooks.failAtDirSync : 'EIO'
               });
           throw err;
@@ -275,7 +367,7 @@ export function atomicWriteFileSync(targetPath, content, options = {}) {
 
         if (faultHooks.simulateDirSyncSuccess) {
           dirSyncSuccess = true;
-          dirSyncStatus = 'SUPPORTED_AND_SYNCED';
+          dirSyncStatus = 'CONFIRMED_SYNCHRONIZATION';
         } else {
           // Real directory sync
           let dirFd = null;
@@ -283,7 +375,7 @@ export function atomicWriteFileSync(targetPath, content, options = {}) {
             dirFd = fs.openSync(targetDir, 'r');
             fs.fsyncSync(dirFd);
             dirSyncSuccess = true;
-            dirSyncStatus = 'SUPPORTED_AND_SYNCED';
+            dirSyncStatus = 'CONFIRMED_SYNCHRONIZATION';
           } finally {
             if (dirFd !== null) {
               try { fs.closeSync(dirFd); } catch (_) {}
@@ -291,14 +383,13 @@ export function atomicWriteFileSync(targetPath, content, options = {}) {
           }
         }
       } catch (dirErr) {
-        // Distinguish recognized unsupported operations from genuine I/O or filesystem errors
-        const isUnsupported = Boolean(dirErr && dirErr.code && UNSUPPORTED_DIR_SYNC_CODES.has(dirErr.code));
-        if (isUnsupported) {
-          // Documented, recognized unsupported-operation: non-fatal warning/status
-          dirSyncStatus = `UNSUPPORTED_OPERATION_${dirErr.code}`;
+        // Classify directory synchronization error using fail-safe taxonomy
+        const classification = classifyDirectorySyncError(dirErr, platform);
+        if (!classification.isFatal) {
+          dirSyncStatus = classification.status;
           dirSyncSuccess = false;
         } else {
-          // Genuine I/O error or filesystem failure after rename has already completed!
+          // Genuine I/O error or unverified durability failure after rename has already completed!
           // DO NOT roll back or delete targetPath because rename has ALREADY succeeded.
           // Throw a distinct PostRenameDurabilityError indicating the new file is in place
           // but durability could not be confirmed.
@@ -374,13 +465,13 @@ export function generateChecksumManifest(options = {}) {
   }
 
   // 1. Update Directive Header
-  manifest.directive = options.directive || 'W021.5-CTO-DIRECTIVE-081';
+  manifest.directive = options.directive || 'W021.5-CTO-DIRECTIVE-082';
 
   // 2. Reconcile Git Baseline Coordinates
   if (!manifest.gitBaseline) {
     manifest.gitBaseline = {};
   }
-  Object.assign(manifest.gitBaseline, DIRECTIVE_081_COORDINATES);
+  Object.assign(manifest.gitBaseline, DIRECTIVE_082_COORDINATES);
 
   // 3. Inspect Authoritative Base Manifest
   const baseManifestRelPath = manifest.authoritativeAffidavitManifest?.path || 'reports/w021_5b2_b2_2e_affidavit_manifest.json';
@@ -530,7 +621,8 @@ export function generateChecksumManifest(options = {}) {
   try {
     writeResult = atomicWriteFileSync(manifestPath, manifestOutput, {
       faultHooks: options.faultHooks,
-      forceDirSync: options.forceDirSync
+      forceDirSync: options.forceDirSync,
+      platform: options.platform
     });
   } catch (err) {
     if (err instanceof PostRenameDurabilityError || err.isPostRename) {
