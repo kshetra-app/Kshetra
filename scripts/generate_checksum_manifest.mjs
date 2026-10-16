@@ -37,17 +37,21 @@ export const REQUIRED_EVIDENCE_SPECS = [
   }
 ];
 
-export const DIRECTIVE_080_COORDINATES = {
+export const DIRECTIVE_081_COORDINATES = {
   directive078BaselineCommit: 'e3359d35ca47700c0c65093122ab3c4cee2dc342',
   directive078DeliveryCommit: '8bb81d7382fe27f9095f61282d5d927c46dc571c',
   directive078ImmediateParent: 'e3359d35ca47700c0c65093122ab3c4cee2dc342',
   directive079BaselineCommit: '8bb81d7382fe27f9095f61282d5d927c46dc571c',
   directive079DeliveryCommit: 'f64d13e36f2cf264dc059ce495547533cfae1f03',
   directive079ImmediateParent: '8bb81d7382fe27f9095f61282d5d927c46dc571c',
-  directive080BaselineCommit: 'f64d13e36f2cf264dc059ce495547533cfae1f03'
+  directive080BaselineCommit: 'f64d13e36f2cf264dc059ce495547533cfae1f03',
+  directive080DeliveryCommit: '1021102cca2dc71d718971ce6eb2c9b7090d65b1',
+  directive080ImmediateParent: 'f64d13e36f2cf264dc059ce495547533cfae1f03',
+  directive081BaselineCommit: '1021102cca2dc71d718971ce6eb2c9b7090d65b1'
 };
 
-export const DIRECTIVE_079_COORDINATES = DIRECTIVE_080_COORDINATES;
+export const DIRECTIVE_080_COORDINATES = DIRECTIVE_081_COORDINATES;
+export const DIRECTIVE_079_COORDINATES = DIRECTIVE_081_COORDINATES;
 
 export const REQUIRED_DELIVERABLE_ENTRIES = [
   {
@@ -69,6 +73,10 @@ export const REQUIRED_DELIVERABLE_ENTRIES = [
   {
     path: 'reports/W021.5-CTO-DIRECTIVE-080-IMPLEMENTATION-REPORT.md',
     description: 'Comprehensive Directive 080 implementation report covering atomic manifest replacement, persistence boundary failure recovery, and audit reconciliation'
+  },
+  {
+    path: 'reports/W021.5-CTO-DIRECTIVE-081-IMPLEMENTATION-REPORT.md',
+    description: 'Comprehensive Directive 081 implementation report covering post-rename directory synchronization, durability reporting, and audit reconciliation'
   }
 ];
 
@@ -102,8 +110,47 @@ export function validateIso8601Utc(dateStr) {
 }
 
 /**
+ * Known error codes indicating that directory synchronization is not supported
+ * by the operating system, kernel, or underlying filesystem implementation.
+ */
+export const UNSUPPORTED_DIR_SYNC_CODES = new Set([
+  'EINVAL',     // Invalid argument (e.g. Linux/FreeBSD when fs does not support dir fsync)
+  'ENOTSUP',    // Operation not supported
+  'EOPNOTSUPP', // Operation not supported on transport endpoint
+  'EISDIR',     // Is a directory (rejected by platforms where fsync is regular-file only)
+  'EPERM',      // Operation not permitted (sandbox policy or Win32 FlushFileBuffers on directory)
+  'EBADF'       // Bad file descriptor
+]);
+
+/**
+ * Custom error thrown when directory synchronization fails after a successful atomic rename.
+ * Distinct from pre-rename failures: indicates that the new file may already be installed
+ * at targetPath, but directory metadata durability could not be confirmed.
+ */
+export class PostRenameDurabilityError extends Error {
+  constructor(targetPath, tempPath, cause) {
+    const causeMsg = cause ? (cause.message || String(cause)) : 'Unknown error';
+    const causeCode = cause && cause.code ? ` [code: ${cause.code}]` : '';
+    super(
+      `POST_RENAME_DURABILITY_ERROR: Directory synchronization failed after successful atomic rename${causeCode}. ` +
+      `The new manifest may already be installed at ${targetPath}, but directory-entry persistence durability could not be confirmed ` +
+      `to stable storage. NOTE: The previous manifest was replaced and is no longer intact: ${causeMsg}`
+    );
+    this.name = 'PostRenameDurabilityError';
+    this.code = 'POST_RENAME_DURABILITY_ERROR';
+    this.isPostRename = true;
+    this.renameSucceeded = true;
+    this.targetPath = targetPath;
+    this.tempPath = tempPath;
+    this.cause = cause;
+  }
+}
+
+/**
  * Safely writes content to targetPath using a temporary file, fsync, and atomic rename.
- * Guarantees that targetPath remains intact byte-for-byte if any step fails.
+ * Distinguishes pre-rename failures (where targetPath remains intact byte-for-byte) from
+ * post-rename directory synchronization errors (where the new file is installed but durability
+ * confirmation failed).
  * 
  * Platform & Durability Guarantees:
  * - Same-Directory Guarantee: The temp file is created in path.dirname(targetPath), ensuring it
@@ -115,17 +162,25 @@ export function validateIso8601Utc(dateStr) {
  *   atomically replaces the destination on NTFS.
  * - Windows File Handle Protection: The temporary file descriptor is explicitly closed before renameSync
  *   to avoid Windows sharing violations (EBUSY/EPERM).
- * - Directory Metadata Synchronization: Where supported by the OS (POSIX), fsyncSync is called on the
- *   directory handle. On Windows, directory fsync is not supported by Win32/NTFS and is safely omitted,
- *   relying on NTFS journaled transactions.
+ * - Post-Rename Directory Synchronization: Where supported by the OS and filesystem, fsyncSync is
+ *   called on the parent directory handle.
+ *   * Unsupported Operations: Explicitly recognized error codes (EINVAL, ENOTSUP, EOPNOTSUPP, EISDIR,
+ *     EPERM, EBADF) or Win32 limitations (FlushFileBuffers unsupported on directory handles) are
+ *     treated as non-fatal warnings with durability status documented.
+ *   * Genuine Errors: Arbitrary I/O or filesystem errors (e.g. EIO, ENOSPC, EROFS) are NOT silently
+ *     suppressed. They throw PostRenameDurabilityError, explicitly notifying the caller that the new
+ *     file may already be installed but durability could not be confirmed, without attempting an unsafe
+ *     rollback.
  * - Fail-Closed Cleanup: Any failure prior to rename completion catches the exception, closes any open
- *   file descriptors, removes the temporary file, and leaves the original target untouched.
+ *   file descriptors, removes the temporary file, and leaves the original target untouched. If rename
+ *   has already succeeded, the newly installed target is preserved and never deleted.
  * 
  * @param {string} targetPath - Final file path to replace atomically.
  * @param {string|Buffer} content - Serialized data to persist.
  * @param {Object} [options] - Options and optional fault-injection hooks.
+ * @param {boolean} [options.forceDirSync] - Force directory sync attempt even on Windows.
  * @param {Object} [options.faultHooks] - Deterministic fault-injection hooks for regression testing.
- * @returns {{ success: boolean, targetPath: string, bytesWritten: number }}
+ * @returns {{ success: boolean, targetPath: string, bytesWritten: number, durability: Object }}
  */
 export function atomicWriteFileSync(targetPath, content, options = {}) {
   const targetDir = path.dirname(path.resolve(targetPath));
@@ -185,23 +240,82 @@ export function atomicWriteFileSync(targetPath, content, options = {}) {
       throw new Error(`ATOMIC_RENAME_FAILED: Could not atomically replace ${targetPath} with ${tempPath}: ${renameErr.message}`);
     }
 
-    if (process.platform !== 'win32') {
+    // --- Post-Rename Directory Synchronization ---
+    let dirSyncStatus = 'NOT_ATTEMPTED';
+    let dirSyncSuccess = false;
+
+    const shouldAttemptDirSync = (process.platform !== 'win32') ||
+      Boolean(options.forceDirSync) ||
+      Boolean(faultHooks.failAtDirSync) ||
+      Boolean(faultHooks.failAtDirSyncUnsupported) ||
+      Boolean(faultHooks.simulateDirSyncSuccess);
+
+    if (!shouldAttemptDirSync) {
+      // On Windows/NTFS, Win32 FlushFileBuffers is not supported on directory handles
+      // (throws EINVAL/EPERM in libuv). NTFS provides journaled transaction durability.
+      dirSyncStatus = 'UNSUPPORTED_PLATFORM_WIN32';
+    } else {
       try {
-        const dirFd = fs.openSync(targetDir, 'r');
-        try {
-          fs.fsyncSync(dirFd);
-        } finally {
-          fs.closeSync(dirFd);
+        if (faultHooks.failAtDirSyncUnsupported) {
+          const err = new Error('FAULT_INJECTION: Directory synchronization not supported on this filesystem (ENOTSUP)');
+          err.code = typeof faultHooks.failAtDirSyncUnsupported === 'string'
+            ? faultHooks.failAtDirSyncUnsupported
+            : 'ENOTSUP';
+          throw err;
         }
-      } catch (_) {
-        // Non-fatal if directory sync is not supported by filesystem
+
+        if (faultHooks.failAtDirSync) {
+          const err = faultHooks.failAtDirSync instanceof Error
+            ? faultHooks.failAtDirSync
+            : Object.assign(new Error('FAULT_INJECTION: Simulated genuine directory-sync I/O error'), {
+                code: typeof faultHooks.failAtDirSync === 'string' ? faultHooks.failAtDirSync : 'EIO'
+              });
+          throw err;
+        }
+
+        if (faultHooks.simulateDirSyncSuccess) {
+          dirSyncSuccess = true;
+          dirSyncStatus = 'SUPPORTED_AND_SYNCED';
+        } else {
+          // Real directory sync
+          let dirFd = null;
+          try {
+            dirFd = fs.openSync(targetDir, 'r');
+            fs.fsyncSync(dirFd);
+            dirSyncSuccess = true;
+            dirSyncStatus = 'SUPPORTED_AND_SYNCED';
+          } finally {
+            if (dirFd !== null) {
+              try { fs.closeSync(dirFd); } catch (_) {}
+            }
+          }
+        }
+      } catch (dirErr) {
+        // Distinguish recognized unsupported operations from genuine I/O or filesystem errors
+        const isUnsupported = Boolean(dirErr && dirErr.code && UNSUPPORTED_DIR_SYNC_CODES.has(dirErr.code));
+        if (isUnsupported) {
+          // Documented, recognized unsupported-operation: non-fatal warning/status
+          dirSyncStatus = `UNSUPPORTED_OPERATION_${dirErr.code}`;
+          dirSyncSuccess = false;
+        } else {
+          // Genuine I/O error or filesystem failure after rename has already completed!
+          // DO NOT roll back or delete targetPath because rename has ALREADY succeeded.
+          // Throw a distinct PostRenameDurabilityError indicating the new file is in place
+          // but durability could not be confirmed.
+          throw new PostRenameDurabilityError(targetPath, tempPath, dirErr);
+        }
       }
     }
 
     return {
       success: true,
       targetPath,
-      bytesWritten: buf.length
+      bytesWritten: buf.length,
+      durability: {
+        fileSynced: true,
+        directorySynced: dirSyncSuccess,
+        directorySyncStatus: dirSyncStatus
+      }
     };
   } catch (err) {
     if (fd !== null) {
@@ -216,6 +330,9 @@ export function atomicWriteFileSync(targetPath, content, options = {}) {
         fs.unlinkSync(tempPath);
       } catch (_) {}
     }
+
+    // Notice: if renameSucceeded is true, tempPath was already renamed to targetPath.
+    // targetPath contains the complete, file-fsynced new manifest and MUST NOT be unlinked.
 
     throw err;
   }
@@ -257,13 +374,13 @@ export function generateChecksumManifest(options = {}) {
   }
 
   // 1. Update Directive Header
-  manifest.directive = options.directive || 'W021.5-CTO-DIRECTIVE-080';
+  manifest.directive = options.directive || 'W021.5-CTO-DIRECTIVE-081';
 
   // 2. Reconcile Git Baseline Coordinates
   if (!manifest.gitBaseline) {
     manifest.gitBaseline = {};
   }
-  Object.assign(manifest.gitBaseline, DIRECTIVE_080_COORDINATES);
+  Object.assign(manifest.gitBaseline, DIRECTIVE_081_COORDINATES);
 
   // 3. Inspect Authoritative Base Manifest
   const baseManifestRelPath = manifest.authoritativeAffidavitManifest?.path || 'reports/w021_5b2_b2_2e_affidavit_manifest.json';
@@ -409,9 +526,23 @@ export function generateChecksumManifest(options = {}) {
   // 8. Safely Write Updated Manifest to Disk Using Atomic Temporary-File-and-Rename
   log('\n--- Persisting Checksum Manifest Atomically ---');
   const manifestOutput = JSON.stringify(manifest, null, 2) + '\n';
-  atomicWriteFileSync(manifestPath, manifestOutput, { faultHooks: options.faultHooks });
+  let writeResult;
+  try {
+    writeResult = atomicWriteFileSync(manifestPath, manifestOutput, {
+      faultHooks: options.faultHooks,
+      forceDirSync: options.forceDirSync
+    });
+  } catch (err) {
+    if (err instanceof PostRenameDurabilityError || err.isPostRename) {
+      log(`\n[DURABILITY WARNING / ERROR] ${err.message}`);
+    }
+    throw err;
+  }
 
   log(`Successfully wrote updated checksum manifest to ${manifestPath} (atomic replacement verified)`);
+  if (writeResult.durability && writeResult.durability.directorySyncStatus) {
+    log(`Directory durability status: ${writeResult.durability.directorySyncStatus}`);
+  }
   log('================================================================');
   log('MANIFEST GENERATION: 100% COMPLETE');
   log('================================================================');
@@ -419,7 +550,8 @@ export function generateChecksumManifest(options = {}) {
   return {
     manifest,
     generatedAt: freshGeneratedAt,
-    deliverablesCount: manifest.deliverables.length
+    deliverablesCount: manifest.deliverables.length,
+    durability: writeResult.durability
   };
 }
 
@@ -433,7 +565,11 @@ if (isMain) {
   try {
     generateChecksumManifest();
   } catch (err) {
-    console.error(`FAIL: ${err.message}`);
+    if (err instanceof PostRenameDurabilityError || err.isPostRename) {
+      console.error(`FATAL POST-RENAME DURABILITY ERROR: ${err.message}`);
+    } else {
+      console.error(`FAIL: ${err.message}`);
+    }
     process.exit(1);
   }
 }

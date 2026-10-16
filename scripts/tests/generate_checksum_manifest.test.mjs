@@ -3,7 +3,7 @@
 /**
  * Kshetra W021.5 / B2.2-E — Checksum Manifest Generator Regression Test Suite
  * 
- * Fulfills CTO Directive 080 §2.2 requirements:
+ * Fulfills CTO Directive 080 & Directive 081 §2.2 requirements:
  * - Verifies manifest with stale prior timestamp receives refreshed timestamp.
  * - Verifies repeat invocation refreshes timestamp again (strictly monotonic).
  * - Verifies generated timestamp is strictly later than all required evidence timestamps.
@@ -17,6 +17,14 @@
  * - Verifies temporary-file fsync failure leaves original manifest unchanged and cleans up temp files.
  * - Verifies replacement rename failure leaves original manifest unchanged and cleans up temp files.
  * - Verifies failed replacement does not return success result or log success messages.
+ * - Verifies successful replacement with supported directory synchronization.
+ * - Verifies recognized unsupported-directory-sync error following successful rename is non-fatal.
+ * - Verifies genuine directory-sync I/O error following successful rename throws PostRenameDurabilityError.
+ * - Verifies accurate reporting that new manifest may already be installed after a post-rename error.
+ * - Verifies no false claim that old manifest remains intact after rename has succeeded.
+ * - Verifies correct completion-banner and return/error behavior for each outcome.
+ * - Verifies preservation of pre-rename guarantees leaving old manifest bitwise identical.
+ * - Verifies temporary-file cleanup without deleting or corrupting the successfully renamed target.
  * - Operates entirely offline using isolated temporary fixtures.
  */
 
@@ -29,7 +37,9 @@ import {
   generateChecksumManifest,
   validateIso8601Utc,
   atomicWriteFileSync,
-  REQUIRED_EVIDENCE_SPECS
+  REQUIRED_EVIDENCE_SPECS,
+  UNSUPPORTED_DIR_SYNC_CODES,
+  PostRenameDurabilityError
 } from '../generate_checksum_manifest.mjs';
 
 const REPO_ROOT = process.cwd();
@@ -350,7 +360,7 @@ try {
     assert.ok(result.generatedAt, 'Generated timestamp must be defined');
     const onDiskRaw = fs.readFileSync(env.manifestPath, 'utf8');
     const parsed = JSON.parse(onDiskRaw);
-    assert.strictEqual(parsed.directive, 'W021.5-CTO-DIRECTIVE-080');
+    assert.strictEqual(parsed.directive, 'W021.5-CTO-DIRECTIVE-081');
     assert.strictEqual(parsed.generatedAt, result.generatedAt);
     assert.ok(Array.isArray(parsed.deliverables), 'Deliverables must be array');
 
@@ -492,6 +502,239 @@ try {
       atomicWriteFileSync(testTarget, 'modified', { faultHooks: { failAtOpen: true } });
     }, /FAULT_INJECTION: Simulated file open failure/);
     assert.strictEqual(fs.readFileSync(testTarget, 'utf8'), testData, 'Original content preserved after open failure');
+  });
+
+  // Test 19: Successful replacement with supported directory synchronization
+  runTest('Successful replacement with supported directory synchronization', () => {
+    const env = setupFixtureEnv();
+    const result = generateChecksumManifest({
+      repoRoot: env.tempRoot,
+      manifestPath: env.manifestPath,
+      silent: true,
+      autoInjectRequiredDeliverables: false,
+      faultHooks: { simulateDirSyncSuccess: true }
+    });
+
+    assert.ok(result.durability, 'Durability object must be returned');
+    assert.strictEqual(result.durability.fileSynced, true, 'File sync must be confirmed');
+    assert.strictEqual(result.durability.directorySynced, true, 'Directory sync must be confirmed');
+    assert.strictEqual(result.durability.directorySyncStatus, 'SUPPORTED_AND_SYNCED');
+
+    const manifestData = JSON.parse(fs.readFileSync(env.manifestPath, 'utf8'));
+    assert.strictEqual(manifestData.generatedAt, result.generatedAt);
+    const tempFiles = fs.readdirSync(env.evidenceDir).filter(f => f.includes('.tmp.'));
+    assert.strictEqual(tempFiles.length, 0, 'No temporary files remaining');
+  });
+
+  // Test 20: Recognized unsupported-directory-sync error following successful rename is non-fatal
+  runTest('Recognized unsupported-directory-sync error following successful rename is non-fatal', () => {
+    const env = setupFixtureEnv();
+    for (const code of ['ENOTSUP', 'EINVAL', 'EISDIR']) {
+      const result = generateChecksumManifest({
+        repoRoot: env.tempRoot,
+        manifestPath: env.manifestPath,
+        silent: true,
+        autoInjectRequiredDeliverables: false,
+        faultHooks: { failAtDirSyncUnsupported: code }
+      });
+
+      assert.ok(result.durability, 'Durability object must be returned');
+      assert.strictEqual(result.durability.fileSynced, true, 'File sync must be true');
+      assert.strictEqual(result.durability.directorySynced, false, 'Directory sync is false for unsupported operations');
+      assert.strictEqual(result.durability.directorySyncStatus, `UNSUPPORTED_OPERATION_${code}`);
+
+      const manifestData = JSON.parse(fs.readFileSync(env.manifestPath, 'utf8'));
+      assert.strictEqual(manifestData.generatedAt, result.generatedAt);
+      const tempFiles = fs.readdirSync(env.evidenceDir).filter(f => f.includes('.tmp.'));
+      assert.strictEqual(tempFiles.length, 0, 'No temporary files remaining');
+    }
+  });
+
+  // Test 21: Genuine directory-sync I/O error following successful rename throws PostRenameDurabilityError
+  runTest('Genuine directory-sync I/O error following successful rename throws PostRenameDurabilityError', () => {
+    const env = setupFixtureEnv();
+    let threw = false;
+    try {
+      generateChecksumManifest({
+        repoRoot: env.tempRoot,
+        manifestPath: env.manifestPath,
+        silent: true,
+        autoInjectRequiredDeliverables: false,
+        faultHooks: { failAtDirSync: 'EIO' }
+      });
+    } catch (err) {
+      threw = true;
+      assert.ok(err instanceof PostRenameDurabilityError, 'Must be instance of PostRenameDurabilityError');
+      assert.strictEqual(err.code, 'POST_RENAME_DURABILITY_ERROR');
+      assert.strictEqual(err.isPostRename, true);
+      assert.strictEqual(err.renameSucceeded, true);
+      assert.strictEqual(err.targetPath, env.manifestPath);
+      assert.strictEqual(err.cause.code, 'EIO');
+    }
+    assert.strictEqual(threw, true, 'Must throw PostRenameDurabilityError on genuine I/O error');
+  });
+
+  // Test 22: Accurate reporting that new manifest may already be installed after a post-rename error
+  runTest('Accurate reporting that new manifest may already be installed after a post-rename error', () => {
+    const env = setupFixtureEnv();
+    const oldRaw = fs.readFileSync(env.manifestPath, 'utf8');
+
+    let capturedError = null;
+    try {
+      generateChecksumManifest({
+        repoRoot: env.tempRoot,
+        manifestPath: env.manifestPath,
+        silent: true,
+        autoInjectRequiredDeliverables: false,
+        faultHooks: { failAtDirSync: 'EIO' }
+      });
+    } catch (err) {
+      capturedError = err;
+    }
+
+    assert.ok(capturedError, 'Expected PostRenameDurabilityError');
+    assert.ok(
+      capturedError.message.includes('The new manifest may already be installed at'),
+      'Error message must state new manifest may already be installed'
+    );
+    assert.ok(
+      capturedError.message.includes('persistence durability could not be confirmed'),
+      'Error message must state durability could not be confirmed'
+    );
+
+    // Verify on disk that the new manifest IS installed (rename had succeeded before dir sync)
+    const currentDiskRaw = fs.readFileSync(env.manifestPath, 'utf8');
+    assert.notStrictEqual(currentDiskRaw, oldRaw, 'Manifest on disk was already replaced by the new version');
+    const parsedCurrent = JSON.parse(currentDiskRaw);
+    assert.strictEqual(parsedCurrent.directive, 'W021.5-CTO-DIRECTIVE-081');
+  });
+
+  // Test 23: No false claim that old manifest remains intact after rename has succeeded
+  runTest('No false claim that old manifest remains intact after rename has succeeded', () => {
+    const env = setupFixtureEnv();
+    let capturedError = null;
+    try {
+      generateChecksumManifest({
+        repoRoot: env.tempRoot,
+        manifestPath: env.manifestPath,
+        silent: true,
+        autoInjectRequiredDeliverables: false,
+        faultHooks: { failAtDirSync: 'ENOSPC' }
+      });
+    } catch (err) {
+      capturedError = err;
+    }
+
+    assert.ok(capturedError, 'Expected error to be thrown');
+    assert.ok(
+      !capturedError.message.toLowerCase().includes('remains unchanged'),
+      'Must NOT claim original file remains unchanged when rename succeeded'
+    );
+    assert.ok(
+      !capturedError.message.toLowerCase().includes('remains intact'),
+      'Must NOT claim previous manifest remains intact when rename succeeded'
+    );
+    assert.ok(
+      capturedError.message.includes('The previous manifest was replaced and is no longer intact'),
+      'Must explicitly state previous manifest was replaced and is no longer intact'
+    );
+  });
+
+  // Test 24: Correct completion-banner and return/error behavior for post-rename durability error
+  runTest('Correct completion-banner and return/error behavior for post-rename durability error', () => {
+    const env = setupFixtureEnv();
+    const stdoutCaptured = [];
+    const origLog = console.log;
+    console.log = (...args) => stdoutCaptured.push(args.join(' '));
+
+    let threw = false;
+    try {
+      generateChecksumManifest({
+        repoRoot: env.tempRoot,
+        manifestPath: env.manifestPath,
+        silent: false,
+        autoInjectRequiredDeliverables: false,
+        faultHooks: { failAtDirSync: 'EIO' }
+      });
+    } catch (err) {
+      threw = true;
+      assert.ok(err instanceof PostRenameDurabilityError);
+    } finally {
+      console.log = origLog;
+    }
+
+    assert.strictEqual(threw, true, 'Must throw exception');
+    // Must NOT emit unqualified full-success banners
+    assert.ok(
+      !stdoutCaptured.some(line => line.includes('MANIFEST GENERATION: 100% COMPLETE')),
+      'Must not emit MANIFEST GENERATION: 100% COMPLETE on post-rename durability error'
+    );
+    assert.ok(
+      !stdoutCaptured.some(line => line.includes('atomic replacement verified')),
+      'Must not emit atomic replacement verified on post-rename durability error'
+    );
+    assert.ok(
+      stdoutCaptured.some(line => line.includes('DURABILITY WARNING / ERROR')),
+      'Must emit durability warning/error notice'
+    );
+  });
+
+  // Test 25: Preservation of pre-rename guarantees leaving old manifest bitwise identical
+  runTest('Preservation of pre-rename guarantees leaving old manifest bitwise identical', () => {
+    const env = setupFixtureEnv();
+    const preRenameHooks = [
+      { hook: { failAtOpen: true }, pattern: /Simulated file open failure/ },
+      { hook: { failAtWrite: true }, pattern: /Simulated file write failure/ },
+      { hook: { failAtFsync: true }, pattern: /Simulated fsync failure/ },
+      { hook: { failAtRename: true }, pattern: /Simulated rename replacement failure/ }
+    ];
+
+    for (const { hook, pattern } of preRenameHooks) {
+      const beforeRaw = fs.readFileSync(env.manifestPath, 'utf8');
+      assert.throws(() => {
+        generateChecksumManifest({
+          repoRoot: env.tempRoot,
+          manifestPath: env.manifestPath,
+          silent: true,
+          autoInjectRequiredDeliverables: false,
+          faultHooks: hook
+        });
+      }, pattern);
+
+      const afterRaw = fs.readFileSync(env.manifestPath, 'utf8');
+      assert.strictEqual(beforeRaw, afterRaw, 'Target manifest must remain bitwise identical on pre-rename failure');
+
+      const tempFiles = fs.readdirSync(env.evidenceDir).filter(f => f.includes('.tmp.'));
+      assert.strictEqual(tempFiles.length, 0, 'Temporary files must be cleaned up on pre-rename failure');
+    }
+  });
+
+  // Test 26: Temporary-file cleanup without deleting or corrupting the successfully renamed target upon post-rename error
+  runTest('Temporary-file cleanup without deleting or corrupting the successfully renamed target upon post-rename error', () => {
+    const env = setupFixtureEnv();
+    try {
+      generateChecksumManifest({
+        repoRoot: env.tempRoot,
+        manifestPath: env.manifestPath,
+        silent: true,
+        autoInjectRequiredDeliverables: false,
+        faultHooks: { failAtDirSync: 'EIO' }
+      });
+    } catch (err) {
+      assert.ok(err instanceof PostRenameDurabilityError);
+    }
+
+    // Temporary files must be gone
+    const tempFiles = fs.readdirSync(env.evidenceDir).filter(f => f.includes('.tmp.'));
+    assert.strictEqual(tempFiles.length, 0, 'No temporary files should remain after post-rename error');
+
+    // The target manifest MUST exist and must be valid JSON (not deleted or truncated)
+    assert.strictEqual(fs.existsSync(env.manifestPath), true, 'Target manifest must still exist');
+    const diskContent = fs.readFileSync(env.manifestPath, 'utf8');
+    assert.ok(diskContent.length > 0, 'Target manifest must not be empty');
+    const parsed = JSON.parse(diskContent);
+    assert.strictEqual(parsed.directive, 'W021.5-CTO-DIRECTIVE-081');
+    assert.ok(Array.isArray(parsed.deliverables), 'Deliverables array must be intact');
   });
 
 } finally {
