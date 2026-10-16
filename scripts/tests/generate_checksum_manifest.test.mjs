@@ -3,7 +3,7 @@
 /**
  * Kshetra W021.5 / B2.2-E — Checksum Manifest Generator Regression Test Suite
  * 
- * Fulfills CTO Directive 079 §2.2 requirements:
+ * Fulfills CTO Directive 080 §2.2 requirements:
  * - Verifies manifest with stale prior timestamp receives refreshed timestamp.
  * - Verifies repeat invocation refreshes timestamp again (strictly monotonic).
  * - Verifies generated timestamp is strictly later than all required evidence timestamps.
@@ -11,6 +11,12 @@
  * - Verifies deliverable hashes, byte lengths, and Git blob SHAs are refreshed accurately.
  * - Verifies master checksum manifest is strictly excluded from its own deliverables (non-recursive).
  * - Verifies failed validation does not overwrite or corrupt the existing manifest.
+ * - Verifies atomic manifest replacement using safe temporary-file-and-rename strategy.
+ * - Verifies temporary files are created in the same directory as target manifest.
+ * - Verifies temporary-file write failure leaves original manifest unchanged and cleans up temp files.
+ * - Verifies temporary-file fsync failure leaves original manifest unchanged and cleans up temp files.
+ * - Verifies replacement rename failure leaves original manifest unchanged and cleans up temp files.
+ * - Verifies failed replacement does not return success result or log success messages.
  * - Operates entirely offline using isolated temporary fixtures.
  */
 
@@ -22,6 +28,7 @@ import { execSync } from 'child_process';
 import {
   generateChecksumManifest,
   validateIso8601Utc,
+  atomicWriteFileSync,
   REQUIRED_EVIDENCE_SPECS
 } from '../generate_checksum_manifest.mjs';
 
@@ -333,6 +340,158 @@ try {
 
     const afterRaw = fs.readFileSync(env.manifestPath, 'utf8');
     assert.strictEqual(beforeRaw, afterRaw, 'Manifest on disk must remain unchanged upon deliverable error');
+  });
+
+  // Test 12: Successful generation replaces manifest with valid, complete JSON via atomic replacement and leaves no leftover temporary files
+  runTest('Successful generation replaces manifest with complete JSON and leaves zero temporary files', () => {
+    const env = setupFixtureEnv();
+    const result = generateChecksumManifest({ repoRoot: env.tempRoot, manifestPath: env.manifestPath, silent: true, autoInjectRequiredDeliverables: false });
+
+    assert.ok(result.generatedAt, 'Generated timestamp must be defined');
+    const onDiskRaw = fs.readFileSync(env.manifestPath, 'utf8');
+    const parsed = JSON.parse(onDiskRaw);
+    assert.strictEqual(parsed.directive, 'W021.5-CTO-DIRECTIVE-080');
+    assert.strictEqual(parsed.generatedAt, result.generatedAt);
+    assert.ok(Array.isArray(parsed.deliverables), 'Deliverables must be array');
+
+    // Assert zero temporary files remaining in the manifest directory
+    const tempFiles = fs.readdirSync(env.evidenceDir).filter(f => f.includes('.tmp.'));
+    assert.strictEqual(tempFiles.length, 0, 'No leftover temporary files should exist in directory');
+  });
+
+  // Test 13: Temporary file is created in the same directory as target manifest ensuring same-filesystem volume affinity
+  runTest('Atomic persistence strategy writes temporary file in the same directory as target manifest', () => {
+    const env = setupFixtureEnv();
+    let tempPathObserved = null;
+    const origOpenSync = fs.openSync;
+
+    // Spy on fs.openSync to observe temp file directory
+    fs.openSync = function(targetFile, flags, mode) {
+      if (typeof targetFile === 'string' && targetFile.includes('.tmp.')) {
+        tempPathObserved = targetFile;
+      }
+      return origOpenSync.call(fs, targetFile, flags, mode);
+    };
+
+    try {
+      generateChecksumManifest({ repoRoot: env.tempRoot, manifestPath: env.manifestPath, silent: true, autoInjectRequiredDeliverables: false });
+      assert.ok(tempPathObserved, 'Temporary file creation must have been observed');
+      assert.strictEqual(path.dirname(path.resolve(tempPathObserved)), path.dirname(path.resolve(env.manifestPath)), 'Temp file must be in same directory as target');
+    } finally {
+      fs.openSync = origOpenSync;
+    }
+  });
+
+  // Test 14: Simulated temporary-file write failure leaves original manifest unchanged and cleans up temporary file
+  runTest('Temporary-file write failure leaves original manifest unchanged byte-for-byte and cleans up temp file', () => {
+    const env = setupFixtureEnv();
+    const beforeRaw = fs.readFileSync(env.manifestPath, 'utf8');
+
+    assert.throws(() => {
+      generateChecksumManifest({
+        repoRoot: env.tempRoot,
+        manifestPath: env.manifestPath,
+        silent: true,
+        autoInjectRequiredDeliverables: false,
+        faultHooks: { failAtWrite: true }
+      });
+    }, /FAULT_INJECTION: Simulated file write failure/);
+
+    const afterRaw = fs.readFileSync(env.manifestPath, 'utf8');
+    assert.strictEqual(beforeRaw, afterRaw, 'Target manifest must remain bitwise identical after write failure');
+
+    const tempFiles = fs.readdirSync(env.evidenceDir).filter(f => f.includes('.tmp.'));
+    assert.strictEqual(tempFiles.length, 0, 'Temporary file must be cleaned up after write failure');
+  });
+
+  // Test 15: Simulated temporary-file fsync failure leaves original manifest unchanged and cleans up temporary file
+  runTest('Temporary-file fsync failure leaves original manifest unchanged byte-for-byte and cleans up temp file', () => {
+    const env = setupFixtureEnv();
+    const beforeRaw = fs.readFileSync(env.manifestPath, 'utf8');
+
+    assert.throws(() => {
+      generateChecksumManifest({
+        repoRoot: env.tempRoot,
+        manifestPath: env.manifestPath,
+        silent: true,
+        autoInjectRequiredDeliverables: false,
+        faultHooks: { failAtFsync: true }
+      });
+    }, /FAULT_INJECTION: Simulated fsync failure/);
+
+    const afterRaw = fs.readFileSync(env.manifestPath, 'utf8');
+    assert.strictEqual(beforeRaw, afterRaw, 'Target manifest must remain bitwise identical after fsync failure');
+
+    const tempFiles = fs.readdirSync(env.evidenceDir).filter(f => f.includes('.tmp.'));
+    assert.strictEqual(tempFiles.length, 0, 'Temporary file must be cleaned up after fsync failure');
+  });
+
+  // Test 16: Simulated replacement/rename failure leaves original manifest unchanged and cleans up temporary file
+  runTest('Replacement rename failure leaves original manifest unchanged byte-for-byte and cleans up temp file', () => {
+    const env = setupFixtureEnv();
+    const beforeRaw = fs.readFileSync(env.manifestPath, 'utf8');
+
+    assert.throws(() => {
+      generateChecksumManifest({
+        repoRoot: env.tempRoot,
+        manifestPath: env.manifestPath,
+        silent: true,
+        autoInjectRequiredDeliverables: false,
+        faultHooks: { failAtRename: true }
+      });
+    }, /FAULT_INJECTION: Simulated rename replacement failure/);
+
+    const afterRaw = fs.readFileSync(env.manifestPath, 'utf8');
+    assert.strictEqual(beforeRaw, afterRaw, 'Target manifest must remain bitwise identical after rename failure');
+
+    const tempFiles = fs.readdirSync(env.evidenceDir).filter(f => f.includes('.tmp.'));
+    assert.strictEqual(tempFiles.length, 0, 'Temporary file must be cleaned up after rename failure');
+  });
+
+  // Test 17: Failed replacement does not return a successful result or print a success message
+  runTest('Failed replacement does not return successful result or emit completion banner', () => {
+    const env = setupFixtureEnv();
+    const stdoutCaptured = [];
+    const origLog = console.log;
+    console.log = (...args) => stdoutCaptured.push(args.join(' '));
+
+    let threw = false;
+    try {
+      generateChecksumManifest({
+        repoRoot: env.tempRoot,
+        manifestPath: env.manifestPath,
+        silent: false,
+        autoInjectRequiredDeliverables: false,
+        faultHooks: { failAtRename: true }
+      });
+    } catch (err) {
+      threw = true;
+      assert.ok(err.message.includes('FAULT_INJECTION'), 'Expected fault injection error');
+    } finally {
+      console.log = origLog;
+    }
+
+    assert.strictEqual(threw, true, 'Function must throw on replacement failure');
+    assert.ok(!stdoutCaptured.some(line => line.includes('MANIFEST GENERATION: 100% COMPLETE')), 'Must not emit completion banner on failure');
+    assert.ok(!stdoutCaptured.some(line => line.includes('atomic replacement verified')), 'Must not emit success verification message on failure');
+  });
+
+  // Test 18: Standalone atomicWriteFileSync guarantees byte-for-byte integrity and cleans up on open failure
+  runTest('Standalone atomicWriteFileSync writes complete data and cleans up on early failure', () => {
+    const env = setupFixtureEnv();
+    const testTarget = path.join(env.tempRoot, 'test_atomic_file.json');
+    const testData = JSON.stringify({ key: 'atomic-persistence-test', value: 12345 }, null, 2);
+
+    // Successful write
+    const writeResult = atomicWriteFileSync(testTarget, testData);
+    assert.strictEqual(writeResult.success, true);
+    assert.strictEqual(fs.readFileSync(testTarget, 'utf8'), testData);
+
+    // Open failure
+    assert.throws(() => {
+      atomicWriteFileSync(testTarget, 'modified', { faultHooks: { failAtOpen: true } });
+    }, /FAULT_INJECTION: Simulated file open failure/);
+    assert.strictEqual(fs.readFileSync(testTarget, 'utf8'), testData, 'Original content preserved after open failure');
   });
 
 } finally {
