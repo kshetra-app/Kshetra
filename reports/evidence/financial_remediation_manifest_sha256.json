@@ -2,8 +2,8 @@
   "milestone": "W021.5 / B2.2-E",
   "defect": "DQ-W021.5-B2.2E-001",
   "defectStatus": "STRICTLY OPEN",
-  "directive": "W021.5-CTO-DIRECTIVE-077",
-  "generatedAt": "2026-10-15T17:03:39.274Z",
+  "directive": "W021.5-CTO-DIRECTIVE-078",
+  "generatedAt": "2026-10-16T03:51:12.636Z",
   "gitBaseline": {
     "startingCommit": "20d5ea575fa1595648fcceee07ddf0d45b4973a3",
     "canonicalBranch": "master",
@@ -25,7 +25,10 @@
     "directive076ImmediateParent": "bce18bd8509f5d9244dc756c86708395aaa4f8cb",
     "directive076ClosureCommit": "36e202a2dcd7a6470a0327d2f84a6902c546339b",
     "directive076ClosureImmediateParent": "bd2d7a93207c88a40406173f1a9663bd7185a2c5",
-    "directive077BaselineCommit": "36e202a2dcd7a6470a0327d2f84a6902c546339b"
+    "directive077BaselineCommit": "36e202a2dcd7a6470a0327d2f84a6902c546339b",
+    "directive077DeliveryCommit": "e3359d35ca47700c0c65093122ab3c4cee2dc342",
+    "directive077ImmediateParent": "36e202a2dcd7a6470a0327d2f84a6902c546339b",
+    "directive078BaselineCommit": "e3359d35ca47700c0c65093122ab3c4cee2dc342"
   },
   "authoritativeAffidavitManifest": {
     "path": "reports/w021_5b2_b2_2e_affidavit_manifest.json",
@@ -258,9 +261,9 @@
     },
     {
       "path": "reports/evidence/financial_remediation_test_results.json",
-      "byteLength": 27519,
-      "sha256": "10d94ff71b9c22405982acc94f24efaabe1547f77955aea85cc21955e38847ef",
-      "gitBlobSha": "8da26b447d4942d41c61f93a3a3385bfc6a93080",
+      "byteLength": 27520,
+      "sha256": "ba20834c810bf341932aefd3b682610752b2784da0b5880593648af2a6bfd029",
+      "gitBlobSha": "b08192acca77204ea5f5abc819e6ea33f96d887c",
       "description": "Machine-readable test results for all 105 tests in the Directive 068 battery"
     },
     {
@@ -336,8 +339,8 @@
     {
       "path": "reports/evidence/adjudication_manifest_test_results.json",
       "byteLength": 5063,
-      "sha256": "6843526c84da0f0c0141c50ecc392e49441d0f9a970775b6e0d434f614aa15ed",
-      "gitBlobSha": "78ef55c2f773eee36e727ec5dd89eaac12538624",
+      "sha256": "1a484c617213feb9758587d0b0402afecb4a1c0d8758475a1bddd25a0cb4d696",
+      "gitBlobSha": "86ba7d448a8294d4d1fffad42c7c02082fc99c64",
       "description": "Machine-readable test results for all 26 tests in the Directive 074 adjudication test battery"
     },
     {
@@ -391,9 +394,9 @@
     },
     {
       "path": "scripts/audit_artifact_accounting.mjs",
-      "byteLength": 15550,
-      "sha256": "3507d09fb61c9b615fffac438a2b0add98e1152ec7e9a7149320f50dc8dc9e4c",
-      "gitBlobSha": "7818e867e7ad7a1f46b139e7acdafaa47fba7801",
+      "byteLength": 19319,
+      "sha256": "c116a893a1c235ccb4028b88b180af350f86fc1f0ff95f5c0a91049a04f6a74e",
+      "gitBlobSha": "63809725624af05208abc828396ae26809953afc",
       "description": "Mechanical artifact accounting audit script verifying manifest counts, duplicate absence, file integrity, category reconciliation, and provenance coordinates"
     },
     {
@@ -409,6 +412,20 @@
       "sha256": "0da033e3820911a11ebca891259e175d4030f6e1324986963e390963326580df",
       "gitBlobSha": "728ec099d7c70a07b996d15edb12f17e6155a545",
       "description": "Comprehensive Directive 077 implementation report covering closure commit provenance, hardened mechanical audit, and exact deliverable accounting"
+    },
+    {
+      "path": "scripts/generate_checksum_manifest.mjs",
+      "byteLength": 7073,
+      "sha256": "37a7b17d98941fe027371fd516b9a49f2d59cb5263d76a91cea961ac3d961e1e",
+      "gitBlobSha": "e6f5036acb7c343c24632b44d861f2975b84724b",
+      "description": "Master checksum manifest generator and refresher script enforcing evidence freshness, ISO 8601 UTC timestamp format, and non-recursive integrity"
+    },
+    {
+      "path": "reports/W021.5-CTO-DIRECTIVE-078-IMPLEMENTATION-REPORT.md",
+      "byteLength": 24627,
+      "sha256": "9250ccbc82a14a5eda06b0e75aca340b5c1c685212db420a8559fbcc339f22fc",
+      "gitBlobSha": "633f3360e5c6437c045854860fac6063f5d07206",
+      "description": "Comprehensive Directive 078 implementation report covering checksum manifest generation-time, evidence freshness, and hardened mechanical audit"
     }
   ],
   "checksumMethodology": {

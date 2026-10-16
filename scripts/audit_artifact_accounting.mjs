@@ -248,11 +248,19 @@ const CATEGORIES = {
       'reports/W021.5-CTO-DIRECTIVE-076-IMPLEMENTATION-REPORT.md'
     ])
   },
-  'K_DIRECTIVE_077': {
+    'K_DIRECTIVE_077': {
     name: 'Directive 077 Provenance Closure Deliverables',
     expectedCount: 1,
     paths: new Set([
       'reports/W021.5-CTO-DIRECTIVE-077-IMPLEMENTATION-REPORT.md'
+    ])
+  },
+  'L_DIRECTIVE_078': {
+    name: 'Directive 078 Generation-Time & Evidence-Freshness Deliverables',
+    expectedCount: 2,
+    paths: new Set([
+      'scripts/generate_checksum_manifest.mjs',
+      'reports/W021.5-CTO-DIRECTIVE-078-IMPLEMENTATION-REPORT.md'
     ])
   }
 };
@@ -328,7 +336,10 @@ const EXPECTED_COORDINATES = {
   directive076ImmediateParent: 'bce18bd8509f5d9244dc756c86708395aaa4f8cb',
   directive076ClosureCommit: '36e202a2dcd7a6470a0327d2f84a6902c546339b',
   directive076ClosureImmediateParent: 'bd2d7a93207c88a40406173f1a9663bd7185a2c5',
-  directive077BaselineCommit: '36e202a2dcd7a6470a0327d2f84a6902c546339b'
+  directive077BaselineCommit: '36e202a2dcd7a6470a0327d2f84a6902c546339b',
+  directive077DeliveryCommit: 'e3359d35ca47700c0c65093122ab3c4cee2dc342',
+  directive077ImmediateParent: '36e202a2dcd7a6470a0327d2f84a6902c546339b',
+  directive078BaselineCommit: 'e3359d35ca47700c0c65093122ab3c4cee2dc342'
 };
 
 for (const [key, expectedSha] of Object.entries(EXPECTED_COORDINATES)) {
@@ -360,12 +371,79 @@ try {
     process.exit(1);
   }
   console.log(`[PASS] Directive 076 closure commit parent confirmed: ${d076ClosureParent}`);
+
+  const d077CommitParent = execSync(`git rev-parse ${EXPECTED_COORDINATES.directive077DeliveryCommit}~1`, { encoding: 'utf8' }).trim();
+  if (d077CommitParent !== EXPECTED_COORDINATES.directive076ClosureCommit) {
+    console.error(`FAIL: Directive 077 delivery commit parent (${d077CommitParent}) does not match baseline (${EXPECTED_COORDINATES.directive076ClosureCommit})`);
+    process.exit(1);
+  }
+  console.log(`[PASS] Directive 077 delivery commit parent confirmed: ${d077CommitParent}`);
 } catch (err) {
   console.error(`FAIL: Could not verify commit parent via git: ${err.message}`);
   process.exit(1);
 }
 
 console.log('[PASS] All git provenance baseline and delivery coordinates verified');
+
+// ----------------------------------------------------------------------------
+// 6. Checksum Manifest Generation-Time & Evidence-Freshness Audit
+// ----------------------------------------------------------------------------
+console.log('\n--- 6. Checksum Manifest Generation-Time & Evidence-Freshness Audit ---');
+const generatedAt = manifest.generatedAt;
+if (!generatedAt || typeof generatedAt !== 'string') {
+  console.error('FAIL: Missing or invalid generatedAt timestamp in checksum manifest');
+  process.exit(1);
+}
+
+// 1. Validate ISO 8601 UTC timestamp format (YYYY-MM-DDTHH:mm:ss.sssZ)
+const iso8601Regex = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,3})?Z$/;
+if (!iso8601Regex.test(generatedAt)) {
+  console.error(`FAIL: manifest.generatedAt is not a valid ISO 8601 UTC timestamp: ${generatedAt}`);
+  process.exit(1);
+}
+
+const manifestTime = new Date(generatedAt).getTime();
+if (isNaN(manifestTime)) {
+  console.error(`FAIL: manifest.generatedAt parsed to NaN: ${generatedAt}`);
+  process.exit(1);
+}
+console.log(`[PASS] manifest.generatedAt format valid: ${generatedAt}`);
+
+// 2. Evidence freshness checks against included evidence files
+const evidenceFilesToCheck = [
+  { path: 'reports/evidence/financial_remediation_test_results.json', dateField: 'executionDate' },
+  { path: 'reports/evidence/adjudication_manifest_test_results.json', dateField: 'executedAt' },
+  { path: 'reports/w021_5_financial_remediation_adjudication_manifest.json', dateField: 'generatedAt' },
+  { path: 'reports/w021_5_financial_remediation_adjudication_summary.json', dateField: 'generatedAt' }
+];
+
+for (const evidenceSpec of evidenceFilesToCheck) {
+  const fullEvidencePath = path.join(REPO_ROOT, evidenceSpec.path);
+  if (!fs.existsSync(fullEvidencePath)) {
+    console.error(`FAIL: Evidence file missing for freshness audit: ${evidenceSpec.path}`);
+    process.exit(1);
+  }
+
+  const evidenceData = JSON.parse(fs.readFileSync(fullEvidencePath, 'utf8'));
+  const evidenceDateStr = evidenceData[evidenceSpec.dateField];
+  if (!evidenceDateStr) {
+    console.error(`FAIL: Missing ${evidenceSpec.dateField} in evidence file: ${evidenceSpec.path}`);
+    process.exit(1);
+  }
+
+  const evidenceTime = new Date(evidenceDateStr).getTime();
+  if (isNaN(evidenceTime)) {
+    console.error(`FAIL: Unparseable date in evidence file ${evidenceSpec.path}: ${evidenceDateStr}`);
+    process.exit(1);
+  }
+
+  if (manifestTime < evidenceTime) {
+    console.error(`FAIL: Stale manifest detected! manifest.generatedAt (${generatedAt}) is earlier than ${evidenceSpec.path} ${evidenceSpec.dateField} (${evidenceDateStr})`);
+    process.exit(1);
+  }
+
+  console.log(`[PASS] Evidence freshness confirmed for ${evidenceSpec.path} (${evidenceSpec.dateField}: ${evidenceDateStr} <= manifest: ${generatedAt})`);
+}
 
 console.log('\n================================================================');
 console.log('AUDIT RESULT: 100% PASS (All checks and invariants satisfied)');
