@@ -1,7 +1,7 @@
 {
   "suite": "adjudication_manifest_test_suite",
   "directive": "W021.5-CTO-DIRECTIVE-075",
-  "executedAt": "2026-10-16T03:09:58.692Z",
+  "executedAt": "2026-10-16T03:23:28.069Z",
   "totalTests": 26,
   "passed": 26,
   "failed": 0,

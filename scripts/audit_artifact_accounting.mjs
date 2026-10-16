@@ -247,6 +247,13 @@ const CATEGORIES = {
       'scripts/audit_artifact_accounting.mjs',
       'reports/W021.5-CTO-DIRECTIVE-076-IMPLEMENTATION-REPORT.md'
     ])
+  },
+  'K_DIRECTIVE_077': {
+    name: 'Directive 077 Provenance Closure Deliverables',
+    expectedCount: 1,
+    paths: new Set([
+      'reports/W021.5-CTO-DIRECTIVE-077-IMPLEMENTATION-REPORT.md'
+    ])
   }
 };
 
@@ -317,7 +324,11 @@ const EXPECTED_COORDINATES = {
   directive075BaselineCommit: 'accf4b43db814d5440a1c0e913ac76b50b1e98a4',
   directive075DeliveryCommit: 'bce18bd8509f5d9244dc756c86708395aaa4f8cb',
   directive076BaselineCommit: 'bce18bd8509f5d9244dc756c86708395aaa4f8cb',
-  directive076ImplementationCommit: 'bd2d7a93207c88a40406173f1a9663bd7185a2c5'
+  directive076ImplementationCommit: 'bd2d7a93207c88a40406173f1a9663bd7185a2c5',
+  directive076ImmediateParent: 'bce18bd8509f5d9244dc756c86708395aaa4f8cb',
+  directive076ClosureCommit: '36e202a2dcd7a6470a0327d2f84a6902c546339b',
+  directive076ClosureImmediateParent: 'bd2d7a93207c88a40406173f1a9663bd7185a2c5',
+  directive077BaselineCommit: '36e202a2dcd7a6470a0327d2f84a6902c546339b'
 };
 
 for (const [key, expectedSha] of Object.entries(EXPECTED_COORDINATES)) {
@@ -342,6 +353,13 @@ try {
     process.exit(1);
   }
   console.log(`[PASS] Directive 076 implementation commit parent confirmed: ${d076CommitParent}`);
+
+  const d076ClosureParent = execSync(`git rev-parse ${EXPECTED_COORDINATES.directive076ClosureCommit}~1`, { encoding: 'utf8' }).trim();
+  if (d076ClosureParent !== EXPECTED_COORDINATES.directive076ImplementationCommit) {
+    console.error(`FAIL: Directive 076 closure commit parent (${d076ClosureParent}) does not match implementation commit (${EXPECTED_COORDINATES.directive076ImplementationCommit})`);
+    process.exit(1);
+  }
+  console.log(`[PASS] Directive 076 closure commit parent confirmed: ${d076ClosureParent}`);
 } catch (err) {
   console.error(`FAIL: Could not verify commit parent via git: ${err.message}`);
   process.exit(1);

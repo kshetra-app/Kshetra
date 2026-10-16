@@ -2,7 +2,7 @@
   "milestone": "W021.5 / B2.2-E",
   "defect": "DQ-W021.5-B2.2E-001",
   "defectStatus": "STRICTLY OPEN",
-  "directive": "W021.5-CTO-DIRECTIVE-076",
+  "directive": "W021.5-CTO-DIRECTIVE-077",
   "generatedAt": "2026-10-15T17:03:39.274Z",
   "gitBaseline": {
     "startingCommit": "20d5ea575fa1595648fcceee07ddf0d45b4973a3",
@@ -22,7 +22,10 @@
     "directive075DeliveryCommit": "bce18bd8509f5d9244dc756c86708395aaa4f8cb",
     "directive076BaselineCommit": "bce18bd8509f5d9244dc756c86708395aaa4f8cb",
     "directive076ImplementationCommit": "bd2d7a93207c88a40406173f1a9663bd7185a2c5",
-    "directive076ImmediateParent": "bce18bd8509f5d9244dc756c86708395aaa4f8cb"
+    "directive076ImmediateParent": "bce18bd8509f5d9244dc756c86708395aaa4f8cb",
+    "directive076ClosureCommit": "36e202a2dcd7a6470a0327d2f84a6902c546339b",
+    "directive076ClosureImmediateParent": "bd2d7a93207c88a40406173f1a9663bd7185a2c5",
+    "directive077BaselineCommit": "36e202a2dcd7a6470a0327d2f84a6902c546339b"
   },
   "authoritativeAffidavitManifest": {
     "path": "reports/w021_5b2_b2_2e_affidavit_manifest.json",
@@ -255,9 +258,9 @@
     },
     {
       "path": "reports/evidence/financial_remediation_test_results.json",
-      "byteLength": 27521,
-      "sha256": "cb4b0935b9aa032df9ff308897bad9762fd2a78017a7d71d54f9b21816063648",
-      "gitBlobSha": "25e94a58867be22658936651de79b9ea8fc3c71b",
+      "byteLength": 27519,
+      "sha256": "10d94ff71b9c22405982acc94f24efaabe1547f77955aea85cc21955e38847ef",
+      "gitBlobSha": "8da26b447d4942d41c61f93a3a3385bfc6a93080",
       "description": "Machine-readable test results for all 105 tests in the Directive 068 battery"
     },
     {
@@ -333,8 +336,8 @@
     {
       "path": "reports/evidence/adjudication_manifest_test_results.json",
       "byteLength": 5063,
-      "sha256": "2bf15507b7f81948e2369b071f52cabc2cb703519ec09d29efe2f5cdbf61950a",
-      "gitBlobSha": "b778bec33f583be5a6b7798979e1fd8eaa41ab9e",
+      "sha256": "6843526c84da0f0c0141c50ecc392e49441d0f9a970775b6e0d434f614aa15ed",
+      "gitBlobSha": "78ef55c2f773eee36e727ec5dd89eaac12538624",
       "description": "Machine-readable test results for all 26 tests in the Directive 074 adjudication test battery"
     },
     {
@@ -388,17 +391,24 @@
     },
     {
       "path": "scripts/audit_artifact_accounting.mjs",
-      "byteLength": 14520,
-      "sha256": "3fbaa602ff71503299ce2add7df9ffd18e92b8d49777e72cea9c1e27a20e1f6a",
-      "gitBlobSha": "03e8f8d6bf10aefdd427cbac09cb067b3d90da43",
+      "byteLength": 15550,
+      "sha256": "3507d09fb61c9b615fffac438a2b0add98e1152ec7e9a7149320f50dc8dc9e4c",
+      "gitBlobSha": "7818e867e7ad7a1f46b139e7acdafaa47fba7801",
       "description": "Mechanical artifact accounting audit script verifying manifest counts, duplicate absence, file integrity, category reconciliation, and provenance coordinates"
     },
     {
       "path": "reports/W021.5-CTO-DIRECTIVE-076-IMPLEMENTATION-REPORT.md",
-      "byteLength": 19671,
-      "sha256": "6ab2da8ae6da45f9a7a6289c60e6108b2bd7e4d21b7b2c7270a3ec9d54c3db22",
-      "gitBlobSha": "58b604b1798f935f4f006120898f0a12aa751829",
+      "byteLength": 19947,
+      "sha256": "9387a55619e51c9d9b21b8ee78b9b6c1d817e3e0fcc2a6d9ca01e974f297817e",
+      "gitBlobSha": "73bc14bf40818f3a32509256616a8e25fd68adcd",
       "description": "Comprehensive Directive 076 implementation report covering provenance closure, two-commit protocol, exact artifact accounting, mechanical audit evidence, and governance bounds"
+    },
+    {
+      "path": "reports/W021.5-CTO-DIRECTIVE-077-IMPLEMENTATION-REPORT.md",
+      "byteLength": 20081,
+      "sha256": "0da033e3820911a11ebca891259e175d4030f6e1324986963e390963326580df",
+      "gitBlobSha": "728ec099d7c70a07b996d15edb12f17e6155a545",
+      "description": "Comprehensive Directive 077 implementation report covering closure commit provenance, hardened mechanical audit, and exact deliverable accounting"
     }
   ],
   "checksumMethodology": {
