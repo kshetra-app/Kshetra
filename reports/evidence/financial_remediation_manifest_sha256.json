@@ -20,7 +20,9 @@
     "directive074DeliveryCommit": "accf4b43db814d5440a1c0e913ac76b50b1e98a4",
     "directive075BaselineCommit": "accf4b43db814d5440a1c0e913ac76b50b1e98a4",
     "directive075DeliveryCommit": "bce18bd8509f5d9244dc756c86708395aaa4f8cb",
-    "directive076BaselineCommit": "bce18bd8509f5d9244dc756c86708395aaa4f8cb"
+    "directive076BaselineCommit": "bce18bd8509f5d9244dc756c86708395aaa4f8cb",
+    "directive076ImplementationCommit": "bd2d7a93207c88a40406173f1a9663bd7185a2c5",
+    "directive076ImmediateParent": "bce18bd8509f5d9244dc756c86708395aaa4f8cb"
   },
   "authoritativeAffidavitManifest": {
     "path": "reports/w021_5b2_b2_2e_affidavit_manifest.json",
@@ -386,16 +388,16 @@
     },
     {
       "path": "scripts/audit_artifact_accounting.mjs",
-      "byteLength": 13939,
-      "sha256": "9fe84e048cf32d45ceab15b5a7c8a40e7805d017055673051b3e6bab1369f55f",
-      "gitBlobSha": "bf9c6bf65554441167ebf0ec7967b9aeee040ff7",
+      "byteLength": 14520,
+      "sha256": "3fbaa602ff71503299ce2add7df9ffd18e92b8d49777e72cea9c1e27a20e1f6a",
+      "gitBlobSha": "03e8f8d6bf10aefdd427cbac09cb067b3d90da43",
       "description": "Mechanical artifact accounting audit script verifying manifest counts, duplicate absence, file integrity, category reconciliation, and provenance coordinates"
     },
     {
       "path": "reports/W021.5-CTO-DIRECTIVE-076-IMPLEMENTATION-REPORT.md",
-      "byteLength": 19270,
-      "sha256": "fc27f52aa22924d13f2114ed8b587d4febcb04c5d65b2765b817c7bf4d288478",
-      "gitBlobSha": "d5db49a63883f5afc599f4d1adccac1b89ac3561",
+      "byteLength": 19671,
+      "sha256": "6ab2da8ae6da45f9a7a6289c60e6108b2bd7e4d21b7b2c7270a3ec9d54c3db22",
+      "gitBlobSha": "58b604b1798f935f4f006120898f0a12aa751829",
       "description": "Comprehensive Directive 076 implementation report covering provenance closure, two-commit protocol, exact artifact accounting, mechanical audit evidence, and governance bounds"
     }
   ],

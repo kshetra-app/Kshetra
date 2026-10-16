@@ -316,7 +316,8 @@ const EXPECTED_COORDINATES = {
   directive074DeliveryCommit: 'accf4b43db814d5440a1c0e913ac76b50b1e98a4',
   directive075BaselineCommit: 'accf4b43db814d5440a1c0e913ac76b50b1e98a4',
   directive075DeliveryCommit: 'bce18bd8509f5d9244dc756c86708395aaa4f8cb',
-  directive076BaselineCommit: 'bce18bd8509f5d9244dc756c86708395aaa4f8cb'
+  directive076BaselineCommit: 'bce18bd8509f5d9244dc756c86708395aaa4f8cb',
+  directive076ImplementationCommit: 'bd2d7a93207c88a40406173f1a9663bd7185a2c5'
 };
 
 for (const [key, expectedSha] of Object.entries(EXPECTED_COORDINATES)) {
@@ -334,8 +335,15 @@ try {
     process.exit(1);
   }
   console.log(`[PASS] Directive 075 delivery commit parent confirmed: ${d075CommitParent}`);
+
+  const d076CommitParent = execSync(`git rev-parse ${EXPECTED_COORDINATES.directive076ImplementationCommit}~1`, { encoding: 'utf8' }).trim();
+  if (d076CommitParent !== EXPECTED_COORDINATES.directive076BaselineCommit) {
+    console.error(`FAIL: Directive 076 implementation commit parent (${d076CommitParent}) does not match baseline (${EXPECTED_COORDINATES.directive076BaselineCommit})`);
+    process.exit(1);
+  }
+  console.log(`[PASS] Directive 076 implementation commit parent confirmed: ${d076CommitParent}`);
 } catch (err) {
-  console.error(`FAIL: Could not verify Directive 075 commit parent via git: ${err.message}`);
+  console.error(`FAIL: Could not verify commit parent via git: ${err.message}`);
   process.exit(1);
 }
 
