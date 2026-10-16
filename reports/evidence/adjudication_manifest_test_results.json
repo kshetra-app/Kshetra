@@ -1,7 +1,7 @@
 {
   "suite": "adjudication_manifest_test_suite",
-  "directive": "W021.5-CTO-DIRECTIVE-074",
-  "executedAt": "2026-10-15T17:05:42.712Z",
+  "directive": "W021.5-CTO-DIRECTIVE-075",
+  "executedAt": "2026-10-16T02:21:46.972Z",
   "totalTests": 26,
   "passed": 26,
   "failed": 0,
@@ -93,7 +93,7 @@
     },
     {
       "id": "Test 15",
-      "name": "Production validateEligibilityGate() rejects boolean false, truthy strings, numbers, invalid domains, and invalid states",
+      "name": "Production validateEligibilityGate() rejects non-boolean verifier states, invalid domains, invalid states, and missing reasons",
       "status": "PASS",
       "error": null
     },
@@ -117,7 +117,7 @@
     },
     {
       "id": "Test 19",
-      "name": "Production validateSummaryReconciliation() rejects independent alterations across all summary dimensions",
+      "name": "Production validateSummaryReconciliation() rejects independent alterations, omitted fields, unexpected keys, and invalid values",
       "status": "PASS",
       "error": null
     },

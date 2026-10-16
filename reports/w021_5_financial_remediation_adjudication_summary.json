@@ -1,14 +1,15 @@
 {
   "manifestVersion": "1.0.0",
-  "directive": "W021.5-CTO-DIRECTIVE-074",
+  "directive": "W021.5-CTO-DIRECTIVE-075",
   "milestone": "W021.5 / B2.2-E — Candidate Affidavits and Civic Extensions",
   "defect": "DQ-W021.5-B2.2E-001",
   "defectStatus": "STRICTLY OPEN — AWAITING INDEPENDENT CTO ADJUDICATION",
   "governance": "Rule IV-001 — Non-Self-Acceptance",
-  "generatedAt": "2026-10-15T16:57:51.959Z",
+  "generatedAt": "2026-10-16T02:11:48.346Z",
   "gitBaseline": {
     "directive073DeliveryCommit": "e323def374415767df8f5febc7114efc0f68d309",
-    "directive074BaselineCommit": "e323def374415767df8f5febc7114efc0f68d309",
+    "directive074DeliveryCommit": "accf4b43db814d5440a1c0e913ac76b50b1e98a4",
+    "directive075BaselineCommit": "accf4b43db814d5440a1c0e913ac76b50b1e98a4",
     "canonicalBranch": "master",
     "remoteRepository": "https://github.com/kshetra-app/Kshetra.git"
   },

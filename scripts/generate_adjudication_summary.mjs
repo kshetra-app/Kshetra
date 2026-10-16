@@ -6,10 +6,21 @@ const REPO_ROOT = process.cwd();
 const manifestPath = path.join(REPO_ROOT, 'reports/w021_5_financial_remediation_adjudication_manifest.json');
 const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
 
-// Recompute row-level counts and sample IDs
+// Recompute row-level counts, dimensional totals, subset integrity, and sample IDs
 const recomputedGroupCounts = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
 const recomputedAssetCounts = { ELIGIBLE: 0, INELIGIBLE: 0, REQUIRES_REVIEW: 0 };
 const recomputedLiabilityCounts = { ELIGIBLE: 0, INELIGIBLE: 0, REQUIRES_REVIEW: 0 };
+
+let rowAssetPositive = 0;
+let rowAssetMissing = 0;
+let rowAssetZero = 0;
+
+let rowLiabPositive = 0;
+let rowLiabMissing = 0;
+let rowLiabZero = 0;
+
+const missingAssetIds = new Set();
+const missingLiabIds = new Set();
 
 const assetRejectionMap = {};
 const liabilityRejectionMap = {};
@@ -23,6 +34,15 @@ for (const aff of manifest.affidavits) {
   // Asset
   const assetElig = aff.dimensions.asset.eligibility;
   recomputedAssetCounts[assetElig]++;
+  if (aff.dimensions.asset.proposedValue === null) {
+    rowAssetMissing++;
+    missingAssetIds.add(aff.affidavitId);
+  } else if (aff.dimensions.asset.proposedValue === 0) {
+    rowAssetZero++;
+  } else if (typeof aff.dimensions.asset.proposedValue === 'number' && aff.dimensions.asset.proposedValue > 0) {
+    rowAssetPositive++;
+  }
+
   if (assetElig === 'REQUIRES_REVIEW') {
     const reasonKey = (aff.dimensions.asset.verifierRejectionReason || 'UNKNOWN').split(':')[0].trim();
     assetRejectionMap[reasonKey] = (assetRejectionMap[reasonKey] || 0) + 1;
@@ -35,6 +55,15 @@ for (const aff of manifest.affidavits) {
   // Liability
   const liabElig = aff.dimensions.liability.eligibility;
   recomputedLiabilityCounts[liabElig]++;
+  if (aff.dimensions.liability.proposedValue === null) {
+    rowLiabMissing++;
+    missingLiabIds.add(aff.affidavitId);
+  } else if (aff.dimensions.liability.proposedValue === 0) {
+    rowLiabZero++;
+  } else if (typeof aff.dimensions.liability.proposedValue === 'number' && aff.dimensions.liability.proposedValue > 0) {
+    rowLiabPositive++;
+  }
+
   if (liabElig === 'REQUIRES_REVIEW') {
     const reasonKey = (aff.dimensions.liability.verifierRejectionReason || 'UNKNOWN').split(':')[0].trim();
     liabilityRejectionMap[reasonKey] = (liabilityRejectionMap[reasonKey] || 0) + 1;
@@ -47,7 +76,7 @@ for (const aff of manifest.affidavits) {
 
 const summary = {
   manifestVersion: manifest.manifestVersion,
-  directive: 'W021.5-CTO-DIRECTIVE-074',
+  directive: 'W021.5-CTO-DIRECTIVE-075',
   milestone: manifest.milestone,
   defect: manifest.defect,
   defectStatus: manifest.defectStatus,
@@ -55,12 +84,13 @@ const summary = {
   generatedAt: new Date().toISOString(),
   gitBaseline: {
     directive073DeliveryCommit: 'e323def374415767df8f5febc7114efc0f68d309',
-    directive074BaselineCommit: 'e323def374415767df8f5febc7114efc0f68d309',
+    directive074DeliveryCommit: 'accf4b43db814d5440a1c0e913ac76b50b1e98a4',
+    directive075BaselineCommit: 'accf4b43db814d5440a1c0e913ac76b50b1e98a4',
     canonicalBranch: 'master',
     remoteRepository: 'https://github.com/kshetra-app/Kshetra.git'
   },
   populationReconciliation: {
-    totalRetainedAffidavits: manifest.populationSummary.totalAffidavits,
+    totalRetainedAffidavits: manifest.affidavits.length,
     fiveGroupCounts: {
       group1_positiveAssets_positiveLiabilities: recomputedGroupCounts[1],
       group2_positiveAssets_zeroLiabilities: recomputedGroupCounts[2],
@@ -69,8 +99,20 @@ const summary = {
       group5_zeroAssets_zeroLiabilities: recomputedGroupCounts[5],
       total: recomputedGroupCounts[1] + recomputedGroupCounts[2] + recomputedGroupCounts[3] + recomputedGroupCounts[4] + recomputedGroupCounts[5]
     },
-    dimensionalTotals: manifest.populationSummary.totalsByDimension,
-    subsetIntegrity: manifest.populationSummary.subsetIntegrity
+    dimensionalTotals: {
+      assetRestorationTotal: rowAssetPositive,
+      assetMissingTotal: rowAssetMissing,
+      assetZeroTotal: rowAssetZero,
+      liabilityRestorationTotal: rowLiabPositive,
+      liabilityMissingTotal: rowLiabMissing,
+      liabilityZeroTotal: rowLiabZero
+    },
+    subsetIntegrity: {
+      missingAssetsIsSubsetOfMissingLiabilities: Array.from(missingAssetIds).every(id => missingLiabIds.has(id)),
+      missingAssetsCount: missingAssetIds.size,
+      missingLiabilitiesCount: missingLiabIds.size,
+      uncoveredMissingAssets: Array.from(missingAssetIds).filter(id => !missingLiabIds.has(id)).length
+    }
   },
   eligibilityBreakdown: {
     assetDimension: {
@@ -163,4 +205,4 @@ validateSummaryReconciliation(manifest, summary);
 
 const summaryPath = path.join(REPO_ROOT, 'reports/w021_5_financial_remediation_adjudication_summary.json');
 fs.writeFileSync(summaryPath, JSON.stringify(summary, null, 2), 'utf8');
-console.log(`Wrote Directive 074 adjudication summary to ${summaryPath}`);
+console.log(`Wrote Directive 075 adjudication summary to ${summaryPath}`);

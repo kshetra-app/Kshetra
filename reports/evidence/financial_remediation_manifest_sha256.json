@@ -2,7 +2,7 @@
   "milestone": "W021.5 / B2.2-E",
   "defect": "DQ-W021.5-B2.2E-001",
   "defectStatus": "STRICTLY OPEN",
-  "directive": "W021.5-CTO-DIRECTIVE-074",
+  "directive": "W021.5-CTO-DIRECTIVE-075",
   "generatedAt": "2026-10-15T17:03:39.274Z",
   "gitBaseline": {
     "startingCommit": "20d5ea575fa1595648fcceee07ddf0d45b4973a3",
@@ -16,7 +16,9 @@
     "directive072DeliveryCommit": "fc9992fa1aeb328bab7c414eb9d352aa406e23bb",
     "directive073BaselineCommit": "fc9992fa1aeb328bab7c414eb9d352aa406e23bb",
     "directive073DeliveryCommit": "e323def374415767df8f5febc7114efc0f68d309",
-    "directive074BaselineCommit": "e323def374415767df8f5febc7114efc0f68d309"
+    "directive074BaselineCommit": "e323def374415767df8f5febc7114efc0f68d309",
+    "directive074DeliveryCommit": "accf4b43db814d5440a1c0e913ac76b50b1e98a4",
+    "directive075BaselineCommit": "accf4b43db814d5440a1c0e913ac76b50b1e98a4"
   },
   "authoritativeAffidavitManifest": {
     "path": "reports/w021_5b2_b2_2e_affidavit_manifest.json",
@@ -277,23 +279,23 @@
     },
     {
       "path": "reports/w021_5_financial_remediation_adjudication_manifest.json",
-      "byteLength": 15234885,
-      "sha256": "aee55fd0e0af9f737a13f76d07752ba74d9df049adf8bad021e9e8e7b0642028",
-      "gitBlobSha": "16dc26d2d0e21ea2e3ad50c1543bb2d8c327f34c",
+      "byteLength": 15234963,
+      "sha256": "7e3e619e51552a777a1f4af778c19548a75807bd109cd62ffc1a87296ec902f2",
+      "gitBlobSha": "875b3a1e9d4ab1e649dd3bfc2c93b424a8f032bf",
       "description": "Row-level financial remediation adjudication manifest evaluating all 4,523 candidate affidavits under Directive 074 coordinates"
     },
     {
       "path": "reports/w021_5_financial_remediation_adjudication_summary.json",
-      "byteLength": 6661,
-      "sha256": "9a90408aae499c9e8a1e454ff85c4a78f242a3fc209c2d4a8642855cdd3104db",
-      "gitBlobSha": "fdb42e12d884dc832b7ef55571341118777e665e",
+      "byteLength": 6739,
+      "sha256": "60f464c914023ae019b6a39a9cb16075f768a79bbe65a948b2b9150372400bd7",
+      "gitBlobSha": "4048b71b03bed846f6ab27148cef70b36ad4b623",
       "description": "Machine-readable validation summary exposing population counts, recomputed eligibility totals, reconciled liability rejection breakdown, and declaration of zero live DB observations"
     },
     {
       "path": "scripts/tests/adjudication_manifest.test.mjs",
-      "byteLength": 37776,
-      "sha256": "f14f51bc10aff3babda51925897086b1471c38ac2f6a62a60037ec334bb88d68",
-      "gitBlobSha": "ed385f839136971e7e3b0edd7907ea538aaf3605",
+      "byteLength": 47461,
+      "sha256": "1afba9720ab9439a791e4b0a262290ad4821ef917d5bf3faabb8a2165c1bbd78",
+      "gitBlobSha": "5a32dcbb263c88cc1210a2dbaf6a73f904dbad4d",
       "description": "26-test production-path adversarial test suite covering all claimed failure paths and invariant controls"
     },
     {
@@ -319,37 +321,37 @@
     },
     {
       "path": "reports/evidence/adjudication_manifest_test_stdout.txt",
-      "byteLength": 3177,
-      "sha256": "0d0c3fff4c6d52714e006df3e4d1cf60280d3617e3e3bed837f0f82c1be44021",
-      "gitBlobSha": "60046f6d9a93dbe93584c3e1b06b4e98cac17bc4",
+      "byteLength": 3206,
+      "sha256": "f29f2c5c09f6d65c9cba8129d9eee920c84aaff94fcc5b8a8ec400866a774ece",
+      "gitBlobSha": "5a4e4ff960c914d39cc11c76a3c643c622475d89",
       "description": "Raw UTF-8 stdout output from 26-test adjudication manifest test suite execution"
     },
     {
       "path": "reports/evidence/adjudication_manifest_test_results.json",
-      "byteLength": 5034,
-      "sha256": "4e72d16c33fbf287a05f7551db41abfd92d80af24dbb0b5b34992a1981fe2cea",
-      "gitBlobSha": "020bbb082b86dff18a25d559acc3c038df5afd96",
+      "byteLength": 5063,
+      "sha256": "b5c23745fc8140508a83f34789b64cf89acf0747023226dac3f3fbcefeb9afb0",
+      "gitBlobSha": "13c9cfd991498cdbf072307d3c5407bdf7ca01b3",
       "description": "Machine-readable test results for all 26 tests in the Directive 074 adjudication test battery"
     },
     {
       "path": "scripts/generate_adjudication_manifest.mjs",
-      "byteLength": 15442,
-      "sha256": "9457c6733db1a45584b7e12b42ffad2c09eb0c0cd5ad4191246524cfa24006fd",
-      "gitBlobSha": "8c7c618c98fda7569426967db852f8ed86a2aeb0",
+      "byteLength": 15518,
+      "sha256": "00a40b05289c10ddc8d5d745bde8640d6b9157c6a5117788203636436cd8356c",
+      "gitBlobSha": "1688870103a8399ff5724716a0f6154c1ee6b356",
       "description": "Manifest generator wired to Directive 074 coordinates and full crosswalk coverage check"
     },
     {
       "path": "scripts/audit_adjudication_reconciliation.mjs",
       "byteLength": 14429,
-      "sha256": "07daf8eccbba3350c74e7af87bc48a25c69fd274b6d81a6aedd39fd6f9c54f47",
-      "gitBlobSha": "7c384c62fb9ab12684fa7d370aeca233148ad879",
+      "sha256": "e1cf0785fdec2c60b516693f76794b2e24341a5fb7f8134cadfb0e9ece6bdf69",
+      "gitBlobSha": "401ca9a4905564335c7cf09b3e1071730c9fcc74",
       "description": "Row-level audit script verifying exact mathematical invariants, SQL chunk coverage, and verifier integration"
     },
     {
       "path": "scripts/generate_adjudication_summary.mjs",
-      "byteLength": 8658,
-      "sha256": "bea49f6796e3cea40420d3a97dfe27de98defc8187c3dcd924aab12ec7003b0b",
-      "gitBlobSha": "d1684553fa8590915919818c8fd4f48414f940cf",
+      "byteLength": 10161,
+      "sha256": "431939a6cce09b2c1c5b030fc87ab74d01f56044d3628b57a2d06796729fdd32",
+      "gitBlobSha": "0c8dc30e9b0c6a94025b3bcf07ac4d7487e4fc19",
       "description": "Summary generator recomputing eligibility totals, validating complete summary reconciliation, and grouping reconciled liability review IDs"
     },
     {
@@ -361,17 +363,24 @@
     },
     {
       "path": "scripts/adjudication_validators.mjs",
-      "byteLength": 24078,
-      "sha256": "ad82539c1abefc8f7f6d0f7e449bd36e7831e5805ada1b16a195d7557fa9570f",
-      "gitBlobSha": "1bcdfe7fecab97548560c224e7399dda94b8fe61",
+      "byteLength": 31450,
+      "sha256": "8e039b16605176b735d36d01466bf3f1948d4fb04981612e1cc1f075a2bcfeac",
+      "gitBlobSha": "c8f4e3c4a1f64dbb2f418f0f38b6fa5934e3d5fe",
       "description": "Hardened production validators with canonical UUID checks, 18-column tuple checks, eligibility domain enforcement, complete summary reconciliation, and non-empty hash verification"
     },
     {
       "path": "reports/W021.5-CTO-DIRECTIVE-074-IMPLEMENTATION-REPORT.md",
-      "byteLength": 22140,
-      "sha256": "d85b8aafc938b6c7f3250afc209890a7a2a5d2b80e0fb0ae0727571801691a0b",
-      "gitBlobSha": "035b85ab2d9fdfc2525996edb1c2881665258684",
+      "byteLength": 24379,
+      "sha256": "97d944e2636e10b89e4ae4739d7b860b1f4ddc681d407639fd708a19c6ab145c",
+      "gitBlobSha": "c8f3e56e8ee74236a5eefcfe6913e877caf9a731",
       "description": "Comprehensive Directive 074 implementation report covering strict crosswalk validation, eligibility gate domain hardening, SQL chunk coverage, complete summary reconciliation, and non-recursive evidence"
+    },
+    {
+      "path": "reports/W021.5-CTO-DIRECTIVE-075-IMPLEMENTATION-REPORT.md",
+      "byteLength": 21223,
+      "sha256": "37fc0cb3eca095077a5dc264a0047d260fe7d16af16afda6ff47d1a14047cb4e",
+      "gitBlobSha": "0ca8c515f2207cfd22fc47e5ac4b693ea6416c57",
+      "description": "Comprehensive Directive 075 implementation report covering strict boolean verifier states, mandatory rejection reasons, complete summary reconciliation, and deliverable scope reconciliation"
     }
   ],
   "checksumMethodology": {

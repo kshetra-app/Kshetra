@@ -10,7 +10,7 @@ import {
 
 const REPO_ROOT = process.cwd();
 
-console.log('=== KSHETRA W021.5 / DIRECTIVE 074 RECONCILIATION AUDIT ===');
+console.log('=== KSHETRA W021.5 / DIRECTIVE 075 RECONCILIATION AUDIT ===');
 console.log('Repository Root:', REPO_ROOT);
 
 // 1. Load Authoritative Affidavit Manifest

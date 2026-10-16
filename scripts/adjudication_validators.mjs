@@ -193,7 +193,8 @@ export function validateSqlChunks(chunkFiles, crosswalkTargetUuidSet, repoRoot, 
 
 /**
  * 3. Validate Production Eligibility Gate Invariants
- * Pure production-gate assertion function with domain validation and strict boolean checks.
+ * Pure production-gate assertion function with domain validation, strict boolean checks,
+ * and fail-closed rejection reason enforcement (Directive 075 §2, §3).
  */
 export function validateEligibilityGate({
   eligibility,
@@ -205,6 +206,11 @@ export function validateEligibilityGate({
   const ALLOWED_STATES = ['ELIGIBLE', 'INELIGIBLE', 'REQUIRES_REVIEW'];
   if (!ALLOWED_STATES.includes(eligibility)) {
     throw new Error(`UNSUPPORTED_ELIGIBILITY_STATE: State '${eligibility}' is not one of [${ALLOWED_STATES.join(', ')}]`);
+  }
+
+  // Strict boolean validation on passesExistingOfflineVerifier across all states (Directive 075 §2)
+  if (typeof passesExistingOfflineVerifier !== 'boolean') {
+    throw new Error(`VERIFIER_GATE_VIOLATION: passesExistingOfflineVerifier must be a strict boolean (got ${typeof passesExistingOfflineVerifier}: ${passesExistingOfflineVerifier})`);
   }
 
   // Domain validation on expectedDatabaseValue and proposedValue
@@ -224,21 +230,21 @@ export function validateEligibilityGate({
       throw new Error(`ILLEGAL_ELIGIBLE_STATE: Record with expectedDatabaseValue === proposedValue (${proposedValue}) cannot be ELIGIBLE (no mutation required; must be INELIGIBLE)`);
     }
   } else if (eligibility === 'INELIGIBLE') {
+    if (passesExistingOfflineVerifier !== false) {
+      throw new Error('ILLEGAL_INELIGIBLE_STATE: Record marked INELIGIBLE must have passesExistingOfflineVerifier === false (strictly boolean false)');
+    }
     if (expectedDatabaseValue !== proposedValue) {
       throw new Error(`INELIGIBLE_VALUE_MISMATCH: Ineligible record must have expectedDatabaseValue (${expectedDatabaseValue}) === proposedValue (${proposedValue})`);
     }
-    if (passesExistingOfflineVerifier === true) {
-      throw new Error('ILLEGAL_INELIGIBLE_STATE: Record marked INELIGIBLE cannot have passesExistingOfflineVerifier === true');
-    }
   } else if (eligibility === 'REQUIRES_REVIEW') {
     if (passesExistingOfflineVerifier !== false) {
-      throw new Error('ILLEGAL_REQUIRES_REVIEW_STATE: Record marked REQUIRES_REVIEW must have passesExistingOfflineVerifier === false');
+      throw new Error('ILLEGAL_REQUIRES_REVIEW_STATE: Record marked REQUIRES_REVIEW must have passesExistingOfflineVerifier === false (strictly boolean false)');
     }
     if (expectedDatabaseValue === proposedValue) {
       throw new Error(`ILLEGAL_REQUIRES_REVIEW_STATE: Record with expectedDatabaseValue === proposedValue (${proposedValue}) requires no mutation and must be INELIGIBLE`);
     }
-    if (rejectionReason !== null && (typeof rejectionReason !== 'string' || rejectionReason.trim() === '')) {
-      throw new Error('ILLEGAL_REQUIRES_REVIEW_STATE: Rejection reason for REQUIRES_REVIEW must be a non-empty string or null');
+    if (typeof rejectionReason !== 'string' || rejectionReason.trim() === '') {
+      throw new Error(`MISSING_REJECTION_REASON: Record marked REQUIRES_REVIEW must have a non-empty, non-whitespace rejection reason (got ${typeof rejectionReason}: '${rejectionReason}')`);
     }
   }
 
@@ -304,7 +310,7 @@ export function evaluateDimensionEligibility({
     }
   }
 
-  // Validate production gate invariants
+  // Validate production gate invariants (passes actual verifier rejection reason)
   validateEligibilityGate({
     eligibility,
     passesExistingOfflineVerifier,
@@ -325,7 +331,7 @@ export function evaluateDimensionEligibility({
  * 5. Validate Summary Reconciliation
  * Recomputes totals from manifest.affidavits across all 5 groups, dimensional totals,
  * subset containment, eligibility categories, and rejection reasons, asserting bit-for-bit
- * agreement with summary.
+ * agreement with summary. Strictly validates all controls, fields, and rejection-reason key sets (Directive 075 §4).
  */
 export function validateSummaryReconciliation(manifest, summary) {
   if (!manifest || !Array.isArray(manifest.affidavits)) {
@@ -333,6 +339,49 @@ export function validateSummaryReconciliation(manifest, summary) {
   }
   if (!summary || typeof summary !== 'object') {
     throw new Error('INVALID_SUMMARY: Summary missing or invalid');
+  }
+
+  // Required summary root sections (Directive 075 §4)
+  if (!summary.populationReconciliation || typeof summary.populationReconciliation !== 'object') {
+    throw new Error('MISSING_SUMMARY_FIELD: Summary missing populationReconciliation object');
+  }
+  if (!summary.eligibilityBreakdown || typeof summary.eligibilityBreakdown !== 'object') {
+    throw new Error('MISSING_SUMMARY_FIELD: Summary missing eligibilityBreakdown object');
+  }
+  if (!summary.populationReconciliation.fiveGroupCounts || typeof summary.populationReconciliation.fiveGroupCounts !== 'object') {
+    throw new Error('MISSING_SUMMARY_FIELD: Summary missing fiveGroupCounts object');
+  }
+  if (!summary.populationReconciliation.dimensionalTotals || typeof summary.populationReconciliation.dimensionalTotals !== 'object') {
+    throw new Error('MISSING_SUMMARY_FIELD: Summary missing dimensionalTotals object');
+  }
+  if (!summary.populationReconciliation.subsetIntegrity || typeof summary.populationReconciliation.subsetIntegrity !== 'object') {
+    throw new Error('MISSING_SUMMARY_FIELD: Summary missing subsetIntegrity object');
+  }
+  if (!summary.eligibilityBreakdown.assetDimension || typeof summary.eligibilityBreakdown.assetDimension !== 'object') {
+    throw new Error('MISSING_SUMMARY_FIELD: Summary missing assetDimension object');
+  }
+  if (!summary.eligibilityBreakdown.liabilityDimension || typeof summary.eligibilityBreakdown.liabilityDimension !== 'object') {
+    throw new Error('MISSING_SUMMARY_FIELD: Summary missing liabilityDimension object');
+  }
+
+  // Required summary control fields (Directive 075 §4)
+  if (typeof summary.populationReconciliation.totalRetainedAffidavits !== 'number') {
+    throw new Error('MISSING_SUMMARY_FIELD: Summary missing totalRetainedAffidavits numeric field');
+  }
+  if (typeof summary.populationReconciliation.fiveGroupCounts.total !== 'number') {
+    throw new Error('MISSING_SUMMARY_FIELD: Summary fiveGroupCounts missing total numeric field');
+  }
+  if (typeof summary.eligibilityBreakdown.assetDimension.totalEvaluations !== 'number') {
+    throw new Error('MISSING_SUMMARY_FIELD: Summary assetDimension missing totalEvaluations numeric field');
+  }
+  if (typeof summary.eligibilityBreakdown.liabilityDimension.totalEvaluations !== 'number') {
+    throw new Error('MISSING_SUMMARY_FIELD: Summary liabilityDimension missing totalEvaluations numeric field');
+  }
+  if (!summary.eligibilityBreakdown.assetDimension.verifierRejectionBreakdown || typeof summary.eligibilityBreakdown.assetDimension.verifierRejectionBreakdown !== 'object') {
+    throw new Error('MISSING_SUMMARY_FIELD: Summary assetDimension missing verifierRejectionBreakdown object');
+  }
+  if (!summary.eligibilityBreakdown.liabilityDimension.verifierRejectionBreakdown || typeof summary.eligibilityBreakdown.liabilityDimension.verifierRejectionBreakdown !== 'object') {
+    throw new Error('MISSING_SUMMARY_FIELD: Summary liabilityDimension missing verifierRejectionBreakdown object');
   }
 
   const ALLOWED_GROUPS = [1, 2, 3, 4, 5];
@@ -410,7 +459,10 @@ export function validateSummaryReconciliation(manifest, summary) {
     }
 
     if (assetDim.eligibility === 'REQUIRES_REVIEW') {
-      const reasonCode = assetDim.verifierRejectionReason?.split(':')[0]?.trim();
+      if (!assetDim.verifierRejectionReason || typeof assetDim.verifierRejectionReason !== 'string' || assetDim.verifierRejectionReason.trim() === '') {
+        throw new Error(`MISSING_REJECTION_REASON: Row ${a.affidavitId} marked REQUIRES_REVIEW has missing or empty asset verifierRejectionReason`);
+      }
+      const reasonCode = assetDim.verifierRejectionReason.split(':')[0]?.trim();
       if (!ALLOWED_ASSET_REASONS.includes(reasonCode)) {
         throw new Error(`UNKNOWN_REJECTION_REASON: Row ${a.affidavitId} has unknown asset rejection reason '${reasonCode}'`);
       }
@@ -439,7 +491,10 @@ export function validateSummaryReconciliation(manifest, summary) {
     }
 
     if (liabDim.eligibility === 'REQUIRES_REVIEW') {
-      const reasonCode = liabDim.verifierRejectionReason?.split(':')[0]?.trim();
+      if (!liabDim.verifierRejectionReason || typeof liabDim.verifierRejectionReason !== 'string' || liabDim.verifierRejectionReason.trim() === '') {
+        throw new Error(`MISSING_REJECTION_REASON: Row ${a.affidavitId} marked REQUIRES_REVIEW has missing or empty liability verifierRejectionReason`);
+      }
+      const reasonCode = liabDim.verifierRejectionReason.split(':')[0]?.trim();
       if (!ALLOWED_LIAB_REASONS.includes(reasonCode)) {
         throw new Error(`UNKNOWN_REJECTION_REASON: Row ${a.affidavitId} has unknown liability rejection reason '${reasonCode}'`);
       }
@@ -461,15 +516,23 @@ export function validateSummaryReconciliation(manifest, summary) {
   // 2. Assert against summary fields
 
   // Total population
-  const sumPop = summary.populationReconciliation?.totalRetainedAffidavits;
+  const sumPop = summary.populationReconciliation.totalRetainedAffidavits;
   if (sumPop !== manifest.affidavits.length) {
     throw new Error(`SUMMARY_RECONCILIATION_MISMATCH: Total retained population summary (${sumPop}) != manifest rows (${manifest.affidavits.length})`);
   }
 
-  // Group counts
-  const sumGroups = summary.populationReconciliation?.fiveGroupCounts;
-  if (!sumGroups) {
-    throw new Error('INVALID_SUMMARY: Summary missing fiveGroupCounts');
+  // Group counts and total
+  const sumGroups = summary.populationReconciliation.fiveGroupCounts;
+  if (sumGroups.total !== manifest.affidavits.length) {
+    throw new Error(`SUMMARY_RECONCILIATION_MISMATCH: fiveGroupCounts.total (${sumGroups.total}) != recomputed population (${manifest.affidavits.length})`);
+  }
+  const groupSum = sumGroups.group1_positiveAssets_positiveLiabilities +
+                   sumGroups.group2_positiveAssets_zeroLiabilities +
+                   sumGroups.group3_positiveAssets_missingLiabilities +
+                   sumGroups.group4_missingAssets_missingLiabilities +
+                   sumGroups.group5_zeroAssets_zeroLiabilities;
+  if (groupSum !== manifest.affidavits.length) {
+    throw new Error(`SUMMARY_RECONCILIATION_MISMATCH: Sum of five group counts (${groupSum}) != recomputed population (${manifest.affidavits.length})`);
   }
   if (
     sumGroups.group1_positiveAssets_positiveLiabilities !== rowGroupCounts[1] ||
@@ -482,10 +545,7 @@ export function validateSummaryReconciliation(manifest, summary) {
   }
 
   // Dimensional totals
-  const sumDim = summary.populationReconciliation?.dimensionalTotals;
-  if (!sumDim) {
-    throw new Error('INVALID_SUMMARY: Summary missing dimensionalTotals');
-  }
+  const sumDim = summary.populationReconciliation.dimensionalTotals;
   if (
     sumDim.assetRestorationTotal !== rowAssetPositive ||
     sumDim.assetMissingTotal !== rowAssetMissing ||
@@ -496,12 +556,15 @@ export function validateSummaryReconciliation(manifest, summary) {
   ) {
     throw new Error(`SUMMARY_RECONCILIATION_MISMATCH: Dimensional totals do not match recomputed row counts`);
   }
+  if (sumDim.assetRestorationTotal + sumDim.assetMissingTotal + sumDim.assetZeroTotal !== manifest.affidavits.length) {
+    throw new Error(`SUMMARY_RECONCILIATION_MISMATCH: Sum of asset dimensional totals != recomputed population (${manifest.affidavits.length})`);
+  }
+  if (sumDim.liabilityRestorationTotal + sumDim.liabilityMissingTotal + sumDim.liabilityZeroTotal !== manifest.affidavits.length) {
+    throw new Error(`SUMMARY_RECONCILIATION_MISMATCH: Sum of liability dimensional totals != recomputed population (${manifest.affidavits.length})`);
+  }
 
   // Subset integrity in summary
-  const sumSubset = summary.populationReconciliation?.subsetIntegrity;
-  if (!sumSubset) {
-    throw new Error('INVALID_SUMMARY: Summary missing subsetIntegrity');
-  }
+  const sumSubset = summary.populationReconciliation.subsetIntegrity;
   if (
     sumSubset.missingAssetsIsSubsetOfMissingLiabilities !== true ||
     sumSubset.missingAssetsCount !== missingAssetIds.size ||
@@ -511,12 +574,17 @@ export function validateSummaryReconciliation(manifest, summary) {
     throw new Error(`SUMMARY_RECONCILIATION_MISMATCH: Subset integrity summary does not match recomputed row data`);
   }
 
-  // Eligibility breakdown
-  const sumAsset = summary.eligibilityBreakdown?.assetDimension;
-  const sumLiab = summary.eligibilityBreakdown?.liabilityDimension;
-  if (!sumAsset || !sumLiab) {
-    throw new Error('INVALID_SUMMARY: Summary missing eligibilityBreakdown dimensions');
+  // Eligibility breakdown and totalEvaluations (Directive 075 §4)
+  const sumAsset = summary.eligibilityBreakdown.assetDimension;
+  const sumLiab = summary.eligibilityBreakdown.liabilityDimension;
+
+  if (sumAsset.totalEvaluations !== manifest.affidavits.length) {
+    throw new Error(`SUMMARY_RECONCILIATION_MISMATCH: Asset dimension totalEvaluations (${sumAsset.totalEvaluations}) != recomputed population (${manifest.affidavits.length})`);
   }
+  if (sumLiab.totalEvaluations !== manifest.affidavits.length) {
+    throw new Error(`SUMMARY_RECONCILIATION_MISMATCH: Liability dimension totalEvaluations (${sumLiab.totalEvaluations}) != recomputed population (${manifest.affidavits.length})`);
+  }
+
   if (
     sumAsset.eligibleCount !== rowAssetCounts.ELIGIBLE ||
     sumAsset.ineligibleCount !== rowAssetCounts.INELIGIBLE ||
@@ -524,6 +592,10 @@ export function validateSummaryReconciliation(manifest, summary) {
   ) {
     throw new Error(`SUMMARY_RECONCILIATION_MISMATCH: Asset eligibility counts do not match recomputed row counts`);
   }
+  if (sumAsset.eligibleCount + sumAsset.ineligibleCount + sumAsset.requiresReviewCount !== manifest.affidavits.length) {
+    throw new Error(`SUMMARY_RECONCILIATION_MISMATCH: Sum of asset eligibility counts != recomputed population (${manifest.affidavits.length})`);
+  }
+
   if (
     sumLiab.eligibleCount !== rowLiabCounts.ELIGIBLE ||
     sumLiab.ineligibleCount !== rowLiabCounts.INELIGIBLE ||
@@ -531,13 +603,27 @@ export function validateSummaryReconciliation(manifest, summary) {
   ) {
     throw new Error(`SUMMARY_RECONCILIATION_MISMATCH: Liability eligibility counts do not match recomputed row counts`);
   }
+  if (sumLiab.eligibleCount + sumLiab.ineligibleCount + sumLiab.requiresReviewCount !== manifest.affidavits.length) {
+    throw new Error(`SUMMARY_RECONCILIATION_MISMATCH: Sum of liability eligibility counts != recomputed population (${manifest.affidavits.length})`);
+  }
 
-  // Rejection reason breakdown
+  // Rejection reason key sets & values (Directive 075 §4)
   const sumAssetRej = sumAsset.verifierRejectionBreakdown;
   const sumLiabRej = sumLiab.verifierRejectionBreakdown;
-  if (!sumAssetRej || !sumLiabRej) {
-    throw new Error('INVALID_SUMMARY: Summary missing verifierRejectionBreakdown');
+
+  // Strict key set validation: reject unexpected keys
+  for (const key of Object.keys(sumAssetRej)) {
+    if (!ALLOWED_ASSET_REASONS.includes(key)) {
+      throw new Error(`UNEXPECTED_REJECTION_REASON_KEY: Asset verifierRejectionBreakdown contains unexpected key '${key}'`);
+    }
   }
+  for (const key of Object.keys(sumLiabRej)) {
+    if (!ALLOWED_LIAB_REASONS.includes(key)) {
+      throw new Error(`UNEXPECTED_REJECTION_REASON_KEY: Liability verifierRejectionBreakdown contains unexpected key '${key}'`);
+    }
+  }
+
+  // Value reconciliation for each allowed reason
   for (const reason of ALLOWED_ASSET_REASONS) {
     if (sumAssetRej[reason] !== rowAssetRejection[reason]) {
       throw new Error(`SUMMARY_RECONCILIATION_MISMATCH: Asset rejection reason '${reason}' summary (${sumAssetRej[reason]}) != row (${rowAssetRejection[reason]})`);
@@ -547,6 +633,16 @@ export function validateSummaryReconciliation(manifest, summary) {
     if (sumLiabRej[reason] !== rowLiabRejection[reason]) {
       throw new Error(`SUMMARY_RECONCILIATION_MISMATCH: Liability rejection reason '${reason}' summary (${sumLiabRej[reason]}) != row (${rowLiabRejection[reason]})`);
     }
+  }
+
+  // Rejection totals reconciliation against requiresReviewCount
+  const assetRejSum = Object.values(sumAssetRej).reduce((a, b) => a + b, 0);
+  if (assetRejSum !== sumAsset.requiresReviewCount) {
+    throw new Error(`SUMMARY_RECONCILIATION_MISMATCH: Asset rejection reasons sum (${assetRejSum}) != requiresReviewCount (${sumAsset.requiresReviewCount})`);
+  }
+  const liabRejSum = Object.values(sumLiabRej).reduce((a, b) => a + b, 0);
+  if (liabRejSum !== sumLiab.requiresReviewCount) {
+    throw new Error(`SUMMARY_RECONCILIATION_MISMATCH: Liability rejection reasons sum (${liabRejSum}) != requiresReviewCount (${sumLiab.requiresReviewCount})`);
   }
 
   return {

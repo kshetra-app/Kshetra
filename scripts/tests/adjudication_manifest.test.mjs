@@ -18,12 +18,12 @@ import {
 
 /**
  * Kshetra W021.5 / B2.2-E — Adjudication Manifest Test Suite
- * Hardened for CTO Directive 074:
+ * Hardened for CTO Directive 075:
  * - Direct production-path adversarial testing
  * - Strict crosswalk validation (canonical UUID, manifest ID, bijective uniqueness)
  * - Strict SQL chunk tuple counting, 18-column schema, target UUID, and bidirectional coverage
- * - Strict eligibility gate invariants and financial value domains
- * - Complete summary reconciliation across all 5 groups, dimensions, and rejection reasons
+ * - Strict eligibility gate invariants, strict boolean verifier states, and required rejection reasons
+ * - Complete summary reconciliation across all 5 groups, dimensions, controls, and rejection-reason key sets
  * - Source evidence existence, safe pathing, and non-empty SHA-256 verification
  * - Non-self-acceptance under Rule IV-001 (CTO acceptance authority only)
  */
@@ -31,7 +31,7 @@ import {
 const REPO_ROOT = process.cwd();
 
 console.log('================================================================');
-console.log('KSHETRA W021.5 — DIRECTIVE 074 ADJUDICATION MANIFEST TEST SUITE');
+console.log('KSHETRA W021.5 — DIRECTIVE 075 ADJUDICATION MANIFEST TEST SUITE');
 console.log('================================================================');
 
 // Load master artifacts
@@ -434,8 +434,8 @@ runTest('Existing verifier yields exactly 0 ELIGIBLE records across both dimensi
   assert.strictEqual(summaryLiab.requiresReviewCount, 893, `Expected 893 requires_review liabilities, got ${summaryLiab.requiresReviewCount}`);
 });
 
-// Test 15: Production-Path Adversarial: Eligibility Gate Invariant Violations (Directive 074 §3)
-runTest('Production validateEligibilityGate() rejects boolean false, truthy strings, numbers, invalid domains, and invalid states', () => {
+// Test 15: Production-Path Adversarial: Eligibility Gate Invariant Violations (Directive 075 §2, §3)
+runTest('Production validateEligibilityGate() rejects non-boolean verifier states, invalid domains, invalid states, and missing reasons', () => {
   // A. ELIGIBLE with passesExistingOfflineVerifier = false
   assert.throws(() => {
     validateEligibilityGate({
@@ -466,7 +466,7 @@ runTest('Production validateEligibilityGate() rejects boolean false, truthy stri
     });
   }, /VERIFIER_GATE_VIOLATION/);
 
-  // D. ELIGIBLE with truthy string 'true' (Directive 074 §3)
+  // D. ELIGIBLE with truthy string 'true' (Directive 074/075)
   assert.throws(() => {
     validateEligibilityGate({
       eligibility: 'ELIGIBLE',
@@ -476,7 +476,7 @@ runTest('Production validateEligibilityGate() rejects boolean false, truthy stri
     });
   }, /VERIFIER_GATE_VIOLATION/);
 
-  // E. ELIGIBLE with truthy number 1 (Directive 074 §3)
+  // E. ELIGIBLE with truthy number 1 (Directive 074/075)
   assert.throws(() => {
     validateEligibilityGate({
       eligibility: 'ELIGIBLE',
@@ -486,77 +486,58 @@ runTest('Production validateEligibilityGate() rejects boolean false, truthy stri
     });
   }, /VERIFIER_GATE_VIOLATION/);
 
-  // F. Unsupported eligibility state
+  // F. INELIGIBLE rejects non-boolean values even when expectedDatabaseValue === proposedValue (Directive 075 §2)
+  // F.1 undefined
   assert.throws(() => {
     validateEligibilityGate({
-      eligibility: 'UNKNOWN_STATE',
-      passesExistingOfflineVerifier: false,
+      eligibility: 'INELIGIBLE',
+      passesExistingOfflineVerifier: undefined,
       expectedDatabaseValue: 0,
       proposedValue: 0
     });
-  }, /UNSUPPORTED_ELIGIBILITY_STATE/);
+  }, /VERIFIER_GATE_VIOLATION/);
 
-  // G. Missing / undefined values
+  // F.2 null
   assert.throws(() => {
     validateEligibilityGate({
       eligibility: 'INELIGIBLE',
-      passesExistingOfflineVerifier: false,
-      expectedDatabaseValue: undefined,
-      proposedValue: undefined
-    });
-  }, /INVALID_FINANCIAL_VALUE_DOMAIN/);
-
-  // H. NaN values
-  assert.throws(() => {
-    validateEligibilityGate({
-      eligibility: 'INELIGIBLE',
-      passesExistingOfflineVerifier: false,
-      expectedDatabaseValue: NaN,
-      proposedValue: NaN
-    });
-  }, /INVALID_FINANCIAL_VALUE_DOMAIN/);
-
-  // I. Negative value
-  assert.throws(() => {
-    validateEligibilityGate({
-      eligibility: 'INELIGIBLE',
-      passesExistingOfflineVerifier: false,
-      expectedDatabaseValue: -1,
-      proposedValue: -1
-    });
-  }, /INVALID_FINANCIAL_VALUE_DOMAIN/);
-
-  // J. Fractional number
-  assert.throws(() => {
-    validateEligibilityGate({
-      eligibility: 'INELIGIBLE',
-      passesExistingOfflineVerifier: false,
-      expectedDatabaseValue: 12.34,
-      proposedValue: 12.34
-    });
-  }, /INVALID_FINANCIAL_VALUE_DOMAIN/);
-
-  // K. String numeric value
-  assert.throws(() => {
-    validateEligibilityGate({
-      eligibility: 'INELIGIBLE',
-      passesExistingOfflineVerifier: false,
-      expectedDatabaseValue: '100',
-      proposedValue: '100'
-    });
-  }, /INVALID_FINANCIAL_VALUE_DOMAIN/);
-
-  // L. INELIGIBLE with mismatched values
-  assert.throws(() => {
-    validateEligibilityGate({
-      eligibility: 'INELIGIBLE',
-      passesExistingOfflineVerifier: false,
+      passesExistingOfflineVerifier: null,
       expectedDatabaseValue: 0,
-      proposedValue: 5000000
+      proposedValue: 0
     });
-  }, /INELIGIBLE_VALUE_MISMATCH/);
+  }, /VERIFIER_GATE_VIOLATION/);
 
-  // M. INELIGIBLE with verifier true
+  // F.3 truthy string "false"
+  assert.throws(() => {
+    validateEligibilityGate({
+      eligibility: 'INELIGIBLE',
+      passesExistingOfflineVerifier: 'false',
+      expectedDatabaseValue: 0,
+      proposedValue: 0
+    });
+  }, /VERIFIER_GATE_VIOLATION/);
+
+  // F.4 falsy number 0
+  assert.throws(() => {
+    validateEligibilityGate({
+      eligibility: 'INELIGIBLE',
+      passesExistingOfflineVerifier: 0,
+      expectedDatabaseValue: 0,
+      proposedValue: 0
+    });
+  }, /VERIFIER_GATE_VIOLATION/);
+
+  // F.5 object {}
+  assert.throws(() => {
+    validateEligibilityGate({
+      eligibility: 'INELIGIBLE',
+      passesExistingOfflineVerifier: {},
+      expectedDatabaseValue: 0,
+      proposedValue: 0
+    });
+  }, /VERIFIER_GATE_VIOLATION/);
+
+  // F.6 boolean true
   assert.throws(() => {
     validateEligibilityGate({
       eligibility: 'INELIGIBLE',
@@ -566,27 +547,194 @@ runTest('Production validateEligibilityGate() rejects boolean false, truthy stri
     });
   }, /ILLEGAL_INELIGIBLE_STATE/);
 
-  // N. REQUIRES_REVIEW with verifier true
+  // G. REQUIRES_REVIEW rejects non-boolean values (Directive 075 §2)
+  assert.throws(() => {
+    validateEligibilityGate({
+      eligibility: 'REQUIRES_REVIEW',
+      passesExistingOfflineVerifier: undefined,
+      expectedDatabaseValue: 0,
+      proposedValue: 5000000,
+      rejectionReason: 'MISSING_LEDGER_ENTRY'
+    });
+  }, /VERIFIER_GATE_VIOLATION/);
+
+  assert.throws(() => {
+    validateEligibilityGate({
+      eligibility: 'REQUIRES_REVIEW',
+      passesExistingOfflineVerifier: null,
+      expectedDatabaseValue: 0,
+      proposedValue: 5000000,
+      rejectionReason: 'MISSING_LEDGER_ENTRY'
+    });
+  }, /VERIFIER_GATE_VIOLATION/);
+
+  assert.throws(() => {
+    validateEligibilityGate({
+      eligibility: 'REQUIRES_REVIEW',
+      passesExistingOfflineVerifier: 'false',
+      expectedDatabaseValue: 0,
+      proposedValue: 5000000,
+      rejectionReason: 'MISSING_LEDGER_ENTRY'
+    });
+  }, /VERIFIER_GATE_VIOLATION/);
+
+  assert.throws(() => {
+    validateEligibilityGate({
+      eligibility: 'REQUIRES_REVIEW',
+      passesExistingOfflineVerifier: 0,
+      expectedDatabaseValue: 0,
+      proposedValue: 5000000,
+      rejectionReason: 'MISSING_LEDGER_ENTRY'
+    });
+  }, /VERIFIER_GATE_VIOLATION/);
+
   assert.throws(() => {
     validateEligibilityGate({
       eligibility: 'REQUIRES_REVIEW',
       passesExistingOfflineVerifier: true,
       expectedDatabaseValue: 0,
-      proposedValue: 5000000
+      proposedValue: 5000000,
+      rejectionReason: 'MISSING_LEDGER_ENTRY'
     });
   }, /ILLEGAL_REQUIRES_REVIEW_STATE/);
 
-  // O. REQUIRES_REVIEW with equal values (should be INELIGIBLE)
+  // H. REQUIRES_REVIEW rejects missing/invalid rejection reasons (Directive 075 §3)
+  // H.1 Missing / undefined reason
   assert.throws(() => {
     validateEligibilityGate({
       eligibility: 'REQUIRES_REVIEW',
       passesExistingOfflineVerifier: false,
       expectedDatabaseValue: 0,
+      proposedValue: 5000000
+    });
+  }, /MISSING_REJECTION_REASON/);
+
+  // H.2 Explicit null reason
+  assert.throws(() => {
+    validateEligibilityGate({
+      eligibility: 'REQUIRES_REVIEW',
+      passesExistingOfflineVerifier: false,
+      expectedDatabaseValue: 0,
+      proposedValue: 5000000,
+      rejectionReason: null
+    });
+  }, /MISSING_REJECTION_REASON/);
+
+  // H.3 Empty string reason
+  assert.throws(() => {
+    validateEligibilityGate({
+      eligibility: 'REQUIRES_REVIEW',
+      passesExistingOfflineVerifier: false,
+      expectedDatabaseValue: 0,
+      proposedValue: 5000000,
+      rejectionReason: ''
+    });
+  }, /MISSING_REJECTION_REASON/);
+
+  // H.4 Whitespace-only reason
+  assert.throws(() => {
+    validateEligibilityGate({
+      eligibility: 'REQUIRES_REVIEW',
+      passesExistingOfflineVerifier: false,
+      expectedDatabaseValue: 0,
+      proposedValue: 5000000,
+      rejectionReason: '   '
+    });
+  }, /MISSING_REJECTION_REASON/);
+
+  // H.5 Non-string reason
+  assert.throws(() => {
+    validateEligibilityGate({
+      eligibility: 'REQUIRES_REVIEW',
+      passesExistingOfflineVerifier: false,
+      expectedDatabaseValue: 0,
+      proposedValue: 5000000,
+      rejectionReason: 12345
+    });
+  }, /MISSING_REJECTION_REASON/);
+
+  // I. Unsupported eligibility state
+  assert.throws(() => {
+    validateEligibilityGate({
+      eligibility: 'UNKNOWN_STATE',
+      passesExistingOfflineVerifier: false,
+      expectedDatabaseValue: 0,
       proposedValue: 0
+    });
+  }, /UNSUPPORTED_ELIGIBILITY_STATE/);
+
+  // J. Missing / undefined values
+  assert.throws(() => {
+    validateEligibilityGate({
+      eligibility: 'INELIGIBLE',
+      passesExistingOfflineVerifier: false,
+      expectedDatabaseValue: undefined,
+      proposedValue: undefined
+    });
+  }, /INVALID_FINANCIAL_VALUE_DOMAIN/);
+
+  // K. NaN values
+  assert.throws(() => {
+    validateEligibilityGate({
+      eligibility: 'INELIGIBLE',
+      passesExistingOfflineVerifier: false,
+      expectedDatabaseValue: NaN,
+      proposedValue: NaN
+    });
+  }, /INVALID_FINANCIAL_VALUE_DOMAIN/);
+
+  // L. Negative value
+  assert.throws(() => {
+    validateEligibilityGate({
+      eligibility: 'INELIGIBLE',
+      passesExistingOfflineVerifier: false,
+      expectedDatabaseValue: -1,
+      proposedValue: -1
+    });
+  }, /INVALID_FINANCIAL_VALUE_DOMAIN/);
+
+  // M. Fractional number
+  assert.throws(() => {
+    validateEligibilityGate({
+      eligibility: 'INELIGIBLE',
+      passesExistingOfflineVerifier: false,
+      expectedDatabaseValue: 12.34,
+      proposedValue: 12.34
+    });
+  }, /INVALID_FINANCIAL_VALUE_DOMAIN/);
+
+  // N. String numeric value
+  assert.throws(() => {
+    validateEligibilityGate({
+      eligibility: 'INELIGIBLE',
+      passesExistingOfflineVerifier: false,
+      expectedDatabaseValue: '100',
+      proposedValue: '100'
+    });
+  }, /INVALID_FINANCIAL_VALUE_DOMAIN/);
+
+  // O. INELIGIBLE with mismatched values
+  assert.throws(() => {
+    validateEligibilityGate({
+      eligibility: 'INELIGIBLE',
+      passesExistingOfflineVerifier: false,
+      expectedDatabaseValue: 0,
+      proposedValue: 5000000
+    });
+  }, /INELIGIBLE_VALUE_MISMATCH/);
+
+  // P. REQUIRES_REVIEW with equal values (should be INELIGIBLE)
+  assert.throws(() => {
+    validateEligibilityGate({
+      eligibility: 'REQUIRES_REVIEW',
+      passesExistingOfflineVerifier: false,
+      expectedDatabaseValue: 0,
+      proposedValue: 0,
+      rejectionReason: 'MISSING_LEDGER_ENTRY'
     });
   }, /ILLEGAL_REQUIRES_REVIEW_STATE/);
 
-  // P. Valid control cases
+  // Q. Valid control cases for all three states (Directive 075 §2, §3)
   assert.strictEqual(validateEligibilityGate({
     eligibility: 'ELIGIBLE',
     passesExistingOfflineVerifier: true,
@@ -606,7 +754,7 @@ runTest('Production validateEligibilityGate() rejects boolean false, truthy stri
     passesExistingOfflineVerifier: false,
     expectedDatabaseValue: 0,
     proposedValue: 5000000,
-    rejectionReason: 'MISSING_LEDGER_ENTRY'
+    rejectionReason: 'MISSING_LEDGER_ENTRY: Component ledger entry absent'
   }), true);
 });
 
@@ -665,8 +813,8 @@ runTest('Production validateSummaryReconciliation() asserts complete bit-for-bit
   assert.strictEqual(result.subsetContainmentVerified, true);
 });
 
-// Test 19: Production-Path Adversarial: Summary Reconciliation Invariant Rejections (Directive 074 §5)
-runTest('Production validateSummaryReconciliation() rejects independent alterations across all summary dimensions', () => {
+// Test 19: Production-Path Adversarial: Summary Reconciliation Invariant Rejections (Directive 075 §4)
+runTest('Production validateSummaryReconciliation() rejects independent alterations, omitted fields, unexpected keys, and invalid values', () => {
   // A. Tampered total population
   const badPopSummary = JSON.parse(JSON.stringify(summaryData));
   badPopSummary.populationReconciliation.totalRetainedAffidavits = 9999;
@@ -681,61 +829,178 @@ runTest('Production validateSummaryReconciliation() rejects independent alterati
     validateSummaryReconciliation(manifestData, badGroupSummary);
   }, /SUMMARY_RECONCILIATION_MISMATCH/);
 
-  // C. Tampered dimensional totals
+  // C. Tampered fiveGroupCounts.total (Directive 075 §4)
+  const badGroupTotalSummary = JSON.parse(JSON.stringify(summaryData));
+  badGroupTotalSummary.populationReconciliation.fiveGroupCounts.total = 9999;
+  assert.throws(() => {
+    validateSummaryReconciliation(manifestData, badGroupTotalSummary);
+  }, /SUMMARY_RECONCILIATION_MISMATCH/);
+
+  // D. Tampered dimensional totals
   const badDimSummary = JSON.parse(JSON.stringify(summaryData));
   badDimSummary.populationReconciliation.dimensionalTotals.assetRestorationTotal = 9999;
   assert.throws(() => {
     validateSummaryReconciliation(manifestData, badDimSummary);
   }, /SUMMARY_RECONCILIATION_MISMATCH/);
 
-  // D. Tampered subset integrity
+  // E. Tampered subset integrity
   const badSubsetSummary = JSON.parse(JSON.stringify(summaryData));
   badSubsetSummary.populationReconciliation.subsetIntegrity.missingAssetsIsSubsetOfMissingLiabilities = false;
   assert.throws(() => {
     validateSummaryReconciliation(manifestData, badSubsetSummary);
   }, /SUMMARY_RECONCILIATION_MISMATCH/);
 
-  // E. Tampered asset eligibility count
+  // F. Tampered totalEvaluations (Directive 075 §4)
+  const badAssetEvalSummary = JSON.parse(JSON.stringify(summaryData));
+  badAssetEvalSummary.eligibilityBreakdown.assetDimension.totalEvaluations = 9999;
+  assert.throws(() => {
+    validateSummaryReconciliation(manifestData, badAssetEvalSummary);
+  }, /SUMMARY_RECONCILIATION_MISMATCH/);
+
+  const badLiabEvalSummary = JSON.parse(JSON.stringify(summaryData));
+  badLiabEvalSummary.eligibilityBreakdown.liabilityDimension.totalEvaluations = 9999;
+  assert.throws(() => {
+    validateSummaryReconciliation(manifestData, badLiabEvalSummary);
+  }, /SUMMARY_RECONCILIATION_MISMATCH/);
+
+  // G. Tampered asset eligibility count
   const badAssetSummary = JSON.parse(JSON.stringify(summaryData));
   badAssetSummary.eligibilityBreakdown.assetDimension.eligibleCount = 10;
   assert.throws(() => {
     validateSummaryReconciliation(manifestData, badAssetSummary);
   }, /SUMMARY_RECONCILIATION_MISMATCH/);
 
-  // F. Tampered liability eligibility count
+  // H. Tampered liability eligibility count
   const badLiabSummary = JSON.parse(JSON.stringify(summaryData));
   badLiabSummary.eligibilityBreakdown.liabilityDimension.requiresReviewCount = 0;
   assert.throws(() => {
     validateSummaryReconciliation(manifestData, badLiabSummary);
   }, /SUMMARY_RECONCILIATION_MISMATCH/);
 
-  // G. Tampered rejection reason breakdown
+  // I. Injected unexpected rejection reason key (Directive 075 §4)
+  const badAssetKeySummary = JSON.parse(JSON.stringify(summaryData));
+  badAssetKeySummary.eligibilityBreakdown.assetDimension.verifierRejectionBreakdown.UNEXPECTED_INJECTED_REASON = 1;
+  assert.throws(() => {
+    validateSummaryReconciliation(manifestData, badAssetKeySummary);
+  }, /UNEXPECTED_REJECTION_REASON_KEY/);
+
+  const badLiabKeySummary = JSON.parse(JSON.stringify(summaryData));
+  badLiabKeySummary.eligibilityBreakdown.liabilityDimension.verifierRejectionBreakdown.UNEXPECTED_INJECTED_REASON = 1;
+  assert.throws(() => {
+    validateSummaryReconciliation(manifestData, badLiabKeySummary);
+  }, /UNEXPECTED_REJECTION_REASON_KEY/);
+
+  // J. Tampered rejection reason breakdown value
   const badRejSummary = JSON.parse(JSON.stringify(summaryData));
   badRejSummary.eligibilityBreakdown.assetDimension.verifierRejectionBreakdown.MISSING_LEDGER_ENTRY = 9999;
   assert.throws(() => {
     validateSummaryReconciliation(manifestData, badRejSummary);
   }, /SUMMARY_RECONCILIATION_MISMATCH/);
 
-  // H. Manifest with invalid group value
+  // K. Independent tests for omitted summary fields (Directive 075 §4)
+  // K.1 Omitted populationReconciliation
+  const omitPopSummary = JSON.parse(JSON.stringify(summaryData));
+  delete omitPopSummary.populationReconciliation;
+  assert.throws(() => {
+    validateSummaryReconciliation(manifestData, omitPopSummary);
+  }, /MISSING_SUMMARY_FIELD/);
+
+  // K.2 Omitted totalRetainedAffidavits
+  const omitPopTotal = JSON.parse(JSON.stringify(summaryData));
+  delete omitPopTotal.populationReconciliation.totalRetainedAffidavits;
+  assert.throws(() => {
+    validateSummaryReconciliation(manifestData, omitPopTotal);
+  }, /MISSING_SUMMARY_FIELD/);
+
+  // K.3 Omitted fiveGroupCounts
+  const omitGroups = JSON.parse(JSON.stringify(summaryData));
+  delete omitGroups.populationReconciliation.fiveGroupCounts;
+  assert.throws(() => {
+    validateSummaryReconciliation(manifestData, omitGroups);
+  }, /MISSING_SUMMARY_FIELD/);
+
+  // K.4 Omitted fiveGroupCounts.total
+  const omitGroupTotal = JSON.parse(JSON.stringify(summaryData));
+  delete omitGroupTotal.populationReconciliation.fiveGroupCounts.total;
+  assert.throws(() => {
+    validateSummaryReconciliation(manifestData, omitGroupTotal);
+  }, /MISSING_SUMMARY_FIELD/);
+
+  // K.5 Omitted dimensionalTotals
+  const omitDim = JSON.parse(JSON.stringify(summaryData));
+  delete omitDim.populationReconciliation.dimensionalTotals;
+  assert.throws(() => {
+    validateSummaryReconciliation(manifestData, omitDim);
+  }, /MISSING_SUMMARY_FIELD/);
+
+  // K.6 Omitted subsetIntegrity
+  const omitSubset = JSON.parse(JSON.stringify(summaryData));
+  delete omitSubset.populationReconciliation.subsetIntegrity;
+  assert.throws(() => {
+    validateSummaryReconciliation(manifestData, omitSubset);
+  }, /MISSING_SUMMARY_FIELD/);
+
+  // K.7 Omitted eligibilityBreakdown
+  const omitElig = JSON.parse(JSON.stringify(summaryData));
+  delete omitElig.eligibilityBreakdown;
+  assert.throws(() => {
+    validateSummaryReconciliation(manifestData, omitElig);
+  }, /MISSING_SUMMARY_FIELD/);
+
+  // K.8 Omitted assetDimension totalEvaluations
+  const omitAssetEval = JSON.parse(JSON.stringify(summaryData));
+  delete omitAssetEval.eligibilityBreakdown.assetDimension.totalEvaluations;
+  assert.throws(() => {
+    validateSummaryReconciliation(manifestData, omitAssetEval);
+  }, /MISSING_SUMMARY_FIELD/);
+
+  // K.9 Omitted liabilityDimension totalEvaluations
+  const omitLiabEval = JSON.parse(JSON.stringify(summaryData));
+  delete omitLiabEval.eligibilityBreakdown.liabilityDimension.totalEvaluations;
+  assert.throws(() => {
+    validateSummaryReconciliation(manifestData, omitLiabEval);
+  }, /MISSING_SUMMARY_FIELD/);
+
+  // K.10 Omitted verifierRejectionBreakdown
+  const omitAssetRej = JSON.parse(JSON.stringify(summaryData));
+  delete omitAssetRej.eligibilityBreakdown.assetDimension.verifierRejectionBreakdown;
+  assert.throws(() => {
+    validateSummaryReconciliation(manifestData, omitAssetRej);
+  }, /MISSING_SUMMARY_FIELD/);
+
+  // L. Manifest with invalid group value
   const badManifestGroup = JSON.parse(JSON.stringify(manifestData));
   badManifestGroup.affidavits[0].group = 99;
   assert.throws(() => {
     validateSummaryReconciliation(badManifestGroup, summaryData);
   }, /UNKNOWN_GROUP_VALUE/);
 
-  // I. Manifest with invalid eligibility value
+  // M. Manifest with invalid eligibility value
   const badManifestElig = JSON.parse(JSON.stringify(manifestData));
   badManifestElig.affidavits[0].dimensions.asset.eligibility = 'PENDING_APPROVAL';
   assert.throws(() => {
     validateSummaryReconciliation(badManifestElig, summaryData);
   }, /UNKNOWN_ELIGIBILITY_VALUE/);
 
-  // J. Manifest with unknown rejection reason
+  // N. Manifest with unknown rejection reason
   const badManifestReason = JSON.parse(JSON.stringify(manifestData));
   badManifestReason.affidavits[0].dimensions.asset.verifierRejectionReason = 'FABRICATED_REASON: Details';
   assert.throws(() => {
     validateSummaryReconciliation(badManifestReason, summaryData);
   }, /UNKNOWN_REJECTION_REASON/);
+
+  // O. Manifest row marked REQUIRES_REVIEW with missing rejection reason (Directive 075 §3)
+  const badManifestEmptyReason = JSON.parse(JSON.stringify(manifestData));
+  badManifestEmptyReason.affidavits[0].dimensions.asset.verifierRejectionReason = '';
+  assert.throws(() => {
+    validateSummaryReconciliation(badManifestEmptyReason, summaryData);
+  }, /MISSING_REJECTION_REASON/);
+
+  const badManifestWhitespaceReason = JSON.parse(JSON.stringify(manifestData));
+  badManifestWhitespaceReason.affidavits[0].dimensions.asset.verifierRejectionReason = '   ';
+  assert.throws(() => {
+    validateSummaryReconciliation(badManifestWhitespaceReason, summaryData);
+  }, /MISSING_REJECTION_REASON/);
 });
 
 // Test 20: Karnataka Unresolved Conflict Isolation
@@ -844,7 +1109,7 @@ console.log('================================================================');
 // Write test results artifact
 const resultsArtifact = {
   suite: 'adjudication_manifest_test_suite',
-  directive: 'W021.5-CTO-DIRECTIVE-074',
+  directive: 'W021.5-CTO-DIRECTIVE-075',
   executedAt: new Date().toISOString(),
   totalTests: total,
   passed,

@@ -1,5 +1,5 @@
 ================================================================
-KSHETRA W021.5 — DIRECTIVE 074 ADJUDICATION MANIFEST TEST SUITE
+KSHETRA W021.5 — DIRECTIVE 075 ADJUDICATION MANIFEST TEST SUITE
 ================================================================
 [✓ PASS] Test 01: All 4,523 retained records are accounted for exactly once
 [✓ PASS] Test 02: Production validateCrosswalk() verifies exact 4,523-row bijection, uniqueness, and canonical formats
@@ -15,11 +15,11 @@ KSHETRA W021.5 — DIRECTIVE 074 ADJUDICATION MANIFEST TEST SUITE
 [✓ PASS] Test 12: Adversarial: Prohibits claiming unverified LIVE_DATABASE_OBSERVATION across all rows
 [✓ PASS] Test 13: No record is marked ELIGIBLE without passesExistingOfflineVerifier === true
 [✓ PASS] Test 14: Existing verifier yields exactly 0 ELIGIBLE records across both dimensions
-[✓ PASS] Test 15: Production validateEligibilityGate() rejects boolean false, truthy strings, numbers, invalid domains, and invalid states
+[✓ PASS] Test 15: Production validateEligibilityGate() rejects non-boolean verifier states, invalid domains, invalid states, and missing reasons
 [✓ PASS] Test 16: Ineligible records strictly correspond to expectedDatabaseValue === proposedValue
 [✓ PASS] Test 17: Production validateCorrectionEligibility() execution matches recorded row outcomes
 [✓ PASS] Test 18: Production validateSummaryReconciliation() asserts complete bit-for-bit reconciliation across all controls
-[✓ PASS] Test 19: Production validateSummaryReconciliation() rejects independent alterations across all summary dimensions
+[✓ PASS] Test 19: Production validateSummaryReconciliation() rejects independent alterations, omitted fields, unexpected keys, and invalid values
 [✓ PASS] Test 20: Karnataka conflict (0215b22e-aff-00001430) isolated as REQUIRES_REVIEW with conflict metadata
 [✓ PASS] Test 21: Production validateCorrectionEligibility() rejects conflict bypass attempt
 [✓ PASS] Test 22: Production validateSourceEvidenceFile() verifies all referenced source files and hashes
