@@ -262,6 +262,14 @@ const CATEGORIES = {
       'scripts/generate_checksum_manifest.mjs',
       'reports/W021.5-CTO-DIRECTIVE-078-IMPLEMENTATION-REPORT.md'
     ])
+  },
+  'M_DIRECTIVE_079': {
+    name: 'Directive 079 Manifest Regeneration-Time & Test Suite Deliverables',
+    expectedCount: 2,
+    paths: new Set([
+      'scripts/tests/generate_checksum_manifest.test.mjs',
+      'reports/W021.5-CTO-DIRECTIVE-079-IMPLEMENTATION-REPORT.md'
+    ])
   }
 };
 
@@ -339,7 +347,10 @@ const EXPECTED_COORDINATES = {
   directive077BaselineCommit: '36e202a2dcd7a6470a0327d2f84a6902c546339b',
   directive077DeliveryCommit: 'e3359d35ca47700c0c65093122ab3c4cee2dc342',
   directive077ImmediateParent: '36e202a2dcd7a6470a0327d2f84a6902c546339b',
-  directive078BaselineCommit: 'e3359d35ca47700c0c65093122ab3c4cee2dc342'
+  directive078BaselineCommit: 'e3359d35ca47700c0c65093122ab3c4cee2dc342',
+  directive078DeliveryCommit: '8bb81d7382fe27f9095f61282d5d927c46dc571c',
+  directive078ImmediateParent: 'e3359d35ca47700c0c65093122ab3c4cee2dc342',
+  directive079BaselineCommit: '8bb81d7382fe27f9095f61282d5d927c46dc571c'
 };
 
 for (const [key, expectedSha] of Object.entries(EXPECTED_COORDINATES)) {
@@ -378,6 +389,13 @@ try {
     process.exit(1);
   }
   console.log(`[PASS] Directive 077 delivery commit parent confirmed: ${d077CommitParent}`);
+
+  const d078CommitParent = execSync(`git rev-parse ${EXPECTED_COORDINATES.directive078DeliveryCommit}~1`, { encoding: 'utf8' }).trim();
+  if (d078CommitParent !== EXPECTED_COORDINATES.directive078BaselineCommit) {
+    console.error(`FAIL: Directive 078 delivery commit parent (${d078CommitParent}) does not match baseline (${EXPECTED_COORDINATES.directive078BaselineCommit})`);
+    process.exit(1);
+  }
+  console.log(`[PASS] Directive 078 delivery commit parent confirmed: ${d078CommitParent}`);
 } catch (err) {
   console.error(`FAIL: Could not verify commit parent via git: ${err.message}`);
   process.exit(1);
@@ -395,10 +413,35 @@ if (!generatedAt || typeof generatedAt !== 'string') {
   process.exit(1);
 }
 
-// 1. Validate ISO 8601 UTC timestamp format (YYYY-MM-DDTHH:mm:ss.sssZ)
-const iso8601Regex = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,3})?Z$/;
-if (!iso8601Regex.test(generatedAt)) {
-  console.error(`FAIL: manifest.generatedAt is not a valid ISO 8601 UTC timestamp: ${generatedAt}`);
+// 1. Validate ISO 8601 UTC timestamp format and calendar validity
+function validateCalendarIso8601Utc(dateStr) {
+  if (typeof dateStr !== 'string') return false;
+  const match = dateStr.match(/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})(?:\.\d{1,3})?Z$/);
+  if (!match) return false;
+  const [, yStr, mStr, dStr, hStr, minStr, sStr] = match;
+  const y = parseInt(yStr, 10);
+  const m = parseInt(mStr, 10);
+  const d = parseInt(dStr, 10);
+  const h = parseInt(hStr, 10);
+  const min = parseInt(minStr, 10);
+  const s = parseInt(sStr, 10);
+
+  const t = Date.parse(dateStr);
+  if (isNaN(t)) return false;
+  const dateObj = new Date(t);
+
+  return (
+    dateObj.getUTCFullYear() === y &&
+    dateObj.getUTCMonth() + 1 === m &&
+    dateObj.getUTCDate() === d &&
+    dateObj.getUTCHours() === h &&
+    dateObj.getUTCMinutes() === min &&
+    dateObj.getUTCSeconds() === s
+  );
+}
+
+if (!validateCalendarIso8601Utc(generatedAt)) {
+  console.error(`FAIL: manifest.generatedAt is not a valid ISO 8601 UTC timestamp or represents an invalid calendar date: ${generatedAt}`);
   process.exit(1);
 }
 
@@ -407,9 +450,9 @@ if (isNaN(manifestTime)) {
   console.error(`FAIL: manifest.generatedAt parsed to NaN: ${generatedAt}`);
   process.exit(1);
 }
-console.log(`[PASS] manifest.generatedAt format valid: ${generatedAt}`);
+console.log(`[PASS] manifest.generatedAt format and calendar date valid: ${generatedAt}`);
 
-// 2. Evidence freshness checks against included evidence files
+// 2. Evidence freshness checks against included evidence files (strictly earlier than manifest)
 const evidenceFilesToCheck = [
   { path: 'reports/evidence/financial_remediation_test_results.json', dateField: 'executionDate' },
   { path: 'reports/evidence/adjudication_manifest_test_results.json', dateField: 'executedAt' },
@@ -431,18 +474,23 @@ for (const evidenceSpec of evidenceFilesToCheck) {
     process.exit(1);
   }
 
+  if (!validateCalendarIso8601Utc(evidenceDateStr)) {
+    console.error(`FAIL: Evidence file ${evidenceSpec.path} date is not valid ISO 8601 UTC calendar date: ${evidenceDateStr}`);
+    process.exit(1);
+  }
+
   const evidenceTime = new Date(evidenceDateStr).getTime();
   if (isNaN(evidenceTime)) {
     console.error(`FAIL: Unparseable date in evidence file ${evidenceSpec.path}: ${evidenceDateStr}`);
     process.exit(1);
   }
 
-  if (manifestTime < evidenceTime) {
-    console.error(`FAIL: Stale manifest detected! manifest.generatedAt (${generatedAt}) is earlier than ${evidenceSpec.path} ${evidenceSpec.dateField} (${evidenceDateStr})`);
+  if (manifestTime <= evidenceTime) {
+    console.error(`FAIL: Stale or non-monotonic manifest detected! manifest.generatedAt (${generatedAt}) is not strictly later than ${evidenceSpec.path} ${evidenceSpec.dateField} (${evidenceDateStr})`);
     process.exit(1);
   }
 
-  console.log(`[PASS] Evidence freshness confirmed for ${evidenceSpec.path} (${evidenceSpec.dateField}: ${evidenceDateStr} <= manifest: ${generatedAt})`);
+  console.log(`[PASS] Evidence freshness confirmed for ${evidenceSpec.path} (${evidenceSpec.dateField}: ${evidenceDateStr} < manifest: ${generatedAt})`);
 }
 
 console.log('\n================================================================');

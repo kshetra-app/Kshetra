@@ -2,8 +2,8 @@
   "milestone": "W021.5 / B2.2-E",
   "defect": "DQ-W021.5-B2.2E-001",
   "defectStatus": "STRICTLY OPEN",
-  "directive": "W021.5-CTO-DIRECTIVE-078",
-  "generatedAt": "2026-10-16T03:51:12.636Z",
+  "directive": "W021.5-CTO-DIRECTIVE-079",
+  "generatedAt": "2026-10-16T04:20:17.183Z",
   "gitBaseline": {
     "startingCommit": "20d5ea575fa1595648fcceee07ddf0d45b4973a3",
     "canonicalBranch": "master",
@@ -28,7 +28,10 @@
     "directive077BaselineCommit": "36e202a2dcd7a6470a0327d2f84a6902c546339b",
     "directive077DeliveryCommit": "e3359d35ca47700c0c65093122ab3c4cee2dc342",
     "directive077ImmediateParent": "36e202a2dcd7a6470a0327d2f84a6902c546339b",
-    "directive078BaselineCommit": "e3359d35ca47700c0c65093122ab3c4cee2dc342"
+    "directive078BaselineCommit": "e3359d35ca47700c0c65093122ab3c4cee2dc342",
+    "directive078DeliveryCommit": "8bb81d7382fe27f9095f61282d5d927c46dc571c",
+    "directive078ImmediateParent": "e3359d35ca47700c0c65093122ab3c4cee2dc342",
+    "directive079BaselineCommit": "8bb81d7382fe27f9095f61282d5d927c46dc571c"
   },
   "authoritativeAffidavitManifest": {
     "path": "reports/w021_5b2_b2_2e_affidavit_manifest.json",
@@ -261,9 +264,9 @@
     },
     {
       "path": "reports/evidence/financial_remediation_test_results.json",
-      "byteLength": 27520,
-      "sha256": "ba20834c810bf341932aefd3b682610752b2784da0b5880593648af2a6bfd029",
-      "gitBlobSha": "b08192acca77204ea5f5abc819e6ea33f96d887c",
+      "byteLength": 27518,
+      "sha256": "794c1e94114663edf44166081396e5f30b4ff1d474155f33d8d1e392220663e4",
+      "gitBlobSha": "b1c09354b05e7e960a98e691523b764ccbab7d3a",
       "description": "Machine-readable test results for all 105 tests in the Directive 068 battery"
     },
     {
@@ -339,8 +342,8 @@
     {
       "path": "reports/evidence/adjudication_manifest_test_results.json",
       "byteLength": 5063,
-      "sha256": "1a484c617213feb9758587d0b0402afecb4a1c0d8758475a1bddd25a0cb4d696",
-      "gitBlobSha": "86ba7d448a8294d4d1fffad42c7c02082fc99c64",
+      "sha256": "9af3c5b51f7e53e61faa543f63fbb007d2f473c60977c4ad149fb606666c2a34",
+      "gitBlobSha": "8846ccf37d2e907db3a618e730e81aa2948ad0ad",
       "description": "Machine-readable test results for all 26 tests in the Directive 074 adjudication test battery"
     },
     {
@@ -394,9 +397,9 @@
     },
     {
       "path": "scripts/audit_artifact_accounting.mjs",
-      "byteLength": 19319,
-      "sha256": "c116a893a1c235ccb4028b88b180af350f86fc1f0ff95f5c0a91049a04f6a74e",
-      "gitBlobSha": "63809725624af05208abc828396ae26809953afc",
+      "byteLength": 21386,
+      "sha256": "2b2c80d901c9aa567ee524c1ab61bf1c805ba4096a29cbcd7febfbceb43cbb52",
+      "gitBlobSha": "61212bde78e9843c1300a3227a5ff48b6a5c9fde",
       "description": "Mechanical artifact accounting audit script verifying manifest counts, duplicate absence, file integrity, category reconciliation, and provenance coordinates"
     },
     {
@@ -415,9 +418,9 @@
     },
     {
       "path": "scripts/generate_checksum_manifest.mjs",
-      "byteLength": 7073,
-      "sha256": "37a7b17d98941fe027371fd516b9a49f2d59cb5263d76a91cea961ac3d961e1e",
-      "gitBlobSha": "e6f5036acb7c343c24632b44d861f2975b84724b",
+      "byteLength": 11579,
+      "sha256": "5549acb230d34e943b7f294d7fe1b2c0864ddac391d663af19d4bf28a95e06a8",
+      "gitBlobSha": "34b819c42391c7516c5f7e463c17f8de9014ed27",
       "description": "Master checksum manifest generator and refresher script enforcing evidence freshness, ISO 8601 UTC timestamp format, and non-recursive integrity"
     },
     {
@@ -426,6 +429,20 @@
       "sha256": "9250ccbc82a14a5eda06b0e75aca340b5c1c685212db420a8559fbcc339f22fc",
       "gitBlobSha": "633f3360e5c6437c045854860fac6063f5d07206",
       "description": "Comprehensive Directive 078 implementation report covering checksum manifest generation-time, evidence freshness, and hardened mechanical audit"
+    },
+    {
+      "path": "scripts/tests/generate_checksum_manifest.test.mjs",
+      "byteLength": 16597,
+      "sha256": "80fd22f9b2d2469db807d5d7a03598a59d83c881eb0411c9a5efa4a9cd9b9fdd",
+      "gitBlobSha": "18019daa0a294ba1650e82879b2741e91d57f5ff",
+      "description": "Automated regression test suite verifying manifest regeneration semantics, timestamp freshness, fail-closed validation, and non-recursive integrity"
+    },
+    {
+      "path": "reports/W021.5-CTO-DIRECTIVE-079-IMPLEMENTATION-REPORT.md",
+      "byteLength": 28821,
+      "sha256": "a27647b6d5d5f7b4d7000b280302a8ec7ae0ecec35272533f418d808f960b5af",
+      "gitBlobSha": "38ed7ac50a68d68609206b7dfb339bdf76657f4e",
+      "description": "Comprehensive Directive 079 implementation report covering true manifest regeneration semantics, automated generator regression testing, and audit hardening"
     }
   ],
   "checksumMethodology": {
