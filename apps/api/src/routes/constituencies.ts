@@ -21,6 +21,7 @@ import {
   getRawConstituency,
   getStateInfo,
   searchConstituencies,
+  getConstituencyElectionData,
 } from '../services/stateData';
 import { sendApiError } from '../lib/replyHelper';
 
@@ -127,6 +128,37 @@ const getConstituencyDetailSchema = {
         reservationStatus: { type: 'string' },
         currentParty: { type: 'string' },
         currentMLA: { type: 'string' },
+        recentElection: {
+          type: 'object',
+          properties: {
+            electionYear: { type: 'integer' },
+            electionType: { type: 'string' },
+            winner: { type: 'string' },
+            winnerName: { type: 'string' },
+            winnerVotes: { type: ['number', 'null'] },
+            runnerUp: { type: 'string' },
+            margin: { type: ['number', 'null'] },
+            marginPercent: { type: ['number', 'null'] },
+          },
+          required: ['electionYear', 'electionType', 'winner', 'winnerName', 'runnerUp'],
+        },
+        elections: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              electionYear: { type: 'integer' },
+              electionType: { type: 'string' },
+              winner: { type: 'string' },
+              winnerName: { type: 'string' },
+              winnerVotes: { type: ['number', 'null'] },
+              runnerUp: { type: 'string' },
+              margin: { type: ['number', 'null'] },
+              marginPercent: { type: ['number', 'null'] },
+            },
+            required: ['electionYear', 'electionType', 'winner', 'winnerName'],
+          },
+        },
         election2023: {
           type: 'object',
           properties: {
@@ -140,7 +172,7 @@ const getConstituencyDetailSchema = {
           required: ['winner', 'winnerName', 'winnerVotes', 'runnerUp', 'margin', 'marginPercent'],
         },
       },
-      required: ['id', 'name', 'acNo', 'stateCode', 'district', 'reservationStatus', 'currentParty', 'currentMLA', 'election2023'],
+      required: ['id', 'name', 'acNo', 'stateCode', 'district', 'reservationStatus', 'currentParty', 'currentMLA'],
     },
   },
 };
@@ -408,23 +440,35 @@ export async function constituencyRoutes(app: FastifyInstance) {
         });
       }
 
-      const raw = getRawConstituency(code, brief.acNo);
-      const winner = raw?.winner2025 ?? raw?.winner2024 ?? raw?.winner2023 ?? raw?.winner2022 ?? raw?.winner2021 ?? raw?.winner ?? brief.currentParty ?? '';
-      const winnerName = raw?.winnerName2025 ?? raw?.winnerName2024 ?? raw?.winnerName2023 ?? raw?.winnerName2022 ?? raw?.winnerName2021 ?? raw?.winnerName ?? brief.currentMLA ?? '';
-      const winnerVotes = raw?.winnerVotes2025 ?? raw?.winnerVotes2024 ?? raw?.winnerVotes2023 ?? raw?.winnerVotes2022 ?? raw?.winnerVotes2021 ?? raw?.winnerVotes ?? 0;
-      const runnerUp = raw?.runnerUp2025 ?? raw?.runnerUp2024 ?? raw?.runnerUp2023 ?? raw?.runnerUp2022 ?? raw?.runnerUp2021 ?? raw?.runnerUp ?? '';
-      const margin = raw?.margin2025 ?? raw?.margin2024 ?? raw?.margin2023 ?? raw?.margin2022 ?? raw?.margin2021 ?? raw?.margin ?? 0;
+      const electionData = getConstituencyElectionData(code, brief.acNo);
+      const recentElection = electionData?.recentElection ?? {
+        electionYear: 2024,
+        electionType: 'GENERAL' as const,
+        winner: brief.currentParty,
+        winnerName: brief.currentMLA,
+        winnerVotes: null,
+        runnerUp: '',
+        margin: null,
+        marginPercent: null,
+      };
+
+      const elections = electionData?.elections ?? [recentElection];
+
+      // Backward-compatible alias for election2023 with non-null numeric fallbacks for legacy clients
+      const election2023 = {
+        winner: recentElection.winner,
+        winnerName: recentElection.winnerName,
+        winnerVotes: recentElection.winnerVotes ?? 0,
+        runnerUp: recentElection.runnerUp,
+        margin: recentElection.margin ?? 0,
+        marginPercent: recentElection.marginPercent ?? 0,
+      };
 
       return {
         ...brief,
-        election2023: {
-          winner,
-          winnerName,
-          winnerVotes,
-          runnerUp,
-          margin,
-          marginPercent: winnerVotes > 0 ? parseFloat(((margin / winnerVotes) * 100).toFixed(1)) : 0,
-        },
+        recentElection,
+        elections,
+        election2023,
       };
     },
   );

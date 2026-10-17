@@ -1,0 +1,816 @@
+{
+  "title": "Kshetra W021.5 National Data Coverage Inventory Matrix",
+  "directive": "CTO DIRECTIVE 084",
+  "generatedAt": "2026-10-17T04:25:59.273Z",
+  "totalStatesAudited": 31,
+  "summary": {
+    "canonicalFullStatesCount": 4,
+    "partialHistoricalCount": 4,
+    "seededPendingAffidavitsCount": 23,
+    "unavailableCount": 0,
+    "totalStatutorySeats": 4123,
+    "totalSeededConstituencies": 4123,
+    "totalMlaProfiles": 5029,
+    "totalAffidavits": 28
+  },
+  "states": [
+    {
+      "stateCode": "TS",
+      "stateName": "Telangana",
+      "statutoryAssemblySeats": 119,
+      "seededConstituencyCount": 119,
+      "discoverySupported": true,
+      "primaryElectionYear": 2023,
+      "primaryElectionType": "GENERAL",
+      "availableElectionYears": [
+        2023,
+        2018,
+        2014
+      ],
+      "mlaProfilesAvailable": 119,
+      "demographicsAvailable": 119,
+      "affidavitsAvailable": 17,
+      "hasGeoJSON": true,
+      "hasHistoricalPerConstituency": true,
+      "hasStateElectionHistory": true,
+      "dataTier": "CANONICAL_FULL",
+      "dataCompletenessStatus": "VERIFIED_PRODUCTION",
+      "provenanceSource": "Election Commission of India (ECI) / State Election Commission + ADR/MyNeta candidate disclosures",
+      "materialGaps": []
+    },
+    {
+      "stateCode": "AP",
+      "stateName": "Andhra Pradesh",
+      "statutoryAssemblySeats": 175,
+      "seededConstituencyCount": 175,
+      "discoverySupported": true,
+      "primaryElectionYear": 2024,
+      "primaryElectionType": "GENERAL",
+      "availableElectionYears": [
+        2024,
+        2019
+      ],
+      "mlaProfilesAvailable": 344,
+      "demographicsAvailable": 175,
+      "affidavitsAvailable": 2,
+      "hasGeoJSON": false,
+      "hasHistoricalPerConstituency": true,
+      "hasStateElectionHistory": true,
+      "dataTier": "CANONICAL_FULL",
+      "dataCompletenessStatus": "VERIFIED_PRODUCTION",
+      "provenanceSource": "Election Commission of India (ECI) / State Election Commission + ADR/MyNeta candidate disclosures",
+      "materialGaps": [
+        "Assembly boundary GeoJSON not indexed in repository data/geo"
+      ]
+    },
+    {
+      "stateCode": "KA",
+      "stateName": "Karnataka",
+      "statutoryAssemblySeats": 224,
+      "seededConstituencyCount": 224,
+      "discoverySupported": true,
+      "primaryElectionYear": 2023,
+      "primaryElectionType": "GENERAL",
+      "availableElectionYears": [
+        2023,
+        2018
+      ],
+      "mlaProfilesAvailable": 215,
+      "demographicsAvailable": 0,
+      "affidavitsAvailable": 2,
+      "hasGeoJSON": false,
+      "hasHistoricalPerConstituency": true,
+      "hasStateElectionHistory": true,
+      "dataTier": "CANONICAL_FULL",
+      "dataCompletenessStatus": "VERIFIED_PRODUCTION",
+      "provenanceSource": "Election Commission of India (ECI) / State Election Commission + ADR/MyNeta candidate disclosures",
+      "materialGaps": [
+        "Assembly boundary GeoJSON not indexed in repository data/geo"
+      ]
+    },
+    {
+      "stateCode": "MH",
+      "stateName": "Maharashtra",
+      "statutoryAssemblySeats": 288,
+      "seededConstituencyCount": 288,
+      "discoverySupported": true,
+      "primaryElectionYear": 2024,
+      "primaryElectionType": "GENERAL",
+      "availableElectionYears": [
+        2024,
+        2019
+      ],
+      "mlaProfilesAvailable": 268,
+      "demographicsAvailable": 0,
+      "affidavitsAvailable": 1,
+      "hasGeoJSON": false,
+      "hasHistoricalPerConstituency": true,
+      "hasStateElectionHistory": true,
+      "dataTier": "CANONICAL_FULL",
+      "dataCompletenessStatus": "VERIFIED_PRODUCTION",
+      "provenanceSource": "Election Commission of India (ECI) / State Election Commission + ADR/MyNeta candidate disclosures",
+      "materialGaps": [
+        "Assembly boundary GeoJSON not indexed in repository data/geo"
+      ]
+    },
+    {
+      "stateCode": "TN",
+      "stateName": "Tamil Nadu",
+      "statutoryAssemblySeats": 234,
+      "seededConstituencyCount": 234,
+      "discoverySupported": true,
+      "primaryElectionYear": 2021,
+      "primaryElectionType": "GENERAL",
+      "availableElectionYears": [
+        2021,
+        2016
+      ],
+      "mlaProfilesAvailable": 468,
+      "demographicsAvailable": 234,
+      "affidavitsAvailable": 2,
+      "hasGeoJSON": false,
+      "hasHistoricalPerConstituency": true,
+      "hasStateElectionHistory": true,
+      "dataTier": "PARTIAL_HISTORICAL_NO_GEOJSON",
+      "dataCompletenessStatus": "FUNCTIONAL_PARTIAL",
+      "provenanceSource": "Election Commission of India (ECI) / State Election Commission + ADR/MyNeta candidate disclosures",
+      "materialGaps": [
+        "Assembly boundary GeoJSON not indexed in repository data/geo"
+      ]
+    },
+    {
+      "stateCode": "KL",
+      "stateName": "Kerala",
+      "statutoryAssemblySeats": 140,
+      "seededConstituencyCount": 140,
+      "discoverySupported": true,
+      "primaryElectionYear": 2021,
+      "primaryElectionType": "GENERAL",
+      "availableElectionYears": [
+        2021,
+        2016
+      ],
+      "mlaProfilesAvailable": 280,
+      "demographicsAvailable": 140,
+      "affidavitsAvailable": 1,
+      "hasGeoJSON": false,
+      "hasHistoricalPerConstituency": true,
+      "hasStateElectionHistory": true,
+      "dataTier": "PARTIAL_HISTORICAL_NO_GEOJSON",
+      "dataCompletenessStatus": "FUNCTIONAL_PARTIAL",
+      "provenanceSource": "Election Commission of India (ECI) / State Election Commission + ADR/MyNeta candidate disclosures",
+      "materialGaps": [
+        "Assembly boundary GeoJSON not indexed in repository data/geo"
+      ]
+    },
+    {
+      "stateCode": "WB",
+      "stateName": "West Bengal",
+      "statutoryAssemblySeats": 294,
+      "seededConstituencyCount": 294,
+      "discoverySupported": true,
+      "primaryElectionYear": 2021,
+      "primaryElectionType": "GENERAL",
+      "availableElectionYears": [
+        2021,
+        2016
+      ],
+      "mlaProfilesAvailable": 588,
+      "demographicsAvailable": 294,
+      "affidavitsAvailable": 1,
+      "hasGeoJSON": false,
+      "hasHistoricalPerConstituency": true,
+      "hasStateElectionHistory": true,
+      "dataTier": "PARTIAL_HISTORICAL_NO_GEOJSON",
+      "dataCompletenessStatus": "FUNCTIONAL_PARTIAL",
+      "provenanceSource": "Election Commission of India (ECI) / State Election Commission + ADR/MyNeta candidate disclosures",
+      "materialGaps": [
+        "Assembly boundary GeoJSON not indexed in repository data/geo"
+      ]
+    },
+    {
+      "stateCode": "UP",
+      "stateName": "Uttar Pradesh",
+      "statutoryAssemblySeats": 403,
+      "seededConstituencyCount": 403,
+      "discoverySupported": true,
+      "primaryElectionYear": 2022,
+      "primaryElectionType": "GENERAL",
+      "availableElectionYears": [
+        2022,
+        2017
+      ],
+      "mlaProfilesAvailable": 357,
+      "demographicsAvailable": 401,
+      "affidavitsAvailable": 2,
+      "hasGeoJSON": false,
+      "hasHistoricalPerConstituency": true,
+      "hasStateElectionHistory": true,
+      "dataTier": "PARTIAL_HISTORICAL_NO_GEOJSON",
+      "dataCompletenessStatus": "FUNCTIONAL_PARTIAL",
+      "provenanceSource": "Election Commission of India (ECI) / State Election Commission + ADR/MyNeta candidate disclosures",
+      "materialGaps": [
+        "Assembly boundary GeoJSON not indexed in repository data/geo"
+      ]
+    },
+    {
+      "stateCode": "RJ",
+      "stateName": "Rajasthan",
+      "statutoryAssemblySeats": 200,
+      "seededConstituencyCount": 200,
+      "discoverySupported": true,
+      "primaryElectionYear": 2023,
+      "primaryElectionType": "GENERAL",
+      "availableElectionYears": [
+        2023
+      ],
+      "mlaProfilesAvailable": 187,
+      "demographicsAvailable": 187,
+      "affidavitsAvailable": 0,
+      "hasGeoJSON": false,
+      "hasHistoricalPerConstituency": false,
+      "hasStateElectionHistory": true,
+      "dataTier": "SEEDED_CONSTITUENCIES_PENDING_AFFIDAVITS",
+      "dataCompletenessStatus": "FUNCTIONAL_PARTIAL",
+      "provenanceSource": "Election Commission of India (ECI) / State Election Commission",
+      "materialGaps": [
+        "Candidate financial affidavits pending indexing (shows Affidavit Pending notice)",
+        "Assembly boundary GeoJSON not indexed in repository data/geo",
+        "Per-constituency historical elections prior to current term not yet seeded"
+      ]
+    },
+    {
+      "stateCode": "GJ",
+      "stateName": "Gujarat",
+      "statutoryAssemblySeats": 182,
+      "seededConstituencyCount": 182,
+      "discoverySupported": true,
+      "primaryElectionYear": 2022,
+      "primaryElectionType": "GENERAL",
+      "availableElectionYears": [
+        2022
+      ],
+      "mlaProfilesAvailable": 169,
+      "demographicsAvailable": 169,
+      "affidavitsAvailable": 0,
+      "hasGeoJSON": false,
+      "hasHistoricalPerConstituency": false,
+      "hasStateElectionHistory": true,
+      "dataTier": "SEEDED_CONSTITUENCIES_PENDING_AFFIDAVITS",
+      "dataCompletenessStatus": "FUNCTIONAL_PARTIAL",
+      "provenanceSource": "Election Commission of India (ECI) / State Election Commission",
+      "materialGaps": [
+        "Candidate financial affidavits pending indexing (shows Affidavit Pending notice)",
+        "Assembly boundary GeoJSON not indexed in repository data/geo",
+        "Per-constituency historical elections prior to current term not yet seeded"
+      ]
+    },
+    {
+      "stateCode": "JH",
+      "stateName": "Jharkhand",
+      "statutoryAssemblySeats": 81,
+      "seededConstituencyCount": 81,
+      "discoverySupported": true,
+      "primaryElectionYear": 2024,
+      "primaryElectionType": "GENERAL",
+      "availableElectionYears": [
+        2024
+      ],
+      "mlaProfilesAvailable": 73,
+      "demographicsAvailable": 73,
+      "affidavitsAvailable": 0,
+      "hasGeoJSON": false,
+      "hasHistoricalPerConstituency": false,
+      "hasStateElectionHistory": true,
+      "dataTier": "SEEDED_CONSTITUENCIES_PENDING_AFFIDAVITS",
+      "dataCompletenessStatus": "FUNCTIONAL_PARTIAL",
+      "provenanceSource": "Election Commission of India (ECI) / State Election Commission",
+      "materialGaps": [
+        "Candidate financial affidavits pending indexing (shows Affidavit Pending notice)",
+        "Assembly boundary GeoJSON not indexed in repository data/geo",
+        "Per-constituency historical elections prior to current term not yet seeded"
+      ]
+    },
+    {
+      "stateCode": "OD",
+      "stateName": "Odisha",
+      "statutoryAssemblySeats": 147,
+      "seededConstituencyCount": 147,
+      "discoverySupported": true,
+      "primaryElectionYear": 2024,
+      "primaryElectionType": "GENERAL",
+      "availableElectionYears": [
+        2024
+      ],
+      "mlaProfilesAvailable": 132,
+      "demographicsAvailable": 132,
+      "affidavitsAvailable": 0,
+      "hasGeoJSON": false,
+      "hasHistoricalPerConstituency": false,
+      "hasStateElectionHistory": true,
+      "dataTier": "SEEDED_CONSTITUENCIES_PENDING_AFFIDAVITS",
+      "dataCompletenessStatus": "FUNCTIONAL_PARTIAL",
+      "provenanceSource": "Election Commission of India (ECI) / State Election Commission",
+      "materialGaps": [
+        "Candidate financial affidavits pending indexing (shows Affidavit Pending notice)",
+        "Assembly boundary GeoJSON not indexed in repository data/geo",
+        "Per-constituency historical elections prior to current term not yet seeded"
+      ]
+    },
+    {
+      "stateCode": "DL",
+      "stateName": "Delhi",
+      "statutoryAssemblySeats": 70,
+      "seededConstituencyCount": 70,
+      "discoverySupported": true,
+      "primaryElectionYear": 2025,
+      "primaryElectionType": "GENERAL",
+      "availableElectionYears": [
+        2025
+      ],
+      "mlaProfilesAvailable": 221,
+      "demographicsAvailable": 221,
+      "affidavitsAvailable": 0,
+      "hasGeoJSON": false,
+      "hasHistoricalPerConstituency": false,
+      "hasStateElectionHistory": true,
+      "dataTier": "SEEDED_CONSTITUENCIES_PENDING_AFFIDAVITS",
+      "dataCompletenessStatus": "FUNCTIONAL_PARTIAL",
+      "provenanceSource": "Election Commission of India (ECI) / State Election Commission",
+      "materialGaps": [
+        "Candidate financial affidavits pending indexing (shows Affidavit Pending notice)",
+        "Assembly boundary GeoJSON not indexed in repository data/geo",
+        "Per-constituency historical elections prior to current term not yet seeded",
+        "Delhi records DL-AC-071 through DL-AC-087 are demographic non-assembly records preserved as NOT_VERIFIED"
+      ]
+    },
+    {
+      "stateCode": "PB",
+      "stateName": "Punjab",
+      "statutoryAssemblySeats": 117,
+      "seededConstituencyCount": 117,
+      "discoverySupported": true,
+      "primaryElectionYear": 2022,
+      "primaryElectionType": "GENERAL",
+      "availableElectionYears": [
+        2022
+      ],
+      "mlaProfilesAvailable": 111,
+      "demographicsAvailable": 111,
+      "affidavitsAvailable": 0,
+      "hasGeoJSON": false,
+      "hasHistoricalPerConstituency": false,
+      "hasStateElectionHistory": true,
+      "dataTier": "SEEDED_CONSTITUENCIES_PENDING_AFFIDAVITS",
+      "dataCompletenessStatus": "FUNCTIONAL_PARTIAL",
+      "provenanceSource": "Election Commission of India (ECI) / State Election Commission",
+      "materialGaps": [
+        "Candidate financial affidavits pending indexing (shows Affidavit Pending notice)",
+        "Assembly boundary GeoJSON not indexed in repository data/geo",
+        "Per-constituency historical elections prior to current term not yet seeded"
+      ]
+    },
+    {
+      "stateCode": "HR",
+      "stateName": "Haryana",
+      "statutoryAssemblySeats": 90,
+      "seededConstituencyCount": 90,
+      "discoverySupported": true,
+      "primaryElectionYear": 2024,
+      "primaryElectionType": "GENERAL",
+      "availableElectionYears": [
+        2024
+      ],
+      "mlaProfilesAvailable": 80,
+      "demographicsAvailable": 80,
+      "affidavitsAvailable": 0,
+      "hasGeoJSON": false,
+      "hasHistoricalPerConstituency": false,
+      "hasStateElectionHistory": true,
+      "dataTier": "SEEDED_CONSTITUENCIES_PENDING_AFFIDAVITS",
+      "dataCompletenessStatus": "FUNCTIONAL_PARTIAL",
+      "provenanceSource": "Election Commission of India (ECI) / State Election Commission",
+      "materialGaps": [
+        "Candidate financial affidavits pending indexing (shows Affidavit Pending notice)",
+        "Assembly boundary GeoJSON not indexed in repository data/geo",
+        "Per-constituency historical elections prior to current term not yet seeded"
+      ]
+    },
+    {
+      "stateCode": "CG",
+      "stateName": "Chhattisgarh",
+      "statutoryAssemblySeats": 90,
+      "seededConstituencyCount": 90,
+      "discoverySupported": true,
+      "primaryElectionYear": 2023,
+      "primaryElectionType": "GENERAL",
+      "availableElectionYears": [
+        2023
+      ],
+      "mlaProfilesAvailable": 81,
+      "demographicsAvailable": 81,
+      "affidavitsAvailable": 0,
+      "hasGeoJSON": false,
+      "hasHistoricalPerConstituency": false,
+      "hasStateElectionHistory": true,
+      "dataTier": "SEEDED_CONSTITUENCIES_PENDING_AFFIDAVITS",
+      "dataCompletenessStatus": "FUNCTIONAL_PARTIAL",
+      "provenanceSource": "Election Commission of India (ECI) / State Election Commission",
+      "materialGaps": [
+        "Candidate financial affidavits pending indexing (shows Affidavit Pending notice)",
+        "Assembly boundary GeoJSON not indexed in repository data/geo",
+        "Per-constituency historical elections prior to current term not yet seeded"
+      ]
+    },
+    {
+      "stateCode": "MP",
+      "stateName": "Madhya Pradesh",
+      "statutoryAssemblySeats": 230,
+      "seededConstituencyCount": 230,
+      "discoverySupported": true,
+      "primaryElectionYear": 2023,
+      "primaryElectionType": "GENERAL",
+      "availableElectionYears": [
+        2023
+      ],
+      "mlaProfilesAvailable": 208,
+      "demographicsAvailable": 208,
+      "affidavitsAvailable": 0,
+      "hasGeoJSON": false,
+      "hasHistoricalPerConstituency": false,
+      "hasStateElectionHistory": true,
+      "dataTier": "SEEDED_CONSTITUENCIES_PENDING_AFFIDAVITS",
+      "dataCompletenessStatus": "FUNCTIONAL_PARTIAL",
+      "provenanceSource": "Election Commission of India (ECI) / State Election Commission",
+      "materialGaps": [
+        "Candidate financial affidavits pending indexing (shows Affidavit Pending notice)",
+        "Assembly boundary GeoJSON not indexed in repository data/geo",
+        "Per-constituency historical elections prior to current term not yet seeded"
+      ]
+    },
+    {
+      "stateCode": "BR",
+      "stateName": "Bihar",
+      "statutoryAssemblySeats": 243,
+      "seededConstituencyCount": 243,
+      "discoverySupported": true,
+      "primaryElectionYear": 2020,
+      "primaryElectionType": "GENERAL",
+      "availableElectionYears": [
+        2020
+      ],
+      "mlaProfilesAvailable": 227,
+      "demographicsAvailable": 227,
+      "affidavitsAvailable": 0,
+      "hasGeoJSON": false,
+      "hasHistoricalPerConstituency": false,
+      "hasStateElectionHistory": true,
+      "dataTier": "SEEDED_CONSTITUENCIES_PENDING_AFFIDAVITS",
+      "dataCompletenessStatus": "FUNCTIONAL_PARTIAL",
+      "provenanceSource": "Election Commission of India (ECI) / State Election Commission",
+      "materialGaps": [
+        "Candidate financial affidavits pending indexing (shows Affidavit Pending notice)",
+        "Assembly boundary GeoJSON not indexed in repository data/geo",
+        "Per-constituency historical elections prior to current term not yet seeded"
+      ]
+    },
+    {
+      "stateCode": "AS",
+      "stateName": "Assam",
+      "statutoryAssemblySeats": 126,
+      "seededConstituencyCount": 126,
+      "discoverySupported": true,
+      "primaryElectionYear": 2021,
+      "primaryElectionType": "GENERAL",
+      "availableElectionYears": [
+        2021
+      ],
+      "mlaProfilesAvailable": 224,
+      "demographicsAvailable": 112,
+      "affidavitsAvailable": 0,
+      "hasGeoJSON": false,
+      "hasHistoricalPerConstituency": false,
+      "hasStateElectionHistory": true,
+      "dataTier": "SEEDED_CONSTITUENCIES_PENDING_AFFIDAVITS",
+      "dataCompletenessStatus": "FUNCTIONAL_PARTIAL",
+      "provenanceSource": "Election Commission of India (ECI) / State Election Commission",
+      "materialGaps": [
+        "Candidate financial affidavits pending indexing (shows Affidavit Pending notice)",
+        "Assembly boundary GeoJSON not indexed in repository data/geo",
+        "Per-constituency historical elections prior to current term not yet seeded"
+      ]
+    },
+    {
+      "stateCode": "GA",
+      "stateName": "Goa",
+      "statutoryAssemblySeats": 40,
+      "seededConstituencyCount": 40,
+      "discoverySupported": true,
+      "primaryElectionYear": 2022,
+      "primaryElectionType": "GENERAL",
+      "availableElectionYears": [
+        2022
+      ],
+      "mlaProfilesAvailable": 34,
+      "demographicsAvailable": 34,
+      "affidavitsAvailable": 0,
+      "hasGeoJSON": false,
+      "hasHistoricalPerConstituency": false,
+      "hasStateElectionHistory": true,
+      "dataTier": "SEEDED_CONSTITUENCIES_PENDING_AFFIDAVITS",
+      "dataCompletenessStatus": "FUNCTIONAL_PARTIAL",
+      "provenanceSource": "Election Commission of India (ECI) / State Election Commission",
+      "materialGaps": [
+        "Candidate financial affidavits pending indexing (shows Affidavit Pending notice)",
+        "Assembly boundary GeoJSON not indexed in repository data/geo",
+        "Per-constituency historical elections prior to current term not yet seeded"
+      ]
+    },
+    {
+      "stateCode": "HP",
+      "stateName": "Himachal Pradesh",
+      "statutoryAssemblySeats": 68,
+      "seededConstituencyCount": 68,
+      "discoverySupported": true,
+      "primaryElectionYear": 2022,
+      "primaryElectionType": "GENERAL",
+      "availableElectionYears": [
+        2022
+      ],
+      "mlaProfilesAvailable": 70,
+      "demographicsAvailable": 70,
+      "affidavitsAvailable": 0,
+      "hasGeoJSON": false,
+      "hasHistoricalPerConstituency": false,
+      "hasStateElectionHistory": true,
+      "dataTier": "SEEDED_CONSTITUENCIES_PENDING_AFFIDAVITS",
+      "dataCompletenessStatus": "FUNCTIONAL_PARTIAL",
+      "provenanceSource": "Election Commission of India (ECI) / State Election Commission",
+      "materialGaps": [
+        "Candidate financial affidavits pending indexing (shows Affidavit Pending notice)",
+        "Assembly boundary GeoJSON not indexed in repository data/geo",
+        "Per-constituency historical elections prior to current term not yet seeded"
+      ]
+    },
+    {
+      "stateCode": "MN",
+      "stateName": "Manipur",
+      "statutoryAssemblySeats": 60,
+      "seededConstituencyCount": 60,
+      "discoverySupported": true,
+      "primaryElectionYear": 2022,
+      "primaryElectionType": "GENERAL",
+      "availableElectionYears": [
+        2022
+      ],
+      "mlaProfilesAvailable": 60,
+      "demographicsAvailable": 60,
+      "affidavitsAvailable": 0,
+      "hasGeoJSON": false,
+      "hasHistoricalPerConstituency": false,
+      "hasStateElectionHistory": true,
+      "dataTier": "SEEDED_CONSTITUENCIES_PENDING_AFFIDAVITS",
+      "dataCompletenessStatus": "FUNCTIONAL_PARTIAL",
+      "provenanceSource": "Election Commission of India (ECI) / State Election Commission",
+      "materialGaps": [
+        "Candidate financial affidavits pending indexing (shows Affidavit Pending notice)",
+        "Assembly boundary GeoJSON not indexed in repository data/geo",
+        "Per-constituency historical elections prior to current term not yet seeded"
+      ]
+    },
+    {
+      "stateCode": "ML",
+      "stateName": "Meghalaya",
+      "statutoryAssemblySeats": 60,
+      "seededConstituencyCount": 60,
+      "discoverySupported": true,
+      "primaryElectionYear": 2023,
+      "primaryElectionType": "GENERAL",
+      "availableElectionYears": [
+        2023
+      ],
+      "mlaProfilesAvailable": 60,
+      "demographicsAvailable": 60,
+      "affidavitsAvailable": 0,
+      "hasGeoJSON": false,
+      "hasHistoricalPerConstituency": false,
+      "hasStateElectionHistory": true,
+      "dataTier": "SEEDED_CONSTITUENCIES_PENDING_AFFIDAVITS",
+      "dataCompletenessStatus": "FUNCTIONAL_PARTIAL",
+      "provenanceSource": "Election Commission of India (ECI) / State Election Commission",
+      "materialGaps": [
+        "Candidate financial affidavits pending indexing (shows Affidavit Pending notice)",
+        "Assembly boundary GeoJSON not indexed in repository data/geo",
+        "Per-constituency historical elections prior to current term not yet seeded"
+      ]
+    },
+    {
+      "stateCode": "MZ",
+      "stateName": "Mizoram",
+      "statutoryAssemblySeats": 40,
+      "seededConstituencyCount": 40,
+      "discoverySupported": true,
+      "primaryElectionYear": 2023,
+      "primaryElectionType": "GENERAL",
+      "availableElectionYears": [
+        2023
+      ],
+      "mlaProfilesAvailable": 35,
+      "demographicsAvailable": 40,
+      "affidavitsAvailable": 0,
+      "hasGeoJSON": false,
+      "hasHistoricalPerConstituency": false,
+      "hasStateElectionHistory": true,
+      "dataTier": "SEEDED_CONSTITUENCIES_PENDING_AFFIDAVITS",
+      "dataCompletenessStatus": "FUNCTIONAL_PARTIAL",
+      "provenanceSource": "Election Commission of India (ECI) / State Election Commission",
+      "materialGaps": [
+        "Candidate financial affidavits pending indexing (shows Affidavit Pending notice)",
+        "Assembly boundary GeoJSON not indexed in repository data/geo",
+        "Per-constituency historical elections prior to current term not yet seeded"
+      ]
+    },
+    {
+      "stateCode": "NL",
+      "stateName": "Nagaland",
+      "statutoryAssemblySeats": 60,
+      "seededConstituencyCount": 60,
+      "discoverySupported": true,
+      "primaryElectionYear": 2023,
+      "primaryElectionType": "GENERAL",
+      "availableElectionYears": [
+        2023
+      ],
+      "mlaProfilesAvailable": 60,
+      "demographicsAvailable": 60,
+      "affidavitsAvailable": 0,
+      "hasGeoJSON": false,
+      "hasHistoricalPerConstituency": false,
+      "hasStateElectionHistory": true,
+      "dataTier": "SEEDED_CONSTITUENCIES_PENDING_AFFIDAVITS",
+      "dataCompletenessStatus": "FUNCTIONAL_PARTIAL",
+      "provenanceSource": "Election Commission of India (ECI) / State Election Commission",
+      "materialGaps": [
+        "Candidate financial affidavits pending indexing (shows Affidavit Pending notice)",
+        "Assembly boundary GeoJSON not indexed in repository data/geo",
+        "Per-constituency historical elections prior to current term not yet seeded"
+      ]
+    },
+    {
+      "stateCode": "TR",
+      "stateName": "Tripura",
+      "statutoryAssemblySeats": 60,
+      "seededConstituencyCount": 60,
+      "discoverySupported": true,
+      "primaryElectionYear": 2023,
+      "primaryElectionType": "GENERAL",
+      "availableElectionYears": [
+        2023
+      ],
+      "mlaProfilesAvailable": 60,
+      "demographicsAvailable": 60,
+      "affidavitsAvailable": 0,
+      "hasGeoJSON": false,
+      "hasHistoricalPerConstituency": false,
+      "hasStateElectionHistory": true,
+      "dataTier": "SEEDED_CONSTITUENCIES_PENDING_AFFIDAVITS",
+      "dataCompletenessStatus": "FUNCTIONAL_PARTIAL",
+      "provenanceSource": "Election Commission of India (ECI) / State Election Commission",
+      "materialGaps": [
+        "Candidate financial affidavits pending indexing (shows Affidavit Pending notice)",
+        "Assembly boundary GeoJSON not indexed in repository data/geo",
+        "Per-constituency historical elections prior to current term not yet seeded"
+      ]
+    },
+    {
+      "stateCode": "SK",
+      "stateName": "Sikkim",
+      "statutoryAssemblySeats": 32,
+      "seededConstituencyCount": 32,
+      "discoverySupported": true,
+      "primaryElectionYear": 2024,
+      "primaryElectionType": "GENERAL",
+      "availableElectionYears": [
+        2024
+      ],
+      "mlaProfilesAvailable": 31,
+      "demographicsAvailable": 32,
+      "affidavitsAvailable": 0,
+      "hasGeoJSON": false,
+      "hasHistoricalPerConstituency": false,
+      "hasStateElectionHistory": true,
+      "dataTier": "SEEDED_CONSTITUENCIES_PENDING_AFFIDAVITS",
+      "dataCompletenessStatus": "FUNCTIONAL_PARTIAL",
+      "provenanceSource": "Election Commission of India (ECI) / State Election Commission",
+      "materialGaps": [
+        "Candidate financial affidavits pending indexing (shows Affidavit Pending notice)",
+        "Assembly boundary GeoJSON not indexed in repository data/geo",
+        "Per-constituency historical elections prior to current term not yet seeded"
+      ]
+    },
+    {
+      "stateCode": "AR",
+      "stateName": "Arunachal Pradesh",
+      "statutoryAssemblySeats": 60,
+      "seededConstituencyCount": 60,
+      "discoverySupported": true,
+      "primaryElectionYear": 2024,
+      "primaryElectionType": "GENERAL",
+      "availableElectionYears": [
+        2024
+      ],
+      "mlaProfilesAvailable": 53,
+      "demographicsAvailable": 60,
+      "affidavitsAvailable": 0,
+      "hasGeoJSON": false,
+      "hasHistoricalPerConstituency": false,
+      "hasStateElectionHistory": true,
+      "dataTier": "SEEDED_CONSTITUENCIES_PENDING_AFFIDAVITS",
+      "dataCompletenessStatus": "FUNCTIONAL_PARTIAL",
+      "provenanceSource": "Election Commission of India (ECI) / State Election Commission",
+      "materialGaps": [
+        "Candidate financial affidavits pending indexing (shows Affidavit Pending notice)",
+        "Assembly boundary GeoJSON not indexed in repository data/geo",
+        "Per-constituency historical elections prior to current term not yet seeded"
+      ]
+    },
+    {
+      "stateCode": "UK",
+      "stateName": "Uttarakhand",
+      "statutoryAssemblySeats": 70,
+      "seededConstituencyCount": 70,
+      "discoverySupported": true,
+      "primaryElectionYear": 2022,
+      "primaryElectionType": "GENERAL",
+      "availableElectionYears": [
+        2022
+      ],
+      "mlaProfilesAvailable": 70,
+      "demographicsAvailable": 70,
+      "affidavitsAvailable": 0,
+      "hasGeoJSON": false,
+      "hasHistoricalPerConstituency": false,
+      "hasStateElectionHistory": true,
+      "dataTier": "SEEDED_CONSTITUENCIES_PENDING_AFFIDAVITS",
+      "dataCompletenessStatus": "FUNCTIONAL_PARTIAL",
+      "provenanceSource": "Election Commission of India (ECI) / State Election Commission",
+      "materialGaps": [
+        "Candidate financial affidavits pending indexing (shows Affidavit Pending notice)",
+        "Assembly boundary GeoJSON not indexed in repository data/geo",
+        "Per-constituency historical elections prior to current term not yet seeded"
+      ]
+    },
+    {
+      "stateCode": "PY",
+      "stateName": "Puducherry",
+      "statutoryAssemblySeats": 30,
+      "seededConstituencyCount": 30,
+      "discoverySupported": true,
+      "primaryElectionYear": 2021,
+      "primaryElectionType": "GENERAL",
+      "availableElectionYears": [
+        2021
+      ],
+      "mlaProfilesAvailable": 54,
+      "demographicsAvailable": 30,
+      "affidavitsAvailable": 0,
+      "hasGeoJSON": false,
+      "hasHistoricalPerConstituency": false,
+      "hasStateElectionHistory": true,
+      "dataTier": "SEEDED_CONSTITUENCIES_PENDING_AFFIDAVITS",
+      "dataCompletenessStatus": "FUNCTIONAL_PARTIAL",
+      "provenanceSource": "Election Commission of India (ECI) / State Election Commission",
+      "materialGaps": [
+        "Candidate financial affidavits pending indexing (shows Affidavit Pending notice)",
+        "Assembly boundary GeoJSON not indexed in repository data/geo",
+        "Per-constituency historical elections prior to current term not yet seeded"
+      ]
+    },
+    {
+      "stateCode": "JK",
+      "stateName": "Jammu & Kashmir",
+      "statutoryAssemblySeats": 90,
+      "seededConstituencyCount": 90,
+      "discoverySupported": true,
+      "primaryElectionYear": 2024,
+      "primaryElectionType": "GENERAL",
+      "availableElectionYears": [
+        2024
+      ],
+      "mlaProfilesAvailable": 90,
+      "demographicsAvailable": 90,
+      "affidavitsAvailable": 0,
+      "hasGeoJSON": false,
+      "hasHistoricalPerConstituency": false,
+      "hasStateElectionHistory": true,
+      "dataTier": "SEEDED_CONSTITUENCIES_PENDING_AFFIDAVITS",
+      "dataCompletenessStatus": "FUNCTIONAL_PARTIAL",
+      "provenanceSource": "Election Commission of India (ECI) / State Election Commission",
+      "materialGaps": [
+        "Candidate financial affidavits pending indexing (shows Affidavit Pending notice)",
+        "Assembly boundary GeoJSON not indexed in repository data/geo",
+        "Per-constituency historical elections prior to current term not yet seeded"
+      ]
+    }
+  ]
+}

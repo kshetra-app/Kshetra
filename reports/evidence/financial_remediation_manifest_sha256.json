@@ -3,7 +3,7 @@
   "defect": "DQ-W021.5-B2.2E-001",
   "defectStatus": "STRICTLY OPEN",
   "directive": "W021.5-CTO-DIRECTIVE-082",
-  "generatedAt": "2026-10-17T03:39:48.913Z",
+  "generatedAt": "2026-10-17T06:18:14.880Z",
   "gitBaseline": {
     "startingCommit": "20d5ea575fa1595648fcceee07ddf0d45b4973a3",
     "canonicalBranch": "master",
@@ -210,9 +210,9 @@
     },
     {
       "path": "apps/mobile/app/legislator/[id].tsx",
-      "byteLength": 20645,
-      "sha256": "0bfc877a81a08bc89f2ab90ab10aef38ba2df8c1bea985164651720ad8cc1db4",
-      "gitBlobSha": "09556b837b0256d71cfc2fa287f9ae311c85c77f",
+      "byteLength": 20744,
+      "sha256": "f570a6cdecb7c4985a6b924d4b3f09145e94915f2d3add282434238f4cd2b7ee",
+      "gitBlobSha": "4a6569a53f1c9936b150eec76ee0aaa0030ea530",
       "description": "Legislator detail screen computing net worth and combined assets without zero coercion"
     },
     {
@@ -273,9 +273,9 @@
     },
     {
       "path": "reports/evidence/financial_remediation_test_results.json",
-      "byteLength": 27518,
-      "sha256": "f8f7c630ec07c8a889555328bbf7b47d47c0c0bcf39fca7a9e91484b1dcf8f29",
-      "gitBlobSha": "71952b1e7a7f02d4ecb8b90429d9f72ab857fd60",
+      "byteLength": 27520,
+      "sha256": "6f8020159ec2b935f4e6fa012dc8a9d9dae71e20a206c08b69572925dc5942a7",
+      "gitBlobSha": "91f2dc9d73b4072b1821b90e8563fc460b0a9a8c",
       "description": "Machine-readable test results for all 105 tests in the Directive 068 battery"
     },
     {
@@ -351,8 +351,8 @@
     {
       "path": "reports/evidence/adjudication_manifest_test_results.json",
       "byteLength": 5063,
-      "sha256": "e4a961370782a148db09a9d6643f77951f31c03a4917dafdce97bfa372311cdd",
-      "gitBlobSha": "24557e03ae68423761f6351f269a6712c49d4d29",
+      "sha256": "611f40c0c15f3010dfb63419b43546e652e67c9808fe3312a8bd097b650f7dbf",
+      "gitBlobSha": "8c9c98726493707f78f74dffb212a21919e54f5c",
       "description": "Machine-readable test results for all 26 tests in the Directive 074 adjudication test battery"
     },
     {

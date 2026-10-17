@@ -42,6 +42,14 @@ import { JK_CONSTITUENCIES } from '../../../../data/seed/jammu-kashmir-constitue
 
 import { TELANGANA_ELECTION_HISTORY } from '../../../../data/seed/telangana-election-history';
 import { TELANGANA_MLA_PROFILES, getMLAProfile } from '../../../../data/seed/telangana-mla-profiles';
+import { TELANGANA_2014_RESULTS, TELANGANA_2018_RESULTS } from '../../../../data/seed/telangana-historical-results';
+import { AP_2019_RESULTS } from '../../../../data/seed/andhra-pradesh-historical-results';
+import { getKA2018Result } from '../../../../data/seed/karnataka-historical-results';
+import { getMH2019Result } from '../../../../data/seed/maharashtra-historical-results';
+import { getTN2016Result } from '../../../../data/seed/tamil-nadu-historical-results';
+import { getKL2016Result } from '../../../../data/seed/kerala-historical-results';
+import { getWB2016Result } from '../../../../data/seed/west-bengal-historical-results';
+import { getUP2017Result } from '../../../../data/seed/uttar-pradesh-historical-results';
 
 // Generic Mapper
 function genericToBrief(stateCode: string, c: any): ConstituencyBrief {
@@ -198,3 +206,243 @@ export function getTSMLAProfiles() {
 }
 
 export { getMLAProfile };
+
+export interface ConstituencyElectionSummary {
+  electionYear: number;
+  electionType: 'GENERAL' | 'BYPOLL';
+  winner: string;
+  winnerName: string;
+  winnerVotes: number | null;
+  runnerUp: string;
+  margin: number | null;
+  marginPercent: number | null;
+}
+
+export interface ConstituencyElectionData {
+  recentElection: ConstituencyElectionSummary;
+  elections: ConstituencyElectionSummary[];
+}
+
+/**
+ * Returns temporally correct election summary and historical results for a constituency.
+ * Preserves actual election years (e.g. 2025 for DL, 2024 for AP/MH, 2023 for TS/KA, 2022 for UP, etc.)
+ * Preserves null for missing vote totals or margins without zero coercion.
+ */
+export function getConstituencyElectionData(stateCode: string, acNo: number): ConstituencyElectionData | null {
+  const code = stateCode.toUpperCase();
+  const raw = getRawConstituency(code, acNo);
+  const brief = getConstituency(code, acNo);
+  if (!raw && !brief) return null;
+
+  // Determine actual election year and results
+  let year = 2024;
+  let winner = '';
+  let winnerName = '';
+  let winnerVotes: number | null = null;
+  let runnerUp = '';
+  let margin: number | null = null;
+
+  if (raw) {
+    if (raw.winner2025 !== undefined) {
+      year = 2025;
+      winner = raw.winner2025;
+      winnerName = raw.winnerName2025 ?? '';
+      winnerVotes = typeof raw.winnerVotes2025 === 'number' ? raw.winnerVotes2025 : null;
+      runnerUp = raw.runnerUp2025 ?? '';
+      margin = typeof raw.margin2025 === 'number' ? raw.margin2025 : null;
+    } else if (raw.winner2024 !== undefined) {
+      year = 2024;
+      winner = raw.winner2024;
+      winnerName = raw.winnerName2024 ?? '';
+      winnerVotes = typeof raw.winnerVotes2024 === 'number' ? raw.winnerVotes2024 : null;
+      runnerUp = raw.runnerUp2024 ?? '';
+      margin = typeof raw.margin2024 === 'number' ? raw.margin2024 : null;
+    } else if (raw.winner2023 !== undefined) {
+      year = 2023;
+      winner = raw.winner2023;
+      winnerName = raw.winnerName2023 ?? '';
+      winnerVotes = typeof raw.winnerVotes2023 === 'number' ? raw.winnerVotes2023 : null;
+      runnerUp = raw.runnerUp2023 ?? '';
+      margin = typeof raw.margin2023 === 'number' ? raw.margin2023 : null;
+    } else if (raw.winner2022 !== undefined) {
+      year = 2022;
+      winner = raw.winner2022;
+      winnerName = raw.winnerName2022 ?? '';
+      winnerVotes = typeof raw.winnerVotes2022 === 'number' ? raw.winnerVotes2022 : null;
+      runnerUp = raw.runnerUp2022 ?? '';
+      margin = typeof raw.margin2022 === 'number' ? raw.margin2022 : null;
+    } else if (raw.winner2021 !== undefined) {
+      year = 2021;
+      winner = raw.winner2021;
+      winnerName = raw.winnerName2021 ?? '';
+      winnerVotes = typeof raw.winnerVotes2021 === 'number' ? raw.winnerVotes2021 : null;
+      runnerUp = raw.runnerUp2021 ?? '';
+      margin = typeof raw.margin2021 === 'number' ? raw.margin2021 : null;
+    } else {
+      winner = raw.winner ?? brief?.currentParty ?? '';
+      winnerName = raw.winnerName ?? brief?.currentMLA ?? '';
+      winnerVotes = typeof raw.winnerVotes === 'number' ? raw.winnerVotes : null;
+      runnerUp = raw.runnerUp ?? '';
+      margin = typeof raw.margin === 'number' ? raw.margin : null;
+      if (['BR'].includes(code)) year = 2020;
+      else if (['TS', 'KA', 'MP', 'RJ', 'CG', 'MZ', 'NL', 'TR', 'ML'].includes(code)) year = 2023;
+      else if (['UP', 'PB', 'GJ', 'GA', 'HP', 'MN', 'UK'].includes(code)) year = 2022;
+      else if (['TN', 'KL', 'WB', 'AS', 'PY'].includes(code)) year = 2021;
+      else year = 2024;
+    }
+  } else if (brief) {
+    winner = brief.currentParty;
+    winnerName = brief.currentMLA;
+  }
+
+  const marginPercent =
+    winnerVotes && winnerVotes > 0 && margin != null
+      ? parseFloat(((margin / winnerVotes) * 100).toFixed(1))
+      : null;
+
+  const recentElection: ConstituencyElectionSummary = {
+    electionYear: year,
+    electionType: 'GENERAL',
+    winner,
+    winnerName,
+    winnerVotes,
+    runnerUp,
+    margin,
+    marginPercent,
+  };
+
+  const elections: ConstituencyElectionSummary[] = [recentElection];
+
+  // Attach verified historical per-constituency election records
+  if (code === 'TS') {
+    const h2018 = TELANGANA_2018_RESULTS.find((r) => r.acNo === acNo);
+    if (h2018) {
+      elections.push({
+        electionYear: 2018,
+        electionType: 'GENERAL',
+        winner: h2018.party,
+        winnerName: h2018.winner,
+        winnerVotes: null,
+        runnerUp: '',
+        margin: null,
+        marginPercent: null,
+      });
+    }
+    const h2014 = TELANGANA_2014_RESULTS.find((r) => r.acNo === acNo);
+    if (h2014) {
+      elections.push({
+        electionYear: 2014,
+        electionType: 'GENERAL',
+        winner: h2014.party,
+        winnerName: h2014.winner,
+        winnerVotes: null,
+        runnerUp: '',
+        margin: null,
+        marginPercent: null,
+      });
+    }
+  } else if (code === 'AP') {
+    const h2019 = AP_2019_RESULTS.find((r) => r.acNo === acNo);
+    if (h2019) {
+      elections.push({
+        electionYear: 2019,
+        electionType: 'GENERAL',
+        winner: h2019.party,
+        winnerName: h2019.winner,
+        winnerVotes: null,
+        runnerUp: '',
+        margin: null,
+        marginPercent: null,
+      });
+    }
+  } else if (code === 'KA') {
+    const h2018 = getKA2018Result(acNo);
+    if (h2018) {
+      elections.push({
+        electionYear: 2018,
+        electionType: 'GENERAL',
+        winner: h2018.party,
+        winnerName: h2018.winner,
+        winnerVotes: null,
+        runnerUp: '',
+        margin: null,
+        marginPercent: null,
+      });
+    }
+  } else if (code === 'MH') {
+    const h2019 = getMH2019Result(acNo);
+    if (h2019) {
+      elections.push({
+        electionYear: 2019,
+        electionType: 'GENERAL',
+        winner: h2019.party,
+        winnerName: h2019.winner,
+        winnerVotes: null,
+        runnerUp: '',
+        margin: null,
+        marginPercent: null,
+      });
+    }
+  } else if (code === 'TN') {
+    const h2016 = getTN2016Result(acNo);
+    if (h2016) {
+      elections.push({
+        electionYear: 2016,
+        electionType: 'GENERAL',
+        winner: h2016.party,
+        winnerName: h2016.winner,
+        winnerVotes: null,
+        runnerUp: '',
+        margin: null,
+        marginPercent: null,
+      });
+    }
+  } else if (code === 'KL') {
+    const h2016 = getKL2016Result(acNo);
+    if (h2016) {
+      elections.push({
+        electionYear: 2016,
+        electionType: 'GENERAL',
+        winner: h2016.party,
+        winnerName: h2016.winner,
+        winnerVotes: null,
+        runnerUp: '',
+        margin: null,
+        marginPercent: null,
+      });
+    }
+  } else if (code === 'WB') {
+    const h2016 = getWB2016Result(acNo);
+    if (h2016) {
+      elections.push({
+        electionYear: 2016,
+        electionType: 'GENERAL',
+        winner: h2016.party,
+        winnerName: h2016.winner,
+        winnerVotes: null,
+        runnerUp: '',
+        margin: null,
+        marginPercent: null,
+      });
+    }
+  } else if (code === 'UP') {
+    const h2017 = getUP2017Result(acNo);
+    if (h2017) {
+      elections.push({
+        electionYear: 2017,
+        electionType: 'GENERAL',
+        winner: h2017.party,
+        winnerName: h2017.winner,
+        winnerVotes: null,
+        runnerUp: '',
+        margin: null,
+        marginPercent: null,
+      });
+    }
+  }
+
+  return {
+    recentElection,
+    elections,
+  };
+}

@@ -339,6 +339,109 @@ describe('CTO Directive 083 — Political Intelligence Vertical Slice', () => {
       expect(() => validateConstituenciesListResponse('invalid')).toThrow(ApiValidationError);
       expect(() => validateConstituenciesListResponse({ state: 'TS', data: 'not-array' })).toThrow(ApiValidationError);
     });
+    it('validateConstituencyDetail parses recentElection with real election year and nullable numbers', () => {
+      const detailDL = {
+        id: 'DL-AC-1',
+        name: 'Nerela',
+        acNo: 1,
+        stateCode: 'DL',
+        district: 'North Delhi',
+        reservationStatus: 'GEN',
+        currentParty: 'AAP',
+        currentMLA: 'Sharad Kumar',
+        recentElection: {
+          electionYear: 2025,
+          electionType: 'GENERAL' as const,
+          winner: 'AAP',
+          winnerName: 'Sharad Kumar',
+          winnerVotes: null,
+          runnerUp: 'BJP',
+          margin: null,
+          marginPercent: null,
+        },
+        elections: [
+          {
+            electionYear: 2025,
+            electionType: 'GENERAL' as const,
+            winner: 'AAP',
+            winnerName: 'Sharad Kumar',
+            winnerVotes: null,
+            runnerUp: 'BJP',
+            margin: null,
+            marginPercent: null,
+          },
+        ],
+      };
+
+      const res = validateConstituencyDetail(detailDL, 'test-dl');
+      expect(res.recentElection).toBeDefined();
+      expect(res.recentElection?.electionYear).toBe(2025);
+      expect(res.recentElection?.winnerVotes).toBeNull();
+      expect(res.recentElection?.margin).toBeNull();
+      expect(res.recentElection?.marginPercent).toBeNull();
+      expect(res.elections?.length).toBe(1);
+      expect(res.elections?.[0].electionYear).toBe(2025);
+    });
+
+    it('validateConstituencyDetail preserves historical multi-election results with distinct years', () => {
+      const detailTS = {
+        id: 'TS-AC-72',
+        name: 'Kodangal',
+        acNo: 72,
+        stateCode: 'TS',
+        district: 'Vikarabad',
+        reservationStatus: 'GEN',
+        currentParty: 'INC',
+        currentMLA: 'Anumula Revanth Reddy',
+        recentElection: {
+          electionYear: 2023,
+          electionType: 'GENERAL' as const,
+          winner: 'INC',
+          winnerName: 'Anumula Revanth Reddy',
+          winnerVotes: 108547,
+          runnerUp: 'BRS',
+          margin: 57814,
+          marginPercent: 53.3,
+        },
+        elections: [
+          {
+            electionYear: 2023,
+            electionType: 'GENERAL' as const,
+            winner: 'INC',
+            winnerName: 'Anumula Revanth Reddy',
+            winnerVotes: 108547,
+            runnerUp: 'BRS',
+            margin: 57814,
+            marginPercent: 53.3,
+          },
+          {
+            electionYear: 2018,
+            electionType: 'GENERAL' as const,
+            winner: 'TRS',
+            winnerName: 'Patnam Narender Reddy',
+            winnerVotes: null,
+            runnerUp: '',
+            margin: null,
+            marginPercent: null,
+          },
+          {
+            electionYear: 2014,
+            electionType: 'GENERAL' as const,
+            winner: 'TDP',
+            winnerName: 'Anumula Revanth Reddy',
+            winnerVotes: null,
+            runnerUp: '',
+            margin: null,
+            marginPercent: null,
+          },
+        ],
+      };
+
+      const res = validateConstituencyDetail(detailTS, 'test-ts');
+      expect(res.elections?.length).toBe(3);
+      expect(res.elections?.map((e) => e.electionYear)).toEqual([2023, 2018, 2014]);
+      expect(res.elections?.map((e) => e.winner)).toEqual(['INC', 'TRS', 'TDP']);
+    });
   });
 
   // ══════════════════════════════════════════════════════════════════════════
@@ -395,6 +498,34 @@ describe('CTO Directive 083 — Political Intelligence Vertical Slice', () => {
       expect(tsConstituencies.length).toBe(119);
       const ac72 = tsConstituencies.find((c) => c.acNo === 72);
       expect(ac72?.name).toBe('Kodangal');
+    });
+
+    it('national data coverage inventory matrix covers all 31 Indian states and UTs with 4,123 assembly seats without gaps', () => {
+      const fs = require('fs');
+      const path = require('path');
+      const matrixPath = path.resolve(__dirname, '../../../reports/w021_5_national_data_coverage_matrix.json');
+      expect(fs.existsSync(matrixPath)).toBe(true);
+
+      const matrix = JSON.parse(fs.readFileSync(matrixPath, 'utf8'));
+      expect(matrix.totalStatesAudited).toBe(31);
+      expect(matrix.summary.totalStatutorySeats).toBe(4123);
+      expect(matrix.summary.totalSeededConstituencies).toBe(4123);
+      expect(matrix.summary.canonicalFullStatesCount).toBe(4);
+      expect(matrix.summary.partialHistoricalCount).toBe(4);
+      expect(matrix.summary.seededPendingAffidavitsCount).toBe(23);
+      expect(matrix.states.length).toBe(31);
+
+      // Verify DL has 70 seats
+      const dl = matrix.states.find((s: any) => s.stateCode === 'DL');
+      expect(dl).toBeDefined();
+      expect(dl?.statutoryAssemblySeats).toBe(70);
+      expect(dl?.primaryElectionYear).toBe(2025);
+
+      // Verify AP and MH have 2024
+      const ap = matrix.states.find((s: any) => s.stateCode === 'AP');
+      expect(ap?.primaryElectionYear).toBe(2024);
+      const mh = matrix.states.find((s: any) => s.stateCode === 'MH');
+      expect(mh?.primaryElectionYear).toBe(2024);
     });
   });
 });

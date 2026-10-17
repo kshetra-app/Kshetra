@@ -12,7 +12,31 @@ import type { ApiClient } from '../client';
 import { ApiValidationError } from '../errors';
 import type { ConstituencyBrief } from '@kshetra/shared';
 
+export interface ConstituencyElectionSummary {
+  electionYear: number;
+  electionType: 'GENERAL' | 'BYPOLL';
+  winner: string;
+  winnerName: string;
+  winnerVotes: number | null;
+  runnerUp: string;
+  margin: number | null;
+  marginPercent: number | null;
+}
+
+export interface ConstituencyElectionHistoryItem {
+  electionYear: number;
+  electionType: 'GENERAL' | 'BYPOLL';
+  winner: string;
+  winnerName: string;
+  winnerVotes: number | null;
+  runnerUp: string;
+  margin: number | null;
+  marginPercent: number | null;
+}
+
 export interface ConstituencyDetailDTO extends ConstituencyBrief {
+  recentElection?: ConstituencyElectionSummary;
+  elections?: ConstituencyElectionHistoryItem[];
   election2023?: {
     winner: string;
     winnerName: string;
@@ -82,8 +106,40 @@ export function validateConstituencyBrief(data: unknown, context: string): Const
 export function validateConstituencyDetail(data: unknown, context: string): ConstituencyDetailDTO {
   const brief = validateConstituencyBrief(data, context);
   const obj = data as Record<string, unknown>;
-  let election2023: ConstituencyDetailDTO['election2023'];
 
+  let recentElection: ConstituencyElectionSummary | undefined;
+  if (obj.recentElection && typeof obj.recentElection === 'object' && !Array.isArray(obj.recentElection)) {
+    const el = obj.recentElection as Record<string, unknown>;
+    recentElection = {
+      electionYear: typeof el.electionYear === 'number' ? el.electionYear : 2024,
+      electionType: (el.electionType as 'GENERAL' | 'BYPOLL') ?? 'GENERAL',
+      winner: typeof el.winner === 'string' ? el.winner : '',
+      winnerName: typeof el.winnerName === 'string' ? el.winnerName : '',
+      winnerVotes: typeof el.winnerVotes === 'number' ? el.winnerVotes : null,
+      runnerUp: typeof el.runnerUp === 'string' ? el.runnerUp : '',
+      margin: typeof el.margin === 'number' ? el.margin : null,
+      marginPercent: typeof el.marginPercent === 'number' ? el.marginPercent : null,
+    };
+  }
+
+  let elections: ConstituencyElectionHistoryItem[] | undefined;
+  if (Array.isArray(obj.elections)) {
+    elections = obj.elections.map((item, idx) => {
+      const el = item as Record<string, unknown>;
+      return {
+        electionYear: typeof el.electionYear === 'number' ? el.electionYear : (typeof el.year === 'number' ? el.year : 2024),
+        electionType: (el.electionType as 'GENERAL' | 'BYPOLL') ?? 'GENERAL',
+        winner: typeof el.winner === 'string' ? el.winner : '',
+        winnerName: typeof el.winnerName === 'string' ? el.winnerName : '',
+        winnerVotes: typeof el.winnerVotes === 'number' ? el.winnerVotes : null,
+        runnerUp: typeof el.runnerUp === 'string' ? el.runnerUp : '',
+        margin: typeof el.margin === 'number' ? el.margin : null,
+        marginPercent: typeof el.marginPercent === 'number' ? el.marginPercent : null,
+      };
+    });
+  }
+
+  let election2023: ConstituencyDetailDTO['election2023'];
   if (obj.election2023 && typeof obj.election2023 === 'object' && !Array.isArray(obj.election2023)) {
     const el = obj.election2023 as Record<string, unknown>;
     election2023 = {
@@ -98,6 +154,8 @@ export function validateConstituencyDetail(data: unknown, context: string): Cons
 
   return {
     ...brief,
+    recentElection,
+    elections,
     election2023,
   };
 }

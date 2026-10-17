@@ -304,9 +304,9 @@ export default function LegislatorProfileScreen() {
             </View>
             <View style={styles.infoGrid}>
               <InfoRow label="Constituency" value={`#${acNo} ${constName}`} />
-              <InfoRow label="Votes Received" value={constituency.winnerVotes.toLocaleString()} />
-              <InfoRow label="Margin" value={`${constituency.margin.toLocaleString()} votes`} />
-              <InfoRow label="Runner Up" value={constituency.runnerUp} />
+              <InfoRow label="Votes Received" value={constituency.winnerVotes != null ? constituency.winnerVotes.toLocaleString() : 'Not Reported'} />
+              <InfoRow label="Margin" value={constituency.margin != null ? `${constituency.margin.toLocaleString()} votes` : '—'} />
+              <InfoRow label="Runner Up" value={constituency.runnerUp || '—'} />
               <InfoRow label="Type" value={constType} />
               {constituency.currentParty !== constituency.winnerParty && (
                 <InfoRow label="Current Party" value={constituency.currentParty} />
