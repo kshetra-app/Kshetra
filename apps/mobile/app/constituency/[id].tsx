@@ -146,7 +146,9 @@ export default function ConstituencyDetailScreen() {
   const effectiveWinnerVotes = apiDetail?.recentElection?.winnerVotes !== undefined ? apiDetail.recentElection.winnerVotes : (constituency?.winnerVotes ?? null);
   const effectiveMargin = apiDetail?.recentElection?.margin !== undefined ? apiDetail.recentElection.margin : (constituency?.margin ?? null);
   const effectiveRunnerUp = apiDetail?.recentElection?.runnerUp || constituency?.runnerUp || '';
-  const effectiveElectionYear = apiDetail?.recentElection?.electionYear ?? constituency?.electionYear ?? 2024;
+  const effectiveElectionYear = apiDetail?.recentElection?.electionYear !== undefined
+    ? apiDetail.recentElection.electionYear
+    : (constituency?.electionYear ?? null);
   const effectiveMarginPercent = apiDetail?.recentElection?.marginPercent !== undefined
     ? apiDetail.recentElection.marginPercent
     : (effectiveMargin != null && effectiveWinnerVotes != null && effectiveWinnerVotes > 0
@@ -314,7 +316,7 @@ export default function ConstituencyDetailScreen() {
                 styles.provenanceText,
                 { color: dataSource === 'LIVE_API' ? '#10B981' : '#3B82F6' }
               ]}>
-                {dataSource === 'LIVE_API' ? 'Verified Live API' : 'Offline Seed Data'}
+                {dataSource === 'LIVE_API' ? 'Live API (Electoral) + Seed Data' : (dataSource === 'OFFLINE_SEED' ? 'Offline Seed Data' : 'Data Unavailable')}
               </Text>
             </View>
             <View style={styles.heroButtons}>
@@ -412,7 +414,9 @@ export default function ConstituencyDetailScreen() {
 
         {/* Result Card with Temporally Correct Year and Non-Coerced Disclosures */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>{t('constituency.electionResult', { year: effectiveElectionYear })}</Text>
+          <Text style={styles.sectionTitle}>
+            {effectiveElectionYear ? t('constituency.electionResult', { year: effectiveElectionYear }) : t('constituency.recentElectionResult', { defaultValue: 'Recent Election Result' })}
+          </Text>
           <View style={styles.resultCard}>
             <View style={styles.resultRow}>
               <View style={styles.resultLeft}>
@@ -473,7 +477,7 @@ export default function ConstituencyDetailScreen() {
               <MLACard profile={mla} />
               <Pressable
                 style={styles.fullProfileBtn}
-                onPress={() => router.push(`/legislator/MLA_${stateCode}_${effectiveElectionYear}_${effectiveConstituencyName}_${acNo}` as any)}
+                onPress={() => router.push(effectiveElectionYear ? `/legislator/MLA_${stateCode}_${effectiveElectionYear}_${effectiveConstituencyName}_${acNo}` as any : `/legislator/MLA_${stateCode}_${effectiveConstituencyName}_${acNo}` as any)}
               >
                 <Ionicons name="person-circle" size={16} color="#4F8EF7" />
                 <Text style={styles.fullProfileBtnText}>{t('constituencyExtended.viewCompleteProfile')}</Text>
@@ -555,7 +559,9 @@ export default function ConstituencyDetailScreen() {
 
                 <View style={styles.demoDivider} />
 
-                <Text style={styles.demoSubTitle}>{t('constituency.voterProfile', { year: effectiveElectionYear })}</Text>
+                <Text style={styles.demoSubTitle}>
+                  {effectiveElectionYear ? t('constituency.voterProfile', { year: effectiveElectionYear }) : t('constituency.recentVoterProfile', { defaultValue: 'Voter Profile' })}
+                </Text>
                 <View style={styles.demoRow}>
                   <View style={styles.demoItem}>
                     <Text style={styles.demoValue}>{(demo.totalVoters / 1000).toFixed(0)}K</Text>
@@ -758,14 +764,14 @@ export default function ConstituencyDetailScreen() {
         {(() => {
           let elections = [
             ...getHistoryForState(stateCode, acNo),
-            { year: effectiveElectionYear, winner: effectiveWinnerName, party: effectiveWinnerParty },
+            { year: effectiveElectionYear ?? undefined, winner: effectiveWinnerName, party: effectiveWinnerParty },
           ];
 
           if (apiDetail?.elections && apiDetail.elections.length > 0) {
             elections = [...apiDetail.elections]
-              .sort((a, b) => a.electionYear - b.electionYear)
+              .sort((a, b) => (a.electionYear ?? 0) - (b.electionYear ?? 0))
               .map((e) => ({
-                year: e.electionYear,
+                year: e.electionYear ?? undefined,
                 winner: e.winnerName || e.winner,
                 party: e.winner,
               }));
@@ -945,7 +951,7 @@ export default function ConstituencyDetailScreen() {
         {/* Candidate Transparency — Affidavit */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>{t('constituencyExtended.candidateTransparency')}</Text>
-          <AffidavitCard stateCode={stateCode} acNo={acNo} electionYear={effectiveElectionYear} />
+          <AffidavitCard stateCode={stateCode} acNo={acNo} electionYear={effectiveElectionYear ?? constituency?.electionYear ?? 2024} />
         </View>
 
         {/* AI Analysis */}

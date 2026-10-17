@@ -13,7 +13,7 @@ import { ApiValidationError } from '../errors';
 import type { ConstituencyBrief } from '@kshetra/shared';
 
 export interface ConstituencyElectionSummary {
-  electionYear: number;
+  electionYear: number | null;
   electionType: 'GENERAL' | 'BYPOLL';
   winner: string;
   winnerName: string;
@@ -24,7 +24,7 @@ export interface ConstituencyElectionSummary {
 }
 
 export interface ConstituencyElectionHistoryItem {
-  electionYear: number;
+  electionYear: number | null;
   electionType: 'GENERAL' | 'BYPOLL';
   winner: string;
   winnerName: string;
@@ -111,8 +111,8 @@ export function validateConstituencyDetail(data: unknown, context: string): Cons
   if (obj.recentElection && typeof obj.recentElection === 'object' && !Array.isArray(obj.recentElection)) {
     const el = obj.recentElection as Record<string, unknown>;
     recentElection = {
-      electionYear: typeof el.electionYear === 'number' ? el.electionYear : 2024,
-      electionType: (el.electionType as 'GENERAL' | 'BYPOLL') ?? 'GENERAL',
+      electionYear: typeof el.electionYear === 'number' ? el.electionYear : null,
+      electionType: el.electionType === 'BYPOLL' ? 'BYPOLL' : 'GENERAL',
       winner: typeof el.winner === 'string' ? el.winner : '',
       winnerName: typeof el.winnerName === 'string' ? el.winnerName : '',
       winnerVotes: typeof el.winnerVotes === 'number' ? el.winnerVotes : null,
@@ -127,8 +127,8 @@ export function validateConstituencyDetail(data: unknown, context: string): Cons
     elections = obj.elections.map((item, idx) => {
       const el = item as Record<string, unknown>;
       return {
-        electionYear: typeof el.electionYear === 'number' ? el.electionYear : (typeof el.year === 'number' ? el.year : 2024),
-        electionType: (el.electionType as 'GENERAL' | 'BYPOLL') ?? 'GENERAL',
+        electionYear: typeof el.electionYear === 'number' ? el.electionYear : (typeof el.year === 'number' ? el.year : null),
+        electionType: el.electionType === 'BYPOLL' ? 'BYPOLL' : 'GENERAL',
         winner: typeof el.winner === 'string' ? el.winner : '',
         winnerName: typeof el.winnerName === 'string' ? el.winnerName : '',
         winnerVotes: typeof el.winnerVotes === 'number' ? el.winnerVotes : null,

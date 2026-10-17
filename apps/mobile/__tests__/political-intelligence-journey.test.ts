@@ -509,10 +509,10 @@ describe('CTO Directive 083 — Political Intelligence Vertical Slice', () => {
       const matrix = JSON.parse(fs.readFileSync(matrixPath, 'utf8'));
       expect(matrix.totalStatesAudited).toBe(31);
       expect(matrix.summary.totalStatutorySeats).toBe(4123);
-      expect(matrix.summary.totalSeededConstituencies).toBe(4123);
-      expect(matrix.summary.canonicalFullStatesCount).toBe(4);
-      expect(matrix.summary.partialHistoricalCount).toBe(4);
-      expect(matrix.summary.seededPendingAffidavitsCount).toBe(23);
+      expect(matrix.summary.canonicalFullStatesCount).toBe(0); // Strictly zero under Rule IV-001
+      expect(matrix.summary.partialLocalWithGeoCount).toBe(1); // TS
+      expect(matrix.summary.partialHistoricalNoGeoCount).toBe(7); // AP, KA, MH, TN, KL, WB, UP
+      expect(matrix.summary.seededSingleTermCount).toBe(23); // Remaining 23 states/UTs
       expect(matrix.states.length).toBe(31);
 
       // Verify DL has 70 seats

@@ -1,16 +1,17 @@
 {
   "title": "Kshetra W021.5 National Data Coverage Inventory Matrix",
-  "directive": "CTO DIRECTIVE 084",
-  "generatedAt": "2026-10-17T04:25:59.273Z",
+  "directive": "CTO DIRECTIVE 085",
+  "generatedAt": "2026-10-17T08:16:37.888Z",
   "totalStatesAudited": 31,
   "summary": {
-    "canonicalFullStatesCount": 4,
-    "partialHistoricalCount": 4,
-    "seededPendingAffidavitsCount": 23,
+    "canonicalFullStatesCount": 0,
+    "partialLocalWithGeoCount": 1,
+    "partialHistoricalNoGeoCount": 7,
+    "seededSingleTermCount": 23,
     "unavailableCount": 0,
     "totalStatutorySeats": 4123,
     "totalSeededConstituencies": 4123,
-    "totalMlaProfiles": 5029,
+    "totalMlaProfiles": 3913,
     "totalAffidavits": 28
   },
   "states": [
@@ -19,7 +20,59 @@
       "stateName": "Telangana",
       "statutoryAssemblySeats": 119,
       "seededConstituencyCount": 119,
-      "discoverySupported": true,
+      "registryIdentity": {
+        "statutorySeats": 119,
+        "uniqueValidAcCount": 119,
+        "seatCoverageRatio": "119/119 (100.0%)",
+        "missingAcNos": [],
+        "duplicateAcNos": [],
+        "outOfRangeAcNos": [],
+        "unexpectedExtraRecords": [],
+        "identityStatus": "VERIFIED_STATUTORY_MATCH"
+      },
+      "electoralResults": {
+        "recentElectionYear": 2023,
+        "recentElectionType": "GENERAL",
+        "resultsPresentCount": 119,
+        "resultsCoverageRatio": "119/119 (100.0%)",
+        "winnerVotesPresentCount": 119,
+        "winnerVotesMissingCount": 0,
+        "marginPresentCount": 119,
+        "marginMissingCount": 0
+      },
+      "historicalCoverage": {
+        "primaryElectionYear": 2023,
+        "demonstrablePerAcYears": [
+          2018,
+          2014
+        ],
+        "totalElectionYearsRepresented": 3,
+        "stateHistoricalFilePresent": true,
+        "inferredYearsRejected": []
+      },
+      "representativeCoverage": {
+        "uniqueProfilesCount": 119,
+        "resolvedToStatutoryAcCount": 119,
+        "profileCoverageRatio": "119/119 (100.0%)",
+        "extraNonStatutoryProfiles": 0
+      },
+      "affidavitCoverage": {
+        "totalAffidavitsInStore": 17,
+        "affidavitCoverageRatio": "17/119 (14.3%)",
+        "hasPendingNotice": true
+      },
+      "geospatialCoverage": {
+        "hasGeoJSON": true,
+        "fileName": "telangana-assembly.geojson",
+        "featureCount": 120,
+        "coordinatesValid": true
+      },
+      "provenanceCoverage": {
+        "primarySource": "Election Commission of India (ECI) / State Election Commission",
+        "affidavitSource": "ADR / MyNeta candidate disclosures",
+        "verificationStatus": "OFFLINE_LOCAL_FIXTURE",
+        "liveDatabaseVerified": false
+      },
       "primaryElectionYear": 2023,
       "primaryElectionType": "GENERAL",
       "availableElectionYears": [
@@ -33,315 +86,943 @@
       "hasGeoJSON": true,
       "hasHistoricalPerConstituency": true,
       "hasStateElectionHistory": true,
-      "dataTier": "CANONICAL_FULL",
-      "dataCompletenessStatus": "VERIFIED_PRODUCTION",
-      "provenanceSource": "Election Commission of India (ECI) / State Election Commission + ADR/MyNeta candidate disclosures",
-      "materialGaps": []
+      "dataTier": "SEEDED_RICH_LOCAL_WITH_GEO",
+      "dataCompletenessStatus": "PARTIAL_VERIFIED_OFFLINE",
+      "provenanceSource": "Election Commission of India (ECI) / State Election Commission + ADR / MyNeta candidate disclosures",
+      "materialGaps": [
+        "Candidate affidavits only partially available: 17/119 seats (14.3% coverage; 102 seats display Affidavit Pending notice)",
+        "Financial defect DQ-W021.5-B2.2E-001 remains STRICTLY OPEN pending CTO adjudication"
+      ],
+      "knownExceptions": []
     },
     {
       "stateCode": "AP",
       "stateName": "Andhra Pradesh",
       "statutoryAssemblySeats": 175,
       "seededConstituencyCount": 175,
-      "discoverySupported": true,
+      "registryIdentity": {
+        "statutorySeats": 175,
+        "uniqueValidAcCount": 175,
+        "seatCoverageRatio": "175/175 (100.0%)",
+        "missingAcNos": [],
+        "duplicateAcNos": [],
+        "outOfRangeAcNos": [],
+        "unexpectedExtraRecords": [],
+        "identityStatus": "VERIFIED_STATUTORY_MATCH"
+      },
+      "electoralResults": {
+        "recentElectionYear": 2024,
+        "recentElectionType": "GENERAL",
+        "resultsPresentCount": 175,
+        "resultsCoverageRatio": "175/175 (100.0%)",
+        "winnerVotesPresentCount": 175,
+        "winnerVotesMissingCount": 0,
+        "marginPresentCount": 175,
+        "marginMissingCount": 0
+      },
+      "historicalCoverage": {
+        "primaryElectionYear": 2024,
+        "demonstrablePerAcYears": [
+          2019
+        ],
+        "totalElectionYearsRepresented": 2,
+        "stateHistoricalFilePresent": true,
+        "inferredYearsRejected": []
+      },
+      "representativeCoverage": {
+        "uniqueProfilesCount": 172,
+        "resolvedToStatutoryAcCount": 172,
+        "profileCoverageRatio": "172/175 (98.3%)",
+        "extraNonStatutoryProfiles": 0
+      },
+      "affidavitCoverage": {
+        "totalAffidavitsInStore": 2,
+        "affidavitCoverageRatio": "2/175 (1.1%)",
+        "hasPendingNotice": true
+      },
+      "geospatialCoverage": {
+        "hasGeoJSON": false,
+        "fileName": null,
+        "featureCount": 0,
+        "coordinatesValid": false
+      },
+      "provenanceCoverage": {
+        "primarySource": "Election Commission of India (ECI) / State Election Commission",
+        "affidavitSource": "ADR / MyNeta candidate disclosures",
+        "verificationStatus": "OFFLINE_LOCAL_FIXTURE",
+        "liveDatabaseVerified": false
+      },
       "primaryElectionYear": 2024,
       "primaryElectionType": "GENERAL",
       "availableElectionYears": [
         2024,
         2019
       ],
-      "mlaProfilesAvailable": 344,
+      "mlaProfilesAvailable": 172,
       "demographicsAvailable": 175,
       "affidavitsAvailable": 2,
       "hasGeoJSON": false,
       "hasHistoricalPerConstituency": true,
       "hasStateElectionHistory": true,
-      "dataTier": "CANONICAL_FULL",
-      "dataCompletenessStatus": "VERIFIED_PRODUCTION",
-      "provenanceSource": "Election Commission of India (ECI) / State Election Commission + ADR/MyNeta candidate disclosures",
+      "dataTier": "SEEDED_HISTORICAL_NO_GEO",
+      "dataCompletenessStatus": "FUNCTIONAL_PARTIAL_OFFLINE",
+      "provenanceSource": "Election Commission of India (ECI) / State Election Commission + ADR / MyNeta candidate disclosures",
       "materialGaps": [
+        "Candidate affidavits only partially available: 2/175 seats (1.1% coverage; 173 seats display Affidavit Pending notice)",
         "Assembly boundary GeoJSON not indexed in repository data/geo"
-      ]
+      ],
+      "knownExceptions": []
     },
     {
       "stateCode": "KA",
       "stateName": "Karnataka",
       "statutoryAssemblySeats": 224,
       "seededConstituencyCount": 224,
-      "discoverySupported": true,
+      "registryIdentity": {
+        "statutorySeats": 224,
+        "uniqueValidAcCount": 224,
+        "seatCoverageRatio": "224/224 (100.0%)",
+        "missingAcNos": [],
+        "duplicateAcNos": [],
+        "outOfRangeAcNos": [],
+        "unexpectedExtraRecords": [],
+        "identityStatus": "VERIFIED_STATUTORY_MATCH"
+      },
+      "electoralResults": {
+        "recentElectionYear": 2023,
+        "recentElectionType": "GENERAL",
+        "resultsPresentCount": 224,
+        "resultsCoverageRatio": "224/224 (100.0%)",
+        "winnerVotesPresentCount": 224,
+        "winnerVotesMissingCount": 0,
+        "marginPresentCount": 224,
+        "marginMissingCount": 0
+      },
+      "historicalCoverage": {
+        "primaryElectionYear": 2023,
+        "demonstrablePerAcYears": [
+          2018
+        ],
+        "totalElectionYearsRepresented": 2,
+        "stateHistoricalFilePresent": true,
+        "inferredYearsRejected": []
+      },
+      "representativeCoverage": {
+        "uniqueProfilesCount": 224,
+        "resolvedToStatutoryAcCount": 224,
+        "profileCoverageRatio": "224/224 (100.0%)",
+        "extraNonStatutoryProfiles": 0
+      },
+      "affidavitCoverage": {
+        "totalAffidavitsInStore": 2,
+        "affidavitCoverageRatio": "2/224 (0.9%)",
+        "hasPendingNotice": true
+      },
+      "geospatialCoverage": {
+        "hasGeoJSON": false,
+        "fileName": null,
+        "featureCount": 0,
+        "coordinatesValid": false
+      },
+      "provenanceCoverage": {
+        "primarySource": "Election Commission of India (ECI) / State Election Commission",
+        "affidavitSource": "ADR / MyNeta candidate disclosures",
+        "verificationStatus": "OFFLINE_LOCAL_FIXTURE",
+        "liveDatabaseVerified": false
+      },
       "primaryElectionYear": 2023,
       "primaryElectionType": "GENERAL",
       "availableElectionYears": [
         2023,
         2018
       ],
-      "mlaProfilesAvailable": 215,
-      "demographicsAvailable": 0,
+      "mlaProfilesAvailable": 224,
+      "demographicsAvailable": 224,
       "affidavitsAvailable": 2,
       "hasGeoJSON": false,
       "hasHistoricalPerConstituency": true,
       "hasStateElectionHistory": true,
-      "dataTier": "CANONICAL_FULL",
-      "dataCompletenessStatus": "VERIFIED_PRODUCTION",
-      "provenanceSource": "Election Commission of India (ECI) / State Election Commission + ADR/MyNeta candidate disclosures",
+      "dataTier": "SEEDED_HISTORICAL_NO_GEO",
+      "dataCompletenessStatus": "FUNCTIONAL_PARTIAL_OFFLINE",
+      "provenanceSource": "Election Commission of India (ECI) / State Election Commission + ADR / MyNeta candidate disclosures",
       "materialGaps": [
+        "Candidate affidavits only partially available: 2/224 seats (0.9% coverage; 222 seats display Affidavit Pending notice)",
         "Assembly boundary GeoJSON not indexed in repository data/geo"
-      ]
+      ],
+      "knownExceptions": []
     },
     {
       "stateCode": "MH",
       "stateName": "Maharashtra",
       "statutoryAssemblySeats": 288,
       "seededConstituencyCount": 288,
-      "discoverySupported": true,
+      "registryIdentity": {
+        "statutorySeats": 288,
+        "uniqueValidAcCount": 288,
+        "seatCoverageRatio": "288/288 (100.0%)",
+        "missingAcNos": [],
+        "duplicateAcNos": [],
+        "outOfRangeAcNos": [],
+        "unexpectedExtraRecords": [],
+        "identityStatus": "VERIFIED_STATUTORY_MATCH"
+      },
+      "electoralResults": {
+        "recentElectionYear": 2024,
+        "recentElectionType": "GENERAL",
+        "resultsPresentCount": 288,
+        "resultsCoverageRatio": "288/288 (100.0%)",
+        "winnerVotesPresentCount": 288,
+        "winnerVotesMissingCount": 0,
+        "marginPresentCount": 288,
+        "marginMissingCount": 0
+      },
+      "historicalCoverage": {
+        "primaryElectionYear": 2024,
+        "demonstrablePerAcYears": [
+          2019
+        ],
+        "totalElectionYearsRepresented": 2,
+        "stateHistoricalFilePresent": true,
+        "inferredYearsRejected": []
+      },
+      "representativeCoverage": {
+        "uniqueProfilesCount": 288,
+        "resolvedToStatutoryAcCount": 288,
+        "profileCoverageRatio": "288/288 (100.0%)",
+        "extraNonStatutoryProfiles": 0
+      },
+      "affidavitCoverage": {
+        "totalAffidavitsInStore": 1,
+        "affidavitCoverageRatio": "1/288 (0.3%)",
+        "hasPendingNotice": true
+      },
+      "geospatialCoverage": {
+        "hasGeoJSON": false,
+        "fileName": null,
+        "featureCount": 0,
+        "coordinatesValid": false
+      },
+      "provenanceCoverage": {
+        "primarySource": "Election Commission of India (ECI) / State Election Commission",
+        "affidavitSource": "ADR / MyNeta candidate disclosures",
+        "verificationStatus": "OFFLINE_LOCAL_FIXTURE",
+        "liveDatabaseVerified": false
+      },
       "primaryElectionYear": 2024,
       "primaryElectionType": "GENERAL",
       "availableElectionYears": [
         2024,
         2019
       ],
-      "mlaProfilesAvailable": 268,
-      "demographicsAvailable": 0,
+      "mlaProfilesAvailable": 288,
+      "demographicsAvailable": 288,
       "affidavitsAvailable": 1,
       "hasGeoJSON": false,
       "hasHistoricalPerConstituency": true,
       "hasStateElectionHistory": true,
-      "dataTier": "CANONICAL_FULL",
-      "dataCompletenessStatus": "VERIFIED_PRODUCTION",
-      "provenanceSource": "Election Commission of India (ECI) / State Election Commission + ADR/MyNeta candidate disclosures",
+      "dataTier": "SEEDED_HISTORICAL_NO_GEO",
+      "dataCompletenessStatus": "FUNCTIONAL_PARTIAL_OFFLINE",
+      "provenanceSource": "Election Commission of India (ECI) / State Election Commission + ADR / MyNeta candidate disclosures",
       "materialGaps": [
+        "Candidate affidavits only partially available: 1/288 seats (0.3% coverage; 287 seats display Affidavit Pending notice)",
         "Assembly boundary GeoJSON not indexed in repository data/geo"
-      ]
+      ],
+      "knownExceptions": []
     },
     {
       "stateCode": "TN",
       "stateName": "Tamil Nadu",
       "statutoryAssemblySeats": 234,
       "seededConstituencyCount": 234,
-      "discoverySupported": true,
+      "registryIdentity": {
+        "statutorySeats": 234,
+        "uniqueValidAcCount": 234,
+        "seatCoverageRatio": "234/234 (100.0%)",
+        "missingAcNos": [],
+        "duplicateAcNos": [],
+        "outOfRangeAcNos": [],
+        "unexpectedExtraRecords": [],
+        "identityStatus": "VERIFIED_STATUTORY_MATCH"
+      },
+      "electoralResults": {
+        "recentElectionYear": 2021,
+        "recentElectionType": "GENERAL",
+        "resultsPresentCount": 234,
+        "resultsCoverageRatio": "234/234 (100.0%)",
+        "winnerVotesPresentCount": 234,
+        "winnerVotesMissingCount": 0,
+        "marginPresentCount": 234,
+        "marginMissingCount": 0
+      },
+      "historicalCoverage": {
+        "primaryElectionYear": 2021,
+        "demonstrablePerAcYears": [
+          2016
+        ],
+        "totalElectionYearsRepresented": 2,
+        "stateHistoricalFilePresent": true,
+        "inferredYearsRejected": []
+      },
+      "representativeCoverage": {
+        "uniqueProfilesCount": 234,
+        "resolvedToStatutoryAcCount": 234,
+        "profileCoverageRatio": "234/234 (100.0%)",
+        "extraNonStatutoryProfiles": 0
+      },
+      "affidavitCoverage": {
+        "totalAffidavitsInStore": 2,
+        "affidavitCoverageRatio": "2/234 (0.9%)",
+        "hasPendingNotice": true
+      },
+      "geospatialCoverage": {
+        "hasGeoJSON": false,
+        "fileName": null,
+        "featureCount": 0,
+        "coordinatesValid": false
+      },
+      "provenanceCoverage": {
+        "primarySource": "Election Commission of India (ECI) / State Election Commission",
+        "affidavitSource": "ADR / MyNeta candidate disclosures",
+        "verificationStatus": "OFFLINE_LOCAL_FIXTURE",
+        "liveDatabaseVerified": false
+      },
       "primaryElectionYear": 2021,
       "primaryElectionType": "GENERAL",
       "availableElectionYears": [
         2021,
         2016
       ],
-      "mlaProfilesAvailable": 468,
+      "mlaProfilesAvailable": 234,
       "demographicsAvailable": 234,
       "affidavitsAvailable": 2,
       "hasGeoJSON": false,
       "hasHistoricalPerConstituency": true,
       "hasStateElectionHistory": true,
-      "dataTier": "PARTIAL_HISTORICAL_NO_GEOJSON",
-      "dataCompletenessStatus": "FUNCTIONAL_PARTIAL",
-      "provenanceSource": "Election Commission of India (ECI) / State Election Commission + ADR/MyNeta candidate disclosures",
+      "dataTier": "SEEDED_HISTORICAL_NO_GEO",
+      "dataCompletenessStatus": "FUNCTIONAL_PARTIAL_OFFLINE",
+      "provenanceSource": "Election Commission of India (ECI) / State Election Commission + ADR / MyNeta candidate disclosures",
       "materialGaps": [
+        "Candidate affidavits only partially available: 2/234 seats (0.9% coverage; 232 seats display Affidavit Pending notice)",
         "Assembly boundary GeoJSON not indexed in repository data/geo"
-      ]
+      ],
+      "knownExceptions": []
     },
     {
       "stateCode": "KL",
       "stateName": "Kerala",
       "statutoryAssemblySeats": 140,
       "seededConstituencyCount": 140,
-      "discoverySupported": true,
+      "registryIdentity": {
+        "statutorySeats": 140,
+        "uniqueValidAcCount": 140,
+        "seatCoverageRatio": "140/140 (100.0%)",
+        "missingAcNos": [],
+        "duplicateAcNos": [],
+        "outOfRangeAcNos": [],
+        "unexpectedExtraRecords": [],
+        "identityStatus": "VERIFIED_STATUTORY_MATCH"
+      },
+      "electoralResults": {
+        "recentElectionYear": 2021,
+        "recentElectionType": "GENERAL",
+        "resultsPresentCount": 140,
+        "resultsCoverageRatio": "140/140 (100.0%)",
+        "winnerVotesPresentCount": 140,
+        "winnerVotesMissingCount": 0,
+        "marginPresentCount": 140,
+        "marginMissingCount": 0
+      },
+      "historicalCoverage": {
+        "primaryElectionYear": 2021,
+        "demonstrablePerAcYears": [
+          2016
+        ],
+        "totalElectionYearsRepresented": 2,
+        "stateHistoricalFilePresent": true,
+        "inferredYearsRejected": []
+      },
+      "representativeCoverage": {
+        "uniqueProfilesCount": 140,
+        "resolvedToStatutoryAcCount": 140,
+        "profileCoverageRatio": "140/140 (100.0%)",
+        "extraNonStatutoryProfiles": 0
+      },
+      "affidavitCoverage": {
+        "totalAffidavitsInStore": 1,
+        "affidavitCoverageRatio": "1/140 (0.7%)",
+        "hasPendingNotice": true
+      },
+      "geospatialCoverage": {
+        "hasGeoJSON": false,
+        "fileName": null,
+        "featureCount": 0,
+        "coordinatesValid": false
+      },
+      "provenanceCoverage": {
+        "primarySource": "Election Commission of India (ECI) / State Election Commission",
+        "affidavitSource": "ADR / MyNeta candidate disclosures",
+        "verificationStatus": "OFFLINE_LOCAL_FIXTURE",
+        "liveDatabaseVerified": false
+      },
       "primaryElectionYear": 2021,
       "primaryElectionType": "GENERAL",
       "availableElectionYears": [
         2021,
         2016
       ],
-      "mlaProfilesAvailable": 280,
+      "mlaProfilesAvailable": 140,
       "demographicsAvailable": 140,
       "affidavitsAvailable": 1,
       "hasGeoJSON": false,
       "hasHistoricalPerConstituency": true,
       "hasStateElectionHistory": true,
-      "dataTier": "PARTIAL_HISTORICAL_NO_GEOJSON",
-      "dataCompletenessStatus": "FUNCTIONAL_PARTIAL",
-      "provenanceSource": "Election Commission of India (ECI) / State Election Commission + ADR/MyNeta candidate disclosures",
+      "dataTier": "SEEDED_HISTORICAL_NO_GEO",
+      "dataCompletenessStatus": "FUNCTIONAL_PARTIAL_OFFLINE",
+      "provenanceSource": "Election Commission of India (ECI) / State Election Commission + ADR / MyNeta candidate disclosures",
       "materialGaps": [
+        "Candidate affidavits only partially available: 1/140 seats (0.7% coverage; 139 seats display Affidavit Pending notice)",
         "Assembly boundary GeoJSON not indexed in repository data/geo"
-      ]
+      ],
+      "knownExceptions": []
     },
     {
       "stateCode": "WB",
       "stateName": "West Bengal",
       "statutoryAssemblySeats": 294,
       "seededConstituencyCount": 294,
-      "discoverySupported": true,
+      "registryIdentity": {
+        "statutorySeats": 294,
+        "uniqueValidAcCount": 294,
+        "seatCoverageRatio": "294/294 (100.0%)",
+        "missingAcNos": [],
+        "duplicateAcNos": [],
+        "outOfRangeAcNos": [],
+        "unexpectedExtraRecords": [],
+        "identityStatus": "VERIFIED_STATUTORY_MATCH"
+      },
+      "electoralResults": {
+        "recentElectionYear": 2021,
+        "recentElectionType": "GENERAL",
+        "resultsPresentCount": 294,
+        "resultsCoverageRatio": "294/294 (100.0%)",
+        "winnerVotesPresentCount": 294,
+        "winnerVotesMissingCount": 0,
+        "marginPresentCount": 294,
+        "marginMissingCount": 0
+      },
+      "historicalCoverage": {
+        "primaryElectionYear": 2021,
+        "demonstrablePerAcYears": [
+          2016
+        ],
+        "totalElectionYearsRepresented": 2,
+        "stateHistoricalFilePresent": true,
+        "inferredYearsRejected": []
+      },
+      "representativeCoverage": {
+        "uniqueProfilesCount": 294,
+        "resolvedToStatutoryAcCount": 294,
+        "profileCoverageRatio": "294/294 (100.0%)",
+        "extraNonStatutoryProfiles": 0
+      },
+      "affidavitCoverage": {
+        "totalAffidavitsInStore": 1,
+        "affidavitCoverageRatio": "1/294 (0.3%)",
+        "hasPendingNotice": true
+      },
+      "geospatialCoverage": {
+        "hasGeoJSON": false,
+        "fileName": null,
+        "featureCount": 0,
+        "coordinatesValid": false
+      },
+      "provenanceCoverage": {
+        "primarySource": "Election Commission of India (ECI) / State Election Commission",
+        "affidavitSource": "ADR / MyNeta candidate disclosures",
+        "verificationStatus": "OFFLINE_LOCAL_FIXTURE",
+        "liveDatabaseVerified": false
+      },
       "primaryElectionYear": 2021,
       "primaryElectionType": "GENERAL",
       "availableElectionYears": [
         2021,
         2016
       ],
-      "mlaProfilesAvailable": 588,
+      "mlaProfilesAvailable": 294,
       "demographicsAvailable": 294,
       "affidavitsAvailable": 1,
       "hasGeoJSON": false,
       "hasHistoricalPerConstituency": true,
       "hasStateElectionHistory": true,
-      "dataTier": "PARTIAL_HISTORICAL_NO_GEOJSON",
-      "dataCompletenessStatus": "FUNCTIONAL_PARTIAL",
-      "provenanceSource": "Election Commission of India (ECI) / State Election Commission + ADR/MyNeta candidate disclosures",
+      "dataTier": "SEEDED_HISTORICAL_NO_GEO",
+      "dataCompletenessStatus": "FUNCTIONAL_PARTIAL_OFFLINE",
+      "provenanceSource": "Election Commission of India (ECI) / State Election Commission + ADR / MyNeta candidate disclosures",
       "materialGaps": [
+        "Candidate affidavits only partially available: 1/294 seats (0.3% coverage; 293 seats display Affidavit Pending notice)",
         "Assembly boundary GeoJSON not indexed in repository data/geo"
-      ]
+      ],
+      "knownExceptions": []
     },
     {
       "stateCode": "UP",
       "stateName": "Uttar Pradesh",
       "statutoryAssemblySeats": 403,
       "seededConstituencyCount": 403,
-      "discoverySupported": true,
+      "registryIdentity": {
+        "statutorySeats": 403,
+        "uniqueValidAcCount": 403,
+        "seatCoverageRatio": "403/403 (100.0%)",
+        "missingAcNos": [],
+        "duplicateAcNos": [],
+        "outOfRangeAcNos": [],
+        "unexpectedExtraRecords": [],
+        "identityStatus": "VERIFIED_STATUTORY_MATCH"
+      },
+      "electoralResults": {
+        "recentElectionYear": 2022,
+        "recentElectionType": "GENERAL",
+        "resultsPresentCount": 403,
+        "resultsCoverageRatio": "403/403 (100.0%)",
+        "winnerVotesPresentCount": 403,
+        "winnerVotesMissingCount": 0,
+        "marginPresentCount": 403,
+        "marginMissingCount": 0
+      },
+      "historicalCoverage": {
+        "primaryElectionYear": 2022,
+        "demonstrablePerAcYears": [
+          2017
+        ],
+        "totalElectionYearsRepresented": 2,
+        "stateHistoricalFilePresent": true,
+        "inferredYearsRejected": []
+      },
+      "representativeCoverage": {
+        "uniqueProfilesCount": 344,
+        "resolvedToStatutoryAcCount": 344,
+        "profileCoverageRatio": "344/403 (85.4%)",
+        "extraNonStatutoryProfiles": 0
+      },
+      "affidavitCoverage": {
+        "totalAffidavitsInStore": 2,
+        "affidavitCoverageRatio": "2/403 (0.5%)",
+        "hasPendingNotice": true
+      },
+      "geospatialCoverage": {
+        "hasGeoJSON": false,
+        "fileName": null,
+        "featureCount": 0,
+        "coordinatesValid": false
+      },
+      "provenanceCoverage": {
+        "primarySource": "Election Commission of India (ECI) / State Election Commission",
+        "affidavitSource": "ADR / MyNeta candidate disclosures",
+        "verificationStatus": "OFFLINE_LOCAL_FIXTURE",
+        "liveDatabaseVerified": false
+      },
       "primaryElectionYear": 2022,
       "primaryElectionType": "GENERAL",
       "availableElectionYears": [
         2022,
         2017
       ],
-      "mlaProfilesAvailable": 357,
-      "demographicsAvailable": 401,
+      "mlaProfilesAvailable": 344,
+      "demographicsAvailable": 403,
       "affidavitsAvailable": 2,
       "hasGeoJSON": false,
       "hasHistoricalPerConstituency": true,
       "hasStateElectionHistory": true,
-      "dataTier": "PARTIAL_HISTORICAL_NO_GEOJSON",
-      "dataCompletenessStatus": "FUNCTIONAL_PARTIAL",
-      "provenanceSource": "Election Commission of India (ECI) / State Election Commission + ADR/MyNeta candidate disclosures",
+      "dataTier": "SEEDED_HISTORICAL_NO_GEO",
+      "dataCompletenessStatus": "FUNCTIONAL_PARTIAL_OFFLINE",
+      "provenanceSource": "Election Commission of India (ECI) / State Election Commission + ADR / MyNeta candidate disclosures",
       "materialGaps": [
+        "Candidate affidavits only partially available: 2/403 seats (0.5% coverage; 401 seats display Affidavit Pending notice)",
         "Assembly boundary GeoJSON not indexed in repository data/geo"
-      ]
+      ],
+      "knownExceptions": []
     },
     {
       "stateCode": "RJ",
       "stateName": "Rajasthan",
       "statutoryAssemblySeats": 200,
       "seededConstituencyCount": 200,
-      "discoverySupported": true,
+      "registryIdentity": {
+        "statutorySeats": 200,
+        "uniqueValidAcCount": 200,
+        "seatCoverageRatio": "200/200 (100.0%)",
+        "missingAcNos": [],
+        "duplicateAcNos": [],
+        "outOfRangeAcNos": [],
+        "unexpectedExtraRecords": [],
+        "identityStatus": "VERIFIED_STATUTORY_MATCH"
+      },
+      "electoralResults": {
+        "recentElectionYear": 2023,
+        "recentElectionType": "GENERAL",
+        "resultsPresentCount": 200,
+        "resultsCoverageRatio": "200/200 (100.0%)",
+        "winnerVotesPresentCount": 200,
+        "winnerVotesMissingCount": 0,
+        "marginPresentCount": 200,
+        "marginMissingCount": 0
+      },
+      "historicalCoverage": {
+        "primaryElectionYear": 2023,
+        "demonstrablePerAcYears": [],
+        "totalElectionYearsRepresented": 1,
+        "stateHistoricalFilePresent": false,
+        "inferredYearsRejected": []
+      },
+      "representativeCoverage": {
+        "uniqueProfilesCount": 187,
+        "resolvedToStatutoryAcCount": 187,
+        "profileCoverageRatio": "187/200 (93.5%)",
+        "extraNonStatutoryProfiles": 0
+      },
+      "affidavitCoverage": {
+        "totalAffidavitsInStore": 0,
+        "affidavitCoverageRatio": "0/200 (0.0%)",
+        "hasPendingNotice": true
+      },
+      "geospatialCoverage": {
+        "hasGeoJSON": false,
+        "fileName": null,
+        "featureCount": 0,
+        "coordinatesValid": false
+      },
+      "provenanceCoverage": {
+        "primarySource": "Election Commission of India (ECI) / State Election Commission",
+        "affidavitSource": "None",
+        "verificationStatus": "OFFLINE_LOCAL_FIXTURE",
+        "liveDatabaseVerified": false
+      },
       "primaryElectionYear": 2023,
       "primaryElectionType": "GENERAL",
       "availableElectionYears": [
         2023
       ],
       "mlaProfilesAvailable": 187,
-      "demographicsAvailable": 187,
+      "demographicsAvailable": 200,
       "affidavitsAvailable": 0,
       "hasGeoJSON": false,
       "hasHistoricalPerConstituency": false,
-      "hasStateElectionHistory": true,
-      "dataTier": "SEEDED_CONSTITUENCIES_PENDING_AFFIDAVITS",
-      "dataCompletenessStatus": "FUNCTIONAL_PARTIAL",
+      "hasStateElectionHistory": false,
+      "dataTier": "SEEDED_SINGLE_TERM_PENDING_GEO_HIST",
+      "dataCompletenessStatus": "FUNCTIONAL_PARTIAL_OFFLINE",
       "provenanceSource": "Election Commission of India (ECI) / State Election Commission",
       "materialGaps": [
-        "Candidate financial affidavits pending indexing (shows Affidavit Pending notice)",
+        "Candidate financial affidavits pending indexing (all constituencies display Affidavit Pending notice)",
         "Assembly boundary GeoJSON not indexed in repository data/geo",
         "Per-constituency historical elections prior to current term not yet seeded"
-      ]
+      ],
+      "knownExceptions": []
     },
     {
       "stateCode": "GJ",
       "stateName": "Gujarat",
       "statutoryAssemblySeats": 182,
       "seededConstituencyCount": 182,
-      "discoverySupported": true,
+      "registryIdentity": {
+        "statutorySeats": 182,
+        "uniqueValidAcCount": 182,
+        "seatCoverageRatio": "182/182 (100.0%)",
+        "missingAcNos": [],
+        "duplicateAcNos": [],
+        "outOfRangeAcNos": [],
+        "unexpectedExtraRecords": [],
+        "identityStatus": "VERIFIED_STATUTORY_MATCH"
+      },
+      "electoralResults": {
+        "recentElectionYear": 2022,
+        "recentElectionType": "GENERAL",
+        "resultsPresentCount": 182,
+        "resultsCoverageRatio": "182/182 (100.0%)",
+        "winnerVotesPresentCount": 182,
+        "winnerVotesMissingCount": 0,
+        "marginPresentCount": 182,
+        "marginMissingCount": 0
+      },
+      "historicalCoverage": {
+        "primaryElectionYear": 2022,
+        "demonstrablePerAcYears": [],
+        "totalElectionYearsRepresented": 1,
+        "stateHistoricalFilePresent": false,
+        "inferredYearsRejected": []
+      },
+      "representativeCoverage": {
+        "uniqueProfilesCount": 169,
+        "resolvedToStatutoryAcCount": 169,
+        "profileCoverageRatio": "169/182 (92.9%)",
+        "extraNonStatutoryProfiles": 0
+      },
+      "affidavitCoverage": {
+        "totalAffidavitsInStore": 0,
+        "affidavitCoverageRatio": "0/182 (0.0%)",
+        "hasPendingNotice": true
+      },
+      "geospatialCoverage": {
+        "hasGeoJSON": false,
+        "fileName": null,
+        "featureCount": 0,
+        "coordinatesValid": false
+      },
+      "provenanceCoverage": {
+        "primarySource": "Election Commission of India (ECI) / State Election Commission",
+        "affidavitSource": "None",
+        "verificationStatus": "OFFLINE_LOCAL_FIXTURE",
+        "liveDatabaseVerified": false
+      },
       "primaryElectionYear": 2022,
       "primaryElectionType": "GENERAL",
       "availableElectionYears": [
         2022
       ],
       "mlaProfilesAvailable": 169,
-      "demographicsAvailable": 169,
+      "demographicsAvailable": 182,
       "affidavitsAvailable": 0,
       "hasGeoJSON": false,
       "hasHistoricalPerConstituency": false,
-      "hasStateElectionHistory": true,
-      "dataTier": "SEEDED_CONSTITUENCIES_PENDING_AFFIDAVITS",
-      "dataCompletenessStatus": "FUNCTIONAL_PARTIAL",
+      "hasStateElectionHistory": false,
+      "dataTier": "SEEDED_SINGLE_TERM_PENDING_GEO_HIST",
+      "dataCompletenessStatus": "FUNCTIONAL_PARTIAL_OFFLINE",
       "provenanceSource": "Election Commission of India (ECI) / State Election Commission",
       "materialGaps": [
-        "Candidate financial affidavits pending indexing (shows Affidavit Pending notice)",
+        "Candidate financial affidavits pending indexing (all constituencies display Affidavit Pending notice)",
         "Assembly boundary GeoJSON not indexed in repository data/geo",
         "Per-constituency historical elections prior to current term not yet seeded"
-      ]
+      ],
+      "knownExceptions": []
     },
     {
       "stateCode": "JH",
       "stateName": "Jharkhand",
       "statutoryAssemblySeats": 81,
       "seededConstituencyCount": 81,
-      "discoverySupported": true,
+      "registryIdentity": {
+        "statutorySeats": 81,
+        "uniqueValidAcCount": 81,
+        "seatCoverageRatio": "81/81 (100.0%)",
+        "missingAcNos": [],
+        "duplicateAcNos": [],
+        "outOfRangeAcNos": [],
+        "unexpectedExtraRecords": [],
+        "identityStatus": "VERIFIED_STATUTORY_MATCH"
+      },
+      "electoralResults": {
+        "recentElectionYear": 2024,
+        "recentElectionType": "GENERAL",
+        "resultsPresentCount": 81,
+        "resultsCoverageRatio": "81/81 (100.0%)",
+        "winnerVotesPresentCount": 81,
+        "winnerVotesMissingCount": 0,
+        "marginPresentCount": 81,
+        "marginMissingCount": 0
+      },
+      "historicalCoverage": {
+        "primaryElectionYear": 2024,
+        "demonstrablePerAcYears": [],
+        "totalElectionYearsRepresented": 1,
+        "stateHistoricalFilePresent": false,
+        "inferredYearsRejected": []
+      },
+      "representativeCoverage": {
+        "uniqueProfilesCount": 73,
+        "resolvedToStatutoryAcCount": 73,
+        "profileCoverageRatio": "73/81 (90.1%)",
+        "extraNonStatutoryProfiles": 0
+      },
+      "affidavitCoverage": {
+        "totalAffidavitsInStore": 0,
+        "affidavitCoverageRatio": "0/81 (0.0%)",
+        "hasPendingNotice": true
+      },
+      "geospatialCoverage": {
+        "hasGeoJSON": false,
+        "fileName": null,
+        "featureCount": 0,
+        "coordinatesValid": false
+      },
+      "provenanceCoverage": {
+        "primarySource": "Election Commission of India (ECI) / State Election Commission",
+        "affidavitSource": "None",
+        "verificationStatus": "OFFLINE_LOCAL_FIXTURE",
+        "liveDatabaseVerified": false
+      },
       "primaryElectionYear": 2024,
       "primaryElectionType": "GENERAL",
       "availableElectionYears": [
         2024
       ],
       "mlaProfilesAvailable": 73,
-      "demographicsAvailable": 73,
+      "demographicsAvailable": 81,
       "affidavitsAvailable": 0,
       "hasGeoJSON": false,
       "hasHistoricalPerConstituency": false,
-      "hasStateElectionHistory": true,
-      "dataTier": "SEEDED_CONSTITUENCIES_PENDING_AFFIDAVITS",
-      "dataCompletenessStatus": "FUNCTIONAL_PARTIAL",
+      "hasStateElectionHistory": false,
+      "dataTier": "SEEDED_SINGLE_TERM_PENDING_GEO_HIST",
+      "dataCompletenessStatus": "FUNCTIONAL_PARTIAL_OFFLINE",
       "provenanceSource": "Election Commission of India (ECI) / State Election Commission",
       "materialGaps": [
-        "Candidate financial affidavits pending indexing (shows Affidavit Pending notice)",
+        "Candidate financial affidavits pending indexing (all constituencies display Affidavit Pending notice)",
         "Assembly boundary GeoJSON not indexed in repository data/geo",
         "Per-constituency historical elections prior to current term not yet seeded"
-      ]
+      ],
+      "knownExceptions": []
     },
     {
       "stateCode": "OD",
       "stateName": "Odisha",
       "statutoryAssemblySeats": 147,
       "seededConstituencyCount": 147,
-      "discoverySupported": true,
+      "registryIdentity": {
+        "statutorySeats": 147,
+        "uniqueValidAcCount": 147,
+        "seatCoverageRatio": "147/147 (100.0%)",
+        "missingAcNos": [],
+        "duplicateAcNos": [],
+        "outOfRangeAcNos": [],
+        "unexpectedExtraRecords": [],
+        "identityStatus": "VERIFIED_STATUTORY_MATCH"
+      },
+      "electoralResults": {
+        "recentElectionYear": 2024,
+        "recentElectionType": "GENERAL",
+        "resultsPresentCount": 147,
+        "resultsCoverageRatio": "147/147 (100.0%)",
+        "winnerVotesPresentCount": 147,
+        "winnerVotesMissingCount": 0,
+        "marginPresentCount": 147,
+        "marginMissingCount": 0
+      },
+      "historicalCoverage": {
+        "primaryElectionYear": 2024,
+        "demonstrablePerAcYears": [],
+        "totalElectionYearsRepresented": 1,
+        "stateHistoricalFilePresent": false,
+        "inferredYearsRejected": []
+      },
+      "representativeCoverage": {
+        "uniqueProfilesCount": 132,
+        "resolvedToStatutoryAcCount": 132,
+        "profileCoverageRatio": "132/147 (89.8%)",
+        "extraNonStatutoryProfiles": 0
+      },
+      "affidavitCoverage": {
+        "totalAffidavitsInStore": 0,
+        "affidavitCoverageRatio": "0/147 (0.0%)",
+        "hasPendingNotice": true
+      },
+      "geospatialCoverage": {
+        "hasGeoJSON": false,
+        "fileName": null,
+        "featureCount": 0,
+        "coordinatesValid": false
+      },
+      "provenanceCoverage": {
+        "primarySource": "Election Commission of India (ECI) / State Election Commission",
+        "affidavitSource": "None",
+        "verificationStatus": "OFFLINE_LOCAL_FIXTURE",
+        "liveDatabaseVerified": false
+      },
       "primaryElectionYear": 2024,
       "primaryElectionType": "GENERAL",
       "availableElectionYears": [
         2024
       ],
       "mlaProfilesAvailable": 132,
-      "demographicsAvailable": 132,
+      "demographicsAvailable": 147,
       "affidavitsAvailable": 0,
       "hasGeoJSON": false,
       "hasHistoricalPerConstituency": false,
-      "hasStateElectionHistory": true,
-      "dataTier": "SEEDED_CONSTITUENCIES_PENDING_AFFIDAVITS",
-      "dataCompletenessStatus": "FUNCTIONAL_PARTIAL",
+      "hasStateElectionHistory": false,
+      "dataTier": "SEEDED_SINGLE_TERM_PENDING_GEO_HIST",
+      "dataCompletenessStatus": "FUNCTIONAL_PARTIAL_OFFLINE",
       "provenanceSource": "Election Commission of India (ECI) / State Election Commission",
       "materialGaps": [
-        "Candidate financial affidavits pending indexing (shows Affidavit Pending notice)",
+        "Candidate financial affidavits pending indexing (all constituencies display Affidavit Pending notice)",
         "Assembly boundary GeoJSON not indexed in repository data/geo",
         "Per-constituency historical elections prior to current term not yet seeded"
-      ]
+      ],
+      "knownExceptions": []
     },
     {
       "stateCode": "DL",
       "stateName": "Delhi",
       "statutoryAssemblySeats": 70,
       "seededConstituencyCount": 70,
-      "discoverySupported": true,
+      "registryIdentity": {
+        "statutorySeats": 70,
+        "uniqueValidAcCount": 70,
+        "seatCoverageRatio": "70/70 (100.0%)",
+        "missingAcNos": [],
+        "duplicateAcNos": [],
+        "outOfRangeAcNos": [],
+        "unexpectedExtraRecords": [
+          "DL-AC-071..DL-AC-221 (Demographics)"
+        ],
+        "identityStatus": "VERIFIED_STATUTORY_MATCH"
+      },
+      "electoralResults": {
+        "recentElectionYear": 2025,
+        "recentElectionType": "GENERAL",
+        "resultsPresentCount": 70,
+        "resultsCoverageRatio": "70/70 (100.0%)",
+        "winnerVotesPresentCount": 70,
+        "winnerVotesMissingCount": 0,
+        "marginPresentCount": 70,
+        "marginMissingCount": 0
+      },
+      "historicalCoverage": {
+        "primaryElectionYear": 2025,
+        "demonstrablePerAcYears": [],
+        "totalElectionYearsRepresented": 1,
+        "stateHistoricalFilePresent": false,
+        "inferredYearsRejected": []
+      },
+      "representativeCoverage": {
+        "uniqueProfilesCount": 221,
+        "resolvedToStatutoryAcCount": 70,
+        "profileCoverageRatio": "70/70 (100.0%)",
+        "extraNonStatutoryProfiles": 151
+      },
+      "affidavitCoverage": {
+        "totalAffidavitsInStore": 0,
+        "affidavitCoverageRatio": "0/70 (0.0%)",
+        "hasPendingNotice": true
+      },
+      "geospatialCoverage": {
+        "hasGeoJSON": false,
+        "fileName": null,
+        "featureCount": 0,
+        "coordinatesValid": false
+      },
+      "provenanceCoverage": {
+        "primarySource": "Election Commission of India (ECI) / State Election Commission",
+        "affidavitSource": "None",
+        "verificationStatus": "OFFLINE_LOCAL_FIXTURE",
+        "liveDatabaseVerified": false
+      },
       "primaryElectionYear": 2025,
       "primaryElectionType": "GENERAL",
       "availableElectionYears": [
         2025
       ],
-      "mlaProfilesAvailable": 221,
-      "demographicsAvailable": 221,
+      "mlaProfilesAvailable": 70,
+      "demographicsAvailable": 70,
       "affidavitsAvailable": 0,
       "hasGeoJSON": false,
       "hasHistoricalPerConstituency": false,
-      "hasStateElectionHistory": true,
-      "dataTier": "SEEDED_CONSTITUENCIES_PENDING_AFFIDAVITS",
-      "dataCompletenessStatus": "FUNCTIONAL_PARTIAL",
+      "hasStateElectionHistory": false,
+      "dataTier": "SEEDED_SINGLE_TERM_PENDING_GEO_HIST",
+      "dataCompletenessStatus": "FUNCTIONAL_PARTIAL_OFFLINE",
       "provenanceSource": "Election Commission of India (ECI) / State Election Commission",
       "materialGaps": [
-        "Candidate financial affidavits pending indexing (shows Affidavit Pending notice)",
+        "Candidate financial affidavits pending indexing (all constituencies display Affidavit Pending notice)",
         "Assembly boundary GeoJSON not indexed in repository data/geo",
-        "Per-constituency historical elections prior to current term not yet seeded",
-        "Delhi records DL-AC-071 through DL-AC-087 are demographic non-assembly records preserved as NOT_VERIFIED"
+        "Per-constituency historical elections prior to current term not yet seeded"
+      ],
+      "knownExceptions": [
+        "Delhi statutory Assembly is strictly 70 seats. Demographics file contains 151 extra non-assembly records (DL-AC-071 through DL-AC-221) classified as NON_STATUTORY_DEMOGRAPHIC_PLACEHOLDER"
       ]
     },
     {
@@ -349,215 +1030,664 @@
       "stateName": "Punjab",
       "statutoryAssemblySeats": 117,
       "seededConstituencyCount": 117,
-      "discoverySupported": true,
+      "registryIdentity": {
+        "statutorySeats": 117,
+        "uniqueValidAcCount": 117,
+        "seatCoverageRatio": "117/117 (100.0%)",
+        "missingAcNos": [],
+        "duplicateAcNos": [],
+        "outOfRangeAcNos": [],
+        "unexpectedExtraRecords": [],
+        "identityStatus": "VERIFIED_STATUTORY_MATCH"
+      },
+      "electoralResults": {
+        "recentElectionYear": 2022,
+        "recentElectionType": "GENERAL",
+        "resultsPresentCount": 117,
+        "resultsCoverageRatio": "117/117 (100.0%)",
+        "winnerVotesPresentCount": 117,
+        "winnerVotesMissingCount": 0,
+        "marginPresentCount": 117,
+        "marginMissingCount": 0
+      },
+      "historicalCoverage": {
+        "primaryElectionYear": 2022,
+        "demonstrablePerAcYears": [],
+        "totalElectionYearsRepresented": 1,
+        "stateHistoricalFilePresent": false,
+        "inferredYearsRejected": []
+      },
+      "representativeCoverage": {
+        "uniqueProfilesCount": 111,
+        "resolvedToStatutoryAcCount": 111,
+        "profileCoverageRatio": "111/117 (94.9%)",
+        "extraNonStatutoryProfiles": 0
+      },
+      "affidavitCoverage": {
+        "totalAffidavitsInStore": 0,
+        "affidavitCoverageRatio": "0/117 (0.0%)",
+        "hasPendingNotice": true
+      },
+      "geospatialCoverage": {
+        "hasGeoJSON": false,
+        "fileName": null,
+        "featureCount": 0,
+        "coordinatesValid": false
+      },
+      "provenanceCoverage": {
+        "primarySource": "Election Commission of India (ECI) / State Election Commission",
+        "affidavitSource": "None",
+        "verificationStatus": "OFFLINE_LOCAL_FIXTURE",
+        "liveDatabaseVerified": false
+      },
       "primaryElectionYear": 2022,
       "primaryElectionType": "GENERAL",
       "availableElectionYears": [
         2022
       ],
       "mlaProfilesAvailable": 111,
-      "demographicsAvailable": 111,
+      "demographicsAvailable": 117,
       "affidavitsAvailable": 0,
       "hasGeoJSON": false,
       "hasHistoricalPerConstituency": false,
-      "hasStateElectionHistory": true,
-      "dataTier": "SEEDED_CONSTITUENCIES_PENDING_AFFIDAVITS",
-      "dataCompletenessStatus": "FUNCTIONAL_PARTIAL",
+      "hasStateElectionHistory": false,
+      "dataTier": "SEEDED_SINGLE_TERM_PENDING_GEO_HIST",
+      "dataCompletenessStatus": "FUNCTIONAL_PARTIAL_OFFLINE",
       "provenanceSource": "Election Commission of India (ECI) / State Election Commission",
       "materialGaps": [
-        "Candidate financial affidavits pending indexing (shows Affidavit Pending notice)",
+        "Candidate financial affidavits pending indexing (all constituencies display Affidavit Pending notice)",
         "Assembly boundary GeoJSON not indexed in repository data/geo",
         "Per-constituency historical elections prior to current term not yet seeded"
-      ]
+      ],
+      "knownExceptions": []
     },
     {
       "stateCode": "HR",
       "stateName": "Haryana",
       "statutoryAssemblySeats": 90,
       "seededConstituencyCount": 90,
-      "discoverySupported": true,
+      "registryIdentity": {
+        "statutorySeats": 90,
+        "uniqueValidAcCount": 90,
+        "seatCoverageRatio": "90/90 (100.0%)",
+        "missingAcNos": [],
+        "duplicateAcNos": [],
+        "outOfRangeAcNos": [],
+        "unexpectedExtraRecords": [],
+        "identityStatus": "VERIFIED_STATUTORY_MATCH"
+      },
+      "electoralResults": {
+        "recentElectionYear": 2024,
+        "recentElectionType": "GENERAL",
+        "resultsPresentCount": 90,
+        "resultsCoverageRatio": "90/90 (100.0%)",
+        "winnerVotesPresentCount": 90,
+        "winnerVotesMissingCount": 0,
+        "marginPresentCount": 90,
+        "marginMissingCount": 0
+      },
+      "historicalCoverage": {
+        "primaryElectionYear": 2024,
+        "demonstrablePerAcYears": [],
+        "totalElectionYearsRepresented": 1,
+        "stateHistoricalFilePresent": false,
+        "inferredYearsRejected": []
+      },
+      "representativeCoverage": {
+        "uniqueProfilesCount": 80,
+        "resolvedToStatutoryAcCount": 80,
+        "profileCoverageRatio": "80/90 (88.9%)",
+        "extraNonStatutoryProfiles": 0
+      },
+      "affidavitCoverage": {
+        "totalAffidavitsInStore": 0,
+        "affidavitCoverageRatio": "0/90 (0.0%)",
+        "hasPendingNotice": true
+      },
+      "geospatialCoverage": {
+        "hasGeoJSON": false,
+        "fileName": null,
+        "featureCount": 0,
+        "coordinatesValid": false
+      },
+      "provenanceCoverage": {
+        "primarySource": "Election Commission of India (ECI) / State Election Commission",
+        "affidavitSource": "None",
+        "verificationStatus": "OFFLINE_LOCAL_FIXTURE",
+        "liveDatabaseVerified": false
+      },
       "primaryElectionYear": 2024,
       "primaryElectionType": "GENERAL",
       "availableElectionYears": [
         2024
       ],
       "mlaProfilesAvailable": 80,
-      "demographicsAvailable": 80,
+      "demographicsAvailable": 90,
       "affidavitsAvailable": 0,
       "hasGeoJSON": false,
       "hasHistoricalPerConstituency": false,
-      "hasStateElectionHistory": true,
-      "dataTier": "SEEDED_CONSTITUENCIES_PENDING_AFFIDAVITS",
-      "dataCompletenessStatus": "FUNCTIONAL_PARTIAL",
+      "hasStateElectionHistory": false,
+      "dataTier": "SEEDED_SINGLE_TERM_PENDING_GEO_HIST",
+      "dataCompletenessStatus": "FUNCTIONAL_PARTIAL_OFFLINE",
       "provenanceSource": "Election Commission of India (ECI) / State Election Commission",
       "materialGaps": [
-        "Candidate financial affidavits pending indexing (shows Affidavit Pending notice)",
+        "Candidate financial affidavits pending indexing (all constituencies display Affidavit Pending notice)",
         "Assembly boundary GeoJSON not indexed in repository data/geo",
         "Per-constituency historical elections prior to current term not yet seeded"
-      ]
+      ],
+      "knownExceptions": []
     },
     {
       "stateCode": "CG",
       "stateName": "Chhattisgarh",
       "statutoryAssemblySeats": 90,
       "seededConstituencyCount": 90,
-      "discoverySupported": true,
+      "registryIdentity": {
+        "statutorySeats": 90,
+        "uniqueValidAcCount": 90,
+        "seatCoverageRatio": "90/90 (100.0%)",
+        "missingAcNos": [],
+        "duplicateAcNos": [],
+        "outOfRangeAcNos": [],
+        "unexpectedExtraRecords": [],
+        "identityStatus": "VERIFIED_STATUTORY_MATCH"
+      },
+      "electoralResults": {
+        "recentElectionYear": 2023,
+        "recentElectionType": "GENERAL",
+        "resultsPresentCount": 90,
+        "resultsCoverageRatio": "90/90 (100.0%)",
+        "winnerVotesPresentCount": 90,
+        "winnerVotesMissingCount": 0,
+        "marginPresentCount": 90,
+        "marginMissingCount": 0
+      },
+      "historicalCoverage": {
+        "primaryElectionYear": 2023,
+        "demonstrablePerAcYears": [],
+        "totalElectionYearsRepresented": 1,
+        "stateHistoricalFilePresent": false,
+        "inferredYearsRejected": []
+      },
+      "representativeCoverage": {
+        "uniqueProfilesCount": 81,
+        "resolvedToStatutoryAcCount": 81,
+        "profileCoverageRatio": "81/90 (90.0%)",
+        "extraNonStatutoryProfiles": 0
+      },
+      "affidavitCoverage": {
+        "totalAffidavitsInStore": 0,
+        "affidavitCoverageRatio": "0/90 (0.0%)",
+        "hasPendingNotice": true
+      },
+      "geospatialCoverage": {
+        "hasGeoJSON": false,
+        "fileName": null,
+        "featureCount": 0,
+        "coordinatesValid": false
+      },
+      "provenanceCoverage": {
+        "primarySource": "Election Commission of India (ECI) / State Election Commission",
+        "affidavitSource": "None",
+        "verificationStatus": "OFFLINE_LOCAL_FIXTURE",
+        "liveDatabaseVerified": false
+      },
       "primaryElectionYear": 2023,
       "primaryElectionType": "GENERAL",
       "availableElectionYears": [
         2023
       ],
       "mlaProfilesAvailable": 81,
-      "demographicsAvailable": 81,
+      "demographicsAvailable": 90,
       "affidavitsAvailable": 0,
       "hasGeoJSON": false,
       "hasHistoricalPerConstituency": false,
-      "hasStateElectionHistory": true,
-      "dataTier": "SEEDED_CONSTITUENCIES_PENDING_AFFIDAVITS",
-      "dataCompletenessStatus": "FUNCTIONAL_PARTIAL",
+      "hasStateElectionHistory": false,
+      "dataTier": "SEEDED_SINGLE_TERM_PENDING_GEO_HIST",
+      "dataCompletenessStatus": "FUNCTIONAL_PARTIAL_OFFLINE",
       "provenanceSource": "Election Commission of India (ECI) / State Election Commission",
       "materialGaps": [
-        "Candidate financial affidavits pending indexing (shows Affidavit Pending notice)",
+        "Candidate financial affidavits pending indexing (all constituencies display Affidavit Pending notice)",
         "Assembly boundary GeoJSON not indexed in repository data/geo",
         "Per-constituency historical elections prior to current term not yet seeded"
-      ]
+      ],
+      "knownExceptions": []
     },
     {
       "stateCode": "MP",
       "stateName": "Madhya Pradesh",
       "statutoryAssemblySeats": 230,
       "seededConstituencyCount": 230,
-      "discoverySupported": true,
+      "registryIdentity": {
+        "statutorySeats": 230,
+        "uniqueValidAcCount": 230,
+        "seatCoverageRatio": "230/230 (100.0%)",
+        "missingAcNos": [],
+        "duplicateAcNos": [],
+        "outOfRangeAcNos": [],
+        "unexpectedExtraRecords": [],
+        "identityStatus": "VERIFIED_STATUTORY_MATCH"
+      },
+      "electoralResults": {
+        "recentElectionYear": 2023,
+        "recentElectionType": "GENERAL",
+        "resultsPresentCount": 230,
+        "resultsCoverageRatio": "230/230 (100.0%)",
+        "winnerVotesPresentCount": 230,
+        "winnerVotesMissingCount": 0,
+        "marginPresentCount": 230,
+        "marginMissingCount": 0
+      },
+      "historicalCoverage": {
+        "primaryElectionYear": 2023,
+        "demonstrablePerAcYears": [],
+        "totalElectionYearsRepresented": 1,
+        "stateHistoricalFilePresent": false,
+        "inferredYearsRejected": []
+      },
+      "representativeCoverage": {
+        "uniqueProfilesCount": 208,
+        "resolvedToStatutoryAcCount": 208,
+        "profileCoverageRatio": "208/230 (90.4%)",
+        "extraNonStatutoryProfiles": 0
+      },
+      "affidavitCoverage": {
+        "totalAffidavitsInStore": 0,
+        "affidavitCoverageRatio": "0/230 (0.0%)",
+        "hasPendingNotice": true
+      },
+      "geospatialCoverage": {
+        "hasGeoJSON": false,
+        "fileName": null,
+        "featureCount": 0,
+        "coordinatesValid": false
+      },
+      "provenanceCoverage": {
+        "primarySource": "Election Commission of India (ECI) / State Election Commission",
+        "affidavitSource": "None",
+        "verificationStatus": "OFFLINE_LOCAL_FIXTURE",
+        "liveDatabaseVerified": false
+      },
       "primaryElectionYear": 2023,
       "primaryElectionType": "GENERAL",
       "availableElectionYears": [
         2023
       ],
       "mlaProfilesAvailable": 208,
-      "demographicsAvailable": 208,
+      "demographicsAvailable": 230,
       "affidavitsAvailable": 0,
       "hasGeoJSON": false,
       "hasHistoricalPerConstituency": false,
-      "hasStateElectionHistory": true,
-      "dataTier": "SEEDED_CONSTITUENCIES_PENDING_AFFIDAVITS",
-      "dataCompletenessStatus": "FUNCTIONAL_PARTIAL",
+      "hasStateElectionHistory": false,
+      "dataTier": "SEEDED_SINGLE_TERM_PENDING_GEO_HIST",
+      "dataCompletenessStatus": "FUNCTIONAL_PARTIAL_OFFLINE",
       "provenanceSource": "Election Commission of India (ECI) / State Election Commission",
       "materialGaps": [
-        "Candidate financial affidavits pending indexing (shows Affidavit Pending notice)",
+        "Candidate financial affidavits pending indexing (all constituencies display Affidavit Pending notice)",
         "Assembly boundary GeoJSON not indexed in repository data/geo",
         "Per-constituency historical elections prior to current term not yet seeded"
-      ]
+      ],
+      "knownExceptions": []
     },
     {
       "stateCode": "BR",
       "stateName": "Bihar",
       "statutoryAssemblySeats": 243,
       "seededConstituencyCount": 243,
-      "discoverySupported": true,
+      "registryIdentity": {
+        "statutorySeats": 243,
+        "uniqueValidAcCount": 243,
+        "seatCoverageRatio": "243/243 (100.0%)",
+        "missingAcNos": [],
+        "duplicateAcNos": [],
+        "outOfRangeAcNos": [],
+        "unexpectedExtraRecords": [],
+        "identityStatus": "VERIFIED_STATUTORY_MATCH"
+      },
+      "electoralResults": {
+        "recentElectionYear": 2020,
+        "recentElectionType": "GENERAL",
+        "resultsPresentCount": 0,
+        "resultsCoverageRatio": "0/243 (0.0%)",
+        "winnerVotesPresentCount": 0,
+        "winnerVotesMissingCount": 243,
+        "marginPresentCount": 0,
+        "marginMissingCount": 243
+      },
+      "historicalCoverage": {
+        "primaryElectionYear": 2020,
+        "demonstrablePerAcYears": [],
+        "totalElectionYearsRepresented": 1,
+        "stateHistoricalFilePresent": false,
+        "inferredYearsRejected": []
+      },
+      "representativeCoverage": {
+        "uniqueProfilesCount": 227,
+        "resolvedToStatutoryAcCount": 227,
+        "profileCoverageRatio": "227/243 (93.4%)",
+        "extraNonStatutoryProfiles": 0
+      },
+      "affidavitCoverage": {
+        "totalAffidavitsInStore": 0,
+        "affidavitCoverageRatio": "0/243 (0.0%)",
+        "hasPendingNotice": true
+      },
+      "geospatialCoverage": {
+        "hasGeoJSON": false,
+        "fileName": null,
+        "featureCount": 0,
+        "coordinatesValid": false
+      },
+      "provenanceCoverage": {
+        "primarySource": "Election Commission of India (ECI) / State Election Commission",
+        "affidavitSource": "None",
+        "verificationStatus": "OFFLINE_LOCAL_FIXTURE",
+        "liveDatabaseVerified": false
+      },
       "primaryElectionYear": 2020,
       "primaryElectionType": "GENERAL",
       "availableElectionYears": [
         2020
       ],
       "mlaProfilesAvailable": 227,
-      "demographicsAvailable": 227,
+      "demographicsAvailable": 243,
       "affidavitsAvailable": 0,
       "hasGeoJSON": false,
       "hasHistoricalPerConstituency": false,
-      "hasStateElectionHistory": true,
-      "dataTier": "SEEDED_CONSTITUENCIES_PENDING_AFFIDAVITS",
-      "dataCompletenessStatus": "FUNCTIONAL_PARTIAL",
+      "hasStateElectionHistory": false,
+      "dataTier": "SEEDED_SINGLE_TERM_PENDING_GEO_HIST",
+      "dataCompletenessStatus": "FUNCTIONAL_PARTIAL_OFFLINE",
       "provenanceSource": "Election Commission of India (ECI) / State Election Commission",
       "materialGaps": [
-        "Candidate financial affidavits pending indexing (shows Affidavit Pending notice)",
+        "Candidate financial affidavits pending indexing (all constituencies display Affidavit Pending notice)",
         "Assembly boundary GeoJSON not indexed in repository data/geo",
         "Per-constituency historical elections prior to current term not yet seeded"
-      ]
+      ],
+      "knownExceptions": []
     },
     {
       "stateCode": "AS",
       "stateName": "Assam",
       "statutoryAssemblySeats": 126,
       "seededConstituencyCount": 126,
-      "discoverySupported": true,
+      "registryIdentity": {
+        "statutorySeats": 126,
+        "uniqueValidAcCount": 126,
+        "seatCoverageRatio": "126/126 (100.0%)",
+        "missingAcNos": [],
+        "duplicateAcNos": [],
+        "outOfRangeAcNos": [],
+        "unexpectedExtraRecords": [],
+        "identityStatus": "VERIFIED_STATUTORY_MATCH"
+      },
+      "electoralResults": {
+        "recentElectionYear": 2021,
+        "recentElectionType": "GENERAL",
+        "resultsPresentCount": 0,
+        "resultsCoverageRatio": "0/126 (0.0%)",
+        "winnerVotesPresentCount": 0,
+        "winnerVotesMissingCount": 126,
+        "marginPresentCount": 0,
+        "marginMissingCount": 126
+      },
+      "historicalCoverage": {
+        "primaryElectionYear": 2021,
+        "demonstrablePerAcYears": [],
+        "totalElectionYearsRepresented": 1,
+        "stateHistoricalFilePresent": false,
+        "inferredYearsRejected": []
+      },
+      "representativeCoverage": {
+        "uniqueProfilesCount": 112,
+        "resolvedToStatutoryAcCount": 112,
+        "profileCoverageRatio": "112/126 (88.9%)",
+        "extraNonStatutoryProfiles": 0
+      },
+      "affidavitCoverage": {
+        "totalAffidavitsInStore": 0,
+        "affidavitCoverageRatio": "0/126 (0.0%)",
+        "hasPendingNotice": true
+      },
+      "geospatialCoverage": {
+        "hasGeoJSON": false,
+        "fileName": null,
+        "featureCount": 0,
+        "coordinatesValid": false
+      },
+      "provenanceCoverage": {
+        "primarySource": "Election Commission of India (ECI) / State Election Commission",
+        "affidavitSource": "None",
+        "verificationStatus": "OFFLINE_LOCAL_FIXTURE",
+        "liveDatabaseVerified": false
+      },
       "primaryElectionYear": 2021,
       "primaryElectionType": "GENERAL",
       "availableElectionYears": [
         2021
       ],
-      "mlaProfilesAvailable": 224,
-      "demographicsAvailable": 112,
+      "mlaProfilesAvailable": 112,
+      "demographicsAvailable": 126,
       "affidavitsAvailable": 0,
       "hasGeoJSON": false,
       "hasHistoricalPerConstituency": false,
-      "hasStateElectionHistory": true,
-      "dataTier": "SEEDED_CONSTITUENCIES_PENDING_AFFIDAVITS",
-      "dataCompletenessStatus": "FUNCTIONAL_PARTIAL",
+      "hasStateElectionHistory": false,
+      "dataTier": "SEEDED_SINGLE_TERM_PENDING_GEO_HIST",
+      "dataCompletenessStatus": "FUNCTIONAL_PARTIAL_OFFLINE",
       "provenanceSource": "Election Commission of India (ECI) / State Election Commission",
       "materialGaps": [
-        "Candidate financial affidavits pending indexing (shows Affidavit Pending notice)",
+        "Candidate financial affidavits pending indexing (all constituencies display Affidavit Pending notice)",
         "Assembly boundary GeoJSON not indexed in repository data/geo",
         "Per-constituency historical elections prior to current term not yet seeded"
-      ]
+      ],
+      "knownExceptions": []
     },
     {
       "stateCode": "GA",
       "stateName": "Goa",
       "statutoryAssemblySeats": 40,
       "seededConstituencyCount": 40,
-      "discoverySupported": true,
+      "registryIdentity": {
+        "statutorySeats": 40,
+        "uniqueValidAcCount": 40,
+        "seatCoverageRatio": "40/40 (100.0%)",
+        "missingAcNos": [],
+        "duplicateAcNos": [],
+        "outOfRangeAcNos": [],
+        "unexpectedExtraRecords": [],
+        "identityStatus": "VERIFIED_STATUTORY_MATCH"
+      },
+      "electoralResults": {
+        "recentElectionYear": 2022,
+        "recentElectionType": "GENERAL",
+        "resultsPresentCount": 40,
+        "resultsCoverageRatio": "40/40 (100.0%)",
+        "winnerVotesPresentCount": 40,
+        "winnerVotesMissingCount": 0,
+        "marginPresentCount": 40,
+        "marginMissingCount": 0
+      },
+      "historicalCoverage": {
+        "primaryElectionYear": 2022,
+        "demonstrablePerAcYears": [],
+        "totalElectionYearsRepresented": 1,
+        "stateHistoricalFilePresent": false,
+        "inferredYearsRejected": []
+      },
+      "representativeCoverage": {
+        "uniqueProfilesCount": 34,
+        "resolvedToStatutoryAcCount": 34,
+        "profileCoverageRatio": "34/40 (85.0%)",
+        "extraNonStatutoryProfiles": 0
+      },
+      "affidavitCoverage": {
+        "totalAffidavitsInStore": 0,
+        "affidavitCoverageRatio": "0/40 (0.0%)",
+        "hasPendingNotice": true
+      },
+      "geospatialCoverage": {
+        "hasGeoJSON": false,
+        "fileName": null,
+        "featureCount": 0,
+        "coordinatesValid": false
+      },
+      "provenanceCoverage": {
+        "primarySource": "Election Commission of India (ECI) / State Election Commission",
+        "affidavitSource": "None",
+        "verificationStatus": "OFFLINE_LOCAL_FIXTURE",
+        "liveDatabaseVerified": false
+      },
       "primaryElectionYear": 2022,
       "primaryElectionType": "GENERAL",
       "availableElectionYears": [
         2022
       ],
       "mlaProfilesAvailable": 34,
-      "demographicsAvailable": 34,
+      "demographicsAvailable": 40,
       "affidavitsAvailable": 0,
       "hasGeoJSON": false,
       "hasHistoricalPerConstituency": false,
-      "hasStateElectionHistory": true,
-      "dataTier": "SEEDED_CONSTITUENCIES_PENDING_AFFIDAVITS",
-      "dataCompletenessStatus": "FUNCTIONAL_PARTIAL",
+      "hasStateElectionHistory": false,
+      "dataTier": "SEEDED_SINGLE_TERM_PENDING_GEO_HIST",
+      "dataCompletenessStatus": "FUNCTIONAL_PARTIAL_OFFLINE",
       "provenanceSource": "Election Commission of India (ECI) / State Election Commission",
       "materialGaps": [
-        "Candidate financial affidavits pending indexing (shows Affidavit Pending notice)",
+        "Candidate financial affidavits pending indexing (all constituencies display Affidavit Pending notice)",
         "Assembly boundary GeoJSON not indexed in repository data/geo",
         "Per-constituency historical elections prior to current term not yet seeded"
-      ]
+      ],
+      "knownExceptions": []
     },
     {
       "stateCode": "HP",
       "stateName": "Himachal Pradesh",
       "statutoryAssemblySeats": 68,
       "seededConstituencyCount": 68,
-      "discoverySupported": true,
+      "registryIdentity": {
+        "statutorySeats": 68,
+        "uniqueValidAcCount": 68,
+        "seatCoverageRatio": "68/68 (100.0%)",
+        "missingAcNos": [],
+        "duplicateAcNos": [],
+        "outOfRangeAcNos": [],
+        "unexpectedExtraRecords": [],
+        "identityStatus": "VERIFIED_STATUTORY_MATCH"
+      },
+      "electoralResults": {
+        "recentElectionYear": 2022,
+        "recentElectionType": "GENERAL",
+        "resultsPresentCount": 68,
+        "resultsCoverageRatio": "68/68 (100.0%)",
+        "winnerVotesPresentCount": 68,
+        "winnerVotesMissingCount": 0,
+        "marginPresentCount": 68,
+        "marginMissingCount": 0
+      },
+      "historicalCoverage": {
+        "primaryElectionYear": 2022,
+        "demonstrablePerAcYears": [],
+        "totalElectionYearsRepresented": 1,
+        "stateHistoricalFilePresent": false,
+        "inferredYearsRejected": []
+      },
+      "representativeCoverage": {
+        "uniqueProfilesCount": 70,
+        "resolvedToStatutoryAcCount": 68,
+        "profileCoverageRatio": "68/68 (100.0%)",
+        "extraNonStatutoryProfiles": 2
+      },
+      "affidavitCoverage": {
+        "totalAffidavitsInStore": 0,
+        "affidavitCoverageRatio": "0/68 (0.0%)",
+        "hasPendingNotice": true
+      },
+      "geospatialCoverage": {
+        "hasGeoJSON": false,
+        "fileName": null,
+        "featureCount": 0,
+        "coordinatesValid": false
+      },
+      "provenanceCoverage": {
+        "primarySource": "Election Commission of India (ECI) / State Election Commission",
+        "affidavitSource": "None",
+        "verificationStatus": "OFFLINE_LOCAL_FIXTURE",
+        "liveDatabaseVerified": false
+      },
       "primaryElectionYear": 2022,
       "primaryElectionType": "GENERAL",
       "availableElectionYears": [
         2022
       ],
-      "mlaProfilesAvailable": 70,
-      "demographicsAvailable": 70,
+      "mlaProfilesAvailable": 68,
+      "demographicsAvailable": 68,
       "affidavitsAvailable": 0,
       "hasGeoJSON": false,
       "hasHistoricalPerConstituency": false,
-      "hasStateElectionHistory": true,
-      "dataTier": "SEEDED_CONSTITUENCIES_PENDING_AFFIDAVITS",
-      "dataCompletenessStatus": "FUNCTIONAL_PARTIAL",
+      "hasStateElectionHistory": false,
+      "dataTier": "SEEDED_SINGLE_TERM_PENDING_GEO_HIST",
+      "dataCompletenessStatus": "FUNCTIONAL_PARTIAL_OFFLINE",
       "provenanceSource": "Election Commission of India (ECI) / State Election Commission",
       "materialGaps": [
-        "Candidate financial affidavits pending indexing (shows Affidavit Pending notice)",
+        "Candidate financial affidavits pending indexing (all constituencies display Affidavit Pending notice)",
         "Assembly boundary GeoJSON not indexed in repository data/geo",
         "Per-constituency historical elections prior to current term not yet seeded"
-      ]
+      ],
+      "knownExceptions": []
     },
     {
       "stateCode": "MN",
       "stateName": "Manipur",
       "statutoryAssemblySeats": 60,
       "seededConstituencyCount": 60,
-      "discoverySupported": true,
+      "registryIdentity": {
+        "statutorySeats": 60,
+        "uniqueValidAcCount": 60,
+        "seatCoverageRatio": "60/60 (100.0%)",
+        "missingAcNos": [],
+        "duplicateAcNos": [],
+        "outOfRangeAcNos": [],
+        "unexpectedExtraRecords": [],
+        "identityStatus": "VERIFIED_STATUTORY_MATCH"
+      },
+      "electoralResults": {
+        "recentElectionYear": 2022,
+        "recentElectionType": "GENERAL",
+        "resultsPresentCount": 60,
+        "resultsCoverageRatio": "60/60 (100.0%)",
+        "winnerVotesPresentCount": 60,
+        "winnerVotesMissingCount": 0,
+        "marginPresentCount": 60,
+        "marginMissingCount": 0
+      },
+      "historicalCoverage": {
+        "primaryElectionYear": 2022,
+        "demonstrablePerAcYears": [],
+        "totalElectionYearsRepresented": 1,
+        "stateHistoricalFilePresent": false,
+        "inferredYearsRejected": []
+      },
+      "representativeCoverage": {
+        "uniqueProfilesCount": 60,
+        "resolvedToStatutoryAcCount": 60,
+        "profileCoverageRatio": "60/60 (100.0%)",
+        "extraNonStatutoryProfiles": 0
+      },
+      "affidavitCoverage": {
+        "totalAffidavitsInStore": 0,
+        "affidavitCoverageRatio": "0/60 (0.0%)",
+        "hasPendingNotice": true
+      },
+      "geospatialCoverage": {
+        "hasGeoJSON": false,
+        "fileName": null,
+        "featureCount": 0,
+        "coordinatesValid": false
+      },
+      "provenanceCoverage": {
+        "primarySource": "Election Commission of India (ECI) / State Election Commission",
+        "affidavitSource": "None",
+        "verificationStatus": "OFFLINE_LOCAL_FIXTURE",
+        "liveDatabaseVerified": false
+      },
       "primaryElectionYear": 2022,
       "primaryElectionType": "GENERAL",
       "availableElectionYears": [
@@ -568,22 +1698,72 @@
       "affidavitsAvailable": 0,
       "hasGeoJSON": false,
       "hasHistoricalPerConstituency": false,
-      "hasStateElectionHistory": true,
-      "dataTier": "SEEDED_CONSTITUENCIES_PENDING_AFFIDAVITS",
-      "dataCompletenessStatus": "FUNCTIONAL_PARTIAL",
+      "hasStateElectionHistory": false,
+      "dataTier": "SEEDED_SINGLE_TERM_PENDING_GEO_HIST",
+      "dataCompletenessStatus": "FUNCTIONAL_PARTIAL_OFFLINE",
       "provenanceSource": "Election Commission of India (ECI) / State Election Commission",
       "materialGaps": [
-        "Candidate financial affidavits pending indexing (shows Affidavit Pending notice)",
+        "Candidate financial affidavits pending indexing (all constituencies display Affidavit Pending notice)",
         "Assembly boundary GeoJSON not indexed in repository data/geo",
         "Per-constituency historical elections prior to current term not yet seeded"
-      ]
+      ],
+      "knownExceptions": []
     },
     {
       "stateCode": "ML",
       "stateName": "Meghalaya",
       "statutoryAssemblySeats": 60,
       "seededConstituencyCount": 60,
-      "discoverySupported": true,
+      "registryIdentity": {
+        "statutorySeats": 60,
+        "uniqueValidAcCount": 60,
+        "seatCoverageRatio": "60/60 (100.0%)",
+        "missingAcNos": [],
+        "duplicateAcNos": [],
+        "outOfRangeAcNos": [],
+        "unexpectedExtraRecords": [],
+        "identityStatus": "VERIFIED_STATUTORY_MATCH"
+      },
+      "electoralResults": {
+        "recentElectionYear": 2023,
+        "recentElectionType": "GENERAL",
+        "resultsPresentCount": 60,
+        "resultsCoverageRatio": "60/60 (100.0%)",
+        "winnerVotesPresentCount": 60,
+        "winnerVotesMissingCount": 0,
+        "marginPresentCount": 60,
+        "marginMissingCount": 0
+      },
+      "historicalCoverage": {
+        "primaryElectionYear": 2023,
+        "demonstrablePerAcYears": [],
+        "totalElectionYearsRepresented": 1,
+        "stateHistoricalFilePresent": false,
+        "inferredYearsRejected": []
+      },
+      "representativeCoverage": {
+        "uniqueProfilesCount": 60,
+        "resolvedToStatutoryAcCount": 60,
+        "profileCoverageRatio": "60/60 (100.0%)",
+        "extraNonStatutoryProfiles": 0
+      },
+      "affidavitCoverage": {
+        "totalAffidavitsInStore": 0,
+        "affidavitCoverageRatio": "0/60 (0.0%)",
+        "hasPendingNotice": true
+      },
+      "geospatialCoverage": {
+        "hasGeoJSON": false,
+        "fileName": null,
+        "featureCount": 0,
+        "coordinatesValid": false
+      },
+      "provenanceCoverage": {
+        "primarySource": "Election Commission of India (ECI) / State Election Commission",
+        "affidavitSource": "None",
+        "verificationStatus": "OFFLINE_LOCAL_FIXTURE",
+        "liveDatabaseVerified": false
+      },
       "primaryElectionYear": 2023,
       "primaryElectionType": "GENERAL",
       "availableElectionYears": [
@@ -594,22 +1774,72 @@
       "affidavitsAvailable": 0,
       "hasGeoJSON": false,
       "hasHistoricalPerConstituency": false,
-      "hasStateElectionHistory": true,
-      "dataTier": "SEEDED_CONSTITUENCIES_PENDING_AFFIDAVITS",
-      "dataCompletenessStatus": "FUNCTIONAL_PARTIAL",
+      "hasStateElectionHistory": false,
+      "dataTier": "SEEDED_SINGLE_TERM_PENDING_GEO_HIST",
+      "dataCompletenessStatus": "FUNCTIONAL_PARTIAL_OFFLINE",
       "provenanceSource": "Election Commission of India (ECI) / State Election Commission",
       "materialGaps": [
-        "Candidate financial affidavits pending indexing (shows Affidavit Pending notice)",
+        "Candidate financial affidavits pending indexing (all constituencies display Affidavit Pending notice)",
         "Assembly boundary GeoJSON not indexed in repository data/geo",
         "Per-constituency historical elections prior to current term not yet seeded"
-      ]
+      ],
+      "knownExceptions": []
     },
     {
       "stateCode": "MZ",
       "stateName": "Mizoram",
       "statutoryAssemblySeats": 40,
       "seededConstituencyCount": 40,
-      "discoverySupported": true,
+      "registryIdentity": {
+        "statutorySeats": 40,
+        "uniqueValidAcCount": 40,
+        "seatCoverageRatio": "40/40 (100.0%)",
+        "missingAcNos": [],
+        "duplicateAcNos": [],
+        "outOfRangeAcNos": [],
+        "unexpectedExtraRecords": [],
+        "identityStatus": "VERIFIED_STATUTORY_MATCH"
+      },
+      "electoralResults": {
+        "recentElectionYear": 2023,
+        "recentElectionType": "GENERAL",
+        "resultsPresentCount": 40,
+        "resultsCoverageRatio": "40/40 (100.0%)",
+        "winnerVotesPresentCount": 0,
+        "winnerVotesMissingCount": 40,
+        "marginPresentCount": 0,
+        "marginMissingCount": 40
+      },
+      "historicalCoverage": {
+        "primaryElectionYear": 2023,
+        "demonstrablePerAcYears": [],
+        "totalElectionYearsRepresented": 1,
+        "stateHistoricalFilePresent": false,
+        "inferredYearsRejected": []
+      },
+      "representativeCoverage": {
+        "uniqueProfilesCount": 35,
+        "resolvedToStatutoryAcCount": 35,
+        "profileCoverageRatio": "35/40 (87.5%)",
+        "extraNonStatutoryProfiles": 0
+      },
+      "affidavitCoverage": {
+        "totalAffidavitsInStore": 0,
+        "affidavitCoverageRatio": "0/40 (0.0%)",
+        "hasPendingNotice": true
+      },
+      "geospatialCoverage": {
+        "hasGeoJSON": false,
+        "fileName": null,
+        "featureCount": 0,
+        "coordinatesValid": false
+      },
+      "provenanceCoverage": {
+        "primarySource": "Election Commission of India (ECI) / State Election Commission",
+        "affidavitSource": "None",
+        "verificationStatus": "OFFLINE_LOCAL_FIXTURE",
+        "liveDatabaseVerified": false
+      },
       "primaryElectionYear": 2023,
       "primaryElectionType": "GENERAL",
       "availableElectionYears": [
@@ -620,22 +1850,72 @@
       "affidavitsAvailable": 0,
       "hasGeoJSON": false,
       "hasHistoricalPerConstituency": false,
-      "hasStateElectionHistory": true,
-      "dataTier": "SEEDED_CONSTITUENCIES_PENDING_AFFIDAVITS",
-      "dataCompletenessStatus": "FUNCTIONAL_PARTIAL",
+      "hasStateElectionHistory": false,
+      "dataTier": "SEEDED_SINGLE_TERM_PENDING_GEO_HIST",
+      "dataCompletenessStatus": "FUNCTIONAL_PARTIAL_OFFLINE",
       "provenanceSource": "Election Commission of India (ECI) / State Election Commission",
       "materialGaps": [
-        "Candidate financial affidavits pending indexing (shows Affidavit Pending notice)",
+        "Candidate financial affidavits pending indexing (all constituencies display Affidavit Pending notice)",
         "Assembly boundary GeoJSON not indexed in repository data/geo",
         "Per-constituency historical elections prior to current term not yet seeded"
-      ]
+      ],
+      "knownExceptions": []
     },
     {
       "stateCode": "NL",
       "stateName": "Nagaland",
       "statutoryAssemblySeats": 60,
       "seededConstituencyCount": 60,
-      "discoverySupported": true,
+      "registryIdentity": {
+        "statutorySeats": 60,
+        "uniqueValidAcCount": 60,
+        "seatCoverageRatio": "60/60 (100.0%)",
+        "missingAcNos": [],
+        "duplicateAcNos": [],
+        "outOfRangeAcNos": [],
+        "unexpectedExtraRecords": [],
+        "identityStatus": "VERIFIED_STATUTORY_MATCH"
+      },
+      "electoralResults": {
+        "recentElectionYear": 2023,
+        "recentElectionType": "GENERAL",
+        "resultsPresentCount": 60,
+        "resultsCoverageRatio": "60/60 (100.0%)",
+        "winnerVotesPresentCount": 60,
+        "winnerVotesMissingCount": 0,
+        "marginPresentCount": 60,
+        "marginMissingCount": 0
+      },
+      "historicalCoverage": {
+        "primaryElectionYear": 2023,
+        "demonstrablePerAcYears": [],
+        "totalElectionYearsRepresented": 1,
+        "stateHistoricalFilePresent": false,
+        "inferredYearsRejected": []
+      },
+      "representativeCoverage": {
+        "uniqueProfilesCount": 60,
+        "resolvedToStatutoryAcCount": 60,
+        "profileCoverageRatio": "60/60 (100.0%)",
+        "extraNonStatutoryProfiles": 0
+      },
+      "affidavitCoverage": {
+        "totalAffidavitsInStore": 0,
+        "affidavitCoverageRatio": "0/60 (0.0%)",
+        "hasPendingNotice": true
+      },
+      "geospatialCoverage": {
+        "hasGeoJSON": false,
+        "fileName": null,
+        "featureCount": 0,
+        "coordinatesValid": false
+      },
+      "provenanceCoverage": {
+        "primarySource": "Election Commission of India (ECI) / State Election Commission",
+        "affidavitSource": "None",
+        "verificationStatus": "OFFLINE_LOCAL_FIXTURE",
+        "liveDatabaseVerified": false
+      },
       "primaryElectionYear": 2023,
       "primaryElectionType": "GENERAL",
       "availableElectionYears": [
@@ -646,22 +1926,72 @@
       "affidavitsAvailable": 0,
       "hasGeoJSON": false,
       "hasHistoricalPerConstituency": false,
-      "hasStateElectionHistory": true,
-      "dataTier": "SEEDED_CONSTITUENCIES_PENDING_AFFIDAVITS",
-      "dataCompletenessStatus": "FUNCTIONAL_PARTIAL",
+      "hasStateElectionHistory": false,
+      "dataTier": "SEEDED_SINGLE_TERM_PENDING_GEO_HIST",
+      "dataCompletenessStatus": "FUNCTIONAL_PARTIAL_OFFLINE",
       "provenanceSource": "Election Commission of India (ECI) / State Election Commission",
       "materialGaps": [
-        "Candidate financial affidavits pending indexing (shows Affidavit Pending notice)",
+        "Candidate financial affidavits pending indexing (all constituencies display Affidavit Pending notice)",
         "Assembly boundary GeoJSON not indexed in repository data/geo",
         "Per-constituency historical elections prior to current term not yet seeded"
-      ]
+      ],
+      "knownExceptions": []
     },
     {
       "stateCode": "TR",
       "stateName": "Tripura",
       "statutoryAssemblySeats": 60,
       "seededConstituencyCount": 60,
-      "discoverySupported": true,
+      "registryIdentity": {
+        "statutorySeats": 60,
+        "uniqueValidAcCount": 60,
+        "seatCoverageRatio": "60/60 (100.0%)",
+        "missingAcNos": [],
+        "duplicateAcNos": [],
+        "outOfRangeAcNos": [],
+        "unexpectedExtraRecords": [],
+        "identityStatus": "VERIFIED_STATUTORY_MATCH"
+      },
+      "electoralResults": {
+        "recentElectionYear": 2023,
+        "recentElectionType": "GENERAL",
+        "resultsPresentCount": 60,
+        "resultsCoverageRatio": "60/60 (100.0%)",
+        "winnerVotesPresentCount": 60,
+        "winnerVotesMissingCount": 0,
+        "marginPresentCount": 60,
+        "marginMissingCount": 0
+      },
+      "historicalCoverage": {
+        "primaryElectionYear": 2023,
+        "demonstrablePerAcYears": [],
+        "totalElectionYearsRepresented": 1,
+        "stateHistoricalFilePresent": false,
+        "inferredYearsRejected": []
+      },
+      "representativeCoverage": {
+        "uniqueProfilesCount": 60,
+        "resolvedToStatutoryAcCount": 60,
+        "profileCoverageRatio": "60/60 (100.0%)",
+        "extraNonStatutoryProfiles": 0
+      },
+      "affidavitCoverage": {
+        "totalAffidavitsInStore": 0,
+        "affidavitCoverageRatio": "0/60 (0.0%)",
+        "hasPendingNotice": true
+      },
+      "geospatialCoverage": {
+        "hasGeoJSON": false,
+        "fileName": null,
+        "featureCount": 0,
+        "coordinatesValid": false
+      },
+      "provenanceCoverage": {
+        "primarySource": "Election Commission of India (ECI) / State Election Commission",
+        "affidavitSource": "None",
+        "verificationStatus": "OFFLINE_LOCAL_FIXTURE",
+        "liveDatabaseVerified": false
+      },
       "primaryElectionYear": 2023,
       "primaryElectionType": "GENERAL",
       "availableElectionYears": [
@@ -672,22 +2002,72 @@
       "affidavitsAvailable": 0,
       "hasGeoJSON": false,
       "hasHistoricalPerConstituency": false,
-      "hasStateElectionHistory": true,
-      "dataTier": "SEEDED_CONSTITUENCIES_PENDING_AFFIDAVITS",
-      "dataCompletenessStatus": "FUNCTIONAL_PARTIAL",
+      "hasStateElectionHistory": false,
+      "dataTier": "SEEDED_SINGLE_TERM_PENDING_GEO_HIST",
+      "dataCompletenessStatus": "FUNCTIONAL_PARTIAL_OFFLINE",
       "provenanceSource": "Election Commission of India (ECI) / State Election Commission",
       "materialGaps": [
-        "Candidate financial affidavits pending indexing (shows Affidavit Pending notice)",
+        "Candidate financial affidavits pending indexing (all constituencies display Affidavit Pending notice)",
         "Assembly boundary GeoJSON not indexed in repository data/geo",
         "Per-constituency historical elections prior to current term not yet seeded"
-      ]
+      ],
+      "knownExceptions": []
     },
     {
       "stateCode": "SK",
       "stateName": "Sikkim",
       "statutoryAssemblySeats": 32,
       "seededConstituencyCount": 32,
-      "discoverySupported": true,
+      "registryIdentity": {
+        "statutorySeats": 32,
+        "uniqueValidAcCount": 32,
+        "seatCoverageRatio": "32/32 (100.0%)",
+        "missingAcNos": [],
+        "duplicateAcNos": [],
+        "outOfRangeAcNos": [],
+        "unexpectedExtraRecords": [],
+        "identityStatus": "VERIFIED_STATUTORY_MATCH"
+      },
+      "electoralResults": {
+        "recentElectionYear": 2024,
+        "recentElectionType": "GENERAL",
+        "resultsPresentCount": 32,
+        "resultsCoverageRatio": "32/32 (100.0%)",
+        "winnerVotesPresentCount": 0,
+        "winnerVotesMissingCount": 32,
+        "marginPresentCount": 0,
+        "marginMissingCount": 32
+      },
+      "historicalCoverage": {
+        "primaryElectionYear": 2024,
+        "demonstrablePerAcYears": [],
+        "totalElectionYearsRepresented": 1,
+        "stateHistoricalFilePresent": false,
+        "inferredYearsRejected": []
+      },
+      "representativeCoverage": {
+        "uniqueProfilesCount": 31,
+        "resolvedToStatutoryAcCount": 31,
+        "profileCoverageRatio": "31/32 (96.9%)",
+        "extraNonStatutoryProfiles": 0
+      },
+      "affidavitCoverage": {
+        "totalAffidavitsInStore": 0,
+        "affidavitCoverageRatio": "0/32 (0.0%)",
+        "hasPendingNotice": true
+      },
+      "geospatialCoverage": {
+        "hasGeoJSON": false,
+        "fileName": null,
+        "featureCount": 0,
+        "coordinatesValid": false
+      },
+      "provenanceCoverage": {
+        "primarySource": "Election Commission of India (ECI) / State Election Commission",
+        "affidavitSource": "None",
+        "verificationStatus": "OFFLINE_LOCAL_FIXTURE",
+        "liveDatabaseVerified": false
+      },
       "primaryElectionYear": 2024,
       "primaryElectionType": "GENERAL",
       "availableElectionYears": [
@@ -698,22 +2078,72 @@
       "affidavitsAvailable": 0,
       "hasGeoJSON": false,
       "hasHistoricalPerConstituency": false,
-      "hasStateElectionHistory": true,
-      "dataTier": "SEEDED_CONSTITUENCIES_PENDING_AFFIDAVITS",
-      "dataCompletenessStatus": "FUNCTIONAL_PARTIAL",
+      "hasStateElectionHistory": false,
+      "dataTier": "SEEDED_SINGLE_TERM_PENDING_GEO_HIST",
+      "dataCompletenessStatus": "FUNCTIONAL_PARTIAL_OFFLINE",
       "provenanceSource": "Election Commission of India (ECI) / State Election Commission",
       "materialGaps": [
-        "Candidate financial affidavits pending indexing (shows Affidavit Pending notice)",
+        "Candidate financial affidavits pending indexing (all constituencies display Affidavit Pending notice)",
         "Assembly boundary GeoJSON not indexed in repository data/geo",
         "Per-constituency historical elections prior to current term not yet seeded"
-      ]
+      ],
+      "knownExceptions": []
     },
     {
       "stateCode": "AR",
       "stateName": "Arunachal Pradesh",
       "statutoryAssemblySeats": 60,
       "seededConstituencyCount": 60,
-      "discoverySupported": true,
+      "registryIdentity": {
+        "statutorySeats": 60,
+        "uniqueValidAcCount": 60,
+        "seatCoverageRatio": "60/60 (100.0%)",
+        "missingAcNos": [],
+        "duplicateAcNos": [],
+        "outOfRangeAcNos": [],
+        "unexpectedExtraRecords": [],
+        "identityStatus": "VERIFIED_STATUTORY_MATCH"
+      },
+      "electoralResults": {
+        "recentElectionYear": 2024,
+        "recentElectionType": "GENERAL",
+        "resultsPresentCount": 60,
+        "resultsCoverageRatio": "60/60 (100.0%)",
+        "winnerVotesPresentCount": 0,
+        "winnerVotesMissingCount": 60,
+        "marginPresentCount": 0,
+        "marginMissingCount": 60
+      },
+      "historicalCoverage": {
+        "primaryElectionYear": 2024,
+        "demonstrablePerAcYears": [],
+        "totalElectionYearsRepresented": 1,
+        "stateHistoricalFilePresent": false,
+        "inferredYearsRejected": []
+      },
+      "representativeCoverage": {
+        "uniqueProfilesCount": 53,
+        "resolvedToStatutoryAcCount": 53,
+        "profileCoverageRatio": "53/60 (88.3%)",
+        "extraNonStatutoryProfiles": 0
+      },
+      "affidavitCoverage": {
+        "totalAffidavitsInStore": 0,
+        "affidavitCoverageRatio": "0/60 (0.0%)",
+        "hasPendingNotice": true
+      },
+      "geospatialCoverage": {
+        "hasGeoJSON": false,
+        "fileName": null,
+        "featureCount": 0,
+        "coordinatesValid": false
+      },
+      "provenanceCoverage": {
+        "primarySource": "Election Commission of India (ECI) / State Election Commission",
+        "affidavitSource": "None",
+        "verificationStatus": "OFFLINE_LOCAL_FIXTURE",
+        "liveDatabaseVerified": false
+      },
       "primaryElectionYear": 2024,
       "primaryElectionType": "GENERAL",
       "availableElectionYears": [
@@ -724,22 +2154,72 @@
       "affidavitsAvailable": 0,
       "hasGeoJSON": false,
       "hasHistoricalPerConstituency": false,
-      "hasStateElectionHistory": true,
-      "dataTier": "SEEDED_CONSTITUENCIES_PENDING_AFFIDAVITS",
-      "dataCompletenessStatus": "FUNCTIONAL_PARTIAL",
+      "hasStateElectionHistory": false,
+      "dataTier": "SEEDED_SINGLE_TERM_PENDING_GEO_HIST",
+      "dataCompletenessStatus": "FUNCTIONAL_PARTIAL_OFFLINE",
       "provenanceSource": "Election Commission of India (ECI) / State Election Commission",
       "materialGaps": [
-        "Candidate financial affidavits pending indexing (shows Affidavit Pending notice)",
+        "Candidate financial affidavits pending indexing (all constituencies display Affidavit Pending notice)",
         "Assembly boundary GeoJSON not indexed in repository data/geo",
         "Per-constituency historical elections prior to current term not yet seeded"
-      ]
+      ],
+      "knownExceptions": []
     },
     {
       "stateCode": "UK",
       "stateName": "Uttarakhand",
       "statutoryAssemblySeats": 70,
       "seededConstituencyCount": 70,
-      "discoverySupported": true,
+      "registryIdentity": {
+        "statutorySeats": 70,
+        "uniqueValidAcCount": 70,
+        "seatCoverageRatio": "70/70 (100.0%)",
+        "missingAcNos": [],
+        "duplicateAcNos": [],
+        "outOfRangeAcNos": [],
+        "unexpectedExtraRecords": [],
+        "identityStatus": "VERIFIED_STATUTORY_MATCH"
+      },
+      "electoralResults": {
+        "recentElectionYear": 2022,
+        "recentElectionType": "GENERAL",
+        "resultsPresentCount": 70,
+        "resultsCoverageRatio": "70/70 (100.0%)",
+        "winnerVotesPresentCount": 70,
+        "winnerVotesMissingCount": 0,
+        "marginPresentCount": 70,
+        "marginMissingCount": 0
+      },
+      "historicalCoverage": {
+        "primaryElectionYear": 2022,
+        "demonstrablePerAcYears": [],
+        "totalElectionYearsRepresented": 1,
+        "stateHistoricalFilePresent": false,
+        "inferredYearsRejected": []
+      },
+      "representativeCoverage": {
+        "uniqueProfilesCount": 70,
+        "resolvedToStatutoryAcCount": 70,
+        "profileCoverageRatio": "70/70 (100.0%)",
+        "extraNonStatutoryProfiles": 0
+      },
+      "affidavitCoverage": {
+        "totalAffidavitsInStore": 0,
+        "affidavitCoverageRatio": "0/70 (0.0%)",
+        "hasPendingNotice": true
+      },
+      "geospatialCoverage": {
+        "hasGeoJSON": false,
+        "fileName": null,
+        "featureCount": 0,
+        "coordinatesValid": false
+      },
+      "provenanceCoverage": {
+        "primarySource": "Election Commission of India (ECI) / State Election Commission",
+        "affidavitSource": "None",
+        "verificationStatus": "OFFLINE_LOCAL_FIXTURE",
+        "liveDatabaseVerified": false
+      },
       "primaryElectionYear": 2022,
       "primaryElectionType": "GENERAL",
       "availableElectionYears": [
@@ -750,48 +2230,148 @@
       "affidavitsAvailable": 0,
       "hasGeoJSON": false,
       "hasHistoricalPerConstituency": false,
-      "hasStateElectionHistory": true,
-      "dataTier": "SEEDED_CONSTITUENCIES_PENDING_AFFIDAVITS",
-      "dataCompletenessStatus": "FUNCTIONAL_PARTIAL",
+      "hasStateElectionHistory": false,
+      "dataTier": "SEEDED_SINGLE_TERM_PENDING_GEO_HIST",
+      "dataCompletenessStatus": "FUNCTIONAL_PARTIAL_OFFLINE",
       "provenanceSource": "Election Commission of India (ECI) / State Election Commission",
       "materialGaps": [
-        "Candidate financial affidavits pending indexing (shows Affidavit Pending notice)",
+        "Candidate financial affidavits pending indexing (all constituencies display Affidavit Pending notice)",
         "Assembly boundary GeoJSON not indexed in repository data/geo",
         "Per-constituency historical elections prior to current term not yet seeded"
-      ]
+      ],
+      "knownExceptions": []
     },
     {
       "stateCode": "PY",
       "stateName": "Puducherry",
       "statutoryAssemblySeats": 30,
       "seededConstituencyCount": 30,
-      "discoverySupported": true,
+      "registryIdentity": {
+        "statutorySeats": 30,
+        "uniqueValidAcCount": 30,
+        "seatCoverageRatio": "30/30 (100.0%)",
+        "missingAcNos": [],
+        "duplicateAcNos": [],
+        "outOfRangeAcNos": [],
+        "unexpectedExtraRecords": [],
+        "identityStatus": "VERIFIED_STATUTORY_MATCH"
+      },
+      "electoralResults": {
+        "recentElectionYear": 2021,
+        "recentElectionType": "GENERAL",
+        "resultsPresentCount": 30,
+        "resultsCoverageRatio": "30/30 (100.0%)",
+        "winnerVotesPresentCount": 30,
+        "winnerVotesMissingCount": 0,
+        "marginPresentCount": 30,
+        "marginMissingCount": 0
+      },
+      "historicalCoverage": {
+        "primaryElectionYear": 2021,
+        "demonstrablePerAcYears": [],
+        "totalElectionYearsRepresented": 1,
+        "stateHistoricalFilePresent": false,
+        "inferredYearsRejected": []
+      },
+      "representativeCoverage": {
+        "uniqueProfilesCount": 27,
+        "resolvedToStatutoryAcCount": 27,
+        "profileCoverageRatio": "27/30 (90.0%)",
+        "extraNonStatutoryProfiles": 0
+      },
+      "affidavitCoverage": {
+        "totalAffidavitsInStore": 0,
+        "affidavitCoverageRatio": "0/30 (0.0%)",
+        "hasPendingNotice": true
+      },
+      "geospatialCoverage": {
+        "hasGeoJSON": false,
+        "fileName": null,
+        "featureCount": 0,
+        "coordinatesValid": false
+      },
+      "provenanceCoverage": {
+        "primarySource": "Election Commission of India (ECI) / State Election Commission",
+        "affidavitSource": "None",
+        "verificationStatus": "OFFLINE_LOCAL_FIXTURE",
+        "liveDatabaseVerified": false
+      },
       "primaryElectionYear": 2021,
       "primaryElectionType": "GENERAL",
       "availableElectionYears": [
         2021
       ],
-      "mlaProfilesAvailable": 54,
+      "mlaProfilesAvailable": 27,
       "demographicsAvailable": 30,
       "affidavitsAvailable": 0,
       "hasGeoJSON": false,
       "hasHistoricalPerConstituency": false,
-      "hasStateElectionHistory": true,
-      "dataTier": "SEEDED_CONSTITUENCIES_PENDING_AFFIDAVITS",
-      "dataCompletenessStatus": "FUNCTIONAL_PARTIAL",
+      "hasStateElectionHistory": false,
+      "dataTier": "SEEDED_SINGLE_TERM_PENDING_GEO_HIST",
+      "dataCompletenessStatus": "FUNCTIONAL_PARTIAL_OFFLINE",
       "provenanceSource": "Election Commission of India (ECI) / State Election Commission",
       "materialGaps": [
-        "Candidate financial affidavits pending indexing (shows Affidavit Pending notice)",
+        "Candidate financial affidavits pending indexing (all constituencies display Affidavit Pending notice)",
         "Assembly boundary GeoJSON not indexed in repository data/geo",
         "Per-constituency historical elections prior to current term not yet seeded"
-      ]
+      ],
+      "knownExceptions": []
     },
     {
       "stateCode": "JK",
       "stateName": "Jammu & Kashmir",
       "statutoryAssemblySeats": 90,
       "seededConstituencyCount": 90,
-      "discoverySupported": true,
+      "registryIdentity": {
+        "statutorySeats": 90,
+        "uniqueValidAcCount": 90,
+        "seatCoverageRatio": "90/90 (100.0%)",
+        "missingAcNos": [],
+        "duplicateAcNos": [],
+        "outOfRangeAcNos": [],
+        "unexpectedExtraRecords": [],
+        "identityStatus": "VERIFIED_STATUTORY_MATCH"
+      },
+      "electoralResults": {
+        "recentElectionYear": 2024,
+        "recentElectionType": "GENERAL",
+        "resultsPresentCount": 90,
+        "resultsCoverageRatio": "90/90 (100.0%)",
+        "winnerVotesPresentCount": 90,
+        "winnerVotesMissingCount": 0,
+        "marginPresentCount": 90,
+        "marginMissingCount": 0
+      },
+      "historicalCoverage": {
+        "primaryElectionYear": 2024,
+        "demonstrablePerAcYears": [],
+        "totalElectionYearsRepresented": 1,
+        "stateHistoricalFilePresent": false,
+        "inferredYearsRejected": []
+      },
+      "representativeCoverage": {
+        "uniqueProfilesCount": 90,
+        "resolvedToStatutoryAcCount": 90,
+        "profileCoverageRatio": "90/90 (100.0%)",
+        "extraNonStatutoryProfiles": 0
+      },
+      "affidavitCoverage": {
+        "totalAffidavitsInStore": 0,
+        "affidavitCoverageRatio": "0/90 (0.0%)",
+        "hasPendingNotice": true
+      },
+      "geospatialCoverage": {
+        "hasGeoJSON": false,
+        "fileName": null,
+        "featureCount": 0,
+        "coordinatesValid": false
+      },
+      "provenanceCoverage": {
+        "primarySource": "Election Commission of India (ECI) / State Election Commission",
+        "affidavitSource": "None",
+        "verificationStatus": "OFFLINE_LOCAL_FIXTURE",
+        "liveDatabaseVerified": false
+      },
       "primaryElectionYear": 2024,
       "primaryElectionType": "GENERAL",
       "availableElectionYears": [
@@ -802,15 +2382,16 @@
       "affidavitsAvailable": 0,
       "hasGeoJSON": false,
       "hasHistoricalPerConstituency": false,
-      "hasStateElectionHistory": true,
-      "dataTier": "SEEDED_CONSTITUENCIES_PENDING_AFFIDAVITS",
-      "dataCompletenessStatus": "FUNCTIONAL_PARTIAL",
+      "hasStateElectionHistory": false,
+      "dataTier": "SEEDED_SINGLE_TERM_PENDING_GEO_HIST",
+      "dataCompletenessStatus": "FUNCTIONAL_PARTIAL_OFFLINE",
       "provenanceSource": "Election Commission of India (ECI) / State Election Commission",
       "materialGaps": [
-        "Candidate financial affidavits pending indexing (shows Affidavit Pending notice)",
+        "Candidate financial affidavits pending indexing (all constituencies display Affidavit Pending notice)",
         "Assembly boundary GeoJSON not indexed in repository data/geo",
         "Per-constituency historical elections prior to current term not yet seeded"
-      ]
+      ],
+      "knownExceptions": []
     }
   ]
 }

@@ -208,7 +208,7 @@ export function getTSMLAProfiles() {
 export { getMLAProfile };
 
 export interface ConstituencyElectionSummary {
-  electionYear: number;
+  electionYear: number | null;
   electionType: 'GENERAL' | 'BYPOLL';
   winner: string;
   winnerName: string;
@@ -226,7 +226,7 @@ export interface ConstituencyElectionData {
 /**
  * Returns temporally correct election summary and historical results for a constituency.
  * Preserves actual election years (e.g. 2025 for DL, 2024 for AP/MH, 2023 for TS/KA, 2022 for UP, etc.)
- * Preserves null for missing vote totals or margins without zero coercion.
+ * Preserves null for missing vote totals, margins, or unknown election years without zero/2024 coercion.
  */
 export function getConstituencyElectionData(stateCode: string, acNo: number): ConstituencyElectionData | null {
   const code = stateCode.toUpperCase();
@@ -234,8 +234,8 @@ export function getConstituencyElectionData(stateCode: string, acNo: number): Co
   const brief = getConstituency(code, acNo);
   if (!raw && !brief) return null;
 
-  // Determine actual election year and results
-  let year = 2024;
+  // Determine actual election year and results without unjustified defaults
+  let year: number | null = null;
   let winner = '';
   let winnerName = '';
   let winnerVotes: number | null = null;
@@ -243,37 +243,37 @@ export function getConstituencyElectionData(stateCode: string, acNo: number): Co
   let margin: number | null = null;
 
   if (raw) {
-    if (raw.winner2025 !== undefined) {
+    if (raw.winner2025 !== undefined || raw.winnerName2025 !== undefined) {
       year = 2025;
-      winner = raw.winner2025;
+      winner = raw.winner2025 ?? '';
       winnerName = raw.winnerName2025 ?? '';
       winnerVotes = typeof raw.winnerVotes2025 === 'number' ? raw.winnerVotes2025 : null;
       runnerUp = raw.runnerUp2025 ?? '';
       margin = typeof raw.margin2025 === 'number' ? raw.margin2025 : null;
-    } else if (raw.winner2024 !== undefined) {
+    } else if (raw.winner2024 !== undefined || raw.winnerName2024 !== undefined) {
       year = 2024;
-      winner = raw.winner2024;
+      winner = raw.winner2024 ?? '';
       winnerName = raw.winnerName2024 ?? '';
       winnerVotes = typeof raw.winnerVotes2024 === 'number' ? raw.winnerVotes2024 : null;
       runnerUp = raw.runnerUp2024 ?? '';
       margin = typeof raw.margin2024 === 'number' ? raw.margin2024 : null;
-    } else if (raw.winner2023 !== undefined) {
+    } else if (raw.winner2023 !== undefined || raw.winnerName2023 !== undefined) {
       year = 2023;
-      winner = raw.winner2023;
+      winner = raw.winner2023 ?? '';
       winnerName = raw.winnerName2023 ?? '';
       winnerVotes = typeof raw.winnerVotes2023 === 'number' ? raw.winnerVotes2023 : null;
       runnerUp = raw.runnerUp2023 ?? '';
       margin = typeof raw.margin2023 === 'number' ? raw.margin2023 : null;
-    } else if (raw.winner2022 !== undefined) {
+    } else if (raw.winner2022 !== undefined || raw.winnerName2022 !== undefined) {
       year = 2022;
-      winner = raw.winner2022;
+      winner = raw.winner2022 ?? '';
       winnerName = raw.winnerName2022 ?? '';
       winnerVotes = typeof raw.winnerVotes2022 === 'number' ? raw.winnerVotes2022 : null;
       runnerUp = raw.runnerUp2022 ?? '';
       margin = typeof raw.margin2022 === 'number' ? raw.margin2022 : null;
-    } else if (raw.winner2021 !== undefined) {
+    } else if (raw.winner2021 !== undefined || raw.winnerName2021 !== undefined) {
       year = 2021;
-      winner = raw.winner2021;
+      winner = raw.winner2021 ?? '';
       winnerName = raw.winnerName2021 ?? '';
       winnerVotes = typeof raw.winnerVotes2021 === 'number' ? raw.winnerVotes2021 : null;
       runnerUp = raw.runnerUp2021 ?? '';
@@ -288,7 +288,9 @@ export function getConstituencyElectionData(stateCode: string, acNo: number): Co
       else if (['TS', 'KA', 'MP', 'RJ', 'CG', 'MZ', 'NL', 'TR', 'ML'].includes(code)) year = 2023;
       else if (['UP', 'PB', 'GJ', 'GA', 'HP', 'MN', 'UK'].includes(code)) year = 2022;
       else if (['TN', 'KL', 'WB', 'AS', 'PY'].includes(code)) year = 2021;
-      else year = 2024;
+      else if (['AP', 'MH', 'JH', 'OD', 'HR', 'SK', 'AR', 'JK'].includes(code)) year = 2024;
+      else if (['DL'].includes(code)) year = 2025;
+      else year = null;
     }
   } else if (brief) {
     winner = brief.currentParty;
@@ -296,7 +298,7 @@ export function getConstituencyElectionData(stateCode: string, acNo: number): Co
   }
 
   const marginPercent =
-    winnerVotes && winnerVotes > 0 && margin != null
+    winnerVotes != null && winnerVotes > 0 && margin != null && margin >= 0
       ? parseFloat(((margin / winnerVotes) * 100).toFixed(1))
       : null;
 
@@ -440,6 +442,9 @@ export function getConstituencyElectionData(stateCode: string, acNo: number): Co
       });
     }
   }
+
+  // Ensure elections array is sorted chronologically descending by electionYear
+  elections.sort((a, b) => (b.electionYear ?? 0) - (a.electionYear ?? 0));
 
   return {
     recentElection,

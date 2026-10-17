@@ -52,9 +52,10 @@ runTest('1.3 Total statutory assembly seats equals 4,123 without missing seats',
 });
 
 runTest('1.4 Data tier breakdown is accurate and truthful', () => {
-  assert.strictEqual(matrix.summary.canonicalFullStatesCount, 4, 'Tier 1 CANONICAL_FULL must be 4 (TS, AP, KA, MH)');
-  assert.strictEqual(matrix.summary.partialHistoricalCount, 4, 'Tier 2 PARTIAL_HISTORICAL_NO_GEOJSON must be 4 (TN, KL, WB, UP)');
-  assert.strictEqual(matrix.summary.seededPendingAffidavitsCount, 23, 'Tier 3 SEEDED_CONSTITUENCIES_PENDING_AFFIDAVITS must be 23');
+  assert.strictEqual(matrix.summary.canonicalFullStatesCount, 0, 'Tier 0 CANONICAL_FULL must be strictly 0 under Rule IV-001');
+  assert.strictEqual(matrix.summary.partialLocalWithGeoCount, 1, 'Tier 1 SEEDED_RICH_LOCAL_WITH_GEO must be 1 (TS)');
+  assert.strictEqual(matrix.summary.partialHistoricalNoGeoCount, 7, 'Tier 2 SEEDED_HISTORICAL_NO_GEO must be 7 (AP, KA, MH, TN, KL, WB, UP)');
+  assert.strictEqual(matrix.summary.seededSingleTermCount, 23, 'Tier 3 SEEDED_SINGLE_TERM_PENDING_GEO_HIST must be 23');
   assert.strictEqual(matrix.summary.unavailableCount, 0, 'Zero states unavailable');
 });
 
@@ -129,7 +130,7 @@ runTest('3.2 Constituency detail screen wires SequenceGuard, apiClient and prove
   assert.ok(code.includes('apiClient.constituencies.getConstituency'), 'Must call apiClient.constituencies.getConstituency');
   assert.ok(code.includes('token.isStale()'), 'Must check token.isStale() on async resolution');
   assert.ok(code.includes('sequenceGuardRef.current.reset()'), 'Must reset guard on cleanup');
-  assert.ok(code.includes("dataSource === 'LIVE_API' ? 'Verified Live API' : 'Offline Seed Data'"), 'Must render provenance badge');
+  assert.ok(code.includes("Live API (Electoral) + Seed Data"), 'Must render provenance badge');
   assert.ok(code.includes('effectiveElectionYear'), 'Must use effectiveElectionYear instead of hardcoded 2023');
 });
 

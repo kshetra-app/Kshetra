@@ -131,8 +131,8 @@ const getConstituencyDetailSchema = {
         recentElection: {
           type: 'object',
           properties: {
-            electionYear: { type: 'integer' },
-            electionType: { type: 'string' },
+            electionYear: { type: ['integer', 'null'] },
+            electionType: { type: 'string', enum: ['GENERAL', 'BYPOLL'] },
             winner: { type: 'string' },
             winnerName: { type: 'string' },
             winnerVotes: { type: ['number', 'null'] },
@@ -147,8 +147,8 @@ const getConstituencyDetailSchema = {
           items: {
             type: 'object',
             properties: {
-              electionYear: { type: 'integer' },
-              electionType: { type: 'string' },
+              electionYear: { type: ['integer', 'null'] },
+              electionType: { type: 'string', enum: ['GENERAL', 'BYPOLL'] },
               winner: { type: 'string' },
               winnerName: { type: 'string' },
               winnerVotes: { type: ['number', 'null'] },
@@ -442,7 +442,7 @@ export async function constituencyRoutes(app: FastifyInstance) {
 
       const electionData = getConstituencyElectionData(code, brief.acNo);
       const recentElection = electionData?.recentElection ?? {
-        electionYear: 2024,
+        electionYear: null,
         electionType: 'GENERAL' as const,
         winner: brief.currentParty,
         winnerName: brief.currentMLA,
@@ -454,7 +454,9 @@ export async function constituencyRoutes(app: FastifyInstance) {
 
       const elections = electionData?.elections ?? [recentElection];
 
-      // Backward-compatible alias for election2023 with non-null numeric fallbacks for legacy clients
+      // @deprecated LEGACY COMPATIBILITY ALIAS (CTO Directive 085)
+      // Preserved strictly for unmigrated legacy clients expecting election2023.
+      // Warning: this alias coerces null values to 0. Modern clients MUST consume recentElection and elections[].
       const election2023 = {
         winner: recentElection.winner,
         winnerName: recentElection.winnerName,
