@@ -1,7 +1,7 @@
 {
   "title": "Kshetra W021.5 National Data Coverage Inventory Matrix",
-  "directive": "CTO DIRECTIVE 085",
-  "generatedAt": "2026-10-17T08:16:37.888Z",
+  "directive": "CTO DIRECTIVE 085 / CTO DIRECTIVE 086",
+  "generatedAt": "2026-10-17T08:58:52.280Z",
   "totalStatesAudited": 31,
   "summary": {
     "canonicalFullStatesCount": 0,
@@ -11,7 +11,7 @@
     "unavailableCount": 0,
     "totalStatutorySeats": 4123,
     "totalSeededConstituencies": 4123,
-    "totalMlaProfiles": 3913,
+    "totalMlaProfiles": 3812,
     "totalAffidavits": 28
   },
   "states": [
@@ -65,7 +65,11 @@
         "hasGeoJSON": true,
         "fileName": "telangana-assembly.geojson",
         "featureCount": 120,
-        "coordinatesValid": true
+        "validFeatureCount": 120,
+        "coordinatesValid": true,
+        "coordinateRangeValid": true,
+        "linkedConstituencyCount": 119,
+        "validationErrors": []
       },
       "provenanceCoverage": {
         "primarySource": "Election Commission of India (ECI) / State Election Commission",
@@ -144,7 +148,13 @@
         "hasGeoJSON": false,
         "fileName": null,
         "featureCount": 0,
-        "coordinatesValid": false
+        "validFeatureCount": 0,
+        "coordinatesValid": false,
+        "coordinateRangeValid": false,
+        "linkedConstituencyCount": 0,
+        "validationErrors": [
+          "File not found in data/geo"
+        ]
       },
       "provenanceCoverage": {
         "primarySource": "Election Commission of India (ECI) / State Election Commission",
@@ -208,9 +218,9 @@
         "inferredYearsRejected": []
       },
       "representativeCoverage": {
-        "uniqueProfilesCount": 224,
-        "resolvedToStatutoryAcCount": 224,
-        "profileCoverageRatio": "224/224 (100.0%)",
+        "uniqueProfilesCount": 171,
+        "resolvedToStatutoryAcCount": 171,
+        "profileCoverageRatio": "171/224 (76.3%)",
         "extraNonStatutoryProfiles": 0
       },
       "affidavitCoverage": {
@@ -222,7 +232,13 @@
         "hasGeoJSON": false,
         "fileName": null,
         "featureCount": 0,
-        "coordinatesValid": false
+        "validFeatureCount": 0,
+        "coordinatesValid": false,
+        "coordinateRangeValid": false,
+        "linkedConstituencyCount": 0,
+        "validationErrors": [
+          "File not found in data/geo"
+        ]
       },
       "provenanceCoverage": {
         "primarySource": "Election Commission of India (ECI) / State Election Commission",
@@ -236,7 +252,7 @@
         2023,
         2018
       ],
-      "mlaProfilesAvailable": 224,
+      "mlaProfilesAvailable": 171,
       "demographicsAvailable": 224,
       "affidavitsAvailable": 2,
       "hasGeoJSON": false,
@@ -286,9 +302,9 @@
         "inferredYearsRejected": []
       },
       "representativeCoverage": {
-        "uniqueProfilesCount": 288,
-        "resolvedToStatutoryAcCount": 288,
-        "profileCoverageRatio": "288/288 (100.0%)",
+        "uniqueProfilesCount": 240,
+        "resolvedToStatutoryAcCount": 240,
+        "profileCoverageRatio": "240/288 (83.3%)",
         "extraNonStatutoryProfiles": 0
       },
       "affidavitCoverage": {
@@ -300,7 +316,13 @@
         "hasGeoJSON": false,
         "fileName": null,
         "featureCount": 0,
-        "coordinatesValid": false
+        "validFeatureCount": 0,
+        "coordinatesValid": false,
+        "coordinateRangeValid": false,
+        "linkedConstituencyCount": 0,
+        "validationErrors": [
+          "File not found in data/geo"
+        ]
       },
       "provenanceCoverage": {
         "primarySource": "Election Commission of India (ECI) / State Election Commission",
@@ -314,7 +336,7 @@
         2024,
         2019
       ],
-      "mlaProfilesAvailable": 288,
+      "mlaProfilesAvailable": 240,
       "demographicsAvailable": 288,
       "affidavitsAvailable": 1,
       "hasGeoJSON": false,
@@ -378,7 +400,13 @@
         "hasGeoJSON": false,
         "fileName": null,
         "featureCount": 0,
-        "coordinatesValid": false
+        "validFeatureCount": 0,
+        "coordinatesValid": false,
+        "coordinateRangeValid": false,
+        "linkedConstituencyCount": 0,
+        "validationErrors": [
+          "File not found in data/geo"
+        ]
       },
       "provenanceCoverage": {
         "primarySource": "Election Commission of India (ECI) / State Election Commission",
@@ -456,7 +484,13 @@
         "hasGeoJSON": false,
         "fileName": null,
         "featureCount": 0,
-        "coordinatesValid": false
+        "validFeatureCount": 0,
+        "coordinatesValid": false,
+        "coordinateRangeValid": false,
+        "linkedConstituencyCount": 0,
+        "validationErrors": [
+          "File not found in data/geo"
+        ]
       },
       "provenanceCoverage": {
         "primarySource": "Election Commission of India (ECI) / State Election Commission",
@@ -534,7 +568,13 @@
         "hasGeoJSON": false,
         "fileName": null,
         "featureCount": 0,
-        "coordinatesValid": false
+        "validFeatureCount": 0,
+        "coordinatesValid": false,
+        "coordinateRangeValid": false,
+        "linkedConstituencyCount": 0,
+        "validationErrors": [
+          "File not found in data/geo"
+        ]
       },
       "provenanceCoverage": {
         "primarySource": "Election Commission of India (ECI) / State Election Commission",
@@ -612,7 +652,13 @@
         "hasGeoJSON": false,
         "fileName": null,
         "featureCount": 0,
-        "coordinatesValid": false
+        "validFeatureCount": 0,
+        "coordinatesValid": false,
+        "coordinateRangeValid": false,
+        "linkedConstituencyCount": 0,
+        "validationErrors": [
+          "File not found in data/geo"
+        ]
       },
       "provenanceCoverage": {
         "primarySource": "Election Commission of India (ECI) / State Election Commission",
@@ -688,7 +734,13 @@
         "hasGeoJSON": false,
         "fileName": null,
         "featureCount": 0,
-        "coordinatesValid": false
+        "validFeatureCount": 0,
+        "coordinatesValid": false,
+        "coordinateRangeValid": false,
+        "linkedConstituencyCount": 0,
+        "validationErrors": [
+          "File not found in data/geo"
+        ]
       },
       "provenanceCoverage": {
         "primarySource": "Election Commission of India (ECI) / State Election Commission",
@@ -764,7 +816,13 @@
         "hasGeoJSON": false,
         "fileName": null,
         "featureCount": 0,
-        "coordinatesValid": false
+        "validFeatureCount": 0,
+        "coordinatesValid": false,
+        "coordinateRangeValid": false,
+        "linkedConstituencyCount": 0,
+        "validationErrors": [
+          "File not found in data/geo"
+        ]
       },
       "provenanceCoverage": {
         "primarySource": "Election Commission of India (ECI) / State Election Commission",
@@ -840,7 +898,13 @@
         "hasGeoJSON": false,
         "fileName": null,
         "featureCount": 0,
-        "coordinatesValid": false
+        "validFeatureCount": 0,
+        "coordinatesValid": false,
+        "coordinateRangeValid": false,
+        "linkedConstituencyCount": 0,
+        "validationErrors": [
+          "File not found in data/geo"
+        ]
       },
       "provenanceCoverage": {
         "primarySource": "Election Commission of India (ECI) / State Election Commission",
@@ -916,7 +980,13 @@
         "hasGeoJSON": false,
         "fileName": null,
         "featureCount": 0,
-        "coordinatesValid": false
+        "validFeatureCount": 0,
+        "coordinatesValid": false,
+        "coordinateRangeValid": false,
+        "linkedConstituencyCount": 0,
+        "validationErrors": [
+          "File not found in data/geo"
+        ]
       },
       "provenanceCoverage": {
         "primarySource": "Election Commission of India (ECI) / State Election Commission",
@@ -994,7 +1064,13 @@
         "hasGeoJSON": false,
         "fileName": null,
         "featureCount": 0,
-        "coordinatesValid": false
+        "validFeatureCount": 0,
+        "coordinatesValid": false,
+        "coordinateRangeValid": false,
+        "linkedConstituencyCount": 0,
+        "validationErrors": [
+          "File not found in data/geo"
+        ]
       },
       "provenanceCoverage": {
         "primarySource": "Election Commission of India (ECI) / State Election Commission",
@@ -1072,7 +1148,13 @@
         "hasGeoJSON": false,
         "fileName": null,
         "featureCount": 0,
-        "coordinatesValid": false
+        "validFeatureCount": 0,
+        "coordinatesValid": false,
+        "coordinateRangeValid": false,
+        "linkedConstituencyCount": 0,
+        "validationErrors": [
+          "File not found in data/geo"
+        ]
       },
       "provenanceCoverage": {
         "primarySource": "Election Commission of India (ECI) / State Election Commission",
@@ -1148,7 +1230,13 @@
         "hasGeoJSON": false,
         "fileName": null,
         "featureCount": 0,
-        "coordinatesValid": false
+        "validFeatureCount": 0,
+        "coordinatesValid": false,
+        "coordinateRangeValid": false,
+        "linkedConstituencyCount": 0,
+        "validationErrors": [
+          "File not found in data/geo"
+        ]
       },
       "provenanceCoverage": {
         "primarySource": "Election Commission of India (ECI) / State Election Commission",
@@ -1224,7 +1312,13 @@
         "hasGeoJSON": false,
         "fileName": null,
         "featureCount": 0,
-        "coordinatesValid": false
+        "validFeatureCount": 0,
+        "coordinatesValid": false,
+        "coordinateRangeValid": false,
+        "linkedConstituencyCount": 0,
+        "validationErrors": [
+          "File not found in data/geo"
+        ]
       },
       "provenanceCoverage": {
         "primarySource": "Election Commission of India (ECI) / State Election Commission",
@@ -1300,7 +1394,13 @@
         "hasGeoJSON": false,
         "fileName": null,
         "featureCount": 0,
-        "coordinatesValid": false
+        "validFeatureCount": 0,
+        "coordinatesValid": false,
+        "coordinateRangeValid": false,
+        "linkedConstituencyCount": 0,
+        "validationErrors": [
+          "File not found in data/geo"
+        ]
       },
       "provenanceCoverage": {
         "primarySource": "Election Commission of India (ECI) / State Election Commission",
@@ -1347,12 +1447,12 @@
       "electoralResults": {
         "recentElectionYear": 2020,
         "recentElectionType": "GENERAL",
-        "resultsPresentCount": 0,
-        "resultsCoverageRatio": "0/243 (0.0%)",
-        "winnerVotesPresentCount": 0,
-        "winnerVotesMissingCount": 243,
-        "marginPresentCount": 0,
-        "marginMissingCount": 243
+        "resultsPresentCount": 243,
+        "resultsCoverageRatio": "243/243 (100.0%)",
+        "winnerVotesPresentCount": 243,
+        "winnerVotesMissingCount": 0,
+        "marginPresentCount": 243,
+        "marginMissingCount": 0
       },
       "historicalCoverage": {
         "primaryElectionYear": 2020,
@@ -1376,7 +1476,13 @@
         "hasGeoJSON": false,
         "fileName": null,
         "featureCount": 0,
-        "coordinatesValid": false
+        "validFeatureCount": 0,
+        "coordinatesValid": false,
+        "coordinateRangeValid": false,
+        "linkedConstituencyCount": 0,
+        "validationErrors": [
+          "File not found in data/geo"
+        ]
       },
       "provenanceCoverage": {
         "primarySource": "Election Commission of India (ECI) / State Election Commission",
@@ -1421,8 +1527,8 @@
         "identityStatus": "VERIFIED_STATUTORY_MATCH"
       },
       "electoralResults": {
-        "recentElectionYear": 2021,
-        "recentElectionType": "GENERAL",
+        "recentElectionYear": null,
+        "recentElectionType": null,
         "resultsPresentCount": 0,
         "resultsCoverageRatio": "0/126 (0.0%)",
         "winnerVotesPresentCount": 0,
@@ -1431,9 +1537,9 @@
         "marginMissingCount": 126
       },
       "historicalCoverage": {
-        "primaryElectionYear": 2021,
+        "primaryElectionYear": null,
         "demonstrablePerAcYears": [],
-        "totalElectionYearsRepresented": 1,
+        "totalElectionYearsRepresented": 0,
         "stateHistoricalFilePresent": false,
         "inferredYearsRejected": []
       },
@@ -1452,7 +1558,13 @@
         "hasGeoJSON": false,
         "fileName": null,
         "featureCount": 0,
-        "coordinatesValid": false
+        "validFeatureCount": 0,
+        "coordinatesValid": false,
+        "coordinateRangeValid": false,
+        "linkedConstituencyCount": 0,
+        "validationErrors": [
+          "File not found in data/geo"
+        ]
       },
       "provenanceCoverage": {
         "primarySource": "Election Commission of India (ECI) / State Election Commission",
@@ -1460,11 +1572,9 @@
         "verificationStatus": "OFFLINE_LOCAL_FIXTURE",
         "liveDatabaseVerified": false
       },
-      "primaryElectionYear": 2021,
-      "primaryElectionType": "GENERAL",
-      "availableElectionYears": [
-        2021
-      ],
+      "primaryElectionYear": null,
+      "primaryElectionType": null,
+      "availableElectionYears": [],
       "mlaProfilesAvailable": 112,
       "demographicsAvailable": 126,
       "affidavitsAvailable": 0,
@@ -1528,7 +1638,13 @@
         "hasGeoJSON": false,
         "fileName": null,
         "featureCount": 0,
-        "coordinatesValid": false
+        "validFeatureCount": 0,
+        "coordinatesValid": false,
+        "coordinateRangeValid": false,
+        "linkedConstituencyCount": 0,
+        "validationErrors": [
+          "File not found in data/geo"
+        ]
       },
       "provenanceCoverage": {
         "primarySource": "Election Commission of India (ECI) / State Election Commission",
@@ -1604,7 +1720,13 @@
         "hasGeoJSON": false,
         "fileName": null,
         "featureCount": 0,
-        "coordinatesValid": false
+        "validFeatureCount": 0,
+        "coordinatesValid": false,
+        "coordinateRangeValid": false,
+        "linkedConstituencyCount": 0,
+        "validationErrors": [
+          "File not found in data/geo"
+        ]
       },
       "provenanceCoverage": {
         "primarySource": "Election Commission of India (ECI) / State Election Commission",
@@ -1680,7 +1802,13 @@
         "hasGeoJSON": false,
         "fileName": null,
         "featureCount": 0,
-        "coordinatesValid": false
+        "validFeatureCount": 0,
+        "coordinatesValid": false,
+        "coordinateRangeValid": false,
+        "linkedConstituencyCount": 0,
+        "validationErrors": [
+          "File not found in data/geo"
+        ]
       },
       "provenanceCoverage": {
         "primarySource": "Election Commission of India (ECI) / State Election Commission",
@@ -1756,7 +1884,13 @@
         "hasGeoJSON": false,
         "fileName": null,
         "featureCount": 0,
-        "coordinatesValid": false
+        "validFeatureCount": 0,
+        "coordinatesValid": false,
+        "coordinateRangeValid": false,
+        "linkedConstituencyCount": 0,
+        "validationErrors": [
+          "File not found in data/geo"
+        ]
       },
       "provenanceCoverage": {
         "primarySource": "Election Commission of India (ECI) / State Election Commission",
@@ -1832,7 +1966,13 @@
         "hasGeoJSON": false,
         "fileName": null,
         "featureCount": 0,
-        "coordinatesValid": false
+        "validFeatureCount": 0,
+        "coordinatesValid": false,
+        "coordinateRangeValid": false,
+        "linkedConstituencyCount": 0,
+        "validationErrors": [
+          "File not found in data/geo"
+        ]
       },
       "provenanceCoverage": {
         "primarySource": "Election Commission of India (ECI) / State Election Commission",
@@ -1908,7 +2048,13 @@
         "hasGeoJSON": false,
         "fileName": null,
         "featureCount": 0,
-        "coordinatesValid": false
+        "validFeatureCount": 0,
+        "coordinatesValid": false,
+        "coordinateRangeValid": false,
+        "linkedConstituencyCount": 0,
+        "validationErrors": [
+          "File not found in data/geo"
+        ]
       },
       "provenanceCoverage": {
         "primarySource": "Election Commission of India (ECI) / State Election Commission",
@@ -1984,7 +2130,13 @@
         "hasGeoJSON": false,
         "fileName": null,
         "featureCount": 0,
-        "coordinatesValid": false
+        "validFeatureCount": 0,
+        "coordinatesValid": false,
+        "coordinateRangeValid": false,
+        "linkedConstituencyCount": 0,
+        "validationErrors": [
+          "File not found in data/geo"
+        ]
       },
       "provenanceCoverage": {
         "primarySource": "Election Commission of India (ECI) / State Election Commission",
@@ -2060,7 +2212,13 @@
         "hasGeoJSON": false,
         "fileName": null,
         "featureCount": 0,
-        "coordinatesValid": false
+        "validFeatureCount": 0,
+        "coordinatesValid": false,
+        "coordinateRangeValid": false,
+        "linkedConstituencyCount": 0,
+        "validationErrors": [
+          "File not found in data/geo"
+        ]
       },
       "provenanceCoverage": {
         "primarySource": "Election Commission of India (ECI) / State Election Commission",
@@ -2136,7 +2294,13 @@
         "hasGeoJSON": false,
         "fileName": null,
         "featureCount": 0,
-        "coordinatesValid": false
+        "validFeatureCount": 0,
+        "coordinatesValid": false,
+        "coordinateRangeValid": false,
+        "linkedConstituencyCount": 0,
+        "validationErrors": [
+          "File not found in data/geo"
+        ]
       },
       "provenanceCoverage": {
         "primarySource": "Election Commission of India (ECI) / State Election Commission",
@@ -2212,7 +2376,13 @@
         "hasGeoJSON": false,
         "fileName": null,
         "featureCount": 0,
-        "coordinatesValid": false
+        "validFeatureCount": 0,
+        "coordinatesValid": false,
+        "coordinateRangeValid": false,
+        "linkedConstituencyCount": 0,
+        "validationErrors": [
+          "File not found in data/geo"
+        ]
       },
       "provenanceCoverage": {
         "primarySource": "Election Commission of India (ECI) / State Election Commission",
@@ -2288,7 +2458,13 @@
         "hasGeoJSON": false,
         "fileName": null,
         "featureCount": 0,
-        "coordinatesValid": false
+        "validFeatureCount": 0,
+        "coordinatesValid": false,
+        "coordinateRangeValid": false,
+        "linkedConstituencyCount": 0,
+        "validationErrors": [
+          "File not found in data/geo"
+        ]
       },
       "provenanceCoverage": {
         "primarySource": "Election Commission of India (ECI) / State Election Commission",
@@ -2364,7 +2540,13 @@
         "hasGeoJSON": false,
         "fileName": null,
         "featureCount": 0,
-        "coordinatesValid": false
+        "validFeatureCount": 0,
+        "coordinatesValid": false,
+        "coordinateRangeValid": false,
+        "linkedConstituencyCount": 0,
+        "validationErrors": [
+          "File not found in data/geo"
+        ]
       },
       "provenanceCoverage": {
         "primarySource": "Election Commission of India (ECI) / State Election Commission",

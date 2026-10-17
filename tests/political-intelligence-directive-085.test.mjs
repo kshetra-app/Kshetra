@@ -119,7 +119,11 @@ runTest('2.1 Fastify schema allows nullable electionYear and strictly enums elec
   const code = fs.readFileSync(routesPath, 'utf8');
 
   assert.ok(code.includes("electionYear: { type: ['integer', 'null'] }"), 'recentElection electionYear must be nullable');
-  assert.ok(code.includes("electionType: { type: 'string', enum: ['GENERAL', 'BYPOLL'] }"), 'electionType must be validated enum');
+  assert.ok(
+    code.includes("electionType: { type: 'string', enum: ['GENERAL', 'BYPOLL'] }") ||
+    code.includes("electionType: { type: ['string', 'null'], enum: ['GENERAL', 'BYPOLL', null] }"),
+    'electionType must be validated enum',
+  );
   assert.ok(code.includes('@deprecated LEGACY COMPATIBILITY ALIAS (CTO Directive 085)'), 'Must mark election2023 as deprecated');
 });
 
@@ -145,7 +149,11 @@ runTest('2.4 Mobile API client endpoint validates nullable electionYear without 
 
   assert.ok(code.includes('electionYear: number | null;'), 'Must allow null in ConstituencyElectionSummary');
   assert.ok(code.includes("typeof el.electionYear === 'number' ? el.electionYear : null"), 'Must not default to 2024 in recentElection');
-  assert.ok(code.includes("el.electionType === 'BYPOLL' ? 'BYPOLL' : 'GENERAL'"), 'Must strictly validate electionType');
+  assert.ok(
+    code.includes("el.electionType === 'BYPOLL' ? 'BYPOLL' : 'GENERAL'") ||
+    code.includes("throw new ApiValidationError(`Invalid recentElection.electionType:"),
+    'Must strictly validate electionType',
+  );
 });
 
 // ─────────────────────────────────────────────────────────────────────────────

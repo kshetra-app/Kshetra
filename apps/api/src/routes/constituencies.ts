@@ -132,7 +132,7 @@ const getConstituencyDetailSchema = {
           type: 'object',
           properties: {
             electionYear: { type: ['integer', 'null'] },
-            electionType: { type: 'string', enum: ['GENERAL', 'BYPOLL'] },
+            electionType: { type: ['string', 'null'], enum: ['GENERAL', 'BYPOLL', null] },
             winner: { type: 'string' },
             winnerName: { type: 'string' },
             winnerVotes: { type: ['number', 'null'] },
@@ -148,7 +148,7 @@ const getConstituencyDetailSchema = {
             type: 'object',
             properties: {
               electionYear: { type: ['integer', 'null'] },
-              electionType: { type: 'string', enum: ['GENERAL', 'BYPOLL'] },
+              electionType: { type: ['string', 'null'], enum: ['GENERAL', 'BYPOLL', null] },
               winner: { type: 'string' },
               winnerName: { type: 'string' },
               winnerVotes: { type: ['number', 'null'] },

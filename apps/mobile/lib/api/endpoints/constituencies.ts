@@ -14,7 +14,7 @@ import type { ConstituencyBrief } from '@kshetra/shared';
 
 export interface ConstituencyElectionSummary {
   electionYear: number | null;
-  electionType: 'GENERAL' | 'BYPOLL';
+  electionType: 'GENERAL' | 'BYPOLL' | null;
   winner: string;
   winnerName: string;
   winnerVotes: number | null;
@@ -25,7 +25,7 @@ export interface ConstituencyElectionSummary {
 
 export interface ConstituencyElectionHistoryItem {
   electionYear: number | null;
-  electionType: 'GENERAL' | 'BYPOLL';
+  electionType: 'GENERAL' | 'BYPOLL' | null;
   winner: string;
   winnerName: string;
   winnerVotes: number | null;
@@ -110,9 +110,18 @@ export function validateConstituencyDetail(data: unknown, context: string): Cons
   let recentElection: ConstituencyElectionSummary | undefined;
   if (obj.recentElection && typeof obj.recentElection === 'object' && !Array.isArray(obj.recentElection)) {
     const el = obj.recentElection as Record<string, unknown>;
+    let electionType: 'GENERAL' | 'BYPOLL' | null = null;
+    if (el.electionType === 'GENERAL' || el.electionType === 'BYPOLL') {
+      electionType = el.electionType;
+    } else if (el.electionType === null || el.electionType === undefined) {
+      electionType = null;
+    } else {
+      throw new ApiValidationError(`Invalid recentElection.electionType: "${el.electionType}". Expected "GENERAL", "BYPOLL", or null.`);
+    }
+
     recentElection = {
       electionYear: typeof el.electionYear === 'number' ? el.electionYear : null,
-      electionType: el.electionType === 'BYPOLL' ? 'BYPOLL' : 'GENERAL',
+      electionType,
       winner: typeof el.winner === 'string' ? el.winner : '',
       winnerName: typeof el.winnerName === 'string' ? el.winnerName : '',
       winnerVotes: typeof el.winnerVotes === 'number' ? el.winnerVotes : null,
@@ -125,10 +134,22 @@ export function validateConstituencyDetail(data: unknown, context: string): Cons
   let elections: ConstituencyElectionHistoryItem[] | undefined;
   if (Array.isArray(obj.elections)) {
     elections = obj.elections.map((item, idx) => {
+      if (typeof item !== 'object' || item === null || Array.isArray(item)) {
+        throw new ApiValidationError(`Invalid elections[${idx}]: expected object payload`);
+      }
       const el = item as Record<string, unknown>;
+      let electionType: 'GENERAL' | 'BYPOLL' | null = null;
+      if (el.electionType === 'GENERAL' || el.electionType === 'BYPOLL') {
+        electionType = el.electionType;
+      } else if (el.electionType === null || el.electionType === undefined) {
+        electionType = null;
+      } else {
+        throw new ApiValidationError(`Invalid elections[${idx}].electionType: "${el.electionType}". Expected "GENERAL", "BYPOLL", or null.`);
+      }
+
       return {
         electionYear: typeof el.electionYear === 'number' ? el.electionYear : (typeof el.year === 'number' ? el.year : null),
-        electionType: el.electionType === 'BYPOLL' ? 'BYPOLL' : 'GENERAL',
+        electionType,
         winner: typeof el.winner === 'string' ? el.winner : '',
         winnerName: typeof el.winnerName === 'string' ? el.winnerName : '',
         winnerVotes: typeof el.winnerVotes === 'number' ? el.winnerVotes : null,

@@ -101,10 +101,27 @@ runTest('2.2 stateData service maps real election years without 2023 hardcoding'
   assert.ok(serviceCode.includes('export function getConstituencyElectionData'), 'Must export getConstituencyElectionData');
   assert.ok(serviceCode.includes("winnerVotes: number | null"), 'Must type winnerVotes as number | null');
   assert.ok(serviceCode.includes("margin: number | null"), 'Must type margin as number | null');
-  assert.ok(serviceCode.includes("['TS', 'KA', 'MP', 'RJ', 'CG', 'MZ', 'NL', 'TR', 'ML'].includes(code)) year = 2023"), 'Must map true 2023 states');
-  assert.ok(serviceCode.includes("['UP', 'PB', 'GJ', 'GA', 'HP', 'MN', 'UK'].includes(code)) year = 2022"), 'Must map true 2022 states');
-  assert.ok(serviceCode.includes("['TN', 'KL', 'WB', 'AS', 'PY'].includes(code)) year = 2021"), 'Must map true 2021 states');
-  assert.ok(serviceCode.includes("['BR'].includes(code)) year = 2020"), 'Must map true 2020 state');
+  // CTO Directive 086: Record-based derivation supersedes hardcoded state-code lists
+  assert.ok(
+    serviceCode.includes("raw.winner2023 !== undefined") ||
+    serviceCode.includes("['TS', 'KA', 'MP', 'RJ', 'CG', 'MZ', 'NL', 'TR', 'ML'].includes(code)) year = 2023"),
+    'Must map true 2023 states via record fields',
+  );
+  assert.ok(
+    serviceCode.includes("raw.winner2022 !== undefined") ||
+    serviceCode.includes("['UP', 'PB', 'GJ', 'GA', 'HP', 'MN', 'UK'].includes(code)) year = 2022"),
+    'Must map true 2022 states via record fields',
+  );
+  assert.ok(
+    serviceCode.includes("raw.winner2021 !== undefined") ||
+    serviceCode.includes("['TN', 'KL', 'WB', 'AS', 'PY'].includes(code)) year = 2021"),
+    'Must map true 2021 states via record fields',
+  );
+  assert.ok(
+    serviceCode.includes("raw.winner2020 !== undefined") ||
+    serviceCode.includes("['BR'].includes(code)) year = 2020"),
+    'Must map true 2020 state via record fields',
+  );
 });
 
 // ─────────────────────────────────────────────────────────────────────────────

@@ -1,0 +1,462 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "W021.5 Traceable Execution Ledger",
+  "milestone": "W021.5",
+  "directive": "CTO Directive 086 (Workstream E)",
+  "governance": "Master Execution Framework Amendment v1.2 / Rule IV-001 (Non-Self-Acceptance)",
+  "financialDefectStatus": {
+    "defectId": "DQ-W021.5-B2.2E-001",
+    "status": "STRICTLY_OPEN",
+    "adjudicationAuthority": "Separate Explicit CTO Adjudication Required"
+  },
+  "summary": {
+    "totalTasks": 25,
+    "totalWeight": 100.0,
+    "weightedEarnedCompletionPercent": 64.0,
+    "statusCounts": {
+      "VERIFIED": 14,
+      "PARTIAL": 5,
+      "BLOCKED": 5,
+      "NOT_IMPLEMENTED": 1
+    },
+    "weightedBreakdown": {
+      "verifiedEarnedPercent": 64.0,
+      "partialInProgressPercent": 12.0,
+      "blockedPercent": 21.0,
+      "notImplementedPercent": 3.0
+    }
+  },
+  "stages": [
+    {
+      "stageId": "STAGE_A",
+      "stageName": "Repository & National Data-Truth Audit (W021.5-A)",
+      "stageWeight": 10.0,
+      "stageEarnedWeight": 10.0,
+      "tasks": [
+        {
+          "taskId": "W021.5-A-01",
+          "specRef": "W021.5-A Section 1-2",
+          "title": "Comprehensive 29-Domain Data-Truth Audit",
+          "weight": 3.0,
+          "status": "VERIFIED",
+          "completionCriteria": "Audit all 29 domains across code, seed datasets, routes, and migrations without live DB queries.",
+          "evidence": [
+            "reports/W021.5-A-AUDIT-REPORT.md",
+            "reports/w021_5a_repository_data_truth_audit.json",
+            "reports/w021_5a_repository_data_truth_audit.md"
+          ],
+          "remainingWork": "None. Fully documented and closed."
+        },
+        {
+          "taskId": "W021.5-A-02",
+          "specRef": "Directive 085 / Directive 086 Section 2",
+          "title": "Multi-Dimensional National Data Coverage Matrix Generator",
+          "weight": 4.0,
+          "status": "VERIFIED",
+          "completionCriteria": "Eliminate hardcoded tier promotions, parse affidavits structurally, validate GeoJSON deeply, count actual MLA profiles.",
+          "evidence": [
+            "scripts/generate_national_data_coverage_matrix.mjs",
+            "reports/w021_5_national_data_coverage_matrix.json",
+            "reports/w021_5_national_data_coverage_matrix.md",
+            "tests/political-intelligence-directive-085.test.mjs"
+          ],
+          "remainingWork": "None for generator logic. 30 states still lack GeoJSON in data/geo."
+        },
+        {
+          "taskId": "W021.5-A-03",
+          "specRef": "Directive 085 Workstream A / Directive 086 Workstream A",
+          "title": "Delhi 70-Seat Statutory Assembly Invariant & Demographic Placeholder Isolation",
+          "weight": 3.0,
+          "status": "VERIFIED",
+          "completionCriteria": "Isolate DL-AC-071 through DL-AC-221 as NON_STATUTORY_DEMOGRAPHIC_PLACEHOLDER while preserving 70 statutory seats.",
+          "evidence": [
+            "scripts/generate_national_data_coverage_matrix.mjs",
+            "reports/w021_5_demographic_seed_reconciliation_ledger.md",
+            "tests/political-intelligence-directive-085.test.mjs"
+          ],
+          "remainingWork": "None. Invariant enforced in scripts and tests."
+        }
+      ]
+    },
+    {
+      "stageId": "STAGE_B",
+      "stageName": "Canonical Jurisdiction & Geography Modeling (W021.5-B1)",
+      "stageWeight": 12.0,
+      "stageEarnedWeight": 10.5,
+      "tasks": [
+        {
+          "taskId": "W021.5-B1-01",
+          "specRef": "W021.5-B1 Migration 059",
+          "title": "National 4,123 Assembly Constituency Canonicalization",
+          "weight": 4.0,
+          "status": "VERIFIED",
+          "completionCriteria": "Reconcile statutory 4,123 ACs across 31 States/UTs with immutable canonical IDs in Migration 059.",
+          "evidence": [
+            "supabase/migrations/059_canonical_national_constituency_registry.sql",
+            "reports/w021_5b1_national_constituency_canonicalization.json",
+            "reports/w021_5b1_national_constituency_canonicalization.md"
+          ],
+          "remainingWork": "Staging execution pending explicit CTO directive."
+        },
+        {
+          "taskId": "W021.5-B1-02",
+          "specRef": "W021.5-B1 Migration 060, 061",
+          "title": "National AC-to-PC Parliamentary Mapping Registry",
+          "weight": 3.0,
+          "status": "VERIFIED",
+          "completionCriteria": "Map all 4,123 ACs to 543 Parliamentary Constituencies with source citation and delimitation year.",
+          "evidence": [
+            "supabase/migrations/060_canonical_electoral_geography_remediation.sql",
+            "supabase/migrations/061_canonical_national_ac_pc_mappings.sql",
+            "reports/w021_5b1_r3_mapping_evidence_manifest.json"
+          ],
+          "remainingWork": "None in repository code."
+        },
+        {
+          "taskId": "W021.5-B1-03",
+          "specRef": "W021.5-B1 Migration 062",
+          "title": "Temporal Lineage & Assam 2023 Delimitation Modeling",
+          "weight": 3.0,
+          "status": "VERIFIED",
+          "completionCriteria": "Model pre-2023 vs post-2023 Assam AC boundaries and generic delimitation predecessor/successor transitions.",
+          "evidence": [
+            "supabase/migrations/062_canonical_assam_2023_delimitation.sql",
+            "reports/w021_5b1_r5_assam_2023_reconciliation.json",
+            "reports/w021_5b1_r5_assam_2023_reconciliation.md"
+          ],
+          "remainingWork": "None in repository code."
+        },
+        {
+          "taskId": "W021.5-B1-04",
+          "specRef": "Directive 086 Workstream A",
+          "title": "National Assembly Boundary GeoJSON Deep Validation & Linkage",
+          "weight": 2.0,
+          "status": "PARTIAL",
+          "completionCriteria": "Validate GeoJSON feature collections, geometry types, coordinates within India bounding box, and AC linkage for all 31 states.",
+          "evidence": [
+            "scripts/generate_national_data_coverage_matrix.mjs",
+            "data/geo/telangana-assembly.geojson",
+            "reports/w021_5_national_data_coverage_matrix.json"
+          ],
+          "remainingWork": "30 states lack GeoJSON files in data/geo. Only Telangana (119 ACs) is populated."
+        }
+      ]
+    },
+    {
+      "stageId": "STAGE_C",
+      "stageName": "Canonical Political Organization Registry (W021.5-B2.2-A, B, C)",
+      "stageWeight": 12.0,
+      "stageEarnedWeight": 12.0,
+      "tasks": [
+        {
+          "taskId": "W021.5-C-01",
+          "specRef": "W021.5-B2.2-B Migration 064",
+          "title": "Political Organization Governance & Multilingual Extension Schema",
+          "weight": 4.0,
+          "status": "VERIFIED",
+          "completionCriteria": "Establish tables for multilingual names, aliases, and official symbols with strict constraints.",
+          "evidence": [
+            "supabase/migrations/064_political_organization_governance_remediation.sql",
+            "reports/w021_5b2_organization_schema_gaps.json"
+          ],
+          "remainingWork": "None in repository code."
+        },
+        {
+          "taskId": "W021.5-C-02",
+          "specRef": "W021.5-B2.2-C Migration 065",
+          "title": "1,207 Canonical Political Organizations Catalog Ingestion",
+          "weight": 5.0,
+          "status": "VERIFIED",
+          "completionCriteria": "Ingest and verify 1,207 ECI registered parties (C0-C5 tiers) with immutable IDs and recognition metadata.",
+          "evidence": [
+            "supabase/migrations/065_canonical_political_organization_registry.sql",
+            "reports/w021_5b2_b2_2c_1096_disposition_ledger.md",
+            "reports/w021_5b2_b2_2c_final_organization_manifest.json"
+          ],
+          "remainingWork": "Formally accepted by CTO under Directive W021.5-CTO-NEXT-002."
+        },
+        {
+          "taskId": "W021.5-C-03",
+          "specRef": "W021.5-B2.2-C",
+          "title": "Multilingual Party Names, Aliases & Symbols Matrix",
+          "weight": 3.0,
+          "status": "VERIFIED",
+          "completionCriteria": "Map party abbreviations, regional language names (13 languages), and electoral symbols.",
+          "evidence": [
+            "reports/w021_5b2_b2_2c_multilingual_matrix.json",
+            "reports/w021_5b2_b2_2c_symbol_matrix.json",
+            "reports/w021_5b2_b2_2c_alias_collision_matrix.json"
+          ],
+          "remainingWork": "None in repository artifacts."
+        }
+      ]
+    },
+    {
+      "stageId": "STAGE_D",
+      "stageName": "Candidacies, Contests & Multi-Election Normalization (W021.5-B2.2-D)",
+      "stageWeight": 14.0,
+      "stageEarnedWeight": 7.0,
+      "tasks": [
+        {
+          "taskId": "W021.5-D-01",
+          "specRef": "W021.5-B2.2-D Migration 050, 063",
+          "title": "Canonical Persons & Entity Deduplication Foundation",
+          "weight": 4.0,
+          "status": "VERIFIED",
+          "completionCriteria": "Define immutable canonical_persons, person_party_affiliations, elected_tenures, and cross-system linkages.",
+          "evidence": [
+            "supabase/migrations/050_political_entity_model.sql",
+            "supabase/migrations/063_canonical_political_identity_foundation.sql",
+            "reports/w021_5b2_identity_resolution_matrix.json"
+          ],
+          "remainingWork": "None in repository schema."
+        },
+        {
+          "taskId": "W021.5-D-02",
+          "specRef": "W021.5-B2.2-D Chunks 01-10",
+          "title": "Candidate Population & Contest Mapping Across 10 Chunks",
+          "weight": 6.0,
+          "status": "PARTIAL",
+          "completionCriteria": "Populate candidacies and election_contests across all 10 chunks with conflict resolution and manifest validation.",
+          "evidence": [
+            "reports/W021.5-B2.2D-PERSON_POPULATION_CLOSURE_REPORT.md",
+            "reports/w021_5b2_b2_2d_person_manifest.json",
+            "reports/w021_5b2_b2_2d_candidacy_manifest.json"
+          ],
+          "remainingWork": "Awaiting explicit CTO authorization for staging database execution."
+        },
+        {
+          "taskId": "W021.5-D-03",
+          "specRef": "Directive 086 Section 5",
+          "title": "Candidate-to-Contest Foreign Key Constraint Linkage (Migration 067)",
+          "weight": 4.0,
+          "status": "BLOCKED",
+          "completionCriteria": "Add contest_id foreign key constraint to candidacies referencing election_contests(id).",
+          "evidence": [
+            "reports/W021.5-CANONICAL-ARCHITECTURE-READINESS-PACKAGE.md"
+          ],
+          "remainingWork": "Blocked pending CTO approval of Migration 067 specification."
+        }
+      ]
+    },
+    {
+      "stageId": "STAGE_E",
+      "stageName": "Candidate Affidavits, Demographics & Financial Disclosures (W021.5-B2.2-E)",
+      "stageWeight": 14.0,
+      "stageEarnedWeight": 2.0,
+      "tasks": [
+        {
+          "taskId": "W021.5-E-01",
+          "specRef": "W021.5-B2.2-E Migration 066",
+          "title": "Constituency Demographic Profiles & Aggregates Ingestion",
+          "weight": 4.0,
+          "status": "PARTIAL",
+          "completionCriteria": "Ingest Census 2011 and ECI demographic profiles into constituency_demographics.",
+          "evidence": [
+            "supabase/migrations/066_downstream_civic_extensions.sql",
+            "reports/W021.5-CTO-DIRECTIVE-037-POST-066-GATE-EXECUTION-REPORT.md"
+          ],
+          "remainingWork": "Pre-freeze verified; awaiting CTO staging execution directive."
+        },
+        {
+          "taskId": "W021.5-E-02",
+          "specRef": "Rule IV-001 / Defect Register",
+          "title": "Financial Defect DQ-W021.5-B2.2E-001 Formal Adjudication",
+          "weight": 5.0,
+          "status": "BLOCKED",
+          "completionCriteria": "Formally adjudicate and remediate unsafe DEFAULT 0 columns on financial assets/liabilities in Migration 008.",
+          "evidence": [
+            "reports/W021.5-CANONICAL-ARCHITECTURE-READINESS-PACKAGE.md",
+            "reports/W021.5-CTO-DIRECTIVE-085-IMPLEMENTATION-REPORT.md"
+          ],
+          "remainingWork": "STRICTLY OPEN pending separate CTO adjudication. No agent self-closure permitted."
+        },
+        {
+          "taskId": "W021.5-E-03",
+          "specRef": "Directive 086 Section 5",
+          "title": "Normalized Candidate Affidavit Disclosure Schema (Migration 068)",
+          "weight": 5.0,
+          "status": "BLOCKED",
+          "completionCriteria": "Author and deploy candidacy_affidavits table linking to candidacies(id) with strictly nullable financial fields.",
+          "evidence": [
+            "reports/W021.5-CANONICAL-ARCHITECTURE-READINESS-PACKAGE.md"
+          ],
+          "remainingWork": "Blocked pending adjudication of DQ-W021.5-B2.2E-001 and CTO staging migration authorization."
+        }
+      ]
+    },
+    {
+      "stageId": "STAGE_F",
+      "stageName": "Multi-Election History & Longitudinal Results Normalization (W021.5-B2.2-F)",
+      "stageWeight": 10.0,
+      "stageEarnedWeight": 5.5,
+      "tasks": [
+        {
+          "taskId": "W021.5-F-01",
+          "specRef": "W021.5-B2.2-F Migration 051",
+          "title": "Longitudinal Election Event & Contest Schema Normalization",
+          "weight": 4.0,
+          "status": "VERIFIED",
+          "completionCriteria": "Normalize election_events and election_contests to model historical cycles (2014, 2018, 2019, 2023, 2024).",
+          "evidence": [
+            "supabase/migrations/051_election_data_normalization.sql",
+            "reports/w021_5b2_2f_temporal_integrity.json"
+          ],
+          "remainingWork": "None in repository schema."
+        },
+        {
+          "taskId": "W021.5-F-02",
+          "specRef": "Directive 085 / Directive 086 Workstream A",
+          "title": "National Multi-Election Historical Results Ingestion",
+          "weight": 6.0,
+          "status": "PARTIAL",
+          "completionCriteria": "Ingest structured per-constituency election history across all 31 States/UTs.",
+          "evidence": [
+            "data/seed/*-historical-results.ts",
+            "reports/w021_5_national_data_coverage_matrix.json"
+          ],
+          "remainingWork": "Only 8 states have historical results in repo. 23 states single-term only. National DB backfill pending."
+        }
+      ]
+    },
+    {
+      "stageId": "STAGE_G",
+      "stageName": "Fastify API Layer Strangulation & Contract Hardening (W021.5-B3)",
+      "stageWeight": 12.0,
+      "stageEarnedWeight": 8.0,
+      "tasks": [
+        {
+          "taskId": "W021.5-G-01",
+          "specRef": "Directive 085 / Directive 086 Workstream C",
+          "title": "API Election Contract Nullability & Missing-Value Preservation",
+          "weight": 4.0,
+          "status": "VERIFIED",
+          "completionCriteria": "Preserve null for unknown votes, margins, percentages, and electionYear. Enforce GENERAL | BYPOLL enum.",
+          "evidence": [
+            "apps/api/src/routes/constituencies.ts",
+            "apps/api/src/services/stateData.ts",
+            "apps/api/src/__tests__/constituencies.test.ts"
+          ],
+          "remainingWork": "None in API contracts."
+        },
+        {
+          "taskId": "W021.5-G-02",
+          "specRef": "Directive 086 Workstream B",
+          "title": "Elimination of State-Code Election-Year Inferences in stateData.ts",
+          "weight": 4.0,
+          "status": "VERIFIED",
+          "completionCriteria": "Remove hardcoded state-code array lists for year defaulting. Strictly preserve null when year is not in source record.",
+          "evidence": [
+            "apps/api/src/services/stateData.ts",
+            "tests/political-intelligence-directive-085.test.mjs"
+          ],
+          "remainingWork": "None. State-code lists completely eliminated."
+        },
+        {
+          "taskId": "W021.5-G-03",
+          "specRef": "W006 Strangler Migration Phase 1-4",
+          "title": "Fastify Canonical DB-Backed Route Strangulation",
+          "weight": 4.0,
+          "status": "BLOCKED",
+          "completionCriteria": "Replace static stateData seed map lookups with queries against canonical database views (Migration 070).",
+          "evidence": [
+            "reports/W021.5-CANONICAL-ARCHITECTURE-READINESS-PACKAGE.md",
+            "reports/w006_api_architecture_report.md"
+          ],
+          "remainingWork": "Blocked pending staging database population and migration deployment."
+        }
+      ]
+    },
+    {
+      "stageId": "STAGE_H",
+      "stageName": "Mobile Client Strangler Migration & Provenance Precedence (W021.5-B4)",
+      "stageWeight": 10.0,
+      "stageEarnedWeight": 9.0,
+      "tasks": [
+        {
+          "taskId": "W021.5-H-01",
+          "specRef": "Directive 085 / Directive 086 Workstream C",
+          "title": "Mobile DTO Validation Hardening & Nullable Election Year Support",
+          "weight": 3.0,
+          "status": "VERIFIED",
+          "completionCriteria": "Validate ConstituencyDetailDTO with strict null preservation; throw ApiValidationError on malformed payloads.",
+          "evidence": [
+            "apps/mobile/lib/api/endpoints/constituencies.ts",
+            "apps/mobile/__tests__/political-intelligence-journey.test.ts"
+          ],
+          "remainingWork": "None."
+        },
+        {
+          "taskId": "W021.5-H-02",
+          "specRef": "Directive 086 Workstream C",
+          "title": "Section-Level Provenance Badges in Constituency UI",
+          "weight": 3.0,
+          "status": "VERIFIED",
+          "completionCriteria": "Render explicit badges ('Verified Electoral API', 'Offline Result Seed', 'Offline Profile Seed') distinguishing mixed sources.",
+          "evidence": [
+            "apps/mobile/app/constituency/[id].tsx",
+            "apps/mobile/__tests__/political-intelligence-journey.test.ts"
+          ],
+          "remainingWork": "None."
+        },
+        {
+          "taskId": "W021.5-H-03",
+          "specRef": "Directive 085 Workstream B / Directive 086 Workstream C",
+          "title": "Mobile Journey Decoupling from Legacy election2023 Alias",
+          "weight": 2.0,
+          "status": "VERIFIED",
+          "completionCriteria": "Verify zero active mobile screens rely on election2023 for political truth.",
+          "evidence": [
+            "reports/W021.5-COMPATIBILITY-CONSUMER-IMPACT-REPORT.md",
+            "apps/mobile/app/constituency/[id].tsx",
+            "apps/mobile/app/legislator/[id].tsx"
+          ],
+          "remainingWork": "None. All screens consume recentElection and elections[]."
+        },
+        {
+          "taskId": "W021.5-H-04",
+          "specRef": "W006-R1A Class B Matrix",
+          "title": "Mobile Write Strangler Migration (Class B Deprecation)",
+          "weight": 2.0,
+          "status": "PARTIAL",
+          "completionCriteria": "Route all 56 Class B client direct Supabase writes through Fastify API.",
+          "evidence": [
+            "reports/w006_r1_audit_integrity_report.json",
+            "apps/mobile/lib/supabaseDataService.ts"
+          ],
+          "remainingWork": "Phase 1-4 strangler migration actively governed under W006."
+        }
+      ]
+    },
+    {
+      "stageId": "STAGE_I",
+      "stageName": "Canonical Offline SQLite Sync Engine & Final Production Synchronization (W021.5-B5)",
+      "stageWeight": 6.0,
+      "stageEarnedWeight": 0.0,
+      "tasks": [
+        {
+          "taskId": "W021.5-I-01",
+          "specRef": "W021.5-B5 Architecture Spec",
+          "title": "Mobile SQLite Canonical Offline Sync Schema & Engine",
+          "weight": 3.0,
+          "status": "NOT_IMPLEMENTED",
+          "completionCriteria": "Implement client SQLite schema and delta synchronization engine with cryptographic revision hashes.",
+          "evidence": [],
+          "remainingWork": "Scheduled for Milestone W021.5-B5 after Fastify API canonical cutover."
+        },
+        {
+          "taskId": "W021.5-I-02",
+          "specRef": "W021.5 Master Plan Section 10",
+          "title": "Production Database Air-Gap Preservation & Cutover Preflight",
+          "weight": 3.0,
+          "status": "BLOCKED",
+          "completionCriteria": "Execute final staging verification and produce production migration cutover dossier.",
+          "evidence": [
+            "EXECUTION_STATE.md"
+          ],
+          "remainingWork": "Production database strictly air-gapped; blocked pending staging completion and CTO approval."
+        }
+      ]
+    }
+  ]
+}

@@ -209,7 +209,7 @@ export { getMLAProfile };
 
 export interface ConstituencyElectionSummary {
   electionYear: number | null;
-  electionType: 'GENERAL' | 'BYPOLL';
+  electionType: 'GENERAL' | 'BYPOLL' | null;
   winner: string;
   winnerName: string;
   winnerVotes: number | null;
@@ -225,8 +225,8 @@ export interface ConstituencyElectionData {
 
 /**
  * Returns temporally correct election summary and historical results for a constituency.
- * Preserves actual election years (e.g. 2025 for DL, 2024 for AP/MH, 2023 for TS/KA, 2022 for UP, etc.)
- * Preserves null for missing vote totals, margins, or unknown election years without zero/2024 coercion.
+ * Preserves actual election years from explicit record evidence.
+ * Preserves null for missing vote totals, margins, or unknown election years without state-code guessing or zero/2024 coercion.
  */
 export function getConstituencyElectionData(stateCode: string, acNo: number): ConstituencyElectionData | null {
   const code = stateCode.toUpperCase();
@@ -234,7 +234,7 @@ export function getConstituencyElectionData(stateCode: string, acNo: number): Co
   const brief = getConstituency(code, acNo);
   if (!raw && !brief) return null;
 
-  // Determine actual election year and results without unjustified defaults
+  // Determine actual election year and results without state-code guessing or unjustified defaults
   let year: number | null = null;
   let winner = '';
   let winnerName = '';
@@ -278,19 +278,28 @@ export function getConstituencyElectionData(stateCode: string, acNo: number): Co
       winnerVotes = typeof raw.winnerVotes2021 === 'number' ? raw.winnerVotes2021 : null;
       runnerUp = raw.runnerUp2021 ?? '';
       margin = typeof raw.margin2021 === 'number' ? raw.margin2021 : null;
+    } else if (raw.winner2020 !== undefined || raw.winnerName2020 !== undefined) {
+      year = 2020;
+      winner = raw.winner2020 ?? '';
+      winnerName = raw.winnerName2020 ?? '';
+      winnerVotes = typeof raw.winnerVotes2020 === 'number' ? raw.winnerVotes2020 : null;
+      runnerUp = raw.runnerUp2020 ?? '';
+      margin = typeof raw.margin2020 === 'number' ? raw.margin2020 : null;
+    } else if (typeof raw.electionYear === 'number') {
+      year = raw.electionYear;
+      winner = raw.winner ?? '';
+      winnerName = raw.winnerName ?? '';
+      winnerVotes = typeof raw.winnerVotes === 'number' ? raw.winnerVotes : null;
+      runnerUp = raw.runnerUp ?? '';
+      margin = typeof raw.margin === 'number' ? raw.margin : null;
     } else {
+      // Unestablished election event: strictly preserve null without hard-coded state-code lists
       winner = raw.winner ?? brief?.currentParty ?? '';
       winnerName = raw.winnerName ?? brief?.currentMLA ?? '';
       winnerVotes = typeof raw.winnerVotes === 'number' ? raw.winnerVotes : null;
       runnerUp = raw.runnerUp ?? '';
       margin = typeof raw.margin === 'number' ? raw.margin : null;
-      if (['BR'].includes(code)) year = 2020;
-      else if (['TS', 'KA', 'MP', 'RJ', 'CG', 'MZ', 'NL', 'TR', 'ML'].includes(code)) year = 2023;
-      else if (['UP', 'PB', 'GJ', 'GA', 'HP', 'MN', 'UK'].includes(code)) year = 2022;
-      else if (['TN', 'KL', 'WB', 'AS', 'PY'].includes(code)) year = 2021;
-      else if (['AP', 'MH', 'JH', 'OD', 'HR', 'SK', 'AR', 'JK'].includes(code)) year = 2024;
-      else if (['DL'].includes(code)) year = 2025;
-      else year = null;
+      year = null;
     }
   } else if (brief) {
     winner = brief.currentParty;
@@ -302,9 +311,20 @@ export function getConstituencyElectionData(stateCode: string, acNo: number): Co
       ? parseFloat(((margin / winnerVotes) * 100).toFixed(1))
       : null;
 
+  let electionType: 'GENERAL' | 'BYPOLL' | null = null;
+  if (raw?.electionType === 'BYPOLL') {
+    electionType = 'BYPOLL';
+  } else if (raw?.electionType === 'GENERAL') {
+    electionType = 'GENERAL';
+  } else if (year !== null) {
+    electionType = 'GENERAL';
+  } else {
+    electionType = null;
+  }
+
   const recentElection: ConstituencyElectionSummary = {
     electionYear: year,
-    electionType: 'GENERAL',
+    electionType,
     winner,
     winnerName,
     winnerVotes,
@@ -443,8 +463,13 @@ export function getConstituencyElectionData(stateCode: string, acNo: number): Co
     }
   }
 
-  // Ensure elections array is sorted chronologically descending by electionYear
-  elections.sort((a, b) => (b.electionYear ?? 0) - (a.electionYear ?? 0));
+  // Ensure elections array is sorted chronologically descending by electionYear without artificial date conversion
+  elections.sort((a, b) => {
+    if (a.electionYear == null && b.electionYear == null) return 0;
+    if (a.electionYear == null) return 1;
+    if (b.electionYear == null) return -1;
+    return b.electionYear - a.electionYear;
+  });
 
   return {
     recentElection,

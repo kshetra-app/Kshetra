@@ -1,8 +1,8 @@
 # KSHETRA W021.5 — NATIONAL DATA COVERAGE INVENTORY MATRIX
 
 **Milestone:** W021.5 — National Political Intelligence and Candidate Transparency  
-**Directive:** CTO Directive 085 (Workstream A)  
-**Generated At:** `2026-10-17T08:16:37.888Z`  
+**Directive:** CTO Directive 085 / CTO Directive 086 (Workstream A)  
+**Generated At:** `2026-10-17T08:58:52.280Z`  
 **Total States/UTs Audited:** 31  
 **Defect Classification:** `DQ-W021.5-B2.2E-001` — **STRICTLY OPEN**  
 **Governance Invariant:** Rule IV-001 — Non-Self-Acceptance  
@@ -13,7 +13,7 @@
 
 This matrix establishes the definitive, evidence-based national political data coverage inventory of the Kshetra platform across all 31 supported Indian states and Union Territories.
 
-Under **CTO Directive 085** and **Rule IV-001 (Non-Self-Acceptance)**, this report repudiates unsupported completeness claims:
+Under **CTO Directive 085 / CTO Directive 086** and **Rule IV-001 (Non-Self-Acceptance)**, this report repudiates unsupported completeness claims:
 1. **Zero Canonical Full States:** No state is promoted to `CANONICAL_FULL` or `VERIFIED_PRODUCTION` merely because of allowlisted state codes or file existence. All records are classified truthfully as offline local seed fixtures pending live database verification.
 2. **Multi-Dimensional Evidence:** Every state is audited across 7 distinct dimensions: Registry Identity, Electoral Results, Historical Coverage, Representative Profiles, Affidavits, Geospatial Boundaries, and Provenance.
 3. **Delhi Statutory Invariant:** Strictly 70 statutory Assembly seats. 151 extra municipal/demographic records (`DL-AC-071` to `DL-AC-221`) are explicitly isolated as `NON_STATUTORY_DEMOGRAPHIC_PLACEHOLDER`.
@@ -23,7 +23,7 @@ Under **CTO Directive 085** and **Rule IV-001 (Non-Self-Acceptance)**, this repo
 ### Platform Coverage Summary
 - **Total Statutory Assembly Seats:** 4123
 - **Total Unique Seeded Constituencies:** 4123 (100.0% seat identity coverage)
-- **Total MLA Profiles Resolved to Statutory Seats:** 3913
+- **Total MLA Profiles Resolved to Statutory Seats:** 3812
 - **Total Candidate Affidavits in Store:** 28
 - **Tier 0 (Canonical Full Production):** 0 states (Strictly 0; live DB and complete affidavits pending)
 - **Tier 1 (Seeded Rich Local + GeoJSON + Historical + Sample Affidavits):** 1 state (TS)
@@ -38,8 +38,8 @@ Under **CTO Directive 085** and **Rule IV-001 (Non-Self-Acceptance)**, this repo
 | :---: | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :--- | :--- |
 | **TS** | Telangana | 119 | 119/119 (100.0%) | 2023 (GENERAL) | 2018, 2014 | 119/119 (100.0%) | 17/119 (14.3%) | ✓ (119) | `SEEDED_RICH_LOCAL_WITH_GEO` | `PARTIAL_VERIFIED_OFFLINE` |
 | **AP** | Andhra Pradesh | 175 | 175/175 (100.0%) | 2024 (GENERAL) | 2019 | 172/175 (98.3%) | 2/175 (1.1%) | — (0) | `SEEDED_HISTORICAL_NO_GEO` | `FUNCTIONAL_PARTIAL_OFFLINE` |
-| **KA** | Karnataka | 224 | 224/224 (100.0%) | 2023 (GENERAL) | 2018 | 224/224 (100.0%) | 2/224 (0.9%) | — (0) | `SEEDED_HISTORICAL_NO_GEO` | `FUNCTIONAL_PARTIAL_OFFLINE` |
-| **MH** | Maharashtra | 288 | 288/288 (100.0%) | 2024 (GENERAL) | 2019 | 288/288 (100.0%) | 1/288 (0.3%) | — (0) | `SEEDED_HISTORICAL_NO_GEO` | `FUNCTIONAL_PARTIAL_OFFLINE` |
+| **KA** | Karnataka | 224 | 224/224 (100.0%) | 2023 (GENERAL) | 2018 | 171/224 (76.3%) | 2/224 (0.9%) | — (0) | `SEEDED_HISTORICAL_NO_GEO` | `FUNCTIONAL_PARTIAL_OFFLINE` |
+| **MH** | Maharashtra | 288 | 288/288 (100.0%) | 2024 (GENERAL) | 2019 | 240/288 (83.3%) | 1/288 (0.3%) | — (0) | `SEEDED_HISTORICAL_NO_GEO` | `FUNCTIONAL_PARTIAL_OFFLINE` |
 | **TN** | Tamil Nadu | 234 | 234/234 (100.0%) | 2021 (GENERAL) | 2016 | 234/234 (100.0%) | 2/234 (0.9%) | — (0) | `SEEDED_HISTORICAL_NO_GEO` | `FUNCTIONAL_PARTIAL_OFFLINE` |
 | **KL** | Kerala | 140 | 140/140 (100.0%) | 2021 (GENERAL) | 2016 | 140/140 (100.0%) | 1/140 (0.7%) | — (0) | `SEEDED_HISTORICAL_NO_GEO` | `FUNCTIONAL_PARTIAL_OFFLINE` |
 | **WB** | West Bengal | 294 | 294/294 (100.0%) | 2021 (GENERAL) | 2016 | 294/294 (100.0%) | 1/294 (0.3%) | — (0) | `SEEDED_HISTORICAL_NO_GEO` | `FUNCTIONAL_PARTIAL_OFFLINE` |
@@ -54,7 +54,7 @@ Under **CTO Directive 085** and **Rule IV-001 (Non-Self-Acceptance)**, this repo
 | **CG** | Chhattisgarh | 90 | 90/90 (100.0%) | 2023 (GENERAL) | None | 81/90 (90.0%) | 0/90 (0.0%) | — (0) | `SEEDED_SINGLE_TERM_PENDING_GEO_HIST` | `FUNCTIONAL_PARTIAL_OFFLINE` |
 | **MP** | Madhya Pradesh | 230 | 230/230 (100.0%) | 2023 (GENERAL) | None | 208/230 (90.4%) | 0/230 (0.0%) | — (0) | `SEEDED_SINGLE_TERM_PENDING_GEO_HIST` | `FUNCTIONAL_PARTIAL_OFFLINE` |
 | **BR** | Bihar | 243 | 243/243 (100.0%) | 2020 (GENERAL) | None | 227/243 (93.4%) | 0/243 (0.0%) | — (0) | `SEEDED_SINGLE_TERM_PENDING_GEO_HIST` | `FUNCTIONAL_PARTIAL_OFFLINE` |
-| **AS** | Assam | 126 | 126/126 (100.0%) | 2021 (GENERAL) | None | 112/126 (88.9%) | 0/126 (0.0%) | — (0) | `SEEDED_SINGLE_TERM_PENDING_GEO_HIST` | `FUNCTIONAL_PARTIAL_OFFLINE` |
+| **AS** | Assam | 126 | 126/126 (100.0%) | null (null) | None | 112/126 (88.9%) | 0/126 (0.0%) | — (0) | `SEEDED_SINGLE_TERM_PENDING_GEO_HIST` | `FUNCTIONAL_PARTIAL_OFFLINE` |
 | **GA** | Goa | 40 | 40/40 (100.0%) | 2022 (GENERAL) | None | 34/40 (85.0%) | 0/40 (0.0%) | — (0) | `SEEDED_SINGLE_TERM_PENDING_GEO_HIST` | `FUNCTIONAL_PARTIAL_OFFLINE` |
 | **HP** | Himachal Pradesh | 68 | 68/68 (100.0%) | 2022 (GENERAL) | None | 68/68 (100.0%) | 0/68 (0.0%) | — (0) | `SEEDED_SINGLE_TERM_PENDING_GEO_HIST` | `FUNCTIONAL_PARTIAL_OFFLINE` |
 | **MN** | Manipur | 60 | 60/60 (100.0%) | 2022 (GENERAL) | None | 60/60 (100.0%) | 0/60 (0.0%) | — (0) | `SEEDED_SINGLE_TERM_PENDING_GEO_HIST` | `FUNCTIONAL_PARTIAL_OFFLINE` |
@@ -102,7 +102,7 @@ Under **CTO Directive 085** and **Rule IV-001 (Non-Self-Acceptance)**, this repo
 - **1. Registry / Identity:** 224/224 (100.0%) statutory seats mapped. Status: `VERIFIED_STATUTORY_MATCH`. Missing ACs: None.
 - **2. Electoral Results:** 224/224 (100.0%) records present for 2023 (GENERAL). Winner votes present: 224, missing: 0. Margin present: 224, missing: 0.
 - **3. Historical Elections:** Primary 2023 + Demonstrable historical years: [2018]. (Total terms: 2). State historical file: Present.
-- **4. Representatives / Profiles:** 224/224 (100.0%) resolved to statutory assembly seats.
+- **4. Representatives / Profiles:** 171/224 (76.3%) resolved to statutory assembly seats.
 - **5. Affidavits:** 2/224 (0.9%) candidates in store. Verified: 0. Pending notice: Active.
 - **6. Geospatial:** File: None | Features: 0 | Coordinates Valid: No.
 - **7. Provenance & Verification:** Source: Election Commission of India (ECI) / State Election Commission + ADR / MyNeta candidate disclosures | Status: `OFFLINE_LOCAL_FIXTURE` | Live DB Verified: `false`.
@@ -115,7 +115,7 @@ Under **CTO Directive 085** and **Rule IV-001 (Non-Self-Acceptance)**, this repo
 - **1. Registry / Identity:** 288/288 (100.0%) statutory seats mapped. Status: `VERIFIED_STATUTORY_MATCH`. Missing ACs: None.
 - **2. Electoral Results:** 288/288 (100.0%) records present for 2024 (GENERAL). Winner votes present: 288, missing: 0. Margin present: 288, missing: 0.
 - **3. Historical Elections:** Primary 2024 + Demonstrable historical years: [2019]. (Total terms: 2). State historical file: Present.
-- **4. Representatives / Profiles:** 288/288 (100.0%) resolved to statutory assembly seats.
+- **4. Representatives / Profiles:** 240/288 (83.3%) resolved to statutory assembly seats.
 - **5. Affidavits:** 1/288 (0.3%) candidates in store. Verified: 0. Pending notice: Active.
 - **6. Geospatial:** File: None | Features: 0 | Coordinates Valid: No.
 - **7. Provenance & Verification:** Source: Election Commission of India (ECI) / State Election Commission + ADR / MyNeta candidate disclosures | Status: `OFFLINE_LOCAL_FIXTURE` | Live DB Verified: `false`.
@@ -306,7 +306,7 @@ Under **CTO Directive 085** and **Rule IV-001 (Non-Self-Acceptance)**, this repo
 
 ### Bihar (BR)
 - **1. Registry / Identity:** 243/243 (100.0%) statutory seats mapped. Status: `VERIFIED_STATUTORY_MATCH`. Missing ACs: None.
-- **2. Electoral Results:** 0/243 (0.0%) records present for 2020 (GENERAL). Winner votes present: 0, missing: 243. Margin present: 0, missing: 243.
+- **2. Electoral Results:** 243/243 (100.0%) records present for 2020 (GENERAL). Winner votes present: 243, missing: 0. Margin present: 243, missing: 0.
 - **3. Historical Elections:** Primary 2020 + Demonstrable historical years: [None]. (Total terms: 1). State historical file: Absent.
 - **4. Representatives / Profiles:** 227/243 (93.4%) resolved to statutory assembly seats.
 - **5. Affidavits:** 0/243 (0.0%) candidates in store. Verified: 0. Pending notice: Active.
@@ -320,8 +320,8 @@ Under **CTO Directive 085** and **Rule IV-001 (Non-Self-Acceptance)**, this repo
 
 ### Assam (AS)
 - **1. Registry / Identity:** 126/126 (100.0%) statutory seats mapped. Status: `VERIFIED_STATUTORY_MATCH`. Missing ACs: None.
-- **2. Electoral Results:** 0/126 (0.0%) records present for 2021 (GENERAL). Winner votes present: 0, missing: 126. Margin present: 0, missing: 126.
-- **3. Historical Elections:** Primary 2021 + Demonstrable historical years: [None]. (Total terms: 1). State historical file: Absent.
+- **2. Electoral Results:** 0/126 (0.0%) records present for null (null). Winner votes present: 0, missing: 126. Margin present: 0, missing: 126.
+- **3. Historical Elections:** Primary null + Demonstrable historical years: [None]. (Total terms: 0). State historical file: Absent.
 - **4. Representatives / Profiles:** 112/126 (88.9%) resolved to statutory assembly seats.
 - **5. Affidavits:** 0/126 (0.0%) candidates in store. Verified: 0. Pending notice: Active.
 - **6. Geospatial:** File: None | Features: 0 | Coordinates Valid: No.

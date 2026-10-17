@@ -23,37 +23,37 @@ const REPO_ROOT = path.resolve(__dirname, '..');
 
 // ─── Authoritative States and Expected Statutory Assembly Seat Counts ───
 export const AUTHORITATIVE_STATE_SEATS = {
-  TS: { name: 'Telangana', seats: 119, electionYear: 2023, electionType: 'GENERAL' },
-  AP: { name: 'Andhra Pradesh', seats: 175, electionYear: 2024, electionType: 'GENERAL' },
-  KA: { name: 'Karnataka', seats: 224, electionYear: 2023, electionType: 'GENERAL' },
-  MH: { name: 'Maharashtra', seats: 288, electionYear: 2024, electionType: 'GENERAL' },
-  TN: { name: 'Tamil Nadu', seats: 234, electionYear: 2021, electionType: 'GENERAL' },
-  KL: { name: 'Kerala', seats: 140, electionYear: 2021, electionType: 'GENERAL' },
-  WB: { name: 'West Bengal', seats: 294, electionYear: 2021, electionType: 'GENERAL' },
-  UP: { name: 'Uttar Pradesh', seats: 403, electionYear: 2022, electionType: 'GENERAL' },
-  RJ: { name: 'Rajasthan', seats: 200, electionYear: 2023, electionType: 'GENERAL' },
-  GJ: { name: 'Gujarat', seats: 182, electionYear: 2022, electionType: 'GENERAL' },
-  JH: { name: 'Jharkhand', seats: 81, electionYear: 2024, electionType: 'GENERAL' },
-  OD: { name: 'Odisha', seats: 147, electionYear: 2024, electionType: 'GENERAL' },
-  DL: { name: 'Delhi', seats: 70, electionYear: 2025, electionType: 'GENERAL' },
-  PB: { name: 'Punjab', seats: 117, electionYear: 2022, electionType: 'GENERAL' },
-  HR: { name: 'Haryana', seats: 90, electionYear: 2024, electionType: 'GENERAL' },
-  CG: { name: 'Chhattisgarh', seats: 90, electionYear: 2023, electionType: 'GENERAL' },
-  MP: { name: 'Madhya Pradesh', seats: 230, electionYear: 2023, electionType: 'GENERAL' },
-  BR: { name: 'Bihar', seats: 243, electionYear: 2020, electionType: 'GENERAL' },
-  AS: { name: 'Assam', seats: 126, electionYear: 2021, electionType: 'GENERAL' },
-  GA: { name: 'Goa', seats: 40, electionYear: 2022, electionType: 'GENERAL' },
-  HP: { name: 'Himachal Pradesh', seats: 68, electionYear: 2022, electionType: 'GENERAL' },
-  MN: { name: 'Manipur', seats: 60, electionYear: 2022, electionType: 'GENERAL' },
-  ML: { name: 'Meghalaya', seats: 60, electionYear: 2023, electionType: 'GENERAL' },
-  MZ: { name: 'Mizoram', seats: 40, electionYear: 2023, electionType: 'GENERAL' },
-  NL: { name: 'Nagaland', seats: 60, electionYear: 2023, electionType: 'GENERAL' },
-  TR: { name: 'Tripura', seats: 60, electionYear: 2023, electionType: 'GENERAL' },
-  SK: { name: 'Sikkim', seats: 32, electionYear: 2024, electionType: 'GENERAL' },
-  AR: { name: 'Arunachal Pradesh', seats: 60, electionYear: 2024, electionType: 'GENERAL' },
-  UK: { name: 'Uttarakhand', seats: 70, electionYear: 2022, electionType: 'GENERAL' },
-  PY: { name: 'Puducherry', seats: 30, electionYear: 2021, electionType: 'GENERAL' },
-  JK: { name: 'Jammu & Kashmir', seats: 90, electionYear: 2024, electionType: 'GENERAL' },
+  TS: { name: 'Telangana', seats: 119 },
+  AP: { name: 'Andhra Pradesh', seats: 175 },
+  KA: { name: 'Karnataka', seats: 224 },
+  MH: { name: 'Maharashtra', seats: 288 },
+  TN: { name: 'Tamil Nadu', seats: 234 },
+  KL: { name: 'Kerala', seats: 140 },
+  WB: { name: 'West Bengal', seats: 294 },
+  UP: { name: 'Uttar Pradesh', seats: 403 },
+  RJ: { name: 'Rajasthan', seats: 200 },
+  GJ: { name: 'Gujarat', seats: 182 },
+  JH: { name: 'Jharkhand', seats: 81 },
+  OD: { name: 'Odisha', seats: 147 },
+  DL: { name: 'Delhi', seats: 70 },
+  PB: { name: 'Punjab', seats: 117 },
+  HR: { name: 'Haryana', seats: 90 },
+  CG: { name: 'Chhattisgarh', seats: 90 },
+  MP: { name: 'Madhya Pradesh', seats: 230 },
+  BR: { name: 'Bihar', seats: 243 },
+  AS: { name: 'Assam', seats: 126 },
+  GA: { name: 'Goa', seats: 40 },
+  HP: { name: 'Himachal Pradesh', seats: 68 },
+  MN: { name: 'Manipur', seats: 60 },
+  ML: { name: 'Meghalaya', seats: 60 },
+  MZ: { name: 'Mizoram', seats: 40 },
+  NL: { name: 'Nagaland', seats: 60 },
+  TR: { name: 'Tripura', seats: 60 },
+  SK: { name: 'Sikkim', seats: 32 },
+  AR: { name: 'Arunachal Pradesh', seats: 60 },
+  UK: { name: 'Uttarakhand', seats: 70 },
+  PY: { name: 'Puducherry', seats: 30 },
+  JK: { name: 'Jammu & Kashmir', seats: 90 },
 };
 
 export const STATE_SLUGS = {
@@ -90,7 +90,7 @@ export const STATE_SLUGS = {
   JK: 'jammu-kashmir',
 };
 
-// Inspect GeoJSON file with structural verification
+// Inspect GeoJSON file with deep structural verification
 function inspectGeoJSON(stateCode) {
   const slug = STATE_SLUGS[stateCode];
   const geoPath = path.join(REPO_ROOT, 'data', 'geo', `${slug}-assembly.geojson`);
@@ -102,46 +102,147 @@ function inspectGeoJSON(stateCode) {
       hasGeoJSON: false,
       fileName: null,
       featureCount: 0,
+      validFeatureCount: 0,
       coordinatesValid: false,
+      coordinateRangeValid: false,
+      linkedConstituencyCount: 0,
+      validationErrors: ['File not found in data/geo'],
     };
   }
 
   try {
     const raw = fs.readFileSync(targetPath, 'utf8');
     const parsed = JSON.parse(raw);
-    const isValidFC = parsed && parsed.type === 'FeatureCollection' && Array.isArray(parsed.features);
-    const count = isValidFC ? parsed.features.length : 0;
+    const errors = [];
+    if (!parsed || parsed.type !== 'FeatureCollection' || !Array.isArray(parsed.features)) {
+      return {
+        hasGeoJSON: false,
+        fileName: path.basename(targetPath),
+        featureCount: 0,
+        validFeatureCount: 0,
+        coordinatesValid: false,
+        coordinateRangeValid: false,
+        linkedConstituencyCount: 0,
+        validationErrors: ['Root is not a valid FeatureCollection'],
+      };
+    }
+
+    let validFeatures = 0;
+    let coordErrors = 0;
+    const linkedAcs = new Set();
+
+    for (const f of parsed.features) {
+      if (!f || f.type !== 'Feature') {
+        errors.push('Item in features array is not a Feature');
+        continue;
+      }
+      if (!f.geometry || typeof f.geometry !== 'object') {
+        errors.push('Feature missing geometry');
+        continue;
+      }
+      if (f.geometry.type !== 'Polygon' && f.geometry.type !== 'MultiPolygon') {
+        errors.push(`Feature geometry type "${f.geometry.type}" is not Polygon/MultiPolygon`);
+        continue;
+      }
+      if (!Array.isArray(f.geometry.coordinates) || f.geometry.coordinates.length === 0) {
+        errors.push('Feature coordinates array is empty or invalid');
+        continue;
+      }
+
+      // Validate coordinates numeric pairs and India geographic bounding box
+      let featureCoordValid = true;
+      const validateCoords = (arr) => {
+        if (!Array.isArray(arr)) {
+          featureCoordValid = false;
+          return;
+        }
+        if (typeof arr[0] === 'number' && typeof arr[1] === 'number') {
+          const [lng, lat] = arr;
+          if (isNaN(lng) || isNaN(lat)) {
+            featureCoordValid = false;
+          } else if (lng < 65 || lng > 100 || lat < 5 || lat > 40) {
+            coordErrors++;
+          }
+        } else {
+          for (const sub of arr) validateCoords(sub);
+        }
+      };
+      validateCoords(f.geometry.coordinates);
+
+      if (featureCoordValid) {
+        validFeatures++;
+      }
+
+      // Check constituency linkage
+      const ac = f.properties?.AC_NO ?? f.properties?.ac_no ?? f.properties?.acNo ?? f.properties?.acNumber;
+      if (ac != null && !isNaN(Number(ac))) {
+        linkedAcs.add(Number(ac));
+      }
+    }
+
+    const coordinatesValid = validFeatures > 0 && errors.length === 0;
+    const coordinateRangeValid = coordErrors === 0;
+
     return {
-      hasGeoJSON: count > 0,
+      hasGeoJSON: validFeatures > 0 && coordinatesValid,
       fileName: path.basename(targetPath),
-      featureCount: count,
-      coordinatesValid: isValidFC,
+      featureCount: parsed.features.length,
+      validFeatureCount: validFeatures,
+      coordinatesValid,
+      coordinateRangeValid,
+      linkedConstituencyCount: linkedAcs.size,
+      validationErrors: errors.slice(0, 5),
     };
-  } catch (_) {
+  } catch (err) {
     return {
       hasGeoJSON: false,
       fileName: path.basename(targetPath),
       featureCount: 0,
+      validFeatureCount: 0,
       coordinatesValid: false,
+      coordinateRangeValid: false,
+      linkedConstituencyCount: 0,
+      validationErrors: [err.message],
     };
   }
 }
 
-// Inspect affidavits in store
+// Inspect affidavits in store via structural parsing
 function inspectAffidavits(stateCode) {
   const storePath = path.join(REPO_ROOT, 'apps', 'mobile', 'stores', 'affidavits.ts');
-  if (!fs.existsSync(storePath)) return { total: 0, verified: 0, pending: 0 };
+  if (!fs.existsSync(storePath)) return { total: 0, verified: 0, pending: 0, records: [] };
   const content = fs.readFileSync(storePath, 'utf8');
 
-  // Count occurrences of candidate affidavits for this stateCode
-  const regex = new RegExp(`stateCode:\\s*['"]${stateCode}['"]`, 'g');
-  const matches = content.match(regex);
-  const total = matches ? matches.length : 0;
+  // Structural extraction of candidate affidavit objects from SEED_AFFIDAVITS
+  const blockRegex = /\{\s*id:\s*'([^']+)',\s*candidateName:\s*'([^']+)',\s*acNo:\s*(\d+),\s*constituencyName:\s*'([^']+)',\s*stateCode:\s*'([^']+)',[\s\S]*?sourceUrl:\s*'([^']+)',/g;
+  const matches = [...content.matchAll(blockRegex)];
+
+  const stateRecords = [];
+  for (const m of matches) {
+    const id = m[1];
+    const candidateName = m[2];
+    const acNo = parseInt(m[3], 10);
+    const constituencyName = m[4];
+    const recStateCode = m[5];
+    const sourceUrl = m[6];
+
+    // Structural validation of affidavit record
+    if (recStateCode === stateCode && id && candidateName && !isNaN(acNo) && acNo > 0) {
+      stateRecords.push({
+        id,
+        candidateName,
+        acNo,
+        constituencyName,
+        sourceUrl,
+      });
+    }
+  }
 
   return {
-    total,
-    verified: 0, // Zero affidavits in store have undergone live database or statutory verification
-    pending: total,
+    total: stateRecords.length,
+    verified: 0, // Zero affidavits in store have undergone live statutory ECI/DB verification
+    pending: stateRecords.length,
+    records: stateRecords,
   };
 }
 
@@ -182,7 +283,7 @@ function inspectHistoricalCoverage(stateCode) {
   };
 }
 
-// Inspect MLA profiles file with schema and boundary awareness
+// Inspect MLA profiles file with schema and boundary awareness (no map assumptions)
 function inspectMlaProfiles(stateCode, statutorySeats) {
   const slug = STATE_SLUGS[stateCode];
   const mlaPath = path.join(REPO_ROOT, 'data', 'seed', `${slug}-mla-profiles.ts`);
@@ -196,16 +297,7 @@ function inspectMlaProfiles(stateCode, statutorySeats) {
 
   const content = fs.readFileSync(mlaPath, 'utf8');
 
-  // Handle mapped MLA files (KA, MH)
-  if (content.includes(`${stateCode}_CONSTITUENCIES.map`)) {
-    return {
-      uniqueProfilesCount: statutorySeats,
-      resolvedToStatutoryAcCount: statutorySeats,
-      extraNonStatutoryProfiles: 0,
-    };
-  }
-
-  // Extract acNo references from profiles
+  // Extract explicit acNo declarations from profile records in the file
   const acMatches = [...content.matchAll(/acNo:\s*(\d+)/g)].map((m) => parseInt(m[1], 10));
   const uniqueAcs = new Set(acMatches);
 
@@ -218,15 +310,6 @@ function inspectMlaProfiles(stateCode, statutorySeats) {
     } else {
       extraNonStatutory++;
     }
-  }
-
-  // Delhi invariant: 70 statutory seats; extra records are municipal/demographic non-assembly placeholders
-  if (stateCode === 'DL') {
-    return {
-      uniqueProfilesCount: uniqueAcs.size,
-      resolvedToStatutoryAcCount: Math.min(validInStatutory, statutorySeats),
-      extraNonStatutoryProfiles: uniqueAcs.size - Math.min(validInStatutory, statutorySeats),
-    };
   }
 
   return {
@@ -298,22 +381,39 @@ export async function generateCoverageInventory() {
     let winnerVotesMissingCount = 0;
     let marginPresentCount = 0;
     let marginMissingCount = 0;
+    const evidencedYearsSet = new Set();
+    const evidencedTypesSet = new Set();
 
     for (const c of validAcRecords) {
-      const winner = c.winner2025 ?? c.winner2024 ?? c.winner2023 ?? c.winner2022 ?? c.winner2021 ?? c.winner;
-      const winnerName = c.winnerName2025 ?? c.winnerName2024 ?? c.winnerName2023 ?? c.winnerName2022 ?? c.winnerName2021 ?? c.winnerName;
+      let recYear = null;
+      if (c.winner2025 !== undefined || c.winnerName2025 !== undefined) recYear = 2025;
+      else if (c.winner2024 !== undefined || c.winnerName2024 !== undefined) recYear = 2024;
+      else if (c.winner2023 !== undefined || c.winnerName2023 !== undefined) recYear = 2023;
+      else if (c.winner2022 !== undefined || c.winnerName2022 !== undefined) recYear = 2022;
+      else if (c.winner2021 !== undefined || c.winnerName2021 !== undefined) recYear = 2021;
+      else if (c.winner2020 !== undefined || c.winnerName2020 !== undefined) recYear = 2020;
+      else if (typeof c.electionYear === 'number') recYear = c.electionYear;
+
+      if (recYear != null) evidencedYearsSet.add(recYear);
+
+      if (c.electionType === 'BYPOLL' || c.electionType === 'GENERAL') {
+        evidencedTypesSet.add(c.electionType);
+      }
+
+      const winner = c.winner2025 ?? c.winner2024 ?? c.winner2023 ?? c.winner2022 ?? c.winner2021 ?? c.winner2020 ?? c.winner;
+      const winnerName = c.winnerName2025 ?? c.winnerName2024 ?? c.winnerName2023 ?? c.winnerName2022 ?? c.winnerName2021 ?? c.winnerName2020 ?? c.winnerName;
       if (winner || winnerName) {
         resultsPresentCount++;
       }
 
-      const votes = c.winnerVotes2025 ?? c.winnerVotes2024 ?? c.winnerVotes2023 ?? c.winnerVotes2022 ?? c.winnerVotes2021 ?? c.winnerVotes;
+      const votes = c.winnerVotes2025 ?? c.winnerVotes2024 ?? c.winnerVotes2023 ?? c.winnerVotes2022 ?? c.winnerVotes2021 ?? c.winnerVotes2020 ?? c.winnerVotes;
       if (typeof votes === 'number') {
         winnerVotesPresentCount++;
       } else {
         winnerVotesMissingCount++;
       }
 
-      const margin = c.margin2025 ?? c.margin2024 ?? c.margin2023 ?? c.margin2022 ?? c.margin2021 ?? c.margin;
+      const margin = c.margin2025 ?? c.margin2024 ?? c.margin2023 ?? c.margin2022 ?? c.margin2021 ?? c.margin2020 ?? c.margin;
       if (typeof margin === 'number') {
         marginPresentCount++;
       } else {
@@ -324,9 +424,18 @@ export async function generateCoverageInventory() {
     const resultsCoveragePercent = meta.seats > 0 ? ((resultsPresentCount / meta.seats) * 100).toFixed(1) : '0.0';
     const resultsCoverageRatio = `${resultsPresentCount}/${meta.seats} (${resultsCoveragePercent}%)`;
 
+    // Derive recent election year strictly from record evidence (NO state code or cycle guessing!)
+    const evidencedRecentYears = [...evidencedYearsSet].sort((a, b) => b - a);
+    const primaryRecentElectionYear = evidencedRecentYears.length > 0 ? evidencedRecentYears[0] : null;
+    const primaryRecentElectionType = evidencedTypesSet.has('BYPOLL') && evidencedTypesSet.size === 1
+      ? 'BYPOLL'
+      : (primaryRecentElectionYear != null ? 'GENERAL' : null);
+
     // 3. Historical Coverage Dimension
     const hist = inspectHistoricalCoverage(code);
-    const allAvailableYears = [meta.electionYear, ...hist.demonstrablePerAcYears];
+    const allAvailableYears = primaryRecentElectionYear != null
+      ? [...new Set([primaryRecentElectionYear, ...hist.demonstrablePerAcYears])].sort((a, b) => b - a)
+      : [...hist.demonstrablePerAcYears].sort((a, b) => b - a);
 
     // 4. Representative / Profile Dimension
     const mla = inspectMlaProfiles(code, meta.seats);
@@ -411,8 +520,8 @@ export async function generateCoverageInventory() {
         identityStatus: uniqueValidAcCount === meta.seats ? 'VERIFIED_STATUTORY_MATCH' : 'MISMATCH',
       },
       electoralResults: {
-        recentElectionYear: meta.electionYear,
-        recentElectionType: meta.electionType,
+        recentElectionYear: primaryRecentElectionYear,
+        recentElectionType: primaryRecentElectionType,
         resultsPresentCount,
         resultsCoverageRatio,
         winnerVotesPresentCount,
@@ -421,9 +530,9 @@ export async function generateCoverageInventory() {
         marginMissingCount,
       },
       historicalCoverage: {
-        primaryElectionYear: meta.electionYear,
+        primaryElectionYear: primaryRecentElectionYear,
         demonstrablePerAcYears: hist.demonstrablePerAcYears,
-        totalElectionYearsRepresented: 1 + hist.demonstrablePerAcYears.length,
+        totalElectionYearsRepresented: (primaryRecentElectionYear ? 1 : 0) + hist.demonstrablePerAcYears.length,
         stateHistoricalFilePresent: hist.stateHistoricalFilePresent,
         inferredYearsRejected: [],
       },
@@ -445,8 +554,8 @@ export async function generateCoverageInventory() {
         verificationStatus,
         liveDatabaseVerified,
       },
-      primaryElectionYear: meta.electionYear,
-      primaryElectionType: meta.electionType,
+      primaryElectionYear: primaryRecentElectionYear,
+      primaryElectionType: primaryRecentElectionType,
       availableElectionYears: allAvailableYears,
       mlaProfilesAvailable: mla.resolvedToStatutoryAcCount,
       demographicsAvailable: uniqueValidAcCount,
@@ -471,7 +580,7 @@ export async function writeCoverageReports() {
 
   const reportJson = {
     title: 'Kshetra W021.5 National Data Coverage Inventory Matrix',
-    directive: 'CTO DIRECTIVE 085',
+    directive: 'CTO DIRECTIVE 085 / CTO DIRECTIVE 086',
     generatedAt,
     totalStatesAudited: inventory.length,
     summary: {
@@ -496,7 +605,7 @@ export async function writeCoverageReports() {
   let md = `# KSHETRA W021.5 — NATIONAL DATA COVERAGE INVENTORY MATRIX
 
 **Milestone:** W021.5 — National Political Intelligence and Candidate Transparency  
-**Directive:** CTO Directive 085 (Workstream A)  
+**Directive:** CTO Directive 085 / CTO Directive 086 (Workstream A)  
 **Generated At:** \`${generatedAt}\`  
 **Total States/UTs Audited:** ${inventory.length}  
 **Defect Classification:** \`DQ-W021.5-B2.2E-001\` — **STRICTLY OPEN**  
@@ -508,7 +617,7 @@ export async function writeCoverageReports() {
 
 This matrix establishes the definitive, evidence-based national political data coverage inventory of the Kshetra platform across all 31 supported Indian states and Union Territories.
 
-Under **CTO Directive 085** and **Rule IV-001 (Non-Self-Acceptance)**, this report repudiates unsupported completeness claims:
+Under **CTO Directive 085 / CTO Directive 086** and **Rule IV-001 (Non-Self-Acceptance)**, this report repudiates unsupported completeness claims:
 1. **Zero Canonical Full States:** No state is promoted to \`CANONICAL_FULL\` or \`VERIFIED_PRODUCTION\` merely because of allowlisted state codes or file existence. All records are classified truthfully as offline local seed fixtures pending live database verification.
 2. **Multi-Dimensional Evidence:** Every state is audited across 7 distinct dimensions: Registry Identity, Electoral Results, Historical Coverage, Representative Profiles, Affidavits, Geospatial Boundaries, and Provenance.
 3. **Delhi Statutory Invariant:** Strictly 70 statutory Assembly seats. 151 extra municipal/demographic records (\`DL-AC-071\` to \`DL-AC-221\`) are explicitly isolated as \`NON_STATUTORY_DEMOGRAPHIC_PLACEHOLDER\`.

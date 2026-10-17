@@ -414,9 +414,17 @@ export default function ConstituencyDetailScreen() {
 
         {/* Result Card with Temporally Correct Year and Non-Coerced Disclosures */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>
-            {effectiveElectionYear ? t('constituency.electionResult', { year: effectiveElectionYear }) : t('constituency.recentElectionResult', { defaultValue: 'Recent Election Result' })}
-          </Text>
+          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
+            <Text style={styles.sectionTitle}>
+              {effectiveElectionYear ? t('constituency.electionResult', { year: effectiveElectionYear }) : t('constituency.recentElectionResult', { defaultValue: 'Recent Election Result' })}
+            </Text>
+            <View style={[styles.provenancePill, { backgroundColor: apiDetail?.recentElection ? '#10B98115' : '#3B82F615', borderColor: apiDetail?.recentElection ? '#10B98140' : '#3B82F640', paddingVertical: 2, paddingHorizontal: 6 }]}>
+              <View style={[styles.provenanceDot, { backgroundColor: apiDetail?.recentElection ? '#10B981' : '#3B82F6', width: 5, height: 5 }]} />
+              <Text style={[styles.provenanceText, { color: apiDetail?.recentElection ? '#10B981' : '#3B82F6', fontSize: 10 }]}>
+                {apiDetail?.recentElection ? 'Verified Electoral API' : 'Offline Result Seed'}
+              </Text>
+            </View>
+          </View>
           <View style={styles.resultCard}>
             <View style={styles.resultRow}>
               <View style={styles.resultLeft}>
@@ -448,7 +456,7 @@ export default function ConstituencyDetailScreen() {
             <View style={styles.statsRow}>
               <View style={styles.statItem}>
                 <Text style={styles.statValue}>
-                  {effectiveMargin != null ? effectiveMargin.toLocaleString() : '—'}
+                  {effectiveMargin != null ? (effectiveMargin === 0 && !effectiveRunnerUp ? '0 (Uncontested)' : effectiveMargin.toLocaleString()) : '—'}
                 </Text>
                 <Text style={styles.statLabel}>{t('constituency.margin')}</Text>
               </View>
@@ -473,7 +481,15 @@ export default function ConstituencyDetailScreen() {
           const mla = getMLAProfileForState(stateCode, acNo);
           return mla ? (
             <View style={styles.section}>
-              <Text style={styles.sectionTitle}>{t('constituency.currentMlaSection')}</Text>
+              <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
+                <Text style={styles.sectionTitle}>{t('constituency.currentMlaSection')}</Text>
+                <View style={[styles.provenancePill, { backgroundColor: '#3B82F615', borderColor: '#3B82F640', paddingVertical: 2, paddingHorizontal: 6 }]}>
+                  <View style={[styles.provenanceDot, { backgroundColor: '#3B82F6', width: 5, height: 5 }]} />
+                  <Text style={[styles.provenanceText, { color: '#3B82F6', fontSize: 10 }]}>
+                    Offline Profile Seed
+                  </Text>
+                </View>
+              </View>
               <MLACard profile={mla} />
               <Pressable
                 style={styles.fullProfileBtn}
