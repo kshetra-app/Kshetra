@@ -1,0 +1,14 @@
+{
+  "version": "1.0",
+  "authorities": [
+    {
+      "keyId": "cto-root-v1",
+      "identity": "Kshetra Chief Technology Officer",
+      "role": "CTO",
+      "algorithm": "Ed25519",
+      "publicKeyFile": "cto_root_public_key.pem",
+      "validFrom": "2026-01-01T00:00:00Z",
+      "status": "ACTIVE"
+    }
+  ]
+}

@@ -17,6 +17,7 @@
 import assert from 'assert';
 import fs from 'fs';
 import path from 'path';
+import crypto from 'crypto';
 import { execSync } from 'child_process';
 import { fileURLToPath } from 'url';
 
@@ -28,6 +29,7 @@ import {
   computeLedgerSummary,
   reconcileExecutionLedger,
   generateLedgerMarkdown,
+  getCanonicalAcceptancePayload,
   TASK_DELIVERABLE_SIGNATURES,
   STAGE_EVIDENCE_RELEVANCE,
 } from '../scripts/reconcile_execution_ledger.mjs';
@@ -770,20 +772,24 @@ runTest('2.6 Acceptance artifact path bounds: path traversal outside repository 
 
 runTest('2.7 Valid authenticated acceptance record passes validation cleanly', () => {
   const tmpValidAccept = path.join(REPO_ROOT, 'reports/.tmp_valid_acceptance.json');
-  fs.writeFileSync(
-    tmpValidAccept,
-    JSON.stringify({
-      milestone: 'W021.5',
-      taskRef: 'W021.5-TEST-VALIDACC-01',
-      decision: 'ACCEPTED',
-      adjudicatorIdentity: 'Chief Technology Officer',
-      adjudicatorRole: 'CTO',
-      authenticationToken: 'VALID_SECURE_CTO_TOKEN_1234567890',
-      adjudicationDate: '2026-10-17T00:00:00Z',
-      authorSelfAcceptance: false,
-    }),
-    'utf8'
-  );
+  const { publicKey, privateKey } = crypto.generateKeyPairSync('ed25519');
+  const pubPem = publicKey.export({ type: 'spki', format: 'pem' });
+
+  const record = {
+    milestone: 'W021.5',
+    taskRef: 'W021.5-TEST-VALIDACC-01',
+    decision: 'ACCEPTED',
+    adjudicatorIdentity: 'Chief Technology Officer',
+    adjudicatorRole: 'CTO',
+    adjudicationDate: '2026-10-17T00:00:00Z',
+    authorSelfAcceptance: false,
+    keyId: 'cto-test-authority-093',
+  };
+  const canonicalPayload = getCanonicalAcceptancePayload(record);
+  const signature = crypto.sign(null, Buffer.from(canonicalPayload, 'utf8'), privateKey).toString('base64');
+  record.signature = signature;
+
+  fs.writeFileSync(tmpValidAccept, JSON.stringify(record, null, 2), 'utf8');
 
   try {
     const validAcceptTask = {
@@ -808,7 +814,19 @@ runTest('2.7 Valid authenticated acceptance record passes validation cleanly', (
         formalAcceptanceArtifact: 'reports/.tmp_valid_acceptance.json',
       },
     };
-    assert.strictEqual(validateTaskAccounting(validAcceptTask), true);
+    const options = {
+      trustedAuthorities: [
+        {
+          keyId: 'cto-test-authority-093',
+          identity: 'Chief Technology Officer',
+          role: 'CTO',
+          algorithm: 'Ed25519',
+          publicKeyPem: pubPem,
+          status: 'ACTIVE',
+        },
+      ],
+    };
+    assert.strictEqual(validateTaskAccounting(validAcceptTask, null, options), true);
   } finally {
     if (fs.existsSync(tmpValidAccept)) fs.unlinkSync(tmpValidAccept);
   }
