@@ -48,7 +48,7 @@ export function evaluateAstNode(node, sourceFile, diagnostics = []) {
           text: node.text,
           message: `Numeric literal "${node.text}" is not a finite number`,
         });
-        return NaN;
+        return undefined;
       }
       return num;
     }
@@ -64,16 +64,14 @@ export function evaluateAstNode(node, sourceFile, diagnostics = []) {
 
     case ts.SyntaxKind.PrefixUnaryExpression: {
       const operandVal = evaluateAstNode(node.operand, sourceFile, diagnostics);
-      if (node.operator === ts.SyntaxKind.MinusToken && typeof operandVal === 'number') {
-        return -operandVal;
-      }
-      if (node.operator === ts.SyntaxKind.PlusToken && typeof operandVal === 'number') {
-        return +operandVal;
+      if (typeof operandVal === 'number' && Number.isFinite(operandVal)) {
+        if (node.operator === ts.SyntaxKind.MinusToken) return -operandVal;
+        if (node.operator === ts.SyntaxKind.PlusToken) return +operandVal;
       }
       diagnostics.push({
         type: 'UNSUPPORTED_PREFIX_OPERATOR',
         operator: node.operator,
-        message: `Prefix unary operator ${node.operator} not supported on non-numeric operand`,
+        message: `Prefix unary operator not supported on non-finite or non-numeric operand`,
       });
       return undefined;
     }
@@ -137,9 +135,17 @@ export function evaluateAstNode(node, sourceFile, diagnostics = []) {
     }
 
     case ts.SyntaxKind.Identifier:
-      if (node.text === 'undefined') return undefined;
-      if (node.text === 'NaN') return NaN;
-      if (node.text === 'Infinity') return Infinity;
+      if (node.text === 'undefined') {
+        return undefined;
+      }
+      if (node.text === 'NaN' || node.text === 'Infinity') {
+        diagnostics.push({
+          type: 'NON_FINITE_NUMERIC_IDENTIFIER',
+          name: node.text,
+          message: `Identifier "${node.text}" is not a finite numeric literal; unsupported in strict literal subset`,
+        });
+        return NaN;
+      }
       diagnostics.push({
         type: 'UNSUPPORTED_IDENTIFIER_REFERENCE',
         name: node.text,
@@ -156,8 +162,9 @@ export function evaluateAstNode(node, sourceFile, diagnostics = []) {
       diagnostics.push({
         type: 'UNSUPPORTED_AST_EXPRESSION',
         kind: node.kind,
+        kindName: ts.SyntaxKind[node.kind] || String(node.kind),
         text: node.getText(sourceFile),
-        message: `AST SyntaxKind ${node.kind} ("${node.getText(sourceFile)}") is unsupported in strict literal subset`,
+        message: `AST SyntaxKind ${ts.SyntaxKind[node.kind] || node.kind} ("${node.getText(sourceFile)}") is unsupported in strict literal subset`,
       });
       return undefined;
   }
@@ -309,6 +316,7 @@ export function inspectAffidavitsAst(sourceText, stateCode, statutorySeats, cano
   let identityUnresolvedCount = 0;
   let sourceProvenanceRecordedCount = 0;
   const seenIds = new Set();
+  const seenCanonicalAcs = new Set();
   const parseErrors = [];
 
   for (const element of rawElements) {
@@ -319,84 +327,124 @@ export function inspectAffidavitsAst(sourceText, stateCode, statutorySeats, cano
 
     const elementDiagnostics = [];
     const obj = evaluateAstNode(element, sourceFile, elementDiagnostics);
-    if (!obj || typeof obj !== 'object') continue;
 
+    // Workstream A1: Reject unsupported records ATOMICALLY
+    // An unsupported expression anywhere within a record invalidates that entire record for trusted extraction.
     if (elementDiagnostics.length > 0) {
       for (const d of elementDiagnostics) {
         parseErrors.push(d.message || d.type);
       }
+      presentInFileCount++;
+      identityUnresolvedCount++;
+      continue;
     }
 
+    if (!obj || typeof obj !== 'object') continue;
     if (obj.stateCode !== stateCode) continue;
 
     presentInFileCount++;
 
-    // Validate required fields presence
+    // Validate required fields presence and types
     const hasId = typeof obj.id === 'string' && obj.id.trim().length > 0;
     const hasName = typeof obj.candidateName === 'string' && obj.candidateName.trim().length > 0;
-    const hasAcNo = typeof obj.acNo === 'number' && Number.isInteger(obj.acNo);
+    const hasAcNo = typeof obj.acNo === 'number' && Number.isInteger(obj.acNo) && Number.isFinite(obj.acNo);
     const hasCName = typeof obj.constituencyName === 'string' && obj.constituencyName.trim().length > 0;
     const hasSource = typeof obj.sourceUrl === 'string' && obj.sourceUrl.trim().length > 0;
 
-    if (hasId && hasName && hasAcNo && hasCName && hasSource) {
-      requiredFieldsValidCount++;
+    if (!hasId || !hasName || !hasAcNo || !hasCName || !hasSource) {
+      parseErrors.push(`Record missing required valid fields: id=${hasId}, name=${hasName}, acNo=${hasAcNo}, cName=${hasCName}, source=${hasSource}`);
+      identityUnresolvedCount++;
+      continue;
     }
 
-    // Structural validity: required fields valid AND zero unsupported AST expressions
-    const isStructurallyValid = hasId && hasName && hasAcNo && hasCName && hasSource && elementDiagnostics.length === 0;
-    if (isStructurallyValid) {
-      structurallyValidCount++;
-    }
+    requiredFieldsValidCount++;
+    structurallyValidCount++;
 
     // URL format validity: strictly HTTP or HTTPS well-formed URL
-    const urlValid = isStructurallyValid && isValidHttpUrl(obj.sourceUrl);
+    const urlValid = isValidHttpUrl(obj.sourceUrl);
     if (urlValid) {
       urlFormatValidCount++;
       sourceProvenanceRecordedCount++;
     }
 
     // Seat number in range check
-    const seatInRange = isStructurallyValid && obj.acNo >= 1 && obj.acNo <= statutorySeats;
+    const seatInRange = obj.acNo >= 1 && obj.acNo <= statutorySeats;
     if (seatInRange) {
       seatNumberInRangeCount++;
+    } else {
+      parseErrors.push(`AC ${obj.acNo} is outside statutory range 1..${statutorySeats}`);
+      identityUnresolvedCount++;
+      continue;
     }
 
-    // Statutory identity validation: seat in range, unique record ID, and matched canonical constituency
-    if (seatInRange) {
-      const isUnique = !seenIds.has(obj.id);
-      if (isUnique) {
-        seenIds.add(obj.id);
+    // Unique record ID check
+    if (seenIds.has(obj.id)) {
+      parseErrors.push(`Duplicate affidavit record ID: ${obj.id}`);
+      identityUnresolvedCount++;
+      continue;
+    }
+    seenIds.add(obj.id);
 
-        let identityMatch = true;
-        if (canonicalConstituencies && typeof canonicalConstituencies.has === 'function') {
-          if (!canonicalConstituencies.has(obj.acNo)) {
-            identityMatch = false;
+    // Canonical statutory identity validation (Workstream B1)
+    // Directive 090 B1: "A missing canonical constituency registry must never cause identityValidatedCount to increase by default."
+    // "Only report a record as identity-validated when an explicitly supplied canonical statutory registry establishes the match according to a documented identity-matching rule."
+    let identityValidated = false;
+    let unresolvedReason = null;
+
+    if (!canonicalConstituencies || typeof canonicalConstituencies !== 'object') {
+      unresolvedReason = 'CANONICAL_REGISTRY_UNAVAILABLE';
+    } else {
+      let canonicalEntry = null;
+      if (typeof canonicalConstituencies.get === 'function') {
+        canonicalEntry = canonicalConstituencies.get(obj.acNo);
+      } else if (canonicalConstituencies[obj.acNo] !== undefined) {
+        canonicalEntry = canonicalConstituencies[obj.acNo];
+      }
+
+      if (!canonicalEntry) {
+        unresolvedReason = 'CONSTITUENCY_NOT_IN_CANONICAL_REGISTRY';
+      } else {
+        const expectedName = typeof canonicalEntry === 'string' ? canonicalEntry : (canonicalEntry.name || canonicalEntry.constituencyName);
+        if (!expectedName || typeof expectedName !== 'string') {
+          unresolvedReason = 'CANONICAL_REGISTRY_INCOMPLETE';
+        } else {
+          const normRec = obj.constituencyName.trim().toLowerCase().replace(/[^a-z0-9]/g, '');
+          const normExp = expectedName.trim().toLowerCase().replace(/[^a-z0-9]/g, '');
+          const claimKey = `${obj.acNo}_${obj.electionYear || 'any'}_${obj.candidateName.trim().toLowerCase()}`;
+          if (normRec !== normExp) {
+            unresolvedReason = `CONSTITUENCY_NAME_MISMATCH: record "${obj.constituencyName}" does not match canonical "${expectedName}"`;
+          } else if (seenCanonicalAcs.has(claimKey)) {
+            unresolvedReason = `DUPLICATE_CANONICAL_IDENTITY_CLAIM: candidate "${obj.candidateName}" already has validated affidavit for AC ${obj.acNo}`;
+          } else {
+            seenCanonicalAcs.add(claimKey);
+            identityValidated = true;
           }
         }
-
-        if (identityMatch) {
-          identityValidatedCount++;
-        } else {
-          identityUnresolvedCount++;
-        }
-
-        const provenanceStatus = urlValid ? 'SOURCE_PROVENANCE_RECORDED_LOCAL_SEED' : 'PROVENANCE_UNRECORDED_INVALID_URL';
-        stateRecords.push({
-          id: obj.id,
-          candidateName: obj.candidateName,
-          acNo: obj.acNo,
-          constituencyName: obj.constituencyName,
-          sourceUrl: obj.sourceUrl,
-          urlFormatValid: urlValid,
-          status: provenanceStatus,
-          sourceProvenanceStatus: provenanceStatus,
-        });
-      } else {
-        identityUnresolvedCount++;
       }
+    }
+
+    if (identityValidated) {
+      identityValidatedCount++;
     } else {
       identityUnresolvedCount++;
+      if (unresolvedReason) {
+        parseErrors.push(unresolvedReason);
+      }
     }
+
+    const provenanceStatus = urlValid ? 'SOURCE_PROVENANCE_RECORDED_LOCAL_SEED' : 'PROVENANCE_UNRECORDED_INVALID_URL';
+    stateRecords.push({
+      id: obj.id,
+      candidateName: obj.candidateName,
+      acNo: obj.acNo,
+      constituencyName: obj.constituencyName,
+      sourceUrl: obj.sourceUrl,
+      urlFormatValid: urlValid,
+      status: provenanceStatus,
+      sourceProvenanceStatus: provenanceStatus,
+      canonicalIdentityValidated: identityValidated,
+      canonicalIdentityUnresolvedReason: unresolvedReason,
+    });
   }
 
   return {
@@ -419,7 +467,7 @@ export function inspectAffidavitsAst(sourceText, stateCode, statutorySeats, cano
     records: stateRecords,
     syntacticParseSuccess: true,
     parseDiagnostics: [],
-    parseErrors: parseErrors.slice(0, 5),
+    parseErrors,
   };
 }
 

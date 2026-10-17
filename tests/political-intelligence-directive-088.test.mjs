@@ -290,9 +290,10 @@ runTest('1.7 Missing and out-of-range AC numbers are reported in dedicated count
   assert.strictEqual(res.hasGeoJSON, false);
 });
 
-runTest('1.8 Real Telangana GeoJSON passes all validations with 120 features, 120 valid features, and 1 duplicate feature', () => {
+runTest('1.8 Real Telangana GeoJSON passes feature geometry validations with 120 valid features and identifies duplicate AC 119 linkage blocker', () => {
   const tsGeo = inspectGeoJSON('TS', 119);
-  assert.strictEqual(tsGeo.hasGeoJSON, true);
+  assert.strictEqual(tsGeo.hasGeoJSON, false, 'Directive 090 Workstream C: Duplicate feature claims strictly invalidate hasGeoJSON');
+  assert.strictEqual(tsGeo.hasCleanConstituencyMapping, false);
   assert.strictEqual(tsGeo.filePresent, true);
   assert.strictEqual(tsGeo.featureCount, 120);
   assert.strictEqual(tsGeo.validFeatureCount, 120);
@@ -320,11 +321,20 @@ runTest('2.1 AST parser extracts complete affidavit records from store file', ()
 
   assert.strictEqual(tsAff.total, 17, 'Telangana has 17 valid affidavits in store');
   assert.strictEqual(tsAff.structurallyValidCount, 17);
-  assert.strictEqual(tsAff.identityValidatedCount, 17);
+  assert.strictEqual(tsAff.seatNumberInRangeCount, 17);
+  // Directive 090 B1: Identity cannot be validated without an explicit canonical registry
+  assert.strictEqual(tsAff.identityValidatedCount, 0);
+  assert.strictEqual(tsAff.identityUnresolvedCount, 17);
   assert.strictEqual(tsAff.sourceProvenanceRecordedCount, 17);
   assert.strictEqual(tsAff.verified, 0, 'Zero affidavits have undergone live statutory ECI/DB verification');
   assert.strictEqual(tsAff.canonicalDatabaseBacked, false);
   assert.strictEqual(tsAff.formallyAccepted, false);
+
+  // When explicit canonical registry is supplied, identity is validated
+  const canonicalRegistry = new Map(tsAff.records.map((r) => [r.acNo, { name: r.constituencyName }]));
+  const tsAffWithRegistry = inspectAffidavitsAst(content, 'TS', 119, canonicalRegistry);
+  assert.strictEqual(tsAffWithRegistry.identityValidatedCount, 17);
+  assert.strictEqual(tsAffWithRegistry.identityUnresolvedCount, 0);
 });
 
 runTest('2.2 Adversarial test: braces inside strings do not corrupt AST parsing', () => {
@@ -421,7 +431,9 @@ runTest('2.6 Distinct evidence dimensions separated: presence, structural validi
   const ts = inspectAffidavits('TS', 119);
   assert.strictEqual(ts.presentInFileCount, 17);
   assert.strictEqual(ts.structurallyValidCount, 17);
-  assert.strictEqual(ts.identityValidatedCount, 17);
+  assert.strictEqual(ts.seatNumberInRangeCount, 17);
+  assert.strictEqual(ts.identityValidatedCount, 0, 'Directive 090 B1: Unresolved without explicit canonical registry');
+  assert.strictEqual(ts.identityUnresolvedCount, 17);
   assert.strictEqual(ts.sourceProvenanceRecordedCount, 17);
   assert.strictEqual(ts.officiallyVerifiedCount, 0, 'Local seed fixture is NOT treated as official ECI verification');
   assert.strictEqual(ts.canonicalDatabaseBacked, false);

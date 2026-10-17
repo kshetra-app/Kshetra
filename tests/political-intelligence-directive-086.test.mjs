@@ -88,13 +88,14 @@ runTest('1.4 MLA Profile counting inspects actual structured records without .ma
 
 runTest('1.5 Deep GeoJSON inspection validates features, coordinates within India bbox, and AC linkage', () => {
   const ts = matrix.states.find(s => s.stateCode === 'TS');
-  assert.strictEqual(ts.geospatialCoverage.hasGeoJSON, true);
+  assert.strictEqual(ts.geospatialCoverage.hasGeoJSON, false, 'Directive 090: Duplicate AC 119 blocks clean constituency mapping');
+  assert.strictEqual(ts.geospatialCoverage.hasCleanConstituencyMapping, false);
   assert.strictEqual(ts.geospatialCoverage.featureCount, 120);
   assert.strictEqual(ts.geospatialCoverage.validFeatureCount, 120);
   assert.strictEqual(ts.geospatialCoverage.coordinatesValid, true);
   assert.strictEqual(ts.geospatialCoverage.coordinateRangeValid, true);
   assert.strictEqual(ts.geospatialCoverage.linkedConstituencyCount, 119);
-  assert.strictEqual(ts.geospatialCoverage.validationErrors.length, 0);
+  assert.strictEqual(ts.geospatialCoverage.duplicateLinkedAcs.length, 1);
 
   // 30 other states have no GeoJSON
   const otherStates = matrix.states.filter(s => s.stateCode !== 'TS');

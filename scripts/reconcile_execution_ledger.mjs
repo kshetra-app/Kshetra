@@ -26,8 +26,75 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const REPO_ROOT = path.resolve(__dirname, '..');
 
+export function validateTaskAccounting(task) {
+  if (!task || typeof task !== 'object') {
+    throw new Error('Ledger accounting validation error: Invalid task object.');
+  }
+  const classification = task.taskClassification ?? 'CORE_SPECIFICATION';
+  if (classification !== 'CORE_SPECIFICATION' && classification !== 'HARDENING_EXTENSION') {
+    throw new Error(
+      `Ledger accounting validation error: Task ${task.taskId} has invalid or missing taskClassification: "${task.taskClassification}". Must be 'CORE_SPECIFICATION' or 'HARDENING_EXTENSION'.`
+    );
+  }
+
+  // Validate task weight
+  if (typeof task.weight !== 'number' || !Number.isFinite(task.weight) || task.weight <= 0) {
+    throw new Error(
+      `Ledger accounting validation error: Task ${task.taskId} has invalid weight: ${task.weight}. Weight must be a positive finite number.`
+    );
+  }
+
+  // Workstream D1: Eliminate all silent fallbacks on accounting metadata
+  if (!task.accounting || typeof task.accounting !== 'object') {
+    throw new Error(`Ledger accounting validation error: Task ${task.taskId} missing required accounting object.`);
+  }
+
+  const acct = task.accounting;
+  if (acct.repoCompletionRatio === undefined || acct.unexecutedDatabaseWeight === undefined || acct.formalAcceptanceStatus === undefined) {
+    throw new Error(`Ledger accounting validation error: Task ${task.taskId} missing required accounting metadata fields.`);
+  }
+
+  if (typeof acct.repoCompletionRatio !== 'number' || !Number.isFinite(acct.repoCompletionRatio) || acct.repoCompletionRatio < 0.0 || acct.repoCompletionRatio > 1.0) {
+    throw new Error(
+      `Ledger accounting validation error: Task ${task.taskId} has invalid repoCompletionRatio: ${acct.repoCompletionRatio}. Must be a finite number in [0.0, 1.0].`
+    );
+  }
+
+  if (typeof acct.unexecutedDatabaseWeight !== 'number' || !Number.isFinite(acct.unexecutedDatabaseWeight) || acct.unexecutedDatabaseWeight < 0.0) {
+    throw new Error(
+      `Ledger accounting validation error: Task ${task.taskId} has invalid unexecutedDatabaseWeight: ${acct.unexecutedDatabaseWeight}. Must be non-negative finite number.`
+    );
+  }
+
+  if (acct.unexecutedDatabaseWeight > task.weight) {
+    throw new Error(
+      `Ledger accounting validation error: Task ${task.taskId} unexecutedDatabaseWeight (${acct.unexecutedDatabaseWeight}) cannot exceed task weight (${task.weight}).`
+    );
+  }
+
+  // Check DB discount integrity
+  if (acct.unexecutedDatabaseWeight > 0) {
+    if (!acct.requiresDatabaseExecution || acct.databaseExecutionEvidenced) {
+      throw new Error(
+        `Ledger accounting validation error: Task ${task.taskId} has unexecutedDatabaseWeight (${acct.unexecutedDatabaseWeight}) > 0, but requiresDatabaseExecution is not true or databaseExecutionEvidenced is true.`
+      );
+    }
+  }
+
+  const validAcceptanceStatuses = ['CONFIRMED_ACCEPTED', 'PENDING_INDEPENDENT_CONFIRMATION', 'UNACCEPTED'];
+  if (!validAcceptanceStatuses.includes(acct.formalAcceptanceStatus)) {
+    throw new Error(
+      `Ledger accounting validation error: Task ${task.taskId} has invalid formalAcceptanceStatus: "${acct.formalAcceptanceStatus}". Must be one of: ${validAcceptanceStatuses.join(', ')}.`
+    );
+  }
+
+  return true;
+}
+
 export function computeLedgerSummary(ledger) {
   let totalTasks = 0;
+  let coreTasksCount = 0;
+  let hardeningExtensionsCount = 0;
   let totalWeight = 0;
   let repoVerifiedEarned = 0;
   let partialEarned = 0;
@@ -54,33 +121,45 @@ export function computeLedgerSummary(ledger) {
 
   const accountingDiagnostics = [];
 
+  if (!ledger || !Array.isArray(ledger.stages)) {
+    throw new Error('Ledger accounting validation error: Missing or invalid stages array');
+  }
+
   for (const stage of ledger.stages) {
+    if (!stage || typeof stage !== 'object') {
+      throw new Error('Ledger accounting validation error: Invalid stage object in ledger.stages');
+    }
+    if (typeof stage.stageWeight !== 'number' || !Number.isFinite(stage.stageWeight) || stage.stageWeight <= 0) {
+      throw new Error(`Ledger accounting validation error: Stage ${stage.stageId || 'unknown'} has invalid stageWeight: ${stage.stageWeight}`);
+    }
+
     let stageTaskSum = 0;
     let stageEarned = 0;
 
     for (const task of stage.tasks) {
       totalTasks++;
+
+      // Validate task accounting metadata rigorously
+      validateTaskAccounting(task);
+
+      if (task.taskClassification === 'CORE_SPECIFICATION') {
+        coreTasksCount++;
+      } else if (task.taskClassification === 'HARDENING_EXTENSION') {
+        hardeningExtensionsCount++;
+      }
+
       totalWeight += task.weight;
       stageTaskSum += task.weight;
-
-      const acct = task.accounting || {};
-
-      // Validate required accounting metadata
-      if (typeof acct.repoCompletionRatio !== 'number') {
-        accountingDiagnostics.push(`Task ${task.taskId} missing acct.repoCompletionRatio`);
-      }
-      if (typeof acct.unexecutedDatabaseWeight !== 'number') {
-        accountingDiagnostics.push(`Task ${task.taskId} missing acct.unexecutedDatabaseWeight`);
-      }
+      const acct = task.accounting;
 
       const st = task.status;
       if (st === 'REPO_VERIFIED' || st === 'VERIFIED') {
         mutuallyExclusiveStatusCounts.REPO_VERIFIED++;
-        const ratio = typeof acct.repoCompletionRatio === 'number' ? acct.repoCompletionRatio : 1.0;
+        const ratio = acct.repoCompletionRatio; // Strictly NO fallback!
         const earned = task.weight * ratio;
         repoVerifiedEarned += earned;
         stageEarned += earned;
-        unexecutedDbDiscount += (acct.unexecutedDatabaseWeight || 0);
+        unexecutedDbDiscount += acct.unexecutedDatabaseWeight;
 
         if (acct.formalAcceptanceStatus === 'CONFIRMED_ACCEPTED') {
           acceptanceFacetCounts.CONFIRMED_ACCEPTED++;
@@ -94,11 +173,11 @@ export function computeLedgerSummary(ledger) {
       } else if (st === 'PARTIAL') {
         mutuallyExclusiveStatusCounts.PARTIAL++;
         acceptanceFacetCounts.UNACCEPTED++;
-        const ratio = typeof acct.repoCompletionRatio === 'number' ? acct.repoCompletionRatio : 0.5;
+        const ratio = acct.repoCompletionRatio; // Strictly NO fallback!
         const earned = task.weight * ratio;
         partialEarned += earned;
         stageEarned += earned;
-        unexecutedDbDiscount += (acct.unexecutedDatabaseWeight || 0);
+        unexecutedDbDiscount += acct.unexecutedDatabaseWeight;
       } else if (st === 'BLOCKED') {
         mutuallyExclusiveStatusCounts.BLOCKED++;
         acceptanceFacetCounts.UNACCEPTED++;
@@ -108,11 +187,23 @@ export function computeLedgerSummary(ledger) {
         acceptanceFacetCounts.UNACCEPTED++;
         notImplementedWeight += task.weight;
       } else {
-        accountingDiagnostics.push(`Task ${task.taskId} has unrecognized status: ${st}`);
+        throw new Error(`Ledger accounting validation error: Task ${task.taskId} has unrecognized status: "${st}".`);
       }
     }
 
+    // Validate stage weight reconciliation
+    if (Math.abs(stageTaskSum - stage.stageWeight) > 0.001) {
+      throw new Error(
+        `Ledger accounting validation error: Stage ${stage.stageId} task weights sum (${stageTaskSum}) does not reconcile with stageWeight (${stage.stageWeight}).`
+      );
+    }
+
     stage.stageEarnedWeight = Math.round(stageEarned * 10) / 10;
+  }
+
+  // Validate total weight reconciliation (must sum to exactly 100.0%)
+  if (Math.abs(totalWeight - 100.0) > 0.001) {
+    throw new Error(`Ledger accounting validation error: Total ledger weight (${totalWeight}) does not reconcile to 100.0%.`);
   }
 
   const repoReadiness = Math.round((repoVerifiedEarned + partialEarned) * 10) / 10;
@@ -121,7 +212,9 @@ export function computeLedgerSummary(ledger) {
 
   return {
     totalTasks,
-    statutoryBaseTasks: 25,
+    coreTasksCount,
+    hardeningExtensionsCount,
+    statutoryBaseTasks: coreTasksCount, // Retained for backwards compatibility
     totalWeight: Math.round(totalWeight * 10) / 10,
     weightedEarnedCompletionPercent: repoReadiness,
     repositoryImplementationPercent: repoReadiness,
@@ -163,7 +256,7 @@ export function generateLedgerMarkdown(ledger) {
 ## Master Specification Mapping, Stage Dependencies, Weighted Accounting & Blocker Analysis
 
 **Milestone:** W021.5 — National Political Intelligence and Candidate Transparency  
-**Directive:** CTO Directive 086 / CTO Directive 087 / CTO Directive 088 / CTO Directive 089 (Workstream D)  
+**Directive:** CTO Directive 086 / CTO Directive 087 / CTO Directive 088 / CTO Directive 089 / CTO Directive 090 (Workstream D)  
 **Date:** 2026-10-17  
 **Governance Invariant:** Master Execution Framework Amendment v1.2 / Rule IV-001 (Non-Self-Acceptance)  
 **Financial Defect Status:** \`DQ-W021.5-B2.2E-001\` — **STRICTLY OPEN**, pending separate CTO adjudication  
@@ -173,19 +266,19 @@ export function generateLedgerMarkdown(ledger) {
 
 ## 1. Executive Summary & Reproducible Progress Accounting
 
-In accordance with **CTO Directive 086 / 087 / 088 / 089**, this execution ledger replaces subjective progress estimates with an evidence-backed, mathematically reproducible accounting across all nine mandatory stages of Milestone W021.5 (Stages A through I).
+In accordance with **CTO Directive 086 / 087 / 088 / 089 / 090**, this execution ledger replaces subjective progress estimates with an evidence-backed, mathematically reproducible accounting across all nine mandatory stages of Milestone W021.5 (Stages A through I).
 
-Under **Rule IV-001 (Non-Self-Acceptance)** and Directive 089, the ledger strictly differentiates **repository implementation** (authored code, schemas, and offline tests) from **live database execution** and **formal CTO acceptance**. Requirements requiring unexecuted staging migrations, unresolved CTO decision gates, or open defects are explicitly isolated as \`PARTIAL\`, \`BLOCKED\`, or \`NOT IMPLEMENTED\`.
+Under **Rule IV-001 (Non-Self-Acceptance)** and Directive 090, the ledger strictly differentiates **repository implementation** (authored code, schemas, and offline tests) from **live database execution** and **formal CTO acceptance**. Requirements requiring unexecuted staging migrations, unresolved CTO decision gates, or open defects are explicitly isolated as \`PARTIAL\`, \`BLOCKED\`, or \`NOT IMPLEMENTED\`.
 
 \`\`\`text
 ================================================================================
-KSHETRA W021.5 EXECUTION LEDGER ACCOUNTING SUMMARY (Directive 089 Reconciled)
+KSHETRA W021.5 EXECUTION LEDGER ACCOUNTING SUMMARY (Directive 090 Reconciled)
 ================================================================================
-Total Tasks in Master Ledger:         ${summary.totalTasks} Tasks across 9 Stages (${summary.statutoryBaseTasks} Core Tasks + 2 Hardening Extensions)
+Total Tasks in Master Ledger:         ${summary.totalTasks} Tasks across 9 Stages (${summary.coreTasksCount || summary.statutoryBaseTasks} Core Tasks + ${summary.hardeningExtensionsCount || 2} Hardening Extensions)
 Total Weight Base:                   ${summary.totalWeight.toFixed(1)}%
 Verified Earned Completion:          ${summary.weightedEarnedCompletionPercent.toFixed(1)}%
 --------------------------------------------------------------------------------
-RECONCILED PROGRESS DIMENSIONS (Directive 089):
+RECONCILED PROGRESS DIMENSIONS (Directive 090):
 Repository Implementation Readiness: ${summary.repositoryImplementationPercent.toFixed(1)}% (Authored & Offline-Verified)
 Adjudicated Earned Completion:       ${summary.adjudicatedEarnedCompletionPercent.toFixed(1)}% (Discounting Unexecuted DB Stages)
 Live Database Staging Execution:     ${summary.databaseExecutionPercent.toFixed(1)}%  (Zero unverified DB claims)

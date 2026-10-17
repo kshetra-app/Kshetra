@@ -428,11 +428,19 @@ export const SEED_AFFIDAVITS = [
   }
 ];
 `;
-  const res = inspectAffidavitsAst(mixedIdentitySource, 'TS', 119);
-  assert.strictEqual(res.presentInFileCount, 3);
-  assert.strictEqual(res.seatNumberInRangeCount, 1, 'Only AC 5 is within 1-119');
-  assert.strictEqual(res.identityValidatedCount, 1, 'Only AC 5 has validated statutory identity');
-  assert.strictEqual(res.identityUnresolvedCount, 2, '2 records have unresolved statutory identity');
+  // Directive 090 B1: Without an explicit canonical registry, in-range seat is not identity proof
+  const resNoRegistry = inspectAffidavitsAst(mixedIdentitySource, 'TS', 119);
+  assert.strictEqual(resNoRegistry.presentInFileCount, 3);
+  assert.strictEqual(resNoRegistry.seatNumberInRangeCount, 1, 'Only AC 5 is within 1-119');
+  assert.strictEqual(resNoRegistry.identityValidatedCount, 0, 'Identity remains unresolved without canonical registry');
+  assert.strictEqual(resNoRegistry.identityUnresolvedCount, 3, 'All 3 records unresolved without canonical registry');
+
+  // When explicit canonical statutory registry is supplied, AC 5 matching Bellampalli is validated
+  const canonicalReg = new Map([[5, { name: 'Bellampalli' }]]);
+  const resWithReg = inspectAffidavitsAst(mixedIdentitySource, 'TS', 119, canonicalReg);
+  assert.strictEqual(resWithReg.seatNumberInRangeCount, 1);
+  assert.strictEqual(resWithReg.identityValidatedCount, 1, 'Only AC 5 has validated statutory identity');
+  assert.strictEqual(resWithReg.identityUnresolvedCount, 2, '2 records have unresolved statutory identity');
 });
 
 runTest('3.4 Local seed records maintain officiallyVerifiedCount: 0, canonicalDatabaseBacked: false, formallyAccepted: false', () => {

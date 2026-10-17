@@ -114,13 +114,17 @@ console.log('\n--- 2. Workstream B: Close GeoJSON Validation Gaps ---');
 
 runTest('2.1 Telangana GeoJSON passes all deep structural and coordinate validations', () => {
   const tsGeo = inspectGeoJSON('TS', 119);
-  assert.strictEqual(tsGeo.hasGeoJSON, true, 'TS GeoJSON must be valid');
+  assert.strictEqual(tsGeo.hasGeoJSON, false, 'TS GeoJSON has duplicate AC 119 claims so clean mapping is blocked and hasGeoJSON is false');
+  assert.strictEqual(tsGeo.hasCleanConstituencyMapping, false);
+  assert.strictEqual(tsGeo.linkageValid, false);
   assert.strictEqual(tsGeo.filePresent, true);
   assert.strictEqual(tsGeo.featureCount, 120);
   assert.strictEqual(tsGeo.validFeatureCount, 120);
+  assert.strictEqual(tsGeo.geometryValidFeatureCount, 120);
   assert.strictEqual(tsGeo.coordinatesValid, true);
   assert.strictEqual(tsGeo.coordinateRangeValid, true);
   assert.strictEqual(tsGeo.linkedConstituencyCount, 119);
+  assert.strictEqual(tsGeo.duplicateFeatureCount, 1);
   assert.strictEqual(tsGeo.duplicateLinkedAcs.length, 1, 'Bhadrachalam (AC 119) has two polygon features in shapefile');
   assert.strictEqual(tsGeo.duplicateLinkedAcs[0], 119);
   assert.strictEqual(tsGeo.authoritativeVerified, false, 'Boundary file is local seed fixture, not live ECI verified');
@@ -308,11 +312,23 @@ runTest('4.1 Affidavit parsing structurally extracts complete records and separa
   assert.strictEqual(tsAff.total, 17);
   assert.strictEqual(tsAff.presentInFileCount, 17);
   assert.strictEqual(tsAff.structurallyValidCount, 17);
-  assert.strictEqual(tsAff.identityValidatedCount, 17);
+  assert.strictEqual(tsAff.seatNumberInRangeCount, 17);
+  // Directive 090 B1: Without canonical registry, identityValidatedCount is 0, identityUnresolvedCount is 17
+  assert.strictEqual(tsAff.identityValidatedCount, 0);
+  assert.strictEqual(tsAff.identityUnresolvedCount, 17);
   assert.strictEqual(tsAff.sourceProvenanceRecordedCount, 17);
   assert.strictEqual(tsAff.officiallyVerifiedCount, 0, 'Seed affidavits are NOT officially verified');
   assert.strictEqual(tsAff.canonicalDatabaseBacked, false);
   assert.strictEqual(tsAff.formallyAccepted, false);
+
+  // When explicit canonical registry is provided, all 17 match their statutory identity
+  const fullTsReg = new Map();
+  for (const r of tsAff.records) {
+    fullTsReg.set(r.acNo, { name: r.constituencyName });
+  }
+  const tsAffValidated = inspectAffidavits('TS', 119, fullTsReg);
+  assert.strictEqual(tsAffValidated.identityValidatedCount, 17);
+  assert.strictEqual(tsAffValidated.identityUnresolvedCount, 0);
 });
 
 runTest('4.2 MLA profile counting parses structured records with required fields (no regex text assumption)', () => {

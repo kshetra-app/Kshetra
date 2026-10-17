@@ -61,8 +61,8 @@ runTest('1.3 Rule IV-001 Invariant: Zero states promoted to CANONICAL_FULL witho
 });
 
 runTest('1.4 Evidence-derived tier breakdown distinguishes GeoJSON and Historical depth', () => {
-  assert.strictEqual(matrix.summary.partialLocalWithGeoCount, 1, 'Only TS has GeoJSON in data/geo');
-  assert.strictEqual(matrix.summary.partialHistoricalNoGeoCount, 7, '7 states have historical election records but no GeoJSON');
+  assert.strictEqual(matrix.summary.partialLocalWithGeoCount, 0, 'Directive 090 C: TS GeoJSON clean mapping blocked by duplicate AC 119 features');
+  assert.strictEqual(matrix.summary.partialHistoricalNoGeoCount, 8, '8 states have historical election records (including TS pending GeoJSON deduplication)');
   assert.strictEqual(matrix.summary.seededSingleTermCount, 23, '23 states have single-term seeds pending Geo and historical');
   assert.strictEqual(matrix.summary.unavailableCount, 0, 'Zero states unavailable');
 });
@@ -105,8 +105,8 @@ runTest('1.7 JSON and Markdown reports agree on key summary statistics', () => {
   assert.ok(mdContent.includes('Total Statutory Assembly Seats:** 4123'));
   assert.ok(mdContent.includes('Total Unique Seeded Constituencies:** 4123'));
   assert.ok(mdContent.includes('Tier 0 (Canonical Full Production):** 0 states'));
-  assert.ok(mdContent.includes('Tier 1 (Seeded Rich Local + GeoJSON + Historical + Sample Affidavits):** 1 state (TS)'));
-  assert.ok(mdContent.includes('Tier 2 (Seeded Historical + Profiles, GeoJSON & Complete Affidavits Pending):** 7 states'));
+  assert.ok(mdContent.includes('Tier 1 (Seeded Rich Local + GeoJSON + Historical + Sample Affidavits):** 0 states'));
+  assert.ok(mdContent.includes('Tier 2 (Seeded Historical + Profiles, GeoJSON & Complete Affidavits Pending):** 8 states'));
 });
 
 // ─────────────────────────────────────────────────────────────────────────────
