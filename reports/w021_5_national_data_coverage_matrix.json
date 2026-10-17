@@ -1,7 +1,7 @@
 {
   "title": "Kshetra W021.5 National Data Coverage Inventory Matrix",
-  "directive": "CTO DIRECTIVE 085 / CTO DIRECTIVE 086",
-  "generatedAt": "2026-10-17T08:58:52.280Z",
+  "directive": "CTO DIRECTIVE 085 / CTO DIRECTIVE 086 / CTO DIRECTIVE 087",
+  "generatedAt": "2026-10-17T09:40:50.757Z",
   "totalStatesAudited": 31,
   "summary": {
     "canonicalFullStatesCount": 0,
@@ -12,7 +12,9 @@
     "totalStatutorySeats": 4123,
     "totalSeededConstituencies": 4123,
     "totalMlaProfiles": 3812,
-    "totalAffidavits": 28
+    "totalAffidavits": 28,
+    "totalDuplicateConstituencyRecords": 0,
+    "totalMalformedConstituencyRecords": 0
   },
   "states": [
     {
@@ -27,12 +29,13 @@
         "missingAcNos": [],
         "duplicateAcNos": [],
         "outOfRangeAcNos": [],
+        "malformedAcCount": 0,
         "unexpectedExtraRecords": [],
         "identityStatus": "VERIFIED_STATUTORY_MATCH"
       },
       "electoralResults": {
         "recentElectionYear": 2023,
-        "recentElectionType": "GENERAL",
+        "recentElectionType": null,
         "resultsPresentCount": 119,
         "resultsCoverageRatio": "119/119 (100.0%)",
         "winnerVotesPresentCount": 119,
@@ -54,21 +57,38 @@
         "uniqueProfilesCount": 119,
         "resolvedToStatutoryAcCount": 119,
         "profileCoverageRatio": "119/119 (100.0%)",
-        "extraNonStatutoryProfiles": 0
+        "extraNonStatutoryProfiles": 0,
+        "duplicateProfilesCount": 0,
+        "malformedProfilesCount": 0
       },
       "affidavitCoverage": {
         "totalAffidavitsInStore": 17,
         "affidavitCoverageRatio": "17/119 (14.3%)",
-        "hasPendingNotice": true
+        "hasPendingNotice": true,
+        "presentInFileCount": 17,
+        "structurallyValidCount": 17,
+        "identityValidatedCount": 17,
+        "sourceProvenanceRecordedCount": 17,
+        "officiallyVerifiedCount": 0,
+        "canonicalDatabaseBacked": false,
+        "formallyAccepted": false
       },
       "geospatialCoverage": {
         "hasGeoJSON": true,
+        "filePresent": true,
         "fileName": "telangana-assembly.geojson",
         "featureCount": 120,
         "validFeatureCount": 120,
         "coordinatesValid": true,
         "coordinateRangeValid": true,
         "linkedConstituencyCount": 119,
+        "duplicateLinkedAcs": [
+          119
+        ],
+        "outOfRangeLinkedAcs": [],
+        "unresolvedFeatureCount": 0,
+        "linkageValid": true,
+        "authoritativeVerified": false,
         "validationErrors": []
       },
       "provenanceCoverage": {
@@ -78,7 +98,7 @@
         "liveDatabaseVerified": false
       },
       "primaryElectionYear": 2023,
-      "primaryElectionType": "GENERAL",
+      "primaryElectionType": null,
       "availableElectionYears": [
         2023,
         2018,
@@ -111,12 +131,13 @@
         "missingAcNos": [],
         "duplicateAcNos": [],
         "outOfRangeAcNos": [],
+        "malformedAcCount": 0,
         "unexpectedExtraRecords": [],
         "identityStatus": "VERIFIED_STATUTORY_MATCH"
       },
       "electoralResults": {
         "recentElectionYear": 2024,
-        "recentElectionType": "GENERAL",
+        "recentElectionType": null,
         "resultsPresentCount": 175,
         "resultsCoverageRatio": "175/175 (100.0%)",
         "winnerVotesPresentCount": 175,
@@ -137,21 +158,36 @@
         "uniqueProfilesCount": 172,
         "resolvedToStatutoryAcCount": 172,
         "profileCoverageRatio": "172/175 (98.3%)",
-        "extraNonStatutoryProfiles": 0
+        "extraNonStatutoryProfiles": 0,
+        "duplicateProfilesCount": 0,
+        "malformedProfilesCount": 0
       },
       "affidavitCoverage": {
         "totalAffidavitsInStore": 2,
         "affidavitCoverageRatio": "2/175 (1.1%)",
-        "hasPendingNotice": true
+        "hasPendingNotice": true,
+        "presentInFileCount": 2,
+        "structurallyValidCount": 2,
+        "identityValidatedCount": 2,
+        "sourceProvenanceRecordedCount": 2,
+        "officiallyVerifiedCount": 0,
+        "canonicalDatabaseBacked": false,
+        "formallyAccepted": false
       },
       "geospatialCoverage": {
         "hasGeoJSON": false,
+        "filePresent": false,
         "fileName": null,
         "featureCount": 0,
         "validFeatureCount": 0,
         "coordinatesValid": false,
         "coordinateRangeValid": false,
         "linkedConstituencyCount": 0,
+        "duplicateLinkedAcs": [],
+        "outOfRangeLinkedAcs": [],
+        "unresolvedFeatureCount": 0,
+        "linkageValid": false,
+        "authoritativeVerified": false,
         "validationErrors": [
           "File not found in data/geo"
         ]
@@ -163,7 +199,7 @@
         "liveDatabaseVerified": false
       },
       "primaryElectionYear": 2024,
-      "primaryElectionType": "GENERAL",
+      "primaryElectionType": null,
       "availableElectionYears": [
         2024,
         2019
@@ -195,12 +231,13 @@
         "missingAcNos": [],
         "duplicateAcNos": [],
         "outOfRangeAcNos": [],
+        "malformedAcCount": 0,
         "unexpectedExtraRecords": [],
         "identityStatus": "VERIFIED_STATUTORY_MATCH"
       },
       "electoralResults": {
         "recentElectionYear": 2023,
-        "recentElectionType": "GENERAL",
+        "recentElectionType": null,
         "resultsPresentCount": 224,
         "resultsCoverageRatio": "224/224 (100.0%)",
         "winnerVotesPresentCount": 224,
@@ -221,21 +258,36 @@
         "uniqueProfilesCount": 171,
         "resolvedToStatutoryAcCount": 171,
         "profileCoverageRatio": "171/224 (76.3%)",
-        "extraNonStatutoryProfiles": 0
+        "extraNonStatutoryProfiles": 0,
+        "duplicateProfilesCount": 44,
+        "malformedProfilesCount": 0
       },
       "affidavitCoverage": {
         "totalAffidavitsInStore": 2,
         "affidavitCoverageRatio": "2/224 (0.9%)",
-        "hasPendingNotice": true
+        "hasPendingNotice": true,
+        "presentInFileCount": 2,
+        "structurallyValidCount": 2,
+        "identityValidatedCount": 2,
+        "sourceProvenanceRecordedCount": 2,
+        "officiallyVerifiedCount": 0,
+        "canonicalDatabaseBacked": false,
+        "formallyAccepted": false
       },
       "geospatialCoverage": {
         "hasGeoJSON": false,
+        "filePresent": false,
         "fileName": null,
         "featureCount": 0,
         "validFeatureCount": 0,
         "coordinatesValid": false,
         "coordinateRangeValid": false,
         "linkedConstituencyCount": 0,
+        "duplicateLinkedAcs": [],
+        "outOfRangeLinkedAcs": [],
+        "unresolvedFeatureCount": 0,
+        "linkageValid": false,
+        "authoritativeVerified": false,
         "validationErrors": [
           "File not found in data/geo"
         ]
@@ -247,7 +299,7 @@
         "liveDatabaseVerified": false
       },
       "primaryElectionYear": 2023,
-      "primaryElectionType": "GENERAL",
+      "primaryElectionType": null,
       "availableElectionYears": [
         2023,
         2018
@@ -279,12 +331,13 @@
         "missingAcNos": [],
         "duplicateAcNos": [],
         "outOfRangeAcNos": [],
+        "malformedAcCount": 0,
         "unexpectedExtraRecords": [],
         "identityStatus": "VERIFIED_STATUTORY_MATCH"
       },
       "electoralResults": {
         "recentElectionYear": 2024,
-        "recentElectionType": "GENERAL",
+        "recentElectionType": null,
         "resultsPresentCount": 288,
         "resultsCoverageRatio": "288/288 (100.0%)",
         "winnerVotesPresentCount": 288,
@@ -305,21 +358,36 @@
         "uniqueProfilesCount": 240,
         "resolvedToStatutoryAcCount": 240,
         "profileCoverageRatio": "240/288 (83.3%)",
-        "extraNonStatutoryProfiles": 0
+        "extraNonStatutoryProfiles": 0,
+        "duplicateProfilesCount": 28,
+        "malformedProfilesCount": 0
       },
       "affidavitCoverage": {
         "totalAffidavitsInStore": 1,
         "affidavitCoverageRatio": "1/288 (0.3%)",
-        "hasPendingNotice": true
+        "hasPendingNotice": true,
+        "presentInFileCount": 1,
+        "structurallyValidCount": 1,
+        "identityValidatedCount": 1,
+        "sourceProvenanceRecordedCount": 1,
+        "officiallyVerifiedCount": 0,
+        "canonicalDatabaseBacked": false,
+        "formallyAccepted": false
       },
       "geospatialCoverage": {
         "hasGeoJSON": false,
+        "filePresent": false,
         "fileName": null,
         "featureCount": 0,
         "validFeatureCount": 0,
         "coordinatesValid": false,
         "coordinateRangeValid": false,
         "linkedConstituencyCount": 0,
+        "duplicateLinkedAcs": [],
+        "outOfRangeLinkedAcs": [],
+        "unresolvedFeatureCount": 0,
+        "linkageValid": false,
+        "authoritativeVerified": false,
         "validationErrors": [
           "File not found in data/geo"
         ]
@@ -331,7 +399,7 @@
         "liveDatabaseVerified": false
       },
       "primaryElectionYear": 2024,
-      "primaryElectionType": "GENERAL",
+      "primaryElectionType": null,
       "availableElectionYears": [
         2024,
         2019
@@ -363,12 +431,13 @@
         "missingAcNos": [],
         "duplicateAcNos": [],
         "outOfRangeAcNos": [],
+        "malformedAcCount": 0,
         "unexpectedExtraRecords": [],
         "identityStatus": "VERIFIED_STATUTORY_MATCH"
       },
       "electoralResults": {
         "recentElectionYear": 2021,
-        "recentElectionType": "GENERAL",
+        "recentElectionType": null,
         "resultsPresentCount": 234,
         "resultsCoverageRatio": "234/234 (100.0%)",
         "winnerVotesPresentCount": 234,
@@ -389,21 +458,36 @@
         "uniqueProfilesCount": 234,
         "resolvedToStatutoryAcCount": 234,
         "profileCoverageRatio": "234/234 (100.0%)",
-        "extraNonStatutoryProfiles": 0
+        "extraNonStatutoryProfiles": 0,
+        "duplicateProfilesCount": 0,
+        "malformedProfilesCount": 0
       },
       "affidavitCoverage": {
         "totalAffidavitsInStore": 2,
         "affidavitCoverageRatio": "2/234 (0.9%)",
-        "hasPendingNotice": true
+        "hasPendingNotice": true,
+        "presentInFileCount": 2,
+        "structurallyValidCount": 2,
+        "identityValidatedCount": 2,
+        "sourceProvenanceRecordedCount": 2,
+        "officiallyVerifiedCount": 0,
+        "canonicalDatabaseBacked": false,
+        "formallyAccepted": false
       },
       "geospatialCoverage": {
         "hasGeoJSON": false,
+        "filePresent": false,
         "fileName": null,
         "featureCount": 0,
         "validFeatureCount": 0,
         "coordinatesValid": false,
         "coordinateRangeValid": false,
         "linkedConstituencyCount": 0,
+        "duplicateLinkedAcs": [],
+        "outOfRangeLinkedAcs": [],
+        "unresolvedFeatureCount": 0,
+        "linkageValid": false,
+        "authoritativeVerified": false,
         "validationErrors": [
           "File not found in data/geo"
         ]
@@ -415,7 +499,7 @@
         "liveDatabaseVerified": false
       },
       "primaryElectionYear": 2021,
-      "primaryElectionType": "GENERAL",
+      "primaryElectionType": null,
       "availableElectionYears": [
         2021,
         2016
@@ -447,12 +531,13 @@
         "missingAcNos": [],
         "duplicateAcNos": [],
         "outOfRangeAcNos": [],
+        "malformedAcCount": 0,
         "unexpectedExtraRecords": [],
         "identityStatus": "VERIFIED_STATUTORY_MATCH"
       },
       "electoralResults": {
         "recentElectionYear": 2021,
-        "recentElectionType": "GENERAL",
+        "recentElectionType": null,
         "resultsPresentCount": 140,
         "resultsCoverageRatio": "140/140 (100.0%)",
         "winnerVotesPresentCount": 140,
@@ -473,21 +558,36 @@
         "uniqueProfilesCount": 140,
         "resolvedToStatutoryAcCount": 140,
         "profileCoverageRatio": "140/140 (100.0%)",
-        "extraNonStatutoryProfiles": 0
+        "extraNonStatutoryProfiles": 0,
+        "duplicateProfilesCount": 0,
+        "malformedProfilesCount": 0
       },
       "affidavitCoverage": {
         "totalAffidavitsInStore": 1,
         "affidavitCoverageRatio": "1/140 (0.7%)",
-        "hasPendingNotice": true
+        "hasPendingNotice": true,
+        "presentInFileCount": 1,
+        "structurallyValidCount": 1,
+        "identityValidatedCount": 1,
+        "sourceProvenanceRecordedCount": 1,
+        "officiallyVerifiedCount": 0,
+        "canonicalDatabaseBacked": false,
+        "formallyAccepted": false
       },
       "geospatialCoverage": {
         "hasGeoJSON": false,
+        "filePresent": false,
         "fileName": null,
         "featureCount": 0,
         "validFeatureCount": 0,
         "coordinatesValid": false,
         "coordinateRangeValid": false,
         "linkedConstituencyCount": 0,
+        "duplicateLinkedAcs": [],
+        "outOfRangeLinkedAcs": [],
+        "unresolvedFeatureCount": 0,
+        "linkageValid": false,
+        "authoritativeVerified": false,
         "validationErrors": [
           "File not found in data/geo"
         ]
@@ -499,7 +599,7 @@
         "liveDatabaseVerified": false
       },
       "primaryElectionYear": 2021,
-      "primaryElectionType": "GENERAL",
+      "primaryElectionType": null,
       "availableElectionYears": [
         2021,
         2016
@@ -531,12 +631,13 @@
         "missingAcNos": [],
         "duplicateAcNos": [],
         "outOfRangeAcNos": [],
+        "malformedAcCount": 0,
         "unexpectedExtraRecords": [],
         "identityStatus": "VERIFIED_STATUTORY_MATCH"
       },
       "electoralResults": {
         "recentElectionYear": 2021,
-        "recentElectionType": "GENERAL",
+        "recentElectionType": null,
         "resultsPresentCount": 294,
         "resultsCoverageRatio": "294/294 (100.0%)",
         "winnerVotesPresentCount": 294,
@@ -557,21 +658,36 @@
         "uniqueProfilesCount": 294,
         "resolvedToStatutoryAcCount": 294,
         "profileCoverageRatio": "294/294 (100.0%)",
-        "extraNonStatutoryProfiles": 0
+        "extraNonStatutoryProfiles": 0,
+        "duplicateProfilesCount": 0,
+        "malformedProfilesCount": 0
       },
       "affidavitCoverage": {
         "totalAffidavitsInStore": 1,
         "affidavitCoverageRatio": "1/294 (0.3%)",
-        "hasPendingNotice": true
+        "hasPendingNotice": true,
+        "presentInFileCount": 1,
+        "structurallyValidCount": 1,
+        "identityValidatedCount": 1,
+        "sourceProvenanceRecordedCount": 1,
+        "officiallyVerifiedCount": 0,
+        "canonicalDatabaseBacked": false,
+        "formallyAccepted": false
       },
       "geospatialCoverage": {
         "hasGeoJSON": false,
+        "filePresent": false,
         "fileName": null,
         "featureCount": 0,
         "validFeatureCount": 0,
         "coordinatesValid": false,
         "coordinateRangeValid": false,
         "linkedConstituencyCount": 0,
+        "duplicateLinkedAcs": [],
+        "outOfRangeLinkedAcs": [],
+        "unresolvedFeatureCount": 0,
+        "linkageValid": false,
+        "authoritativeVerified": false,
         "validationErrors": [
           "File not found in data/geo"
         ]
@@ -583,7 +699,7 @@
         "liveDatabaseVerified": false
       },
       "primaryElectionYear": 2021,
-      "primaryElectionType": "GENERAL",
+      "primaryElectionType": null,
       "availableElectionYears": [
         2021,
         2016
@@ -615,12 +731,13 @@
         "missingAcNos": [],
         "duplicateAcNos": [],
         "outOfRangeAcNos": [],
+        "malformedAcCount": 0,
         "unexpectedExtraRecords": [],
         "identityStatus": "VERIFIED_STATUTORY_MATCH"
       },
       "electoralResults": {
         "recentElectionYear": 2022,
-        "recentElectionType": "GENERAL",
+        "recentElectionType": null,
         "resultsPresentCount": 403,
         "resultsCoverageRatio": "403/403 (100.0%)",
         "winnerVotesPresentCount": 403,
@@ -641,21 +758,36 @@
         "uniqueProfilesCount": 344,
         "resolvedToStatutoryAcCount": 344,
         "profileCoverageRatio": "344/403 (85.4%)",
-        "extraNonStatutoryProfiles": 0
+        "extraNonStatutoryProfiles": 0,
+        "duplicateProfilesCount": 13,
+        "malformedProfilesCount": 0
       },
       "affidavitCoverage": {
         "totalAffidavitsInStore": 2,
         "affidavitCoverageRatio": "2/403 (0.5%)",
-        "hasPendingNotice": true
+        "hasPendingNotice": true,
+        "presentInFileCount": 2,
+        "structurallyValidCount": 2,
+        "identityValidatedCount": 2,
+        "sourceProvenanceRecordedCount": 2,
+        "officiallyVerifiedCount": 0,
+        "canonicalDatabaseBacked": false,
+        "formallyAccepted": false
       },
       "geospatialCoverage": {
         "hasGeoJSON": false,
+        "filePresent": false,
         "fileName": null,
         "featureCount": 0,
         "validFeatureCount": 0,
         "coordinatesValid": false,
         "coordinateRangeValid": false,
         "linkedConstituencyCount": 0,
+        "duplicateLinkedAcs": [],
+        "outOfRangeLinkedAcs": [],
+        "unresolvedFeatureCount": 0,
+        "linkageValid": false,
+        "authoritativeVerified": false,
         "validationErrors": [
           "File not found in data/geo"
         ]
@@ -667,7 +799,7 @@
         "liveDatabaseVerified": false
       },
       "primaryElectionYear": 2022,
-      "primaryElectionType": "GENERAL",
+      "primaryElectionType": null,
       "availableElectionYears": [
         2022,
         2017
@@ -699,12 +831,13 @@
         "missingAcNos": [],
         "duplicateAcNos": [],
         "outOfRangeAcNos": [],
+        "malformedAcCount": 0,
         "unexpectedExtraRecords": [],
         "identityStatus": "VERIFIED_STATUTORY_MATCH"
       },
       "electoralResults": {
         "recentElectionYear": 2023,
-        "recentElectionType": "GENERAL",
+        "recentElectionType": null,
         "resultsPresentCount": 200,
         "resultsCoverageRatio": "200/200 (100.0%)",
         "winnerVotesPresentCount": 200,
@@ -723,21 +856,36 @@
         "uniqueProfilesCount": 187,
         "resolvedToStatutoryAcCount": 187,
         "profileCoverageRatio": "187/200 (93.5%)",
-        "extraNonStatutoryProfiles": 0
+        "extraNonStatutoryProfiles": 0,
+        "duplicateProfilesCount": 0,
+        "malformedProfilesCount": 0
       },
       "affidavitCoverage": {
         "totalAffidavitsInStore": 0,
         "affidavitCoverageRatio": "0/200 (0.0%)",
-        "hasPendingNotice": true
+        "hasPendingNotice": true,
+        "presentInFileCount": 0,
+        "structurallyValidCount": 0,
+        "identityValidatedCount": 0,
+        "sourceProvenanceRecordedCount": 0,
+        "officiallyVerifiedCount": 0,
+        "canonicalDatabaseBacked": false,
+        "formallyAccepted": false
       },
       "geospatialCoverage": {
         "hasGeoJSON": false,
+        "filePresent": false,
         "fileName": null,
         "featureCount": 0,
         "validFeatureCount": 0,
         "coordinatesValid": false,
         "coordinateRangeValid": false,
         "linkedConstituencyCount": 0,
+        "duplicateLinkedAcs": [],
+        "outOfRangeLinkedAcs": [],
+        "unresolvedFeatureCount": 0,
+        "linkageValid": false,
+        "authoritativeVerified": false,
         "validationErrors": [
           "File not found in data/geo"
         ]
@@ -749,7 +897,7 @@
         "liveDatabaseVerified": false
       },
       "primaryElectionYear": 2023,
-      "primaryElectionType": "GENERAL",
+      "primaryElectionType": null,
       "availableElectionYears": [
         2023
       ],
@@ -781,12 +929,13 @@
         "missingAcNos": [],
         "duplicateAcNos": [],
         "outOfRangeAcNos": [],
+        "malformedAcCount": 0,
         "unexpectedExtraRecords": [],
         "identityStatus": "VERIFIED_STATUTORY_MATCH"
       },
       "electoralResults": {
         "recentElectionYear": 2022,
-        "recentElectionType": "GENERAL",
+        "recentElectionType": null,
         "resultsPresentCount": 182,
         "resultsCoverageRatio": "182/182 (100.0%)",
         "winnerVotesPresentCount": 182,
@@ -805,21 +954,36 @@
         "uniqueProfilesCount": 169,
         "resolvedToStatutoryAcCount": 169,
         "profileCoverageRatio": "169/182 (92.9%)",
-        "extraNonStatutoryProfiles": 0
+        "extraNonStatutoryProfiles": 0,
+        "duplicateProfilesCount": 0,
+        "malformedProfilesCount": 0
       },
       "affidavitCoverage": {
         "totalAffidavitsInStore": 0,
         "affidavitCoverageRatio": "0/182 (0.0%)",
-        "hasPendingNotice": true
+        "hasPendingNotice": true,
+        "presentInFileCount": 0,
+        "structurallyValidCount": 0,
+        "identityValidatedCount": 0,
+        "sourceProvenanceRecordedCount": 0,
+        "officiallyVerifiedCount": 0,
+        "canonicalDatabaseBacked": false,
+        "formallyAccepted": false
       },
       "geospatialCoverage": {
         "hasGeoJSON": false,
+        "filePresent": false,
         "fileName": null,
         "featureCount": 0,
         "validFeatureCount": 0,
         "coordinatesValid": false,
         "coordinateRangeValid": false,
         "linkedConstituencyCount": 0,
+        "duplicateLinkedAcs": [],
+        "outOfRangeLinkedAcs": [],
+        "unresolvedFeatureCount": 0,
+        "linkageValid": false,
+        "authoritativeVerified": false,
         "validationErrors": [
           "File not found in data/geo"
         ]
@@ -831,7 +995,7 @@
         "liveDatabaseVerified": false
       },
       "primaryElectionYear": 2022,
-      "primaryElectionType": "GENERAL",
+      "primaryElectionType": null,
       "availableElectionYears": [
         2022
       ],
@@ -863,12 +1027,13 @@
         "missingAcNos": [],
         "duplicateAcNos": [],
         "outOfRangeAcNos": [],
+        "malformedAcCount": 0,
         "unexpectedExtraRecords": [],
         "identityStatus": "VERIFIED_STATUTORY_MATCH"
       },
       "electoralResults": {
         "recentElectionYear": 2024,
-        "recentElectionType": "GENERAL",
+        "recentElectionType": null,
         "resultsPresentCount": 81,
         "resultsCoverageRatio": "81/81 (100.0%)",
         "winnerVotesPresentCount": 81,
@@ -887,21 +1052,36 @@
         "uniqueProfilesCount": 73,
         "resolvedToStatutoryAcCount": 73,
         "profileCoverageRatio": "73/81 (90.1%)",
-        "extraNonStatutoryProfiles": 0
+        "extraNonStatutoryProfiles": 0,
+        "duplicateProfilesCount": 0,
+        "malformedProfilesCount": 0
       },
       "affidavitCoverage": {
         "totalAffidavitsInStore": 0,
         "affidavitCoverageRatio": "0/81 (0.0%)",
-        "hasPendingNotice": true
+        "hasPendingNotice": true,
+        "presentInFileCount": 0,
+        "structurallyValidCount": 0,
+        "identityValidatedCount": 0,
+        "sourceProvenanceRecordedCount": 0,
+        "officiallyVerifiedCount": 0,
+        "canonicalDatabaseBacked": false,
+        "formallyAccepted": false
       },
       "geospatialCoverage": {
         "hasGeoJSON": false,
+        "filePresent": false,
         "fileName": null,
         "featureCount": 0,
         "validFeatureCount": 0,
         "coordinatesValid": false,
         "coordinateRangeValid": false,
         "linkedConstituencyCount": 0,
+        "duplicateLinkedAcs": [],
+        "outOfRangeLinkedAcs": [],
+        "unresolvedFeatureCount": 0,
+        "linkageValid": false,
+        "authoritativeVerified": false,
         "validationErrors": [
           "File not found in data/geo"
         ]
@@ -913,7 +1093,7 @@
         "liveDatabaseVerified": false
       },
       "primaryElectionYear": 2024,
-      "primaryElectionType": "GENERAL",
+      "primaryElectionType": null,
       "availableElectionYears": [
         2024
       ],
@@ -945,12 +1125,13 @@
         "missingAcNos": [],
         "duplicateAcNos": [],
         "outOfRangeAcNos": [],
+        "malformedAcCount": 0,
         "unexpectedExtraRecords": [],
         "identityStatus": "VERIFIED_STATUTORY_MATCH"
       },
       "electoralResults": {
         "recentElectionYear": 2024,
-        "recentElectionType": "GENERAL",
+        "recentElectionType": null,
         "resultsPresentCount": 147,
         "resultsCoverageRatio": "147/147 (100.0%)",
         "winnerVotesPresentCount": 147,
@@ -969,21 +1150,36 @@
         "uniqueProfilesCount": 132,
         "resolvedToStatutoryAcCount": 132,
         "profileCoverageRatio": "132/147 (89.8%)",
-        "extraNonStatutoryProfiles": 0
+        "extraNonStatutoryProfiles": 0,
+        "duplicateProfilesCount": 0,
+        "malformedProfilesCount": 0
       },
       "affidavitCoverage": {
         "totalAffidavitsInStore": 0,
         "affidavitCoverageRatio": "0/147 (0.0%)",
-        "hasPendingNotice": true
+        "hasPendingNotice": true,
+        "presentInFileCount": 0,
+        "structurallyValidCount": 0,
+        "identityValidatedCount": 0,
+        "sourceProvenanceRecordedCount": 0,
+        "officiallyVerifiedCount": 0,
+        "canonicalDatabaseBacked": false,
+        "formallyAccepted": false
       },
       "geospatialCoverage": {
         "hasGeoJSON": false,
+        "filePresent": false,
         "fileName": null,
         "featureCount": 0,
         "validFeatureCount": 0,
         "coordinatesValid": false,
         "coordinateRangeValid": false,
         "linkedConstituencyCount": 0,
+        "duplicateLinkedAcs": [],
+        "outOfRangeLinkedAcs": [],
+        "unresolvedFeatureCount": 0,
+        "linkageValid": false,
+        "authoritativeVerified": false,
         "validationErrors": [
           "File not found in data/geo"
         ]
@@ -995,7 +1191,7 @@
         "liveDatabaseVerified": false
       },
       "primaryElectionYear": 2024,
-      "primaryElectionType": "GENERAL",
+      "primaryElectionType": null,
       "availableElectionYears": [
         2024
       ],
@@ -1027,6 +1223,7 @@
         "missingAcNos": [],
         "duplicateAcNos": [],
         "outOfRangeAcNos": [],
+        "malformedAcCount": 0,
         "unexpectedExtraRecords": [
           "DL-AC-071..DL-AC-221 (Demographics)"
         ],
@@ -1034,7 +1231,7 @@
       },
       "electoralResults": {
         "recentElectionYear": 2025,
-        "recentElectionType": "GENERAL",
+        "recentElectionType": null,
         "resultsPresentCount": 70,
         "resultsCoverageRatio": "70/70 (100.0%)",
         "winnerVotesPresentCount": 70,
@@ -1053,21 +1250,36 @@
         "uniqueProfilesCount": 221,
         "resolvedToStatutoryAcCount": 70,
         "profileCoverageRatio": "70/70 (100.0%)",
-        "extraNonStatutoryProfiles": 151
+        "extraNonStatutoryProfiles": 151,
+        "duplicateProfilesCount": 0,
+        "malformedProfilesCount": 0
       },
       "affidavitCoverage": {
         "totalAffidavitsInStore": 0,
         "affidavitCoverageRatio": "0/70 (0.0%)",
-        "hasPendingNotice": true
+        "hasPendingNotice": true,
+        "presentInFileCount": 0,
+        "structurallyValidCount": 0,
+        "identityValidatedCount": 0,
+        "sourceProvenanceRecordedCount": 0,
+        "officiallyVerifiedCount": 0,
+        "canonicalDatabaseBacked": false,
+        "formallyAccepted": false
       },
       "geospatialCoverage": {
         "hasGeoJSON": false,
+        "filePresent": false,
         "fileName": null,
         "featureCount": 0,
         "validFeatureCount": 0,
         "coordinatesValid": false,
         "coordinateRangeValid": false,
         "linkedConstituencyCount": 0,
+        "duplicateLinkedAcs": [],
+        "outOfRangeLinkedAcs": [],
+        "unresolvedFeatureCount": 0,
+        "linkageValid": false,
+        "authoritativeVerified": false,
         "validationErrors": [
           "File not found in data/geo"
         ]
@@ -1079,7 +1291,7 @@
         "liveDatabaseVerified": false
       },
       "primaryElectionYear": 2025,
-      "primaryElectionType": "GENERAL",
+      "primaryElectionType": null,
       "availableElectionYears": [
         2025
       ],
@@ -1113,12 +1325,13 @@
         "missingAcNos": [],
         "duplicateAcNos": [],
         "outOfRangeAcNos": [],
+        "malformedAcCount": 0,
         "unexpectedExtraRecords": [],
         "identityStatus": "VERIFIED_STATUTORY_MATCH"
       },
       "electoralResults": {
         "recentElectionYear": 2022,
-        "recentElectionType": "GENERAL",
+        "recentElectionType": null,
         "resultsPresentCount": 117,
         "resultsCoverageRatio": "117/117 (100.0%)",
         "winnerVotesPresentCount": 117,
@@ -1137,21 +1350,36 @@
         "uniqueProfilesCount": 111,
         "resolvedToStatutoryAcCount": 111,
         "profileCoverageRatio": "111/117 (94.9%)",
-        "extraNonStatutoryProfiles": 0
+        "extraNonStatutoryProfiles": 0,
+        "duplicateProfilesCount": 0,
+        "malformedProfilesCount": 0
       },
       "affidavitCoverage": {
         "totalAffidavitsInStore": 0,
         "affidavitCoverageRatio": "0/117 (0.0%)",
-        "hasPendingNotice": true
+        "hasPendingNotice": true,
+        "presentInFileCount": 0,
+        "structurallyValidCount": 0,
+        "identityValidatedCount": 0,
+        "sourceProvenanceRecordedCount": 0,
+        "officiallyVerifiedCount": 0,
+        "canonicalDatabaseBacked": false,
+        "formallyAccepted": false
       },
       "geospatialCoverage": {
         "hasGeoJSON": false,
+        "filePresent": false,
         "fileName": null,
         "featureCount": 0,
         "validFeatureCount": 0,
         "coordinatesValid": false,
         "coordinateRangeValid": false,
         "linkedConstituencyCount": 0,
+        "duplicateLinkedAcs": [],
+        "outOfRangeLinkedAcs": [],
+        "unresolvedFeatureCount": 0,
+        "linkageValid": false,
+        "authoritativeVerified": false,
         "validationErrors": [
           "File not found in data/geo"
         ]
@@ -1163,7 +1391,7 @@
         "liveDatabaseVerified": false
       },
       "primaryElectionYear": 2022,
-      "primaryElectionType": "GENERAL",
+      "primaryElectionType": null,
       "availableElectionYears": [
         2022
       ],
@@ -1195,12 +1423,13 @@
         "missingAcNos": [],
         "duplicateAcNos": [],
         "outOfRangeAcNos": [],
+        "malformedAcCount": 0,
         "unexpectedExtraRecords": [],
         "identityStatus": "VERIFIED_STATUTORY_MATCH"
       },
       "electoralResults": {
         "recentElectionYear": 2024,
-        "recentElectionType": "GENERAL",
+        "recentElectionType": null,
         "resultsPresentCount": 90,
         "resultsCoverageRatio": "90/90 (100.0%)",
         "winnerVotesPresentCount": 90,
@@ -1219,21 +1448,36 @@
         "uniqueProfilesCount": 80,
         "resolvedToStatutoryAcCount": 80,
         "profileCoverageRatio": "80/90 (88.9%)",
-        "extraNonStatutoryProfiles": 0
+        "extraNonStatutoryProfiles": 0,
+        "duplicateProfilesCount": 0,
+        "malformedProfilesCount": 0
       },
       "affidavitCoverage": {
         "totalAffidavitsInStore": 0,
         "affidavitCoverageRatio": "0/90 (0.0%)",
-        "hasPendingNotice": true
+        "hasPendingNotice": true,
+        "presentInFileCount": 0,
+        "structurallyValidCount": 0,
+        "identityValidatedCount": 0,
+        "sourceProvenanceRecordedCount": 0,
+        "officiallyVerifiedCount": 0,
+        "canonicalDatabaseBacked": false,
+        "formallyAccepted": false
       },
       "geospatialCoverage": {
         "hasGeoJSON": false,
+        "filePresent": false,
         "fileName": null,
         "featureCount": 0,
         "validFeatureCount": 0,
         "coordinatesValid": false,
         "coordinateRangeValid": false,
         "linkedConstituencyCount": 0,
+        "duplicateLinkedAcs": [],
+        "outOfRangeLinkedAcs": [],
+        "unresolvedFeatureCount": 0,
+        "linkageValid": false,
+        "authoritativeVerified": false,
         "validationErrors": [
           "File not found in data/geo"
         ]
@@ -1245,7 +1489,7 @@
         "liveDatabaseVerified": false
       },
       "primaryElectionYear": 2024,
-      "primaryElectionType": "GENERAL",
+      "primaryElectionType": null,
       "availableElectionYears": [
         2024
       ],
@@ -1277,12 +1521,13 @@
         "missingAcNos": [],
         "duplicateAcNos": [],
         "outOfRangeAcNos": [],
+        "malformedAcCount": 0,
         "unexpectedExtraRecords": [],
         "identityStatus": "VERIFIED_STATUTORY_MATCH"
       },
       "electoralResults": {
         "recentElectionYear": 2023,
-        "recentElectionType": "GENERAL",
+        "recentElectionType": null,
         "resultsPresentCount": 90,
         "resultsCoverageRatio": "90/90 (100.0%)",
         "winnerVotesPresentCount": 90,
@@ -1301,21 +1546,36 @@
         "uniqueProfilesCount": 81,
         "resolvedToStatutoryAcCount": 81,
         "profileCoverageRatio": "81/90 (90.0%)",
-        "extraNonStatutoryProfiles": 0
+        "extraNonStatutoryProfiles": 0,
+        "duplicateProfilesCount": 0,
+        "malformedProfilesCount": 0
       },
       "affidavitCoverage": {
         "totalAffidavitsInStore": 0,
         "affidavitCoverageRatio": "0/90 (0.0%)",
-        "hasPendingNotice": true
+        "hasPendingNotice": true,
+        "presentInFileCount": 0,
+        "structurallyValidCount": 0,
+        "identityValidatedCount": 0,
+        "sourceProvenanceRecordedCount": 0,
+        "officiallyVerifiedCount": 0,
+        "canonicalDatabaseBacked": false,
+        "formallyAccepted": false
       },
       "geospatialCoverage": {
         "hasGeoJSON": false,
+        "filePresent": false,
         "fileName": null,
         "featureCount": 0,
         "validFeatureCount": 0,
         "coordinatesValid": false,
         "coordinateRangeValid": false,
         "linkedConstituencyCount": 0,
+        "duplicateLinkedAcs": [],
+        "outOfRangeLinkedAcs": [],
+        "unresolvedFeatureCount": 0,
+        "linkageValid": false,
+        "authoritativeVerified": false,
         "validationErrors": [
           "File not found in data/geo"
         ]
@@ -1327,7 +1587,7 @@
         "liveDatabaseVerified": false
       },
       "primaryElectionYear": 2023,
-      "primaryElectionType": "GENERAL",
+      "primaryElectionType": null,
       "availableElectionYears": [
         2023
       ],
@@ -1359,12 +1619,13 @@
         "missingAcNos": [],
         "duplicateAcNos": [],
         "outOfRangeAcNos": [],
+        "malformedAcCount": 0,
         "unexpectedExtraRecords": [],
         "identityStatus": "VERIFIED_STATUTORY_MATCH"
       },
       "electoralResults": {
         "recentElectionYear": 2023,
-        "recentElectionType": "GENERAL",
+        "recentElectionType": null,
         "resultsPresentCount": 230,
         "resultsCoverageRatio": "230/230 (100.0%)",
         "winnerVotesPresentCount": 230,
@@ -1383,21 +1644,36 @@
         "uniqueProfilesCount": 208,
         "resolvedToStatutoryAcCount": 208,
         "profileCoverageRatio": "208/230 (90.4%)",
-        "extraNonStatutoryProfiles": 0
+        "extraNonStatutoryProfiles": 0,
+        "duplicateProfilesCount": 0,
+        "malformedProfilesCount": 0
       },
       "affidavitCoverage": {
         "totalAffidavitsInStore": 0,
         "affidavitCoverageRatio": "0/230 (0.0%)",
-        "hasPendingNotice": true
+        "hasPendingNotice": true,
+        "presentInFileCount": 0,
+        "structurallyValidCount": 0,
+        "identityValidatedCount": 0,
+        "sourceProvenanceRecordedCount": 0,
+        "officiallyVerifiedCount": 0,
+        "canonicalDatabaseBacked": false,
+        "formallyAccepted": false
       },
       "geospatialCoverage": {
         "hasGeoJSON": false,
+        "filePresent": false,
         "fileName": null,
         "featureCount": 0,
         "validFeatureCount": 0,
         "coordinatesValid": false,
         "coordinateRangeValid": false,
         "linkedConstituencyCount": 0,
+        "duplicateLinkedAcs": [],
+        "outOfRangeLinkedAcs": [],
+        "unresolvedFeatureCount": 0,
+        "linkageValid": false,
+        "authoritativeVerified": false,
         "validationErrors": [
           "File not found in data/geo"
         ]
@@ -1409,7 +1685,7 @@
         "liveDatabaseVerified": false
       },
       "primaryElectionYear": 2023,
-      "primaryElectionType": "GENERAL",
+      "primaryElectionType": null,
       "availableElectionYears": [
         2023
       ],
@@ -1441,12 +1717,13 @@
         "missingAcNos": [],
         "duplicateAcNos": [],
         "outOfRangeAcNos": [],
+        "malformedAcCount": 0,
         "unexpectedExtraRecords": [],
         "identityStatus": "VERIFIED_STATUTORY_MATCH"
       },
       "electoralResults": {
         "recentElectionYear": 2020,
-        "recentElectionType": "GENERAL",
+        "recentElectionType": null,
         "resultsPresentCount": 243,
         "resultsCoverageRatio": "243/243 (100.0%)",
         "winnerVotesPresentCount": 243,
@@ -1465,21 +1742,36 @@
         "uniqueProfilesCount": 227,
         "resolvedToStatutoryAcCount": 227,
         "profileCoverageRatio": "227/243 (93.4%)",
-        "extraNonStatutoryProfiles": 0
+        "extraNonStatutoryProfiles": 0,
+        "duplicateProfilesCount": 0,
+        "malformedProfilesCount": 0
       },
       "affidavitCoverage": {
         "totalAffidavitsInStore": 0,
         "affidavitCoverageRatio": "0/243 (0.0%)",
-        "hasPendingNotice": true
+        "hasPendingNotice": true,
+        "presentInFileCount": 0,
+        "structurallyValidCount": 0,
+        "identityValidatedCount": 0,
+        "sourceProvenanceRecordedCount": 0,
+        "officiallyVerifiedCount": 0,
+        "canonicalDatabaseBacked": false,
+        "formallyAccepted": false
       },
       "geospatialCoverage": {
         "hasGeoJSON": false,
+        "filePresent": false,
         "fileName": null,
         "featureCount": 0,
         "validFeatureCount": 0,
         "coordinatesValid": false,
         "coordinateRangeValid": false,
         "linkedConstituencyCount": 0,
+        "duplicateLinkedAcs": [],
+        "outOfRangeLinkedAcs": [],
+        "unresolvedFeatureCount": 0,
+        "linkageValid": false,
+        "authoritativeVerified": false,
         "validationErrors": [
           "File not found in data/geo"
         ]
@@ -1491,7 +1783,7 @@
         "liveDatabaseVerified": false
       },
       "primaryElectionYear": 2020,
-      "primaryElectionType": "GENERAL",
+      "primaryElectionType": null,
       "availableElectionYears": [
         2020
       ],
@@ -1523,6 +1815,7 @@
         "missingAcNos": [],
         "duplicateAcNos": [],
         "outOfRangeAcNos": [],
+        "malformedAcCount": 0,
         "unexpectedExtraRecords": [],
         "identityStatus": "VERIFIED_STATUTORY_MATCH"
       },
@@ -1547,21 +1840,36 @@
         "uniqueProfilesCount": 112,
         "resolvedToStatutoryAcCount": 112,
         "profileCoverageRatio": "112/126 (88.9%)",
-        "extraNonStatutoryProfiles": 0
+        "extraNonStatutoryProfiles": 0,
+        "duplicateProfilesCount": 0,
+        "malformedProfilesCount": 0
       },
       "affidavitCoverage": {
         "totalAffidavitsInStore": 0,
         "affidavitCoverageRatio": "0/126 (0.0%)",
-        "hasPendingNotice": true
+        "hasPendingNotice": true,
+        "presentInFileCount": 0,
+        "structurallyValidCount": 0,
+        "identityValidatedCount": 0,
+        "sourceProvenanceRecordedCount": 0,
+        "officiallyVerifiedCount": 0,
+        "canonicalDatabaseBacked": false,
+        "formallyAccepted": false
       },
       "geospatialCoverage": {
         "hasGeoJSON": false,
+        "filePresent": false,
         "fileName": null,
         "featureCount": 0,
         "validFeatureCount": 0,
         "coordinatesValid": false,
         "coordinateRangeValid": false,
         "linkedConstituencyCount": 0,
+        "duplicateLinkedAcs": [],
+        "outOfRangeLinkedAcs": [],
+        "unresolvedFeatureCount": 0,
+        "linkageValid": false,
+        "authoritativeVerified": false,
         "validationErrors": [
           "File not found in data/geo"
         ]
@@ -1603,12 +1911,13 @@
         "missingAcNos": [],
         "duplicateAcNos": [],
         "outOfRangeAcNos": [],
+        "malformedAcCount": 0,
         "unexpectedExtraRecords": [],
         "identityStatus": "VERIFIED_STATUTORY_MATCH"
       },
       "electoralResults": {
         "recentElectionYear": 2022,
-        "recentElectionType": "GENERAL",
+        "recentElectionType": null,
         "resultsPresentCount": 40,
         "resultsCoverageRatio": "40/40 (100.0%)",
         "winnerVotesPresentCount": 40,
@@ -1627,21 +1936,36 @@
         "uniqueProfilesCount": 34,
         "resolvedToStatutoryAcCount": 34,
         "profileCoverageRatio": "34/40 (85.0%)",
-        "extraNonStatutoryProfiles": 0
+        "extraNonStatutoryProfiles": 0,
+        "duplicateProfilesCount": 0,
+        "malformedProfilesCount": 0
       },
       "affidavitCoverage": {
         "totalAffidavitsInStore": 0,
         "affidavitCoverageRatio": "0/40 (0.0%)",
-        "hasPendingNotice": true
+        "hasPendingNotice": true,
+        "presentInFileCount": 0,
+        "structurallyValidCount": 0,
+        "identityValidatedCount": 0,
+        "sourceProvenanceRecordedCount": 0,
+        "officiallyVerifiedCount": 0,
+        "canonicalDatabaseBacked": false,
+        "formallyAccepted": false
       },
       "geospatialCoverage": {
         "hasGeoJSON": false,
+        "filePresent": false,
         "fileName": null,
         "featureCount": 0,
         "validFeatureCount": 0,
         "coordinatesValid": false,
         "coordinateRangeValid": false,
         "linkedConstituencyCount": 0,
+        "duplicateLinkedAcs": [],
+        "outOfRangeLinkedAcs": [],
+        "unresolvedFeatureCount": 0,
+        "linkageValid": false,
+        "authoritativeVerified": false,
         "validationErrors": [
           "File not found in data/geo"
         ]
@@ -1653,7 +1977,7 @@
         "liveDatabaseVerified": false
       },
       "primaryElectionYear": 2022,
-      "primaryElectionType": "GENERAL",
+      "primaryElectionType": null,
       "availableElectionYears": [
         2022
       ],
@@ -1685,12 +2009,13 @@
         "missingAcNos": [],
         "duplicateAcNos": [],
         "outOfRangeAcNos": [],
+        "malformedAcCount": 0,
         "unexpectedExtraRecords": [],
         "identityStatus": "VERIFIED_STATUTORY_MATCH"
       },
       "electoralResults": {
         "recentElectionYear": 2022,
-        "recentElectionType": "GENERAL",
+        "recentElectionType": null,
         "resultsPresentCount": 68,
         "resultsCoverageRatio": "68/68 (100.0%)",
         "winnerVotesPresentCount": 68,
@@ -1709,21 +2034,36 @@
         "uniqueProfilesCount": 70,
         "resolvedToStatutoryAcCount": 68,
         "profileCoverageRatio": "68/68 (100.0%)",
-        "extraNonStatutoryProfiles": 2
+        "extraNonStatutoryProfiles": 2,
+        "duplicateProfilesCount": 0,
+        "malformedProfilesCount": 0
       },
       "affidavitCoverage": {
         "totalAffidavitsInStore": 0,
         "affidavitCoverageRatio": "0/68 (0.0%)",
-        "hasPendingNotice": true
+        "hasPendingNotice": true,
+        "presentInFileCount": 0,
+        "structurallyValidCount": 0,
+        "identityValidatedCount": 0,
+        "sourceProvenanceRecordedCount": 0,
+        "officiallyVerifiedCount": 0,
+        "canonicalDatabaseBacked": false,
+        "formallyAccepted": false
       },
       "geospatialCoverage": {
         "hasGeoJSON": false,
+        "filePresent": false,
         "fileName": null,
         "featureCount": 0,
         "validFeatureCount": 0,
         "coordinatesValid": false,
         "coordinateRangeValid": false,
         "linkedConstituencyCount": 0,
+        "duplicateLinkedAcs": [],
+        "outOfRangeLinkedAcs": [],
+        "unresolvedFeatureCount": 0,
+        "linkageValid": false,
+        "authoritativeVerified": false,
         "validationErrors": [
           "File not found in data/geo"
         ]
@@ -1735,7 +2075,7 @@
         "liveDatabaseVerified": false
       },
       "primaryElectionYear": 2022,
-      "primaryElectionType": "GENERAL",
+      "primaryElectionType": null,
       "availableElectionYears": [
         2022
       ],
@@ -1767,12 +2107,13 @@
         "missingAcNos": [],
         "duplicateAcNos": [],
         "outOfRangeAcNos": [],
+        "malformedAcCount": 0,
         "unexpectedExtraRecords": [],
         "identityStatus": "VERIFIED_STATUTORY_MATCH"
       },
       "electoralResults": {
         "recentElectionYear": 2022,
-        "recentElectionType": "GENERAL",
+        "recentElectionType": null,
         "resultsPresentCount": 60,
         "resultsCoverageRatio": "60/60 (100.0%)",
         "winnerVotesPresentCount": 60,
@@ -1791,21 +2132,36 @@
         "uniqueProfilesCount": 60,
         "resolvedToStatutoryAcCount": 60,
         "profileCoverageRatio": "60/60 (100.0%)",
-        "extraNonStatutoryProfiles": 0
+        "extraNonStatutoryProfiles": 0,
+        "duplicateProfilesCount": 0,
+        "malformedProfilesCount": 0
       },
       "affidavitCoverage": {
         "totalAffidavitsInStore": 0,
         "affidavitCoverageRatio": "0/60 (0.0%)",
-        "hasPendingNotice": true
+        "hasPendingNotice": true,
+        "presentInFileCount": 0,
+        "structurallyValidCount": 0,
+        "identityValidatedCount": 0,
+        "sourceProvenanceRecordedCount": 0,
+        "officiallyVerifiedCount": 0,
+        "canonicalDatabaseBacked": false,
+        "formallyAccepted": false
       },
       "geospatialCoverage": {
         "hasGeoJSON": false,
+        "filePresent": false,
         "fileName": null,
         "featureCount": 0,
         "validFeatureCount": 0,
         "coordinatesValid": false,
         "coordinateRangeValid": false,
         "linkedConstituencyCount": 0,
+        "duplicateLinkedAcs": [],
+        "outOfRangeLinkedAcs": [],
+        "unresolvedFeatureCount": 0,
+        "linkageValid": false,
+        "authoritativeVerified": false,
         "validationErrors": [
           "File not found in data/geo"
         ]
@@ -1817,7 +2173,7 @@
         "liveDatabaseVerified": false
       },
       "primaryElectionYear": 2022,
-      "primaryElectionType": "GENERAL",
+      "primaryElectionType": null,
       "availableElectionYears": [
         2022
       ],
@@ -1849,12 +2205,13 @@
         "missingAcNos": [],
         "duplicateAcNos": [],
         "outOfRangeAcNos": [],
+        "malformedAcCount": 0,
         "unexpectedExtraRecords": [],
         "identityStatus": "VERIFIED_STATUTORY_MATCH"
       },
       "electoralResults": {
         "recentElectionYear": 2023,
-        "recentElectionType": "GENERAL",
+        "recentElectionType": null,
         "resultsPresentCount": 60,
         "resultsCoverageRatio": "60/60 (100.0%)",
         "winnerVotesPresentCount": 60,
@@ -1873,21 +2230,36 @@
         "uniqueProfilesCount": 60,
         "resolvedToStatutoryAcCount": 60,
         "profileCoverageRatio": "60/60 (100.0%)",
-        "extraNonStatutoryProfiles": 0
+        "extraNonStatutoryProfiles": 0,
+        "duplicateProfilesCount": 0,
+        "malformedProfilesCount": 0
       },
       "affidavitCoverage": {
         "totalAffidavitsInStore": 0,
         "affidavitCoverageRatio": "0/60 (0.0%)",
-        "hasPendingNotice": true
+        "hasPendingNotice": true,
+        "presentInFileCount": 0,
+        "structurallyValidCount": 0,
+        "identityValidatedCount": 0,
+        "sourceProvenanceRecordedCount": 0,
+        "officiallyVerifiedCount": 0,
+        "canonicalDatabaseBacked": false,
+        "formallyAccepted": false
       },
       "geospatialCoverage": {
         "hasGeoJSON": false,
+        "filePresent": false,
         "fileName": null,
         "featureCount": 0,
         "validFeatureCount": 0,
         "coordinatesValid": false,
         "coordinateRangeValid": false,
         "linkedConstituencyCount": 0,
+        "duplicateLinkedAcs": [],
+        "outOfRangeLinkedAcs": [],
+        "unresolvedFeatureCount": 0,
+        "linkageValid": false,
+        "authoritativeVerified": false,
         "validationErrors": [
           "File not found in data/geo"
         ]
@@ -1899,7 +2271,7 @@
         "liveDatabaseVerified": false
       },
       "primaryElectionYear": 2023,
-      "primaryElectionType": "GENERAL",
+      "primaryElectionType": null,
       "availableElectionYears": [
         2023
       ],
@@ -1931,12 +2303,13 @@
         "missingAcNos": [],
         "duplicateAcNos": [],
         "outOfRangeAcNos": [],
+        "malformedAcCount": 0,
         "unexpectedExtraRecords": [],
         "identityStatus": "VERIFIED_STATUTORY_MATCH"
       },
       "electoralResults": {
         "recentElectionYear": 2023,
-        "recentElectionType": "GENERAL",
+        "recentElectionType": null,
         "resultsPresentCount": 40,
         "resultsCoverageRatio": "40/40 (100.0%)",
         "winnerVotesPresentCount": 0,
@@ -1955,21 +2328,36 @@
         "uniqueProfilesCount": 35,
         "resolvedToStatutoryAcCount": 35,
         "profileCoverageRatio": "35/40 (87.5%)",
-        "extraNonStatutoryProfiles": 0
+        "extraNonStatutoryProfiles": 0,
+        "duplicateProfilesCount": 0,
+        "malformedProfilesCount": 0
       },
       "affidavitCoverage": {
         "totalAffidavitsInStore": 0,
         "affidavitCoverageRatio": "0/40 (0.0%)",
-        "hasPendingNotice": true
+        "hasPendingNotice": true,
+        "presentInFileCount": 0,
+        "structurallyValidCount": 0,
+        "identityValidatedCount": 0,
+        "sourceProvenanceRecordedCount": 0,
+        "officiallyVerifiedCount": 0,
+        "canonicalDatabaseBacked": false,
+        "formallyAccepted": false
       },
       "geospatialCoverage": {
         "hasGeoJSON": false,
+        "filePresent": false,
         "fileName": null,
         "featureCount": 0,
         "validFeatureCount": 0,
         "coordinatesValid": false,
         "coordinateRangeValid": false,
         "linkedConstituencyCount": 0,
+        "duplicateLinkedAcs": [],
+        "outOfRangeLinkedAcs": [],
+        "unresolvedFeatureCount": 0,
+        "linkageValid": false,
+        "authoritativeVerified": false,
         "validationErrors": [
           "File not found in data/geo"
         ]
@@ -1981,7 +2369,7 @@
         "liveDatabaseVerified": false
       },
       "primaryElectionYear": 2023,
-      "primaryElectionType": "GENERAL",
+      "primaryElectionType": null,
       "availableElectionYears": [
         2023
       ],
@@ -2013,12 +2401,13 @@
         "missingAcNos": [],
         "duplicateAcNos": [],
         "outOfRangeAcNos": [],
+        "malformedAcCount": 0,
         "unexpectedExtraRecords": [],
         "identityStatus": "VERIFIED_STATUTORY_MATCH"
       },
       "electoralResults": {
         "recentElectionYear": 2023,
-        "recentElectionType": "GENERAL",
+        "recentElectionType": null,
         "resultsPresentCount": 60,
         "resultsCoverageRatio": "60/60 (100.0%)",
         "winnerVotesPresentCount": 60,
@@ -2037,21 +2426,36 @@
         "uniqueProfilesCount": 60,
         "resolvedToStatutoryAcCount": 60,
         "profileCoverageRatio": "60/60 (100.0%)",
-        "extraNonStatutoryProfiles": 0
+        "extraNonStatutoryProfiles": 0,
+        "duplicateProfilesCount": 0,
+        "malformedProfilesCount": 0
       },
       "affidavitCoverage": {
         "totalAffidavitsInStore": 0,
         "affidavitCoverageRatio": "0/60 (0.0%)",
-        "hasPendingNotice": true
+        "hasPendingNotice": true,
+        "presentInFileCount": 0,
+        "structurallyValidCount": 0,
+        "identityValidatedCount": 0,
+        "sourceProvenanceRecordedCount": 0,
+        "officiallyVerifiedCount": 0,
+        "canonicalDatabaseBacked": false,
+        "formallyAccepted": false
       },
       "geospatialCoverage": {
         "hasGeoJSON": false,
+        "filePresent": false,
         "fileName": null,
         "featureCount": 0,
         "validFeatureCount": 0,
         "coordinatesValid": false,
         "coordinateRangeValid": false,
         "linkedConstituencyCount": 0,
+        "duplicateLinkedAcs": [],
+        "outOfRangeLinkedAcs": [],
+        "unresolvedFeatureCount": 0,
+        "linkageValid": false,
+        "authoritativeVerified": false,
         "validationErrors": [
           "File not found in data/geo"
         ]
@@ -2063,7 +2467,7 @@
         "liveDatabaseVerified": false
       },
       "primaryElectionYear": 2023,
-      "primaryElectionType": "GENERAL",
+      "primaryElectionType": null,
       "availableElectionYears": [
         2023
       ],
@@ -2095,12 +2499,13 @@
         "missingAcNos": [],
         "duplicateAcNos": [],
         "outOfRangeAcNos": [],
+        "malformedAcCount": 0,
         "unexpectedExtraRecords": [],
         "identityStatus": "VERIFIED_STATUTORY_MATCH"
       },
       "electoralResults": {
         "recentElectionYear": 2023,
-        "recentElectionType": "GENERAL",
+        "recentElectionType": null,
         "resultsPresentCount": 60,
         "resultsCoverageRatio": "60/60 (100.0%)",
         "winnerVotesPresentCount": 60,
@@ -2119,21 +2524,36 @@
         "uniqueProfilesCount": 60,
         "resolvedToStatutoryAcCount": 60,
         "profileCoverageRatio": "60/60 (100.0%)",
-        "extraNonStatutoryProfiles": 0
+        "extraNonStatutoryProfiles": 0,
+        "duplicateProfilesCount": 0,
+        "malformedProfilesCount": 0
       },
       "affidavitCoverage": {
         "totalAffidavitsInStore": 0,
         "affidavitCoverageRatio": "0/60 (0.0%)",
-        "hasPendingNotice": true
+        "hasPendingNotice": true,
+        "presentInFileCount": 0,
+        "structurallyValidCount": 0,
+        "identityValidatedCount": 0,
+        "sourceProvenanceRecordedCount": 0,
+        "officiallyVerifiedCount": 0,
+        "canonicalDatabaseBacked": false,
+        "formallyAccepted": false
       },
       "geospatialCoverage": {
         "hasGeoJSON": false,
+        "filePresent": false,
         "fileName": null,
         "featureCount": 0,
         "validFeatureCount": 0,
         "coordinatesValid": false,
         "coordinateRangeValid": false,
         "linkedConstituencyCount": 0,
+        "duplicateLinkedAcs": [],
+        "outOfRangeLinkedAcs": [],
+        "unresolvedFeatureCount": 0,
+        "linkageValid": false,
+        "authoritativeVerified": false,
         "validationErrors": [
           "File not found in data/geo"
         ]
@@ -2145,7 +2565,7 @@
         "liveDatabaseVerified": false
       },
       "primaryElectionYear": 2023,
-      "primaryElectionType": "GENERAL",
+      "primaryElectionType": null,
       "availableElectionYears": [
         2023
       ],
@@ -2177,12 +2597,13 @@
         "missingAcNos": [],
         "duplicateAcNos": [],
         "outOfRangeAcNos": [],
+        "malformedAcCount": 0,
         "unexpectedExtraRecords": [],
         "identityStatus": "VERIFIED_STATUTORY_MATCH"
       },
       "electoralResults": {
         "recentElectionYear": 2024,
-        "recentElectionType": "GENERAL",
+        "recentElectionType": null,
         "resultsPresentCount": 32,
         "resultsCoverageRatio": "32/32 (100.0%)",
         "winnerVotesPresentCount": 0,
@@ -2201,21 +2622,36 @@
         "uniqueProfilesCount": 31,
         "resolvedToStatutoryAcCount": 31,
         "profileCoverageRatio": "31/32 (96.9%)",
-        "extraNonStatutoryProfiles": 0
+        "extraNonStatutoryProfiles": 0,
+        "duplicateProfilesCount": 0,
+        "malformedProfilesCount": 0
       },
       "affidavitCoverage": {
         "totalAffidavitsInStore": 0,
         "affidavitCoverageRatio": "0/32 (0.0%)",
-        "hasPendingNotice": true
+        "hasPendingNotice": true,
+        "presentInFileCount": 0,
+        "structurallyValidCount": 0,
+        "identityValidatedCount": 0,
+        "sourceProvenanceRecordedCount": 0,
+        "officiallyVerifiedCount": 0,
+        "canonicalDatabaseBacked": false,
+        "formallyAccepted": false
       },
       "geospatialCoverage": {
         "hasGeoJSON": false,
+        "filePresent": false,
         "fileName": null,
         "featureCount": 0,
         "validFeatureCount": 0,
         "coordinatesValid": false,
         "coordinateRangeValid": false,
         "linkedConstituencyCount": 0,
+        "duplicateLinkedAcs": [],
+        "outOfRangeLinkedAcs": [],
+        "unresolvedFeatureCount": 0,
+        "linkageValid": false,
+        "authoritativeVerified": false,
         "validationErrors": [
           "File not found in data/geo"
         ]
@@ -2227,7 +2663,7 @@
         "liveDatabaseVerified": false
       },
       "primaryElectionYear": 2024,
-      "primaryElectionType": "GENERAL",
+      "primaryElectionType": null,
       "availableElectionYears": [
         2024
       ],
@@ -2259,12 +2695,13 @@
         "missingAcNos": [],
         "duplicateAcNos": [],
         "outOfRangeAcNos": [],
+        "malformedAcCount": 0,
         "unexpectedExtraRecords": [],
         "identityStatus": "VERIFIED_STATUTORY_MATCH"
       },
       "electoralResults": {
         "recentElectionYear": 2024,
-        "recentElectionType": "GENERAL",
+        "recentElectionType": null,
         "resultsPresentCount": 60,
         "resultsCoverageRatio": "60/60 (100.0%)",
         "winnerVotesPresentCount": 0,
@@ -2283,21 +2720,36 @@
         "uniqueProfilesCount": 53,
         "resolvedToStatutoryAcCount": 53,
         "profileCoverageRatio": "53/60 (88.3%)",
-        "extraNonStatutoryProfiles": 0
+        "extraNonStatutoryProfiles": 0,
+        "duplicateProfilesCount": 0,
+        "malformedProfilesCount": 0
       },
       "affidavitCoverage": {
         "totalAffidavitsInStore": 0,
         "affidavitCoverageRatio": "0/60 (0.0%)",
-        "hasPendingNotice": true
+        "hasPendingNotice": true,
+        "presentInFileCount": 0,
+        "structurallyValidCount": 0,
+        "identityValidatedCount": 0,
+        "sourceProvenanceRecordedCount": 0,
+        "officiallyVerifiedCount": 0,
+        "canonicalDatabaseBacked": false,
+        "formallyAccepted": false
       },
       "geospatialCoverage": {
         "hasGeoJSON": false,
+        "filePresent": false,
         "fileName": null,
         "featureCount": 0,
         "validFeatureCount": 0,
         "coordinatesValid": false,
         "coordinateRangeValid": false,
         "linkedConstituencyCount": 0,
+        "duplicateLinkedAcs": [],
+        "outOfRangeLinkedAcs": [],
+        "unresolvedFeatureCount": 0,
+        "linkageValid": false,
+        "authoritativeVerified": false,
         "validationErrors": [
           "File not found in data/geo"
         ]
@@ -2309,7 +2761,7 @@
         "liveDatabaseVerified": false
       },
       "primaryElectionYear": 2024,
-      "primaryElectionType": "GENERAL",
+      "primaryElectionType": null,
       "availableElectionYears": [
         2024
       ],
@@ -2341,12 +2793,13 @@
         "missingAcNos": [],
         "duplicateAcNos": [],
         "outOfRangeAcNos": [],
+        "malformedAcCount": 0,
         "unexpectedExtraRecords": [],
         "identityStatus": "VERIFIED_STATUTORY_MATCH"
       },
       "electoralResults": {
         "recentElectionYear": 2022,
-        "recentElectionType": "GENERAL",
+        "recentElectionType": null,
         "resultsPresentCount": 70,
         "resultsCoverageRatio": "70/70 (100.0%)",
         "winnerVotesPresentCount": 70,
@@ -2365,21 +2818,36 @@
         "uniqueProfilesCount": 70,
         "resolvedToStatutoryAcCount": 70,
         "profileCoverageRatio": "70/70 (100.0%)",
-        "extraNonStatutoryProfiles": 0
+        "extraNonStatutoryProfiles": 0,
+        "duplicateProfilesCount": 0,
+        "malformedProfilesCount": 0
       },
       "affidavitCoverage": {
         "totalAffidavitsInStore": 0,
         "affidavitCoverageRatio": "0/70 (0.0%)",
-        "hasPendingNotice": true
+        "hasPendingNotice": true,
+        "presentInFileCount": 0,
+        "structurallyValidCount": 0,
+        "identityValidatedCount": 0,
+        "sourceProvenanceRecordedCount": 0,
+        "officiallyVerifiedCount": 0,
+        "canonicalDatabaseBacked": false,
+        "formallyAccepted": false
       },
       "geospatialCoverage": {
         "hasGeoJSON": false,
+        "filePresent": false,
         "fileName": null,
         "featureCount": 0,
         "validFeatureCount": 0,
         "coordinatesValid": false,
         "coordinateRangeValid": false,
         "linkedConstituencyCount": 0,
+        "duplicateLinkedAcs": [],
+        "outOfRangeLinkedAcs": [],
+        "unresolvedFeatureCount": 0,
+        "linkageValid": false,
+        "authoritativeVerified": false,
         "validationErrors": [
           "File not found in data/geo"
         ]
@@ -2391,7 +2859,7 @@
         "liveDatabaseVerified": false
       },
       "primaryElectionYear": 2022,
-      "primaryElectionType": "GENERAL",
+      "primaryElectionType": null,
       "availableElectionYears": [
         2022
       ],
@@ -2423,12 +2891,13 @@
         "missingAcNos": [],
         "duplicateAcNos": [],
         "outOfRangeAcNos": [],
+        "malformedAcCount": 0,
         "unexpectedExtraRecords": [],
         "identityStatus": "VERIFIED_STATUTORY_MATCH"
       },
       "electoralResults": {
         "recentElectionYear": 2021,
-        "recentElectionType": "GENERAL",
+        "recentElectionType": null,
         "resultsPresentCount": 30,
         "resultsCoverageRatio": "30/30 (100.0%)",
         "winnerVotesPresentCount": 30,
@@ -2447,21 +2916,36 @@
         "uniqueProfilesCount": 27,
         "resolvedToStatutoryAcCount": 27,
         "profileCoverageRatio": "27/30 (90.0%)",
-        "extraNonStatutoryProfiles": 0
+        "extraNonStatutoryProfiles": 0,
+        "duplicateProfilesCount": 0,
+        "malformedProfilesCount": 0
       },
       "affidavitCoverage": {
         "totalAffidavitsInStore": 0,
         "affidavitCoverageRatio": "0/30 (0.0%)",
-        "hasPendingNotice": true
+        "hasPendingNotice": true,
+        "presentInFileCount": 0,
+        "structurallyValidCount": 0,
+        "identityValidatedCount": 0,
+        "sourceProvenanceRecordedCount": 0,
+        "officiallyVerifiedCount": 0,
+        "canonicalDatabaseBacked": false,
+        "formallyAccepted": false
       },
       "geospatialCoverage": {
         "hasGeoJSON": false,
+        "filePresent": false,
         "fileName": null,
         "featureCount": 0,
         "validFeatureCount": 0,
         "coordinatesValid": false,
         "coordinateRangeValid": false,
         "linkedConstituencyCount": 0,
+        "duplicateLinkedAcs": [],
+        "outOfRangeLinkedAcs": [],
+        "unresolvedFeatureCount": 0,
+        "linkageValid": false,
+        "authoritativeVerified": false,
         "validationErrors": [
           "File not found in data/geo"
         ]
@@ -2473,7 +2957,7 @@
         "liveDatabaseVerified": false
       },
       "primaryElectionYear": 2021,
-      "primaryElectionType": "GENERAL",
+      "primaryElectionType": null,
       "availableElectionYears": [
         2021
       ],
@@ -2505,12 +2989,13 @@
         "missingAcNos": [],
         "duplicateAcNos": [],
         "outOfRangeAcNos": [],
+        "malformedAcCount": 0,
         "unexpectedExtraRecords": [],
         "identityStatus": "VERIFIED_STATUTORY_MATCH"
       },
       "electoralResults": {
         "recentElectionYear": 2024,
-        "recentElectionType": "GENERAL",
+        "recentElectionType": null,
         "resultsPresentCount": 90,
         "resultsCoverageRatio": "90/90 (100.0%)",
         "winnerVotesPresentCount": 90,
@@ -2529,21 +3014,36 @@
         "uniqueProfilesCount": 90,
         "resolvedToStatutoryAcCount": 90,
         "profileCoverageRatio": "90/90 (100.0%)",
-        "extraNonStatutoryProfiles": 0
+        "extraNonStatutoryProfiles": 0,
+        "duplicateProfilesCount": 0,
+        "malformedProfilesCount": 0
       },
       "affidavitCoverage": {
         "totalAffidavitsInStore": 0,
         "affidavitCoverageRatio": "0/90 (0.0%)",
-        "hasPendingNotice": true
+        "hasPendingNotice": true,
+        "presentInFileCount": 0,
+        "structurallyValidCount": 0,
+        "identityValidatedCount": 0,
+        "sourceProvenanceRecordedCount": 0,
+        "officiallyVerifiedCount": 0,
+        "canonicalDatabaseBacked": false,
+        "formallyAccepted": false
       },
       "geospatialCoverage": {
         "hasGeoJSON": false,
+        "filePresent": false,
         "fileName": null,
         "featureCount": 0,
         "validFeatureCount": 0,
         "coordinatesValid": false,
         "coordinateRangeValid": false,
         "linkedConstituencyCount": 0,
+        "duplicateLinkedAcs": [],
+        "outOfRangeLinkedAcs": [],
+        "unresolvedFeatureCount": 0,
+        "linkageValid": false,
+        "authoritativeVerified": false,
         "validationErrors": [
           "File not found in data/geo"
         ]
@@ -2555,7 +3055,7 @@
         "liveDatabaseVerified": false
       },
       "primaryElectionYear": 2024,
-      "primaryElectionType": "GENERAL",
+      "primaryElectionType": null,
       "availableElectionYears": [
         2024
       ],

@@ -316,8 +316,6 @@ export function getConstituencyElectionData(stateCode: string, acNo: number): Co
     electionType = 'BYPOLL';
   } else if (raw?.electionType === 'GENERAL') {
     electionType = 'GENERAL';
-  } else if (year !== null) {
-    electionType = 'GENERAL';
   } else {
     electionType = null;
   }

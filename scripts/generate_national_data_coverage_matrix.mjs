@@ -3,7 +3,7 @@
 /**
  * scripts/generate_national_data_coverage_matrix.mjs
  *
- * Master Execution Framework — W021.5 / CTO Directive 085
+ * Master Execution Framework — W021.5 / CTO Directive 085, 086 & 087
  * Canonical Political Truth, Evidence-Based Coverage and Contract Integrity
  *
  * Mechanically inspects repository data files, API routes, and mobile stores
@@ -90,22 +90,191 @@ export const STATE_SLUGS = {
   JK: 'jammu-kashmir',
 };
 
-// Inspect GeoJSON file with deep structural verification
-function inspectGeoJSON(stateCode) {
+// Safe depth-aware object block extractor
+export function extractObjectBlocks(str) {
+  const blocks = [];
+  let depth = 0;
+  let start = -1;
+  let inString = false;
+  let stringChar = '';
+  let escape = false;
+
+  for (let i = 0; i < str.length; i++) {
+    const ch = str[i];
+    if (escape) {
+      escape = false;
+      continue;
+    }
+    if (ch === '\\') {
+      escape = true;
+      continue;
+    }
+    if (inString) {
+      if (ch === stringChar) {
+        inString = false;
+      }
+      continue;
+    }
+    if (ch === "'" || ch === '"' || ch === '`') {
+      inString = true;
+      stringChar = ch;
+      continue;
+    }
+    if (ch === '{') {
+      if (depth === 0) start = i;
+      depth++;
+    } else if (ch === '}') {
+      depth--;
+      if (depth === 0 && start !== -1) {
+        blocks.push(str.slice(start, i + 1));
+        start = -1;
+      }
+    }
+  }
+  return blocks;
+}
+
+// Deep GeoJSON validation logic
+export function validateGeoJsonObject(parsed, stateCode, statutorySeats, fileName = 'geojson-object') {
+  const errors = [];
+  if (!parsed || parsed.type !== 'FeatureCollection' || !Array.isArray(parsed.features)) {
+    return {
+      hasGeoJSON: false,
+      filePresent: true,
+      fileName,
+      featureCount: 0,
+      validFeatureCount: 0,
+      coordinatesValid: false,
+      coordinateRangeValid: false,
+      linkedConstituencyCount: 0,
+      duplicateLinkedAcs: [],
+      outOfRangeLinkedAcs: [],
+      unresolvedFeatureCount: 0,
+      linkageValid: false,
+      authoritativeVerified: false,
+      validationErrors: ['Root is not a valid FeatureCollection'],
+    };
+  }
+
+  let validFeatures = 0;
+  let coordNumericErrors = 0;
+  let coordRangeErrors = 0;
+  const linkedAcs = new Set();
+  const seenAcs = new Set();
+  const duplicateLinkedAcs = [];
+  const outOfRangeLinkedAcs = [];
+  let unresolvedFeatureCount = 0;
+
+  for (const f of parsed.features) {
+    if (!f || f.type !== 'Feature') {
+      errors.push('Item in features array is not a Feature');
+      continue;
+    }
+    if (!f.geometry || typeof f.geometry !== 'object') {
+      errors.push('Feature missing geometry');
+      continue;
+    }
+    if (f.geometry.type !== 'Polygon' && f.geometry.type !== 'MultiPolygon') {
+      errors.push(`Feature geometry type "${f.geometry.type}" is not Polygon/MultiPolygon`);
+      continue;
+    }
+    if (!Array.isArray(f.geometry.coordinates) || f.geometry.coordinates.length === 0) {
+      errors.push('Feature coordinates array is empty or invalid');
+      continue;
+    }
+
+    // Validate coordinates numeric pairs and India geographic bounding box
+    let featureCoordValid = true;
+    const validateCoords = (arr) => {
+      if (!Array.isArray(arr) || arr.length === 0) {
+        featureCoordValid = false;
+        coordNumericErrors++;
+        return;
+      }
+      if (typeof arr[0] === 'number' && typeof arr[1] === 'number') {
+        const [lng, lat] = arr;
+        if (!Number.isFinite(lng) || !Number.isFinite(lat) || isNaN(lng) || isNaN(lat)) {
+          featureCoordValid = false;
+          coordNumericErrors++;
+        } else if (lng < 65 || lng > 100 || lat < 5 || lat > 40) {
+          coordRangeErrors++;
+        }
+      } else {
+        for (const sub of arr) validateCoords(sub);
+      }
+    };
+    validateCoords(f.geometry.coordinates);
+
+    if (featureCoordValid) {
+      validFeatures++;
+    }
+
+    // Check constituency linkage
+    const ac = f.properties?.AC_NO ?? f.properties?.ac_no ?? f.properties?.acNo ?? f.properties?.acNumber;
+    if (ac != null && !isNaN(Number(ac))) {
+      const acNum = Number(ac);
+      if (acNum >= 1 && acNum <= statutorySeats) {
+        if (seenAcs.has(acNum)) {
+          duplicateLinkedAcs.push(acNum);
+        } else {
+          seenAcs.add(acNum);
+        }
+        linkedAcs.add(acNum);
+      } else {
+        outOfRangeLinkedAcs.push(acNum);
+      }
+    } else {
+      unresolvedFeatureCount++;
+    }
+  }
+
+  const coordinatesValid = validFeatures > 0 && errors.length === 0 && coordNumericErrors === 0;
+  const coordinateRangeValid = coordRangeErrors === 0;
+  const linkageValid = linkedAcs.size > 0 && unresolvedFeatureCount === 0 && outOfRangeLinkedAcs.length === 0;
+
+  // Under Directive 087 Workstream B:
+  // hasGeoJSON CANNOT be true if coordinateRangeValid is false, coordinatesValid is false, or errors exist!
+  const hasGeoJSON = validFeatures > 0 && coordinatesValid && coordinateRangeValid && errors.length === 0;
+
+  return {
+    hasGeoJSON,
+    filePresent: true,
+    fileName,
+    featureCount: parsed.features.length,
+    validFeatureCount: validFeatures,
+    coordinatesValid,
+    coordinateRangeValid,
+    linkedConstituencyCount: linkedAcs.size,
+    duplicateLinkedAcs: [...new Set(duplicateLinkedAcs)],
+    outOfRangeLinkedAcs: [...new Set(outOfRangeLinkedAcs)],
+    unresolvedFeatureCount,
+    linkageValid,
+    authoritativeVerified: false, // Local boundary file; not live statutory ECI database verified
+    validationErrors: errors.slice(0, 5),
+  };
+}
+
+export function inspectGeoJSON(stateCode, statutorySeats, overridePath = null) {
   const slug = STATE_SLUGS[stateCode];
   const geoPath = path.join(REPO_ROOT, 'data', 'geo', `${slug}-assembly.geojson`);
   const altGeoPath = path.join(REPO_ROOT, 'data', 'geo', `${stateCode.toLowerCase()}-assembly.geojson`);
-  const targetPath = fs.existsSync(geoPath) ? geoPath : (fs.existsSync(altGeoPath) ? altGeoPath : null);
+  const targetPath = overridePath || (fs.existsSync(geoPath) ? geoPath : (fs.existsSync(altGeoPath) ? altGeoPath : null));
 
-  if (!targetPath) {
+  if (!targetPath || !fs.existsSync(targetPath)) {
     return {
       hasGeoJSON: false,
+      filePresent: false,
       fileName: null,
       featureCount: 0,
       validFeatureCount: 0,
       coordinatesValid: false,
       coordinateRangeValid: false,
       linkedConstituencyCount: 0,
+      duplicateLinkedAcs: [],
+      outOfRangeLinkedAcs: [],
+      unresolvedFeatureCount: 0,
+      linkageValid: false,
+      authoritativeVerified: false,
       validationErrors: ['File not found in data/geo'],
     };
   }
@@ -113,141 +282,134 @@ function inspectGeoJSON(stateCode) {
   try {
     const raw = fs.readFileSync(targetPath, 'utf8');
     const parsed = JSON.parse(raw);
-    const errors = [];
-    if (!parsed || parsed.type !== 'FeatureCollection' || !Array.isArray(parsed.features)) {
-      return {
-        hasGeoJSON: false,
-        fileName: path.basename(targetPath),
-        featureCount: 0,
-        validFeatureCount: 0,
-        coordinatesValid: false,
-        coordinateRangeValid: false,
-        linkedConstituencyCount: 0,
-        validationErrors: ['Root is not a valid FeatureCollection'],
-      };
-    }
-
-    let validFeatures = 0;
-    let coordErrors = 0;
-    const linkedAcs = new Set();
-
-    for (const f of parsed.features) {
-      if (!f || f.type !== 'Feature') {
-        errors.push('Item in features array is not a Feature');
-        continue;
-      }
-      if (!f.geometry || typeof f.geometry !== 'object') {
-        errors.push('Feature missing geometry');
-        continue;
-      }
-      if (f.geometry.type !== 'Polygon' && f.geometry.type !== 'MultiPolygon') {
-        errors.push(`Feature geometry type "${f.geometry.type}" is not Polygon/MultiPolygon`);
-        continue;
-      }
-      if (!Array.isArray(f.geometry.coordinates) || f.geometry.coordinates.length === 0) {
-        errors.push('Feature coordinates array is empty or invalid');
-        continue;
-      }
-
-      // Validate coordinates numeric pairs and India geographic bounding box
-      let featureCoordValid = true;
-      const validateCoords = (arr) => {
-        if (!Array.isArray(arr)) {
-          featureCoordValid = false;
-          return;
-        }
-        if (typeof arr[0] === 'number' && typeof arr[1] === 'number') {
-          const [lng, lat] = arr;
-          if (isNaN(lng) || isNaN(lat)) {
-            featureCoordValid = false;
-          } else if (lng < 65 || lng > 100 || lat < 5 || lat > 40) {
-            coordErrors++;
-          }
-        } else {
-          for (const sub of arr) validateCoords(sub);
-        }
-      };
-      validateCoords(f.geometry.coordinates);
-
-      if (featureCoordValid) {
-        validFeatures++;
-      }
-
-      // Check constituency linkage
-      const ac = f.properties?.AC_NO ?? f.properties?.ac_no ?? f.properties?.acNo ?? f.properties?.acNumber;
-      if (ac != null && !isNaN(Number(ac))) {
-        linkedAcs.add(Number(ac));
-      }
-    }
-
-    const coordinatesValid = validFeatures > 0 && errors.length === 0;
-    const coordinateRangeValid = coordErrors === 0;
-
-    return {
-      hasGeoJSON: validFeatures > 0 && coordinatesValid,
-      fileName: path.basename(targetPath),
-      featureCount: parsed.features.length,
-      validFeatureCount: validFeatures,
-      coordinatesValid,
-      coordinateRangeValid,
-      linkedConstituencyCount: linkedAcs.size,
-      validationErrors: errors.slice(0, 5),
-    };
+    return validateGeoJsonObject(parsed, stateCode, statutorySeats, path.basename(targetPath));
   } catch (err) {
     return {
       hasGeoJSON: false,
+      filePresent: true,
       fileName: path.basename(targetPath),
       featureCount: 0,
       validFeatureCount: 0,
       coordinatesValid: false,
       coordinateRangeValid: false,
       linkedConstituencyCount: 0,
+      duplicateLinkedAcs: [],
+      outOfRangeLinkedAcs: [],
+      unresolvedFeatureCount: 0,
+      linkageValid: false,
+      authoritativeVerified: false,
       validationErrors: [err.message],
     };
   }
 }
 
 // Inspect affidavits in store via structural parsing
-function inspectAffidavits(stateCode) {
+export function inspectAffidavits(stateCode, statutorySeats) {
   const storePath = path.join(REPO_ROOT, 'apps', 'mobile', 'stores', 'affidavits.ts');
-  if (!fs.existsSync(storePath)) return { total: 0, verified: 0, pending: 0, records: [] };
+  if (!fs.existsSync(storePath)) {
+    return {
+      total: 0,
+      totalAffidavitsInStore: 0,
+      presentInFileCount: 0,
+      structurallyValidCount: 0,
+      identityValidatedCount: 0,
+      sourceProvenanceRecordedCount: 0,
+      verified: 0,
+      officiallyVerifiedCount: 0,
+      canonicalDatabaseBacked: false,
+      formallyAccepted: false,
+      pending: 0,
+      records: [],
+    };
+  }
+
   const content = fs.readFileSync(storePath, 'utf8');
 
-  // Structural extraction of candidate affidavit objects from SEED_AFFIDAVITS
-  const blockRegex = /\{\s*id:\s*'([^']+)',\s*candidateName:\s*'([^']+)',\s*acNo:\s*(\d+),\s*constituencyName:\s*'([^']+)',\s*stateCode:\s*'([^']+)',[\s\S]*?sourceUrl:\s*'([^']+)',/g;
-  const matches = [...content.matchAll(blockRegex)];
+  // Find array declaration SEED_AFFIDAVITS
+  const arrayMatch = content.match(/const\s+SEED_AFFIDAVITS\s*(?::\s*[^=]+)?=\s*\[([\s\S]*?)\];/);
+  if (!arrayMatch) {
+    return {
+      total: 0,
+      totalAffidavitsInStore: 0,
+      presentInFileCount: 0,
+      structurallyValidCount: 0,
+      identityValidatedCount: 0,
+      sourceProvenanceRecordedCount: 0,
+      verified: 0,
+      officiallyVerifiedCount: 0,
+      canonicalDatabaseBacked: false,
+      formallyAccepted: false,
+      pending: 0,
+      records: [],
+    };
+  }
 
+  const objBlocks = extractObjectBlocks(arrayMatch[1]);
   const stateRecords = [];
-  for (const m of matches) {
-    const id = m[1];
-    const candidateName = m[2];
-    const acNo = parseInt(m[3], 10);
-    const constituencyName = m[4];
-    const recStateCode = m[5];
-    const sourceUrl = m[6];
+  let presentInFileCount = 0;
+  let structurallyValidCount = 0;
+  let identityValidatedCount = 0;
+  let sourceProvenanceRecordedCount = 0;
+  const seenIds = new Set();
 
-    // Structural validation of affidavit record
-    if (recStateCode === stateCode && id && candidateName && !isNaN(acNo) && acNo > 0) {
-      stateRecords.push({
-        id,
-        candidateName,
-        acNo,
-        constituencyName,
-        sourceUrl,
-      });
+  for (const block of objBlocks) {
+    const stateMatch = block.match(/stateCode:\s*'([^']+)'/);
+    if (!stateMatch || stateMatch[1] !== stateCode) continue;
+
+    presentInFileCount++;
+
+    const idMatch = block.match(/id:\s*'([^']+)'/);
+    const nameMatch = block.match(/candidateName:\s*'([^']+)'/);
+    const acMatch = block.match(/acNo:\s*(\d+)/);
+    const cNameMatch = block.match(/constituencyName:\s*'([^']+)'/);
+    const sourceMatch = block.match(/sourceUrl:\s*'([^']+)'/);
+
+    if (idMatch && nameMatch && acMatch && cNameMatch && sourceMatch) {
+      structurallyValidCount++;
+      const id = idMatch[1];
+      const candidateName = nameMatch[1];
+      const acNo = parseInt(acMatch[1], 10);
+      const constituencyName = cNameMatch[1];
+      const sourceUrl = sourceMatch[1];
+
+      if (acNo >= 1 && acNo <= statutorySeats && !seenIds.has(id)) {
+        identityValidatedCount++;
+        seenIds.add(id);
+
+        if (sourceUrl.startsWith('http://') || sourceUrl.startsWith('https://')) {
+          sourceProvenanceRecordedCount++;
+        }
+
+        stateRecords.push({
+          id,
+          candidateName,
+          acNo,
+          constituencyName,
+          sourceUrl,
+          status: 'SOURCE_PROVENANCE_RECORDED_LOCAL_SEED',
+        });
+      }
     }
   }
 
   return {
     total: stateRecords.length,
+    totalAffidavitsInStore: stateRecords.length,
+    presentInFileCount,
+    structurallyValidCount,
+    identityValidatedCount,
+    sourceProvenanceRecordedCount,
     verified: 0, // Zero affidavits in store have undergone live statutory ECI/DB verification
+    officiallyVerifiedCount: 0,
+    canonicalDatabaseBacked: false,
+    formallyAccepted: false,
     pending: stateRecords.length,
     records: stateRecords,
   };
 }
 
 // Inspect historical election records tied to actual per-constituency source files
-function inspectHistoricalCoverage(stateCode) {
+export function inspectHistoricalCoverage(stateCode) {
   const slug = STATE_SLUGS[stateCode];
   const histPath = path.join(REPO_ROOT, 'data', 'seed', `${slug}-historical-results.ts`);
   const exists = fs.existsSync(histPath);
@@ -255,26 +417,21 @@ function inspectHistoricalCoverage(stateCode) {
   const demonstrableYears = [];
   if (exists) {
     const content = fs.readFileSync(histPath, 'utf8');
-    // Check which years are represented in per-constituency data
-    if (stateCode === 'TS') {
-      if (content.includes('TELANGANA_2018_RESULTS')) demonstrableYears.push(2018);
-      if (content.includes('TELANGANA_2014_RESULTS')) demonstrableYears.push(2014);
-    } else if (stateCode === 'AP') {
-      if (content.includes('AP_2019_RESULTS')) demonstrableYears.push(2019);
-    } else if (stateCode === 'KA') {
-      if (content.includes('2018') || content.includes('getKA2018Result')) demonstrableYears.push(2018);
-    } else if (stateCode === 'MH') {
-      if (content.includes('2019') || content.includes('getMH2019Result')) demonstrableYears.push(2019);
-    } else if (stateCode === 'TN') {
-      if (content.includes('2016') || content.includes('getTN2016Result')) demonstrableYears.push(2016);
-    } else if (stateCode === 'KL') {
-      if (content.includes('2016') || content.includes('getKL2016Result')) demonstrableYears.push(2016);
-    } else if (stateCode === 'WB') {
-      if (content.includes('2016') || content.includes('getWB2016Result')) demonstrableYears.push(2016);
-    } else if (stateCode === 'UP') {
-      if (content.includes('2017') || content.includes('getUP2017Result')) demonstrableYears.push(2017);
+    // Extract array declarations containing 4-digit years in their identifier
+    const arrayRegex = /(?:const|let|var|export const)\s+([A-Za-z0-9_]*?(19\d\d|20\d\d)[A-Za-z0-9_]*)\s*(?::\s*[^=]+)?=\s*\[([\s\S]*?)\];/g;
+    let m;
+    while ((m = arrayRegex.exec(content)) !== null) {
+      const year = parseInt(m[2], 10);
+      const body = m[3];
+      // Check if the array body contains actual structured per-constituency records with acNo
+      const acMatches = [...body.matchAll(/\{\s*acNo:\s*(\d+)/g)];
+      if (acMatches.length > 0 && !demonstrableYears.includes(year)) {
+        demonstrableYears.push(year);
+      }
     }
   }
+
+  demonstrableYears.sort((a, b) => b - a);
 
   return {
     stateHistoricalFilePresent: exists,
@@ -283,39 +440,116 @@ function inspectHistoricalCoverage(stateCode) {
   };
 }
 
-// Inspect MLA profiles file with schema and boundary awareness (no map assumptions)
-function inspectMlaProfiles(stateCode, statutorySeats) {
-  const slug = STATE_SLUGS[stateCode];
+// Inspect MLA profiles file with schema and boundary awareness
+export function inspectMlaProfiles(stateCode, statutorySeats) {
+  const slug = STATE_SLUGS[codeOrSlug(stateCode)];
   const mlaPath = path.join(REPO_ROOT, 'data', 'seed', `${slug}-mla-profiles.ts`);
   if (!fs.existsSync(mlaPath)) {
     return {
       uniqueProfilesCount: 0,
       resolvedToStatutoryAcCount: 0,
       extraNonStatutoryProfiles: 0,
+      duplicateProfilesCount: 0,
+      malformedProfilesCount: 0,
     };
   }
 
   const content = fs.readFileSync(mlaPath, 'utf8');
 
-  // Extract explicit acNo declarations from profile records in the file
-  const acMatches = [...content.matchAll(/acNo:\s*(\d+)/g)].map((m) => parseInt(m[1], 10));
-  const uniqueAcs = new Set(acMatches);
-
-  let validInStatutory = 0;
+  // Match array declarations
+  const arrayMatches = [...content.matchAll(/(?:export\s+)?const\s+[A-Za-z0-9_]+\s*(?::\s*[^=]+)?=\s*\[([\s\S]*?)\];/g)];
+  const validRecords = [];
+  const uniqueAcs = new Set();
+  const duplicateAcs = [];
   let extraNonStatutory = 0;
+  let malformedCount = 0;
 
-  for (const ac of uniqueAcs) {
-    if (ac >= 1 && ac <= statutorySeats) {
-      validInStatutory++;
-    } else {
-      extraNonStatutory++;
+  for (const arrMatch of arrayMatches) {
+    const arrayBody = arrMatch[1];
+    const objBlocks = extractObjectBlocks(arrayBody);
+    for (const block of objBlocks) {
+      const acMatch = block.match(/\bacNo:\s*(\d+)/);
+      const nameMatch = block.match(/\bname:\s*['"]([^'"]+)['"]/);
+      if (acMatch && nameMatch) {
+        const acNo = parseInt(acMatch[1], 10);
+        if (uniqueAcs.has(acNo)) {
+          duplicateAcs.push(acNo);
+        } else {
+          uniqueAcs.add(acNo);
+          if (acNo >= 1 && acNo <= statutorySeats) {
+            validRecords.push({ acNo, name: nameMatch[1] });
+          } else {
+            extraNonStatutory++;
+          }
+        }
+      } else if (block.includes('acNo:')) {
+        malformedCount++;
+      }
     }
   }
 
   return {
     uniqueProfilesCount: uniqueAcs.size,
-    resolvedToStatutoryAcCount: validInStatutory,
+    resolvedToStatutoryAcCount: validRecords.length,
     extraNonStatutoryProfiles: extraNonStatutory,
+    duplicateProfilesCount: duplicateAcs.length,
+    malformedProfilesCount: malformedCount,
+  };
+}
+
+function codeOrSlug(code) {
+  return STATE_SLUGS[code] ? code : Object.keys(STATE_SLUGS).find(k => STATE_SLUGS[k] === code) || code;
+}
+
+// Helper to validate raw constituencies array
+export function validateConstituencyArray(rawConstituencies, statutorySeats) {
+  const seenAcNos = new Set();
+  const duplicateAcNos = [];
+  const outOfRangeAcNos = [];
+  const malformedAcRecords = [];
+  const validAcMap = new Map();
+
+  for (const c of rawConstituencies) {
+    if (!c || typeof c !== 'object') {
+      malformedAcRecords.push(c);
+      continue;
+    }
+
+    const rawAc = c.acNo;
+    const ac = typeof rawAc === 'number' ? rawAc : parseInt(rawAc, 10);
+    if (isNaN(ac) || !Number.isInteger(ac)) {
+      malformedAcRecords.push(c);
+      continue;
+    }
+
+    if (seenAcNos.has(ac)) {
+      duplicateAcNos.push(ac);
+      continue; // Duplicate record cannot be added as valid statutory AC!
+    }
+
+    seenAcNos.add(ac);
+
+    if (ac < 1 || ac > statutorySeats) {
+      outOfRangeAcNos.push(ac);
+    } else {
+      validAcMap.set(ac, c);
+    }
+  }
+
+  const missingAcNos = [];
+  for (let i = 1; i <= statutorySeats; i++) {
+    if (!validAcMap.has(i)) {
+      missingAcNos.push(i);
+    }
+  }
+
+  return {
+    validAcRecords: Array.from(validAcMap.values()),
+    uniqueValidAcCount: validAcMap.size,
+    duplicateAcNos: [...new Set(duplicateAcNos)],
+    outOfRangeAcNos: [...new Set(outOfRangeAcNos)],
+    malformedAcCount: malformedAcRecords.length,
+    missingAcNos,
   };
 }
 
@@ -341,37 +575,10 @@ export async function generateCoverageInventory() {
       }
     }
 
-    // 1. Registry / Identity Dimension
-    const seenAcNos = new Set();
-    const duplicateAcNos = [];
-    const outOfRangeAcNos = [];
-    const validAcRecords = [];
+    // 1. Registry / Identity Dimension with strict deduplication & malformed detection
+    const valResult = validateConstituencyArray(rawConstituencies, meta.seats);
+    const { validAcRecords, uniqueValidAcCount, duplicateAcNos, outOfRangeAcNos, malformedAcCount, missingAcNos } = valResult;
 
-    for (const c of rawConstituencies) {
-      const ac = typeof c.acNo === 'number' ? c.acNo : parseInt(c.acNo, 10);
-      if (isNaN(ac)) continue;
-
-      if (seenAcNos.has(ac)) {
-        duplicateAcNos.push(ac);
-      } else {
-        seenAcNos.add(ac);
-      }
-
-      if (ac < 1 || ac > meta.seats) {
-        outOfRangeAcNos.push(ac);
-      } else {
-        validAcRecords.push(c);
-      }
-    }
-
-    const missingAcNos = [];
-    for (let i = 1; i <= meta.seats; i++) {
-      if (!seenAcNos.has(i)) {
-        missingAcNos.push(i);
-      }
-    }
-
-    const uniqueValidAcCount = validAcRecords.length;
     const seatCoveragePercent = ((uniqueValidAcCount / meta.seats) * 100).toFixed(1);
     const seatCoverageRatio = `${uniqueValidAcCount}/${meta.seats} (${seatCoveragePercent}%)`;
 
@@ -429,9 +636,9 @@ export async function generateCoverageInventory() {
     const primaryRecentElectionYear = evidencedRecentYears.length > 0 ? evidencedRecentYears[0] : null;
     const primaryRecentElectionType = evidencedTypesSet.has('BYPOLL') && evidencedTypesSet.size === 1
       ? 'BYPOLL'
-      : (primaryRecentElectionYear != null ? 'GENERAL' : null);
+      : (evidencedTypesSet.has('GENERAL') ? 'GENERAL' : null);
 
-    // 3. Historical Coverage Dimension
+    // 3. Historical Coverage Dimension (structural parsing without hardcoded state-code lists)
     const hist = inspectHistoricalCoverage(code);
     const allAvailableYears = primaryRecentElectionYear != null
       ? [...new Set([primaryRecentElectionYear, ...hist.demonstrablePerAcYears])].sort((a, b) => b - a)
@@ -443,12 +650,12 @@ export async function generateCoverageInventory() {
     const profileCoverageRatio = `${mla.resolvedToStatutoryAcCount}/${meta.seats} (${profileCoveragePercent}%)`;
 
     // 5. Affidavit Dimension
-    const aff = inspectAffidavits(code);
+    const aff = inspectAffidavits(code, meta.seats);
     const affidavitCoveragePercent = meta.seats > 0 ? ((aff.total / meta.seats) * 100).toFixed(1) : '0.0';
     const affidavitCoverageRatio = `${aff.total}/${meta.seats} (${affidavitCoveragePercent}%)`;
 
-    // 6. Geospatial Dimension
-    const geo = inspectGeoJSON(code);
+    // 6. Geospatial Dimension (deep structural & coordinate validation)
+    const geo = inspectGeoJSON(code, meta.seats);
 
     // 7. Provenance Dimension
     let primarySource = 'Election Commission of India (ECI) / State Election Commission';
@@ -516,6 +723,7 @@ export async function generateCoverageInventory() {
         missingAcNos,
         duplicateAcNos,
         outOfRangeAcNos,
+        malformedAcCount,
         unexpectedExtraRecords: code === 'DL' ? ['DL-AC-071..DL-AC-221 (Demographics)'] : [],
         identityStatus: uniqueValidAcCount === meta.seats ? 'VERIFIED_STATUTORY_MATCH' : 'MISMATCH',
       },
@@ -541,11 +749,20 @@ export async function generateCoverageInventory() {
         resolvedToStatutoryAcCount: mla.resolvedToStatutoryAcCount,
         profileCoverageRatio,
         extraNonStatutoryProfiles: mla.extraNonStatutoryProfiles,
+        duplicateProfilesCount: mla.duplicateProfilesCount,
+        malformedProfilesCount: mla.malformedProfilesCount,
       },
       affidavitCoverage: {
         totalAffidavitsInStore: aff.total,
         affidavitCoverageRatio,
         hasPendingNotice: aff.total < meta.seats,
+        presentInFileCount: aff.presentInFileCount,
+        structurallyValidCount: aff.structurallyValidCount,
+        identityValidatedCount: aff.identityValidatedCount,
+        sourceProvenanceRecordedCount: aff.sourceProvenanceRecordedCount,
+        officiallyVerifiedCount: aff.officiallyVerifiedCount,
+        canonicalDatabaseBacked: aff.canonicalDatabaseBacked,
+        formallyAccepted: aff.formallyAccepted,
       },
       geospatialCoverage: geo,
       provenanceCoverage: {
@@ -580,7 +797,7 @@ export async function writeCoverageReports() {
 
   const reportJson = {
     title: 'Kshetra W021.5 National Data Coverage Inventory Matrix',
-    directive: 'CTO DIRECTIVE 085 / CTO DIRECTIVE 086',
+    directive: 'CTO DIRECTIVE 085 / CTO DIRECTIVE 086 / CTO DIRECTIVE 087',
     generatedAt,
     totalStatesAudited: inventory.length,
     summary: {
@@ -593,6 +810,8 @@ export async function writeCoverageReports() {
       totalSeededConstituencies: inventory.reduce((acc, s) => acc + s.seededConstituencyCount, 0),
       totalMlaProfiles: inventory.reduce((acc, s) => acc + s.mlaProfilesAvailable, 0),
       totalAffidavits: inventory.reduce((acc, s) => acc + s.affidavitsAvailable, 0),
+      totalDuplicateConstituencyRecords: inventory.reduce((acc, s) => acc + s.registryIdentity.duplicateAcNos.length, 0),
+      totalMalformedConstituencyRecords: inventory.reduce((acc, s) => acc + s.registryIdentity.malformedAcCount, 0),
     },
     states: inventory,
   };
@@ -605,7 +824,7 @@ export async function writeCoverageReports() {
   let md = `# KSHETRA W021.5 — NATIONAL DATA COVERAGE INVENTORY MATRIX
 
 **Milestone:** W021.5 — National Political Intelligence and Candidate Transparency  
-**Directive:** CTO Directive 085 / CTO Directive 086 (Workstream A)  
+**Directive:** CTO Directive 085 / CTO Directive 086 / CTO Directive 087 (Workstream A & B)  
 **Generated At:** \`${generatedAt}\`  
 **Total States/UTs Audited:** ${inventory.length}  
 **Defect Classification:** \`DQ-W021.5-B2.2E-001\` — **STRICTLY OPEN**  
@@ -617,18 +836,22 @@ export async function writeCoverageReports() {
 
 This matrix establishes the definitive, evidence-based national political data coverage inventory of the Kshetra platform across all 31 supported Indian states and Union Territories.
 
-Under **CTO Directive 085 / CTO Directive 086** and **Rule IV-001 (Non-Self-Acceptance)**, this report repudiates unsupported completeness claims:
+Under **CTO Directive 085 / 086 / 087** and **Rule IV-001 (Non-Self-Acceptance)**, this report repudiates unsupported completeness claims:
 1. **Zero Canonical Full States:** No state is promoted to \`CANONICAL_FULL\` or \`VERIFIED_PRODUCTION\` merely because of allowlisted state codes or file existence. All records are classified truthfully as offline local seed fixtures pending live database verification.
 2. **Multi-Dimensional Evidence:** Every state is audited across 7 distinct dimensions: Registry Identity, Electoral Results, Historical Coverage, Representative Profiles, Affidavits, Geospatial Boundaries, and Provenance.
 3. **Delhi Statutory Invariant:** Strictly 70 statutory Assembly seats. 151 extra municipal/demographic records (\`DL-AC-071\` to \`DL-AC-221\`) are explicitly isolated as \`NON_STATUTORY_DEMOGRAPHIC_PLACEHOLDER\`.
-4. **Historical Availability by Record Evidence:** Election years are derived solely from demonstrable per-constituency data records, not inferred from state codes.
-5. **Numerator and Denominator Accounting:** All coverage metrics report explicit fractions and percentages.
+4. **Historical Availability by Record Evidence:** Election years are derived solely from demonstrable per-constituency data records, not inferred from state codes or constants.
+5. **Deduplicated Statutory Seat Accounting:** Duplicate constituency entries cannot inflate seeded seat counts or national totals. Numerator reflects unique, valid statutory AC identities.
+6. **Strict GeoJSON Gate:** Coordinate range failures and geometry errors strictly invalidate \`hasGeoJSON\`. No boundary is deemed authoritative without live statutory database verification.
+7. **Explicit Evidence Statuses:** Affidavits and profiles clearly distinguish presence in file, structural validity, identity validation, source provenance recording, and official verification.
 
 ### Platform Coverage Summary
 - **Total Statutory Assembly Seats:** ${reportJson.summary.totalStatutorySeats}
 - **Total Unique Seeded Constituencies:** ${reportJson.summary.totalSeededConstituencies} (${((reportJson.summary.totalSeededConstituencies / reportJson.summary.totalStatutorySeats) * 100).toFixed(1)}% seat identity coverage)
 - **Total MLA Profiles Resolved to Statutory Seats:** ${reportJson.summary.totalMlaProfiles}
 - **Total Candidate Affidavits in Store:** ${reportJson.summary.totalAffidavits}
+- **Total Duplicate Constituency Records:** ${reportJson.summary.totalDuplicateConstituencyRecords}
+- **Total Malformed Constituency Records:** ${reportJson.summary.totalMalformedConstituencyRecords}
 - **Tier 0 (Canonical Full Production):** ${reportJson.summary.canonicalFullStatesCount} states (Strictly 0; live DB and complete affidavits pending)
 - **Tier 1 (Seeded Rich Local + GeoJSON + Historical + Sample Affidavits):** ${reportJson.summary.partialLocalWithGeoCount} state (TS)
 - **Tier 2 (Seeded Historical + Profiles, GeoJSON & Complete Affidavits Pending):** ${reportJson.summary.partialHistoricalNoGeoCount} states (AP, KA, MH, TN, KL, WB, UP)
@@ -643,11 +866,14 @@ Under **CTO Directive 085 / CTO Directive 086** and **Rule IV-001 (Non-Self-Acce
 `;
 
   for (const s of inventory) {
-    const geo = s.hasGeoJSON ? '✓ (119)' : '— (0)';
+    const geo = s.hasGeoJSON ? `✓ (${s.geospatialCoverage.validFeatureCount})` : '— (0)';
     const histYears = s.historicalCoverage.demonstrablePerAcYears.length > 0
       ? s.historicalCoverage.demonstrablePerAcYears.join(', ')
       : 'None';
-    md += `| **${s.stateCode}** | ${s.stateName} | ${s.statutoryAssemblySeats} | ${s.registryIdentity.seatCoverageRatio} | ${s.primaryElectionYear} (${s.primaryElectionType}) | ${histYears} | ${s.representativeCoverage.profileCoverageRatio} | ${s.affidavitCoverage.affidavitCoverageRatio} | ${geo} | \`${s.dataTier}\` | \`${s.dataCompletenessStatus}\` |\n`;
+    const primaryYearStr = s.primaryElectionYear
+      ? `${s.primaryElectionYear}${s.primaryElectionType ? ` (${s.primaryElectionType})` : ''}`
+      : 'None';
+    md += `| **${s.stateCode}** | ${s.stateName} | ${s.statutoryAssemblySeats} | ${s.registryIdentity.seatCoverageRatio} | ${primaryYearStr} | ${histYears} | ${s.representativeCoverage.profileCoverageRatio} | ${s.affidavitCoverage.affidavitCoverageRatio} | ${geo} | \`${s.dataTier}\` | \`${s.dataCompletenessStatus}\` |\n`;
   }
 
   md += `
@@ -658,13 +884,16 @@ Under **CTO Directive 085 / CTO Directive 086** and **Rule IV-001 (Non-Self-Acce
 `;
 
   for (const s of inventory) {
+    const primaryYearStr = s.primaryElectionYear
+      ? `${s.primaryElectionYear}${s.primaryElectionType ? ` (${s.primaryElectionType})` : ''}`
+      : 'None';
     md += `### ${s.stateName} (${s.stateCode})
-- **1. Registry / Identity:** ${s.registryIdentity.seatCoverageRatio} statutory seats mapped. Status: \`${s.registryIdentity.identityStatus}\`. Missing ACs: ${s.registryIdentity.missingAcNos.length === 0 ? 'None' : s.registryIdentity.missingAcNos.join(', ')}.
-- **2. Electoral Results:** ${s.electoralResults.resultsCoverageRatio} records present for ${s.primaryElectionYear} (${s.primaryElectionType}). Winner votes present: ${s.electoralResults.winnerVotesPresentCount}, missing: ${s.electoralResults.winnerVotesMissingCount}. Margin present: ${s.electoralResults.marginPresentCount}, missing: ${s.electoralResults.marginMissingCount}.
-- **3. Historical Elections:** Primary ${s.historicalCoverage.primaryElectionYear} + Demonstrable historical years: [${s.historicalCoverage.demonstrablePerAcYears.join(', ') || 'None'}]. (Total terms: ${s.historicalCoverage.totalElectionYearsRepresented}). State historical file: ${s.historicalCoverage.stateHistoricalFilePresent ? 'Present' : 'Absent'}.
-- **4. Representatives / Profiles:** ${s.representativeCoverage.profileCoverageRatio} resolved to statutory assembly seats.
-- **5. Affidavits:** ${s.affidavitCoverage.affidavitCoverageRatio} candidates in store. Verified: 0. Pending notice: ${s.affidavitCoverage.hasPendingNotice ? 'Active' : 'None'}.
-- **6. Geospatial:** File: ${s.geospatialCoverage.fileName || 'None'} | Features: ${s.geospatialCoverage.featureCount} | Coordinates Valid: ${s.geospatialCoverage.coordinatesValid ? 'Yes' : 'No'}.
+- **1. Registry / Identity:** ${s.registryIdentity.seatCoverageRatio} statutory seats mapped. Status: \`${s.registryIdentity.identityStatus}\`. Missing ACs: ${s.registryIdentity.missingAcNos.length === 0 ? 'None' : s.registryIdentity.missingAcNos.join(', ')}. Duplicate ACs: ${s.registryIdentity.duplicateAcNos.length === 0 ? '0' : s.registryIdentity.duplicateAcNos.join(', ')}. Malformed: ${s.registryIdentity.malformedAcCount}.
+- **2. Electoral Results:** ${s.electoralResults.resultsCoverageRatio} records present for ${primaryYearStr}. Winner votes present: ${s.electoralResults.winnerVotesPresentCount}, missing: ${s.electoralResults.winnerVotesMissingCount}. Margin present: ${s.electoralResults.marginPresentCount}, missing: ${s.electoralResults.marginMissingCount}.
+- **3. Historical Elections:** Primary ${s.historicalCoverage.primaryElectionYear || 'None'} + Demonstrable historical years: [${s.historicalCoverage.demonstrablePerAcYears.join(', ') || 'None'}]. (Total terms: ${s.historicalCoverage.totalElectionYearsRepresented}). State historical file: ${s.historicalCoverage.stateHistoricalFilePresent ? 'Present' : 'Absent'}.
+- **4. Representatives / Profiles:** ${s.representativeCoverage.profileCoverageRatio} resolved to statutory assembly seats. Extra non-statutory: ${s.representativeCoverage.extraNonStatutoryProfiles}. Duplicates: ${s.representativeCoverage.duplicateProfilesCount}.
+- **5. Affidavits:** ${s.affidavitCoverage.affidavitCoverageRatio} candidates in store. Present in file: ${s.affidavitCoverage.presentInFileCount}, Structurally valid: ${s.affidavitCoverage.structurallyValidCount}, Identity validated: ${s.affidavitCoverage.identityValidatedCount}, Source recorded: ${s.affidavitCoverage.sourceProvenanceRecordedCount}, Officially verified: 0. Pending notice: ${s.affidavitCoverage.hasPendingNotice ? 'Active' : 'None'}.
+- **6. Geospatial:** File: ${s.geospatialCoverage.fileName || 'None'} | Features: ${s.geospatialCoverage.featureCount} | Coordinates Valid: ${s.geospatialCoverage.coordinatesValid ? 'Yes' : 'No'} | Range Valid: ${s.geospatialCoverage.coordinateRangeValid ? 'Yes' : 'No'} | Linkage Valid: ${s.geospatialCoverage.linkageValid ? 'Yes' : 'No'}.
 - **7. Provenance & Verification:** Source: ${s.provenanceSource} | Status: \`${s.provenanceCoverage.verificationStatus}\` | Live DB Verified: \`${s.provenanceCoverage.liveDatabaseVerified}\`.
 - **Evidence Tier:** \`${s.dataTier}\` | **Data Completeness Status:** \`${s.dataCompletenessStatus}\`
 `;
