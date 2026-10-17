@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "W021.5 Traceable Execution Ledger",
   "milestone": "W021.5",
-  "directive": "CTO Directive 086 / CTO Directive 087 / CTO Directive 088 / CTO Directive 089 / CTO Directive 090 (Workstream D)",
+  "directive": "CTO Directive 086 / CTO Directive 087 / CTO Directive 088 / CTO Directive 089 / CTO Directive 090 / CTO Directive 091 / CTO Directive 092 / CTO Directive 093",
   "governance": "Master Execution Framework Amendment v1.2 / Rule IV-001 (Non-Self-Acceptance)",
   "financialDefectStatus": {
     "defectId": "DQ-W021.5-B2.2E-001",

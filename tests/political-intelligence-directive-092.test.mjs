@@ -282,7 +282,14 @@ runTest('1.9 Completion ratio overstatement fails closed', () => {
     taskClassification: 'CORE_SPECIFICATION',
     weight: 2.0,
     status: 'REPO_VERIFIED',
-    evidence: ['scripts/reconcile_execution_ledger.mjs'],
+    evidence: [
+      {
+        path: 'scripts/reconcile_execution_ledger.mjs',
+        evidenceClass: 'REPOSITORY_IMPLEMENTATION',
+        supportsClaim: 'Reconciler script authored and maintained in repository',
+        verificationStatus: 'VERIFIED_ON_DISK',
+      },
+    ],
     accounting: {
       repoCompletionRatio: 1.0, // claims 100%
       ratioRationale: 'Repository implementation is pending additional work', // contradictory!
@@ -301,7 +308,14 @@ runTest('1.9 Completion ratio overstatement fails closed', () => {
     taskClassification: 'CORE_SPECIFICATION',
     weight: 2.0,
     status: 'REPO_VERIFIED',
-    evidence: ['scripts/reconcile_execution_ledger.mjs'],
+    evidence: [
+      {
+        path: 'scripts/reconcile_execution_ledger.mjs',
+        evidenceClass: 'REPOSITORY_IMPLEMENTATION',
+        supportsClaim: 'Reconciler script authored and maintained in repository',
+        verificationStatus: 'VERIFIED_ON_DISK',
+      },
+    ],
     accounting: {
       repoCompletionRatio: 0.0, // claims 0%
       ratioRationale: 'Repository implementation is fully complete', // contradictory!
@@ -322,7 +336,14 @@ runTest('1.10 Repository-only claim incorrectly claiming database execution fail
     taskClassification: 'CORE_SPECIFICATION',
     weight: 2.0,
     status: 'REPO_VERIFIED',
-    evidence: ['scripts/reconcile_execution_ledger.mjs'],
+    evidence: [
+      {
+        path: 'scripts/reconcile_execution_ledger.mjs',
+        evidenceClass: 'REPOSITORY_IMPLEMENTATION',
+        supportsClaim: 'Reconciler script authored and verified offline',
+        verificationStatus: 'VERIFIED_ON_DISK',
+      },
+    ],
     accounting: {
       repoCompletionRatio: 1.0,
       ratioRationale: 'Reconciler script authored and verified offline',
@@ -472,7 +493,14 @@ runTest('2.4 Unexecuted database discount cannot exceed task weight or double-de
     taskClassification: 'CORE_SPECIFICATION',
     weight: 2.0,
     status: 'REPO_VERIFIED',
-    evidence: ['scripts/reconcile_execution_ledger.mjs'],
+    evidence: [
+      {
+        path: 'scripts/reconcile_execution_ledger.mjs',
+        evidenceClass: 'REPOSITORY_IMPLEMENTATION',
+        supportsClaim: 'Valid ratio rationale text here for deliverable',
+        verificationStatus: 'VERIFIED_ON_DISK',
+      },
+    ],
     accounting: {
       repoCompletionRatio: 1.0,
       ratioRationale: 'Valid ratio rationale text here',
@@ -634,7 +662,14 @@ runTest('5.1 Arbitrary markdown file or implementation report cannot establish C
     taskClassification: 'CORE_SPECIFICATION',
     weight: 2.0,
     status: 'REPO_VERIFIED',
-    evidence: ['scripts/reconcile_execution_ledger.mjs'],
+    evidence: [
+      {
+        path: 'scripts/reconcile_execution_ledger.mjs',
+        evidenceClass: 'REPOSITORY_IMPLEMENTATION',
+        supportsClaim: 'Reconciler script authored and maintained in repository',
+        verificationStatus: 'VERIFIED_ON_DISK',
+      },
+    ],
     accounting: {
       repoCompletionRatio: 1.0,
       ratioRationale: 'Valid ratio rationale text here',
@@ -656,7 +691,14 @@ runTest('5.2 Generated summary or coverage matrix cannot establish CONFIRMED_ACC
     taskClassification: 'CORE_SPECIFICATION',
     weight: 2.0,
     status: 'REPO_VERIFIED',
-    evidence: ['scripts/reconcile_execution_ledger.mjs'],
+    evidence: [
+      {
+        path: 'scripts/reconcile_execution_ledger.mjs',
+        evidenceClass: 'REPOSITORY_IMPLEMENTATION',
+        supportsClaim: 'Reconciler script authored and maintained in repository',
+        verificationStatus: 'VERIFIED_ON_DISK',
+      },
+    ],
     accounting: {
       repoCompletionRatio: 1.0,
       ratioRationale: 'Valid ratio rationale text here',
@@ -678,7 +720,14 @@ runTest('5.3 Test execution or CI results cannot establish CONFIRMED_ACCEPTED', 
     taskClassification: 'CORE_SPECIFICATION',
     weight: 2.0,
     status: 'REPO_VERIFIED',
-    evidence: ['scripts/reconcile_execution_ledger.mjs'],
+    evidence: [
+      {
+        path: 'scripts/reconcile_execution_ledger.mjs',
+        evidenceClass: 'REPOSITORY_IMPLEMENTATION',
+        supportsClaim: 'Reconciler script authored and maintained in repository',
+        verificationStatus: 'VERIFIED_ON_DISK',
+      },
+    ],
     accounting: {
       repoCompletionRatio: 1.0,
       ratioRationale: 'Valid ratio rationale text here',
@@ -699,9 +748,12 @@ runTest('5.4 Author self-acceptance record is strictly rejected under Rule IV-00
   fs.writeFileSync(
     tmpAcceptancePath,
     JSON.stringify({
+      milestone: 'W021.5',
       taskRef: 'W021.5-TEST-SELF-01',
       decision: 'ACCEPTED',
-      adjudicatorRole: 'Chief Technology Officer',
+      adjudicatorIdentity: 'Chief Technology Officer',
+      adjudicatorRole: 'CTO',
+      authenticationToken: 'VALID_AUTH_TOKEN_CTO_12345678',
       adjudicationDate: '2026-10-17T00:00:00Z',
       authorSelfAcceptance: true, // FORBIDDEN under Rule IV-001!
     }),
@@ -715,7 +767,14 @@ runTest('5.4 Author self-acceptance record is strictly rejected under Rule IV-00
       taskClassification: 'CORE_SPECIFICATION',
       weight: 2.0,
       status: 'REPO_VERIFIED',
-      evidence: ['scripts/reconcile_execution_ledger.mjs'],
+      evidence: [
+        {
+          path: 'scripts/reconcile_execution_ledger.mjs',
+          evidenceClass: 'REPOSITORY_IMPLEMENTATION',
+          supportsClaim: 'Reconciler script authored and maintained in repository',
+          verificationStatus: 'VERIFIED_ON_DISK',
+        },
+      ],
       accounting: {
         repoCompletionRatio: 1.0,
         ratioRationale: 'Valid ratio rationale text here',
@@ -738,9 +797,12 @@ runTest('5.5 Acceptance record lacking authorized CTO adjudicator role is reject
   fs.writeFileSync(
     tmpNonCtoPath,
     JSON.stringify({
+      milestone: 'W021.5',
       taskRef: 'W021.5-TEST-ROLE-01',
       decision: 'ACCEPTED',
+      adjudicatorIdentity: 'Junior Dev',
       adjudicatorRole: 'Junior Developer', // NOT CTO!
+      authenticationToken: 'VALID_AUTH_TOKEN_CTO_12345678',
       adjudicationDate: '2026-10-17T00:00:00Z',
       authorSelfAcceptance: false,
     }),
@@ -754,7 +816,14 @@ runTest('5.5 Acceptance record lacking authorized CTO adjudicator role is reject
       taskClassification: 'CORE_SPECIFICATION',
       weight: 2.0,
       status: 'REPO_VERIFIED',
-      evidence: ['scripts/reconcile_execution_ledger.mjs'],
+      evidence: [
+        {
+          path: 'scripts/reconcile_execution_ledger.mjs',
+          evidenceClass: 'REPOSITORY_IMPLEMENTATION',
+          supportsClaim: 'Reconciler script authored and maintained in repository',
+          verificationStatus: 'VERIFIED_ON_DISK',
+        },
+      ],
       accounting: {
         repoCompletionRatio: 1.0,
         ratioRationale: 'Valid ratio rationale text here',

@@ -39,6 +39,30 @@ export const STAGE_EVIDENCE_RELEVANCE = {
   STAGE_I: /^(EXECUTION_STATE\.md|reports\/W021\.5-CANONICAL-ARCHITECTURE|scripts\/verify-backup-recovery)/,
 };
 
+export const TASK_DELIVERABLE_SIGNATURES = {
+  'W021.5-A-01': (paths) => paths.some((p) => p.includes('repository_data_truth_audit')),
+  'W021.5-A-02': (paths) => paths.some((p) => p.includes('generate_national_data_coverage_matrix')),
+  'W021.5-A-03': (paths) => paths.some((p) => p.includes('demographic_seed_reconciliation_ledger') || p.includes('generate_national_data_coverage_matrix')),
+  'W021.5-B1-01': (paths) => paths.some((p) => p.includes('059_canonical_national_constituency_registry.sql')),
+  'W021.5-B1-02': (paths) => paths.some((p) => p.includes('060_') || p.includes('061_')),
+  'W021.5-B1-03': (paths) => paths.some((p) => p.includes('062_canonical_assam_2023_delimitation.sql')),
+  'W021.5-B1-04': (paths) => paths.some((p) => p.endsWith('.geojson')),
+  'W021.5-C-01': (paths) => paths.some((p) => p.includes('064_political_organization_governance_remediation.sql')),
+  'W021.5-C-02': (paths) => paths.some((p) => p.includes('065_canonical_political_organization_registry.sql')),
+  'W021.5-C-03': (paths) => paths.some((p) => p.includes('multilingual_matrix') || p.includes('symbol_matrix') || p.includes('alias_collision_matrix')),
+  'W021.5-D-01': (paths) => paths.some((p) => p.includes('050_') || p.includes('063_')),
+  'W021.5-D-02': (paths) => paths.some((p) => p.includes('b2_2d_person_manifest') || p.includes('b2_2d_candidacy_manifest')),
+  'W021.5-E-01': (paths) => paths.some((p) => p.includes('066_downstream_civic_extensions.sql')),
+  'W021.5-F-01': (paths) => paths.some((p) => p.includes('051_election_data_normalization.sql')),
+  'W021.5-F-02': (paths) => paths.some((p) => p.includes('historical-results.ts')),
+  'W021.5-G-01': (paths) => paths.some((p) => p.includes('apps/api/src/routes/constituencies.ts')),
+  'W021.5-G-02': (paths) => paths.some((p) => p.includes('apps/api/src/services/stateData.ts')),
+  'W021.5-H-01': (paths) => paths.some((p) => p.includes('apps/mobile/lib/api/endpoints/constituencies.ts')),
+  'W021.5-H-02': (paths) => paths.some((p) => p.includes('apps/mobile/app/constituency/[id].tsx')),
+  'W021.5-H-03': (paths) => paths.some((p) => p.includes('apps/mobile/app/legislator/[id].tsx') || p.includes('W021.5-COMPATIBILITY-CONSUMER-IMPACT-REPORT.md')),
+  'W021.5-H-04': (paths) => paths.some((p) => p.includes('apps/mobile/lib/supabaseDataService.ts')),
+};
+
 export const VALID_EVIDENCE_CLASSES = [
   'REPOSITORY_IMPLEMENTATION',
   'DATABASE_EXECUTION',
@@ -54,9 +78,33 @@ export const VALID_VERIFICATION_STATUSES = [
 
 /**
  * Validate that an artifact claiming formal CTO acceptance is genuine, authorized,
- * and adheres to Rule IV-001 (Non-Self-Acceptance).
+ * independently authenticated, and adheres to Rule IV-001 (Non-Self-Acceptance).
  */
 export function validateFormalAcceptanceArtifact(task, resolvedPath) {
+  // Reject non-existent file
+  if (!fs.existsSync(resolvedPath)) {
+    throw new Error(
+      `Ledger accounting validation error: Task ${task.taskId} formalAcceptanceArtifact does not exist on disk: "${resolvedPath}".`
+    );
+  }
+
+  // Reject directory target
+  const stat = fs.statSync(resolvedPath);
+  if (!stat.isFile()) {
+    throw new Error(
+      `Ledger accounting validation error: Task ${task.taskId} formalAcceptanceArtifact references non-file target: "${resolvedPath}".`
+    );
+  }
+
+  // Symlink check: resolved realpath must stay within REPO_ROOT
+  const realPath = fs.realpathSync(resolvedPath);
+  const relRealPath = path.relative(REPO_ROOT, realPath);
+  if (relRealPath.startsWith('..') || path.isAbsolute(relRealPath)) {
+    throw new Error(
+      `Ledger accounting validation error: Task ${task.taskId} formalAcceptanceArtifact resolves via symlink outside repository root: "${resolvedPath}".`
+    );
+  }
+
   const relPath = path.relative(REPO_ROOT, resolvedPath).replace(/\\/g, '/');
 
   // Rule IV-001: Implementation reports cannot serve as acceptance records
@@ -80,43 +128,162 @@ export function validateFormalAcceptanceArtifact(task, resolvedPath) {
     );
   }
 
+  // Workstream B.1: Markdown files cannot serve as acceptance records (marker fallbacks strictly removed)
+  if (relPath.endsWith('.md') || relPath.endsWith('.markdown') || relPath.endsWith('.txt')) {
+    throw new Error(
+      `Ledger accounting validation error: Task ${task.taskId} formalAcceptanceArtifact "${relPath}" is a Markdown/text file. Markdown marker fallbacks are strictly prohibited; formal acceptance requires a strictly structured, authenticated JSON record.`
+    );
+  }
+
   // Must read content and assert structured acceptance record
   const content = fs.readFileSync(resolvedPath, 'utf8');
   let record = null;
   try {
     record = JSON.parse(content);
   } catch (e) {
-    // Check if markdown has formal acceptance block
-    const isAcceptedBlock =
-      content.includes('FORMAL_CTO_ACCEPTANCE_RECORD') ||
-      content.includes('ADJUDICATION_DECISION: ACCEPTED');
-    if (!isAcceptedBlock) {
-      throw new Error(
-        `Ledger accounting validation error: Task ${task.taskId} formalAcceptanceArtifact "${relPath}" does not contain a valid formal CTO acceptance record.`
-      );
-    }
+    throw new Error(
+      `Ledger accounting validation error: Task ${task.taskId} formalAcceptanceArtifact "${relPath}" must be a strictly valid JSON record. Markdown marker fallbacks and malformed records are strictly prohibited.`
+    );
   }
 
-  if (record) {
-    // Assert required fields in JSON acceptance record
-    if (!record.adjudicatorRole || !['CTO', 'Chief Technology Officer'].includes(record.adjudicatorRole)) {
+  if (!record || typeof record !== 'object' || Array.isArray(record)) {
+    throw new Error(
+      `Ledger accounting validation error: Task ${task.taskId} formalAcceptanceArtifact "${relPath}" must be a structured JSON object.`
+    );
+  }
+
+  // Schema Validation (Workstream B.2)
+  if (!record.taskRef) {
+    throw new Error(
+      `Ledger accounting validation error: Task ${task.taskId} formalAcceptanceArtifact "${relPath}" missing required taskRef.`
+    );
+  }
+  const taskRefs = Array.isArray(record.taskRef) ? record.taskRef : [record.taskRef];
+  if (!taskRefs.includes(task.taskId)) {
+    throw new Error(
+      `Ledger accounting validation error: Task ${task.taskId} formalAcceptanceArtifact "${relPath}" taskRef "${record.taskRef}" does not match task ID ${task.taskId}.`
+    );
+  }
+
+  if (record.decision !== 'ACCEPTED' && record.decision !== 'CONFIRMED_ACCEPTED') {
+    throw new Error(
+      `Ledger accounting validation error: Task ${task.taskId} formalAcceptanceArtifact "${relPath}" lacks approved acceptance decision.`
+    );
+  }
+
+  if (!record.adjudicatorIdentity || typeof record.adjudicatorIdentity !== 'string' || record.adjudicatorIdentity.trim().length === 0) {
+    throw new Error(
+      `Ledger accounting validation error: Task ${task.taskId} formalAcceptanceArtifact "${relPath}" missing required adjudicatorIdentity.`
+    );
+  }
+
+  if (!record.adjudicatorRole || !['CTO', 'Chief Technology Officer'].includes(record.adjudicatorRole)) {
+    throw new Error(
+      `Ledger accounting validation error: Task ${task.taskId} formalAcceptanceArtifact "${relPath}" lacks authorized CTO adjudicatorRole.`
+    );
+  }
+
+  // Strict ISO 8601 UTC timestamp format: YYYY-MM-DDTHH:mm:ssZ or YYYY-MM-DDTHH:mm:ss.sssZ
+  const isoUtcRegex = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d{3})?Z$/;
+  if (!record.adjudicationDate || !isoUtcRegex.test(record.adjudicationDate) || isNaN(Date.parse(record.adjudicationDate))) {
+    throw new Error(
+      `Ledger accounting validation error: Task ${task.taskId} formalAcceptanceArtifact "${relPath}" lacks valid ISO 8601 UTC adjudicationDate (expected YYYY-MM-DDTHH:mm:ssZ).`
+    );
+  }
+
+  if (record.authorSelfAcceptance === true) {
+    throw new Error(
+      `Ledger accounting validation error: Task ${task.taskId} formalAcceptanceArtifact "${relPath}" violates Rule IV-001 (author self-acceptance is strictly prohibited).`
+    );
+  }
+
+  if (record.authorSelfAcceptance !== false) {
+    throw new Error(
+      `Ledger accounting validation error: Task ${task.taskId} formalAcceptanceArtifact "${relPath}" must explicitly declare authorSelfAcceptance: false.`
+    );
+  }
+
+  // Workstream B.3: Independent Authentication Check
+  // Do not treat self-declared adjudicatorRole: "CTO" as authentication.
+  // Acceptance must be backed by an independently verifiable authorized decision record or trusted review record.
+  const authToken = record.authenticationToken || record.verificationAuthorityToken || record.adjudicationSignature;
+  if (!authToken || typeof authToken !== 'string' || authToken.trim().length < 16) {
+    throw new Error(
+      `Ledger accounting validation error: Task ${task.taskId} formalAcceptanceArtifact "${relPath}" lacks independently verifiable authenticated authority. Self-declared CTO role without authenticated verification token cannot establish CONFIRMED_ACCEPTED; status must remain PENDING_INDEPENDENT_CONFIRMATION or UNACCEPTED.`
+    );
+  }
+
+  return true;
+}
+
+/**
+ * Perform substantive content validation on claim evidence files.
+ */
+export function validateClaimSpecificContent(task, evPath, resolvedPath, item) {
+  const stat = fs.statSync(resolvedPath);
+  if (stat.size === 0) {
+    throw new Error(
+      `Ledger accounting validation error: Task ${task.taskId} references empty evidence file: "${evPath}". Evidence must contain substantive deliverable content.`
+    );
+  }
+
+  // If claim asserts completed database execution in supportsClaim, fail closed
+  if (/\b(completed|proven|verified|executed)\s+(live\s+)?(database|staging)\s+execution\b/i.test(item.supportsClaim) ||
+      /\b(live\s+database\s+executed|database\s+execution\s+completed|database\s+execution\s+verified)\b/i.test(item.supportsClaim)) {
+    throw new Error(
+      `Ledger accounting validation error: Task ${task.taskId} evidence item "${evPath}" claims live database execution in supportsClaim. Database staging execution is prohibited under current boundaries.`
+    );
+  }
+
+  // If claim asserts formal CTO acceptance in supportsClaim without being an authenticated acceptance record, fail closed
+  if (/\b(proves|establishes|constitutes|confirms)\s+(formal\s+cto\s+acceptance|formal\s+acceptance)\b/i.test(item.supportsClaim) && item.evidenceClass !== 'FORMAL_ACCEPTANCE') {
+    throw new Error(
+      `Ledger accounting validation error: Task ${task.taskId} evidence item "${evPath}" claims formal acceptance in supportsClaim under non-acceptance class "${item.evidenceClass}".`
+    );
+  }
+
+  // File type specific substantive checks
+  if (evPath.endsWith('.json')) {
+    try {
+      const parsed = JSON.parse(fs.readFileSync(resolvedPath, 'utf8'));
+      if (typeof parsed !== 'object' || parsed === null) {
+        throw new Error('Not an object');
+      }
+      if (Array.isArray(parsed) && parsed.length === 0) {
+        throw new Error('Empty array');
+      }
+      if (!Array.isArray(parsed) && Object.keys(parsed).length === 0) {
+        throw new Error('Empty object');
+      }
+      if (evPath.endsWith('.geojson')) {
+        if (parsed.type !== 'FeatureCollection' && parsed.type !== 'Feature') {
+          throw new Error('Invalid GeoJSON type');
+        }
+      }
+    } catch (err) {
       throw new Error(
-        `Ledger accounting validation error: Task ${task.taskId} formalAcceptanceArtifact "${relPath}" lacks authorized CTO adjudicatorRole.`
+        `Ledger accounting validation error: Task ${task.taskId} references invalid or empty JSON evidence file: "${evPath}" (${err.message}).`
       );
     }
-    if (record.decision !== 'ACCEPTED' && record.decision !== 'CONFIRMED_ACCEPTED') {
+  } else if (evPath.endsWith('.sql')) {
+    const rawSql = fs.readFileSync(resolvedPath, 'utf8');
+    if (!/(CREATE|ALTER|INSERT|TABLE|BEGIN|--|\/\*)/i.test(rawSql)) {
       throw new Error(
-        `Ledger accounting validation error: Task ${task.taskId} formalAcceptanceArtifact "${relPath}" lacks approved acceptance decision.`
+        `Ledger accounting validation error: Task ${task.taskId} references SQL file "${evPath}" lacking valid SQL DDL or DML statements.`
       );
     }
-    if (!record.adjudicationDate || isNaN(Date.parse(record.adjudicationDate))) {
+  } else if (evPath.includes('.test.')) {
+    const rawTest = fs.readFileSync(resolvedPath, 'utf8');
+    if (!/(test\(|describe\(|runTest|assert[\.\(]|it\()/i.test(rawTest)) {
       throw new Error(
-        `Ledger accounting validation error: Task ${task.taskId} formalAcceptanceArtifact "${relPath}" lacks valid adjudicationDate.`
+        `Ledger accounting validation error: Task ${task.taskId} references test file "${evPath}" lacking test assertions or test suites.`
       );
     }
-    if (record.authorSelfAcceptance === true) {
+  } else if (evPath.endsWith('.md')) {
+    const rawMd = fs.readFileSync(resolvedPath, 'utf8');
+    if (!rawMd.includes('#') || rawMd.length < 50) {
       throw new Error(
-        `Ledger accounting validation error: Task ${task.taskId} formalAcceptanceArtifact "${relPath}" violates Rule IV-001 (author self-acceptance is strictly prohibited).`
+        `Ledger accounting validation error: Task ${task.taskId} references Markdown file "${evPath}" lacking structured markdown documentation.`
       );
     }
   }
@@ -138,6 +305,10 @@ export function validateTaskEvidence(task, stageId = null) {
       );
     }
 
+    let verifiedOnDiskCount = 0;
+    let provisionalCount = 0;
+    let blockedCount = 0;
+
     for (const item of task.evidence) {
       if (!item) {
         throw new Error(
@@ -145,48 +316,17 @@ export function validateTaskEvidence(task, stageId = null) {
         );
       }
 
+      // Check for path extraction first so path bounds and domain scope checks run consistently
       let evPath = '';
-      let evClass = 'REPOSITORY_IMPLEMENTATION';
-      let supportsClaim = '';
-      let verificationStatus = 'VERIFIED_ON_DISK';
-
       if (typeof item === 'string') {
         evPath = item.trim();
-        supportsClaim = acct.ratioRationale;
-      } else if (typeof item === 'object') {
+      } else if (typeof item === 'object' && !Array.isArray(item)) {
         if (!item.path || typeof item.path !== 'string') {
           throw new Error(
             `Ledger accounting validation error: Task ${task.taskId} evidence object missing required string path.`
           );
         }
         evPath = item.path.trim();
-
-        if (item.evidenceClass !== undefined) {
-          if (!VALID_EVIDENCE_CLASSES.includes(item.evidenceClass)) {
-            throw new Error(
-              `Ledger accounting validation error: Task ${task.taskId} has invalid evidenceClass: "${item.evidenceClass}". Must be one of: ${VALID_EVIDENCE_CLASSES.join(', ')}.`
-            );
-          }
-          evClass = item.evidenceClass;
-        }
-
-        if (item.supportsClaim !== undefined) {
-          if (typeof item.supportsClaim !== 'string' || item.supportsClaim.trim().length < 10) {
-            throw new Error(
-              `Ledger accounting validation error: Task ${task.taskId} has invalid or insufficient supportsClaim in evidence entry.`
-            );
-          }
-          supportsClaim = item.supportsClaim.trim();
-        }
-
-        if (item.verificationStatus !== undefined) {
-          if (!VALID_VERIFICATION_STATUSES.includes(item.verificationStatus)) {
-            throw new Error(
-              `Ledger accounting validation error: Task ${task.taskId} has invalid verificationStatus: "${item.verificationStatus}".`
-            );
-          }
-          verificationStatus = item.verificationStatus;
-        }
       } else {
         throw new Error(
           `Ledger accounting validation error: Task ${task.taskId} contains invalid non-string, non-object evidence reference.`
@@ -231,6 +371,63 @@ export function validateTaskEvidence(task, stageId = null) {
         );
       }
 
+      // Symlink boundary check: realpath must resolve within repository root
+      const realPath = fs.realpathSync(resolvedPath);
+      const relRealPath = path.relative(REPO_ROOT, realPath);
+      if (relRealPath.startsWith('..') || path.isAbsolute(relRealPath)) {
+        throw new Error(
+          `Ledger accounting validation error: Task ${task.taskId} evidence path resolves via symlink outside repository root: "${evPath}".`
+        );
+      }
+
+      // Check domain scope relevance
+      if (stageId && STAGE_EVIDENCE_RELEVANCE[stageId]) {
+        const pattern = STAGE_EVIDENCE_RELEVANCE[stageId];
+        const normalizedEvPath = evPath.replace(/\\/g, '/');
+        if (!pattern.test(normalizedEvPath)) {
+          throw new Error(
+            `Ledger accounting validation error: Task ${task.taskId} in ${stageId} references irrelevant evidence artifact "${evPath}" outside domain scope.`
+          );
+        }
+      }
+
+      // Workstream A.1: Require structured object with path, evidenceClass, supportsClaim, verificationStatus
+      // Plain string evidence entries are strictly rejected for non-zero completion tasks!
+      if (typeof item === 'string') {
+        throw new Error(
+          `Ledger accounting validation error: Task ${task.taskId} uses plain string evidence reference "${item}". Non-zero completion tasks must use structured evidence objects with path, evidenceClass, supportsClaim, and verificationStatus.`
+        );
+      }
+
+      if (!item.evidenceClass || typeof item.evidenceClass !== 'string' || !VALID_EVIDENCE_CLASSES.includes(item.evidenceClass)) {
+        throw new Error(
+          `Ledger accounting validation error: Task ${task.taskId} evidence entry "${evPath}" missing or invalid evidenceClass: "${item.evidenceClass}". Must be one of: ${VALID_EVIDENCE_CLASSES.join(', ')}.`
+        );
+      }
+      const evClass = item.evidenceClass;
+
+      if (!item.supportsClaim || typeof item.supportsClaim !== 'string' || item.supportsClaim.trim().length < 10) {
+        throw new Error(
+          `Ledger accounting validation error: Task ${task.taskId} evidence entry "${evPath}" missing or insufficient supportsClaim in evidence entry.`
+        );
+      }
+
+      if (!item.verificationStatus || typeof item.verificationStatus !== 'string' || !VALID_VERIFICATION_STATUSES.includes(item.verificationStatus)) {
+        throw new Error(
+          `Ledger accounting validation error: Task ${task.taskId} evidence entry "${evPath}" missing or invalid verificationStatus: "${item.verificationStatus}".`
+        );
+      }
+      const verificationStatus = item.verificationStatus;
+
+      // Track verification counts
+      if (verificationStatus === 'VERIFIED_ON_DISK') {
+        verifiedOnDiskCount++;
+      } else if (verificationStatus === 'PROVISIONAL_PENDING_CONFIRMATION') {
+        provisionalCount++;
+      } else if (verificationStatus === 'BLOCKED_PENDING_EXECUTION') {
+        blockedCount++;
+      }
+
       // Semantic Boundary Rule 1: Do not equate migration file existence with execution
       if (evClass === 'DATABASE_EXECUTION' && (evPath.startsWith('supabase/migrations/') || evPath.endsWith('.sql'))) {
         throw new Error(
@@ -250,15 +447,39 @@ export function validateTaskEvidence(task, stageId = null) {
         validateFormalAcceptanceArtifact(task, resolvedPath);
       }
 
-      // Relevance check: if stageId is known, check against STAGE_EVIDENCE_RELEVANCE
-      if (stageId && STAGE_EVIDENCE_RELEVANCE[stageId]) {
-        const pattern = STAGE_EVIDENCE_RELEVANCE[stageId];
-        const normalizedEvPath = evPath.replace(/\\/g, '/');
-        if (!pattern.test(normalizedEvPath)) {
-          throw new Error(
-            `Ledger accounting validation error: Task ${task.taskId} in ${stageId} references irrelevant evidence artifact "${evPath}" outside domain scope.`
-          );
-        }
+      // Semantic Boundary Rule 4: Claim-specific content validation
+      validateClaimSpecificContent(task, evPath, resolvedPath, item);
+    }
+
+    // Workstream A.5: Check task-specific deliverable signatures
+    if (task.taskId && TASK_DELIVERABLE_SIGNATURES[task.taskId]) {
+      const allPaths = task.evidence.map((e) => (typeof e === 'string' ? e : e.path));
+      if (!TASK_DELIVERABLE_SIGNATURES[task.taskId](allPaths)) {
+        throw new Error(
+          `Ledger accounting validation error: Task ${task.taskId} evidence does not contain required deliverable demonstration artifact for stated deliverable.`
+        );
+      }
+    }
+
+    // Workstream A.4: Meaningful control on verificationStatus
+    if (acct.repoCompletionRatio === 1.0) {
+      if (provisionalCount > 0 || blockedCount > 0) {
+        throw new Error(
+          `Ledger accounting validation error: Task ${task.taskId} claims 100% completion (repoCompletionRatio: 1.0) but contains unverified or provisional evidence (${provisionalCount} provisional, ${blockedCount} blocked).`
+        );
+      }
+      if (verifiedOnDiskCount === 0) {
+        throw new Error(
+          `Ledger accounting validation error: Task ${task.taskId} claims 100% completion but has 0 VERIFIED_ON_DISK evidence items.`
+        );
+      }
+    }
+
+    if (acct.repoCompletionRatio > 0.0) {
+      if (verifiedOnDiskCount === 0 && provisionalCount === 0) {
+        throw new Error(
+          `Ledger accounting validation error: Task ${task.taskId} has non-zero repoCompletionRatio (${acct.repoCompletionRatio}) but all evidence items are blocked pending execution.`
+        );
       }
     }
 
@@ -385,20 +606,59 @@ export function validateTaskAccounting(task, stageId = null) {
     );
   }
 
-  // Workstream E: Unsupported acceptance claims without permitted evidence
-  if (acct.formalAcceptanceStatus === 'CONFIRMED_ACCEPTED') {
-    if (!acct.formalAcceptanceArtifact || typeof acct.formalAcceptanceArtifact !== 'string') {
+  // Workstream B: Unsupported acceptance claims without permitted evidence
+  if (acct.formalAcceptanceArtifact) {
+    if (typeof acct.formalAcceptanceArtifact !== 'string') {
       throw new Error(
-        `Ledger accounting validation error: Task ${task.taskId} claims CONFIRMED_ACCEPTED without explicit formalAcceptanceArtifact.`
+        `Ledger accounting validation error: Task ${task.taskId} formalAcceptanceArtifact must be a string.`
       );
     }
-    const resolvedArtifact = path.resolve(REPO_ROOT, acct.formalAcceptanceArtifact);
+    const artifactPath = acct.formalAcceptanceArtifact.trim();
+    if (artifactPath.length === 0) {
+      throw new Error(
+        `Ledger accounting validation error: Task ${task.taskId} formalAcceptanceArtifact cannot be empty string.`
+      );
+    }
+    // Reject absolute paths
+    if (path.isAbsolute(artifactPath) || /^[a-zA-Z]:/.test(artifactPath) || artifactPath.startsWith('/') || artifactPath.startsWith('\\')) {
+      throw new Error(
+        `Ledger accounting validation error: Task ${task.taskId} formalAcceptanceArtifact cannot be absolute: "${artifactPath}". Must be relative to repository root.`
+      );
+    }
+    // Reject traversal
+    const resolvedArtifact = path.resolve(REPO_ROOT, artifactPath);
+    const relToRoot = path.relative(REPO_ROOT, resolvedArtifact);
+    if (relToRoot.startsWith('..') || path.isAbsolute(relToRoot)) {
+      throw new Error(
+        `Ledger accounting validation error: Task ${task.taskId} formalAcceptanceArtifact contains path traversal outside repository root: "${artifactPath}".`
+      );
+    }
     if (!fs.existsSync(resolvedArtifact)) {
       throw new Error(
-        `Ledger accounting validation error: Task ${task.taskId} claims CONFIRMED_ACCEPTED with non-existent formalAcceptanceArtifact: "${acct.formalAcceptanceArtifact}".`
+        `Ledger accounting validation error: Task ${task.taskId} claims formalAcceptanceArtifact with non-existent file: "${artifactPath}".`
       );
     }
-    validateFormalAcceptanceArtifact(task, resolvedArtifact);
+    const stat = fs.statSync(resolvedArtifact);
+    if (!stat.isFile()) {
+      throw new Error(
+        `Ledger accounting validation error: Task ${task.taskId} formalAcceptanceArtifact references non-file target: "${artifactPath}".`
+      );
+    }
+    const realPath = fs.realpathSync(resolvedArtifact);
+    const relRealPath = path.relative(REPO_ROOT, realPath);
+    if (relRealPath.startsWith('..') || path.isAbsolute(relRealPath)) {
+      throw new Error(
+        `Ledger accounting validation error: Task ${task.taskId} formalAcceptanceArtifact resolves via symlink outside repository root: "${artifactPath}".`
+      );
+    }
+
+    if (acct.formalAcceptanceStatus === 'CONFIRMED_ACCEPTED') {
+      validateFormalAcceptanceArtifact(task, resolvedArtifact);
+    }
+  } else if (acct.formalAcceptanceStatus === 'CONFIRMED_ACCEPTED') {
+    throw new Error(
+      `Ledger accounting validation error: Task ${task.taskId} claims CONFIRMED_ACCEPTED without explicit formalAcceptanceArtifact.`
+    );
   }
 
   return true;
@@ -666,7 +926,7 @@ export function generateLedgerMarkdown(ledger) {
 ## Master Specification Mapping, Stage Dependencies, Weighted Accounting & Blocker Analysis
 
 **Milestone:** W021.5 — National Political Intelligence and Candidate Transparency  
-**Directive:** CTO Directive 086 / CTO Directive 087 / CTO Directive 088 / CTO Directive 089 / CTO Directive 090 / CTO Directive 091 / CTO Directive 092 (Consolidated Adjudication)  
+**Directive:** CTO Directive 086 / CTO Directive 087 / CTO Directive 088 / CTO Directive 089 / CTO Directive 090 / CTO Directive 091 / CTO Directive 092 / CTO Directive 093 (Consolidated Adjudication)  
 **Date:** 2026-10-17  
 **Governance Invariant:** Master Execution Framework Amendment v1.2 / Rule IV-001 (Non-Self-Acceptance)  
 **Financial Defect Status:** \`DQ-W021.5-B2.2E-001\` — **STRICTLY OPEN**, pending separate CTO adjudication  
@@ -676,13 +936,13 @@ export function generateLedgerMarkdown(ledger) {
 
 ## 1. Executive Summary & Reproducible Progress Accounting
 
-In accordance with **CTO Directive 092**, this execution ledger provides an evidence-backed, mathematically reconciled progress accounting across all nine mandatory stages of Milestone W021.5 (Stages A through I).
+In accordance with **CTO Directive 093**, this execution ledger provides an evidence-backed, mathematically reconciled progress accounting across all nine mandatory stages of Milestone W021.5 (Stages A through I).
 
 Under **Rule IV-001 (Non-Self-Acceptance)**, the ledger strictly differentiates **repository implementation** (authored code, schemas, and offline tests) from **live database execution** and **formal CTO acceptance**. Requirements requiring unexecuted staging migrations, unresolved CTO decision gates, or open defects are explicitly isolated as \`PARTIAL\`, \`BLOCKED\`, or \`NOT IMPLEMENTED\`.
 
 \`\`\`text
 ================================================================================
-KSHETRA W021.5 EXECUTION LEDGER ACCOUNTING SUMMARY (Directive 092 Reconciled)
+KSHETRA W021.5 EXECUTION LEDGER ACCOUNTING SUMMARY (Directive 093 Reconciled)
 ================================================================================
 Total Tasks in Master Ledger:         ${summary.totalTasks} Tasks across 9 Stages (${summary.coreTasksCount || summary.statutoryBaseTasks} Core Tasks + ${summary.hardeningExtensionsCount || 2} Hardening Extensions)
 Total Weight Base:                   ${summary.totalWeight.toFixed(1)}%

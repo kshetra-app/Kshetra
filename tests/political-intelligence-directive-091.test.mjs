@@ -220,7 +220,14 @@ runTest('2.1 Valid explicitly classified task passes validation', () => {
     taskClassification: 'CORE_SPECIFICATION',
     weight: 2.0,
     status: 'REPO_VERIFIED',
-    evidence: ['reports/w021_5_national_data_coverage_matrix.json'],
+    evidence: [
+      {
+        path: 'reports/w021_5_national_data_coverage_matrix.json',
+        evidenceClass: 'REPOSITORY_IMPLEMENTATION',
+        supportsClaim: 'Coverage matrix report generated and verified in repository',
+        verificationStatus: 'VERIFIED_ON_DISK',
+      },
+    ],
     accounting: {
       repoCompletionRatio: 1.0,
       ratioRationale: 'Valid rationale exceeding minimum length requirement.',
@@ -460,7 +467,14 @@ runTest('4.2 Task with non-zero repoCompletionRatio requires meaningful ratioRat
     taskClassification: 'CORE_SPECIFICATION',
     weight: 2.0,
     status: 'REPO_VERIFIED',
-    evidence: ['reports/w021_5_national_data_coverage_matrix.json'],
+    evidence: [
+      {
+        path: 'reports/w021_5_national_data_coverage_matrix.json',
+        evidenceClass: 'REPOSITORY_IMPLEMENTATION',
+        supportsClaim: 'Coverage matrix report generated and verified in repository',
+        verificationStatus: 'VERIFIED_ON_DISK',
+      },
+    ],
     accounting: {
       repoCompletionRatio: 1.0,
       ratioRationale: 'Done', // too short (< 10 chars)
@@ -482,7 +496,14 @@ runTest('4.3 Offline reports or tests CANNOT claim live database staging executi
     taskClassification: 'CORE_SPECIFICATION',
     weight: 2.0,
     status: 'REPO_VERIFIED',
-    evidence: ['reports/w021_5_national_data_coverage_matrix.json'],
+    evidence: [
+      {
+        path: 'reports/w021_5_national_data_coverage_matrix.json',
+        evidenceClass: 'REPOSITORY_IMPLEMENTATION',
+        supportsClaim: 'Coverage matrix report generated and verified in repository',
+        verificationStatus: 'VERIFIED_ON_DISK',
+      },
+    ],
     accounting: {
       repoCompletionRatio: 1.0,
       ratioRationale: 'Valid rationale exceeding minimum length requirement.',
@@ -504,7 +525,14 @@ runTest('4.4 CONFIRMED_ACCEPTED status requires verified formalAcceptanceArtifac
     taskClassification: 'CORE_SPECIFICATION',
     weight: 2.0,
     status: 'REPO_VERIFIED',
-    evidence: ['reports/w021_5_national_data_coverage_matrix.json'],
+    evidence: [
+      {
+        path: 'reports/w021_5_national_data_coverage_matrix.json',
+        evidenceClass: 'REPOSITORY_IMPLEMENTATION',
+        supportsClaim: 'Coverage matrix report generated and verified in repository',
+        verificationStatus: 'VERIFIED_ON_DISK',
+      },
+    ],
     accounting: {
       repoCompletionRatio: 1.0,
       ratioRationale: 'Valid rationale exceeding minimum length requirement.',
