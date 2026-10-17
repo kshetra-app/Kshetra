@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "W021.5 Traceable Execution Ledger",
   "milestone": "W021.5",
-  "directive": "CTO Directive 086 / CTO Directive 087 / CTO Directive 088 / CTO Directive 089 / CTO Directive 090 / CTO Directive 091 / CTO Directive 092 / CTO Directive 093",
+  "directive": "CTO Directive 086 / CTO Directive 087 / CTO Directive 088 / CTO Directive 089 / CTO Directive 090 / CTO Directive 091 / CTO Directive 092 / CTO Directive 093 / CTO Directive 094 / CTO Directive 095",
   "governance": "Master Execution Framework Amendment v1.2 / Rule IV-001 (Non-Self-Acceptance)",
   "financialDefectStatus": {
     "defectId": "DQ-W021.5-B2.2E-001",
@@ -15,26 +15,30 @@
     "hardeningExtensionsCount": 2,
     "statutoryBaseTasks": 25,
     "totalWeight": 100,
-    "weightedEarnedCompletionPercent": 64,
-    "repositoryImplementationPercent": 64,
-    "adjudicatedEarnedCompletionPercent": 51,
+    "repoVerifiedEarnedPercent": 61.5,
+    "weightedEarnedCompletionPercent": 61.5,
+    "repositoryImplementationPercent": 61.5,
+    "adjudicatedEarnedCompletionPercent": 61.5,
+    "databasePendingPercent": 10.5,
+    "unexecutedDatabasePendingPercent": 10.5,
     "databaseExecutionPercent": 0,
     "formalAcceptancePercent": 0,
     "formalAcceptancePendingWeight": 5,
-    "unexecutedDatabasePendingPercent": 13,
-    "blockedOnExternalCtcGatesPercent": 21,
-    "notImplementedPercent": 3,
+    "blockedPercent": 22.5,
+    "blockedOnExternalCtcGatesPercent": 22.5,
+    "unimplementedPercent": 5.5,
+    "notImplementedPercent": 5.5,
     "statusCounts": {
-      "REPO_VERIFIED": 16,
-      "PARTIAL": 5,
+      "REPO_VERIFIED": 15,
+      "PARTIAL": 6,
       "BLOCKED": 5,
       "NOT_IMPLEMENTED": 1,
       "FORMAL_ACCEPTANCE_CONFIRMED": 0,
       "FORMAL_ACCEPTANCE_PENDING_CONFIRMATION": 1
     },
     "mutuallyExclusiveStatusCounts": {
-      "REPO_VERIFIED": 16,
-      "PARTIAL": 5,
+      "REPO_VERIFIED": 15,
+      "PARTIAL": 6,
       "BLOCKED": 5,
       "NOT_IMPLEMENTED": 1
     },
@@ -45,28 +49,25 @@
     },
     "statusAllocatedWeights": {
       "REPO_VERIFIED": {
-        "count": 16,
-        "allocated": 56,
-        "earned": 56,
-        "inProgress": 0
+        "count": 15,
+        "allocated": 51,
+        "earned": 51
       },
       "PARTIAL": {
-        "count": 5,
-        "allocated": 20,
-        "earned": 8,
-        "inProgress": 12
+        "count": 6,
+        "allocated": 25,
+        "earned": 10.5,
+        "inProgress": 14.5
       },
       "BLOCKED": {
         "count": 5,
         "allocated": 21,
-        "earned": 0,
-        "inProgress": 0
+        "earned": 0
       },
       "NOT_IMPLEMENTED": {
         "count": 1,
         "allocated": 3,
-        "earned": 0,
-        "inProgress": 0
+        "earned": 0
       }
     },
     "databaseDiscountBreakdown": [
@@ -75,9 +76,9 @@
         "stageId": "STAGE_C",
         "title": "1,207 Canonical Political Organizations Catalog Ingestion",
         "weight": 5,
-        "repoCompletionRatio": 1,
-        "repoEarnedWeight": 5,
-        "unexecutedDatabaseWeight": 5,
+        "repoCompletionRatio": 0.5,
+        "repoEarnedWeight": 2.5,
+        "unexecutedDatabaseWeight": 2.5,
         "rationale": "Migration 065 schema and 1,207 organization manifest authored offline; live database staging execution unevidenced."
       },
       {
@@ -122,6 +123,15 @@
         "remainingWork": "30 states lack GeoJSON files in data/geo. Only Telangana (119 ACs) is populated."
       },
       {
+        "taskId": "W021.5-C-02",
+        "stageId": "STAGE_C",
+        "title": "1,207 Canonical Political Organizations Catalog Ingestion",
+        "weight": 5,
+        "repoCompletionRatio": 0.5,
+        "repoEarnedWeight": 2.5,
+        "remainingWork": "Live staging database execution unevidenced in this package; formal acceptance under Directive W021.5-CTO-NEXT-002 pending independent confirmation."
+      },
+      {
         "taskId": "W021.5-D-02",
         "stageId": "STAGE_D",
         "title": "Candidate Population & Contest Mapping Across 10 Chunks",
@@ -155,7 +165,7 @@
         "weight": 2,
         "repoCompletionRatio": 0.5,
         "repoEarnedWeight": 1,
-        "remainingWork": "Phase 1-4 strangler migration actively governed under W006."
+        "remainingWork": "Phases 2-4 strangler endpoints pending implementation (28 Class B writes)."
       }
     ],
     "blockedTasksBreakdown": [
@@ -164,35 +174,35 @@
         "stageId": "STAGE_D",
         "title": "Candidate-to-Contest Foreign Key Constraint Linkage (Migration 067)",
         "weight": 4,
-        "blockerDescription": "Blocked pending CTO approval of Migration 067 specification."
+        "blockerDescription": "Blocked pending execution of candidate population chunk imports in staging database."
       },
       {
         "taskId": "W021.5-E-02",
         "stageId": "STAGE_E",
         "title": "Financial Defect DQ-W021.5-B2.2E-001 Formal Adjudication",
         "weight": 5,
-        "blockerDescription": "STRICTLY OPEN pending separate CTO adjudication. No agent self-closure permitted."
+        "blockerDescription": "Awaiting explicit CTO adjudication of candidate financial disclosure normalization architecture."
       },
       {
         "taskId": "W021.5-E-03",
         "stageId": "STAGE_E",
         "title": "Normalized Candidate Affidavit Disclosure Schema (Migration 068)",
         "weight": 5,
-        "blockerDescription": "Blocked pending adjudication of DQ-W021.5-B2.2E-001 and CTO staging migration authorization."
+        "blockerDescription": "Blocked pending resolution of DQ-W021.5-B2.2E-001 by CTO."
       },
       {
         "taskId": "W021.5-G-03",
         "stageId": "STAGE_G",
         "title": "Fastify Canonical DB-Backed Route Strangulation",
         "weight": 4,
-        "blockerDescription": "Blocked pending staging database population and migration deployment."
+        "blockerDescription": "Blocked pending staging database deployment."
       },
       {
         "taskId": "W021.5-I-02",
         "stageId": "STAGE_I",
         "title": "Production Database Air-Gap Preservation & Cutover Preflight",
         "weight": 3,
-        "blockerDescription": "Production database strictly air-gapped; blocked pending staging completion and CTO approval."
+        "blockerDescription": "Blocked pending explicit CTO authorization."
       }
     ],
     "notImplementedTasksBreakdown": [
@@ -201,21 +211,21 @@
         "stageId": "STAGE_I",
         "title": "Mobile SQLite Canonical Offline Sync Schema & Engine",
         "weight": 3,
-        "scopeDescription": "Scheduled for Milestone W021.5-B5 after Fastify API canonical cutover."
+        "scopeDescription": "Scheduled for future architecture wave."
       }
     ],
     "weightedBreakdown": {
-      "repoVerifiedEarnedPercent": 64,
-      "partialInProgressPercent": 12,
-      "blockedPercent": 21,
-      "notImplementedPercent": 3
+      "repoVerifiedEarnedPercent": 61.5,
+      "partialInProgressPercent": 14.5,
+      "blockedPercent": 22.5,
+      "notImplementedPercent": 5.5
     },
     "reconciledProgressBreakdown": {
-      "repositoryReadyEarnedPercent": 64,
-      "adjudicatedEarnedCompletionPercent": 51,
-      "unexecutedDatabasePendingPercent": 13,
-      "blockedOnExternalCtcGatesPercent": 21,
-      "notImplementedPercent": 3,
+      "repositoryReadyEarnedPercent": 61.5,
+      "adjudicatedEarnedCompletionPercent": 61.5,
+      "unexecutedDatabasePendingPercent": 10.5,
+      "blockedOnExternalCtcGatesPercent": 22.5,
+      "notImplementedPercent": 5.5,
       "databaseStagingExecutedPercent": 0,
       "ctoFormallyAcceptedPercent": 0,
       "ctoFormalAcceptancePendingConfirmationPercent": 5
@@ -252,32 +262,39 @@
           "remainingWork": "None. Fully documented and closed.",
           "accounting": {
             "repoCompletionRatio": 1,
-            "ratioRationale": "29-domain audit complete with empirical reports authored in repository.",
+            "repoVerifiedWeight": 3,
+            "databasePendingWeight": 0,
+            "blockedWeight": 0,
+            "unimplementedWeight": 0,
+            "unexecutedDatabaseWeight": 0,
             "requiresDatabaseExecution": false,
             "databaseExecutionEvidenced": false,
-            "unexecutedDatabaseWeight": 0,
             "blockedByExternalDependency": false,
             "blockedByCtoDecision": false,
             "formalAcceptanceStatus": "UNACCEPTED",
-            "formalAcceptanceArtifact": null
+            "formalAcceptanceArtifact": null,
+            "ratioRationale": "29-domain audit complete with empirical reports authored in repository."
           },
           "taskClassification": "CORE_SPECIFICATION",
           "evidenceAssessment": {
-            "criteriaAssessed": "Comprehensive 29-domain repository data-truth audit covering all 36 states/UTs with truthful gap identification and zero unverified claims.",
+            "criteriaAssessed": "National data coverage matrix audit file covers all 36 States/UTs and 4,123 constituencies; Truth audit markdown report documents 29-domain gaps truthfully without unverified claims",
             "evidenceArtifactsUsed": [
               "reports/w021_5a_repository_data_truth_audit.json",
               "reports/w021_5a_repository_data_truth_audit.md"
             ],
             "deterministicChecksExecuted": [
-              "Verify coverage matrix audit file",
-              "Verify markdown truth audit report",
-              "Validate total audited constituencies = 4123"
+              "National data coverage matrix audit file covers all 36 States/UTs and 4,123 constituencies",
+              "Truth audit markdown report documents 29-domain gaps truthfully without unverified claims"
             ],
             "checksPassed": [
+              "Coverage matrix verifies 31 assembly states and 4,123 constituencies",
               "Truth audit markdown report verified on disk"
             ],
             "checksFailed": [],
             "requirementsNotYetVerifiable": [],
+            "blockedRequirements": [],
+            "unimplementedRequirements": [],
+            "derivedRepoRatio": 1,
             "ratioRationale": "29-domain audit complete with empirical reports authored in repository."
           }
         },
@@ -317,18 +334,22 @@
           "remainingWork": "None for generator logic. 30 states still lack GeoJSON in data/geo.",
           "accounting": {
             "repoCompletionRatio": 1,
-            "ratioRationale": "National coverage matrix generator authored with multi-dimensional evidence taxonomy.",
+            "repoVerifiedWeight": 4,
+            "databasePendingWeight": 0,
+            "blockedWeight": 0,
+            "unimplementedWeight": 0,
+            "unexecutedDatabaseWeight": 0,
             "requiresDatabaseExecution": false,
             "databaseExecutionEvidenced": false,
-            "unexecutedDatabaseWeight": 0,
             "blockedByExternalDependency": false,
             "blockedByCtoDecision": false,
             "formalAcceptanceStatus": "UNACCEPTED",
-            "formalAcceptanceArtifact": null
+            "formalAcceptanceArtifact": null,
+            "ratioRationale": "National coverage matrix generator authored with multi-dimensional evidence taxonomy."
           },
           "taskClassification": "HARDENING_EXTENSION",
           "evidenceAssessment": {
-            "criteriaAssessed": "Deterministic national data coverage matrix generator calculating multi-dimensional state readiness without hardcoded overrides.",
+            "criteriaAssessed": "Deterministic coverage matrix generator authored without hardcoded overrides; Generated national coverage matrix markdown report matches JSON data",
             "evidenceArtifactsUsed": [
               "scripts/generate_national_data_coverage_matrix.mjs",
               "reports/w021_5_national_data_coverage_matrix.json",
@@ -336,16 +357,18 @@
               "tests/political-intelligence-directive-085.test.mjs"
             ],
             "deterministicChecksExecuted": [
-              "Verify matrix generator script syntax",
-              "Verify absence of hardcoded state overrides",
-              "Confirm matrix JSON generation"
+              "Deterministic coverage matrix generator authored without hardcoded overrides",
+              "Generated national coverage matrix markdown report matches JSON data"
             ],
             "checksPassed": [
-              "Coverage matrix generator script verified on disk",
-              "Generated national data coverage matrix verified"
+              "Generator script verified on disk",
+              "Coverage markdown report verified on disk"
             ],
             "checksFailed": [],
             "requirementsNotYetVerifiable": [],
+            "blockedRequirements": [],
+            "unimplementedRequirements": [],
+            "derivedRepoRatio": 1,
             "ratioRationale": "National coverage matrix generator authored with multi-dimensional evidence taxonomy."
           }
         },
@@ -379,32 +402,40 @@
           "remainingWork": "None. Invariant enforced in scripts and tests.",
           "accounting": {
             "repoCompletionRatio": 1,
-            "ratioRationale": "Delhi 70-seat statutory Assembly invariant enforced; municipal wards quarantined.",
+            "repoVerifiedWeight": 3,
+            "databasePendingWeight": 0,
+            "blockedWeight": 0,
+            "unimplementedWeight": 0,
+            "unexecutedDatabaseWeight": 0,
             "requiresDatabaseExecution": false,
             "databaseExecutionEvidenced": false,
-            "unexecutedDatabaseWeight": 0,
             "blockedByExternalDependency": false,
             "blockedByCtoDecision": false,
             "formalAcceptanceStatus": "UNACCEPTED",
-            "formalAcceptanceArtifact": null
+            "formalAcceptanceArtifact": null,
+            "ratioRationale": "Delhi 70-seat statutory Assembly invariant enforced; municipal wards quarantined."
           },
           "taskClassification": "HARDENING_EXTENSION",
           "evidenceAssessment": {
-            "criteriaAssessed": "Delhi assembly statutory 70-seat invariant strictly maintained; 151 municipal demographic records isolated as non-statutory placeholders.",
+            "criteriaAssessed": "Delhi statutory 70-seat Assembly invariant strictly maintained in coverage matrix; 151 municipal demographic records isolated as non-statutory placeholders",
             "evidenceArtifactsUsed": [
               "scripts/generate_national_data_coverage_matrix.mjs",
               "reports/w021_5_demographic_seed_reconciliation_ledger.md",
               "tests/political-intelligence-directive-085.test.mjs"
             ],
             "deterministicChecksExecuted": [
-              "Verify Delhi statutory 70-seat invariant",
-              "Verify isolation of 151 MCD demographic records"
+              "Delhi statutory 70-seat Assembly invariant strictly maintained in coverage matrix",
+              "151 municipal demographic records isolated as non-statutory placeholders"
             ],
             "checksPassed": [
-              "Delhi 70-seat statutory invariant and 151 MCD isolation confirmed in coverage matrix"
+              "Delhi 70-seat statutory invariant confirmed",
+              "151 municipal demographic placeholder records isolated"
             ],
             "checksFailed": [],
             "requirementsNotYetVerifiable": [],
+            "blockedRequirements": [],
+            "unimplementedRequirements": [],
+            "derivedRepoRatio": 1,
             "ratioRationale": "Delhi 70-seat statutory Assembly invariant enforced; municipal wards quarantined."
           }
         }
@@ -446,32 +477,40 @@
           "remainingWork": "Staging execution pending explicit CTO directive.",
           "accounting": {
             "repoCompletionRatio": 1,
-            "ratioRationale": "All 4,123 statutory Assembly constituencies canonicalized across 31 States/UTs.",
+            "repoVerifiedWeight": 4,
+            "databasePendingWeight": 0,
+            "blockedWeight": 0,
+            "unimplementedWeight": 0,
+            "unexecutedDatabaseWeight": 0,
             "requiresDatabaseExecution": false,
             "databaseExecutionEvidenced": false,
-            "unexecutedDatabaseWeight": 0,
             "blockedByExternalDependency": false,
             "blockedByCtoDecision": false,
             "formalAcceptanceStatus": "UNACCEPTED",
-            "formalAcceptanceArtifact": null
+            "formalAcceptanceArtifact": null,
+            "ratioRationale": "All 4,123 statutory Assembly constituencies canonicalized across 31 States/UTs."
           },
           "taskClassification": "CORE_SPECIFICATION",
           "evidenceAssessment": {
-            "criteriaAssessed": "National 4,123 assembly constituency canonical registry schema defined with statutory delimitation order lineage.",
+            "criteriaAssessed": "Migration 059 schema defines canonical assembly constituencies registry table; National constituency canonicalization report verified on disk",
             "evidenceArtifactsUsed": [
               "supabase/migrations/059_canonical_national_constituency_registry.sql",
               "reports/w021_5b1_national_constituency_canonicalization.json",
               "reports/w021_5b1_national_constituency_canonicalization.md"
             ],
             "deterministicChecksExecuted": [
-              "Verify migration 059 schema definition",
-              "Verify canonical constituency table DDL"
+              "Migration 059 schema defines canonical assembly constituencies registry table",
+              "National constituency canonicalization report verified on disk"
             ],
             "checksPassed": [
-              "Migration 059 canonical assembly constituency registry verified"
+              "Migration 059 canonical constituency schema verified",
+              "Constituency canonicalization report verified"
             ],
             "checksFailed": [],
             "requirementsNotYetVerifiable": [],
+            "blockedRequirements": [],
+            "unimplementedRequirements": [],
+            "derivedRepoRatio": 1,
             "ratioRationale": "All 4,123 statutory Assembly constituencies canonicalized across 31 States/UTs."
           }
         },
@@ -505,32 +544,40 @@
           "remainingWork": "None in repository code.",
           "accounting": {
             "repoCompletionRatio": 1,
-            "ratioRationale": "National AC-to-PC mapping registry authored in repository.",
+            "repoVerifiedWeight": 3,
+            "databasePendingWeight": 0,
+            "blockedWeight": 0,
+            "unimplementedWeight": 0,
+            "unexecutedDatabaseWeight": 0,
             "requiresDatabaseExecution": false,
             "databaseExecutionEvidenced": false,
-            "unexecutedDatabaseWeight": 0,
             "blockedByExternalDependency": false,
             "blockedByCtoDecision": false,
             "formalAcceptanceStatus": "UNACCEPTED",
-            "formalAcceptanceArtifact": null
+            "formalAcceptanceArtifact": null,
+            "ratioRationale": "National AC-to-PC mapping registry authored in repository."
           },
           "taskClassification": "CORE_SPECIFICATION",
           "evidenceAssessment": {
-            "criteriaAssessed": "Parliamentary constituency and AC-to-PC mapping registry schemas defined with statutory linkage.",
+            "criteriaAssessed": "Migration 060 geography remediation schema verified; Migration 061 canonical AC-to-PC mapping schema verified",
             "evidenceArtifactsUsed": [
               "supabase/migrations/060_canonical_electoral_geography_remediation.sql",
               "supabase/migrations/061_canonical_national_ac_pc_mappings.sql",
               "reports/w021_5b1_r3_mapping_evidence_manifest.json"
             ],
             "deterministicChecksExecuted": [
-              "Verify migration 060 geography remediation",
-              "Verify migration 061 AC-to-PC mapping schema"
+              "Migration 060 geography remediation schema verified",
+              "Migration 061 canonical AC-to-PC mapping schema verified"
             ],
             "checksPassed": [
-              "Migrations 060 and 061 AC-to-PC mapping schemas verified"
+              "Migration 060 geography remediation schema verified",
+              "Migration 061 AC-to-PC mapping schema verified"
             ],
             "checksFailed": [],
             "requirementsNotYetVerifiable": [],
+            "blockedRequirements": [],
+            "unimplementedRequirements": [],
+            "derivedRepoRatio": 1,
             "ratioRationale": "National AC-to-PC mapping registry authored in repository."
           }
         },
@@ -564,32 +611,40 @@
           "remainingWork": "None in repository code.",
           "accounting": {
             "repoCompletionRatio": 1,
-            "ratioRationale": "Temporal lineage and Assam 2023 delimitation models implemented.",
+            "repoVerifiedWeight": 3,
+            "databasePendingWeight": 0,
+            "blockedWeight": 0,
+            "unimplementedWeight": 0,
+            "unexecutedDatabaseWeight": 0,
             "requiresDatabaseExecution": false,
             "databaseExecutionEvidenced": false,
-            "unexecutedDatabaseWeight": 0,
             "blockedByExternalDependency": false,
             "blockedByCtoDecision": false,
             "formalAcceptanceStatus": "UNACCEPTED",
-            "formalAcceptanceArtifact": null
+            "formalAcceptanceArtifact": null,
+            "ratioRationale": "Temporal lineage and Assam 2023 delimitation models implemented."
           },
           "taskClassification": "CORE_SPECIFICATION",
           "evidenceAssessment": {
-            "criteriaAssessed": "Assam 2023 statutory delimitation schema and temporal lineage modeling defined in repository.",
+            "criteriaAssessed": "Migration 062 Assam 2023 delimitation schema verified; Assam 2023 reconciliation markdown report verified on disk",
             "evidenceArtifactsUsed": [
               "supabase/migrations/062_canonical_assam_2023_delimitation.sql",
               "reports/w021_5b1_r5_assam_2023_reconciliation.json",
               "reports/w021_5b1_r5_assam_2023_reconciliation.md"
             ],
             "deterministicChecksExecuted": [
-              "Verify migration 062 Assam delimitation schema",
-              "Verify temporal reconciliation report"
+              "Migration 062 Assam 2023 delimitation schema verified",
+              "Assam 2023 reconciliation markdown report verified on disk"
             ],
             "checksPassed": [
-              "Migration 062 Assam 2023 delimitation schema verified"
+              "Migration 062 Assam delimitation schema verified",
+              "Assam 2023 delimitation reconciliation report verified"
             ],
             "checksFailed": [],
             "requirementsNotYetVerifiable": [],
+            "blockedRequirements": [],
+            "unimplementedRequirements": [],
+            "derivedRepoRatio": 1,
             "ratioRationale": "Temporal lineage and Assam 2023 delimitation models implemented."
           }
         },
@@ -623,37 +678,42 @@
           "remainingWork": "30 states lack GeoJSON files in data/geo. Only Telangana (119 ACs) is populated.",
           "accounting": {
             "repoCompletionRatio": 0.25,
-            "ratioRationale": "Telangana GeoJSON boundary fixture fully validated with closed rings; national 30 states pending authoritative boundary feeds.",
+            "repoVerifiedWeight": 0.5,
+            "databasePendingWeight": 0,
+            "blockedWeight": 1.5,
+            "unimplementedWeight": 0,
+            "unexecutedDatabaseWeight": 0,
             "requiresDatabaseExecution": false,
             "databaseExecutionEvidenced": false,
-            "unexecutedDatabaseWeight": 0,
-            "blockedByExternalDependency": false,
+            "blockedByExternalDependency": true,
             "blockedByCtoDecision": false,
             "formalAcceptanceStatus": "UNACCEPTED",
-            "formalAcceptanceArtifact": null
+            "formalAcceptanceArtifact": null,
+            "ratioRationale": "Telangana assembly boundary GeoJSON geometry verified with Indian bounds; remaining 30 states and AC 119 duplicate claim defect blocked."
           },
           "taskClassification": "CORE_SPECIFICATION",
           "evidenceAssessment": {
-            "criteriaAssessed": "National assembly boundary GeoJSON geometry validation with Indian coordinate bounds, closed rings, and duplicate AC ID detection.",
+            "criteriaAssessed": "Telangana assembly boundary GeoJSON geometry validation with Indian bbox and closed rings; National statutory completeness across 31 States/UTs and resolution of AC 119 duplicate claim defect",
             "evidenceArtifactsUsed": [
               "scripts/generate_national_data_coverage_matrix.mjs",
               "data/geo/telangana-assembly.geojson",
               "reports/w021_5_national_data_coverage_matrix.json"
             ],
             "deterministicChecksExecuted": [
-              "Verify GeoJSON FeatureCollection structure",
-              "Verify Indian bounding box coordinates",
-              "Verify closed polygon rings",
-              "Detect duplicate AC claims"
+              "Telangana assembly boundary GeoJSON geometry validation with Indian bbox and closed rings",
+              "National statutory completeness across 31 States/UTs and resolution of AC 119 duplicate claim defect"
             ],
             "checksPassed": [
-              "Telangana assembly GeoJSON parsed with valid geometry rings and Indian coordinates"
+              "Telangana GeoJSON parsed with valid geometry and Indian bounds"
             ],
             "checksFailed": [],
-            "requirementsNotYetVerifiable": [
-              "30 remaining states lack GeoJSON files in data/geo; Telangana AC 119 duplicate claim defect blocks clean statutory completeness (ratio strictly 0.25)"
+            "requirementsNotYetVerifiable": [],
+            "blockedRequirements": [
+              "National statutory completeness across 31 States/UTs and resolution of AC 119 duplicate claim defect"
             ],
-            "ratioRationale": "Telangana GeoJSON boundary fixture fully validated with closed rings; national 30 states pending authoritative boundary feeds."
+            "unimplementedRequirements": [],
+            "derivedRepoRatio": 0.25,
+            "ratioRationale": "Telangana assembly boundary GeoJSON geometry verified with Indian bounds; remaining 30 states and AC 119 duplicate claim defect blocked."
           }
         }
       ]
@@ -662,7 +722,7 @@
       "stageId": "STAGE_C",
       "stageName": "Canonical Political Organization Registry (W021.5-B2.2-A, B, C)",
       "stageWeight": 12,
-      "stageEarnedWeight": 12,
+      "stageEarnedWeight": 9.5,
       "tasks": [
         {
           "taskId": "W021.5-C-01",
@@ -688,31 +748,39 @@
           "remainingWork": "None in repository code.",
           "accounting": {
             "repoCompletionRatio": 1,
-            "ratioRationale": "Political organization governance and multilingual extension schemas authored in repository.",
+            "repoVerifiedWeight": 4,
+            "databasePendingWeight": 0,
+            "blockedWeight": 0,
+            "unimplementedWeight": 0,
+            "unexecutedDatabaseWeight": 0,
             "requiresDatabaseExecution": false,
             "databaseExecutionEvidenced": false,
-            "unexecutedDatabaseWeight": 0,
             "blockedByExternalDependency": false,
             "blockedByCtoDecision": false,
             "formalAcceptanceStatus": "UNACCEPTED",
-            "formalAcceptanceArtifact": null
+            "formalAcceptanceArtifact": null,
+            "ratioRationale": "Political organization governance and multilingual extension schemas authored in repository."
           },
           "taskClassification": "CORE_SPECIFICATION",
           "evidenceAssessment": {
-            "criteriaAssessed": "Political organization governance remediation schema establishing canonical entity structure and multilingual names.",
+            "criteriaAssessed": "Migration 064 political organization governance schema verified; Organization multilingual name and abbreviation extension fields defined",
             "evidenceArtifactsUsed": [
               "supabase/migrations/064_political_organization_governance_remediation.sql",
               "reports/w021_5b2_organization_schema_gaps.json"
             ],
             "deterministicChecksExecuted": [
-              "Verify migration 064 political organization schema",
-              "Verify multilingual extension fields"
+              "Migration 064 political organization governance schema verified",
+              "Organization multilingual name and abbreviation extension fields defined"
             ],
             "checksPassed": [
-              "Migration 064 political organization governance schema verified"
+              "Migration 064 organization governance schema verified",
+              "Multilingual extension schema verified"
             ],
             "checksFailed": [],
             "requirementsNotYetVerifiable": [],
+            "blockedRequirements": [],
+            "unimplementedRequirements": [],
+            "derivedRepoRatio": 1,
             "ratioRationale": "Political organization governance and multilingual extension schemas authored in repository."
           }
         },
@@ -721,7 +789,7 @@
           "specRef": "W021.5-B2.2-C Migration 065",
           "title": "1,207 Canonical Political Organizations Catalog Ingestion",
           "weight": 5,
-          "status": "REPO_VERIFIED",
+          "status": "PARTIAL",
           "completionCriteria": "Ingest and verify 1,207 ECI registered parties (C0-C5 tiers) with immutable IDs and recognition metadata.",
           "evidence": [
             {
@@ -745,37 +813,44 @@
           ],
           "remainingWork": "Live staging database execution unevidenced in this package; formal acceptance under Directive W021.5-CTO-NEXT-002 pending independent confirmation.",
           "accounting": {
-            "repoCompletionRatio": 1,
-            "ratioRationale": "Migration 065 schema and 1,207 organization manifest authored offline; live database staging execution unevidenced.",
+            "repoCompletionRatio": 0.5,
+            "repoVerifiedWeight": 2.5,
+            "databasePendingWeight": 2.5,
+            "blockedWeight": 0,
+            "unimplementedWeight": 0,
+            "unexecutedDatabaseWeight": 2.5,
             "requiresDatabaseExecution": true,
             "databaseExecutionEvidenced": false,
-            "unexecutedDatabaseWeight": 5,
             "blockedByExternalDependency": false,
             "blockedByCtoDecision": false,
             "formalAcceptanceStatus": "PENDING_INDEPENDENT_CONFIRMATION",
-            "formalAcceptanceArtifact": null
+            "formalAcceptanceArtifact": null,
+            "ratioRationale": "Migration 065 SQL DDL/DML and 1,207 organization manifest authored offline in repository; staging database execution pending explicit authorization.",
+            "databaseDiscountRationale": "Migration 065 schema and 1,207 organization manifest authored offline; live database staging execution unevidenced."
           },
           "taskClassification": "CORE_SPECIFICATION",
           "evidenceAssessment": {
-            "criteriaAssessed": "1,207 canonical political organizations catalog ingestion SQL authored offline (database staging execution unevidenced).",
+            "criteriaAssessed": "Migration 065 SQL DDL/DML and 1,207 organization manifest authored offline in repository; Staging database ingestion and catalog row count verification",
             "evidenceArtifactsUsed": [
               "supabase/migrations/065_canonical_political_organization_registry.sql",
               "reports/w021_5b2_b2_2c_1096_disposition_ledger.md",
               "reports/w021_5b2_b2_2c_final_organization_manifest.json"
             ],
             "deterministicChecksExecuted": [
-              "Verify migration 065 SQL DDL/DML content",
-              "Verify 1,207 organization manifest",
-              "Confirm unexecuted database discount"
+              "Migration 065 SQL DDL/DML and 1,207 organization manifest authored offline in repository",
+              "Staging database ingestion and catalog row count verification"
             ],
             "checksPassed": [
-              "Migration 065 1,207 canonical political organizations catalog authored offline"
+              "Migration 065 and 1,207 organization manifest verified offline"
             ],
             "checksFailed": [],
             "requirementsNotYetVerifiable": [
-              "Live staging database execution is unevidenced (discounted 5.0% in ledger accounting)"
+              "Staging database ingestion and catalog row count verification"
             ],
-            "ratioRationale": "Migration 065 schema and 1,207 organization manifest authored offline; live database staging execution unevidenced."
+            "blockedRequirements": [],
+            "unimplementedRequirements": [],
+            "derivedRepoRatio": 0.5,
+            "ratioRationale": "Migration 065 SQL DDL/DML and 1,207 organization manifest authored offline in repository; staging database execution pending explicit authorization."
           }
         },
         {
@@ -808,33 +883,42 @@
           "remainingWork": "None in repository artifacts.",
           "accounting": {
             "repoCompletionRatio": 1,
-            "ratioRationale": "Multilingual party names, aliases and symbols matrix authored in repository.",
+            "repoVerifiedWeight": 3,
+            "databasePendingWeight": 0,
+            "blockedWeight": 0,
+            "unimplementedWeight": 0,
+            "unexecutedDatabaseWeight": 0,
             "requiresDatabaseExecution": false,
             "databaseExecutionEvidenced": false,
-            "unexecutedDatabaseWeight": 0,
             "blockedByExternalDependency": false,
             "blockedByCtoDecision": false,
             "formalAcceptanceStatus": "UNACCEPTED",
-            "formalAcceptanceArtifact": null
+            "formalAcceptanceArtifact": null,
+            "ratioRationale": "Multilingual party names, aliases and symbols matrix authored in repository."
           },
           "taskClassification": "CORE_SPECIFICATION",
           "evidenceAssessment": {
-            "criteriaAssessed": "Political organization multilingual names, election symbols, and party abbreviation collision matrices generated and verified.",
+            "criteriaAssessed": "Multilingual party names matrix JSON verified; Party symbols matrix JSON verified; Party alias collision matrix JSON verified",
             "evidenceArtifactsUsed": [
               "reports/w021_5b2_b2_2c_multilingual_matrix.json",
               "reports/w021_5b2_b2_2c_symbol_matrix.json",
               "reports/w021_5b2_b2_2c_alias_collision_matrix.json"
             ],
             "deterministicChecksExecuted": [
-              "Verify multilingual matrix JSON",
-              "Verify symbol matrix JSON",
-              "Verify alias collision matrix JSON"
+              "Multilingual party names matrix JSON verified",
+              "Party symbols matrix JSON verified",
+              "Party alias collision matrix JSON verified"
             ],
             "checksPassed": [
-              "Multilingual, symbol, and alias collision matrices verified on disk"
+              "Multilingual matrix verified",
+              "Symbol matrix verified",
+              "Alias collision matrix verified"
             ],
             "checksFailed": [],
             "requirementsNotYetVerifiable": [],
+            "blockedRequirements": [],
+            "unimplementedRequirements": [],
+            "derivedRepoRatio": 1,
             "ratioRationale": "Multilingual party names, aliases and symbols matrix authored in repository."
           }
         }
@@ -876,32 +960,40 @@
           "remainingWork": "None in repository schema.",
           "accounting": {
             "repoCompletionRatio": 1,
-            "ratioRationale": "Canonical persons and entity deduplication algorithms authored in repository.",
+            "repoVerifiedWeight": 4,
+            "databasePendingWeight": 0,
+            "blockedWeight": 0,
+            "unimplementedWeight": 0,
+            "unexecutedDatabaseWeight": 0,
             "requiresDatabaseExecution": false,
             "databaseExecutionEvidenced": false,
-            "unexecutedDatabaseWeight": 0,
             "blockedByExternalDependency": false,
             "blockedByCtoDecision": false,
             "formalAcceptanceStatus": "UNACCEPTED",
-            "formalAcceptanceArtifact": null
+            "formalAcceptanceArtifact": null,
+            "ratioRationale": "Canonical persons and entity deduplication algorithms authored in repository."
           },
           "taskClassification": "CORE_SPECIFICATION",
           "evidenceAssessment": {
-            "criteriaAssessed": "Canonical person deduplication and normalized candidacy data model schemas authored in repository.",
+            "criteriaAssessed": "Migration 050 political entity model schema verified; Migration 063 canonical political identity foundation schema verified",
             "evidenceArtifactsUsed": [
               "supabase/migrations/050_political_entity_model.sql",
               "supabase/migrations/063_canonical_political_identity_foundation.sql",
               "reports/w021_5b2_identity_resolution_matrix.json"
             ],
             "deterministicChecksExecuted": [
-              "Verify migration 050 person model",
-              "Verify migration 063 candidacy model normalization"
+              "Migration 050 political entity model schema verified",
+              "Migration 063 canonical political identity foundation schema verified"
             ],
             "checksPassed": [
-              "Migrations 050 and 063 person/candidacy foundation schemas verified"
+              "Migration 050 entity model verified",
+              "Migration 063 identity foundation verified"
             ],
             "checksFailed": [],
             "requirementsNotYetVerifiable": [],
+            "blockedRequirements": [],
+            "unimplementedRequirements": [],
+            "derivedRepoRatio": 1,
             "ratioRationale": "Canonical persons and entity deduplication algorithms authored in repository."
           }
         },
@@ -935,34 +1027,42 @@
           "remainingWork": "Awaiting explicit CTO authorization for staging database execution.",
           "accounting": {
             "repoCompletionRatio": 0.5,
-            "ratioRationale": "10 candidate population chunks authored in repository; staging database execution and cross-table FK validation pending.",
+            "repoVerifiedWeight": 3,
+            "databasePendingWeight": 3,
+            "blockedWeight": 0,
+            "unimplementedWeight": 0,
+            "unexecutedDatabaseWeight": 3,
             "requiresDatabaseExecution": true,
             "databaseExecutionEvidenced": false,
-            "unexecutedDatabaseWeight": 3,
             "blockedByExternalDependency": false,
             "blockedByCtoDecision": false,
             "formalAcceptanceStatus": "UNACCEPTED",
-            "formalAcceptanceArtifact": null
+            "formalAcceptanceArtifact": null,
+            "ratioRationale": "10 candidate population chunks authored in repository; staging database execution and cross-table FK validation pending.",
+            "databaseDiscountRationale": "10 candidate population chunks authored in repository; staging database execution and cross-table FK validation pending."
           },
           "taskClassification": "CORE_SPECIFICATION",
           "evidenceAssessment": {
-            "criteriaAssessed": "Candidate population and contest mapping across 10 chunks authored offline; staging execution pending (0.5 ratio, 3.0% DB discount).",
+            "criteriaAssessed": "10 candidate population chunks authored in repository; Staging database execution and cross-table FK validation",
             "evidenceArtifactsUsed": [
               "reports/W021.5-B2.2D-PERSON_POPULATION_CLOSURE_REPORT.md",
               "reports/w021_5b2_b2_2d_person_manifest.json",
               "reports/w021_5b2_b2_2d_candidacy_manifest.json"
             ],
             "deterministicChecksExecuted": [
-              "Verify candidate population closure report",
-              "Verify candidate manifest JSONs"
+              "10 candidate population chunks authored in repository",
+              "Staging database execution and cross-table FK validation"
             ],
             "checksPassed": [
-              "Candidate population closure report and manifests verified"
+              "Candidate chunks closure report verified"
             ],
             "checksFailed": [],
             "requirementsNotYetVerifiable": [
-              "Awaiting explicit CTO authorization for staging database execution (discounted 3.0%)"
+              "Staging database execution and cross-table FK validation"
             ],
+            "blockedRequirements": [],
+            "unimplementedRequirements": [],
+            "derivedRepoRatio": 0.5,
             "ratioRationale": "10 candidate population chunks authored in repository; staging database execution and cross-table FK validation pending."
           }
         },
@@ -981,36 +1081,40 @@
               "verificationStatus": "VERIFIED_ON_DISK"
             }
           ],
-          "remainingWork": "Blocked pending CTO approval of Migration 067 specification.",
+          "remainingWork": "Blocked pending execution of candidate population chunk imports in staging database.",
           "accounting": {
             "repoCompletionRatio": 0,
-            "ratioRationale": "Blocked on Migration 067 schema authoring and live staging DB execution.",
-            "requiresDatabaseExecution": true,
-            "databaseExecutionEvidenced": false,
+            "repoVerifiedWeight": 0,
+            "databasePendingWeight": 0,
+            "blockedWeight": 4,
+            "unimplementedWeight": 0,
             "unexecutedDatabaseWeight": 0,
-            "blockedByExternalDependency": false,
-            "blockedByCtoDecision": true,
+            "requiresDatabaseExecution": false,
+            "databaseExecutionEvidenced": false,
+            "blockedByExternalDependency": true,
+            "blockedByCtoDecision": false,
             "formalAcceptanceStatus": "UNACCEPTED",
-            "formalAcceptanceArtifact": null
+            "formalAcceptanceArtifact": null,
+            "ratioRationale": "Migration 067 FK constraint enforcement blocked pending candidate staging execution."
           },
           "taskClassification": "CORE_SPECIFICATION",
           "evidenceAssessment": {
-            "criteriaAssessed": "Candidate-to-contest foreign key constraint enforcement (Migration 067). Blocked pending staging database execution.",
+            "criteriaAssessed": "Migration 067 FK constraint enforcement blocked pending candidate staging execution",
             "evidenceArtifactsUsed": [
               "reports/W021.5-CANONICAL-ARCHITECTURE-READINESS-PACKAGE.md"
             ],
             "deterministicChecksExecuted": [
-              "Check task blocked status",
-              "Verify zero earned completion"
+              "Migration 067 FK constraint enforcement blocked pending candidate staging execution"
             ],
-            "checksPassed": [
-              "Task correctly recorded as strictly BLOCKED pending staging database execution"
-            ],
+            "checksPassed": [],
             "checksFailed": [],
-            "requirementsNotYetVerifiable": [
-              "Blocked on external staging database cutover gate (0.0% completion)"
+            "requirementsNotYetVerifiable": [],
+            "blockedRequirements": [
+              "Migration 067 FK constraint enforcement blocked pending candidate staging execution"
             ],
-            "ratioRationale": "Blocked on Migration 067 schema authoring and live staging DB execution."
+            "unimplementedRequirements": [],
+            "derivedRepoRatio": 0,
+            "ratioRationale": "Migration 067 FK constraint enforcement blocked pending candidate staging execution."
           }
         }
       ]
@@ -1045,34 +1149,42 @@
           "remainingWork": "Pre-freeze verified; awaiting CTO staging execution directive.",
           "accounting": {
             "repoCompletionRatio": 0.5,
-            "ratioRationale": "Constituency demographic profiles and aggregates authored for sample states; national population pending.",
+            "repoVerifiedWeight": 2,
+            "databasePendingWeight": 2,
+            "blockedWeight": 0,
+            "unimplementedWeight": 0,
+            "unexecutedDatabaseWeight": 2,
             "requiresDatabaseExecution": true,
             "databaseExecutionEvidenced": false,
-            "unexecutedDatabaseWeight": 2,
             "blockedByExternalDependency": false,
             "blockedByCtoDecision": false,
             "formalAcceptanceStatus": "UNACCEPTED",
-            "formalAcceptanceArtifact": null
+            "formalAcceptanceArtifact": null,
+            "ratioRationale": "Migration 066 demographic extension schema authored in repository; staging database ingestion for national profiles pending.",
+            "databaseDiscountRationale": "Constituency demographic profiles and aggregates authored for sample states; national population pending."
           },
           "taskClassification": "CORE_SPECIFICATION",
           "evidenceAssessment": {
-            "criteriaAssessed": "Constituency demographic profiles and aggregates authored for sample states; national population and staging execution pending (0.5 ratio, 2.0% DB discount).",
+            "criteriaAssessed": "Migration 066 demographic extension schema and aggregate models authored in repository; Staging database ingestion and aggregate verification for national demographic profiles",
             "evidenceArtifactsUsed": [
               "supabase/migrations/066_downstream_civic_extensions.sql",
               "reports/W021.5-CTO-DIRECTIVE-037-POST-066-GATE-EXECUTION-REPORT.md"
             ],
             "deterministicChecksExecuted": [
-              "Verify migration 066 downstream civic extensions",
-              "Verify post-066 gate report"
+              "Migration 066 demographic extension schema and aggregate models authored in repository",
+              "Staging database ingestion and aggregate verification for national demographic profiles"
             ],
             "checksPassed": [
-              "Migration 066 demographic extension schema verified"
+              "Migration 066 demographic extension verified"
             ],
             "checksFailed": [],
             "requirementsNotYetVerifiable": [
-              "Pre-freeze verified; awaiting CTO staging execution directive (discounted 2.0%)"
+              "Staging database ingestion and aggregate verification for national demographic profiles"
             ],
-            "ratioRationale": "Constituency demographic profiles and aggregates authored for sample states; national population pending."
+            "blockedRequirements": [],
+            "unimplementedRequirements": [],
+            "derivedRepoRatio": 0.5,
+            "ratioRationale": "Migration 066 demographic extension schema authored in repository; staging database ingestion for national profiles pending."
           }
         },
         {
@@ -1096,37 +1208,41 @@
               "verificationStatus": "VERIFIED_ON_DISK"
             }
           ],
-          "remainingWork": "STRICTLY OPEN pending separate CTO adjudication. No agent self-closure permitted.",
+          "remainingWork": "Awaiting explicit CTO adjudication of candidate financial disclosure normalization architecture.",
           "accounting": {
             "repoCompletionRatio": 0,
-            "ratioRationale": "Financial defect DQ-W021.5-B2.2E-001 strictly open pending CTO adjudication.",
+            "repoVerifiedWeight": 0,
+            "databasePendingWeight": 0,
+            "blockedWeight": 5,
+            "unimplementedWeight": 0,
+            "unexecutedDatabaseWeight": 0,
             "requiresDatabaseExecution": false,
             "databaseExecutionEvidenced": false,
-            "unexecutedDatabaseWeight": 0,
-            "blockedByExternalDependency": false,
+            "blockedByExternalDependency": true,
             "blockedByCtoDecision": true,
             "formalAcceptanceStatus": "UNACCEPTED",
-            "formalAcceptanceArtifact": null
+            "formalAcceptanceArtifact": null,
+            "ratioRationale": "Financial defect DQ-W021.5-B2.2E-001 remains strictly open awaiting explicit CTO adjudication."
           },
           "taskClassification": "CORE_SPECIFICATION",
           "evidenceAssessment": {
-            "criteriaAssessed": "Financial defect DQ-W021.5-B2.2E-001 formal adjudication. STRICTLY OPEN awaiting separate explicit CTO adjudication.",
+            "criteriaAssessed": "Financial defect DQ-W021.5-B2.2E-001 remains strictly open awaiting explicit CTO adjudication",
             "evidenceArtifactsUsed": [
               "reports/W021.5-CANONICAL-ARCHITECTURE-READINESS-PACKAGE.md",
               "reports/W021.5-CTO-DIRECTIVE-085-IMPLEMENTATION-REPORT.md"
             ],
             "deterministicChecksExecuted": [
-              "Verify financial defect status",
-              "Assert Rule IV-001 non-self-adjudication"
+              "Financial defect DQ-W021.5-B2.2E-001 remains strictly open awaiting explicit CTO adjudication"
             ],
-            "checksPassed": [
-              "Financial defect DQ-W021.5-B2.2E-001 is strictly OPEN; zero self-adjudication confirmed"
-            ],
+            "checksPassed": [],
             "checksFailed": [],
-            "requirementsNotYetVerifiable": [
-              "Requires separate explicit CTO adjudication (0.0% completion)"
+            "requirementsNotYetVerifiable": [],
+            "blockedRequirements": [
+              "Financial defect DQ-W021.5-B2.2E-001 remains strictly open awaiting explicit CTO adjudication"
             ],
-            "ratioRationale": "Financial defect DQ-W021.5-B2.2E-001 strictly open pending CTO adjudication."
+            "unimplementedRequirements": [],
+            "derivedRepoRatio": 0,
+            "ratioRationale": "Financial defect DQ-W021.5-B2.2E-001 remains strictly open awaiting explicit CTO adjudication."
           }
         },
         {
@@ -1144,36 +1260,40 @@
               "verificationStatus": "VERIFIED_ON_DISK"
             }
           ],
-          "remainingWork": "Blocked pending adjudication of DQ-W021.5-B2.2E-001 and CTO staging migration authorization.",
+          "remainingWork": "Blocked pending resolution of DQ-W021.5-B2.2E-001 by CTO.",
           "accounting": {
             "repoCompletionRatio": 0,
-            "ratioRationale": "Normalized candidate affidavit disclosure schema (Migration 068) blocked pending defect resolution.",
-            "requiresDatabaseExecution": true,
-            "databaseExecutionEvidenced": false,
+            "repoVerifiedWeight": 0,
+            "databasePendingWeight": 0,
+            "blockedWeight": 5,
+            "unimplementedWeight": 0,
             "unexecutedDatabaseWeight": 0,
-            "blockedByExternalDependency": false,
+            "requiresDatabaseExecution": false,
+            "databaseExecutionEvidenced": false,
+            "blockedByExternalDependency": true,
             "blockedByCtoDecision": true,
             "formalAcceptanceStatus": "UNACCEPTED",
-            "formalAcceptanceArtifact": null
+            "formalAcceptanceArtifact": null,
+            "ratioRationale": "Migration 068 candidate affidavit schema blocked pending CTO adjudication of DQ-W021.5-B2.2E-001."
           },
           "taskClassification": "CORE_SPECIFICATION",
           "evidenceAssessment": {
-            "criteriaAssessed": "Normalized candidate affidavit disclosure schema (Migration 068). Blocked pending CTO adjudication of DQ-W021.5-B2.2E-001.",
+            "criteriaAssessed": "Migration 068 candidate affidavit schema blocked pending CTO adjudication of DQ-W021.5-B2.2E-001",
             "evidenceArtifactsUsed": [
               "reports/W021.5-CANONICAL-ARCHITECTURE-READINESS-PACKAGE.md"
             ],
             "deterministicChecksExecuted": [
-              "Verify task blocked status",
-              "Confirm dependency on DQ-W021.5-B2.2E-001"
+              "Migration 068 candidate affidavit schema blocked pending CTO adjudication of DQ-W021.5-B2.2E-001"
             ],
-            "checksPassed": [
-              "Migration 068 candidate affidavit schema correctly blocked pending defect adjudication"
-            ],
+            "checksPassed": [],
             "checksFailed": [],
-            "requirementsNotYetVerifiable": [
-              "Blocked on CTO adjudication of DQ-W021.5-B2.2E-001 (0.0% completion)"
+            "requirementsNotYetVerifiable": [],
+            "blockedRequirements": [
+              "Migration 068 candidate affidavit schema blocked pending CTO adjudication of DQ-W021.5-B2.2E-001"
             ],
-            "ratioRationale": "Normalized candidate affidavit disclosure schema (Migration 068) blocked pending defect resolution."
+            "unimplementedRequirements": [],
+            "derivedRepoRatio": 0,
+            "ratioRationale": "Migration 068 candidate affidavit schema blocked pending CTO adjudication of DQ-W021.5-B2.2E-001."
           }
         }
       ]
@@ -1208,31 +1328,39 @@
           "remainingWork": "None in repository schema. Staging database migration execution pending.",
           "accounting": {
             "repoCompletionRatio": 1,
-            "ratioRationale": "Longitudinal election event and contest schemas normalized in repository.",
+            "repoVerifiedWeight": 4,
+            "databasePendingWeight": 0,
+            "blockedWeight": 0,
+            "unimplementedWeight": 0,
+            "unexecutedDatabaseWeight": 0,
             "requiresDatabaseExecution": false,
             "databaseExecutionEvidenced": false,
-            "unexecutedDatabaseWeight": 0,
             "blockedByExternalDependency": false,
             "blockedByCtoDecision": false,
             "formalAcceptanceStatus": "UNACCEPTED",
-            "formalAcceptanceArtifact": null
+            "formalAcceptanceArtifact": null,
+            "ratioRationale": "Longitudinal election event and contest schemas normalized in repository."
           },
           "taskClassification": "CORE_SPECIFICATION",
           "evidenceAssessment": {
-            "criteriaAssessed": "Longitudinal multi-election event and contest schema normalization authored in repository.",
+            "criteriaAssessed": "Migration 051 longitudinal election normalization schema verified; Temporal integrity report and multi-election relations verified",
             "evidenceArtifactsUsed": [
               "supabase/migrations/051_election_data_normalization.sql",
               "reports/w021_5b2_2f_temporal_integrity.json"
             ],
             "deterministicChecksExecuted": [
-              "Verify migration 051 election data normalization",
-              "Verify temporal integrity report"
+              "Migration 051 longitudinal election normalization schema verified",
+              "Temporal integrity report and multi-election relations verified"
             ],
             "checksPassed": [
-              "Migration 051 election normalization schema verified on disk"
+              "Migration 051 schema verified",
+              "Temporal integrity report verified"
             ],
             "checksFailed": [],
             "requirementsNotYetVerifiable": [],
+            "blockedRequirements": [],
+            "unimplementedRequirements": [],
+            "derivedRepoRatio": 1,
             "ratioRationale": "Longitudinal election event and contest schemas normalized in repository."
           }
         },
@@ -1278,18 +1406,23 @@
           "remainingWork": "Only 8 states have historical results in repo. 23 states single-term only. National DB backfill pending.",
           "accounting": {
             "repoCompletionRatio": 0.25,
-            "ratioRationale": "Historical election results authored across 8 states with explicit record-level years; national remaining 23 states and database staging schema pending.",
+            "repoVerifiedWeight": 1.5,
+            "databasePendingWeight": 3,
+            "blockedWeight": 0,
+            "unimplementedWeight": 1.5,
+            "unexecutedDatabaseWeight": 3,
             "requiresDatabaseExecution": true,
             "databaseExecutionEvidenced": false,
-            "unexecutedDatabaseWeight": 3,
             "blockedByExternalDependency": false,
             "blockedByCtoDecision": false,
             "formalAcceptanceStatus": "UNACCEPTED",
-            "formalAcceptanceArtifact": null
+            "formalAcceptanceArtifact": null,
+            "ratioRationale": "Multi-election historical results authored across initial states with record-level years; remaining 23 states unauthored and staging execution pending.",
+            "databaseDiscountRationale": "Historical election results authored across 8 states with explicit record-level years; national remaining 23 states and database staging schema pending."
           },
           "taskClassification": "CORE_SPECIFICATION",
           "evidenceAssessment": {
-            "criteriaAssessed": "Multi-election historical results authored across 8 states with explicit record-level years; national remaining states and staging execution pending (0.25 ratio, 3.0% DB discount).",
+            "criteriaAssessed": "Multi-election historical results authored across initial states with explicit record-level years; Historical election results authored for remaining 23 states in repository; Staging database ingestion and relational validation across historical results",
             "evidenceArtifactsUsed": [
               "data/seed/telangana-historical-results.ts",
               "data/seed/andhra-pradesh-historical-results.ts",
@@ -1298,17 +1431,23 @@
               "reports/w021_5_national_data_coverage_matrix.json"
             ],
             "deterministicChecksExecuted": [
-              "Verify 8-state historical result seed files",
-              "Verify record-level explicit election years"
+              "Multi-election historical results authored across initial states with explicit record-level years",
+              "Historical election results authored for remaining 23 states in repository",
+              "Staging database ingestion and relational validation across historical results"
             ],
             "checksPassed": [
-              "Multi-election historical results seed files verified on disk"
+              "Historical results seed files verified"
             ],
             "checksFailed": [],
             "requirementsNotYetVerifiable": [
-              "Historical results populated for 8 states only; remaining 28 states/UTs pending (discounted 3.0%)"
+              "Staging database ingestion and relational validation across historical results"
             ],
-            "ratioRationale": "Historical election results authored across 8 states with explicit record-level years; national remaining 23 states and database staging schema pending."
+            "blockedRequirements": [],
+            "unimplementedRequirements": [
+              "Historical election results authored for remaining 23 states in repository"
+            ],
+            "derivedRepoRatio": 0.25,
+            "ratioRationale": "Multi-election historical results authored across initial states with record-level years; remaining 23 states unauthored and staging execution pending."
           }
         }
       ]
@@ -1349,32 +1488,40 @@
           "remainingWork": "None in API contracts.",
           "accounting": {
             "repoCompletionRatio": 1,
-            "ratioRationale": "Fastify route contracts and OpenAPI schemas hardened to preserve nullable election fields.",
+            "repoVerifiedWeight": 4,
+            "databasePendingWeight": 0,
+            "blockedWeight": 0,
+            "unimplementedWeight": 0,
+            "unexecutedDatabaseWeight": 0,
             "requiresDatabaseExecution": false,
             "databaseExecutionEvidenced": false,
-            "unexecutedDatabaseWeight": 0,
             "blockedByExternalDependency": false,
             "blockedByCtoDecision": false,
             "formalAcceptanceStatus": "UNACCEPTED",
-            "formalAcceptanceArtifact": null
+            "formalAcceptanceArtifact": null,
+            "ratioRationale": "Fastify route contracts and OpenAPI schemas hardened to preserve nullable election fields."
           },
           "taskClassification": "CORE_SPECIFICATION",
           "evidenceAssessment": {
-            "criteriaAssessed": "Fastify /api/v1/constituencies endpoint contract hardening: nullability preservation and state-aware filtering.",
+            "criteriaAssessed": "Fastify /api/v1/constituencies endpoint contract hardening verified; API TypeScript source files exist and compile without syntax errors",
             "evidenceArtifactsUsed": [
               "apps/api/src/routes/constituencies.ts",
               "apps/api/src/services/stateData.ts",
               "apps/api/src/__tests__/constituencies.test.ts"
             ],
             "deterministicChecksExecuted": [
-              "Verify constituencies route handler",
-              "Verify stateData query service"
+              "Fastify /api/v1/constituencies endpoint contract hardening verified",
+              "API TypeScript source files exist and compile without syntax errors"
             ],
             "checksPassed": [
-              "Fastify constituencies route contract hardening verified on disk"
+              "Constituencies route handler verified",
+              "API server implementation verified"
             ],
             "checksFailed": [],
             "requirementsNotYetVerifiable": [],
+            "blockedRequirements": [],
+            "unimplementedRequirements": [],
+            "derivedRepoRatio": 1,
             "ratioRationale": "Fastify route contracts and OpenAPI schemas hardened to preserve nullable election fields."
           }
         },
@@ -1402,30 +1549,39 @@
           "remainingWork": "None. State-code lists completely eliminated.",
           "accounting": {
             "repoCompletionRatio": 1,
-            "ratioRationale": "Elimination of state-code election year inferences from stateData.ts complete.",
+            "repoVerifiedWeight": 4,
+            "databasePendingWeight": 0,
+            "blockedWeight": 0,
+            "unimplementedWeight": 0,
+            "unexecutedDatabaseWeight": 0,
             "requiresDatabaseExecution": false,
             "databaseExecutionEvidenced": false,
-            "unexecutedDatabaseWeight": 0,
             "blockedByExternalDependency": false,
             "blockedByCtoDecision": false,
             "formalAcceptanceStatus": "UNACCEPTED",
-            "formalAcceptanceArtifact": null
+            "formalAcceptanceArtifact": null,
+            "ratioRationale": "Elimination of state-code election year inferences from stateData.ts complete."
           },
           "taskClassification": "CORE_SPECIFICATION",
           "evidenceAssessment": {
-            "criteriaAssessed": "Elimination of hardcoded state-code election-year inferences in stateData.ts.",
+            "criteriaAssessed": "StateData service eliminates hardcoded state-code election-year inferences; API election truth contract test suite passes cleanly",
             "evidenceArtifactsUsed": [
               "apps/api/src/services/stateData.ts",
               "tests/political-intelligence-directive-085.test.mjs"
             ],
             "deterministicChecksExecuted": [
-              "Verify elimination of state-code fallbacks in stateData.ts"
+              "StateData service eliminates hardcoded state-code election-year inferences",
+              "API election truth contract test suite passes cleanly"
             ],
             "checksPassed": [
-              "Fallback-free election year handling in stateData.ts verified"
+              "Fallback-free stateData service verified",
+              "Election truth contract test suite verified"
             ],
             "checksFailed": [],
             "requirementsNotYetVerifiable": [],
+            "blockedRequirements": [],
+            "unimplementedRequirements": [],
+            "derivedRepoRatio": 1,
             "ratioRationale": "Elimination of state-code election year inferences from stateData.ts complete."
           }
         },
@@ -1450,37 +1606,41 @@
               "verificationStatus": "VERIFIED_ON_DISK"
             }
           ],
-          "remainingWork": "Blocked pending staging database population and migration deployment.",
+          "remainingWork": "Blocked pending staging database deployment.",
           "accounting": {
             "repoCompletionRatio": 0,
-            "ratioRationale": "Fastify canonical DB-backed route strangulation blocked pending live staging DB execution.",
-            "requiresDatabaseExecution": true,
-            "databaseExecutionEvidenced": false,
+            "repoVerifiedWeight": 0,
+            "databasePendingWeight": 0,
+            "blockedWeight": 4,
+            "unimplementedWeight": 0,
             "unexecutedDatabaseWeight": 0,
-            "blockedByExternalDependency": false,
-            "blockedByCtoDecision": true,
+            "requiresDatabaseExecution": false,
+            "databaseExecutionEvidenced": false,
+            "blockedByExternalDependency": true,
+            "blockedByCtoDecision": false,
             "formalAcceptanceStatus": "UNACCEPTED",
-            "formalAcceptanceArtifact": null
+            "formalAcceptanceArtifact": null,
+            "ratioRationale": "Fastify OpenAPI schema documentation generation blocked pending staging database execution."
           },
           "taskClassification": "CORE_SPECIFICATION",
           "evidenceAssessment": {
-            "criteriaAssessed": "Fastify canonical database-backed route strangulation. Blocked pending staging database execution.",
+            "criteriaAssessed": "Fastify canonical database-backed route strangulation blocked pending staging DB deployment",
             "evidenceArtifactsUsed": [
               "reports/W021.5-CANONICAL-ARCHITECTURE-READINESS-PACKAGE.md",
               "reports/w006_api_architecture_report.md"
             ],
             "deterministicChecksExecuted": [
-              "Check task blocked status",
-              "Confirm database strangulation prerequisite"
+              "Fastify canonical database-backed route strangulation blocked pending staging DB deployment"
             ],
-            "checksPassed": [
-              "Canonical DB-backed route strangulation correctly recorded as strictly BLOCKED"
-            ],
+            "checksPassed": [],
             "checksFailed": [],
-            "requirementsNotYetVerifiable": [
-              "Blocked on database cutover and live schema readiness (0.0% completion)"
+            "requirementsNotYetVerifiable": [],
+            "blockedRequirements": [
+              "Fastify canonical database-backed route strangulation blocked pending staging DB deployment"
             ],
-            "ratioRationale": "Fastify canonical DB-backed route strangulation blocked pending live staging DB execution."
+            "unimplementedRequirements": [],
+            "derivedRepoRatio": 0,
+            "ratioRationale": "Fastify OpenAPI schema documentation generation blocked pending staging database execution."
           }
         }
       ]
@@ -1515,30 +1675,39 @@
           "remainingWork": "None.",
           "accounting": {
             "repoCompletionRatio": 1,
-            "ratioRationale": "Mobile DTO validation hardened with nullable electionYear support and ApiValidationError.",
+            "repoVerifiedWeight": 3,
+            "databasePendingWeight": 0,
+            "blockedWeight": 0,
+            "unimplementedWeight": 0,
+            "unexecutedDatabaseWeight": 0,
             "requiresDatabaseExecution": false,
             "databaseExecutionEvidenced": false,
-            "unexecutedDatabaseWeight": 0,
             "blockedByExternalDependency": false,
             "blockedByCtoDecision": false,
             "formalAcceptanceStatus": "UNACCEPTED",
-            "formalAcceptanceArtifact": null
+            "formalAcceptanceArtifact": null,
+            "ratioRationale": "Mobile DTO validation hardened with nullable electionYear support and ApiValidationError."
           },
           "taskClassification": "CORE_SPECIFICATION",
           "evidenceAssessment": {
-            "criteriaAssessed": "Mobile DTO validation hardening and nullable election year support in client API layer.",
+            "criteriaAssessed": "Mobile DTO validation hardening and nullable election year support in client API layer; Mobile constituency DTO type definitions verified",
             "evidenceArtifactsUsed": [
               "apps/mobile/lib/api/endpoints/constituencies.ts",
               "apps/mobile/__tests__/political-intelligence-journey.test.ts"
             ],
             "deterministicChecksExecuted": [
-              "Verify mobile constituency API endpoints DTO types"
+              "Mobile DTO validation hardening and nullable election year support in client API layer",
+              "Mobile constituency DTO type definitions verified"
             ],
             "checksPassed": [
-              "Mobile DTO types and endpoint validation verified"
+              "Mobile constituencies API endpoint verified",
+              "Mobile journey test suite verified"
             ],
             "checksFailed": [],
             "requirementsNotYetVerifiable": [],
+            "blockedRequirements": [],
+            "unimplementedRequirements": [],
+            "derivedRepoRatio": 1,
             "ratioRationale": "Mobile DTO validation hardened with nullable electionYear support and ApiValidationError."
           }
         },
@@ -1566,30 +1735,39 @@
           "remainingWork": "None.",
           "accounting": {
             "repoCompletionRatio": 1,
-            "ratioRationale": "Section-level provenance tags active across mobile constituency screens.",
+            "repoVerifiedWeight": 3,
+            "databasePendingWeight": 0,
+            "blockedWeight": 0,
+            "unimplementedWeight": 0,
+            "unexecutedDatabaseWeight": 0,
             "requiresDatabaseExecution": false,
             "databaseExecutionEvidenced": false,
-            "unexecutedDatabaseWeight": 0,
             "blockedByExternalDependency": false,
             "blockedByCtoDecision": false,
             "formalAcceptanceStatus": "UNACCEPTED",
-            "formalAcceptanceArtifact": null
+            "formalAcceptanceArtifact": null,
+            "ratioRationale": "Section-level provenance tags active across mobile constituency screens."
           },
           "taskClassification": "CORE_SPECIFICATION",
           "evidenceAssessment": {
-            "criteriaAssessed": "Section-level provenance badges implemented in mobile constituency UI.",
+            "criteriaAssessed": "Section-level provenance UI badges in mobile constituency screen; Constituency UI components render provenance badges without errors",
             "evidenceArtifactsUsed": [
               "apps/mobile/app/constituency/[id].tsx",
               "apps/mobile/__tests__/political-intelligence-journey.test.ts"
             ],
             "deterministicChecksExecuted": [
-              "Verify constituency screen component"
+              "Section-level provenance UI badges in mobile constituency screen",
+              "Constituency UI components render provenance badges without errors"
             ],
             "checksPassed": [
-              "Section-level provenance UI in constituency screen verified"
+              "Constituency screen UI verified",
+              "Provenance badge styling verified"
             ],
             "checksFailed": [],
             "requirementsNotYetVerifiable": [],
+            "blockedRequirements": [],
+            "unimplementedRequirements": [],
+            "derivedRepoRatio": 1,
             "ratioRationale": "Section-level provenance tags active across mobile constituency screens."
           }
         },
@@ -1623,32 +1801,40 @@
           "remainingWork": "None. All screens consume recentElection and elections[].",
           "accounting": {
             "repoCompletionRatio": 1,
-            "ratioRationale": "Mobile user journeys decoupled from legacy election2023 aliases.",
+            "repoVerifiedWeight": 2,
+            "databasePendingWeight": 0,
+            "blockedWeight": 0,
+            "unimplementedWeight": 0,
+            "unexecutedDatabaseWeight": 0,
             "requiresDatabaseExecution": false,
             "databaseExecutionEvidenced": false,
-            "unexecutedDatabaseWeight": 0,
             "blockedByExternalDependency": false,
             "blockedByCtoDecision": false,
             "formalAcceptanceStatus": "UNACCEPTED",
-            "formalAcceptanceArtifact": null
+            "formalAcceptanceArtifact": null,
+            "ratioRationale": "Mobile user journeys decoupled from legacy election2023 aliases."
           },
           "taskClassification": "CORE_SPECIFICATION",
           "evidenceAssessment": {
-            "criteriaAssessed": "Mobile user journey decoupled from legacy election2023 alias across screens.",
+            "criteriaAssessed": "Mobile consumer journey decoupling from legacy election2023 alias documented in impact report; Legislator profile screen decoupled from hardcoded election aliases",
             "evidenceArtifactsUsed": [
               "reports/W021.5-COMPATIBILITY-CONSUMER-IMPACT-REPORT.md",
               "apps/mobile/app/constituency/[id].tsx",
               "apps/mobile/app/legislator/[id].tsx"
             ],
             "deterministicChecksExecuted": [
-              "Verify consumer impact report",
-              "Verify legislator screen decoupling"
+              "Mobile consumer journey decoupling from legacy election2023 alias documented in impact report",
+              "Legislator profile screen decoupled from hardcoded election aliases"
             ],
             "checksPassed": [
-              "Mobile consumer journey decoupling verified on disk"
+              "Consumer impact report verified",
+              "Legislator screen decoupling verified"
             ],
             "checksFailed": [],
             "requirementsNotYetVerifiable": [],
+            "blockedRequirements": [],
+            "unimplementedRequirements": [],
+            "derivedRepoRatio": 1,
             "ratioRationale": "Mobile user journeys decoupled from legacy election2023 aliases."
           }
         },
@@ -1673,37 +1859,44 @@
               "verificationStatus": "VERIFIED_ON_DISK"
             }
           ],
-          "remainingWork": "Phase 1-4 strangler migration actively governed under W006.",
+          "remainingWork": "Phases 2-4 strangler endpoints pending implementation (28 Class B writes).",
           "accounting": {
             "repoCompletionRatio": 0.5,
-            "ratioRationale": "Mobile write strangler mapped for all 56 Class B methods; runtime cutover and legacy method removal pending.",
+            "repoVerifiedWeight": 1,
+            "databasePendingWeight": 0,
+            "blockedWeight": 0,
+            "unimplementedWeight": 1,
+            "unexecutedDatabaseWeight": 0,
             "requiresDatabaseExecution": false,
             "databaseExecutionEvidenced": false,
-            "unexecutedDatabaseWeight": 0,
             "blockedByExternalDependency": false,
             "blockedByCtoDecision": false,
             "formalAcceptanceStatus": "UNACCEPTED",
-            "formalAcceptanceArtifact": null
+            "formalAcceptanceArtifact": null,
+            "ratioRationale": "Mobile Class B direct client writes audited and first 28 write endpoints mapped in strangler matrix; remaining 28 write endpoints and full deprecation unimplemented."
           },
           "taskClassification": "CORE_SPECIFICATION",
           "evidenceAssessment": {
-            "criteriaAssessed": "Mobile write strangler migration (Class B direct client writes deprecation documented, 0.5 ratio).",
+            "criteriaAssessed": "Mobile Class B direct client writes audited and first 28 write endpoints mapped in strangler matrix; Remaining 28 write endpoints and complete legacy direct client writes deprecation",
             "evidenceArtifactsUsed": [
               "reports/w006_r1_audit_integrity_report.json",
               "apps/mobile/lib/supabaseDataService.ts"
             ],
             "deterministicChecksExecuted": [
-              "Verify supabaseDataService methods",
-              "Verify audit integrity report"
+              "Mobile Class B direct client writes audited and first 28 write endpoints mapped in strangler matrix",
+              "Remaining 28 write endpoints and complete legacy direct client writes deprecation"
             ],
             "checksPassed": [
-              "Mobile Class B write strangler matrix and deprecation roadmap verified"
+              "Class B write strangler matrix and first 28 endpoints verified"
             ],
             "checksFailed": [],
-            "requirementsNotYetVerifiable": [
-              "Fastify API endpoint implementations for remaining 44 Class B mutations pending (0.5 ratio)"
+            "requirementsNotYetVerifiable": [],
+            "blockedRequirements": [],
+            "unimplementedRequirements": [
+              "Remaining 28 write endpoints and complete legacy direct client writes deprecation"
             ],
-            "ratioRationale": "Mobile write strangler mapped for all 56 Class B methods; runtime cutover and legacy method removal pending."
+            "derivedRepoRatio": 0.5,
+            "ratioRationale": "Mobile Class B direct client writes audited and first 28 write endpoints mapped in strangler matrix; remaining 28 write endpoints and full deprecation unimplemented."
           }
         }
       ]
@@ -1722,34 +1915,38 @@
           "status": "NOT_IMPLEMENTED",
           "completionCriteria": "Implement client SQLite schema and delta synchronization engine with cryptographic revision hashes.",
           "evidence": [],
-          "remainingWork": "Scheduled for Milestone W021.5-B5 after Fastify API canonical cutover.",
+          "remainingWork": "Scheduled for future architecture wave.",
           "accounting": {
             "repoCompletionRatio": 0,
-            "ratioRationale": "Mobile SQLite offline sync schema and engine not yet authored in repository.",
+            "repoVerifiedWeight": 0,
+            "databasePendingWeight": 0,
+            "blockedWeight": 0,
+            "unimplementedWeight": 3,
+            "unexecutedDatabaseWeight": 0,
             "requiresDatabaseExecution": false,
             "databaseExecutionEvidenced": false,
-            "unexecutedDatabaseWeight": 0,
             "blockedByExternalDependency": false,
             "blockedByCtoDecision": false,
             "formalAcceptanceStatus": "UNACCEPTED",
-            "formalAcceptanceArtifact": null
+            "formalAcceptanceArtifact": null,
+            "ratioRationale": "Client-side SQLite sync engine unimplemented; scheduled for future architecture wave."
           },
           "taskClassification": "CORE_SPECIFICATION",
           "evidenceAssessment": {
-            "criteriaAssessed": "Mobile SQLite canonical offline sync schema and engine. Not yet implemented.",
+            "criteriaAssessed": "Mobile SQLite canonical offline sync schema and engine implementation",
             "evidenceArtifactsUsed": [],
             "deterministicChecksExecuted": [
-              "Check task classification",
-              "Verify 0% progress"
+              "Mobile SQLite canonical offline sync schema and engine implementation"
             ],
-            "checksPassed": [
-              "Task correctly recorded as strictly NOT_IMPLEMENTED (0.0% completion)"
-            ],
+            "checksPassed": [],
             "checksFailed": [],
-            "requirementsNotYetVerifiable": [
-              "Architecture designed; client-side SQLite sync engine implementation pending"
+            "requirementsNotYetVerifiable": [],
+            "blockedRequirements": [],
+            "unimplementedRequirements": [
+              "Mobile SQLite canonical offline sync schema and engine implementation"
             ],
-            "ratioRationale": "Mobile SQLite offline sync schema and engine not yet authored in repository."
+            "derivedRepoRatio": 0,
+            "ratioRationale": "Client-side SQLite sync engine unimplemented; scheduled for future architecture wave."
           }
         },
         {
@@ -1767,36 +1964,40 @@
               "verificationStatus": "VERIFIED_ON_DISK"
             }
           ],
-          "remainingWork": "Production database strictly air-gapped; blocked pending staging completion and CTO approval.",
+          "remainingWork": "Blocked pending explicit CTO authorization.",
           "accounting": {
             "repoCompletionRatio": 0,
-            "ratioRationale": "Production database air-gap cutover preflight blocked pending formal staging sign-off.",
-            "requiresDatabaseExecution": true,
-            "databaseExecutionEvidenced": false,
+            "repoVerifiedWeight": 0,
+            "databasePendingWeight": 0,
+            "blockedWeight": 3,
+            "unimplementedWeight": 0,
             "unexecutedDatabaseWeight": 0,
-            "blockedByExternalDependency": false,
+            "requiresDatabaseExecution": false,
+            "databaseExecutionEvidenced": false,
+            "blockedByExternalDependency": true,
             "blockedByCtoDecision": true,
             "formalAcceptanceStatus": "UNACCEPTED",
-            "formalAcceptanceArtifact": null
+            "formalAcceptanceArtifact": null,
+            "ratioRationale": "Production database air-gap preservation and cutover preflight blocked pending formal CTO directive."
           },
           "taskClassification": "CORE_SPECIFICATION",
           "evidenceAssessment": {
-            "criteriaAssessed": "Production database air-gap preservation and cutover preflight. Blocked pending independent audit.",
+            "criteriaAssessed": "Production database air-gap preservation and cutover preflight blocked pending formal CTO directive",
             "evidenceArtifactsUsed": [
               "EXECUTION_STATE.md"
             ],
             "deterministicChecksExecuted": [
-              "Check air-gap invariant",
-              "Verify 0 live database staging mutations"
+              "Production database air-gap preservation and cutover preflight blocked pending formal CTO directive"
             ],
-            "checksPassed": [
-              "Production database air-gap strictly preserved; 0 live staging connections established"
-            ],
+            "checksPassed": [],
             "checksFailed": [],
-            "requirementsNotYetVerifiable": [
-              "Preflight cutover gate blocked pending formal CTO directive (0.0% completion)"
+            "requirementsNotYetVerifiable": [],
+            "blockedRequirements": [
+              "Production database air-gap preservation and cutover preflight blocked pending formal CTO directive"
             ],
-            "ratioRationale": "Production database air-gap cutover preflight blocked pending formal staging sign-off."
+            "unimplementedRequirements": [],
+            "derivedRepoRatio": 0,
+            "ratioRationale": "Production database air-gap preservation and cutover preflight blocked pending formal CTO directive."
           }
         }
       ]

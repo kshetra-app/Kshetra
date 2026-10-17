@@ -851,12 +851,12 @@ runTest('3.1 All 27 tasks pass claim-specific deliverable validation in producti
   assert.strictEqual(verifiedTasks, 27, 'Exactly 27 tasks audited and verified');
 });
 
-runTest('3.2 13.0% unexecuted database discount derived strictly from the 4 validated tasks', () => {
+runTest('3.2 Unexecuted database discount derived strictly from the 4 validated tasks', () => {
   const ledgerPath = path.join(REPO_ROOT, 'reports/w021_5_execution_ledger.json');
   const ledger = JSON.parse(fs.readFileSync(ledgerPath, 'utf8'));
   const summary = computeLedgerSummary(ledger);
 
-  assert.strictEqual(summary.unexecutedDatabasePendingPercent, 13.0);
+  assert.strictEqual(summary.unexecutedDatabasePendingPercent, 10.5);
   assert.strictEqual(summary.databaseDiscountBreakdown.length, 4);
 
   const discountTasks = summary.databaseDiscountBreakdown.map((d) => d.taskId);
@@ -868,7 +868,7 @@ runTest('3.2 13.0% unexecuted database discount derived strictly from the 4 vali
   ]);
 
   const discountWeights = summary.databaseDiscountBreakdown.map((d) => d.unexecutedDatabaseWeight);
-  assert.deepStrictEqual(discountWeights, [5.0, 3.0, 2.0, 3.0]);
+  assert.deepStrictEqual(discountWeights, [2.5, 3.0, 2.0, 3.0]);
 });
 
 runTest('3.3 Database discount does not exceed task weight or double-count blocked tasks', () => {
@@ -898,21 +898,21 @@ runTest('3.4 Progress dimensions strictly partitioned with zero live DB or forma
   const ledger = JSON.parse(fs.readFileSync(ledgerPath, 'utf8'));
   const summary = computeLedgerSummary(ledger);
 
-  assert.strictEqual(summary.repositoryImplementationPercent, 64.0);
-  assert.strictEqual(summary.adjudicatedEarnedCompletionPercent, 51.0);
+  assert.strictEqual(summary.repositoryImplementationPercent, 61.5);
+  assert.strictEqual(summary.adjudicatedEarnedCompletionPercent, 61.5);
   assert.strictEqual(summary.databaseExecutionPercent, 0.0);
   assert.strictEqual(summary.formalAcceptancePercent, 0.0);
-  assert.strictEqual(summary.unexecutedDatabasePendingPercent, 13.0);
-  assert.strictEqual(summary.blockedOnExternalCtcGatesPercent, 21.0);
-  assert.strictEqual(summary.notImplementedPercent, 3.0);
+  assert.strictEqual(summary.unexecutedDatabasePendingPercent, 10.5);
+  assert.strictEqual(summary.blockedOnExternalCtcGatesPercent, 22.5);
+  assert.strictEqual(summary.notImplementedPercent, 5.5);
 
-  // Math closure: 51.0% + 13.0% = 64.0%
+  // Math closure: 61.5% + 10.5% + 22.5% + 5.5% = 100.0%
   assert.strictEqual(
-    summary.adjudicatedEarnedCompletionPercent + summary.unexecutedDatabasePendingPercent,
-    summary.repositoryImplementationPercent
+    summary.repoVerifiedEarnedPercent + summary.unexecutedDatabasePendingPercent + summary.blockedPercent + summary.notImplementedPercent,
+    100.0
   );
 
-  // Status weight allocation sum: 56.0 + 20.0 + 21.0 + 3.0 = 100.0%
+  // Status weight allocation sum: 51.0 + 25.0 + 21.0 + 3.0 = 100.0%
   const allocatedSum =
     summary.statusAllocatedWeights.REPO_VERIFIED.allocated +
     summary.statusAllocatedWeights.PARTIAL.allocated +

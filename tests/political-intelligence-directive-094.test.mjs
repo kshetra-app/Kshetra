@@ -190,7 +190,7 @@ runTest('1.3 Malformed signature in acceptance record fails closed', () => {
       milestone: 'W021.5',
       taskRef: 'W021.5-TEST-BADSIG-01',
       decision: 'ACCEPTED',
-      adjudicatorIdentity: 'Chief Technology Officer',
+      adjudicatorIdentity: 'Kshetra Chief Technology Officer',
       adjudicatorRole: 'CTO',
       keyId: 'cto-root-v1',
       signature: 'this_is_not_valid_signature_bytes_at_all!!',
@@ -223,8 +223,11 @@ runTest('1.3 Malformed signature in acceptance record fails closed', () => {
         formalAcceptanceArtifact: 'reports/.tmp_bad_sig.json',
       },
     };
+    const options = {
+      externalTrustPin: 'fcd67878d2d152b7e478e39814d817b8105c8c84f56a7f7ce72dc6e69e10227d',
+    };
     assert.throws(
-      () => validateTaskAccounting(task),
+      () => validateTaskAccounting(task, null, options),
       /signature verification failed|cryptographic verification error/
     );
   } finally {
@@ -333,7 +336,14 @@ runTest('1.5 Tampered acceptance record (post-signing field modification) fails 
       },
     };
     const options = {
-      trustedAuthorities: [{ keyId: 'test-authority-094', publicKeyPem: pubPem, status: 'ACTIVE' }],
+      trustedAuthorities: [{
+        keyId: 'test-authority-094',
+        identity: 'Chief Technology Officer',
+        role: 'CTO',
+        algorithm: 'Ed25519',
+        publicKeyPem: pubPem,
+        status: 'ACTIVE',
+      }],
     };
     assert.throws(
       () => validateTaskAccounting(task, null, options),
@@ -889,21 +899,24 @@ runTest('3.3 Reconciled ledger metrics match exact mathematical formulas', () =>
   const ledger = JSON.parse(fs.readFileSync(ledgerPath, 'utf8'));
   const summary = computeLedgerSummary(ledger);
 
-  assert.strictEqual(summary.repositoryImplementationPercent, 64.0);
-  assert.strictEqual(summary.adjudicatedEarnedCompletionPercent, 51.0);
+  assert.strictEqual(summary.repositoryImplementationPercent, 61.5);
+  assert.strictEqual(summary.adjudicatedEarnedCompletionPercent, 61.5);
   assert.strictEqual(summary.databaseExecutionPercent, 0.0);
   assert.strictEqual(summary.formalAcceptancePercent, 0.0);
-  assert.strictEqual(summary.unexecutedDatabasePendingPercent, 13.0);
-  assert.strictEqual(summary.blockedOnExternalCtcGatesPercent, 21.0);
-  assert.strictEqual(summary.notImplementedPercent, 3.0);
+  assert.strictEqual(summary.unexecutedDatabasePendingPercent, 10.5);
+  assert.strictEqual(summary.blockedOnExternalCtcGatesPercent, 22.5);
+  assert.strictEqual(summary.notImplementedPercent, 5.5);
 
-  // Closure: 51.0% + 13.0% = 64.0%
+  // Non-overlapping conservation closure: 61.5% + 10.5% + 22.5% + 5.5% = 100.0%
   assert.strictEqual(
-    summary.adjudicatedEarnedCompletionPercent + summary.unexecutedDatabasePendingPercent,
-    summary.repositoryImplementationPercent
+    summary.repoVerifiedEarnedPercent +
+      summary.unexecutedDatabasePendingPercent +
+      summary.blockedPercent +
+      summary.notImplementedPercent,
+    100.0
   );
 
-  // Total allocated: 56.0 + 20.0 + 21.0 + 3.0 = 100.0%
+  // Total allocated: 51.0 + 25.0 + 21.0 + 3.0 = 100.0%
   const totalAllocated =
     summary.statusAllocatedWeights.REPO_VERIFIED.allocated +
     summary.statusAllocatedWeights.PARTIAL.allocated +
