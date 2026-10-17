@@ -3,18 +3,18 @@
 /**
  * scripts/reconcile_execution_ledger.mjs
  *
- * Master Execution Framework — W021.5 / CTO Directive 088 (Workstream D)
- * Independently Reproducible Progress Accounting & Execution Ledger Adjudication
+ * Master Execution Framework — W021.5 / CTO Directive 089 (Workstream D)
+ * Evidence-Driven Progress Accounting, Task-Level Metadata & Execution Ledger Adjudication
  *
  * Programmatically computes:
  * - Repository Implementation Readiness (64.0%)
  * - Adjudicated Earned Completion (51.0%, discounting unexecuted database stages)
  * - Live Database Staging Execution (strictly 0.0%)
- * - Formal CTO Acceptance (strictly 5.0%, Task W021.5-C-02 under DEC-033)
+ * - Formal CTO Acceptance (0.0% verified, 5.0% provisional pending independent confirmation)
  * - Unexecuted Database Pending (13.0%)
  * - Blocked on External / CTO Gates (21.0%)
  * - Not Implemented (3.0%)
- * - Status counts matching actual task records exactly (27 tasks)
+ * - Mutually exclusive status partition matching actual task records exactly (27 tasks: 16 REPO_VERIFIED, 5 PARTIAL, 5 BLOCKED, 1 NOT_IMPLEMENTED)
  * - Markdown ledger matching JSON ledger exactly
  */
 
@@ -35,15 +35,24 @@ export function computeLedgerSummary(ledger) {
   let notImplementedWeight = 0;
   let unexecutedDbDiscount = 0;
   let formallyAcceptedWeight = 0;
+  let formalAcceptancePendingWeight = 0;
 
-  const statusCounts = {
+  // Primary Mutually Exclusive Partition (sums to totalTasks)
+  const mutuallyExclusiveStatusCounts = {
     REPO_VERIFIED: 0,
-    FORMALLY_ACCEPTED: 0,
-    VERIFIED: 0,
     PARTIAL: 0,
     BLOCKED: 0,
     NOT_IMPLEMENTED: 0,
   };
+
+  // Secondary / Overlapping Facet Counts
+  const acceptanceFacetCounts = {
+    CONFIRMED_ACCEPTED: 0,
+    PENDING_INDEPENDENT_CONFIRMATION: 0,
+    UNACCEPTED: 0,
+  };
+
+  const accountingDiagnostics = [];
 
   for (const stage of ledger.stages) {
     let stageTaskSum = 0;
@@ -54,52 +63,52 @@ export function computeLedgerSummary(ledger) {
       totalWeight += task.weight;
       stageTaskSum += task.weight;
 
-      const st = task.status;
-      if (st === 'FORMALLY_ACCEPTED') {
-        statusCounts.FORMALLY_ACCEPTED++;
-        statusCounts.REPO_VERIFIED++;
-        statusCounts.VERIFIED++;
-        repoVerifiedEarned += task.weight;
-        formallyAcceptedWeight += task.weight;
-        stageEarned += task.weight;
-      } else if (st === 'VERIFIED' || st === 'REPO_VERIFIED') {
-        statusCounts.REPO_VERIFIED++;
-        statusCounts.VERIFIED++;
-        repoVerifiedEarned += task.weight;
-        stageEarned += task.weight;
+      const acct = task.accounting || {};
 
-        // Check if database execution is pending
-        if (
-          task.remainingWork &&
-          (task.remainingWork.toLowerCase().includes('staging execution') ||
-            task.remainingWork.toLowerCase().includes('database migration'))
-        ) {
-          unexecutedDbDiscount += task.weight;
+      // Validate required accounting metadata
+      if (typeof acct.repoCompletionRatio !== 'number') {
+        accountingDiagnostics.push(`Task ${task.taskId} missing acct.repoCompletionRatio`);
+      }
+      if (typeof acct.unexecutedDatabaseWeight !== 'number') {
+        accountingDiagnostics.push(`Task ${task.taskId} missing acct.unexecutedDatabaseWeight`);
+      }
+
+      const st = task.status;
+      if (st === 'REPO_VERIFIED' || st === 'VERIFIED') {
+        mutuallyExclusiveStatusCounts.REPO_VERIFIED++;
+        const ratio = typeof acct.repoCompletionRatio === 'number' ? acct.repoCompletionRatio : 1.0;
+        const earned = task.weight * ratio;
+        repoVerifiedEarned += earned;
+        stageEarned += earned;
+        unexecutedDbDiscount += (acct.unexecutedDatabaseWeight || 0);
+
+        if (acct.formalAcceptanceStatus === 'CONFIRMED_ACCEPTED') {
+          acceptanceFacetCounts.CONFIRMED_ACCEPTED++;
+          formallyAcceptedWeight += task.weight;
+        } else if (acct.formalAcceptanceStatus === 'PENDING_INDEPENDENT_CONFIRMATION') {
+          acceptanceFacetCounts.PENDING_INDEPENDENT_CONFIRMATION++;
+          formalAcceptancePendingWeight += task.weight;
+        } else {
+          acceptanceFacetCounts.UNACCEPTED++;
         }
       } else if (st === 'PARTIAL') {
-        statusCounts.PARTIAL++;
-        // Calculate partial earned ratio
-        let ratio = 0.5; // default 50%
-        if (task.taskId === 'W021.5-B1-04' || task.taskId === 'W021.5-F-02') {
-          ratio = 0.25; // 25% for partial national seed coverage
-        }
+        mutuallyExclusiveStatusCounts.PARTIAL++;
+        acceptanceFacetCounts.UNACCEPTED++;
+        const ratio = typeof acct.repoCompletionRatio === 'number' ? acct.repoCompletionRatio : 0.5;
         const earned = task.weight * ratio;
         partialEarned += earned;
         stageEarned += earned;
-
-        if (
-          task.remainingWork &&
-          (task.remainingWork.toLowerCase().includes('staging database execution') ||
-            task.remainingWork.toLowerCase().includes('staging execution'))
-        ) {
-          unexecutedDbDiscount += earned;
-        }
+        unexecutedDbDiscount += (acct.unexecutedDatabaseWeight || 0);
       } else if (st === 'BLOCKED') {
-        statusCounts.BLOCKED++;
+        mutuallyExclusiveStatusCounts.BLOCKED++;
+        acceptanceFacetCounts.UNACCEPTED++;
         blockedWeight += task.weight;
       } else if (st === 'NOT_IMPLEMENTED') {
-        statusCounts.NOT_IMPLEMENTED++;
+        mutuallyExclusiveStatusCounts.NOT_IMPLEMENTED++;
+        acceptanceFacetCounts.UNACCEPTED++;
         notImplementedWeight += task.weight;
+      } else {
+        accountingDiagnostics.push(`Task ${task.taskId} has unrecognized status: ${st}`);
       }
     }
 
@@ -117,9 +126,18 @@ export function computeLedgerSummary(ledger) {
     weightedEarnedCompletionPercent: repoReadiness,
     repositoryImplementationPercent: repoReadiness,
     adjudicatedEarnedCompletionPercent: adjudicatedEarned,
-    databaseExecutionPercent: 0.0,
-    formalAcceptancePercent: Math.round(formallyAcceptedWeight * 10) / 10,
-    statusCounts,
+    databaseExecutionPercent: 0.0, // Strictly 0.0% live DB execution
+    formalAcceptancePercent: Math.round(formallyAcceptedWeight * 10) / 10, // 0.0% independently verified
+    formalAcceptancePendingWeight: Math.round(formalAcceptancePendingWeight * 10) / 10, // 5.0% provisional
+    statusCounts: {
+      ...mutuallyExclusiveStatusCounts,
+      // Documented overlapping facet
+      FORMAL_ACCEPTANCE_CONFIRMED: acceptanceFacetCounts.CONFIRMED_ACCEPTED,
+      FORMAL_ACCEPTANCE_PENDING_CONFIRMATION: acceptanceFacetCounts.PENDING_INDEPENDENT_CONFIRMATION,
+    },
+    mutuallyExclusiveStatusCounts,
+    acceptanceFacetCounts,
+    accountingDiagnostics,
     weightedBreakdown: {
       repoVerifiedEarnedPercent: repoReadiness,
       partialInProgressPercent: partialRemaining,
@@ -134,6 +152,7 @@ export function computeLedgerSummary(ledger) {
       notImplementedPercent: Math.round(notImplementedWeight * 10) / 10,
       databaseStagingExecutedPercent: 0.0,
       ctoFormallyAcceptedPercent: Math.round(formallyAcceptedWeight * 10) / 10,
+      ctoFormalAcceptancePendingConfirmationPercent: Math.round(formalAcceptancePendingWeight * 10) / 10,
     },
   };
 }
@@ -144,7 +163,7 @@ export function generateLedgerMarkdown(ledger) {
 ## Master Specification Mapping, Stage Dependencies, Weighted Accounting & Blocker Analysis
 
 **Milestone:** W021.5 — National Political Intelligence and Candidate Transparency  
-**Directive:** CTO Directive 086 / CTO Directive 087 / CTO Directive 088 (Workstream D)  
+**Directive:** CTO Directive 086 / CTO Directive 087 / CTO Directive 088 / CTO Directive 089 (Workstream D)  
 **Date:** 2026-10-17  
 **Governance Invariant:** Master Execution Framework Amendment v1.2 / Rule IV-001 (Non-Self-Acceptance)  
 **Financial Defect Status:** \`DQ-W021.5-B2.2E-001\` — **STRICTLY OPEN**, pending separate CTO adjudication  
@@ -154,23 +173,23 @@ export function generateLedgerMarkdown(ledger) {
 
 ## 1. Executive Summary & Reproducible Progress Accounting
 
-In accordance with **CTO Directive 086 / 087 / 088**, this execution ledger replaces subjective progress estimates with an evidence-backed, mathematically reproducible accounting across all nine mandatory stages of Milestone W021.5 (Stages A through I).
+In accordance with **CTO Directive 086 / 087 / 088 / 089**, this execution ledger replaces subjective progress estimates with an evidence-backed, mathematically reproducible accounting across all nine mandatory stages of Milestone W021.5 (Stages A through I).
 
-Under **Rule IV-001 (Non-Self-Acceptance)** and Directive 088, the ledger strictly differentiates **repository implementation** (authored code, schemas, and offline tests) from **live database execution** and **formal CTO acceptance**. Requirements requiring unexecuted staging migrations, unresolved CTO decision gates, or open defects are explicitly isolated as \`PARTIAL\`, \`BLOCKED\`, or \`NOT IMPLEMENTED\`.
+Under **Rule IV-001 (Non-Self-Acceptance)** and Directive 089, the ledger strictly differentiates **repository implementation** (authored code, schemas, and offline tests) from **live database execution** and **formal CTO acceptance**. Requirements requiring unexecuted staging migrations, unresolved CTO decision gates, or open defects are explicitly isolated as \`PARTIAL\`, \`BLOCKED\`, or \`NOT IMPLEMENTED\`.
 
 \`\`\`text
 ================================================================================
-KSHETRA W021.5 EXECUTION LEDGER ACCOUNTING SUMMARY (Directive 088 Reconciled)
+KSHETRA W021.5 EXECUTION LEDGER ACCOUNTING SUMMARY (Directive 089 Reconciled)
 ================================================================================
 Total Tasks in Master Ledger:         ${summary.totalTasks} Tasks across 9 Stages (${summary.statutoryBaseTasks} Core Tasks + 2 Hardening Extensions)
 Total Weight Base:                   ${summary.totalWeight.toFixed(1)}%
 Verified Earned Completion:          ${summary.weightedEarnedCompletionPercent.toFixed(1)}%
 --------------------------------------------------------------------------------
-RECONCILED PROGRESS DIMENSIONS (Directive 088):
+RECONCILED PROGRESS DIMENSIONS (Directive 089):
 Repository Implementation Readiness: ${summary.repositoryImplementationPercent.toFixed(1)}% (Authored & Offline-Verified)
 Adjudicated Earned Completion:       ${summary.adjudicatedEarnedCompletionPercent.toFixed(1)}% (Discounting Unexecuted DB Stages)
 Live Database Staging Execution:     ${summary.databaseExecutionPercent.toFixed(1)}%  (Zero unverified DB claims)
-Formal CTO Acceptance:              ${summary.formalAcceptancePercent.toFixed(1)}%  (Task W021.5-C-02 under DEC-033)
+Formal CTO Acceptance:              ${summary.formalAcceptancePercent.toFixed(1)}%  (Verified in repo; ${summary.formalAcceptancePendingWeight.toFixed(1)}% provisional pending confirmation)
 Unexecuted Database Pending:         ${summary.reconciledProgressBreakdown.unexecutedDatabasePendingPercent.toFixed(1)}%
 Blocked on External / CTO Gates:     ${summary.reconciledProgressBreakdown.blockedOnExternalCtcGatesPercent.toFixed(1)}%
 Not Implemented:                     ${summary.reconciledProgressBreakdown.notImplementedPercent.toFixed(1)}%
@@ -182,12 +201,17 @@ Staging Database Mutations:          0 (Zero connections or schema mutations)
 
 ### Reproducible Weighted Formula:
 $$\\text{Earned Completion (Repository Readiness)} = \\sum_{i=1}^{N} \\left( W_i \\times \\text{EarnedRatio}_i \\right) = ${summary.repositoryImplementationPercent.toFixed(1)}\\%$$
-$$\\text{Adjudicated Completion (Evidence Reconciled)} = ${summary.adjudicatedEarnedCompletionPercent.toFixed(1)}\\%$$
-- **REPO_VERIFIED Tasks:** Counted at 100% of designated weight for repository implementation; discounted where staging database execution remains pending.
-- **FORMALLY_ACCEPTED Tasks:** Counted at 100% of designated weight and attributed to formal CTO acceptance (Task W021.5-C-02).
-- **PARTIAL Tasks:** Counted at observable progress ratio (e.g. 50% for schema/dossiers awaiting execution, 25% for partial national seed coverage).
-- **BLOCKED Tasks:** Counted strictly at 0.0% earned progress.
-- **NOT IMPLEMENTED Tasks:** Counted strictly at 0.0% earned progress.
+$$\\text{Adjudicated Completion (Evidence Reconciled)} = \\text{Repository Readiness} - \\text{Unexecuted Database Discount} = ${summary.adjudicatedEarnedCompletionPercent.toFixed(1)}\\%$$
+
+- **REPO_VERIFIED Tasks (16 tasks, 56.0%):** Counted at 100% of designated weight for repository implementation; unexecuted database portions discounted where staging database execution remains pending.
+- **PARTIAL Tasks (5 tasks, 8.0% earned of 20.0% allocated):** Counted at observable progress ratio:
+  - \`W021.5-B1-04\`: 25% ratio (0.5% earned) — Telangana boundary fixture complete with closed rings; national coverage pending.
+  - \`W021.5-D-02\`: 50% ratio (3.0% earned) — 10 candidate chunks authored; live staging execution pending.
+  - \`W021.5-E-01\`: 50% ratio (2.0% earned) — Demographics authored for sample states; national DB population pending.
+  - \`W021.5-F-02\`: 25% ratio (1.5% earned) — 8 state historical results authored with record-level years; remaining states pending.
+  - \`W021.5-H-04\`: 50% ratio (1.0% earned) — Fastify strangler matrix mapped for all 56 Class B methods; cutover pending.
+- **BLOCKED Tasks (5 tasks, 21.0% allocated, 0.0% earned):** Counted strictly at 0.0% earned progress.
+- **NOT IMPLEMENTED Tasks (1 task, 3.0% allocated, 0.0% earned):** Counted strictly at 0.0% earned progress.
 
 ---
 
@@ -198,40 +222,36 @@ $$\\text{Adjudicated Completion (Evidence Reconciled)} = ${summary.adjudicatedEa
 `;
 
   for (const s of ledger.stages) {
-    const isVerified = s.stageEarnedWeight === s.stageWeight;
-    const isBlocked = s.stageEarnedWeight === 0 && s.tasks.some((t) => t.status === 'BLOCKED');
-    const status = isVerified ? '**VERIFIED**' : isBlocked ? '**BLOCKED**' : '**PARTIAL**';
-    md += `| **${s.stageId}** | ${s.stageName} | ${s.tasks[0]?.specRef?.split(' ')[0] || 'W021.5'} | ${s.tasks.length} | ${s.stageWeight.toFixed(1)}% | **${s.stageEarnedWeight.toFixed(1)}%** | ${status} |\n`;
+    const sEarned = (s.stageEarnedWeight || 0).toFixed(1);
+    const sWeight = (s.stageWeight || 0).toFixed(1);
+    const sStatus = sEarned === sWeight ? '`VERIFIED`' : (Number(sEarned) > 0 ? '`PARTIAL`' : '`BLOCKED`');
+    md += `| **${s.stageId}** | ${s.stageName} | ${s.stageId} | ${s.tasks.length} | ${sWeight}% | ${sEarned}% | ${sStatus} |\n`;
   }
-
-  md += `| **TOTAL** | **Consolidated Milestone W021.5** | — | **${summary.totalTasks}** | **${summary.totalWeight.toFixed(1)}%** | **${summary.repositoryImplementationPercent.toFixed(1)}%** | **PARTIAL / BLOCKED** |\n`;
 
   md += `
 ---
 
-## 3. Detailed Stage-by-Stage Requirement Ledger
+## 3. Comprehensive Task-by-Task Specification & Evidence Inventory
 
 `;
 
   for (const s of ledger.stages) {
-    md += `### ${s.stageId}: ${s.stageName}
-*Stage Weight: ${s.stageWeight.toFixed(1)}% | Earned: ${s.stageEarnedWeight.toFixed(1)}%*
-
-| Task ID | Master Spec Ref | Scope & Completion Criteria | Weight | Status | Evidence Reference | Remaining Work & Blockers |
-| :--- | :--- | :--- | :---: | :---: | :--- | :--- |
-`;
-
+    md += `### Stage ${s.stageId}: ${s.stageName} (Weight: ${s.stageWeight.toFixed(1)}% | Earned: ${s.stageEarnedWeight.toFixed(1)}%)\n\n`;
+    md += `| Task ID | Spec Ref | Title / Deliverable | Weight | Status | Evidence Source | Remaining Work / Blockers |\n`;
+    md += `| :--- | :--- | :--- | :---: | :---: | :--- | :--- |\n`;
     for (const t of s.tasks) {
-      md += `| **${t.taskId}** | ${t.specRef} | ${t.completionCriteria} | ${t.weight.toFixed(1)}% | \`${t.status}\` | ${t.evidence.join(', ')} | ${t.remainingWork} |\n`;
+      const evStr = (t.evidence || []).join(', ');
+      md += `| **${t.taskId}** | ${t.specRef} | ${t.title} | ${t.weight.toFixed(1)}% | \`${t.status}\` | ${evStr} | ${t.remainingWork} |\n`;
     }
-
-    md += `\n---\n\n`;
+    md += `\n`;
   }
 
-  md += `## 4. Non-Negotiable Governance Invariants
+  md += `---
+
+## 4. Non-Negotiable Governance Invariants
 
 1. **Defect \`DQ-W021.5-B2.2E-001\` remains STRICTLY OPEN:** No financial disclosures or asset/liability schemas have been remediated without explicit CTO approval.
-2. **Rule IV-001 Non-Self-Acceptance:** The author does NOT self-certify, self-ratify, or close Milestone W021.5. This ledger presents reproducible evidence for independent review.
+2. **Rule IV-001 (Non-Self-Acceptance):** The author does NOT self-certify, self-ratify, or close Milestone W021.5. This ledger presents reproducible evidence for independent review.
 3. **Delhi Assembly Boundary Invariant:** Delhi statutory seats are strictly 70. Municipal demographic records (\`DL-AC-071\` through \`DL-AC-221\`) remain classified as \`NON_STATUTORY_DEMOGRAPHIC_PLACEHOLDER\`.
 4. **Zero Live Database Mutations:** Zero migrations executed on live staging or production databases.
 5. **Separation of Repository Implementation from Database Execution:** Authored migrations and scripts are repository artifacts, not live execution proof.
@@ -241,27 +261,24 @@ $$\\text{Adjudicated Completion (Evidence Reconciled)} = ${summary.adjudicatedEa
 }
 
 export function reconcileExecutionLedger() {
-  const jsonPath = path.join(REPO_ROOT, 'reports/w021_5_execution_ledger.json');
-  const mdPath = path.join(REPO_ROOT, 'reports/W021.5-EXECUTION-LEDGER.md');
+  const ledgerPath = path.join(REPO_ROOT, 'reports', 'w021_5_execution_ledger.json');
+  const mdPath = path.join(REPO_ROOT, 'reports', 'W021.5-EXECUTION-LEDGER.md');
 
-  const ledger = JSON.parse(fs.readFileSync(jsonPath, 'utf8'));
+  const raw = fs.readFileSync(ledgerPath, 'utf8');
+  const ledger = JSON.parse(raw);
 
-  // Update directive attribute
-  ledger.directive = 'CTO Directive 086 / CTO Directive 087 / CTO Directive 088 (Workstream D)';
+  const summary = computeLedgerSummary(ledger);
+  ledger.summary = summary;
 
-  // Compute summary programmatically
-  ledger.summary = computeLedgerSummary(ledger);
+  fs.writeFileSync(ledgerPath, JSON.stringify(ledger, null, 2), 'utf8');
+  console.log(`[PASS] Reconciled JSON ledger written to ${ledgerPath}`);
 
-  // Write updated JSON
-  fs.writeFileSync(jsonPath, JSON.stringify(ledger, null, 2), 'utf8');
-  console.log(`[PASS] Reconciled JSON ledger written to ${jsonPath}`);
-
-  // Generate and write Markdown
   const md = generateLedgerMarkdown(ledger);
   fs.writeFileSync(mdPath, md, 'utf8');
   console.log(`[PASS] Reconciled Markdown ledger written to ${mdPath}`);
 }
 
+// Execute if invoked directly
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
   reconcileExecutionLedger();
 }

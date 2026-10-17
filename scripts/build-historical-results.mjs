@@ -71,7 +71,7 @@ console.log('VALID =', valid, missing.length ? `(missing ${missing.length}: ${mi
 if (WRITE && valid) {
   const esc = (s) => String(s).replace(/\\/g, '\\\\').replace(/'/g, "\\'");
   const tallyStr = Object.entries(tally).sort((a, b) => b[1] - a[1]).map(([k, v]) => `${k} ${v}`).join(', ');
-  const recLine = (r) => `  { acNo: ${r.acNo}, name: '${esc(r.name)}', winner: '${esc(r.winner)}', party: '${esc(r.party)}' },`;
+  const recLine = (r) => `  { acNo: ${r.acNo}, name: '${esc(r.name)}', winner: '${esc(r.winner)}', party: '${esc(r.party)}', year: ${Y} },`;
   const out = `/**
  * ${cfg.label} — Previous Election Results (${Y})
  *
@@ -87,6 +87,7 @@ export interface ${cfg.iface} {
   name: string;
   winner: string;
   party: string;
+  year?: number;
 }
 
 const ${cfg.arr}: ${cfg.iface}[] = [

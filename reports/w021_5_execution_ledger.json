@@ -17,15 +17,28 @@
     "repositoryImplementationPercent": 64,
     "adjudicatedEarnedCompletionPercent": 51,
     "databaseExecutionPercent": 0,
-    "formalAcceptancePercent": 5,
+    "formalAcceptancePercent": 0,
+    "formalAcceptancePendingWeight": 5,
     "statusCounts": {
       "REPO_VERIFIED": 16,
-      "FORMALLY_ACCEPTED": 1,
-      "VERIFIED": 16,
+      "PARTIAL": 5,
+      "BLOCKED": 5,
+      "NOT_IMPLEMENTED": 1,
+      "FORMAL_ACCEPTANCE_CONFIRMED": 0,
+      "FORMAL_ACCEPTANCE_PENDING_CONFIRMATION": 1
+    },
+    "mutuallyExclusiveStatusCounts": {
+      "REPO_VERIFIED": 16,
       "PARTIAL": 5,
       "BLOCKED": 5,
       "NOT_IMPLEMENTED": 1
     },
+    "acceptanceFacetCounts": {
+      "CONFIRMED_ACCEPTED": 0,
+      "PENDING_INDEPENDENT_CONFIRMATION": 1,
+      "UNACCEPTED": 26
+    },
+    "accountingDiagnostics": [],
     "weightedBreakdown": {
       "repoVerifiedEarnedPercent": 64,
       "partialInProgressPercent": 12,
@@ -39,7 +52,8 @@
       "blockedOnExternalCtcGatesPercent": 21,
       "notImplementedPercent": 3,
       "databaseStagingExecutedPercent": 0,
-      "ctoFormallyAcceptedPercent": 5
+      "ctoFormallyAcceptedPercent": 0,
+      "ctoFormalAcceptancePendingConfirmationPercent": 5
     }
   },
   "stages": [
@@ -61,7 +75,18 @@
             "reports/w021_5a_repository_data_truth_audit.json",
             "reports/w021_5a_repository_data_truth_audit.md"
           ],
-          "remainingWork": "None. Fully documented and closed."
+          "remainingWork": "None. Fully documented and closed.",
+          "accounting": {
+            "repoCompletionRatio": 1,
+            "ratioRationale": "29-domain audit complete with empirical reports authored in repository.",
+            "requiresDatabaseExecution": false,
+            "databaseExecutionEvidenced": false,
+            "unexecutedDatabaseWeight": 0,
+            "blockedByExternalDependency": false,
+            "blockedByCtoDecision": false,
+            "formalAcceptanceStatus": "UNACCEPTED",
+            "formalAcceptanceArtifact": null
+          }
         },
         {
           "taskId": "W021.5-A-02",
@@ -76,7 +101,18 @@
             "reports/w021_5_national_data_coverage_matrix.md",
             "tests/political-intelligence-directive-085.test.mjs"
           ],
-          "remainingWork": "None for generator logic. 30 states still lack GeoJSON in data/geo."
+          "remainingWork": "None for generator logic. 30 states still lack GeoJSON in data/geo.",
+          "accounting": {
+            "repoCompletionRatio": 1,
+            "ratioRationale": "National coverage matrix generator authored with multi-dimensional evidence taxonomy.",
+            "requiresDatabaseExecution": false,
+            "databaseExecutionEvidenced": false,
+            "unexecutedDatabaseWeight": 0,
+            "blockedByExternalDependency": false,
+            "blockedByCtoDecision": false,
+            "formalAcceptanceStatus": "UNACCEPTED",
+            "formalAcceptanceArtifact": null
+          }
         },
         {
           "taskId": "W021.5-A-03",
@@ -90,7 +126,18 @@
             "reports/w021_5_demographic_seed_reconciliation_ledger.md",
             "tests/political-intelligence-directive-085.test.mjs"
           ],
-          "remainingWork": "None. Invariant enforced in scripts and tests."
+          "remainingWork": "None. Invariant enforced in scripts and tests.",
+          "accounting": {
+            "repoCompletionRatio": 1,
+            "ratioRationale": "Delhi 70-seat statutory Assembly invariant enforced; municipal wards quarantined.",
+            "requiresDatabaseExecution": false,
+            "databaseExecutionEvidenced": false,
+            "unexecutedDatabaseWeight": 0,
+            "blockedByExternalDependency": false,
+            "blockedByCtoDecision": false,
+            "formalAcceptanceStatus": "UNACCEPTED",
+            "formalAcceptanceArtifact": null
+          }
         }
       ]
     },
@@ -112,7 +159,18 @@
             "reports/w021_5b1_national_constituency_canonicalization.json",
             "reports/w021_5b1_national_constituency_canonicalization.md"
           ],
-          "remainingWork": "Staging execution pending explicit CTO directive."
+          "remainingWork": "Staging execution pending explicit CTO directive.",
+          "accounting": {
+            "repoCompletionRatio": 1,
+            "ratioRationale": "All 4,123 statutory Assembly constituencies canonicalized across 31 States/UTs.",
+            "requiresDatabaseExecution": false,
+            "databaseExecutionEvidenced": false,
+            "unexecutedDatabaseWeight": 0,
+            "blockedByExternalDependency": false,
+            "blockedByCtoDecision": false,
+            "formalAcceptanceStatus": "UNACCEPTED",
+            "formalAcceptanceArtifact": null
+          }
         },
         {
           "taskId": "W021.5-B1-02",
@@ -126,7 +184,18 @@
             "supabase/migrations/061_canonical_national_ac_pc_mappings.sql",
             "reports/w021_5b1_r3_mapping_evidence_manifest.json"
           ],
-          "remainingWork": "None in repository code."
+          "remainingWork": "None in repository code.",
+          "accounting": {
+            "repoCompletionRatio": 1,
+            "ratioRationale": "National AC-to-PC mapping registry authored in repository.",
+            "requiresDatabaseExecution": false,
+            "databaseExecutionEvidenced": false,
+            "unexecutedDatabaseWeight": 0,
+            "blockedByExternalDependency": false,
+            "blockedByCtoDecision": false,
+            "formalAcceptanceStatus": "UNACCEPTED",
+            "formalAcceptanceArtifact": null
+          }
         },
         {
           "taskId": "W021.5-B1-03",
@@ -140,7 +209,18 @@
             "reports/w021_5b1_r5_assam_2023_reconciliation.json",
             "reports/w021_5b1_r5_assam_2023_reconciliation.md"
           ],
-          "remainingWork": "None in repository code."
+          "remainingWork": "None in repository code.",
+          "accounting": {
+            "repoCompletionRatio": 1,
+            "ratioRationale": "Temporal lineage and Assam 2023 delimitation models implemented.",
+            "requiresDatabaseExecution": false,
+            "databaseExecutionEvidenced": false,
+            "unexecutedDatabaseWeight": 0,
+            "blockedByExternalDependency": false,
+            "blockedByCtoDecision": false,
+            "formalAcceptanceStatus": "UNACCEPTED",
+            "formalAcceptanceArtifact": null
+          }
         },
         {
           "taskId": "W021.5-B1-04",
@@ -154,7 +234,18 @@
             "data/geo/telangana-assembly.geojson",
             "reports/w021_5_national_data_coverage_matrix.json"
           ],
-          "remainingWork": "30 states lack GeoJSON files in data/geo. Only Telangana (119 ACs) is populated."
+          "remainingWork": "30 states lack GeoJSON files in data/geo. Only Telangana (119 ACs) is populated.",
+          "accounting": {
+            "repoCompletionRatio": 0.25,
+            "ratioRationale": "Telangana GeoJSON boundary fixture fully validated with closed rings; national 30 states pending authoritative boundary feeds.",
+            "requiresDatabaseExecution": false,
+            "databaseExecutionEvidenced": false,
+            "unexecutedDatabaseWeight": 0,
+            "blockedByExternalDependency": false,
+            "blockedByCtoDecision": false,
+            "formalAcceptanceStatus": "UNACCEPTED",
+            "formalAcceptanceArtifact": null
+          }
         }
       ]
     },
@@ -175,21 +266,43 @@
             "supabase/migrations/064_political_organization_governance_remediation.sql",
             "reports/w021_5b2_organization_schema_gaps.json"
           ],
-          "remainingWork": "None in repository code."
+          "remainingWork": "None in repository code.",
+          "accounting": {
+            "repoCompletionRatio": 1,
+            "ratioRationale": "Political organization governance and multilingual extension schemas authored in repository.",
+            "requiresDatabaseExecution": false,
+            "databaseExecutionEvidenced": false,
+            "unexecutedDatabaseWeight": 0,
+            "blockedByExternalDependency": false,
+            "blockedByCtoDecision": false,
+            "formalAcceptanceStatus": "UNACCEPTED",
+            "formalAcceptanceArtifact": null
+          }
         },
         {
           "taskId": "W021.5-C-02",
           "specRef": "W021.5-B2.2-C Migration 065",
           "title": "1,207 Canonical Political Organizations Catalog Ingestion",
           "weight": 5,
-          "status": "FORMALLY_ACCEPTED",
+          "status": "REPO_VERIFIED",
           "completionCriteria": "Ingest and verify 1,207 ECI registered parties (C0-C5 tiers) with immutable IDs and recognition metadata.",
           "evidence": [
             "supabase/migrations/065_canonical_political_organization_registry.sql",
             "reports/w021_5b2_b2_2c_1096_disposition_ledger.md",
             "reports/w021_5b2_b2_2c_final_organization_manifest.json"
           ],
-          "remainingWork": "Formally accepted by CTO under Directive W021.5-CTO-NEXT-002."
+          "remainingWork": "Live staging database execution unevidenced in this package; formal acceptance under Directive W021.5-CTO-NEXT-002 pending independent confirmation.",
+          "accounting": {
+            "repoCompletionRatio": 1,
+            "ratioRationale": "Migration 065 schema and 1,207 organization manifest authored offline; live database staging execution unevidenced.",
+            "requiresDatabaseExecution": true,
+            "databaseExecutionEvidenced": false,
+            "unexecutedDatabaseWeight": 5,
+            "blockedByExternalDependency": false,
+            "blockedByCtoDecision": false,
+            "formalAcceptanceStatus": "PENDING_INDEPENDENT_CONFIRMATION",
+            "formalAcceptanceArtifact": null
+          }
         },
         {
           "taskId": "W021.5-C-03",
@@ -203,7 +316,18 @@
             "reports/w021_5b2_b2_2c_symbol_matrix.json",
             "reports/w021_5b2_b2_2c_alias_collision_matrix.json"
           ],
-          "remainingWork": "None in repository artifacts."
+          "remainingWork": "None in repository artifacts.",
+          "accounting": {
+            "repoCompletionRatio": 1,
+            "ratioRationale": "Multilingual party names, aliases and symbols matrix authored in repository.",
+            "requiresDatabaseExecution": false,
+            "databaseExecutionEvidenced": false,
+            "unexecutedDatabaseWeight": 0,
+            "blockedByExternalDependency": false,
+            "blockedByCtoDecision": false,
+            "formalAcceptanceStatus": "UNACCEPTED",
+            "formalAcceptanceArtifact": null
+          }
         }
       ]
     },
@@ -225,7 +349,18 @@
             "supabase/migrations/063_canonical_political_identity_foundation.sql",
             "reports/w021_5b2_identity_resolution_matrix.json"
           ],
-          "remainingWork": "None in repository schema."
+          "remainingWork": "None in repository schema.",
+          "accounting": {
+            "repoCompletionRatio": 1,
+            "ratioRationale": "Canonical persons and entity deduplication algorithms authored in repository.",
+            "requiresDatabaseExecution": false,
+            "databaseExecutionEvidenced": false,
+            "unexecutedDatabaseWeight": 0,
+            "blockedByExternalDependency": false,
+            "blockedByCtoDecision": false,
+            "formalAcceptanceStatus": "UNACCEPTED",
+            "formalAcceptanceArtifact": null
+          }
         },
         {
           "taskId": "W021.5-D-02",
@@ -239,7 +374,18 @@
             "reports/w021_5b2_b2_2d_person_manifest.json",
             "reports/w021_5b2_b2_2d_candidacy_manifest.json"
           ],
-          "remainingWork": "Awaiting explicit CTO authorization for staging database execution."
+          "remainingWork": "Awaiting explicit CTO authorization for staging database execution.",
+          "accounting": {
+            "repoCompletionRatio": 0.5,
+            "ratioRationale": "10 candidate population chunks authored in repository; staging database execution and cross-table FK validation pending.",
+            "requiresDatabaseExecution": true,
+            "databaseExecutionEvidenced": false,
+            "unexecutedDatabaseWeight": 3,
+            "blockedByExternalDependency": false,
+            "blockedByCtoDecision": false,
+            "formalAcceptanceStatus": "UNACCEPTED",
+            "formalAcceptanceArtifact": null
+          }
         },
         {
           "taskId": "W021.5-D-03",
@@ -251,7 +397,18 @@
           "evidence": [
             "reports/W021.5-CANONICAL-ARCHITECTURE-READINESS-PACKAGE.md"
           ],
-          "remainingWork": "Blocked pending CTO approval of Migration 067 specification."
+          "remainingWork": "Blocked pending CTO approval of Migration 067 specification.",
+          "accounting": {
+            "repoCompletionRatio": 0,
+            "ratioRationale": "Blocked on Migration 067 schema authoring and live staging DB execution.",
+            "requiresDatabaseExecution": true,
+            "databaseExecutionEvidenced": false,
+            "unexecutedDatabaseWeight": 0,
+            "blockedByExternalDependency": false,
+            "blockedByCtoDecision": true,
+            "formalAcceptanceStatus": "UNACCEPTED",
+            "formalAcceptanceArtifact": null
+          }
         }
       ]
     },
@@ -272,7 +429,18 @@
             "supabase/migrations/066_downstream_civic_extensions.sql",
             "reports/W021.5-CTO-DIRECTIVE-037-POST-066-GATE-EXECUTION-REPORT.md"
           ],
-          "remainingWork": "Pre-freeze verified; awaiting CTO staging execution directive."
+          "remainingWork": "Pre-freeze verified; awaiting CTO staging execution directive.",
+          "accounting": {
+            "repoCompletionRatio": 0.5,
+            "ratioRationale": "Constituency demographic profiles and aggregates authored for sample states; national population pending.",
+            "requiresDatabaseExecution": true,
+            "databaseExecutionEvidenced": false,
+            "unexecutedDatabaseWeight": 2,
+            "blockedByExternalDependency": false,
+            "blockedByCtoDecision": false,
+            "formalAcceptanceStatus": "UNACCEPTED",
+            "formalAcceptanceArtifact": null
+          }
         },
         {
           "taskId": "W021.5-E-02",
@@ -285,7 +453,18 @@
             "reports/W021.5-CANONICAL-ARCHITECTURE-READINESS-PACKAGE.md",
             "reports/W021.5-CTO-DIRECTIVE-085-IMPLEMENTATION-REPORT.md"
           ],
-          "remainingWork": "STRICTLY OPEN pending separate CTO adjudication. No agent self-closure permitted."
+          "remainingWork": "STRICTLY OPEN pending separate CTO adjudication. No agent self-closure permitted.",
+          "accounting": {
+            "repoCompletionRatio": 0,
+            "ratioRationale": "Financial defect DQ-W021.5-B2.2E-001 strictly open pending CTO adjudication.",
+            "requiresDatabaseExecution": false,
+            "databaseExecutionEvidenced": false,
+            "unexecutedDatabaseWeight": 0,
+            "blockedByExternalDependency": false,
+            "blockedByCtoDecision": true,
+            "formalAcceptanceStatus": "UNACCEPTED",
+            "formalAcceptanceArtifact": null
+          }
         },
         {
           "taskId": "W021.5-E-03",
@@ -297,7 +476,18 @@
           "evidence": [
             "reports/W021.5-CANONICAL-ARCHITECTURE-READINESS-PACKAGE.md"
           ],
-          "remainingWork": "Blocked pending adjudication of DQ-W021.5-B2.2E-001 and CTO staging migration authorization."
+          "remainingWork": "Blocked pending adjudication of DQ-W021.5-B2.2E-001 and CTO staging migration authorization.",
+          "accounting": {
+            "repoCompletionRatio": 0,
+            "ratioRationale": "Normalized candidate affidavit disclosure schema (Migration 068) blocked pending defect resolution.",
+            "requiresDatabaseExecution": true,
+            "databaseExecutionEvidenced": false,
+            "unexecutedDatabaseWeight": 0,
+            "blockedByExternalDependency": false,
+            "blockedByCtoDecision": true,
+            "formalAcceptanceStatus": "UNACCEPTED",
+            "formalAcceptanceArtifact": null
+          }
         }
       ]
     },
@@ -318,7 +508,18 @@
             "supabase/migrations/051_election_data_normalization.sql",
             "reports/w021_5b2_2f_temporal_integrity.json"
           ],
-          "remainingWork": "None in repository schema. Staging database migration execution pending."
+          "remainingWork": "None in repository schema. Staging database migration execution pending.",
+          "accounting": {
+            "repoCompletionRatio": 1,
+            "ratioRationale": "Longitudinal election event and contest schemas normalized in repository.",
+            "requiresDatabaseExecution": false,
+            "databaseExecutionEvidenced": false,
+            "unexecutedDatabaseWeight": 0,
+            "blockedByExternalDependency": false,
+            "blockedByCtoDecision": false,
+            "formalAcceptanceStatus": "UNACCEPTED",
+            "formalAcceptanceArtifact": null
+          }
         },
         {
           "taskId": "W021.5-F-02",
@@ -331,7 +532,18 @@
             "data/seed/*-historical-results.ts",
             "reports/w021_5_national_data_coverage_matrix.json"
           ],
-          "remainingWork": "Only 8 states have historical results in repo. 23 states single-term only. National DB backfill pending."
+          "remainingWork": "Only 8 states have historical results in repo. 23 states single-term only. National DB backfill pending.",
+          "accounting": {
+            "repoCompletionRatio": 0.25,
+            "ratioRationale": "Historical election results authored across 8 states with explicit record-level years; national remaining 23 states and database staging schema pending.",
+            "requiresDatabaseExecution": true,
+            "databaseExecutionEvidenced": false,
+            "unexecutedDatabaseWeight": 3,
+            "blockedByExternalDependency": false,
+            "blockedByCtoDecision": false,
+            "formalAcceptanceStatus": "UNACCEPTED",
+            "formalAcceptanceArtifact": null
+          }
         }
       ]
     },
@@ -353,7 +565,18 @@
             "apps/api/src/services/stateData.ts",
             "apps/api/src/__tests__/constituencies.test.ts"
           ],
-          "remainingWork": "None in API contracts."
+          "remainingWork": "None in API contracts.",
+          "accounting": {
+            "repoCompletionRatio": 1,
+            "ratioRationale": "Fastify route contracts and OpenAPI schemas hardened to preserve nullable election fields.",
+            "requiresDatabaseExecution": false,
+            "databaseExecutionEvidenced": false,
+            "unexecutedDatabaseWeight": 0,
+            "blockedByExternalDependency": false,
+            "blockedByCtoDecision": false,
+            "formalAcceptanceStatus": "UNACCEPTED",
+            "formalAcceptanceArtifact": null
+          }
         },
         {
           "taskId": "W021.5-G-02",
@@ -366,7 +589,18 @@
             "apps/api/src/services/stateData.ts",
             "tests/political-intelligence-directive-085.test.mjs"
           ],
-          "remainingWork": "None. State-code lists completely eliminated."
+          "remainingWork": "None. State-code lists completely eliminated.",
+          "accounting": {
+            "repoCompletionRatio": 1,
+            "ratioRationale": "Elimination of state-code election year inferences from stateData.ts complete.",
+            "requiresDatabaseExecution": false,
+            "databaseExecutionEvidenced": false,
+            "unexecutedDatabaseWeight": 0,
+            "blockedByExternalDependency": false,
+            "blockedByCtoDecision": false,
+            "formalAcceptanceStatus": "UNACCEPTED",
+            "formalAcceptanceArtifact": null
+          }
         },
         {
           "taskId": "W021.5-G-03",
@@ -379,7 +613,18 @@
             "reports/W021.5-CANONICAL-ARCHITECTURE-READINESS-PACKAGE.md",
             "reports/w006_api_architecture_report.md"
           ],
-          "remainingWork": "Blocked pending staging database population and migration deployment."
+          "remainingWork": "Blocked pending staging database population and migration deployment.",
+          "accounting": {
+            "repoCompletionRatio": 0,
+            "ratioRationale": "Fastify canonical DB-backed route strangulation blocked pending live staging DB execution.",
+            "requiresDatabaseExecution": true,
+            "databaseExecutionEvidenced": false,
+            "unexecutedDatabaseWeight": 0,
+            "blockedByExternalDependency": false,
+            "blockedByCtoDecision": true,
+            "formalAcceptanceStatus": "UNACCEPTED",
+            "formalAcceptanceArtifact": null
+          }
         }
       ]
     },
@@ -400,7 +645,18 @@
             "apps/mobile/lib/api/endpoints/constituencies.ts",
             "apps/mobile/__tests__/political-intelligence-journey.test.ts"
           ],
-          "remainingWork": "None."
+          "remainingWork": "None.",
+          "accounting": {
+            "repoCompletionRatio": 1,
+            "ratioRationale": "Mobile DTO validation hardened with nullable electionYear support and ApiValidationError.",
+            "requiresDatabaseExecution": false,
+            "databaseExecutionEvidenced": false,
+            "unexecutedDatabaseWeight": 0,
+            "blockedByExternalDependency": false,
+            "blockedByCtoDecision": false,
+            "formalAcceptanceStatus": "UNACCEPTED",
+            "formalAcceptanceArtifact": null
+          }
         },
         {
           "taskId": "W021.5-H-02",
@@ -413,7 +669,18 @@
             "apps/mobile/app/constituency/[id].tsx",
             "apps/mobile/__tests__/political-intelligence-journey.test.ts"
           ],
-          "remainingWork": "None."
+          "remainingWork": "None.",
+          "accounting": {
+            "repoCompletionRatio": 1,
+            "ratioRationale": "Section-level provenance tags active across mobile constituency screens.",
+            "requiresDatabaseExecution": false,
+            "databaseExecutionEvidenced": false,
+            "unexecutedDatabaseWeight": 0,
+            "blockedByExternalDependency": false,
+            "blockedByCtoDecision": false,
+            "formalAcceptanceStatus": "UNACCEPTED",
+            "formalAcceptanceArtifact": null
+          }
         },
         {
           "taskId": "W021.5-H-03",
@@ -427,7 +694,18 @@
             "apps/mobile/app/constituency/[id].tsx",
             "apps/mobile/app/legislator/[id].tsx"
           ],
-          "remainingWork": "None. All screens consume recentElection and elections[]."
+          "remainingWork": "None. All screens consume recentElection and elections[].",
+          "accounting": {
+            "repoCompletionRatio": 1,
+            "ratioRationale": "Mobile user journeys decoupled from legacy election2023 aliases.",
+            "requiresDatabaseExecution": false,
+            "databaseExecutionEvidenced": false,
+            "unexecutedDatabaseWeight": 0,
+            "blockedByExternalDependency": false,
+            "blockedByCtoDecision": false,
+            "formalAcceptanceStatus": "UNACCEPTED",
+            "formalAcceptanceArtifact": null
+          }
         },
         {
           "taskId": "W021.5-H-04",
@@ -440,7 +718,18 @@
             "reports/w006_r1_audit_integrity_report.json",
             "apps/mobile/lib/supabaseDataService.ts"
           ],
-          "remainingWork": "Phase 1-4 strangler migration actively governed under W006."
+          "remainingWork": "Phase 1-4 strangler migration actively governed under W006.",
+          "accounting": {
+            "repoCompletionRatio": 0.5,
+            "ratioRationale": "Mobile write strangler mapped for all 56 Class B methods; runtime cutover and legacy method removal pending.",
+            "requiresDatabaseExecution": false,
+            "databaseExecutionEvidenced": false,
+            "unexecutedDatabaseWeight": 0,
+            "blockedByExternalDependency": false,
+            "blockedByCtoDecision": false,
+            "formalAcceptanceStatus": "UNACCEPTED",
+            "formalAcceptanceArtifact": null
+          }
         }
       ]
     },
@@ -458,7 +747,18 @@
           "status": "NOT_IMPLEMENTED",
           "completionCriteria": "Implement client SQLite schema and delta synchronization engine with cryptographic revision hashes.",
           "evidence": [],
-          "remainingWork": "Scheduled for Milestone W021.5-B5 after Fastify API canonical cutover."
+          "remainingWork": "Scheduled for Milestone W021.5-B5 after Fastify API canonical cutover.",
+          "accounting": {
+            "repoCompletionRatio": 0,
+            "ratioRationale": "Mobile SQLite offline sync schema and engine not yet authored in repository.",
+            "requiresDatabaseExecution": false,
+            "databaseExecutionEvidenced": false,
+            "unexecutedDatabaseWeight": 0,
+            "blockedByExternalDependency": false,
+            "blockedByCtoDecision": false,
+            "formalAcceptanceStatus": "UNACCEPTED",
+            "formalAcceptanceArtifact": null
+          }
         },
         {
           "taskId": "W021.5-I-02",
@@ -470,7 +770,18 @@
           "evidence": [
             "EXECUTION_STATE.md"
           ],
-          "remainingWork": "Production database strictly air-gapped; blocked pending staging completion and CTO approval."
+          "remainingWork": "Production database strictly air-gapped; blocked pending staging completion and CTO approval.",
+          "accounting": {
+            "repoCompletionRatio": 0,
+            "ratioRationale": "Production database air-gap cutover preflight blocked pending formal staging sign-off.",
+            "requiresDatabaseExecution": true,
+            "databaseExecutionEvidenced": false,
+            "unexecutedDatabaseWeight": 0,
+            "blockedByExternalDependency": false,
+            "blockedByCtoDecision": true,
+            "formalAcceptanceStatus": "UNACCEPTED",
+            "formalAcceptanceArtifact": null
+          }
         }
       ]
     }

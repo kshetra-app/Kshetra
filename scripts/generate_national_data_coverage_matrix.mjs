@@ -139,7 +139,7 @@ export function extractObjectBlocks(str) {
   return blocks;
 }
 
-// Hardened GeoJSON validation logic (CTO Directive 088 Workstream A)
+// Hardened GeoJSON validation logic (CTO Directive 088 & 089 Workstreams A & C)
 export function validateGeoJsonObject(parsed, stateCode, statutorySeats, fileName = 'geojson-object') {
   const errors = [];
   if (!parsed || parsed.type !== 'FeatureCollection' || !Array.isArray(parsed.features)) {
@@ -155,12 +155,22 @@ export function validateGeoJsonObject(parsed, stateCode, statutorySeats, fileNam
       multipartFeatureCount: 0,
       coordNumericErrors: 0,
       coordRangeErrors: 0,
+      expectedStatutoryAcCount: statutorySeats,
+      uniqueStatutoryAcsLinked: 0,
       linkedConstituencyCount: 0,
+      missingStatutoryAcNos: Array.from({ length: statutorySeats }, (_, i) => i + 1),
       duplicateLinkedAcs: [],
+      excessFeatureCount: 0,
       duplicateFeatureCount: 0,
       outOfRangeLinkedAcs: [],
       unresolvedFeatureCount: 0,
+      allExpectedStatutoryAcsRepresented: false,
+      allFeaturesValid: false,
+      allGeometriesValid: false,
+      allCoordinatesNumericValid: false,
+      allCoordinatesRangeValid: false,
       linkageValid: false,
+      statutoryComplete: false,
       coordinatesValid: false,
       coordinateRangeValid: false,
       authoritativeVerified: false,
@@ -185,8 +195,9 @@ export function validateGeoJsonObject(parsed, stateCode, statutorySeats, fileNam
   for (let i = 0; i < parsed.features.length; i++) {
     const f = parsed.features[i];
     let featureGeometryValid = true;
-    let featureNumericValid = true;
-    let featureRangeValid = true;
+    let featureNumericValid = false;
+    let featureRangeValid = false;
+    let coordinatesTraversed = false;
 
     if (!f || f.type !== 'Feature') {
       errors.push(`Feature[${i}] is not a valid Feature object`);
@@ -216,14 +227,26 @@ export function validateGeoJsonObject(parsed, stateCode, statutorySeats, fileNam
       featureGeometryValid = false;
     }
 
-    // Deep coordinate nesting and position validation
+    // Deep coordinate nesting, ring closure, and numeric/range position validation
     if (featureGeometryValid) {
+      coordinatesTraversed = true;
+      featureNumericValid = true;
+      featureRangeValid = true;
+
       if (gType === 'Polygon') {
         // Must be Array of LinearRings (depth 3: number[][][])
         for (const ring of coords) {
-          if (!Array.isArray(ring) || ring.length < 3) {
+          if (!Array.isArray(ring) || ring.length < 4) {
             featureGeometryValid = false;
-            errors.push(`Feature[${i}] polygon ring has invalid structure or < 3 positions`);
+            errors.push(`Feature[${i}] polygon ring has invalid structure or < 4 positions (RFC 7946 violation)`);
+            break;
+          }
+          // Linear ring closure requirement: first and last position must be equivalent
+          const first = ring[0];
+          const last = ring[ring.length - 1];
+          if (!Array.isArray(first) || !Array.isArray(last) || first[0] !== last[0] || first[1] !== last[1]) {
+            featureGeometryValid = false;
+            errors.push(`Feature[${i}] polygon ring is not closed: first [${first}] != last [${last}]`);
             break;
           }
           for (const pos of ring) {
@@ -251,9 +274,17 @@ export function validateGeoJsonObject(parsed, stateCode, statutorySeats, fileNam
             break;
           }
           for (const ring of poly) {
-            if (!Array.isArray(ring) || ring.length < 3) {
+            if (!Array.isArray(ring) || ring.length < 4) {
               featureGeometryValid = false;
-              errors.push(`Feature[${i}] MultiPolygon ring has invalid structure or < 3 positions`);
+              errors.push(`Feature[${i}] MultiPolygon ring has invalid structure or < 4 positions (RFC 7946 violation)`);
+              break;
+            }
+            // Linear ring closure requirement
+            const first = ring[0];
+            const last = ring[ring.length - 1];
+            if (!Array.isArray(first) || !Array.isArray(last) || first[0] !== last[0] || first[1] !== last[1]) {
+              featureGeometryValid = false;
+              errors.push(`Feature[${i}] MultiPolygon ring is not closed: first [${first}] != last [${last}]`);
               break;
             }
             for (const pos of ring) {
@@ -276,12 +307,15 @@ export function validateGeoJsonObject(parsed, stateCode, statutorySeats, fileNam
       }
     }
 
-    if (featureGeometryValid) geometryValidFeatureCount++;
-    if (featureNumericValid) coordinateNumericValidFeatureCount++;
-    if (featureRangeValid) coordinateRangeValidFeatureCount++;
+    // Workstream C Invariant: Features rejected before coordinate traversal MUST NOT increment numeric or range counts!
+    if (featureGeometryValid) {
+      geometryValidFeatureCount++;
+      if (coordinatesTraversed && featureNumericValid) coordinateNumericValidFeatureCount++;
+      if (coordinatesTraversed && featureRangeValid) coordinateRangeValidFeatureCount++;
+    }
 
     // A feature is strictly valid only if all geometry, numeric, and coordinate range checks pass
-    if (featureGeometryValid && featureNumericValid && featureRangeValid) {
+    if (featureGeometryValid && coordinatesTraversed && featureNumericValid && featureRangeValid) {
       validFeatureCount++;
     }
 
@@ -305,16 +339,37 @@ export function validateGeoJsonObject(parsed, stateCode, statutorySeats, fileNam
   }
 
   const totalFeatures = parsed.features.length;
-  const coordinatesValid = totalFeatures > 0 && coordNumericErrors === 0 && coordinateNumericValidFeatureCount === totalFeatures;
-  const coordinateRangeValid = totalFeatures > 0 && coordRangeErrors === 0 && coordinateRangeValidFeatureCount === totalFeatures;
-  const linkageValid = linkedAcs.size > 0 && unresolvedFeatureCount === 0 && outOfRangeLinkedAcs.length === 0;
+  const missingStatutoryAcNos = [];
+  for (let s = 1; s <= statutorySeats; s++) {
+    if (!linkedAcs.has(s)) {
+      missingStatutoryAcNos.push(s);
+    }
+  }
 
-  // Under Directive 088 Workstream A:
-  // hasGeoJSON CANNOT be true if any geometry, coordinate, range, or linkage validation fails!
+  const uniqueStatutoryAcsLinked = linkedAcs.size;
+  const duplicateAcSet = [...new Set(duplicateLinkedAcs)];
+  const excessFeatureCount = duplicateLinkedAcs.length;
+  const outOfRangeAcSet = [...new Set(outOfRangeLinkedAcs)];
+
+  const allExpectedStatutoryAcsRepresented = missingStatutoryAcNos.length === 0;
+  const allGeometriesValid = totalFeatures > 0 && geometryValidFeatureCount === totalFeatures;
+  const allCoordinatesNumericValid = totalFeatures > 0 && coordinateNumericValidFeatureCount === totalFeatures && coordNumericErrors === 0;
+  const allCoordinatesRangeValid = totalFeatures > 0 && coordinateRangeValidFeatureCount === totalFeatures && coordRangeErrors === 0;
+  const allFeaturesValid = totalFeatures > 0 && validFeatureCount === totalFeatures && errors.length === 0;
+  const linkageValid = linkedAcs.size > 0 && unresolvedFeatureCount === 0 && outOfRangeLinkedAcs.length === 0;
+  const statutoryComplete = allExpectedStatutoryAcsRepresented;
+
+  const coordinatesValid = allCoordinatesNumericValid;
+  const coordinateRangeValid = allCoordinatesRangeValid;
+
+  // Under Directive 088 & 089 Workstream C:
+  // hasGeoJSON requires all features, geometries, coordinates, and linkage to be valid.
+  // statutoryComplete is a distinct metric tracking whether every statutory AC is represented.
   const hasGeoJSON = totalFeatures > 0 &&
-    validFeatureCount === totalFeatures &&
-    coordinatesValid &&
-    coordinateRangeValid &&
+    allFeaturesValid &&
+    allGeometriesValid &&
+    allCoordinatesNumericValid &&
+    allCoordinatesRangeValid &&
     linkageValid &&
     errors.length === 0;
 
@@ -330,12 +385,22 @@ export function validateGeoJsonObject(parsed, stateCode, statutorySeats, fileNam
     multipartFeatureCount,
     coordNumericErrors,
     coordRangeErrors,
-    linkedConstituencyCount: linkedAcs.size,
-    duplicateLinkedAcs: [...new Set(duplicateLinkedAcs)],
-    duplicateFeatureCount: duplicateLinkedAcs.length,
-    outOfRangeLinkedAcs: [...new Set(outOfRangeLinkedAcs)],
+    expectedStatutoryAcCount: statutorySeats,
+    uniqueStatutoryAcsLinked,
+    linkedConstituencyCount: uniqueStatutoryAcsLinked,
+    missingStatutoryAcNos,
+    duplicateLinkedAcs: duplicateAcSet,
+    excessFeatureCount,
+    duplicateFeatureCount: excessFeatureCount,
+    outOfRangeLinkedAcs: outOfRangeAcSet,
     unresolvedFeatureCount,
+    allExpectedStatutoryAcsRepresented,
+    allFeaturesValid,
+    allGeometriesValid,
+    allCoordinatesNumericValid,
+    allCoordinatesRangeValid,
     linkageValid,
+    statutoryComplete,
     coordinatesValid,
     coordinateRangeValid,
     authoritativeVerified: false, // Local boundary file; not live statutory ECI database verified
@@ -430,7 +495,7 @@ export function inspectAffidavits(stateCode, statutorySeats) {
   }
 
   const content = fs.readFileSync(storePath, 'utf8');
-  return inspectAffidavitsAst(content, stateCode, statutorySeats, 'affidavits.ts');
+  return inspectAffidavitsAst(content, stateCode, statutorySeats, null, 'affidavits.ts');
 }
 
 // Inspect historical election records tied to actual per-constituency source files via AST (CTO Directive 088 Workstream C)

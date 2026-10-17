@@ -479,8 +479,8 @@ runTest('3.2 Historical records bind winner, runner-up, votes, margin, and elect
 runTest('3.3 Explicit numeric 0 margin is preserved as 0, while missing margin is strictly null', () => {
   const testData = `
 export const TEST_2014_RESULTS = [
-  { acNo: 1, name: 'Sirpur', winner: 'Winner A', party: 'TRS', margin: 0, votes: 50000 },
-  { acNo: 2, name: 'Chennur', winner: 'Winner B', party: 'INC' }
+  { year: 2014, acNo: 1, name: 'Sirpur', winner: 'Winner A', party: 'TRS', margin: 0, votes: 50000 },
+  { year: 2014, acNo: 2, name: 'Chennur', winner: 'Winner B', party: 'INC' }
 ];
 `;
   const res = inspectHistoricalResultsAst(testData, 10);
@@ -501,14 +501,13 @@ export const TELANGANA_2014_RESULTS = [
 ];
 `;
   const res = inspectHistoricalResultsAst(mixedYearData, 10);
-  assert.deepStrictEqual(res.demonstrablePerAcYears, [2018, 2014]);
+  assert.deepStrictEqual(res.demonstrablePerAcYears, [2018], 'Per Directive 089, yearless record inside year-named array must remain yearless');
+  assert.strictEqual(res.eventsByYear[2014], undefined, 'Yearless record must not be assigned 2014 from collection name');
 
-  const rec2014 = res.eventsByYear[2014][0];
   const rec2018 = res.eventsByYear[2018][0];
-
-  assert.strictEqual(rec2014.eventYear, 2014);
   assert.strictEqual(rec2018.eventYear, 2018);
   assert.strictEqual(rec2018.electionType, 'BYPOLL');
+  assert.strictEqual(res.yearlessRecordCount, 1, 'Yearless record tracked as yearless');
 });
 
 runTest('3.5 Empty arrays and malformed records do not establish historical years', () => {
@@ -542,7 +541,8 @@ runTest('4.1 Dynamic recomputation: computes summary programmatically from tasks
   assert.strictEqual(dynamicallyComputed.repositoryImplementationPercent, 64.0, 'Repository readiness is 64.0%');
   assert.strictEqual(dynamicallyComputed.adjudicatedEarnedCompletionPercent, 51.0, 'Adjudicated completion is 51.0%');
   assert.strictEqual(dynamicallyComputed.databaseExecutionPercent, 0.0, 'Database execution is strictly 0.0%');
-  assert.strictEqual(dynamicallyComputed.formalAcceptancePercent, 5.0, 'Formal acceptance is strictly 5.0%');
+  assert.strictEqual(dynamicallyComputed.formalAcceptancePercent, 0.0, 'Formal acceptance is 0.0% verified in repo');
+  assert.strictEqual(dynamicallyComputed.formalAcceptancePendingWeight, 5.0, '5.0% provisional pending confirmation');
 });
 
 runTest('4.2 All 9 stage weights total exactly 100.0% and task weights reconcile to stages', () => {
@@ -565,7 +565,6 @@ runTest('4.2 All 9 stage weights total exactly 100.0% and task weights reconcile
 runTest('4.3 Task status counts in summary match actual records in tasks array', () => {
   const actualCounts = {
     REPO_VERIFIED: 0,
-    FORMALLY_ACCEPTED: 0,
     PARTIAL: 0,
     BLOCKED: 0,
     NOT_IMPLEMENTED: 0,
@@ -583,10 +582,10 @@ runTest('4.3 Task status counts in summary match actual records in tasks array',
 
   assert.strictEqual(ledger.summary.totalTasks, totalTaskCount, 'summary.totalTasks matches task count');
   assert.strictEqual(totalTaskCount, 27, 'Total task count is exactly 27');
-  assert.strictEqual(ledger.summary.statusCounts.REPO_VERIFIED, actualCounts.REPO_VERIFIED + actualCounts.FORMALLY_ACCEPTED);
-  assert.strictEqual(ledger.summary.statusCounts.PARTIAL, actualCounts.PARTIAL);
-  assert.strictEqual(ledger.summary.statusCounts.BLOCKED, actualCounts.BLOCKED);
-  assert.strictEqual(ledger.summary.statusCounts.NOT_IMPLEMENTED, actualCounts.NOT_IMPLEMENTED);
+  assert.strictEqual(ledger.summary.mutuallyExclusiveStatusCounts.REPO_VERIFIED, actualCounts.REPO_VERIFIED);
+  assert.strictEqual(ledger.summary.mutuallyExclusiveStatusCounts.PARTIAL, actualCounts.PARTIAL);
+  assert.strictEqual(ledger.summary.mutuallyExclusiveStatusCounts.BLOCKED, actualCounts.BLOCKED);
+  assert.strictEqual(ledger.summary.mutuallyExclusiveStatusCounts.NOT_IMPLEMENTED, actualCounts.NOT_IMPLEMENTED);
 });
 
 runTest('4.4 Progress accounting produces separate independent dimensions without conflation', () => {
@@ -594,7 +593,8 @@ runTest('4.4 Progress accounting produces separate independent dimensions withou
   assert.strictEqual(s.repositoryImplementationPercent, 64.0);
   assert.strictEqual(s.adjudicatedEarnedCompletionPercent, 51.0);
   assert.strictEqual(s.databaseExecutionPercent, 0.0);
-  assert.strictEqual(s.formalAcceptancePercent, 5.0);
+  assert.strictEqual(s.formalAcceptancePercent, 0.0);
+  assert.strictEqual(s.formalAcceptancePendingWeight, 5.0);
   assert.strictEqual(s.reconciledProgressBreakdown.unexecutedDatabasePendingPercent, 13.0);
   assert.strictEqual(s.reconciledProgressBreakdown.blockedOnExternalCtcGatesPercent, 21.0);
   assert.strictEqual(s.reconciledProgressBreakdown.notImplementedPercent, 3.0);
@@ -616,7 +616,8 @@ runTest('4.5 Tasks with pending DB staging execution are labeled REPO_VERIFIED, 
   assert.strictEqual(f01.status, 'REPO_VERIFIED', 'Migration 051 is REPO_VERIFIED (staging execution pending)');
 
   const c02 = ledger.stages.find((s) => s.stageId === 'STAGE_C').tasks.find((t) => t.taskId === 'W021.5-C-02');
-  assert.strictEqual(c02.status, 'FORMALLY_ACCEPTED', 'Task C-02 is FORMALLY_ACCEPTED under DEC-033');
+  assert.strictEqual(c02.status, 'REPO_VERIFIED', 'Task C-02 is REPO_VERIFIED (formal acceptance pending independent confirmation)');
+  assert.strictEqual(c02.accounting.formalAcceptanceStatus, 'PENDING_INDEPENDENT_CONFIRMATION');
 });
 
 runTest('4.6 Markdown ledger matches JSON ledger in totals, tables, and breakdown', () => {
@@ -625,7 +626,7 @@ runTest('4.6 Markdown ledger matches JSON ledger in totals, tables, and breakdow
   assert.ok(content.includes('Repository Implementation Readiness: 64.0%'));
   assert.ok(content.includes('Adjudicated Earned Completion:       51.0%'));
   assert.ok(content.includes('Live Database Staging Execution:     0.0%'));
-  assert.ok(content.includes('Formal CTO Acceptance:              5.0%'));
+  assert.ok(content.includes('Formal CTO Acceptance:              0.0%'));
   assert.ok(content.includes('Unexecuted Database Pending:         13.0%'));
   assert.ok(content.includes('Blocked on External / CTO Gates:     21.0%'));
   assert.ok(content.includes('Not Implemented:                     3.0%'));

@@ -359,7 +359,8 @@ runTest('5.2 Ledger explicitly differentiates repository readiness from database
   assert.strictEqual(ledger.summary.repositoryImplementationPercent, 64.0, 'Repository implementation readiness is 64.0%');
   assert.strictEqual(ledger.summary.adjudicatedEarnedCompletionPercent, 51.0, 'Adjudicated progress discounting unexecuted DB is 51.0%');
   assert.strictEqual(ledger.summary.databaseExecutionPercent, 0.0, 'Live database execution is strictly 0.0%');
-  assert.strictEqual(ledger.summary.formalAcceptancePercent, 5.0, 'Formal CTO acceptance is strictly 5.0% (Task W021.5-C-02)');
+  assert.strictEqual(ledger.summary.formalAcceptancePercent, 0.0, 'Formal CTO acceptance is 0.0% verified in repo (5.0% provisional pending confirmation)');
+  assert.strictEqual(ledger.summary.formalAcceptancePendingWeight, 5.0, 'Task W021.5-C-02 provisional weight is 5.0%');
 });
 
 runTest('5.3 Execution ledger Markdown reflects reconciled accounting dimensions', () => {
@@ -367,7 +368,7 @@ runTest('5.3 Execution ledger Markdown reflects reconciled accounting dimensions
   assert.ok(content.includes('Verified Earned Completion:          64.0%'));
   assert.ok(content.includes('Adjudicated Earned Completion:       51.0%'));
   assert.ok(content.includes('Live Database Staging Execution:     0.0%'));
-  assert.ok(content.includes('Formal CTO Acceptance:              5.0%'));
+  assert.ok(content.includes('Formal CTO Acceptance:              0.0%'));
 });
 
 // ─────────────────────────────────────────────────────────────────────────────

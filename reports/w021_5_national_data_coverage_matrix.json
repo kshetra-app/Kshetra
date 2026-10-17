@@ -1,7 +1,7 @@
 {
   "title": "Kshetra W021.5 National Data Coverage Inventory Matrix",
   "directive": "CTO DIRECTIVE 085 / CTO DIRECTIVE 086 / CTO DIRECTIVE 087 / CTO DIRECTIVE 088",
-  "generatedAt": "2026-10-17T11:29:28.066Z",
+  "generatedAt": "2026-10-17T12:08:14.014Z",
   "totalStatesAudited": 31,
   "summary": {
     "canonicalFullStatesCount": 0,
@@ -85,14 +85,24 @@
         "multipartFeatureCount": 0,
         "coordNumericErrors": 0,
         "coordRangeErrors": 0,
+        "expectedStatutoryAcCount": 119,
+        "uniqueStatutoryAcsLinked": 119,
         "linkedConstituencyCount": 119,
+        "missingStatutoryAcNos": [],
         "duplicateLinkedAcs": [
           119
         ],
+        "excessFeatureCount": 1,
         "duplicateFeatureCount": 1,
         "outOfRangeLinkedAcs": [],
         "unresolvedFeatureCount": 0,
+        "allExpectedStatutoryAcsRepresented": true,
+        "allFeaturesValid": true,
+        "allGeometriesValid": true,
+        "allCoordinatesNumericValid": true,
+        "allCoordinatesRangeValid": true,
         "linkageValid": true,
+        "statutoryComplete": true,
         "coordinatesValid": true,
         "coordinateRangeValid": true,
         "authoritativeVerified": false,
