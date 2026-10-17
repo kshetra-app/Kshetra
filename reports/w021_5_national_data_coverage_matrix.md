@@ -1,8 +1,8 @@
 # KSHETRA W021.5 — NATIONAL DATA COVERAGE INVENTORY MATRIX
 
 **Milestone:** W021.5 — National Political Intelligence and Candidate Transparency  
-**Directive:** CTO Directive 085 / CTO Directive 086 / CTO Directive 087 (Workstream A & B)  
-**Generated At:** `2026-10-17T09:40:50.757Z`  
+**Directive:** CTO Directive 085 / CTO Directive 086 / CTO Directive 087 / CTO Directive 088  
+**Generated At:** `2026-10-17T11:29:28.066Z`  
 **Total States/UTs Audited:** 31  
 **Defect Classification:** `DQ-W021.5-B2.2E-001` — **STRICTLY OPEN**  
 **Governance Invariant:** Rule IV-001 — Non-Self-Acceptance  
@@ -13,7 +13,7 @@
 
 This matrix establishes the definitive, evidence-based national political data coverage inventory of the Kshetra platform across all 31 supported Indian states and Union Territories.
 
-Under **CTO Directive 085 / 086 / 087** and **Rule IV-001 (Non-Self-Acceptance)**, this report repudiates unsupported completeness claims:
+Under **CTO Directive 085 / 086 / 087 / 088** and **Rule IV-001 (Non-Self-Acceptance)**, this report repudiates unsupported completeness claims:
 1. **Zero Canonical Full States:** No state is promoted to `CANONICAL_FULL` or `VERIFIED_PRODUCTION` merely because of allowlisted state codes or file existence. All records are classified truthfully as offline local seed fixtures pending live database verification.
 2. **Multi-Dimensional Evidence:** Every state is audited across 7 distinct dimensions: Registry Identity, Electoral Results, Historical Coverage, Representative Profiles, Affidavits, Geospatial Boundaries, and Provenance.
 3. **Delhi Statutory Invariant:** Strictly 70 statutory Assembly seats. 151 extra municipal/demographic records (`DL-AC-071` to `DL-AC-221`) are explicitly isolated as `NON_STATUTORY_DEMOGRAPHIC_PLACEHOLDER`.

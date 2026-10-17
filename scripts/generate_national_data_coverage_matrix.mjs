@@ -16,6 +16,11 @@
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import {
+  inspectAffidavitsAst,
+  inspectMlaProfilesAst,
+  inspectHistoricalResultsAst,
+} from './lib/ast_data_parser.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -134,7 +139,7 @@ export function extractObjectBlocks(str) {
   return blocks;
 }
 
-// Deep GeoJSON validation logic
+// Hardened GeoJSON validation logic (CTO Directive 088 Workstream A)
 export function validateGeoJsonObject(parsed, stateCode, statutorySeats, fileName = 'geojson-object') {
   const errors = [];
   if (!parsed || parsed.type !== 'FeatureCollection' || !Array.isArray(parsed.features)) {
@@ -144,74 +149,145 @@ export function validateGeoJsonObject(parsed, stateCode, statutorySeats, fileNam
       fileName,
       featureCount: 0,
       validFeatureCount: 0,
-      coordinatesValid: false,
-      coordinateRangeValid: false,
+      geometryValidFeatureCount: 0,
+      coordinateNumericValidFeatureCount: 0,
+      coordinateRangeValidFeatureCount: 0,
+      multipartFeatureCount: 0,
+      coordNumericErrors: 0,
+      coordRangeErrors: 0,
       linkedConstituencyCount: 0,
       duplicateLinkedAcs: [],
+      duplicateFeatureCount: 0,
       outOfRangeLinkedAcs: [],
       unresolvedFeatureCount: 0,
       linkageValid: false,
+      coordinatesValid: false,
+      coordinateRangeValid: false,
       authoritativeVerified: false,
       validationErrors: ['Root is not a valid FeatureCollection'],
     };
   }
 
-  let validFeatures = 0;
+  let validFeatureCount = 0;
+  let geometryValidFeatureCount = 0;
+  let coordinateNumericValidFeatureCount = 0;
+  let coordinateRangeValidFeatureCount = 0;
+  let multipartFeatureCount = 0;
   let coordNumericErrors = 0;
   let coordRangeErrors = 0;
+
   const linkedAcs = new Set();
   const seenAcs = new Set();
   const duplicateLinkedAcs = [];
   const outOfRangeLinkedAcs = [];
   let unresolvedFeatureCount = 0;
 
-  for (const f of parsed.features) {
+  for (let i = 0; i < parsed.features.length; i++) {
+    const f = parsed.features[i];
+    let featureGeometryValid = true;
+    let featureNumericValid = true;
+    let featureRangeValid = true;
+
     if (!f || f.type !== 'Feature') {
-      errors.push('Item in features array is not a Feature');
+      errors.push(`Feature[${i}] is not a valid Feature object`);
+      featureGeometryValid = false;
       continue;
     }
+
     if (!f.geometry || typeof f.geometry !== 'object') {
-      errors.push('Feature missing geometry');
-      continue;
-    }
-    if (f.geometry.type !== 'Polygon' && f.geometry.type !== 'MultiPolygon') {
-      errors.push(`Feature geometry type "${f.geometry.type}" is not Polygon/MultiPolygon`);
-      continue;
-    }
-    if (!Array.isArray(f.geometry.coordinates) || f.geometry.coordinates.length === 0) {
-      errors.push('Feature coordinates array is empty or invalid');
+      errors.push(`Feature[${i}] missing geometry object`);
+      featureGeometryValid = false;
       continue;
     }
 
-    // Validate coordinates numeric pairs and India geographic bounding box
-    let featureCoordValid = true;
-    const validateCoords = (arr) => {
-      if (!Array.isArray(arr) || arr.length === 0) {
-        featureCoordValid = false;
-        coordNumericErrors++;
-        return;
-      }
-      if (typeof arr[0] === 'number' && typeof arr[1] === 'number') {
-        const [lng, lat] = arr;
-        if (!Number.isFinite(lng) || !Number.isFinite(lat) || isNaN(lng) || isNaN(lat)) {
-          featureCoordValid = false;
-          coordNumericErrors++;
-        } else if (lng < 65 || lng > 100 || lat < 5 || lat > 40) {
-          coordRangeErrors++;
+    const gType = f.geometry.type;
+    if (gType !== 'Polygon' && gType !== 'MultiPolygon') {
+      errors.push(`Feature[${i}] geometry type "${gType}" is unsupported (only Polygon/MultiPolygon permitted)`);
+      featureGeometryValid = false;
+    }
+
+    if (gType === 'MultiPolygon') {
+      multipartFeatureCount++;
+    }
+
+    const coords = f.geometry.coordinates;
+    if (!Array.isArray(coords) || coords.length === 0) {
+      errors.push(`Feature[${i}] coordinates array is empty or non-array`);
+      featureGeometryValid = false;
+    }
+
+    // Deep coordinate nesting and position validation
+    if (featureGeometryValid) {
+      if (gType === 'Polygon') {
+        // Must be Array of LinearRings (depth 3: number[][][])
+        for (const ring of coords) {
+          if (!Array.isArray(ring) || ring.length < 3) {
+            featureGeometryValid = false;
+            errors.push(`Feature[${i}] polygon ring has invalid structure or < 3 positions`);
+            break;
+          }
+          for (const pos of ring) {
+            if (!Array.isArray(pos) || pos.length < 2) {
+              featureGeometryValid = false;
+              errors.push(`Feature[${i}] coordinate position is not a 2-element array`);
+              break;
+            }
+            const [lng, lat] = pos;
+            if (typeof lng !== 'number' || typeof lat !== 'number' || !Number.isFinite(lng) || !Number.isFinite(lat) || isNaN(lng) || isNaN(lat)) {
+              featureNumericValid = false;
+              coordNumericErrors++;
+            } else if (lng < 65 || lng > 100 || lat < 5 || lat > 40) {
+              featureRangeValid = false;
+              coordRangeErrors++;
+            }
+          }
         }
-      } else {
-        for (const sub of arr) validateCoords(sub);
+      } else if (gType === 'MultiPolygon') {
+        // Must be Array of Polygons (depth 4: number[][][][])
+        for (const poly of coords) {
+          if (!Array.isArray(poly) || poly.length === 0) {
+            featureGeometryValid = false;
+            errors.push(`Feature[${i}] MultiPolygon polygon element is empty or non-array`);
+            break;
+          }
+          for (const ring of poly) {
+            if (!Array.isArray(ring) || ring.length < 3) {
+              featureGeometryValid = false;
+              errors.push(`Feature[${i}] MultiPolygon ring has invalid structure or < 3 positions`);
+              break;
+            }
+            for (const pos of ring) {
+              if (!Array.isArray(pos) || pos.length < 2) {
+                featureGeometryValid = false;
+                errors.push(`Feature[${i}] MultiPolygon coordinate position is not a 2-element array`);
+                break;
+              }
+              const [lng, lat] = pos;
+              if (typeof lng !== 'number' || typeof lat !== 'number' || !Number.isFinite(lng) || !Number.isFinite(lat) || isNaN(lng) || isNaN(lat)) {
+                featureNumericValid = false;
+                coordNumericErrors++;
+              } else if (lng < 65 || lng > 100 || lat < 5 || lat > 40) {
+                featureRangeValid = false;
+                coordRangeErrors++;
+              }
+            }
+          }
+        }
       }
-    };
-    validateCoords(f.geometry.coordinates);
-
-    if (featureCoordValid) {
-      validFeatures++;
     }
 
-    // Check constituency linkage
+    if (featureGeometryValid) geometryValidFeatureCount++;
+    if (featureNumericValid) coordinateNumericValidFeatureCount++;
+    if (featureRangeValid) coordinateRangeValidFeatureCount++;
+
+    // A feature is strictly valid only if all geometry, numeric, and coordinate range checks pass
+    if (featureGeometryValid && featureNumericValid && featureRangeValid) {
+      validFeatureCount++;
+    }
+
+    // Check constituency AC linkage
     const ac = f.properties?.AC_NO ?? f.properties?.ac_no ?? f.properties?.acNo ?? f.properties?.acNumber;
-    if (ac != null && !isNaN(Number(ac))) {
+    if (ac != null && !isNaN(Number(ac)) && Number.isInteger(Number(ac))) {
       const acNum = Number(ac);
       if (acNum >= 1 && acNum <= statutorySeats) {
         if (seenAcs.has(acNum)) {
@@ -228,27 +304,40 @@ export function validateGeoJsonObject(parsed, stateCode, statutorySeats, fileNam
     }
   }
 
-  const coordinatesValid = validFeatures > 0 && errors.length === 0 && coordNumericErrors === 0;
-  const coordinateRangeValid = coordRangeErrors === 0;
+  const totalFeatures = parsed.features.length;
+  const coordinatesValid = totalFeatures > 0 && coordNumericErrors === 0 && coordinateNumericValidFeatureCount === totalFeatures;
+  const coordinateRangeValid = totalFeatures > 0 && coordRangeErrors === 0 && coordinateRangeValidFeatureCount === totalFeatures;
   const linkageValid = linkedAcs.size > 0 && unresolvedFeatureCount === 0 && outOfRangeLinkedAcs.length === 0;
 
-  // Under Directive 087 Workstream B:
-  // hasGeoJSON CANNOT be true if coordinateRangeValid is false, coordinatesValid is false, or errors exist!
-  const hasGeoJSON = validFeatures > 0 && coordinatesValid && coordinateRangeValid && errors.length === 0;
+  // Under Directive 088 Workstream A:
+  // hasGeoJSON CANNOT be true if any geometry, coordinate, range, or linkage validation fails!
+  const hasGeoJSON = totalFeatures > 0 &&
+    validFeatureCount === totalFeatures &&
+    coordinatesValid &&
+    coordinateRangeValid &&
+    linkageValid &&
+    errors.length === 0;
 
   return {
     hasGeoJSON,
     filePresent: true,
     fileName,
-    featureCount: parsed.features.length,
-    validFeatureCount: validFeatures,
-    coordinatesValid,
-    coordinateRangeValid,
+    featureCount: totalFeatures,
+    validFeatureCount,
+    geometryValidFeatureCount,
+    coordinateNumericValidFeatureCount,
+    coordinateRangeValidFeatureCount,
+    multipartFeatureCount,
+    coordNumericErrors,
+    coordRangeErrors,
     linkedConstituencyCount: linkedAcs.size,
     duplicateLinkedAcs: [...new Set(duplicateLinkedAcs)],
+    duplicateFeatureCount: duplicateLinkedAcs.length,
     outOfRangeLinkedAcs: [...new Set(outOfRangeLinkedAcs)],
     unresolvedFeatureCount,
     linkageValid,
+    coordinatesValid,
+    coordinateRangeValid,
     authoritativeVerified: false, // Local boundary file; not live statutory ECI database verified
     validationErrors: errors.slice(0, 5),
   };
@@ -267,13 +356,20 @@ export function inspectGeoJSON(stateCode, statutorySeats, overridePath = null) {
       fileName: null,
       featureCount: 0,
       validFeatureCount: 0,
-      coordinatesValid: false,
-      coordinateRangeValid: false,
+      geometryValidFeatureCount: 0,
+      coordinateNumericValidFeatureCount: 0,
+      coordinateRangeValidFeatureCount: 0,
+      multipartFeatureCount: 0,
+      coordNumericErrors: 0,
+      coordRangeErrors: 0,
       linkedConstituencyCount: 0,
       duplicateLinkedAcs: [],
+      duplicateFeatureCount: 0,
       outOfRangeLinkedAcs: [],
       unresolvedFeatureCount: 0,
       linkageValid: false,
+      coordinatesValid: false,
+      coordinateRangeValid: false,
       authoritativeVerified: false,
       validationErrors: ['File not found in data/geo'],
     };
@@ -290,20 +386,28 @@ export function inspectGeoJSON(stateCode, statutorySeats, overridePath = null) {
       fileName: path.basename(targetPath),
       featureCount: 0,
       validFeatureCount: 0,
-      coordinatesValid: false,
-      coordinateRangeValid: false,
+      geometryValidFeatureCount: 0,
+      coordinateNumericValidFeatureCount: 0,
+      coordinateRangeValidFeatureCount: 0,
+      multipartFeatureCount: 0,
+      coordNumericErrors: 0,
+      coordRangeErrors: 0,
       linkedConstituencyCount: 0,
       duplicateLinkedAcs: [],
+      duplicateFeatureCount: 0,
       outOfRangeLinkedAcs: [],
       unresolvedFeatureCount: 0,
       linkageValid: false,
+      coordinatesValid: false,
+      coordinateRangeValid: false,
       authoritativeVerified: false,
       validationErrors: [err.message],
     };
   }
 }
 
-// Inspect affidavits in store via structural parsing
+// Inspect affidavits in store via AST structural parsing (CTO Directive 088 Workstream B)
+// Enforces required candidate fields: id, candidateName, acNo, constituencyName, stateCode, sourceUrl
 export function inspectAffidavits(stateCode, statutorySeats) {
   const storePath = path.join(REPO_ROOT, 'apps', 'mobile', 'stores', 'affidavits.ts');
   if (!fs.existsSync(storePath)) {
@@ -320,127 +424,43 @@ export function inspectAffidavits(stateCode, statutorySeats) {
       formallyAccepted: false,
       pending: 0,
       records: [],
+      syntacticParseSuccess: false,
+      parseErrors: ['File not found on disk'],
     };
   }
 
   const content = fs.readFileSync(storePath, 'utf8');
-
-  // Find array declaration SEED_AFFIDAVITS
-  const arrayMatch = content.match(/const\s+SEED_AFFIDAVITS\s*(?::\s*[^=]+)?=\s*\[([\s\S]*?)\];/);
-  if (!arrayMatch) {
-    return {
-      total: 0,
-      totalAffidavitsInStore: 0,
-      presentInFileCount: 0,
-      structurallyValidCount: 0,
-      identityValidatedCount: 0,
-      sourceProvenanceRecordedCount: 0,
-      verified: 0,
-      officiallyVerifiedCount: 0,
-      canonicalDatabaseBacked: false,
-      formallyAccepted: false,
-      pending: 0,
-      records: [],
-    };
-  }
-
-  const objBlocks = extractObjectBlocks(arrayMatch[1]);
-  const stateRecords = [];
-  let presentInFileCount = 0;
-  let structurallyValidCount = 0;
-  let identityValidatedCount = 0;
-  let sourceProvenanceRecordedCount = 0;
-  const seenIds = new Set();
-
-  for (const block of objBlocks) {
-    const stateMatch = block.match(/stateCode:\s*'([^']+)'/);
-    if (!stateMatch || stateMatch[1] !== stateCode) continue;
-
-    presentInFileCount++;
-
-    const idMatch = block.match(/id:\s*'([^']+)'/);
-    const nameMatch = block.match(/candidateName:\s*'([^']+)'/);
-    const acMatch = block.match(/acNo:\s*(\d+)/);
-    const cNameMatch = block.match(/constituencyName:\s*'([^']+)'/);
-    const sourceMatch = block.match(/sourceUrl:\s*'([^']+)'/);
-
-    if (idMatch && nameMatch && acMatch && cNameMatch && sourceMatch) {
-      structurallyValidCount++;
-      const id = idMatch[1];
-      const candidateName = nameMatch[1];
-      const acNo = parseInt(acMatch[1], 10);
-      const constituencyName = cNameMatch[1];
-      const sourceUrl = sourceMatch[1];
-
-      if (acNo >= 1 && acNo <= statutorySeats && !seenIds.has(id)) {
-        identityValidatedCount++;
-        seenIds.add(id);
-
-        if (sourceUrl.startsWith('http://') || sourceUrl.startsWith('https://')) {
-          sourceProvenanceRecordedCount++;
-        }
-
-        stateRecords.push({
-          id,
-          candidateName,
-          acNo,
-          constituencyName,
-          sourceUrl,
-          status: 'SOURCE_PROVENANCE_RECORDED_LOCAL_SEED',
-        });
-      }
-    }
-  }
-
-  return {
-    total: stateRecords.length,
-    totalAffidavitsInStore: stateRecords.length,
-    presentInFileCount,
-    structurallyValidCount,
-    identityValidatedCount,
-    sourceProvenanceRecordedCount,
-    verified: 0, // Zero affidavits in store have undergone live statutory ECI/DB verification
-    officiallyVerifiedCount: 0,
-    canonicalDatabaseBacked: false,
-    formallyAccepted: false,
-    pending: stateRecords.length,
-    records: stateRecords,
-  };
+  return inspectAffidavitsAst(content, stateCode, statutorySeats, 'affidavits.ts');
 }
 
-// Inspect historical election records tied to actual per-constituency source files
-export function inspectHistoricalCoverage(stateCode) {
-  const slug = STATE_SLUGS[stateCode];
+// Inspect historical election records tied to actual per-constituency source files via AST (CTO Directive 088 Workstream C)
+export function inspectHistoricalCoverage(stateCode, statutorySeats = 500) {
+  const slug = STATE_SLUGS[codeOrSlug(stateCode)];
   const histPath = path.join(REPO_ROOT, 'data', 'seed', `${slug}-historical-results.ts`);
   const exists = fs.existsSync(histPath);
 
-  const demonstrableYears = [];
-  if (exists) {
-    const content = fs.readFileSync(histPath, 'utf8');
-    // Extract array declarations containing 4-digit years in their identifier
-    const arrayRegex = /(?:const|let|var|export const)\s+([A-Za-z0-9_]*?(19\d\d|20\d\d)[A-Za-z0-9_]*)\s*(?::\s*[^=]+)?=\s*\[([\s\S]*?)\];/g;
-    let m;
-    while ((m = arrayRegex.exec(content)) !== null) {
-      const year = parseInt(m[2], 10);
-      const body = m[3];
-      // Check if the array body contains actual structured per-constituency records with acNo
-      const acMatches = [...body.matchAll(/\{\s*acNo:\s*(\d+)/g)];
-      if (acMatches.length > 0 && !demonstrableYears.includes(year)) {
-        demonstrableYears.push(year);
-      }
-    }
+  if (!exists) {
+    return {
+      stateHistoricalFilePresent: false,
+      demonstrablePerAcYears: [],
+      totalHistoricalYears: 0,
+      eventsByYear: {},
+      malformedRecordCount: 0,
+    };
   }
 
-  demonstrableYears.sort((a, b) => b - a);
-
+  const content = fs.readFileSync(histPath, 'utf8');
+  const res = inspectHistoricalResultsAst(content, statutorySeats, `${slug}-historical-results.ts`);
   return {
-    stateHistoricalFilePresent: exists,
-    demonstrablePerAcYears: demonstrableYears,
-    totalHistoricalYears: demonstrableYears.length,
+    stateHistoricalFilePresent: true,
+    demonstrablePerAcYears: res.demonstrablePerAcYears,
+    totalHistoricalYears: res.totalHistoricalYears,
+    eventsByYear: res.eventsByYear,
+    malformedRecordCount: res.malformedRecordCount,
   };
 }
 
-// Inspect MLA profiles file with schema and boundary awareness
+// Inspect MLA profiles file with AST parsing and boundary awareness (CTO Directive 088 Workstream B)
 export function inspectMlaProfiles(stateCode, statutorySeats) {
   const slug = STATE_SLUGS[codeOrSlug(stateCode)];
   const mlaPath = path.join(REPO_ROOT, 'data', 'seed', `${slug}-mla-profiles.ts`);
@@ -451,50 +471,12 @@ export function inspectMlaProfiles(stateCode, statutorySeats) {
       extraNonStatutoryProfiles: 0,
       duplicateProfilesCount: 0,
       malformedProfilesCount: 0,
+      totalEvaluated: 0,
     };
   }
 
   const content = fs.readFileSync(mlaPath, 'utf8');
-
-  // Match array declarations
-  const arrayMatches = [...content.matchAll(/(?:export\s+)?const\s+[A-Za-z0-9_]+\s*(?::\s*[^=]+)?=\s*\[([\s\S]*?)\];/g)];
-  const validRecords = [];
-  const uniqueAcs = new Set();
-  const duplicateAcs = [];
-  let extraNonStatutory = 0;
-  let malformedCount = 0;
-
-  for (const arrMatch of arrayMatches) {
-    const arrayBody = arrMatch[1];
-    const objBlocks = extractObjectBlocks(arrayBody);
-    for (const block of objBlocks) {
-      const acMatch = block.match(/\bacNo:\s*(\d+)/);
-      const nameMatch = block.match(/\bname:\s*['"]([^'"]+)['"]/);
-      if (acMatch && nameMatch) {
-        const acNo = parseInt(acMatch[1], 10);
-        if (uniqueAcs.has(acNo)) {
-          duplicateAcs.push(acNo);
-        } else {
-          uniqueAcs.add(acNo);
-          if (acNo >= 1 && acNo <= statutorySeats) {
-            validRecords.push({ acNo, name: nameMatch[1] });
-          } else {
-            extraNonStatutory++;
-          }
-        }
-      } else if (block.includes('acNo:')) {
-        malformedCount++;
-      }
-    }
-  }
-
-  return {
-    uniqueProfilesCount: uniqueAcs.size,
-    resolvedToStatutoryAcCount: validRecords.length,
-    extraNonStatutoryProfiles: extraNonStatutory,
-    duplicateProfilesCount: duplicateAcs.length,
-    malformedProfilesCount: malformedCount,
-  };
+  return inspectMlaProfilesAst(content, statutorySeats, `${slug}-mla-profiles.ts`);
 }
 
 function codeOrSlug(code) {
@@ -639,7 +621,7 @@ export async function generateCoverageInventory() {
       : (evidencedTypesSet.has('GENERAL') ? 'GENERAL' : null);
 
     // 3. Historical Coverage Dimension (structural parsing without hardcoded state-code lists)
-    const hist = inspectHistoricalCoverage(code);
+    const hist = inspectHistoricalCoverage(code, meta.seats);
     const allAvailableYears = primaryRecentElectionYear != null
       ? [...new Set([primaryRecentElectionYear, ...hist.demonstrablePerAcYears])].sort((a, b) => b - a)
       : [...hist.demonstrablePerAcYears].sort((a, b) => b - a);
@@ -797,7 +779,7 @@ export async function writeCoverageReports() {
 
   const reportJson = {
     title: 'Kshetra W021.5 National Data Coverage Inventory Matrix',
-    directive: 'CTO DIRECTIVE 085 / CTO DIRECTIVE 086 / CTO DIRECTIVE 087',
+    directive: 'CTO DIRECTIVE 085 / CTO DIRECTIVE 086 / CTO DIRECTIVE 087 / CTO DIRECTIVE 088',
     generatedAt,
     totalStatesAudited: inventory.length,
     summary: {
@@ -824,7 +806,7 @@ export async function writeCoverageReports() {
   let md = `# KSHETRA W021.5 — NATIONAL DATA COVERAGE INVENTORY MATRIX
 
 **Milestone:** W021.5 — National Political Intelligence and Candidate Transparency  
-**Directive:** CTO Directive 085 / CTO Directive 086 / CTO Directive 087 (Workstream A & B)  
+**Directive:** CTO Directive 085 / CTO Directive 086 / CTO Directive 087 / CTO Directive 088  
 **Generated At:** \`${generatedAt}\`  
 **Total States/UTs Audited:** ${inventory.length}  
 **Defect Classification:** \`DQ-W021.5-B2.2E-001\` — **STRICTLY OPEN**  
@@ -836,7 +818,7 @@ export async function writeCoverageReports() {
 
 This matrix establishes the definitive, evidence-based national political data coverage inventory of the Kshetra platform across all 31 supported Indian states and Union Territories.
 
-Under **CTO Directive 085 / 086 / 087** and **Rule IV-001 (Non-Self-Acceptance)**, this report repudiates unsupported completeness claims:
+Under **CTO Directive 085 / 086 / 087 / 088** and **Rule IV-001 (Non-Self-Acceptance)**, this report repudiates unsupported completeness claims:
 1. **Zero Canonical Full States:** No state is promoted to \`CANONICAL_FULL\` or \`VERIFIED_PRODUCTION\` merely because of allowlisted state codes or file existence. All records are classified truthfully as offline local seed fixtures pending live database verification.
 2. **Multi-Dimensional Evidence:** Every state is audited across 7 distinct dimensions: Registry Identity, Electoral Results, Historical Coverage, Representative Profiles, Affidavits, Geospatial Boundaries, and Provenance.
 3. **Delhi Statutory Invariant:** Strictly 70 statutory Assembly seats. 151 extra municipal/demographic records (\`DL-AC-071\` to \`DL-AC-221\`) are explicitly isolated as \`NON_STATUTORY_DEMOGRAPHIC_PLACEHOLDER\`.
