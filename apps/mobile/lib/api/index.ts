@@ -29,6 +29,9 @@ export * from './endpoints/states';
 export * from './endpoints/civic';
 export * from './endpoints/politician';
 export * from './endpoints/spatial';
+export * from './endpoints/constituencies';
+export * from './endpoints/elections';
+export * from '../staleResponseGuard';
 export {
   resolveRequestId,
   injectTracingHeaders,

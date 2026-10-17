@@ -3,7 +3,7 @@
   "defect": "DQ-W021.5-B2.2E-001",
   "defectStatus": "STRICTLY OPEN",
   "directive": "W021.5-CTO-DIRECTIVE-082",
-  "generatedAt": "2026-10-16T16:40:49.426Z",
+  "generatedAt": "2026-10-17T03:39:48.913Z",
   "gitBaseline": {
     "startingCommit": "20d5ea575fa1595648fcceee07ddf0d45b4973a3",
     "canonicalBranch": "master",
@@ -168,16 +168,16 @@
     },
     {
       "path": "apps/mobile/components/AffidavitCard.tsx",
-      "byteLength": 6706,
-      "sha256": "0505696253353936535a9749cc9b52e4d26f6d876e3bb37311d86627ca3cf069",
-      "gitBlobSha": "096304cde13b82c8c3c3245f7a9c38995df70cf7",
+      "byteLength": 7365,
+      "sha256": "baa6dce1ec5eed6eca42216ae8a8a7267274d7238340e47ca9a78f533dd4e6e1",
+      "gitBlobSha": "d5675df52160730917edc2ab86e5abcd5c4f74f5",
       "description": "Mobile affidavit card hardened against null growth percent and nullable formatINR"
     },
     {
       "path": "apps/mobile/components/legislator/FinancialBreakdownCard.tsx",
-      "byteLength": 21355,
-      "sha256": "396ff641e078f22fb9287a5c63f9609c587bafb6750569c583ea3f2996b5ff1f",
-      "gitBlobSha": "fd2a9e4c59e1885fd20b54617969f95187f7fe96",
+      "byteLength": 21351,
+      "sha256": "918243c8ed933fb66282f703463a8034981476fa0e5738ee9c334f1ac6c99f3f",
+      "gitBlobSha": "5a91037c9a19c1eb5d7dd8e2ebf2a665b1210ae6",
       "description": "Legislator financial breakdown card showing every disclosed component when totalAssets is null, labeling missing items Not Disclosed, and suppressing stacked bar on partial disclosures"
     },
     {
@@ -196,9 +196,9 @@
     },
     {
       "path": "apps/mobile/stores/affidavits.ts",
-      "byteLength": 33846,
-      "sha256": "a86950b23357f7aed9c2205570f6c5f3e3365f408782148c13e0a756a97f9c30",
-      "gitBlobSha": "4a4dd22a38b6f919c54dbf1ba02cc2725f1b8506",
+      "byteLength": 34138,
+      "sha256": "32669fabd196bd8a30be2595e8ae9ebeae9e4ef5a363d42f1645ef76cebfc64c",
+      "gitBlobSha": "ce75b46f5f19414434e0572cdf9e63e468a1136e",
       "description": "Affidavits store computing disclosed vs overall crorepati ratios and required integrity candidate counts"
     },
     {
@@ -210,9 +210,9 @@
     },
     {
       "path": "apps/mobile/app/legislator/[id].tsx",
-      "byteLength": 19190,
-      "sha256": "4d75809016f35e214c44e3a9cb91d307b6c3e7efae5e14eb08b6e6d19efd1959",
-      "gitBlobSha": "eeb1014aa87eb1cc04ae76c8525bcbb21215648e",
+      "byteLength": 20645,
+      "sha256": "0bfc877a81a08bc89f2ab90ab10aef38ba2df8c1bea985164651720ad8cc1db4",
+      "gitBlobSha": "09556b837b0256d71cfc2fa287f9ae311c85c77f",
       "description": "Legislator detail screen computing net worth and combined assets without zero coercion"
     },
     {
@@ -273,9 +273,9 @@
     },
     {
       "path": "reports/evidence/financial_remediation_test_results.json",
-      "byteLength": 27520,
-      "sha256": "8806b8ec78efaf5587f8c0e5b3227f5a9a0e95abc65a2599573f3eeb1d0290df",
-      "gitBlobSha": "a3ea4f71b98fc407ea9b41d7f92983c8c4b58cd1",
+      "byteLength": 27518,
+      "sha256": "f8f7c630ec07c8a889555328bbf7b47d47c0c0bcf39fca7a9e91484b1dcf8f29",
+      "gitBlobSha": "71952b1e7a7f02d4ecb8b90429d9f72ab857fd60",
       "description": "Machine-readable test results for all 105 tests in the Directive 068 battery"
     },
     {
@@ -351,8 +351,8 @@
     {
       "path": "reports/evidence/adjudication_manifest_test_results.json",
       "byteLength": 5063,
-      "sha256": "a20c7eeb3be80cef68fb220b81de10452fab78be1385dd9e566e8bf654a9c1cc",
-      "gitBlobSha": "efab422c28097fd6bffbb750978871e568da5aba",
+      "sha256": "e4a961370782a148db09a9d6643f77951f31c03a4917dafdce97bfa372311cdd",
+      "gitBlobSha": "24557e03ae68423761f6351f269a6712c49d4d29",
       "description": "Machine-readable test results for all 26 tests in the Directive 074 adjudication test battery"
     },
     {

@@ -27,39 +27,65 @@ export default function LegislatorProfileScreen() {
   const { colors } = useTheme();
   const { contentPaddingBottom } = useResponsive();
 
-  // Parse ID: format is "MLA_TS_2023_Kodangal_65"
+  // Parse ID: handles formats like:
+  // - "MLA_TS_2023_Kodangal_65"
+  // - "MLA_TS_2023_65"
+  // - "MLA_TS_65"
+  // - "TS-AC-65"
+  // - "65"
   const idStr = String(id || '');
-  const parts = idStr.split('_');
-  const stateCode = parts[1] || 'TS';
-  const electionYear = parseInt(parts[2] || '2023', 10);
-  const acNo = parseInt(parts[parts.length - 1] || '0', 10);
+  let parsedStateCode = 'TS';
+  let parsedElectionYear: number | null = null;
+  let parsedAcNo = 0;
+
+  if (idStr.includes('-AC-')) {
+    const segs = idStr.split('-AC-');
+    parsedStateCode = segs[0].toUpperCase();
+    parsedAcNo = parseInt(segs[1], 10) || 0;
+  } else if (idStr.startsWith('MLA_')) {
+    const segs = idStr.split('_');
+    parsedStateCode = segs[1] || 'TS';
+    if (segs.length >= 4) {
+      parsedElectionYear = parseInt(segs[2], 10) || null;
+      parsedAcNo = parseInt(segs[segs.length - 1], 10) || 0;
+    } else if (segs.length === 3) {
+      parsedAcNo = parseInt(segs[2], 10) || 0;
+    }
+  } else {
+    parsedAcNo = parseInt(idStr, 10) || 0;
+  }
+
+  const stateCode = parsedStateCode;
+  const acNo = parsedAcNo;
 
   // All data access is wrapped in try-catch useMemo to prevent crashes
-  const { mla, constituency, winnerAffidavit, financialRecords, redFlags, dataCompleteness } = useMemo(() => {
+  const { mla, constituency, winnerAffidavit, financialRecords, redFlags, dataCompleteness, electionYear } = useMemo(() => {
     try {
       const _mla = getMLAProfileForState(stateCode, acNo) ?? null;
       const _allConst = getUnifiedConstituenciesForState(stateCode) || [];
       const _constituency = _allConst.find(c => c.acNo === acNo) ?? null;
 
+      const effectiveYear = parsedElectionYear ?? _constituency?.electionYear ?? 2023;
       const _store = useAffidavitStore.getState();
-      const _winnerAffidavit = _store.getWinnerAffidavit(stateCode, acNo, electionYear);
+      const _winnerAffidavit = _store.getWinnerAffidavit(stateCode, acNo, effectiveYear);
 
-      // Financial records
+      // Financial records matching FinancialRecord interface in FinancialBreakdownCard
       let _financialRecords: any[] = [];
       if (_winnerAffidavit) {
         const hasBoth = _winnerAffidavit.totalAssets != null && _winnerAffidavit.totalLiabilities != null;
         _financialRecords = [
           {
-            year: electionYear,
-            movableAssets: (_winnerAffidavit.selfMovableAssets != null && _winnerAffidavit.spouseMovableAssets != null)
-              ? (_winnerAffidavit.selfMovableAssets + _winnerAffidavit.spouseMovableAssets)
-              : null,
-            immovableAssets: (_winnerAffidavit.selfImmovableAssets != null && _winnerAffidavit.spouseImmovableAssets != null)
-              ? (_winnerAffidavit.selfImmovableAssets + _winnerAffidavit.spouseImmovableAssets)
-              : null,
+            electionYear: _winnerAffidavit.electionYear || effectiveYear,
+            selfMovableAssets: _winnerAffidavit.selfMovableAssets,
+            selfImmovableAssets: _winnerAffidavit.selfImmovableAssets,
+            spouseMovableAssets: _winnerAffidavit.spouseMovableAssets,
+            spouseImmovableAssets: _winnerAffidavit.spouseImmovableAssets,
+            dependentsAssets: (_winnerAffidavit as any).dependentsAssets,
             totalAssets: _winnerAffidavit.totalAssets,
-            liabilities: _winnerAffidavit.totalLiabilities,
+            totalLiabilities: _winnerAffidavit.totalLiabilities,
             netWorth: hasBoth ? (_winnerAffidavit.totalAssets! - _winnerAffidavit.totalLiabilities!) : null,
+            selfIncome: _winnerAffidavit.selfIncome,
+            spouseIncome: _winnerAffidavit.spouseIncome,
           },
         ];
       }
@@ -103,12 +129,13 @@ export default function LegislatorProfileScreen() {
         financialRecords: _financialRecords,
         redFlags: _redFlags,
         dataCompleteness: score,
+        electionYear: effectiveYear,
       };
     } catch (e) {
       console.error('[LegislatorProfile] Data load error:', e);
-      return { mla: null, constituency: null, winnerAffidavit: null, financialRecords: [], redFlags: [], dataCompleteness: 0 };
+      return { mla: null, constituency: null, winnerAffidavit: null, financialRecords: [], redFlags: [], dataCompleteness: 0, electionYear: parsedElectionYear ?? 2023 };
     }
-  }, [stateCode, acNo, electionYear]);
+  }, [stateCode, acNo, parsedElectionYear]);
 
   // Fall through — need at least MLA or constituency data
   if (!mla && !constituency) {
@@ -288,11 +315,17 @@ export default function LegislatorProfileScreen() {
           </View>
         )}
 
-        {/* Disclaimer */}
-        {winnerAffidavit && (
+        {/* Disclaimer / Disclosure Status */}
+        {winnerAffidavit ? (
           <Text style={[styles.disclaimer, { color: colors.textMuted }]}>
             {i18n.t('legislator.dataDisclaimer')}
           </Text>
+        ) : (
+          <View style={{ marginHorizontal: 16, marginTop: 12, padding: 12, borderRadius: 8, backgroundColor: colors.surfaceElevated, borderWidth: 1, borderColor: colors.border }}>
+            <Text style={{ fontSize: 12, lineHeight: 16, color: colors.textMuted }}>
+              Affidavit and asset disclosures for this representative have not yet been ingested or verified for the {electionYear} term. Unverified or missing disclosures are not coerced to zero.
+            </Text>
+          </View>
         )}
 
         {/* Sources */}

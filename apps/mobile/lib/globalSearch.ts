@@ -11,7 +11,7 @@
  * Returns a ranked, deduplicated result set.
  */
 
-import { getUnifiedConstituenciesForState, type UnifiedConstituency } from './stateDataAdapter';
+import { getUnifiedConstituenciesForState, getAvailableStates, type UnifiedConstituency } from './stateDataAdapter';
 import { useCivicStore } from '../stores/civic';
 import { useFeedStore } from '../stores/feed';
 import { usePromiseStore } from '../stores/promises';
@@ -38,8 +38,6 @@ export interface SearchResult {
   };
 }
 
-const SUPPORTED_STATES = ['TS', 'AP', 'KA', 'MH'];
-
 /**
  * Search across all data sources.
  */
@@ -48,9 +46,10 @@ export function globalSearch(query: string, maxResults = 30): SearchResult[] {
 
   const q = query.trim().toLowerCase();
   const results: SearchResult[] = [];
+  const supportedStates = getAvailableStates();
 
   // 1. Constituencies
-  for (const stateCode of SUPPORTED_STATES) {
+  for (const stateCode of supportedStates) {
     const constituencies = getUnifiedConstituenciesForState(stateCode);
     for (const c of constituencies) {
       const score = scoreConstituency(c, q);
@@ -74,7 +73,7 @@ export function globalSearch(query: string, maxResults = 30): SearchResult[] {
           type: 'mla',
           title: c.winnerName,
           subtitle: `MLA, ${c.name} (${c.currentParty}) · ${stateCode}`,
-          route: `/constituency/${stateCode}-AC-${c.acNo}`,
+          route: `/legislator/MLA_${stateCode}_${c.electionYear}_${c.name}_${c.acNo}`,
           score: mlaScore,
           meta: { party: c.currentParty, stateCode, acNo: c.acNo },
         });
@@ -160,14 +159,19 @@ export function globalSearch(query: string, maxResults = 30): SearchResult[] {
 function scoreConstituency(c: UnifiedConstituency, q: string): number {
   let score = 0;
 
+  // Canonical ID match (e.g. "ts-ac-65", "ap-ac-1")
+  const canonicalId = `${c.stateCode}-ac-${c.acNo}`.toLowerCase();
+  if (q === canonicalId) return 100;
+  if (canonicalId.startsWith(q) || q === `ac-${c.acNo}`) score = Math.max(score, 90);
+
   // Exact AC number match
   if (q.match(/^\d+$/) && parseInt(q, 10) === c.acNo) return 95;
 
   // Name match
   const nameLower = c.name.toLowerCase();
   if (nameLower === q) return 90;
-  if (nameLower.startsWith(q)) score = 80;
-  else if (nameLower.includes(q)) score = 60;
+  if (nameLower.startsWith(q)) score = Math.max(score, 80);
+  else if (nameLower.includes(q)) score = Math.max(score, 60);
 
   // District match
   if (c.district.toLowerCase().includes(q)) score = Math.max(score, 45);

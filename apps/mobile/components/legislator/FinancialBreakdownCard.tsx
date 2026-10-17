@@ -81,6 +81,8 @@ export function resolveBreakdownState(record: FinancialRecord): BreakdownState {
   let statusNotice = '';
   if (hasCompleteBreakdown) {
     statusNotice = 'Complete itemization';
+  } else if (isZeroTotal) {
+    statusNotice = 'Affirmative zero assets disclosed';
   } else if (hasAnyDisclosedComponent) {
     statusNotice = totalAssetsDisclosed
       ? 'Partial itemization — complete component breakdown not disclosed in filing'
@@ -88,8 +90,6 @@ export function resolveBreakdownState(record: FinancialRecord): BreakdownState {
   } else {
     if (!totalAssetsDisclosed) {
       statusNotice = 'Assets not disclosed in filing';
-    } else if (isZeroTotal) {
-      statusNotice = 'Affirmative zero assets disclosed';
     } else {
       statusNotice = 'Component breakdown not itemized in filing';
     }

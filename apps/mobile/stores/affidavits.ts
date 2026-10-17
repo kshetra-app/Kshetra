@@ -876,10 +876,19 @@ export const useAffidavitStore = create<AffidavitState>()((set, get) => ({
       .affidavits.filter((a) => a.candidateName === candidateName)
       .sort((a, b) => a.electionYear - b.electionYear),
 
-  getWinnerAffidavit: (stateCode, acNo, year) =>
-    get().affidavits.find(
-      (a) => a.stateCode === stateCode && a.acNo === acNo && a.electionYear === year && a.isWinner,
-    ) ?? null,
+  getWinnerAffidavit: (stateCode, acNo, year) => {
+    const constBrief = getUnifiedConstituenciesForState(stateCode).find((c) => c.acNo === acNo);
+    const constName = constBrief?.name?.toLowerCase();
+    return (
+      get().affidavits.find(
+        (a) =>
+          a.stateCode === stateCode &&
+          a.electionYear === year &&
+          a.isWinner &&
+          (a.acNo === acNo || (constName && a.constituencyName?.toLowerCase() === constName)),
+      ) ?? null
+    );
+  },
 
   getWealthGrowth: (candidateName) => {
     const sorted = get()

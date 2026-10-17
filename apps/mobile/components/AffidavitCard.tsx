@@ -44,7 +44,24 @@ export default React.memo(function AffidavitCard({ stateCode, acNo, electionYear
     [affidavit, getWealthGrowth],
   );
 
-  if (!affidavit) return null;
+  if (!affidavit) {
+    return (
+      <View style={styles.card}>
+        <View style={styles.header}>
+          <View style={styles.headerLeft}>
+            <Ionicons name="document-text-outline" size={18} color="#94A3B8" />
+            <Text style={styles.title}>{t('affidavit.title')}</Text>
+          </View>
+          <View style={styles.yearBadge}>
+            <Text style={styles.yearText}>{electionYear}</Text>
+          </View>
+        </View>
+        <Text style={[styles.candidateMeta, { marginBottom: 0 }]}>
+          Candidate affidavit disclosures for this constituency and election term are pending formal ingestion and verification.
+        </Text>
+      </View>
+    );
+  }
 
   const latestGrowth = wealthGrowth.length > 0 ? wealthGrowth[wealthGrowth.length - 1] : null;
 

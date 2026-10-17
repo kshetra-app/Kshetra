@@ -389,11 +389,17 @@ export async function constituencyRoutes(app: FastifyInstance) {
     async (request, reply) => {
       const { stateCode, constituencyId } = request.params;
       const code = stateCode.toUpperCase();
-      const acNo = parseInt(constituencyId, 10);
+      let acNo = parseInt(constituencyId, 10);
+      if (isNaN(acNo) && constituencyId.includes('-AC-')) {
+        const parts = constituencyId.split('-AC-');
+        acNo = parseInt(parts[1], 10);
+      }
       const brief = !isNaN(acNo)
         ? getConstituency(code, acNo)
         : getConstituencies(code).find(
-            (c) => c.name.toLowerCase() === constituencyId.toLowerCase(),
+            (c) =>
+              c.name.toLowerCase() === constituencyId.toLowerCase() ||
+              c.id.toLowerCase() === constituencyId.toLowerCase(),
           );
 
       if (!brief) {
@@ -403,11 +409,11 @@ export async function constituencyRoutes(app: FastifyInstance) {
       }
 
       const raw = getRawConstituency(code, brief.acNo);
-      const winner = raw?.winner2024 ?? raw?.winner2023 ?? raw?.winner2022 ?? raw?.winner ?? brief.currentParty;
-      const winnerName = raw?.winnerName2024 ?? raw?.winnerName2023 ?? raw?.winnerName2022 ?? raw?.winnerName ?? brief.currentMLA;
-      const winnerVotes = raw?.winnerVotes2024 ?? raw?.winnerVotes2023 ?? raw?.winnerVotes ?? 50000;
-      const runnerUp = raw?.runnerUp2024 ?? raw?.runnerUp2023 ?? raw?.runnerUp ?? 'INC';
-      const margin = raw?.margin2024 ?? raw?.margin2023 ?? raw?.margin ?? 5000;
+      const winner = raw?.winner2025 ?? raw?.winner2024 ?? raw?.winner2023 ?? raw?.winner2022 ?? raw?.winner2021 ?? raw?.winner ?? brief.currentParty ?? '';
+      const winnerName = raw?.winnerName2025 ?? raw?.winnerName2024 ?? raw?.winnerName2023 ?? raw?.winnerName2022 ?? raw?.winnerName2021 ?? raw?.winnerName ?? brief.currentMLA ?? '';
+      const winnerVotes = raw?.winnerVotes2025 ?? raw?.winnerVotes2024 ?? raw?.winnerVotes2023 ?? raw?.winnerVotes2022 ?? raw?.winnerVotes2021 ?? raw?.winnerVotes ?? 0;
+      const runnerUp = raw?.runnerUp2025 ?? raw?.runnerUp2024 ?? raw?.runnerUp2023 ?? raw?.runnerUp2022 ?? raw?.runnerUp2021 ?? raw?.runnerUp ?? '';
+      const margin = raw?.margin2025 ?? raw?.margin2024 ?? raw?.margin2023 ?? raw?.margin2022 ?? raw?.margin2021 ?? raw?.margin ?? 0;
 
       return {
         ...brief,
@@ -440,12 +446,14 @@ export async function constituencyRoutes(app: FastifyInstance) {
   }, async (request) => {
     const { stateCode } = request.params;
     const { q, party, district, type, minMargin, maxMargin, sort } = request.query;
+    const code = stateCode.toUpperCase();
+    const allBriefs = getConstituencies(code);
 
-    if (stateCode.toUpperCase() !== 'TS') {
-      return { state: stateCode.toUpperCase(), count: 0, data: [] };
+    if (allBriefs.length === 0) {
+      return { state: code, count: 0, data: [] };
     }
 
-    let results = TELANGANA_CONSTITUENCIES;
+    let results = allBriefs;
 
     if (q) {
       const lower = q.toLowerCase();
@@ -453,13 +461,14 @@ export async function constituencyRoutes(app: FastifyInstance) {
         (c) =>
           c.name.toLowerCase().includes(lower) ||
           c.district.toLowerCase().includes(lower) ||
-          c.winnerName2023.toLowerCase().includes(lower) ||
+          c.currentMLA.toLowerCase().includes(lower) ||
+          c.id.toLowerCase().includes(lower) ||
           String(c.acNo).includes(lower),
       );
     }
     if (party) {
       const p = party.toUpperCase();
-      results = results.filter((c) => c.winner2023 === p);
+      results = results.filter((c) => c.currentParty.toUpperCase() === p);
     }
     if (district) {
       const d = district.toLowerCase();
@@ -467,37 +476,49 @@ export async function constituencyRoutes(app: FastifyInstance) {
     }
     if (type) {
       const t = type.toUpperCase();
-      results = results.filter((c) => c.type === t);
+      results = results.filter((c) => c.reservationStatus === t);
     }
-    if (minMargin) {
-      const min = parseInt(minMargin, 10);
-      if (!isNaN(min)) results = results.filter((c) => c.margin2023 >= min);
-    }
-    if (maxMargin) {
-      const max = parseInt(maxMargin, 10);
-      if (!isNaN(max)) results = results.filter((c) => c.margin2023 <= max);
+    if (minMargin || maxMargin) {
+      const min = minMargin ? parseInt(minMargin, 10) : -Infinity;
+      const max = maxMargin ? parseInt(maxMargin, 10) : Infinity;
+      results = results.filter((c) => {
+        const raw = getRawConstituency(code, c.acNo);
+        const m = raw?.margin2025 ?? raw?.margin2024 ?? raw?.margin2023 ?? raw?.margin2022 ?? raw?.margin2021 ?? raw?.margin ?? 0;
+        return m >= min && m <= max;
+      });
     }
 
-    // Sort
     const sorted = [...results];
     switch (sort) {
       case 'name':
         sorted.sort((a, b) => a.name.localeCompare(b.name));
         break;
       case 'margin_asc':
-        sorted.sort((a, b) => a.margin2023 - b.margin2023);
+        sorted.sort((a, b) => {
+          const rawA = getRawConstituency(code, a.acNo);
+          const rawB = getRawConstituency(code, b.acNo);
+          const mA = rawA?.margin2025 ?? rawA?.margin2024 ?? rawA?.margin2023 ?? rawA?.margin2022 ?? rawA?.margin ?? 0;
+          const mB = rawB?.margin2025 ?? rawB?.margin2024 ?? rawB?.margin2023 ?? rawB?.margin2022 ?? rawB?.margin ?? 0;
+          return mA - mB;
+        });
         break;
       case 'margin_desc':
-        sorted.sort((a, b) => b.margin2023 - a.margin2023);
+        sorted.sort((a, b) => {
+          const rawA = getRawConstituency(code, a.acNo);
+          const rawB = getRawConstituency(code, b.acNo);
+          const mA = rawA?.margin2025 ?? rawA?.margin2024 ?? rawA?.margin2023 ?? rawA?.margin2022 ?? rawA?.margin ?? 0;
+          const mB = rawB?.margin2025 ?? rawB?.margin2024 ?? rawB?.margin2023 ?? rawB?.margin2022 ?? rawB?.margin ?? 0;
+          return mB - mA;
+        });
         break;
       default:
         sorted.sort((a, b) => a.acNo - b.acNo);
     }
 
     return {
-      state: 'TS',
+      state: code,
       count: sorted.length,
-      data: sorted.map(seedToBrief),
+      data: sorted,
     };
   });
 
