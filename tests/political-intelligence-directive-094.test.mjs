@@ -32,6 +32,7 @@ import {
   getCanonicalAcceptancePayload,
   getTrustedAuthorities,
   verifyCryptographicAcceptanceSignature,
+  computeKeyFingerprint,
   validateGeoJsonContent,
   validateSqlContent,
   validateTestContent,
@@ -344,6 +345,7 @@ runTest('1.5 Tampered acceptance record (post-signing field modification) fails 
         publicKeyPem: pubPem,
         status: 'ACTIVE',
       }],
+      externalTrustPin: computeKeyFingerprint(pubPem),
     };
     assert.throws(
       () => validateTaskAccounting(task, null, options),

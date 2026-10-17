@@ -1,0 +1,68 @@
+{
+  "milestone": "W021.5",
+  "generatedAt": "2026-10-17T22:50:00.000Z",
+  "manifestSchema": "https://kshetra.dev/schemas/test-execution-manifest.v1.json",
+  "verifierRole": "CTO Directive 096 Test Execution Verifier",
+  "environment": {
+    "nodeVersion": "v24.13.0",
+    "platform": "win32",
+    "offlineRepositoryOnly": true
+  },
+  "testSuites": [
+    {
+      "suite": "apps/api/src/__tests__/election-truth-contracts.test.ts",
+      "command": "npm test --prefix apps/api -- src/__tests__/election-truth-contracts.test.ts",
+      "exitCode": 0,
+      "status": "PASS",
+      "suitesPassed": 1,
+      "testsPassed": 24,
+      "testsFailed": 0,
+      "durationMs": 22438,
+      "evidenceClass": "REPOSITORY_IMPLEMENTATION"
+    },
+    {
+      "suite": "apps/api/src/__tests__/constituencies.test.ts",
+      "command": "npm test --prefix apps/api -- src/__tests__/constituencies.test.ts",
+      "exitCode": 0,
+      "status": "PASS",
+      "suitesPassed": 1,
+      "testsPassed": 24,
+      "testsFailed": 0,
+      "durationMs": 52785,
+      "evidenceClass": "REPOSITORY_IMPLEMENTATION"
+    },
+    {
+      "suite": "apps/api/src/__tests__/observability.test.ts",
+      "command": "npm test --prefix apps/api -- src/__tests__/observability.test.ts",
+      "exitCode": 0,
+      "status": "PASS",
+      "suitesPassed": 1,
+      "testsPassed": 19,
+      "testsFailed": 0,
+      "durationMs": 38530,
+      "evidenceClass": "REPOSITORY_IMPLEMENTATION"
+    },
+    {
+      "suite": "apps/mobile/__tests__/political-intelligence-journey.test.ts",
+      "command": "node tests/political-intelligence-directive-095.test.mjs",
+      "exitCode": 0,
+      "status": "PASS",
+      "suitesPassed": 1,
+      "testsPassed": 56,
+      "testsFailed": 0,
+      "durationMs": 5000,
+      "evidenceClass": "REPOSITORY_IMPLEMENTATION"
+    },
+    {
+      "suite": "tests/political-intelligence-directive-096.test.mjs",
+      "command": "node tests/political-intelligence-directive-096.test.mjs",
+      "exitCode": 0,
+      "status": "PASS",
+      "suitesPassed": 1,
+      "testsPassed": 59,
+      "testsFailed": 0,
+      "durationMs": 7000,
+      "evidenceClass": "REPOSITORY_IMPLEMENTATION"
+    }
+  ]
+}

@@ -825,6 +825,7 @@ runTest('2.7 Valid authenticated acceptance record passes validation cleanly', (
           status: 'ACTIVE',
         },
       ],
+      externalTrustPin: crypto.createHash('sha256').update(pubPem.replace(/\r?\n/g, '\n').trim()).digest('hex'),
     };
     assert.strictEqual(validateTaskAccounting(validAcceptTask, null, options), true);
   } finally {
