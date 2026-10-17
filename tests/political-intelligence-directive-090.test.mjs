@@ -536,6 +536,7 @@ runTest('4.1 Reconciler fails closed on missing, invalid, or non-finite accounti
   const brokenTask = {
     taskId: 'W021.5-TEST-01',
     taskTitle: 'Broken Task',
+    taskClassification: 'CORE_SPECIFICATION',
     weight: 2.0,
     status: 'REPO_VERIFIED',
     accounting: {
@@ -553,6 +554,7 @@ runTest('4.1 Reconciler fails closed on missing, invalid, or non-finite accounti
   const negativeWeightTask = {
     taskId: 'W021.5-TEST-02',
     taskTitle: 'Negative Weight Task',
+    taskClassification: 'CORE_SPECIFICATION',
     weight: -1.0,
     status: 'REPO_VERIFIED',
     accounting: {
@@ -570,6 +572,7 @@ runTest('4.1 Reconciler fails closed on missing, invalid, or non-finite accounti
   const outOfBoundsRatioTask = {
     taskId: 'W021.5-TEST-03',
     taskTitle: 'Out of Bounds Task',
+    taskClassification: 'CORE_SPECIFICATION',
     weight: 2.0,
     status: 'REPO_VERIFIED',
     accounting: {
@@ -587,10 +590,13 @@ runTest('4.1 Reconciler fails closed on missing, invalid, or non-finite accounti
   const excessiveDiscountTask = {
     taskId: 'W021.5-TEST-04',
     taskTitle: 'Excessive Discount Task',
+    taskClassification: 'CORE_SPECIFICATION',
     weight: 2.0,
     status: 'REPO_VERIFIED',
+    evidence: ['scripts/reconcile_execution_ledger.mjs'],
     accounting: {
       repoCompletionRatio: 1.0,
+      ratioRationale: 'Valid ratio rationale for test',
       unexecutedDatabaseWeight: 5.0, // > weight
       formalAcceptanceStatus: 'NOT_SUBMITTED'
     }

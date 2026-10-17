@@ -18078,7 +18078,6 @@ export const TN_MLA_PROFILES: LegislatorProfile[] = [
       spouseProfession: 'Self Employment',
     },
     maritalStatus: 'Married',
-    photoUrl: undefined,
     photoSources: {
         myneta_prior: 'https://www.myneta.info/images_candidate/TamilNadu2021/7789067fd2301a1f9e0bd9bf8cf0ddc8a820b20d.jpg',
     },

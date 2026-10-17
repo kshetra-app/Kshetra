@@ -30,21 +30,34 @@ export function validateTaskAccounting(task) {
   if (!task || typeof task !== 'object') {
     throw new Error('Ledger accounting validation error: Invalid task object.');
   }
-  const classification = task.taskClassification ?? 'CORE_SPECIFICATION';
+
+  // Workstream B: Remove all fallbacks. Reject missing, null, empty, or unrecognized taskClassification
+  if (
+    task.taskClassification === undefined ||
+    task.taskClassification === null ||
+    typeof task.taskClassification !== 'string' ||
+    task.taskClassification.trim() === ''
+  ) {
+    throw new Error(
+      `Ledger accounting validation error: Task ${task.taskId || 'unknown'} has missing, null, or empty taskClassification. Must be explicitly declared as 'CORE_SPECIFICATION' or 'HARDENING_EXTENSION'.`
+    );
+  }
+
+  const classification = task.taskClassification.trim();
   if (classification !== 'CORE_SPECIFICATION' && classification !== 'HARDENING_EXTENSION') {
     throw new Error(
-      `Ledger accounting validation error: Task ${task.taskId} has invalid or missing taskClassification: "${task.taskClassification}". Must be 'CORE_SPECIFICATION' or 'HARDENING_EXTENSION'.`
+      `Ledger accounting validation error: Task ${task.taskId || 'unknown'} has unrecognized taskClassification: "${task.taskClassification}". Must be 'CORE_SPECIFICATION' or 'HARDENING_EXTENSION'.`
     );
   }
 
   // Validate task weight
   if (typeof task.weight !== 'number' || !Number.isFinite(task.weight) || task.weight <= 0) {
     throw new Error(
-      `Ledger accounting validation error: Task ${task.taskId} has invalid weight: ${task.weight}. Weight must be a positive finite number.`
+      `Ledger accounting validation error: Task ${task.taskId || 'unknown'} has invalid weight: ${task.weight}. Weight must be a positive finite number.`
     );
   }
 
-  // Workstream D1: Eliminate all silent fallbacks on accounting metadata
+  // Workstream D: Eliminate all silent fallbacks on accounting metadata
   if (!task.accounting || typeof task.accounting !== 'object') {
     throw new Error(`Ledger accounting validation error: Task ${task.taskId} missing required accounting object.`);
   }
@@ -58,6 +71,33 @@ export function validateTaskAccounting(task) {
     throw new Error(
       `Ledger accounting validation error: Task ${task.taskId} has invalid repoCompletionRatio: ${acct.repoCompletionRatio}. Must be a finite number in [0.0, 1.0].`
     );
+  }
+
+  // Workstream D: For every task with non-zero repoCompletionRatio, require explicit task-level evidence and rationale
+  if (acct.repoCompletionRatio > 0) {
+    if (!Array.isArray(task.evidence) || task.evidence.length === 0) {
+      throw new Error(
+        `Ledger accounting validation error: Task ${task.taskId} has non-zero repoCompletionRatio (${acct.repoCompletionRatio}) but missing or empty evidence array.`
+      );
+    }
+    for (const ev of task.evidence) {
+      if (typeof ev !== 'string' || ev.trim().length === 0) {
+        throw new Error(
+          `Ledger accounting validation error: Task ${task.taskId} contains invalid or non-string evidence reference: "${ev}".`
+        );
+      }
+      const resolvedPath = path.resolve(REPO_ROOT, ev);
+      if (!fs.existsSync(resolvedPath)) {
+        throw new Error(
+          `Ledger accounting validation error: Task ${task.taskId} references non-existent evidence artifact: "${ev}".`
+        );
+      }
+    }
+    if (typeof acct.ratioRationale !== 'string' || acct.ratioRationale.trim().length < 10) {
+      throw new Error(
+        `Ledger accounting validation error: Task ${task.taskId} has non-zero repoCompletionRatio (${acct.repoCompletionRatio}) but missing or insufficient ratioRationale.`
+      );
+    }
   }
 
   if (typeof acct.unexecutedDatabaseWeight !== 'number' || !Number.isFinite(acct.unexecutedDatabaseWeight) || acct.unexecutedDatabaseWeight < 0.0) {
@@ -81,11 +121,33 @@ export function validateTaskAccounting(task) {
     }
   }
 
+  // Workstream D: Database execution claim without permitted evidence
+  if (acct.databaseExecutionEvidenced === true) {
+    throw new Error(
+      `Ledger accounting validation error: Task ${task.taskId} claims databaseExecutionEvidenced: true, but live database staging execution is strictly prohibited under current boundaries.`
+    );
+  }
+
   const validAcceptanceStatuses = ['CONFIRMED_ACCEPTED', 'PENDING_INDEPENDENT_CONFIRMATION', 'UNACCEPTED'];
   if (!validAcceptanceStatuses.includes(acct.formalAcceptanceStatus)) {
     throw new Error(
       `Ledger accounting validation error: Task ${task.taskId} has invalid formalAcceptanceStatus: "${acct.formalAcceptanceStatus}". Must be one of: ${validAcceptanceStatuses.join(', ')}.`
     );
+  }
+
+  // Workstream D: Unsupported acceptance claims without permitted evidence
+  if (acct.formalAcceptanceStatus === 'CONFIRMED_ACCEPTED') {
+    if (!acct.formalAcceptanceArtifact || typeof acct.formalAcceptanceArtifact !== 'string') {
+      throw new Error(
+        `Ledger accounting validation error: Task ${task.taskId} claims CONFIRMED_ACCEPTED without explicit formalAcceptanceArtifact.`
+      );
+    }
+    const resolvedArtifact = path.resolve(REPO_ROOT, acct.formalAcceptanceArtifact);
+    if (!fs.existsSync(resolvedArtifact)) {
+      throw new Error(
+        `Ledger accounting validation error: Task ${task.taskId} claims CONFIRMED_ACCEPTED with non-existent formalAcceptanceArtifact: "${acct.formalAcceptanceArtifact}".`
+      );
+    }
   }
 
   return true;
@@ -131,6 +193,10 @@ export function computeLedgerSummary(ledger) {
     }
     if (typeof stage.stageWeight !== 'number' || !Number.isFinite(stage.stageWeight) || stage.stageWeight <= 0) {
       throw new Error(`Ledger accounting validation error: Stage ${stage.stageId || 'unknown'} has invalid stageWeight: ${stage.stageWeight}`);
+    }
+
+    if (!Array.isArray(stage.tasks) || stage.tasks.length === 0) {
+      throw new Error(`Ledger accounting validation error: Stage ${stage.stageId || 'unknown'} has missing or empty tasks array`);
     }
 
     let stageTaskSum = 0;

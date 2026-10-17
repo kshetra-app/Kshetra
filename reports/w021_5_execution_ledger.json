@@ -73,7 +73,6 @@
           "status": "REPO_VERIFIED",
           "completionCriteria": "Audit all 29 domains across code, seed datasets, routes, and migrations without live DB queries.",
           "evidence": [
-            "reports/W021.5-A-AUDIT-REPORT.md",
             "reports/w021_5a_repository_data_truth_audit.json",
             "reports/w021_5a_repository_data_truth_audit.md"
           ],
@@ -548,7 +547,10 @@
           "status": "PARTIAL",
           "completionCriteria": "Ingest structured per-constituency election history across all 31 States/UTs.",
           "evidence": [
-            "data/seed/*-historical-results.ts",
+            "data/seed/telangana-historical-results.ts",
+            "data/seed/andhra-pradesh-historical-results.ts",
+            "data/seed/karnataka-historical-results.ts",
+            "data/seed/maharashtra-historical-results.ts",
             "reports/w021_5_national_data_coverage_matrix.json"
           ],
           "remainingWork": "Only 8 states have historical results in repo. 23 states single-term only. National DB backfill pending.",

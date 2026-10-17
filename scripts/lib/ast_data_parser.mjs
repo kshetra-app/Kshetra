@@ -136,6 +136,11 @@ export function evaluateAstNode(node, sourceFile, diagnostics = []) {
 
     case ts.SyntaxKind.Identifier:
       if (node.text === 'undefined') {
+        diagnostics.push({
+          type: 'UNSUPPORTED_UNDEFINED_IDENTIFIER',
+          name: node.text,
+          message: `Identifier "undefined" is unsupported in strict literal subset; records must omit optional properties or use explicit null`,
+        });
         return undefined;
       }
       if (node.text === 'NaN' || node.text === 'Infinity') {

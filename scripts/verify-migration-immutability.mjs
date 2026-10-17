@@ -3,12 +3,13 @@
 /**
  * scripts/verify-migration-immutability.mjs
  *
- * Master Execution Framework — W021.5 / CTO Directive 090 (Workstream E)
- * Bitwise & Content-Level Migration Immutability Verification
+ * Master Execution Framework — W021.5 / CTO Directive 091 (Workstream C)
+ * True Raw-Byte Migration Immutability & Exact Path-Set Verification
  *
- * Compares all 68 migrations under supabase/migrations/ bitwise against the starting commit
- * `0ea572d860aa064766042f6b418b157fd8e2098f` using Git tree blobs and SHA-256 hashes.
- * Enforces zero database mutations and strict migration file immutability.
+ * Compares all 68 migrations under supabase/migrations/ byte-for-byte against the starting commit
+ * `0ea572d860aa064766042f6b418b157fd8e2098f` using raw Buffer comparisons and SHA-256 hashes
+ * WITHOUT newline or CRLF/LF normalization.
+ * Enforces exact path sets, zero database mutations, and strict byte-for-byte immutability.
  */
 
 import fs from 'fs';
@@ -24,67 +25,138 @@ const REPO_ROOT = path.resolve(__dirname, '..');
 export const STARTING_COMMIT = '0ea572d860aa064766042f6b418b157fd8e2098f';
 export const EXPECTED_MIGRATION_COUNT = 68;
 
+/**
+ * Pure comparison function comparing raw byte maps.
+ * Never normalizes text, newlines, or line endings.
+ *
+ * @param {Map<string, Buffer|null>} baselineFiles - Map of relative path -> raw Buffer from baseline commit
+ * @param {Map<string, Buffer|null>} currentFiles - Map of relative path -> raw Buffer from current tree
+ * @returns {object} Detailed immutability audit report
+ */
+export function compareMigrationBytes(baselineFiles, currentFiles) {
+  const baselinePaths = Array.from(baselineFiles.keys()).sort();
+  const currentPaths = Array.from(currentFiles.keys()).sort();
+
+  const missingPaths = baselinePaths.filter((p) => !currentFiles.has(p));
+  const addedPaths = currentPaths.filter((p) => !baselineFiles.has(p));
+  const commonPaths = baselinePaths.filter((p) => currentFiles.has(p));
+
+  const contentModifiedFiles = [];
+  const identicalFiles = [];
+  const unresolvedBlobs = [];
+  const results = [];
+
+  for (const p of commonPaths) {
+    const baseBuf = baselineFiles.get(p);
+    const currBuf = currentFiles.get(p);
+
+    if (baseBuf === undefined || baseBuf === null) {
+      unresolvedBlobs.push(p);
+      results.push({
+        path: p,
+        status: 'BASELINE_BLOB_UNRESOLVED',
+        isMatch: false,
+      });
+      continue;
+    }
+
+    if (currBuf === undefined || currBuf === null) {
+      results.push({
+        path: p,
+        status: 'CURRENT_FILE_UNREADABLE',
+        isMatch: false,
+      });
+      continue;
+    }
+
+    const baseSha256 = crypto.createHash('sha256').update(baseBuf).digest('hex');
+    const currSha256 = crypto.createHash('sha256').update(currBuf).digest('hex');
+    const isMatch = baseBuf.equals(currBuf);
+
+    if (isMatch) {
+      identicalFiles.push(p);
+      results.push({
+        path: p,
+        status: 'RAW_BYTES_IDENTICAL',
+        isMatch: true,
+        baseSha256,
+        currSha256,
+        byteLength: currBuf.length,
+      });
+    } else {
+      contentModifiedFiles.push(p);
+      results.push({
+        path: p,
+        status: 'CONTENT_MODIFIED',
+        isMatch: false,
+        baseSha256,
+        currSha256,
+        baseByteLength: baseBuf.length,
+        currByteLength: currBuf.length,
+      });
+    }
+  }
+
+  const pathSetsIdentical = missingPaths.length === 0 && addedPaths.length === 0;
+  const isImmutabilityPreserved =
+    pathSetsIdentical &&
+    unresolvedBlobs.length === 0 &&
+    contentModifiedFiles.length === 0 &&
+    results.length > 0 &&
+    results.every((r) => r.isMatch === true);
+
+  return {
+    isImmutabilityPreserved,
+    pathSetsIdentical,
+    totalBaselinePaths: baselinePaths.length,
+    totalCurrentPaths: currentPaths.length,
+    identicalCount: identicalFiles.length,
+    missingPaths,
+    addedPaths,
+    unresolvedBlobs,
+    contentModifiedFiles,
+    results,
+  };
+}
+
+/**
+ * Verifies repository migration immutability against baseline commit using raw byte comparisons.
+ */
 export function verifyMigrationImmutability(startingCommit = STARTING_COMMIT) {
   const migrationsDir = path.join(REPO_ROOT, 'supabase', 'migrations');
   if (!fs.existsSync(migrationsDir)) {
     throw new Error(`Migrations directory not found at ${migrationsDir}`);
   }
 
-  const localFiles = fs.readdirSync(migrationsDir)
-    .filter((f) => f.endsWith('.sql'))
-    .sort();
-
-  if (localFiles.length !== EXPECTED_MIGRATION_COUNT) {
-    throw new Error(
-      `Migration count mismatch: expected ${EXPECTED_MIGRATION_COUNT} files, found ${localFiles.length}`
-    );
-  }
-
-  // 1. Verify Git tree blob mapping from starting commit
-  const treeOutput = execSync(`git ls-tree ${startingCommit}:supabase/migrations`, {
+  // 1. Retrieve baseline tree paths and blobs from starting commit
+  const treeOutput = execSync(`git ls-tree -r ${startingCommit} supabase/migrations`, {
     cwd: REPO_ROOT,
     encoding: 'utf8',
   }).trim();
 
   const treeLines = treeOutput.split('\n').filter(Boolean);
-  const startingCommitFiles = new Map();
+  const baselineBlobMap = new Map();
 
   for (const line of treeLines) {
     const parts = line.trim().split(/\s+/);
     if (parts.length >= 4) {
       const blobSha = parts[2];
-      const fileName = parts.slice(3).join(' ');
-      if (fileName.endsWith('.sql')) {
-        startingCommitFiles.set(fileName, blobSha);
+      const relPath = parts.slice(3).join(' ');
+      if (relPath.endsWith('.sql')) {
+        baselineBlobMap.set(relPath, blobSha);
       }
     }
   }
 
-  if (startingCommitFiles.size !== EXPECTED_MIGRATION_COUNT) {
-    throw new Error(
-      `Starting commit migration count mismatch: expected ${EXPECTED_MIGRATION_COUNT}, found ${startingCommitFiles.size}`
-    );
-  }
-
-  // 2. Verify git diff against starting commit is completely clean
-  const gitDiffOutput = execSync(`git diff ${startingCommit} -- supabase/migrations`, {
-    cwd: REPO_ROOT,
-    encoding: 'utf8',
-  }).trim();
-
-  const isGitDiffClean = gitDiffOutput.length === 0;
-
-  // 3. Bitwise & content comparison for each file
-  // Batch retrieve starting commit blobs for maximum performance
-  const batchInput = Array.from(startingCommitFiles.values()).join('\n') + '\n';
+  // 2. Read baseline Git blobs as RAW BUFFERS via git cat-file --batch
+  const batchInput = Array.from(baselineBlobMap.values()).join('\n') + '\n';
   const batchOutputBuffer = execSync(`git cat-file --batch`, {
     cwd: REPO_ROOT,
     input: batchInput,
     maxBuffer: 50 * 1024 * 1024,
   });
 
-  // Parse git cat-file --batch output
-  const blobContents = new Map();
+  const blobBySha = new Map();
   let offset = 0;
   while (offset < batchOutputBuffer.length) {
     const headerEnd = batchOutputBuffer.indexOf(0x0a, offset);
@@ -95,91 +167,75 @@ export function verifyMigrationImmutability(startingCommit = STARTING_COMMIT) {
     const contentStart = headerEnd + 1;
     const contentEnd = contentStart + size;
     const blobBuffer = batchOutputBuffer.subarray(contentStart, contentEnd);
-    blobContents.set(sha, blobBuffer);
+    blobBySha.set(sha, blobBuffer);
     offset = contentEnd + 1; // skip trailing newline
   }
 
-  const results = [];
-  let bitwiseMatchCount = 0;
-  let mismatchCount = 0;
-
-  for (const fileName of localFiles) {
-    const filePath = path.join(migrationsDir, fileName);
-    const localRaw = fs.readFileSync(filePath, 'utf8').replace(/\r\n/g, '\n');
-    const localSha256 = crypto.createHash('sha256').update(localRaw, 'utf8').digest('hex');
-
-    const expectedBlobSha = startingCommitFiles.get(fileName);
-    if (!expectedBlobSha) {
-      mismatchCount++;
-      results.push({
-        fileName,
-        status: 'MISSING_IN_STARTING_COMMIT',
-        localSha256,
-        startingCommitBlobSha: null,
-      });
-      continue;
-    }
-
-    const startingBlobBuffer = blobContents.get(expectedBlobSha);
-    if (!startingBlobBuffer) {
-      mismatchCount++;
-      results.push({
-        fileName,
-        status: 'BLOB_UNRESOLVED',
-        localSha256,
-        startingCommitBlobSha: expectedBlobSha,
-      });
-      continue;
-    }
-
-    const startingRaw = startingBlobBuffer.toString('utf8').replace(/\r\n/g, '\n');
-    const startingSha256 = crypto.createHash('sha256').update(startingRaw, 'utf8').digest('hex');
-
-    const isMatch = localSha256 === startingSha256;
-
-    if (isMatch) {
-      bitwiseMatchCount++;
-      results.push({
-        fileName,
-        status: 'BITWISE_IDENTICAL',
-        localSha256,
-        startingSha256,
-        gitBlobSha: expectedBlobSha,
-      });
-    } else {
-      mismatchCount++;
-      results.push({
-        fileName,
-        status: 'CONTENT_MISMATCH',
-        localSha256,
-        startingSha256,
-        expectedBlobSha,
-      });
-    }
+  const baselineFiles = new Map();
+  for (const [relPath, blobSha] of baselineBlobMap.entries()) {
+    const buf = blobBySha.get(blobSha) || null;
+    baselineFiles.set(relPath, buf);
   }
 
-  const isImmutabilityPreserved = mismatchCount === 0 &&
-    bitwiseMatchCount === EXPECTED_MIGRATION_COUNT &&
+  // 3. Read current local files as RAW BUFFERS without any text encoding or newline normalization
+  const localFileNames = fs.readdirSync(migrationsDir).filter((f) => f.endsWith('.sql')).sort();
+  const currentFiles = new Map();
+
+  for (const f of localFileNames) {
+    const fullPath = path.join(migrationsDir, f);
+    const relPath = `supabase/migrations/${f}`;
+    const rawBuf = fs.readFileSync(fullPath); // RAW Buffer
+    currentFiles.set(relPath, rawBuf);
+  }
+
+  // 4. Execute pure byte comparison
+  const comparison = compareMigrationBytes(baselineFiles, currentFiles);
+
+  // 5. Verify secondary count invariant
+  const secondaryCountValid =
+    comparison.totalBaselinePaths === EXPECTED_MIGRATION_COUNT &&
+    comparison.totalCurrentPaths === EXPECTED_MIGRATION_COUNT;
+
+  // 6. Verify git diff is empty
+  const gitDiffOutput = execSync(`git diff ${startingCommit} -- supabase/migrations`, {
+    cwd: REPO_ROOT,
+    encoding: 'utf8',
+  }).trim();
+
+  const isGitDiffClean = gitDiffOutput.length === 0;
+
+  const isImmutabilityPreserved =
+    comparison.isImmutabilityPreserved &&
+    secondaryCountValid &&
     isGitDiffClean;
 
   return {
     isImmutabilityPreserved,
     isGitDiffClean,
     startingCommit,
-    totalFilesAudited: localFiles.length,
+    totalFilesAudited: comparison.totalCurrentPaths,
     expectedCount: EXPECTED_MIGRATION_COUNT,
-    bitwiseMatchCount,
-    mismatchCount,
-    results,
+    identicalCount: comparison.identicalCount,
+    bitwiseMatchCount: comparison.identicalCount,
+    mismatchCount: comparison.contentModifiedFiles.length,
+    missingPaths: comparison.missingPaths,
+    addedPaths: comparison.addedPaths,
+    unresolvedBlobs: comparison.unresolvedBlobs,
+    contentModifiedFiles: comparison.contentModifiedFiles,
+    pathSetsIdentical: comparison.pathSetsIdentical,
+    results: comparison.results,
   };
 }
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
   console.log(`Auditing 68 SQL migrations against starting commit ${STARTING_COMMIT}...`);
   const report = verifyMigrationImmutability();
-  console.log(`[PASS] Total migrations verified: ${report.bitwiseMatchCount}/${report.expectedCount}`);
-  console.log(`[PASS] Bitwise matches: ${report.bitwiseMatchCount}`);
-  console.log(`[PASS] Mismatches: ${report.mismatchCount}`);
+  console.log(`[PASS] Total migrations verified: ${report.identicalCount}/${report.expectedCount}`);
+  console.log(`[PASS] Raw byte matches: ${report.identicalCount}`);
+  console.log(`[PASS] Missing paths: ${report.missingPaths.length}`);
+  console.log(`[PASS] Added paths: ${report.addedPaths.length}`);
+  console.log(`[PASS] Content modified: ${report.contentModifiedFiles.length}`);
+  console.log(`[PASS] Path sets identical: ${report.pathSetsIdentical}`);
   console.log(`[PASS] Git diff clean: ${report.isGitDiffClean}`);
-  console.log(`[PASS] Migration immutability preserved: ${report.isImmutabilityPreserved}`);
+  console.log(`[PASS] Raw-byte immutability preserved: ${report.isImmutabilityPreserved}`);
 }
