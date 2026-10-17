@@ -21,6 +21,9 @@
     "databaseExecutionPercent": 0,
     "formalAcceptancePercent": 0,
     "formalAcceptancePendingWeight": 5,
+    "unexecutedDatabasePendingPercent": 13,
+    "blockedOnExternalCtcGatesPercent": 21,
+    "notImplementedPercent": 3,
     "statusCounts": {
       "REPO_VERIFIED": 16,
       "PARTIAL": 5,
@@ -40,6 +43,167 @@
       "PENDING_INDEPENDENT_CONFIRMATION": 1,
       "UNACCEPTED": 26
     },
+    "statusAllocatedWeights": {
+      "REPO_VERIFIED": {
+        "count": 16,
+        "allocated": 56,
+        "earned": 56,
+        "inProgress": 0
+      },
+      "PARTIAL": {
+        "count": 5,
+        "allocated": 20,
+        "earned": 8,
+        "inProgress": 12
+      },
+      "BLOCKED": {
+        "count": 5,
+        "allocated": 21,
+        "earned": 0,
+        "inProgress": 0
+      },
+      "NOT_IMPLEMENTED": {
+        "count": 1,
+        "allocated": 3,
+        "earned": 0,
+        "inProgress": 0
+      }
+    },
+    "databaseDiscountBreakdown": [
+      {
+        "taskId": "W021.5-C-02",
+        "stageId": "STAGE_C",
+        "title": "1,207 Canonical Political Organizations Catalog Ingestion",
+        "weight": 5,
+        "repoCompletionRatio": 1,
+        "repoEarnedWeight": 5,
+        "unexecutedDatabaseWeight": 5,
+        "rationale": "Migration 065 schema and 1,207 organization manifest authored offline; live database staging execution unevidenced."
+      },
+      {
+        "taskId": "W021.5-D-02",
+        "stageId": "STAGE_D",
+        "title": "Candidate Population & Contest Mapping Across 10 Chunks",
+        "weight": 6,
+        "repoCompletionRatio": 0.5,
+        "repoEarnedWeight": 3,
+        "unexecutedDatabaseWeight": 3,
+        "rationale": "10 candidate population chunks authored in repository; staging database execution and cross-table FK validation pending."
+      },
+      {
+        "taskId": "W021.5-E-01",
+        "stageId": "STAGE_E",
+        "title": "Constituency Demographic Profiles & Aggregates Ingestion",
+        "weight": 4,
+        "repoCompletionRatio": 0.5,
+        "repoEarnedWeight": 2,
+        "unexecutedDatabaseWeight": 2,
+        "rationale": "Constituency demographic profiles and aggregates authored for sample states; national population pending."
+      },
+      {
+        "taskId": "W021.5-F-02",
+        "stageId": "STAGE_F",
+        "title": "National Multi-Election Historical Results Ingestion",
+        "weight": 6,
+        "repoCompletionRatio": 0.25,
+        "repoEarnedWeight": 1.5,
+        "unexecutedDatabaseWeight": 3,
+        "rationale": "Historical election results authored across 8 states with explicit record-level years; national remaining 23 states and database staging schema pending."
+      }
+    ],
+    "partialTasksBreakdown": [
+      {
+        "taskId": "W021.5-B1-04",
+        "stageId": "STAGE_B",
+        "title": "National Assembly Boundary GeoJSON Deep Validation & Linkage",
+        "weight": 2,
+        "repoCompletionRatio": 0.25,
+        "repoEarnedWeight": 0.5,
+        "remainingWork": "30 states lack GeoJSON files in data/geo. Only Telangana (119 ACs) is populated."
+      },
+      {
+        "taskId": "W021.5-D-02",
+        "stageId": "STAGE_D",
+        "title": "Candidate Population & Contest Mapping Across 10 Chunks",
+        "weight": 6,
+        "repoCompletionRatio": 0.5,
+        "repoEarnedWeight": 3,
+        "remainingWork": "Awaiting explicit CTO authorization for staging database execution."
+      },
+      {
+        "taskId": "W021.5-E-01",
+        "stageId": "STAGE_E",
+        "title": "Constituency Demographic Profiles & Aggregates Ingestion",
+        "weight": 4,
+        "repoCompletionRatio": 0.5,
+        "repoEarnedWeight": 2,
+        "remainingWork": "Pre-freeze verified; awaiting CTO staging execution directive."
+      },
+      {
+        "taskId": "W021.5-F-02",
+        "stageId": "STAGE_F",
+        "title": "National Multi-Election Historical Results Ingestion",
+        "weight": 6,
+        "repoCompletionRatio": 0.25,
+        "repoEarnedWeight": 1.5,
+        "remainingWork": "Only 8 states have historical results in repo. 23 states single-term only. National DB backfill pending."
+      },
+      {
+        "taskId": "W021.5-H-04",
+        "stageId": "STAGE_H",
+        "title": "Mobile Write Strangler Migration (Class B Deprecation)",
+        "weight": 2,
+        "repoCompletionRatio": 0.5,
+        "repoEarnedWeight": 1,
+        "remainingWork": "Phase 1-4 strangler migration actively governed under W006."
+      }
+    ],
+    "blockedTasksBreakdown": [
+      {
+        "taskId": "W021.5-D-03",
+        "stageId": "STAGE_D",
+        "title": "Candidate-to-Contest Foreign Key Constraint Linkage (Migration 067)",
+        "weight": 4,
+        "remainingWork": "Blocked pending CTO approval of Migration 067 specification."
+      },
+      {
+        "taskId": "W021.5-E-02",
+        "stageId": "STAGE_E",
+        "title": "Financial Defect DQ-W021.5-B2.2E-001 Formal Adjudication",
+        "weight": 5,
+        "remainingWork": "STRICTLY OPEN pending separate CTO adjudication. No agent self-closure permitted."
+      },
+      {
+        "taskId": "W021.5-E-03",
+        "stageId": "STAGE_E",
+        "title": "Normalized Candidate Affidavit Disclosure Schema (Migration 068)",
+        "weight": 5,
+        "remainingWork": "Blocked pending adjudication of DQ-W021.5-B2.2E-001 and CTO staging migration authorization."
+      },
+      {
+        "taskId": "W021.5-G-03",
+        "stageId": "STAGE_G",
+        "title": "Fastify Canonical DB-Backed Route Strangulation",
+        "weight": 4,
+        "remainingWork": "Blocked pending staging database population and migration deployment."
+      },
+      {
+        "taskId": "W021.5-I-02",
+        "stageId": "STAGE_I",
+        "title": "Production Database Air-Gap Preservation & Cutover Preflight",
+        "weight": 3,
+        "remainingWork": "Production database strictly air-gapped; blocked pending staging completion and CTO approval."
+      }
+    ],
+    "notImplementedTasksBreakdown": [
+      {
+        "taskId": "W021.5-I-01",
+        "stageId": "STAGE_I",
+        "title": "Mobile SQLite Canonical Offline Sync Schema & Engine",
+        "weight": 3,
+        "remainingWork": "Scheduled for Milestone W021.5-B5 after Fastify API canonical cutover."
+      }
+    ],
     "accountingDiagnostics": [],
     "weightedBreakdown": {
       "repoVerifiedEarnedPercent": 64,
@@ -73,8 +237,18 @@
           "status": "REPO_VERIFIED",
           "completionCriteria": "Audit all 29 domains across code, seed datasets, routes, and migrations without live DB queries.",
           "evidence": [
-            "reports/w021_5a_repository_data_truth_audit.json",
-            "reports/w021_5a_repository_data_truth_audit.md"
+            {
+              "path": "reports/w021_5a_repository_data_truth_audit.json",
+              "evidenceClass": "REPOSITORY_IMPLEMENTATION",
+              "supportsClaim": "29-domain audit complete with empirical reports authored in repository.",
+              "verificationStatus": "VERIFIED_ON_DISK"
+            },
+            {
+              "path": "reports/w021_5a_repository_data_truth_audit.md",
+              "evidenceClass": "REPOSITORY_IMPLEMENTATION",
+              "supportsClaim": "29-domain audit complete with empirical reports authored in repository.",
+              "verificationStatus": "VERIFIED_ON_DISK"
+            }
           ],
           "remainingWork": "None. Fully documented and closed.",
           "accounting": {
@@ -98,10 +272,30 @@
           "status": "REPO_VERIFIED",
           "completionCriteria": "Eliminate hardcoded tier promotions, parse affidavits structurally, validate GeoJSON deeply, count actual MLA profiles.",
           "evidence": [
-            "scripts/generate_national_data_coverage_matrix.mjs",
-            "reports/w021_5_national_data_coverage_matrix.json",
-            "reports/w021_5_national_data_coverage_matrix.md",
-            "tests/political-intelligence-directive-085.test.mjs"
+            {
+              "path": "scripts/generate_national_data_coverage_matrix.mjs",
+              "evidenceClass": "REPOSITORY_IMPLEMENTATION",
+              "supportsClaim": "National coverage matrix generator authored with multi-dimensional evidence taxonomy.",
+              "verificationStatus": "VERIFIED_ON_DISK"
+            },
+            {
+              "path": "reports/w021_5_national_data_coverage_matrix.json",
+              "evidenceClass": "REPOSITORY_IMPLEMENTATION",
+              "supportsClaim": "National coverage matrix generator authored with multi-dimensional evidence taxonomy.",
+              "verificationStatus": "VERIFIED_ON_DISK"
+            },
+            {
+              "path": "reports/w021_5_national_data_coverage_matrix.md",
+              "evidenceClass": "REPOSITORY_IMPLEMENTATION",
+              "supportsClaim": "National coverage matrix generator authored with multi-dimensional evidence taxonomy.",
+              "verificationStatus": "VERIFIED_ON_DISK"
+            },
+            {
+              "path": "tests/political-intelligence-directive-085.test.mjs",
+              "evidenceClass": "REPOSITORY_IMPLEMENTATION",
+              "supportsClaim": "National coverage matrix generator authored with multi-dimensional evidence taxonomy.",
+              "verificationStatus": "VERIFIED_ON_DISK"
+            }
           ],
           "remainingWork": "None for generator logic. 30 states still lack GeoJSON in data/geo.",
           "accounting": {
@@ -125,9 +319,24 @@
           "status": "REPO_VERIFIED",
           "completionCriteria": "Isolate DL-AC-071 through DL-AC-221 as NON_STATUTORY_DEMOGRAPHIC_PLACEHOLDER while preserving 70 statutory seats.",
           "evidence": [
-            "scripts/generate_national_data_coverage_matrix.mjs",
-            "reports/w021_5_demographic_seed_reconciliation_ledger.md",
-            "tests/political-intelligence-directive-085.test.mjs"
+            {
+              "path": "scripts/generate_national_data_coverage_matrix.mjs",
+              "evidenceClass": "REPOSITORY_IMPLEMENTATION",
+              "supportsClaim": "Delhi 70-seat statutory Assembly invariant enforced; municipal wards quarantined.",
+              "verificationStatus": "VERIFIED_ON_DISK"
+            },
+            {
+              "path": "reports/w021_5_demographic_seed_reconciliation_ledger.md",
+              "evidenceClass": "REPOSITORY_IMPLEMENTATION",
+              "supportsClaim": "Delhi 70-seat statutory Assembly invariant enforced; municipal wards quarantined.",
+              "verificationStatus": "VERIFIED_ON_DISK"
+            },
+            {
+              "path": "tests/political-intelligence-directive-085.test.mjs",
+              "evidenceClass": "REPOSITORY_IMPLEMENTATION",
+              "supportsClaim": "Delhi 70-seat statutory Assembly invariant enforced; municipal wards quarantined.",
+              "verificationStatus": "VERIFIED_ON_DISK"
+            }
           ],
           "remainingWork": "None. Invariant enforced in scripts and tests.",
           "accounting": {
@@ -159,9 +368,24 @@
           "status": "REPO_VERIFIED",
           "completionCriteria": "Reconcile statutory 4,123 ACs across 31 States/UTs with immutable canonical IDs in Migration 059.",
           "evidence": [
-            "supabase/migrations/059_canonical_national_constituency_registry.sql",
-            "reports/w021_5b1_national_constituency_canonicalization.json",
-            "reports/w021_5b1_national_constituency_canonicalization.md"
+            {
+              "path": "supabase/migrations/059_canonical_national_constituency_registry.sql",
+              "evidenceClass": "REPOSITORY_IMPLEMENTATION",
+              "supportsClaim": "All 4,123 statutory Assembly constituencies canonicalized across 31 States/UTs.",
+              "verificationStatus": "VERIFIED_ON_DISK"
+            },
+            {
+              "path": "reports/w021_5b1_national_constituency_canonicalization.json",
+              "evidenceClass": "REPOSITORY_IMPLEMENTATION",
+              "supportsClaim": "All 4,123 statutory Assembly constituencies canonicalized across 31 States/UTs.",
+              "verificationStatus": "VERIFIED_ON_DISK"
+            },
+            {
+              "path": "reports/w021_5b1_national_constituency_canonicalization.md",
+              "evidenceClass": "REPOSITORY_IMPLEMENTATION",
+              "supportsClaim": "All 4,123 statutory Assembly constituencies canonicalized across 31 States/UTs.",
+              "verificationStatus": "VERIFIED_ON_DISK"
+            }
           ],
           "remainingWork": "Staging execution pending explicit CTO directive.",
           "accounting": {
@@ -185,9 +409,24 @@
           "status": "REPO_VERIFIED",
           "completionCriteria": "Map all 4,123 ACs to 543 Parliamentary Constituencies with source citation and delimitation year.",
           "evidence": [
-            "supabase/migrations/060_canonical_electoral_geography_remediation.sql",
-            "supabase/migrations/061_canonical_national_ac_pc_mappings.sql",
-            "reports/w021_5b1_r3_mapping_evidence_manifest.json"
+            {
+              "path": "supabase/migrations/060_canonical_electoral_geography_remediation.sql",
+              "evidenceClass": "REPOSITORY_IMPLEMENTATION",
+              "supportsClaim": "National AC-to-PC mapping registry authored in repository.",
+              "verificationStatus": "VERIFIED_ON_DISK"
+            },
+            {
+              "path": "supabase/migrations/061_canonical_national_ac_pc_mappings.sql",
+              "evidenceClass": "REPOSITORY_IMPLEMENTATION",
+              "supportsClaim": "National AC-to-PC mapping registry authored in repository.",
+              "verificationStatus": "VERIFIED_ON_DISK"
+            },
+            {
+              "path": "reports/w021_5b1_r3_mapping_evidence_manifest.json",
+              "evidenceClass": "REPOSITORY_IMPLEMENTATION",
+              "supportsClaim": "National AC-to-PC mapping registry authored in repository.",
+              "verificationStatus": "VERIFIED_ON_DISK"
+            }
           ],
           "remainingWork": "None in repository code.",
           "accounting": {
@@ -211,9 +450,24 @@
           "status": "REPO_VERIFIED",
           "completionCriteria": "Model pre-2023 vs post-2023 Assam AC boundaries and generic delimitation predecessor/successor transitions.",
           "evidence": [
-            "supabase/migrations/062_canonical_assam_2023_delimitation.sql",
-            "reports/w021_5b1_r5_assam_2023_reconciliation.json",
-            "reports/w021_5b1_r5_assam_2023_reconciliation.md"
+            {
+              "path": "supabase/migrations/062_canonical_assam_2023_delimitation.sql",
+              "evidenceClass": "REPOSITORY_IMPLEMENTATION",
+              "supportsClaim": "Temporal lineage and Assam 2023 delimitation models implemented.",
+              "verificationStatus": "VERIFIED_ON_DISK"
+            },
+            {
+              "path": "reports/w021_5b1_r5_assam_2023_reconciliation.json",
+              "evidenceClass": "REPOSITORY_IMPLEMENTATION",
+              "supportsClaim": "Temporal lineage and Assam 2023 delimitation models implemented.",
+              "verificationStatus": "VERIFIED_ON_DISK"
+            },
+            {
+              "path": "reports/w021_5b1_r5_assam_2023_reconciliation.md",
+              "evidenceClass": "REPOSITORY_IMPLEMENTATION",
+              "supportsClaim": "Temporal lineage and Assam 2023 delimitation models implemented.",
+              "verificationStatus": "VERIFIED_ON_DISK"
+            }
           ],
           "remainingWork": "None in repository code.",
           "accounting": {
@@ -237,9 +491,24 @@
           "status": "PARTIAL",
           "completionCriteria": "Validate GeoJSON feature collections, geometry types, coordinates within India bounding box, and AC linkage for all 31 states.",
           "evidence": [
-            "scripts/generate_national_data_coverage_matrix.mjs",
-            "data/geo/telangana-assembly.geojson",
-            "reports/w021_5_national_data_coverage_matrix.json"
+            {
+              "path": "scripts/generate_national_data_coverage_matrix.mjs",
+              "evidenceClass": "REPOSITORY_IMPLEMENTATION",
+              "supportsClaim": "Telangana GeoJSON boundary fixture fully validated with closed rings; national 30 states pending authoritative boundary feeds.",
+              "verificationStatus": "VERIFIED_ON_DISK"
+            },
+            {
+              "path": "data/geo/telangana-assembly.geojson",
+              "evidenceClass": "REPOSITORY_IMPLEMENTATION",
+              "supportsClaim": "Telangana GeoJSON boundary fixture fully validated with closed rings; national 30 states pending authoritative boundary feeds.",
+              "verificationStatus": "VERIFIED_ON_DISK"
+            },
+            {
+              "path": "reports/w021_5_national_data_coverage_matrix.json",
+              "evidenceClass": "REPOSITORY_IMPLEMENTATION",
+              "supportsClaim": "Telangana GeoJSON boundary fixture fully validated with closed rings; national 30 states pending authoritative boundary feeds.",
+              "verificationStatus": "VERIFIED_ON_DISK"
+            }
           ],
           "remainingWork": "30 states lack GeoJSON files in data/geo. Only Telangana (119 ACs) is populated.",
           "accounting": {
@@ -271,8 +540,18 @@
           "status": "REPO_VERIFIED",
           "completionCriteria": "Establish tables for multilingual names, aliases, and official symbols with strict constraints.",
           "evidence": [
-            "supabase/migrations/064_political_organization_governance_remediation.sql",
-            "reports/w021_5b2_organization_schema_gaps.json"
+            {
+              "path": "supabase/migrations/064_political_organization_governance_remediation.sql",
+              "evidenceClass": "REPOSITORY_IMPLEMENTATION",
+              "supportsClaim": "Political organization governance and multilingual extension schemas authored in repository.",
+              "verificationStatus": "VERIFIED_ON_DISK"
+            },
+            {
+              "path": "reports/w021_5b2_organization_schema_gaps.json",
+              "evidenceClass": "REPOSITORY_IMPLEMENTATION",
+              "supportsClaim": "Political organization governance and multilingual extension schemas authored in repository.",
+              "verificationStatus": "VERIFIED_ON_DISK"
+            }
           ],
           "remainingWork": "None in repository code.",
           "accounting": {
@@ -296,9 +575,24 @@
           "status": "REPO_VERIFIED",
           "completionCriteria": "Ingest and verify 1,207 ECI registered parties (C0-C5 tiers) with immutable IDs and recognition metadata.",
           "evidence": [
-            "supabase/migrations/065_canonical_political_organization_registry.sql",
-            "reports/w021_5b2_b2_2c_1096_disposition_ledger.md",
-            "reports/w021_5b2_b2_2c_final_organization_manifest.json"
+            {
+              "path": "supabase/migrations/065_canonical_political_organization_registry.sql",
+              "evidenceClass": "REPOSITORY_IMPLEMENTATION",
+              "supportsClaim": "Migration 065 schema and 1,207 organization manifest authored offline; live database staging execution unevidenced.",
+              "verificationStatus": "VERIFIED_ON_DISK"
+            },
+            {
+              "path": "reports/w021_5b2_b2_2c_1096_disposition_ledger.md",
+              "evidenceClass": "REPOSITORY_IMPLEMENTATION",
+              "supportsClaim": "Migration 065 schema and 1,207 organization manifest authored offline; live database staging execution unevidenced.",
+              "verificationStatus": "VERIFIED_ON_DISK"
+            },
+            {
+              "path": "reports/w021_5b2_b2_2c_final_organization_manifest.json",
+              "evidenceClass": "REPOSITORY_IMPLEMENTATION",
+              "supportsClaim": "Migration 065 schema and 1,207 organization manifest authored offline; live database staging execution unevidenced.",
+              "verificationStatus": "VERIFIED_ON_DISK"
+            }
           ],
           "remainingWork": "Live staging database execution unevidenced in this package; formal acceptance under Directive W021.5-CTO-NEXT-002 pending independent confirmation.",
           "accounting": {
@@ -322,9 +616,24 @@
           "status": "REPO_VERIFIED",
           "completionCriteria": "Map party abbreviations, regional language names (13 languages), and electoral symbols.",
           "evidence": [
-            "reports/w021_5b2_b2_2c_multilingual_matrix.json",
-            "reports/w021_5b2_b2_2c_symbol_matrix.json",
-            "reports/w021_5b2_b2_2c_alias_collision_matrix.json"
+            {
+              "path": "reports/w021_5b2_b2_2c_multilingual_matrix.json",
+              "evidenceClass": "REPOSITORY_IMPLEMENTATION",
+              "supportsClaim": "Multilingual party names, aliases and symbols matrix authored in repository.",
+              "verificationStatus": "VERIFIED_ON_DISK"
+            },
+            {
+              "path": "reports/w021_5b2_b2_2c_symbol_matrix.json",
+              "evidenceClass": "REPOSITORY_IMPLEMENTATION",
+              "supportsClaim": "Multilingual party names, aliases and symbols matrix authored in repository.",
+              "verificationStatus": "VERIFIED_ON_DISK"
+            },
+            {
+              "path": "reports/w021_5b2_b2_2c_alias_collision_matrix.json",
+              "evidenceClass": "REPOSITORY_IMPLEMENTATION",
+              "supportsClaim": "Multilingual party names, aliases and symbols matrix authored in repository.",
+              "verificationStatus": "VERIFIED_ON_DISK"
+            }
           ],
           "remainingWork": "None in repository artifacts.",
           "accounting": {
@@ -356,9 +665,24 @@
           "status": "REPO_VERIFIED",
           "completionCriteria": "Define immutable canonical_persons, person_party_affiliations, elected_tenures, and cross-system linkages.",
           "evidence": [
-            "supabase/migrations/050_political_entity_model.sql",
-            "supabase/migrations/063_canonical_political_identity_foundation.sql",
-            "reports/w021_5b2_identity_resolution_matrix.json"
+            {
+              "path": "supabase/migrations/050_political_entity_model.sql",
+              "evidenceClass": "REPOSITORY_IMPLEMENTATION",
+              "supportsClaim": "Canonical persons and entity deduplication algorithms authored in repository.",
+              "verificationStatus": "VERIFIED_ON_DISK"
+            },
+            {
+              "path": "supabase/migrations/063_canonical_political_identity_foundation.sql",
+              "evidenceClass": "REPOSITORY_IMPLEMENTATION",
+              "supportsClaim": "Canonical persons and entity deduplication algorithms authored in repository.",
+              "verificationStatus": "VERIFIED_ON_DISK"
+            },
+            {
+              "path": "reports/w021_5b2_identity_resolution_matrix.json",
+              "evidenceClass": "REPOSITORY_IMPLEMENTATION",
+              "supportsClaim": "Canonical persons and entity deduplication algorithms authored in repository.",
+              "verificationStatus": "VERIFIED_ON_DISK"
+            }
           ],
           "remainingWork": "None in repository schema.",
           "accounting": {
@@ -382,9 +706,24 @@
           "status": "PARTIAL",
           "completionCriteria": "Populate candidacies and election_contests across all 10 chunks with conflict resolution and manifest validation.",
           "evidence": [
-            "reports/W021.5-B2.2D-PERSON_POPULATION_CLOSURE_REPORT.md",
-            "reports/w021_5b2_b2_2d_person_manifest.json",
-            "reports/w021_5b2_b2_2d_candidacy_manifest.json"
+            {
+              "path": "reports/W021.5-B2.2D-PERSON_POPULATION_CLOSURE_REPORT.md",
+              "evidenceClass": "REPOSITORY_IMPLEMENTATION",
+              "supportsClaim": "10 candidate population chunks authored in repository; staging database execution and cross-table FK validation pending.",
+              "verificationStatus": "VERIFIED_ON_DISK"
+            },
+            {
+              "path": "reports/w021_5b2_b2_2d_person_manifest.json",
+              "evidenceClass": "REPOSITORY_IMPLEMENTATION",
+              "supportsClaim": "10 candidate population chunks authored in repository; staging database execution and cross-table FK validation pending.",
+              "verificationStatus": "VERIFIED_ON_DISK"
+            },
+            {
+              "path": "reports/w021_5b2_b2_2d_candidacy_manifest.json",
+              "evidenceClass": "REPOSITORY_IMPLEMENTATION",
+              "supportsClaim": "10 candidate population chunks authored in repository; staging database execution and cross-table FK validation pending.",
+              "verificationStatus": "VERIFIED_ON_DISK"
+            }
           ],
           "remainingWork": "Awaiting explicit CTO authorization for staging database execution.",
           "accounting": {
@@ -408,7 +747,12 @@
           "status": "BLOCKED",
           "completionCriteria": "Add contest_id foreign key constraint to candidacies referencing election_contests(id).",
           "evidence": [
-            "reports/W021.5-CANONICAL-ARCHITECTURE-READINESS-PACKAGE.md"
+            {
+              "path": "reports/W021.5-CANONICAL-ARCHITECTURE-READINESS-PACKAGE.md",
+              "evidenceClass": "BLOCKED_OR_UNRESOLVED",
+              "supportsClaim": "Blocked on Migration 067 schema authoring and live staging DB execution.",
+              "verificationStatus": "VERIFIED_ON_DISK"
+            }
           ],
           "remainingWork": "Blocked pending CTO approval of Migration 067 specification.",
           "accounting": {
@@ -440,8 +784,18 @@
           "status": "PARTIAL",
           "completionCriteria": "Ingest Census 2011 and ECI demographic profiles into constituency_demographics.",
           "evidence": [
-            "supabase/migrations/066_downstream_civic_extensions.sql",
-            "reports/W021.5-CTO-DIRECTIVE-037-POST-066-GATE-EXECUTION-REPORT.md"
+            {
+              "path": "supabase/migrations/066_downstream_civic_extensions.sql",
+              "evidenceClass": "REPOSITORY_IMPLEMENTATION",
+              "supportsClaim": "Constituency demographic profiles and aggregates authored for sample states; national population pending.",
+              "verificationStatus": "VERIFIED_ON_DISK"
+            },
+            {
+              "path": "reports/W021.5-CTO-DIRECTIVE-037-POST-066-GATE-EXECUTION-REPORT.md",
+              "evidenceClass": "REPOSITORY_IMPLEMENTATION",
+              "supportsClaim": "Constituency demographic profiles and aggregates authored for sample states; national population pending.",
+              "verificationStatus": "VERIFIED_ON_DISK"
+            }
           ],
           "remainingWork": "Pre-freeze verified; awaiting CTO staging execution directive.",
           "accounting": {
@@ -465,8 +819,18 @@
           "status": "BLOCKED",
           "completionCriteria": "Formally adjudicate and remediate unsafe DEFAULT 0 columns on financial assets/liabilities in Migration 008.",
           "evidence": [
-            "reports/W021.5-CANONICAL-ARCHITECTURE-READINESS-PACKAGE.md",
-            "reports/W021.5-CTO-DIRECTIVE-085-IMPLEMENTATION-REPORT.md"
+            {
+              "path": "reports/W021.5-CANONICAL-ARCHITECTURE-READINESS-PACKAGE.md",
+              "evidenceClass": "BLOCKED_OR_UNRESOLVED",
+              "supportsClaim": "Financial defect DQ-W021.5-B2.2E-001 strictly open pending CTO adjudication.",
+              "verificationStatus": "VERIFIED_ON_DISK"
+            },
+            {
+              "path": "reports/W021.5-CTO-DIRECTIVE-085-IMPLEMENTATION-REPORT.md",
+              "evidenceClass": "BLOCKED_OR_UNRESOLVED",
+              "supportsClaim": "Financial defect DQ-W021.5-B2.2E-001 strictly open pending CTO adjudication.",
+              "verificationStatus": "VERIFIED_ON_DISK"
+            }
           ],
           "remainingWork": "STRICTLY OPEN pending separate CTO adjudication. No agent self-closure permitted.",
           "accounting": {
@@ -490,7 +854,12 @@
           "status": "BLOCKED",
           "completionCriteria": "Author and deploy candidacy_affidavits table linking to candidacies(id) with strictly nullable financial fields.",
           "evidence": [
-            "reports/W021.5-CANONICAL-ARCHITECTURE-READINESS-PACKAGE.md"
+            {
+              "path": "reports/W021.5-CANONICAL-ARCHITECTURE-READINESS-PACKAGE.md",
+              "evidenceClass": "BLOCKED_OR_UNRESOLVED",
+              "supportsClaim": "Normalized candidate affidavit disclosure schema (Migration 068) blocked pending defect resolution.",
+              "verificationStatus": "VERIFIED_ON_DISK"
+            }
           ],
           "remainingWork": "Blocked pending adjudication of DQ-W021.5-B2.2E-001 and CTO staging migration authorization.",
           "accounting": {
@@ -522,8 +891,18 @@
           "status": "REPO_VERIFIED",
           "completionCriteria": "Normalize election_events and election_contests to model historical cycles (2014, 2018, 2019, 2023, 2024).",
           "evidence": [
-            "supabase/migrations/051_election_data_normalization.sql",
-            "reports/w021_5b2_2f_temporal_integrity.json"
+            {
+              "path": "supabase/migrations/051_election_data_normalization.sql",
+              "evidenceClass": "REPOSITORY_IMPLEMENTATION",
+              "supportsClaim": "Longitudinal election event and contest schemas normalized in repository.",
+              "verificationStatus": "VERIFIED_ON_DISK"
+            },
+            {
+              "path": "reports/w021_5b2_2f_temporal_integrity.json",
+              "evidenceClass": "REPOSITORY_IMPLEMENTATION",
+              "supportsClaim": "Longitudinal election event and contest schemas normalized in repository.",
+              "verificationStatus": "VERIFIED_ON_DISK"
+            }
           ],
           "remainingWork": "None in repository schema. Staging database migration execution pending.",
           "accounting": {
@@ -547,11 +926,36 @@
           "status": "PARTIAL",
           "completionCriteria": "Ingest structured per-constituency election history across all 31 States/UTs.",
           "evidence": [
-            "data/seed/telangana-historical-results.ts",
-            "data/seed/andhra-pradesh-historical-results.ts",
-            "data/seed/karnataka-historical-results.ts",
-            "data/seed/maharashtra-historical-results.ts",
-            "reports/w021_5_national_data_coverage_matrix.json"
+            {
+              "path": "data/seed/telangana-historical-results.ts",
+              "evidenceClass": "REPOSITORY_IMPLEMENTATION",
+              "supportsClaim": "Historical election results authored across 8 states with explicit record-level years; national remaining 23 states and database staging schema pending.",
+              "verificationStatus": "VERIFIED_ON_DISK"
+            },
+            {
+              "path": "data/seed/andhra-pradesh-historical-results.ts",
+              "evidenceClass": "REPOSITORY_IMPLEMENTATION",
+              "supportsClaim": "Historical election results authored across 8 states with explicit record-level years; national remaining 23 states and database staging schema pending.",
+              "verificationStatus": "VERIFIED_ON_DISK"
+            },
+            {
+              "path": "data/seed/karnataka-historical-results.ts",
+              "evidenceClass": "REPOSITORY_IMPLEMENTATION",
+              "supportsClaim": "Historical election results authored across 8 states with explicit record-level years; national remaining 23 states and database staging schema pending.",
+              "verificationStatus": "VERIFIED_ON_DISK"
+            },
+            {
+              "path": "data/seed/maharashtra-historical-results.ts",
+              "evidenceClass": "REPOSITORY_IMPLEMENTATION",
+              "supportsClaim": "Historical election results authored across 8 states with explicit record-level years; national remaining 23 states and database staging schema pending.",
+              "verificationStatus": "VERIFIED_ON_DISK"
+            },
+            {
+              "path": "reports/w021_5_national_data_coverage_matrix.json",
+              "evidenceClass": "REPOSITORY_IMPLEMENTATION",
+              "supportsClaim": "Historical election results authored across 8 states with explicit record-level years; national remaining 23 states and database staging schema pending.",
+              "verificationStatus": "VERIFIED_ON_DISK"
+            }
           ],
           "remainingWork": "Only 8 states have historical results in repo. 23 states single-term only. National DB backfill pending.",
           "accounting": {
@@ -583,9 +987,24 @@
           "status": "REPO_VERIFIED",
           "completionCriteria": "Preserve null for unknown votes, margins, percentages, and electionYear. Enforce GENERAL | BYPOLL enum.",
           "evidence": [
-            "apps/api/src/routes/constituencies.ts",
-            "apps/api/src/services/stateData.ts",
-            "apps/api/src/__tests__/constituencies.test.ts"
+            {
+              "path": "apps/api/src/routes/constituencies.ts",
+              "evidenceClass": "REPOSITORY_IMPLEMENTATION",
+              "supportsClaim": "Fastify route contracts and OpenAPI schemas hardened to preserve nullable election fields.",
+              "verificationStatus": "VERIFIED_ON_DISK"
+            },
+            {
+              "path": "apps/api/src/services/stateData.ts",
+              "evidenceClass": "REPOSITORY_IMPLEMENTATION",
+              "supportsClaim": "Fastify route contracts and OpenAPI schemas hardened to preserve nullable election fields.",
+              "verificationStatus": "VERIFIED_ON_DISK"
+            },
+            {
+              "path": "apps/api/src/__tests__/constituencies.test.ts",
+              "evidenceClass": "REPOSITORY_IMPLEMENTATION",
+              "supportsClaim": "Fastify route contracts and OpenAPI schemas hardened to preserve nullable election fields.",
+              "verificationStatus": "VERIFIED_ON_DISK"
+            }
           ],
           "remainingWork": "None in API contracts.",
           "accounting": {
@@ -609,8 +1028,18 @@
           "status": "REPO_VERIFIED",
           "completionCriteria": "Remove hardcoded state-code array lists for year defaulting. Strictly preserve null when year is not in source record.",
           "evidence": [
-            "apps/api/src/services/stateData.ts",
-            "tests/political-intelligence-directive-085.test.mjs"
+            {
+              "path": "apps/api/src/services/stateData.ts",
+              "evidenceClass": "REPOSITORY_IMPLEMENTATION",
+              "supportsClaim": "Elimination of state-code election year inferences from stateData.ts complete.",
+              "verificationStatus": "VERIFIED_ON_DISK"
+            },
+            {
+              "path": "tests/political-intelligence-directive-085.test.mjs",
+              "evidenceClass": "REPOSITORY_IMPLEMENTATION",
+              "supportsClaim": "Elimination of state-code election year inferences from stateData.ts complete.",
+              "verificationStatus": "VERIFIED_ON_DISK"
+            }
           ],
           "remainingWork": "None. State-code lists completely eliminated.",
           "accounting": {
@@ -634,8 +1063,18 @@
           "status": "BLOCKED",
           "completionCriteria": "Replace static stateData seed map lookups with queries against canonical database views (Migration 070).",
           "evidence": [
-            "reports/W021.5-CANONICAL-ARCHITECTURE-READINESS-PACKAGE.md",
-            "reports/w006_api_architecture_report.md"
+            {
+              "path": "reports/W021.5-CANONICAL-ARCHITECTURE-READINESS-PACKAGE.md",
+              "evidenceClass": "BLOCKED_OR_UNRESOLVED",
+              "supportsClaim": "Fastify canonical DB-backed route strangulation blocked pending live staging DB execution.",
+              "verificationStatus": "VERIFIED_ON_DISK"
+            },
+            {
+              "path": "reports/w006_api_architecture_report.md",
+              "evidenceClass": "BLOCKED_OR_UNRESOLVED",
+              "supportsClaim": "Fastify canonical DB-backed route strangulation blocked pending live staging DB execution.",
+              "verificationStatus": "VERIFIED_ON_DISK"
+            }
           ],
           "remainingWork": "Blocked pending staging database population and migration deployment.",
           "accounting": {
@@ -667,8 +1106,18 @@
           "status": "REPO_VERIFIED",
           "completionCriteria": "Validate ConstituencyDetailDTO with strict null preservation; throw ApiValidationError on malformed payloads.",
           "evidence": [
-            "apps/mobile/lib/api/endpoints/constituencies.ts",
-            "apps/mobile/__tests__/political-intelligence-journey.test.ts"
+            {
+              "path": "apps/mobile/lib/api/endpoints/constituencies.ts",
+              "evidenceClass": "REPOSITORY_IMPLEMENTATION",
+              "supportsClaim": "Mobile DTO validation hardened with nullable electionYear support and ApiValidationError.",
+              "verificationStatus": "VERIFIED_ON_DISK"
+            },
+            {
+              "path": "apps/mobile/__tests__/political-intelligence-journey.test.ts",
+              "evidenceClass": "REPOSITORY_IMPLEMENTATION",
+              "supportsClaim": "Mobile DTO validation hardened with nullable electionYear support and ApiValidationError.",
+              "verificationStatus": "VERIFIED_ON_DISK"
+            }
           ],
           "remainingWork": "None.",
           "accounting": {
@@ -692,8 +1141,18 @@
           "status": "REPO_VERIFIED",
           "completionCriteria": "Render explicit badges ('Verified Electoral API', 'Offline Result Seed', 'Offline Profile Seed') distinguishing mixed sources.",
           "evidence": [
-            "apps/mobile/app/constituency/[id].tsx",
-            "apps/mobile/__tests__/political-intelligence-journey.test.ts"
+            {
+              "path": "apps/mobile/app/constituency/[id].tsx",
+              "evidenceClass": "REPOSITORY_IMPLEMENTATION",
+              "supportsClaim": "Section-level provenance tags active across mobile constituency screens.",
+              "verificationStatus": "VERIFIED_ON_DISK"
+            },
+            {
+              "path": "apps/mobile/__tests__/political-intelligence-journey.test.ts",
+              "evidenceClass": "REPOSITORY_IMPLEMENTATION",
+              "supportsClaim": "Section-level provenance tags active across mobile constituency screens.",
+              "verificationStatus": "VERIFIED_ON_DISK"
+            }
           ],
           "remainingWork": "None.",
           "accounting": {
@@ -717,9 +1176,24 @@
           "status": "REPO_VERIFIED",
           "completionCriteria": "Verify zero active mobile screens rely on election2023 for political truth.",
           "evidence": [
-            "reports/W021.5-COMPATIBILITY-CONSUMER-IMPACT-REPORT.md",
-            "apps/mobile/app/constituency/[id].tsx",
-            "apps/mobile/app/legislator/[id].tsx"
+            {
+              "path": "reports/W021.5-COMPATIBILITY-CONSUMER-IMPACT-REPORT.md",
+              "evidenceClass": "REPOSITORY_IMPLEMENTATION",
+              "supportsClaim": "Mobile user journeys decoupled from legacy election2023 aliases.",
+              "verificationStatus": "VERIFIED_ON_DISK"
+            },
+            {
+              "path": "apps/mobile/app/constituency/[id].tsx",
+              "evidenceClass": "REPOSITORY_IMPLEMENTATION",
+              "supportsClaim": "Mobile user journeys decoupled from legacy election2023 aliases.",
+              "verificationStatus": "VERIFIED_ON_DISK"
+            },
+            {
+              "path": "apps/mobile/app/legislator/[id].tsx",
+              "evidenceClass": "REPOSITORY_IMPLEMENTATION",
+              "supportsClaim": "Mobile user journeys decoupled from legacy election2023 aliases.",
+              "verificationStatus": "VERIFIED_ON_DISK"
+            }
           ],
           "remainingWork": "None. All screens consume recentElection and elections[].",
           "accounting": {
@@ -743,8 +1217,18 @@
           "status": "PARTIAL",
           "completionCriteria": "Route all 56 Class B client direct Supabase writes through Fastify API.",
           "evidence": [
-            "reports/w006_r1_audit_integrity_report.json",
-            "apps/mobile/lib/supabaseDataService.ts"
+            {
+              "path": "reports/w006_r1_audit_integrity_report.json",
+              "evidenceClass": "REPOSITORY_IMPLEMENTATION",
+              "supportsClaim": "Mobile write strangler mapped for all 56 Class B methods; runtime cutover and legacy method removal pending.",
+              "verificationStatus": "VERIFIED_ON_DISK"
+            },
+            {
+              "path": "apps/mobile/lib/supabaseDataService.ts",
+              "evidenceClass": "REPOSITORY_IMPLEMENTATION",
+              "supportsClaim": "Mobile write strangler mapped for all 56 Class B methods; runtime cutover and legacy method removal pending.",
+              "verificationStatus": "VERIFIED_ON_DISK"
+            }
           ],
           "remainingWork": "Phase 1-4 strangler migration actively governed under W006.",
           "accounting": {
@@ -798,7 +1282,12 @@
           "status": "BLOCKED",
           "completionCriteria": "Execute final staging verification and produce production migration cutover dossier.",
           "evidence": [
-            "EXECUTION_STATE.md"
+            {
+              "path": "EXECUTION_STATE.md",
+              "evidenceClass": "BLOCKED_OR_UNRESOLVED",
+              "supportsClaim": "Production database air-gap cutover preflight blocked pending formal staging sign-off.",
+              "verificationStatus": "VERIFIED_ON_DISK"
+            }
           ],
           "remainingWork": "Production database strictly air-gapped; blocked pending staging completion and CTO approval.",
           "accounting": {

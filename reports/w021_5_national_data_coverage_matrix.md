@@ -2,7 +2,7 @@
 
 **Milestone:** W021.5 — National Political Intelligence and Candidate Transparency  
 **Directive:** CTO Directive 085 / CTO Directive 086 / CTO Directive 087 / CTO Directive 088 / CTO Directive 089 / CTO Directive 090  
-**Generated At:** `2026-10-17T13:45:59.276Z`  
+**Generated At:** `2026-10-17T14:14:58.610Z`  
 **Total States/UTs Audited:** 31  
 **Defect Classification:** `DQ-W021.5-B2.2E-001` — **STRICTLY OPEN**  
 **Governance Invariant:** Rule IV-001 — Non-Self-Acceptance  
