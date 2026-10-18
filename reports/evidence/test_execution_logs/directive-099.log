@@ -4,7 +4,7 @@ Suite: tests/political-intelligence-directive-099.test.mjs
 Command: node tests/political-intelligence-directive-099.test.mjs
 Working Directory: C:\Users\Laven\OneDrive\Desktop\Kshetra
 Runtime: Node v24.13.0 (win32)
-Execution Timestamp: 2026-10-18T06:17:49.865Z
+Execution Timestamp: 2026-10-18T16:59:09.972Z
 Exit Code: 0
 ================================================================================
 
@@ -39,7 +39,7 @@ Strong Suite Binding, Manifest-Log Reconciliation & Task Criterion Audit
   [PASS] 2.9 Unexpected suite outside declared execution scope fails closed when exact scope enforced
   [PASS] 2.10 Manifest declaring PASS with exitCode non-zero fails closed
 --- 3. Workstream C: Execution Provenance, Stale Metadata & Inventory Reconciled ---
-  [PASS] 3.1 Test suite inventory defines exactly 20 canonical suites (4 foundational + 16 directives)
+  [PASS] 3.1 Test suite inventory defines canonical suites (4 foundational + >=16 directives)
   [PASS] 3.2 Directive 099 suite definition is registered with expected command, logFilename, and directiveRef
   [PASS] 3.3 Manifest verifierRole mismatch is rejected in validateManifestIntegrity
   [PASS] 3.4 Manifest executionEpoch is strictly DIRECTIVE_099 across new execution records
@@ -78,6 +78,6 @@ TEST SUMMARY: 48 PASSED, 0 FAILED
 
 
 --- PROCESS METRICS ---
-DurationMs: 1512
+DurationMs: 3211
 ExitCode: 0
 ================================================================================

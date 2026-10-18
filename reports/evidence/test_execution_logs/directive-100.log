@@ -1,0 +1,94 @@
+================================================================================
+KSHETRA VERIFIABLE TEST EXECUTION LOG
+Suite: tests/political-intelligence-directive-100.test.mjs
+Command: node tests/political-intelligence-directive-100.test.mjs
+Working Directory: C:\Users\Laven\OneDrive\Desktop\Kshetra
+Runtime: Node v24.13.0 (win32)
+Execution Timestamp: 2026-10-18T16:59:20.228Z
+Exit Code: 0
+================================================================================
+
+--- STDOUT ---
+================================================================
+KSHETRA W021.5 — CTO DIRECTIVE 100 VERIFICATION SUITE
+Canonical Task Identity, Criteria-Derived Accounting & Verification Readiness
+================================================================
+
+--- 1. Workstream A: Canonical Task Identity Reconciliation & Discrepancy Falsification ---
+  [PASS] 1.1 Canonical task metadata defines exactly 27 tasks across 9 stages summing to 100.0%
+  [PASS] 1.2 Every canonical task maps to exactly one task specification with matching attributes
+  [PASS] 1.3 OLD_TO_CANONICAL_TASK_MAPPING resolves all 27 canonical tasks and tracks historical aliases
+  [PASS] 1.4 Falsification: Altering a canonical task title fails closed
+  [PASS] 1.5 Falsification: Altering a task ID to an unrecognized ID fails closed
+  [PASS] 1.6 Falsification: Altering a task stage assignment fails closed
+  [PASS] 1.7 Falsification: Altering a task weight fails closed
+  [PASS] 1.8 Falsification: Altering a task specification reference (specRef) fails closed
+  [PASS] 1.9 Falsification: Duplicate task ID in ledger fails closed in computeLedgerSummary
+  [PASS] 1.10 Falsification: Missing canonical task ID in ledger fails closed in computeLedgerSummary
+  [PASS] 1.11 Falsification: Unexpected phantom task ID (W021.5-I-03) fails closed in computeLedgerSummary
+  [PASS] 1.12 Falsification: Total task allocation not summing to 100.0% fails closed
+--- 2. Workstream B: Authoritative Criteria-Derived Accounting & Rule Enforcement ---
+  [PASS] 2.1 evaluateTaskCriteria exposes all 10 accounting dimensions for every task
+  [PASS] 2.2 Criterion-derived ratio is the authoritative basis for earned repository weight
+  [PASS] 2.3 Total progress partition derived from criteria evaluations sums to exactly 100.0%
+  [PASS] 2.4 Rule 1: Only passing REPOSITORY_VERIFIABLE criterion contributes earned repository weight
+  [PASS] 2.5 Rule 2: Database-dependent criteria remain unverified until separately authorized execution exists
+  [PASS] 2.6 Rule 3: Externally blocked criteria earn strictly 0 weight
+  [PASS] 2.7 Rule 4: Unimplemented criteria earn strictly 0 weight
+  [PASS] 2.8 Rule 5: Missing or malformed evidence cannot increase earned weight
+  [PASS] 2.9 Rule 6: Failed criterion fails closed and is represented explicitly
+  [PASS] 2.10 Rule 7: Ledger fails closed when supplied accounting disagrees with calculated results
+  [PASS] 2.11 Rule 8: Offline limitations recorded explicitly in assessment.limitations
+  [PASS] 2.12 Falsification: Artificially inflating repoCompletionRatio above criterion evaluation fails closed
+  [PASS] 2.13 Falsification: Altering databasePendingWeight without matching DATABASE_STAGING criteria fails closed
+  [PASS] 2.14 Falsification: Altering blockedWeight without matching BLOCKED_EXTERNAL criteria fails closed
+  [PASS] 2.15 Falsification: Altering unimplementedWeight without matching UNIMPLEMENTED criteria fails closed
+--- 3. Workstream C: Criterion-Level Verification Matrix & Substantive Domain Assertions ---
+  [PASS] 3.1 Exactly 50 valid criteria exist across all 27 task specifications (calculated dynamically)
+  [PASS] 3.2 Scope distribution: 37 REPOSITORY_VERIFIABLE, 4 DATABASE_STAGING, 6 BLOCKED_EXTERNAL, 3 UNIMPLEMENTED
+  [PASS] 3.3 All 37 REPOSITORY_VERIFIABLE criteria pass positive verification in current repository
+  [PASS] 3.4 Substantive Domain Assertion: Statutory 4,123 constituency count, 31 assembly states/UTs
+  [PASS] 3.5 Substantive Domain Assertion: Delhi 70-seat statutory assembly invariant strictly maintained
+  [PASS] 3.6 Substantive Domain Assertion: Canonical political organizations catalog contains 1,207 organizations
+  [PASS] 3.7 Substantive Domain Assertion: Multilingual party matrix covers 27 identities across 11 languages with 19 symbols
+  [PASS] 3.8 Substantive Domain Assertion: AC-to-PC parliamentary mapping referential integrity
+  [PASS] 3.9 Substantive Domain Assertion: Temporal delimitation lineage and Assam 2023 delimitation modeling
+  [PASS] 3.10 Substantive Domain Assertion: Candidate-to-person deduplication algorithm and 10 chunk manifests
+  [PASS] 3.11 Substantive Domain Assertion: Multi-election historical results verified with record-level election years
+  [PASS] 3.12 Substantive Domain Assertion: Fastify API nullability contracts preserve missing values
+  [PASS] 3.13 Substantive Domain Assertion: Elimination of hardcoded election years in stateData.ts verified with clean AST
+  [PASS] 3.14 Substantive Domain Assertion: Mobile DTO validation hardening and section-level provenance badges
+--- 4. Workstream D: Cross-Artifact Reconciliation ---
+  [PASS] 4.1 reports/w021_5_execution_ledger.json matches reports/W021.5-EXECUTION-LEDGER.md in task count (27)
+  [PASS] 4.2 Total weight (100.0%) and partition percentages match exactly across JSON and Markdown ledgers
+  [PASS] 4.3 Status counts match exactly: 15 REPO_VERIFIED, 6 PARTIAL, 5 BLOCKED, 1 NOT_IMPLEMENTED
+  [PASS] 4.4 All 27 task IDs and canonical titles match byte-for-byte across JSON and Markdown ledgers
+  [PASS] 4.5 Database-pending task list (4 tasks: C-02, D-02, E-01, F-02) matches exactly across JSON and Markdown
+  [PASS] 4.6 Falsification: Tampering with a task title in ledger JSON causes cross-artifact reconciliation to fail closed
+--- 5. Workstream E: Test-Execution Provenance & Independent Attestation ---
+  [PASS] 5.1 Test suite inventory generated from registered definitions contains exactly 21 suites (4 foundational + 17 directives)
+  [PASS] 5.2 All 21 registered test suites exist on disk with valid file paths and commands
+  [PASS] 5.3 Registered suite definitions, manifest, and on-disk logs agree on suite identity
+  [PASS] 5.4 Test execution provenance clearly distinguishes repository-recorded execution from independent CI attestation
+  [PASS] 5.5 External CI limitation explicit: Matching SHA-256 digest proves log integrity but not independent actor identity
+--- 6. Workstream F & Mandatory Invariants: Rule IV-001, Defect Registers & Air-Gap ---
+  [PASS] 6.1 Rule IV-001 (Non-Self-Acceptance): Formal acceptance strictly 0.0% (UNACCEPTED)
+  [PASS] 6.2 External trust provisioning distinct from repository configuration; caller-controlled trust stripped
+  [PASS] 6.3 Financial Defect DQ-W021.5-B2.2E-001 remains STRICTLY OPEN pending explicit CTO adjudication
+  [PASS] 6.4 Telangana Assembly Constituency 119 duplication defect remains OPEN/BLOCKED
+  [PASS] 6.5 Baseline 68 SQL migrations immutable byte-for-byte identical to commit 0ea572d
+  [PASS] 6.6 Baseline 31 MLA profile seed files have pure LF and 0 undefined properties matching commit fb408ce
+  [PASS] 6.7 Air-gap preservation: Strictly 0.0% live database execution, 0 migrations, 0 staging/production mutations
+
+================================================================
+TEST SUMMARY: 59 PASSED, 0 FAILED
+================================================================
+
+
+--- STDERR ---
+
+
+--- PROCESS METRICS ---
+DurationMs: 10249
+ExitCode: 0
+================================================================================

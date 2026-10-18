@@ -101,6 +101,891 @@ export function applyTaskAccountingDefaults(task) {
 }
 
 /**
+ * Workstream A (CTO Directive 100):
+ * Canonical Task Metadata — Authoritative single source of truth for task identity,
+ * stage assignments, weights, master specification references, and classifications.
+ */
+export const CANONICAL_TASK_METADATA = {
+  'W021.5-A-01': {
+    taskId: 'W021.5-A-01',
+    canonicalTitle: 'Comprehensive 29-Domain Data-Truth Audit',
+    stageId: 'STAGE_A',
+    stageName: 'Repository & National Data-Truth Audit (W021.5-A)',
+    weight: 3.0,
+    masterSpecRef: 'W021.5-A Section 1-2',
+    requirementCode: 'REQ-AUD-001',
+    taskClassification: 'CORE_SPECIFICATION',
+  },
+  'W021.5-A-02': {
+    taskId: 'W021.5-A-02',
+    canonicalTitle: 'Multi-Dimensional National Data Coverage Matrix Generator',
+    stageId: 'STAGE_A',
+    stageName: 'Repository & National Data-Truth Audit (W021.5-A)',
+    weight: 4.0,
+    masterSpecRef: 'Directive 085 / Directive 086 Section 2',
+    requirementCode: 'REQ-AUD-002',
+    taskClassification: 'HARDENING_EXTENSION',
+  },
+  'W021.5-A-03': {
+    taskId: 'W021.5-A-03',
+    canonicalTitle: 'Delhi 70-Seat Statutory Assembly Invariant & Demographic Placeholder Isolation',
+    stageId: 'STAGE_A',
+    stageName: 'Repository & National Data-Truth Audit (W021.5-A)',
+    weight: 3.0,
+    masterSpecRef: 'Directive 085 Workstream A / Directive 086 Workstream A',
+    requirementCode: 'REQ-AUD-003',
+    taskClassification: 'HARDENING_EXTENSION',
+  },
+  'W021.5-B1-01': {
+    taskId: 'W021.5-B1-01',
+    canonicalTitle: 'National 4,123 Assembly Constituency Canonicalization',
+    stageId: 'STAGE_B',
+    stageName: 'Canonical Jurisdiction & Geography Modeling (W021.5-B1)',
+    weight: 4.0,
+    masterSpecRef: 'W021.5-B1 Migration 059',
+    requirementCode: 'REQ-GEO-001',
+    taskClassification: 'CORE_SPECIFICATION',
+  },
+  'W021.5-B1-02': {
+    taskId: 'W021.5-B1-02',
+    canonicalTitle: 'National AC-to-PC Parliamentary Mapping Registry',
+    stageId: 'STAGE_B',
+    stageName: 'Canonical Jurisdiction & Geography Modeling (W021.5-B1)',
+    weight: 3.0,
+    masterSpecRef: 'W021.5-B1 Migration 060, 061',
+    requirementCode: 'REQ-GEO-002',
+    taskClassification: 'CORE_SPECIFICATION',
+  },
+  'W021.5-B1-03': {
+    taskId: 'W021.5-B1-03',
+    canonicalTitle: 'Temporal Lineage & Assam 2023 Delimitation Modeling',
+    stageId: 'STAGE_B',
+    stageName: 'Canonical Jurisdiction & Geography Modeling (W021.5-B1)',
+    weight: 3.0,
+    masterSpecRef: 'W021.5-B1 Migration 062',
+    requirementCode: 'REQ-GEO-003',
+    taskClassification: 'CORE_SPECIFICATION',
+  },
+  'W021.5-B1-04': {
+    taskId: 'W021.5-B1-04',
+    canonicalTitle: 'National Assembly Boundary GeoJSON Deep Validation & Linkage',
+    stageId: 'STAGE_B',
+    stageName: 'Canonical Jurisdiction & Geography Modeling (W021.5-B1)',
+    weight: 2.0,
+    masterSpecRef: 'Directive 086 Workstream A',
+    requirementCode: 'REQ-GEO-004',
+    taskClassification: 'CORE_SPECIFICATION',
+  },
+  'W021.5-C-01': {
+    taskId: 'W021.5-C-01',
+    canonicalTitle: 'Political Organization Governance & Multilingual Extension Schema',
+    stageId: 'STAGE_C',
+    stageName: 'Canonical Political Organization Registry (W021.5-B2.2-A, B, C)',
+    weight: 4.0,
+    masterSpecRef: 'W021.5-B2.2-B Migration 064',
+    requirementCode: 'REQ-ORG-001',
+    taskClassification: 'CORE_SPECIFICATION',
+  },
+  'W021.5-C-02': {
+    taskId: 'W021.5-C-02',
+    canonicalTitle: '1,207 Canonical Political Organizations Catalog Ingestion',
+    stageId: 'STAGE_C',
+    stageName: 'Canonical Political Organization Registry (W021.5-B2.2-A, B, C)',
+    weight: 5.0,
+    masterSpecRef: 'W021.5-B2.2-C Migration 065',
+    requirementCode: 'REQ-ORG-002',
+    taskClassification: 'CORE_SPECIFICATION',
+  },
+  'W021.5-C-03': {
+    taskId: 'W021.5-C-03',
+    canonicalTitle: 'Multilingual Party Names, Aliases & Symbols Matrix',
+    stageId: 'STAGE_C',
+    stageName: 'Canonical Political Organization Registry (W021.5-B2.2-A, B, C)',
+    weight: 3.0,
+    masterSpecRef: 'W021.5-B2.2-C',
+    requirementCode: 'REQ-ORG-003',
+    taskClassification: 'CORE_SPECIFICATION',
+  },
+  'W021.5-D-01': {
+    taskId: 'W021.5-D-01',
+    canonicalTitle: 'Canonical Persons & Entity Deduplication Foundation',
+    stageId: 'STAGE_D',
+    stageName: 'Candidacies, Contests & Multi-Election Normalization (W021.5-B2.2-D)',
+    weight: 4.0,
+    masterSpecRef: 'W021.5-B2.2-D Migration 050, 063',
+    requirementCode: 'REQ-CND-001',
+    taskClassification: 'CORE_SPECIFICATION',
+  },
+  'W021.5-D-02': {
+    taskId: 'W021.5-D-02',
+    canonicalTitle: 'Candidate Population & Contest Mapping Across 10 Chunks',
+    stageId: 'STAGE_D',
+    stageName: 'Candidacies, Contests & Multi-Election Normalization (W021.5-B2.2-D)',
+    weight: 6.0,
+    masterSpecRef: 'W021.5-B2.2-D Chunks 01-10',
+    requirementCode: 'REQ-CND-002',
+    taskClassification: 'CORE_SPECIFICATION',
+  },
+  'W021.5-D-03': {
+    taskId: 'W021.5-D-03',
+    canonicalTitle: 'Candidate-to-Contest Foreign Key Constraint Linkage (Migration 067)',
+    stageId: 'STAGE_D',
+    stageName: 'Candidacies, Contests & Multi-Election Normalization (W021.5-B2.2-D)',
+    weight: 4.0,
+    masterSpecRef: 'Directive 086 Section 5',
+    requirementCode: 'REQ-CND-003',
+    taskClassification: 'CORE_SPECIFICATION',
+  },
+  'W021.5-E-01': {
+    taskId: 'W021.5-E-01',
+    canonicalTitle: 'Constituency Demographic Profiles & Aggregates Ingestion',
+    stageId: 'STAGE_E',
+    stageName: 'Candidate Affidavits, Demographics & Financial Disclosures (W021.5-B2.2-E)',
+    weight: 4.0,
+    masterSpecRef: 'W021.5-B2.2-E Migration 066',
+    requirementCode: 'REQ-DEM-001',
+    taskClassification: 'CORE_SPECIFICATION',
+  },
+  'W021.5-E-02': {
+    taskId: 'W021.5-E-02',
+    canonicalTitle: 'Financial Defect DQ-W021.5-B2.2E-001 Formal Adjudication',
+    stageId: 'STAGE_E',
+    stageName: 'Candidate Affidavits, Demographics & Financial Disclosures (W021.5-B2.2-E)',
+    weight: 5.0,
+    masterSpecRef: 'Rule IV-001 / Defect Register',
+    requirementCode: 'REQ-FIN-001',
+    taskClassification: 'CORE_SPECIFICATION',
+  },
+  'W021.5-E-03': {
+    taskId: 'W021.5-E-03',
+    canonicalTitle: 'Normalized Candidate Affidavit Disclosure Schema (Migration 068)',
+    stageId: 'STAGE_E',
+    stageName: 'Candidate Affidavits, Demographics & Financial Disclosures (W021.5-B2.2-E)',
+    weight: 5.0,
+    masterSpecRef: 'Directive 086 Section 5',
+    requirementCode: 'REQ-FIN-002',
+    taskClassification: 'CORE_SPECIFICATION',
+  },
+  'W021.5-F-01': {
+    taskId: 'W021.5-F-01',
+    canonicalTitle: 'Longitudinal Election Event & Contest Schema Normalization',
+    stageId: 'STAGE_F',
+    stageName: 'Multi-Election History & Longitudinal Results Normalization (W021.5-B2.2-F)',
+    weight: 4.0,
+    masterSpecRef: 'W021.5-B2.2-F Migration 051',
+    requirementCode: 'REQ-HIS-001',
+    taskClassification: 'CORE_SPECIFICATION',
+  },
+  'W021.5-F-02': {
+    taskId: 'W021.5-F-02',
+    canonicalTitle: 'National Multi-Election Historical Results Ingestion',
+    stageId: 'STAGE_F',
+    stageName: 'Multi-Election History & Longitudinal Results Normalization (W021.5-B2.2-F)',
+    weight: 6.0,
+    masterSpecRef: 'Directive 085 / Directive 086 Workstream A',
+    requirementCode: 'REQ-HIS-002',
+    taskClassification: 'CORE_SPECIFICATION',
+  },
+  'W021.5-G-01': {
+    taskId: 'W021.5-G-01',
+    canonicalTitle: 'API Election Contract Nullability & Missing-Value Preservation',
+    stageId: 'STAGE_G',
+    stageName: 'Fastify API Layer Strangulation & Contract Hardening (W021.5-B3)',
+    weight: 4.0,
+    masterSpecRef: 'Directive 085 / Directive 086 Workstream C',
+    requirementCode: 'REQ-API-001',
+    taskClassification: 'CORE_SPECIFICATION',
+  },
+  'W021.5-G-02': {
+    taskId: 'W021.5-G-02',
+    canonicalTitle: 'Elimination of State-Code Election-Year Inferences in stateData.ts',
+    stageId: 'STAGE_G',
+    stageName: 'Fastify API Layer Strangulation & Contract Hardening (W021.5-B3)',
+    weight: 4.0,
+    masterSpecRef: 'Directive 086 Workstream B',
+    requirementCode: 'REQ-API-002',
+    taskClassification: 'CORE_SPECIFICATION',
+  },
+  'W021.5-G-03': {
+    taskId: 'W021.5-G-03',
+    canonicalTitle: 'Fastify Canonical DB-Backed Route Strangulation',
+    stageId: 'STAGE_G',
+    stageName: 'Fastify API Layer Strangulation & Contract Hardening (W021.5-B3)',
+    weight: 4.0,
+    masterSpecRef: 'W006 Strangler Migration Phase 1-4',
+    requirementCode: 'REQ-API-003',
+    taskClassification: 'CORE_SPECIFICATION',
+  },
+  'W021.5-H-01': {
+    taskId: 'W021.5-H-01',
+    canonicalTitle: 'Mobile DTO Validation Hardening & Nullable Election Year Support',
+    stageId: 'STAGE_H',
+    stageName: 'Mobile Client Strangler Migration & Provenance Precedence (W021.5-B4)',
+    weight: 3.0,
+    masterSpecRef: 'Directive 085 / Directive 086 Workstream C',
+    requirementCode: 'REQ-MOB-001',
+    taskClassification: 'CORE_SPECIFICATION',
+  },
+  'W021.5-H-02': {
+    taskId: 'W021.5-H-02',
+    canonicalTitle: 'Section-Level Provenance Badges in Constituency UI',
+    stageId: 'STAGE_H',
+    stageName: 'Mobile Client Strangler Migration & Provenance Precedence (W021.5-B4)',
+    weight: 3.0,
+    masterSpecRef: 'Directive 086 Workstream C',
+    requirementCode: 'REQ-MOB-002',
+    taskClassification: 'CORE_SPECIFICATION',
+  },
+  'W021.5-H-03': {
+    taskId: 'W021.5-H-03',
+    canonicalTitle: 'Mobile Journey Decoupling from Legacy election2023 Alias',
+    stageId: 'STAGE_H',
+    stageName: 'Mobile Client Strangler Migration & Provenance Precedence (W021.5-B4)',
+    weight: 2.0,
+    masterSpecRef: 'Directive 085 Workstream B / Directive 086 Workstream C',
+    requirementCode: 'REQ-MOB-003',
+    taskClassification: 'CORE_SPECIFICATION',
+  },
+  'W021.5-H-04': {
+    taskId: 'W021.5-H-04',
+    canonicalTitle: 'Mobile Write Strangler Migration (Class B Deprecation)',
+    stageId: 'STAGE_H',
+    stageName: 'Mobile Client Strangler Migration & Provenance Precedence (W021.5-B4)',
+    weight: 2.0,
+    masterSpecRef: 'W006-R1A Class B Matrix',
+    requirementCode: 'REQ-MOB-004',
+    taskClassification: 'CORE_SPECIFICATION',
+  },
+  'W021.5-I-01': {
+    taskId: 'W021.5-I-01',
+    canonicalTitle: 'Mobile SQLite Canonical Offline Sync Schema & Engine',
+    stageId: 'STAGE_I',
+    stageName: 'Canonical Offline SQLite Sync Engine & Final Production Synchronization (W021.5-B5)',
+    weight: 3.0,
+    masterSpecRef: 'W021.5-B5 Architecture Spec',
+    requirementCode: 'REQ-SYS-001',
+    taskClassification: 'CORE_SPECIFICATION',
+  },
+  'W021.5-I-02': {
+    taskId: 'W021.5-I-02',
+    canonicalTitle: 'Production Database Air-Gap Preservation & Cutover Preflight',
+    stageId: 'STAGE_I',
+    stageName: 'Canonical Offline SQLite Sync Engine & Final Production Synchronization (W021.5-B5)',
+    weight: 3.0,
+    masterSpecRef: 'W021.5 Master Plan Section 10',
+    requirementCode: 'REQ-SYS-002',
+    taskClassification: 'CORE_SPECIFICATION',
+  },
+};
+
+/**
+ * Workstream A (CTO Directive 100):
+ * Comprehensive Old-to-Canonical Task Mapping resolving every discrepancy,
+ * abbreviated label, synthetic grid alias, and phantom task across historical reports.
+ */
+export const OLD_TO_CANONICAL_TASK_MAPPING = {
+  'W021.5-A-01': {
+    canonicalTaskId: 'W021.5-A-01',
+    canonicalTitle: 'Comprehensive 29-Domain Data-Truth Audit',
+    stageId: 'STAGE_A',
+    weight: 3.0,
+    masterSpecRef: 'W021.5-A Section 1-2',
+    historicalAliases: [
+      {
+        alias: 'Data-Truth Audit',
+        source: 'Directive 099 Implementation Report',
+        discrepancyType: 'ABBREVIATED_REPORT_LABEL',
+        rationale: 'Abbreviated column title in Directive 099 report criteria verification matrix table.',
+      },
+      {
+        alias: 'Statutory Assembly Constituency Mapping',
+        source: 'Directive 099 Executive Chat Summary',
+        discrepancyType: 'SYNTHETIC_CHAT_SUMMARY',
+        rationale: 'Erroneous chat summary label conflating Stage A data-truth audit with assembly constituency mapping.',
+      },
+    ],
+  },
+  'W021.5-A-02': {
+    canonicalTaskId: 'W021.5-A-02',
+    canonicalTitle: 'Multi-Dimensional National Data Coverage Matrix Generator',
+    stageId: 'STAGE_A',
+    weight: 4.0,
+    masterSpecRef: 'Directive 085 / Directive 086 Section 2',
+    historicalAliases: [
+      {
+        alias: 'Coverage Matrix Generator',
+        source: 'Directive 099 Implementation Report',
+        discrepancyType: 'ABBREVIATED_REPORT_LABEL',
+        rationale: 'Abbreviated column title in Directive 099 report criteria verification matrix table.',
+      },
+      {
+        alias: 'National Boundary Delimitation & Coverage Matrix',
+        source: 'Directive 099 Executive Chat Summary',
+        discrepancyType: 'SYNTHETIC_CHAT_SUMMARY',
+        rationale: 'Synthetic narrative title in chat summary 9x3 grid.',
+      },
+    ],
+  },
+  'W021.5-A-03': {
+    canonicalTaskId: 'W021.5-A-03',
+    canonicalTitle: 'Delhi 70-Seat Statutory Assembly Invariant & Demographic Placeholder Isolation',
+    stageId: 'STAGE_A',
+    weight: 3.0,
+    masterSpecRef: 'Directive 085 Workstream A / Directive 086 Workstream A',
+    historicalAliases: [
+      {
+        alias: 'Delhi 70-Seat Invariant',
+        source: 'Directive 099 Implementation Report',
+        discrepancyType: 'ABBREVIATED_REPORT_LABEL',
+        rationale: 'Abbreviated column title in Directive 099 report criteria verification matrix table.',
+      },
+      {
+        alias: 'Delhi Assembly Invariant Reconciliation',
+        source: 'Directive 099 Executive Chat Summary',
+        discrepancyType: 'SYNTHETIC_CHAT_SUMMARY',
+        rationale: 'Synthetic narrative title in chat summary 9x3 grid.',
+      },
+    ],
+  },
+  'W021.5-B1-01': {
+    canonicalTaskId: 'W021.5-B1-01',
+    canonicalTitle: 'National 4,123 Assembly Constituency Canonicalization',
+    stageId: 'STAGE_B',
+    weight: 4.0,
+    masterSpecRef: 'W021.5-B1 Migration 059',
+    historicalAliases: [
+      {
+        alias: 'Constituency Canonicalization',
+        source: 'Directive 099 Implementation Report',
+        discrepancyType: 'ABBREVIATED_REPORT_LABEL',
+        rationale: 'Abbreviated column title in Directive 099 report table.',
+      },
+      {
+        alias: 'National AC Canonicalization & Delimitation Registry',
+        source: 'Directive 099 Executive Chat Summary',
+        discrepancyType: 'SYNTHETIC_CHAT_SUMMARY',
+        rationale: 'Synthetic narrative title in chat summary 9x3 grid (keyed as W021.5-B-01).',
+      },
+    ],
+  },
+  'W021.5-B1-02': {
+    canonicalTaskId: 'W021.5-B1-02',
+    canonicalTitle: 'National AC-to-PC Parliamentary Mapping Registry',
+    stageId: 'STAGE_B',
+    weight: 3.0,
+    masterSpecRef: 'W021.5-B1 Migration 060, 061',
+    historicalAliases: [
+      {
+        alias: 'AC-to-PC Mapping Registry',
+        source: 'Directive 099 Implementation Report',
+        discrepancyType: 'ABBREVIATED_REPORT_LABEL',
+        rationale: 'Abbreviated column title in Directive 099 report table.',
+      },
+      {
+        alias: 'AC-to-PC Mapping & Electoral Hierarchy',
+        source: 'Directive 099 Executive Chat Summary',
+        discrepancyType: 'SYNTHETIC_CHAT_SUMMARY',
+        rationale: 'Synthetic narrative title in chat summary 9x3 grid (keyed as W021.5-B-02).',
+      },
+    ],
+  },
+  'W021.5-B1-03': {
+    canonicalTaskId: 'W021.5-B1-03',
+    canonicalTitle: 'Temporal Lineage & Assam 2023 Delimitation Modeling',
+    stageId: 'STAGE_B',
+    weight: 3.0,
+    masterSpecRef: 'W021.5-B1 Migration 062',
+    historicalAliases: [
+      {
+        alias: 'Assam Delimitation Modeling',
+        source: 'Directive 099 Implementation Report',
+        discrepancyType: 'ABBREVIATED_REPORT_LABEL',
+        rationale: 'Abbreviated column title in Directive 099 report table.',
+      },
+      {
+        alias: 'Temporal Delimitation Lineage (Assam 2023)',
+        source: 'Directive 099 Executive Chat Summary',
+        discrepancyType: 'SYNTHETIC_CHAT_SUMMARY',
+        rationale: 'Synthetic narrative title in chat summary 9x3 grid (keyed as W021.5-B-03).',
+      },
+    ],
+  },
+  'W021.5-B1-04': {
+    canonicalTaskId: 'W021.5-B1-04',
+    canonicalTitle: 'National Assembly Boundary GeoJSON Deep Validation & Linkage',
+    stageId: 'STAGE_B',
+    weight: 2.0,
+    masterSpecRef: 'Directive 086 Workstream A',
+    historicalAliases: [
+      {
+        alias: 'GeoJSON Validation & Linkage',
+        source: 'Directive 099 Implementation Report',
+        discrepancyType: 'ABBREVIATED_REPORT_LABEL',
+        rationale: 'Abbreviated column title in Directive 099 report table.',
+      },
+      {
+        alias: 'Assembly Boundary Topology & AC 119 Quarantine',
+        source: 'Directive 099 Executive Chat Summary',
+        discrepancyType: 'SYNTHETIC_CHAT_SUMMARY',
+        rationale: 'Folded or omitted in chat summary 3-per-stage grid.',
+      },
+    ],
+  },
+  'W021.5-C-01': {
+    canonicalTaskId: 'W021.5-C-01',
+    canonicalTitle: 'Political Organization Governance & Multilingual Extension Schema',
+    stageId: 'STAGE_C',
+    weight: 4.0,
+    masterSpecRef: 'W021.5-B2.2-B Migration 064',
+    historicalAliases: [
+      {
+        alias: 'Organization Schema Governance',
+        source: 'Directive 099 Implementation Report',
+        discrepancyType: 'ABBREVIATED_REPORT_LABEL',
+        rationale: 'Abbreviated column title in Directive 099 report table.',
+      },
+      {
+        alias: 'Political Organization Governance & Multilingual Taxonomy',
+        source: 'Directive 099 Executive Chat Summary',
+        discrepancyType: 'SYNTHETIC_CHAT_SUMMARY',
+        rationale: 'Synthetic narrative title in chat summary 9x3 grid.',
+      },
+    ],
+  },
+  'W021.5-C-02': {
+    canonicalTaskId: 'W021.5-C-02',
+    canonicalTitle: '1,207 Canonical Political Organizations Catalog Ingestion',
+    stageId: 'STAGE_C',
+    weight: 5.0,
+    masterSpecRef: 'W021.5-B2.2-C Migration 065',
+    historicalAliases: [
+      {
+        alias: '1,207 Org Ingestion',
+        source: 'Directive 099 Implementation Report',
+        discrepancyType: 'ABBREVIATED_REPORT_LABEL',
+        rationale: 'Abbreviated column title in Directive 099 report table.',
+      },
+      {
+        alias: '1,207 Political Organization Ingestion & Invariant Gate',
+        source: 'Directive 099 Executive Chat Summary',
+        discrepancyType: 'SYNTHETIC_CHAT_SUMMARY',
+        rationale: 'Synthetic narrative title in chat summary 9x3 grid.',
+      },
+    ],
+  },
+  'W021.5-C-03': {
+    canonicalTaskId: 'W021.5-C-03',
+    canonicalTitle: 'Multilingual Party Names, Aliases & Symbols Matrix',
+    stageId: 'STAGE_C',
+    weight: 3.0,
+    masterSpecRef: 'W021.5-B2.2-C',
+    historicalAliases: [
+      {
+        alias: 'Party Names, Aliases & Symbols',
+        source: 'Directive 099 Implementation Report',
+        discrepancyType: 'ABBREVIATED_REPORT_LABEL',
+        rationale: 'Abbreviated column title in Directive 099 report table.',
+      },
+      {
+        alias: 'Multilingual Symbol & Party Alias Collision Resolution',
+        source: 'Directive 099 Executive Chat Summary',
+        discrepancyType: 'SYNTHETIC_CHAT_SUMMARY',
+        rationale: 'Synthetic narrative title in chat summary 9x3 grid.',
+      },
+    ],
+  },
+  'W021.5-D-01': {
+    canonicalTaskId: 'W021.5-D-01',
+    canonicalTitle: 'Canonical Persons & Entity Deduplication Foundation',
+    stageId: 'STAGE_D',
+    weight: 4.0,
+    masterSpecRef: 'W021.5-B2.2-D Migration 050, 063',
+    historicalAliases: [
+      {
+        alias: 'Person Deduplication Foundation',
+        source: 'Directive 099 Implementation Report',
+        discrepancyType: 'ABBREVIATED_REPORT_LABEL',
+        rationale: 'Abbreviated column title in Directive 099 report table.',
+      },
+      {
+        alias: 'Canonical Persons & Entity Deduplication Foundation',
+        source: 'Directive 099 Executive Chat Summary',
+        discrepancyType: 'SYNTHETIC_CHAT_SUMMARY',
+        rationale: 'Identical title in chat summary 9x3 grid.',
+      },
+    ],
+  },
+  'W021.5-D-02': {
+    canonicalTaskId: 'W021.5-D-02',
+    canonicalTitle: 'Candidate Population & Contest Mapping Across 10 Chunks',
+    stageId: 'STAGE_D',
+    weight: 6.0,
+    masterSpecRef: 'W021.5-B2.2-D Chunks 01-10',
+    historicalAliases: [
+      {
+        alias: 'Candidate Population Chunks',
+        source: 'Directive 099 Implementation Report',
+        discrepancyType: 'ABBREVIATED_REPORT_LABEL',
+        rationale: 'Abbreviated column title in Directive 099 report table.',
+      },
+      {
+        alias: 'Candidate Ingestion & Contest Linkage Across 10 Chunks',
+        source: 'Directive 099 Executive Chat Summary',
+        discrepancyType: 'SYNTHETIC_CHAT_SUMMARY',
+        rationale: 'Synthetic narrative title in chat summary 9x3 grid.',
+      },
+    ],
+  },
+  'W021.5-D-03': {
+    canonicalTaskId: 'W021.5-D-03',
+    canonicalTitle: 'Candidate-to-Contest Foreign Key Constraint Linkage (Migration 067)',
+    stageId: 'STAGE_D',
+    weight: 4.0,
+    masterSpecRef: 'Directive 086 Section 5',
+    historicalAliases: [
+      {
+        alias: 'Candidate-to-Contest FK Linkage',
+        source: 'Directive 099 Implementation Report',
+        discrepancyType: 'ABBREVIATED_REPORT_LABEL',
+        rationale: 'Abbreviated column title in Directive 099 report table.',
+      },
+      {
+        alias: 'Candidate-to-Contest FK Enforcement (Migration 067)',
+        source: 'Directive 099 Executive Chat Summary',
+        discrepancyType: 'SYNTHETIC_CHAT_SUMMARY',
+        rationale: 'Synthetic narrative title in chat summary 9x3 grid.',
+      },
+    ],
+  },
+  'W021.5-E-01': {
+    canonicalTaskId: 'W021.5-E-01',
+    canonicalTitle: 'Constituency Demographic Profiles & Aggregates Ingestion',
+    stageId: 'STAGE_E',
+    weight: 4.0,
+    masterSpecRef: 'W021.5-B2.2-E Migration 066',
+    historicalAliases: [
+      {
+        alias: 'Demographic Profiles Ingestion',
+        source: 'Directive 099 Implementation Report',
+        discrepancyType: 'ABBREVIATED_REPORT_LABEL',
+        rationale: 'Abbreviated column title in Directive 099 report table.',
+      },
+      {
+        alias: 'Constituency Demographic Profiles & Aggregate Ingestion',
+        source: 'Directive 099 Executive Chat Summary',
+        discrepancyType: 'SYNTHETIC_CHAT_SUMMARY',
+        rationale: 'Synthetic narrative title in chat summary 9x3 grid.',
+      },
+    ],
+  },
+  'W021.5-E-02': {
+    canonicalTaskId: 'W021.5-E-02',
+    canonicalTitle: 'Financial Defect DQ-W021.5-B2.2E-001 Formal Adjudication',
+    stageId: 'STAGE_E',
+    weight: 5.0,
+    masterSpecRef: 'Rule IV-001 / Defect Register',
+    historicalAliases: [
+      {
+        alias: 'Financial Defect Adjudication',
+        source: 'Directive 099 Implementation Report',
+        discrepancyType: 'ABBREVIATED_REPORT_LABEL',
+        rationale: 'Abbreviated column title in Directive 099 report table.',
+      },
+      {
+        alias: 'Financial Defect DQ-W021.5-B2.2E-001 Formal Adjudication',
+        source: 'Directive 099 Executive Chat Summary',
+        discrepancyType: 'SYNTHETIC_CHAT_SUMMARY',
+        rationale: 'Identical title in chat summary 9x3 grid.',
+      },
+    ],
+  },
+  'W021.5-E-03': {
+    canonicalTaskId: 'W021.5-E-03',
+    canonicalTitle: 'Normalized Candidate Affidavit Disclosure Schema (Migration 068)',
+    stageId: 'STAGE_E',
+    weight: 5.0,
+    masterSpecRef: 'Directive 086 Section 5',
+    historicalAliases: [
+      {
+        alias: 'Affidavit Disclosure Schema',
+        source: 'Directive 099 Implementation Report',
+        discrepancyType: 'ABBREVIATED_REPORT_LABEL',
+        rationale: 'Abbreviated column title in Directive 099 report table.',
+      },
+      {
+        alias: 'Candidate Affidavit Schema Normalization (Migration 068)',
+        source: 'Directive 099 Executive Chat Summary',
+        discrepancyType: 'SYNTHETIC_CHAT_SUMMARY',
+        rationale: 'Synthetic narrative title in chat summary 9x3 grid.',
+      },
+    ],
+  },
+  'W021.5-F-01': {
+    canonicalTaskId: 'W021.5-F-01',
+    canonicalTitle: 'Longitudinal Election Event & Contest Schema Normalization',
+    stageId: 'STAGE_F',
+    weight: 4.0,
+    masterSpecRef: 'W021.5-B2.2-F Migration 051',
+    historicalAliases: [
+      {
+        alias: 'Longitudinal Schema Normalization',
+        source: 'Directive 099 Implementation Report',
+        discrepancyType: 'ABBREVIATED_REPORT_LABEL',
+        rationale: 'Abbreviated column title in Directive 099 report table.',
+      },
+      {
+        alias: 'Multi-Election History & Longitudinal Schema Normalization',
+        source: 'Directive 099 Executive Chat Summary',
+        discrepancyType: 'SYNTHETIC_CHAT_SUMMARY',
+        rationale: 'Synthetic narrative title in chat summary 9x3 grid.',
+      },
+    ],
+  },
+  'W021.5-F-02': {
+    canonicalTaskId: 'W021.5-F-02',
+    canonicalTitle: 'National Multi-Election Historical Results Ingestion',
+    stageId: 'STAGE_F',
+    weight: 6.0,
+    masterSpecRef: 'Directive 085 / Directive 086 Workstream A',
+    historicalAliases: [
+      {
+        alias: 'Historical Results Ingestion',
+        source: 'Directive 099 Implementation Report',
+        discrepancyType: 'ABBREVIATED_REPORT_LABEL',
+        rationale: 'Abbreviated column title in Directive 099 report table.',
+      },
+      {
+        alias: 'National Multi-Election Results Ingestion & Partition Gate',
+        source: 'Directive 099 Executive Chat Summary',
+        discrepancyType: 'SYNTHETIC_CHAT_SUMMARY',
+        rationale: 'Synthetic narrative title in chat summary 9x3 grid.',
+      },
+    ],
+  },
+  'W021.5-G-01': {
+    canonicalTaskId: 'W021.5-G-01',
+    canonicalTitle: 'API Election Contract Nullability & Missing-Value Preservation',
+    stageId: 'STAGE_G',
+    weight: 4.0,
+    masterSpecRef: 'Directive 085 / Directive 086 Workstream C',
+    historicalAliases: [
+      {
+        alias: 'API Contract Nullability',
+        source: 'Directive 099 Implementation Report',
+        discrepancyType: 'ABBREVIATED_REPORT_LABEL',
+        rationale: 'Abbreviated column title in Directive 099 report table.',
+      },
+      {
+        alias: 'API Contract Nullability & Missing-Value Preservation',
+        source: 'Directive 099 Executive Chat Summary',
+        discrepancyType: 'SYNTHETIC_CHAT_SUMMARY',
+        rationale: 'Identical title in chat summary 9x3 grid.',
+      },
+    ],
+  },
+  'W021.5-G-02': {
+    canonicalTaskId: 'W021.5-G-02',
+    canonicalTitle: 'Elimination of State-Code Election-Year Inferences in stateData.ts',
+    stageId: 'STAGE_G',
+    weight: 4.0,
+    masterSpecRef: 'Directive 086 Workstream B',
+    historicalAliases: [
+      {
+        alias: 'Elimination of Year Inferences',
+        source: 'Directive 099 Implementation Report',
+        discrepancyType: 'ABBREVIATED_REPORT_LABEL',
+        rationale: 'Abbreviated column title in Directive 099 report table.',
+      },
+      {
+        alias: 'Elimination of Hardcoded State-Code Election Year Inferences',
+        source: 'Directive 099 Executive Chat Summary',
+        discrepancyType: 'SYNTHETIC_CHAT_SUMMARY',
+        rationale: 'Synthetic narrative title in chat summary 9x3 grid.',
+      },
+    ],
+  },
+  'W021.5-G-03': {
+    canonicalTaskId: 'W021.5-G-03',
+    canonicalTitle: 'Fastify Canonical DB-Backed Route Strangulation',
+    stageId: 'STAGE_G',
+    weight: 4.0,
+    masterSpecRef: 'W006 Strangler Migration Phase 1-4',
+    historicalAliases: [
+      {
+        alias: 'DB-Backed Route Strangulation',
+        source: 'Directive 099 Implementation Report',
+        discrepancyType: 'ABBREVIATED_REPORT_LABEL',
+        rationale: 'Abbreviated column title in Directive 099 report table.',
+      },
+      {
+        alias: 'Fastify DB-Backed Route Strangulation & Cutover Gate',
+        source: 'Directive 099 Executive Chat Summary',
+        discrepancyType: 'SYNTHETIC_CHAT_SUMMARY',
+        rationale: 'Synthetic narrative title in chat summary 9x3 grid.',
+      },
+    ],
+  },
+  'W021.5-H-01': {
+    canonicalTaskId: 'W021.5-H-01',
+    canonicalTitle: 'Mobile DTO Validation Hardening & Nullable Election Year Support',
+    stageId: 'STAGE_H',
+    weight: 3.0,
+    masterSpecRef: 'Directive 085 / Directive 086 Workstream C',
+    historicalAliases: [
+      {
+        alias: 'Mobile DTO Validation',
+        source: 'Directive 099 Implementation Report',
+        discrepancyType: 'ABBREVIATED_REPORT_LABEL',
+        rationale: 'Abbreviated column title in Directive 099 report table.',
+      },
+      {
+        alias: 'Mobile DTO Validation Hardening & Nullable Year Support',
+        source: 'Directive 099 Executive Chat Summary',
+        discrepancyType: 'SYNTHETIC_CHAT_SUMMARY',
+        rationale: 'Synthetic narrative title in chat summary 9x3 grid.',
+      },
+    ],
+  },
+  'W021.5-H-02': {
+    canonicalTaskId: 'W021.5-H-02',
+    canonicalTitle: 'Section-Level Provenance Badges in Constituency UI',
+    stageId: 'STAGE_H',
+    weight: 3.0,
+    masterSpecRef: 'Directive 086 Workstream C',
+    historicalAliases: [
+      {
+        alias: 'Provenance Badges in UI',
+        source: 'Directive 099 Implementation Report',
+        discrepancyType: 'ABBREVIATED_REPORT_LABEL',
+        rationale: 'Abbreviated column title in Directive 099 report table.',
+      },
+      {
+        alias: 'Section-Level Data Provenance UI Indicators',
+        source: 'Directive 099 Executive Chat Summary',
+        discrepancyType: 'SYNTHETIC_CHAT_SUMMARY',
+        rationale: 'Synthetic narrative title in chat summary 9x3 grid.',
+      },
+    ],
+  },
+  'W021.5-H-03': {
+    canonicalTaskId: 'W021.5-H-03',
+    canonicalTitle: 'Mobile Journey Decoupling from Legacy election2023 Alias',
+    stageId: 'STAGE_H',
+    weight: 2.0,
+    masterSpecRef: 'Directive 085 Workstream B / Directive 086 Workstream C',
+    historicalAliases: [
+      {
+        alias: 'Journey Decoupling from Alias',
+        source: 'Directive 099 Implementation Report',
+        discrepancyType: 'ABBREVIATED_REPORT_LABEL',
+        rationale: 'Abbreviated column title in Directive 099 report table.',
+      },
+      {
+        alias: 'Mobile User Journey Decoupling from Legacy Aliases',
+        source: 'Directive 099 Executive Chat Summary',
+        discrepancyType: 'SYNTHETIC_CHAT_SUMMARY',
+        rationale: 'Synthetic narrative title in chat summary 9x3 grid.',
+      },
+    ],
+  },
+  'W021.5-H-04': {
+    canonicalTaskId: 'W021.5-H-04',
+    canonicalTitle: 'Mobile Write Strangler Migration (Class B Deprecation)',
+    stageId: 'STAGE_H',
+    weight: 2.0,
+    masterSpecRef: 'W006-R1A Class B Matrix',
+    historicalAliases: [
+      {
+        alias: 'Mobile Write Strangler',
+        source: 'Directive 099 Implementation Report',
+        discrepancyType: 'ABBREVIATED_REPORT_LABEL',
+        rationale: 'Abbreviated column title in Directive 099 report table.',
+      },
+      {
+        alias: 'Mobile Write Strangler Migration (Class B Direct Write Gate)',
+        source: 'Directive 099 Executive Chat Summary',
+        discrepancyType: 'SYNTHETIC_CHAT_SUMMARY',
+        rationale: 'Omitted from chat summary 3-per-stage grid.',
+      },
+    ],
+  },
+  'W021.5-I-01': {
+    canonicalTaskId: 'W021.5-I-01',
+    canonicalTitle: 'Mobile SQLite Canonical Offline Sync Schema & Engine',
+    stageId: 'STAGE_I',
+    weight: 3.0,
+    masterSpecRef: 'W021.5-B5 Architecture Spec',
+    historicalAliases: [
+      {
+        alias: 'SQLite Offline Sync Engine',
+        source: 'Directive 099 Implementation Report',
+        discrepancyType: 'ABBREVIATED_REPORT_LABEL',
+        rationale: 'Abbreviated column title in Directive 099 report table.',
+      },
+      {
+        alias: 'Canonical Offline SQLite Sync Engine & Schema',
+        source: 'Directive 099 Executive Chat Summary',
+        discrepancyType: 'SYNTHETIC_CHAT_SUMMARY',
+        rationale: 'Synthetic narrative title in chat summary 9x3 grid.',
+      },
+    ],
+  },
+  'W021.5-I-02': {
+    canonicalTaskId: 'W021.5-I-02',
+    canonicalTitle: 'Production Database Air-Gap Preservation & Cutover Preflight',
+    stageId: 'STAGE_I',
+    weight: 3.0,
+    masterSpecRef: 'W021.5 Master Plan Section 10',
+    historicalAliases: [
+      {
+        alias: 'Air-Gap & Cutover Preflight',
+        source: 'Directive 099 Implementation Report',
+        discrepancyType: 'ABBREVIATED_REPORT_LABEL',
+        rationale: 'Abbreviated column title in Directive 099 report table.',
+      },
+      {
+        alias: 'Production Database Air-Gap & Final Synchronization Preflight',
+        source: 'Directive 099 Executive Chat Summary',
+        discrepancyType: 'SYNTHETIC_CHAT_SUMMARY',
+        rationale: 'Synthetic narrative title in chat summary 9x3 grid.',
+      },
+    ],
+  },
+};
+
+/**
+ * Validates canonical identity, title, weight, stage, and specRef for a task.
+ * Fails closed on any discrepancy or unrecognized task ID.
+ */
+export function validateCanonicalTaskIdentity(task, stageId = null) {
+  if (!task || typeof task !== 'object') {
+    throw new Error('Ledger task identity validation error: Invalid task object.');
+  }
+  if (!task.taskId || typeof task.taskId !== 'string' || task.taskId.trim() === '') {
+    throw new Error('Ledger task identity validation error: Missing or invalid taskId.');
+  }
+  const canonical = CANONICAL_TASK_METADATA[task.taskId];
+  if (!canonical) {
+    throw new Error(`Ledger task identity validation error: Unrecognized, duplicate or unexpected task ID "${task.taskId}".`);
+  }
+  const declaredTitle = task.title || task.taskTitle;
+  if (!declaredTitle || declaredTitle !== canonical.canonicalTitle) {
+    throw new Error(`Ledger task identity validation error: Task ${task.taskId} title mismatch: expected "${canonical.canonicalTitle}", got "${declaredTitle}".`);
+  }
+  if (typeof task.weight !== 'number' || Math.abs(task.weight - canonical.weight) > 0.001) {
+    throw new Error(`Ledger task identity validation error: Task ${task.taskId} weight mismatch: expected ${canonical.weight}, got ${task.weight}.`);
+  }
+  if (stageId && stageId !== canonical.stageId) {
+    throw new Error(`Ledger task identity validation error: Task ${task.taskId} stage mismatch: expected "${canonical.stageId}", got "${stageId}".`);
+  }
+  const declaredSpecRef = task.specRef || task.masterSpecRef;
+  if (declaredSpecRef && declaredSpecRef !== canonical.masterSpecRef) {
+    throw new Error(`Ledger task identity validation error: Task ${task.taskId} specification reference mismatch: expected "${canonical.masterSpecRef}", got "${declaredSpecRef}".`);
+  }
+  return true;
+}
+
+/**
  * Workstream B: Task acceptance criteria specification with explicit criteria and executable verifiers.
  */
 export const TASK_SPECIFICATIONS = {
@@ -1185,8 +2070,19 @@ export const TASK_SPECIFICATIONS = {
   },
 };
 
-// Backwards-compatible aliases for criteria and validator
+// Backwards-compatible aliases and canonical metadata hydration for specifications
 for (const [id, spec] of Object.entries(TASK_SPECIFICATIONS)) {
+  const meta = CANONICAL_TASK_METADATA[id];
+  if (meta) {
+    spec.taskId = meta.taskId;
+    spec.canonicalTitle = meta.canonicalTitle;
+    spec.stageId = meta.stageId;
+    spec.stageName = meta.stageName;
+    spec.weight = meta.weight;
+    spec.masterSpecRef = meta.masterSpecRef;
+    spec.requirementCode = meta.requirementCode;
+    spec.taskClassification = meta.taskClassification;
+  }
   if (!spec.acceptanceCriteria) {
     spec.acceptanceCriteria = spec.criteria;
   }
@@ -1196,7 +2092,8 @@ for (const [id, spec] of Object.entries(TASK_SPECIFICATIONS)) {
 }
 
 /**
- * Execute acceptance criteria evaluation for a task and derive its completion ratio.
+ * Execute acceptance criteria evaluation for a task and derive its authoritative completion accounting.
+ * Exposes all 10 accounting dimensions required by CTO Directive 100 Workstream B.
  */
 export function evaluateTaskCriteria(task, root, options = {}) {
   const spec = TASK_SPECIFICATIONS[task.taskId];
@@ -1235,6 +2132,8 @@ export function evaluateTaskCriteria(task, root, options = {}) {
     throw new Error(`Ledger verification failure: Task ${task.taskId} criterion weight ratios sum to ${totalWeightRatio}, expected 1.0.`);
   }
 
+  const taskWeight = typeof task.weight === 'number' && Number.isFinite(task.weight) ? task.weight : (spec.weight || 0.0);
+
   const evaluations = [];
   const checksExecuted = [];
   const checksPassed = [];
@@ -1242,13 +2141,22 @@ export function evaluateTaskCriteria(task, root, options = {}) {
   const unverifiableInOfflineRepo = [];
   const blockedRequirements = [];
   const unimplementedRequirements = [];
+  const limitations = [];
 
+  let repoVerifiableWeight = 0.0;
+  let passedWeight = 0.0;
+  let failedWeight = 0.0;
+  let databasePendingWeight = 0.0;
+  let blockedWeight = 0.0;
+  let unimplementedWeight = 0.0;
   let derivedRepoRatio = 0.0;
 
   for (const crit of spec.criteria) {
     checksExecuted.push(crit.description);
+    const critAllocatedWeight = Number((taskWeight * crit.weightRatio).toFixed(3));
 
     if (crit.scope === 'REPOSITORY_VERIFIABLE') {
+      repoVerifiableWeight += critAllocatedWeight;
       if (typeof crit.verify !== 'function') {
         throw new Error(`Ledger verification failure: Criterion ${crit.criterionId} in Task ${task.taskId} has no executable verifier.`);
       }
@@ -1259,23 +2167,28 @@ export function evaluateTaskCriteria(task, root, options = {}) {
             criterionId: crit.criterionId,
             description: crit.description,
             weightRatio: crit.weightRatio,
+            criterionWeight: critAllocatedWeight,
             scope: crit.scope,
             status: 'PASS',
             message: res.message || crit.description,
           });
           checksPassed.push(res.message || crit.description);
           derivedRepoRatio += crit.weightRatio;
+          passedWeight += critAllocatedWeight;
         } else {
           const failMsg = res ? res.message : `Criterion ${crit.criterionId} reported failure`;
           evaluations.push({
             criterionId: crit.criterionId,
             description: crit.description,
             weightRatio: crit.weightRatio,
+            criterionWeight: critAllocatedWeight,
             scope: crit.scope,
             status: 'FAIL',
             message: failMsg,
           });
           checksFailed.push(failMsg);
+          failedWeight += critAllocatedWeight;
+          limitations.push(`Criterion ${crit.criterionId} FAILED: ${failMsg}`);
         }
       } catch (err) {
         const errMsg = `Criterion ${crit.criterionId} error: ${err.message}`;
@@ -1283,48 +2196,97 @@ export function evaluateTaskCriteria(task, root, options = {}) {
           criterionId: crit.criterionId,
           description: crit.description,
           weightRatio: crit.weightRatio,
+          criterionWeight: critAllocatedWeight,
           scope: crit.scope,
           status: 'FAIL',
           message: errMsg,
         });
         checksFailed.push(errMsg);
+        failedWeight += critAllocatedWeight;
+        limitations.push(`Criterion ${crit.criterionId} ERROR: ${errMsg}`);
       }
     } else if (crit.scope === 'DATABASE_STAGING') {
+      databasePendingWeight += critAllocatedWeight;
       evaluations.push({
         criterionId: crit.criterionId,
         description: crit.description,
         weightRatio: crit.weightRatio,
+        criterionWeight: critAllocatedWeight,
         scope: crit.scope,
         status: 'UNVERIFIED',
-        message: 'Pending live staging database execution',
+        message: 'Pending live staging database execution and authorization',
       });
       unverifiableInOfflineRepo.push(crit.description);
+      limitations.push(`Database Pending: ${crit.description} (requires explicit CTO authorization and live staging execution)`);
     } else if (crit.scope === 'BLOCKED_EXTERNAL') {
+      blockedWeight += critAllocatedWeight;
       evaluations.push({
         criterionId: crit.criterionId,
         description: crit.description,
         weightRatio: crit.weightRatio,
+        criterionWeight: critAllocatedWeight,
         scope: crit.scope,
         status: 'BLOCKED',
         message: 'Blocked pending external authority / CTO gate',
       });
       blockedRequirements.push(crit.description);
+      limitations.push(`Blocked External: ${crit.description}`);
     } else if (crit.scope === 'UNIMPLEMENTED') {
+      unimplementedWeight += critAllocatedWeight;
       evaluations.push({
         criterionId: crit.criterionId,
         description: crit.description,
         weightRatio: crit.weightRatio,
+        criterionWeight: critAllocatedWeight,
         scope: crit.scope,
         status: 'NOT_IMPLEMENTED',
         message: 'Scheduled for future architecture wave',
       });
       unimplementedRequirements.push(crit.description);
+      limitations.push(`Unimplemented: ${crit.description}`);
     }
   }
 
   derivedRepoRatio = Number(derivedRepoRatio.toFixed(3));
+  repoVerifiableWeight = Number(repoVerifiableWeight.toFixed(3));
+  passedWeight = Number(passedWeight.toFixed(3));
+  failedWeight = Number(failedWeight.toFixed(3));
+  databasePendingWeight = Number(databasePendingWeight.toFixed(3));
+  blockedWeight = Number(blockedWeight.toFixed(3));
+  unimplementedWeight = Number(unimplementedWeight.toFixed(3));
 
-  if (checksFailed.length > 0) {
+  // Determine computed status and status description
+  let status;
+  let statusDescription;
+  if (failedWeight > 0) {
+    status = 'VERIFICATION_FAILED';
+    statusDescription = `Criterion verification failed on ${checksFailed.length} criteria (${failedWeight.toFixed(1)}% failed)`;
+  } else if (passedWeight === taskWeight && taskWeight > 0) {
+    status = 'REPO_VERIFIED';
+    statusDescription = 'All repository acceptance criteria verified on disk';
+  } else if (passedWeight > 0 && passedWeight < taskWeight) {
+    status = 'PARTIAL';
+    const parts = [`${passedWeight.toFixed(1)}% earned of ${taskWeight.toFixed(1)}% allocated`];
+    if (databasePendingWeight > 0) parts.push(`${databasePendingWeight.toFixed(1)}% database pending`);
+    if (blockedWeight > 0) parts.push(`${blockedWeight.toFixed(1)}% blocked`);
+    if (unimplementedWeight > 0) parts.push(`${unimplementedWeight.toFixed(1)}% unimplemented`);
+    statusDescription = parts.join('; ');
+  } else if (passedWeight === 0 && blockedWeight > 0) {
+    status = 'BLOCKED';
+    statusDescription = 'Blocked pending external dependency / CTO adjudication';
+  } else if (passedWeight === 0 && unimplementedWeight > 0) {
+    status = 'NOT_IMPLEMENTED';
+    statusDescription = 'Scheduled for future architecture wave';
+  } else if (passedWeight === 0 && databasePendingWeight === taskWeight && taskWeight > 0) {
+    status = 'DATABASE_PENDING';
+    statusDescription = 'Pending live staging database execution';
+  } else {
+    status = 'UNACCEPTED';
+    statusDescription = 'Unaccepted under Rule IV-001';
+  }
+
+  // Rule 6: A failed criterion must be represented explicitly. Fail closed unless caller requested failClosed: false.
+  if (checksFailed.length > 0 && options.failClosed !== false) {
     throw new Error(`Ledger verification failure: Task ${task.taskId} has failed acceptance criteria: ${checksFailed.join('; ')}`);
   }
 
@@ -1333,6 +2295,26 @@ export function evaluateTaskCriteria(task, root, options = {}) {
     : [];
 
   const assessment = {
+    taskId: task.taskId,
+    canonicalTitle: spec.title,
+    specRef: spec.specRef,
+    allocatedWeight: taskWeight,
+    criterionCount: spec.criteria.length,
+    criterionWeightRatioSum: Number(totalWeightRatio.toFixed(3)),
+    criterionWeightsSum: taskWeight,
+    criterionWeights: spec.criteria.map((c) => ({
+      criterionId: c.criterionId,
+      weightRatio: c.weightRatio,
+      weight: Number((taskWeight * c.weightRatio).toFixed(3)),
+      scope: c.scope,
+    })),
+    repoVerifiableWeight,
+    passedWeight,
+    failedWeight,
+    databasePendingWeight,
+    blockedWeight,
+    unimplementedWeight,
+    earnedWeight: passedWeight,
     criteriaAssessed: spec.criteria.map((c) => c.description).join('; '),
     evidenceArtifactsUsed: allPaths,
     deterministicChecksExecuted: checksExecuted,
@@ -1342,8 +2324,12 @@ export function evaluateTaskCriteria(task, root, options = {}) {
     requirementsNotYetVerifiable: unverifiableInOfflineRepo,
     blockedRequirements,
     unimplementedRequirements,
+    remainingUnimplemented: [...unverifiableInOfflineRepo, ...blockedRequirements, ...unimplementedRequirements],
+    limitations,
     derivedRepoRatio,
     ratioRationale: task.accounting ? task.accounting.ratioRationale : 'N/A',
+    status,
+    statusDescription,
   };
 
   task.evidenceAssessment = assessment;
@@ -2600,6 +3586,11 @@ export function validateTaskAccounting(task, stageId = null, options = {}) {
     throw new Error(`Ledger verification failure: Task ${task.taskId} has no defined acceptance criteria specification.`);
   }
 
+  // Workstream A (Directive 100): Strict canonical task identity validation
+  if (options.enforceCanonicalIdentity === true) {
+    validateCanonicalTaskIdentity(task, stageId);
+  }
+
   // Basic numeric accounting fields required across all tasks (legacy & modern)
   if (acct.repoCompletionRatio === undefined || typeof acct.repoCompletionRatio !== 'number' || !Number.isFinite(acct.repoCompletionRatio)) {
     throw new Error(`Ledger accounting validation error: Task ${task.taskId} missing or invalid numeric accounting field (missing or invalid required numeric accounting field): "repoCompletionRatio".`);
@@ -2719,6 +3710,11 @@ export function validateTaskAccounting(task, stageId = null, options = {}) {
         `Ledger accounting validation error: Task ${task.taskId} unimplementedWeight (${acct.unimplementedWeight}) is not justified by criteria scopes (expected ${expectedUnimplemented} based on UNIMPLEMENTED criteria). Partition contradicts task evidence.`
       );
     }
+    if (options.enforceCanonicalIdentity === true && task.status && task.status !== assessment.status) {
+      throw new Error(
+        `Ledger accounting validation error: Task ${task.taskId} status mismatch: declared "${task.status}" contradicts criterion evaluation status "${assessment.status}".`
+      );
+    }
   } else if (!task.taskId.startsWith('W021.5-TEST-') && !task.taskId.startsWith('TASK-') && !task.taskId.startsWith('W021.5-TASK-')) {
     throw new Error(`Ledger verification failure: Task ${task.taskId} has no defined acceptance criteria specification.`);
   }
@@ -2835,6 +3831,32 @@ export function computeLedgerSummary(ledger, options = {}) {
   const blockedTasksBreakdown = [];
   const notImplementedTasksBreakdown = [];
   const databaseDiscountBreakdown = [];
+
+  // Workstream A (Directive 100):
+  // Validate that all task IDs across all stages are unique, match canonical definitions,
+  // and reject duplicate, missing, or unexpected task IDs.
+  if (options.enforceCanonicalIdentity === true) {
+    const seenTaskIds = new Set();
+    for (const stage of ledger.stages) {
+      for (const task of stage.tasks) {
+        if (seenTaskIds.has(task.taskId)) {
+          throw new Error(`Ledger task identity validation error: Duplicate task ID "${task.taskId}" detected across stages.`);
+        }
+        seenTaskIds.add(task.taskId);
+      }
+    }
+    const canonicalIds = Object.keys(CANONICAL_TASK_METADATA);
+    for (const cid of canonicalIds) {
+      if (!seenTaskIds.has(cid)) {
+        throw new Error(`Ledger task identity validation error: Missing canonical task ID "${cid}" in execution ledger.`);
+      }
+    }
+    for (const tid of seenTaskIds) {
+      if (!CANONICAL_TASK_METADATA[tid]) {
+        throw new Error(`Ledger task identity validation error: Unexpected or unrecognized task ID "${tid}" in execution ledger.`);
+      }
+    }
+  }
 
   for (const stage of ledger.stages) {
     let stageEarned = 0.0;
@@ -3075,7 +4097,7 @@ export function generateLedgerMarkdown(ledger, inputSummary) {
   let md = `# KSHETRA W021.5 — Traceable Execution Ledger & Multi-Dimensional Accounting Report
 
 > **Governance Authority:** Master Execution Framework Amendment v1.2 / Rule IV-001 (Non-Self-Acceptance)  
-> **Directive Lineage:** CTO Directive 086 through CTO Directive 099  
+> **Directive Lineage:** CTO Directive 086 through CTO Directive 100  
 > **Status:** \`SUBMITTED_FOR_INDEPENDENT_REVIEW\` — STRICTLY UNACCEPTED  
 > **Financial Defect Status:** \`DQ-W021.5-B2.2E-001\` — **STRICTLY OPEN**, pending separate CTO adjudication  
 > **Database Boundary:** Repository-Only Offline Verification (Zero database migrations, mutations, staging, or production execution)  
@@ -3217,14 +4239,16 @@ export function reconcileExecutionLedger(options = {}) {
     throw new Error('Ledger accounting validation error: Missing or empty stages array.');
   }
 
+  const opts = { enforceCanonicalIdentity: true, ...options };
+
   for (const stage of ledger.stages) {
-    validateStageAccounting(stage, options);
+    validateStageAccounting(stage, opts);
   }
 
-  ledger.directive = 'CTO Directive 086 / CTO Directive 087 / CTO Directive 088 / CTO Directive 089 / CTO Directive 090 / CTO Directive 091 / CTO Directive 092 / CTO Directive 093 / CTO Directive 094 / CTO Directive 095 / CTO Directive 096 / CTO Directive 097 / CTO Directive 098 / CTO Directive 099';
+  ledger.directive = 'CTO Directive 086 / CTO Directive 087 / CTO Directive 088 / CTO Directive 089 / CTO Directive 090 / CTO Directive 091 / CTO Directive 092 / CTO Directive 093 / CTO Directive 094 / CTO Directive 095 / CTO Directive 096 / CTO Directive 097 / CTO Directive 098 / CTO Directive 099 / CTO Directive 100';
 
   // Compute summary
-  const summary = computeLedgerSummary(ledger, options);
+  const summary = computeLedgerSummary(ledger, opts);
   ledger.summary = summary;
 
   // Write reconciled JSON

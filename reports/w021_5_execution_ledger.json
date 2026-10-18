@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "W021.5 Traceable Execution Ledger",
   "milestone": "W021.5",
-  "directive": "CTO Directive 086 / CTO Directive 087 / CTO Directive 088 / CTO Directive 089 / CTO Directive 090 / CTO Directive 091 / CTO Directive 092 / CTO Directive 093 / CTO Directive 094 / CTO Directive 095 / CTO Directive 096 / CTO Directive 097 / CTO Directive 098 / CTO Directive 099",
+  "directive": "CTO Directive 086 / CTO Directive 087 / CTO Directive 088 / CTO Directive 089 / CTO Directive 090 / CTO Directive 091 / CTO Directive 092 / CTO Directive 093 / CTO Directive 094 / CTO Directive 095 / CTO Directive 096 / CTO Directive 097 / CTO Directive 098 / CTO Directive 099 / CTO Directive 100",
   "governance": "Master Execution Framework Amendment v1.2 / Rule IV-001 (Non-Self-Acceptance)",
   "financialDefectStatus": {
     "defectId": "DQ-W021.5-B2.2E-001",
@@ -447,6 +447,34 @@
           },
           "taskClassification": "CORE_SPECIFICATION",
           "evidenceAssessment": {
+            "taskId": "W021.5-A-01",
+            "canonicalTitle": "Comprehensive 29-Domain Data-Truth Audit",
+            "specRef": "REQ-AUD-001",
+            "allocatedWeight": 3,
+            "criterionCount": 2,
+            "criterionWeightRatioSum": 1,
+            "criterionWeightsSum": 3,
+            "criterionWeights": [
+              {
+                "criterionId": "CRIT-A01-01",
+                "weightRatio": 0.5,
+                "weight": 1.5,
+                "scope": "REPOSITORY_VERIFIABLE"
+              },
+              {
+                "criterionId": "CRIT-A01-02",
+                "weightRatio": 0.5,
+                "weight": 1.5,
+                "scope": "REPOSITORY_VERIFIABLE"
+              }
+            ],
+            "repoVerifiableWeight": 3,
+            "passedWeight": 3,
+            "failedWeight": 0,
+            "databasePendingWeight": 0,
+            "blockedWeight": 0,
+            "unimplementedWeight": 0,
+            "earnedWeight": 3,
             "criteriaAssessed": "National data coverage matrix audit file covers all 36 States/UTs and 4,123 constituencies; Truth audit markdown report documents 29-domain gaps truthfully without unverified claims",
             "evidenceArtifactsUsed": [
               "reports/w021_5a_repository_data_truth_audit.json",
@@ -461,6 +489,7 @@
                 "criterionId": "CRIT-A01-01",
                 "description": "National data coverage matrix audit file covers all 36 States/UTs and 4,123 constituencies",
                 "weightRatio": 0.5,
+                "criterionWeight": 1.5,
                 "scope": "REPOSITORY_VERIFIABLE",
                 "status": "PASS",
                 "message": "Coverage matrix verifies 31 assembly states and 4,123 constituencies"
@@ -469,6 +498,7 @@
                 "criterionId": "CRIT-A01-02",
                 "description": "Truth audit markdown report documents 29-domain gaps truthfully without unverified claims",
                 "weightRatio": 0.5,
+                "criterionWeight": 1.5,
                 "scope": "REPOSITORY_VERIFIABLE",
                 "status": "PASS",
                 "message": "Truth audit markdown report verified on disk"
@@ -482,8 +512,12 @@
             "requirementsNotYetVerifiable": [],
             "blockedRequirements": [],
             "unimplementedRequirements": [],
+            "remainingUnimplemented": [],
+            "limitations": [],
             "derivedRepoRatio": 1,
-            "ratioRationale": "29-domain audit complete with empirical reports authored in repository."
+            "ratioRationale": "29-domain audit complete with empirical reports authored in repository.",
+            "status": "REPO_VERIFIED",
+            "statusDescription": "All repository acceptance criteria verified on disk"
           }
         },
         {
@@ -537,6 +571,34 @@
           },
           "taskClassification": "HARDENING_EXTENSION",
           "evidenceAssessment": {
+            "taskId": "W021.5-A-02",
+            "canonicalTitle": "Multi-Dimensional National Data Coverage Matrix Generator",
+            "specRef": "REQ-AUD-002",
+            "allocatedWeight": 4,
+            "criterionCount": 2,
+            "criterionWeightRatioSum": 1,
+            "criterionWeightsSum": 4,
+            "criterionWeights": [
+              {
+                "criterionId": "CRIT-A02-01",
+                "weightRatio": 0.5,
+                "weight": 2,
+                "scope": "REPOSITORY_VERIFIABLE"
+              },
+              {
+                "criterionId": "CRIT-A02-02",
+                "weightRatio": 0.5,
+                "weight": 2,
+                "scope": "REPOSITORY_VERIFIABLE"
+              }
+            ],
+            "repoVerifiableWeight": 4,
+            "passedWeight": 4,
+            "failedWeight": 0,
+            "databasePendingWeight": 0,
+            "blockedWeight": 0,
+            "unimplementedWeight": 0,
+            "earnedWeight": 4,
             "criteriaAssessed": "Deterministic coverage matrix generator authored without hardcoded overrides; Generated national coverage matrix markdown report matches JSON data",
             "evidenceArtifactsUsed": [
               "scripts/generate_national_data_coverage_matrix.mjs",
@@ -553,6 +615,7 @@
                 "criterionId": "CRIT-A02-01",
                 "description": "Deterministic coverage matrix generator authored without hardcoded overrides",
                 "weightRatio": 0.5,
+                "criterionWeight": 2,
                 "scope": "REPOSITORY_VERIFIABLE",
                 "status": "PASS",
                 "message": "Generator script verified with valid AST and statutory mappings"
@@ -561,6 +624,7 @@
                 "criterionId": "CRIT-A02-02",
                 "description": "Generated national coverage matrix markdown report matches JSON data",
                 "weightRatio": 0.5,
+                "criterionWeight": 2,
                 "scope": "REPOSITORY_VERIFIABLE",
                 "status": "PASS",
                 "message": "Coverage markdown report verified on disk"
@@ -574,8 +638,12 @@
             "requirementsNotYetVerifiable": [],
             "blockedRequirements": [],
             "unimplementedRequirements": [],
+            "remainingUnimplemented": [],
+            "limitations": [],
             "derivedRepoRatio": 1,
-            "ratioRationale": "National coverage matrix generator authored with multi-dimensional evidence taxonomy."
+            "ratioRationale": "National coverage matrix generator authored with multi-dimensional evidence taxonomy.",
+            "status": "REPO_VERIFIED",
+            "statusDescription": "All repository acceptance criteria verified on disk"
           }
         },
         {
@@ -623,6 +691,34 @@
           },
           "taskClassification": "HARDENING_EXTENSION",
           "evidenceAssessment": {
+            "taskId": "W021.5-A-03",
+            "canonicalTitle": "Delhi 70-Seat Statutory Assembly Invariant & Demographic Placeholder Isolation",
+            "specRef": "REQ-AUD-003",
+            "allocatedWeight": 3,
+            "criterionCount": 2,
+            "criterionWeightRatioSum": 1,
+            "criterionWeightsSum": 3,
+            "criterionWeights": [
+              {
+                "criterionId": "CRIT-A03-01",
+                "weightRatio": 0.5,
+                "weight": 1.5,
+                "scope": "REPOSITORY_VERIFIABLE"
+              },
+              {
+                "criterionId": "CRIT-A03-02",
+                "weightRatio": 0.5,
+                "weight": 1.5,
+                "scope": "REPOSITORY_VERIFIABLE"
+              }
+            ],
+            "repoVerifiableWeight": 3,
+            "passedWeight": 3,
+            "failedWeight": 0,
+            "databasePendingWeight": 0,
+            "blockedWeight": 0,
+            "unimplementedWeight": 0,
+            "earnedWeight": 3,
             "criteriaAssessed": "Delhi statutory 70-seat Assembly invariant strictly maintained in coverage matrix; 151 municipal demographic records isolated as non-statutory placeholders",
             "evidenceArtifactsUsed": [
               "scripts/generate_national_data_coverage_matrix.mjs",
@@ -638,6 +734,7 @@
                 "criterionId": "CRIT-A03-01",
                 "description": "Delhi statutory 70-seat Assembly invariant strictly maintained in coverage matrix",
                 "weightRatio": 0.5,
+                "criterionWeight": 1.5,
                 "scope": "REPOSITORY_VERIFIABLE",
                 "status": "PASS",
                 "message": "Delhi 70-seat statutory invariant confirmed"
@@ -646,6 +743,7 @@
                 "criterionId": "CRIT-A03-02",
                 "description": "151 municipal demographic records isolated as non-statutory placeholders",
                 "weightRatio": 0.5,
+                "criterionWeight": 1.5,
                 "scope": "REPOSITORY_VERIFIABLE",
                 "status": "PASS",
                 "message": "151 municipal demographic placeholder records isolated"
@@ -659,8 +757,12 @@
             "requirementsNotYetVerifiable": [],
             "blockedRequirements": [],
             "unimplementedRequirements": [],
+            "remainingUnimplemented": [],
+            "limitations": [],
             "derivedRepoRatio": 1,
-            "ratioRationale": "Delhi 70-seat statutory Assembly invariant enforced; municipal wards quarantined."
+            "ratioRationale": "Delhi 70-seat statutory Assembly invariant enforced; municipal wards quarantined.",
+            "status": "REPO_VERIFIED",
+            "statusDescription": "All repository acceptance criteria verified on disk"
           }
         }
       ]
@@ -716,6 +818,34 @@
           },
           "taskClassification": "CORE_SPECIFICATION",
           "evidenceAssessment": {
+            "taskId": "W021.5-B1-01",
+            "canonicalTitle": "National 4,123 Assembly Constituency Canonicalization",
+            "specRef": "REQ-GEO-001",
+            "allocatedWeight": 4,
+            "criterionCount": 2,
+            "criterionWeightRatioSum": 1,
+            "criterionWeightsSum": 4,
+            "criterionWeights": [
+              {
+                "criterionId": "CRIT-B101-01",
+                "weightRatio": 0.5,
+                "weight": 2,
+                "scope": "REPOSITORY_VERIFIABLE"
+              },
+              {
+                "criterionId": "CRIT-B101-02",
+                "weightRatio": 0.5,
+                "weight": 2,
+                "scope": "REPOSITORY_VERIFIABLE"
+              }
+            ],
+            "repoVerifiableWeight": 4,
+            "passedWeight": 4,
+            "failedWeight": 0,
+            "databasePendingWeight": 0,
+            "blockedWeight": 0,
+            "unimplementedWeight": 0,
+            "earnedWeight": 4,
             "criteriaAssessed": "Migration 059 schema defines canonical assembly constituencies registry table with statutory constraints; National constituency canonicalization report verified on disk with 4,123 constituencies",
             "evidenceArtifactsUsed": [
               "supabase/migrations/059_canonical_national_constituency_registry.sql",
@@ -731,6 +861,7 @@
                 "criterionId": "CRIT-B101-01",
                 "description": "Migration 059 schema defines canonical assembly constituencies registry table with statutory constraints",
                 "weightRatio": 0.5,
+                "criterionWeight": 2,
                 "scope": "REPOSITORY_VERIFIABLE",
                 "status": "PASS",
                 "message": "Migration 059 canonical constituency schema, conflict infrastructure, indexes and statutory records verified"
@@ -739,6 +870,7 @@
                 "criterionId": "CRIT-B101-02",
                 "description": "National constituency canonicalization report verified on disk with 4,123 constituencies",
                 "weightRatio": 0.5,
+                "criterionWeight": 2,
                 "scope": "REPOSITORY_VERIFIABLE",
                 "status": "PASS",
                 "message": "Constituency canonicalization report verified with 4,123 constituencies"
@@ -752,8 +884,12 @@
             "requirementsNotYetVerifiable": [],
             "blockedRequirements": [],
             "unimplementedRequirements": [],
+            "remainingUnimplemented": [],
+            "limitations": [],
             "derivedRepoRatio": 1,
-            "ratioRationale": "All 4,123 statutory Assembly constituencies canonicalized across 31 States/UTs."
+            "ratioRationale": "All 4,123 statutory Assembly constituencies canonicalized across 31 States/UTs.",
+            "status": "REPO_VERIFIED",
+            "statusDescription": "All repository acceptance criteria verified on disk"
           }
         },
         {
@@ -801,6 +937,34 @@
           },
           "taskClassification": "CORE_SPECIFICATION",
           "evidenceAssessment": {
+            "taskId": "W021.5-B1-02",
+            "canonicalTitle": "National AC-to-PC Parliamentary Mapping Registry",
+            "specRef": "REQ-GEO-002",
+            "allocatedWeight": 3,
+            "criterionCount": 2,
+            "criterionWeightRatioSum": 1,
+            "criterionWeightsSum": 3,
+            "criterionWeights": [
+              {
+                "criterionId": "CRIT-B102-01",
+                "weightRatio": 0.5,
+                "weight": 1.5,
+                "scope": "REPOSITORY_VERIFIABLE"
+              },
+              {
+                "criterionId": "CRIT-B102-02",
+                "weightRatio": 0.5,
+                "weight": 1.5,
+                "scope": "REPOSITORY_VERIFIABLE"
+              }
+            ],
+            "repoVerifiableWeight": 3,
+            "passedWeight": 3,
+            "failedWeight": 0,
+            "databasePendingWeight": 0,
+            "blockedWeight": 0,
+            "unimplementedWeight": 0,
+            "earnedWeight": 3,
             "criteriaAssessed": "Migration 060 geography remediation schema verified with valid SQL DDL; Migration 061 canonical AC-to-PC mapping schema verified with foreign keys and indexes",
             "evidenceArtifactsUsed": [
               "supabase/migrations/060_canonical_electoral_geography_remediation.sql",
@@ -816,6 +980,7 @@
                 "criterionId": "CRIT-B102-01",
                 "description": "Migration 060 geography remediation schema verified with valid SQL DDL",
                 "weightRatio": 0.5,
+                "criterionWeight": 1.5,
                 "scope": "REPOSITORY_VERIFIABLE",
                 "status": "PASS",
                 "message": "Migration 060 geography remediation schema verified"
@@ -824,6 +989,7 @@
                 "criterionId": "CRIT-B102-02",
                 "description": "Migration 061 canonical AC-to-PC mapping schema verified with foreign keys and indexes",
                 "weightRatio": 0.5,
+                "criterionWeight": 1.5,
                 "scope": "REPOSITORY_VERIFIABLE",
                 "status": "PASS",
                 "message": "Migration 061 AC-to-PC mapping schema verified"
@@ -837,8 +1003,12 @@
             "requirementsNotYetVerifiable": [],
             "blockedRequirements": [],
             "unimplementedRequirements": [],
+            "remainingUnimplemented": [],
+            "limitations": [],
             "derivedRepoRatio": 1,
-            "ratioRationale": "National AC-to-PC mapping registry authored in repository."
+            "ratioRationale": "National AC-to-PC mapping registry authored in repository.",
+            "status": "REPO_VERIFIED",
+            "statusDescription": "All repository acceptance criteria verified on disk"
           }
         },
         {
@@ -886,6 +1056,34 @@
           },
           "taskClassification": "CORE_SPECIFICATION",
           "evidenceAssessment": {
+            "taskId": "W021.5-B1-03",
+            "canonicalTitle": "Temporal Lineage & Assam 2023 Delimitation Modeling",
+            "specRef": "REQ-GEO-003",
+            "allocatedWeight": 3,
+            "criterionCount": 2,
+            "criterionWeightRatioSum": 1,
+            "criterionWeightsSum": 3,
+            "criterionWeights": [
+              {
+                "criterionId": "CRIT-B103-01",
+                "weightRatio": 0.5,
+                "weight": 1.5,
+                "scope": "REPOSITORY_VERIFIABLE"
+              },
+              {
+                "criterionId": "CRIT-B103-02",
+                "weightRatio": 0.5,
+                "weight": 1.5,
+                "scope": "REPOSITORY_VERIFIABLE"
+              }
+            ],
+            "repoVerifiableWeight": 3,
+            "passedWeight": 3,
+            "failedWeight": 0,
+            "databasePendingWeight": 0,
+            "blockedWeight": 0,
+            "unimplementedWeight": 0,
+            "earnedWeight": 3,
             "criteriaAssessed": "Migration 062 Assam 2023 delimitation schema verified with 126 assembly seats DDL; Assam 2023 reconciliation markdown report verified on disk with 126 statutory seats",
             "evidenceArtifactsUsed": [
               "supabase/migrations/062_canonical_assam_2023_delimitation.sql",
@@ -901,6 +1099,7 @@
                 "criterionId": "CRIT-B103-01",
                 "description": "Migration 062 Assam 2023 delimitation schema verified with 126 assembly seats DDL",
                 "weightRatio": 0.5,
+                "criterionWeight": 1.5,
                 "scope": "REPOSITORY_VERIFIABLE",
                 "status": "PASS",
                 "message": "Migration 062 Assam delimitation schema verified"
@@ -909,6 +1108,7 @@
                 "criterionId": "CRIT-B103-02",
                 "description": "Assam 2023 reconciliation markdown report verified on disk with 126 statutory seats",
                 "weightRatio": 0.5,
+                "criterionWeight": 1.5,
                 "scope": "REPOSITORY_VERIFIABLE",
                 "status": "PASS",
                 "message": "Assam 2023 delimitation reconciliation report verified"
@@ -922,8 +1122,12 @@
             "requirementsNotYetVerifiable": [],
             "blockedRequirements": [],
             "unimplementedRequirements": [],
+            "remainingUnimplemented": [],
+            "limitations": [],
             "derivedRepoRatio": 1,
-            "ratioRationale": "Temporal lineage and Assam 2023 delimitation models implemented."
+            "ratioRationale": "Temporal lineage and Assam 2023 delimitation models implemented.",
+            "status": "REPO_VERIFIED",
+            "statusDescription": "All repository acceptance criteria verified on disk"
           }
         },
         {
@@ -971,6 +1175,34 @@
           },
           "taskClassification": "CORE_SPECIFICATION",
           "evidenceAssessment": {
+            "taskId": "W021.5-B1-04",
+            "canonicalTitle": "National Assembly Boundary GeoJSON Deep Validation & Linkage",
+            "specRef": "REQ-GEO-004",
+            "allocatedWeight": 2,
+            "criterionCount": 2,
+            "criterionWeightRatioSum": 1,
+            "criterionWeightsSum": 2,
+            "criterionWeights": [
+              {
+                "criterionId": "CRIT-B104-01",
+                "weightRatio": 0.25,
+                "weight": 0.5,
+                "scope": "REPOSITORY_VERIFIABLE"
+              },
+              {
+                "criterionId": "CRIT-B104-02",
+                "weightRatio": 0.75,
+                "weight": 1.5,
+                "scope": "BLOCKED_EXTERNAL"
+              }
+            ],
+            "repoVerifiableWeight": 0.5,
+            "passedWeight": 0.5,
+            "failedWeight": 0,
+            "databasePendingWeight": 0,
+            "blockedWeight": 1.5,
+            "unimplementedWeight": 0,
+            "earnedWeight": 0.5,
             "criteriaAssessed": "Telangana assembly boundary GeoJSON geometry validation with Indian bbox and closed rings; National statutory boundary completeness across 31 States/UTs and resolution of AC 119 duplicate claim defect",
             "evidenceArtifactsUsed": [
               "scripts/generate_national_data_coverage_matrix.mjs",
@@ -986,6 +1218,7 @@
                 "criterionId": "CRIT-B104-01",
                 "description": "Telangana assembly boundary GeoJSON geometry validation with Indian bbox and closed rings",
                 "weightRatio": 0.25,
+                "criterionWeight": 0.5,
                 "scope": "REPOSITORY_VERIFIABLE",
                 "status": "PASS",
                 "message": "Telangana assembly GeoJSON geometry and bounding box verified; AC 119 duplicate claim defect detected (120 features for 119 statutory seats)"
@@ -994,6 +1227,7 @@
                 "criterionId": "CRIT-B104-02",
                 "description": "National statutory boundary completeness across 31 States/UTs and resolution of AC 119 duplicate claim defect",
                 "weightRatio": 0.75,
+                "criterionWeight": 1.5,
                 "scope": "BLOCKED_EXTERNAL",
                 "status": "BLOCKED",
                 "message": "Blocked pending external authority / CTO gate"
@@ -1008,8 +1242,16 @@
               "National statutory boundary completeness across 31 States/UTs and resolution of AC 119 duplicate claim defect"
             ],
             "unimplementedRequirements": [],
+            "remainingUnimplemented": [
+              "National statutory boundary completeness across 31 States/UTs and resolution of AC 119 duplicate claim defect"
+            ],
+            "limitations": [
+              "Blocked External: National statutory boundary completeness across 31 States/UTs and resolution of AC 119 duplicate claim defect"
+            ],
             "derivedRepoRatio": 0.25,
-            "ratioRationale": "Telangana assembly boundary GeoJSON geometry verified with Indian bounds; remaining 30 states and AC 119 duplicate claim defect blocked."
+            "ratioRationale": "Telangana assembly boundary GeoJSON geometry verified with Indian bounds; remaining 30 states and AC 119 duplicate claim defect blocked.",
+            "status": "PARTIAL",
+            "statusDescription": "0.5% earned of 2.0% allocated; 1.5% blocked"
           }
         }
       ]
@@ -1059,6 +1301,34 @@
           },
           "taskClassification": "CORE_SPECIFICATION",
           "evidenceAssessment": {
+            "taskId": "W021.5-C-01",
+            "canonicalTitle": "Political Organization Governance & Multilingual Extension Schema",
+            "specRef": "REQ-ORG-001",
+            "allocatedWeight": 4,
+            "criterionCount": 2,
+            "criterionWeightRatioSum": 1,
+            "criterionWeightsSum": 4,
+            "criterionWeights": [
+              {
+                "criterionId": "CRIT-C01-01",
+                "weightRatio": 0.5,
+                "weight": 2,
+                "scope": "REPOSITORY_VERIFIABLE"
+              },
+              {
+                "criterionId": "CRIT-C01-02",
+                "weightRatio": 0.5,
+                "weight": 2,
+                "scope": "REPOSITORY_VERIFIABLE"
+              }
+            ],
+            "repoVerifiableWeight": 4,
+            "passedWeight": 4,
+            "failedWeight": 0,
+            "databasePendingWeight": 0,
+            "blockedWeight": 0,
+            "unimplementedWeight": 0,
+            "earnedWeight": 4,
             "criteriaAssessed": "Migration 064 political organization governance schema verified with valid SQL DDL; Organization multilingual name and abbreviation extension fields defined in schema",
             "evidenceArtifactsUsed": [
               "supabase/migrations/064_political_organization_governance_remediation.sql",
@@ -1073,6 +1343,7 @@
                 "criterionId": "CRIT-C01-01",
                 "description": "Migration 064 political organization governance schema verified with valid SQL DDL",
                 "weightRatio": 0.5,
+                "criterionWeight": 2,
                 "scope": "REPOSITORY_VERIFIABLE",
                 "status": "PASS",
                 "message": "Migration 064 organization governance schema verified"
@@ -1081,6 +1352,7 @@
                 "criterionId": "CRIT-C01-02",
                 "description": "Organization multilingual name and abbreviation extension fields defined in schema",
                 "weightRatio": 0.5,
+                "criterionWeight": 2,
                 "scope": "REPOSITORY_VERIFIABLE",
                 "status": "PASS",
                 "message": "Multilingual extension schema verified with independent name and abbreviation definitions"
@@ -1094,8 +1366,12 @@
             "requirementsNotYetVerifiable": [],
             "blockedRequirements": [],
             "unimplementedRequirements": [],
+            "remainingUnimplemented": [],
+            "limitations": [],
             "derivedRepoRatio": 1,
-            "ratioRationale": "Political organization governance and multilingual extension schemas authored in repository."
+            "ratioRationale": "Political organization governance and multilingual extension schemas authored in repository.",
+            "status": "REPO_VERIFIED",
+            "statusDescription": "All repository acceptance criteria verified on disk"
           }
         },
         {
@@ -1144,6 +1420,34 @@
           },
           "taskClassification": "CORE_SPECIFICATION",
           "evidenceAssessment": {
+            "taskId": "W021.5-C-02",
+            "canonicalTitle": "1,207 Canonical Political Organizations Catalog Ingestion",
+            "specRef": "REQ-ORG-002",
+            "allocatedWeight": 5,
+            "criterionCount": 2,
+            "criterionWeightRatioSum": 1,
+            "criterionWeightsSum": 5,
+            "criterionWeights": [
+              {
+                "criterionId": "CRIT-C02-01",
+                "weightRatio": 0.5,
+                "weight": 2.5,
+                "scope": "REPOSITORY_VERIFIABLE"
+              },
+              {
+                "criterionId": "CRIT-C02-02",
+                "weightRatio": 0.5,
+                "weight": 2.5,
+                "scope": "DATABASE_STAGING"
+              }
+            ],
+            "repoVerifiableWeight": 2.5,
+            "passedWeight": 2.5,
+            "failedWeight": 0,
+            "databasePendingWeight": 2.5,
+            "blockedWeight": 0,
+            "unimplementedWeight": 0,
+            "earnedWeight": 2.5,
             "criteriaAssessed": "Migration 065 SQL DDL/DML and 1,207 organization manifest authored offline in repository; Staging database ingestion and catalog row count verification",
             "evidenceArtifactsUsed": [
               "supabase/migrations/065_canonical_political_organization_registry.sql",
@@ -1159,6 +1463,7 @@
                 "criterionId": "CRIT-C02-01",
                 "description": "Migration 065 SQL DDL/DML and 1,207 organization manifest authored offline in repository",
                 "weightRatio": 0.5,
+                "criterionWeight": 2.5,
                 "scope": "REPOSITORY_VERIFIABLE",
                 "status": "PASS",
                 "message": "Migration 065 and 1,207 organization manifest verified offline"
@@ -1167,9 +1472,10 @@
                 "criterionId": "CRIT-C02-02",
                 "description": "Staging database ingestion and catalog row count verification",
                 "weightRatio": 0.5,
+                "criterionWeight": 2.5,
                 "scope": "DATABASE_STAGING",
                 "status": "UNVERIFIED",
-                "message": "Pending live staging database execution"
+                "message": "Pending live staging database execution and authorization"
               }
             ],
             "checksPassed": [
@@ -1181,8 +1487,16 @@
             ],
             "blockedRequirements": [],
             "unimplementedRequirements": [],
+            "remainingUnimplemented": [
+              "Staging database ingestion and catalog row count verification"
+            ],
+            "limitations": [
+              "Database Pending: Staging database ingestion and catalog row count verification (requires explicit CTO authorization and live staging execution)"
+            ],
             "derivedRepoRatio": 0.5,
-            "ratioRationale": "Migration 065 SQL DDL/DML and 1,207 organization manifest authored offline in repository; staging database execution pending explicit authorization."
+            "ratioRationale": "Migration 065 SQL DDL/DML and 1,207 organization manifest authored offline in repository; staging database execution pending explicit authorization.",
+            "status": "PARTIAL",
+            "statusDescription": "2.5% earned of 5.0% allocated; 2.5% database pending"
           }
         },
         {
@@ -1230,6 +1544,40 @@
           },
           "taskClassification": "CORE_SPECIFICATION",
           "evidenceAssessment": {
+            "taskId": "W021.5-C-03",
+            "canonicalTitle": "Multilingual Party Names, Aliases & Symbols Matrix",
+            "specRef": "REQ-ORG-003",
+            "allocatedWeight": 3,
+            "criterionCount": 3,
+            "criterionWeightRatioSum": 1,
+            "criterionWeightsSum": 3,
+            "criterionWeights": [
+              {
+                "criterionId": "CRIT-C03-01",
+                "weightRatio": 0.333,
+                "weight": 0.999,
+                "scope": "REPOSITORY_VERIFIABLE"
+              },
+              {
+                "criterionId": "CRIT-C03-02",
+                "weightRatio": 0.333,
+                "weight": 0.999,
+                "scope": "REPOSITORY_VERIFIABLE"
+              },
+              {
+                "criterionId": "CRIT-C03-03",
+                "weightRatio": 0.334,
+                "weight": 1.002,
+                "scope": "REPOSITORY_VERIFIABLE"
+              }
+            ],
+            "repoVerifiableWeight": 3,
+            "passedWeight": 3,
+            "failedWeight": 0,
+            "databasePendingWeight": 0,
+            "blockedWeight": 0,
+            "unimplementedWeight": 0,
+            "earnedWeight": 3,
             "criteriaAssessed": "Multilingual party names matrix verified with >=25 identities across >=10 Indian languages and scripts; Party symbols matrix verified with official ECI notifications and reservation types; Party alias collision matrix verified with high-risk resolution rules and ambiguity tracking",
             "evidenceArtifactsUsed": [
               "reports/w021_5b2_b2_2c_multilingual_matrix.json",
@@ -1246,6 +1594,7 @@
                 "criterionId": "CRIT-C03-01",
                 "description": "Multilingual party names matrix verified with >=25 identities across >=10 Indian languages and scripts",
                 "weightRatio": 0.333,
+                "criterionWeight": 0.999,
                 "scope": "REPOSITORY_VERIFIABLE",
                 "status": "PASS",
                 "message": "Multilingual matrix verified (27 identities across 11 languages)"
@@ -1254,6 +1603,7 @@
                 "criterionId": "CRIT-C03-02",
                 "description": "Party symbols matrix verified with official ECI notifications and reservation types",
                 "weightRatio": 0.333,
+                "criterionWeight": 0.999,
                 "scope": "REPOSITORY_VERIFIABLE",
                 "status": "PASS",
                 "message": "Symbol matrix verified (19 symbols with statutory authority citations)"
@@ -1262,6 +1612,7 @@
                 "criterionId": "CRIT-C03-03",
                 "description": "Party alias collision matrix verified with high-risk resolution rules and ambiguity tracking",
                 "weightRatio": 0.334,
+                "criterionWeight": 1.002,
                 "scope": "REPOSITORY_VERIFIABLE",
                 "status": "PASS",
                 "message": "Alias collision matrix verified (1095 keys audited, 11 high-risk resolutions)"
@@ -1276,8 +1627,12 @@
             "requirementsNotYetVerifiable": [],
             "blockedRequirements": [],
             "unimplementedRequirements": [],
+            "remainingUnimplemented": [],
+            "limitations": [],
             "derivedRepoRatio": 1,
-            "ratioRationale": "Multilingual party names, aliases and symbols matrix authored in repository."
+            "ratioRationale": "Multilingual party names, aliases and symbols matrix authored in repository.",
+            "status": "REPO_VERIFIED",
+            "statusDescription": "All repository acceptance criteria verified on disk"
           }
         }
       ]
@@ -1333,6 +1688,34 @@
           },
           "taskClassification": "CORE_SPECIFICATION",
           "evidenceAssessment": {
+            "taskId": "W021.5-D-01",
+            "canonicalTitle": "Canonical Persons & Entity Deduplication Foundation",
+            "specRef": "REQ-CND-001",
+            "allocatedWeight": 4,
+            "criterionCount": 2,
+            "criterionWeightRatioSum": 1,
+            "criterionWeightsSum": 4,
+            "criterionWeights": [
+              {
+                "criterionId": "CRIT-D01-01",
+                "weightRatio": 0.5,
+                "weight": 2,
+                "scope": "REPOSITORY_VERIFIABLE"
+              },
+              {
+                "criterionId": "CRIT-D01-02",
+                "weightRatio": 0.5,
+                "weight": 2,
+                "scope": "REPOSITORY_VERIFIABLE"
+              }
+            ],
+            "repoVerifiableWeight": 4,
+            "passedWeight": 4,
+            "failedWeight": 0,
+            "databasePendingWeight": 0,
+            "blockedWeight": 0,
+            "unimplementedWeight": 0,
+            "earnedWeight": 4,
             "criteriaAssessed": "Migration 050 political entity model schema verified with valid SQL DDL; Migration 063 canonical political identity foundation schema verified with valid SQL DDL",
             "evidenceArtifactsUsed": [
               "supabase/migrations/050_political_entity_model.sql",
@@ -1348,6 +1731,7 @@
                 "criterionId": "CRIT-D01-01",
                 "description": "Migration 050 political entity model schema verified with valid SQL DDL",
                 "weightRatio": 0.5,
+                "criterionWeight": 2,
                 "scope": "REPOSITORY_VERIFIABLE",
                 "status": "PASS",
                 "message": "Migration 050 entity model verified"
@@ -1356,6 +1740,7 @@
                 "criterionId": "CRIT-D01-02",
                 "description": "Migration 063 canonical political identity foundation schema verified with valid SQL DDL",
                 "weightRatio": 0.5,
+                "criterionWeight": 2,
                 "scope": "REPOSITORY_VERIFIABLE",
                 "status": "PASS",
                 "message": "Migration 063 identity foundation verified"
@@ -1369,8 +1754,12 @@
             "requirementsNotYetVerifiable": [],
             "blockedRequirements": [],
             "unimplementedRequirements": [],
+            "remainingUnimplemented": [],
+            "limitations": [],
             "derivedRepoRatio": 1,
-            "ratioRationale": "Canonical persons and entity deduplication algorithms authored in repository."
+            "ratioRationale": "Canonical persons and entity deduplication algorithms authored in repository.",
+            "status": "REPO_VERIFIED",
+            "statusDescription": "All repository acceptance criteria verified on disk"
           }
         },
         {
@@ -1419,6 +1808,34 @@
           },
           "taskClassification": "CORE_SPECIFICATION",
           "evidenceAssessment": {
+            "taskId": "W021.5-D-02",
+            "canonicalTitle": "Candidate Population & Contest Mapping Across 10 Chunks",
+            "specRef": "REQ-CND-002",
+            "allocatedWeight": 6,
+            "criterionCount": 2,
+            "criterionWeightRatioSum": 1,
+            "criterionWeightsSum": 6,
+            "criterionWeights": [
+              {
+                "criterionId": "CRIT-D02-01",
+                "weightRatio": 0.5,
+                "weight": 3,
+                "scope": "REPOSITORY_VERIFIABLE"
+              },
+              {
+                "criterionId": "CRIT-D02-02",
+                "weightRatio": 0.5,
+                "weight": 3,
+                "scope": "DATABASE_STAGING"
+              }
+            ],
+            "repoVerifiableWeight": 3,
+            "passedWeight": 3,
+            "failedWeight": 0,
+            "databasePendingWeight": 3,
+            "blockedWeight": 0,
+            "unimplementedWeight": 0,
+            "earnedWeight": 3,
             "criteriaAssessed": "10 candidate population chunks authored in repository with closure report; Staging database execution and cross-table FK validation",
             "evidenceArtifactsUsed": [
               "reports/W021.5-B2.2D-PERSON_POPULATION_CLOSURE_REPORT.md",
@@ -1434,6 +1851,7 @@
                 "criterionId": "CRIT-D02-01",
                 "description": "10 candidate population chunks authored in repository with closure report",
                 "weightRatio": 0.5,
+                "criterionWeight": 3,
                 "scope": "REPOSITORY_VERIFIABLE",
                 "status": "PASS",
                 "message": "Candidate chunks and closure report verified"
@@ -1442,9 +1860,10 @@
                 "criterionId": "CRIT-D02-02",
                 "description": "Staging database execution and cross-table FK validation",
                 "weightRatio": 0.5,
+                "criterionWeight": 3,
                 "scope": "DATABASE_STAGING",
                 "status": "UNVERIFIED",
-                "message": "Pending live staging database execution"
+                "message": "Pending live staging database execution and authorization"
               }
             ],
             "checksPassed": [
@@ -1456,8 +1875,16 @@
             ],
             "blockedRequirements": [],
             "unimplementedRequirements": [],
+            "remainingUnimplemented": [
+              "Staging database execution and cross-table FK validation"
+            ],
+            "limitations": [
+              "Database Pending: Staging database execution and cross-table FK validation (requires explicit CTO authorization and live staging execution)"
+            ],
             "derivedRepoRatio": 0.5,
-            "ratioRationale": "10 candidate population chunks authored in repository; staging database execution and cross-table FK validation pending."
+            "ratioRationale": "10 candidate population chunks authored in repository; staging database execution and cross-table FK validation pending.",
+            "status": "PARTIAL",
+            "statusDescription": "3.0% earned of 6.0% allocated; 3.0% database pending"
           }
         },
         {
@@ -1493,6 +1920,28 @@
           },
           "taskClassification": "CORE_SPECIFICATION",
           "evidenceAssessment": {
+            "taskId": "W021.5-D-03",
+            "canonicalTitle": "Candidate-to-Contest Foreign Key Constraint Linkage (Migration 067)",
+            "specRef": "REQ-CND-003",
+            "allocatedWeight": 4,
+            "criterionCount": 1,
+            "criterionWeightRatioSum": 1,
+            "criterionWeightsSum": 4,
+            "criterionWeights": [
+              {
+                "criterionId": "CRIT-D03-01",
+                "weightRatio": 1,
+                "weight": 4,
+                "scope": "BLOCKED_EXTERNAL"
+              }
+            ],
+            "repoVerifiableWeight": 0,
+            "passedWeight": 0,
+            "failedWeight": 0,
+            "databasePendingWeight": 0,
+            "blockedWeight": 4,
+            "unimplementedWeight": 0,
+            "earnedWeight": 0,
             "criteriaAssessed": "Migration 067 FK constraint enforcement blocked pending candidate staging execution",
             "evidenceArtifactsUsed": [
               "reports/W021.5-CANONICAL-ARCHITECTURE-READINESS-PACKAGE.md"
@@ -1505,6 +1954,7 @@
                 "criterionId": "CRIT-D03-01",
                 "description": "Migration 067 FK constraint enforcement blocked pending candidate staging execution",
                 "weightRatio": 1,
+                "criterionWeight": 4,
                 "scope": "BLOCKED_EXTERNAL",
                 "status": "BLOCKED",
                 "message": "Blocked pending external authority / CTO gate"
@@ -1517,8 +1967,16 @@
               "Migration 067 FK constraint enforcement blocked pending candidate staging execution"
             ],
             "unimplementedRequirements": [],
+            "remainingUnimplemented": [
+              "Migration 067 FK constraint enforcement blocked pending candidate staging execution"
+            ],
+            "limitations": [
+              "Blocked External: Migration 067 FK constraint enforcement blocked pending candidate staging execution"
+            ],
             "derivedRepoRatio": 0,
-            "ratioRationale": "Migration 067 FK constraint enforcement blocked pending candidate staging execution."
+            "ratioRationale": "Migration 067 FK constraint enforcement blocked pending candidate staging execution.",
+            "status": "BLOCKED",
+            "statusDescription": "Blocked pending external dependency / CTO adjudication"
           }
         }
       ]
@@ -1569,6 +2027,34 @@
           },
           "taskClassification": "CORE_SPECIFICATION",
           "evidenceAssessment": {
+            "taskId": "W021.5-E-01",
+            "canonicalTitle": "Constituency Demographic Profiles & Aggregates Ingestion",
+            "specRef": "REQ-DEM-001",
+            "allocatedWeight": 4,
+            "criterionCount": 2,
+            "criterionWeightRatioSum": 1,
+            "criterionWeightsSum": 4,
+            "criterionWeights": [
+              {
+                "criterionId": "CRIT-E01-01",
+                "weightRatio": 0.5,
+                "weight": 2,
+                "scope": "REPOSITORY_VERIFIABLE"
+              },
+              {
+                "criterionId": "CRIT-E01-02",
+                "weightRatio": 0.5,
+                "weight": 2,
+                "scope": "DATABASE_STAGING"
+              }
+            ],
+            "repoVerifiableWeight": 2,
+            "passedWeight": 2,
+            "failedWeight": 0,
+            "databasePendingWeight": 2,
+            "blockedWeight": 0,
+            "unimplementedWeight": 0,
+            "earnedWeight": 2,
             "criteriaAssessed": "Migration 066 demographic extension schema and aggregate models authored in repository; Staging database ingestion and aggregate verification for national demographic profiles",
             "evidenceArtifactsUsed": [
               "supabase/migrations/066_downstream_civic_extensions.sql",
@@ -1583,6 +2069,7 @@
                 "criterionId": "CRIT-E01-01",
                 "description": "Migration 066 demographic extension schema and aggregate models authored in repository",
                 "weightRatio": 0.5,
+                "criterionWeight": 2,
                 "scope": "REPOSITORY_VERIFIABLE",
                 "status": "PASS",
                 "message": "Migration 066 demographic extension verified"
@@ -1591,9 +2078,10 @@
                 "criterionId": "CRIT-E01-02",
                 "description": "Staging database ingestion and aggregate verification for national demographic profiles",
                 "weightRatio": 0.5,
+                "criterionWeight": 2,
                 "scope": "DATABASE_STAGING",
                 "status": "UNVERIFIED",
-                "message": "Pending live staging database execution"
+                "message": "Pending live staging database execution and authorization"
               }
             ],
             "checksPassed": [
@@ -1605,8 +2093,16 @@
             ],
             "blockedRequirements": [],
             "unimplementedRequirements": [],
+            "remainingUnimplemented": [
+              "Staging database ingestion and aggregate verification for national demographic profiles"
+            ],
+            "limitations": [
+              "Database Pending: Staging database ingestion and aggregate verification for national demographic profiles (requires explicit CTO authorization and live staging execution)"
+            ],
             "derivedRepoRatio": 0.5,
-            "ratioRationale": "Migration 066 demographic extension schema authored in repository; staging database ingestion for national profiles pending."
+            "ratioRationale": "Migration 066 demographic extension schema authored in repository; staging database ingestion for national profiles pending.",
+            "status": "PARTIAL",
+            "statusDescription": "2.0% earned of 4.0% allocated; 2.0% database pending"
           }
         },
         {
@@ -1648,6 +2144,28 @@
           },
           "taskClassification": "CORE_SPECIFICATION",
           "evidenceAssessment": {
+            "taskId": "W021.5-E-02",
+            "canonicalTitle": "Financial Defect DQ-W021.5-B2.2E-001 Formal Adjudication",
+            "specRef": "REQ-FIN-001",
+            "allocatedWeight": 5,
+            "criterionCount": 1,
+            "criterionWeightRatioSum": 1,
+            "criterionWeightsSum": 5,
+            "criterionWeights": [
+              {
+                "criterionId": "CRIT-E02-01",
+                "weightRatio": 1,
+                "weight": 5,
+                "scope": "BLOCKED_EXTERNAL"
+              }
+            ],
+            "repoVerifiableWeight": 0,
+            "passedWeight": 0,
+            "failedWeight": 0,
+            "databasePendingWeight": 0,
+            "blockedWeight": 5,
+            "unimplementedWeight": 0,
+            "earnedWeight": 0,
             "criteriaAssessed": "Financial defect DQ-W021.5-B2.2E-001 remains strictly open awaiting explicit CTO adjudication",
             "evidenceArtifactsUsed": [
               "reports/W021.5-CANONICAL-ARCHITECTURE-READINESS-PACKAGE.md",
@@ -1661,6 +2179,7 @@
                 "criterionId": "CRIT-E02-01",
                 "description": "Financial defect DQ-W021.5-B2.2E-001 remains strictly open awaiting explicit CTO adjudication",
                 "weightRatio": 1,
+                "criterionWeight": 5,
                 "scope": "BLOCKED_EXTERNAL",
                 "status": "BLOCKED",
                 "message": "Blocked pending external authority / CTO gate"
@@ -1673,8 +2192,16 @@
               "Financial defect DQ-W021.5-B2.2E-001 remains strictly open awaiting explicit CTO adjudication"
             ],
             "unimplementedRequirements": [],
+            "remainingUnimplemented": [
+              "Financial defect DQ-W021.5-B2.2E-001 remains strictly open awaiting explicit CTO adjudication"
+            ],
+            "limitations": [
+              "Blocked External: Financial defect DQ-W021.5-B2.2E-001 remains strictly open awaiting explicit CTO adjudication"
+            ],
             "derivedRepoRatio": 0,
-            "ratioRationale": "Financial defect DQ-W021.5-B2.2E-001 remains strictly open awaiting explicit CTO adjudication."
+            "ratioRationale": "Financial defect DQ-W021.5-B2.2E-001 remains strictly open awaiting explicit CTO adjudication.",
+            "status": "BLOCKED",
+            "statusDescription": "Blocked pending external dependency / CTO adjudication"
           }
         },
         {
@@ -1710,6 +2237,28 @@
           },
           "taskClassification": "CORE_SPECIFICATION",
           "evidenceAssessment": {
+            "taskId": "W021.5-E-03",
+            "canonicalTitle": "Normalized Candidate Affidavit Disclosure Schema (Migration 068)",
+            "specRef": "REQ-FIN-002",
+            "allocatedWeight": 5,
+            "criterionCount": 1,
+            "criterionWeightRatioSum": 1,
+            "criterionWeightsSum": 5,
+            "criterionWeights": [
+              {
+                "criterionId": "CRIT-E03-01",
+                "weightRatio": 1,
+                "weight": 5,
+                "scope": "BLOCKED_EXTERNAL"
+              }
+            ],
+            "repoVerifiableWeight": 0,
+            "passedWeight": 0,
+            "failedWeight": 0,
+            "databasePendingWeight": 0,
+            "blockedWeight": 5,
+            "unimplementedWeight": 0,
+            "earnedWeight": 0,
             "criteriaAssessed": "Migration 068 candidate affidavit schema blocked pending CTO adjudication of DQ-W021.5-B2.2E-001",
             "evidenceArtifactsUsed": [
               "reports/W021.5-CANONICAL-ARCHITECTURE-READINESS-PACKAGE.md"
@@ -1722,6 +2271,7 @@
                 "criterionId": "CRIT-E03-01",
                 "description": "Migration 068 candidate affidavit schema blocked pending CTO adjudication of DQ-W021.5-B2.2E-001",
                 "weightRatio": 1,
+                "criterionWeight": 5,
                 "scope": "BLOCKED_EXTERNAL",
                 "status": "BLOCKED",
                 "message": "Blocked pending external authority / CTO gate"
@@ -1734,8 +2284,16 @@
               "Migration 068 candidate affidavit schema blocked pending CTO adjudication of DQ-W021.5-B2.2E-001"
             ],
             "unimplementedRequirements": [],
+            "remainingUnimplemented": [
+              "Migration 068 candidate affidavit schema blocked pending CTO adjudication of DQ-W021.5-B2.2E-001"
+            ],
+            "limitations": [
+              "Blocked External: Migration 068 candidate affidavit schema blocked pending CTO adjudication of DQ-W021.5-B2.2E-001"
+            ],
             "derivedRepoRatio": 0,
-            "ratioRationale": "Migration 068 candidate affidavit schema blocked pending CTO adjudication of DQ-W021.5-B2.2E-001."
+            "ratioRationale": "Migration 068 candidate affidavit schema blocked pending CTO adjudication of DQ-W021.5-B2.2E-001.",
+            "status": "BLOCKED",
+            "statusDescription": "Blocked pending external dependency / CTO adjudication"
           }
         }
       ]
@@ -1785,6 +2343,34 @@
           },
           "taskClassification": "CORE_SPECIFICATION",
           "evidenceAssessment": {
+            "taskId": "W021.5-F-01",
+            "canonicalTitle": "Longitudinal Election Event & Contest Schema Normalization",
+            "specRef": "REQ-HIS-001",
+            "allocatedWeight": 4,
+            "criterionCount": 2,
+            "criterionWeightRatioSum": 1,
+            "criterionWeightsSum": 4,
+            "criterionWeights": [
+              {
+                "criterionId": "CRIT-F01-01",
+                "weightRatio": 0.5,
+                "weight": 2,
+                "scope": "REPOSITORY_VERIFIABLE"
+              },
+              {
+                "criterionId": "CRIT-F01-02",
+                "weightRatio": 0.5,
+                "weight": 2,
+                "scope": "REPOSITORY_VERIFIABLE"
+              }
+            ],
+            "repoVerifiableWeight": 4,
+            "passedWeight": 4,
+            "failedWeight": 0,
+            "databasePendingWeight": 0,
+            "blockedWeight": 0,
+            "unimplementedWeight": 0,
+            "earnedWeight": 4,
             "criteriaAssessed": "Migration 051 longitudinal election normalization schema verified with valid SQL DDL; Temporal integrity report and multi-election relations verified with valid non-empty schema",
             "evidenceArtifactsUsed": [
               "supabase/migrations/051_election_data_normalization.sql",
@@ -1799,6 +2385,7 @@
                 "criterionId": "CRIT-F01-01",
                 "description": "Migration 051 longitudinal election normalization schema verified with valid SQL DDL",
                 "weightRatio": 0.5,
+                "criterionWeight": 2,
                 "scope": "REPOSITORY_VERIFIABLE",
                 "status": "PASS",
                 "message": "Migration 051 schema verified"
@@ -1807,6 +2394,7 @@
                 "criterionId": "CRIT-F01-02",
                 "description": "Temporal integrity report and multi-election relations verified with valid non-empty schema",
                 "weightRatio": 0.5,
+                "criterionWeight": 2,
                 "scope": "REPOSITORY_VERIFIABLE",
                 "status": "PASS",
                 "message": "Temporal integrity report verified"
@@ -1820,8 +2408,12 @@
             "requirementsNotYetVerifiable": [],
             "blockedRequirements": [],
             "unimplementedRequirements": [],
+            "remainingUnimplemented": [],
+            "limitations": [],
             "derivedRepoRatio": 1,
-            "ratioRationale": "Longitudinal election event and contest schemas normalized in repository."
+            "ratioRationale": "Longitudinal election event and contest schemas normalized in repository.",
+            "status": "REPO_VERIFIED",
+            "statusDescription": "All repository acceptance criteria verified on disk"
           }
         },
         {
@@ -1882,6 +2474,40 @@
           },
           "taskClassification": "CORE_SPECIFICATION",
           "evidenceAssessment": {
+            "taskId": "W021.5-F-02",
+            "canonicalTitle": "National Multi-Election Historical Results Ingestion",
+            "specRef": "REQ-HIS-002",
+            "allocatedWeight": 6,
+            "criterionCount": 3,
+            "criterionWeightRatioSum": 1,
+            "criterionWeightsSum": 6,
+            "criterionWeights": [
+              {
+                "criterionId": "CRIT-F02-01",
+                "weightRatio": 0.25,
+                "weight": 1.5,
+                "scope": "REPOSITORY_VERIFIABLE"
+              },
+              {
+                "criterionId": "CRIT-F02-02",
+                "weightRatio": 0.25,
+                "weight": 1.5,
+                "scope": "UNIMPLEMENTED"
+              },
+              {
+                "criterionId": "CRIT-F02-03",
+                "weightRatio": 0.5,
+                "weight": 3,
+                "scope": "DATABASE_STAGING"
+              }
+            ],
+            "repoVerifiableWeight": 1.5,
+            "passedWeight": 1.5,
+            "failedWeight": 0,
+            "databasePendingWeight": 3,
+            "blockedWeight": 0,
+            "unimplementedWeight": 1.5,
+            "earnedWeight": 1.5,
             "criteriaAssessed": "Multi-election historical results authored across initial states with explicit record-level years; Historical election results authored for remaining 23 states in repository; Staging database ingestion and relational validation across historical results",
             "evidenceArtifactsUsed": [
               "data/seed/telangana-historical-results.ts",
@@ -1900,6 +2526,7 @@
                 "criterionId": "CRIT-F02-01",
                 "description": "Multi-election historical results authored across initial states with explicit record-level years",
                 "weightRatio": 0.25,
+                "criterionWeight": 1.5,
                 "scope": "REPOSITORY_VERIFIABLE",
                 "status": "PASS",
                 "message": "Historical results seed files verified with pure LF"
@@ -1908,6 +2535,7 @@
                 "criterionId": "CRIT-F02-02",
                 "description": "Historical election results authored for remaining 23 states in repository",
                 "weightRatio": 0.25,
+                "criterionWeight": 1.5,
                 "scope": "UNIMPLEMENTED",
                 "status": "NOT_IMPLEMENTED",
                 "message": "Scheduled for future architecture wave"
@@ -1916,9 +2544,10 @@
                 "criterionId": "CRIT-F02-03",
                 "description": "Staging database ingestion and relational validation across historical results",
                 "weightRatio": 0.5,
+                "criterionWeight": 3,
                 "scope": "DATABASE_STAGING",
                 "status": "UNVERIFIED",
-                "message": "Pending live staging database execution"
+                "message": "Pending live staging database execution and authorization"
               }
             ],
             "checksPassed": [
@@ -1932,8 +2561,18 @@
             "unimplementedRequirements": [
               "Historical election results authored for remaining 23 states in repository"
             ],
+            "remainingUnimplemented": [
+              "Staging database ingestion and relational validation across historical results",
+              "Historical election results authored for remaining 23 states in repository"
+            ],
+            "limitations": [
+              "Unimplemented: Historical election results authored for remaining 23 states in repository",
+              "Database Pending: Staging database ingestion and relational validation across historical results (requires explicit CTO authorization and live staging execution)"
+            ],
             "derivedRepoRatio": 0.25,
-            "ratioRationale": "Multi-election historical results authored across initial states with record-level years; remaining 23 states unauthored and staging execution pending."
+            "ratioRationale": "Multi-election historical results authored across initial states with record-level years; remaining 23 states unauthored and staging execution pending.",
+            "status": "PARTIAL",
+            "statusDescription": "1.5% earned of 6.0% allocated; 3.0% database pending; 1.5% unimplemented"
           }
         }
       ]
@@ -1989,6 +2628,34 @@
           },
           "taskClassification": "CORE_SPECIFICATION",
           "evidenceAssessment": {
+            "taskId": "W021.5-G-01",
+            "canonicalTitle": "API Election Contract Nullability & Missing-Value Preservation",
+            "specRef": "REQ-API-001",
+            "allocatedWeight": 4,
+            "criterionCount": 2,
+            "criterionWeightRatioSum": 1,
+            "criterionWeightsSum": 4,
+            "criterionWeights": [
+              {
+                "criterionId": "CRIT-G01-01",
+                "weightRatio": 0.5,
+                "weight": 2,
+                "scope": "REPOSITORY_VERIFIABLE"
+              },
+              {
+                "criterionId": "CRIT-G01-02",
+                "weightRatio": 0.5,
+                "weight": 2,
+                "scope": "REPOSITORY_VERIFIABLE"
+              }
+            ],
+            "repoVerifiableWeight": 4,
+            "passedWeight": 4,
+            "failedWeight": 0,
+            "databasePendingWeight": 0,
+            "blockedWeight": 0,
+            "unimplementedWeight": 0,
+            "earnedWeight": 4,
             "criteriaAssessed": "Fastify /api/v1/constituencies route schema contract and nullability verified with clean AST; API server entrypoint and route configuration verified with clean TypeScript AST parse",
             "evidenceArtifactsUsed": [
               "apps/api/src/routes/constituencies.ts",
@@ -2004,6 +2671,7 @@
                 "criterionId": "CRIT-G01-01",
                 "description": "Fastify /api/v1/constituencies route schema contract and nullability verified with clean AST",
                 "weightRatio": 0.5,
+                "criterionWeight": 2,
                 "scope": "REPOSITORY_VERIFIABLE",
                 "status": "PASS",
                 "message": "Fastify constituencies route contract and schema verified with clean AST"
@@ -2012,6 +2680,7 @@
                 "criterionId": "CRIT-G01-02",
                 "description": "API server entrypoint and route configuration verified with clean TypeScript AST parse",
                 "weightRatio": 0.5,
+                "criterionWeight": 2,
                 "scope": "REPOSITORY_VERIFIABLE",
                 "status": "PASS",
                 "message": "API server entrypoint and route configuration verified with clean TS AST"
@@ -2025,8 +2694,12 @@
             "requirementsNotYetVerifiable": [],
             "blockedRequirements": [],
             "unimplementedRequirements": [],
+            "remainingUnimplemented": [],
+            "limitations": [],
             "derivedRepoRatio": 1,
-            "ratioRationale": "Fastify route contracts and OpenAPI schemas hardened to preserve nullable election fields."
+            "ratioRationale": "Fastify route contracts and OpenAPI schemas hardened to preserve nullable election fields.",
+            "status": "REPO_VERIFIED",
+            "statusDescription": "All repository acceptance criteria verified on disk"
           }
         },
         {
@@ -2068,6 +2741,34 @@
           },
           "taskClassification": "CORE_SPECIFICATION",
           "evidenceAssessment": {
+            "taskId": "W021.5-G-02",
+            "canonicalTitle": "Elimination of State-Code Election-Year Inferences in stateData.ts",
+            "specRef": "REQ-API-002",
+            "allocatedWeight": 4,
+            "criterionCount": 2,
+            "criterionWeightRatioSum": 1,
+            "criterionWeightsSum": 4,
+            "criterionWeights": [
+              {
+                "criterionId": "CRIT-G02-01",
+                "weightRatio": 0.5,
+                "weight": 2,
+                "scope": "REPOSITORY_VERIFIABLE"
+              },
+              {
+                "criterionId": "CRIT-G02-02",
+                "weightRatio": 0.5,
+                "weight": 2,
+                "scope": "REPOSITORY_VERIFIABLE"
+              }
+            ],
+            "repoVerifiableWeight": 4,
+            "passedWeight": 4,
+            "failedWeight": 0,
+            "databasePendingWeight": 0,
+            "blockedWeight": 0,
+            "unimplementedWeight": 0,
+            "earnedWeight": 4,
             "criteriaAssessed": "StateData service eliminates hardcoded state-code election-year inferences; API election truth contract test suite passes cleanly with verified test execution proof",
             "evidenceArtifactsUsed": [
               "apps/api/src/services/stateData.ts",
@@ -2082,6 +2783,7 @@
                 "criterionId": "CRIT-G02-01",
                 "description": "StateData service eliminates hardcoded state-code election-year inferences",
                 "weightRatio": 0.5,
+                "criterionWeight": 2,
                 "scope": "REPOSITORY_VERIFIABLE",
                 "status": "PASS",
                 "message": "Fallback-free stateData service verified with clean TS AST"
@@ -2090,6 +2792,7 @@
                 "criterionId": "CRIT-G02-02",
                 "description": "API election truth contract test suite passes cleanly with verified test execution proof",
                 "weightRatio": 0.5,
+                "criterionWeight": 2,
                 "scope": "REPOSITORY_VERIFIABLE",
                 "status": "PASS",
                 "message": "Election truth contracts test suite syntax, passing execution and on-disk log SHA-256 verified"
@@ -2103,8 +2806,12 @@
             "requirementsNotYetVerifiable": [],
             "blockedRequirements": [],
             "unimplementedRequirements": [],
+            "remainingUnimplemented": [],
+            "limitations": [],
             "derivedRepoRatio": 1,
-            "ratioRationale": "Elimination of state-code election year inferences from stateData.ts complete."
+            "ratioRationale": "Elimination of state-code election year inferences from stateData.ts complete.",
+            "status": "REPO_VERIFIED",
+            "statusDescription": "All repository acceptance criteria verified on disk"
           }
         },
         {
@@ -2146,6 +2853,28 @@
           },
           "taskClassification": "CORE_SPECIFICATION",
           "evidenceAssessment": {
+            "taskId": "W021.5-G-03",
+            "canonicalTitle": "Fastify Canonical DB-Backed Route Strangulation",
+            "specRef": "REQ-API-003",
+            "allocatedWeight": 4,
+            "criterionCount": 1,
+            "criterionWeightRatioSum": 1,
+            "criterionWeightsSum": 4,
+            "criterionWeights": [
+              {
+                "criterionId": "CRIT-G03-01",
+                "weightRatio": 1,
+                "weight": 4,
+                "scope": "BLOCKED_EXTERNAL"
+              }
+            ],
+            "repoVerifiableWeight": 0,
+            "passedWeight": 0,
+            "failedWeight": 0,
+            "databasePendingWeight": 0,
+            "blockedWeight": 4,
+            "unimplementedWeight": 0,
+            "earnedWeight": 0,
             "criteriaAssessed": "Fastify canonical database-backed route strangulation blocked pending staging DB deployment",
             "evidenceArtifactsUsed": [
               "reports/W021.5-CANONICAL-ARCHITECTURE-READINESS-PACKAGE.md",
@@ -2159,6 +2888,7 @@
                 "criterionId": "CRIT-G03-01",
                 "description": "Fastify canonical database-backed route strangulation blocked pending staging DB deployment",
                 "weightRatio": 1,
+                "criterionWeight": 4,
                 "scope": "BLOCKED_EXTERNAL",
                 "status": "BLOCKED",
                 "message": "Blocked pending external authority / CTO gate"
@@ -2171,8 +2901,16 @@
               "Fastify canonical database-backed route strangulation blocked pending staging DB deployment"
             ],
             "unimplementedRequirements": [],
+            "remainingUnimplemented": [
+              "Fastify canonical database-backed route strangulation blocked pending staging DB deployment"
+            ],
+            "limitations": [
+              "Blocked External: Fastify canonical database-backed route strangulation blocked pending staging DB deployment"
+            ],
             "derivedRepoRatio": 0,
-            "ratioRationale": "Fastify OpenAPI schema documentation generation blocked pending staging database execution."
+            "ratioRationale": "Fastify OpenAPI schema documentation generation blocked pending staging database execution.",
+            "status": "BLOCKED",
+            "statusDescription": "Blocked pending external dependency / CTO adjudication"
           }
         }
       ]
@@ -2222,6 +2960,34 @@
           },
           "taskClassification": "CORE_SPECIFICATION",
           "evidenceAssessment": {
+            "taskId": "W021.5-H-01",
+            "canonicalTitle": "Mobile DTO Validation Hardening & Nullable Election Year Support",
+            "specRef": "REQ-MOB-001",
+            "allocatedWeight": 3,
+            "criterionCount": 2,
+            "criterionWeightRatioSum": 1,
+            "criterionWeightsSum": 3,
+            "criterionWeights": [
+              {
+                "criterionId": "CRIT-H01-01",
+                "weightRatio": 0.5,
+                "weight": 1.5,
+                "scope": "REPOSITORY_VERIFIABLE"
+              },
+              {
+                "criterionId": "CRIT-H01-02",
+                "weightRatio": 0.5,
+                "weight": 1.5,
+                "scope": "REPOSITORY_VERIFIABLE"
+              }
+            ],
+            "repoVerifiableWeight": 3,
+            "passedWeight": 3,
+            "failedWeight": 0,
+            "databasePendingWeight": 0,
+            "blockedWeight": 0,
+            "unimplementedWeight": 0,
+            "earnedWeight": 3,
             "criteriaAssessed": "Mobile DTO validation hardening and nullable election year support in client API layer; Mobile journey test suite passes cleanly with verified test execution proof",
             "evidenceArtifactsUsed": [
               "apps/mobile/lib/api/endpoints/constituencies.ts",
@@ -2236,6 +3002,7 @@
                 "criterionId": "CRIT-H01-01",
                 "description": "Mobile DTO validation hardening and nullable election year support in client API layer",
                 "weightRatio": 0.5,
+                "criterionWeight": 1.5,
                 "scope": "REPOSITORY_VERIFIABLE",
                 "status": "PASS",
                 "message": "Mobile constituencies API endpoint verified with clean TS AST"
@@ -2244,6 +3011,7 @@
                 "criterionId": "CRIT-H01-02",
                 "description": "Mobile journey test suite passes cleanly with verified test execution proof",
                 "weightRatio": 0.5,
+                "criterionWeight": 1.5,
                 "scope": "REPOSITORY_VERIFIABLE",
                 "status": "PASS",
                 "message": "Mobile journey test suite syntax, passing execution and on-disk log SHA-256 verified"
@@ -2257,8 +3025,12 @@
             "requirementsNotYetVerifiable": [],
             "blockedRequirements": [],
             "unimplementedRequirements": [],
+            "remainingUnimplemented": [],
+            "limitations": [],
             "derivedRepoRatio": 1,
-            "ratioRationale": "Mobile DTO validation hardened with nullable electionYear support and ApiValidationError."
+            "ratioRationale": "Mobile DTO validation hardened with nullable electionYear support and ApiValidationError.",
+            "status": "REPO_VERIFIED",
+            "statusDescription": "All repository acceptance criteria verified on disk"
           }
         },
         {
@@ -2300,6 +3072,34 @@
           },
           "taskClassification": "CORE_SPECIFICATION",
           "evidenceAssessment": {
+            "taskId": "W021.5-H-02",
+            "canonicalTitle": "Section-Level Provenance Badges in Constituency UI",
+            "specRef": "REQ-MOB-002",
+            "allocatedWeight": 3,
+            "criterionCount": 2,
+            "criterionWeightRatioSum": 1,
+            "criterionWeightsSum": 3,
+            "criterionWeights": [
+              {
+                "criterionId": "CRIT-H02-01",
+                "weightRatio": 0.5,
+                "weight": 1.5,
+                "scope": "REPOSITORY_VERIFIABLE"
+              },
+              {
+                "criterionId": "CRIT-H02-02",
+                "weightRatio": 0.5,
+                "weight": 1.5,
+                "scope": "REPOSITORY_VERIFIABLE"
+              }
+            ],
+            "repoVerifiableWeight": 3,
+            "passedWeight": 3,
+            "failedWeight": 0,
+            "databasePendingWeight": 0,
+            "blockedWeight": 0,
+            "unimplementedWeight": 0,
+            "earnedWeight": 3,
             "criteriaAssessed": "Section-level provenance UI badges in mobile constituency screen; Constituency UI components render provenance badges without errors",
             "evidenceArtifactsUsed": [
               "apps/mobile/app/constituency/[id].tsx",
@@ -2314,6 +3114,7 @@
                 "criterionId": "CRIT-H02-01",
                 "description": "Section-level provenance UI badges in mobile constituency screen",
                 "weightRatio": 0.5,
+                "criterionWeight": 1.5,
                 "scope": "REPOSITORY_VERIFIABLE",
                 "status": "PASS",
                 "message": "Constituency screen UI verified with clean TSX AST"
@@ -2322,6 +3123,7 @@
                 "criterionId": "CRIT-H02-02",
                 "description": "Constituency UI components render provenance badges without errors",
                 "weightRatio": 0.5,
+                "criterionWeight": 1.5,
                 "scope": "REPOSITORY_VERIFIABLE",
                 "status": "PASS",
                 "message": "Provenance badge UI rendering and styling verified in constituency screen"
@@ -2335,8 +3137,12 @@
             "requirementsNotYetVerifiable": [],
             "blockedRequirements": [],
             "unimplementedRequirements": [],
+            "remainingUnimplemented": [],
+            "limitations": [],
             "derivedRepoRatio": 1,
-            "ratioRationale": "Section-level provenance tags active across mobile constituency screens."
+            "ratioRationale": "Section-level provenance tags active across mobile constituency screens.",
+            "status": "REPO_VERIFIED",
+            "statusDescription": "All repository acceptance criteria verified on disk"
           }
         },
         {
@@ -2384,6 +3190,34 @@
           },
           "taskClassification": "CORE_SPECIFICATION",
           "evidenceAssessment": {
+            "taskId": "W021.5-H-03",
+            "canonicalTitle": "Mobile Journey Decoupling from Legacy election2023 Alias",
+            "specRef": "REQ-MOB-003",
+            "allocatedWeight": 2,
+            "criterionCount": 2,
+            "criterionWeightRatioSum": 1,
+            "criterionWeightsSum": 2,
+            "criterionWeights": [
+              {
+                "criterionId": "CRIT-H03-01",
+                "weightRatio": 0.5,
+                "weight": 1,
+                "scope": "REPOSITORY_VERIFIABLE"
+              },
+              {
+                "criterionId": "CRIT-H03-02",
+                "weightRatio": 0.5,
+                "weight": 1,
+                "scope": "REPOSITORY_VERIFIABLE"
+              }
+            ],
+            "repoVerifiableWeight": 2,
+            "passedWeight": 2,
+            "failedWeight": 0,
+            "databasePendingWeight": 0,
+            "blockedWeight": 0,
+            "unimplementedWeight": 0,
+            "earnedWeight": 2,
             "criteriaAssessed": "Mobile consumer journey decoupling from legacy election2023 alias documented in impact report; Legislator profile screen decoupled from hardcoded election aliases",
             "evidenceArtifactsUsed": [
               "reports/W021.5-COMPATIBILITY-CONSUMER-IMPACT-REPORT.md",
@@ -2399,6 +3233,7 @@
                 "criterionId": "CRIT-H03-01",
                 "description": "Mobile consumer journey decoupling from legacy election2023 alias documented in impact report",
                 "weightRatio": 0.5,
+                "criterionWeight": 1,
                 "scope": "REPOSITORY_VERIFIABLE",
                 "status": "PASS",
                 "message": "Consumer impact report verified"
@@ -2407,6 +3242,7 @@
                 "criterionId": "CRIT-H03-02",
                 "description": "Legislator profile screen decoupled from hardcoded election aliases",
                 "weightRatio": 0.5,
+                "criterionWeight": 1,
                 "scope": "REPOSITORY_VERIFIABLE",
                 "status": "PASS",
                 "message": "Legislator screen decoupling verified with clean TSX AST"
@@ -2420,8 +3256,12 @@
             "requirementsNotYetVerifiable": [],
             "blockedRequirements": [],
             "unimplementedRequirements": [],
+            "remainingUnimplemented": [],
+            "limitations": [],
             "derivedRepoRatio": 1,
-            "ratioRationale": "Mobile user journeys decoupled from legacy election2023 aliases."
+            "ratioRationale": "Mobile user journeys decoupled from legacy election2023 aliases.",
+            "status": "REPO_VERIFIED",
+            "statusDescription": "All repository acceptance criteria verified on disk"
           }
         },
         {
@@ -2463,6 +3303,34 @@
           },
           "taskClassification": "CORE_SPECIFICATION",
           "evidenceAssessment": {
+            "taskId": "W021.5-H-04",
+            "canonicalTitle": "Mobile Write Strangler Migration (Class B Deprecation)",
+            "specRef": "REQ-MOB-004",
+            "allocatedWeight": 2,
+            "criterionCount": 2,
+            "criterionWeightRatioSum": 1,
+            "criterionWeightsSum": 2,
+            "criterionWeights": [
+              {
+                "criterionId": "CRIT-H04-01",
+                "weightRatio": 0.5,
+                "weight": 1,
+                "scope": "REPOSITORY_VERIFIABLE"
+              },
+              {
+                "criterionId": "CRIT-H04-02",
+                "weightRatio": 0.5,
+                "weight": 1,
+                "scope": "UNIMPLEMENTED"
+              }
+            ],
+            "repoVerifiableWeight": 1,
+            "passedWeight": 1,
+            "failedWeight": 0,
+            "databasePendingWeight": 0,
+            "blockedWeight": 0,
+            "unimplementedWeight": 1,
+            "earnedWeight": 1,
             "criteriaAssessed": "Mobile Class B direct client writes audited and first 28 write endpoints mapped in strangler matrix; Remaining 28 write endpoints and complete legacy direct client writes deprecation",
             "evidenceArtifactsUsed": [
               "reports/w006_r1_audit_integrity_report.json",
@@ -2477,6 +3345,7 @@
                 "criterionId": "CRIT-H04-01",
                 "description": "Mobile Class B direct client writes audited and first 28 write endpoints mapped in strangler matrix",
                 "weightRatio": 0.5,
+                "criterionWeight": 1,
                 "scope": "REPOSITORY_VERIFIABLE",
                 "status": "PASS",
                 "message": "Class B write strangler matrix and first 28 endpoints verified"
@@ -2485,6 +3354,7 @@
                 "criterionId": "CRIT-H04-02",
                 "description": "Remaining 28 write endpoints and complete legacy direct client writes deprecation",
                 "weightRatio": 0.5,
+                "criterionWeight": 1,
                 "scope": "UNIMPLEMENTED",
                 "status": "NOT_IMPLEMENTED",
                 "message": "Scheduled for future architecture wave"
@@ -2499,8 +3369,16 @@
             "unimplementedRequirements": [
               "Remaining 28 write endpoints and complete legacy direct client writes deprecation"
             ],
+            "remainingUnimplemented": [
+              "Remaining 28 write endpoints and complete legacy direct client writes deprecation"
+            ],
+            "limitations": [
+              "Unimplemented: Remaining 28 write endpoints and complete legacy direct client writes deprecation"
+            ],
             "derivedRepoRatio": 0.5,
-            "ratioRationale": "Mobile Class B direct client writes audited and first 28 write endpoints mapped in strangler matrix; remaining 28 write endpoints and full deprecation unimplemented."
+            "ratioRationale": "Mobile Class B direct client writes audited and first 28 write endpoints mapped in strangler matrix; remaining 28 write endpoints and full deprecation unimplemented.",
+            "status": "PARTIAL",
+            "statusDescription": "1.0% earned of 2.0% allocated; 1.0% unimplemented"
           }
         }
       ]
@@ -2537,6 +3415,28 @@
           },
           "taskClassification": "CORE_SPECIFICATION",
           "evidenceAssessment": {
+            "taskId": "W021.5-I-01",
+            "canonicalTitle": "Mobile SQLite Canonical Offline Sync Schema & Engine",
+            "specRef": "REQ-SYS-001",
+            "allocatedWeight": 3,
+            "criterionCount": 1,
+            "criterionWeightRatioSum": 1,
+            "criterionWeightsSum": 3,
+            "criterionWeights": [
+              {
+                "criterionId": "CRIT-I01-01",
+                "weightRatio": 1,
+                "weight": 3,
+                "scope": "UNIMPLEMENTED"
+              }
+            ],
+            "repoVerifiableWeight": 0,
+            "passedWeight": 0,
+            "failedWeight": 0,
+            "databasePendingWeight": 0,
+            "blockedWeight": 0,
+            "unimplementedWeight": 3,
+            "earnedWeight": 0,
             "criteriaAssessed": "Mobile SQLite canonical offline sync schema and engine implementation",
             "evidenceArtifactsUsed": [],
             "deterministicChecksExecuted": [
@@ -2547,6 +3447,7 @@
                 "criterionId": "CRIT-I01-01",
                 "description": "Mobile SQLite canonical offline sync schema and engine implementation",
                 "weightRatio": 1,
+                "criterionWeight": 3,
                 "scope": "UNIMPLEMENTED",
                 "status": "NOT_IMPLEMENTED",
                 "message": "Scheduled for future architecture wave"
@@ -2559,8 +3460,16 @@
             "unimplementedRequirements": [
               "Mobile SQLite canonical offline sync schema and engine implementation"
             ],
+            "remainingUnimplemented": [
+              "Mobile SQLite canonical offline sync schema and engine implementation"
+            ],
+            "limitations": [
+              "Unimplemented: Mobile SQLite canonical offline sync schema and engine implementation"
+            ],
             "derivedRepoRatio": 0,
-            "ratioRationale": "Client-side SQLite sync engine unimplemented; scheduled for future architecture wave."
+            "ratioRationale": "Client-side SQLite sync engine unimplemented; scheduled for future architecture wave.",
+            "status": "NOT_IMPLEMENTED",
+            "statusDescription": "Scheduled for future architecture wave"
           }
         },
         {
@@ -2596,6 +3505,28 @@
           },
           "taskClassification": "CORE_SPECIFICATION",
           "evidenceAssessment": {
+            "taskId": "W021.5-I-02",
+            "canonicalTitle": "Production Database Air-Gap Preservation & Cutover Preflight",
+            "specRef": "REQ-SYS-002",
+            "allocatedWeight": 3,
+            "criterionCount": 1,
+            "criterionWeightRatioSum": 1,
+            "criterionWeightsSum": 3,
+            "criterionWeights": [
+              {
+                "criterionId": "CRIT-I02-01",
+                "weightRatio": 1,
+                "weight": 3,
+                "scope": "BLOCKED_EXTERNAL"
+              }
+            ],
+            "repoVerifiableWeight": 0,
+            "passedWeight": 0,
+            "failedWeight": 0,
+            "databasePendingWeight": 0,
+            "blockedWeight": 3,
+            "unimplementedWeight": 0,
+            "earnedWeight": 0,
             "criteriaAssessed": "Production database air-gap preservation and cutover preflight blocked pending formal CTO directive",
             "evidenceArtifactsUsed": [
               "EXECUTION_STATE.md"
@@ -2608,6 +3539,7 @@
                 "criterionId": "CRIT-I02-01",
                 "description": "Production database air-gap preservation and cutover preflight blocked pending formal CTO directive",
                 "weightRatio": 1,
+                "criterionWeight": 3,
                 "scope": "BLOCKED_EXTERNAL",
                 "status": "BLOCKED",
                 "message": "Blocked pending external authority / CTO gate"
@@ -2620,8 +3552,16 @@
               "Production database air-gap preservation and cutover preflight blocked pending formal CTO directive"
             ],
             "unimplementedRequirements": [],
+            "remainingUnimplemented": [
+              "Production database air-gap preservation and cutover preflight blocked pending formal CTO directive"
+            ],
+            "limitations": [
+              "Blocked External: Production database air-gap preservation and cutover preflight blocked pending formal CTO directive"
+            ],
             "derivedRepoRatio": 0,
-            "ratioRationale": "Production database air-gap preservation and cutover preflight blocked pending formal CTO directive."
+            "ratioRationale": "Production database air-gap preservation and cutover preflight blocked pending formal CTO directive.",
+            "status": "BLOCKED",
+            "statusDescription": "Blocked pending external dependency / CTO adjudication"
           }
         }
       ]
