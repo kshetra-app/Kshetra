@@ -1,0 +1,78 @@
+================================================================
+KSHETRA W021.5 — CTO DIRECTIVE 096 VERIFICATION SUITE
+Close Trust-Anchor Bypass, Enforce Substantive Criteria & Certify Ledger
+================================================================
+
+--- 1. Workstream A: Close Trust-Anchor Bypass & Cryptographic Adjudication ---
+  [PASS] 1.1 verifyCryptographicAcceptanceSignature: Supplying options.trustedAuthorities alone fails closed with TRUST_ANCHOR_UNPINNED
+  [PASS] 1.2 verifyCryptographicAcceptanceSignature: Supplying options.externalPublicKey alone fails closed with UNTRUSTED_EXTERNAL_KEY
+  [PASS] 1.3 verifyCryptographicAcceptanceSignature: Providing matching externalTrustPin validates anchored authority successfully
+  [PASS] 1.4 verifyCryptographicAcceptanceSignature: Mismatched externalTrustPin fails closed with TRUST_PIN_MISMATCH
+  [PASS] 1.5 verifyCryptographicAcceptanceSignature: Malformed externalTrustPin (non-hex or wrong length) fails closed with MALFORMED_TRUST_PIN
+  [PASS] 1.6 verifyCryptographicAcceptanceSignature: Trust policy mode APPROVED_FINGERPRINTS accepts approved key
+  [PASS] 1.7 verifyCryptographicAcceptanceSignature: Trust policy mode APPROVED_FINGERPRINTS rejects unapproved key with TRUST_POLICY_MISMATCH
+  [PASS] 1.8 verifyCryptographicAcceptanceSignature: Trust policy mode PIN_ANCHORED accepts valid pin and rejects mismatched pin
+  [PASS] 1.9 verifyCryptographicAcceptanceSignature: Malformed trust policy object or unrecognized mode fails closed with MALFORMED_TRUST_POLICY
+  [PASS] 1.10 verifyCryptographicAcceptanceSignature: Authority with status REVOKED fails closed with references REVOKED authority
+  [PASS] 1.11 verifyCryptographicAcceptanceSignature: Authority with unauthorized role (e.g. LEAD_ENGINEER) fails closed with UNAUTHORIZED_ROLE
+  [PASS] 1.12 verifyCryptographicAcceptanceSignature: Adjudication date outside validFrom / validUntil fails closed with KEY_NOT_YET_VALID or EXPIRED_KEY
+  [PASS] 1.13 verifyCryptographicAcceptanceSignature: Rule IV-001 binding: authorSelfAcceptance: true fails closed with self-acceptance is strictly prohibited
+  [PASS] 1.14 Decision binding: Tampering with keyId invalidates cryptographic signature
+  [PASS] 1.15 Decision binding: Tampering with adjudicationDate invalidates cryptographic signature
+  [PASS] 1.16 Decision binding: Tampering with taskRef invalidates cryptographic signature
+  [PASS] 1.17 Decision binding: Tampering with decision (e.g. ACCEPTED to REJECTED) invalidates cryptographic signature
+  [PASS] 1.18 Decision binding: Tampering with conditions array invalidates cryptographic signature
+  [PASS] 1.19 Decision binding: Tampering with findings array invalidates cryptographic signature
+  [PASS] 1.20 Decision binding: Tampering with authorSelfAcceptance invalidates Rule IV-001 non-self-acceptance
+  [PASS] 1.21 Calling verifyCryptographicAcceptanceSignature with 4 arguments vs 3 arguments functions identically
+  [PASS] 1.22 Calling verifyCryptographicAcceptanceSignature with mismatched signer identity throws IDENTITY_MISMATCH
+--- 2. Workstream B: Substantive Task Criteria & End-to-End Mutation Tests ---
+  [PASS] 2.1 Criteria evaluation: Every one of the 27 tasks produces explicit criterion statuses
+  [PASS] 2.2 Task W021.5-B1-04 substantive GeoJSON verifier detects Telangana geometry and duplicate AC 119 defect
+  [PASS] 2.3 Real end-to-end mutation test: Mutating GeoJSON to inject unclosed ring causes W021.5-B1-04 verifier to FAIL
+  [PASS] 2.4 Real end-to-end mutation test: Mutating GeoJSON to eliminate duplicate AC 119 causes verifier to reject lack of defect
+  [PASS] 2.5 Real end-to-end mutation test: Mutating test execution manifest exit code to 1 causes CRIT-G02-02 to FAIL
+  [PASS] 2.6 Real end-to-end mutation test: Mutating test execution manifest status to FAIL causes CRIT-H01-02 to FAIL
+  [PASS] 2.7 Real end-to-end mutation test: Mutating constituency canonicalization count from 4123 causes CRIT-B01-02 to FAIL
+  [PASS] 2.8 Real end-to-end mutation test: Deleting required evidence file causes verifier to throw with failed acceptance criteria
+  [PASS] 2.9 Real end-to-end mutation test: Empty or whitespace-only evidence file causes verifier to throw
+  [PASS] 2.10 Non-repository criteria scopes (DATABASE_STAGING, BLOCKED_EXTERNAL, UNIMPLEMENTED) never award repo weight
+  [PASS] 2.11 Derived repository ratio is derived strictly from passing criteria; tampering with repoCompletionRatio throws RATIO_MISMATCH
+  [PASS] 2.12 Criterion weight integrity: Sum of criterion weight ratios for every task in TASK_SPECIFICATIONS strictly equals 1.0
+--- 3. Workstream C: Strict Ledger Schema & Non-Overlapping Accounting ---
+  [PASS] 3.1 Strict canonical ledger validation: Missing numeric accounting partition fields strictly throws error without auto-defaulting
+  [PASS] 3.2 Non-overlapping partition conservation law: repoVerified + dbPending + blocked + unimplemented = task.weight
+  [PASS] 3.3 Strict allocation justification: Task with 0 database criteria throws error if databasePendingWeight > 0
+  [PASS] 3.4 Strict allocation justification: Task with mismatched blocked criteria weight throws error
+  [PASS] 3.5 Strict allocation justification: Database pending weight requires requiresDatabaseExecution: true
+  [PASS] 3.6 Ledger reconciler enforces exactly 27 unique canonical tasks and total task weight of 100.0%
+  [PASS] 3.7 applyTaskAccountingDefaults helper correctly initializes synthetic test fixtures without contaminating canonical ledger
+--- 4. Workstream D: Semantic Validation & Test Execution Proof ---
+  [PASS] 4.1 SQL validation: Comment-only file is rejected with comment-only or empty SQL file
+  [PASS] 4.2 SQL validation: Keyword-only file without valid statements is rejected
+  [PASS] 4.3 SQL validation: SQL statements with comments and dollar-quoted strings with keywords inside are parsed correctly
+  [PASS] 4.4 SQL validation: SQL file with unclosed quote is rejected with malformed syntax
+  [PASS] 4.5 Test validation: Test file containing TypeScript syntax errors is rejected with parse diagnostics
+  [PASS] 4.6 Test validation: Test file with keywords only in comments or string literals is rejected
+  [PASS] 4.7 Test validation: Valid test file with executable AST describe/it/assert syntax passes validation
+  [PASS] 4.8 Test execution proof: Test execution manifest requires exit code 0, non-zero passed tests, and verified file path
+--- 5. Workstream E: National Completeness & Known Blockers ---
+  [PASS] 5.1 Telangana AC 119 duplicate claim defect is strictly recorded as OPEN / BLOCKED
+  [PASS] 5.2 Telangana GeoJSON has 120 features for 119 statutory seats (2 features for AC 119)
+  [PASS] 5.3 National coverage matrix correctly identifies 31 audited states and 4,123 statutory seats
+  [PASS] 5.4 National boundary completeness is NOT claimed merely because Telangana geometry parses
+--- 6. Workstream F: Baseline Immutability, Governance & Air-Gap Preservation ---
+  [PASS] 6.1 Rule IV-001 Non-Self-Acceptance: Formal CTO acceptance remains strictly 0.0%
+  [PASS] 6.2 Financial defect DQ-W021.5-B2.2E-001 remains strictly OPEN awaiting external CTO review
+  [PASS] 6.3 Baseline immutability: All 68 SQL migrations are byte-for-byte identical to commit 0ea572d
+  [PASS] 6.4 Seed invariants: All 31 seed files have pure LF line endings matching baseline fb408ce (0 CRLF)
+  [PASS] 6.5 Offline air-gap preservation: Live database execution weight is strictly 0.0%
+[PASS] Reconciled JSON ledger written to C:\Users\Laven\OneDrive\Desktop\Kshetra\reports\w021_5_execution_ledger.json
+[PASS] Reconciled Markdown ledger written to C:\Users\Laven\OneDrive\Desktop\Kshetra\reports\W021.5-EXECUTION-LEDGER.md
+[PASS] Reconciled JSON ledger written to C:\Users\Laven\OneDrive\Desktop\Kshetra\reports\w021_5_execution_ledger.json
+[PASS] Reconciled Markdown ledger written to C:\Users\Laven\OneDrive\Desktop\Kshetra\reports\W021.5-EXECUTION-LEDGER.md
+  [PASS] 6.6 Reconciler idempotency: reconcileExecutionLedger produces byte-identical outputs across runs
+
+================================================================
+VERIFICATION SUMMARY: 59 PASSED, 0 FAILED
+================================================================

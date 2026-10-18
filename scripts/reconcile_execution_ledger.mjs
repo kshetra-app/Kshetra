@@ -271,13 +271,19 @@ export const TASK_SPECIFICATIONS = {
             return { passed: false, message: `Migration 059 SQL invalid: ${e.message}` };
           }
           const sql = fs.readFileSync(p, 'utf8');
-          if (!sql.includes('canonical_assembly_constituencies') && !sql.includes('constituencies')) {
-            return { passed: false, message: 'Table definition missing in migration 059' };
+          if (!sql.includes('public.migration_conflicts')) {
+            return { passed: false, message: 'migration_conflicts infrastructure missing in migration 059' };
           }
-          if (!sql.includes('state_code') || !sql.includes('ac_no')) {
+          if (!sql.includes('idx_migration_conflicts_status') || !sql.includes('idx_migration_conflicts_entity')) {
+            return { passed: false, message: 'migration_conflicts indexes missing in migration 059' };
+          }
+          if (!sql.includes('INSERT INTO public.constituencies') || !sql.includes('INSERT INTO public.dataset_versions')) {
+            return { passed: false, message: 'Statutory insert statements missing in migration 059' };
+          }
+          if (!sql.includes('state_code') || !sql.includes('ac_no') || !sql.includes('name')) {
             return { passed: false, message: 'Required statutory columns missing in migration 059' };
           }
-          return { passed: true, message: 'Migration 059 canonical constituency schema verified' };
+          return { passed: true, message: 'Migration 059 canonical constituency schema, conflict infrastructure, indexes and statutory records verified' };
         },
       },
       {
@@ -319,6 +325,10 @@ export const TASK_SPECIFICATIONS = {
           } catch (e) {
             return { passed: false, message: `Migration 060 SQL invalid: ${e.message}` };
           }
+          const sql = fs.readFileSync(p, 'utf8');
+          if (!sql.includes('public.constituency_lineage') || !sql.includes('public.constituency_parliamentary_mappings')) {
+            return { passed: false, message: 'Lineage or mapping schema tables missing in migration 060' };
+          }
           return { passed: true, message: 'Migration 060 geography remediation schema verified' };
         },
       },
@@ -336,8 +346,11 @@ export const TASK_SPECIFICATIONS = {
             return { passed: false, message: `Migration 061 SQL invalid: ${e.message}` };
           }
           const sql = fs.readFileSync(p, 'utf8');
-          if (!sql.includes('mapping') && !sql.includes('canonical_ac_pc_mappings') && !sql.includes('ac_id')) {
-            return { passed: false, message: 'Mapping schema definitions missing in migration 061' };
+          if (!sql.includes('INSERT INTO public.constituency_parliamentary_mappings')) {
+            return { passed: false, message: 'Mapping batch inserts missing in migration 061' };
+          }
+          if (!sql.includes('parliamentary_constituency_version_id') || !sql.includes('assembly_constituency_version_id') || !sql.includes('delimitation_regime_id')) {
+            return { passed: false, message: 'Statutory mapping key columns missing in migration 061' };
           }
           return { passed: true, message: 'Migration 061 AC-to-PC mapping schema verified' };
         },
@@ -469,10 +482,15 @@ export const TASK_SPECIFICATIONS = {
           const p = path.join(root, 'supabase/migrations/064_political_organization_governance_remediation.sql');
           if (!fs.existsSync(p)) return { passed: false, message: 'Migration 064 missing' };
           const sql = fs.readFileSync(p, 'utf8');
-          if (!sql.includes('name') && !sql.includes('abbreviation')) {
-            return { passed: false, message: 'Multilingual extension fields missing in migration 064' };
+          const hasName = sql.includes('name_value') || sql.toLowerCase().includes('name');
+          const hasAbbreviation = sql.includes('STANDARD_ABBREVIATION') || sql.toLowerCase().includes('abbreviation');
+          if (!hasName) {
+            return { passed: false, message: 'Multilingual name column missing in migration 064' };
           }
-          return { passed: true, message: 'Multilingual extension schema verified' };
+          if (!hasAbbreviation) {
+            return { passed: false, message: 'Multilingual abbreviation column missing in migration 064' };
+          }
+          return { passed: true, message: 'Multilingual extension schema verified with independent name and abbreviation definitions' };
         },
       },
     ],
@@ -529,7 +547,7 @@ export const TASK_SPECIFICATIONS = {
     criteria: [
       {
         criterionId: 'CRIT-C03-01',
-        description: 'Multilingual party names matrix JSON verified with valid non-empty schema',
+        description: 'Multilingual party names matrix verified with >=25 identities across >=10 Indian languages and scripts',
         weightRatio: 0.333,
         scope: 'REPOSITORY_VERIFIABLE',
         verify: (root) => {
@@ -540,12 +558,29 @@ export const TASK_SPECIFICATIONS = {
           } catch (e) {
             return { passed: false, message: `Multilingual matrix JSON invalid: ${e.message}` };
           }
-          return { passed: true, message: 'Multilingual matrix verified' };
+          let parsed;
+          try {
+            parsed = JSON.parse(fs.readFileSync(p, 'utf8'));
+          } catch (e) {
+            return { passed: false, message: `Multilingual matrix parse error: ${e.message}` };
+          }
+          if (!parsed.languagesCovered || parsed.languagesCovered.length < 10) {
+            return { passed: false, message: 'Multilingual matrix covers fewer than 10 languages' };
+          }
+          if (!Array.isArray(parsed.identities) || parsed.identities.length < 25) {
+            return { passed: false, message: 'Multilingual matrix has fewer than 25 verified identities' };
+          }
+          for (const item of parsed.identities) {
+            if (!item.orgId || !item.lang || !item.script || !item.name || !item.short) {
+              return { passed: false, message: `Multilingual identity missing required fields: ${JSON.stringify(item)}` };
+            }
+          }
+          return { passed: true, message: `Multilingual matrix verified (${parsed.identities.length} identities across ${parsed.languagesCovered.length} languages)` };
         },
       },
       {
         criterionId: 'CRIT-C03-02',
-        description: 'Party symbols matrix JSON verified with valid non-empty schema',
+        description: 'Party symbols matrix verified with official ECI notifications and reservation types',
         weightRatio: 0.333,
         scope: 'REPOSITORY_VERIFIABLE',
         verify: (root) => {
@@ -556,12 +591,26 @@ export const TASK_SPECIFICATIONS = {
           } catch (e) {
             return { passed: false, message: `Symbol matrix JSON invalid: ${e.message}` };
           }
-          return { passed: true, message: 'Symbol matrix verified' };
+          let parsed;
+          try {
+            parsed = JSON.parse(fs.readFileSync(p, 'utf8'));
+          } catch (e) {
+            return { passed: false, message: `Symbol matrix parse error: ${e.message}` };
+          }
+          if (!Array.isArray(parsed.symbols) || parsed.symbols.length < 15) {
+            return { passed: false, message: 'Symbol matrix has fewer than 15 verified symbol records' };
+          }
+          for (const sym of parsed.symbols) {
+            if (!sym.orgId || !sym.symbolName || !sym.symbolType || !sym.authority || !sym.confidence) {
+              return { passed: false, message: `Symbol record missing required fields: ${JSON.stringify(sym)}` };
+            }
+          }
+          return { passed: true, message: `Symbol matrix verified (${parsed.symbols.length} symbols with statutory authority citations)` };
         },
       },
       {
         criterionId: 'CRIT-C03-03',
-        description: 'Party alias collision matrix JSON verified with valid non-empty schema',
+        description: 'Party alias collision matrix verified with high-risk resolution rules and ambiguity tracking',
         weightRatio: 0.334,
         scope: 'REPOSITORY_VERIFIABLE',
         verify: (root) => {
@@ -572,7 +621,24 @@ export const TASK_SPECIFICATIONS = {
           } catch (e) {
             return { passed: false, message: `Alias collision matrix JSON invalid: ${e.message}` };
           }
-          return { passed: true, message: 'Alias collision matrix verified' };
+          let parsed;
+          try {
+            parsed = JSON.parse(fs.readFileSync(p, 'utf8'));
+          } catch (e) {
+            return { passed: false, message: `Alias collision matrix parse error: ${e.message}` };
+          }
+          if (typeof parsed.totalKeysAudited !== 'number' || parsed.totalKeysAudited < 1000) {
+            return { passed: false, message: 'Alias collision matrix audited keys count insufficient (<1000 keys)' };
+          }
+          if (!Array.isArray(parsed.collisions) || !Array.isArray(parsed.highRiskKeysAudit) || parsed.highRiskKeysAudit.length < 5) {
+            return { passed: false, message: 'Alias collision matrix missing highRiskKeysAudit resolutions' };
+          }
+          for (const hr of parsed.highRiskKeysAudit) {
+            if (!hr.key || !hr.resolvedTo || !hr.rule) {
+              return { passed: false, message: `High risk key resolution missing required fields: ${JSON.stringify(hr)}` };
+            }
+          }
+          return { passed: true, message: `Alias collision matrix verified (${parsed.totalKeysAudited} keys audited, ${parsed.highRiskKeysAudit.length} high-risk resolutions)` };
         },
       },
     ],
@@ -800,7 +866,7 @@ export const TASK_SPECIFICATIONS = {
     criteria: [
       {
         criterionId: 'CRIT-G01-01',
-        description: 'Fastify /api/v1/constituencies endpoint contract hardening verified with TypeScript AST',
+        description: 'Fastify /api/v1/constituencies route schema contract and nullability verified with clean AST',
         weightRatio: 0.5,
         scope: 'REPOSITORY_VERIFIABLE',
         verify: (root) => {
@@ -811,15 +877,15 @@ export const TASK_SPECIFICATIONS = {
           if (sf.parseDiagnostics && sf.parseDiagnostics.length > 0) {
             return { passed: false, message: 'Constituencies route has TypeScript syntax diagnostics' };
           }
-          if (!raw.includes('fastify') && !raw.includes('get') && !raw.includes('constituencies')) {
-            return { passed: false, message: 'Constituencies route handler registration missing' };
+          if (!raw.includes('/states/:stateCode/constituencies') || !raw.includes('getConstituencyDetailSchema')) {
+            return { passed: false, message: 'Constituencies route handler registration or schema missing' };
           }
-          return { passed: true, message: 'Constituencies route handler verified with clean TS AST' };
+          return { passed: true, message: 'Fastify constituencies route contract and schema verified with clean AST' };
         },
       },
       {
         criterionId: 'CRIT-G01-02',
-        description: 'API TypeScript source files exist and compile without syntax errors',
+        description: 'API server entrypoint and route configuration verified with clean TypeScript AST parse',
         weightRatio: 0.5,
         scope: 'REPOSITORY_VERIFIABLE',
         verify: (root) => {
@@ -830,7 +896,10 @@ export const TASK_SPECIFICATIONS = {
           if (sf.parseDiagnostics && sf.parseDiagnostics.length > 0) {
             return { passed: false, message: 'Server source file has TypeScript syntax diagnostics' };
           }
-          return { passed: true, message: 'API server implementation verified with clean TS AST' };
+          if (!raw.includes('Fastify') && !raw.includes('buildServer')) {
+            return { passed: false, message: 'Server entrypoint missing Fastify initialization' };
+          }
+          return { passed: true, message: 'API server entrypoint and route configuration verified with clean TS AST' };
         },
       },
     ],
@@ -877,14 +946,26 @@ export const TASK_SPECIFICATIONS = {
           }
           try {
             const manifest = options && options.testExecutionManifest ? options.testExecutionManifest : JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
-            const entry = manifest.testSuites?.find((s) => s.suite === 'apps/api/src/__tests__/election-truth-contracts.test.ts');
-            if (!entry || entry.exitCode !== 0 || entry.status !== 'PASS' || entry.testsFailed > 0) {
+            const suitePath = 'apps/api/src/__tests__/election-truth-contracts.test.ts';
+            const entry = manifest.testSuites?.find((s) => s.suite === suitePath);
+            if (!entry || entry.exitCode !== 0 || entry.status !== 'PASS' || entry.testsFailed > 0 || (entry.testsPassed || 0) === 0) {
               return { passed: false, message: 'Election truth contracts test execution failed or exitCode !== 0' };
+            }
+            if (entry.outputLogPath) {
+              const fullLogPath = path.resolve(root, entry.outputLogPath);
+              if (!fs.existsSync(fullLogPath)) {
+                return { passed: false, message: `Referenced test log file "${entry.outputLogPath}" does not exist on disk` };
+              }
+              const logContent = fs.readFileSync(fullLogPath, 'utf8');
+              const logSha = crypto.createHash('sha256').update(logContent, 'utf8').digest('hex');
+              if (entry.outputLogSha256 && logSha.toLowerCase() !== entry.outputLogSha256.toLowerCase()) {
+                return { passed: false, message: 'Test execution log SHA-256 mismatch: manifest does not match on-disk log file' };
+              }
             }
           } catch (e) {
             return { passed: false, message: `Failed to verify test execution manifest: ${e.message}` };
           }
-          return { passed: true, message: 'Election truth contracts test suite syntax and passing execution verified' };
+          return { passed: true, message: 'Election truth contracts test suite syntax, passing execution and on-disk log SHA-256 verified' };
         },
       },
     ],
@@ -941,14 +1022,26 @@ export const TASK_SPECIFICATIONS = {
           }
           try {
             const manifest = options && options.testExecutionManifest ? options.testExecutionManifest : JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
-            const entry = manifest.testSuites?.find((s) => s.suite === 'apps/mobile/__tests__/political-intelligence-journey.test.ts');
-            if (!entry || entry.exitCode !== 0 || entry.status !== 'PASS' || entry.testsFailed > 0) {
+            const suitePath = 'apps/mobile/__tests__/political-intelligence-journey.test.ts';
+            const entry = manifest.testSuites?.find((s) => s.suite === suitePath);
+            if (!entry || entry.exitCode !== 0 || entry.status !== 'PASS' || entry.testsFailed > 0 || (entry.testsPassed || 0) === 0) {
               return { passed: false, message: 'Mobile journey test execution failed or exitCode !== 0' };
+            }
+            if (entry.outputLogPath) {
+              const fullLogPath = path.resolve(root, entry.outputLogPath);
+              if (!fs.existsSync(fullLogPath)) {
+                return { passed: false, message: `Referenced test log file "${entry.outputLogPath}" does not exist on disk` };
+              }
+              const logContent = fs.readFileSync(fullLogPath, 'utf8');
+              const logSha = crypto.createHash('sha256').update(logContent, 'utf8').digest('hex');
+              if (entry.outputLogSha256 && logSha.toLowerCase() !== entry.outputLogSha256.toLowerCase()) {
+                return { passed: false, message: 'Test execution log SHA-256 mismatch: manifest does not match on-disk log file' };
+              }
             }
           } catch (e) {
             return { passed: false, message: `Failed to verify test execution manifest: ${e.message}` };
           }
-          return { passed: true, message: 'Mobile journey test suite syntax and passing execution verified' };
+          return { passed: true, message: 'Mobile journey test suite syntax, passing execution and on-disk log SHA-256 verified' };
         },
       },
     ],
@@ -1453,12 +1546,112 @@ export function verifyCryptographicAcceptanceSignature(arg1, arg2, arg3, arg4) {
   }
 
   // 6. Workstream A: Independent trust boundary check
-  const externalTrustPin = options.externalTrustPin || process.env.CTO_TRUST_PIN || null;
-  const trustPolicy = options.trustPolicy || null;
+  const envTrustPin = (process.env.CTO_TRUST_PIN && process.env.CTO_TRUST_PIN.trim()) || null;
+  let envTrustPolicy = null;
+  if (process.env.CTO_TRUST_POLICY) {
+    try {
+      envTrustPolicy = JSON.parse(process.env.CTO_TRUST_POLICY);
+    } catch (e) {
+      throw new Error(
+        `Ledger accounting validation error: Task ${taskId} formalAcceptanceArtifact "${relPath}" MALFORMED_TRUST_POLICY: process.env.CTO_TRUST_POLICY is not valid JSON (${e.message}).`
+      );
+    }
+  }
+
+  const isIsolatedTest = options.isolatedTestHarnessAuth === true || options.testHarnessIsolatedAuth === true;
+  const callerTrustPin = options.externalTrustPin || null;
+  const callerTrustPolicy = options.trustPolicy || null;
+  const callerPublicKey = options.externalPublicKey || null;
+
+  // Validate format of externalTrustPin if provided
+  const candidatePin = envTrustPin || callerTrustPin;
+  if (candidatePin) {
+    if (typeof candidatePin !== 'string' || !/^[0-9a-fA-F]{64}$/.test(candidatePin.trim())) {
+      throw new Error(
+        `Ledger accounting validation error: Task ${taskId} formalAcceptanceArtifact "${relPath}" MALFORMED_TRUST_PIN: External trust pin must be a 64-character hexadecimal SHA-256 fingerprint.`
+      );
+    }
+  }
+
+  // Validate trustPolicy schema strictly if provided
+  const candidateTrustPolicy = envTrustPolicy || callerTrustPolicy;
+  if (candidateTrustPolicy) {
+    if (typeof candidateTrustPolicy !== 'object' || candidateTrustPolicy === null) {
+      throw new Error(
+        `Ledger accounting validation error: Task ${taskId} formalAcceptanceArtifact "${relPath}" MALFORMED_TRUST_POLICY: Trust policy must be an object.`
+      );
+    }
+    const validModes = ['APPROVED_FINGERPRINTS', 'PIN_ANCHORED'];
+    if (!validModes.includes(candidateTrustPolicy.mode)) {
+      throw new Error(
+        `Ledger accounting validation error: Task ${taskId} formalAcceptanceArtifact "${relPath}" MALFORMED_TRUST_POLICY: Unrecognized trust policy mode "${candidateTrustPolicy.mode}".`
+      );
+    }
+
+    if (candidateTrustPolicy.mode === 'PIN_ANCHORED') {
+      if (!candidateTrustPolicy.pin || typeof candidateTrustPolicy.pin !== 'string' || !/^[0-9a-fA-F]{64}$/.test(candidateTrustPolicy.pin.trim())) {
+        throw new Error(
+          `Ledger accounting validation error: Task ${taskId} formalAcceptanceArtifact "${relPath}" MALFORMED_TRUST_POLICY: trustPolicy.pin must be a 64-character hexadecimal SHA-256 fingerprint.`
+        );
+      }
+      if (Array.isArray(candidateTrustPolicy.approvedFingerprints) && !candidateTrustPolicy.approvedFingerprints.includes(candidateTrustPolicy.pin)) {
+        throw new Error(
+          `Ledger accounting validation error: Task ${taskId} formalAcceptanceArtifact "${relPath}" MALFORMED_TRUST_POLICY: Conflicting trust configuration between pin and approvedFingerprints.`
+        );
+      }
+    } else if (candidateTrustPolicy.mode === 'APPROVED_FINGERPRINTS') {
+      if (!Array.isArray(candidateTrustPolicy.approvedFingerprints) || candidateTrustPolicy.approvedFingerprints.length === 0) {
+        throw new Error(
+          `Ledger accounting validation error: Task ${taskId} formalAcceptanceArtifact "${relPath}" MALFORMED_TRUST_POLICY: approvedFingerprints must be a non-empty array.`
+        );
+      }
+      for (const fp of candidateTrustPolicy.approvedFingerprints) {
+        if (typeof fp !== 'string' || !/^[0-9a-fA-F]{64}$/.test(fp.trim())) {
+          throw new Error(
+            `Ledger accounting validation error: Task ${taskId} formalAcceptanceArtifact "${relPath}" MALFORMED_TRUST_POLICY: Malformed fingerprint in approvedFingerprints list.`
+          );
+        }
+      }
+    }
+
+    if (candidateTrustPolicy.authorizedRole && candidateTrustPolicy.authorizedRole !== 'CTO') {
+      throw new Error(
+        `Ledger accounting validation error: Task ${taskId} formalAcceptanceArtifact "${relPath}" UNAUTHORIZED_ROLE: Trust policy specifies authorizedRole "${candidateTrustPolicy.authorizedRole}", but CTO adjudication requires role "CTO".`
+      );
+    }
+    if (candidateTrustPolicy.keyAlgorithm && candidateTrustPolicy.keyAlgorithm !== 'ed25519') {
+      throw new Error(
+        `Ledger accounting validation error: Task ${taskId} formalAcceptanceArtifact "${relPath}" UNSUPPORTED_KEY_ALGORITHM: Trust policy requires algorithm "${candidateTrustPolicy.keyAlgorithm}", expected "ed25519".`
+      );
+    }
+  }
+
+  // Workstream A.2 & A.3: Eliminate caller self-authorization paths
+  // Rule A: A caller cannot authorize its own key by supplying both externalPublicKey and externalTrustPin in options
+  if (callerPublicKey && callerTrustPin && !isIsolatedTest) {
+    if (!envTrustPin || envTrustPin.toLowerCase() !== callerTrustPin.trim().toLowerCase()) {
+      throw new Error(
+        `Ledger accounting validation error: Task ${taskId} formalAcceptanceArtifact "${relPath}" CALLER_SELF_AUTHORIZATION_PROHIBITED: A caller cannot authorize its own key by supplying both externalPublicKey and externalTrustPin in options. The trust pin must be established through the independently trusted configuration boundary (process.env.CTO_TRUST_PIN).`
+      );
+    }
+  }
+
+  // Rule B: A caller cannot authorize its own key by supplying a matching fingerprint whitelist
+  if (callerTrustPolicy && !isIsolatedTest) {
+    if (!envTrustPolicy) {
+      throw new Error(
+        `Ledger accounting validation error: Task ${taskId} formalAcceptanceArtifact "${relPath}" CALLER_SELF_AUTHORIZATION_PROHIBITED: Caller-supplied trustPolicy cannot establish independent authority without authenticated configuration provenance. Self-authorization via caller-controlled options is prohibited.`
+      );
+    }
+  }
+
+  // Resolve active trust anchor
+  const externalTrustPin = envTrustPin || (isIsolatedTest ? callerTrustPin : (callerPublicKey ? null : callerTrustPin)) || null;
+  const trustPolicy = envTrustPolicy || (isIsolatedTest ? candidateTrustPolicy : null) || null;
 
   // Supplying options.trustedAuthorities alone or options.externalPublicKey alone NEVER bypasses trust anchoring
   if (!externalTrustPin && !trustPolicy) {
-    if (options.externalPublicKey) {
+    if (callerPublicKey) {
       throw new Error(
         `Ledger accounting validation error: Task ${taskId} formalAcceptanceArtifact "${relPath}" UNTRUSTED_EXTERNAL_KEY: Caller-supplied public key has no independently established trust anchor. An independent trust pin or approved trust policy is required.`
       );
@@ -1466,41 +1659,6 @@ export function verifyCryptographicAcceptanceSignature(arg1, arg2, arg3, arg4) {
     throw new Error(
       `Ledger accounting validation error: Task ${taskId} formalAcceptanceArtifact "${relPath}" TRUST_ANCHOR_UNPINNED. No external trust pin (process.env.CTO_TRUST_PIN or options.externalTrustPin) or approved external trust policy was provisioned. Repository-committed keys and caller-supplied registries cannot establish their own authority without an independent trust anchor.`
     );
-  }
-
-  // Validate format of externalTrustPin if provided
-  if (externalTrustPin) {
-    if (typeof externalTrustPin !== 'string' || !/^[0-9a-fA-F]{64}$/.test(externalTrustPin.trim())) {
-      throw new Error(
-        `Ledger accounting validation error: Task ${taskId} formalAcceptanceArtifact "${relPath}" MALFORMED_TRUST_PIN: External trust pin must be a 64-character hexadecimal SHA-256 fingerprint.`
-      );
-    }
-  }
-
-  // Validate trustPolicy if provided
-  if (trustPolicy) {
-    if (typeof trustPolicy !== 'object' || trustPolicy === null) {
-      throw new Error(
-        `Ledger accounting validation error: Task ${taskId} formalAcceptanceArtifact "${relPath}" MALFORMED_TRUST_POLICY: Trust policy must be an object.`
-      );
-    }
-    if (trustPolicy.mode === 'APPROVED_FINGERPRINTS') {
-      if (!Array.isArray(trustPolicy.approvedFingerprints) || trustPolicy.approvedFingerprints.length === 0) {
-        throw new Error(
-          `Ledger accounting validation error: Task ${taskId} formalAcceptanceArtifact "${relPath}" MALFORMED_TRUST_POLICY: approvedFingerprints must be a non-empty array.`
-        );
-      }
-    } else if (trustPolicy.mode === 'PIN_ANCHORED') {
-      if (!trustPolicy.pin || typeof trustPolicy.pin !== 'string' || !/^[0-9a-fA-F]{64}$/.test(trustPolicy.pin.trim())) {
-        throw new Error(
-          `Ledger accounting validation error: Task ${taskId} formalAcceptanceArtifact "${relPath}" MALFORMED_TRUST_POLICY: trustPolicy.pin must be a 64-character hexadecimal SHA-256 fingerprint.`
-        );
-      }
-    } else {
-      throw new Error(
-        `Ledger accounting validation error: Task ${taskId} formalAcceptanceArtifact "${relPath}" MALFORMED_TRUST_POLICY: Unrecognized trust policy mode "${trustPolicy.mode}".`
-      );
-    }
   }
 
   // 7. Resolve candidate public key
@@ -1528,6 +1686,14 @@ export function verifyCryptographicAcceptanceSignature(arg1, arg2, arg3, arg4) {
 
   // 8. Verify candidate public key against independent trust anchor
   const candidateFingerprint = computeKeyFingerprint(publicKeyPem);
+
+  if (trustPolicy && Array.isArray(trustPolicy.revokedFingerprints)) {
+    if (trustPolicy.revokedFingerprints.some((rfp) => rfp.toLowerCase() === candidateFingerprint.toLowerCase())) {
+      throw new Error(
+        `Ledger accounting validation error: Task ${taskId} formalAcceptanceArtifact "${relPath}" REVOKED_KEY: Candidate authority key fingerprint "${candidateFingerprint}" is revoked in trust policy.`
+      );
+    }
+  }
 
   if (externalTrustPin) {
     if (candidateFingerprint.toLowerCase() !== externalTrustPin.trim().toLowerCase()) {
@@ -1739,7 +1905,20 @@ export function validateFormalAcceptanceArtifact(task, resolvedPath, options = {
     );
   }
 
-  verifyCryptographicAcceptanceSignature(record, relPath, options);
+  // In canonical production acceptance validation, trust anchors must be established via independent environment configuration.
+  // Any caller-injected test bypass or override options are strictly stripped for canonical production tasks.
+  const isSyntheticTask = task && task.taskId && (task.taskId.startsWith('W021.5-TEST-') || task.taskId.startsWith('TASK-') || task.taskId.startsWith('W021.5-TASK-'));
+  const effectiveOptions = { ...options };
+  if (!isSyntheticTask) {
+    delete effectiveOptions.isolatedTestHarnessAuth;
+    delete effectiveOptions.testHarnessIsolatedAuth;
+    delete effectiveOptions.externalTrustPin;
+    delete effectiveOptions.trustPolicy;
+    delete effectiveOptions.trustedAuthorities;
+    delete effectiveOptions.externalPublicKey;
+  }
+
+  verifyCryptographicAcceptanceSignature(record, relPath, effectiveOptions);
 
   return true;
 }
@@ -2892,7 +3071,7 @@ export function generateLedgerMarkdown(ledger, inputSummary) {
   let md = `# KSHETRA W021.5 — Traceable Execution Ledger & Multi-Dimensional Accounting Report
 
 > **Governance Authority:** Master Execution Framework Amendment v1.2 / Rule IV-001 (Non-Self-Acceptance)  
-> **Directive Lineage:** CTO Directive 086 through CTO Directive 096  
+> **Directive Lineage:** CTO Directive 086 through CTO Directive 097  
 > **Status:** \`SUBMITTED_FOR_INDEPENDENT_REVIEW\` — STRICTLY UNACCEPTED  
 > **Financial Defect Status:** \`DQ-W021.5-B2.2E-001\` — **STRICTLY OPEN**, pending separate CTO adjudication  
 > **Database Boundary:** Repository-Only Offline Verification (Zero database migrations, mutations, staging, or production execution)  

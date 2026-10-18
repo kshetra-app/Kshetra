@@ -1,0 +1,37 @@
+
+> @kshetra/api@0.1.0 test
+> node ../../node_modules/jest/bin/jest.js --passWithNoTests --forceExit src/__tests__/observability.test.ts
+
+PASS src/__tests__/observability.test.ts (11.243 s)
+  Observability, Tracing & Error Interception (JOB W004 / DEC-020)
+    Request ID Propagation & Correlation Headers
+      √ generates a unique x-request-id and x-response-time header when none provided (531 ms)
+      √ echoes caller-provided x-request-id across response headers and JSON body (2 ms)
+      √ sanitizes and replaces invalid or malicious request IDs with a UUID (2 ms)
+      √ replaces oversized request IDs (>128 chars) with a UUID (2 ms)
+    Controlled Error Interception & Envelope Formatting
+      √ captures controlled 400 Bad Request with correlation ID and timestamp (2 ms)
+      √ captures controlled 503 database failure with sanitized response (13 ms)
+      √ sanitizes 500 internal errors and attaches correlation ID to error envelope (2 ms)
+      √ returns structured 404 response with correlation ID on unknown routes (2 ms)
+    Operational Metrics Endpoint (GET /api/metrics)
+      √ serves real-time telemetry, memory usage, request counts, and latency percentiles (3 ms)
+    Production Route Protection & Hardening (W004-R1 Mandate)
+      √ rejects public requests to /api/debug/error with 404 in production environment (3 ms)
+      √ allows privileged bypass to /api/debug/error in production with matching secret (2 ms)
+      √ protects /api/metrics in production: rejects unauthorized requests with 401 (1 ms)
+      √ protects /api/metrics in production: permits authorized requests with Bearer token (1 ms)
+      √ protects /api/metrics in production: permits authorized requests with x-metrics-token (1 ms)
+      √ rejects wrong metrics token in production with 401 (1 ms)
+      √ rejects Supabase service-role key presented as metrics token in production (W004-R1A credential separation) (1 ms)
+      √ fails closed when METRICS_AUTH_TOKEN is not configured in production (1 ms)
+    Error Classification & External Error Monitoring Engine (W004-R1 Mandate)
+      √ classifies all 8 standard operational error categories appropriately (1 ms)
+      √ safely captures error events without throwing even if monitoring sinks fail (15 ms)
+
+Test Suites: 1 passed, 1 total
+Tests:       19 passed, 19 total
+Snapshots:   0 total
+Time:        11.771 s, estimated 12 s
+Ran all test suites matching /src\\__tests__\\observability.test.ts/i.
+Force exiting Jest: Have you considered using `--detectOpenHandles` to detect async operations that kept running after all tests finished?

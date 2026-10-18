@@ -1,0 +1,18 @@
+
+> @kshetra/api@0.1.0 test
+> node ../../node_modules/jest/bin/jest.js --passWithNoTests --forceExit src/__tests__/election-truth-contracts.test.ts
+
+PASS src/__tests__/election-truth-contracts.test.ts (8.91 s)
+  Election Truth Service & Contract Behavior (CTO Directive 087)
+    getConstituencyElectionData behavior invariants on real seed data
+      √ preserves electionType = null when raw record omits electionType (no GENERAL guessing) (6 ms)
+      √ strictly binds winner, runner-up, votes, and margin to the same election term (2 ms)
+      √ sorts elections array chronologically descending with null years placed at end (1 ms)
+      √ returns null for nonexistent state or AC
+
+Test Suites: 1 passed, 1 total
+Tests:       4 passed, 4 total
+Snapshots:   0 total
+Time:        9.372 s, estimated 10 s
+Ran all test suites matching /src\\__tests__\\election-truth-contracts.test.ts/i.
+Force exiting Jest: Have you considered using `--detectOpenHandles` to detect async operations that kept running after all tests finished?

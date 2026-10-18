@@ -1,0 +1,37 @@
+
+> @kshetra/api@0.1.0 test
+> node ../../node_modules/jest/bin/jest.js --passWithNoTests --forceExit src/__tests__/constituencies.test.ts
+
+PASS src/__tests__/constituencies.test.ts (25.856 s)
+  Constituency Routes
+    √ GET /states/TS/constituencies should return 119 constituencies (2153 ms)
+    √ GET /states/ZZ/constituencies should return 404 for unsupported state (828 ms)
+    √ GET /states/TS/constituencies/1 should return Sirpur with election data (893 ms)
+    √ GET /states/TS/constituencies/charminar should return Charminar by name (579 ms)
+    √ GET /states/TS/constituencies/999 should return 404 (602 ms)
+    √ GET /states/TS/constituencies/search?q=charminar should find Charminar (682 ms)
+    √ GET /states/TS/constituencies/search?party=AIMIM should return 7 seats (543 ms)
+    √ GET /states/TS/constituencies/search?district=hyderabad should return Hyd ACs (485 ms)
+    √ GET /states/TS/constituencies/search?type=ST should return ST reserved seats (534 ms)
+    √ GET /states/TS/analytics should return party summary and districts (377 ms)
+    √ GET /states/KA/analytics should return 404 (295 ms)
+    √ GET /states/TS/elections should return 3 elections (266 ms)
+    √ GET /states/KA/elections should return 404 (240 ms)
+    √ GET /states/TS/mla should return all profiles (272 ms)
+    √ GET /states/TS/mla/29 should return KTR profile (296 ms)
+    √ GET /states/TS/mla/2 should return profile for AC 2 (385 ms)
+    √ GET /states/TS/mla/abc should return 400 (420 ms)
+    √ GET /states/TS/constituencies/search?maxMargin=5000 should return close contests (387 ms)
+    √ GET /states/TS/constituencies/search?minMargin=50000 should return landslides (356 ms)
+    √ GET /states/TS/constituencies/search?sort=name should return alphabetically sorted (303 ms)
+    √ GET /states/TS/constituencies/search?sort=margin_asc should return closest margins first (264 ms)
+    √ GET /constituencies/locate should require lat and lng (257 ms)
+    √ GET /constituencies/locate should find Goshamahal for Charminar coords (299 ms)
+    √ GET /constituencies/locate should return null for out-of-state coords (246 ms)
+
+Test Suites: 1 passed, 1 total
+Tests:       24 passed, 24 total
+Snapshots:   0 total
+Time:        26.335 s
+Ran all test suites matching /src\\__tests__\\constituencies.test.ts/i.
+Force exiting Jest: Have you considered using `--detectOpenHandles` to detect async operations that kept running after all tests finished?

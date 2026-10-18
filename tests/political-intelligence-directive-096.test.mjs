@@ -280,6 +280,7 @@ runTest('1.6 verifyCryptographicAcceptanceSignature: Trust policy mode APPROVED_
   record.signature = crypto.sign(null, Buffer.from(payload, 'utf8'), privateKey).toString('base64');
 
   const result = verifyCryptographicAcceptanceSignature(record, 'dummy.json', {
+    isolatedTestHarnessAuth: true,
     trustPolicy: {
       mode: 'APPROVED_FINGERPRINTS',
       approvedFingerprints: [fingerprint, 'b'.repeat(64)],
@@ -317,6 +318,7 @@ runTest('1.7 verifyCryptographicAcceptanceSignature: Trust policy mode APPROVED_
   assert.throws(
     () =>
       verifyCryptographicAcceptanceSignature(record, 'dummy.json', {
+        isolatedTestHarnessAuth: true,
         trustPolicy: {
           mode: 'APPROVED_FINGERPRINTS',
           approvedFingerprints: ['c'.repeat(64)],
@@ -354,6 +356,7 @@ runTest('1.8 verifyCryptographicAcceptanceSignature: Trust policy mode PIN_ANCHO
 
   // Matching pin in trustPolicy
   const ok = verifyCryptographicAcceptanceSignature(record, 'dummy.json', {
+    isolatedTestHarnessAuth: true,
     trustPolicy: {
       mode: 'PIN_ANCHORED',
       pin: fingerprint,
@@ -374,6 +377,7 @@ runTest('1.8 verifyCryptographicAcceptanceSignature: Trust policy mode PIN_ANCHO
   assert.throws(
     () =>
       verifyCryptographicAcceptanceSignature(record, 'dummy.json', {
+        isolatedTestHarnessAuth: true,
         trustPolicy: {
           mode: 'PIN_ANCHORED',
           pin: 'd'.repeat(64),

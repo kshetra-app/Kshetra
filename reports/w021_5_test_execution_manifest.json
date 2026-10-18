@@ -1,8 +1,8 @@
 {
   "milestone": "W021.5",
-  "generatedAt": "2026-10-17T22:50:00.000Z",
-  "manifestSchema": "https://kshetra.dev/schemas/test-execution-manifest.v1.json",
-  "verifierRole": "CTO Directive 096 Test Execution Verifier",
+  "generatedAt": "2026-10-18T04:21:41.617Z",
+  "manifestSchema": "https://kshetra.dev/schemas/test-execution-manifest.v2.json",
+  "verifierRole": "CTO Directive 097 Test Execution Verifier",
   "environment": {
     "nodeVersion": "v24.13.0",
     "platform": "win32",
@@ -15,10 +15,14 @@
       "exitCode": 0,
       "status": "PASS",
       "suitesPassed": 1,
-      "testsPassed": 24,
+      "testsPassed": 4,
       "testsFailed": 0,
-      "durationMs": 22438,
-      "evidenceClass": "REPOSITORY_IMPLEMENTATION"
+      "durationMs": 11766,
+      "evidenceClass": "REPOSITORY_IMPLEMENTATION",
+      "executedInCurrentDelivery": true,
+      "evidenceType": "DIRECT_EXECUTION_CAPTURE",
+      "outputLogPath": "reports/evidence/test_execution_logs/api-election-truth-contracts.log",
+      "outputLogSha256": "270daad40ec4f0f9dc9dc4b02fd343fd92909085ea11b6a279bfa6f5fb43fe8d"
     },
     {
       "suite": "apps/api/src/__tests__/constituencies.test.ts",
@@ -28,8 +32,12 @@
       "suitesPassed": 1,
       "testsPassed": 24,
       "testsFailed": 0,
-      "durationMs": 52785,
-      "evidenceClass": "REPOSITORY_IMPLEMENTATION"
+      "durationMs": 28706,
+      "evidenceClass": "REPOSITORY_IMPLEMENTATION",
+      "executedInCurrentDelivery": true,
+      "evidenceType": "DIRECT_EXECUTION_CAPTURE",
+      "outputLogPath": "reports/evidence/test_execution_logs/api-constituencies.log",
+      "outputLogSha256": "288b8bf02e0559ba06a3b2a7f05b9e04d1ca4707f4d542d18d245a65df413649"
     },
     {
       "suite": "apps/api/src/__tests__/observability.test.ts",
@@ -39,19 +47,27 @@
       "suitesPassed": 1,
       "testsPassed": 19,
       "testsFailed": 0,
-      "durationMs": 38530,
-      "evidenceClass": "REPOSITORY_IMPLEMENTATION"
+      "durationMs": 14782,
+      "evidenceClass": "REPOSITORY_IMPLEMENTATION",
+      "executedInCurrentDelivery": true,
+      "evidenceType": "DIRECT_EXECUTION_CAPTURE",
+      "outputLogPath": "reports/evidence/test_execution_logs/api-observability.log",
+      "outputLogSha256": "920c6be4350a5f078b538b70fa1dee9d8514d5ac792991165a1604d7f44992a4"
     },
     {
       "suite": "apps/mobile/__tests__/political-intelligence-journey.test.ts",
-      "command": "node tests/political-intelligence-directive-095.test.mjs",
+      "command": "npm test --prefix apps/mobile -- __tests__/political-intelligence-journey.test.ts",
       "exitCode": 0,
       "status": "PASS",
       "suitesPassed": 1,
-      "testsPassed": 56,
+      "testsPassed": 23,
       "testsFailed": 0,
-      "durationMs": 5000,
-      "evidenceClass": "REPOSITORY_IMPLEMENTATION"
+      "durationMs": 10875,
+      "evidenceClass": "REPOSITORY_IMPLEMENTATION",
+      "executedInCurrentDelivery": true,
+      "evidenceType": "DIRECT_EXECUTION_CAPTURE",
+      "outputLogPath": "reports/evidence/test_execution_logs/mobile-political-intelligence-journey.log",
+      "outputLogSha256": "80a8e22141ef6cf38b298b93488260ec126613c8fc2873158a0bca7204085b75"
     },
     {
       "suite": "tests/political-intelligence-directive-096.test.mjs",
@@ -61,8 +77,27 @@
       "suitesPassed": 1,
       "testsPassed": 59,
       "testsFailed": 0,
-      "durationMs": 7000,
-      "evidenceClass": "REPOSITORY_IMPLEMENTATION"
+      "durationMs": 5899,
+      "evidenceClass": "REPOSITORY_IMPLEMENTATION",
+      "executedInCurrentDelivery": true,
+      "evidenceType": "DIRECT_EXECUTION_CAPTURE",
+      "outputLogPath": "reports/evidence/test_execution_logs/directive-096.log",
+      "outputLogSha256": "8776e0e9bfbb83ab7a369494534d1421c273ecfc720135aa7c03fec80aa9c28e"
+    },
+    {
+      "suite": "tests/political-intelligence-directive-097.test.mjs",
+      "command": "node tests/political-intelligence-directive-097.test.mjs",
+      "exitCode": 0,
+      "status": "PASS",
+      "suitesPassed": 1,
+      "testsPassed": 49,
+      "testsFailed": 0,
+      "durationMs": 7330,
+      "evidenceClass": "REPOSITORY_IMPLEMENTATION",
+      "executedInCurrentDelivery": true,
+      "evidenceType": "DIRECT_EXECUTION_CAPTURE",
+      "outputLogPath": "reports/evidence/test_execution_logs/directive-097.log",
+      "outputLogSha256": "651b9e2efbe46cb94953a03325e8f0d528e839d975bae153c90a32515c982725"
     }
   ]
 }

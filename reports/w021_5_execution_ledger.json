@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "W021.5 Traceable Execution Ledger",
   "milestone": "W021.5",
-  "directive": "CTO Directive 086 / CTO Directive 087 / CTO Directive 088 / CTO Directive 089 / CTO Directive 090 / CTO Directive 091 / CTO Directive 092 / CTO Directive 093 / CTO Directive 094 / CTO Directive 095",
+  "directive": "CTO Directive 086 / CTO Directive 087 / CTO Directive 088 / CTO Directive 089 / CTO Directive 090 / CTO Directive 091 / CTO Directive 092 / CTO Directive 093 / CTO Directive 094 / CTO Directive 095 / CTO Directive 096 / CTO Directive 097",
   "governance": "Master Execution Framework Amendment v1.2 / Rule IV-001 (Non-Self-Acceptance)",
   "financialDefectStatus": {
     "defectId": "DQ-W021.5-B2.2E-001",
@@ -733,7 +733,7 @@
                 "weightRatio": 0.5,
                 "scope": "REPOSITORY_VERIFIABLE",
                 "status": "PASS",
-                "message": "Migration 059 canonical constituency schema verified"
+                "message": "Migration 059 canonical constituency schema, conflict infrastructure, indexes and statutory records verified"
               },
               {
                 "criterionId": "CRIT-B101-02",
@@ -745,7 +745,7 @@
               }
             ],
             "checksPassed": [
-              "Migration 059 canonical constituency schema verified",
+              "Migration 059 canonical constituency schema, conflict infrastructure, indexes and statutory records verified",
               "Constituency canonicalization report verified with 4,123 constituencies"
             ],
             "checksFailed": [],
@@ -1083,12 +1083,12 @@
                 "weightRatio": 0.5,
                 "scope": "REPOSITORY_VERIFIABLE",
                 "status": "PASS",
-                "message": "Multilingual extension schema verified"
+                "message": "Multilingual extension schema verified with independent name and abbreviation definitions"
               }
             ],
             "checksPassed": [
               "Migration 064 organization governance schema verified",
-              "Multilingual extension schema verified"
+              "Multilingual extension schema verified with independent name and abbreviation definitions"
             ],
             "checksFailed": [],
             "requirementsNotYetVerifiable": [],
@@ -1230,47 +1230,47 @@
           },
           "taskClassification": "CORE_SPECIFICATION",
           "evidenceAssessment": {
-            "criteriaAssessed": "Multilingual party names matrix JSON verified with valid non-empty schema; Party symbols matrix JSON verified with valid non-empty schema; Party alias collision matrix JSON verified with valid non-empty schema",
+            "criteriaAssessed": "Multilingual party names matrix verified with >=25 identities across >=10 Indian languages and scripts; Party symbols matrix verified with official ECI notifications and reservation types; Party alias collision matrix verified with high-risk resolution rules and ambiguity tracking",
             "evidenceArtifactsUsed": [
               "reports/w021_5b2_b2_2c_multilingual_matrix.json",
               "reports/w021_5b2_b2_2c_symbol_matrix.json",
               "reports/w021_5b2_b2_2c_alias_collision_matrix.json"
             ],
             "deterministicChecksExecuted": [
-              "Multilingual party names matrix JSON verified with valid non-empty schema",
-              "Party symbols matrix JSON verified with valid non-empty schema",
-              "Party alias collision matrix JSON verified with valid non-empty schema"
+              "Multilingual party names matrix verified with >=25 identities across >=10 Indian languages and scripts",
+              "Party symbols matrix verified with official ECI notifications and reservation types",
+              "Party alias collision matrix verified with high-risk resolution rules and ambiguity tracking"
             ],
             "evaluations": [
               {
                 "criterionId": "CRIT-C03-01",
-                "description": "Multilingual party names matrix JSON verified with valid non-empty schema",
+                "description": "Multilingual party names matrix verified with >=25 identities across >=10 Indian languages and scripts",
                 "weightRatio": 0.333,
                 "scope": "REPOSITORY_VERIFIABLE",
                 "status": "PASS",
-                "message": "Multilingual matrix verified"
+                "message": "Multilingual matrix verified (27 identities across 11 languages)"
               },
               {
                 "criterionId": "CRIT-C03-02",
-                "description": "Party symbols matrix JSON verified with valid non-empty schema",
+                "description": "Party symbols matrix verified with official ECI notifications and reservation types",
                 "weightRatio": 0.333,
                 "scope": "REPOSITORY_VERIFIABLE",
                 "status": "PASS",
-                "message": "Symbol matrix verified"
+                "message": "Symbol matrix verified (19 symbols with statutory authority citations)"
               },
               {
                 "criterionId": "CRIT-C03-03",
-                "description": "Party alias collision matrix JSON verified with valid non-empty schema",
+                "description": "Party alias collision matrix verified with high-risk resolution rules and ambiguity tracking",
                 "weightRatio": 0.334,
                 "scope": "REPOSITORY_VERIFIABLE",
                 "status": "PASS",
-                "message": "Alias collision matrix verified"
+                "message": "Alias collision matrix verified (1095 keys audited, 11 high-risk resolutions)"
               }
             ],
             "checksPassed": [
-              "Multilingual matrix verified",
-              "Symbol matrix verified",
-              "Alias collision matrix verified"
+              "Multilingual matrix verified (27 identities across 11 languages)",
+              "Symbol matrix verified (19 symbols with statutory authority citations)",
+              "Alias collision matrix verified (1095 keys audited, 11 high-risk resolutions)"
             ],
             "checksFailed": [],
             "requirementsNotYetVerifiable": [],
@@ -1989,37 +1989,37 @@
           },
           "taskClassification": "CORE_SPECIFICATION",
           "evidenceAssessment": {
-            "criteriaAssessed": "Fastify /api/v1/constituencies endpoint contract hardening verified with TypeScript AST; API TypeScript source files exist and compile without syntax errors",
+            "criteriaAssessed": "Fastify /api/v1/constituencies route schema contract and nullability verified with clean AST; API server entrypoint and route configuration verified with clean TypeScript AST parse",
             "evidenceArtifactsUsed": [
               "apps/api/src/routes/constituencies.ts",
               "apps/api/src/services/stateData.ts",
               "apps/api/src/__tests__/constituencies.test.ts"
             ],
             "deterministicChecksExecuted": [
-              "Fastify /api/v1/constituencies endpoint contract hardening verified with TypeScript AST",
-              "API TypeScript source files exist and compile without syntax errors"
+              "Fastify /api/v1/constituencies route schema contract and nullability verified with clean AST",
+              "API server entrypoint and route configuration verified with clean TypeScript AST parse"
             ],
             "evaluations": [
               {
                 "criterionId": "CRIT-G01-01",
-                "description": "Fastify /api/v1/constituencies endpoint contract hardening verified with TypeScript AST",
+                "description": "Fastify /api/v1/constituencies route schema contract and nullability verified with clean AST",
                 "weightRatio": 0.5,
                 "scope": "REPOSITORY_VERIFIABLE",
                 "status": "PASS",
-                "message": "Constituencies route handler verified with clean TS AST"
+                "message": "Fastify constituencies route contract and schema verified with clean AST"
               },
               {
                 "criterionId": "CRIT-G01-02",
-                "description": "API TypeScript source files exist and compile without syntax errors",
+                "description": "API server entrypoint and route configuration verified with clean TypeScript AST parse",
                 "weightRatio": 0.5,
                 "scope": "REPOSITORY_VERIFIABLE",
                 "status": "PASS",
-                "message": "API server implementation verified with clean TS AST"
+                "message": "API server entrypoint and route configuration verified with clean TS AST"
               }
             ],
             "checksPassed": [
-              "Constituencies route handler verified with clean TS AST",
-              "API server implementation verified with clean TS AST"
+              "Fastify constituencies route contract and schema verified with clean AST",
+              "API server entrypoint and route configuration verified with clean TS AST"
             ],
             "checksFailed": [],
             "requirementsNotYetVerifiable": [],
@@ -2092,12 +2092,12 @@
                 "weightRatio": 0.5,
                 "scope": "REPOSITORY_VERIFIABLE",
                 "status": "PASS",
-                "message": "Election truth contracts test suite syntax and passing execution verified"
+                "message": "Election truth contracts test suite syntax, passing execution and on-disk log SHA-256 verified"
               }
             ],
             "checksPassed": [
               "Fallback-free stateData service verified with clean TS AST",
-              "Election truth contracts test suite syntax and passing execution verified"
+              "Election truth contracts test suite syntax, passing execution and on-disk log SHA-256 verified"
             ],
             "checksFailed": [],
             "requirementsNotYetVerifiable": [],
@@ -2246,12 +2246,12 @@
                 "weightRatio": 0.5,
                 "scope": "REPOSITORY_VERIFIABLE",
                 "status": "PASS",
-                "message": "Mobile journey test suite syntax and passing execution verified"
+                "message": "Mobile journey test suite syntax, passing execution and on-disk log SHA-256 verified"
               }
             ],
             "checksPassed": [
               "Mobile constituencies API endpoint verified with clean TS AST",
-              "Mobile journey test suite syntax and passing execution verified"
+              "Mobile journey test suite syntax, passing execution and on-disk log SHA-256 verified"
             ],
             "checksFailed": [],
             "requirementsNotYetVerifiable": [],

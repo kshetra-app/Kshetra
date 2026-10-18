@@ -1,0 +1,78 @@
+================================================================
+KSHETRA W021.5 — CTO DIRECTIVE 097 VERIFICATION SUITE
+Independently Authenticated Trust Policy & Verifiable Test Provenance
+================================================================
+
+--- 1. Workstream A: Independently Authenticated Trust Policy & Adversarial Verification ---
+  [PASS] 1.1 A caller cannot authorize its own key by supplying a matching fingerprint whitelist in options without independent environment provenance
+  [PASS] 1.2 A caller cannot authorize its own key by supplying both externalPublicKey and externalTrustPin in options without matching process.env.CTO_TRUST_PIN
+  [PASS] 1.3 Production formal acceptance path (validateFormalAcceptanceArtifact) strips isolatedTestHarnessAuth and options, failing closed without environment trust anchor
+  [PASS] 1.4 Independently provisioned environment configuration (process.env.CTO_TRUST_PIN) successfully establishes trust anchor
+  [PASS] 1.5 Caller-supplied trustedAuthorities alone fails closed with TRUST_ANCHOR_UNPINNED
+  [PASS] 1.6 Caller-supplied externalPublicKey alone fails closed with UNTRUSTED_EXTERNAL_KEY
+  [PASS] 1.7 Malformed externalTrustPin (non-hex or non-64 chars) fails closed with MALFORMED_TRUST_PIN
+  [PASS] 1.8 Malformed trustPolicy (unrecognized mode) fails closed with MALFORMED_TRUST_POLICY
+  [PASS] 1.9 Malformed trustPolicy (empty approvedFingerprints array) fails closed with MALFORMED_TRUST_POLICY
+  [PASS] 1.10 Conflicting trust configuration between pin and approvedFingerprints fails closed with MALFORMED_TRUST_POLICY
+  [PASS] 1.11 Trust policy specifying unauthorized role fails closed with UNAUTHORIZED_ROLE
+  [PASS] 1.12 Trust policy specifying unsupported key algorithm fails closed with UNSUPPORTED_KEY_ALGORITHM
+  [PASS] 1.13 Authority with status REVOKED fails closed with references REVOKED authority
+  [PASS] 1.14 Rule IV-001 Non-Self-Acceptance: authorSelfAcceptance: true fails closed immediately
+  [PASS] 1.15 Decision payload binding: Tampering with conditions or findings invalidates cryptographic signature
+  [PASS] 1.16 Decision payload binding: Tampering with decision (ACCEPTED -> REJECTED) invalidates cryptographic signature
+  [PASS] 1.17 Calling verifyCryptographicAcceptanceSignature with 4 arguments vs 3 arguments behaves identically
+
+--- 2. Workstream B: Verifiable Test Execution Provenance & Manifest Integrity ---
+  [PASS] 2.1 Manifest audit: All manifest entries have exact suite identity, command, exitCode 0, status PASS, and outputLogPath
+  [PASS] 2.2 Mobile test manifest entry accurately specifies npm test for political-intelligence-journey.test.ts (23 passed), NOT directive-095
+  [PASS] 2.3 Verifiable evidence connection: Every suite outputLogPath exists on disk and SHA-256 matches bitwise
+  [PASS] 2.4 Mutation test: Tampering with manifest exitCode (0 -> 1) causes test-dependent criterion CRIT-G02-02 to FAIL
+  [PASS] 2.5 Mutation test: Tampering with manifest status (PASS -> FAIL) causes test-dependent criterion CRIT-H01-02 to FAIL
+  [PASS] 2.6 Mutation test: Tampering with manifest outputLogSha256 causes verifier to FAIL with checksum mismatch
+  [PASS] 2.7 Mutation test: Corrupting log file content causes bitwise SHA-256 verification failure
+
+--- 3. Workstream C: Canonical Progress Reconciliation & Lineage ---
+  [PASS] 3.1 Canonical progress accounting: Exactly 27 tasks sum to exactly 100.0% with non-overlapping partitions
+  [PASS] 3.2 Database-pending tasks reconciled: Exactly 4 tasks (W021.5-C-02, W021.5-D-02, W021.5-E-01, W021.5-F-02) totaling 10.5%
+  [PASS] 3.3 Non-database tasks strictly have 0% databasePendingWeight
+  [PASS] 3.4 Directive lineage: reports/w021_5_execution_ledger.json records complete lineage through Directive 097 without overwriting history
+[PASS] Reconciled JSON ledger written to C:\Users\Laven\OneDrive\Desktop\Kshetra\reports\w021_5_execution_ledger.json
+[PASS] Reconciled Markdown ledger written to C:\Users\Laven\OneDrive\Desktop\Kshetra\reports\W021.5-EXECUTION-LEDGER.md
+[PASS] Reconciled JSON ledger written to C:\Users\Laven\OneDrive\Desktop\Kshetra\reports\w021_5_execution_ledger.json
+[PASS] Reconciled Markdown ledger written to C:\Users\Laven\OneDrive\Desktop\Kshetra\reports\W021.5-EXECUTION-LEDGER.md
+  [PASS] 3.5 Deterministic generation: reconcileExecutionLedger produces identical JSON and Markdown ledgers with 0 unexplained diff
+  [PASS] 3.6 Reconciled milestone totals: repoVerified (61.5%) + dbPending (10.5%) + blocked (22.5%) + unimplemented (5.5%) = 100.0%
+
+--- 4. Workstream D: Substantive Acceptance Criteria Verification & Mutation ---
+  [PASS] 4.1 CRIT-B101-01 & CRIT-B101-02: Verifies statutory migration_conflicts table, constraints, indexes, and insert statements
+  [PASS] 4.2 CRIT-B102-01 & CRIT-B102-02: Verifies statutory AC-to-PC mapping foreign keys and indexes
+  [PASS] 4.3 CRIT-C01-02: Verifies both name and abbreviation columns independently in migration 064
+  [PASS] 4.4 CRIT-C03-01: Verifies multilingual party matrix contains >=25 identities across >=10 Indian languages and scripts
+  [PASS] 4.5 CRIT-C03-02: Verifies symbol matrix contains >=15 records with non-empty symbol properties
+  [PASS] 4.6 CRIT-C03-03: Verifies alias collision matrix contains >=1000 audited keys and documented collisions and resolutions
+  [PASS] 4.7 CRIT-G01-01 & CRIT-G01-02: Fastify route contracts and AST verified; distinguishes AST parse from full compiler build
+  [PASS] 4.8 Real mutation test: Deleting required column from migration 064 causes CRIT-C01-02 to FAIL
+  [PASS] 4.9 Real mutation test: Truncating multilingual matrix below 10 languages causes CRIT-C03-01 to FAIL
+
+--- 5. Workstream E: Semantic Validation Boundaries & Known Blockers ---
+  [PASS] 5.1 SQL parser boundary: Recognizes nested comments, escaped quotes, dollar-quoted strings, and rejects unclosed syntax
+  [PASS] 5.2 TypeScript AST validation: Catches syntax errors and rejects mock files containing only comments or string literals
+  [PASS] 5.3 Telangana AC 119 duplicate claim defect is strictly OPEN with 120 features for 119 statutory seats
+  [PASS] 5.4 National statutory boundary completeness is NOT claimed without remaining 30 state GeoJSON files
+
+--- 6. Workstream F: Baseline Immutability, Governance & Air-Gap Preservation ---
+  [PASS] 6.1 Rule IV-001 Non-Self-Acceptance: Formal CTO acceptance remains strictly 0.0% (UNACCEPTED)
+  [PASS] 6.2 Financial defect DQ-W021.5-B2.2E-001 remains strictly OPEN awaiting independent CTO review
+  [PASS] 6.3 Baseline immutability: All 68 SQL migrations are byte-for-byte identical to baseline commit 0ea572d
+  [PASS] 6.4 Seed immutability: All 31 seed files have pure LF line endings matching baseline fb408ce (0 CRLF)
+  [PASS] 6.5 Offline air-gap preservation: Live database execution weight is strictly 0.0%
+[PASS] Reconciled JSON ledger written to C:\Users\Laven\OneDrive\Desktop\Kshetra\reports\w021_5_execution_ledger.json
+[PASS] Reconciled Markdown ledger written to C:\Users\Laven\OneDrive\Desktop\Kshetra\reports\W021.5-EXECUTION-LEDGER.md
+[PASS] Reconciled JSON ledger written to C:\Users\Laven\OneDrive\Desktop\Kshetra\reports\w021_5_execution_ledger.json
+[PASS] Reconciled Markdown ledger written to C:\Users\Laven\OneDrive\Desktop\Kshetra\reports\W021.5-EXECUTION-LEDGER.md
+  [PASS] 6.6 Reconciler determinism: Multiple runs produce byte-identical reports/w021_5_execution_ledger.json and reports/W021.5-EXECUTION-LEDGER.md
+
+================================================================
+VERIFICATION SUMMARY: 49 PASSED, 0 FAILED
+================================================================
+

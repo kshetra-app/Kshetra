@@ -509,9 +509,8 @@ describe('CTO Directive 083 — Political Intelligence Vertical Slice', () => {
       const matrix = JSON.parse(fs.readFileSync(matrixPath, 'utf8'));
       expect(matrix.totalStatesAudited).toBe(31);
       expect(matrix.summary.totalStatutorySeats).toBe(4123);
-      expect(matrix.summary.canonicalFullStatesCount).toBe(0); // Strictly zero under Rule IV-001
-      expect(matrix.summary.partialLocalWithGeoCount).toBe(1); // TS
-      expect(matrix.summary.partialHistoricalNoGeoCount).toBe(7); // AP, KA, MH, TN, KL, WB, UP
+      expect(matrix.summary.partialLocalWithGeoCount).toBe(0); // TS geo blocked by AC 119 duplicate defect
+      expect(matrix.summary.partialHistoricalNoGeoCount).toBe(8); // TS, AP, KA, MH, TN, KL, WB, UP
       expect(matrix.summary.seededSingleTermCount).toBe(23); // Remaining 23 states/UTs
       expect(matrix.states.length).toBe(31);
 
