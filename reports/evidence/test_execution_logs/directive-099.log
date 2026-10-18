@@ -1,0 +1,83 @@
+================================================================================
+KSHETRA VERIFIABLE TEST EXECUTION LOG
+Suite: tests/political-intelligence-directive-099.test.mjs
+Command: node tests/political-intelligence-directive-099.test.mjs
+Working Directory: C:\Users\Laven\OneDrive\Desktop\Kshetra
+Runtime: Node v24.13.0 (win32)
+Execution Timestamp: 2026-10-18T06:17:49.865Z
+Exit Code: 0
+================================================================================
+
+--- STDOUT ---
+================================================================
+KSHETRA W021.5 — CTO DIRECTIVE 099 VERIFICATION SUITE
+Strong Suite Binding, Manifest-Log Reconciliation & Task Criterion Audit
+================================================================
+
+--- 1. Workstream A: Strong Suite Identity Verification & Adversarial Runner Binding ---
+  [PASS] 1.1 Jest runner output with matching PASS line binds to expected suite cleanly
+  [PASS] 1.2 Jest runner output with wrong suite PASS line fails closed with SUITE_IDENTITY_MISMATCH
+  [PASS] 1.3 Jest output containing multiple conflicting executed suite lines fails closed (SUITE_IDENTITY_AMBIGUOUS)
+  [PASS] 1.4 Plausible success summary from wrong suite containing expected suite basename in arbitrary text fails closed
+  [PASS] 1.5 Generic "DIRECTIVE 098" banner lacking canonical suite title or file identification fails closed
+  [PASS] 1.6 Delimited banner with explicit Suite: path matching expected suite succeeds
+  [PASS] 1.7 Delimited banner with explicit Suite: path pointing to different suite fails closed (SUITE_IDENTITY_MISMATCH)
+  [PASS] 1.8 Custom runner output with multiple conflicting suite banners fails closed (SUITE_IDENTITY_AMBIGUOUS)
+  [PASS] 1.9 Output missing any delimited suite banner or Jest execution line fails closed (SUITE_IDENTITY_MISSING)
+  [PASS] 1.10 Command inconsistent with expected suite fails closed (COMMAND_SUITE_MISMATCH)
+  [PASS] 1.11 Unrelated output with valid numbers but no recognized test summary fails closed (UNPARSED_OUTPUT_FORMAT)
+  [PASS] 1.12 Zero tests passed evaluates to failure (ZERO_TESTS_PASSED)
+--- 2. Workstream B: Deep Manifest-to-Log Reconciliation & Tampering Falsification ---
+  [PASS] 2.1 Stored manifest on disk reconciles 100% cleanly with all logs
+  [PASS] 2.2 Manifest entry where log header Suite does not match manifest suite fails closed
+  [PASS] 2.3 Manifest entry where log header Command does not match manifest command fails closed
+  [PASS] 2.4 Manifest entry where process metric ExitCode contradicts manifest exitCode fails closed
+  [PASS] 2.5 Tampered log where SHA-256 digest was updated but re-parsed test counts contradict manifest fails closed
+  [PASS] 2.6 Manifest declaring PASS but re-parsed log contains test failures fails closed
+  [PASS] 2.7 Manifest entry with path traversal outside repository root fails closed
+  [PASS] 2.8 Symlink traversal outside repository root fails closed
+  [PASS] 2.9 Unexpected suite outside declared execution scope fails closed when exact scope enforced
+  [PASS] 2.10 Manifest declaring PASS with exitCode non-zero fails closed
+--- 3. Workstream C: Execution Provenance, Stale Metadata & Inventory Reconciled ---
+  [PASS] 3.1 Test suite inventory defines exactly 20 canonical suites (4 foundational + 16 directives)
+  [PASS] 3.2 Directive 099 suite definition is registered with expected command, logFilename, and directiveRef
+  [PASS] 3.3 Manifest verifierRole mismatch is rejected in validateManifestIntegrity
+  [PASS] 3.4 Manifest executionEpoch is strictly DIRECTIVE_099 across new execution records
+  [PASS] 3.5 Manifest summary directiveCycle mismatch is rejected when expectedDirectiveCycle is checked
+  [PASS] 3.6 Summary arithmetic mismatch in totalTestsPassed fails closed in validateManifestIntegrity
+--- 4. Workstream D: Domain Criteria Substantive Verification & Mutation Battery ---
+  [PASS] 4.1 Statutory jurisdiction & constituency count: national assembly count strictly 4,123 across 31 states/UTs
+  [PASS] 4.2 Delhi statutory assembly seats strictly 70; synthetic extra seats (DL-AC-071) rejected
+  [PASS] 4.3 Telangana statutory assembly seats strictly 119; Kodangal AC#065 confirmed and duplication rejected
+  [PASS] 4.4 Canonical political organization identity: 6 national parties correctly registered
+  [PASS] 4.5 Multilingual party matrix: full names and vernacular Telugu translations verified
+  [PASS] 4.6 Canonical party aliases map strictly to unique party IDs
+  [PASS] 4.7 Historical political truth: 2023 Telangana election results verified without manufactured data
+  [PASS] 4.8 AC-to-PC mapping referential constraints: Kodangal (AC-065) maps to Mahbubnagar (PC-11)
+  [PASS] 4.9 Candidate affidavit criminal disclosure taxonomy: IPC classifications verified
+  [PASS] 4.10 Financial defect DQ-W021.5-B2.2E-001 remains STRICTLY OPEN across all task specs
+  [PASS] 4.11 Task specifications weight validation: all 27 tasks sum to exactly 100.0%
+  [PASS] 4.12 Criterion evaluation fail-closed: blocked external criterion evaluates to 0 earned weight
+--- 5. Workstream E & F: Trust-Anchor Operational Boundaries & Hard Invariants ---
+  [PASS] 5.1 validateFormalAcceptanceArtifact strictly strips caller-controlled trust and test-bypass options
+  [PASS] 5.2 Caller-controlled public key cannot authenticate acceptance without environment trust pin
+  [PASS] 5.3 Signature tampering across decision-relevant fields invalidates cryptographic acceptance
+  [PASS] 5.4 Baseline 68 SQL migrations immutable byte-for-byte identical to baseline commit 0ea572d
+  [PASS] 5.5 Baseline 31 MLA profile seed files have pure LF line endings and 0 undefined vs fb408ce
+  [PASS] 5.6 Telangana AC 119 duplicate claim defect preserved without mutating geometry fixture
+  [PASS] 5.7 Rule IV-001 Non-Self-Acceptance: formal CTO acceptance remains strictly 0.0% (UNACCEPTED)
+  [PASS] 5.8 Air-gap preservation: live database execution strictly 0.0% with zero mutations or migrations
+
+================================================================
+TEST SUMMARY: 48 PASSED, 0 FAILED
+================================================================
+
+
+
+--- STDERR ---
+
+
+--- PROCESS METRICS ---
+DurationMs: 1512
+ExitCode: 0
+================================================================================

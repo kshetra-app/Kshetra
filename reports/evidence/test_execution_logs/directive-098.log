@@ -4,7 +4,7 @@ Suite: tests/political-intelligence-directive-098.test.mjs
 Command: node tests/political-intelligence-directive-098.test.mjs
 Working Directory: C:\Users\Laven\OneDrive\Desktop\Kshetra
 Runtime: Node v24.13.0 (win32)
-Execution Timestamp: 2026-10-18T05:07:24.570Z
+Execution Timestamp: 2026-10-18T06:17:48.349Z
 Exit Code: 0
 ================================================================================
 
@@ -28,7 +28,7 @@ Fail-Closed Test Capture, Trust-Boundary Assurance & Criterion Auditability
   [PASS] 1.11 Duplicate manifest entries and omitted expected suites fail closed
   [PASS] 1.12 Exit code non-zero with PASS status is rejected in manifest validation
 --- 2. Workstream C: Reconciled Current vs Historical Test Totals & Provenance ---
-  [PASS] 2.1 Test suite inventory defines exactly 19 canonical suites (4 foundational + 15 directives)
+  [PASS] 2.1 Test suite inventory defines at least 19 canonical suites (4 foundational + >=15 directives)
   [PASS] 2.2 Manifest summary calculation matches exact sum of suite entries
   [PASS] 2.3 Summary arithmetic mismatch causes validateManifestIntegrity to fail closed
   [PASS] 2.4 Stored test execution manifest on disk passes validateManifestIntegrity
@@ -75,6 +75,6 @@ TEST SUMMARY: 45 PASSED, 0 FAILED
 
 
 --- PROCESS METRICS ---
-DurationMs: 1385
+DurationMs: 1528
 ExitCode: 0
 ================================================================================

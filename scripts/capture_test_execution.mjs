@@ -183,7 +183,149 @@ export const TEST_SUITE_DEFINITIONS = [
     directiveRef: '098',
     shell: true,
   },
+  {
+    suite: 'tests/political-intelligence-directive-099.test.mjs',
+    command: 'node tests/political-intelligence-directive-099.test.mjs',
+    logFilename: 'directive-099.log',
+    suiteType: 'DIRECTIVE_VERIFICATION_TEST',
+    directiveRef: '099',
+    shell: true,
+  },
 ];
+
+/**
+ * Rigorously verifies that the observed process output binds to the intended test suite.
+ * Rejects outputs where the suite name only appears in arbitrary text, comments, or descriptions.
+ */
+export function verifySuiteIdentity(rawOutput, suiteDef) {
+  if (!suiteDef || !suiteDef.suite) {
+    return { ok: true, runnerFormat: null };
+  }
+
+  const expectedSuite = suiteDef.suite;
+  const expectedCommand = suiteDef.command || '';
+  const suiteBasename = path.basename(expectedSuite);
+
+  // 1. Verify that command (if provided) is consistent with suite identity
+  if (expectedCommand) {
+    const cmdContainsSuite = expectedCommand.includes(expectedSuite) ||
+      expectedCommand.includes(suiteBasename) ||
+      expectedCommand.includes(suiteBasename.replace(/\.(test|spec)\.(ts|js|mjs)$/, ''));
+    if (!cmdContainsSuite) {
+      return {
+        ok: false,
+        reason: 'COMMAND_SUITE_MISMATCH',
+        detail: `Command "${expectedCommand}" does not reference expected suite "${expectedSuite}".`,
+      };
+    }
+  }
+
+  // 2. Identify structured runner execution blocks
+  // Case A: Jest Runner Output
+  // Jest explicitly outputs "PASS <path>" or "FAIL <path>" on its own line in the test execution section
+  const jestSuiteRegex = /(?:^|\n)\s*(?:PASS|FAIL)\s+([^\s\(\)]+\.(?:test|spec)\.(?:ts|js|mjs))\b/g;
+  const jestMatches = [...rawOutput.matchAll(jestSuiteRegex)].map((m) => m[1].replace(/\\/g, '/'));
+
+  if (jestMatches.length > 0) {
+    const uniqueJestSuites = [...new Set(jestMatches)];
+    const matchedJestSuite = uniqueJestSuites.find((js) => expectedSuite.endsWith(js) || js.endsWith(expectedSuite));
+    if (!matchedJestSuite) {
+      return {
+        ok: false,
+        reason: 'SUITE_IDENTITY_MISMATCH',
+        detail: `Jest executed suite(s) [${uniqueJestSuites.join(', ')}] do not match expected suite "${expectedSuite}".`,
+      };
+    }
+    if (uniqueJestSuites.length > 1) {
+      return {
+        ok: false,
+        reason: 'SUITE_IDENTITY_AMBIGUOUS',
+        detail: `Jest output contains multiple executed suites: [${uniqueJestSuites.join(', ')}].`,
+      };
+    }
+    return { ok: true, runnerFormat: 'JEST', matchedSuite: matchedJestSuite };
+  }
+
+  // Case B: Delimited Suite Header Banner (Custom Summary / Directive Test Suites)
+  // Must be enclosed in top-level delimiter lines `={20,}`
+  const bannerBlockRegex = /(?:^|\n)={20,}\r?\n([\s\S]*?)\r?\n={20,}/g;
+  const bannerBlocks = [...rawOutput.matchAll(bannerBlockRegex)].map((m) => m[1].trim());
+
+  const suiteHeaderBanners = bannerBlocks.filter((b) => 
+    !/^(?:TEST|VERIFICATION)\s+SUMMARY:/i.test(b) &&
+    !/^KSHETRA\s+VERIFIABLE\s+TEST\s+EXECUTION\s+LOG/i.test(b) &&
+    (/CTO\s+DIRECTIVE/i.test(b) || /Suite:\s*/i.test(b) || /VERIFICATION\s+SUITE/i.test(b) || /INTEGRATION\s+VERIFICATION/i.test(b))
+  );
+
+  if (suiteHeaderBanners.length === 0) {
+    return {
+      ok: false,
+      reason: 'SUITE_IDENTITY_MISSING',
+      detail: `No recognized test runner suite header or Jest execution line found in output for suite "${expectedSuite}".`,
+    };
+  }
+
+  if (suiteHeaderBanners.length > 1) {
+    return {
+      ok: false,
+      reason: 'SUITE_IDENTITY_AMBIGUOUS',
+      detail: `Multiple conflicting suite header banners detected in output (${suiteHeaderBanners.length} banners).`,
+    };
+  }
+
+  const headerBanner = suiteHeaderBanners[0];
+  const explicitSuiteMatch = headerBanner.match(/\bSuite:\s*([^\s\r\n]+)/i);
+  if (explicitSuiteMatch) {
+    const declaredSuite = explicitSuiteMatch[1].replace(/\\/g, '/');
+    if (!expectedSuite.endsWith(declaredSuite) && !declaredSuite.endsWith(expectedSuite)) {
+      return {
+        ok: false,
+        reason: 'SUITE_IDENTITY_MISMATCH',
+        detail: `Suite header explicitly declared "${declaredSuite}" but expected "${expectedSuite}".`,
+      };
+    }
+    return { ok: true, runnerFormat: 'CUSTOM_SUMMARY', matchedSuite: declaredSuite };
+  }
+
+  // Check for canonical Kshetra Directive Verification Suite banner
+  const canonicalDirectiveRegex = /KSHETRA\s+W021\.5\s+[—–-]\s+CTO\s+DIRECTIVE\s+0*(\d+)\b.*(?:VERIFICATION\s+SUITE|VERIFICATION\s+TEST\s+BATTERY|REGRESSION\s+VERIFICATION\s+SUITE)/i;
+  const canonicalMatch = headerBanner.match(canonicalDirectiveRegex);
+
+  if (canonicalMatch) {
+    const bannerDirectiveNum = parseInt(canonicalMatch[1], 10);
+    let expectedDirectiveNum = null;
+    if (suiteDef.directiveRef) {
+      expectedDirectiveNum = parseInt(suiteDef.directiveRef, 10);
+    } else {
+      const m = expectedSuite.match(/directive-0?(\d+)/i);
+      if (m) expectedDirectiveNum = parseInt(m[1], 10);
+    }
+
+    if (expectedDirectiveNum === null || bannerDirectiveNum !== expectedDirectiveNum) {
+      return {
+        ok: false,
+        reason: 'SUITE_IDENTITY_MISMATCH',
+        detail: `Suite header identifies Directive ${bannerDirectiveNum}, but expected suite is ${expectedDirectiveNum !== null ? 'Directive ' + expectedDirectiveNum : '"' + expectedSuite + '"'}.`,
+      };
+    }
+    return { ok: true, runnerFormat: 'CUSTOM_SUMMARY', directiveNum: bannerDirectiveNum };
+  }
+
+  // Reject generic directive banners lacking explicit test file identification or canonical suite title
+  if (/DIRECTIVE\s+0*(\d+)\b/i.test(headerBanner)) {
+    return {
+      ok: false,
+      reason: 'GENERIC_DIRECTIVE_BANNER_REJECTED',
+      detail: `Generic directive reference in banner is not accepted without canonical verification suite header or explicit test file identification ("${expectedSuite}").`,
+    };
+  }
+
+  return {
+    ok: false,
+    reason: 'SUITE_IDENTITY_MISMATCH',
+    detail: `Suite header banner did not match expected suite identity for "${expectedSuite}".`,
+  };
+}
 
 /**
  * Fail-Closed Test Output Parser
@@ -195,7 +337,8 @@ export const TEST_SUITE_DEFINITIONS = [
  * - no tests discovered (NO_TESTS_DISCOVERED)
  * - unrecognized format (UNPARSED_OUTPUT_FORMAT)
  * - zero tests passed (ZERO_TESTS_PASSED)
- * - suite identity mismatch (SUITE_IDENTITY_MISMATCH)
+ * - suite identity mismatch / missing / ambiguous (SUITE_IDENTITY_MISMATCH, SUITE_IDENTITY_MISSING, SUITE_IDENTITY_AMBIGUOUS)
+ * - command suite mismatch (COMMAND_SUITE_MISMATCH)
  */
 export function parseTestOutput(rawOutput, suiteDef = null) {
   if (!rawOutput || typeof rawOutput !== 'string' || rawOutput.trim().length === 0) {
@@ -281,36 +424,17 @@ export function parseTestOutput(rawOutput, suiteDef = null) {
     };
   }
 
-  // 6. Positive evidence that the intended test suite actually ran
+  // 6. Strong positive evidence that the intended test suite actually ran in the runner section
   if (suiteDef && suiteDef.suite) {
-    const suiteBasename = path.basename(suiteDef.suite);
-    const suiteNameWithoutExt = suiteBasename.replace(/\.(test|spec)\.(ts|js|mjs)$/, '');
-    let identityMatched = rawOutput.includes(suiteBasename) || rawOutput.includes(suiteNameWithoutExt);
-
-    if (!identityMatched && suiteDef.directiveRef) {
-      const directiveNum = parseInt(suiteDef.directiveRef, 10);
-      const directiveRegex = new RegExp(`DIRECTIVE\\s+0*${directiveNum}\\b`, 'i');
-      if (directiveRegex.test(rawOutput)) {
-        identityMatched = true;
-      }
-    } else if (!identityMatched) {
-      const m = suiteDef.suite.match(/directive-0?(\d+)/i);
-      if (m) {
-        const directiveNum = parseInt(m[1], 10);
-        const directiveRegex = new RegExp(`DIRECTIVE\\s+0*${directiveNum}\\b`, 'i');
-        if (directiveRegex.test(rawOutput)) {
-          identityMatched = true;
-        }
-      }
-    }
-
-    if (!identityMatched) {
+    const identityRes = verifySuiteIdentity(rawOutput, suiteDef);
+    if (!identityRes.ok) {
       return {
         isParsed: false,
-        failureReason: 'SUITE_IDENTITY_MISMATCH',
+        failureReason: identityRes.reason,
+        failureDetail: identityRes.detail,
         passed,
         failed,
-        suitesPassed,
+        suitesPassed: 0,
         totalTests,
         runnerFormat,
       };
@@ -410,7 +534,7 @@ export function runSuiteAndCapture(suiteDef) {
       evidenceClass: 'REPOSITORY_IMPLEMENTATION',
       executedInCurrentDelivery: true,
       evidenceType: 'DIRECT_EXECUTION_CAPTURE',
-      executionEpoch: 'DIRECTIVE_098',
+      executionEpoch: 'DIRECTIVE_099',
       outputLogPath: relLogPath,
       outputLogSha256: sha256,
     };
@@ -456,7 +580,7 @@ export function runSuiteAndCapture(suiteDef) {
     evidenceClass: 'REPOSITORY_IMPLEMENTATION',
     executedInCurrentDelivery: true,
     evidenceType: 'DIRECT_EXECUTION_CAPTURE',
-    executionEpoch: 'DIRECTIVE_098',
+    executionEpoch: 'DIRECTIVE_099',
     outputLogPath: relLogPath,
     outputLogSha256: sha256,
   };
@@ -472,7 +596,7 @@ export function captureAllSuites(additionalSuites = []) {
     milestone: 'W021.5',
     generatedAt: new Date().toISOString(),
     manifestSchema: 'https://kshetra.dev/schemas/test-execution-manifest.v2.json',
-    verifierRole: 'CTO Directive 098 Test Execution Verifier',
+    verifierRole: 'CTO Directive 099 Test Execution Verifier',
     executionScope: 'FULL_REPOSITORY_REGRESSION_AND_DIRECTIVE_BATTERY',
     environment: {
       nodeVersion: process.version,
@@ -488,7 +612,7 @@ export function captureAllSuites(additionalSuites = []) {
       totalTestsFailed: 0,
       allSuitesPassed: false,
       executionScope: 'FULL_REPOSITORY_REGRESSION_AND_DIRECTIVE_BATTERY',
-      directiveCycle: 'CTO_DIRECTIVE_098',
+      directiveCycle: 'CTO_DIRECTIVE_099',
     },
   };
 
@@ -502,6 +626,16 @@ export function captureAllSuites(additionalSuites = []) {
       // ignore
     }
   }
+
+  // Ensure metadata is consistently synchronized with current directive cycle
+  manifest.manifestSchema = 'https://kshetra.dev/schemas/test-execution-manifest.v2.json';
+  manifest.verifierRole = 'CTO Directive 099 Test Execution Verifier';
+  manifest.executionScope = 'FULL_REPOSITORY_REGRESSION_AND_DIRECTIVE_BATTERY';
+  manifest.environment = {
+    nodeVersion: process.version,
+    platform: process.platform,
+    offlineRepositoryOnly: true,
+  };
 
   let totalFailedSuites = 0;
 
@@ -519,6 +653,12 @@ export function captureAllSuites(additionalSuites = []) {
     } else {
       manifest.testSuites.push(res);
     }
+
+    manifest.testSuites.sort((a, b) => {
+      const idxA = suites.findIndex((s) => s.suite === a.suite);
+      const idxB = suites.findIndex((s) => s.suite === b.suite);
+      return (idxA >= 0 ? idxA : 999) - (idxB >= 0 ? idxB : 999);
+    });
 
     // Recompute manifest summary
     let sumPassed = 0;
@@ -544,7 +684,7 @@ export function captureAllSuites(additionalSuites = []) {
       totalTestsFailed: sumFailed,
       allSuitesPassed: countFailedSuites === 0,
       executionScope: 'FULL_REPOSITORY_REGRESSION_AND_DIRECTIVE_BATTERY',
-      directiveCycle: 'CTO_DIRECTIVE_098',
+      directiveCycle: 'CTO_DIRECTIVE_099',
     };
 
     fs.writeFileSync(MANIFEST_PATH, JSON.stringify(manifest, null, 2) + '\n', 'utf8');
@@ -558,6 +698,10 @@ export function captureAllSuites(additionalSuites = []) {
 
 /**
  * Deterministically validates the integrity of a test execution manifest against disk evidence.
+ *
+ * NOTE: SHA-256 digests provide bitwise integrity verification against disk corruption or accidental
+ * mutation, but do NOT provide cryptographic author authentication. Production acceptance authority
+ * requires independent operational environment provisioning (CTO_TRUST_PIN / CTO_TRUST_POLICY).
  */
 export function validateManifestIntegrity(manifest, repoRoot = REPO_ROOT, options = {}) {
   if (!manifest || typeof manifest !== 'object') {
@@ -568,9 +712,27 @@ export function validateManifestIntegrity(manifest, repoRoot = REPO_ROOT, option
     throw new Error(`Manifest validation error: Invalid milestone "${manifest.milestone}". Expected "W021.5".`);
   }
 
+  const expectedSchema = 'https://kshetra.dev/schemas/test-execution-manifest.v2.json';
+  if (options.requireManifestSchema || manifest.manifestSchema !== undefined) {
+    if (manifest.manifestSchema !== expectedSchema) {
+      throw new Error(`Manifest validation error: Invalid manifestSchema "${manifest.manifestSchema}". Expected "${expectedSchema}".`);
+    }
+  }
+
+  if (options.expectedVerifierRole && manifest.verifierRole !== options.expectedVerifierRole) {
+    throw new Error(`Manifest validation error: verifierRole mismatch. Expected "${options.expectedVerifierRole}", got "${manifest.verifierRole}".`);
+  }
+
+  if (options.expectedDirectiveCycle && manifest.summary && manifest.summary.directiveCycle !== options.expectedDirectiveCycle) {
+    throw new Error(`Manifest validation error: summary.directiveCycle mismatch. Expected "${options.expectedDirectiveCycle}", got "${manifest.summary.directiveCycle}".`);
+  }
+
   if (!Array.isArray(manifest.testSuites) || manifest.testSuites.length === 0) {
     throw new Error('Manifest validation error: testSuites is missing or empty.');
   }
+
+  const normalizedRoot = path.resolve(repoRoot);
+  const realRepoRoot = fs.existsSync(normalizedRoot) ? fs.realpathSync(normalizedRoot) : normalizedRoot;
 
   const seenSuites = new Set();
   let calculatedPassedSuites = 0;
@@ -588,6 +750,10 @@ export function validateManifestIntegrity(manifest, repoRoot = REPO_ROOT, option
       throw new Error(`Manifest validation error: Duplicate suite entry detected: "${entry.suite}".`);
     }
     seenSuites.add(entry.suite);
+
+    if (!entry.command || typeof entry.command !== 'string') {
+      throw new Error(`Manifest validation error: Suite "${entry.suite}" lacks command.`);
+    }
 
     if (typeof entry.exitCode !== 'number') {
       throw new Error(`Manifest validation error: Suite "${entry.suite}" lacks numeric exitCode.`);
@@ -613,31 +779,91 @@ export function validateManifestIntegrity(manifest, repoRoot = REPO_ROOT, option
       throw new Error(`Manifest validation error: Suite "${entry.suite}" lacks valid SHA-256 digest.`);
     }
 
+    // Path containment and traversal protection (including symlinks)
     const absLogPath = path.resolve(repoRoot, entry.outputLogPath);
+    if (!absLogPath.startsWith(normalizedRoot + path.sep) && absLogPath !== normalizedRoot) {
+      throw new Error(`Manifest validation error: Suite "${entry.suite}" outputLogPath traverses outside repository root: "${entry.outputLogPath}".`);
+    }
+
     if (!fs.existsSync(absLogPath)) {
       throw new Error(`Manifest validation error: Suite "${entry.suite}" output log file does not exist on disk: "${entry.outputLogPath}".`);
     }
 
-    const logContent = fs.readFileSync(absLogPath, 'utf8');
-    const actualDigest = crypto.createHash('sha256').update(logContent, 'utf8').digest('hex');
+    const realLogPath = fs.realpathSync(absLogPath);
+    if (!realLogPath.startsWith(realRepoRoot + path.sep) && realLogPath !== realRepoRoot) {
+      throw new Error(`Manifest validation error: Suite "${entry.suite}" outputLogPath resolves through symlink outside repository root.`);
+    }
 
+    const logContent = fs.readFileSync(absLogPath, 'utf8');
+
+    // SHA-256 Digest Verification
+    const actualDigest = crypto.createHash('sha256').update(logContent, 'utf8').digest('hex');
     if (actualDigest.toLowerCase() !== entry.outputLogSha256.toLowerCase()) {
       throw new Error(`Manifest validation error: Suite "${entry.suite}" output log digest mismatch. Recorded: ${entry.outputLogSha256}, Actual: ${actualDigest}.`);
     }
 
-    // Verify log content binds to this entry (prevents pointing to another suite's log)
-    const suiteBasename = path.basename(entry.suite);
-    const suiteNameWithoutExt = suiteBasename.replace(/\.(test|spec)\.(ts|js|mjs)$/, '');
-    const hasHeaderSuite = new RegExp(`^Suite:\\s+${entry.suite.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`, 'm').test(logContent);
-    const hasBasename = logContent.includes(suiteBasename) || logContent.includes(suiteNameWithoutExt);
-    const m = entry.suite.match(/directive-0?(\d+)/i);
-    const hasDirectiveMatch = m && new RegExp(`DIRECTIVE\\s+0*${parseInt(m[1], 10)}\\b`, 'i').test(logContent);
-
-    if (!hasHeaderSuite && !hasBasename && !hasDirectiveMatch) {
-      throw new Error(`Manifest validation error: Log file "${entry.outputLogPath}" does not belong to suite "${entry.suite}" (suite identity mismatch in log header).`);
+    // 1. Validate log header's suite, command, and exit code against manifest entry
+    const headerSuiteMatch = logContent.match(/^Suite:\s*([^\r\n]+)$/m);
+    if (!headerSuiteMatch) {
+      throw new Error(`Manifest validation error: Log file "${entry.outputLogPath}" does not belong to suite "${entry.suite}" (suite identity mismatch in log header: missing Suite:).`);
+    }
+    const logHeaderSuite = headerSuiteMatch[1].trim();
+    if (logHeaderSuite !== entry.suite) {
+      throw new Error(`Manifest validation error: Log file "${entry.outputLogPath}" does not belong to suite "${entry.suite}" (suite identity mismatch in log header: declared "${logHeaderSuite}", expected "${entry.suite}").`);
     }
 
+    const headerCommandMatch = logContent.match(/^Command:\s*([^\r\n]+)$/m);
+    if (!headerCommandMatch) {
+      throw new Error(`Manifest validation error: Suite "${entry.suite}" log file is missing "Command:" in header.`);
+    }
+    const logHeaderCommand = headerCommandMatch[1].trim();
+    if (logHeaderCommand !== entry.command) {
+      throw new Error(`Manifest validation error: Suite "${entry.suite}" log header command ("${logHeaderCommand}") does not match manifest command ("${entry.command}").`);
+    }
+
+    const headerExitMatch = logContent.match(/^Exit Code:\s*([^\r\n]+)$/m);
+    if (headerExitMatch) {
+      const logHeaderExit = parseInt(headerExitMatch[1].trim(), 10);
+      if (logHeaderExit !== entry.exitCode) {
+        throw new Error(`Manifest validation error: Suite "${entry.suite}" log header Exit Code (${logHeaderExit}) does not match manifest exitCode (${entry.exitCode}).`);
+      }
+    }
+
+    // 2. Validate process metrics block
+    const metricsExitMatch = logContent.match(/^ExitCode:\s*([0-9]+)$/m);
+    if (!metricsExitMatch) {
+      throw new Error(`Manifest validation error: Suite "${entry.suite}" log file is missing "ExitCode:" in process metrics section.`);
+    }
+    const metricExitCode = parseInt(metricsExitMatch[1], 10);
+    if (metricExitCode !== entry.exitCode) {
+      throw new Error(`Manifest validation error: Suite "${entry.suite}" process metric ExitCode (${metricExitCode}) does not match manifest exitCode (${entry.exitCode}).`);
+    }
+
+    // 3. Extract and re-parse actual runner output from stdout and stderr sections
+    const stdoutMatch = logContent.match(/--- STDOUT ---\r?\n([\s\S]*?)\r?\n--- STDERR ---/);
+    const stderrMatch = logContent.match(/--- STDERR ---\r?\n([\s\S]*?)\r?\n--- PROCESS METRICS ---/);
+    const stdout = stdoutMatch ? stdoutMatch[1] : '';
+    const stderr = stderrMatch ? stderrMatch[1] : '';
+    const combinedLogOutput = stdout + '\n' + stderr;
+
+    const reparsed = parseTestOutput(combinedLogOutput, entry);
+
     if (entry.status === 'PASS') {
+      if (!reparsed.isParsed) {
+        throw new Error(`Manifest validation error: Suite "${entry.suite}" declared PASS but re-parsed log output failed: ${reparsed.failureReason}.`);
+      }
+      if (reparsed.failed > 0) {
+        throw new Error(`Manifest validation error: Suite "${entry.suite}" declared PASS but log contains ${reparsed.failed} test failure(s).`);
+      }
+      if (reparsed.passed !== entry.testsPassed) {
+        throw new Error(`Manifest validation error: Suite "${entry.suite}" re-parsed passed count (${reparsed.passed}) does not match manifest testsPassed (${entry.testsPassed}).`);
+      }
+      if (entry.totalTests !== undefined && reparsed.totalTests !== entry.totalTests) {
+        throw new Error(`Manifest validation error: Suite "${entry.suite}" re-parsed totalTests (${reparsed.totalTests}) does not match manifest totalTests (${entry.totalTests}).`);
+      }
+      if (entry.runnerFormat && reparsed.runnerFormat !== entry.runnerFormat) {
+        throw new Error(`Manifest validation error: Suite "${entry.suite}" runnerFormat mismatch: expected ${entry.runnerFormat}, re-parsed ${reparsed.runnerFormat}.`);
+      }
       calculatedPassedSuites++;
     } else {
       calculatedFailedSuites++;
@@ -651,6 +877,16 @@ export function validateManifestIntegrity(manifest, repoRoot = REPO_ROOT, option
     for (const expected of options.expectedSuites) {
       if (!seenSuites.has(expected)) {
         throw new Error(`Manifest validation error: Expected suite "${expected}" is missing from manifest.`);
+      }
+    }
+  }
+
+  // Check for unexpected suites outside declared execution scope if requireExactSuites is set
+  if (options.requireExactSuites && options.expectedSuites && Array.isArray(options.expectedSuites)) {
+    const expectedSet = new Set(options.expectedSuites);
+    for (const suite of seenSuites) {
+      if (!expectedSet.has(suite)) {
+        throw new Error(`Manifest validation error: Unexpected suite "${suite}" outside declared execution scope.`);
       }
     }
   }

@@ -349,14 +349,14 @@ runTest('1.12 Exit code non-zero with PASS status is rejected in manifest valida
 // ─────────────────────────────────────────────────────────────────────────────
 console.log('--- 2. Workstream C: Reconciled Current vs Historical Test Totals & Provenance ---');
 
-runTest('2.1 Test suite inventory defines exactly 19 canonical suites (4 foundational + 15 directives)', () => {
-  assert.strictEqual(TEST_SUITE_DEFINITIONS.length, 19);
+runTest('2.1 Test suite inventory defines at least 19 canonical suites (4 foundational + >=15 directives)', () => {
+  assert.ok(TEST_SUITE_DEFINITIONS.length >= 19, `Expected >= 19 suites, got ${TEST_SUITE_DEFINITIONS.length}`);
 
   const foundational = TEST_SUITE_DEFINITIONS.filter((s) => s.suiteType === 'CORE_SYSTEM_TEST');
   const directives = TEST_SUITE_DEFINITIONS.filter((s) => s.suiteType === 'DIRECTIVE_VERIFICATION_TEST');
 
   assert.strictEqual(foundational.length, 4);
-  assert.strictEqual(directives.length, 15);
+  assert.ok(directives.length >= 15, `Expected >= 15 directive suites, got ${directives.length}`);
 
   // Directives 084 through 098 are present in order
   for (let d = 84; d <= 98; d++) {

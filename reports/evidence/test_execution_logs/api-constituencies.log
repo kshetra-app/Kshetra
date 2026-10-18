@@ -4,7 +4,7 @@ Suite: apps/api/src/__tests__/constituencies.test.ts
 Command: npm test --prefix apps/api -- src/__tests__/constituencies.test.ts
 Working Directory: C:\Users\Laven\OneDrive\Desktop\Kshetra
 Runtime: Node v24.13.0 (win32)
-Execution Timestamp: 2026-10-18T05:06:13.799Z
+Execution Timestamp: 2026-10-18T06:16:26.637Z
 Exit Code: 0
 ================================================================================
 
@@ -16,42 +16,42 @@ Exit Code: 0
 
 
 --- STDERR ---
-PASS src/__tests__/constituencies.test.ts (23.613 s)
+PASS src/__tests__/constituencies.test.ts (17.693 s)
   Constituency Routes
-    √ GET /states/TS/constituencies should return 119 constituencies (1277 ms)
-    √ GET /states/ZZ/constituencies should return 404 for unsupported state (510 ms)
-    √ GET /states/TS/constituencies/1 should return Sirpur with election data (505 ms)
-    √ GET /states/TS/constituencies/charminar should return Charminar by name (350 ms)
-    √ GET /states/TS/constituencies/999 should return 404 (274 ms)
-    √ GET /states/TS/constituencies/search?q=charminar should find Charminar (262 ms)
-    √ GET /states/TS/constituencies/search?party=AIMIM should return 7 seats (274 ms)
-    √ GET /states/TS/constituencies/search?district=hyderabad should return Hyd ACs (287 ms)
-    √ GET /states/TS/constituencies/search?type=ST should return ST reserved seats (335 ms)
-    √ GET /states/TS/analytics should return party summary and districts (304 ms)
-    √ GET /states/KA/analytics should return 404 (278 ms)
-    √ GET /states/TS/elections should return 3 elections (290 ms)
-    √ GET /states/KA/elections should return 404 (246 ms)
-    √ GET /states/TS/mla should return all profiles (302 ms)
-    √ GET /states/TS/mla/29 should return KTR profile (301 ms)
-    √ GET /states/TS/mla/2 should return profile for AC 2 (262 ms)
-    √ GET /states/TS/mla/abc should return 400 (282 ms)
-    √ GET /states/TS/constituencies/search?maxMargin=5000 should return close contests (261 ms)
-    √ GET /states/TS/constituencies/search?minMargin=50000 should return landslides (278 ms)
-    √ GET /states/TS/constituencies/search?sort=name should return alphabetically sorted (280 ms)
-    √ GET /states/TS/constituencies/search?sort=margin_asc should return closest margins first (294 ms)
-    √ GET /constituencies/locate should require lat and lng (283 ms)
-    √ GET /constituencies/locate should find Goshamahal for Charminar coords (334 ms)
-    √ GET /constituencies/locate should return null for out-of-state coords (338 ms)
+    √ GET /states/TS/constituencies should return 119 constituencies (1012 ms)
+    √ GET /states/ZZ/constituencies should return 404 for unsupported state (342 ms)
+    √ GET /states/TS/constituencies/1 should return Sirpur with election data (265 ms)
+    √ GET /states/TS/constituencies/charminar should return Charminar by name (282 ms)
+    √ GET /states/TS/constituencies/999 should return 404 (323 ms)
+    √ GET /states/TS/constituencies/search?q=charminar should find Charminar (294 ms)
+    √ GET /states/TS/constituencies/search?party=AIMIM should return 7 seats (295 ms)
+    √ GET /states/TS/constituencies/search?district=hyderabad should return Hyd ACs (286 ms)
+    √ GET /states/TS/constituencies/search?type=ST should return ST reserved seats (250 ms)
+    √ GET /states/TS/analytics should return party summary and districts (249 ms)
+    √ GET /states/KA/analytics should return 404 (309 ms)
+    √ GET /states/TS/elections should return 3 elections (312 ms)
+    √ GET /states/KA/elections should return 404 (405 ms)
+    √ GET /states/TS/mla should return all profiles (328 ms)
+    √ GET /states/TS/mla/29 should return KTR profile (233 ms)
+    √ GET /states/TS/mla/2 should return profile for AC 2 (294 ms)
+    √ GET /states/TS/mla/abc should return 400 (326 ms)
+    √ GET /states/TS/constituencies/search?maxMargin=5000 should return close contests (257 ms)
+    √ GET /states/TS/constituencies/search?minMargin=50000 should return landslides (353 ms)
+    √ GET /states/TS/constituencies/search?sort=name should return alphabetically sorted (305 ms)
+    √ GET /states/TS/constituencies/search?sort=margin_asc should return closest margins first (297 ms)
+    √ GET /constituencies/locate should require lat and lng (255 ms)
+    √ GET /constituencies/locate should find Goshamahal for Charminar coords (319 ms)
+    √ GET /constituencies/locate should return null for out-of-state coords (289 ms)
 
 Test Suites: 1 passed, 1 total
 Tests:       24 passed, 24 total
 Snapshots:   0 total
-Time:        24.264 s
+Time:        18.248 s, estimated 19 s
 Ran all test suites matching /src\\__tests__\\constituencies.test.ts/i.
 Force exiting Jest: Have you considered using `--detectOpenHandles` to detect async operations that kept running after all tests finished?
 
 
 --- PROCESS METRICS ---
-DurationMs: 27841
+DurationMs: 21775
 ExitCode: 0
 ================================================================================
