@@ -4,7 +4,7 @@ Suite: tests/political-intelligence-directive-100.test.mjs
 Command: node tests/political-intelligence-directive-100.test.mjs
 Working Directory: C:\Users\Laven\OneDrive\Desktop\Kshetra
 Runtime: Node v24.13.0 (win32)
-Execution Timestamp: 2026-10-18T16:59:20.228Z
+Execution Timestamp: 2026-10-18T18:04:44.246Z
 Exit Code: 0
 ================================================================================
 
@@ -66,8 +66,8 @@ Canonical Task Identity, Criteria-Derived Accounting & Verification Readiness
   [PASS] 4.5 Database-pending task list (4 tasks: C-02, D-02, E-01, F-02) matches exactly across JSON and Markdown
   [PASS] 4.6 Falsification: Tampering with a task title in ledger JSON causes cross-artifact reconciliation to fail closed
 --- 5. Workstream E: Test-Execution Provenance & Independent Attestation ---
-  [PASS] 5.1 Test suite inventory generated from registered definitions contains exactly 21 suites (4 foundational + 17 directives)
-  [PASS] 5.2 All 21 registered test suites exist on disk with valid file paths and commands
+  [PASS] 5.1 Test suite inventory generated from registered definitions contains canonical suites (4 foundational + >=17 directives)
+  [PASS] 5.2 All registered test suites exist on disk with valid file paths and commands
   [PASS] 5.3 Registered suite definitions, manifest, and on-disk logs agree on suite identity
   [PASS] 5.4 Test execution provenance clearly distinguishes repository-recorded execution from independent CI attestation
   [PASS] 5.5 External CI limitation explicit: Matching SHA-256 digest proves log integrity but not independent actor identity
@@ -89,6 +89,6 @@ TEST SUMMARY: 59 PASSED, 0 FAILED
 
 
 --- PROCESS METRICS ---
-DurationMs: 10249
+DurationMs: 4616
 ExitCode: 0
 ================================================================================

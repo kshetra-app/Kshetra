@@ -1,0 +1,85 @@
+================================================================================
+KSHETRA VERIFIABLE TEST EXECUTION LOG
+Suite: tests/political-intelligence-directive-101.test.mjs
+Command: node tests/political-intelligence-directive-101.test.mjs
+Working Directory: C:\Users\Laven\OneDrive\Desktop\Kshetra
+Runtime: Node v24.13.0 (win32)
+Execution Timestamp: 2026-10-18T18:04:46.756Z
+Exit Code: 0
+================================================================================
+
+--- STDOUT ---
+================================================================
+KSHETRA W021.5 — CTO DIRECTIVE 101 VERIFICATION SUITE
+Master-Specification Authority, Canonical Task Recovery & Accounting Reconciliation
+================================================================
+
+--- 1. Workstream A: Master-Specification Authority & Independent Grounding ---
+  [PASS] 1.1 Master specification manifest exists at governance/specifications/w021_5_master_specification.json and loads cleanly
+  [PASS] 1.2 Historical origin commit be4ba41 exists in git history as authoritative source of truth
+  [PASS] 1.3 Master specification defines 9 stages summing to exactly 100.0% without normalization
+  [PASS] 1.4 Master specification task structure agrees 1-to-1 with CANONICAL_TASK_METADATA
+  [PASS] 1.5 Every task in master specification maps to an executable TASK_SPECIFICATIONS definition
+  [PASS] 1.6 Falsification: Code agreeing with itself while deviating from master specification fails closed
+
+--- 2. Workstream B: Canonical Task Identity Reconciliation & Discrepancy Falsification ---
+  [PASS] 2.1 Authoritative 1-to-1 task identity: Exactly 27 tasks with unique canonical titles and stages
+  [PASS] 2.2 Concrete Discrepancy Investigation: W021.5-A-02 is authoritative National Coverage Matrix Generator (4.0%)
+  [PASS] 2.3 Concrete Discrepancy Investigation: W021.5-A-03 is authoritative Delhi 70-Seat Statutory Assembly Invariant (3.0%)
+  [PASS] 2.4 Falsification: Attempting to repurpose W021.5-A-02 as Delhi disambiguation fails closed
+  [PASS] 2.5 Phantom Tasks Disposition: W021.5-B2-01, B2-02, B2-03 are rejected and mapped to canonical tasks
+  [PASS] 2.6 Falsification: Inserting phantom task W021.5-B2-01 into ledger fails closed
+  [PASS] 2.7 Falsification: Omitting canonical tasks (W021.5-A-03, H-02, H-03) fails closed
+  [PASS] 2.8 resolveTaskIdentity correctly disambiguates canonical, alias, phantom, and unknown identities
+
+--- 3. Workstream C: Weight Conservation from Authoritative Source & Adversarial Falsification ---
+  [PASS] 3.1 Approved task weights sum to exactly 100.000% under 3-decimal numeric precision policy
+  [PASS] 3.2 Approved stage weights sum to exactly 100.000% across all 9 stages
+  [PASS] 3.3 Every stage weight equals the exact sum of its constituent canonical task weights
+  [PASS] 3.4 Adversarial Falsification: Injecting Directive 100 dossier 101.5% defect into stage weights fails closed
+  [PASS] 3.5 Adversarial Falsification: Injecting Directive 100 dossier 101.5% defect into task weights fails closed
+  [PASS] 3.6 Falsification: Proportional normalization without authoritative backing fails closed
+  [PASS] 3.7 Falsification: Negative, NaN, missing, or zero weights fail closed in validateTaskAccounting
+
+--- 4. Workstream D: Independent Task and Criterion Tests & Substantive Verification ---
+  [PASS] 4.1 Master criteria inventory defines exactly 50 criteria across 27 tasks
+  [PASS] 4.2 Criterion scope distribution: 37 REPOSITORY_VERIFIABLE, 4 DATABASE_STAGING, 6 BLOCKED_EXTERNAL, 3 UNIMPLEMENTED
+  [PASS] 4.3 Every criterion weight ratio is strictly > 0 and sums to exactly 1.000 per task
+  [PASS] 4.4 All 37 REPOSITORY_VERIFIABLE criteria execute and pass positive repository verification
+  [PASS] 4.5 Substantive Domain Assertion: Statutory 4,123 constituency count, 31 assembly states/UTs
+  [PASS] 4.6 Substantive Domain Assertion: Delhi 70-seat statutory assembly invariant strictly isolated from 151 municipal records
+  [PASS] 4.7 Substantive Domain Assertion: Canonical political organizations catalog contains 1,207 total inserts & 107 canonical orgs
+  [PASS] 4.8 Substantive Domain Assertion: AC-to-PC parliamentary mapping referential integrity
+  [PASS] 4.9 Substantive Domain Assertion: Fastify API nullability contracts preserve missing values
+  [PASS] 4.10 Substantive Domain Assertion: stateData.ts AST clean of hardcoded election years
+
+--- 5. Workstream E: Criteria-Derived Progress Accounting & Partition Conservation ---
+  [PASS] 5.1 Progress partition derived from criterion evaluations matches exact dimensions
+  [PASS] 5.2 Rule 1: Only passing REPOSITORY_VERIFIABLE criterion contributes earned repository weight
+  [PASS] 5.3 Rule 2: Database-dependent criteria remain unverified until separately authorized execution exists
+  [PASS] 5.4 Rule 3: Externally blocked criteria earn strictly 0 weight
+  [PASS] 5.5 Rule 4: Unimplemented criteria earn strictly 0 weight
+  [PASS] 5.6 Rule 6: Failed criterion fails closed and is represented explicitly
+
+--- 6. Workstream F: Cross-Artifact Deterministic Reconciliation & Mandatory Invariants ---
+  [PASS] 6.1 reports/w021_5_execution_ledger.json matches reports/W021.5-EXECUTION-LEDGER.md in task count (27)
+  [PASS] 6.2 Total weight (100.0%) and partition percentages match exactly across JSON and Markdown ledgers
+  [PASS] 6.3 Rule IV-001 (Non-Self-Acceptance): Formal acceptance strictly 0.0% (UNACCEPTED)
+  [PASS] 6.4 Financial Defect DQ-W021.5-B2.2E-001 remains STRICTLY OPEN pending explicit CTO adjudication
+  [PASS] 6.5 Telangana Assembly Constituency 119 duplication defect remains OPEN/BLOCKED
+  [PASS] 6.6 Baseline 68 SQL migrations immutable byte-for-byte identical to commit 0ea572d
+  [PASS] 6.7 Baseline 31 MLA profile seed files have pure LF and 0 undefined properties matching commit fb408ce
+
+================================================================
+TEST SUMMARY: 44 PASSED, 0 FAILED
+================================================================
+
+
+
+--- STDERR ---
+
+
+--- PROCESS METRICS ---
+DurationMs: 2502
+ExitCode: 0
+================================================================================

@@ -949,14 +949,14 @@ runTest('4.6 Falsification: Tampering with a task title in ledger JSON causes cr
 // ─────────────────────────────────────────────────────────────────────────────
 console.log('--- 5. Workstream E: Test-Execution Provenance & Independent Attestation ---');
 
-runTest('5.1 Test suite inventory generated from registered definitions contains exactly 21 suites (4 foundational + 17 directives)', () => {
-  assert.strictEqual(TEST_SUITE_DEFINITIONS.length, 21, `Expected 21 test suites, got ${TEST_SUITE_DEFINITIONS.length}`);
+runTest('5.1 Test suite inventory generated from registered definitions contains canonical suites (4 foundational + >=17 directives)', () => {
+  assert.ok(TEST_SUITE_DEFINITIONS.length >= 21, `Expected at least 21 test suites, got ${TEST_SUITE_DEFINITIONS.length}`);
 
   const foundational = TEST_SUITE_DEFINITIONS.filter((s) => s.suiteType === 'CORE_SYSTEM_TEST');
   const directives = TEST_SUITE_DEFINITIONS.filter((s) => s.suiteType === 'DIRECTIVE_VERIFICATION_TEST');
 
   assert.strictEqual(foundational.length, 4);
-  assert.strictEqual(directives.length, 17);
+  assert.ok(directives.length >= 17, `Expected at least 17 directives, got ${directives.length}`);
 
   // Directives 084 through 100 are present in order
   for (let d = 84; d <= 100; d++) {
@@ -966,7 +966,7 @@ runTest('5.1 Test suite inventory generated from registered definitions contains
   }
 });
 
-runTest('5.2 All 21 registered test suites exist on disk with valid file paths and commands', () => {
+runTest('5.2 All registered test suites exist on disk with valid file paths and commands', () => {
   for (const s of TEST_SUITE_DEFINITIONS) {
     const fullPath = path.resolve(REPO_ROOT, s.suite);
     assert.strictEqual(fs.existsSync(fullPath), true, `Suite file ${s.suite} must exist on disk`);
@@ -1001,7 +1001,11 @@ runTest('5.4 Test execution provenance clearly distinguishes repository-recorded
 
   // Manifest environment explicitly declares offline repository verification
   assert.strictEqual(manifest.environment.offlineRepositoryOnly, true);
-  assert.strictEqual(manifest.verifierRole, 'CTO Directive 100 Test Execution Verifier');
+  assert.ok(
+    manifest.verifierRole === 'CTO Directive 100 Test Execution Verifier' ||
+    manifest.verifierRole === 'CTO Directive 101 Test Execution Verifier',
+    `Unexpected verifierRole: ${manifest.verifierRole}`
+  );
 });
 
 runTest('5.5 External CI limitation explicit: Matching SHA-256 digest proves log integrity but not independent actor identity', () => {

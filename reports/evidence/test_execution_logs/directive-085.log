@@ -4,7 +4,7 @@ Suite: tests/political-intelligence-directive-085.test.mjs
 Command: node tests/political-intelligence-directive-085.test.mjs
 Working Directory: C:\Users\Laven\OneDrive\Desktop\Kshetra
 Runtime: Node v24.13.0 (win32)
-Execution Timestamp: 2026-10-18T16:57:08.127Z
+Execution Timestamp: 2026-10-18T18:03:48.581Z
 Exit Code: 0
 ================================================================================
 
@@ -48,6 +48,6 @@ TEST SUMMARY: 17 PASSED, 0 FAILED
 
 
 --- PROCESS METRICS ---
-DurationMs: 527
+DurationMs: 273
 ExitCode: 0
 ================================================================================

@@ -1,8 +1,8 @@
 {
   "milestone": "W021.5",
-  "generatedAt": "2026-10-18T16:59:20.239Z",
+  "generatedAt": "2026-10-18T18:04:46.758Z",
   "manifestSchema": "https://kshetra.dev/schemas/test-execution-manifest.v2.json",
-  "verifierRole": "CTO Directive 100 Test Execution Verifier",
+  "verifierRole": "CTO Directive 101 Test Execution Verifier",
   "environment": {
     "nodeVersion": "v24.13.0",
     "platform": "win32",
@@ -19,7 +19,7 @@
       "testsPassed": 4,
       "testsFailed": 0,
       "totalTests": 4,
-      "durationMs": 45138,
+      "durationMs": 12016,
       "runnerFormat": "JEST",
       "suiteType": "CORE_SYSTEM_TEST",
       "directiveRef": null,
@@ -28,7 +28,7 @@
       "evidenceType": "DIRECT_EXECUTION_CAPTURE",
       "executionEpoch": "DIRECTIVE_099",
       "outputLogPath": "reports/evidence/test_execution_logs/api-election-truth-contracts.log",
-      "outputLogSha256": "ad3375814c944fa60b1fa3e5a88227d9a6c5baeea6f6278d65e1d9e517718866"
+      "outputLogSha256": "a995e724f00e7c00c0d00e1222cf650e435f506769563b17c3ad0c9f9d00b071"
     },
     {
       "suite": "apps/api/src/__tests__/constituencies.test.ts",
@@ -40,7 +40,7 @@
       "testsPassed": 24,
       "testsFailed": 0,
       "totalTests": 24,
-      "durationMs": 59789,
+      "durationMs": 23105,
       "runnerFormat": "JEST",
       "suiteType": "CORE_SYSTEM_TEST",
       "directiveRef": null,
@@ -49,7 +49,7 @@
       "evidenceType": "DIRECT_EXECUTION_CAPTURE",
       "executionEpoch": "DIRECTIVE_099",
       "outputLogPath": "reports/evidence/test_execution_logs/api-constituencies.log",
-      "outputLogSha256": "c08af35a45db76d9b41443860554639920d5de6090b52d089004ca28dc4c464f"
+      "outputLogSha256": "a0182da7605ff45de6badd746e39e07d0f6724805c2f49c917a0b91179fab91e"
     },
     {
       "suite": "apps/api/src/__tests__/observability.test.ts",
@@ -61,7 +61,7 @@
       "testsPassed": 19,
       "testsFailed": 0,
       "totalTests": 19,
-      "durationMs": 30660,
+      "durationMs": 13619,
       "runnerFormat": "JEST",
       "suiteType": "CORE_SYSTEM_TEST",
       "directiveRef": null,
@@ -70,7 +70,7 @@
       "evidenceType": "DIRECT_EXECUTION_CAPTURE",
       "executionEpoch": "DIRECTIVE_099",
       "outputLogPath": "reports/evidence/test_execution_logs/api-observability.log",
-      "outputLogSha256": "33e99d4c8b998b0269d888e7ab99e912fa125e33018c24bea1fedb94870117a4"
+      "outputLogSha256": "5e2f4b1f4e3d8f839a1ae9f41fb59a1d262a6f0e51685f9ff6fdb080e243d2ee"
     },
     {
       "suite": "apps/mobile/__tests__/political-intelligence-journey.test.ts",
@@ -82,7 +82,7 @@
       "testsPassed": 23,
       "testsFailed": 0,
       "totalTests": 23,
-      "durationMs": 25509,
+      "durationMs": 11175,
       "runnerFormat": "JEST",
       "suiteType": "CORE_SYSTEM_TEST",
       "directiveRef": null,
@@ -91,7 +91,7 @@
       "evidenceType": "DIRECT_EXECUTION_CAPTURE",
       "executionEpoch": "DIRECTIVE_099",
       "outputLogPath": "reports/evidence/test_execution_logs/mobile-political-intelligence-journey.log",
-      "outputLogSha256": "57fca05769ec9cd050596162aa5a4ab9d82cadad26ffd52abfcec19329e1f8aa"
+      "outputLogSha256": "5a04141f5f6c8372815f7889939f6a1788c9bf507a8542c6d6784d0eb3ccc0f3"
     },
     {
       "suite": "tests/political-intelligence-directive-084.test.mjs",
@@ -103,7 +103,7 @@
       "testsPassed": 13,
       "testsFailed": 0,
       "totalTests": 13,
-      "durationMs": 409,
+      "durationMs": 270,
       "runnerFormat": "CUSTOM_SUMMARY",
       "suiteType": "DIRECTIVE_VERIFICATION_TEST",
       "directiveRef": "084",
@@ -112,7 +112,7 @@
       "evidenceType": "DIRECT_EXECUTION_CAPTURE",
       "executionEpoch": "DIRECTIVE_099",
       "outputLogPath": "reports/evidence/test_execution_logs/directive-084.log",
-      "outputLogSha256": "4f5798c6528f05eaa93faa996b4fb9d3066f8b6090088db852f18a929e669c5a"
+      "outputLogSha256": "f2f0765c6e254be873b05fb07d4fcaf66772f77387be725d0dc1b3525115f643"
     },
     {
       "suite": "tests/political-intelligence-directive-085.test.mjs",
@@ -124,7 +124,7 @@
       "testsPassed": 17,
       "testsFailed": 0,
       "totalTests": 17,
-      "durationMs": 527,
+      "durationMs": 273,
       "runnerFormat": "CUSTOM_SUMMARY",
       "suiteType": "DIRECTIVE_VERIFICATION_TEST",
       "directiveRef": "085",
@@ -133,7 +133,7 @@
       "evidenceType": "DIRECT_EXECUTION_CAPTURE",
       "executionEpoch": "DIRECTIVE_099",
       "outputLogPath": "reports/evidence/test_execution_logs/directive-085.log",
-      "outputLogSha256": "59c27eef0e83cb30f3c10372116f257359a9bef36c87deedb56f782376902f17"
+      "outputLogSha256": "7d9f5a1bf762d4625f46c80ae728f694e06a1101b1ee9a81854c0cc76f957ac5"
     },
     {
       "suite": "tests/political-intelligence-directive-086.test.mjs",
@@ -145,7 +145,7 @@
       "testsPassed": 19,
       "testsFailed": 0,
       "totalTests": 19,
-      "durationMs": 457,
+      "durationMs": 252,
       "runnerFormat": "CUSTOM_SUMMARY",
       "suiteType": "DIRECTIVE_VERIFICATION_TEST",
       "directiveRef": "086",
@@ -154,7 +154,7 @@
       "evidenceType": "DIRECT_EXECUTION_CAPTURE",
       "executionEpoch": "DIRECTIVE_099",
       "outputLogPath": "reports/evidence/test_execution_logs/directive-086.log",
-      "outputLogSha256": "833b65951e0e22248bff76e321c4cc42dfba13a021ba0d7563782365c496f5a9"
+      "outputLogSha256": "8f5a69b6f4a0b4ac26522348f49b810aa6a409e59acec1c3696214b833f72fd3"
     },
     {
       "suite": "tests/political-intelligence-directive-087.test.mjs",
@@ -166,7 +166,7 @@
       "testsPassed": 25,
       "testsFailed": 0,
       "totalTests": 25,
-      "durationMs": 2873,
+      "durationMs": 1122,
       "runnerFormat": "CUSTOM_SUMMARY",
       "suiteType": "DIRECTIVE_VERIFICATION_TEST",
       "directiveRef": "087",
@@ -175,7 +175,7 @@
       "evidenceType": "DIRECT_EXECUTION_CAPTURE",
       "executionEpoch": "DIRECTIVE_099",
       "outputLogPath": "reports/evidence/test_execution_logs/directive-087.log",
-      "outputLogSha256": "c290ee37c204f7f0ad2c193e33c5207996c32b563c5274e4358d1da0af0d977a"
+      "outputLogSha256": "a7f75f3eb2f90068712098eab749bf4879ab0f5b485a932b2e7c2bcba639929e"
     },
     {
       "suite": "tests/political-intelligence-directive-088.test.mjs",
@@ -187,7 +187,7 @@
       "testsPassed": 30,
       "testsFailed": 0,
       "totalTests": 30,
-      "durationMs": 4982,
+      "durationMs": 2042,
       "runnerFormat": "CUSTOM_SUMMARY",
       "suiteType": "DIRECTIVE_VERIFICATION_TEST",
       "directiveRef": "088",
@@ -196,7 +196,7 @@
       "evidenceType": "DIRECT_EXECUTION_CAPTURE",
       "executionEpoch": "DIRECTIVE_099",
       "outputLogPath": "reports/evidence/test_execution_logs/directive-088.log",
-      "outputLogSha256": "b6cb796341819d91369e6b73cfaa5a0355ce7012ec7965d82f25f972e122030c"
+      "outputLogSha256": "efc757062d104d2c55791f4a3a4d7a34c6b9a7cb14d9ddb14a373cc46d695b11"
     },
     {
       "suite": "tests/political-intelligence-directive-089.test.mjs",
@@ -208,7 +208,7 @@
       "testsPassed": 33,
       "testsFailed": 0,
       "totalTests": 33,
-      "durationMs": 11286,
+      "durationMs": 3870,
       "runnerFormat": "CUSTOM_SUMMARY",
       "suiteType": "DIRECTIVE_VERIFICATION_TEST",
       "directiveRef": "089",
@@ -217,7 +217,7 @@
       "evidenceType": "DIRECT_EXECUTION_CAPTURE",
       "executionEpoch": "DIRECTIVE_099",
       "outputLogPath": "reports/evidence/test_execution_logs/directive-089.log",
-      "outputLogSha256": "58b3fb37fcf45eb8f32241c523cc2f78594a080d00e414f0348ac6ef283a7146"
+      "outputLogSha256": "d88f415bcedf2aaabdd37456cbd25306baf0f7eeb14776216da4ba10be4c71cb"
     },
     {
       "suite": "tests/political-intelligence-directive-090.test.mjs",
@@ -229,7 +229,7 @@
       "testsPassed": 18,
       "testsFailed": 0,
       "totalTests": 18,
-      "durationMs": 7105,
+      "durationMs": 2436,
       "runnerFormat": "CUSTOM_SUMMARY",
       "suiteType": "DIRECTIVE_VERIFICATION_TEST",
       "directiveRef": "090",
@@ -238,7 +238,7 @@
       "evidenceType": "DIRECT_EXECUTION_CAPTURE",
       "executionEpoch": "DIRECTIVE_099",
       "outputLogPath": "reports/evidence/test_execution_logs/directive-090.log",
-      "outputLogSha256": "d8d7cdb53c44f331d0e8bf7293ff609cf22053b5db7d0ff70221233406b5f640"
+      "outputLogSha256": "6c4728f872f883ee96c41e5dd494084745c5dd2484e3b8809e9fd0e60b6d9036"
     },
     {
       "suite": "tests/political-intelligence-directive-091.test.mjs",
@@ -250,7 +250,7 @@
       "testsPassed": 22,
       "testsFailed": 0,
       "totalTests": 22,
-      "durationMs": 4848,
+      "durationMs": 2399,
       "runnerFormat": "CUSTOM_SUMMARY",
       "suiteType": "DIRECTIVE_VERIFICATION_TEST",
       "directiveRef": "091",
@@ -259,7 +259,7 @@
       "evidenceType": "DIRECT_EXECUTION_CAPTURE",
       "executionEpoch": "DIRECTIVE_099",
       "outputLogPath": "reports/evidence/test_execution_logs/directive-091.log",
-      "outputLogSha256": "dc8ccb8868fb40fe337ffabfcf3a40d758acf1fdeab765405ecd81dfc520c77c"
+      "outputLogSha256": "3996c9e5d8e2d3cbaabcbc01e5f3028bb3dbf8736a936f85379f1c43af28d9e5"
     },
     {
       "suite": "tests/political-intelligence-directive-092.test.mjs",
@@ -271,7 +271,7 @@
       "testsPassed": 34,
       "testsFailed": 0,
       "totalTests": 34,
-      "durationMs": 15280,
+      "durationMs": 6331,
       "runnerFormat": "CUSTOM_SUMMARY",
       "suiteType": "DIRECTIVE_VERIFICATION_TEST",
       "directiveRef": "092",
@@ -280,7 +280,7 @@
       "evidenceType": "DIRECT_EXECUTION_CAPTURE",
       "executionEpoch": "DIRECTIVE_099",
       "outputLogPath": "reports/evidence/test_execution_logs/directive-092.log",
-      "outputLogSha256": "6e59e30e297e6c5f3dc9ef7095843912661bbdbab9869e1e7541143275080c39"
+      "outputLogSha256": "d3f361209c3ce003aab9d00d166b7d5704d5899252744f15e3a30ad547239519"
     },
     {
       "suite": "tests/political-intelligence-directive-093.test.mjs",
@@ -292,7 +292,7 @@
       "testsPassed": 32,
       "testsFailed": 0,
       "totalTests": 32,
-      "durationMs": 10849,
+      "durationMs": 3915,
       "runnerFormat": "CUSTOM_SUMMARY",
       "suiteType": "DIRECTIVE_VERIFICATION_TEST",
       "directiveRef": "093",
@@ -301,7 +301,7 @@
       "evidenceType": "DIRECT_EXECUTION_CAPTURE",
       "executionEpoch": "DIRECTIVE_099",
       "outputLogPath": "reports/evidence/test_execution_logs/directive-093.log",
-      "outputLogSha256": "e75eaa25bb764e428498e99873a44927c1d52e95bf7516896f8a6498d0c585b0"
+      "outputLogSha256": "6518f22a1697d606fec4b80c8c4f9430289ee9bedc89e5d0fefef3089636703a"
     },
     {
       "suite": "tests/political-intelligence-directive-094.test.mjs",
@@ -313,7 +313,7 @@
       "testsPassed": 37,
       "testsFailed": 0,
       "totalTests": 37,
-      "durationMs": 9093,
+      "durationMs": 4088,
       "runnerFormat": "CUSTOM_SUMMARY",
       "suiteType": "DIRECTIVE_VERIFICATION_TEST",
       "directiveRef": "094",
@@ -322,7 +322,7 @@
       "evidenceType": "DIRECT_EXECUTION_CAPTURE",
       "executionEpoch": "DIRECTIVE_099",
       "outputLogPath": "reports/evidence/test_execution_logs/directive-094.log",
-      "outputLogSha256": "fd334258ca19080881545793803d078eb409c9b99ec54ee505c969441d1209da"
+      "outputLogSha256": "1a77c8598bf30c666b4a705ab4d1851a03754acb6084089a96c503bd1ea8f127"
     },
     {
       "suite": "tests/political-intelligence-directive-095.test.mjs",
@@ -334,7 +334,7 @@
       "testsPassed": 56,
       "testsFailed": 0,
       "totalTests": 56,
-      "durationMs": 15365,
+      "durationMs": 6991,
       "runnerFormat": "CUSTOM_SUMMARY",
       "suiteType": "DIRECTIVE_VERIFICATION_TEST",
       "directiveRef": "095",
@@ -343,7 +343,7 @@
       "evidenceType": "DIRECT_EXECUTION_CAPTURE",
       "executionEpoch": "DIRECTIVE_099",
       "outputLogPath": "reports/evidence/test_execution_logs/directive-095.log",
-      "outputLogSha256": "c030efa145ae471399b2002f14e52a9d8545d4deb71898712a525d67f7a79ece"
+      "outputLogSha256": "5963f11a5785f5da5c0804870ddf87a79646c351df9683f6bc46e581cbd7623e"
     },
     {
       "suite": "tests/political-intelligence-directive-096.test.mjs",
@@ -355,7 +355,7 @@
       "testsPassed": 59,
       "testsFailed": 0,
       "totalTests": 59,
-      "durationMs": 15071,
+      "durationMs": 6435,
       "runnerFormat": "CUSTOM_SUMMARY",
       "suiteType": "DIRECTIVE_VERIFICATION_TEST",
       "directiveRef": "096",
@@ -364,7 +364,7 @@
       "evidenceType": "DIRECT_EXECUTION_CAPTURE",
       "executionEpoch": "DIRECTIVE_099",
       "outputLogPath": "reports/evidence/test_execution_logs/directive-096.log",
-      "outputLogSha256": "f46ba5fc4f2bb7a1f61e9f0aa299840bcead5a8f8c9d529cd79c67aa96ee0d7f"
+      "outputLogSha256": "7acc69aadb3172353856385fe0f6d51fccbea484791f9e0023878c83a5a02240"
     },
     {
       "suite": "tests/political-intelligence-directive-097.test.mjs",
@@ -376,7 +376,7 @@
       "testsPassed": 49,
       "testsFailed": 0,
       "totalTests": 49,
-      "durationMs": 18189,
+      "durationMs": 7906,
       "runnerFormat": "CUSTOM_SUMMARY",
       "suiteType": "DIRECTIVE_VERIFICATION_TEST",
       "directiveRef": "097",
@@ -385,7 +385,7 @@
       "evidenceType": "DIRECT_EXECUTION_CAPTURE",
       "executionEpoch": "DIRECTIVE_099",
       "outputLogPath": "reports/evidence/test_execution_logs/directive-097.log",
-      "outputLogSha256": "72d623bd7da19483601c0e7e0dc0888a99d0f0a9efca24c56a62318a5a2a8b42"
+      "outputLogSha256": "d12bab0fa155b50da469ad9357b533635bcbd618ccf2cc9151939050652f9d30"
     },
     {
       "suite": "tests/political-intelligence-directive-098.test.mjs",
@@ -397,7 +397,7 @@
       "testsPassed": 45,
       "testsFailed": 0,
       "totalTests": 45,
-      "durationMs": 3129,
+      "durationMs": 1408,
       "runnerFormat": "CUSTOM_SUMMARY",
       "suiteType": "DIRECTIVE_VERIFICATION_TEST",
       "directiveRef": "098",
@@ -406,7 +406,7 @@
       "evidenceType": "DIRECT_EXECUTION_CAPTURE",
       "executionEpoch": "DIRECTIVE_099",
       "outputLogPath": "reports/evidence/test_execution_logs/directive-098.log",
-      "outputLogSha256": "8d86750a110428080766146ddfeebb67bd39f0dae41dd0b61db3362ed35f14cb"
+      "outputLogSha256": "815e76fd9022107f87ade1da0ae7dd84f936b524f85e8a5590531469effba625"
     },
     {
       "suite": "tests/political-intelligence-directive-099.test.mjs",
@@ -418,7 +418,7 @@
       "testsPassed": 48,
       "testsFailed": 0,
       "totalTests": 48,
-      "durationMs": 3211,
+      "durationMs": 1749,
       "runnerFormat": "CUSTOM_SUMMARY",
       "suiteType": "DIRECTIVE_VERIFICATION_TEST",
       "directiveRef": "099",
@@ -427,7 +427,7 @@
       "evidenceType": "DIRECT_EXECUTION_CAPTURE",
       "executionEpoch": "DIRECTIVE_099",
       "outputLogPath": "reports/evidence/test_execution_logs/directive-099.log",
-      "outputLogSha256": "1b5d830301dfbc1d40196d835efa9b2970fdbe939582b6399c31f3600efe0c9f"
+      "outputLogSha256": "8a815ab90d78204ce713ea2db8779c9c7513a4f2d48da729bc4bf1bfd4193fc7"
     },
     {
       "suite": "tests/political-intelligence-directive-100.test.mjs",
@@ -439,7 +439,7 @@
       "testsPassed": 59,
       "testsFailed": 0,
       "totalTests": 59,
-      "durationMs": 10249,
+      "durationMs": 4616,
       "runnerFormat": "CUSTOM_SUMMARY",
       "suiteType": "DIRECTIVE_VERIFICATION_TEST",
       "directiveRef": "100",
@@ -448,18 +448,39 @@
       "evidenceType": "DIRECT_EXECUTION_CAPTURE",
       "executionEpoch": "DIRECTIVE_099",
       "outputLogPath": "reports/evidence/test_execution_logs/directive-100.log",
-      "outputLogSha256": "eda13833f4d514b419a49a3e8b1e8c9561f3211bb4b988a52e20017f4b7dbe26"
+      "outputLogSha256": "f95a4f053b87fef0e40d74fcf38f846823d67a146f2312f9d762f4bc2561eff0"
+    },
+    {
+      "suite": "tests/political-intelligence-directive-101.test.mjs",
+      "command": "node tests/political-intelligence-directive-101.test.mjs",
+      "exitCode": 0,
+      "status": "PASS",
+      "failureReason": null,
+      "suitesPassed": 1,
+      "testsPassed": 44,
+      "testsFailed": 0,
+      "totalTests": 44,
+      "durationMs": 2502,
+      "runnerFormat": "CUSTOM_SUMMARY",
+      "suiteType": "DIRECTIVE_VERIFICATION_TEST",
+      "directiveRef": "101",
+      "evidenceClass": "REPOSITORY_IMPLEMENTATION",
+      "executedInCurrentDelivery": true,
+      "evidenceType": "DIRECT_EXECUTION_CAPTURE",
+      "executionEpoch": "DIRECTIVE_099",
+      "outputLogPath": "reports/evidence/test_execution_logs/directive-101.log",
+      "outputLogSha256": "6a99ca23f70c3c4fa9e9a3bb4015dd25eaedbc02377c608531774f2344e1bf70"
     }
   ],
   "summary": {
-    "totalSuites": 21,
-    "passedSuites": 21,
+    "totalSuites": 22,
+    "passedSuites": 22,
     "failedSuites": 0,
-    "totalTestsPassed": 666,
+    "totalTestsPassed": 710,
     "totalTestsFailed": 0,
     "allSuitesPassed": true,
     "executionScope": "FULL_REPOSITORY_REGRESSION_AND_DIRECTIVE_BATTERY",
-    "directiveCycle": "CTO_DIRECTIVE_100"
+    "directiveCycle": "CTO_DIRECTIVE_101"
   },
   "executionScope": "FULL_REPOSITORY_REGRESSION_AND_DIRECTIVE_BATTERY"
 }

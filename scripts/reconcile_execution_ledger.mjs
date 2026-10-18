@@ -31,6 +31,18 @@ const __dirname = path.dirname(__filename);
 const REPO_ROOT = path.resolve(__dirname, '..');
 
 export const TRUSTED_AUTHORITIES_PATH = path.join(REPO_ROOT, 'governance', 'authorities', 'trusted_authorities.json');
+export const MASTER_SPECIFICATION_PATH = path.join(REPO_ROOT, 'governance', 'specifications', 'w021_5_master_specification.json');
+
+/**
+ * Loads the authoritative master specification manifest independently grounded in repository history.
+ */
+export function loadMasterSpecification(repoRoot = REPO_ROOT) {
+  const p = path.join(repoRoot, 'governance', 'specifications', 'w021_5_master_specification.json');
+  if (!fs.existsSync(p)) {
+    throw new Error(`Master specification manifest not found at: ${p}`);
+  }
+  return JSON.parse(fs.readFileSync(p, 'utf8'));
+}
 
 // Stage domain pattern map for evidence relevance validation
 export const STAGE_EVIDENCE_RELEVANCE = {
@@ -403,6 +415,12 @@ export const OLD_TO_CANONICAL_TASK_MAPPING = {
         discrepancyType: 'SYNTHETIC_CHAT_SUMMARY',
         rationale: 'Erroneous chat summary label conflating Stage A data-truth audit with assembly constituency mapping.',
       },
+      {
+        alias: 'Statutory Assembly Constituency Count Canonicalization',
+        source: 'Directive 100 Implementation Report Table',
+        discrepancyType: 'SYNTHETIC_REPORT_LABEL',
+        rationale: 'Erroneous table column label in Directive 100 Section 3.1 relabeling Data-Truth Audit.',
+      },
     ],
   },
   'W021.5-A-02': {
@@ -424,6 +442,12 @@ export const OLD_TO_CANONICAL_TASK_MAPPING = {
         discrepancyType: 'SYNTHETIC_CHAT_SUMMARY',
         rationale: 'Synthetic narrative title in chat summary 9x3 grid.',
       },
+      {
+        alias: 'Delhi Statutory Assembly vs Municipal Ward Disambiguation',
+        source: 'Directive 100 Implementation Report Table',
+        discrepancyType: 'ERRONEOUS_CONFLATION',
+        rationale: 'Erroneous table assignment in Directive 100 Section 3.1 misassigning Delhi ward disambiguation to W021.5-A-02, conflating with W021.5-A-03.',
+      },
     ],
   },
   'W021.5-A-03': {
@@ -444,6 +468,12 @@ export const OLD_TO_CANONICAL_TASK_MAPPING = {
         source: 'Directive 099 Executive Chat Summary',
         discrepancyType: 'SYNTHETIC_CHAT_SUMMARY',
         rationale: 'Synthetic narrative title in chat summary 9x3 grid.',
+      },
+      {
+        alias: 'OMITTED_FROM_DIRECTIVE_100_REPORT_TABLE',
+        source: 'Directive 100 Implementation Report Table',
+        discrepancyType: 'OMITTED_TASK',
+        rationale: 'Directive 100 Section 3.1 table omitted W021.5-A-03 after misallocating its requirement to W021.5-A-02.',
       },
     ],
   },
@@ -952,6 +982,94 @@ export const OLD_TO_CANONICAL_TASK_MAPPING = {
     ],
   },
 };
+
+/**
+ * Phantom tasks and unapproved task dispositions identified across historical reports and adversarial tests.
+ */
+export const PHANTOM_TASK_DISPOSITIONS = {
+  'W021.5-B2-01': {
+    phantomTaskId: 'W021.5-B2-01',
+    phantomTitle: 'Temporal Delimitation Lineage Engine & Spatial Evolution Tracking',
+    stageId: 'STAGE_B2',
+    weight: 4.0,
+    disposition: 'REJECTED_PHANTOM_TASK',
+    canonicalMapping: 'W021.5-B1-03',
+    rationale: 'Invented in Directive 100 report table under unapproved STAGE_B2. Temporal delimitation lineage is authoritatively governed under W021.5-B1-03 in STAGE_B.',
+  },
+  'W021.5-B2-02': {
+    phantomTaskId: 'W021.5-B2-02',
+    phantomTitle: 'Comprehensive Delimitation Change Engine & Invariant Integrity',
+    stageId: 'STAGE_B2',
+    weight: 3.0,
+    disposition: 'REJECTED_PHANTOM_TASK',
+    canonicalMapping: 'W021.5-B1-03',
+    rationale: 'Invented in Directive 100 report table under unapproved STAGE_B2. Delimitation change tracking is authoritatively part of W021.5-B1-03 in STAGE_B.',
+  },
+  'W021.5-B2-03': {
+    phantomTaskId: 'W021.5-B2-03',
+    phantomTitle: 'Spatial Audit Framework & Topological Boundary Repair Pipeline',
+    stageId: 'STAGE_B2',
+    weight: 3.0,
+    disposition: 'REJECTED_PHANTOM_TASK',
+    canonicalMapping: 'W021.5-B1-04',
+    rationale: 'Invented in Directive 100 report table under unapproved STAGE_B2. Boundary validation and repair is authoritatively governed under W021.5-B1-04 in STAGE_B.',
+  },
+  'W021.5-I-03': {
+    phantomTaskId: 'W021.5-I-03',
+    phantomTitle: 'Synthetic Adversarial Verification Task',
+    stageId: 'STAGE_I',
+    weight: 1.0,
+    disposition: 'REJECTED_PHANTOM_TASK',
+    canonicalMapping: null,
+    rationale: 'Synthetic adversarial test fixture task used to verify fail-closed ledger rejection.',
+  },
+};
+
+/**
+ * Resolves an arbitrary task ID, title, or alias into its canonical identity or rejected phantom status.
+ */
+export function resolveTaskIdentity(identifier) {
+  if (!identifier || typeof identifier !== 'string') return null;
+  const trimmed = identifier.trim();
+  if (CANONICAL_TASK_METADATA[trimmed]) {
+    return {
+      status: 'CANONICAL',
+      canonicalTaskId: trimmed,
+      metadata: CANONICAL_TASK_METADATA[trimmed],
+    };
+  }
+  if (PHANTOM_TASK_DISPOSITIONS[trimmed]) {
+    return {
+      status: 'REJECTED_PHANTOM',
+      phantomTaskId: trimmed,
+      disposition: PHANTOM_TASK_DISPOSITIONS[trimmed],
+    };
+  }
+  for (const [canonicalId, meta] of Object.entries(CANONICAL_TASK_METADATA)) {
+    if (meta.canonicalTitle === trimmed) {
+      return {
+        status: 'CANONICAL_BY_TITLE',
+        canonicalTaskId: canonicalId,
+        metadata: meta,
+      };
+    }
+  }
+  for (const [canonicalId, mapping] of Object.entries(OLD_TO_CANONICAL_TASK_MAPPING)) {
+    const matched = mapping.historicalAliases.find((a) => a.alias === trimmed);
+    if (matched) {
+      return {
+        status: 'HISTORICAL_ALIAS',
+        canonicalTaskId: canonicalId,
+        metadata: CANONICAL_TASK_METADATA[canonicalId],
+        aliasInfo: matched,
+      };
+    }
+  }
+  return {
+    status: 'UNKNOWN',
+    identifier: trimmed,
+  };
+}
 
 /**
  * Validates canonical identity, title, weight, stage, and specRef for a task.
@@ -4097,7 +4215,7 @@ export function generateLedgerMarkdown(ledger, inputSummary) {
   let md = `# KSHETRA W021.5 — Traceable Execution Ledger & Multi-Dimensional Accounting Report
 
 > **Governance Authority:** Master Execution Framework Amendment v1.2 / Rule IV-001 (Non-Self-Acceptance)  
-> **Directive Lineage:** CTO Directive 086 through CTO Directive 100  
+> **Directive Lineage:** CTO Directive 086 through CTO Directive 101  
 > **Status:** \`SUBMITTED_FOR_INDEPENDENT_REVIEW\` — STRICTLY UNACCEPTED  
 > **Financial Defect Status:** \`DQ-W021.5-B2.2E-001\` — **STRICTLY OPEN**, pending separate CTO adjudication  
 > **Database Boundary:** Repository-Only Offline Verification (Zero database migrations, mutations, staging, or production execution)  
@@ -4245,7 +4363,7 @@ export function reconcileExecutionLedger(options = {}) {
     validateStageAccounting(stage, opts);
   }
 
-  ledger.directive = 'CTO Directive 086 / CTO Directive 087 / CTO Directive 088 / CTO Directive 089 / CTO Directive 090 / CTO Directive 091 / CTO Directive 092 / CTO Directive 093 / CTO Directive 094 / CTO Directive 095 / CTO Directive 096 / CTO Directive 097 / CTO Directive 098 / CTO Directive 099 / CTO Directive 100';
+  ledger.directive = 'CTO Directive 086 / CTO Directive 087 / CTO Directive 088 / CTO Directive 089 / CTO Directive 090 / CTO Directive 091 / CTO Directive 092 / CTO Directive 093 / CTO Directive 094 / CTO Directive 095 / CTO Directive 096 / CTO Directive 097 / CTO Directive 098 / CTO Directive 099 / CTO Directive 100 / CTO Directive 101';
 
   // Compute summary
   const summary = computeLedgerSummary(ledger, opts);

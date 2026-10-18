@@ -1,0 +1,399 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "specificationId": "W021.5-MASTER-SPECIFICATION-V1.0",
+  "milestone": "W021.5",
+  "title": "National Political Intelligence and Candidate Transparency",
+  "governingAuthority": "CTO Directive 086 / Commit be4ba41 / reports/W021.5-CANONICAL-ARCHITECTURE-READINESS-PACKAGE.md",
+  "historicalOriginCommit": "be4ba41f74616e068b531df17780080a1a946bbd",
+  "totalMilestoneWeight": 100.0,
+  "stageCount": 9,
+  "taskCount": 27,
+  "criteriaCount": 50,
+  "numericPrecisionPolicy": {
+    "precisionDecimals": 3,
+    "tolerance": 0.001,
+    "conservationRule": "Sum of all task weights must equal exactly 100.000%, sum of stage weights must equal exactly 100.000%, and sum of criterion weight ratios per task must equal exactly 1.000."
+  },
+  "stages": [
+    {
+      "stageId": "STAGE_A",
+      "stageName": "Repository & National Data-Truth Audit (W021.5-A)",
+      "approvedWeight": 10.0,
+      "taskIds": ["W021.5-A-01", "W021.5-A-02", "W021.5-A-03"]
+    },
+    {
+      "stageId": "STAGE_B",
+      "stageName": "Canonical Jurisdiction & Geography Modeling (W021.5-B1)",
+      "approvedWeight": 12.0,
+      "taskIds": ["W021.5-B1-01", "W021.5-B1-02", "W021.5-B1-03", "W021.5-B1-04"]
+    },
+    {
+      "stageId": "STAGE_C",
+      "stageName": "Canonical Political Organization Registry (W021.5-B2.2-A, B, C)",
+      "approvedWeight": 12.0,
+      "taskIds": ["W021.5-C-01", "W021.5-C-02", "W021.5-C-03"]
+    },
+    {
+      "stageId": "STAGE_D",
+      "stageName": "Candidacies, Contests & Multi-Election Normalization (W021.5-B2.2-D)",
+      "approvedWeight": 14.0,
+      "taskIds": ["W021.5-D-01", "W021.5-D-02", "W021.5-D-03"]
+    },
+    {
+      "stageId": "STAGE_E",
+      "stageName": "Candidate Affidavits, Demographics & Financial Disclosures (W021.5-B2.2-E)",
+      "approvedWeight": 14.0,
+      "taskIds": ["W021.5-E-01", "W021.5-E-02", "W021.5-E-03"]
+    },
+    {
+      "stageId": "STAGE_F",
+      "stageName": "Multi-Election History & Longitudinal Results Normalization (W021.5-B2.2-F)",
+      "approvedWeight": 10.0,
+      "taskIds": ["W021.5-F-01", "W021.5-F-02"]
+    },
+    {
+      "stageId": "STAGE_G",
+      "stageName": "Fastify API Layer Strangulation & Contract Hardening (W021.5-B3)",
+      "approvedWeight": 12.0,
+      "taskIds": ["W021.5-G-01", "W021.5-G-02", "W021.5-G-03"]
+    },
+    {
+      "stageId": "STAGE_H",
+      "stageName": "Mobile Client Strangler Migration & Provenance Precedence (W021.5-B4)",
+      "approvedWeight": 10.0,
+      "taskIds": ["W021.5-H-01", "W021.5-H-02", "W021.5-H-03", "W021.5-H-04"]
+    },
+    {
+      "stageId": "STAGE_I",
+      "stageName": "Canonical Offline SQLite Sync Engine & Final Production Synchronization (W021.5-B5)",
+      "approvedWeight": 6.0,
+      "taskIds": ["W021.5-I-01", "W021.5-I-02"]
+    }
+  ],
+  "tasks": {
+    "W021.5-A-01": {
+      "taskId": "W021.5-A-01",
+      "canonicalTitle": "Comprehensive 29-Domain Data-Truth Audit",
+      "stageId": "STAGE_A",
+      "stageName": "Repository & National Data-Truth Audit (W021.5-A)",
+      "approvedWeight": 3.0,
+      "governingSpecRef": "W021.5-A Section 1-2",
+      "governingRequirement": "REQ-AUD-001",
+      "taskClassification": "CORE_SPECIFICATION",
+      "expectedCriteriaCount": 2,
+      "offlineRepoVerifiable": true
+    },
+    "W021.5-A-02": {
+      "taskId": "W021.5-A-02",
+      "canonicalTitle": "Multi-Dimensional National Data Coverage Matrix Generator",
+      "stageId": "STAGE_A",
+      "stageName": "Repository & National Data-Truth Audit (W021.5-A)",
+      "approvedWeight": 4.0,
+      "governingSpecRef": "Directive 085 / Directive 086 Section 2",
+      "governingRequirement": "REQ-AUD-002",
+      "taskClassification": "HARDENING_EXTENSION",
+      "expectedCriteriaCount": 2,
+      "offlineRepoVerifiable": true
+    },
+    "W021.5-A-03": {
+      "taskId": "W021.5-A-03",
+      "canonicalTitle": "Delhi 70-Seat Statutory Assembly Invariant & Demographic Placeholder Isolation",
+      "stageId": "STAGE_A",
+      "stageName": "Repository & National Data-Truth Audit (W021.5-A)",
+      "approvedWeight": 3.0,
+      "governingSpecRef": "Directive 085 Workstream A / Directive 086 Workstream A",
+      "governingRequirement": "REQ-AUD-003",
+      "taskClassification": "HARDENING_EXTENSION",
+      "expectedCriteriaCount": 2,
+      "offlineRepoVerifiable": true
+    },
+    "W021.5-B1-01": {
+      "taskId": "W021.5-B1-01",
+      "canonicalTitle": "National 4,123 Assembly Constituency Canonicalization",
+      "stageId": "STAGE_B",
+      "stageName": "Canonical Jurisdiction & Geography Modeling (W021.5-B1)",
+      "approvedWeight": 4.0,
+      "governingSpecRef": "W021.5-B1 Migration 059",
+      "governingRequirement": "REQ-GEO-001",
+      "taskClassification": "CORE_SPECIFICATION",
+      "expectedCriteriaCount": 2,
+      "offlineRepoVerifiable": true
+    },
+    "W021.5-B1-02": {
+      "taskId": "W021.5-B1-02",
+      "canonicalTitle": "National AC-to-PC Parliamentary Mapping Registry",
+      "stageId": "STAGE_B",
+      "stageName": "Canonical Jurisdiction & Geography Modeling (W021.5-B1)",
+      "approvedWeight": 3.0,
+      "governingSpecRef": "W021.5-B1 Migration 060, 061",
+      "governingRequirement": "REQ-GEO-002",
+      "taskClassification": "CORE_SPECIFICATION",
+      "expectedCriteriaCount": 2,
+      "offlineRepoVerifiable": true
+    },
+    "W021.5-B1-03": {
+      "taskId": "W021.5-B1-03",
+      "canonicalTitle": "Temporal Lineage & Assam 2023 Delimitation Modeling",
+      "stageId": "STAGE_B",
+      "stageName": "Canonical Jurisdiction & Geography Modeling (W021.5-B1)",
+      "approvedWeight": 3.0,
+      "governingSpecRef": "W021.5-B1 Migration 062",
+      "governingRequirement": "REQ-GEO-003",
+      "taskClassification": "CORE_SPECIFICATION",
+      "expectedCriteriaCount": 2,
+      "offlineRepoVerifiable": true
+    },
+    "W021.5-B1-04": {
+      "taskId": "W021.5-B1-04",
+      "canonicalTitle": "National Assembly Boundary GeoJSON Deep Validation & Linkage",
+      "stageId": "STAGE_B",
+      "stageName": "Canonical Jurisdiction & Geography Modeling (W021.5-B1)",
+      "approvedWeight": 2.0,
+      "governingSpecRef": "Directive 086 Workstream A",
+      "governingRequirement": "REQ-GEO-004",
+      "taskClassification": "CORE_SPECIFICATION",
+      "expectedCriteriaCount": 2,
+      "offlineRepoVerifiable": false
+    },
+    "W021.5-C-01": {
+      "taskId": "W021.5-C-01",
+      "canonicalTitle": "Political Organization Governance & Multilingual Extension Schema",
+      "stageId": "STAGE_C",
+      "stageName": "Canonical Political Organization Registry (W021.5-B2.2-A, B, C)",
+      "approvedWeight": 4.0,
+      "governingSpecRef": "W021.5-B2.2-B Migration 064",
+      "governingRequirement": "REQ-ORG-001",
+      "taskClassification": "CORE_SPECIFICATION",
+      "expectedCriteriaCount": 2,
+      "offlineRepoVerifiable": true
+    },
+    "W021.5-C-02": {
+      "taskId": "W021.5-C-02",
+      "canonicalTitle": "1,207 Canonical Political Organizations Catalog Ingestion",
+      "stageId": "STAGE_C",
+      "stageName": "Canonical Political Organization Registry (W021.5-B2.2-A, B, C)",
+      "approvedWeight": 5.0,
+      "governingSpecRef": "W021.5-B2.2-C Migration 065",
+      "governingRequirement": "REQ-ORG-002",
+      "taskClassification": "CORE_SPECIFICATION",
+      "expectedCriteriaCount": 2,
+      "offlineRepoVerifiable": false
+    },
+    "W021.5-C-03": {
+      "taskId": "W021.5-C-03",
+      "canonicalTitle": "Multilingual Party Names, Aliases & Symbols Matrix",
+      "stageId": "STAGE_C",
+      "stageName": "Canonical Political Organization Registry (W021.5-B2.2-A, B, C)",
+      "approvedWeight": 3.0,
+      "governingSpecRef": "W021.5-B2.2-C",
+      "governingRequirement": "REQ-ORG-003",
+      "taskClassification": "CORE_SPECIFICATION",
+      "expectedCriteriaCount": 3,
+      "offlineRepoVerifiable": true
+    },
+    "W021.5-D-01": {
+      "taskId": "W021.5-D-01",
+      "canonicalTitle": "Canonical Persons & Entity Deduplication Foundation",
+      "stageId": "STAGE_D",
+      "stageName": "Candidacies, Contests & Multi-Election Normalization (W021.5-B2.2-D)",
+      "approvedWeight": 4.0,
+      "governingSpecRef": "W021.5-B2.2-D Migration 050, 063",
+      "governingRequirement": "REQ-CND-001",
+      "taskClassification": "CORE_SPECIFICATION",
+      "expectedCriteriaCount": 2,
+      "offlineRepoVerifiable": true
+    },
+    "W021.5-D-02": {
+      "taskId": "W021.5-D-02",
+      "canonicalTitle": "Candidate Population & Contest Mapping Across 10 Chunks",
+      "stageId": "STAGE_D",
+      "stageName": "Candidacies, Contests & Multi-Election Normalization (W021.5-B2.2-D)",
+      "approvedWeight": 6.0,
+      "governingSpecRef": "W021.5-B2.2-D Chunks 01-10",
+      "governingRequirement": "REQ-CND-002",
+      "taskClassification": "CORE_SPECIFICATION",
+      "expectedCriteriaCount": 2,
+      "offlineRepoVerifiable": false
+    },
+    "W021.5-D-03": {
+      "taskId": "W021.5-D-03",
+      "canonicalTitle": "Candidate-to-Contest Foreign Key Constraint Linkage (Migration 067)",
+      "stageId": "STAGE_D",
+      "stageName": "Candidacies, Contests & Multi-Election Normalization (W021.5-B2.2-D)",
+      "approvedWeight": 4.0,
+      "governingSpecRef": "Directive 086 Section 5",
+      "governingRequirement": "REQ-CND-003",
+      "taskClassification": "CORE_SPECIFICATION",
+      "expectedCriteriaCount": 1,
+      "offlineRepoVerifiable": false
+    },
+    "W021.5-E-01": {
+      "taskId": "W021.5-E-01",
+      "canonicalTitle": "Constituency Demographic Profiles & Aggregates Ingestion",
+      "stageId": "STAGE_E",
+      "stageName": "Candidate Affidavits, Demographics & Financial Disclosures (W021.5-B2.2-E)",
+      "approvedWeight": 4.0,
+      "governingSpecRef": "W021.5-B2.2-E Migration 066",
+      "governingRequirement": "REQ-DEM-001",
+      "taskClassification": "CORE_SPECIFICATION",
+      "expectedCriteriaCount": 2,
+      "offlineRepoVerifiable": false
+    },
+    "W021.5-E-02": {
+      "taskId": "W021.5-E-02",
+      "canonicalTitle": "Financial Defect DQ-W021.5-B2.2E-001 Formal Adjudication",
+      "stageId": "STAGE_E",
+      "stageName": "Candidate Affidavits, Demographics & Financial Disclosures (W021.5-B2.2-E)",
+      "approvedWeight": 5.0,
+      "governingSpecRef": "Rule IV-001 / Defect Register",
+      "governingRequirement": "REQ-FIN-001",
+      "taskClassification": "CORE_SPECIFICATION",
+      "expectedCriteriaCount": 1,
+      "offlineRepoVerifiable": false
+    },
+    "W021.5-E-03": {
+      "taskId": "W021.5-E-03",
+      "canonicalTitle": "Normalized Candidate Affidavit Disclosure Schema (Migration 068)",
+      "stageId": "STAGE_E",
+      "stageName": "Candidate Affidavits, Demographics & Financial Disclosures (W021.5-B2.2-E)",
+      "approvedWeight": 5.0,
+      "governingSpecRef": "Directive 086 Section 5",
+      "governingRequirement": "REQ-FIN-002",
+      "taskClassification": "CORE_SPECIFICATION",
+      "expectedCriteriaCount": 1,
+      "offlineRepoVerifiable": false
+    },
+    "W021.5-F-01": {
+      "taskId": "W021.5-F-01",
+      "canonicalTitle": "Longitudinal Election Event & Contest Schema Normalization",
+      "stageId": "STAGE_F",
+      "stageName": "Multi-Election History & Longitudinal Results Normalization (W021.5-B2.2-F)",
+      "approvedWeight": 4.0,
+      "governingSpecRef": "W021.5-B2.2-F Migration 051",
+      "governingRequirement": "REQ-HIS-001",
+      "taskClassification": "CORE_SPECIFICATION",
+      "expectedCriteriaCount": 2,
+      "offlineRepoVerifiable": true
+    },
+    "W021.5-F-02": {
+      "taskId": "W021.5-F-02",
+      "canonicalTitle": "National Multi-Election Historical Results Ingestion",
+      "stageId": "STAGE_F",
+      "stageName": "Multi-Election History & Longitudinal Results Normalization (W021.5-B2.2-F)",
+      "approvedWeight": 6.0,
+      "governingSpecRef": "Directive 085 / Directive 086 Workstream A",
+      "governingRequirement": "REQ-HIS-002",
+      "taskClassification": "CORE_SPECIFICATION",
+      "expectedCriteriaCount": 3,
+      "offlineRepoVerifiable": false
+    },
+    "W021.5-G-01": {
+      "taskId": "W021.5-G-01",
+      "canonicalTitle": "API Election Contract Nullability & Missing-Value Preservation",
+      "stageId": "STAGE_G",
+      "stageName": "Fastify API Layer Strangulation & Contract Hardening (W021.5-B3)",
+      "approvedWeight": 4.0,
+      "governingSpecRef": "Directive 085 / Directive 086 Workstream C",
+      "governingRequirement": "REQ-API-001",
+      "taskClassification": "CORE_SPECIFICATION",
+      "expectedCriteriaCount": 2,
+      "offlineRepoVerifiable": true
+    },
+    "W021.5-G-02": {
+      "taskId": "W021.5-G-02",
+      "canonicalTitle": "Elimination of State-Code Election-Year Inferences in stateData.ts",
+      "stageId": "STAGE_G",
+      "stageName": "Fastify API Layer Strangulation & Contract Hardening (W021.5-B3)",
+      "approvedWeight": 4.0,
+      "governingSpecRef": "Directive 086 Workstream B",
+      "governingRequirement": "REQ-API-002",
+      "taskClassification": "CORE_SPECIFICATION",
+      "expectedCriteriaCount": 2,
+      "offlineRepoVerifiable": true
+    },
+    "W021.5-G-03": {
+      "taskId": "W021.5-G-03",
+      "canonicalTitle": "Fastify Canonical DB-Backed Route Strangulation",
+      "stageId": "STAGE_G",
+      "stageName": "Fastify API Layer Strangulation & Contract Hardening (W021.5-B3)",
+      "approvedWeight": 4.0,
+      "governingSpecRef": "W006 Strangler Migration Phase 1-4",
+      "governingRequirement": "REQ-API-003",
+      "taskClassification": "CORE_SPECIFICATION",
+      "expectedCriteriaCount": 1,
+      "offlineRepoVerifiable": false
+    },
+    "W021.5-H-01": {
+      "taskId": "W021.5-H-01",
+      "canonicalTitle": "Mobile DTO Validation Hardening & Nullable Election Year Support",
+      "stageId": "STAGE_H",
+      "stageName": "Mobile Client Strangler Migration & Provenance Precedence (W021.5-B4)",
+      "approvedWeight": 3.0,
+      "governingSpecRef": "Directive 085 / Directive 086 Workstream C",
+      "governingRequirement": "REQ-MOB-001",
+      "taskClassification": "CORE_SPECIFICATION",
+      "expectedCriteriaCount": 2,
+      "offlineRepoVerifiable": true
+    },
+    "W021.5-H-02": {
+      "taskId": "W021.5-H-02",
+      "canonicalTitle": "Section-Level Provenance Badges in Constituency UI",
+      "stageId": "STAGE_H",
+      "stageName": "Mobile Client Strangler Migration & Provenance Precedence (W021.5-B4)",
+      "approvedWeight": 3.0,
+      "governingSpecRef": "Directive 086 Workstream C",
+      "governingRequirement": "REQ-MOB-002",
+      "taskClassification": "CORE_SPECIFICATION",
+      "expectedCriteriaCount": 2,
+      "offlineRepoVerifiable": true
+    },
+    "W021.5-H-03": {
+      "taskId": "W021.5-H-03",
+      "canonicalTitle": "Mobile Journey Decoupling from Legacy election2023 Alias",
+      "stageId": "STAGE_H",
+      "stageName": "Mobile Client Strangler Migration & Provenance Precedence (W021.5-B4)",
+      "approvedWeight": 2.0,
+      "governingSpecRef": "Directive 085 Workstream B / Directive 086 Workstream C",
+      "governingRequirement": "REQ-MOB-003",
+      "taskClassification": "CORE_SPECIFICATION",
+      "expectedCriteriaCount": 2,
+      "offlineRepoVerifiable": true
+    },
+    "W021.5-H-04": {
+      "taskId": "W021.5-H-04",
+      "canonicalTitle": "Mobile Write Strangler Migration (Class B Deprecation)",
+      "stageId": "STAGE_H",
+      "stageName": "Mobile Client Strangler Migration & Provenance Precedence (W021.5-B4)",
+      "approvedWeight": 2.0,
+      "governingSpecRef": "W006-R1A Class B Matrix",
+      "governingRequirement": "REQ-MOB-004",
+      "taskClassification": "CORE_SPECIFICATION",
+      "expectedCriteriaCount": 2,
+      "offlineRepoVerifiable": false
+    },
+    "W021.5-I-01": {
+      "taskId": "W021.5-I-01",
+      "canonicalTitle": "Mobile SQLite Canonical Offline Sync Schema & Engine",
+      "stageId": "STAGE_I",
+      "stageName": "Canonical Offline SQLite Sync Engine & Final Production Synchronization (W021.5-B5)",
+      "approvedWeight": 3.0,
+      "governingSpecRef": "W021.5-B5 Architecture Spec",
+      "governingRequirement": "REQ-SYS-001",
+      "taskClassification": "CORE_SPECIFICATION",
+      "expectedCriteriaCount": 1,
+      "offlineRepoVerifiable": false
+    },
+    "W021.5-I-02": {
+      "taskId": "W021.5-I-02",
+      "canonicalTitle": "Production Database Air-Gap Preservation & Cutover Preflight",
+      "stageId": "STAGE_I",
+      "stageName": "Canonical Offline SQLite Sync Engine & Final Production Synchronization (W021.5-B5)",
+      "approvedWeight": 3.0,
+      "governingSpecRef": "W021.5 Master Plan Section 10",
+      "governingRequirement": "REQ-SYS-002",
+      "taskClassification": "CORE_SPECIFICATION",
+      "expectedCriteriaCount": 1,
+      "offlineRepoVerifiable": false
+    }
+  }
+}
