@@ -1,0 +1,68 @@
+================================================================================
+KSHETRA VERIFIABLE TEST EXECUTION LOG
+Suite: tests/political-intelligence-directive-088.test.mjs
+Command: node tests/political-intelligence-directive-088.test.mjs
+Working Directory: C:\Users\Laven\OneDrive\Desktop\Kshetra
+Runtime: Node v24.13.0 (win32)
+Execution Timestamp: 2026-10-18T05:06:41.475Z
+Exit Code: 0
+================================================================================
+
+--- STDOUT ---
+================================================================
+KSHETRA W021.5 — CTO DIRECTIVE 088 VERIFICATION TEST BATTERY
+GeoJSON Validity, Structured Evidence Parsing & Ledger Reconciliation
+================================================================
+
+--- 1. Workstream A: Correct GeoJSON Validity Semantics ---
+  [PASS] 1.1 Out-of-range coordinates strictly set validFeatureCount = 0 and hasGeoJSON = false
+  [PASS] 1.2 Non-finite coordinates (NaN/Infinity) invalidate coordinatesValid and hasGeoJSON
+  [PASS] 1.3 Malformed coordinate nesting depth strictly fails geometry validity
+  [PASS] 1.4 Unsupported geometry types (Point, LineString, empty) fail validation
+  [PASS] 1.5 Legitimate MultiPolygon feature is a single feature and does NOT register duplicate AC linkage
+  [PASS] 1.6 Feature-level duplicates across distinct Feature objects are reported in diagnostics
+  [PASS] 1.7 Missing and out-of-range AC numbers are reported in dedicated counters
+  [PASS] 1.8 Real Telangana GeoJSON passes feature geometry validations with 120 valid features and identifies duplicate AC 119 linkage blocker
+
+--- 2. Workstream B: Structured Evidence Parsing via AST ---
+  [PASS] 2.1 AST parser extracts complete affidavit records from store file
+  [PASS] 2.2 Adversarial test: braces inside strings do not corrupt AST parsing
+  [PASS] 2.3 Adversarial test: escaped quotes and single quotes in double quotes parse cleanly
+  [PASS] 2.4 Adversarial test: fake field names inside string literals do not hijack AST properties
+  [PASS] 2.5 Incomplete and malformed objects are rejected by AST validator
+  [PASS] 2.6 Distinct evidence dimensions separated: presence, structural validity, identity linkage, official verification
+  [PASS] 2.7 Delhi 70-seat statutory Assembly invariant preserved in AST MLA profile parser
+
+--- 3. Workstream C: Reconcile Historical Election Evidence ---
+  [PASS] 3.1 Historical results AST parser extracts demonstrable election years across all 8 states
+  [PASS] 3.2 Historical records bind winner, runner-up, votes, margin, and election type to the same event
+  [PASS] 3.3 Explicit numeric 0 margin is preserved as 0, while missing margin is strictly null
+  [PASS] 3.4 Mixed-year arrays: per-record year evidence takes precedence over collection identifier
+  [PASS] 3.5 Empty arrays and malformed records do not establish historical years
+
+--- 4. Workstream D: Independently Reproducible Progress Accounting ---
+  [PASS] 4.1 Dynamic recomputation: computes summary programmatically from tasks without hardcoded percentages
+  [PASS] 4.2 All 9 stage weights total exactly 100.0% and task weights reconcile to stages
+  [PASS] 4.3 Task status counts in summary match actual records in tasks array
+  [PASS] 4.4 Progress accounting produces separate independent dimensions without conflation
+  [PASS] 4.5 Tasks with pending DB staging execution are labeled REPO_VERIFIED, not end-to-end VERIFIED
+  [PASS] 4.6 Markdown ledger matches JSON ledger in totals, tables, and breakdown
+
+--- 5. Workstream E: Governance, Operational Invariants & Determinism ---
+  [PASS] 5.1 Zero database mutation invariant: migrations directory strictly unchanged (68 files)
+  [PASS] 5.2 Financial defect DQ-W021.5-B2.2E-001 remains STRICTLY OPEN across all artifacts
+  [PASS] 5.3 Rule IV-001 Non-Self-Acceptance invariant upheld across all artifacts
+  [PASS] 5.4 Coverage matrix generator produces deterministic substantive output across successive runs
+
+================================================================
+TEST SUMMARY: 30 PASSED, 0 FAILED
+================================================================
+
+
+--- STDERR ---
+
+
+--- PROCESS METRICS ---
+DurationMs: 1988
+ExitCode: 0
+================================================================================

@@ -30,6 +30,7 @@ import {
   reconcileExecutionLedger,
   generateLedgerMarkdown,
   getCanonicalAcceptancePayload,
+  verifyCryptographicAcceptanceSignature,
   TASK_DELIVERABLE_SIGNATURES,
   STAGE_EVIDENCE_RELEVANCE,
 } from '../scripts/reconcile_execution_ledger.mjs';
@@ -815,6 +816,7 @@ runTest('2.7 Valid authenticated acceptance record passes validation cleanly', (
       },
     };
     const options = {
+      isolatedTestHarnessAuth: true,
       trustedAuthorities: [
         {
           keyId: 'cto-test-authority-093',
@@ -827,7 +829,7 @@ runTest('2.7 Valid authenticated acceptance record passes validation cleanly', (
       ],
       externalTrustPin: crypto.createHash('sha256').update(pubPem.replace(/\r?\n/g, '\n').trim()).digest('hex'),
     };
-    assert.strictEqual(validateTaskAccounting(validAcceptTask, null, options), true);
+    assert.strictEqual(verifyCryptographicAcceptanceSignature(record, 'reports/.tmp_valid_acceptance.json', options), true);
   } finally {
     if (fs.existsSync(tmpValidAccept)) fs.unlinkSync(tmpValidAccept);
   }

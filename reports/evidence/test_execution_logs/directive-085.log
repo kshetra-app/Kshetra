@@ -1,0 +1,53 @@
+================================================================================
+KSHETRA VERIFIABLE TEST EXECUTION LOG
+Suite: tests/political-intelligence-directive-085.test.mjs
+Command: node tests/political-intelligence-directive-085.test.mjs
+Working Directory: C:\Users\Laven\OneDrive\Desktop\Kshetra
+Runtime: Node v24.13.0 (win32)
+Execution Timestamp: 2026-10-18T05:06:38.246Z
+Exit Code: 0
+================================================================================
+
+--- STDOUT ---
+================================================================
+KSHETRA W021.5 — CTO DIRECTIVE 085 REGRESSION VERIFICATION SUITE
+Canonical Political Truth, Evidence-Based Coverage & Contract Integrity
+================================================================
+
+--- 1. National Data Coverage Matrix & Observable Evidence ---
+  [PASS] 1.1 Matrix artifacts exist on disk and reference CTO Directive 085
+  [PASS] 1.2 Exactly 31 Indian states and Union Territories are audited across all dimensions
+  [PASS] 1.3 Rule IV-001 Invariant: Zero states promoted to CANONICAL_FULL without evidence
+  [PASS] 1.4 Evidence-derived tier breakdown distinguishes GeoJSON and Historical depth
+  [PASS] 1.5 Delhi 70-seat statutory boundary invariant and placeholder accounting
+  [PASS] 1.6 Historical election years are tied to per-constituency data records, not inferred
+  [PASS] 1.7 JSON and Markdown reports agree on key summary statistics
+
+--- 2. Truthful Electoral Contracts & Null Preservation ---
+  [PASS] 2.1 Fastify schema allows nullable electionYear and strictly enums electionType
+  [PASS] 2.2 stateData service preserves null for unknown electionYear without 2024 defaulting
+  [PASS] 2.3 Margin percent is strictly null when margin or winnerVotes is missing or invalid
+  [PASS] 2.4 Mobile API client endpoint validates nullable electionYear without 2024 fallback
+
+--- 3. Mobile UI Precedence & Provenance Truthfulness ---
+  [PASS] 3.1 Constituency screen renders truthful mixed-source provenance badge
+  [PASS] 3.2 Constituency screen effective election year preserves null without 2024 fallback
+  [PASS] 3.3 SequenceGuard cancellation and stale response protection active
+
+--- 4. Governance, Lineage & Operational Boundaries ---
+  [PASS] 4.1 Zero database mutation invariant: migrations directory strictly unchanged (68 files)
+  [PASS] 4.2 Financial defect DQ-W021.5-B2.2E-001 remains STRICTLY OPEN under Rule IV-001
+  [PASS] 4.3 Non-self-acceptance invariant: report discloses that passing tests != CTO acceptance
+
+================================================================
+TEST SUMMARY: 17 PASSED, 0 FAILED
+================================================================
+
+
+--- STDERR ---
+
+
+--- PROCESS METRICS ---
+DurationMs: 157
+ExitCode: 0
+================================================================================

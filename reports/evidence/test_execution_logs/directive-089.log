@@ -1,0 +1,77 @@
+================================================================================
+KSHETRA VERIFIABLE TEST EXECUTION LOG
+Suite: tests/political-intelligence-directive-089.test.mjs
+Command: node tests/political-intelligence-directive-089.test.mjs
+Working Directory: C:\Users\Laven\OneDrive\Desktop\Kshetra
+Runtime: Node v24.13.0 (win32)
+Execution Timestamp: 2026-10-18T05:06:44.922Z
+Exit Code: 0
+================================================================================
+
+--- STDOUT ---
+================================================================
+KSHETRA W021.5 — CTO DIRECTIVE 089 VERIFICATION TEST BATTERY
+Evidence-Truth Closure: AST Parsing, Statutory Coverage & Ledger
+================================================================
+
+--- 1. Workstream A: Fail-Closed TypeScript AST Parsing ---
+  [PASS] 1.1 Syntax errors in TypeScript source fail closed with diagnostics and zero records
+  [PASS] 1.2 Computed property keys fail closed with explicit diagnostic without silent conversion
+  [PASS] 1.3 Shorthand properties fail closed with explicit diagnostic without silent conversion
+  [PASS] 1.4 Spread expressions fail closed with explicit diagnostic without silent conversion
+  [PASS] 1.5 Variable identifiers fail closed with explicit diagnostic without silent conversion
+  [PASS] 1.6 Valid literal subset parses correctly (numeric separators, negative numbers, braces in strings, null, booleans)
+
+--- 2. Workstream B: Mandatory Historical Election Event Reconciliation ---
+  [PASS] 2.1 Yearless records inside year-named collections remain yearless (collection identifier fallback removed)
+  [PASS] 2.2 Record-level year precedence: electionYear ?? year extracted correctly
+  [PASS] 2.3 Conflicting record-level year fields (electionYear !== year) fail closed as malformed
+  [PASS] 2.4 Out-of-constitutional-era years (< 1947 or > 2030) fail closed as yearless
+  [PASS] 2.5 Numeric margin 0 is preserved as 0, while missing margin is strictly null
+  [PASS] 2.6 Negative metrics (votes < 0, margin < 0) fail closed as malformed records
+  [PASS] 2.7 Reconciled records bind winner, runner-up, votes, margin, and election type to same event record
+
+--- 3. Workstream C: Evidence Taxonomy & URL Format Validation ---
+  [PASS] 3.1 Valid HTTP/HTTPS URLs increment urlFormatValidCount and sourceProvenanceRecordedCount
+  [PASS] 3.2 Invalid URLs fail format check, receive status PROVENANCE_UNRECORDED_INVALID_URL, and do not increment provenance count
+  [PASS] 3.3 Statutory identity separation: seatNumberInRangeCount vs identityValidatedCount vs identityUnresolvedCount
+  [PASS] 3.4 Local seed records maintain officiallyVerifiedCount: 0, canonicalDatabaseBacked: false, formallyAccepted: false
+
+--- 4. Workstream D: GeoJSON RFC 7946 Validation & Statutory Completeness ---
+  [PASS] 4.1 Unclosed polygon ring (first position !== last position) strictly fails RFC 7946 validation
+  [PASS] 4.2 Polygon ring with fewer than 4 coordinate positions strictly fails RFC 7946 validation
+  [PASS] 4.3 Features rejected before coordinate traversal do NOT increment coordinateNumeric or coordinateRange counters
+  [PASS] 4.4 Incomplete statutory coverage is detected (statutoryComplete: false) while feature-level validity is preserved
+  [PASS] 4.5 Legitimate MultiPolygon feature does NOT produce duplicate AC linkage
+  [PASS] 4.6 Duplicate feature objects claiming same AC are flagged in duplicateLinkedAcs and duplicateFeatureCount
+
+--- 5. Workstream E: Evidence-Driven Progress Accounting ---
+  [PASS] 5.1 All 27 tasks contain explicit accounting objects with required metadata fields
+  [PASS] 5.2 Programmatically computed progress dimensions: 61.5% repo readiness, 10.5% database pending
+  [PASS] 5.3 Mutually exclusive status partition totals exactly 27 (15/16 REPO_VERIFIED, 5/6 PARTIAL, 5 BLOCKED, 1 NOT_IMPLEMENTED)
+  [PASS] 5.4 Task W021.5-C-02 investigated under DEC-033: marked PARTIAL/REPO_VERIFIED with formal acceptance PENDING_INDEPENDENT_CONFIRMATION
+  [PASS] 5.5 Stage weights total exactly 100.0% and task weights reconcile to stages
+  [PASS] 5.6 Markdown ledger matches JSON ledger across all totals, dimensions, and governance invariants
+
+--- 6. Workstream F: Governance Invariants & Output Determinism ---
+  [PASS] 6.1 Zero database mutation invariant: 68 files in supabase/migrations/ unchanged
+  [PASS] 6.2 Financial defect DQ-W021.5-B2.2E-001 remains STRICTLY OPEN across all artifacts
+  [PASS] 6.3 Rule IV-001 Non-Self-Acceptance invariant upheld across all artifacts
+  [PASS] 6.4 National coverage matrix generator produces deterministic substantive output across runs
+
+================================================================
+TEST SUMMARY: 33 PASSED, 0 FAILED
+================================================================
+
+
+--- STDERR ---
+(node:20856) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///C:/Users/Laven/OneDrive/Desktop/Kshetra/data/seed/telangana-constituencies.ts is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to C:\Users\Laven\OneDrive\Desktop\Kshetra\data\seed\package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+--- PROCESS METRICS ---
+DurationMs: 3443
+ExitCode: 0
+================================================================================

@@ -1,0 +1,65 @@
+================================================================================
+KSHETRA VERIFIABLE TEST EXECUTION LOG
+Suite: tests/political-intelligence-directive-087.test.mjs
+Command: node tests/political-intelligence-directive-087.test.mjs
+Working Directory: C:\Users\Laven\OneDrive\Desktop\Kshetra
+Runtime: Node v24.13.0 (win32)
+Execution Timestamp: 2026-10-18T05:06:39.484Z
+Exit Code: 0
+================================================================================
+
+--- STDOUT ---
+================================================================
+KSHETRA W021.5 — CTO DIRECTIVE 087 REGRESSION VERIFICATION SUITE
+Coverage Integrity, Election-Truth Contract Closure & Ledger Adjudication
+================================================================
+
+--- 1. Workstream A: Constituency Coverage Accounting & Deduplication ---
+  [PASS] 1.1 Deduplication invariant: duplicate ACs cannot inflate seeded counts or national totals
+  [PASS] 1.2 Adversarial seed validation: malformed, missing, and out-of-range records reported independently
+  [PASS] 1.3 Delhi 70-seat statutory invariant and demographic placeholder isolation
+  [PASS] 1.4 All summary totals reconcile with detailed state-level inventory
+
+--- 2. Workstream B: Close GeoJSON Validation Gaps ---
+  [PASS] 2.1 Telangana GeoJSON passes all deep structural and coordinate validations
+  [PASS] 2.2 Negative test: out-of-range coordinates strictly force coordinateRangeValid=false and hasGeoJSON=false
+  [PASS] 2.3 Negative test: malformed geometry types (Point, LineString, empty) strictly fail validation
+  [PASS] 2.4 Negative test: non-numeric, NaN, or infinite coordinates strictly fail validation
+  [PASS] 2.5 Negative test: duplicate AC linkage and out-of-range AC linkage reported in diagnostics
+  [PASS] 2.6 GeoJSON validation distinguishes file presence, coordinates, range, linkage, and authoritative verification
+
+--- 3. Workstream C: Remove Residual Year and Election-Type Inference ---
+  [PASS] 3.1 stateData.ts contains ZERO fallback assigning electionType = GENERAL when year is known
+  [PASS] 3.2 stateData.ts strictly evaluates electionType from raw.electionType without year guessing
+  [PASS] 3.3 stateData.ts strictly binds winner, runner-up, votes, and margin to the same year term
+  [PASS] 3.4 stateData.ts preserves real numeric 0 margin while keeping missing margin strictly null
+  [PASS] 3.5 Coverage generator derives historical years from parsed records without hardcoded state lists
+
+--- 4. Workstream D: Semantic Honesty in Coverage Evidence ---
+  [PASS] 4.1 Affidavit parsing structurally extracts complete records and separates evidence statuses
+  [PASS] 4.2 MLA profile counting parses structured records with required fields (no regex text assumption)
+  [PASS] 4.3 Zero states promoted to CANONICAL_FULL without live database verification
+
+--- 5. Workstream E: Reconciled Execution Ledger Accounting ---
+  [PASS] 5.1 Execution ledger JSON exists with reproducible weighted math and task reconciliation
+  [PASS] 5.2 Ledger explicitly differentiates repository readiness from database execution and CTO acceptance
+  [PASS] 5.3 Execution ledger Markdown reflects reconciled accounting dimensions
+
+--- 6. Workstream F & G: Readiness Package & Governance Boundaries ---
+  [PASS] 6.1 Canonical Architecture Readiness Package documents 68 existing migrations and proposed 067-070 sequence
+  [PASS] 6.2 Zero database mutation invariant: migrations directory strictly unchanged (68 files)
+  [PASS] 6.3 Financial defect DQ-W021.5-B2.2E-001 remains STRICTLY OPEN across all artifacts
+  [PASS] 6.4 Rule IV-001 Non-Self-Acceptance invariant upheld across all artifacts
+
+================================================================
+TEST SUMMARY: 25 PASSED, 0 FAILED
+================================================================
+
+
+--- STDERR ---
+
+
+--- PROCESS METRICS ---
+DurationMs: 1076
+ExitCode: 0
+================================================================================

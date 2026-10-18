@@ -1,3 +1,14 @@
+================================================================================
+KSHETRA VERIFIABLE TEST EXECUTION LOG
+Suite: tests/political-intelligence-directive-097.test.mjs
+Command: node tests/political-intelligence-directive-097.test.mjs
+Working Directory: C:\Users\Laven\OneDrive\Desktop\Kshetra
+Runtime: Node v24.13.0 (win32)
+Execution Timestamp: 2026-10-18T05:07:23.183Z
+Exit Code: 0
+================================================================================
+
+--- STDOUT ---
 ================================================================
 KSHETRA W021.5 — CTO DIRECTIVE 097 VERIFICATION SUITE
 Independently Authenticated Trust Policy & Verifiable Test Provenance
@@ -76,3 +87,12 @@ Independently Authenticated Trust Policy & Verifiable Test Provenance
 VERIFICATION SUMMARY: 49 PASSED, 0 FAILED
 ================================================================
 
+
+
+--- STDERR ---
+
+
+--- PROCESS METRICS ---
+DurationMs: 7220
+ExitCode: 0
+================================================================================

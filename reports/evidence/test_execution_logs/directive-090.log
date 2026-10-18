@@ -1,0 +1,56 @@
+================================================================================
+KSHETRA VERIFIABLE TEST EXECUTION LOG
+Suite: tests/political-intelligence-directive-090.test.mjs
+Command: node tests/political-intelligence-directive-090.test.mjs
+Working Directory: C:\Users\Laven\OneDrive\Desktop\Kshetra
+Runtime: Node v24.13.0 (win32)
+Execution Timestamp: 2026-10-18T05:06:47.357Z
+Exit Code: 0
+================================================================================
+
+--- STDOUT ---
+================================================================
+KSHETRA W021.5 — CTO DIRECTIVE 090 VERIFICATION SUITE
+Atomic Evidence Validation, Canonical Identity, GeoJSON Integrity & Defensible Accounting
+================================================================
+
+--- 1. Workstream A: Atomic, Fail-Closed AST Evaluation ---
+  [PASS] 1.1 Atomic invalidation: nested unsupported expressions invalidate the entire record
+  [PASS] 1.2 Sentinel values & numeric validity: NaN, Infinity, and invalid numbers are rejected with diagnostics
+  [PASS] 1.3 Preserves supported explicit null without conflating with undefined or unsupported results
+  [PASS] 1.4 TypeScript parse diagnostics fail closed: malformed source cannot report syntactic success
+  [PASS] 1.5 Historical event truth: year precedence, no collection fallback, conflicting years rejected, margin 0 preserved
+
+--- 2. Workstream B: Canonical Statutory Identity & Adversarial Verification ---
+  [PASS] 2.1 B1 Invariant: missing canonical registry NEVER increases identityValidatedCount
+  [PASS] 2.2 Dimension separation: distinct counters for presence, structure, url, seat range, identity, verification
+  [PASS] 2.3 Adversarial Identity Matrix: 8 comprehensive adversarial scenarios verified
+
+--- 3. Workstream C: GeoJSON Statutory Mapping Integrity ---
+  [PASS] 3.1 Telangana duplicate AC 119 claim blocks clean mapping while preserving feature validity
+  [PASS] 3.2 Multipart MultiPolygon feature is a single feature and does NOT register duplicate AC linkage
+  [PASS] 3.3 Rigorous geometry validation: ring closure, minimum positions, nesting depth, coordinate numeric bounds
+  [PASS] 3.4 National matrix artifact truthfully reports material gaps and Delhi 70-seat boundary
+
+--- 4. Workstream D: Evidence-Backed Execution Ledger Accounting ---
+  [PASS] 4.1 Reconciler fails closed on missing, invalid, or non-finite accounting metadata
+  [PASS] 4.2 Dynamic task classification: 25 CORE_SPECIFICATION + 2 HARDENING_EXTENSION = 27 total
+  [PASS] 4.3 Reconciled ledger math and progress accounting dimensions
+
+--- 5. Workstream E: 68-File Migration Invariant & Governance Proof ---
+  [PASS] 5.1 Content-level tree comparison: all 68 migrations match starting commit 0ea572d bitwise
+  [PASS] 5.2 Financial defect DQ-W021.5-B2.2E-001 is STRICTLY OPEN in all reports and code artifacts
+  [PASS] 5.3 Rule IV-001 Non-Self-Acceptance: zero author self-certification across all artifacts
+
+================================================================
+TEST SUMMARY: 18 PASSED, 0 FAILED
+================================================================
+
+
+--- STDERR ---
+
+
+--- PROCESS METRICS ---
+DurationMs: 2432
+ExitCode: 0
+================================================================================

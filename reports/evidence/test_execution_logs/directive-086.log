@@ -1,0 +1,57 @@
+================================================================================
+KSHETRA VERIFIABLE TEST EXECUTION LOG
+Suite: tests/political-intelligence-directive-086.test.mjs
+Command: node tests/political-intelligence-directive-086.test.mjs
+Working Directory: C:\Users\Laven\OneDrive\Desktop\Kshetra
+Runtime: Node v24.13.0 (win32)
+Execution Timestamp: 2026-10-18T05:06:38.405Z
+Exit Code: 0
+================================================================================
+
+--- STDOUT ---
+================================================================
+KSHETRA W021.5 — CTO DIRECTIVE 086 REGRESSION VERIFICATION SUITE
+Consolidated Political-Truth Remediation, Readiness Package & Ledger
+================================================================
+
+--- 1. Evidence-Based Coverage Generator & Deep Structure ---
+  [PASS] 1.1 Coverage matrix artifacts exist and reflect Directive 086 evidence standards
+  [PASS] 1.2 Statutory seats are legal counts only without hardcoded election years
+  [PASS] 1.3 Affidavit parsing is structural and enforces required candidate fields
+  [PASS] 1.4 MLA Profile counting inspects actual structured records without .map assumption
+  [PASS] 1.5 Deep GeoJSON inspection validates features, coordinates within India bbox, and AC linkage
+  [PASS] 1.6 All summary numerators and denominators trace to detailed state inventory
+
+--- 2. Removal of State-Code Year Inference & Temporal Integrity ---
+  [PASS] 2.1 stateData.ts eliminates all state-code array lists for election year inference
+  [PASS] 2.2 stateData.ts strictly binds winner, runner-up, votes, and margin to the same year term
+  [PASS] 2.3 Election history sort does not convert unknown years into 0 or artificial dates
+
+--- 3. Contract Hardening & Mobile Provenance Precedence ---
+  [PASS] 3.1 Fastify route schema validates nullable electionType and electionYear
+  [PASS] 3.2 Mobile endpoint validator rejects invalid election types with ApiValidationError
+  [PASS] 3.3 Mobile constituency screen renders distinct section-level provenance tags
+  [PASS] 3.4 Zero active mobile screens rely on election2023 for political truth
+
+--- 4. Canonical Readiness Package & Execution Ledger ---
+  [PASS] 4.1 Canonical Architecture Readiness Package exists and addresses all 10 mandated questions
+  [PASS] 4.2 Traceable Execution Ledger JSON exists with reproducible weighted math
+  [PASS] 4.3 Execution Ledger Markdown exists and agrees with JSON ledger
+
+--- 5. Governance, Lineage & Operational Boundaries ---
+  [PASS] 5.1 Zero database mutation invariant: migrations directory strictly unchanged (68 files)
+  [PASS] 5.2 Financial defect DQ-W021.5-B2.2E-001 remains STRICTLY OPEN across all artifacts
+  [PASS] 5.3 Rule IV-001 Non-Self-Acceptance invariant upheld across all artifacts
+
+================================================================
+TEST SUMMARY: 19 PASSED, 0 FAILED
+================================================================
+
+
+--- STDERR ---
+
+
+--- PROCESS METRICS ---
+DurationMs: 154
+ExitCode: 0
+================================================================================

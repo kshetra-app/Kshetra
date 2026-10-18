@@ -1,0 +1,48 @@
+================================================================================
+KSHETRA VERIFIABLE TEST EXECUTION LOG
+Suite: tests/political-intelligence-directive-084.test.mjs
+Command: node tests/political-intelligence-directive-084.test.mjs
+Working Directory: C:\Users\Laven\OneDrive\Desktop\Kshetra
+Runtime: Node v24.13.0 (win32)
+Execution Timestamp: 2026-10-18T05:06:38.087Z
+Exit Code: 0
+================================================================================
+
+--- STDOUT ---
+================================================================
+KSHETRA W021.5 — CTO DIRECTIVE 084 INTEGRATION VERIFICATION SUITE
+================================================================
+
+--- 1. National Data Coverage Matrix Audit ---
+  [PASS] 1.1 Matrix artifacts exist on disk
+  [PASS] 1.2 Exactly 31 Indian states and Union Territories are audited
+  [PASS] 1.3 Total statutory assembly seats equals 4,123 without missing seats
+  [PASS] 1.4 Data tier breakdown is accurate and truthful
+  [PASS] 1.5 Delhi invariant: strictly 70 assembly seats with 2025 election year
+  [PASS] 1.6 Andhra Pradesh & Maharashtra: 2024 primary election years
+
+--- 2. Temporally Correct Electoral Model ---
+  [PASS] 2.1 Fastify constituency routes include recentElection with nullable numbers
+  [PASS] 2.2 stateData service maps real election years without 2023 hardcoding
+
+--- 3. Mobile Client Canonical Data Path & UI Truthfulness ---
+  [PASS] 3.1 Mobile client endpoint parses recentElection and elections array
+  [PASS] 3.2 Constituency detail screen wires SequenceGuard, apiClient and provenance badge
+  [PASS] 3.3 Legislator profile screen protects against null vote/margin coercion
+
+--- 4. Governance & Population Invariants ---
+  [PASS] 4.1 Zero database mutation invariant: no SQL migration created for Directive 084
+  [PASS] 4.2 DQ-W021.5-B2.2E-001 remains STRICTLY OPEN under Rule IV-001
+
+================================================================
+TEST SUMMARY: 13 PASSED, 0 FAILED
+================================================================
+
+
+--- STDERR ---
+
+
+--- PROCESS METRICS ---
+DurationMs: 185
+ExitCode: 0
+================================================================================

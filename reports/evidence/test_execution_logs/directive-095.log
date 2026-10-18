@@ -1,0 +1,99 @@
+================================================================================
+KSHETRA VERIFIABLE TEST EXECUTION LOG
+Suite: tests/political-intelligence-directive-095.test.mjs
+Command: node tests/political-intelligence-directive-095.test.mjs
+Working Directory: C:\Users\Laven\OneDrive\Desktop\Kshetra
+Runtime: Node v24.13.0 (win32)
+Execution Timestamp: 2026-10-18T05:07:09.142Z
+Exit Code: 0
+================================================================================
+
+--- STDOUT ---
+================================================================
+KSHETRA W021.5 — CTO DIRECTIVE 095 VERIFICATION SUITE
+Independent Trust Anchoring, Evidence-Derived Completion & Reconciliation
+================================================================
+
+--- 1. Workstream A: Independent Trust Boundary & Cryptographic Adjudication ---
+  [PASS] 1.1 Replacing repository trust registry and public key fails closed with TRUST_ANCHOR_UNPINNED when no external pin is provided
+  [PASS] 1.2 Providing an external trust pin that does NOT match the authority public key fails closed with TRUST_PIN_MISMATCH
+  [PASS] 1.3 Providing a matching external trust pin validates the independently anchored key successfully
+  [PASS] 1.4 A key whose registered role is not CTO fails closed with UNAUTHORIZED_ROLE
+  [PASS] 1.5 A signer identity that conflicts with the registered authority identity fails closed with IDENTITY_MISMATCH
+  [PASS] 1.6 Key marked as REVOKED fails closed with references REVOKED authority
+  [PASS] 1.7 Expired authority key (validUntil exceeded) fails closed with EXPIRED_KEY
+  [PASS] 1.8 Pre-dating authority key (validFrom not yet reached) fails closed with NOT_YET_VALID
+  [PASS] 1.9 Unknown / unregistered keyId fails closed with untrusted or unknown authority keyId
+  [PASS] 1.10 Post-signing tampering with conditions causes cryptographic signature verification failed
+  [PASS] 1.11 Post-signing tampering with findings causes cryptographic signature verification failed
+  [PASS] 1.12 Post-signing tampering with decision field causes cryptographic signature verification failed
+  [PASS] 1.13 Post-signing tampering with taskRef causes cryptographic signature verification failed
+  [PASS] 1.14 Replaying an acceptance record signed for Task A to approve Task B fails closed with taskRef mismatch
+  [PASS] 1.15 Malformed signature value (not valid base64/hex) fails closed with malformed signature
+  [PASS] 1.16 Self-acceptance (authorSelfAcceptance: true) strictly fails closed under Rule IV-001 even with cryptographically valid signature
+  [PASS] 1.17 Missing authorSelfAcceptance declaration fails closed
+  [PASS] 1.18 Offline repository environment without external trust pin strictly preserves 0.0% formal CTO acceptance
+
+--- 2. Workstream B: Enforceable Acceptance Criteria & Mutation Verifiers ---
+  [PASS] 2.1 All 27 tasks in TASK_SPECIFICATIONS declare explicit criteria with weight ratios summing to 1.0
+  [PASS] 2.2 Verifier execution deterministically derives derivedRepoRatio matching ledger reporting
+  [PASS] 2.3 Reconciler fails closed when a task has no defined acceptance criteria
+  [PASS] 2.4 Reconciler fails closed when reported ratio differs from verified derived ratio
+  [PASS] 2.5 Mutation test: Deleting required artifact prevents 100% completion claim
+  [PASS] 2.6 Mutation test: Changing statutory Delhi Assembly seats from 70 to 69 causes invariant verifier to fail
+  [PASS] 2.7 Mutation test: Changing national assembly constituency count from 4,123 to 4,000 causes verifier to fail
+  [PASS] 2.8 Mutation test: Forcing validator to return no passed criteria fails closed with 0% earned
+  [PASS] 2.9 Blocked tasks derive 0% repo ratio and document blocked external gate
+
+--- 3. Workstream C: Non-Overlapping Progress Accounting & Dimension Partition ---
+  [PASS] 3.1 Canonical non-overlapping partition test: components sum to task weight for all 27 tasks
+  [PASS] 3.2 Aggregate progress metric partition satisfies exact conservation law (61.5 + 10.5 + 22.5 + 5.5 = 100.0%)
+  [PASS] 3.3 Resolves prior overlapping progress discounts: 4 tasks partition independently without double deduction
+  [PASS] 3.4 Mutually exclusive task status allocated weights reconcile to 100.0% exactly
+  [PASS] 3.5 Status earned weights reconcile to Repository Readiness: 51.0 + 10.5 = 61.5%
+
+--- 4. Workstream D: Hardened Semantic Artifact Validation ---
+  [PASS] 4.1 SQL parser validates quote-aware and dollar-quote-aware statement balance across migrations
+  [PASS] 4.2 SQL comment-only file strictly fails closed
+  [PASS] 4.3 SQL file lacking executable DDL/DML statements fails closed
+  [PASS] 4.4 Test file parser verifies TypeScript AST CallExpression nodes for test runner and assertions
+  [PASS] 4.5 Comment-only test file strictly fails closed
+  [PASS] 4.6 Token-only test file (tokens without call expressions) strictly fails closed
+  [PASS] 4.7 GeoJSON validator verifies FeatureCollection and coordinate structure
+  [PASS] 4.8 GeoJSON coordinate nesting, finiteness, and Indian bounding box check
+  [PASS] 4.9 GeoJSON unclosed linear ring check detects polygon topology violation
+  [PASS] 4.10 GeoJSON duplicate AC ID detection keeps syntactic validity separate from statutory completeness
+  [PASS] 4.11 Markdown validator enforces structured headings (# and ##), minimum length, and domain keywords
+  [PASS] 4.12 JSON validator rejects empty object, empty array, and invalid schemas
+  [PASS] 4.13 Path traversal outside repository root fails closed
+
+--- 5. Workstream E: Canonical 27-Task Inventory & Deterministic Reporting ---
+  [PASS] 5.1 Exactly 27 tasks present in canonical task inventory across 9 stages
+  [PASS] 5.2 All 27 task IDs are unique and match canonical specification set
+  [PASS] 5.3 Stage weights sum to declared stage weights and total allocated weight equals 100.0%
+  [PASS] 5.4 Complete identity between JSON and Markdown execution ledgers
+[PASS] Reconciled JSON ledger written to C:\Users\Laven\OneDrive\Desktop\Kshetra\reports\w021_5_execution_ledger.json
+[PASS] Reconciled Markdown ledger written to C:\Users\Laven\OneDrive\Desktop\Kshetra\reports\W021.5-EXECUTION-LEDGER.md
+  [PASS] 5.5 Reconciler run is idempotent and produces byte-identical files (0 git diff)
+
+--- 6. Workstream F: Baseline Immutability, Minimal Diffs & Governance ---
+  [PASS] 6.1 Financial defect DQ-W021.5-B2.2E-001 remains STRICTLY OPEN across all artifacts
+  [PASS] 6.2 Rule IV-001 Non-Self-Acceptance strictly preserved: zero self-acceptance or self-ratification
+  [PASS] 6.3 68 SQL migration files match baseline commit 0ea572d byte-for-byte identical
+  [PASS] 6.4 All 31 MLA profile seed files have LF line endings matching baseline fb408ce (0 CRLF)
+  [PASS] 6.5 Zero undefined identifiers across all 31 seed files (minimal diff preserved vs fb408ce)
+  [PASS] 6.6 Telangana AC 119 duplicate claim blocker preserved without mutating geometry fixture
+
+================================================================
+TEST SUMMARY: 56 PASSED, 0 FAILED
+================================================================
+
+
+
+--- STDERR ---
+
+
+--- PROCESS METRICS ---
+DurationMs: 6268
+ExitCode: 0
+================================================================================

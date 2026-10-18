@@ -1,0 +1,60 @@
+================================================================================
+KSHETRA VERIFIABLE TEST EXECUTION LOG
+Suite: tests/political-intelligence-directive-091.test.mjs
+Command: node tests/political-intelligence-directive-091.test.mjs
+Working Directory: C:\Users\Laven\OneDrive\Desktop\Kshetra
+Runtime: Node v24.13.0 (win32)
+Execution Timestamp: 2026-10-18T05:06:49.485Z
+Exit Code: 0
+================================================================================
+
+--- STDOUT ---
+================================================================
+KSHETRA W021.5 — CTO DIRECTIVE 091 VERIFICATION SUITE
+Strict Undefined-Rejection, Explicit Classification, Raw Bytes & Evidence Grounding
+================================================================
+
+--- 1. Workstream A: Complete Atomic AST Rejection of Undefined Identifiers ---
+  [PASS] 1.1 Undefined in optional property atomically invalidates the record and records diagnostic
+  [PASS] 1.2 Undefined nested inside a sub-object atomically invalidates the entire top-level record
+  [PASS] 1.3 Undefined inside an array [1, undefined] atomically invalidates the record
+  [PASS] 1.4 Undefined inside an unrequired/non-standard field invalidates the entire record
+  [PASS] 1.5 Mixtures of valid fields and unsupported expressions are completely rejected (no partial extraction)
+  [PASS] 1.6 Explicit null and numeric 0 remain valid, trusted, and strictly distinct from undefined/unsupported
+
+--- 2. Workstream B: Mandatory Explicit Task Classification ---
+  [PASS] 2.1 Valid explicitly classified task passes validation
+  [PASS] 2.2 Missing taskClassification fails closed (no fallback to CORE_SPECIFICATION)
+  [PASS] 2.3 Null taskClassification fails closed
+  [PASS] 2.4 Empty-string taskClassification fails closed
+  [PASS] 2.5 Unrecognized taskClassification fails closed
+  [PASS] 2.6 Missing classification cannot alter totals or generate a valid-looking summary
+
+--- 3. Workstream C: True Raw-Byte Migration Immutability ---
+  [PASS] 3.1 Live repository: all 68 migrations raw-byte identical to starting commit (no CRLF/LF normalization)
+  [PASS] 3.2 Pure comparator logic handles all 7 adversarial immutability cases
+
+--- 4. Workstream D: Evidence-Grounded Ledger Accounting ---
+  [PASS] 4.1 Task with non-zero repoCompletionRatio requires valid evidence array of existing files
+  [PASS] 4.2 Task with non-zero repoCompletionRatio requires meaningful ratioRationale
+  [PASS] 4.3 Offline reports or tests CANNOT claim live database staging execution
+  [PASS] 4.4 CONFIRMED_ACCEPTED status requires verified formalAcceptanceArtifact on disk
+  [PASS] 4.5 Reconciled ledger matches exact validated figures: 64.0% readiness, 51.0% adjudicated, 0.0% live DB
+
+--- 5. Workstream E: Governance & Invariant Preservation ---
+  [PASS] 5.1 Financial defect DQ-W021.5-B2.2E-001 remains STRICTLY OPEN in all artifacts
+  [PASS] 5.2 Rule IV-001 Non-Self-Acceptance: zero author self-certification across all artifacts
+  [PASS] 5.3 Telangana AC 119 duplicate claim blocker preserved without mutating geometry fixture
+
+================================================================
+TEST SUMMARY: 22 PASSED, 0 FAILED
+================================================================
+
+
+--- STDERR ---
+
+
+--- PROCESS METRICS ---
+DurationMs: 2124
+ExitCode: 0
+================================================================================

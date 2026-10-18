@@ -1,0 +1,76 @@
+================================================================================
+KSHETRA VERIFIABLE TEST EXECUTION LOG
+Suite: tests/political-intelligence-directive-092.test.mjs
+Command: node tests/political-intelligence-directive-092.test.mjs
+Working Directory: C:\Users\Laven\OneDrive\Desktop\Kshetra
+Runtime: Node v24.13.0 (win32)
+Execution Timestamp: 2026-10-18T05:06:55.249Z
+Exit Code: 0
+================================================================================
+
+--- STDOUT ---
+================================================================
+KSHETRA W021.5 — CTO DIRECTIVE 092 VERIFICATION SUITE
+Evidence Semantics, Reconciled Discount, Report Consistency & Seed Diffs
+================================================================
+
+--- 1. Workstream A: Evidence Semantics & Claim Grounding ---
+  [PASS] 1.1 Existing but irrelevant evidence files fail domain validation
+  [PASS] 1.2 Migration files (.sql) cannot be used to assert DATABASE_EXECUTION
+  [PASS] 1.3 Test files cannot be used to assert DATABASE_EXECUTION
+  [PASS] 1.4 Test files cannot be used to assert FORMAL_ACCEPTANCE
+  [PASS] 1.5 Absolute paths fail closed (must be relative to repository root)
+  [PASS] 1.6 Path traversal outside repository root fails closed
+  [PASS] 1.7 Non-file targets (directories) fail closed
+  [PASS] 1.8 Empty, null, whitespace, or malformed evidence entries fail closed
+  [PASS] 1.9 Completion ratio overstatement fails closed
+  [PASS] 1.10 Repository-only claim incorrectly claiming database execution fails closed
+  [PASS] 1.11 Structured evidence objects with invalid evidenceClass fail closed
+  [PASS] 1.12 Valid structured evidence objects pass validation cleanly
+
+--- 2. Workstream B: Database Discount & Status Reconciliation ---
+  [PASS] 2.1 Reconciled database discount equals 10.5% (or 13.0%), naming the exact 4 tasks
+  [PASS] 2.2 Task status allocated weights sum to exactly 100.0%
+  [PASS] 2.3 Status earned weights reconcile to Repository Readiness (51% + 10.5% = 61.5%)
+  [PASS] 2.4 Unexecuted database discount cannot exceed task weight or double-deduct from blocked tasks
+  [PASS] 2.5 25 Core Specification + 2 Hardening Extensions strictly validated
+
+--- 3. Workstream C: JSON and Markdown Determinism & Agreement ---
+  [PASS] 3.1 Every metric in execution ledger JSON matches Markdown ledger verbatim
+  [PASS] 3.2 The database discount breakdown table in Markdown lists the exact 4 tasks and weights
+[PASS] Reconciled JSON ledger written to C:\Users\Laven\OneDrive\Desktop\Kshetra\reports\w021_5_execution_ledger.json
+[PASS] Reconciled Markdown ledger written to C:\Users\Laven\OneDrive\Desktop\Kshetra\reports\W021.5-EXECUTION-LEDGER.md
+  [PASS] 3.3 Repeated runs of reconcileExecutionLedger() produce byte-identical files (0 diff)
+
+--- 4. Workstream D: Seed Data Line-Ending Preservation & Minimal Diff ---
+  [PASS] 4.1 All 22 MLA profile seed files have LF line endings matching baseline fb408ce
+  [PASS] 4.2 Zero undefined identifiers in all 31 seed files
+  [PASS] 4.3 Total national profiles remains strictly 3,812 across 31 States/UTs
+  [PASS] 4.4 Delhi 70-seat statutory Assembly invariant and 151 municipal placeholder isolation preserved
+  [PASS] 4.5 Git diff vs fb408ce on seed files contains zero line-ending noise (only property omissions)
+
+--- 5. Workstream E: Formal Acceptance Strict Validation ---
+  [PASS] 5.1 Arbitrary markdown file or implementation report cannot establish CONFIRMED_ACCEPTED
+  [PASS] 5.2 Generated summary or coverage matrix cannot establish CONFIRMED_ACCEPTED
+  [PASS] 5.3 Test execution or CI results cannot establish CONFIRMED_ACCEPTED
+  [PASS] 5.4 Author self-acceptance record is strictly rejected under Rule IV-001
+  [PASS] 5.5 Acceptance record lacking authorized CTO adjudicator role is rejected
+
+--- 6. Workstream F: Governance & Boundary Preservation ---
+  [PASS] 6.1 Financial defect DQ-W021.5-B2.2E-001 remains STRICTLY OPEN across all artifacts
+  [PASS] 6.2 Rule IV-001 Non-Self-Acceptance upheld: zero author self-certification
+  [PASS] 6.3 68 SQL migrations in supabase/migrations/ match baseline commit 0ea572d raw-byte identical
+  [PASS] 6.4 Telangana AC 119 duplicate claim blocker preserved without mutating geometry asset
+
+================================================================
+TEST SUMMARY: 34 PASSED, 0 FAILED
+================================================================
+
+
+--- STDERR ---
+
+
+--- PROCESS METRICS ---
+DurationMs: 5762
+ExitCode: 0
+================================================================================

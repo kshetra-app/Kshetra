@@ -1905,17 +1905,21 @@ export function validateFormalAcceptanceArtifact(task, resolvedPath, options = {
     );
   }
 
-  // In canonical production acceptance validation, trust anchors must be established via independent environment configuration.
-  // Any caller-injected test bypass or override options are strictly stripped for canonical production tasks.
-  const isSyntheticTask = task && task.taskId && (task.taskId.startsWith('W021.5-TEST-') || task.taskId.startsWith('TASK-') || task.taskId.startsWith('W021.5-TASK-'));
+  // Canonical task acceptance: Real production tasks can NEVER accept caller trust overrides or test authorization.
+  // A caller cannot establish authority on canonical tasks by supplying public keys, trust policies, registries, or synthetic-task options.
+  const isCanonicalTask = !task || !task.taskId || !task.taskId.startsWith('W021.5-TEST-') || TASK_SPECIFICATIONS[task.taskId];
   const effectiveOptions = { ...options };
-  if (!isSyntheticTask) {
+
+  if (isCanonicalTask) {
+    // Strictly strip all caller-supplied trust anchors and test options for canonical production validation
     delete effectiveOptions.isolatedTestHarnessAuth;
     delete effectiveOptions.testHarnessIsolatedAuth;
     delete effectiveOptions.externalTrustPin;
     delete effectiveOptions.trustPolicy;
     delete effectiveOptions.trustedAuthorities;
     delete effectiveOptions.externalPublicKey;
+    delete effectiveOptions.syntheticTask;
+    delete effectiveOptions.isSyntheticTask;
   }
 
   verifyCryptographicAcceptanceSignature(record, relPath, effectiveOptions);
@@ -3071,7 +3075,7 @@ export function generateLedgerMarkdown(ledger, inputSummary) {
   let md = `# KSHETRA W021.5 — Traceable Execution Ledger & Multi-Dimensional Accounting Report
 
 > **Governance Authority:** Master Execution Framework Amendment v1.2 / Rule IV-001 (Non-Self-Acceptance)  
-> **Directive Lineage:** CTO Directive 086 through CTO Directive 097  
+> **Directive Lineage:** CTO Directive 086 through CTO Directive 098  
 > **Status:** \`SUBMITTED_FOR_INDEPENDENT_REVIEW\` — STRICTLY UNACCEPTED  
 > **Financial Defect Status:** \`DQ-W021.5-B2.2E-001\` — **STRICTLY OPEN**, pending separate CTO adjudication  
 > **Database Boundary:** Repository-Only Offline Verification (Zero database migrations, mutations, staging, or production execution)  
@@ -3216,6 +3220,8 @@ export function reconcileExecutionLedger(options = {}) {
   for (const stage of ledger.stages) {
     validateStageAccounting(stage, options);
   }
+
+  ledger.directive = 'CTO Directive 086 / CTO Directive 087 / CTO Directive 088 / CTO Directive 089 / CTO Directive 090 / CTO Directive 091 / CTO Directive 092 / CTO Directive 093 / CTO Directive 094 / CTO Directive 095 / CTO Directive 096 / CTO Directive 097 / CTO Directive 098';
 
   // Compute summary
   const summary = computeLedgerSummary(ledger, options);

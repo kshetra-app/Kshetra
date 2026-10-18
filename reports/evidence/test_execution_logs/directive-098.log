@@ -1,0 +1,80 @@
+================================================================================
+KSHETRA VERIFIABLE TEST EXECUTION LOG
+Suite: tests/political-intelligence-directive-098.test.mjs
+Command: node tests/political-intelligence-directive-098.test.mjs
+Working Directory: C:\Users\Laven\OneDrive\Desktop\Kshetra
+Runtime: Node v24.13.0 (win32)
+Execution Timestamp: 2026-10-18T05:07:24.570Z
+Exit Code: 0
+================================================================================
+
+--- STDOUT ---
+================================================================
+KSHETRA W021.5 — CTO DIRECTIVE 098 VERIFICATION SUITE
+Fail-Closed Test Capture, Trust-Boundary Assurance & Criterion Auditability
+================================================================
+
+--- 1. Workstream B: Adversarial Tests for False-Positive Test Capture ---
+  [PASS] 1.1 Exit code 0 with empty output fails closed (EMPTY_OUTPUT)
+  [PASS] 1.2 Exit code 0 with arbitrary non-test output fails closed (UNPARSED_OUTPUT_FORMAT)
+  [PASS] 1.3 Exit code 0 with "no tests found" message fails closed (NO_TESTS_DISCOVERED)
+  [PASS] 1.4 Exit code 0 with malformed or incomplete summary output fails closed (UNPARSED_OUTPUT_FORMAT)
+  [PASS] 1.5 Exit code 0 where expected suite name is absent fails closed (SUITE_IDENTITY_MISMATCH)
+  [PASS] 1.6 A genuine zero-test result fails closed and does not count as success (ZERO_TESTS_PASSED)
+  [PASS] 1.7 Explicit failed-test summary evaluates to failure with non-zero failed count
+  [PASS] 1.8 Jest format with test failures evaluates to failed count correctly
+  [PASS] 1.9 Tampered log whose digest no longer matches fails closed in validateManifestIntegrity
+  [PASS] 1.10 Manifest entry pointing to another suite log fails closed (suite identity mismatch)
+  [PASS] 1.11 Duplicate manifest entries and omitted expected suites fail closed
+  [PASS] 1.12 Exit code non-zero with PASS status is rejected in manifest validation
+--- 2. Workstream C: Reconciled Current vs Historical Test Totals & Provenance ---
+  [PASS] 2.1 Test suite inventory defines exactly 19 canonical suites (4 foundational + 15 directives)
+  [PASS] 2.2 Manifest summary calculation matches exact sum of suite entries
+  [PASS] 2.3 Summary arithmetic mismatch causes validateManifestIntegrity to fail closed
+  [PASS] 2.4 Stored test execution manifest on disk passes validateManifestIntegrity
+  [PASS] 2.5 Unexecuted suites are never counted in passed current execution totals
+  [PASS] 2.6 Deterministic log format contains all required header parameters and separated streams
+--- 3. Workstream D: Independent Trust Boundary Adversarial Verification ---
+  [PASS] 3.1 validateFormalAcceptanceArtifact strictly strips caller-supplied trustedAuthorities
+  [PASS] 3.2 validateFormalAcceptanceArtifact strictly strips caller-supplied externalTrustPin
+  [PASS] 3.3 validateFormalAcceptanceArtifact strictly strips caller-supplied trustPolicy
+  [PASS] 3.4 validateFormalAcceptanceArtifact strictly strips caller-supplied externalPublicKey
+  [PASS] 3.5 validateFormalAcceptanceArtifact strictly strips isolatedTestHarnessAuth: true
+  [PASS] 3.6 Synthetic task option cannot bypass trust stripping on canonical production tasks
+  [PASS] 3.7 Independent environment provisioned CTO_TRUST_PIN authenticates candidate signing key cleanly
+  [PASS] 3.8 Mismatched environment trust pin fails closed with TRUST_PIN_MISMATCH
+  [PASS] 3.9 Revoked key fingerprint in trust policy fails closed with REVOKED_KEY
+  [PASS] 3.10 Tampering with canonical payload fields invalidates cryptographic signature
+  [PASS] 3.11 Non-CTO adjudicatorRole fails closed immediately under governance policy
+--- 4. Workstream E: Substantive Criteria & Mutation Testing ---
+  [PASS] 4.1 Missing required schema fields in task specification fails closed
+  [PASS] 4.2 Missing criterionId in criterion fails closed
+  [PASS] 4.3 Duplicate criterionId in task specification fails closed
+  [PASS] 4.4 Invalid scope in criterion fails closed
+  [PASS] 4.5 Criterion weight ratios not summing to 1.0 fails closed
+  [PASS] 4.6 Criterion verification failure prevents task from claiming repository-earned weight
+  [PASS] 4.7 Non-existent evidence file declared in task fails closed
+  [PASS] 4.8 Corrupted JSON evidence file fails substantive verification
+  [PASS] 4.9 Mismatched task weight allocation fails stage accounting validation
+--- 5. Workstream F & G: Hard Invariants, Baseline Immutability & Air-Gap Preservation ---
+  [PASS] 5.1 All 68 SQL migrations in supabase/migrations/ match baseline commit 0ea572d byte-for-byte identical
+  [PASS] 5.2 All 31 MLA profile seed files have LF line endings matching baseline fb408ce (0 CRLF)
+  [PASS] 5.3 Zero undefined identifiers across all 31 MLA profile seed files
+  [PASS] 5.4 Financial defect DQ-W021.5-B2.2E-001 remains STRICTLY OPEN across all artifacts
+  [PASS] 5.5 Rule IV-001 Non-Self-Acceptance: formal CTO acceptance remains strictly 0.0% (UNACCEPTED)
+  [PASS] 5.6 Telangana AC 119 duplicate claim defect preserved without mutating geometry fixture
+  [PASS] 5.7 Multi-dimensional progress partition sums to exactly 100.0% with mutually exclusive scopes
+
+================================================================
+TEST SUMMARY: 45 PASSED, 0 FAILED
+================================================================
+
+
+
+--- STDERR ---
+
+
+--- PROCESS METRICS ---
+DurationMs: 1385
+ExitCode: 0
+================================================================================
