@@ -23,12 +23,17 @@
 import fs from 'fs';
 import path from 'path';
 import crypto from 'crypto';
+import { execSync } from 'child_process';
 import { fileURLToPath } from 'url';
 import ts from 'typescript';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const REPO_ROOT = path.resolve(__dirname, '..');
+
+export const HISTORICAL_ORIGIN_COMMIT = 'be4ba41f74616e068b531df17780080a1a946bbd';
+export const EXPECTED_RAW_HISTORICAL_LEDGER_SHA256 = '4ff9e7d9fde0176ec6343ea4468ebb675c1e1d8e32daf2d138cb486464fae21a';
+export const EXPECTED_RAW_HISTORICAL_LEDGER_BYTES = 20494;
 
 export const TRUSTED_AUTHORITIES_PATH = path.join(REPO_ROOT, 'governance', 'authorities', 'trusted_authorities.json');
 export const MASTER_SPECIFICATION_PATH = path.join(REPO_ROOT, 'governance', 'specifications', 'w021_5_master_specification.json');
@@ -57,11 +62,107 @@ export function loadHistoricalOriginLedger(repoRoot = REPO_ROOT) {
 }
 
 /**
+ * Workstream A (CTO Directive 103):
+ * Enforces historical artifact integrity, raw SHA-256 validation from git history,
+ * snapshot fidelity (semantic/canonical JSON equality), and semantic consistency.
+ */
+export function verifyHistoricalArtifactIntegrity(options = {}) {
+  const repoRoot = options.repoRoot || REPO_ROOT;
+  const snapshot = loadHistoricalOriginLedger(repoRoot);
+
+  // 1. Historical identity check
+  if (snapshot.sourceOriginCommit !== HISTORICAL_ORIGIN_COMMIT) {
+    throw new Error(`Historical identity violation: expected commit ${HISTORICAL_ORIGIN_COMMIT}, got ${snapshot.sourceOriginCommit}`);
+  }
+  if (snapshot.sourceArtifactPath !== 'reports/w021_5_execution_ledger.json') {
+    throw new Error(`Historical source path violation: expected "reports/w021_5_execution_ledger.json", got "${snapshot.sourceArtifactPath}"`);
+  }
+
+  // 2. Raw artifact integrity from Git history
+  let rawBytes;
+  try {
+    rawBytes = options.rawBytesOverride !== undefined
+      ? options.rawBytesOverride
+      : execSync(`git show ${HISTORICAL_ORIGIN_COMMIT}:reports/w021_5_execution_ledger.json`, {
+          cwd: repoRoot,
+          maxBuffer: 10 * 1024 * 1024,
+        });
+  } catch (err) {
+    throw new Error(`Raw artifact retrieval failed for ${HISTORICAL_ORIGIN_COMMIT}: ${err.message}`);
+  }
+
+  const rawSha256 = crypto.createHash('sha256').update(rawBytes).digest('hex');
+  const expectedHash = options.expectedHashOverride || EXPECTED_RAW_HISTORICAL_LEDGER_SHA256;
+  if (rawSha256 !== expectedHash) {
+    throw new Error(`Raw artifact integrity violation: SHA-256 hash mismatch. Expected ${expectedHash}, got ${rawSha256}`);
+  }
+
+  // 3. Snapshot fidelity (structural and canonical parsed JSON equality)
+  const gitParsed = JSON.parse(rawBytes.toString('utf8'));
+  const canonicalGitStr = JSON.stringify(gitParsed);
+  const canonicalSnapshotStr = JSON.stringify(snapshot.historicalLedger);
+  if (canonicalGitStr !== canonicalSnapshotStr) {
+    throw new Error(`Snapshot fidelity violation: snapshot historicalLedger content does not structurally match git show parsed JSON`);
+  }
+
+  // 4. Semantic consistency
+  const histLedger = snapshot.historicalLedger;
+  let uniqueNestedTaskCount = 0;
+  const seenTaskIds = new Set();
+  for (const s of histLedger.stages) {
+    for (const t of s.tasks) {
+      if (seenTaskIds.has(t.taskId)) {
+        throw new Error(`Semantic consistency violation: Duplicate task ID "${t.taskId}" in historical origin ledger stages`);
+      }
+      seenTaskIds.add(t.taskId);
+      uniqueNestedTaskCount++;
+    }
+  }
+
+  return {
+    verified: true,
+    historicalIdentity: {
+      sourceOriginCommit: HISTORICAL_ORIGIN_COMMIT,
+      sourceArtifactPath: snapshot.sourceArtifactPath,
+    },
+    rawArtifactIntegrity: {
+      expectedSha256: expectedHash,
+      actualSha256: rawSha256,
+      rawByteLength: rawBytes.length,
+      match: true,
+    },
+    snapshotFidelity: {
+      comparisonMethod: 'SEMANTIC_AND_CANONICAL_SERIALIZED_JSON_EQUALITY',
+      snapshotPath: 'governance/specifications/historical_w021_5_origin_ledger.json',
+      structuralMatch: true,
+      isBitwiseEnvelopeMatch: false,
+      fidelityNote: 'Snapshot preserves historicalLedger JSON payload identically; snapshot envelope adds repository metadata wrapper.',
+    },
+    semanticConsistency: {
+      nestedTaskCount: uniqueNestedTaskCount,
+      summaryDeclaredTaskCount: histLedger.summary.totalTasks,
+      hasSummaryHeaderLag: uniqueNestedTaskCount !== histLedger.summary.totalTasks,
+      discrepancyId: 'DISC-012',
+      discrepancyClassification: 'HISTORICAL_STALE_SUMMARY_HEADER',
+      coreTasksCount: 25,
+      hardeningExtensionsCount: 2,
+      stageCount: histLedger.stages.length,
+      totalWeightSum: histLedger.stages.reduce((sum, s) => sum + s.stageWeight, 0),
+    },
+    trustAnchorStatus: {
+      classification: 'REPOSITORY_LOCAL_INTEGRITY_CHECK_NOT_EXTERNAL_TRUST_ANCHOR',
+      limitation: 'A hash recorded within the repository verifies tamper detection against drift within the codebase but does not constitute an independent external cryptographic trust anchor without out-of-band verification.',
+    },
+  };
+}
+
+/**
  * Validates master specification manifest consistency against implementation metadata.
  */
 export function validateMasterSpecificationAgainstCode(repoRoot = REPO_ROOT) {
   const spec = loadMasterSpecification(repoRoot);
   const taskIds = Object.keys(CANONICAL_TASK_METADATA).sort();
+  const specTaskIds = Object.keys(spec.tasks).sort();
 
   if (spec.totalMilestoneWeight !== 100.0) {
     throw new Error(`Master specification totalMilestoneWeight must equal 100.0, got ${spec.totalMilestoneWeight}`);
@@ -72,7 +173,21 @@ export function validateMasterSpecificationAgainstCode(repoRoot = REPO_ROOT) {
   if (spec.stageCount !== 9) {
     throw new Error(`Master specification stageCount must equal 9, got ${spec.stageCount}`);
   }
+  if (spec.criteriaCount !== 50) {
+    throw new Error(`Master specification criteriaCount must equal 50, got ${spec.criteriaCount}`);
+  }
 
+  // Bidirectional task inventory match
+  if (specTaskIds.length !== taskIds.length) {
+    throw new Error(`Master specification task count (${specTaskIds.length}) does not match canonical metadata (${taskIds.length})`);
+  }
+  for (const tid of specTaskIds) {
+    if (!CANONICAL_TASK_METADATA[tid]) {
+      throw new Error(`Master specification contains unexpected task "${tid}" not in canonical metadata`);
+    }
+  }
+
+  let totalExpectedCriteria = 0;
   for (const tid of taskIds) {
     const meta = CANONICAL_TASK_METADATA[tid];
     const specTask = spec.tasks[tid];
@@ -90,6 +205,12 @@ export function validateMasterSpecificationAgainstCode(repoRoot = REPO_ROOT) {
     if (specStage !== metaStage) {
       throw new Error(`Task ${tid} stage mismatch: spec="${specTask.stageId}", meta="${meta.stageId}"`);
     }
+    if (specTask.governingSpecRef !== meta.masterSpecRef) {
+      throw new Error(`Task ${tid} governingSpecRef mismatch: spec="${specTask.governingSpecRef}", meta="${meta.masterSpecRef}"`);
+    }
+    if (specTask.governingRequirement !== meta.requirementCode) {
+      throw new Error(`Task ${tid} governingRequirement mismatch: spec="${specTask.governingRequirement}", meta="${meta.requirementCode}"`);
+    }
     const specRef = TASK_SPECIFICATIONS[tid];
     if (!specRef) {
       throw new Error(`Task ${tid} missing from executable TASK_SPECIFICATIONS`);
@@ -97,15 +218,45 @@ export function validateMasterSpecificationAgainstCode(repoRoot = REPO_ROOT) {
     if (specRef.title !== meta.canonicalTitle) {
       throw new Error(`Task ${tid} TASK_SPECIFICATIONS title "${specRef.title}" differs from canonical "${meta.canonicalTitle}"`);
     }
+    if (specTask.expectedCriteriaCount !== specRef.criteria.length) {
+      throw new Error(`Task ${tid} criteria count mismatch: spec expected ${specTask.expectedCriteriaCount}, actual is ${specRef.criteria.length}`);
+    }
+    totalExpectedCriteria += specTask.expectedCriteriaCount;
+  }
+
+  if (totalExpectedCriteria !== spec.criteriaCount) {
+    throw new Error(`Master specification criteria count mismatch: spec declared ${spec.criteriaCount}, task sum is ${totalExpectedCriteria}`);
+  }
+
+  // Bidirectional stage check
+  if (spec.stages.length !== 9) {
+    throw new Error(`Master specification stages array length must be 9, got ${spec.stages.length}`);
+  }
+  let stageWeightSum = 0;
+  for (const stage of spec.stages) {
+    stageWeightSum += stage.approvedWeight;
+    const stageTasksWeightSum = stage.taskIds.reduce((sum, tid) => {
+      const t = spec.tasks[tid];
+      if (!t) throw new Error(`Stage ${stage.stageId} references missing task "${tid}"`);
+      return sum + t.approvedWeight;
+    }, 0);
+    if (Math.abs(stageTasksWeightSum - stage.approvedWeight) > 0.001) {
+      throw new Error(`Stage ${stage.stageId} task weights sum (${stageTasksWeightSum}) does not equal stage approvedWeight (${stage.approvedWeight})`);
+    }
+  }
+  if (Math.abs(stageWeightSum - 100.0) > 0.001) {
+    throw new Error(`Master specification stage weights sum must equal 100.0%, got ${stageWeightSum}%`);
   }
 
   return true;
 }
 
 /**
- * Workstream B (CTO Directive 102):
- * Enforces authority boundary by comparing implementation metadata against immutable historical origin (be4ba41).
- * Fails closed if any task title, weight, stage, or specification reference deviates from origin.
+ * Workstream B (CTO Directive 102 & 103):
+ * Enforces bidirectional authority boundary by comparing implementation metadata and master specification
+ * against immutable historical origin (be4ba41).
+ * Fails closed if any task title, weight, stage, specification reference, governing requirement,
+ * stage membership, or subtotal deviates from origin in either direction.
  */
 export function verifyAuthorityBoundary(options = {}) {
   const repoRoot = options.repoRoot || REPO_ROOT;
@@ -113,13 +264,38 @@ export function verifyAuthorityBoundary(options = {}) {
   const histLedger = snapshot.historicalLedger;
   const masterSpec = loadMasterSpecification(repoRoot);
 
+  // 1. Historical Identity Check
+  if (snapshot.sourceOriginCommit !== HISTORICAL_ORIGIN_COMMIT) {
+    throw new Error(`Authority boundary violation: Origin snapshot commit (${snapshot.sourceOriginCommit}) does not match required origin commit (${HISTORICAL_ORIGIN_COMMIT}).`);
+  }
+  if (snapshot.sourceArtifactPath !== 'reports/w021_5_execution_ledger.json') {
+    throw new Error(`Authority boundary violation: Origin artifact path (${snapshot.sourceArtifactPath}) does not match reports/w021_5_execution_ledger.json.`);
+  }
+
   const histTaskMap = {};
   const histStageMap = {};
+  const seenHistTaskIds = new Set();
+
   for (const s of histLedger.stages) {
     const normStageId = s.stageId === 'STAGE_B1' ? 'STAGE_B' : s.stageId;
-    histStageMap[normStageId] = s.stageWeight;
+    if (histStageMap[normStageId]) {
+      throw new Error(`Authority boundary violation: Duplicate stage ID "${s.stageId}" in historical origin.`);
+    }
+    histStageMap[normStageId] = {
+      stageId: normStageId,
+      originalStageId: s.stageId,
+      stageName: s.stageName,
+      stageWeight: s.stageWeight,
+      tasks: s.tasks,
+      taskIds: s.tasks.map((t) => t.taskId),
+    };
     for (const t of s.tasks) {
+      if (seenHistTaskIds.has(t.taskId)) {
+        throw new Error(`Authority boundary violation: Duplicate task ID "${t.taskId}" in historical origin stages.`);
+      }
+      seenHistTaskIds.add(t.taskId);
       histTaskMap[t.taskId] = {
+        taskId: t.taskId,
         title: t.title,
         weight: t.weight,
         stageId: normStageId,
@@ -128,9 +304,12 @@ export function verifyAuthorityBoundary(options = {}) {
     }
   }
 
-  // 0. Verify bidirectional task inventory match
+  // 2. Bidirectional Task Inventory Enforcement (Historical <-> Canonical <-> Master Spec)
   const canonicalIds = Object.keys(CANONICAL_TASK_METADATA);
   const histIds = Object.keys(histTaskMap);
+  const specIds = Object.keys(masterSpec.tasks);
+
+  // 2a. Canonical vs Historical
   if (canonicalIds.length !== histIds.length) {
     throw new Error(`Authority boundary violation: Canonical task count (${canonicalIds.length}) does not match historical origin (${histIds.length}).`);
   }
@@ -139,56 +318,148 @@ export function verifyAuthorityBoundary(options = {}) {
       throw new Error(`Authority boundary violation: Task ${histId} present in historical origin is missing from canonical metadata.`);
     }
   }
-
-  // 1. Verify every task in CANONICAL_TASK_METADATA matches historical source exactly
-  for (const [taskId, canonical] of Object.entries(CANONICAL_TASK_METADATA)) {
-    const hist = histTaskMap[taskId];
-    if (!hist) {
-      throw new Error(`Authority boundary violation: Task ${taskId} does not exist in historical origin ledger (${snapshot.sourceOriginCommit}).`);
-    }
-    if (canonical.canonicalTitle !== hist.title) {
-      throw new Error(`Authority boundary violation: Task ${taskId} title mismatch: expected "${hist.title}" from origin, got "${canonical.canonicalTitle}".`);
-    }
-    if (Math.abs(canonical.weight - hist.weight) > 0.001) {
-      throw new Error(`Authority boundary violation: Task ${taskId} weight mismatch: expected ${hist.weight}% from origin, got ${canonical.weight}%.`);
-    }
-    const normStage = canonical.stageId === 'STAGE_B1' ? 'STAGE_B' : canonical.stageId;
-    if (normStage !== hist.stageId) {
-      throw new Error(`Authority boundary violation: Task ${taskId} stage mismatch: expected ${hist.stageId} from origin, got ${canonical.stageId}.`);
+  for (const canId of canonicalIds) {
+    if (!histTaskMap[canId]) {
+      throw new Error(`Authority boundary violation: Canonical task ${canId} does not exist in historical origin ledger.`);
     }
   }
 
-  // 2. Verify master specification matches historical source exactly
-  for (const [taskId, specTask] of Object.entries(masterSpec.tasks)) {
+  // 2b. Master Spec vs Historical
+  if (specIds.length !== histIds.length) {
+    throw new Error(`Authority boundary violation: Master specification task count (${specIds.length}) does not match historical origin (${histIds.length}).`);
+  }
+  for (const histId of histIds) {
+    if (!masterSpec.tasks[histId]) {
+      throw new Error(`Authority boundary violation: Origin task ${histId} missing from master specification manifest.`);
+    }
+  }
+  for (const specId of specIds) {
+    if (!histTaskMap[specId]) {
+      throw new Error(`Authority boundary violation: Master spec task ${specId} does not exist in historical origin.`);
+    }
+  }
+
+  // 2c. Master Spec vs Canonical
+  if (specIds.length !== canonicalIds.length) {
+    throw new Error(`Authority boundary violation: Master spec task count (${specIds.length}) does not match canonical metadata (${canonicalIds.length}).`);
+  }
+  for (const canId of canonicalIds) {
+    if (!masterSpec.tasks[canId]) {
+      throw new Error(`Authority boundary violation: Canonical task ${canId} missing from master specification manifest.`);
+    }
+  }
+
+  // 3. Task-Level Attribute Equality (Title, Weight, Stage, SpecRef, Governing Requirement)
+  for (const [taskId, canonical] of Object.entries(CANONICAL_TASK_METADATA)) {
     const hist = histTaskMap[taskId];
-    if (!hist) {
-      throw new Error(`Authority boundary violation: Master spec task ${taskId} missing in historical origin.`);
+    const specTask = masterSpec.tasks[taskId];
+
+    // Canonical Title check
+    if (canonical.canonicalTitle !== hist.title) {
+      throw new Error(`Authority boundary violation: Task ${taskId} title mismatch: expected "${hist.title}" from origin, got "${canonical.canonicalTitle}".`);
     }
     if (specTask.canonicalTitle !== hist.title) {
       throw new Error(`Authority boundary violation: Master spec task ${taskId} title "${specTask.canonicalTitle}" differs from origin "${hist.title}".`);
     }
+
+    // Weight check
+    if (Math.abs(canonical.weight - hist.weight) > 0.001) {
+      throw new Error(`Authority boundary violation: Task ${taskId} weight mismatch: expected ${hist.weight}% from origin, got ${canonical.weight}%.`);
+    }
     if (Math.abs(specTask.approvedWeight - hist.weight) > 0.001) {
       throw new Error(`Authority boundary violation: Master spec task ${taskId} weight ${specTask.approvedWeight}% differs from origin ${hist.weight}%.`);
     }
+
+    // Stage check
+    const normCanonicalStage = canonical.stageId === 'STAGE_B1' ? 'STAGE_B' : canonical.stageId;
+    const normSpecStage = specTask.stageId === 'STAGE_B1' ? 'STAGE_B' : specTask.stageId;
+    if (normCanonicalStage !== hist.stageId) {
+      throw new Error(`Authority boundary violation: Task ${taskId} stage mismatch: expected ${hist.stageId} from origin, got ${canonical.stageId}.`);
+    }
+    if (normSpecStage !== hist.stageId) {
+      throw new Error(`Authority boundary violation: Master spec task ${taskId} stage mismatch: expected ${hist.stageId} from origin, got ${specTask.stageId}.`);
+    }
+
+    // SpecRef check (historical specRef must match both canonical metadata and master spec)
+    if (canonical.masterSpecRef !== hist.specRef) {
+      throw new Error(`Authority boundary violation: Task ${taskId} specRef mismatch: expected "${hist.specRef}" from origin, got "${canonical.masterSpecRef}".`);
+    }
+    if (specTask.governingSpecRef !== hist.specRef) {
+      throw new Error(`Authority boundary violation: Master spec task ${taskId} governingSpecRef mismatch: expected "${hist.specRef}" from origin, got "${specTask.governingSpecRef}".`);
+    }
+
+    // Governing Requirement check
+    if (specTask.governingRequirement !== canonical.requirementCode) {
+      throw new Error(`Authority boundary violation: Master spec task ${taskId} governingRequirement mismatch: expected "${canonical.requirementCode}", got "${specTask.governingRequirement}".`);
+    }
   }
 
-  // 3. Verify stage weights in master spec match historical source exactly
-  for (const stage of masterSpec.stages) {
-    const normStageId = stage.stageId === 'STAGE_B1' ? 'STAGE_B' : stage.stageId;
-    const histWeight = histStageMap[normStageId];
-    if (histWeight === undefined) {
-      throw new Error(`Authority boundary violation: Master spec stage ${stage.stageId} missing in origin.`);
+  // 4. Stage-Level Bidirectional Validation (Stage count, IDs, Names, Weights, Task Membership, Subtotals)
+  const specStageMap = {};
+  for (const s of masterSpec.stages) {
+    const normStageId = s.stageId === 'STAGE_B1' ? 'STAGE_B' : s.stageId;
+    specStageMap[normStageId] = s;
+  }
+  const histStageKeys = Object.keys(histStageMap).sort();
+  const specStageKeys = Object.keys(specStageMap).sort();
+
+  if (specStageKeys.length !== histStageKeys.length) {
+    throw new Error(`Authority boundary violation: Master spec stage count (${specStageKeys.length}) does not match origin (${histStageKeys.length}).`);
+  }
+  for (const sid of histStageKeys) {
+    if (!specStageMap[sid]) {
+      throw new Error(`Authority boundary violation: Origin stage ${sid} missing in master specification.`);
     }
-    if (Math.abs(stage.approvedWeight - histWeight) > 0.001) {
-      throw new Error(`Authority boundary violation: Master spec stage ${stage.stageId} weight ${stage.approvedWeight}% differs from origin ${histWeight}%.`);
+  }
+  for (const sid of specStageKeys) {
+    if (!histStageMap[sid]) {
+      throw new Error(`Authority boundary violation: Master spec stage ${sid} does not exist in historical origin.`);
     }
+  }
+
+  for (const sid of histStageKeys) {
+    const histStage = histStageMap[sid];
+    const specStage = specStageMap[sid];
+
+    if (specStage.stageName !== histStage.stageName) {
+      throw new Error(`Authority boundary violation: Stage ${sid} name mismatch: expected "${histStage.stageName}", got "${specStage.stageName}".`);
+    }
+    if (Math.abs(specStage.approvedWeight - histStage.stageWeight) > 0.001) {
+      throw new Error(`Authority boundary violation: Master spec stage ${sid} weight ${specStage.approvedWeight}% differs from origin ${histStage.stageWeight}%.`);
+    }
+
+    // Task membership equality
+    const sortedHistTasks = [...histStage.taskIds].sort();
+    const sortedSpecTasks = [...specStage.taskIds].sort();
+    if (sortedHistTasks.length !== sortedSpecTasks.length || !sortedHistTasks.every((id, idx) => id === sortedSpecTasks[idx])) {
+      throw new Error(`Authority boundary violation: Stage ${sid} task membership mismatch: origin=[${sortedHistTasks.join(',')}], spec=[${sortedSpecTasks.join(',')}].`);
+    }
+
+    // Subtotal conservation: sum of task weights must equal stage weight
+    const histTaskSum = histStage.tasks.reduce((acc, t) => acc + t.weight, 0);
+    if (Math.abs(histTaskSum - histStage.stageWeight) > 0.001) {
+      throw new Error(`Authority boundary violation: Stage ${sid} task weight subtotal (${histTaskSum}) does not equal stage weight (${histStage.stageWeight}).`);
+    }
+    const specTaskSum = specStage.taskIds.reduce((acc, id) => acc + masterSpec.tasks[id].approvedWeight, 0);
+    if (Math.abs(specTaskSum - specStage.approvedWeight) > 0.001) {
+      throw new Error(`Authority boundary violation: Stage ${sid} master spec task weight subtotal (${specTaskSum}) does not equal stage approvedWeight (${specStage.approvedWeight}).`);
+    }
+  }
+
+  // 5. Total Milestone Allocation Conservation
+  const totalAllocation = masterSpec.stages.reduce((acc, s) => acc + s.approvedWeight, 0);
+  if (Math.abs(totalAllocation - 100.0) > 0.001) {
+    throw new Error(`Authority boundary violation: Total milestone allocation must equal 100.0%, got ${totalAllocation}%.`);
   }
 
   return {
     verified: true,
     historicalOriginCommit: snapshot.sourceOriginCommit,
     taskCount: Object.keys(CANONICAL_TASK_METADATA).length,
+    stageCount: Object.keys(histStageMap).length,
     conservationSum: 100.0,
+    specRefVerified: true,
+    governingRequirementVerified: true,
   };
 }
 
@@ -1311,6 +1582,24 @@ export const DISCREPANCY_REGISTER = [
     rationale: 'Official delimitation data from CEO Telangana contains 120 features for 119 seats; cannot be synthesized or falsified. Preserved as unresolved defect.',
     requiresCtcAdjudication: true,
     resolutionStatus: 'PRESERVED_OPEN_PENDING_CTO',
+  },
+  {
+    discrepancyId: 'DISC-012',
+    itemKey: 'HISTORICAL_ORIGIN:totalTasks_vs_nestedRecords',
+    discrepancyType: 'HISTORICAL_SUMMARY_HEADER_TASK_COUNT_LAG',
+    affectedEntity: 'Historical Origin Ledger Summary Header (be4ba41:reports/w021_5_execution_ledger.json)',
+    priorReportValue: { summaryTotalTasks: 25, summaryVerifiedTasks: 14, nestedUniqueTasks: 27, nestedVerifiedTasks: 16 },
+    proposedCanonicalValue: {
+      canonicalTaskCount: 27,
+      coreSpecificationTasks: 25,
+      hardeningExtensionTasks: 2,
+      historicalSummaryHeaderStatus: 'STALE_HEADER_LAG_PRESERVED',
+      historicalNestedStageIntegrity: 'AUTHORITATIVE_27_TASKS_CONSERVED_100_PERCENT',
+    },
+    historicalSourceEvidence: 'be4ba41:reports/w021_5_execution_ledger.json (summary vs stages[].tasks), be4ba41:reports/W021.5-EXECUTION-LEDGER.md (Stage breakdown table rows sum to 27)',
+    rationale: 'Historical ledger be4ba41 summary header declared totalTasks=25 and VERIFIED=14 reflecting the initial 25 core specification tasks. When 2 hardening extensions (W021.5-A-02 [4.0%] and W021.5-A-03 [3.0%]) were added to Stage A, nested stage records expanded to 27 tasks (16 VERIFIED, 64.0% earned), but the summary header lagged behind. The stage breakdown table in be4ba41:reports/W021.5-EXECUTION-LEDGER.md explicitly enumerated 3, 4, 3, 3, 3, 2, 3, 4, 2 tasks (sum = 27) with stage weights summing to 100.0%. The original historical snapshot is preserved byte-identically and unchanged; the discrepancy is formally registered and reconciled.',
+    requiresCtcAdjudication: false,
+    resolutionStatus: 'RECONCILED_WITH_HISTORICAL_EVIDENCE',
   },
 ];
 
@@ -4486,6 +4775,49 @@ export function computeLedgerSummary(ledger, options = {}) {
 }
 
 /**
+ * Workstream D (CTO Directive 103):
+ * Validates that ledger summary task count, stage breakdown, and task membership
+ * match the actual nested stage records identically. Fails closed on any mismatch.
+ */
+export function validateLedgerSummaryConsistency(ledger) {
+  if (!ledger || typeof ledger !== 'object') {
+    throw new Error('Ledger summary consistency error: Invalid ledger object.');
+  }
+  if (!ledger.summary || typeof ledger.summary !== 'object') {
+    throw new Error('Ledger summary consistency error: Missing ledger.summary object.');
+  }
+  if (!Array.isArray(ledger.stages) || ledger.stages.length === 0) {
+    throw new Error('Ledger summary consistency error: Missing or empty ledger.stages array.');
+  }
+
+  let nestedCount = 0;
+  const seenTaskIds = new Set();
+
+  for (const stage of ledger.stages) {
+    if (!Array.isArray(stage.tasks)) {
+      throw new Error(`Ledger summary consistency error: Stage ${stage.stageId} missing tasks array.`);
+    }
+    for (const task of stage.tasks) {
+      if (seenTaskIds.has(task.taskId)) {
+        throw new Error(`Ledger summary consistency error: Duplicate task ID "${task.taskId}" detected in nested stage records.`);
+      }
+      seenTaskIds.add(task.taskId);
+      nestedCount++;
+    }
+  }
+
+  if (ledger.summary.totalTasks !== nestedCount) {
+    throw new Error(`Ledger summary consistency error: summary.totalTasks (${ledger.summary.totalTasks}) does not match nested task count (${nestedCount}).`);
+  }
+
+  return {
+    consistent: true,
+    totalTasks: nestedCount,
+    stageCount: ledger.stages.length,
+  };
+}
+
+/**
  * Generate human-readable Markdown ledger.
  */
 export function generateLedgerMarkdown(ledger, inputSummary) {
@@ -4505,7 +4837,7 @@ export function generateLedgerMarkdown(ledger, inputSummary) {
   let md = `# KSHETRA W021.5 — Traceable Execution Ledger & Multi-Dimensional Accounting Report
 
 > **Governance Authority:** Master Execution Framework Amendment v1.2 / Rule IV-001 (Non-Self-Acceptance)  
-> **Directive Lineage:** CTO Directive 086 through CTO Directive 102  
+> **Directive Lineage:** CTO Directive 086 through CTO Directive 103  
 > **Status:** \`SUBMITTED_FOR_INDEPENDENT_REVIEW\` — STRICTLY UNACCEPTED  
 > **Financial Defect Status:** \`DQ-W021.5-B2.2E-001\` — **STRICTLY OPEN**, pending separate CTO adjudication  
 > **Database Boundary:** Repository-Only Offline Verification (Zero database migrations, mutations, staging, or production execution)  
@@ -4650,7 +4982,10 @@ export function reconcileExecutionLedger(options = {}) {
 
   const opts = { enforceCanonicalIdentity: true, ...options };
 
-  // Workstream B (CTO Directive 102): Enforce Authority Boundary against historical origin commit be4ba41
+  // Workstream A (CTO Directive 103): Verify Historical Artifact Integrity (Raw Git SHA-256 & Snapshot Fidelity)
+  verifyHistoricalArtifactIntegrity(opts);
+
+  // Workstream B (CTO Directive 102 & 103): Enforce Authority Boundary against historical origin commit be4ba41
   verifyAuthorityBoundary(opts);
 
   // Validate master specification manifest against code metadata
@@ -4660,11 +4995,12 @@ export function reconcileExecutionLedger(options = {}) {
     validateStageAccounting(stage, opts);
   }
 
-  ledger.directive = 'CTO Directive 086 / CTO Directive 087 / CTO Directive 088 / CTO Directive 089 / CTO Directive 090 / CTO Directive 091 / CTO Directive 092 / CTO Directive 093 / CTO Directive 094 / CTO Directive 095 / CTO Directive 096 / CTO Directive 097 / CTO Directive 098 / CTO Directive 099 / CTO Directive 100 / CTO Directive 101 / CTO Directive 102';
+  ledger.directive = 'CTO Directive 086 / CTO Directive 087 / CTO Directive 088 / CTO Directive 089 / CTO Directive 090 / CTO Directive 091 / CTO Directive 092 / CTO Directive 093 / CTO Directive 094 / CTO Directive 095 / CTO Directive 096 / CTO Directive 097 / CTO Directive 098 / CTO Directive 099 / CTO Directive 100 / CTO Directive 101 / CTO Directive 102 / CTO Directive 103';
 
   // Compute summary
   const summary = computeLedgerSummary(ledger, opts);
   ledger.summary = summary;
+  validateLedgerSummaryConsistency(ledger);
 
   // Write reconciled JSON
   fs.writeFileSync(jsonPath, JSON.stringify(ledger, null, 2), 'utf8');

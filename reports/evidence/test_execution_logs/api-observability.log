@@ -4,7 +4,7 @@ Suite: apps/api/src/__tests__/observability.test.ts
 Command: npm test --prefix apps/api -- src/__tests__/observability.test.ts
 Working Directory: C:\Users\Laven\OneDrive\Desktop\Kshetra
 Runtime: Node v24.13.0 (win32)
-Execution Timestamp: 2026-10-19T03:18:48.930Z
+Execution Timestamp: 2026-10-19T04:01:43.018Z
 Exit Code: 0
 ================================================================================
 
@@ -16,42 +16,42 @@ Exit Code: 0
 
 
 --- STDERR ---
-PASS src/__tests__/observability.test.ts (10.464 s)
+PASS src/__tests__/observability.test.ts (11.846 s)
   Observability, Tracing & Error Interception (JOB W004 / DEC-020)
     Request ID Propagation & Correlation Headers
-      √ generates a unique x-request-id and x-response-time header when none provided (509 ms)
-      √ echoes caller-provided x-request-id across response headers and JSON body (2 ms)
-      √ sanitizes and replaces invalid or malicious request IDs with a UUID (1 ms)
+      √ generates a unique x-request-id and x-response-time header when none provided (586 ms)
+      √ echoes caller-provided x-request-id across response headers and JSON body (4 ms)
+      √ sanitizes and replaces invalid or malicious request IDs with a UUID (2 ms)
       √ replaces oversized request IDs (>128 chars) with a UUID (2 ms)
     Controlled Error Interception & Envelope Formatting
-      √ captures controlled 400 Bad Request with correlation ID and timestamp (2 ms)
-      √ captures controlled 503 database failure with sanitized response (12 ms)
-      √ sanitizes 500 internal errors and attaches correlation ID to error envelope (2 ms)
-      √ returns structured 404 response with correlation ID on unknown routes (1 ms)
+      √ captures controlled 400 Bad Request with correlation ID and timestamp (3 ms)
+      √ captures controlled 503 database failure with sanitized response (14 ms)
+      √ sanitizes 500 internal errors and attaches correlation ID to error envelope (3 ms)
+      √ returns structured 404 response with correlation ID on unknown routes (2 ms)
     Operational Metrics Endpoint (GET /api/metrics)
       √ serves real-time telemetry, memory usage, request counts, and latency percentiles (4 ms)
     Production Route Protection & Hardening (W004-R1 Mandate)
       √ rejects public requests to /api/debug/error with 404 in production environment (3 ms)
       √ allows privileged bypass to /api/debug/error in production with matching secret (1 ms)
       √ protects /api/metrics in production: rejects unauthorized requests with 401 (1 ms)
-      √ protects /api/metrics in production: permits authorized requests with Bearer token (1 ms)
+      √ protects /api/metrics in production: permits authorized requests with Bearer token (2 ms)
       √ protects /api/metrics in production: permits authorized requests with x-metrics-token (1 ms)
       √ rejects wrong metrics token in production with 401 (1 ms)
       √ rejects Supabase service-role key presented as metrics token in production (W004-R1A credential separation) (1 ms)
       √ fails closed when METRICS_AUTH_TOKEN is not configured in production (1 ms)
     Error Classification & External Error Monitoring Engine (W004-R1 Mandate)
       √ classifies all 8 standard operational error categories appropriately (1 ms)
-      √ safely captures error events without throwing even if monitoring sinks fail (13 ms)
+      √ safely captures error events without throwing even if monitoring sinks fail (16 ms)
 
 Test Suites: 1 passed, 1 total
 Tests:       19 passed, 19 total
 Snapshots:   0 total
-Time:        10.903 s, estimated 11 s
+Time:        12.571 s
 Ran all test suites matching /src\\__tests__\\observability.test.ts/i.
 Force exiting Jest: Have you considered using `--detectOpenHandles` to detect async operations that kept running after all tests finished?
 
 
 --- PROCESS METRICS ---
-DurationMs: 13437
+DurationMs: 15573
 ExitCode: 0
 ================================================================================

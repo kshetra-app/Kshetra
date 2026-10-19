@@ -1,0 +1,83 @@
+================================================================================
+KSHETRA VERIFIABLE TEST EXECUTION LOG
+Suite: tests/political-intelligence-directive-103.test.mjs
+Command: node tests/political-intelligence-directive-103.test.mjs
+Working Directory: C:\Users\Laven\OneDrive\Desktop\Kshetra
+Runtime: Node v24.13.0 (win32)
+Execution Timestamp: 2026-10-19T04:03:29.189Z
+Exit Code: 0
+================================================================================
+
+--- STDOUT ---
+================================================================
+KSHETRA W021.5 — CTO DIRECTIVE 103 VERIFICATION SUITE
+Bidirectional Authority Enforcement, Historical Integrity & Accounting Proof
+================================================================
+
+--- 1. Workstream A: Historical Artifact Integrity & Provenance Proof ---
+  [PASS] 1.1 verifyHistoricalArtifactIntegrity() passes and returns comprehensive integrity proof
+  [PASS] 1.2 Historical identity: exact source commit and source path verified
+  [PASS] 1.3 Raw artifact integrity: git bytes length (20,494) and SHA-256 match exactly
+  [PASS] 1.4 Snapshot fidelity: semantic canonical JSON equality asserted; envelope distinction documented
+  [PASS] 1.5 Repo-local trust anchor limitation transparently stated in verification output
+
+--- 2. Workstream B: Bidirectional Task, Stage & Spec-Ref Boundary Enforcement ---
+  [PASS] 2.1 verifyAuthorityBoundary() passes on authentic repository state
+  [PASS] 2.2 Bidirectional task inventory: historical origin (27) <-> canonical metadata (27) <-> master spec (27)
+  [PASS] 2.3 Task attribute equality: titles, weights, and stage assignments match across all 27 tasks
+  [PASS] 2.4 Historical specRef validation: historical specRef matches canonical masterSpecRef and master spec governingSpecRef
+  [PASS] 2.5 Governing requirement validation: canonical requirementCode matches master spec governingRequirement
+  [PASS] 2.6 Stage-level bidirectional validation: Stage count (9), IDs, names, approved weights, task membership, subtotals (100.0%)
+
+--- 3. Workstream C: Historical 25-vs-27 Task Discrepancy Resolution ---
+  [PASS] 3.1 Recomputed unique task count from historical nested stage data is exactly 27
+  [PASS] 3.2 Reconciled count vs summary header: summary header totalTasks=25 reflects pre-extension core specification tasks
+  [PASS] 3.3 Historical Markdown ledger at be4ba41:reports/W021.5-EXECUTION-LEDGER.md enumerates 27 tasks
+  [PASS] 3.4 Origin weighted earned completion math 64.0% mathematically requires all 27 tasks
+  [PASS] 3.5 Original historical artifact snapshot is preserved byte-identically without mutation
+  [PASS] 3.6 Discrepancy registered in DISCREPANCY_REGISTER as DISC-012 with complete archival proof
+
+--- 4. Workstream D: Comprehensive Adversarial Falsification Matrix ---
+  [PASS] 4.1 Mutation 1: Remove a canonical task fails closed in verifyAuthorityBoundary
+  [PASS] 4.2 Mutation 2: Add an extra task to the specification manifest fails closed in verifyAuthorityBoundary
+  [PASS] 4.3 Mutation 3: Change a task's specification reference fails closed in verifyAuthorityBoundary
+  [PASS] 4.4 Mutation 4: Change a governing requirement reference fails closed in verifyAuthorityBoundary
+  [PASS] 4.5 Mutation 5: Change stage membership or stage weight fails closed in verifyAuthorityBoundary
+  [PASS] 4.6 Mutation 6: Change task weight with offsetting change elsewhere fails closed in verifyAuthorityBoundary
+  [PASS] 4.7 Mutation 7: Alter historical snapshot bytes fails closed in verifyHistoricalArtifactIntegrity
+  [PASS] 4.8 Mutation 8: Change summary.totalTasks without changing nested task records fails closed
+  [PASS] 4.9 Mutation 9: Change nested records without updating summary counts fails closed
+  [PASS] 4.10 Mutation 10: Create a duplicate task ID or inconsistent stage membership fails closed
+  [PASS] 4.11 Shared incorrect value rejection: Test cannot pass when canonical metadata and spec share same false value
+
+--- 5. Workstream E: Progress Calculation Proof from Substantive Criteria ---
+  [PASS] 5.1 50 substantive criteria across 27 tasks: dynamic evaluation yields 37 PASS, 13 FAIL/PENDING
+  [PASS] 5.2 Trace each earned amount to specific task, criterion, evidence artifact, and verification result
+  [PASS] 5.3 Recomputed task-earned weight and stage-earned weight dynamically from evaluation results
+  [PASS] 5.4 Mutually exclusive partition conservation: 61.500% + 10.500% + 22.500% + 5.500% === 100.000%
+  [PASS] 5.5 Validate calculations independently from the generated report
+  [PASS] 5.6 Substantive domain evidence: non-superficial domain invariants verified
+  [PASS] 5.7 Repository verification distinguished from live database execution (0.0%) and formal CTO acceptance (0.0%)
+
+--- 6. Workstream F: Mandatory Governance Invariants & Baseline Immutability ---
+  [PASS] 6.1 Rule IV-001 Non-Self-Acceptance: formal acceptance remains strictly 0.0% (UNACCEPTED)
+  [PASS] 6.2 Offline Air-Gap: live database execution remains strictly 0.0% with zero SQL migrations executed
+  [PASS] 6.3 Financial Defect DQ-W021.5-B2.2E-001 remains STRICTLY OPEN (earned = 0.0%)
+  [PASS] 6.4 Telangana AC 119 Boundary Defect remains STRICTLY OPEN / BLOCKED
+  [PASS] 6.5 SQL Migration Immutability: 68 migrations match baseline 0ea572d byte-for-byte
+  [PASS] 6.6 MLA Profile Seed Immutability: 31 seed files match baseline fb408ce byte-for-byte
+  [PASS] 6.7 Cross-Artifact Reconciliation: JSON matches Markdown ledger exactly across all dimensions
+
+================================================================
+TEST SUMMARY: 42 PASSED, 0 FAILED
+================================================================
+
+
+
+--- STDERR ---
+
+
+--- PROCESS METRICS ---
+DurationMs: 4559
+ExitCode: 0
+================================================================================

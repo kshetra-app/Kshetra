@@ -4,7 +4,7 @@ Suite: tests/political-intelligence-directive-102.test.mjs
 Command: node tests/political-intelligence-directive-102.test.mjs
 Working Directory: C:\Users\Laven\OneDrive\Desktop\Kshetra
 Runtime: Node v24.13.0 (win32)
-Execution Timestamp: 2026-10-19T03:20:01.293Z
+Execution Timestamp: 2026-10-19T04:03:24.620Z
 Exit Code: 0
 ================================================================================
 
@@ -29,7 +29,7 @@ Historical Provenance, Task Reconciliation & Authority Boundary Enforcement
   [PASS] 2.3 verifyAuthorityBoundary() fails closed on altered task weight
   [PASS] 2.4 verifyAuthorityBoundary() fails closed on altered stage weight in master spec
   [PASS] 2.5 verifyAuthorityBoundary() fails closed on missing canonical task
-  [PASS] 2.6 DISCREPANCY_REGISTER contains 11 traced discrepancy entries
+  [PASS] 2.6 DISCREPANCY_REGISTER contains at least 11 traced discrepancy entries
   [PASS] 2.7 Concrete resolution of W021.5-A-01 discrepancy
   [PASS] 2.8 Concrete resolution of Stage H (10.0%) and Stage I (6.0%) discrepancy
 
@@ -81,6 +81,6 @@ TEST SUMMARY: 46 PASSED, 0 FAILED
 
 
 --- PROCESS METRICS ---
-DurationMs: 5606
+DurationMs: 9124
 ExitCode: 0
 ================================================================================
