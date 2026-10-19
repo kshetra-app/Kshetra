@@ -1,0 +1,544 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "W021.5 Stage A Post-W021 Architecture & National Data-Truth Audit",
+  "milestone": "W021.5",
+  "stage": "STAGE_A_POST_W021_ARCHITECTURE_AND_NATIONAL_DATA_TRUTH_AUDIT",
+  "governingDirective": "KSHETRA — W021.5 CTO DIRECTIVE 114",
+  "governance": "Master Execution Framework Amendment v1.2 / Rule IV-001 (Non-Self-Acceptance)",
+  "evidenceMetadata": {
+    "repository": "https://github.com/kshetra-app/Kshetra.git",
+    "branch": "master",
+    "startingCommit": "09be451ef9e4e2c1bad4a4664d3c6bddd9f74517",
+    "ciRemediationCommit": "39b1359e90afc4a0c76a8ecaf53045ebe62f17df",
+    "timestamp": "2026-10-19T17:10:00.000Z",
+    "implementationStatus": "NOT_AUTHORIZED_AUDIT_ONLY",
+    "ruleIV001Acceptance": "0.0% (UNACCEPTED)",
+    "liveProductionAirGap": "0.0% (AIR_GAPPED_UNEXECUTED)",
+    "completionAccounting": {
+      "repoVerifiedEarnedPercent": 61.5,
+      "unexecutedDatabasePendingPercent": 10.5,
+      "blockedOnExternalCtcGatesPercent": 22.5,
+      "unimplementedPercent": 5.5,
+      "totalAccounting": 100.0
+    },
+    "financialDefect": {
+      "defectId": "DQ-W021.5-B2.2E-001",
+      "status": "STRICTLY_OPEN"
+    },
+    "boundaryDefect": {
+      "defectId": "TELANGANA_AC_119_BOUNDARY_DEFECT",
+      "status": "STRICTLY_OPEN_BLOCKED"
+    },
+    "immutabilityBaselines": {
+      "sqlMigrations68Commit": "0ea572d",
+      "sqlMigrationsByteForByte": true,
+      "mlaSeeds31Commit": "fb408ce",
+      "mlaSeedsByteForByte": true
+    }
+  },
+  "executiveSummary": {
+    "auditScope": "Stage A post-W021 architecture and national data-truth audit across all 18 canonical domains. Stages B through I are strictly unexecuted and not authorized under Directive 114.",
+    "bifurcatedArchitectureDiagnosis": "The repository exhibits a profound structural bifurcation: (1) A robust, highly normalized relational PostgreSQL core established in W014-W021 (Migrations 039-057) supporting canonical entities, temporal tenures, contest candidacies, PostGIS vector tiles, and an authenticated Fastify SaaS gateway (/api/vsaas/v1/...); and (2) A legacy Sprint 1-30 in-memory seed layer consisting of flat TypeScript data files (>25MB), flat GeoJSON, and single-table mutable models (Migration 012) using fragile fallback chains ('winner2025 ?? winner2024 ?? winner2023 ...').",
+    "nationalCoverageReality": "Constituency geographic boundaries, names, and seat counts exist for all 31 States and Union Territories (4,123 Assembly Constituencies and 543 Parliamentary Constituencies). However, deep political intelligence (politician profiles, tenures, defect history, demographic breakdowns, margin data) is currently populated almost exclusively for Telangana (TS), with partial stubs for 7 other major states (AP, KA, MH, TN, KL, WB, UP), and zero deep records for the remaining 23 states/UTs.",
+    "externalScraperIndependence": "Scrapers in scrapers/ (MyNeta, Wikipedia) are historical, offline, unversioned batch extraction utilities with zero automated cron execution or live database connection. The platform has zero scheduled continuous background data ingestion crons.",
+    "delimitationEngineSeparation": "The authoritative delimitation math engine (Hamilton apportionment, Article 332 SC/ST allocation, Article 82/170 legal applicability) is centralized in apps/api/src/services/delimitationService.ts. However, the mobile client (apps/mobile/stores/delimitation.ts) contains an obsolete, duplicated simulator with static constants (119, 543) that must be decommissioned in favor of the Fastify API."
+  },
+  "phase1_ciRemediationAudit": {
+    "historicalRunId": "39281440891",
+    "historicalFailureCode": "EBADPLATFORM",
+    "historicalFailureDetail": "Unsupported platform for lightningcss-win32-x64-msvc@1.32.0: wanted {\"os\":\"win32\",\"cpu\":\"x64\"} (current: {\"os\":\"linux\",\"cpu\":\"x64\"})",
+    "rootCauseAnalysis": "Forensic audit of package.json revealed line 297 explicitly declared lightningcss-win32-x64-msvc: ^1.32.0 in root dependencies. This forced npm ci on Linux runners to treat a platform-specific Windows MSVC binary as a mandatory dependency rather than an optional platform package, failing closed across all four CI jobs.",
+    "remediationAction": "Removed lightningcss-win32-x64-msvc from root package.json line 297. Regenerated package-lock.json using npm install --package-lock-only, ensuring lightningcss-win32-x64-msvc is marked optional: true exclusively under lightningcss.optionalDependencies without --force or --legacy-peer-deps. Hardened EXECUTION_STATE.md governance fields (IMPLEMENTATION_AUTHORIZATION: NO, IMPLEMENTATION_AUTHORIZATION_COMMIT: NONE).",
+    "remoteVerificationRunId": "39290879767",
+    "remoteVerificationHead": "39b1359e90afc4a0c76a8ecaf53045ebe62f17df",
+    "cleanInstallVerdict": "PROVEN_CLEAN_INSTALL_SUCCESS_ON_LINUX",
+    "jobBreakdown": {
+      "typecheck": {
+        "status": "completed",
+        "conclusion": "success",
+        "installDependencies": "success",
+        "typecheckApi": "success",
+        "typecheckShared": "success",
+        "typecheckMobile": "success"
+      },
+      "test": {
+        "status": "in_progress",
+        "installDependencies": "success",
+        "buildShared": "success",
+        "testShared": "success",
+        "testEnvironmentSeparation": "success"
+      },
+      "lint": {
+        "status": "in_progress",
+        "installDependencies": "success"
+      },
+      "governance": {
+        "status": "completed",
+        "conclusion": "failure",
+        "installDependencies": "success",
+        "failedStep": "Verify Governance Consistency",
+        "failureRootCause": "Downstream step failure unrelated to dependencies: actions/checkout@v4 runs with default fetch-depth: 1 (shallow clone), causing git log -n 1 --format='%h' 795b9af -- AMENDMENT_v1.5.md to fail with 'fatal: bad revision 795b9af'."
+      }
+    }
+  },
+  "domainInventory": [
+    {
+      "domainId": 1,
+      "domainName": "States & Union Territories",
+      "exactFiles": ["apps/api/src/services/stateData.ts", "apps/api/src/routes/states.ts", "data/seed/*-constituencies.ts"],
+      "databaseTables": ["states"],
+      "servicesAndRoutes": ["stateData.ts", "states.ts", "saasV1.ts (/api/vsaas/v1/states)"],
+      "consumers": ["Mobile ActiveStateStore", "Mobile StateSelector", "B2B SaaS Clients"],
+      "seedDatasets": ["31 state/UT constituency seed files in data/seed/"],
+      "testCoverage": ["tests/saas-v1-routes.test.ts", "apps/api/src/__tests__/observability.test.ts"],
+      "sourceOfTruth": "Bifurcated: states table (Canonical) vs STATE_RAW_MAP in stateData.ts (Legacy)",
+      "temporalSupport": false,
+      "provenanceAvailable": true,
+      "indiaWideCoverage": "COMPLETE_31_STATES_UTS",
+      "completenessStatus": "COMPLETE",
+      "duplicationRisk": "HIGH_DUPLICATION (STATE_RAW_MAP duplicates states table metadata)"
+    },
+    {
+      "domainId": 2,
+      "domainName": "Districts",
+      "exactFiles": ["apps/api/src/services/delimitationService.ts", "data/census/india-district-population-2011.json"],
+      "databaseTables": ["districts"],
+      "servicesAndRoutes": ["delimitationService.ts", "spatialRuntimeService.ts"],
+      "consumers": ["Mobile ConstituencyExplorer", "Delimitation Simulator"],
+      "seedDatasets": ["data/census/india-district-population-2011.json (640 Census 2011 districts)"],
+      "testCoverage": ["tests/delimitation-g8-integration.test.mjs", "data/census/jest.config.js"],
+      "sourceOfTruth": "Bifurcated: Census 2011 JSON (In-Memory) vs districts table (Canonical Migration 040)",
+      "temporalSupport": true,
+      "provenanceAvailable": true,
+      "indiaWideCoverage": "COMPLETE_640_DISTRICTS_2011",
+      "completenessStatus": "COMPLETE",
+      "duplicationRisk": "MODERATE_DUPLICATION (Census JSON vs Database districts)"
+    },
+    {
+      "domainId": 3,
+      "domainName": "Assembly Constituencies (AC)",
+      "exactFiles": ["apps/api/src/routes/constituencies.ts", "apps/api/src/services/stateData.ts", "data/seed/*-constituencies.ts"],
+      "databaseTables": ["constituencies", "assembly_constituency_versions"],
+      "servicesAndRoutes": ["stateData.ts", "constituencies.ts", "saasV1.ts (/api/vsaas/v1/constituencies)"],
+      "consumers": ["Mobile Constituency Detail Screen", "SaaS B2B Consumers"],
+      "seedDatasets": ["4,123 assembly constituency seeds across 31 TS files"],
+      "testCoverage": ["tests/saas-v1-routes.test.ts", "apps/api/src/__tests__/constituencies.test.ts"],
+      "sourceOfTruth": "Bifurcated: data/seed/*-constituencies.ts (Legacy) vs constituencies/assembly_constituency_versions (Canonical 040/041)",
+      "temporalSupport": true,
+      "provenanceAvailable": true,
+      "indiaWideCoverage": "COMPLETE_4123_SEATS",
+      "completenessStatus": "COMPLETE_GEOGRAPHY_PARTIAL_DATA",
+      "duplicationRisk": "CRITICAL_DUPLICATION (Seed files hold winner2023/currentMLA while DB holds relational models)"
+    },
+    {
+      "domainId": 4,
+      "domainName": "Parliamentary Constituencies (PC)",
+      "exactFiles": ["apps/api/src/routes/geoRuntime.ts", "data/seed/mp-profiles.ts", "apps/mobile/lib/data.ts"],
+      "databaseTables": ["parliamentary_constituencies", "entity_geometries"],
+      "servicesAndRoutes": ["spatialRuntimeService.ts", "geoRuntime.ts"],
+      "consumers": ["Mobile Parliament Screen", "MapScreen"],
+      "seedDatasets": ["data/seed/mp-profiles.ts (543 Lok Sabha seats)"],
+      "testCoverage": ["apps/api/src/__tests__/geo-runtime.test.ts", "tests/spatial-invariants.test.mjs"],
+      "sourceOfTruth": "Bifurcated: mp-profiles.ts (Legacy) vs parliamentary_constituencies (Canonical 040)",
+      "temporalSupport": true,
+      "provenanceAvailable": true,
+      "indiaWideCoverage": "COMPLETE_543_LOK_SABHA",
+      "completenessStatus": "COMPLETE_SEATS_BASIC_PROFILES",
+      "duplicationRisk": "MODERATE_DUPLICATION"
+    },
+    {
+      "domainId": 5,
+      "domainName": "Rajya Sabha & Legislative Councils (RS/LC)",
+      "exactFiles": ["packages/shared/src/contracts/political.ts", "supabase/migrations/050_political_entity_model.sql"],
+      "databaseTables": ["elected_tenures (chamber='RAJYA_SABHA' | 'LEGISLATIVE_COUNCIL')"],
+      "servicesAndRoutes": ["politicalEntityService.ts (stubbed support)"],
+      "consumers": ["None (Not yet exposed in Mobile UI)"],
+      "seedDatasets": ["None (Zero static seeds for RS/LC)"],
+      "testCoverage": ["tests/political-entities-invariants.test.mjs (schema level only)"],
+      "sourceOfTruth": "PostgreSQL schema in Migration 050",
+      "temporalSupport": true,
+      "provenanceAvailable": true,
+      "indiaWideCoverage": "SCHEMA_ONLY_ZERO_POPULATION",
+      "completenessStatus": "INCOMPLETE",
+      "duplicationRisk": "NONE"
+    },
+    {
+      "domainId": 6,
+      "domainName": "Officeholders / MLAs / MPs",
+      "exactFiles": ["apps/api/src/routes/constituencies.ts", "apps/api/src/services/politicalEntityService.ts", "data/seed/*-mla-profiles.ts"],
+      "databaseTables": ["canonical_persons", "elected_tenures", "legislator_profiles"],
+      "servicesAndRoutes": ["politicalEntityService.ts", "constituencies.ts", "saasV1.ts"],
+      "consumers": ["Mobile LegislatorProfileScreen", "CandidateExplorer"],
+      "seedDatasets": ["data/seed/*-mla-profiles.ts (31 state MLA seed files)"],
+      "testCoverage": ["tests/political-entities-invariants.test.mjs", "tests/political-intelligence-directive-113.test.mjs"],
+      "sourceOfTruth": "Bifurcated: legislator_profiles (Migration 012 mutable legacy) vs canonical_persons/elected_tenures (Migration 050 temporal)",
+      "temporalSupport": true,
+      "provenanceAvailable": true,
+      "indiaWideCoverage": "PARTIAL (Telangana has deep profile; other 30 states have name/party stubs)",
+      "completenessStatus": "PARTIAL",
+      "duplicationRisk": "CRITICAL_DUPLICATION (Double-booking between Migration 012 and 050)"
+    },
+    {
+      "domainId": 7,
+      "domainName": "Political Parties & Organizations",
+      "exactFiles": ["apps/api/src/services/politicalEntityService.ts", "data/seed/parties.ts", "reports/w021_5b2_canonical_org_catalog_raw.json"],
+      "databaseTables": ["political_organizations", "political_parties"],
+      "servicesAndRoutes": ["politicalEntityService.ts", "saasV1.ts (/api/vsaas/v1/parties)"],
+      "consumers": ["Mobile Party Badges", "Delimitation Analysis", "SaaS B2B"],
+      "seedDatasets": ["data/seed/parties.ts (legacy 30 parties) vs 1,207 Canonical Organization Catalog"],
+      "testCoverage": ["tests/political-entities-invariants.test.mjs", "tests/political-intelligence-directive-086.test.mjs"],
+      "sourceOfTruth": "Canonical 1,207 Political Organizations Catalog (Migration 065 / W021.5-B2.2C)",
+      "temporalSupport": true,
+      "provenanceAvailable": true,
+      "indiaWideCoverage": "COMPLETE_NATIONAL_ECI_CATALOG (1,207 parties recognized)",
+      "completenessStatus": "COMPLETE_CATALOG_PENDING_STAGING_DEPLOY",
+      "duplicationRisk": "MODERATE_DUPLICATION (parties.ts 30 parties vs 1,207 catalog)"
+    },
+    {
+      "domainId": 8,
+      "domainName": "Elections & Contests",
+      "exactFiles": ["apps/api/src/services/electionService.ts", "apps/api/src/routes/elections.ts", "data/seed/*-election-history.ts"],
+      "databaseTables": ["election_events", "election_contests", "candidacies", "ballot_choices"],
+      "servicesAndRoutes": ["electionService.ts", "elections.ts", "saasV1.ts"],
+      "consumers": ["Mobile LiveElectionStore", "ElectionHistoryTab"],
+      "seedDatasets": ["data/seed/telangana-election-history.ts", "data/seed/andhra-pradesh-historical-results.ts"],
+      "testCoverage": ["apps/api/src/__tests__/elections.test.ts", "tests/election-normalization-invariants.test.mjs"],
+      "sourceOfTruth": "Canonical Migrations 051/053/054 (Relational Normalized)",
+      "temporalSupport": true,
+      "provenanceAvailable": true,
+      "indiaWideCoverage": "PARTIAL (Deep in TS/AP; basic cycle years for other states)",
+      "completenessStatus": "PARTIAL",
+      "duplicationRisk": "HIGH_DUPLICATION (Seed election-history TS files vs election_contests DB)"
+    },
+    {
+      "domainId": 9,
+      "domainName": "Election Results & Margin Truth",
+      "exactFiles": ["apps/api/src/services/stateData.ts", "data/evidence/w019/canonical_benchmarks.json"],
+      "databaseTables": ["candidacies", "ballot_choices"],
+      "servicesAndRoutes": ["stateData.ts (getConstituencyElectionData)", "electionService.ts"],
+      "consumers": ["Mobile ConstituencyScreen", "Delimitation Analysis"],
+      "seedDatasets": ["data/evidence/w019/canonical_benchmarks.json (Certified Gajwel & Kodangal 2023)"],
+      "testCoverage": ["tests/election-normalization-invariants.test.mjs", "apps/api/src/__tests__/election-truth-contracts.test.ts"],
+      "sourceOfTruth": "Canonical benchmarks (Gajwel Eatala 66,653 vs corrupted 91,753 DB discrepancy identified in W019)",
+      "temporalSupport": true,
+      "provenanceAvailable": true,
+      "indiaWideCoverage": "HIGH_DEFECT_RISK (Fallback chain winner2025..2020 guesses years)",
+      "completenessStatus": "PARTIAL_REQUIRING_RECONCILIATION",
+      "duplicationRisk": "CRITICAL_RESIDUE"
+    },
+    {
+      "domainId": 10,
+      "domainName": "Political Defections & Timeline Events",
+      "exactFiles": ["apps/api/src/services/politicalEntityService.ts", "data/seed/telangana-political-timeline.ts"],
+      "databaseTables": ["tenure_party_switches", "organization_relationships"],
+      "servicesAndRoutes": ["politicalEntityService.ts", "saasV1.ts (/api/vsaas/v1/entities/:id/timeline)"],
+      "consumers": ["Mobile Political Timeline UI"],
+      "seedDatasets": ["data/seed/telangana-political-timeline.ts (50+ curated Telangana defections)"],
+      "testCoverage": ["tests/political-entities-invariants.test.mjs"],
+      "sourceOfTruth": "Migration 050 tenure_party_switches (Relational)",
+      "temporalSupport": true,
+      "provenanceAvailable": true,
+      "indiaWideCoverage": "TELANGANA_ONLY_RESIDUE (Zero timeline data for other 30 states)",
+      "completenessStatus": "PARTIAL",
+      "duplicationRisk": "MODERATE_DUPLICATION"
+    },
+    {
+      "domainId": 11,
+      "domainName": "Geography & Spatial Boundaries",
+      "exactFiles": ["apps/api/src/routes/geoRuntime.ts", "apps/api/src/routes/geo.ts", "apps/api/public/geo/*.json"],
+      "databaseTables": ["entity_geometries (589 SHA-256 verified rows in Migration 048/049)"],
+      "servicesAndRoutes": ["spatialRuntimeService.ts", "geoRuntime.ts"],
+      "consumers": ["Mobile MapLibre/Vector Map", "Delimitation Boundary Mapper"],
+      "seedDatasets": ["apps/api/public/geo/telangana-constituencies.json", "data/geo/*.geojson"],
+      "testCoverage": ["tests/spatial-invariants.test.mjs", "apps/api/src/__tests__/geo-runtime.test.ts"],
+      "sourceOfTruth": "PostGIS entity_geometries (589 frozen verified geometry rows)",
+      "temporalSupport": true,
+      "provenanceAvailable": true,
+      "indiaWideCoverage": "PARTIAL (589 validated polygons; Telangana 119 ACs + 17 PCs verified; nationwide coverage partial)",
+      "completenessStatus": "PARTIAL",
+      "duplicationRisk": "MODERATE_DUPLICATION (Flat GeoJSON files vs PostGIS binary table)"
+    },
+    {
+      "domainId": 12,
+      "domainName": "Delimitation Simulation & Projections",
+      "exactFiles": ["apps/api/src/services/delimitationService.ts", "apps/api/src/services/delimitationQueryService.ts", "apps/mobile/stores/delimitation.ts"],
+      "databaseTables": ["delimitation_proposals", "delimitation_scenarios (Migrations 011, 055)"],
+      "servicesAndRoutes": ["delimitationService.ts", "delimitationQueryService.ts", "apps/api/src/routes/delimitation.ts"],
+      "consumers": ["Mobile DelimitationScreen", "B2B SaaS Gateway"],
+      "seedDatasets": ["data/census/india-district-population-2011.json"],
+      "testCoverage": ["tests/delimitation-g8-integration.test.mjs (25/25 PASS)", "apps/api/src/__tests__/delimitation.test.ts (33/33 PASS)"],
+      "sourceOfTruth": "Fastify Delimitation Engine (W020 Statutory & Mathematical Engine)",
+      "temporalSupport": true,
+      "provenanceAvailable": true,
+      "indiaWideCoverage": "COMPLETE_NATIONAL_MATHEMATICAL_MODEL",
+      "completenessStatus": "COMPLETE_ENGINE_TELANGANA_RESIDUE_IN_MLA_IMPACT",
+      "duplicationRisk": "CRITICAL_DUPLICATION (Obsolete mobile store duplicates math with static 119/543 constants)"
+    },
+    {
+      "domainId": 13,
+      "domainName": "News Ingestion Subsystem",
+      "exactFiles": ["apps/api/src/services/news/newsService.ts", "apps/api/src/services/news/rssParser.ts", "apps/api/src/services/news/sources.ts", "apps/api/src/routes/news.ts"],
+      "databaseTables": ["news_articles", "news_sources (Migrations 015, 033 - currently unwritten by runtime)"],
+      "servicesAndRoutes": ["newsService.ts", "news.ts"],
+      "consumers": ["Mobile NewsFeedScreen", "ConstituencyNewsWidget"],
+      "seedDatasets": ["None"],
+      "testCoverage": ["apps/api/src/__tests__/contracts.test.ts"],
+      "sourceOfTruth": "Strictly in-memory cache (cache: NewsFeed). Database tables 015/033 are unwritten.",
+      "temporalSupport": true,
+      "provenanceAvailable": true,
+      "indiaWideCoverage": "PARTIAL (21 RSS feeds: 8 national English, 5 state English [TS, AP, TN, KA, KL], 2 Hindi, 1 Tamil)",
+      "completenessStatus": "INCOMPLETE_PIPELINE (3 of 11 stages implemented, 3 partial, 5 missing)",
+      "duplicationRisk": "NONE"
+    },
+    {
+      "domainId": 14,
+      "domainName": "Multilingual & Localization (i18n)",
+      "exactFiles": ["apps/mobile/i18n/index.ts", "apps/mobile/i18n/locales/*.ts", "scripts/verify-13-locales.mjs"],
+      "databaseTables": ["None (Client-side localized static dictionaries)"],
+      "servicesAndRoutes": ["verify-13-locales.mjs (CI verification harness)"],
+      "consumers": ["Mobile UI (All 51 screen components)"],
+      "seedDatasets": ["13 locale dictionaries: en, te, hi, ta, kn, ml, mr, bn, gu, or, pa, as, ne"],
+      "testCoverage": ["scripts/verify-13-locales.mjs (100% parity across 2,128 keys)"],
+      "sourceOfTruth": "Canonical apps/mobile/i18n/locales/*.ts",
+      "temporalSupport": false,
+      "provenanceAvailable": false,
+      "indiaWideCoverage": "COMPLETE_13_INDIAN_LANGUAGES",
+      "completenessStatus": "COMPLETE",
+      "duplicationRisk": "NONE"
+    },
+    {
+      "domainId": 15,
+      "domainName": "Multilingual Search & Indexing",
+      "exactFiles": ["supabase/migrations/020_foundation_hardening.sql", "supabase/migrations/036_foundation_and_grants_repair.sql", "apps/api/src/services/stateData.ts"],
+      "databaseTables": ["global_search RPC (PostgreSQL Full-Text Search across 4 tables)"],
+      "servicesAndRoutes": ["global_search RPC", "searchConstituencies in stateData.ts", "saasV1.ts (/entities/search)"],
+      "consumers": ["Mobile SearchBar", "B2B SaaS Gateway"],
+      "seedDatasets": ["None"],
+      "testCoverage": ["tests/api-architecture-audit.test.mjs"],
+      "sourceOfTruth": "Bifurcated: In-memory substring search (API stateData.ts) vs PostgreSQL RPC (Database)",
+      "temporalSupport": false,
+      "provenanceAvailable": false,
+      "indiaWideCoverage": "PARTIAL (In-memory search only scans 31 seed files; RPC fails on UNION ORDER BY in staging)",
+      "completenessStatus": "PARTIAL_DEFECT_KNOWN",
+      "duplicationRisk": "HIGH_DUPLICATION"
+    },
+    {
+      "domainId": 16,
+      "domainName": "AI & Sentiment Intelligence",
+      "exactFiles": ["apps/api/src/services/ai.ts", "apps/api/src/routes/ai.ts"],
+      "databaseTables": ["None (External LLM API integration via OpenAI/Anthropic SDKs)"],
+      "servicesAndRoutes": ["ai.ts", "routes/ai.ts (/api/v1/ai/ask, /api/v1/ai/analyze)"],
+      "consumers": ["Mobile Civic Chatbot", "Constituency AI Summary"],
+      "seedDatasets": ["Hardcoded prompt context extracted from Telangana seeds"],
+      "testCoverage": ["apps/api/src/__tests__/ai.test.ts"],
+      "sourceOfTruth": "External LLM + Hardcoded prompt in apps/api/src/services/ai.ts",
+      "temporalSupport": false,
+      "provenanceAvailable": false,
+      "indiaWideCoverage": "TELANGANA_EXCLUSIVE_RESIDUE (Hardcoded to 119 seats, 2023 election)",
+      "completenessStatus": "CURRENT_BUT_NEEDS_REFACTOR",
+      "duplicationRisk": "MODERATE_DUPLICATION"
+    },
+    {
+      "domainId": 17,
+      "domainName": "Local Governance (Panchayats & Municipalities)",
+      "exactFiles": ["supabase/migrations/022_panchayat_wards_and_local_gov.sql", "data/seed/local-body-representatives.ts"],
+      "databaseTables": ["local_bodies", "local_body_wards", "local_body_representatives (Migration 022)"],
+      "servicesAndRoutes": ["spatialRuntimeService.ts (stub)"],
+      "consumers": ["Mobile LocalGovScreen (stub)"],
+      "seedDatasets": ["data/seed/local-body-representatives.ts (sample Hyderabad GHMC & rural mandals)"],
+      "testCoverage": ["None"],
+      "sourceOfTruth": "Migration 022 schema + static TS seeds",
+      "temporalSupport": true,
+      "provenanceAvailable": false,
+      "indiaWideCoverage": "TELANGANA_MUNICIPAL_STUBS_ONLY",
+      "completenessStatus": "INCOMPLETE",
+      "duplicationRisk": "LOW"
+    },
+    {
+      "domainId": 18,
+      "domainName": "API Gateway & B2B SaaS Layer",
+      "exactFiles": ["apps/api/src/routes/saasV1.ts", "apps/api/src/lib/saasAuthPlugin.ts", "apps/api/src/lib/saasCrypto.ts", "apps/api/src/lib/saasRateLimiter.ts", "apps/api/openapi-saas-v1.yaml"],
+      "databaseTables": ["saas_tenants", "saas_api_keys", "saas_usage_ledger (Migrations 056, 057, 058)"],
+      "servicesAndRoutes": ["Fastify /api/vsaas/v1/... (138 routes registered)"],
+      "consumers": ["B2B Commercial Tenants", "Enterprise Integration Partners"],
+      "seedDatasets": ["None"],
+      "testCoverage": ["tests/saas-v1-routes.test.ts", "tests/saas-g6-security-probes.test.mjs"],
+      "sourceOfTruth": "Fastify Saas Plugin Architecture (Canonical W021-G6)",
+      "temporalSupport": true,
+      "provenanceAvailable": true,
+      "indiaWideCoverage": "COMPLETE_NATIONAL_GATEWAY",
+      "completenessStatus": "COMPLETE",
+      "duplicationRisk": "NONE"
+    }
+  ],
+  "architecturalResidueTaxonomy": {
+    "categories": [
+      "LEGITIMATE",
+      "LEGACY_BUT_SAFE",
+      "LEGACY_AND_MUST_REMOVE",
+      "CURRENT_AND_CORRECT",
+      "CURRENT_BUT_NEEDS_REFACTOR"
+    ],
+    "inventory": [
+      {
+        "id": "RES-001",
+        "entity": "PANIN_SCENARIO & PANIN Brand Identity",
+        "locations": ["apps/api/openapi-saas-v1.yaml", "packages/shared/src/contracts/delimitation.ts"],
+        "classification": "LEGITIMATE",
+        "rationale": "Official statutory scenario classification enum and enterprise B2B product brand namespace. Must remain unconditionally preserved."
+      },
+      {
+        "id": "RES-002",
+        "entity": "State Code TG vs TS Normalization",
+        "locations": ["apps/api/src/routes/saasV1.ts line 63"],
+        "classification": "LEGITIMATE",
+        "rationale": "Maps official ISO 3166-2:IN code TG to postal/historical code TS. Legitimate API gateway interoperability shim."
+      },
+      {
+        "id": "RES-003",
+        "entity": "October 2026 Confirmed By-Election Overrides",
+        "locations": ["apps/api/src/services/stateData.ts lines 60-76"],
+        "classification": "LEGITIMATE",
+        "rationale": "Explicit statutory evidence for confirmed 2026 by-elections (TN AC 35, 101; WB AC 210, 70; PY AC 9). Must be migrated to database by-election records in Stage C/D."
+      },
+      {
+        "id": "RES-004",
+        "entity": "MapLibre Compatibility Layer",
+        "locations": ["apps/mobile/lib/maplibreCompat.tsx"],
+        "classification": "CURRENT_AND_CORRECT",
+        "rationale": "Open-source compatibility wrapper replacing proprietary Mapbox SDKs with zero proprietary API key leakage."
+      },
+      {
+        "id": "RES-005",
+        "entity": "13-Language i18n Locales",
+        "locations": ["apps/mobile/i18n/locales/*.ts"],
+        "classification": "CURRENT_AND_CORRECT",
+        "rationale": "Complete 2,128-key localized dictionary across 13 Indian languages with 100% key parity verified by CI scripts/verify-13-locales.mjs."
+      },
+      {
+        "id": "RES-006",
+        "entity": "Statutory Delimitation Math Engine",
+        "locations": ["apps/api/src/services/delimitationService.ts"],
+        "classification": "CURRENT_AND_CORRECT",
+        "rationale": "Mathematical apportionment (Hamilton method), Article 332 SC/ST allocation, and Article 82/170 legal applicability models are mathematically correct and national."
+      },
+      {
+        "id": "RES-007",
+        "entity": "Historical UI Localization Keys (winner2023)",
+        "locations": ["apps/mobile/i18n/locales/*.ts line 146"],
+        "classification": "LEGACY_BUT_SAFE",
+        "rationale": "Localization strings like '2023 Winner' and '2023 విజేత' are safe UI labels for viewing historical 2023 election results."
+      },
+      {
+        "id": "RES-008",
+        "entity": "MyNeta Offline Scrapers",
+        "locations": ["scrapers/myneta-*.js", "scrapers/myneta-enrichment.js"],
+        "classification": "LEGACY_BUT_SAFE",
+        "rationale": "Historic scraping scripts for candidate affidavits. Decoupled from runtime; safe for documentation and provenance."
+      },
+      {
+        "id": "RES-009",
+        "entity": "Static Constituency Seed TS Files (31 States)",
+        "locations": ["data/seed/*-constituencies.ts", "data/seed/*-mla-profiles.ts"],
+        "classification": "LEGACY_BUT_SAFE",
+        "rationale": "Frozen static seed arrays (>25MB). Safe until Stage C/D relational database ingestion completes."
+      },
+      {
+        "id": "RES-010",
+        "entity": "ConstituencyBrief Winner Fallback Chain",
+        "locations": ["apps/api/src/services/stateData.ts line 57-58"],
+        "classification": "LEGACY_AND_MUST_REMOVE",
+        "rationale": "Chaining 'winner2025 ?? winner2024 ?? winner2023 ?? winner2022...' conflates election contest outcomes with immutable constituency geometry. Must be replaced with queries to candidacies/elected_tenures."
+      },
+      {
+        "id": "RES-011",
+        "entity": "Legislator Profiles is_current_member Boolean",
+        "locations": ["supabase/migrations/012_legislator_profiles.sql line 38"],
+        "classification": "LEGACY_AND_MUST_REMOVE",
+        "rationale": "Unindexed mutable boolean breaks temporal integrity and election auditability. Completely superseded by elected_tenures in Migration 050."
+      },
+      {
+        "id": "RES-012",
+        "entity": "Mobile Delimitation Store Hardcoded Constants",
+        "locations": ["apps/mobile/stores/delimitation.ts lines 25, 77, 88"],
+        "classification": "LEGACY_AND_MUST_REMOVE",
+        "rationale": "Mobile client duplicates server apportionment logic with static seat constants (543, 119, 175, 224). Must be de-scoped to consume Fastify API."
+      },
+      {
+        "id": "RES-013",
+        "entity": "Mobile Civic Metrics Hardcoded 119 Seats",
+        "locations": ["apps/mobile/stores/civicMetrics.ts lines 82-84"],
+        "classification": "LEGACY_AND_MUST_REMOVE",
+        "rationale": "Mock civic scoreboard defaults totalLegislators to 119 and totalACs to 119, breaking in all other 30 states."
+      },
+      {
+        "id": "RES-014",
+        "entity": "Multi-State Data Access Service (stateData.ts)",
+        "locations": ["apps/api/src/services/stateData.ts"],
+        "classification": "CURRENT_BUT_NEEDS_REFACTOR",
+        "rationale": "Supports 31 states but exports Telangana-specific functions (getTSRawSeeds, getTSElectionHistory, getTSMLAProfiles) and mixes hardcoded election logic with generic access."
+      },
+      {
+        "id": "RES-015",
+        "entity": "Delimitation MLA Impact Analysis (getMlaImpact)",
+        "locations": ["apps/api/src/services/delimitationService.ts lines 1325-1360"],
+        "classification": "CURRENT_BUT_NEEDS_REFACTOR",
+        "rationale": "Generic delimitation service restricts getMlaImpact strictly to 'TS' and binds to TELANGANA_CONSTITUENCIES with hardcoded Kodangal/Gajwel overrides."
+      },
+      {
+        "id": "RES-016",
+        "entity": "AI Prompt & Context Generator (ai.ts)",
+        "locations": ["apps/api/src/services/ai.ts lines 9-97"],
+        "classification": "CURRENT_BUT_NEEDS_REFACTOR",
+        "rationale": "System prompt and constituency context generator are hardcoded to Telangana 119 seats and 2023 results, unable to serve any of the other 30 states."
+      }
+    ]
+  },
+  "subsystemDeepDives": {
+    "stateDataService": {
+      "filePath": "apps/api/src/services/stateData.ts",
+      "totalStatesConfigured": 31,
+      "totalConstituenciesLoaded": 4123,
+      "fallbackChainAnalysis": "Lines 57-58: let currentParty = c.winner2025 ?? c.winner2024 ?? c.winner2023 ?? c.winner2022 ?? c.winner2021 ?? c.winner ?? ''; let currentMLA = c.winnerName2025 ?? c.winnerName2024 ?? c.winnerName2023 ?? c.winnerName2022 ?? c.winnerName2021 ?? c.winnerName ?? '';. This pattern masks whether a candidate actually contested in a given year.",
+      "byElectionOverrides": "Lines 60-76 contain procedural hardcoding for 5 specific seats (TN AC 35/101, WB AC 210/70, PY AC 9). These overrides demonstrate genuine data truth but must be modeled relationally in election_contests rather than procedural shims.",
+      "stateSpecificCoupling": "Lines 196-208 leak getTSRawSeeds(), getTSElectionHistory(), getTSMLAProfiles(), and getMLAProfile into a common service. Lines 338-463 contain hardcoded branching for 8 states (TS, AP, KA, MH, TN, KL, WB, UP) while silently emitting zero historical results for the remaining 23 states."
+    },
+    "delimitationSubsystem": {
+      "filePath": "apps/api/src/services/delimitationService.ts",
+      "mathematicalCore": "Hamilton largest-remainder method with strict quota safety (MAX_SAFE_REQUESTED_SEATS = 10000). Proportional Article 332 SC/ST reservation logic mathematically decoupled from allocation remainder assignment.",
+      "statutoryBaselines": "Byte-exact legal chain: 2008 ECI Delimitation Order -> APRA 2014 -> G.S.R. 311(E) (2015) -> ECI Notification 282/AP/2018(DEL) -> Current geography.",
+      "residueFound": "getMlaImpact (line 1327) explicitly aborts for any stateCode !== 'TS'. Lines 1344-1360 contain manual benchmark injections for Kodangal (AC-065, margin 32532) and Gajwel (AC-040, margin 45031).",
+      "mobileStoreDuplication": "apps/mobile/stores/delimitation.ts contains client-side simulation logic and hardcoded seat counts, conflicting with the single-source-of-truth Fastify API."
+    },
+    "aiIntelligenceSubsystem": {
+      "filePath": "apps/api/src/services/ai.ts",
+      "systemPromptScope": "Hardcoded exclusively to Telangana (119 seats, 2023 election results: INC 64, BRS 39, BJP 8, AIMIM 7).",
+      "contextBuilderScope": "buildConstituencyContext (lines 49-98) only queries TELANGANA_CONSTITUENCIES, getConstituencyHistory, getMLAProfile, getConstituencyDemographics, and getConstituencyTimeline. Does not accept or resolve any other state."
+    },
+    "newsIngestionPipeline": {
+      "sourceFiles": ["apps/api/src/services/news/sources.ts", "apps/api/src/services/news/rssParser.ts", "apps/api/src/services/news/newsService.ts"],
+      "stagesEvaluation": {
+        "stage1_discovery": "IMPLEMENTED (21 curated RSS feed sources in sources.ts across 5 languages)",
+        "stage2_ingestion": "IMPLEMENTED (HTTP fetch via fetchFeedXml in rssParser.ts)",
+        "stage3_parsing": "IMPLEMENTED (Fast regex/XML feed parser in rssParser.ts)",
+        "stage4_deduplication": "PARTIAL (SHA1 URL hashing in hashId; zero semantic or near-duplicate title deduplication)",
+        "stage5_contentExtraction": "MISSING (Extracts RSS summary tags only; no full readability/article body parsing)",
+        "stage6_entityExtraction": "MISSING (constituencyId exists on interface but is never populated by NLP or NER)",
+        "stage7_topicClassification": "PARTIAL (Static category assigned at feed level; no per-article text categorization)",
+        "stage8_sentimentAnalysis": "MISSING (Zero sentiment, bias, or political leaning scoring implemented)",
+        "stage9_geoMapping": "PARTIAL (State code attached at source level; zero district or assembly constituency spatial bounding)",
+        "stage10_databasePersistence": "MISSING (Strictly in-memory cache; news_articles table in Migrations 015/033 remains completely unwritten)",
+        "stage11_searchAndPush": "MISSING (getFeed performs in-memory array filtering only; no PostgreSQL FTS or push triggers)"
+      },
+      "summary": "3 Implemented, 3 Partial, 5 Missing. Entire subsystem operates as a transient in-memory cache with zero database persistence."
+    }
+  },
+  "governanceInvariants": {
+    "ruleIV001NonSelfAcceptance": "0.0% (UNACCEPTED) — Implementing agent certifies technical readiness but strictly withholds formal CTO acceptance.",
+    "productionAirGap": "0.0% (AIR_GAPPED_UNEXECUTED) — Production database (ehfafcnimmjusyvplbah) remains 100% untouched.",
+    "completionAccounting": "61.500% repo-verified earned completion strictly preserved (38.500% unearned/blocked, total 100.000%).",
+    "financialDefectStatus": "DQ-W021.5-B2.2E-001 remains STRICTLY OPEN.",
+    "boundaryDefectStatus": "TELANGANA_AC_119_BOUNDARY_DEFECT remains STRICTLY OPEN / BLOCKED.",
+    "immutability": "68 SQL migrations (0ea572d) and 31 MLA profile seeds (fb408ce) remain byte-for-byte immutable."
+  }
+}
