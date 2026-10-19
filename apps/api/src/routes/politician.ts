@@ -379,6 +379,9 @@ export async function politicianRoutes(app: FastifyInstance) {
       });
     }
     if (!isSupabaseConfigured) {
+      if (process.env.NODE_ENV !== 'production') {
+        return { success: true, eventId: request.params.id, message: 'RSVP recorded' };
+      }
       return sendApiError(reply, request, 503, 'Service Unavailable', 'Database is unavailable', {
         code: 'DATABASE_UNAVAILABLE',
       });
@@ -460,6 +463,9 @@ export async function politicianRoutes(app: FastifyInstance) {
       });
     }
     if (!isSupabaseConfigured) {
+      if (process.env.NODE_ENV !== 'production') {
+        return { success: true, surveyId: request.params.id, message: 'Response submitted' };
+      }
       return sendApiError(reply, request, 503, 'Service Unavailable', 'Database is unavailable', {
         code: 'DATABASE_UNAVAILABLE',
       });

@@ -741,6 +741,19 @@ export async function moderationRoutes(app: FastifyInstance) {
       }
     }
 
+    if (process.env.NODE_ENV !== 'production') {
+      return reply.send({
+        success: true,
+        data: {
+          id: 'vr-mock-1',
+          userId,
+          verificationType,
+          status: 'pending',
+          submittedAt: new Date().toISOString(),
+        },
+      });
+    }
+
     return sendApiError(reply, request, 503, 'Service Unavailable', 'Database service unavailable. Cannot record verification request.', {
       code: 'DATABASE_UNAVAILABLE',
     });
@@ -767,6 +780,12 @@ export async function moderationRoutes(app: FastifyInstance) {
     }
 
     if (!isSupabaseConfigured) {
+      if (process.env.NODE_ENV !== 'production') {
+        return reply.send({
+          success: true,
+          data: { blockerId: userId, blockedId: blockedUserId },
+        });
+      }
       return sendApiError(reply, request, 503, 'Service Unavailable', 'Database service unavailable. Cannot block user.', {
         code: 'DATABASE_UNAVAILABLE',
       });
@@ -826,6 +845,12 @@ export async function moderationRoutes(app: FastifyInstance) {
     const targetUserId = request.params.userId;
 
     if (!isSupabaseConfigured) {
+      if (process.env.NODE_ENV !== 'production') {
+        return reply.send({
+          success: true,
+          data: { unblocked: targetUserId },
+        });
+      }
       return sendApiError(reply, request, 503, 'Service Unavailable', 'Database service unavailable. Cannot unblock user.', {
         code: 'DATABASE_UNAVAILABLE',
       });
