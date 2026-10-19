@@ -1,0 +1,86 @@
+================================================================================
+KSHETRA VERIFIABLE TEST EXECUTION LOG
+Suite: tests/political-intelligence-directive-102.test.mjs
+Command: node tests/political-intelligence-directive-102.test.mjs
+Working Directory: C:\Users\Laven\OneDrive\Desktop\Kshetra
+Runtime: Node v24.13.0 (win32)
+Execution Timestamp: 2026-10-19T03:20:01.293Z
+Exit Code: 0
+================================================================================
+
+--- STDOUT ---
+================================================================
+KSHETRA W021.5 — CTO DIRECTIVE 102 VERIFICATION SUITE
+Historical Provenance, Task Reconciliation & Authority Boundary Enforcement
+================================================================
+
+--- 1. Workstream A: Historical Provenance & Origin Artifact Verification ---
+  [PASS] 1.1 Historical origin snapshot file exists and cites origin commit be4ba41
+  [PASS] 1.2 Git history at be4ba41 verifies reports/w021_5_execution_ledger.json existed with exact SHA-256 match
+  [PASS] 1.3 Git history at be4ba41 verifies reports/W021.5-CANONICAL-ARCHITECTURE-READINESS-PACKAGE.md existed
+  [PASS] 1.4 Four-category authority taxonomy verification
+  [PASS] 1.5 Historical origin ledger records exactly 9 stages and 27 tasks with approved stage weights
+  [PASS] 1.6 Historical origin records W021.5-A-01 title as "Comprehensive 29-Domain Data-Truth Audit" with weight 3.0%
+  [PASS] 1.7 Absence of unapproved titles: neither corrupted titles nor 8.5%/7.5% stage weights exist in be4ba41
+
+--- 2. Workstream B: Authority Boundary Enforcement & Discrepancy Register ---
+  [PASS] 2.1 verifyAuthorityBoundary() validates implementation metadata against be4ba41
+  [PASS] 2.2 verifyAuthorityBoundary() fails closed on altered task title
+  [PASS] 2.3 verifyAuthorityBoundary() fails closed on altered task weight
+  [PASS] 2.4 verifyAuthorityBoundary() fails closed on altered stage weight in master spec
+  [PASS] 2.5 verifyAuthorityBoundary() fails closed on missing canonical task
+  [PASS] 2.6 DISCREPANCY_REGISTER contains 11 traced discrepancy entries
+  [PASS] 2.7 Concrete resolution of W021.5-A-01 discrepancy
+  [PASS] 2.8 Concrete resolution of Stage H (10.0%) and Stage I (6.0%) discrepancy
+
+--- 3. Workstream C: Weight Conservation & Adversarial Falsification ---
+  [PASS] 3.1 9 Stage weights sum to exactly 100.000%
+  [PASS] 3.2 27 Task weights sum to exactly 100.000% matching stage weights
+  [PASS] 3.3 Stage H task weights (3+3+2+2=10) conserve Stage H allocation
+  [PASS] 3.4 Stage I task weights (3+3=6) conserve Stage I allocation
+  [PASS] 3.5 Adversarial test: stage weights summing to 101.5% fail closed
+  [PASS] 3.6 Adversarial test: attempting proportional normalization without authoritative source fails closed
+  [PASS] 3.7 Zero ungrounded weight editing: tests cannot pass by mutating both spec and expected test simultaneously
+
+--- 4. Workstream D: Substantive Domain Criteria Verification ---
+  [PASS] 4.1 AC count invariant: Exactly 4,123 statutory Assembly Constituencies verified
+  [PASS] 4.2 Delhi AC count invariant: Exactly 70 statutory seats; 151 demographic placeholders
+  [PASS] 4.3 Political organization invariant: Exactly 1,207 organizations verified
+  [PASS] 4.4 AC-to-PC mapping: 4,123 ACs mapped to 543 Lok Sabha PCs without orphan constituencies
+  [PASS] 4.5 Assam 2023 delimitation invariant: 126 ACs post-2023 order preserved
+  [PASS] 4.6 Fastify election contract nullability: missing election years serialize as null
+  [PASS] 4.7 AST analysis of stateData.ts: clean of hardcoded election year inferences
+  [PASS] 4.8 50 Criteria verified across 27 tasks with deterministic verifiers
+  [PASS] 4.9 Adversarial test: Criteria pass/fail cannot be bypassed by dummy or empty files
+  [PASS] 4.10 Adversarial test: Criteria fail closed on known defect DQ-W021.5-B2.2E-001
+
+--- 5. Workstream E: Criteria-Derived Progress Accounting & Partition Conservation ---
+  [PASS] 5.1 Reconciled ledger yields exact 61.500% Repository-Verified Earned Progress
+  [PASS] 5.2 Reconciled ledger yields exact 10.500% Unexecuted Database-Pending Allocation
+  [PASS] 5.3 Reconciled ledger yields exact 22.500% Blocked on External / CTO Gates Allocation
+  [PASS] 5.4 Reconciled ledger yields exact 5.500% Unimplemented Scope Allocation
+  [PASS] 5.5 Total Partition Conservation: 61.5% + 10.5% + 22.5% + 5.5% = 100.000% exactly
+  [PASS] 5.6 Rules 1 through 8 consistency reflected across accounting and reports
+  [PASS] 5.7 Earned progress is dynamically derived from substantive criteria (not retained arbitrarily)
+
+--- 6. Workstream F: Cross-Artifact Consistency & Mandatory Governance Invariants ---
+  [PASS] 6.1 reports/w021_5_execution_ledger.json matches reports/W021.5-EXECUTION-LEDGER.md
+  [PASS] 6.2 Rule IV-001 Non-Self-Acceptance: formal acceptance remains strictly 0.0%
+  [PASS] 6.3 Offline Air-Gap: live database execution remains strictly 0.0%
+  [PASS] 6.4 Financial Defect DQ-W021.5-B2.2E-001 remains STRICTLY OPEN (earned = 0.0%)
+  [PASS] 6.5 Telangana AC 119 Boundary Defect remains STRICTLY OPEN / BLOCKED
+  [PASS] 6.6 SQL Migration Immutability: 68 migrations match baseline 0ea572d byte-for-byte
+  [PASS] 6.7 MLA Profile Seed Immutability: 31 seed files match baseline fb408ce byte-for-byte
+
+================================================================
+TEST SUMMARY: 46 PASSED, 0 FAILED
+================================================================
+
+
+--- STDERR ---
+
+
+--- PROCESS METRICS ---
+DurationMs: 5606
+ExitCode: 0
+================================================================================

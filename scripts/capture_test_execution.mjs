@@ -207,6 +207,14 @@ export const TEST_SUITE_DEFINITIONS = [
     directiveRef: '101',
     shell: true,
   },
+  {
+    suite: 'tests/political-intelligence-directive-102.test.mjs',
+    command: 'node tests/political-intelligence-directive-102.test.mjs',
+    logFilename: 'directive-102.log',
+    suiteType: 'DIRECTIVE_VERIFICATION_TEST',
+    directiveRef: '102',
+    shell: true,
+  },
 ];
 
 /**
@@ -402,7 +410,7 @@ export function parseTestOutput(rawOutput, suiteDef = null) {
 
   // 3. Try custom summary format: VERIFICATION SUMMARY: X PASSED, Y FAILED or TEST SUMMARY: X PASSED, Y FAILED
   if (!matched) {
-    const customMatch = rawOutput.match(/(?:VERIFICATION|TEST)\s+SUMMARY:\s+([0-9]+)\s+PASSED,\s+([0-9]+)\s+FAILED/i);
+    const customMatch = rawOutput.match(/(?:VERIFICATION|TEST)\s+(?:EXECUTION\s+)?SUMMARY:\s+([0-9]+)\s+PASSED,\s+([0-9]+)\s+FAILED/i);
     if (customMatch) {
       passed = parseInt(customMatch[1], 10);
       failed = parseInt(customMatch[2], 10);
@@ -550,7 +558,7 @@ export function runSuiteAndCapture(suiteDef) {
       evidenceClass: 'REPOSITORY_IMPLEMENTATION',
       executedInCurrentDelivery: true,
       evidenceType: 'DIRECT_EXECUTION_CAPTURE',
-      executionEpoch: 'DIRECTIVE_101',
+      executionEpoch: 'DIRECTIVE_102',
       outputLogPath: relLogPath,
       outputLogSha256: sha256,
     };
@@ -596,7 +604,7 @@ export function runSuiteAndCapture(suiteDef) {
     evidenceClass: 'REPOSITORY_IMPLEMENTATION',
     executedInCurrentDelivery: true,
     evidenceType: 'DIRECT_EXECUTION_CAPTURE',
-    executionEpoch: 'DIRECTIVE_099',
+    executionEpoch: 'DIRECTIVE_102',
     outputLogPath: relLogPath,
     outputLogSha256: sha256,
   };
@@ -612,7 +620,7 @@ export function captureAllSuites(additionalSuites = []) {
     milestone: 'W021.5',
     generatedAt: new Date().toISOString(),
     manifestSchema: 'https://kshetra.dev/schemas/test-execution-manifest.v2.json',
-    verifierRole: 'CTO Directive 101 Test Execution Verifier',
+    verifierRole: 'CTO Directive 102 Test Execution Verifier',
     executionScope: 'FULL_REPOSITORY_REGRESSION_AND_DIRECTIVE_BATTERY',
     environment: {
       nodeVersion: process.version,
@@ -628,11 +636,11 @@ export function captureAllSuites(additionalSuites = []) {
       totalTestsFailed: 0,
       allSuitesPassed: false,
       executionScope: 'FULL_REPOSITORY_REGRESSION_AND_DIRECTIVE_BATTERY',
-      directiveCycle: 'CTO_DIRECTIVE_101',
+      directiveCycle: 'CTO_DIRECTIVE_102',
     },
   };
 
-  if (fs.existsSync(MANIFEST_PATH)) {
+  if (additionalSuites.length > 0 && fs.existsSync(MANIFEST_PATH)) {
     try {
       const existing = JSON.parse(fs.readFileSync(MANIFEST_PATH, 'utf8'));
       if (Array.isArray(existing.testSuites)) {
@@ -645,7 +653,7 @@ export function captureAllSuites(additionalSuites = []) {
 
   // Ensure metadata is consistently synchronized with current directive cycle
   manifest.manifestSchema = 'https://kshetra.dev/schemas/test-execution-manifest.v2.json';
-  manifest.verifierRole = 'CTO Directive 101 Test Execution Verifier';
+  manifest.verifierRole = 'CTO Directive 102 Test Execution Verifier';
   manifest.executionScope = 'FULL_REPOSITORY_REGRESSION_AND_DIRECTIVE_BATTERY';
   manifest.environment = {
     nodeVersion: process.version,
@@ -702,7 +710,7 @@ export function captureAllSuites(additionalSuites = []) {
       totalTestsFailed: sumFailed,
       allSuitesPassed: countFailedSuites === 0,
       executionScope: 'FULL_REPOSITORY_REGRESSION_AND_DIRECTIVE_BATTERY',
-      directiveCycle: 'CTO_DIRECTIVE_101',
+      directiveCycle: 'CTO_DIRECTIVE_102',
     };
 
     fs.writeFileSync(MANIFEST_PATH, JSON.stringify(manifest, null, 2) + '\n', 'utf8');

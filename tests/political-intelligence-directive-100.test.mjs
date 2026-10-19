@@ -1003,7 +1003,8 @@ runTest('5.4 Test execution provenance clearly distinguishes repository-recorded
   assert.strictEqual(manifest.environment.offlineRepositoryOnly, true);
   assert.ok(
     manifest.verifierRole === 'CTO Directive 100 Test Execution Verifier' ||
-    manifest.verifierRole === 'CTO Directive 101 Test Execution Verifier',
+    manifest.verifierRole === 'CTO Directive 101 Test Execution Verifier' ||
+    manifest.verifierRole === 'CTO Directive 102 Test Execution Verifier',
     `Unexpected verifierRole: ${manifest.verifierRole}`
   );
 });

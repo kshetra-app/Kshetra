@@ -32,6 +32,7 @@ const REPO_ROOT = path.resolve(__dirname, '..');
 
 export const TRUSTED_AUTHORITIES_PATH = path.join(REPO_ROOT, 'governance', 'authorities', 'trusted_authorities.json');
 export const MASTER_SPECIFICATION_PATH = path.join(REPO_ROOT, 'governance', 'specifications', 'w021_5_master_specification.json');
+export const HISTORICAL_ORIGIN_LEDGER_PATH = path.join(REPO_ROOT, 'governance', 'specifications', 'historical_w021_5_origin_ledger.json');
 
 /**
  * Loads the authoritative master specification manifest independently grounded in repository history.
@@ -43,6 +44,154 @@ export function loadMasterSpecification(repoRoot = REPO_ROOT) {
   }
   return JSON.parse(fs.readFileSync(p, 'utf8'));
 }
+
+/**
+ * Loads the immutable historical origin ledger snapshot anchored at commit be4ba41.
+ */
+export function loadHistoricalOriginLedger(repoRoot = REPO_ROOT) {
+  const p = path.join(repoRoot, 'governance', 'specifications', 'historical_w021_5_origin_ledger.json');
+  if (!fs.existsSync(p)) {
+    throw new Error(`Historical origin ledger snapshot not found at: ${p}`);
+  }
+  return JSON.parse(fs.readFileSync(p, 'utf8'));
+}
+
+/**
+ * Validates master specification manifest consistency against implementation metadata.
+ */
+export function validateMasterSpecificationAgainstCode(repoRoot = REPO_ROOT) {
+  const spec = loadMasterSpecification(repoRoot);
+  const taskIds = Object.keys(CANONICAL_TASK_METADATA).sort();
+
+  if (spec.totalMilestoneWeight !== 100.0) {
+    throw new Error(`Master specification totalMilestoneWeight must equal 100.0, got ${spec.totalMilestoneWeight}`);
+  }
+  if (spec.taskCount !== 27) {
+    throw new Error(`Master specification taskCount must equal 27, got ${spec.taskCount}`);
+  }
+  if (spec.stageCount !== 9) {
+    throw new Error(`Master specification stageCount must equal 9, got ${spec.stageCount}`);
+  }
+
+  for (const tid of taskIds) {
+    const meta = CANONICAL_TASK_METADATA[tid];
+    const specTask = spec.tasks[tid];
+    if (!specTask) {
+      throw new Error(`Task ${tid} missing from master specification manifest`);
+    }
+    if (specTask.canonicalTitle !== meta.canonicalTitle) {
+      throw new Error(`Task ${tid} title mismatch: spec="${specTask.canonicalTitle}", meta="${meta.canonicalTitle}"`);
+    }
+    if (Math.abs(specTask.approvedWeight - meta.weight) > 0.001) {
+      throw new Error(`Task ${tid} weight mismatch: spec=${specTask.approvedWeight}, meta=${meta.weight}`);
+    }
+    const specStage = specTask.stageId === 'STAGE_B1' ? 'STAGE_B' : specTask.stageId;
+    const metaStage = meta.stageId === 'STAGE_B1' ? 'STAGE_B' : meta.stageId;
+    if (specStage !== metaStage) {
+      throw new Error(`Task ${tid} stage mismatch: spec="${specTask.stageId}", meta="${meta.stageId}"`);
+    }
+    const specRef = TASK_SPECIFICATIONS[tid];
+    if (!specRef) {
+      throw new Error(`Task ${tid} missing from executable TASK_SPECIFICATIONS`);
+    }
+    if (specRef.title !== meta.canonicalTitle) {
+      throw new Error(`Task ${tid} TASK_SPECIFICATIONS title "${specRef.title}" differs from canonical "${meta.canonicalTitle}"`);
+    }
+  }
+
+  return true;
+}
+
+/**
+ * Workstream B (CTO Directive 102):
+ * Enforces authority boundary by comparing implementation metadata against immutable historical origin (be4ba41).
+ * Fails closed if any task title, weight, stage, or specification reference deviates from origin.
+ */
+export function verifyAuthorityBoundary(options = {}) {
+  const repoRoot = options.repoRoot || REPO_ROOT;
+  const snapshot = loadHistoricalOriginLedger(repoRoot);
+  const histLedger = snapshot.historicalLedger;
+  const masterSpec = loadMasterSpecification(repoRoot);
+
+  const histTaskMap = {};
+  const histStageMap = {};
+  for (const s of histLedger.stages) {
+    const normStageId = s.stageId === 'STAGE_B1' ? 'STAGE_B' : s.stageId;
+    histStageMap[normStageId] = s.stageWeight;
+    for (const t of s.tasks) {
+      histTaskMap[t.taskId] = {
+        title: t.title,
+        weight: t.weight,
+        stageId: normStageId,
+        specRef: t.specRef,
+      };
+    }
+  }
+
+  // 0. Verify bidirectional task inventory match
+  const canonicalIds = Object.keys(CANONICAL_TASK_METADATA);
+  const histIds = Object.keys(histTaskMap);
+  if (canonicalIds.length !== histIds.length) {
+    throw new Error(`Authority boundary violation: Canonical task count (${canonicalIds.length}) does not match historical origin (${histIds.length}).`);
+  }
+  for (const histId of histIds) {
+    if (!CANONICAL_TASK_METADATA[histId]) {
+      throw new Error(`Authority boundary violation: Task ${histId} present in historical origin is missing from canonical metadata.`);
+    }
+  }
+
+  // 1. Verify every task in CANONICAL_TASK_METADATA matches historical source exactly
+  for (const [taskId, canonical] of Object.entries(CANONICAL_TASK_METADATA)) {
+    const hist = histTaskMap[taskId];
+    if (!hist) {
+      throw new Error(`Authority boundary violation: Task ${taskId} does not exist in historical origin ledger (${snapshot.sourceOriginCommit}).`);
+    }
+    if (canonical.canonicalTitle !== hist.title) {
+      throw new Error(`Authority boundary violation: Task ${taskId} title mismatch: expected "${hist.title}" from origin, got "${canonical.canonicalTitle}".`);
+    }
+    if (Math.abs(canonical.weight - hist.weight) > 0.001) {
+      throw new Error(`Authority boundary violation: Task ${taskId} weight mismatch: expected ${hist.weight}% from origin, got ${canonical.weight}%.`);
+    }
+    const normStage = canonical.stageId === 'STAGE_B1' ? 'STAGE_B' : canonical.stageId;
+    if (normStage !== hist.stageId) {
+      throw new Error(`Authority boundary violation: Task ${taskId} stage mismatch: expected ${hist.stageId} from origin, got ${canonical.stageId}.`);
+    }
+  }
+
+  // 2. Verify master specification matches historical source exactly
+  for (const [taskId, specTask] of Object.entries(masterSpec.tasks)) {
+    const hist = histTaskMap[taskId];
+    if (!hist) {
+      throw new Error(`Authority boundary violation: Master spec task ${taskId} missing in historical origin.`);
+    }
+    if (specTask.canonicalTitle !== hist.title) {
+      throw new Error(`Authority boundary violation: Master spec task ${taskId} title "${specTask.canonicalTitle}" differs from origin "${hist.title}".`);
+    }
+    if (Math.abs(specTask.approvedWeight - hist.weight) > 0.001) {
+      throw new Error(`Authority boundary violation: Master spec task ${taskId} weight ${specTask.approvedWeight}% differs from origin ${hist.weight}%.`);
+    }
+  }
+
+  // 3. Verify stage weights in master spec match historical source exactly
+  for (const stage of masterSpec.stages) {
+    const normStageId = stage.stageId === 'STAGE_B1' ? 'STAGE_B' : stage.stageId;
+    const histWeight = histStageMap[normStageId];
+    if (histWeight === undefined) {
+      throw new Error(`Authority boundary violation: Master spec stage ${stage.stageId} missing in origin.`);
+    }
+    if (Math.abs(stage.approvedWeight - histWeight) > 0.001) {
+      throw new Error(`Authority boundary violation: Master spec stage ${stage.stageId} weight ${stage.approvedWeight}% differs from origin ${histWeight}%.`);
+    }
+  }
+
+  return {
+    verified: true,
+    historicalOriginCommit: snapshot.sourceOriginCommit,
+    taskCount: Object.keys(CANONICAL_TASK_METADATA).length,
+    conservationSum: 100.0,
+  };
+}
+
 
 // Stage domain pattern map for evidence relevance validation
 export const STAGE_EVIDENCE_RELEVANCE = {
@@ -1024,6 +1173,147 @@ export const PHANTOM_TASK_DISPOSITIONS = {
     rationale: 'Synthetic adversarial test fixture task used to verify fail-closed ledger rejection.',
   },
 };
+
+/**
+ * Workstream B (CTO Directive 102):
+ * Discrepancy Register recording historical discrepancies, title corruptions,
+ * stage-weight shifts, task-weight alterations, and governance boundaries.
+ */
+export const DISCREPANCY_REGISTER = [
+  {
+    discrepancyId: 'DISC-001',
+    itemKey: 'W021.5-A-01:title',
+    discrepancyType: 'UNGROUNDED_REPORT_TITLE_CORRUPTION',
+    affectedEntity: 'Task W021.5-A-01',
+    priorReportValue: 'Statutory Assembly Constituency Count Canonicalization',
+    proposedCanonicalValue: 'Comprehensive 29-Domain Data-Truth Audit',
+    historicalSourceEvidence: 'be4ba41:reports/w021_5_execution_ledger.json (Stage A, task W021.5-A-01 title), be4ba41:reports/W021.5-CANONICAL-ARCHITECTURE-READINESS-PACKAGE.md Section 1',
+    rationale: 'Directive 101 report narrative draft erroneously substituted an unapproved title conflating data truth audit with AC canonicalization. Code metadata and origin commit be4ba41 unequivocally record "Comprehensive 29-Domain Data-Truth Audit".',
+    requiresCtcAdjudication: false,
+    resolutionStatus: 'RESOLVED_TO_HISTORICAL_ORIGIN',
+  },
+  {
+    discrepancyId: 'DISC-002',
+    itemKey: 'STAGE_H:stageWeight',
+    discrepancyType: 'UNGROUNDED_STAGE_WEIGHT_SHIFT',
+    affectedEntity: 'Stage H (Mobile Client Strangler Migration)',
+    priorReportValue: 8.5,
+    proposedCanonicalValue: 10.0,
+    historicalSourceEvidence: 'be4ba41:reports/w021_5_execution_ledger.json (Stage H stageWeight = 10.0%, tasks H-01: 3%, H-02: 3%, H-03: 2%, H-04: 2%), w021_5_master_specification.json',
+    rationale: 'Directive 100 narrative draft reduced Stage H by 1.5% (from 10.0% to 8.5%) and shifted 1.5% to Stage I without historical or specification authorization. Historical origin be4ba41 establishes Stage H = 10.0%.',
+    requiresCtcAdjudication: false,
+    resolutionStatus: 'RESOLVED_TO_HISTORICAL_ORIGIN',
+  },
+  {
+    discrepancyId: 'DISC-003',
+    itemKey: 'STAGE_I:stageWeight',
+    discrepancyType: 'UNGROUNDED_STAGE_WEIGHT_SHIFT',
+    affectedEntity: 'Stage I (Canonical Offline SQLite Sync Engine)',
+    priorReportValue: 7.5,
+    proposedCanonicalValue: 6.0,
+    historicalSourceEvidence: 'be4ba41:reports/w021_5_execution_ledger.json (Stage I stageWeight = 6.0%, tasks I-01: 3%, I-02: 3%), w021_5_master_specification.json',
+    rationale: 'Directive 100 narrative draft inflated Stage I by 1.5% (from 6.0% to 7.5%) to absorb the arbitrary reduction from Stage H. Historical origin be4ba41 establishes Stage I = 6.0%.',
+    requiresCtcAdjudication: false,
+    resolutionStatus: 'RESOLVED_TO_HISTORICAL_ORIGIN',
+  },
+  {
+    discrepancyId: 'DISC-004',
+    itemKey: 'STAGE_H:taskWeights',
+    discrepancyType: 'UNGROUNDED_TASK_WEIGHT_ALTERATION',
+    affectedEntity: 'Stage H Tasks (H-01, H-02, H-03, H-04)',
+    priorReportValue: { 'W021.5-H-01': 2.5, 'W021.5-H-02': 2.5, 'W021.5-H-03': 2.0, 'W021.5-H-04': 1.5 },
+    proposedCanonicalValue: { 'W021.5-H-01': 3.0, 'W021.5-H-02': 3.0, 'W021.5-H-03': 2.0, 'W021.5-H-04': 2.0 },
+    historicalSourceEvidence: 'be4ba41:reports/w021_5_execution_ledger.json, governance/specifications/historical_w021_5_origin_ledger.json',
+    rationale: 'Directive 100 report narrative distorted individual task weights in Stage H to sum to 8.5%. Origin be4ba41 confirms 3.0%, 3.0%, 2.0%, 2.0% summing to 10.0%.',
+    requiresCtcAdjudication: false,
+    resolutionStatus: 'RESOLVED_TO_HISTORICAL_ORIGIN',
+  },
+  {
+    discrepancyId: 'DISC-005',
+    itemKey: 'STAGE_I:taskWeights',
+    discrepancyType: 'UNGROUNDED_TASK_WEIGHT_ALTERATION',
+    affectedEntity: 'Stage I Tasks (I-01, I-02)',
+    priorReportValue: { 'W021.5-I-01': 4.0, 'W021.5-I-02': 3.5 },
+    proposedCanonicalValue: { 'W021.5-I-01': 3.0, 'W021.5-I-02': 3.0 },
+    historicalSourceEvidence: 'be4ba41:reports/w021_5_execution_ledger.json, governance/specifications/historical_w021_5_origin_ledger.json',
+    rationale: 'Directive 100 report narrative inflated I-01 and I-02 weights to match unapproved 7.5% stage weight. Origin be4ba41 confirms 3.0% and 3.0% summing to 6.0%.',
+    requiresCtcAdjudication: false,
+    resolutionStatus: 'RESOLVED_TO_HISTORICAL_ORIGIN',
+  },
+  {
+    discrepancyId: 'DISC-006',
+    itemKey: 'STAGE_B:taskWeights',
+    discrepancyType: 'UNGROUNDED_TASK_WEIGHT_ALTERATION',
+    affectedEntity: 'Stage B Tasks (B1-01, B1-02, B1-03, B1-04)',
+    priorReportValue: { 'W021.5-B1-01': 3.5, 'W021.5-B1-02': 3.5, 'W021.5-B1-03': 2.5, 'W021.5-B1-04': 2.5 },
+    proposedCanonicalValue: { 'W021.5-B1-01': 4.0, 'W021.5-B1-02': 3.0, 'W021.5-B1-03': 3.0, 'W021.5-B1-04': 2.0 },
+    historicalSourceEvidence: 'be4ba41:reports/w021_5_execution_ledger.json, governance/specifications/historical_w021_5_origin_ledger.json',
+    rationale: 'Narrative draft altered individual task weights while keeping stage sum at 12.0%. Origin be4ba41 confirms 4.0%, 3.0%, 3.0%, 2.0%.',
+    requiresCtcAdjudication: false,
+    resolutionStatus: 'RESOLVED_TO_HISTORICAL_ORIGIN',
+  },
+  {
+    discrepancyId: 'DISC-007',
+    itemKey: 'STAGE_C:taskWeights',
+    discrepancyType: 'UNGROUNDED_TASK_WEIGHT_ALTERATION',
+    affectedEntity: 'Stage C Tasks (C-01, C-02, C-03)',
+    priorReportValue: { 'W021.5-C-01': 4.5, 'W021.5-C-02': 4.5, 'W021.5-C-03': 3.0 },
+    proposedCanonicalValue: { 'W021.5-C-01': 4.0, 'W021.5-C-02': 5.0, 'W021.5-C-03': 3.0 },
+    historicalSourceEvidence: 'be4ba41:reports/w021_5_execution_ledger.json, governance/specifications/historical_w021_5_origin_ledger.json',
+    rationale: 'Origin be4ba41 assigns 4.0% to C-01 (schema) and 5.0% to C-02 (1,207 orgs ingestion).',
+    requiresCtcAdjudication: false,
+    resolutionStatus: 'RESOLVED_TO_HISTORICAL_ORIGIN',
+  },
+  {
+    discrepancyId: 'DISC-008',
+    itemKey: 'STAGE_D:taskWeights',
+    discrepancyType: 'UNGROUNDED_TASK_WEIGHT_ALTERATION',
+    affectedEntity: 'Stage D Tasks (D-01, D-02, D-03)',
+    priorReportValue: { 'W021.5-D-01': 4.5, 'W021.5-D-02': 5.5, 'W021.5-D-03': 4.0 },
+    proposedCanonicalValue: { 'W021.5-D-01': 4.0, 'W021.5-D-02': 6.0, 'W021.5-D-03': 4.0 },
+    historicalSourceEvidence: 'be4ba41:reports/w021_5_execution_ledger.json, governance/specifications/historical_w021_5_origin_ledger.json',
+    rationale: 'Origin be4ba41 assigns 4.0% to D-01, 6.0% to D-02 (10 chunks), and 4.0% to D-03.',
+    requiresCtcAdjudication: false,
+    resolutionStatus: 'RESOLVED_TO_HISTORICAL_ORIGIN',
+  },
+  {
+    discrepancyId: 'DISC-009',
+    itemKey: 'STAGE_E:taskWeights',
+    discrepancyType: 'UNGROUNDED_TASK_WEIGHT_ALTERATION',
+    affectedEntity: 'Stage E Tasks (E-01, E-02, E-03)',
+    priorReportValue: { 'W021.5-E-01': 4.5, 'W021.5-E-02': 4.5, 'W021.5-E-03': 5.0 },
+    proposedCanonicalValue: { 'W021.5-E-01': 4.0, 'W021.5-E-02': 5.0, 'W021.5-E-03': 5.0 },
+    historicalSourceEvidence: 'be4ba41:reports/w021_5_execution_ledger.json, governance/specifications/historical_w021_5_origin_ledger.json',
+    rationale: 'Origin be4ba41 assigns 4.0% to E-01, 5.0% to E-02, and 5.0% to E-03.',
+    requiresCtcAdjudication: false,
+    resolutionStatus: 'RESOLVED_TO_HISTORICAL_ORIGIN',
+  },
+  {
+    discrepancyId: 'DISC-010',
+    itemKey: 'W021.5-E-02:defectAdjudication',
+    discrepancyType: 'GOVERNANCE_AUTHORITY_BOUNDARY',
+    affectedEntity: 'Financial Defect DQ-W021.5-B2.2E-001',
+    priorReportValue: 'Blocked / Open pending CTO adjudication (5.0% allocated, 0.0% earned)',
+    proposedCanonicalValue: 'STRICTLY OPEN / BLOCKED pending separate CTO adjudication',
+    historicalSourceEvidence: 'Master Execution Framework Amendment v1.2 / Rule IV-001, Directive 086 Section 5, be4ba41:reports/W021.5-CANONICAL-ARCHITECTURE-READINESS-PACKAGE.md',
+    rationale: 'The agent cannot self-adjudicate or close defect DQ-W021.5-B2.2E-001 without separate explicit CTO adjudication. Weight earned remains strictly 0.0%.',
+    requiresCtcAdjudication: true,
+    resolutionStatus: 'PRESERVED_OPEN_PENDING_CTO',
+  },
+  {
+    discrepancyId: 'DISC-011',
+    itemKey: 'W021.5-B1-04:telanganaAC119',
+    discrepancyType: 'EXTERNAL_DATA_DEFECT',
+    affectedEntity: 'Telangana AC 119 Boundary Defect',
+    priorReportValue: 'Blocked on official boundary correction (2.0% allocated, 0.0% earned)',
+    proposedCanonicalValue: 'STRICTLY OPEN / BLOCKED (120 features for 119 statutory seats in data/geo/telangana-assembly.geojson)',
+    historicalSourceEvidence: 'be4ba41:reports/W021.5-CANONICAL-ARCHITECTURE-READINESS-PACKAGE.md Section 2, Directive 086 Workstream D',
+    rationale: 'Official delimitation data from CEO Telangana contains 120 features for 119 seats; cannot be synthesized or falsified. Preserved as unresolved defect.',
+    requiresCtcAdjudication: true,
+    resolutionStatus: 'PRESERVED_OPEN_PENDING_CTO',
+  },
+];
+
 
 /**
  * Resolves an arbitrary task ID, title, or alias into its canonical identity or rejected phantom status.
@@ -4215,7 +4505,7 @@ export function generateLedgerMarkdown(ledger, inputSummary) {
   let md = `# KSHETRA W021.5 — Traceable Execution Ledger & Multi-Dimensional Accounting Report
 
 > **Governance Authority:** Master Execution Framework Amendment v1.2 / Rule IV-001 (Non-Self-Acceptance)  
-> **Directive Lineage:** CTO Directive 086 through CTO Directive 101  
+> **Directive Lineage:** CTO Directive 086 through CTO Directive 102  
 > **Status:** \`SUBMITTED_FOR_INDEPENDENT_REVIEW\` — STRICTLY UNACCEPTED  
 > **Financial Defect Status:** \`DQ-W021.5-B2.2E-001\` — **STRICTLY OPEN**, pending separate CTO adjudication  
 > **Database Boundary:** Repository-Only Offline Verification (Zero database migrations, mutations, staging, or production execution)  
@@ -4328,6 +4618,7 @@ ${discountRows}| **Total** | — | **Reconciled Unexecuted Database Pending Allo
 5. **Seed File Invariants:** 31 MLA profile seed files match baseline \`fb408ce\` with pure LF and zero \`: undefined\` properties.
 6. **Telangana AC 119 Boundary Defect:** \`data/geo/telangana-assembly.geojson\` contains 120 features for 119 statutory seats. Defect is preserved as unresolved until official delimitation data is provisioned.
 7. **Offline Repository-Only Boundary:** Zero live database migrations, mutations, staging execution, or deployments.
+8. **Historical Origin & Authority Boundary:** Grounded bitwise in immutable origin commit \`be4ba41f74616e068b531df17780080a1a946bbd\`. All 27 task titles, 27 task weights, and 9 stage weights conserve exactly 100.000% without proportional normalization.
 `;
 
   return md;
@@ -4359,11 +4650,17 @@ export function reconcileExecutionLedger(options = {}) {
 
   const opts = { enforceCanonicalIdentity: true, ...options };
 
+  // Workstream B (CTO Directive 102): Enforce Authority Boundary against historical origin commit be4ba41
+  verifyAuthorityBoundary(opts);
+
+  // Validate master specification manifest against code metadata
+  validateMasterSpecificationAgainstCode(opts.repoRoot || REPO_ROOT);
+
   for (const stage of ledger.stages) {
     validateStageAccounting(stage, opts);
   }
 
-  ledger.directive = 'CTO Directive 086 / CTO Directive 087 / CTO Directive 088 / CTO Directive 089 / CTO Directive 090 / CTO Directive 091 / CTO Directive 092 / CTO Directive 093 / CTO Directive 094 / CTO Directive 095 / CTO Directive 096 / CTO Directive 097 / CTO Directive 098 / CTO Directive 099 / CTO Directive 100 / CTO Directive 101';
+  ledger.directive = 'CTO Directive 086 / CTO Directive 087 / CTO Directive 088 / CTO Directive 089 / CTO Directive 090 / CTO Directive 091 / CTO Directive 092 / CTO Directive 093 / CTO Directive 094 / CTO Directive 095 / CTO Directive 096 / CTO Directive 097 / CTO Directive 098 / CTO Directive 099 / CTO Directive 100 / CTO Directive 101 / CTO Directive 102';
 
   // Compute summary
   const summary = computeLedgerSummary(ledger, opts);
