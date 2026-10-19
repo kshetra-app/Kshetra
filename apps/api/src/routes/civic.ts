@@ -532,16 +532,13 @@ export async function civicRoutes(app: FastifyInstance) {
         code: 'UNAUTHORIZED',
       });
     }
-    const { id } = request.params;
-    const { support } = request.body;
     if (!isSupabaseConfigured) {
-      if (process.env.NODE_ENV !== 'production') {
-        return { success: true, billId: id, support, message: 'Opinion recorded' };
-      }
       return sendApiError(reply, request, 503, 'Service Unavailable', 'Database is unavailable', {
         code: 'DATABASE_UNAVAILABLE',
       });
     }
+    const { id } = request.params;
+    const { support } = request.body;
     const { data: bill, error: fetchErr } = await supabase
       .from('bills')
       .select('public_opinion')
@@ -636,9 +633,6 @@ export async function civicRoutes(app: FastifyInstance) {
       });
     }
     if (!isSupabaseConfigured) {
-      if (process.env.NODE_ENV !== 'production') {
-        return { success: true, id: 'rti-test-1', message: 'RTI request filed', data: request.body };
-      }
       return sendApiError(reply, request, 503, 'Service Unavailable', 'Database is unavailable', {
         code: 'DATABASE_UNAVAILABLE',
       });
@@ -681,9 +675,6 @@ export async function civicRoutes(app: FastifyInstance) {
       });
     }
     if (!isSupabaseConfigured) {
-      if (process.env.NODE_ENV !== 'production') {
-        return { success: true, rtiId: request.params.id, message: 'Upvote recorded' };
-      }
       return sendApiError(reply, request, 503, 'Service Unavailable', 'Database is unavailable', {
         code: 'DATABASE_UNAVAILABLE',
       });

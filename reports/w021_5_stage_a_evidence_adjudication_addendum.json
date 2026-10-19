@@ -1,0 +1,235 @@
+{
+  "adjudicationIdentifier": "W021.5-STAGE-A-EVIDENCE-ADJUDICATION-ADDENDUM-V1.0",
+  "directive": "CTO Directive 115",
+  "specification": "Master Execution Framework Amendment v1.6 / Rule IV-001 Non-Self-Acceptance",
+  "auditTimestamp": "2026-10-20T02:40:00.000Z",
+  "governanceStatus": {
+    "ruleIV001Acceptance": "0.0% (UNACCEPTED)",
+    "productionAirGap": "0.0% (AIR_GAPPED_UNEXECUTED)",
+    "completionEarnedPercent": 61.500,
+    "completionUnearnedPercent": 38.500,
+    "completionTotalPercent": 100.000,
+    "financialDefectStatus": "OPEN",
+    "financialDefectId": "DQ-W021.5-B2.2E-001",
+    "telanganaAc119BoundaryDefect": "OPEN / BLOCKED",
+    "stageAuthorization": "STAGE A EVIDENCE ADJUDICATION ONLY (STAGES B-I NOT AUTHORIZED)"
+  },
+  "d1_coverage_adjudication": {
+    "totalStatesAndUts": 31,
+    "totalAssemblyConstituencies": 4123,
+    "totalParliamentaryConstituencies": 543,
+    "geographicCoverage": {
+      "status": "VERIFIED",
+      "description": "Statutory boundaries, names, constituency codes, and seat numbers are verified across all 31 States/UTs (4,123 ACs and 543 PCs) in both flat GeoJSON assets and statutory seed files."
+    },
+    "politicalIntelligenceCoverage": {
+      "status": "PARTIAL",
+      "telangana": {
+        "status": "VERIFIED",
+        "assemblySeats": 119,
+        "detailLevel": "Complete deep political intelligence: verified candidate profiles, wealth/criminal disclosures, historical tenures (2014, 2018, 2023), 50+ defection timelines, demographic cross-tabs, certified Kodangal/Gajwel vote counts and victory margins."
+      },
+      "partialStates": {
+        "status": "PARTIAL",
+        "stateCodes": ["AP", "KA", "MH", "TN", "KL", "WB", "UP"],
+        "count": 7,
+        "detailLevel": "Basic historical results and winner/party strings populated in seed arrays; partial MLA profiles; zero deep defection timelines or verified candidate disclosures."
+      },
+      "remainingStatesAndUts": {
+        "status": "NOT IMPLEMENTED",
+        "count": 23,
+        "detailLevel": "Geographic boundary and seat code stubs only; zero deep political metadata, candidate disclosures, or historical contest records."
+      }
+    }
+  },
+  "d2_canonical_and_consumer_mapping": {
+    "status": "VERIFIED",
+    "domains": [
+      {
+        "id": 1,
+        "name": "States & Union Territories",
+        "canonicalSchema": "states (Migrations 001, 003, 040)",
+        "legacySource": "STATE_RAW_MAP in stateData.ts (31 seeds)",
+        "runtimeConsumers": ["ActiveStateStore", "StateSelectorModal", "/api/vsaas/v1/states"],
+        "classification": "IMPLEMENTED"
+      },
+      {
+        "id": 2,
+        "name": "Districts",
+        "canonicalSchema": "districts (Migrations 001, 040)",
+        "legacySource": "data/census/india-district-population-2011.json (640 districts)",
+        "runtimeConsumers": ["ConstituencyExplorer", "delimitationService.ts"],
+        "classification": "IMPLEMENTED"
+      },
+      {
+        "id": 3,
+        "name": "Assembly Constituencies",
+        "canonicalSchema": "constituencies, assembly_constituency_versions (Migrations 001, 003, 040, 041)",
+        "legacySource": "data/seed/*-constituencies.ts (4,123 ACs)",
+        "runtimeConsumers": ["app/constituency/[id].tsx", "/api/vsaas/v1/constituencies", "stateData.ts"],
+        "classification": "VERIFIED"
+      },
+      {
+        "id": 4,
+        "name": "Parliamentary Constituencies",
+        "canonicalSchema": "parliamentary_constituencies (Migrations 001, 040)",
+        "legacySource": "data/seed/mp-profiles.ts (543 PCs)",
+        "runtimeConsumers": ["app/parliament/index.tsx", "spatialRuntimeService.ts"],
+        "classification": "VERIFIED"
+      },
+      {
+        "id": 5,
+        "name": "Rajya Sabha & Legislative Councils",
+        "canonicalSchema": "elected_tenures (Migration 050, chamber IN ('RAJYA_SABHA', 'LEGISLATIVE_COUNCIL'))",
+        "legacySource": "None (zero seed records)",
+        "runtimeConsumers": ["None (unwired in mobile UI)"],
+        "classification": "NOT IMPLEMENTED"
+      },
+      {
+        "id": 6,
+        "name": "Officeholders / MLAs / MPs",
+        "canonicalSchema": "canonical_persons, elected_tenures (Migration 050)",
+        "legacySource": "data/seed/*-mla-profiles.ts, legislator_profiles (Migration 012)",
+        "runtimeConsumers": ["app/legislator/[id].tsx", "CandidateExplorer", "politicalEntityService.ts"],
+        "classification": "PARTIAL"
+      },
+      {
+        "id": 7,
+        "name": "Political Parties & Organizations",
+        "canonicalSchema": "political_organizations, organization_relationships (Migration 050)",
+        "legacySource": "reports/w021_5b2_canonical_org_catalog_raw.json (1,207 organizations), parties.ts",
+        "runtimeConsumers": ["Mobile party badges", "delimitationService.ts", "/api/vsaas/v1/parties"],
+        "classification": "VERIFIED"
+      },
+      {
+        "id": 8,
+        "name": "Elections & Contests",
+        "canonicalSchema": "election_events, election_contests (Migration 051)",
+        "legacySource": "data/seed/*-election-history.ts",
+        "runtimeConsumers": ["stores/electionLive.ts", "ElectionHistoryTab", "electionService.ts"],
+        "classification": "PARTIAL"
+      },
+      {
+        "id": 9,
+        "name": "Election Results & Margin Truth",
+        "canonicalSchema": "candidacies, ballot_choices (Migrations 051, 053, 054)",
+        "legacySource": "stateData.ts winner fallback chain, canonical_benchmarks.json",
+        "runtimeConsumers": ["app/constituency/[id].tsx", "delimitationService.ts"],
+        "classification": "PARTIAL"
+      },
+      {
+        "id": 10,
+        "name": "Political Defections & Timeline Events",
+        "canonicalSchema": "tenure_party_switches, organization_relationships (Migration 050)",
+        "legacySource": "data/seed/telangana-political-timeline.ts",
+        "runtimeConsumers": ["Mobile Political Timeline UI", "/api/vsaas/v1/entities/:id/timeline"],
+        "classification": "PARTIAL"
+      },
+      {
+        "id": 11,
+        "name": "Geography & Spatial Boundaries",
+        "canonicalSchema": "entity_geometries (589 PostGIS rows, Migrations 048, 049)",
+        "legacySource": "apps/api/public/geo/*.json",
+        "runtimeConsumers": ["Mobile MapLibre screen", "spatialRuntimeService.ts"],
+        "classification": "PARTIAL"
+      },
+      {
+        "id": 12,
+        "name": "Delimitation Subsystem",
+        "canonicalSchema": "delimitation_proposals, delimitation_scenarios (Migrations 011, 055)",
+        "legacySource": "apps/api/src/services/delimitationService.ts, apps/mobile/stores/delimitation.ts",
+        "runtimeConsumers": ["Mobile Delimitation Screen", "/api/vsaas/v1/delimitation/..."],
+        "classification": "VERIFIED"
+      },
+      {
+        "id": 13,
+        "name": "News Ingestion Subsystem",
+        "canonicalSchema": "news_articles, news_sources (Migrations 015, 033)",
+        "legacySource": "apps/api/src/services/news/* (21 RSS feeds in-memory cache)",
+        "runtimeConsumers": ["Mobile News Screen", "Constituency News Widget"],
+        "classification": "PARTIAL"
+      },
+      {
+        "id": 14,
+        "name": "Multilingual & Localization (i18n)",
+        "canonicalSchema": "None (Client-side localized key dictionaries)",
+        "legacySource": "apps/mobile/i18n/locales/*.ts (13 languages, 2,128 keys)",
+        "runtimeConsumers": ["All mobile components and screens"],
+        "classification": "VERIFIED"
+      },
+      {
+        "id": 15,
+        "name": "Multilingual Search & Indexing",
+        "canonicalSchema": "global_search RPC (Migrations 020, 036)",
+        "legacySource": "searchConstituencies in stateData.ts",
+        "runtimeConsumers": ["Mobile SearchBar", "global_search RPC"],
+        "classification": "BLOCKED"
+      },
+      {
+        "id": 16,
+        "name": "AI & Sentiment Intelligence",
+        "canonicalSchema": "None (External LLM Gateway)",
+        "legacySource": "apps/api/src/services/ai.ts (Telangana-only context builder)",
+        "runtimeConsumers": ["Mobile Civic Chatbot", "Constituency AI Summary"],
+        "classification": "PARTIAL"
+      },
+      {
+        "id": 17,
+        "name": "Local Governance (Panchayats & Municipalities)",
+        "canonicalSchema": "local_bodies, local_body_wards, local_body_representatives (Migration 022)",
+        "legacySource": "data/seed/local-body-representatives.ts",
+        "runtimeConsumers": ["Mobile LocalGov screen stub"],
+        "classification": "NOT IMPLEMENTED"
+      },
+      {
+        "id": 18,
+        "name": "API Gateway & B2B SaaS Layer",
+        "canonicalSchema": "saas_tenants, saas_api_keys, saas_usage_ledger (Migrations 056, 057, 058)",
+        "legacySource": "None (Pure canonical relational architecture)",
+        "runtimeConsumers": ["B2B SaaS Tenants, Enterprise Clients, /api/vsaas/v1/... (138 endpoints)"],
+        "classification": "VERIFIED"
+      }
+    ]
+  },
+  "d3_news_ingestion_reconciliation": {
+    "implementedStages": [
+      { "stage": 1, "name": "Source Registry / Feed Discovery", "details": "21 RSS feeds defined in sources.ts." },
+      { "stage": 2, "name": "Ingestion / Transport", "details": "HTTP XML retrieval via fetchFeedXml in rssParser.ts." },
+      { "stage": 3, "name": "RSS / Atom Parsing", "details": "XML parsing in parseFeed (rssParser.ts)." }
+    ],
+    "partialStages": [
+      { "stage": 4, "name": "Deduplication", "details": "SHA1 URL hash eliminates exact URL duplicates; zero semantic/cross-source clustering." },
+      { "stage": 7, "name": "Topic Classification", "details": "Static category mapped at feed source level; zero NLP text categorization." },
+      { "stage": 9, "name": "Geolocation & Bounding", "details": "State code attached from feed source metadata; zero constituency spatial resolution." }
+    ],
+    "missingStages": [
+      { "stage": 5, "name": "Content Extraction / Scraping", "details": "Consumes RSS <description> tag only; zero full article body scraping." },
+      { "stage": 6, "name": "Entity Extraction / NER", "details": "constituencyId field exists on interface but is never populated." },
+      { "stage": 8, "name": "Sentiment & Bias Analysis", "details": "Zero sentiment, bias, or stance detection implemented." },
+      { "stage": 10, "name": "Database Persistence & Archival", "details": "Operates strictly in-memory; news_articles (015/033) completely unwritten." },
+      { "stage": 11, "name": "Search & Push Notification", "details": "In-memory array filtering only; zero full-text search indexing or push dispatching." }
+    ],
+    "summary": "3 implemented, 3 partial, 5 missing. Subsystem is entirely an ephemeral in-memory cache without relational persistence."
+  },
+  "d4_delimitation_engine_duplication": {
+    "authoritativeEngine": {
+      "location": "apps/api/src/services/delimitationService.ts and delimitationQueryService.ts",
+      "methodology": "Hamilton largest-remainder apportionment with Article 332 SC/ST allocation and Article 82/170 legal applicability constraints.",
+      "status": "AUTHORITATIVE_PRODUCTION_CORE"
+    },
+    "duplicatedClientSimulator": {
+      "location": "apps/mobile/stores/delimitation.ts",
+      "nature": "Obsolete client-side duplicate containing static seat constants (543, 119, 175, 224) and client-side apportionment logic.",
+      "status": "LEGACY_AND_MUST_REMOVE"
+    },
+    "retirementRecommendation": "Deprecate and remove duplicated client-side simulation logic in apps/mobile/stores/delimitation.ts during Stage B/C. Refactor mobile store to act as a pure client consuming the Fastify API /api/vsaas/v1/delimitation/... endpoints."
+  },
+  "d5_classification_summary": {
+    "IMPLEMENTED": 2,
+    "VERIFIED": 6,
+    "PARTIAL": 6,
+    "BLOCKED": 1,
+    "NOT IMPLEMENTED": 3,
+    "total": 18
+  }
+}
