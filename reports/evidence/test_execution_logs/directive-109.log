@@ -1,0 +1,73 @@
+================================================================================
+KSHETRA VERIFIABLE TEST EXECUTION LOG
+Suite: tests/political-intelligence-directive-109.test.mjs
+Command: node tests/political-intelligence-directive-109.test.mjs
+Working Directory: C:\Users\Laven\OneDrive\Desktop\Kshetra
+Runtime: Node v24.13.0 (win32)
+Execution Timestamp: 2026-10-19T10:52:22.195Z
+Exit Code: 0
+================================================================================
+
+--- STDOUT ---
+================================================================
+KSHETRA W021.5 — CTO DIRECTIVE 109 VERIFICATION SUITE
+Verification Engine Boundary Clarification & Clean-Process Regression
+Suite: tests/political-intelligence-directive-109.test.mjs
+Command: node tests/political-intelligence-directive-109.test.mjs
+================================================================
+
+--- 1. Clean-Process Module Loading & Dependency Acyclicity ---
+  [PASS] 1.1 Clean-process import of scripts/reconcile_execution_ledger.mjs succeeds without module-initialization errors
+  [PASS] 1.2 Clean-process import of tests/helpers/ledger-test-adapter.mjs succeeds without module-initialization errors
+  [PASS] 1.3 Clean-process verification of acyclic dependency graph (zero circular dependencies)
+  [PASS] 1.4 Clean-process test harness fails closed when child process encounters error or missing marker
+
+--- 2. Public Trust Override Rejection & Symbol Forgery Defense ---
+  [PASS] 2.1 B1: verifyHistoricalArtifactIntegrity rejects ALL 10 forbidden overrides unconditionally in clean process
+  [PASS] 2.2 B1: verifyAuthorityBoundary rejects ALL 10 forbidden overrides unconditionally
+  [PASS] 2.3 B1: verifyGoverningSpecificationProvenance rejects ALL 10 forbidden overrides unconditionally
+  [PASS] 2.4 B1: reconcileExecutionLedger rejects ALL 10 forbidden overrides unconditionally
+  [PASS] 2.5 B2: Caller-supplied Booleans and mode flags CANNOT bypass trust rejection
+  [PASS] 2.6 B3: Symbol.for token forge cannot bypass public verifiers or authorize overrides in clean process
+
+--- 3. Test Adapter Seam & Shared Implementation Parity ---
+  [PASS] 3.1 Test adapter exercises shared verification logic against tampered hash fixture and fails closed
+  [PASS] 3.2 Test adapter exercises shared verification logic against tampered raw bytes and fails closed
+  [PASS] 3.3 Test adapter exercises shared verification logic against tampered origin commit and fails closed
+  [PASS] 3.4 Test adapter exercises shared verification logic against empty matrix and fails closed
+  [PASS] 3.5 Implementation parity proof: Production verifiers and test adapter produce identical results under standard inputs
+  [PASS] 3.6 Codebase reachability audit: Test adapter is NOT imported by shipped application code
+
+--- 4. Path & Manifest Symlink Containment ---
+  [PASS] 4.1 assertPathContainedInRoot rejects absolute paths and drive-anchored paths
+  [PASS] 4.2 assertPathContainedInRoot rejects lexical path traversal outside root
+  [PASS] 4.3 Genuine symlink/junction adversarial escape fixture in validateManifestIntegrity fails closed
+
+--- 5. Manifest Evidence Qualification & Skipped Counts ---
+  [PASS] 5.1 Manifest evidence qualification is strictly REPOSITORY_RECORDED_EXECUTION
+  [PASS] 5.2 Manifest preserves SKIPPED_COUNT_NOT_REPORTED for legacy suites without explicit skipped count evidence
+  [PASS] 5.3 Jest suites and recent directive suites evidence EXPLICIT_ZERO_SKIPPED
+  [PASS] 5.4 Manifest aggregate counts are derivable from individual suite entries
+
+--- 6. Mandatory Governance Invariants & Baseline Immutability ---
+  [PASS] 6.1 Rule IV-001 Non-Self-Acceptance: Formal acceptance is strictly 0.0% / UNACCEPTED
+  [PASS] 6.2 Production Air-Gap: Live database execution is strictly 0.0% / UNEXECUTED
+  [PASS] 6.3 Financial Defect DQ-W021.5-B2.2E-001 remains STRICTLY OPEN (0.0% earned, 5.0% blocked)
+  [PASS] 6.4 Telangana AC 119 Boundary Defect remains STRICTLY OPEN / BLOCKED (1.5% blocked)
+  [PASS] 6.5 SQL Migration Immutability: 68 migrations match baseline 0ea572d byte-for-byte identical
+  [PASS] 6.6 MLA Profile Seed Immutability: 31 seed files match baseline fb408ce byte-for-byte identical
+  [PASS] 6.7 Canonical task inventory equality: exactly 27 canonical tasks summing to 100.000% weight
+
+================================================================
+TEST SUMMARY: 30 PASSED, 0 FAILED, 0 SKIPPED
+================================================================
+
+
+
+--- STDERR ---
+
+
+--- PROCESS METRICS ---
+DurationMs: 11107
+ExitCode: 0
+================================================================================

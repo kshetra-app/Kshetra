@@ -1,0 +1,61 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "registerId": "W021.5-DIRECTIVE-108-DISCREPANCY-REGISTER-V1.0",
+  "milestone": "W021.5",
+  "directive": "CTO Directive 109",
+  "purpose": "Forensic discrepancy register and remediation mapping for independent review findings of CTO Directive 108.",
+  "generatedAt": "2026-10-19T10:45:00.000Z",
+  "governance": "Master Execution Framework Amendment v1.2 / Rule IV-001 (Non-Self-Acceptance)",
+  "summary": {
+    "totalDiscrepanciesAudited": 3,
+    "discrepanciesResolved": 3,
+    "discrepanciesBlocked": 0,
+    "discrepancyCategoriesAudited": [
+      "circular_module_dependency",
+      "threat_model_boundary_clarification",
+      "manifest_evidence_qualification_skipped_counts"
+    ],
+    "resolutionStatus": "ALL_DISCREPANCIES_FORENSICALLY_ANALYZED_AND_RECONCILED"
+  },
+  "discrepancies": [
+    {
+      "discrepancyId": "DISC-035",
+      "itemKey": "MODULE_ARCHITECTURE:circularDependency",
+      "category": "circular_module_dependency",
+      "discrepancyType": "CIRCULAR_MODULE_INITIALIZATION_CYCLE",
+      "affectedEntity": "scripts/reconcile_execution_ledger.mjs and scripts/internal/reconcile_engine.mjs",
+      "priorReportValue": "Directive 108 split verification functions into scripts/internal/reconcile_engine.mjs, which imported 18 symbols from scripts/reconcile_execution_ledger.mjs, while scripts/reconcile_execution_ledger.mjs imported internal functions from reconcile_engine.mjs. This created a mutual circular module dependency in Node ECMAScript module resolution.",
+      "canonicalCommittedValue": "Pure root verification payload functions (verifyHistoricalArtifactIntegrityPayload, verifyAuthorityBoundaryPayload, verifyGoverningSpecificationProvenancePayload, reconcileExecutionLedgerCore) are authored directly in scripts/reconcile_execution_ledger.mjs with ZERO internal imports. tests/helpers/ledger-test-adapter.mjs imports these pure payloads to execute controlled fixtures. scripts/internal/reconcile_engine.mjs re-exports from ledger-test-adapter.mjs for backward compatibility without creating any reference back to reconcile_execution_ledger.mjs. Module graph is an absolute DAG with 0 cycles.",
+      "representationOrigin": "Refactoring of internal verification functions in Directive 108 without process-isolated acyclicity validation.",
+      "historicalLineage": "Directive 108 created scripts/internal/reconcile_engine.mjs to extract shared logic but retained mutual imports between the public verifier and internal engine.",
+      "resolutionAction": "Consolidated core payload execution inside scripts/reconcile_execution_ledger.mjs, updated tests/helpers/ledger-test-adapter.mjs to consume them directly, decoupled scripts/internal/reconcile_engine.mjs, and verified acyclicity in clean separate Node processes (Suite 30 Check 1.3).",
+      "resolutionStatus": "RESOLVED_MODULE_GRAPH_STRICT_DAG"
+    },
+    {
+      "discrepancyId": "DISC-036",
+      "itemKey": "VERIFIER_ENGINE:threatModelAndTrustBoundary",
+      "category": "threat_model_boundary_clarification",
+      "discrepancyType": "STRUCTURAL_CONVENTION_SECURITY_BOUNDARY_CONFLATION",
+      "affectedEntity": "Threat model documentation, public production verifier, and repository import graph",
+      "priorReportValue": "Directive 108 reports suggested that directory naming (scripts/internal/) and underscore prefixes (_verify*Internal) constituted an authorization or security boundary, and discussed arbitrary same-process imports as potential vulnerabilities without demonstrating application reachability.",
+      "canonicalCommittedValue": "Formally documented authentic threat model distinguishing: (1) Public production verifier interface (safe-by-default, rejects all 10 FORBIDDEN_TRUST_OVERRIDES); (2) Internal module interfaces (ECMAScript export conventions, non-production seams); (3) Test harness used to exercise adversarial fixtures; (4) Genuine runtime boundaries (OS process isolation, air-gap, production DB isolation). Shipped application code (apps/api, apps/mobile, packages/) does not import test adapters or verification scripts. Same-process imports are developer/CI tools, not remotely reachable attack surfaces.",
+      "representationOrigin": "Conflating syntactic/file-structure conventions with language-level privacy or runtime authorization boundaries in report narrative.",
+      "historicalLineage": "Directive 108 introduced scripts/internal/ to isolate test fixtures, which was critiqued in review for overstating file-path privacy.",
+      "resolutionAction": "Documented formal threat model in Directive 109 implementation report and discrepancy register. Verified application codebase reachability in Suite 30 Test 3.6 confirming zero test adapter imports in shipped code.",
+      "resolutionStatus": "RESOLVED_THREAT_MODEL_AND_SECURITY_BOUNDARY_FORMALIZED"
+    },
+    {
+      "discrepancyId": "DISC-037",
+      "itemKey": "MANIFEST_VALIDATOR:skippedCountEvidenceQualification",
+      "category": "manifest_evidence_qualification_skipped_counts",
+      "discrepancyType": "UNREPORTED_SKIPPED_COUNT_OVERCLAIM",
+      "affectedEntity": "reports/w021_5_test_execution_manifest.json and test execution reporting language",
+      "priorReportValue": "All passing test suites in the manifest had testsSkipped: 0, which could be misconstrued as independent affirmative proof of zero skipped tests across all suites, even though legacy test suites did not report skipped counts.",
+      "canonicalCommittedValue": "Strict tri-state skipped counting preserved in manifest and validator: SKIPPED_COUNT_NOT_REPORTED (zeroSkippedEvidenced: false) for 23 legacy custom suites where runner output omitted skipped counts, and EXPLICIT_ZERO_SKIPPED (zeroSkippedEvidenced: true) only where runner contract or explicit summary outputs guaranteed zero skipped (4 Jest suites and Directives 107-109). Aggregate qualification maintained strictly as REPOSITORY_RECORDED_EXECUTION.",
+      "representationOrigin": "Defaulting missing runner skipped counts to numeric 0 without qualifying whether zero was evidenced or unevidenced.",
+      "historicalLineage": "Directives 107 and 108 introduced skippedState and zeroSkippedEvidenced fields, but evidence qualification language needed full reconciliation.",
+      "resolutionAction": "Maintained explicit skippedState and zeroSkippedEvidenced validation in scripts/capture_test_execution.mjs and verified in Suite 30 Tests 5.1-5.4.",
+      "resolutionStatus": "RESOLVED_SKIPPED_COUNT_QUALIFICATION_ENFORCED"
+    }
+  ]
+}

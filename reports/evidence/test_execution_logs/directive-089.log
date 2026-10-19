@@ -4,7 +4,7 @@ Suite: tests/political-intelligence-directive-089.test.mjs
 Command: node tests/political-intelligence-directive-089.test.mjs
 Working Directory: C:\Users\Laven\OneDrive\Desktop\Kshetra
 Runtime: Node v24.13.0 (win32)
-Execution Timestamp: 2026-10-19T09:42:28.216Z
+Execution Timestamp: 2026-10-19T10:48:57.412Z
 Exit Code: 0
 ================================================================================
 
@@ -65,13 +65,13 @@ TEST SUMMARY: 33 PASSED, 0 FAILED
 
 
 --- STDERR ---
-(node:28800) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///C:/Users/Laven/OneDrive/Desktop/Kshetra/data/seed/telangana-constituencies.ts is not specified and it doesn't parse as CommonJS.
+(node:12312) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///C:/Users/Laven/OneDrive/Desktop/Kshetra/data/seed/telangana-constituencies.ts is not specified and it doesn't parse as CommonJS.
 Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
 To eliminate this warning, add "type": "module" to C:\Users\Laven\OneDrive\Desktop\Kshetra\data\seed\package.json.
 (Use `node --trace-warnings ...` to show where the warning was created)
 
 
 --- PROCESS METRICS ---
-DurationMs: 5097
+DurationMs: 5330
 ExitCode: 0
 ================================================================================
