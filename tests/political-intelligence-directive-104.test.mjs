@@ -36,8 +36,6 @@ import {
   verifyHistoricalArtifactIntegrity,
   verifyAuthorityBoundary,
   verifyGoverningSpecificationProvenance,
-  __testOnly_verifyGoverningSpecificationProvenance,
-  TEST_HARNESS_PROTECTION_TOKEN,
   validateMasterSpecificationAgainstCode,
   validateLedgerSummaryConsistency,
   validateCanonicalTaskIdentity,
@@ -56,6 +54,7 @@ import {
 } from '../scripts/reconcile_execution_ledger.mjs';
 
 import { verifyMigrationImmutability } from '../scripts/verify-migration-immutability.mjs';
+import { testVerifyGoverningSpecificationProvenance } from './helpers/ledger-test-adapter.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -367,7 +366,7 @@ runTest('4.1 Fabricated requirement reference fails closed in verifyGoverningSpe
     mutatedMatrix.tasks[0].requirementCode = 'REQ-FABRICATED-999';
   }, ({ mutatedMatrix }) => {
     assert.throws(
-      () => __testOnly_verifyGoverningSpecificationProvenance({ matrixOverride: mutatedMatrix }, TEST_HARNESS_PROTECTION_TOKEN),
+      () => testVerifyGoverningSpecificationProvenance({ matrixOverride: mutatedMatrix }),
       /Governing provenance violation.*requirementCode mismatch/
     );
   });
@@ -378,7 +377,7 @@ runTest('4.2 Omitted real requirement fails closed in verifyGoverningSpecificati
     mutatedMatrix.tasks.pop(); // Remove 27th task
   }, ({ mutatedMatrix }) => {
     assert.throws(
-      () => __testOnly_verifyGoverningSpecificationProvenance({ matrixOverride: mutatedMatrix }, TEST_HARNESS_PROTECTION_TOKEN),
+      () => testVerifyGoverningSpecificationProvenance({ matrixOverride: mutatedMatrix }),
       /Governing provenance violation.*Expected 27 tasks in governing matrix, got 26/
     );
   });
@@ -386,11 +385,11 @@ runTest('4.2 Omitted real requirement fails closed in verifyGoverningSpecificati
 
 runTest('4.3 Task mapped to wrong governing section fails closed in verifyGoverningSpecificationProvenance', () => {
   assert.throws(
-    () => __testOnly_verifyGoverningSpecificationProvenance({
+    () => testVerifyGoverningSpecificationProvenance({
       taskSectionOverrides: {
         'W021.5-A-01': 'Completely Wrong Section 99.9',
       },
-    }, TEST_HARNESS_PROTECTION_TOKEN),
+    }),
     /Governing provenance violation.*mapped to wrong governing section/
   );
 });
@@ -402,7 +401,7 @@ runTest('4.4 Unapproved extension promoted to core specification fails closed in
     t.taskClassification = 'CORE_SPECIFICATION';
   }, ({ mutatedMatrix }) => {
     assert.throws(
-      () => __testOnly_verifyGoverningSpecificationProvenance({ matrixOverride: mutatedMatrix }, TEST_HARNESS_PROTECTION_TOKEN),
+      () => testVerifyGoverningSpecificationProvenance({ matrixOverride: mutatedMatrix }),
       /Governing provenance violation.*classification mismatch.*expected "CORE_SPECIFICATION", got "HARDENING_EXTENSION"/
     );
   });
@@ -415,7 +414,7 @@ runTest('4.5 Co-mutated manifest + metadata bypass attempt fails closed against 
   mutatedSpec.tasks['W021.5-A-01'].governingRequirement = 'REQ-CO-MUTATED-BYPASS';
   try {
     assert.throws(
-      () => __testOnly_verifyGoverningSpecificationProvenance({ masterSpecOverride: mutatedSpec }, TEST_HARNESS_PROTECTION_TOKEN),
+      () => testVerifyGoverningSpecificationProvenance({ masterSpecOverride: mutatedSpec }),
       /Governing provenance violation.*requirementCode mismatch/
     );
   } finally {
@@ -428,7 +427,7 @@ runTest('4.6 Mutated task weight or stage weight fails closed against governing 
     mutatedMatrix.tasks[0].approvedWeight = 5.0; // was 3.0
   }, ({ mutatedMatrix }) => {
     assert.throws(
-      () => __testOnly_verifyGoverningSpecificationProvenance({ matrixOverride: mutatedMatrix }, TEST_HARNESS_PROTECTION_TOKEN),
+      () => testVerifyGoverningSpecificationProvenance({ matrixOverride: mutatedMatrix }),
       /Governing provenance violation.*weight mismatch vs governing matrix/
     );
   });
@@ -439,7 +438,7 @@ runTest('4.7 Tampered governing document hash fails closed in verifyGoverningSpe
     mutatedMatrix.governingDocuments[0].sha256 = '0000000000000000000000000000000000000000000000000000000000000000';
   }, ({ mutatedMatrix }) => {
     assert.throws(
-      () => __testOnly_verifyGoverningSpecificationProvenance({ matrixOverride: mutatedMatrix }, TEST_HARNESS_PROTECTION_TOKEN),
+      () => testVerifyGoverningSpecificationProvenance({ matrixOverride: mutatedMatrix }),
       /Governing provenance violation: Document digest mismatch/
     );
   });
@@ -450,7 +449,7 @@ runTest('4.8 Mismatched or fabricated criterion ID in task specification fails c
     mutatedMatrix.tasks[0].criterionIds = ['CRIT-FABRICATED-01', 'CRIT-FABRICATED-02'];
   }, ({ mutatedMatrix }) => {
     assert.throws(
-      () => __testOnly_verifyGoverningSpecificationProvenance({ matrixOverride: mutatedMatrix }, TEST_HARNESS_PROTECTION_TOKEN),
+      () => testVerifyGoverningSpecificationProvenance({ matrixOverride: mutatedMatrix }),
       /Governing provenance violation: Task W021.5-A-01 criterion IDs mismatch/
     );
   });
@@ -461,7 +460,7 @@ runTest('4.9 Tampered progress partition sum in matrix fails closed', () => {
     mutatedMatrix.summary.progressPartition.repoVerifiedEarned = 70.0; // Breaks 100% sum
   }, ({ mutatedMatrix }) => {
     assert.throws(
-      () => __testOnly_verifyGoverningSpecificationProvenance({ matrixOverride: mutatedMatrix }, TEST_HARNESS_PROTECTION_TOKEN),
+      () => testVerifyGoverningSpecificationProvenance({ matrixOverride: mutatedMatrix }),
       /Governing provenance violation: Progress partition does not sum to 100\.000%/
     );
   });

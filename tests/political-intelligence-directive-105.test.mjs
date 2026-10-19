@@ -34,16 +34,18 @@ import {
   HISTORICAL_ORIGIN_COMMIT,
   EXPECTED_RAW_HISTORICAL_LEDGER_SHA256,
   verifyHistoricalArtifactIntegrity,
-  __testOnly_verifyHistoricalArtifactIntegrity,
-  TEST_HARNESS_PROTECTION_TOKEN,
   verifyAuthorityBoundary,
   verifyGoverningSpecificationProvenance,
-  __testOnly_verifyGoverningSpecificationProvenance,
   verifyNonOverlappingAccountingAndTraceability,
   evaluateTaskCriteria,
   computeLedgerSummary,
   reconcileExecutionLedger,
 } from '../scripts/reconcile_execution_ledger.mjs';
+
+import {
+  testVerifyHistoricalArtifactIntegrity,
+  testVerifyGoverningSpecificationProvenance,
+} from './helpers/ledger-test-adapter.mjs';
 
 let passedTests = 0;
 let failedTests = 0;
@@ -338,7 +340,7 @@ runTest('3.3 Falsification: Co-mutated manifest, matrix, and metadata fails clos
   assert.throws(
     () => {
       // Historical origin be4ba41 is immutable in git object database
-      __testOnly_verifyHistoricalArtifactIntegrity({ expectedHashOverride: '0000000000000000000000000000000000000000000000000000000000000000' }, TEST_HARNESS_PROTECTION_TOKEN);
+      testVerifyHistoricalArtifactIntegrity({ expectedHashOverride: '0000000000000000000000000000000000000000000000000000000000000000' });
     },
     (err) => err.message.includes('Raw artifact integrity violation')
   );
@@ -353,7 +355,7 @@ runTest('3.4 Falsification: Tampered document hash in governing matrix fails clo
 
   assert.throws(
     () => {
-      __testOnly_verifyGoverningSpecificationProvenance({ matrixOverride: mutatedMatrix }, TEST_HARNESS_PROTECTION_TOKEN);
+      testVerifyGoverningSpecificationProvenance({ matrixOverride: mutatedMatrix });
     },
     (err) => err.message.includes('Governing provenance violation: Document digest mismatch')
   );

@@ -39,8 +39,6 @@ import {
   EXPECTED_RAW_HISTORICAL_LEDGER_SHA256,
   EXPECTED_RAW_HISTORICAL_LEDGER_BYTES,
   verifyHistoricalArtifactIntegrity,
-  __testOnly_verifyHistoricalArtifactIntegrity,
-  TEST_HARNESS_PROTECTION_TOKEN,
   verifyAuthorityBoundary,
   validateMasterSpecificationAgainstCode,
   validateLedgerSummaryConsistency,
@@ -57,6 +55,7 @@ import {
 } from '../scripts/reconcile_execution_ledger.mjs';
 
 import { verifyMigrationImmutability } from '../scripts/verify-migration-immutability.mjs';
+import { testVerifyHistoricalArtifactIntegrity } from './helpers/ledger-test-adapter.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -470,11 +469,11 @@ runTest('4.6 Mutation 6: Change task weight with offsetting change elsewhere fai
 
 runTest('4.7 Mutation 7: Alter historical snapshot bytes fails closed in verifyHistoricalArtifactIntegrity', () => {
   assert.throws(
-    () => __testOnly_verifyHistoricalArtifactIntegrity({ expectedHashOverride: '0000000000000000000000000000000000000000000000000000000000000000' }, TEST_HARNESS_PROTECTION_TOKEN),
+    () => testVerifyHistoricalArtifactIntegrity({ expectedHashOverride: '0000000000000000000000000000000000000000000000000000000000000000' }),
     /Raw artifact integrity violation: SHA-256 hash mismatch/
   );
   assert.throws(
-    () => __testOnly_verifyHistoricalArtifactIntegrity({ rawBytesOverride: Buffer.from('{"tampered": true}') }, TEST_HARNESS_PROTECTION_TOKEN),
+    () => testVerifyHistoricalArtifactIntegrity({ rawBytesOverride: Buffer.from('{"tampered": true}') }),
     /Raw artifact integrity violation: SHA-256 hash mismatch/
   );
 });

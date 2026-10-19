@@ -33,7 +33,6 @@ import {
   PHANTOM_TASK_DISPOSITIONS,
   DISCREPANCY_REGISTER,
   FORBIDDEN_TRUST_OVERRIDES,
-  TEST_HARNESS_PROTECTION_TOKEN,
   HISTORICAL_ORIGIN_COMMIT,
   EXPECTED_RAW_HISTORICAL_LEDGER_SHA256,
   AUTHORITY_CLASSIFICATION,
@@ -49,11 +48,15 @@ import {
   evaluateTaskCriteria,
   computeLedgerSummary,
   reconcileExecutionLedger,
-  __testOnly_verifyHistoricalArtifactIntegrity,
-  __testOnly_verifyAuthorityBoundary,
-  __testOnly_verifyGoverningSpecificationProvenance,
-  __testOnly_reconcileExecutionLedger,
 } from '../scripts/reconcile_execution_ledger.mjs';
+import * as productionVerifierModule from '../scripts/reconcile_execution_ledger.mjs';
+
+import {
+  testVerifyHistoricalArtifactIntegrity,
+  testVerifyAuthorityBoundary,
+  testVerifyGoverningSpecificationProvenance,
+  testReconcileExecutionLedger,
+} from './helpers/ledger-test-adapter.mjs';
 
 import {
   MANIFEST_PATH,
@@ -90,14 +93,8 @@ console.log('================================================================\n'
 // -----------------------------------------------------------------------------
 console.log('--- 1. Workstream A: Make Trust Override Protection Safe by Default ---');
 
-runTest('1.1 verifyHistoricalArtifactIntegrity rejects caller trust overrides by default (no mode flags)', () => {
-  for (const overrideKey of [
-    'expectedHashOverride',
-    'rawBytesOverride',
-    'historicalOriginCommitOverride',
-    'originCommitOverride',
-    'referenceCommitOverride',
-  ]) {
+runTest('1.1 B1: verifyHistoricalArtifactIntegrity rejects ALL 10 forbidden overrides unconditionally', () => {
+  for (const overrideKey of FORBIDDEN_TRUST_OVERRIDES) {
     assert.throws(
       () => {
         verifyHistoricalArtifactIntegrity({ [overrideKey]: 'attacker_controlled_value' });
@@ -113,15 +110,11 @@ runTest('1.1 verifyHistoricalArtifactIntegrity rejects caller trust overrides by
   }
 });
 
-runTest('1.2 verifyAuthorityBoundary rejects caller trust overrides by default (no mode flags)', () => {
-  for (const overrideKey of [
-    'expectedDocHashes',
-    'historicalOriginCommitOverride',
-    'originCommitOverride',
-  ]) {
+runTest('1.2 B1: verifyAuthorityBoundary rejects ALL 10 forbidden overrides unconditionally', () => {
+  for (const overrideKey of FORBIDDEN_TRUST_OVERRIDES) {
     assert.throws(
       () => {
-        verifyAuthorityBoundary({ [overrideKey]: { 'test.md': 'hash' } });
+        verifyAuthorityBoundary({ [overrideKey]: 'attacker_controlled_value' });
       },
       (err) => {
         return (
@@ -134,16 +127,11 @@ runTest('1.2 verifyAuthorityBoundary rejects caller trust overrides by default (
   }
 });
 
-runTest('1.3 verifyGoverningSpecificationProvenance rejects caller trust overrides by default (no mode flags)', () => {
-  for (const overrideKey of [
-    'masterSpecOverride',
-    'matrixOverride',
-    'expectedDocHashes',
-    'taskSectionOverrides',
-  ]) {
+runTest('1.3 B1: verifyGoverningSpecificationProvenance rejects ALL 10 forbidden overrides unconditionally', () => {
+  for (const overrideKey of FORBIDDEN_TRUST_OVERRIDES) {
     assert.throws(
       () => {
-        verifyGoverningSpecificationProvenance({ [overrideKey]: {} });
+        verifyGoverningSpecificationProvenance({ [overrideKey]: 'attacker_controlled_value' });
       },
       (err) => {
         return (
@@ -156,17 +144,11 @@ runTest('1.3 verifyGoverningSpecificationProvenance rejects caller trust overrid
   }
 });
 
-runTest('1.4 reconcileExecutionLedger rejects caller trust overrides by default (no mode flags)', () => {
-  for (const overrideKey of [
-    'ledgerOverride',
-    'expectedHashOverride',
-    'historicalOriginCommitOverride',
-    'masterSpecOverride',
-    'matrixOverride',
-  ]) {
+runTest('1.4 B1: reconcileExecutionLedger rejects ALL 10 forbidden overrides unconditionally', () => {
+  for (const overrideKey of FORBIDDEN_TRUST_OVERRIDES) {
     assert.throws(
       () => {
-        reconcileExecutionLedger({ [overrideKey]: {} });
+        reconcileExecutionLedger({ [overrideKey]: 'attacker_controlled_value' });
       },
       (err) => {
         return (
@@ -179,61 +161,88 @@ runTest('1.4 reconcileExecutionLedger rejects caller trust overrides by default 
   }
 });
 
-runTest('1.5 Caller-supplied Booleans (productionMode: false, allowOverrides: true) CANNOT bypass trust rejection', () => {
+runTest('1.5 B2: Caller-supplied Booleans and mode flags CANNOT bypass trust rejection across all 4 public verifiers', () => {
+  const verifiers = [
+    { name: 'verifyHistoricalArtifactIntegrity', fn: verifyHistoricalArtifactIntegrity },
+    { name: 'verifyAuthorityBoundary', fn: verifyAuthorityBoundary },
+    { name: 'verifyGoverningSpecificationProvenance', fn: verifyGoverningSpecificationProvenance },
+    { name: 'reconcileExecutionLedger', fn: reconcileExecutionLedger },
+  ];
+
   const deceptiveOptions = [
     { productionMode: false, expectedHashOverride: '0000000000000000000000000000000000000000000000000000000000000000' },
     { productionVerificationMode: false, rawBytesOverride: 'malicious_bytes' },
     { allowOverrides: true, masterSpecOverride: {} },
     { testMode: true, matrixOverride: {} },
+    { productionMode: false, allowOverrides: true, ledgerOverride: {} },
+    { productionVerificationMode: false, testMode: true, expectedDocHashes: {} },
   ];
 
-  for (const opt of deceptiveOptions) {
+  for (const { name, fn } of verifiers) {
+    for (const opt of deceptiveOptions) {
+      assert.throws(
+        () => fn(opt),
+        (err) => err.message.includes('CALLER_TRUST_OVERRIDE_PROHIBITED'),
+        `${name} must reject deceptive options: ${JSON.stringify(opt)}`
+      );
+    }
+  }
+});
+
+runTest('1.6 B3: Production verifier exports neither token nor __testOnly_* functions; Symbol.for cannot bypass overrides', () => {
+  // 1. Assert production verifier does NOT export TEST_HARNESS_PROTECTION_TOKEN
+  assert.strictEqual(
+    productionVerifierModule.TEST_HARNESS_PROTECTION_TOKEN,
+    undefined,
+    'TEST_HARNESS_PROTECTION_TOKEN must NOT be exported from production verifier'
+  );
+
+  // 2. Assert production verifier does NOT export __testOnly_* interfaces
+  assert.strictEqual(productionVerifierModule.__testOnly_verifyHistoricalArtifactIntegrity, undefined);
+  assert.strictEqual(productionVerifierModule.__testOnly_verifyAuthorityBoundary, undefined);
+  assert.strictEqual(productionVerifierModule.__testOnly_verifyGoverningSpecificationProvenance, undefined);
+  assert.strictEqual(productionVerifierModule.__testOnly_reconcileExecutionLedger, undefined);
+
+  // 3. Assert that recreating the former Symbol token cannot bypass any public verifier entry point
+  const forgedToken = Symbol.for('KSHETRA_TEST_ONLY_HARNESS_PROTECTION_TOKEN');
+  const verifiers = [
+    { name: 'verifyHistoricalArtifactIntegrity', fn: verifyHistoricalArtifactIntegrity },
+    { name: 'verifyAuthorityBoundary', fn: verifyAuthorityBoundary },
+    { name: 'verifyGoverningSpecificationProvenance', fn: verifyGoverningSpecificationProvenance },
+    { name: 'reconcileExecutionLedger', fn: reconcileExecutionLedger },
+  ];
+
+  for (const { name, fn } of verifiers) {
     assert.throws(
-      () => {
-        reconcileExecutionLedger(opt);
-      },
+      () => fn({ protectionToken: forgedToken, expectedHashOverride: 'attacker_hash' }),
       (err) => err.message.includes('CALLER_TRUST_OVERRIDE_PROHIBITED'),
-      'Boolean flags must never bypass CALLER_TRUST_OVERRIDE_PROHIBITED'
+      `${name} must reject forged Symbol.for token bypass attempt`
     );
   }
 });
 
-runTest('1.6 Test-only interfaces (__testOnly_*) throw TEST_ONLY_HARNESS_PROTECTED when called without valid Symbol token', () => {
-  const invalidTokens = [undefined, null, false, true, 'KSHETRA_TEST_ONLY_HARNESS_PROTECTION_TOKEN', Symbol('fake')];
+runTest('1.7 B4: Shared verification implementation exercised via isolated test adapter seam', () => {
+  // Test adapter functions exist in isolated tests/helpers/
+  assert.strictEqual(typeof testVerifyHistoricalArtifactIntegrity, 'function');
+  assert.strictEqual(typeof testVerifyAuthorityBoundary, 'function');
+  assert.strictEqual(typeof testVerifyGoverningSpecificationProvenance, 'function');
+  assert.strictEqual(typeof testReconcileExecutionLedger, 'function');
 
-  for (const tok of invalidTokens) {
-    assert.throws(
-      () => __testOnly_verifyHistoricalArtifactIntegrity({}, tok),
-      (err) => err.message.includes('TEST_ONLY_HARNESS_PROTECTED'),
-      '__testOnly_verifyHistoricalArtifactIntegrity must require valid Symbol token'
-    );
-    assert.throws(
-      () => __testOnly_verifyAuthorityBoundary({}, tok),
-      (err) => err.message.includes('TEST_ONLY_HARNESS_PROTECTED'),
-      '__testOnly_verifyAuthorityBoundary must require valid Symbol token'
-    );
-    assert.throws(
-      () => __testOnly_verifyGoverningSpecificationProvenance({}, tok),
-      (err) => err.message.includes('TEST_ONLY_HARNESS_PROTECTED'),
-      '__testOnly_verifyGoverningSpecificationProvenance must require valid Symbol token'
-    );
-    assert.throws(
-      () => __testOnly_reconcileExecutionLedger({}, tok),
-      (err) => err.message.includes('TEST_ONLY_HARNESS_PROTECTED'),
-      '__testOnly_reconcileExecutionLedger must require valid Symbol token'
-    );
-  }
-});
-
-runTest('1.7 Test-only interfaces succeed with valid TEST_HARNESS_PROTECTION_TOKEN', () => {
-  const resHist = __testOnly_verifyHistoricalArtifactIntegrity({}, TEST_HARNESS_PROTECTION_TOKEN);
+  // Verify that test adapter exercises authentic verification logic
+  const resHist = testVerifyHistoricalArtifactIntegrity({});
   assert.strictEqual(resHist.verified, true);
 
-  const resAuth = __testOnly_verifyAuthorityBoundary({}, TEST_HARNESS_PROTECTION_TOKEN);
+  const resAuth = testVerifyAuthorityBoundary({});
   assert.strictEqual(resAuth.verified, true);
 
-  const resGov = __testOnly_verifyGoverningSpecificationProvenance({}, TEST_HARNESS_PROTECTION_TOKEN);
+  const resGov = testVerifyGoverningSpecificationProvenance({});
   assert.strictEqual(resGov.verified, true);
+
+  // Verify that test adapter shares fail-closed logic when tampered
+  assert.throws(
+    () => testVerifyHistoricalArtifactIntegrity({ expectedHashOverride: '0000000000000000000000000000000000000000000000000000000000000000' }),
+    /Raw artifact integrity violation: SHA-256 hash mismatch/
+  );
 });
 
 runTest('1.8 FORBIDDEN_TRUST_OVERRIDES contains comprehensive list of 10 override parameter names', () => {
@@ -398,7 +407,40 @@ runTest('2.2 Adversarial Case 2: Changed log with recomputed manifest digest is 
   }
 });
 
-runTest('2.3 Adversarial Case 3: Path escaping repository root is rejected (path traversal attack)', () => {
+runTest('2.3 Adversarial Case 3: Symlink resolving outside repository root is rejected (symlink escape attack)', () => {
+  const fixture = createIsolatedManifestFixture();
+  const extDir = fs.mkdtempSync(path.join(os.tmpdir(), 'kshetra-external-log-dir-'));
+  try {
+    // 1. Move the valid authentic log file to the external directory
+    const extLogPath = path.join(extDir, 'sample-adversarial.log');
+    fs.writeFileSync(extLogPath, fixture.logContent, 'utf8');
+
+    // 2. Remove the original inside log directory and replace it with a symlink/junction pointing outside
+    const originalLogDir = path.dirname(fixture.logAbsPath);
+    fs.rmSync(originalLogDir, { recursive: true, force: true });
+    fs.symlinkSync(extDir, originalLogDir, 'junction');
+
+    // 3. Confirm target exists and log matches perfectly on disk
+    assert.strictEqual(fs.existsSync(fixture.logAbsPath), true, 'Log file must exist via symlink');
+
+    // 4. validateManifestIntegrity must detect that canonical path escapes repository root
+    assert.throws(
+      () => validateManifestIntegrity(fixture.manifest, fixture.tmpDir),
+      (err) => {
+        return (
+          err.message.includes('resolves through symlink outside repository root') ||
+          err.message.includes('Canonical target')
+        );
+      },
+      'validateManifestIntegrity must reject symlink resolving outside repo root'
+    );
+  } finally {
+    fs.rmSync(fixture.tmpDir, { recursive: true, force: true });
+    fs.rmSync(extDir, { recursive: true, force: true });
+  }
+});
+
+runTest('2.3b Adversarial Case 3b: Lexical path traversal escaping repository root is rejected', () => {
   const fixture = createIsolatedManifestFixture();
   try {
     fixture.manifest.testSuites[0].outputLogPath = '../../../../etc/passwd';
@@ -894,7 +936,7 @@ runTest('6.6 MLA Profile Seed Immutability: 31 seed files match baseline fb408ce
 runTest('6.7 Repository manifest integrity validation', () => {
   assert.ok(fs.existsSync(MANIFEST_PATH), 'Manifest file must exist');
   const manifest = JSON.parse(fs.readFileSync(MANIFEST_PATH, 'utf8'));
-  if (manifest.summary && manifest.summary.directiveCycle === 'CTO_DIRECTIVE_107') {
+  if (manifest.summary && (manifest.summary.directiveCycle === 'CTO_DIRECTIVE_107' || manifest.summary.directiveCycle === 'CTO_DIRECTIVE_108')) {
     const res = validateManifestIntegrity(manifest, REPO_ROOT);
     assert.strictEqual(res, true);
     assert.strictEqual(manifest.executionQualification, 'REPOSITORY_RECORDED_EXECUTION');

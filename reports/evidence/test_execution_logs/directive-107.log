@@ -4,7 +4,7 @@ Suite: tests/political-intelligence-directive-107.test.mjs
 Command: node tests/political-intelligence-directive-107.test.mjs
 Working Directory: C:\Users\Laven\OneDrive\Desktop\Kshetra
 Runtime: Node v24.13.0 (win32)
-Execution Timestamp: 2026-10-19T08:38:45.844Z
+Execution Timestamp: 2026-10-19T09:45:21.147Z
 Exit Code: 0
 ================================================================================
 
@@ -17,19 +17,20 @@ Command: node tests/political-intelligence-directive-107.test.mjs
 ================================================================
 
 --- 1. Workstream A: Make Trust Override Protection Safe by Default ---
-  [PASS] 1.1 verifyHistoricalArtifactIntegrity rejects caller trust overrides by default (no mode flags)
-  [PASS] 1.2 verifyAuthorityBoundary rejects caller trust overrides by default (no mode flags)
-  [PASS] 1.3 verifyGoverningSpecificationProvenance rejects caller trust overrides by default (no mode flags)
-  [PASS] 1.4 reconcileExecutionLedger rejects caller trust overrides by default (no mode flags)
-  [PASS] 1.5 Caller-supplied Booleans (productionMode: false, allowOverrides: true) CANNOT bypass trust rejection
-  [PASS] 1.6 Test-only interfaces (__testOnly_*) throw TEST_ONLY_HARNESS_PROTECTED when called without valid Symbol token
-  [PASS] 1.7 Test-only interfaces succeed with valid TEST_HARNESS_PROTECTION_TOKEN
+  [PASS] 1.1 B1: verifyHistoricalArtifactIntegrity rejects ALL 10 forbidden overrides unconditionally
+  [PASS] 1.2 B1: verifyAuthorityBoundary rejects ALL 10 forbidden overrides unconditionally
+  [PASS] 1.3 B1: verifyGoverningSpecificationProvenance rejects ALL 10 forbidden overrides unconditionally
+  [PASS] 1.4 B1: reconcileExecutionLedger rejects ALL 10 forbidden overrides unconditionally
+  [PASS] 1.5 B2: Caller-supplied Booleans and mode flags CANNOT bypass trust rejection across all 4 public verifiers
+  [PASS] 1.6 B3: Production verifier exports neither token nor __testOnly_* functions; Symbol.for cannot bypass overrides
+  [PASS] 1.7 B4: Shared verification implementation exercised via isolated test adapter seam
   [PASS] 1.8 FORBIDDEN_TRUST_OVERRIDES contains comprehensive list of 10 override parameter names
 
 --- 2. Workstream B: Manifest Validation Adversarial Negative Test Battery ---
   [PASS] 2.1 Adversarial Case 1: Changed test result with unchanged log is rejected (testsPassed mismatch)
   [PASS] 2.2 Adversarial Case 2: Changed log with recomputed manifest digest is rejected (failure in log)
-  [PASS] 2.3 Adversarial Case 3: Path escaping repository root is rejected (path traversal attack)
+  [PASS] 2.3 Adversarial Case 3: Symlink resolving outside repository root is rejected (symlink escape attack)
+  [PASS] 2.3b Adversarial Case 3b: Lexical path traversal escaping repository root is rejected
   [PASS] 2.4 Adversarial Case 4: Duplicate suite entries are rejected
   [PASS] 2.5 Adversarial Case 5: Inconsistent exit codes and status fields are rejected (exitCode 1 with status PASS)
   [PASS] 2.6 Adversarial Case 6: Incorrect total tests count mismatch is rejected
@@ -67,7 +68,7 @@ Command: node tests/political-intelligence-directive-107.test.mjs
   [PASS] 6.7 Repository manifest integrity validation
 
 ================================================================
-TEST SUMMARY: 38 PASSED, 0 FAILED, 0 SKIPPED
+TEST SUMMARY: 39 PASSED, 0 FAILED, 0 SKIPPED
 ================================================================
 
 
@@ -76,6 +77,6 @@ TEST SUMMARY: 38 PASSED, 0 FAILED, 0 SKIPPED
 
 
 --- PROCESS METRICS ---
-DurationMs: 9871
+DurationMs: 9802
 ExitCode: 0
 ================================================================================

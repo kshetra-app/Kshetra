@@ -255,6 +255,14 @@ export const TEST_SUITE_DEFINITIONS = [
     directiveRef: '107',
     shell: true,
   },
+  {
+    suite: 'tests/political-intelligence-directive-108.test.mjs',
+    command: 'node tests/political-intelligence-directive-108.test.mjs',
+    logFilename: 'directive-108.log',
+    suiteType: 'DIRECTIVE_VERIFICATION_TEST',
+    directiveRef: '108',
+    shell: true,
+  },
 ];
 
 /**
@@ -803,7 +811,7 @@ export function runSuiteAndCapture(suiteDef) {
       evidenceClass: 'REPOSITORY_IMPLEMENTATION',
       executedInCurrentDelivery: true,
       evidenceType: 'DIRECT_EXECUTION_CAPTURE',
-      executionEpoch: 'DIRECTIVE_107',
+      executionEpoch: 'DIRECTIVE_108',
       outputLogPath: relLogPath,
       outputLogSha256: sha256,
     };
@@ -852,7 +860,7 @@ export function runSuiteAndCapture(suiteDef) {
     evidenceClass: 'REPOSITORY_IMPLEMENTATION',
     executedInCurrentDelivery: true,
     evidenceType: 'DIRECT_EXECUTION_CAPTURE',
-    executionEpoch: 'DIRECTIVE_107',
+    executionEpoch: 'DIRECTIVE_108',
     executionQualification: 'REPOSITORY_RECORDED_EXECUTION',
     outputLogPath: relLogPath,
     outputLogSha256: sha256,
@@ -870,7 +878,7 @@ export function captureAllSuites(additionalSuites = []) {
     generatedAt: new Date().toISOString(),
     manifestSchema: 'https://kshetra.dev/schemas/test-execution-manifest.v2.json',
     executionQualification: 'REPOSITORY_RECORDED_EXECUTION',
-    verifierRole: 'CTO Directive 107 Test Execution Verifier',
+    verifierRole: 'CTO Directive 108 Test Execution Verifier',
     executionScope: 'FULL_REPOSITORY_REGRESSION_AND_DIRECTIVE_BATTERY',
     environment: {
       nodeVersion: process.version,
@@ -886,7 +894,7 @@ export function captureAllSuites(additionalSuites = []) {
       totalTestsFailed: 0,
       allSuitesPassed: false,
       executionScope: 'FULL_REPOSITORY_REGRESSION_AND_DIRECTIVE_BATTERY',
-      directiveCycle: 'CTO_DIRECTIVE_107',
+      directiveCycle: 'CTO_DIRECTIVE_108',
     },
   };
 
@@ -904,7 +912,7 @@ export function captureAllSuites(additionalSuites = []) {
   // Ensure metadata is consistently synchronized with current directive cycle
   manifest.manifestSchema = 'https://kshetra.dev/schemas/test-execution-manifest.v2.json';
   manifest.executionQualification = 'REPOSITORY_RECORDED_EXECUTION';
-  manifest.verifierRole = 'CTO Directive 107 Test Execution Verifier';
+  manifest.verifierRole = 'CTO Directive 108 Test Execution Verifier';
   manifest.executionScope = 'FULL_REPOSITORY_REGRESSION_AND_DIRECTIVE_BATTERY';
   manifest.environment = {
     nodeVersion: process.version,
@@ -961,7 +969,7 @@ export function captureAllSuites(additionalSuites = []) {
       totalTestsFailed: sumFailed,
       allSuitesPassed: countFailedSuites === 0,
       executionScope: 'FULL_REPOSITORY_REGRESSION_AND_DIRECTIVE_BATTERY',
-      directiveCycle: 'CTO_DIRECTIVE_107',
+      directiveCycle: 'CTO_DIRECTIVE_108',
     };
 
     fs.writeFileSync(MANIFEST_PATH, JSON.stringify(manifest, null, 2) + '\n', 'utf8');
@@ -971,6 +979,49 @@ export function captureAllSuites(additionalSuites = []) {
   console.log(`Summary: ${manifest.summary.passedSuites}/${manifest.summary.totalSuites} suites passed, ${manifest.summary.totalTestsPassed} total tests passed.`);
 
   return { manifest, hasFailures: totalFailedSuites > 0 };
+}
+
+/**
+ * Asserts that a given relative candidate path strictly resides within repoRoot,
+ * verifying lexical containment, existence, and canonical filesystem realpath resolution (symlink protection).
+ */
+export function assertPathContainedInRoot(relOrAbsPath, repoRoot = REPO_ROOT, context = 'path') {
+  if (!relOrAbsPath || typeof relOrAbsPath !== 'string') {
+    throw new Error(`Path containment violation: ${context} is missing or not a string.`);
+  }
+
+  if (path.isAbsolute(relOrAbsPath) || /^[a-zA-Z]:[/\\]/.test(relOrAbsPath) || relOrAbsPath.startsWith('/') || relOrAbsPath.startsWith('\\')) {
+    throw new Error(`Path containment violation: ${context} must be a relative repository path, but got absolute or root-anchored path "${relOrAbsPath}".`);
+  }
+
+  const normalizedRoot = path.resolve(repoRoot);
+  const resolvedLexical = path.resolve(normalizedRoot, relOrAbsPath);
+  const rootWithSep = normalizedRoot.endsWith(path.sep) ? normalizedRoot : normalizedRoot + path.sep;
+  if (!resolvedLexical.startsWith(rootWithSep) && resolvedLexical !== normalizedRoot) {
+    throw new Error(`Path containment violation: ${context} "${relOrAbsPath}" lexically traverses outside repository root "${normalizedRoot}".`);
+  }
+
+  if (!fs.existsSync(resolvedLexical)) {
+    throw new Error(`Path containment violation: ${context} file does not exist on disk: "${relOrAbsPath}".`);
+  }
+
+  const realRepoRoot = fs.existsSync(normalizedRoot) ? fs.realpathSync(normalizedRoot) : normalizedRoot;
+  let realTarget;
+  try {
+    realTarget = fs.realpathSync(resolvedLexical);
+  } catch (err) {
+    throw new Error(`Path containment violation: Failed to resolve canonical realpath for ${context} "${relOrAbsPath}": ${err.message}`);
+  }
+
+  const canonicalRootWithSep = realRepoRoot.endsWith(path.sep) ? realRepoRoot : realRepoRoot + path.sep;
+  if (!realTarget.startsWith(canonicalRootWithSep) && realTarget !== realRepoRoot) {
+    throw new Error(`Path containment violation: ${context} "${relOrAbsPath}" resolves through symlink outside repository root. Canonical target: "${realTarget}", canonical root: "${realRepoRoot}".`);
+  }
+
+  return {
+    lexicalPath: resolvedLexical,
+    canonicalPath: realTarget,
+  };
 }
 
 /**
@@ -1056,9 +1107,14 @@ export function validateManifestIntegrity(manifest, repoRoot = REPO_ROOT, option
       throw new Error(`Manifest validation error: Suite "${entry.suite}" lacks valid SHA-256 digest.`);
     }
 
-    // Path containment and traversal protection (including symlinks)
+    // Path containment and traversal protection (including absolute paths and symlinks)
+    if (path.isAbsolute(entry.outputLogPath) || /^[a-zA-Z]:[/\\]/.test(entry.outputLogPath) || entry.outputLogPath.startsWith('/') || entry.outputLogPath.startsWith('\\')) {
+      throw new Error(`Manifest validation error: Suite "${entry.suite}" outputLogPath must be a relative repository path, but got absolute or root-anchored path: "${entry.outputLogPath}".`);
+    }
+
     const absLogPath = path.resolve(repoRoot, entry.outputLogPath);
-    if (!absLogPath.startsWith(normalizedRoot + path.sep) && absLogPath !== normalizedRoot) {
+    const normalizedRootWithSep = normalizedRoot.endsWith(path.sep) ? normalizedRoot : normalizedRoot + path.sep;
+    if (!absLogPath.startsWith(normalizedRootWithSep) && absLogPath !== normalizedRoot) {
       throw new Error(`Manifest validation error: Suite "${entry.suite}" outputLogPath traverses outside repository root: "${entry.outputLogPath}".`);
     }
 
@@ -1066,9 +1122,16 @@ export function validateManifestIntegrity(manifest, repoRoot = REPO_ROOT, option
       throw new Error(`Manifest validation error: Suite "${entry.suite}" output log file does not exist on disk: "${entry.outputLogPath}".`);
     }
 
-    const realLogPath = fs.realpathSync(absLogPath);
-    if (!realLogPath.startsWith(realRepoRoot + path.sep) && realLogPath !== realRepoRoot) {
-      throw new Error(`Manifest validation error: Suite "${entry.suite}" outputLogPath resolves through symlink outside repository root.`);
+    let realLogPath;
+    try {
+      realLogPath = fs.realpathSync(absLogPath);
+    } catch (err) {
+      throw new Error(`Manifest validation error: Suite "${entry.suite}" failed to resolve canonical realpath for "${entry.outputLogPath}": ${err.message}`);
+    }
+
+    const realRepoRootWithSep = realRepoRoot.endsWith(path.sep) ? realRepoRoot : realRepoRoot + path.sep;
+    if (!realLogPath.startsWith(realRepoRootWithSep) && realLogPath !== realRepoRoot) {
+      throw new Error(`Manifest validation error: Suite "${entry.suite}" outputLogPath resolves through symlink outside repository root: "${entry.outputLogPath}".`);
     }
 
     const logContent = fs.readFileSync(absLogPath, 'utf8');
