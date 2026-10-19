@@ -26,6 +26,7 @@ import crypto from 'crypto';
 import { execSync } from 'child_process';
 import { fileURLToPath } from 'url';
 import ts from 'typescript';
+import vm from 'vm';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -34,6 +35,8 @@ const REPO_ROOT = path.resolve(__dirname, '..');
 export const HISTORICAL_ORIGIN_COMMIT = 'be4ba41f74616e068b531df17780080a1a946bbd';
 export const EXPECTED_RAW_HISTORICAL_LEDGER_SHA256 = '4ff9e7d9fde0176ec6343ea4468ebb675c1e1d8e32daf2d138cb486464fae21a';
 export const EXPECTED_RAW_HISTORICAL_LEDGER_BYTES = 20494;
+export const AUTHORITY_CLASSIFICATION = 'NOT_INDEPENDENTLY_ESTABLISHED';
+export const AUTHORITY_BOUNDARY_ROLE = 'HISTORICAL_COMPARISON_BASELINE_NOT_EXTERNAL_APPROVAL_AUTHORITY';
 
 export const TRUSTED_AUTHORITIES_PATH = path.join(REPO_ROOT, 'governance', 'authorities', 'trusted_authorities.json');
 export const MASTER_SPECIFICATION_PATH = path.join(REPO_ROOT, 'governance', 'specifications', 'w021_5_master_specification.json');
@@ -79,6 +82,18 @@ export function loadHistoricalOriginLedger(repoRoot = REPO_ROOT) {
  * snapshot fidelity (semantic/canonical JSON equality), and semantic consistency.
  */
 export function verifyHistoricalArtifactIntegrity(options = {}) {
+  // CTO Directive 106 Workstream B: Fail-closed caller trust override prohibition in production mode
+  if (options.productionVerificationMode || options.productionMode) {
+    if (
+      options.expectedHashOverride !== undefined ||
+      options.rawBytesOverride !== undefined ||
+      options.referenceCommitOverride !== undefined ||
+      options.originCommitOverride !== undefined
+    ) {
+      throw new Error('CALLER_TRUST_OVERRIDE_PROHIBITED: Caller options cannot override historical origin commit or cryptographic digests in production verification mode.');
+    }
+  }
+
   const repoRoot = options.repoRoot || REPO_ROOT;
   const snapshot = loadHistoricalOriginLedger(repoRoot);
 
@@ -90,7 +105,7 @@ export function verifyHistoricalArtifactIntegrity(options = {}) {
     throw new Error(`Historical source path violation: expected "reports/w021_5_execution_ledger.json", got "${snapshot.sourceArtifactPath}"`);
   }
 
-  // 2. Raw artifact integrity from Git history
+  // 2. Raw artifact integrity from Git history (immutable Git object database)
   let rawBytes;
   try {
     rawBytes = options.rawBytesOverride !== undefined
@@ -273,6 +288,18 @@ export function validateMasterSpecificationAgainstCode(repoRoot = REPO_ROOT) {
  * or unapproved extension promotion, even if manifest and metadata are co-mutated.
  */
 export function verifyGoverningSpecificationProvenance(options = {}) {
+  // CTO Directive 106 Workstream B: Fail-closed caller trust override prohibition
+  if (options.productionVerificationMode || options.productionMode) {
+    if (
+      options.expectedDocHashes !== undefined ||
+      options.taskSectionOverrides !== undefined ||
+      options.matrixOverride !== undefined ||
+      options.masterSpecOverride !== undefined
+    ) {
+      throw new Error('CALLER_TRUST_OVERRIDE_PROHIBITED: Caller options cannot override governing matrix or document expectations in production verification mode.');
+    }
+  }
+
   const repoRoot = options.repoRoot || REPO_ROOT;
   const matrix = options.matrixOverride || loadGoverningTraceabilityMatrix(repoRoot);
   const masterSpec = options.masterSpecOverride || loadMasterSpecification(repoRoot);
@@ -287,7 +314,7 @@ export function verifyGoverningSpecificationProvenance(options = {}) {
     throw new Error(`Governing provenance violation: Expected 27 tasks in governing matrix, got ${matrix.tasks?.length}.`);
   }
 
-  // 1. Verify governing documents integrity and existence
+  // 1. Verify governing documents integrity, existence, and Git historical blob SHA
   const docMap = {};
   for (const doc of matrix.governingDocuments) {
     docMap[doc.docId] = doc;
@@ -295,12 +322,32 @@ export function verifyGoverningSpecificationProvenance(options = {}) {
     if (!fs.existsSync(docFullPath)) {
       throw new Error(`Governing provenance violation: Governing document missing on disk: ${doc.path} (${doc.docId}).`);
     }
-    if (options.verifyDocumentHashes !== false) {
-      const fileBytes = fs.readFileSync(docFullPath);
-      const computedHash = crypto.createHash('sha256').update(fileBytes).digest('hex');
-      const expectedHash = (options.expectedDocHashes && options.expectedDocHashes[doc.docId]) || doc.sha256;
-      if (computedHash !== expectedHash) {
-        throw new Error(`Governing provenance violation: Document digest mismatch for ${doc.path}. Expected ${expectedHash}, got ${computedHash}.`);
+    const fileBytes = fs.readFileSync(docFullPath);
+    const computedHash = crypto.createHash('sha256').update(fileBytes).digest('hex');
+    const expectedHash = (options.expectedDocHashes && options.expectedDocHashes[doc.docId]) || doc.sha256 || doc.contentIdentity?.sha256;
+    if (computedHash !== expectedHash) {
+      throw new Error(`Governing provenance violation: Document digest mismatch for ${doc.path}. Expected ${expectedHash}, got ${computedHash}.`);
+    }
+
+    // Git Blob SHA Verification: Compute blob SHA and verify against Git history
+    const header = Buffer.from(`blob ${fileBytes.length}\0`);
+    const computedBlobSha = crypto.createHash('sha1').update(Buffer.concat([header, fileBytes])).digest('hex');
+    const expectedBlobSha = doc.contentIdentity ? doc.contentIdentity.gitBlobSha : doc.blobShaHead;
+    if (computedBlobSha !== expectedBlobSha) {
+      throw new Error(`Governing provenance violation: Document Git blob SHA mismatch for ${doc.path}. Expected ${expectedBlobSha}, got ${computedBlobSha}.`);
+    }
+
+    // Verify blob presence in Git object database at recorded commit
+    const commitSha = doc.historicalIdentity?.recordedCommitSha || doc.recordedCommitSha || doc.commitSha || doc.historicalIdentity?.introducingCommit?.sha || doc.introducingCommit?.sha;
+    if (commitSha) {
+      try {
+        const histBlob = execSync(`git rev-parse ${commitSha}:${doc.path}`, { cwd: repoRoot, stdio: ['ignore', 'pipe', 'ignore'] }).toString().trim();
+        if (histBlob !== expectedBlobSha) {
+          throw new Error(`Governing provenance violation: Historical blob SHA mismatch for ${doc.path} at commit ${commitSha}. Expected ${expectedBlobSha}, got ${histBlob}.`);
+        }
+      } catch (e) {
+        if (e.message.includes('Historical blob SHA mismatch')) throw e;
+        throw new Error(`Governing provenance violation: Historical blob verification failed for ${doc.path} at commit ${commitSha}: ${e.message}`);
       }
     }
   }
@@ -421,14 +468,27 @@ export function verifyGoverningSpecificationProvenance(options = {}) {
  * stage membership, or subtotal deviates from origin in either direction.
  */
 export function verifyAuthorityBoundary(options = {}) {
+  // CTO Directive 106 Workstream B: Fail-closed caller trust override prohibition
+  if (options.productionVerificationMode || options.productionMode) {
+    if (
+      options.originCommitOverride !== undefined ||
+      options.referenceCommitOverride !== undefined ||
+      options.rawBytesOverride !== undefined ||
+      options.expectedHashOverride !== undefined
+    ) {
+      throw new Error('CALLER_TRUST_OVERRIDE_PROHIBITED: Caller options cannot override authority boundary references in production verification mode.');
+    }
+  }
+
   const repoRoot = options.repoRoot || REPO_ROOT;
   const snapshot = loadHistoricalOriginLedger(repoRoot);
   const histLedger = snapshot.historicalLedger;
   const masterSpec = loadMasterSpecification(repoRoot);
 
   // 1. Historical Identity Check
-  if (snapshot.sourceOriginCommit !== HISTORICAL_ORIGIN_COMMIT) {
-    throw new Error(`Authority boundary violation: Origin snapshot commit (${snapshot.sourceOriginCommit}) does not match required origin commit (${HISTORICAL_ORIGIN_COMMIT}).`);
+  const expectedCommit = options.originCommitOverride || options.referenceCommitOverride || HISTORICAL_ORIGIN_COMMIT;
+  if (snapshot.sourceOriginCommit !== expectedCommit) {
+    throw new Error(`Authority boundary violation: Origin snapshot commit (${snapshot.sourceOriginCommit}) does not match required origin commit (${expectedCommit}).`);
   }
   if (snapshot.sourceArtifactPath !== 'reports/w021_5_execution_ledger.json') {
     throw new Error(`Authority boundary violation: Origin artifact path (${snapshot.sourceArtifactPath}) does not match reports/w021_5_execution_ledger.json.`);
@@ -1882,6 +1942,78 @@ export const DISCREPANCY_REGISTER = [
     requiresCtcAdjudication: false,
     resolutionStatus: 'RESOLVED_PROVENANCE_DUAL_BOUND',
   },
+  {
+    discrepancyId: 'DISC-021',
+    itemKey: 'GOVERNING_AUTHORITY:independentApprovalAnchor',
+    discrepancyType: 'AUTHORITY_CONFLATION_GIT_HISTORY_AS_APPROVAL',
+    affectedEntity: 'Governing Documents Approval Authority',
+    priorReportValue: 'Directive 105 report treated Git commit history (be4ba41) and in-repo hashes as independent approval evidence.',
+    proposedCanonicalValue: 'Explicit classification: NOT_INDEPENDENTLY_ESTABLISHED. Proposed Cosign/GPG root authority manifest classified as PROPOSED_NOT_ACTIVE.',
+    historicalSourceEvidence: 'CTO Directive 106 Workstream A, reports/w021_5_governing_source_inventory_audit.json',
+    rationale: 'Repository commits and same-repository manifests do not establish independent approval authority. Git commit be4ba41 is an immutable comparison baseline for drift detection, not independent external authorization.',
+    requiresCtcAdjudication: false,
+    resolutionStatus: 'RESOLVED_AUTHORITY_EXPLICITLY_CLASSIFIED',
+  },
+  {
+    discrepancyId: 'DISC-022',
+    itemKey: 'VERIFICATION_TESTS:coordinatedTamperingZeroHashSeam',
+    discrepancyType: 'NON_ADVERSARIAL_TEST_SEAM',
+    affectedEntity: 'tests/political-intelligence-directive-105.test.mjs',
+    priorReportValue: 'Test labeled as proving coordinated tampering supplied an all-zero expectedHashOverride parameter, testing an invalid hash rather than a coordinated mutation attack.',
+    proposedCanonicalValue: 'Replaced with 9 genuine adversarial test cases in Suite 27 exercising the real public verification path with isolated fixtures.',
+    historicalSourceEvidence: 'CTO Directive 106 Workstream B, tests/political-intelligence-directive-106.test.mjs',
+    rationale: 'Passing an override hash does not prove resilience against coordinated artifact tampering. Genuine adversarial verification mutates multiple artifacts and asserts rejection by the normal reconciliation path.',
+    requiresCtcAdjudication: false,
+    resolutionStatus: 'RESOLVED_ADVERSARIAL_BATTERY_DEPLOYED',
+  },
+  {
+    discrepancyId: 'DISC-023',
+    itemKey: 'VERIFIER_ENGINE:callerTrustOverrideAcceptance',
+    discrepancyType: 'PRODUCTION_VERIFIER_TRUST_OVERRIDE_SEAM',
+    affectedEntity: 'scripts/reconcile_execution_ledger.mjs',
+    priorReportValue: 'Verification functions accepted caller-provided hash and commit overrides in options (e.g. expectedHashOverride, historicalOriginCommitOverride).',
+    proposedCanonicalValue: 'Strict caller trust override prohibition: verifiers reject caller-supplied trust overrides and throw CALLER_TRUST_OVERRIDE_PROHIBITED.',
+    historicalSourceEvidence: 'CTO Directive 106 Workstream B, scripts/reconcile_execution_ledger.mjs',
+    rationale: 'Production verifiers must not permit callers or attackers to override trust anchors. Test-specific overrides must be isolated and rejected by public production paths.',
+    requiresCtcAdjudication: false,
+    resolutionStatus: 'RESOLVED_TRUST_OVERRIDES_PROHIBITED',
+  },
+  {
+    discrepancyId: 'DISC-024',
+    itemKey: 'TASK_SPECIFICATIONS:superficialCriteriaVerifiers',
+    discrepancyType: 'SUPERFICIAL_CRITERIA_VERIFICATION',
+    affectedEntity: 'CRIT-B101-01, CRIT-B104-01, CRIT-C02-01, CRIT-G02-01',
+    priorReportValue: 'Verifiers used file existence, line counts, or superficial string inclusion checks (e.g., checking for "1207" in SQL text, checking "stateCode === \'TS\' ? 2023" absence without testing behavior).',
+    proposedCanonicalValue: 'Substantive domain verifiers implemented: SQL DDL constraint/nullability/relationship checks, GeoJSON bbox/closed-rings/AC 119 defect checks, organization manifest-to-SQL tuple reconciliation, and VM-based behavioral testing across mapped, unmapped, and null inputs.',
+    historicalSourceEvidence: 'CTO Directive 106 Workstream C, scripts/reconcile_execution_ledger.mjs',
+    rationale: 'Syntax or keyword presence alone is insufficient for substantive criteria verification.',
+    requiresCtcAdjudication: false,
+    resolutionStatus: 'RESOLVED_SUBSTANTIVE_VERIFIERS_IMPLEMENTED',
+  },
+  {
+    discrepancyId: 'DISC-025',
+    itemKey: 'CRITERION_REGISTER:missingEvidenceClassTaxonomy',
+    discrepancyType: 'MISSING_EVIDENCE_CLASS_CLASSIFICATION',
+    affectedEntity: 'governance/specifications/w021_5_criterion_evidence_register.json',
+    priorReportValue: 'Criteria evidence register lacked standardized evidence class taxonomy across all 50 criteria.',
+    proposedCanonicalValue: 'All 50 criteria assigned one of 5 standard classes: 32 STATIC_SEMANTIC_VERIFICATION, 5 ARTIFACT_PRESENCE_ONLY, 5 DATABASE_STAGING_VERIFICATION, 5 EXTERNAL_AUTHORITY_VERIFICATION, 3 EXECUTABLE_BEHAVIOR_VERIFICATION.',
+    historicalSourceEvidence: 'CTO Directive 106 Workstream C, w021_5_criterion_evidence_register.json',
+    rationale: 'Every criterion outcome must derive from an explicit evidence class matching the strongest test supported.',
+    requiresCtcAdjudication: false,
+    resolutionStatus: 'RESOLVED_TAXONOMY_STANDARDIZED',
+  },
+  {
+    discrepancyId: 'DISC-026',
+    itemKey: 'TEST_MANIFEST:unqualifiedExecutionClaims',
+    discrepancyType: 'UNQUALIFIED_TEST_EXECUTION_PROVENANCE',
+    affectedEntity: 'reports/w021_5_test_execution_manifest.json',
+    priorReportValue: 'Manifest recorded test execution without explicit execution qualification distinguishing repository-recorded from CI-reproduced or independently reproduced results.',
+    proposedCanonicalValue: 'Explicit execution qualification REPOSITORY_RECORDED_EXECUTION added to manifest and suite records; parsed exit codes and zero-skipped claims validated against captured logs.',
+    historicalSourceEvidence: 'CTO Directive 106 Workstream E, scripts/capture_test_execution.mjs',
+    rationale: 'A log hash in the repository proves git storage, not independent execution. Explicit qualification prevents self-certification of execution provenance.',
+    requiresCtcAdjudication: false,
+    resolutionStatus: 'RESOLVED_EXECUTION_QUALIFIED',
+  },
 ];
 
 
@@ -1976,6 +2108,7 @@ export const TASK_SPECIFICATIONS = {
         description: 'National data coverage matrix audit file covers all 36 States/UTs and 4,123 constituencies',
         weightRatio: 0.5,
         scope: 'REPOSITORY_VERIFIABLE',
+        evidenceClass: 'STATIC_SEMANTIC_VERIFICATION',
         verify: (root) => {
           const matrixPath = path.join(root, 'reports/w021_5_national_data_coverage_matrix.json');
           if (!fs.existsSync(matrixPath)) return { passed: false, message: 'Matrix JSON missing' };
@@ -1999,6 +2132,7 @@ export const TASK_SPECIFICATIONS = {
         description: 'Truth audit markdown report documents 29-domain gaps truthfully without unverified claims',
         weightRatio: 0.5,
         scope: 'REPOSITORY_VERIFIABLE',
+        evidenceClass: 'ARTIFACT_PRESENCE_ONLY',
         verify: (root) => {
           const auditMdPath = path.join(root, 'reports/w021_5a_repository_data_truth_audit.md');
           if (!fs.existsSync(auditMdPath)) return { passed: false, message: 'Truth audit markdown report missing' };
@@ -2025,6 +2159,7 @@ export const TASK_SPECIFICATIONS = {
         description: 'Deterministic coverage matrix generator authored without hardcoded overrides',
         weightRatio: 0.5,
         scope: 'REPOSITORY_VERIFIABLE',
+        evidenceClass: 'STATIC_SEMANTIC_VERIFICATION',
         verify: (root) => {
           const p = path.join(root, 'scripts/generate_national_data_coverage_matrix.mjs');
           if (!fs.existsSync(p)) return { passed: false, message: 'Generator script missing' };
@@ -2046,6 +2181,7 @@ export const TASK_SPECIFICATIONS = {
         description: 'Generated national coverage matrix markdown report matches JSON data',
         weightRatio: 0.5,
         scope: 'REPOSITORY_VERIFIABLE',
+        evidenceClass: 'STATIC_SEMANTIC_VERIFICATION',
         verify: (root) => {
           const p = path.join(root, 'reports/w021_5_national_data_coverage_matrix.md');
           if (!fs.existsSync(p)) return { passed: false, message: 'Coverage markdown missing' };
@@ -2072,6 +2208,7 @@ export const TASK_SPECIFICATIONS = {
         description: 'Delhi statutory 70-seat Assembly invariant strictly maintained in coverage matrix',
         weightRatio: 0.5,
         scope: 'REPOSITORY_VERIFIABLE',
+        evidenceClass: 'STATIC_SEMANTIC_VERIFICATION',
         verify: (root) => {
           const matrixPath = path.join(root, 'reports/w021_5_national_data_coverage_matrix.json');
           if (!fs.existsSync(matrixPath)) return { passed: false, message: 'Matrix JSON missing' };
@@ -2093,6 +2230,7 @@ export const TASK_SPECIFICATIONS = {
         description: '151 municipal demographic records isolated as non-statutory placeholders',
         weightRatio: 0.5,
         scope: 'REPOSITORY_VERIFIABLE',
+        evidenceClass: 'STATIC_SEMANTIC_VERIFICATION',
         verify: (root) => {
           const matrixPath = path.join(root, 'reports/w021_5_national_data_coverage_matrix.json');
           if (!fs.existsSync(matrixPath)) return { passed: false, message: 'Matrix JSON missing' };
@@ -2125,28 +2263,63 @@ export const TASK_SPECIFICATIONS = {
         description: 'Migration 059 schema defines canonical assembly constituencies registry table with statutory constraints',
         weightRatio: 0.5,
         scope: 'REPOSITORY_VERIFIABLE',
+        evidenceClass: 'STATIC_SEMANTIC_VERIFICATION',
         verify: (root) => {
           const p = path.join(root, 'supabase/migrations/059_canonical_national_constituency_registry.sql');
+          const pInit = path.join(root, 'supabase/migrations/001_initial_schema.sql');
           if (!fs.existsSync(p)) return { passed: false, message: 'Migration 059 missing' };
+          if (!fs.existsSync(pInit)) return { passed: false, message: 'Migration 001 initial schema missing' };
           try {
             validateSqlContent({ taskId: 'W021.5-B1-01' }, '059_canonical_national_constituency_registry.sql', p);
+            validateSqlContent({ taskId: 'W021.5-B1-01' }, '001_initial_schema.sql', pInit);
           } catch (e) {
-            return { passed: false, message: `Migration 059 SQL invalid: ${e.message}` };
+            return { passed: false, message: `Migration SQL invalid: ${e.message}` };
           }
-          const sql = fs.readFileSync(p, 'utf8');
-          if (!sql.includes('public.migration_conflicts')) {
-            return { passed: false, message: 'migration_conflicts infrastructure missing in migration 059' };
+          const sql059 = fs.readFileSync(p, 'utf8');
+          const sql001 = fs.readFileSync(pInit, 'utf8');
+
+          if (!sql001.includes('CREATE TABLE IF NOT EXISTS constituencies') && !sql001.includes('CREATE TABLE constituencies')) {
+            return { passed: false, message: 'constituencies table definition missing in initial schema' };
           }
-          if (!sql.includes('idx_migration_conflicts_status') || !sql.includes('idx_migration_conflicts_entity')) {
+          if (!sql001.includes('id TEXT PRIMARY KEY')) {
+            return { passed: false, message: 'constituencies primary key constraint missing' };
+          }
+          if (!sql001.includes('state_code TEXT NOT NULL REFERENCES states(code)')) {
+            return { passed: false, message: 'constituencies state_code foreign key relationship missing' };
+          }
+          if (!sql001.includes('ac_no INTEGER NOT NULL') || !sql001.includes('name TEXT NOT NULL')) {
+            return { passed: false, message: 'constituencies required column nullability constraints missing' };
+          }
+          if (!sql001.includes('UNIQUE (state_code, ac_no)')) {
+            return { passed: false, message: 'constituencies UNIQUE (state_code, ac_no) constraint missing' };
+          }
+
+          if (!sql059.includes('CREATE TABLE IF NOT EXISTS public.migration_conflicts')) {
+            return { passed: false, message: 'public.migration_conflicts table definition missing in migration 059' };
+          }
+          if (!sql059.includes('id UUID PRIMARY KEY') || !sql059.includes("status TEXT NOT NULL DEFAULT 'OPEN' CHECK (status IN ('OPEN', 'RESOLVED', 'DISMISSED'))")) {
+            return { passed: false, message: 'migration_conflicts primary key or status CHECK constraint missing in migration 059' };
+          }
+          if (!sql059.includes('idx_migration_conflicts_status') || !sql059.includes('idx_migration_conflicts_entity')) {
             return { passed: false, message: 'migration_conflicts indexes missing in migration 059' };
           }
-          if (!sql.includes('INSERT INTO public.constituencies') || !sql.includes('INSERT INTO public.dataset_versions')) {
-            return { passed: false, message: 'Statutory insert statements missing in migration 059' };
+
+          if (!sql059.includes('INSERT INTO public.dataset_versions') || !sql059.includes('eci_national_ac_2008_v1')) {
+            return { passed: false, message: 'Statutory dataset versions registration missing in migration 059' };
           }
-          if (!sql.includes('state_code') || !sql.includes('ac_no') || !sql.includes('name')) {
-            return { passed: false, message: 'Required statutory columns missing in migration 059' };
+          if (!sql059.includes('INSERT INTO public.constituencies')) {
+            return { passed: false, message: 'Statutory insert statements for constituencies missing in migration 059' };
           }
-          return { passed: true, message: 'Migration 059 canonical constituency schema, conflict infrastructure, indexes and statutory records verified' };
+
+          const matchAcRows = sql059.match(/\('([A-Z]{2}-AC-\d+)',\s*'([A-Z]{2}-AC-\d+)',\s*(\d+),\s*'([^']+)',\s*'([A-Z]{2})'/g);
+          if (!matchAcRows || matchAcRows.length !== 4123) {
+            return { passed: false, message: `Expected 4,123 statutory constituency inserts in migration 059, counted ${matchAcRows ? matchAcRows.length : 0}` };
+          }
+
+          return {
+            passed: true,
+            message: 'Migration 059 and canonical constituency schema verified: 4,123 statutory seats, UNIQUE(state_code, ac_no), FK relationships, and migration_conflicts table verified',
+          };
         },
       },
       {
@@ -2154,6 +2327,7 @@ export const TASK_SPECIFICATIONS = {
         description: 'National constituency canonicalization report verified on disk with 4,123 constituencies',
         weightRatio: 0.5,
         scope: 'REPOSITORY_VERIFIABLE',
+        evidenceClass: 'STATIC_SEMANTIC_VERIFICATION',
         verify: (root) => {
           const p = path.join(root, 'reports/w021_5b1_national_constituency_canonicalization.json');
           if (!fs.existsSync(p)) return { passed: false, message: 'Report 059 JSON missing' };
@@ -2180,6 +2354,7 @@ export const TASK_SPECIFICATIONS = {
         description: 'Migration 060 geography remediation schema verified with valid SQL DDL',
         weightRatio: 0.5,
         scope: 'REPOSITORY_VERIFIABLE',
+        evidenceClass: 'STATIC_SEMANTIC_VERIFICATION',
         verify: (root) => {
           const p = path.join(root, 'supabase/migrations/060_canonical_electoral_geography_remediation.sql');
           if (!fs.existsSync(p)) return { passed: false, message: 'Migration 060 missing' };
@@ -2200,6 +2375,7 @@ export const TASK_SPECIFICATIONS = {
         description: 'Migration 061 canonical AC-to-PC mapping schema verified with foreign keys and indexes',
         weightRatio: 0.5,
         scope: 'REPOSITORY_VERIFIABLE',
+        evidenceClass: 'STATIC_SEMANTIC_VERIFICATION',
         verify: (root) => {
           const p = path.join(root, 'supabase/migrations/061_canonical_national_ac_pc_mappings.sql');
           if (!fs.existsSync(p)) return { passed: false, message: 'Migration 061 missing' };
@@ -2229,6 +2405,7 @@ export const TASK_SPECIFICATIONS = {
         description: 'Migration 062 Assam 2023 delimitation schema verified with 126 assembly seats DDL',
         weightRatio: 0.5,
         scope: 'REPOSITORY_VERIFIABLE',
+        evidenceClass: 'STATIC_SEMANTIC_VERIFICATION',
         verify: (root) => {
           const p = path.join(root, 'supabase/migrations/062_canonical_assam_2023_delimitation.sql');
           if (!fs.existsSync(p)) return { passed: false, message: 'Migration 062 missing' };
@@ -2249,6 +2426,7 @@ export const TASK_SPECIFICATIONS = {
         description: 'Assam 2023 reconciliation markdown report verified on disk with 126 statutory seats',
         weightRatio: 0.5,
         scope: 'REPOSITORY_VERIFIABLE',
+        evidenceClass: 'ARTIFACT_PRESENCE_ONLY',
         verify: (root) => {
           const p = path.join(root, 'reports/w021_5b1_r5_assam_2023_reconciliation.md');
           if (!fs.existsSync(p)) return { passed: false, message: 'Assam report missing' };
@@ -2275,6 +2453,7 @@ export const TASK_SPECIFICATIONS = {
         description: 'Telangana assembly boundary GeoJSON geometry validation with Indian bbox and closed rings',
         weightRatio: 0.25,
         scope: 'REPOSITORY_VERIFIABLE',
+        evidenceClass: 'STATIC_SEMANTIC_VERIFICATION',
         verify: (root) => {
           const p = path.join(root, 'data/geo/telangana-assembly.geojson');
           if (!fs.existsSync(p)) return { passed: false, message: 'Telangana GeoJSON missing' };
@@ -2289,14 +2468,56 @@ export const TASK_SPECIFICATIONS = {
           } catch (e) {
             return { passed: false, message: `Telangana GeoJSON parse failed: ${e.message}` };
           }
+          if (geo.type !== 'FeatureCollection') {
+            return { passed: false, message: 'Expected FeatureCollection' };
+          }
+          if (!Array.isArray(geo.features)) {
+            return { passed: false, message: 'Expected features array in Telangana GeoJSON' };
+          }
           const acNos = (geo.features || []).map((f) => String(f.properties?.AC_NO || ''));
           const hasAc119Duplicate = acNos.filter((x) => x === '119').length > 1;
           if (!hasAc119Duplicate) {
             return { passed: false, message: 'Expected AC 119 duplicate claim defect in Telangana GeoJSON' };
           }
+          if (geo.features.length !== 120) {
+            return { passed: false, message: `Expected 120 features in Telangana GeoJSON, got ${geo.features.length}` };
+          }
+
+          let minLng = Infinity, maxLng = -Infinity, minLat = Infinity, maxLat = -Infinity;
+          let allClosed = true;
+
+          function checkRing(ring) {
+            if (!Array.isArray(ring) || ring.length < 4) allClosed = false;
+            const first = ring[0];
+            const last = ring[ring.length - 1];
+            if (first[0] !== last[0] || first[1] !== last[1]) allClosed = false;
+            for (const pt of ring) {
+              if (pt[0] < minLng) minLng = pt[0];
+              if (pt[0] > maxLng) maxLng = pt[0];
+              if (pt[1] < minLat) minLat = pt[1];
+              if (pt[1] > maxLat) maxLat = pt[1];
+            }
+          }
+
+          for (const f of geo.features) {
+            const geom = f.geometry;
+            if (geom.type === 'Polygon') {
+              for (const r of geom.coordinates) checkRing(r);
+            } else if (geom.type === 'MultiPolygon') {
+              for (const poly of geom.coordinates) {
+                for (const r of poly) checkRing(r);
+              }
+            }
+          }
+
+          if (!allClosed) return { passed: false, message: 'Unclosed rings detected in Telangana GeoJSON' };
+          if (minLng < 77.0 || minLat < 15.8 || maxLng > 81.5 || maxLat > 20.0) {
+            return { passed: false, message: `Telangana coordinates out of bbox [77.0, 15.8, 81.5, 20.0]: [${minLng}, ${minLat}, ${maxLng}, ${maxLat}]` };
+          }
+
           return {
             passed: true,
-            message: 'Telangana assembly GeoJSON geometry and bounding box verified; AC 119 duplicate claim defect detected (120 features for 119 statutory seats)',
+            message: 'Telangana assembly GeoJSON geometry, closed rings, and bbox verified; AC 119 duplicate claim defect detected; AC 119 duplicate claim defect confirmed (120 features for 119 statutory seats)',
           };
         },
       },
@@ -2305,6 +2526,7 @@ export const TASK_SPECIFICATIONS = {
         description: 'National statutory boundary completeness across 31 States/UTs and resolution of AC 119 duplicate claim defect',
         weightRatio: 0.75,
         scope: 'BLOCKED_EXTERNAL',
+        evidenceClass: 'EXTERNAL_AUTHORITY_VERIFICATION',
         verify: () => ({
           passed: false,
           message: 'National statutory boundary completeness blocked pending 30 remaining state GeoJSON boundaries and AC 119 duplicate claim resolution',
@@ -2321,6 +2543,7 @@ export const TASK_SPECIFICATIONS = {
         description: 'Migration 064 political organization governance schema verified with valid SQL DDL',
         weightRatio: 0.5,
         scope: 'REPOSITORY_VERIFIABLE',
+        evidenceClass: 'STATIC_SEMANTIC_VERIFICATION',
         verify: (root) => {
           const p = path.join(root, 'supabase/migrations/064_political_organization_governance_remediation.sql');
           if (!fs.existsSync(p)) return { passed: false, message: 'Migration 064 missing' };
@@ -2341,6 +2564,7 @@ export const TASK_SPECIFICATIONS = {
         description: 'Organization multilingual name and abbreviation extension fields defined in schema',
         weightRatio: 0.5,
         scope: 'REPOSITORY_VERIFIABLE',
+        evidenceClass: 'STATIC_SEMANTIC_VERIFICATION',
         verify: (root) => {
           const p = path.join(root, 'supabase/migrations/064_political_organization_governance_remediation.sql');
           if (!fs.existsSync(p)) return { passed: false, message: 'Migration 064 missing' };
@@ -2367,6 +2591,7 @@ export const TASK_SPECIFICATIONS = {
         description: 'Migration 065 SQL DDL/DML and 1,207 organization manifest authored offline in repository',
         weightRatio: 0.5,
         scope: 'REPOSITORY_VERIFIABLE',
+        evidenceClass: 'STATIC_SEMANTIC_VERIFICATION',
         verify: (root) => {
           const p = path.join(root, 'supabase/migrations/065_canonical_political_organization_registry.sql');
           const m = path.join(root, 'reports/w021_5b2_b2_2c_final_organization_manifest.json');
@@ -2384,15 +2609,37 @@ export const TASK_SPECIFICATIONS = {
           } catch (e) {
             return { passed: false, message: `Manifest JSON malformed: ${e.message}` };
           }
-          const canonicalOrgs = manifest.summary?.exactCanonicalOrganizations || manifest.canonicalOrganizations?.length;
-          if (canonicalOrgs !== 107) {
-            return { passed: false, message: `Expected 107 canonical organizations in manifest, found ${canonicalOrgs}` };
+
+          if (manifest.summary?.exactCanonicalOrganizations !== 107) {
+            return { passed: false, message: `Expected 107 canonical orgs in manifest, got ${manifest.summary?.exactCanonicalOrganizations}` };
           }
+          if (manifest.summary?.exactRawAliasesMapped !== 1043) {
+            return { passed: false, message: `Expected 1,043 aliases in manifest, got ${manifest.summary?.exactRawAliasesMapped}` };
+          }
+
           const sql = fs.readFileSync(p, 'utf8');
-          if (!sql.includes('1207')) {
-            return { passed: false, message: 'Expected 1,207 batch insert record count in migration 065' };
+          const provenanceId = '0215b22c-0000-0000-0000-000000000001';
+          if (!sql.includes(provenanceId)) {
+            return { passed: false, message: 'Batch provenance anchor record missing in migration 065' };
           }
-          return { passed: true, message: 'Migration 065 and 1,207 organization manifest verified offline' };
+
+          const orgInsert = sql.indexOf('INSERT INTO public.political_organizations');
+          const orgInsertEnd = sql.indexOf('ON CONFLICT (id) DO NOTHING;', orgInsert);
+          const orgLines = sql.slice(orgInsert, orgInsertEnd).split('\n');
+          const orgCount = orgLines.filter(l => l.trim().startsWith('(') && l.includes(provenanceId)).length;
+          if (orgCount !== 107) {
+            return { passed: false, message: `Expected 107 inserted organizations, counted ${orgCount}` };
+          }
+
+          const aliasStart = sql.indexOf('WITH incoming_aliases');
+          const aliasEnd = sql.indexOf('INSERT INTO public.organization_aliases', aliasStart);
+          const aliasLines = sql.slice(aliasStart, aliasEnd).split('\n');
+          const aliasCount = aliasLines.filter(l => l.trim().startsWith('(') && l.includes(provenanceId)).length;
+          if (aliasCount !== 1043) {
+            return { passed: false, message: `Expected 1,043 alias rows in CTE, counted ${aliasCount}` };
+          }
+
+          return { passed: true, message: 'Migration 065 verified offline: 107 canonical organizations and 1,043 aliases reconciled with manifest' };
         },
       },
       {
@@ -2400,6 +2647,7 @@ export const TASK_SPECIFICATIONS = {
         description: 'Staging database ingestion and catalog row count verification',
         weightRatio: 0.5,
         scope: 'DATABASE_STAGING',
+        evidenceClass: 'DATABASE_STAGING_VERIFICATION',
         verify: () => ({ passed: false, message: 'Pending live staging database execution' }),
       },
     ],
@@ -2413,6 +2661,7 @@ export const TASK_SPECIFICATIONS = {
         description: 'Multilingual party names matrix verified with >=25 identities across >=10 Indian languages and scripts',
         weightRatio: 0.333,
         scope: 'REPOSITORY_VERIFIABLE',
+        evidenceClass: 'STATIC_SEMANTIC_VERIFICATION',
         verify: (root) => {
           const p = path.join(root, 'reports/w021_5b2_b2_2c_multilingual_matrix.json');
           if (!fs.existsSync(p)) return { passed: false, message: 'Multilingual matrix missing' };
@@ -2446,6 +2695,7 @@ export const TASK_SPECIFICATIONS = {
         description: 'Party symbols matrix verified with official ECI notifications and reservation types',
         weightRatio: 0.333,
         scope: 'REPOSITORY_VERIFIABLE',
+        evidenceClass: 'STATIC_SEMANTIC_VERIFICATION',
         verify: (root) => {
           const p = path.join(root, 'reports/w021_5b2_b2_2c_symbol_matrix.json');
           if (!fs.existsSync(p)) return { passed: false, message: 'Symbol matrix missing' };
@@ -2476,6 +2726,7 @@ export const TASK_SPECIFICATIONS = {
         description: 'Party alias collision matrix verified with high-risk resolution rules and ambiguity tracking',
         weightRatio: 0.334,
         scope: 'REPOSITORY_VERIFIABLE',
+        evidenceClass: 'STATIC_SEMANTIC_VERIFICATION',
         verify: (root) => {
           const p = path.join(root, 'reports/w021_5b2_b2_2c_alias_collision_matrix.json');
           if (!fs.existsSync(p)) return { passed: false, message: 'Alias collision matrix missing' };
@@ -2515,6 +2766,7 @@ export const TASK_SPECIFICATIONS = {
         description: 'Migration 050 political entity model schema verified with valid SQL DDL',
         weightRatio: 0.5,
         scope: 'REPOSITORY_VERIFIABLE',
+        evidenceClass: 'STATIC_SEMANTIC_VERIFICATION',
         verify: (root) => {
           const p = path.join(root, 'supabase/migrations/050_political_entity_model.sql');
           if (!fs.existsSync(p)) return { passed: false, message: 'Migration 050 missing' };
@@ -2531,6 +2783,7 @@ export const TASK_SPECIFICATIONS = {
         description: 'Migration 063 canonical political identity foundation schema verified with valid SQL DDL',
         weightRatio: 0.5,
         scope: 'REPOSITORY_VERIFIABLE',
+        evidenceClass: 'STATIC_SEMANTIC_VERIFICATION',
         verify: (root) => {
           const p = path.join(root, 'supabase/migrations/063_canonical_political_identity_foundation.sql');
           if (!fs.existsSync(p)) return { passed: false, message: 'Migration 063 missing' };
@@ -2553,6 +2806,7 @@ export const TASK_SPECIFICATIONS = {
         description: '10 candidate population chunks authored in repository with closure report',
         weightRatio: 0.5,
         scope: 'REPOSITORY_VERIFIABLE',
+        evidenceClass: 'STATIC_SEMANTIC_VERIFICATION',
         verify: (root) => {
           const p = path.join(root, 'reports/W021.5-B2.2D-PERSON_POPULATION_CLOSURE_REPORT.md');
           if (!fs.existsSync(p)) return { passed: false, message: 'Candidate chunks closure report missing' };
@@ -2576,6 +2830,7 @@ export const TASK_SPECIFICATIONS = {
         description: 'Staging database execution and cross-table FK validation',
         weightRatio: 0.5,
         scope: 'DATABASE_STAGING',
+        evidenceClass: 'DATABASE_STAGING_VERIFICATION',
         verify: () => ({ passed: false, message: 'Pending live staging database execution' }),
       },
     ],
@@ -2589,6 +2844,7 @@ export const TASK_SPECIFICATIONS = {
         description: 'Migration 067 FK constraint enforcement blocked pending candidate staging execution',
         weightRatio: 1.0,
         scope: 'BLOCKED_EXTERNAL',
+        evidenceClass: 'DATABASE_STAGING_VERIFICATION',
         verify: () => ({ passed: false, message: 'Blocked pending candidate staging execution' }),
       },
     ],
@@ -2602,6 +2858,7 @@ export const TASK_SPECIFICATIONS = {
         description: 'Migration 066 demographic extension schema and aggregate models authored in repository',
         weightRatio: 0.5,
         scope: 'REPOSITORY_VERIFIABLE',
+        evidenceClass: 'STATIC_SEMANTIC_VERIFICATION',
         verify: (root) => {
           const p = path.join(root, 'supabase/migrations/066_downstream_civic_extensions.sql');
           if (!fs.existsSync(p)) return { passed: false, message: 'Migration 066 missing' };
@@ -2618,6 +2875,7 @@ export const TASK_SPECIFICATIONS = {
         description: 'Staging database ingestion and aggregate verification for national demographic profiles',
         weightRatio: 0.5,
         scope: 'DATABASE_STAGING',
+        evidenceClass: 'DATABASE_STAGING_VERIFICATION',
         verify: () => ({ passed: false, message: 'Pending live staging database execution' }),
       },
     ],
@@ -2631,6 +2889,7 @@ export const TASK_SPECIFICATIONS = {
         description: 'Financial defect DQ-W021.5-B2.2E-001 remains strictly open awaiting explicit CTO adjudication',
         weightRatio: 1.0,
         scope: 'BLOCKED_EXTERNAL',
+        evidenceClass: 'EXTERNAL_AUTHORITY_VERIFICATION',
         verify: () => ({ passed: false, message: 'Blocked awaiting explicit CTO adjudication' }),
       },
     ],
@@ -2644,6 +2903,7 @@ export const TASK_SPECIFICATIONS = {
         description: 'Migration 068 candidate affidavit schema blocked pending CTO adjudication of DQ-W021.5-B2.2E-001',
         weightRatio: 1.0,
         scope: 'BLOCKED_EXTERNAL',
+        evidenceClass: 'EXTERNAL_AUTHORITY_VERIFICATION',
         verify: () => ({ passed: false, message: 'Blocked pending DQ-W021.5-B2.2E-001 adjudication' }),
       },
     ],
@@ -2657,6 +2917,7 @@ export const TASK_SPECIFICATIONS = {
         description: 'Migration 051 longitudinal election normalization schema verified with valid SQL DDL',
         weightRatio: 0.5,
         scope: 'REPOSITORY_VERIFIABLE',
+        evidenceClass: 'STATIC_SEMANTIC_VERIFICATION',
         verify: (root) => {
           const p = path.join(root, 'supabase/migrations/051_election_data_normalization.sql');
           if (!fs.existsSync(p)) return { passed: false, message: 'Migration 051 missing' };
@@ -2673,6 +2934,7 @@ export const TASK_SPECIFICATIONS = {
         description: 'Temporal integrity report and multi-election relations verified with valid non-empty schema',
         weightRatio: 0.5,
         scope: 'REPOSITORY_VERIFIABLE',
+        evidenceClass: 'STATIC_SEMANTIC_VERIFICATION',
         verify: (root) => {
           const p = path.join(root, 'reports/w021_5b2_2f_temporal_integrity.json');
           if (!fs.existsSync(p)) return { passed: false, message: 'Temporal integrity report missing' };
@@ -2695,6 +2957,7 @@ export const TASK_SPECIFICATIONS = {
         description: 'Multi-election historical results authored across initial states with explicit record-level years',
         weightRatio: 0.25,
         scope: 'REPOSITORY_VERIFIABLE',
+        evidenceClass: 'STATIC_SEMANTIC_VERIFICATION',
         verify: (root) => {
           const p = path.join(root, 'data/seed/telangana-historical-results.ts');
           if (!fs.existsSync(p)) return { passed: false, message: 'Telangana historical results seed missing' };
@@ -2712,6 +2975,7 @@ export const TASK_SPECIFICATIONS = {
         description: 'Historical election results authored for remaining 23 states in repository',
         weightRatio: 0.25,
         scope: 'UNIMPLEMENTED',
+        evidenceClass: 'ARTIFACT_PRESENCE_ONLY',
         verify: () => ({ passed: false, message: 'Remaining 23 states unauthored' }),
       },
       {
@@ -2719,6 +2983,7 @@ export const TASK_SPECIFICATIONS = {
         description: 'Staging database ingestion and relational validation across historical results',
         weightRatio: 0.50,
         scope: 'DATABASE_STAGING',
+        evidenceClass: 'DATABASE_STAGING_VERIFICATION',
         verify: () => ({ passed: false, message: 'Pending live staging database execution' }),
       },
     ],
@@ -2732,6 +2997,7 @@ export const TASK_SPECIFICATIONS = {
         description: 'Fastify /api/v1/constituencies route schema contract and nullability verified with clean AST',
         weightRatio: 0.5,
         scope: 'REPOSITORY_VERIFIABLE',
+        evidenceClass: 'STATIC_SEMANTIC_VERIFICATION',
         verify: (root) => {
           const p = path.join(root, 'apps/api/src/routes/constituencies.ts');
           if (!fs.existsSync(p)) return { passed: false, message: 'Constituencies route file missing' };
@@ -2751,6 +3017,7 @@ export const TASK_SPECIFICATIONS = {
         description: 'API server entrypoint and route configuration verified with clean TypeScript AST parse',
         weightRatio: 0.5,
         scope: 'REPOSITORY_VERIFIABLE',
+        evidenceClass: 'STATIC_SEMANTIC_VERIFICATION',
         verify: (root) => {
           const p = path.join(root, 'apps/api/src/server.ts');
           if (!fs.existsSync(p)) return { passed: false, message: 'API server implementation file missing' };
@@ -2776,6 +3043,7 @@ export const TASK_SPECIFICATIONS = {
         description: 'StateData service eliminates hardcoded state-code election-year inferences',
         weightRatio: 0.5,
         scope: 'REPOSITORY_VERIFIABLE',
+        evidenceClass: 'EXECUTABLE_BEHAVIOR_VERIFICATION',
         verify: (root) => {
           const p = path.join(root, 'apps/api/src/services/stateData.ts');
           if (!fs.existsSync(p)) return { passed: false, message: 'StateData service file missing' };
@@ -2787,7 +3055,47 @@ export const TASK_SPECIFICATIONS = {
           if (raw.includes("stateCode === 'TS' ? 2023")) {
             return { passed: false, message: 'Hardcoded election-year inference detected in stateData.ts' };
           }
-          return { passed: true, message: 'Fallback-free stateData service verified with clean TS AST' };
+
+          // Substantive behavioral verification in VM
+          const trans = ts.transpileModule(raw, {
+            compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 },
+          });
+          const modObj = { exports: {} };
+          const mockRequire = (id) => {
+            const norm = id.replace(/^[./\\]+/, '');
+            const candidateTs = path.resolve(norm + '.ts');
+            if (fs.existsSync(candidateTs)) {
+              const subRaw = fs.readFileSync(candidateTs, 'utf8');
+              const t = ts.transpileModule(subRaw, { compilerOptions: { module: ts.ModuleKind.CommonJS } });
+              const subMod = { exports: {} };
+              vm.runInNewContext(t.outputText, { module: subMod, exports: subMod.exports, require: mockRequire });
+              return subMod.exports;
+            }
+            return {};
+          };
+          const ctx = vm.createContext({ module: modObj, exports: modObj.exports, require: mockRequire, console });
+          vm.runInContext(trans.outputText, ctx);
+          const { getConstituencyElectionData } = modObj.exports;
+
+          // 1. Mapped input
+          const mapped = getConstituencyElectionData('TS', 1);
+          if (!mapped || mapped.recentElection?.electionYear !== 2023 || mapped.recentElection?.winner !== 'BJP') {
+            return { passed: false, message: 'Behavioral verification failed for mapped input (TS, 1)' };
+          }
+
+          // 2. Unmapped input
+          const unmapped = getConstituencyElectionData('XX', 999);
+          if (unmapped !== null) {
+            return { passed: false, message: 'Behavioral verification failed for unmapped input (XX, 999), expected null' };
+          }
+
+          // 3. Null input
+          const nullResult = getConstituencyElectionData(null, null);
+          if (nullResult !== null) {
+            return { passed: false, message: 'Behavioral verification failed for null input (null, null), expected null' };
+          }
+
+          return { passed: true, message: 'StateData service verified: clean TS AST and substantive behavior on mapped, unmapped, and null inputs' };
         },
       },
       {
@@ -2795,6 +3103,7 @@ export const TASK_SPECIFICATIONS = {
         description: 'API election truth contract test suite passes cleanly with verified test execution proof',
         weightRatio: 0.5,
         scope: 'REPOSITORY_VERIFIABLE',
+        evidenceClass: 'EXECUTABLE_BEHAVIOR_VERIFICATION',
         verify: (root, options = {}) => {
           const p = path.join(root, 'apps/api/src/__tests__/election-truth-contracts.test.ts');
           if (!fs.existsSync(p)) return { passed: false, message: 'Election truth contract test suite missing' };
@@ -2842,6 +3151,7 @@ export const TASK_SPECIFICATIONS = {
         description: 'Fastify canonical database-backed route strangulation blocked pending staging DB deployment',
         weightRatio: 1.0,
         scope: 'BLOCKED_EXTERNAL',
+        evidenceClass: 'EXTERNAL_AUTHORITY_VERIFICATION',
         verify: () => ({ passed: false, message: 'Blocked pending staging database deployment' }),
       },
     ],
@@ -2855,6 +3165,7 @@ export const TASK_SPECIFICATIONS = {
         description: 'Mobile DTO validation hardening and nullable election year support in client API layer',
         weightRatio: 0.5,
         scope: 'REPOSITORY_VERIFIABLE',
+        evidenceClass: 'STATIC_SEMANTIC_VERIFICATION',
         verify: (root) => {
           const p = path.join(root, 'apps/mobile/lib/api/endpoints/constituencies.ts');
           if (!fs.existsSync(p)) return { passed: false, message: 'Mobile constituencies API endpoint missing' };
@@ -2871,6 +3182,7 @@ export const TASK_SPECIFICATIONS = {
         description: 'Mobile journey test suite passes cleanly with verified test execution proof',
         weightRatio: 0.5,
         scope: 'REPOSITORY_VERIFIABLE',
+        evidenceClass: 'EXECUTABLE_BEHAVIOR_VERIFICATION',
         verify: (root, options = {}) => {
           const p = path.join(root, 'apps/mobile/__tests__/political-intelligence-journey.test.ts');
           if (!fs.existsSync(p)) return { passed: false, message: 'Mobile journey test suite missing' };
@@ -2918,6 +3230,7 @@ export const TASK_SPECIFICATIONS = {
         description: 'Section-level provenance UI badges in mobile constituency screen',
         weightRatio: 0.5,
         scope: 'REPOSITORY_VERIFIABLE',
+        evidenceClass: 'STATIC_SEMANTIC_VERIFICATION',
         verify: (root) => {
           const p = path.join(root, 'apps/mobile/app/constituency/[id].tsx');
           if (!fs.existsSync(p)) return { passed: false, message: 'Constituency screen UI file missing' };
@@ -2934,6 +3247,7 @@ export const TASK_SPECIFICATIONS = {
         description: 'Constituency UI components render provenance badges without errors',
         weightRatio: 0.5,
         scope: 'REPOSITORY_VERIFIABLE',
+        evidenceClass: 'STATIC_SEMANTIC_VERIFICATION',
         verify: (root) => {
           const p = path.join(root, 'apps/mobile/app/constituency/[id].tsx');
           if (!fs.existsSync(p)) return { passed: false, message: 'Constituency screen UI file missing' };
@@ -2955,6 +3269,7 @@ export const TASK_SPECIFICATIONS = {
         description: 'Mobile consumer journey decoupling from legacy election2023 alias documented in impact report',
         weightRatio: 0.5,
         scope: 'REPOSITORY_VERIFIABLE',
+        evidenceClass: 'STATIC_SEMANTIC_VERIFICATION',
         verify: (root) => {
           const p = path.join(root, 'reports/W021.5-COMPATIBILITY-CONSUMER-IMPACT-REPORT.md');
           if (!fs.existsSync(p)) return { passed: false, message: 'Consumer impact report missing' };
@@ -2971,6 +3286,7 @@ export const TASK_SPECIFICATIONS = {
         description: 'Legislator profile screen decoupled from hardcoded election aliases',
         weightRatio: 0.5,
         scope: 'REPOSITORY_VERIFIABLE',
+        evidenceClass: 'STATIC_SEMANTIC_VERIFICATION',
         verify: (root) => {
           const p = path.join(root, 'apps/mobile/app/legislator/[id].tsx');
           if (!fs.existsSync(p)) return { passed: false, message: 'Legislator screen missing' };
@@ -2993,6 +3309,7 @@ export const TASK_SPECIFICATIONS = {
         description: 'Mobile Class B direct client writes audited and first 28 write endpoints mapped in strangler matrix',
         weightRatio: 0.5,
         scope: 'REPOSITORY_VERIFIABLE',
+        evidenceClass: 'STATIC_SEMANTIC_VERIFICATION',
         verify: (root) => {
           const p1 = path.join(root, 'reports/w006_api_architecture_report.md');
           const p2 = path.join(root, 'apps/mobile/lib/supabaseDataService.ts');
@@ -3016,6 +3333,7 @@ export const TASK_SPECIFICATIONS = {
         description: 'Remaining 28 write endpoints and complete legacy direct client writes deprecation',
         weightRatio: 0.5,
         scope: 'UNIMPLEMENTED',
+        evidenceClass: 'ARTIFACT_PRESENCE_ONLY',
         verify: () => ({ passed: false, message: 'Remaining 28 write endpoints unimplemented' }),
       },
     ],
@@ -3029,6 +3347,7 @@ export const TASK_SPECIFICATIONS = {
         description: 'Mobile SQLite canonical offline sync schema and engine implementation',
         weightRatio: 1.0,
         scope: 'UNIMPLEMENTED',
+        evidenceClass: 'ARTIFACT_PRESENCE_ONLY',
         verify: () => ({ passed: false, message: 'Client-side SQLite sync engine unimplemented' }),
       },
     ],
@@ -3042,6 +3361,7 @@ export const TASK_SPECIFICATIONS = {
         description: 'Production database air-gap preservation and cutover preflight blocked pending formal CTO directive',
         weightRatio: 1.0,
         scope: 'BLOCKED_EXTERNAL',
+        evidenceClass: 'EXTERNAL_AUTHORITY_VERIFICATION',
         verify: () => ({ passed: false, message: 'Blocked pending formal CTO directive' }),
       },
     ],
@@ -3083,10 +3403,17 @@ export function evaluateTaskCriteria(task, root, options = {}) {
     throw new Error(`Ledger verification failure: Task ${task.taskId} has empty acceptance criteria.`);
   }
 
-  // Validate criteria schema: unique IDs, valid scope, positive weightRatio, sum === 1.0
+  // Validate criteria schema: unique IDs, valid scope, evidenceClass, positive weightRatio, sum === 1.0
   const seenIds = new Set();
   let totalWeightRatio = 0.0;
   const validScopes = ['REPOSITORY_VERIFIABLE', 'DATABASE_STAGING', 'BLOCKED_EXTERNAL', 'UNIMPLEMENTED'];
+  const validEvidenceClasses = [
+    'ARTIFACT_PRESENCE_ONLY',
+    'STATIC_SEMANTIC_VERIFICATION',
+    'EXECUTABLE_BEHAVIOR_VERIFICATION',
+    'DATABASE_STAGING_VERIFICATION',
+    'EXTERNAL_AUTHORITY_VERIFICATION',
+  ];
 
   for (const crit of spec.criteria) {
     if (!crit.criterionId || typeof crit.criterionId !== 'string') {
@@ -3100,6 +3427,10 @@ export function evaluateTaskCriteria(task, root, options = {}) {
     if (!validScopes.includes(crit.scope)) {
       throw new Error(`Ledger verification failure: Invalid scope "${crit.scope}" in criterion ${crit.criterionId}.`);
     }
+    if (crit.evidenceClass && !validEvidenceClasses.includes(crit.evidenceClass)) {
+      throw new Error(`Ledger verification failure: Invalid evidenceClass "${crit.evidenceClass}" in criterion ${crit.criterionId}.`);
+    }
+    const assignedEvidenceClass = crit.evidenceClass || 'STATIC_SEMANTIC_VERIFICATION';
     if (typeof crit.weightRatio !== 'number' || crit.weightRatio <= 0) {
       throw new Error(`Ledger verification failure: Invalid weightRatio ${crit.weightRatio} in criterion ${crit.criterionId}.`);
     }
@@ -3131,6 +3462,7 @@ export function evaluateTaskCriteria(task, root, options = {}) {
 
   for (const crit of spec.criteria) {
     checksExecuted.push(crit.description);
+    const assignedEvidenceClass = crit.evidenceClass || 'STATIC_SEMANTIC_VERIFICATION';
     const critAllocatedWeight = Number((taskWeight * crit.weightRatio).toFixed(3));
 
     if (crit.scope === 'REPOSITORY_VERIFIABLE') {
@@ -3147,6 +3479,7 @@ export function evaluateTaskCriteria(task, root, options = {}) {
             weightRatio: crit.weightRatio,
             criterionWeight: critAllocatedWeight,
             scope: crit.scope,
+            evidenceClass: assignedEvidenceClass,
             status: 'PASS',
             message: res.message || crit.description,
           });
@@ -3161,6 +3494,7 @@ export function evaluateTaskCriteria(task, root, options = {}) {
             weightRatio: crit.weightRatio,
             criterionWeight: critAllocatedWeight,
             scope: crit.scope,
+            evidenceClass: assignedEvidenceClass,
             status: 'FAIL',
             message: failMsg,
           });
@@ -3171,12 +3505,13 @@ export function evaluateTaskCriteria(task, root, options = {}) {
       } catch (err) {
         const errMsg = `Criterion ${crit.criterionId} error: ${err.message}`;
         evaluations.push({
-          criterionId: crit.criterionId,
-          description: crit.description,
-          weightRatio: crit.weightRatio,
-          criterionWeight: critAllocatedWeight,
-          scope: crit.scope,
-          status: 'FAIL',
+            criterionId: crit.criterionId,
+            description: crit.description,
+            weightRatio: crit.weightRatio,
+            criterionWeight: critAllocatedWeight,
+            scope: crit.scope,
+            evidenceClass: assignedEvidenceClass,
+            status: 'FAIL',
           message: errMsg,
         });
         checksFailed.push(errMsg);
@@ -3186,12 +3521,13 @@ export function evaluateTaskCriteria(task, root, options = {}) {
     } else if (crit.scope === 'DATABASE_STAGING') {
       databasePendingWeight += critAllocatedWeight;
       evaluations.push({
-        criterionId: crit.criterionId,
-        description: crit.description,
-        weightRatio: crit.weightRatio,
-        criterionWeight: critAllocatedWeight,
-        scope: crit.scope,
-        status: 'UNVERIFIED',
+            criterionId: crit.criterionId,
+            description: crit.description,
+            weightRatio: crit.weightRatio,
+            criterionWeight: critAllocatedWeight,
+            scope: crit.scope,
+            evidenceClass: assignedEvidenceClass,
+            status: 'UNVERIFIED',
         message: 'Pending live staging database execution and authorization',
       });
       unverifiableInOfflineRepo.push(crit.description);
@@ -3199,12 +3535,13 @@ export function evaluateTaskCriteria(task, root, options = {}) {
     } else if (crit.scope === 'BLOCKED_EXTERNAL') {
       blockedWeight += critAllocatedWeight;
       evaluations.push({
-        criterionId: crit.criterionId,
-        description: crit.description,
-        weightRatio: crit.weightRatio,
-        criterionWeight: critAllocatedWeight,
-        scope: crit.scope,
-        status: 'BLOCKED',
+            criterionId: crit.criterionId,
+            description: crit.description,
+            weightRatio: crit.weightRatio,
+            criterionWeight: critAllocatedWeight,
+            scope: crit.scope,
+            evidenceClass: assignedEvidenceClass,
+            status: 'BLOCKED',
         message: 'Blocked pending external authority / CTO gate',
       });
       blockedRequirements.push(crit.description);
@@ -3212,12 +3549,13 @@ export function evaluateTaskCriteria(task, root, options = {}) {
     } else if (crit.scope === 'UNIMPLEMENTED') {
       unimplementedWeight += critAllocatedWeight;
       evaluations.push({
-        criterionId: crit.criterionId,
-        description: crit.description,
-        weightRatio: crit.weightRatio,
-        criterionWeight: critAllocatedWeight,
-        scope: crit.scope,
-        status: 'NOT_IMPLEMENTED',
+            criterionId: crit.criterionId,
+            description: crit.description,
+            weightRatio: crit.weightRatio,
+            criterionWeight: critAllocatedWeight,
+            scope: crit.scope,
+            evidenceClass: assignedEvidenceClass,
+            status: 'NOT_IMPLEMENTED',
         message: 'Scheduled for future architecture wave',
       });
       unimplementedRequirements.push(crit.description);
@@ -5445,6 +5783,21 @@ export function verifyNonOverlappingAccountingAndTraceability(options = {}) {
  * Main ledger reconciliation workflow.
  */
 export function reconcileExecutionLedger(options = {}) {
+  // CTO Directive 106 Workstream B: Fail-closed caller trust override prohibition
+  if (
+    options.historicalOriginCommitOverride !== undefined ||
+    options.expectedHashOverride !== undefined ||
+    options.rawBytesOverride !== undefined ||
+    options.originCommitOverride !== undefined ||
+    options.referenceCommitOverride !== undefined ||
+    options.matrixOverride !== undefined ||
+    options.masterSpecOverride !== undefined ||
+    options.expectedDocHashes !== undefined ||
+    options.taskSectionOverrides !== undefined
+  ) {
+    throw new Error('CALLER_TRUST_OVERRIDE_PROHIBITED: Caller options cannot override historical origin commit or cryptographic digests in production verification mode.');
+  }
+
   const jsonPath = path.resolve(REPO_ROOT, 'reports/w021_5_execution_ledger.json');
   const mdPath = path.resolve(REPO_ROOT, 'reports/W021.5-EXECUTION-LEDGER.md');
 
@@ -5465,7 +5818,7 @@ export function reconcileExecutionLedger(options = {}) {
     throw new Error('Ledger accounting validation error: Missing or empty stages array.');
   }
 
-  const opts = { enforceCanonicalIdentity: true, ...options };
+  const opts = { enforceCanonicalIdentity: true, productionVerificationMode: true, ...options };
 
   // Workstream A (CTO Directive 103): Verify Historical Artifact Integrity (Raw Git SHA-256 & Snapshot Fidelity)
   verifyHistoricalArtifactIntegrity(opts);
@@ -5480,7 +5833,7 @@ export function reconcileExecutionLedger(options = {}) {
     validateStageAccounting(stage, opts);
   }
 
-  ledger.directive = 'CTO Directive 086 / CTO Directive 087 / CTO Directive 088 / CTO Directive 089 / CTO Directive 090 / CTO Directive 091 / CTO Directive 092 / CTO Directive 093 / CTO Directive 094 / CTO Directive 095 / CTO Directive 096 / CTO Directive 097 / CTO Directive 098 / CTO Directive 099 / CTO Directive 100 / CTO Directive 101 / CTO Directive 102 / CTO Directive 103 / CTO Directive 104 / CTO Directive 105';
+  ledger.directive = 'CTO Directive 086 / CTO Directive 087 / CTO Directive 088 / CTO Directive 089 / CTO Directive 090 / CTO Directive 091 / CTO Directive 092 / CTO Directive 093 / CTO Directive 094 / CTO Directive 095 / CTO Directive 096 / CTO Directive 097 / CTO Directive 098 / CTO Directive 099 / CTO Directive 100 / CTO Directive 101 / CTO Directive 102 / CTO Directive 103 / CTO Directive 104 / CTO Directive 105 / CTO Directive 106';
 
   // Compute summary
   const summary = computeLedgerSummary(ledger, opts);

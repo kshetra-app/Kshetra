@@ -1,0 +1,74 @@
+================================================================================
+KSHETRA VERIFIABLE TEST EXECUTION LOG
+Suite: tests/political-intelligence-directive-106.test.mjs
+Command: node tests/political-intelligence-directive-106.test.mjs
+Working Directory: C:\Users\Laven\OneDrive\Desktop\Kshetra
+Runtime: Node v24.13.0 (win32)
+Execution Timestamp: 2026-10-19T07:27:23.803Z
+Exit Code: 0
+================================================================================
+
+--- STDOUT ---
+================================================================
+KSHETRA W021.5 — CTO DIRECTIVE 106 VERIFICATION SUITE
+Independent Authority Anchoring, Genuine Adversarial Verification, and Criterion Evidence Hardening
+================================================================
+
+--- 1. Workstream A: Establish the Governing Authority Boundary ---
+  [PASS] 1.1 Discrepancy register exists and registers all Directive 105 discrepancies DISC-021 through DISC-026
+  [PASS] 1.2 Governing source inventory audit reports 5 dimensions across all 15 documents
+  [PASS] 1.3 Top-level approval authority explicitly classified as NOT_INDEPENDENTLY_ESTABLISHED
+  [PASS] 1.4 Proposed external authority anchor mechanism is explicitly recorded as PROPOSED_NOT_ACTIVE
+  [PASS] 1.5 Historical origin commit be4ba41f is classified as baseline comparison role only
+
+--- 2. Workstream B: 9 Genuine Adversarial Coordinated-Tampering Cases ---
+  [PASS] 2.1 Case 1: Co-mutated task weight/title/identity across matrix, master spec, and metadata fails closed
+  [PASS] 2.2 Case 2: Co-mutated task IDs and stage membership fails closed against canonical origin
+  [PASS] 2.3 Case 3: Co-mutated governing document and in-repository expected digest fails closed against Git blob SHA
+  [PASS] 2.4 Case 4: Co-mutated local historical snapshot and local metadata fails closed against Git origin object
+  [PASS] 2.5 Case 5: Replaced, omitted, or redirected governing document path fails closed
+  [PASS] 2.6 Case 6: Attempt to override reference commit or expected digest through caller options throws CALLER_TRUST_OVERRIDE_PROHIBITED
+  [PASS] 2.7 Case 7: Swapped criterion IDs or criterion weight ratios while preserving total count fails closed
+  [PASS] 2.8 Case 8: Phantom task (W021.5-B1-05), duplicate task ID, or duplicate requirement code fails closed
+  [PASS] 2.9 Case 9: Changed report and test manifest claiming pass not supported by output fails closed
+  [PASS] 2.10 Canonical fixture passes cleanly and verification restoration is confirmed
+
+--- 3. Workstream C: Substantive Domain Criteria Verification ---
+  [PASS] 3.1 All 50 criteria in criterion evidence register and TASK_SPECIFICATIONS are assigned valid evidence classes
+  [PASS] 3.2 CRIT-B101-01 substantively validates schema DDL, constraints, nullability, relationships, and 4,123 seat inserts
+  [PASS] 3.3 CRIT-B104-01 substantively validates 120 features, closed rings, bbox, and detects AC 119 duplicate defect
+  [PASS] 3.4 CRIT-C02-01 substantively reconciles 107 canonical organizations and 1,043 aliases between JSON and SQL CTE
+  [PASS] 3.5 CRIT-G02-01 substantively verifies TS AST and VM behavior for mapped, unmapped, and null inputs
+
+--- 4. Workstream D: Recompute Completion Without Self-Certification ---
+  [PASS] 4.1 Four-way milestone partition conserves exactly 100.000%
+  [PASS] 4.2 Dynamic progress derivation from discrete criteria yields exactly 61.500% earned
+  [PASS] 4.3 Task accounting reconciles weight === earned + dbPending + blocked + unimplemented with zero duplicate credit
+  [PASS] 4.4 Cross-reconciliation between JSON ledger, Markdown ledger, criterion register, and master specification
+
+--- 5. Workstream E: Truthful Test Execution Evidence & Manifest ---
+  [PASS] 5.1 Test execution harness defines exactly 27 test suites with Suite 27 integrated
+  [PASS] 5.2 parseTestOutput parser extracts skipped counts and establishes positive execution evidence
+  [PASS] 5.3 validateManifestIntegrity verifies manifest structure and rejects discrepancies fail-closed
+
+--- 6. Workstream F: Mandatory Governance Invariants & Baseline Preservation ---
+  [PASS] 6.1 Rule IV-001 Non-Self-Acceptance: formal CTO acceptance strictly 0.0% (UNACCEPTED)
+  [PASS] 6.2 Offline Air-Gap: live DB staging execution strictly 0.0% (UNEXECUTED)
+  [PASS] 6.3 Financial Defect DQ-W021.5-B2.2E-001 remains STRICTLY OPEN (0.0% earned, 5.0% blocked)
+  [PASS] 6.4 Telangana AC 119 Boundary Defect remains STRICTLY OPEN / BLOCKED (1.5% blocked)
+  [PASS] 6.5 SQL Migration Immutability: 68 migrations match baseline 0ea572d byte-for-byte identical
+  [PASS] 6.6 MLA Profile Seed Immutability: 31 seed files match baseline fb408ce byte-for-byte identical
+
+================================================================
+TEST SUMMARY: 33 PASSED, 0 FAILED
+================================================================
+
+
+
+--- STDERR ---
+
+
+--- PROCESS METRICS ---
+DurationMs: 13667
+ExitCode: 0
+================================================================================

@@ -229,6 +229,7 @@ export interface ConstituencyElectionData {
  * Preserves null for missing vote totals, margins, or unknown election years without state-code guessing or zero/2024 coercion.
  */
 export function getConstituencyElectionData(stateCode: string, acNo: number): ConstituencyElectionData | null {
+  if (!stateCode || typeof stateCode !== 'string' || acNo == null) return null;
   const code = stateCode.toUpperCase();
   const raw = getRawConstituency(code, acNo);
   const brief = getConstituency(code, acNo);

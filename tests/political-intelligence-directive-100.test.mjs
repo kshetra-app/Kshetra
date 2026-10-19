@@ -1007,7 +1007,8 @@ runTest('5.4 Test execution provenance clearly distinguishes repository-recorded
     manifest.verifierRole === 'CTO Directive 102 Test Execution Verifier' ||
     manifest.verifierRole === 'CTO Directive 103 Test Execution Verifier' ||
     manifest.verifierRole === 'CTO Directive 104 Test Execution Verifier' ||
-    manifest.verifierRole === 'CTO Directive 105 Test Execution Verifier',
+    manifest.verifierRole === 'CTO Directive 105 Test Execution Verifier' ||
+    manifest.verifierRole === 'CTO Directive 106 Test Execution Verifier',
     `Unexpected verifierRole: ${manifest.verifierRole}`
   );
 });

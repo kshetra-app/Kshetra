@@ -2,8 +2,9 @@
 ## Authority Provenance, Canonical Task Inventory, and Bidirectional Requirement Linkage
 
 > **Governance Authority:** Master Execution Framework Amendment v1.2 / Rule IV-001 (Non-Self-Acceptance)  
-> **Directive Reference:** CTO Directive 104 / CTO Directive 105  
+> **Directive Reference:** CTO Directive 104 / CTO Directive 105 / CTO Directive 106  
 > **Milestone:** `W021.5`  
+> **Authority Classification:** **`NOT_INDEPENDENTLY_ESTABLISHED`** (Absence of external cryptographic trust anchor)  
 > **Matrix Version:** `W021.5-GOVERNING-SPECIFICATION-TRACEABILITY-MATRIX-V1.0`  
 > **Monolithic Specification Disposition:** `FEDERATED_CORPUS_PRESERVED_NO_SINGLE_MONOLITHIC_FILE`  
 

@@ -1,6 +1,16 @@
 {
-  "auditEpoch": "DIRECTIVE_105",
-  "auditedAt": "2026-10-19T05:25:41.124Z",
+  "auditEpoch": "DIRECTIVE_106",
+  "auditedAt": "2026-10-19T06:19:12.848Z",
+  "authorityClassification": "NOT_INDEPENDENTLY_ESTABLISHED",
+  "authorityBoundarySummary": {
+    "trustAnchorStatus": "IN_REPOSITORY_INTEGRITY_ONLY",
+    "externalAuthorityAnchor": null,
+    "historicalBaselineCommit": "be4ba41f74616e068b531df17780080a1a946bbd",
+    "historicalBaselineRole": "HISTORICAL_COMPARISON_BASELINE_NOT_EXTERNAL_APPROVAL_AUTHORITY",
+    "tamperDetectionCapability": "Cryptographic SHA-256 and Git tree blob matching detect internal divergence, but cannot substitute for external non-repudiable signing.",
+    "proposedGovernanceMechanism": "Cryptographically signed root authority manifests (e.g. Cosign/GPG signatures from authorized CTO key with independent transparency log). Status: PROPOSED_NOT_ACTIVE.",
+    "disclaimer": "Under Rule IV-001, immutable Git history proves when and where files were introduced into the repository, but repository presence alone does not constitute independent external CTO approval."
+  },
   "governingDocumentsCount": 15,
   "documents": [
     {
@@ -28,7 +38,45 @@
       },
       "controlledTasks": [
         "W021.5-A-01"
-      ]
+      ],
+      "contentIdentity": {
+        "path": "W021.5-A-AUDIT-REPORT.md",
+        "gitBlobSha": "2c82f6e0257c553e1c1c0ac4bb48e8f0258ac2e2",
+        "rawByteLength": 47399,
+        "sha256": "6138d07e86b40301712de65df85364ed5df1452dfc4c5e492507899ddc25f8e2"
+      },
+      "historicalIdentity": {
+        "introducingCommit": {
+          "sha": "7be949dc6e9c1eb00beeeb2492084b1e71c952bf",
+          "date": "2026-10-03",
+          "subject": "docs(w021.5): finalize w021.5-a audit and w021.5-b1 evidence reports"
+        },
+        "latestCommit": {
+          "sha": "7be949dc6e9c1eb00beeeb2492084b1e71c952bf",
+          "date": "2026-10-03",
+          "subject": "docs(w021.5): finalize w021.5-a audit and w021.5-b1 evidence reports"
+        },
+        "recordedCommitSha": "7be949dc6e9c1eb00beeeb2492084b1e71c952bf",
+        "recordedCommitExists": true,
+        "fileAtRecordedCommitExists": true,
+        "blobAtRecordedCommit": "2c82f6e0257c553e1c1c0ac4bb48e8f0258ac2e2"
+      },
+      "approvalAuthority": {
+        "claimedAuthority": "CTO EXECUTION DIRECTIVE — W021.5-A (AUDIT ONLY)",
+        "approvalClassification": "NOT_INDEPENDENTLY_ESTABLISHED",
+        "approvalEvidenceType": "IN_REPOSITORY_RECORD_ONLY",
+        "externalAuthorityAnchor": null,
+        "approvalNote": "Repository Git history and internal commit records evidence that this document was committed into the repository, but do NOT constitute an independent external cryptographic approval anchor under Rule IV-001."
+      },
+      "requirementTraceability": {
+        "controlledTasks": [
+          "W021.5-A-01"
+        ],
+        "governingSectionRefs": [
+          "Section 1-2: Complete Domain Inventory (29 Domains) & Baseline Verification"
+        ]
+      },
+      "verificationLimitations": "Repository inspection proves content integrity and historical Git presence, but does NOT prove out-of-band external approval by an independent authority."
     },
     {
       "docId": "DOC-W021.5-A-REPO-AUDIT",
@@ -53,7 +101,41 @@
         "date": "2026-10-03",
         "subject": "docs(w021.5): finalize w021.5-a audit and w021.5-b1 evidence reports"
       },
-      "controlledTasks": []
+      "controlledTasks": [],
+      "contentIdentity": {
+        "path": "reports/w021_5a_repository_data_truth_audit.md",
+        "gitBlobSha": "2c82f6e0257c553e1c1c0ac4bb48e8f0258ac2e2",
+        "rawByteLength": 47399,
+        "sha256": "6138d07e86b40301712de65df85364ed5df1452dfc4c5e492507899ddc25f8e2"
+      },
+      "historicalIdentity": {
+        "introducingCommit": {
+          "sha": "7be949dc6e9c1eb00beeeb2492084b1e71c952bf",
+          "date": "2026-10-03",
+          "subject": "docs(w021.5): finalize w021.5-a audit and w021.5-b1 evidence reports"
+        },
+        "latestCommit": {
+          "sha": "7be949dc6e9c1eb00beeeb2492084b1e71c952bf",
+          "date": "2026-10-03",
+          "subject": "docs(w021.5): finalize w021.5-a audit and w021.5-b1 evidence reports"
+        },
+        "recordedCommitSha": "7be949dc6e9c1eb00beeeb2492084b1e71c952bf",
+        "recordedCommitExists": true,
+        "fileAtRecordedCommitExists": true,
+        "blobAtRecordedCommit": "2c82f6e0257c553e1c1c0ac4bb48e8f0258ac2e2"
+      },
+      "approvalAuthority": {
+        "claimedAuthority": "CTO Directive W021.5-A",
+        "approvalClassification": "NOT_INDEPENDENTLY_ESTABLISHED",
+        "approvalEvidenceType": "IN_REPOSITORY_RECORD_ONLY",
+        "externalAuthorityAnchor": null,
+        "approvalNote": "Repository Git history and internal commit records evidence that this document was committed into the repository, but do NOT constitute an independent external cryptographic approval anchor under Rule IV-001."
+      },
+      "requirementTraceability": {
+        "controlledTasks": [],
+        "governingSectionRefs": []
+      },
+      "verificationLimitations": "Repository inspection proves content integrity and historical Git presence, but does NOT prove out-of-band external approval by an independent authority."
     },
     {
       "docId": "DOC-W021.5-B1-SPEC",
@@ -80,7 +162,45 @@
       },
       "controlledTasks": [
         "W021.5-B1-01"
-      ]
+      ],
+      "contentIdentity": {
+        "path": "docs/W021.5-B1-NATIONAL-CONSTITUENCY-CANONICALIZATION.md",
+        "gitBlobSha": "10edf3bd46c0bc8e45615444122f9613447e6b7a",
+        "rawByteLength": 29676,
+        "sha256": "9cf3716d63469e22f835747a460c930fafc40cbe2c1528f589b0b22d55463ed7"
+      },
+      "historicalIdentity": {
+        "introducingCommit": {
+          "sha": "a8489201933ca66dbe811893181edcc189adcf61",
+          "date": "2026-10-03",
+          "subject": "docs(w021.5-b1): document national canonicalization"
+        },
+        "latestCommit": {
+          "sha": "60d54eed77ba2aebd3c6aab61cba2375b72aef2a",
+          "date": "2026-10-03",
+          "subject": "feat(w021.5): milestone b1-r4 final source integrity, canonical coverage and lineage semantics closure"
+        },
+        "recordedCommitSha": "60d54eed77ba2aebd3c6aab61cba2375b72aef2a",
+        "recordedCommitExists": true,
+        "fileAtRecordedCommitExists": true,
+        "blobAtRecordedCommit": "10edf3bd46c0bc8e45615444122f9613447e6b7a"
+      },
+      "approvalAuthority": {
+        "claimedAuthority": "CTO Master Implementation Specification W021.5-B1 & CTO Remediation Directive W021.5-B1-R1",
+        "approvalClassification": "NOT_INDEPENDENTLY_ESTABLISHED",
+        "approvalEvidenceType": "IN_REPOSITORY_RECORD_ONLY",
+        "externalAuthorityAnchor": null,
+        "approvalNote": "Repository Git history and internal commit records evidence that this document was committed into the repository, but do NOT constitute an independent external cryptographic approval anchor under Rule IV-001."
+      },
+      "requirementTraceability": {
+        "controlledTasks": [
+          "W021.5-B1-01"
+        ],
+        "governingSectionRefs": [
+          "Section 1: Statutory Constituency Baseline & Migration 059 DDL Specification"
+        ]
+      },
+      "verificationLimitations": "Repository inspection proves content integrity and historical Git presence, but does NOT prove out-of-band external approval by an independent authority."
     },
     {
       "docId": "DOC-W021.5-B1-R2-SPEC",
@@ -107,7 +227,45 @@
       },
       "controlledTasks": [
         "W021.5-B1-02"
-      ]
+      ],
+      "contentIdentity": {
+        "path": "docs/W021.5-B1-R2-NATIONAL-AC-PC-COMPLETENESS.md",
+        "gitBlobSha": "476f2e4d66aeac351deee072090e5de7cc9fbace",
+        "rawByteLength": 11882,
+        "sha256": "a08c2e49609aa17c9704aaf2dd2429a415c1be9d4a200138fa9eae7bc30ee79e"
+      },
+      "historicalIdentity": {
+        "introducingCommit": {
+          "sha": "758ba8372bd38bd9656743adff7bcd068deed23c",
+          "date": "2026-10-03",
+          "subject": "feat(w021.5-b1-r2): complete national AC-PC mappings and temporal integrity closure"
+        },
+        "latestCommit": {
+          "sha": "758ba8372bd38bd9656743adff7bcd068deed23c",
+          "date": "2026-10-03",
+          "subject": "feat(w021.5-b1-r2): complete national AC-PC mappings and temporal integrity closure"
+        },
+        "recordedCommitSha": "758ba8372bd38bd9656743adff7bcd068deed23c",
+        "recordedCommitExists": true,
+        "fileAtRecordedCommitExists": true,
+        "blobAtRecordedCommit": "476f2e4d66aeac351deee072090e5de7cc9fbace"
+      },
+      "approvalAuthority": {
+        "claimedAuthority": "CTO Master Implementation Specification (W021.5-B1-R2 Directive)",
+        "approvalClassification": "NOT_INDEPENDENTLY_ESTABLISHED",
+        "approvalEvidenceType": "IN_REPOSITORY_RECORD_ONLY",
+        "externalAuthorityAnchor": null,
+        "approvalNote": "Repository Git history and internal commit records evidence that this document was committed into the repository, but do NOT constitute an independent external cryptographic approval anchor under Rule IV-001."
+      },
+      "requirementTraceability": {
+        "controlledTasks": [
+          "W021.5-B1-02"
+        ],
+        "governingSectionRefs": [
+          "Section 2: AC-to-PC Parliamentary Mapping Matrix & Migrations 060, 061"
+        ]
+      },
+      "verificationLimitations": "Repository inspection proves content integrity and historical Git presence, but does NOT prove out-of-band external approval by an independent authority."
     },
     {
       "docId": "DOC-W021.5-B1-R3-SPEC",
@@ -134,7 +292,45 @@
       },
       "controlledTasks": [
         "W021.5-B1-04"
-      ]
+      ],
+      "contentIdentity": {
+        "path": "docs/W021.5-B1-R3-NATIONAL-MAPPING-PROVENANCE.md",
+        "gitBlobSha": "6bc59964e39df39e8428d2cfc28738ac2caee0ba",
+        "rawByteLength": 13251,
+        "sha256": "80be250cc8dfcc45c4407410e5fe1c79b96b5ef931aa0ae2346dff738ead75cc"
+      },
+      "historicalIdentity": {
+        "introducingCommit": {
+          "sha": "cb84da9dea0fa21a297fd735383f9b722f8d4d4c",
+          "date": "2026-10-03",
+          "subject": "feat(w021.5-b1-r3): national AC-PC provenance, source-of-truth and consistency closure"
+        },
+        "latestCommit": {
+          "sha": "cb84da9dea0fa21a297fd735383f9b722f8d4d4c",
+          "date": "2026-10-03",
+          "subject": "feat(w021.5-b1-r3): national AC-PC provenance, source-of-truth and consistency closure"
+        },
+        "recordedCommitSha": "cb84da9dea0fa21a297fd735383f9b722f8d4d4c",
+        "recordedCommitExists": true,
+        "fileAtRecordedCommitExists": true,
+        "blobAtRecordedCommit": "6bc59964e39df39e8428d2cfc28738ac2caee0ba"
+      },
+      "approvalAuthority": {
+        "claimedAuthority": "CTO Remediation Directive W021.5-B1-R3",
+        "approvalClassification": "NOT_INDEPENDENTLY_ESTABLISHED",
+        "approvalEvidenceType": "IN_REPOSITORY_RECORD_ONLY",
+        "externalAuthorityAnchor": null,
+        "approvalNote": "Repository Git history and internal commit records evidence that this document was committed into the repository, but do NOT constitute an independent external cryptographic approval anchor under Rule IV-001."
+      },
+      "requirementTraceability": {
+        "controlledTasks": [
+          "W021.5-B1-04"
+        ],
+        "governingSectionRefs": [
+          "Section 3: Geographic Boundary Linkage & Provenance Integrity"
+        ]
+      },
+      "verificationLimitations": "Repository inspection proves content integrity and historical Git presence, but does NOT prove out-of-band external approval by an independent authority."
     },
     {
       "docId": "DOC-W021.5-B1-R4-SPEC",
@@ -159,7 +355,41 @@
         "date": "2026-10-03",
         "subject": "feat(w021.5): milestone b1-r4 final source integrity, canonical coverage and lineage semantics closure"
       },
-      "controlledTasks": []
+      "controlledTasks": [],
+      "contentIdentity": {
+        "path": "docs/W021.5-B1-R4-SOURCE-AND-LINEAGE-INTEGRITY.md",
+        "gitBlobSha": "1eee1be1d30b60b8b2f38281b4bae2f8488df0f6",
+        "rawByteLength": 13423,
+        "sha256": "083017d388e2e0eaa2fdcef317d89edf85419f21d9e1874f634c4830c6c16250"
+      },
+      "historicalIdentity": {
+        "introducingCommit": {
+          "sha": "60d54eed77ba2aebd3c6aab61cba2375b72aef2a",
+          "date": "2026-10-03",
+          "subject": "feat(w021.5): milestone b1-r4 final source integrity, canonical coverage and lineage semantics closure"
+        },
+        "latestCommit": {
+          "sha": "60d54eed77ba2aebd3c6aab61cba2375b72aef2a",
+          "date": "2026-10-03",
+          "subject": "feat(w021.5): milestone b1-r4 final source integrity, canonical coverage and lineage semantics closure"
+        },
+        "recordedCommitSha": "60d54eed77ba2aebd3c6aab61cba2375b72aef2a",
+        "recordedCommitExists": true,
+        "fileAtRecordedCommitExists": true,
+        "blobAtRecordedCommit": "1eee1be1d30b60b8b2f38281b4bae2f8488df0f6"
+      },
+      "approvalAuthority": {
+        "claimedAuthority": "CTO Remediation Directive W021.5-B1-R4",
+        "approvalClassification": "NOT_INDEPENDENTLY_ESTABLISHED",
+        "approvalEvidenceType": "IN_REPOSITORY_RECORD_ONLY",
+        "externalAuthorityAnchor": null,
+        "approvalNote": "Repository Git history and internal commit records evidence that this document was committed into the repository, but do NOT constitute an independent external cryptographic approval anchor under Rule IV-001."
+      },
+      "requirementTraceability": {
+        "controlledTasks": [],
+        "governingSectionRefs": []
+      },
+      "verificationLimitations": "Repository inspection proves content integrity and historical Git presence, but does NOT prove out-of-band external approval by an independent authority."
     },
     {
       "docId": "DOC-W021.5-B1-R5-SPEC",
@@ -186,7 +416,45 @@
       },
       "controlledTasks": [
         "W021.5-B1-03"
-      ]
+      ],
+      "contentIdentity": {
+        "path": "docs/W021.5-B1-R5-CURRENT-STATUTORY-GEOGRAPHY.md",
+        "gitBlobSha": "8e56f24cfe17b44189d661681739caf9e3dc270b",
+        "rawByteLength": 10550,
+        "sha256": "3b64f3a5236f26a2842ed354d468d3058b8c8fa58df4cd35d0923d7f88c5826c"
+      },
+      "historicalIdentity": {
+        "introducingCommit": {
+          "sha": "a0df1813fd59c814d37a9c00677670c2327ec516",
+          "date": "2026-10-03",
+          "subject": "feat(w021.5): milestone b1-r5 current statutory geography certification and assam 2023 closure"
+        },
+        "latestCommit": {
+          "sha": "a0df1813fd59c814d37a9c00677670c2327ec516",
+          "date": "2026-10-03",
+          "subject": "feat(w021.5): milestone b1-r5 current statutory geography certification and assam 2023 closure"
+        },
+        "recordedCommitSha": "a0df1813fd59c814d37a9c00677670c2327ec516",
+        "recordedCommitExists": true,
+        "fileAtRecordedCommitExists": true,
+        "blobAtRecordedCommit": "8e56f24cfe17b44189d661681739caf9e3dc270b"
+      },
+      "approvalAuthority": {
+        "claimedAuthority": "CTO Remediation Directive W021.5-B1-R5",
+        "approvalClassification": "NOT_INDEPENDENTLY_ESTABLISHED",
+        "approvalEvidenceType": "IN_REPOSITORY_RECORD_ONLY",
+        "externalAuthorityAnchor": null,
+        "approvalNote": "Repository Git history and internal commit records evidence that this document was committed into the repository, but do NOT constitute an independent external cryptographic approval anchor under Rule IV-001."
+      },
+      "requirementTraceability": {
+        "controlledTasks": [
+          "W021.5-B1-03"
+        ],
+        "governingSectionRefs": [
+          "Section 1-2: 31 Assembly Jurisdictions Statutory Regime Matrix & Migration 062"
+        ]
+      },
+      "verificationLimitations": "Repository inspection proves content integrity and historical Git presence, but does NOT prove out-of-band external approval by an independent authority."
     },
     {
       "docId": "DOC-W021.5-B2.2-A-AUDIT",
@@ -211,7 +479,41 @@
         "date": "2026-10-03",
         "subject": "feat(w021.5): b2.2-a national political organization forensic audit"
       },
-      "controlledTasks": []
+      "controlledTasks": [],
+      "contentIdentity": {
+        "path": "docs/W021.5-B2.2-A-NATIONAL-POLITICAL-ORGANIZATION-FORENSIC-AUDIT.md",
+        "gitBlobSha": "6d9b872fb44f58f8eb3f48c81fd586f741a0fbf4",
+        "rawByteLength": 11714,
+        "sha256": "b66e28f133c3c3e19e78ffccf2b3867a7008efc0558b3f14815153eff8673cbe"
+      },
+      "historicalIdentity": {
+        "introducingCommit": {
+          "sha": "4db6fb53fdb1a885606bd76a60f1928b0af6fa3e",
+          "date": "2026-10-03",
+          "subject": "feat(w021.5): b2.2-a national political organization forensic audit"
+        },
+        "latestCommit": {
+          "sha": "4db6fb53fdb1a885606bd76a60f1928b0af6fa3e",
+          "date": "2026-10-03",
+          "subject": "feat(w021.5): b2.2-a national political organization forensic audit"
+        },
+        "recordedCommitSha": "4db6fb53fdb1a885606bd76a60f1928b0af6fa3e",
+        "recordedCommitExists": true,
+        "fileAtRecordedCommitExists": true,
+        "blobAtRecordedCommit": "6d9b872fb44f58f8eb3f48c81fd586f741a0fbf4"
+      },
+      "approvalAuthority": {
+        "claimedAuthority": "CTO Directive W021.5-B2.2-A",
+        "approvalClassification": "NOT_INDEPENDENTLY_ESTABLISHED",
+        "approvalEvidenceType": "IN_REPOSITORY_RECORD_ONLY",
+        "externalAuthorityAnchor": null,
+        "approvalNote": "Repository Git history and internal commit records evidence that this document was committed into the repository, but do NOT constitute an independent external cryptographic approval anchor under Rule IV-001."
+      },
+      "requirementTraceability": {
+        "controlledTasks": [],
+        "governingSectionRefs": []
+      },
+      "verificationLimitations": "Repository inspection proves content integrity and historical Git presence, but does NOT prove out-of-band external approval by an independent authority."
     },
     {
       "docId": "DOC-W021.5-B2.2-B-SPEC",
@@ -238,7 +540,45 @@
       },
       "controlledTasks": [
         "W021.5-C-01"
-      ]
+      ],
+      "contentIdentity": {
+        "path": "docs/W021.5-B2.2-B-ORGANIZATION-SCHEMA-GOVERNANCE-REMEDIATION.md",
+        "gitBlobSha": "e15cbd9b93c81ad493c44c6497139d3a41c0d07f",
+        "rawByteLength": 12751,
+        "sha256": "5db29d53a9423c5ec84d0afcecf62c926979969abc7b123b405bf47f8807f98c"
+      },
+      "historicalIdentity": {
+        "introducingCommit": {
+          "sha": "1f3fc4001a63c5dce663b34d55fb57206933abf0",
+          "date": "2026-10-03",
+          "subject": "feat(w021.5): b2.2-b political organization schema and governance remediation"
+        },
+        "latestCommit": {
+          "sha": "1f3fc4001a63c5dce663b34d55fb57206933abf0",
+          "date": "2026-10-03",
+          "subject": "feat(w021.5): b2.2-b political organization schema and governance remediation"
+        },
+        "recordedCommitSha": "1f3fc4001a63c5dce663b34d55fb57206933abf0",
+        "recordedCommitExists": true,
+        "fileAtRecordedCommitExists": true,
+        "blobAtRecordedCommit": "e15cbd9b93c81ad493c44c6497139d3a41c0d07f"
+      },
+      "approvalAuthority": {
+        "claimedAuthority": "CTO Remediation Directive W021.5-B2.2-B",
+        "approvalClassification": "NOT_INDEPENDENTLY_ESTABLISHED",
+        "approvalEvidenceType": "IN_REPOSITORY_RECORD_ONLY",
+        "externalAuthorityAnchor": null,
+        "approvalNote": "Repository Git history and internal commit records evidence that this document was committed into the repository, but do NOT constitute an independent external cryptographic approval anchor under Rule IV-001."
+      },
+      "requirementTraceability": {
+        "controlledTasks": [
+          "W021.5-C-01"
+        ],
+        "governingSectionRefs": [
+          "Section 2: Core Architectural & Schema Remediation Matrix & Migration 064"
+        ]
+      },
+      "verificationLimitations": "Repository inspection proves content integrity and historical Git presence, but does NOT prove out-of-band external approval by an independent authority."
     },
     {
       "docId": "DOC-W021.5-B2.2-C-SPEC",
@@ -266,7 +606,47 @@
       "controlledTasks": [
         "W021.5-C-02",
         "W021.5-C-03"
-      ]
+      ],
+      "contentIdentity": {
+        "path": "docs/W021.5-B2.2-C-FINAL-FORENSIC-RECONCILIATION.md",
+        "gitBlobSha": "734f3e60b7448e5d150065a5266f2aa7a3b55b34",
+        "rawByteLength": 8922,
+        "sha256": "14b67a8e21295403f29c7e86dbf4030bb5e3a18c6bb51df8f00a455c9d437412"
+      },
+      "historicalIdentity": {
+        "introducingCommit": {
+          "sha": "3b66878118d116a00dd04f78d0199c060972fd90",
+          "date": "2026-10-03",
+          "subject": "feat(w021.5): b2.2-c final forensic reconciliation and pre-migration gate closure"
+        },
+        "latestCommit": {
+          "sha": "3b66878118d116a00dd04f78d0199c060972fd90",
+          "date": "2026-10-03",
+          "subject": "feat(w021.5): b2.2-c final forensic reconciliation and pre-migration gate closure"
+        },
+        "recordedCommitSha": "3b66878118d116a00dd04f78d0199c060972fd90",
+        "recordedCommitExists": true,
+        "fileAtRecordedCommitExists": true,
+        "blobAtRecordedCommit": "734f3e60b7448e5d150065a5266f2aa7a3b55b34"
+      },
+      "approvalAuthority": {
+        "claimedAuthority": "CTO Directive W021.5-B2.2-C",
+        "approvalClassification": "NOT_INDEPENDENTLY_ESTABLISHED",
+        "approvalEvidenceType": "IN_REPOSITORY_RECORD_ONLY",
+        "externalAuthorityAnchor": null,
+        "approvalNote": "Repository Git history and internal commit records evidence that this document was committed into the repository, but do NOT constitute an independent external cryptographic approval anchor under Rule IV-001."
+      },
+      "requirementTraceability": {
+        "controlledTasks": [
+          "W021.5-C-02",
+          "W021.5-C-03"
+        ],
+        "governingSectionRefs": [
+          "Section 1-3: Mathematical Parity, C0-C7 Dry-Run Simulation & Migration 065",
+          "Section 5: Machine-Readable Evidence Artifacts & Symbol Matrix"
+        ]
+      },
+      "verificationLimitations": "Repository inspection proves content integrity and historical Git presence, but does NOT prove out-of-band external approval by an independent authority."
     },
     {
       "docId": "DOC-W021.5-B2.2-D-SPEC",
@@ -294,7 +674,47 @@
       "controlledTasks": [
         "W021.5-D-01",
         "W021.5-D-02"
-      ]
+      ],
+      "contentIdentity": {
+        "path": "docs/W021.5-B2.2-D-BASELINE-FORENSIC-AUDIT.md",
+        "gitBlobSha": "7183bea04b8405912f9214e26e7adfac0378dd9f",
+        "rawByteLength": 8031,
+        "sha256": "d09d6a04930e31cd9dc8b94aa08d98b1269f7cd5b2dd404e8919216f62f336f5"
+      },
+      "historicalIdentity": {
+        "introducingCommit": {
+          "sha": "7ef569c42251b9b1bd285e85565624917c8780da",
+          "date": "2026-10-03",
+          "subject": "chore(w021.5): complete forensic pre-flight audit for milestone B2.2-D"
+        },
+        "latestCommit": {
+          "sha": "7ef569c42251b9b1bd285e85565624917c8780da",
+          "date": "2026-10-03",
+          "subject": "chore(w021.5): complete forensic pre-flight audit for milestone B2.2-D"
+        },
+        "recordedCommitSha": "7ef569c42251b9b1bd285e85565624917c8780da",
+        "recordedCommitExists": true,
+        "fileAtRecordedCommitExists": true,
+        "blobAtRecordedCommit": "7183bea04b8405912f9214e26e7adfac0378dd9f"
+      },
+      "approvalAuthority": {
+        "claimedAuthority": "CTO Directive W021.5-B2.2-D",
+        "approvalClassification": "NOT_INDEPENDENTLY_ESTABLISHED",
+        "approvalEvidenceType": "IN_REPOSITORY_RECORD_ONLY",
+        "externalAuthorityAnchor": null,
+        "approvalNote": "Repository Git history and internal commit records evidence that this document was committed into the repository, but do NOT constitute an independent external cryptographic approval anchor under Rule IV-001."
+      },
+      "requirementTraceability": {
+        "controlledTasks": [
+          "W021.5-D-01",
+          "W021.5-D-02"
+        ],
+        "governingSectionRefs": [
+          "Section 3: Candidate & Person Disambiguation Invariants & Migrations 050, 063",
+          "Section 6: Migration Simulation & Idempotency Proof Across 10 Chunks"
+        ]
+      },
+      "verificationLimitations": "Repository inspection proves content integrity and historical Git presence, but does NOT prove out-of-band external approval by an independent authority."
     },
     {
       "docId": "DOC-W021.5-B2.2-E-SPEC",
@@ -321,7 +741,45 @@
       },
       "controlledTasks": [
         "W021.5-E-01"
-      ]
+      ],
+      "contentIdentity": {
+        "path": "docs/W021.5-B2.2-E-BASELINE-FORENSIC-AUDIT.md",
+        "gitBlobSha": "a9d327bba8206e1ff216e90ccfcc235bf0075e28",
+        "rawByteLength": 5235,
+        "sha256": "bff5192a65a1d79ce3c999e5eb11f8b8b67d9e5b31e1bb0e9b110d7abaf600ca"
+      },
+      "historicalIdentity": {
+        "introducingCommit": {
+          "sha": "331da74f4e748d6ce643eb45a8a409227d5b219c",
+          "date": "2026-10-03",
+          "subject": "feat(w021.5): execute B2.2-E civic extensions population and independent closure"
+        },
+        "latestCommit": {
+          "sha": "331da74f4e748d6ce643eb45a8a409227d5b219c",
+          "date": "2026-10-03",
+          "subject": "feat(w021.5): execute B2.2-E civic extensions population and independent closure"
+        },
+        "recordedCommitSha": "331da74f4e748d6ce643eb45a8a409227d5b219c",
+        "recordedCommitExists": true,
+        "fileAtRecordedCommitExists": true,
+        "blobAtRecordedCommit": "a9d327bba8206e1ff216e90ccfcc235bf0075e28"
+      },
+      "approvalAuthority": {
+        "claimedAuthority": "CTO Directive W021.5-B2.2-E",
+        "approvalClassification": "NOT_INDEPENDENTLY_ESTABLISHED",
+        "approvalEvidenceType": "IN_REPOSITORY_RECORD_ONLY",
+        "externalAuthorityAnchor": null,
+        "approvalNote": "Repository Git history and internal commit records evidence that this document was committed into the repository, but do NOT constitute an independent external cryptographic approval anchor under Rule IV-001."
+      },
+      "requirementTraceability": {
+        "controlledTasks": [
+          "W021.5-E-01"
+        ],
+        "governingSectionRefs": [
+          "Section 4: Data Plane E-C: Voter Demographics & Turnout & Migration 066"
+        ]
+      },
+      "verificationLimitations": "Repository inspection proves content integrity and historical Git presence, but does NOT prove out-of-band external approval by an independent authority."
     },
     {
       "docId": "DOC-W021.5-SURG-FIX-001",
@@ -350,7 +808,49 @@
         "W021.5-A-03",
         "W021.5-E-02",
         "W021.5-I-02"
-      ]
+      ],
+      "contentIdentity": {
+        "path": "reports/W021_5_MASTER_SURGICAL_REMEDIATION_CLOSURE_REPORT.md",
+        "gitBlobSha": "db6c6c56c0476bee58e124f5fe747179fd7878ad",
+        "rawByteLength": 9451,
+        "sha256": "4085e694d2f2bb9dce746b34a7e371e971e7f9df6d8b5e6511e56b69e0cfa879"
+      },
+      "historicalIdentity": {
+        "introducingCommit": {
+          "sha": "b0fefe5915834eae4caa93afdd272c0c73f6a441",
+          "date": "2026-10-06",
+          "subject": "docs(governance): add W021.5 master surgical remediation closure report and blocker register"
+        },
+        "latestCommit": {
+          "sha": "aaf36555a3066ffa8e3ff50cb3007fc0501dff4e",
+          "date": "2026-10-07",
+          "subject": "docs(governance): align commit coordinates in closure report and apply strict blocker status taxonomy"
+        },
+        "recordedCommitSha": "aaf36555a3066ffa8e3ff50cb3007fc0501dff4e",
+        "recordedCommitExists": true,
+        "fileAtRecordedCommitExists": true,
+        "blobAtRecordedCommit": "db6c6c56c0476bee58e124f5fe747179fd7878ad"
+      },
+      "approvalAuthority": {
+        "claimedAuthority": "Directive ID: W021.5-SURG-FIX-001 / Rule IV-001 Non-Self-Acceptance",
+        "approvalClassification": "NOT_INDEPENDENTLY_ESTABLISHED",
+        "approvalEvidenceType": "IN_REPOSITORY_RECORD_ONLY",
+        "externalAuthorityAnchor": null,
+        "approvalNote": "Repository Git history and internal commit records evidence that this document was committed into the repository, but do NOT constitute an independent external cryptographic approval anchor under Rule IV-001."
+      },
+      "requirementTraceability": {
+        "controlledTasks": [
+          "W021.5-A-03",
+          "W021.5-E-02",
+          "W021.5-I-02"
+        ],
+        "governingSectionRefs": [
+          "Section 4: Canonical Geography Universe Audit (4,123 vs 4,142) & Blocker Register",
+          "Section 8: Master Blocker Register Defect DQ-W021.5-B2.2E-001",
+          "Production Synchronization Runbook & CTO Checkpoint Gate"
+        ]
+      },
+      "verificationLimitations": "Repository inspection proves content integrity and historical Git presence, but does NOT prove out-of-band external approval by an independent authority."
     },
     {
       "docId": "DOC-W021.5-CANONICAL-PACKAGE",
@@ -389,7 +889,69 @@
         "W021.5-H-03",
         "W021.5-H-04",
         "W021.5-I-01"
-      ]
+      ],
+      "contentIdentity": {
+        "path": "reports/W021.5-CANONICAL-ARCHITECTURE-READINESS-PACKAGE.md",
+        "gitBlobSha": "a7a9530fd9529dfccf642dc9c9c4115bb2078bbc",
+        "rawByteLength": 22535,
+        "sha256": "953cf43f18d13abfeef917003e6b276b7efd7a84256d071f1f8d5f6055be9371"
+      },
+      "historicalIdentity": {
+        "introducingCommit": {
+          "sha": "be4ba41f74616e068b531df17780080a1a946bbd",
+          "date": "2026-10-17",
+          "subject": "feat(w021.5): deliver consolidated political-truth remediation, canonical readiness package and execution ledger (Directive 086)"
+        },
+        "latestCommit": {
+          "sha": "376f551441e985c391be696c1b68019d7d0290b2",
+          "date": "2026-10-17",
+          "subject": "feat(w021.5): deliver coverage integrity, election-truth closure and execution ledger adjudication (Directive 087)"
+        },
+        "recordedCommitSha": "376f551441e985c391be696c1b68019d7d0290b2",
+        "recordedCommitExists": true,
+        "fileAtRecordedCommitExists": true,
+        "blobAtRecordedCommit": "a7a9530fd9529dfccf642dc9c9c4115bb2078bbc"
+      },
+      "approvalAuthority": {
+        "claimedAuthority": "CTO Directive 086 (Workstream D)",
+        "approvalClassification": "NOT_INDEPENDENTLY_ESTABLISHED",
+        "approvalEvidenceType": "IN_REPOSITORY_RECORD_ONLY",
+        "externalAuthorityAnchor": null,
+        "approvalNote": "Repository Git history and internal commit records evidence that this document was committed into the repository, but do NOT constitute an independent external cryptographic approval anchor under Rule IV-001."
+      },
+      "requirementTraceability": {
+        "controlledTasks": [
+          "W021.5-A-02",
+          "W021.5-D-03",
+          "W021.5-E-03",
+          "W021.5-F-01",
+          "W021.5-F-02",
+          "W021.5-G-01",
+          "W021.5-G-02",
+          "W021.5-G-03",
+          "W021.5-H-01",
+          "W021.5-H-02",
+          "W021.5-H-03",
+          "W021.5-H-04",
+          "W021.5-I-01"
+        ],
+        "governingSectionRefs": [
+          "Directive 085 / Directive 086 Section 2: Question 1 & National Data Coverage Matrix",
+          "Question 4 & Forward-Only Migration Sequence: Migration 067 Candidate-to-Contest FK",
+          "Question 4 & Forward-Only Migration Sequence: Migration 068 Affidavit DDL Plan",
+          "Question 4 & Migration 051: Election Event, Contest & Ballot Normalization",
+          "Question 5: Temporal Representation of Historical Records & Directive 085/086",
+          "Question 7: API Contract Changes & Consumer Dependency & Directives 085/086",
+          "Directive 086 Workstream B: Elimination of State-Code Specific Year Inferences",
+          "Question 8 & W006 Strangler Migration Plan: Phases 1 to 4 Route Mediation",
+          "Directive 085 / Directive 086 Workstream C: Mobile DTO Contract Hardening",
+          "Directive 086 Workstream C: Section-Level Provenance Display in Mobile UI",
+          "Directive 085 Workstream B / Directive 086 Workstream C: Legacy Alias Decoupling",
+          "W006-R1A Class B 56-Method Strangler Migration Matrix",
+          "Question 6: Seed Separation & SQLite Offline Sync Architecture"
+        ]
+      },
+      "verificationLimitations": "Repository inspection proves content integrity and historical Git presence, but does NOT prove out-of-band external approval by an independent authority."
     },
     {
       "docId": "DOC-W021.5-ORIGIN-LEDGER",
@@ -414,7 +976,41 @@
         "date": "2026-10-19",
         "subject": "feat(w021.5): historical specification provenance, task-weight reconciliation, and authority boundary enforcement (Directive 102)"
       },
-      "controlledTasks": []
+      "controlledTasks": [],
+      "contentIdentity": {
+        "path": "governance/specifications/historical_w021_5_origin_ledger.json",
+        "gitBlobSha": "01f263ca33b692b0105ad73e01800bf1519efc64",
+        "rawByteLength": 21741,
+        "sha256": "9e80d79c899e76fff947eba719579bf77ef5f785727c0308e08d6aa7775c97c6"
+      },
+      "historicalIdentity": {
+        "introducingCommit": {
+          "sha": "e4adf727c5a77f913c59c9b3aa20016fedccecc9",
+          "date": "2026-10-19",
+          "subject": "feat(w021.5): historical specification provenance, task-weight reconciliation, and authority boundary enforcement (Directive 102)"
+        },
+        "latestCommit": {
+          "sha": "e4adf727c5a77f913c59c9b3aa20016fedccecc9",
+          "date": "2026-10-19",
+          "subject": "feat(w021.5): historical specification provenance, task-weight reconciliation, and authority boundary enforcement (Directive 102)"
+        },
+        "recordedCommitSha": "e4adf727c5a77f913c59c9b3aa20016fedccecc9",
+        "recordedCommitExists": true,
+        "fileAtRecordedCommitExists": true,
+        "blobAtRecordedCommit": "01f263ca33b692b0105ad73e01800bf1519efc64"
+      },
+      "approvalAuthority": {
+        "claimedAuthority": "CTO Directive 086 (Workstream E) / Origin Commit be4ba41",
+        "approvalClassification": "NOT_INDEPENDENTLY_ESTABLISHED",
+        "approvalEvidenceType": "IN_REPOSITORY_RECORD_ONLY",
+        "externalAuthorityAnchor": null,
+        "approvalNote": "Repository Git history and internal commit records evidence that this document was committed into the repository, but do NOT constitute an independent external cryptographic approval anchor under Rule IV-001."
+      },
+      "requirementTraceability": {
+        "controlledTasks": [],
+        "governingSectionRefs": []
+      },
+      "verificationLimitations": "Repository inspection proves content integrity and historical Git presence, but does NOT prove out-of-band external approval by an independent authority."
     }
   ]
 }

@@ -1,0 +1,103 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "registerId": "W021.5-DIRECTIVE-105-DISCREPANCY-REGISTER-V1.0",
+  "milestone": "W021.5",
+  "directive": "CTO Directive 106",
+  "purpose": "Forensic discrepancy register and remediation mapping for independent review findings of CTO Directive 105.",
+  "generatedAt": "2026-10-19T12:10:30.000Z",
+  "governance": "Master Execution Framework Amendment v1.2 / Rule IV-001 (Non-Self-Acceptance)",
+  "summary": {
+    "totalDiscrepanciesAudited": 6,
+    "discrepanciesResolved": 6,
+    "discrepanciesBlocked": 0,
+    "discrepancyCategoriesAudited": [
+      "governing_authority_boundary",
+      "adversarial_verification_tampering",
+      "production_verifier_trust_guards",
+      "substantive_criteria_procedures",
+      "evidence_class_taxonomy",
+      "test_execution_provenance"
+    ],
+    "resolutionStatus": "ALL_DISCREPANCIES_FORENSICALLY_ANALYZED_AND_RECONCILED"
+  },
+  "discrepancies": [
+    {
+      "discrepancyId": "DISC-021",
+      "itemKey": "GOVERNING_AUTHORITY:independentApprovalAnchor",
+      "category": "governing_authority_boundary",
+      "discrepancyType": "AUTHORITY_CONFLATION_GIT_HISTORY_AS_APPROVAL",
+      "affectedEntity": "Governing Documents Approval Authority",
+      "priorReportValue": "Directive 105 report treated Git commit history (be4ba41) and in-repo hashes as independent approval evidence.",
+      "canonicalCommittedValue": "Explicit classification: NOT_INDEPENDENTLY_ESTABLISHED. In-repository trust anchor status: IN_REPOSITORY_INTEGRITY_ONLY. Proposed external Cosign/GPG root authority manifest classified as PROPOSED_NOT_ACTIVE.",
+      "representationOrigin": "Conflation of repository commit immutability with external governing approval authority.",
+      "historicalLineage": "Origin commit be4ba41 is an immutable comparison baseline for detecting drift in repository state, but repository history alone cannot self-authenticate as an independent approval authority.",
+      "resolutionAction": "Classified governing authority as NOT_INDEPENDENTLY_ESTABLISHED across all 15 governing sources, master specification, traceability matrix, and audit inventory. Defined PROPOSED_NOT_ACTIVE out-of-band cryptographic anchor architecture.",
+      "resolutionStatus": "RESOLVED_AUTHORITY_EXPLICITLY_CLASSIFIED"
+    },
+    {
+      "discrepancyId": "DISC-022",
+      "itemKey": "VERIFICATION_TESTS:coordinatedTamperingZeroHashSeam",
+      "category": "adversarial_verification_tampering",
+      "discrepancyType": "NON_ADVERSARIAL_TEST_SEAM",
+      "affectedEntity": "tests/political-intelligence-directive-105.test.mjs",
+      "priorReportValue": "Test labeled as proving coordinated tampering supplied an all-zero expectedHashOverride parameter, testing an invalid hash rather than a coordinated mutation attack.",
+      "canonicalCommittedValue": "Replaced with 9 genuine adversarial test cases in Suite 27 exercising the real public verification path with isolated fixtures.",
+      "representationOrigin": "Seam in test harness where an internal override parameter was supplied instead of executing an adversarial multi-file mutation attack.",
+      "historicalLineage": "Directive 105 attempted to prove tampering resilience via caller-supplied option override rather than mutating physical or in-memory fixtures.",
+      "resolutionAction": "Authored Suite 27 (tests/political-intelligence-directive-106.test.mjs) with 9 genuine adversarial cases mutating task identities, weights, stages, document digests, snapshots, criteria, phantom tasks, and manifest logs against the public reconciliation entry point.",
+      "resolutionStatus": "RESOLVED_ADVERSARIAL_BATTERY_DEPLOYED"
+    },
+    {
+      "discrepancyId": "DISC-023",
+      "itemKey": "VERIFIER_ENGINE:callerTrustOverrideAcceptance",
+      "category": "production_verifier_trust_guards",
+      "discrepancyType": "PRODUCTION_VERIFIER_TRUST_OVERRIDE_SEAM",
+      "affectedEntity": "scripts/reconcile_execution_ledger.mjs",
+      "priorReportValue": "Verification functions accepted caller-provided hash and commit overrides in options (e.g. expectedHashOverride, historicalOriginCommitOverride).",
+      "canonicalCommittedValue": "Strict caller trust override prohibition: verifiers reject caller-supplied trust overrides and throw CALLER_TRUST_OVERRIDE_PROHIBITED.",
+      "representationOrigin": "Optional debug/test parameters inadvertently exposed in public verification function signatures.",
+      "historicalLineage": "Directive 105 reconciler allowed options.expectedHashOverride to bypass immutable origin comparisons.",
+      "resolutionAction": "Enforced fail-closed caller-trust override prohibition guards in verifyHistoricalArtifactIntegrity, verifyAuthorityBoundary, verifyGoverningSpecificationProvenance, and reconcileExecutionLedger.",
+      "resolutionStatus": "RESOLVED_TRUST_OVERRIDES_PROHIBITED"
+    },
+    {
+      "discrepancyId": "DISC-024",
+      "itemKey": "TASK_SPECIFICATIONS:superficialCriteriaVerifiers",
+      "category": "substantive_criteria_procedures",
+      "discrepancyType": "SUPERFICIAL_CRITERIA_VERIFICATION",
+      "affectedEntity": "CRIT-B101-01, CRIT-B104-01, CRIT-C02-01, CRIT-G02-01",
+      "priorReportValue": "Verifiers used file existence, line counts, or superficial string inclusion checks (e.g., checking for \"1207\" in SQL text, checking \"stateCode === 'TS' ? 2023\" absence without testing behavior).",
+      "canonicalCommittedValue": "Substantive domain verifiers implemented: SQL DDL constraint/nullability/relationship checks, GeoJSON bbox/closed-rings/AC 119 defect checks, organization manifest-to-SQL tuple reconciliation, and VM-based behavioral testing across mapped, unmapped, and null inputs.",
+      "representationOrigin": "Superficial string matching in test specifications rather than substantive semantic and behavioral evaluation.",
+      "historicalLineage": "Directives 100-105 relied on text-level checks in some criteria verifiers.",
+      "resolutionAction": "Upgraded all 4 verifiers to substantive executable procedures: CRIT-B101-01 validates full DDL, constraints, and 4,123 seat inserts; CRIT-B104-01 validates closed rings, coordinates, bbox, and detects AC 119 defect; CRIT-C02-01 reconciles 107 canonical orgs and 1,043 aliases between JSON and SQL; CRIT-G02-01 executes VM behavioral evaluation for mapped, unmapped, and null inputs.",
+      "resolutionStatus": "RESOLVED_SUBSTANTIVE_VERIFIERS_IMPLEMENTED"
+    },
+    {
+      "discrepancyId": "DISC-025",
+      "itemKey": "CRITERION_REGISTER:missingEvidenceClassTaxonomy",
+      "category": "evidence_class_taxonomy",
+      "discrepancyType": "MISSING_EVIDENCE_CLASS_CLASSIFICATION",
+      "affectedEntity": "governance/specifications/w021_5_criterion_evidence_register.json",
+      "priorReportValue": "Criteria evidence register lacked standardized evidence class taxonomy across all 50 criteria.",
+      "canonicalCommittedValue": "All 50 criteria assigned one of 5 standard classes: 32 STATIC_SEMANTIC_VERIFICATION, 5 ARTIFACT_PRESENCE_ONLY, 5 DATABASE_STAGING_VERIFICATION, 5 EXTERNAL_AUTHORITY_VERIFICATION, 3 EXECUTABLE_BEHAVIOR_VERIFICATION.",
+      "representationOrigin": "Register lacked explicit evidenceClass attribute.",
+      "historicalLineage": "Directive 105 introduced criterion evidence register but did not enforce evidence classification taxonomy.",
+      "resolutionAction": "Updated w021_5_criterion_evidence_register.json, w021_5_criterion_evidence_register.md, TASK_SPECIFICATIONS, and evaluateTaskCriteria with explicit evidenceClass schema validation and reporting.",
+      "resolutionStatus": "RESOLVED_TAXONOMY_STANDARDIZED"
+    },
+    {
+      "discrepancyId": "DISC-026",
+      "itemKey": "TEST_MANIFEST:unqualifiedExecutionClaims",
+      "category": "test_execution_provenance",
+      "discrepancyType": "UNQUALIFIED_TEST_EXECUTION_PROVENANCE",
+      "affectedEntity": "reports/w021_5_test_execution_manifest.json",
+      "priorReportValue": "Manifest recorded test execution without explicit execution qualification distinguishing repository-recorded from CI-reproduced or independently reproduced results.",
+      "canonicalCommittedValue": "Explicit execution qualification REPOSITORY_RECORDED_EXECUTION added to manifest and suite records; parsed exit codes and zero-skipped claims validated against captured logs.",
+      "representationOrigin": "Unqualified execution reporting that did not separate committed test logs from independent runtime reproduction.",
+      "historicalLineage": "Directives 100-105 test execution runner did not qualify execution provenance context.",
+      "resolutionAction": "Added REPOSITORY_RECORDED_EXECUTION qualification, enhanced parseTestOutput with skipped count extraction, and hardened validateManifestIntegrity to enforce zero-skipped verification against raw process output.",
+      "resolutionStatus": "RESOLVED_EXECUTION_QUALIFIED"
+    }
+  ]
+}

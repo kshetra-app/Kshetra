@@ -239,6 +239,14 @@ export const TEST_SUITE_DEFINITIONS = [
     directiveRef: '105',
     shell: true,
   },
+  {
+    suite: 'tests/political-intelligence-directive-106.test.mjs',
+    command: 'node tests/political-intelligence-directive-106.test.mjs',
+    logFilename: 'directive-106.log',
+    suiteType: 'DIRECTIVE_VERIFICATION_TEST',
+    directiveRef: '106',
+    shell: true,
+  },
 ];
 
 /**
@@ -421,23 +429,26 @@ export function parseTestOutput(rawOutput, suiteDef = null) {
   let runnerFormat = null;
   let matched = false;
 
-  // 2. Try Jest format: Tests: 24 passed, 24 total
-  const jestTestsMatch = rawOutput.match(/Tests:\s+([0-9]+)\s+passed(?:,\s+([0-9]+)\s+failed)?/i);
+  // 2. Try Jest format: Tests: [X skipped, ]Y passed[, Z failed]
+  const jestTestsMatch = rawOutput.match(/Tests:\s+(?:([0-9]+)\s+skipped,\s+)?([0-9]+)\s+passed(?:,\s+([0-9]+)\s+failed)?/i);
   const jestSuitesMatch = rawOutput.match(/Test Suites:\s+([0-9]+)\s+passed/i);
+  let skipped = 0;
   if (jestTestsMatch) {
-    passed = parseInt(jestTestsMatch[1], 10);
-    failed = jestTestsMatch[2] ? parseInt(jestTestsMatch[2], 10) : 0;
+    skipped = jestTestsMatch[1] ? parseInt(jestTestsMatch[1], 10) : 0;
+    passed = parseInt(jestTestsMatch[2], 10);
+    failed = jestTestsMatch[3] ? parseInt(jestTestsMatch[3], 10) : 0;
     suitesPassed = jestSuitesMatch ? parseInt(jestSuitesMatch[1], 10) : (failed === 0 && passed > 0 ? 1 : 0);
     runnerFormat = 'JEST';
     matched = true;
   }
 
-  // 3. Try custom summary format: VERIFICATION SUMMARY: X PASSED, Y FAILED or TEST SUMMARY: X PASSED, Y FAILED
+  // 3. Try custom summary format: VERIFICATION SUMMARY: X PASSED, Y FAILED[, Z SKIPPED]
   if (!matched) {
-    const customMatch = rawOutput.match(/(?:VERIFICATION|TEST)\s+(?:EXECUTION\s+)?SUMMARY:\s+([0-9]+)\s+PASSED,\s+([0-9]+)\s+FAILED/i);
+    const customMatch = rawOutput.match(/(?:VERIFICATION|TEST)\s+(?:EXECUTION\s+)?SUMMARY:\s+([0-9]+)\s+PASSED,\s+([0-9]+)\s+FAILED(?:,\s+([0-9]+)\s+SKIPPED)?/i);
     if (customMatch) {
       passed = parseInt(customMatch[1], 10);
       failed = parseInt(customMatch[2], 10);
+      skipped = customMatch[3] ? parseInt(customMatch[3], 10) : 0;
       suitesPassed = failed === 0 && passed > 0 ? 1 : 0;
       runnerFormat = 'CUSTOM_SUMMARY';
       matched = true;
@@ -451,6 +462,8 @@ export function parseTestOutput(rawOutput, suiteDef = null) {
       failureReason: 'UNPARSED_OUTPUT_FORMAT',
       passed: 0,
       failed: 0,
+      skipped: 0,
+      zeroSkippedEvidenced: false,
       suitesPassed: 0,
       totalTests: 0,
       runnerFormat: null,
@@ -466,6 +479,8 @@ export function parseTestOutput(rawOutput, suiteDef = null) {
       failureReason: failed > 0 ? 'TESTS_FAILED' : 'ZERO_TESTS_PASSED',
       passed,
       failed,
+      skipped,
+      zeroSkippedEvidenced: skipped === 0,
       suitesPassed,
       totalTests,
       runnerFormat,
@@ -494,6 +509,8 @@ export function parseTestOutput(rawOutput, suiteDef = null) {
     failureReason: null,
     passed,
     failed,
+    skipped,
+    zeroSkippedEvidenced: skipped === 0,
     suitesPassed,
     totalTests,
     runnerFormat,
@@ -582,7 +599,7 @@ export function runSuiteAndCapture(suiteDef) {
       evidenceClass: 'REPOSITORY_IMPLEMENTATION',
       executedInCurrentDelivery: true,
       evidenceType: 'DIRECT_EXECUTION_CAPTURE',
-      executionEpoch: 'DIRECTIVE_105',
+      executionEpoch: 'DIRECTIVE_106',
       outputLogPath: relLogPath,
       outputLogSha256: sha256,
     };
@@ -620,6 +637,8 @@ export function runSuiteAndCapture(suiteDef) {
     suitesPassed: parsed.suitesPassed || (status === 'PASS' ? 1 : 0),
     testsPassed: parsed.passed,
     testsFailed: parsed.failed + (status === 'FAIL' && parsed.failed === 0 ? 1 : 0),
+    testsSkipped: parsed.skipped || 0,
+    zeroSkippedEvidenced: (parsed.skipped || 0) === 0,
     totalTests: parsed.totalTests,
     durationMs: durationMs,
     runnerFormat: parsed.runnerFormat,
@@ -628,7 +647,8 @@ export function runSuiteAndCapture(suiteDef) {
     evidenceClass: 'REPOSITORY_IMPLEMENTATION',
     executedInCurrentDelivery: true,
     evidenceType: 'DIRECT_EXECUTION_CAPTURE',
-    executionEpoch: 'DIRECTIVE_105',
+    executionEpoch: 'DIRECTIVE_106',
+    executionQualification: 'REPOSITORY_RECORDED_EXECUTION',
     outputLogPath: relLogPath,
     outputLogSha256: sha256,
   };
@@ -644,7 +664,8 @@ export function captureAllSuites(additionalSuites = []) {
     milestone: 'W021.5',
     generatedAt: new Date().toISOString(),
     manifestSchema: 'https://kshetra.dev/schemas/test-execution-manifest.v2.json',
-    verifierRole: 'CTO Directive 105 Test Execution Verifier',
+    executionQualification: 'REPOSITORY_RECORDED_EXECUTION',
+    verifierRole: 'CTO Directive 106 Test Execution Verifier',
     executionScope: 'FULL_REPOSITORY_REGRESSION_AND_DIRECTIVE_BATTERY',
     environment: {
       nodeVersion: process.version,
@@ -660,7 +681,7 @@ export function captureAllSuites(additionalSuites = []) {
       totalTestsFailed: 0,
       allSuitesPassed: false,
       executionScope: 'FULL_REPOSITORY_REGRESSION_AND_DIRECTIVE_BATTERY',
-      directiveCycle: 'CTO_DIRECTIVE_105',
+      directiveCycle: 'CTO_DIRECTIVE_106',
     },
   };
 
@@ -677,7 +698,8 @@ export function captureAllSuites(additionalSuites = []) {
 
   // Ensure metadata is consistently synchronized with current directive cycle
   manifest.manifestSchema = 'https://kshetra.dev/schemas/test-execution-manifest.v2.json';
-  manifest.verifierRole = 'CTO Directive 105 Test Execution Verifier';
+  manifest.executionQualification = 'REPOSITORY_RECORDED_EXECUTION';
+  manifest.verifierRole = 'CTO Directive 106 Test Execution Verifier';
   manifest.executionScope = 'FULL_REPOSITORY_REGRESSION_AND_DIRECTIVE_BATTERY';
   manifest.environment = {
     nodeVersion: process.version,
@@ -734,7 +756,7 @@ export function captureAllSuites(additionalSuites = []) {
       totalTestsFailed: sumFailed,
       allSuitesPassed: countFailedSuites === 0,
       executionScope: 'FULL_REPOSITORY_REGRESSION_AND_DIRECTIVE_BATTERY',
-      directiveCycle: 'CTO_DIRECTIVE_105',
+      directiveCycle: 'CTO_DIRECTIVE_106',
     };
 
     fs.writeFileSync(MANIFEST_PATH, JSON.stringify(manifest, null, 2) + '\n', 'utf8');
@@ -913,6 +935,12 @@ export function validateManifestIntegrity(manifest, repoRoot = REPO_ROOT, option
       }
       if (entry.runnerFormat && reparsed.runnerFormat !== entry.runnerFormat) {
         throw new Error(`Manifest validation error: Suite "${entry.suite}" runnerFormat mismatch: expected ${entry.runnerFormat}, re-parsed ${reparsed.runnerFormat}.`);
+      }
+      if (entry.testsSkipped !== undefined && reparsed.skipped !== undefined && entry.testsSkipped !== reparsed.skipped) {
+        throw new Error(`Manifest validation error: Suite "${entry.suite}" re-parsed skipped count (${reparsed.skipped}) does not match manifest testsSkipped (${entry.testsSkipped}).`);
+      }
+      if (entry.zeroSkippedEvidenced && (reparsed.skipped !== 0)) {
+        throw new Error(`Manifest validation error: Suite "${entry.suite}" claims zeroSkippedEvidenced but log contains ${reparsed.skipped} skipped test(s).`);
       }
       calculatedPassedSuites++;
     } else {

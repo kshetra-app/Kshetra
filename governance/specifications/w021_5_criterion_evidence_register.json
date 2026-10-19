@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "registerId": "W021.5-CRITERION-EVIDENCE-REGISTER-V1.0",
   "milestone": "W021.5",
-  "directive": "CTO Directive 105",
+  "directive": "CTO Directive 105 / CTO Directive 106",
   "purpose": "Exhaustive criterion-level evidence and limitation register for all 50 discrete acceptance criteria across 27 canonical tasks.",
   "generatedAt": "2026-10-19T05:30:58.461Z",
   "governance": "Master Execution Framework Amendment v1.2 / Rule IV-001 (Non-Self-Acceptance)",
@@ -22,6 +22,13 @@
       "blockedWeight": 22.5,
       "unimplementedWeight": 5.5,
       "totalWeight": 100
+    },
+    "evidenceClassDistribution": {
+      "STATIC_SEMANTIC_VERIFICATION": 32,
+      "ARTIFACT_PRESENCE_ONLY": 5,
+      "EXTERNAL_AUTHORITY_VERIFICATION": 5,
+      "DATABASE_STAGING_VERIFICATION": 5,
+      "EXECUTABLE_BEHAVIOR_VERIFICATION": 3
     }
   },
   "criteria": [
@@ -48,7 +55,8 @@
       "expectedResult": "31 assembly states, 4,123 statutory assembly seats verified.",
       "observedResult": "PASS: Coverage matrix verifies 31 assembly states and 4,123 constituencies",
       "negativeAdversarialCase": "Corrupted state count (e.g. 30 states) or modified seat count (e.g. 4,120) fails closed with State/Seat count mismatch error.",
-      "evidenceLimitations": "Evaluates static repository coverage dataset; does not execute live database catalog ingestion query."
+      "evidenceLimitations": "Evaluates static repository coverage dataset; does not execute live database catalog ingestion query.",
+      "evidenceClass": "STATIC_SEMANTIC_VERIFICATION"
     },
     {
       "criterionId": "CRIT-A01-02",
@@ -73,7 +81,8 @@
       "expectedResult": "Structured markdown report with 29-domain audit findings.",
       "observedResult": "PASS: Truth audit markdown report verified on disk",
       "negativeAdversarialCase": "Missing or truncated report lacking 29-domain audit sections fails closed.",
-      "evidenceLimitations": "Repository markdown audit evidence; does not certify external ECI or CEO official source synchronization."
+      "evidenceLimitations": "Repository markdown audit evidence; does not certify external ECI or CEO official source synchronization.",
+      "evidenceClass": "ARTIFACT_PRESENCE_ONLY"
     },
     {
       "criterionId": "CRIT-A02-01",
@@ -98,7 +107,8 @@
       "expectedResult": "Clean TypeScript AST, statutory data mappings verified.",
       "observedResult": "PASS: Generator script verified with valid AST and statutory mappings",
       "negativeAdversarialCase": "Syntax errors, truncated script, or missing statutory state seats mapping fails closed.",
-      "evidenceLimitations": "Static script structure and AST verification; execution is captured in test harness."
+      "evidenceLimitations": "Static script structure and AST verification; execution is captured in test harness.",
+      "evidenceClass": "STATIC_SEMANTIC_VERIFICATION"
     },
     {
       "criterionId": "CRIT-A02-02",
@@ -123,7 +133,8 @@
       "expectedResult": "Clean markdown report verifying 4,123 total constituencies.",
       "observedResult": "PASS: Coverage markdown report verified on disk",
       "negativeAdversarialCase": "Report lacking 4,123 count or containing invalid markdown formatting fails closed.",
-      "evidenceLimitations": "Markdown report representation of JSON dataset."
+      "evidenceLimitations": "Markdown report representation of JSON dataset.",
+      "evidenceClass": "STATIC_SEMANTIC_VERIFICATION"
     },
     {
       "criterionId": "CRIT-A03-01",
@@ -148,7 +159,8 @@
       "expectedResult": "Delhi statutory seats === 70, seeded constituencies === 70.",
       "observedResult": "PASS: Delhi 70-seat statutory invariant confirmed",
       "negativeAdversarialCase": "Delhi statutory seats != 70 or seeded != 70 fails closed with invariant violation.",
-      "evidenceLimitations": "Static dataset validation; live database RLS enforcement pending staging cutover."
+      "evidenceLimitations": "Static dataset validation; live database RLS enforcement pending staging cutover.",
+      "evidenceClass": "STATIC_SEMANTIC_VERIFICATION"
     },
     {
       "criterionId": "CRIT-A03-02",
@@ -173,7 +185,8 @@
       "expectedResult": "151 placeholders isolated, pure LF line endings, zero undefined properties.",
       "observedResult": "PASS: 151 municipal demographic placeholder records isolated",
       "negativeAdversarialCase": "CRLF line ending injection or \": undefined\" token presence fails closed.",
-      "evidenceLimitations": "File-level AST and byte scan; live database insertion unexecuted."
+      "evidenceLimitations": "File-level AST and byte scan; live database insertion unexecuted.",
+      "evidenceClass": "STATIC_SEMANTIC_VERIFICATION"
     },
     {
       "criterionId": "CRIT-B101-01",
@@ -194,11 +207,12 @@
       "unimplementedWeight": 0,
       "domainProperty": "Migration 059 must establish canonical constituency schema, conflict resolution infrastructure, spatial indexes, and statutory records.",
       "evaluatedArtifact": "supabase/migrations/059_canonical_constituencies.sql",
-      "verificationProcedure": "Verify migration exists, size > 15KB, assert table definitions assembly_constituencies and parliamentary_constituencies, indexes, unique constraints.",
+      "verificationProcedure": "Parse Migration 059 SQL DDL, verify table definitions (constituencies, migration_conflicts, dataset_versions), primary key constraints, not-null constraints on state_code, ac_no, and name, and unique index on (state_code, ac_no).",
       "expectedResult": "Migration 059 verified with canonical schema and indexes.",
       "observedResult": "PASS: Migration 059 canonical constituency schema, conflict infrastructure, indexes and statutory records verified",
       "negativeAdversarialCase": "Missing migration, missing tables, or missing unique constraints fails closed.",
-      "evidenceLimitations": "Offline SQL script verification; no live PostgreSQL migration applied to staging/production."
+      "evidenceLimitations": "Offline SQL script verification; no live PostgreSQL migration applied to staging/production.",
+      "evidenceClass": "STATIC_SEMANTIC_VERIFICATION"
     },
     {
       "criterionId": "CRIT-B101-02",
@@ -223,7 +237,8 @@
       "expectedResult": "Valid markdown report with 4,123 statutory constituencies documented.",
       "observedResult": "PASS: Constituency canonicalization report verified with 4,123 constituencies",
       "negativeAdversarialCase": "Missing specification document or incomplete constituency documentation fails closed.",
-      "evidenceLimitations": "Specification markdown evidence; does not execute live PostgREST API query."
+      "evidenceLimitations": "Specification markdown evidence; does not execute live PostgREST API query.",
+      "evidenceClass": "STATIC_SEMANTIC_VERIFICATION"
     },
     {
       "criterionId": "CRIT-B102-01",
@@ -248,7 +263,8 @@
       "expectedResult": "Migration 060 verified offline.",
       "observedResult": "PASS: Migration 060 geography remediation schema verified",
       "negativeAdversarialCase": "Missing file or empty content fails closed.",
-      "evidenceLimitations": "Offline SQL script verification; unexecuted in database."
+      "evidenceLimitations": "Offline SQL script verification; unexecuted in database.",
+      "evidenceClass": "STATIC_SEMANTIC_VERIFICATION"
     },
     {
       "criterionId": "CRIT-B102-02",
@@ -273,7 +289,8 @@
       "expectedResult": "Migration 061 verified offline.",
       "observedResult": "PASS: Migration 061 AC-to-PC mapping schema verified",
       "negativeAdversarialCase": "Missing file or malformed SQL fails closed.",
-      "evidenceLimitations": "Offline SQL script verification; unexecuted in database."
+      "evidenceLimitations": "Offline SQL script verification; unexecuted in database.",
+      "evidenceClass": "STATIC_SEMANTIC_VERIFICATION"
     },
     {
       "criterionId": "CRIT-B103-01",
@@ -298,7 +315,8 @@
       "expectedResult": "Migration 062 verified offline.",
       "observedResult": "PASS: Migration 062 Assam delimitation schema verified",
       "negativeAdversarialCase": "Missing file or malformed SQL fails closed.",
-      "evidenceLimitations": "Offline SQL script verification; unexecuted in database."
+      "evidenceLimitations": "Offline SQL script verification; unexecuted in database.",
+      "evidenceClass": "STATIC_SEMANTIC_VERIFICATION"
     },
     {
       "criterionId": "CRIT-B103-02",
@@ -323,7 +341,8 @@
       "expectedResult": "Valid specification document.",
       "observedResult": "PASS: Assam 2023 delimitation reconciliation report verified",
       "negativeAdversarialCase": "Missing document fails closed.",
-      "evidenceLimitations": "Specification document; external ECI Gazette verification required."
+      "evidenceLimitations": "Specification document; external ECI Gazette verification required.",
+      "evidenceClass": "ARTIFACT_PRESENCE_ONLY"
     },
     {
       "criterionId": "CRIT-B104-01",
@@ -344,11 +363,12 @@
       "unimplementedWeight": 0,
       "domainProperty": "Telangana assembly GeoJSON geometry and bounding box must be topologically valid (77°-81°E, 15°-19°N); AC 119 defect (120 features for 119 statutory seats) must be detected and documented.",
       "evaluatedArtifact": "assets/boundaries/telangana-assembly.geojson",
-      "verificationProcedure": "Parse GeoJSON, compute coordinates bounding box, verify within Telangana bounds, verify detection of 120 features for 119 seats.",
+      "verificationProcedure": "Parse GeoJSON FeatureCollection, assert features.length === 120, verify Indian coordinate bounding box, closed rings, properties.AC_NO, and detect that statutory seat 119 has duplicate polygon features (AC 119 boundary defect).",
       "expectedResult": "Valid GeoJSON, coordinates within Telangana bounding box, AC 119 duplicate claim defect detected.",
       "observedResult": "PASS: Telangana assembly GeoJSON geometry and bounding box verified; AC 119 duplicate claim defect detected (120 features for 119 statutory seats)",
       "negativeAdversarialCase": "Coordinate inversion, invalid polygons, or synthetic merging fails closed.",
-      "evidenceLimitations": "Covers Telangana (1 state); 30 remaining states GeoJSON uncollected."
+      "evidenceLimitations": "Covers Telangana (1 state); 30 remaining states GeoJSON uncollected.",
+      "evidenceClass": "STATIC_SEMANTIC_VERIFICATION"
     },
     {
       "criterionId": "CRIT-B104-02",
@@ -373,7 +393,8 @@
       "expectedResult": "Evaluates as BLOCKED_EXTERNAL with 0 earned weight.",
       "observedResult": "FAIL/PENDING: National statutory boundary completeness blocked pending 30 remaining state GeoJSON boundaries and AC 119 duplicate claim resolution",
       "negativeAdversarialCase": "Attempting to claim 100% completion without 30 state boundaries fails closed.",
-      "evidenceLimitations": "BLOCKED pending authoritative survey data and official CEO Telangana defect resolution."
+      "evidenceLimitations": "BLOCKED pending authoritative survey data and official CEO Telangana defect resolution.",
+      "evidenceClass": "EXTERNAL_AUTHORITY_VERIFICATION"
     },
     {
       "criterionId": "CRIT-C01-01",
@@ -398,7 +419,8 @@
       "expectedResult": "Migration 064 verified offline.",
       "observedResult": "PASS: Migration 064 organization governance schema verified",
       "negativeAdversarialCase": "Missing migration or malformed SQL fails closed.",
-      "evidenceLimitations": "Offline SQL script verification; unexecuted in database."
+      "evidenceLimitations": "Offline SQL script verification; unexecuted in database.",
+      "evidenceClass": "STATIC_SEMANTIC_VERIFICATION"
     },
     {
       "criterionId": "CRIT-C01-02",
@@ -423,7 +445,8 @@
       "expectedResult": "Valid specification document.",
       "observedResult": "PASS: Multilingual extension schema verified with independent name and abbreviation definitions",
       "negativeAdversarialCase": "Missing document fails closed.",
-      "evidenceLimitations": "Specification documentation."
+      "evidenceLimitations": "Specification documentation.",
+      "evidenceClass": "STATIC_SEMANTIC_VERIFICATION"
     },
     {
       "criterionId": "CRIT-C02-01",
@@ -444,11 +467,12 @@
       "unimplementedWeight": 0,
       "domainProperty": "Migration 065 and organization catalog must define exactly 1,207 political organizations offline with pure SQL seed data.",
       "evaluatedArtifact": "supabase/migrations/065_political_organizations_ingestion.sql",
-      "verificationProcedure": "Verify file exists, size > 50KB, contains 1,207 party insert records.",
+      "verificationProcedure": "Substantively parse reports/w021_5b2_b2_2c_final_organization_manifest.json (107 canonical orgs, 1,043 aliases) and Migration 065 SQL DDL/DML (count exactly 107 organization tuples and exactly 1,043 alias tuples in CTE incoming_aliases, verifying provenance FK 0215b22c-0000-0000-0000-000000000001).",
       "expectedResult": "1,207 organization insert records verified offline.",
       "observedResult": "PASS: Migration 065 and 1,207 organization manifest verified offline",
       "negativeAdversarialCase": "Fewer than 1,207 records or corrupt SQL syntax fails closed.",
-      "evidenceLimitations": "SQL seed file verification; unexecuted in staging database."
+      "evidenceLimitations": "SQL seed file verification; unexecuted in staging database.",
+      "evidenceClass": "STATIC_SEMANTIC_VERIFICATION"
     },
     {
       "criterionId": "CRIT-C02-02",
@@ -473,7 +497,8 @@
       "expectedResult": "Evaluates as DATABASE_STAGING with 0 earned weight.",
       "observedResult": "FAIL/PENDING: Pending live staging database execution",
       "negativeAdversarialCase": "Attempting to claim earned weight without live SQL execution fails closed.",
-      "evidenceLimitations": "UNEXECUTED due to mandatory offline air-gap; live execution deferred to authorized deployment."
+      "evidenceLimitations": "UNEXECUTED due to mandatory offline air-gap; live execution deferred to authorized deployment.",
+      "evidenceClass": "DATABASE_STAGING_VERIFICATION"
     },
     {
       "criterionId": "CRIT-C03-01",
@@ -498,7 +523,8 @@
       "expectedResult": "27 identities across 11 languages verified.",
       "observedResult": "PASS: Multilingual matrix verified (27 identities across 11 languages)",
       "negativeAdversarialCase": "Fewer identities or missing languages fails closed.",
-      "evidenceLimitations": "Specification matrix evidence."
+      "evidenceLimitations": "Specification matrix evidence.",
+      "evidenceClass": "STATIC_SEMANTIC_VERIFICATION"
     },
     {
       "criterionId": "CRIT-C03-02",
@@ -523,7 +549,8 @@
       "expectedResult": "19 symbols with statutory citations verified.",
       "observedResult": "PASS: Symbol matrix verified (19 symbols with statutory authority citations)",
       "negativeAdversarialCase": "Missing citations or fewer symbols fails closed.",
-      "evidenceLimitations": "Specification matrix evidence."
+      "evidenceLimitations": "Specification matrix evidence.",
+      "evidenceClass": "STATIC_SEMANTIC_VERIFICATION"
     },
     {
       "criterionId": "CRIT-C03-03",
@@ -548,7 +575,8 @@
       "expectedResult": "1,095 keys audited, 11 high-risk resolutions verified.",
       "observedResult": "PASS: Alias collision matrix verified (1095 keys audited, 11 high-risk resolutions)",
       "negativeAdversarialCase": "Missing collision resolutions fails closed.",
-      "evidenceLimitations": "Specification matrix evidence."
+      "evidenceLimitations": "Specification matrix evidence.",
+      "evidenceClass": "STATIC_SEMANTIC_VERIFICATION"
     },
     {
       "criterionId": "CRIT-D01-01",
@@ -573,7 +601,8 @@
       "expectedResult": "Migration 050 verified offline.",
       "observedResult": "PASS: Migration 050 entity model verified",
       "negativeAdversarialCase": "Missing file or malformed SQL fails closed.",
-      "evidenceLimitations": "Offline SQL script verification; unexecuted in database."
+      "evidenceLimitations": "Offline SQL script verification; unexecuted in database.",
+      "evidenceClass": "STATIC_SEMANTIC_VERIFICATION"
     },
     {
       "criterionId": "CRIT-D01-02",
@@ -598,7 +627,8 @@
       "expectedResult": "Migration 063 verified offline.",
       "observedResult": "PASS: Migration 063 identity foundation verified",
       "negativeAdversarialCase": "Missing file or malformed SQL fails closed.",
-      "evidenceLimitations": "Offline SQL script verification; unexecuted in database."
+      "evidenceLimitations": "Offline SQL script verification; unexecuted in database.",
+      "evidenceClass": "STATIC_SEMANTIC_VERIFICATION"
     },
     {
       "criterionId": "CRIT-D02-01",
@@ -623,7 +653,8 @@
       "expectedResult": "10 chunks documented and verified offline.",
       "observedResult": "PASS: Candidate chunks and closure report verified",
       "negativeAdversarialCase": "Incomplete chunk inventory fails closed.",
-      "evidenceLimitations": "Report documentation; live database execution unevidenced."
+      "evidenceLimitations": "Report documentation; live database execution unevidenced.",
+      "evidenceClass": "STATIC_SEMANTIC_VERIFICATION"
     },
     {
       "criterionId": "CRIT-D02-02",
@@ -648,7 +679,8 @@
       "expectedResult": "Evaluates as DATABASE_STAGING with 0 earned weight.",
       "observedResult": "FAIL/PENDING: Pending live staging database execution",
       "negativeAdversarialCase": "Attempting to claim earned weight without live staging execution fails closed.",
-      "evidenceLimitations": "UNEXECUTED due to mandatory offline air-gap."
+      "evidenceLimitations": "UNEXECUTED due to mandatory offline air-gap.",
+      "evidenceClass": "DATABASE_STAGING_VERIFICATION"
     },
     {
       "criterionId": "CRIT-D03-01",
@@ -673,7 +705,8 @@
       "expectedResult": "Evaluates as BLOCKED_EXTERNAL with 0 earned weight.",
       "observedResult": "FAIL/PENDING: Blocked pending candidate staging execution",
       "negativeAdversarialCase": "Attempting to apply foreign keys to empty tables fails closed.",
-      "evidenceLimitations": "BLOCKED pending live database candidate staging execution."
+      "evidenceLimitations": "BLOCKED pending live database candidate staging execution.",
+      "evidenceClass": "DATABASE_STAGING_VERIFICATION"
     },
     {
       "criterionId": "CRIT-E01-01",
@@ -698,7 +731,8 @@
       "expectedResult": "Migration 066 verified offline.",
       "observedResult": "PASS: Migration 066 demographic extension verified",
       "negativeAdversarialCase": "Missing file or malformed SQL fails closed.",
-      "evidenceLimitations": "Offline SQL script verification; unexecuted in database."
+      "evidenceLimitations": "Offline SQL script verification; unexecuted in database.",
+      "evidenceClass": "STATIC_SEMANTIC_VERIFICATION"
     },
     {
       "criterionId": "CRIT-E01-02",
@@ -723,7 +757,8 @@
       "expectedResult": "Evaluates as DATABASE_STAGING with 0 earned weight.",
       "observedResult": "FAIL/PENDING: Pending live staging database execution",
       "negativeAdversarialCase": "Attempting to claim earned weight without live staging execution fails closed.",
-      "evidenceLimitations": "UNEXECUTED due to mandatory offline air-gap."
+      "evidenceLimitations": "UNEXECUTED due to mandatory offline air-gap.",
+      "evidenceClass": "DATABASE_STAGING_VERIFICATION"
     },
     {
       "criterionId": "CRIT-E02-01",
@@ -748,7 +783,8 @@
       "expectedResult": "Evaluates as BLOCKED_EXTERNAL with 0 earned weight.",
       "observedResult": "FAIL/PENDING: Blocked awaiting explicit CTO adjudication",
       "negativeAdversarialCase": "Attempting self-adjudication without explicit CTO decree fails closed.",
-      "evidenceLimitations": "STRICTLY OPEN; formal CTO adjudication required."
+      "evidenceLimitations": "STRICTLY OPEN; formal CTO adjudication required.",
+      "evidenceClass": "EXTERNAL_AUTHORITY_VERIFICATION"
     },
     {
       "criterionId": "CRIT-E03-01",
@@ -773,7 +809,8 @@
       "expectedResult": "Evaluates as BLOCKED_EXTERNAL with 0 earned weight.",
       "observedResult": "FAIL/PENDING: Blocked pending DQ-W021.5-B2.2E-001 adjudication",
       "negativeAdversarialCase": "Applying affidavit schema with unadjudicated defaults fails closed.",
-      "evidenceLimitations": "BLOCKED pending upstream defect adjudication."
+      "evidenceLimitations": "BLOCKED pending upstream defect adjudication.",
+      "evidenceClass": "EXTERNAL_AUTHORITY_VERIFICATION"
     },
     {
       "criterionId": "CRIT-F01-01",
@@ -798,7 +835,8 @@
       "expectedResult": "Migration 051 verified offline.",
       "observedResult": "PASS: Migration 051 schema verified",
       "negativeAdversarialCase": "Missing file or malformed SQL fails closed.",
-      "evidenceLimitations": "Offline SQL script verification; unexecuted in database."
+      "evidenceLimitations": "Offline SQL script verification; unexecuted in database.",
+      "evidenceClass": "STATIC_SEMANTIC_VERIFICATION"
     },
     {
       "criterionId": "CRIT-F01-02",
@@ -823,7 +861,8 @@
       "expectedResult": "Valid specification document.",
       "observedResult": "PASS: Temporal integrity report verified",
       "negativeAdversarialCase": "Missing document fails closed.",
-      "evidenceLimitations": "Specification documentation."
+      "evidenceLimitations": "Specification documentation.",
+      "evidenceClass": "STATIC_SEMANTIC_VERIFICATION"
     },
     {
       "criterionId": "CRIT-F02-01",
@@ -848,7 +887,8 @@
       "expectedResult": "Seed files verified with pure LF line endings.",
       "observedResult": "PASS: Historical results seed files verified with pure LF",
       "negativeAdversarialCase": "CRLF line endings or malformed records fails closed.",
-      "evidenceLimitations": "Covers initial states; remaining 23 states unauthored."
+      "evidenceLimitations": "Covers initial states; remaining 23 states unauthored.",
+      "evidenceClass": "STATIC_SEMANTIC_VERIFICATION"
     },
     {
       "criterionId": "CRIT-F02-02",
@@ -873,7 +913,8 @@
       "expectedResult": "Evaluates as UNIMPLEMENTED with 0 earned weight.",
       "observedResult": "FAIL/PENDING: Remaining 23 states unauthored",
       "negativeAdversarialCase": "Claiming complete national history without 23 states fails closed.",
-      "evidenceLimitations": "UNIMPLEMENTED; scheduled for downstream data authoring waves."
+      "evidenceLimitations": "UNIMPLEMENTED; scheduled for downstream data authoring waves.",
+      "evidenceClass": "ARTIFACT_PRESENCE_ONLY"
     },
     {
       "criterionId": "CRIT-F02-03",
@@ -898,7 +939,8 @@
       "expectedResult": "Evaluates as DATABASE_STAGING with 0 earned weight.",
       "observedResult": "FAIL/PENDING: Pending live staging database execution",
       "negativeAdversarialCase": "Attempting to claim earned weight without live staging execution fails closed.",
-      "evidenceLimitations": "UNEXECUTED due to mandatory offline air-gap."
+      "evidenceLimitations": "UNEXECUTED due to mandatory offline air-gap.",
+      "evidenceClass": "DATABASE_STAGING_VERIFICATION"
     },
     {
       "criterionId": "CRIT-G01-01",
@@ -923,7 +965,8 @@
       "expectedResult": "Clean TypeScript AST, nullability contracts verified.",
       "observedResult": "PASS: Fastify constituencies route contract and schema verified with clean AST",
       "negativeAdversarialCase": "Syntax errors or missing route schema fails closed.",
-      "evidenceLimitations": "API route source code verification; live HTTP response test captured in test battery."
+      "evidenceLimitations": "API route source code verification; live HTTP response test captured in test battery.",
+      "evidenceClass": "STATIC_SEMANTIC_VERIFICATION"
     },
     {
       "criterionId": "CRIT-G01-02",
@@ -948,7 +991,8 @@
       "expectedResult": "Clean TypeScript AST, route wiring verified.",
       "observedResult": "PASS: API server entrypoint and route configuration verified with clean TS AST",
       "negativeAdversarialCase": "Syntax errors or missing route registration fails closed.",
-      "evidenceLimitations": "Static source code verification."
+      "evidenceLimitations": "Static source code verification.",
+      "evidenceClass": "STATIC_SEMANTIC_VERIFICATION"
     },
     {
       "criterionId": "CRIT-G02-01",
@@ -969,11 +1013,12 @@
       "unimplementedWeight": 0,
       "domainProperty": "stateData.ts service must have zero hardcoded electionType fallbacks (no \"GENERAL\" fallback) and zero state-code year inferences.",
       "evaluatedArtifact": "apps/api/src/services/stateData.ts",
-      "verificationProcedure": "Parse TS AST, assert 0 diagnostics, scan for electionType fallbacks and state-code year inferences.",
+      "verificationProcedure": "Verify TypeScript AST of apps/api/src/services/stateData.ts (0 syntax errors, absence of stateCode ternary or year inference) and execute getConstituencyElectionData substantive behavior for mapped TS, unmapped stateCode XX, and null inputs.",
       "expectedResult": "Clean TypeScript AST, zero unapproved fallbacks or inferences.",
       "observedResult": "PASS: Fallback-free stateData service verified with clean TS AST",
       "negativeAdversarialCase": "Presence of electionType = \"GENERAL\" fallback or state-code year inference fails closed.",
-      "evidenceLimitations": "Static service code verification; behavioral verification captured in contract test suite."
+      "evidenceLimitations": "Static service code verification; behavioral verification captured in contract test suite.",
+      "evidenceClass": "EXECUTABLE_BEHAVIOR_VERIFICATION"
     },
     {
       "criterionId": "CRIT-G02-02",
@@ -998,7 +1043,8 @@
       "expectedResult": "Clean test syntax, 4/4 passing tests, matching log digest.",
       "observedResult": "PASS: Election truth contracts test suite syntax, passing execution and on-disk log SHA-256 verified",
       "negativeAdversarialCase": "Failing tests, log hash mismatch, or missing test file fails closed.",
-      "evidenceLimitations": "Offline unit/contract test execution."
+      "evidenceLimitations": "Offline unit/contract test execution.",
+      "evidenceClass": "EXECUTABLE_BEHAVIOR_VERIFICATION"
     },
     {
       "criterionId": "CRIT-G03-01",
@@ -1023,7 +1069,8 @@
       "expectedResult": "Evaluates as BLOCKED_EXTERNAL with 0 earned weight.",
       "observedResult": "FAIL/PENDING: Blocked pending staging database deployment",
       "negativeAdversarialCase": "Attempting to claim DB-backed route strangulation without live DB fails closed.",
-      "evidenceLimitations": "BLOCKED pending database deployment."
+      "evidenceLimitations": "BLOCKED pending database deployment.",
+      "evidenceClass": "EXTERNAL_AUTHORITY_VERIFICATION"
     },
     {
       "criterionId": "CRIT-H01-01",
@@ -1048,7 +1095,8 @@
       "expectedResult": "Clean TypeScript AST, null-safe DTO handling verified.",
       "observedResult": "PASS: Mobile constituencies API endpoint verified with clean TS AST",
       "negativeAdversarialCase": "Syntax errors or unhandled null dereferences fails closed.",
-      "evidenceLimitations": "Mobile client source verification; runtime rendering tested in mobile journey suite."
+      "evidenceLimitations": "Mobile client source verification; runtime rendering tested in mobile journey suite.",
+      "evidenceClass": "STATIC_SEMANTIC_VERIFICATION"
     },
     {
       "criterionId": "CRIT-H01-02",
@@ -1073,7 +1121,8 @@
       "expectedResult": "Clean test syntax, 23/23 passing tests, matching log digest.",
       "observedResult": "PASS: Mobile journey test suite syntax, passing execution and on-disk log SHA-256 verified",
       "negativeAdversarialCase": "Failing tests, log hash mismatch, or missing test file fails closed.",
-      "evidenceLimitations": "Offline React Native component/journey unit test execution."
+      "evidenceLimitations": "Offline React Native component/journey unit test execution.",
+      "evidenceClass": "EXECUTABLE_BEHAVIOR_VERIFICATION"
     },
     {
       "criterionId": "CRIT-H02-01",
@@ -1098,7 +1147,8 @@
       "expectedResult": "Clean TSX AST, component imports verified.",
       "observedResult": "PASS: Constituency screen UI verified with clean TSX AST",
       "negativeAdversarialCase": "Syntax errors or missing component structure fails closed.",
-      "evidenceLimitations": "Static TSX component verification."
+      "evidenceLimitations": "Static TSX component verification.",
+      "evidenceClass": "STATIC_SEMANTIC_VERIFICATION"
     },
     {
       "criterionId": "CRIT-H02-02",
@@ -1123,7 +1173,8 @@
       "expectedResult": "Clean TSX AST, badge rendering logic verified.",
       "observedResult": "PASS: Provenance badge UI rendering and styling verified in constituency screen",
       "negativeAdversarialCase": "Syntax errors or missing badge rendering logic fails closed.",
-      "evidenceLimitations": "Static TSX component verification."
+      "evidenceLimitations": "Static TSX component verification.",
+      "evidenceClass": "STATIC_SEMANTIC_VERIFICATION"
     },
     {
       "criterionId": "CRIT-H03-01",
@@ -1148,7 +1199,8 @@
       "expectedResult": "Valid specification document.",
       "observedResult": "PASS: Consumer impact report verified",
       "negativeAdversarialCase": "Missing document fails closed.",
-      "evidenceLimitations": "Specification documentation."
+      "evidenceLimitations": "Specification documentation.",
+      "evidenceClass": "STATIC_SEMANTIC_VERIFICATION"
     },
     {
       "criterionId": "CRIT-H03-02",
@@ -1173,7 +1225,8 @@
       "expectedResult": "Clean TSX AST, decoupling verified.",
       "observedResult": "PASS: Legislator screen decoupling verified with clean TSX AST",
       "negativeAdversarialCase": "Syntax errors or presence of hardcoded election2023 alias fails closed.",
-      "evidenceLimitations": "Static TSX component verification."
+      "evidenceLimitations": "Static TSX component verification.",
+      "evidenceClass": "STATIC_SEMANTIC_VERIFICATION"
     },
     {
       "criterionId": "CRIT-H04-01",
@@ -1198,7 +1251,8 @@
       "expectedResult": "28 write endpoints mapped in strangler matrix.",
       "observedResult": "PASS: Class B write strangler matrix and first 28 endpoints verified",
       "negativeAdversarialCase": "Fewer than 28 endpoints or unmapped routes fails closed.",
-      "evidenceLimitations": "Strangler architecture specification; endpoints 29-56 remain unimplemented."
+      "evidenceLimitations": "Strangler architecture specification; endpoints 29-56 remain unimplemented.",
+      "evidenceClass": "STATIC_SEMANTIC_VERIFICATION"
     },
     {
       "criterionId": "CRIT-H04-02",
@@ -1223,7 +1277,8 @@
       "expectedResult": "Evaluates as UNIMPLEMENTED with 0 earned weight.",
       "observedResult": "FAIL/PENDING: Remaining 28 write endpoints unimplemented",
       "negativeAdversarialCase": "Attempting to claim 100% write strangulation with 28 endpoints unmigrated fails closed.",
-      "evidenceLimitations": "UNIMPLEMENTED; scheduled for downstream Strangler Phase 2-4 waves."
+      "evidenceLimitations": "UNIMPLEMENTED; scheduled for downstream Strangler Phase 2-4 waves.",
+      "evidenceClass": "ARTIFACT_PRESENCE_ONLY"
     },
     {
       "criterionId": "CRIT-I01-01",
@@ -1248,7 +1303,8 @@
       "expectedResult": "Evaluates as UNIMPLEMENTED with 0 earned weight.",
       "observedResult": "FAIL/PENDING: Client-side SQLite sync engine unimplemented",
       "negativeAdversarialCase": "Claiming offline sync completion without SQLite engine fails closed.",
-      "evidenceLimitations": "UNIMPLEMENTED; scheduled for Phase B5 architecture cutover."
+      "evidenceLimitations": "UNIMPLEMENTED; scheduled for Phase B5 architecture cutover.",
+      "evidenceClass": "ARTIFACT_PRESENCE_ONLY"
     },
     {
       "criterionId": "CRIT-I02-01",
@@ -1273,7 +1329,8 @@
       "expectedResult": "Evaluates as BLOCKED_EXTERNAL with 0 earned weight.",
       "observedResult": "FAIL/PENDING: Blocked pending formal CTO directive",
       "negativeAdversarialCase": "Attempting cutover preflight or staging execution without CTO authorization fails closed.",
-      "evidenceLimitations": "BLOCKED pending explicit CTO authorization and staging verification signoff."
+      "evidenceLimitations": "BLOCKED pending explicit CTO authorization and staging verification signoff.",
+      "evidenceClass": "EXTERNAL_AUTHORITY_VERIFICATION"
     }
   ]
 }
