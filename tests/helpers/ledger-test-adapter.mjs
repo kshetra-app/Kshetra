@@ -1,7 +1,7 @@
 /**
  * tests/helpers/ledger-test-adapter.mjs
  *
- * Master Execution Framework — W021.5 / CTO Directive 108 & 109
+ * Master Execution Framework — W021.5 / CTO Directive 108, 109 & 110
  * Isolated Test Seam Adapter for Verification Fixtures
  *
  * Provides a dedicated, structurally isolated test adapter for test suites
@@ -12,7 +12,8 @@
  * of the production verifier (scripts/reconcile_execution_ledger.mjs). It does NOT
  * rely on caller-reproducible tokens, Symbol.for(...), string secrets, or mode flags.
  * Fixture injection is implemented in test-only code without exposing an override-capable
- * callable interface in production, while reusing the shared verification logic.
+ * callable interface in production, while reusing the shared verification logic from
+ * scripts/internal/reconcile_engine.mjs.
  */
 
 import { execSync } from 'child_process';
@@ -28,7 +29,7 @@ import {
   verifyAuthorityBoundaryPayload,
   verifyGoverningSpecificationProvenancePayload,
   reconcileExecutionLedgerCore,
-} from '../../scripts/reconcile_execution_ledger.mjs';
+} from '../../scripts/internal/reconcile_engine.mjs';
 
 /**
  * Executes historical artifact integrity verification within controlled test fixtures.

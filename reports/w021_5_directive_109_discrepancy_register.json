@@ -1,0 +1,61 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "registerId": "W021.5-DIRECTIVE-109-DISCREPANCY-REGISTER-V1.0",
+  "milestone": "W021.5",
+  "directive": "CTO Directive 110",
+  "purpose": "Forensic discrepancy register and remediation mapping for independent review findings of CTO Directive 109.",
+  "generatedAt": "2026-10-19T12:15:00.000Z",
+  "governance": "Master Execution Framework Amendment v1.2 / Rule IV-001 (Non-Self-Acceptance)",
+  "summary": {
+    "totalDiscrepanciesAudited": 3,
+    "discrepanciesResolved": 3,
+    "discrepanciesBlocked": 0,
+    "discrepancyCategoriesAudited": [
+      "unprotected_payload_exports",
+      "dependency_graph_acyclicity",
+      "test_harness_precision"
+    ],
+    "resolutionStatus": "ALL_DISCREPANCIES_FORENSICALLY_ANALYZED_AND_RECONCILED"
+  },
+  "discrepancies": [
+    {
+      "discrepancyId": "DISC-038",
+      "itemKey": "VERIFIER_ENGINE:directInvocationPayloadBypass",
+      "category": "unprotected_payload_exports",
+      "discrepancyType": "DIRECT_INVOCATION_VERIFIER_GUARD_BYPASS",
+      "affectedEntity": "scripts/reconcile_execution_ledger.mjs (public export surface)",
+      "priorReportValue": "Directive 109 exported verifyHistoricalArtifactIntegrityPayload, verifyAuthorityBoundaryPayload, verifyGoverningSpecificationProvenancePayload, and reconcileExecutionLedgerCore directly from scripts/reconcile_execution_ledger.mjs. These payload functions accept caller-provided verification inputs directly without assertNoCallerTrustOverrides guards, allowing an in-process caller to bypass public verifier controls.",
+      "canonicalCommittedValue": "All four payload functions are completely removed from the public export surface of scripts/reconcile_execution_ledger.mjs (they evaluate to undefined on the module namespace). The shared verification algorithms reside in scripts/internal/reconcile_engine.mjs, consumed internally by guarded production verifiers and the test adapter. No bypass route exists on the production verifier.",
+      "representationOrigin": "Directive 109 refactoring that moved root payload execution into reconcile_execution_ledger.mjs to avoid circular dependencies without restricting the module export surface.",
+      "historicalLineage": "Directive 108 attempted isolation via internal folder and tokens; Directive 109 eliminated tokens and circular loops by exporting payloads; Directive 110 properly scopes payload implementations to internal engine while exposing only guarded entry points.",
+      "resolutionAction": "Moved payload functions into scripts/internal/reconcile_engine.mjs. Refactored scripts/reconcile_execution_ledger.mjs to import payloads internally and expose ONLY the four guarded entry points (verifyHistoricalArtifactIntegrity, verifyAuthorityBoundary, verifyGoverningSpecificationProvenance, reconcileExecutionLedger). Verified in Suite 31 Tests 1.1-1.6 and 3.6.",
+      "resolutionStatus": "RESOLVED_UNPROTECTED_PAYLOAD_EXPORTS_REMOVED"
+    },
+    {
+      "discrepancyId": "DISC-039",
+      "itemKey": "MODULE_ARCHITECTURE:sharedEngineDAGSeparation",
+      "category": "dependency_graph_acyclicity",
+      "discrepancyType": "INVERTED_DEPENDENCY_STRUCTURE",
+      "affectedEntity": "scripts/internal/reconcile_engine.mjs, scripts/reconcile_execution_ledger.mjs, and tests/helpers/ledger-test-adapter.mjs",
+      "priorReportValue": "Directive 109 treated scripts/internal/reconcile_engine.mjs as a backward-compatibility forwarder re-exporting from tests/helpers/ledger-test-adapter.mjs. This inverted the architectural hierarchy, making the internal engine dependent on a test helper.",
+      "canonicalCommittedValue": "Architectural hierarchy is strictly top-down: scripts/internal/reconcile_engine.mjs serves as the Layer 0 shared base engine (with zero repository imports). Both scripts/reconcile_execution_ledger.mjs (production wrapper) and tests/helpers/ledger-test-adapter.mjs (adversarial fixture harness) are Layer 1 consumers importing from Layer 0. Zero circular dependencies exist.",
+      "representationOrigin": "Ad-hoc re-export in Directive 109 to satisfy legacy test references while breaking circular imports between verifier and engine.",
+      "historicalLineage": "Mutual imports in Directive 108 were inverted in Directive 109; Directive 110 establishes a clean, canonical DAG.",
+      "resolutionAction": "Consolidated verification payload algorithms into scripts/internal/reconcile_engine.mjs without repo imports. Re-pointed tests/helpers/ledger-test-adapter.mjs to import from internal engine. Verified clean process loading and static DAG structure in Suite 31 Tests 4.1-4.5.",
+      "resolutionStatus": "RESOLVED_STRICT_DAG_ARCHITECTURE_ESTABLISHED"
+    },
+    {
+      "discrepancyId": "DISC-040",
+      "itemKey": "TEST_SUITE:suite30AcyclicityCheckRefinement",
+      "category": "test_harness_precision",
+      "discrepancyType": "HEURISTIC_CIRCULARITY_CHECK_FALSE_POSITIVE",
+      "affectedEntity": "tests/political-intelligence-directive-109.test.mjs (Test 1.3)",
+      "priorReportValue": "Suite 30 Test 1.3 checked for circularity using string matching that asserted scripts/reconcile_execution_ledger.mjs must not contain \"from './internal/reconcile_engine.mjs'\", confusing importing an internal engine with a circular dependency.",
+      "canonicalCommittedValue": "Test 1.3 updated to perform true dependency cycle verification: asserting that production verifier does not import test adapter, internal engine does not import production verifier or test adapter, and test adapter does not import production verifier. Proves true acyclicity of the three-module graph.",
+      "representationOrigin": "Hardcoded string assertion in Directive 109 test suite reflecting the temporary inverted structure of Directive 109.",
+      "historicalLineage": "Directive 109 test checked against the specific file layout of that commit rather than semantic DAG properties.",
+      "resolutionAction": "Refined Test 1.3 in tests/political-intelligence-directive-109.test.mjs using regex import statement analysis, and added comprehensive DAG verification in Suite 31 Tests 4.4 and 4.5.",
+      "resolutionStatus": "RESOLVED_TEST_CHECK_PRECISION_RECONCILED"
+    }
+  ]
+}

@@ -137,13 +137,20 @@ runTest('1.3 Clean-process verification of acyclic dependency graph (zero circul
     import * as verifier from './scripts/reconcile_execution_ledger.mjs';
     import * as adapter from './tests/helpers/ledger-test-adapter.mjs';
     
-    // Assert production verifier does NOT have internal engine or adapter in its module records
-    const fileContent = (await import('fs')).readFileSync('scripts/reconcile_execution_ledger.mjs', 'utf8');
-    if (fileContent.includes("from './internal/reconcile_engine.mjs'")) {
-      throw new Error('CIRCULAR_DEPENDENCY_DETECTED: reconcile_execution_ledger.mjs imports reconcile_engine.mjs');
-    }
-    if (fileContent.includes("from '../tests/helpers/ledger-test-adapter.mjs'")) {
+    // Assert production verifier does NOT import test adapter (no test seam leak in production)
+    const verifierContent = (await import('fs')).readFileSync('scripts/reconcile_execution_ledger.mjs', 'utf8');
+    if (/from\s+['"][^'"]*ledger-test-adapter/.test(verifierContent)) {
       throw new Error('CIRCULAR_DEPENDENCY_DETECTED: reconcile_execution_ledger.mjs imports ledger-test-adapter.mjs');
+    }
+    // Assert internal engine does NOT import production verifier or test adapter (zero circular dependency)
+    const engineContent = (await import('fs')).readFileSync('scripts/internal/reconcile_engine.mjs', 'utf8');
+    if (/from\s+['"][^'"]*(reconcile_execution_ledger|ledger-test-adapter)/.test(engineContent)) {
+      throw new Error('CIRCULAR_DEPENDENCY_DETECTED: reconcile_engine.mjs imports production verifier or test adapter');
+    }
+    // Assert test adapter does NOT import production verifier
+    const adapterContent = (await import('fs')).readFileSync('tests/helpers/ledger-test-adapter.mjs', 'utf8');
+    if (/from\s+['"][^'"]*reconcile_execution_ledger/.test(adapterContent)) {
+      throw new Error('CIRCULAR_DEPENDENCY_DETECTED: ledger-test-adapter.mjs imports production verifier');
     }
     console.log('SUCCESS:MODULE_GRAPH_ACYCLIC');
   `;

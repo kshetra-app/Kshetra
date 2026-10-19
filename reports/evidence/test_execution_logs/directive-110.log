@@ -1,0 +1,78 @@
+================================================================================
+KSHETRA VERIFIABLE TEST EXECUTION LOG
+Suite: tests/political-intelligence-directive-110.test.mjs
+Command: node tests/political-intelligence-directive-110.test.mjs
+Working Directory: C:\Users\Laven\OneDrive\Desktop\Kshetra
+Runtime: Node v24.13.0 (win32)
+Execution Timestamp: 2026-10-19T12:15:25.390Z
+Exit Code: 0
+================================================================================
+
+--- STDOUT ---
+================================================================
+KSHETRA W021.5 — CTO DIRECTIVE 110 VERIFICATION SUITE
+Remove Unprotected Payload Exports & Close Direct-Invocation Bypass
+Suite: tests/political-intelligence-directive-110.test.mjs
+Command: node tests/political-intelligence-directive-110.test.mjs
+================================================================
+
+--- 1. Production Verifier Export Surface Audit (B1) ---
+  [PASS] 1.1 B1: verifyHistoricalArtifactIntegrityPayload is NOT exported from production verifier
+  [PASS] 1.2 B1: verifyAuthorityBoundaryPayload is NOT exported from production verifier
+  [PASS] 1.3 B1: verifyGoverningSpecificationProvenancePayload is NOT exported from production verifier
+  [PASS] 1.4 B1: reconcileExecutionLedgerCore is NOT exported from production verifier
+  [PASS] 1.5 B1: No alternate payload aliases, internal prefixes, or test tokens are exported
+  [PASS] 1.6 B1: Production verifier exports exactly 4 guarded public verifier entry points
+
+--- 2. Public Trust Override Rejection Matrix & Defense (B2) ---
+  [PASS] 2.1 B2: verifyHistoricalArtifactIntegrity rejects ALL 10 forbidden overrides unconditionally
+  [PASS] 2.2 B2: verifyAuthorityBoundary rejects ALL 10 forbidden overrides unconditionally
+  [PASS] 2.3 B2: verifyGoverningSpecificationProvenance rejects ALL 10 forbidden overrides unconditionally
+  [PASS] 2.4 B2: reconcileExecutionLedger rejects ALL 10 forbidden overrides unconditionally
+  [PASS] 2.5 B2: Caller-supplied Booleans and mode flags CANNOT bypass trust rejection across verifiers
+  [PASS] 2.6 B2: Symbol.for token forge cannot bypass public verifiers or authorize overrides in clean process
+
+--- 3. Test Adapter Seam & Shared Implementation Parity (B3 & B4) ---
+  [PASS] 3.1 B3: Test adapter exercises shared verification logic against tampered hash fixture and fails closed
+  [PASS] 3.2 B3: Test adapter exercises shared verification logic against tampered raw bytes and fails closed
+  [PASS] 3.3 B3: Test adapter exercises shared verification logic against tampered origin commit and fails closed
+  [PASS] 3.4 B3: Test adapter exercises shared verification logic against empty matrix and fails closed
+  [PASS] 3.5 B4: Implementation parity proof: Production verifiers and test adapter produce identical results under standard inputs
+  [PASS] 3.6 B4: Direct invocation bypass closure proof: Production verifier cannot be called with payload arguments
+
+--- 4. Clean-Process Module Loading & Dependency Acyclicity (B5 & B6) ---
+  [PASS] 4.1 B5: Clean-process import of scripts/reconcile_execution_ledger.mjs succeeds without module-initialization errors
+  [PASS] 4.2 B5: Clean-process import of tests/helpers/ledger-test-adapter.mjs succeeds without module-initialization errors
+  [PASS] 4.3 B5: Clean-process import of scripts/internal/reconcile_engine.mjs succeeds without module-initialization errors
+  [PASS] 4.4 B6: Clean-process simultaneous import of all three modules confirms acyclic module graph
+  [PASS] 4.5 B6: Static AST/code analysis confirms strict DAG architecture (zero circular imports)
+  [PASS] 4.6 B5: Clean-process test runner fails closed on non-zero child exit or missing marker
+
+--- 5. Path Containment & Codebase Reachability (B7 & B8) ---
+  [PASS] 5.1 B7: assertPathContainedInRoot rejects absolute paths and drive-anchored paths
+  [PASS] 5.2 B7: assertPathContainedInRoot rejects lexical path traversal outside root
+  [PASS] 5.3 B7: Genuine symlink/junction adversarial escape fixture in validateManifestIntegrity fails closed
+  [PASS] 5.4 B8: Codebase reachability audit: Test adapter and internal engine are NOT imported by shipped application code
+
+--- 6. Mandatory Governance Invariants & Baseline Immutability (B9) ---
+  [PASS] 6.1 B9: Rule IV-001 Non-Self-Acceptance: Formal acceptance is strictly 0.0% / UNACCEPTED
+  [PASS] 6.2 B9: Production Air-Gap: Live database execution is strictly 0.0% / UNEXECUTED
+  [PASS] 6.3 B9: Financial Defect DQ-W021.5-B2.2E-001 remains STRICTLY OPEN (0.0% earned, 5.0% blocked)
+  [PASS] 6.4 B9: Telangana AC 119 Boundary Defect remains STRICTLY OPEN / BLOCKED (1.5% blocked)
+  [PASS] 6.5 B9: SQL Migration Immutability: 68 migrations match baseline 0ea572d byte-for-byte identical
+  [PASS] 6.6 B9: MLA Profile Seed Immutability: 31 seed files match baseline fb408ce byte-for-byte identical
+  [PASS] 6.7 B9: Canonical task inventory equality: exactly 27 canonical tasks summing to 100.000% weight
+
+================================================================
+TEST SUMMARY: 35 PASSED, 0 FAILED, 0 SKIPPED
+================================================================
+
+
+
+--- STDERR ---
+
+
+--- PROCESS METRICS ---
+DurationMs: 11749
+ExitCode: 0
+================================================================================
