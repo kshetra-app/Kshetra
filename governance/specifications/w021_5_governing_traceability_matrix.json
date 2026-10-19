@@ -1,0 +1,1060 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "matrixId": "W021.5-GOVERNING-SPECIFICATION-TRACEABILITY-MATRIX-V1.0",
+  "milestone": "W021.5",
+  "directive": "CTO Directive 104",
+  "governance": "Master Execution Framework Amendment v1.2 / Rule IV-001 (Non-Self-Acceptance)",
+  "generatedAt": "2026-10-19T04:29:37.357Z",
+  "monolithicSpecificationStatus": {
+    "title": "W021.5 MASTER SURGICAL IMPLEMENTATION SPECIFICATION A–I",
+    "status": "FEDERATED_CORPUS_PRESERVED_NO_SINGLE_MONOLITHIC_FILE",
+    "disposition": "No single consolidated file titled \"W021.5 MASTER SURGICAL IMPLEMENTATION SPECIFICATION A–I\" exists in Git history or repository trees. The governing requirements for Stages A through I are authoritatively established across the 15 primary source documents inventoried below.",
+    "limitationNote": "Citation of a single monolithic document is classified as a historical citation placeholder; the underlying stage specifications, forensic audits, and directives are individually intact, version-controlled, and cryptographically verified."
+  },
+  "summary": {
+    "totalDocuments": 15,
+    "totalCanonicalTasks": 27,
+    "coreSpecificationTasks": 25,
+    "hardeningExtensionTasks": 2,
+    "unapprovedExtensions": 0,
+    "totalCriteria": 50,
+    "totalMilestoneWeight": 100,
+    "progressPartition": {
+      "repoVerifiedEarned": 61.5,
+      "databasePending": 10.5,
+      "blockedExternal": 22.5,
+      "unimplemented": 5.5,
+      "partitionTotal": 100
+    }
+  },
+  "governingDocuments": [
+    {
+      "docId": "DOC-W021.5-A-AUDIT",
+      "title": "W021.5-A Architectural & Data-Truth Audit Report",
+      "path": "W021.5-A-AUDIT-REPORT.md",
+      "authority": "CTO EXECUTION DIRECTIVE — W021.5-A (AUDIT ONLY)",
+      "role": "PRIMARY_GOVERNING_AUDIT_BASELINE",
+      "byteLength": 47399,
+      "sha256": "6138d07e86b40301712de65df85364ed5df1452dfc4c5e492507899ddc25f8e2",
+      "commitSha": "7be949dc6e9c1eb00beeeb2492084b1e71c952bf",
+      "commitDate": "Sat Oct 3 08:17:53 2026 +0530",
+      "author": "Kshetra Team",
+      "subject": "docs(w021.5): finalize w021.5-a audit and w021.5-b1 evidence reports"
+    },
+    {
+      "docId": "DOC-W021.5-A-REPO-AUDIT",
+      "title": "W021.5-A Repository Data-Truth Audit",
+      "path": "reports/w021_5a_repository_data_truth_audit.md",
+      "authority": "CTO Directive W021.5-A",
+      "role": "PRIMARY_DOMAIN_INVENTORY_REPORT",
+      "byteLength": 47399,
+      "sha256": "6138d07e86b40301712de65df85364ed5df1452dfc4c5e492507899ddc25f8e2",
+      "commitSha": "7be949dc6e9c1eb00beeeb2492084b1e71c952bf",
+      "commitDate": "Sat Oct 3 08:17:53 2026 +0530",
+      "author": "Kshetra Team",
+      "subject": "docs(w021.5): finalize w021.5-a audit and w021.5-b1 evidence reports"
+    },
+    {
+      "docId": "DOC-W021.5-B1-SPEC",
+      "title": "W021.5-B1 National Constituency Canonicalization",
+      "path": "docs/W021.5-B1-NATIONAL-CONSTITUENCY-CANONICALIZATION.md",
+      "authority": "CTO Master Implementation Specification W021.5-B1 & CTO Remediation Directive W021.5-B1-R1",
+      "role": "PRIMARY_GOVERNING_SPECIFICATION_STAGE_B",
+      "byteLength": 29676,
+      "sha256": "9cf3716d63469e22f835747a460c930fafc40cbe2c1528f589b0b22d55463ed7",
+      "commitSha": "60d54eed77ba2aebd3c6aab61cba2375b72aef2a",
+      "commitDate": "Sat Oct 3 12:23:07 2026 +0530",
+      "author": "Kshetra Team",
+      "subject": "feat(w021.5): milestone b1-r4 final source integrity, canonical coverage and lineage semantics closure"
+    },
+    {
+      "docId": "DOC-W021.5-B1-R2-SPEC",
+      "title": "W021.5-B1-R2 National AC-PC Completeness Specification",
+      "path": "docs/W021.5-B1-R2-NATIONAL-AC-PC-COMPLETENESS.md",
+      "authority": "CTO Master Implementation Specification (W021.5-B1-R2 Directive)",
+      "role": "PRIMARY_GOVERNING_SPECIFICATION_STAGE_B_PC_MAPPING",
+      "byteLength": 11882,
+      "sha256": "a08c2e49609aa17c9704aaf2dd2429a415c1be9d4a200138fa9eae7bc30ee79e",
+      "commitSha": "758ba8372bd38bd9656743adff7bcd068deed23c",
+      "commitDate": "Sat Oct 3 10:45:07 2026 +0530",
+      "author": "Kshetra Team",
+      "subject": "feat(w021.5-b1-r2): complete national AC-PC mappings and temporal integrity closure"
+    },
+    {
+      "docId": "DOC-W021.5-B1-R3-SPEC",
+      "title": "W021.5-B1-R3 National Mapping Provenance",
+      "path": "docs/W021.5-B1-R3-NATIONAL-MAPPING-PROVENANCE.md",
+      "authority": "CTO Remediation Directive W021.5-B1-R3",
+      "role": "PRIMARY_GOVERNING_SPECIFICATION_STAGE_B_GEOJSON",
+      "byteLength": 13251,
+      "sha256": "80be250cc8dfcc45c4407410e5fe1c79b96b5ef931aa0ae2346dff738ead75cc",
+      "commitSha": "cb84da9dea0fa21a297fd735383f9b722f8d4d4c",
+      "commitDate": "Sat Oct 3 11:28:08 2026 +0530",
+      "author": "Kshetra Team",
+      "subject": "feat(w021.5-b1-r3): national AC-PC provenance, source-of-truth and consistency closure"
+    },
+    {
+      "docId": "DOC-W021.5-B1-R4-SPEC",
+      "title": "W021.5-B1-R4 Source and Lineage Integrity",
+      "path": "docs/W021.5-B1-R4-SOURCE-AND-LINEAGE-INTEGRITY.md",
+      "authority": "CTO Remediation Directive W021.5-B1-R4",
+      "role": "PRIMARY_GOVERNING_SPECIFICATION_STAGE_B_LINEAGE",
+      "byteLength": 13423,
+      "sha256": "083017d388e2e0eaa2fdcef317d89edf85419f21d9e1874f634c4830c6c16250",
+      "commitSha": "60d54eed77ba2aebd3c6aab61cba2375b72aef2a",
+      "commitDate": "Sat Oct 3 12:23:07 2026 +0530",
+      "author": "Kshetra Team",
+      "subject": "feat(w021.5): milestone b1-r4 final source integrity, canonical coverage and lineage semantics closure"
+    },
+    {
+      "docId": "DOC-W021.5-B1-R5-SPEC",
+      "title": "W021.5-B1-R5 Current Statutory Geography & Assam 2023 Closure Dossier",
+      "path": "docs/W021.5-B1-R5-CURRENT-STATUTORY-GEOGRAPHY.md",
+      "authority": "CTO Remediation Directive W021.5-B1-R5",
+      "role": "PRIMARY_GOVERNING_SPECIFICATION_STAGE_B_ASSAM",
+      "byteLength": 10550,
+      "sha256": "3b64f3a5236f26a2842ed354d468d3058b8c8fa58df4cd35d0923d7f88c5826c",
+      "commitSha": "a0df1813fd59c814d37a9c00677670c2327ec516",
+      "commitDate": "Sat Oct 3 14:57:40 2026 +0530",
+      "author": "Kshetra Team",
+      "subject": "feat(w021.5): milestone b1-r5 current statutory geography certification and assam 2023 closure"
+    },
+    {
+      "docId": "DOC-W021.5-B2.2-A-AUDIT",
+      "title": "W021.5-B2.2-A National Political Organization Forensic Audit",
+      "path": "docs/W021.5-B2.2-A-NATIONAL-POLITICAL-ORGANIZATION-FORENSIC-AUDIT.md",
+      "authority": "CTO Directive W021.5-B2.2-A",
+      "role": "PRIMARY_GOVERNING_SPECIFICATION_STAGE_C_VOCABULARY",
+      "byteLength": 11714,
+      "sha256": "b66e28f133c3c3e19e78ffccf2b3867a7008efc0558b3f14815153eff8673cbe",
+      "commitSha": "4db6fb53fdb1a885606bd76a60f1928b0af6fa3e",
+      "commitDate": "Sat Oct 3 16:50:22 2026 +0530",
+      "author": "Kshetra Team",
+      "subject": "feat(w021.5): b2.2-a national political organization forensic audit"
+    },
+    {
+      "docId": "DOC-W021.5-B2.2-B-SPEC",
+      "title": "W021.5-B2.2-B Political Organization Schema & Governance Remediation",
+      "path": "docs/W021.5-B2.2-B-ORGANIZATION-SCHEMA-GOVERNANCE-REMEDIATION.md",
+      "authority": "CTO Remediation Directive W021.5-B2.2-B",
+      "role": "PRIMARY_GOVERNING_SPECIFICATION_STAGE_C_SCHEMA",
+      "byteLength": 12751,
+      "sha256": "5db29d53a9423c5ec84d0afcecf62c926979969abc7b123b405bf47f8807f98c",
+      "commitSha": "1f3fc4001a63c5dce663b34d55fb57206933abf0",
+      "commitDate": "Sat Oct 3 18:11:21 2026 +0530",
+      "author": "Kshetra Team",
+      "subject": "feat(w021.5): b2.2-b political organization schema and governance remediation"
+    },
+    {
+      "docId": "DOC-W021.5-B2.2-C-SPEC",
+      "title": "W021.5-B2.2-C Final Forensic Reconciliation & Pre-Migration Gate Closure Report",
+      "path": "docs/W021.5-B2.2-C-FINAL-FORENSIC-RECONCILIATION.md",
+      "authority": "CTO Directive W021.5-B2.2-C",
+      "role": "PRIMARY_GOVERNING_SPECIFICATION_STAGE_C_INGESTION",
+      "byteLength": 8922,
+      "sha256": "14b67a8e21295403f29c7e86dbf4030bb5e3a18c6bb51df8f00a455c9d437412",
+      "commitSha": "3b66878118d116a00dd04f78d0199c060972fd90",
+      "commitDate": "Sat Oct 3 19:00:25 2026 +0530",
+      "author": "Kshetra Team",
+      "subject": "feat(w021.5): b2.2-c final forensic reconciliation and pre-migration gate closure"
+    },
+    {
+      "docId": "DOC-W021.5-B2.2-D-SPEC",
+      "title": "W021.5-B2.2-D Milestone Baseline Forensic Audit",
+      "path": "docs/W021.5-B2.2-D-BASELINE-FORENSIC-AUDIT.md",
+      "authority": "CTO Directive W021.5-B2.2-D",
+      "role": "PRIMARY_GOVERNING_SPECIFICATION_STAGE_D_PERSONS_CANDIDATES",
+      "byteLength": 8031,
+      "sha256": "d09d6a04930e31cd9dc8b94aa08d98b1269f7cd5b2dd404e8919216f62f336f5",
+      "commitSha": "7ef569c42251b9b1bd285e85565624917c8780da",
+      "commitDate": "Sat Oct 3 21:36:01 2026 +0530",
+      "author": "Kshetra Team",
+      "subject": "chore(w021.5): complete forensic pre-flight audit for milestone B2.2-D"
+    },
+    {
+      "docId": "DOC-W021.5-B2.2-E-SPEC",
+      "title": "W021.5-B2.2-E Baseline Forensic Audit Report: Downstream Civic & Political Extensions",
+      "path": "docs/W021.5-B2.2-E-BASELINE-FORENSIC-AUDIT.md",
+      "authority": "CTO Directive W021.5-B2.2-E",
+      "role": "PRIMARY_GOVERNING_SPECIFICATION_STAGE_E_CIVIC_EXTENSIONS",
+      "byteLength": 5235,
+      "sha256": "bff5192a65a1d79ce3c999e5eb11f8b8b67d9e5b31e1bb0e9b110d7abaf600ca",
+      "commitSha": "331da74f4e748d6ce643eb45a8a409227d5b219c",
+      "commitDate": "Sat Oct 3 22:36:17 2026 +0530",
+      "author": "Kshetra Team",
+      "subject": "feat(w021.5): execute B2.2-E civic extensions population and independent closure"
+    },
+    {
+      "docId": "DOC-W021.5-SURG-FIX-001",
+      "title": "W021.5 Master Surgical Remediation Closure Report",
+      "path": "reports/W021_5_MASTER_SURGICAL_REMEDIATION_CLOSURE_REPORT.md",
+      "authority": "Directive ID: W021.5-SURG-FIX-001 / Rule IV-001 Non-Self-Acceptance",
+      "role": "PRIMARY_GOVERNING_SURGICAL_REMEDIATION_CLOSURE",
+      "byteLength": 9451,
+      "sha256": "4085e694d2f2bb9dce746b34a7e371e971e7f9df6d8b5e6511e56b69e0cfa879",
+      "commitSha": "aaf36555a3066ffa8e3ff50cb3007fc0501dff4e",
+      "commitDate": "Wed Oct 7 08:37:12 2026 +0530",
+      "author": "Kshetra Team",
+      "subject": "docs(governance): align commit coordinates in closure report and apply strict blocker status taxonomy"
+    },
+    {
+      "docId": "DOC-W021.5-CANONICAL-PACKAGE",
+      "title": "W021.5 Canonical Architecture Readiness Package",
+      "path": "reports/W021.5-CANONICAL-ARCHITECTURE-READINESS-PACKAGE.md",
+      "authority": "CTO Directive 086 (Workstream D)",
+      "role": "PRIMARY_CANONICAL_ARCHITECTURE_SYNTHESIS",
+      "byteLength": 22535,
+      "sha256": "953cf43f18d13abfeef917003e6b276b7efd7a84256d071f1f8d5f6055be9371",
+      "commitSha": "376f551441e985c391be696c1b68019d7d0290b2",
+      "commitDate": "Sat Oct 17 15:12:22 2026 +0530",
+      "author": "Kshetra Team",
+      "subject": "feat(w021.5): deliver coverage integrity, election-truth closure and execution ledger adjudication (Directive 087)"
+    },
+    {
+      "docId": "DOC-W021.5-ORIGIN-LEDGER",
+      "title": "W021.5 Historical Origin Ledger Snapshot (be4ba41)",
+      "path": "governance/specifications/historical_w021_5_origin_ledger.json",
+      "authority": "CTO Directive 086 (Workstream E) / Origin Commit be4ba41",
+      "role": "HISTORICAL_ORIGIN_ALLOCATION_LEDGER",
+      "byteLength": 21741,
+      "sha256": "9e80d79c899e76fff947eba719579bf77ef5f785727c0308e08d6aa7775c97c6",
+      "commitSha": "e4adf727c5a77f913c59c9b3aa20016fedccecc9",
+      "commitDate": "Mon Oct 19 08:56:22 2026 +0530",
+      "author": "Kshetra Team",
+      "subject": "feat(w021.5): historical specification provenance, task-weight reconciliation, and authority boundary enforcement (Directive 102)"
+    }
+  ],
+  "tasks": [
+    {
+      "taskId": "W021.5-A-01",
+      "canonicalTitle": "Comprehensive 29-Domain Data-Truth Audit",
+      "stageId": "STAGE_A",
+      "stageName": "Repository & National Data-Truth Audit (W021.5-A)",
+      "approvedWeight": 3,
+      "requirementCode": "REQ-AUD-001",
+      "taskClassification": "CORE_SPECIFICATION",
+      "governingDocumentId": "DOC-W021.5-A-AUDIT",
+      "governingDocumentPath": "W021.5-A-AUDIT-REPORT.md",
+      "governingCommitSha": "73df0a9c56be9ebbc0ed5e857d3e790b2ab9e8cc",
+      "governingSectionRef": "Section 1-2: Complete Domain Inventory (29 Domains) & Baseline Verification",
+      "governingMandate": "Exhaustive audit across all 29 architectural domains; baseline 4,123 statutory ACs and 543 PCs; identify and document all legacy hardcoding.",
+      "criterionIds": [
+        "CRIT-A01-01",
+        "CRIT-A01-02"
+      ],
+      "evidenceArtifacts": [
+        "reports/w021_5_national_data_coverage_matrix.json",
+        "reports/w021_5a_repository_data_truth_audit.md"
+      ],
+      "deterministicMethod": "Parse coverage matrix JSON for 31 assembly states and 4,123 constituencies; validate 29-domain markdown structure.",
+      "accounting": {
+        "repoVerifiedWeight": 3,
+        "databasePendingWeight": 0,
+        "blockedWeight": 0,
+        "unimplementedWeight": 0,
+        "status": "REPO_VERIFIED"
+      },
+      "limitations": "Repository audit only. Does not assert live production database state."
+    },
+    {
+      "taskId": "W021.5-A-02",
+      "canonicalTitle": "Multi-Dimensional National Data Coverage Matrix Generator",
+      "stageId": "STAGE_A",
+      "stageName": "Repository & National Data-Truth Audit (W021.5-A)",
+      "approvedWeight": 4,
+      "requirementCode": "REQ-AUD-002",
+      "taskClassification": "HARDENING_EXTENSION",
+      "governingDocumentId": "DOC-W021.5-CANONICAL-PACKAGE",
+      "governingDocumentPath": "reports/W021.5-CANONICAL-ARCHITECTURE-READINESS-PACKAGE.md",
+      "governingCommitSha": "376f551441e985c391be696c1b68019d7d0290b2",
+      "governingSectionRef": "Directive 085 / Directive 086 Section 2: Question 1 & National Data Coverage Matrix",
+      "governingMandate": "Deterministic coverage matrix generation algorithm measuring coverage across 36 States/UTs without hardcoded overrides.",
+      "criterionIds": [
+        "CRIT-A02-01",
+        "CRIT-A02-02"
+      ],
+      "evidenceArtifacts": [
+        "scripts/generate_national_data_coverage_matrix.mjs",
+        "reports/w021_5_national_data_coverage_matrix.json"
+      ],
+      "deterministicMethod": "TypeScript AST syntax check of generator script; verify matrix summary records 36 States/UTs and 4,123 seats.",
+      "accounting": {
+        "repoVerifiedWeight": 4,
+        "databasePendingWeight": 0,
+        "blockedWeight": 0,
+        "unimplementedWeight": 0,
+        "status": "REPO_VERIFIED"
+      },
+      "limitations": "Measures repository source data coverage; does not prove live API streaming performance."
+    },
+    {
+      "taskId": "W021.5-A-03",
+      "canonicalTitle": "Delhi 70-Seat Statutory Assembly Invariant & Demographic Placeholder Isolation",
+      "stageId": "STAGE_A",
+      "stageName": "Repository & National Data-Truth Audit (W021.5-A)",
+      "approvedWeight": 3,
+      "requirementCode": "REQ-AUD-003",
+      "taskClassification": "HARDENING_EXTENSION",
+      "governingDocumentId": "DOC-W021.5-SURG-FIX-001",
+      "governingDocumentPath": "reports/W021_5_MASTER_SURGICAL_REMEDIATION_CLOSURE_REPORT.md",
+      "governingCommitSha": "aaf36555a3066ffa8e3ff50cb3007fc0501dff4e",
+      "governingSectionRef": "Section 4: Canonical Geography Universe Audit (4,123 vs 4,142) & Blocker Register",
+      "governingMandate": "Enforce Delhi 70 AC statutory invariant, isolate 151 spurious municipal placeholders (DL-AC-071 to DL-AC-221), and reconcile national AC total to 4,123.",
+      "criterionIds": [
+        "CRIT-A03-01",
+        "CRIT-A03-02"
+      ],
+      "evidenceArtifacts": [
+        "reports/w021_5_demographic_seed_reconciliation_ledger.json",
+        "reports/w021_5_demographic_seed_reconciliation_ledger.md"
+      ],
+      "deterministicMethod": "Verify ledger records exactly 151 quarantined municipal placeholders; verify Delhi AC count is strictly 70.",
+      "accounting": {
+        "repoVerifiedWeight": 3,
+        "databasePendingWeight": 0,
+        "blockedWeight": 0,
+        "unimplementedWeight": 0,
+        "status": "REPO_VERIFIED"
+      },
+      "limitations": "Isolates placeholders in demographic seed layer; does not execute database purge."
+    },
+    {
+      "taskId": "W021.5-B1-01",
+      "canonicalTitle": "National 4,123 Assembly Constituency Canonicalization",
+      "stageId": "STAGE_B",
+      "stageName": "Canonical Jurisdiction & Geography Modeling (W021.5-B1)",
+      "approvedWeight": 4,
+      "requirementCode": "REQ-GEO-001",
+      "taskClassification": "CORE_SPECIFICATION",
+      "governingDocumentId": "DOC-W021.5-B1-SPEC",
+      "governingDocumentPath": "docs/W021.5-B1-NATIONAL-CONSTITUENCY-CANONICALIZATION.md",
+      "governingCommitSha": "6bbbfb9121a97d27e9976bb2d31da4094a821e2e",
+      "governingSectionRef": "Section 1: Statutory Constituency Baseline & Migration 059 DDL Specification",
+      "governingMandate": "Canonical national registry of 4,123 Assembly Constituencies across 36 States/UTs with ISO state codes and statutory seat numbering.",
+      "criterionIds": [
+        "CRIT-B101-01",
+        "CRIT-B101-02"
+      ],
+      "evidenceArtifacts": [
+        "supabase/migrations/059_canonical_national_constituency_registry.sql",
+        "reports/w021_5b1_national_constituency_canonicalization.md"
+      ],
+      "deterministicMethod": "Audit Migration 059 SQL AST and 4,123 seat insertion tuples; verify markdown report completeness.",
+      "accounting": {
+        "repoVerifiedWeight": 4,
+        "databasePendingWeight": 0,
+        "blockedWeight": 0,
+        "unimplementedWeight": 0,
+        "status": "REPO_VERIFIED"
+      },
+      "limitations": "DDL and migration files verified in repository; staging/production migration unexecuted."
+    },
+    {
+      "taskId": "W021.5-B1-02",
+      "canonicalTitle": "National AC-to-PC Parliamentary Mapping Registry",
+      "stageId": "STAGE_B",
+      "stageName": "Canonical Jurisdiction & Geography Modeling (W021.5-B1)",
+      "approvedWeight": 3,
+      "requirementCode": "REQ-GEO-002",
+      "taskClassification": "CORE_SPECIFICATION",
+      "governingDocumentId": "DOC-W021.5-B1-R2-SPEC",
+      "governingDocumentPath": "docs/W021.5-B1-R2-NATIONAL-AC-PC-COMPLETENESS.md",
+      "governingCommitSha": "758ba8372bd38bd9656743adff7bcd068deed23c",
+      "governingSectionRef": "Section 2: AC-to-PC Parliamentary Mapping Matrix & Migrations 060, 061",
+      "governingMandate": "Exhaustive mapping of all 4,123 ACs to 543 Parliamentary Constituencies with foreign key integrity and zero unmapped segments.",
+      "criterionIds": [
+        "CRIT-B102-01",
+        "CRIT-B102-02"
+      ],
+      "evidenceArtifacts": [
+        "supabase/migrations/060_canonical_electoral_geography_remediation.sql",
+        "supabase/migrations/061_canonical_national_ac_pc_mappings.sql"
+      ],
+      "deterministicMethod": "Verify Migration 060 DDL integrity; verify Migration 061 contains exactly 4,123 mapping statements.",
+      "accounting": {
+        "repoVerifiedWeight": 3,
+        "databasePendingWeight": 0,
+        "blockedWeight": 0,
+        "unimplementedWeight": 0,
+        "status": "REPO_VERIFIED"
+      },
+      "limitations": "Repository SQL migration verified; live staging execution pending."
+    },
+    {
+      "taskId": "W021.5-B1-03",
+      "canonicalTitle": "Temporal Lineage & Assam 2023 Delimitation Modeling",
+      "stageId": "STAGE_B",
+      "stageName": "Canonical Jurisdiction & Geography Modeling (W021.5-B1)",
+      "approvedWeight": 3,
+      "requirementCode": "REQ-GEO-003",
+      "taskClassification": "CORE_SPECIFICATION",
+      "governingDocumentId": "DOC-W021.5-B1-R5-SPEC",
+      "governingDocumentPath": "docs/W021.5-B1-R5-CURRENT-STATUTORY-GEOGRAPHY.md",
+      "governingCommitSha": "a0df1813fd59c814d37a9c00677670c2327ec516",
+      "governingSectionRef": "Section 1-2: 31 Assembly Jurisdictions Statutory Regime Matrix & Migration 062",
+      "governingMandate": "Temporal predecessor-successor modeling, delimitation versioning, and Assam 2023 delimitation renumbering without mutating historical keys.",
+      "criterionIds": [
+        "CRIT-B103-01",
+        "CRIT-B103-02"
+      ],
+      "evidenceArtifacts": [
+        "supabase/migrations/062_canonical_delimitation_temporal_lineage.sql",
+        "reports/w021_5b1_r5_current_regime_matrix.json"
+      ],
+      "deterministicMethod": "Verify Migration 062 temporal schema and triggers; verify 31-state regime matrix includes Assam 2023 order.",
+      "accounting": {
+        "repoVerifiedWeight": 3,
+        "databasePendingWeight": 0,
+        "blockedWeight": 0,
+        "unimplementedWeight": 0,
+        "status": "REPO_VERIFIED"
+      },
+      "limitations": "Temporal lineage modeled in schema; live staging database unexecuted."
+    },
+    {
+      "taskId": "W021.5-B1-04",
+      "canonicalTitle": "National Assembly Boundary GeoJSON Deep Validation & Linkage",
+      "stageId": "STAGE_B",
+      "stageName": "Canonical Jurisdiction & Geography Modeling (W021.5-B1)",
+      "approvedWeight": 2,
+      "requirementCode": "REQ-GEO-004",
+      "taskClassification": "CORE_SPECIFICATION",
+      "governingDocumentId": "DOC-W021.5-B1-R3-SPEC",
+      "governingDocumentPath": "docs/W021.5-B1-R3-NATIONAL-MAPPING-PROVENANCE.md",
+      "governingCommitSha": "cb84da9dea0fa21a297fd735383f9b722f8d4d4c",
+      "governingSectionRef": "Section 3: Geographic Boundary Linkage & Provenance Integrity",
+      "governingMandate": "Validate national AC GeoJSON files for RFC 7946 coordinates and topology. Telangana AC 119 remains blocked pending upstream resolution.",
+      "criterionIds": [
+        "CRIT-B104-01",
+        "CRIT-B104-02"
+      ],
+      "evidenceArtifacts": [
+        "apps/api/public/geo/telangana-constituencies.json",
+        "reports/W021.5-CTO-INC-066-42703_FORENSIC_REMEDIATION_DOSSIER.md"
+      ],
+      "deterministicMethod": "Deep RFC 7946 coordinate validation across GeoJSON features; verify Telangana AC 119 duplicate feature is detected and held blocked.",
+      "accounting": {
+        "repoVerifiedWeight": 0.5,
+        "databasePendingWeight": 0,
+        "blockedWeight": 1.5,
+        "unimplementedWeight": 0,
+        "status": "PARTIAL"
+      },
+      "limitations": "Telangana AC 119 has 120 features for 119 statutory seats; remaining 1.5% strictly BLOCKED until authoritative boundary resolves discrepancy."
+    },
+    {
+      "taskId": "W021.5-C-01",
+      "canonicalTitle": "Political Organization Governance & Multilingual Extension Schema",
+      "stageId": "STAGE_C",
+      "stageName": "Canonical Political Organization Registry (W021.5-B2.2-A, B, C)",
+      "approvedWeight": 4,
+      "requirementCode": "REQ-ORG-001",
+      "taskClassification": "CORE_SPECIFICATION",
+      "governingDocumentId": "DOC-W021.5-B2.2-B-SPEC",
+      "governingDocumentPath": "docs/W021.5-B2.2-B-ORGANIZATION-SCHEMA-GOVERNANCE-REMEDIATION.md",
+      "governingCommitSha": "1f3fc4001a63c5dce663b34d55fb57206933abf0",
+      "governingSectionRef": "Section 2: Core Architectural & Schema Remediation Matrix & Migration 064",
+      "governingMandate": "Temporal organization schema, multilingual name tables, symbol registry, and prohibition of synthetic independent parties.",
+      "criterionIds": [
+        "CRIT-C01-01",
+        "CRIT-C01-02"
+      ],
+      "evidenceArtifacts": [
+        "supabase/migrations/064_political_organization_governance_remediation.sql",
+        "reports/w021_5b2_b2_2c_symbol_matrix.json"
+      ],
+      "deterministicMethod": "Inspect Migration 064 DDL for organization_multilingual_names, organization_symbols, and synthetic IND prohibition triggers.",
+      "accounting": {
+        "repoVerifiedWeight": 4,
+        "databasePendingWeight": 0,
+        "blockedWeight": 0,
+        "unimplementedWeight": 0,
+        "status": "REPO_VERIFIED"
+      },
+      "limitations": "DDL authored and verified in repository; staging database execution on hold."
+    },
+    {
+      "taskId": "W021.5-C-02",
+      "canonicalTitle": "1,207 Canonical Political Organizations Catalog Ingestion",
+      "stageId": "STAGE_C",
+      "stageName": "Canonical Political Organization Registry (W021.5-B2.2-A, B, C)",
+      "approvedWeight": 5,
+      "requirementCode": "REQ-ORG-002",
+      "taskClassification": "CORE_SPECIFICATION",
+      "governingDocumentId": "DOC-W021.5-B2.2-C-SPEC",
+      "governingDocumentPath": "docs/W021.5-B2.2-C-FINAL-FORENSIC-RECONCILIATION.md",
+      "governingCommitSha": "3b66878118d116a00dd04f78d0199c060972fd90",
+      "governingSectionRef": "Section 1-3: Mathematical Parity, C0-C7 Dry-Run Simulation & Migration 065",
+      "governingMandate": "Ingestion of 1,207 canonical political parties with verified ECI codes and zero synthetic collisions. Staging DB population is pending CTO authorization.",
+      "criterionIds": [
+        "CRIT-C02-01",
+        "CRIT-C02-02"
+      ],
+      "evidenceArtifacts": [
+        "reports/w021_5b2_b2_2c_final_organization_manifest.json",
+        "supabase/migrations/065_canonical_political_organization_registry.sql"
+      ],
+      "deterministicMethod": "Parse organization manifest for 1,207 unique organizations; verify Migration 065 SQL structure and fail-closed overwrite protection.",
+      "accounting": {
+        "repoVerifiedWeight": 2.5,
+        "databasePendingWeight": 2.5,
+        "blockedWeight": 0,
+        "unimplementedWeight": 0,
+        "status": "PARTIAL"
+      },
+      "limitations": "2.5% database pending live staging execution of Migration 065."
+    },
+    {
+      "taskId": "W021.5-C-03",
+      "canonicalTitle": "Multilingual Party Names, Aliases & Symbols Matrix",
+      "stageId": "STAGE_C",
+      "stageName": "Canonical Political Organization Registry (W021.5-B2.2-A, B, C)",
+      "approvedWeight": 3,
+      "requirementCode": "REQ-ORG-003",
+      "taskClassification": "CORE_SPECIFICATION",
+      "governingDocumentId": "DOC-W021.5-B2.2-C-SPEC",
+      "governingDocumentPath": "docs/W021.5-B2.2-C-FINAL-FORENSIC-RECONCILIATION.md",
+      "governingCommitSha": "3b66878118d116a00dd04f78d0199c060972fd90",
+      "governingSectionRef": "Section 5: Machine-Readable Evidence Artifacts & Symbol Matrix",
+      "governingMandate": "Comprehensive multilingual names, acronyms, and election symbol mapping for all canonical parties across English, Hindi, and regional scripts.",
+      "criterionIds": [
+        "CRIT-C03-01",
+        "CRIT-C03-02",
+        "CRIT-C03-03"
+      ],
+      "evidenceArtifacts": [
+        "reports/w021_5b2_b2_2c_multilingual_matrix.json",
+        "reports/w021_5b2_b2_2c_symbol_matrix.json",
+        "reports/w021_5b2_b2_2c_alias_collision_matrix.json"
+      ],
+      "deterministicMethod": "Parse multilingual matrix, symbol matrix, and alias collision matrix; assert zero unmapped party symbols.",
+      "accounting": {
+        "repoVerifiedWeight": 3,
+        "databasePendingWeight": 0,
+        "blockedWeight": 0,
+        "unimplementedWeight": 0,
+        "status": "REPO_VERIFIED"
+      },
+      "limitations": "Matrix artifacts verified on disk; live database population unexecuted."
+    },
+    {
+      "taskId": "W021.5-D-01",
+      "canonicalTitle": "Canonical Persons & Entity Deduplication Foundation",
+      "stageId": "STAGE_D",
+      "stageName": "Candidacies, Contests & Multi-Election Normalization (W021.5-B2.2-D)",
+      "approvedWeight": 4,
+      "requirementCode": "REQ-CND-001",
+      "taskClassification": "CORE_SPECIFICATION",
+      "governingDocumentId": "DOC-W021.5-B2.2-D-SPEC",
+      "governingDocumentPath": "docs/W021.5-B2.2-D-BASELINE-FORENSIC-AUDIT.md",
+      "governingCommitSha": "7ef569c42251b9b1bd285e85565624917c8780da",
+      "governingSectionRef": "Section 3: Candidate & Person Disambiguation Invariants & Migrations 050, 063",
+      "governingMandate": "Normalized canonical person modeling separating physical human identity from mutable candidacies, elected tenures, and party affiliations.",
+      "criterionIds": [
+        "CRIT-D01-01",
+        "CRIT-D01-02"
+      ],
+      "evidenceArtifacts": [
+        "supabase/migrations/050_political_entity_model.sql",
+        "supabase/migrations/063_canonical_person_identity_resolution.sql"
+      ],
+      "deterministicMethod": "Verify Migration 050 canonical_persons, elected_tenures, and candidacies DDL; verify Migration 063 identity resolution tables.",
+      "accounting": {
+        "repoVerifiedWeight": 4,
+        "databasePendingWeight": 0,
+        "blockedWeight": 0,
+        "unimplementedWeight": 0,
+        "status": "REPO_VERIFIED"
+      },
+      "limitations": "Repository SQL migration verified; live staging execution pending."
+    },
+    {
+      "taskId": "W021.5-D-02",
+      "canonicalTitle": "Candidate Population & Contest Mapping Across 10 Chunks",
+      "stageId": "STAGE_D",
+      "stageName": "Candidacies, Contests & Multi-Election Normalization (W021.5-B2.2-D)",
+      "approvedWeight": 6,
+      "requirementCode": "REQ-CND-002",
+      "taskClassification": "CORE_SPECIFICATION",
+      "governingDocumentId": "DOC-W021.5-B2.2-D-SPEC",
+      "governingDocumentPath": "docs/W021.5-B2.2-D-BASELINE-FORENSIC-AUDIT.md",
+      "governingCommitSha": "7ef569c42251b9b1bd285e85565624917c8780da",
+      "governingSectionRef": "Section 6: Migration Simulation & Idempotency Proof Across 10 Chunks",
+      "governingMandate": "Chunks 01-10 candidate population scripts with FK validation to constituencies and organizations. Staging DB execution is 50% pending.",
+      "criterionIds": [
+        "CRIT-D02-01",
+        "CRIT-D02-02"
+      ],
+      "evidenceArtifacts": [
+        "supabase/staging_checkpoints/w021_5_b2_2d_chunk_01_checkpoint.sql",
+        "supabase/staging_checkpoints/w021_5_b2_2d_chunk_10b_checkpoint.sql"
+      ],
+      "deterministicMethod": "Verify all 10 chunk checkpoint SQL files exist and exceed minimum line thresholds.",
+      "accounting": {
+        "repoVerifiedWeight": 3,
+        "databasePendingWeight": 3,
+        "blockedWeight": 0,
+        "unimplementedWeight": 0,
+        "status": "PARTIAL"
+      },
+      "limitations": "3.0% database pending live staging execution of candidate chunks."
+    },
+    {
+      "taskId": "W021.5-D-03",
+      "canonicalTitle": "Candidate-to-Contest Foreign Key Constraint Linkage (Migration 067)",
+      "stageId": "STAGE_D",
+      "stageName": "Candidacies, Contests & Multi-Election Normalization (W021.5-B2.2-D)",
+      "approvedWeight": 4,
+      "requirementCode": "REQ-CND-003",
+      "taskClassification": "CORE_SPECIFICATION",
+      "governingDocumentId": "DOC-W021.5-CANONICAL-PACKAGE",
+      "governingDocumentPath": "reports/W021.5-CANONICAL-ARCHITECTURE-READINESS-PACKAGE.md",
+      "governingCommitSha": "376f551441e985c391be696c1b68019d7d0290b2",
+      "governingSectionRef": "Question 4 & Forward-Only Migration Sequence: Migration 067 Candidate-to-Contest FK",
+      "governingMandate": "Forward DDL Migration 067 establishing strict foreign key constraints between candidacies and election contests. Blocked pending CTO approval.",
+      "criterionIds": [
+        "CRIT-D03-01"
+      ],
+      "evidenceArtifacts": [
+        "reports/W021.5-CANONICAL-ARCHITECTURE-READINESS-PACKAGE.md"
+      ],
+      "deterministicMethod": "Audit readiness package Section 2 Question 4 and Forward Plan for Migration 067.",
+      "accounting": {
+        "repoVerifiedWeight": 0,
+        "databasePendingWeight": 0,
+        "blockedWeight": 4,
+        "unimplementedWeight": 0,
+        "status": "BLOCKED"
+      },
+      "limitations": "Strictly 4.0% BLOCKED pending formal CTO authorization and review of Migration 067."
+    },
+    {
+      "taskId": "W021.5-E-01",
+      "canonicalTitle": "Constituency Demographic Profiles & Aggregates Ingestion",
+      "stageId": "STAGE_E",
+      "stageName": "Candidate Affidavits, Demographics & Financial Disclosures (W021.5-B2.2-E)",
+      "approvedWeight": 4,
+      "requirementCode": "REQ-DEM-001",
+      "taskClassification": "CORE_SPECIFICATION",
+      "governingDocumentId": "DOC-W021.5-B2.2-E-SPEC",
+      "governingDocumentPath": "docs/W021.5-B2.2-E-BASELINE-FORENSIC-AUDIT.md",
+      "governingCommitSha": "331da74f4e748d6ce643eb45a8a409227d5b219c",
+      "governingSectionRef": "Section 4: Data Plane E-C: Voter Demographics & Turnout & Migration 066",
+      "governingMandate": "Ingestion of constituency demographic metrics and census profiles. Staging database execution is 50% pending.",
+      "criterionIds": [
+        "CRIT-E01-01",
+        "CRIT-E01-02"
+      ],
+      "evidenceArtifacts": [
+        "supabase/migrations/066_downstream_civic_extensions.sql",
+        "reports/w021_5b2_b2_2e_demographics_manifest.json"
+      ],
+      "deterministicMethod": "Verify Migration 066 DDL structure and demographics manifest records.",
+      "accounting": {
+        "repoVerifiedWeight": 2,
+        "databasePendingWeight": 2,
+        "blockedWeight": 0,
+        "unimplementedWeight": 0,
+        "status": "PARTIAL"
+      },
+      "limitations": "2.0% database pending live staging execution of Migration 066."
+    },
+    {
+      "taskId": "W021.5-E-02",
+      "canonicalTitle": "Financial Defect DQ-W021.5-B2.2E-001 Formal Adjudication",
+      "stageId": "STAGE_E",
+      "stageName": "Candidate Affidavits, Demographics & Financial Disclosures (W021.5-B2.2-E)",
+      "approvedWeight": 5,
+      "requirementCode": "REQ-FIN-001",
+      "taskClassification": "CORE_SPECIFICATION",
+      "governingDocumentId": "DOC-W021.5-SURG-FIX-001",
+      "governingDocumentPath": "reports/W021_5_MASTER_SURGICAL_REMEDIATION_CLOSURE_REPORT.md",
+      "governingCommitSha": "aaf36555a3066ffa8e3ff50cb3007fc0501dff4e",
+      "governingSectionRef": "Section 8: Master Blocker Register Defect DQ-W021.5-B2.2E-001",
+      "governingMandate": "Adjudication of financial default 0 corruption across candidate affidavits. Strictly BLOCKED and OPEN under Rule IV-001; zero earned completion.",
+      "criterionIds": [
+        "CRIT-E02-01"
+      ],
+      "evidenceArtifacts": [
+        "reports/W021.5-CTO-DIRECTIVE-071-IMPLEMENTATION-REPORT.md",
+        "reports/W021.5-EXECUTION-LEDGER.md"
+      ],
+      "deterministicMethod": "Verify defect is registered as STRICTLY OPEN with 0.0% earned weight; assert no self-adjudication occurred.",
+      "accounting": {
+        "repoVerifiedWeight": 0,
+        "databasePendingWeight": 0,
+        "blockedWeight": 5,
+        "unimplementedWeight": 0,
+        "status": "BLOCKED"
+      },
+      "limitations": "Strictly 5.0% BLOCKED pending explicit written CTO adjudication."
+    },
+    {
+      "taskId": "W021.5-E-03",
+      "canonicalTitle": "Normalized Candidate Affidavit Disclosure Schema (Migration 068)",
+      "stageId": "STAGE_E",
+      "stageName": "Candidate Affidavits, Demographics & Financial Disclosures (W021.5-B2.2-E)",
+      "approvedWeight": 5,
+      "requirementCode": "REQ-FIN-002",
+      "taskClassification": "CORE_SPECIFICATION",
+      "governingDocumentId": "DOC-W021.5-CANONICAL-PACKAGE",
+      "governingDocumentPath": "reports/W021.5-CANONICAL-ARCHITECTURE-READINESS-PACKAGE.md",
+      "governingCommitSha": "376f551441e985c391be696c1b68019d7d0290b2",
+      "governingSectionRef": "Question 4 & Forward-Only Migration Sequence: Migration 068 Affidavit DDL Plan",
+      "governingMandate": "Normalized affidavit disclosure schema separating movable/immovable assets, liabilities, and criminal disclosures. Blocked pending CTO approval.",
+      "criterionIds": [
+        "CRIT-E03-01"
+      ],
+      "evidenceArtifacts": [
+        "reports/W021.5-CANONICAL-ARCHITECTURE-READINESS-PACKAGE.md"
+      ],
+      "deterministicMethod": "Audit readiness package Section 2 Question 4 and Forward Plan for Migration 068.",
+      "accounting": {
+        "repoVerifiedWeight": 0,
+        "databasePendingWeight": 0,
+        "blockedWeight": 5,
+        "unimplementedWeight": 0,
+        "status": "BLOCKED"
+      },
+      "limitations": "Strictly 5.0% BLOCKED pending formal CTO authorization and review of Migration 068."
+    },
+    {
+      "taskId": "W021.5-F-01",
+      "canonicalTitle": "Longitudinal Election Event & Contest Schema Normalization",
+      "stageId": "STAGE_F",
+      "stageName": "Multi-Election History & Longitudinal Results Normalization (W021.5-B2.2-F)",
+      "approvedWeight": 4,
+      "requirementCode": "REQ-HIS-001",
+      "taskClassification": "CORE_SPECIFICATION",
+      "governingDocumentId": "DOC-W021.5-CANONICAL-PACKAGE",
+      "governingDocumentPath": "reports/W021.5-CANONICAL-ARCHITECTURE-READINESS-PACKAGE.md",
+      "governingCommitSha": "376f551441e985c391be696c1b68019d7d0290b2",
+      "governingSectionRef": "Question 4 & Migration 051: Election Event, Contest & Ballot Normalization",
+      "governingMandate": "Relational normalization of election events, assembly and parliamentary contests, and ballot choices in public.election_events and election_contests.",
+      "criterionIds": [
+        "CRIT-F01-01",
+        "CRIT-F01-02"
+      ],
+      "evidenceArtifacts": [
+        "supabase/migrations/051_election_cycle_normalization.sql",
+        "supabase/migrations/053_election_contests_and_candidacies.sql"
+      ],
+      "deterministicMethod": "Verify Migration 051 and 053 DDL structure and relational foreign keys.",
+      "accounting": {
+        "repoVerifiedWeight": 4,
+        "databasePendingWeight": 0,
+        "blockedWeight": 0,
+        "unimplementedWeight": 0,
+        "status": "REPO_VERIFIED"
+      },
+      "limitations": "Repository SQL migration verified; live staging execution pending."
+    },
+    {
+      "taskId": "W021.5-F-02",
+      "canonicalTitle": "National Multi-Election Historical Results Ingestion",
+      "stageId": "STAGE_F",
+      "stageName": "Multi-Election History & Longitudinal Results Normalization (W021.5-B2.2-F)",
+      "approvedWeight": 6,
+      "requirementCode": "REQ-HIS-002",
+      "taskClassification": "CORE_SPECIFICATION",
+      "governingDocumentId": "DOC-W021.5-CANONICAL-PACKAGE",
+      "governingDocumentPath": "reports/W021.5-CANONICAL-ARCHITECTURE-READINESS-PACKAGE.md",
+      "governingCommitSha": "376f551441e985c391be696c1b68019d7d0290b2",
+      "governingSectionRef": "Question 5: Temporal Representation of Historical Records & Directive 085/086",
+      "governingMandate": "Multi-election historical result ingestion across assembly cycles. (25% repo-verified, 50% staging DB pending, 25% unimplemented downstream).",
+      "criterionIds": [
+        "CRIT-F02-01",
+        "CRIT-F02-02",
+        "CRIT-F02-03"
+      ],
+      "evidenceArtifacts": [
+        "data/seed/telangana-election-history.ts",
+        "apps/api/src/services/electionService.ts"
+      ],
+      "deterministicMethod": "Audit election history seed structure and election service query implementation.",
+      "accounting": {
+        "repoVerifiedWeight": 1.5,
+        "databasePendingWeight": 3,
+        "blockedWeight": 0,
+        "unimplementedWeight": 1.5,
+        "status": "PARTIAL"
+      },
+      "limitations": "3.0% database pending staging population; 1.5% unimplemented downstream."
+    },
+    {
+      "taskId": "W021.5-G-01",
+      "canonicalTitle": "API Election Contract Nullability & Missing-Value Preservation",
+      "stageId": "STAGE_G",
+      "stageName": "Fastify API Layer Strangulation & Contract Hardening (W021.5-B3)",
+      "approvedWeight": 4,
+      "requirementCode": "REQ-API-001",
+      "taskClassification": "CORE_SPECIFICATION",
+      "governingDocumentId": "DOC-W021.5-CANONICAL-PACKAGE",
+      "governingDocumentPath": "reports/W021.5-CANONICAL-ARCHITECTURE-READINESS-PACKAGE.md",
+      "governingCommitSha": "376f551441e985c391be696c1b68019d7d0290b2",
+      "governingSectionRef": "Question 7: API Contract Changes & Consumer Dependency & Directives 085/086",
+      "governingMandate": "Fastify API contracts strictly preserve null for missing election results and forbid synthetic default 0 or empty strings.",
+      "criterionIds": [
+        "CRIT-G01-01",
+        "CRIT-G01-02"
+      ],
+      "evidenceArtifacts": [
+        "apps/api/src/routes/constituencies.ts",
+        "apps/api/src/services/stateData.ts"
+      ],
+      "deterministicMethod": "TypeScript AST check of constituencies route and stateData service ensuring null preservation.",
+      "accounting": {
+        "repoVerifiedWeight": 4,
+        "databasePendingWeight": 0,
+        "blockedWeight": 0,
+        "unimplementedWeight": 0,
+        "status": "REPO_VERIFIED"
+      },
+      "limitations": "API contract verified in Fastify source; live client telemetry pending."
+    },
+    {
+      "taskId": "W021.5-G-02",
+      "canonicalTitle": "Elimination of State-Code Election-Year Inferences in stateData.ts",
+      "stageId": "STAGE_G",
+      "stageName": "Fastify API Layer Strangulation & Contract Hardening (W021.5-B3)",
+      "approvedWeight": 4,
+      "requirementCode": "REQ-API-002",
+      "taskClassification": "CORE_SPECIFICATION",
+      "governingDocumentId": "DOC-W021.5-CANONICAL-PACKAGE",
+      "governingDocumentPath": "reports/W021.5-CANONICAL-ARCHITECTURE-READINESS-PACKAGE.md",
+      "governingCommitSha": "376f551441e985c391be696c1b68019d7d0290b2",
+      "governingSectionRef": "Directive 086 Workstream B: Elimination of State-Code Specific Year Inferences",
+      "governingMandate": "Eliminate hardcoded election-year inferences based on state codes in apps/api/src/services/stateData.ts.",
+      "criterionIds": [
+        "CRIT-G02-01",
+        "CRIT-G02-02"
+      ],
+      "evidenceArtifacts": [
+        "apps/api/src/services/stateData.ts",
+        "tests/political-intelligence-directive-086.test.mjs"
+      ],
+      "deterministicMethod": "AST check of stateData.ts verifying zero state-code election year branches.",
+      "accounting": {
+        "repoVerifiedWeight": 4,
+        "databasePendingWeight": 0,
+        "blockedWeight": 0,
+        "unimplementedWeight": 0,
+        "status": "REPO_VERIFIED"
+      },
+      "limitations": "Service refactored; upstream callers must provide explicit election years."
+    },
+    {
+      "taskId": "W021.5-G-03",
+      "canonicalTitle": "Fastify Canonical DB-Backed Route Strangulation",
+      "stageId": "STAGE_G",
+      "stageName": "Fastify API Layer Strangulation & Contract Hardening (W021.5-B3)",
+      "approvedWeight": 4,
+      "requirementCode": "REQ-API-003",
+      "taskClassification": "CORE_SPECIFICATION",
+      "governingDocumentId": "DOC-W021.5-CANONICAL-PACKAGE",
+      "governingDocumentPath": "reports/W021.5-CANONICAL-ARCHITECTURE-READINESS-PACKAGE.md",
+      "governingCommitSha": "376f551441e985c391be696c1b68019d7d0290b2",
+      "governingSectionRef": "Question 8 & W006 Strangler Migration Plan: Phases 1 to 4 Route Mediation",
+      "governingMandate": "Transition of mobile client routes to Fastify API gateway. Blocked pending W006 CTO review and acceptance.",
+      "criterionIds": [
+        "CRIT-G03-01"
+      ],
+      "evidenceArtifacts": [
+        "reports/w006_api_architecture_report.md",
+        "reports/w006_r1_audit_integrity_report.md"
+      ],
+      "deterministicMethod": "Verify W006 strangler matrix documentation and Class B deprecation plan.",
+      "accounting": {
+        "repoVerifiedWeight": 0,
+        "databasePendingWeight": 0,
+        "blockedWeight": 4,
+        "unimplementedWeight": 0,
+        "status": "BLOCKED"
+      },
+      "limitations": "Strictly 4.0% BLOCKED pending formal CTO acceptance of W006."
+    },
+    {
+      "taskId": "W021.5-H-01",
+      "canonicalTitle": "Mobile DTO Validation Hardening & Nullable Election Year Support",
+      "stageId": "STAGE_H",
+      "stageName": "Mobile Client Strangler Migration & Provenance Precedence (W021.5-B4)",
+      "approvedWeight": 3,
+      "requirementCode": "REQ-MOB-001",
+      "taskClassification": "CORE_SPECIFICATION",
+      "governingDocumentId": "DOC-W021.5-CANONICAL-PACKAGE",
+      "governingDocumentPath": "reports/W021.5-CANONICAL-ARCHITECTURE-READINESS-PACKAGE.md",
+      "governingCommitSha": "376f551441e985c391be696c1b68019d7d0290b2",
+      "governingSectionRef": "Directive 085 / Directive 086 Workstream C: Mobile DTO Contract Hardening",
+      "governingMandate": "Mobile DTO validation supports nullable election years and handles absent election events safely without crashes.",
+      "criterionIds": [
+        "CRIT-H01-01",
+        "CRIT-H01-02"
+      ],
+      "evidenceArtifacts": [
+        "apps/mobile/lib/stateDataAdapter.ts",
+        "tests/political-intelligence-directive-085.test.mjs"
+      ],
+      "deterministicMethod": "Audit mobile stateDataAdapter.ts for null-safe election winner parsing and absence handling.",
+      "accounting": {
+        "repoVerifiedWeight": 3,
+        "databasePendingWeight": 0,
+        "blockedWeight": 0,
+        "unimplementedWeight": 0,
+        "status": "REPO_VERIFIED"
+      },
+      "limitations": "Mobile TypeScript adapter verified; physical mobile device build verification pending."
+    },
+    {
+      "taskId": "W021.5-H-02",
+      "canonicalTitle": "Section-Level Provenance Badges in Constituency UI",
+      "stageId": "STAGE_H",
+      "stageName": "Mobile Client Strangler Migration & Provenance Precedence (W021.5-B4)",
+      "approvedWeight": 3,
+      "requirementCode": "REQ-MOB-002",
+      "taskClassification": "CORE_SPECIFICATION",
+      "governingDocumentId": "DOC-W021.5-CANONICAL-PACKAGE",
+      "governingDocumentPath": "reports/W021.5-CANONICAL-ARCHITECTURE-READINESS-PACKAGE.md",
+      "governingCommitSha": "376f551441e985c391be696c1b68019d7d0290b2",
+      "governingSectionRef": "Directive 086 Workstream C: Section-Level Provenance Display in Mobile UI",
+      "governingMandate": "Render section-level provenance badges (ECI official, Census 2011, MyNeta affidavit, Delimitation Order) in constituency screens.",
+      "criterionIds": [
+        "CRIT-H02-01",
+        "CRIT-H02-02"
+      ],
+      "evidenceArtifacts": [
+        "apps/mobile/components/ProvenanceBadge.tsx",
+        "apps/mobile/app/constituency/[id].tsx"
+      ],
+      "deterministicMethod": "Verify ProvenanceBadge component existence, props, and integration into constituency screen.",
+      "accounting": {
+        "repoVerifiedWeight": 3,
+        "databasePendingWeight": 0,
+        "blockedWeight": 0,
+        "unimplementedWeight": 0,
+        "status": "REPO_VERIFIED"
+      },
+      "limitations": "Component verified via static analysis; visual layout requires UI regression run."
+    },
+    {
+      "taskId": "W021.5-H-03",
+      "canonicalTitle": "Mobile Journey Decoupling from Legacy election2023 Alias",
+      "stageId": "STAGE_H",
+      "stageName": "Mobile Client Strangler Migration & Provenance Precedence (W021.5-B4)",
+      "approvedWeight": 2,
+      "requirementCode": "REQ-MOB-003",
+      "taskClassification": "CORE_SPECIFICATION",
+      "governingDocumentId": "DOC-W021.5-CANONICAL-PACKAGE",
+      "governingDocumentPath": "reports/W021.5-CANONICAL-ARCHITECTURE-READINESS-PACKAGE.md",
+      "governingCommitSha": "376f551441e985c391be696c1b68019d7d0290b2",
+      "governingSectionRef": "Directive 085 Workstream B / Directive 086 Workstream C: Legacy Alias Decoupling",
+      "governingMandate": "Decouple mobile journeys and test suites from legacy election2023 alias in favor of dynamic election event resolution.",
+      "criterionIds": [
+        "CRIT-H03-01",
+        "CRIT-H03-02"
+      ],
+      "evidenceArtifacts": [
+        "apps/mobile/stores/electionLive.ts",
+        "tests/political-intelligence-directive-085.test.mjs"
+      ],
+      "deterministicMethod": "AST check of mobile stores verifying dynamic election resolution rather than static election2023.",
+      "accounting": {
+        "repoVerifiedWeight": 2,
+        "databasePendingWeight": 0,
+        "blockedWeight": 0,
+        "unimplementedWeight": 0,
+        "status": "REPO_VERIFIED"
+      },
+      "limitations": "Decoupling implemented in mobile store logic; legacy seed files remain in repo for offline fallback."
+    },
+    {
+      "taskId": "W021.5-H-04",
+      "canonicalTitle": "Mobile Write Strangler Migration (Class B Deprecation)",
+      "stageId": "STAGE_H",
+      "stageName": "Mobile Client Strangler Migration & Provenance Precedence (W021.5-B4)",
+      "approvedWeight": 2,
+      "requirementCode": "REQ-MOB-004",
+      "taskClassification": "CORE_SPECIFICATION",
+      "governingDocumentId": "DOC-W021.5-CANONICAL-PACKAGE",
+      "governingDocumentPath": "reports/W021.5-CANONICAL-ARCHITECTURE-READINESS-PACKAGE.md",
+      "governingCommitSha": "376f551441e985c391be696c1b68019d7d0290b2",
+      "governingSectionRef": "W006-R1A Class B 56-Method Strangler Migration Matrix",
+      "governingMandate": "Deprecation and strangulation of direct client writes to Supabase. (50% repo-verified in adapter design, 50% unimplemented pending W007+).",
+      "criterionIds": [
+        "CRIT-H04-01",
+        "CRIT-H04-02"
+      ],
+      "evidenceArtifacts": [
+        "apps/mobile/lib/supabaseDataService.ts",
+        "reports/w006_r1a_provenance_rls_report.md"
+      ],
+      "deterministicMethod": "Audit mobile data service methods against Class B strangler inventory.",
+      "accounting": {
+        "repoVerifiedWeight": 1,
+        "databasePendingWeight": 0,
+        "blockedWeight": 0,
+        "unimplementedWeight": 1,
+        "status": "PARTIAL"
+      },
+      "limitations": "1.0% unimplemented pending execution of W007+ strangler waves."
+    },
+    {
+      "taskId": "W021.5-I-01",
+      "canonicalTitle": "Mobile SQLite Canonical Offline Sync Schema & Engine",
+      "stageId": "STAGE_I",
+      "stageName": "Canonical Offline SQLite Sync Engine & Final Production Synchronization (W021.5-B5)",
+      "approvedWeight": 3,
+      "requirementCode": "REQ-SYS-001",
+      "taskClassification": "CORE_SPECIFICATION",
+      "governingDocumentId": "DOC-W021.5-CANONICAL-PACKAGE",
+      "governingDocumentPath": "reports/W021.5-CANONICAL-ARCHITECTURE-READINESS-PACKAGE.md",
+      "governingCommitSha": "376f551441e985c391be696c1b68019d7d0290b2",
+      "governingSectionRef": "Question 6: Seed Separation & SQLite Offline Sync Architecture",
+      "governingMandate": "Local SQLite offline caching and synchronization schema for mobile client. (Unimplemented, scheduled for Milestone W022).",
+      "criterionIds": [
+        "CRIT-I01-01"
+      ],
+      "evidenceArtifacts": [
+        "docs/W021.5-FINAL-PRODUCTION-SYNC-PLAN.md"
+      ],
+      "deterministicMethod": "Verify offline sync architecture design plan in repository documentation.",
+      "accounting": {
+        "repoVerifiedWeight": 0,
+        "databasePendingWeight": 0,
+        "blockedWeight": 0,
+        "unimplementedWeight": 3,
+        "status": "NOT_IMPLEMENTED"
+      },
+      "limitations": "Strictly 3.0% UNIMPLEMENTED; scheduled for future Milestone W022."
+    },
+    {
+      "taskId": "W021.5-I-02",
+      "canonicalTitle": "Production Database Air-Gap Preservation & Cutover Preflight",
+      "stageId": "STAGE_I",
+      "stageName": "Canonical Offline SQLite Sync Engine & Final Production Synchronization (W021.5-B5)",
+      "approvedWeight": 3,
+      "requirementCode": "REQ-SYS-002",
+      "taskClassification": "CORE_SPECIFICATION",
+      "governingDocumentId": "DOC-W021.5-SURG-FIX-001",
+      "governingDocumentPath": "reports/W021_5_MASTER_SURGICAL_REMEDIATION_CLOSURE_REPORT.md",
+      "governingCommitSha": "aaf36555a3066ffa8e3ff50cb3007fc0501dff4e",
+      "governingSectionRef": "Production Synchronization Runbook & CTO Checkpoint Gate",
+      "governingMandate": "Production air-gap enforcement (ehfafcnimmjusyvplbah untouched) and cutover preflight verification. Blocked pending formal CTO production authorization.",
+      "criterionIds": [
+        "CRIT-I02-01"
+      ],
+      "evidenceArtifacts": [
+        "docs/W021.5-PRODUCTION-SYNCHRONIZATION-RUNBOOK.md",
+        "reports/W021.5-EXECUTION-LEDGER.md"
+      ],
+      "deterministicMethod": "Verify runbook documents air-gap and production authorization gates; verify live database execution is recorded as 0.0%.",
+      "accounting": {
+        "repoVerifiedWeight": 0,
+        "databasePendingWeight": 0,
+        "blockedWeight": 3,
+        "unimplementedWeight": 0,
+        "status": "BLOCKED"
+      },
+      "limitations": "Strictly 3.0% BLOCKED pending formal CTO production authorization and migration schedule."
+    }
+  ]
+}

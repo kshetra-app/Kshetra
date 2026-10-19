@@ -1,0 +1,79 @@
+================================================================================
+KSHETRA VERIFIABLE TEST EXECUTION LOG
+Suite: tests/political-intelligence-directive-104.test.mjs
+Command: node tests/political-intelligence-directive-104.test.mjs
+Working Directory: C:\Users\Laven\OneDrive\Desktop\Kshetra
+Runtime: Node v24.13.0 (win32)
+Execution Timestamp: 2026-10-19T04:59:16.109Z
+Exit Code: 0
+================================================================================
+
+--- STDOUT ---
+================================================================
+KSHETRA W021.5 — CTO DIRECTIVE 104 VERIFICATION SUITE
+Governing-Specification Provenance, Independent Criterion Substantiation, and Final Evidence Reconciliation
+================================================================
+
+--- 1. Workstream A: Governing Specification Provenance & Source Inspection ---
+  [PASS] 1.1 verifyGoverningSpecificationProvenance() passes and returns comprehensive provenance proof
+  [PASS] 1.2 Exact source path, commit SHA, file size, and SHA-256 integrity verified for all 15 governing documents
+  [PASS] 1.3 Monolithic specification disposition is transparently disclosed as FEDERATED_CORPUS_PRESERVED_NO_SINGLE_MONOLITHIC_FILE
+  [PASS] 1.4 Explicit task classification: exactly 25 CORE_SPECIFICATION tasks, 2 HARDENING_EXTENSION tasks, and 0 UNAPPROVED_EXTENSIONS
+  [PASS] 1.5 Document distinction: governing specification documents are strictly separated from implementation reports, execution ledgers, and manifests
+
+--- 2. Workstream B: Bidirectional Task, Requirement & Stage Provenance ---
+  [PASS] 2.1 Bidirectional inventory: 15 governing docs <-> 27 canonical tasks <-> 50 criteria <-> execution ledger records
+  [PASS] 2.2 Requirement code validation: every canonical task requirement code resolves to governing matrix
+  [PASS] 2.3 Governing document & section reference: each of the 27 tasks links to a valid governing doc ID and non-empty section reference
+  [PASS] 2.4 Criteria resolution: all 50 criterion IDs in TASK_SPECIFICATIONS match governing matrix criterionIds in exact sequence and identity
+  [PASS] 2.5 Master specification manifest alignment: master spec tasks match governing matrix in title, weight, stage, requirementCode
+  [PASS] 2.6 Historical origin ledger alignment: historical origin matches governing matrix in task IDs, titles, weights
+
+--- 3. Workstream C: Substantive Domain Criteria Verification ---
+  [PASS] 3.1 Dynamic evaluation of all 50 criteria across 27 tasks: yields 37 PASS, 13 FAIL/PENDING without mock bypass
+  [PASS] 3.2 Domain property verification beyond mere file presence, non-empty content, or syntax checks
+  [PASS] 3.3 Stage A through Stage I domain checks (verifies specific domain requirements across all 9 stages)
+  [PASS] 3.4 Adversarial criterion falsification: simulated corrupt domain data causes criteria to fail closed
+  [PASS] 3.5 Repository verification distinguished from live database staging execution (strictly 0.0%) and formal CTO acceptance (strictly 0.0%)
+
+--- 4. Workstream D: Comprehensive Adversarial Falsification Matrix ---
+  [PASS] 4.1 Fabricated requirement reference fails closed in verifyGoverningSpecificationProvenance
+  [PASS] 4.2 Omitted real requirement fails closed in verifyGoverningSpecificationProvenance
+  [PASS] 4.3 Task mapped to wrong governing section fails closed in verifyGoverningSpecificationProvenance
+  [PASS] 4.4 Unapproved extension promoted to core specification fails closed in verifyGoverningSpecificationProvenance
+  [PASS] 4.5 Co-mutated manifest + metadata bypass attempt fails closed against independent governing matrix
+  [PASS] 4.6 Mutated task weight or stage weight fails closed against governing matrix
+  [PASS] 4.7 Tampered governing document hash fails closed in verifyGoverningSpecificationProvenance
+  [PASS] 4.8 Mismatched or fabricated criterion ID in task specification fails closed
+  [PASS] 4.9 Tampered progress partition sum in matrix fails closed
+
+--- 5. Workstream E: Dynamic Progress Calculation Proof ---
+  [PASS] 5.1 Independent dynamic derivation of earned percentage: derivedEarned = sum(task.weight * derivedRepoRatio)
+  [PASS] 5.2 Verification that calculation is dynamic and derived from validated criteria outcomes, not hardcoded
+  [PASS] 5.3 Mutually exclusive 4-way progress partition: Earned (61.5%) + DB Pending (10.5%) + Blocked (22.5%) + Unimplemented (5.5%) === 100.000%
+  [PASS] 5.4 Independent recomputation and cross-reconciliation against reports/w021_5_execution_ledger.json
+  [PASS] 5.5 Cross-reconciliation against executive Markdown ledger reports/W021.5-EXECUTION-LEDGER.md
+
+--- 6. Workstream F: Directive 103 Discrepancy Correction & Mandatory Governance Invariants ---
+  [PASS] 6.1 Directive 103 report finalized commit resolved (e09b523ec550b1ed73071117a4f496d1dc8e7806), zero occurrences of PENDING_COMMIT_FINALIZATION
+  [PASS] 6.2 Historical origin 25-vs-27 task discrepancy registered in DISCREPANCY_REGISTER as DISC-012 and disclosed
+  [PASS] 6.3 Rule IV-001 Non-Self-Acceptance: formal CTO acceptance strictly 0.0% (UNACCEPTED)
+  [PASS] 6.4 Offline Air-Gap: live DB staging execution strictly 0.0% (UNEXECUTED), zero SQL executed
+  [PASS] 6.5 Financial Defect DQ-W021.5-B2.2E-001: STRICTLY OPEN (0.0% earned)
+  [PASS] 6.6 Telangana AC 119 Boundary Defect: STRICTLY OPEN / BLOCKED (1.5% blocked)
+  [PASS] 6.7 SQL Migration Immutability: 68 migrations match baseline 0ea572d byte-for-byte
+  [PASS] 6.8 MLA Profile Seed Immutability: 31 seed files match baseline fb408ce byte-for-byte
+
+================================================================
+TEST SUMMARY: 38 PASSED, 0 FAILED
+================================================================
+
+
+
+--- STDERR ---
+
+
+--- PROCESS METRICS ---
+DurationMs: 2817
+ExitCode: 0
+================================================================================

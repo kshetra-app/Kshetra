@@ -4,7 +4,7 @@ Suite: apps/mobile/__tests__/political-intelligence-journey.test.ts
 Command: npm test --prefix apps/mobile -- __tests__/political-intelligence-journey.test.ts
 Working Directory: C:\Users\Laven\OneDrive\Desktop\Kshetra
 Runtime: Node v24.13.0 (win32)
-Execution Timestamp: 2026-10-19T04:01:56.098Z
+Execution Timestamp: 2026-10-19T04:57:46.960Z
 Exit Code: 0
 ================================================================================
 
@@ -39,47 +39,47 @@ Exit Code: 0
 
 
 --- STDERR ---
-PASS __tests__/political-intelligence-journey.test.ts (9.382 s)
+PASS __tests__/political-intelligence-journey.test.ts (8.707 s)
   CTO Directive 083 — Political Intelligence Vertical Slice
     1. Constituency Discovery & Canonical Identity
-      √ finds constituency by name and returns canonical route and identifier (19 ms)
-      √ matches exact canonical ID format with top score (10 ms)
+      √ finds constituency by name and returns canonical route and identifier (13 ms)
+      √ matches exact canonical ID format with top score (9 ms)
       √ finds MLA by name and provides direct legislator profile navigation (9 ms)
-      √ supports national architecture across 31 available states/UTs without single-state hardcoding (25 ms)
+      √ supports national architecture across 31 available states/UTs without single-state hardcoding (28 ms)
     2. Political & Electoral Intelligence Contracts
-      √ resolves unified constituency with accurate election year, winner, runner-up and margin (2 ms)
+      √ resolves unified constituency with accurate election year, winner, runner-up and margin (1 ms)
       √ preserves state-specific election years across the national timeline (3 ms)
       √ maps correctly to shared ConstituencyBrief contract (1 ms)
     3. Representative, Candidate & Financial Disclosures
-      √ Case 1: Positive assets and liabilities with complete itemization and accurate net worth (3 ms)
-      √ Case 2: Genuine affirmative zero assets or liabilities preserved without coercion (69 ms)
-      √ Case 3: Missing disclosures strictly preserved as null without coercion to zero (2 ms)
+      √ Case 1: Positive assets and liabilities with complete itemization and accurate net worth (2 ms)
+      √ Case 2: Genuine affirmative zero assets or liabilities preserved without coercion (72 ms)
+      √ Case 3: Missing disclosures strictly preserved as null without coercion to zero (1 ms)
       √ Case 4: Partial itemization displays filed items without fabricating missing items (1 ms)
       √ Case 5: Unverified / missing disclosures return clean non-blocking status (1 ms)
     4. Mobile API Client Endpoints & Schemas
-      √ apiClient exposes constituencies and elections endpoints (1 ms)
-      √ validateConstituencyBrief validates correct brief and rejects malformed payloads (13 ms)
+      √ apiClient exposes constituencies and elections endpoints (2 ms)
+      √ validateConstituencyBrief validates correct brief and rejects malformed payloads (11 ms)
       √ validateConstituencyDetail preserves election2023 returns without manufactured values (1 ms)
-      √ validateConstituenciesListResponse validates list array payload (2 ms)
-      √ validateConstituencyDetail parses recentElection with real election year and nullable numbers (1 ms)
-      √ validateConstituencyDetail preserves historical multi-election results with distinct years
+      √ validateConstituenciesListResponse validates list array payload (1 ms)
+      √ validateConstituencyDetail parses recentElection with real election year and nullable numbers
+      √ validateConstituencyDetail preserves historical multi-election results with distinct years (1 ms)
     5. Stale Response Prevention on Rapid Navigation
       √ SequenceGuard discards out-of-order resolution from rapid constituency switching (1 ms)
-      √ SequenceGuard reset immediately invalidates all active requests (1 ms)
+      √ SequenceGuard reset immediately invalidates all active requests
     6. Governance, Lineage & Population Invariants
-      √ Delhi assembly seats are strictly 70; DL-AC-071 through DL-AC-087 do not exist as verified assembly seats (5 ms)
+      √ Delhi assembly seats are strictly 70; DL-AC-071 through DL-AC-087 do not exist as verified assembly seats (4 ms)
       √ Telangana assembly seats are strictly 119 with Kodangal AC#72 confirmed (1 ms)
-      √ national data coverage inventory matrix covers all 31 Indian states and UTs with 4,123 assembly seats without gaps (4 ms)
+      √ national data coverage inventory matrix covers all 31 Indian states and UTs with 4,123 assembly seats without gaps (5 ms)
 
 Test Suites: 1 passed, 1 total
 Tests:       23 passed, 23 total
 Snapshots:   0 total
-Time:        10.224 s
+Time:        9.41 s, estimated 20 s
 Ran all test suites matching /__tests__\\political-intelligence-journey.test.ts/i.
 Force exiting Jest: Have you considered using `--detectOpenHandles` to detect async operations that kept running after all tests finished?
 
 
 --- PROCESS METRICS ---
-DurationMs: 13068
+DurationMs: 11970
 ExitCode: 0
 ================================================================================

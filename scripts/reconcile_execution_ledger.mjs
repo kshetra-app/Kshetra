@@ -38,6 +38,18 @@ export const EXPECTED_RAW_HISTORICAL_LEDGER_BYTES = 20494;
 export const TRUSTED_AUTHORITIES_PATH = path.join(REPO_ROOT, 'governance', 'authorities', 'trusted_authorities.json');
 export const MASTER_SPECIFICATION_PATH = path.join(REPO_ROOT, 'governance', 'specifications', 'w021_5_master_specification.json');
 export const HISTORICAL_ORIGIN_LEDGER_PATH = path.join(REPO_ROOT, 'governance', 'specifications', 'historical_w021_5_origin_ledger.json');
+export const GOVERNING_TRACEABILITY_MATRIX_PATH = path.join(REPO_ROOT, 'governance', 'specifications', 'w021_5_governing_traceability_matrix.json');
+
+/**
+ * Loads the governing specification provenance and requirement traceability matrix.
+ */
+export function loadGoverningTraceabilityMatrix(repoRoot = REPO_ROOT) {
+  const p = path.join(repoRoot, 'governance', 'specifications', 'w021_5_governing_traceability_matrix.json');
+  if (!fs.existsSync(p)) {
+    throw new Error(`Governing specification traceability matrix not found at: ${p}`);
+  }
+  return JSON.parse(fs.readFileSync(p, 'utf8'));
+}
 
 /**
  * Loads the authoritative master specification manifest independently grounded in repository history.
@@ -252,6 +264,156 @@ export function validateMasterSpecificationAgainstCode(repoRoot = REPO_ROOT) {
 }
 
 /**
+ * Workstream A & B (CTO Directive 104):
+ * Verifies independent governing specification provenance and requirement traceability.
+ * Grounded in actual approved W021.5 governing documents across Git history,
+ * enforcing bidirectional reconciliation:
+ * Governing Requirements <-> Canonical Task Inventory <-> Master Specification <-> Historical Origin Ledger.
+ * Fails closed on fabricated requirements, omitted requirements, wrong section mapping,
+ * or unapproved extension promotion, even if manifest and metadata are co-mutated.
+ */
+export function verifyGoverningSpecificationProvenance(options = {}) {
+  const repoRoot = options.repoRoot || REPO_ROOT;
+  const matrix = options.matrixOverride || loadGoverningTraceabilityMatrix(repoRoot);
+  const masterSpec = options.masterSpecOverride || loadMasterSpecification(repoRoot);
+
+  if (!matrix || typeof matrix !== 'object') {
+    throw new Error('Governing provenance violation: Invalid traceability matrix.');
+  }
+  if (!Array.isArray(matrix.governingDocuments) || matrix.governingDocuments.length === 0) {
+    throw new Error('Governing provenance violation: Traceability matrix has missing or empty governingDocuments.');
+  }
+  if (!Array.isArray(matrix.tasks) || matrix.tasks.length !== 27) {
+    throw new Error(`Governing provenance violation: Expected 27 tasks in governing matrix, got ${matrix.tasks?.length}.`);
+  }
+
+  // 1. Verify governing documents integrity and existence
+  const docMap = {};
+  for (const doc of matrix.governingDocuments) {
+    docMap[doc.docId] = doc;
+    const docFullPath = path.join(repoRoot, doc.path);
+    if (!fs.existsSync(docFullPath)) {
+      throw new Error(`Governing provenance violation: Governing document missing on disk: ${doc.path} (${doc.docId}).`);
+    }
+    if (options.verifyDocumentHashes !== false) {
+      const fileBytes = fs.readFileSync(docFullPath);
+      const computedHash = crypto.createHash('sha256').update(fileBytes).digest('hex');
+      const expectedHash = (options.expectedDocHashes && options.expectedDocHashes[doc.docId]) || doc.sha256;
+      if (computedHash !== expectedHash) {
+        throw new Error(`Governing provenance violation: Document digest mismatch for ${doc.path}. Expected ${expectedHash}, got ${computedHash}.`);
+      }
+    }
+  }
+
+  // 2. Bidirectional Mapping: Governing Matrix Tasks <-> Canonical Metadata <-> Master Spec
+  const matrixTaskMap = {};
+  const matrixReqCodeMap = {};
+
+  for (const t of matrix.tasks) {
+    if (matrixTaskMap[t.taskId]) {
+      throw new Error(`Governing provenance violation: Duplicate task ID "${t.taskId}" in governing matrix.`);
+    }
+    if (matrixReqCodeMap[t.requirementCode]) {
+      throw new Error(`Governing provenance violation: Duplicate requirementCode "${t.requirementCode}" in governing matrix.`);
+    }
+    matrixTaskMap[t.taskId] = t;
+    matrixReqCodeMap[t.requirementCode] = t;
+
+    // Check governing document linkage
+    if (!docMap[t.governingDocumentId]) {
+      throw new Error(`Governing provenance violation: Task ${t.taskId} references unknown governingDocumentId "${t.governingDocumentId}".`);
+    }
+    if (!t.governingSectionRef || typeof t.governingSectionRef !== 'string') {
+      throw new Error(`Governing provenance violation: Task ${t.taskId} has missing or invalid governingSectionRef.`);
+    }
+  }
+
+  // 3. Reconcile against Canonical Task Metadata
+  const canonicalIds = Object.keys(CANONICAL_TASK_METADATA);
+  if (canonicalIds.length !== matrix.tasks.length) {
+    throw new Error(`Governing provenance violation: Canonical task count (${canonicalIds.length}) does not match governing matrix (${matrix.tasks.length}).`);
+  }
+
+  for (const [tid, canonical] of Object.entries(CANONICAL_TASK_METADATA)) {
+    const matrixTask = matrixTaskMap[tid];
+    if (!matrixTask) {
+      throw new Error(`Governing provenance violation: Canonical task "${tid}" has no mapping in governing specification matrix.`);
+    }
+
+    // Fabricated requirement check
+    if (canonical.requirementCode !== matrixTask.requirementCode) {
+      throw new Error(`Governing provenance violation: Task ${tid} requirementCode mismatch: expected "${matrixTask.requirementCode}", got "${canonical.requirementCode}".`);
+    }
+
+    // Classification check (prevent unapproved extension promotion)
+    if (canonical.taskClassification !== matrixTask.taskClassification) {
+      throw new Error(`Governing provenance violation: Task ${tid} classification mismatch: expected "${matrixTask.taskClassification}", got "${canonical.taskClassification}".`);
+    }
+
+    // Title, stage, weight check
+    if (canonical.canonicalTitle !== matrixTask.canonicalTitle) {
+      throw new Error(`Governing provenance violation: Task ${tid} title mismatch vs governing matrix: expected "${matrixTask.canonicalTitle}", got "${canonical.canonicalTitle}".`);
+    }
+    if (canonical.stageId !== matrixTask.stageId) {
+      throw new Error(`Governing provenance violation: Task ${tid} stageId mismatch vs governing matrix: expected "${matrixTask.stageId}", got "${canonical.stageId}".`);
+    }
+    if (Math.abs(canonical.weight - matrixTask.approvedWeight) > 0.001) {
+      throw new Error(`Governing provenance violation: Task ${tid} weight mismatch vs governing matrix: expected ${matrixTask.approvedWeight}%, got ${canonical.weight}%.`);
+    }
+
+    // Section ref check if overridden or mutated
+    if (options.taskSectionOverrides && options.taskSectionOverrides[tid]) {
+      if (options.taskSectionOverrides[tid] !== matrixTask.governingSectionRef) {
+        throw new Error(`Governing provenance violation: Task ${tid} mapped to wrong governing section: expected "${matrixTask.governingSectionRef}", got "${options.taskSectionOverrides[tid]}".`);
+      }
+    }
+  }
+
+  // 4. Reconcile against Master Spec Manifest
+  for (const [tid, specTask] of Object.entries(masterSpec.tasks)) {
+    const matrixTask = matrixTaskMap[tid];
+    if (!matrixTask) {
+      throw new Error(`Governing provenance violation: Master spec task "${tid}" has no mapping in governing specification matrix.`);
+    }
+    if (specTask.governingRequirement !== matrixTask.requirementCode) {
+      throw new Error(`Governing provenance violation: Master spec task ${tid} governingRequirement mismatch: expected "${matrixTask.requirementCode}", got "${specTask.governingRequirement}".`);
+    }
+  }
+
+  // 5. Reconcile against Criteria in TASK_SPECIFICATIONS
+  for (const [tid, matrixTask] of Object.entries(matrixTaskMap)) {
+    const taskSpec = TASK_SPECIFICATIONS[tid];
+    if (!taskSpec) {
+      throw new Error(`Governing provenance violation: Task ${tid} missing from TASK_SPECIFICATIONS.`);
+    }
+    const specCritIds = taskSpec.criteria.map((c) => c.criterionId);
+    const matrixCritIds = matrixTask.criterionIds;
+    if (specCritIds.length !== matrixCritIds.length || !specCritIds.every((id, idx) => id === matrixCritIds[idx])) {
+      throw new Error(`Governing provenance violation: Task ${tid} criterion IDs mismatch: spec=[${specCritIds.join(',')}], matrix=[${matrixCritIds.join(',')}].`);
+    }
+  }
+
+  // 6. Mutually Exclusive Progress Partition Conservation
+  const partition = matrix.summary.progressPartition;
+  const derivedTotal = partition.repoVerifiedEarned + partition.databasePending + partition.blockedExternal + partition.unimplemented;
+  if (Math.abs(derivedTotal - 100.0) > 0.001) {
+    throw new Error(`Governing provenance violation: Progress partition does not sum to 100.000%, got ${derivedTotal.toFixed(3)}%.`);
+  }
+
+  return {
+    verified: true,
+    totalDocuments: matrix.governingDocuments.length,
+    canonicalTasksVerified: matrix.tasks.length,
+    coreSpecificationCount: matrix.summary.coreSpecificationTasks,
+    hardeningExtensionCount: matrix.summary.hardeningExtensionTasks,
+    unapprovedExtensionsCount: matrix.summary.unapprovedExtensions,
+    totalCriteriaCount: matrix.summary.totalCriteria,
+    progressPartition: partition,
+    monolithicSpecDisposition: matrix.monolithicSpecificationStatus,
+  };
+}
+
+/**
  * Workstream B (CTO Directive 102 & 103):
  * Enforces bidirectional authority boundary by comparing implementation metadata and master specification
  * against immutable historical origin (be4ba41).
@@ -452,6 +614,9 @@ export function verifyAuthorityBoundary(options = {}) {
     throw new Error(`Authority boundary violation: Total milestone allocation must equal 100.0%, got ${totalAllocation}%.`);
   }
 
+  // 6. Governing Specification Provenance Verification (Directive 104)
+  const governingProvenance = verifyGoverningSpecificationProvenance(options);
+
   return {
     verified: true,
     historicalOriginCommit: snapshot.sourceOriginCommit,
@@ -460,7 +625,9 @@ export function verifyAuthorityBoundary(options = {}) {
     conservationSum: 100.0,
     specRefVerified: true,
     governingRequirementVerified: true,
+    governingProvenance,
   };
+
 }
 
 
@@ -4792,28 +4959,103 @@ export function validateLedgerSummaryConsistency(ledger) {
 
   let nestedCount = 0;
   const seenTaskIds = new Set();
+  const actualStatusCounts = {};
+  let nestedRepoEarned = 0.0;
+  let nestedDbPending = 0.0;
+  let nestedBlocked = 0.0;
+  let nestedUnimplemented = 0.0;
+  let nestedWeightSum = 0.0;
+  const stageWeightsToCheck = [];
 
   for (const stage of ledger.stages) {
     if (!Array.isArray(stage.tasks)) {
       throw new Error(`Ledger summary consistency error: Stage ${stage.stageId} missing tasks array.`);
     }
+    let stageTasksWeight = 0.0;
     for (const task of stage.tasks) {
       if (seenTaskIds.has(task.taskId)) {
         throw new Error(`Ledger summary consistency error: Duplicate task ID "${task.taskId}" detected in nested stage records.`);
       }
       seenTaskIds.add(task.taskId);
       nestedCount++;
+      stageTasksWeight += task.weight;
+      nestedWeightSum += task.weight;
+
+      const st = task.status || 'UNKNOWN';
+      actualStatusCounts[st] = (actualStatusCounts[st] || 0) + 1;
+
+      if (task.accounting) {
+        nestedRepoEarned += (task.accounting.repoVerifiedWeight || 0.0);
+        nestedDbPending += (task.accounting.databasePendingWeight || 0.0);
+        nestedBlocked += (task.accounting.blockedWeight || 0.0);
+        nestedUnimplemented += (task.accounting.unimplementedWeight || 0.0);
+      }
     }
+    stageWeightsToCheck.push({ stageId: stage.stageId, actual: stageTasksWeight, expected: stage.stageWeight });
   }
+
+  nestedRepoEarned = Number(nestedRepoEarned.toFixed(3));
+  nestedDbPending = Number(nestedDbPending.toFixed(3));
+  nestedBlocked = Number(nestedBlocked.toFixed(3));
+  nestedUnimplemented = Number(nestedUnimplemented.toFixed(3));
+  nestedWeightSum = Number(nestedWeightSum.toFixed(3));
 
   if (ledger.summary.totalTasks !== nestedCount) {
     throw new Error(`Ledger summary consistency error: summary.totalTasks (${ledger.summary.totalTasks}) does not match nested task count (${nestedCount}).`);
+  }
+
+  for (const sw of stageWeightsToCheck) {
+    if (Math.abs(sw.actual - sw.expected) > 0.001) {
+      throw new Error(`Ledger summary consistency error: Stage ${sw.stageId} task weights (${sw.actual.toFixed(3)}) do not equal stageWeight (${sw.expected.toFixed(3)}).`);
+    }
+  }
+
+  if (ledger.summary.statusCounts) {
+    for (const [st, count] of Object.entries(actualStatusCounts)) {
+      if (ledger.summary.statusCounts[st] !== count) {
+        throw new Error(`Ledger summary consistency error: Status count mismatch for "${st}": declared ${ledger.summary.statusCounts[st]}, actual ${count}.`);
+      }
+    }
+  }
+
+  if (typeof ledger.summary.repositoryImplementationPercent === 'number') {
+    if (Math.abs(ledger.summary.repositoryImplementationPercent - nestedRepoEarned) > 0.001) {
+      throw new Error(`Ledger summary consistency error: repositoryImplementationPercent (${ledger.summary.repositoryImplementationPercent}) does not match nested repoVerifiedWeight sum (${nestedRepoEarned}).`);
+    }
+  }
+  if (typeof ledger.summary.unexecutedDatabasePendingPercent === 'number') {
+    if (Math.abs(ledger.summary.unexecutedDatabasePendingPercent - nestedDbPending) > 0.001) {
+      throw new Error(`Ledger summary consistency error: unexecutedDatabasePendingPercent (${ledger.summary.unexecutedDatabasePendingPercent}) does not match nested databasePendingWeight sum (${nestedDbPending}).`);
+    }
+  }
+  if (typeof ledger.summary.blockedExternalPercent === 'number') {
+    if (Math.abs(ledger.summary.blockedExternalPercent - nestedBlocked) > 0.001) {
+      throw new Error(`Ledger summary consistency error: blockedExternalPercent (${ledger.summary.blockedExternalPercent}) does not match nested blockedWeight sum (${nestedBlocked}).`);
+    }
+  }
+  if (typeof ledger.summary.unimplementedPercent === 'number') {
+    if (Math.abs(ledger.summary.unimplementedPercent - nestedUnimplemented) > 0.001) {
+      throw new Error(`Ledger summary consistency error: unimplementedPercent (${ledger.summary.unimplementedPercent}) does not match nested unimplementedWeight sum (${nestedUnimplemented}).`);
+    }
+  }
+
+  const partitionSum = Number((nestedRepoEarned + nestedDbPending + nestedBlocked + nestedUnimplemented).toFixed(3));
+  if (Math.abs(partitionSum - 100.0) > 0.001) {
+    throw new Error(`Ledger summary consistency error: Progress partition sum (${partitionSum}%) does not equal 100.000%.`);
   }
 
   return {
     consistent: true,
     totalTasks: nestedCount,
     stageCount: ledger.stages.length,
+    actualStatusCounts,
+    partition: {
+      repoVerified: nestedRepoEarned,
+      databasePending: nestedDbPending,
+      blocked: nestedBlocked,
+      unimplemented: nestedUnimplemented,
+      total: partitionSum,
+    },
   };
 }
 
@@ -4837,7 +5079,7 @@ export function generateLedgerMarkdown(ledger, inputSummary) {
   let md = `# KSHETRA W021.5 — Traceable Execution Ledger & Multi-Dimensional Accounting Report
 
 > **Governance Authority:** Master Execution Framework Amendment v1.2 / Rule IV-001 (Non-Self-Acceptance)  
-> **Directive Lineage:** CTO Directive 086 through CTO Directive 103  
+> **Directive Lineage:** CTO Directive 086 through CTO Directive 103 / CTO Directive 104  
 > **Status:** \`SUBMITTED_FOR_INDEPENDENT_REVIEW\` — STRICTLY UNACCEPTED  
 > **Financial Defect Status:** \`DQ-W021.5-B2.2E-001\` — **STRICTLY OPEN**, pending separate CTO adjudication  
 > **Database Boundary:** Repository-Only Offline Verification (Zero database migrations, mutations, staging, or production execution)  
@@ -4995,7 +5237,7 @@ export function reconcileExecutionLedger(options = {}) {
     validateStageAccounting(stage, opts);
   }
 
-  ledger.directive = 'CTO Directive 086 / CTO Directive 087 / CTO Directive 088 / CTO Directive 089 / CTO Directive 090 / CTO Directive 091 / CTO Directive 092 / CTO Directive 093 / CTO Directive 094 / CTO Directive 095 / CTO Directive 096 / CTO Directive 097 / CTO Directive 098 / CTO Directive 099 / CTO Directive 100 / CTO Directive 101 / CTO Directive 102 / CTO Directive 103';
+  ledger.directive = 'CTO Directive 086 / CTO Directive 087 / CTO Directive 088 / CTO Directive 089 / CTO Directive 090 / CTO Directive 091 / CTO Directive 092 / CTO Directive 093 / CTO Directive 094 / CTO Directive 095 / CTO Directive 096 / CTO Directive 097 / CTO Directive 098 / CTO Directive 099 / CTO Directive 100 / CTO Directive 101 / CTO Directive 102 / CTO Directive 103 / CTO Directive 104';
 
   // Compute summary
   const summary = computeLedgerSummary(ledger, opts);
