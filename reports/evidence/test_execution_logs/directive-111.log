@@ -4,7 +4,7 @@ Suite: tests/political-intelligence-directive-111.test.mjs
 Command: node tests/political-intelligence-directive-111.test.mjs
 Working Directory: C:\Users\Laven\OneDrive\Desktop\Kshetra
 Runtime: Node v24.13.0 (win32)
-Execution Timestamp: 2026-10-19T13:40:03.320Z
+Execution Timestamp: 2026-10-19T15:41:16.619Z
 Exit Code: 0
 ================================================================================
 
@@ -27,7 +27,7 @@ Command: node tests/political-intelligence-directive-111.test.mjs
   [PASS] 2.3 B: Unapproved or unexpected symbol added to production verifier namespace fails closed
   [PASS] 2.4 B: All 4 payload functions remain strictly absent (undefined) on production module
   [PASS] 2.5 B: All 4 public verifier entry points unconditionally reject all 10 FORBIDDEN_TRUST_OVERRIDES
-  [PASS] 2.6 B: Caller-supplied boolean mode flags cannot bypass verifier guards
+  [PASS] 2.6 B: Caller-supplied boolean mode flags cannot bypass verifier guards (isolated tests)
 
 --- 3. Internal-Engine Trust Boundary & Architecture (Workstream C) ---
   [PASS] 3.1 C: Clean-process isolated import of scripts/reconcile_execution_ledger.mjs succeeds
@@ -58,6 +58,6 @@ TEST SUMMARY: 24 PASSED, 0 FAILED, 0 SKIPPED
 
 
 --- PROCESS METRICS ---
-DurationMs: 12438
+DurationMs: 41233
 ExitCode: 0
 ================================================================================

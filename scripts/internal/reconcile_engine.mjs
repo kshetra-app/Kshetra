@@ -81,13 +81,85 @@ export const FORBIDDEN_TRUST_OVERRIDES = [
   'ledgerOverride',
 ];
 
+const ADDITIONAL_TRUST_OVERRIDES = [
+  'snapshotOverride',
+  'testExecutionManifest',
+  'testExecutionManifestPath',
+  'trustedAuthorities',
+  'externalTrustPin',
+  'trustPolicy',
+  'externalPublicKey',
+  'isolatedTestHarnessAuth',
+  'testHarnessIsolatedAuth',
+];
+
+const APPROVED_PUBLIC_OPTIONS = ['repoRoot'];
+
 export function assertNoCallerTrustOverrides(options = {}, entryPointName = 'verifier') {
-  if (!options || typeof options !== 'object') return;
+  // 1. undefined or empty call is legitimate default
+  if (options === undefined) {
+    return;
+  }
+
+  // 2. Positional string argument for backward-compatibility (e.g. reconcileExecutionLedger(REPO_ROOT))
+  if (typeof options === 'string') {
+    if (options.trim().length === 0) {
+      throw new Error(`CALLER_OPTIONS_INVALID: options path string cannot be empty in ${entryPointName}`);
+    }
+    if (!fs.existsSync(options)) {
+      throw new Error(`INVALID_REPO_ROOT: Repository root does not exist: "${options}" in ${entryPointName}`);
+    }
+    return;
+  }
+
+  // 3. Non-object inputs (null, boolean, number, symbol, function, array)
+  if (options === null) {
+    throw new Error(`CALLER_OPTIONS_INVALID: options cannot be null in ${entryPointName}`);
+  }
+  if (typeof options !== 'object') {
+    throw new Error(`CALLER_OPTIONS_INVALID: options must be an object in ${entryPointName}, received ${typeof options}`);
+  }
+  if (Array.isArray(options)) {
+    throw new Error(`CALLER_OPTIONS_INVALID: options cannot be an array in ${entryPointName}`);
+  }
+
+  // 4. Check FORBIDDEN_TRUST_OVERRIDES (both own and inherited properties)
   for (const key of FORBIDDEN_TRUST_OVERRIDES) {
-    if (options[key] !== undefined) {
+    if (key in options || options[key] !== undefined) {
       throw new Error(
         `CALLER_TRUST_OVERRIDE_PROHIBITED: Caller options cannot override "${key}" in ${entryPointName}. Public verification entry points are safe by default and unconditionally reject caller-controlled trust overrides.`
       );
+    }
+  }
+
+  // 5. Check ADDITIONAL_TRUST_OVERRIDES (both own and inherited properties)
+  for (const key of ADDITIONAL_TRUST_OVERRIDES) {
+    if (key in options || options[key] !== undefined) {
+      throw new Error(
+        `CALLER_TRUST_OVERRIDE_PROHIBITED: Caller options cannot override "${key}" in ${entryPointName}. Public verification entry points are safe by default and unconditionally reject caller-controlled trust overrides.`
+      );
+    }
+  }
+
+  // 6. Check for unapproved options / unknown keys / bypass flags (both own and inherited properties)
+  for (const key in options) {
+    if (!APPROVED_PUBLIC_OPTIONS.includes(key)) {
+      throw new Error(
+        `CALLER_TRUST_OVERRIDE_PROHIBITED: Unsupported option "${key}" in ${entryPointName}. Public verification entry points only support approved configuration options: ["repoRoot"].`
+      );
+    }
+  }
+
+  // 7. Validate legitimate repoRoot option if provided
+  if (options.repoRoot !== undefined) {
+    if (typeof options.repoRoot !== 'string' || options.repoRoot.trim().length === 0) {
+      throw new Error(`INVALID_REPO_ROOT: repoRoot must be a non-empty string in ${entryPointName}`);
+    }
+    if (!fs.existsSync(options.repoRoot)) {
+      throw new Error(`INVALID_REPO_ROOT: repoRoot path does not exist: "${options.repoRoot}" in ${entryPointName}`);
+    }
+    if (!fs.statSync(options.repoRoot).isDirectory()) {
+      throw new Error(`INVALID_REPO_ROOT: repoRoot path is not a directory: "${options.repoRoot}" in ${entryPointName}`);
     }
   }
 }

@@ -1,0 +1,65 @@
+================================================================================
+KSHETRA VERIFIABLE TEST EXECUTION LOG
+Suite: tests/political-intelligence-directive-113.test.mjs
+Command: node tests/political-intelligence-directive-113.test.mjs
+Working Directory: C:\Users\Laven\OneDrive\Desktop\Kshetra
+Runtime: Node v24.13.0 (win32)
+Execution Timestamp: 2026-10-19T15:42:13.704Z
+Exit Code: 0
+================================================================================
+
+--- STDOUT ---
+================================================================
+KSHETRA W021.5 — CTO DIRECTIVE 113 VERIFICATION SUITE
+CI Dependency Blocker Resolution & Adversarial Trust-Boundary Verification
+Suite: tests/political-intelligence-directive-113.test.mjs
+Command: node tests/political-intelligence-directive-113.test.mjs
+================================================================
+
+--- 1. Clean-Install Dependency Resolution & Compatibility (Workstream A) ---
+  [PASS] 1.1 A: apps/mobile/package.json declares @config-plugins/react-native-webrtc at ^13.0.0
+  [PASS] 1.2 A: package-lock.json resolves @config-plugins/react-native-webrtc to version 13.0.0 with Expo 54 peer match
+  [PASS] 1.3 A: WebRTC mobile application integration files remain preserved and functional
+  [PASS] 1.4 A: Clean installation simulation (npm ci --dry-run) passes cleanly with 0 ERESOLVE errors
+
+--- 2. Adversarial Override Tests & Options Auditing (Workstream B) ---
+  [PASS] 2.1 B: Isolated boolean mode flags tested independently cannot bypass verifier guards
+  [PASS] 2.2 B: Unknown or unapproved options are rejected independently across all 4 verifiers
+  [PASS] 2.3 B: Inherited prototype properties (overrides and bypass flags) are detected and rejected
+  [PASS] 2.4 B: Non-object inputs (null, primitives, arrays) fail closed
+  [PASS] 2.5 B: Path substitution and traversal in repoRoot fails closed
+  [PASS] 2.6 B: Caller-controlled trust material attempts rejected independently across all 4 verifiers
+[PASS] Reconciled JSON ledger written to C:\Users\Laven\OneDrive\Desktop\Kshetra\reports\w021_5_execution_ledger.json
+[PASS] Reconciled Markdown ledger written to C:\Users\Laven\OneDrive\Desktop\Kshetra\reports\W021.5-EXECUTION-LEDGER.md
+  [PASS] 2.7 B: Legitimate options (repoRoot, empty object, default) execute full authentic verification
+  [PASS] 2.8 B: Exact approved export inventory (55 symbols) strictly preserved
+
+--- 3. Internal Engine Isolation Review (Workstream C) ---
+  [PASS] 3.1 C: Layer 0 internal engine imports ZERO repository files (0 relative imports)
+  [PASS] 3.2 C: Shipped application dependency graph NEVER imports internal engine or test adapter
+  [PASS] 3.3 C: Test-only fixture seams cannot be reached through the production verifier namespace
+  [PASS] 3.4 C: Canonical single implementation preserved: zero verification algorithm duplication
+  [PASS] 3.5 C: Boundary guarantee is documented as repository convention, static DAG, and build boundary
+
+--- 4. Mandatory Governance Invariants (Workstream D) ---
+  [PASS] 4.1 D: Rule IV-001 Non-Self-Acceptance: Formal acceptance is strictly 0.0% / UNACCEPTED
+  [PASS] 4.2 D: Production Air-Gap: Live database execution is strictly 0.0% / UNEXECUTED
+  [PASS] 4.3 D: Financial Defect DQ-W021.5-B2.2E-001 remains STRICTLY OPEN (0.0% earned, 5.0% blocked)
+  [PASS] 4.4 D: Telangana AC 119 Boundary Defect remains STRICTLY OPEN / BLOCKED (1.5% blocked)
+  [PASS] 4.5 D: SQL Migration Immutability: 68 migrations match baseline 0ea572d byte-for-byte identical
+  [PASS] 4.6 D: MLA Profile Seed Immutability: 31 seed files match baseline fb408ce byte-for-byte identical
+  [PASS] 4.7 D: Canonical task inventory equality: exactly 27 canonical tasks summing to 100.000% weight, 61.5% repo-verified earned
+
+================================================================
+TEST SUMMARY: 24 PASSED, 0 FAILED, 0 SKIPPED
+================================================================
+
+
+
+--- STDERR ---
+
+
+--- PROCESS METRICS ---
+DurationMs: 57066
+ExitCode: 0
+================================================================================

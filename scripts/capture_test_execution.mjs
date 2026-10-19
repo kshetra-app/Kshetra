@@ -287,6 +287,14 @@ export const TEST_SUITE_DEFINITIONS = [
     directiveRef: '111',
     shell: true,
   },
+  {
+    suite: 'tests/political-intelligence-directive-113.test.mjs',
+    command: 'node tests/political-intelligence-directive-113.test.mjs',
+    logFilename: 'directive-113.log',
+    suiteType: 'DIRECTIVE_VERIFICATION_TEST',
+    directiveRef: '113',
+    shell: true,
+  },
 ];
 
 /**

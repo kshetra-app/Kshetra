@@ -1,0 +1,61 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "registerId": "W021.5-DIRECTIVE-113-DISCREPANCY-REGISTER-V1.0",
+  "milestone": "W021.5",
+  "directive": "CTO Directive 113",
+  "purpose": "Forensic discrepancy register and remediation mapping for CI dependency blocker resolution, adversarial trust-boundary hardening, and architectural isolation review under CTO Directive 113.",
+  "generatedAt": "2026-10-19T16:00:00.000Z",
+  "governance": "Master Execution Framework Amendment v1.2 / Rule IV-001 (Non-Self-Acceptance)",
+  "summary": {
+    "totalDiscrepanciesAudited": 3,
+    "discrepanciesResolved": 3,
+    "discrepanciesBlocked": 0,
+    "discrepancyCategoriesAudited": [
+      "dependency_compatibility",
+      "test_authenticity",
+      "architectural_honesty"
+    ],
+    "resolutionStatus": "ALL_DISCREPANCIES_FORENSICALLY_ANALYZED_AND_RECONCILED"
+  },
+  "discrepancies": [
+    {
+      "discrepancyId": "DISC-044",
+      "itemKey": "DEPENDENCY_CONFLICT:expo54WebrtcPeerMismatch",
+      "category": "dependency_compatibility",
+      "discrepancyType": "NPM_CI_ERESOLVE_PEER_CONFLICT",
+      "affectedEntity": "package.json, package-lock.json, apps/mobile/package.json",
+      "priorReportValue": "In published commit 7a38b4a (and previous D110/D111 commits), remote GitHub Actions run 39270699898 failed on Step 4 ('Install dependencies') across all 4 jobs with code ERESOLVE: Could not resolve dependency @config-plugins/react-native-webrtc@12.0.0 requiring peer expo: '^53', while root project requires expo: '^54.0.0'.",
+      "canonicalCommittedValue": "apps/mobile/package.json updated @config-plugins/react-native-webrtc from ^12.0.0 to ^13.0.0. @config-plugins/react-native-webrtc@13.0.0 specifies peerDependencies.expo: '^54', matching Expo 54. package-lock.json regenerated cleanly without --force or --legacy-peer-deps. Clean-install validated via npm ci --dry-run (exit code 0, 0 ERESOLVE errors). All WebRTC mobile functionality preserved.",
+      "representationOrigin": "Project upgraded to Expo 54 in prior milestone, but @config-plugins/react-native-webrtc was left pinned to 12.0.0 (Expo 53 peer).",
+      "historicalLineage": "Uncovered when CI workflow quoting fix in D111 allowed jobs to execute their step graphs on GitHub Actions runners.",
+      "resolutionAction": "Upgraded @config-plugins/react-native-webrtc to ^13.0.0 in apps/mobile/package.json; regenerated package-lock.json; verified npm ci clean install reproducibility.",
+      "resolutionStatus": "RESOLVED_DEPENDENCY_PEER_CONFLICT_ELIMINATED"
+    },
+    {
+      "discrepancyId": "DISC-045",
+      "itemKey": "TEST_AUTHENTICITY:confoundedAdversarialModeFlagTests",
+      "category": "test_authenticity",
+      "discrepancyType": "CONFLATED_TEST_ASSERTION_PATTERN",
+      "affectedEntity": "tests/political-intelligence-directive-111.test.mjs (Test 2.6)",
+      "priorReportValue": "In Directive 111 Test 2.6, bypass mode flags (e.g. testMode: true, allowOverrides: true, bypassLedgerValidation: true) were passed in combination with expectedHashOverride: 'TAMPERED'. Because expectedHashOverride was itself rejected as a forbidden key, the test passed due to the expectedHashOverride check, failing to prove that each bypass flag in isolation was ineffective.",
+      "canonicalCommittedValue": "Disentangled all bypass flag tests. Each flag is tested strictly in isolation against all 4 public verifier entry points without expectedHashOverride. Hardened assertNoCallerTrustOverrides in scripts/internal/reconcile_engine.mjs to reject non-object inputs (null, primitives, arrays), inherited prototype properties (using key in options), unknown/unapproved options (restricting public options strictly to APPROVED_PUBLIC_OPTIONS = ['repoRoot']), and expanded caller trust material overrides. Added 24 isolated tests in Suite 33.",
+      "representationOrigin": "D111 test authoring combined multiple attack vectors into a single test object rather than isolating each parameter under test.",
+      "historicalLineage": "Identified in CTO Directive 113 review as an adversarial test validity gap; fully resolved in D113 Workstream B.",
+      "resolutionAction": "Refactored D111 Test 2.6 to test flags in isolation; hardened assertNoCallerTrustOverrides with prototype scanning and unknown key rejection; created dedicated Suite 33 with comprehensive isolation tests.",
+      "resolutionStatus": "RESOLVED_ADVERSARIAL_TESTS_DISENTANGLED_AND_HARDENED"
+    },
+    {
+      "discrepancyId": "DISC-046",
+      "itemKey": "ARCHITECTURAL_HONESTY:internalEngineRuntimeIsolationClaim",
+      "category": "architectural_honesty",
+      "discrepancyType": "IMPRECISE_SECURITY_GUARANTEE_CHARACTERIZATION",
+      "affectedEntity": "scripts/internal/reconcile_engine.mjs, reports, and governance documentation",
+      "priorReportValue": "D110/D111 reports ambiguously described scripts/internal/reconcile_engine.mjs as having 'runtime isolation' or 'module privacy', which could imply an in-process VM sandbox or Node.js module encapsulation boundary preventing arbitrary imports.",
+      "canonicalCommittedValue": "Truthfully codified that Node.js ECMAScript Modules do not enforce process-level privacy or unforgeable isolation between workspace files. The boundary is an architectural repository convention, an acyclic static DAG (Layer 0 has 0 relative repo imports), and a build/deployment boundary verified by static AST reachability audits (0 application imports across 444 files in apps/api/src, apps/mobile, and packages). Public entry points wrap internal payloads safely, preserving single-implementation verification without code duplication.",
+      "representationOrigin": "CTO Directive 113 review requirement to establish realistic security claims.",
+      "historicalLineage": "D108 created internal engine; D110 scoped exports; D111 audited reachability; D113 precisely articulates architectural vs VM security guarantees.",
+      "resolutionAction": "Documented exact architectural guarantee (repository convention, acyclic static DAG, and build/deploy boundary); verified zero application reachability across 444 files; validated single-implementation integrity.",
+      "resolutionStatus": "RESOLVED_ARCHITECTURAL_GUARANTEE_HONESTLY_CODIFIED"
+    }
+  ]
+}

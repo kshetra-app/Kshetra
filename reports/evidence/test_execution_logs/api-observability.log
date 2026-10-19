@@ -4,7 +4,7 @@ Suite: apps/api/src/__tests__/observability.test.ts
 Command: npm test --prefix apps/api -- src/__tests__/observability.test.ts
 Working Directory: C:\Users\Laven\OneDrive\Desktop\Kshetra
 Runtime: Node v24.13.0 (win32)
-Execution Timestamp: 2026-10-19T13:36:20.008Z
+Execution Timestamp: 2026-10-19T15:28:31.224Z
 Exit Code: 0
 ================================================================================
 
@@ -16,42 +16,42 @@ Exit Code: 0
 
 
 --- STDERR ---
-PASS src/__tests__/observability.test.ts (16.898 s)
+PASS src/__tests__/observability.test.ts (40.597 s)
   Observability, Tracing & Error Interception (JOB W004 / DEC-020)
     Request ID Propagation & Correlation Headers
-      √ generates a unique x-request-id and x-response-time header when none provided (682 ms)
-      √ echoes caller-provided x-request-id across response headers and JSON body (2 ms)
-      √ sanitizes and replaces invalid or malicious request IDs with a UUID (2 ms)
-      √ replaces oversized request IDs (>128 chars) with a UUID (2 ms)
+      √ generates a unique x-request-id and x-response-time header when none provided (2302 ms)
+      √ echoes caller-provided x-request-id across response headers and JSON body (9 ms)
+      √ sanitizes and replaces invalid or malicious request IDs with a UUID (6 ms)
+      √ replaces oversized request IDs (>128 chars) with a UUID (6 ms)
     Controlled Error Interception & Envelope Formatting
-      √ captures controlled 400 Bad Request with correlation ID and timestamp (3 ms)
-      √ captures controlled 503 database failure with sanitized response (20 ms)
-      √ sanitizes 500 internal errors and attaches correlation ID to error envelope (3 ms)
-      √ returns structured 404 response with correlation ID on unknown routes (4 ms)
+      √ captures controlled 400 Bad Request with correlation ID and timestamp (12 ms)
+      √ captures controlled 503 database failure with sanitized response (112 ms)
+      √ sanitizes 500 internal errors and attaches correlation ID to error envelope (131 ms)
+      √ returns structured 404 response with correlation ID on unknown routes (41 ms)
     Operational Metrics Endpoint (GET /api/metrics)
-      √ serves real-time telemetry, memory usage, request counts, and latency percentiles (5 ms)
+      √ serves real-time telemetry, memory usage, request counts, and latency percentiles (49 ms)
     Production Route Protection & Hardening (W004-R1 Mandate)
-      √ rejects public requests to /api/debug/error with 404 in production environment (3 ms)
-      √ allows privileged bypass to /api/debug/error in production with matching secret (2 ms)
-      √ protects /api/metrics in production: rejects unauthorized requests with 401 (2 ms)
-      √ protects /api/metrics in production: permits authorized requests with Bearer token (1 ms)
-      √ protects /api/metrics in production: permits authorized requests with x-metrics-token (2 ms)
-      √ rejects wrong metrics token in production with 401 (1 ms)
-      √ rejects Supabase service-role key presented as metrics token in production (W004-R1A credential separation) (1 ms)
-      √ fails closed when METRICS_AUTH_TOKEN is not configured in production (1 ms)
+      √ rejects public requests to /api/debug/error with 404 in production environment (8 ms)
+      √ allows privileged bypass to /api/debug/error in production with matching secret (5 ms)
+      √ protects /api/metrics in production: rejects unauthorized requests with 401 (5 ms)
+      √ protects /api/metrics in production: permits authorized requests with Bearer token (5 ms)
+      √ protects /api/metrics in production: permits authorized requests with x-metrics-token (10 ms)
+      √ rejects wrong metrics token in production with 401 (5 ms)
+      √ rejects Supabase service-role key presented as metrics token in production (W004-R1A credential separation) (5 ms)
+      √ fails closed when METRICS_AUTH_TOKEN is not configured in production (5 ms)
     Error Classification & External Error Monitoring Engine (W004-R1 Mandate)
-      √ classifies all 8 standard operational error categories appropriately (2 ms)
-      √ safely captures error events without throwing even if monitoring sinks fail (26 ms)
+      √ classifies all 8 standard operational error categories appropriately (7 ms)
+      √ safely captures error events without throwing even if monitoring sinks fail (221 ms)
 
 Test Suites: 1 passed, 1 total
 Tests:       19 passed, 19 total
 Snapshots:   0 total
-Time:        17.332 s
+Time:        42.279 s
 Ran all test suites matching /src\\__tests__\\observability.test.ts/i.
 Force exiting Jest: Have you considered using `--detectOpenHandles` to detect async operations that kept running after all tests finished?
 
 
 --- PROCESS METRICS ---
-DurationMs: 19793
+DurationMs: 50721
 ExitCode: 0
 ================================================================================

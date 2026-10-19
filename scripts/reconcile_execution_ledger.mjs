@@ -179,7 +179,7 @@ export {
  */
 export function verifyHistoricalArtifactIntegrity(options = {}) {
   assertNoCallerTrustOverrides(options, 'verifyHistoricalArtifactIntegrity');
-  const repoRoot = options.repoRoot || REPO_ROOT;
+  const repoRoot = typeof options === 'string' ? options : (options?.repoRoot || REPO_ROOT);
   const snapshot = loadHistoricalOriginLedger(repoRoot);
   let rawBytes;
   try {
@@ -203,7 +203,7 @@ export function verifyHistoricalArtifactIntegrity(options = {}) {
  */
 export function verifyGoverningSpecificationProvenance(options = {}) {
   assertNoCallerTrustOverrides(options, 'verifyGoverningSpecificationProvenance');
-  const repoRoot = options.repoRoot || REPO_ROOT;
+  const repoRoot = typeof options === 'string' ? options : (options?.repoRoot || REPO_ROOT);
   const matrix = loadGoverningTraceabilityMatrix(repoRoot);
   const masterSpec = loadMasterSpecification(repoRoot);
   return verifyGoverningSpecificationProvenancePayload({
@@ -219,7 +219,7 @@ export function verifyGoverningSpecificationProvenance(options = {}) {
  */
 export function verifyAuthorityBoundary(options = {}) {
   assertNoCallerTrustOverrides(options, 'verifyAuthorityBoundary');
-  const repoRoot = options.repoRoot || REPO_ROOT;
+  const repoRoot = typeof options === 'string' ? options : (options?.repoRoot || REPO_ROOT);
   const snapshot = loadHistoricalOriginLedger(repoRoot);
   const masterSpec = loadMasterSpecification(repoRoot);
   return verifyAuthorityBoundaryPayload({
@@ -236,7 +236,8 @@ export function verifyAuthorityBoundary(options = {}) {
  */
 export function reconcileExecutionLedger(options = {}) {
   assertNoCallerTrustOverrides(options, 'reconcileExecutionLedger');
-  return reconcileExecutionLedgerCore(options);
+  const safeOptions = typeof options === 'string' ? { repoRoot: options } : { repoRoot: options?.repoRoot || REPO_ROOT };
+  return reconcileExecutionLedgerCore(safeOptions);
 }
 
 // Execute when invoked directly

@@ -1,6 +1,6 @@
 {
   "milestone": "W021.5",
-  "generatedAt": "2026-10-19T13:40:03.324Z",
+  "generatedAt": "2026-10-19T15:42:13.726Z",
   "manifestSchema": "https://kshetra.dev/schemas/test-execution-manifest.v2.json",
   "executionQualification": "REPOSITORY_RECORDED_EXECUTION",
   "verifierRole": "CTO Directive 111 Test Execution Verifier",
@@ -24,7 +24,7 @@
       "skippedState": "EXPLICIT_ZERO_SKIPPED",
       "zeroSkippedEvidenced": true,
       "totalTests": 4,
-      "durationMs": 11493,
+      "durationMs": 34646,
       "runnerFormat": "JEST",
       "suiteType": "CORE_SYSTEM_TEST",
       "directiveRef": null,
@@ -34,7 +34,7 @@
       "executionEpoch": "DIRECTIVE_111",
       "executionQualification": "REPOSITORY_RECORDED_EXECUTION",
       "outputLogPath": "reports/evidence/test_execution_logs/api-election-truth-contracts.log",
-      "outputLogSha256": "9665372e79fd7842acc86384fd8825a99228f6678c9da62b38e8b31d3ed6192f"
+      "outputLogSha256": "441c69e9cf28e19ac32f08a7f20e73626b04bcb87958d84b6da3cb05df7825b9"
     },
     {
       "suite": "apps/api/src/__tests__/constituencies.test.ts",
@@ -49,7 +49,7 @@
       "skippedState": "EXPLICIT_ZERO_SKIPPED",
       "zeroSkippedEvidenced": true,
       "totalTests": 24,
-      "durationMs": 18882,
+      "durationMs": 59352,
       "runnerFormat": "JEST",
       "suiteType": "CORE_SYSTEM_TEST",
       "directiveRef": null,
@@ -59,7 +59,7 @@
       "executionEpoch": "DIRECTIVE_111",
       "executionQualification": "REPOSITORY_RECORDED_EXECUTION",
       "outputLogPath": "reports/evidence/test_execution_logs/api-constituencies.log",
-      "outputLogSha256": "89065b4f59f3ef34c417fcd2790824b277a242cb3b786d825954659cb93453f2"
+      "outputLogSha256": "42c831a87cc68b06f61b646c367b319dc9dc029312e36a6bd54638c516eab74e"
     },
     {
       "suite": "apps/api/src/__tests__/observability.test.ts",
@@ -74,7 +74,7 @@
       "skippedState": "EXPLICIT_ZERO_SKIPPED",
       "zeroSkippedEvidenced": true,
       "totalTests": 19,
-      "durationMs": 19793,
+      "durationMs": 50721,
       "runnerFormat": "JEST",
       "suiteType": "CORE_SYSTEM_TEST",
       "directiveRef": null,
@@ -84,7 +84,7 @@
       "executionEpoch": "DIRECTIVE_111",
       "executionQualification": "REPOSITORY_RECORDED_EXECUTION",
       "outputLogPath": "reports/evidence/test_execution_logs/api-observability.log",
-      "outputLogSha256": "f9ec5db5d58bcb06c6d4c1dd8932e25e4f933141b906c8ee31549b413b9f80a5"
+      "outputLogSha256": "44dd7ea9375e666bccd22c2f378465c87c936172d10f221fe0aade14e8081985"
     },
     {
       "suite": "apps/mobile/__tests__/political-intelligence-journey.test.ts",
@@ -99,7 +99,7 @@
       "skippedState": "EXPLICIT_ZERO_SKIPPED",
       "zeroSkippedEvidenced": true,
       "totalTests": 23,
-      "durationMs": 11796,
+      "durationMs": 39388,
       "runnerFormat": "JEST",
       "suiteType": "CORE_SYSTEM_TEST",
       "directiveRef": null,
@@ -109,7 +109,7 @@
       "executionEpoch": "DIRECTIVE_111",
       "executionQualification": "REPOSITORY_RECORDED_EXECUTION",
       "outputLogPath": "reports/evidence/test_execution_logs/mobile-political-intelligence-journey.log",
-      "outputLogSha256": "e0d1ad85aa526bc98590b233451b79e2fee24a1f68ec369f3178585badd879e2"
+      "outputLogSha256": "de7b5ad3c437613609ffcd9537057417a34db7fe4b5ad097c1215322443eb014"
     },
     {
       "suite": "tests/political-intelligence-directive-084.test.mjs",
@@ -124,7 +124,7 @@
       "skippedState": "SKIPPED_COUNT_NOT_REPORTED",
       "zeroSkippedEvidenced": false,
       "totalTests": 13,
-      "durationMs": 159,
+      "durationMs": 538,
       "runnerFormat": "CUSTOM_SUMMARY",
       "suiteType": "DIRECTIVE_VERIFICATION_TEST",
       "directiveRef": "084",
@@ -134,7 +134,7 @@
       "executionEpoch": "DIRECTIVE_111",
       "executionQualification": "REPOSITORY_RECORDED_EXECUTION",
       "outputLogPath": "reports/evidence/test_execution_logs/directive-084.log",
-      "outputLogSha256": "91f8920ff0b41a00cd53d73bfb776179b63ca448a2a11939e4136b878de83ec5"
+      "outputLogSha256": "92902c9e8ce680fad3e5bb24fa1d5c052afbe27998f6eabc8d46932de4ae1bab"
     },
     {
       "suite": "tests/political-intelligence-directive-085.test.mjs",
@@ -149,7 +149,7 @@
       "skippedState": "SKIPPED_COUNT_NOT_REPORTED",
       "zeroSkippedEvidenced": false,
       "totalTests": 17,
-      "durationMs": 167,
+      "durationMs": 385,
       "runnerFormat": "CUSTOM_SUMMARY",
       "suiteType": "DIRECTIVE_VERIFICATION_TEST",
       "directiveRef": "085",
@@ -159,7 +159,7 @@
       "executionEpoch": "DIRECTIVE_111",
       "executionQualification": "REPOSITORY_RECORDED_EXECUTION",
       "outputLogPath": "reports/evidence/test_execution_logs/directive-085.log",
-      "outputLogSha256": "001474418ecc637c086a37de418a20f841a981329c3b23f94c8cdeb8e179a1a7"
+      "outputLogSha256": "36c8062656a3d31034267604ed8f123266e23f428adaef40d10ec3ba0f08c10b"
     },
     {
       "suite": "tests/political-intelligence-directive-086.test.mjs",
@@ -174,7 +174,7 @@
       "skippedState": "SKIPPED_COUNT_NOT_REPORTED",
       "zeroSkippedEvidenced": false,
       "totalTests": 19,
-      "durationMs": 166,
+      "durationMs": 407,
       "runnerFormat": "CUSTOM_SUMMARY",
       "suiteType": "DIRECTIVE_VERIFICATION_TEST",
       "directiveRef": "086",
@@ -184,7 +184,7 @@
       "executionEpoch": "DIRECTIVE_111",
       "executionQualification": "REPOSITORY_RECORDED_EXECUTION",
       "outputLogPath": "reports/evidence/test_execution_logs/directive-086.log",
-      "outputLogSha256": "27395a72dbf1e106d36bea104992d636ec2fcdafa869e900d596f8482a5e4f61"
+      "outputLogSha256": "2733fb83b3591e43dec7c8f3ef4bd331d3c50e5fce8ddb4894882361613265bd"
     },
     {
       "suite": "tests/political-intelligence-directive-087.test.mjs",
@@ -199,7 +199,7 @@
       "skippedState": "SKIPPED_COUNT_NOT_REPORTED",
       "zeroSkippedEvidenced": false,
       "totalTests": 25,
-      "durationMs": 1042,
+      "durationMs": 3003,
       "runnerFormat": "CUSTOM_SUMMARY",
       "suiteType": "DIRECTIVE_VERIFICATION_TEST",
       "directiveRef": "087",
@@ -209,7 +209,7 @@
       "executionEpoch": "DIRECTIVE_111",
       "executionQualification": "REPOSITORY_RECORDED_EXECUTION",
       "outputLogPath": "reports/evidence/test_execution_logs/directive-087.log",
-      "outputLogSha256": "19c6ab58c3023c27e9f25aa688b346f94d5d3034b7b7aad79a3bce923be30c63"
+      "outputLogSha256": "f88b638ac117a29a4fbcf8cc9e0a190aba7b876cd8d97b0099c6c9a19e175bda"
     },
     {
       "suite": "tests/political-intelligence-directive-088.test.mjs",
@@ -224,7 +224,7 @@
       "skippedState": "SKIPPED_COUNT_NOT_REPORTED",
       "zeroSkippedEvidenced": false,
       "totalTests": 30,
-      "durationMs": 3188,
+      "durationMs": 9196,
       "runnerFormat": "CUSTOM_SUMMARY",
       "suiteType": "DIRECTIVE_VERIFICATION_TEST",
       "directiveRef": "088",
@@ -234,7 +234,7 @@
       "executionEpoch": "DIRECTIVE_111",
       "executionQualification": "REPOSITORY_RECORDED_EXECUTION",
       "outputLogPath": "reports/evidence/test_execution_logs/directive-088.log",
-      "outputLogSha256": "2c95cd4b5a4199c94ccbcfd1538c39d98f1cb1af774c6f3df930a1364c00cdc1"
+      "outputLogSha256": "28fc5cc61f2e296b2bb321c34f253859f3b652cc271edc5664188f89bb63c2a6"
     },
     {
       "suite": "tests/political-intelligence-directive-089.test.mjs",
@@ -249,7 +249,7 @@
       "skippedState": "SKIPPED_COUNT_NOT_REPORTED",
       "zeroSkippedEvidenced": false,
       "totalTests": 33,
-      "durationMs": 4633,
+      "durationMs": 16242,
       "runnerFormat": "CUSTOM_SUMMARY",
       "suiteType": "DIRECTIVE_VERIFICATION_TEST",
       "directiveRef": "089",
@@ -259,7 +259,7 @@
       "executionEpoch": "DIRECTIVE_111",
       "executionQualification": "REPOSITORY_RECORDED_EXECUTION",
       "outputLogPath": "reports/evidence/test_execution_logs/directive-089.log",
-      "outputLogSha256": "0f84721a91ec6fc164efe0ed65767ce2bfab170f2b218634337190514b9c2571"
+      "outputLogSha256": "d931bd40871c8173c01b26a160e29166adacc7dbe5d58eef73d71586c4425942"
     },
     {
       "suite": "tests/political-intelligence-directive-090.test.mjs",
@@ -274,7 +274,7 @@
       "skippedState": "SKIPPED_COUNT_NOT_REPORTED",
       "zeroSkippedEvidenced": false,
       "totalTests": 18,
-      "durationMs": 3349,
+      "durationMs": 12021,
       "runnerFormat": "CUSTOM_SUMMARY",
       "suiteType": "DIRECTIVE_VERIFICATION_TEST",
       "directiveRef": "090",
@@ -284,7 +284,7 @@
       "executionEpoch": "DIRECTIVE_111",
       "executionQualification": "REPOSITORY_RECORDED_EXECUTION",
       "outputLogPath": "reports/evidence/test_execution_logs/directive-090.log",
-      "outputLogSha256": "a3e3b54c95433dc84f4054c2925ea82938ca78fce76ac27e6cb4255c59b68c3c"
+      "outputLogSha256": "7bc72decf62823834652dd651a925e290c955dace13488482bf63d8fd0d3b056"
     },
     {
       "suite": "tests/political-intelligence-directive-091.test.mjs",
@@ -299,7 +299,7 @@
       "skippedState": "SKIPPED_COUNT_NOT_REPORTED",
       "zeroSkippedEvidenced": false,
       "totalTests": 22,
-      "durationMs": 3242,
+      "durationMs": 11644,
       "runnerFormat": "CUSTOM_SUMMARY",
       "suiteType": "DIRECTIVE_VERIFICATION_TEST",
       "directiveRef": "091",
@@ -309,7 +309,7 @@
       "executionEpoch": "DIRECTIVE_111",
       "executionQualification": "REPOSITORY_RECORDED_EXECUTION",
       "outputLogPath": "reports/evidence/test_execution_logs/directive-091.log",
-      "outputLogSha256": "7aa063a2d4e7442f1bafd074706db612828867c3f7b51f16533dc229b6ff7498"
+      "outputLogSha256": "61d8635a950f8be39a3f98590fc5b98dda837cf4068ad6cf29350f81896af9e6"
     },
     {
       "suite": "tests/political-intelligence-directive-092.test.mjs",
@@ -324,7 +324,7 @@
       "skippedState": "SKIPPED_COUNT_NOT_REPORTED",
       "zeroSkippedEvidenced": false,
       "totalTests": 34,
-      "durationMs": 15470,
+      "durationMs": 52499,
       "runnerFormat": "CUSTOM_SUMMARY",
       "suiteType": "DIRECTIVE_VERIFICATION_TEST",
       "directiveRef": "092",
@@ -334,7 +334,7 @@
       "executionEpoch": "DIRECTIVE_111",
       "executionQualification": "REPOSITORY_RECORDED_EXECUTION",
       "outputLogPath": "reports/evidence/test_execution_logs/directive-092.log",
-      "outputLogSha256": "f4bf10a9abfcf2d3174ae78c2ab340c388d2d71b885f17625232ad711977c58c"
+      "outputLogSha256": "653cc76c2b2f51efea61c85113d76145e1e9f107a5c7b00642a585bdb3219c30"
     },
     {
       "suite": "tests/political-intelligence-directive-093.test.mjs",
@@ -349,7 +349,7 @@
       "skippedState": "SKIPPED_COUNT_NOT_REPORTED",
       "zeroSkippedEvidenced": false,
       "totalTests": 32,
-      "durationMs": 8229,
+      "durationMs": 26748,
       "runnerFormat": "CUSTOM_SUMMARY",
       "suiteType": "DIRECTIVE_VERIFICATION_TEST",
       "directiveRef": "093",
@@ -359,7 +359,7 @@
       "executionEpoch": "DIRECTIVE_111",
       "executionQualification": "REPOSITORY_RECORDED_EXECUTION",
       "outputLogPath": "reports/evidence/test_execution_logs/directive-093.log",
-      "outputLogSha256": "37dba684f2ac0129bc0de74b7945a7a96109fc77a2788ebc45dbdf849b5acc2a"
+      "outputLogSha256": "45248468052f94d7cdb989366b19f75e94963b4a10f92b5d09452defee0023fe"
     },
     {
       "suite": "tests/political-intelligence-directive-094.test.mjs",
@@ -374,7 +374,7 @@
       "skippedState": "SKIPPED_COUNT_NOT_REPORTED",
       "zeroSkippedEvidenced": false,
       "totalTests": 37,
-      "durationMs": 7760,
+      "durationMs": 21484,
       "runnerFormat": "CUSTOM_SUMMARY",
       "suiteType": "DIRECTIVE_VERIFICATION_TEST",
       "directiveRef": "094",
@@ -384,7 +384,7 @@
       "executionEpoch": "DIRECTIVE_111",
       "executionQualification": "REPOSITORY_RECORDED_EXECUTION",
       "outputLogPath": "reports/evidence/test_execution_logs/directive-094.log",
-      "outputLogSha256": "aad99c12bed38705bc3613e78d579ff0cf8e835d5799a60308c0975d19ef4c06"
+      "outputLogSha256": "e6a0eafc4383314880d791e0c07ab0303e5c1c75d46d81388ae514837d042727"
     },
     {
       "suite": "tests/political-intelligence-directive-095.test.mjs",
@@ -399,7 +399,7 @@
       "skippedState": "SKIPPED_COUNT_NOT_REPORTED",
       "zeroSkippedEvidenced": false,
       "totalTests": 56,
-      "durationMs": 12494,
+      "durationMs": 46418,
       "runnerFormat": "CUSTOM_SUMMARY",
       "suiteType": "DIRECTIVE_VERIFICATION_TEST",
       "directiveRef": "095",
@@ -409,7 +409,7 @@
       "executionEpoch": "DIRECTIVE_111",
       "executionQualification": "REPOSITORY_RECORDED_EXECUTION",
       "outputLogPath": "reports/evidence/test_execution_logs/directive-095.log",
-      "outputLogSha256": "fb8175edf071d8efd82a672ecbeb9e5490f4362c018561e957264fc74ea6e780"
+      "outputLogSha256": "1d22e28f67adaaa76801eec9f43dbb4f07452be813efbe71544556efc471155c"
     },
     {
       "suite": "tests/political-intelligence-directive-096.test.mjs",
@@ -424,7 +424,7 @@
       "skippedState": "SKIPPED_COUNT_NOT_REPORTED",
       "zeroSkippedEvidenced": false,
       "totalTests": 59,
-      "durationMs": 13104,
+      "durationMs": 58849,
       "runnerFormat": "CUSTOM_SUMMARY",
       "suiteType": "DIRECTIVE_VERIFICATION_TEST",
       "directiveRef": "096",
@@ -434,7 +434,7 @@
       "executionEpoch": "DIRECTIVE_111",
       "executionQualification": "REPOSITORY_RECORDED_EXECUTION",
       "outputLogPath": "reports/evidence/test_execution_logs/directive-096.log",
-      "outputLogSha256": "2beae9c3b893671a255240206e011ae379a68b57bfceb54d7fcfcfec6d2a574d"
+      "outputLogSha256": "664182cc87b035091c826b0b12e24778409f079a323b24a7d862b8dd56aa2045"
     },
     {
       "suite": "tests/political-intelligence-directive-097.test.mjs",
@@ -449,7 +449,7 @@
       "skippedState": "SKIPPED_COUNT_NOT_REPORTED",
       "zeroSkippedEvidenced": false,
       "totalTests": 49,
-      "durationMs": 19306,
+      "durationMs": 82466,
       "runnerFormat": "CUSTOM_SUMMARY",
       "suiteType": "DIRECTIVE_VERIFICATION_TEST",
       "directiveRef": "097",
@@ -459,7 +459,7 @@
       "executionEpoch": "DIRECTIVE_111",
       "executionQualification": "REPOSITORY_RECORDED_EXECUTION",
       "outputLogPath": "reports/evidence/test_execution_logs/directive-097.log",
-      "outputLogSha256": "6f3754a80b8307b1a254050a421a3c255c6326a552789ac42f37accc5912ab09"
+      "outputLogSha256": "07134977130626a138e9c9ec5bff3a7b494053488350cafe106208a027eb934b"
     },
     {
       "suite": "tests/political-intelligence-directive-098.test.mjs",
@@ -474,7 +474,7 @@
       "skippedState": "SKIPPED_COUNT_NOT_REPORTED",
       "zeroSkippedEvidenced": false,
       "totalTests": 45,
-      "durationMs": 1497,
+      "durationMs": 4429,
       "runnerFormat": "CUSTOM_SUMMARY",
       "suiteType": "DIRECTIVE_VERIFICATION_TEST",
       "directiveRef": "098",
@@ -484,7 +484,7 @@
       "executionEpoch": "DIRECTIVE_111",
       "executionQualification": "REPOSITORY_RECORDED_EXECUTION",
       "outputLogPath": "reports/evidence/test_execution_logs/directive-098.log",
-      "outputLogSha256": "c4a61588b8aeb9987e4fd548941a9d58e66bd178748cf2ada5bddf5a2b0f8328"
+      "outputLogSha256": "471e924a3887bae974d05f8d8d8446a6338d03c2e4a4a054e83527308d11b4f0"
     },
     {
       "suite": "tests/political-intelligence-directive-099.test.mjs",
@@ -499,7 +499,7 @@
       "skippedState": "SKIPPED_COUNT_NOT_REPORTED",
       "zeroSkippedEvidenced": false,
       "totalTests": 48,
-      "durationMs": 2183,
+      "durationMs": 6197,
       "runnerFormat": "CUSTOM_SUMMARY",
       "suiteType": "DIRECTIVE_VERIFICATION_TEST",
       "directiveRef": "099",
@@ -509,7 +509,7 @@
       "executionEpoch": "DIRECTIVE_111",
       "executionQualification": "REPOSITORY_RECORDED_EXECUTION",
       "outputLogPath": "reports/evidence/test_execution_logs/directive-099.log",
-      "outputLogSha256": "4804cb4ae61bea5f36bf1030a27fbb3742de1e9b6851cde0a9e9f88b922df1f3"
+      "outputLogSha256": "7993e51dcca592d85b448f01f63d3b6b8162c936a9ca5f105e07dd41c5910437"
     },
     {
       "suite": "tests/political-intelligence-directive-100.test.mjs",
@@ -524,7 +524,7 @@
       "skippedState": "SKIPPED_COUNT_NOT_REPORTED",
       "zeroSkippedEvidenced": false,
       "totalTests": 59,
-      "durationMs": 11588,
+      "durationMs": 41083,
       "runnerFormat": "CUSTOM_SUMMARY",
       "suiteType": "DIRECTIVE_VERIFICATION_TEST",
       "directiveRef": "100",
@@ -534,7 +534,7 @@
       "executionEpoch": "DIRECTIVE_111",
       "executionQualification": "REPOSITORY_RECORDED_EXECUTION",
       "outputLogPath": "reports/evidence/test_execution_logs/directive-100.log",
-      "outputLogSha256": "fd908d6a03e4f2d649188e3844d96f6e28021505544025953958d60085f927ce"
+      "outputLogSha256": "e75885af47818f81170dcac84a019bb8343a151fd8d4718031dd7db7dba76bfc"
     },
     {
       "suite": "tests/political-intelligence-directive-101.test.mjs",
@@ -549,7 +549,7 @@
       "skippedState": "SKIPPED_COUNT_NOT_REPORTED",
       "zeroSkippedEvidenced": false,
       "totalTests": 44,
-      "durationMs": 4007,
+      "durationMs": 13868,
       "runnerFormat": "CUSTOM_SUMMARY",
       "suiteType": "DIRECTIVE_VERIFICATION_TEST",
       "directiveRef": "101",
@@ -559,7 +559,7 @@
       "executionEpoch": "DIRECTIVE_111",
       "executionQualification": "REPOSITORY_RECORDED_EXECUTION",
       "outputLogPath": "reports/evidence/test_execution_logs/directive-101.log",
-      "outputLogSha256": "770216effc4d8c5b30dce86d46b386f26dea66d9834c249cf120fe1c1ae039fb"
+      "outputLogSha256": "8d7570b6b9724229fd56db115bc817897ec5e9fb2b16c6b8f1d7733b3c6f2650"
     },
     {
       "suite": "tests/political-intelligence-directive-102.test.mjs",
@@ -574,7 +574,7 @@
       "skippedState": "SKIPPED_COUNT_NOT_REPORTED",
       "zeroSkippedEvidenced": false,
       "totalTests": 46,
-      "durationMs": 14149,
+      "durationMs": 40542,
       "runnerFormat": "CUSTOM_SUMMARY",
       "suiteType": "DIRECTIVE_VERIFICATION_TEST",
       "directiveRef": "102",
@@ -584,7 +584,7 @@
       "executionEpoch": "DIRECTIVE_111",
       "executionQualification": "REPOSITORY_RECORDED_EXECUTION",
       "outputLogPath": "reports/evidence/test_execution_logs/directive-102.log",
-      "outputLogSha256": "d1c2f7357d7fbc93fc20a94850dc1134fe69b354339056d2de98e5021aeff1b4"
+      "outputLogSha256": "23e18ae769c6cb038529e533e2de4b5173c00dd84955ecfde357b0b5f23d6398"
     },
     {
       "suite": "tests/political-intelligence-directive-103.test.mjs",
@@ -599,7 +599,7 @@
       "skippedState": "SKIPPED_COUNT_NOT_REPORTED",
       "zeroSkippedEvidenced": false,
       "totalTests": 42,
-      "durationMs": 7732,
+      "durationMs": 30861,
       "runnerFormat": "CUSTOM_SUMMARY",
       "suiteType": "DIRECTIVE_VERIFICATION_TEST",
       "directiveRef": "103",
@@ -609,7 +609,7 @@
       "executionEpoch": "DIRECTIVE_111",
       "executionQualification": "REPOSITORY_RECORDED_EXECUTION",
       "outputLogPath": "reports/evidence/test_execution_logs/directive-103.log",
-      "outputLogSha256": "d888d5302ba7d54213dc17f0fabe76ccd91898a559977b071168fc37ddfb8e69"
+      "outputLogSha256": "34a7beeb99d2649570005ad8ed8bc8588b7f8d82d063c241e64f019555e8b4e9"
     },
     {
       "suite": "tests/political-intelligence-directive-104.test.mjs",
@@ -624,7 +624,7 @@
       "skippedState": "SKIPPED_COUNT_NOT_REPORTED",
       "zeroSkippedEvidenced": false,
       "totalTests": 38,
-      "durationMs": 13149,
+      "durationMs": 51492,
       "runnerFormat": "CUSTOM_SUMMARY",
       "suiteType": "DIRECTIVE_VERIFICATION_TEST",
       "directiveRef": "104",
@@ -634,7 +634,7 @@
       "executionEpoch": "DIRECTIVE_111",
       "executionQualification": "REPOSITORY_RECORDED_EXECUTION",
       "outputLogPath": "reports/evidence/test_execution_logs/directive-104.log",
-      "outputLogSha256": "db8e3b8d4a1a045a636b6e55fc3e18872f73009265510feb98c259fdf9e26f05"
+      "outputLogSha256": "820e35f7768f1a473eb312019b5fce8b16a572b0fbef940fc39b772accc69f5e"
     },
     {
       "suite": "tests/political-intelligence-directive-105.test.mjs",
@@ -649,7 +649,7 @@
       "skippedState": "SKIPPED_COUNT_NOT_REPORTED",
       "zeroSkippedEvidenced": false,
       "totalTests": 35,
-      "durationMs": 2693,
+      "durationMs": 8997,
       "runnerFormat": "CUSTOM_SUMMARY",
       "suiteType": "DIRECTIVE_VERIFICATION_TEST",
       "directiveRef": "105",
@@ -659,7 +659,7 @@
       "executionEpoch": "DIRECTIVE_111",
       "executionQualification": "REPOSITORY_RECORDED_EXECUTION",
       "outputLogPath": "reports/evidence/test_execution_logs/directive-105.log",
-      "outputLogSha256": "f53e6e39897fddc1d0e3079e006d20654092fcc14e9115659aa6b5cc6d9a44f5"
+      "outputLogSha256": "c15863b0834622326990cfd41900f03111406575d0c5ab420088edeb9da13719"
     },
     {
       "suite": "tests/political-intelligence-directive-106.test.mjs",
@@ -674,7 +674,7 @@
       "skippedState": "SKIPPED_COUNT_NOT_REPORTED",
       "zeroSkippedEvidenced": false,
       "totalTests": 33,
-      "durationMs": 10130,
+      "durationMs": 32166,
       "runnerFormat": "CUSTOM_SUMMARY",
       "suiteType": "DIRECTIVE_VERIFICATION_TEST",
       "directiveRef": "106",
@@ -684,7 +684,7 @@
       "executionEpoch": "DIRECTIVE_111",
       "executionQualification": "REPOSITORY_RECORDED_EXECUTION",
       "outputLogPath": "reports/evidence/test_execution_logs/directive-106.log",
-      "outputLogSha256": "31856e030e63deeda23d32ff2059724f7eb55ce51c23f78d187d2db798d5f79a"
+      "outputLogSha256": "617030be7d9ba18b4fdd42226e20af9f18db3f2a3722cbd10b5a2e9dbf703b7a"
     },
     {
       "suite": "tests/political-intelligence-directive-107.test.mjs",
@@ -699,7 +699,7 @@
       "skippedState": "EXPLICIT_ZERO_SKIPPED",
       "zeroSkippedEvidenced": true,
       "totalTests": 39,
-      "durationMs": 9335,
+      "durationMs": 29435,
       "runnerFormat": "CUSTOM_SUMMARY",
       "suiteType": "DIRECTIVE_VERIFICATION_TEST",
       "directiveRef": "107",
@@ -709,7 +709,7 @@
       "executionEpoch": "DIRECTIVE_111",
       "executionQualification": "REPOSITORY_RECORDED_EXECUTION",
       "outputLogPath": "reports/evidence/test_execution_logs/directive-107.log",
-      "outputLogSha256": "5dfde4dec4edefbc6d204417eb02eba6b1b9affb54208c704d13c2db1f805a88"
+      "outputLogSha256": "1cd8dceda80d5e25b469f58250ac1aa0fb5e62ee975d2c7878332929a7a56af1"
     },
     {
       "suite": "tests/political-intelligence-directive-108.test.mjs",
@@ -724,7 +724,7 @@
       "skippedState": "EXPLICIT_ZERO_SKIPPED",
       "zeroSkippedEvidenced": true,
       "totalTests": 34,
-      "durationMs": 6135,
+      "durationMs": 20648,
       "runnerFormat": "CUSTOM_SUMMARY",
       "suiteType": "DIRECTIVE_VERIFICATION_TEST",
       "directiveRef": "108",
@@ -734,7 +734,7 @@
       "executionEpoch": "DIRECTIVE_111",
       "executionQualification": "REPOSITORY_RECORDED_EXECUTION",
       "outputLogPath": "reports/evidence/test_execution_logs/directive-108.log",
-      "outputLogSha256": "aab17a9b5427726a54625a9a8838e8f75755a1e8ec04e522417d677a9f93170d"
+      "outputLogSha256": "90a33de0eef32d124eb4ba420f715a59493cddc0023c60626f2b66681a9a00ee"
     },
     {
       "suite": "tests/political-intelligence-directive-109.test.mjs",
@@ -749,7 +749,7 @@
       "skippedState": "EXPLICIT_ZERO_SKIPPED",
       "zeroSkippedEvidenced": true,
       "totalTests": 30,
-      "durationMs": 12176,
+      "durationMs": 29344,
       "runnerFormat": "CUSTOM_SUMMARY",
       "suiteType": "DIRECTIVE_VERIFICATION_TEST",
       "directiveRef": "109",
@@ -759,7 +759,7 @@
       "executionEpoch": "DIRECTIVE_111",
       "executionQualification": "REPOSITORY_RECORDED_EXECUTION",
       "outputLogPath": "reports/evidence/test_execution_logs/directive-109.log",
-      "outputLogSha256": "c8281500139d5948317489570166f18323af7c527ad2420894ef43f6d32a17ad"
+      "outputLogSha256": "ae6bca62bec7260ed6b6a1cff0adc573c49e87c08a1feda4875432110b44017b"
     },
     {
       "suite": "tests/political-intelligence-directive-110.test.mjs",
@@ -774,7 +774,7 @@
       "skippedState": "EXPLICIT_ZERO_SKIPPED",
       "zeroSkippedEvidenced": true,
       "totalTests": 35,
-      "durationMs": 11857,
+      "durationMs": 33220,
       "runnerFormat": "CUSTOM_SUMMARY",
       "suiteType": "DIRECTIVE_VERIFICATION_TEST",
       "directiveRef": "110",
@@ -784,7 +784,7 @@
       "executionEpoch": "DIRECTIVE_111",
       "executionQualification": "REPOSITORY_RECORDED_EXECUTION",
       "outputLogPath": "reports/evidence/test_execution_logs/directive-110.log",
-      "outputLogSha256": "7013ea0c6c9ce7ebb9477af9650c1853432874e5d48b74bd2e177580c7f19d6e"
+      "outputLogSha256": "b6e54b9e34d4078d81e9d8ee79f4f829b2829e324021dda32c3e7fd8246707be"
     },
     {
       "suite": "tests/political-intelligence-directive-111.test.mjs",
@@ -799,7 +799,7 @@
       "skippedState": "EXPLICIT_ZERO_SKIPPED",
       "zeroSkippedEvidenced": true,
       "totalTests": 24,
-      "durationMs": 12438,
+      "durationMs": 41233,
       "runnerFormat": "CUSTOM_SUMMARY",
       "suiteType": "DIRECTIVE_VERIFICATION_TEST",
       "directiveRef": "111",
@@ -809,14 +809,39 @@
       "executionEpoch": "DIRECTIVE_111",
       "executionQualification": "REPOSITORY_RECORDED_EXECUTION",
       "outputLogPath": "reports/evidence/test_execution_logs/directive-111.log",
-      "outputLogSha256": "59e308a39fe2eaefe1974df994f345cae470d89b3c6beb8158320333aba6aae8"
+      "outputLogSha256": "d6d067b391f8b4def039c10b49908ef419b4b39e1eb135795f835bfb596ba04a"
+    },
+    {
+      "suite": "tests/political-intelligence-directive-113.test.mjs",
+      "command": "node tests/political-intelligence-directive-113.test.mjs",
+      "exitCode": 0,
+      "status": "PASS",
+      "failureReason": null,
+      "suitesPassed": 1,
+      "testsPassed": 24,
+      "testsFailed": 0,
+      "testsSkipped": 0,
+      "skippedState": "EXPLICIT_ZERO_SKIPPED",
+      "zeroSkippedEvidenced": true,
+      "totalTests": 24,
+      "durationMs": 57066,
+      "runnerFormat": "CUSTOM_SUMMARY",
+      "suiteType": "DIRECTIVE_VERIFICATION_TEST",
+      "directiveRef": "113",
+      "evidenceClass": "REPOSITORY_IMPLEMENTATION",
+      "executedInCurrentDelivery": true,
+      "evidenceType": "DIRECT_EXECUTION_CAPTURE",
+      "executionEpoch": "DIRECTIVE_111",
+      "executionQualification": "REPOSITORY_RECORDED_EXECUTION",
+      "outputLogPath": "reports/evidence/test_execution_logs/directive-113.log",
+      "outputLogSha256": "e82a638cb7cd30bdf8edfe2342ed552b25641b23fff38bbf901456400629e7d1"
     }
   ],
   "summary": {
-    "totalSuites": 32,
-    "passedSuites": 32,
+    "totalSuites": 33,
+    "passedSuites": 33,
     "failedSuites": 0,
-    "totalTestsPassed": 1066,
+    "totalTestsPassed": 1090,
     "totalTestsFailed": 0,
     "allSuitesPassed": true,
     "executionScope": "FULL_REPOSITORY_REGRESSION_AND_DIRECTIVE_BATTERY",

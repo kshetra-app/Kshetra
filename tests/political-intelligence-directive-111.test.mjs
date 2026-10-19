@@ -239,7 +239,7 @@ runTest('2.5 B: All 4 public verifier entry points unconditionally reject all 10
   }
 });
 
-runTest('2.6 B: Caller-supplied boolean mode flags cannot bypass verifier guards', () => {
+runTest('2.6 B: Caller-supplied boolean mode flags cannot bypass verifier guards (isolated tests)', () => {
   const verifiers = [
     { name: 'verifyHistoricalArtifactIntegrity', fn: verifyHistoricalArtifactIntegrity },
     { name: 'verifyAuthorityBoundary', fn: verifyAuthorityBoundary },
@@ -253,15 +253,19 @@ runTest('2.6 B: Caller-supplied boolean mode flags cannot bypass verifier guards
     { allowOverrides: true },
     { bypassSecurity: true },
     { disableValidation: true },
+    { productionMode: false },
+    { failClosed: false },
+    { enforceCanonicalIdentity: false },
   ];
 
   for (const v of verifiers) {
     for (const flags of bypassFlags) {
-      const opts = { ...flags, expectedHashOverride: 'TAMPERED_HASH' };
+      // Test isolated flag WITHOUT expectedHashOverride or secondary override
+      const flagKey = Object.keys(flags)[0];
       assert.throws(
-        () => v.fn(opts),
-        (err) => err.message.includes('CALLER_TRUST_OVERRIDE_PROHIBITED'),
-        `${v.name} must not be bypassed by flag ${JSON.stringify(flags)}`
+        () => v.fn(flags),
+        (err) => err.message.includes('CALLER_TRUST_OVERRIDE_PROHIBITED') && err.message.includes(flagKey),
+        `${v.name} must isolate and reject flag ${flagKey} without secondary overrides`
       );
     }
   }
