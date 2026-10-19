@@ -1,0 +1,76 @@
+================================================================================
+KSHETRA VERIFIABLE TEST EXECUTION LOG
+Suite: tests/political-intelligence-directive-105.test.mjs
+Command: node tests/political-intelligence-directive-105.test.mjs
+Working Directory: C:\Users\Laven\OneDrive\Desktop\Kshetra
+Runtime: Node v24.13.0 (win32)
+Execution Timestamp: 2026-10-19T05:53:04.352Z
+Exit Code: 0
+================================================================================
+
+--- STDOUT ---
+================================================================
+KSHETRA W021.5 — CTO DIRECTIVE 105 VERIFICATION SUITE
+Evidence Chain Reconciliation, Non-Overlapping Accounting, and Authority Verification
+================================================================
+
+--- 1. Workstream A: Report-versus-Repository Evidence Reconciliation & Discrepancies ---
+  [PASS] 1.1 Discrepancy register exists and registers all Directive 104 discrepancies DISC-013 through DISC-020
+  [PASS] 1.2 Line-by-line reconciliation covers all 9 required discrepancy dimensions
+  [PASS] 1.3 Falsification: Phantom task injection (e.g. W021.5-B1-05) fails closed in verifyNonOverlappingAccountingAndTraceability
+  [PASS] 1.4 Falsification: Fabricated task W021.5-F-03 from chat response fails closed
+  [PASS] 1.5 Discrepancy markdown companion reports/w021_5_directive_104_discrepancy_register.md is present and formatted
+
+--- 2. Workstream B: Strict Non-Overlapping Accounting & Mathematical Conservation ---
+  [PASS] 2.1 verifyNonOverlappingAccountingAndTraceability passes on canonical repository ledger
+  [PASS] 2.2 Invariant 1: approvedWeight === earned + dbPending + blocked + unimplemented for every task
+  [PASS] 2.3 Invariant 2: stage approved weight === sum of task approved weights for all 9 stages
+  [PASS] 2.4 Invariant 3: milestone total weight === 100.000% exactly
+  [PASS] 2.5 Invariant 4: 4-way progress partition sums to 100.000% (61.5% + 10.5% + 22.5% + 5.5%)
+  [PASS] 2.6 Invariant 5: Mutual exclusivity proof — W021.5-I-02 is strictly in Blocked (3.0%) and 0.0% in Unimplemented
+  [PASS] 2.7 Falsification: Weight total below 100.0% (such as 99.0% from chat table) fails closed with WEIGHT_CONSERVATION_VIOLATION
+  [PASS] 2.8 Falsification: Weight total above 100.0% (such as 101.0%) fails closed with WEIGHT_CONSERVATION_VIOLATION
+  [PASS] 2.9 Falsification: Duplicate category allocation on W021.5-I-02 (e.g. 3% blocked AND 3% unimpl) fails closed
+  [PASS] 2.10 Falsification: Progress partition sum deviation (!== 100%) fails closed with PROGRESS_PARTITION_VIOLATION
+
+--- 3. Workstream C: Governing Authority & External Trust Boundary Falsification ---
+  [PASS] 3.1 All 15 governing documents verified against Git history with exact paths, blob SHAs, and sizes
+  [PASS] 3.2 Local SHA-256 digest within same repo is recognized as tamper-detection, not external trust anchor
+  [PASS] 3.3 Falsification: Co-mutated manifest, matrix, and metadata fails closed against immutable Git historical origin be4ba41
+  [PASS] 3.4 Falsification: Tampered document hash in governing matrix fails closed
+
+--- 4. Workstream D: Substantive Domain Criteria vs Superficial Syntax/AST ---
+  [PASS] 4.1 Criterion evidence register exists and documents all 50 criteria with substantive properties
+  [PASS] 4.2 Falsification: Superficial file existence without substantive domain properties fails closed
+  [PASS] 4.3 Substantive Domain Invariant: CRIT-A01-01 verifies statutory 4,123 seats across 31 Assembly states
+  [PASS] 4.4 Substantive Domain Invariant: CRIT-A03-01/02 verifies Delhi 70-seat invariant and 151 municipal placeholders
+  [PASS] 4.5 Substantive Domain Invariant: CRIT-B104-01 detects Telangana AC 119 boundary defect (120 features for 119 seats)
+  [PASS] 4.6 Substantive Domain Invariant: CRIT-C02-01 verifies 1,207 political organization registry rows in migration 065 SQL
+  [PASS] 4.7 Substantive Domain Invariant: CRIT-G02-01 verifies stateData.ts has zero hardcoded state-code election-year inferences
+
+--- 5. Workstream E: Dynamic Progress Re-Substantiation Proof ---
+  [PASS] 5.1 Dynamic progress derivation recomputed from 50 discrete criteria yields exactly 61.500%
+  [PASS] 5.2 Verification that earned progress is dynamic: mutating passing criterion outcome reduces progress dynamically
+  [PASS] 5.3 Cross-reconciliation against reports/w021_5_execution_ledger.json and Markdown ledger
+
+--- 6. Workstream F: Mandatory Governance Invariants & Defect Statuses ---
+  [PASS] 6.1 Rule IV-001 Non-Self-Acceptance: formal CTO acceptance strictly 0.0% (UNACCEPTED)
+  [PASS] 6.2 Offline Air-Gap: live DB staging execution strictly 0.0% (UNEXECUTED)
+  [PASS] 6.3 Financial Defect DQ-W021.5-B2.2E-001 remains STRICTLY OPEN (0.0% earned)
+  [PASS] 6.4 Telangana AC 119 Boundary Defect remains STRICTLY OPEN / BLOCKED (1.5% blocked)
+  [PASS] 6.5 SQL Migration Immutability: 68 migrations match baseline 0ea572d byte-for-byte identical
+  [PASS] 6.6 MLA Profile Seed Immutability: 31 seed files match baseline fb408ce byte-for-byte identical
+
+================================================================
+TEST SUMMARY: 35 PASSED, 0 FAILED
+================================================================
+
+
+
+--- STDERR ---
+
+
+--- PROCESS METRICS ---
+DurationMs: 1700
+ExitCode: 0
+================================================================================

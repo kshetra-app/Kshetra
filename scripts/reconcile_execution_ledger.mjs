@@ -1610,6 +1610,24 @@ export const PHANTOM_TASK_DISPOSITIONS = {
     canonicalMapping: null,
     rationale: 'Synthetic adversarial test fixture task used to verify fail-closed ledger rejection.',
   },
+  'W021.5-B1-05': {
+    phantomTaskId: 'W021.5-B1-05',
+    phantomTitle: 'Statutory Delimitation Geometry Baseline Package',
+    stageId: 'STAGE_B',
+    weight: 4.0,
+    disposition: 'REJECTED_PHANTOM_TASK',
+    canonicalMapping: 'W021.5-B1-04',
+    rationale: 'Unapproved phantom task inserted into Directive 104 report narrative table creating 28 rows. Delimitation boundary geometry is authoritatively governed under W021.5-B1-04 (weight 2.0%) in STAGE_B.',
+  },
+  'W021.5-F-03': {
+    phantomTaskId: 'W021.5-F-03',
+    phantomTitle: 'Historical Election Analytical Invariant Verification',
+    stageId: 'STAGE_F',
+    weight: 3.0,
+    disposition: 'REJECTED_PHANTOM_TASK',
+    canonicalMapping: 'W021.5-F-02',
+    rationale: 'Fabricated phantom task introduced in conversational response table for Directive 104. Stage F authoritatively has exactly 2 tasks: W021.5-F-01 (4.0%) and W021.5-F-02 (6.0%).',
+  },
 };
 
 /**
@@ -1767,6 +1785,102 @@ export const DISCREPANCY_REGISTER = [
     rationale: 'Historical ledger be4ba41 summary header declared totalTasks=25 and VERIFIED=14 reflecting the initial 25 core specification tasks. When 2 hardening extensions (W021.5-A-02 [4.0%] and W021.5-A-03 [3.0%]) were added to Stage A, nested stage records expanded to 27 tasks (16 VERIFIED, 64.0% earned), but the summary header lagged behind. The stage breakdown table in be4ba41:reports/W021.5-EXECUTION-LEDGER.md explicitly enumerated 3, 4, 3, 3, 3, 2, 3, 4, 2 tasks (sum = 27) with stage weights summing to 100.0%. The original historical snapshot is preserved byte-identically and unchanged; the discrepancy is formally registered and reconciled.',
     requiresCtcAdjudication: false,
     resolutionStatus: 'RECONCILED_WITH_HISTORICAL_EVIDENCE',
+  },
+  {
+    discrepancyId: 'DISC-013',
+    itemKey: 'STAGE_B:taskInventory:phantomTask',
+    discrepancyType: 'PHANTOM_TASK_INJECTION',
+    affectedEntity: 'Task Inventory / Stage B',
+    priorReportValue: 'Table 3.2 Row 94 inserted W021.5-B1-05 ("Statutory Delimitation Geometry Baseline Package", 4.0% weight), creating a 28-row table while declaring 27 tasks.',
+    proposedCanonicalValue: 'Strictly absent. Stage B has exactly 4 tasks (W021.5-B1-01 [4%], W021.5-B1-02 [3%], W021.5-B1-03 [3%], W021.5-B1-04 [2%]), summing to 12.0%. Total canonical tasks = exactly 27.',
+    historicalSourceEvidence: 'be4ba41:reports/w021_5_execution_ledger.json, w021_5_master_specification.json',
+    rationale: 'Narrative draft copy-paste. An unapproved concept for delimitation geometry packaging was manually inserted into the report markdown table without corresponding entries in CANONICAL_TASK_METADATA or reports/w021_5_execution_ledger.json.',
+    requiresCtcAdjudication: false,
+    resolutionStatus: 'RESOLVED_PHANTOM_REJECTED',
+  },
+  {
+    discrepancyId: 'DISC-014',
+    itemKey: 'MULTIPLE_TASKS:approvedTaskWeights',
+    discrepancyType: 'UNAPPROVED_TASK_WEIGHT_ALTERATIONS',
+    affectedEntity: 'Tasks B1-02, B1-03, B1-04, C-02, D-01, D-02, F-02',
+    priorReportValue: 'Report Table 3.2 listed: B1-02 (4%), B1-03 (4%), B1-04 (3%), C-02 (3%), D-01 (3%), D-02 (4%), F-02 (4%).',
+    proposedCanonicalValue: 'Canonical weights from origin be4ba41, CANONICAL_TASK_METADATA, and reports/w021_5_execution_ledger.json: B1-02 (3%), B1-03 (3%), B1-04 (2%), C-02 (5%), D-01 (4%), D-02 (6%), F-02 (6%).',
+    historicalSourceEvidence: 'be4ba41:reports/w021_5_execution_ledger.json, w021_5_master_specification.json',
+    rationale: 'Narrative draft weight mutation. The report author artificially altered individual task weights to create 4.0% of headroom for the phantom task W021.5-B1-05 while keeping the reported sum at 100%.',
+    requiresCtcAdjudication: false,
+    resolutionStatus: 'RESOLVED_WEIGHTS_RECONCILED',
+  },
+  {
+    discrepancyId: 'DISC-015',
+    itemKey: 'CHAT_DELIVERY:totalMilestoneWeightSum',
+    discrepancyType: 'WEIGHT_SUM_DEFICIT_IN_DELIVERY',
+    affectedEntity: 'Directive 104 Chat Response Table',
+    priorReportValue: 'Sum of task weights in submitted chat response table totaled 99.0% (Stage A: 12%, B: 20%, C: 11%, D: 11%, E: 11%, F: 10%, G: 10%, H: 7%, I: 7%), while declaring "TOTALS: 100.0%".',
+    proposedCanonicalValue: 'Milestone approved weight is exactly 100.000% (Stage A: 10%, B: 12%, C: 12%, D: 14%, E: 14%, F: 10%, G: 12%, H: 10%, I: 6%).',
+    historicalSourceEvidence: 'be4ba41:reports/w021_5_execution_ledger.json, w021_5_master_specification.json',
+    rationale: 'Ad-hoc table reformatting in conversational response. The model generated an altered 27-row task table with synthesized task IDs (B-01..05, F-03, omitting H-03/H-04) whose arithmetic sum was 99.0%, lacking self-checking before submission.',
+    requiresCtcAdjudication: false,
+    resolutionStatus: 'RESOLVED_ARITHMETIC_CONSERVED',
+  },
+  {
+    discrepancyId: 'DISC-016',
+    itemKey: 'W021.5-I-02:partitionCategories',
+    discrepancyType: 'DOUBLE_COUNTING_ACROSS_PARTITION_CATEGORIES',
+    affectedEntity: 'Task W021.5-I-02 (weight 3.0%)',
+    priorReportValue: 'Section 5.2 narrative listed W021.5-I-02 (3.0%) under Category 3 (Blocked on External/CTO Gates) AND listed W021.5-I-02 (3.0%) under Category 4 (Remaining Unimplemented Work), resulting in 6.0% total allocation.',
+    proposedCanonicalValue: 'Strictly non-overlapping: blockedWeight: 3.0%, unimplementedWeight: 0.0% in reports/w021_5_execution_ledger.json. Approved weight 3.0% = 0 earned + 0 db + 3 blocked + 0 unimpl.',
+    historicalSourceEvidence: 'reports/w021_5_execution_ledger.json',
+    rationale: 'Narrative copy-paste error in report draft. The task title was erroneously duplicated across two list items in markdown prose.',
+    requiresCtcAdjudication: false,
+    resolutionStatus: 'RESOLVED_DOUBLE_COUNTING_ELIMINATED',
+  },
+  {
+    discrepancyId: 'DISC-017',
+    itemKey: 'MULTIPLE_PARTIAL_TASKS:partitionAllocations',
+    discrepancyType: 'INCONSISTENT_PARTIAL_TASK_PARTITIONS',
+    affectedEntity: 'Tasks B1-04, F-02, H-04, D-03, E-03, G-03, H-02, H-03',
+    priorReportValue: 'Report table and narrative claimed B1-04 earned 1.5% (actual: 0.5%); F-02 had 0% unimpl (actual: 1.5%); D-03, E-03, G-03 claimed 100% earned (actual: 0% earned, 100% blocked); H-02, H-03 claimed 100% blocked (actual: 100% earned).',
+    proposedCanonicalValue: 'Single consistent allocation in reports/w021_5_execution_ledger.json: B1-04 (0.5% earned, 1.5% blocked); F-02 (1.5% earned, 3.0% db, 1.5% unimpl); H-04 (1.0% earned, 1.0% unimpl); D-03 (4.0% blocked); E-03 (5.0% blocked); G-03 (4.0% blocked); H-02 (3.0% earned); H-03 (2.0% earned).',
+    historicalSourceEvidence: 'reports/w021_5_execution_ledger.json, TASK_SPECIFICATIONS criteria verifiers',
+    rationale: 'Manual report table authoring. The author drafted status and partition columns manually rather than binding them directly to ledger and criteria evaluation records.',
+    requiresCtcAdjudication: false,
+    resolutionStatus: 'RESOLVED_PARTITIONS_SYNCHRONIZED',
+  },
+  {
+    discrepancyId: 'DISC-018',
+    itemKey: 'MULTIPLE_TASKS:canonicalTitles',
+    discrepancyType: 'NON_CANONICAL_REPORT_TITLES',
+    affectedEntity: 'Report Table 3.2 Titles across 20+ tasks',
+    priorReportValue: 'Abbreviated or colloquial titles used in report table (e.g. "National Political Party Registry (ECI Classification)" for C-01; "Fastify API Nullability Preservation Contracts" for G-01).',
+    proposedCanonicalValue: 'Canonical titles defined in CANONICAL_TASK_METADATA and historical origin be4ba41 (e.g. C-01: "Political Organization Governance & Multilingual Extension Schema"; G-01: "API Election Contract Nullability & Missing-Value Preservation").',
+    historicalSourceEvidence: 'be4ba41:reports/w021_5_execution_ledger.json, w021_5_master_specification.json',
+    rationale: 'Informal copywriting during markdown report compilation.',
+    requiresCtcAdjudication: false,
+    resolutionStatus: 'RESOLVED_TITLES_STANDARDIZED',
+  },
+  {
+    discrepancyId: 'DISC-019',
+    itemKey: 'MULTIPLE_TASKS:criteriaSequenceAndCounts',
+    discrepancyType: 'CRITERION_ENUMERATION_INACCURACY',
+    affectedEntity: 'Report Table 3.2 Criteria IDs column',
+    priorReportValue: 'Indiscriminate "01, 02" paired listing for single-criterion tasks (E-02, E-03, G-03, I-01, I-02) and fabricated "CRIT-B105-01, 02".',
+    proposedCanonicalValue: 'Exact 50 criteria defined in TASK_SPECIFICATIONS: 21 tasks have 2 criteria (42), 2 tasks have 3 criteria (6: C-03 and F-02), 4 tasks have 1 criterion (4: D-03, E-02, E-03, G-03, I-01, I-02). Sum = 50.',
+    historicalSourceEvidence: 'TASK_SPECIFICATIONS, w021_5_criterion_evidence_register.json',
+    rationale: 'Templated markdown formatting placeholder.',
+    requiresCtcAdjudication: false,
+    resolutionStatus: 'RESOLVED_CRITERIA_VERIFIED',
+  },
+  {
+    discrepancyId: 'DISC-020',
+    itemKey: 'GOVERNING_DOCUMENTS:commitCoordinatesAndSizes',
+    discrepancyType: 'PROVENANCE_COORDINATE_DIMENSION_CONFLATION',
+    affectedEntity: 'Table 2.2 in Directive 104 report vs w021_5_governing_traceability_matrix.json',
+    priorReportValue: 'Table 2.2 recorded historical introduction commits (e.g. 6bbbfb9, 6,346 bytes for DOC-W021.5-B1-SPEC), whereas the JSON matrix recorded latest audited commit (60d54ee, 29,676 bytes).',
+    proposedCanonicalValue: 'Both commits are authentic Git objects: introducing commit represents provenance origin, while latest commit represents audited content state at milestone baseline. Conflating the two without distinction produced apparent file size and hash contradictions.',
+    historicalSourceEvidence: 'git log --format="%H|%as|%s" docs/W021.5-B1-NATIONAL-CONSTITUENCY-CANONICALIZATION.md',
+    rationale: 'Dual provenance lineage representation without explicit column labeling.',
+    requiresCtcAdjudication: false,
+    resolutionStatus: 'RESOLVED_PROVENANCE_DUAL_BOUND',
   },
 ];
 
@@ -5079,7 +5193,7 @@ export function generateLedgerMarkdown(ledger, inputSummary) {
   let md = `# KSHETRA W021.5 — Traceable Execution Ledger & Multi-Dimensional Accounting Report
 
 > **Governance Authority:** Master Execution Framework Amendment v1.2 / Rule IV-001 (Non-Self-Acceptance)  
-> **Directive Lineage:** CTO Directive 086 through CTO Directive 103 / CTO Directive 104  
+> **Directive Lineage:** CTO Directive 086 through CTO Directive 103 / CTO Directive 104 / CTO Directive 105  
 > **Status:** \`SUBMITTED_FOR_INDEPENDENT_REVIEW\` — STRICTLY UNACCEPTED  
 > **Financial Defect Status:** \`DQ-W021.5-B2.2E-001\` — **STRICTLY OPEN**, pending separate CTO adjudication  
 > **Database Boundary:** Repository-Only Offline Verification (Zero database migrations, mutations, staging, or production execution)  
@@ -5198,6 +5312,135 @@ ${discountRows}| **Total** | — | **Reconciled Unexecuted Database Pending Allo
   return md;
 }
 
+
+/**
+ * Workstream B (CTO Directive 105):
+ * Verifies strict non-overlapping progress accounting, mathematical conservation invariants,
+ * and canonical task inventory traceability.
+ * Fails closed on:
+ * - Phantom task injection (e.g. W021.5-B1-05, W021.5-F-03)
+ * - Task count divergence (!== 27)
+ * - Task weight total deficit or surplus (!== 100.0%, such as 99.0% or 101.0%)
+ * - Individual task accounting partition violation (approvedWeight !== earned + dbPending + blocked + unimplemented)
+ * - Category double counting (e.g. W021.5-I-02 in both blocked and unimplemented)
+ * - Stage weight subtotal conservation violation
+ * - Milestone 4-way progress partition sum deviation (!== 100.000%)
+ */
+export function verifyNonOverlappingAccountingAndTraceability(options = {}) {
+  const repoRoot = options.repoRoot || REPO_ROOT;
+  const ledgerPath = path.resolve(repoRoot, 'reports/w021_5_execution_ledger.json');
+  if (!fs.existsSync(ledgerPath)) {
+    throw new Error(`Ledger accounting validation error: File not found "${ledgerPath}".`);
+  }
+  const rawJson = fs.readFileSync(ledgerPath, 'utf8');
+  const ledger = options.ledgerOverride || JSON.parse(rawJson);
+
+  // 1. Task Inventory & Phantom Task Check
+  const canonicalIds = Object.keys(CANONICAL_TASK_METADATA).sort();
+  const ledgerTasks = ledger.stages.flatMap((s) => s.tasks);
+  const ledgerTaskIds = ledgerTasks.map((t) => t.taskId).sort();
+
+  if (ledgerTasks.length !== 27) {
+    throw new Error(`Ledger accounting validation error: Expected exactly 27 canonical tasks, found ${ledgerTasks.length}.`);
+  }
+
+  for (const t of ledgerTasks) {
+    if (PHANTOM_TASK_DISPOSITIONS[t.taskId]) {
+      throw new Error(`PHANTOM_TASK_INJECTION_REJECTED: Task "${t.taskId}" is a known rejected phantom task.`);
+    }
+    if (!CANONICAL_TASK_METADATA[t.taskId]) {
+      throw new Error(`PHANTOM_TASK_INJECTION_REJECTED: Task "${t.taskId}" is not present in canonical task metadata.`);
+    }
+  }
+
+  // 2. Weight Conservation Check (Exact 100.000%)
+  const totalApprovedWeight = ledgerTasks.reduce((sum, t) => sum + t.weight, 0);
+  if (Math.abs(totalApprovedWeight - 100.0) > 0.001) {
+    throw new Error(`WEIGHT_CONSERVATION_VIOLATION: Sum of task approved weights must equal exactly 100.000%, got ${totalApprovedWeight.toFixed(3)}%.`);
+  }
+
+  // 3. Stage Subtotal Conservation
+  let stageWeightSum = 0;
+  for (const stage of ledger.stages) {
+    stageWeightSum += stage.stageWeight;
+    const stageTasksWeight = stage.tasks.reduce((sum, t) => sum + t.weight, 0);
+    if (Math.abs(stageTasksWeight - stage.stageWeight) > 0.001) {
+      throw new Error(`STAGE_WEIGHT_CONSERVATION_VIOLATION: Stage ${stage.stageId} task weights (${stageTasksWeight.toFixed(3)}%) != stageWeight (${stage.stageWeight.toFixed(3)}%).`);
+    }
+  }
+  if (Math.abs(stageWeightSum - 100.0) > 0.001) {
+    throw new Error(`STAGE_WEIGHT_CONSERVATION_VIOLATION: Stage weights sum must equal exactly 100.000%, got ${stageWeightSum.toFixed(3)}%.`);
+  }
+
+  // 4. Task-Level Non-Overlapping Conservation Invariant
+  let sumEarned = 0;
+  let sumDbPending = 0;
+  let sumBlocked = 0;
+  let sumUnimplemented = 0;
+
+  for (const t of ledgerTasks) {
+    const a = t.accounting || {};
+    const earned = a.repoVerifiedWeight || 0;
+    const dbPending = a.databasePendingWeight || 0;
+    const blocked = a.blockedWeight || 0;
+    const unimplemented = a.unimplementedWeight || 0;
+    const partitionSum = earned + dbPending + blocked + unimplemented;
+
+    if (Math.abs(partitionSum - t.weight) > 0.001) {
+      throw new Error(`TASK_PARTITION_CONSERVATION_VIOLATION: Task ${t.taskId} partition sum (${partitionSum.toFixed(3)}%) != approved weight (${t.weight.toFixed(3)}%).`);
+    }
+
+    // Double counting check: single-criterion or mutually exclusive tasks must not duplicate allocations
+    if (t.taskId === 'W021.5-I-02') {
+      if (blocked > 0 && unimplemented > 0) {
+        throw new Error(`DUPLICATE_CATEGORY_ALLOCATION_REJECTED: Task W021.5-I-02 must not be allocated to both BLOCKED and UNIMPLEMENTED simultaneously.`);
+      }
+    }
+
+    sumEarned += earned;
+    sumDbPending += dbPending;
+    sumBlocked += blocked;
+    sumUnimplemented += unimplemented;
+  }
+
+  // 5. Milestone 4-Way Partition Conservation
+  const milestonePartitionSum = sumEarned + sumDbPending + sumBlocked + sumUnimplemented;
+  if (Math.abs(milestonePartitionSum - 100.0) > 0.001) {
+    throw new Error(`PROGRESS_PARTITION_VIOLATION: Milestone 4-way partition does not sum to 100.000%, got ${milestonePartitionSum.toFixed(3)}%.`);
+  }
+
+  // 6. Report Markdown Invariant Check (if report exists)
+  const reportPath = path.resolve(repoRoot, 'reports/W021.5-CTO-DIRECTIVE-105-IMPLEMENTATION-REPORT.md');
+  if (fs.existsSync(reportPath)) {
+    const reportText = fs.readFileSync(reportPath, 'utf8');
+    const tableRows = reportText.split('\n').filter((l) => l.startsWith('| **W021.5-'));
+    if (tableRows.length > 0 && tableRows.length !== 27) {
+      throw new Error(`REPORT_TABLE_DIVERGENCE: Implementation report contains ${tableRows.length} task rows, expected exactly 27.`);
+    }
+  }
+
+  return {
+    verified: true,
+    totalTasks: ledgerTasks.length,
+    totalApprovedWeight,
+    stageCount: ledger.stages.length,
+    partition: {
+      repoVerifiedEarned: sumEarned,
+      databasePending: sumDbPending,
+      blockedExternal: sumBlocked,
+      unimplemented: sumUnimplemented,
+      partitionTotal: milestonePartitionSum,
+    },
+    invariants: {
+      taskConservation: true,
+      stageConservation: true,
+      milestoneConservation: true,
+      nonOverlappingProof: true,
+      phantomTasksRejected: true,
+    },
+  };
+}
+
 /**
  * Main ledger reconciliation workflow.
  */
@@ -5237,12 +5480,15 @@ export function reconcileExecutionLedger(options = {}) {
     validateStageAccounting(stage, opts);
   }
 
-  ledger.directive = 'CTO Directive 086 / CTO Directive 087 / CTO Directive 088 / CTO Directive 089 / CTO Directive 090 / CTO Directive 091 / CTO Directive 092 / CTO Directive 093 / CTO Directive 094 / CTO Directive 095 / CTO Directive 096 / CTO Directive 097 / CTO Directive 098 / CTO Directive 099 / CTO Directive 100 / CTO Directive 101 / CTO Directive 102 / CTO Directive 103 / CTO Directive 104';
+  ledger.directive = 'CTO Directive 086 / CTO Directive 087 / CTO Directive 088 / CTO Directive 089 / CTO Directive 090 / CTO Directive 091 / CTO Directive 092 / CTO Directive 093 / CTO Directive 094 / CTO Directive 095 / CTO Directive 096 / CTO Directive 097 / CTO Directive 098 / CTO Directive 099 / CTO Directive 100 / CTO Directive 101 / CTO Directive 102 / CTO Directive 103 / CTO Directive 104 / CTO Directive 105';
 
   // Compute summary
   const summary = computeLedgerSummary(ledger, opts);
   ledger.summary = summary;
   validateLedgerSummaryConsistency(ledger);
+
+  // Workstream B (CTO Directive 105): Enforce strict non-overlapping accounting and conservation
+  verifyNonOverlappingAccountingAndTraceability({ ...opts, ledgerOverride: ledger });
 
   // Write reconciled JSON
   fs.writeFileSync(jsonPath, JSON.stringify(ledger, null, 2), 'utf8');

@@ -1,0 +1,420 @@
+{
+  "auditEpoch": "DIRECTIVE_105",
+  "auditedAt": "2026-10-19T05:25:41.124Z",
+  "governingDocumentsCount": 15,
+  "documents": [
+    {
+      "docId": "DOC-W021.5-A-AUDIT",
+      "title": "W021.5-A Architectural & Data-Truth Audit Report",
+      "path": "W021.5-A-AUDIT-REPORT.md",
+      "authority": "CTO EXECUTION DIRECTIVE — W021.5-A (AUDIT ONLY)",
+      "role": "PRIMARY_GOVERNING_AUDIT_BASELINE",
+      "byteLength": 47399,
+      "sha256": "6138d07e86b40301712de65df85364ed5df1452dfc4c5e492507899ddc25f8e2",
+      "blobShaHead": "2c82f6e0257c553e1c1c0ac4bb48e8f0258ac2e2",
+      "recordedCommitSha": "7be949dc6e9c1eb00beeeb2492084b1e71c952bf",
+      "recordedCommitExists": true,
+      "fileAtRecordedCommitExists": true,
+      "blobAtRecordedCommit": "2c82f6e0257c553e1c1c0ac4bb48e8f0258ac2e2",
+      "introducingCommit": {
+        "sha": "7be949dc6e9c1eb00beeeb2492084b1e71c952bf",
+        "date": "2026-10-03",
+        "subject": "docs(w021.5): finalize w021.5-a audit and w021.5-b1 evidence reports"
+      },
+      "latestCommit": {
+        "sha": "7be949dc6e9c1eb00beeeb2492084b1e71c952bf",
+        "date": "2026-10-03",
+        "subject": "docs(w021.5): finalize w021.5-a audit and w021.5-b1 evidence reports"
+      },
+      "controlledTasks": [
+        "W021.5-A-01"
+      ]
+    },
+    {
+      "docId": "DOC-W021.5-A-REPO-AUDIT",
+      "title": "W021.5-A Repository Data-Truth Audit",
+      "path": "reports/w021_5a_repository_data_truth_audit.md",
+      "authority": "CTO Directive W021.5-A",
+      "role": "PRIMARY_DOMAIN_INVENTORY_REPORT",
+      "byteLength": 47399,
+      "sha256": "6138d07e86b40301712de65df85364ed5df1452dfc4c5e492507899ddc25f8e2",
+      "blobShaHead": "2c82f6e0257c553e1c1c0ac4bb48e8f0258ac2e2",
+      "recordedCommitSha": "7be949dc6e9c1eb00beeeb2492084b1e71c952bf",
+      "recordedCommitExists": true,
+      "fileAtRecordedCommitExists": true,
+      "blobAtRecordedCommit": "2c82f6e0257c553e1c1c0ac4bb48e8f0258ac2e2",
+      "introducingCommit": {
+        "sha": "7be949dc6e9c1eb00beeeb2492084b1e71c952bf",
+        "date": "2026-10-03",
+        "subject": "docs(w021.5): finalize w021.5-a audit and w021.5-b1 evidence reports"
+      },
+      "latestCommit": {
+        "sha": "7be949dc6e9c1eb00beeeb2492084b1e71c952bf",
+        "date": "2026-10-03",
+        "subject": "docs(w021.5): finalize w021.5-a audit and w021.5-b1 evidence reports"
+      },
+      "controlledTasks": []
+    },
+    {
+      "docId": "DOC-W021.5-B1-SPEC",
+      "title": "W021.5-B1 National Constituency Canonicalization",
+      "path": "docs/W021.5-B1-NATIONAL-CONSTITUENCY-CANONICALIZATION.md",
+      "authority": "CTO Master Implementation Specification W021.5-B1 & CTO Remediation Directive W021.5-B1-R1",
+      "role": "PRIMARY_GOVERNING_SPECIFICATION_STAGE_B",
+      "byteLength": 29676,
+      "sha256": "9cf3716d63469e22f835747a460c930fafc40cbe2c1528f589b0b22d55463ed7",
+      "blobShaHead": "10edf3bd46c0bc8e45615444122f9613447e6b7a",
+      "recordedCommitSha": "60d54eed77ba2aebd3c6aab61cba2375b72aef2a",
+      "recordedCommitExists": true,
+      "fileAtRecordedCommitExists": true,
+      "blobAtRecordedCommit": "10edf3bd46c0bc8e45615444122f9613447e6b7a",
+      "introducingCommit": {
+        "sha": "a8489201933ca66dbe811893181edcc189adcf61",
+        "date": "2026-10-03",
+        "subject": "docs(w021.5-b1): document national canonicalization"
+      },
+      "latestCommit": {
+        "sha": "60d54eed77ba2aebd3c6aab61cba2375b72aef2a",
+        "date": "2026-10-03",
+        "subject": "feat(w021.5): milestone b1-r4 final source integrity, canonical coverage and lineage semantics closure"
+      },
+      "controlledTasks": [
+        "W021.5-B1-01"
+      ]
+    },
+    {
+      "docId": "DOC-W021.5-B1-R2-SPEC",
+      "title": "W021.5-B1-R2 National AC-PC Completeness Specification",
+      "path": "docs/W021.5-B1-R2-NATIONAL-AC-PC-COMPLETENESS.md",
+      "authority": "CTO Master Implementation Specification (W021.5-B1-R2 Directive)",
+      "role": "PRIMARY_GOVERNING_SPECIFICATION_STAGE_B_PC_MAPPING",
+      "byteLength": 11882,
+      "sha256": "a08c2e49609aa17c9704aaf2dd2429a415c1be9d4a200138fa9eae7bc30ee79e",
+      "blobShaHead": "476f2e4d66aeac351deee072090e5de7cc9fbace",
+      "recordedCommitSha": "758ba8372bd38bd9656743adff7bcd068deed23c",
+      "recordedCommitExists": true,
+      "fileAtRecordedCommitExists": true,
+      "blobAtRecordedCommit": "476f2e4d66aeac351deee072090e5de7cc9fbace",
+      "introducingCommit": {
+        "sha": "758ba8372bd38bd9656743adff7bcd068deed23c",
+        "date": "2026-10-03",
+        "subject": "feat(w021.5-b1-r2): complete national AC-PC mappings and temporal integrity closure"
+      },
+      "latestCommit": {
+        "sha": "758ba8372bd38bd9656743adff7bcd068deed23c",
+        "date": "2026-10-03",
+        "subject": "feat(w021.5-b1-r2): complete national AC-PC mappings and temporal integrity closure"
+      },
+      "controlledTasks": [
+        "W021.5-B1-02"
+      ]
+    },
+    {
+      "docId": "DOC-W021.5-B1-R3-SPEC",
+      "title": "W021.5-B1-R3 National Mapping Provenance",
+      "path": "docs/W021.5-B1-R3-NATIONAL-MAPPING-PROVENANCE.md",
+      "authority": "CTO Remediation Directive W021.5-B1-R3",
+      "role": "PRIMARY_GOVERNING_SPECIFICATION_STAGE_B_GEOJSON",
+      "byteLength": 13251,
+      "sha256": "80be250cc8dfcc45c4407410e5fe1c79b96b5ef931aa0ae2346dff738ead75cc",
+      "blobShaHead": "6bc59964e39df39e8428d2cfc28738ac2caee0ba",
+      "recordedCommitSha": "cb84da9dea0fa21a297fd735383f9b722f8d4d4c",
+      "recordedCommitExists": true,
+      "fileAtRecordedCommitExists": true,
+      "blobAtRecordedCommit": "6bc59964e39df39e8428d2cfc28738ac2caee0ba",
+      "introducingCommit": {
+        "sha": "cb84da9dea0fa21a297fd735383f9b722f8d4d4c",
+        "date": "2026-10-03",
+        "subject": "feat(w021.5-b1-r3): national AC-PC provenance, source-of-truth and consistency closure"
+      },
+      "latestCommit": {
+        "sha": "cb84da9dea0fa21a297fd735383f9b722f8d4d4c",
+        "date": "2026-10-03",
+        "subject": "feat(w021.5-b1-r3): national AC-PC provenance, source-of-truth and consistency closure"
+      },
+      "controlledTasks": [
+        "W021.5-B1-04"
+      ]
+    },
+    {
+      "docId": "DOC-W021.5-B1-R4-SPEC",
+      "title": "W021.5-B1-R4 Source and Lineage Integrity",
+      "path": "docs/W021.5-B1-R4-SOURCE-AND-LINEAGE-INTEGRITY.md",
+      "authority": "CTO Remediation Directive W021.5-B1-R4",
+      "role": "PRIMARY_GOVERNING_SPECIFICATION_STAGE_B_LINEAGE",
+      "byteLength": 13423,
+      "sha256": "083017d388e2e0eaa2fdcef317d89edf85419f21d9e1874f634c4830c6c16250",
+      "blobShaHead": "1eee1be1d30b60b8b2f38281b4bae2f8488df0f6",
+      "recordedCommitSha": "60d54eed77ba2aebd3c6aab61cba2375b72aef2a",
+      "recordedCommitExists": true,
+      "fileAtRecordedCommitExists": true,
+      "blobAtRecordedCommit": "1eee1be1d30b60b8b2f38281b4bae2f8488df0f6",
+      "introducingCommit": {
+        "sha": "60d54eed77ba2aebd3c6aab61cba2375b72aef2a",
+        "date": "2026-10-03",
+        "subject": "feat(w021.5): milestone b1-r4 final source integrity, canonical coverage and lineage semantics closure"
+      },
+      "latestCommit": {
+        "sha": "60d54eed77ba2aebd3c6aab61cba2375b72aef2a",
+        "date": "2026-10-03",
+        "subject": "feat(w021.5): milestone b1-r4 final source integrity, canonical coverage and lineage semantics closure"
+      },
+      "controlledTasks": []
+    },
+    {
+      "docId": "DOC-W021.5-B1-R5-SPEC",
+      "title": "W021.5-B1-R5 Current Statutory Geography & Assam 2023 Closure Dossier",
+      "path": "docs/W021.5-B1-R5-CURRENT-STATUTORY-GEOGRAPHY.md",
+      "authority": "CTO Remediation Directive W021.5-B1-R5",
+      "role": "PRIMARY_GOVERNING_SPECIFICATION_STAGE_B_ASSAM",
+      "byteLength": 10550,
+      "sha256": "3b64f3a5236f26a2842ed354d468d3058b8c8fa58df4cd35d0923d7f88c5826c",
+      "blobShaHead": "8e56f24cfe17b44189d661681739caf9e3dc270b",
+      "recordedCommitSha": "a0df1813fd59c814d37a9c00677670c2327ec516",
+      "recordedCommitExists": true,
+      "fileAtRecordedCommitExists": true,
+      "blobAtRecordedCommit": "8e56f24cfe17b44189d661681739caf9e3dc270b",
+      "introducingCommit": {
+        "sha": "a0df1813fd59c814d37a9c00677670c2327ec516",
+        "date": "2026-10-03",
+        "subject": "feat(w021.5): milestone b1-r5 current statutory geography certification and assam 2023 closure"
+      },
+      "latestCommit": {
+        "sha": "a0df1813fd59c814d37a9c00677670c2327ec516",
+        "date": "2026-10-03",
+        "subject": "feat(w021.5): milestone b1-r5 current statutory geography certification and assam 2023 closure"
+      },
+      "controlledTasks": [
+        "W021.5-B1-03"
+      ]
+    },
+    {
+      "docId": "DOC-W021.5-B2.2-A-AUDIT",
+      "title": "W021.5-B2.2-A National Political Organization Forensic Audit",
+      "path": "docs/W021.5-B2.2-A-NATIONAL-POLITICAL-ORGANIZATION-FORENSIC-AUDIT.md",
+      "authority": "CTO Directive W021.5-B2.2-A",
+      "role": "PRIMARY_GOVERNING_SPECIFICATION_STAGE_C_VOCABULARY",
+      "byteLength": 11714,
+      "sha256": "b66e28f133c3c3e19e78ffccf2b3867a7008efc0558b3f14815153eff8673cbe",
+      "blobShaHead": "6d9b872fb44f58f8eb3f48c81fd586f741a0fbf4",
+      "recordedCommitSha": "4db6fb53fdb1a885606bd76a60f1928b0af6fa3e",
+      "recordedCommitExists": true,
+      "fileAtRecordedCommitExists": true,
+      "blobAtRecordedCommit": "6d9b872fb44f58f8eb3f48c81fd586f741a0fbf4",
+      "introducingCommit": {
+        "sha": "4db6fb53fdb1a885606bd76a60f1928b0af6fa3e",
+        "date": "2026-10-03",
+        "subject": "feat(w021.5): b2.2-a national political organization forensic audit"
+      },
+      "latestCommit": {
+        "sha": "4db6fb53fdb1a885606bd76a60f1928b0af6fa3e",
+        "date": "2026-10-03",
+        "subject": "feat(w021.5): b2.2-a national political organization forensic audit"
+      },
+      "controlledTasks": []
+    },
+    {
+      "docId": "DOC-W021.5-B2.2-B-SPEC",
+      "title": "W021.5-B2.2-B Political Organization Schema & Governance Remediation",
+      "path": "docs/W021.5-B2.2-B-ORGANIZATION-SCHEMA-GOVERNANCE-REMEDIATION.md",
+      "authority": "CTO Remediation Directive W021.5-B2.2-B",
+      "role": "PRIMARY_GOVERNING_SPECIFICATION_STAGE_C_SCHEMA",
+      "byteLength": 12751,
+      "sha256": "5db29d53a9423c5ec84d0afcecf62c926979969abc7b123b405bf47f8807f98c",
+      "blobShaHead": "e15cbd9b93c81ad493c44c6497139d3a41c0d07f",
+      "recordedCommitSha": "1f3fc4001a63c5dce663b34d55fb57206933abf0",
+      "recordedCommitExists": true,
+      "fileAtRecordedCommitExists": true,
+      "blobAtRecordedCommit": "e15cbd9b93c81ad493c44c6497139d3a41c0d07f",
+      "introducingCommit": {
+        "sha": "1f3fc4001a63c5dce663b34d55fb57206933abf0",
+        "date": "2026-10-03",
+        "subject": "feat(w021.5): b2.2-b political organization schema and governance remediation"
+      },
+      "latestCommit": {
+        "sha": "1f3fc4001a63c5dce663b34d55fb57206933abf0",
+        "date": "2026-10-03",
+        "subject": "feat(w021.5): b2.2-b political organization schema and governance remediation"
+      },
+      "controlledTasks": [
+        "W021.5-C-01"
+      ]
+    },
+    {
+      "docId": "DOC-W021.5-B2.2-C-SPEC",
+      "title": "W021.5-B2.2-C Final Forensic Reconciliation & Pre-Migration Gate Closure Report",
+      "path": "docs/W021.5-B2.2-C-FINAL-FORENSIC-RECONCILIATION.md",
+      "authority": "CTO Directive W021.5-B2.2-C",
+      "role": "PRIMARY_GOVERNING_SPECIFICATION_STAGE_C_INGESTION",
+      "byteLength": 8922,
+      "sha256": "14b67a8e21295403f29c7e86dbf4030bb5e3a18c6bb51df8f00a455c9d437412",
+      "blobShaHead": "734f3e60b7448e5d150065a5266f2aa7a3b55b34",
+      "recordedCommitSha": "3b66878118d116a00dd04f78d0199c060972fd90",
+      "recordedCommitExists": true,
+      "fileAtRecordedCommitExists": true,
+      "blobAtRecordedCommit": "734f3e60b7448e5d150065a5266f2aa7a3b55b34",
+      "introducingCommit": {
+        "sha": "3b66878118d116a00dd04f78d0199c060972fd90",
+        "date": "2026-10-03",
+        "subject": "feat(w021.5): b2.2-c final forensic reconciliation and pre-migration gate closure"
+      },
+      "latestCommit": {
+        "sha": "3b66878118d116a00dd04f78d0199c060972fd90",
+        "date": "2026-10-03",
+        "subject": "feat(w021.5): b2.2-c final forensic reconciliation and pre-migration gate closure"
+      },
+      "controlledTasks": [
+        "W021.5-C-02",
+        "W021.5-C-03"
+      ]
+    },
+    {
+      "docId": "DOC-W021.5-B2.2-D-SPEC",
+      "title": "W021.5-B2.2-D Milestone Baseline Forensic Audit",
+      "path": "docs/W021.5-B2.2-D-BASELINE-FORENSIC-AUDIT.md",
+      "authority": "CTO Directive W021.5-B2.2-D",
+      "role": "PRIMARY_GOVERNING_SPECIFICATION_STAGE_D_PERSONS_CANDIDATES",
+      "byteLength": 8031,
+      "sha256": "d09d6a04930e31cd9dc8b94aa08d98b1269f7cd5b2dd404e8919216f62f336f5",
+      "blobShaHead": "7183bea04b8405912f9214e26e7adfac0378dd9f",
+      "recordedCommitSha": "7ef569c42251b9b1bd285e85565624917c8780da",
+      "recordedCommitExists": true,
+      "fileAtRecordedCommitExists": true,
+      "blobAtRecordedCommit": "7183bea04b8405912f9214e26e7adfac0378dd9f",
+      "introducingCommit": {
+        "sha": "7ef569c42251b9b1bd285e85565624917c8780da",
+        "date": "2026-10-03",
+        "subject": "chore(w021.5): complete forensic pre-flight audit for milestone B2.2-D"
+      },
+      "latestCommit": {
+        "sha": "7ef569c42251b9b1bd285e85565624917c8780da",
+        "date": "2026-10-03",
+        "subject": "chore(w021.5): complete forensic pre-flight audit for milestone B2.2-D"
+      },
+      "controlledTasks": [
+        "W021.5-D-01",
+        "W021.5-D-02"
+      ]
+    },
+    {
+      "docId": "DOC-W021.5-B2.2-E-SPEC",
+      "title": "W021.5-B2.2-E Baseline Forensic Audit Report: Downstream Civic & Political Extensions",
+      "path": "docs/W021.5-B2.2-E-BASELINE-FORENSIC-AUDIT.md",
+      "authority": "CTO Directive W021.5-B2.2-E",
+      "role": "PRIMARY_GOVERNING_SPECIFICATION_STAGE_E_CIVIC_EXTENSIONS",
+      "byteLength": 5235,
+      "sha256": "bff5192a65a1d79ce3c999e5eb11f8b8b67d9e5b31e1bb0e9b110d7abaf600ca",
+      "blobShaHead": "a9d327bba8206e1ff216e90ccfcc235bf0075e28",
+      "recordedCommitSha": "331da74f4e748d6ce643eb45a8a409227d5b219c",
+      "recordedCommitExists": true,
+      "fileAtRecordedCommitExists": true,
+      "blobAtRecordedCommit": "a9d327bba8206e1ff216e90ccfcc235bf0075e28",
+      "introducingCommit": {
+        "sha": "331da74f4e748d6ce643eb45a8a409227d5b219c",
+        "date": "2026-10-03",
+        "subject": "feat(w021.5): execute B2.2-E civic extensions population and independent closure"
+      },
+      "latestCommit": {
+        "sha": "331da74f4e748d6ce643eb45a8a409227d5b219c",
+        "date": "2026-10-03",
+        "subject": "feat(w021.5): execute B2.2-E civic extensions population and independent closure"
+      },
+      "controlledTasks": [
+        "W021.5-E-01"
+      ]
+    },
+    {
+      "docId": "DOC-W021.5-SURG-FIX-001",
+      "title": "W021.5 Master Surgical Remediation Closure Report",
+      "path": "reports/W021_5_MASTER_SURGICAL_REMEDIATION_CLOSURE_REPORT.md",
+      "authority": "Directive ID: W021.5-SURG-FIX-001 / Rule IV-001 Non-Self-Acceptance",
+      "role": "PRIMARY_GOVERNING_SURGICAL_REMEDIATION_CLOSURE",
+      "byteLength": 9451,
+      "sha256": "4085e694d2f2bb9dce746b34a7e371e971e7f9df6d8b5e6511e56b69e0cfa879",
+      "blobShaHead": "db6c6c56c0476bee58e124f5fe747179fd7878ad",
+      "recordedCommitSha": "aaf36555a3066ffa8e3ff50cb3007fc0501dff4e",
+      "recordedCommitExists": true,
+      "fileAtRecordedCommitExists": true,
+      "blobAtRecordedCommit": "db6c6c56c0476bee58e124f5fe747179fd7878ad",
+      "introducingCommit": {
+        "sha": "b0fefe5915834eae4caa93afdd272c0c73f6a441",
+        "date": "2026-10-06",
+        "subject": "docs(governance): add W021.5 master surgical remediation closure report and blocker register"
+      },
+      "latestCommit": {
+        "sha": "aaf36555a3066ffa8e3ff50cb3007fc0501dff4e",
+        "date": "2026-10-07",
+        "subject": "docs(governance): align commit coordinates in closure report and apply strict blocker status taxonomy"
+      },
+      "controlledTasks": [
+        "W021.5-A-03",
+        "W021.5-E-02",
+        "W021.5-I-02"
+      ]
+    },
+    {
+      "docId": "DOC-W021.5-CANONICAL-PACKAGE",
+      "title": "W021.5 Canonical Architecture Readiness Package",
+      "path": "reports/W021.5-CANONICAL-ARCHITECTURE-READINESS-PACKAGE.md",
+      "authority": "CTO Directive 086 (Workstream D)",
+      "role": "PRIMARY_CANONICAL_ARCHITECTURE_SYNTHESIS",
+      "byteLength": 22535,
+      "sha256": "953cf43f18d13abfeef917003e6b276b7efd7a84256d071f1f8d5f6055be9371",
+      "blobShaHead": "a7a9530fd9529dfccf642dc9c9c4115bb2078bbc",
+      "recordedCommitSha": "376f551441e985c391be696c1b68019d7d0290b2",
+      "recordedCommitExists": true,
+      "fileAtRecordedCommitExists": true,
+      "blobAtRecordedCommit": "a7a9530fd9529dfccf642dc9c9c4115bb2078bbc",
+      "introducingCommit": {
+        "sha": "be4ba41f74616e068b531df17780080a1a946bbd",
+        "date": "2026-10-17",
+        "subject": "feat(w021.5): deliver consolidated political-truth remediation, canonical readiness package and execution ledger (Directive 086)"
+      },
+      "latestCommit": {
+        "sha": "376f551441e985c391be696c1b68019d7d0290b2",
+        "date": "2026-10-17",
+        "subject": "feat(w021.5): deliver coverage integrity, election-truth closure and execution ledger adjudication (Directive 087)"
+      },
+      "controlledTasks": [
+        "W021.5-A-02",
+        "W021.5-D-03",
+        "W021.5-E-03",
+        "W021.5-F-01",
+        "W021.5-F-02",
+        "W021.5-G-01",
+        "W021.5-G-02",
+        "W021.5-G-03",
+        "W021.5-H-01",
+        "W021.5-H-02",
+        "W021.5-H-03",
+        "W021.5-H-04",
+        "W021.5-I-01"
+      ]
+    },
+    {
+      "docId": "DOC-W021.5-ORIGIN-LEDGER",
+      "title": "W021.5 Historical Origin Ledger Snapshot (be4ba41)",
+      "path": "governance/specifications/historical_w021_5_origin_ledger.json",
+      "authority": "CTO Directive 086 (Workstream E) / Origin Commit be4ba41",
+      "role": "HISTORICAL_ORIGIN_ALLOCATION_LEDGER",
+      "byteLength": 21741,
+      "sha256": "9e80d79c899e76fff947eba719579bf77ef5f785727c0308e08d6aa7775c97c6",
+      "blobShaHead": "01f263ca33b692b0105ad73e01800bf1519efc64",
+      "recordedCommitSha": "e4adf727c5a77f913c59c9b3aa20016fedccecc9",
+      "recordedCommitExists": true,
+      "fileAtRecordedCommitExists": true,
+      "blobAtRecordedCommit": "01f263ca33b692b0105ad73e01800bf1519efc64",
+      "introducingCommit": {
+        "sha": "e4adf727c5a77f913c59c9b3aa20016fedccecc9",
+        "date": "2026-10-19",
+        "subject": "feat(w021.5): historical specification provenance, task-weight reconciliation, and authority boundary enforcement (Directive 102)"
+      },
+      "latestCommit": {
+        "sha": "e4adf727c5a77f913c59c9b3aa20016fedccecc9",
+        "date": "2026-10-19",
+        "subject": "feat(w021.5): historical specification provenance, task-weight reconciliation, and authority boundary enforcement (Directive 102)"
+      },
+      "controlledTasks": []
+    }
+  ]
+}
