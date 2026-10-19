@@ -1,0 +1,75 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "registerId": "W021.5-DIRECTIVE-106-DISCREPANCY-REGISTER-V1.0",
+  "milestone": "W021.5",
+  "directive": "CTO Directive 107",
+  "purpose": "Forensic discrepancy register and remediation mapping for independent review findings of CTO Directive 106.",
+  "generatedAt": "2026-10-19T13:40:00.000Z",
+  "governance": "Master Execution Framework Amendment v1.2 / Rule IV-001 (Non-Self-Acceptance)",
+  "summary": {
+    "totalDiscrepanciesAudited": 4,
+    "discrepanciesResolved": 4,
+    "discrepanciesBlocked": 0,
+    "discrepancyCategoriesAudited": [
+      "canonical_task_inventory_reconciliation",
+      "safe_by_default_trust_verification",
+      "test_output_parsing_semantics",
+      "manifest_validation_adversarial_coverage"
+    ],
+    "resolutionStatus": "ALL_DISCREPANCIES_FORENSICALLY_ANALYZED_AND_RECONCILED"
+  },
+  "discrepancies": [
+    {
+      "discrepancyId": "DISC-027",
+      "itemKey": "TASK_INVENTORY:directive106ReportTable32Tasks",
+      "category": "canonical_task_inventory_reconciliation",
+      "discrepancyType": "PHANTOM_TASK_INCLUSION_REPORT_MISMATCH",
+      "affectedEntity": "reports/W021.5-CTO-DIRECTIVE-106-IMPLEMENTATION-REPORT.md Section 3 table (32 rows, 99.0% weight sum)",
+      "priorReportValue": "Directive 106 markdown report table erroneously included 32 rows containing 5 phantom task IDs (W021.5-B2-01, W021.5-B2-02, W021.5-I-03, W021.5-EXT-01, W021.5-EXT-02) summing to 99.0% weight, while machine-readable specifications and ledgers defined exactly 27 canonical tasks totaling 100.000%.",
+      "canonicalCommittedValue": "Reconciled task inventory strictly to 27 canonical tasks (100.000% weight). Enforced programmatic equality across master specification, traceability matrix, canonical metadata, criteria specifications, and execution ledger. Rejected phantom tasks without governing approval authority.",
+      "representationOrigin": "Accidental insertion of unratified draft / phantom task IDs in the Directive 106 Markdown summary table during manual transcription, diverging from authoritative machine-readable specifications (w021_5_master_specification.json, w021_5_governing_traceability_matrix.json, w021_5_execution_ledger.json).",
+      "historicalLineage": "All canonical machine-readable definitions since origin commit be4ba41 defined exactly 27 tasks with 100.000% weight sum. Phantom tasks had no ratified specifications, criteria, or approved governing lineage.",
+      "resolutionAction": "Removed 5 phantom tasks from report, asserted strict programmatic equality (27 tasks, 50 criteria, 100.000% weight) across all sources in Suite 28, and documented unratified status as NOT_INDEPENDENTLY_ESTABLISHED.",
+      "resolutionStatus": "RESOLVED_INVENTORY_RECONCILED"
+    },
+    {
+      "discrepancyId": "DISC-028",
+      "itemKey": "VERIFIER_ENGINE:safeByDefaultTrustGuards",
+      "category": "safe_by_default_trust_verification",
+      "discrepancyType": "CALLER_CONTROLLED_TRUST_FLAG_SEAM",
+      "affectedEntity": "scripts/reconcile_execution_ledger.mjs verification functions (verifyHistoricalArtifactIntegrity, verifyAuthorityBoundary, verifyGoverningSpecificationProvenance, reconcileExecutionLedger)",
+      "priorReportValue": "Trust override prohibitions were gated behind caller-supplied flags (productionVerificationMode: true or productionMode: true), meaning ordinary callers omitting the flag could pass trust overrides (expectedHashOverride, historicalOriginCommitOverride, etc.).",
+      "canonicalCommittedValue": "Verification functions reject caller trust overrides unconditionally by default, with or without any mode flags. Dedicated test fixtures must use explicit test-only functions (__testOnly_*) protected by an unforgeable Symbol token (TEST_HARNESS_PROTECTION_TOKEN), making caller-supplied Booleans irrelevant to trust boundaries.",
+      "representationOrigin": "Defensive check conditioned on a Boolean parameter rather than executing fail-closed unconditionally.",
+      "historicalLineage": "Directive 106 added assertNoCallerTrustOverrides but called it only when productionVerificationMode or productionMode was true.",
+      "resolutionAction": "Refactored assertNoCallerTrustOverrides to run unconditionally in all public entry points. Exported TEST_HARNESS_PROTECTION_TOKEN (Symbol.for('KSHETRA_TEST_ONLY_HARNESS_PROTECTION_TOKEN')) and separated test injection behind __testOnly_* functions verifying the presence of the Symbol token.",
+      "resolutionStatus": "RESOLVED_SAFE_BY_DEFAULT_ENFORCED"
+    },
+    {
+      "discrepancyId": "DISC-029",
+      "itemKey": "TEST_PARSER:triStateSkippedTestSemantics",
+      "category": "test_output_parsing_semantics",
+      "discrepancyType": "BINARY_SKIPPED_STATE_ASSUMPTION",
+      "affectedEntity": "scripts/capture_test_execution.mjs (parseTestOutput, validateManifestIntegrity)",
+      "priorReportValue": "Test parser used binary logic where omitted skipped counts could default or lead to assumptions about zero skipped tests without verifying the runner's specific output contract.",
+      "canonicalCommittedValue": "Strict tri-state skipped-test model: EXPLICIT_ZERO_SKIPPED, SKIPPED_COUNT_REPORTED_NONZERO, SKIPPED_COUNT_NOT_REPORTED. zeroSkippedEvidenced is only set to true when explicit zero is reported OR when runner contract independently guarantees omission means zero (verified for Jest where total === passed + failed). Internally inconsistent totals, conflicting summaries, non-zero exit codes, and fake summaries are detected and rejected.",
+      "representationOrigin": "Simplistic regex capture that treated absence of skipped text as zero skipped tests.",
+      "historicalLineage": "Directives 100-106 parsed test outputs with basic regex patterns that did not account for runner contract variations or conflicting multi-summary text.",
+      "resolutionAction": "Implemented tri-state skipped parsing in scripts/capture_test_execution.mjs, verified runner contracts for Jest and custom runners, added consistency checks rejecting inconsistent totals (INTERNALLY_INCONSISTENT_TOTALS) and conflicting summaries (CONFLICTING_TEST_SUMMARIES), and enforced verification in validateManifestIntegrity.",
+      "resolutionStatus": "RESOLVED_TRI_STATE_PARSER_HARDENED"
+    },
+    {
+      "discrepancyId": "DISC-030",
+      "itemKey": "VERIFICATION_TESTS:manifestValidationAdversarialCoverage",
+      "category": "manifest_validation_adversarial_coverage",
+      "discrepancyType": "SHALLOW_MANIFEST_VALIDATION_TESTS",
+      "affectedEntity": "tests/political-intelligence-directive-106.test.mjs / tests/political-intelligence-directive-107.test.mjs",
+      "priorReportValue": "Tests for manifest validation checked existence or minimum suite counts rather than mutating isolated manifest/log fixtures to prove negative rejection paths.",
+      "canonicalCommittedValue": "8 genuine adversarial negative tests mutating isolated manifest/log fixtures exercising validateManifestIntegrity directly: (1) changed test result with unchanged log, (2) changed log with recomputed manifest digest, (3) path escaping repository or symlink traversal, (4) duplicate suite entries, (5) inconsistent exit codes and status fields, (6) incorrect passed/failed/skipped/total counts, (7) output log hash matches but test contents contradict manifest, (8) manifest claiming a suite ran when command/suite identity does not match.",
+      "representationOrigin": "Test suites asserting presence of features rather than exercising adversarial falsification.",
+      "historicalLineage": "Directive 106 added manifest integrity checks in capture_test_execution.mjs but lacked dedicated adversarial mutation tests for each specific rejection reason.",
+      "resolutionAction": "Authored 8 dedicated adversarial negative test cases in Suite 28 (tests/political-intelligence-directive-107.test.mjs), validating exact fail-closed rejection reason codes (LOG_DIGEST_MISMATCH, TOTAL_COUNT_MISMATCH, PATH_TRAVERSAL_DETECTED, DUPLICATE_SUITE_ENTRY, EXIT_CODE_STATUS_MISMATCH, TEST_COUNT_SUM_MISMATCH, LOG_CONTENT_CONTRADICTS_MANIFEST, SUITE_IDENTITY_MISMATCH).",
+      "resolutionStatus": "RESOLVED_ADVERSARIAL_MUTATION_BATTERY_DEPLOYED"
+    }
+  ]
+}

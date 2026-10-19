@@ -76,24 +76,38 @@ export function loadHistoricalOriginLedger(repoRoot = REPO_ROOT) {
   return JSON.parse(fs.readFileSync(p, 'utf8'));
 }
 
+export const TEST_HARNESS_PROTECTION_TOKEN = Symbol.for('KSHETRA_TEST_ONLY_HARNESS_PROTECTION_TOKEN');
+
+export const FORBIDDEN_TRUST_OVERRIDES = [
+  'expectedHashOverride',
+  'rawBytesOverride',
+  'referenceCommitOverride',
+  'originCommitOverride',
+  'historicalOriginCommitOverride',
+  'expectedDocHashes',
+  'taskSectionOverrides',
+  'matrixOverride',
+  'masterSpecOverride',
+  'ledgerOverride',
+];
+
+export function assertNoCallerTrustOverrides(options = {}, entryPointName = 'verifier') {
+  if (!options || typeof options !== 'object') return;
+  for (const key of FORBIDDEN_TRUST_OVERRIDES) {
+    if (options[key] !== undefined) {
+      throw new Error(
+        `CALLER_TRUST_OVERRIDE_PROHIBITED: Caller options cannot override "${key}" in ${entryPointName}. Public verification entry points are safe by default and unconditionally reject caller-controlled trust overrides.`
+      );
+    }
+  }
+}
+
 /**
  * Workstream A (CTO Directive 103):
  * Enforces historical artifact integrity, raw SHA-256 validation from git history,
  * snapshot fidelity (semantic/canonical JSON equality), and semantic consistency.
  */
-export function verifyHistoricalArtifactIntegrity(options = {}) {
-  // CTO Directive 106 Workstream B: Fail-closed caller trust override prohibition in production mode
-  if (options.productionVerificationMode || options.productionMode) {
-    if (
-      options.expectedHashOverride !== undefined ||
-      options.rawBytesOverride !== undefined ||
-      options.referenceCommitOverride !== undefined ||
-      options.originCommitOverride !== undefined
-    ) {
-      throw new Error('CALLER_TRUST_OVERRIDE_PROHIBITED: Caller options cannot override historical origin commit or cryptographic digests in production verification mode.');
-    }
-  }
-
+export function _verifyHistoricalArtifactIntegrityInternal(options = {}) {
   const repoRoot = options.repoRoot || REPO_ROOT;
   const snapshot = loadHistoricalOriginLedger(repoRoot);
 
@@ -181,6 +195,24 @@ export function verifyHistoricalArtifactIntegrity(options = {}) {
       limitation: 'A hash recorded within the repository verifies tamper detection against drift within the codebase but does not constitute an independent external cryptographic trust anchor without out-of-band verification.',
     },
   };
+}
+
+/**
+ * Public production verifier: Safe by default, unconditionally rejects caller-controlled trust overrides.
+ */
+export function verifyHistoricalArtifactIntegrity(options = {}) {
+  assertNoCallerTrustOverrides(options, 'verifyHistoricalArtifactIntegrity');
+  return _verifyHistoricalArtifactIntegrityInternal(options);
+}
+
+/**
+ * Explicit test-only interface protected by non-Boolean internal symbol token.
+ */
+export function __testOnly_verifyHistoricalArtifactIntegrity(options = {}, token) {
+  if (token !== TEST_HARNESS_PROTECTION_TOKEN) {
+    throw new Error('TEST_ONLY_HARNESS_PROTECTED: Direct invocation of test harness interface is unauthorized without the internal protection token.');
+  }
+  return _verifyHistoricalArtifactIntegrityInternal(options);
 }
 
 /**
@@ -287,19 +319,7 @@ export function validateMasterSpecificationAgainstCode(repoRoot = REPO_ROOT) {
  * Fails closed on fabricated requirements, omitted requirements, wrong section mapping,
  * or unapproved extension promotion, even if manifest and metadata are co-mutated.
  */
-export function verifyGoverningSpecificationProvenance(options = {}) {
-  // CTO Directive 106 Workstream B: Fail-closed caller trust override prohibition
-  if (options.productionVerificationMode || options.productionMode) {
-    if (
-      options.expectedDocHashes !== undefined ||
-      options.taskSectionOverrides !== undefined ||
-      options.matrixOverride !== undefined ||
-      options.masterSpecOverride !== undefined
-    ) {
-      throw new Error('CALLER_TRUST_OVERRIDE_PROHIBITED: Caller options cannot override governing matrix or document expectations in production verification mode.');
-    }
-  }
-
+export function _verifyGoverningSpecificationProvenanceInternal(options = {}) {
   const repoRoot = options.repoRoot || REPO_ROOT;
   const matrix = options.matrixOverride || loadGoverningTraceabilityMatrix(repoRoot);
   const masterSpec = options.masterSpecOverride || loadMasterSpecification(repoRoot);
@@ -461,25 +481,31 @@ export function verifyGoverningSpecificationProvenance(options = {}) {
 }
 
 /**
+ * Public production verifier: Safe by default, unconditionally rejects caller-controlled trust overrides.
+ */
+export function verifyGoverningSpecificationProvenance(options = {}) {
+  assertNoCallerTrustOverrides(options, 'verifyGoverningSpecificationProvenance');
+  return _verifyGoverningSpecificationProvenanceInternal(options);
+}
+
+/**
+ * Explicit test-only interface protected by non-Boolean internal symbol token.
+ */
+export function __testOnly_verifyGoverningSpecificationProvenance(options = {}, token) {
+  if (token !== TEST_HARNESS_PROTECTION_TOKEN) {
+    throw new Error('TEST_ONLY_HARNESS_PROTECTED: Direct invocation of test harness interface is unauthorized without the internal protection token.');
+  }
+  return _verifyGoverningSpecificationProvenanceInternal(options);
+}
+
+/**
  * Workstream B (CTO Directive 102 & 103):
  * Enforces bidirectional authority boundary by comparing implementation metadata and master specification
  * against immutable historical origin (be4ba41).
  * Fails closed if any task title, weight, stage, specification reference, governing requirement,
  * stage membership, or subtotal deviates from origin in either direction.
  */
-export function verifyAuthorityBoundary(options = {}) {
-  // CTO Directive 106 Workstream B: Fail-closed caller trust override prohibition
-  if (options.productionVerificationMode || options.productionMode) {
-    if (
-      options.originCommitOverride !== undefined ||
-      options.referenceCommitOverride !== undefined ||
-      options.rawBytesOverride !== undefined ||
-      options.expectedHashOverride !== undefined
-    ) {
-      throw new Error('CALLER_TRUST_OVERRIDE_PROHIBITED: Caller options cannot override authority boundary references in production verification mode.');
-    }
-  }
-
+export function _verifyAuthorityBoundaryInternal(options = {}) {
   const repoRoot = options.repoRoot || REPO_ROOT;
   const snapshot = loadHistoricalOriginLedger(repoRoot);
   const histLedger = snapshot.historicalLedger;
@@ -675,7 +701,7 @@ export function verifyAuthorityBoundary(options = {}) {
   }
 
   // 6. Governing Specification Provenance Verification (Directive 104)
-  const governingProvenance = verifyGoverningSpecificationProvenance(options);
+  const governingProvenance = _verifyGoverningSpecificationProvenanceInternal(options);
 
   return {
     verified: true,
@@ -687,7 +713,24 @@ export function verifyAuthorityBoundary(options = {}) {
     governingRequirementVerified: true,
     governingProvenance,
   };
+}
 
+/**
+ * Public production verifier: Safe by default, unconditionally rejects caller-controlled trust overrides.
+ */
+export function verifyAuthorityBoundary(options = {}) {
+  assertNoCallerTrustOverrides(options, 'verifyAuthorityBoundary');
+  return _verifyAuthorityBoundaryInternal(options);
+}
+
+/**
+ * Explicit test-only interface protected by non-Boolean internal symbol token.
+ */
+export function __testOnly_verifyAuthorityBoundary(options = {}, token) {
+  if (token !== TEST_HARNESS_PROTECTION_TOKEN) {
+    throw new Error('TEST_ONLY_HARNESS_PROTECTED: Direct invocation of test harness interface is unauthorized without the internal protection token.');
+  }
+  return _verifyAuthorityBoundaryInternal(options);
 }
 
 
@@ -5782,21 +5825,7 @@ export function verifyNonOverlappingAccountingAndTraceability(options = {}) {
 /**
  * Main ledger reconciliation workflow.
  */
-export function reconcileExecutionLedger(options = {}) {
-  // CTO Directive 106 Workstream B: Fail-closed caller trust override prohibition
-  if (
-    options.historicalOriginCommitOverride !== undefined ||
-    options.expectedHashOverride !== undefined ||
-    options.rawBytesOverride !== undefined ||
-    options.originCommitOverride !== undefined ||
-    options.referenceCommitOverride !== undefined ||
-    options.matrixOverride !== undefined ||
-    options.masterSpecOverride !== undefined ||
-    options.expectedDocHashes !== undefined ||
-    options.taskSectionOverrides !== undefined
-  ) {
-    throw new Error('CALLER_TRUST_OVERRIDE_PROHIBITED: Caller options cannot override historical origin commit or cryptographic digests in production verification mode.');
-  }
+export function _reconcileExecutionLedgerInternal(options = {}) {
 
   const jsonPath = path.resolve(REPO_ROOT, 'reports/w021_5_execution_ledger.json');
   const mdPath = path.resolve(REPO_ROOT, 'reports/W021.5-EXECUTION-LEDGER.md');
@@ -5821,10 +5850,10 @@ export function reconcileExecutionLedger(options = {}) {
   const opts = { enforceCanonicalIdentity: true, productionVerificationMode: true, ...options };
 
   // Workstream A (CTO Directive 103): Verify Historical Artifact Integrity (Raw Git SHA-256 & Snapshot Fidelity)
-  verifyHistoricalArtifactIntegrity(opts);
+  _verifyHistoricalArtifactIntegrityInternal(opts);
 
   // Workstream B (CTO Directive 102 & 103): Enforce Authority Boundary against historical origin commit be4ba41
-  verifyAuthorityBoundary(opts);
+  _verifyAuthorityBoundaryInternal(opts);
 
   // Validate master specification manifest against code metadata
   validateMasterSpecificationAgainstCode(opts.repoRoot || REPO_ROOT);
@@ -5833,7 +5862,7 @@ export function reconcileExecutionLedger(options = {}) {
     validateStageAccounting(stage, opts);
   }
 
-  ledger.directive = 'CTO Directive 086 / CTO Directive 087 / CTO Directive 088 / CTO Directive 089 / CTO Directive 090 / CTO Directive 091 / CTO Directive 092 / CTO Directive 093 / CTO Directive 094 / CTO Directive 095 / CTO Directive 096 / CTO Directive 097 / CTO Directive 098 / CTO Directive 099 / CTO Directive 100 / CTO Directive 101 / CTO Directive 102 / CTO Directive 103 / CTO Directive 104 / CTO Directive 105 / CTO Directive 106';
+  ledger.directive = 'CTO Directive 086 / CTO Directive 087 / CTO Directive 088 / CTO Directive 089 / CTO Directive 090 / CTO Directive 091 / CTO Directive 092 / CTO Directive 093 / CTO Directive 094 / CTO Directive 095 / CTO Directive 096 / CTO Directive 097 / CTO Directive 098 / CTO Directive 099 / CTO Directive 100 / CTO Directive 101 / CTO Directive 102 / CTO Directive 103 / CTO Directive 104 / CTO Directive 105 / CTO Directive 106 / CTO Directive 107';
 
   // Compute summary
   const summary = computeLedgerSummary(ledger, opts);
@@ -5853,6 +5882,24 @@ export function reconcileExecutionLedger(options = {}) {
   console.log(`[PASS] Reconciled Markdown ledger written to ${mdPath}`);
 
   return { reconciled: true, ledger, summary };
+}
+
+/**
+ * Public production verifier: Safe by default, unconditionally rejects caller-controlled trust overrides.
+ */
+export function reconcileExecutionLedger(options = {}) {
+  assertNoCallerTrustOverrides(options, 'reconcileExecutionLedger');
+  return _reconcileExecutionLedgerInternal(options);
+}
+
+/**
+ * Explicit test-only interface protected by non-Boolean internal symbol token.
+ */
+export function __testOnly_reconcileExecutionLedger(options = {}, token) {
+  if (token !== TEST_HARNESS_PROTECTION_TOKEN) {
+    throw new Error('TEST_ONLY_HARNESS_PROTECTED: Direct invocation of test harness interface is unauthorized without the internal protection token.');
+  }
+  return _reconcileExecutionLedgerInternal(options);
 }
 
 // Execute when invoked directly

@@ -1,0 +1,81 @@
+================================================================================
+KSHETRA VERIFIABLE TEST EXECUTION LOG
+Suite: tests/political-intelligence-directive-107.test.mjs
+Command: node tests/political-intelligence-directive-107.test.mjs
+Working Directory: C:\Users\Laven\OneDrive\Desktop\Kshetra
+Runtime: Node v24.13.0 (win32)
+Execution Timestamp: 2026-10-19T08:38:45.844Z
+Exit Code: 0
+================================================================================
+
+--- STDOUT ---
+================================================================
+KSHETRA W021.5 — CTO DIRECTIVE 107 VERIFICATION SUITE
+Safe-by-Default Trust Verification, Evidence Parser Corrections, and Canonical Inventory Reconciliation
+Suite: tests/political-intelligence-directive-107.test.mjs
+Command: node tests/political-intelligence-directive-107.test.mjs
+================================================================
+
+--- 1. Workstream A: Make Trust Override Protection Safe by Default ---
+  [PASS] 1.1 verifyHistoricalArtifactIntegrity rejects caller trust overrides by default (no mode flags)
+  [PASS] 1.2 verifyAuthorityBoundary rejects caller trust overrides by default (no mode flags)
+  [PASS] 1.3 verifyGoverningSpecificationProvenance rejects caller trust overrides by default (no mode flags)
+  [PASS] 1.4 reconcileExecutionLedger rejects caller trust overrides by default (no mode flags)
+  [PASS] 1.5 Caller-supplied Booleans (productionMode: false, allowOverrides: true) CANNOT bypass trust rejection
+  [PASS] 1.6 Test-only interfaces (__testOnly_*) throw TEST_ONLY_HARNESS_PROTECTED when called without valid Symbol token
+  [PASS] 1.7 Test-only interfaces succeed with valid TEST_HARNESS_PROTECTION_TOKEN
+  [PASS] 1.8 FORBIDDEN_TRUST_OVERRIDES contains comprehensive list of 10 override parameter names
+
+--- 2. Workstream B: Manifest Validation Adversarial Negative Test Battery ---
+  [PASS] 2.1 Adversarial Case 1: Changed test result with unchanged log is rejected (testsPassed mismatch)
+  [PASS] 2.2 Adversarial Case 2: Changed log with recomputed manifest digest is rejected (failure in log)
+  [PASS] 2.3 Adversarial Case 3: Path escaping repository root is rejected (path traversal attack)
+  [PASS] 2.4 Adversarial Case 4: Duplicate suite entries are rejected
+  [PASS] 2.5 Adversarial Case 5: Inconsistent exit codes and status fields are rejected (exitCode 1 with status PASS)
+  [PASS] 2.6 Adversarial Case 6: Incorrect total tests count mismatch is rejected
+  [PASS] 2.7 Adversarial Case 7: Contradictory skipped-state is rejected (claims zeroSkippedEvidenced on unevidenced log)
+  [PASS] 2.8 Adversarial Case 8: Suite identity mismatch in log header is rejected
+
+--- 3. Workstream C: Skipped-Test Semantics & Output Parsing ---
+  [PASS] 3.1 SKIPPED_COUNT_NOT_REPORTED: Runner output omitting skipped count sets zeroSkippedEvidenced: false
+  [PASS] 3.2 EXPLICIT_ZERO_SKIPPED: Custom runner reporting "0 SKIPPED" sets zeroSkippedEvidenced: true
+  [PASS] 3.3 SKIPPED_COUNT_REPORTED_NONZERO: Custom runner reporting ">0 SKIPPED" records non-zero skipped
+  [PASS] 3.4 Jest Runner Contract: Total equals passed + failed independently evidences zero skipped
+  [PASS] 3.5 Jest Runner with explicit skipped: Records non-zero skipped correctly
+  [PASS] 3.6 Rejects internally inconsistent totals (INTERNALLY_INCONSISTENT_TOTALS)
+  [PASS] 3.7 Rejects multiple conflicting test summaries (CONFLICTING_TEST_SUMMARIES)
+  [PASS] 3.8 Rejects fake summary text without authentic runner suite identity evidence
+
+--- 4. Workstream D: Reconcile the Canonical Task Inventory ---
+  [PASS] 4.1 Programmatic equality across 7 sources (exactly 27 canonical tasks, 100.000% weight sum)
+  [PASS] 4.2 Rejection and isolation of 5 phantom tasks (W021.5-B2-01, B2-02, I-03, EXT-01, EXT-02)
+  [PASS] 4.3 Criteria membership equality: All 50 criteria map strictly to canonical 27 tasks
+  [PASS] 4.4 Governing specifications provenance and authority boundary remain explicitly NOT_INDEPENDENTLY_ESTABLISHED
+
+--- 5. Workstream E: Requalify Criterion Evidence & Completion ---
+  [PASS] 5.1 50 criteria classified across 5 standard evidence classes
+  [PASS] 5.2 Recomputed completion: strictly 61.500% earned, 38.500% blocked, summing to 100.000%
+  [PASS] 5.3 Preservation of Telangana AC 119 duplicate boundary feature (strictly blocked at 1.5%)
+
+--- 6. Workstream F: Mandatory Governance Invariants & Baseline Immutability ---
+  [PASS] 6.1 Rule IV-001 Non-Self-Acceptance: Formal acceptance is strictly 0.0% / UNACCEPTED
+  [PASS] 6.2 Production Air-Gap: Live database execution is strictly 0.0% / UNEXECUTED
+  [PASS] 6.3 Financial Defect DQ-W021.5-B2.2E-001 remains STRICTLY OPEN (0.0% earned, 5.0% blocked)
+  [PASS] 6.4 Telangana AC 119 Boundary Defect remains STRICTLY OPEN / BLOCKED (1.5% blocked)
+  [PASS] 6.5 SQL Migration Immutability: 68 migrations match baseline 0ea572d byte-for-byte identical
+  [PASS] 6.6 MLA Profile Seed Immutability: 31 seed files match baseline fb408ce byte-for-byte identical
+  [PASS] 6.7 Repository manifest integrity validation
+
+================================================================
+TEST SUMMARY: 38 PASSED, 0 FAILED, 0 SKIPPED
+================================================================
+
+
+
+--- STDERR ---
+
+
+--- PROCESS METRICS ---
+DurationMs: 9871
+ExitCode: 0
+================================================================================

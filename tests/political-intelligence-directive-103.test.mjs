@@ -39,6 +39,8 @@ import {
   EXPECTED_RAW_HISTORICAL_LEDGER_SHA256,
   EXPECTED_RAW_HISTORICAL_LEDGER_BYTES,
   verifyHistoricalArtifactIntegrity,
+  __testOnly_verifyHistoricalArtifactIntegrity,
+  TEST_HARNESS_PROTECTION_TOKEN,
   verifyAuthorityBoundary,
   validateMasterSpecificationAgainstCode,
   validateLedgerSummaryConsistency,
@@ -468,11 +470,11 @@ runTest('4.6 Mutation 6: Change task weight with offsetting change elsewhere fai
 
 runTest('4.7 Mutation 7: Alter historical snapshot bytes fails closed in verifyHistoricalArtifactIntegrity', () => {
   assert.throws(
-    () => verifyHistoricalArtifactIntegrity({ expectedHashOverride: '0000000000000000000000000000000000000000000000000000000000000000' }),
+    () => __testOnly_verifyHistoricalArtifactIntegrity({ expectedHashOverride: '0000000000000000000000000000000000000000000000000000000000000000' }, TEST_HARNESS_PROTECTION_TOKEN),
     /Raw artifact integrity violation: SHA-256 hash mismatch/
   );
   assert.throws(
-    () => verifyHistoricalArtifactIntegrity({ rawBytesOverride: Buffer.from('{"tampered": true}') }),
+    () => __testOnly_verifyHistoricalArtifactIntegrity({ rawBytesOverride: Buffer.from('{"tampered": true}') }, TEST_HARNESS_PROTECTION_TOKEN),
     /Raw artifact integrity violation: SHA-256 hash mismatch/
   );
 });

@@ -247,6 +247,14 @@ export const TEST_SUITE_DEFINITIONS = [
     directiveRef: '106',
     shell: true,
   },
+  {
+    suite: 'tests/political-intelligence-directive-107.test.mjs',
+    command: 'node tests/political-intelligence-directive-107.test.mjs',
+    logFilename: 'directive-107.log',
+    suiteType: 'DIRECTIVE_VERIFICATION_TEST',
+    directiveRef: '107',
+    shell: true,
+  },
 ];
 
 /**
@@ -425,30 +433,220 @@ export function parseTestOutput(rawOutput, suiteDef = null) {
 
   let passed = 0;
   let failed = 0;
+  let skipped = 0;
+  let skippedState = 'SKIPPED_COUNT_NOT_REPORTED';
+  let zeroSkippedEvidenced = false;
   let suitesPassed = 0;
   let runnerFormat = null;
   let matched = false;
 
-  // 2. Try Jest format: Tests: [X skipped, ]Y passed[, Z failed]
-  const jestTestsMatch = rawOutput.match(/Tests:\s+(?:([0-9]+)\s+skipped,\s+)?([0-9]+)\s+passed(?:,\s+([0-9]+)\s+failed)?/i);
-  const jestSuitesMatch = rawOutput.match(/Test Suites:\s+([0-9]+)\s+passed/i);
-  let skipped = 0;
-  if (jestTestsMatch) {
-    skipped = jestTestsMatch[1] ? parseInt(jestTestsMatch[1], 10) : 0;
-    passed = parseInt(jestTestsMatch[2], 10);
-    failed = jestTestsMatch[3] ? parseInt(jestTestsMatch[3], 10) : 0;
+  // 2. Try Jest format: Tests: [X failed, ][Y skipped, ][Z passed, ]W total
+  const jestLineMatch = rawOutput.match(/(?:^|\n)\s*Tests:\s+([^\r\n]+)/i);
+  const jestSuitesMatch = rawOutput.match(/(?:^|\n)\s*Test Suites:\s+([0-9]+)\s+passed/i);
+
+  if (jestLineMatch) {
+    const lineText = jestLineMatch[1];
+    const passedMatch = lineText.match(/([0-9]+)\s+passed/i);
+    const failedMatch = lineText.match(/([0-9]+)\s+failed/i);
+    const skippedMatch = lineText.match(/([0-9]+)\s+skipped/i);
+    const totalMatch = lineText.match(/([0-9]+)\s+total/i);
+
+    passed = passedMatch ? parseInt(passedMatch[1], 10) : 0;
+    failed = failedMatch ? parseInt(failedMatch[1], 10) : 0;
+    const jestReportedSkipped = skippedMatch ? parseInt(skippedMatch[1], 10) : null;
+    const jestTotal = totalMatch ? parseInt(totalMatch[1], 10) : null;
+
+    if (jestReportedSkipped !== null) {
+      if (jestReportedSkipped === 0) {
+        skippedState = 'EXPLICIT_ZERO_SKIPPED';
+        skipped = 0;
+        zeroSkippedEvidenced = true;
+      } else {
+        skippedState = 'SKIPPED_COUNT_REPORTED_NONZERO';
+        skipped = jestReportedSkipped;
+        zeroSkippedEvidenced = false;
+      }
+    } else if (jestTotal !== null) {
+      // Documented runner contract: In Jest, when total equals passed + failed,
+      // omission of skipped count independently guarantees zero skipped tests.
+      if (jestTotal === passed + failed) {
+        skippedState = 'EXPLICIT_ZERO_SKIPPED';
+        skipped = 0;
+        zeroSkippedEvidenced = true;
+      } else {
+        return {
+          isParsed: false,
+          failureReason: 'INTERNALLY_INCONSISTENT_TOTALS',
+          failureDetail: `Jest reported total (${jestTotal}) does not equal passed (${passed}) + failed (${failed}).`,
+          passed,
+          failed,
+          skipped: 0,
+          skippedState: 'SKIPPED_COUNT_NOT_REPORTED',
+          zeroSkippedEvidenced: false,
+          suitesPassed: 0,
+          totalTests: jestTotal,
+          runnerFormat: 'JEST',
+        };
+      }
+    } else {
+      skippedState = 'SKIPPED_COUNT_NOT_REPORTED';
+      skipped = 0;
+      zeroSkippedEvidenced = false;
+    }
+
+    if (jestTotal !== null && jestReportedSkipped !== null) {
+      if (jestTotal !== passed + failed + jestReportedSkipped) {
+        return {
+          isParsed: false,
+          failureReason: 'INTERNALLY_INCONSISTENT_TOTALS',
+          failureDetail: `Jest reported total (${jestTotal}) does not equal passed (${passed}) + failed (${failed}) + skipped (${jestReportedSkipped}).`,
+          passed,
+          failed,
+          skipped,
+          skippedState,
+          zeroSkippedEvidenced,
+          suitesPassed: 0,
+          totalTests: jestTotal,
+          runnerFormat: 'JEST',
+        };
+      }
+    }
+
     suitesPassed = jestSuitesMatch ? parseInt(jestSuitesMatch[1], 10) : (failed === 0 && passed > 0 ? 1 : 0);
     runnerFormat = 'JEST';
     matched = true;
   }
 
-  // 3. Try custom summary format: VERIFICATION SUMMARY: X PASSED, Y FAILED[, Z SKIPPED]
-  if (!matched) {
-    const customMatch = rawOutput.match(/(?:VERIFICATION|TEST)\s+(?:EXECUTION\s+)?SUMMARY:\s+([0-9]+)\s+PASSED,\s+([0-9]+)\s+FAILED(?:,\s+([0-9]+)\s+SKIPPED)?/i);
-    if (customMatch) {
-      passed = parseInt(customMatch[1], 10);
-      failed = parseInt(customMatch[2], 10);
-      skipped = customMatch[3] ? parseInt(customMatch[3], 10) : 0;
+  // 3. Try custom summary format: VERIFICATION / TEST SUMMARY: X PASSED, Y FAILED[, Z SKIPPED][, W TOTAL]
+  const customSummaryRegex = /(?:^|\n)\s*(?:VERIFICATION|TEST)\s+(?:EXECUTION\s+)?SUMMARY:\s+([^\r\n]+)/gi;
+  const allCustomMatches = [...rawOutput.matchAll(customSummaryRegex)];
+
+  if (matched && allCustomMatches.length > 0) {
+    const customLine = allCustomMatches[0][1];
+    const cPassedMatch = customLine.match(/([0-9]+)\s+PASSED/i);
+    const cFailedMatch = customLine.match(/([0-9]+)\s+FAILED/i);
+    if (cPassedMatch && parseInt(cPassedMatch[1], 10) !== passed) {
+      return {
+        isParsed: false,
+        failureReason: 'CONFLICTING_TEST_SUMMARIES',
+        failureDetail: `Jest passed (${passed}) conflicts with custom summary passed (${cPassedMatch[1]}).`,
+        passed: 0,
+        failed: 0,
+        skipped: 0,
+        skippedState: 'SKIPPED_COUNT_NOT_REPORTED',
+        zeroSkippedEvidenced: false,
+        suitesPassed: 0,
+        totalTests: 0,
+        runnerFormat: null,
+      };
+    }
+  }
+
+  if (!matched && allCustomMatches.length > 1) {
+    const parsedSummaries = allCustomMatches.map((m) => {
+      const txt = m[1];
+      const p = txt.match(/([0-9]+)\s+PASSED/i);
+      const f = txt.match(/([0-9]+)\s+FAILED/i);
+      const s = txt.match(/([0-9]+)\s+SKIPPED/i);
+      const t = txt.match(/([0-9]+)\s+TOTAL/i);
+      return {
+        raw: m[0].trim(),
+        p: p ? parseInt(p[1], 10) : null,
+        f: f ? parseInt(f[1], 10) : null,
+        s: s ? parseInt(s[1], 10) : null,
+        t: t ? parseInt(t[1], 10) : null,
+      };
+    });
+
+    const first = parsedSummaries[0];
+    const hasConflict = parsedSummaries.some((ps) =>
+      ps.p !== first.p || ps.f !== first.f || ps.s !== first.s || ps.t !== first.t
+    );
+
+    if (hasConflict) {
+      return {
+        isParsed: false,
+        failureReason: 'CONFLICTING_TEST_SUMMARIES',
+        failureDetail: `Multiple conflicting custom test summaries detected: ${parsedSummaries.map((ps) => ps.raw).join(' vs ')}`,
+        passed: 0,
+        failed: 0,
+        skipped: 0,
+        skippedState: 'SKIPPED_COUNT_NOT_REPORTED',
+        zeroSkippedEvidenced: false,
+        suitesPassed: 0,
+        totalTests: 0,
+        runnerFormat: 'CUSTOM_SUMMARY',
+      };
+    }
+  }
+
+  if (!matched && allCustomMatches.length > 0) {
+    const customLine = allCustomMatches[allCustomMatches.length - 1][1];
+    const passedMatch = customLine.match(/([0-9]+)\s+PASSED/i);
+    const failedMatch = customLine.match(/([0-9]+)\s+FAILED/i);
+    const skippedMatch = customLine.match(/([0-9]+)\s+SKIPPED/i);
+    const totalMatch = customLine.match(/([0-9]+)\s+TOTAL/i);
+
+    if (passedMatch && failedMatch) {
+      passed = parseInt(passedMatch[1], 10);
+      failed = parseInt(failedMatch[1], 10);
+      const customReportedSkipped = skippedMatch ? parseInt(skippedMatch[1], 10) : null;
+      const customTotal = totalMatch ? parseInt(totalMatch[1], 10) : null;
+
+      if (customReportedSkipped !== null) {
+        if (customReportedSkipped === 0) {
+          skippedState = 'EXPLICIT_ZERO_SKIPPED';
+          skipped = 0;
+          zeroSkippedEvidenced = true;
+        } else {
+          skippedState = 'SKIPPED_COUNT_REPORTED_NONZERO';
+          skipped = customReportedSkipped;
+          zeroSkippedEvidenced = false;
+        }
+      } else if (customTotal !== null) {
+        if (customTotal === passed + failed) {
+          skippedState = 'EXPLICIT_ZERO_SKIPPED';
+          skipped = 0;
+          zeroSkippedEvidenced = true;
+        } else {
+          return {
+            isParsed: false,
+            failureReason: 'INTERNALLY_INCONSISTENT_TOTALS',
+            failureDetail: `Custom summary reported total (${customTotal}) does not equal passed (${passed}) + failed (${failed}).`,
+            passed,
+            failed,
+            skipped: 0,
+            skippedState: 'SKIPPED_COUNT_NOT_REPORTED',
+            zeroSkippedEvidenced: false,
+            suitesPassed: 0,
+            totalTests: customTotal,
+            runnerFormat: 'CUSTOM_SUMMARY',
+          };
+        }
+      } else {
+        skippedState = 'SKIPPED_COUNT_NOT_REPORTED';
+        skipped = 0;
+        zeroSkippedEvidenced = false;
+      }
+
+      if (customTotal !== null && customReportedSkipped !== null) {
+        if (customTotal !== passed + failed + customReportedSkipped) {
+          return {
+            isParsed: false,
+            failureReason: 'INTERNALLY_INCONSISTENT_TOTALS',
+            failureDetail: `Custom summary reported total (${customTotal}) does not equal passed (${passed}) + failed (${failed}) + skipped (${customReportedSkipped}).`,
+            passed,
+            failed,
+            skipped,
+            skippedState,
+            zeroSkippedEvidenced,
+            suitesPassed: 0,
+            totalTests: customTotal,
+            runnerFormat: 'CUSTOM_SUMMARY',
+          };
+        }
+      }
+
       suitesPassed = failed === 0 && passed > 0 ? 1 : 0;
       runnerFormat = 'CUSTOM_SUMMARY';
       matched = true;
@@ -463,6 +661,7 @@ export function parseTestOutput(rawOutput, suiteDef = null) {
       passed: 0,
       failed: 0,
       skipped: 0,
+      skippedState: 'SKIPPED_COUNT_NOT_REPORTED',
       zeroSkippedEvidenced: false,
       suitesPassed: 0,
       totalTests: 0,
@@ -470,7 +669,7 @@ export function parseTestOutput(rawOutput, suiteDef = null) {
     };
   }
 
-  const totalTests = passed + failed;
+  const totalTests = passed + failed + (skipped || 0);
 
   // 5. Zero tests passed is a failure
   if (passed === 0) {
@@ -480,7 +679,8 @@ export function parseTestOutput(rawOutput, suiteDef = null) {
       passed,
       failed,
       skipped,
-      zeroSkippedEvidenced: skipped === 0,
+      skippedState,
+      zeroSkippedEvidenced,
       suitesPassed,
       totalTests,
       runnerFormat,
@@ -497,6 +697,9 @@ export function parseTestOutput(rawOutput, suiteDef = null) {
         failureDetail: identityRes.detail,
         passed,
         failed,
+        skipped,
+        skippedState,
+        zeroSkippedEvidenced,
         suitesPassed: 0,
         totalTests,
         runnerFormat,
@@ -510,7 +713,8 @@ export function parseTestOutput(rawOutput, suiteDef = null) {
     passed,
     failed,
     skipped,
-    zeroSkippedEvidenced: skipped === 0,
+    skippedState,
+    zeroSkippedEvidenced,
     suitesPassed,
     totalTests,
     runnerFormat,
@@ -599,7 +803,7 @@ export function runSuiteAndCapture(suiteDef) {
       evidenceClass: 'REPOSITORY_IMPLEMENTATION',
       executedInCurrentDelivery: true,
       evidenceType: 'DIRECT_EXECUTION_CAPTURE',
-      executionEpoch: 'DIRECTIVE_106',
+      executionEpoch: 'DIRECTIVE_107',
       outputLogPath: relLogPath,
       outputLogSha256: sha256,
     };
@@ -638,7 +842,8 @@ export function runSuiteAndCapture(suiteDef) {
     testsPassed: parsed.passed,
     testsFailed: parsed.failed + (status === 'FAIL' && parsed.failed === 0 ? 1 : 0),
     testsSkipped: parsed.skipped || 0,
-    zeroSkippedEvidenced: (parsed.skipped || 0) === 0,
+    skippedState: parsed.skippedState || 'SKIPPED_COUNT_NOT_REPORTED',
+    zeroSkippedEvidenced: parsed.zeroSkippedEvidenced === true,
     totalTests: parsed.totalTests,
     durationMs: durationMs,
     runnerFormat: parsed.runnerFormat,
@@ -647,7 +852,7 @@ export function runSuiteAndCapture(suiteDef) {
     evidenceClass: 'REPOSITORY_IMPLEMENTATION',
     executedInCurrentDelivery: true,
     evidenceType: 'DIRECT_EXECUTION_CAPTURE',
-    executionEpoch: 'DIRECTIVE_106',
+    executionEpoch: 'DIRECTIVE_107',
     executionQualification: 'REPOSITORY_RECORDED_EXECUTION',
     outputLogPath: relLogPath,
     outputLogSha256: sha256,
@@ -665,7 +870,7 @@ export function captureAllSuites(additionalSuites = []) {
     generatedAt: new Date().toISOString(),
     manifestSchema: 'https://kshetra.dev/schemas/test-execution-manifest.v2.json',
     executionQualification: 'REPOSITORY_RECORDED_EXECUTION',
-    verifierRole: 'CTO Directive 106 Test Execution Verifier',
+    verifierRole: 'CTO Directive 107 Test Execution Verifier',
     executionScope: 'FULL_REPOSITORY_REGRESSION_AND_DIRECTIVE_BATTERY',
     environment: {
       nodeVersion: process.version,
@@ -681,7 +886,7 @@ export function captureAllSuites(additionalSuites = []) {
       totalTestsFailed: 0,
       allSuitesPassed: false,
       executionScope: 'FULL_REPOSITORY_REGRESSION_AND_DIRECTIVE_BATTERY',
-      directiveCycle: 'CTO_DIRECTIVE_106',
+      directiveCycle: 'CTO_DIRECTIVE_107',
     },
   };
 
@@ -699,7 +904,7 @@ export function captureAllSuites(additionalSuites = []) {
   // Ensure metadata is consistently synchronized with current directive cycle
   manifest.manifestSchema = 'https://kshetra.dev/schemas/test-execution-manifest.v2.json';
   manifest.executionQualification = 'REPOSITORY_RECORDED_EXECUTION';
-  manifest.verifierRole = 'CTO Directive 106 Test Execution Verifier';
+  manifest.verifierRole = 'CTO Directive 107 Test Execution Verifier';
   manifest.executionScope = 'FULL_REPOSITORY_REGRESSION_AND_DIRECTIVE_BATTERY';
   manifest.environment = {
     nodeVersion: process.version,
@@ -756,7 +961,7 @@ export function captureAllSuites(additionalSuites = []) {
       totalTestsFailed: sumFailed,
       allSuitesPassed: countFailedSuites === 0,
       executionScope: 'FULL_REPOSITORY_REGRESSION_AND_DIRECTIVE_BATTERY',
-      directiveCycle: 'CTO_DIRECTIVE_106',
+      directiveCycle: 'CTO_DIRECTIVE_107',
     };
 
     fs.writeFileSync(MANIFEST_PATH, JSON.stringify(manifest, null, 2) + '\n', 'utf8');
@@ -938,6 +1143,12 @@ export function validateManifestIntegrity(manifest, repoRoot = REPO_ROOT, option
       }
       if (entry.testsSkipped !== undefined && reparsed.skipped !== undefined && entry.testsSkipped !== reparsed.skipped) {
         throw new Error(`Manifest validation error: Suite "${entry.suite}" re-parsed skipped count (${reparsed.skipped}) does not match manifest testsSkipped (${entry.testsSkipped}).`);
+      }
+      if (entry.skippedState && reparsed.skippedState && entry.skippedState !== reparsed.skippedState) {
+        throw new Error(`Manifest validation error: Suite "${entry.suite}" skippedState mismatch: manifest declared "${entry.skippedState}", log parsed "${reparsed.skippedState}".`);
+      }
+      if (entry.zeroSkippedEvidenced && !reparsed.zeroSkippedEvidenced) {
+        throw new Error(`Manifest validation error: Suite "${entry.suite}" claims zeroSkippedEvidenced but log parser did not evidence explicit zero skipped (state: ${reparsed.skippedState}).`);
       }
       if (entry.zeroSkippedEvidenced && (reparsed.skipped !== 0)) {
         throw new Error(`Manifest validation error: Suite "${entry.suite}" claims zeroSkippedEvidenced but log contains ${reparsed.skipped} skipped test(s).`);

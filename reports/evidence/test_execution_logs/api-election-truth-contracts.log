@@ -4,7 +4,7 @@ Suite: apps/api/src/__tests__/election-truth-contracts.test.ts
 Command: npm test --prefix apps/api -- src/__tests__/election-truth-contracts.test.ts
 Working Directory: C:\Users\Laven\OneDrive\Desktop\Kshetra
 Runtime: Node v24.13.0 (win32)
-Execution Timestamp: 2026-10-19T07:23:13.148Z
+Execution Timestamp: 2026-10-19T08:34:15.954Z
 Exit Code: 0
 ================================================================================
 
@@ -16,23 +16,23 @@ Exit Code: 0
 
 
 --- STDERR ---
-PASS src/__tests__/election-truth-contracts.test.ts (10.922 s)
+PASS src/__tests__/election-truth-contracts.test.ts (10.455 s)
   Election Truth Service & Contract Behavior (CTO Directive 087)
     getConstituencyElectionData behavior invariants on real seed data
-      √ preserves electionType = null when raw record omits electionType (no GENERAL guessing) (9 ms)
-      √ strictly binds winner, runner-up, votes, and margin to the same election term (2 ms)
-      √ sorts elections array chronologically descending with null years placed at end (2 ms)
+      √ preserves electionType = null when raw record omits electionType (no GENERAL guessing) (30 ms)
+      √ strictly binds winner, runner-up, votes, and margin to the same election term (3 ms)
+      √ sorts elections array chronologically descending with null years placed at end (6 ms)
       √ returns null for nonexistent state or AC (1 ms)
 
 Test Suites: 1 passed, 1 total
 Tests:       4 passed, 4 total
 Snapshots:   0 total
-Time:        11.484 s
+Time:        11.202 s, estimated 13 s
 Ran all test suites matching /src\\__tests__\\election-truth-contracts.test.ts/i.
 Force exiting Jest: Have you considered using `--detectOpenHandles` to detect async operations that kept running after all tests finished?
 
 
 --- PROCESS METRICS ---
-DurationMs: 14511
+DurationMs: 13832
 ExitCode: 0
 ================================================================================
