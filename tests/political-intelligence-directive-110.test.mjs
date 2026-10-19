@@ -250,11 +250,25 @@ runTest('1.5 B1: No alternate payload aliases, internal prefixes, or test tokens
   assert.strictEqual(productionVerifierModule._reconcileExecutionLedgerInternal, undefined);
 });
 
-runTest('1.6 B1: Production verifier exports exactly 4 guarded public verifier entry points', () => {
+runTest('1.6 B1: Production verifier exports exactly 4 guarded public verifier entry points alongside approved auxiliary inventory', () => {
   assert.strictEqual(typeof productionVerifierModule.verifyHistoricalArtifactIntegrity, 'function');
   assert.strictEqual(typeof productionVerifierModule.verifyAuthorityBoundary, 'function');
   assert.strictEqual(typeof productionVerifierModule.verifyGoverningSpecificationProvenance, 'function');
   assert.strictEqual(typeof productionVerifierModule.reconcileExecutionLedger, 'function');
+
+  // Verify that the actual exported namespace strictly matches APPROVED_PRODUCTION_EXPORTS
+  assert.ok(Array.isArray(productionVerifierModule.APPROVED_PRODUCTION_EXPORTS), 'APPROVED_PRODUCTION_EXPORTS must be an array');
+  const actualExports = Object.keys(productionVerifierModule).sort();
+  const approvedExports = productionVerifierModule.APPROVED_PRODUCTION_EXPORTS.slice().sort();
+  assert.deepStrictEqual(actualExports, approvedExports, 'Actual exports must strictly match approved inventory');
+
+  // Prove that adding an unexpected symbol fails the inventory check
+  const simulatedTamperedNamespace = [...actualExports, 'UNAPPROVED_MALICIOUS_EXPORT'].sort();
+  assert.throws(
+    () => assert.deepStrictEqual(simulatedTamperedNamespace, approvedExports),
+    (err) => err.name === 'AssertionError',
+    'Namespace comparison must fail closed when an unapproved export is added'
+  );
 });
 
 // -----------------------------------------------------------------------------

@@ -38,6 +38,88 @@ import {
   reconcileExecutionLedgerCore,
 } from './internal/reconcile_engine.mjs';
 
+/**
+ * Approved Production Export Inventory (CTO Directive 111 Workstream B)
+ *
+ * Defines the complete, approved export surface of the production verifier module.
+ * Exposes:
+ * - Exactly 4 guarded public verifier entry points.
+ * - An approved inventory of safe auxiliary constants, schemas, loaders, and accounting utilities.
+ * All 4 payload functions (verifyHistoricalArtifactIntegrityPayload, verifyAuthorityBoundaryPayload,
+ * verifyGoverningSpecificationProvenancePayload, reconcileExecutionLedgerCore) and test seams are strictly
+ * excluded.
+ */
+export const APPROVED_PRODUCTION_EXPORTS = Object.freeze([
+  // 4 Guarded Public Verifier Entry Points
+  'verifyHistoricalArtifactIntegrity',
+  'verifyAuthorityBoundary',
+  'verifyGoverningSpecificationProvenance',
+  'reconcileExecutionLedger',
+
+  // Self-describing Approved Export Inventory
+  'APPROVED_PRODUCTION_EXPORTS',
+
+  // Safe Canonical Paths & Identifiers
+  'REPO_ROOT',
+  'HISTORICAL_ORIGIN_COMMIT',
+  'EXPECTED_RAW_HISTORICAL_LEDGER_SHA256',
+  'EXPECTED_RAW_HISTORICAL_LEDGER_BYTES',
+  'TRUSTED_AUTHORITIES_PATH',
+  'MASTER_SPECIFICATION_PATH',
+  'HISTORICAL_ORIGIN_LEDGER_PATH',
+  'GOVERNING_TRACEABILITY_MATRIX_PATH',
+
+  // Safe Domain Classifications & Schemas
+  'AUTHORITY_CLASSIFICATION',
+  'AUTHORITY_BOUNDARY_ROLE',
+  'STAGE_EVIDENCE_RELEVANCE',
+  'TASK_DELIVERABLE_SIGNATURES',
+  'VALID_EVIDENCE_CLASSES',
+  'VALID_VERIFICATION_STATUSES',
+  'CANONICAL_TASK_METADATA',
+  'OLD_TO_CANONICAL_TASK_MAPPING',
+  'PHANTOM_TASK_DISPOSITIONS',
+  'DISCREPANCY_REGISTER',
+  'TASK_SPECIFICATIONS',
+
+  // Safe Guard Utilities & Constants
+  'FORBIDDEN_TRUST_OVERRIDES',
+  'assertNoCallerTrustOverrides',
+
+  // Safe Read-Only Parsers & Loaders
+  'loadGoverningTraceabilityMatrix',
+  'loadMasterSpecification',
+  'loadHistoricalOriginLedger',
+  'getTrustedAuthorities',
+  'getCanonicalAcceptancePayload',
+  'canonicalizeValue',
+  'computeKeyFingerprint',
+  'stripSqlCommentsAndLiterals',
+  'resolveTaskIdentity',
+
+  // Safe Offline Accounting & Validation Utilities
+  'applyTaskAccountingDefaults',
+  'validateMasterSpecificationAgainstCode',
+  'validateCanonicalTaskIdentity',
+  'evaluateTaskCriteria',
+  'verifyCryptographicAcceptanceSignature',
+  'validateFormalAcceptanceArtifact',
+  'validateCoordinates',
+  'validateGeoJsonContent',
+  'validateSqlContent',
+  'validateTestContent',
+  'validateMarkdownContent',
+  'validateJsonContent',
+  'validateClaimSpecificContent',
+  'validateTaskEvidence',
+  'validateTaskAccounting',
+  'validateStageAccounting',
+  'computeLedgerSummary',
+  'validateLedgerSummaryConsistency',
+  'generateLedgerMarkdown',
+  'verifyNonOverlappingAccountingAndTraceability',
+]);
+
 // Re-export safe constants, loaders, and accounting utilities for external scripts and tests
 export {
   REPO_ROOT,

@@ -1,0 +1,61 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "registerId": "W021.5-DIRECTIVE-110-DISCREPANCY-REGISTER-V1.0",
+  "milestone": "W021.5",
+  "directive": "CTO Directive 111",
+  "purpose": "Forensic discrepancy register and remediation mapping for independent review findings and CI failure diagnosis of CTO Directive 110.",
+  "generatedAt": "2026-10-19T13:40:00.000Z",
+  "governance": "Master Execution Framework Amendment v1.2 / Rule IV-001 (Non-Self-Acceptance)",
+  "summary": {
+    "totalDiscrepanciesAudited": 3,
+    "discrepanciesResolved": 3,
+    "discrepanciesBlocked": 0,
+    "discrepancyCategoriesAudited": [
+      "ci_workflow_integrity",
+      "export_contract_precision",
+      "trust_boundary_verification"
+    ],
+    "resolutionStatus": "ALL_DISCREPANCIES_FORENSICALLY_ANALYZED_AND_RECONCILED"
+  },
+  "discrepancies": [
+    {
+      "discrepancyId": "DISC-041",
+      "itemKey": "CI_WORKFLOW:yamlSyntaxColonMappingFailure",
+      "category": "ci_workflow_integrity",
+      "discrepancyType": "YAML_PARSING_SYNTAX_ERROR",
+      "affectedEntity": ".github/workflows/ci.yml (line 39)",
+      "priorReportValue": "In commit c1f47a0, GitHub Actions workflow run 39251117231 completed in 0 seconds with 0 jobs scheduled and status failure. Root cause was an unquoted step name containing a colon followed by space: '- name: Regression Test: Evidence Integrity & Dirty-Tree Rejection', causing a YAML mapping syntax parsing exception.",
+      "canonicalCommittedValue": "Step name is quoted: '- name: \"Regression Test: Evidence Integrity & Dirty-Tree Rejection\"'. Verified with js-yaml parser; all 4 workflow jobs (governance, test, typecheck, lint) parse cleanly with 0 syntax errors.",
+      "representationOrigin": "Directive 110 commit c1f47a0 added regression test step without enclosing string in quotes.",
+      "historicalLineage": "Workflow updated in D110 to add dedicated dirty-tree check; syntax defect resolved in D111.",
+      "resolutionAction": "Enclosed step name in quotes in .github/workflows/ci.yml:39. Validated via js-yaml and added regression test in Suite 32 Tests 1.1-1.3.",
+      "resolutionStatus": "RESOLVED_YAML_SYNTAX_ERROR_CORRECTED"
+    },
+    {
+      "discrepancyId": "DISC-042",
+      "itemKey": "EXPORT_CONTRACT:claimedVsTestedExportContractMismatch",
+      "category": "export_contract_precision",
+      "discrepancyType": "INACCURATE_EXPORT_SURFACE_CLAIM_AND_WEAK_ASSERTION",
+      "affectedEntity": "scripts/reconcile_execution_ledger.mjs and tests/political-intelligence-directive-110.test.mjs (Test 1.6)",
+      "priorReportValue": "Directive 110 test and implementation report claimed the production verifier exports 'exactly 4 guarded public verifier entry points', while the module actually re-exported 50 safe auxiliary utilities and constants from scripts/internal/reconcile_engine.mjs for backward compatibility. Test 1.6 asserted presence of the 4 guarded functions without verifying the complete export surface.",
+      "canonicalCommittedValue": "Approved production export inventory is codified as APPROVED_PRODUCTION_EXPORTS (55 frozen symbols: 4 guarded verifiers + APPROVED_PRODUCTION_EXPORTS + 50 safe utilities/constants). Test 1.6 and Suite 32 assert deep strict equality against Object.keys(module). All 4 payload functions remain strictly undefined.",
+      "representationOrigin": "Directive 110 report claimed exactly 4 exports based on guarded verifier functions, overlooking backward-compatibility re-exports required by 30 test suites and scripts.",
+      "historicalLineage": "Directive 110 removed payload functions but left re-exports intact; Directive 111 aligns claim, documentation, and executable tests with deep strict equality.",
+      "resolutionAction": "Exported APPROVED_PRODUCTION_EXPORTS from scripts/reconcile_execution_ledger.mjs. Updated Test 1.6 in D110 and added Suite 32 Tests 2.1-2.6 asserting exact set equality and fail-closed rejection of unapproved exports.",
+      "resolutionStatus": "RESOLVED_EXPORT_CONTRACT_ALIGNMENT_VERIFIED"
+    },
+    {
+      "discrepancyId": "DISC-043",
+      "itemKey": "TRUST_BOUNDARY:internalEngineTrustBoundaryVerification",
+      "category": "trust_boundary_verification",
+      "discrepancyType": "UNVERIFIED_INTERNAL_ENGINE_REACHABILITY_RISK",
+      "affectedEntity": "scripts/internal/reconcile_engine.mjs and shipped runtime paths (apps/api, apps/mobile, packages)",
+      "priorReportValue": "Independent review identified a potential trust-boundary risk: whether moving payload functions to scripts/internal/reconcile_engine.mjs could reintroduce a caller-controlled trust override bypass if imported by shipped application code or packages.",
+      "canonicalCommittedValue": "Affirmatively verified that Layer 0 (scripts/internal/reconcile_engine.mjs) has 0 repository imports. Audited all 444 application files across apps/api/src, apps/mobile, and packages: exactly 0 import reconcile_engine.mjs or ledger-test-adapter.mjs. Production entry points obtain all inputs internally and unconditionally reject all 10 FORBIDDEN_TRUST_OVERRIDES.",
+      "representationOrigin": "Independent review requirement for Directive 111 Workstream C.",
+      "historicalLineage": "Directive 108 introduced internal/ engine; Directive 110 scoped payloads; Directive 111 comprehensively audits application reachability and runtime isolation.",
+      "resolutionAction": "Audited application codebase, added clean-process module loading tests, verified acyclic DAG, and proved adversarial tests fail closed in Suite 32 Tests 3.1-3.8.",
+      "resolutionStatus": "RESOLVED_INTERNAL_ENGINE_AIR_GAP_VERIFIED"
+    }
+  ]
+}

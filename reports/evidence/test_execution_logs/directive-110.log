@@ -4,7 +4,7 @@ Suite: tests/political-intelligence-directive-110.test.mjs
 Command: node tests/political-intelligence-directive-110.test.mjs
 Working Directory: C:\Users\Laven\OneDrive\Desktop\Kshetra
 Runtime: Node v24.13.0 (win32)
-Execution Timestamp: 2026-10-19T12:15:25.390Z
+Execution Timestamp: 2026-10-19T13:39:50.873Z
 Exit Code: 0
 ================================================================================
 
@@ -22,7 +22,7 @@ Command: node tests/political-intelligence-directive-110.test.mjs
   [PASS] 1.3 B1: verifyGoverningSpecificationProvenancePayload is NOT exported from production verifier
   [PASS] 1.4 B1: reconcileExecutionLedgerCore is NOT exported from production verifier
   [PASS] 1.5 B1: No alternate payload aliases, internal prefixes, or test tokens are exported
-  [PASS] 1.6 B1: Production verifier exports exactly 4 guarded public verifier entry points
+  [PASS] 1.6 B1: Production verifier exports exactly 4 guarded public verifier entry points alongside approved auxiliary inventory
 
 --- 2. Public Trust Override Rejection Matrix & Defense (B2) ---
   [PASS] 2.1 B2: verifyHistoricalArtifactIntegrity rejects ALL 10 forbidden overrides unconditionally
@@ -73,6 +73,6 @@ TEST SUMMARY: 35 PASSED, 0 FAILED, 0 SKIPPED
 
 
 --- PROCESS METRICS ---
-DurationMs: 11749
+DurationMs: 11857
 ExitCode: 0
 ================================================================================

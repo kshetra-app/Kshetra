@@ -36,7 +36,7 @@ jobs:
       - name: Audit Repository & Evidence Integrity (Part 34)
         run: node scripts/check-repo-evidence-integrity.mjs
 
-      - name: Regression Test: Evidence Integrity & Dirty-Tree Rejection
+      - name: "Regression Test: Evidence Integrity & Dirty-Tree Rejection"
         run: node tests/repo-evidence-integrity.test.mjs
 
       - name: Declared API Contract Drift Check (Part 34E)

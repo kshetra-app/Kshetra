@@ -1,0 +1,63 @@
+================================================================================
+KSHETRA VERIFIABLE TEST EXECUTION LOG
+Suite: tests/political-intelligence-directive-111.test.mjs
+Command: node tests/political-intelligence-directive-111.test.mjs
+Working Directory: C:\Users\Laven\OneDrive\Desktop\Kshetra
+Runtime: Node v24.13.0 (win32)
+Execution Timestamp: 2026-10-19T13:40:03.320Z
+Exit Code: 0
+================================================================================
+
+--- STDOUT ---
+================================================================
+KSHETRA W021.5 — CTO DIRECTIVE 111 VERIFICATION SUITE
+D110 CI Failure Diagnosis, Export Contract & Final Trust Boundary
+Suite: tests/political-intelligence-directive-111.test.mjs
+Command: node tests/political-intelligence-directive-111.test.mjs
+================================================================
+
+--- 1. CI Workflow Syntax Diagnosis & Hardening (Workstream A) ---
+  [PASS] 1.1 A: .github/workflows/ci.yml exists and parses as valid YAML without errors
+  [PASS] 1.2 A: ci.yml line 39 step name is properly quoted, eliminating unquoted colon mapping defect
+  [PASS] 1.3 A: Defective unquoted mapping sequence fails closed in YAML parser
+
+--- 2. Production Verifier Export Contract & Inventory Alignment (Workstream B) ---
+  [PASS] 2.1 B: APPROVED_PRODUCTION_EXPORTS is exported, frozen, and contains exactly 55 approved symbols
+  [PASS] 2.2 B: Actual production verifier export namespace strictly matches APPROVED_PRODUCTION_EXPORTS
+  [PASS] 2.3 B: Unapproved or unexpected symbol added to production verifier namespace fails closed
+  [PASS] 2.4 B: All 4 payload functions remain strictly absent (undefined) on production module
+  [PASS] 2.5 B: All 4 public verifier entry points unconditionally reject all 10 FORBIDDEN_TRUST_OVERRIDES
+  [PASS] 2.6 B: Caller-supplied boolean mode flags cannot bypass verifier guards
+
+--- 3. Internal-Engine Trust Boundary & Architecture (Workstream C) ---
+  [PASS] 3.1 C: Clean-process isolated import of scripts/reconcile_execution_ledger.mjs succeeds
+  [PASS] 3.2 C: Clean-process isolated import of tests/helpers/ledger-test-adapter.mjs succeeds
+  [PASS] 3.3 C: Clean-process isolated import of scripts/internal/reconcile_engine.mjs succeeds
+  [PASS] 3.4 C: Clean-process concurrent import confirms acyclic dependency graph (zero circular dependencies)
+  [PASS] 3.5 C: Static AST/code analysis proves strict DAG hierarchy (Layer 0 engine, Layer 1 verifier/adapter)
+  [PASS] 3.6 C: Codebase reachability audit: Shipped application code NEVER imports test adapter or internal engine
+  [PASS] 3.7 C: Adversarial test adapter fails closed on tampered verification fixtures
+  [PASS] 3.8 C: Implementation parity proof: Production verifiers and test adapter produce identical results under standard inputs
+
+--- 4. Mandatory Governance Invariants & Baseline Immutability (Workstream D) ---
+  [PASS] 4.1 D: Rule IV-001 Non-Self-Acceptance: Formal acceptance is strictly 0.0% / UNACCEPTED
+  [PASS] 4.2 D: Production Air-Gap: Live database execution is strictly 0.0% / UNEXECUTED
+  [PASS] 4.3 D: Financial Defect DQ-W021.5-B2.2E-001 remains STRICTLY OPEN (0.0% earned, 5.0% blocked)
+  [PASS] 4.4 D: Telangana AC 119 Boundary Defect remains STRICTLY OPEN / BLOCKED (1.5% blocked)
+  [PASS] 4.5 D: SQL Migration Immutability: 68 migrations match baseline 0ea572d byte-for-byte identical
+  [PASS] 4.6 D: MLA Profile Seed Immutability: 31 seed files match baseline fb408ce byte-for-byte identical
+  [PASS] 4.7 D: Canonical task inventory equality: exactly 27 canonical tasks summing to 100.000% weight, 61.5% repo-verified earned
+
+================================================================
+TEST SUMMARY: 24 PASSED, 0 FAILED, 0 SKIPPED
+================================================================
+
+
+
+--- STDERR ---
+
+
+--- PROCESS METRICS ---
+DurationMs: 12438
+ExitCode: 0
+================================================================================

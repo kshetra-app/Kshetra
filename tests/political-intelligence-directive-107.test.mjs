@@ -936,7 +936,7 @@ runTest('6.6 MLA Profile Seed Immutability: 31 seed files match baseline fb408ce
 runTest('6.7 Repository manifest integrity validation', () => {
   assert.ok(fs.existsSync(MANIFEST_PATH), 'Manifest file must exist');
   const manifest = JSON.parse(fs.readFileSync(MANIFEST_PATH, 'utf8'));
-  if (manifest.summary && (manifest.summary.directiveCycle === 'CTO_DIRECTIVE_107' || manifest.summary.directiveCycle === 'CTO_DIRECTIVE_108' || manifest.summary.directiveCycle === 'CTO_DIRECTIVE_109' || manifest.summary.directiveCycle === 'CTO_DIRECTIVE_110')) {
+  if (manifest.summary && (manifest.summary.directiveCycle === 'CTO_DIRECTIVE_107' || manifest.summary.directiveCycle === 'CTO_DIRECTIVE_108' || manifest.summary.directiveCycle === 'CTO_DIRECTIVE_109' || manifest.summary.directiveCycle === 'CTO_DIRECTIVE_110' || manifest.summary.directiveCycle === 'CTO_DIRECTIVE_111')) {
     const res = validateManifestIntegrity(manifest, REPO_ROOT);
     assert.strictEqual(res, true);
     assert.strictEqual(manifest.executionQualification, 'REPOSITORY_RECORDED_EXECUTION');
