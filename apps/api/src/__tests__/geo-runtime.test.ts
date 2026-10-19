@@ -1,6 +1,10 @@
 import { buildApp } from '../server';
+import { isLocalDatabaseAvailable } from './testDbProbe';
 
-describe('Canonical Spatial Runtime API (W016-C3-R9)', () => {
+const isDbAvailable = isLocalDatabaseAvailable();
+const describeIntegration = isDbAvailable ? describe : describe.skip;
+
+describeIntegration('Canonical Spatial Runtime API (W016-C3-R9) [INTEGRATION: requires PostGIS container]', () => {
   let app: Awaited<ReturnType<typeof buildApp>>;
 
   beforeAll(async () => {

@@ -1,6 +1,10 @@
 import { buildApp } from '../server';
+import { isLocalDatabaseAvailable } from './testDbProbe';
 
-describe('Spatial Gateway, Boundary Diff & Analytics API (W017)', () => {
+const isDbAvailable = isLocalDatabaseAvailable();
+const describeIntegration = isDbAvailable ? describe : describe.skip;
+
+describeIntegration('Spatial Gateway, Boundary Diff & Analytics API (W017) [INTEGRATION: requires PostGIS container]', () => {
   let app: Awaited<ReturnType<typeof buildApp>>;
 
   beforeAll(async () => {

@@ -38,7 +38,7 @@ describe('AI Routes', () => {
 
       expect(res.statusCode).toBe(400);
       const body = JSON.parse(res.payload);
-      expect(body.error).toContain('messages');
+      expect(body.message || body.error).toContain('messages');
     });
 
     it('should reject missing messages', async () => {

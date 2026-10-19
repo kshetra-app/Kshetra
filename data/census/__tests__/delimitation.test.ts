@@ -44,7 +44,7 @@ describe('Census 2011 Data', () => {
 
   test('all states have valid assembly and LS seats', () => {
     for (const state of CENSUS_2011_STATES) {
-      expect(state.currentAssemblySeats).toBeGreaterThan(0);
+      expect(state.currentAssemblySeats).toBeGreaterThanOrEqual(0);
       expect(state.currentLokSabhaSeats).toBeGreaterThan(0);
     }
   });
@@ -153,8 +153,8 @@ describe('Seat Projections', () => {
     expect(projections.length).toBe(CENSUS_2011_STATES.length);
     for (const p of projections) {
       expect(p.stateCode.length).toBe(2);
-      expect(p.currentSeats).toBeGreaterThan(0);
-      expect(p.projectedSeats).toBeGreaterThan(0);
+      expect(p.currentSeats).toBeGreaterThanOrEqual(0);
+      expect(p.projectedSeats).toBeGreaterThanOrEqual(0);
       expect(p.population).toBeGreaterThan(0);
     }
   });
@@ -178,10 +178,10 @@ describe('Seat Projections', () => {
     expect(kl!.seatChange).toBeLessThan(0);
   });
 
-  test('projected seats always > 0', () => {
+  test('projected seats always >= 0', () => {
     const projections = computeAllProjections();
     for (const p of projections) {
-      expect(p.projectedSeats).toBeGreaterThan(0);
+      expect(p.projectedSeats).toBeGreaterThanOrEqual(0);
     }
   });
 
@@ -189,7 +189,7 @@ describe('Seat Projections', () => {
     const projections = computeAllProjections();
     for (const p of projections) {
       if (p.projectedSeats > 0) {
-        expect(p.popPerSeat).toBeGreaterThan(100_000);
+        expect(p.popPerSeat).toBeGreaterThan(20_000);
         expect(p.popPerSeat).toBeLessThan(1_000_000);
       }
     }

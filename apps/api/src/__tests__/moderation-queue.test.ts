@@ -26,7 +26,7 @@ describe('Phase 1: Ticket 1.3 - Moderation Queue & Action Routes', () => {
 
     expect(res.statusCode).toBe(403);
     const body = JSON.parse(res.payload);
-    expect(body.error).toContain('Insufficient permissions');
+    expect(body.message || body.error).toContain('Insufficient permissions');
   });
 
   it('GET /api/v1/moderation/queue allows moderators and returns pending items', async () => {

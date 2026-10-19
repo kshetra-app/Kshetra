@@ -13,20 +13,28 @@ import type {
 } from './types';
 
 export class RazorpayProvider implements PaymentProvider {
-  private keyId: string;
-  private keySecret: string;
+  private explicitKeyId?: string;
+  private explicitKeySecret?: string;
 
   constructor(keyId?: string, keySecret?: string) {
-    this.keyId = keyId ?? process.env.RAZORPAY_KEY_ID ?? '';
-    this.keySecret = keySecret ?? process.env.RAZORPAY_KEY_SECRET ?? '';
+    this.explicitKeyId = keyId;
+    this.explicitKeySecret = keySecret;
+  }
+
+  private getKeyId(): string {
+    return this.explicitKeyId ?? process.env.RAZORPAY_KEY_ID ?? '';
+  }
+
+  private getKeySecret(): string {
+    return this.explicitKeySecret ?? process.env.RAZORPAY_KEY_SECRET ?? '';
   }
 
   isConfigured(): boolean {
-    return Boolean(this.keyId && this.keySecret);
+    return Boolean(this.getKeyId() && this.getKeySecret());
   }
 
   getPublicKey(): string {
-    return this.keyId || 'rzp_test_placeholderKey123';
+    return this.getKeyId() || 'rzp_test_placeholderKey123';
   }
 
   async createOrder(params: PaymentOrderParams): Promise<PaymentOrderResult> {
@@ -41,7 +49,7 @@ export class RazorpayProvider implements PaymentProvider {
       amountPaise,
       currency,
       key: this.getPublicKey(),
-      isSandbox: !this.keyId,
+      isSandbox: !this.getKeyId(),
       billingCycle: params.billingCycle,
       description: params.pageId
         ? `Kshetra Page Pro (${params.billingCycle || 'monthly'}): ₹${amountINR.toLocaleString('en-IN')}`
@@ -71,7 +79,7 @@ export class RazorpayProvider implements PaymentProvider {
       };
     }
 
-    const secret = this.keySecret || process.env.RAZORPAY_KEY_SECRET;
+    const secret = this.getKeySecret();
     if (!secret) {
       throw new Error('PROVIDER_CONFIG_ERROR: Payment verification service configuration missing (RAZORPAY_KEY_SECRET)');
     }
@@ -98,7 +106,7 @@ export class RazorpayProvider implements PaymentProvider {
   }
 
   verifyWebhookSignature(rawBody: string | Buffer, signature: string, secretOverride?: string): boolean {
-    const secret = secretOverride || process.env.RAZORPAY_WEBHOOK_SECRET || this.keySecret;
+    const secret = secretOverride || process.env.RAZORPAY_WEBHOOK_SECRET || this.getKeySecret();
     if (!secret || !signature) {
       return false;
     }

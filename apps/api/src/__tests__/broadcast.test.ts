@@ -73,10 +73,19 @@ describe('Broadcast API Routes', () => {
     expect(body.margin).toBeDefined();
   });
 
-  it('GET /api/v1/broadcast/state/INVALID should return 404', async () => {
+  it('GET /api/v1/broadcast/state/INVALID should return 400 for schema violation', async () => {
     const response = await app.inject({
       method: 'GET',
       url: '/api/v1/broadcast/state/INVALID',
+    });
+
+    expect(response.statusCode).toBe(400);
+  });
+
+  it('GET /api/v1/broadcast/state/XX should return 404 for unrepresented state', async () => {
+    const response = await app.inject({
+      method: 'GET',
+      url: '/api/v1/broadcast/state/XX',
     });
 
     expect(response.statusCode).toBe(404);

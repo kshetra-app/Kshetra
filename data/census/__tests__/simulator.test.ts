@@ -376,8 +376,8 @@ describe('End-to-End Integration', () => {
     for (const state of summary.states) {
       // SC can't be > 35% (no state has >35% SC population)
       expect(state.scPercent).toBeLessThan(35);
-      // ST can't be > 40%
-      expect(state.stPercent).toBeLessThan(40);
+      // ST can be up to 100% in tribal-majority northeastern states (e.g., Mizoram 94.4%, Nagaland 86.5%, Meghalaya 86.1%)
+      expect(state.stPercent).toBeLessThanOrEqual(100);
       // Total reservations can't exceed total seats
       expect(state.projected.scReserved + state.projected.stReserved).toBeLessThanOrEqual(state.projected.total);
     }

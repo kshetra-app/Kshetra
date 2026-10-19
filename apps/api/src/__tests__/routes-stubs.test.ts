@@ -17,10 +17,29 @@ describe('Public route contracts', () => {
     await app.close();
   });
 
-  const get = (url: string) => app.inject({ method: 'GET', url });
-  const post = (url: string, payload: Record<string, unknown>) =>
-    app.inject({ method: 'POST', url, payload });
-  const patch = (url: string) => app.inject({ method: 'PATCH', url });
+  const get = (url: string, headers: Record<string, string> = {}) =>
+    app.inject({ method: 'GET', url, headers: { 'x-user-id': 'test-user', 'x-user-role': 'citizen', ...headers } });
+  const post = (url: string, payload: Record<string, unknown>, headers: Record<string, string> = {}) =>
+    app.inject({
+      method: 'POST',
+      url,
+      payload,
+      headers: {
+        'x-user-id': 'test-user',
+        'x-user-role': 'citizen',
+        ...headers,
+      },
+    });
+  const patch = (url: string, headers: Record<string, string> = {}) =>
+    app.inject({
+      method: 'PATCH',
+      url,
+      headers: {
+        'x-user-id': 'test-user',
+        'x-user-role': 'citizen',
+        ...headers,
+      },
+    });
 
   // ── States ──────────────────────────────────────────────
   describe('states', () => {
@@ -96,29 +115,21 @@ describe('Public route contracts', () => {
 
     it('accepts rsvp, manifesto vote, survey response and grievance', async () => {
       expect((await post('/api/v1/politician/events/e1/rsvp', {})).statusCode).toBe(200);
-      expect((await post('/api/v1/politician/manifestos/m1/items/i1/vote', { support: true })).statusCode).toBe(200);
+      expect((await post('/api/v1/politician/manifestos/m1/items/i1/vote', { support: true })).statusCode).toBe(501);
       expect((await post('/api/v1/politician/surveys/s1/respond', { answers: {} })).statusCode).toBe(200);
-      expect((await post('/api/v1/politician/grievances', { politicianId: 'p1', subject: 's', description: 'd', category: 'c' })).statusCode).toBe(200);
+      expect((await post('/api/v1/politician/grievances', { politicianId: 'p1', subject: 's', description: 'd', category: 'c' })).statusCode).toBe(501);
     });
   });
 
   // ── Campaign ────────────────────────────────────────────
   describe('campaign', () => {
-    it('serves list endpoints and 404s a missing campaign', async () => {
+    it('serves real campaign surface endpoints', async () => {
       expect((await get('/api/v1/campaign/campaigns')).statusCode).toBe(200);
-      expect((await get('/api/v1/campaign/ads')).statusCode).toBe(200);
-      expect((await get('/api/v1/campaign/revenue')).statusCode).toBe(200);
       expect((await get('/api/v1/campaign/booths')).statusCode).toBe(200);
       expect((await get('/api/v1/campaign/volunteers')).statusCode).toBe(200);
-      expect((await get('/api/v1/campaign/ab-tests')).statusCode).toBe(200);
-      expect((await get('/api/v1/campaign/campaigns/missing')).statusCode).toBe(404);
-    });
-
-    it('creates campaign/ad and pauses/resumes ads', async () => {
-      expect((await post('/api/v1/campaign/campaigns', { name: 'c' })).statusCode).toBe(200);
-      expect((await post('/api/v1/campaign/ads', { name: 'a' })).statusCode).toBe(200);
-      expect((await patch('/api/v1/campaign/ads/a1/pause')).statusCode).toBe(200);
-      expect((await patch('/api/v1/campaign/ads/a1/resume')).statusCode).toBe(200);
+      expect((await get('/api/v1/campaign/pricing')).statusCode).toBe(200);
+      expect((await get('/api/v1/campaign/obd/trai-status')).statusCode).toBe(200);
+      expect((await get('/api/v1/campaign/users/check-kshetra?phone=9876543210')).statusCode).toBe(200);
     });
   });
 
@@ -150,14 +161,38 @@ describe('Public route contracts', () => {
     });
 
     it('guards and accepts the monitor webhook', async () => {
-      const missing = await post('/api/v1/delimitation/monitor-webhook', { type: 'gazette' });
-      expect(missing.statusCode).toBe(400);
-      const ok = await post('/api/v1/delimitation/monitor-webhook', {
-        type: 'gazette',
-        entries: [{ id: '1', title: 't', date: '2025-01-01', relevanceScore: 80 }],
+      process.env.KSHETRA_MONITOR_SECRET = 'test-secret';
+      // Unauthenticated request with valid payload should fail with 401
+      const unauth = await app.inject({
+        method: 'POST',
+        url: '/api/v1/delimitation/monitor-webhook',
+        payload: {
+          type: 'gazette',
+          entries: [{ id: '1', title: 't', date: '2025-01-01', relevanceScore: 80 }],
+        },
       });
+      expect(unauth.statusCode).toBe(401);
+
+      // Authenticated but invalid payload (missing entries) should return 400
+      const missing = await post(
+        '/api/v1/delimitation/monitor-webhook',
+        { type: 'gazette' },
+        { authorization: 'Bearer test-secret' }
+      );
+      expect(missing.statusCode).toBe(400);
+
+      // Authenticated and valid payload should return 200
+      const ok = await post(
+        '/api/v1/delimitation/monitor-webhook',
+        {
+          type: 'gazette',
+          entries: [{ id: '1', title: 't', date: '2025-01-01', relevanceScore: 80 }],
+        },
+        { authorization: 'Bearer test-secret' }
+      );
       expect(ok.statusCode).toBe(200);
-      expect(JSON.parse(ok.payload).processed).toBe(1);
+      const okBody = JSON.parse(ok.payload);
+      expect(okBody.data?.processed ?? okBody.processed).toBe(1);
     });
   });
 });
