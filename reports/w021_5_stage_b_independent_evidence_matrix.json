@@ -1,0 +1,133 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "W021.5 CTO Directive 117 Stage B Criterion-by-Criterion Evidence Matrix",
+  "directive": "CTO Directive 117",
+  "governingAuthority": "Master Execution Framework Amendment v1.6 / Rule IV-001 Non-Self-Acceptance",
+  "allocatedStageWeight": 12.0,
+  "repoVerifiedEarnedWeight": 10.5,
+  "blockedWeight": 1.5,
+  "formalAcceptanceStatus": "UNACCEPTED (0.0%)",
+  "productionBoundary": "AIR_GAPPED_UNEXECUTED",
+  "evidenceTaxonomy": {
+    "A": "Static repository evidence (file existence, AST, schema markers)",
+    "B": "Executed deterministic validation of source assets (parsers, tests, checksums)",
+    "C": "Actual database execution or query evidence (staging/live execution)",
+    "D": "External statutory or source-authority evidence (ECI orders, gazettes)",
+    "E": "Independent CTO adjudication"
+  },
+  "criteria": [
+    {
+      "taskId": "W021.5-B1-01",
+      "criterionId": "CRIT-B101-01",
+      "title": "Canonical 4,123 Assembly Constituencies Across 31 Jurisdictions",
+      "weight": 2.0,
+      "status": "REPO_VERIFIED",
+      "evidenceClassification": {
+        "A_staticEvidence": "supabase/migrations/059_canonical_national_constituency_registry.sql contains DDL and DML for all 4,123 ACs",
+        "B_executedDeterministic": "tests/stage-b-national-geography-validation.test.mjs executed and parsed exactly 4,123 unique seats across 31 seed files (31/31 passed)",
+        "C_databaseExecution": "PENDING_STAGING_EXECUTION — Local and CI repository verified; live database execution unexecuted under production air-gap",
+        "D_externalAuthority": "Delimitation of Parliamentary and Assembly Constituencies Order, 2008 & J&K Reorganisation Act 2019",
+        "E_ctoAdjudication": "UNACCEPTED — Submitted for independent review"
+      }
+    },
+    {
+      "taskId": "W021.5-B1-01",
+      "criterionId": "CRIT-B101-02",
+      "title": "Immutable Canonical Constituency Identifier Formulation",
+      "weight": 2.0,
+      "status": "REPO_VERIFIED",
+      "evidenceClassification": {
+        "A_staticEvidence": "Schema enforces UNIQUE(state_code, ac_no) and format {STATE}-AC-{NUMBER}",
+        "B_executedDeterministic": "Parser verified 4,123 distinct IDs, 0 duplicates, 0 missing numbers across 31 state seed files",
+        "C_databaseExecution": "PENDING_STAGING_EXECUTION",
+        "D_externalAuthority": "ECI statutory constituency numbering tables",
+        "E_ctoAdjudication": "UNACCEPTED — Submitted for independent review"
+      }
+    },
+    {
+      "taskId": "W021.5-B1-02",
+      "criterionId": "CRIT-B102-01",
+      "title": "National AC-to-PC Parliamentary Mapping Registry (4,123 Rows)",
+      "weight": 1.5,
+      "status": "REPO_VERIFIED",
+      "evidenceClassification": {
+        "A_staticEvidence": "supabase/migrations/061_canonical_national_ac_pc_mappings.sql defines constituency_parliamentary_mappings table and VALUES tuples",
+        "B_executedDeterministic": "AST parser extracted exactly 4,123 SQL VALUES tuples from migration 061; confirmed 0 duplicate ACs, 0 orphan ACs, 537 referenced PCs",
+        "C_databaseExecution": "PENDING_STAGING_EXECUTION",
+        "D_externalAuthority": "ECI Delimitation Order 2008 Schedules I–XXXI and AP Reorganisation Act 2014 Schedule XXXI",
+        "E_ctoAdjudication": "UNACCEPTED — Submitted for independent review"
+      }
+    },
+    {
+      "taskId": "W021.5-B1-02",
+      "criterionId": "CRIT-B102-02",
+      "title": "Uniform State Partition & Boundary Invariant Verification",
+      "weight": 1.5,
+      "status": "REPO_VERIFIED",
+      "evidenceClassification": {
+        "A_staticEvidence": "Migration 061 contains check constraint and state_code validation",
+        "B_executedDeterministic": "Parser confirmed 0 cross-state AC-to-PC mappings; uniform partition verified for all major Indian states",
+        "C_databaseExecution": "PENDING_STAGING_EXECUTION",
+        "D_externalAuthority": "Statutory state boundaries per Constitution of India First Schedule",
+        "E_ctoAdjudication": "UNACCEPTED — Submitted for independent review"
+      }
+    },
+    {
+      "taskId": "W021.5-B1-03",
+      "criterionId": "CRIT-B103-01",
+      "title": "Assam 2023 Delimitation Temporal Modeling (126 ACs / 14 PCs)",
+      "weight": 1.5,
+      "status": "REPO_VERIFIED",
+      "evidenceClassification": {
+        "A_staticEvidence": "supabase/migrations/062_canonical_assam_2023_delimitation.sql registers dataset version eci_national_ac_2023_as_v1 and evidence record a55a0023-0000-4000-8000-000000000001",
+        "B_executedDeterministic": "Migration inspected and verified: 126 AC updates, 14 PC updates, 98 GEN / 9 SC / 19 ST breakdown verified",
+        "C_databaseExecution": "PENDING_STAGING_EXECUTION",
+        "D_externalAuthority": "ECI Delimitation Order No. 282/AS/2023(DEL)/Vol.V published in Gazette of India Extraordinary No. 434",
+        "E_ctoAdjudication": "UNACCEPTED — Submitted for independent review"
+      }
+    },
+    {
+      "taskId": "W021.5-B1-03",
+      "criterionId": "CRIT-B103-02",
+      "title": "Historical Cutoff & Cross-Regime Lineage Preservation",
+      "weight": 1.5,
+      "status": "REPO_VERIFIED",
+      "evidenceClassification": {
+        "A_staticEvidence": "Migration 062 archives pre-2023 versions with valid_to = '2023-08-16'::date and is_current = false",
+        "B_executedDeterministic": "Verified strict chronological demarcation (pre-2023 valid_to = 2023-08-16, post-2023 valid_from = 2023-08-16)",
+        "C_databaseExecution": "PENDING_STAGING_EXECUTION",
+        "D_externalAuthority": "ECI Section 8A Representation of the People Act, 1950",
+        "E_ctoAdjudication": "ASSAM_HISTORICAL_LINEAGE_PENDING — Retained pending authoritative cross-regime lineage data"
+      }
+    },
+    {
+      "taskId": "W021.5-B1-04",
+      "criterionId": "CRIT-B104-01",
+      "title": "PostGIS Mandal Reconciliation & Telangana GeoJSON Validation",
+      "weight": 0.5,
+      "status": "REPO_VERIFIED",
+      "evidenceClassification": {
+        "A_staticEvidence": "data/geo/telangana-assembly.geojson and reports/w021_5_national_jurisdiction_geometry_inventory.json exist on disk",
+        "B_executedDeterministic": "Direct GeoJSON validation on underlying file: 120 features, 120 closed polygon rings, 0 coordinate errors, RFC 7946 coordinates; 589 PostGIS mandals reconciled (0 AC polygons in PostGIS)",
+        "C_databaseExecution": "PENDING_STAGING_EXECUTION",
+        "D_externalAuthority": "Telangana State Remote Sensing Applications Centre (TRAC) / Survey of India",
+        "E_ctoAdjudication": "UNACCEPTED — Submitted for independent review"
+      }
+    },
+    {
+      "taskId": "W021.5-B1-04",
+      "criterionId": "CRIT-B104-02",
+      "title": "Preservation of AC 119 Boundary Defect & 30-State Missing Boundary Register",
+      "weight": 1.5,
+      "status": "BLOCKED",
+      "evidenceClassification": {
+        "A_staticEvidence": "reports/w021_5_source_provenance_and_missing_data_register.json documents missing boundaries for 30 States/UTs",
+        "B_executedDeterministic": "Direct parser executed on telangana-assembly.geojson confirmed AC 119 has 2 distinct polygon features (FID 4159 & 4160); AC 119 flagged with hasGeoJSON = false in client constant",
+        "C_databaseExecution": "N/A — Boundary defect is geometric/statutory, not database-internal",
+        "D_externalAuthority": "Requires official Andhra Pradesh / Telangana bifurcation revenue department gazette",
+        "E_ctoAdjudication": "OPEN_AND_BLOCKED — Defect preserved strictly open per Directive 117 Rule 8"
+      }
+    }
+  ],
+  "generatedAt": "2026-10-20T12:51:00.000Z"
+}

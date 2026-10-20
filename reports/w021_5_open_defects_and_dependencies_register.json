@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "W021.5 CTO Directive 117 Open Defects & External Dependencies Register",
+  "directive": "CTO Directive 117",
+  "governingAuthority": "Master Execution Framework Amendment v1.6 / Rule IV-001 Non-Self-Acceptance",
+  "defects": [
+    {
+      "defectId": "DQ-W021.5-B2.2E-001",
+      "title": "Candidate Financial Disclosures & Criminal Affidavits Data Quality Discrepancy",
+      "affectedTask": "W021.5-E-02 / W021.5-E-03",
+      "status": "STRICTLY_OPEN",
+      "description": "Cross-source discrepancies in candidate declared movable/immovable assets and criminal cases across ADR/MyNeta vs ECI Form 26 filings.",
+      "resolutionAuthority": "Requires Separate Explicit CTO Adjudication. Self-closure strictly prohibited under Directive 117 Rule 8."
+    },
+    {
+      "defectId": "DQ-W021.5-B1-001",
+      "title": "Telangana AC 119 (Bhadrachalam) Duplicate Polygon Geometry Defect",
+      "affectedTask": "W021.5-B1-04",
+      "status": "OPEN_AND_BLOCKED",
+      "description": "data/geo/telangana-assembly.geojson contains 2 separate polygon features (FID 4159 & 4160) for statutory seat 119 (Bhadrachalam ST). Total features: 120 vs 119 statutory seats.",
+      "resolutionRequirement": "Requires official Andhra Pradesh / Telangana bifurcation revenue department gazette delineating Sukma / Khammam territorial transfer. Tampering, merging, or deletion strictly prohibited."
+    }
+  ],
+  "externalDependencies": [
+    {
+      "dependencyId": "DEP-GEO-001",
+      "title": "National Statutory Boundary Polygons for Remaining 30 States/UTs",
+      "affectedTask": "W021.5-B1-04 (1.5% blocked weight)",
+      "status": "BLOCKED_EXTERNAL",
+      "description": "Authoritative boundary shapefiles/GeoJSON are absent for 30 States/UTs (4,004 statutory seats).",
+      "resolutionRequirement": "Official Survey of India / ECI open data publication. Synthetic polygon generation strictly prohibited."
+    },
+    {
+      "dependencyId": "DEP-DB-001",
+      "title": "Staging Database Migration & Ingestion Execution Authorization",
+      "affectedTasks": ["W021.5-C-02", "W021.5-D-02", "W021.5-E-01", "W021.5-F-02"],
+      "status": "AIR_GAPPED_UNEXECUTED",
+      "description": "Database-pending weight (10.5%) cannot be executed under strict air-gap boundary.",
+      "resolutionRequirement": "Explicit CTO authorization and provision of staging database credentials."
+    },
+    {
+      "dependencyId": "DEP-LIN-001",
+      "title": "Assam 2023 Cross-Regime Territorial Concordance Tables",
+      "affectedTask": "W021.5-B1-03",
+      "status": "ASSAM_HISTORICAL_LINEAGE_PENDING",
+      "description": "Territorial reshuffling in 2023 delimitation prevents automated 1:1 lineage linking.",
+      "resolutionRequirement": "Official CEO Assam gazette concordance between 2008 and 2023 boundaries."
+    }
+  ],
+  "generatedAt": "2026-10-20T12:51:00.000Z"
+}

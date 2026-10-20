@@ -1,0 +1,123 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "W021.5 CTO Directive 117 Marathon Planning Reconciliation",
+  "directive": "CTO Directive 117 (Workstream F)",
+  "governingAuthority": "Master Execution Framework Amendment v1.6 / Rule IV-001 Non-Self-Acceptance",
+  "baselineAccounting": {
+    "totalMilestoneWeight": 100.0,
+    "repoVerifiedEarnedPercent": 61.5,
+    "unearnedPortionPercent": 38.5,
+    "twentyFivePercentTarget": 9.625,
+    "doubleCountingWarning": "Stage B 10.5% earned weight is ALREADY counted in the 61.5% baseline. Incremental progress requires completing unearned criteria only."
+  },
+  "candidateWorkstreams": [
+    {
+      "taskId": "W021.5-F-02",
+      "stageId": "STAGE_F",
+      "title": "Longitudinal Election Results Across 31 Jurisdictions",
+      "allocatedWeight": 6.0,
+      "alreadyEarnedInBaseline": 1.5,
+      "remainingUnearned": 4.5,
+      "breakdown": {
+        "repoVerifiableUnimplemented": 1.5,
+        "databasePending": 3.0,
+        "blocked": 0.0
+      },
+      "additionalEarnableOffline": 1.5,
+      "dependencies": ["Stage B Closure", "Stage C Registry", "Prior Stage Gate Authorization"],
+      "executionAuthorized": false
+    },
+    {
+      "taskId": "W021.5-H-04",
+      "stageId": "STAGE_H",
+      "title": "Mobile Client Class B Direct Client Writes Deprecation",
+      "allocatedWeight": 2.0,
+      "alreadyEarnedInBaseline": 1.0,
+      "remainingUnearned": 1.0,
+      "breakdown": {
+        "repoVerifiableUnimplemented": 1.0,
+        "databasePending": 0.0,
+        "blocked": 0.0
+      },
+      "additionalEarnableOffline": 1.0,
+      "dependencies": ["Fastify API Route Strangulation (Stage G)", "Prior Stage Gate Authorization"],
+      "executionAuthorized": false
+    },
+    {
+      "taskId": "W021.5-C-02",
+      "stageId": "STAGE_C",
+      "title": "Canonical Political Organization Registry DDL/DML Staging Execution",
+      "allocatedWeight": 5.0,
+      "alreadyEarnedInBaseline": 2.5,
+      "remainingUnearned": 2.5,
+      "breakdown": {
+        "repoVerifiableUnimplemented": 0.0,
+        "databasePending": 2.5,
+        "blocked": 0.0
+      },
+      "additionalEarnableOffline": 0.0,
+      "dependencies": ["Stage B Review Acceptance", "Explicit Staging Database Authorization"],
+      "executionAuthorized": false
+    },
+    {
+      "taskId": "W021.5-D-02",
+      "stageId": "STAGE_D",
+      "title": "Multi-Election Contests & Candidacies Staging Ingestion",
+      "allocatedWeight": 6.0,
+      "alreadyEarnedInBaseline": 3.0,
+      "remainingUnearned": 3.0,
+      "breakdown": {
+        "repoVerifiableUnimplemented": 0.0,
+        "databasePending": 3.0,
+        "blocked": 0.0
+      },
+      "additionalEarnableOffline": 0.0,
+      "dependencies": ["Stage C Closure", "Explicit Staging Database Authorization"],
+      "executionAuthorized": false
+    },
+    {
+      "taskId": "W021.5-D-03",
+      "stageId": "STAGE_D",
+      "title": "Cross-Table Foreign Key Constraint Enforcement",
+      "allocatedWeight": 4.0,
+      "alreadyEarnedInBaseline": 0.0,
+      "remainingUnearned": 4.0,
+      "breakdown": {
+        "repoVerifiableUnimplemented": 0.0,
+        "databasePending": 0.0,
+        "blocked": 4.0
+      },
+      "additionalEarnableOffline": 0.0,
+      "dependencies": ["Completion of Task W021.5-D-02 Staging Ingestion"],
+      "executionAuthorized": false
+    },
+    {
+      "taskId": "W021.5-E-01",
+      "stageId": "STAGE_E",
+      "title": "Constituency Demographics & Census Integration Staging Ingestion",
+      "allocatedWeight": 4.0,
+      "alreadyEarnedInBaseline": 2.0,
+      "remainingUnearned": 2.0,
+      "breakdown": {
+        "repoVerifiableUnimplemented": 0.0,
+        "databasePending": 2.0,
+        "blocked": 0.0
+      },
+      "additionalEarnableOffline": 0.0,
+      "dependencies": ["Stage D Closure", "Explicit Staging Database Authorization"],
+      "executionAuthorized": false
+    }
+  ],
+  "candidatePoolSummary": {
+    "totalCandidateAllocatedWeight": 27.0,
+    "totalCandidateAlreadyEarned": 10.0,
+    "totalCandidateRemainingUnearned": 17.0,
+    "targetRequirement": 9.625,
+    "targetFeasibility": "FEASIBLE — 17.0% unearned capacity exceeds 9.625% target requirement",
+    "pureRepositoryOfflineCapacity": 2.5,
+    "stagingDatabaseDependentCapacity": 10.5,
+    "blockedDependencyCapacity": 4.0
+  },
+  "stageBoundaryEnforcement": "PLANNING_ONLY — Zero execution authorized; execution remains stopped at Stage B gate.",
+  "generatedAt": "2026-10-20T12:51:00.000Z"
+}

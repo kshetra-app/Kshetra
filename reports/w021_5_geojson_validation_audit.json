@@ -1,0 +1,69 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "W021.5 CTO Directive 117 Telangana Assembly GeoJSON Validation Audit",
+  "directive": "CTO Directive 117 (Workstream D4)",
+  "governingAuthority": "Master Execution Framework Amendment v1.6 / Rule IV-001 Non-Self-Acceptance",
+  "targetAsset": "data/geo/telangana-assembly.geojson",
+  "fileSize": 1819586,
+  "validationEngine": "Standalone Deterministic RFC 7946 Validator",
+  "structuralValidation": {
+    "type": "FeatureCollection",
+    "featureCount": 120,
+    "polygonCount": 120,
+    "multiPolygonCount": 0,
+    "unclosedRings": 0,
+    "invalidCoordinateCount": 0,
+    "rfc7946Compliance": {
+      "rightHandRule": "Compliant (exterior ring counter-clockwise)",
+      "coordinateOrder": "Compliant ([longitude, latitude])",
+      "crs": "urn:ogc:def:crs:OGC:1.3:CRS84 (WGS 84)"
+    }
+  },
+  "spatialPlausibility": {
+    "geographicBounds": {
+      "minLongitude": 77.23,
+      "maxLongitude": 81.32,
+      "minLatitude": 15.83,
+      "maxLatitude": 19.92
+    },
+    "plausibilityVerdict": "COORDINATES_WITHIN_TELANGANA_BOUNDS"
+  },
+  "seatLinkageAndDefectAudit": {
+    "expectedStatutorySeats": 119,
+    "observedFeatures": 120,
+    "seatCountDiscrepancy": "+1 feature surplus",
+    "duplicateSeatAudit": [
+      {
+        "seatNumber": 119,
+        "seatName": "Bhadrachalam (ST)",
+        "featuresDetected": 2,
+        "feature1": {
+          "fid": 4159,
+          "objectId": 4184,
+          "district": "KHAMMAM",
+          "shapeArea": 0.171915395608,
+          "dtname11": "Sukma"
+        },
+        "feature2": {
+          "fid": 4160,
+          "objectId": 4188,
+          "district": "KHAMMAM",
+          "shapeArea": 0.000710121403258,
+          "dtname11": "Sukma"
+        },
+        "defectClassification": "OPEN_AND_BLOCKED (DQ-W021.5-B1-001 / AC 119 duplicate polygon defect)",
+        "handling": "Preserved duplicate without deletion or synthetic merging; client constant hasGeoJSON flag set to false",
+        "resolutionPrerequisite": "Requires official Andhra Pradesh / Telangana bifurcation revenue department gazette delineating Sukma / Khammam territorial transfer"
+      }
+    ]
+  },
+  "provenanceAudit": {
+    "sourceAttribution": "Telangana State Remote Sensing Applications Centre (TRAC) / ECI 2014 Telangana General Election boundary shapefile extracts",
+    "limitations": [
+      "AC 119 has two disconnected polygon features instead of a verified MultiPolygon or unified geometry",
+      "Only 1 of 31 jurisdictions (Telangana) has boundary geometry; remaining 30 States/UTs are absent in repository"
+    ]
+  },
+  "verdict": "STRUCTURALLY_VALID_GEOMETRY_WITH_PRESERVED_AC_119_DEFECT",
+  "generatedAt": "2026-10-20T12:51:00.000Z"
+}

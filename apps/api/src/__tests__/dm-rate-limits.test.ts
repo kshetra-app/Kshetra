@@ -1,6 +1,6 @@
 import { checkConversationRateLimit } from '../routes/dm';
 import { buildApp } from '../server';
-import { isSupabaseConfigured, setSupabaseConfiguredForTesting } from '../lib/supabase';
+import { supabase, isSupabaseConfigured, setSupabaseConfiguredForTesting } from '../lib/supabase';
 import type { FastifyInstance } from 'fastify';
 
 describe('TICKET 3.5 & 3.2: Direct Message Tiered Rate Limiting & Anti-Abuse', () => {
@@ -126,6 +126,31 @@ describe('TICKET 3.5 & 3.2: Direct Message Tiered Rate Limiting & Anti-Abuse', (
     });
 
     it('returns unread count for authenticated user via GET /api/v1/dm/unread-count', async () => {
+      const fromSpy = jest.spyOn(supabase, 'from').mockImplementation(((table: string) => {
+        if (table === 'user_profiles') {
+          return {
+            select: () => ({
+              eq: () => ({
+                maybeSingle: async () => ({
+                  data: { role: 'citizen', verification_status: 'unverified', created_at: new Date().toISOString() },
+                  error: null,
+                }),
+              }),
+            }),
+          };
+        }
+        if (table === 'conversations') {
+          return {
+            select: () => ({
+              eq: () => ({
+                or: async () => ({ data: [], error: null }),
+              }),
+            }),
+          };
+        }
+        return {};
+      }) as any);
+
       const res = await app.inject({
         method: 'GET',
         url: '/api/v1/dm/unread-count',
@@ -133,6 +158,8 @@ describe('TICKET 3.5 & 3.2: Direct Message Tiered Rate Limiting & Anti-Abuse', (
           'x-user-id': '00000000-0000-0000-0000-000000000001',
         },
       });
+
+      fromSpy.mockRestore();
 
       expect(res.statusCode).toBe(200);
       const body = JSON.parse(res.payload);

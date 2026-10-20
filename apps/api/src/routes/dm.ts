@@ -204,9 +204,6 @@ export const dmRoutes: FastifyPluginAsync = async (app) => {
         .or(`participant_one.eq.${auth.userId},participant_two.eq.${auth.userId}`);
 
       if (convError) {
-        if (process.env.NODE_ENV !== 'production') {
-          return reply.send({ success: true, count: 0 });
-        }
         throw convError;
       }
       if (!convs || convs.length === 0) {
@@ -224,17 +221,11 @@ export const dmRoutes: FastifyPluginAsync = async (app) => {
         .is('read_at', null);
 
       if (countError) {
-        if (process.env.NODE_ENV !== 'production') {
-          return reply.send({ success: true, count: 0 });
-        }
         throw countError;
       }
 
       return reply.send({ success: true, count: count ?? 0 });
     } catch (err: any) {
-      if (process.env.NODE_ENV !== 'production') {
-        return reply.send({ success: true, count: 0 });
-      }
       app.log.error({ err: err?.message }, 'Failed to compute DM unread count');
       return sendApiError(reply, request, 500, 'Internal Server Error', 'Failed to retrieve unread count', {
         code: 'DATABASE_ERROR',

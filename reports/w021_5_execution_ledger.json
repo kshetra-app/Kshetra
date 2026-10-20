@@ -2,8 +2,8 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "W021.5 Traceable Execution Ledger",
   "milestone": "W021.5",
-  "directive": "CTO Directive 086 / CTO Directive 087 / CTO Directive 088 / CTO Directive 089 / CTO Directive 090 / CTO Directive 091 / CTO Directive 092 / CTO Directive 093 / CTO Directive 094 / CTO Directive 095 / CTO Directive 096 / CTO Directive 097 / CTO Directive 098 / CTO Directive 099 / CTO Directive 100 / CTO Directive 101 / CTO Directive 102 / CTO Directive 103 / CTO Directive 104 / CTO Directive 105 / CTO Directive 106 / CTO Directive 107 / CTO Directive 108 / CTO Directive 109 / CTO Directive 110",
-  "governance": "Master Execution Framework Amendment v1.2 / Rule IV-001 (Non-Self-Acceptance)",
+  "directive": "CTO Directive 086 / CTO Directive 087 / CTO Directive 088 / CTO Directive 089 / CTO Directive 090 / CTO Directive 091 / CTO Directive 092 / CTO Directive 093 / CTO Directive 094 / CTO Directive 095 / CTO Directive 096 / CTO Directive 097 / CTO Directive 098 / CTO Directive 099 / CTO Directive 100 / CTO Directive 101 / CTO Directive 102 / CTO Directive 103 / CTO Directive 104 / CTO Directive 105 / CTO Directive 106 / CTO Directive 107 / CTO Directive 108 / CTO Directive 109 / CTO Directive 110 / CTO Directive 111 / CTO Directive 112 / CTO Directive 113 / CTO Directive 114 / CTO Directive 115 / CTO Directive 116 / CTO Directive 117",
+  "governance": "Master Execution Framework Amendment v1.6 / Rule IV-001 Non-Self-Acceptance",
   "financialDefectStatus": {
     "defectId": "DQ-W021.5-B2.2E-001",
     "status": "STRICTLY_OPEN",
@@ -3617,5 +3617,5 @@
       ]
     }
   ],
-  "lastReconciledDate": "2026-10-17T17:14:34.948Z"
+  "lastReconciledDate": "2026-10-20T12:45:00.000Z"
 }

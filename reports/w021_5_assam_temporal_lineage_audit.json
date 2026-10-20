@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "W021.5 CTO Directive 117 Assam 2023 Temporal Delimitation & Lineage Audit",
+  "directive": "CTO Directive 117 (Workstream D3)",
+  "governingAuthority": "Master Execution Framework Amendment v1.6 / Rule IV-001 Non-Self-Acceptance",
+  "targetMigration": "supabase/migrations/062_canonical_assam_2023_delimitation.sql",
+  "statutoryOrder": {
+    "orderNumber": "ECI Delimitation Order No. 282/AS/2023(DEL)/Vol.V",
+    "orderDate": "2023-08-11",
+    "effectiveDate": "2023-08-16",
+    "statutoryAuthority": "Section 8A of the Representation of the People Act, 1950 & Delimitation Act, 2002",
+    "gazetteCitation": "Gazette of India Extraordinary No. 434 dated 11 August 2023",
+    "evidenceRecordId": "a55a0023-0000-4000-8000-000000000001",
+    "datasetVersionId": "eci_national_ac_2023_as_v1"
+  },
+  "statutoryComposition": {
+    "assemblyConstituencyCount": 126,
+    "parliamentaryConstituencyCount": 14,
+    "reservationBreakdown": {
+      "general": 98,
+      "scheduledCastes": 9,
+      "scheduledTribes": 19,
+      "total": 126
+    }
+  },
+  "temporalModelIntegrity": {
+    "historicalCutoffDate": "2023-08-16",
+    "archiveMechanism": {
+      "pre2023AcVersions": "UPDATE public.assembly_constituency_versions SET valid_to = '2023-08-16'::date, is_current = false WHERE ...",
+      "pre2023PcVersions": "UPDATE public.parliamentary_constituency_versions SET valid_to = '2023-08-16'::date, is_current = false WHERE ...",
+      "post2023Versions": "INSERT INTO public.assembly_constituency_versions (... valid_from = '2023-08-16'::date, valid_to = NULL, is_current = true ...)"
+    },
+    "chronologicalIntegrity": "VERIFIED — Pre-2023 and Post-2023 versions do not overlap; valid_to equals valid_from at cutoff"
+  },
+  "lineageStatus": {
+    "status": "ASSAM_HISTORICAL_LINEAGE_PENDING",
+    "rationale": "The 2023 Delimitation in Assam underwent extensive territorial reshuffling: multiple constituencies were renamed, merged, split, or newly formed (e.g., Baokhungri, Birsing Jarua, Pakabetbari). 1:1 name-matching across regimes is strictly invalid. Cross-regime lineage graph edges remain intentionally pending until official ECI/CEO territorial concordance tables are published."
+  },
+  "verdict": "TEMPORAL_MODEL_VERIFIED_HISTORICAL_LINEAGE_PENDING",
+  "generatedAt": "2026-10-20T12:51:00.000Z"
+}

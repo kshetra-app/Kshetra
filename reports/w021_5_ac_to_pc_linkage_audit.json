@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "W021.5 CTO Directive 117 National AC-to-PC Linkage Verification Audit",
+  "directive": "CTO Directive 117 (Workstream D2)",
+  "governingAuthority": "Master Execution Framework Amendment v1.6 / Rule IV-001 Non-Self-Acceptance",
+  "targetMigration": "supabase/migrations/061_canonical_national_ac_pc_mappings.sql",
+  "validationMethod": "Direct SQL AST / VALUES Tuple Extraction & Cross-Table Key Verification",
+  "tupleExtractionResults": {
+    "totalSqlValuesTuples": 4123,
+    "uniqueAssemblyConstituencyCodes": 4123,
+    "uniqueParliamentaryConstituencyCodes": 537,
+    "duplicateAssemblyConstituencyMappings": 0,
+    "crossStateConstituencyMappings": 0
+  },
+  "pcReconciliation": {
+    "totalParliamentaryConstituenciesInMigration059": 543,
+    "pcsReferencedByAssemblyConstituencies": 537,
+    "pcsInUnionTerritoriesWithoutAssemblies": 6,
+    "unmappedPcInventory": [
+      { "pcCode": "AN-PC-01", "name": "Andaman & Nicobar Islands", "statutoryAssemblySeats": 0 },
+      { "pcCode": "CH-PC-01", "name": "Chandigarh", "statutoryAssemblySeats": 0 },
+      { "pcCode": "DH-PC-01", "name": "Daman & Diu", "statutoryAssemblySeats": 0 },
+      { "pcCode": "DH-PC-02", "name": "Dadra & Nagar Haveli", "statutoryAssemblySeats": 0 },
+      { "pcCode": "LA-PC-01", "name": "Ladakh", "statutoryAssemblySeats": 0 },
+      { "pcCode": "LD-PC-01", "name": "Lakshadweep", "statutoryAssemblySeats": 0 }
+    ],
+    "statutoryReconciliationNote": "In the Republic of India, 5 Union Territories do not possess legislative assemblies; their 6 Lok Sabha seats have zero statutory Assembly segments. 537 + 6 = exactly 543 PCs."
+  },
+  "jurisdictionPartitionIntegrity": {
+    "uniformPartitionVerifiedStates": [
+      { "stateCode": "AP", "acs": 175, "pcs": 25, "ratio": "7.0 ACs/PC" },
+      { "stateCode": "GJ", "acs": 182, "pcs": 26, "ratio": "7.0 ACs/PC" },
+      { "stateCode": "KA", "acs": 224, "pcs": 28, "ratio": "8.0 ACs/PC" },
+      { "stateCode": "KL", "acs": 140, "pcs": 20, "ratio": "7.0 ACs/PC" },
+      { "stateCode": "TS", "acs": 119, "pcs": 17, "ratio": "7.0 ACs/PC" },
+      { "stateCode": "DL", "acs": 70, "pcs": 7, "ratio": "10.0 ACs/PC" }
+    ],
+    "crossStateOrphanCount": 0
+  },
+  "temporalRegimeAudit": {
+    "defaultRegime": "eci_delimitation_2008",
+    "bifurcationRegime": "eci_delimitation_2014_ap_ts (AP & TS)",
+    "jkReorganisationRegime": "eci_delimitation_2022_jk (J&K 90 ACs / 5 PCs)",
+    "assamRegime": "eci_delimitation_2023_as (Assam 126 ACs / 14 PCs)"
+  },
+  "verdict": "VERIFIED_CANONICAL_SQL_MAPPINGS_WITHOUT_ORPHANS_OR_DUPLICATES",
+  "generatedAt": "2026-10-20T12:51:00.000Z"
+}
