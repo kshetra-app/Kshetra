@@ -9,7 +9,7 @@ describe('TICKET 3.5 & 3.2: Direct Message Tiered Rate Limiting & Anti-Abuse', (
 
   beforeAll(async () => {
     originalConfigured = isSupabaseConfigured;
-    setSupabaseConfiguredForTesting(true);
+    setSupabaseConfiguredForTesting(false);
     app = await buildApp();
   });
 
@@ -151,6 +151,8 @@ describe('TICKET 3.5 & 3.2: Direct Message Tiered Rate Limiting & Anti-Abuse', (
         return {};
       }) as any);
 
+      setSupabaseConfiguredForTesting(true);
+
       const res = await app.inject({
         method: 'GET',
         url: '/api/v1/dm/unread-count',
@@ -159,6 +161,7 @@ describe('TICKET 3.5 & 3.2: Direct Message Tiered Rate Limiting & Anti-Abuse', (
         },
       });
 
+      setSupabaseConfiguredForTesting(false);
       fromSpy.mockRestore();
 
       expect(res.statusCode).toBe(200);

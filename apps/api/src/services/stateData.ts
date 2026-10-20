@@ -130,6 +130,9 @@ const STATE_RAW_MAP: Record<string, { name: string; total: number; data: any[] }
   JK: { name: 'Jammu & Kashmir', total: 90, data: JK_CONSTITUENCIES },
 };
 
+/** Validated state codes with available, canonical GeoJSON geometry */
+export const VALIDATED_GEOJSON_STATES = new Set<string>(['TS']);
+
 /** Get info about a state's data availability */
 export function getStateInfo(stateCode: string): StateDataInfo | null {
   const code = stateCode.toUpperCase();
@@ -141,7 +144,7 @@ export function getStateInfo(stateCode: string): StateDataInfo | null {
     totalSeats: entry.total,
     loadedCount: entry.data.length,
     dataStatus: entry.data.length >= entry.total ? 'full' : 'stub',
-    hasGeoJSON: true,
+    hasGeoJSON: VALIDATED_GEOJSON_STATES.has(code),
   };
 }
 

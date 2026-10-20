@@ -1,8 +1,8 @@
 # KSHETRA W021.5 — FULL SPECIFICATION TASK RECONCILIATION
 ## Comprehensive Task-by-Task Inventory Across Stages A through I
 
-**Directive:** CTO Directive 118  
-**Predecessor:** CTO Directive 117  
+**Directive:** CTO Directive 119  
+**Predecessor:** CTO Directive 118  
 **Repository:** `https://github.com/kshetra-app/Kshetra`  
 **Governing Authority:** Master Execution Framework Amendment v1.6 / Rule IV-001 Non-Self-Acceptance  
 **Production Boundary:** `AIR_GAPPED_UNEXECUTED` (Strictly zero queries, zero mutations on `ehfafcnimmjusyvplbah`)  
@@ -37,15 +37,15 @@ This document provides an exhaustive, evidence-backed reconciliation of all 27 c
 
 | Stage ID | Stage Title | Tasks | Allocated Weight | Repo-Verified Earned | DB Pending | Blocked | Unimplemented | Implementation Authorization |
 |---|---|---:|---:|---:|---:|---:|---:|---|
-| **STAGE_A** | undefined | 3 | 10.0% | 10.0% | 0.0% | 0.0% | 0.0% | Submitted for Review |
-| **STAGE_B** | undefined | 4 | 12.0% | 10.5% | 0.0% | 1.5% | 0.0% | Submitted for Adjudication |
-| **STAGE_C** | undefined | 3 | 12.0% | 9.5% | 2.5% | 0.0% | 0.0% | **NOT AUTHORIZED** |
-| **STAGE_D** | undefined | 3 | 14.0% | 7.0% | 3.0% | 4.0% | 0.0% | **NOT AUTHORIZED** |
-| **STAGE_E** | undefined | 3 | 14.0% | 2.0% | 2.0% | 10.0% | 0.0% | **NOT AUTHORIZED** |
-| **STAGE_F** | undefined | 2 | 10.0% | 5.5% | 3.0% | 0.0% | 1.5% | **NOT AUTHORIZED** |
-| **STAGE_G** | undefined | 3 | 12.0% | 8.0% | 0.0% | 4.0% | 0.0% | **NOT AUTHORIZED** |
-| **STAGE_H** | undefined | 4 | 10.0% | 9.0% | 0.0% | 0.0% | 1.0% | **NOT AUTHORIZED** |
-| **STAGE_I** | undefined | 2 | 6.0% | 0.0% | 0.0% | 3.0% | 3.0% | **NOT AUTHORIZED** |
+| **STAGE_A** | Foundation Hardening & Schema Alignment | 3 | 10.0% | 10.0% | 0.0% | 0.0% | 0.0% | Submitted for Review |
+| **STAGE_B** | Canonical Jurisdiction & Geography Modeling | 4 | 12.0% | 10.5% | 0.0% | 1.5% | 0.0% | Submitted for Adjudication |
+| **STAGE_C** | Political Intelligence & Election History Foundation | 3 | 12.0% | 9.5% | 2.5% | 0.0% | 0.0% | **NOT AUTHORIZED** |
+| **STAGE_D** | Delimitation Projections & Reservation Analysis Engine | 3 | 14.0% | 7.0% | 3.0% | 4.0% | 0.0% | **NOT AUTHORIZED** |
+| **STAGE_E** | Demographics, Polling & Public Opinion Calibration | 3 | 14.0% | 2.0% | 2.0% | 10.0% | 0.0% | **NOT AUTHORIZED** |
+| **STAGE_F** | Campaign Infrastructure, Field Ops & Telecom Gateways | 2 | 10.0% | 5.5% | 3.0% | 0.0% | 1.5% | **NOT AUTHORIZED** |
+| **STAGE_G** | Creator Economics, Verification & Media Pipelines | 3 | 12.0% | 8.0% | 0.0% | 4.0% | 0.0% | **NOT AUTHORIZED** |
+| **STAGE_H** | Cross-Jurisdiction Analytics, AI & Semantic Search | 4 | 10.0% | 9.0% | 0.0% | 0.0% | 1.0% | **NOT AUTHORIZED** |
+| **STAGE_I** | Governance Framework, Audits & Production Air-Gap Certification | 2 | 6.0% | 0.0% | 0.0% | 3.0% | 3.0% | **NOT AUTHORIZED** |
 | **TOTAL** | **All 9 Stages (A through I)** | **27** | **100.0%** | **61.5%** | **10.5%** | **22.5%** | **5.5%** | **Strict Stage Gates Enforced** |
 
 ---

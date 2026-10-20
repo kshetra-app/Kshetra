@@ -1,5 +1,5 @@
 import { buildApp } from '../server';
-import { isSupabaseConfigured, setSupabaseConfiguredForTesting } from '../lib/supabase';
+import { supabase, isSupabaseConfigured, setSupabaseConfiguredForTesting } from '../lib/supabase';
 
 /**
  * Contract tests for the public, deterministic route surfaces:
@@ -13,11 +13,34 @@ describe('Public route contracts', () => {
   beforeAll(async () => {
     originalConfigured = isSupabaseConfigured;
     setSupabaseConfiguredForTesting(true);
+
+    // Mock network database calls to fail immediately or return valid mock response
+    // so fallback handlers respond instantly without 30s TCP connection timeouts.
+    jest.spyOn(supabase, 'from').mockImplementation(((table: string) => {
+      const okResult = { data: { id: 'mock-id-1', status: 'submitted' }, error: null };
+      const chainable: any = {
+        eq: () => chainable,
+        or: () => chainable,
+        order: () => chainable,
+        select: () => chainable,
+        maybeSingle: async () => okResult,
+        single: async () => okResult,
+        then: (resolve: any) => resolve(okResult),
+      };
+      return {
+        select: () => chainable,
+        insert: () => chainable,
+        upsert: () => chainable,
+        update: () => ({ eq: () => chainable }),
+      };
+    }) as any);
+
     app = await buildApp();
     await app.ready();
   });
 
   afterAll(async () => {
+    jest.restoreAllMocks();
     setSupabaseConfiguredForTesting(originalConfigured);
     await app.close();
   });

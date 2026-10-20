@@ -39,9 +39,31 @@ describe('State Data Service (stateData.ts) Unit Tests', () => {
       expect(getStateInfo('UNKNOWN')).toBeNull();
     });
 
-    it('returns all 31 supported states with full metadata', () => {
+    it('returns all 31 supported states with full metadata and accurate geographic capability', () => {
       const all = getAllStatesInfo();
       expect(all.length).toBe(31);
+      const withGeo = all.filter((s) => s.hasGeoJSON);
+      const withoutGeo = all.filter((s) => !s.hasGeoJSON);
+
+      // Exactly 1 state (TS) has validated canonical GeoJSON boundary assets
+      expect(withGeo.length).toBe(1);
+      expect(withGeo[0].code).toBe('TS');
+
+      // The remaining 30 states must report hasGeoJSON: false (no validated boundary assets)
+      expect(withoutGeo.length).toBe(30);
+
+      const OTHER_30_STATES = [
+        'AP', 'KA', 'MH', 'TN', 'KL', 'WB', 'UP', 'RJ', 'GJ', 'JH',
+        'OD', 'DL', 'PB', 'HR', 'CG', 'MP', 'BR', 'AS', 'GA', 'HP',
+        'MN', 'ML', 'MZ', 'NL', 'TR', 'SK', 'AR', 'UK', 'PY', 'JK'
+      ];
+
+      for (const code of OTHER_30_STATES) {
+        const stateInfo = getStateInfo(code);
+        expect(stateInfo).not.toBeNull();
+        expect(stateInfo?.hasGeoJSON).toBe(false);
+      }
+
       for (const info of all) {
         expect(info.code).toBeDefined();
         expect(info.name).toBeDefined();

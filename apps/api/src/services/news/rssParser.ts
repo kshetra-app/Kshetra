@@ -51,7 +51,7 @@ function decodeEntities(input: string): string {
 }
 
 function stripHtml(input: string): string {
-  return decodeEntities(input.replace(/<[^>]+>/g, ' ')).replace(/\s+/g, ' ').trim();
+  return decodeEntities(input).replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
 }
 
 function firstMatch(block: string, patterns: RegExp[]): string | undefined {
@@ -116,14 +116,24 @@ export function parseFeed(xml: string): ParsedItem[] {
     const image = parseImage(block);
 
     const summary = rawSummary ? stripHtml(rawSummary).slice(0, 280) : undefined;
-    const publishedAt = date ? new Date(decodeEntities(date)).toISOString() : undefined;
+    let publishedAt: string | undefined;
+    if (date) {
+      try {
+        const parsedDate = new Date(decodeEntities(date));
+        if (!isNaN(parsedDate.getTime())) {
+          publishedAt = parsedDate.toISOString();
+        }
+      } catch {
+        publishedAt = undefined;
+      }
+    }
 
     items.push({
       title: stripHtml(title).slice(0, 300),
       link,
       summary,
       imageUrl: image ? decodeEntities(image) : undefined,
-      publishedAt: publishedAt && publishedAt !== 'Invalid Date' ? publishedAt : undefined,
+      publishedAt,
     });
   }
 
