@@ -1,0 +1,934 @@
+{
+  "jurisdictionsSummary": {
+    "totalJurisdictions": 36,
+    "assemblyJurisdictionsCount": 31,
+    "nonAssemblyJurisdictionsCount": 5,
+    "totalStatutoryAssemblySeats": 4123,
+    "totalStatutoryParliamentarySeats": 543
+  },
+  "seedValidationSummary": {
+    "totalSeedFiles": 31,
+    "totalSeededAcs": 4123,
+    "statutoryAssemblySeatsTarget": 4123,
+    "seedDiscrepanciesCount": 0
+  },
+  "seedValidation": [
+    {
+      "jurisdictionCode": "AP",
+      "name": "Andhra Pradesh",
+      "statutorySeats": 175,
+      "seedFilePresent": true,
+      "seedFileName": "andhra-pradesh-constituencies.ts",
+      "seededSeatCount": 175,
+      "matchesStatutory": true
+    },
+    {
+      "jurisdictionCode": "AR",
+      "name": "Arunachal Pradesh",
+      "statutorySeats": 60,
+      "seedFilePresent": true,
+      "seedFileName": "arunachal-pradesh-constituencies.ts",
+      "seededSeatCount": 60,
+      "matchesStatutory": true
+    },
+    {
+      "jurisdictionCode": "AS",
+      "name": "Assam",
+      "statutorySeats": 126,
+      "seedFilePresent": true,
+      "seedFileName": "assam-constituencies.ts",
+      "seededSeatCount": 126,
+      "matchesStatutory": true
+    },
+    {
+      "jurisdictionCode": "BR",
+      "name": "Bihar",
+      "statutorySeats": 243,
+      "seedFilePresent": true,
+      "seedFileName": "bihar-constituencies.ts",
+      "seededSeatCount": 243,
+      "matchesStatutory": true
+    },
+    {
+      "jurisdictionCode": "CG",
+      "name": "Chhattisgarh",
+      "statutorySeats": 90,
+      "seedFilePresent": true,
+      "seedFileName": "chhattisgarh-constituencies.ts",
+      "seededSeatCount": 90,
+      "matchesStatutory": true
+    },
+    {
+      "jurisdictionCode": "GA",
+      "name": "Goa",
+      "statutorySeats": 40,
+      "seedFilePresent": true,
+      "seedFileName": "goa-constituencies.ts",
+      "seededSeatCount": 40,
+      "matchesStatutory": true
+    },
+    {
+      "jurisdictionCode": "GJ",
+      "name": "Gujarat",
+      "statutorySeats": 182,
+      "seedFilePresent": true,
+      "seedFileName": "gujarat-constituencies.ts",
+      "seededSeatCount": 182,
+      "matchesStatutory": true
+    },
+    {
+      "jurisdictionCode": "HR",
+      "name": "Haryana",
+      "statutorySeats": 90,
+      "seedFilePresent": true,
+      "seedFileName": "haryana-constituencies.ts",
+      "seededSeatCount": 90,
+      "matchesStatutory": true
+    },
+    {
+      "jurisdictionCode": "HP",
+      "name": "Himachal Pradesh",
+      "statutorySeats": 68,
+      "seedFilePresent": true,
+      "seedFileName": "himachal-pradesh-constituencies.ts",
+      "seededSeatCount": 68,
+      "matchesStatutory": true
+    },
+    {
+      "jurisdictionCode": "JH",
+      "name": "Jharkhand",
+      "statutorySeats": 81,
+      "seedFilePresent": true,
+      "seedFileName": "jharkhand-constituencies.ts",
+      "seededSeatCount": 81,
+      "matchesStatutory": true
+    },
+    {
+      "jurisdictionCode": "KA",
+      "name": "Karnataka",
+      "statutorySeats": 224,
+      "seedFilePresent": true,
+      "seedFileName": "karnataka-constituencies.ts",
+      "seededSeatCount": 224,
+      "matchesStatutory": true
+    },
+    {
+      "jurisdictionCode": "KL",
+      "name": "Kerala",
+      "statutorySeats": 140,
+      "seedFilePresent": true,
+      "seedFileName": "kerala-constituencies.ts",
+      "seededSeatCount": 140,
+      "matchesStatutory": true
+    },
+    {
+      "jurisdictionCode": "MP",
+      "name": "Madhya Pradesh",
+      "statutorySeats": 230,
+      "seedFilePresent": true,
+      "seedFileName": "madhya-pradesh-constituencies.ts",
+      "seededSeatCount": 230,
+      "matchesStatutory": true
+    },
+    {
+      "jurisdictionCode": "MH",
+      "name": "Maharashtra",
+      "statutorySeats": 288,
+      "seedFilePresent": true,
+      "seedFileName": "maharashtra-constituencies.ts",
+      "seededSeatCount": 288,
+      "matchesStatutory": true
+    },
+    {
+      "jurisdictionCode": "MN",
+      "name": "Manipur",
+      "statutorySeats": 60,
+      "seedFilePresent": true,
+      "seedFileName": "manipur-constituencies.ts",
+      "seededSeatCount": 60,
+      "matchesStatutory": true
+    },
+    {
+      "jurisdictionCode": "ML",
+      "name": "Meghalaya",
+      "statutorySeats": 60,
+      "seedFilePresent": true,
+      "seedFileName": "meghalaya-constituencies.ts",
+      "seededSeatCount": 60,
+      "matchesStatutory": true
+    },
+    {
+      "jurisdictionCode": "MZ",
+      "name": "Mizoram",
+      "statutorySeats": 40,
+      "seedFilePresent": true,
+      "seedFileName": "mizoram-constituencies.ts",
+      "seededSeatCount": 40,
+      "matchesStatutory": true
+    },
+    {
+      "jurisdictionCode": "NL",
+      "name": "Nagaland",
+      "statutorySeats": 60,
+      "seedFilePresent": true,
+      "seedFileName": "nagaland-constituencies.ts",
+      "seededSeatCount": 60,
+      "matchesStatutory": true
+    },
+    {
+      "jurisdictionCode": "OD",
+      "name": "Odisha",
+      "statutorySeats": 147,
+      "seedFilePresent": true,
+      "seedFileName": "odisha-constituencies.ts",
+      "seededSeatCount": 147,
+      "matchesStatutory": true
+    },
+    {
+      "jurisdictionCode": "PB",
+      "name": "Punjab",
+      "statutorySeats": 117,
+      "seedFilePresent": true,
+      "seedFileName": "punjab-constituencies.ts",
+      "seededSeatCount": 117,
+      "matchesStatutory": true
+    },
+    {
+      "jurisdictionCode": "RJ",
+      "name": "Rajasthan",
+      "statutorySeats": 200,
+      "seedFilePresent": true,
+      "seedFileName": "rajasthan-constituencies.ts",
+      "seededSeatCount": 200,
+      "matchesStatutory": true
+    },
+    {
+      "jurisdictionCode": "SK",
+      "name": "Sikkim",
+      "statutorySeats": 32,
+      "seedFilePresent": true,
+      "seedFileName": "sikkim-constituencies.ts",
+      "seededSeatCount": 32,
+      "matchesStatutory": true
+    },
+    {
+      "jurisdictionCode": "TN",
+      "name": "Tamil Nadu",
+      "statutorySeats": 234,
+      "seedFilePresent": true,
+      "seedFileName": "tamil-nadu-constituencies.ts",
+      "seededSeatCount": 234,
+      "matchesStatutory": true
+    },
+    {
+      "jurisdictionCode": "TS",
+      "name": "Telangana",
+      "statutorySeats": 119,
+      "seedFilePresent": true,
+      "seedFileName": "telangana-constituencies.ts",
+      "seededSeatCount": 119,
+      "matchesStatutory": true
+    },
+    {
+      "jurisdictionCode": "TR",
+      "name": "Tripura",
+      "statutorySeats": 60,
+      "seedFilePresent": true,
+      "seedFileName": "tripura-constituencies.ts",
+      "seededSeatCount": 60,
+      "matchesStatutory": true
+    },
+    {
+      "jurisdictionCode": "UP",
+      "name": "Uttar Pradesh",
+      "statutorySeats": 403,
+      "seedFilePresent": true,
+      "seedFileName": "uttar-pradesh-constituencies.ts",
+      "seededSeatCount": 403,
+      "matchesStatutory": true
+    },
+    {
+      "jurisdictionCode": "UK",
+      "name": "Uttarakhand",
+      "statutorySeats": 70,
+      "seedFilePresent": true,
+      "seedFileName": "uttarakhand-constituencies.ts",
+      "seededSeatCount": 70,
+      "matchesStatutory": true
+    },
+    {
+      "jurisdictionCode": "WB",
+      "name": "West Bengal",
+      "statutorySeats": 294,
+      "seedFilePresent": true,
+      "seedFileName": "west-bengal-constituencies.ts",
+      "seededSeatCount": 294,
+      "matchesStatutory": true
+    },
+    {
+      "jurisdictionCode": "DL",
+      "name": "Delhi",
+      "statutorySeats": 70,
+      "seedFilePresent": true,
+      "seedFileName": "delhi-constituencies.ts",
+      "seededSeatCount": 70,
+      "matchesStatutory": true
+    },
+    {
+      "jurisdictionCode": "JK",
+      "name": "Jammu & Kashmir",
+      "statutorySeats": 90,
+      "seedFilePresent": true,
+      "seedFileName": "jammu-kashmir-constituencies.ts",
+      "seededSeatCount": 90,
+      "matchesStatutory": true
+    },
+    {
+      "jurisdictionCode": "PY",
+      "name": "Puducherry",
+      "statutorySeats": 30,
+      "seedFilePresent": true,
+      "seedFileName": "puducherry-constituencies.ts",
+      "seededSeatCount": 30,
+      "matchesStatutory": true
+    }
+  ],
+  "postGis589Reconciliation": {
+    "mandalReorganisationGOMs": "G.O.Ms. Nos. 214-245 Rev (2016-10-11)",
+    "statutoryMandalsInTelangana": 589,
+    "entityGeometriesTableVerifiedRows": 589,
+    "entityGeometriesFrozenDigest": "f839fa02980318a8f35f932ebe72fa1d3ad6325dc86a624bf159d932fe5f613b",
+    "postGisAssemblyConstituenciesRowCount": 0,
+    "postGisParliamentaryConstituenciesRowCount": 0,
+    "reconciliationFinding": "The 589 PostGIS geometry rows represent the frozen Telangana 2016 reorganisation mandals (sub-district administrative divisions). Zero Assembly Constituencies and zero Parliamentary Constituencies currently have PostGIS geometry rows in the database catalog."
+  },
+  "tsValidation": {
+    "filePath": "data/geo/telangana-assembly.geojson",
+    "fileSize": 3663116,
+    "featureCount": 120,
+    "statutorySeatCount": 119,
+    "validFeatureCount": 120,
+    "geometryValidCount": 120,
+    "numericCoordinatesValidCount": 120,
+    "rangeCoordinatesValidCount": 120,
+    "coordinateErrorsCount": 0,
+    "boundingBox": [
+      77.2358,
+      15.8364,
+      81.3226,
+      19.9169
+    ],
+    "withinIndiaBbox": true,
+    "uniqueStatutoryAcsLinked": 119,
+    "duplicateAcs": [
+      119
+    ],
+    "excessFeatures": 1,
+    "hasCleanConstituencyMapping": false,
+    "hasGeoJSON": false,
+    "ac119DefectConfirmed": true,
+    "defectStatus": "OPEN_AND_BLOCKED",
+    "defectRationale": "Statutory seat 119 has 2 distinct polygon features in raw shapefile instead of a consolidated MultiPolygon. Overwriting or arbitrary polygon deletion is prohibited without official CEO Telangana gazette reconciliation."
+  },
+  "candidateAudit": [
+    {
+      "fileName": "ARUNACHAL_PRADESH_ASSEMBLY.geojson",
+      "jurisdiction": "AR",
+      "statutorySeats": 60,
+      "featureCount": 61,
+      "seatDifference": 1,
+      "propertySchema": [
+        "FID",
+        "OBJECTID",
+        "ST_CODE",
+        "ST_NAME",
+        "DT_CODE",
+        "DIST_NAME",
+        "AC_NO",
+        "AC_NAME"
+      ],
+      "provenance": "UNOFFICIAL_COMMUNITY_SCRAPE",
+      "canonicalStatus": "NON_CANONICAL_SCRATCH_ONLY",
+      "canBeMergedToProductionDataGeo": false,
+      "rejectionReason": "Fails Rule IV-001 authoritative source requirements. Unofficial community scrapes without Survey of India / ECI digital signatures cannot be silently promoted to official data/geo assets."
+    },
+    {
+      "fileName": "jk-source.geojson",
+      "jurisdiction": "JK",
+      "statutorySeats": 90,
+      "featureCount": 91,
+      "seatDifference": 1,
+      "propertySchema": [
+        "seat_id",
+        "state_id",
+        "seat_name_en",
+        "seat_district_en",
+        "sc_st_gen",
+        "seat_name_hi",
+        "seat_district_hi",
+        "seat_name_ur"
+      ],
+      "provenance": "UNOFFICIAL_COMMUNITY_SCRAPE",
+      "canonicalStatus": "NON_CANONICAL_SCRATCH_ONLY",
+      "canBeMergedToProductionDataGeo": false,
+      "rejectionReason": "Fails Rule IV-001 authoritative source requirements. Unofficial community scrapes without Survey of India / ECI digital signatures cannot be silently promoted to official data/geo assets."
+    },
+    {
+      "fileName": "MANIPUR_ASSEMBLY.geojson",
+      "jurisdiction": "MN",
+      "statutorySeats": 60,
+      "featureCount": 68,
+      "seatDifference": 8,
+      "propertySchema": [
+        "FID",
+        "OBJECTID",
+        "ST_CODE",
+        "ST_NAME",
+        "DT_CODE",
+        "DIST_NAME",
+        "AC_NO",
+        "AC_NAME"
+      ],
+      "provenance": "UNOFFICIAL_COMMUNITY_SCRAPE",
+      "canonicalStatus": "NON_CANONICAL_SCRATCH_ONLY",
+      "canBeMergedToProductionDataGeo": false,
+      "rejectionReason": "Fails Rule IV-001 authoritative source requirements. Unofficial community scrapes without Survey of India / ECI digital signatures cannot be silently promoted to official data/geo assets."
+    },
+    {
+      "fileName": "MEGHALAYA_ASSEMBLY.geojson",
+      "jurisdiction": "ML",
+      "statutorySeats": 60,
+      "featureCount": 60,
+      "seatDifference": 0,
+      "propertySchema": [
+        "FID",
+        "OBJECTID",
+        "ST_CODE",
+        "ST_NAME",
+        "DT_CODE",
+        "DIST_NAME",
+        "AC_NO",
+        "AC_NAME"
+      ],
+      "provenance": "UNOFFICIAL_COMMUNITY_SCRAPE",
+      "canonicalStatus": "NON_CANONICAL_SCRATCH_ONLY",
+      "canBeMergedToProductionDataGeo": false,
+      "rejectionReason": "Fails Rule IV-001 authoritative source requirements. Unofficial community scrapes without Survey of India / ECI digital signatures cannot be silently promoted to official data/geo assets."
+    },
+    {
+      "fileName": "MIZORAM_ASSEMBLY.geojson",
+      "jurisdiction": "MZ",
+      "statutorySeats": 40,
+      "featureCount": 40,
+      "seatDifference": 0,
+      "propertySchema": [
+        "FID",
+        "OBJECTID",
+        "ST_CODE",
+        "ST_NAME",
+        "DT_CODE",
+        "DIST_NAME",
+        "AC_NO",
+        "AC_NAME"
+      ],
+      "provenance": "UNOFFICIAL_COMMUNITY_SCRAPE",
+      "canonicalStatus": "NON_CANONICAL_SCRATCH_ONLY",
+      "canBeMergedToProductionDataGeo": false,
+      "rejectionReason": "Fails Rule IV-001 authoritative source requirements. Unofficial community scrapes without Survey of India / ECI digital signatures cannot be silently promoted to official data/geo assets."
+    },
+    {
+      "fileName": "NAGALAND_ASSEMBLY.geojson",
+      "jurisdiction": "NL",
+      "statutorySeats": 60,
+      "featureCount": 60,
+      "seatDifference": 0,
+      "propertySchema": [
+        "FID",
+        "OBJECTID",
+        "ST_CODE",
+        "ST_NAME",
+        "DT_CODE",
+        "DIST_NAME",
+        "AC_NO",
+        "AC_NAME"
+      ],
+      "provenance": "UNOFFICIAL_COMMUNITY_SCRAPE",
+      "canonicalStatus": "NON_CANONICAL_SCRATCH_ONLY",
+      "canBeMergedToProductionDataGeo": false,
+      "rejectionReason": "Fails Rule IV-001 authoritative source requirements. Unofficial community scrapes without Survey of India / ECI digital signatures cannot be silently promoted to official data/geo assets."
+    },
+    {
+      "fileName": "PUDUCHERRY_ASSEMBLY.geojson",
+      "jurisdiction": "PY",
+      "statutorySeats": 30,
+      "featureCount": 30,
+      "seatDifference": 0,
+      "propertySchema": [
+        "FID",
+        "OBJECTID",
+        "ST_CODE",
+        "ST_NAME",
+        "DT_CODE",
+        "DIST_NAME",
+        "AC_NO",
+        "AC_NAME"
+      ],
+      "provenance": "UNOFFICIAL_COMMUNITY_SCRAPE",
+      "canonicalStatus": "NON_CANONICAL_SCRATCH_ONLY",
+      "canBeMergedToProductionDataGeo": false,
+      "rejectionReason": "Fails Rule IV-001 authoritative source requirements. Unofficial community scrapes without Survey of India / ECI digital signatures cannot be silently promoted to official data/geo assets."
+    },
+    {
+      "fileName": "SIKKIM_ASSEMBLY.geojson",
+      "jurisdiction": "SK",
+      "statutorySeats": 32,
+      "featureCount": 38,
+      "seatDifference": 6,
+      "propertySchema": [
+        "FID",
+        "OBJECTID",
+        "ST_CODE",
+        "ST_NAME",
+        "DT_CODE",
+        "DIST_NAME",
+        "AC_NO",
+        "AC_NAME"
+      ],
+      "provenance": "UNOFFICIAL_COMMUNITY_SCRAPE",
+      "canonicalStatus": "NON_CANONICAL_SCRATCH_ONLY",
+      "canBeMergedToProductionDataGeo": false,
+      "rejectionReason": "Fails Rule IV-001 authoritative source requirements. Unofficial community scrapes without Survey of India / ECI digital signatures cannot be silently promoted to official data/geo assets."
+    },
+    {
+      "fileName": "sk-source.geojson",
+      "jurisdiction": "SK",
+      "statutorySeats": 32,
+      "featureCount": 31,
+      "seatDifference": -1,
+      "propertySchema": [
+        "ac_num",
+        "ac_name",
+        "ac_type"
+      ],
+      "provenance": "UNOFFICIAL_COMMUNITY_SCRAPE",
+      "canonicalStatus": "NON_CANONICAL_SCRATCH_ONLY",
+      "canBeMergedToProductionDataGeo": false,
+      "rejectionReason": "Fails Rule IV-001 authoritative source requirements. Unofficial community scrapes without Survey of India / ECI digital signatures cannot be silently promoted to official data/geo assets."
+    },
+    {
+      "fileName": "TRIPURA_ASSEMBLY.geojson",
+      "jurisdiction": "TR",
+      "statutorySeats": 60,
+      "featureCount": 60,
+      "seatDifference": 0,
+      "propertySchema": [
+        "FID",
+        "OBJECTID",
+        "ST_CODE",
+        "ST_NAME",
+        "DT_CODE",
+        "DIST_NAME",
+        "AC_NO",
+        "AC_NAME"
+      ],
+      "provenance": "UNOFFICIAL_COMMUNITY_SCRAPE",
+      "canonicalStatus": "NON_CANONICAL_SCRATCH_ONLY",
+      "canBeMergedToProductionDataGeo": false,
+      "rejectionReason": "Fails Rule IV-001 authoritative source requirements. Unofficial community scrapes without Survey of India / ECI digital signatures cannot be silently promoted to official data/geo assets."
+    },
+    {
+      "fileName": "UTTARAKHAND_ASSEMBLY.geojson",
+      "jurisdiction": "UK",
+      "statutorySeats": 70,
+      "featureCount": 70,
+      "seatDifference": 0,
+      "propertySchema": [
+        "FID",
+        "OBJECTID",
+        "ST_CODE",
+        "ST_NAME",
+        "DT_CODE",
+        "DIST_NAME",
+        "AC_NO",
+        "AC_NAME"
+      ],
+      "provenance": "UNOFFICIAL_COMMUNITY_SCRAPE",
+      "canonicalStatus": "NON_CANONICAL_SCRATCH_ONLY",
+      "canBeMergedToProductionDataGeo": false,
+      "rejectionReason": "Fails Rule IV-001 authoritative source requirements. Unofficial community scrapes without Survey of India / ECI digital signatures cannot be silently promoted to official data/geo assets."
+    }
+  ],
+  "missing30States": [
+    {
+      "jurisdictionCode": "AP",
+      "jurisdictionName": "Andhra Pradesh",
+      "statutoryAssemblySeats": 175,
+      "status": "MISSING_AUTHORITATIVE_BOUNDARY_FEED",
+      "requiredSourceFeed": "Survey of India (1:50k) / Election Commission of India (ECI) Delimitation Orders GIS Layer",
+      "blockerCode": "CRIT-B104-02",
+      "mitigationForbidden": "Synthetic extrapolation or duplication of Telangana boundaries is strictly prohibited under Master Execution Framework Amendment v1.6."
+    },
+    {
+      "jurisdictionCode": "AR",
+      "jurisdictionName": "Arunachal Pradesh",
+      "statutoryAssemblySeats": 60,
+      "status": "MISSING_AUTHORITATIVE_BOUNDARY_FEED",
+      "requiredSourceFeed": "Survey of India (1:50k) / Election Commission of India (ECI) Delimitation Orders GIS Layer",
+      "blockerCode": "CRIT-B104-02",
+      "mitigationForbidden": "Synthetic extrapolation or duplication of Telangana boundaries is strictly prohibited under Master Execution Framework Amendment v1.6."
+    },
+    {
+      "jurisdictionCode": "AS",
+      "jurisdictionName": "Assam",
+      "statutoryAssemblySeats": 126,
+      "status": "MISSING_AUTHORITATIVE_BOUNDARY_FEED",
+      "requiredSourceFeed": "Survey of India (1:50k) / Election Commission of India (ECI) Delimitation Orders GIS Layer",
+      "blockerCode": "CRIT-B104-02",
+      "mitigationForbidden": "Synthetic extrapolation or duplication of Telangana boundaries is strictly prohibited under Master Execution Framework Amendment v1.6."
+    },
+    {
+      "jurisdictionCode": "BR",
+      "jurisdictionName": "Bihar",
+      "statutoryAssemblySeats": 243,
+      "status": "MISSING_AUTHORITATIVE_BOUNDARY_FEED",
+      "requiredSourceFeed": "Survey of India (1:50k) / Election Commission of India (ECI) Delimitation Orders GIS Layer",
+      "blockerCode": "CRIT-B104-02",
+      "mitigationForbidden": "Synthetic extrapolation or duplication of Telangana boundaries is strictly prohibited under Master Execution Framework Amendment v1.6."
+    },
+    {
+      "jurisdictionCode": "CG",
+      "jurisdictionName": "Chhattisgarh",
+      "statutoryAssemblySeats": 90,
+      "status": "MISSING_AUTHORITATIVE_BOUNDARY_FEED",
+      "requiredSourceFeed": "Survey of India (1:50k) / Election Commission of India (ECI) Delimitation Orders GIS Layer",
+      "blockerCode": "CRIT-B104-02",
+      "mitigationForbidden": "Synthetic extrapolation or duplication of Telangana boundaries is strictly prohibited under Master Execution Framework Amendment v1.6."
+    },
+    {
+      "jurisdictionCode": "GA",
+      "jurisdictionName": "Goa",
+      "statutoryAssemblySeats": 40,
+      "status": "MISSING_AUTHORITATIVE_BOUNDARY_FEED",
+      "requiredSourceFeed": "Survey of India (1:50k) / Election Commission of India (ECI) Delimitation Orders GIS Layer",
+      "blockerCode": "CRIT-B104-02",
+      "mitigationForbidden": "Synthetic extrapolation or duplication of Telangana boundaries is strictly prohibited under Master Execution Framework Amendment v1.6."
+    },
+    {
+      "jurisdictionCode": "GJ",
+      "jurisdictionName": "Gujarat",
+      "statutoryAssemblySeats": 182,
+      "status": "MISSING_AUTHORITATIVE_BOUNDARY_FEED",
+      "requiredSourceFeed": "Survey of India (1:50k) / Election Commission of India (ECI) Delimitation Orders GIS Layer",
+      "blockerCode": "CRIT-B104-02",
+      "mitigationForbidden": "Synthetic extrapolation or duplication of Telangana boundaries is strictly prohibited under Master Execution Framework Amendment v1.6."
+    },
+    {
+      "jurisdictionCode": "HR",
+      "jurisdictionName": "Haryana",
+      "statutoryAssemblySeats": 90,
+      "status": "MISSING_AUTHORITATIVE_BOUNDARY_FEED",
+      "requiredSourceFeed": "Survey of India (1:50k) / Election Commission of India (ECI) Delimitation Orders GIS Layer",
+      "blockerCode": "CRIT-B104-02",
+      "mitigationForbidden": "Synthetic extrapolation or duplication of Telangana boundaries is strictly prohibited under Master Execution Framework Amendment v1.6."
+    },
+    {
+      "jurisdictionCode": "HP",
+      "jurisdictionName": "Himachal Pradesh",
+      "statutoryAssemblySeats": 68,
+      "status": "MISSING_AUTHORITATIVE_BOUNDARY_FEED",
+      "requiredSourceFeed": "Survey of India (1:50k) / Election Commission of India (ECI) Delimitation Orders GIS Layer",
+      "blockerCode": "CRIT-B104-02",
+      "mitigationForbidden": "Synthetic extrapolation or duplication of Telangana boundaries is strictly prohibited under Master Execution Framework Amendment v1.6."
+    },
+    {
+      "jurisdictionCode": "JH",
+      "jurisdictionName": "Jharkhand",
+      "statutoryAssemblySeats": 81,
+      "status": "MISSING_AUTHORITATIVE_BOUNDARY_FEED",
+      "requiredSourceFeed": "Survey of India (1:50k) / Election Commission of India (ECI) Delimitation Orders GIS Layer",
+      "blockerCode": "CRIT-B104-02",
+      "mitigationForbidden": "Synthetic extrapolation or duplication of Telangana boundaries is strictly prohibited under Master Execution Framework Amendment v1.6."
+    },
+    {
+      "jurisdictionCode": "KA",
+      "jurisdictionName": "Karnataka",
+      "statutoryAssemblySeats": 224,
+      "status": "MISSING_AUTHORITATIVE_BOUNDARY_FEED",
+      "requiredSourceFeed": "Survey of India (1:50k) / Election Commission of India (ECI) Delimitation Orders GIS Layer",
+      "blockerCode": "CRIT-B104-02",
+      "mitigationForbidden": "Synthetic extrapolation or duplication of Telangana boundaries is strictly prohibited under Master Execution Framework Amendment v1.6."
+    },
+    {
+      "jurisdictionCode": "KL",
+      "jurisdictionName": "Kerala",
+      "statutoryAssemblySeats": 140,
+      "status": "MISSING_AUTHORITATIVE_BOUNDARY_FEED",
+      "requiredSourceFeed": "Survey of India (1:50k) / Election Commission of India (ECI) Delimitation Orders GIS Layer",
+      "blockerCode": "CRIT-B104-02",
+      "mitigationForbidden": "Synthetic extrapolation or duplication of Telangana boundaries is strictly prohibited under Master Execution Framework Amendment v1.6."
+    },
+    {
+      "jurisdictionCode": "MP",
+      "jurisdictionName": "Madhya Pradesh",
+      "statutoryAssemblySeats": 230,
+      "status": "MISSING_AUTHORITATIVE_BOUNDARY_FEED",
+      "requiredSourceFeed": "Survey of India (1:50k) / Election Commission of India (ECI) Delimitation Orders GIS Layer",
+      "blockerCode": "CRIT-B104-02",
+      "mitigationForbidden": "Synthetic extrapolation or duplication of Telangana boundaries is strictly prohibited under Master Execution Framework Amendment v1.6."
+    },
+    {
+      "jurisdictionCode": "MH",
+      "jurisdictionName": "Maharashtra",
+      "statutoryAssemblySeats": 288,
+      "status": "MISSING_AUTHORITATIVE_BOUNDARY_FEED",
+      "requiredSourceFeed": "Survey of India (1:50k) / Election Commission of India (ECI) Delimitation Orders GIS Layer",
+      "blockerCode": "CRIT-B104-02",
+      "mitigationForbidden": "Synthetic extrapolation or duplication of Telangana boundaries is strictly prohibited under Master Execution Framework Amendment v1.6."
+    },
+    {
+      "jurisdictionCode": "MN",
+      "jurisdictionName": "Manipur",
+      "statutoryAssemblySeats": 60,
+      "status": "MISSING_AUTHORITATIVE_BOUNDARY_FEED",
+      "requiredSourceFeed": "Survey of India (1:50k) / Election Commission of India (ECI) Delimitation Orders GIS Layer",
+      "blockerCode": "CRIT-B104-02",
+      "mitigationForbidden": "Synthetic extrapolation or duplication of Telangana boundaries is strictly prohibited under Master Execution Framework Amendment v1.6."
+    },
+    {
+      "jurisdictionCode": "ML",
+      "jurisdictionName": "Meghalaya",
+      "statutoryAssemblySeats": 60,
+      "status": "MISSING_AUTHORITATIVE_BOUNDARY_FEED",
+      "requiredSourceFeed": "Survey of India (1:50k) / Election Commission of India (ECI) Delimitation Orders GIS Layer",
+      "blockerCode": "CRIT-B104-02",
+      "mitigationForbidden": "Synthetic extrapolation or duplication of Telangana boundaries is strictly prohibited under Master Execution Framework Amendment v1.6."
+    },
+    {
+      "jurisdictionCode": "MZ",
+      "jurisdictionName": "Mizoram",
+      "statutoryAssemblySeats": 40,
+      "status": "MISSING_AUTHORITATIVE_BOUNDARY_FEED",
+      "requiredSourceFeed": "Survey of India (1:50k) / Election Commission of India (ECI) Delimitation Orders GIS Layer",
+      "blockerCode": "CRIT-B104-02",
+      "mitigationForbidden": "Synthetic extrapolation or duplication of Telangana boundaries is strictly prohibited under Master Execution Framework Amendment v1.6."
+    },
+    {
+      "jurisdictionCode": "NL",
+      "jurisdictionName": "Nagaland",
+      "statutoryAssemblySeats": 60,
+      "status": "MISSING_AUTHORITATIVE_BOUNDARY_FEED",
+      "requiredSourceFeed": "Survey of India (1:50k) / Election Commission of India (ECI) Delimitation Orders GIS Layer",
+      "blockerCode": "CRIT-B104-02",
+      "mitigationForbidden": "Synthetic extrapolation or duplication of Telangana boundaries is strictly prohibited under Master Execution Framework Amendment v1.6."
+    },
+    {
+      "jurisdictionCode": "OD",
+      "jurisdictionName": "Odisha",
+      "statutoryAssemblySeats": 147,
+      "status": "MISSING_AUTHORITATIVE_BOUNDARY_FEED",
+      "requiredSourceFeed": "Survey of India (1:50k) / Election Commission of India (ECI) Delimitation Orders GIS Layer",
+      "blockerCode": "CRIT-B104-02",
+      "mitigationForbidden": "Synthetic extrapolation or duplication of Telangana boundaries is strictly prohibited under Master Execution Framework Amendment v1.6."
+    },
+    {
+      "jurisdictionCode": "PB",
+      "jurisdictionName": "Punjab",
+      "statutoryAssemblySeats": 117,
+      "status": "MISSING_AUTHORITATIVE_BOUNDARY_FEED",
+      "requiredSourceFeed": "Survey of India (1:50k) / Election Commission of India (ECI) Delimitation Orders GIS Layer",
+      "blockerCode": "CRIT-B104-02",
+      "mitigationForbidden": "Synthetic extrapolation or duplication of Telangana boundaries is strictly prohibited under Master Execution Framework Amendment v1.6."
+    },
+    {
+      "jurisdictionCode": "RJ",
+      "jurisdictionName": "Rajasthan",
+      "statutoryAssemblySeats": 200,
+      "status": "MISSING_AUTHORITATIVE_BOUNDARY_FEED",
+      "requiredSourceFeed": "Survey of India (1:50k) / Election Commission of India (ECI) Delimitation Orders GIS Layer",
+      "blockerCode": "CRIT-B104-02",
+      "mitigationForbidden": "Synthetic extrapolation or duplication of Telangana boundaries is strictly prohibited under Master Execution Framework Amendment v1.6."
+    },
+    {
+      "jurisdictionCode": "SK",
+      "jurisdictionName": "Sikkim",
+      "statutoryAssemblySeats": 32,
+      "status": "MISSING_AUTHORITATIVE_BOUNDARY_FEED",
+      "requiredSourceFeed": "Survey of India (1:50k) / Election Commission of India (ECI) Delimitation Orders GIS Layer",
+      "blockerCode": "CRIT-B104-02",
+      "mitigationForbidden": "Synthetic extrapolation or duplication of Telangana boundaries is strictly prohibited under Master Execution Framework Amendment v1.6."
+    },
+    {
+      "jurisdictionCode": "TN",
+      "jurisdictionName": "Tamil Nadu",
+      "statutoryAssemblySeats": 234,
+      "status": "MISSING_AUTHORITATIVE_BOUNDARY_FEED",
+      "requiredSourceFeed": "Survey of India (1:50k) / Election Commission of India (ECI) Delimitation Orders GIS Layer",
+      "blockerCode": "CRIT-B104-02",
+      "mitigationForbidden": "Synthetic extrapolation or duplication of Telangana boundaries is strictly prohibited under Master Execution Framework Amendment v1.6."
+    },
+    {
+      "jurisdictionCode": "TR",
+      "jurisdictionName": "Tripura",
+      "statutoryAssemblySeats": 60,
+      "status": "MISSING_AUTHORITATIVE_BOUNDARY_FEED",
+      "requiredSourceFeed": "Survey of India (1:50k) / Election Commission of India (ECI) Delimitation Orders GIS Layer",
+      "blockerCode": "CRIT-B104-02",
+      "mitigationForbidden": "Synthetic extrapolation or duplication of Telangana boundaries is strictly prohibited under Master Execution Framework Amendment v1.6."
+    },
+    {
+      "jurisdictionCode": "UP",
+      "jurisdictionName": "Uttar Pradesh",
+      "statutoryAssemblySeats": 403,
+      "status": "MISSING_AUTHORITATIVE_BOUNDARY_FEED",
+      "requiredSourceFeed": "Survey of India (1:50k) / Election Commission of India (ECI) Delimitation Orders GIS Layer",
+      "blockerCode": "CRIT-B104-02",
+      "mitigationForbidden": "Synthetic extrapolation or duplication of Telangana boundaries is strictly prohibited under Master Execution Framework Amendment v1.6."
+    },
+    {
+      "jurisdictionCode": "UK",
+      "jurisdictionName": "Uttarakhand",
+      "statutoryAssemblySeats": 70,
+      "status": "MISSING_AUTHORITATIVE_BOUNDARY_FEED",
+      "requiredSourceFeed": "Survey of India (1:50k) / Election Commission of India (ECI) Delimitation Orders GIS Layer",
+      "blockerCode": "CRIT-B104-02",
+      "mitigationForbidden": "Synthetic extrapolation or duplication of Telangana boundaries is strictly prohibited under Master Execution Framework Amendment v1.6."
+    },
+    {
+      "jurisdictionCode": "WB",
+      "jurisdictionName": "West Bengal",
+      "statutoryAssemblySeats": 294,
+      "status": "MISSING_AUTHORITATIVE_BOUNDARY_FEED",
+      "requiredSourceFeed": "Survey of India (1:50k) / Election Commission of India (ECI) Delimitation Orders GIS Layer",
+      "blockerCode": "CRIT-B104-02",
+      "mitigationForbidden": "Synthetic extrapolation or duplication of Telangana boundaries is strictly prohibited under Master Execution Framework Amendment v1.6."
+    },
+    {
+      "jurisdictionCode": "DL",
+      "jurisdictionName": "Delhi",
+      "statutoryAssemblySeats": 70,
+      "status": "MISSING_AUTHORITATIVE_BOUNDARY_FEED",
+      "requiredSourceFeed": "Survey of India (1:50k) / Election Commission of India (ECI) Delimitation Orders GIS Layer",
+      "blockerCode": "CRIT-B104-02",
+      "mitigationForbidden": "Synthetic extrapolation or duplication of Telangana boundaries is strictly prohibited under Master Execution Framework Amendment v1.6."
+    },
+    {
+      "jurisdictionCode": "JK",
+      "jurisdictionName": "Jammu & Kashmir",
+      "statutoryAssemblySeats": 90,
+      "status": "MISSING_AUTHORITATIVE_BOUNDARY_FEED",
+      "requiredSourceFeed": "Survey of India (1:50k) / Election Commission of India (ECI) Delimitation Orders GIS Layer",
+      "blockerCode": "CRIT-B104-02",
+      "mitigationForbidden": "Synthetic extrapolation or duplication of Telangana boundaries is strictly prohibited under Master Execution Framework Amendment v1.6."
+    },
+    {
+      "jurisdictionCode": "PY",
+      "jurisdictionName": "Puducherry",
+      "statutoryAssemblySeats": 30,
+      "status": "MISSING_AUTHORITATIVE_BOUNDARY_FEED",
+      "requiredSourceFeed": "Survey of India (1:50k) / Election Commission of India (ECI) Delimitation Orders GIS Layer",
+      "blockerCode": "CRIT-B104-02",
+      "mitigationForbidden": "Synthetic extrapolation or duplication of Telangana boundaries is strictly prohibited under Master Execution Framework Amendment v1.6."
+    }
+  ],
+  "stageBMatrix": [
+    {
+      "taskId": "W021.5-B1-01",
+      "taskTitle": "Core Canonicalization Engine & Statutory Boundary Conflict Resolution",
+      "allocatedWeight": 4,
+      "earnedWeight": 4,
+      "status": "REPO_VERIFIED",
+      "completionRatio": 1,
+      "criteria": [
+        {
+          "criterionId": "CRIT-B101-01",
+          "weight": 2,
+          "status": "PASS",
+          "scope": "REPOSITORY_VERIFIABLE",
+          "evaluation": "Migration 059 canonical constituency registry, conflict resolution infrastructure, unique indexes, and foreign keys verified on disk."
+        },
+        {
+          "criterionId": "CRIT-B101-02",
+          "weight": 2,
+          "status": "PASS",
+          "scope": "REPOSITORY_VERIFIABLE",
+          "evaluation": "National constituency canonicalization specification report verified covering all 4,123 statutory Assembly Constituencies."
+        }
+      ]
+    },
+    {
+      "taskId": "W021.5-B1-02",
+      "taskTitle": "National AC-to-PC Parliamentary Mapping Registry",
+      "allocatedWeight": 3,
+      "earnedWeight": 3,
+      "status": "REPO_VERIFIED",
+      "completionRatio": 1,
+      "criteria": [
+        {
+          "criterionId": "CRIT-B102-01",
+          "weight": 1.5,
+          "status": "PASS",
+          "scope": "REPOSITORY_VERIFIABLE",
+          "evaluation": "Migration 060 geography remediation schema, temporal constraints, and delimitation regime catalogs verified."
+        },
+        {
+          "criterionId": "CRIT-B102-02",
+          "weight": 1.5,
+          "status": "PASS",
+          "scope": "REPOSITORY_VERIFIABLE",
+          "evaluation": "Migration 061 AC-to-PC mapping registry verified with exactly 4,123 mapping rows, zero orphaned ACs, zero orphaned PCs, and uniform state partition invariants."
+        }
+      ]
+    },
+    {
+      "taskId": "W021.5-B1-03",
+      "taskTitle": "Temporal Lineage & Assam 2023 Delimitation Modeling",
+      "allocatedWeight": 3,
+      "earnedWeight": 3,
+      "status": "REPO_VERIFIED",
+      "completionRatio": 1,
+      "criteria": [
+        {
+          "criterionId": "CRIT-B103-01",
+          "weight": 1.5,
+          "status": "PASS",
+          "scope": "REPOSITORY_VERIFIABLE",
+          "evaluation": "Migration 062 Assam delimitation schema verified with 126 new 2023 AC versions, 14 2023 PC versions, Table B mapping, and statutory reservations."
+        },
+        {
+          "criterionId": "CRIT-B103-02",
+          "weight": 1.5,
+          "status": "PASS",
+          "scope": "REPOSITORY_VERIFIABLE",
+          "evaluation": "Assam 2023 delimitation reconciliation report verified with temporal cutoff simulation and preservation of historical 2008 boundaries."
+        }
+      ]
+    },
+    {
+      "taskId": "W021.5-B1-04",
+      "taskTitle": "National Assembly Boundary GeoJSON Deep Validation & Linkage",
+      "allocatedWeight": 2,
+      "earnedWeight": 0.5,
+      "status": "PARTIAL",
+      "completionRatio": 0.25,
+      "criteria": [
+        {
+          "criterionId": "CRIT-B104-01",
+          "weight": 0.5,
+          "status": "PASS",
+          "scope": "REPOSITORY_VERIFIABLE",
+          "evaluation": "Telangana assembly GeoJSON deep RFC 7946 validation passed with Indian bounding box; AC 119 duplicate claim defect detected and confirmed."
+        },
+        {
+          "criterionId": "CRIT-B104-02",
+          "weight": 1.5,
+          "status": "BLOCKED",
+          "scope": "BLOCKED_EXTERNAL",
+          "evaluation": "National statutory boundary completeness across 31 States/UTs blocked pending 30 remaining state authoritative GeoJSON feeds and official CEO Telangana AC 119 defect resolution."
+        }
+      ]
+    }
+  ],
+  "stageBAllocatedWeight": 12,
+  "stageBEarnedWeight": 10.5,
+  "stageBBlockedWeight": 1.5
+}

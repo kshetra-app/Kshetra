@@ -9,19 +9,21 @@
  */
 
 import { buildApp } from '../server';
-import { setSupabaseConfiguredForTesting } from '../lib/supabase';
+import { isSupabaseConfigured, setSupabaseConfiguredForTesting } from '../lib/supabase';
 import type { FastifyInstance } from 'fastify';
 
 describe('W009-B4 Canonical Mutations API', () => {
   let app: FastifyInstance;
+  let originalConfigured: boolean;
 
   beforeAll(async () => {
+    originalConfigured = isSupabaseConfigured;
     app = await buildApp();
     await app.ready();
   });
 
   afterAll(async () => {
-    setSupabaseConfiguredForTesting(false);
+    setSupabaseConfiguredForTesting(originalConfigured);
     await app.close();
   });
 
@@ -125,6 +127,10 @@ describe('W009-B4 Canonical Mutations API', () => {
   describe('Fail-Closed on Unconfigured Database (503 No Fake Success)', () => {
     beforeEach(() => {
       setSupabaseConfiguredForTesting(false);
+    });
+
+    afterAll(() => {
+      setSupabaseConfiguredForTesting(originalConfigured);
     });
 
     it('returns 503 DATABASE_UNAVAILABLE when database is unconfigured on upvote', async () => {

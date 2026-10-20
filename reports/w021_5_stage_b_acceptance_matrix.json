@@ -1,0 +1,107 @@
+{
+  "title": "Stage B Task-by-Task Acceptance Matrix",
+  "directive": "CTO Directive 116",
+  "generatedAt": "2026-10-20T06:17:07.757Z",
+  "stageWeight": 12,
+  "stageEarnedWeight": 10.5,
+  "stageBlockedWeight": 1.5,
+  "stageCompletionRatio": 0.875,
+  "tasks": [
+    {
+      "taskId": "W021.5-B1-01",
+      "taskTitle": "Core Canonicalization Engine & Statutory Boundary Conflict Resolution",
+      "allocatedWeight": 4,
+      "earnedWeight": 4,
+      "status": "REPO_VERIFIED",
+      "completionRatio": 1,
+      "criteria": [
+        {
+          "criterionId": "CRIT-B101-01",
+          "weight": 2,
+          "status": "PASS",
+          "scope": "REPOSITORY_VERIFIABLE",
+          "evaluation": "Migration 059 canonical constituency registry, conflict resolution infrastructure, unique indexes, and foreign keys verified on disk."
+        },
+        {
+          "criterionId": "CRIT-B101-02",
+          "weight": 2,
+          "status": "PASS",
+          "scope": "REPOSITORY_VERIFIABLE",
+          "evaluation": "National constituency canonicalization specification report verified covering all 4,123 statutory Assembly Constituencies."
+        }
+      ]
+    },
+    {
+      "taskId": "W021.5-B1-02",
+      "taskTitle": "National AC-to-PC Parliamentary Mapping Registry",
+      "allocatedWeight": 3,
+      "earnedWeight": 3,
+      "status": "REPO_VERIFIED",
+      "completionRatio": 1,
+      "criteria": [
+        {
+          "criterionId": "CRIT-B102-01",
+          "weight": 1.5,
+          "status": "PASS",
+          "scope": "REPOSITORY_VERIFIABLE",
+          "evaluation": "Migration 060 geography remediation schema, temporal constraints, and delimitation regime catalogs verified."
+        },
+        {
+          "criterionId": "CRIT-B102-02",
+          "weight": 1.5,
+          "status": "PASS",
+          "scope": "REPOSITORY_VERIFIABLE",
+          "evaluation": "Migration 061 AC-to-PC mapping registry verified with exactly 4,123 mapping rows, zero orphaned ACs, zero orphaned PCs, and uniform state partition invariants."
+        }
+      ]
+    },
+    {
+      "taskId": "W021.5-B1-03",
+      "taskTitle": "Temporal Lineage & Assam 2023 Delimitation Modeling",
+      "allocatedWeight": 3,
+      "earnedWeight": 3,
+      "status": "REPO_VERIFIED",
+      "completionRatio": 1,
+      "criteria": [
+        {
+          "criterionId": "CRIT-B103-01",
+          "weight": 1.5,
+          "status": "PASS",
+          "scope": "REPOSITORY_VERIFIABLE",
+          "evaluation": "Migration 062 Assam delimitation schema verified with 126 new 2023 AC versions, 14 2023 PC versions, Table B mapping, and statutory reservations."
+        },
+        {
+          "criterionId": "CRIT-B103-02",
+          "weight": 1.5,
+          "status": "PASS",
+          "scope": "REPOSITORY_VERIFIABLE",
+          "evaluation": "Assam 2023 delimitation reconciliation report verified with temporal cutoff simulation and preservation of historical 2008 boundaries."
+        }
+      ]
+    },
+    {
+      "taskId": "W021.5-B1-04",
+      "taskTitle": "National Assembly Boundary GeoJSON Deep Validation & Linkage",
+      "allocatedWeight": 2,
+      "earnedWeight": 0.5,
+      "status": "PARTIAL",
+      "completionRatio": 0.25,
+      "criteria": [
+        {
+          "criterionId": "CRIT-B104-01",
+          "weight": 0.5,
+          "status": "PASS",
+          "scope": "REPOSITORY_VERIFIABLE",
+          "evaluation": "Telangana assembly GeoJSON deep RFC 7946 validation passed with Indian bounding box; AC 119 duplicate claim defect detected and confirmed."
+        },
+        {
+          "criterionId": "CRIT-B104-02",
+          "weight": 1.5,
+          "status": "BLOCKED",
+          "scope": "BLOCKED_EXTERNAL",
+          "evaluation": "National statutory boundary completeness across 31 States/UTs blocked pending 30 remaining state authoritative GeoJSON feeds and official CEO Telangana AC 119 defect resolution."
+        }
+      ]
+    }
+  ]
+}

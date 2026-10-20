@@ -1,4 +1,5 @@
 import { buildApp } from '../server';
+import { isSupabaseConfigured, setSupabaseConfiguredForTesting } from '../lib/supabase';
 
 /**
  * Trust & Safety route tests — exercises role-based authorization,
@@ -6,13 +7,17 @@ import { buildApp } from '../server';
  */
 describe('Moderation Routes', () => {
   let app: Awaited<ReturnType<typeof buildApp>>;
+  let originalConfigured: boolean;
 
   beforeAll(async () => {
+    originalConfigured = isSupabaseConfigured;
+    setSupabaseConfiguredForTesting(true);
     app = await buildApp();
     await app.ready();
   });
 
   afterAll(async () => {
+    setSupabaseConfiguredForTesting(originalConfigured);
     await app.close();
   });
 
@@ -381,7 +386,7 @@ describe('Moderation Routes', () => {
         url: '/api/v1/moderation/block/u2',
         headers: { 'x-user-id': 'u1' },
       });
-      expect([200, 503]).toContain(ok.statusCode);
+      expect(ok.statusCode).toBe(200);
     });
 
     it('verify-request succeeds when authenticated', async () => {
@@ -391,7 +396,7 @@ describe('Moderation Routes', () => {
         headers: { 'x-user-id': 'u1' },
         payload: { verificationType: 'journalist' },
       });
-      expect([200, 503]).toContain(res.statusCode);
+      expect(res.statusCode).toBe(200);
     });
   });
 

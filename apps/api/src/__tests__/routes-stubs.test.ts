@@ -1,4 +1,5 @@
 import { buildApp } from '../server';
+import { isSupabaseConfigured, setSupabaseConfiguredForTesting } from '../lib/supabase';
 
 /**
  * Contract tests for the public, deterministic route surfaces:
@@ -7,13 +8,17 @@ import { buildApp } from '../server';
  */
 describe('Public route contracts', () => {
   let app: Awaited<ReturnType<typeof buildApp>>;
+  let originalConfigured: boolean;
 
   beforeAll(async () => {
+    originalConfigured = isSupabaseConfigured;
+    setSupabaseConfiguredForTesting(true);
     app = await buildApp();
     await app.ready();
   });
 
   afterAll(async () => {
+    setSupabaseConfiguredForTesting(originalConfigured);
     await app.close();
   });
 
@@ -80,9 +85,9 @@ describe('Public route contracts', () => {
     });
 
     it('records bill opinion, files & upvotes RTI', async () => {
-      expect([200, 503]).toContain((await post('/api/v1/civic/bills/b1/opinion', { support: true })).statusCode);
-      expect([200, 503]).toContain((await post('/api/v1/civic/rti', { subject: 'x' })).statusCode);
-      expect([200, 503]).toContain((await post('/api/v1/civic/rti/r1/upvote', {})).statusCode);
+      expect((await post('/api/v1/civic/bills/b1/opinion', { support: true })).statusCode).toBe(200);
+      expect((await post('/api/v1/civic/rti', { subject: 'x' })).statusCode).toBe(200);
+      expect((await post('/api/v1/civic/rti/r1/upvote', {})).statusCode).toBe(200);
     });
   });
 
@@ -114,9 +119,9 @@ describe('Public route contracts', () => {
     });
 
     it('accepts rsvp, manifesto vote, survey response and grievance', async () => {
-      expect([200, 503]).toContain((await post('/api/v1/politician/events/e1/rsvp', {})).statusCode);
+      expect((await post('/api/v1/politician/events/e1/rsvp', {})).statusCode).toBe(200);
       expect((await post('/api/v1/politician/manifestos/m1/items/i1/vote', { support: true })).statusCode).toBe(501);
-      expect([200, 503]).toContain((await post('/api/v1/politician/surveys/s1/respond', { answers: {} })).statusCode);
+      expect((await post('/api/v1/politician/surveys/s1/respond', { answers: {} })).statusCode).toBe(200);
       expect((await post('/api/v1/politician/grievances', { politicianId: 'p1', subject: 's', description: 'd', category: 'c' })).statusCode).toBe(501);
     });
   });

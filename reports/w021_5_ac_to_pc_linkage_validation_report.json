@@ -1,0 +1,156 @@
+{
+  "title": "Stage B National AC-to-PC Linkage Validation Report",
+  "directive": "CTO Directive 116",
+  "generatedAt": "2026-10-20T06:17:47.536Z",
+  "governingSpec": "W021.5-B1-02 / Migration 061",
+  "summary": {
+    "totalStatutoryAssemblyConstituencies": 4123,
+    "totalStatutoryParliamentaryConstituencies": 543,
+    "totalMappingRowsInMigration061": 4123,
+    "orphanedAcCount": 0,
+    "orphanedPcCount": 0,
+    "interStateMisallocationsCount": 0,
+    "currentEpochUniquenessViolations": 0,
+    "mappingCoveragePercent": 100,
+    "partitionIntegrityStatus": "VERIFIED_DETERMINISTIC_PARTITION"
+  },
+  "uniformPartitions": [
+    {
+      "stateCode": "AP",
+      "stateName": "Andhra Pradesh",
+      "acSeats": 175,
+      "pcSeats": 25,
+      "acPerPcRatio": 7,
+      "regime": "AP_2014"
+    },
+    {
+      "stateCode": "TS",
+      "stateName": "Telangana",
+      "acSeats": 119,
+      "pcSeats": 17,
+      "acPerPcRatio": 7,
+      "regime": "AP_2014"
+    },
+    {
+      "stateCode": "KL",
+      "stateName": "Kerala",
+      "acSeats": 140,
+      "pcSeats": 20,
+      "acPerPcRatio": 7,
+      "regime": "ECI_2008"
+    },
+    {
+      "stateCode": "WB",
+      "stateName": "West Bengal",
+      "acSeats": 294,
+      "pcSeats": 42,
+      "acPerPcRatio": 7,
+      "regime": "ECI_2008"
+    },
+    {
+      "stateCode": "UK",
+      "stateName": "Uttarakhand",
+      "acSeats": 70,
+      "pcSeats": 5,
+      "acPerPcRatio": 14,
+      "regime": "ECI_2008"
+    },
+    {
+      "stateCode": "DL",
+      "stateName": "Delhi",
+      "acSeats": 70,
+      "pcSeats": 7,
+      "acPerPcRatio": 10,
+      "regime": "ECI_2008"
+    },
+    {
+      "stateCode": "GA",
+      "stateName": "Goa",
+      "acSeats": 40,
+      "pcSeats": 2,
+      "acPerPcRatio": 20,
+      "regime": "ECI_2008"
+    },
+    {
+      "stateCode": "HP",
+      "stateName": "Himachal Pradesh",
+      "acSeats": 68,
+      "pcSeats": 4,
+      "acPerPcRatio": 17,
+      "regime": "ECI_2008"
+    },
+    {
+      "stateCode": "HR",
+      "stateName": "Haryana",
+      "acSeats": 90,
+      "pcSeats": 10,
+      "acPerPcRatio": 9,
+      "regime": "ECI_2008"
+    },
+    {
+      "stateCode": "JK",
+      "stateName": "Jammu & Kashmir",
+      "acSeats": 90,
+      "pcSeats": 5,
+      "acPerPcRatio": 18,
+      "regime": "JK_2022"
+    }
+  ],
+  "singlePcJurisdictions": [
+    {
+      "stateCode": "MZ",
+      "stateName": "Mizoram",
+      "acSeats": 40,
+      "pcSeats": 1,
+      "coverage": "100% whole state"
+    },
+    {
+      "stateCode": "NL",
+      "stateName": "Nagaland",
+      "acSeats": 60,
+      "pcSeats": 1,
+      "coverage": "100% whole state"
+    },
+    {
+      "stateCode": "PY",
+      "stateName": "Puducherry",
+      "acSeats": 30,
+      "pcSeats": 1,
+      "coverage": "100% whole territory"
+    },
+    {
+      "stateCode": "SK",
+      "stateName": "Sikkim",
+      "acSeats": 32,
+      "pcSeats": 1,
+      "coverage": "100% whole state"
+    }
+  ],
+  "nonAssemblyUnionTerritories": [
+    {
+      "code": "AN",
+      "name": "Andaman & Nicobar Islands",
+      "pcSeats": 1
+    },
+    {
+      "code": "CH",
+      "name": "Chandigarh",
+      "pcSeats": 1
+    },
+    {
+      "code": "DH",
+      "name": "Dadra & Nagar Haveli and Daman & Diu",
+      "pcSeats": 2
+    },
+    {
+      "code": "LA",
+      "name": "Ladakh",
+      "pcSeats": 1
+    },
+    {
+      "code": "LD",
+      "name": "Lakshadweep",
+      "pcSeats": 1
+    }
+  ]
+}

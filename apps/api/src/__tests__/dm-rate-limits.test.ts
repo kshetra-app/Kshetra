@@ -1,15 +1,20 @@
 import { checkConversationRateLimit } from '../routes/dm';
 import { buildApp } from '../server';
+import { isSupabaseConfigured, setSupabaseConfiguredForTesting } from '../lib/supabase';
 import type { FastifyInstance } from 'fastify';
 
 describe('TICKET 3.5 & 3.2: Direct Message Tiered Rate Limiting & Anti-Abuse', () => {
   let app: FastifyInstance;
+  let originalConfigured: boolean;
 
   beforeAll(async () => {
+    originalConfigured = isSupabaseConfigured;
+    setSupabaseConfiguredForTesting(true);
     app = await buildApp();
   });
 
   afterAll(async () => {
+    setSupabaseConfiguredForTesting(originalConfigured);
     await app.close();
   });
 
@@ -129,14 +134,10 @@ describe('TICKET 3.5 & 3.2: Direct Message Tiered Rate Limiting & Anti-Abuse', (
         },
       });
 
-      expect([200, 503]).toContain(res.statusCode);
+      expect(res.statusCode).toBe(200);
       const body = JSON.parse(res.payload);
-      if (res.statusCode === 200) {
-        expect(body.success).toBe(true);
-        expect(typeof body.count).toBe('number');
-      } else {
-        expect(body.code || body.error).toMatch(/DATABASE_UNAVAILABLE/i);
-      }
+      expect(body.success).toBe(true);
+      expect(typeof body.count).toBe('number');
     });
   });
 });

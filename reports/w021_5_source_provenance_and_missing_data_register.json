@@ -1,0 +1,66 @@
+{
+  "title": "Stage B Source Provenance & Missing Data Register",
+  "directive": "CTO Directive 116",
+  "generatedAt": "2026-10-20T06:17:47.536Z",
+  "governingSpec": "W021.5-B1-04 & Master Execution Framework Amendment v1.6",
+  "authoritativeSources": [
+    {
+      "authority": "Election Commission of India (ECI)",
+      "document": "Delimitation of Parliamentary and Assembly Constituencies Order, 2008",
+      "evidenceScope": "National Baseline (4,123 ACs, 543 PCs)"
+    },
+    {
+      "authority": "Parliament of India",
+      "document": "Andhra Pradesh Reorganisation Act, 2014 (Act No. 6 of 2014)",
+      "evidenceScope": "Andhra Pradesh (175 ACs) and Telangana (119 ACs)"
+    },
+    {
+      "authority": "Delimitation Commission of India",
+      "document": "Final Order No. 2022/2 (Jammu & Kashmir)",
+      "evidenceScope": "UT of Jammu & Kashmir (90 ACs, 5 PCs)"
+    },
+    {
+      "authority": "Election Commission of India",
+      "document": "Delimitation Order No. 282/AS/2023",
+      "evidenceScope": "Assam 2023 Delimitation (126 ACs, 14 PCs)"
+    },
+    {
+      "authority": "Government of Telangana (Revenue Dept)",
+      "document": "G.O.Ms. Nos. 214-245 Rev (2016-10-11)",
+      "evidenceScope": "Telangana 589 Baseline Mandals"
+    },
+    {
+      "authority": "CEO Telangana GIS Portal / Survey of India",
+      "document": "Telangana Assembly Constituencies Boundary Shapefile",
+      "evidenceScope": "Telangana 120 Polygon Features (AC 119 defect detected)"
+    }
+  ],
+  "missingDataItems": [
+    {
+      "itemId": "MISS-GEO-001",
+      "description": "Authoritative GeoJSON Assembly Boundaries for 30 States/UTs",
+      "impactedConstituencies": 4004,
+      "impactedJurisdictionsCount": 30,
+      "status": "BLOCKED_EXTERNAL",
+      "requiredAuthority": "Survey of India / ECI National GIS Portal",
+      "mitigationStatus": "PROHIBITED from synthesizing, extrapolating, or duplicating polygons."
+    },
+    {
+      "itemId": "MISS-GEO-002",
+      "description": "Telangana AC 119 Shapefile Bifurcation Resolution",
+      "impactedConstituencies": 1,
+      "impactedJurisdiction": "TS",
+      "status": "BLOCKED_EXTERNAL / OPEN_DEFECT",
+      "requiredAuthority": "CEO Telangana Gazette Reorganisation Order",
+      "mitigationStatus": "PROHIBITED from arbitrary polygon deletion or unverified merging."
+    },
+    {
+      "itemId": "MISS-FIN-001",
+      "description": "Financial Disclosures Defect DQ-W021.5-B2.2E-001",
+      "impactedDomain": "Candidate Affidavits & Asset Disclosures",
+      "status": "STRICTLY_OPEN",
+      "requiredAuthority": "Explicit Separate CTO Adjudication",
+      "mitigationStatus": "Preserved strictly open across all manifests and reports."
+    }
+  ]
+}

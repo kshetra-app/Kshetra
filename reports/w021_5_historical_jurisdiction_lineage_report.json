@@ -1,0 +1,81 @@
+{
+  "title": "Stage B Historical Jurisdiction Lineage & Delimitation Modeling Report",
+  "directive": "CTO Directive 116",
+  "generatedAt": "2026-10-20T06:17:47.536Z",
+  "governingSpec": "W021.5-B1-03 / Migration 060 & 062",
+  "statutoryRegimes": [
+    {
+      "regimeId": "ECI_2008",
+      "title": "Delimitation of Parliamentary and Assembly Constituencies Order, 2008",
+      "authority": "Delimitation Commission of India / ECI",
+      "effectiveDate": "2008-02-19",
+      "applicableJurisdictions": "29 States and Union Territories (National Baseline)"
+    },
+    {
+      "regimeId": "AP_2014",
+      "title": "Andhra Pradesh Reorganisation Act, 2014 (Act No. 6 of 2014)",
+      "authority": "Parliament of India",
+      "effectiveDate": "2014-06-02",
+      "applicableJurisdictions": "Andhra Pradesh (175 ACs, 25 PCs) and Telangana (119 ACs, 17 PCs)"
+    },
+    {
+      "regimeId": "JK_2022",
+      "title": "Delimitation Commission Final Order No. 2022/2 (Jammu & Kashmir)",
+      "authority": "Delimitation Commission of India (Justice Ranjana Prakash Desai)",
+      "effectiveDate": "2022-05-20",
+      "applicableJurisdictions": "UT of Jammu & Kashmir (90 ACs, 5 PCs) and UT of Ladakh (1 PC)"
+    },
+    {
+      "regimeId": "AS_2023",
+      "title": "Election Commission of India Delimitation Order No. 282/AS/2023",
+      "authority": "Election Commission of India (under Section 8A of Representation of the People Act, 1950)",
+      "gazetteDate": "2023-08-11",
+      "effectiveDate": "2023-08-16",
+      "applicableJurisdictions": "State of Assam (126 ACs, 14 PCs)"
+    }
+  ],
+  "assam2023Reconciliation": {
+    "totalAssemblyConstituencies": 126,
+    "totalParliamentaryConstituencies": 14,
+    "statutoryReservationBreakdown": {
+      "general": 98,
+      "scheduledCastes": 9,
+      "scheduledTribes": 19
+    },
+    "lineageIntegrityStatus": "TEMPORAL_CUTOFF_PRESERVED",
+    "lineageRelationshipStatus": "ASSAM_HISTORICAL_LINEAGE_PENDING",
+    "lineageFinding": "Migration 062 archives pre-2023 Assam boundaries (effective_to = 2023-08-15) and loads post-2023 boundaries (effective_from = 2023-08-16). Cross-regime lineage edges remain intentionally pending to prevent lossy or incorrect 1:1 name-matching across completely reshaped territorial polygons."
+  },
+  "jurisdictionDistinctions": [
+    {
+      "type": "Constitutional States / UTs",
+      "count": 36,
+      "description": "Sovereign administrative entities under the First Schedule of the Constitution of India."
+    },
+    {
+      "type": "Parliamentary Constituencies (Lok Sabha)",
+      "count": 543,
+      "description": "Territorial constituencies for election to the House of the People under Article 81."
+    },
+    {
+      "type": "Assembly Constituencies (Vidhan Sabha)",
+      "count": 4123,
+      "description": "Territorial constituencies for election to Legislative Assemblies across 31 States/UTs under Article 170."
+    },
+    {
+      "type": "Legislative Councils (Vidhan Parishad)",
+      "count": 6,
+      "description": "Upper chambers for AP, Bihar, Karnataka, Maharashtra, Telangana, and UP under Article 171 (distinct from Assemblies)."
+    },
+    {
+      "type": "Rajya Sabha Allocation",
+      "count": 245,
+      "description": "Council of States indirect seats allocated under the Fourth Schedule of the Constitution."
+    },
+    {
+      "type": "Local Government Mandals / Sub-Districts",
+      "count": "Varies (589 in TS)",
+      "description": "Sub-district administrative jurisdictions established by State statutory orders (G.O.Ms. 214-245 in TS)."
+    }
+  ]
+}
