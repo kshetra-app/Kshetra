@@ -1,3 +1,4 @@
+import * as stateData from '../services/stateData';
 import {
   getStateInfo,
   getAllStatesInfo,
@@ -273,6 +274,196 @@ describe('State Data Service (stateData.ts) Unit Tests', () => {
       const data = getConstituencyElectionData('BR', 1);
       expect(data).not.toBeNull();
       expect(data?.recentElection.electionYear).toBe(2020);
+    });
+
+    it('covers Delhi (2025 winner)', () => {
+      const data = getConstituencyElectionData('DL', 1);
+      expect(data).not.toBeNull();
+      expect(data?.recentElection.electionYear).toBe(2025);
+    });
+
+    it('covers explicit electionYear and GENERAL electionType in raw record', () => {
+      const rawSeeds = getTSRawSeeds() as any[];
+      const testAc = {
+        acNo: 9991,
+        name: 'Mock Explicit AC',
+        district: 'Hyderabad',
+        type: 'GEN',
+        electionYear: 2019,
+        electionType: 'GENERAL',
+        winner: 'INC',
+        winnerName: 'Test Leader',
+        winnerVotes: 60000,
+        runnerUp: 'BRS',
+        margin: 5000,
+      };
+      rawSeeds.push(testAc);
+
+      try {
+        const data = getConstituencyElectionData('TS', 9991);
+        expect(data).not.toBeNull();
+        expect(data?.recentElection.electionYear).toBe(2019);
+        expect(data?.recentElection.electionType).toBe('GENERAL');
+        expect(data?.recentElection.winnerVotes).toBe(60000);
+        expect(data?.recentElection.margin).toBe(5000);
+      } finally {
+        const idx = rawSeeds.findIndex((c) => c.acNo === 9991);
+        if (idx !== -1) rawSeeds.splice(idx, 1);
+      }
+    });
+
+    it('covers bypoll electionType and unestablished election year', () => {
+      const rawSeeds = getTSRawSeeds() as any[];
+      const testAc = {
+        acNo: 9992,
+        name: 'Mock Bypoll AC',
+        district: 'Hyderabad',
+        type: 'GEN',
+        electionType: 'BYPOLL',
+        winner: 'BJP',
+        winnerName: 'Bypoll Winner',
+        winnerVotes: 40000,
+        runnerUp: 'INC',
+        margin: 2000,
+      };
+      rawSeeds.push(testAc);
+
+      try {
+        const data = getConstituencyElectionData('TS', 9992);
+        expect(data).not.toBeNull();
+        expect(data?.recentElection.electionYear).toBeNull();
+        expect(data?.recentElection.electionType).toBe('BYPOLL');
+        expect(data?.recentElection.winner).toBe('BJP');
+        expect(data?.elections.length).toBeGreaterThan(0);
+      } finally {
+        const idx = rawSeeds.findIndex((c) => c.acNo === 9992);
+        if (idx !== -1) rawSeeds.splice(idx, 1);
+      }
+    });
+
+    it('covers winnerName-only and non-number votes/margins across all historical election years', () => {
+      const rawSeeds = getTSRawSeeds() as any[];
+
+      // 2025: winnerName2025 defined, winner2025 undefined, non-number votes
+      const ac2025 = {
+        acNo: 9994,
+        name: 'Mock 2025 AC',
+        winnerName2025: 'Name 2025',
+        winnerVotes2025: null,
+        margin2025: 'invalid',
+      };
+      // 2024: winnerName2024 defined, winner2024 undefined, non-number votes
+      const ac2024 = {
+        acNo: 9995,
+        name: 'Mock 2024 AC',
+        winnerName2024: 'Name 2024',
+        winnerVotes2024: null,
+        margin2024: null,
+      };
+      // 2023: winnerName2023 defined, winner2023 undefined, non-number votes
+      const ac2023 = {
+        acNo: 9996,
+        name: 'Mock 2023 AC',
+        winnerName2023: 'Name 2023',
+        winnerVotes2023: undefined,
+        margin2023: undefined,
+      };
+      // 2022: winnerName2022 defined, winner2022 undefined
+      const ac2022 = {
+        acNo: 9997,
+        name: 'Mock 2022 AC',
+        winnerName2022: 'Name 2022',
+        winnerVotes2022: null,
+        margin2022: null,
+      };
+      // 2021: winnerName2021 defined, winner2021 undefined
+      const ac2021 = {
+        acNo: 9998,
+        name: 'Mock 2021 AC',
+        winnerName2021: 'Name 2021',
+        winnerVotes2021: null,
+        margin2021: null,
+      };
+      // 2020: winnerName2020 defined, winner2020 undefined
+      const ac2020 = {
+        acNo: 9999,
+        name: 'Mock 2020 AC',
+        winnerName2020: 'Name 2020',
+        winnerVotes2020: null,
+        margin2020: null,
+      };
+
+      rawSeeds.push(ac2025, ac2024, ac2023, ac2022, ac2021, ac2020);
+
+      try {
+        const d2025 = getConstituencyElectionData('TS', 9994);
+        expect(d2025?.recentElection.electionYear).toBe(2025);
+        expect(d2025?.recentElection.winnerVotes).toBeNull();
+        expect(d2025?.recentElection.margin).toBeNull();
+
+        const d2024 = getConstituencyElectionData('TS', 9995);
+        expect(d2024?.recentElection.electionYear).toBe(2024);
+
+        const d2023 = getConstituencyElectionData('TS', 9996);
+        expect(d2023?.recentElection.electionYear).toBe(2023);
+
+        const d2022 = getConstituencyElectionData('TS', 9997);
+        expect(d2022?.recentElection.electionYear).toBe(2022);
+
+        const d2021 = getConstituencyElectionData('TS', 9998);
+        expect(d2021?.recentElection.electionYear).toBe(2021);
+
+        const d2020 = getConstituencyElectionData('TS', 9999);
+        expect(d2020?.recentElection.electionYear).toBe(2020);
+      } finally {
+        for (const ac of [9994, 9995, 9996, 9997, 9998, 9999]) {
+          const idx = rawSeeds.findIndex((c) => c.acNo === ac);
+          if (idx !== -1) rawSeeds.splice(idx, 1);
+        }
+      }
+    });
+
+    it('handles states when historical results do not match (h is undefined)', () => {
+      // Test high acNo across states where historical data is sparse or missing
+      expect(getConstituencyElectionData('AP', 175)).not.toBeNull();
+      expect(getConstituencyElectionData('KA', 224)).not.toBeNull();
+      expect(getConstituencyElectionData('MH', 288)).not.toBeNull();
+      expect(getConstituencyElectionData('TN', 234)).not.toBeNull();
+      expect(getConstituencyElectionData('KL', 140)).not.toBeNull();
+      expect(getConstituencyElectionData('WB', 294)).not.toBeNull();
+      expect(getConstituencyElectionData('UP', 403)).not.toBeNull();
+    });
+
+    it('covers all marginPercent false branches (winnerVotes <= 0, margin < 0, nulls)', () => {
+      const rawSeeds = getTSRawSeeds() as any[];
+      const zeroVotesAc = {
+        acNo: 9988,
+        name: 'Zero Votes AC',
+        winner2023: 'INC',
+        winnerVotes2023: 0,
+        margin2023: 100,
+      };
+      const negMarginAc = {
+        acNo: 9989,
+        name: 'Negative Margin AC',
+        winner2023: 'INC',
+        winnerVotes2023: 1000,
+        margin2023: -10,
+      };
+      rawSeeds.push(zeroVotesAc, negMarginAc);
+
+      try {
+        const dZero = getConstituencyElectionData('TS', 9988);
+        expect(dZero?.recentElection.marginPercent).toBeNull();
+
+        const dNeg = getConstituencyElectionData('TS', 9989);
+        expect(dNeg?.recentElection.marginPercent).toBeNull();
+      } finally {
+        for (const ac of [9988, 9989]) {
+          const idx = rawSeeds.findIndex((c) => c.acNo === ac);
+          if (idx !== -1) rawSeeds.splice(idx, 1);
+        }
+      }
     });
 
     it('computes marginPercent accurately when votes and margin exist', () => {

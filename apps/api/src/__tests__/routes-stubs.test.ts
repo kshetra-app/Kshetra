@@ -13,7 +13,11 @@ describe('Public route contracts', () => {
   beforeAll(async () => {
     originalConfigured = isSupabaseConfigured;
     setSupabaseConfiguredForTesting(true);
+    app = await buildApp();
+    await app.ready();
+  });
 
+  beforeEach(() => {
     // Mock network database calls to fail immediately or return valid mock response
     // so fallback handlers respond instantly without 30s TCP connection timeouts.
     jest.spyOn(supabase, 'from').mockImplementation(((table: string) => {
@@ -34,9 +38,6 @@ describe('Public route contracts', () => {
         update: () => ({ eq: () => chainable }),
       };
     }) as any);
-
-    app = await buildApp();
-    await app.ready();
   });
 
   afterAll(async () => {
@@ -128,6 +129,9 @@ describe('Public route contracts', () => {
       expect((await post('/api/v1/journalist/articles/a1/vouch', {})).statusCode).toBe(200);
       expect((await post('/api/v1/journalist/articles/a1/flag', { reason: 'x' })).statusCode).toBe(200);
       expect((await post('/api/v1/journalist/articles/a1/tip', { amountINR: 100 })).statusCode).toBe(200);
+      expect((await post('/api/v1/journalist/articles/missing/vouch', {})).statusCode).toBe(404);
+      expect((await post('/api/v1/journalist/articles/missing/flag', { reason: 'x' })).statusCode).toBe(404);
+      expect((await post('/api/v1/journalist/articles/missing/tip', { amountINR: 100 })).statusCode).toBe(404);
     });
   });
 

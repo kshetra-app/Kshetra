@@ -41,6 +41,8 @@ import { saasV1Routes } from '../routes/saasV1';
 import { saasRateLimiter } from '../lib/saasRateLimiter';
 import { electionService } from '../services/electionService';
 import { politicalEntityService } from '../services/politicalEntityService';
+import { delimitationService } from '../services/delimitationService';
+import * as stateData from '../services/stateData';
 
 describe('W021-G4: Public/Partner SaaS API Routes (/api/vsaas/v1/...) Test Suite', () => {
   let app: FastifyInstance;
@@ -695,6 +697,46 @@ describe('W021-G4: Public/Partner SaaS API Routes (/api/vsaas/v1/...) Test Suite
       const body = JSON.parse(res.body);
       expect(body.code).toBe('CONTEST_NOT_FOUND');
     });
+
+    it('GET /api/vsaas/v1/elections/:id: returns election details when found', async () => {
+      const res = await app.inject({
+        method: 'GET',
+        url: '/api/vsaas/v1/elections/e1111111-1111-1111-1111-111111111111',
+        headers: { 'x-api-key': validKey.rawKey },
+      });
+      expect(res.statusCode).toBe(200);
+      const body = JSON.parse(res.body);
+      expect(body.success).toBe(true);
+      expect(body.data.id).toBe('e1111111-1111-1111-1111-111111111111');
+      expect(body.data.provenance.authorityLayer).toBe('STATUTORY_FACT');
+    });
+
+    it('GET /api/vsaas/v1/elections/:id/contests: returns contests list when election exists', async () => {
+      const res = await app.inject({
+        method: 'GET',
+        url: '/api/vsaas/v1/elections/e1111111-1111-1111-1111-111111111111/contests',
+        headers: { 'x-api-key': validKey.rawKey },
+      });
+      expect(res.statusCode).toBe(200);
+      const body = JSON.parse(res.body);
+      expect(body.success).toBe(true);
+      expect(body.data.contests.length).toBe(1);
+      expect(body.data.contests[0].provenance.authorityLayer).toBe('STATUTORY_FACT');
+    });
+
+    it('GET /api/vsaas/v1/elections/:id/contests/:constituencyId: returns full contest breakdown when found', async () => {
+      const res = await app.inject({
+        method: 'GET',
+        url: '/api/vsaas/v1/elections/e1111111-1111-1111-1111-111111111111/contests/ac-65',
+        headers: { 'x-api-key': validKey.rawKey },
+      });
+      expect(res.statusCode).toBe(200);
+      const body = JSON.parse(res.body);
+      expect(body.success).toBe(true);
+      expect(body.data.contest.acNo).toBe(65);
+      expect(body.data.candidates.length).toBe(1);
+      expect(body.data.winner.candidateName).toBe('Anumula Revanth Reddy');
+    });
   });
 
   // ════════════════════════════════════════════════════════════════════════════
@@ -758,6 +800,108 @@ describe('W021-G4: Public/Partner SaaS API Routes (/api/vsaas/v1/...) Test Suite
       const body = JSON.parse(res.body);
       expect(body.success).toBe(true);
       expect(Array.isArray(body.data.legislators)).toBe(true);
+    });
+
+    it('GET /api/vsaas/v1/entities/persons/:id: returns person profile when found', async () => {
+      const res = await app.inject({
+        method: 'GET',
+        url: '/api/vsaas/v1/entities/persons/p1111111-1111-1111-1111-111111111111',
+        headers: { 'x-api-key': validKey.rawKey },
+      });
+      expect(res.statusCode).toBe(200);
+      const body = JSON.parse(res.body);
+      expect(body.success).toBe(true);
+      expect(body.data.canonicalName).toBe('Anumula Revanth Reddy');
+      expect(body.data.provenance.authorityLayer).toBe('STATUTORY_FACT');
+    });
+
+    it('GET /api/vsaas/v1/entities/organizations/:id: returns organization profile when found', async () => {
+      const res = await app.inject({
+        method: 'GET',
+        url: '/api/vsaas/v1/entities/organizations/o1111111-1111-1111-1111-111111111111',
+        headers: { 'x-api-key': validKey.rawKey },
+      });
+      expect(res.statusCode).toBe(200);
+      const body = JSON.parse(res.body);
+      expect(body.success).toBe(true);
+      expect(body.data.name).toBe('Indian National Congress');
+      expect(body.data.shortName).toBe('INC');
+      expect(body.data.provenance.authorityLayer).toBe('STATUTORY_FACT');
+    });
+
+    it('handles unexpected service exceptions across routes gracefully with 500', async () => {
+      // 1. Election events search failure
+      jest.spyOn(electionService, 'listElectionEvents').mockRejectedValueOnce(new Error('DB failure'));
+      const resElecErr = await app.inject({
+        method: 'GET',
+        url: '/api/vsaas/v1/elections',
+        headers: { 'x-api-key': validKey.rawKey },
+      });
+      expect(resElecErr.statusCode).toBe(500);
+
+      // 2. Election event get failure
+      jest.spyOn(electionService, 'getElectionEventById').mockRejectedValueOnce(new Error('DB failure'));
+      const resEventErr = await app.inject({
+        method: 'GET',
+        url: '/api/vsaas/v1/elections/e1',
+        headers: { 'x-api-key': validKey.rawKey },
+      });
+      expect(resEventErr.statusCode).toBe(500);
+
+      // 3. Contests list failure
+      jest.spyOn(electionService, 'getElectionEventById').mockResolvedValueOnce({ id: 'e1' } as any);
+      jest.spyOn(electionService, 'listElectionContests').mockRejectedValueOnce(new Error('DB failure'));
+      const resContestsErr = await app.inject({
+        method: 'GET',
+        url: '/api/vsaas/v1/elections/e1/contests',
+        headers: { 'x-api-key': validKey.rawKey },
+      });
+      expect(resContestsErr.statusCode).toBe(500);
+
+      // 4. Contest detail failure
+      jest.spyOn(electionService, 'getContestDetail').mockRejectedValueOnce(new Error('DB failure'));
+      const resContestErr = await app.inject({
+        method: 'GET',
+        url: '/api/vsaas/v1/elections/e1/contests/ac-1',
+        headers: { 'x-api-key': validKey.rawKey },
+      });
+      expect(resContestErr.statusCode).toBe(500);
+
+      // 5. Entity search failure
+      jest.spyOn(politicalEntityService, 'searchEntities').mockRejectedValueOnce(new Error('DB failure'));
+      const resSearchErr = await app.inject({
+        method: 'GET',
+        url: '/api/vsaas/v1/entities/search',
+        headers: { 'x-api-key': validKey.rawKey },
+      });
+      expect(resSearchErr.statusCode).toBe(500);
+
+      // 6. Person lookup unexpected 500
+      jest.spyOn(politicalEntityService, 'getPersonById').mockRejectedValueOnce(new Error('Unexpected DB timeout'));
+      const resPersonErr = await app.inject({
+        method: 'GET',
+        url: '/api/vsaas/v1/entities/persons/p1',
+        headers: { 'x-api-key': validKey.rawKey },
+      });
+      expect(resPersonErr.statusCode).toBe(500);
+
+      // 7. Organization lookup unexpected 500
+      jest.spyOn(politicalEntityService, 'getOrganizationById').mockRejectedValueOnce(new Error('Unexpected DB timeout'));
+      const resOrgErr = await app.inject({
+        method: 'GET',
+        url: '/api/vsaas/v1/entities/organizations/o1',
+        headers: { 'x-api-key': validKey.rawKey },
+      });
+      expect(resOrgErr.statusCode).toBe(500);
+
+      // 8. Legislators lookup failure
+      jest.spyOn(politicalEntityService, 'listCurrentLegislators').mockRejectedValueOnce(new Error('DB failure'));
+      const resLegErr = await app.inject({
+        method: 'GET',
+        url: '/api/vsaas/v1/entities/legislators',
+        headers: { 'x-api-key': validKey.rawKey },
+      });
+      expect(resLegErr.statusCode).toBe(500);
     });
   });
 
@@ -829,6 +973,148 @@ describe('W021-G4: Public/Partner SaaS API Routes (/api/vsaas/v1/...) Test Suite
         headers: { 'x-api-key': validKey.rawKey },
       });
       expect(res.statusCode).toBe(400);
+
+      // Seats exceeds max safe requested seats
+      const resMax = await app.inject({
+        method: 'GET',
+        url: '/api/vsaas/v1/delim/simulate/TG?seats=10001',
+        headers: { 'x-api-key': validKey.rawKey },
+      });
+      expect(resMax.statusCode).toBe(400);
+
+      // Seats with non-numeric value
+      const resNaN = await app.inject({
+        method: 'GET',
+        url: '/api/vsaas/v1/delim/simulate/TG?seats=abc',
+        headers: { 'x-api-key': validKey.rawKey },
+      });
+      expect(resNaN.statusCode).toBe(400);
+
+      // Valid simulation parameters
+      const resValid = await app.inject({
+        method: 'GET',
+        url: '/api/vsaas/v1/delim/simulate/TG?seats=125&maxDeviation=0.1&mode=scenario',
+        headers: { 'x-api-key': validKey.rawKey },
+      });
+      expect(resValid.statusCode).toBe(200);
+    });
+
+    it('GET /api/vsaas/v1/delim/projections: supports model query parameter', async () => {
+      const res = await app.inject({
+        method: 'GET',
+        url: '/api/vsaas/v1/delim/projections?model=article170',
+        headers: { 'x-api-key': validKey.rawKey },
+      });
+      expect(res.statusCode).toBe(200);
+    });
+
+    it('handles query parameters and fallbacks in elections, entities, and legislators', async () => {
+      // 1. Elections search with limit and offset
+      const resElec = await app.inject({
+        method: 'GET',
+        url: '/api/vsaas/v1/elections?limit=10&offset=5',
+        headers: { 'x-api-key': validKey.rawKey },
+      });
+      expect(resElec.statusCode).toBe(200);
+
+      // 2. Election contests with query filters
+      const resContests = await app.inject({
+        method: 'GET',
+        url: '/api/vsaas/v1/elections/e1111111-1111-1111-1111-111111111111/contests?search=Kod&party=INC&limit=10&offset=0',
+        headers: { 'x-api-key': validKey.rawKey },
+      });
+      expect(resContests.statusCode).toBe(200);
+
+      // 3. Contest detail with candidate missing person, missing party, and party with no shortName
+      jest.spyOn(electionService, 'getContestDetail').mockResolvedValueOnce({
+        id: 'c2',
+        electionId: 'e1',
+        constituencyId: 'ac-1',
+        constituencyName: 'Test AC',
+        acNo: 1,
+        candidates: [
+          {
+            id: 'cand-anon',
+            person: null, // Unknown Candidate
+            party: null, // Independent
+            votesReceived: 500,
+          },
+          {
+            id: 'cand-party-long',
+            person: { canonicalName: 'Long Party Candidate' },
+            party: { name: 'Full Party Name Only', shortName: null },
+            votesReceived: 1000,
+          },
+        ],
+        winner: null,
+        runnerUp: null,
+      } as any);
+
+      const resCandFallback = await app.inject({
+        method: 'GET',
+        url: '/api/vsaas/v1/elections/e1/contests/ac-1',
+        headers: { 'x-api-key': validKey.rawKey },
+      });
+      expect(resCandFallback.statusCode).toBe(200);
+      const candData = JSON.parse(resCandFallback.body).data;
+      expect(candData.candidates[0].candidateName).toBe('Unknown Candidate');
+      expect(candData.candidates[0].party).toBe('Independent');
+      expect(candData.candidates[1].party).toBe('Full Party Name Only');
+      expect(candData.winner).toBeNull();
+
+      // 4. Entities search with type person, organization, and pagination
+      const resPersonSearch = await app.inject({
+        method: 'GET',
+        url: '/api/vsaas/v1/entities/search?type=person&state=TG&limit=5&offset=2',
+        headers: { 'x-api-key': validKey.rawKey },
+      });
+      expect(resPersonSearch.statusCode).toBe(200);
+
+      const resOrgSearch = await app.inject({
+        method: 'GET',
+        url: '/api/vsaas/v1/entities/search?type=organization',
+        headers: { 'x-api-key': validKey.rawKey },
+      });
+      expect(resOrgSearch.statusCode).toBe(200);
+
+      // 5. Legislators with state, house, currentOnly false, and organization null
+      jest.spyOn(politicalEntityService, 'listCurrentLegislators').mockResolvedValueOnce({
+        legislators: [
+          {
+            tenure: {
+              id: 't1',
+              officeName: 'MLA',
+              jurisdictionId: 'ac-1',
+              stateCode: 'TS',
+              startDate: '2023-12-07',
+              endDate: null,
+              isCurrent: true,
+            },
+            person: { id: 'p1', canonicalName: 'Independent MLA', photoUrl: null },
+            organization: null, // No party affiliation
+          } as any,
+        ],
+        total: 1,
+      });
+
+      const resLegParams = await app.inject({
+        method: 'GET',
+        url: '/api/vsaas/v1/entities/legislators?state=TG&house=assembly&currentOnly=false',
+        headers: { 'x-api-key': validKey.rawKey },
+      });
+      expect(resLegParams.statusCode).toBe(200);
+      const legData = JSON.parse(resLegParams.body).data;
+      expect(legData.legislators[0].party).toBeNull();
+    });
+
+    it('GET /api/vsaas/v1/delim/simulate/:stateCode: returns 404 for unsupported geography', async () => {
+      const res = await app.inject({
+        method: 'GET',
+        url: '/api/vsaas/v1/delim/simulate/XX',
+        headers: { 'x-api-key': validKey.rawKey },
+      });
+      expect(res.statusCode).toBe(404);
+      expect(JSON.parse(res.body).code).toBe('UNSUPPORTED_GEOGRAPHY');
     });
 
     it('GET /api/vsaas/v1/delim/simulate/:stateCode: rejects client scenario override query params', async () => {
@@ -853,6 +1139,177 @@ describe('W021-G4: Public/Partner SaaS API Routes (/api/vsaas/v1/...) Test Suite
       const body = JSON.parse(res.body);
       expect(body.code).toBe('SCENARIO_INPUT_FORBIDDEN');
       expect(body.error).toBe('Bad Request');
+    });
+
+    it('handles null entity results from politicalEntityService', async () => {
+      // getPersonById returning null
+      jest.spyOn(politicalEntityService, 'getPersonById').mockResolvedValueOnce(null as any);
+      const resNullPerson = await app.inject({
+        method: 'GET',
+        url: '/api/vsaas/v1/entities/persons/p-null-1',
+        headers: { 'x-api-key': validKey.rawKey },
+      });
+      expect(resNullPerson.statusCode).toBe(404);
+      expect(JSON.parse(resNullPerson.body).code).toBe('PERSON_NOT_FOUND');
+
+      // getOrganizationById returning null
+      jest.spyOn(politicalEntityService, 'getOrganizationById').mockResolvedValueOnce(null as any);
+      const resNullOrg = await app.inject({
+        method: 'GET',
+        url: '/api/vsaas/v1/entities/organizations/o-null-1',
+        headers: { 'x-api-key': validKey.rawKey },
+      });
+      expect(resNullOrg.statusCode).toBe(404);
+      expect(JSON.parse(resNullOrg.body).code).toBe('ORGANIZATION_NOT_FOUND');
+    });
+
+    it('handles unexpected exceptions in geography and delimitation services', async () => {
+      // 1. getAllStatesInfo throwing error
+      jest.spyOn(stateData, 'getAllStatesInfo').mockImplementationOnce(() => {
+        throw new Error('Disk read error');
+      });
+      const resStatesErr = await app.inject({
+        method: 'GET',
+        url: '/api/vsaas/v1/geo/states',
+        headers: { 'x-api-key': validKey.rawKey },
+      });
+      expect(resStatesErr.statusCode).toBe(500);
+      expect(JSON.parse(resStatesErr.body).code).toBe('GEO_LOOKUP_FAILURE');
+
+      // 2. getStateInfo throwing error
+      jest.spyOn(stateData, 'getStateInfo').mockImplementationOnce(() => {
+        throw new Error('State error');
+      });
+      const resStateErr = await app.inject({
+        method: 'GET',
+        url: '/api/vsaas/v1/geo/states/TG',
+        headers: { 'x-api-key': validKey.rawKey },
+      });
+      expect(resStateErr.statusCode).toBe(500);
+
+      // 3. getConstituencies throwing error
+      jest.spyOn(stateData, 'getConstituencies').mockImplementationOnce(() => {
+        throw new Error('Constituencies error');
+      });
+      const resConstituenciesErr = await app.inject({
+        method: 'GET',
+        url: '/api/vsaas/v1/geo/states/TG/constituencies',
+        headers: { 'x-api-key': validKey.rawKey },
+      });
+      expect(resConstituenciesErr.statusCode).toBe(500);
+
+      // 4. delimitationService.getTimeline throwing error
+      jest.spyOn(delimitationService, 'getTimeline').mockImplementationOnce(() => {
+        throw new Error('Timeline error');
+      });
+      const resRegimesErr = await app.inject({
+        method: 'GET',
+        url: '/api/vsaas/v1/delim/regimes',
+        headers: { 'x-api-key': validKey.rawKey },
+      });
+      expect(resRegimesErr.statusCode).toBe(500);
+      expect(JSON.parse(resRegimesErr.body).code).toBe('DELIMITATION_REGIMES_FAILURE');
+
+      // 5. delimitationService.getProjections throwing error
+      jest.spyOn(delimitationService, 'getProjections').mockImplementationOnce(() => {
+        throw new Error('Projections error');
+      });
+      const resProjErr = await app.inject({
+        method: 'GET',
+        url: '/api/vsaas/v1/delim/projections',
+        headers: { 'x-api-key': validKey.rawKey },
+      });
+      expect(resProjErr.statusCode).toBe(500);
+      expect(JSON.parse(resProjErr.body).code).toBe('PROJECTIONS_FAILURE');
+
+      // 6. delimitationService.simulateBoundaries throwing generic simulation error
+      jest.spyOn(delimitationService, 'simulateBoundaries').mockImplementationOnce(() => {
+        const err: any = new Error('Generic simulation algorithm failed');
+        err.statusCode = 400;
+        err.code = 'SIMULATION_ERROR';
+        throw err;
+      });
+      const resSimErr = await app.inject({
+        method: 'GET',
+        url: '/api/vsaas/v1/delim/simulate/TG',
+        headers: { 'x-api-key': validKey.rawKey },
+      });
+      expect(resSimErr.statusCode).toBe(400);
+      expect(JSON.parse(resSimErr.body).code).toBe('SIMULATION_ERROR');
+
+      // 7. delimitationService.simulateBoundaries throwing fallback error without code or statusCode
+      jest.spyOn(delimitationService, 'simulateBoundaries').mockImplementationOnce(() => {
+        throw new Error('Fallback error message');
+      });
+      const resSimFallback = await app.inject({
+        method: 'GET',
+        url: '/api/vsaas/v1/delim/simulate/TG',
+        headers: { 'x-api-key': validKey.rawKey },
+      });
+      expect(resSimFallback.statusCode).toBe(400);
+      expect(JSON.parse(resSimFallback.body).code).toBe('SIMULATION_ERROR');
+    });
+
+    it('covers state not found branches in constituencies and entity errors', async () => {
+      // 1. GET /api/vsaas/v1/geo/states/XX/constituencies -> state not found (line 248)
+      const resConstState404 = await app.inject({
+        method: 'GET',
+        url: '/api/vsaas/v1/geo/states/XX/constituencies',
+        headers: { 'x-api-key': validKey.rawKey },
+      });
+      expect(resConstState404.statusCode).toBe(404);
+      expect(JSON.parse(resConstState404.body).code).toBe('STATE_NOT_FOUND');
+
+      // 2. GET /api/vsaas/v1/geo/states/XX/constituencies/1 -> state not found (line 291)
+      const resSingleConstState404 = await app.inject({
+        method: 'GET',
+        url: '/api/vsaas/v1/geo/states/XX/constituencies/1',
+        headers: { 'x-api-key': validKey.rawKey },
+      });
+      expect(resSingleConstState404.statusCode).toBe(404);
+      expect(JSON.parse(resSingleConstState404.body).code).toBe('STATE_NOT_FOUND');
+
+      // 3. getPersonById throwing error with PERSON_NOT_FOUND code (line 632)
+      jest.spyOn(politicalEntityService, 'getPersonById').mockImplementationOnce(async () => {
+        const err: any = new Error('Person custom not found');
+        err.code = 'PERSON_NOT_FOUND';
+        throw err;
+      });
+      const resPersonErr = await app.inject({
+        method: 'GET',
+        url: '/api/vsaas/v1/entities/persons/p-custom-err',
+        headers: { 'x-api-key': validKey.rawKey },
+      });
+      expect(resPersonErr.statusCode).toBe(404);
+
+      // 4. getOrganizationById throwing error with ORGANIZATION_NOT_FOUND code (line 684)
+      jest.spyOn(politicalEntityService, 'getOrganizationById').mockImplementationOnce(async () => {
+        const err: any = new Error('Org custom not found');
+        err.code = 'ORGANIZATION_NOT_FOUND';
+        throw err;
+      });
+      const resOrgErr = await app.inject({
+        method: 'GET',
+        url: '/api/vsaas/v1/entities/organizations/o-custom-err',
+        headers: { 'x-api-key': validKey.rawKey },
+      });
+      expect(resOrgErr.statusCode).toBe(404);
+
+      // 5. entities/search with q and role
+      const resSearchQRole = await app.inject({
+        method: 'GET',
+        url: '/api/vsaas/v1/entities/search?q=Revanth&role=MLA',
+        headers: { 'x-api-key': validKey.rawKey },
+      });
+      expect(resSearchQRole.statusCode).toBe(200);
+
+      // 6. entities/legislators with house=parliament
+      const resLegisParl = await app.inject({
+        method: 'GET',
+        url: '/api/vsaas/v1/entities/legislators?house=parliament',
+        headers: { 'x-api-key': validKey.rawKey },
+      });
+      expect(resLegisParl.statusCode).toBe(200);
     });
   });
 

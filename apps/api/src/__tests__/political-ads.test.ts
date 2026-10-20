@@ -1,5 +1,6 @@
 import { buildApp } from '../server';
 import type { FastifyInstance } from 'fastify';
+import { supabase } from '../lib/supabase';
 
 describe('PHASE4-B2: Political Ad Infrastructure & Compliance Verification', () => {
   let app: FastifyInstance;
@@ -9,7 +10,31 @@ describe('PHASE4-B2: Political Ad Infrastructure & Compliance Verification', () 
   });
 
   afterAll(async () => {
+    jest.restoreAllMocks();
     await app.close();
+  });
+
+  beforeEach(() => {
+    jest.spyOn(supabase, 'from').mockImplementation(((table: string) => {
+      const okResult = { data: [], error: null };
+      const chainable: any = {
+        eq: () => chainable,
+        or: () => chainable,
+        order: () => chainable,
+        in: () => chainable,
+        select: () => chainable,
+        maybeSingle: async () => ({ data: null, error: null }),
+        single: async () => ({ data: null, error: null }),
+        then: (resolve: any) => resolve(okResult),
+      };
+      return {
+        select: () => chainable,
+        insert: () => chainable,
+        upsert: () => chainable,
+        delete: () => chainable,
+        update: () => chainable,
+      };
+    }) as any);
   });
 
   describe('1. Unauthenticated Public Ad Library', () => {

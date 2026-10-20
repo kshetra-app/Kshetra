@@ -1,5 +1,6 @@
 import { buildApp } from '../server';
 import type { FastifyInstance } from 'fastify';
+import { supabase } from '../lib/supabase';
 
 describe('FIX-3: Server-side Live Gating Authentication & Role Checks', () => {
   let app: FastifyInstance;
@@ -9,7 +10,26 @@ describe('FIX-3: Server-side Live Gating Authentication & Role Checks', () => {
   });
 
   afterAll(async () => {
+    jest.restoreAllMocks();
     await app.close();
+  });
+
+  beforeEach(() => {
+    jest.spyOn(supabase, 'from').mockImplementation(((table: string) => {
+      if (table === 'user_profiles') {
+        return {
+          select: () => ({
+            eq: () => ({
+              maybeSingle: async () => ({
+                data: null, // Profile not found -> 403 PROFILE_NOT_FOUND
+                error: null,
+              }),
+            }),
+          }),
+        } as any;
+      }
+      return {} as any;
+    }) as any);
   });
 
   it('rejects unauthenticated requests even if body claims admin and verified', async () => {

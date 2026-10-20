@@ -1,6 +1,7 @@
 import { buildApp } from '../server';
 import type { FastifyInstance } from 'fastify';
 import { setTestAuthResolver, setTestPageAuthorityResolver, resetPagesTestResolvers } from '../routes/pages';
+import { supabase } from '../lib/supabase';
 
 describe('Tickets 0.4 & 0.5: Web Page Manager & Grievance Policy Routes', () => {
   let app: FastifyInstance;
@@ -17,7 +18,57 @@ describe('Tickets 0.4 & 0.5: Web Page Manager & Grievance Policy Routes', () => 
 
   afterAll(async () => {
     resetPagesTestResolvers();
+    jest.restoreAllMocks();
     await app.close();
+  });
+
+  beforeEach(() => {
+    let queriedId = 'test-page-1';
+    const chainable: any = {
+      eq: (col: string, val: any) => {
+        queriedId = val;
+        return chainable;
+      },
+      or: () => chainable,
+      order: () => chainable,
+      select: () => chainable,
+      maybeSingle: async () => ({
+        data: {
+          id: queriedId,
+          handle: queriedId,
+          page_id: 'test-page-1',
+          user_id: 'user-1',
+          billing_cycle: 'monthly',
+          status: 'created',
+          is_pro: false,
+          subscription_tier: 'free',
+        },
+        error: null,
+      }),
+      single: async () => ({
+        data: {
+          id: queriedId,
+          handle: queriedId,
+          page_id: 'test-page-1',
+          user_id: 'user-1',
+          billing_cycle: 'monthly',
+          status: 'created',
+          is_pro: false,
+          subscription_tier: 'free',
+        },
+        error: null,
+      }),
+      then: (resolve: any) => resolve({ data: [], error: null }),
+    };
+    jest.spyOn(supabase, 'from').mockImplementation(((table: string) => {
+      return {
+        select: () => chainable,
+        insert: () => chainable,
+        upsert: () => chainable,
+        delete: () => chainable,
+        update: () => chainable,
+      };
+    }) as any);
   });
 
   describe('Ticket 0.4: Web Page Manager Shell', () => {

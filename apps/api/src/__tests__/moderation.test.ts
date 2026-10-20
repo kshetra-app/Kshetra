@@ -1,5 +1,5 @@
 import { buildApp } from '../server';
-import { isSupabaseConfigured, setSupabaseConfiguredForTesting } from '../lib/supabase';
+import { supabase, isSupabaseConfigured, setSupabaseConfiguredForTesting } from '../lib/supabase';
 
 /**
  * Trust & Safety route tests — exercises role-based authorization,
@@ -17,8 +17,37 @@ describe('Moderation Routes', () => {
   });
 
   afterAll(async () => {
+    jest.restoreAllMocks();
     setSupabaseConfiguredForTesting(originalConfigured);
     await app.close();
+  });
+
+  beforeEach(() => {
+    jest.spyOn(supabase, 'from').mockImplementation(((table: string) => {
+      const okResult = {
+        id: 'mock-id-1',
+        status: 'submitted',
+        verification_type: 'journalist',
+        role: 'citizen',
+        created_at: new Date().toISOString(),
+      };
+      const chainable: any = {
+        eq: () => chainable,
+        or: () => chainable,
+        order: () => chainable,
+        select: () => chainable,
+        maybeSingle: async () => ({ data: okResult, error: null }),
+        single: async () => ({ data: okResult, error: null }),
+        then: (resolve: any) => resolve({ data: okResult, error: null }),
+      };
+      return {
+        select: () => chainable,
+        insert: () => chainable,
+        upsert: () => chainable,
+        delete: () => chainable,
+        update: () => chainable,
+      };
+    }) as any);
   });
 
   describe('POST /api/v1/moderation/action', () => {

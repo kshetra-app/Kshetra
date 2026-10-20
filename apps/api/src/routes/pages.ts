@@ -17,7 +17,7 @@ export interface PageEntitlement {
 }
 
 // Short-lived cache in front of Supabase database reads
-const ENTITLEMENT_CACHE = new Map<string, PageEntitlement>();
+export const ENTITLEMENT_CACHE = new Map<string, PageEntitlement>();
 
 const getPageEntitlementSchema = {
   params: {

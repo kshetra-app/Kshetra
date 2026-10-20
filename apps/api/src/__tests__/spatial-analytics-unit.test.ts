@@ -598,5 +598,305 @@ describe('SpatialAnalyticsService & Routes Unit Tests (W017)', () => {
       expect(body.data.anomalyCount).toBe(0);
       expect(body.data.governanceNotice).toContain('NON_JUDICIAL_DIAGNOSTIC');
     });
+
+    it('handles Bearer tokens and resolveCaller permutations', async () => {
+      const origServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+      process.env.SUPABASE_SERVICE_ROLE_KEY = 'spatial-test-service-key-12345';
+
+      try {
+        // 1. Missing or non-Bearer authorization header (anon -> 401)
+        const resNonBearer = await app.inject({
+          method: 'POST',
+          url: '/api/v1/spatial/analytics/overlap',
+          headers: { authorization: 'Basic dXNlcjpwYXNz' },
+          payload: {
+            baseEntity: { entityId: 'E1', selection: { mode: 'current' } },
+            comparisonEntity: { entityId: 'E2', selection: { mode: 'current' } },
+          },
+        });
+        expect(resNonBearer.statusCode).toBe(401);
+
+        // 2. Bearer with empty token (anon -> 401)
+        const resEmptyBearer = await app.inject({
+          method: 'POST',
+          url: '/api/v1/spatial/analytics/overlap',
+          headers: { authorization: 'Bearer   ' },
+          payload: {
+            baseEntity: { entityId: 'E1', selection: { mode: 'current' } },
+            comparisonEntity: { entityId: 'E2', selection: { mode: 'current' } },
+          },
+        });
+        expect(resEmptyBearer.statusCode).toBe(401);
+
+        // 3. Bearer with 'invalid-token' literal (anon -> 401)
+        const resInvalidLiteral = await app.inject({
+          method: 'POST',
+          url: '/api/v1/spatial/analytics/overlap',
+          headers: { authorization: 'Bearer invalid-token' },
+          payload: {
+            baseEntity: { entityId: 'E1', selection: { mode: 'current' } },
+            comparisonEntity: { entityId: 'E2', selection: { mode: 'current' } },
+          },
+        });
+        expect(resInvalidLiteral.statusCode).toBe(401);
+
+        // 4. Bearer matching SUPABASE_SERVICE_ROLE_KEY directly (service_role -> 200 on /quality/anomalies)
+        jest.spyOn(spatialAnalyticsService, 'detectAnomalies').mockResolvedValueOnce({
+          layer: 'mandals',
+          profile: 'v1.0-standard',
+          scannedFeatureCount: 0,
+          anomalyCount: 0,
+          anomalies: [],
+          governanceNotice: 'SERVICE_ROLE_MATCH',
+        });
+        const resServiceKey = await app.inject({
+          method: 'GET',
+          url: '/api/v1/spatial/quality/anomalies?layer=mandals&bbox=78.4,17.3,78.5,17.4',
+          headers: { authorization: 'Bearer spatial-test-service-key-12345' },
+        });
+        expect(resServiceKey.statusCode).toBe(200);
+
+        // 5. Bearer token resolved via supabase.auth.getUser as authenticated user
+        jest.spyOn(supabase.auth, 'getUser').mockResolvedValueOnce({
+          data: { user: { id: 'user-auth-123', app_metadata: { role: 'authenticated' } } } as any,
+          error: null,
+        });
+        jest.spyOn(spatialAnalyticsService, 'calculateOverlap').mockResolvedValueOnce({
+          baseEntityAreaM2: 1000000,
+          comparisonEntityAreaM2: 1000000,
+          intersectionAreaM2: 500000,
+          baseOverlapPercentage: 50.0,
+          comparisonOverlapPercentage: 50.0,
+          intersectionDimension: 2,
+          isDisjoint: false,
+          regimeContext: { isCrossRegime: false, baseSelection: { mode: 'current' }, comparisonSelection: { mode: 'current' } },
+        });
+        const resAuthUser = await app.inject({
+          method: 'POST',
+          url: '/api/v1/spatial/analytics/overlap',
+          headers: { authorization: 'Bearer valid-jwt-token' },
+          payload: {
+            baseEntity: { entityId: 'E1', selection: { mode: 'current' } },
+            comparisonEntity: { entityId: 'E2', selection: { mode: 'current' } },
+          },
+        });
+        expect(resAuthUser.statusCode).toBe(200);
+
+        // 6. Bearer token resolved via supabase.auth.getUser as service_role user
+        jest.spyOn(supabase.auth, 'getUser').mockResolvedValueOnce({
+          data: { user: { id: 'service-user-123', app_metadata: { role: 'service_role' } } } as any,
+          error: null,
+        });
+        jest.spyOn(spatialAnalyticsService, 'detectAnomalies').mockResolvedValueOnce({
+          layer: 'mandals',
+          profile: 'v1.0-standard',
+          scannedFeatureCount: 0,
+          anomalyCount: 0,
+          anomalies: [],
+          governanceNotice: 'SERVICE_USER_MATCH',
+        });
+        const resServiceUser = await app.inject({
+          method: 'GET',
+          url: '/api/v1/spatial/quality/anomalies?layer=mandals&bbox=78.4,17.3,78.5,17.4',
+          headers: { authorization: 'Bearer valid-service-jwt' },
+        });
+        expect(resServiceUser.statusCode).toBe(200);
+
+        // 7. Bearer token where supabase.auth.getUser throws exception (catches and falls back to authenticated)
+        jest.spyOn(supabase.auth, 'getUser').mockRejectedValueOnce(new Error('Network error on auth'));
+        jest.spyOn(spatialAnalyticsService, 'calculateOverlap').mockResolvedValueOnce({
+          baseEntityAreaM2: 1000000,
+          comparisonEntityAreaM2: 1000000,
+          intersectionAreaM2: 500000,
+          baseOverlapPercentage: 50.0,
+          comparisonOverlapPercentage: 50.0,
+          intersectionDimension: 2,
+          isDisjoint: false,
+          regimeContext: { isCrossRegime: false, baseSelection: { mode: 'current' }, comparisonSelection: { mode: 'current' } },
+        });
+        const resFallbackUser = await app.inject({
+          method: 'POST',
+          url: '/api/v1/spatial/analytics/overlap',
+          headers: { authorization: 'Bearer some-jwt-with-network-error' },
+          payload: {
+            baseEntity: { entityId: 'E1', selection: { mode: 'current' } },
+            comparisonEntity: { entityId: 'E2', selection: { mode: 'current' } },
+          },
+        });
+        expect(resFallbackUser.statusCode).toBe(200);
+      } finally {
+        process.env.SUPABASE_SERVICE_ROLE_KEY = origServiceKey;
+      }
+    });
+
+    it('covers cross-regime response headers and error envelopes across all spatial endpoints', async () => {
+      // 1. POST /overlap cross-regime header
+      jest.spyOn(spatialAnalyticsService, 'calculateOverlap').mockResolvedValueOnce({
+        baseEntityAreaM2: 1000000,
+        comparisonEntityAreaM2: 1000000,
+        intersectionAreaM2: 500000,
+        baseOverlapPercentage: 50.0,
+        comparisonOverlapPercentage: 50.0,
+        intersectionDimension: 2,
+        isDisjoint: false,
+        regimeContext: { isCrossRegime: true, baseSelection: { mode: 'current' }, comparisonSelection: { mode: 'as_of', asOfDate: '2016-10-10' } },
+      });
+      const resOverlapCross = await app.inject({
+        method: 'POST',
+        url: '/api/v1/spatial/analytics/overlap',
+        headers: { 'x-test-role': 'authenticated' },
+        payload: {
+          baseEntity: { entityId: 'E1', selection: { mode: 'current' } },
+          comparisonEntity: { entityId: 'E2', selection: { mode: 'as_of', asOfDate: '2016-10-10' } },
+        },
+      });
+      expect(resOverlapCross.statusCode).toBe(200);
+      expect(resOverlapCross.headers['x-spatial-cross-regime']).toBe('true');
+
+      // 2. POST /overlap 404 error envelope
+      jest.spyOn(spatialAnalyticsService, 'calculateOverlap').mockImplementationOnce(async () => {
+        const err: any = new Error('Base geometry not found');
+        err.statusCode = 404;
+        err.code = 'GEOMETRY_NOT_FOUND';
+        throw err;
+      });
+      const resOverlap404 = await app.inject({
+        method: 'POST',
+        url: '/api/v1/spatial/analytics/overlap',
+        headers: { 'x-test-role': 'authenticated' },
+        payload: {
+          baseEntity: { entityId: 'E1', selection: { mode: 'current' } },
+          comparisonEntity: { entityId: 'E2', selection: { mode: 'current' } },
+        },
+      });
+      expect(resOverlap404.statusCode).toBe(404);
+      expect(JSON.parse(resOverlap404.payload).code).toBe('GEOMETRY_NOT_FOUND');
+
+      // 3. POST /overlap 500 error envelope with defaults
+      jest.spyOn(spatialAnalyticsService, 'calculateOverlap').mockImplementationOnce(async () => {
+        throw new Error('Uncaught database failure');
+      });
+      const resOverlap500 = await app.inject({
+        method: 'POST',
+        url: '/api/v1/spatial/analytics/overlap',
+        headers: { 'x-test-role': 'authenticated' },
+        payload: {
+          baseEntity: { entityId: 'E1', selection: { mode: 'current' } },
+          comparisonEntity: { entityId: 'E2', selection: { mode: 'current' } },
+        },
+      });
+      expect(resOverlap500.statusCode).toBe(500);
+      expect(JSON.parse(resOverlap500.payload).code).toBe('SPATIAL_CALCULATION_ERROR');
+
+      // 4. POST /boundary-diff unauthenticated (401)
+      const resDiffAnon = await app.inject({
+        method: 'POST',
+        url: '/api/v1/spatial/analytics/boundary-diff',
+        payload: {
+          entityId: 'TS-MDL-5001',
+          sourceSelection: { mode: 'current' },
+          targetSelection: { mode: 'version', versionId: 'V2' },
+        },
+      });
+      expect(resDiffAnon.statusCode).toBe(401);
+
+      // 5. POST /boundary-diff cross-regime header
+      jest.spyOn(spatialAnalyticsService, 'calculateBoundaryDiff').mockResolvedValueOnce({
+        entityId: 'TS-MDL-5001',
+        sourceAreaM2: 1000000,
+        targetAreaM2: 1100000,
+        netAreaChangeM2: 100000,
+        addedAreaM2: 150000,
+        removedAreaM2: 50000,
+        unmodifiedAreaM2: 950000,
+        similarityIndex: 0.95,
+        regimeContext: { isCrossRegime: true, baseSelection: { mode: 'current' }, comparisonSelection: { mode: 'version' } },
+        addedGeoJson: null,
+        removedGeoJson: null,
+      });
+      const resDiffCross = await app.inject({
+        method: 'POST',
+        url: '/api/v1/spatial/analytics/boundary-diff',
+        headers: { 'x-test-role': 'authenticated' },
+        payload: {
+          entityId: 'TS-MDL-5001',
+          sourceSelection: { mode: 'current' },
+          targetSelection: { mode: 'version', versionId: 'V2' },
+        },
+      });
+      expect(resDiffCross.statusCode).toBe(200);
+      expect(resDiffCross.headers['x-spatial-cross-regime']).toBe('true');
+
+      // 6. POST /boundary-diff 404 error envelope
+      jest.spyOn(spatialAnalyticsService, 'calculateBoundaryDiff').mockImplementationOnce(async () => {
+        const err: any = new Error('Boundary entity not found');
+        err.statusCode = 404;
+        err.code = 'ENTITY_NOT_FOUND';
+        throw err;
+      });
+      const resDiff404 = await app.inject({
+        method: 'POST',
+        url: '/api/v1/spatial/analytics/boundary-diff',
+        headers: { 'x-test-role': 'authenticated' },
+        payload: {
+          entityId: 'TS-MDL-5001',
+          sourceSelection: { mode: 'current' },
+          targetSelection: { mode: 'version', versionId: 'V2' },
+        },
+      });
+      expect(resDiff404.statusCode).toBe(404);
+      expect(JSON.parse(resDiff404.payload).code).toBe('ENTITY_NOT_FOUND');
+
+      // 7. POST /boundary-diff 500 default error envelope
+      jest.spyOn(spatialAnalyticsService, 'calculateBoundaryDiff').mockImplementationOnce(async () => {
+        throw new Error('Boundary calculation engine failed');
+      });
+      const resDiff500 = await app.inject({
+        method: 'POST',
+        url: '/api/v1/spatial/analytics/boundary-diff',
+        headers: { 'x-test-role': 'authenticated' },
+        payload: {
+          entityId: 'TS-MDL-5001',
+          sourceSelection: { mode: 'current' },
+          targetSelection: { mode: 'version', versionId: 'V2' },
+        },
+      });
+      expect(resDiff500.statusCode).toBe(500);
+      expect(JSON.parse(resDiff500.payload).code).toBe('BOUNDARY_DIFF_ERROR');
+
+      // 8. GET /quality/anomalies unauthenticated (401)
+      const resAnomaliesAnon = await app.inject({
+        method: 'GET',
+        url: '/api/v1/spatial/quality/anomalies?layer=mandals&bbox=78.4,17.3,78.5,17.4',
+      });
+      expect(resAnomaliesAnon.statusCode).toBe(401);
+
+      // 9. GET /quality/anomalies 413 error envelope
+      jest.spyOn(spatialAnalyticsService, 'detectAnomalies').mockImplementationOnce(async () => {
+        const err: any = new Error('Bbox exceeds 2.0 degrees');
+        err.statusCode = 413;
+        err.code = 'BOUNDING_BOX_EXCEEDS_MAX_WINDOW';
+        throw err;
+      });
+      const resAnomalies413 = await app.inject({
+        method: 'GET',
+        url: '/api/v1/spatial/quality/anomalies?layer=mandals&bbox=78.4,17.3,78.5,17.4',
+        headers: { 'x-test-role': 'service_role' },
+      });
+      expect(resAnomalies413.statusCode).toBe(413);
+      expect(JSON.parse(resAnomalies413.payload).code).toBe('BOUNDING_BOX_EXCEEDS_MAX_WINDOW');
+
+      // 10. GET /quality/anomalies 500 default error envelope
+      jest.spyOn(spatialAnalyticsService, 'detectAnomalies').mockImplementationOnce(async () => {
+        throw new Error('PostGIS topological exception');
+      });
+      const resAnomalies500 = await app.inject({
+        method: 'GET',
+        url: '/api/v1/spatial/quality/anomalies?layer=mandals&bbox=78.4,17.3,78.5,17.4',
+        headers: { 'x-test-role': 'service_role' },
+      });
+      expect(resAnomalies500.statusCode).toBe(500);
+      expect(JSON.parse(resAnomalies500.payload).code).toBe('SPATIAL_ANOMALY_SCAN_ERROR');
+    });
   });
 });

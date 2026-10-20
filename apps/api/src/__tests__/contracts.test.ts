@@ -14,6 +14,7 @@
 
 import { buildApp } from '../server';
 import type { FastifyInstance } from 'fastify';
+import { supabase } from '../lib/supabase';
 
 describe('W008 API Contract Standardization & Schema Envelopes', () => {
   let app: FastifyInstance;
@@ -23,7 +24,39 @@ describe('W008 API Contract Standardization & Schema Envelopes', () => {
   });
 
   afterAll(async () => {
+    jest.restoreAllMocks();
     await app.close();
+  });
+
+  beforeEach(() => {
+    let queriedId = 'mock-page-1';
+    const chainable: any = {
+      eq: (col: string, val: any) => {
+        queriedId = val;
+        return chainable;
+      },
+      or: () => chainable,
+      order: () => chainable,
+      select: () => chainable,
+      maybeSingle: async () => ({
+        data: { id: queriedId, handle: queriedId, is_pro: false, subscription_tier: 'free' },
+        error: null,
+      }),
+      single: async () => ({
+        data: { id: queriedId, handle: queriedId, is_pro: false, subscription_tier: 'free' },
+        error: null,
+      }),
+      then: (resolve: any) => resolve({ data: [], error: null }),
+    };
+    jest.spyOn(supabase, 'from').mockImplementation(((table: string) => {
+      return {
+        select: () => chainable,
+        insert: () => chainable,
+        upsert: () => chainable,
+        delete: () => chainable,
+        update: () => chainable,
+      };
+    }) as any);
   });
 
   describe('Config Flags Schema & Negative Paths (NP-01 .. NP-03)', () => {

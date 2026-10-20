@@ -54,6 +54,35 @@ describe('SpatialRuntimeService & Routes Unit Tests (W016)', () => {
     await app.close();
   });
 
+  beforeEach(() => {
+    jest.spyOn(supabase, 'from').mockImplementation((table: string) => {
+      if (table === 'mandal_versions') {
+        return {
+          select: jest.fn().mockResolvedValue({
+            data: [
+              {
+                id: '01900000-0000-0000-0000-000000000088',
+                mandal_id: 'TS-MDL-5001',
+                name: 'Kondangal Mandal',
+                district_id: 'TS-DST-001',
+              },
+            ],
+            error: null,
+          }),
+        } as any;
+      }
+      const mockQueryBuilder: any = {
+        select: jest.fn().mockReturnThis(),
+        eq: jest.fn().mockReturnThis(),
+        gte: jest.fn().mockReturnThis(),
+        lte: jest.fn().mockReturnThis(),
+        or: jest.fn().mockReturnThis(),
+        then: (resolve: any) => Promise.resolve({ data: [mockFeatureRow], error: null }).then(resolve),
+      };
+      return mockQueryBuilder;
+    });
+  });
+
   afterEach(() => {
     jest.restoreAllMocks();
   });
@@ -432,6 +461,290 @@ describe('SpatialRuntimeService & Routes Unit Tests (W016)', () => {
         url: '/geo/features/mandals/NONEXISTENT',
       });
       expect(res404.statusCode).toBe(404);
+    });
+  });
+
+  describe('Exhaustive Branch Coverage & Error Paths', () => {
+    it('exercises encodeValue with number, null, and undefined properties, and MultiPolygon geometry', () => {
+      const multiPolyGeom = {
+        type: 'MultiPolygon',
+        coordinates: [
+          [
+            [
+              [78.4, 17.3],
+              [78.5, 17.3],
+              [78.5, 17.4],
+              [78.4, 17.4],
+              [78.4, 17.3], // closed ring
+            ],
+            // degenerate ring with < 3 points
+            [[78.4, 17.3], [78.5, 17.3]],
+          ],
+        ],
+      };
+
+      const buf = encodeMVTLayer(
+        'mandals',
+        [
+          {
+            geometry: multiPolyGeom,
+            properties: {
+              strProp: 'hello',
+              numProp: 12345,
+              boolProp: true,
+              nullProp: null,
+              undefProp: undefined,
+            },
+          },
+        ],
+        10,
+        500,
+        500,
+      );
+      expect(buf).toBeInstanceOf(Buffer);
+      expect(buf.length).toBeGreaterThan(0);
+    });
+
+    it('rejects unsupported regime with INVALID_REGIME', async () => {
+      await expect(
+        spatialRuntimeService.selectGenericSpatialFeatures({
+          entityType: 'mandal',
+          regime: 'unsupported_regime' as any,
+        }),
+      ).rejects.toThrow('INVALID_REGIME');
+    });
+
+    it('handles historical regime with asOf and version regime with versionId', async () => {
+      const mockQuery: any = {
+        select: jest.fn().mockReturnThis(),
+        eq: jest.fn().mockReturnThis(),
+        lte: jest.fn().mockReturnThis(),
+        or: jest.fn().mockReturnThis(),
+        filter: jest.fn().mockReturnThis(),
+        then: (resolve: any) => Promise.resolve({ data: [mockFeatureRow], error: null }).then(resolve),
+      };
+      jest.spyOn(supabase, 'from').mockReturnValue(mockQuery);
+
+      // Historical with asOf
+      const histFeatures = await spatialRuntimeService.selectGenericSpatialFeatures({
+        entityType: 'mandal',
+        regime: 'historical',
+        asOf: '2020-01-01',
+      });
+      expect(histFeatures.length).toBe(1);
+
+      // Version with versionId
+      const verFeatures = await spatialRuntimeService.selectGenericSpatialFeatures({
+        entityType: 'mandal',
+        regime: 'version',
+        versionId: '01900000-0000-0000-0000-000000000088',
+      });
+      expect(verFeatures.length).toBe(1);
+    });
+
+    it('handles non-UUID id and tileBBox in selectGenericSpatialFeatures', async () => {
+      const mockQuery: any = {
+        select: jest.fn().mockReturnThis(),
+        eq: jest.fn().mockReturnThis(),
+        or: jest.fn().mockReturnThis(),
+        filter: jest.fn().mockReturnThis(),
+        then: (resolve: any) => Promise.resolve({ data: [mockFeatureRow], error: null }).then(resolve),
+      };
+      jest.spyOn(supabase, 'from').mockReturnValue(mockQuery);
+
+      const features = await spatialRuntimeService.selectGenericSpatialFeatures({
+        entityType: 'mandals',
+        id: 'TS-MDL-5001',
+        tileBBox: { minX: 78, minY: 17, maxX: 79, maxY: 18 },
+        regime: 'current',
+      });
+      expect(features.length).toBe(1);
+    });
+
+    it('handles database error and empty data in selectGenericSpatialFeatures', async () => {
+      const mockQueryErr: any = {
+        select: jest.fn().mockReturnThis(),
+        eq: jest.fn().mockReturnThis(),
+        or: jest.fn().mockReturnThis(),
+        then: (resolve: any) => Promise.resolve({ data: null, error: { message: 'DB crash' } }).then(resolve),
+      };
+      jest.spyOn(supabase, 'from').mockReturnValue(mockQueryErr);
+
+      await expect(
+        spatialRuntimeService.selectGenericSpatialFeatures({
+          entityType: 'mandal',
+          regime: 'current',
+        }),
+      ).rejects.toThrow('DATABASE_QUERY_ERROR');
+
+      const mockQueryEmpty: any = {
+        select: jest.fn().mockReturnThis(),
+        eq: jest.fn().mockReturnThis(),
+        or: jest.fn().mockReturnThis(),
+        then: (resolve: any) => Promise.resolve({ data: [], error: null }).then(resolve),
+      };
+      jest.spyOn(supabase, 'from').mockReturnValue(mockQueryEmpty);
+
+      const empty = await spatialRuntimeService.selectGenericSpatialFeatures({
+        entityType: 'mandal',
+        regime: 'current',
+      });
+      expect(empty).toEqual([]);
+    });
+
+    it('evaluates point queries with PostGIS rpc st_intersects (both match, non-match, and rpc error)', async () => {
+      const mockQuery: any = {
+        select: jest.fn().mockReturnThis(),
+        eq: jest.fn().mockReturnThis(),
+        or: jest.fn().mockReturnThis(),
+        filter: jest.fn().mockReturnThis(),
+        then: (resolve: any) => Promise.resolve({ data: [mockFeatureRow], error: null }).then(resolve),
+      };
+      jest.spyOn(supabase, 'from').mockReturnValue(mockQuery);
+
+      // Match
+      jest.spyOn(supabase, 'rpc').mockResolvedValueOnce({ data: true, error: null } as any);
+      const matched = await spatialRuntimeService.selectGenericSpatialFeatures({
+        entityType: 'mandal',
+        point: { lng: 78.45, lat: 17.35 },
+        regime: 'current',
+      });
+      expect(matched.length).toBe(1);
+
+      // Non-match
+      jest.spyOn(supabase, 'rpc').mockResolvedValueOnce({ data: false, error: null } as any);
+      const nonMatched = await spatialRuntimeService.selectGenericSpatialFeatures({
+        entityType: 'mandal',
+        point: { lng: 78.45, lat: 17.35 },
+        regime: 'current',
+      });
+      expect(nonMatched.length).toBe(0);
+
+      // RPC error
+      jest.spyOn(supabase, 'rpc').mockResolvedValueOnce({ data: null, error: { message: 'RPC failure' } } as any);
+      const rpcErrFeatures = await spatialRuntimeService.selectGenericSpatialFeatures({
+        entityType: 'mandal',
+        point: { lng: 78.45, lat: 17.35 },
+        regime: 'current',
+      });
+      expect(rpcErrFeatures.length).toBe(0);
+    });
+
+    it('exercises getTile when genericFeatures is empty and with bypassAdapter', async () => {
+      jest.spyOn(spatialRuntimeService, 'selectGenericSpatialFeatures').mockResolvedValueOnce([]);
+      const tileEmpty = await spatialRuntimeService.getTile({
+        layer: 'mandals',
+        z: 0,
+        x: 0,
+        y: 0,
+        regime: 'current',
+      });
+      expect(tileEmpty).toBeNull();
+
+      jest.spyOn(spatialRuntimeService, 'selectGenericSpatialFeatures').mockResolvedValueOnce([
+        {
+          geometry: mockPolygonGeoJson,
+          properties: {
+            entity_id: null,
+            version_id: 'v-1',
+            geometry_id: 'g-1',
+            source_feature_id: 'src-1',
+            entity_type: 'mandal',
+            status: 'DERIVED',
+            is_current: true,
+            temporal_classification: 'CURRENT_LEGAL',
+            authority_classification: 'STATUTORY',
+            valid_from: '2016-10-11',
+            valid_to: null,
+          },
+        },
+      ]);
+      const tileBypass = await spatialRuntimeService.getTile({
+        layer: 'mandals',
+        z: 0,
+        x: 0,
+        y: 0,
+        regime: 'current',
+        bypassAdapter: true,
+      });
+      expect(tileBypass).not.toBeNull();
+      expect(tileBypass?.features[0].entity_id).toBeNull();
+    });
+
+    it('exercises locatePoint invalid coordinates, empty features, and bypassAdapter', async () => {
+      // Invalid lat/lng
+      await expect(
+        spatialRuntimeService.locatePoint({ lat: 100, lng: 78 }),
+      ).rejects.toThrow('INVALID_COORDINATES');
+
+      await expect(
+        spatialRuntimeService.locatePoint({ lat: 17, lng: 200 }),
+      ).rejects.toThrow('INVALID_COORDINATES');
+
+      await expect(
+        spatialRuntimeService.locatePoint({ lat: NaN, lng: 78 }),
+      ).rejects.toThrow('INVALID_COORDINATES');
+
+      // Empty features
+      jest.spyOn(spatialRuntimeService, 'selectGenericSpatialFeatures').mockResolvedValueOnce([]);
+      const notFound = await spatialRuntimeService.locatePoint({ lat: 17, lng: 78 });
+      expect(notFound).toBeNull();
+
+      // bypassAdapter = true
+      jest.spyOn(spatialRuntimeService, 'selectGenericSpatialFeatures').mockResolvedValueOnce([
+        {
+          geometry: mockPolygonGeoJson,
+          properties: {
+            entity_id: null,
+            version_id: 'v-1',
+            geometry_id: 'g-1',
+            source_feature_id: 'src-1',
+            entity_type: 'mandal',
+            status: 'DERIVED',
+            is_current: true,
+            temporal_classification: 'CURRENT_LEGAL',
+            authority_classification: 'STATUTORY',
+            valid_from: '2016-10-11',
+            valid_to: null,
+          },
+        },
+      ]);
+      const bypassed = await spatialRuntimeService.locatePoint({
+        lat: 17,
+        lng: 78,
+        bypassAdapter: true,
+      });
+      expect(bypassed?.entity_id).toBeNull();
+    });
+
+    it('exercises getFeatureDetail empty features and bypassAdapter', async () => {
+      jest.spyOn(spatialRuntimeService, 'selectGenericSpatialFeatures').mockResolvedValueOnce([]);
+      const notFound = await spatialRuntimeService.getFeatureDetail({ id: 'missing' });
+      expect(notFound).toBeNull();
+
+      jest.spyOn(spatialRuntimeService, 'selectGenericSpatialFeatures').mockResolvedValueOnce([
+        {
+          geometry: mockPolygonGeoJson,
+          properties: {
+            entity_id: null,
+            version_id: 'v-1',
+            geometry_id: 'g-1',
+            source_feature_id: 'src-1',
+            entity_type: 'mandal',
+            status: 'DERIVED',
+            is_current: true,
+            temporal_classification: 'CURRENT_LEGAL',
+            authority_classification: 'STATUTORY',
+            valid_from: '2016-10-11',
+            valid_to: null,
+          },
+        },
+      ]);
+      const bypassed = await spatialRuntimeService.getFeatureDetail({
+        id: 'g-1',
+        bypassAdapter: true,
+      });
+      expect(bypassed?.entity_id).toBeNull();
     });
   });
 });

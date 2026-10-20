@@ -565,4 +565,269 @@ describe('ElectionService & Routes Unit Tests (W019)', () => {
       expect(body.metadata.total).toBe(2);
     });
   });
+
+  describe('Exhaustive Branch Coverage & Edge Case Hardening', () => {
+    it('covers all clamp boundaries and null fallbacks in listElectionEvents', async () => {
+      // limit > 50, limit < 1, offset < 0, data null, count null
+      jest.spyOn(supabase, 'from').mockImplementation((() => ({
+        select: jest.fn().mockReturnThis(),
+        eq: jest.fn().mockReturnThis(),
+        order: jest.fn().mockReturnThis(),
+        range: jest.fn().mockResolvedValue({ data: null, count: null, error: null }),
+      })) as any);
+
+      const resCapped = await electionService.listElectionEvents({ limit: 100, offset: -5 });
+      expect(resCapped.events).toEqual([]);
+      expect(resCapped.total).toBe(0);
+
+      const resMin = await electionService.listElectionEvents({ limit: -10 });
+      expect(resMin.events).toEqual([]);
+      expect(resMin.total).toBe(0);
+    });
+
+    it('covers all clamp boundaries and null fallbacks in listElectionContests', async () => {
+      jest.spyOn(electionService, 'getElectionEventById').mockResolvedValue(mockElectionEvent as any);
+
+      jest.spyOn(supabase, 'from').mockImplementation((() => ({
+        select: jest.fn().mockReturnThis(),
+        eq: jest.fn().mockReturnThis(),
+        order: jest.fn().mockReturnThis(),
+        range: jest.fn().mockResolvedValue({ data: null, count: null, error: null }),
+      })) as any);
+
+      const resCapped = await electionService.listElectionContests('TS_LA_2023', { limit: 200, offset: -10 });
+      expect(resCapped.contests).toEqual([]);
+      expect(resCapped.total).toBe(0);
+
+      const resMin = await electionService.listElectionContests('TS_LA_2023', { limit: -5 });
+      expect(resMin.contests).toEqual([]);
+      expect(resMin.total).toBe(0);
+    });
+
+    it('throws when election_contests query errors in getContestDetail (line 219)', async () => {
+      jest.spyOn(electionService, 'getElectionEventById').mockResolvedValue(mockElectionEvent as any);
+
+      jest.spyOn(supabase, 'from').mockImplementation(((table: string) => {
+        if (table === 'election_contests') {
+          return {
+            select: jest.fn().mockReturnThis(),
+            eq: jest.fn().mockReturnThis(),
+            maybeSingle: jest.fn().mockResolvedValue({ data: null, error: { message: 'Contest table failure' } }),
+          };
+        }
+        return { select: jest.fn().mockReturnThis() };
+      }) as any);
+
+      await expect(electionService.getContestDetail('TS_LA_2023', 'TS-AC-065')).rejects.toThrow(
+        'Failed to get contest: Contest table failure'
+      );
+    });
+
+    it('throws when ballot_choices query errors in getContestDetail (line 248)', async () => {
+      jest.spyOn(electionService, 'getElectionEventById').mockResolvedValue(mockElectionEvent as any);
+
+      jest.spyOn(supabase, 'from').mockImplementation(((table: string) => {
+        if (table === 'election_contests') {
+          return {
+            select: jest.fn().mockReturnThis(),
+            eq: jest.fn().mockReturnThis(),
+            maybeSingle: jest.fn().mockResolvedValue({ data: mockContest, error: null }),
+          };
+        }
+        if (table === 'candidacies') {
+          return {
+            select: jest.fn().mockReturnThis(),
+            eq: jest.fn().mockReturnThis(),
+            order: jest.fn().mockResolvedValue({ data: [], error: null }),
+          };
+        }
+        if (table === 'ballot_choices') {
+          return {
+            select: jest.fn().mockReturnThis(),
+            eq: jest.fn().mockReturnThis(),
+            order: jest.fn().mockResolvedValue({ data: null, error: { message: 'Ballot table failure' } }),
+          };
+        }
+        return { select: jest.fn().mockReturnThis() };
+      }) as any);
+
+      await expect(electionService.getContestDetail('TS_LA_2023', 'TS-AC-065')).rejects.toThrow(
+        'Failed to get ballot choices: Ballot table failure'
+      );
+    });
+
+    it('covers all mapper branches with nullish and sparse rows', async () => {
+      jest.spyOn(electionService, 'getElectionEventById').mockResolvedValue({
+        id: 'sparse-election',
+        election_code: 'SPARSE',
+        state_code: 'TS',
+        election_type: 'assembly',
+        election_year: 2023,
+        title: 'Sparse',
+        notification_date: null,
+        polling_date: '2023-11-30',
+        counting_date: null,
+        status: 'SCHEDULED',
+        total_constituencies: null,
+        total_electors: null,
+        total_votes_polled: null,
+        turnout_percentage: null,
+        data_status: 'PROVISIONAL',
+        provenance_id: null,
+        metadata: null,
+        created_at: '2023-01-01',
+        updated_at: '2023-01-01',
+      } as any);
+
+      const sparseContest = {
+        id: 'sparse-contest',
+        election_id: 'sparse-election',
+        contest_code: 'SPARSE_C',
+        constituency_id: 'AC-1',
+        constituency_version_id: null,
+        constituency_name: 'Sparse AC',
+        reservation_status: 'GEN',
+        status: 'UPCOMING',
+        is_uncontested: 0,
+        countermanded_contest_id: null,
+        total_electors: null,
+        total_votes_polled: null,
+        total_valid_votes: null,
+        total_rejected_votes: undefined,
+        total_nota_votes: null,
+        turnout_percentage: null,
+        victory_margin: null,
+        winning_candidacy_id: null,
+        runner_up_candidacy_id: null,
+        data_status: 'PROVISIONAL',
+        provenance_id: null,
+        metadata: null,
+        created_at: '2023-01-01',
+        updated_at: '2023-01-01',
+      };
+
+      const sparseCandidates = [
+        {
+          id: 'cand-no-person',
+          contest_id: 'sparse-contest',
+          person_id: 'p-1',
+          election_year: 2023,
+          election_type: 'assembly',
+          constituency_type: 'assembly',
+          constituency_id: 'AC-1',
+          party_id: null,
+          is_independent: false,
+          result: 'LOST',
+          votes_received: null,
+          evm_votes: null,
+          postal_votes: undefined,
+          vote_share: null,
+          rank: null,
+          affidavit_id: null,
+          data_status: 'PROVISIONAL',
+          created_at: '2023-01-01',
+          updated_at: '2023-01-01',
+          canonical_persons: null,
+          political_organizations: null,
+        },
+      ];
+
+      const sparseBallot = [
+        {
+          id: 'bc-nulls',
+          contest_id: 'sparse-contest',
+          choice_type: 'REJECTED',
+          is_valid_vote: null,
+          votes_received: null,
+          vote_share: null,
+          created_at: '2023-01-01',
+        },
+      ];
+
+      jest.spyOn(supabase, 'from').mockImplementation(((table: string) => {
+        if (table === 'election_contests') {
+          return {
+            select: jest.fn().mockReturnThis(),
+            eq: jest.fn().mockReturnThis(),
+            maybeSingle: jest.fn().mockResolvedValue({ data: sparseContest, error: null }),
+          };
+        }
+        if (table === 'candidacies') {
+          return {
+            select: jest.fn().mockReturnThis(),
+            eq: jest.fn().mockReturnThis(),
+            order: jest.fn().mockResolvedValue({ data: sparseCandidates, error: null }),
+          };
+        }
+        if (table === 'ballot_choices') {
+          return {
+            select: jest.fn().mockReturnThis(),
+            eq: jest.fn().mockReturnThis(),
+            order: jest.fn().mockResolvedValue({ data: sparseBallot, error: null }),
+          };
+        }
+        return { select: jest.fn().mockReturnThis() };
+      }) as any);
+
+      const res = await electionService.getContestDetail('SPARSE', 'AC-1');
+      expect(res).not.toBeNull();
+      expect(res?.totalElectors).toBe(0);
+      expect(res?.totalRejectedVotes).toBeNull();
+      expect(res?.winner).toBeNull();
+      expect(res?.runnerUp).toBeNull();
+      expect(res?.candidates[0].person).toBeNull();
+      expect(res?.candidates[0].party).toBeNull();
+      expect(res?.candidates[0].votesReceived).toBe(0);
+      expect(res?.candidates[0].evmVotes).toBeNull();
+      expect(res?.candidates[0].postalVotes).toBeNull();
+      expect(res?.ballotChoices[0].isValidVote).toBe(true);
+      expect(res?.ballotChoices[0].votesReceived).toBe(0);
+    });
+
+    it('handles empty candidates array in getContestDetail and null in getPersonElections', async () => {
+      jest.spyOn(electionService, 'getElectionEventById').mockResolvedValue(mockElectionEvent as any);
+
+      jest.spyOn(supabase, 'from').mockImplementation(((table: string) => {
+        if (table === 'election_contests') {
+          return {
+            select: jest.fn().mockReturnThis(),
+            eq: jest.fn().mockReturnThis(),
+            maybeSingle: jest.fn().mockResolvedValue({ data: mockContest, error: null }),
+          };
+        }
+        if (table === 'candidacies') {
+          return {
+            select: jest.fn().mockReturnThis(),
+            eq: jest.fn().mockReturnThis(),
+            order: jest.fn().mockResolvedValue({ data: null, error: null }),
+          };
+        }
+        if (table === 'ballot_choices') {
+          return {
+            select: jest.fn().mockReturnThis(),
+            eq: jest.fn().mockReturnThis(),
+            order: jest.fn().mockResolvedValue({ data: null, error: null }),
+          };
+        }
+        return { select: jest.fn().mockReturnThis() };
+      }) as any);
+
+      const res = await electionService.getContestDetail('TS_LA_2023', 'TS-AC-065');
+      expect(res).not.toBeNull();
+      expect(res?.candidates).toEqual([]);
+      expect(res?.winner).toBeNull();
+      expect(res?.runnerUp).toBeNull();
+      expect(res?.ballotChoices).toEqual([]);
+
+      // getPersonElections with data null
+      jest.spyOn(supabase, 'from').mockImplementation((() => ({
+        select: jest.fn().mockReturnThis(),
+        eq: jest.fn().mockReturnThis(),
+        order: jest.fn().mockResolvedValue({ data: null, error: null }),
+      })) as any);
+
+      const personRes = await electionService.getPersonElections('p-none');
+      expect(personRes).toEqual([]);
+    });
+  });
 });
