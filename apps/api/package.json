@@ -8,7 +8,7 @@
     "start": "tsx src/server.ts",
     "smoke": "node ../../scripts/smoke-api.mjs",
     "test": "node ../../node_modules/jest/bin/jest.js --passWithNoTests --forceExit",
-    "test:coverage": "node ../../node_modules/jest/bin/jest.js --coverage",
+    "test:coverage": "node ../../node_modules/jest/bin/jest.js --coverage --forceExit",
     "clean": "rm -rf dist",
     "lint": "echo lint"
   },
