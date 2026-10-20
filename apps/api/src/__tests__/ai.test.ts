@@ -92,5 +92,35 @@ describe('AI Routes', () => {
 
       expect(res.statusCode).toBe(400);
     });
+
+    it('should accept national AC numbers beyond 119 for non-TS states gracefully', async () => {
+      const res = await app.inject({
+        method: 'GET',
+        url: '/api/v1/ai/analyze/constituency/150?stateCode=KA',
+      });
+
+      expect(res.statusCode).toBe(200);
+      const body = JSON.parse(res.payload);
+      expect(body.acNo).toBe(150);
+      expect(body.stateCode).toBe('KA');
+      expect(body.analysis).toBeDefined();
+    });
+  });
+
+  describe('POST /api/v1/ai/smart-search multi-state', () => {
+    it('should accept search queries with optional stateCode', async () => {
+      const res = await app.inject({
+        method: 'POST',
+        url: '/api/v1/ai/smart-search',
+        payload: {
+          query: 'Bangalore rural constituency',
+          stateCode: 'KA',
+        },
+      });
+
+      expect(res.statusCode).toBe(200);
+      const body = JSON.parse(res.payload);
+      expect(Array.isArray(body.results)).toBe(true);
+    });
   });
 });

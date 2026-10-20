@@ -11,9 +11,9 @@ import {
 import { validate } from '../lib/validation';
 import { sendApiError } from '../lib/replyHelper';
 
-/** Telangana has 119 assembly constituencies (Phase 1 scope). */
-const TS_MIN_AC = 1;
-const TS_MAX_AC = 119;
+/** Assembly constituencies range from 1 to 500 across Indian States & UTs. */
+const MIN_AC_NO = 1;
+const MAX_AC_NO = 500;
 const MIN_SEARCH_QUERY_LENGTH = 3;
 const MAX_SEARCH_QUERY_LENGTH = 500;
 const MAX_MESSAGE_LENGTH = 4000;
@@ -33,11 +33,16 @@ const chatBodySchema = z.object({
     )
     .min(1, 'messages array is required and must not be empty')
     .max(MAX_MESSAGES_COUNT),
-  constituencyAcNo: z.number().int().min(TS_MIN_AC).max(TS_MAX_AC).optional(),
+  constituencyAcNo: z.number().int().min(MIN_AC_NO).max(MAX_AC_NO).optional(),
+  stateCode: z.string().trim().length(2).optional(),
 });
 
 const acNoParamSchema = z.object({
-  acNo: z.coerce.number().int().min(TS_MIN_AC).max(TS_MAX_AC),
+  acNo: z.coerce.number().int().min(MIN_AC_NO).max(MAX_AC_NO),
+});
+
+const constituencyQuerySchema = z.object({
+  stateCode: z.string().trim().length(2).optional(),
 });
 
 const smartSearchBodySchema = z.object({
@@ -46,6 +51,7 @@ const smartSearchBodySchema = z.object({
     .trim()
     .min(MIN_SEARCH_QUERY_LENGTH, 'query string is required (min 3 characters)')
     .max(MAX_SEARCH_QUERY_LENGTH),
+  stateCode: z.string().trim().length(2).optional(),
 });
 
 const summarizeIssuesBodySchema = z.object({
@@ -79,6 +85,7 @@ export async function aiRoutes(app: FastifyInstance) {
       const response = await chatWithAI({
         messages: parsed.data.messages,
         constituencyAcNo: parsed.data.constituencyAcNo,
+        stateCode: parsed.data.stateCode,
       });
       return { response };
     } catch (err: unknown) {
@@ -93,17 +100,19 @@ export async function aiRoutes(app: FastifyInstance) {
   app.get('/api/v1/ai/analyze/constituency/:acNo', async (request, reply) => {
     const parsed = validate(acNoParamSchema, request.params);
     if (!parsed.ok) {
-      return sendApiError(reply, request, 400, 'Bad Request', 'Invalid AC number. Expected integer between 1 and 119.', {
+      return sendApiError(reply, request, 400, 'Bad Request', 'Invalid AC number. Expected integer between 1 and 500.', {
         code: 'FST_ERR_VALIDATION',
       });
     }
 
+    const queryParsed = validate(constituencyQuerySchema, request.query);
+    const stateCode = queryParsed.ok && queryParsed.data?.stateCode ? queryParsed.data.stateCode.toUpperCase() : 'TS';
     const num = parsed.data.acNo;
     try {
-      const analysis = await analyzeConstituency(num);
-      return { acNo: num, analysis };
+      const analysis = await analyzeConstituency(num, stateCode);
+      return { acNo: num, stateCode, analysis };
     } catch (err: unknown) {
-      request.log.error({ err, acNo: num }, 'AI constituency analysis failed');
+      request.log.error({ err, acNo: num, stateCode }, 'AI constituency analysis failed');
       return sendApiError(reply, request, 500, 'Internal Server Error', 'Failed to analyze constituency', {
         code: 'AI_PROVIDER_ERROR',
       });
@@ -133,7 +142,7 @@ export async function aiRoutes(app: FastifyInstance) {
     }
 
     try {
-      const results = await smartSearch(parsed.data.query);
+      const results = await smartSearch(parsed.data.query, parsed.data.stateCode);
       return { results };
     } catch (err: unknown) {
       request.log.error({ err }, 'AI smart search failed');

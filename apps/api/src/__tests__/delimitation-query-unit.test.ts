@@ -316,5 +316,165 @@ describe('Delimitation Query Service & Legal Applicability (W020-G8/G9) Unit Tes
       const empty = await delimitationQueryService.getProposals({ stateCode: 'ZZ' });
       expect(empty).toEqual([]);
     });
+
+    describe('resolveRegime modes and validation', () => {
+      const mockRegimes = [
+        {
+          id: 'regime-current-001',
+          name: 'Current Legal Regime 2008/2014',
+          regimeType: 'CURRENT_LEGAL_REGIME' as const,
+          description: 'Current statutory regime',
+          effectiveFrom: '2008-02-19T00:00:00Z',
+          effectiveTo: null,
+          authority: 'Delimitation Commission of India',
+          isActive: true,
+          metadata: {},
+          createdAt: '2024-01-01T00:00:00Z',
+        },
+        {
+          id: 'regime-historical-001',
+          name: 'Historical Legal Regime 1976',
+          regimeType: 'HISTORICAL_LEGAL_REGIME' as const,
+          description: '1976 delimitation',
+          effectiveFrom: '1976-01-01T00:00:00Z',
+          effectiveTo: '2008-02-18T23:59:59Z',
+          authority: 'Delimitation Commission of India',
+          isActive: false,
+          metadata: {},
+          createdAt: '2024-01-01T00:00:00Z',
+        },
+        {
+          id: 'regime-future-001',
+          name: 'Post-2026 Delimitation',
+          regimeType: 'FUTURE_ANTICIPATED_REGIME' as const,
+          description: 'Anticipated post-freeze delimitation',
+          effectiveFrom: '2028-01-01T00:00:00Z',
+          effectiveTo: null,
+          authority: 'Future Commission',
+          isActive: false,
+          metadata: {},
+          createdAt: '2024-01-01T00:00:00Z',
+        },
+        {
+          id: 'regime-scenario-001',
+          name: 'Exploratory Scenario A',
+          regimeType: 'SCENARIO_PROPOSED_REGIME' as const,
+          description: 'Computational scenario',
+          effectiveFrom: '2025-01-01T00:00:00Z',
+          effectiveTo: null,
+          authority: 'PANIN Delimitation Engine',
+          isActive: false,
+          metadata: {},
+          createdAt: '2024-01-01T00:00:00Z',
+        },
+      ];
+
+      beforeEach(() => {
+        jest.spyOn(delimitationQueryService, 'getRegimes').mockResolvedValue(mockRegimes);
+      });
+
+      it('resolves current regime successfully', async () => {
+        const res = await delimitationQueryService.resolveRegime({ mode: 'current' });
+        expect(res.regime.id).toBe('regime-current-001');
+        expect(res.isScenario).toBe(false);
+      });
+
+      it('throws when active regime is not CURRENT_LEGAL_REGIME', async () => {
+        jest.spyOn(delimitationQueryService, 'getRegimes').mockResolvedValue([
+          {
+            ...mockRegimes[3],
+            isActive: true,
+          },
+        ]);
+
+        await expect(delimitationQueryService.resolveRegime({ mode: 'current' })).rejects.toThrow(
+          DelimitationQueryError,
+        );
+      });
+
+      it('resolves as_of regime for date in force', async () => {
+        const res = await delimitationQueryService.resolveRegime({
+          mode: 'as_of',
+          date: '1995-05-15',
+        });
+        expect(res.regime.id).toBe('regime-historical-001');
+        expect(res.isScenario).toBe(false);
+      });
+
+      it('throws 400 for invalid date format in as_of mode', async () => {
+        await expect(
+          delimitationQueryService.resolveRegime({ mode: 'as_of', date: 'INVALID_DATE' }),
+        ).rejects.toThrow(DelimitationQueryError);
+      });
+
+      it('throws 404 when no regime was in force on as_of date', async () => {
+        await expect(
+          delimitationQueryService.resolveRegime({ mode: 'as_of', date: '1950-01-01' }),
+        ).rejects.toThrow(DelimitationQueryError);
+      });
+
+      it('resolves explicit regime by valid id', async () => {
+        const res = await delimitationQueryService.resolveRegime({
+          mode: 'explicit',
+          regimeId: 'regime-historical-001',
+        });
+        expect(res.regime.id).toBe('regime-historical-001');
+      });
+
+      it('throws for forbidden explicit regime ID', async () => {
+        await expect(
+          delimitationQueryService.resolveRegime({
+            mode: 'explicit',
+            regimeId: 'SIMULATION_PROPOSED',
+          }),
+        ).rejects.toThrow(DelimitationQueryError);
+      });
+
+      it('resolves future_anticipated regime', async () => {
+        const res = await delimitationQueryService.resolveRegime({ mode: 'future_anticipated' });
+        expect(res.regime.regimeType).toBe('FUTURE_ANTICIPATED_REGIME');
+        expect(res.proposals).toEqual([]);
+      });
+
+      it('resolves scenario regime by regime_id selector', async () => {
+        const res = await delimitationQueryService.resolveRegime({
+          mode: 'scenario',
+          selector: { type: 'regime_id', regimeId: 'regime-scenario-001' },
+        });
+        expect(res.isScenario).toBe(true);
+        expect(res.regime.id).toBe('regime-scenario-001');
+      });
+    });
+
+    describe('Timeline events and delimitation status', () => {
+      it('getTimelineEvents returns statutory timeline events', async () => {
+        const events = await delimitationQueryService.getTimelineEvents();
+        expect(events.length).toBeGreaterThan(5);
+        expect(events[0].id).toBe('LEG-2002-01');
+        expect(events[1].verified).toBe(true);
+      });
+
+      it('getDelimitationStatus returns national status DTO and provenance', async () => {
+        jest.spyOn(delimitationQueryService, 'getRegimes').mockResolvedValue([
+          {
+            id: 'regime-future-001',
+            name: 'Post-Census 2027 Operation',
+            regimeType: 'FUTURE_ANTICIPATED_REGIME' as const,
+            description: 'Post freeze',
+            effectiveFrom: '2028-01-01',
+            effectiveTo: null,
+            authority: 'ECI',
+            isActive: false,
+            metadata: {},
+            createdAt: '2024-01-01',
+          },
+        ]);
+
+        const status = await delimitationQueryService.getDelimitationStatus();
+        expect(status.nationalStatus).toBe('pre_census');
+        expect(status.censusTracking.finalPopulationAvailable).toBe(false);
+        expect(status.provenance.methodology).toBe('CONSTITUTIONAL_STATUS_AUDIT');
+      });
+    });
   });
 });

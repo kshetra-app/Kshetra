@@ -79,7 +79,7 @@ jobs:
           NODE_ENV: test
 
       - name: Test API (with coverage gate)
-        run: npm run test:coverage -w @kshetra/api -- --forceExit
+        run: npm run test:coverage -w @kshetra/api
         env:
           SUPABASE_URL: https://test-fixture.supabase.co
           SUPABASE_ANON_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRlc3QiLCJyb2xlIjoiYW5vbiIsImlhdCI6MTYwMDAwMDAwMCwiZXhwIjoxOTAwMDAwMDAwfQ.dummy_signature_for_test_environment_only

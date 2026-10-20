@@ -5,6 +5,12 @@ import { getMLAProfile } from '../../../../data/seed/telangana-mla-profiles';
 import { getConstituencyDemographics } from '../../../../data/seed/telangana-demographics';
 import { getConstituencyHistory, isPartyStronghold } from '../../../../data/seed/telangana-historical-results';
 import { getConstituencyTimeline, getDefectionSummary, computePartyStrength } from '../../../../data/seed/telangana-political-timeline';
+import {
+  getConstituency,
+  getConstituencyElectionData,
+  getStateInfo,
+  getConstituencies,
+} from './stateData';
 
 const SYSTEM_PROMPT = `You are KSHETRA AI — an expert, non-partisan civic & electoral intelligence assistant.
 You provide objective, strictly factual answers grounded ONLY in verified public records, election commissions data, and official constituency statistics.
@@ -46,51 +52,83 @@ Guidelines:
 - Use all verified context to provide rich, factual analysis`;
 
 /** Build rich context string from all data sources for a specific constituency */
-function buildConstituencyContext(acNo?: number): string {
+export function buildConstituencyContext(acNo?: number, stateCode = 'TS'): string {
   if (!acNo) return '';
+  const code = (stateCode || 'TS').toUpperCase();
 
-  const c = TELANGANA_CONSTITUENCIES.find((x) => x.acNo === acNo);
+  if (code === 'TS') {
+    const c = TELANGANA_CONSTITUENCIES.find((x) => x.acNo === acNo);
+    if (!c) return '';
+
+    let ctx = `\n\n=== CONSTITUENCY CONTEXT: AC #${c.acNo} ${c.name} (TS) ===`;
+    ctx += `\nDistrict: ${c.district} | Type: ${c.type}`;
+    ctx += `\n2023 Winner: ${c.winnerName2023} (${c.winner2023}) — ${c.winnerVotes2023.toLocaleString()} votes`;
+    ctx += `\nRunner-up: ${c.runnerUp2023} | Margin: ${c.margin2023.toLocaleString()} votes`;
+
+    if (c.winner2023 !== c.currentParty) {
+      ctx += `\nDEFECTION: Elected as ${c.winner2023}, currently with ${c.currentParty}`;
+    }
+
+    // Historical results
+    const history = getConstituencyHistory(c.acNo);
+    if (history.ac2014) ctx += `\n2014: ${history.ac2014.winner} (${history.ac2014.party})`;
+    if (history.ac2018) ctx += `\n2018: ${history.ac2018.winner} (${history.ac2018.party})`;
+
+    const stronghold = isPartyStronghold(c.acNo, c.winner2023);
+    if (stronghold) ctx += `\nSTRONGHOLD: Same party won all 3 elections`;
+
+    // MLA profile
+    const mla = getMLAProfile(c.acNo);
+    if (mla) {
+      ctx += `\nMLA: ${mla.name} (${mla.party}), Gender: ${mla.gender}, Terms: ${mla.terms}`;
+      if (mla.education) ctx += `, Education: ${mla.education}`;
+      if (mla.age) ctx += `, Age: ${mla.age}`;
+    }
+
+    // Demographics
+    const demo = getConstituencyDemographics(c.acNo);
+    if (demo) {
+      ctx += `\nPopulation: ${demo.population.toLocaleString()}, Literacy: ${demo.literacy}%`;
+      ctx += `, Turnout 2023: ${demo.turnout2023}%, Urban: ${demo.urbanPercent}%`;
+      ctx += `, Voters: ${demo.totalVoters.toLocaleString()}`;
+    }
+
+    // Political timeline events for this AC
+    const timeline = getConstituencyTimeline(c.acNo);
+    if (timeline.length > 0) {
+      ctx += `\nPolitical events:`;
+      for (const ev of timeline.slice(0, 5)) {
+        ctx += `\n  - ${ev.date}: ${ev.explanation}`;
+      }
+    }
+
+    return ctx;
+  }
+
+  // Generalized multi-state constituency retrieval
+  const c = getConstituency(code, acNo);
   if (!c) return '';
 
-  let ctx = `\n\n=== CONSTITUENCY CONTEXT: AC #${c.acNo} ${c.name} ===`;
-  ctx += `\nDistrict: ${c.district} | Type: ${c.type}`;
-  ctx += `\n2023 Winner: ${c.winnerName2023} (${c.winner2023}) — ${c.winnerVotes2023.toLocaleString()} votes`;
-  ctx += `\nRunner-up: ${c.runnerUp2023} | Margin: ${c.margin2023.toLocaleString()} votes`;
+  let ctx = `\n\n=== CONSTITUENCY CONTEXT: AC #${c.acNo} ${c.name} (${code}) ===`;
+  ctx += `\nDistrict: ${c.district || 'Unassigned'} | Reservation: ${c.reservationStatus}`;
+  ctx += `\nCurrent MLA: ${c.currentMLA || 'Not Recorded'} (${c.currentParty || 'Unspecified'})`;
 
-  if (c.winner2023 !== c.currentParty) {
-    ctx += `\nDEFECTION: Elected as ${c.winner2023}, currently with ${c.currentParty}`;
+  const elecData = getConstituencyElectionData(code, acNo);
+  if (elecData?.recentElection) {
+    const rec = elecData.recentElection;
+    ctx += `\nRecent Election: Winner: ${rec.winnerName || c.currentMLA} (${rec.winner || c.currentParty})`;
+    if (rec.electionYear != null) ctx += ` in ${rec.electionYear}`;
+    if (rec.winnerVotes != null) ctx += ` — ${rec.winnerVotes.toLocaleString()} votes`;
+    if (rec.runnerUp) ctx += ` | Runner-up: ${rec.runnerUp}`;
+    if (rec.margin != null) ctx += ` | Margin: ${rec.margin.toLocaleString()} votes`;
   }
 
-  // Historical results
-  const history = getConstituencyHistory(c.acNo);
-  if (history.ac2014) ctx += `\n2014: ${history.ac2014.winner} (${history.ac2014.party})`;
-  if (history.ac2018) ctx += `\n2018: ${history.ac2018.winner} (${history.ac2018.party})`;
-
-  const stronghold = isPartyStronghold(c.acNo, c.winner2023);
-  if (stronghold) ctx += `\nSTRONGHOLD: Same party won all 3 elections`;
-
-  // MLA profile
-  const mla = getMLAProfile(c.acNo);
-  if (mla) {
-    ctx += `\nMLA: ${mla.name} (${mla.party}), Gender: ${mla.gender}, Terms: ${mla.terms}`;
-    if (mla.education) ctx += `, Education: ${mla.education}`;
-    if (mla.age) ctx += `, Age: ${mla.age}`;
-  }
-
-  // Demographics
-  const demo = getConstituencyDemographics(c.acNo);
-  if (demo) {
-    ctx += `\nPopulation: ${demo.population.toLocaleString()}, Literacy: ${demo.literacy}%`;
-    ctx += `, Turnout 2023: ${demo.turnout2023}%, Urban: ${demo.urbanPercent}%`;
-    ctx += `, Voters: ${demo.totalVoters.toLocaleString()}`;
-  }
-
-  // Political timeline events for this AC
-  const timeline = getConstituencyTimeline(c.acNo);
-  if (timeline.length > 0) {
-    ctx += `\nPolitical events:`;
-    for (const ev of timeline.slice(0, 5)) {
-      ctx += `\n  - ${ev.date}: ${ev.explanation}`;
+  if (elecData?.elections && elecData.elections.length > 1) {
+    ctx += `\nPast Election Records:`;
+    for (const e of elecData.elections.slice(1, 4)) {
+      if (e.electionYear) {
+        ctx += `\n  - ${e.electionYear}: ${e.winnerName || 'Winner'} (${e.winner || 'Party'})`;
+      }
     }
   }
 
@@ -117,6 +155,7 @@ export interface ChatMessage {
 export interface AIChatOptions {
   messages: ChatMessage[];
   constituencyAcNo?: number;
+  stateCode?: string;
   stream?: boolean;
 }
 
@@ -151,7 +190,7 @@ export async function chatWithAI(options: AIChatOptions): Promise<string> {
 
   const contextualPrompt =
     SYSTEM_PROMPT +
-    buildConstituencyContext(options.constituencyAcNo) +
+    buildConstituencyContext(options.constituencyAcNo, options.stateCode) +
     '\n\nElection History:\n' +
     buildHistoryContext();
 
@@ -174,15 +213,17 @@ export async function chatWithAI(options: AIChatOptions): Promise<string> {
 }
 
 /** Generate quick analysis for a constituency */
-export async function analyzeConstituency(acNo: number): Promise<string> {
+export async function analyzeConstituency(acNo: number, stateCode = 'TS'): Promise<string> {
+  const code = (stateCode || 'TS').toUpperCase();
   return chatWithAI({
     messages: [
       {
         role: 'user',
-        content: `Give me a comprehensive political analysis of this constituency. Cover: 1) 2023 result significance and margin analysis, 2) historical voting patterns across 2014/2018/2023, 3) MLA profile and political dynamics, 4) demographic factors that may influence politics, 5) any defections or notable political events. Keep each point concise (1-2 sentences).`,
+        content: `Give me a comprehensive political analysis of this constituency (AC #${acNo} in ${code}). Cover: 1) recent election result significance and margin analysis, 2) historical voting patterns, 3) MLA profile and political dynamics, 4) demographic factors that may influence politics, 5) any defections or notable political events. Keep each point concise (1-2 sentences).`,
       },
     ],
     constituencyAcNo: acNo,
+    stateCode: code,
   });
 }
 
@@ -216,12 +257,23 @@ export async function analyzeElectionTrends(): Promise<string> {
 }
 
 /** Natural language constituency search — find constituency matching a query */
-export async function smartSearch(query: string): Promise<{ acNo: number; name: string; reason: string }[]> {
+export async function smartSearch(
+  query: string,
+  stateCode = 'TS',
+): Promise<{ acNo: number; name: string; reason: string }[]> {
+  const code = (stateCode || 'TS').toUpperCase();
+  const constituencies = getConstituencies(code);
+  const stateInfo = getStateInfo(code);
+  const stateName = stateInfo?.name || code;
+
   // Build a compact constituency index for the AI
-  const index = TELANGANA_CONSTITUENCIES.map((c) => {
-    const mla = getMLAProfile(c.acNo);
-    return `${c.acNo}|${c.name}|${c.district}|${c.winner2023}|${c.winnerName2023}|${mla?.name ?? ''}|${c.type}`;
-  }).join('\n');
+  const index = constituencies
+    .map((c) => {
+      const mlaProfile = code === 'TS' ? getMLAProfile(c.acNo) : null;
+      const mlaName = mlaProfile?.name ?? c.currentMLA;
+      return `${c.acNo}|${c.name}|${c.district}|${c.currentParty}|${c.currentMLA}|${mlaName}|${c.reservationStatus}`;
+    })
+    .join('\n');
 
   const ai = getAIClient();
   if (!ai) return [];
@@ -231,7 +283,7 @@ export async function smartSearch(query: string): Promise<{ acNo: number; name: 
     messages: [
       {
         role: 'system',
-        content: `You are a Telangana constituency search engine. Given a natural language query and a pipe-delimited index (acNo|name|district|party|winnerName|mlaName|type), return a JSON array of up to 5 matching constituencies with {acNo, name, reason}. The reason should explain why this constituency matches the query in 10 words or less. Return ONLY valid JSON array, no markdown.\n\nIndex:\n${index}`,
+        content: `You are a ${stateName} constituency search engine. Given a natural language query and a pipe-delimited index (acNo|name|district|party|winnerName|mlaName|type), return a JSON array of up to 5 matching constituencies with {acNo, name, reason}. The reason should explain why this constituency matches the query in 10 words or less. Return ONLY valid JSON array, no markdown.\n\nIndex:\n${index}`,
       },
       { role: 'user', content: query },
     ],
