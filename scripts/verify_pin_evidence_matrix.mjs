@@ -1,5 +1,5 @@
 /**
- * KSHETRA W021.5 — CTO DIRECTIVE 127 INDEPENDENT PIN EVIDENCE VALIDATOR (ES MODULE WRAPPER)
+ * KSHETRA W021.5 — CTO DIRECTIVE 129 INDEPENDENT PIN EVIDENCE VALIDATOR (ES MODULE WRAPPER)
  * Re-exports the canonical validation engine and negative test battery from verify_pin_evidence_matrix.cjs
  */
 
@@ -12,6 +12,10 @@ export const {
   MULTI_AC_PIN_SPECS,
   ALLOWED_CONFIDENCE_TAXONOMIES,
   REQUIRED_DOCUMENTARY_FIELDS,
+  REQUIRED_SOURCE_BINDING_FIELDS,
+  REQUIRED_ORTHOGONAL_STATUS_FIELDS,
+  parseStatutoryTableBExtract,
+  computeFileSha256,
   parseDelimitationServiceCuratedPins,
   parseSeedConstituencyNames,
   validateEvidenceMatrix,

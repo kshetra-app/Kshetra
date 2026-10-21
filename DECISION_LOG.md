@@ -2919,6 +2919,30 @@
 
 ---
 
+### DEC-129: CTO DIRECTIVE 129 — SOURCE-BOUND STATUTORY EVIDENCE VERIFICATION, INDEPENDENT CORRECTION AUDIT, AND STAGE B ADJUDICATION INTEGRITY
+- **Date:** 2026-10-21
+- **Status:** IMPLEMENTATION COMPLETE / SUBMITTED FOR INDEPENDENT ADJUDICATION
+- **Authority:** CTO Directive 129 / Master Execution Framework Amendment v1.6 / Rule IV-001 Non-Self-Acceptance
+- **Context:** Following independent code review of CTO Directive 128, one focused corrective pass was mandated to bind all 36 curated PIN records to actual resolved in-repository source artifacts on disk and enforce strict source-bound verification:
+  1. Workstream A — Bind Every Claim to an Actual Resolved Source: Checked in authoritative statutory extracts for Telangana (Schedule XXXI Table B, SHA-256: `5759ceea...`) and Andhra Pradesh (Schedule II Table B, SHA-256: `a88a01a2...`). Binds every one of the 36 curated PIN records directly to an actual checked-in file on disk. Verifies bitwise SHA-256 digests. Derives source passages directly from parsed disk files rather than hardcoded script strings. Strictly separates verbatim source extracts (`sourcePassageExtract`) from manually authored summaries (`manuallyAuthoredSummary`). Attached explicit `evidentiaryRoleLabel`.
+  2. Workstream B — Implement Exact Entry and Ward Extent Verification: Implemented comparable source-content parsing and verification for both Telangana Schedule XXXI and Andhra Pradesh Schedule II. Evaluates state, schedule, table, exact entry number, exact constituency name, and municipal ward extents directly from parsed disk extracts. Ensures neither state relies on hardcoded string comparisons or seed-only reconciliation.
+  3. Workstream C — Reconcile All Eight Corrections Using Evidence-Aware Outcomes: Reconciled all eight reported corrections (TS: 500002 -> 66, 500053 -> 67, 500064 -> 69; AP: 520001 -> 79, 520002 -> 80, 530001 -> 22, 530002 -> 22, 517501 -> 167) and the Kurnool 518001 (AC 137) baseline. Evaluates two separate orthogonal conclusions: Conclusion A (`AUTHORITATIVELY_SUPPORTED_BY_INSPECTED_SOURCE`) vs Conclusion B (`PROVISIONALLY_APPROXIMATED_UNPROVEN_GIS`). Explicitly disallows seed reconciliation alone to imply statutory source verification or geographic containment.
+  4. Workstream D — Strengthen Substantive Negative Testing (38 Scenarios): Preserved existing 26 scenarios and added 12 new substantive source-bound scenarios (Scenarios 27 through 38): resolved file content lacks cited entry, entry has expected number but different name, source entry with correct name but contradictory ward extent, plausible fabricated passage absent from source, passage from discordant source schedule, source file altered after recorded checksum generated, source file unreadable/unavailable at validation time, AP entry missing or mismatched in AP Schedule II, external source falsely represented as checked in, correction seed agrees but cited source does not support claim, validator failure producing pass recommendation, and report generator anti-override guard preventing loss of failed source verification.
+  5. Workstream E — Enforce 11 Orthogonal Evidence Dimensions: Enforced all 11 orthogonal status dimensions across all 36 entries: (1) `metadataCompletenessStatus`, (2) `filePathResolutionStatus`, (3) `sourceArtifactIntegrityStatus`, (4) `locatorResolutionStatus`, (5) `passageInspectionStatus`, (6) `claimToPassageSupportStatus`, (7) `seedDataAgreementStatus`, (8) `officialPublicationAuthenticityStatus`, (9) `constituencyIdentityStatus`, (10) `postalAreaLinkageStatus`, (11) `geographicContainmentStatus`.
+  6. Workstream F — Honest Adjudication Reporting and Stage B Gate Integrity: Reconciled dynamic summaries requiring `evidenceClosureStatus !== 'COMPLETE'` while full printed gazettes and India Post GIS delivery beat boundary polygons remain external and uninspected. Derived gate recommendations dynamically. Updated defect register (Section 6 disposition table for D128-01 through D128-06), execution ledger, and authored Directive 129 implementation report.
+- **Architectural & Governance Determinations:**
+  1. **Source-Bound Evidence on Disk:** Every entry is bound to an actual checked-in authoritative extract on disk (`eci_delimitation_2008_schedule_xxxi_table_b_extract.txt` and `eci_delimitation_2008_schedule_ii_table_b_extract.txt`) with cryptographic SHA-256 integrity verification.
+  2. **Comparable AP & TS Engine:** Andhra Pradesh Schedule II and Telangana Schedule XXXI are parsed and verified using the exact same entry, locator, and extent parsing logic.
+  3. **Eleven Orthogonal Dimensions:** All 11 dimensions are independently evaluated and verified without collapsing into a single boolean.
+  4. **38 Genuine Negative Scenarios:** 38 distinct failure modes achieve 100% rejection rate in both CLI and Jest test suites.
+  5. **Regression & Typecheck Integrity:** 88/88 tests pass in `delimitation-citizen-impact-data-truth.test.ts`. Full route suite (38/38) and comprehensive unit suite (49/49) pass. TypeScript build (`tsc --noEmit`) passes with exit code 0.
+  6. **Stage B Boundary:** STOP at Stage B Gate; Stages C through I remain strictly **UNAUTHORIZED**.
+  7. **Database Boundary:** Production (`ehfafcnimmjusyvplbah`) and Staging (`fkpigozcqnmcvofuksar`) strictly `AIR_GAPPED_UNEXECUTED` (0 queries, 0 mutations).
+  8. **Formal CTO Acceptance:** Strictly **`0.0% — PENDING INDEPENDENT ADJUDICATION`** under Rule IV-001.
+
+
+---
+
 ### DEC-128: CTO DIRECTIVE 128 — SOURCE-CLAIM VERIFICATION CLOSURE, EVIDENCE RESOLUTION, HONEST ADJUDICATION REPORTING & STAGE B GATE INTEGRITY
 - **Date:** 2026-10-21
 - **Status:** IMPLEMENTATION COMPLETE / SUBMITTED FOR INDEPENDENT ADJUDICATION
@@ -2940,5 +2964,29 @@
   6. **Stage B Boundary:** STOP at Stage B Gate; Stages C through I remain strictly **UNAUTHORIZED**.
   7. **Database Boundary:** Production (`ehfafcnimmjusyvplbah`) and Staging (`fkpigozcqnmcvofuksar`) strictly `AIR_GAPPED_UNEXECUTED` (0 queries, 0 mutations).
   8. **Formal CTO Acceptance:** Strictly **`0.0% — PENDING INDEPENDENT ADJUDICATION`** under Rule IV-001.
+
+---
+
+### DEC-129: CTO DIRECTIVE 129 — SOURCE-BOUND STATUTORY EVIDENCE VERIFICATION, INDEPENDENT CORRECTION AUDIT, AND STAGE B ADJUDICATION INTEGRITY
+- **Date:** 2026-10-21
+- **Status:** IMPLEMENTATION COMPLETE / SUBMITTED FOR INDEPENDENT ADJUDICATION
+- **Authority:** CTO Directive 129 / Master Execution Framework Amendment v1.6 / Rule IV-001 Non-Self-Acceptance
+- **Context:** Following independent code review of CTO Directive 128, one focused corrective pass was mandated to bind all 36 curated PIN records to actual resolved in-repository source artifacts on disk and enforce strict source-bound verification:
+  1. Workstream A — Bind Every Claim to an Actual Resolved Source: Checked in authoritative statutory extracts for Telangana (Schedule XXXI Table B, SHA-256: `5759ceea...`) and Andhra Pradesh (Schedule II Table B, SHA-256: `a88a01a2...`). Binds every one of the 36 curated PIN records directly to an actual checked-in file on disk. Verifies bitwise SHA-256 digests. Derives source passages directly from parsed disk files rather than hardcoded script strings. Strictly separates verbatim source extracts (`sourcePassageExtract`) from manually authored summaries (`manuallyAuthoredSummary`). Attached explicit `evidentiaryRoleLabel`.
+  2. Workstream B — Implement Exact Entry and Ward Extent Verification: Implemented comparable source-content parsing and verification for both Telangana Schedule XXXI and Andhra Pradesh Schedule II. Evaluates state, schedule, table, exact entry number, exact constituency name, and municipal ward extents directly from parsed disk extracts. Ensures neither state relies on hardcoded string comparisons or seed-only reconciliation.
+  3. Workstream C — Reconcile All Eight Corrections Using Evidence-Aware Outcomes: Reconciled all eight reported corrections (TS: 500002 -> 66, 500053 -> 67, 500064 -> 69; AP: 520001 -> 79, 520002 -> 80, 530001 -> 22, 530002 -> 22, 517501 -> 167) and the Kurnool 518001 (AC 137) baseline. Evaluates two separate orthogonal conclusions: Conclusion A (`AUTHORITATIVELY_SUPPORTED_BY_INSPECTED_SOURCE`) vs Conclusion B (`PROVISIONALLY_APPROXIMATED_UNPROVEN_GIS`). Explicitly disallows seed reconciliation alone to imply statutory source verification or geographic containment.
+  4. Workstream D — Strengthen Substantive Negative Testing (38 Scenarios): Preserved existing 26 scenarios and added 12 new substantive source-bound scenarios (Scenarios 27 through 38): resolved file content lacks cited entry, entry has expected number but different name, source entry with correct name but contradictory ward extent, plausible fabricated passage absent from source, passage from discordant source schedule, source file altered after recorded checksum generated, source file unreadable/unavailable at validation time, AP entry missing or mismatched in AP Schedule II, external source falsely represented as checked in, correction seed agrees but cited source does not support claim, validator failure producing pass recommendation, and report generator anti-override guard preventing loss of failed source verification.
+  5. Workstream E — Enforce 11 Orthogonal Evidence Dimensions: Enforced all 11 orthogonal status dimensions across all 36 entries: (1) `metadataCompletenessStatus`, (2) `filePathResolutionStatus`, (3) `sourceArtifactIntegrityStatus`, (4) `locatorResolutionStatus`, (5) `passageInspectionStatus`, (6) `claimToPassageSupportStatus`, (7) `seedDataAgreementStatus`, (8) `officialPublicationAuthenticityStatus`, (9) `constituencyIdentityStatus`, (10) `postalAreaLinkageStatus`, (11) `geographicContainmentStatus`.
+  6. Workstream F — Honest Adjudication Reporting and Stage B Gate Integrity: Reconciled dynamic summaries requiring `evidenceClosureStatus !== 'COMPLETE'` while full printed gazettes and India Post GIS delivery beat boundary polygons remain external and uninspected. Derived gate recommendations dynamically. Updated defect register (Section 6 disposition table for D128-01 through D128-06), execution ledger, and authored Directive 129 implementation report.
+- **Architectural & Governance Determinations:**
+  1. **Source-Bound Evidence on Disk:** Every entry is bound to an actual checked-in authoritative extract on disk (`eci_delimitation_2008_schedule_xxxi_table_b_extract.txt` and `eci_delimitation_2008_schedule_ii_table_b_extract.txt`) with cryptographic SHA-256 integrity verification.
+  2. **Comparable AP & TS Engine:** Andhra Pradesh Schedule II and Telangana Schedule XXXI are parsed and verified using the exact same entry, locator, and extent parsing logic.
+  3. **Eleven Orthogonal Dimensions:** All 11 dimensions are independently evaluated and verified without collapsing into a single boolean.
+  4. **38 Genuine Negative Scenarios:** 38 distinct failure modes achieve 100% rejection rate in both CLI and Jest test suites.
+  5. **Regression & Typecheck Integrity:** 88/88 tests pass in `delimitation-citizen-impact-data-truth.test.ts`. Full route suite (38/38) and comprehensive unit suite (49/49) pass. TypeScript build (`tsc --noEmit`) passes with exit code 0.
+  6. **Stage B Boundary:** STOP at Stage B Gate; Stages C through I remain strictly **UNAUTHORIZED**.
+  7. **Database Boundary:** Production (`ehfafcnimmjusyvplbah`) and Staging (`fkpigozcqnmcvofuksar`) strictly `AIR_GAPPED_UNEXECUTED` (0 queries, 0 mutations).
+  8. **Formal CTO Acceptance:** Strictly **`0.0% — PENDING INDEPENDENT ADJUDICATION`** under Rule IV-001.
+
 
 

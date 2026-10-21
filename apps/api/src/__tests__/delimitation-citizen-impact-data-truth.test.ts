@@ -604,7 +604,7 @@ describe('CTO Directive 123 — Residual Electoral Data-Truth & Provisional Look
     it('verifies independent validation matrix report exists and records 100% check pass rate', () => {
       expect(fs.existsSync(matrixReportPath)).toBe(true);
       const matrixReport = JSON.parse(fs.readFileSync(matrixReportPath, 'utf8'));
-      expect(matrixReport.metadata.directive).toMatch(/CTO Directive 12[678]/);
+      expect(matrixReport.metadata.directive).toMatch(/CTO Directive 12[6789]/);
       expect(matrixReport.metadata.validationSummary.allChecksPassed).toBe(true);
       expect(matrixReport.metadata.validationChecks.every((c: any) => c.passed)).toBe(true);
     });
@@ -975,7 +975,7 @@ describe('CTO Directive 123 — Residual Electoral Data-Truth & Provisional Look
       const reportPath = path.resolve(__dirname, '../../../../reports/w021_5_pin_independent_evidence_matrix.json');
       const report = JSON.parse(fs.readFileSync(reportPath, 'utf8'));
 
-      expect(report.metadata.directive).toBe('CTO Directive 128');
+      expect(report.metadata.directive).toMatch(/CTO Directive 12[89]/);
       expect(report.metadata.validationSummary.allChecksPassed).toBe(true);
       expect(report.metadata.validationSummary.eightAcCorrectionsVerified).toBe(true);
       expect(report.metadata.validationSummary.pin500001AmbiguousFailClosed).toBe(true);
@@ -985,8 +985,8 @@ describe('CTO Directive 123 — Residual Electoral Data-Truth & Provisional Look
       expect(report.metadata.validationSummary.claimSupportVerified).toBe(true);
       expect(report.metadata.validationSummary.dateConsistencyVerified).toBe(true);
       expect(report.metadata.validationSummary.dynamicSummaryIntegrityVerified).toBe(true);
-      expect(report.metadata.validationSummary.negativeScenariosExecuted).toBe(26);
-      expect(report.metadata.validationSummary.negativeScenariosPassed).toBe(26);
+      expect(report.metadata.validationSummary.negativeScenariosExecuted).toBeGreaterThanOrEqual(26);
+      expect(report.metadata.validationSummary.negativeScenariosPassed).toBeGreaterThanOrEqual(26);
       expect(report.metadata.validationSummary.gateRecommendation).toBe('SUBMIT_FOR_INDEPENDENT_STAGE_B_ADJUDICATION_WITH_DOCUMENTED_EXTERNAL_BLOCKERS');
     });
   });
@@ -1214,7 +1214,7 @@ describe('CTO Directive 123 — Residual Electoral Data-Truth & Provisional Look
 
       const negativeResults = validatorModule.runNegativeValidationSuite({ directory, manifest, seedNames });
       expect(negativeResults.allScenariosPassed).toBe(true);
-      expect(negativeResults.scenarios).toHaveLength(26);
+      expect(negativeResults.scenarios.length).toBeGreaterThanOrEqual(26);
       expect(negativeResults.scenarios.every((s: any) => s.passed)).toBe(true);
     });
 
@@ -1225,23 +1225,308 @@ describe('CTO Directive 123 — Residual Electoral Data-Truth & Provisional Look
       const jsonReport = JSON.parse(fs.readFileSync(jsonReportPath, 'utf8'));
       const mdReport = fs.readFileSync(mdReportPath, 'utf8');
 
-      expect(jsonReport.metadata.directive).toBe('CTO Directive 128');
+      expect(jsonReport.metadata.directive).toMatch(/CTO Directive 12[89]/);
       expect(jsonReport.metadata.validationSummary.structuralValidationStatus).toBe('PASS');
-      expect(jsonReport.metadata.validationSummary.sourceResolutionStatus).toBe('PARTIAL_IN_REPO_DOSSIERS_EXTERNAL_GAZETTE_PENDING');
-      expect(jsonReport.metadata.validationSummary.locatorResolutionStatus).toBe('EXACT_COORDINATES_DOCUMENTED_EXTERNAL_GAZETTE_PENDING');
+      expect(jsonReport.metadata.validationSummary.sourceResolutionStatus).toMatch(/PARTIAL_IN_REPO_DOSSIERS_EXTERNAL_GAZETTE_PENDING|VERIFIED_CHECKED_IN_EXTRACTS_SHA256_MATCH/);
+      expect(jsonReport.metadata.validationSummary.locatorResolutionStatus).toMatch(/EXACT_COORDINATES_DOCUMENTED_EXTERNAL_GAZETTE_PENDING|EXACT_ENTRY_AND_WARD_COORDINATES_VERIFIED_AGAINST_SOURCE_ARTIFACT/);
       expect(jsonReport.metadata.validationSummary.substantiveSourceClaimStatus).toBe('PARTIALLY_SUPPORTED_IDENTITY_VERIFIED_POSTAL_UNPROVEN');
-      expect(jsonReport.metadata.validationSummary.externalPublicationAuthenticityStatus).toBe('PENDING_OFFICIAL_GAZETTE_PHYSICAL_COPY_AUDIT');
-      expect(jsonReport.metadata.validationSummary.geographicContainmentStatus).toBe('UNPROVEN_GIS_DELIVERY_BEAT_BOUNDARY');
-      expect(jsonReport.metadata.validationSummary.negativeScenariosExecuted).toBe(26);
-      expect(jsonReport.metadata.validationSummary.negativeScenariosPassed).toBe(26);
+      expect(jsonReport.metadata.validationSummary.externalPublicationAuthenticityStatus).toMatch(/PENDING_OFFICIAL_GAZETTE_PHYSICAL_COPY_AUDIT|UNVERIFIED_EXTERNAL_PUBLICATION_NOT_CHECKED_IN/);
+      expect(jsonReport.metadata.validationSummary.geographicContainmentStatus).toMatch(/UNPROVEN_GIS_DELIVERY_BEAT_BOUNDARY|UNVERIFIED_NO_GIS_DELIVERY_BEAT_POLYGON/);
+      expect(jsonReport.metadata.validationSummary.negativeScenariosExecuted).toBeGreaterThanOrEqual(26);
+      expect(jsonReport.metadata.validationSummary.negativeScenariosPassed).toBeGreaterThanOrEqual(26);
       expect(jsonReport.metadata.validationSummary.gateRecommendation).toBe('SUBMIT_FOR_INDEPENDENT_STAGE_B_ADJUDICATION_WITH_DOCUMENTED_EXTERNAL_BLOCKERS');
       expect(jsonReport.metadata.eightCorrectionsAccounting.reportedCorrectionsLedger).toHaveLength(8);
       expect(jsonReport.metadata.eightCorrectionsAccounting.kurnoolLedgerEntry.pinCode).toBe('518001');
 
-      expect(mdReport).toContain('CTO Directive 128');
-      expect(mdReport).toContain('26 Scenarios');
+      expect(mdReport).toMatch(/CTO Directive 12[89]/);
+      expect(mdReport).toMatch(/(26|38) Scenarios/);
       expect(mdReport).toContain('SUBMIT_FOR_INDEPENDENT_STAGE_B_ADJUDICATION_WITH_DOCUMENTED_EXTERNAL_BLOCKERS');
-      expect(mdReport).toContain('Reconciled Eight Corrections & Kurnool Accounting (Workstream D)');
+      expect(mdReport).toContain('Reconciled Eight Corrections & Kurnool Accounting');
+    });
+  });
+
+  describe('CTO Directive 129 — Source-Bound Statutory Evidence Verification, Independent Correction Audit, and Stage B Adjudication Integrity', () => {
+    const manifestPath = path.resolve(__dirname, '../../../../data/evidence/w021_5/pin_independent_evidence_manifest.json');
+    const tsExtractPath = path.resolve(__dirname, '../../../../data/evidence/w021_5/authoritative/eci_delimitation_2008_schedule_xxxi_table_b_extract.txt');
+    const apExtractPath = path.resolve(__dirname, '../../../../data/evidence/w021_5/authoritative/eci_delimitation_2008_schedule_ii_table_b_extract.txt');
+    let validatorModule: any;
+
+    beforeAll(() => {
+      const validatorPath = path.resolve(__dirname, '../../../../scripts/verify_pin_evidence_matrix.cjs');
+      validatorModule = require(validatorPath);
+    });
+
+    it('verifies checked-in authoritative statutory extracts exist on disk with valid SHA-256 digests', () => {
+      expect(fs.existsSync(tsExtractPath)).toBe(true);
+      expect(fs.existsSync(apExtractPath)).toBe(true);
+
+      const tsSha = validatorModule.computeFileSha256(tsExtractPath);
+      const apSha = validatorModule.computeFileSha256(apExtractPath);
+      expect(tsSha).toBe('5759ceea56cb119974ce441fa1249cc58d4bfb7a3157814fa31cb28b5726a648');
+      expect(apSha).toBe('a88a01a26875bd7744c8e54695a2a39662f7b36753938b7fc94a2eff822080fa');
+    });
+
+    it('pure validation engine passes all 10 checks under Directive 129 check semantics', () => {
+      const directory = validatorModule.parseDelimitationServiceCuratedPins();
+      const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+      const seedNames = validatorModule.parseSeedConstituencyNames();
+
+      const validation = validatorModule.validateEvidenceMatrix({ directory, manifest, seedNames });
+      expect(validation.allPassed).toBe(true);
+      expect(validation.errors).toHaveLength(0);
+
+      const d129Checks = [
+        'CHECK_1_EXACT_INVENTORY_PARITY',
+        'CHECK_2_MULTI_AC_FAIL_CLOSED_AMBIGUITY',
+        'CHECK_3_TAXONOMY_ENFORCEMENT_AND_DISTRIBUTION',
+        'CHECK_4_CORRECTION_CONSISTENCY_AND_SOURCE_EVIDENCE',
+        'CHECK_5_DOCUMENTARY_FIELD_COMPLETENESS',
+        'CHECK_6_SOURCE_RESOLUTION',
+        'CHECK_7_LOCATOR_RESOLUTION',
+        'CHECK_8_CLAIM_SUPPORT',
+        'CHECK_9_DATE_CONSISTENCY',
+        'CHECK_10_DYNAMIC_SUMMARY_INTEGRITY',
+      ];
+
+      for (const checkId of d129Checks) {
+        const chk = validation.checks.find((c: any) => c.checkId === checkId);
+        expect(chk).toBeDefined();
+        expect(chk.passed).toBe(true);
+      }
+    });
+
+    it('verifies exact constituency entry, name, and municipal extent parsed from source disk file for both TS and AP', () => {
+      const tsParsed = validatorModule.parseStatutoryTableBExtract(tsExtractPath);
+      const apParsed = validatorModule.parseStatutoryTableBExtract(apExtractPath);
+
+      expect(Object.keys(tsParsed)).toHaveLength(20);
+      expect(Object.keys(apParsed)).toHaveLength(5);
+
+      // Verify TS AC 66 Charminar
+      expect(tsParsed[66].name).toBe('Charminar');
+      expect(tsParsed[66].extent).toContain('Ward No. 13 and 14');
+
+      // Verify AP AC 79 Vijayawada West
+      expect(apParsed[79].name).toBe('Vijayawada West');
+      expect(apParsed[79].extent).toContain('Ward No. 1 to 14');
+    });
+
+    it('reconciles all eight corrections and Kurnool 137 with separate Conclusion A (Identity) and Conclusion B (Postal Linkage)', () => {
+      const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+
+      for (const corr of validatorModule.REPORTED_AC_CORRECTIONS) {
+        const entry = manifest.entries.find((e: any) => e.pinCode === corr.pin);
+        expect(entry).toBeDefined();
+        expect(entry.conclusionA_constituencyIdentity).toBe('AUTHORITATIVELY_SUPPORTED_BY_INSPECTED_SOURCE');
+        expect(entry.conclusionB_postalLinkage).toBe('PROVISIONALLY_APPROXIMATED_UNPROVEN_GIS');
+        expect(entry.seedReconciliationOnly).toBe(false);
+        expect(entry.geographicContainmentVerified).toBe(false);
+      }
+
+      const kurnoolEntry = manifest.entries.find((e: any) => e.pinCode === '518001');
+      expect(kurnoolEntry).toBeDefined();
+      expect(kurnoolEntry.conclusionA_constituencyIdentity).toBe('AUTHORITATIVELY_SUPPORTED_BY_INSPECTED_SOURCE');
+      expect(kurnoolEntry.conclusionB_postalLinkage).toBe('PROVISIONALLY_APPROXIMATED_UNPROVEN_GIS');
+      expect(kurnoolEntry.isReportedCorrection).toBe(false);
+    });
+
+    it('genuine negative test (Scenario 27): rejects resolved file content lacking cited constituency entry', () => {
+      const directory = validatorModule.parseDelimitationServiceCuratedPins();
+      const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+      const seedNames = validatorModule.parseSeedConstituencyNames();
+
+      const corruptEntries = manifest.entries.map((e: any) => e.pinCode === '500002' ? { ...e, assignedAcNumber: 999, sourceLocator: 'Schedule XXXI, Table B, Entry 999 (Nonexistent)' } : e);
+      const corruptManifest = { ...manifest, entries: corruptEntries };
+      const validation = validatorModule.validateEvidenceMatrix({ directory, manifest: corruptManifest, seedNames });
+
+      expect(validation.allPassed).toBe(false);
+      const check7 = validation.checks.find((c: any) => c.checkId === 'CHECK_7_LOCATOR_RESOLUTION');
+      expect(check7.passed).toBe(false);
+    });
+
+    it('genuine negative test (Scenario 28): rejects entry citing correct number but contradictory name', () => {
+      const directory = validatorModule.parseDelimitationServiceCuratedPins();
+      const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+      const seedNames = validatorModule.parseSeedConstituencyNames();
+
+      const corruptEntries = manifest.entries.map((e: any) => e.pinCode === '500002' ? { ...e, assignedAcName: 'Kukatpally' } : e);
+      const corruptManifest = { ...manifest, entries: corruptEntries };
+      const validation = validatorModule.validateEvidenceMatrix({ directory, manifest: corruptManifest, seedNames });
+
+      expect(validation.allPassed).toBe(false);
+      const check7 = validation.checks.find((c: any) => c.checkId === 'CHECK_7_LOCATOR_RESOLUTION');
+      expect(check7.passed).toBe(false);
+    });
+
+    it('genuine negative test (Scenario 29): rejects entry with contradictory ward extent in source passage', () => {
+      const directory = validatorModule.parseDelimitationServiceCuratedPins();
+      const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+      const seedNames = validatorModule.parseSeedConstituencyNames();
+
+      const corruptEntries = manifest.entries.map((e: any) => e.pinCode === '500002' ? { ...e, sourcePassageExtract: 'Schedule XXXI, Table B, Entry 66. Charminar: Contradictory Ward Nos. 99 and 100.' } : e);
+      const corruptManifest = { ...manifest, entries: corruptEntries };
+      const validation = validatorModule.validateEvidenceMatrix({ directory, manifest: corruptManifest, seedNames });
+
+      expect(validation.allPassed).toBe(false);
+      const check8 = validation.checks.find((c: any) => c.checkId === 'CHECK_8_CLAIM_SUPPORT');
+      expect(check8.passed).toBe(false);
+    });
+
+    it('genuine negative test (Scenario 30): rejects fabricated passage absent from resolved source', () => {
+      const directory = validatorModule.parseDelimitationServiceCuratedPins();
+      const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+      const seedNames = validatorModule.parseSeedConstituencyNames();
+
+      const corruptEntries = manifest.entries.map((e: any) => e.pinCode === '500002' ? { ...e, sourcePassageExtract: 'Schedule XXXI, Table B, Entry 66. Charminar: Fabricated ward extent not in delimitation order.' } : e);
+      const corruptManifest = { ...manifest, entries: corruptEntries };
+      const validation = validatorModule.validateEvidenceMatrix({ directory, manifest: corruptManifest, seedNames });
+
+      expect(validation.allPassed).toBe(false);
+      const check8 = validation.checks.find((c: any) => c.checkId === 'CHECK_8_CLAIM_SUPPORT');
+      expect(check8.passed).toBe(false);
+    });
+
+    it('genuine negative test (Scenario 31): rejects passage presented from discordant source schedule', () => {
+      const directory = validatorModule.parseDelimitationServiceCuratedPins();
+      const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+      const seedNames = validatorModule.parseSeedConstituencyNames();
+
+      const corruptEntries = manifest.entries.map((e: any) => e.pinCode === '500002' ? { ...e, sourcePassageExtract: 'Schedule II, Table B, Entry 79. Vijayawada West: Vijayawada (M.Corp) (Part) - Ward Nos. 1 to 14.' } : e);
+      const corruptManifest = { ...manifest, entries: corruptEntries };
+      const validation = validatorModule.validateEvidenceMatrix({ directory, manifest: corruptManifest, seedNames });
+
+      expect(validation.allPassed).toBe(false);
+      const check8 = validation.checks.find((c: any) => c.checkId === 'CHECK_8_CLAIM_SUPPORT');
+      expect(check8.passed).toBe(false);
+    });
+
+    it('genuine negative test (Scenario 32): rejects altered source artifact checksum', () => {
+      const directory = validatorModule.parseDelimitationServiceCuratedPins();
+      const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+      const seedNames = validatorModule.parseSeedConstituencyNames();
+
+      const corruptEntries = manifest.entries.map((e: any) => e.pinCode === '500002' ? { ...e, sourceArtifactSha256: '0000000000000000000000000000000000000000000000000000000000000000' } : e);
+      const corruptManifest = { ...manifest, entries: corruptEntries };
+      const validation = validatorModule.validateEvidenceMatrix({ directory, manifest: corruptManifest, seedNames });
+
+      expect(validation.allPassed).toBe(false);
+      const check6 = validation.checks.find((c: any) => c.checkId === 'CHECK_6_SOURCE_RESOLUTION');
+      expect(check6.passed).toBe(false);
+    });
+
+    it('genuine negative test (Scenario 33): rejects unreadable/unavailable source file', () => {
+      const directory = validatorModule.parseDelimitationServiceCuratedPins();
+      const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+      const seedNames = validatorModule.parseSeedConstituencyNames();
+
+      const corruptEntries = manifest.entries.map((e: any) => e.pinCode === '500002' ? { ...e, referenceDocumentPath: 'data/evidence/w021_5/authoritative/deleted_extract.txt' } : e);
+      const corruptManifest = { ...manifest, entries: corruptEntries };
+      const validation = validatorModule.validateEvidenceMatrix({ directory, manifest: corruptManifest, seedNames });
+
+      expect(validation.allPassed).toBe(false);
+      const check6 = validation.checks.find((c: any) => c.checkId === 'CHECK_6_SOURCE_RESOLUTION');
+      expect(check6.passed).toBe(false);
+    });
+
+    it('genuine negative test (Scenario 34): rejects AP entry missing or mismatched in AP Schedule II', () => {
+      const directory = validatorModule.parseDelimitationServiceCuratedPins();
+      const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+      const seedNames = validatorModule.parseSeedConstituencyNames();
+
+      const corruptEntries = manifest.entries.map((e: any) => e.pinCode === '520001' ? { ...e, assignedAcNumber: 999, sourceLocator: 'Schedule II, Table B, Entry 999 (Nonexistent)' } : e);
+      const corruptManifest = { ...manifest, entries: corruptEntries };
+      const validation = validatorModule.validateEvidenceMatrix({ directory, manifest: corruptManifest, seedNames });
+
+      expect(validation.allPassed).toBe(false);
+      const check7 = validation.checks.find((c: any) => c.checkId === 'CHECK_7_LOCATOR_RESOLUTION');
+      expect(check7.passed).toBe(false);
+    });
+
+    it('genuine negative test (Scenario 35): rejects external source falsely claimed as checked in', () => {
+      const directory = validatorModule.parseDelimitationServiceCuratedPins();
+      const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+      const seedNames = validatorModule.parseSeedConstituencyNames();
+
+      const corruptEntries = manifest.entries.map((e: any) => e.pinCode === '500002' ? { ...e, referenceDocumentPath: 'EXTERNAL_STATUTORY_PUBLICATION_NOT_CHECKED_IN', filePathResolutionStatus: 'VERIFIED_IN_REPO_FILE_RESOLVED' } : e);
+      const corruptManifest = { ...manifest, entries: corruptEntries };
+      const validation = validatorModule.validateEvidenceMatrix({ directory, manifest: corruptManifest, seedNames });
+
+      expect(validation.allPassed).toBe(false);
+      const check6 = validation.checks.find((c: any) => c.checkId === 'CHECK_6_SOURCE_RESOLUTION');
+      expect(check6.passed).toBe(false);
+    });
+
+    it('genuine negative test (Scenario 36): rejects correction where seed agrees but source claim is unsupported', () => {
+      const directory = validatorModule.parseDelimitationServiceCuratedPins();
+      const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+      const seedNames = validatorModule.parseSeedConstituencyNames();
+
+      const corruptEntries = manifest.entries.map((e: any) => e.pinCode === '500053' ? { ...e, conclusionA_constituencyIdentity: 'UNSUPPORTED' } : e);
+      const corruptManifest = { ...manifest, entries: corruptEntries };
+      const validation = validatorModule.validateEvidenceMatrix({ directory, manifest: corruptManifest, seedNames });
+
+      expect(validation.allPassed).toBe(false);
+      const check4 = validation.checks.find((c: any) => c.checkId === 'CHECK_4_CORRECTION_CONSISTENCY_AND_SOURCE_EVIDENCE');
+      expect(check4.passed).toBe(false);
+    });
+
+    it('genuine negative test (Scenario 37): rejects validator failure with pass recommendation', () => {
+      const directory = validatorModule.parseDelimitationServiceCuratedPins();
+      const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+      const seedNames = validatorModule.parseSeedConstituencyNames();
+
+      const corruptManifest = {
+        ...manifest,
+        entries: manifest.entries.slice(0, 35),
+        metadata: {
+          ...manifest.metadata,
+          validationSummary: {
+            gateRecommendation: 'SUBMIT_FOR_INDEPENDENT_STAGE_B_ADJUDICATION'
+          }
+        }
+      };
+      const validation = validatorModule.validateEvidenceMatrix({ directory, manifest: corruptManifest, seedNames });
+
+      expect(validation.allPassed).toBe(false);
+      const check1 = validation.checks.find((c: any) => c.checkId === 'CHECK_1_EXACT_INVENTORY_PARITY');
+      expect(check1.passed).toBe(false);
+    });
+
+    it('executes full 38-scenario negative validation battery with 100% pass rate', () => {
+      const directory = validatorModule.parseDelimitationServiceCuratedPins();
+      const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+      const seedNames = validatorModule.parseSeedConstituencyNames();
+
+      const negativeResults = validatorModule.runNegativeValidationSuite({ directory, manifest, seedNames });
+      expect(negativeResults.allScenariosPassed).toBe(true);
+      expect(negativeResults.scenarios).toHaveLength(38);
+      expect(negativeResults.scenarios.every((s: any) => s.passed)).toBe(true);
+    });
+
+    it('verifies generated Directive 129 reports possess 11 orthogonal evidence dimensions, source-to-claim ledgers, and honest blocker disclosures', () => {
+      const jsonReportPath = path.resolve(__dirname, '../../../../reports/w021_5_pin_independent_evidence_matrix.json');
+      const mdReportPath = path.resolve(__dirname, '../../../../reports/w021_5_pin_independent_evidence_matrix.md');
+
+      const jsonReport = JSON.parse(fs.readFileSync(jsonReportPath, 'utf8'));
+      const mdReport = fs.readFileSync(mdReportPath, 'utf8');
+
+      expect(jsonReport.metadata.directive).toBe('CTO Directive 129');
+      expect(jsonReport.metadata.validationSummary.structuralValidationStatus).toBe('PASS');
+      expect(jsonReport.metadata.validationSummary.sourceResolutionStatus).toBe('VERIFIED_CHECKED_IN_EXTRACTS_SHA256_MATCH');
+      expect(jsonReport.metadata.validationSummary.locatorResolutionStatus).toBe('EXACT_ENTRY_AND_WARD_COORDINATES_VERIFIED_AGAINST_SOURCE_ARTIFACT');
+      expect(jsonReport.metadata.validationSummary.substantiveSourceClaimStatus).toBe('PARTIALLY_SUPPORTED_IDENTITY_VERIFIED_POSTAL_UNPROVEN');
+      expect(jsonReport.metadata.validationSummary.externalPublicationAuthenticityStatus).toBe('UNVERIFIED_EXTERNAL_PUBLICATION_NOT_CHECKED_IN');
+      expect(jsonReport.metadata.validationSummary.geographicContainmentStatus).toBe('UNVERIFIED_NO_GIS_DELIVERY_BEAT_POLYGON');
+      expect(jsonReport.metadata.validationSummary.negativeScenariosExecuted).toBe(38);
+      expect(jsonReport.metadata.validationSummary.negativeScenariosPassed).toBe(38);
+      expect(jsonReport.metadata.validationSummary.gateRecommendation).toBe('SUBMIT_FOR_INDEPENDENT_STAGE_B_ADJUDICATION_WITH_DOCUMENTED_EXTERNAL_BLOCKERS');
+      expect(jsonReport.metadata.eightCorrectionsAccounting.reportedCorrectionsLedger).toHaveLength(8);
+      expect(jsonReport.metadata.eightCorrectionsAccounting.kurnoolLedgerEntry.pinCode).toBe('518001');
+
+      expect(mdReport).toContain('CTO Directive 129');
+      expect(mdReport).toContain('38 Scenarios');
+      expect(mdReport).toContain('11 Orthogonal Evidence Status Dimensions');
+      expect(mdReport).toContain('SUBMIT_FOR_INDEPENDENT_STAGE_B_ADJUDICATION_WITH_DOCUMENTED_EXTERNAL_BLOCKERS');
     });
   });
 });
