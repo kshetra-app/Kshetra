@@ -2917,3 +2917,28 @@
   7. **Database Boundary:** Production (`ehfafcnimmjusyvplbah`) and Staging (`fkpigozcqnmcvofuksar`) strictly `AIR_GAPPED_UNEXECUTED` (0 queries, 0 mutations).
   8. **Formal CTO Acceptance:** Strictly **`0.0% — PENDING INDEPENDENT ADJUDICATION`** under Rule IV-001.
 
+---
+
+### DEC-128: CTO DIRECTIVE 128 — SOURCE-CLAIM VERIFICATION CLOSURE, EVIDENCE RESOLUTION, HONEST ADJUDICATION REPORTING & STAGE B GATE INTEGRITY
+- **Date:** 2026-10-21
+- **Status:** IMPLEMENTATION COMPLETE / SUBMITTED FOR INDEPENDENT ADJUDICATION
+- **Authority:** CTO Directive 128 / Master Execution Framework Amendment v1.6 / Rule IV-001 Non-Self-Acceptance
+- **Context:** Following independent audit of CTO Directive 127, one focused corrective pass was mandated to close the gap between internal structural consistency and substantive documentary evidence:
+  1. Workstream A — Resolve Every Referenced Source: Audit all 36 records to resolve declared reference documents. Distinguish in-repo dossiers (`data/evidence/w020/authoritative/`, `data/evidence/w015_b2/`) from full official statutory publications not checked into git (`EXTERNAL_STATUTORY_PUBLICATION_NOT_CHECKED_IN`). Report inspection status honestly (`IN_REPO_DOSSIER_AND_SEED_INSPECTED`). Reject unresolvable in-repository file paths and reject claiming external gazettes are verified.
+  2. Workstream B — Validate Actual Locators Against Source Content: Strengthen CHECK 7. Validate that cited schedule exists, cited entry exists in Delimitation Order 2008 extracts, cited constituency name and number agree with source content, and passages are sufficiently precise. Reject generic locators lacking entry/ward coordinates.
+  3. Workstream C — Implement Genuine Source-Claim Verification: Strengthen CHECK 8. Decouple 9 orthogonal dimensions: (1) document field completeness, (2) source document resolution, (3) exact locator resolution, (4) source-passage content, (5) claim support for attributed proposition, (6) official publication authenticity, (7) constituency name/number correctness, (8) postal-to-constituency linkage, and (9) verified geographic containment. All claims classified `PARTIALLY_SUPPORTED` (statutory administrative entry supported; postal delivery beat containment unsupported/unverified).
+  4. Workstream D — Eight-Correction Audit & Substantive Verification: Verify the 8 reported corrections (TS: 500002 -> 66, 500053 -> 67, 500064 -> 69; AP: 520001 -> 79, 520002 -> 80, 530001 -> 22, 530002 -> 22, 517501 -> 167) and Kurnool 518001 baseline against substantive source passages. Ensure corrections pass both structural checks and claim verification, reporting two distinct conclusions: authoritative constituency identity vs provisional postal linkage.
+  5. Workstream E — Truthful Evidence Reporting: Strengthen CHECK 10 and report generator. Eliminate hardcoded summaries. Derive evidence closure status dynamically: strictly enforce `evidenceClosureStatus !== 'COMPLETE'` while statutory gazettes and India Post GIS delivery beat boundary polygons remain external and uninspected. Derive gate recommendation dynamically: reject approval when any check fails or when unwarranted claims are asserted.
+  6. Workstream F — Substantive Negative Test Battery: Expand negative test battery to 26 distinct scenarios (14 structural + 12 substantive scenarios: unresolvable in-repo file paths, missing extract entries, wrong locator entries, discordant constituency names, unwarranted spatial containment assertions, passage contradictions, premature official publication claims, external claims falsely claimed inspected, false evidence closure, fail-closed Markdown check rendering, correction claim failures, and inconsistent gate recommendations).
+  7. Workstream G & H — Governance Records & Verification: Update defect register with Section 5 disposition table for D127-01 through D127-06, append DEC-128, update execution ledger, author Directive 128 implementation report, and verify CI green.
+- **Architectural & Governance Determinations:**
+  1. **Substantive Source Resolution:** In-repo source dossiers and Delimitation Order 2008 extracts exist and are bitwise verified. Full multi-hundred page physical gazettes and India Post GIS delivery beat boundary polygons are not checked into git and are truthfully reported as external and uninspected.
+  2. **Nine Orthogonal Evidence Dimensions:** No collapsing into a single boolean. Field completeness, source resolution, locator resolution, passage content, claim support, official publication authenticity, constituency identity, postal linkage, and geographic containment are evaluated and reported independently.
+  3. **Zero False Geographic Containment Claims:** `spatialContainmentVerified` is strictly `false` across all 36 records. Any record asserting `spatialContainmentVerified === true` fails validation immediately (Scenario 19).
+  4. **26 Genuine Negative Scenarios:** Complete negative test battery of 26 scenarios achieves 100% rejection rate across CLI and Jest test suites.
+  5. **Regression & Typecheck Integrity:** 71/71 tests pass in `delimitation-citizen-impact-data-truth.test.ts`. Full route suite (38/38) and comprehensive unit suite (49/49) pass. TypeScript build (`tsc --noEmit`) passes with exit code 0.
+  6. **Stage B Boundary:** STOP at Stage B Gate; Stages C through I remain strictly **UNAUTHORIZED**.
+  7. **Database Boundary:** Production (`ehfafcnimmjusyvplbah`) and Staging (`fkpigozcqnmcvofuksar`) strictly `AIR_GAPPED_UNEXECUTED` (0 queries, 0 mutations).
+  8. **Formal CTO Acceptance:** Strictly **`0.0% — PENDING INDEPENDENT ADJUDICATION`** under Rule IV-001.
+
+
