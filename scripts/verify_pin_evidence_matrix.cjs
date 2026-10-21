@@ -1,18 +1,16 @@
 /**
- * KSHETRA W021.5 — CTO DIRECTIVE 130 INDEPENDENT PIN EVIDENCE VALIDATOR (COMMONJS ENGINE)
+ * KSHETRA W021.5 — CTO DIRECTIVE 131 INDEPENDENT PIN EVIDENCE VALIDATOR (COMMONJS ENGINE)
  * Validates CURATED_PROVISIONAL_PIN_DIRECTORY against data/evidence/w021_5/pin_independent_evidence_manifest.json
  * 
  * Features:
  * 1. Pure validation engine `validateEvidenceMatrix({ directory, manifest, seedNames })`
- *    - Workstream A: Exact locator and administrative extent verification parsed directly from disk for both TS (Schedule XXXI) and AP (Schedule II).
- *      Explicitly reconciles PIN 500053 (Wards 16–18) and PIN 500064 (Ward 19 & Ward 18 Part).
- *    - Workstream B: Enforces single source-resolution chain:
- *      declared source path -> resolved file -> live SHA-256 -> parsed entry -> extracted passage -> locator verification -> claim-support verification.
- *    - Workstream C: Strengthened multi-AC verification verifying all candidate numbers, names, and extents against the resolved extract.
- *    - Workstream D: Corrected 38-scenario negative-test battery executing real validator, parser, and generator mechanisms.
- *    - Workstream E: Distinct reporting of transcription fidelity, artifact checksum integrity, exact locator extents, and 11 orthogonal status dimensions.
- *    - Workstream F: Reconciled 8 reported corrections + Kurnool accounting with distinct Conclusion A (Identity) vs Conclusion B (Postal Linkage).
- *    - Workstream G: Dynamic summary derivation and Stage B gate recommendation integrity.
+ *    - Workstream A: Report-to-evidence concordance across all 36 records including reconciled PINs 500001, 500028, and 500056.
+ *    - Workstream B: Genuine report generator anti-override testing executing real generateEvidenceReports across 8 failure modes.
+ *    - Workstream C: Strengthened positive and negative test assertions with anti-false-positive checks.
+ *    - Workstream D: Report-to-manifest reconciliation with single source of truth.
+ *    - Workstream E: Preserved 8 historical corrections and Kurnool baseline accounting.
+ *    - Workstream F: Defect register and governance reconciliation.
+ *    - Workstream G: Final Stage B evidence integrity and verification battery.
  * 
  * Generates:
  * 1. reports/w021_5_pin_independent_evidence_matrix.json
@@ -1326,17 +1324,46 @@ function runNegativeValidationSuite({ directory, manifest, seedNames }) {
     details: sc23Passed ? 'Correctly rejected false evidence closure claim (CHECK_10 failed)' : 'Failed to reject false closure'
   });
 
-  // Scenario 24: Failed check cannot render PASS in Markdown report (Workstream D.7)
-  const mockFailedCheck = { checkId: 'CHECK_8_CLAIM_SUPPORT', description: 'Claim support test', passed: false, details: 'External source unavailable' };
-  const renderedStatus = mockFailedCheck.passed ? '**PASS**' : '**FAIL**';
-  const tamperedMarkdown = `| \`${mockFailedCheck.checkId}\` | ${mockFailedCheck.description} | **PASS** |`;
-  const detectedIncorrectSuccessInMarkdown = !mockFailedCheck.passed && tamperedMarkdown.includes('**PASS**');
-  const sc24Passed = renderedStatus === '**FAIL**' && detectedIncorrectSuccessInMarkdown;
+  // Scenario 24: Failed check cannot render PASS in Markdown report (Workstream B & D)
+  // Invokes REAL generateEvidenceReports with a failing check and verifies Markdown renders **FAIL** and never **PASS** for that check
+  const failingCheck24 = {
+    checkId: 'CHECK_7_LOCATOR_RESOLUTION',
+    description: 'Statutory locator and extent verification',
+    passed: false,
+    details: 'DELIBERATE_TEST_FAILURE: Locator extent mismatch'
+  };
+  const mockPosResults24 = {
+    totalDirectoryPins: 36,
+    totalManifestPins: 36,
+    checks: [
+      { checkId: 'CHECK_1_EXACT_INVENTORY_PARITY', description: 'Inventory parity', passed: true, details: 'OK' },
+      failingCheck24
+    ],
+    errors: ['Locator extent mismatch'],
+    allPassed: false
+  };
+  const genResult24 = generateEvidenceReports({
+    directory,
+    manifest,
+    seedNames,
+    positiveResults: mockPosResults24,
+    skipNegative: true,
+    writeFiles: false
+  });
+  const md24 = genResult24.matrixMd;
+  const checkRow24 = md24.split('\n').find(line => line.includes('`CHECK_7_LOCATOR_RESOLUTION`'));
+  const sc24Passed = Boolean(
+    checkRow24 &&
+    checkRow24.includes('**FAIL**') &&
+    !checkRow24.includes('**PASS**') &&
+    md24.includes('Overall Validation Status:** `FAILED`') &&
+    !md24.includes('100% PASS')
+  );
   scenarios.push({
     scenarioId: 'NEG_SCENARIO_24_FAILED_CHECK_CANNOT_RENDER_PASS',
-    description: 'Report generator ensures a failed validation check cannot be represented as **PASS** in Markdown',
+    description: 'Real report generator ensures a failed validation check renders **FAIL** and overall status renders FAILED in Markdown',
     passed: sc24Passed,
-    details: sc24Passed ? 'Correctly rejected incorrect **PASS** rendering for failed check' : 'Failed to enforce check rendering'
+    details: sc24Passed ? 'Real generator correctly rendered **FAIL** and rejected **PASS** in Markdown' : 'Failed to enforce check rendering in real generator'
   });
 
   // Scenario 25: A correction passes structural consistency checks but fails documentary claim verification
@@ -1533,30 +1560,36 @@ function runNegativeValidationSuite({ directory, manifest, seedNames }) {
     details: sc37Passed ? 'Correctly rejected inconsistent gate recommendation during failure (CHECK_10 failed)' : 'Failed to reject pass recommendation'
   });
 
-  // Scenario 38: Failed source-verification result lost during report regeneration (Workstream D.8 & D.10):
-  // Tests actual report generator logic with failed validation and verifies failure is retained in JSON and Markdown
-  const failingPositiveResults = {
-    totalDirectoryPins: 36,
-    totalManifestPins: 36,
-    errors: ['CHECK_7_LOCATOR_RESOLUTION failed: locator extent mismatch'],
-    checks: [
-      { checkId: 'CHECK_1_EXACT_INVENTORY_PARITY', description: 'Inventory', passed: true, details: 'OK' },
-      { checkId: 'CHECK_6_SOURCE_RESOLUTION', description: 'Source resolution', passed: true, details: 'OK' },
-      { checkId: 'CHECK_7_LOCATOR_RESOLUTION', description: 'Locator extent', passed: false, details: 'Failed extent mismatch' },
-    ],
-    allPassed: false
-  };
-  const generatedSummary = {
-    allChecksPassed: failingPositiveResults.allPassed,
-    structuralValidationStatus: failingPositiveResults.allPassed ? "PASS" : "FAIL",
-    gateRecommendation: failingPositiveResults.allPassed ? "SUBMIT_FOR_INDEPENDENT_STAGE_B_ADJUDICATION_WITH_DOCUMENTED_EXTERNAL_BLOCKERS" : "GATE_REJECTED_VALIDATION_FAILURE"
-  };
-  const sc38Passed = generatedSummary.structuralValidationStatus === 'FAIL' && generatedSummary.gateRecommendation === 'GATE_REJECTED_VALIDATION_FAILURE';
+  // Scenario 38: Failed source-verification result lost during report regeneration (Workstream B & D)
+  // Executes REAL report generator with a failing validation and verifies failure is retained in both JSON and Markdown output
+  const corrupt38Entries = (manifest.entries || []).map(e => e.pinCode === '500002' ? { ...e, sourceLocator: 'CORRUPTED_LOCATOR_SCHEDULE_MISSING' } : e);
+  const corrupt38Manifest = { ...manifest, entries: corrupt38Entries, metadata: { ...manifest.metadata, evidenceClosureStatus: 'COMPLETE' } };
+  const realFailPosResults38 = validateEvidenceMatrix({ directory, manifest: corrupt38Manifest, seedNames });
+  const genResult38 = generateEvidenceReports({
+    directory,
+    manifest: corrupt38Manifest,
+    seedNames,
+    positiveResults: realFailPosResults38,
+    skipNegative: true,
+    writeFiles: false
+  });
+  const jsonReport38 = genResult38.matrixJson;
+  const mdReport38 = genResult38.matrixMd;
+  const sc38Passed = Boolean(
+    !realFailPosResults38.allPassed &&
+    jsonReport38.metadata.validationSummary.structuralValidationStatus === 'FAIL' &&
+    jsonReport38.metadata.validationSummary.gateRecommendation === 'GATE_REJECTED_VALIDATION_FAILURE' &&
+    jsonReport38.metadata.validationSummary.evidenceClosureStatus === 'CLOSURE_REJECTED_VALIDATION_FAILED' &&
+    jsonReport38.metadata.validationSummary.locatorResolutionStatus === 'FAIL' &&
+    mdReport38.includes('Overall Validation Status:** `FAILED`') &&
+    mdReport38.includes('GATE_REJECTED_VALIDATION_FAILURE') &&
+    !mdReport38.includes('100% PASS')
+  );
   scenarios.push({
     scenarioId: 'NEG_SCENARIO_38_FAILED_SOURCE_RESULT_LOST_IN_REPORT_REGENERATION',
-    description: 'Report generator anti-override test proves that failed source verification result is retained as FAIL and GATE_REJECTED',
+    description: 'Real report generator anti-override test proves that failed validation is retained as FAIL, GATE_REJECTED, and CLOSURE_REJECTED in JSON and Markdown',
     passed: sc38Passed,
-    details: sc38Passed ? 'Correctly retained failed status and gate rejection in report summary' : 'Failed to retain error in report generation'
+    details: sc38Passed ? 'Real generator correctly retained FAIL, GATE_REJECTED, and CLOSURE_REJECTED in both JSON and Markdown' : 'Real generator failed to retain error in report generation'
   });
 
   const allScenariosPassed = scenarios.every(s => s.passed);
@@ -1600,31 +1633,82 @@ function runValidation() {
   return { results, directory, manifest, seedNames, positiveResults, negativeResults };
 }
 
-function generateReports() {
-  console.log('Running Independent PIN Evidence Matrix Validation (CTO Directive 130)...');
-  const { results, directory, manifest, seedNames, positiveResults, negativeResults } = runValidation();
+// Helper: Atomic file writer to ensure report integrity and prevent partial writes
+function atomicWriteFileSync(filePath, content) {
+  const dir = path.dirname(filePath);
+  if (!fs.existsSync(dir)) {
+    fs.mkdirSync(dir, { recursive: true });
+  }
+  const tmpPath = `${filePath}.tmp.${Date.now()}.${Math.random().toString(36).slice(2, 8)}`;
+  try {
+    fs.writeFileSync(tmpPath, content, 'utf8');
+    fs.renameSync(tmpPath, filePath);
+  } catch (err) {
+    if (fs.existsSync(tmpPath)) {
+      try { fs.unlinkSync(tmpPath); } catch (_) {}
+    }
+    throw err;
+  }
+}
 
-  const reportDir = path.resolve(REPO_ROOT, 'reports');
+/**
+ * Genuine Report Generator (Workstream B):
+ * Derives JSON and Markdown reports directly from actual validation results.
+ * Strictly enforces that failed validations cannot retain PASS, closure status, or positive gate recommendations.
+ */
+function generateEvidenceReports(options = {}) {
+  const directory = options.directory || parseDelimitationServiceCuratedPins();
+  const manifestPath = path.resolve(REPO_ROOT, 'data/evidence/w021_5/pin_independent_evidence_manifest.json');
+  const manifest = options.manifest || JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+  const seedNames = options.seedNames || parseSeedConstituencyNames();
+
+  const positiveResults = options.positiveResults || validateEvidenceMatrix({ directory, manifest, seedNames });
+  const negativeResults = options.negativeResults || (options.skipNegative ? { allScenariosPassed: true, scenarios: [] } : runNegativeValidationSuite({ directory, manifest, seedNames }));
+
+  const reportDir = options.reportDir || path.resolve(REPO_ROOT, 'reports');
+  const writeFiles = options.writeFiles !== undefined ? options.writeFiles : true;
+
+  const allChecks = [
+    ...(positiveResults.checks || []),
+    ...((negativeResults.scenarios || []).map(s => ({
+      checkId: s.scenarioId,
+      description: s.description,
+      passed: s.passed,
+      details: s.details
+    })))
+  ];
+
+  const overallPassed = Boolean(positiveResults.allPassed && (negativeResults.allScenariosPassed ?? true));
+
+  const results = {
+    totalDirectoryPins: positiveResults.totalDirectoryPins ?? Object.keys(directory).length,
+    totalManifestPins: positiveResults.totalManifestPins ?? (manifest.entries ? manifest.entries.length : 0),
+    checks: allChecks,
+    errors: positiveResults.errors || [],
+    positivePassed: Boolean(positiveResults.allPassed),
+    negativePassed: Boolean(negativeResults.allScenariosPassed ?? true),
+    allPassed: overallPassed
+  };
 
   // Dynamically derive all summary flags strictly from actual check results
-  const check1 = positiveResults.checks.find(c => c.checkId === 'CHECK_1_EXACT_INVENTORY_PARITY');
-  const check2 = positiveResults.checks.find(c => c.checkId === 'CHECK_2_MULTI_AC_FAIL_CLOSED_AMBIGUITY');
-  const check3 = positiveResults.checks.find(c => c.checkId === 'CHECK_3_TAXONOMY_ENFORCEMENT_AND_DISTRIBUTION');
-  const check4 = positiveResults.checks.find(c => c.checkId === 'CHECK_4_CORRECTION_CONSISTENCY_AND_SOURCE_EVIDENCE');
-  const check5 = positiveResults.checks.find(c => c.checkId === 'CHECK_5_DOCUMENTARY_FIELD_COMPLETENESS');
-  const check6 = positiveResults.checks.find(c => c.checkId === 'CHECK_6_SOURCE_RESOLUTION');
-  const check7 = positiveResults.checks.find(c => c.checkId === 'CHECK_7_LOCATOR_RESOLUTION');
-  const check8 = positiveResults.checks.find(c => c.checkId === 'CHECK_8_CLAIM_SUPPORT');
-  const check9 = positiveResults.checks.find(c => c.checkId === 'CHECK_9_DATE_CONSISTENCY');
-  const check10 = positiveResults.checks.find(c => c.checkId === 'CHECK_10_DYNAMIC_SUMMARY_INTEGRITY');
+  const check1 = (positiveResults.checks || []).find(c => c.checkId === 'CHECK_1_EXACT_INVENTORY_PARITY');
+  const check2 = (positiveResults.checks || []).find(c => c.checkId === 'CHECK_2_MULTI_AC_FAIL_CLOSED_AMBIGUITY');
+  const check3 = (positiveResults.checks || []).find(c => c.checkId === 'CHECK_3_TAXONOMY_ENFORCEMENT_AND_DISTRIBUTION');
+  const check4 = (positiveResults.checks || []).find(c => c.checkId === 'CHECK_4_CORRECTION_CONSISTENCY_AND_SOURCE_EVIDENCE');
+  const check5 = (positiveResults.checks || []).find(c => c.checkId === 'CHECK_5_DOCUMENTARY_FIELD_COMPLETENESS');
+  const check6 = (positiveResults.checks || []).find(c => c.checkId === 'CHECK_6_SOURCE_RESOLUTION');
+  const check7 = (positiveResults.checks || []).find(c => c.checkId === 'CHECK_7_LOCATOR_RESOLUTION');
+  const check8 = (positiveResults.checks || []).find(c => c.checkId === 'CHECK_8_CLAIM_SUPPORT');
+  const check9 = (positiveResults.checks || []).find(c => c.checkId === 'CHECK_9_DATE_CONSISTENCY');
+  const check10 = (positiveResults.checks || []).find(c => c.checkId === 'CHECK_10_DYNAMIC_SUMMARY_INTEGRITY');
 
-  const provisionalCount = manifest.entries.filter(e => e.confidenceTaxonomy === 'PROVISIONALLY_APPROXIMATED').length;
-  const ambiguousCount = manifest.entries.filter(e => e.confidenceTaxonomy === 'AMBIGUOUS_MULTI_CONSTITUENCY').length;
-  const authoritativeCount = manifest.entries.filter(e => e.confidenceTaxonomy === 'AUTHORITATIVELY_VERIFIED').length;
-  const unverifiedCount = manifest.entries.filter(e => e.confidenceTaxonomy === 'UNVERIFIED_OR_EXTERNALLY_BLOCKED').length;
+  const provisionalCount = (manifest.entries || []).filter(e => e.confidenceTaxonomy === 'PROVISIONALLY_APPROXIMATED').length;
+  const ambiguousCount = (manifest.entries || []).filter(e => e.confidenceTaxonomy === 'AMBIGUOUS_MULTI_CONSTITUENCY').length;
+  const authoritativeCount = (manifest.entries || []).filter(e => e.confidenceTaxonomy === 'AUTHORITATIVELY_VERIFIED').length;
+  const unverifiedCount = (manifest.entries || []).filter(e => e.confidenceTaxonomy === 'UNVERIFIED_OR_EXTERNALLY_BLOCKED').length;
 
   const reportedCorrectionsLedger = REPORTED_AC_CORRECTIONS.map(c => {
-    const entry = manifest.entries.find(e => e.pinCode === c.pin);
+    const entry = (manifest.entries || []).find(e => e.pinCode === c.pin);
     return {
       pinCode: c.pin,
       stateCode: c.state,
@@ -1652,7 +1736,7 @@ function generateReports() {
     };
   });
 
-  const kurnoolEntry = manifest.entries.find(e => e.pinCode === KURNOOL_RECONCILIATION.pin);
+  const kurnoolEntry = (manifest.entries || []).find(e => e.pinCode === KURNOOL_RECONCILIATION.pin);
   const kurnoolLedgerEntry = {
     pinCode: "518001",
     stateCode: "AP",
@@ -1681,11 +1765,33 @@ function generateReports() {
     requiredNextAction: "INGEST_INDIA_POST_GIS_DELIVERY_BEAT_POLYGONS_AND_PHYSICAL_GAZETTE_AUDIT"
   };
 
+  // Workstream B.3: Closure-status protection
+  // Generator enforces the permitted closure state based on actual validation outcome and external blockers.
+  // A manifest cannot override a failed check or force an unsupported COMPLETE status.
+  let derivedEvidenceClosureStatus;
+  if (!overallPassed) {
+    derivedEvidenceClosureStatus = "CLOSURE_REJECTED_VALIDATION_FAILED";
+  } else {
+    // Under Stage B external blockers (gazette scans and GIS delivery beats unavailable),
+    // closure cannot be COMPLETE.
+    const manifestClosure = manifest.metadata?.evidenceClosureStatus;
+    if (manifestClosure === 'COMPLETE') {
+      derivedEvidenceClosureStatus = "PARTIALLY_CLOSED_INDEPENDENT_EVIDENCE_RECORDS_COMPLETE_EXTERNAL_BLOCKERS_REMAIN";
+    } else {
+      derivedEvidenceClosureStatus = manifestClosure || "PENDING_EXTERNAL_OFFICIAL_GAZETTE_AND_GIS_DELIVERY_BEAT_EVIDENCE";
+    }
+  }
+
+  // Workstream B.1 & B.2: Gate recommendation derived strictly from actual validation outcome
+  const derivedGateRecommendation = overallPassed
+    ? "SUBMIT_FOR_INDEPENDENT_STAGE_B_ADJUDICATION_WITH_DOCUMENTED_EXTERNAL_BLOCKERS"
+    : "GATE_REJECTED_VALIDATION_FAILURE";
+
   // 1. Write reports/w021_5_pin_independent_evidence_matrix.json
   const matrixJson = {
     metadata: {
-      directive: "CTO Directive 130",
-      workstream: "Workstream A, B, C, D, E, F, G — Exact Locator Extent Integrity, Source-Path Binding, Genuine Negative Tests, and Stage B Gate Correctness",
+      directive: "CTO Directive 131",
+      workstream: "Workstream A, B, C, D, E, F, G — Report-to-Evidence Concordance, Genuine Report-Generator Anti-Override Testing, and Final Stage B Evidence Integrity",
       governingFramework: "Master Execution Framework Amendment v1.6 / Rule IV-001 Non-Self-Acceptance",
       stageBoundary: "Stage B Gate — STOP",
       formalAcceptance: "0.0% — PENDING INDEPENDENT ADJUDICATION",
@@ -1710,32 +1816,32 @@ function generateReports() {
         allChecksPassed: results.allPassed,
         positiveValidationPassed: results.positivePassed,
         negativeValidationPassed: results.negativePassed,
-        totalEntries: manifest.entries.length,
+        totalEntries: (manifest.entries || []).length,
         provisionalCount: provisionalCount,
         ambiguousCount: ambiguousCount,
         authoritativeCount: authoritativeCount,
         unverifiedOrBlockedCount: unverifiedCount,
-        structuralValidationStatus: results.positivePassed ? "PASS" : "FAIL",
-        evidenceClosureStatus: manifest.metadata?.evidenceClosureStatus || "PARTIALLY_CLOSED_INDEPENDENT_EVIDENCE_RECORDS_COMPLETE_EXTERNAL_BLOCKERS_REMAIN",
+        structuralValidationStatus: overallPassed ? "PASS" : "FAIL",
+        evidenceClosureStatus: derivedEvidenceClosureStatus,
         sourceResolutionStatus: check6?.passed ? "VERIFIED_CHECKED_IN_EXTRACTS_SHA256_MATCH" : "FAIL",
         locatorResolutionStatus: check7?.passed ? "EXACT_ENTRY_AND_WARD_COORDINATES_VERIFIED_AGAINST_SOURCE_ARTIFACT" : "FAIL",
         substantiveSourceClaimStatus: check8?.passed ? "PARTIALLY_SUPPORTED_IDENTITY_VERIFIED_POSTAL_UNPROVEN" : "FAIL",
         externalPublicationAuthenticityStatus: "UNVERIFIED_EXTERNAL_PUBLICATION_NOT_CHECKED_IN",
         transcriptionFidelityStatus: "UNVERIFIED_PENDING_PHYSICAL_GAZETTE_COMPARISON",
         geographicContainmentStatus: "UNVERIFIED_NO_GIS_DELIVERY_BEAT_POLYGON",
-        inventoryParityVerified: check1 ? check1.passed : false,
-        pin500001AmbiguousFailClosed: check2 ? check2.passed : false,
-        completeTaxonomyEnforced: check3 ? check3.passed : false,
-        eightAcCorrectionsVerified: check4 ? check4.passed : false,
-        documentaryFieldCompletenessVerified: check5 ? check5.passed : false,
-        sourceResolutionVerified: check6 ? check6.passed : false,
-        locatorResolutionVerified: check7 ? check7.passed : false,
-        claimSupportVerified: check8 ? check8.passed : false,
-        dateConsistencyVerified: check9 ? check9.passed : false,
-        dynamicSummaryIntegrityVerified: check10 ? check10.passed : false,
-        negativeScenariosExecuted: negativeResults.scenarios.length,
-        negativeScenariosPassed: negativeResults.scenarios.filter(s => s.passed).length,
-        gateRecommendation: results.allPassed ? "SUBMIT_FOR_INDEPENDENT_STAGE_B_ADJUDICATION_WITH_DOCUMENTED_EXTERNAL_BLOCKERS" : "GATE_REJECTED_VALIDATION_FAILURE",
+        inventoryParityVerified: check1 ? Boolean(check1.passed) : false,
+        pin500001AmbiguousFailClosed: check2 ? Boolean(check2.passed) : false,
+        completeTaxonomyEnforced: check3 ? Boolean(check3.passed) : false,
+        eightAcCorrectionsVerified: check4 ? Boolean(check4.passed) : false,
+        documentaryFieldCompletenessVerified: check5 ? Boolean(check5.passed) : false,
+        sourceResolutionVerified: check6 ? Boolean(check6.passed) : false,
+        locatorResolutionVerified: check7 ? Boolean(check7.passed) : false,
+        claimSupportVerified: check8 ? Boolean(check8.passed) : false,
+        dateConsistencyVerified: check9 ? Boolean(check9.passed) : false,
+        dynamicSummaryIntegrityVerified: check10 ? Boolean(check10.passed) : false,
+        negativeScenariosExecuted: (negativeResults.scenarios || []).length,
+        negativeScenariosPassed: (negativeResults.scenarios || []).filter(s => s.passed).length,
+        gateRecommendation: derivedGateRecommendation,
         remainingBlockers: [
           "INDIA_POST_GIS_DELIVERY_BEAT_POLYGONS_UNAVAILABLE: Department of Posts does not publish statutory 6-digit delivery beat GIS polygon shapefiles.",
           "FULL_STATUTORY_GAZETTE_SCAN_NOT_CHECKED_IN: ECI Delimitation Notification No. 282/AP/2008 / Gazette of India Extraordinary is a 300+ page printed gazette not checked into git in full.",
@@ -1745,29 +1851,26 @@ function generateReports() {
       },
       validationChecks: results.checks,
     },
-    entries: manifest.entries,
+    entries: manifest.entries || [],
   };
-
-  const jsonPath = path.resolve(reportDir, 'w021_5_pin_independent_evidence_matrix.json');
-  fs.writeFileSync(jsonPath, JSON.stringify(matrixJson, null, 2), 'utf8');
-  console.log(`Wrote JSON Evidence Matrix: ${jsonPath}`);
 
   // 2. Write reports/w021_5_pin_independent_evidence_matrix.md
   let matrixMd = `# KSHETRA W021.5 — INDEPENDENT 36-PIN EVIDENCE MATRIX & DATA-TRUTH REPORT
-**Directive:** CTO Directive 130 (Workstreams A, B, C, D, E, F, G)  
+**Directive:** CTO Directive 131 (Workstreams A, B, C, D, E, F, G)  
 **Governing Framework:** Master Execution Framework Amendment v1.6 / Rule IV-001 Non-Self-Acceptance  
 **Stage Boundary:** STOP at Stage B Gate (Stages C–I Strictly Unauthorized)  
 **Formal Acceptance:** Strictly \`0.0% — PENDING INDEPENDENT ADJUDICATION\`  
 **Generated At:** \`${new Date().toISOString()}\`  
-**Total Curated Entries Audited:** \`36\`  
-**Overall Validation Status:** \`${results.allPassed ? '100% PASS' : 'FAILED'}\`  
-**Gate Recommendation:** \`${matrixJson.metadata.validationSummary.gateRecommendation}\`  
+**Total Curated Entries Audited:** \`${manifest.entries?.length || 0}\`  
+**Overall Validation Status:** \`${overallPassed ? '100% PASS' : 'FAILED'}\`  
+**Gate Recommendation:** \`${derivedGateRecommendation}\`  
+**Evidence Closure Status:** \`${derivedEvidenceClosureStatus}\`  
 
 ---
 
 ## 1. Executive Summary & Honest Evidence Independence Scope (Workstreams A & F)
 
-Under CTO Directive 130, all 36 postal lookup entries in \`CURATED_PROVISIONAL_PIN_DIRECTORY\` have been bound to actual resolved source extract files checked into git with bitwise SHA-256 integrity and exact administrative-unit extents verified directly against Delimitation Order 2008 Table B:
+Under CTO Directive 131, all 36 postal lookup entries in \`CURATED_PROVISIONAL_PIN_DIRECTORY\` have been bound to actual resolved source extract files checked into git with bitwise SHA-256 integrity and exact administrative-unit extents verified directly against Delimitation Order 2008 Table B:
 
 ### Critical Evidentiary Independence & Boundary Findings
 1. **Source-Bound Evidence Verification & Single Resolution Chain:**
@@ -1778,7 +1881,11 @@ Under CTO Directive 130, all 36 postal lookup entries in \`CURATED_PROVISIONAL_P
 2. **Exact Locator & Administrative Extent Verification:**
    Every single entry's \`sourceLocator\` specifies the exact Schedule, Table, Entry Number, Constituency Name, and full statutory extent. PIN 500053 is explicitly reconciled with \`Ward No. 16 to 18\` (eliminating informal \`Ward 15 part\`); PIN 500064 is explicitly reconciled with \`Ward No. 19 and Ward No. 18 (Part) Block No. 4 to 8\` (eliminating informal \`Ward 12\`).
 3. **Multi-AC Candidate Extent Verification:**
-   All 4 ambiguous multi-AC entries (\`500001\`, \`500028\`, \`500034\`, \`500056\`) verify candidate numbers, names, and administrative extents against the resolved source file while remaining strictly fail-closed with \`canonicalAcNo: undefined\`.
+   All 4 ambiguous multi-AC entries (\`500001\`, \`500028\`, \`500034\`, \`500056\`) verify candidate numbers, names, and administrative extents against the resolved source file while remaining strictly fail-closed with \`canonicalAcNo: undefined\`:
+   - \`500001\`: Candidates \`[65, 63, 58]\` (Goshamahal, Nampally, Malakpet).
+   - \`500028\`: Candidates \`[64, 63]\` (Karwan, Nampally).
+   - \`500034\`: Candidates \`[60, 61]\` (Khairatabad, Jubilee Hills).
+   - \`500056\`: Candidates \`[71, 46]\` (Secunderabad Cantonment, Kukatpally).
 4. **Structural Separation vs. Geographic Proof:**
    The evidence manifest (\`pin_independent_evidence_manifest.json\`) is maintained separately from runtime code. While this establishes **structural separation**, it does **NOT** independently establish the geographic truth of postal delivery beat containment.
 5. **Statutory Delimitation Scope (ECI Delimitation Orders 2008):**
@@ -1803,7 +1910,7 @@ All validation outcomes and summary flags are computed dynamically at runtime wi
 |---|---|---|---|
 `;
 
-  for (const c of positiveResults.checks) {
+  for (const c of (positiveResults.checks || [])) {
     matrixMd += `| \`${c.checkId}\` | ${c.description} | ${c.passed ? '**PASS**' : '**FAIL**'} | ${c.details} |\n`;
   }
 
@@ -1818,19 +1925,24 @@ The validator employs a genuine negative test harness that feeds deliberately co
 |---|---|---|---|---|
 `;
 
-  for (const s of negativeResults.scenarios) {
+  for (const s of (negativeResults.scenarios || [])) {
     matrixMd += `| \`${s.scenarioId}\` | ${s.description} | \`allPassed === false\` & Check Fails | ${s.details} | ${s.passed ? '**PASS (REJECTED)**' : '**FAIL (PERMITTED)**'} |\n`;
   }
 
   matrixMd += `
 ---
 
-## 4. Resolution of PIN 500001 (Hyderabad GPO)
+## 4. Resolution of Multi-AC Ambiguous Records (PIN 500001, 500028, 500034, 500056)
 
-- **Candidate Set:** \`[65, 63, 58]\` (Goshamahal, Nampally, Malakpet)
-- **Canonical AC Number:** Strictly \`undefined\` (Fail-Closed)
-- **Status:** \`AMBIGUOUS_MULTI_CONSTITUENCY\` / \`DOCUMENTED_MULTI_AC_AMBIGUITY\`
-- **Independent Finding:** The Hyderabad General Post Office (GPO) located at Abids serves a dense commercial delivery beat spanning GHMC Ward 78 (Gunfoundry, Goshamahal AC 65), Ward 10/11 parts (Nampally AC 63), and Ward 3/Musi frontage (Malakpet AC 58). Because the postal delivery routes cross these ward lines, establishing a single constituency containment is factually impossible without address-level geocoding. The fail-closed multi-candidate representation is strictly preserved.
+All 4 ambiguous multi-AC entries fail closed with \`canonicalAcNo: undefined\` and have candidate sets fully reconciled with statutory Table B:
+
+### Multi-AC Ambiguity Register
+| PIN | State | Locality | Candidate ACs | Parsed Candidate Names | Candidate Extents Verified Against Source Extract | Canonical AC Assignment |
+|:---:|:---:|:---|:---:|:---|:---|:---:|
+| \`500001\` | TS | Hyderabad GPO / Abids / Koti / Gunfoundry | \`[65, 63, 58]\` | Goshamahal, Nampally, Malakpet | **AC 65 (Goshamahal)**: Hyderabad (M.Corp.) (Part) - Ward No. 4, 14, 15 and 21.<br>**AC 63 (Nampally)**: Hyderabad (M.Corp.) (Part) - Ward No. 10 and 11, Ward No. 12 (Part) Block No. 1 to 6.<br>**AC 58 (Malakpet)**: Hyderabad (M.Corp.) (Part) - Ward No. 16 (Part) Block No. 1 and 2, Ward No. 17. | \`undefined\` (Fail-closed) |
+| \`500028\` | TS | Mehdipatnam / Gudimalkapur / Murad Nagar | \`[64, 63]\` | Karwan, Nampally | **AC 64 (Karwan)**: Hyderabad (M.Corp.) (Part) - Ward No. 9 and 13 (Part) Block No. 1 to 3.<br>**AC 63 (Nampally)**: Hyderabad (M.Corp.) (Part) - Ward No. 10 and 11, Ward No. 12 (Part) Block No. 1 to 6. | \`undefined\` (Fail-closed) |
+| \`500034\` | TS | Banjara Hills / Somajiguda / Punjagutta | \`[60, 61]\` | Khairatabad, Jubilee Hills | **AC 60 (Khairatabad)**: Hyderabad (M.Corp.) (Part) - Ward No. 6.<br>**AC 61 (Jubilee Hills)**: Hyderabad (M.Corp.) (Part) - Ward No. 8 (Part) Block No. 1 to 3. | \`undefined\` (Fail-closed) |
+| \`500056\` | TS | Bowenpally / Hasmathpet / Manovikas Nagar | \`[71, 46]\` | Secunderabad Cantonment, Kukatpally | **AC 71 (Secunderabad Cantonment)**: Hyderabad (M.Corp.) (Part) - Ward No. 24, Secunderabad Cantonment Board.<br>**AC 46 (Kukatpally)**: Balanagar Mandal (Part), Kukatpally (M) (Part) - Ward No. 1 to 4. | \`undefined\` (Fail-closed) |
 
 ---
 
@@ -1865,7 +1977,7 @@ For each correction, two orthogonal conclusions are reported:
 |---|---|---|---|---|---|---|---|---|
 `;
 
-  for (const e of manifest.entries) {
+  for (const e of (manifest.entries || [])) {
     const acStr = e.assignedAcNumber ? `AC ${e.assignedAcNumber} (${e.assignedAcName})` : '*(None - Ambiguous)*';
     const candsStr = e.candidateAcNumbers.length > 0 ? e.candidateAcNumbers.join(', ') : '-';
     matrixMd += `| \`${e.pinCode}\` | ${e.locality} | ${e.stateCode} / ${e.district} | ${acStr} | \`${candsStr}\` | ${e.officialSource}; ${e.sourceLocator} | \`${e.sourceInspectionStatus}\` | \`${e.claimSupportStatus}\` | \`${e.confidenceTaxonomy}\` |\n`;
@@ -1894,7 +2006,7 @@ All 36 entries adhere to the 12 orthogonal evidence dimensions:
 
 ## 8. Evidence Resolution & External Blocker Disclosures (Workstream G)
 
-In compliance with Master Execution Framework Amendment v1.6 and CTO Directive 130, the following evidence boundaries and blockers are formally documented:
+In compliance with Master Execution Framework Amendment v1.6 and CTO Directive 131, the following evidence boundaries and blockers are formally documented:
 1. **In-Repository Extract Byte Integrity (\`BITWISE_IN_REPO_VERIFIED\`):** All checked-in source extract files match their recorded SHA-256 cryptographic digests bitwise.
 2. **External Statutory Publication Status (\`EXTERNAL_STATUTORY_PUBLICATION_NOT_CHECKED_IN\`):** Full official gazette scans are external publications not stored in git.
 3. **Transcription Fidelity (\`UNVERIFIED_PENDING_PHYSICAL_GAZETTE_COMPARISON\`):** Independent physical audit against printed gazette remains pending.
@@ -1907,11 +2019,221 @@ In compliance with Master Execution Framework Amendment v1.6 and CTO Directive 1
 6. **Stage B Gate & Non-Self-Acceptance:** STOP at Stage B Gate. Formal acceptance remains strictly \`0.0% — PENDING INDEPENDENT ADJUDICATION\`.
 `;
 
-  const mdPath = path.resolve(reportDir, 'w021_5_pin_independent_evidence_matrix.md');
-  fs.writeFileSync(mdPath, matrixMd, 'utf8');
-  console.log(`Wrote Markdown Evidence Matrix: ${mdPath}`);
+  if (writeFiles) {
+    const jsonPath = path.resolve(reportDir, 'w021_5_pin_independent_evidence_matrix.json');
+    atomicWriteFileSync(jsonPath, JSON.stringify(matrixJson, null, 2));
+    console.log(`Wrote JSON Evidence Matrix: ${jsonPath}`);
 
-  return results;
+    const mdPath = path.resolve(reportDir, 'w021_5_pin_independent_evidence_matrix.md');
+    atomicWriteFileSync(mdPath, matrixMd);
+    console.log(`Wrote Markdown Evidence Matrix: ${mdPath}`);
+  }
+
+  return { matrixJson, matrixMd, results, positiveResults, negativeResults };
+}
+
+function generateReports(options = {}) {
+  console.log('Running Independent PIN Evidence Matrix Validation (CTO Directive 131)...');
+  const out = generateEvidenceReports(options);
+  return out.results;
+}
+
+/**
+ * Report Generator Failure Battery (CTO Directive 131 Workstream B):
+ * Executes the real generateEvidenceReports across all 8 mandatory failure modes:
+ * 1. Failed locator-extent check
+ * 2. Source-path or checksum failure
+ * 3. Failed multi-AC candidate verification
+ * 4. Incomplete inventory
+ * 5. Manifest asserting evidenceClosureStatus: COMPLETE
+ * 6. Failed validation with forged submission-ready gate recommendation
+ * 7. Overwriting prior PASS report on disk upon validation failure
+ * 8. Unavailable source artifact
+ */
+function runReportGeneratorFailureBattery(options = {}) {
+  const directory = options.directory || parseDelimitationServiceCuratedPins();
+  const manifestPath = path.resolve(REPO_ROOT, 'data/evidence/w021_5/pin_independent_evidence_manifest.json');
+  const baseManifest = options.manifest || JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+  const seedNames = options.seedNames || parseSeedConstituencyNames();
+
+  const cases = [];
+
+  // Case 1: A failed locator-extent check
+  const corruptCase1Entries = baseManifest.entries.map(e => e.pinCode === '500002' ? { ...e, sourceLocator: 'CORRUPTED_LOCATOR_SCHEDULE_MISSING' } : e);
+  const corruptCase1Manifest = { ...baseManifest, entries: corruptCase1Entries };
+  const resCase1 = validateEvidenceMatrix({ directory, manifest: corruptCase1Manifest, seedNames });
+  const outCase1 = generateEvidenceReports({ directory, manifest: corruptCase1Manifest, seedNames, positiveResults: resCase1, skipNegative: true, writeFiles: false });
+  const case1Passed = Boolean(
+    !resCase1.allPassed &&
+    outCase1.matrixJson.metadata.validationSummary.structuralValidationStatus === 'FAIL' &&
+    outCase1.matrixJson.metadata.validationSummary.locatorResolutionStatus === 'FAIL' &&
+    outCase1.matrixJson.metadata.validationSummary.gateRecommendation === 'GATE_REJECTED_VALIDATION_FAILURE' &&
+    outCase1.matrixMd.includes('Overall Validation Status:** `FAILED`') &&
+    outCase1.matrixMd.includes('GATE_REJECTED_VALIDATION_FAILURE') &&
+    !outCase1.matrixMd.includes('100% PASS')
+  );
+  cases.push({
+    caseId: 'GEN_CASE_1_FAILED_LOCATOR_EXTENT',
+    description: 'Real report generator handles failed locator-extent check by setting structuralValidationStatus FAIL, locatorResolutionStatus FAIL, gateRecommendation GATE_REJECTED_VALIDATION_FAILURE, and Markdown FAILED',
+    passed: case1Passed,
+    details: case1Passed ? 'Real generator correctly produced failing JSON summary and Markdown for locator extent failure' : 'Real generator failed to retain locator failure'
+  });
+
+  // Case 2: A source-path or checksum failure
+  const corruptCase2Entries = baseManifest.entries.map(e => e.pinCode === '500002' ? { ...e, referenceDocumentPath: 'data/evidence/w021_5/authoritative/wrong_file.txt' } : e);
+  const corruptCase2Manifest = { ...baseManifest, entries: corruptCase2Entries };
+  const resCase2 = validateEvidenceMatrix({ directory, manifest: corruptCase2Manifest, seedNames });
+  const outCase2 = generateEvidenceReports({ directory, manifest: corruptCase2Manifest, seedNames, positiveResults: resCase2, skipNegative: true, writeFiles: false });
+  const case2Passed = Boolean(
+    !resCase2.allPassed &&
+    outCase2.matrixJson.metadata.validationSummary.structuralValidationStatus === 'FAIL' &&
+    outCase2.matrixJson.metadata.validationSummary.sourceResolutionStatus === 'FAIL' &&
+    outCase2.matrixJson.metadata.validationSummary.gateRecommendation === 'GATE_REJECTED_VALIDATION_FAILURE' &&
+    outCase2.matrixMd.includes('Overall Validation Status:** `FAILED`')
+  );
+  cases.push({
+    caseId: 'GEN_CASE_2_SOURCE_PATH_OR_CHECKSUM_FAILURE',
+    description: 'Real report generator handles source-path or checksum failure with sourceResolutionStatus FAIL and gate rejection',
+    passed: case2Passed,
+    details: case2Passed ? 'Real generator correctly reflected source resolution failure in JSON and Markdown' : 'Real generator failed to retain source path failure'
+  });
+
+  // Case 3: A failed multi-AC candidate verification
+  const corruptCase3Entries = baseManifest.entries.map(e => e.pinCode === '500001' ? { ...e, candidateAcNumbers: [65, 999] } : e);
+  const corruptCase3Manifest = { ...baseManifest, entries: corruptCase3Entries };
+  const resCase3 = validateEvidenceMatrix({ directory, manifest: corruptCase3Manifest, seedNames });
+  const outCase3 = generateEvidenceReports({ directory, manifest: corruptCase3Manifest, seedNames, positiveResults: resCase3, skipNegative: true, writeFiles: false });
+  const case3Passed = Boolean(
+    !resCase3.allPassed &&
+    outCase3.matrixJson.metadata.validationSummary.structuralValidationStatus === 'FAIL' &&
+    outCase3.matrixJson.metadata.validationSummary.pin500001AmbiguousFailClosed === false &&
+    outCase3.matrixJson.metadata.validationSummary.gateRecommendation === 'GATE_REJECTED_VALIDATION_FAILURE'
+  );
+  cases.push({
+    caseId: 'GEN_CASE_3_FAILED_MULTI_AC_CANDIDATE_VERIFICATION',
+    description: 'Real report generator handles failed multi-AC candidate verification with pin500001AmbiguousFailClosed false and gate rejection',
+    passed: case3Passed,
+    details: case3Passed ? 'Real generator correctly reflected multi-AC verification failure' : 'Real generator failed to retain multi-AC error'
+  });
+
+  // Case 4: An incomplete inventory
+  const corruptCase4Entries = baseManifest.entries.filter(e => e.pinCode !== '500001');
+  const corruptCase4Manifest = { ...baseManifest, entries: corruptCase4Entries };
+  const resCase4 = validateEvidenceMatrix({ directory, manifest: corruptCase4Manifest, seedNames });
+  const outCase4 = generateEvidenceReports({ directory, manifest: corruptCase4Manifest, seedNames, positiveResults: resCase4, skipNegative: true, writeFiles: false });
+  const case4Passed = Boolean(
+    !resCase4.allPassed &&
+    outCase4.matrixJson.metadata.validationSummary.structuralValidationStatus === 'FAIL' &&
+    outCase4.matrixJson.metadata.validationSummary.inventoryParityVerified === false &&
+    outCase4.matrixJson.metadata.validationSummary.gateRecommendation === 'GATE_REJECTED_VALIDATION_FAILURE'
+  );
+  cases.push({
+    caseId: 'GEN_CASE_4_INCOMPLETE_INVENTORY',
+    description: 'Real report generator handles incomplete inventory parity failure with inventoryParityVerified false and gate rejection',
+    passed: case4Passed,
+    details: case4Passed ? 'Real generator correctly reflected inventory parity failure' : 'Real generator failed on incomplete inventory'
+  });
+
+  // Case 5: A manifest that incorrectly asserts evidenceClosureStatus: COMPLETE
+  const corruptCase5Manifest = { ...baseManifest, metadata: { ...baseManifest.metadata, evidenceClosureStatus: 'COMPLETE' } };
+  const resCase5 = validateEvidenceMatrix({ directory, manifest: corruptCase5Manifest, seedNames });
+  const outCase5 = generateEvidenceReports({ directory, manifest: corruptCase5Manifest, seedNames, positiveResults: resCase5, skipNegative: true, writeFiles: false });
+  const case5Passed = Boolean(
+    outCase5.matrixJson.metadata.validationSummary.evidenceClosureStatus !== 'COMPLETE' &&
+    outCase5.matrixJson.metadata.validationSummary.evidenceClosureStatus === 'CLOSURE_REJECTED_VALIDATION_FAILED'
+  );
+  cases.push({
+    caseId: 'GEN_CASE_5_MANIFEST_ASSERTING_COMPLETE_CLOSURE',
+    description: 'Real report generator enforces closure-status protection: manifest asserting COMPLETE cannot force COMPLETE status in generated report',
+    passed: case5Passed,
+    details: case5Passed ? 'Real generator enforced closure-status protection (status: CLOSURE_REJECTED_VALIDATION_FAILED, never COMPLETE)' : 'Real generator allowed unauthorized COMPLETE status'
+  });
+
+  // Case 6: A failed validation combined with a stale or forged submission-ready gate recommendation
+  const corruptCase6Entries = baseManifest.entries.map(e => e.pinCode === '500002' ? { ...e, sourceLocator: 'CORRUPTED_LOCATOR' } : e);
+  const corruptCase6Manifest = {
+    ...baseManifest,
+    entries: corruptCase6Entries,
+    metadata: {
+      ...baseManifest.metadata,
+      gateRecommendation: "SUBMIT_FOR_INDEPENDENT_STAGE_B_ADJUDICATION_WITH_DOCUMENTED_EXTERNAL_BLOCKERS"
+    }
+  };
+  const resCase6 = validateEvidenceMatrix({ directory, manifest: corruptCase6Manifest, seedNames });
+  const outCase6 = generateEvidenceReports({ directory, manifest: corruptCase6Manifest, seedNames, positiveResults: resCase6, skipNegative: true, writeFiles: false });
+  const case6Passed = Boolean(
+    !resCase6.allPassed &&
+    outCase6.matrixJson.metadata.validationSummary.gateRecommendation === 'GATE_REJECTED_VALIDATION_FAILURE' &&
+    outCase6.matrixMd.includes('GATE_REJECTED_VALIDATION_FAILURE') &&
+    !outCase6.matrixMd.includes('SUBMIT_FOR_INDEPENDENT_STAGE_B_ADJUDICATION')
+  );
+  cases.push({
+    caseId: 'GEN_CASE_6_FORGED_GATE_RECOMMENDATION_ON_FAILURE',
+    description: 'Real report generator prevents manifest forged gate recommendation from overriding validation failure outcome',
+    passed: case6Passed,
+    details: case6Passed ? 'Real generator correctly overrode forged recommendation with GATE_REJECTED_VALIDATION_FAILURE' : 'Real generator accepted forged recommendation'
+  });
+
+  // Case 7: A report-generation run in which a prior generated report contains PASS values but current validation fails (overwrite guarantee)
+  const tempDir = path.resolve(REPO_ROOT, 'scratch', `test_report_overwrite_${Date.now()}`);
+  fs.mkdirSync(tempDir, { recursive: true });
+  const priorPassJson = {
+    metadata: {
+      validationSummary: {
+        structuralValidationStatus: "PASS",
+        gateRecommendation: "SUBMIT_FOR_INDEPENDENT_STAGE_B_ADJUDICATION_WITH_DOCUMENTED_EXTERNAL_BLOCKERS",
+        allChecksPassed: true
+      }
+    }
+  };
+  fs.writeFileSync(path.resolve(tempDir, 'w021_5_pin_independent_evidence_matrix.json'), JSON.stringify(priorPassJson, null, 2), 'utf8');
+  fs.writeFileSync(path.resolve(tempDir, 'w021_5_pin_independent_evidence_matrix.md'), '# Prior PASS Report\nOverall Validation Status: `100% PASS`\n', 'utf8');
+
+  // Now execute real generator into tempDir with a failing validation
+  const corruptCase7Entries = baseManifest.entries.map(e => e.pinCode === '500002' ? { ...e, sourceLocator: 'CORRUPTED_LOCATOR_OVERWRITE_TEST' } : e);
+  const corruptCase7Manifest = { ...baseManifest, entries: corruptCase7Entries };
+  const resCase7 = validateEvidenceMatrix({ directory, manifest: corruptCase7Manifest, seedNames });
+  generateEvidenceReports({ directory, manifest: corruptCase7Manifest, seedNames, positiveResults: resCase7, skipNegative: true, reportDir: tempDir, writeFiles: true });
+
+  const overwrittenJson = JSON.parse(fs.readFileSync(path.resolve(tempDir, 'w021_5_pin_independent_evidence_matrix.json'), 'utf8'));
+  const overwrittenMd = fs.readFileSync(path.resolve(tempDir, 'w021_5_pin_independent_evidence_matrix.md'), 'utf8');
+
+  // Clean up tempDir
+  fs.rmSync(tempDir, { recursive: true, force: true });
+
+  const case7Passed = Boolean(
+    overwrittenJson.metadata.validationSummary.structuralValidationStatus === 'FAIL' &&
+    overwrittenJson.metadata.validationSummary.gateRecommendation === 'GATE_REJECTED_VALIDATION_FAILURE' &&
+    overwrittenMd.includes('Overall Validation Status:** `FAILED`') &&
+    !overwrittenMd.includes('100% PASS')
+  );
+  cases.push({
+    caseId: 'GEN_CASE_7_OVERWRITE_PRIOR_PASS_REPORT_ON_FAILURE',
+    description: 'Real report generator overwrites any prior PASS report on disk with FAIL report when validation fails, leaving no stale PASS output',
+    passed: case7Passed,
+    details: case7Passed ? 'Real generator successfully overwritten prior PASS report on disk with fail-closed output' : 'Failed to overwrite prior report'
+  });
+
+  // Case 8: Report-generation error or unavailable source artifact
+  const corruptCase8Entries = baseManifest.entries.map(e => e.pinCode === '500002' ? { ...e, referenceDocumentPath: 'data/evidence/w021_5/authoritative/non_existent_file_artifact.txt' } : e);
+  const corruptCase8Manifest = { ...baseManifest, entries: corruptCase8Entries };
+  const resCase8 = validateEvidenceMatrix({ directory, manifest: corruptCase8Manifest, seedNames });
+  const outCase8 = generateEvidenceReports({ directory, manifest: corruptCase8Manifest, seedNames, positiveResults: resCase8, skipNegative: true, writeFiles: false });
+  const case8Passed = Boolean(
+    !resCase8.allPassed &&
+    outCase8.matrixJson.metadata.validationSummary.structuralValidationStatus === 'FAIL' &&
+    outCase8.matrixJson.metadata.validationSummary.sourceResolutionStatus === 'FAIL' &&
+    outCase8.matrixJson.metadata.validationSummary.gateRecommendation === 'GATE_REJECTED_VALIDATION_FAILURE'
+  );
+  cases.push({
+    caseId: 'GEN_CASE_8_UNAVAILABLE_SOURCE_ARTIFACT',
+    description: 'Real report generator handles unavailable source artifact with sourceResolutionStatus FAIL and gate rejection',
+    passed: case8Passed,
+    details: case8Passed ? 'Real generator correctly handled unavailable source artifact fail-closed' : 'Real generator failed on unavailable artifact'
+  });
+
+  const allCasesPassed = cases.every(c => c.passed);
+  return { allCasesPassed, cases };
 }
 
 module.exports = {
@@ -1930,4 +2252,6 @@ module.exports = {
   runNegativeValidationSuite,
   runValidation,
   generateReports,
+  generateEvidenceReports,
+  runReportGeneratorFailureBattery,
 };

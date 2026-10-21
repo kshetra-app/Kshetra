@@ -1,5 +1,5 @@
 /**
- * KSHETRA W021.5 — CTO DIRECTIVE 130 INDEPENDENT PIN EVIDENCE MANIFEST BUILDER
+ * KSHETRA W021.5 — CTO DIRECTIVE 131 INDEPENDENT PIN EVIDENCE MANIFEST BUILDER
  * Generates data/evidence/w021_5/pin_independent_evidence_manifest.json
  * 
  * Binds every claim to an actual resolved source artifact checked into the repository:
@@ -17,8 +17,8 @@
  * 3. AMBIGUOUS_MULTI_CONSTITUENCY: 4 (500001, 500028, 500034, 500056 fail-closed multi-AC sets)
  * 4. UNVERIFIED_OR_EXTERNALLY_BLOCKED: 0 maintained (unmapped pins fail-closed via runtime lookup)
  * 
- * Workstream A, B, C, D, E, F, G (CTO Directive 130):
- * - Binds all 36 claims to resolved in-repo source extract files with live SHA-256 digests.
+ * Workstream A, B, C, D, E, F, G (CTO Directive 131):
+ * - Reconciles all report claims against validated manifest and source extracts (PIN 500001, 500028, 500056).
  * - Enforces single source-resolution chain: declared path -> resolved file -> live SHA-256 -> parsed entry -> extent.
  * - Extracts exact entry numbers, names, and administrative extents from source files.
  * - Reconciles exact locators and administrative extents (specifically PIN 500053 Wards 16-18, PIN 500064 Ward 19 & 18 Part).
@@ -26,7 +26,7 @@
  * - Reconciles the eight reported corrections across AP (5) and TS (3) with complete source-claim records.
  * - Explicitly records Kurnool PIN 518001 as existing provisional record, NOT a correction.
  * - Distinguishes transcription fidelity (pending physical gazette audit) from artifact checksum integrity.
- * - Reports 11 distinct orthogonal evidence dimensions.
+ * - Reports 12 distinct orthogonal evidence dimensions.
  */
 
 import fs from 'fs';
@@ -1088,8 +1088,8 @@ export function buildManifest() {
 
   const manifestData = {
     metadata: {
-      directive: "CTO Directive 130",
-      workstream: "Workstream A, B, C, D, E, F, G — Exact Locator Extent Integrity, Source-Path Binding, Genuine Negative Tests, and Stage B Gate Correctness",
+      directive: "CTO Directive 131",
+      workstream: "Workstream A, B, C, D, E, F, G — Report-to-Evidence Concordance, Genuine Report-Generator Anti-Override Testing, and Final Stage B Evidence Integrity",
       governingFramework: "Master Execution Framework Amendment v1.6 / Rule IV-001 Non-Self-Acceptance",
       stageBoundary: "Stage B Gate — STOP",
       formalAcceptance: "0.0% — PENDING INDEPENDENT ADJUDICATION",

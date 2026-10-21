@@ -1,18 +1,19 @@
 # KSHETRA W021.5 — INDEPENDENT 36-PIN EVIDENCE MATRIX & DATA-TRUTH REPORT
-**Directive:** CTO Directive 130 (Workstreams A, B, C, D, E, F, G)  
+**Directive:** CTO Directive 131 (Workstreams A, B, C, D, E, F, G)  
 **Governing Framework:** Master Execution Framework Amendment v1.6 / Rule IV-001 Non-Self-Acceptance  
 **Stage Boundary:** STOP at Stage B Gate (Stages C–I Strictly Unauthorized)  
 **Formal Acceptance:** Strictly `0.0% — PENDING INDEPENDENT ADJUDICATION`  
-**Generated At:** `2026-10-21T12:27:52.950Z`  
+**Generated At:** `2026-10-21T18:13:13.396Z`  
 **Total Curated Entries Audited:** `36`  
 **Overall Validation Status:** `100% PASS`  
 **Gate Recommendation:** `SUBMIT_FOR_INDEPENDENT_STAGE_B_ADJUDICATION_WITH_DOCUMENTED_EXTERNAL_BLOCKERS`  
+**Evidence Closure Status:** `PENDING_EXTERNAL_OFFICIAL_GAZETTE_AND_GIS_DELIVERY_BEAT_EVIDENCE`  
 
 ---
 
 ## 1. Executive Summary & Honest Evidence Independence Scope (Workstreams A & F)
 
-Under CTO Directive 130, all 36 postal lookup entries in `CURATED_PROVISIONAL_PIN_DIRECTORY` have been bound to actual resolved source extract files checked into git with bitwise SHA-256 integrity and exact administrative-unit extents verified directly against Delimitation Order 2008 Table B:
+Under CTO Directive 131, all 36 postal lookup entries in `CURATED_PROVISIONAL_PIN_DIRECTORY` have been bound to actual resolved source extract files checked into git with bitwise SHA-256 integrity and exact administrative-unit extents verified directly against Delimitation Order 2008 Table B:
 
 ### Critical Evidentiary Independence & Boundary Findings
 1. **Source-Bound Evidence Verification & Single Resolution Chain:**
@@ -23,7 +24,11 @@ Under CTO Directive 130, all 36 postal lookup entries in `CURATED_PROVISIONAL_PI
 2. **Exact Locator & Administrative Extent Verification:**
    Every single entry's `sourceLocator` specifies the exact Schedule, Table, Entry Number, Constituency Name, and full statutory extent. PIN 500053 is explicitly reconciled with `Ward No. 16 to 18` (eliminating informal `Ward 15 part`); PIN 500064 is explicitly reconciled with `Ward No. 19 and Ward No. 18 (Part) Block No. 4 to 8` (eliminating informal `Ward 12`).
 3. **Multi-AC Candidate Extent Verification:**
-   All 4 ambiguous multi-AC entries (`500001`, `500028`, `500034`, `500056`) verify candidate numbers, names, and administrative extents against the resolved source file while remaining strictly fail-closed with `canonicalAcNo: undefined`.
+   All 4 ambiguous multi-AC entries (`500001`, `500028`, `500034`, `500056`) verify candidate numbers, names, and administrative extents against the resolved source file while remaining strictly fail-closed with `canonicalAcNo: undefined`:
+   - `500001`: Candidates `[65, 63, 58]` (Goshamahal, Nampally, Malakpet).
+   - `500028`: Candidates `[64, 63]` (Karwan, Nampally).
+   - `500034`: Candidates `[60, 61]` (Khairatabad, Jubilee Hills).
+   - `500056`: Candidates `[71, 46]` (Secunderabad Cantonment, Kukatpally).
 4. **Structural Separation vs. Geographic Proof:**
    The evidence manifest (`pin_independent_evidence_manifest.json`) is maintained separately from runtime code. While this establishes **structural separation**, it does **NOT** independently establish the geographic truth of postal delivery beat containment.
 5. **Statutory Delimitation Scope (ECI Delimitation Orders 2008):**
@@ -88,7 +93,7 @@ The validator employs a genuine negative test harness that feeds deliberately co
 | `NEG_SCENARIO_21_UNVERIFIED_GAZETTE_AUTHENTICITY_CLAIM` | Manifest fixture claiming AUTHORITATIVELY_VERIFIED_OFFICIAL_GAZETTE without physical gazette audit is rejected by validator | `allPassed === false` & Check Fails | Correctly rejected premature gazette authenticity claim (CHECK_6 failed) | **PASS (REJECTED)** |
 | `NEG_SCENARIO_22_EXTERNAL_SOURCE_FALSELY_CLAIMED_INSPECTED` | Manifest fixture claiming external source status for referenceDocumentPath is rejected by validator | `allPassed === false` & Check Fails | Correctly rejected external path without checked-in extract (CHECK_6 failed) | **PASS (REJECTED)** |
 | `NEG_SCENARIO_23_FALSE_EVIDENCE_CLOSURE_CLAIM` | Manifest fixture falsely claiming evidenceClosureStatus === "COMPLETE" is rejected by validator | `allPassed === false` & Check Fails | Correctly rejected false evidence closure claim (CHECK_10 failed) | **PASS (REJECTED)** |
-| `NEG_SCENARIO_24_FAILED_CHECK_CANNOT_RENDER_PASS` | Report generator ensures a failed validation check cannot be represented as **PASS** in Markdown | `allPassed === false` & Check Fails | Correctly rejected incorrect **PASS** rendering for failed check | **PASS (REJECTED)** |
+| `NEG_SCENARIO_24_FAILED_CHECK_CANNOT_RENDER_PASS` | Real report generator ensures a failed validation check renders **FAIL** and overall status renders FAILED in Markdown | `allPassed === false` & Check Fails | Real generator correctly rendered **FAIL** and rejected **PASS** in Markdown | **PASS (REJECTED)** |
 | `NEG_SCENARIO_25_CORRECTION_SUBSTANTIVE_CLAIM_FAILURE` | Correction fixture passing structural checks but marked UNSUPPORTED_BY_INSPECTED_SOURCE is rejected by validator | `allPassed === false` & Check Fails | Correctly rejected correction with unsupported claim (CHECK_4/CHECK_8 failed) | **PASS (REJECTED)** |
 | `NEG_SCENARIO_26_INCONSISTENT_GATE_RECOMMENDATION` | Manifest fixture with inconsistent gate recommendation during validation failure is rejected by validator | `allPassed === false` & Check Fails | Correctly rejected inconsistent gate recommendation (CHECK_10 failed) | **PASS (REJECTED)** |
 | `NEG_SCENARIO_27_LOCATOR_EXTENT_MISMATCH` | Manifest entry with contradictory locator extent (PIN 500053 claiming GHMC Ward 15 part instead of Wards 16-18) is rejected by validator | `allPassed === false` & Check Fails | Correctly rejected locator-extent mismatch (CHECK_7 failed) | **PASS (REJECTED)** |
@@ -102,16 +107,21 @@ The validator employs a genuine negative test harness that feeds deliberately co
 | `NEG_SCENARIO_35_UNSUPPORTED_POSTAL_GEOGRAPHY_ASSERTION` | Manifest entry whose source passage asserts postal delivery beat spatial containment is rejected by validator | `allPassed === false` & Check Fails | Correctly rejected unsupported postal geography claim in passage (CHECK_8 failed) | **PASS (REJECTED)** |
 | `NEG_SCENARIO_36_CORRECTION_SOURCE_UNSUPPORTED` | Correction entry where seed agrees but source conclusion A is unsupported is rejected by validator | `allPassed === false` & Check Fails | Correctly rejected unsupported correction source claim (CHECK_4 failed) | **PASS (REJECTED)** |
 | `NEG_SCENARIO_37_VALIDATOR_FAILURE_WITH_PASS_RECOMMENDATION` | Validator failure producing adjudication-ready recommendation is rejected by validator | `allPassed === false` & Check Fails | Correctly rejected inconsistent gate recommendation during failure (CHECK_10 failed) | **PASS (REJECTED)** |
-| `NEG_SCENARIO_38_FAILED_SOURCE_RESULT_LOST_IN_REPORT_REGENERATION` | Report generator anti-override test proves that failed source verification result is retained as FAIL and GATE_REJECTED | `allPassed === false` & Check Fails | Correctly retained failed status and gate rejection in report summary | **PASS (REJECTED)** |
+| `NEG_SCENARIO_38_FAILED_SOURCE_RESULT_LOST_IN_REPORT_REGENERATION` | Real report generator anti-override test proves that failed validation is retained as FAIL, GATE_REJECTED, and CLOSURE_REJECTED in JSON and Markdown | `allPassed === false` & Check Fails | Real generator correctly retained FAIL, GATE_REJECTED, and CLOSURE_REJECTED in both JSON and Markdown | **PASS (REJECTED)** |
 
 ---
 
-## 4. Resolution of PIN 500001 (Hyderabad GPO)
+## 4. Resolution of Multi-AC Ambiguous Records (PIN 500001, 500028, 500034, 500056)
 
-- **Candidate Set:** `[65, 63, 58]` (Goshamahal, Nampally, Malakpet)
-- **Canonical AC Number:** Strictly `undefined` (Fail-Closed)
-- **Status:** `AMBIGUOUS_MULTI_CONSTITUENCY` / `DOCUMENTED_MULTI_AC_AMBIGUITY`
-- **Independent Finding:** The Hyderabad General Post Office (GPO) located at Abids serves a dense commercial delivery beat spanning GHMC Ward 78 (Gunfoundry, Goshamahal AC 65), Ward 10/11 parts (Nampally AC 63), and Ward 3/Musi frontage (Malakpet AC 58). Because the postal delivery routes cross these ward lines, establishing a single constituency containment is factually impossible without address-level geocoding. The fail-closed multi-candidate representation is strictly preserved.
+All 4 ambiguous multi-AC entries fail closed with `canonicalAcNo: undefined` and have candidate sets fully reconciled with statutory Table B:
+
+### Multi-AC Ambiguity Register
+| PIN | State | Locality | Candidate ACs | Parsed Candidate Names | Candidate Extents Verified Against Source Extract | Canonical AC Assignment |
+|:---:|:---:|:---|:---:|:---|:---|:---:|
+| `500001` | TS | Hyderabad GPO / Abids / Koti / Gunfoundry | `[65, 63, 58]` | Goshamahal, Nampally, Malakpet | **AC 65 (Goshamahal)**: Hyderabad (M.Corp.) (Part) - Ward No. 4, 14, 15 and 21.<br>**AC 63 (Nampally)**: Hyderabad (M.Corp.) (Part) - Ward No. 10 and 11, Ward No. 12 (Part) Block No. 1 to 6.<br>**AC 58 (Malakpet)**: Hyderabad (M.Corp.) (Part) - Ward No. 16 (Part) Block No. 1 and 2, Ward No. 17. | `undefined` (Fail-closed) |
+| `500028` | TS | Mehdipatnam / Gudimalkapur / Murad Nagar | `[64, 63]` | Karwan, Nampally | **AC 64 (Karwan)**: Hyderabad (M.Corp.) (Part) - Ward No. 9 and 13 (Part) Block No. 1 to 3.<br>**AC 63 (Nampally)**: Hyderabad (M.Corp.) (Part) - Ward No. 10 and 11, Ward No. 12 (Part) Block No. 1 to 6. | `undefined` (Fail-closed) |
+| `500034` | TS | Banjara Hills / Somajiguda / Punjagutta | `[60, 61]` | Khairatabad, Jubilee Hills | **AC 60 (Khairatabad)**: Hyderabad (M.Corp.) (Part) - Ward No. 6.<br>**AC 61 (Jubilee Hills)**: Hyderabad (M.Corp.) (Part) - Ward No. 8 (Part) Block No. 1 to 3. | `undefined` (Fail-closed) |
+| `500056` | TS | Bowenpally / Hasmathpet / Manovikas Nagar | `[71, 46]` | Secunderabad Cantonment, Kukatpally | **AC 71 (Secunderabad Cantonment)**: Hyderabad (M.Corp.) (Part) - Ward No. 24, Secunderabad Cantonment Board.<br>**AC 46 (Kukatpally)**: Balanagar Mandal (Part), Kukatpally (M) (Part) - Ward No. 1 to 4. | `undefined` (Fail-closed) |
 
 ---
 
@@ -205,7 +215,7 @@ All 36 entries adhere to the 12 orthogonal evidence dimensions:
 
 ## 8. Evidence Resolution & External Blocker Disclosures (Workstream G)
 
-In compliance with Master Execution Framework Amendment v1.6 and CTO Directive 130, the following evidence boundaries and blockers are formally documented:
+In compliance with Master Execution Framework Amendment v1.6 and CTO Directive 131, the following evidence boundaries and blockers are formally documented:
 1. **In-Repository Extract Byte Integrity (`BITWISE_IN_REPO_VERIFIED`):** All checked-in source extract files match their recorded SHA-256 cryptographic digests bitwise.
 2. **External Statutory Publication Status (`EXTERNAL_STATUTORY_PUBLICATION_NOT_CHECKED_IN`):** Full official gazette scans are external publications not stored in git.
 3. **Transcription Fidelity (`UNVERIFIED_PENDING_PHYSICAL_GAZETTE_COMPARISON`):** Independent physical audit against printed gazette remains pending.

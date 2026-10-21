@@ -1,6 +1,6 @@
 /**
- * KSHETRA W021.5 — CTO DIRECTIVE 129 INDEPENDENT PIN EVIDENCE VALIDATOR (ES MODULE WRAPPER)
- * Re-exports the canonical validation engine and negative test battery from verify_pin_evidence_matrix.cjs
+ * KSHETRA W021.5 — CTO DIRECTIVE 131 INDEPENDENT PIN EVIDENCE VALIDATOR (ES MODULE WRAPPER)
+ * Re-exports the canonical validation engine, negative test battery, and report-generator failure battery
  */
 
 import * as validator from './verify_pin_evidence_matrix.cjs';
@@ -22,14 +22,22 @@ export const {
   runNegativeValidationSuite,
   runValidation,
   generateReports,
+  generateEvidenceReports,
+  runReportGeneratorFailureBattery,
 } = validator;
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
-  const results = generateReports();
+  const { results } = generateEvidenceReports();
   if (!results.allPassed) {
     console.error('Validation failed with errors:', results.errors);
     process.exit(1);
-  } else {
-    console.log(`All validation checks PASSED (Positive: ${results.positivePassed}, Negative Battery: ${results.negativePassed}).`);
   }
+
+  const battery = runReportGeneratorFailureBattery();
+  if (!battery.allCasesPassed) {
+    console.error('Report generator failure battery failed:', battery.cases.filter(c => !c.passed));
+    process.exit(1);
+  }
+
+  console.log(`All validation checks PASSED (Positive: ${results.positivePassed}, Negative Battery: ${results.negativePassed}, Report Generator Failure Battery: 8/8 passed).`);
 }

@@ -1,11 +1,11 @@
 {
   "metadata": {
-    "directive": "CTO Directive 130",
-    "workstream": "Workstream A, B, C, D, E, F, G — Exact Locator Extent Integrity, Source-Path Binding, Genuine Negative Tests, and Stage B Gate Correctness",
+    "directive": "CTO Directive 131",
+    "workstream": "Workstream A, B, C, D, E, F, G — Report-to-Evidence Concordance, Genuine Report-Generator Anti-Override Testing, and Final Stage B Evidence Integrity",
     "governingFramework": "Master Execution Framework Amendment v1.6 / Rule IV-001 Non-Self-Acceptance",
     "stageBoundary": "Stage B Gate — STOP",
     "formalAcceptance": "0.0% — PENDING INDEPENDENT ADJUDICATION",
-    "generatedAt": "2026-10-21T12:27:52.942Z",
+    "generatedAt": "2026-10-21T18:13:13.396Z",
     "evidentiaryIndependenceScope": {
       "structuralSeparation": "Manifest is maintained in a standalone JSON file and build script separate from runtime implementation array.",
       "geographicProofLimitation": "Structural separation does NOT constitute independent geographic proof of postal delivery beat containment.",
@@ -487,9 +487,9 @@
       },
       {
         "checkId": "NEG_SCENARIO_24_FAILED_CHECK_CANNOT_RENDER_PASS",
-        "description": "Report generator ensures a failed validation check cannot be represented as **PASS** in Markdown",
+        "description": "Real report generator ensures a failed validation check renders **FAIL** and overall status renders FAILED in Markdown",
         "passed": true,
-        "details": "Correctly rejected incorrect **PASS** rendering for failed check"
+        "details": "Real generator correctly rendered **FAIL** and rejected **PASS** in Markdown"
       },
       {
         "checkId": "NEG_SCENARIO_25_CORRECTION_SUBSTANTIVE_CLAIM_FAILURE",
@@ -571,9 +571,9 @@
       },
       {
         "checkId": "NEG_SCENARIO_38_FAILED_SOURCE_RESULT_LOST_IN_REPORT_REGENERATION",
-        "description": "Report generator anti-override test proves that failed source verification result is retained as FAIL and GATE_REJECTED",
+        "description": "Real report generator anti-override test proves that failed validation is retained as FAIL, GATE_REJECTED, and CLOSURE_REJECTED in JSON and Markdown",
         "passed": true,
-        "details": "Correctly retained failed status and gate rejection in report summary"
+        "details": "Real generator correctly retained FAIL, GATE_REJECTED, and CLOSURE_REJECTED in both JSON and Markdown"
       }
     ]
   },

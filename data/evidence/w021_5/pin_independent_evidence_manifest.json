@@ -1,12 +1,12 @@
 {
   "metadata": {
-    "directive": "CTO Directive 130",
-    "workstream": "Workstream A, B, C, D, E, F, G — Exact Locator Extent Integrity, Source-Path Binding, Genuine Negative Tests, and Stage B Gate Correctness",
+    "directive": "CTO Directive 131",
+    "workstream": "Workstream A, B, C, D, E, F, G — Report-to-Evidence Concordance, Genuine Report-Generator Anti-Override Testing, and Final Stage B Evidence Integrity",
     "governingFramework": "Master Execution Framework Amendment v1.6 / Rule IV-001 Non-Self-Acceptance",
     "stageBoundary": "Stage B Gate — STOP",
     "formalAcceptance": "0.0% — PENDING INDEPENDENT ADJUDICATION",
     "evidenceClosureStatus": "PENDING_EXTERNAL_OFFICIAL_GAZETTE_AND_GIS_DELIVERY_BEAT_EVIDENCE",
-    "generatedAt": "2026-10-21T12:05:16.905Z",
+    "generatedAt": "2026-10-21T17:52:06.349Z",
     "totalEntriesAudited": 36,
     "confidenceTaxonomySummary": {
       "authoritativelyVerifiedCount": 0,

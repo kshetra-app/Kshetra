@@ -2987,6 +2987,29 @@
   6. **Database Boundary:** Production (`ehfafcnimmjusyvplbah`) and Staging (`fkpigozcqnmcvofuksar`) strictly `AIR_GAPPED_UNEXECUTED` (0 queries, 0 mutations).
   7. **Formal CTO Acceptance:** Strictly **`0.0% — PENDING INDEPENDENT ADJUDICATION`** under Rule IV-001.
 
+---
+
+### DEC-131: CTO DIRECTIVE 131 — REPORT-TO-EVIDENCE CONCORDANCE, GENUINE REPORT-GENERATOR ANTI-OVERRIDE TESTING, AND FINAL STAGE B EVIDENCE INTEGRITY
+- **Date:** 2026-10-21
+- **Status:** IMPLEMENTATION COMPLETE / SUBMITTED FOR INDEPENDENT ADJUDICATION
+- **Authority:** CTO Directive 131 / Master Execution Framework Amendment v1.6 / Rule IV-001 Non-Self-Acceptance
+- **Context:** Following independent audit of CTO Directive 130, residual evidence-integrity defects were identified and systematically resolved:
+  1. Workstream A — Report-to-Evidence Concordance & Single Source of Truth: Audited all 36 records across implementation report, Markdown matrix, JSON matrix, manifest, validator, and source extracts. Reconciled all multi-AC discrepancies from D130 implementation report: PIN 500001 AC 65 is Goshamahal (`Ward No. 4, 14, 15 and 21`, not Karwan); PIN 500028 candidate ACs are `[64, 63]` (Karwan and Nampally, not `[65, 63]`); PIN 500056 candidate ACs are `[71, 46]` (Secunderabad Cantonment and Kukatpally, not `[67, 69]`). Programmatically generated Markdown report tables directly from the validated manifest and checked-in Table B source extracts, eliminating manual divergence.
+  2. Workstream B — Genuine Report-Generator Anti-Override Testing: Refactored report generator into `generateEvidenceReports(options)` and eliminated all manual mock summary objects from anti-override tests. Implemented dedicated 8-case report-generator failure battery (`runReportGeneratorFailureBattery`) executing the real generator against: (1) failed locator-extent check, (2) source-path or checksum failure, (3) failed multi-AC candidate verification, (4) incomplete inventory, (5) manifest asserting `evidenceClosureStatus: COMPLETE`, (6) failed validation with forged submission-ready gate recommendation, (7) report generation run where prior report contains PASS values but current validation fails (overwrite guarantee), and (8) unavailable source artifact.
+  3. Workstream B.3 — Closure-Status Protection: Enforced generator-level closure status protection: if validation fails, generator strictly sets `CLOSURE_REJECTED_VALIDATION_FAILED`; if manifest asserts `COMPLETE`, generator overrides and rejects it fail-closed, setting partial closure status with external blockers explicit. Under no execution path can generated reports claim `COMPLETE` while full gazette scans and postal GIS polygons remain unverified.
+  4. Workstream B.4 — Output Integrity & Overwrite Guarantee: Enforced deterministic atomic file writes (`atomicWriteFileSync`) and file overwrite guarantee: when validation fails, any prior report on disk is immediately and atomically overwritten with failing status and gate rejection, leaving zero stale PASS output.
+  5. Workstream C — Strengthened Positive & Negative Test Assertions: Retained all 38 negative scenarios with anti-false-positive check-specific assertions. Updated Scenario 24 and Scenario 38 to invoke real report-generator functions. Added dedicated CTO Directive 131 Jest test suite covering concordance, all 8 generator failure cases, closure protection, overwrite guarantees, and 8 corrections.
+  6. Workstream D & E — Reconciled Artifacts & Historical Accounting: Regenerated `w021_5_pin_independent_evidence_matrix.json` and `.md` with CTO Directive 131 metadata. Preserved historical 8 corrections (TS: 500002 -> 66, 500053 -> 67, 500064 -> 69; AP: 520001 -> 79, 520002 -> 80, 530001 -> 22, 530002 -> 22, 517501 -> 167) and Kurnool 518001 (AC 137) baseline.
+  7. Workstream F & G — Governance Records & Evidence Integrity: Updated `DEFECT_REGISTER.md` (Section 8 disposition table), `DECISION_LOG.md` (DEC-131), `reports/w021_5_execution_ledger.json`, and authored `reports/W021.5-CTO-DIRECTIVE-131-IMPLEMENTATION-REPORT.md`.
+- **Architectural & Governance Determinations:**
+  1. **Complete Report-to-Evidence Concordance:** All 36 records in the implementation report, evidence matrices, and manifest agree 100% with statutory Table B extracts.
+  2. **Real Report-Generator Anti-Override Execution:** All anti-override tests invoke the real report-generator function, with 0 mock summary objects.
+  3. **Closure-Status Protection:** Reports cannot claim `COMPLETE` closure status while external official gazette scans and postal GIS delivery beat polygons remain uninspected.
+  4. **Output Integrity:** Prior PASS reports on disk are cleanly overwritten with failing reports upon validation failure.
+  5. **Stage B Boundary:** Strict STOP at Stage B Gate; Stages C through I remain strictly **UNAUTHORIZED**.
+  6. **Database Boundary:** Production (`ehfafcnimmjusyvplbah`) and Staging (`fkpigozcqnmcvofuksar`) strictly `AIR_GAPPED_UNEXECUTED` (0 queries, 0 mutations).
+  7. **Formal CTO Acceptance:** Strictly **`0.0% — PENDING INDEPENDENT ADJUDICATION`** under Rule IV-001.
+
 
 
 
