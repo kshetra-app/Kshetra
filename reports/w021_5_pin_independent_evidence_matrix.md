@@ -1,16 +1,18 @@
 # KSHETRA W021.5 — INDEPENDENT 36-PIN EVIDENCE MATRIX & DATA-TRUTH REPORT
-**Directive:** CTO Directive 126 (Corrective Actions A, B, C, D, E)  
+**Directive:** CTO Directive 127 (Workstreams A, B, C, D, E, F, G)  
 **Governing Framework:** Master Execution Framework Amendment v1.6 / Rule IV-001 Non-Self-Acceptance  
 **Stage Boundary:** STOP at Stage B Gate (Stages C–I Strictly Unauthorized)  
 **Formal Acceptance:** Strictly `0.0% — PENDING INDEPENDENT ADJUDICATION`  
-**Generated At:** `2026-10-21T07:03:23.434Z`  
+**Generated At:** `2026-10-21T07:29:47.672Z`  
 **Total Curated Entries Audited:** `36`  
+**Overall Validation Status:** `100% PASS`  
+**Gate Recommendation:** `SUBMIT_FOR_INDEPENDENT_STAGE_B_ADJUDICATION`  
 
 ---
 
-## 1. Executive Summary & Honest Evidence Independence Scope (Directive 126 Action A)
+## 1. Executive Summary & Honest Evidence Independence Scope (Workstream A & F)
 
-Under CTO Directive 126, all 36 postal lookup entries in `CURATED_PROVISIONAL_PIN_DIRECTORY` have been audited with strict truth-in-engineering disclosures regarding what the evidence tooling actually proves:
+Under CTO Directive 127, all 36 postal lookup entries in `CURATED_PROVISIONAL_PIN_DIRECTORY` have been audited with strict truth-in-engineering disclosures regarding what the evidence tooling actually proves:
 
 ### Critical Evidentiary Independence Finding
 1. **Structural Separation vs. Geographic Proof:**
@@ -19,7 +21,7 @@ Under CTO Directive 126, all 36 postal lookup entries in `CURATED_PROVISIONAL_PI
    ECI Delimitation Orders define assembly constituencies strictly by **administrative territorial units**: Municipal Corporations, Municipal Wards, Mandals, and Revenue Villages. They do **not** define or reference Department of Posts (DoP) 6-digit PIN codes.
 3. **Postal Beat Status:**
    A PIN code is an operational mail routing beat created by India Post. No statutory 1:1 PIN-to-AC delimitation exists under Indian electoral law. Spatial containment requires statutory GIS delivery beat boundary polygons, which are not published by India Post.
-4. **Taxonomy Enforcement:**
+4. **Complete Mutually Exclusive Taxonomy Enforcement (Workstream A):**
    - **Authoritatively Verified (`0`):** Zero PIN codes claim authoritative status.
    - **Provisionally Approximated (`32`):** Single-AC mappings are provisional approximations based on municipal ward concordance or post office locality centroids.
    - **Ambiguous Multi-Constituency (`4`):** Dense urban delivery zones spanning &ge;2 constituencies (`500001`, `500028`, `500034`, `500056`) fail closed with `canonicalAcNo: undefined` and documented candidate sets.
@@ -27,21 +29,28 @@ Under CTO Directive 126, all 36 postal lookup entries in `CURATED_PROVISIONAL_PI
 
 ---
 
-## 2. Independent Positive Validation Checks
+## 2. Independent Positive Validation Checks (Workstream B & D)
+
+All validation outcomes and summary flags are computed dynamically at runtime with zero hardcoded booleans:
 
 | Check ID | Description | Status | Details |
 |---|---|---|---|
 | `CHECK_1_EXACT_INVENTORY_PARITY` | Directory and independent evidence manifest have exact 36-entry inventory parity with zero duplicate PINs | **PASS** | Directory: 36, Manifest: 36, Duplicates: 0 |
 | `CHECK_2_MULTI_AC_FAIL_CLOSED_AMBIGUITY` | All 4 multi-AC records fail closed (canonicalAcNo undefined, candidates >= 2, status AMBIGUOUS_MULTI_CONSTITUENCY) | **PASS** | Verified PINs: 500001, 500028, 500034, 500056 |
-| `CHECK_3_PROVISIONAL_CLASSIFICATION_INTEGRITY` | Provisional single-AC entries strictly classified as PROVISIONALLY_APPROXIMATED; zero false authoritative claims | **PASS** | Authoritative Count: 0 (expected 0) |
-| `CHECK_4_EIGHT_AC_CORRECTIONS_VERIFIED` | All 8 reported AC corrections independently verified for constituency name & number while retaining PROVISIONALLY_APPROXIMATED | **PASS** | Verified 8 corrections strictly across AP (5) and TS (3); Kurnool 137 verified as existing single-AC record |
-| `CHECK_5_DOCUMENTARY_TRACEABILITY_FIELDS` | All 36 entries possess complete traceable source locators, dates, inspection status, propositions, and uncertainty disclosures | **PASS** | All 15 required documentary fields populated on all 36 entries |
+| `CHECK_3_TAXONOMY_ENFORCEMENT_AND_DISTRIBUTION` | Enforces complete 4-tier mutually exclusive taxonomy: 32 provisional, 4 ambiguous, 0 authoritative, 0 unverified | **PASS** | Provisional: 32/32, Ambiguous: 4/4, Authoritative: 0/0, Unverified: 0/0 |
+| `CHECK_4_EIGHT_AC_CORRECTIONS_VERIFIED` | All 8 reported AC corrections independently verified for constituency name & number while retaining PROVISIONALLY_APPROXIMATED | **PASS** | Verified 8 corrections strictly across AP (5) and TS (3); Kurnool 137 verified as existing single-AC provisional record |
+| `CHECK_5_DOCUMENTARY_FIELD_COMPLETENESS` | All 36 entries possess all 15 required documentary metadata fields as non-empty strings | **PASS** | 15 required fields validated across all 36 entries |
+| `CHECK_6_SOURCE_RESOLUTION` | Referenced statutory source dossiers exist on disk and reference documents resolve to authorized Delimitation Orders | **PASS** | Resolved Schedule II dossier and Schedule XXXI extract; verified referenceDocument across 36 entries |
+| `CHECK_7_LOCATOR_RESOLUTION` | Documentary locators identify specific Schedule, Table, and Entry / Ward coordinates in Delimitation Order 2008 | **PASS** | Locators resolved across Schedule XXXI Table B (TS) and Schedule II Table B (AP) |
+| `CHECK_8_CLAIM_SUPPORT` | Cited passages strictly support stated propositions; spatial containment explicitly unproven under administrative orders | **PASS** | Proposition and state-schedule concordance verified; zero unwarranted spatial containment claims |
+| `CHECK_9_DATE_CONSISTENCY` | Source publication and effective dates are valid ISO 8601 calendar dates with effective date <= publication date | **PASS** | Publication and effective dates verified consistent across all 36 entries |
+| `CHECK_10_DYNAMIC_SUMMARY_INTEGRITY` | Metadata summary counts and assertions dynamically match computed entry metrics with zero contradiction | **PASS** | Metadata summary dynamically reconciled with computed metrics |
 
 ---
 
-## 3. Genuine Negative Validation Test Battery (Directive 126 Action B)
+## 3. Genuine Negative Validation Test Battery — 14 Scenarios (Workstream E)
 
-The validator employs a genuine negative test harness that feeds deliberately corrupted fixtures into `validateEvidenceMatrix` and asserts fail-closed rejection:
+The validator employs a genuine negative test harness that feeds deliberately corrupted fixtures into `validateEvidenceMatrix` and asserts fail-closed rejection across 14 distinct failure modes:
 
 | Scenario ID | Corrupted Fixture Description | Expected Outcome | Actual Result | Verification Status |
 |---|---|---|---|---|
@@ -49,8 +58,16 @@ The validator employs a genuine negative test harness that feeds deliberately co
 | `NEG_SCENARIO_2_DUPLICATE_PIN` | Manifest fixture with duplicate PIN code is rejected by validator | `allPassed === false` & Check Fails | Correctly rejected duplicate PIN (CHECK_1 failed) | **PASS (REJECTED)** |
 | `NEG_SCENARIO_3_CONTRADICTORY_AC_CORRECTION` | Manifest fixture with tampered AC number (999 on 500002) is rejected by validator | `allPassed === false` & Check Fails | Correctly rejected contradictory AC assignment (CHECK_4 failed) | **PASS (REJECTED)** |
 | `NEG_SCENARIO_4_MULTI_AC_CANONICAL_BREACH` | Manifest fixture with canonical AC assigned to multi-AC PIN (500001) is rejected by validator | `allPassed === false` & Check Fails | Correctly rejected assignedAcNumber on multi-AC PIN (CHECK_2 failed) | **PASS (REJECTED)** |
-| `NEG_SCENARIO_5_UNSUPPORTED_AUTHORITATIVE_PROMOTION` | Manifest fixture with unauthorized AUTHORITATIVELY_VERIFIED classification is rejected by validator | `allPassed === false` & Check Fails | Correctly rejected unauthorized authoritative promotion (CHECK_3 failed) | **PASS (REJECTED)** |
-| `NEG_SCENARIO_6_MISSING_DOCUMENTARY_LOCATOR` | Manifest fixture with empty sourceLocator is rejected by validator | `allPassed === false` & Check Fails | Correctly rejected missing documentary field (CHECK_5 failed) | **PASS (REJECTED)** |
+| `NEG_SCENARIO_5_UNAUTHORIZED_AUTHORITATIVE_PROMOTION` | Manifest fixture with unauthorized AUTHORITATIVELY_VERIFIED classification is rejected by validator | `allPassed === false` & Check Fails | Correctly rejected unauthorized authoritative promotion (CHECK_3 failed) | **PASS (REJECTED)** |
+| `NEG_SCENARIO_6_MISSING_DOCUMENTARY_FIELD` | Manifest fixture with empty sourceLocator is rejected by validator | `allPassed === false` & Check Fails | Correctly rejected missing documentary field (CHECK_5 failed) | **PASS (REJECTED)** |
+| `NEG_SCENARIO_7_UNKNOWN_TAXONOMY_CLASSIFICATION` | Manifest fixture with unknown confidenceTaxonomy ("PROVISIONAL_GUESS") is rejected by validator | `allPassed === false` & Check Fails | Correctly rejected unknown classification (CHECK_3 failed) | **PASS (REJECTED)** |
+| `NEG_SCENARIO_8_INCONSISTENT_CLASSIFICATION_AND_ASSIGNMENT` | Manifest fixture with PROVISIONALLY_APPROXIMATED but null assignedAcNumber is rejected by validator | `allPassed === false` & Check Fails | Correctly rejected inconsistent classification and assignment (CHECK_3 failed) | **PASS (REJECTED)** |
+| `NEG_SCENARIO_9_INCORRECT_CLASSIFICATION_DISTRIBUTION` | Manifest fixture with altered classification distribution (31 provisional, 5 ambiguous) is rejected by validator | `allPassed === false` & Check Fails | Correctly rejected invalid taxonomy distribution (CHECK_3 failed) | **PASS (REJECTED)** |
+| `NEG_SCENARIO_10_NONEXISTENT_SOURCE_DOCUMENT` | Manifest fixture referencing nonexistent source document is rejected by validator | `allPassed === false` & Check Fails | Correctly rejected nonexistent source document (CHECK_6 failed) | **PASS (REJECTED)** |
+| `NEG_SCENARIO_11_INVALID_DOCUMENTARY_LOCATOR` | Manifest fixture with invalid documentary locator ("Schedule XCIX") is rejected by validator | `allPassed === false` & Check Fails | Correctly rejected invalid locator (CHECK_7 failed) | **PASS (REJECTED)** |
+| `NEG_SCENARIO_12_LOCATOR_NOT_SUPPORTING_CLAIM` | Manifest fixture where locator does not support claim (state TS cites AP Schedule II) is rejected by validator | `allPassed === false` & Check Fails | Correctly rejected discordant state-schedule locator (CHECK_8 failed) | **PASS (REJECTED)** |
+| `NEG_SCENARIO_13_MATERIAL_SOURCE_DATE_INCONSISTENCY` | Manifest fixture with sourceEffectiveDate (2026-12-31) after sourcePublicationDate (2008-08-17) is rejected by validator | `allPassed === false` & Check Fails | Correctly rejected inconsistent source dates (CHECK_9 failed) | **PASS (REJECTED)** |
+| `NEG_SCENARIO_14_TAMPERED_SUMMARY_ASSERTION` | Manifest fixture with tampered metadata summary assertion (claims 1 authoritative) is rejected by validator | `allPassed === false` & Check Fails | Correctly rejected tampered metadata summary (CHECK_10 failed) | **PASS (REJECTED)** |
 
 ---
 
@@ -63,7 +80,7 @@ The validator employs a genuine negative test harness that feeds deliberately co
 
 ---
 
-## 5. Eight Constituency Corrections & Kurnool Accounting Resolution (Directive 126 Action C)
+## 5. Eight Constituency Corrections & Kurnool Accounting Resolution (Workstream C)
 
 ### 5.1 Reconciled Eight Corrections Accounting
 In Directive 124, exactly **8 constituency number corrections** were applied. In the Directive 125 executive summary, an editorial error listed Kurnool (AC 137) alongside 7 other city names, grouping Visakhapatnam South (530001 and 530002) into a single bullet.
@@ -74,10 +91,10 @@ In Directive 124, exactly **8 constituency number corrections** were applied. In
 
 ### 5.2 Two Distinct Conclusions for Each of the Eight Corrections
 For each correction, two orthogonal conclusions are reported:
-1. **Constituency Identity:** Whether the target constituency name and number are authoritatively verified against ECI Delimitation Order 2008 and statutory seed records.
-2. **Postal Area Linkage:** Whether the PIN delivery area is proven to lie within that constituency (provisional approximation only; spatial containment unproven).
+1. **Constituency Identity (Conclusion A):** Whether the target constituency name and number are authoritatively verified against ECI Delimitation Order 2008 and statutory seed records.
+2. **Postal Area Linkage (Conclusion B):** Whether the PIN delivery area is proven to lie within that constituency (provisional approximation only; spatial containment unproven).
 
-| State | PIN | Locality | Historical (Pre-D124) | Corrected AC | Verified Constituency Name | Identity Conclusion | Postal Containment Conclusion |
+| State | PIN | Locality | Historical (Pre-D124) | Corrected AC | Verified Constituency Name | Identity Conclusion (A) | Postal Containment Conclusion (B) |
 |---|---|---|---|---|---|---|---|
 | **TS** | `500002` | Charminar / Moghalpura / Shalibanda | AC 67 | **AC 66** | **Charminar** | `AUTHORITATIVELY_VERIFIED` | `PROVISIONALLY_APPROXIMATED (Unproven GIS)` |
 | **TS** | `500053` | Chandrayangutta / Barkas / Falaknuma | AC 69 | **AC 67** | **Chandrayangutta** | `AUTHORITATIVELY_VERIFIED` | `PROVISIONALLY_APPROXIMATED (Unproven GIS)` |
@@ -135,7 +152,7 @@ For each correction, two orthogonal conclusions are reported:
 
 ---
 
-## 7. Provenance Distinctions & External Blocker Disclosures (Directive 126 Action D & E)
+## 7. Provenance Distinctions & External Blocker Disclosures (Workstream F)
 
 In compliance with Master Execution Framework Amendment v1.6, four distinct provenance tiers are maintained:
 1. **In-Repository Dossier Byte Integrity (`BITWISE_IN_REPO_VERIFIED`):** All checked-in source dossiers (in `data/evidence/w020/authoritative/` and `data/evidence/w015_b2/`) match their recorded SHA-256 cryptographic digests bitwise.

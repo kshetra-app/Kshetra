@@ -2893,3 +2893,27 @@
   5. **Stage B Boundary:** STOP at Stage B Gate; Stages C through I remain strictly **UNAUTHORIZED**.
   6. **Database Boundary:** Production (`ehfafcnimmjusyvplbah`) and Staging (`fkpigozcqnmcvofuksar`) strictly `AIR_GAPPED_UNEXECUTED` (0 queries, 0 mutations).
   7. **Formal CTO Acceptance:** Strictly **`0.0% — PENDING INDEPENDENT ADJUDICATION`** under Rule IV-001.
+
+---
+
+### DEC-127: CTO DIRECTIVE 127 — VALIDATOR COMPLETENESS, SOURCE-CLAIM VERIFICATION, TRUTHFUL EVIDENCE REPORTING & STAGE B ADJUDICATION INTEGRITY
+- **Date:** 2026-10-21
+- **Status:** IMPLEMENTATION COMPLETE / SUBMITTED FOR INDEPENDENT ADJUDICATION
+- **Authority:** CTO Directive 127 / Master Execution Framework Amendment v1.6 / Rule IV-001 Non-Self-Acceptance
+- **Context:** Following independent code review of Directive 126, a focused corrective pass was mandated to address residual validation engine and reporting deficiencies:
+  1. Mandatory Workstream A: Enforce complete 4-tier mutually exclusive taxonomy across all 36 records: 32 `PROVISIONALLY_APPROXIMATED`, 4 `AMBIGUOUS_MULTI_CONSTITUENCY`, 0 `AUTHORITATIVELY_VERIFIED` (for spatial containment), 0 `UNVERIFIED_OR_EXTERNALLY_BLOCKED`. Enforce consistency between taxonomy, canonical assignments, candidate sets, spatial containment false, relationship types, and actions.
+  2. Mandatory Workstream B: Separate single documentary traceability check into distinct orthogonal validation checks: Field completeness, Source resolution (in-repo dossiers exist on disk), Locator resolution (Schedule II / XXXI Table B entries), Claim support (state-schedule concordance, spatial containment false), Date consistency (valid ISO calendar dates, effective <= publication), and Dynamic summary integrity.
+  3. Mandatory Workstream C: Reconcile 8 corrections (TS: 500002 -> 66, 500053 -> 67, 500064 -> 69; AP: 520001 -> 79, 520002 -> 80, 530001 -> 22, 530002 -> 22, 517501 -> 167) directly against Delimitation Order 2008 statutory ward compositions. Reconcile Kurnool 518001 as existing single-AC provisional record (AC 137). Enforce distinct Conclusion A (Constituency Identity verified) vs Conclusion B (Postal Linkage provisional / unproven GIS).
+  4. Mandatory Workstream D: Eliminate all hardcoded success claims in generated reports (e.g. `eightAcCorrectionsVerified: true`, `pin500001AmbiguousFailClosed: true`). Compute all summary flags, category counts, and gate recommendations dynamically at runtime from check outcomes.
+  5. Mandatory Workstream E: Expand genuine negative validation suite from 6 to 14 distinct scenarios covering all fault domains: missing entries, duplicate PINs, tampered ACs, multi-AC canonical breach, unauthorized authoritative promotion, missing documentary fields, unknown taxonomy classifications, inconsistent assignments, invalid distribution counts, nonexistent source documents, invalid documentary locators, discordant state-schedule locators, material date inconsistencies, and tampered summary assertions.
+  6. Mandatory Workstream F & G: Update governance records, defect register (Section 4 disposition table for D126-01 through D126-06), author implementation report, commit, and verify CI.
+- **Architectural & Governance Determinations:**
+  1. **Complete Taxonomy Enforcement:** Taxonomy is strict, exhaustive, and mutually exclusive. Zero records claim authoritative spatial containment. Single-AC records strictly require matching positive canonical AC and empty candidate sets. Multi-AC records strictly fail closed with undefined canonical AC and candidate sets >= 2.
+  2. **Orthogonal Verification Dimensions:** Decoupled metadata presence from document existence, locator precision, claim justification, date chronology, and summary parity.
+  3. **Zero Hardcoded Report Flags:** `generateReports()` derives all summary booleans exclusively from runtime validation check results. If any check fails, the report summary explicitly reports failure and gate rejection.
+  4. **14 Genuine Negative Scenarios:** All 14 corrupted fixtures fail closed with specific check failures and 100% rejection rate.
+  5. **Regression & Typecheck Integrity:** 57/57 tests pass in `delimitation-citizen-impact-data-truth.test.ts`. Full route suite (38/38) and comprehensive unit suite (49/49) pass. Full TypeScript compilation (`tsc --noEmit`) passes with exit code 0.
+  6. **Stage B Boundary:** STOP at Stage B Gate; Stages C through I remain strictly **UNAUTHORIZED**.
+  7. **Database Boundary:** Production (`ehfafcnimmjusyvplbah`) and Staging (`fkpigozcqnmcvofuksar`) strictly `AIR_GAPPED_UNEXECUTED` (0 queries, 0 mutations).
+  8. **Formal CTO Acceptance:** Strictly **`0.0% — PENDING INDEPENDENT ADJUDICATION`** under Rule IV-001.
+

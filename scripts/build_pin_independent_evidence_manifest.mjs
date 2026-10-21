@@ -1,5 +1,5 @@
 /**
- * KSHETRA W021.5 — CTO DIRECTIVE 126 INDEPENDENT PIN EVIDENCE MANIFEST BUILDER
+ * KSHETRA W021.5 — CTO DIRECTIVE 127 INDEPENDENT PIN EVIDENCE MANIFEST BUILDER
  * Generates data/evidence/w021_5/pin_independent_evidence_manifest.json
  * 
  * Separates independent evidence recording structurally from runtime implementation directory.
@@ -909,8 +909,8 @@ export function buildManifest() {
 
   const manifestData = {
     metadata: {
-      directive: "CTO Directive 126",
-      workstream: "Corrective Action A & C — Honest Evidence Independence & 8-Correction Accounting Reconciliation",
+      directive: "CTO Directive 127",
+      workstream: "Workstream A, B, C, D, E, F — Complete Taxonomy, Separated Traceability, 14 Negative Scenarios & Dynamic Reporting",
       governingFramework: "Master Execution Framework Amendment v1.6 / Rule IV-001 Non-Self-Acceptance",
       stageBoundary: "Stage B Gate — STOP",
       formalAcceptance: "0.0% — PENDING INDEPENDENT ADJUDICATION",

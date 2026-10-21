@@ -1,11 +1,11 @@
 {
   "metadata": {
-    "directive": "CTO Directive 126",
-    "workstream": "Corrective Action A, B, C, D — Evidence Validation Integrity, Source-Claim Verification & Stage B Readiness",
+    "directive": "CTO Directive 127",
+    "workstream": "Workstream A, B, C, D, E, F — Complete Taxonomy, Separated Traceability, 14 Negative Scenarios & Dynamic Reporting",
     "governingFramework": "Master Execution Framework Amendment v1.6 / Rule IV-001 Non-Self-Acceptance",
     "stageBoundary": "Stage B Gate — STOP",
     "formalAcceptance": "0.0% — PENDING INDEPENDENT ADJUDICATION",
-    "generatedAt": "2026-10-21T07:03:23.430Z",
+    "generatedAt": "2026-10-21T07:29:47.669Z",
     "evidentiaryIndependenceScope": {
       "structuralSeparation": "Manifest is maintained in a standalone JSON file and build script separate from runtime implementation array.",
       "geographicProofLimitation": "Structural separation does NOT constitute independent geographic proof of postal delivery beat containment.",
@@ -100,8 +100,20 @@
       "provisionalCount": 32,
       "ambiguousCount": 4,
       "authoritativeCount": 0,
+      "unverifiedOrBlockedCount": 0,
+      "inventoryParityVerified": true,
+      "pin500001AmbiguousFailClosed": true,
+      "completeTaxonomyEnforced": true,
       "eightAcCorrectionsVerified": true,
-      "pin500001AmbiguousFailClosed": true
+      "documentaryFieldCompletenessVerified": true,
+      "sourceResolutionVerified": true,
+      "locatorResolutionVerified": true,
+      "claimSupportVerified": true,
+      "dateConsistencyVerified": true,
+      "dynamicSummaryIntegrityVerified": true,
+      "negativeScenariosExecuted": 14,
+      "negativeScenariosPassed": 14,
+      "gateRecommendation": "SUBMIT_FOR_INDEPENDENT_STAGE_B_ADJUDICATION"
     },
     "validationChecks": [
       {
@@ -117,22 +129,52 @@
         "details": "Verified PINs: 500001, 500028, 500034, 500056"
       },
       {
-        "checkId": "CHECK_3_PROVISIONAL_CLASSIFICATION_INTEGRITY",
-        "description": "Provisional single-AC entries strictly classified as PROVISIONALLY_APPROXIMATED; zero false authoritative claims",
+        "checkId": "CHECK_3_TAXONOMY_ENFORCEMENT_AND_DISTRIBUTION",
+        "description": "Enforces complete 4-tier mutually exclusive taxonomy: 32 provisional, 4 ambiguous, 0 authoritative, 0 unverified",
         "passed": true,
-        "details": "Authoritative Count: 0 (expected 0)"
+        "details": "Provisional: 32/32, Ambiguous: 4/4, Authoritative: 0/0, Unverified: 0/0"
       },
       {
         "checkId": "CHECK_4_EIGHT_AC_CORRECTIONS_VERIFIED",
         "description": "All 8 reported AC corrections independently verified for constituency name & number while retaining PROVISIONALLY_APPROXIMATED",
         "passed": true,
-        "details": "Verified 8 corrections strictly across AP (5) and TS (3); Kurnool 137 verified as existing single-AC record"
+        "details": "Verified 8 corrections strictly across AP (5) and TS (3); Kurnool 137 verified as existing single-AC provisional record"
       },
       {
-        "checkId": "CHECK_5_DOCUMENTARY_TRACEABILITY_FIELDS",
-        "description": "All 36 entries possess complete traceable source locators, dates, inspection status, propositions, and uncertainty disclosures",
+        "checkId": "CHECK_5_DOCUMENTARY_FIELD_COMPLETENESS",
+        "description": "All 36 entries possess all 15 required documentary metadata fields as non-empty strings",
         "passed": true,
-        "details": "All 15 required documentary fields populated on all 36 entries"
+        "details": "15 required fields validated across all 36 entries"
+      },
+      {
+        "checkId": "CHECK_6_SOURCE_RESOLUTION",
+        "description": "Referenced statutory source dossiers exist on disk and reference documents resolve to authorized Delimitation Orders",
+        "passed": true,
+        "details": "Resolved Schedule II dossier and Schedule XXXI extract; verified referenceDocument across 36 entries"
+      },
+      {
+        "checkId": "CHECK_7_LOCATOR_RESOLUTION",
+        "description": "Documentary locators identify specific Schedule, Table, and Entry / Ward coordinates in Delimitation Order 2008",
+        "passed": true,
+        "details": "Locators resolved across Schedule XXXI Table B (TS) and Schedule II Table B (AP)"
+      },
+      {
+        "checkId": "CHECK_8_CLAIM_SUPPORT",
+        "description": "Cited passages strictly support stated propositions; spatial containment explicitly unproven under administrative orders",
+        "passed": true,
+        "details": "Proposition and state-schedule concordance verified; zero unwarranted spatial containment claims"
+      },
+      {
+        "checkId": "CHECK_9_DATE_CONSISTENCY",
+        "description": "Source publication and effective dates are valid ISO 8601 calendar dates with effective date <= publication date",
+        "passed": true,
+        "details": "Publication and effective dates verified consistent across all 36 entries"
+      },
+      {
+        "checkId": "CHECK_10_DYNAMIC_SUMMARY_INTEGRITY",
+        "description": "Metadata summary counts and assertions dynamically match computed entry metrics with zero contradiction",
+        "passed": true,
+        "details": "Metadata summary dynamically reconciled with computed metrics"
       },
       {
         "checkId": "NEG_SCENARIO_1_MISSING_ENTRY",
@@ -159,16 +201,64 @@
         "details": "Correctly rejected assignedAcNumber on multi-AC PIN (CHECK_2 failed)"
       },
       {
-        "checkId": "NEG_SCENARIO_5_UNSUPPORTED_AUTHORITATIVE_PROMOTION",
+        "checkId": "NEG_SCENARIO_5_UNAUTHORIZED_AUTHORITATIVE_PROMOTION",
         "description": "Manifest fixture with unauthorized AUTHORITATIVELY_VERIFIED classification is rejected by validator",
         "passed": true,
         "details": "Correctly rejected unauthorized authoritative promotion (CHECK_3 failed)"
       },
       {
-        "checkId": "NEG_SCENARIO_6_MISSING_DOCUMENTARY_LOCATOR",
+        "checkId": "NEG_SCENARIO_6_MISSING_DOCUMENTARY_FIELD",
         "description": "Manifest fixture with empty sourceLocator is rejected by validator",
         "passed": true,
         "details": "Correctly rejected missing documentary field (CHECK_5 failed)"
+      },
+      {
+        "checkId": "NEG_SCENARIO_7_UNKNOWN_TAXONOMY_CLASSIFICATION",
+        "description": "Manifest fixture with unknown confidenceTaxonomy (\"PROVISIONAL_GUESS\") is rejected by validator",
+        "passed": true,
+        "details": "Correctly rejected unknown classification (CHECK_3 failed)"
+      },
+      {
+        "checkId": "NEG_SCENARIO_8_INCONSISTENT_CLASSIFICATION_AND_ASSIGNMENT",
+        "description": "Manifest fixture with PROVISIONALLY_APPROXIMATED but null assignedAcNumber is rejected by validator",
+        "passed": true,
+        "details": "Correctly rejected inconsistent classification and assignment (CHECK_3 failed)"
+      },
+      {
+        "checkId": "NEG_SCENARIO_9_INCORRECT_CLASSIFICATION_DISTRIBUTION",
+        "description": "Manifest fixture with altered classification distribution (31 provisional, 5 ambiguous) is rejected by validator",
+        "passed": true,
+        "details": "Correctly rejected invalid taxonomy distribution (CHECK_3 failed)"
+      },
+      {
+        "checkId": "NEG_SCENARIO_10_NONEXISTENT_SOURCE_DOCUMENT",
+        "description": "Manifest fixture referencing nonexistent source document is rejected by validator",
+        "passed": true,
+        "details": "Correctly rejected nonexistent source document (CHECK_6 failed)"
+      },
+      {
+        "checkId": "NEG_SCENARIO_11_INVALID_DOCUMENTARY_LOCATOR",
+        "description": "Manifest fixture with invalid documentary locator (\"Schedule XCIX\") is rejected by validator",
+        "passed": true,
+        "details": "Correctly rejected invalid locator (CHECK_7 failed)"
+      },
+      {
+        "checkId": "NEG_SCENARIO_12_LOCATOR_NOT_SUPPORTING_CLAIM",
+        "description": "Manifest fixture where locator does not support claim (state TS cites AP Schedule II) is rejected by validator",
+        "passed": true,
+        "details": "Correctly rejected discordant state-schedule locator (CHECK_8 failed)"
+      },
+      {
+        "checkId": "NEG_SCENARIO_13_MATERIAL_SOURCE_DATE_INCONSISTENCY",
+        "description": "Manifest fixture with sourceEffectiveDate (2026-12-31) after sourcePublicationDate (2008-08-17) is rejected by validator",
+        "passed": true,
+        "details": "Correctly rejected inconsistent source dates (CHECK_9 failed)"
+      },
+      {
+        "checkId": "NEG_SCENARIO_14_TAMPERED_SUMMARY_ASSERTION",
+        "description": "Manifest fixture with tampered metadata summary assertion (claims 1 authoritative) is rejected by validator",
+        "passed": true,
+        "details": "Correctly rejected tampered metadata summary (CHECK_10 failed)"
       }
     ]
   },
