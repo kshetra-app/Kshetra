@@ -1,9 +1,9 @@
 # KSHETRA W021.5 — PROVENANCE CHECKSUM AUDIT & REMEDIATION REPORT
-**Directive:** CTO Directive 124 (Workstream C)  
+**Directive:** CTO Directive 125 (Workstream C)  
 **Governing Framework:** Master Execution Framework Amendment v1.6 / Rule IV-001 Non-Self-Acceptance  
 **Stage Boundary:** STOP at Stage B Gate (Stages C–I Strictly Unauthorized)  
 **Formal Acceptance:** Strictly `0.0% — PENDING INDEPENDENT ADJUDICATION`  
-**Generated At:** `2026-10-21T05:56:09.177Z`  
+**Generated At:** `2026-10-21T06:26:38.145Z`  
 
 ---
 
@@ -24,7 +24,17 @@ During independent CTO review of Directive 123, provenance checksum constants in
 
 ## 2. Provenance Remediation Actions
 
-Under Directive 124 Section 5.3:
+Under Directive 124 Section 5.3 and Directive 125 Workstream C:
+1. **Zero Hallucinated Checksums:** We do NOT invent replacement hashes or hash unrelated documents.
+2. **Statutory External Documents:** Official gazettes (Delimitation Order 2008, APRA 2014, GSR 311(E), ECI Notification 2018) and the RGI Census 2011 PCA dataset are official external government instruments published on paper and government portals. Their multi-hundred-megabyte raw source files are not checked into this git repository.
+3. **Explicitly Undefined Checksum:** In `DatasetVersionProvenance`, `checksum` is set to `undefined`.
+4. **Checked-In Source Dossiers:** For each external statutory source, an authoritative source dossier markdown document exists in `data/evidence/w020/authoritative/`.
+5. **Separation of Evidence States (Directive 125 Workstream C):**
+   - Dossier byte integrity: `dossierIntegrityStatus: 'BITWISE_IN_REPO_VERIFIED'`
+   - External statutory publication status: `statutorySourceStatus: 'EXTERNAL_STATUTORY_PUBLICATION_NOT_CHECKED_IN'`
+   - Substantive verification: `substantiveVerificationStatus: 'PENDING_OFFICIAL_GAZETTE_BITWISE_AUDIT'`
+   - Explicit machine-readable status: `evidenceStatus: 'IN_REPO_DOSSIER_VERIFIED_EXTERNAL_INSTRUMENT_UNVERIFIED'` (replacing the misleading generic verified label)
+6. **Bitwise In-Repository Evidence Digests:** All in-repository evidence files are hashed using real cryptographic SHA-256 and monitored via automated regression tests.
 1. **Zero Hallucinated Checksums:** We do NOT invent replacement hashes or hash unrelated documents.
 2. **Statutory External Documents:** Official gazettes (Delimitation Order 2008, APRA 2014, GSR 311(E), ECI Notification 2018) and the RGI Census 2011 PCA dataset are official external government instruments published on paper and government portals. Their multi-hundred-megabyte raw source files are not checked into this git repository.
 3. **Explicitly Undefined Checksum:** In `DatasetVersionProvenance`, `checksum` is set to `undefined`.
@@ -37,11 +47,11 @@ Under Directive 124 Section 5.3:
 
 | Constant | Authority | Version / Date | Historical Checksum | Remediated Checksum | In-Repo Dossier Artifact | Status |
 |---|---|---|---|---|---|---|
-| `CENSUS_2011_PCA_PROVENANCE` | Office of the Registrar General & Census Commissioner, India | `v1.0_statutory` (2011-04-30) | `e3b0c44298fc1c14...` | `undefined` | `data/evidence/w020/authoritative/census_2011_pca_source_dossier.md` | `EXTERNAL_STATUTORY_DOCUMENT_DOSSIER_VERIFIED` |
-| `DELIMITATION_2008_REGIME_PROVENANCE` | Delimitation Commission of India / Election Commission of India | `2008_statutory_order` (2008-02-19) | `a1b2c3d4e5f60718...` | `undefined` | `data/evidence/w020/authoritative/eci_delimitation_order_2008_source_dossier.md` | `EXTERNAL_STATUTORY_DOCUMENT_DOSSIER_VERIFIED` |
-| `APRA_2014_PROVENANCE` | Parliament of India (Ministry of Law and Justice) | `statutory_act` (2014-03-01) | `b2c3d4e5f6a7b8c9...` | `undefined` | `data/evidence/w020/authoritative/mha_apra_2014_source_dossier.md` | `EXTERNAL_STATUTORY_DOCUMENT_DOSSIER_VERIFIED` |
-| `GSR_311E_2015_PROVENANCE` | Ministry of Home Affairs, Government of India | `statutory_order` (2015-04-23) | `c3d4e5f6a7b8c9d0...` | `undefined` | `data/evidence/w020/authoritative/mha_gsr_311e_2015_source_dossier.md` | `EXTERNAL_STATUTORY_DOCUMENT_DOSSIER_VERIFIED` |
-| `ECI_NOTIFICATION_2018_PROVENANCE` | Election Commission of India | `gazette_notification` (2018-09-22) | `d4e5f6a7b8c9d0e1...` | `undefined` | `data/evidence/w020/authoritative/eci_notification_282_ap_2018_source_dossier.md` | `EXTERNAL_STATUTORY_DOCUMENT_DOSSIER_VERIFIED` |
+| `CENSUS_2011_PCA_PROVENANCE` | Office of the Registrar General & Census Commissioner, India | `v1.0_statutory` (2011-04-30) | `e3b0c44298fc1c14...` | `undefined` | `data/evidence/w020/authoritative/census_2011_pca_source_dossier.md` | `IN_REPO_DOSSIER_VERIFIED_EXTERNAL_INSTRUMENT_UNVERIFIED` |
+| `DELIMITATION_2008_REGIME_PROVENANCE` | Delimitation Commission of India / Election Commission of India | `2008_statutory_order` (2008-02-19) | `a1b2c3d4e5f60718...` | `undefined` | `data/evidence/w020/authoritative/eci_delimitation_order_2008_source_dossier.md` | `IN_REPO_DOSSIER_VERIFIED_EXTERNAL_INSTRUMENT_UNVERIFIED` |
+| `APRA_2014_PROVENANCE` | Parliament of India (Ministry of Law and Justice) | `statutory_act` (2014-03-01) | `b2c3d4e5f6a7b8c9...` | `undefined` | `data/evidence/w020/authoritative/mha_apra_2014_source_dossier.md` | `IN_REPO_DOSSIER_VERIFIED_EXTERNAL_INSTRUMENT_UNVERIFIED` |
+| `GSR_311E_2015_PROVENANCE` | Ministry of Home Affairs, Government of India | `statutory_order` (2015-04-23) | `c3d4e5f6a7b8c9d0...` | `undefined` | `data/evidence/w020/authoritative/mha_gsr_311e_2015_source_dossier.md` | `IN_REPO_DOSSIER_VERIFIED_EXTERNAL_INSTRUMENT_UNVERIFIED` |
+| `ECI_NOTIFICATION_2018_PROVENANCE` | Election Commission of India | `gazette_notification` (2018-09-22) | `d4e5f6a7b8c9d0e1...` | `undefined` | `data/evidence/w020/authoritative/eci_notification_282_ap_2018_source_dossier.md` | `IN_REPO_DOSSIER_VERIFIED_EXTERNAL_INSTRUMENT_UNVERIFIED` |
 
 ---
 

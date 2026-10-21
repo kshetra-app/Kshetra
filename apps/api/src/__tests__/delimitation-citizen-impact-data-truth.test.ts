@@ -443,7 +443,10 @@ describe('CTO Directive 123 — Residual Electoral Data-Truth & Provisional Look
         expect(prov.artifactPath).toBeDefined();
         const fullDossierPath = path.resolve(__dirname, '../../../../', prov.artifactPath!);
         expect(fs.existsSync(fullDossierPath)).toBe(true);
-        expect(prov.evidenceStatus).toBe('EXTERNAL_STATUTORY_DOCUMENT_DOSSIER_VERIFIED');
+        expect(prov.evidenceStatus).toBe('IN_REPO_DOSSIER_VERIFIED_EXTERNAL_INSTRUMENT_UNVERIFIED');
+        expect(prov.dossierIntegrityStatus).toBe('BITWISE_IN_REPO_VERIFIED');
+        expect(prov.statutorySourceStatus).toBe('EXTERNAL_STATUTORY_PUBLICATION_NOT_CHECKED_IN');
+        expect(prov.substantiveVerificationStatus).toBe('PENDING_OFFICIAL_GAZETTE_BITWISE_AUDIT');
       }
     });
 
@@ -473,6 +476,136 @@ describe('CTO Directive 123 — Residual Electoral Data-Truth & Provisional Look
           throw new Error('EVIDENCE_INTEGRITY_VIOLATION: Source artifact checksum mismatch.');
         }
       }).toThrow('EVIDENCE_INTEGRITY_VIOLATION');
+    });
+  });
+
+  describe('CTO Directive 125 — Independent Evidence Closure, PIN Verification & Provenance Semantics', () => {
+    const manifestPath = path.resolve(__dirname, '../../../../data/evidence/w021_5/pin_independent_evidence_manifest.json');
+    const matrixReportPath = path.resolve(__dirname, '../../../../reports/w021_5_pin_independent_evidence_matrix.json');
+
+    it('verifies independent PIN evidence manifest exists with exact 36 entries and complete traceability', () => {
+      expect(fs.existsSync(manifestPath)).toBe(true);
+      const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+      expect(manifest.entries).toHaveLength(36);
+
+      for (const entry of manifest.entries) {
+        expect(entry.pinCode).toMatch(/^5\d{5}$/);
+        expect(entry.locality).toBeTruthy();
+        expect(entry.officialSource).toBeTruthy();
+        expect(entry.sourceLocator).toBeTruthy();
+        expect(entry.referenceDocument).toBeTruthy();
+        expect(entry.sourcePublicationDate).toBeTruthy();
+        expect(entry.sourceEffectiveDate).toBeTruthy();
+        expect(entry.whatSourceEstablishes).toBeTruthy();
+        expect(entry.whatSourceDoesNotEstablish).toBeTruthy();
+        expect(entry.remainingUncertainty).toBeTruthy();
+        expect(entry.requiredAction).toBeTruthy();
+      }
+    });
+
+    it('enforces 4-tier confidence taxonomy: zero authoritative, 32 provisional, 4 ambiguous, 0 unverified', () => {
+      const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+      const counts = {
+        AUTHORITATIVELY_VERIFIED: 0,
+        PROVISIONALLY_APPROXIMATED: 0,
+        AMBIGUOUS_MULTI_CONSTITUENCY: 0,
+        UNVERIFIED_OR_EXTERNALLY_BLOCKED: 0,
+      };
+
+      for (const entry of manifest.entries) {
+        counts[entry.confidenceTaxonomy as keyof typeof counts]++;
+        // Zero entries may claim statutory spatial containment without official GIS overlay
+        expect(entry.spatialContainmentVerified).toBe(false);
+      }
+
+      expect(counts.AUTHORITATIVELY_VERIFIED).toBe(0);
+      expect(counts.PROVISIONALLY_APPROXIMATED).toBe(32);
+      expect(counts.AMBIGUOUS_MULTI_CONSTITUENCY).toBe(4);
+      expect(counts.UNVERIFIED_OR_EXTERNALLY_BLOCKED).toBe(0);
+    });
+
+    it('strictly preserves fail-closed behavior for PIN 500001 (Hyderabad GPO)', () => {
+      const impact = delimitationService.getCitizenImpact('500001');
+      expect(impact.status).toBe('AMBIGUOUS_CANDIDATES');
+      expect(impact.currentConstituency).toBeUndefined();
+      expect(impact.candidateConstituencies).toBeDefined();
+      expect(impact.candidateConstituencies!.map((c) => c.acNo)).toEqual([65, 63, 58]);
+
+      // Manifest record
+      const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+      const entry500001 = manifest.entries.find((e: any) => e.pinCode === '500001');
+      expect(entry500001).toBeDefined();
+      expect(entry500001.assignedAcNumber).toBeNull();
+      expect(entry500001.candidateAcNumbers).toEqual([65, 63, 58]);
+      expect(entry500001.confidenceTaxonomy).toBe('AMBIGUOUS_MULTI_CONSTITUENCY');
+    });
+
+    it('verifies all 4 multi-AC records fail closed in both directory and independent manifest', () => {
+      const multiAcPins = ['500001', '500028', '500034', '500056'];
+      const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+
+      for (const pin of multiAcPins) {
+        const impact = delimitationService.getCitizenImpact(pin);
+        expect(impact.status).toBe('AMBIGUOUS_CANDIDATES');
+        expect(impact.currentConstituency).toBeUndefined();
+        expect(impact.candidateConstituencies!.length).toBeGreaterThanOrEqual(2);
+
+        const manifestEntry = manifest.entries.find((e: any) => e.pinCode === pin);
+        expect(manifestEntry.assignedAcNumber).toBeNull();
+        expect(manifestEntry.candidateAcNumbers.length).toBeGreaterThanOrEqual(2);
+        expect(manifestEntry.confidenceTaxonomy).toBe('AMBIGUOUS_MULTI_CONSTITUENCY');
+      }
+    });
+
+    it('verifies the eight reported constituency corrections against seed identity while retaining PROVISIONALLY_APPROXIMATED', () => {
+      const corrections = [
+        { pin: '500002', state: 'TS', expectedAc: 66, expectedName: 'Charminar' },
+        { pin: '500053', state: 'TS', expectedAc: 67, expectedName: 'Chandrayangutta' },
+        { pin: '500064', state: 'TS', expectedAc: 69, expectedName: 'Bahadurpura' },
+        { pin: '520001', state: 'AP', expectedAc: 79, expectedName: 'Vijayawada West' },
+        { pin: '520002', state: 'AP', expectedAc: 80, expectedName: 'Vijayawada Central' },
+        { pin: '530001', state: 'AP', expectedAc: 22, expectedName: 'Visakhapatnam South' },
+        { pin: '530002', state: 'AP', expectedAc: 22, expectedName: 'Visakhapatnam South' },
+        { pin: '517501', state: 'AP', expectedAc: 167, expectedName: 'Tirupati' },
+      ];
+
+      const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+
+      for (const c of corrections) {
+        // Runtime lookup verification
+        const impact = delimitationService.getCitizenImpact(c.pin);
+        expect(impact.currentConstituency).toBeDefined();
+        expect(impact.currentConstituency!.acNo).toBe(c.expectedAc);
+        expect(impact.currentConstituency!.name).toBe(c.expectedName);
+
+        // Manifest verification
+        const manifestEntry = manifest.entries.find((e: any) => e.pinCode === c.pin);
+        expect(manifestEntry.assignedAcNumber).toBe(c.expectedAc);
+        expect(manifestEntry.assignedAcName).toBe(c.expectedName);
+        expect(manifestEntry.constituencyIdentityVerified).toBe(true);
+        // Separate postal containment confidence MUST remain provisional
+        expect(manifestEntry.spatialContainmentVerified).toBe(false);
+        expect(manifestEntry.confidenceTaxonomy).toBe('PROVISIONALLY_APPROXIMATED');
+      }
+    });
+
+    it('fails closed when manifest is tampered with (negative test)', () => {
+      const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+      // Simulate unauthorized promotion to AUTHORITATIVELY_VERIFIED without statutory GIS
+      const tamperedEntry = { ...manifest.entries[0], confidenceTaxonomy: 'AUTHORITATIVELY_VERIFIED' };
+      expect(() => {
+        if (tamperedEntry.confidenceTaxonomy === 'AUTHORITATIVELY_VERIFIED' && !tamperedEntry.spatialContainmentVerified) {
+          throw new Error('EVIDENCE_CLASSIFICATION_VIOLATION: Cannot claim authoritative status without statutory GIS overlay.');
+        }
+      }).toThrow('EVIDENCE_CLASSIFICATION_VIOLATION');
+    });
+
+    it('verifies independent validation matrix report exists and records 100% check pass rate', () => {
+      expect(fs.existsSync(matrixReportPath)).toBe(true);
+      const matrixReport = JSON.parse(fs.readFileSync(matrixReportPath, 'utf8'));
+      expect(matrixReport.metadata.directive).toBe('CTO Directive 125');
+      expect(matrixReport.metadata.validationSummary.allChecksPassed).toBe(true);
+      expect(matrixReport.metadata.validationChecks.every((c: any) => c.passed)).toBe(true);
     });
   });
 });

@@ -1286,6 +1286,11 @@ export class DelimitationQueryService {
           sourceAuthority: 'Delimitation Commission of India / Election Commission of India',
           publicationDate: '2008-02-19',
           checksum: undefined, // External statutory gazette; raw ECI order PDF not stored in repo (dossier: data/evidence/w020/authoritative/eci_delimitation_order_2008_source_dossier.md)
+          artifactPath: 'data/evidence/w020/authoritative/eci_delimitation_order_2008_source_dossier.md',
+          dossierIntegrityStatus: 'BITWISE_IN_REPO_VERIFIED' as const,
+          statutorySourceStatus: 'EXTERNAL_STATUTORY_PUBLICATION_NOT_CHECKED_IN' as const,
+          substantiveVerificationStatus: 'PENDING_OFFICIAL_GAZETTE_BITWISE_AUDIT' as const,
+          evidenceStatus: 'IN_REPO_DOSSIER_VERIFIED_EXTERNAL_INSTRUMENT_UNVERIFIED',
         },
       ],
       methodology: 'CONSTITUTIONAL_STATUS_AUDIT',

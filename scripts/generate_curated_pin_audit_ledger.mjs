@@ -848,7 +848,10 @@ export const PROVENANCE_RECORDS_AUDIT = [
     artifactPresence: 'EXTERNAL_STATUTORY_PUBLICATION_DOSSIER_CHECKED_IN',
     inRepoArtifactPath: 'data/evidence/w020/authoritative/census_2011_pca_source_dossier.md',
     inRepoArtifactDigestSha256: undefined, // computed at runtime
-    evidenceStatus: 'EXTERNAL_STATUTORY_DOCUMENT_DOSSIER_VERIFIED',
+    dossierIntegrityStatus: 'BITWISE_IN_REPO_VERIFIED',
+    statutorySourceStatus: 'EXTERNAL_STATUTORY_PUBLICATION_NOT_CHECKED_IN',
+    substantiveVerificationStatus: 'PENDING_OFFICIAL_GAZETTE_BITWISE_AUDIT',
+    evidenceStatus: 'IN_REPO_DOSSIER_VERIFIED_EXTERNAL_INSTRUMENT_UNVERIFIED',
     rationale: 'The stored hash e3b0c442... was the SHA-256 of empty string (0 bytes), introduced in W020-G5. The raw RGI PCA spreadsheet is an external government publication (~150MB) not stored directly in git. Stored checksum nullified; in-repo dossier tracked bitwise.',
   },
   {
@@ -863,7 +866,10 @@ export const PROVENANCE_RECORDS_AUDIT = [
     artifactPresence: 'EXTERNAL_STATUTORY_GAZETTE_DOSSIER_CHECKED_IN',
     inRepoArtifactPath: 'data/evidence/w020/authoritative/eci_delimitation_order_2008_source_dossier.md',
     inRepoArtifactDigestSha256: undefined,
-    evidenceStatus: 'EXTERNAL_STATUTORY_DOCUMENT_DOSSIER_VERIFIED',
+    dossierIntegrityStatus: 'BITWISE_IN_REPO_VERIFIED',
+    statutorySourceStatus: 'EXTERNAL_STATUTORY_PUBLICATION_NOT_CHECKED_IN',
+    substantiveVerificationStatus: 'PENDING_OFFICIAL_GAZETTE_BITWISE_AUDIT',
+    evidenceStatus: 'IN_REPO_DOSSIER_VERIFIED_EXTERNAL_INSTRUMENT_UNVERIFIED',
     rationale: 'Introduced in W020-G8 as a patterned synthetic placeholder hash (a1b2c3...). The official Delimitation Order 2008 is an external statutory gazette. Stored checksum nullified; in-repo dossier tracked bitwise.',
   },
   {
@@ -878,7 +884,10 @@ export const PROVENANCE_RECORDS_AUDIT = [
     artifactPresence: 'EXTERNAL_STATUTORY_ACT_DOSSIER_CHECKED_IN',
     inRepoArtifactPath: 'data/evidence/w020/authoritative/mha_apra_2014_source_dossier.md',
     inRepoArtifactDigestSha256: undefined,
-    evidenceStatus: 'EXTERNAL_STATUTORY_DOCUMENT_DOSSIER_VERIFIED',
+    dossierIntegrityStatus: 'BITWISE_IN_REPO_VERIFIED',
+    statutorySourceStatus: 'EXTERNAL_STATUTORY_PUBLICATION_NOT_CHECKED_IN',
+    substantiveVerificationStatus: 'PENDING_OFFICIAL_GAZETTE_BITWISE_AUDIT',
+    evidenceStatus: 'IN_REPO_DOSSIER_VERIFIED_EXTERNAL_INSTRUMENT_UNVERIFIED',
     rationale: 'Introduced in W020-G8 as patterned synthetic placeholder (b2c3d4...). The official Act is an external parliamentary enactment. Stored checksum nullified; in-repo dossier tracked bitwise.',
   },
   {
@@ -893,7 +902,10 @@ export const PROVENANCE_RECORDS_AUDIT = [
     artifactPresence: 'EXTERNAL_STATUTORY_ORDER_DOSSIER_CHECKED_IN',
     inRepoArtifactPath: 'data/evidence/w020/authoritative/mha_gsr_311e_2015_source_dossier.md',
     inRepoArtifactDigestSha256: undefined,
-    evidenceStatus: 'EXTERNAL_STATUTORY_DOCUMENT_DOSSIER_VERIFIED',
+    dossierIntegrityStatus: 'BITWISE_IN_REPO_VERIFIED',
+    statutorySourceStatus: 'EXTERNAL_STATUTORY_PUBLICATION_NOT_CHECKED_IN',
+    substantiveVerificationStatus: 'PENDING_OFFICIAL_GAZETTE_BITWISE_AUDIT',
+    evidenceStatus: 'IN_REPO_DOSSIER_VERIFIED_EXTERNAL_INSTRUMENT_UNVERIFIED',
     rationale: 'Introduced in W020-G8 as patterned synthetic placeholder (c3d4e5...). Official MHA notification is external gazette. Stored checksum nullified; in-repo dossier tracked bitwise.',
   },
   {
@@ -908,7 +920,10 @@ export const PROVENANCE_RECORDS_AUDIT = [
     artifactPresence: 'EXTERNAL_STATUTORY_NOTIFICATION_DOSSIER_CHECKED_IN',
     inRepoArtifactPath: 'data/evidence/w020/authoritative/eci_notification_282_ap_2018_source_dossier.md',
     inRepoArtifactDigestSha256: undefined,
-    evidenceStatus: 'EXTERNAL_STATUTORY_DOCUMENT_DOSSIER_VERIFIED',
+    dossierIntegrityStatus: 'BITWISE_IN_REPO_VERIFIED',
+    statutorySourceStatus: 'EXTERNAL_STATUTORY_PUBLICATION_NOT_CHECKED_IN',
+    substantiveVerificationStatus: 'PENDING_OFFICIAL_GAZETTE_BITWISE_AUDIT',
+    evidenceStatus: 'IN_REPO_DOSSIER_VERIFIED_EXTERNAL_INSTRUMENT_UNVERIFIED',
     rationale: 'Introduced in W020-G8 as patterned synthetic placeholder (d4e5f6...). Official ECI notification is external gazette. Stored checksum nullified; in-repo dossier tracked bitwise.',
   },
 ];
@@ -957,7 +972,7 @@ export function generateLedgers() {
   // 1. Write reports/w021_5_curated_pin_audit_ledger.json
   const pinLedgerJson = {
     metadata: {
-      directive: 'CTO Directive 124',
+      directive: 'CTO Directive 124 / Reconciled in CTO Directive 125',
       workstream: 'Workstream B — Reconcile All 36 Curated PIN Entries',
       generatedAt: new Date().toISOString(),
       sourceOfTruth: 'apps/api/src/services/delimitationService.ts',
@@ -977,7 +992,7 @@ export function generateLedgers() {
 
   // 2. Write reports/w021_5_curated_pin_audit_ledger.md
   let pinLedgerMd = `# KSHETRA W021.5 — CURATED PROVISIONAL PIN AUDIT LEDGER
-**Directive:** CTO Directive 124 (Workstream B)  
+**Directive:** CTO Directive 124 / Reconciled in CTO Directive 125 (Workstream B)  
 **Governing Framework:** Master Execution Framework Amendment v1.6 / Rule IV-001 Non-Self-Acceptance  
 **Stage Boundary:** STOP at Stage B Gate (Stages C–I Strictly Unauthorized)  
 **Formal Acceptance:** Strictly \`0.0% — PENDING INDEPENDENT ADJUDICATION\`  
@@ -1055,8 +1070,8 @@ All 4 entries return \`status: 'AMBIGUOUS_CANDIDATES'\` with \`currentConstituen
   // 3. Write reports/w021_5_provenance_checksum_audit.json
   const checksumAuditJson = {
     metadata: {
-      directive: 'CTO Directive 124',
-      workstream: 'Workstream C — Audit Provenance Checksum Integrity',
+      directive: 'CTO Directive 125',
+      workstream: 'Workstream C — Provenance Semantics & Checksum Integrity',
       generatedAt: new Date().toISOString(),
       governingFramework: 'Master Execution Framework Amendment v1.6',
       totalProvenanceRecordsAudited: PROVENANCE_RECORDS_AUDIT.length,
@@ -1072,7 +1087,7 @@ All 4 entries return \`status: 'AMBIGUOUS_CANDIDATES'\` with \`currentConstituen
 
   // 4. Write reports/w021_5_provenance_checksum_audit.md
   let checksumAuditMd = `# KSHETRA W021.5 — PROVENANCE CHECKSUM AUDIT & REMEDIATION REPORT
-**Directive:** CTO Directive 124 (Workstream C)  
+**Directive:** CTO Directive 125 (Workstream C)  
 **Governing Framework:** Master Execution Framework Amendment v1.6 / Rule IV-001 Non-Self-Acceptance  
 **Stage Boundary:** STOP at Stage B Gate (Stages C–I Strictly Unauthorized)  
 **Formal Acceptance:** Strictly \`0.0% — PENDING INDEPENDENT ADJUDICATION\`  
@@ -1097,7 +1112,17 @@ During independent CTO review of Directive 123, provenance checksum constants in
 
 ## 2. Provenance Remediation Actions
 
-Under Directive 124 Section 5.3:
+Under Directive 124 Section 5.3 and Directive 125 Workstream C:
+1. **Zero Hallucinated Checksums:** We do NOT invent replacement hashes or hash unrelated documents.
+2. **Statutory External Documents:** Official gazettes (Delimitation Order 2008, APRA 2014, GSR 311(E), ECI Notification 2018) and the RGI Census 2011 PCA dataset are official external government instruments published on paper and government portals. Their multi-hundred-megabyte raw source files are not checked into this git repository.
+3. **Explicitly Undefined Checksum:** In \`DatasetVersionProvenance\`, \`checksum\` is set to \`undefined\`.
+4. **Checked-In Source Dossiers:** For each external statutory source, an authoritative source dossier markdown document exists in \`data/evidence/w020/authoritative/\`.
+5. **Separation of Evidence States (Directive 125 Workstream C):**
+   - Dossier byte integrity: \`dossierIntegrityStatus: 'BITWISE_IN_REPO_VERIFIED'\`
+   - External statutory publication status: \`statutorySourceStatus: 'EXTERNAL_STATUTORY_PUBLICATION_NOT_CHECKED_IN'\`
+   - Substantive verification: \`substantiveVerificationStatus: 'PENDING_OFFICIAL_GAZETTE_BITWISE_AUDIT'\`
+   - Explicit machine-readable status: \`evidenceStatus: 'IN_REPO_DOSSIER_VERIFIED_EXTERNAL_INSTRUMENT_UNVERIFIED'\` (replacing the misleading generic verified label)
+6. **Bitwise In-Repository Evidence Digests:** All in-repository evidence files are hashed using real cryptographic SHA-256 and monitored via automated regression tests.
 1. **Zero Hallucinated Checksums:** We do NOT invent replacement hashes or hash unrelated documents.
 2. **Statutory External Documents:** Official gazettes (Delimitation Order 2008, APRA 2014, GSR 311(E), ECI Notification 2018) and the RGI Census 2011 PCA dataset are official external government instruments published on paper and government portals. Their multi-hundred-megabyte raw source files are not checked into this git repository.
 3. **Explicitly Undefined Checksum:** In \`DatasetVersionProvenance\`, \`checksum\` is set to \`undefined\`.

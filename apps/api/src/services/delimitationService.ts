@@ -85,7 +85,10 @@ export const CENSUS_2011_PCA_PROVENANCE: DatasetVersionProvenance = {
   publicationDate: '2011-04-30',
   checksum: undefined, // External statutory publication; raw RGI file not stored in repo (dossier: data/evidence/w020/authoritative/census_2011_pca_source_dossier.md)
   artifactPath: 'data/evidence/w020/authoritative/census_2011_pca_source_dossier.md',
-  evidenceStatus: 'EXTERNAL_STATUTORY_DOCUMENT_DOSSIER_VERIFIED',
+  dossierIntegrityStatus: 'BITWISE_IN_REPO_VERIFIED',
+  statutorySourceStatus: 'EXTERNAL_STATUTORY_PUBLICATION_NOT_CHECKED_IN',
+  substantiveVerificationStatus: 'PENDING_OFFICIAL_GAZETTE_BITWISE_AUDIT',
+  evidenceStatus: 'IN_REPO_DOSSIER_VERIFIED_EXTERNAL_INSTRUMENT_UNVERIFIED',
 };
 
 export const DELIMITATION_2008_REGIME_PROVENANCE: DatasetVersionProvenance = {
@@ -95,7 +98,10 @@ export const DELIMITATION_2008_REGIME_PROVENANCE: DatasetVersionProvenance = {
   publicationDate: '2008-02-19',
   checksum: undefined, // External statutory gazette; raw ECI order PDF not stored in repo (dossier: data/evidence/w020/authoritative/eci_delimitation_order_2008_source_dossier.md)
   artifactPath: 'data/evidence/w020/authoritative/eci_delimitation_order_2008_source_dossier.md',
-  evidenceStatus: 'EXTERNAL_STATUTORY_DOCUMENT_DOSSIER_VERIFIED',
+  dossierIntegrityStatus: 'BITWISE_IN_REPO_VERIFIED',
+  statutorySourceStatus: 'EXTERNAL_STATUTORY_PUBLICATION_NOT_CHECKED_IN',
+  substantiveVerificationStatus: 'PENDING_OFFICIAL_GAZETTE_BITWISE_AUDIT',
+  evidenceStatus: 'IN_REPO_DOSSIER_VERIFIED_EXTERNAL_INSTRUMENT_UNVERIFIED',
 };
 
 export const APRA_2014_PROVENANCE: DatasetVersionProvenance = {
@@ -105,7 +111,10 @@ export const APRA_2014_PROVENANCE: DatasetVersionProvenance = {
   publicationDate: '2014-03-01',
   checksum: undefined, // External statutory enactment (Act 6 of 2014); dossier: data/evidence/w020/authoritative/mha_apra_2014_source_dossier.md
   artifactPath: 'data/evidence/w020/authoritative/mha_apra_2014_source_dossier.md',
-  evidenceStatus: 'EXTERNAL_STATUTORY_DOCUMENT_DOSSIER_VERIFIED',
+  dossierIntegrityStatus: 'BITWISE_IN_REPO_VERIFIED',
+  statutorySourceStatus: 'EXTERNAL_STATUTORY_PUBLICATION_NOT_CHECKED_IN',
+  substantiveVerificationStatus: 'PENDING_OFFICIAL_GAZETTE_BITWISE_AUDIT',
+  evidenceStatus: 'IN_REPO_DOSSIER_VERIFIED_EXTERNAL_INSTRUMENT_UNVERIFIED',
 };
 
 export const GSR_311E_2015_PROVENANCE: DatasetVersionProvenance = {
@@ -115,7 +124,10 @@ export const GSR_311E_2015_PROVENANCE: DatasetVersionProvenance = {
   publicationDate: '2015-04-23',
   checksum: undefined, // External statutory order (G.S.R. 311(E)); dossier: data/evidence/w020/authoritative/mha_gsr_311e_2015_source_dossier.md
   artifactPath: 'data/evidence/w020/authoritative/mha_gsr_311e_2015_source_dossier.md',
-  evidenceStatus: 'EXTERNAL_STATUTORY_DOCUMENT_DOSSIER_VERIFIED',
+  dossierIntegrityStatus: 'BITWISE_IN_REPO_VERIFIED',
+  statutorySourceStatus: 'EXTERNAL_STATUTORY_PUBLICATION_NOT_CHECKED_IN',
+  substantiveVerificationStatus: 'PENDING_OFFICIAL_GAZETTE_BITWISE_AUDIT',
+  evidenceStatus: 'IN_REPO_DOSSIER_VERIFIED_EXTERNAL_INSTRUMENT_UNVERIFIED',
 };
 
 export const ECI_NOTIFICATION_2018_PROVENANCE: DatasetVersionProvenance = {
@@ -125,7 +137,10 @@ export const ECI_NOTIFICATION_2018_PROVENANCE: DatasetVersionProvenance = {
   publicationDate: '2018-09-22',
   checksum: undefined, // External statutory notification (282/AP/2018); dossier: data/evidence/w020/authoritative/eci_notification_282_ap_2018_source_dossier.md
   artifactPath: 'data/evidence/w020/authoritative/eci_notification_282_ap_2018_source_dossier.md',
-  evidenceStatus: 'EXTERNAL_STATUTORY_DOCUMENT_DOSSIER_VERIFIED',
+  dossierIntegrityStatus: 'BITWISE_IN_REPO_VERIFIED',
+  statutorySourceStatus: 'EXTERNAL_STATUTORY_PUBLICATION_NOT_CHECKED_IN',
+  substantiveVerificationStatus: 'PENDING_OFFICIAL_GAZETTE_BITWISE_AUDIT',
+  evidenceStatus: 'IN_REPO_DOSSIER_VERIFIED_EXTERNAL_INSTRUMENT_UNVERIFIED',
 };
 
 // ─── AUTHORITATIVE STATUTORY RESERVATION BASELINES (Delimitation Order 2008 & APRA 2014) ───

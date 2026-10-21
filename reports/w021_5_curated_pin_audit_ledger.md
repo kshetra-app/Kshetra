@@ -1,9 +1,9 @@
 # KSHETRA W021.5 — CURATED PROVISIONAL PIN AUDIT LEDGER
-**Directive:** CTO Directive 124 (Workstream B)  
+**Directive:** CTO Directive 124 / Reconciled in CTO Directive 125 (Workstream B)  
 **Governing Framework:** Master Execution Framework Amendment v1.6 / Rule IV-001 Non-Self-Acceptance  
 **Stage Boundary:** STOP at Stage B Gate (Stages C–I Strictly Unauthorized)  
 **Formal Acceptance:** Strictly `0.0% — PENDING INDEPENDENT ADJUDICATION`  
-**Generated At:** `2026-10-21T05:56:09.174Z`  
+**Generated At:** `2026-10-21T06:26:38.143Z`  
 **Source of Truth:** `apps/api/src/services/delimitationService.ts` (`CURATED_PROVISIONAL_PIN_DIRECTORY`)  
 **Total Curated Entries:** `36` (Telangana: 30, Andhra Pradesh: 6)
 

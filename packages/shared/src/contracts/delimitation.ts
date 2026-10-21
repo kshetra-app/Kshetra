@@ -119,6 +119,10 @@ export interface DatasetVersionProvenance {
   publicationDate: string;
   checksum?: string;
   artifactPath?: string;
+  // Provenance orthogonal dimensions (Directive 125 Workstream C)
+  dossierIntegrityStatus?: 'BITWISE_IN_REPO_VERIFIED' | 'MISSING' | 'TAMPERED';
+  statutorySourceStatus?: 'EXTERNAL_STATUTORY_PUBLICATION_NOT_CHECKED_IN' | 'OFFICIAL_GOVERNMENT_GAZETTE_VERIFIED';
+  substantiveVerificationStatus?: 'PROVISION_VERIFIED_FOR_IMPLEMENTATION' | 'PENDING_OFFICIAL_GAZETTE_BITWISE_AUDIT';
   evidenceStatus?: string;
 }
 

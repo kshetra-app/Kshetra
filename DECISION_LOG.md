@@ -2817,3 +2817,56 @@
      - Stage B Boundary strictly observed: STOP at Stage B Gate; Stages C through I remain strictly **UNAUTHORIZED**.
      - Production & Staging Databases strictly `AIR_GAPPED_UNEXECUTED` (0 queries, 0 mutations).
      - Formal CTO Acceptance strictly **`0.0% — PENDING INDEPENDENT ADJUDICATION`** under Rule IV-001.
+
+---
+
+### DEC-125: CTO DIRECTIVE 125 — INDEPENDENT EVIDENCE CLOSURE, PIN-TO-CONSTITUENCY DATA-TRUTH VERIFICATION, PROVENANCE INTEGRITY & STAGE B ADJUDICATION READINESS
+- **Date:** 2026-10-21
+- **Status:** IMPLEMENTATION COMPLETE / SUBMITTED FOR INDEPENDENT ADJUDICATION
+- **Authority:** CTO Directive 125 / Master Execution Framework Amendment v1.6 / Rule IV-001 Non-Self-Acceptance
+- **Context:** Following independent code review of Directive 124, one consolidated evidence-closure pass was mandated to deliver a reproducible, independently reviewable evidence package for authorized CTO Stage B adjudication:
+  1. Establish actual repository and CI baseline: confirm `master` HEAD, ancestor lineage from `f1b1dc2`, clean working tree, and CI run `39552724542` success.
+  2. Close the 36-PIN evidence gap: build independent evidence matrix separating postal delivery beat approximation from statutory constituency identity; enforce 4-tier confidence taxonomy (`AUTHORITATIVELY_VERIFIED: 0`, `PROVISIONALLY_APPROXIMATED: 32`, `AMBIGUOUS_MULTI_CONSTITUENCY: 4`, `UNVERIFIED_OR_EXTERNALLY_BLOCKED: 0`); preserve fail-closed multi-AC behavior for PIN `500001` (`[65, 63, 58]`) and the other 3 multi-AC entries (`500028`, `500034`, `500056`).
+  3. Independently verify the eight constituency-number corrections (TS: 66, 67, 69; AP: 79, 80, 22, 22, 167) separately from postal containment confidence.
+  4. Correct provenance status semantics: separate in-repo dossier byte integrity (`BITWISE_IN_REPO_VERIFIED`) from official external instrument publication (`EXTERNAL_STATUTORY_PUBLICATION_NOT_CHECKED_IN`) and substantive verification (`PENDING_OFFICIAL_GAZETTE_BITWISE_AUDIT`). Replaced misleading label `EXTERNAL_STATUTORY_DOCUMENT_DOSSIER_VERIFIED` with explicit machine-readable status `IN_REPO_DOSSIER_VERIFIED_EXTERNAL_INSTRUMENT_UNVERIFIED`.
+  5. Build reproducible, independent evidence validation tooling (`data/evidence/w021_5/pin_independent_evidence_manifest.json`, `scripts/verify_pin_evidence_matrix.mjs`, and generated matrix reports).
+  6. Extend regression test suite from 28 to 35 tests, covering all D125 requirements, and verify with negative tampering tests.
+  7. Formally update governance records, defect register (consolidated disposition table for D124-01 through D124-06), and author the final implementation report.
+- **Architectural & Governance Determinations:**
+  1. **Workstream A — Repository & CI Baseline:**
+     - Predecessor commit `f1b1dc29a55ee34cde981d17cd840a84388784fc` confirmed as direct ancestor of current `origin/master` HEAD.
+     - Clean working tree verified.
+     - GitHub Actions CI run `39552724542` on `f1b1dc2` verified completed with status `success`.
+  2. **Workstream B — Independent 36-PIN Evidence Matrix & 4-Tier Taxonomy:**
+     - Established foundational domain separation: ECI Delimitation Orders (2008) define assembly constituencies by administrative units (GHMC wards, municipalities, mandals); DoP PIN codes are operational mail routing paths. No statutory 1:1 PIN-to-AC overlays exist in India.
+     - 4-Tier confidence taxonomy enforced:
+       - `AUTHORITATIVELY_VERIFIED: 0` (zero PINs possess statutory 1:1 delimitation orders or verified voter-roll GIS polygons).
+       - `PROVISIONALLY_APPROXIMATED: 32` (plausible single-AC approximations based on municipal ward concordance or head post office centroids).
+       - `AMBIGUOUS_MULTI_CONSTITUENCY: 4` (`500001`, `500028`, `500034`, `500056` fail-closed with `canonicalAcNo: undefined`).
+       - `UNVERIFIED_OR_EXTERNALLY_BLOCKED: 0` maintained (unmapped PINs fail closed at runtime with 404 PIN_NOT_FOUND).
+     - PIN `500001` (Hyderabad GPO) candidate set strictly preserved as `[65, 63, 58]` (Goshamahal, Nampally, Malakpet), `canonicalAcNo: undefined`, `status: 'AMBIGUOUS_CANDIDATES'`.
+     - The 8 constituency-number corrections independently verified 100% against seed records and ECI 2008 schedules, while postal linkage confidence is strictly maintained as `PROVISIONALLY_APPROXIMATED`.
+  3. **Workstream C — Provenance Semantics Hardening:**
+     - Refined `DatasetVersionProvenance` contract in `packages/shared/src/contracts/delimitation.ts` to separate:
+       - `dossierIntegrityStatus: 'BITWISE_IN_REPO_VERIFIED'`
+       - `statutorySourceStatus: 'EXTERNAL_STATUTORY_PUBLICATION_NOT_CHECKED_IN'`
+       - `substantiveVerificationStatus: 'PENDING_OFFICIAL_GAZETTE_BITWISE_AUDIT'`
+       - `evidenceStatus: 'IN_REPO_DOSSIER_VERIFIED_EXTERNAL_INSTRUMENT_UNVERIFIED'`
+     - Replaced misleading generic verified labels in `delimitationService.ts`, `delimitationQueryService.ts`, `scripts/generate_curated_pin_audit_ledger.mjs`, and reports.
+     - Verified all 8 in-repo evidence files bitwise against calculated SHA-256 digests.
+  4. **Workstream D — Independent Evidence Validation Tooling:**
+     - Created `data/evidence/w021_5/pin_independent_evidence_manifest.json` capturing the independent documentary analysis for all 36 PINs.
+     - Created `scripts/verify_pin_evidence_matrix.mjs` validating runtime `CURATED_PROVISIONAL_PIN_DIRECTORY` against the independent manifest.
+     - Generated `reports/w021_5_pin_independent_evidence_matrix.json` and `reports/w021_5_pin_independent_evidence_matrix.md`.
+  5. **Workstream E — Regression & Governance Integrity:**
+     - Regression suite in `apps/api/src/__tests__/delimitation-citizen-impact-data-truth.test.ts` expanded to 35 tests (all PASS).
+     - Full test suites pass: `delimitation.test.ts` (38/38 PASS), `delimitation-comprehensive-unit.test.ts` (49/49 PASS).
+     - Full build `tsc --noEmit` succeeds with code 0.
+  6. **Workstream F — Consolidated Defect Disposition:**
+     - Updated `DEFECT_REGISTER.md` with Section 2 consolidated disposition table for findings D124-01 through D124-06.
+     - `DEF-W021-05` maintained as `PARTIALLY_REMEDIATED — PENDING INDEPENDENT ADJUDICATION`.
+     - `DEF-W021-06` updated to `REMEDIATED — PENDING INDEPENDENT ADJUDICATION`.
+     - Headline Accounting strictly preserved: Repo-Verified Earned: **61.5%**, Database-Pending: **10.5%**, Externally-Blocked: **22.5%**, Unimplemented: **5.5%**.
+     - Stage B Boundary strictly observed: STOP at Stage B Gate; Stages C through I remain strictly **UNAUTHORIZED**.
+     - Production & Staging Databases strictly `AIR_GAPPED_UNEXECUTED` (0 queries, 0 mutations).
+     - Formal CTO Acceptance strictly **`0.0% — PENDING INDEPENDENT ADJUDICATION`** under Rule IV-001.
