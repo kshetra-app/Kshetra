@@ -151,8 +151,86 @@ export const STATUTORY_RESERVATION_BASELINES: Record<
 };
 
 // ─── PIN CODE DIRECTORY (Postal Index Number mapping) ───
-const PIN_PREFIX_MAPPING: Record<string, { stateCode: string; stateName: string; district: string; region: string }> = {
-  // Telangana (W020 Authoritative Scope)
+// Canonical Indian Postal Zone Directory across all postal circles (Zones 1-8)
+export const PIN_PREFIX_MAPPING: Record<string, { stateCode: string; stateName: string; district: string; region: string }> = {
+  // Zone 1: Northern (Delhi, Haryana, Punjab, Himachal Pradesh, Jammu & Kashmir, Chandigarh)
+  '110': { stateCode: 'DL', stateName: 'Delhi', district: 'New Delhi', region: 'National Capital Territory' },
+  '111': { stateCode: 'DL', stateName: 'Delhi', district: 'South Delhi', region: 'Delhi South' },
+  '121': { stateCode: 'HR', stateName: 'Haryana', district: 'Faridabad', region: 'NCR Haryana' },
+  '122': { stateCode: 'HR', stateName: 'Haryana', district: 'Gurugram', region: 'NCR Haryana' },
+  '124': { stateCode: 'HR', stateName: 'Haryana', district: 'Rohtak', region: 'Central Haryana' },
+  '125': { stateCode: 'HR', stateName: 'Haryana', district: 'Hisar', region: 'West Haryana' },
+  '131': { stateCode: 'HR', stateName: 'Haryana', district: 'Sonipat', region: 'NCR Haryana' },
+  '132': { stateCode: 'HR', stateName: 'Haryana', district: 'Karnal', region: 'North Haryana' },
+  '133': { stateCode: 'HR', stateName: 'Haryana', district: 'Ambala', region: 'North Haryana' },
+  '134': { stateCode: 'HR', stateName: 'Haryana', district: 'Panchkula', region: 'North Haryana' },
+  '140': { stateCode: 'PB', stateName: 'Punjab', district: 'Mohali', region: 'East Punjab' },
+  '141': { stateCode: 'PB', stateName: 'Punjab', district: 'Ludhiana', region: 'Central Punjab' },
+  '143': { stateCode: 'PB', stateName: 'Punjab', district: 'Amritsar', region: 'Majha' },
+  '144': { stateCode: 'PB', stateName: 'Punjab', district: 'Jalandhar', region: 'Doaba' },
+  '147': { stateCode: 'PB', stateName: 'Punjab', district: 'Patiala', region: 'Malwa East' },
+  '151': { stateCode: 'PB', stateName: 'Punjab', district: 'Bathinda', region: 'Malwa South' },
+  '160': { stateCode: 'PB', stateName: 'Punjab', district: 'Chandigarh / Mohali', region: 'Chandigarh Capital Region' },
+  '171': { stateCode: 'HP', stateName: 'Himachal Pradesh', district: 'Shimla', region: 'Shimla Hills' },
+  '172': { stateCode: 'HP', stateName: 'Himachal Pradesh', district: 'Kinnaur', region: 'Tribal Himachal' },
+  '173': { stateCode: 'HP', stateName: 'Himachal Pradesh', district: 'Solan', region: 'Lower Himachal' },
+  '175': { stateCode: 'HP', stateName: 'Himachal Pradesh', district: 'Mandi', region: 'Central Himachal' },
+  '176': { stateCode: 'HP', stateName: 'Himachal Pradesh', district: 'Kangra', region: 'Kangra Valley' },
+  '180': { stateCode: 'JK', stateName: 'Jammu & Kashmir', district: 'Jammu', region: 'Jammu Urban' },
+  '182': { stateCode: 'JK', stateName: 'Jammu & Kashmir', district: 'Udhampur', region: 'Jammu Central' },
+  '184': { stateCode: 'JK', stateName: 'Jammu & Kashmir', district: 'Kathua', region: 'Jammu South' },
+  '190': { stateCode: 'JK', stateName: 'Jammu & Kashmir', district: 'Srinagar', region: 'Kashmir Central' },
+  '192': { stateCode: 'JK', stateName: 'Jammu & Kashmir', district: 'Anantnag', region: 'Kashmir South' },
+  '193': { stateCode: 'JK', stateName: 'Jammu & Kashmir', district: 'Baramulla', region: 'Kashmir North' },
+
+  // Zone 2: Northern Central (Uttar Pradesh, Uttarakhand)
+  '201': { stateCode: 'UP', stateName: 'Uttar Pradesh', district: 'Ghaziabad / Gautam Buddha Nagar', region: 'NCR West UP' },
+  '202': { stateCode: 'UP', stateName: 'Uttar Pradesh', district: 'Aligarh', region: 'Braj West' },
+  '208': { stateCode: 'UP', stateName: 'Uttar Pradesh', district: 'Kanpur Nagar', region: 'Central UP' },
+  '209': { stateCode: 'UP', stateName: 'Uttar Pradesh', district: 'Kanpur Dehat', region: 'Central UP Rural' },
+  '211': { stateCode: 'UP', stateName: 'Uttar Pradesh', district: 'Prayagraj', region: 'Lower Doab' },
+  '221': { stateCode: 'UP', stateName: 'Uttar Pradesh', district: 'Varanasi', region: 'Purvanchal South' },
+  '226': { stateCode: 'UP', stateName: 'Uttar Pradesh', district: 'Lucknow', region: 'Awadh Central' },
+  '244': { stateCode: 'UP', stateName: 'Uttar Pradesh', district: 'Moradabad', region: 'Rohilkhand' },
+  '250': { stateCode: 'UP', stateName: 'Uttar Pradesh', district: 'Meerut', region: 'Upper Doab' },
+  '273': { stateCode: 'UP', stateName: 'Uttar Pradesh', district: 'Gorakhpur', region: 'Purvanchal North' },
+  '282': { stateCode: 'UP', stateName: 'Uttar Pradesh', district: 'Agra', region: 'Braj' },
+  '248': { stateCode: 'UK', stateName: 'Uttarakhand', district: 'Dehradun', region: 'Garhwal Foothills' },
+  '249': { stateCode: 'UK', stateName: 'Uttarakhand', district: 'Haridwar / Rishikesh', region: 'Garhwal Plains' },
+  '262': { stateCode: 'UK', stateName: 'Uttarakhand', district: 'Pithoragarh', region: 'Kumaon Hills' },
+  '263': { stateCode: 'UK', stateName: 'Uttarakhand', district: 'Nainital', region: 'Kumaon Central' },
+
+  // Zone 3: Western (Rajasthan, Gujarat)
+  '301': { stateCode: 'RJ', stateName: 'Rajasthan', district: 'Alwar', region: 'Mewat / NCR' },
+  '302': { stateCode: 'RJ', stateName: 'Rajasthan', district: 'Jaipur', region: 'Dhundhar Central' },
+  '305': { stateCode: 'RJ', stateName: 'Rajasthan', district: 'Ajmer', region: 'Central Rajasthan' },
+  '313': { stateCode: 'RJ', stateName: 'Rajasthan', district: 'Udaipur', region: 'Mewar' },
+  '324': { stateCode: 'RJ', stateName: 'Rajasthan', district: 'Kota', region: 'Hadoti' },
+  '342': { stateCode: 'RJ', stateName: 'Rajasthan', district: 'Jodhpur', region: 'Marwar' },
+  '360': { stateCode: 'GJ', stateName: 'Gujarat', district: 'Rajkot', region: 'Saurashtra' },
+  '380': { stateCode: 'GJ', stateName: 'Gujarat', district: 'Ahmedabad', region: 'Central Gujarat' },
+  '382': { stateCode: 'GJ', stateName: 'Gujarat', district: 'Gandhinagar', region: 'Capital Region' },
+  '390': { stateCode: 'GJ', stateName: 'Gujarat', district: 'Vadodara', region: 'Central Gujarat' },
+  '395': { stateCode: 'GJ', stateName: 'Gujarat', district: 'Surat', region: 'South Gujarat' },
+
+  // Zone 4: West Central (Maharashtra, Goa, Madhya Pradesh, Chhattisgarh)
+  '400': { stateCode: 'MH', stateName: 'Maharashtra', district: 'Mumbai', region: 'Konkan Urban' },
+  '401': { stateCode: 'MH', stateName: 'Maharashtra', district: 'Thane / Palghar', region: 'Konkan Outer' },
+  '403': { stateCode: 'GA', stateName: 'Goa', district: 'North / South Goa', region: 'Goa Coastal' },
+  '411': { stateCode: 'MH', stateName: 'Maharashtra', district: 'Pune', region: 'Desh West' },
+  '416': { stateCode: 'MH', stateName: 'Maharashtra', district: 'Kolhapur', region: 'Southern Maharashtra' },
+  '422': { stateCode: 'MH', stateName: 'Maharashtra', district: 'Nashik', region: 'Khandesh' },
+  '431': { stateCode: 'MH', stateName: 'Maharashtra', district: 'Chhatrapati Sambhajinagar', region: 'Marathwada' },
+  '440': { stateCode: 'MH', stateName: 'Maharashtra', district: 'Nagpur', region: 'Vidarbha' },
+  '452': { stateCode: 'MP', stateName: 'Madhya Pradesh', district: 'Indore', region: 'Malwa West' },
+  '462': { stateCode: 'MP', stateName: 'Madhya Pradesh', district: 'Bhopal', region: 'Central MP' },
+  '474': { stateCode: 'MP', stateName: 'Madhya Pradesh', district: 'Gwalior', region: 'Gird' },
+  '482': { stateCode: 'MP', stateName: 'Madhya Pradesh', district: 'Jabalpur', region: 'Mahakoshal' },
+  '490': { stateCode: 'CG', stateName: 'Chhattisgarh', district: 'Durg / Bhilai', region: 'Central Chhattisgarh' },
+  '492': { stateCode: 'CG', stateName: 'Chhattisgarh', district: 'Raipur', region: 'Raipur Urban' },
+  '495': { stateCode: 'CG', stateName: 'Chhattisgarh', district: 'Bilaspur', region: 'North Chhattisgarh' },
+
+  // Zone 5: Southern (Telangana, Andhra Pradesh, Karnataka)
   '500': { stateCode: 'TS', stateName: 'Telangana', district: 'Hyderabad', region: 'Hyderabad Urban' },
   '501': { stateCode: 'TS', stateName: 'Telangana', district: 'Rangareddy', region: 'Rangareddy Outer' },
   '502': { stateCode: 'TS', stateName: 'Telangana', district: 'Sangareddy', region: 'Medak / Sangareddy' },
@@ -163,7 +241,6 @@ const PIN_PREFIX_MAPPING: Record<string, { stateCode: string; stateName: string;
   '507': { stateCode: 'TS', stateName: 'Telangana', district: 'Khammam', region: 'Khammam' },
   '508': { stateCode: 'TS', stateName: 'Telangana', district: 'Nalgonda', region: 'Nalgonda' },
   '509': { stateCode: 'TS', stateName: 'Telangana', district: 'Mahbubnagar', region: 'Mahbubnagar' },
-  // Andhra Pradesh (Succession Reference)
   '515': { stateCode: 'AP', stateName: 'Andhra Pradesh', district: 'Anantapur', region: 'Rayalaseema West' },
   '516': { stateCode: 'AP', stateName: 'Andhra Pradesh', district: 'YSR Kadapa', region: 'Rayalaseema Central' },
   '517': { stateCode: 'AP', stateName: 'Andhra Pradesh', district: 'Chittoor', region: 'Rayalaseema South' },
@@ -177,6 +254,58 @@ const PIN_PREFIX_MAPPING: Record<string, { stateCode: string; stateName: string;
   '533': { stateCode: 'AP', stateName: 'Andhra Pradesh', district: 'East Godavari', region: 'East Godavari' },
   '534': { stateCode: 'AP', stateName: 'Andhra Pradesh', district: 'West Godavari', region: 'West Godavari' },
   '535': { stateCode: 'AP', stateName: 'Andhra Pradesh', district: 'Vizianagaram', region: 'Vizianagaram' },
+  '560': { stateCode: 'KA', stateName: 'Karnataka', district: 'Bengaluru Urban', region: 'Bengaluru Metropolitan' },
+  '562': { stateCode: 'KA', stateName: 'Karnataka', district: 'Bengaluru Rural', region: 'South Karnataka' },
+  '570': { stateCode: 'KA', stateName: 'Karnataka', district: 'Mysuru', region: 'Old Mysuru' },
+  '575': { stateCode: 'KA', stateName: 'Karnataka', district: 'Dakshina Kannada', region: 'Coastal Karnataka' },
+  '580': { stateCode: 'KA', stateName: 'Karnataka', district: 'Dharwad / Hubballi', region: 'North Karnataka' },
+  '590': { stateCode: 'KA', stateName: 'Karnataka', district: 'Belagavi', region: 'North-West Karnataka' },
+
+  // Zone 6: Southern (Tamil Nadu, Kerala, Puducherry)
+  '600': { stateCode: 'TN', stateName: 'Tamil Nadu', district: 'Chennai', region: 'Chennai Metropolitan' },
+  '601': { stateCode: 'TN', stateName: 'Tamil Nadu', district: 'Tiruvallur', region: 'North Coastal TN' },
+  '605': { stateCode: 'PY', stateName: 'Puducherry', district: 'Puducherry', region: 'Coromandel Coastal' },
+  '620': { stateCode: 'TN', stateName: 'Tamil Nadu', district: 'Tiruchirappalli', region: 'Central Tamil Nadu' },
+  '625': { stateCode: 'TN', stateName: 'Tamil Nadu', district: 'Madurai', region: 'South Tamil Nadu' },
+  '641': { stateCode: 'TN', stateName: 'Tamil Nadu', district: 'Coimbatore', region: 'Kongu Nadu' },
+  '670': { stateCode: 'KL', stateName: 'Kerala', district: 'Kannur', region: 'North Malabar' },
+  '673': { stateCode: 'KL', stateName: 'Kerala', district: 'Kozhikode', region: 'Malabar' },
+  '682': { stateCode: 'KL', stateName: 'Kerala', district: 'Ernakulam / Kochi', region: 'Central Kerala' },
+  '686': { stateCode: 'KL', stateName: 'Kerala', district: 'Kottayam', region: 'Travancore' },
+  '691': { stateCode: 'KL', stateName: 'Kerala', district: 'Kollam', region: 'South Kerala' },
+  '695': { stateCode: 'KL', stateName: 'Kerala', district: 'Thiruvananthapuram', region: 'Capital Region' },
+
+  // Zone 7: Eastern & North-Eastern (West Bengal, Odisha, Assam, NE States)
+  '700': { stateCode: 'WB', stateName: 'West Bengal', district: 'Kolkata', region: 'Kolkata Metropolitan' },
+  '711': { stateCode: 'WB', stateName: 'West Bengal', district: 'Howrah', region: 'Howrah / Hooghly' },
+  '721': { stateCode: 'WB', stateName: 'West Bengal', district: 'Paschim Medinipur', region: 'Rarh Bengal' },
+  '734': { stateCode: 'WB', stateName: 'West Bengal', district: 'Darjeeling / Siliguri', region: 'North Bengal' },
+  '737': { stateCode: 'SK', stateName: 'Sikkim', district: 'East Sikkim / Gangtok', region: 'Sikkim Hills' },
+  '751': { stateCode: 'OD', stateName: 'Odisha', district: 'Khurda / Bhubaneswar', region: 'Capital Coastal' },
+  '753': { stateCode: 'OD', stateName: 'Odisha', district: 'Cuttack', region: 'Central Odisha' },
+  '760': { stateCode: 'OD', stateName: 'Odisha', district: 'Ganjam / Berhampur', region: 'South Odisha' },
+  '768': { stateCode: 'OD', stateName: 'Odisha', district: 'Sambalpur', region: 'Western Odisha' },
+  '781': { stateCode: 'AS', stateName: 'Assam', district: 'Kamrup Metropolitan / Guwahati', region: 'Lower Assam' },
+  '782': { stateCode: 'AS', stateName: 'Assam', district: 'Nagaon', region: 'Central Assam' },
+  '786': { stateCode: 'AS', stateName: 'Assam', district: 'Dibrugarh', region: 'Upper Assam' },
+  '791': { stateCode: 'AR', stateName: 'Arunachal Pradesh', district: 'Papum Pare / Itanagar', region: 'Western Arunachal' },
+  '793': { stateCode: 'ML', stateName: 'Meghalaya', district: 'East Khasi Hills / Shillong', region: 'Khasi Hills' },
+  '795': { stateCode: 'MN', stateName: 'Manipur', district: 'Imphal West', region: 'Manipur Valley' },
+  '796': { stateCode: 'MZ', stateName: 'Mizoram', district: 'Aizawl', region: 'Mizoram Hills' },
+  '797': { stateCode: 'NL', stateName: 'Nagaland', district: 'Kohima', region: 'Nagaland Hills' },
+  '799': { stateCode: 'TR', stateName: 'Tripura', district: 'West Tripura / Agartala', region: 'Tripura Central' },
+
+  // Zone 8: Eastern Central (Bihar, Jharkhand)
+  '800': { stateCode: 'BR', stateName: 'Bihar', district: 'Patna', region: 'Magadh Central' },
+  '801': { stateCode: 'BR', stateName: 'Bihar', district: 'Patna Rural', region: 'Magadh' },
+  '812': { stateCode: 'BR', stateName: 'Bihar', district: 'Bhagalpur', region: 'Anga' },
+  '823': { stateCode: 'BR', stateName: 'Bihar', district: 'Gaya', region: 'Magadh South' },
+  '825': { stateCode: 'JH', stateName: 'Jharkhand', district: 'Hazaribagh', region: 'North Chotanagpur' },
+  '826': { stateCode: 'JH', stateName: 'Jharkhand', district: 'Dhanbad', region: 'Koylanchal' },
+  '831': { stateCode: 'JH', stateName: 'Jharkhand', district: 'East Singhbhum / Jamshedpur', region: 'Kolhan' },
+  '834': { stateCode: 'JH', stateName: 'Jharkhand', district: 'Ranchi', region: 'South Chotanagpur' },
+  '842': { stateCode: 'BR', stateName: 'Bihar', district: 'Muzaffarpur', region: 'Tirhut' },
+  '854': { stateCode: 'BR', stateName: 'Bihar', district: 'Purnia', region: 'Seemanchal' },
 };
 
 export class DelimitationService {
@@ -952,12 +1081,13 @@ export class DelimitationService {
     }
 
     const prefix3 = pinCode.substring(0, 3);
-    const matched = PIN_PREFIX_MAPPING[prefix3] ?? {
-      stateCode: 'TS',
-      stateName: 'Telangana',
-      district: 'Hyderabad',
-      region: 'Central Region',
-    };
+    const matched = PIN_PREFIX_MAPPING[prefix3];
+    if (!matched) {
+      const err = new Error(`PIN code prefix '${prefix3}' is not mapped to a known postal division or state.`);
+      (err as any).statusCode = 404;
+      (err as any).code = 'PIN_NOT_FOUND';
+      throw err;
+    }
 
     const stateConstituencies = getStateConstituencies(matched.stateCode);
     const pinSuffix = parseInt(pinCode.slice(-2), 10) || 0;

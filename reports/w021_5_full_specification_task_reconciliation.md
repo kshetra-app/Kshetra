@@ -1,8 +1,8 @@
 # KSHETRA W021.5 — FULL SPECIFICATION TASK RECONCILIATION
 ## Comprehensive Task-by-Task Inventory Across Stages A through I
 
-**Directive:** CTO Directive 119  
-**Predecessor:** CTO Directive 118  
+**Directive:** CTO Directive 121  
+**Predecessor:** CTO Directive 120  
 **Repository:** `https://github.com/kshetra-app/Kshetra`  
 **Governing Authority:** Master Execution Framework Amendment v1.6 / Rule IV-001 Non-Self-Acceptance  
 **Production Boundary:** `AIR_GAPPED_UNEXECUTED` (Strictly zero queries, zero mutations on `ehfafcnimmjusyvplbah`)  
@@ -180,12 +180,12 @@ This document provides an exhaustive, evidence-backed reconciliation of all 27 c
 | Field | Audit Finding |
 |---|---|
 | **Requirement** | Complete implementation and verification of national assembly boundary geojson deep validation & linkage adhering to canonical governance and zero-data-loss standards. |
-| **Current Implementation** | Documented across canonical migrations, services, test suites, and audit ledgers in repository. |
-| **Existing Foundation** | Validated static types, shared contracts, seed files, and deterministic query services. |
-| **Missing Work / Limitations** | Blocked on external evidence/gates (1.5%).  |
-| **Defects & Blockers** | Telangana AC 119 duplicate polygon defect (OPEN_AND_BLOCKED); 30 missing states boundary feeds (BLOCKED_EXTERNAL) |
+| **Current Implementation** | Reusable 7-tier geographic validation pipeline implemented in `scripts/reproduce_national_electoral_geography.mjs` and asserted by `tests/national-electoral-geography-invariants.test.mjs`. Precision geographic capability model deployed in `apps/api/src/services/stateData.ts`. |
+| **Existing Foundation** | Validated static types, shared contracts, seed files, deterministic query services, and 7-tier validation taxonomy. |
+| **Missing Work / Limitations** | Blocked on external evidence/gates (1.5%). 30 States/UTs lack official statutory GIS boundary feeds from Survey of India / ECI. |
+| **Defects & Blockers** | Telangana AC 119 multi-part polygon topology artifact (DEF-W021-01, OPEN_AND_BLOCKED); 30 missing states boundary feeds (DEF-W021-03, BLOCKED_EXTERNAL). Candidate boundary files in `scripts/` inspected and rejected. |
 | **Dependencies** | Upstream: Preceding stage data models and migrations; Downstream: Consuming API routes and UI components. |
-| **Evidence Status** | Documented in execution ledger |
+| **Evidence Status** | Documented in `reports/w021_5_execution_ledger.json` and `reports/w021_5_national_electoral_geography_reproduction.json`. |
 | **Completion Criteria** | Strict unit and integration pass, schema migration idempotency, zero fake data, independent CTO adjudication. |
 | **Next Action** | Submit Stage B evidence package for independent CTO adjudication. |
 

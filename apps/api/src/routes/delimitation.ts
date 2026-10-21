@@ -343,8 +343,10 @@ export async function delimitationRoutes(app: FastifyInstance) {
       const result = delimitationService.getCitizenImpact(pinCode);
       return sendSuccess(reply, request, result);
     } catch (err: any) {
-      return sendApiError(reply, request, 500, 'Internal Server Error', err.message || 'Error resolving citizen impact', {
-        code: 'CITIZEN_IMPACT_ERROR',
+      const statusCode = err.statusCode || 500;
+      const statusTitle = statusCode === 404 ? 'Not Found' : statusCode === 400 ? 'Bad Request' : 'Internal Server Error';
+      return sendApiError(reply, request, statusCode, statusTitle, err.message || 'Error resolving citizen impact', {
+        code: err.code || 'CITIZEN_IMPACT_ERROR',
       });
     }
   });

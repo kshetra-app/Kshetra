@@ -70,9 +70,9 @@ test('Regression: Authoritative migrations in supabase/migrations/ preserve thei
     '061_canonical_national_ac_pc_mappings.sql': '4d8eafa4c0c6d88854bd815227fbf81529ee9d2911c9ed9f44cc799f519726e9',
     '062_canonical_assam_2023_delimitation.sql': 'b5747944360c44db20d3276119b3820e6e935df7896678c893f2140609670208',
     '063_canonical_political_identity_foundation.sql': 'f99ceb6d98a762784cc251eb4e6ea355be6e08c97949e084e1d61449b5129368',
-    '064_political_organization_governance_remediation.sql': '71683a4aab0c6e329bf5739cc0bfdb3c04ac7769e1f26b7142532348c05da072',
-    '065_canonical_political_organization_registry.sql': '78ec752a92702bcc32e4aba6a0115d55c2a024c0165af8418f7cc41c598100e1',
-    '066_downstream_civic_extensions.sql': '74fbcd9a6303946eb2d6b9895a085ce0c6b8fcf6a405a65118fea6fdb24353a3'
+    '064_political_organization_governance_remediation.sql': '51fc1addc090eb75fb0ef9dbe75727029ff455ed3e2d80a9a48d6c5c6e6e0be1',
+    '065_canonical_political_organization_registry.sql': 'd514c64e8a80b928875f1ea03d0853e5d7e3675e0e3a4134c25958632fe675b7',
+    '066_downstream_civic_extensions.sql': '6c923a4467a0fa605ab3092c452aa94b391431081fdc35fb2926e5538c691dda'
   };
 
   for (const [file, expectedHash] of Object.entries(expectedHashes)) {

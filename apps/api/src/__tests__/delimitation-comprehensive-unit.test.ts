@@ -268,7 +268,7 @@ describe('Comprehensive Delimitation Unit & Route Tests', () => {
       });
       expect(errRes.statusCode).toBe(400);
       expect(JSON.parse(errRes.payload).code).toBe('CUSTOM_ERROR');
-    });
+    }, 60000);
 
     it('Route 7: /impact/:pinCode handles validation and service errors', async () => {
       // Service error

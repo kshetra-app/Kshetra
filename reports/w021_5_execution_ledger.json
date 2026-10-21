@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "W021.5 Traceable Execution Ledger",
   "milestone": "W021.5",
-  "directive": "CTO Directive 086 / CTO Directive 087 / CTO Directive 088 / CTO Directive 089 / CTO Directive 090 / CTO Directive 091 / CTO Directive 092 / CTO Directive 093 / CTO Directive 094 / CTO Directive 095 / CTO Directive 096 / CTO Directive 097 / CTO Directive 098 / CTO Directive 099 / CTO Directive 100 / CTO Directive 101 / CTO Directive 102 / CTO Directive 103 / CTO Directive 104 / CTO Directive 105 / CTO Directive 106 / CTO Directive 107 / CTO Directive 108 / CTO Directive 109 / CTO Directive 110 / CTO Directive 111 / CTO Directive 112 / CTO Directive 113 / CTO Directive 114 / CTO Directive 115 / CTO Directive 116 / CTO Directive 117 / CTO Directive 118 / CTO Directive 119 / CTO Directive 120",
+  "directive": "CTO Directive 086 / CTO Directive 087 / CTO Directive 088 / CTO Directive 089 / CTO Directive 090 / CTO Directive 091 / CTO Directive 092 / CTO Directive 093 / CTO Directive 094 / CTO Directive 095 / CTO Directive 096 / CTO Directive 097 / CTO Directive 098 / CTO Directive 099 / CTO Directive 100 / CTO Directive 101 / CTO Directive 102 / CTO Directive 103 / CTO Directive 104 / CTO Directive 105 / CTO Directive 106 / CTO Directive 107 / CTO Directive 108 / CTO Directive 109 / CTO Directive 110 / CTO Directive 111 / CTO Directive 112 / CTO Directive 113 / CTO Directive 114 / CTO Directive 115 / CTO Directive 116 / CTO Directive 117 / CTO Directive 118 / CTO Directive 119 / CTO Directive 120 / CTO Directive 121",
   "governance": "Master Execution Framework Amendment v1.6 / Rule IV-001 Non-Self-Acceptance",
   "financialDefectStatus": {
     "defectId": "DQ-W021.5-B2.2E-001",
@@ -1166,6 +1166,24 @@
               "path": "reports/w021_5_national_data_coverage_matrix.json",
               "evidenceClass": "REPOSITORY_IMPLEMENTATION",
               "supportsClaim": "Telangana GeoJSON boundary fixture fully validated with closed rings; national 30 states pending authoritative boundary feeds.",
+              "verificationStatus": "VERIFIED_ON_DISK"
+            },
+            {
+              "path": "scripts/reproduce_national_electoral_geography.mjs",
+              "evidenceClass": "REPOSITORY_IMPLEMENTATION",
+              "supportsClaim": "Directive 121 national 7-tier geographic boundary validation pipeline, AC 119 forensic investigation, and candidate rejection proofs.",
+              "verificationStatus": "VERIFIED_ON_DISK"
+            },
+            {
+              "path": "reports/w021_5_national_electoral_geography_reproduction.json",
+              "evidenceClass": "REPOSITORY_IMPLEMENTATION",
+              "supportsClaim": "Directive 121 7-tier validation matrix across 36 jurisdictions, AC 119 forensic topology artifact findings, and 30 missing states catalog.",
+              "verificationStatus": "VERIFIED_ON_DISK"
+            },
+            {
+              "path": "tests/national-electoral-geography-invariants.test.mjs",
+              "evidenceClass": "TEST_VERIFICATION",
+              "supportsClaim": "Deterministic test battery asserting 4,123 ACs, 543 PCs, Assam 2023 delimitation cutoff, 7-tier geography pipeline, and precision capability model.",
               "verificationStatus": "VERIFIED_ON_DISK"
             }
           ],

@@ -251,6 +251,55 @@ describe('Delimitation Engine Foundation Routes (W020-G5)', () => {
       expect(json.data.provenance.dataStatus).toBe('ESTIMATE');
     });
 
+    it('returns 200 for Delhi PIN code (110001) mapping to DL and not falling back to TS', async () => {
+      const res = await app.inject({
+        method: 'GET',
+        url: '/api/v1/delimitation/impact/110001',
+      });
+
+      expect(res.statusCode).toBe(200);
+      const json = JSON.parse(res.payload);
+      expect(json.success).toBe(true);
+      expect(json.data.location.stateCode).toBe('DL');
+      expect(json.data.location.stateName).toBe('Delhi');
+    });
+
+    it('returns 200 for Maharashtra PIN code (400001) mapping to MH', async () => {
+      const res = await app.inject({
+        method: 'GET',
+        url: '/api/v1/delimitation/impact/400001',
+      });
+
+      expect(res.statusCode).toBe(200);
+      const json = JSON.parse(res.payload);
+      expect(json.success).toBe(true);
+      expect(json.data.location.stateCode).toBe('MH');
+      expect(json.data.location.district).toBe('Mumbai');
+    });
+
+    it('returns 200 for Karnataka PIN code (560001) mapping to KA', async () => {
+      const res = await app.inject({
+        method: 'GET',
+        url: '/api/v1/delimitation/impact/560001',
+      });
+
+      expect(res.statusCode).toBe(200);
+      const json = JSON.parse(res.payload);
+      expect(json.success).toBe(true);
+      expect(json.data.location.stateCode).toBe('KA');
+    });
+
+    it('returns 404 for unmapped PIN code (999999) without silent fallback to TS', async () => {
+      const res = await app.inject({
+        method: 'GET',
+        url: '/api/v1/delimitation/impact/999999',
+      });
+
+      expect(res.statusCode).toBe(404);
+      const json = JSON.parse(res.payload);
+      expect(json.code).toBe('PIN_NOT_FOUND');
+    });
+
     it('returns 400 for malformed PIN code (less than 6 digits)', async () => {
       const res = await app.inject({
         method: 'GET',

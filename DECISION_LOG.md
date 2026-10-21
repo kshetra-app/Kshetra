@@ -2657,3 +2657,38 @@
 - **Milestone Gate Status:**
   - W021-G5: **ACCEPTED / COMPLETE**.
   - W021-G6: **SUBMITTED FOR CTO ACCEPTANCE REVIEW**.
+
+### DEC-121: CTO DIRECTIVE 121 — STAGE B CLOSURE, NATIONAL DATA-TRUTH COMPLETION & ARCHITECTURAL INTEGRITY
+- **Date:** 2026-10-21
+- **Status:** IMPLEMENTATION COMPLETE / SUBMITTED FOR INDEPENDENT ADJUDICATION
+- **Authority:** CTO Directive 121 / Master Execution Framework Amendment v1.6 / Rule IV-001 Non-Self-Acceptance
+- **Context:** Directive 121 mandated completing all repository-verifiable work to bring Stage B as close as possible to defensible independent adjudication, correcting national data-truth and architectural defects without compromising the passing test coverage gate.
+- **Architectural & Governance Determinations:**
+  1. **Workstream A — Precision Geographic Capability Model:**
+     - Deployed 6-tier status taxonomy (`UNAVAILABLE`, `MALFORMED`, `STRUCTURALLY_VALID`, `CONFLICT_PENDING`, `LINKED_PROVISIONAL`, `ACCEPTED_AUTHORITATIVE`) in `apps/api/src/services/stateData.ts`.
+     - Eliminated contradictory `VALIDATED_GEOJSON_STATES = new Set(['TS'])`. The set is now strictly empty (`Set([])`).
+     - Standardized `hasGeoJSON` to fail closed to `false` for all 31 States/UTs, eliminating overstatement of geometry availability.
+     - Separated `hasBoundaryAsset: true` for Telangana from statutory verification and conflict clearance (`hasCleanConstituencyMapping: false`, `isAuthoritativeAccepted: false`, `activeDefects: ['DEF-W021-01']`).
+  2. **Workstream B — Complete Forensic AC 119 Investigation (DEF-W021-01):**
+     - Detailed inspection of FID 4159 (Index 118, northern body) and FID 4160 (Index 119, southern detached pocket) in `telangana-assembly.geojson`.
+     - Cross-referenced against official TGRAC state GIS data (`tgrac_assembly_constituencies_raw.json`), which represents Bhadrachalam AC as a single feature with 2 rings.
+     - Determined root cause as multi-part polygon topology artifact resulting from the 2014 Polavaram mandal transfer, improperly converted into 2 Polygon features by open-source Datameet shapefile tooling.
+     - Under Rule IV-001, arbitrary deletion of FID 4160 or unverified merging is strictly prohibited. `DEF-W021-01` remains `OPEN_AND_BLOCKED` pending official CEO Telangana gazette consolidation.
+  3. **Workstream C — Reusable 7-Tier National Geography Validation Pipeline:**
+     - Standardized 7-tier validation across all 36 jurisdictions in `scripts/reproduce_national_electoral_geography.mjs`.
+     - 30 States/UTs catalogued as Tier 1 (`FILE_ABSENT`) and tracked under `DEF-W021-03` (`BLOCKED_EXTERNAL`).
+     - Audited and formally rejected all 11 candidate scratch files in `scripts/` due to seat discrepancies and lack of Survey of India / ECI digital signatures.
+  4. **Workstream D — National AC (4,123) and AC-to-PC (543) Invariant Reproduction:**
+     - Re-verified all 4,123 ACs across 31 seed files with sequential indexing from 1 to statutory seat count (zero gaps, zero duplicates).
+     - Re-verified 4,123 AC-to-PC mapping tuples in Migration 061 mapping to 537 PCs in assembly states, plus 6 non-assembly UT PCs (AN: 1, CH: 1, DH: 2, LA: 1, LD: 1), totaling the statutory 543 Parliamentary Constituencies with zero interstate misallocations.
+     - Established explicit 6-tier evidence taxonomy (`STATIC_FILE_PARSING`, `DETERMINISTIC_TEST_VERIFIED`, `LOGICAL_REFERENTIAL_VALIDATED`, `DATABASE_VERIFICATION_PENDING`, `STATUTORY_ELECTORAL_EVALUATED`, `INDEPENDENT_ACCEPTANCE_PENDING`).
+  5. **Workstream E — Assam Delimitation 2023 Temporal Model (DEF-W021-02):**
+     - Verified Migration 062 modeling 126 new 2023 ACs, 14 PCs, and statutory reservation (98 GEN, 9 SC, 19 ST) with effective cutoff `2023-08-16`.
+     - Pre-2023 1976 order vector lineage preserved as `ASSAM_HISTORICAL_LINEAGE_PENDING` under `DEF-W021-02` pending ECI vector digitization.
+  6. **Workstream F — Delimitation Postal Routing Defect Remediation (DEF-W021-05):**
+     - Expanded `PIN_PREFIX_MAPPING` in `apps/api/src/services/delimitationService.ts` across canonical postal zones 1 to 8.
+     - Removed silent fallback `{ stateCode: 'TS', ... }`. Unmapped PINs fail closed with HTTP 404 `PIN_NOT_FOUND`.
+  7. **Workstream H — Quality and Governance Gate Preservation:**
+     - Passing coverage gate maintained: Statements 95.41%, Branches 83.31%, Functions 96.50%, Lines 95.95% (exceeding all 90/82/90/90 thresholds).
+     - Strict production air-gap preserved (`AIR_GAPPED_UNEXECUTED`).
+     - Formal CTO Acceptance strictly `0.0% — PENDING INDEPENDENT ADJUDICATION`.

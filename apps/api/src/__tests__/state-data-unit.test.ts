@@ -24,7 +24,15 @@ describe('State Data Service (stateData.ts) Unit Tests', () => {
       expect(ts?.totalSeats).toBe(119);
       expect(ts?.loadedCount).toBe(119);
       expect(ts?.dataStatus).toBe('full');
-      expect(ts?.hasGeoJSON).toBe(true);
+      // Directive 121: hasGeoJSON fails closed to false due to DEF-W021-01 (AC 119 duplicate polygon)
+      expect(ts?.hasGeoJSON).toBe(false);
+      // Granular geographicCapability truth
+      expect(ts?.geographicCapability.hasBoundaryAsset).toBe(true);
+      expect(ts?.geographicCapability.boundaryStatus).toBe('CONFLICT_PENDING');
+      expect(ts?.geographicCapability.isStructurallyValid).toBe(true);
+      expect(ts?.geographicCapability.hasCleanConstituencyMapping).toBe(false);
+      expect(ts?.geographicCapability.isAuthoritativeAccepted).toBe(false);
+      expect(ts?.geographicCapability.activeDefects).toEqual(['DEF-W021-01']);
 
       const tsLower = getStateInfo('ts');
       expect(tsLower).toEqual(ts);
@@ -32,6 +40,10 @@ describe('State Data Service (stateData.ts) Unit Tests', () => {
       const ap = getStateInfo('AP');
       expect(ap?.name).toBe('Andhra Pradesh');
       expect(ap?.totalSeats).toBe(175);
+      expect(ap?.hasGeoJSON).toBe(false);
+      expect(ap?.geographicCapability.hasBoundaryAsset).toBe(false);
+      expect(ap?.geographicCapability.boundaryStatus).toBe('UNAVAILABLE');
+      expect(ap?.geographicCapability.activeDefects).toEqual(['DEF-W021-03']);
     });
 
     it('returns null for non-existent or unsupported state codes', () => {
@@ -46,12 +58,14 @@ describe('State Data Service (stateData.ts) Unit Tests', () => {
       const withGeo = all.filter((s) => s.hasGeoJSON);
       const withoutGeo = all.filter((s) => !s.hasGeoJSON);
 
-      // Exactly 1 state (TS) has validated canonical GeoJSON boundary assets
-      expect(withGeo.length).toBe(1);
-      expect(withGeo[0].code).toBe('TS');
+      // Directive 121: Zero states claim accepted authoritative geometry without statutory clearance
+      expect(withGeo.length).toBe(0);
+      expect(withoutGeo.length).toBe(31);
 
-      // The remaining 30 states must report hasGeoJSON: false (no validated boundary assets)
-      expect(withoutGeo.length).toBe(30);
+      // Telangana possesses a local boundary asset, but is flagged as CONFLICT_PENDING
+      const tsInfo = getStateInfo('TS');
+      expect(tsInfo?.geographicCapability.hasBoundaryAsset).toBe(true);
+      expect(tsInfo?.geographicCapability.boundaryStatus).toBe('CONFLICT_PENDING');
 
       const OTHER_30_STATES = [
         'AP', 'KA', 'MH', 'TN', 'KL', 'WB', 'UP', 'RJ', 'GJ', 'JH',
@@ -63,6 +77,9 @@ describe('State Data Service (stateData.ts) Unit Tests', () => {
         const stateInfo = getStateInfo(code);
         expect(stateInfo).not.toBeNull();
         expect(stateInfo?.hasGeoJSON).toBe(false);
+        expect(stateInfo?.geographicCapability.hasBoundaryAsset).toBe(false);
+        expect(stateInfo?.geographicCapability.boundaryStatus).toBe('UNAVAILABLE');
+        expect(stateInfo?.geographicCapability.activeDefects).toContain('DEF-W021-03');
       }
 
       for (const info of all) {
@@ -72,6 +89,16 @@ describe('State Data Service (stateData.ts) Unit Tests', () => {
         expect(info.loadedCount).toBeGreaterThan(0);
         expect(['full', 'stub']).toContain(info.dataStatus);
       }
+    });
+
+    it('verifies exported helper getGeographicCapability and constants', () => {
+      expect(stateData.getGeographicCapability('TS').hasBoundaryAsset).toBe(true);
+      expect(stateData.getGeographicCapability('ts').boundaryStatus).toBe('CONFLICT_PENDING');
+      expect(stateData.getGeographicCapability('AP').hasBoundaryAsset).toBe(false);
+      expect(stateData.getGeographicCapability('DL').boundaryStatus).toBe('UNAVAILABLE');
+      expect(stateData.VALIDATED_GEOJSON_STATES.size).toBe(0);
+      expect(stateData.STATES_WITH_BOUNDARY_ASSETS.has('TS')).toBe(true);
+      expect(stateData.STATES_WITH_BOUNDARY_ASSETS.size).toBe(1);
     });
   });
 

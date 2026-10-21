@@ -87,13 +87,46 @@ function genericToBrief(stateCode: string, c: any): ConstituencyBrief {
   };
 }
 
+/**
+ * 6-Tier Geographic Boundary Status Taxonomy (Directive 121 / MEF Amendment v1.6):
+ * - UNAVAILABLE: No boundary file or asset exists in canonical data/geo/
+ * - MALFORMED: File exists but JSON is invalid, corrupted, or rings unclosed
+ * - STRUCTURALLY_VALID: RFC 7946 valid coordinates and rings, but unlinked or partial
+ * - CONFLICT_PENDING: Geometry valid, but has unresolved feature conflicts / duplicates (e.g. TS AC 119)
+ * - LINKED_PROVISIONAL: Linked 1:1 to canonical constituencies, but unverified statutory provenance
+ * - ACCEPTED_AUTHORITATIVE: Fully accepted authoritative boundary by CEO / ECI / statutory body
+ */
+export type GeographicBoundaryStatus =
+  | 'UNAVAILABLE'
+  | 'MALFORMED'
+  | 'STRUCTURALLY_VALID'
+  | 'CONFLICT_PENDING'
+  | 'LINKED_PROVISIONAL'
+  | 'ACCEPTED_AUTHORITATIVE';
+
+export interface GeographicCapability {
+  hasBoundaryAsset: boolean;
+  boundaryStatus: GeographicBoundaryStatus;
+  isStructurallyValid: boolean;
+  hasCleanConstituencyMapping: boolean;
+  isAuthoritativeAccepted: boolean;
+  activeDefects: string[];
+  notes?: string;
+}
+
 export interface StateDataInfo {
   code: string;
   name: string;
   totalSeats: number;
   loadedCount: number;
   dataStatus: 'full' | 'stub' | 'planned';
+  /**
+   * Fail-closed boolean indicating whether authoritative, conflict-free
+   * boundary data is accepted and available for production rendering.
+   * Evaluates to false if active defects (such as DEF-W021-01) or unverified provenance exist.
+   */
   hasGeoJSON: boolean;
+  geographicCapability: GeographicCapability;
 }
 
 const STATE_RAW_MAP: Record<string, { name: string; total: number; data: any[] }> = {
@@ -130,21 +163,59 @@ const STATE_RAW_MAP: Record<string, { name: string; total: number; data: any[] }
   JK: { name: 'Jammu & Kashmir', total: 90, data: JK_CONSTITUENCIES },
 };
 
-/** Validated state codes with available, canonical GeoJSON geometry */
-export const VALIDATED_GEOJSON_STATES = new Set<string>(['TS']);
+/**
+ * Resolves granular geographic capability for a state.
+ * Prevents a single boolean from implying stronger guarantees than the evidence supports.
+ */
+export function getGeographicCapability(stateCode: string): GeographicCapability {
+  const code = stateCode.toUpperCase();
+  if (code === 'TS') {
+    return {
+      hasBoundaryAsset: true,
+      boundaryStatus: 'CONFLICT_PENDING',
+      isStructurallyValid: true,
+      hasCleanConstituencyMapping: false,
+      isAuthoritativeAccepted: false,
+      activeDefects: ['DEF-W021-01'],
+      notes: 'Telangana has local boundary asset data/geo/telangana-assembly.geojson with 120 features for 119 statutory seats. AC 119 contains 2 distinct polygon features (FID 4159 & 4160). Blocked pending official CEO Telangana gazette consolidation.',
+    };
+  }
+
+  return {
+    hasBoundaryAsset: false,
+    boundaryStatus: 'UNAVAILABLE',
+    isStructurallyValid: false,
+    hasCleanConstituencyMapping: false,
+    isAuthoritativeAccepted: false,
+    activeDefects: ['DEF-W021-03'],
+    notes: 'Statutory boundary asset unavailable in canonical data/geo/. Ingestion blocked pending verified survey feeds.',
+  };
+}
+
+/**
+ * Validated state codes with accepted authoritative and conflict-free GeoJSON geometry.
+ * Currently EMPTY (Set()) because Telangana is blocked under DEF-W021-01 (AC 119 duplicate polygon)
+ * and the remaining 30 States/UTs are blocked under DEF-W021-03 (missing authoritative GIS feeds).
+ */
+export const VALIDATED_GEOJSON_STATES = new Set<string>([]);
+
+/** State codes that possess local candidate or provisional GeoJSON assets */
+export const STATES_WITH_BOUNDARY_ASSETS = new Set<string>(['TS']);
 
 /** Get info about a state's data availability */
 export function getStateInfo(stateCode: string): StateDataInfo | null {
   const code = stateCode.toUpperCase();
   const entry = STATE_RAW_MAP[code];
   if (!entry) return null;
+  const geographicCapability = getGeographicCapability(code);
   return {
     code,
     name: entry.name,
     totalSeats: entry.total,
     loadedCount: entry.data.length,
     dataStatus: entry.data.length >= entry.total ? 'full' : 'stub',
-    hasGeoJSON: VALIDATED_GEOJSON_STATES.has(code),
+    hasGeoJSON: geographicCapability.isAuthoritativeAccepted,
+    geographicCapability,
   };
 }
 

@@ -222,6 +222,7 @@ export async function saasV1Routes(app: FastifyInstance): Promise<void> {
         totalSeats: info.totalSeats,
         loadedConstituencies: info.loadedCount,
         hasSpatialBoundaries: info.hasGeoJSON,
+        geographicCapability: info.geographicCapability,
         provenance: {
           authorityLayer: 'STATUTORY_FACT',
           dataStatus: 'OFFICIAL',
