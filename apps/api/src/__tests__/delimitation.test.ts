@@ -236,7 +236,7 @@ describe('Delimitation Engine Foundation Routes (W020-G5)', () => {
   });
 
   describe('Route 7: GET /api/v1/delimitation/impact/:pinCode', () => {
-    it('returns 200 with spatial caveat and provenance for Hyderabad PIN 500001', async () => {
+    it('returns 200 with documented multi-AC ambiguity for Hyderabad PIN 500001', async () => {
       const res = await app.inject({
         method: 'GET',
         url: '/api/v1/delimitation/impact/500001',
@@ -246,12 +246,35 @@ describe('Delimitation Engine Foundation Routes (W020-G5)', () => {
       const json = JSON.parse(res.payload);
       expect(json.success).toBe(true);
       expect(json.data.location.stateCode).toBe('TS');
-      expect(json.data.impactAnalysis.spatialCaveat).toBeDefined();
+      expect(json.data.status).toBe('AMBIGUOUS_CANDIDATES');
+      expect(json.data.currentConstituency).toBeUndefined();
+      expect(json.data.proposedConstituency).toBeUndefined();
+      expect(json.data.impactAnalysis).toBeUndefined();
+      expect(Array.isArray(json.data.candidateConstituencies)).toBe(true);
+      expect(json.data.candidateConstituencies.length).toBe(3); // Goshamahal (65), Nampally (63), Malakpet (58)
+      expect(json.data.linkageNotice).toContain('intersects 3 assembly constituencies');
       expect(json.data.provenance.outputClassification).toBe('GEOGRAPHIC_APPROXIMATION');
       expect(json.data.provenance.dataStatus).toBe('ESTIMATE');
     });
 
-    it('returns 200 for Delhi PIN code (110001) mapping to DL without arbitrary AC assignment', async () => {
+    it('returns 200 for curated single AC PIN (500004) with authentic canonical constituency and absent proposed data', async () => {
+      const res = await app.inject({
+        method: 'GET',
+        url: '/api/v1/delimitation/impact/500004',
+      });
+
+      expect(res.statusCode).toBe(200);
+      const json = JSON.parse(res.payload);
+      expect(json.success).toBe(true);
+      expect(json.data.status).toBe('LINKED_PROVISIONAL');
+      expect(json.data.currentConstituency).toBeDefined();
+      expect(json.data.currentConstituency.acNo).toBe(63);
+      expect(json.data.currentConstituency.name).toBe('Nampally');
+      expect(json.data.proposedConstituency).toBeUndefined();
+      expect(json.data.impactAnalysis).toBeUndefined();
+    });
+
+    it('returns 200 for Delhi PIN code (110001) mapping to DL with regional info only', async () => {
       const res = await app.inject({
         method: 'GET',
         url: '/api/v1/delimitation/impact/110001',
@@ -262,16 +285,15 @@ describe('Delimitation Engine Foundation Routes (W020-G5)', () => {
       expect(json.success).toBe(true);
       expect(json.data.location.stateCode).toBe('DL');
       expect(json.data.location.stateName).toBe('Delhi');
-      // Invariant (Directive 122): Regional postal prefix does NOT arbitrarily assign an AC
+      // Invariant (Directive 123): Regional postal prefix does NOT arbitrarily assign an AC or statewide candidate list
       expect(json.data.currentConstituency).toBeUndefined();
       expect(json.data.proposedConstituency).toBeUndefined();
       expect(json.data.impactAnalysis).toBeUndefined();
-      expect(json.data.candidateConstituencies).toBeDefined();
-      expect(json.data.candidateConstituencies.length).toBeGreaterThan(0);
-      expect(json.data.status).toBe('AMBIGUOUS_CANDIDATES');
+      expect(json.data.candidateConstituencies).toBeUndefined();
+      expect(json.data.status).toBe('REGIONAL_ONLY');
     });
 
-    it('returns 200 for Maharashtra PIN code (400001) mapping to MH with regional candidate list', async () => {
+    it('returns 200 for Maharashtra PIN code (400001) mapping to MH with regional info only (no statewide candidate dump)', async () => {
       const res = await app.inject({
         method: 'GET',
         url: '/api/v1/delimitation/impact/400001',
@@ -282,13 +304,13 @@ describe('Delimitation Engine Foundation Routes (W020-G5)', () => {
       expect(json.success).toBe(true);
       expect(json.data.location.stateCode).toBe('MH');
       expect(json.data.location.district).toBe('Mumbai');
-      // Invariant (Directive 122): Regional postal prefix returns regional info only
+      // Invariant (Directive 123): Regional postal prefix returns regional info only
       expect(json.data.currentConstituency).toBeUndefined();
-      expect(json.data.candidateConstituencies).toBeDefined();
-      expect(json.data.status).toBe('AMBIGUOUS_CANDIDATES');
+      expect(json.data.candidateConstituencies).toBeUndefined();
+      expect(json.data.status).toBe('REGIONAL_ONLY');
     });
 
-    it('returns 200 for Karnataka PIN code (560001) mapping to KA with regional candidate list', async () => {
+    it('returns 200 for Karnataka PIN code (560001) mapping to KA with regional info only', async () => {
       const res = await app.inject({
         method: 'GET',
         url: '/api/v1/delimitation/impact/560001',
@@ -298,10 +320,10 @@ describe('Delimitation Engine Foundation Routes (W020-G5)', () => {
       const json = JSON.parse(res.payload);
       expect(json.success).toBe(true);
       expect(json.data.location.stateCode).toBe('KA');
-      // Invariant (Directive 122): Regional postal prefix returns regional info only
+      expect(json.data.location.district).toBe('Bengaluru Urban');
       expect(json.data.currentConstituency).toBeUndefined();
-      expect(json.data.candidateConstituencies).toBeDefined();
-      expect(json.data.status).toBe('AMBIGUOUS_CANDIDATES');
+      expect(json.data.candidateConstituencies).toBeUndefined();
+      expect(json.data.status).toBe('REGIONAL_ONLY');
     });
 
     it('returns 404 for unmapped PIN code (999999) without silent fallback to TS', async () => {

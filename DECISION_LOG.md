@@ -2724,3 +2724,49 @@
      - Headline Accounting: Repo-Verified Earned: **61.5%**, Database-Pending: **10.5%**, Externally-Blocked: **22.5%**, Unimplemented: **5.5%**.
      - Production Air-Gap strictly maintained (`AIR_GAPPED_UNEXECUTED`).
      - Formal CTO Acceptance strictly **`0.0% — PENDING INDEPENDENT ADJUDICATION`** under Rule IV-001.
+
+---
+
+### DEC-123: CTO DIRECTIVE 123 — RESIDUAL ELECTORAL DATA-TRUTH DEFECTS, PROVISIONAL LOOKUP INTEGRITY & INDEPENDENT STAGE B READINESS
+- **Date:** 2026-10-21
+- **Status:** IMPLEMENTATION COMPLETE / SUBMITTED FOR INDEPENDENT ADJUDICATION
+- **Authority:** CTO Directive 123 / Master Execution Framework Amendment v1.6 / Rule IV-001 Non-Self-Acceptance
+- **Context:** Following independent source inspection of Directive 122, residual electoral data-truth defects were identified in `apps/api/src/services/delimitationService.ts` (`getCitizenImpact`): (1) placeholder substitutions of `'Sitting Legislator'` and `'INC'` when MLA or party was absent in canonical data; (2) arithmetic generation of proposed AC numbers via `Math.round(acNo * 1.15)`; (3) generic prefix candidate sets using district substring matching with statewide fallback; and (4) unaudited entries in `CURATED_PROVISIONAL_PIN_DIRECTORY`. Directive 123 mandated the systematic eradication of these residual defects, a full audit of all 36 curated entries, implementation of negative case assertions, and preparation for independent Stage B adjudication.
+- **Architectural & Governance Determinations:**
+  1. **Workstream A — Eradication of Fabricated Provisional Political Data:**
+     - Completely removed `'Sitting Legislator'` fallback: when `canonicalAC.currentMLA` is absent, `sittingMLA` is strictly `undefined`.
+     - Completely removed `'INC'` fallback: when `canonicalAC.currentParty` is absent, `party` is strictly `undefined`.
+     - Completely removed silent defaulting of reservation to `'GEN'`: when absent, `reservation` is strictly `undefined`.
+     - Completely eradicated `Math.round(acNo * 1.15)` arithmetic generation of proposed constituency numbers.
+     - Default lookups omit `proposedConstituency` and `impactAnalysis` entirely (`undefined`).
+     - Grounded scenario projections (when `options.scenarioId` or `options.proposalId` is supplied) use scenario-scoped string identifiers (`scenarioAcIdentifier: 'SCENARIO-...'`), declare statutory status as `'NON_STATUTORY_HYPOTHETICAL_SCENARIO'`, and assert `isScenarioEstimate: true`.
+     - Updated `CitizenImpactDTO` contract in `packages/shared/src/contracts/delimitation.ts` to make `proposedConstituency.acNo`, `impactAnalysis.reservationChange`, and `impactAnalysis.impactSeverity` optional, and added `scenarioAcIdentifier` and `statutoryStatus`.
+  2. **Workstream B — Full Audit of Curated Provisional PIN Directory:**
+     - Audited all 36 entries in `CURATED_PROVISIONAL_PIN_DIRECTORY`:
+       - Documented `evidenceSource`, `referenceDocument`, `whatEvidenceEstablishes`, `spatialRelationship`, `matchingMethod`, `verificationStatus`, and `knownLimitations` for each entry.
+       - Removed fabricated split names and boundary assumptions (`Kapra-ECIL`, `KPHB Colony`, `Madhapur-Hitec City`, `Gachibowli-Kondapur`, `Nizampet-Pragathi Nagar`, `Tirupati Urban`, `Kurnool Urban`).
+       - Classified multi-AC urban intersections (`500001`, `500028`, `500034`, `500056`) as `spatialRelationship: 'INTERSECTS_MULTIPLE_ACS'` with documented candidate AC lists from Delimitation Order 2008 Schedule XXXI, returning `status: 'AMBIGUOUS_CANDIDATES'`.
+       - Single-AC provisional points retain explicit provenance and spatial approximation caveats.
+  3. **Workstream C — Candidate Set & Ambiguity Correction:**
+     - Eradicated district substring matching (`district.toLowerCase().includes(...)`) and statewide fallback.
+     - Generic 3-digit prefixes (`110`, `400`, `560`, etc.) return `status: 'REGIONAL_ONLY'`, `candidateConstituencies: undefined`, `currentConstituency: undefined`, `proposedConstituency: undefined`, and clear explanatory notice stating why constituency assignment is unavailable.
+     - Multi-AC intersections return `status: 'AMBIGUOUS_CANDIDATES'` with documented `candidateConstituencies`.
+  4. **Workstream D — Regression Test Suite Implementation (Directive 123 Section 6):**
+     - Expanded `apps/api/src/__tests__/delimitation-citizen-impact-data-truth.test.ts` to 20 tests verifying all 10 domain assertions:
+       1. Missing MLA does not produce placeholder name (`sittingMLA === undefined`).
+       2. Missing party does not produce placeholder party (`party === undefined`).
+       3. Missing reservation does not default to GEN (`reservation === undefined`).
+       4. Proposed AC number is never arithmetically derived (`Math.round(acNo * 1.15)` eradicated).
+       5. Default lookups omit proposed constituency and impact analysis.
+       6. Generic postal prefixes return regional-only with no statewide candidate dump.
+       7. Multi-constituency postal codes return ambiguous candidates with documented candidates.
+       8. Curated single-constituency points carry explicit provenance and spatial caveats.
+       9. Scenario projections declare scenario status and scenario-scoped identifiers.
+       10. Unsupported or invalid PIN codes fail closed (404 / 400).
+     - Full test pass: 20/20 PASS in `delimitation-citizen-impact-data-truth.test.ts`, 38/38 PASS in `delimitation.test.ts`, 49/49 PASS in `delimitation-comprehensive-unit.test.ts`.
+  5. **Governance & Headline Accounting Preservation:**
+     - Updated `DEFECT_REGISTER.md`: `DEF-W021-05` marked `PARTIALLY_REMEDIATED — PENDING INDEPENDENT ADJUDICATION` with separate status for all 5 subclaims.
+     - Headline Accounting: Repo-Verified Earned: **61.5%**, Database-Pending: **10.5%**, Externally-Blocked: **22.5%**, Unimplemented: **5.5%**.
+     - Stage B Boundary strictly observed: STOP at Stage B Gate; Stages C through I remain strictly **UNAUTHORIZED**.
+     - Production Air-Gap strictly maintained (`AIR_GAPPED_UNEXECUTED`).
+     - Formal CTO Acceptance strictly **`0.0% — PENDING INDEPENDENT ADJUDICATION`** under Rule IV-001.

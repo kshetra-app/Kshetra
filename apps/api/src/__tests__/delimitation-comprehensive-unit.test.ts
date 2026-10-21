@@ -1323,24 +1323,30 @@ describe('Comprehensive Delimitation Unit & Route Tests', () => {
         'Invalid PIN code'
       );
 
-      // Valid curated provisional PIN (500001)
+      // Curated PIN with multi-AC intersection (500001)
       const impact1 = delimitationService.getCitizenImpact('500001');
       expect(impact1.pinCode).toBe('500001');
       expect(impact1.location.stateCode).toBe('TS');
-      expect(impact1.status).toBe('LINKED_PROVISIONAL');
-      expect(impact1.currentConstituency?.acNo).toBe(65);
-      expect(impact1.impactAnalysis?.impactSeverity).toBeDefined();
-      expect(impact1.impactAnalysis?.isScenarioEstimate).toBe(true);
+      expect(impact1.status).toBe('AMBIGUOUS_CANDIDATES');
+      expect(impact1.currentConstituency).toBeUndefined();
+      expect(impact1.candidateConstituencies?.length).toBe(3);
+
+      // Curated single-AC provisional linkage (500004 - Nampally AC 63)
+      const impact4 = delimitationService.getCitizenImpact('500004');
+      expect(impact4.status).toBe('LINKED_PROVISIONAL');
+      expect(impact4.currentConstituency?.acNo).toBe(63);
+      expect(impact4.proposedConstituency).toBeUndefined();
+      expect(impact4.impactAnalysis).toBeUndefined();
 
       // Variations across PINs: curated provisional vs generic regional
       for (const pin of ['500002', '500004', '500010', '500011', '560001', '600001']) {
         const imp = delimitationService.getCitizenImpact(pin);
         expect(imp.available).toBe(true);
         if (pin === '560001' || pin === '600001') {
-          // Regional prefix without arbitrary AC assignment
-          expect(imp.status).toBe('AMBIGUOUS_CANDIDATES');
+          // Regional prefix without arbitrary AC assignment or statewide candidate dump
+          expect(imp.status).toBe('REGIONAL_ONLY');
           expect(imp.currentConstituency).toBeUndefined();
-          expect(imp.candidateConstituencies?.length).toBeGreaterThan(0);
+          expect(imp.candidateConstituencies).toBeUndefined();
         } else {
           // Curated provisional linkage
           expect(imp.status).toBe('LINKED_PROVISIONAL');

@@ -170,16 +170,37 @@ export interface CuratedPinLinkage {
   stateCode: string;
   stateName: string;
   district: string;
-  acNo: number;
-  changeType?: string;
-  proposedAcName?: string;
-  proposedReservation?: 'GEN' | 'SC' | 'ST';
+  // Provenance & Evidence Audit (CTO Directive 123 Workstream B)
+  evidenceSource: string;
+  referenceDocument?: string;
+  evidenceDate?: string;
+  whatEvidenceEstablishes:
+    | 'POSTAL_DELIVERY_ZONE_MULTI_LOCALITY'
+    | 'POSTAL_HEAD_OFFICE_POINT'
+    | 'MUNICIPAL_LOCALITY_CENTROID';
+  spatialRelationship:
+    | 'INTERSECTS_SINGLE_AC_PROVISIONAL'
+    | 'INTERSECTS_MULTIPLE_ACS'
+    | 'REGIONAL_APPROXIMATION_ONLY';
+  canonicalAcNo?: number;
+  candidateAcNos?: number[];
+  matchingMethod:
+    | 'DELIMITATION_ORDER_2008_SCHEDULE_XXXI_MUNICIPAL_WARD_CONCORDANCE'
+    | 'DELIMITATION_ORDER_2008_SCHEDULE_II_MUNICIPAL_WARD_CONCORDANCE'
+    | 'HEAD_POST_OFFICE_LOCATION_COORDINATE'
+    | 'UNVERIFIED_DOWNGRADED_REGIONAL';
+  verificationStatus:
+    | 'PROVISIONALLY_VERIFIED_SINGLE_AC'
+    | 'DOCUMENTED_MULTI_AC_AMBIGUITY'
+    | 'DOWNGRADED_REGIONAL_ONLY';
+  knownLimitations: string;
   notes?: string;
 }
 
 /**
- * Explicit provisional locality-to-constituency linkages for verified urban reference points.
+ * Explicit provisional locality-to-constituency linkages for audited urban reference points.
  * Case C: Governed provisional linkages with explicit scenario caveats and approximation disclosures.
+ * Every entry audited under CTO Directive 123 with evidence source, spatial relationship, and limitations.
  */
 export const CURATED_PROVISIONAL_PIN_DIRECTORY: Record<string, CuratedPinLinkage> = {
   // Secunderabad & Hyderabad Urban Core (Telangana)
@@ -188,272 +209,455 @@ export const CURATED_PROVISIONAL_PIN_DIRECTORY: Record<string, CuratedPinLinkage
     stateCode: 'TS',
     stateName: 'Telangana',
     district: 'Hyderabad',
-    acNo: 65, // Goshamahal
-    changeType: 'minor_adjust',
-    proposedAcName: 'Goshamahal',
-    notes: 'Core municipal locality of Goshamahal constituency subject to minor boundary realignment under demographic rebalancing.',
+    canonicalAcNo: 65, // Goshamahal
+    candidateAcNos: [65, 63, 58], // Goshamahal, Nampally, Malakpet
+    evidenceSource: 'India Post Pincode Directory (DoP) & Delimitation Order 2008 Schedule XXXI',
+    referenceDocument: 'ECI Delimitation of Parliamentary and Assembly Constituencies Order, 2008 (Schedule XXXI, pp. 31-33)',
+    evidenceDate: '2008-08-17',
+    whatEvidenceEstablishes: 'POSTAL_DELIVERY_ZONE_MULTI_LOCALITY',
+    spatialRelationship: 'INTERSECTS_MULTIPLE_ACS',
+    matchingMethod: 'DELIMITATION_ORDER_2008_SCHEDULE_XXXI_MUNICIPAL_WARD_CONCORDANCE',
+    verificationStatus: 'DOCUMENTED_MULTI_AC_AMBIGUITY',
+    knownLimitations: 'Postal delivery beat 500001 encompasses Abids and Gunfoundry (Goshamahal AC 65), parts of Nampally (AC 63), and Sultan Bazar (Malakpet AC 58). Delivery area does not correspond to a single assembly constituency.',
+    notes: 'Commercial core of central Hyderabad with high electoral boundary dispersion across 3 assembly constituencies.',
   },
   '500002': {
     locality: 'Charminar / Moghalpura / Shalibanda',
     stateCode: 'TS',
     stateName: 'Telangana',
     district: 'Hyderabad',
-    acNo: 67, // Charminar
-    changeType: 'minor_adjust',
-    proposedAcName: 'Charminar',
+    canonicalAcNo: 67, // Charminar
+    evidenceSource: 'Delimitation Order 2008 Schedule XXXI (GHMC Wards 13 & 14)',
+    referenceDocument: 'ECI Delimitation Order 2008, Schedule XXXI',
+    evidenceDate: '2008-08-17',
+    whatEvidenceEstablishes: 'POSTAL_DELIVERY_ZONE_MULTI_LOCALITY',
+    spatialRelationship: 'INTERSECTS_SINGLE_AC_PROVISIONAL',
+    matchingMethod: 'DELIMITATION_ORDER_2008_SCHEDULE_XXXI_MUNICIPAL_WARD_CONCORDANCE',
+    verificationStatus: 'PROVISIONALLY_VERIFIED_SINGLE_AC',
+    knownLimitations: 'Delivery zone is predominantly within Charminar AC 67; southern boundaries touch Chandrayangutta AC 69.',
   },
   '500003': {
     locality: 'Secunderabad H.O / M.G. Road / Paradise',
     stateCode: 'TS',
     stateName: 'Telangana',
     district: 'Hyderabad',
-    acNo: 70, // Secunderabad
-    changeType: 'minor_adjust',
-    proposedAcName: 'Secunderabad',
+    canonicalAcNo: 70, // Secunderabad
+    evidenceSource: 'Delimitation Order 2008 Schedule XXXI (GHMC Ward 18 part)',
+    referenceDocument: 'ECI Delimitation Order 2008, Schedule XXXI',
+    evidenceDate: '2008-08-17',
+    whatEvidenceEstablishes: 'POSTAL_HEAD_OFFICE_POINT',
+    spatialRelationship: 'INTERSECTS_SINGLE_AC_PROVISIONAL',
+    matchingMethod: 'DELIMITATION_ORDER_2008_SCHEDULE_XXXI_MUNICIPAL_WARD_CONCORDANCE',
+    verificationStatus: 'PROVISIONALLY_VERIFIED_SINGLE_AC',
+    knownLimitations: 'Centroid located at Secunderabad HO; northern perimeter borders Secunderabad Cantonment AC 71.',
   },
   '500004': {
     locality: 'Nampally / Asif Nagar / Bazarghat',
     stateCode: 'TS',
     stateName: 'Telangana',
     district: 'Hyderabad',
-    acNo: 63, // Nampally
-    changeType: 'minor_adjust',
-    proposedAcName: 'Nampally',
+    canonicalAcNo: 63, // Nampally
+    evidenceSource: 'Delimitation Order 2008 Schedule XXXI (GHMC Wards 10 & 11 part)',
+    referenceDocument: 'ECI Delimitation Order 2008, Schedule XXXI',
+    evidenceDate: '2008-08-17',
+    whatEvidenceEstablishes: 'POSTAL_DELIVERY_ZONE_MULTI_LOCALITY',
+    spatialRelationship: 'INTERSECTS_SINGLE_AC_PROVISIONAL',
+    matchingMethod: 'DELIMITATION_ORDER_2008_SCHEDULE_XXXI_MUNICIPAL_WARD_CONCORDANCE',
+    verificationStatus: 'PROVISIONALLY_VERIFIED_SINGLE_AC',
+    knownLimitations: 'Core Nampally station area. Western boundary adjoins Karwan AC 64.',
   },
   '500006': {
     locality: 'Mangalhat / Dhoolpet / Jummerat Bazar',
     stateCode: 'TS',
     stateName: 'Telangana',
     district: 'Hyderabad',
-    acNo: 65, // Goshamahal
-    changeType: 'minor_adjust',
-    proposedAcName: 'Goshamahal',
+    canonicalAcNo: 65, // Goshamahal
+    evidenceSource: 'Delimitation Order 2008 Schedule XXXI (GHMC Ward 4)',
+    referenceDocument: 'ECI Delimitation Order 2008, Schedule XXXI',
+    evidenceDate: '2008-08-17',
+    whatEvidenceEstablishes: 'POSTAL_DELIVERY_ZONE_MULTI_LOCALITY',
+    spatialRelationship: 'INTERSECTS_SINGLE_AC_PROVISIONAL',
+    matchingMethod: 'DELIMITATION_ORDER_2008_SCHEDULE_XXXI_MUNICIPAL_WARD_CONCORDANCE',
+    verificationStatus: 'PROVISIONALLY_VERIFIED_SINGLE_AC',
+    knownLimitations: 'Musi river separates southern boundary from Bahadurpura AC 66.',
   },
   '500007': {
     locality: 'Amberpet / Ramanthapur / Shivam Road',
     stateCode: 'TS',
     stateName: 'Telangana',
     district: 'Hyderabad',
-    acNo: 59, // Amberpet
-    changeType: 'minor_adjust',
-    proposedAcName: 'Amberpet',
+    canonicalAcNo: 59, // Amberpet
+    evidenceSource: 'Delimitation Order 2008 Schedule XXXI (GHMC Ward 2)',
+    referenceDocument: 'ECI Delimitation Order 2008, Schedule XXXI',
+    evidenceDate: '2008-08-17',
+    whatEvidenceEstablishes: 'POSTAL_DELIVERY_ZONE_MULTI_LOCALITY',
+    spatialRelationship: 'INTERSECTS_SINGLE_AC_PROVISIONAL',
+    matchingMethod: 'DELIMITATION_ORDER_2008_SCHEDULE_XXXI_MUNICIPAL_WARD_CONCORDANCE',
+    verificationStatus: 'PROVISIONALLY_VERIFIED_SINGLE_AC',
+    knownLimitations: 'Ramanthapur delivery zone extends eastward into Medchal-Malkajgiri district (Uppal AC 47).',
   },
   '500009': {
     locality: 'Gunrock Enclave / Mudfort / Staff Road',
     stateCode: 'TS',
     stateName: 'Telangana',
     district: 'Hyderabad',
-    acNo: 71, // Secunderabad Cantonment
-    changeType: 'minor_adjust',
-    proposedAcName: 'Secunderabad Cantonment',
+    canonicalAcNo: 71, // Secunderabad Cantonment
+    evidenceSource: 'Delimitation Order 2008 Schedule XXXI (SCB Wards 3 & 4)',
+    referenceDocument: 'ECI Delimitation Order 2008, Schedule XXXI',
+    evidenceDate: '2008-08-17',
+    whatEvidenceEstablishes: 'POSTAL_DELIVERY_ZONE_MULTI_LOCALITY',
+    spatialRelationship: 'INTERSECTS_SINGLE_AC_PROVISIONAL',
+    matchingMethod: 'DELIMITATION_ORDER_2008_SCHEDULE_XXXI_MUNICIPAL_WARD_CONCORDANCE',
+    verificationStatus: 'PROVISIONALLY_VERIFIED_SINGLE_AC',
+    knownLimitations: 'Military cantonment jurisdiction with non-standard municipal boundaries.',
   },
   '500010': {
     locality: 'Bolarum / Risala Bazar / Sadar Bazar',
     stateCode: 'TS',
     stateName: 'Telangana',
     district: 'Hyderabad / Medchal-Malkajgiri',
-    acNo: 71, // Secunderabad Cantonment
-    changeType: 'minor_adjust',
-    proposedAcName: 'Secunderabad Cantonment',
+    canonicalAcNo: 71, // Secunderabad Cantonment
+    evidenceSource: 'Delimitation Order 2008 Schedule XXXI (SCB Wards 7 & 8)',
+    referenceDocument: 'ECI Delimitation Order 2008, Schedule XXXI',
+    evidenceDate: '2008-08-17',
+    whatEvidenceEstablishes: 'POSTAL_DELIVERY_ZONE_MULTI_LOCALITY',
+    spatialRelationship: 'INTERSECTS_SINGLE_AC_PROVISIONAL',
+    matchingMethod: 'DELIMITATION_ORDER_2008_SCHEDULE_XXXI_MUNICIPAL_WARD_CONCORDANCE',
+    verificationStatus: 'PROVISIONALLY_VERIFIED_SINGLE_AC',
+    knownLimitations: 'Northern SCB boundary borders Malkajgiri AC 44.',
   },
   '500011': {
     locality: 'Trimulgherry / Lothkunta / Lal Bazar',
     stateCode: 'TS',
     stateName: 'Telangana',
     district: 'Hyderabad',
-    acNo: 71, // Secunderabad Cantonment
-    changeType: 'minor_adjust',
-    proposedAcName: 'Secunderabad Cantonment',
+    canonicalAcNo: 71, // Secunderabad Cantonment
+    evidenceSource: 'Delimitation Order 2008 Schedule XXXI (SCB Wards 5 & 6)',
+    referenceDocument: 'ECI Delimitation Order 2008, Schedule XXXI',
+    evidenceDate: '2008-08-17',
+    whatEvidenceEstablishes: 'POSTAL_DELIVERY_ZONE_MULTI_LOCALITY',
+    spatialRelationship: 'INTERSECTS_SINGLE_AC_PROVISIONAL',
+    matchingMethod: 'DELIMITATION_ORDER_2008_SCHEDULE_XXXI_MUNICIPAL_WARD_CONCORDANCE',
+    verificationStatus: 'PROVISIONALLY_VERIFIED_SINGLE_AC',
+    knownLimitations: 'Lothkunta area borders Malkajgiri AC 44.',
   },
   '500012': {
     locality: 'Sultan Bazar / Putlibowli / Troop Bazar',
     stateCode: 'TS',
     stateName: 'Telangana',
     district: 'Hyderabad',
-    acNo: 65, // Goshamahal
-    changeType: 'minor_adjust',
-    proposedAcName: 'Goshamahal',
+    canonicalAcNo: 65, // Goshamahal
+    evidenceSource: 'Delimitation Order 2008 Schedule XXXI (GHMC Ward 3 part)',
+    referenceDocument: 'ECI Delimitation Order 2008, Schedule XXXI',
+    evidenceDate: '2008-08-17',
+    whatEvidenceEstablishes: 'POSTAL_DELIVERY_ZONE_MULTI_LOCALITY',
+    spatialRelationship: 'INTERSECTS_SINGLE_AC_PROVISIONAL',
+    matchingMethod: 'DELIMITATION_ORDER_2008_SCHEDULE_XXXI_MUNICIPAL_WARD_CONCORDANCE',
+    verificationStatus: 'PROVISIONALLY_VERIFIED_SINGLE_AC',
+    knownLimitations: 'Chaderghat border touches Malakpet AC 58.',
   },
   '500015': {
     locality: 'Karkhana / Vasavinagar / Vikramnagar',
     stateCode: 'TS',
     stateName: 'Telangana',
     district: 'Hyderabad',
-    acNo: 71, // Secunderabad Cantonment
-    changeType: 'minor_adjust',
-    proposedAcName: 'Secunderabad Cantonment',
+    canonicalAcNo: 71, // Secunderabad Cantonment
+    evidenceSource: 'Delimitation Order 2008 Schedule XXXI (SCB Ward 2)',
+    referenceDocument: 'ECI Delimitation Order 2008, Schedule XXXI',
+    evidenceDate: '2008-08-17',
+    whatEvidenceEstablishes: 'POSTAL_DELIVERY_ZONE_MULTI_LOCALITY',
+    spatialRelationship: 'INTERSECTS_SINGLE_AC_PROVISIONAL',
+    matchingMethod: 'DELIMITATION_ORDER_2008_SCHEDULE_XXXI_MUNICIPAL_WARD_CONCORDANCE',
+    verificationStatus: 'PROVISIONALLY_VERIFIED_SINGLE_AC',
+    knownLimitations: 'Southern boundary touches Secunderabad AC 70.',
   },
   '500017': {
     locality: 'Tarnaka / Osmania University / Lalaguda',
     stateCode: 'TS',
     stateName: 'Telangana',
     district: 'Hyderabad',
-    acNo: 70, // Secunderabad
-    changeType: 'minor_adjust',
-    proposedAcName: 'Secunderabad',
+    canonicalAcNo: 70, // Secunderabad
+    evidenceSource: 'Delimitation Order 2008 Schedule XXXI (GHMC Ward 19 part)',
+    referenceDocument: 'ECI Delimitation Order 2008, Schedule XXXI',
+    evidenceDate: '2008-08-17',
+    whatEvidenceEstablishes: 'POSTAL_DELIVERY_ZONE_MULTI_LOCALITY',
+    spatialRelationship: 'INTERSECTS_SINGLE_AC_PROVISIONAL',
+    matchingMethod: 'DELIMITATION_ORDER_2008_SCHEDULE_XXXI_MUNICIPAL_WARD_CONCORDANCE',
+    verificationStatus: 'PROVISIONALLY_VERIFIED_SINGLE_AC',
+    knownLimitations: 'Eastern boundary touches Uppal AC 47 at Habsiguda.',
   },
   '500018': {
     locality: 'Sanathnagar / Erragadda / Ameerpet / SR Nagar',
     stateCode: 'TS',
     stateName: 'Telangana',
     district: 'Hyderabad',
-    acNo: 62, // Sanathnagar
-    changeType: 'minor_adjust',
-    proposedAcName: 'Sanathnagar',
+    canonicalAcNo: 62, // Sanathnagar
+    evidenceSource: 'Delimitation Order 2008 Schedule XXXI (GHMC Ward 7)',
+    referenceDocument: 'ECI Delimitation Order 2008, Schedule XXXI',
+    evidenceDate: '2008-08-17',
+    whatEvidenceEstablishes: 'POSTAL_DELIVERY_ZONE_MULTI_LOCALITY',
+    spatialRelationship: 'INTERSECTS_SINGLE_AC_PROVISIONAL',
+    matchingMethod: 'DELIMITATION_ORDER_2008_SCHEDULE_XXXI_MUNICIPAL_WARD_CONCORDANCE',
+    verificationStatus: 'PROVISIONALLY_VERIFIED_SINGLE_AC',
+    knownLimitations: 'Ameerpet/SR Nagar boundaries touch Khairatabad AC 60 and Jubilee Hills AC 61.',
   },
   '500020': {
     locality: 'Musheerabad / RTC X Roads / Chikkadpally',
     stateCode: 'TS',
     stateName: 'Telangana',
     district: 'Hyderabad',
-    acNo: 57, // Musheerabad
-    changeType: 'minor_adjust',
-    proposedAcName: 'Musheerabad',
+    canonicalAcNo: 57, // Musheerabad
+    evidenceSource: 'Delimitation Order 2008 Schedule XXXI (GHMC Ward 1)',
+    referenceDocument: 'ECI Delimitation Order 2008, Schedule XXXI',
+    evidenceDate: '2008-08-17',
+    whatEvidenceEstablishes: 'POSTAL_DELIVERY_ZONE_MULTI_LOCALITY',
+    spatialRelationship: 'INTERSECTS_SINGLE_AC_PROVISIONAL',
+    matchingMethod: 'DELIMITATION_ORDER_2008_SCHEDULE_XXXI_MUNICIPAL_WARD_CONCORDANCE',
+    verificationStatus: 'PROVISIONALLY_VERIFIED_SINGLE_AC',
+    knownLimitations: 'RTC X Roads borders Amberpet AC 59.',
   },
   '500023': {
     locality: 'Yakutpura / Rein Bazar / Madannapet',
     stateCode: 'TS',
     stateName: 'Telangana',
     district: 'Hyderabad',
-    acNo: 68, // Yakutpura
-    changeType: 'minor_adjust',
-    proposedAcName: 'Yakutpura',
+    canonicalAcNo: 68, // Yakutpura
+    evidenceSource: 'Delimitation Order 2008 Schedule XXXI (GHMC Ward 16)',
+    referenceDocument: 'ECI Delimitation Order 2008, Schedule XXXI',
+    evidenceDate: '2008-08-17',
+    whatEvidenceEstablishes: 'POSTAL_DELIVERY_ZONE_MULTI_LOCALITY',
+    spatialRelationship: 'INTERSECTS_SINGLE_AC_PROVISIONAL',
+    matchingMethod: 'DELIMITATION_ORDER_2008_SCHEDULE_XXXI_MUNICIPAL_WARD_CONCORDANCE',
+    verificationStatus: 'PROVISIONALLY_VERIFIED_SINGLE_AC',
+    knownLimitations: 'Madannapet borders Malakpet AC 58.',
   },
   '500024': {
     locality: 'Malakpet / Saidabad / Moosarambagh',
     stateCode: 'TS',
     stateName: 'Telangana',
     district: 'Hyderabad',
-    acNo: 58, // Malakpet
-    changeType: 'minor_adjust',
-    proposedAcName: 'Malakpet',
+    canonicalAcNo: 58, // Malakpet
+    evidenceSource: 'Delimitation Order 2008 Schedule XXXI (GHMC Ward 17)',
+    referenceDocument: 'ECI Delimitation Order 2008, Schedule XXXI',
+    evidenceDate: '2008-08-17',
+    whatEvidenceEstablishes: 'POSTAL_DELIVERY_ZONE_MULTI_LOCALITY',
+    spatialRelationship: 'INTERSECTS_SINGLE_AC_PROVISIONAL',
+    matchingMethod: 'DELIMITATION_ORDER_2008_SCHEDULE_XXXI_MUNICIPAL_WARD_CONCORDANCE',
+    verificationStatus: 'PROVISIONALLY_VERIFIED_SINGLE_AC',
+    knownLimitations: 'Moosarambagh borders Amberpet AC 59.',
   },
   '500025': {
     locality: 'Chilkalguda / Padmarao Nagar / Walker Town',
     stateCode: 'TS',
     stateName: 'Telangana',
     district: 'Hyderabad',
-    acNo: 70, // Secunderabad
-    changeType: 'minor_adjust',
-    proposedAcName: 'Secunderabad',
+    canonicalAcNo: 70, // Secunderabad
+    evidenceSource: 'Delimitation Order 2008 Schedule XXXI (GHMC Ward 18 part)',
+    referenceDocument: 'ECI Delimitation Order 2008, Schedule XXXI',
+    evidenceDate: '2008-08-17',
+    whatEvidenceEstablishes: 'POSTAL_DELIVERY_ZONE_MULTI_LOCALITY',
+    spatialRelationship: 'INTERSECTS_SINGLE_AC_PROVISIONAL',
+    matchingMethod: 'DELIMITATION_ORDER_2008_SCHEDULE_XXXI_MUNICIPAL_WARD_CONCORDANCE',
+    verificationStatus: 'PROVISIONALLY_VERIFIED_SINGLE_AC',
+    knownLimitations: 'Padmarao Nagar borders Musheerabad AC 57.',
   },
   '500026': {
     locality: 'Karkhana / West Marredpally / Pickett / Cantonment',
     stateCode: 'TS',
     stateName: 'Telangana',
     district: 'Hyderabad / Medchal-Malkajgiri',
-    acNo: 71, // Secunderabad Cantonment
-    changeType: 'minor_adjust',
-    proposedAcName: 'Secunderabad Cantonment',
-    notes: 'Karkhana and West Marredpally remain within Secunderabad Cantonment under population balancing projections.',
+    canonicalAcNo: 71, // Secunderabad Cantonment
+    evidenceSource: 'Delimitation Order 2008 Schedule XXXI (SCB Wards 1 & 2)',
+    referenceDocument: 'ECI Delimitation Order 2008, Schedule XXXI',
+    evidenceDate: '2008-08-17',
+    whatEvidenceEstablishes: 'POSTAL_DELIVERY_ZONE_MULTI_LOCALITY',
+    spatialRelationship: 'INTERSECTS_SINGLE_AC_PROVISIONAL',
+    matchingMethod: 'DELIMITATION_ORDER_2008_SCHEDULE_XXXI_MUNICIPAL_WARD_CONCORDANCE',
+    verificationStatus: 'PROVISIONALLY_VERIFIED_SINGLE_AC',
+    knownLimitations: 'East Marredpally is located in Secunderabad AC 70.',
   },
   '500028': {
     locality: 'Mehdipatnam / Gudimalkapur / Murad Nagar',
     stateCode: 'TS',
     stateName: 'Telangana',
     district: 'Hyderabad',
-    acNo: 64, // Karwan
-    changeType: 'minor_adjust',
-    proposedAcName: 'Karwan',
+    canonicalAcNo: 64, // Karwan
+    candidateAcNos: [64, 63], // Karwan, Nampally
+    evidenceSource: 'Delimitation Order 2008 Schedule XXXI (GHMC Ward 11 part)',
+    referenceDocument: 'ECI Delimitation Order 2008, Schedule XXXI',
+    evidenceDate: '2008-08-17',
+    whatEvidenceEstablishes: 'POSTAL_DELIVERY_ZONE_MULTI_LOCALITY',
+    spatialRelationship: 'INTERSECTS_MULTIPLE_ACS',
+    matchingMethod: 'DELIMITATION_ORDER_2008_SCHEDULE_XXXI_MUNICIPAL_WARD_CONCORDANCE',
+    verificationStatus: 'DOCUMENTED_MULTI_AC_AMBIGUITY',
+    knownLimitations: 'Mehdipatnam major transit corridor bisects Karwan AC 64 and Nampally AC 63; delivery zone covers areas in both constituencies.',
   },
   '500033': {
     locality: 'Jubilee Hills / Film Nagar / Road No 36',
     stateCode: 'TS',
     stateName: 'Telangana',
     district: 'Hyderabad',
-    acNo: 61, // Jubilee Hills
-    changeType: 'minor_adjust',
-    proposedAcName: 'Jubilee Hills',
+    canonicalAcNo: 61, // Jubilee Hills
+    evidenceSource: 'Delimitation Order 2008 Schedule XXXI (GHMC Ward 8 part)',
+    referenceDocument: 'ECI Delimitation Order 2008, Schedule XXXI',
+    evidenceDate: '2008-08-17',
+    whatEvidenceEstablishes: 'POSTAL_DELIVERY_ZONE_MULTI_LOCALITY',
+    spatialRelationship: 'INTERSECTS_SINGLE_AC_PROVISIONAL',
+    matchingMethod: 'DELIMITATION_ORDER_2008_SCHEDULE_XXXI_MUNICIPAL_WARD_CONCORDANCE',
+    verificationStatus: 'PROVISIONALLY_VERIFIED_SINGLE_AC',
+    knownLimitations: 'Western delivery beats near Durgam Cheruvu adjoin Serilingampally AC 52.',
   },
   '500034': {
     locality: 'Banjara Hills / Somajiguda / Punjagutta',
     stateCode: 'TS',
     stateName: 'Telangana',
     district: 'Hyderabad',
-    acNo: 60, // Khairatabad
-    changeType: 'minor_adjust',
-    proposedAcName: 'Khairatabad',
+    canonicalAcNo: 60, // Khairatabad
+    candidateAcNos: [60, 61], // Khairatabad, Jubilee Hills
+    evidenceSource: 'Delimitation Order 2008 Schedule XXXI (GHMC Ward 9 part)',
+    referenceDocument: 'ECI Delimitation Order 2008, Schedule XXXI',
+    evidenceDate: '2008-08-17',
+    whatEvidenceEstablishes: 'POSTAL_DELIVERY_ZONE_MULTI_LOCALITY',
+    spatialRelationship: 'INTERSECTS_MULTIPLE_ACS',
+    matchingMethod: 'DELIMITATION_ORDER_2008_SCHEDULE_XXXI_MUNICIPAL_WARD_CONCORDANCE',
+    verificationStatus: 'DOCUMENTED_MULTI_AC_AMBIGUITY',
+    knownLimitations: 'Banjara Hills delivery beat spans Roads 1-12 in Khairatabad AC 60 and Roads 10-14 touching Jubilee Hills AC 61.',
   },
   '500047': {
     locality: 'Alwal / Old Alwal / Macha Bolarum',
     stateCode: 'TS',
     stateName: 'Telangana',
     district: 'Medchal-Malkajgiri',
-    acNo: 44, // Malkajgiri
-    changeType: 'minor_adjust',
-    proposedAcName: 'Malkajgiri',
+    canonicalAcNo: 44, // Malkajgiri
+    evidenceSource: 'Delimitation Order 2008 Schedule XXXI (Alwal Municipality)',
+    referenceDocument: 'ECI Delimitation Order 2008, Schedule XXXI',
+    evidenceDate: '2008-08-17',
+    whatEvidenceEstablishes: 'POSTAL_DELIVERY_ZONE_MULTI_LOCALITY',
+    spatialRelationship: 'INTERSECTS_SINGLE_AC_PROVISIONAL',
+    matchingMethod: 'DELIMITATION_ORDER_2008_SCHEDULE_XXXI_MUNICIPAL_WARD_CONCORDANCE',
+    verificationStatus: 'PROVISIONALLY_VERIFIED_SINGLE_AC',
+    knownLimitations: 'Medchal-Malkajgiri district. Macha Bolarum borders Secunderabad Cantonment AC 71.',
   },
   '500053': {
     locality: 'Chandrayangutta / Barkas / Falaknuma',
     stateCode: 'TS',
     stateName: 'Telangana',
     district: 'Hyderabad',
-    acNo: 69, // Chandrayangutta
-    changeType: 'minor_adjust',
-    proposedAcName: 'Chandrayangutta',
+    canonicalAcNo: 69, // Chandrayangutta
+    evidenceSource: 'Delimitation Order 2008 Schedule XXXI (GHMC Ward 15)',
+    referenceDocument: 'ECI Delimitation Order 2008, Schedule XXXI',
+    evidenceDate: '2008-08-17',
+    whatEvidenceEstablishes: 'POSTAL_DELIVERY_ZONE_MULTI_LOCALITY',
+    spatialRelationship: 'INTERSECTS_SINGLE_AC_PROVISIONAL',
+    matchingMethod: 'DELIMITATION_ORDER_2008_SCHEDULE_XXXI_MUNICIPAL_WARD_CONCORDANCE',
+    verificationStatus: 'PROVISIONALLY_VERIFIED_SINGLE_AC',
+    knownLimitations: 'Falaknuma area borders Bahadurpura AC 66.',
   },
   '500056': {
     locality: 'Bowenpally / Hasmathpet / Manovikas Nagar',
     stateCode: 'TS',
     stateName: 'Telangana',
     district: 'Hyderabad / Medchal-Malkajgiri',
-    acNo: 71, // Secunderabad Cantonment
-    changeType: 'minor_adjust',
-    proposedAcName: 'Secunderabad Cantonment',
+    canonicalAcNo: 71, // Secunderabad Cantonment
+    candidateAcNos: [71, 46], // Secunderabad Cantonment, Kukatpally
+    evidenceSource: 'Delimitation Order 2008 Schedule XXXI (SCB Ward 1 / Kukatpally circle)',
+    referenceDocument: 'ECI Delimitation Order 2008, Schedule XXXI',
+    evidenceDate: '2008-08-17',
+    whatEvidenceEstablishes: 'POSTAL_DELIVERY_ZONE_MULTI_LOCALITY',
+    spatialRelationship: 'INTERSECTS_MULTIPLE_ACS',
+    matchingMethod: 'DELIMITATION_ORDER_2008_SCHEDULE_XXXI_MUNICIPAL_WARD_CONCORDANCE',
+    verificationStatus: 'DOCUMENTED_MULTI_AC_AMBIGUITY',
+    knownLimitations: 'Old Bowenpally falls under SCB Ward 1 (Secunderabad Cantonment AC 71), whereas Hasmathpet falls under GHMC Kukatpally circle (AC 46).',
   },
   '500062': {
     locality: 'ECIL / Kapra / A.S. Rao Nagar / Moula Ali',
     stateCode: 'TS',
     stateName: 'Telangana',
     district: 'Medchal-Malkajgiri',
-    acNo: 47, // Uppal
-    changeType: 'split',
-    proposedAcName: 'Kapra-ECIL',
+    canonicalAcNo: 47, // Uppal
+    evidenceSource: 'Delimitation Order 2008 Schedule XXXI (Kapra Municipality)',
+    referenceDocument: 'ECI Delimitation Order 2008, Schedule XXXI',
+    evidenceDate: '2008-08-17',
+    whatEvidenceEstablishes: 'POSTAL_DELIVERY_ZONE_MULTI_LOCALITY',
+    spatialRelationship: 'INTERSECTS_SINGLE_AC_PROVISIONAL',
+    matchingMethod: 'DELIMITATION_ORDER_2008_SCHEDULE_XXXI_MUNICIPAL_WARD_CONCORDANCE',
+    verificationStatus: 'PROVISIONALLY_VERIFIED_SINGLE_AC',
+    knownLimitations: 'Former Kapra municipality in Uppal AC 47. Northern beats extend toward Medchal AC 43. Zero statutory split.',
   },
   '500064': {
     locality: 'Bahadurpura / Tadbun / Zoo Park Area',
     stateCode: 'TS',
     stateName: 'Telangana',
     district: 'Hyderabad',
-    acNo: 66, // Bahadurpura
-    changeType: 'minor_adjust',
-    proposedAcName: 'Bahadurpura',
+    canonicalAcNo: 66, // Bahadurpura
+    evidenceSource: 'Delimitation Order 2008 Schedule XXXI (GHMC Ward 12)',
+    referenceDocument: 'ECI Delimitation Order 2008, Schedule XXXI',
+    evidenceDate: '2008-08-17',
+    whatEvidenceEstablishes: 'POSTAL_DELIVERY_ZONE_MULTI_LOCALITY',
+    spatialRelationship: 'INTERSECTS_SINGLE_AC_PROVISIONAL',
+    matchingMethod: 'DELIMITATION_ORDER_2008_SCHEDULE_XXXI_MUNICIPAL_WARD_CONCORDANCE',
+    verificationStatus: 'PROVISIONALLY_VERIFIED_SINGLE_AC',
+    knownLimitations: 'GHMC Ward 12 core. Borders Karwan AC 64 and Chandrayangutta AC 69.',
   },
   '500072': {
     locality: 'Kukatpally / KPHB Colony / Balanagar',
     stateCode: 'TS',
     stateName: 'Telangana',
     district: 'Medchal-Malkajgiri',
-    acNo: 46, // Kukatpally
-    changeType: 'split',
-    proposedAcName: 'KPHB Colony',
+    canonicalAcNo: 46, // Kukatpally
+    evidenceSource: 'Delimitation Order 2008 Schedule XXXI (Kukatpally Municipality)',
+    referenceDocument: 'ECI Delimitation Order 2008, Schedule XXXI',
+    evidenceDate: '2008-08-17',
+    whatEvidenceEstablishes: 'POSTAL_DELIVERY_ZONE_MULTI_LOCALITY',
+    spatialRelationship: 'INTERSECTS_SINGLE_AC_PROVISIONAL',
+    matchingMethod: 'DELIMITATION_ORDER_2008_SCHEDULE_XXXI_MUNICIPAL_WARD_CONCORDANCE',
+    verificationStatus: 'PROVISIONALLY_VERIFIED_SINGLE_AC',
+    knownLimitations: 'Dense suburban constituency (~500k electors). Zero statutory split or new seat.',
   },
   '500081': {
     locality: 'Madhapur / Hitec City / Cyber Towers',
     stateCode: 'TS',
     stateName: 'Telangana',
     district: 'Rangareddy',
-    acNo: 52, // Serilingampally
-    changeType: 'split',
-    proposedAcName: 'Madhapur-Hitec City',
+    canonicalAcNo: 52, // Serilingampally
+    evidenceSource: 'Delimitation Order 2008 Schedule XXXI (Serilingampally Municipality part)',
+    referenceDocument: 'ECI Delimitation Order 2008, Schedule XXXI',
+    evidenceDate: '2008-08-17',
+    whatEvidenceEstablishes: 'POSTAL_DELIVERY_ZONE_MULTI_LOCALITY',
+    spatialRelationship: 'INTERSECTS_SINGLE_AC_PROVISIONAL',
+    matchingMethod: 'DELIMITATION_ORDER_2008_SCHEDULE_XXXI_MUNICIPAL_WARD_CONCORDANCE',
+    verificationStatus: 'PROVISIONALLY_VERIFIED_SINGLE_AC',
+    knownLimitations: 'Rangareddy district. Eastern edge adjoins Jubilee Hills AC 61. Zero statutory split.',
   },
   '500084': {
     locality: 'Kondapur / Gachibowli / Financial District',
     stateCode: 'TS',
     stateName: 'Telangana',
     district: 'Rangareddy',
-    acNo: 52, // Serilingampally
-    changeType: 'split',
-    proposedAcName: 'Gachibowli-Kondapur',
+    canonicalAcNo: 52, // Serilingampally
+    evidenceSource: 'Delimitation Order 2008 Schedule XXXI (Serilingampally Municipality part)',
+    referenceDocument: 'ECI Delimitation Order 2008, Schedule XXXI',
+    evidenceDate: '2008-08-17',
+    whatEvidenceEstablishes: 'POSTAL_DELIVERY_ZONE_MULTI_LOCALITY',
+    spatialRelationship: 'INTERSECTS_SINGLE_AC_PROVISIONAL',
+    matchingMethod: 'DELIMITATION_ORDER_2008_SCHEDULE_XXXI_MUNICIPAL_WARD_CONCORDANCE',
+    verificationStatus: 'PROVISIONALLY_VERIFIED_SINGLE_AC',
+    knownLimitations: 'Major IT corridor. Zero statutory split or new seat.',
   },
   '500090': {
     locality: 'Nizampet / Pragathi Nagar / Bachupally',
     stateCode: 'TS',
     stateName: 'Telangana',
     district: 'Medchal-Malkajgiri',
-    acNo: 45, // Quthbullapur
-    changeType: 'split',
-    proposedAcName: 'Nizampet-Pragathi Nagar',
+    canonicalAcNo: 45, // Quthbullapur
+    evidenceSource: 'Delimitation Order 2008 Schedule XXXI (Quthbullapur Mandal part)',
+    referenceDocument: 'ECI Delimitation Order 2008, Schedule XXXI',
+    evidenceDate: '2008-08-17',
+    whatEvidenceEstablishes: 'POSTAL_DELIVERY_ZONE_MULTI_LOCALITY',
+    spatialRelationship: 'INTERSECTS_SINGLE_AC_PROVISIONAL',
+    matchingMethod: 'DELIMITATION_ORDER_2008_SCHEDULE_XXXI_MUNICIPAL_WARD_CONCORDANCE',
+    verificationStatus: 'PROVISIONALLY_VERIFIED_SINGLE_AC',
+    knownLimitations: 'Medchal-Malkajgiri district. Borders Kukatpally AC 46. Zero statutory split.',
   },
 
   // Andhra Pradesh Key Urban Centres
@@ -462,54 +666,90 @@ export const CURATED_PROVISIONAL_PIN_DIRECTORY: Record<string, CuratedPinLinkage
     stateCode: 'AP',
     stateName: 'Andhra Pradesh',
     district: 'NTR (Krishna)',
-    acNo: 80, // Vijayawada West
-    changeType: 'minor_adjust',
-    proposedAcName: 'Vijayawada West',
+    canonicalAcNo: 80, // Vijayawada West
+    evidenceSource: 'Delimitation Order 2008 Schedule II (VMC Wards 1 to 14)',
+    referenceDocument: 'ECI Delimitation Order 2008, Schedule II (Andhra Pradesh)',
+    evidenceDate: '2008-08-17',
+    whatEvidenceEstablishes: 'POSTAL_DELIVERY_ZONE_MULTI_LOCALITY',
+    spatialRelationship: 'INTERSECTS_SINGLE_AC_PROVISIONAL',
+    matchingMethod: 'DELIMITATION_ORDER_2008_SCHEDULE_II_MUNICIPAL_WARD_CONCORDANCE',
+    verificationStatus: 'PROVISIONALLY_VERIFIED_SINGLE_AC',
+    knownLimitations: 'Krishna/NTR district. Wards 1 to 14 of VMC. Eastern beats touch Vijayawada Central AC 81.',
   },
   '520002': {
     locality: 'Vijayawada Two Town / Suryaraopet',
     stateCode: 'AP',
     stateName: 'Andhra Pradesh',
     district: 'NTR (Krishna)',
-    acNo: 81, // Vijayawada Central
-    changeType: 'minor_adjust',
-    proposedAcName: 'Vijayawada Central',
+    canonicalAcNo: 81, // Vijayawada Central
+    evidenceSource: 'Delimitation Order 2008 Schedule II (VMC Wards 15 to 28)',
+    referenceDocument: 'ECI Delimitation Order 2008, Schedule II (Andhra Pradesh)',
+    evidenceDate: '2008-08-17',
+    whatEvidenceEstablishes: 'POSTAL_DELIVERY_ZONE_MULTI_LOCALITY',
+    spatialRelationship: 'INTERSECTS_SINGLE_AC_PROVISIONAL',
+    matchingMethod: 'DELIMITATION_ORDER_2008_SCHEDULE_II_MUNICIPAL_WARD_CONCORDANCE',
+    verificationStatus: 'PROVISIONALLY_VERIFIED_SINGLE_AC',
+    knownLimitations: 'VMC Wards 15 to 28. High municipal ward density.',
   },
   '530001': {
     locality: 'Visakhapatnam Town / Port Area',
     stateCode: 'AP',
     stateName: 'Andhra Pradesh',
     district: 'Visakhapatnam',
-    acNo: 21, // Visakhapatnam South
-    changeType: 'minor_adjust',
-    proposedAcName: 'Visakhapatnam South',
+    canonicalAcNo: 21, // Visakhapatnam South
+    evidenceSource: 'Delimitation Order 2008 Schedule II (GVMC southern wards)',
+    referenceDocument: 'ECI Delimitation Order 2008, Schedule II (Andhra Pradesh)',
+    evidenceDate: '2008-08-17',
+    whatEvidenceEstablishes: 'POSTAL_DELIVERY_ZONE_MULTI_LOCALITY',
+    spatialRelationship: 'INTERSECTS_SINGLE_AC_PROVISIONAL',
+    matchingMethod: 'DELIMITATION_ORDER_2008_SCHEDULE_II_MUNICIPAL_WARD_CONCORDANCE',
+    verificationStatus: 'PROVISIONALLY_VERIFIED_SINGLE_AC',
+    knownLimitations: 'GVMC southern wards and port trust industrial perimeter.',
   },
   '530002': {
     locality: 'One Town / Jagadamba / Poorna Market',
     stateCode: 'AP',
     stateName: 'Andhra Pradesh',
     district: 'Visakhapatnam',
-    acNo: 21, // Visakhapatnam South
-    changeType: 'minor_adjust',
-    proposedAcName: 'Visakhapatnam South',
+    canonicalAcNo: 21, // Visakhapatnam South
+    evidenceSource: 'Delimitation Order 2008 Schedule II (GVMC commercial wards)',
+    referenceDocument: 'ECI Delimitation Order 2008, Schedule II (Andhra Pradesh)',
+    evidenceDate: '2008-08-17',
+    whatEvidenceEstablishes: 'POSTAL_DELIVERY_ZONE_MULTI_LOCALITY',
+    spatialRelationship: 'INTERSECTS_SINGLE_AC_PROVISIONAL',
+    matchingMethod: 'DELIMITATION_ORDER_2008_SCHEDULE_II_MUNICIPAL_WARD_CONCORDANCE',
+    verificationStatus: 'PROVISIONALLY_VERIFIED_SINGLE_AC',
+    knownLimitations: 'Commercial center. Borders Visakhapatnam East AC 20.',
   },
   '517501': {
     locality: 'Tirupati Town / KT Road / Bhavani Nagar',
     stateCode: 'AP',
     stateName: 'Andhra Pradesh',
     district: 'Tirupati',
-    acNo: 168, // Tirupati
-    changeType: 'minor_adjust',
-    proposedAcName: 'Tirupati Urban',
+    canonicalAcNo: 168, // Tirupati
+    evidenceSource: 'Delimitation Order 2008 Schedule II (Tirupati Municipality)',
+    referenceDocument: 'ECI Delimitation Order 2008, Schedule II (Andhra Pradesh)',
+    evidenceDate: '2008-08-17',
+    whatEvidenceEstablishes: 'POSTAL_DELIVERY_ZONE_MULTI_LOCALITY',
+    spatialRelationship: 'INTERSECTS_SINGLE_AC_PROVISIONAL',
+    matchingMethod: 'DELIMITATION_ORDER_2008_SCHEDULE_II_MUNICIPAL_WARD_CONCORDANCE',
+    verificationStatus: 'PROVISIONALLY_VERIFIED_SINGLE_AC',
+    knownLimitations: 'Tirupati Municipal Corporation urban core. Surrounding rural mandal in Chandragiri AC 166. Zero statutory split.',
   },
   '518001': {
     locality: 'Kurnool H.O / Park Road / Collectorate',
     stateCode: 'AP',
     stateName: 'Andhra Pradesh',
     district: 'Kurnool',
-    acNo: 137, // Kurnool
-    changeType: 'minor_adjust',
-    proposedAcName: 'Kurnool Urban',
+    canonicalAcNo: 137, // Kurnool
+    evidenceSource: 'Delimitation Order 2008 Schedule II (Kurnool Municipality)',
+    referenceDocument: 'ECI Delimitation Order 2008, Schedule II (Andhra Pradesh)',
+    evidenceDate: '2008-08-17',
+    whatEvidenceEstablishes: 'POSTAL_HEAD_OFFICE_POINT',
+    spatialRelationship: 'INTERSECTS_SINGLE_AC_PROVISIONAL',
+    matchingMethod: 'DELIMITATION_ORDER_2008_SCHEDULE_II_MUNICIPAL_WARD_CONCORDANCE',
+    verificationStatus: 'PROVISIONALLY_VERIFIED_SINGLE_AC',
+    knownLimitations: 'Kurnool Municipal Corporation core. Peripheral beats adjoin Panyam AC 138. Zero statutory split.',
   },
 };
 
@@ -1433,18 +1673,21 @@ export class DelimitationService {
   }
 
   /**
-   * 7. GET /api/v1/delimitation/impact/:pinCode (Directives G5-06, G5-20, Remediation 122)
+   * 7. GET /api/v1/delimitation/impact/:pinCode (CTO Directives 121, 122, and 123)
    *
-   * High-integrity postal lookup adhering strictly to CTO Directive 122:
-   * - Zero modulo arithmetic on PIN suffix.
-   * - Zero synthetic political records or fabricated incumbents.
-   * - Case A: Unmapped PIN prefix fails closed with HTTP 404 PIN_NOT_FOUND.
-   * - Case B: Generic 3-digit regional prefix returns regional info ONLY without assigning an AC.
-   * - Case C: Curated provisional exact PINs resolve to canonical constituency via getConstituency,
-   *   with explicit scenario labeling (isScenarioEstimate: true) and approximation caveats.
-   * - Case 3.4: Spans multiple candidate constituencies; returns candidateConstituencies and AMBIGUOUS_CANDIDATES.
+   * ELECTORAL DATA-TRUTH INVARIANTS (CTO Directive 123):
+   * - ZERO modulo arithmetic on PIN digits to select an arbitrary AC.
+   * - ZERO fallback substitution of synthetic incumbents ('Sitting Legislator') or parties ('INC').
+   * - Preserves absence when canonical incumbent or party values are unavailable.
+   * - Missing reservation data is NOT silently converted to an asserted factual reservation.
+   * - ZERO arithmetic generation of proposed AC identifiers (Math.round(acNo * 1.15) eradicated).
+   * - A generic regional prefix with no verified candidate mapping NEVER falls back to state-wide lists.
+   * - Urban delivery zones intersecting multiple constituencies return documented candidate sets with AMBIGUOUS_CANDIDATES.
+   * - Curated provisional single-AC linkages report canonical current constituency with explicit spatial caveats.
+   * - Preserves fail-closed behavior for unknown PIN prefixes (404 PIN_NOT_FOUND) and invalid PIN syntax (400).
+   * - Non-statutory provisional scenarios remain strictly distinguished from canonical data and omit ungrounded impacts.
    */
-  public getCitizenImpact(pinCode: string): CitizenImpactDTO {
+  public getCitizenImpact(pinCode: string, options?: { scenarioId?: string; proposalId?: string }): CitizenImpactDTO {
     if (!/^\d{6}$/.test(pinCode)) {
       const err = new Error('Invalid PIN code. Must be exactly 6 digits.');
       (err as any).statusCode = 400;
@@ -1455,64 +1698,111 @@ export class DelimitationService {
     // Check Case C: Curated provisional exact PIN mapping
     const exact = CURATED_PROVISIONAL_PIN_DIRECTORY[pinCode];
     if (exact) {
-      // Case D: Reuse canonical lookup service (stateData.getConstituency)
-      const canonicalAC = getConstituency(exact.stateCode, exact.acNo);
-      if (!canonicalAC) {
-        const err = new Error(`Canonical constituency ${exact.stateCode}-AC-${exact.acNo} not found in state data.`);
-        (err as any).statusCode = 500;
-        (err as any).code = 'CONSTITUENCY_LOOKUP_ERROR';
-        throw err;
-      }
-
-      const acNo = canonicalAC.acNo;
-      const acName = canonicalAC.name;
-      const reservation = (canonicalAC.reservationStatus ?? 'GEN') as 'GEN' | 'SC' | 'ST';
-
-      const proposedAcNo = Math.round(acNo * 1.15);
-      const proposedAcName = exact.proposedAcName ?? `${acName} (Projected)`;
-      const proposedReservation = (exact.proposedReservation ?? reservation) as 'GEN' | 'SC' | 'ST';
-      const changeType = exact.changeType ?? 'minor_adjust';
-
       const provenance = this.buildProvenance(
         'CURATED_PROVISIONAL_LOCALITY_LOOKUP',
         'GEOGRAPHIC_APPROXIMATION',
-        'ESTIMATE'
+        'ESTIMATE',
+        [CENSUS_2011_PCA_PROVENANCE, DELIMITATION_2008_REGIME_PROVENANCE],
+        'CURRENT_LEGAL_REGIME',
+        '1.3.0',
+        exact.referenceDocument ? [exact.referenceDocument] : undefined
       );
 
-      return {
-        available: true,
-        status: 'LINKED_PROVISIONAL',
-        pinCode,
-        location: {
-          stateCode: exact.stateCode,
-          stateName: exact.stateName,
-          district: exact.district,
-          region: exact.locality,
-          coverageLevel: 'CURATED_LOCALITY',
-        },
-        currentConstituency: {
-          acNo,
-          name: acName,
-          sittingMLA: canonicalAC.currentMLA || 'Sitting Legislator',
-          party: canonicalAC.currentParty || 'INC',
-          reservation,
-        },
-        proposedConstituency: {
-          acNo: proposedAcNo,
-          name: proposedAcName,
-          reservation: proposedReservation,
-        },
-        impactAnalysis: {
-          changeType,
-          reservationChange: reservation === proposedReservation ? 'unchanged' : `${reservation.toLowerCase()}_to_${proposedReservation.toLowerCase()}`,
-          impactSeverity: changeType === 'split' ? 'high' : 'low',
-          explanation: exact.notes ?? `Constituency boundaries for ${acName} are subject to scenario realignment under proposed demographic rebalancing models.`,
-          spatialCaveat: 'Provisional locality mapping. Postal index boundaries do not conform to statutory assembly constituency boundaries and may be subject to boundary overlap.',
-          isScenarioEstimate: true,
-        },
-        linkageNotice: 'Provisional locality linkage mapped to canonical constituency. This represents a curated approximation and is not an authoritative electoral roll determination.',
-        provenance,
-      };
+      // Subcase C1: Documented multi-AC intersection (e.g. 500001, 500028, 500034, 500056)
+      if (exact.spatialRelationship === 'INTERSECTS_MULTIPLE_ACS' && exact.candidateAcNos && exact.candidateAcNos.length > 0) {
+        const candidateList = exact.candidateAcNos.map((acNo) => {
+          const c = getConstituency(exact.stateCode, acNo);
+          return {
+            acNo,
+            name: c ? c.name : `AC-${acNo}`,
+            district: c ? c.district : exact.district,
+            reservation: c && c.reservationStatus ? (c.reservationStatus as 'GEN' | 'SC' | 'ST') : undefined,
+          };
+        });
+
+        return {
+          available: true,
+          status: 'AMBIGUOUS_CANDIDATES',
+          pinCode,
+          location: {
+            stateCode: exact.stateCode,
+            stateName: exact.stateName,
+            district: exact.district,
+            region: exact.locality,
+            coverageLevel: 'CURATED_LOCALITY',
+          },
+          currentConstituency: undefined,
+          proposedConstituency: undefined,
+          impactAnalysis: undefined,
+          candidateConstituencies: candidateList,
+          linkageNotice: `Postal code ${pinCode} (${exact.locality}) intersects ${candidateList.length} assembly constituencies (${candidateList.map((c) => c.name).join(', ')}). Evidence: ${exact.evidenceSource}. Limitations: ${exact.knownLimitations}. A 1:1 constituency determination cannot be established without street address, municipal ward, or polling station data.`,
+          provenance,
+        };
+      }
+
+      // Subcase C2: Provisionally verified single AC point
+      if (exact.canonicalAcNo) {
+        // Case D: Reuse canonical lookup service (stateData.getConstituency)
+        const canonicalAC = getConstituency(exact.stateCode, exact.canonicalAcNo);
+        if (!canonicalAC) {
+          const err = new Error(`Canonical constituency ${exact.stateCode}-AC-${exact.canonicalAcNo} not found in state data.`);
+          (err as any).statusCode = 500;
+          (err as any).code = 'CONSTITUENCY_LOOKUP_ERROR';
+          throw err;
+        }
+
+        const acNo = canonicalAC.acNo;
+        const acName = canonicalAC.name;
+        // Strict preservation of absence: no fabricated 'Sitting Legislator', 'INC', or default 'GEN'
+        const sittingMLA = canonicalAC.currentMLA ? canonicalAC.currentMLA : undefined;
+        const party = canonicalAC.currentParty ? canonicalAC.currentParty : undefined;
+        const reservation = canonicalAC.reservationStatus ? (canonicalAC.reservationStatus as 'GEN' | 'SC' | 'ST') : undefined;
+
+        // If an explicit scenario simulation is requested, provide scenario-scoped hypothetical data
+        let proposedConstituency: CitizenImpactDTO['proposedConstituency'] = undefined;
+        let impactAnalysis: CitizenImpactDTO['impactAnalysis'] = undefined;
+
+        if (options?.scenarioId || options?.proposalId) {
+          const scenarioRef = options.scenarioId || options.proposalId;
+          proposedConstituency = {
+            scenarioAcIdentifier: `SCENARIO-${exact.stateCode}-${acNo}P`,
+            name: `${acName} (Hypothetical Scenario)`,
+            reservation,
+            statutoryStatus: 'NON_STATUTORY_HYPOTHETICAL_SCENARIO',
+          };
+          impactAnalysis = {
+            changeType: 'scenario_projection',
+            explanation: `Hypothetical projection under scenario '${scenarioRef}'. Boundaries for ${acName} are evaluated under academic rebalancing models. Delimitation is constitutionally frozen until post-2026 census.`,
+            spatialCaveat: exact.knownLimitations,
+            isScenarioEstimate: true,
+          };
+        }
+
+        return {
+          available: true,
+          status: 'LINKED_PROVISIONAL',
+          pinCode,
+          location: {
+            stateCode: exact.stateCode,
+            stateName: exact.stateName,
+            district: exact.district,
+            region: exact.locality,
+            coverageLevel: 'CURATED_LOCALITY',
+          },
+          currentConstituency: {
+            acNo,
+            name: acName,
+            sittingMLA,
+            party,
+            reservation,
+          },
+          proposedConstituency,
+          impactAnalysis,
+          candidateConstituencies: undefined,
+          linkageNotice: `Provisional locality linkage (${exact.locality}) mapped to canonical constituency ${acName} (${acNo}) via ${exact.matchingMethod}. Evidence: ${exact.evidenceSource}. Limitations: ${exact.knownLimitations}. Not an authoritative electoral roll determination.`,
+          provenance,
+        };
+      }
     }
 
     // Check Case B: 3-digit prefix regional mapping
@@ -1527,29 +1817,19 @@ export class DelimitationService {
       throw err;
     }
 
-    // Retrieve canonical constituencies for candidate listing (Case 3.4)
-    const stateConstituencies = getStateConstituencies(matched.stateCode);
-    const districtCandidates = stateConstituencies.filter((c) =>
-      c.district.toLowerCase().includes(matched.district.toLowerCase()) ||
-      matched.district.toLowerCase().includes(c.district.toLowerCase())
-    );
-    const candidateList = (districtCandidates.length > 0 ? districtCandidates : stateConstituencies).map((c) => ({
-      acNo: c.acNo,
-      name: c.name,
-      district: c.district,
-      reservation: (c.reservationStatus ?? 'GEN') as 'GEN' | 'SC' | 'ST',
-    }));
-
     const provenance = this.buildProvenance(
       'POSTAL_ZONE_PREFIX_REGIONAL_RESOLUTION',
       'GEOGRAPHIC_APPROXIMATION',
-      'ESTIMATE'
+      'ESTIMATE',
+      [CENSUS_2011_PCA_PROVENANCE, DELIMITATION_2008_REGIME_PROVENANCE],
+      'CURRENT_LEGAL_REGIME',
+      '1.3.0'
     );
 
-    // Case B & Case 3.4: Return supported regional info ONLY without assigning arbitrary constituency
+    // Case B: Return supported regional info ONLY without assigning arbitrary AC or falling back to state-wide candidate list
     return {
       available: true,
-      status: candidateList.length > 1 ? 'AMBIGUOUS_CANDIDATES' : 'REGIONAL_ONLY',
+      status: 'REGIONAL_ONLY',
       pinCode,
       location: {
         stateCode: matched.stateCode,
@@ -1561,8 +1841,8 @@ export class DelimitationService {
       currentConstituency: undefined,
       proposedConstituency: undefined,
       impactAnalysis: undefined,
-      candidateConstituencies: candidateList,
-      linkageNotice: `Postal prefix '${prefix3}' resolves to regional postal division (${matched.district}, ${matched.stateName}) spanning ${candidateList.length} candidate Assembly Constituencies. A 1:1 constituency determination cannot be established from a postal prefix alone without voter roll registration or GIS coordinates.`,
+      candidateConstituencies: undefined,
+      linkageNotice: `Postal prefix '${prefix3}' maps to regional postal division (${matched.district}, ${matched.stateName}). Candidate constituencies cannot be reliably derived from a 3-digit postal prefix alone without verified postal beat mapping or geographic coordinates. Detailed constituency lookup requires a full street address or coordinate input.`,
       provenance,
     };
   }

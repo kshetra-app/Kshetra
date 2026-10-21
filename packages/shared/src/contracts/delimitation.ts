@@ -292,14 +292,16 @@ export interface CitizenImpactDTO {
     reservation?: 'GEN' | 'SC' | 'ST';
   }>;
   proposedConstituency?: {
-    acNo: number;
+    acNo?: number;
+    scenarioAcIdentifier?: string;
     name: string;
     reservation?: 'GEN' | 'SC' | 'ST';
+    statutoryStatus?: string;
   };
   impactAnalysis?: {
     changeType: string;
-    reservationChange: string;
-    impactSeverity: string;
+    reservationChange?: string;
+    impactSeverity?: string;
     votersRetainedPercent?: number;
     explanation: string;
     spatialCaveat: string;

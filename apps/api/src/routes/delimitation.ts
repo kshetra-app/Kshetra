@@ -333,12 +333,6 @@ export async function delimitationRoutes(app: FastifyInstance) {
   app.get<{ Params: { pinCode: string } }>('/api/v1/delimitation/impact/:pinCode', { schema: pinCodeParamSchema }, async (request, reply) => {
     const { pinCode } = request.params;
 
-    if (!/^\d{6}$/.test(pinCode)) {
-      return sendApiError(reply, request, 400, 'Bad Request', 'Invalid PIN code. Must be 6 digits.', {
-        code: 'FST_ERR_VALIDATION',
-      });
-    }
-
     try {
       const result = delimitationService.getCitizenImpact(pinCode);
       return sendSuccess(reply, request, result);
