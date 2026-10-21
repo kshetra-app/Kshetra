@@ -1323,16 +1323,29 @@ describe('Comprehensive Delimitation Unit & Route Tests', () => {
         'Invalid PIN code'
       );
 
-      // Valid PIN
+      // Valid curated provisional PIN (500001)
       const impact1 = delimitationService.getCitizenImpact('500001');
       expect(impact1.pinCode).toBe('500001');
       expect(impact1.location.stateCode).toBe('TS');
-      expect(impact1.impactAnalysis.impactSeverity).toBeDefined();
+      expect(impact1.status).toBe('LINKED_PROVISIONAL');
+      expect(impact1.currentConstituency?.acNo).toBe(65);
+      expect(impact1.impactAnalysis?.impactSeverity).toBeDefined();
+      expect(impact1.impactAnalysis?.isScenarioEstimate).toBe(true);
 
-      // Variations across PIN suffixes to hit branches (split, major_redraw, reservation change)
-      for (const pin of ['500000', '500002', '500004', '500005', '500010', '500011', '500022', '560001', '600001']) {
+      // Variations across PINs: curated provisional vs generic regional
+      for (const pin of ['500002', '500004', '500010', '500011', '560001', '600001']) {
         const imp = delimitationService.getCitizenImpact(pin);
         expect(imp.available).toBe(true);
+        if (pin === '560001' || pin === '600001') {
+          // Regional prefix without arbitrary AC assignment
+          expect(imp.status).toBe('AMBIGUOUS_CANDIDATES');
+          expect(imp.currentConstituency).toBeUndefined();
+          expect(imp.candidateConstituencies?.length).toBeGreaterThan(0);
+        } else {
+          // Curated provisional linkage
+          expect(imp.status).toBe('LINKED_PROVISIONAL');
+          expect(imp.currentConstituency).toBeDefined();
+        }
       }
     });
 

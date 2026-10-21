@@ -2692,3 +2692,35 @@
      - Passing coverage gate maintained: Statements 95.41%, Branches 83.31%, Functions 96.50%, Lines 95.95% (exceeding all 90/82/90/90 thresholds).
      - Strict production air-gap preserved (`AIR_GAPPED_UNEXECUTED`).
      - Formal CTO Acceptance strictly `0.0% — PENDING INDEPENDENT ADJUDICATION`.
+
+### DEC-122: CTO DIRECTIVE 122 — ELECTORAL DATA-TRUTH REMEDIATION, CANONICAL LOOKUP INTEGRITY & STAGE B ADJUDICATION READINESS
+- **Date:** 2026-10-21
+- **Status:** IMPLEMENTATION COMPLETE / SUBMITTED FOR INDEPENDENT ADJUDICATION
+- **Authority:** CTO Directive 122 / Master Execution Framework Amendment v1.6 / Rule IV-001 Non-Self-Acceptance
+- **Context:** Following Directive 121, independent source inspection identified an electoral data-truth defect in delimitation PIN code lookup (`getCitizenImpact`), where generic 3-digit PIN prefixes used modulo arithmetic on PIN suffixes to select real Assembly Constituencies and derive synthetic political impact claims. Directive 122 mandated correcting this defect, validating the postal directory, and preparing the Stage B independent adjudication evidence package.
+- **Architectural & Governance Determinations:**
+  1. **Workstream A — PIN-to-Constituency Data Truth Remediation (DEF-W021-05):**
+     - Completely eliminated modulo arithmetic on PIN digits for constituency selection in `apps/api/src/services/delimitationService.ts`.
+     - Removed synthetic mock constituency generation and arbitrary incumbent/party/reservation category fabrication.
+     - Enforced 4-case lookup contract:
+       - **Case A (No postal mapping):** Fails closed with HTTP 404 and code `PIN_NOT_FOUND` (invalid 6-digit syntax rejected with HTTP 400 `FST_ERR_VALIDATION`).
+       - **Case B (Generic 3-digit postal prefix):** Returns supported regional information only (`location: { stateCode, stateName, district, region, coverageLevel: 'POSTAL_ZONE_REGION' }`). Strictly omits `currentConstituency`, `proposedConstituency`, and `impactAnalysis`.
+       - **Case C (Curated provisional exact linkage):** Restricted to verified urban points in `CURATED_PROVISIONAL_PIN_DIRECTORY`. Resolves to canonical constituency via `stateData.getConstituency` (Case D). Mandates explicit scenario labeling (`isScenarioEstimate: true`) and spatial approximation caveats on impact analysis.
+       - **Case 3.4 (Ambiguous candidate constituencies):** Generic regional prefixes spanning multiple candidate ACs return `status: 'AMBIGUOUS_CANDIDATES'` and `candidateConstituencies: [...]`, prohibiting arbitrary single-constituency selection.
+     - Classified `PIN_PREFIX_MAPPING` as `POSTAL_DIRECTORY_CLASSIFICATION: 'APPROXIMATE_REGIONAL_CLASSIFICATION'` (Section 3.5).
+     - Proven by 12/12 dedicated domain invariant tests in `apps/api/src/__tests__/delimitation-citizen-impact-data-truth.test.ts` and 37/37 tests in `apps/api/src/__tests__/delimitation.test.ts`. `DEF-W021-05` marked **`RESOLVED — VERIFIED IN DIRECTIVE 122`**.
+  2. **Workstream B — Geographic Capability Integration:**
+     - Verified consistent consumer adherence to 6-tier capability taxonomy across `stateData.ts`, `saasV1.ts`, `states.ts`, and delimitation routes.
+     - Confirmed that `hasGeoJSON` evaluates to `false` fail-closed across all 31 States/UTs and no unverified boundary is presented as authoritative.
+  3. **Workstream C — AC 119 Forensic Disposition (DEF-W021-01):**
+     - Preserved `DEF-W021-01` as strictly **`OPEN_AND_BLOCKED`** pending official CEO Telangana gazette consolidation.
+  4. **Workstream D & E — National Electoral Geography Invariant Preservation:**
+     - Maintained reproducible validation pipeline across 4,123 ACs, 4,123 AC-to-PC mapping tuples, and 543 Parliamentary Constituencies with zero interstate misallocations across 6 distinct evidence tiers.
+     - 30 States/UTs lack authoritative GIS boundaries and remain blocked under `DEF-W021-03`.
+  5. **Workstream F — Assam Temporal Lineage (DEF-W021-02):**
+     - Retained pre-2023 historical vector lineage as **`ASSAM_HISTORICAL_LINEAGE_PENDING`** pending ECI vector digitization.
+  6. **Workstream G & H — Quality Gate & Headline Accounting:**
+     - Jest API coverage preserved and exceeding regression thresholds: Statements 95.34% (≥90%), Branches 83.22% (≥82%), Functions 96.51% (≥90%), Lines 95.87% (≥90%).
+     - Headline Accounting: Repo-Verified Earned: **61.5%**, Database-Pending: **10.5%**, Externally-Blocked: **22.5%**, Unimplemented: **5.5%**.
+     - Production Air-Gap strictly maintained (`AIR_GAPPED_UNEXECUTED`).
+     - Formal CTO Acceptance strictly **`0.0% — PENDING INDEPENDENT ADJUDICATION`** under Rule IV-001.

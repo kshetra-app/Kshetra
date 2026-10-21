@@ -269,34 +269,43 @@ export interface GainersLosersDTO {
 
 export interface CitizenImpactDTO {
   available: boolean;
-  status: string;
+  status: 'REGIONAL_ONLY' | 'AMBIGUOUS_CANDIDATES' | 'LINKED_PROVISIONAL' | 'RESOLVED' | string;
   pinCode: string;
   location: {
     stateCode: string;
     stateName: string;
     district: string;
     region: string;
+    coverageLevel?: 'POSTAL_ZONE_REGION' | 'CURATED_LOCALITY' | string;
   };
-  currentConstituency: {
+  currentConstituency?: {
     acNo: number;
     name: string;
-    sittingMLA: string;
-    party: string;
-    reservation: 'GEN' | 'SC' | 'ST';
+    sittingMLA?: string;
+    party?: string;
+    reservation?: 'GEN' | 'SC' | 'ST';
   };
-  proposedConstituency: {
+  candidateConstituencies?: Array<{
     acNo: number;
     name: string;
-    reservation: 'GEN' | 'SC' | 'ST';
+    district?: string;
+    reservation?: 'GEN' | 'SC' | 'ST';
+  }>;
+  proposedConstituency?: {
+    acNo: number;
+    name: string;
+    reservation?: 'GEN' | 'SC' | 'ST';
   };
-  impactAnalysis: {
+  impactAnalysis?: {
     changeType: string;
     reservationChange: string;
     impactSeverity: string;
-    votersRetainedPercent: number;
+    votersRetainedPercent?: number;
     explanation: string;
     spatialCaveat: string;
+    isScenarioEstimate?: boolean;
   };
+  linkageNotice?: string;
   provenance: MathematicalProvenance;
 }
 

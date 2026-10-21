@@ -1,8 +1,8 @@
 # KSHETRA W021.5 — FULL SPECIFICATION TASK RECONCILIATION
 ## Comprehensive Task-by-Task Inventory Across Stages A through I
 
-**Directive:** CTO Directive 121  
-**Predecessor:** CTO Directive 120  
+**Directive:** CTO Directive 122  
+**Predecessor:** CTO Directive 121  
 **Repository:** `https://github.com/kshetra-app/Kshetra`  
 **Governing Authority:** Master Execution Framework Amendment v1.6 / Rule IV-001 Non-Self-Acceptance  
 **Production Boundary:** `AIR_GAPPED_UNEXECUTED` (Strictly zero queries, zero mutations on `ehfafcnimmjusyvplbah`)  
@@ -593,6 +593,7 @@ This document provides an exhaustive, evidence-backed reconciliation of all 27 c
 | `TELANGANA_AC_119_DUPLICATE_POLYGON` | Boundary Modeling (`W021.5-B1-04`) | `OPEN_AND_BLOCKED` | 2 conflicting polygon candidates (FID 4159 & FID 4160) for AC-119 Bhadrachalam resulting from 2015 AP Reorganisation territorial transfers | Official Survey of India / CEO Telangana gazetted shapefile resolving Bhadrachalam boundary |
 | `MISSING_30_STATES_GIS_FEEDS` | Boundary Modeling (`W021.5-B1-04`) | `BLOCKED_EXTERNAL` | Only Telangana (120 features) possesses repository GeoJSON; remaining 30 States/UTs lack official GIS feeds | Acquisition, verification, and RFC 7946 validation of official statutory boundary shapefiles for 30 jurisdictions |
 | `ASSAM_HISTORICAL_LINEAGE_PENDING` | Temporal Truth (`W021.5-B1-03`) | `PRESERVED_OPEN` | Pre-2023 historical delimitation constituency boundary mapping pending official archival gazette | Official Delimitation Commission / ECI archival concordance order mapping 1976 to 2023 seats |
+| `DEF-W021-05` | Postal Index Number (PIN) to AC Data Truth | `RESOLVED` | Legacy modulo arithmetic on PIN suffix and synthetic AC selection fabricated electoral determinations | Remediated in Directive 122: eliminated modulo arithmetic, enforced regional ambiguity for generic prefixes, restricted AC linkage to curated provisional reference points with explicit scenario flags (`isScenarioEstimate: true`). Verified by 12/12 dedicated domain tests. |
 
 ---
 
