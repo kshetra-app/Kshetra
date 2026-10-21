@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "directive": "CTO Directive 124 / Reconciled in CTO Directive 125",
+    "directive": "CTO Directive 124 / Reconciled in CTO Directive 125 & 126",
     "workstream": "Workstream B — Reconcile All 36 Curated PIN Entries",
     "generatedAt": "2026-10-21T06:26:38.139Z",
     "sourceOfTruth": "apps/api/src/services/delimitationService.ts",

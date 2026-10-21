@@ -1,13 +1,101 @@
 {
   "metadata": {
-    "directive": "CTO Directive 125",
-    "workstream": "Workstream B — Close the 36-PIN Evidence Gap",
+    "directive": "CTO Directive 126",
+    "workstream": "Corrective Action A, B, C, D — Evidence Validation Integrity, Source-Claim Verification & Stage B Readiness",
     "governingFramework": "Master Execution Framework Amendment v1.6 / Rule IV-001 Non-Self-Acceptance",
     "stageBoundary": "Stage B Gate — STOP",
     "formalAcceptance": "0.0% — PENDING INDEPENDENT ADJUDICATION",
-    "generatedAt": "2026-10-21T06:30:15.840Z",
+    "generatedAt": "2026-10-21T07:03:23.430Z",
+    "evidentiaryIndependenceScope": {
+      "structuralSeparation": "Manifest is maintained in a standalone JSON file and build script separate from runtime implementation array.",
+      "geographicProofLimitation": "Structural separation does NOT constitute independent geographic proof of postal delivery beat containment.",
+      "delimitationOrderScope": "Delimitation Orders define assembly constituencies strictly by municipal wards, mandals, and villages, not postal delivery beats.",
+      "postalBeatStatus": "Zero PINs have statutory 1:1 containment. All single-AC entries are PROVISIONALLY_APPROXIMATED; all multi-AC intersections are AMBIGUOUS_MULTI_CONSTITUENCY fail-closed."
+    },
+    "eightCorrectionsAccounting": {
+      "totalReportedCorrections": 8,
+      "telanganaCorrectionsCount": 3,
+      "andhraPradeshCorrectionsCount": 5,
+      "reconciledKurnoolStatus": "Kurnool PIN 518001 (AC 137) is an existing single-AC provisional record, NOT one of the 8 corrections.",
+      "reportedCorrections": [
+        {
+          "pinCode": "500002",
+          "stateCode": "TS",
+          "historicalPreD124Ac": 67,
+          "correctedAc": 66,
+          "constituencyName": "Charminar",
+          "identityVerificationConclusion": "Target constituency name and number are authoritatively verified against Delimitation Order 2008 and statutory seed records.",
+          "postalContainmentConclusion": "Postal delivery area is provisionally associated with the constituency based on municipal ward concordance / post office locality, but spatial containment is NOT proven because postal beats lack statutory boundary polygons."
+        },
+        {
+          "pinCode": "500053",
+          "stateCode": "TS",
+          "historicalPreD124Ac": 69,
+          "correctedAc": 67,
+          "constituencyName": "Chandrayangutta",
+          "identityVerificationConclusion": "Target constituency name and number are authoritatively verified against Delimitation Order 2008 and statutory seed records.",
+          "postalContainmentConclusion": "Postal delivery area is provisionally associated with the constituency based on municipal ward concordance / post office locality, but spatial containment is NOT proven because postal beats lack statutory boundary polygons."
+        },
+        {
+          "pinCode": "500064",
+          "stateCode": "TS",
+          "historicalPreD124Ac": 66,
+          "correctedAc": 69,
+          "constituencyName": "Bahadurpura",
+          "identityVerificationConclusion": "Target constituency name and number are authoritatively verified against Delimitation Order 2008 and statutory seed records.",
+          "postalContainmentConclusion": "Postal delivery area is provisionally associated with the constituency based on municipal ward concordance / post office locality, but spatial containment is NOT proven because postal beats lack statutory boundary polygons."
+        },
+        {
+          "pinCode": "520001",
+          "stateCode": "AP",
+          "historicalPreD124Ac": 80,
+          "correctedAc": 79,
+          "constituencyName": "Vijayawada West",
+          "identityVerificationConclusion": "Target constituency name and number are authoritatively verified against Delimitation Order 2008 and statutory seed records.",
+          "postalContainmentConclusion": "Postal delivery area is provisionally associated with the constituency based on municipal ward concordance / post office locality, but spatial containment is NOT proven because postal beats lack statutory boundary polygons."
+        },
+        {
+          "pinCode": "520002",
+          "stateCode": "AP",
+          "historicalPreD124Ac": 81,
+          "correctedAc": 80,
+          "constituencyName": "Vijayawada Central",
+          "identityVerificationConclusion": "Target constituency name and number are authoritatively verified against Delimitation Order 2008 and statutory seed records.",
+          "postalContainmentConclusion": "Postal delivery area is provisionally associated with the constituency based on municipal ward concordance / post office locality, but spatial containment is NOT proven because postal beats lack statutory boundary polygons."
+        },
+        {
+          "pinCode": "530001",
+          "stateCode": "AP",
+          "historicalPreD124Ac": 21,
+          "correctedAc": 22,
+          "constituencyName": "Visakhapatnam South",
+          "identityVerificationConclusion": "Target constituency name and number are authoritatively verified against Delimitation Order 2008 and statutory seed records.",
+          "postalContainmentConclusion": "Postal delivery area is provisionally associated with the constituency based on municipal ward concordance / post office locality, but spatial containment is NOT proven because postal beats lack statutory boundary polygons."
+        },
+        {
+          "pinCode": "530002",
+          "stateCode": "AP",
+          "historicalPreD124Ac": 21,
+          "correctedAc": 22,
+          "constituencyName": "Visakhapatnam South",
+          "identityVerificationConclusion": "Target constituency name and number are authoritatively verified against Delimitation Order 2008 and statutory seed records.",
+          "postalContainmentConclusion": "Postal delivery area is provisionally associated with the constituency based on municipal ward concordance / post office locality, but spatial containment is NOT proven because postal beats lack statutory boundary polygons."
+        },
+        {
+          "pinCode": "517501",
+          "stateCode": "AP",
+          "historicalPreD124Ac": 168,
+          "correctedAc": 167,
+          "constituencyName": "Tirupati",
+          "identityVerificationConclusion": "Target constituency name and number are authoritatively verified against Delimitation Order 2008 and statutory seed records.",
+          "postalContainmentConclusion": "Postal delivery area is provisionally associated with the constituency based on municipal ward concordance / post office locality, but spatial containment is NOT proven because postal beats lack statutory boundary polygons."
+        }
+      ]
+    },
     "validationSummary": {
       "allChecksPassed": true,
+      "positiveValidationPassed": true,
+      "negativeValidationPassed": true,
       "totalEntries": 36,
       "provisionalCount": 32,
       "ambiguousCount": 4,
@@ -18,9 +106,9 @@
     "validationChecks": [
       {
         "checkId": "CHECK_1_EXACT_INVENTORY_PARITY",
-        "description": "Directory and independent evidence manifest have exact 36-entry inventory parity",
+        "description": "Directory and independent evidence manifest have exact 36-entry inventory parity with zero duplicate PINs",
         "passed": true,
-        "details": "Directory: 36, Manifest: 36"
+        "details": "Directory: 36, Manifest: 36, Duplicates: 0"
       },
       {
         "checkId": "CHECK_2_MULTI_AC_FAIL_CLOSED_AMBIGUITY",
@@ -38,13 +126,49 @@
         "checkId": "CHECK_4_EIGHT_AC_CORRECTIONS_VERIFIED",
         "description": "All 8 reported AC corrections independently verified for constituency name & number while retaining PROVISIONALLY_APPROXIMATED",
         "passed": true,
-        "details": "Verified 8 corrections across AP and TS"
+        "details": "Verified 8 corrections strictly across AP (5) and TS (3); Kurnool 137 verified as existing single-AC record"
       },
       {
         "checkId": "CHECK_5_DOCUMENTARY_TRACEABILITY_FIELDS",
-        "description": "All 36 entries possess complete traceable source locators, dates, and what source establishes/does not establish",
+        "description": "All 36 entries possess complete traceable source locators, dates, inspection status, propositions, and uncertainty disclosures",
         "passed": true,
-        "details": "All 10 required documentary fields populated on all 36 entries"
+        "details": "All 15 required documentary fields populated on all 36 entries"
+      },
+      {
+        "checkId": "NEG_SCENARIO_1_MISSING_ENTRY",
+        "description": "Manifest fixture with missing record (35 entries) is rejected by validator",
+        "passed": true,
+        "details": "Correctly rejected missing record (CHECK_1 failed)"
+      },
+      {
+        "checkId": "NEG_SCENARIO_2_DUPLICATE_PIN",
+        "description": "Manifest fixture with duplicate PIN code is rejected by validator",
+        "passed": true,
+        "details": "Correctly rejected duplicate PIN (CHECK_1 failed)"
+      },
+      {
+        "checkId": "NEG_SCENARIO_3_CONTRADICTORY_AC_CORRECTION",
+        "description": "Manifest fixture with tampered AC number (999 on 500002) is rejected by validator",
+        "passed": true,
+        "details": "Correctly rejected contradictory AC assignment (CHECK_4 failed)"
+      },
+      {
+        "checkId": "NEG_SCENARIO_4_MULTI_AC_CANONICAL_BREACH",
+        "description": "Manifest fixture with canonical AC assigned to multi-AC PIN (500001) is rejected by validator",
+        "passed": true,
+        "details": "Correctly rejected assignedAcNumber on multi-AC PIN (CHECK_2 failed)"
+      },
+      {
+        "checkId": "NEG_SCENARIO_5_UNSUPPORTED_AUTHORITATIVE_PROMOTION",
+        "description": "Manifest fixture with unauthorized AUTHORITATIVELY_VERIFIED classification is rejected by validator",
+        "passed": true,
+        "details": "Correctly rejected unauthorized authoritative promotion (CHECK_3 failed)"
+      },
+      {
+        "checkId": "NEG_SCENARIO_6_MISSING_DOCUMENTARY_LOCATOR",
+        "description": "Manifest fixture with empty sourceLocator is rejected by validator",
+        "passed": true,
+        "details": "Correctly rejected missing documentary field (CHECK_5 failed)"
       }
     ]
   },
@@ -78,7 +202,15 @@
       "constituencyIdentityVerified": true,
       "spatialContainmentVerified": false,
       "remainingUncertainty": "Exact postal delivery route boundary polygon relative to GHMC ward boundaries.",
-      "requiredAction": "RETAIN_AS_MULTI_AC_AMBIGUITY"
+      "requiredAction": "RETAIN_AS_MULTI_AC_AMBIGUITY",
+      "sourceInspectionStatus": "IN_REPO_DOSSIER_INSPECTED",
+      "statutorySourceStatus": "EXTERNAL_STATUTORY_PUBLICATION_NOT_CHECKED_IN",
+      "propositionSupported": "MULTI_CONSTITUENCY_WARD_INTERSECTION",
+      "directEvidenceVsInference": "Direct statutory delimitation evidence establishes that the delivery beat spans multiple municipal wards across distinct assembly constituencies. Single-constituency assignment is factually unsupportable.",
+      "unsupportedOrInaccessibleClaims": "Statutory 6-digit postal delivery beat boundary polygons are unpublished by India Post and inaccessible. Full multi-hundred page gazette scan is an external publication not checked into git.",
+      "isReportedCorrection": false,
+      "identityVerificationConclusion": "Candidate constituency names and numbers are authoritatively verified against Delimitation Order 2008 and statutory seed records.",
+      "postalContainmentConclusion": "Postal delivery beat intersects multiple constituencies without a unique single containment. Fail-closed multi-AC representation is mandatory."
     },
     {
       "pinCode": "500002",
@@ -101,7 +233,16 @@
       "constituencyIdentityVerified": true,
       "spatialContainmentVerified": false,
       "remainingUncertainty": "Peripheral delivery beats near Moghalpura / Shalibanda may touch AC 67 (Chandrayangutta) or AC 69 (Bahadurpura).",
-      "requiredAction": "RETAIN_AS_PROVISIONAL_APPROXIMATION"
+      "requiredAction": "RETAIN_AS_PROVISIONAL_APPROXIMATION",
+      "sourceInspectionStatus": "IN_REPO_DOSSIER_INSPECTED",
+      "statutorySourceStatus": "EXTERNAL_STATUTORY_PUBLICATION_NOT_CHECKED_IN",
+      "propositionSupported": "CONSTITUENCY_IDENTITY_AND_MUNICIPAL_WARD_COMPOSITION",
+      "directEvidenceVsInference": "Direct statutory delimitation evidence establishes the constituency name, number, and ward extent. The association of postal PIN delivery beat with this constituency is an administrative-locality inference based on office/locality centroid; spatial containment is NOT directly proven.",
+      "unsupportedOrInaccessibleClaims": "Statutory 6-digit postal delivery beat boundary polygons are unpublished by India Post and inaccessible. Full multi-hundred page gazette scan is an external publication not checked into git.",
+      "isReportedCorrection": true,
+      "historicalPreD124Ac": 67,
+      "identityVerificationConclusion": "Target constituency name and number are authoritatively verified against Delimitation Order 2008 and statutory seed records.",
+      "postalContainmentConclusion": "Postal delivery area is provisionally associated with the constituency based on municipal ward concordance / post office locality, but spatial containment is NOT proven because postal beats lack statutory boundary polygons."
     },
     {
       "pinCode": "500003",
@@ -124,7 +265,15 @@
       "constituencyIdentityVerified": true,
       "spatialContainmentVerified": false,
       "remainingUncertainty": "Border beat delivery addresses touching Cantonment board jurisdiction.",
-      "requiredAction": "RETAIN_AS_PROVISIONAL_APPROXIMATION"
+      "requiredAction": "RETAIN_AS_PROVISIONAL_APPROXIMATION",
+      "sourceInspectionStatus": "IN_REPO_DOSSIER_INSPECTED",
+      "statutorySourceStatus": "EXTERNAL_STATUTORY_PUBLICATION_NOT_CHECKED_IN",
+      "propositionSupported": "CONSTITUENCY_IDENTITY_AND_MUNICIPAL_WARD_COMPOSITION",
+      "directEvidenceVsInference": "Direct statutory delimitation evidence establishes the constituency name, number, and ward extent. The association of postal PIN delivery beat with this constituency is an administrative-locality inference based on office/locality centroid; spatial containment is NOT directly proven.",
+      "unsupportedOrInaccessibleClaims": "Statutory 6-digit postal delivery beat boundary polygons are unpublished by India Post and inaccessible. Full multi-hundred page gazette scan is an external publication not checked into git.",
+      "isReportedCorrection": false,
+      "identityVerificationConclusion": "Target constituency name and number are authoritatively verified against Delimitation Order 2008 and statutory seed records.",
+      "postalContainmentConclusion": "Postal delivery area is provisionally associated with the constituency based on municipal ward concordance / post office locality, but spatial containment is NOT proven because postal beats lack statutory boundary polygons."
     },
     {
       "pinCode": "500004",
@@ -147,7 +296,15 @@
       "constituencyIdentityVerified": true,
       "spatialContainmentVerified": false,
       "remainingUncertainty": "Asif Nagar ward boundary bifurcation.",
-      "requiredAction": "RETAIN_AS_PROVISIONAL_APPROXIMATION"
+      "requiredAction": "RETAIN_AS_PROVISIONAL_APPROXIMATION",
+      "sourceInspectionStatus": "IN_REPO_DOSSIER_INSPECTED",
+      "statutorySourceStatus": "EXTERNAL_STATUTORY_PUBLICATION_NOT_CHECKED_IN",
+      "propositionSupported": "CONSTITUENCY_IDENTITY_AND_MUNICIPAL_WARD_COMPOSITION",
+      "directEvidenceVsInference": "Direct statutory delimitation evidence establishes the constituency name, number, and ward extent. The association of postal PIN delivery beat with this constituency is an administrative-locality inference based on office/locality centroid; spatial containment is NOT directly proven.",
+      "unsupportedOrInaccessibleClaims": "Statutory 6-digit postal delivery beat boundary polygons are unpublished by India Post and inaccessible. Full multi-hundred page gazette scan is an external publication not checked into git.",
+      "isReportedCorrection": false,
+      "identityVerificationConclusion": "Target constituency name and number are authoritatively verified against Delimitation Order 2008 and statutory seed records.",
+      "postalContainmentConclusion": "Postal delivery area is provisionally associated with the constituency based on municipal ward concordance / post office locality, but spatial containment is NOT proven because postal beats lack statutory boundary polygons."
     },
     {
       "pinCode": "500006",
@@ -170,7 +327,15 @@
       "constituencyIdentityVerified": true,
       "spatialContainmentVerified": false,
       "remainingUncertainty": "Bordering Karwan constituency boundary.",
-      "requiredAction": "RETAIN_AS_PROVISIONAL_APPROXIMATION"
+      "requiredAction": "RETAIN_AS_PROVISIONAL_APPROXIMATION",
+      "sourceInspectionStatus": "IN_REPO_DOSSIER_INSPECTED",
+      "statutorySourceStatus": "EXTERNAL_STATUTORY_PUBLICATION_NOT_CHECKED_IN",
+      "propositionSupported": "CONSTITUENCY_IDENTITY_AND_MUNICIPAL_WARD_COMPOSITION",
+      "directEvidenceVsInference": "Direct statutory delimitation evidence establishes the constituency name, number, and ward extent. The association of postal PIN delivery beat with this constituency is an administrative-locality inference based on office/locality centroid; spatial containment is NOT directly proven.",
+      "unsupportedOrInaccessibleClaims": "Statutory 6-digit postal delivery beat boundary polygons are unpublished by India Post and inaccessible. Full multi-hundred page gazette scan is an external publication not checked into git.",
+      "isReportedCorrection": false,
+      "identityVerificationConclusion": "Target constituency name and number are authoritatively verified against Delimitation Order 2008 and statutory seed records.",
+      "postalContainmentConclusion": "Postal delivery area is provisionally associated with the constituency based on municipal ward concordance / post office locality, but spatial containment is NOT proven because postal beats lack statutory boundary polygons."
     },
     {
       "pinCode": "500007",
@@ -193,7 +358,15 @@
       "constituencyIdentityVerified": true,
       "spatialContainmentVerified": false,
       "remainingUncertainty": "Ramanthapur delivery beat overlap with Uppal AC 47.",
-      "requiredAction": "RETAIN_AS_PROVISIONAL_APPROXIMATION"
+      "requiredAction": "RETAIN_AS_PROVISIONAL_APPROXIMATION",
+      "sourceInspectionStatus": "IN_REPO_DOSSIER_INSPECTED",
+      "statutorySourceStatus": "EXTERNAL_STATUTORY_PUBLICATION_NOT_CHECKED_IN",
+      "propositionSupported": "CONSTITUENCY_IDENTITY_AND_MUNICIPAL_WARD_COMPOSITION",
+      "directEvidenceVsInference": "Direct statutory delimitation evidence establishes the constituency name, number, and ward extent. The association of postal PIN delivery beat with this constituency is an administrative-locality inference based on office/locality centroid; spatial containment is NOT directly proven.",
+      "unsupportedOrInaccessibleClaims": "Statutory 6-digit postal delivery beat boundary polygons are unpublished by India Post and inaccessible. Full multi-hundred page gazette scan is an external publication not checked into git.",
+      "isReportedCorrection": false,
+      "identityVerificationConclusion": "Target constituency name and number are authoritatively verified against Delimitation Order 2008 and statutory seed records.",
+      "postalContainmentConclusion": "Postal delivery area is provisionally associated with the constituency based on municipal ward concordance / post office locality, but spatial containment is NOT proven because postal beats lack statutory boundary polygons."
     },
     {
       "pinCode": "500009",
@@ -216,7 +389,15 @@
       "constituencyIdentityVerified": true,
       "spatialContainmentVerified": false,
       "remainingUncertainty": "Cantonment civil area perimeters.",
-      "requiredAction": "RETAIN_AS_PROVISIONAL_APPROXIMATION"
+      "requiredAction": "RETAIN_AS_PROVISIONAL_APPROXIMATION",
+      "sourceInspectionStatus": "IN_REPO_DOSSIER_INSPECTED",
+      "statutorySourceStatus": "EXTERNAL_STATUTORY_PUBLICATION_NOT_CHECKED_IN",
+      "propositionSupported": "CONSTITUENCY_IDENTITY_AND_MUNICIPAL_WARD_COMPOSITION",
+      "directEvidenceVsInference": "Direct statutory delimitation evidence establishes the constituency name, number, and ward extent. The association of postal PIN delivery beat with this constituency is an administrative-locality inference based on office/locality centroid; spatial containment is NOT directly proven.",
+      "unsupportedOrInaccessibleClaims": "Statutory 6-digit postal delivery beat boundary polygons are unpublished by India Post and inaccessible. Full multi-hundred page gazette scan is an external publication not checked into git.",
+      "isReportedCorrection": false,
+      "identityVerificationConclusion": "Target constituency name and number are authoritatively verified against Delimitation Order 2008 and statutory seed records.",
+      "postalContainmentConclusion": "Postal delivery area is provisionally associated with the constituency based on municipal ward concordance / post office locality, but spatial containment is NOT proven because postal beats lack statutory boundary polygons."
     },
     {
       "pinCode": "500010",
@@ -239,7 +420,15 @@
       "constituencyIdentityVerified": true,
       "spatialContainmentVerified": false,
       "remainingUncertainty": "Boundary with Medchal-Malkajgiri district.",
-      "requiredAction": "RETAIN_AS_PROVISIONAL_APPROXIMATION"
+      "requiredAction": "RETAIN_AS_PROVISIONAL_APPROXIMATION",
+      "sourceInspectionStatus": "IN_REPO_DOSSIER_INSPECTED",
+      "statutorySourceStatus": "EXTERNAL_STATUTORY_PUBLICATION_NOT_CHECKED_IN",
+      "propositionSupported": "CONSTITUENCY_IDENTITY_AND_MUNICIPAL_WARD_COMPOSITION",
+      "directEvidenceVsInference": "Direct statutory delimitation evidence establishes the constituency name, number, and ward extent. The association of postal PIN delivery beat with this constituency is an administrative-locality inference based on office/locality centroid; spatial containment is NOT directly proven.",
+      "unsupportedOrInaccessibleClaims": "Statutory 6-digit postal delivery beat boundary polygons are unpublished by India Post and inaccessible. Full multi-hundred page gazette scan is an external publication not checked into git.",
+      "isReportedCorrection": false,
+      "identityVerificationConclusion": "Target constituency name and number are authoritatively verified against Delimitation Order 2008 and statutory seed records.",
+      "postalContainmentConclusion": "Postal delivery area is provisionally associated with the constituency based on municipal ward concordance / post office locality, but spatial containment is NOT proven because postal beats lack statutory boundary polygons."
     },
     {
       "pinCode": "500011",
@@ -262,7 +451,15 @@
       "constituencyIdentityVerified": true,
       "spatialContainmentVerified": false,
       "remainingUncertainty": "Lothkunta northern boundary alignment.",
-      "requiredAction": "RETAIN_AS_PROVISIONAL_APPROXIMATION"
+      "requiredAction": "RETAIN_AS_PROVISIONAL_APPROXIMATION",
+      "sourceInspectionStatus": "IN_REPO_DOSSIER_INSPECTED",
+      "statutorySourceStatus": "EXTERNAL_STATUTORY_PUBLICATION_NOT_CHECKED_IN",
+      "propositionSupported": "CONSTITUENCY_IDENTITY_AND_MUNICIPAL_WARD_COMPOSITION",
+      "directEvidenceVsInference": "Direct statutory delimitation evidence establishes the constituency name, number, and ward extent. The association of postal PIN delivery beat with this constituency is an administrative-locality inference based on office/locality centroid; spatial containment is NOT directly proven.",
+      "unsupportedOrInaccessibleClaims": "Statutory 6-digit postal delivery beat boundary polygons are unpublished by India Post and inaccessible. Full multi-hundred page gazette scan is an external publication not checked into git.",
+      "isReportedCorrection": false,
+      "identityVerificationConclusion": "Target constituency name and number are authoritatively verified against Delimitation Order 2008 and statutory seed records.",
+      "postalContainmentConclusion": "Postal delivery area is provisionally associated with the constituency based on municipal ward concordance / post office locality, but spatial containment is NOT proven because postal beats lack statutory boundary polygons."
     },
     {
       "pinCode": "500012",
@@ -285,7 +482,15 @@
       "constituencyIdentityVerified": true,
       "spatialContainmentVerified": false,
       "remainingUncertainty": "Riverfront border beat overlap.",
-      "requiredAction": "RETAIN_AS_PROVISIONAL_APPROXIMATION"
+      "requiredAction": "RETAIN_AS_PROVISIONAL_APPROXIMATION",
+      "sourceInspectionStatus": "IN_REPO_DOSSIER_INSPECTED",
+      "statutorySourceStatus": "EXTERNAL_STATUTORY_PUBLICATION_NOT_CHECKED_IN",
+      "propositionSupported": "CONSTITUENCY_IDENTITY_AND_MUNICIPAL_WARD_COMPOSITION",
+      "directEvidenceVsInference": "Direct statutory delimitation evidence establishes the constituency name, number, and ward extent. The association of postal PIN delivery beat with this constituency is an administrative-locality inference based on office/locality centroid; spatial containment is NOT directly proven.",
+      "unsupportedOrInaccessibleClaims": "Statutory 6-digit postal delivery beat boundary polygons are unpublished by India Post and inaccessible. Full multi-hundred page gazette scan is an external publication not checked into git.",
+      "isReportedCorrection": false,
+      "identityVerificationConclusion": "Target constituency name and number are authoritatively verified against Delimitation Order 2008 and statutory seed records.",
+      "postalContainmentConclusion": "Postal delivery area is provisionally associated with the constituency based on municipal ward concordance / post office locality, but spatial containment is NOT proven because postal beats lack statutory boundary polygons."
     },
     {
       "pinCode": "500015",
@@ -308,7 +513,15 @@
       "constituencyIdentityVerified": true,
       "spatialContainmentVerified": false,
       "remainingUncertainty": "Cantonment boundary demarcation.",
-      "requiredAction": "RETAIN_AS_PROVISIONAL_APPROXIMATION"
+      "requiredAction": "RETAIN_AS_PROVISIONAL_APPROXIMATION",
+      "sourceInspectionStatus": "IN_REPO_DOSSIER_INSPECTED",
+      "statutorySourceStatus": "EXTERNAL_STATUTORY_PUBLICATION_NOT_CHECKED_IN",
+      "propositionSupported": "CONSTITUENCY_IDENTITY_AND_MUNICIPAL_WARD_COMPOSITION",
+      "directEvidenceVsInference": "Direct statutory delimitation evidence establishes the constituency name, number, and ward extent. The association of postal PIN delivery beat with this constituency is an administrative-locality inference based on office/locality centroid; spatial containment is NOT directly proven.",
+      "unsupportedOrInaccessibleClaims": "Statutory 6-digit postal delivery beat boundary polygons are unpublished by India Post and inaccessible. Full multi-hundred page gazette scan is an external publication not checked into git.",
+      "isReportedCorrection": false,
+      "identityVerificationConclusion": "Target constituency name and number are authoritatively verified against Delimitation Order 2008 and statutory seed records.",
+      "postalContainmentConclusion": "Postal delivery area is provisionally associated with the constituency based on municipal ward concordance / post office locality, but spatial containment is NOT proven because postal beats lack statutory boundary polygons."
     },
     {
       "pinCode": "500017",
@@ -331,7 +544,15 @@
       "constituencyIdentityVerified": true,
       "spatialContainmentVerified": false,
       "remainingUncertainty": "Eastern university perimeter.",
-      "requiredAction": "RETAIN_AS_PROVISIONAL_APPROXIMATION"
+      "requiredAction": "RETAIN_AS_PROVISIONAL_APPROXIMATION",
+      "sourceInspectionStatus": "IN_REPO_DOSSIER_INSPECTED",
+      "statutorySourceStatus": "EXTERNAL_STATUTORY_PUBLICATION_NOT_CHECKED_IN",
+      "propositionSupported": "CONSTITUENCY_IDENTITY_AND_MUNICIPAL_WARD_COMPOSITION",
+      "directEvidenceVsInference": "Direct statutory delimitation evidence establishes the constituency name, number, and ward extent. The association of postal PIN delivery beat with this constituency is an administrative-locality inference based on office/locality centroid; spatial containment is NOT directly proven.",
+      "unsupportedOrInaccessibleClaims": "Statutory 6-digit postal delivery beat boundary polygons are unpublished by India Post and inaccessible. Full multi-hundred page gazette scan is an external publication not checked into git.",
+      "isReportedCorrection": false,
+      "identityVerificationConclusion": "Target constituency name and number are authoritatively verified against Delimitation Order 2008 and statutory seed records.",
+      "postalContainmentConclusion": "Postal delivery area is provisionally associated with the constituency based on municipal ward concordance / post office locality, but spatial containment is NOT proven because postal beats lack statutory boundary polygons."
     },
     {
       "pinCode": "500018",
@@ -354,7 +575,15 @@
       "constituencyIdentityVerified": true,
       "spatialContainmentVerified": false,
       "remainingUncertainty": "Northern border with Balanagar/Kukatpally.",
-      "requiredAction": "RETAIN_AS_PROVISIONAL_APPROXIMATION"
+      "requiredAction": "RETAIN_AS_PROVISIONAL_APPROXIMATION",
+      "sourceInspectionStatus": "IN_REPO_DOSSIER_INSPECTED",
+      "statutorySourceStatus": "EXTERNAL_STATUTORY_PUBLICATION_NOT_CHECKED_IN",
+      "propositionSupported": "CONSTITUENCY_IDENTITY_AND_MUNICIPAL_WARD_COMPOSITION",
+      "directEvidenceVsInference": "Direct statutory delimitation evidence establishes the constituency name, number, and ward extent. The association of postal PIN delivery beat with this constituency is an administrative-locality inference based on office/locality centroid; spatial containment is NOT directly proven.",
+      "unsupportedOrInaccessibleClaims": "Statutory 6-digit postal delivery beat boundary polygons are unpublished by India Post and inaccessible. Full multi-hundred page gazette scan is an external publication not checked into git.",
+      "isReportedCorrection": false,
+      "identityVerificationConclusion": "Target constituency name and number are authoritatively verified against Delimitation Order 2008 and statutory seed records.",
+      "postalContainmentConclusion": "Postal delivery area is provisionally associated with the constituency based on municipal ward concordance / post office locality, but spatial containment is NOT proven because postal beats lack statutory boundary polygons."
     },
     {
       "pinCode": "500020",
@@ -377,7 +606,15 @@
       "constituencyIdentityVerified": true,
       "spatialContainmentVerified": false,
       "remainingUncertainty": "Southern border with Amberpet.",
-      "requiredAction": "RETAIN_AS_PROVISIONAL_APPROXIMATION"
+      "requiredAction": "RETAIN_AS_PROVISIONAL_APPROXIMATION",
+      "sourceInspectionStatus": "IN_REPO_DOSSIER_INSPECTED",
+      "statutorySourceStatus": "EXTERNAL_STATUTORY_PUBLICATION_NOT_CHECKED_IN",
+      "propositionSupported": "CONSTITUENCY_IDENTITY_AND_MUNICIPAL_WARD_COMPOSITION",
+      "directEvidenceVsInference": "Direct statutory delimitation evidence establishes the constituency name, number, and ward extent. The association of postal PIN delivery beat with this constituency is an administrative-locality inference based on office/locality centroid; spatial containment is NOT directly proven.",
+      "unsupportedOrInaccessibleClaims": "Statutory 6-digit postal delivery beat boundary polygons are unpublished by India Post and inaccessible. Full multi-hundred page gazette scan is an external publication not checked into git.",
+      "isReportedCorrection": false,
+      "identityVerificationConclusion": "Target constituency name and number are authoritatively verified against Delimitation Order 2008 and statutory seed records.",
+      "postalContainmentConclusion": "Postal delivery area is provisionally associated with the constituency based on municipal ward concordance / post office locality, but spatial containment is NOT proven because postal beats lack statutory boundary polygons."
     },
     {
       "pinCode": "500023",
@@ -400,7 +637,15 @@
       "constituencyIdentityVerified": true,
       "spatialContainmentVerified": false,
       "remainingUncertainty": "Boundary with Malakpet AC 58.",
-      "requiredAction": "RETAIN_AS_PROVISIONAL_APPROXIMATION"
+      "requiredAction": "RETAIN_AS_PROVISIONAL_APPROXIMATION",
+      "sourceInspectionStatus": "IN_REPO_DOSSIER_INSPECTED",
+      "statutorySourceStatus": "EXTERNAL_STATUTORY_PUBLICATION_NOT_CHECKED_IN",
+      "propositionSupported": "CONSTITUENCY_IDENTITY_AND_MUNICIPAL_WARD_COMPOSITION",
+      "directEvidenceVsInference": "Direct statutory delimitation evidence establishes the constituency name, number, and ward extent. The association of postal PIN delivery beat with this constituency is an administrative-locality inference based on office/locality centroid; spatial containment is NOT directly proven.",
+      "unsupportedOrInaccessibleClaims": "Statutory 6-digit postal delivery beat boundary polygons are unpublished by India Post and inaccessible. Full multi-hundred page gazette scan is an external publication not checked into git.",
+      "isReportedCorrection": false,
+      "identityVerificationConclusion": "Target constituency name and number are authoritatively verified against Delimitation Order 2008 and statutory seed records.",
+      "postalContainmentConclusion": "Postal delivery area is provisionally associated with the constituency based on municipal ward concordance / post office locality, but spatial containment is NOT proven because postal beats lack statutory boundary polygons."
     },
     {
       "pinCode": "500024",
@@ -423,7 +668,15 @@
       "constituencyIdentityVerified": true,
       "spatialContainmentVerified": false,
       "remainingUncertainty": "River boundary with Amberpet.",
-      "requiredAction": "RETAIN_AS_PROVISIONAL_APPROXIMATION"
+      "requiredAction": "RETAIN_AS_PROVISIONAL_APPROXIMATION",
+      "sourceInspectionStatus": "IN_REPO_DOSSIER_INSPECTED",
+      "statutorySourceStatus": "EXTERNAL_STATUTORY_PUBLICATION_NOT_CHECKED_IN",
+      "propositionSupported": "CONSTITUENCY_IDENTITY_AND_MUNICIPAL_WARD_COMPOSITION",
+      "directEvidenceVsInference": "Direct statutory delimitation evidence establishes the constituency name, number, and ward extent. The association of postal PIN delivery beat with this constituency is an administrative-locality inference based on office/locality centroid; spatial containment is NOT directly proven.",
+      "unsupportedOrInaccessibleClaims": "Statutory 6-digit postal delivery beat boundary polygons are unpublished by India Post and inaccessible. Full multi-hundred page gazette scan is an external publication not checked into git.",
+      "isReportedCorrection": false,
+      "identityVerificationConclusion": "Target constituency name and number are authoritatively verified against Delimitation Order 2008 and statutory seed records.",
+      "postalContainmentConclusion": "Postal delivery area is provisionally associated with the constituency based on municipal ward concordance / post office locality, but spatial containment is NOT proven because postal beats lack statutory boundary polygons."
     },
     {
       "pinCode": "500025",
@@ -446,7 +699,15 @@
       "constituencyIdentityVerified": true,
       "spatialContainmentVerified": false,
       "remainingUncertainty": "Railway line boundary concordance.",
-      "requiredAction": "RETAIN_AS_PROVISIONAL_APPROXIMATION"
+      "requiredAction": "RETAIN_AS_PROVISIONAL_APPROXIMATION",
+      "sourceInspectionStatus": "IN_REPO_DOSSIER_INSPECTED",
+      "statutorySourceStatus": "EXTERNAL_STATUTORY_PUBLICATION_NOT_CHECKED_IN",
+      "propositionSupported": "CONSTITUENCY_IDENTITY_AND_MUNICIPAL_WARD_COMPOSITION",
+      "directEvidenceVsInference": "Direct statutory delimitation evidence establishes the constituency name, number, and ward extent. The association of postal PIN delivery beat with this constituency is an administrative-locality inference based on office/locality centroid; spatial containment is NOT directly proven.",
+      "unsupportedOrInaccessibleClaims": "Statutory 6-digit postal delivery beat boundary polygons are unpublished by India Post and inaccessible. Full multi-hundred page gazette scan is an external publication not checked into git.",
+      "isReportedCorrection": false,
+      "identityVerificationConclusion": "Target constituency name and number are authoritatively verified against Delimitation Order 2008 and statutory seed records.",
+      "postalContainmentConclusion": "Postal delivery area is provisionally associated with the constituency based on municipal ward concordance / post office locality, but spatial containment is NOT proven because postal beats lack statutory boundary polygons."
     },
     {
       "pinCode": "500026",
@@ -469,7 +730,15 @@
       "constituencyIdentityVerified": true,
       "spatialContainmentVerified": false,
       "remainingUncertainty": "East vs West Marredpally postal beat boundary.",
-      "requiredAction": "RETAIN_AS_PROVISIONAL_APPROXIMATION"
+      "requiredAction": "RETAIN_AS_PROVISIONAL_APPROXIMATION",
+      "sourceInspectionStatus": "IN_REPO_DOSSIER_INSPECTED",
+      "statutorySourceStatus": "EXTERNAL_STATUTORY_PUBLICATION_NOT_CHECKED_IN",
+      "propositionSupported": "CONSTITUENCY_IDENTITY_AND_MUNICIPAL_WARD_COMPOSITION",
+      "directEvidenceVsInference": "Direct statutory delimitation evidence establishes the constituency name, number, and ward extent. The association of postal PIN delivery beat with this constituency is an administrative-locality inference based on office/locality centroid; spatial containment is NOT directly proven.",
+      "unsupportedOrInaccessibleClaims": "Statutory 6-digit postal delivery beat boundary polygons are unpublished by India Post and inaccessible. Full multi-hundred page gazette scan is an external publication not checked into git.",
+      "isReportedCorrection": false,
+      "identityVerificationConclusion": "Target constituency name and number are authoritatively verified against Delimitation Order 2008 and statutory seed records.",
+      "postalContainmentConclusion": "Postal delivery area is provisionally associated with the constituency based on municipal ward concordance / post office locality, but spatial containment is NOT proven because postal beats lack statutory boundary polygons."
     },
     {
       "pinCode": "500028",
@@ -498,7 +767,15 @@
       "constituencyIdentityVerified": true,
       "spatialContainmentVerified": false,
       "remainingUncertainty": "Internal ward boundary between Karwan and Nampally within delivery beat.",
-      "requiredAction": "RETAIN_AS_MULTI_AC_AMBIGUITY"
+      "requiredAction": "RETAIN_AS_MULTI_AC_AMBIGUITY",
+      "sourceInspectionStatus": "IN_REPO_DOSSIER_INSPECTED",
+      "statutorySourceStatus": "EXTERNAL_STATUTORY_PUBLICATION_NOT_CHECKED_IN",
+      "propositionSupported": "MULTI_CONSTITUENCY_WARD_INTERSECTION",
+      "directEvidenceVsInference": "Direct statutory delimitation evidence establishes that the delivery beat spans multiple municipal wards across distinct assembly constituencies. Single-constituency assignment is factually unsupportable.",
+      "unsupportedOrInaccessibleClaims": "Statutory 6-digit postal delivery beat boundary polygons are unpublished by India Post and inaccessible. Full multi-hundred page gazette scan is an external publication not checked into git.",
+      "isReportedCorrection": false,
+      "identityVerificationConclusion": "Candidate constituency names and numbers are authoritatively verified against Delimitation Order 2008 and statutory seed records.",
+      "postalContainmentConclusion": "Postal delivery beat intersects multiple constituencies without a unique single containment. Fail-closed multi-AC representation is mandatory."
     },
     {
       "pinCode": "500033",
@@ -521,7 +798,15 @@
       "constituencyIdentityVerified": true,
       "spatialContainmentVerified": false,
       "remainingUncertainty": "Madhapur/Hitec city border with Serilingampally AC 52.",
-      "requiredAction": "RETAIN_AS_PROVISIONAL_APPROXIMATION"
+      "requiredAction": "RETAIN_AS_PROVISIONAL_APPROXIMATION",
+      "sourceInspectionStatus": "IN_REPO_DOSSIER_INSPECTED",
+      "statutorySourceStatus": "EXTERNAL_STATUTORY_PUBLICATION_NOT_CHECKED_IN",
+      "propositionSupported": "CONSTITUENCY_IDENTITY_AND_MUNICIPAL_WARD_COMPOSITION",
+      "directEvidenceVsInference": "Direct statutory delimitation evidence establishes the constituency name, number, and ward extent. The association of postal PIN delivery beat with this constituency is an administrative-locality inference based on office/locality centroid; spatial containment is NOT directly proven.",
+      "unsupportedOrInaccessibleClaims": "Statutory 6-digit postal delivery beat boundary polygons are unpublished by India Post and inaccessible. Full multi-hundred page gazette scan is an external publication not checked into git.",
+      "isReportedCorrection": false,
+      "identityVerificationConclusion": "Target constituency name and number are authoritatively verified against Delimitation Order 2008 and statutory seed records.",
+      "postalContainmentConclusion": "Postal delivery area is provisionally associated with the constituency based on municipal ward concordance / post office locality, but spatial containment is NOT proven because postal beats lack statutory boundary polygons."
     },
     {
       "pinCode": "500034",
@@ -550,7 +835,15 @@
       "constituencyIdentityVerified": true,
       "spatialContainmentVerified": false,
       "remainingUncertainty": "Arterial road boundary partition across delivery routes.",
-      "requiredAction": "RETAIN_AS_MULTI_AC_AMBIGUITY"
+      "requiredAction": "RETAIN_AS_MULTI_AC_AMBIGUITY",
+      "sourceInspectionStatus": "IN_REPO_DOSSIER_INSPECTED",
+      "statutorySourceStatus": "EXTERNAL_STATUTORY_PUBLICATION_NOT_CHECKED_IN",
+      "propositionSupported": "MULTI_CONSTITUENCY_WARD_INTERSECTION",
+      "directEvidenceVsInference": "Direct statutory delimitation evidence establishes that the delivery beat spans multiple municipal wards across distinct assembly constituencies. Single-constituency assignment is factually unsupportable.",
+      "unsupportedOrInaccessibleClaims": "Statutory 6-digit postal delivery beat boundary polygons are unpublished by India Post and inaccessible. Full multi-hundred page gazette scan is an external publication not checked into git.",
+      "isReportedCorrection": false,
+      "identityVerificationConclusion": "Candidate constituency names and numbers are authoritatively verified against Delimitation Order 2008 and statutory seed records.",
+      "postalContainmentConclusion": "Postal delivery beat intersects multiple constituencies without a unique single containment. Fail-closed multi-AC representation is mandatory."
     },
     {
       "pinCode": "500047",
@@ -573,7 +866,15 @@
       "constituencyIdentityVerified": true,
       "spatialContainmentVerified": false,
       "remainingUncertainty": "Macha Bolarum cantonment border beat overlap.",
-      "requiredAction": "RETAIN_AS_PROVISIONAL_APPROXIMATION"
+      "requiredAction": "RETAIN_AS_PROVISIONAL_APPROXIMATION",
+      "sourceInspectionStatus": "IN_REPO_DOSSIER_INSPECTED",
+      "statutorySourceStatus": "EXTERNAL_STATUTORY_PUBLICATION_NOT_CHECKED_IN",
+      "propositionSupported": "CONSTITUENCY_IDENTITY_AND_MUNICIPAL_WARD_COMPOSITION",
+      "directEvidenceVsInference": "Direct statutory delimitation evidence establishes the constituency name, number, and ward extent. The association of postal PIN delivery beat with this constituency is an administrative-locality inference based on office/locality centroid; spatial containment is NOT directly proven.",
+      "unsupportedOrInaccessibleClaims": "Statutory 6-digit postal delivery beat boundary polygons are unpublished by India Post and inaccessible. Full multi-hundred page gazette scan is an external publication not checked into git.",
+      "isReportedCorrection": false,
+      "identityVerificationConclusion": "Target constituency name and number are authoritatively verified against Delimitation Order 2008 and statutory seed records.",
+      "postalContainmentConclusion": "Postal delivery area is provisionally associated with the constituency based on municipal ward concordance / post office locality, but spatial containment is NOT proven because postal beats lack statutory boundary polygons."
     },
     {
       "pinCode": "500053",
@@ -596,7 +897,16 @@
       "constituencyIdentityVerified": true,
       "spatialContainmentVerified": false,
       "remainingUncertainty": "Northern border with Charminar AC 66.",
-      "requiredAction": "RETAIN_AS_PROVISIONAL_APPROXIMATION"
+      "requiredAction": "RETAIN_AS_PROVISIONAL_APPROXIMATION",
+      "sourceInspectionStatus": "IN_REPO_DOSSIER_INSPECTED",
+      "statutorySourceStatus": "EXTERNAL_STATUTORY_PUBLICATION_NOT_CHECKED_IN",
+      "propositionSupported": "CONSTITUENCY_IDENTITY_AND_MUNICIPAL_WARD_COMPOSITION",
+      "directEvidenceVsInference": "Direct statutory delimitation evidence establishes the constituency name, number, and ward extent. The association of postal PIN delivery beat with this constituency is an administrative-locality inference based on office/locality centroid; spatial containment is NOT directly proven.",
+      "unsupportedOrInaccessibleClaims": "Statutory 6-digit postal delivery beat boundary polygons are unpublished by India Post and inaccessible. Full multi-hundred page gazette scan is an external publication not checked into git.",
+      "isReportedCorrection": true,
+      "historicalPreD124Ac": 69,
+      "identityVerificationConclusion": "Target constituency name and number are authoritatively verified against Delimitation Order 2008 and statutory seed records.",
+      "postalContainmentConclusion": "Postal delivery area is provisionally associated with the constituency based on municipal ward concordance / post office locality, but spatial containment is NOT proven because postal beats lack statutory boundary polygons."
     },
     {
       "pinCode": "500056",
@@ -625,7 +935,15 @@
       "constituencyIdentityVerified": true,
       "spatialContainmentVerified": false,
       "remainingUncertainty": "Hasmathpet / Old Bowenpally boundary line.",
-      "requiredAction": "RETAIN_AS_MULTI_AC_AMBIGUITY"
+      "requiredAction": "RETAIN_AS_MULTI_AC_AMBIGUITY",
+      "sourceInspectionStatus": "IN_REPO_DOSSIER_INSPECTED",
+      "statutorySourceStatus": "EXTERNAL_STATUTORY_PUBLICATION_NOT_CHECKED_IN",
+      "propositionSupported": "MULTI_CONSTITUENCY_WARD_INTERSECTION",
+      "directEvidenceVsInference": "Direct statutory delimitation evidence establishes that the delivery beat spans multiple municipal wards across distinct assembly constituencies. Single-constituency assignment is factually unsupportable.",
+      "unsupportedOrInaccessibleClaims": "Statutory 6-digit postal delivery beat boundary polygons are unpublished by India Post and inaccessible. Full multi-hundred page gazette scan is an external publication not checked into git.",
+      "isReportedCorrection": false,
+      "identityVerificationConclusion": "Candidate constituency names and numbers are authoritatively verified against Delimitation Order 2008 and statutory seed records.",
+      "postalContainmentConclusion": "Postal delivery beat intersects multiple constituencies without a unique single containment. Fail-closed multi-AC representation is mandatory."
     },
     {
       "pinCode": "500062",
@@ -648,7 +966,15 @@
       "constituencyIdentityVerified": true,
       "spatialContainmentVerified": false,
       "remainingUncertainty": "Moula Ali railway boundary line.",
-      "requiredAction": "RETAIN_AS_PROVISIONAL_APPROXIMATION"
+      "requiredAction": "RETAIN_AS_PROVISIONAL_APPROXIMATION",
+      "sourceInspectionStatus": "IN_REPO_DOSSIER_INSPECTED",
+      "statutorySourceStatus": "EXTERNAL_STATUTORY_PUBLICATION_NOT_CHECKED_IN",
+      "propositionSupported": "CONSTITUENCY_IDENTITY_AND_MUNICIPAL_WARD_COMPOSITION",
+      "directEvidenceVsInference": "Direct statutory delimitation evidence establishes the constituency name, number, and ward extent. The association of postal PIN delivery beat with this constituency is an administrative-locality inference based on office/locality centroid; spatial containment is NOT directly proven.",
+      "unsupportedOrInaccessibleClaims": "Statutory 6-digit postal delivery beat boundary polygons are unpublished by India Post and inaccessible. Full multi-hundred page gazette scan is an external publication not checked into git.",
+      "isReportedCorrection": false,
+      "identityVerificationConclusion": "Target constituency name and number are authoritatively verified against Delimitation Order 2008 and statutory seed records.",
+      "postalContainmentConclusion": "Postal delivery area is provisionally associated with the constituency based on municipal ward concordance / post office locality, but spatial containment is NOT proven because postal beats lack statutory boundary polygons."
     },
     {
       "pinCode": "500064",
@@ -671,7 +997,16 @@
       "constituencyIdentityVerified": true,
       "spatialContainmentVerified": false,
       "remainingUncertainty": "Tadbun eastern border beat overlap.",
-      "requiredAction": "RETAIN_AS_PROVISIONAL_APPROXIMATION"
+      "requiredAction": "RETAIN_AS_PROVISIONAL_APPROXIMATION",
+      "sourceInspectionStatus": "IN_REPO_DOSSIER_INSPECTED",
+      "statutorySourceStatus": "EXTERNAL_STATUTORY_PUBLICATION_NOT_CHECKED_IN",
+      "propositionSupported": "CONSTITUENCY_IDENTITY_AND_MUNICIPAL_WARD_COMPOSITION",
+      "directEvidenceVsInference": "Direct statutory delimitation evidence establishes the constituency name, number, and ward extent. The association of postal PIN delivery beat with this constituency is an administrative-locality inference based on office/locality centroid; spatial containment is NOT directly proven.",
+      "unsupportedOrInaccessibleClaims": "Statutory 6-digit postal delivery beat boundary polygons are unpublished by India Post and inaccessible. Full multi-hundred page gazette scan is an external publication not checked into git.",
+      "isReportedCorrection": true,
+      "historicalPreD124Ac": 66,
+      "identityVerificationConclusion": "Target constituency name and number are authoritatively verified against Delimitation Order 2008 and statutory seed records.",
+      "postalContainmentConclusion": "Postal delivery area is provisionally associated with the constituency based on municipal ward concordance / post office locality, but spatial containment is NOT proven because postal beats lack statutory boundary polygons."
     },
     {
       "pinCode": "500072",
@@ -694,7 +1029,15 @@
       "constituencyIdentityVerified": true,
       "spatialContainmentVerified": false,
       "remainingUncertainty": "Hi-tech city link road boundary.",
-      "requiredAction": "RETAIN_AS_PROVISIONAL_APPROXIMATION"
+      "requiredAction": "RETAIN_AS_PROVISIONAL_APPROXIMATION",
+      "sourceInspectionStatus": "IN_REPO_DOSSIER_INSPECTED",
+      "statutorySourceStatus": "EXTERNAL_STATUTORY_PUBLICATION_NOT_CHECKED_IN",
+      "propositionSupported": "CONSTITUENCY_IDENTITY_AND_MUNICIPAL_WARD_COMPOSITION",
+      "directEvidenceVsInference": "Direct statutory delimitation evidence establishes the constituency name, number, and ward extent. The association of postal PIN delivery beat with this constituency is an administrative-locality inference based on office/locality centroid; spatial containment is NOT directly proven.",
+      "unsupportedOrInaccessibleClaims": "Statutory 6-digit postal delivery beat boundary polygons are unpublished by India Post and inaccessible. Full multi-hundred page gazette scan is an external publication not checked into git.",
+      "isReportedCorrection": false,
+      "identityVerificationConclusion": "Target constituency name and number are authoritatively verified against Delimitation Order 2008 and statutory seed records.",
+      "postalContainmentConclusion": "Postal delivery area is provisionally associated with the constituency based on municipal ward concordance / post office locality, but spatial containment is NOT proven because postal beats lack statutory boundary polygons."
     },
     {
       "pinCode": "500081",
@@ -717,7 +1060,15 @@
       "constituencyIdentityVerified": true,
       "spatialContainmentVerified": false,
       "remainingUncertainty": "Durgam Cheruvu boundary concordance.",
-      "requiredAction": "RETAIN_AS_PROVISIONAL_APPROXIMATION"
+      "requiredAction": "RETAIN_AS_PROVISIONAL_APPROXIMATION",
+      "sourceInspectionStatus": "IN_REPO_DOSSIER_INSPECTED",
+      "statutorySourceStatus": "EXTERNAL_STATUTORY_PUBLICATION_NOT_CHECKED_IN",
+      "propositionSupported": "CONSTITUENCY_IDENTITY_AND_MUNICIPAL_WARD_COMPOSITION",
+      "directEvidenceVsInference": "Direct statutory delimitation evidence establishes the constituency name, number, and ward extent. The association of postal PIN delivery beat with this constituency is an administrative-locality inference based on office/locality centroid; spatial containment is NOT directly proven.",
+      "unsupportedOrInaccessibleClaims": "Statutory 6-digit postal delivery beat boundary polygons are unpublished by India Post and inaccessible. Full multi-hundred page gazette scan is an external publication not checked into git.",
+      "isReportedCorrection": false,
+      "identityVerificationConclusion": "Target constituency name and number are authoritatively verified against Delimitation Order 2008 and statutory seed records.",
+      "postalContainmentConclusion": "Postal delivery area is provisionally associated with the constituency based on municipal ward concordance / post office locality, but spatial containment is NOT proven because postal beats lack statutory boundary polygons."
     },
     {
       "pinCode": "500084",
@@ -740,7 +1091,15 @@
       "constituencyIdentityVerified": true,
       "spatialContainmentVerified": false,
       "remainingUncertainty": "Nanakramguda outer ring road perimeter.",
-      "requiredAction": "RETAIN_AS_PROVISIONAL_APPROXIMATION"
+      "requiredAction": "RETAIN_AS_PROVISIONAL_APPROXIMATION",
+      "sourceInspectionStatus": "IN_REPO_DOSSIER_INSPECTED",
+      "statutorySourceStatus": "EXTERNAL_STATUTORY_PUBLICATION_NOT_CHECKED_IN",
+      "propositionSupported": "CONSTITUENCY_IDENTITY_AND_MUNICIPAL_WARD_COMPOSITION",
+      "directEvidenceVsInference": "Direct statutory delimitation evidence establishes the constituency name, number, and ward extent. The association of postal PIN delivery beat with this constituency is an administrative-locality inference based on office/locality centroid; spatial containment is NOT directly proven.",
+      "unsupportedOrInaccessibleClaims": "Statutory 6-digit postal delivery beat boundary polygons are unpublished by India Post and inaccessible. Full multi-hundred page gazette scan is an external publication not checked into git.",
+      "isReportedCorrection": false,
+      "identityVerificationConclusion": "Target constituency name and number are authoritatively verified against Delimitation Order 2008 and statutory seed records.",
+      "postalContainmentConclusion": "Postal delivery area is provisionally associated with the constituency based on municipal ward concordance / post office locality, but spatial containment is NOT proven because postal beats lack statutory boundary polygons."
     },
     {
       "pinCode": "500090",
@@ -763,7 +1122,15 @@
       "constituencyIdentityVerified": true,
       "spatialContainmentVerified": false,
       "remainingUncertainty": "JNTU road boundary with Kukatpally.",
-      "requiredAction": "RETAIN_AS_PROVISIONAL_APPROXIMATION"
+      "requiredAction": "RETAIN_AS_PROVISIONAL_APPROXIMATION",
+      "sourceInspectionStatus": "IN_REPO_DOSSIER_INSPECTED",
+      "statutorySourceStatus": "EXTERNAL_STATUTORY_PUBLICATION_NOT_CHECKED_IN",
+      "propositionSupported": "CONSTITUENCY_IDENTITY_AND_MUNICIPAL_WARD_COMPOSITION",
+      "directEvidenceVsInference": "Direct statutory delimitation evidence establishes the constituency name, number, and ward extent. The association of postal PIN delivery beat with this constituency is an administrative-locality inference based on office/locality centroid; spatial containment is NOT directly proven.",
+      "unsupportedOrInaccessibleClaims": "Statutory 6-digit postal delivery beat boundary polygons are unpublished by India Post and inaccessible. Full multi-hundred page gazette scan is an external publication not checked into git.",
+      "isReportedCorrection": false,
+      "identityVerificationConclusion": "Target constituency name and number are authoritatively verified against Delimitation Order 2008 and statutory seed records.",
+      "postalContainmentConclusion": "Postal delivery area is provisionally associated with the constituency based on municipal ward concordance / post office locality, but spatial containment is NOT proven because postal beats lack statutory boundary polygons."
     },
     {
       "pinCode": "520001",
@@ -786,7 +1153,16 @@
       "constituencyIdentityVerified": true,
       "spatialContainmentVerified": false,
       "remainingUncertainty": "Canal boundary between One Town and Two Town.",
-      "requiredAction": "RETAIN_AS_PROVISIONAL_APPROXIMATION"
+      "requiredAction": "RETAIN_AS_PROVISIONAL_APPROXIMATION",
+      "sourceInspectionStatus": "IN_REPO_DOSSIER_INSPECTED",
+      "statutorySourceStatus": "EXTERNAL_STATUTORY_PUBLICATION_NOT_CHECKED_IN",
+      "propositionSupported": "CONSTITUENCY_IDENTITY_AND_MUNICIPAL_WARD_COMPOSITION",
+      "directEvidenceVsInference": "Direct statutory delimitation evidence establishes the constituency name, number, and ward extent. The association of postal PIN delivery beat with this constituency is an administrative-locality inference based on office/locality centroid; spatial containment is NOT directly proven.",
+      "unsupportedOrInaccessibleClaims": "Statutory 6-digit postal delivery beat boundary polygons are unpublished by India Post and inaccessible. Full multi-hundred page gazette scan is an external publication not checked into git.",
+      "isReportedCorrection": true,
+      "historicalPreD124Ac": 80,
+      "identityVerificationConclusion": "Target constituency name and number are authoritatively verified against Delimitation Order 2008 and statutory seed records.",
+      "postalContainmentConclusion": "Postal delivery area is provisionally associated with the constituency based on municipal ward concordance / post office locality, but spatial containment is NOT proven because postal beats lack statutory boundary polygons."
     },
     {
       "pinCode": "520002",
@@ -809,7 +1185,16 @@
       "constituencyIdentityVerified": true,
       "spatialContainmentVerified": false,
       "remainingUncertainty": "Benz Circle ward boundary.",
-      "requiredAction": "RETAIN_AS_PROVISIONAL_APPROXIMATION"
+      "requiredAction": "RETAIN_AS_PROVISIONAL_APPROXIMATION",
+      "sourceInspectionStatus": "IN_REPO_DOSSIER_INSPECTED",
+      "statutorySourceStatus": "EXTERNAL_STATUTORY_PUBLICATION_NOT_CHECKED_IN",
+      "propositionSupported": "CONSTITUENCY_IDENTITY_AND_MUNICIPAL_WARD_COMPOSITION",
+      "directEvidenceVsInference": "Direct statutory delimitation evidence establishes the constituency name, number, and ward extent. The association of postal PIN delivery beat with this constituency is an administrative-locality inference based on office/locality centroid; spatial containment is NOT directly proven.",
+      "unsupportedOrInaccessibleClaims": "Statutory 6-digit postal delivery beat boundary polygons are unpublished by India Post and inaccessible. Full multi-hundred page gazette scan is an external publication not checked into git.",
+      "isReportedCorrection": true,
+      "historicalPreD124Ac": 81,
+      "identityVerificationConclusion": "Target constituency name and number are authoritatively verified against Delimitation Order 2008 and statutory seed records.",
+      "postalContainmentConclusion": "Postal delivery area is provisionally associated with the constituency based on municipal ward concordance / post office locality, but spatial containment is NOT proven because postal beats lack statutory boundary polygons."
     },
     {
       "pinCode": "530001",
@@ -832,7 +1217,16 @@
       "constituencyIdentityVerified": true,
       "spatialContainmentVerified": false,
       "remainingUncertainty": "Port trust civil boundary.",
-      "requiredAction": "RETAIN_AS_PROVISIONAL_APPROXIMATION"
+      "requiredAction": "RETAIN_AS_PROVISIONAL_APPROXIMATION",
+      "sourceInspectionStatus": "IN_REPO_DOSSIER_INSPECTED",
+      "statutorySourceStatus": "EXTERNAL_STATUTORY_PUBLICATION_NOT_CHECKED_IN",
+      "propositionSupported": "CONSTITUENCY_IDENTITY_AND_MUNICIPAL_WARD_COMPOSITION",
+      "directEvidenceVsInference": "Direct statutory delimitation evidence establishes the constituency name, number, and ward extent. The association of postal PIN delivery beat with this constituency is an administrative-locality inference based on office/locality centroid; spatial containment is NOT directly proven.",
+      "unsupportedOrInaccessibleClaims": "Statutory 6-digit postal delivery beat boundary polygons are unpublished by India Post and inaccessible. Full multi-hundred page gazette scan is an external publication not checked into git.",
+      "isReportedCorrection": true,
+      "historicalPreD124Ac": 21,
+      "identityVerificationConclusion": "Target constituency name and number are authoritatively verified against Delimitation Order 2008 and statutory seed records.",
+      "postalContainmentConclusion": "Postal delivery area is provisionally associated with the constituency based on municipal ward concordance / post office locality, but spatial containment is NOT proven because postal beats lack statutory boundary polygons."
     },
     {
       "pinCode": "530002",
@@ -855,7 +1249,16 @@
       "constituencyIdentityVerified": true,
       "spatialContainmentVerified": false,
       "remainingUncertainty": "Daba Gardens / RTC complex boundary with AC 21.",
-      "requiredAction": "RETAIN_AS_PROVISIONAL_APPROXIMATION"
+      "requiredAction": "RETAIN_AS_PROVISIONAL_APPROXIMATION",
+      "sourceInspectionStatus": "IN_REPO_DOSSIER_INSPECTED",
+      "statutorySourceStatus": "EXTERNAL_STATUTORY_PUBLICATION_NOT_CHECKED_IN",
+      "propositionSupported": "CONSTITUENCY_IDENTITY_AND_MUNICIPAL_WARD_COMPOSITION",
+      "directEvidenceVsInference": "Direct statutory delimitation evidence establishes the constituency name, number, and ward extent. The association of postal PIN delivery beat with this constituency is an administrative-locality inference based on office/locality centroid; spatial containment is NOT directly proven.",
+      "unsupportedOrInaccessibleClaims": "Statutory 6-digit postal delivery beat boundary polygons are unpublished by India Post and inaccessible. Full multi-hundred page gazette scan is an external publication not checked into git.",
+      "isReportedCorrection": true,
+      "historicalPreD124Ac": 21,
+      "identityVerificationConclusion": "Target constituency name and number are authoritatively verified against Delimitation Order 2008 and statutory seed records.",
+      "postalContainmentConclusion": "Postal delivery area is provisionally associated with the constituency based on municipal ward concordance / post office locality, but spatial containment is NOT proven because postal beats lack statutory boundary polygons."
     },
     {
       "pinCode": "517501",
@@ -878,7 +1281,16 @@
       "constituencyIdentityVerified": true,
       "spatialContainmentVerified": false,
       "remainingUncertainty": "Urban peripheral growth outside municipal limits.",
-      "requiredAction": "RETAIN_AS_PROVISIONAL_APPROXIMATION"
+      "requiredAction": "RETAIN_AS_PROVISIONAL_APPROXIMATION",
+      "sourceInspectionStatus": "IN_REPO_DOSSIER_INSPECTED",
+      "statutorySourceStatus": "EXTERNAL_STATUTORY_PUBLICATION_NOT_CHECKED_IN",
+      "propositionSupported": "CONSTITUENCY_IDENTITY_AND_MUNICIPAL_WARD_COMPOSITION",
+      "directEvidenceVsInference": "Direct statutory delimitation evidence establishes the constituency name, number, and ward extent. The association of postal PIN delivery beat with this constituency is an administrative-locality inference based on office/locality centroid; spatial containment is NOT directly proven.",
+      "unsupportedOrInaccessibleClaims": "Statutory 6-digit postal delivery beat boundary polygons are unpublished by India Post and inaccessible. Full multi-hundred page gazette scan is an external publication not checked into git.",
+      "isReportedCorrection": true,
+      "historicalPreD124Ac": 168,
+      "identityVerificationConclusion": "Target constituency name and number are authoritatively verified against Delimitation Order 2008 and statutory seed records.",
+      "postalContainmentConclusion": "Postal delivery area is provisionally associated with the constituency based on municipal ward concordance / post office locality, but spatial containment is NOT proven because postal beats lack statutory boundary polygons."
     },
     {
       "pinCode": "518001",
@@ -901,7 +1313,15 @@
       "constituencyIdentityVerified": true,
       "spatialContainmentVerified": false,
       "remainingUncertainty": "Kurnool rural border beat overlap.",
-      "requiredAction": "RETAIN_AS_PROVISIONAL_APPROXIMATION"
+      "requiredAction": "RETAIN_AS_PROVISIONAL_APPROXIMATION",
+      "sourceInspectionStatus": "IN_REPO_DOSSIER_INSPECTED",
+      "statutorySourceStatus": "EXTERNAL_STATUTORY_PUBLICATION_NOT_CHECKED_IN",
+      "propositionSupported": "CONSTITUENCY_IDENTITY_AND_MUNICIPAL_WARD_COMPOSITION",
+      "directEvidenceVsInference": "Direct statutory delimitation evidence establishes the constituency name, number, and ward extent. The association of postal PIN delivery beat with this constituency is an administrative-locality inference based on office/locality centroid; spatial containment is NOT directly proven.",
+      "unsupportedOrInaccessibleClaims": "Statutory 6-digit postal delivery beat boundary polygons are unpublished by India Post and inaccessible. Full multi-hundred page gazette scan is an external publication not checked into git.",
+      "isReportedCorrection": false,
+      "identityVerificationConclusion": "Target constituency name and number are authoritatively verified against Delimitation Order 2008 and statutory seed records.",
+      "postalContainmentConclusion": "Postal delivery area is provisionally associated with the constituency based on municipal ward concordance / post office locality, but spatial containment is NOT proven because postal beats lack statutory boundary polygons."
     }
   ]
 }

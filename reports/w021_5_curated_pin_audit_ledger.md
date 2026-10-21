@@ -1,5 +1,5 @@
 # KSHETRA W021.5 — CURATED PROVISIONAL PIN AUDIT LEDGER
-**Directive:** CTO Directive 124 / Reconciled in CTO Directive 125 (Workstream B)  
+**Directive:** CTO Directive 124 / Reconciled in CTO Directive 125 & 126 (Workstream B)  
 **Governing Framework:** Master Execution Framework Amendment v1.6 / Rule IV-001 Non-Self-Acceptance  
 **Stage Boundary:** STOP at Stage B Gate (Stages C–I Strictly Unauthorized)  
 **Formal Acceptance:** Strictly `0.0% — PENDING INDEPENDENT ADJUDICATION`  

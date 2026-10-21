@@ -2870,3 +2870,26 @@
      - Stage B Boundary strictly observed: STOP at Stage B Gate; Stages C through I remain strictly **UNAUTHORIZED**.
      - Production & Staging Databases strictly `AIR_GAPPED_UNEXECUTED` (0 queries, 0 mutations).
      - Formal CTO Acceptance strictly **`0.0% — PENDING INDEPENDENT ADJUDICATION`** under Rule IV-001.
+
+
+---
+
+### DEC-126: CTO DIRECTIVE 126 — EVIDENCE VALIDATION INTEGRITY, SOURCE-CLAIM VERIFICATION, NEGATIVE TEST HARNESS & STAGE B ADJUDICATION READINESS
+- **Date:** 2026-10-21
+- **Status:** IMPLEMENTATION COMPLETE / SUBMITTED FOR INDEPENDENT ADJUDICATION
+- **Authority:** CTO Directive 126 / Master Execution Framework Amendment v1.6 / Rule IV-001 Non-Self-Acceptance
+- **Context:** Following independent code review of Directive 125, one focused corrective pass was mandated to eliminate misleading verification claims, establish honest evidence independence, repair negative validation tests, resolve the 8-correction accounting discrepancy, and deliver an airtight submission for independent Stage B CTO adjudication:
+  1. Corrective Action A: Establish evidence independence honestly. Disclose that structural separation of the manifest from the runtime directory does NOT prove geographic containment. Enrich all 36 records with `sourceInspectionStatus`, `propositionSupported`, `directEvidenceVsInference`, and `unsupportedOrInaccessibleClaims`.
+  2. Corrective Action B: Repair the negative validation test. Replace inline mocked mutations with a genuine negative test harness calling `validateEvidenceMatrix` across 6 corrupted fixture scenarios (missing records, duplicate PINs, tampered AC numbers, multi-AC canonical breach, unauthorized authoritative promotion, missing documentary locators).
+  3. Corrective Action C: Resolve the eight-correction accounting discrepancy. Strictly reconcile that there are exactly 8 corrections: TS (3): 500002 (66), 500053 (67), 500064 (69); AP (5): 520001 (79), 520002 (80), 530001 (22), 530002 (22), 517501 (167). Reconcile Kurnool PIN 518001 as an existing single-AC provisional record (AC 137), NOT a correction. For each of the 8, report two distinct conclusions: authoritative constituency identity vs provisional postal linkage.
+  4. Corrective Action D: Verify source claims against actual authoritative sources (Delimitation Order 2008 Schedules II and XXXI and checked-in dossiers in `data/evidence/`).
+  5. Corrective Action E: Maintain four provenance tiers: in-repo dossier byte integrity (`BITWISE_IN_REPO_VERIFIED`), external statutory publication status (`EXTERNAL_STATUTORY_PUBLICATION_NOT_CHECKED_IN`), substantive verification status (`PENDING_OFFICIAL_GAZETTE_BITWISE_AUDIT`), and specific claim support.
+  6. Corrective Action F: Update governance records, defect register (Section 3 disposition table for D125-01 through D125-06), and author the Directive 126 implementation report.
+- **Architectural & Governance Determinations:**
+  1. **Honest Evidence Scope:** Delimitation Order 2008 defines assembly constituencies strictly by municipal wards, mandals, and villages, not postal delivery beats. India Post publishes operational routing beats without statutory GIS boundary polygons. All single-AC entries are strictly `PROVISIONALLY_APPROXIMATED`; multi-AC intersections are strictly `AMBIGUOUS_MULTI_CONSTITUENCY` (fail-closed).
+  2. **Genuine Negative Validation:** The pure validation engine `validateEvidenceMatrix({ directory, manifest, seedNames })` in `scripts/verify_pin_evidence_matrix.cjs` and `.mjs` is verified against both the unmodified production fixture (100% check pass) and 6 corrupted fixtures (all rejected fail-closed).
+  3. **8-Correction Accounting Reconciliation:** Discrepancy in D125 summary resolved. Kurnool is an existing provisional record, not a 9th correction. Total corrections = strictly 8. Distinct conclusions for each: constituency identity is authoritatively verified; postal containment is provisional approximation.
+  4. **Regression Test Integrity:** Expanded `apps/api/src/__tests__/delimitation-citizen-impact-data-truth.test.ts` to 45 tests (all PASS). All route tests (38/38) and comprehensive unit tests (49/49) PASS. Full build `tsc --noEmit` exits 0.
+  5. **Stage B Boundary:** STOP at Stage B Gate; Stages C through I remain strictly **UNAUTHORIZED**.
+  6. **Database Boundary:** Production (`ehfafcnimmjusyvplbah`) and Staging (`fkpigozcqnmcvofuksar`) strictly `AIR_GAPPED_UNEXECUTED` (0 queries, 0 mutations).
+  7. **Formal CTO Acceptance:** Strictly **`0.0% — PENDING INDEPENDENT ADJUDICATION`** under Rule IV-001.

@@ -22,6 +22,7 @@ import type { FastifyInstance } from 'fastify';
 import fs from 'fs';
 import path from 'path';
 import crypto from 'crypto';
+import url from 'url';
 import {
   delimitationService,
   POSTAL_DIRECTORY_CLASSIFICATION,
@@ -603,9 +604,170 @@ describe('CTO Directive 123 — Residual Electoral Data-Truth & Provisional Look
     it('verifies independent validation matrix report exists and records 100% check pass rate', () => {
       expect(fs.existsSync(matrixReportPath)).toBe(true);
       const matrixReport = JSON.parse(fs.readFileSync(matrixReportPath, 'utf8'));
-      expect(matrixReport.metadata.directive).toBe('CTO Directive 125');
+      expect(matrixReport.metadata.directive).toBe('CTO Directive 126');
       expect(matrixReport.metadata.validationSummary.allChecksPassed).toBe(true);
       expect(matrixReport.metadata.validationChecks.every((c: any) => c.passed)).toBe(true);
+    });
+  });
+
+  describe('CTO Directive 126 — Evidence Validation Integrity, Genuine Negative Tests & 8-Correction Accounting', () => {
+    const manifestPath = path.resolve(__dirname, '../../../../data/evidence/w021_5/pin_independent_evidence_manifest.json');
+    const validatorModule = require('../../../../scripts/verify_pin_evidence_matrix.cjs');
+
+    it('runs pure validateEvidenceMatrix against unmodified production directory and passes all positive checks', () => {
+      const directory = validatorModule.parseDelimitationServiceCuratedPins();
+      const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+      const seedNames = validatorModule.parseSeedConstituencyNames();
+
+      const validation = validatorModule.validateEvidenceMatrix({ directory, manifest, seedNames });
+      expect(validation.allPassed).toBe(true);
+      expect(validation.errors).toHaveLength(0);
+      expect(validation.totalDirectoryPins).toBe(36);
+      expect(validation.totalManifestPins).toBe(36);
+      expect(validation.checks.every((c: any) => c.passed)).toBe(true);
+    });
+
+    it('genuine negative test: validator rejects manifest with missing entry (35 records)', () => {
+      const directory = validatorModule.parseDelimitationServiceCuratedPins();
+      const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+      const seedNames = validatorModule.parseSeedConstituencyNames();
+
+      const corruptedManifest = { ...manifest, entries: manifest.entries.slice(0, 35) };
+      const validation = validatorModule.validateEvidenceMatrix({ directory, manifest: corruptedManifest, seedNames });
+
+      expect(validation.allPassed).toBe(false);
+      const check1 = validation.checks.find((c: any) => c.checkId === 'CHECK_1_EXACT_INVENTORY_PARITY');
+      expect(check1).toBeDefined();
+      expect(check1.passed).toBe(false);
+      expect(validation.errors.some((err: string) => err.includes('Manifest entry count is 35, expected 36'))).toBe(true);
+    });
+
+    it('genuine negative test: validator rejects manifest with duplicate PIN codes', () => {
+      const directory = validatorModule.parseDelimitationServiceCuratedPins();
+      const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+      const seedNames = validatorModule.parseSeedConstituencyNames();
+
+      const corruptedEntries = manifest.entries.map((e: any, idx: number) => idx === 1 ? { ...manifest.entries[0] } : e);
+      const corruptedManifest = { ...manifest, entries: corruptedEntries };
+      const validation = validatorModule.validateEvidenceMatrix({ directory, manifest: corruptedManifest, seedNames });
+
+      expect(validation.allPassed).toBe(false);
+      const check1 = validation.checks.find((c: any) => c.checkId === 'CHECK_1_EXACT_INVENTORY_PARITY');
+      expect(check1).toBeDefined();
+      expect(check1.passed).toBe(false);
+      expect(validation.errors.some((err: string) => err.includes('Duplicate PIN codes detected'))).toBe(true);
+    });
+
+    it('genuine negative test: validator rejects contradictory AC number on corrected PIN', () => {
+      const directory = validatorModule.parseDelimitationServiceCuratedPins();
+      const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+      const seedNames = validatorModule.parseSeedConstituencyNames();
+
+      const corruptedEntries = manifest.entries.map((e: any) => e.pinCode === '500002' ? { ...e, assignedAcNumber: 999 } : e);
+      const corruptedManifest = { ...manifest, entries: corruptedEntries };
+      const validation = validatorModule.validateEvidenceMatrix({ directory, manifest: corruptedManifest, seedNames });
+
+      expect(validation.allPassed).toBe(false);
+      const check4 = validation.checks.find((c: any) => c.checkId === 'CHECK_4_EIGHT_AC_CORRECTIONS_VERIFIED');
+      expect(check4).toBeDefined();
+      expect(check4.passed).toBe(false);
+      expect(validation.errors.some((err: string) => err.includes('500002') && err.includes('999'))).toBe(true);
+    });
+
+    it('genuine negative test: validator rejects assigned canonical AC on multi-AC PIN 500001', () => {
+      const directory = validatorModule.parseDelimitationServiceCuratedPins();
+      const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+      const seedNames = validatorModule.parseSeedConstituencyNames();
+
+      const corruptedEntries = manifest.entries.map((e: any) => e.pinCode === '500001' ? { ...e, assignedAcNumber: 65 } : e);
+      const corruptedManifest = { ...manifest, entries: corruptedEntries };
+      const validation = validatorModule.validateEvidenceMatrix({ directory, manifest: corruptedManifest, seedNames });
+
+      expect(validation.allPassed).toBe(false);
+      const check2 = validation.checks.find((c: any) => c.checkId === 'CHECK_2_MULTI_AC_FAIL_CLOSED_AMBIGUITY');
+      expect(check2).toBeDefined();
+      expect(check2.passed).toBe(false);
+      expect(validation.errors.some((err: string) => err.includes('500001') && err.includes('has assignedAcNumber'))).toBe(true);
+    });
+
+    it('genuine negative test: validator rejects unauthorized promotion to AUTHORITATIVELY_VERIFIED', () => {
+      const directory = validatorModule.parseDelimitationServiceCuratedPins();
+      const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+      const seedNames = validatorModule.parseSeedConstituencyNames();
+
+      const corruptedEntries = manifest.entries.map((e: any) => e.pinCode === '500002' ? { ...e, confidenceTaxonomy: 'AUTHORITATIVELY_VERIFIED' } : e);
+      const corruptedManifest = { ...manifest, entries: corruptedEntries };
+      const validation = validatorModule.validateEvidenceMatrix({ directory, manifest: corruptedManifest, seedNames });
+
+      expect(validation.allPassed).toBe(false);
+      const check3 = validation.checks.find((c: any) => c.checkId === 'CHECK_3_PROVISIONAL_CLASSIFICATION_INTEGRITY');
+      expect(check3).toBeDefined();
+      expect(check3.passed).toBe(false);
+      expect(validation.errors.some((err: string) => err.includes('incorrectly claims AUTHORITATIVELY_VERIFIED'))).toBe(true);
+    });
+
+    it('genuine negative test: validator rejects empty documentary traceability locator', () => {
+      const directory = validatorModule.parseDelimitationServiceCuratedPins();
+      const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+      const seedNames = validatorModule.parseSeedConstituencyNames();
+
+      const corruptedEntries = manifest.entries.map((e: any) => e.pinCode === '500002' ? { ...e, sourceLocator: '' } : e);
+      const corruptedManifest = { ...manifest, entries: corruptedEntries };
+      const validation = validatorModule.validateEvidenceMatrix({ directory, manifest: corruptedManifest, seedNames });
+
+      expect(validation.allPassed).toBe(false);
+      const check5 = validation.checks.find((c: any) => c.checkId === 'CHECK_5_DOCUMENTARY_TRACEABILITY_FIELDS');
+      expect(check5).toBeDefined();
+      expect(check5.passed).toBe(false);
+      expect(validation.errors.some((err: string) => err.includes('missing or empty required field \'sourceLocator\''))).toBe(true);
+    });
+
+    it('reconciles the eight reported corrections strictly (3 TS, 5 AP) and confirms Kurnool 137 is not a correction', () => {
+      expect(validatorModule.REPORTED_AC_CORRECTIONS).toHaveLength(8);
+
+      const tsCorrections = validatorModule.REPORTED_AC_CORRECTIONS.filter((c: any) => c.state === 'TS');
+      const apCorrections = validatorModule.REPORTED_AC_CORRECTIONS.filter((c: any) => c.state === 'AP');
+      expect(tsCorrections).toHaveLength(3);
+      expect(apCorrections).toHaveLength(5);
+
+      expect(tsCorrections.map((c: any) => c.pin)).toEqual(['500002', '500053', '500064']);
+      expect(apCorrections.map((c: any) => c.pin)).toEqual(['520001', '520002', '530001', '530002', '517501']);
+
+      // Kurnool PIN 518001 is NOT one of the 8 corrections
+      expect(validatorModule.REPORTED_AC_CORRECTIONS.some((c: any) => c.pin === '518001')).toBe(false);
+      expect(validatorModule.KURNOOL_RECONCILIATION.pin).toBe('518001');
+      expect(validatorModule.KURNOOL_RECONCILIATION.canonicalAc).toBe(137);
+      expect(validatorModule.KURNOOL_RECONCILIATION.isCorrection).toBe(false);
+      expect(validatorModule.KURNOOL_RECONCILIATION.status).toBe('EXISTING_SINGLE_AC_PROVISIONAL_RECORD');
+    });
+
+    it('asserts two distinct conclusions for each of the eight corrections: authoritative identity vs provisional postal linkage', () => {
+      const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+
+      for (const corr of validatorModule.REPORTED_AC_CORRECTIONS) {
+        const entry = manifest.entries.find((e: any) => e.pinCode === corr.pin);
+        expect(entry).toBeDefined();
+
+        // Conclusion 1: Identity is verified
+        expect(entry.constituencyIdentityVerified).toBe(true);
+        expect(entry.identityVerificationConclusion).toContain('Target constituency name and number are authoritatively verified');
+
+        // Conclusion 2: Postal containment is provisional / unproven GIS
+        expect(entry.spatialContainmentVerified).toBe(false);
+        expect(entry.confidenceTaxonomy).toBe('PROVISIONALLY_APPROXIMATED');
+        expect(entry.postalContainmentConclusion).toContain('spatial containment is NOT proven because postal beats lack statutory boundary polygons');
+      }
+    });
+
+    it('verifies runNegativeValidationSuite executes all 6 negative scenarios with 100% pass rate', () => {
+      const directory = validatorModule.parseDelimitationServiceCuratedPins();
+      const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+      const seedNames = validatorModule.parseSeedConstituencyNames();
+
+      const negativeResults = validatorModule.runNegativeValidationSuite({ directory, manifest, seedNames });
+      expect(negativeResults.allScenariosPassed).toBe(true);
+      expect(negativeResults.scenarios).toHaveLength(6);
+      expect(negativeResults.scenarios.every((s: any) => s.passed)).toBe(true);
     });
   });
 });
