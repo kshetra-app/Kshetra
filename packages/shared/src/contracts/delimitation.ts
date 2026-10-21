@@ -118,6 +118,8 @@ export interface DatasetVersionProvenance {
   sourceAuthority: string;
   publicationDate: string;
   checksum?: string;
+  artifactPath?: string;
+  evidenceStatus?: string;
 }
 
 export interface MathematicalProvenance {

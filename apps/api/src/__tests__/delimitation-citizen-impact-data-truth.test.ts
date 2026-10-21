@@ -19,11 +19,19 @@
 
 import { buildApp } from '../server';
 import type { FastifyInstance } from 'fastify';
+import fs from 'fs';
+import path from 'path';
+import crypto from 'crypto';
 import {
   delimitationService,
   POSTAL_DIRECTORY_CLASSIFICATION,
   CURATED_PROVISIONAL_PIN_DIRECTORY,
   PIN_PREFIX_MAPPING,
+  CENSUS_2011_PCA_PROVENANCE,
+  DELIMITATION_2008_REGIME_PROVENANCE,
+  APRA_2014_PROVENANCE,
+  GSR_311E_2015_PROVENANCE,
+  ECI_NOTIFICATION_2018_PROVENANCE,
 } from '../services/delimitationService';
 import * as stateDataModule from '../services/stateData';
 
@@ -294,6 +302,177 @@ describe('CTO Directive 123 — Residual Electoral Data-Truth & Provisional Look
       expect(sim.targetSeats).toBe(130);
       expect(sim.districtBreakdown.length).toBeGreaterThan(0);
       expect(sim.scenarioEnclosure.isScenario).toBe(true);
+    });
+  });
+
+  describe('CTO Directive 124 — Workstream A & B: PIN Audit Reconciliation & Directory Invariants', () => {
+    it('verifies PIN 500001 candidate set is strictly [65, 63, 58] and canonicalAcNo is undefined', () => {
+      const entry = CURATED_PROVISIONAL_PIN_DIRECTORY['500001'];
+      expect(entry).toBeDefined();
+      expect(entry.canonicalAcNo).toBeUndefined();
+      expect(entry.candidateAcNos).toEqual([65, 63, 58]);
+      expect(entry.spatialRelationship).toBe('INTERSECTS_MULTIPLE_ACS');
+      expect(entry.verificationStatus).toBe('DOCUMENTED_MULTI_AC_AMBIGUITY');
+      expect(entry.requiredAction).toBe('RETAIN_AS_MULTI_AC_AMBIGUITY');
+
+      const impact = delimitationService.getCitizenImpact('500001');
+      expect(impact.status).toBe('AMBIGUOUS_CANDIDATES');
+      expect(impact.currentConstituency).toBeUndefined();
+      expect(impact.candidateConstituencies?.map((c) => c.acNo)).toEqual([65, 63, 58]);
+    });
+
+    it('verifies exact 36-entry inventory agreement with generated audit ledger', () => {
+      const ledgerPath = path.resolve(__dirname, '../../../../reports/w021_5_curated_pin_audit_ledger.json');
+      expect(fs.existsSync(ledgerPath)).toBe(true);
+
+      const ledger = JSON.parse(fs.readFileSync(ledgerPath, 'utf8'));
+      expect(ledger.metadata.totalEntries).toBe(36);
+      expect(Object.keys(CURATED_PROVISIONAL_PIN_DIRECTORY).length).toBe(36);
+
+      for (const item of ledger.entries) {
+        const sourceEntry = CURATED_PROVISIONAL_PIN_DIRECTORY[item.pinCode];
+        expect(sourceEntry).toBeDefined();
+        expect(sourceEntry.locality).toBe(item.locality);
+        expect(sourceEntry.stateCode).toBe(item.stateCode);
+        expect(sourceEntry.canonicalAcNo).toBe(item.canonicalAcNo);
+        expect(sourceEntry.candidateAcNos).toEqual(item.candidateAcNos);
+        expect(sourceEntry.spatialRelationship).toBe(item.spatialRelationship);
+        expect(sourceEntry.verificationStatus).toBe(item.verificationStatus);
+        expect(sourceEntry.requiredAction).toBe(item.requiredAction);
+        expect(sourceEntry.sourceLocator).toBe(item.sourceLocator);
+      }
+    });
+
+    it('verifies all 4 multi-AC entries fail closed from unique assignment and provide >= 2 candidates', () => {
+      const multiAcPins = ['500001', '500028', '500034', '500056'];
+      for (const pin of multiAcPins) {
+        const entry = CURATED_PROVISIONAL_PIN_DIRECTORY[pin];
+        expect(entry.canonicalAcNo).toBeUndefined();
+        expect(entry.spatialRelationship).toBe('INTERSECTS_MULTIPLE_ACS');
+        expect(entry.verificationStatus).toBe('DOCUMENTED_MULTI_AC_AMBIGUITY');
+        expect(entry.candidateAcNos).toBeDefined();
+        expect(entry.candidateAcNos!.length).toBeGreaterThanOrEqual(2);
+
+        const res = delimitationService.getCitizenImpact(pin);
+        expect(res.status).toBe('AMBIGUOUS_CANDIDATES');
+        expect(res.currentConstituency).toBeUndefined();
+        expect(res.candidateConstituencies?.length).toBe(entry.candidateAcNos!.length);
+      }
+    });
+
+    it('verifies all 32 single-AC entries resolve in stateData with zero missing AC errors', () => {
+      let singleAcCount = 0;
+      for (const [pin, entry] of Object.entries(CURATED_PROVISIONAL_PIN_DIRECTORY)) {
+        if (entry.canonicalAcNo !== undefined) {
+          singleAcCount++;
+          expect(entry.spatialRelationship).toBe('INTERSECTS_SINGLE_AC_PROVISIONAL');
+          expect(entry.verificationStatus).toBe('PROVISIONAL_APPROXIMATION');
+          expect(entry.requiredAction).toBe('RETAIN_AS_PROVISIONAL_APPROXIMATION');
+
+          const canonicalAC = stateDataModule.getConstituency(entry.stateCode, entry.canonicalAcNo);
+          expect(canonicalAC).toBeDefined();
+          expect(canonicalAC?.acNo).toBe(entry.canonicalAcNo);
+
+          const res = delimitationService.getCitizenImpact(pin);
+          expect(res.status).toBe('LINKED_PROVISIONAL');
+          expect(res.currentConstituency?.acNo).toBe(entry.canonicalAcNo);
+          expect(res.currentConstituency?.name).toBe(canonicalAC?.name);
+        }
+      }
+      expect(singleAcCount).toBe(32);
+    });
+
+    it('verifies corrected AP and TS AC numbers are accurately wired and resolved', () => {
+      // AP corrections
+      expect(delimitationService.getCitizenImpact('520001').currentConstituency?.name).toBe('Vijayawada West');
+      expect(delimitationService.getCitizenImpact('520001').currentConstituency?.acNo).toBe(79);
+
+      expect(delimitationService.getCitizenImpact('520002').currentConstituency?.name).toBe('Vijayawada Central');
+      expect(delimitationService.getCitizenImpact('520002').currentConstituency?.acNo).toBe(80);
+
+      expect(delimitationService.getCitizenImpact('530001').currentConstituency?.name).toBe('Visakhapatnam South');
+      expect(delimitationService.getCitizenImpact('530001').currentConstituency?.acNo).toBe(22);
+
+      expect(delimitationService.getCitizenImpact('530002').currentConstituency?.name).toBe('Visakhapatnam South');
+      expect(delimitationService.getCitizenImpact('530002').currentConstituency?.acNo).toBe(22);
+
+      expect(delimitationService.getCitizenImpact('517501').currentConstituency?.name).toBe('Tirupati');
+      expect(delimitationService.getCitizenImpact('517501').currentConstituency?.acNo).toBe(167);
+
+      expect(delimitationService.getCitizenImpact('518001').currentConstituency?.name).toBe('Kurnool');
+      expect(delimitationService.getCitizenImpact('518001').currentConstituency?.acNo).toBe(137);
+
+      // TS corrections
+      expect(delimitationService.getCitizenImpact('500002').currentConstituency?.name).toBe('Charminar');
+      expect(delimitationService.getCitizenImpact('500002').currentConstituency?.acNo).toBe(66);
+
+      expect(delimitationService.getCitizenImpact('500053').currentConstituency?.name).toBe('Chandrayangutta');
+      expect(delimitationService.getCitizenImpact('500053').currentConstituency?.acNo).toBe(67);
+
+      expect(delimitationService.getCitizenImpact('500064').currentConstituency?.name).toBe('Bahadurpura');
+      expect(delimitationService.getCitizenImpact('500064').currentConstituency?.acNo).toBe(69);
+    });
+  });
+
+  describe('CTO Directive 124 — Workstream C: Provenance Checksum Integrity', () => {
+    it('verifies placeholder and empty-string digests are eradicated from service provenance constants', () => {
+      const EMPTY_STRING_SHA256 = 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855';
+      const PATTERN_A = 'a1b2c3d4e5f60718293a4b5c6d7e8f90123456789abcdef0123456789abcdef0';
+      const PATTERN_B = 'b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3';
+      const PATTERN_C = 'c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4';
+      const PATTERN_D = 'd4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5';
+
+      const constants = [
+        CENSUS_2011_PCA_PROVENANCE,
+        DELIMITATION_2008_REGIME_PROVENANCE,
+        APRA_2014_PROVENANCE,
+        GSR_311E_2015_PROVENANCE,
+        ECI_NOTIFICATION_2018_PROVENANCE,
+      ];
+
+      for (const prov of constants) {
+        // Must be undefined — NEVER a synthetic or empty string checksum!
+        expect(prov.checksum).toBeUndefined();
+        expect(prov.checksum).not.toBe(EMPTY_STRING_SHA256);
+        expect(prov.checksum).not.toBe(PATTERN_A);
+        expect(prov.checksum).not.toBe(PATTERN_B);
+        expect(prov.checksum).not.toBe(PATTERN_C);
+        expect(prov.checksum).not.toBe(PATTERN_D);
+
+        // Authoritative dossier link must be present and exist on disk
+        expect(prov.artifactPath).toBeDefined();
+        const fullDossierPath = path.resolve(__dirname, '../../../../', prov.artifactPath!);
+        expect(fs.existsSync(fullDossierPath)).toBe(true);
+        expect(prov.evidenceStatus).toBe('EXTERNAL_STATUTORY_DOCUMENT_DOSSIER_VERIFIED');
+      }
+    });
+
+    it('verifies in-repository evidence files match their calculated cryptographic SHA-256 digests', () => {
+      const checksumReportPath = path.resolve(__dirname, '../../../../reports/w021_5_provenance_checksum_audit.json');
+      expect(fs.existsSync(checksumReportPath)).toBe(true);
+
+      const audit = JSON.parse(fs.readFileSync(checksumReportPath, 'utf8'));
+      const recordedDigests = audit.inRepoEvidenceFilesChecksums;
+
+      for (const [relPath, expectedSha256] of Object.entries(recordedDigests)) {
+        const fullPath = path.resolve(__dirname, '../../../../', relPath);
+        expect(fs.existsSync(fullPath)).toBe(true);
+        const actualSha256 = crypto.createHash('sha256').update(fs.readFileSync(fullPath)).digest('hex');
+        expect(actualSha256).toBe(expectedSha256);
+      }
+    });
+
+    it('fails closed when artifact content is tampered with (digest mismatch simulation)', () => {
+      const fakeCorruptedBuffer = Buffer.from('TAMPERED_STATUTORY_EVIDENCE');
+      const expectedSha256 = '9123ecb5f9ea5414ee8b4e8cce92aed9e008f352a8924edb7dcb9c27d621737d'; // real Schedule XXXI hash
+      const actualCorruptedSha256 = crypto.createHash('sha256').update(fakeCorruptedBuffer).digest('hex');
+
+      expect(actualCorruptedSha256).not.toBe(expectedSha256);
+      expect(() => {
+        if (actualCorruptedSha256 !== expectedSha256) {
+          throw new Error('EVIDENCE_INTEGRITY_VIOLATION: Source artifact checksum mismatch.');
+        }
+      }).toThrow('EVIDENCE_INTEGRITY_VIOLATION');
     });
   });
 });

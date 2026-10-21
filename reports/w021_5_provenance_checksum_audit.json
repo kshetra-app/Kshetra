@@ -1,0 +1,92 @@
+{
+  "metadata": {
+    "directive": "CTO Directive 124",
+    "workstream": "Workstream C — Audit Provenance Checksum Integrity",
+    "generatedAt": "2026-10-21T05:56:09.176Z",
+    "governingFramework": "Master Execution Framework Amendment v1.6",
+    "totalProvenanceRecordsAudited": 5,
+    "totalInRepoEvidenceFilesAudited": 8
+  },
+  "provenanceConstantsAudit": [
+    {
+      "recordKey": "CENSUS_2011_PCA_PROVENANCE",
+      "datasetName": "Census 2011 Primary Census Abstract (PCA)",
+      "versionTag": "v1.0_statutory",
+      "sourceAuthority": "Office of the Registrar General & Census Commissioner, India",
+      "publicationDate": "2011-04-30",
+      "originalStoredChecksum": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "historicalChecksumStatus": "DEFECTIVE_EMPTY_STRING_SHA256_HASH",
+      "artifactPresence": "EXTERNAL_STATUTORY_PUBLICATION_DOSSIER_CHECKED_IN",
+      "inRepoArtifactPath": "data/evidence/w020/authoritative/census_2011_pca_source_dossier.md",
+      "inRepoArtifactDigestSha256": "1290ab1ced366f0e049c09e1c781cb8d63e461a2d701f013f11ba742d7e341b1",
+      "evidenceStatus": "EXTERNAL_STATUTORY_DOCUMENT_DOSSIER_VERIFIED",
+      "rationale": "The stored hash e3b0c442... was the SHA-256 of empty string (0 bytes), introduced in W020-G5. The raw RGI PCA spreadsheet is an external government publication (~150MB) not stored directly in git. Stored checksum nullified; in-repo dossier tracked bitwise."
+    },
+    {
+      "recordKey": "DELIMITATION_2008_REGIME_PROVENANCE",
+      "datasetName": "Delimitation Order 2008 Statutory Baseline",
+      "versionTag": "2008_statutory_order",
+      "sourceAuthority": "Delimitation Commission of India / Election Commission of India",
+      "publicationDate": "2008-02-19",
+      "originalStoredChecksum": "a1b2c3d4e5f60718293a4b5c6d7e8f90123456789abcdef0123456789abcdef0",
+      "historicalChecksumStatus": "DEFECTIVE_PATTERNED_PLACEHOLDER_HASH",
+      "artifactPresence": "EXTERNAL_STATUTORY_GAZETTE_DOSSIER_CHECKED_IN",
+      "inRepoArtifactPath": "data/evidence/w020/authoritative/eci_delimitation_order_2008_source_dossier.md",
+      "inRepoArtifactDigestSha256": "11b646cb1df307c541ff6d5bd9006338df0577fcded4a1f7f04cab70e3395218",
+      "evidenceStatus": "EXTERNAL_STATUTORY_DOCUMENT_DOSSIER_VERIFIED",
+      "rationale": "Introduced in W020-G8 as a patterned synthetic placeholder hash (a1b2c3...). The official Delimitation Order 2008 is an external statutory gazette. Stored checksum nullified; in-repo dossier tracked bitwise."
+    },
+    {
+      "recordKey": "APRA_2014_PROVENANCE",
+      "datasetName": "Andhra Pradesh Reorganisation Act, 2014 (Act No. 6 of 2014)",
+      "versionTag": "statutory_act",
+      "sourceAuthority": "Parliament of India (Ministry of Law and Justice)",
+      "publicationDate": "2014-03-01",
+      "originalStoredChecksum": "b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3",
+      "historicalChecksumStatus": "DEFECTIVE_PATTERNED_PLACEHOLDER_HASH",
+      "artifactPresence": "EXTERNAL_STATUTORY_ACT_DOSSIER_CHECKED_IN",
+      "inRepoArtifactPath": "data/evidence/w020/authoritative/mha_apra_2014_source_dossier.md",
+      "inRepoArtifactDigestSha256": "ddb8a5d55ef5c72c2ceb98341ce071d998847f5fe5e780f3da7a6a2693ab92be",
+      "evidenceStatus": "EXTERNAL_STATUTORY_DOCUMENT_DOSSIER_VERIFIED",
+      "rationale": "Introduced in W020-G8 as patterned synthetic placeholder (b2c3d4...). The official Act is an external parliamentary enactment. Stored checksum nullified; in-repo dossier tracked bitwise."
+    },
+    {
+      "recordKey": "GSR_311E_2015_PROVENANCE",
+      "datasetName": "Ministry of Home Affairs Gazette Notification G.S.R. 311(E)",
+      "versionTag": "statutory_order",
+      "sourceAuthority": "Ministry of Home Affairs, Government of India",
+      "publicationDate": "2015-04-23",
+      "originalStoredChecksum": "c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4",
+      "historicalChecksumStatus": "DEFECTIVE_PATTERNED_PLACEHOLDER_HASH",
+      "artifactPresence": "EXTERNAL_STATUTORY_ORDER_DOSSIER_CHECKED_IN",
+      "inRepoArtifactPath": "data/evidence/w020/authoritative/mha_gsr_311e_2015_source_dossier.md",
+      "inRepoArtifactDigestSha256": "cb0a4ee9aef369104b73793f8722250cb9e45ab1a00bc411074ffbe484c2bfa2",
+      "evidenceStatus": "EXTERNAL_STATUTORY_DOCUMENT_DOSSIER_VERIFIED",
+      "rationale": "Introduced in W020-G8 as patterned synthetic placeholder (c3d4e5...). Official MHA notification is external gazette. Stored checksum nullified; in-repo dossier tracked bitwise."
+    },
+    {
+      "recordKey": "ECI_NOTIFICATION_2018_PROVENANCE",
+      "datasetName": "Election Commission of India Notification 282/AP/2018",
+      "versionTag": "gazette_notification",
+      "sourceAuthority": "Election Commission of India",
+      "publicationDate": "2018-09-22",
+      "originalStoredChecksum": "d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5",
+      "historicalChecksumStatus": "DEFECTIVE_PATTERNED_PLACEHOLDER_HASH",
+      "artifactPresence": "EXTERNAL_STATUTORY_NOTIFICATION_DOSSIER_CHECKED_IN",
+      "inRepoArtifactPath": "data/evidence/w020/authoritative/eci_notification_282_ap_2018_source_dossier.md",
+      "inRepoArtifactDigestSha256": "848c6fba834339cd827856989914941b8a1e6433ba5ab7c7ec55e456b6c5fe13",
+      "evidenceStatus": "EXTERNAL_STATUTORY_DOCUMENT_DOSSIER_VERIFIED",
+      "rationale": "Introduced in W020-G8 as patterned synthetic placeholder (d4e5f6...). Official ECI notification is external gazette. Stored checksum nullified; in-repo dossier tracked bitwise."
+    }
+  ],
+  "inRepoEvidenceFilesChecksums": {
+    "data/evidence/w015_b2/eci_delimitation_2008_schedule_xxxi.txt": "9123ecb5f9ea5414ee8b4e8cce92aed9e008f352a8924edb7dcb9c27d621737d",
+    "data/evidence/w020/authoritative/census_2011_pca_source_dossier.md": "1290ab1ced366f0e049c09e1c781cb8d63e461a2d701f013f11ba742d7e341b1",
+    "data/evidence/w020/authoritative/eci_delimitation_order_2008_source_dossier.md": "11b646cb1df307c541ff6d5bd9006338df0577fcded4a1f7f04cab70e3395218",
+    "data/evidence/w020/authoritative/mha_apra_2014_source_dossier.md": "ddb8a5d55ef5c72c2ceb98341ce071d998847f5fe5e780f3da7a6a2693ab92be",
+    "data/evidence/w020/authoritative/mha_gsr_311e_2015_source_dossier.md": "cb0a4ee9aef369104b73793f8722250cb9e45ab1a00bc411074ffbe484c2bfa2",
+    "data/evidence/w020/authoritative/eci_notification_282_ap_2018_source_dossier.md": "848c6fba834339cd827856989914941b8a1e6433ba5ab7c7ec55e456b6c5fe13",
+    "data/evidence/w020/authoritative/panin_article_332_simulation_dossier.md": "312ad477b90ff343fc15fb01059e51c27bdd1a2884bca2b0666e6cec1ca7dcaf",
+    "data/census/india-district-population-2011.ts": "03e3d6d39ead9685431e5487e5ce33f8ab0d6628b492953f9411e0ada12317a3"
+  }
+}

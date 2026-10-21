@@ -1285,7 +1285,7 @@ export class DelimitationQueryService {
           versionTag: '2008_statutory_order',
           sourceAuthority: 'Delimitation Commission of India / Election Commission of India',
           publicationDate: '2008-02-19',
-          checksum: 'a1b2c3d4e5f60718293a4b5c6d7e8f90123456789abcdef0123456789abcdef0',
+          checksum: undefined, // External statutory gazette; raw ECI order PDF not stored in repo (dossier: data/evidence/w020/authoritative/eci_delimitation_order_2008_source_dossier.md)
         },
       ],
       methodology: 'CONSTITUTIONAL_STATUS_AUDIT',

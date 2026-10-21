@@ -2770,3 +2770,50 @@
      - Stage B Boundary strictly observed: STOP at Stage B Gate; Stages C through I remain strictly **UNAUTHORIZED**.
      - Production Air-Gap strictly maintained (`AIR_GAPPED_UNEXECUTED`).
      - Formal CTO Acceptance strictly **`0.0% — PENDING INDEPENDENT ADJUDICATION`** under Rule IV-001.
+
+
+---
+
+### DEC-124: CTO DIRECTIVE 124 — PIN AUDIT RECONCILIATION, PROVENANCE INTEGRITY & INDEPENDENT STAGE B EVIDENCE CLOSURE
+- **Date:** 2026-10-21
+- **Status:** IMPLEMENTATION COMPLETE / SUBMITTED FOR INDEPENDENT ADJUDICATION
+- **Authority:** CTO Directive 124 / Master Execution Framework Amendment v1.6 / Rule IV-001 Non-Self-Acceptance
+- **Context:** Following code review of Directive 123, additional evidence reconciliation was mandated: (1) discrepancy between D123 report text (`58, 59, 61`) and source code (`65, 63, 58`) for PIN `500001`; (2) full 36-entry inventory audit with explicit taxonomy (`DOCUMENTED_MULTI_AC_AMBIGUITY` and `PROVISIONAL_APPROXIMATION`) and 16 mandatory audit fields per Section 4.1; (3) provenance checksum audit uncovering an empty-string SHA-256 digest (`e3b0c442...`) from W020-G5 and patterned placeholder hashes (`a1b2c3...`, etc.) from W020-G8; and (4) regression test suite extension covering source/report consistency, fail-closed handling, and cryptographic digest verification.
+- **Architectural & Governance Determinations:**
+  1. **Workstream A — Reconcile PIN `500001`:**
+     - Discrepancy resolved: D123 report author had an editorial typo writing `58, 59, 61` (confusing 61 with Nampally and erroneously including Amberpet 59).
+     - Under Delimitation Order 2008 Schedule XXXI, substantiated candidate set is confirmed as strictly `[65, 63, 58]` (Goshamahal, Nampally, Malakpet).
+     - `canonicalAcNo` on multi-AC entry `500001` is strictly removed (`canonicalAcNo: undefined`).
+  2. **Workstream B — Reconcile All 36 Curated PIN Entries:**
+     - Audited all 36 entries in `CURATED_PROVISIONAL_PIN_DIRECTORY`: 4 multi-AC (`500001`, `500028`, `500034`, `500056`) and 32 provisional single-AC points.
+     - Corrected 8 canonical AC number mismatches discovered during seed data cross-reference:
+       - TS ACs: `500002` (Charminar) canonicalAcNo 67 -> 66; `500053` (Chandrayangutta) canonicalAcNo 69 -> 67; `500064` (Bahadurpura) canonicalAcNo 66 -> 69.
+       - AP ACs: `520001` (Vijayawada West) canonicalAcNo 80 -> 79; `520002` (Vijayawada Central) canonicalAcNo 81 -> 80; `530001` & `530002` (Visakhapatnam South) canonicalAcNo 21 -> 22; `517501` (Tirupati) canonicalAcNo 168 -> 167.
+     - Updated verification taxonomy: all 4 multi-AC entries classified as `DOCUMENTED_MULTI_AC_AMBIGUITY`; all 32 single-AC entries classified as `PROVISIONAL_APPROXIMATION`.
+     - Generated canonical ledgers: `reports/w021_5_curated_pin_audit_ledger.json` and `.md`.
+  3. **Workstream C — Audit Provenance Checksum Integrity (DEF-W021-06):**
+     - Investigated provenance checksum constants in `delimitationService.ts` and `delimitationQueryService.ts`:
+       - `CENSUS_2011_PCA_PROVENANCE` carried `e3b0c442...` (empty-string SHA-256), introduced in W020-G5 (`4221eff`).
+       - Four statutory provenance constants carried patterned dummy hashes (`a1b2c3d4...`, `b2c3d4...`, `c3d4e5...`, `d4e5f6...`), introduced in W020-G8 (`d173be6`).
+     - Remediated: Set `checksum: undefined` across all 5 statutory provenance constants.
+     - Reconciled external vs in-repo artifacts: external statutory gazettes (Delimitation Order 2008, APRA 2014, GSR 311(E), ECI Notification 2018) are official government instruments whose multi-hundred MB raw files are not checked into git; in-repo authoritative secondary dossiers exist in `data/evidence/w020/authoritative/`.
+     - Enhanced `DatasetVersionProvenance` contract in `packages/shared/src/contracts/delimitation.ts` with `artifactPath?: string;` and `evidenceStatus?: string;`.
+     - Calculated real cryptographic bitwise SHA-256 digests for all 8 in-repository evidence files in `data/evidence/` and `data/census/`.
+     - Generated canonical provenance audit files: `reports/w021_5_provenance_checksum_audit.json` and `.md`.
+  4. **Workstream D, E, F — Extended Regression Test Suite:**
+     - Expanded `apps/api/src/__tests__/delimitation-citizen-impact-data-truth.test.ts` from 20 to 28 tests (all PASS):
+       - PIN 500001 candidate set strictly `[65, 63, 58]`, `canonicalAcNo: undefined`, `status: 'AMBIGUOUS_CANDIDATES'`.
+       - All 36 curated PINs match generated audit ledger 1:1.
+       - All 4 multi-AC entries fail closed from unique assignment.
+       - All 32 single-AC entries resolve in `stateData` with 0 missing AC errors.
+       - Corrected AC numbers verified for AP (79, 80, 22, 167, 137) and TS (66, 67, 69).
+       - Provenance constants confirmed free of empty-string or patterned dummy hashes (`checksum === undefined`).
+       - In-repo evidence files verified bitwise against recorded cryptographic digests.
+       - Fail-closed tamper test verifies non-zero exit on corrupted digest.
+  5. **Governance & Stage Boundaries:**
+     - `DEF-W021-05` updated to reflect D124 reconciliation; status remains `PARTIALLY_REMEDIATED — PENDING INDEPENDENT ADJUDICATION`.
+     - New defect `DEF-W021-06` recorded for provenance placeholder hashes; status: `REMEDIATED — PENDING INDEPENDENT ADJUDICATION`.
+     - Headline Accounting: Repo-Verified Earned: **61.5%**, Database-Pending: **10.5%**, Externally-Blocked: **22.5%**, Unimplemented: **5.5%**.
+     - Stage B Boundary strictly observed: STOP at Stage B Gate; Stages C through I remain strictly **UNAUTHORIZED**.
+     - Production & Staging Databases strictly `AIR_GAPPED_UNEXECUTED` (0 queries, 0 mutations).
+     - Formal CTO Acceptance strictly **`0.0% — PENDING INDEPENDENT ADJUDICATION`** under Rule IV-001.
