@@ -604,7 +604,7 @@ describe('CTO Directive 123 — Residual Electoral Data-Truth & Provisional Look
     it('verifies independent validation matrix report exists and records 100% check pass rate', () => {
       expect(fs.existsSync(matrixReportPath)).toBe(true);
       const matrixReport = JSON.parse(fs.readFileSync(matrixReportPath, 'utf8'));
-      expect(matrixReport.metadata.directive).toMatch(/CTO Directive 12[6789]/);
+      expect(matrixReport.metadata.directive).toMatch(/CTO Directive 1(2[6789]|30)/);
       expect(matrixReport.metadata.validationSummary.allChecksPassed).toBe(true);
       expect(matrixReport.metadata.validationChecks.every((c: any) => c.passed)).toBe(true);
     });
@@ -975,7 +975,7 @@ describe('CTO Directive 123 — Residual Electoral Data-Truth & Provisional Look
       const reportPath = path.resolve(__dirname, '../../../../reports/w021_5_pin_independent_evidence_matrix.json');
       const report = JSON.parse(fs.readFileSync(reportPath, 'utf8'));
 
-      expect(report.metadata.directive).toMatch(/CTO Directive 12[89]/);
+      expect(report.metadata.directive).toMatch(/CTO Directive 1(2[89]|30)/);
       expect(report.metadata.validationSummary.allChecksPassed).toBe(true);
       expect(report.metadata.validationSummary.eightAcCorrectionsVerified).toBe(true);
       expect(report.metadata.validationSummary.pin500001AmbiguousFailClosed).toBe(true);
@@ -1225,7 +1225,7 @@ describe('CTO Directive 123 — Residual Electoral Data-Truth & Provisional Look
       const jsonReport = JSON.parse(fs.readFileSync(jsonReportPath, 'utf8'));
       const mdReport = fs.readFileSync(mdReportPath, 'utf8');
 
-      expect(jsonReport.metadata.directive).toMatch(/CTO Directive 12[89]/);
+      expect(jsonReport.metadata.directive).toMatch(/CTO Directive 1(2[89]|30)/);
       expect(jsonReport.metadata.validationSummary.structuralValidationStatus).toBe('PASS');
       expect(jsonReport.metadata.validationSummary.sourceResolutionStatus).toMatch(/PARTIAL_IN_REPO_DOSSIERS_EXTERNAL_GAZETTE_PENDING|VERIFIED_CHECKED_IN_EXTRACTS_SHA256_MATCH/);
       expect(jsonReport.metadata.validationSummary.locatorResolutionStatus).toMatch(/EXACT_COORDINATES_DOCUMENTED_EXTERNAL_GAZETTE_PENDING|EXACT_ENTRY_AND_WARD_COORDINATES_VERIFIED_AGAINST_SOURCE_ARTIFACT/);
@@ -1238,7 +1238,7 @@ describe('CTO Directive 123 — Residual Electoral Data-Truth & Provisional Look
       expect(jsonReport.metadata.eightCorrectionsAccounting.reportedCorrectionsLedger).toHaveLength(8);
       expect(jsonReport.metadata.eightCorrectionsAccounting.kurnoolLedgerEntry.pinCode).toBe('518001');
 
-      expect(mdReport).toMatch(/CTO Directive 12[89]/);
+      expect(mdReport).toMatch(/CTO Directive 1(2[89]|30)/);
       expect(mdReport).toMatch(/(26|38) Scenarios/);
       expect(mdReport).toContain('SUBMIT_FOR_INDEPENDENT_STAGE_B_ADJUDICATION_WITH_DOCUMENTED_EXTERNAL_BLOCKERS');
       expect(mdReport).toContain('Reconciled Eight Corrections & Kurnool Accounting');
@@ -1510,7 +1510,7 @@ describe('CTO Directive 123 — Residual Electoral Data-Truth & Provisional Look
       const jsonReport = JSON.parse(fs.readFileSync(jsonReportPath, 'utf8'));
       const mdReport = fs.readFileSync(mdReportPath, 'utf8');
 
-      expect(jsonReport.metadata.directive).toBe('CTO Directive 129');
+      expect(jsonReport.metadata.directive).toMatch(/CTO Directive 1(29|30)/);
       expect(jsonReport.metadata.validationSummary.structuralValidationStatus).toBe('PASS');
       expect(jsonReport.metadata.validationSummary.sourceResolutionStatus).toBe('VERIFIED_CHECKED_IN_EXTRACTS_SHA256_MATCH');
       expect(jsonReport.metadata.validationSummary.locatorResolutionStatus).toBe('EXACT_ENTRY_AND_WARD_COORDINATES_VERIFIED_AGAINST_SOURCE_ARTIFACT');
@@ -1523,10 +1523,101 @@ describe('CTO Directive 123 — Residual Electoral Data-Truth & Provisional Look
       expect(jsonReport.metadata.eightCorrectionsAccounting.reportedCorrectionsLedger).toHaveLength(8);
       expect(jsonReport.metadata.eightCorrectionsAccounting.kurnoolLedgerEntry.pinCode).toBe('518001');
 
-      expect(mdReport).toContain('CTO Directive 129');
+      expect(mdReport).toMatch(/CTO Directive 1(29|30)/);
       expect(mdReport).toContain('38 Scenarios');
-      expect(mdReport).toContain('11 Orthogonal Evidence Status Dimensions');
+      expect(mdReport).toMatch(/(11|12) Orthogonal Evidence Status Dimensions/);
       expect(mdReport).toContain('SUBMIT_FOR_INDEPENDENT_STAGE_B_ADJUDICATION_WITH_DOCUMENTED_EXTERNAL_BLOCKERS');
+    });
+  });
+
+  describe('CTO Directive 130 — Exact Locator Extent Integrity, Source-Path Binding, Genuine Negative Tests & Stage B Gate Correctness', () => {
+    const manifestPath = path.resolve(__dirname, '../../../../data/evidence/w021_5/pin_independent_evidence_manifest.json');
+    const validatorModule = require('../../../../scripts/verify_pin_evidence_matrix.cjs');
+
+    it('Workstream A: verifies exact parsed locator extents across all 36 records including reconciled PINs 500053 and 500064', () => {
+      const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+
+      // Reconciled PIN 500053: Entry 67 (Chandrayangutta), statutory extent: Ward No. 16 to 18 (NOT Ward 15 part)
+      const e500053 = manifest.entries.find((e: any) => e.pinCode === '500053');
+      expect(e500053).toBeDefined();
+      expect(e500053.assignedAcNumber).toBe(67);
+      expect(e500053.sourceLocator).toContain('Ward No. 16 to 18');
+      expect(e500053.sourceLocator).not.toContain('Ward 15 part');
+
+      // Reconciled PIN 500064: Entry 69 (Bahadurpura), statutory extent: Ward No. 19 and Ward No. 18 (Part) Block No. 4 to 8 (NOT Ward 12)
+      const e500064 = manifest.entries.find((e: any) => e.pinCode === '500064');
+      expect(e500064).toBeDefined();
+      expect(e500064.assignedAcNumber).toBe(69);
+      expect(e500064.sourceLocator).toContain('Ward No. 19 and Ward No. 18 (Part) Block No. 4 to 8');
+      expect(e500064.sourceLocator).not.toContain('GHMC Ward 12');
+    });
+
+    it('Workstream B: validates single source-resolution chain and rejects wrong-state/wrong-schedule source path', () => {
+      const directory = validatorModule.parseDelimitationServiceCuratedPins();
+      const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+      const seedNames = validatorModule.parseSeedConstituencyNames();
+
+      // TS entry declaring AP extract path
+      const corruptEntries = manifest.entries.map((e: any) => e.pinCode === '500002' ? {
+        ...e,
+        referenceDocumentPath: 'data/evidence/w021_5/authoritative/eci_delimitation_2008_schedule_ii_table_b_extract.txt'
+      } : e);
+      const corruptManifest = { ...manifest, entries: corruptEntries };
+      const validation = validatorModule.validateEvidenceMatrix({ directory, manifest: corruptManifest, seedNames });
+
+      expect(validation.allPassed).toBe(false);
+      const check6 = validation.checks.find((c: any) => c.checkId === 'CHECK_6_SOURCE_RESOLUTION');
+      expect(check6.passed).toBe(false);
+      expect(validation.errors.some((err: string) => err.includes('does not match expected Telangana Schedule XXXI extract'))).toBe(true);
+    });
+
+    it('Workstream C: validates multi-AC records fail closed with candidate numbers, names and extents verified', () => {
+      const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+      const multiAcPins = manifest.entries.filter((e: any) => e.confidenceTaxonomy === 'AMBIGUOUS_MULTI_CONSTITUENCY');
+
+      expect(multiAcPins).toHaveLength(4);
+      for (const entry of multiAcPins) {
+        expect(entry.assignedAcNumber == null).toBe(true);
+        expect(entry.candidateAcNumbers.length).toBeGreaterThanOrEqual(2);
+        expect(entry.candidateAcNames.length).toBe(entry.candidateAcNumbers.length);
+        expect(entry.sourceLocator).toMatch(/Extent|Schedule/);
+        expect(entry.postalAreaLinkageStatus).toBe('AMBIGUOUS_MULTI_CONSTITUENCY');
+      }
+    });
+
+    it('Workstream E: validates 12 orthogonal evidence dimensions including transcriptionFidelityStatus', () => {
+      const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+
+      for (const entry of manifest.entries) {
+        expect(entry.transcriptionFidelityStatus).toBe('UNVERIFIED_PENDING_PHYSICAL_GAZETTE_COMPARISON');
+        expect(entry.officialPublicationAuthenticityStatus).toBe('UNVERIFIED_EXTERNAL_PUBLICATION_NOT_CHECKED_IN');
+        expect(entry.geographicContainmentStatus).toBe('UNVERIFIED_NO_GIS_DELIVERY_BEAT_POLYGON');
+        expect(entry.sourceArtifactIntegrityStatus).toBe('VERIFIED_SHA256_MATCH');
+        expect(entry.filePathResolutionStatus).toBe('VERIFIED_IN_REPO_FILE_RESOLVED');
+      }
+    });
+
+    it('Workstream G: executes 38-scenario negative battery and generates honest Directive 130 report with blocker disclosures', () => {
+      const directory = validatorModule.parseDelimitationServiceCuratedPins();
+      const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+      const seedNames = validatorModule.parseSeedConstituencyNames();
+
+      const negativeResults = validatorModule.runNegativeValidationSuite({ directory, manifest, seedNames });
+      expect(negativeResults.allScenariosPassed).toBe(true);
+      expect(negativeResults.scenarios).toHaveLength(38);
+
+      const jsonReportPath = path.resolve(__dirname, '../../../../reports/w021_5_pin_independent_evidence_matrix.json');
+      const mdReportPath = path.resolve(__dirname, '../../../../reports/w021_5_pin_independent_evidence_matrix.md');
+
+      const jsonReport = JSON.parse(fs.readFileSync(jsonReportPath, 'utf8'));
+      const mdReport = fs.readFileSync(mdReportPath, 'utf8');
+
+      expect(jsonReport.metadata.directive).toBe('CTO Directive 130');
+      expect(jsonReport.metadata.validationSummary.evidenceClosureStatus).toBe('PENDING_EXTERNAL_OFFICIAL_GAZETTE_AND_GIS_DELIVERY_BEAT_EVIDENCE');
+      expect(jsonReport.metadata.validationSummary.evidenceClosureStatus).not.toBe('COMPLETE');
+      expect(jsonReport.metadata.validationSummary.transcriptionFidelityStatus).toBe('UNVERIFIED_PENDING_PHYSICAL_GAZETTE_COMPARISON');
+      expect(mdReport).toContain('CTO Directive 130');
+      expect(mdReport).toContain('12 Orthogonal Evidence Status Dimensions');
     });
   });
 });
