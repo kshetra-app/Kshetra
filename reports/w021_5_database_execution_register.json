@@ -1,10 +1,10 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "W021.5 Database Execution Register",
-  "directive": "CTO Directive 140",
+  "directive": "CTO Directive 141",
   "governingAuthority": "Master Execution Framework Amendment v1.6 / Rule IV-001 Non-Self-Acceptance",
-  "generatedAt": "2026-10-22T17:20:00.000Z",
-  "baselineCommit": "f1154c428d0ea216bd61bac40e2ae8d4b0f7b58c",
+  "generatedAt": "2026-10-22T23:45:00.000Z",
+  "baselineCommit": "d282ea50af48607dd406addf42cd000aa1331f29",
   "airGapBoundary": {
     "productionDatabase": "ehfafcnimmjusyvplbah",
     "productionStatus": "AIR_GAPPED_ZERO_QUERIES_ZERO_MUTATIONS",
@@ -100,7 +100,7 @@
         "schemaValid": true
       },
       "corroborationArtifact": "reports/w021_5_staging_execution_report.json",
-      "executionDetails": "Reconciled under CTO Directive 139 via scripts/execute_staging_directive_139.mjs. Clarified scope: 107 canonical political organizations with 1,100 supporting child records = 1,207 total catalog rows. 100% unique short names."
+      "executionDetails": "Reconciled under CTO Directive 141 via scripts/execute_staging_directive_139.mjs. Clarified scope: 107 canonical political organizations with 1,100 supporting child records = 1,207 total catalog rows. 100% unique short names."
     },
     {
       "artifactId": "DB-ART-002",
@@ -132,7 +132,7 @@
         "schemaValid": true
       },
       "corroborationArtifact": "reports/w021_5_staging_execution_report.json",
-      "executionDetails": "Reconciled under CTO Directive 139 via scripts/execute_staging_directive_139.mjs. Clarified historical 5,750 threshold as cumulative count through Subchunk 08A; full 10 subchunks contain 11,334 tuples yielding 11,298 unique rows (36 duplicate discards)."
+      "executionDetails": "Reconciled under CTO Directive 141 via scripts/execute_staging_directive_139.mjs. Clarified historical 5,750 threshold as cumulative count through Subchunk 08A; full 10 subchunks contain 11,334 tuples yielding 11,298 unique rows (36 duplicate discards)."
     },
     {
       "artifactId": "DB-ART-003",
@@ -162,7 +162,7 @@
         "schemaValid": true
       },
       "corroborationArtifact": "reports/w021_5_staging_execution_report.json",
-      "executionDetails": "Reconciled under CTO Directive 139 via scripts/execute_staging_directive_139.mjs. Matches 100% of India's 4,123 assembly constituency seats across all 31 assembly states. Zero negative values, zero percentages > 100%."
+      "executionDetails": "Reconciled under CTO Directive 141 via scripts/execute_staging_directive_139.mjs. Matches 100% of India's 4,123 assembly constituency seats across all 31 assembly states. Zero negative values, zero percentages > 100%."
     },
     {
       "artifactId": "DB-ART-004",
@@ -195,7 +195,7 @@
         "schemaValid": true
       },
       "corroborationArtifact": "reports/w021_5_staging_execution_report.json",
-      "executionDetails": "Reconciled under CTO Directive 139 via scripts/execute_staging_directive_139.mjs. Destructive wholesale DELETE eliminated in favor of idempotent PostgreSQL upsert. Candidate names, party codes, and genuine vote/margin values mapped correctly (zero 'Winner' or 0-vote placeholders)."
+      "executionDetails": "Reconciled under CTO Directive 141 via scripts/execute_staging_directive_139.mjs. Destructive wholesale DELETE eliminated in favor of idempotent PostgreSQL upsert. Candidate names, party codes, and genuine vote/margin values mapped correctly (zero 'Winner' or 0-vote placeholders)."
     },
     {
       "artifactId": "DB-ART-005",

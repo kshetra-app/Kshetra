@@ -1,11 +1,12 @@
 /**
- * KSHETRA W021.5 — CTO DIRECTIVE 139 FULL-MANDATE UNIFIED VERIFIER
+ * KSHETRA W021.5 — CTO DIRECTIVE 141 FULL-MANDATE UNIFIED VERIFIER
  * Deterministic Single Entrypoint for Full-Mandate Completion Verification
  * 
  * Master Execution Framework Amendment v1.6 / Rule IV-001 Non-Self-Acceptance
- * CTO Directive 139: Security Containment, Authentication Hardening & Full Data Truth
+ * CTO Directive 141: Final Implementation Gap Closure, Security Containment,
+ * Source-to-Truth Reconciliation, and Evidence-Gated Milestone Handoff
  * 
- * Executes all 15 mandated verification suites across Stages A through I:
+ * Executes all 19 mandated verification suites across Stages A through I:
  *  1. Working tree cleanliness inspection (git status --porcelain)
  *  2. Commit freshness validator (tests/commit-freshness.test.mjs)
  *  3. Governance consistency test (tests/governance-consistency.test.mjs)
@@ -20,7 +21,11 @@
  * 12. Mobile strangler endpoints 29-56 mediation (tests/mobile-strangler-class-b-29-56.test.mjs)
  * 13. Historical election results for 23 states (tests/historical-election-results-23-states.test.mjs)
  * 14. Production air-gap & cutover preflight (scripts/verify_production_airgap_and_preflight.cjs)
- * 15. Specification, Matrix, Ledger, Blocker & Evidence Concordance Engine
+ * 15. Staging target selection & write-gating security battery (tests/staging-target-selection-security.test.mjs)
+ * 16. Authoritative database identity & catalog reconciliation suite (tests/database-criteria-identity-reconciliation.test.mjs)
+ * 17. Staging write cryptographic authorization & anti-replay battery (tests/staging-authorization-verifier.test.mjs)
+ * 18. Staging transport isolation & zero-network verification battery (tests/staging-transport-isolation.test.mjs)
+ * 19. Specification, Matrix, Ledger, Blocker & Evidence Concordance Engine
  * 
  * Generates: reports/w021_5_full_mandate_verification_manifest.json
  */
@@ -40,10 +45,10 @@ const CRITERIA_PATH = path.join(REPO_ROOT, 'governance/specifications/w021_5_cri
 const ALLOW_DIRTY = process.argv.includes('--allow-dirty');
 
 console.log('================================================================================');
-console.log('KSHETRA W021.5 — CTO DIRECTIVE 134 / 135 FULL-MANDATE UNIFIED VERIFIER');
+console.log('KSHETRA W021.5 — CTO DIRECTIVE 141 FULL-MANDATE UNIFIED VERIFIER');
 console.log('Deterministic Single Entrypoint for Stages A through I Evidence Closure');
 console.log('Governing Authority: Amendment v1.6 / Rule IV-001 Non-Self-Acceptance');
-console.log('Directive 135: 16-Point Verification Engine Hardening Operationalized');
+console.log('Directive 141: Final Implementation Gap Closure & Verification Operationalized');
 console.log('================================================================================\n');
 
 // Dynamically obtain Git HEAD commit and branch (Directive 135 Item 16)
@@ -66,7 +71,7 @@ let overallPass = true; // Atomically tracked (Directive 135 Item 14)
 function runSuite(index, name, command, fn) {
   const start = Date.now();
   const startedAt = new Date().toISOString();
-  console.log(`[Suite ${index}/17] ${name}`);
+  console.log(`[Suite ${index}/19] ${name}`);
   console.log(`  Command: ${command || 'In-Process Engine Assertion'}`);
   
   let passed = false;
@@ -224,15 +229,27 @@ runSuite(15, 'Staging Target Selection & Write-Gating Security Battery', 'node t
 
 // -----------------------------------------------------------------------------
 // Suite 16: Authoritative Database Identity & Catalog Reconciliation Suite
-// CTO Directive 140 Section 3
+// CTO Directive 140 Section 3 / CTO Directive 141 Section 5
 // -----------------------------------------------------------------------------
 runSuite(16, 'Authoritative Database Identity & Catalog Reconciliation Suite', 'node tests/database-criteria-identity-reconciliation.test.mjs');
 
 // -----------------------------------------------------------------------------
-// Suite 17: Specification, Matrix, Ledger, Blocker & Evidence Concordance Engine
+// Suite 17: Staging Write Cryptographic Authorization & Anti-Replay Battery
+// CTO Directive 141 Section 4
+// -----------------------------------------------------------------------------
+runSuite(17, 'Staging Write Cryptographic Authorization & Anti-Replay Battery', 'node tests/staging-authorization-verifier.test.mjs');
+
+// -----------------------------------------------------------------------------
+// Suite 18: Staging Transport Isolation & Zero-Network Verification Battery
+// CTO Directive 141 Section 3.2
+// -----------------------------------------------------------------------------
+runSuite(18, 'Staging Transport Isolation & Zero-Network Verification Battery', 'node tests/staging-transport-isolation.test.mjs');
+
+// -----------------------------------------------------------------------------
+// Suite 19: Specification, Matrix, Ledger, Blocker & Evidence Concordance Engine
 // Operationalizes Directive 135 Section 4 (Items 1-10)
 // -----------------------------------------------------------------------------
-runSuite(17, 'Specification, Matrix, Ledger, Blocker & Evidence Concordance Engine', null, () => {
+runSuite(19, 'Specification, Matrix, Ledger, Blocker & Evidence Concordance Engine', null, () => {
   // Check 1: File Existence & JSON Parsing
   if (!fs.existsSync(MATRIX_PATH)) throw new Error(`Matrix file missing: ${MATRIX_PATH}`);
   if (!fs.existsSync(LEDGER_PATH)) throw new Error(`Ledger file missing: ${LEDGER_PATH}`);
@@ -672,8 +689,8 @@ const dynamicDbPendingTasks = Array.from(new Set(
 
 const manifest = {
   evidenceMetadata: {
-    directive: 'CTO Directive 139',
-    title: 'KSHETRA W021.5 Full-Mandate Unified Verification Manifest (Directive 139)',
+    directive: 'CTO Directive 141',
+    title: 'KSHETRA W021.5 Full-Mandate Unified Verification Manifest (Directive 141)',
     governingAuthority: 'Master Execution Framework Amendment v1.6 / Rule IV-001 Non-Self-Acceptance',
     repository: 'https://github.com/kshetra-app/Kshetra.git',
     branch: gitBranch,

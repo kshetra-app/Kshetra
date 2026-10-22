@@ -3160,6 +3160,49 @@
      - Production Supabase (`ehfafcnimmjusyvplbah`): 100% air-gapped (strictly 0 queries, 0 mutations).
      - Under Rule IV-001, formal CTO acceptance remains strictly `0.0% — PENDING INDEPENDENT ADJUDICATION`.
 
+---
+
+### DEC-141: CTO DIRECTIVE 141 — FINAL IMPLEMENTATION GAP CLOSURE, SECURITY CONTAINMENT, SOURCE-TO-TRUTH RECONCILIATION, AND EVIDENCE-GATED MILESTONE HANDOFF
+- **Date:** 2026-10-22
+- **Status:** IMPLEMENTATION COMPLETE / SUBMITTED FOR INDEPENDENT CTO ADJUDICATION
+- **Authority:** CTO Directive 141 / Master Execution Framework Amendment v1.6 / Rule IV-001 Non-Self-Acceptance
+- **Context:** Execution of final consolidated gap-closure directive for the remaining locally solvable portions of W021.5, eliminating synthetic mock reporting, quarantining legacy hazards, implementing genuine cryptographic authorization, establishing deterministic source-level AST reconciliation across all 4 database criteria, enforcing transport isolation, and delivering an auditable handoff package:
+  1. P0 Legacy Execution Hazard Elimination:
+     - Permanently quarantined `scripts/execute_staging_directive_138.mjs` as a non-executable archival artifact.
+     - Any invocation immediately fails closed with exit code 1; completely removed legacy bypass risks and destructive DELETE hazards while preserving audit lineage.
+  2. P0 Staging Execution Modes & Transport Isolation:
+     - Separated Mode A (Local Preparation & Reconciliation) from Mode B (Authorized Staging Execution) in `scripts/execute_staging_directive_139.mjs`.
+     - Mode A executes strictly offline, requires zero service-role keys, and makes 0 remote network calls.
+     - Implemented injectable transport boundary throwing `NETWORK_ACCESS_FORBIDDEN` if any remote network call is attempted in Mode A.
+     - Authored `tests/staging-transport-isolation.test.mjs` (3/3 PASS) with a controlled transport spy proving 0 HTTP requests.
+     - Truthfully regenerated `reports/w021_5_staging_execution_report.json` recording `stagingExecutionPerformed: false`, `workstreamStatus: PREPARED_AND_RECONCILED_IN_REPOSITORY`, and zero synthetic live claims.
+  3. P0 Cryptographic Authorization Contract:
+     - Designed and implemented `scripts/lib/stagingAuthorization.mjs` replacing regex-only token check with a genuine cryptographic verification contract.
+     - Verifies authenticity under independent trust anchor, issuer (`kshetra-cto-governance`), audience (`kshetra-staging-execution`), exact project ref (`fkpigozcqnmcvofuksar`), granular criteria & operation scopes, temporal validity (exp/nbf), and anti-replay nonce tracking.
+     - Strictly fails closed when trust anchor is unconfigured (external prerequisite).
+     - Authored comprehensive test battery `tests/staging-authorization-verifier.test.mjs` covering all 12 negative and positive conditions (12/12 PASS).
+  4. P1 Source-to-Truth Deterministic Reconciliation Engine:
+     - Upgraded `scripts/reconcile_database_criteria_identities.mjs` and `tests/database-criteria-identity-reconciliation.test.mjs` (23/23 PASS):
+       - CRIT-C02-02 (W021.5-C-02): Deterministic SQL tuple parsing of Migration 065. Reconciled 107 canonical organizations, 107 unique short names, 10 organization relationships with 100% foreign key resolution, 27 multilingual names, 19 symbols, 1,043 aliases, and 1 batch provenance record = exactly 1,207 total catalog records.
+       - CRIT-D02-02 (W021.5-D-02): Fixed duplicate report access by parsing `duplicates.duplicates` array without fallback; computed SHA256 of all 10 subchunk SQL files against manifest; parsed 11,334 raw tuples, verified 5,750 midway milestone at 08A, proved all 36 natural key collisions by `personId::year::electionType::constId`, and confirmed exactly 11,298 unique candidacies under `uq_candidacies`.
+       - CRIT-E01-02 (W021.5-E-01): Reconciled complete 4,123 constituency identity set, composite IDs, statutory bounds against `AUTHORITATIVE_STATE_SEATS` across all 31 assembly states, and Census PCA demographic bounds with 0 bounds violations.
+       - CRIT-F02-03 (W021.5-F-02): Created canonical mapping adapter `mapHistoricalCoverageToResultRow`; eliminated 'OTH'/'Winner' fallbacks; preserved genuine zeros for uncontested seats (Arunachal AC 4, 16, 31); preserved J&K 2014 statutory boundary = 87 seats; enforced idempotent upsert targeting `on_conflict=election_id,constituency_id`; eliminated wholesale DELETEs.
+       - Adversarial Falsification Battery: Proved tests fail closed on missing parties, missing candidate names, corrupted manifests, and invalid duplicates.
+  5. P0/P1 API Authentication Authority & Class B Persistence:
+     - Verified `apps/api/src/lib/userAuth.ts`: privileged roles derive exclusively from server-managed `user.app_metadata?.role` or server lookup; `user_metadata?.role` completely eliminated; test token validator restricted to `NODE_ENV === 'test' && TEST_HARNESS_ACTIVE === 'true'`.
+     - Audited Class B write routes across 10 route files and mobile endpoints 29-56 for actor-to-target identity, error propagation, and `followed_id` schema consistency (27/27 PASS in `tests/api-class-b-security-integration.test.mjs`).
+  6. Governance & Unified Verification Manifest:
+     - Expanded single-entrypoint unified verifier `scripts/verify_w021_5_full_mandate.cjs` to 19 comprehensive suites.
+     - Authored `reports/w021_5_directive_141_defect_ledger.json` tracking 10 defects.
+     - Synchronized `reports/w021_5_database_execution_register.json`, `reports/w021_5_full_specification_completion_matrix.json`, and `governance/specifications/w021_5_criterion_evidence_register.json`.
+     - Exact mathematical weight conservation: 67.0% Repo-Verified, 10.5% Database-Pending, 22.5% Blocked (EB-01..06, DQ), 0.0% Unimplemented, 0.0% Formal Acceptance (Rule IV-001).
+  7. Invariants Preserved:
+     - Production Supabase (`ehfafcnimmjusyvplbah`): 100% air-gapped (strictly 0 queries, 0 mutations).
+     - Remote staging (`fkpigozcqnmcvofuksar`): strictly 0 queries, 0 mutations under Directive 141.
+     - Staging credential rotation: `CONTAINMENT_PENDING_ADMIN_CONFIRMATION` pending external Project Administrator action.
+     - Under Rule IV-001, formal CTO acceptance remains strictly `0.0% — PENDING INDEPENDENT ADJUDICATION`.
+
+
 
 
 

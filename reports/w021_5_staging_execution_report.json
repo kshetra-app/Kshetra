@@ -1,10 +1,13 @@
 {
   "generator": "scripts/execute_staging_directive_139.mjs",
-  "directive": "CTO Directive 140 / Security Incident Containment, Auth Authority & Data Truth Verification",
-  "timestamp": "2026-10-22T17:33:45.963Z",
+  "directive": "CTO Directive 141 / Source-to-Truth Reconciliation & Staging Target Hardening",
+  "timestamp": "2026-10-22T18:23:59.856Z",
   "governingAuthority": "Master Execution Framework Amendment v1.6 / Rule IV-001 Non-Self-Acceptance",
   "stagingProjectRef": "fkpigozcqnmcvofuksar",
   "productionProjectRef": "ehfafcnimmjusyvplbah (AIR-GAPPED — 0 QUERIES, 0 MUTATIONS)",
+  "executionMode": "MODE_A_LOCAL_PREPARATION_AND_RECONCILIATION",
+  "stagingExecutionPerformed": false,
+  "networkRequestsAttempted": 0,
   "securityIncidentContainment": {
     "status": "CONTAINMENT_PENDING_ADMIN_CONFIRMATION",
     "hardcodedFallbackSecretRemoved": true,
@@ -13,39 +16,53 @@
     "actionRequired": "Project Owner rotation of Supabase JWT Secret via Dashboard"
   },
   "summary": {
-    "allStagesPassed": true,
-    "totalCriteriaExecuted": 4,
+    "allStagesPrepared": true,
+    "stagingExecutionPerformed": false,
+    "totalCriteriaPrepared": 4,
     "criteria": [
       "CRIT-C02-02 (Political Organizations Catalog: 107 orgs + 1,100 child rows = 1,207 total)",
       "CRIT-D02-02 (Candidate Contest Chunks: 10 chunks, 11,334 tuples, 11,298 unique rows, 36 duplicates)",
       "CRIT-E01-02 (Constituency Demographics Profiles: 4,123 statutory assembly seats)",
       "CRIT-F02-03 (Corrected 23-State Historical Results: 2,243 statutory seats, non-destructive upsert)"
     ],
-    "workstreamStatus": "STAGING_EXECUTION_COMPLETE_AND_CORROBORATED"
+    "workstreamStatus": "PREPARED_AND_RECONCILED_IN_REPOSITORY",
+    "databaseExecutionDisposition": "STAGING_EXECUTION_PENDING_ADMIN_ROTATION_AND_SEPARATE_AUTHORIZATION"
   },
   "stages": {
     "stage1_political_organizations": {
       "criterionId": "CRIT-C02-02",
       "taskId": "W021.5-C-02",
       "governingRequirement": "REQ-POL-002",
-      "status": "PASSED_CORROBORATED",
-      "startedAt": "2026-10-22T17:33:45.451Z",
-      "completedAt": "2026-10-22T17:33:45.531Z",
+      "status": "PREPARED_AND_RECONCILED_IN_REPOSITORY",
+      "stagingExecuted": false,
+      "remoteCorroborated": false,
+      "remoteCorroborationPending": true,
+      "localSourceVerified": true,
+      "startedAt": "2026-10-22T18:23:59.352Z",
+      "completedAt": "2026-10-22T18:23:59.373Z",
       "metrics": {
-        "politicalOrganizationsCount": 107,
-        "relationshipsCount": 10,
-        "multilingualNamesCount": 27,
-        "symbolsCount": 19,
-        "aliasesCount": 1043,
-        "datasetProvenanceRows": 1,
+        "canonicalOrganizations": 107,
+        "uniqueOrgIds": 107,
+        "relationships": 10,
+        "multilingualNames": 27,
+        "symbols": 19,
+        "aliases": 1043,
+        "provenanceRecords": 1,
+        "provenanceRecordId": "0215b22c-0000-0000-0000-000000000001",
         "totalCatalogRecords": 1207,
         "authoritativeTarget": 1207,
-        "uniqueShortNamesCount": 107,
-        "duplicateShortNamesCount": 0,
+        "uniqueShortNames": 107,
+        "duplicateShortNames": 0,
         "recognitionLevels": {
           "national": 6,
-          "state": 56,
-          "unrecognized": 45
+          "state": 99,
+          "unrecognized": 2
+        },
+        "foreignKeyIntegrity": {
+          "relationshipsValid": true,
+          "multilingualValid": true,
+          "symbolsValid": true,
+          "aliasesValid": true
         }
       }
     },
@@ -53,71 +70,90 @@
       "criterionId": "CRIT-D02-02",
       "taskId": "W021.5-D-02",
       "governingRequirement": "REQ-CAN-002",
-      "status": "PASSED_CORROBORATED",
-      "startedAt": "2026-10-22T17:33:45.532Z",
-      "completedAt": "2026-10-22T17:33:45.548Z",
+      "status": "PREPARED_AND_RECONCILED_IN_REPOSITORY",
+      "stagingExecuted": false,
+      "remoteCorroborated": false,
+      "remoteCorroborationPending": true,
+      "localSourceVerified": true,
+      "startedAt": "2026-10-22T18:23:59.374Z",
+      "completedAt": "2026-10-22T18:23:59.494Z",
       "metrics": {
-        "totalCandidacies": 11298,
-        "expectedUniqueRows": 11298,
+        "totalSubchunks": 10,
+        "subchunkIds": [
+          "06A",
+          "06B",
+          "07A",
+          "07B",
+          "08A",
+          "08B",
+          "09A",
+          "09B",
+          "10A",
+          "10B"
+        ],
         "totalSourceTuples": 11334,
-        "accountedDuplicates": 36,
-        "orphanedCandidaciesCount": 0,
-        "nullPersonCount": 0,
-        "nullConstituencyCount": 0,
-        "yearDistribution": {
-          "2024": 11298
-        },
-        "typeDistribution": {
-          "ASSEMBLY": 11298
-        }
+        "cumulativeTuplesAt08ABoundary": 5750,
+        "accountedDuplicateTuples": 36,
+        "matchedDeclaredDuplicates": 36,
+        "uniqueAuthoritativeCandidacies": 11298,
+        "deduplicationConstraint": "uq_candidacies (person_id, election_year, election_type, constituency_id)",
+        "verifiedChunkHashesCount": 10,
+        "historicalCount5750Clarification": "5,750 was the cumulative subchunk 08A midway milestone, not the total population"
       }
     },
     "stage3_constituency_demographics": {
       "criterionId": "CRIT-E01-02",
       "taskId": "W021.5-E-01",
       "governingRequirement": "REQ-DEM-001",
-      "status": "PASSED_CORROBORATED",
-      "startedAt": "2026-10-22T17:33:45.549Z",
-      "completedAt": "2026-10-22T17:33:45.581Z",
+      "status": "PREPARED_AND_RECONCILED_IN_REPOSITORY",
+      "stagingExecuted": false,
+      "remoteCorroborated": false,
+      "remoteCorroborationPending": true,
+      "localSourceVerified": true,
+      "startedAt": "2026-10-22T18:23:59.495Z",
+      "completedAt": "2026-10-22T18:23:59.555Z",
       "metrics": {
-        "totalDemographicsCount": 4123,
+        "totalConstituencies": 4123,
         "statutoryAssemblyTarget": 4123,
-        "auditedCount": 4123,
-        "negativeValuesCount": 0,
-        "over100PercentValuesCount": 0,
-        "distinctStatesCovered": 31,
-        "stateCounts": {
-          "AP": 133,
-          "AR": 133,
-          "AS": 133,
-          "BR": 133,
-          "CG": 133,
-          "GA": 133,
-          "GJ": 133,
-          "HR": 133,
-          "HP": 133,
-          "JH": 133,
-          "KA": 133,
-          "KL": 133,
-          "MP": 133,
-          "MH": 133,
-          "MN": 133,
-          "ML": 133,
-          "MZ": 133,
-          "NL": 133,
-          "OD": 133,
-          "PB": 133,
-          "RJ": 133,
-          "SK": 133,
-          "TN": 133,
-          "TG": 133,
-          "TR": 133,
-          "UP": 133,
-          "UK": 133,
-          "WB": 133,
-          "DL": 133,
-          "PY": 133,
-          "JK": 133
+        "uniqueConstituencyCompositeIds": 4123,
+        "distinctAssemblyStatesCovered": 31,
+        "stateSeatMismatches": 0,
+        "invalidStateCodeCount": 0,
+        "invalidAcNumberCount": 0,
+        "demographicManifestRecordCount": 4142,
+        "demographicBoundsViolations": 0,
+        "stateSeatDistribution": {
+          "TS": 119,
+          "AP": 175,
+          "KA": 224,
+          "MH": 288,
+          "TN": 234,
+          "KL": 140,
+          "WB": 294,
+          "UP": 403,
+          "RJ": 200,
+          "GJ": 182,
+          "JH": 81,
+          "OD": 147,
+          "DL": 70,
+          "PB": 117,
+          "HR": 90,
+          "CG": 90,
+          "MP": 230,
+          "BR": 243,
+          "AS": 126,
+          "GA": 40,
+          "HP": 68,
+          "MN": 60,
+          "ML": 60,
+          "MZ": 40,
+          "NL": 60,
+          "TR": 60,
+          "SK": 32,
+          "AR": 60,
+          "UK": 70,
+          "PY": 30,
+          "JK": 90
         }
       }
     },
@@ -125,228 +161,186 @@
       "criterionId": "CRIT-F02-03",
       "taskId": "W021.5-F-02",
       "governingRequirement": "REQ-HIS-002",
-      "status": "PASSED_CORROBORATED",
-      "startedAt": "2026-10-22T17:33:45.582Z",
-      "completedAt": "2026-10-22T17:33:45.963Z",
+      "status": "PREPARED_AND_RECONCILED_IN_REPOSITORY",
+      "stagingExecuted": false,
+      "remoteCorroborated": false,
+      "remoteCorroborationPending": true,
+      "localSourceVerified": true,
+      "startedAt": "2026-10-22T18:23:59.555Z",
+      "completedAt": "2026-10-22T18:23:59.856Z",
       "metrics": {
-        "totalStatesIngested": 23,
-        "totalRecordsIngested": 2243,
-        "statutoryTargetSeats": 2243,
-        "jk2014ConstituencyCount": 87,
-        "allStatesExactMatch": true,
-        "dataTruthAudit": {
-          "winnerNamesVerified": true,
-          "partyCodesVerified": true,
-          "genericWinnerPlaceholderCount": 0,
-          "destructiveDeletionsAvoided": true
-        },
-        "stateIngestionSummary": [
+        "totalStatesCovered": 23,
+        "totalHistoricalElectionRecords": 2243,
+        "authoritativeTarget": 2243,
+        "jammuKashmir2014StatutorySeats": 87,
+        "jkPost2022Seats88To90Eliminated": true,
+        "arunachalUncontestedZerosPreserved": true,
+        "missingPartyCount": 0,
+        "missingCandidateNameCount": 0,
+        "invalidVoteCount": 0,
+        "upsertConflictTarget": "on_conflict=election_id,constituency_id",
+        "eliminatedDestructiveDeletes": true,
+        "stateBreakdown": [
           {
             "stateCode": "RJ",
             "stateName": "Rajasthan",
-            "electionId": 9999,
             "electionYear": 2018,
             "statutorySeats": 200,
-            "verifiedDbRowCount": 200,
-            "corroborationStatus": "EXACT_MATCH"
+            "candidateRecordsCount": 200
           },
           {
             "stateCode": "GJ",
             "stateName": "Gujarat",
-            "electionId": 9999,
             "electionYear": 2017,
             "statutorySeats": 182,
-            "verifiedDbRowCount": 182,
-            "corroborationStatus": "EXACT_MATCH"
+            "candidateRecordsCount": 182
           },
           {
             "stateCode": "JH",
             "stateName": "Jharkhand",
-            "electionId": 9999,
             "electionYear": 2019,
             "statutorySeats": 81,
-            "verifiedDbRowCount": 81,
-            "corroborationStatus": "EXACT_MATCH"
+            "candidateRecordsCount": 81
           },
           {
             "stateCode": "OD",
             "stateName": "Odisha",
-            "electionId": 9999,
             "electionYear": 2019,
             "statutorySeats": 147,
-            "verifiedDbRowCount": 147,
-            "corroborationStatus": "EXACT_MATCH"
+            "candidateRecordsCount": 147
           },
           {
             "stateCode": "DL",
             "stateName": "Delhi",
-            "electionId": 9999,
             "electionYear": 2015,
             "statutorySeats": 70,
-            "verifiedDbRowCount": 70,
-            "corroborationStatus": "EXACT_MATCH"
+            "candidateRecordsCount": 70
           },
           {
             "stateCode": "PB",
             "stateName": "Punjab",
-            "electionId": 9999,
             "electionYear": 2017,
             "statutorySeats": 117,
-            "verifiedDbRowCount": 117,
-            "corroborationStatus": "EXACT_MATCH"
+            "candidateRecordsCount": 117
           },
           {
             "stateCode": "HR",
             "stateName": "Haryana",
-            "electionId": 9999,
             "electionYear": 2019,
             "statutorySeats": 90,
-            "verifiedDbRowCount": 90,
-            "corroborationStatus": "EXACT_MATCH"
+            "candidateRecordsCount": 90
           },
           {
             "stateCode": "CG",
             "stateName": "Chhattisgarh",
-            "electionId": 9999,
             "electionYear": 2018,
             "statutorySeats": 90,
-            "verifiedDbRowCount": 90,
-            "corroborationStatus": "EXACT_MATCH"
+            "candidateRecordsCount": 90
           },
           {
             "stateCode": "MP",
             "stateName": "Madhya Pradesh",
-            "electionId": 9999,
             "electionYear": 2018,
             "statutorySeats": 230,
-            "verifiedDbRowCount": 230,
-            "corroborationStatus": "EXACT_MATCH"
+            "candidateRecordsCount": 230
           },
           {
             "stateCode": "BR",
             "stateName": "Bihar",
-            "electionId": 9999,
             "electionYear": 2015,
             "statutorySeats": 243,
-            "verifiedDbRowCount": 243,
-            "corroborationStatus": "EXACT_MATCH"
+            "candidateRecordsCount": 243
           },
           {
             "stateCode": "AS",
             "stateName": "Assam",
-            "electionId": 9999,
             "electionYear": 2016,
             "statutorySeats": 126,
-            "verifiedDbRowCount": 126,
-            "corroborationStatus": "EXACT_MATCH"
+            "candidateRecordsCount": 126
           },
           {
             "stateCode": "GA",
             "stateName": "Goa",
-            "electionId": 9999,
             "electionYear": 2017,
             "statutorySeats": 40,
-            "verifiedDbRowCount": 40,
-            "corroborationStatus": "EXACT_MATCH"
+            "candidateRecordsCount": 40
           },
           {
             "stateCode": "HP",
             "stateName": "Himachal Pradesh",
-            "electionId": 9999,
             "electionYear": 2017,
             "statutorySeats": 68,
-            "verifiedDbRowCount": 68,
-            "corroborationStatus": "EXACT_MATCH"
+            "candidateRecordsCount": 68
           },
           {
             "stateCode": "MN",
             "stateName": "Manipur",
-            "electionId": 9999,
             "electionYear": 2017,
             "statutorySeats": 60,
-            "verifiedDbRowCount": 60,
-            "corroborationStatus": "EXACT_MATCH"
+            "candidateRecordsCount": 60
           },
           {
             "stateCode": "ML",
             "stateName": "Meghalaya",
-            "electionId": 9999,
             "electionYear": 2018,
             "statutorySeats": 60,
-            "verifiedDbRowCount": 60,
-            "corroborationStatus": "EXACT_MATCH"
+            "candidateRecordsCount": 60
           },
           {
             "stateCode": "MZ",
             "stateName": "Mizoram",
-            "electionId": 9999,
             "electionYear": 2018,
             "statutorySeats": 40,
-            "verifiedDbRowCount": 40,
-            "corroborationStatus": "EXACT_MATCH"
+            "candidateRecordsCount": 40
           },
           {
             "stateCode": "NL",
             "stateName": "Nagaland",
-            "electionId": 9999,
             "electionYear": 2018,
             "statutorySeats": 60,
-            "verifiedDbRowCount": 60,
-            "corroborationStatus": "EXACT_MATCH"
+            "candidateRecordsCount": 60
           },
           {
             "stateCode": "TR",
             "stateName": "Tripura",
-            "electionId": 9999,
             "electionYear": 2018,
             "statutorySeats": 60,
-            "verifiedDbRowCount": 60,
-            "corroborationStatus": "EXACT_MATCH"
+            "candidateRecordsCount": 60
           },
           {
             "stateCode": "SK",
             "stateName": "Sikkim",
-            "electionId": 9999,
             "electionYear": 2019,
             "statutorySeats": 32,
-            "verifiedDbRowCount": 32,
-            "corroborationStatus": "EXACT_MATCH"
+            "candidateRecordsCount": 32
           },
           {
             "stateCode": "AR",
             "stateName": "Arunachal Pradesh",
-            "electionId": 9999,
             "electionYear": 2019,
             "statutorySeats": 60,
-            "verifiedDbRowCount": 60,
-            "corroborationStatus": "EXACT_MATCH"
+            "candidateRecordsCount": 60
           },
           {
             "stateCode": "UK",
             "stateName": "Uttarakhand",
-            "electionId": 9999,
             "electionYear": 2017,
             "statutorySeats": 70,
-            "verifiedDbRowCount": 70,
-            "corroborationStatus": "EXACT_MATCH"
+            "candidateRecordsCount": 70
           },
           {
             "stateCode": "PY",
             "stateName": "Puducherry",
-            "electionId": 9999,
             "electionYear": 2016,
             "statutorySeats": 30,
-            "verifiedDbRowCount": 30,
-            "corroborationStatus": "EXACT_MATCH"
+            "candidateRecordsCount": 30
           },
           {
             "stateCode": "JK",
             "stateName": "Jammu & Kashmir",
-            "electionId": 9999,
             "electionYear": 2014,
             "statutorySeats": 87,
-            "verifiedDbRowCount": 87,
-            "corroborationStatus": "EXACT_MATCH"
+            "candidateRecordsCount": 87
           }
         ]
       }

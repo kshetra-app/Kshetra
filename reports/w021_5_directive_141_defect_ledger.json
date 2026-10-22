@@ -1,0 +1,206 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "W021.5 CTO Directive 141 Defect & Remediation Ledger",
+  "directive": "CTO Directive 141",
+  "baselineCommit": "d282ea50af48607dd406addf42cd000aa1331f29",
+  "directive140Commit": "4b13900b66c570f2caf78fe884edc7856b52873c",
+  "governingAuthority": "Master Execution Framework Amendment v1.6 / Rule IV-001 Non-Self-Acceptance",
+  "generatedAt": "2026-10-22T23:45:00.000Z",
+  "summary": {
+    "totalDefects": 10,
+    "containedPendingAdmin": 1,
+    "reconciledAndVerifiedInRepository": 9,
+    "productionAirGapStatus": "100% AIR-GAPPED (ehfafcnimmjusyvplbah: 0 queries, 0 mutations)",
+    "stagingStatus": "CONTAINMENT_PENDING_ADMIN_CONFIRMATION (0 queries, 0 mutations)",
+    "formalAcceptance": "0.0% — PENDING INDEPENDENT ADJUDICATION"
+  },
+  "defects": [
+    {
+      "defectId": "DEF-D141-SEC-01",
+      "severity": "P0_CRITICAL_SECURITY",
+      "category": "CREDENTIAL_EXPOSURE_AND_ADMIN_ROTATION",
+      "title": "Exposed Staging Service-Role Credential Pending Administrative Rotation",
+      "affectedFiles": [
+        "scripts/execute_staging_directive_138.mjs",
+        "scripts/execute_staging_directive_139.mjs"
+      ],
+      "rootCause": "Hardcoded Supabase service-role JWT fallback was committed to historical repository scripts. Source removal alone does not revoke the secret.",
+      "remediationActions": [
+        "Hardcoded fallback secrets permanently eliminated from scripts.",
+        "Target host allowlisting strictly enforced: fkpigozcqnmcvofuksar.supabase.co only.",
+        "Production project ref (ehfafcnimmjusyvplbah) strictly air-gapped (0 queries, 0 mutations).",
+        "Staging write execution disabled pending administrative confirmation of secret rotation.",
+        "Secret redaction verified in diagnostics and error logs."
+      ],
+      "disposition": "CONTAINMENT_PENDING_ADMIN_CONFIRMATION",
+      "externalPrerequisite": "Authorized Project Administrator confirmation of JWT secret rotation via Supabase dashboard on fkpigozcqnmcvofuksar and access-log audit."
+    },
+    {
+      "defectId": "DEF-D141-SEC-02",
+      "severity": "P0_CRITICAL_SECURITY",
+      "category": "LEGACY_EXECUTION_HAZARD_ELIMINATION",
+      "title": "Legacy Execution Hazards in Directive 138 Script (Wholesale DELETE and Fallbacks)",
+      "affectedFiles": [
+        "scripts/execute_staging_directive_138.mjs"
+      ],
+      "rootCause": "Directive 138 script contained destructive table DELETE operations and placeholder fallbacks ('OTH', 'Winner') and could be run as an unrestricted alternative.",
+      "remediationActions": [
+        "Permanently quarantined scripts/execute_staging_directive_138.mjs as a non-executable archival artifact.",
+        "Preserved historical audit code while ensuring any invocation immediately fails closed with code 1.",
+        "Eliminated legacy bypass risk; all staging operations must use the hardened execution pipeline."
+      ],
+      "disposition": "RECONCILED_AND_VERIFIED_IN_REPOSITORY"
+    },
+    {
+      "defectId": "DEF-D141-SEC-03",
+      "severity": "P0_CRITICAL_SECURITY",
+      "category": "STAGING_EXECUTION_MODES_AND_TRANSPORT_ISOLATION",
+      "title": "Synthetic Mock Staging Corroboration Disguised as Database Evidence",
+      "affectedFiles": [
+        "scripts/execute_staging_directive_139.mjs",
+        "reports/w021_5_staging_execution_report.json"
+      ],
+      "rootCause": "Dry-run mode supplied artificial loop records and reported PASSED_CORROBORATED and STAGING_EXECUTION_COMPLETE_AND_CORROBORATED despite zero database queries.",
+      "remediationActions": [
+        "Separated Mode A (Local Preparation & Reconciliation) from Mode B (Authorized Staging Execution).",
+        "Mode A performs zero network requests and does not synthesize fake API responses.",
+        "Implemented injectable transport boundary that throws NETWORK_ACCESS_FORBIDDEN if any network call is attempted in Mode A.",
+        "Authored tests/staging-transport-isolation.test.mjs proving 0 network requests (3/3 PASS).",
+        "Regenerated reports/w021_5_staging_execution_report.json to truthfully state stagingExecutionPerformed: false and status: PREPARED_AND_RECONCILED_IN_REPOSITORY."
+      ],
+      "disposition": "RECONCILED_AND_VERIFIED_IN_REPOSITORY"
+    },
+    {
+      "defectId": "DEF-D141-AUTH-01",
+      "severity": "P0_CRITICAL_SECURITY",
+      "category": "CRYPTOGRAPHIC_WRITE_AUTHORIZATION",
+      "title": "Regex-Only Staging Authorization Lacking Cryptographic Proof",
+      "affectedFiles": [
+        "scripts/lib/stagingAuthorization.mjs",
+        "tests/staging-authorization-verifier.test.mjs",
+        "scripts/execute_staging_directive_139.mjs"
+      ],
+      "rootCause": "Authorization check previously evaluated a regular expression on a string without proving issuing authority or anti-replay.",
+      "remediationActions": [
+        "Designed and implemented cryptographic write authorization contract in scripts/lib/stagingAuthorization.mjs.",
+        "Verifies authenticity under independent trust anchor, strict issuer (kshetra-cto-governance), audience (kshetra-staging-execution), exact project binding (fkpigozcqnmcvofuksar), temporal validity (exp/nbf), and anti-replay nonce tracking.",
+        "Fails closed when trust anchor is unconfigured (external prerequisite).",
+        "Authored comprehensive test battery in tests/staging-authorization-verifier.test.mjs verifying all 12 negative and positive cases (12/12 PASS)."
+      ],
+      "disposition": "RECONCILED_AND_VERIFIED_IN_REPOSITORY"
+    },
+    {
+      "defectId": "DEF-D141-AUTH-02",
+      "severity": "P0_CRITICAL_SECURITY",
+      "category": "API_AUTHORIZATION_AUTHORITY_AND_CLASS_B_WRITES",
+      "title": "Privileged Role Resolution & Class B Write Route Security",
+      "affectedFiles": [
+        "apps/api/src/lib/userAuth.ts",
+        "tests/api-class-b-security-integration.test.mjs"
+      ],
+      "rootCause": "User role determination required strict server-side authority without relying on caller-supplied user_metadata, and test seams needed isolation.",
+      "remediationActions": [
+        "Enforced extractAuthoritativeRole deriving strictly from app_metadata.role or server lookup.",
+        "Gated setTestTokenValidator strictly behind NODE_ENV === 'test' AND TEST_HARNESS_ACTIVE === 'true'.",
+        "Audited Class B write routes across 10 route files and mobile endpoints 29-56 for actor-to-target identity enforcement, error propagation, and followed_id schema consistency.",
+        "Verified 27/27 integration and security tests in tests/api-class-b-security-integration.test.mjs."
+      ],
+      "disposition": "RECONCILED_AND_VERIFIED_IN_REPOSITORY"
+    },
+    {
+      "defectId": "DEF-D141-DATA-01",
+      "severity": "P1_DATA_INTEGRITY",
+      "category": "CRIT_C02_02_POLITICAL_ORGANIZATION_CATALOG",
+      "title": "Aggregate Line-Count Assertion Lacking Semantic Foreign Key Verification",
+      "affectedFiles": [
+        "scripts/reconcile_database_criteria_identities.mjs",
+        "tests/database-criteria-identity-reconciliation.test.mjs"
+      ],
+      "rootCause": "Reconciliation previously relied on line counts starting with '(' rather than parsing semantic SQL tuples and validating foreign keys.",
+      "remediationActions": [
+        "Implemented deterministic SQL parser for Migration 065 extracting all 107 canonical orgs, 107 unique short names, 6 national, 99 state, 2 unrecognized.",
+        "Validated 100% foreign key resolution: 10/10 relationships, 27/27 multilingual names, 19/19 symbols, 1,043/1,043 aliases.",
+        "Validated batch provenance anchor (0215b22c-0000-0000-0000-000000000001). Total: 1,207 catalog records.",
+        "Automated tests verify semantic consistency in tests/database-criteria-identity-reconciliation.test.mjs."
+      ],
+      "disposition": "RECONCILED_AND_VERIFIED_IN_REPOSITORY"
+    },
+    {
+      "defectId": "DEF-D141-DATA-02",
+      "severity": "P1_DATA_INTEGRITY",
+      "category": "CRIT_D02_02_CANDIDATE_SUBCHUNKS_AND_DUPLICATES",
+      "title": "Duplicate Object Array Access Defect & Fallback Elimination",
+      "affectedFiles": [
+        "scripts/reconcile_database_criteria_identities.mjs",
+        "tests/database-criteria-identity-reconciliation.test.mjs"
+      ],
+      "rootCause": "duplicates report is an object with a .duplicates array; checking .length on root returned undefined and triggered a fallback to 36.",
+      "remediationActions": [
+        "Eliminated || 36 fallback; strictly accesses duplicates.duplicates array.",
+        "Parses all 10 subchunk SQL files from disk, verifying SHA256 hashes against manifest.",
+        "Parses 11,334 raw tuples, confirms 5,750 midway milestone at 08A, proves all 36 natural key collisions by person_id::year::election_type::constituency_id, and confirms 11,298 unique candidacies.",
+        "Verified relational constraint uq_candidacies (person_id, election_year, election_type, constituency_id)."
+      ],
+      "disposition": "RECONCILED_AND_VERIFIED_IN_REPOSITORY"
+    },
+    {
+      "defectId": "DEF-D141-DATA-03",
+      "severity": "P1_DATA_INTEGRITY",
+      "category": "CRIT_E01_02_CONSTITUENCY_DEMOGRAPHICS_CONCORDANCE",
+      "title": "Constituency Identity-Level Baseline & Demographic Concordance",
+      "affectedFiles": [
+        "scripts/reconcile_database_criteria_identities.mjs",
+        "tests/database-criteria-identity-reconciliation.test.mjs"
+      ],
+      "rootCause": "Validation previously verified aggregate counts (4,123) without checking individual constituency ID concordance and numeric bounds.",
+      "remediationActions": [
+        "Reconciled complete set of 4,123 unique composite constituency IDs across all 31 assembly states.",
+        "Verified 0 duplicate IDs, 0 invalid state codes, 0 out-of-bound AC numbers against statutory assembly inventory.",
+        "Validated demographic bounds across Census 2011 PCA manifest (turnout, literacy, population, voters).",
+        "Documented 5 unverified voter registration entries in Mizoram under defect DQ-W021.5-B2.2E-001."
+      ],
+      "disposition": "RECONCILED_AND_VERIFIED_IN_REPOSITORY"
+    },
+    {
+      "defectId": "DEF-D141-DATA-04",
+      "severity": "P1_DATA_INTEGRITY",
+      "category": "CRIT_F02_03_HISTORICAL_RESULTS_CANONICAL_ADAPTER",
+      "title": "Historical Election Results Data Truth & Non-Destructive Upsert",
+      "affectedFiles": [
+        "scripts/reconcile_database_criteria_identities.mjs",
+        "tests/database-criteria-identity-reconciliation.test.mjs"
+      ],
+      "rootCause": "Historical results scripts contained placeholder fallbacks ('OTH', 'Winner') and destructive DELETE operations.",
+      "remediationActions": [
+        "Created canonical mapping adapter mapHistoricalCoverageToResultRow mapping normalized AST to public.election_results schema.",
+        "Zero generic 'OTH' or 'Winner' fallbacks; fails closed if party or candidate name is missing.",
+        "Preserved genuine zeros for uncontested seats (Arunachal Pradesh 2019 AC 4, 16, 31).",
+        "Preserved J&K 2014 statutory boundary = 87 seats (post-2022 seats 88-90 eliminated).",
+        "Enforced non-destructive idempotent upsert targeting on_conflict=election_id,constituency_id; eliminated wholesale DELETEs."
+      ],
+      "disposition": "RECONCILED_AND_VERIFIED_IN_REPOSITORY"
+    },
+    {
+      "defectId": "DEF-D141-GOV-01",
+      "severity": "P1_GOVERNANCE",
+      "category": "UNIFIED_VERIFICATION_AND_GOVERNANCE_CONCORDANCE",
+      "title": "Governance Record Synchronization & Stale Directive Coordinates",
+      "affectedFiles": [
+        "scripts/verify_w021_5_full_mandate.cjs",
+        "reports/w021_5_database_execution_register.json",
+        "reports/w021_5_full_specification_completion_matrix.json",
+        "governance/specifications/w021_5_criterion_evidence_register.json",
+        "EXECUTION_STATE.md",
+        "DECISION_LOG.md"
+      ],
+      "rootCause": "Verification manifest and governance registers contained stale directive coordinates (139/140) and needed reconciliation with Directive 141.",
+      "remediationActions": [
+        "Expanded unified verifier to 19 comprehensive suites including cryptographic authorization and transport isolation.",
+        "Synchronized all 9 governance registers and ledgers with Directive 141 coordinates.",
+        "Preserved mathematical weight conservation: 67.0% Repo-Verified, 10.5% DB-Pending, 22.5% Blocked, 0.0% Unimplemented, 0.0% Formal Acceptance (Rule IV-001).",
+        "Recorded DEC-141 in DECISION_LOG.md."
+      ],
+      "disposition": "RECONCILED_AND_VERIFIED_IN_REPOSITORY"
+    }
+  ]
+}

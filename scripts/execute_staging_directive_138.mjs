@@ -75,6 +75,17 @@ if (SERVICE_KEY.includes(PROHIBITED_PRODUCTION_REF)) {
   process.exit(1);
 }
 
+// ─── CTO DIRECTIVE 141 SECTION 2.2: ARCHIVAL DECOMMISSIONING ─────────────────
+// The legacy Directive 138 script contained destructive historical-results DELETE operations
+// and placeholder fallbacks ('OTH', 'Winner'). It is strictly quarantined as a non-executable
+// archival artifact to prevent legacy command bypass and accidental remote mutation.
+console.error('[ARCHIVAL DECOMMISSIONED] scripts/execute_staging_directive_138.mjs is an archived legacy execution artifact.');
+console.error('[SECURITY] Under CTO Directives 140 & 141, all execution and mutation paths in Directive 138 are permanently quarantined.');
+console.error('[SECURITY] This legacy script contained destructive wholesale DELETE operations and unverified placeholder fallbacks.');
+console.error('[GOVERNANCE] Refer to scripts/execute_staging_directive_139.mjs for authorized execution tooling.');
+console.error('[STATUS] FAILED CLOSED — NON-EXECUTABLE ARCHIVAL ARTIFACT (Exit Code 1)');
+process.exit(1);
+
 // Write-gating: default is DRY-RUN (read-only inspection/preparation)
 const writeRequested = process.argv.includes('--write') || process.env.STAGING_WRITE_ENABLED === 'true';
 const authArg = process.argv.find(a => a.startsWith('--auth-token='));
