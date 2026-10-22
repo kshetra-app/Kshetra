@@ -3030,6 +3030,29 @@
   5. **Database Boundary:** Production (`ehfafcnimmjusyvplbah`) and Staging (`fkpigozcqnmcvofuksar`) strictly `AIR_GAPPED_UNEXECUTED` (0 queries, 0 mutations).
   6. **Formal CTO Acceptance:** Strictly **`0.0% — PENDING INDEPENDENT ADJUDICATION`** under Rule IV-001.
 
+---
+
+### DEC-133: CTO DIRECTIVE 133 — FINAL CLI FAILURE CLOSURE, STRICT MARKDOWN CONCORDANCE, AND ADJUDICATION EVIDENCE RECONCILIATION
+- **Date:** 2026-10-22
+- **Status:** IMPLEMENTATION COMPLETE / SUBMITTED FOR INDEPENDENT ADJUDICATION
+- **Authority:** CTO Directive 133 / Master Execution Framework Amendment v1.6 / Rule IV-001 Non-Self-Acceptance
+- **Context:** Following independent review of CTO Directive 132, residual integrity, table formatting, and lifecycle orchestration risks were definitively resolved across all 7 workstreams:
+  1. Workstream A — Close Every CLI Fail-Closed Path: Unified all 6 verification suites inside `runCompleteValidationProcess(options)` before report generation: (1) Positive validation (10 checks), (2) Negative validation battery (38 scenarios), (3) Report-generator failure battery (8 cases), (4) 36-record cross-artifact concordance check, (5) Execution-order & stale-report overwrite regression test (`runExecutionOrderRegressionTest`), (6) Concordance regression battery (18 cases). The overall outcome is strictly derived from the logical conjunction of all 6 suites before report generation. Any suite failure forces `structuralValidationStatus: "FAIL"`, `gateRecommendation: "GATE_REJECTED_VALIDATION_FAILURE"`, non-zero exit code (1), and atomically overwrites prior PASS reports with FAIL status. Added `runOrchestrationFailureBoundaryBattery` testing all 7 boundary failure modes in isolated scratch directories with guaranteed cleanup. Atomic replacement I/O errors are caught cleanly in `writeError`. Both `.cjs` and `.mjs` entrypoints run this unified path.
+  2. Workstream B — Enforce Structurally Valid Markdown Tables: All literal pipe characters in cell values (such as multi-AC extents) are escaped as `\|` via `escapeMarkdownTableCell()`. Character scanner `splitMarkdownRow()` respects escaped pipes, splitting strictly on unescaped delimiters. Table parser `parseMarkdownTable()` validates headers, validates separator row syntax (`:?-+:?\|?`) and column parity, enforces column counts on every data row, detects duplicate PINs, and bubbles up errors via `rows.errors = [...]`. Programmatic generators apply strict pipe escaping across all tables. Prior report tables (D131, D132, Evidence Matrix MD) were audited and corrected, eliminating cell-shifting defects.
+  3. Workstream C — Prove Full-Field Concordance: Enhanced `verifyConcordanceAcrossArtifacts()` to verify PIN, state, locality, assigned AC, candidate ACs, exact source path, schedule, table/entry number, administrative extent, taxonomy, and claim support status for all 36 records across the manifest, extracts, matrix JSON, matrix MD, and implementation reports (D131, D132, D133). Expanded `runConcordanceRegressionBattery()` from 8 to 18 cases, incorporating 10 mandatory Markdown structural fixtures (unescaped pipes, missing columns, extra columns, shifted constituency names, shifted taxonomy/status, trailing malformed cells, invalid separator rows, duplicate PINs, mismatched headers, missing mandatory headers).
+  4. Workstream D — Reconcile Timestamps and Execution Provenance: Distinguished documentary metadata timestamp (`2026-10-22T09:15:00+05:30`), dynamic execution ISO timestamp (`new Date().toISOString()`), and git commit timestamp. Updated reporting process so generated artifacts derive timestamps from runtime execution context rather than manual future values. Reconciled execution ledger with command invocations, exit codes, discovered/passed counts, and durations.
+  5. Workstream E — Establish One Canonical External-Blocker Inventory: Formalized a single canonical 6-item external-blocker inventory `CANONICAL_EXTERNAL_BLOCKERS` (EB-01 to EB-06) across evidence matrix JSON metadata, evidence matrix Markdown Section 8, implementation reports, defect register, decision log, and execution ledger. Clearly distinguished external evidence dependencies from internal repository defects.
+  6. Workstream F — Preserve Data Truth & Governance Boundaries: Preserved all 8 historical constituency corrections (TS: 66, 67, 69; AP: 79, 80, 22, 22, 167) and Kurnool 518001 (AC 137) baseline. Retained strict fail-closed unassigned status (`canonicalAcNo: undefined`) for all 4 multi-AC PINs (`500001`, `500028`, `500034`, `500056`).
+  7. Workstream G — Reproducible Execution & CI Evidence Integrity: Clean scratch directories, deterministic reports, and reproducible local execution across all test suites. Classified GitHub Actions CI as `UNVERIFIED_INDEPENDENTLY` due to absence of local GitHub token.
+- **Architectural & Governance Determinations:**
+  1. **Strict 6-Suite CLI Fail-Closed Lifecycle:** All required suites run before report generation; zero stale PASS reports can survive.
+  2. **Structurally Valid Markdown Tables:** Strict pipe escaping and column count verification eliminate Markdown cell shifts.
+  3. **18-Case Concordance Regression Matrix:** Comprehensive proof of fail-closed rejection for semantically divergent and structurally malformed tables.
+  4. **Single Canonical External Blocker Inventory:** Exactly 6 blockers (EB-01 to EB-06) declared consistently across all governance and evidentiary artifacts.
+  5. **Stage B Boundary:** Strict STOP at Stage B Gate; Stages C through I remain strictly **UNAUTHORIZED**.
+  6. **Database Boundary:** Production (`ehfafcnimmjusyvplbah`) and Staging (`fkpigozcqnmcvofuksar`) strictly `AIR_GAPPED_UNEXECUTED` (0 queries, 0 mutations).
+  7. **Formal CTO Acceptance:** Strictly **`0.0% — PENDING INDEPENDENT ADJUDICATION`** under Rule IV-001.
+
 
 
 

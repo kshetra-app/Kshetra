@@ -604,7 +604,7 @@ describe('CTO Directive 123 — Residual Electoral Data-Truth & Provisional Look
     it('verifies independent validation matrix report exists and records 100% check pass rate', () => {
       expect(fs.existsSync(matrixReportPath)).toBe(true);
       const matrixReport = JSON.parse(fs.readFileSync(matrixReportPath, 'utf8'));
-      expect(matrixReport.metadata.directive).toMatch(/CTO Directive 1(2[6789]|3[012])/);
+      expect(matrixReport.metadata.directive).toMatch(/CTO Directive 1(2[6789]|3[0123])/);
       expect(matrixReport.metadata.validationSummary.allChecksPassed).toBe(true);
       expect(matrixReport.metadata.validationChecks.every((c: any) => c.passed)).toBe(true);
     });
@@ -975,7 +975,7 @@ describe('CTO Directive 123 — Residual Electoral Data-Truth & Provisional Look
       const reportPath = path.resolve(__dirname, '../../../../reports/w021_5_pin_independent_evidence_matrix.json');
       const report = JSON.parse(fs.readFileSync(reportPath, 'utf8'));
 
-      expect(report.metadata.directive).toMatch(/CTO Directive 1(2[89]|3[012])/);
+      expect(report.metadata.directive).toMatch(/CTO Directive 1(2[89]|3[0123])/);
       expect(report.metadata.validationSummary.allChecksPassed).toBe(true);
       expect(report.metadata.validationSummary.eightAcCorrectionsVerified).toBe(true);
       expect(report.metadata.validationSummary.pin500001AmbiguousFailClosed).toBe(true);
@@ -1225,7 +1225,7 @@ describe('CTO Directive 123 — Residual Electoral Data-Truth & Provisional Look
       const jsonReport = JSON.parse(fs.readFileSync(jsonReportPath, 'utf8'));
       const mdReport = fs.readFileSync(mdReportPath, 'utf8');
 
-      expect(jsonReport.metadata.directive).toMatch(/CTO Directive 1(2[89]|3[012])/);
+      expect(jsonReport.metadata.directive).toMatch(/CTO Directive 1(2[89]|3[0123])/);
       expect(jsonReport.metadata.validationSummary.structuralValidationStatus).toBe('PASS');
       expect(jsonReport.metadata.validationSummary.sourceResolutionStatus).toMatch(/PARTIAL_IN_REPO_DOSSIERS_EXTERNAL_GAZETTE_PENDING|VERIFIED_CHECKED_IN_EXTRACTS_SHA256_MATCH/);
       expect(jsonReport.metadata.validationSummary.locatorResolutionStatus).toMatch(/EXACT_COORDINATES_DOCUMENTED_EXTERNAL_GAZETTE_PENDING|EXACT_ENTRY_AND_WARD_COORDINATES_VERIFIED_AGAINST_SOURCE_ARTIFACT/);
@@ -1510,7 +1510,7 @@ describe('CTO Directive 123 — Residual Electoral Data-Truth & Provisional Look
       const jsonReport = JSON.parse(fs.readFileSync(jsonReportPath, 'utf8'));
       const mdReport = fs.readFileSync(mdReportPath, 'utf8');
 
-      expect(jsonReport.metadata.directive).toMatch(/CTO Directive 1(29|3[012])/);
+      expect(jsonReport.metadata.directive).toMatch(/CTO Directive 1(29|3[0123])/);
       expect(jsonReport.metadata.validationSummary.structuralValidationStatus).toBe('PASS');
       expect(jsonReport.metadata.validationSummary.sourceResolutionStatus).toBe('VERIFIED_CHECKED_IN_EXTRACTS_SHA256_MATCH');
       expect(jsonReport.metadata.validationSummary.locatorResolutionStatus).toBe('EXACT_ENTRY_AND_WARD_COORDINATES_VERIFIED_AGAINST_SOURCE_ARTIFACT');
@@ -1612,11 +1612,11 @@ describe('CTO Directive 123 — Residual Electoral Data-Truth & Provisional Look
       const jsonReport = JSON.parse(fs.readFileSync(jsonReportPath, 'utf8'));
       const mdReport = fs.readFileSync(mdReportPath, 'utf8');
 
-      expect(jsonReport.metadata.directive).toMatch(/CTO Directive 13[012]/);
+      expect(jsonReport.metadata.directive).toMatch(/CTO Directive 13[0123]/);
       expect(jsonReport.metadata.validationSummary.evidenceClosureStatus).toBe('PENDING_EXTERNAL_OFFICIAL_GAZETTE_AND_GIS_DELIVERY_BEAT_EVIDENCE');
       expect(jsonReport.metadata.validationSummary.evidenceClosureStatus).not.toBe('COMPLETE');
       expect(jsonReport.metadata.validationSummary.transcriptionFidelityStatus).toBe('UNVERIFIED_PENDING_PHYSICAL_GAZETTE_COMPARISON');
-      expect(mdReport).toMatch(/CTO Directive 13[012]/);
+      expect(mdReport).toMatch(/CTO Directive 13[0123]/);
       expect(mdReport).toContain('12 Orthogonal Evidence Status Dimensions');
     });
   });
@@ -1781,7 +1781,7 @@ describe('CTO Directive 123 — Residual Electoral Data-Truth & Provisional Look
       const jsonReport = JSON.parse(fs.readFileSync(jsonReportPath, 'utf8'));
       const mdReport = fs.readFileSync(mdReportPath, 'utf8');
 
-      expect(jsonReport.metadata.directive).toMatch(/CTO Directive 13[12]/);
+      expect(jsonReport.metadata.directive).toMatch(/CTO Directive 13[123]/);
       expect(jsonReport.metadata.validationSummary.structuralValidationStatus).toBe('PASS');
       expect(jsonReport.metadata.validationSummary.gateRecommendation).toBe('SUBMIT_FOR_INDEPENDENT_STAGE_B_ADJUDICATION_WITH_DOCUMENTED_EXTERNAL_BLOCKERS');
       expect(jsonReport.metadata.validationSummary.evidenceClosureStatus).toBe('PENDING_EXTERNAL_OFFICIAL_GAZETTE_AND_GIS_DELIVERY_BEAT_EVIDENCE');
@@ -1789,7 +1789,7 @@ describe('CTO Directive 123 — Residual Electoral Data-Truth & Provisional Look
       expect(jsonReport.metadata.validationSummary.negativeScenariosExecuted).toBe(38);
       expect(jsonReport.metadata.validationSummary.negativeScenariosPassed).toBe(38);
 
-      expect(mdReport).toMatch(/CTO Directive 13[12]/);
+      expect(mdReport).toMatch(/CTO Directive 13[123]/);
       expect(mdReport).toContain('Overall Validation Status:** `100% PASS`');
       expect(mdReport).toContain('SUBMIT_FOR_INDEPENDENT_STAGE_B_ADJUDICATION_WITH_DOCUMENTED_EXTERNAL_BLOCKERS');
       expect(mdReport).toContain('38 Scenarios');
@@ -1829,7 +1829,7 @@ describe('CTO Directive 123 — Residual Electoral Data-Truth & Provisional Look
     it('Workstream B: executes genuine 8-case concordance regression battery', () => {
       const battery = validatorModule.runConcordanceRegressionBattery();
       expect(battery.allCasesPassed).toBe(true);
-      expect(battery.cases).toHaveLength(8);
+      expect(battery.cases.length).toBeGreaterThanOrEqual(8);
       for (const c of battery.cases) {
         expect(c.passed).toBe(true);
       }
@@ -1928,6 +1928,73 @@ describe('CTO Directive 123 — Residual Electoral Data-Truth & Provisional Look
       const res = validatorModule.verifyConcordanceAcrossArtifacts({ manifest, directory, d131ReportMd: d131Corrupt });
       expect(res.allPassed).toBe(false);
       expect(res.errors.some((err: string) => err.includes('[PIN 500056][d131Report]'))).toBe(true);
+    });
+  });
+
+  describe('CTO Directive 133 — Final CLI Failure Closure, Strict Markdown Concordance, and Adjudication Evidence Reconciliation', () => {
+    const validatorModule = require('../../../../scripts/verify_pin_evidence_matrix.cjs');
+
+    it('Workstream A: verifies fail-closed orchestration failure boundary battery across all 7 lifecycle boundaries', () => {
+      const boundaryResult = validatorModule.runOrchestrationFailureBoundaryBattery();
+      expect(boundaryResult.allPassed).toBe(true);
+      expect(boundaryResult.cases).toHaveLength(7);
+      for (const b of boundaryResult.cases) {
+        expect(b.passed).toBe(true);
+      }
+    });
+
+    it('Workstream B: verifies splitMarkdownRow accurately respects escaped pipes within cell values', () => {
+      const row = '| `500001` | Hyderabad | TS | *(None - Ambiguous)* | [65, 63, 58] | Extents: AC 65 \\| AC 63 \\| AC 58 | `AMBIGUOUS_MULTI_CONSTITUENCY` | `PARTIALLY_SUPPORTED` |';
+      const cells = validatorModule.splitMarkdownRow(row);
+      expect(cells).toHaveLength(8);
+      expect(cells[0]).toBe('`500001`');
+      expect(cells[5]).toBe('Extents: AC 65 \\| AC 63 \\| AC 58');
+      expect(cells[6]).toBe('`AMBIGUOUS_MULTI_CONSTITUENCY`');
+      expect(cells[7]).toBe('`PARTIALLY_SUPPORTED`');
+    });
+
+    it('Workstream B: verifies parseMarkdownTable rejects unescaped pipes that shift columns', () => {
+      const unescapedRow = '| `500001` | Hyderabad | TS | *(None - Ambiguous)* | [65, 63, 58] | Extents: AC 65 | AC 63 | AC 58 | `AMBIGUOUS_MULTI_CONSTITUENCY` | `PARTIALLY_SUPPORTED` |';
+      const md = [
+        '## Test Section',
+        '',
+        '| H1 | H2 | H3 | H4 | H5 | H6 | H7 | H8 |',
+        '|---|---|---|---|---|---|---|---|',
+        unescapedRow
+      ].join('\n');
+      const parsed = validatorModule.parseMarkdownTable(md, 'Test Section');
+      expect(parsed.errors.length).toBeGreaterThan(0);
+      expect(parsed.errors.some((err: string) => err.includes('COLUMN_COUNT_MISMATCH'))).toBe(true);
+    });
+
+    it('Workstream C: verifies complete 18-case concordance regression battery passes', () => {
+      const battery = validatorModule.runConcordanceRegressionBattery();
+      expect(battery.allPassed).toBe(true);
+      expect(battery.cases).toHaveLength(18);
+      expect(battery.passedCount).toBe(18);
+    });
+
+    it('Workstream E: verifies canonical external-blocker inventory defines exactly 6 items EB-01 to EB-06', () => {
+      expect(validatorModule.CANONICAL_EXTERNAL_BLOCKERS).toHaveLength(6);
+      const ids = validatorModule.CANONICAL_EXTERNAL_BLOCKERS.map((b: any) => b.id);
+      expect(ids).toEqual(['EB-01', 'EB-02', 'EB-03', 'EB-04', 'EB-05', 'EB-06']);
+      for (const blocker of validatorModule.CANONICAL_EXTERNAL_BLOCKERS) {
+        expect(blocker.id).toBeDefined();
+        expect(blocker.code).toBeDefined();
+        expect(blocker.description).toBeDefined();
+        expect(blocker.status).toBeDefined();
+      }
+    });
+
+    it('Workstream F: verifies 8 historical corrections and Kurnool baseline preserved across all artifacts', () => {
+      const manifestPath = path.resolve(__dirname, '../../../../data/evidence/w021_5/pin_independent_evidence_manifest.json');
+      const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+      const corrections = manifest.metadata?.eightCorrectionsAccounting?.reportedCorrectionsLedger;
+      expect(corrections).toHaveLength(8);
+      const kurnool = manifest.metadata?.eightCorrectionsAccounting?.kurnoolLedgerEntry;
+      expect(kurnool?.pinCode).toBe('518001');
+      expect(kurnool?.correctedAc).toBe(137);
+      expect(kurnool?.isCorrection).toBe(false);
     });
   });
 });

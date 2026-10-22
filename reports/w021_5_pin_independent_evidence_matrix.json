@@ -1,11 +1,55 @@
 {
   "metadata": {
-    "directive": "CTO Directive 132",
-    "workstream": "Workstream A, B, C, D, E — Final Validation Orchestration, Complete Report Concordance, and Stage B Adjudication-Package Integrity",
+    "directive": "CTO Directive 133",
+    "workstream": "Workstream A-G — Final CLI Failure Closure, Strict Markdown Concordance, and Adjudication Evidence Reconciliation",
     "governingFramework": "Master Execution Framework Amendment v1.6 / Rule IV-001 Non-Self-Acceptance",
     "stageBoundary": "Stage B Gate — STOP",
     "formalAcceptance": "0.0% — PENDING INDEPENDENT ADJUDICATION",
-    "generatedAt": "2026-10-22T03:03:47.843Z",
+    "generatedAt": "2026-10-22T04:49:44.647Z",
+    "canonicalExternalBlockers": [
+      {
+        "id": "EB-01",
+        "code": "OFFICIAL_PHYSICAL_GAZETTE_AUTHENTICITY",
+        "title": "Official Physical Gazette Authenticity",
+        "description": "Full physical printed gazette publication of ECI Delimitation Order 2008 from Controller of Publications, Government of India, is an external instrument not stored in git repository.",
+        "status": "UNVERIFIED_EXTERNAL_PUBLICATION_NOT_CHECKED_IN"
+      },
+      {
+        "id": "EB-02",
+        "code": "PHYSICAL_GAZETTE_TRANSCRIPTION_FIDELITY_AUDIT",
+        "title": "Physical-Gazette Transcription-Fidelity Audit",
+        "description": "Independent physical notary/third-party audit comparing checked-in text extracts against the physical printed gazette remains pending.",
+        "status": "UNVERIFIED_PENDING_PHYSICAL_GAZETTE_COMPARISON"
+      },
+      {
+        "id": "EB-03",
+        "code": "INDIA_POST_DELIVERY_BEAT_GIS_BOUNDARIES",
+        "title": "India Post Delivery-Beat Vector Polygon GIS Boundaries",
+        "description": "Authoritative vector polygon GIS boundaries for Department of Posts 6-digit PIN delivery beats are not published or made available by India Post.",
+        "status": "INDIA_POST_GIS_DELIVERY_BEAT_POLYGONS_UNAVAILABLE"
+      },
+      {
+        "id": "EB-04",
+        "code": "SPATIAL_POSTAL_BEAT_CONTAINMENT_VERIFICATION",
+        "title": "Spatial Postal Beat Containment Verification",
+        "description": "Rigorous geometric GIS polygon overlay proving 100% spatial containment of postal delivery beats within statutory assembly constituency boundaries cannot be performed without delivery beat polygons.",
+        "status": "UNPROVEN_GIS_DELIVERY_BEAT_BOUNDARY"
+      },
+      {
+        "id": "EB-05",
+        "code": "VOTER_ROLL_POLLING_STATION_ELECTORAL_CROSSWALK",
+        "title": "Voter-Roll / Polling-Station Electoral Crosswalk",
+        "description": "Empirical crosswalk linking voter registration addresses and polling station locations to 6-digit PIN codes has not been ingested or verified against official electoral rolls.",
+        "status": "VOTER_ROLL_CROSSWALK_PENDING"
+      },
+      {
+        "id": "EB-06",
+        "code": "INDEPENDENT_STAGE_B_ADJUDICATION_AUTHORIZATION",
+        "title": "Independent Stage B Adjudication & Subsequent Authorization",
+        "description": "Formal Stage B adjudication verdict and explicit CTO authorization required before any Stage C migration or runtime code modifications can proceed (Rule IV-001).",
+        "status": "PENDING_INDEPENDENT_ADJUDICATION"
+      }
+    ],
     "evidentiaryIndependenceScope": {
       "structuralSeparation": "Manifest is maintained in a standalone JSON file and build script separate from runtime implementation array.",
       "geographicProofLimitation": "Structural separation does NOT constitute independent geographic proof of postal delivery beat containment.",
@@ -256,6 +300,10 @@
       "generatorBatteryPassed": true,
       "concordancePassed": true,
       "concordanceVerified": true,
+      "executionOrderRegressionPassed": true,
+      "concordanceBatteryPassed": true,
+      "concordanceCasesExecuted": 18,
+      "concordanceCasesPassed": 18,
       "totalEntries": 36,
       "provisionalCount": 32,
       "ambiguousCount": 4,
@@ -284,11 +332,58 @@
       "generatorCasesExecuted": 8,
       "generatorCasesPassed": 8,
       "gateRecommendation": "SUBMIT_FOR_INDEPENDENT_STAGE_B_ADJUDICATION_WITH_DOCUMENTED_EXTERNAL_BLOCKERS",
+      "canonicalExternalBlockers": [
+        {
+          "id": "EB-01",
+          "code": "OFFICIAL_PHYSICAL_GAZETTE_AUTHENTICITY",
+          "title": "Official Physical Gazette Authenticity",
+          "description": "Full physical printed gazette publication of ECI Delimitation Order 2008 from Controller of Publications, Government of India, is an external instrument not stored in git repository.",
+          "status": "UNVERIFIED_EXTERNAL_PUBLICATION_NOT_CHECKED_IN"
+        },
+        {
+          "id": "EB-02",
+          "code": "PHYSICAL_GAZETTE_TRANSCRIPTION_FIDELITY_AUDIT",
+          "title": "Physical-Gazette Transcription-Fidelity Audit",
+          "description": "Independent physical notary/third-party audit comparing checked-in text extracts against the physical printed gazette remains pending.",
+          "status": "UNVERIFIED_PENDING_PHYSICAL_GAZETTE_COMPARISON"
+        },
+        {
+          "id": "EB-03",
+          "code": "INDIA_POST_DELIVERY_BEAT_GIS_BOUNDARIES",
+          "title": "India Post Delivery-Beat Vector Polygon GIS Boundaries",
+          "description": "Authoritative vector polygon GIS boundaries for Department of Posts 6-digit PIN delivery beats are not published or made available by India Post.",
+          "status": "INDIA_POST_GIS_DELIVERY_BEAT_POLYGONS_UNAVAILABLE"
+        },
+        {
+          "id": "EB-04",
+          "code": "SPATIAL_POSTAL_BEAT_CONTAINMENT_VERIFICATION",
+          "title": "Spatial Postal Beat Containment Verification",
+          "description": "Rigorous geometric GIS polygon overlay proving 100% spatial containment of postal delivery beats within statutory assembly constituency boundaries cannot be performed without delivery beat polygons.",
+          "status": "UNPROVEN_GIS_DELIVERY_BEAT_BOUNDARY"
+        },
+        {
+          "id": "EB-05",
+          "code": "VOTER_ROLL_POLLING_STATION_ELECTORAL_CROSSWALK",
+          "title": "Voter-Roll / Polling-Station Electoral Crosswalk",
+          "description": "Empirical crosswalk linking voter registration addresses and polling station locations to 6-digit PIN codes has not been ingested or verified against official electoral rolls.",
+          "status": "VOTER_ROLL_CROSSWALK_PENDING"
+        },
+        {
+          "id": "EB-06",
+          "code": "INDEPENDENT_STAGE_B_ADJUDICATION_AUTHORIZATION",
+          "title": "Independent Stage B Adjudication & Subsequent Authorization",
+          "description": "Formal Stage B adjudication verdict and explicit CTO authorization required before any Stage C migration or runtime code modifications can proceed (Rule IV-001).",
+          "status": "PENDING_INDEPENDENT_ADJUDICATION"
+        }
+      ],
+      "externalBlockerCount": 6,
       "remainingBlockers": [
-        "INDIA_POST_GIS_DELIVERY_BEAT_POLYGONS_UNAVAILABLE: Department of Posts does not publish statutory 6-digit delivery beat GIS polygon shapefiles.",
-        "FULL_STATUTORY_GAZETTE_SCAN_NOT_CHECKED_IN: ECI Delimitation Notification No. 282/AP/2008 / Gazette of India Extraordinary is a 300+ page printed gazette not checked into git in full.",
-        "PHYSICAL_GAZETTE_TRANSCRIPTION_AUDIT_PENDING: Transcription fidelity of in-repo extracts against the physical printed gazette has not been certified by an independent legal notary.",
-        "VOTER_ROLL_CROSSWALK_PENDING: Polling station voter roll address crosswalk to postal delivery beats has not been ingested for municipal wards."
+        "EB-01 (OFFICIAL_PHYSICAL_GAZETTE_AUTHENTICITY): Full physical printed gazette publication of ECI Delimitation Order 2008 from Controller of Publications, Government of India, is an external instrument not stored in git repository.",
+        "EB-02 (PHYSICAL_GAZETTE_TRANSCRIPTION_FIDELITY_AUDIT): Independent physical notary/third-party audit comparing checked-in text extracts against the physical printed gazette remains pending.",
+        "EB-03 (INDIA_POST_DELIVERY_BEAT_GIS_BOUNDARIES): Authoritative vector polygon GIS boundaries for Department of Posts 6-digit PIN delivery beats are not published or made available by India Post.",
+        "EB-04 (SPATIAL_POSTAL_BEAT_CONTAINMENT_VERIFICATION): Rigorous geometric GIS polygon overlay proving 100% spatial containment of postal delivery beats within statutory assembly constituency boundaries cannot be performed without delivery beat polygons.",
+        "EB-05 (VOTER_ROLL_POLLING_STATION_ELECTORAL_CROSSWALK): Empirical crosswalk linking voter registration addresses and polling station locations to 6-digit PIN codes has not been ingested or verified against official electoral rolls.",
+        "EB-06 (INDEPENDENT_STAGE_B_ADJUDICATION_AUTHORIZATION): Formal Stage B adjudication verdict and explicit CTO authorization required before any Stage C migration or runtime code modifications can proceed (Rule IV-001)."
       ]
     },
     "validationChecks": [
