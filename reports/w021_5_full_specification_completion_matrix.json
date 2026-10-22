@@ -1,10 +1,10 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "Kshetra W021.5 Full-Specification Requirement Completion Matrix",
-  "directive": "CTO DIRECTIVE 134 / CTO DIRECTIVE 135",
+  "directive": "CTO DIRECTIVE 134 / CTO DIRECTIVE 135 / CTO DIRECTIVE 136",
   "governingAuthority": "Master Execution Framework Amendment v1.6 / Rule IV-001 Non-Self-Acceptance",
-  "baselineCommit": "f3803eae67353266e09fbd1c283b10e87265940c",
-  "generatedAt": "2026-10-22T07:40:06.166Z",
+  "baselineCommit": "735c8d6c24bd594874353217334f5a8c8aa56a2d",
+  "generatedAt": "2026-10-22T08:36:40.362Z",
   "summary": {
     "totalRequirements": 27,
     "totalCriteria": 50,

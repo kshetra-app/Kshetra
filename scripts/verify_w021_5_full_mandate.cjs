@@ -246,13 +246,22 @@ runSuite(10, 'Specification, Matrix, Ledger, Blocker & Evidence Concordance Engi
     }
   }
 
-  // 3. Criteria presence & association check (Directive 135 Item 3)
+  // 3. Criteria presence & association check (Directive 135 Item 3 & Directive 136 Item 4.1)
   if (critReg.criteria.length !== spec.criteriaCount) {
     throw new Error(`Criteria count mismatch: Criteria register has ${critReg.criteria.length}, spec expects ${spec.criteriaCount}`);
   }
 
+  const seenCritIds = new Set();
   const critByTask = {};
   for (const crit of critReg.criteria) {
+    if (seenCritIds.has(crit.criterionId)) {
+      throw new Error(`Duplicate criterion ID detected in criterion evidence register: ${crit.criterionId}`);
+    }
+    seenCritIds.add(crit.criterionId);
+    if (typeof crit.effectiveWeight !== 'number' || crit.effectiveWeight <= 0 || crit.effectiveWeight > 100 || !isFinite(crit.effectiveWeight)) {
+      throw new Error(`Criterion ${crit.criterionId} has invalid effective weight: ${crit.effectiveWeight}`);
+    }
+
     if (!critByTask[crit.taskId]) critByTask[crit.taskId] = [];
     critByTask[crit.taskId].push(crit);
     
@@ -268,7 +277,7 @@ runSuite(10, 'Specification, Matrix, Ledger, Blocker & Evidence Concordance Engi
     }
   }
 
-  // 4. Weight reconciliation across criteria, tasks, and stages (Directive 135 Item 4)
+  // 4. Weight reconciliation across criteria, tasks, and stages (Directive 135 Item 4 & Directive 136 Item 4.1)
   let totalCriteriaWeight = 0;
   const criteriaStatusSums = { PASS: 0, DATABASE_PENDING: 0, BLOCKED: 0, UNIMPLEMENTED: 0 };
 
@@ -278,6 +287,38 @@ runSuite(10, 'Specification, Matrix, Ledger, Blocker & Evidence Concordance Engi
       criteriaStatusSums[crit.status] += crit.effectiveWeight;
     } else {
       throw new Error(`Criterion ${crit.criterionId} has unknown status: ${crit.status}`);
+    }
+
+    // Evidence support verification for criterion status (Directive 136 Item 4.1 & 4.3)
+    if (!crit.evaluatedArtifact || typeof crit.evaluatedArtifact !== 'string' || crit.evaluatedArtifact.trim().length === 0) {
+      throw new Error(`Criterion ${crit.criterionId} lacks evaluatedArtifact specification`);
+    }
+    if (!crit.verificationProcedure || typeof crit.verificationProcedure !== 'string' || crit.verificationProcedure.trim().length === 0) {
+      throw new Error(`Criterion ${crit.criterionId} lacks verificationProcedure specification`);
+    }
+    if (!crit.observedResult || typeof crit.observedResult !== 'string' || crit.observedResult.trim().length === 0) {
+      throw new Error(`Criterion ${crit.criterionId} lacks observedResult specification`);
+    }
+
+    if (crit.status === 'PASS') {
+      if (!crit.observedResult.startsWith('PASS')) {
+        throw new Error(`Criterion ${crit.criterionId} marked PASS but observedResult is not PASS: ${crit.observedResult}`);
+      }
+      if (crit.scope !== 'REPOSITORY_VERIFIABLE') {
+        throw new Error(`Criterion ${crit.criterionId} marked PASS but scope is not REPOSITORY_VERIFIABLE: ${crit.scope}`);
+      }
+    } else if (crit.status === 'DATABASE_PENDING') {
+      if (crit.scope !== 'DATABASE_STAGING' && !crit.evaluatedArtifact.toLowerCase().includes('database') && !crit.observedResult.toLowerCase().includes('pending')) {
+        throw new Error(`Criterion ${crit.criterionId} marked DATABASE_PENDING but lacks database scope/evaluatedArtifact`);
+      }
+    } else if (crit.status === 'BLOCKED') {
+      if (crit.scope !== 'BLOCKED_EXTERNAL' && !crit.evaluatedArtifact.toLowerCase().includes('discrepancy') && !crit.evaluatedArtifact.toLowerCase().includes('missing')) {
+        throw new Error(`Criterion ${crit.criterionId} marked BLOCKED but lacks blocking scope/evaluatedArtifact`);
+      }
+    } else if (crit.status === 'UNIMPLEMENTED') {
+      if (crit.scope !== 'UNIMPLEMENTED' && !crit.evaluatedArtifact.toLowerCase().includes('unimplemented') && !crit.evaluatedArtifact.toLowerCase().includes('unauthored')) {
+        throw new Error(`Criterion ${crit.criterionId} marked UNIMPLEMENTED but lacks unimplemented scope/evaluatedArtifact`);
+      }
     }
   }
 
@@ -309,18 +350,10 @@ runSuite(10, 'Specification, Matrix, Ledger, Blocker & Evidence Concordance Engi
     }
   }
 
-  // Verify headline criteria status reconciliation
-  if (Math.abs(criteriaStatusSums.PASS - 61.5) > 0.001) {
-    throw new Error(`Criteria PASS status weight mismatch: expected 61.5%, found ${criteriaStatusSums.PASS}%`);
-  }
-  if (Math.abs(criteriaStatusSums.DATABASE_PENDING - 10.5) > 0.001) {
-    throw new Error(`Criteria DATABASE_PENDING status weight mismatch: expected 10.5%, found ${criteriaStatusSums.DATABASE_PENDING}%`);
-  }
-  if (Math.abs(criteriaStatusSums.BLOCKED - 22.5) > 0.001) {
-    throw new Error(`Criteria BLOCKED status weight mismatch: expected 22.5%, found ${criteriaStatusSums.BLOCKED}%`);
-  }
-  if (Math.abs(criteriaStatusSums.UNIMPLEMENTED - 5.5) > 0.001) {
-    throw new Error(`Criteria UNIMPLEMENTED status weight mismatch: expected 5.5%, found ${criteriaStatusSums.UNIMPLEMENTED}%`);
+  // Dynamic Headline Criteria Status Reconciliation (Directive 136 Item 4.1: no hardcoded progress outcomes)
+  const derivedTotalWeight = criteriaStatusSums.PASS + criteriaStatusSums.DATABASE_PENDING + criteriaStatusSums.BLOCKED + criteriaStatusSums.UNIMPLEMENTED;
+  if (Math.abs(derivedTotalWeight - 100.0) > 0.001) {
+    throw new Error(`Derived total criteria weight (${derivedTotalWeight}%) violates 100.0% conservation invariant`);
   }
 
   // 5. Validate every required field, its actual type, and semantic meaning (Directive 135 Item 5)
@@ -403,8 +436,13 @@ runSuite(10, 'Specification, Matrix, Ledger, Blocker & Evidence Concordance Engi
     }
   }
 
-  // 8. Distinguish prepared database artifacts from executed staging ingestion (Directive 135 Item 8)
-  const dbPendingTasks = ['W021.5-C-02', 'W021.5-D-02', 'W021.5-E-01', 'W021.5-F-02'];
+  // 8. Distinguish prepared database artifacts from executed staging ingestion (Directive 135 Item 8 & Directive 136 Item 4.2)
+  const dbPendingTasks = Array.from(new Set(
+    critReg.criteria
+      .filter(c => c.status === 'DATABASE_PENDING' || c.scope === 'DATABASE_STAGING')
+      .map(c => c.taskId)
+  )).sort();
+
   for (const taskId of dbPendingTasks) {
     const req = matrix.requirements.find(r => r.taskId === taskId);
     if (!req) throw new Error(`Expected DB-dependent task ${taskId} missing in matrix`);
@@ -417,23 +455,23 @@ runSuite(10, 'Specification, Matrix, Ledger, Blocker & Evidence Concordance Engi
     }
   }
 
-  // 9. Detect inconsistencies between matrix, ledger, blocker register, and manifest (Directive 135 Item 9)
+  // 9. Detect inconsistencies between matrix, ledger, blocker register, and manifest (Directive 135 Item 9 & Directive 136 Item 4.1)
   const mSummary = matrix.summary;
   const hRec = mSummary.headlineReconciliation;
   if (mSummary.totalWeight !== 100.0) {
     throw new Error(`Matrix total weight mismatch: expected 100.0%, found ${mSummary.totalWeight}%`);
   }
-  if (hRec.repoVerifiedEarnedPercent !== 61.5) {
-    throw new Error(`Earned weight mismatch: expected 61.5%, found ${hRec.repoVerifiedEarnedPercent}%`);
+  if (Math.abs(hRec.repoVerifiedEarnedPercent - criteriaStatusSums.PASS) > 0.001) {
+    throw new Error(`Earned weight mismatch between matrix (${hRec.repoVerifiedEarnedPercent}%) and derived criteria sum (${criteriaStatusSums.PASS}%)`);
   }
-  if (hRec.databasePendingPercent !== 10.5) {
-    throw new Error(`DB pending mismatch: expected 10.5%, found ${hRec.databasePendingPercent}%`);
+  if (Math.abs(hRec.databasePendingPercent - criteriaStatusSums.DATABASE_PENDING) > 0.001) {
+    throw new Error(`DB pending mismatch between matrix (${hRec.databasePendingPercent}%) and derived criteria sum (${criteriaStatusSums.DATABASE_PENDING}%)`);
   }
-  if (hRec.blockedOnExternalOrAuthorizationPercent !== 22.5) {
-    throw new Error(`Blocked mismatch: expected 22.5%, found ${hRec.blockedOnExternalOrAuthorizationPercent}%`);
+  if (Math.abs(hRec.blockedOnExternalOrAuthorizationPercent - criteriaStatusSums.BLOCKED) > 0.001) {
+    throw new Error(`Blocked mismatch between matrix (${hRec.blockedOnExternalOrAuthorizationPercent}%) and derived criteria sum (${criteriaStatusSums.BLOCKED}%)`);
   }
-  if (hRec.unimplementedPercent !== 5.5) {
-    throw new Error(`Unimplemented mismatch: expected 5.5%, found ${hRec.unimplementedPercent}%`);
+  if (Math.abs(hRec.unimplementedPercent - criteriaStatusSums.UNIMPLEMENTED) > 0.001) {
+    throw new Error(`Unimplemented mismatch between matrix (${hRec.unimplementedPercent}%) and derived criteria sum (${criteriaStatusSums.UNIMPLEMENTED}%)`);
   }
   if (hRec.formalAcceptancePercent !== 0.0) {
     throw new Error(`Rule IV-001 violation: formal acceptance must be 0.0%, found ${hRec.formalAcceptancePercent}%`);
@@ -489,15 +527,98 @@ runSuite(10, 'Specification, Matrix, Ledger, Blocker & Evidence Concordance Engi
     }
   }
 
+  // 11. Substantive Evidence & Anti-False-Positive Validation (Directive 136 Item 4.3)
+  const sqlMigrations = [
+    'supabase/migrations/059_canonical_national_constituency_registry.sql',
+    'supabase/migrations/060_canonical_electoral_geography_remediation.sql',
+    'supabase/migrations/061_canonical_national_ac_pc_mappings.sql',
+    'supabase/migrations/062_canonical_assam_2023_delimitation.sql',
+    'supabase/migrations/063_canonical_political_identity_foundation.sql',
+    'supabase/migrations/064_political_organization_governance_remediation.sql',
+    'supabase/migrations/065_canonical_political_organization_registry.sql',
+    'supabase/migrations/066_downstream_civic_extensions.sql'
+  ];
+  for (const m of sqlMigrations) {
+    const content = fs.readFileSync(path.join(REPO_ROOT, m), 'utf8');
+    if (!content.includes('CREATE TABLE') && !content.includes('ALTER TABLE') && !content.includes('CREATE OR REPLACE FUNCTION')) {
+      throw new Error(`Migration file ${m} lacks required DDL statements (CREATE/ALTER TABLE)`);
+    }
+  }
+
+  // Anti-Inference Check: Prohibit inferring database execution from SQL migration files
+  if (ledger.summary.databaseExecutionPercent !== 0) {
+    throw new Error(`False-positive prevention: databaseExecutionPercent must be 0, found ${ledger.summary.databaseExecutionPercent}`);
+  }
+
+  // Anti-Inference Check: Prohibit inferring official gazette authenticity from local checksums
+  const eb01 = matrix.requirements.find(r => r.outstandingDefectsAndExternalBlockers.includes('EB-01'));
+  if (!eb01 || eb01.finalDisposition === 'COMPLETE_VERIFIED') {
+    throw new Error(`False-positive prevention: Gazette authenticity blocker EB-01 cannot be marked COMPLETE_VERIFIED`);
+  }
+
+  // API Route and TypeScript Contract Verification
+  const apiRouteFiles = [
+    'apps/api/src/routes/constituencies.ts',
+    'apps/api/src/routes/parties.ts',
+    'apps/api/src/routes/delimitation.ts'
+  ];
+  for (const rf of apiRouteFiles) {
+    const fullP = path.join(REPO_ROOT, rf);
+    if (!fs.existsSync(fullP) || fs.statSync(fullP).size < 100) {
+      throw new Error(`Mandatory API route file missing or too small: ${rf}`);
+    }
+    const content = fs.readFileSync(fullP, 'utf8');
+    if (!content.includes('FastifyPluginAsync') && !content.includes('fastify') && !content.includes('app.get') && !content.includes('app.post')) {
+      throw new Error(`API route file ${rf} does not contain valid Fastify route definitions`);
+    }
+  }
+
+  // Contract Verification
+  const sharedContractPath = path.join(REPO_ROOT, 'packages/shared/src/contracts/delimitation.ts');
+  if (!fs.existsSync(sharedContractPath) || fs.statSync(sharedContractPath).size < 100) {
+    throw new Error(`Shared contract file missing: packages/shared/src/contracts/delimitation.ts`);
+  }
+  const contractContent = fs.readFileSync(sharedContractPath, 'utf8');
+  if (!contractContent.includes('OutputClassification') && !contractContent.includes('export interface')) {
+    throw new Error(`Contract packages/shared/src/contracts/delimitation.ts lacks authoritative type exports`);
+  }
+
+  // Substantive Data Files Verification (Non-empty fixtures)
+  const coverageData = JSON.parse(fs.readFileSync(path.join(REPO_ROOT, 'reports/w021_5_national_data_coverage_matrix.json'), 'utf8'));
+  if (!coverageData.states || coverageData.states.length < 35) {
+    throw new Error(`National coverage matrix lacks substantive state entries (${coverageData.states ? coverageData.states.length : 0} found)`);
+  }
+  const pinData = JSON.parse(fs.readFileSync(path.join(REPO_ROOT, 'reports/w021_5_pin_independent_evidence_matrix.json'), 'utf8'));
+  if (!pinData.entries || pinData.entries.length < 36) {
+    throw new Error(`PIN evidence matrix lacks substantive entries (${pinData.entries ? pinData.entries.length : 0} found)`);
+  }
+
   return `Matrix, Ledger & Specification Concordance Confirmed: 27/27 requirements validated dynamically against master spec, 50/50 criteria reconciled across all weight tiers, 6/6 external blockers tracked, all 18 mandatory fields validated semantically, 100.0% mathematical concordance verified.`;
 });
 
 // -----------------------------------------------------------------------------
-// Write Verification Manifest with Safe Filesystem Error Handling (Directive 135 Items 15 & 16)
+// Write Verification Manifest with Safe Filesystem Error Handling (Directive 135 Items 15 & 16 & Directive 136 Item 4.4)
 // -----------------------------------------------------------------------------
+const critRegForManifest = JSON.parse(fs.readFileSync(CRITERIA_PATH, 'utf8'));
+const matrixForManifest = JSON.parse(fs.readFileSync(MATRIX_PATH, 'utf8'));
+const dynamicStatusSums = { PASS: 0, DATABASE_PENDING: 0, BLOCKED: 0, UNIMPLEMENTED: 0 };
+for (const c of critRegForManifest.criteria) {
+  if (dynamicStatusSums[c.status] !== undefined) {
+    dynamicStatusSums[c.status] += c.effectiveWeight;
+  }
+}
+for (const k of Object.keys(dynamicStatusSums)) {
+  dynamicStatusSums[k] = Math.round(dynamicStatusSums[k] * 1000) / 1000;
+}
+const dynamicDbPendingTasks = Array.from(new Set(
+  critRegForManifest.criteria
+    .filter(c => c.status === 'DATABASE_PENDING' || c.scope === 'DATABASE_STAGING')
+    .map(c => c.taskId)
+)).sort();
+
 const manifest = {
   evidenceMetadata: {
-    directive: 'CTO Directive 134 / CTO Directive 135',
+    directive: 'CTO Directive 134 / CTO Directive 135 / CTO Directive 136',
     title: 'KSHETRA W021.5 Full-Mandate Unified Verification Manifest',
     governingAuthority: 'Master Execution Framework Amendment v1.6 / Rule IV-001 Non-Self-Acceptance',
     repository: 'https://github.com/kshetra-app/Kshetra.git',
@@ -512,12 +633,51 @@ const manifest = {
   },
   accountingSummary: {
     totalMilestoneWeight: 100.0,
-    repoVerifiedEarnedPercent: 61.5,
-    unexecutedDatabasePendingPercent: 10.5,
-    blockedOnExternalCtcGatesPercent: 22.5,
-    notImplementedPercent: 5.5,
+    repoVerifiedEarnedPercent: dynamicStatusSums.PASS,
+    unexecutedDatabasePendingPercent: dynamicStatusSums.DATABASE_PENDING,
+    blockedOnExternalCtcGatesPercent: dynamicStatusSums.BLOCKED,
+    notImplementedPercent: dynamicStatusSums.UNIMPLEMENTED,
     formalAcceptancePercent: 0.0,
     formalAcceptanceStatus: '0.0% — PENDING INDEPENDENT ADJUDICATION'
+  },
+  verificationDimensions: {
+    repositoryImplementation: {
+      status: 'VERIFIED_IN_REPOSITORY',
+      earnedWeightPercent: dynamicStatusSums.PASS,
+      verifiedRequirementsCount: matrixForManifest.requirements.filter(r => r.finalDisposition === 'COMPLETE_VERIFIED').length,
+      partialRequirementsCount: matrixForManifest.requirements.filter(r => r.finalDisposition === 'PARTIAL').length,
+      blockedRequirementsCount: matrixForManifest.requirements.filter(r => r.finalDisposition && r.finalDisposition.startsWith('BLOCKED')).length,
+      unimplementedRequirementsCount: matrixForManifest.requirements.filter(r => r.finalDisposition === 'NOT_IMPLEMENTED').length
+    },
+    automatedTestVerification: {
+      status: overallPass ? 'PASS' : 'FAIL',
+      totalSuites: suiteResults.length,
+      passedSuites: suiteResults.filter(s => s.status === 'PASS').length,
+      failedSuites: suiteResults.filter(s => s.status === 'FAIL').length
+    },
+    databaseExecution: {
+      status: 'AIR_GAPPED_ZERO_MUTATIONS',
+      productionQueries: 0,
+      productionMutations: 0,
+      stagingMutations: 0,
+      pendingWeightPercent: dynamicStatusSums.DATABASE_PENDING,
+      pendingTasks: dynamicDbPendingTasks
+    },
+    externalEvidenceVerification: {
+      status: 'BLOCKED_PENDING_EXTERNAL_CORROBORATION',
+      blockedWeightPercent: dynamicStatusSums.BLOCKED,
+      canonicalBlockersCount: 6,
+      unresolvedBlockers: ['EB-01', 'EB-02', 'EB-03', 'EB-04', 'EB-05', 'EB-06']
+    },
+    independentAdjudicationReadiness: {
+      status: 'READY_FOR_INDEPENDENT_CTO_ADJUDICATION',
+      governingRule: 'Rule IV-001 Non-Self-Acceptance'
+    },
+    formalAcceptance: {
+      status: '0.0% — PENDING INDEPENDENT ADJUDICATION',
+      acceptedWeightPercent: 0.0,
+      adjudicator: 'Independent Authorized CTO Adjudicator'
+    }
   },
   airGapBoundary: {
     productionDatabase: 'ehfafcnimmjusyvplbah',

@@ -32,6 +32,7 @@
 
 import fs from 'fs';
 import path from 'path';
+import { execSync } from 'child_process';
 import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -681,25 +682,55 @@ export function generateCompletionMatrix() {
     totalWeight += req.weight;
   }
 
+  // Derive headline weights dynamically from criteria register (Directive 136 Section 4.1)
+  let derivedEarnedWeight = 0;
+  let derivedDbPendingWeight = 0;
+  let derivedBlockedWeight = 0;
+  let derivedUnimplementedWeight = 0;
+
+  if (fs.existsSync(criterionRegisterPath)) {
+    const critReg = JSON.parse(fs.readFileSync(criterionRegisterPath, 'utf8'));
+    for (const c of critReg.criteria) {
+      const eff = c.effectiveWeight !== undefined ? c.effectiveWeight : (c.taskApprovedWeight * c.criterionWeightRatio);
+      if (c.status === 'PASS') derivedEarnedWeight += eff;
+      else if (c.status === 'DATABASE_PENDING') derivedDbPendingWeight += eff;
+      else if (c.status === 'BLOCKED') derivedBlockedWeight += eff;
+      else if (c.status === 'UNIMPLEMENTED') derivedUnimplementedWeight += eff;
+    }
+  }
+
+  derivedEarnedWeight = Math.round(derivedEarnedWeight * 1000) / 1000;
+  derivedDbPendingWeight = Math.round(derivedDbPendingWeight * 1000) / 1000;
+  derivedBlockedWeight = Math.round(derivedBlockedWeight * 1000) / 1000;
+  derivedUnimplementedWeight = Math.round(derivedUnimplementedWeight * 1000) / 1000;
+  const derivedAccountingSum = Math.round((derivedEarnedWeight + derivedDbPendingWeight + derivedBlockedWeight + derivedUnimplementedWeight) * 1000) / 1000;
+
+  let currentGitCommit = '735c8d6c24bd594874353217334f5a8c8aa56a2d';
+  try {
+    currentGitCommit = execSync('git rev-parse HEAD', { cwd: REPO_ROOT, encoding: 'utf8' }).trim();
+  } catch (e) {
+    // Fall back to known baseline
+  }
+
   const matrix = {
     $schema: 'https://json-schema.org/draft/2020-12/schema',
     title: 'Kshetra W021.5 Full-Specification Requirement Completion Matrix',
-    directive: 'CTO DIRECTIVE 134 / CTO DIRECTIVE 135',
+    directive: 'CTO DIRECTIVE 134 / CTO DIRECTIVE 135 / CTO DIRECTIVE 136',
     governingAuthority: 'Master Execution Framework Amendment v1.6 / Rule IV-001 Non-Self-Acceptance',
-    baselineCommit: 'f3803eae67353266e09fbd1c283b10e87265940c',
+    baselineCommit: currentGitCommit,
     generatedAt: new Date().toISOString(),
     summary: {
       totalRequirements: REQUIREMENTS_DATA.length,
       totalCriteria: totalCriteriaCount,
-      totalWeight,
+      totalWeight: Math.round(totalWeight * 1000) / 1000,
       dispositionCounts,
       headlineReconciliation: {
-        repoVerifiedEarnedPercent: 61.5,
-        databasePendingPercent: 10.5,
-        blockedOnExternalOrAuthorizationPercent: 22.5,
-        unimplementedPercent: 5.5,
+        repoVerifiedEarnedPercent: derivedEarnedWeight,
+        databasePendingPercent: derivedDbPendingWeight,
+        blockedOnExternalOrAuthorizationPercent: derivedBlockedWeight,
+        unimplementedPercent: derivedUnimplementedWeight,
         formalAcceptancePercent: 0.0,
-        accountingSum: 100.0
+        accountingSum: derivedAccountingSum
       }
     },
     canonicalExternalBlockersSummary: [

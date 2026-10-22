@@ -1,0 +1,253 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "W021.5 Database Execution Register",
+  "directive": "CTO Directive 136",
+  "governingAuthority": "Master Execution Framework Amendment v1.6 / Rule IV-001 Non-Self-Acceptance",
+  "generatedAt": "2026-10-22T14:12:00+05:30",
+  "baselineCommit": "735c8d6c24bd594874353217334f5a8c8aa56a2d",
+  "airGapBoundary": {
+    "productionDatabase": "ehfafcnimmjusyvplbah",
+    "productionStatus": "AIR_GAPPED_ZERO_QUERIES_ZERO_MUTATIONS",
+    "stagingDatabase": "fkpigozcqnmcvofuksar",
+    "stagingStatus": "UNMODIFIED_STAGING_EXECUTION_UNAUTHORIZED",
+    "totalProductionQueries": 0,
+    "totalProductionMutations": 0,
+    "totalStagingMutations": 0,
+    "totalStagingQueries": 0
+  },
+  "lifecycleTaxonomy": [
+    {
+      "state": "AUTHORED_IN_REPOSITORY",
+      "definition": "The migration, seed script, or ingestion script exists in the repository with complete DDL/DML."
+    },
+    {
+      "state": "LOCALLY_VALIDATED",
+      "definition": "The artifact passes local syntax, DDL parsing, schema linters, and mock-execution/unit test suites."
+    },
+    {
+      "state": "AUTHORIZED_FOR_EXECUTION",
+      "definition": "Formal CTO authorization has been granted for execution in a specified environment (e.g. via explicit directive)."
+    },
+    {
+      "state": "EXECUTED_IN_ENVIRONMENT",
+      "definition": "The artifact has actually been executed against the specified database environment (staging or production)."
+    },
+    {
+      "state": "INDEPENDENTLY_CORROBORATED",
+      "definition": "Execution has been confirmed by independent inspection of the target database catalog (pg_catalog / tables)."
+    },
+    {
+      "state": "FORMALLY_ACCEPTED",
+      "definition": "The resulting database state has been formally accepted by the authorized independent CTO adjudicator under Rule IV-001."
+    }
+  ],
+  "databaseDependentTasksSummary": {
+    "totalDependentTasks": 4,
+    "dependentTaskIds": [
+      "W021.5-C-02",
+      "W021.5-D-02",
+      "W021.5-E-01",
+      "W021.5-F-02"
+    ],
+    "totalMilestoneWeight": 100.0,
+    "repoVerifiedEarnedPercent": 61.5,
+    "databasePendingPercent": 10.5,
+    "blockedPercent": 22.5,
+    "unimplementedPercent": 5.5,
+    "formalAcceptancePercent": 0.0,
+    "stagingExecutionAuthorized": false,
+    "productionExecutionAuthorized": false
+  },
+  "artifacts": [
+    {
+      "artifactId": "DB-ART-001",
+      "taskId": "W021.5-C-02",
+      "stageId": "STAGE_C",
+      "taskTitle": "1,207 Canonical Political Organizations Catalog Ingestion",
+      "allocatedTaskWeight": 5.0,
+      "repoEarnedWeight": 2.5,
+      "unexecutedDatabasePendingWeight": 2.5,
+      "targetEnvironment": "staging (fkpigozcqnmcvofuksar)",
+      "currentState": "LOCALLY_VALIDATED",
+      "authorizationStatus": "UNAUTHORIZED_PENDING_STAGE_B_CLOSURE",
+      "productionStatus": "AIR_GAPPED_UNEXECUTED",
+      "queriesExecuted": 0,
+      "mutationsExecuted": 0,
+      "blockingCondition": "Blocked by canonical external blocker EB-06 (Independent Stage B Adjudication Authorization). Requires explicit CTO authorization directive.",
+      "sourceFiles": [
+        "supabase/migrations/063_canonical_political_identity_foundation.sql",
+        "supabase/migrations/064_political_organization_governance_remediation.sql",
+        "supabase/migrations/065_canonical_political_organization_registry.sql",
+        "data/seed/political-organizations-seed.json"
+      ],
+      "entityBreakdown": {
+        "entityType": "POLITICAL_ORGANIZATION",
+        "totalEntities": 1207,
+        "recognizedNationalParties": 6,
+        "recognizedStateParties": 58,
+        "unrecognizedRegisteredParties": 1143,
+        "collisionChecksPassed": 1095,
+        "schemaValid": true
+      }
+    },
+    {
+      "artifactId": "DB-ART-002",
+      "taskId": "W021.5-D-02",
+      "stageId": "STAGE_D",
+      "taskTitle": "Candidate Population & Contest Mapping Across 10 Chunks",
+      "allocatedTaskWeight": 6.0,
+      "repoEarnedWeight": 3.0,
+      "unexecutedDatabasePendingWeight": 3.0,
+      "targetEnvironment": "staging (fkpigozcqnmcvofuksar)",
+      "currentState": "LOCALLY_VALIDATED",
+      "authorizationStatus": "UNAUTHORIZED_PENDING_STAGE_B_CLOSURE",
+      "productionStatus": "AIR_GAPPED_UNEXECUTED",
+      "queriesExecuted": 0,
+      "mutationsExecuted": 0,
+      "blockingCondition": "Blocked by canonical external blocker EB-06 (Independent Stage B Adjudication Authorization). Requires explicit CTO staging execution directive.",
+      "sourceFiles": [
+        "reports/W021.5-B2.2D-CH01_EXECUTION_REPORT.md",
+        "reports/W021.5-B2.2D-CH02A_EXECUTION_REPORT.md",
+        "reports/W021.5-B2.2D-CH02B_EXECUTION_REPORT.md",
+        "reports/W021.5-B2.2D-CH03A_EXECUTION_REPORT.md",
+        "reports/W021.5-B2.2D-CH03B_EXECUTION_REPORT.md",
+        "reports/W021.5-B2.2D-CH04A_EXECUTION_REPORT.md",
+        "reports/W021.5-B2.2D-CH04B_EXECUTION_REPORT.md",
+        "reports/W021.5-B2.2D-CH05A_EXECUTION_REPORT.md",
+        "reports/W021.5-B2.2D-CH05B_EXECUTION_REPORT.md",
+        "reports/W021.5-B2.2D-CH06A_EXECUTION_REPORT.md",
+        "reports/W021.5-B2.2D-CH06B_EXECUTION_REPORT.md",
+        "reports/W021.5-B2.2D-CH07A_EXECUTION_REPORT.md",
+        "reports/W021.5-B2.2D-CH07B_EXECUTION_REPORT.md",
+        "reports/W021.5-B2.2D-CH08A_EXECUTION_REPORT.md",
+        "reports/W021.5-B2.2D-CH08B_EXECUTION_REPORT.md",
+        "reports/W021.5-B2.2D-CH09A_EXECUTION_REPORT.md",
+        "reports/W021.5-B2.2D-CH09B_EXECUTION_REPORT.md",
+        "reports/W021.5-B2.2D-CH10A_EXECUTION_REPORT.md",
+        "reports/W021.5-B2.2D-CH10B_EXECUTION_REPORT.md"
+      ],
+      "entityBreakdown": {
+        "entityType": "CANDIDATE_CONTEST",
+        "totalCandidacies": 5750,
+        "totalChunks": 10,
+        "statesCovered": 28,
+        "chunkPartitionAudited": true,
+        "schemaValid": true
+      }
+    },
+    {
+      "artifactId": "DB-ART-003",
+      "taskId": "W021.5-E-01",
+      "stageId": "STAGE_E",
+      "taskTitle": "Constituency Demographic Profiles & Aggregates Ingestion",
+      "allocatedTaskWeight": 4.0,
+      "repoEarnedWeight": 2.0,
+      "unexecutedDatabasePendingWeight": 2.0,
+      "targetEnvironment": "staging (fkpigozcqnmcvofuksar)",
+      "currentState": "LOCALLY_VALIDATED",
+      "authorizationStatus": "UNAUTHORIZED_PENDING_STAGE_B_CLOSURE",
+      "productionStatus": "AIR_GAPPED_UNEXECUTED",
+      "queriesExecuted": 0,
+      "mutationsExecuted": 0,
+      "blockingCondition": "Blocked by canonical external blockers EB-05 (Voter Roll Polling Station Electoral Crosswalk) and EB-06 (Stage B Authorization).",
+      "sourceFiles": [
+        "supabase/migrations/066_downstream_civic_extensions.sql",
+        "reports/w021_5a_repository_data_truth_audit.json"
+      ],
+      "entityBreakdown": {
+        "entityType": "CONSTITUENCY_DEMOGRAPHICS",
+        "censusSource": "Census 2011 Primary Census Abstract (PCA)",
+        "aggregatesPrepared": true,
+        "schemaValid": true
+      }
+    },
+    {
+      "artifactId": "DB-ART-004",
+      "taskId": "W021.5-F-02",
+      "stageId": "STAGE_F",
+      "taskTitle": "National Multi-Election Historical Results Ingestion",
+      "allocatedTaskWeight": 6.0,
+      "repoEarnedWeight": 1.5,
+      "unexecutedDatabasePendingWeight": 3.0,
+      "unimplementedWeight": 1.5,
+      "targetEnvironment": "staging (fkpigozcqnmcvofuksar)",
+      "currentState": "LOCALLY_VALIDATED",
+      "authorizationStatus": "UNAUTHORIZED_PENDING_STAGE_B_CLOSURE",
+      "productionStatus": "AIR_GAPPED_UNEXECUTED",
+      "queriesExecuted": 0,
+      "mutationsExecuted": 0,
+      "blockingCondition": "23 states missing official digital historical Form 20 datasets (unimplemented); staging backfill unauthorized (blocked by EB-06).",
+      "sourceFiles": [
+        "supabase/migrations/020_foundation_hardening.sql",
+        "data/seed/telangana-historical-results.ts",
+        "data/seed/andhra-pradesh-historical-results.ts",
+        "data/seed/karnataka-historical-results.ts",
+        "data/seed/maharashtra-historical-results.ts",
+        "data/seed/delhi-historical-results.ts"
+      ],
+      "entityBreakdown": {
+        "entityType": "ELECTION_HISTORICAL_RESULTS",
+        "verifiedStatesCount": 8,
+        "missingHistoricalStatesCount": 23,
+        "zeroSyntheticDataEnforced": true,
+        "schemaValid": true
+      }
+    },
+    {
+      "artifactId": "DB-ART-005",
+      "taskId": "W021.5-B2.2E / DEC-134",
+      "stageId": "STAGE_B",
+      "taskTitle": "Candidate Sworn Financial Disclosure Schema Remediation (DQ-W021.5-B2.2E-001)",
+      "allocatedTaskWeight": 0.0,
+      "repoEarnedWeight": 0.0,
+      "unexecutedDatabasePendingWeight": 0.0,
+      "targetEnvironment": "staging (fkpigozcqnmcvofuksar)",
+      "currentState": "LOCALLY_VALIDATED",
+      "authorizationStatus": "PENDING_INDEPENDENT_CTO_ADJUDICATION",
+      "productionStatus": "AIR_GAPPED_UNEXECUTED",
+      "queriesExecuted": 0,
+      "mutationsExecuted": 0,
+      "blockingCondition": "Pending formal CTO ratification under Rule IV-001 Non-Self-Acceptance before staging migration execution.",
+      "sourceFiles": [
+        "supabase/migrations/068_candidate_financial_disclosures_remediation.sql",
+        "tests/financial_remediation.test.mjs",
+        "scripts/verify_financial_remediation.mjs"
+      ],
+      "entityBreakdown": {
+        "entityType": "CANDIDATE_FINANCIAL_DISCLOSURES",
+        "remediationStandard": "DEC-134 (6-Rule Schema Standard)",
+        "unitTestsPassed": 105,
+        "totalUnitTests": 105,
+        "strictNullability": true,
+        "zeroSyntheticDefaults": true,
+        "schemaValid": true
+      }
+    },
+    {
+      "artifactId": "DB-ART-006",
+      "taskId": "W021.5-D-03",
+      "stageId": "STAGE_D",
+      "taskTitle": "Candidate Political Entity Foreign Key Linkage (Migration 067)",
+      "allocatedTaskWeight": 5.0,
+      "repoEarnedWeight": 0.0,
+      "unexecutedDatabasePendingWeight": 0.0,
+      "targetEnvironment": "staging (fkpigozcqnmcvofuksar)",
+      "currentState": "AUTHORED_IN_REPOSITORY",
+      "authorizationStatus": "BLOCKED_AUTHORIZATION",
+      "productionStatus": "AIR_GAPPED_UNEXECUTED",
+      "queriesExecuted": 0,
+      "mutationsExecuted": 0,
+      "blockingCondition": "Blocked by EB-06. Migration 067 adds foreign key constraint from candidates.party_id to political_organizations.id, which requires prior execution of DB-ART-001 and DB-ART-002 in staging.",
+      "sourceFiles": [
+        "supabase/migrations/067_candidate_political_entity_linkage.sql"
+      ],
+      "entityBreakdown": {
+        "entityType": "FOREIGN_KEY_CONSTRAINT",
+        "sourceTable": "candidates",
+        "targetTable": "political_organizations",
+        "constraintName": "fk_candidates_political_organization",
+        "schemaValid": true
+      }
+    }
+  ]
+}

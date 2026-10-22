@@ -6,6 +6,41 @@
   "governingAuthority": "CTO Directive 086 / Commit be4ba41 / reports/W021.5-CANONICAL-ARCHITECTURE-READINESS-PACKAGE.md (Historical baseline; external authority not independently established)",
   "authorityClassification": "NOT_INDEPENDENTLY_ESTABLISHED",
   "authorityLimitation": "Commit be4ba41 is an immutable comparison baseline for detecting drift; repository history alone does not constitute independent external approval under Rule IV-001.",
+  "authorityDimensions": {
+    "repositoryProvenance": {
+      "canonicalBranch": "master",
+      "historicalOriginCommit": "be4ba41f74616e068b531df17780080a1a946bbd",
+      "repositoryUrl": "https://github.com/kshetra-app/Kshetra.git",
+      "status": "VERIFIED_IN_GIT_ANCESTRY"
+    },
+    "sourceDocumentIdentity": {
+      "corpusStructure": "FEDERATED_15_DOCUMENT_CORPUS",
+      "governingTraceabilityMatrix": "governance/specifications/w021_5_governing_traceability_matrix.md",
+      "version": "1.0",
+      "status": "IDENTIFIED_AND_VERSIONED"
+    },
+    "sourceDocumentIntegrity": {
+      "method": "BITWISE_SHA256_AND_GIT_BLOB_MATCH",
+      "status": "LOCALLY_VERIFIED_ON_DISK",
+      "limitation": "Proves in-repository content integrity; does not prove external government authority."
+    },
+    "requirementToSourceTraceability": {
+      "coverage": "100.0%",
+      "mappedTasks": 27,
+      "mappedCriteria": 50,
+      "status": "FULLY_TRACED_BIDIRECTIONAL"
+    },
+    "externalAuthorityVerification": {
+      "status": "NOT_INDEPENDENTLY_ESTABLISHED",
+      "externalTrustAnchor": "NONE",
+      "limitation": "Official physical gazette seals and digital signatures from ECI / Directorate of Printing are pending external acquisition."
+    },
+    "independentAdjudicationStatus": {
+      "status": "PENDING_INDEPENDENT_ADJUDICATION",
+      "governingRule": "Master Execution Framework Amendment v1.6 / Rule IV-001 Non-Self-Acceptance",
+      "formalCTOAcceptancePercent": 0.0
+    }
+  },
   "historicalOriginCommit": "be4ba41f74616e068b531df17780080a1a946bbd",
   "totalMilestoneWeight": 100.0,
   "stageCount": 9,
