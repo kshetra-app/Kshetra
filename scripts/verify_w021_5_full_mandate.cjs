@@ -66,7 +66,7 @@ let overallPass = true; // Atomically tracked (Directive 135 Item 14)
 function runSuite(index, name, command, fn) {
   const start = Date.now();
   const startedAt = new Date().toISOString();
-  console.log(`[Suite ${index}/15] ${name}`);
+  console.log(`[Suite ${index}/17] ${name}`);
   console.log(`  Command: ${command || 'In-Process Engine Assertion'}`);
   
   let passed = false;
@@ -217,10 +217,22 @@ runSuite(13, 'Historical Election Results for 23 States', 'node tests/historical
 runSuite(14, 'Production Air-Gap & Cutover Preflight', 'node scripts/verify_production_airgap_and_preflight.cjs');
 
 // -----------------------------------------------------------------------------
-// Suite 15: Specification, Matrix, Ledger, Blocker & Evidence Concordance Engine
+// Suite 15: Staging Target Selection & Write-Gating Security Battery
+// CTO Directive 140 Section 2.2
+// -----------------------------------------------------------------------------
+runSuite(15, 'Staging Target Selection & Write-Gating Security Battery', 'node tests/staging-target-selection-security.test.mjs');
+
+// -----------------------------------------------------------------------------
+// Suite 16: Authoritative Database Identity & Catalog Reconciliation Suite
+// CTO Directive 140 Section 3
+// -----------------------------------------------------------------------------
+runSuite(16, 'Authoritative Database Identity & Catalog Reconciliation Suite', 'node tests/database-criteria-identity-reconciliation.test.mjs');
+
+// -----------------------------------------------------------------------------
+// Suite 17: Specification, Matrix, Ledger, Blocker & Evidence Concordance Engine
 // Operationalizes Directive 135 Section 4 (Items 1-10)
 // -----------------------------------------------------------------------------
-runSuite(15, 'Specification, Matrix, Ledger, Blocker & Evidence Concordance Engine', null, () => {
+runSuite(17, 'Specification, Matrix, Ledger, Blocker & Evidence Concordance Engine', null, () => {
   // Check 1: File Existence & JSON Parsing
   if (!fs.existsSync(MATRIX_PATH)) throw new Error(`Matrix file missing: ${MATRIX_PATH}`);
   if (!fs.existsSync(LEDGER_PATH)) throw new Error(`Ledger file missing: ${LEDGER_PATH}`);

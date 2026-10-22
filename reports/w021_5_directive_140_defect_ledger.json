@@ -1,0 +1,174 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "W021.5 CTO Directive 140 Defect & Remediation Ledger",
+  "directive": "CTO Directive 140",
+  "baselineCommit": "f1154c428d0ea216bd61bac40e2ae8d4b0f7b58c",
+  "governingAuthority": "Master Execution Framework Amendment v1.6 / Rule IV-001 Non-Self-Acceptance",
+  "generatedAt": "2026-10-22T17:20:00.000Z",
+  "summary": {
+    "totalDefects": 8,
+    "containedPendingAdmin": 1,
+    "reconciledAndVerifiedInRepository": 7,
+    "productionAirGapStatus": "100% AIR-GAPPED (ehfafcnimmjusyvplbah: 0 queries, 0 mutations)",
+    "formalAcceptance": "0.0% — PENDING INDEPENDENT ADJUDICATION"
+  },
+  "defects": [
+    {
+      "defectId": "DEF-D140-SEC-01",
+      "severity": "P0_CRITICAL_SECURITY",
+      "category": "CREDENTIAL_EXPOSURE_AND_TARGET_GATING",
+      "title": "Exposed Staging Service-Role Credential Fallback in Source Script",
+      "affectedFiles": [
+        "scripts/execute_staging_directive_138.mjs",
+        "scripts/execute_staging_directive_139.mjs"
+      ],
+      "rootCause": "Hardcoded Supabase service-role JWT fallback was committed to repository scripts.",
+      "remediationActions": [
+        "Hardcoded fallback secrets permanently eliminated from scripts.",
+        "Target host allowlisting enforced: fkpigozcqnmcvofuksar.supabase.co strictly.",
+        "Production project ref (ehfafcnimmjusyvplbah) air-gap validation: execution immediately aborts if present.",
+        "Write-gating: default mode is DRY-RUN/offline preparation (0 remote mutations); writes require explicit --write flag AND valid CTO authorization token.",
+        "Secret redaction: regex scrubbing of service-role keys in all diagnostics, logs, and exceptions.",
+        "Automated negative test battery in tests/staging-target-selection-security.test.mjs (10/10 PASS)."
+      ],
+      "disposition": "CONTAINMENT_PENDING_ADMIN_CONFIRMATION",
+      "externalPrerequisite": "External Project Administrator confirmation of JWT secret rotation on Supabase staging dashboard fkpigozcqnmcvofuksar."
+    },
+    {
+      "defectId": "DEF-D140-AUTH-01",
+      "severity": "P0_CRITICAL_SECURITY",
+      "category": "API_AUTHORIZATION_AUTHORITY",
+      "title": "Caller-Supplied Role Spoofing via user_metadata in userAuth.ts",
+      "affectedFiles": [
+        "apps/api/src/lib/userAuth.ts"
+      ],
+      "rootCause": "resolveAuthenticatedUser previously consulted user.user_metadata?.role as an alternative role source, allowing caller-supplied metadata to grant privileged roles.",
+      "remediationActions": [
+        "Removed user.user_metadata?.role completely from authorization resolution.",
+        "Privileged roles derive ONLY from server-managed user.app_metadata?.role or server-side role lookup.",
+        "Unknown or malformed roles fail closed to citizen.",
+        "Validated against recognized role set (citizen, moderator, admin, contributor, volunteer, coordinator).",
+        "Integration tests added in tests/api-class-b-security-integration.test.mjs (27/27 PASS)."
+      ],
+      "disposition": "RECONCILED_AND_VERIFIED_IN_REPOSITORY"
+    },
+    {
+      "defectId": "DEF-D140-AUTH-02",
+      "severity": "P0_CRITICAL_SECURITY",
+      "category": "TEST_SEAM_CONTAINMENT",
+      "title": "Uncontained Test Token Validator Seam in userAuth.ts",
+      "affectedFiles": [
+        "apps/api/src/lib/userAuth.ts",
+        "tests/api-class-b-security-integration.test.mjs"
+      ],
+      "rootCause": "setTestTokenValidator only checked process.env.NODE_ENV === 'production', allowing registration in any non-production runtime without an active test harness.",
+      "remediationActions": [
+        "setTestTokenValidator requires BOTH process.env.NODE_ENV === 'test' AND process.env.TEST_HARNESS_ACTIVE === 'true'.",
+        "Throws SECURITY VIOLATION error if called outside an isolated test harness.",
+        "resolveAuthenticatedUser enforces both environment guards before invoking the test validator.",
+        "Added negative tests proving test harness isolation and adversary role denial."
+      ],
+      "disposition": "RECONCILED_AND_VERIFIED_IN_REPOSITORY"
+    },
+    {
+      "defectId": "DEF-D140-DATA-01",
+      "severity": "P1_DATA_INTEGRITY",
+      "category": "DATABASE_RECONCILIATION",
+      "title": "CRIT-C02-02 Political Organizations Catalog Scope Discrepancy",
+      "affectedFiles": [
+        "supabase/migrations/065_canonical_political_organization_registry.sql",
+        "scripts/reconcile_database_criteria_identities.mjs"
+      ],
+      "rootCause": "Previous reporting conflated 107 canonical organizations with the 1,207 total records across 6 related catalog tables.",
+      "remediationActions": [
+        "Reconciled exact authoritative catalog across 6 tables in Migration 065:",
+        "  - 107 canonical organizations in political_organizations (100% unique short_name, 0 duplicates)",
+        "  - 10 organization relationships in organization_relationships",
+        "  - 27 multilingual names in organization_multilingual_names",
+        "  - 19 statutory symbols in organization_symbols",
+        "  - 1,043 aliases in organization_aliases",
+        "  - 1 dataset provenance record in provenance_records",
+        "Total catalog records: exactly 1,207.",
+        "Deterministic reconciliation automated in scripts/reconcile_database_criteria_identities.mjs and tested in tests/database-criteria-identity-reconciliation.test.mjs."
+      ],
+      "disposition": "RECONCILED_AND_VERIFIED_IN_REPOSITORY"
+    },
+    {
+      "defectId": "DEF-D140-DATA-02",
+      "severity": "P1_DATA_INTEGRITY",
+      "category": "DATABASE_RECONCILIATION",
+      "title": "CRIT-D02-02 Candidate Contest Chunks Count Clarification",
+      "affectedFiles": [
+        "reports/w021_5_b2_2d_candidacy_subchunks_manifest.json",
+        "reports/w021_5_b2_2d_36_candidacy_duplicates.json",
+        "scripts/reconcile_database_criteria_identities.mjs"
+      ],
+      "rootCause": "Historic 5,750 count was cited without clarifying that it represented the cumulative count at the Subchunk 08A boundary, not the full population.",
+      "remediationActions": [
+        "Full manifest reconciled across all 10 subchunks (06A..10B): 11,334 source tuples.",
+        "Subchunk 08A boundary verified: exactly 5,750 cumulative tuples.",
+        "Relational constraint uq_candidacies discards exactly 36 duplicate pairs (100% accounted for).",
+        "Authoritative unique candidacy population: exactly 11,298 records.",
+        "Deterministic reconciliation automated and verified (18/18 PASS)."
+      ],
+      "disposition": "RECONCILED_AND_VERIFIED_IN_REPOSITORY"
+    },
+    {
+      "defectId": "DEF-D140-DATA-03",
+      "severity": "P1_DATA_INTEGRITY",
+      "category": "DATABASE_RECONCILIATION",
+      "title": "CRIT-E01-02 Demographics Baseline Concordance",
+      "affectedFiles": [
+        "reports/w021_5_constituent_inventory_4123.json",
+        "scripts/reconcile_database_criteria_identities.mjs"
+      ],
+      "rootCause": "Lack of deterministic test verifying demographics baseline concordance against all 31 assembly states.",
+      "remediationActions": [
+        "Verified all 4,123 statutory assembly constituencies across all 31 assembly states in authoritative inventory.",
+        "Verified 0 negative values and 0 percentage values > 100%.",
+        "Deterministic test added to tests/database-criteria-identity-reconciliation.test.mjs."
+      ],
+      "disposition": "RECONCILED_AND_VERIFIED_IN_REPOSITORY"
+    },
+    {
+      "defectId": "DEF-D140-DATA-04",
+      "severity": "P1_DATA_INTEGRITY",
+      "category": "DATABASE_RECONCILIATION",
+      "title": "CRIT-F02-03 Field Mapping Defect & Destructive DELETE in Historical Results Script",
+      "affectedFiles": [
+        "scripts/execute_staging_directive_138.mjs",
+        "scripts/execute_staging_directive_139.mjs",
+        "scripts/reconcile_database_criteria_identities.mjs"
+      ],
+      "rootCause": "Script mapped undefined r.party (defaulting to 'OTH') and used destructive DELETE before re-inserting.",
+      "remediationActions": [
+        "Corrected field mapping to authoritative seed data: winner_name: r.winnerName, winner_party: r.winner, winner_votes: r.winnerVotes, margin: r.margin.",
+        "0 generic 'OTH' fallbacks, 0 'Winner' placeholder strings.",
+        "Uncontested seats (Arunachal Pradesh 2019 AC 4, 16, 31) verified with genuine 0 vote counts.",
+        "Destructive DELETE eliminated; replaced with idempotent upsert targeting on_conflict=election_id,constituency_id.",
+        "J&K 2014 verified with exactly 87 statutory seats (post-2022 seats 88-90 eliminated).",
+        "Total 2,243 seats across 23 states reconciled."
+      ],
+      "disposition": "RECONCILED_AND_VERIFIED_IN_REPOSITORY"
+    },
+    {
+      "defectId": "DEF-D140-GOV-01",
+      "severity": "P1_GOVERNANCE",
+      "category": "EVIDENCE_ACCOUNTING",
+      "title": "Premature Database Execution Reporting & Lifecycle State Conflation",
+      "affectedFiles": [
+        "reports/w021_5_database_execution_register.json",
+        "reports/w021_5_staging_execution_report.json"
+      ],
+      "rootCause": "Pre-existing database rows were previously reported as new ingestion evidence before authorization.",
+      "remediationActions": [
+        "Explicit 7-state lifecycle taxonomy established (AUTHORED, LOCALLY_VALIDATED, PREPARED_AND_RECONCILED, AUTHORIZED, EXECUTED, INDEPENDENTLY_CORROBORATED, FORMALLY_ACCEPTED).",
+        "All 4 database criteria classified as PREPARED_AND_RECONCILED (0 remote staging queries, 0 remote staging mutations executed under Directive 140).",
+        "Production air-gap strictly verified (ehfafcnimmjusyvplbah: 0 queries, 0 mutations).",
+        "Staging execution status recorded as CONTAINMENT_PENDING_ADMIN_CONFIRMATION.",
+        "Accounting reconciled: 67.0% Repo-Verified, 10.5% Database-Pending, 22.5% Blocked, 0.0% Unimplemented, 0.0% Formal Acceptance."
+      ],
+      "disposition": "RECONCILED_AND_VERIFIED_IN_REPOSITORY"
+    }
+  ]
+}

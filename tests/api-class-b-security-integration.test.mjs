@@ -19,10 +19,13 @@ import { spawnSync } from 'node:child_process';
 if (!process.env.TSX_BOOTSTRAPPED) {
   const result = spawnSync(process.execPath, ['--import', 'tsx', fileURLToPath(import.meta.url), ...process.argv.slice(2)], {
     stdio: 'inherit',
-    env: { ...process.env, TSX_BOOTSTRAPPED: '1' }
+    env: { ...process.env, TSX_BOOTSTRAPPED: '1', NODE_ENV: 'test', TEST_HARNESS_ACTIVE: 'true' }
   });
   process.exit(result.status ?? 0);
 }
+
+process.env.NODE_ENV = 'test';
+process.env.TEST_HARNESS_ACTIVE = 'true';
 
 const { describe, it, before, after, beforeEach } = await import('node:test');
 const assert = (await import('node:assert')).default;
@@ -120,10 +123,264 @@ describe('CRIT-H04-02: Authentication Hardening, Fail-Closed Writes & Security B
       process.env.NODE_ENV = 'production';
       assert.throws(
         () => setTestTokenValidator(() => ({ id: 'hacker', role: 'admin' })),
-        /SECURITY VIOLATION: Test token validator cannot be registered in production runtime/
+        /SECURITY VIOLATION: Test token validator can only be registered when NODE_ENV === "test" and TEST_HARNESS_ACTIVE === "true"/
       );
     } finally {
       process.env.NODE_ENV = originalEnv;
+    }
+  });
+
+  it('5b. Test Harness Isolation: setTestTokenValidator throws when TEST_HARNESS_ACTIVE is not true', () => {
+    const originalHarness = process.env.TEST_HARNESS_ACTIVE;
+    try {
+      delete process.env.TEST_HARNESS_ACTIVE;
+      assert.throws(
+        () => setTestTokenValidator(() => ({ id: 'hacker', role: 'admin' })),
+        /SECURITY VIOLATION: Test token validator can only be registered when NODE_ENV === "test" and TEST_HARNESS_ACTIVE === "true"/
+      );
+    } finally {
+      process.env.TEST_HARNESS_ACTIVE = originalHarness;
+    }
+  });
+
+  it('5c. Auth Authority: Honors server-managed app_metadata.role from supabase.auth.getUser', async () => {
+    setTestTokenValidator(null);
+    setSupabaseConfiguredForTesting(true);
+
+    const originalGetUser = supabase.auth.getUser;
+    const originalFrom = supabase.from;
+
+    supabase.auth.getUser = async (token) => {
+      if (token === 'bearer-mod-token') {
+        return {
+          data: {
+            user: {
+              id: 'user-auth-mod-1',
+              app_metadata: { role: 'moderator' },
+              user_metadata: { role: 'citizen' }
+            }
+          },
+          error: null
+        };
+      }
+      return { data: { user: null }, error: { message: 'Invalid token' } };
+    };
+
+    supabase.from = (table) => {
+      if (table === 'user_profiles') {
+        return {
+          select: () => ({
+            eq: () => ({
+              maybeSingle: () => Promise.resolve({
+                data: { role: 'moderator' },
+                error: null
+              })
+            })
+          })
+        };
+      }
+      if (table === 'reports') {
+        return {
+          select: () => ({
+            eq: () => ({
+              single: () => Promise.resolve({
+                data: { id: 'rep_test', status: 'pending', post_id: 'post_1' },
+                error: null
+              })
+            })
+          }),
+          update: () => ({
+            eq: () => Promise.resolve({ data: null, error: null })
+          })
+        };
+      }
+      if (table === 'moderation_actions') {
+        return {
+          insert: () => Promise.resolve({ data: null, error: null })
+        };
+      }
+      return originalFrom.call(supabase, table);
+    };
+
+    try {
+      const res = await app.inject({
+        method: 'POST',
+        url: '/api/v1/moderation/action',
+        headers: { authorization: 'Bearer bearer-mod-token' },
+        payload: {
+          moderatorId: 'user-auth-mod-1',
+          reportId: 'rep_test',
+          actionType: 'delete_content',
+          reason: 'Severe violation'
+        }
+      });
+      assert.strictEqual(res.statusCode, 200);
+      const body = JSON.parse(res.payload);
+      assert.strictEqual(body.success, true);
+      assert.strictEqual(body.data.actionType, 'delete_content');
+    } finally {
+      supabase.auth.getUser = originalGetUser;
+      supabase.from = originalFrom;
+    }
+  });
+
+  it('5d. Auth Authority: Disallows privilege escalation from caller-supplied user_metadata.role', async () => {
+    setTestTokenValidator(null);
+    setSupabaseConfiguredForTesting(true);
+
+    const originalGetUser = supabase.auth.getUser;
+    const originalFrom = supabase.from;
+
+    // Caller supplied role: 'admin' in user_metadata, but app_metadata is empty
+    supabase.auth.getUser = async (token) => {
+      if (token === 'bearer-attacker-token') {
+        return {
+          data: {
+            user: {
+              id: 'user-attacker-1',
+              app_metadata: {},
+              user_metadata: { role: 'admin' } // SPOOF ATTEMPT
+            }
+          },
+          error: null
+        };
+      }
+      return { data: { user: null }, error: { message: 'Invalid token' } };
+    };
+
+    supabase.from = (table) => {
+      if (table === 'user_profiles') {
+        return {
+          select: () => ({
+            eq: () => ({
+              maybeSingle: () => Promise.resolve({ data: { role: 'citizen' }, error: null })
+            })
+          })
+        };
+      }
+      return originalFrom.call(supabase, table);
+    };
+
+    try {
+      const res = await app.inject({
+        method: 'POST',
+        url: '/api/v1/moderation/action',
+        headers: { authorization: 'Bearer bearer-attacker-token' },
+        payload: {
+          moderatorId: 'user-attacker-1',
+          reportId: 'rep_test',
+          actionType: 'delete_content',
+          reason: 'Attempted unauthorized moderation'
+        }
+      });
+      // Derived role is 'citizen' because user_metadata is ignored -> 403 Forbidden
+      assert.strictEqual(res.statusCode, 403);
+      const body = JSON.parse(res.payload);
+      assert.strictEqual(body.code, 'FORBIDDEN');
+    } finally {
+      supabase.auth.getUser = originalGetUser;
+      supabase.from = originalFrom;
+    }
+  });
+
+  it('5e. Auth Authority: Unknown app_metadata.role falls closed to citizen', async () => {
+    setTestTokenValidator(null);
+    setSupabaseConfiguredForTesting(true);
+
+    const originalGetUser = supabase.auth.getUser;
+    const originalFrom = supabase.from;
+
+    supabase.auth.getUser = async () => {
+      return {
+        data: {
+          user: {
+            id: 'user-weird-role',
+            app_metadata: { role: 'super_hacker_unrecognized_role' }
+          }
+        },
+        error: null
+      };
+    };
+
+    supabase.from = (table) => {
+      if (table === 'user_profiles') {
+        return {
+          select: () => ({
+            eq: () => ({
+              maybeSingle: () => Promise.resolve({ data: { role: 'citizen' }, error: null })
+            })
+          })
+        };
+      }
+      return originalFrom.call(supabase, table);
+    };
+
+    try {
+      const res = await app.inject({
+        method: 'POST',
+        url: '/api/v1/moderation/action',
+        headers: { authorization: 'Bearer weird-token' },
+        payload: {
+          moderatorId: 'user-weird-role',
+          reportId: 'rep_test',
+          actionType: 'delete_content',
+          reason: 'Test unrecognized role'
+        }
+      });
+      assert.strictEqual(res.statusCode, 403);
+      const body = JSON.parse(res.payload);
+      assert.strictEqual(body.code, 'FORBIDDEN');
+    } finally {
+      supabase.auth.getUser = originalGetUser;
+      supabase.from = originalFrom;
+    }
+  });
+
+  it('5f. Auth Failure: Expired or invalid token in supabase.auth.getUser returns 401', async () => {
+    setTestTokenValidator(null);
+    setSupabaseConfiguredForTesting(true);
+
+    const originalGetUser = supabase.auth.getUser;
+    supabase.auth.getUser = async () => {
+      return { data: { user: null }, error: { message: 'JWT expired' } };
+    };
+
+    try {
+      const res = await app.inject({
+        method: 'POST',
+        url: '/api/v1/users/target_u/follow',
+        headers: { authorization: 'Bearer token-that-expired' },
+        payload: {}
+      });
+      assert.strictEqual(res.statusCode, 401);
+      const body = JSON.parse(res.payload);
+      assert.strictEqual(body.code, 'UNAUTHORIZED');
+    } finally {
+      supabase.auth.getUser = originalGetUser;
+    }
+  });
+
+  it('5g. Auth Exception: Network/runtime error during supabase.auth.getUser returns 500 AUTH_ERROR', async () => {
+    setTestTokenValidator(null);
+    setSupabaseConfiguredForTesting(true);
+
+    const originalGetUser = supabase.auth.getUser;
+    supabase.auth.getUser = async () => {
+      throw new Error('Supabase Auth network timeout');
+    };
+
+    try {
+      const res = await app.inject({
+        method: 'POST',
+        url: '/api/v1/users/target_u/follow',
+        headers: { authorization: 'Bearer token-causes-timeout' },
+        payload: {}
+      });
+      assert.strictEqual(res.statusCode, 500);
+      const body = JSON.parse(res.payload);
+      assert.strictEqual(body.code, 'AUTH_ERROR');
+    } finally {
+      supabase.auth.getUser = originalGetUser;
     }
   });
 

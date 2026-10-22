@@ -3129,6 +3129,38 @@
   7. **Rule IV-001 Compliance:** Formal CTO acceptance remains **`0.0% — PENDING INDEPENDENT ADJUDICATION`**.
   8. **Final Outcome:** Formally declared as **`IMPLEMENTATION_COMPLETE_WITH_EXPLICIT_EXTERNAL_ACCEPTANCE_BLOCKERS`**.
 
+### DEC-140: CTO DIRECTIVE 140 — SECURITY INCIDENT CONTAINMENT, AUTHENTICATION AUTHORITY REPAIR, DATABASE EVIDENCE INTEGRITY, AND DETERMINISTIC VERIFICATION
+- **Date:** 2026-10-22
+- **Status:** IMPLEMENTATION COMPLETE / SUBMITTED FOR INDEPENDENT CTO ADJUDICATION
+- **Authority:** CTO Directive 140 / Master Execution Framework Amendment v1.6 / Rule IV-001 Non-Self-Acceptance
+- **Context:** Implementation of CTO Directive 140 covering P0 security incident containment, target gating hardening, API authentication authority repair, test harness containment, deterministic database criteria identity reconciliation, and evidence register synchronization:
+  1. P0 Credential Containment & Target Selection Gating:
+     - Eliminated hardcoded service-role secrets and fallback credentials across all staging scripts (`scripts/execute_staging_directive_138.mjs` and `scripts/execute_staging_directive_139.mjs`).
+     - Hardened target validation: allowlists `fkpigozcqnmcvofuksar.supabase.co` strictly; rejects production project reference `ehfafcnimmjusyvplbah`; enforces `https:` protocol; requires `SUPABASE_SERVICE_ROLE_KEY` from environment and fails closed if missing.
+     - Enforced write gating: default execution mode is DRY-RUN / offline preparation (0 remote mutations); write operations require explicit `--write` flag and valid CTO authorization token (`CTO-AUTH-W021.5-STAGING-WRITE-*`).
+     - Automated negative test battery in `tests/staging-target-selection-security.test.mjs` (10/10 PASS).
+     - Credential containment disposition recorded as `CONTAINMENT_PENDING_ADMIN_CONFIRMATION` pending external Project Administrator secret rotation on Supabase dashboard.
+  2. P0 Authentication Authority & Test Seam Containment:
+     - In `apps/api/src/lib/userAuth.ts`, removed `user.user_metadata?.role` completely from role resolution. Privileged roles derive exclusively from server-managed `user.app_metadata?.role`. Unknown/malformed roles fail closed to `'citizen'`.
+     - Contained `setTestTokenValidator` behind both `process.env.NODE_ENV === 'test'` AND `process.env.TEST_HARNESS_ACTIVE === 'true'`. Throws security violation error if invoked outside an isolated test harness.
+     - Integration test battery in `tests/api-class-b-security-integration.test.mjs` expanded with adversarial tests verifying caller metadata spoof rejection, unrecognized role fallback to citizen, and test harness isolation (27/27 PASS).
+  3. P1 Database Identity Reconciliation & Evidence Integrity:
+     - Authored `scripts/reconcile_database_criteria_identities.mjs` and `tests/database-criteria-identity-reconciliation.test.mjs` (18/18 PASS) establishing exact repository-level identity reconciliation across 4 criteria:
+       - CRIT-C02-02 (W021.5-C-02): Political Organizations Catalog (107 canonical organizations, 10 relationships, 27 multilingual names, 19 symbols, 1,043 aliases, 1 provenance record = 1,207 total catalog records across 6 tables in Migration 065).
+       - CRIT-D02-02 (W021.5-D-02): Candidate Contest Chunks (10 subchunks 06A..10B, 11,334 source tuples, 36 duplicate pairs discarded via `uq_candidacies`, 11,298 unique authoritative candidacies; clarified 5,750 as the cumulative midway boundary at Subchunk 08A).
+       - CRIT-E01-02 (W021.5-E-01): Constituency Demographics Baseline (4,123 statutory assembly seats across 31 assembly states/UTs in `w021_5_constituent_inventory_4123.json`).
+       - CRIT-F02-03 (W021.5-F-02): Corrected Historical Election Results (23 missing states, 2,243 statutory seats, 87 J&K seats eliminating post-2022 seats 88-90; corrected field mapping to `r.winnerName`, `r.winner`, `r.winnerVotes`, `r.margin`; eliminated destructive DELETE in favor of idempotent upsert targeting `on_conflict=election_id,constituency_id`).
+     - Lifecycle state for all 4 database criteria: `PREPARED_AND_RECONCILED` (0 queries, 0 mutations executed under Directive 140).
+  4. Governance & Accounting Synchronization:
+     - Authored `reports/w021_5_directive_140_defect_ledger.json` tracking 8 defects.
+     - Synchronized `reports/w021_5_database_execution_register.json` and `reports/w021_5_staging_execution_report.json`.
+     - Wired new test suites (Suites 15 & 16) into `scripts/verify_w021_5_full_mandate.cjs`.
+     - Reconciled accounting: 67.0% Repo-Verified, 10.5% Database-Pending, 22.5% Blocked, 0.0% Unimplemented, 0.0% Formal Acceptance.
+  5. Invariants Preserved:
+     - Production Supabase (`ehfafcnimmjusyvplbah`): 100% air-gapped (strictly 0 queries, 0 mutations).
+     - Under Rule IV-001, formal CTO acceptance remains strictly `0.0% — PENDING INDEPENDENT ADJUDICATION`.
+
+
 
 
 

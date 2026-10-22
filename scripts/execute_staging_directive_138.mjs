@@ -31,15 +31,65 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const REPO_ROOT = path.resolve(__dirname, '..');
 
-const STAGING_URL = process.env.SUPABASE_URL || 'https://fkpigozcqnmcvofuksar.supabase.co';
+// ─── TARGET ALLOWLISTING & STRICT PREFLIGHT CONTROLS (CTO Directive 140) ────
+
+const ALLOWED_STAGING_PROJECT_REF = 'fkpigozcqnmcvofuksar';
+const ALLOWED_STAGING_HOSTNAME = `${ALLOWED_STAGING_PROJECT_REF}.supabase.co`;
+const PROHIBITED_PRODUCTION_REF = 'ehfafcnimmjusyvplbah';
+
+const rawUrl = process.env.SUPABASE_URL || `https://${ALLOWED_STAGING_HOSTNAME}`;
+let parsedUrl;
+try {
+  parsedUrl = new URL(rawUrl);
+} catch (err) {
+  console.error('[SECURITY FATAL] Malformed SUPABASE_URL: cannot parse URL');
+  process.exit(1);
+}
+
+if (parsedUrl.protocol !== 'https:') {
+  console.error('[SECURITY FATAL] Insecure protocol: staging connection strictly requires https:');
+  process.exit(1);
+}
+
+if (parsedUrl.hostname !== ALLOWED_STAGING_HOSTNAME) {
+  console.error(`[SECURITY FATAL] Unauthorized staging host: "${parsedUrl.hostname}". Only "${ALLOWED_STAGING_HOSTNAME}" is allowlisted.`);
+  process.exit(1);
+}
+
+if (rawUrl.includes(PROHIBITED_PRODUCTION_REF)) {
+  console.error('[SECURITY FATAL] Production project reference detected in URL. Air-gap violation!');
+  process.exit(1);
+}
+
 const SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
 if (!SERVICE_KEY) {
-  console.error('[FATAL] Missing SUPABASE_SERVICE_ROLE_KEY environment variable.');
-  console.error('[SECURITY] Under CTO Directive 139 P0 Credential Containment, hardcoded secret fallbacks are strictly prohibited.');
-  console.error('[ACTION] Provide authorized credentials via environment or secret manager.');
+  console.error('[SECURITY FATAL] Missing SUPABASE_SERVICE_ROLE_KEY environment variable. Fails closed.');
+  console.error('[SECURITY] Under CTO Directives 139 & 140, hardcoded secret fallbacks are strictly prohibited.');
+  console.error('[ACTION] Provide authorized credentials via environment after administrator key rotation.');
   process.exit(1);
 }
+
+if (SERVICE_KEY.includes(PROHIBITED_PRODUCTION_REF)) {
+  console.error('[SECURITY FATAL] Production reference detected in service key. Air-gap violation!');
+  process.exit(1);
+}
+
+// Write-gating: default is DRY-RUN (read-only inspection/preparation)
+const writeRequested = process.argv.includes('--write') || process.env.STAGING_WRITE_ENABLED === 'true';
+const authArg = process.argv.find(a => a.startsWith('--auth-token='));
+const authToken = authArg ? authArg.split('=')[1] : process.env.STAGING_WRITE_AUTHORIZATION_TOKEN;
+
+const AUTH_TOKEN_REGEX = /^CTO-AUTH-W021\.5-STAGING-WRITE-[A-Za-z0-9_-]{8,}$/;
+const isWriteAuthorized = Boolean(writeRequested && authToken && AUTH_TOKEN_REGEX.test(authToken));
+
+if (writeRequested && !isWriteAuthorized) {
+  console.error('[SECURITY FATAL] Write mode was requested (--write) but write authorization token is missing or invalid.');
+  console.error('[SECURITY] Provide a valid CTO authorization token via --auth-token=... or STAGING_WRITE_AUTHORIZATION_TOKEN.');
+  process.exit(1);
+}
+
+const isDryRun = !writeRequested;
 
 const headers = {
   'apikey': SERVICE_KEY,
@@ -49,20 +99,39 @@ const headers = {
 
 console.log('================================================================================');
 console.log('CTO DIRECTIVE 138 — WORKSTREAM D: STAGING DATABASE EXECUTION & CORROBORATION');
-console.log('Target Staging Environment: fkpigozcqnmcvofuksar.supabase.co');
+console.log(`Target Staging Host: ${parsedUrl.hostname}`);
+console.log(`Execution Mode: ${isDryRun ? 'DRY-RUN / READ-ONLY PREPARATION (0 remote mutations)' : 'AUTHORIZED WRITE EXECUTION'}`);
 console.log('Air-Gap Strict Invariant: Production (ehfafcnimmjusyvplbah) Isolated');
 console.log('================================================================================\n');
 
 async function supabaseFetch(endpoint, options = {}) {
-  const url = `${STAGING_URL}/rest/v1/${endpoint}`;
-  const res = await fetch(url, {
-    ...options,
-    headers: {
-      ...headers,
-      ...(options.headers || {})
-    }
-  });
-  return res;
+  const method = (options.method || 'GET').toUpperCase();
+  if (isDryRun && (method === 'POST' || method === 'PUT' || method === 'PATCH' || method === 'DELETE')) {
+    console.log(`[DRY-RUN] Intercepted and skipped remote mutation: ${method} ${endpoint}`);
+    return {
+      ok: true,
+      status: 200,
+      headers: new Headers({ 'content-range': '0-0/0' }),
+      json: async () => ({ dryRun: true, skippedMutation: true }),
+      text: async () => JSON.stringify({ dryRun: true, skippedMutation: true })
+    };
+  }
+
+  const url = `${parsedUrl.origin}/rest/v1/${endpoint}`;
+  try {
+    const res = await fetch(url, {
+      ...options,
+      redirect: 'error',
+      headers: {
+        ...headers,
+        ...(options.headers || {})
+      }
+    });
+    return res;
+  } catch (err) {
+    const sanitizedMsg = (err.message || '').replace(new RegExp(SERVICE_KEY, 'g'), '[REDACTED_SECRET]');
+    throw new Error(`supabaseFetch failed: ${sanitizedMsg}`);
+  }
 }
 
 async function getExactCount(table, query = '') {

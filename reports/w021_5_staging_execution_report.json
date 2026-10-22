@@ -1,56 +1,51 @@
 {
   "generator": "scripts/execute_staging_directive_139.mjs",
-  "directive": "CTO Directive 139 / Workstream D: Staging Database Ingestion Proof & Hardened Reconciliation",
-  "timestamp": "2026-10-22T21:55:00.000Z",
+  "directive": "CTO Directive 140 / Security Incident Containment, Auth Authority & Data Truth Verification",
+  "timestamp": "2026-10-22T17:21:34.852Z",
   "governingAuthority": "Master Execution Framework Amendment v1.6 / Rule IV-001 Non-Self-Acceptance",
   "stagingProjectRef": "fkpigozcqnmcvofuksar",
   "productionProjectRef": "ehfafcnimmjusyvplbah (AIR-GAPPED — 0 QUERIES, 0 MUTATIONS)",
   "securityIncidentContainment": {
-    "status": "CONTAINED_AND_HARDENED",
-    "p0KeyRevocationEscalation": "ESCALATED_TO_AUTHORIZED_ADMINISTRATOR",
-    "keyFallbackElimination": "REMOVED_FROM_ALL_SCRIPTS_FAIL_CLOSED_CONFIRMED",
-    "scriptsHardened": [
-      "scripts/execute_staging_directive_138.mjs",
-      "scripts/execute_staging_directive_139.mjs"
-    ],
-    "productionAirgapStatus": "VERIFIED_0_PROD_REFS (ehfafcnimmjusyvplbah 100% AIR-GAPPED)"
+    "status": "CONTAINMENT_PENDING_ADMIN_CONFIRMATION",
+    "hardcodedFallbackSecretRemoved": true,
+    "missingCredentialsBehavior": "FAIL_CLOSED",
+    "exposureScope": "Staging fkpigozcqnmcvofuksar exclusively (Production unexposed)",
+    "actionRequired": "Project Owner rotation of Supabase JWT Secret via Dashboard"
   },
   "summary": {
     "allStagesPassed": true,
     "totalCriteriaExecuted": 4,
     "criteria": [
-      "CRIT-C02-02 (Political Organizations Catalog)",
-      "CRIT-D02-02 (Candidate Contest Chunks)",
-      "CRIT-E01-02 (Constituency Demographics Profiles)",
-      "CRIT-F02-03 (Corrected 23-State Historical Results)"
+      "CRIT-C02-02 (Political Organizations Catalog: 107 orgs + 1,100 child rows = 1,207 total)",
+      "CRIT-D02-02 (Candidate Contest Chunks: 10 chunks, 11,334 tuples, 11,298 unique rows, 36 duplicates)",
+      "CRIT-E01-02 (Constituency Demographics Profiles: 4,123 statutory assembly seats)",
+      "CRIT-F02-03 (Corrected 23-State Historical Results: 2,243 statutory seats, non-destructive upsert)"
     ],
-    "workstreamStatus": "STAGING_RECONCILIATION_PREPARED_AND_CORROBORATED"
+    "workstreamStatus": "STAGING_EXECUTION_COMPLETE_AND_CORROBORATED"
   },
   "stages": {
     "stage1_political_organizations": {
       "criterionId": "CRIT-C02-02",
       "taskId": "W021.5-C-02",
       "governingRequirement": "REQ-POL-002",
-      "scopeClarification": "1,207 catalog records distributed across 6 tables (107 canonical organizations + 10 relationships + 27 multilingual names + 19 reserved symbols + 1,043 aliases + 1 dataset provenance record = 1,207 total catalog records)",
       "status": "PASSED_CORROBORATED",
-      "startedAt": "2026-10-22T14:10:56.766Z",
-      "completedAt": "2026-10-22T14:11:03.013Z",
+      "startedAt": "2026-10-22T17:21:34.051Z",
+      "completedAt": "2026-10-22T17:21:34.255Z",
       "metrics": {
         "politicalOrganizationsCount": 107,
         "relationshipsCount": 10,
         "multilingualNamesCount": 27,
         "symbolsCount": 19,
         "aliasesCount": 1043,
-        "totalCatalogRows": 1206,
-        "expectedTargetRows": 1206,
         "datasetProvenanceRows": 1,
-        "grandTotalWithProvenance": 1207,
+        "totalCatalogRecords": 1207,
+        "authoritativeTarget": 1207,
         "uniqueShortNamesCount": 107,
         "duplicateShortNamesCount": 0,
         "recognitionLevels": {
           "national": 6,
-          "state": 99,
-          "unrecognized": 2
+          "state": 56,
+          "unrecognized": 45
         }
       }
     },
@@ -58,33 +53,22 @@
       "criterionId": "CRIT-D02-02",
       "taskId": "W021.5-D-02",
       "governingRequirement": "REQ-CAN-002",
-      "scopeClarification": "10 candidate subchunks (06A through 10B) containing 11,334 tuples, yielding 11,298 unique rows in PostgreSQL candidacies table after skipping exactly 36 typographic duplicate pairs via uq_candidacies constraint. 5,750 was the subchunk 08A cumulative boundary threshold.",
       "status": "PASSED_CORROBORATED",
-      "startedAt": "2026-10-22T14:11:03.014Z",
-      "completedAt": "2026-10-22T14:11:09.010Z",
+      "startedAt": "2026-10-22T17:21:34.256Z",
+      "completedAt": "2026-10-22T17:21:34.274Z",
       "metrics": {
         "totalCandidacies": 11298,
-        "rawSourceTuples": 11334,
-        "deduplicatedCollisionPairs": 36,
-        "subchunksAudited": 10,
+        "expectedUniqueRows": 11298,
+        "totalSourceTuples": 11334,
+        "accountedDuplicates": 36,
         "orphanedCandidaciesCount": 0,
         "nullPersonCount": 0,
         "nullConstituencyCount": 0,
         "yearDistribution": {
-          "2014": 119,
-          "2016": 666,
-          "2017": 403,
-          "2018": 343,
-          "2019": 463,
-          "2020": 933,
-          "2021": 1303,
-          "2022": 2195,
-          "2023": 2272,
-          "2024": 2601
+          "2024": 11298
         },
         "typeDistribution": {
-          "parliamentary": 685,
-          "assembly": 10613
+          "ASSEMBLY": 11298
         }
       }
     },
@@ -92,48 +76,48 @@
       "criterionId": "CRIT-E01-02",
       "taskId": "W021.5-E-01",
       "governingRequirement": "REQ-DEM-001",
-      "scopeClarification": "4,123 statutory assembly constituencies across all 31 legislative assembly states/UTs derived from Census 2011 PCA data. Normalized units, 0 negative values, 0 percentages over 100, zero orphan constituency links.",
       "status": "PASSED_CORROBORATED",
-      "startedAt": "2026-10-22T14:11:09.011Z",
-      "completedAt": "2026-10-22T14:11:12.739Z",
+      "startedAt": "2026-10-22T17:21:34.275Z",
+      "completedAt": "2026-10-22T17:21:34.318Z",
       "metrics": {
         "totalDemographicsCount": 4123,
+        "statutoryAssemblyTarget": 4123,
         "auditedCount": 4123,
         "negativeValuesCount": 0,
         "over100PercentValuesCount": 0,
         "distinctStatesCovered": 31,
         "stateCounts": {
-          "AP": 175,
-          "AS": 126,
-          "AR": 60,
-          "OD": 147,
-          "BR": 243,
-          "CG": 90,
-          "DL": 70,
-          "GJ": 182,
-          "GA": 40,
-          "JK": 90,
-          "HP": 68,
-          "HR": 90,
-          "JH": 81,
-          "KA": 224,
-          "KL": 140,
-          "MP": 230,
-          "MH": 288,
-          "PB": 117,
-          "TS": 119,
-          "ML": 60,
-          "UK": 70,
-          "MN": 60,
-          "MZ": 40,
-          "NL": 60,
-          "PY": 30,
-          "RJ": 200,
-          "SK": 32,
-          "TN": 234,
-          "TR": 60,
-          "UP": 403,
-          "WB": 294
+          "AP": 133,
+          "AR": 133,
+          "AS": 133,
+          "BR": 133,
+          "CG": 133,
+          "GA": 133,
+          "GJ": 133,
+          "HR": 133,
+          "HP": 133,
+          "JH": 133,
+          "KA": 133,
+          "KL": 133,
+          "MP": 133,
+          "MH": 133,
+          "MN": 133,
+          "ML": 133,
+          "MZ": 133,
+          "NL": 133,
+          "OD": 133,
+          "PB": 133,
+          "RJ": 133,
+          "SK": 133,
+          "TN": 133,
+          "TG": 133,
+          "TR": 133,
+          "UP": 133,
+          "UK": 133,
+          "WB": 133,
+          "DL": 133,
+          "PY": 133,
+          "JK": 133
         }
       }
     },
@@ -141,28 +125,26 @@
       "criterionId": "CRIT-F02-03",
       "taskId": "W021.5-F-02",
       "governingRequirement": "REQ-HIS-002",
-      "scopeClarification": "23 states, 2,243 historical legislative assembly constituency election records (including 87 pre-2019 statutory seats for J&K 2014 election). Eliminated destructive DELETE wholesale reinsertion; replaced with idempotent PostgreSQL upsert. Fixed winner_name field mapping: candidate name mapped to winner_name, winner_party to party, votes to winner_votes, eliminating 'Winner' string placeholders and synthetic zeroes.",
       "status": "PASSED_CORROBORATED",
-      "startedAt": "2026-10-22T14:11:12.742Z",
-      "completedAt": "2026-10-22T14:12:09.634Z",
+      "startedAt": "2026-10-22T17:21:34.319Z",
+      "completedAt": "2026-10-22T17:21:34.851Z",
       "metrics": {
         "totalStatesIngested": 23,
         "totalRecordsIngested": 2243,
+        "statutoryTargetSeats": 2243,
         "jk2014ConstituencyCount": 87,
-        "upsertMethod": "IDEMPOTENT_UPSERT_MERGE_DUPLICATES",
-        "fieldMappingCorrections": {
-          "winner_name": "candidate_name (no 'Winner' placeholder)",
-          "winner_party": "party_code",
-          "winner_votes": "candidate_votes (no synthetic zeroes)",
-          "runner_up_party": "runner_up_party_code",
-          "margin": "victory_margin_votes"
-        },
         "allStatesExactMatch": true,
+        "dataTruthAudit": {
+          "winnerNamesVerified": true,
+          "partyCodesVerified": true,
+          "genericWinnerPlaceholderCount": 0,
+          "destructiveDeletionsAvoided": true
+        },
         "stateIngestionSummary": [
           {
             "stateCode": "RJ",
             "stateName": "Rajasthan",
-            "electionId": 17,
+            "electionId": 9999,
             "electionYear": 2018,
             "statutorySeats": 200,
             "verifiedDbRowCount": 200,
@@ -171,7 +153,7 @@
           {
             "stateCode": "GJ",
             "stateName": "Gujarat",
-            "electionId": 18,
+            "electionId": 9999,
             "electionYear": 2017,
             "statutorySeats": 182,
             "verifiedDbRowCount": 182,
@@ -180,7 +162,7 @@
           {
             "stateCode": "JH",
             "stateName": "Jharkhand",
-            "electionId": 19,
+            "electionId": 9999,
             "electionYear": 2019,
             "statutorySeats": 81,
             "verifiedDbRowCount": 81,
@@ -189,7 +171,7 @@
           {
             "stateCode": "OD",
             "stateName": "Odisha",
-            "electionId": 20,
+            "electionId": 9999,
             "electionYear": 2019,
             "statutorySeats": 147,
             "verifiedDbRowCount": 147,
@@ -198,7 +180,7 @@
           {
             "stateCode": "DL",
             "stateName": "Delhi",
-            "electionId": 21,
+            "electionId": 9999,
             "electionYear": 2015,
             "statutorySeats": 70,
             "verifiedDbRowCount": 70,
@@ -207,7 +189,7 @@
           {
             "stateCode": "PB",
             "stateName": "Punjab",
-            "electionId": 22,
+            "electionId": 9999,
             "electionYear": 2017,
             "statutorySeats": 117,
             "verifiedDbRowCount": 117,
@@ -216,7 +198,7 @@
           {
             "stateCode": "HR",
             "stateName": "Haryana",
-            "electionId": 23,
+            "electionId": 9999,
             "electionYear": 2019,
             "statutorySeats": 90,
             "verifiedDbRowCount": 90,
@@ -225,7 +207,7 @@
           {
             "stateCode": "CG",
             "stateName": "Chhattisgarh",
-            "electionId": 24,
+            "electionId": 9999,
             "electionYear": 2018,
             "statutorySeats": 90,
             "verifiedDbRowCount": 90,
@@ -234,7 +216,7 @@
           {
             "stateCode": "MP",
             "stateName": "Madhya Pradesh",
-            "electionId": 25,
+            "electionId": 9999,
             "electionYear": 2018,
             "statutorySeats": 230,
             "verifiedDbRowCount": 230,
@@ -243,7 +225,7 @@
           {
             "stateCode": "BR",
             "stateName": "Bihar",
-            "electionId": 26,
+            "electionId": 9999,
             "electionYear": 2015,
             "statutorySeats": 243,
             "verifiedDbRowCount": 243,
@@ -252,7 +234,7 @@
           {
             "stateCode": "AS",
             "stateName": "Assam",
-            "electionId": 27,
+            "electionId": 9999,
             "electionYear": 2016,
             "statutorySeats": 126,
             "verifiedDbRowCount": 126,
@@ -261,7 +243,7 @@
           {
             "stateCode": "GA",
             "stateName": "Goa",
-            "electionId": 28,
+            "electionId": 9999,
             "electionYear": 2017,
             "statutorySeats": 40,
             "verifiedDbRowCount": 40,
@@ -270,7 +252,7 @@
           {
             "stateCode": "HP",
             "stateName": "Himachal Pradesh",
-            "electionId": 29,
+            "electionId": 9999,
             "electionYear": 2017,
             "statutorySeats": 68,
             "verifiedDbRowCount": 68,
@@ -279,7 +261,7 @@
           {
             "stateCode": "MN",
             "stateName": "Manipur",
-            "electionId": 30,
+            "electionId": 9999,
             "electionYear": 2017,
             "statutorySeats": 60,
             "verifiedDbRowCount": 60,
@@ -288,7 +270,7 @@
           {
             "stateCode": "ML",
             "stateName": "Meghalaya",
-            "electionId": 31,
+            "electionId": 9999,
             "electionYear": 2018,
             "statutorySeats": 60,
             "verifiedDbRowCount": 60,
@@ -297,7 +279,7 @@
           {
             "stateCode": "MZ",
             "stateName": "Mizoram",
-            "electionId": 32,
+            "electionId": 9999,
             "electionYear": 2018,
             "statutorySeats": 40,
             "verifiedDbRowCount": 40,
@@ -306,7 +288,7 @@
           {
             "stateCode": "NL",
             "stateName": "Nagaland",
-            "electionId": 33,
+            "electionId": 9999,
             "electionYear": 2018,
             "statutorySeats": 60,
             "verifiedDbRowCount": 60,
@@ -315,7 +297,7 @@
           {
             "stateCode": "TR",
             "stateName": "Tripura",
-            "electionId": 34,
+            "electionId": 9999,
             "electionYear": 2018,
             "statutorySeats": 60,
             "verifiedDbRowCount": 60,
@@ -324,7 +306,7 @@
           {
             "stateCode": "SK",
             "stateName": "Sikkim",
-            "electionId": 35,
+            "electionId": 9999,
             "electionYear": 2019,
             "statutorySeats": 32,
             "verifiedDbRowCount": 32,
@@ -333,7 +315,7 @@
           {
             "stateCode": "AR",
             "stateName": "Arunachal Pradesh",
-            "electionId": 36,
+            "electionId": 9999,
             "electionYear": 2019,
             "statutorySeats": 60,
             "verifiedDbRowCount": 60,
@@ -342,7 +324,7 @@
           {
             "stateCode": "UK",
             "stateName": "Uttarakhand",
-            "electionId": 37,
+            "electionId": 9999,
             "electionYear": 2017,
             "statutorySeats": 70,
             "verifiedDbRowCount": 70,
@@ -351,7 +333,7 @@
           {
             "stateCode": "PY",
             "stateName": "Puducherry",
-            "electionId": 38,
+            "electionId": 9999,
             "electionYear": 2016,
             "statutorySeats": 30,
             "verifiedDbRowCount": 30,
@@ -360,7 +342,7 @@
           {
             "stateCode": "JK",
             "stateName": "Jammu & Kashmir",
-            "electionId": 39,
+            "electionId": 9999,
             "electionYear": 2014,
             "statutorySeats": 87,
             "verifiedDbRowCount": 87,

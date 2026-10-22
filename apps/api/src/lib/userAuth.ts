@@ -21,13 +21,37 @@ export type TestTokenValidator = (
 
 let customTestTokenValidator: TestTokenValidator | null = null;
 
+export const VALID_ROLES = new Set([
+  'citizen',
+  'moderator',
+  'admin',
+  'contributor',
+  'volunteer',
+  'coordinator',
+]);
+
+/**
+ * Extracts the authoritative role for a user.
+ * Privileged roles must derive ONLY from server-managed app_metadata.role or server-side authoritative lookup.
+ * user_metadata is caller-supplied and must NEVER be trusted for role authority.
+ * Unknown or malformed roles fail closed to 'citizen'.
+ */
+export function extractAuthoritativeRole(user: any): string {
+  const roleCandidate = typeof user?.app_metadata?.role === 'string'
+    ? user.app_metadata.role.trim().toLowerCase()
+    : '';
+  return VALID_ROLES.has(roleCandidate) ? roleCandidate : 'citizen';
+}
+
 /**
  * Test-Only: Register an isolated token validator.
- * Throws immediately if invoked in production mode.
+ * Strictly gated: throws immediately unless NODE_ENV === 'test' AND TEST_HARNESS_ACTIVE === 'true'.
  */
 export function setTestTokenValidator(validator: TestTokenValidator | null): void {
-  if (process.env.NODE_ENV === 'production' && validator !== null) {
-    throw new Error('SECURITY VIOLATION: Test token validator cannot be registered in production runtime.');
+  if (validator !== null) {
+    if (process.env.NODE_ENV !== 'test' || process.env.TEST_HARNESS_ACTIVE !== 'true') {
+      throw new Error('SECURITY VIOLATION: Test token validator can only be registered when NODE_ENV === "test" and TEST_HARNESS_ACTIVE === "true".');
+    }
   }
   customTestTokenValidator = validator;
 }
@@ -57,8 +81,8 @@ export async function resolveAuthenticatedUser(
     return null;
   }
 
-  // 1. Isolated test token validator (strictly active only when registered in non-production)
-  if (customTestTokenValidator && process.env.NODE_ENV !== 'production') {
+  // 1. Isolated test token validator (strictly active only when registered in isolated test harness)
+  if (customTestTokenValidator && process.env.NODE_ENV === 'test' && process.env.TEST_HARNESS_ACTIVE === 'true') {
     try {
       const validated = await customTestTokenValidator(token, request);
       if (!validated) {
@@ -67,9 +91,11 @@ export async function resolveAuthenticatedUser(
         });
         return null;
       }
+      const rawRole = typeof validated.role === 'string' ? validated.role.trim().toLowerCase() : '';
+      const sanitizedRole = VALID_ROLES.has(rawRole) ? rawRole : 'citizen';
       return {
         userId: validated.id,
-        role: validated.role || 'citizen',
+        role: sanitizedRole,
       };
     } catch (err: any) {
       sendApiError(reply, request, 500, 'Internal Server Error', 'Authentication validation failure', {
@@ -88,7 +114,8 @@ export async function resolveAuthenticatedUser(
   }
 
   try {
-    const { data: { user }, error } = await supabase.auth.getUser(token);
+    const { data, error } = await supabase.auth.getUser(token);
+    const user = data?.user;
     if (error || !user) {
       sendApiError(reply, request, 401, 'Unauthorized', 'Invalid or expired authorization token', {
         code: 'UNAUTHORIZED',
@@ -96,7 +123,7 @@ export async function resolveAuthenticatedUser(
       return null;
     }
 
-    const role = (user.app_metadata?.role as string) || (user.user_metadata?.role as string) || 'citizen';
+    const role = extractAuthoritativeRole(user);
     return {
       userId: user.id,
       role,
