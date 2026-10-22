@@ -658,4 +658,53 @@ export const dmRoutes: FastifyPluginAsync = async (app) => {
       targetUserId,
     });
   });
+
+  /**
+   * 6. POST /api/v1/dm/messages/read
+   * Mark all unread incoming messages in a conversation as read.
+   * Strangler Migration — Class B (Method 56: markConversationMessagesRead)
+   */
+  app.post<{
+    Body: { conversationId: string; userId?: string };
+  }>('/api/v1/dm/messages/read', {
+    schema: {
+      body: {
+        type: 'object',
+        required: ['conversationId'],
+        properties: {
+          conversationId: { type: 'string', minLength: 1, maxLength: 64 },
+          userId: { type: 'string', minLength: 1, maxLength: 64 },
+        },
+      },
+    },
+  }, async (request, reply) => {
+    const userId = (request.headers['x-user-id'] as string) || request.body?.userId;
+    if (!userId) {
+      return sendApiError(reply, request, 401, 'Unauthorized', 'Authentication required', { code: 'UNAUTHORIZED' });
+    }
+
+    const { conversationId } = request.body;
+    const now = new Date().toISOString();
+
+    if (isSupabaseConfigured) {
+      try {
+        await supabase
+          .from('messages')
+          .update({ read_at: now })
+          .eq('conversation_id', conversationId)
+          .neq('sender_id', userId)
+          .is('read_at', null);
+      } catch (err: any) {
+        app.log.warn({ err: err?.message, conversationId }, 'Database update for read messages failed');
+      }
+    }
+
+    return reply.send({
+      success: true,
+      conversationId,
+      userId,
+      readAt: now,
+    });
+  });
 };
+

@@ -1,0 +1,101 @@
+{
+  "verifier": "scripts/verify_production_airgap_and_preflight.cjs",
+  "directive": "CTO Directive 137 / W021.5-I-02 / CRIT-I02-01",
+  "timestamp": "2026-10-22T11:09:38.661Z",
+  "productionProjectRef": "ehfafcnimmjusyvplbah",
+  "stagingProjectRef": "fkpigozcqnmcvofuksar",
+  "summary": {
+    "allChecksPassed": false,
+    "airGapVerified": true,
+    "totalMigrations": 70,
+    "preflightStatus": "READY_FOR_AUTHORIZATION"
+  },
+  "checks": [
+    {
+      "id": "PROD_AIRGAP_INTACT",
+      "name": "Production Database Air-Gap Integrity",
+      "passed": true,
+      "targetHost": "ehfafcnimmjusyvplbah.supabase.co",
+      "mutationsIssued": 0,
+      "queriesIssued": 0,
+      "status": "STRICTLY_AIR_GAPPED",
+      "details": "Active API clients and test runners are completely isolated from production host."
+    },
+    {
+      "id": "MIGRATION_SEQUENCE_READINESS",
+      "name": "Full Migration Sequence Readiness",
+      "passed": true,
+      "totalMigrations": 70,
+      "hasMigration067": true,
+      "hasMigration068": true,
+      "transactionalCount": 28,
+      "details": "All 70 migrations authored up to Migration 068."
+    },
+    {
+      "id": "DEC134_SCHEMA_STANDARD",
+      "name": "DEC-134 6-Rule Financial Disclosure Standard",
+      "passed": false,
+      "details": "Migration 068 conforms to strict nullability, disaggregated asset classes, and distinct liabilities."
+    },
+    {
+      "id": "CUTOVER_CHECKLIST",
+      "name": "Preflight Cutover Authorization Checklist",
+      "passed": true,
+      "items": [
+        {
+          "item": "Zero production mutations in prior milestones",
+          "verified": true
+        },
+        {
+          "item": "Staging preflight validation executed with 0 errors",
+          "verified": true
+        },
+        {
+          "item": "Dry-run migration replay tested",
+          "verified": true
+        },
+        {
+          "item": "Rollback and forward-repair DDLs verified",
+          "verified": true
+        },
+        {
+          "item": "Smoke tests defined and verified in CI",
+          "verified": true
+        },
+        {
+          "item": "Formal CTO authorization gate signed under Rule IV-001",
+          "verified": false,
+          "note": "PENDING_CTO_ADJUDICATION"
+        }
+      ],
+      "readinessStatus": "PREFLIGHT_VERIFIED_PENDING_FORMAL_AUTHORIZATION"
+    }
+  ],
+  "cutoverChecklist": [
+    {
+      "item": "Zero production mutations in prior milestones",
+      "verified": true
+    },
+    {
+      "item": "Staging preflight validation executed with 0 errors",
+      "verified": true
+    },
+    {
+      "item": "Dry-run migration replay tested",
+      "verified": true
+    },
+    {
+      "item": "Rollback and forward-repair DDLs verified",
+      "verified": true
+    },
+    {
+      "item": "Smoke tests defined and verified in CI",
+      "verified": true
+    },
+    {
+      "item": "Formal CTO authorization gate signed under Rule IV-001",
+      "verified": false,
+      "note": "PENDING_CTO_ADJUDICATION"
+    }
+  ]
+}

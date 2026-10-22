@@ -2,7 +2,7 @@
 
 **Milestone:** W021.5 — National Political Intelligence and Candidate Transparency  
 **Directive:** CTO Directive 085 / CTO Directive 086 / CTO Directive 087 / CTO Directive 088 / CTO Directive 089 / CTO Directive 090  
-**Generated At:** `2026-10-17T14:14:58.610Z`  
+**Generated At:** `2026-10-22T10:46:44.601Z`  
 **Total States/UTs Audited:** 31  
 **Defect Classification:** `DQ-W021.5-B2.2E-001` — **STRICTLY OPEN**  
 **Governance Invariant:** Rule IV-001 — Non-Self-Acceptance  
@@ -31,8 +31,8 @@ Under **CTO Directive 085 / 086 / 087 / 088** and **Rule IV-001 (Non-Self-Accept
 - **Total Malformed Constituency Records:** 0
 - **Tier 0 (Canonical Full Production):** 0 states (Strictly 0; live DB and complete affidavits pending)
 - **Tier 1 (Seeded Rich Local + GeoJSON + Historical + Sample Affidavits):** 0 states (TS GeoJSON clean mapping blocked by duplicate AC 119 features)
-- **Tier 2 (Seeded Historical + Profiles, GeoJSON & Complete Affidavits Pending):** 8 states (TS, AP, KA, MH, TN, KL, WB, UP)
-- **Tier 3 (Seeded Single-Term Constituencies + Profiles, Affidavits & Geo Pending):** 23 states/UTs
+- **Tier 2 (Seeded Historical + Profiles, GeoJSON & Complete Affidavits Pending):** 31 states (TS, AP, KA, MH, TN, KL, WB, UP)
+- **Tier 3 (Seeded Single-Term Constituencies + Profiles, Affidavits & Geo Pending):** 0 states/UTs
 
 ---
 
@@ -48,29 +48,29 @@ Under **CTO Directive 085 / 086 / 087 / 088** and **Rule IV-001 (Non-Self-Accept
 | **KL** | Kerala | 140 | 140/140 (100.0%) | 2021 | 2016 | 140/140 (100.0%) | 1/140 (0.7%) | — (0) | `SEEDED_HISTORICAL_NO_GEO` | `FUNCTIONAL_PARTIAL_OFFLINE` |
 | **WB** | West Bengal | 294 | 294/294 (100.0%) | 2021 | 2016 | 294/294 (100.0%) | 1/294 (0.3%) | — (0) | `SEEDED_HISTORICAL_NO_GEO` | `FUNCTIONAL_PARTIAL_OFFLINE` |
 | **UP** | Uttar Pradesh | 403 | 403/403 (100.0%) | 2022 | 2017 | 344/403 (85.4%) | 2/403 (0.5%) | — (0) | `SEEDED_HISTORICAL_NO_GEO` | `FUNCTIONAL_PARTIAL_OFFLINE` |
-| **RJ** | Rajasthan | 200 | 200/200 (100.0%) | 2023 | None | 187/200 (93.5%) | 0/200 (0.0%) | — (0) | `SEEDED_SINGLE_TERM_PENDING_GEO_HIST` | `FUNCTIONAL_PARTIAL_OFFLINE` |
-| **GJ** | Gujarat | 182 | 182/182 (100.0%) | 2022 | None | 169/182 (92.9%) | 0/182 (0.0%) | — (0) | `SEEDED_SINGLE_TERM_PENDING_GEO_HIST` | `FUNCTIONAL_PARTIAL_OFFLINE` |
-| **JH** | Jharkhand | 81 | 81/81 (100.0%) | 2024 | None | 73/81 (90.1%) | 0/81 (0.0%) | — (0) | `SEEDED_SINGLE_TERM_PENDING_GEO_HIST` | `FUNCTIONAL_PARTIAL_OFFLINE` |
-| **OD** | Odisha | 147 | 147/147 (100.0%) | 2024 | None | 132/147 (89.8%) | 0/147 (0.0%) | — (0) | `SEEDED_SINGLE_TERM_PENDING_GEO_HIST` | `FUNCTIONAL_PARTIAL_OFFLINE` |
-| **DL** | Delhi | 70 | 70/70 (100.0%) | 2025 | None | 70/70 (100.0%) | 0/70 (0.0%) | — (0) | `SEEDED_SINGLE_TERM_PENDING_GEO_HIST` | `FUNCTIONAL_PARTIAL_OFFLINE` |
-| **PB** | Punjab | 117 | 117/117 (100.0%) | 2022 | None | 111/117 (94.9%) | 0/117 (0.0%) | — (0) | `SEEDED_SINGLE_TERM_PENDING_GEO_HIST` | `FUNCTIONAL_PARTIAL_OFFLINE` |
-| **HR** | Haryana | 90 | 90/90 (100.0%) | 2024 | None | 80/90 (88.9%) | 0/90 (0.0%) | — (0) | `SEEDED_SINGLE_TERM_PENDING_GEO_HIST` | `FUNCTIONAL_PARTIAL_OFFLINE` |
-| **CG** | Chhattisgarh | 90 | 90/90 (100.0%) | 2023 | None | 81/90 (90.0%) | 0/90 (0.0%) | — (0) | `SEEDED_SINGLE_TERM_PENDING_GEO_HIST` | `FUNCTIONAL_PARTIAL_OFFLINE` |
-| **MP** | Madhya Pradesh | 230 | 230/230 (100.0%) | 2023 | None | 208/230 (90.4%) | 0/230 (0.0%) | — (0) | `SEEDED_SINGLE_TERM_PENDING_GEO_HIST` | `FUNCTIONAL_PARTIAL_OFFLINE` |
-| **BR** | Bihar | 243 | 243/243 (100.0%) | 2020 | None | 227/243 (93.4%) | 0/243 (0.0%) | — (0) | `SEEDED_SINGLE_TERM_PENDING_GEO_HIST` | `FUNCTIONAL_PARTIAL_OFFLINE` |
-| **AS** | Assam | 126 | 126/126 (100.0%) | None | None | 112/126 (88.9%) | 0/126 (0.0%) | — (0) | `SEEDED_SINGLE_TERM_PENDING_GEO_HIST` | `FUNCTIONAL_PARTIAL_OFFLINE` |
-| **GA** | Goa | 40 | 40/40 (100.0%) | 2022 | None | 34/40 (85.0%) | 0/40 (0.0%) | — (0) | `SEEDED_SINGLE_TERM_PENDING_GEO_HIST` | `FUNCTIONAL_PARTIAL_OFFLINE` |
-| **HP** | Himachal Pradesh | 68 | 68/68 (100.0%) | 2022 | None | 68/68 (100.0%) | 0/68 (0.0%) | — (0) | `SEEDED_SINGLE_TERM_PENDING_GEO_HIST` | `FUNCTIONAL_PARTIAL_OFFLINE` |
-| **MN** | Manipur | 60 | 60/60 (100.0%) | 2022 | None | 60/60 (100.0%) | 0/60 (0.0%) | — (0) | `SEEDED_SINGLE_TERM_PENDING_GEO_HIST` | `FUNCTIONAL_PARTIAL_OFFLINE` |
-| **ML** | Meghalaya | 60 | 60/60 (100.0%) | 2023 | None | 60/60 (100.0%) | 0/60 (0.0%) | — (0) | `SEEDED_SINGLE_TERM_PENDING_GEO_HIST` | `FUNCTIONAL_PARTIAL_OFFLINE` |
-| **MZ** | Mizoram | 40 | 40/40 (100.0%) | 2023 | None | 35/40 (87.5%) | 0/40 (0.0%) | — (0) | `SEEDED_SINGLE_TERM_PENDING_GEO_HIST` | `FUNCTIONAL_PARTIAL_OFFLINE` |
-| **NL** | Nagaland | 60 | 60/60 (100.0%) | 2023 | None | 60/60 (100.0%) | 0/60 (0.0%) | — (0) | `SEEDED_SINGLE_TERM_PENDING_GEO_HIST` | `FUNCTIONAL_PARTIAL_OFFLINE` |
-| **TR** | Tripura | 60 | 60/60 (100.0%) | 2023 | None | 60/60 (100.0%) | 0/60 (0.0%) | — (0) | `SEEDED_SINGLE_TERM_PENDING_GEO_HIST` | `FUNCTIONAL_PARTIAL_OFFLINE` |
-| **SK** | Sikkim | 32 | 32/32 (100.0%) | 2024 | None | 31/32 (96.9%) | 0/32 (0.0%) | — (0) | `SEEDED_SINGLE_TERM_PENDING_GEO_HIST` | `FUNCTIONAL_PARTIAL_OFFLINE` |
-| **AR** | Arunachal Pradesh | 60 | 60/60 (100.0%) | 2024 | None | 53/60 (88.3%) | 0/60 (0.0%) | — (0) | `SEEDED_SINGLE_TERM_PENDING_GEO_HIST` | `FUNCTIONAL_PARTIAL_OFFLINE` |
-| **UK** | Uttarakhand | 70 | 70/70 (100.0%) | 2022 | None | 70/70 (100.0%) | 0/70 (0.0%) | — (0) | `SEEDED_SINGLE_TERM_PENDING_GEO_HIST` | `FUNCTIONAL_PARTIAL_OFFLINE` |
-| **PY** | Puducherry | 30 | 30/30 (100.0%) | 2021 | None | 27/30 (90.0%) | 0/30 (0.0%) | — (0) | `SEEDED_SINGLE_TERM_PENDING_GEO_HIST` | `FUNCTIONAL_PARTIAL_OFFLINE` |
-| **JK** | Jammu & Kashmir | 90 | 90/90 (100.0%) | 2024 | None | 90/90 (100.0%) | 0/90 (0.0%) | — (0) | `SEEDED_SINGLE_TERM_PENDING_GEO_HIST` | `FUNCTIONAL_PARTIAL_OFFLINE` |
+| **RJ** | Rajasthan | 200 | 200/200 (100.0%) | 2023 | 2018 | 187/200 (93.5%) | 0/200 (0.0%) | — (0) | `SEEDED_HISTORICAL_NO_GEO` | `FUNCTIONAL_PARTIAL_OFFLINE` |
+| **GJ** | Gujarat | 182 | 182/182 (100.0%) | 2022 | 2017 | 169/182 (92.9%) | 0/182 (0.0%) | — (0) | `SEEDED_HISTORICAL_NO_GEO` | `FUNCTIONAL_PARTIAL_OFFLINE` |
+| **JH** | Jharkhand | 81 | 81/81 (100.0%) | 2024 | 2019 | 73/81 (90.1%) | 0/81 (0.0%) | — (0) | `SEEDED_HISTORICAL_NO_GEO` | `FUNCTIONAL_PARTIAL_OFFLINE` |
+| **OD** | Odisha | 147 | 147/147 (100.0%) | 2024 | 2019 | 132/147 (89.8%) | 0/147 (0.0%) | — (0) | `SEEDED_HISTORICAL_NO_GEO` | `FUNCTIONAL_PARTIAL_OFFLINE` |
+| **DL** | Delhi | 70 | 70/70 (100.0%) | 2025 | 2015 | 70/70 (100.0%) | 0/70 (0.0%) | — (0) | `SEEDED_HISTORICAL_NO_GEO` | `FUNCTIONAL_PARTIAL_OFFLINE` |
+| **PB** | Punjab | 117 | 117/117 (100.0%) | 2022 | 2017 | 111/117 (94.9%) | 0/117 (0.0%) | — (0) | `SEEDED_HISTORICAL_NO_GEO` | `FUNCTIONAL_PARTIAL_OFFLINE` |
+| **HR** | Haryana | 90 | 90/90 (100.0%) | 2024 | 2019 | 80/90 (88.9%) | 0/90 (0.0%) | — (0) | `SEEDED_HISTORICAL_NO_GEO` | `FUNCTIONAL_PARTIAL_OFFLINE` |
+| **CG** | Chhattisgarh | 90 | 90/90 (100.0%) | 2023 | 2018 | 81/90 (90.0%) | 0/90 (0.0%) | — (0) | `SEEDED_HISTORICAL_NO_GEO` | `FUNCTIONAL_PARTIAL_OFFLINE` |
+| **MP** | Madhya Pradesh | 230 | 230/230 (100.0%) | 2023 | 2018 | 208/230 (90.4%) | 0/230 (0.0%) | — (0) | `SEEDED_HISTORICAL_NO_GEO` | `FUNCTIONAL_PARTIAL_OFFLINE` |
+| **BR** | Bihar | 243 | 243/243 (100.0%) | 2020 | 2015 | 227/243 (93.4%) | 0/243 (0.0%) | — (0) | `SEEDED_HISTORICAL_NO_GEO` | `FUNCTIONAL_PARTIAL_OFFLINE` |
+| **AS** | Assam | 126 | 126/126 (100.0%) | None | 2016 | 112/126 (88.9%) | 0/126 (0.0%) | — (0) | `SEEDED_HISTORICAL_NO_GEO` | `FUNCTIONAL_PARTIAL_OFFLINE` |
+| **GA** | Goa | 40 | 40/40 (100.0%) | 2022 | 2017 | 34/40 (85.0%) | 0/40 (0.0%) | — (0) | `SEEDED_HISTORICAL_NO_GEO` | `FUNCTIONAL_PARTIAL_OFFLINE` |
+| **HP** | Himachal Pradesh | 68 | 68/68 (100.0%) | 2022 | 2017 | 68/68 (100.0%) | 0/68 (0.0%) | — (0) | `SEEDED_HISTORICAL_NO_GEO` | `FUNCTIONAL_PARTIAL_OFFLINE` |
+| **MN** | Manipur | 60 | 60/60 (100.0%) | 2022 | 2017 | 60/60 (100.0%) | 0/60 (0.0%) | — (0) | `SEEDED_HISTORICAL_NO_GEO` | `FUNCTIONAL_PARTIAL_OFFLINE` |
+| **ML** | Meghalaya | 60 | 60/60 (100.0%) | 2023 | 2018 | 60/60 (100.0%) | 0/60 (0.0%) | — (0) | `SEEDED_HISTORICAL_NO_GEO` | `FUNCTIONAL_PARTIAL_OFFLINE` |
+| **MZ** | Mizoram | 40 | 40/40 (100.0%) | 2023 | 2018 | 35/40 (87.5%) | 0/40 (0.0%) | — (0) | `SEEDED_HISTORICAL_NO_GEO` | `FUNCTIONAL_PARTIAL_OFFLINE` |
+| **NL** | Nagaland | 60 | 60/60 (100.0%) | 2023 | 2018 | 60/60 (100.0%) | 0/60 (0.0%) | — (0) | `SEEDED_HISTORICAL_NO_GEO` | `FUNCTIONAL_PARTIAL_OFFLINE` |
+| **TR** | Tripura | 60 | 60/60 (100.0%) | 2023 | 2018 | 60/60 (100.0%) | 0/60 (0.0%) | — (0) | `SEEDED_HISTORICAL_NO_GEO` | `FUNCTIONAL_PARTIAL_OFFLINE` |
+| **SK** | Sikkim | 32 | 32/32 (100.0%) | 2024 | 2019 | 31/32 (96.9%) | 0/32 (0.0%) | — (0) | `SEEDED_HISTORICAL_NO_GEO` | `FUNCTIONAL_PARTIAL_OFFLINE` |
+| **AR** | Arunachal Pradesh | 60 | 60/60 (100.0%) | 2024 | 2019 | 53/60 (88.3%) | 0/60 (0.0%) | — (0) | `SEEDED_HISTORICAL_NO_GEO` | `FUNCTIONAL_PARTIAL_OFFLINE` |
+| **UK** | Uttarakhand | 70 | 70/70 (100.0%) | 2022 | 2017 | 70/70 (100.0%) | 0/70 (0.0%) | — (0) | `SEEDED_HISTORICAL_NO_GEO` | `FUNCTIONAL_PARTIAL_OFFLINE` |
+| **PY** | Puducherry | 30 | 30/30 (100.0%) | 2021 | 2016 | 27/30 (90.0%) | 0/30 (0.0%) | — (0) | `SEEDED_HISTORICAL_NO_GEO` | `FUNCTIONAL_PARTIAL_OFFLINE` |
+| **JK** | Jammu & Kashmir | 90 | 90/90 (100.0%) | 2024 | 2014 | 90/90 (100.0%) | 0/90 (0.0%) | — (0) | `SEEDED_HISTORICAL_NO_GEO` | `FUNCTIONAL_PARTIAL_OFFLINE` |
 
 ---
 
@@ -186,326 +186,303 @@ Under **CTO Directive 085 / 086 / 087 / 088** and **Rule IV-001 (Non-Self-Accept
 ### Rajasthan (RJ)
 - **1. Registry / Identity:** 200/200 (100.0%) statutory seats mapped. Status: `VERIFIED_STATUTORY_MATCH`. Missing ACs: None. Duplicate ACs: 0. Malformed: 0.
 - **2. Electoral Results:** 200/200 (100.0%) records present for 2023. Winner votes present: 200, missing: 0. Margin present: 200, missing: 0.
-- **3. Historical Elections:** Primary 2023 + Demonstrable historical years: [None]. (Total terms: 1). State historical file: Absent.
+- **3. Historical Elections:** Primary 2023 + Demonstrable historical years: [2018]. (Total terms: 2). State historical file: Present.
 - **4. Representatives / Profiles:** 187/200 (93.5%) resolved to statutory assembly seats. Extra non-statutory: 0. Duplicates: 0.
 - **5. Affidavits:** 0/200 (0.0%) candidates in store. Present in file: 0, Structurally valid: 0, Identity validated: 0, Identity unresolved: 0, Source recorded: 0, Officially verified: 0. Pending notice: Active.
 - **6. Geospatial:** File: None | Features: 0 | Clean Mapping: No | Coordinates Valid: No | Range Valid: No | Linkage Valid: No.
 - **7. Provenance & Verification:** Source: Election Commission of India (ECI) / State Election Commission | Status: `OFFLINE_LOCAL_FIXTURE` | Live DB Verified: `false`.
-- **Evidence Tier:** `SEEDED_SINGLE_TERM_PENDING_GEO_HIST` | **Data Completeness Status:** `FUNCTIONAL_PARTIAL_OFFLINE`
+- **Evidence Tier:** `SEEDED_HISTORICAL_NO_GEO` | **Data Completeness Status:** `FUNCTIONAL_PARTIAL_OFFLINE`
 - **Material Gaps:**
   * Candidate financial affidavits pending indexing (all constituencies display Affidavit Pending notice)
   * Assembly boundary GeoJSON not indexed in repository data/geo
-  * Per-constituency historical elections prior to current term not yet seeded
 
 ### Gujarat (GJ)
 - **1. Registry / Identity:** 182/182 (100.0%) statutory seats mapped. Status: `VERIFIED_STATUTORY_MATCH`. Missing ACs: None. Duplicate ACs: 0. Malformed: 0.
 - **2. Electoral Results:** 182/182 (100.0%) records present for 2022. Winner votes present: 182, missing: 0. Margin present: 182, missing: 0.
-- **3. Historical Elections:** Primary 2022 + Demonstrable historical years: [None]. (Total terms: 1). State historical file: Absent.
+- **3. Historical Elections:** Primary 2022 + Demonstrable historical years: [2017]. (Total terms: 2). State historical file: Present.
 - **4. Representatives / Profiles:** 169/182 (92.9%) resolved to statutory assembly seats. Extra non-statutory: 0. Duplicates: 0.
 - **5. Affidavits:** 0/182 (0.0%) candidates in store. Present in file: 0, Structurally valid: 0, Identity validated: 0, Identity unresolved: 0, Source recorded: 0, Officially verified: 0. Pending notice: Active.
 - **6. Geospatial:** File: None | Features: 0 | Clean Mapping: No | Coordinates Valid: No | Range Valid: No | Linkage Valid: No.
 - **7. Provenance & Verification:** Source: Election Commission of India (ECI) / State Election Commission | Status: `OFFLINE_LOCAL_FIXTURE` | Live DB Verified: `false`.
-- **Evidence Tier:** `SEEDED_SINGLE_TERM_PENDING_GEO_HIST` | **Data Completeness Status:** `FUNCTIONAL_PARTIAL_OFFLINE`
+- **Evidence Tier:** `SEEDED_HISTORICAL_NO_GEO` | **Data Completeness Status:** `FUNCTIONAL_PARTIAL_OFFLINE`
 - **Material Gaps:**
   * Candidate financial affidavits pending indexing (all constituencies display Affidavit Pending notice)
   * Assembly boundary GeoJSON not indexed in repository data/geo
-  * Per-constituency historical elections prior to current term not yet seeded
 
 ### Jharkhand (JH)
 - **1. Registry / Identity:** 81/81 (100.0%) statutory seats mapped. Status: `VERIFIED_STATUTORY_MATCH`. Missing ACs: None. Duplicate ACs: 0. Malformed: 0.
 - **2. Electoral Results:** 81/81 (100.0%) records present for 2024. Winner votes present: 81, missing: 0. Margin present: 81, missing: 0.
-- **3. Historical Elections:** Primary 2024 + Demonstrable historical years: [None]. (Total terms: 1). State historical file: Absent.
+- **3. Historical Elections:** Primary 2024 + Demonstrable historical years: [2019]. (Total terms: 2). State historical file: Present.
 - **4. Representatives / Profiles:** 73/81 (90.1%) resolved to statutory assembly seats. Extra non-statutory: 0. Duplicates: 0.
 - **5. Affidavits:** 0/81 (0.0%) candidates in store. Present in file: 0, Structurally valid: 0, Identity validated: 0, Identity unresolved: 0, Source recorded: 0, Officially verified: 0. Pending notice: Active.
 - **6. Geospatial:** File: None | Features: 0 | Clean Mapping: No | Coordinates Valid: No | Range Valid: No | Linkage Valid: No.
 - **7. Provenance & Verification:** Source: Election Commission of India (ECI) / State Election Commission | Status: `OFFLINE_LOCAL_FIXTURE` | Live DB Verified: `false`.
-- **Evidence Tier:** `SEEDED_SINGLE_TERM_PENDING_GEO_HIST` | **Data Completeness Status:** `FUNCTIONAL_PARTIAL_OFFLINE`
+- **Evidence Tier:** `SEEDED_HISTORICAL_NO_GEO` | **Data Completeness Status:** `FUNCTIONAL_PARTIAL_OFFLINE`
 - **Material Gaps:**
   * Candidate financial affidavits pending indexing (all constituencies display Affidavit Pending notice)
   * Assembly boundary GeoJSON not indexed in repository data/geo
-  * Per-constituency historical elections prior to current term not yet seeded
 
 ### Odisha (OD)
 - **1. Registry / Identity:** 147/147 (100.0%) statutory seats mapped. Status: `VERIFIED_STATUTORY_MATCH`. Missing ACs: None. Duplicate ACs: 0. Malformed: 0.
 - **2. Electoral Results:** 147/147 (100.0%) records present for 2024. Winner votes present: 147, missing: 0. Margin present: 147, missing: 0.
-- **3. Historical Elections:** Primary 2024 + Demonstrable historical years: [None]. (Total terms: 1). State historical file: Absent.
+- **3. Historical Elections:** Primary 2024 + Demonstrable historical years: [2019]. (Total terms: 2). State historical file: Present.
 - **4. Representatives / Profiles:** 132/147 (89.8%) resolved to statutory assembly seats. Extra non-statutory: 0. Duplicates: 0.
 - **5. Affidavits:** 0/147 (0.0%) candidates in store. Present in file: 0, Structurally valid: 0, Identity validated: 0, Identity unresolved: 0, Source recorded: 0, Officially verified: 0. Pending notice: Active.
 - **6. Geospatial:** File: None | Features: 0 | Clean Mapping: No | Coordinates Valid: No | Range Valid: No | Linkage Valid: No.
 - **7. Provenance & Verification:** Source: Election Commission of India (ECI) / State Election Commission | Status: `OFFLINE_LOCAL_FIXTURE` | Live DB Verified: `false`.
-- **Evidence Tier:** `SEEDED_SINGLE_TERM_PENDING_GEO_HIST` | **Data Completeness Status:** `FUNCTIONAL_PARTIAL_OFFLINE`
+- **Evidence Tier:** `SEEDED_HISTORICAL_NO_GEO` | **Data Completeness Status:** `FUNCTIONAL_PARTIAL_OFFLINE`
 - **Material Gaps:**
   * Candidate financial affidavits pending indexing (all constituencies display Affidavit Pending notice)
   * Assembly boundary GeoJSON not indexed in repository data/geo
-  * Per-constituency historical elections prior to current term not yet seeded
 
 ### Delhi (DL)
 - **1. Registry / Identity:** 70/70 (100.0%) statutory seats mapped. Status: `VERIFIED_STATUTORY_MATCH`. Missing ACs: None. Duplicate ACs: 0. Malformed: 0.
 - **2. Electoral Results:** 70/70 (100.0%) records present for 2025. Winner votes present: 70, missing: 0. Margin present: 70, missing: 0.
-- **3. Historical Elections:** Primary 2025 + Demonstrable historical years: [None]. (Total terms: 1). State historical file: Absent.
+- **3. Historical Elections:** Primary 2025 + Demonstrable historical years: [2015]. (Total terms: 2). State historical file: Present.
 - **4. Representatives / Profiles:** 70/70 (100.0%) resolved to statutory assembly seats. Extra non-statutory: 151. Duplicates: 0.
 - **5. Affidavits:** 0/70 (0.0%) candidates in store. Present in file: 0, Structurally valid: 0, Identity validated: 0, Identity unresolved: 0, Source recorded: 0, Officially verified: 0. Pending notice: Active.
 - **6. Geospatial:** File: None | Features: 0 | Clean Mapping: No | Coordinates Valid: No | Range Valid: No | Linkage Valid: No.
 - **7. Provenance & Verification:** Source: Election Commission of India (ECI) / State Election Commission | Status: `OFFLINE_LOCAL_FIXTURE` | Live DB Verified: `false`.
-- **Evidence Tier:** `SEEDED_SINGLE_TERM_PENDING_GEO_HIST` | **Data Completeness Status:** `FUNCTIONAL_PARTIAL_OFFLINE`
+- **Evidence Tier:** `SEEDED_HISTORICAL_NO_GEO` | **Data Completeness Status:** `FUNCTIONAL_PARTIAL_OFFLINE`
 - **Known Exceptions:**
   * Delhi statutory Assembly is strictly 70 seats. Demographics file contains 151 extra non-assembly records (DL-AC-071 through DL-AC-221) classified as NON_STATUTORY_DEMOGRAPHIC_PLACEHOLDER
 - **Material Gaps:**
   * Candidate financial affidavits pending indexing (all constituencies display Affidavit Pending notice)
   * Assembly boundary GeoJSON not indexed in repository data/geo
-  * Per-constituency historical elections prior to current term not yet seeded
 
 ### Punjab (PB)
 - **1. Registry / Identity:** 117/117 (100.0%) statutory seats mapped. Status: `VERIFIED_STATUTORY_MATCH`. Missing ACs: None. Duplicate ACs: 0. Malformed: 0.
 - **2. Electoral Results:** 117/117 (100.0%) records present for 2022. Winner votes present: 117, missing: 0. Margin present: 117, missing: 0.
-- **3. Historical Elections:** Primary 2022 + Demonstrable historical years: [None]. (Total terms: 1). State historical file: Absent.
+- **3. Historical Elections:** Primary 2022 + Demonstrable historical years: [2017]. (Total terms: 2). State historical file: Present.
 - **4. Representatives / Profiles:** 111/117 (94.9%) resolved to statutory assembly seats. Extra non-statutory: 0. Duplicates: 0.
 - **5. Affidavits:** 0/117 (0.0%) candidates in store. Present in file: 0, Structurally valid: 0, Identity validated: 0, Identity unresolved: 0, Source recorded: 0, Officially verified: 0. Pending notice: Active.
 - **6. Geospatial:** File: None | Features: 0 | Clean Mapping: No | Coordinates Valid: No | Range Valid: No | Linkage Valid: No.
 - **7. Provenance & Verification:** Source: Election Commission of India (ECI) / State Election Commission | Status: `OFFLINE_LOCAL_FIXTURE` | Live DB Verified: `false`.
-- **Evidence Tier:** `SEEDED_SINGLE_TERM_PENDING_GEO_HIST` | **Data Completeness Status:** `FUNCTIONAL_PARTIAL_OFFLINE`
+- **Evidence Tier:** `SEEDED_HISTORICAL_NO_GEO` | **Data Completeness Status:** `FUNCTIONAL_PARTIAL_OFFLINE`
 - **Material Gaps:**
   * Candidate financial affidavits pending indexing (all constituencies display Affidavit Pending notice)
   * Assembly boundary GeoJSON not indexed in repository data/geo
-  * Per-constituency historical elections prior to current term not yet seeded
 
 ### Haryana (HR)
 - **1. Registry / Identity:** 90/90 (100.0%) statutory seats mapped. Status: `VERIFIED_STATUTORY_MATCH`. Missing ACs: None. Duplicate ACs: 0. Malformed: 0.
 - **2. Electoral Results:** 90/90 (100.0%) records present for 2024. Winner votes present: 90, missing: 0. Margin present: 90, missing: 0.
-- **3. Historical Elections:** Primary 2024 + Demonstrable historical years: [None]. (Total terms: 1). State historical file: Absent.
+- **3. Historical Elections:** Primary 2024 + Demonstrable historical years: [2019]. (Total terms: 2). State historical file: Present.
 - **4. Representatives / Profiles:** 80/90 (88.9%) resolved to statutory assembly seats. Extra non-statutory: 0. Duplicates: 0.
 - **5. Affidavits:** 0/90 (0.0%) candidates in store. Present in file: 0, Structurally valid: 0, Identity validated: 0, Identity unresolved: 0, Source recorded: 0, Officially verified: 0. Pending notice: Active.
 - **6. Geospatial:** File: None | Features: 0 | Clean Mapping: No | Coordinates Valid: No | Range Valid: No | Linkage Valid: No.
 - **7. Provenance & Verification:** Source: Election Commission of India (ECI) / State Election Commission | Status: `OFFLINE_LOCAL_FIXTURE` | Live DB Verified: `false`.
-- **Evidence Tier:** `SEEDED_SINGLE_TERM_PENDING_GEO_HIST` | **Data Completeness Status:** `FUNCTIONAL_PARTIAL_OFFLINE`
+- **Evidence Tier:** `SEEDED_HISTORICAL_NO_GEO` | **Data Completeness Status:** `FUNCTIONAL_PARTIAL_OFFLINE`
 - **Material Gaps:**
   * Candidate financial affidavits pending indexing (all constituencies display Affidavit Pending notice)
   * Assembly boundary GeoJSON not indexed in repository data/geo
-  * Per-constituency historical elections prior to current term not yet seeded
 
 ### Chhattisgarh (CG)
 - **1. Registry / Identity:** 90/90 (100.0%) statutory seats mapped. Status: `VERIFIED_STATUTORY_MATCH`. Missing ACs: None. Duplicate ACs: 0. Malformed: 0.
 - **2. Electoral Results:** 90/90 (100.0%) records present for 2023. Winner votes present: 90, missing: 0. Margin present: 90, missing: 0.
-- **3. Historical Elections:** Primary 2023 + Demonstrable historical years: [None]. (Total terms: 1). State historical file: Absent.
+- **3. Historical Elections:** Primary 2023 + Demonstrable historical years: [2018]. (Total terms: 2). State historical file: Present.
 - **4. Representatives / Profiles:** 81/90 (90.0%) resolved to statutory assembly seats. Extra non-statutory: 0. Duplicates: 0.
 - **5. Affidavits:** 0/90 (0.0%) candidates in store. Present in file: 0, Structurally valid: 0, Identity validated: 0, Identity unresolved: 0, Source recorded: 0, Officially verified: 0. Pending notice: Active.
 - **6. Geospatial:** File: None | Features: 0 | Clean Mapping: No | Coordinates Valid: No | Range Valid: No | Linkage Valid: No.
 - **7. Provenance & Verification:** Source: Election Commission of India (ECI) / State Election Commission | Status: `OFFLINE_LOCAL_FIXTURE` | Live DB Verified: `false`.
-- **Evidence Tier:** `SEEDED_SINGLE_TERM_PENDING_GEO_HIST` | **Data Completeness Status:** `FUNCTIONAL_PARTIAL_OFFLINE`
+- **Evidence Tier:** `SEEDED_HISTORICAL_NO_GEO` | **Data Completeness Status:** `FUNCTIONAL_PARTIAL_OFFLINE`
 - **Material Gaps:**
   * Candidate financial affidavits pending indexing (all constituencies display Affidavit Pending notice)
   * Assembly boundary GeoJSON not indexed in repository data/geo
-  * Per-constituency historical elections prior to current term not yet seeded
 
 ### Madhya Pradesh (MP)
 - **1. Registry / Identity:** 230/230 (100.0%) statutory seats mapped. Status: `VERIFIED_STATUTORY_MATCH`. Missing ACs: None. Duplicate ACs: 0. Malformed: 0.
 - **2. Electoral Results:** 230/230 (100.0%) records present for 2023. Winner votes present: 230, missing: 0. Margin present: 230, missing: 0.
-- **3. Historical Elections:** Primary 2023 + Demonstrable historical years: [None]. (Total terms: 1). State historical file: Absent.
+- **3. Historical Elections:** Primary 2023 + Demonstrable historical years: [2018]. (Total terms: 2). State historical file: Present.
 - **4. Representatives / Profiles:** 208/230 (90.4%) resolved to statutory assembly seats. Extra non-statutory: 0. Duplicates: 0.
 - **5. Affidavits:** 0/230 (0.0%) candidates in store. Present in file: 0, Structurally valid: 0, Identity validated: 0, Identity unresolved: 0, Source recorded: 0, Officially verified: 0. Pending notice: Active.
 - **6. Geospatial:** File: None | Features: 0 | Clean Mapping: No | Coordinates Valid: No | Range Valid: No | Linkage Valid: No.
 - **7. Provenance & Verification:** Source: Election Commission of India (ECI) / State Election Commission | Status: `OFFLINE_LOCAL_FIXTURE` | Live DB Verified: `false`.
-- **Evidence Tier:** `SEEDED_SINGLE_TERM_PENDING_GEO_HIST` | **Data Completeness Status:** `FUNCTIONAL_PARTIAL_OFFLINE`
+- **Evidence Tier:** `SEEDED_HISTORICAL_NO_GEO` | **Data Completeness Status:** `FUNCTIONAL_PARTIAL_OFFLINE`
 - **Material Gaps:**
   * Candidate financial affidavits pending indexing (all constituencies display Affidavit Pending notice)
   * Assembly boundary GeoJSON not indexed in repository data/geo
-  * Per-constituency historical elections prior to current term not yet seeded
 
 ### Bihar (BR)
 - **1. Registry / Identity:** 243/243 (100.0%) statutory seats mapped. Status: `VERIFIED_STATUTORY_MATCH`. Missing ACs: None. Duplicate ACs: 0. Malformed: 0.
 - **2. Electoral Results:** 243/243 (100.0%) records present for 2020. Winner votes present: 243, missing: 0. Margin present: 243, missing: 0.
-- **3. Historical Elections:** Primary 2020 + Demonstrable historical years: [None]. (Total terms: 1). State historical file: Absent.
+- **3. Historical Elections:** Primary 2020 + Demonstrable historical years: [2015]. (Total terms: 2). State historical file: Present.
 - **4. Representatives / Profiles:** 227/243 (93.4%) resolved to statutory assembly seats. Extra non-statutory: 0. Duplicates: 0.
 - **5. Affidavits:** 0/243 (0.0%) candidates in store. Present in file: 0, Structurally valid: 0, Identity validated: 0, Identity unresolved: 0, Source recorded: 0, Officially verified: 0. Pending notice: Active.
 - **6. Geospatial:** File: None | Features: 0 | Clean Mapping: No | Coordinates Valid: No | Range Valid: No | Linkage Valid: No.
 - **7. Provenance & Verification:** Source: Election Commission of India (ECI) / State Election Commission | Status: `OFFLINE_LOCAL_FIXTURE` | Live DB Verified: `false`.
-- **Evidence Tier:** `SEEDED_SINGLE_TERM_PENDING_GEO_HIST` | **Data Completeness Status:** `FUNCTIONAL_PARTIAL_OFFLINE`
+- **Evidence Tier:** `SEEDED_HISTORICAL_NO_GEO` | **Data Completeness Status:** `FUNCTIONAL_PARTIAL_OFFLINE`
 - **Material Gaps:**
   * Candidate financial affidavits pending indexing (all constituencies display Affidavit Pending notice)
   * Assembly boundary GeoJSON not indexed in repository data/geo
-  * Per-constituency historical elections prior to current term not yet seeded
 
 ### Assam (AS)
 - **1. Registry / Identity:** 126/126 (100.0%) statutory seats mapped. Status: `VERIFIED_STATUTORY_MATCH`. Missing ACs: None. Duplicate ACs: 0. Malformed: 0.
 - **2. Electoral Results:** 0/126 (0.0%) records present for None. Winner votes present: 0, missing: 126. Margin present: 0, missing: 126.
-- **3. Historical Elections:** Primary None + Demonstrable historical years: [None]. (Total terms: 0). State historical file: Absent.
+- **3. Historical Elections:** Primary None + Demonstrable historical years: [2016]. (Total terms: 1). State historical file: Present.
 - **4. Representatives / Profiles:** 112/126 (88.9%) resolved to statutory assembly seats. Extra non-statutory: 0. Duplicates: 0.
 - **5. Affidavits:** 0/126 (0.0%) candidates in store. Present in file: 0, Structurally valid: 0, Identity validated: 0, Identity unresolved: 0, Source recorded: 0, Officially verified: 0. Pending notice: Active.
 - **6. Geospatial:** File: None | Features: 0 | Clean Mapping: No | Coordinates Valid: No | Range Valid: No | Linkage Valid: No.
 - **7. Provenance & Verification:** Source: Election Commission of India (ECI) / State Election Commission | Status: `OFFLINE_LOCAL_FIXTURE` | Live DB Verified: `false`.
-- **Evidence Tier:** `SEEDED_SINGLE_TERM_PENDING_GEO_HIST` | **Data Completeness Status:** `FUNCTIONAL_PARTIAL_OFFLINE`
+- **Evidence Tier:** `SEEDED_HISTORICAL_NO_GEO` | **Data Completeness Status:** `FUNCTIONAL_PARTIAL_OFFLINE`
 - **Material Gaps:**
   * Candidate financial affidavits pending indexing (all constituencies display Affidavit Pending notice)
   * Assembly boundary GeoJSON not indexed in repository data/geo
-  * Per-constituency historical elections prior to current term not yet seeded
 
 ### Goa (GA)
 - **1. Registry / Identity:** 40/40 (100.0%) statutory seats mapped. Status: `VERIFIED_STATUTORY_MATCH`. Missing ACs: None. Duplicate ACs: 0. Malformed: 0.
 - **2. Electoral Results:** 40/40 (100.0%) records present for 2022. Winner votes present: 40, missing: 0. Margin present: 40, missing: 0.
-- **3. Historical Elections:** Primary 2022 + Demonstrable historical years: [None]. (Total terms: 1). State historical file: Absent.
+- **3. Historical Elections:** Primary 2022 + Demonstrable historical years: [2017]. (Total terms: 2). State historical file: Present.
 - **4. Representatives / Profiles:** 34/40 (85.0%) resolved to statutory assembly seats. Extra non-statutory: 0. Duplicates: 0.
 - **5. Affidavits:** 0/40 (0.0%) candidates in store. Present in file: 0, Structurally valid: 0, Identity validated: 0, Identity unresolved: 0, Source recorded: 0, Officially verified: 0. Pending notice: Active.
 - **6. Geospatial:** File: None | Features: 0 | Clean Mapping: No | Coordinates Valid: No | Range Valid: No | Linkage Valid: No.
 - **7. Provenance & Verification:** Source: Election Commission of India (ECI) / State Election Commission | Status: `OFFLINE_LOCAL_FIXTURE` | Live DB Verified: `false`.
-- **Evidence Tier:** `SEEDED_SINGLE_TERM_PENDING_GEO_HIST` | **Data Completeness Status:** `FUNCTIONAL_PARTIAL_OFFLINE`
+- **Evidence Tier:** `SEEDED_HISTORICAL_NO_GEO` | **Data Completeness Status:** `FUNCTIONAL_PARTIAL_OFFLINE`
 - **Material Gaps:**
   * Candidate financial affidavits pending indexing (all constituencies display Affidavit Pending notice)
   * Assembly boundary GeoJSON not indexed in repository data/geo
-  * Per-constituency historical elections prior to current term not yet seeded
 
 ### Himachal Pradesh (HP)
 - **1. Registry / Identity:** 68/68 (100.0%) statutory seats mapped. Status: `VERIFIED_STATUTORY_MATCH`. Missing ACs: None. Duplicate ACs: 0. Malformed: 0.
 - **2. Electoral Results:** 68/68 (100.0%) records present for 2022. Winner votes present: 68, missing: 0. Margin present: 68, missing: 0.
-- **3. Historical Elections:** Primary 2022 + Demonstrable historical years: [None]. (Total terms: 1). State historical file: Absent.
+- **3. Historical Elections:** Primary 2022 + Demonstrable historical years: [2017]. (Total terms: 2). State historical file: Present.
 - **4. Representatives / Profiles:** 68/68 (100.0%) resolved to statutory assembly seats. Extra non-statutory: 2. Duplicates: 0.
 - **5. Affidavits:** 0/68 (0.0%) candidates in store. Present in file: 0, Structurally valid: 0, Identity validated: 0, Identity unresolved: 0, Source recorded: 0, Officially verified: 0. Pending notice: Active.
 - **6. Geospatial:** File: None | Features: 0 | Clean Mapping: No | Coordinates Valid: No | Range Valid: No | Linkage Valid: No.
 - **7. Provenance & Verification:** Source: Election Commission of India (ECI) / State Election Commission | Status: `OFFLINE_LOCAL_FIXTURE` | Live DB Verified: `false`.
-- **Evidence Tier:** `SEEDED_SINGLE_TERM_PENDING_GEO_HIST` | **Data Completeness Status:** `FUNCTIONAL_PARTIAL_OFFLINE`
+- **Evidence Tier:** `SEEDED_HISTORICAL_NO_GEO` | **Data Completeness Status:** `FUNCTIONAL_PARTIAL_OFFLINE`
 - **Material Gaps:**
   * Candidate financial affidavits pending indexing (all constituencies display Affidavit Pending notice)
   * Assembly boundary GeoJSON not indexed in repository data/geo
-  * Per-constituency historical elections prior to current term not yet seeded
 
 ### Manipur (MN)
 - **1. Registry / Identity:** 60/60 (100.0%) statutory seats mapped. Status: `VERIFIED_STATUTORY_MATCH`. Missing ACs: None. Duplicate ACs: 0. Malformed: 0.
 - **2. Electoral Results:** 60/60 (100.0%) records present for 2022. Winner votes present: 60, missing: 0. Margin present: 60, missing: 0.
-- **3. Historical Elections:** Primary 2022 + Demonstrable historical years: [None]. (Total terms: 1). State historical file: Absent.
+- **3. Historical Elections:** Primary 2022 + Demonstrable historical years: [2017]. (Total terms: 2). State historical file: Present.
 - **4. Representatives / Profiles:** 60/60 (100.0%) resolved to statutory assembly seats. Extra non-statutory: 0. Duplicates: 0.
 - **5. Affidavits:** 0/60 (0.0%) candidates in store. Present in file: 0, Structurally valid: 0, Identity validated: 0, Identity unresolved: 0, Source recorded: 0, Officially verified: 0. Pending notice: Active.
 - **6. Geospatial:** File: None | Features: 0 | Clean Mapping: No | Coordinates Valid: No | Range Valid: No | Linkage Valid: No.
 - **7. Provenance & Verification:** Source: Election Commission of India (ECI) / State Election Commission | Status: `OFFLINE_LOCAL_FIXTURE` | Live DB Verified: `false`.
-- **Evidence Tier:** `SEEDED_SINGLE_TERM_PENDING_GEO_HIST` | **Data Completeness Status:** `FUNCTIONAL_PARTIAL_OFFLINE`
+- **Evidence Tier:** `SEEDED_HISTORICAL_NO_GEO` | **Data Completeness Status:** `FUNCTIONAL_PARTIAL_OFFLINE`
 - **Material Gaps:**
   * Candidate financial affidavits pending indexing (all constituencies display Affidavit Pending notice)
   * Assembly boundary GeoJSON not indexed in repository data/geo
-  * Per-constituency historical elections prior to current term not yet seeded
 
 ### Meghalaya (ML)
 - **1. Registry / Identity:** 60/60 (100.0%) statutory seats mapped. Status: `VERIFIED_STATUTORY_MATCH`. Missing ACs: None. Duplicate ACs: 0. Malformed: 0.
 - **2. Electoral Results:** 60/60 (100.0%) records present for 2023. Winner votes present: 60, missing: 0. Margin present: 60, missing: 0.
-- **3. Historical Elections:** Primary 2023 + Demonstrable historical years: [None]. (Total terms: 1). State historical file: Absent.
+- **3. Historical Elections:** Primary 2023 + Demonstrable historical years: [2018]. (Total terms: 2). State historical file: Present.
 - **4. Representatives / Profiles:** 60/60 (100.0%) resolved to statutory assembly seats. Extra non-statutory: 0. Duplicates: 0.
 - **5. Affidavits:** 0/60 (0.0%) candidates in store. Present in file: 0, Structurally valid: 0, Identity validated: 0, Identity unresolved: 0, Source recorded: 0, Officially verified: 0. Pending notice: Active.
 - **6. Geospatial:** File: None | Features: 0 | Clean Mapping: No | Coordinates Valid: No | Range Valid: No | Linkage Valid: No.
 - **7. Provenance & Verification:** Source: Election Commission of India (ECI) / State Election Commission | Status: `OFFLINE_LOCAL_FIXTURE` | Live DB Verified: `false`.
-- **Evidence Tier:** `SEEDED_SINGLE_TERM_PENDING_GEO_HIST` | **Data Completeness Status:** `FUNCTIONAL_PARTIAL_OFFLINE`
+- **Evidence Tier:** `SEEDED_HISTORICAL_NO_GEO` | **Data Completeness Status:** `FUNCTIONAL_PARTIAL_OFFLINE`
 - **Material Gaps:**
   * Candidate financial affidavits pending indexing (all constituencies display Affidavit Pending notice)
   * Assembly boundary GeoJSON not indexed in repository data/geo
-  * Per-constituency historical elections prior to current term not yet seeded
 
 ### Mizoram (MZ)
 - **1. Registry / Identity:** 40/40 (100.0%) statutory seats mapped. Status: `VERIFIED_STATUTORY_MATCH`. Missing ACs: None. Duplicate ACs: 0. Malformed: 0.
 - **2. Electoral Results:** 40/40 (100.0%) records present for 2023. Winner votes present: 0, missing: 40. Margin present: 0, missing: 40.
-- **3. Historical Elections:** Primary 2023 + Demonstrable historical years: [None]. (Total terms: 1). State historical file: Absent.
+- **3. Historical Elections:** Primary 2023 + Demonstrable historical years: [2018]. (Total terms: 2). State historical file: Present.
 - **4. Representatives / Profiles:** 35/40 (87.5%) resolved to statutory assembly seats. Extra non-statutory: 0. Duplicates: 0.
 - **5. Affidavits:** 0/40 (0.0%) candidates in store. Present in file: 0, Structurally valid: 0, Identity validated: 0, Identity unresolved: 0, Source recorded: 0, Officially verified: 0. Pending notice: Active.
 - **6. Geospatial:** File: None | Features: 0 | Clean Mapping: No | Coordinates Valid: No | Range Valid: No | Linkage Valid: No.
 - **7. Provenance & Verification:** Source: Election Commission of India (ECI) / State Election Commission | Status: `OFFLINE_LOCAL_FIXTURE` | Live DB Verified: `false`.
-- **Evidence Tier:** `SEEDED_SINGLE_TERM_PENDING_GEO_HIST` | **Data Completeness Status:** `FUNCTIONAL_PARTIAL_OFFLINE`
+- **Evidence Tier:** `SEEDED_HISTORICAL_NO_GEO` | **Data Completeness Status:** `FUNCTIONAL_PARTIAL_OFFLINE`
 - **Material Gaps:**
   * Candidate financial affidavits pending indexing (all constituencies display Affidavit Pending notice)
   * Assembly boundary GeoJSON not indexed in repository data/geo
-  * Per-constituency historical elections prior to current term not yet seeded
 
 ### Nagaland (NL)
 - **1. Registry / Identity:** 60/60 (100.0%) statutory seats mapped. Status: `VERIFIED_STATUTORY_MATCH`. Missing ACs: None. Duplicate ACs: 0. Malformed: 0.
 - **2. Electoral Results:** 60/60 (100.0%) records present for 2023. Winner votes present: 60, missing: 0. Margin present: 60, missing: 0.
-- **3. Historical Elections:** Primary 2023 + Demonstrable historical years: [None]. (Total terms: 1). State historical file: Absent.
+- **3. Historical Elections:** Primary 2023 + Demonstrable historical years: [2018]. (Total terms: 2). State historical file: Present.
 - **4. Representatives / Profiles:** 60/60 (100.0%) resolved to statutory assembly seats. Extra non-statutory: 0. Duplicates: 0.
 - **5. Affidavits:** 0/60 (0.0%) candidates in store. Present in file: 0, Structurally valid: 0, Identity validated: 0, Identity unresolved: 0, Source recorded: 0, Officially verified: 0. Pending notice: Active.
 - **6. Geospatial:** File: None | Features: 0 | Clean Mapping: No | Coordinates Valid: No | Range Valid: No | Linkage Valid: No.
 - **7. Provenance & Verification:** Source: Election Commission of India (ECI) / State Election Commission | Status: `OFFLINE_LOCAL_FIXTURE` | Live DB Verified: `false`.
-- **Evidence Tier:** `SEEDED_SINGLE_TERM_PENDING_GEO_HIST` | **Data Completeness Status:** `FUNCTIONAL_PARTIAL_OFFLINE`
+- **Evidence Tier:** `SEEDED_HISTORICAL_NO_GEO` | **Data Completeness Status:** `FUNCTIONAL_PARTIAL_OFFLINE`
 - **Material Gaps:**
   * Candidate financial affidavits pending indexing (all constituencies display Affidavit Pending notice)
   * Assembly boundary GeoJSON not indexed in repository data/geo
-  * Per-constituency historical elections prior to current term not yet seeded
 
 ### Tripura (TR)
 - **1. Registry / Identity:** 60/60 (100.0%) statutory seats mapped. Status: `VERIFIED_STATUTORY_MATCH`. Missing ACs: None. Duplicate ACs: 0. Malformed: 0.
 - **2. Electoral Results:** 60/60 (100.0%) records present for 2023. Winner votes present: 60, missing: 0. Margin present: 60, missing: 0.
-- **3. Historical Elections:** Primary 2023 + Demonstrable historical years: [None]. (Total terms: 1). State historical file: Absent.
+- **3. Historical Elections:** Primary 2023 + Demonstrable historical years: [2018]. (Total terms: 2). State historical file: Present.
 - **4. Representatives / Profiles:** 60/60 (100.0%) resolved to statutory assembly seats. Extra non-statutory: 0. Duplicates: 0.
 - **5. Affidavits:** 0/60 (0.0%) candidates in store. Present in file: 0, Structurally valid: 0, Identity validated: 0, Identity unresolved: 0, Source recorded: 0, Officially verified: 0. Pending notice: Active.
 - **6. Geospatial:** File: None | Features: 0 | Clean Mapping: No | Coordinates Valid: No | Range Valid: No | Linkage Valid: No.
 - **7. Provenance & Verification:** Source: Election Commission of India (ECI) / State Election Commission | Status: `OFFLINE_LOCAL_FIXTURE` | Live DB Verified: `false`.
-- **Evidence Tier:** `SEEDED_SINGLE_TERM_PENDING_GEO_HIST` | **Data Completeness Status:** `FUNCTIONAL_PARTIAL_OFFLINE`
+- **Evidence Tier:** `SEEDED_HISTORICAL_NO_GEO` | **Data Completeness Status:** `FUNCTIONAL_PARTIAL_OFFLINE`
 - **Material Gaps:**
   * Candidate financial affidavits pending indexing (all constituencies display Affidavit Pending notice)
   * Assembly boundary GeoJSON not indexed in repository data/geo
-  * Per-constituency historical elections prior to current term not yet seeded
 
 ### Sikkim (SK)
 - **1. Registry / Identity:** 32/32 (100.0%) statutory seats mapped. Status: `VERIFIED_STATUTORY_MATCH`. Missing ACs: None. Duplicate ACs: 0. Malformed: 0.
 - **2. Electoral Results:** 32/32 (100.0%) records present for 2024. Winner votes present: 0, missing: 32. Margin present: 0, missing: 32.
-- **3. Historical Elections:** Primary 2024 + Demonstrable historical years: [None]. (Total terms: 1). State historical file: Absent.
+- **3. Historical Elections:** Primary 2024 + Demonstrable historical years: [2019]. (Total terms: 2). State historical file: Present.
 - **4. Representatives / Profiles:** 31/32 (96.9%) resolved to statutory assembly seats. Extra non-statutory: 0. Duplicates: 0.
 - **5. Affidavits:** 0/32 (0.0%) candidates in store. Present in file: 0, Structurally valid: 0, Identity validated: 0, Identity unresolved: 0, Source recorded: 0, Officially verified: 0. Pending notice: Active.
 - **6. Geospatial:** File: None | Features: 0 | Clean Mapping: No | Coordinates Valid: No | Range Valid: No | Linkage Valid: No.
 - **7. Provenance & Verification:** Source: Election Commission of India (ECI) / State Election Commission | Status: `OFFLINE_LOCAL_FIXTURE` | Live DB Verified: `false`.
-- **Evidence Tier:** `SEEDED_SINGLE_TERM_PENDING_GEO_HIST` | **Data Completeness Status:** `FUNCTIONAL_PARTIAL_OFFLINE`
+- **Evidence Tier:** `SEEDED_HISTORICAL_NO_GEO` | **Data Completeness Status:** `FUNCTIONAL_PARTIAL_OFFLINE`
 - **Material Gaps:**
   * Candidate financial affidavits pending indexing (all constituencies display Affidavit Pending notice)
   * Assembly boundary GeoJSON not indexed in repository data/geo
-  * Per-constituency historical elections prior to current term not yet seeded
 
 ### Arunachal Pradesh (AR)
 - **1. Registry / Identity:** 60/60 (100.0%) statutory seats mapped. Status: `VERIFIED_STATUTORY_MATCH`. Missing ACs: None. Duplicate ACs: 0. Malformed: 0.
 - **2. Electoral Results:** 60/60 (100.0%) records present for 2024. Winner votes present: 0, missing: 60. Margin present: 0, missing: 60.
-- **3. Historical Elections:** Primary 2024 + Demonstrable historical years: [None]. (Total terms: 1). State historical file: Absent.
+- **3. Historical Elections:** Primary 2024 + Demonstrable historical years: [2019]. (Total terms: 2). State historical file: Present.
 - **4. Representatives / Profiles:** 53/60 (88.3%) resolved to statutory assembly seats. Extra non-statutory: 0. Duplicates: 0.
 - **5. Affidavits:** 0/60 (0.0%) candidates in store. Present in file: 0, Structurally valid: 0, Identity validated: 0, Identity unresolved: 0, Source recorded: 0, Officially verified: 0. Pending notice: Active.
 - **6. Geospatial:** File: None | Features: 0 | Clean Mapping: No | Coordinates Valid: No | Range Valid: No | Linkage Valid: No.
 - **7. Provenance & Verification:** Source: Election Commission of India (ECI) / State Election Commission | Status: `OFFLINE_LOCAL_FIXTURE` | Live DB Verified: `false`.
-- **Evidence Tier:** `SEEDED_SINGLE_TERM_PENDING_GEO_HIST` | **Data Completeness Status:** `FUNCTIONAL_PARTIAL_OFFLINE`
+- **Evidence Tier:** `SEEDED_HISTORICAL_NO_GEO` | **Data Completeness Status:** `FUNCTIONAL_PARTIAL_OFFLINE`
 - **Material Gaps:**
   * Candidate financial affidavits pending indexing (all constituencies display Affidavit Pending notice)
   * Assembly boundary GeoJSON not indexed in repository data/geo
-  * Per-constituency historical elections prior to current term not yet seeded
 
 ### Uttarakhand (UK)
 - **1. Registry / Identity:** 70/70 (100.0%) statutory seats mapped. Status: `VERIFIED_STATUTORY_MATCH`. Missing ACs: None. Duplicate ACs: 0. Malformed: 0.
 - **2. Electoral Results:** 70/70 (100.0%) records present for 2022. Winner votes present: 70, missing: 0. Margin present: 70, missing: 0.
-- **3. Historical Elections:** Primary 2022 + Demonstrable historical years: [None]. (Total terms: 1). State historical file: Absent.
+- **3. Historical Elections:** Primary 2022 + Demonstrable historical years: [2017]. (Total terms: 2). State historical file: Present.
 - **4. Representatives / Profiles:** 70/70 (100.0%) resolved to statutory assembly seats. Extra non-statutory: 0. Duplicates: 0.
 - **5. Affidavits:** 0/70 (0.0%) candidates in store. Present in file: 0, Structurally valid: 0, Identity validated: 0, Identity unresolved: 0, Source recorded: 0, Officially verified: 0. Pending notice: Active.
 - **6. Geospatial:** File: None | Features: 0 | Clean Mapping: No | Coordinates Valid: No | Range Valid: No | Linkage Valid: No.
 - **7. Provenance & Verification:** Source: Election Commission of India (ECI) / State Election Commission | Status: `OFFLINE_LOCAL_FIXTURE` | Live DB Verified: `false`.
-- **Evidence Tier:** `SEEDED_SINGLE_TERM_PENDING_GEO_HIST` | **Data Completeness Status:** `FUNCTIONAL_PARTIAL_OFFLINE`
+- **Evidence Tier:** `SEEDED_HISTORICAL_NO_GEO` | **Data Completeness Status:** `FUNCTIONAL_PARTIAL_OFFLINE`
 - **Material Gaps:**
   * Candidate financial affidavits pending indexing (all constituencies display Affidavit Pending notice)
   * Assembly boundary GeoJSON not indexed in repository data/geo
-  * Per-constituency historical elections prior to current term not yet seeded
 
 ### Puducherry (PY)
 - **1. Registry / Identity:** 30/30 (100.0%) statutory seats mapped. Status: `VERIFIED_STATUTORY_MATCH`. Missing ACs: None. Duplicate ACs: 0. Malformed: 0.
 - **2. Electoral Results:** 30/30 (100.0%) records present for 2021. Winner votes present: 30, missing: 0. Margin present: 30, missing: 0.
-- **3. Historical Elections:** Primary 2021 + Demonstrable historical years: [None]. (Total terms: 1). State historical file: Absent.
+- **3. Historical Elections:** Primary 2021 + Demonstrable historical years: [2016]. (Total terms: 2). State historical file: Present.
 - **4. Representatives / Profiles:** 27/30 (90.0%) resolved to statutory assembly seats. Extra non-statutory: 0. Duplicates: 0.
 - **5. Affidavits:** 0/30 (0.0%) candidates in store. Present in file: 0, Structurally valid: 0, Identity validated: 0, Identity unresolved: 0, Source recorded: 0, Officially verified: 0. Pending notice: Active.
 - **6. Geospatial:** File: None | Features: 0 | Clean Mapping: No | Coordinates Valid: No | Range Valid: No | Linkage Valid: No.
 - **7. Provenance & Verification:** Source: Election Commission of India (ECI) / State Election Commission | Status: `OFFLINE_LOCAL_FIXTURE` | Live DB Verified: `false`.
-- **Evidence Tier:** `SEEDED_SINGLE_TERM_PENDING_GEO_HIST` | **Data Completeness Status:** `FUNCTIONAL_PARTIAL_OFFLINE`
+- **Evidence Tier:** `SEEDED_HISTORICAL_NO_GEO` | **Data Completeness Status:** `FUNCTIONAL_PARTIAL_OFFLINE`
 - **Material Gaps:**
   * Candidate financial affidavits pending indexing (all constituencies display Affidavit Pending notice)
   * Assembly boundary GeoJSON not indexed in repository data/geo
-  * Per-constituency historical elections prior to current term not yet seeded
 
 ### Jammu & Kashmir (JK)
 - **1. Registry / Identity:** 90/90 (100.0%) statutory seats mapped. Status: `VERIFIED_STATUTORY_MATCH`. Missing ACs: None. Duplicate ACs: 0. Malformed: 0.
 - **2. Electoral Results:** 90/90 (100.0%) records present for 2024. Winner votes present: 90, missing: 0. Margin present: 90, missing: 0.
-- **3. Historical Elections:** Primary 2024 + Demonstrable historical years: [None]. (Total terms: 1). State historical file: Absent.
+- **3. Historical Elections:** Primary 2024 + Demonstrable historical years: [2014]. (Total terms: 2). State historical file: Present.
 - **4. Representatives / Profiles:** 90/90 (100.0%) resolved to statutory assembly seats. Extra non-statutory: 0. Duplicates: 0.
 - **5. Affidavits:** 0/90 (0.0%) candidates in store. Present in file: 0, Structurally valid: 0, Identity validated: 0, Identity unresolved: 0, Source recorded: 0, Officially verified: 0. Pending notice: Active.
 - **6. Geospatial:** File: None | Features: 0 | Clean Mapping: No | Coordinates Valid: No | Range Valid: No | Linkage Valid: No.
 - **7. Provenance & Verification:** Source: Election Commission of India (ECI) / State Election Commission | Status: `OFFLINE_LOCAL_FIXTURE` | Live DB Verified: `false`.
-- **Evidence Tier:** `SEEDED_SINGLE_TERM_PENDING_GEO_HIST` | **Data Completeness Status:** `FUNCTIONAL_PARTIAL_OFFLINE`
+- **Evidence Tier:** `SEEDED_HISTORICAL_NO_GEO` | **Data Completeness Status:** `FUNCTIONAL_PARTIAL_OFFLINE`
 - **Material Gaps:**
   * Candidate financial affidavits pending indexing (all constituencies display Affidavit Pending notice)
   * Assembly boundary GeoJSON not indexed in repository data/geo
-  * Per-constituency historical elections prior to current term not yet seeded
 
 ---
 

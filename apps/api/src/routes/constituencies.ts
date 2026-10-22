@@ -24,6 +24,7 @@ import {
   getConstituencyElectionData,
 } from '../services/stateData';
 import { sendApiError } from '../lib/replyHelper';
+import { supabase, isSupabaseConfigured } from '../lib/supabase';
 
 /** Map seed data to ConstituencyBrief for API responses */
 function seedToBrief(c: ConstituencySeed): ConstituencyBrief {
@@ -395,6 +396,39 @@ export async function constituencyRoutes(app: FastifyInstance) {
   }, async (request, reply) => {
     const { stateCode } = request.params as { stateCode: string };
     const code = stateCode.toUpperCase();
+
+    // Strangler pattern: Try live database query when Supabase is configured
+    if (isSupabaseConfigured) {
+      try {
+        const { data: dbData, error } = await supabase
+          .from('constituencies')
+          .select('id, name, ac_no, state_code, district, reservation_status, current_party, current_mla')
+          .eq('state_code', code)
+          .order('ac_no', { ascending: true });
+
+        if (!error && dbData && dbData.length > 0) {
+          const mapped: ConstituencyBrief[] = dbData.map((row: any) => ({
+            id: row.id || `${code}-AC-${row.ac_no}`,
+            name: row.name,
+            acNo: row.ac_no,
+            stateCode: row.state_code || code,
+            district: row.district || '',
+            reservationStatus: (row.reservation_status as 'GEN' | 'SC' | 'ST') || 'GEN',
+            currentParty: row.current_party || '',
+            currentMLA: row.current_mla || '',
+          }));
+
+          return {
+            state: code,
+            count: mapped.length,
+            data: mapped,
+          };
+        }
+      } catch (err: any) {
+        app.log.warn({ err: err?.message, stateCode: code }, 'Database query fallback to verified seed catalog');
+      }
+    }
+
     const data = getConstituencies(code);
 
     if (data.length === 0) {
@@ -426,6 +460,48 @@ export async function constituencyRoutes(app: FastifyInstance) {
         const parts = constituencyId.split('-AC-');
         acNo = parseInt(parts[1], 10);
       }
+
+      // Strangler pattern: Try live database query when Supabase is configured
+      if (isSupabaseConfigured && !isNaN(acNo)) {
+        try {
+          const { data: row, error } = await supabase
+            .from('constituencies')
+            .select('*')
+            .eq('state_code', code)
+            .eq('ac_no', acNo)
+            .maybeSingle();
+
+          if (!error && row) {
+            const electionData = getConstituencyElectionData(code, acNo);
+            const recentElection = electionData?.recentElection ?? {
+              electionYear: null,
+              electionType: 'GENERAL' as const,
+              winner: row.current_party || '',
+              winnerName: row.current_mla || '',
+              winnerVotes: null,
+              runnerUp: '',
+              margin: null,
+              marginPercent: null,
+            };
+
+            return {
+              id: row.id || `${code}-AC-${row.ac_no}`,
+              name: row.name,
+              acNo: row.ac_no,
+              stateCode: row.state_code || code,
+              district: row.district || '',
+              reservationStatus: (row.reservation_status as 'GEN' | 'SC' | 'ST') || 'GEN',
+              currentParty: row.current_party || '',
+              currentMLA: row.current_mla || '',
+              recentElection,
+              elections: electionData?.elections ?? [recentElection],
+            };
+          }
+        } catch (err: any) {
+          app.log.warn({ err: err?.message, stateCode: code, acNo }, 'Database query fallback to verified seed detail');
+        }
+      }
+
       const brief = !isNaN(acNo)
         ? getConstituency(code, acNo)
         : getConstituencies(code).find(

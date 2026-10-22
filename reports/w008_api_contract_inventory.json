@@ -3,12 +3,12 @@
     "job": "W008",
     "title": "Fastify API Route Contract Inventory",
     "specification": "Master Execution Framework Amendment v1.5-A / DEC-041",
-    "timestamp": "2026-10-22T08:58:34.793Z"
+    "timestamp": "2026-10-22T11:12:11.942Z"
   },
   "summary": {
-    "totalRoutesRegistered": 182,
-    "pioneerAndPhase1Routes": 60,
-    "schemaCoveredRoutes": 146
+    "totalRoutesRegistered": 201,
+    "pioneerAndPhase1Routes": 63,
+    "schemaCoveredRoutes": 162
   },
   "routes": [
     {
@@ -91,6 +91,42 @@
       "schemaDefined": false,
       "preValidationDefined": false,
       "standardizedEnvelope": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/analytics/sessions",
+      "file": "analytics.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": true,
+      "preValidationDefined": false,
+      "standardizedEnvelope": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/aspirant/modules/:id/complete",
+      "file": "aspirant.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": true,
+      "preValidationDefined": false,
+      "standardizedEnvelope": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/aspirant/challenges/:id/join",
+      "file": "aspirant.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": true,
+      "preValidationDefined": false,
+      "standardizedEnvelope": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/aspirant/:id/endorse",
+      "file": "aspirant.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": true,
+      "preValidationDefined": false,
+      "standardizedEnvelope": true
     },
     {
       "method": "GET",
@@ -498,6 +534,33 @@
       "standardizedEnvelope": true
     },
     {
+      "method": "POST",
+      "path": "/api/v1/contributor/kyc",
+      "file": "contributor.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": true,
+      "preValidationDefined": false,
+      "standardizedEnvelope": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/contributor/fingerprint",
+      "file": "contributor.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": true,
+      "preValidationDefined": false,
+      "standardizedEnvelope": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/contributor/devices",
+      "file": "contributor.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": true,
+      "preValidationDefined": false,
+      "standardizedEnvelope": true
+    },
+    {
       "method": "GET",
       "path": "/debug/error",
       "file": "debug.ts",
@@ -734,6 +797,15 @@
     {
       "method": "POST",
       "path": "/api/v1/dm/block-report",
+      "file": "dm.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": true,
+      "preValidationDefined": false,
+      "standardizedEnvelope": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/dm/messages/read",
       "file": "dm.ts",
       "phase": "Phase 2-4",
       "schemaDefined": true,
@@ -1029,6 +1101,51 @@
       "standardizedEnvelope": true
     },
     {
+      "method": "POST",
+      "path": "/api/v1/lmx/credibility",
+      "file": "lmx.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": true,
+      "preValidationDefined": false,
+      "standardizedEnvelope": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/lmx/live/:id/viewers",
+      "file": "lmx.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": true,
+      "preValidationDefined": false,
+      "standardizedEnvelope": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/lmx/moderation-events",
+      "file": "lmx.ts",
+      "phase": "Phase 1 (Standardized)",
+      "schemaDefined": false,
+      "preValidationDefined": false,
+      "standardizedEnvelope": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/lmx/alerts/content",
+      "file": "lmx.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": false,
+      "preValidationDefined": false,
+      "standardizedEnvelope": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/lmx/alerts/content/:id/acknowledge",
+      "file": "lmx.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": false,
+      "preValidationDefined": false,
+      "standardizedEnvelope": false
+    },
+    {
       "method": "GET",
       "path": "/manage",
       "file": "manage.ts",
@@ -1128,6 +1245,15 @@
       "standardizedEnvelope": true
     },
     {
+      "method": "POST",
+      "path": "/api/v1/moderation/report",
+      "file": "moderation.ts",
+      "phase": "Phase 1 (Standardized)",
+      "schemaDefined": true,
+      "preValidationDefined": false,
+      "standardizedEnvelope": true
+    },
+    {
       "method": "GET",
       "path": "/api/v1/news/feed",
       "file": "news.ts",
@@ -1184,6 +1310,15 @@
     {
       "method": "GET",
       "path": "/api/v1/notifications/triggers",
+      "file": "notifications.ts",
+      "phase": "Phase 1 (Standardized)",
+      "schemaDefined": true,
+      "preValidationDefined": false,
+      "standardizedEnvelope": true
+    },
+    {
+      "method": "PATCH",
+      "path": "/api/v1/notifications/read",
       "file": "notifications.ts",
       "phase": "Phase 1 (Standardized)",
       "schemaDefined": true,
@@ -1579,6 +1714,24 @@
     },
     {
       "method": "POST",
+      "path": "/api/v1/shorts/:id/view",
+      "file": "shorts.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": true,
+      "preValidationDefined": false,
+      "standardizedEnvelope": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/shorts/:id/comments",
+      "file": "shorts.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": true,
+      "preValidationDefined": false,
+      "standardizedEnvelope": true
+    },
+    {
+      "method": "POST",
       "path": "/api/v1/spatial/analytics/overlap",
       "file": "spatialAnalytics.ts",
       "phase": "Phase 2-4",
@@ -1618,6 +1771,24 @@
       "path": "/api/v1/states/:code",
       "file": "states.ts",
       "phase": "Phase 1 (Standardized)",
+      "schemaDefined": true,
+      "preValidationDefined": false,
+      "standardizedEnvelope": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/users/:id/follow",
+      "file": "users.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": true,
+      "preValidationDefined": false,
+      "standardizedEnvelope": true
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/v1/users/:id/follow",
+      "file": "users.ts",
+      "phase": "Phase 2-4",
       "schemaDefined": true,
       "preValidationDefined": false,
       "standardizedEnvelope": true

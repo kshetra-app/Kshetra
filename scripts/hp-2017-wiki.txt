@@ -1,0 +1,1220 @@
+{{Short description|Indian state legislative election}}
+{{Use dmy dates|date=February 2020}}
+{{Use Indian English|date=December 2017}}
+{{Infobox election
+| election_name = 2017 Himachal Pradesh Legislative Assembly election
+| country = India
+| flag_year = 
+| type = Legislative
+| ongoing = no
+| party_colour = 
+| previous_election = 2012 Himachal Pradesh Legislative Assembly election
+| previous_year = 2012
+| next_election = 2022 Himachal Pradesh Legislative Assembly election
+| next_year = 2022
+| seats_for_election = All 68 seats in the [[Himachal Pradesh Legislative Assembly]]
+| majority_seats = 35
+| election_date = 9 November 2017
+| turnout = 75.57% ({{increase}}2.06%)
+<!-- Bharatiya Janata Party -->| image1 = {{CSS image crop|Image=Prem_Kumar_Dhumal.jpg|bSize=120 |cWidth=100|cHeight=120|oLeft=10|oTop=5}}
+| leader1 = [[Prem Kumar Dhumal]]
+| party1 = Bharatiya Janata Party
+| leader_since1 = 1998
+| leaders_seat1 = [[Sujanpur, Himachal Pradesh Assembly constituency|Sujanpur]]<ref>{{cite news |author=<!--Staff writer(s); no by-line.-->|title=CM-designate Dhumal loses in Sujanpur, Himachal Pradesh|url=https://www.thehindu.com/elections/himachal-pradesh-2017/cm-designate-dhumal-loses-in-sujanpur/article61844441.ece|agency=[[The Hindu]]|date=19 December 2017|access-date=30 September 2024}}</ref>''(lost)''
+| last_election1 = 26
+| seats_before1 = 
+| seats1 = '''44'''
+| seat_change1 = {{increase}}18
+| popular_vote1 = '''1,846,432'''
+| percentage1 = '''48.8%'''
+| swing1 = {{increase}}10.33%
+<!-- Congress -->| image2 = {{CSS image crop|Image=Virbhadra Singh HP.jpg|bSize=120 |cWidth=100|cHeight=120|oLeft=10|oTop=5}}
+| leader2 = [[Virbhadra Singh]]
+| party2 = Indian National Congress
+| leader_since2 = 1983
+| leaders_seat2 = [[Arki Assembly constituency|Arki]]<ref>{{cite news |author=<!--Staff writer(s); no by-line.-->|title=Virbhadra Singh files nomination from Arki constituency|url=https://economictimes.indiatimes.com/news/politics-and-nation/virbhadra-singh-files-nomination-from-arki-constituency/articleshow/61152583.cms|work=[[The Economic Times]]|agency=[[Press Trust of India]]|date=20 October 2017|access-date=29 October 2017}}</ref>
+| last_election2 = 36
+| seats_before2 = 
+| seats2 = 21
+| seat_change2 = {{decrease}}15
+| popular_vote2 = 1,577,450
+| percentage2 = 41.7%
+| swing2 = {{decrease}}1.11%
+<!-- Communist Party of India (Marxist) -->| image3 = {{CSS image crop|Image=Cpm election symbol.svg|bSize=100 |cWidth=100|cHeight=120|oLeft=0|oTop=0}}
+| leader3 = [[Rakesh Singha]]
+| party3 = Communist Party of India (Marxist)
+| leader_since3 = 2017
+| leaders_seat3 = [[Theog Assembly constituency|Theog]]
+| last_election3 = 0
+| seats_before3 = 
+| seats3 = 1
+| seat_change3 = {{increase}}1
+| popular_vote3 = 55,558
+| percentage3 = 1.5%
+| swing3 = {{decrease}}0.1%
+| map_image = 2017 Himachal Pradesh Legislative Assembly Election Result Map.svg
+| map_size = 300px
+| map_caption = Seatwise Result Map of the election
+| map2_image = Bharat Himachal Pradesh Vidhan Sabha 2017.svg
+| map2_size = 300px
+| map2_caption = Structure of the [[Himachal Pradesh Legislative Assembly]] after the election
+| title = [[List of Chief Ministers of Himachal Pradesh|Chief Minister]]
+| posttitle = 
+| before_election = [[Virbhadra Singh]]
+| before_colour = 
+| after_election = [[Jai Ram Thakur]]
+| after_colour = 
+| before_party = Indian National Congress
+| after_party = Bharatiya Janata Party
+| result = 
+}}
+
+The '''Himachal Pradesh Legislative Assembly election, 2017''' was held on 9 November 2017 to elect all 68 members of the [[Himachal Pradesh Legislative Assembly]].
+ 
+The term of the previous Legislative Assembly ended on 7 January 2017. Since 2012, the [[Indian National Congress]] Party was in power in the outgoing assembly with 36 seats. The lone opposition party was [[BJP|Bharatiya Janata Party.]]
+
+The [[Constitution of India]] states that the term of Legislative Assemblies is five years, at maximum. The term of current Legislative Assembly ends on 7 January 2018.<ref name="eci">{{cite web|url=http://eci.nic.in/eci_main1/terms_of_houses.aspx|title=Terms of the Houses|website=eci.nic.in|publisher=[[Election Commission of India]]/[[National Informatics Centre]]|access-date=23 May 2016}}</ref> The previous election, held in [[2012 Himachal Pradesh Legislative Assembly election|2012]] resulted in [[Indian National Congress|Congress]] gaining majority of seats and '''[[Virbhadra Singh]]''' becoming [[List of Chief Ministers of Himachal Pradesh|Chief Minister]].
+
+[[Himachal Pradesh]], as a state of [[India]] follows [[Parliamentary system]] of government similar to other states. The Government is responsible to the Assembly and stays in power only if it has the support of majority members. Elections take place on a [[first past the post]] basis, the candidate with the most votes wins the seat regardless of an absolute majority. Every citizen of the state, who is 18 and above is eligible to vote. The Governor then invites the leader of the largest party or coalition to form the government. As is common in most other first past the post electoral systems, the state's politics are dominated by two parties – the [[Indian National Congress]] and [[Bharatiya Janata Party]].
+
+State elections in India are often fought on central issues, and the results are regarded as a referendum on the [[Government of India|central government]]'s policies. This is especially true in the case of states where the two national parties – Congress and BJP are in direct contest with each other. The state units of the parties are not completely independent and the central authority of the parties has a considerable influence over candidate selection and campaigning. However, state issues do tend to dominate the discourse. The Congress party has projected its current [[Chief Minister]] [[Virbhadra Singh]] as its Chief Ministerial candidate for the elections. BJP announced [[Prem Kumar Dhumal]] as its Chief Ministerial candidate. Dhumal, however, lost the election so eventually the BJP made [[Jai Ram Thakur]] the Chief Minister of state, who won from the Seraj constituency over health union/central minister JP Nadda. In the 17th Assembly segment, Tashigang village becomes the highest polling station at an altitude of 15256 feet. The polling station falls in Buddhist-dominated Lahul-Spiti that form the Mandi Lok Sabha seat, the second-largest constituency in India. Situated at about 29 Kilometres from the India-China border, the polling station covers two villages - Tashigang and Gets. As per the revised electoral roll, the two villages have 48 Voters of which 30 are men and 18 women.
+
+==Preparations for elections==
+
+[[Voter-verified paper audit trail|VVPAT]]-fitted [[electronic voting machines]] were used in all of the 7,521 [[Polling place|polling stations]], the first time that the entire state will see the implementation of VVPAT to ensure greater transparency to the voter.<ref>{{Cite web|url=https://indianexpress.com/article/india/the-many-firsts-in-himachal-pradesh-elections-virbhadra-singh-dhumal-vvpat-disabled-people-and-women-to-man-141-booths-4916088/|title=The many firsts in Himachal Pradesh elections: VVPAT, disabled people and women to man 141 booths|date=31 October 2017}}</ref> Over 5 million voters are registered in the state.<ref>{{Cite web|url=https://timesofindia.indiatimes.com/city/shimla/one-day-poll-in-hp-result-on-december-18/articleshow/61063375.cms|title=One day poll in HP, result on December 18 &#124; Shimla News - Times of India|website=The Times of India}}</ref> VVPAT slips were counted in 2 polling stations each across all 68 Himachal Pradesh constituencies.<ref>{{Cite web|url=https://timesofindia.indiatimes.com/india/in-a-first-ec-to-hold-mandatory-vvpat-count-at-one-polling-station-of-each-constituency/articleshow/62115773.cms|title=In a first, EC to hold mandatory VVPAT count at one polling station of each constituency &#124; India News - Times of India|website=The Times of India}}</ref>
+
+India's first voter, [[Shyam Saran Negi]], voted for the 29th time at Kalpa polling station in Kinnaur.<ref>{{Cite news|url=http://www.hindustantimes.com/assembly-elections/at-100-india-s-first-voter-keeps-date-with-v-day/story-bT1GCJKO5dxgL6lbVsdSFI.html|title=At 100, India's first voter Shyam Negi keeps date with V-day|date=9 November 2017|work=[[Hindustan Times]]|access-date=9 November 2017|language=en}}</ref> 
+{| class="wikitable" |
+|-
+! Group of voters !! Voters population
+|-
+| Male || 2,531,321
+|-
+| Female ||  2,457,032 
+|-
+| Third gender  || 169
+|-
+| Total voters || 5,025,541 
+|}
+
+==Tibetan voters==
+
+Indian electoral rules allow any citizen of India above 18 years of age to vote in any [[states and union territories of India]], provided he/she is a resident of that state. India has a large [[Tibetan diaspora]] that fled from [[Tibet]] along with the [[Dalai Lama]]. [[Dharamshala]], a city in [[Himachal Pradesh]], is the capital of the [[Central Tibetan Administration]]. The Government has allowed Tibetans born in India between 1950 and 1987 to vote in the elections. This however, does not affect their relationship with the CTA.<ref>{{Cite news|url=https://timesofindia.indiatimes.com/city/shimla/tibetans-living-in-exile-to-vote-first-time-in-himachal-assembly-elections/articleshow/60896154.cms|title=Tibetans living in exile to vote first time in Himachal assembly elections|work=The Times of India|access-date=14 October 2017}}</ref><ref>{{Cite web|url=https://www.onmanorama.com/in-depth/elections-2017.html|title=RK Nagar By-Election Results &#124; Tamil Nadu Assembly By-poll 2017|website=OnManorama}}</ref>
+
+== Candidate list ==
+[http://www.amarujala.com/india-news/himachal-pradesh-assembly-election-2017-congress-worked-but-narendra-modi-ji-will-win-election BJP] declared list of 68 candidates on 18 October 2017 which includes 14 first timers with 21 new faces.<ref>{{cite news|last1=Verma|first1=Gyan|title=BJP releases candidate list for Himachal elections|url=http://www.livemint.com/Politics/2L6V7p2TgrigOthFARfmqO/Himachal-elections-BJP-releases-candidate-list-Prem-Kumar.html|accessdate=28 October 2017|work=[[Mint (newspaper)|Mint]]|date=19 October 2017}}</ref>
+
+==Schedule==
+
+{| class="wikitable"
+|-
+|'''Event'''
+|'''Date'''
+|'''Day'''
+|-
+| Date for nominations || 16 October 2017 || Monday
+|-
+| Last date for filing nominations || 23 October 2017 || Monday
+|-
+| Date for scrutiny of nominations || 24 October 2017 || Tuesday
+|-
+| Last date for withdrawal of candidatures || 26 October 2017 || Thursday
+|-
+| Date of poll || '''9 Nov 2017''' || Thursday
+|-
+| Date of counting || 18 December 2017 || Monday
+|-
+| Date before which the election shall be completed || 20 December 2017 || Wednesday
+|}
+
+==Opinion polls==
+{| class="wikitable" style="text-align:center;font-size:95%;line-height:16px;"
+|-
+! class="wikitable" rowspan="2" | Polling firm/Commissioner
+! class="wikitable" rowspan="2" | Date published
+| bgcolor="{{party color|Bharatiya Janata Party}}" |
+| bgcolor="{{party color|Indian National Congress}}" |
+| style="background:gray;"|
+|-
+! class="wikitable"| [[Bharatiya Janata Party|BJP]]
+! class="wikitable"| [[Indian National Congress|INC]]
+! class="wikitable"| Others
+|-
+|India-Today (Axis) Opinion Poll<ref>{{cite news|title=Himachal Pradesh Opinion Poll: BJP all set for a big win, development the key issue|url=https://www.indiatoday.in/assembly-elections-2017/himachal-pradesh-assembly-election-2017/story/himachal-pradesh-opinion-poll-2017-bjp-virbhadra-singh-congress-1070402-2017-10-24|access-date=24 October 2017|work=IndiaToday|date=24 October 2017}}</ref>
+| 24 October 2017
+| 49%<br />{{font|size=75%|font=Verdana|text=43–47}}
+| 38%<br />{{font|size=75%|font=Verdana|text=21–25}}
+| 13%<br />{{font|size=75%|font=Verdana|text=0–2}}
+|-
+|ABP News CSDS<ref name=":0">{{cite web|title=BJP set to sweep Himachal Pradesh, may get 39–45 seats: ABP News opinion poll|url=http://www.abplive.in/india-news/bjp-set-to-sweep-himachal-pradesh-may-get-39-45-seats-abp-news-opinion-poll-596836|publisher=ABP Live|accessdate=30 October 2017|date=30 October 2017}}</ref>
+|30 October 2017
+|47%<br />{{font|size=75%|font=Verdana|text=39–45}}
+|41%<br />{{font|size=75%|font=Verdana|text=22–28}}
+|12%<br />{{font|size=75%|font=Verdana|text=0–3}}
+|-
+|C-Voter<ref name=":1">{{cite web|title=C-Voter survey predicts thumping victory for BJP|url=http://www.firstpost.com/politics/himachal-pradesh-assembly-election-2017-opinion-poll-c-voter-survey-predicts-thumping-victory-for-bjp-4195423.html|publisher=Firstpost|accessdate=7 November 2017|date=7 November 2017}}</ref>
+|7 November 2017
+|50%<br />{{font|size=75%|font=Verdana|text=52}}
+|37%<br />{{font|size=75%|font=Verdana|text=15}}
+|11%<br />{{font|size=75%|font=Verdana|text=1}}
+|}
+
+== Results ==
+The results were declared on 18 December 2017.<ref>{{Cite web|url=https://timesofindia.indiatimes.com/india/tale-of-two-states-gujarat-trumps-over-himachal-pradesh-on-nota-votes/articleshow/62122042.cms|title=Tale of two states: Gujarat trumps over Himachal Pradesh on NOTA votes &#124; India News - Times of India|website=The Times of India}}</ref>
+
+{| class="wikitable" style="text-align:right; font-size:95%;"
+|+ [[2012 Himachal Pradesh Legislative Assembly election#Results|←]] Summary of the 9 November 2017 [[Himachal Pradesh Legislative Assembly]] election results<ref>{{Cite web|url=https://www.thehindu.com/elections/himachal-pradesh-2017/live-updates-himachal-pradesh-legislative-assembly-election-results/article21830225.ece|title=Himachal Pradesh Assembly election results — counting ends as BJP seals majority with 44 seats|author=The Hindu Net Desk|date=18 December 2017|via=www.thehindu.com}}</ref>
+|-
+| colspan="7" style="text-align:center" |[[File:Himachal Pradesh Legislative Assembly Elections 2017.svg]]
+|-  style="background:#e9e9e9; text-align:center;"
+! rowspan="2" colspan="2" style="text-align:left; width:205px;"| Parties and coalitions
+! colspan="3"| Popular vote
+! colspan="2"| Seats
+|-  style="background:#e9e9e9; text-align:center;"
+! style="width:70px;"| Votes
+! style="width:45px;"| %
+! style="width:45px;"| ±[[Percentage point|pp]]
+! style="width:30px;"| Won
+! style="width:30px;"| +/−
+|-
+| width="1" bgcolor="{{party color|Bharatiya Janata Party}}"|
+| style="text-align:left;"| [[Bharatiya Janata Party]] (BJP)
+| {{formatnum:1846432}}|| 48.8 || {{increase}}10.3
+| 44 || {{increase}}18
+|-
+| bgcolor="{{party color|Indian National Congress}}"|
+| style="text-align:left;"| [[Indian National Congress]] (INC)
+| {{formatnum:1577450}} || 41.7 || {{decrease}}1.1
+| 21 || {{decrease}}15
+|-
+| bgcolor="{{party color|Independent (politician)}}"|
+| style="text-align:left;"| [[Independent (politician)|Independents]]
+| {{formatnum:239989}} || 6.3 || {{decrease}}6.1
+| 2 || {{decrease}}3
+|-
+| bgcolor="{{party color|Communist Party of India (Marxist)}}"|
+| style="text-align:left;"| [[Communist Party of India (Marxist)]] (CPI(M))
+| {{formatnum:55558}} || 1.5 || {{decrease}}0.1
+| 1 || {{increase}}1
+|-
+| bgcolor="{{party color|Bahujan Samaj Party}}"|
+| style="text-align:left;"| [[Bahujan Samaj Party]] (BSP)
+| {{formatnum:18540}} || 0.5 || {{decrease}}0.7
+| 0 || {{steady}}
+|-
+| style="background:gray;"|
+| style="text-align:left;"| [[Himachal Lokhit Party]] (HLP)
+| colspan="2" {{N/A}} || {{decrease}}2.4
+| 0 || {{decrease}}1
+|-
+| style="background:white;"|
+| style="text-align:left;"| [[None of the Above]] (NOTA)
+| {{formatnum:34232}} || 0.9 || {{increase}}0.9
+| colspan="2" {{N/A}}
+|-
+| colspan="7" style="background:#e9e9e9;"|
+|- style="font-weight:bold;"
+| style="text-align:left;" colspan="2"| Total
+| {{formatnum:3784658}} || 100.00 || style="background:#e9e9e9;"|
+| 68 || ±0
+|-
+! colspan="7" |
+|-
+| style="text-align:left;" colspan="2" |Valid votes
+| align="right" |{{formatnum:3784658}}
+| align="right" |99.64
+| colspan="3" rowspan="5" style="background-color:#E9E9E9" |
+|-
+| style="text-align:left;" colspan="2" |Invalid votes
+| align="right" |{{formatnum:13158}}
+| align="right" |0.36
+|-
+| style="text-align:left;" colspan="2" |'''Votes cast / turnout'''
+| align="right" |'''{{formatnum:3798176}}'''
+| align="right" |'''75.57'''
+|-
+| style="text-align:left;" colspan="2" |Abstentions
+| align="right" | {{formatnum:1227764}}
+| align="right" |24.43
+|-
+| style="text-align:left;" colspan="2" |'''Registered voters'''
+| align="right" | '''{{formatnum:5025940}}'''
+|colspan="1" style="background-color:#E9E9E9"|
+|-
+|}
+
+=== Results by District ===
+{| class="wikitable sortable" style="text-align:centre;"
+!{{nowrap|District wise map of Himachal Pradesh}}
+!District
+!Total Seats
+! style="background:{{party color|Bharatiya Janata Party}}; color:white;" |BJP
+! style="background:{{party color|Indian National Congress}}; color:white;" |INC
+! style="background:grey; color:white;" |OTH
+|-
+| rowspan="12" |[[File:Himachal Pradesh locator map.svg|416x416px]]            
+| [[Chamba district|Chamba]]                  
+|
+5
+| style="background:#FF9933"|'''4'''|| 1 || 0
+
+|-
+|[[Kangra district|Kangra]]
+|
+15
+| style="background:#FF9933"|'''11'''|| 3 || 1
+|-
+| [[Lahaul and Spiti district|Lahaul and Spiti]]
+|
+1
+| style="background:#FF9933"|'''1'''|| 0 || 0      
+|-
+| [[Kullu district|Kullu]]
+|
+4
+| style="background:#FF9933"|'''3'''|| 1 || 0
+|-
+| [[Mandi district|Mandi]]
+|
+10
+| style="background:#FF9933"|'''9'''|| 0 || 1
+|-
+| [[Hamirpur district, Himachal Pradesh|Hamirpur]]
+|
+5
+|| 2|| style="background:#00BFFF|'''3'''|| 0
+|-
+| [[Una district|Una]]
+|
+5
+| style="background:#FF9933"|'''3'''|| 2 || 0 
+|-
+| [[Bilaspur district, Himachal Pradesh|Bilaspur]]
+|
+4
+| style="background:#FF9933"|'''3'''|| 1 || 0 
+|-
+| [[Solan district|Solan]]
+|
+5
+| 2|| style="background:#00BFFF|'''3'''|| 0 
+|-
+| [[Sirmaur district|Sirmaur]]
+|
+5
+| style="background:#FF9933"|'''3'''|| 2 || 0 
+|-
+| [[Shimla district|Shimla]]
+|
+8
+| 3|| style="background:#00BFFF|'''4'''|| 1
+|-
+| [[Kinnaur district|Kinnaur]] 
+|
+1
+|   0|| style="background:#00BFFF|'''1''' ||  0
+
+|-
+| colspan="2"| ''' Total '''
+|
+''' 68 '''
+| style="background:#FF9933"|'''44'''||'''21'''||'''3'''
+|}
+
+=== Results by Constituency ===
+
+{| class="wikitable sortable"
+! rowspan="2" |[[List of districts of Himachal Pradesh|District]]
+! rowspan="2" |#
+! rowspan="2" |Constituency
+! colspan="4" |Winner<ref name="Himachal Pradesh election 2017: Full list of winners">{{cite news|url=https://indianexpress.com/elections/himachal-pradesh-assembly-elections-2017/himachal-pradesh-election-2017-full-list-of-winners-live-updates-4988241/|title=Himachal Pradesh election 2017: Full list of winners|last1=The Indian Express|date=18 December 2017|work=|accessdate=26 January 2023|archiveurl=https://web.archive.org/web/20230126055604/https://indianexpress.com/elections/himachal-pradesh-assembly-elections-2017/himachal-pradesh-election-2017-full-list-of-winners-live-updates-4988241/|archivedate=26 January 2023|language=en}}</ref>
+! colspan="4" |Runner-up
+! rowspan="2" |Margin
+|-
+!Candidate
+! colspan="2" |Party
+! data-sort-type="number" | Votes
+!Candidate
+! colspan="2" |Party
+! data-sort-type="number" | Votes
+|-
+! rowspan="5" |[[Chamba district|Chamba]] 
+|1
+|[[Churah Assembly constituency|Churah (SC)]]
+|[[Hans Raj (politician)|Hans Raj]]
+| bgcolor="#FF9933" |
+|[[Bharatiya Janata Party|BJP]]
+|28,293
+|Surender Bhardwaj
+| bgcolor="#00BFFF" |
+|[[Indian National Congress|INC]]
+|23,349
+|4,944
+|-
+|2
+|[[Bharmour Assembly constituency|Bharmour (ST)]]
+|Jia Lal
+| bgcolor=#FF9933 |
+|[[Bharatiya Janata Party|BJP]]
+|25,744
+|Thakur Singh Bharmouri
+| bgcolor=#00BFFF |
+|[[Indian National Congress|INC]]
+|18,395
+|7,349
+|-
+|3
+|[[Chamba Assembly constituency|Chamba]]
+|[[Pawan Nayyar]]
+| bgcolor=#FF9933 |
+|[[Bharatiya Janata Party|BJP]]
+|26,763
+|Neeraj Nayar
+| bgcolor=#00BFFF |
+|[[Indian National Congress|INC]]
+|24,884
+|1,879
+|-
+|4
+|[[Dalhousie Assembly constituency|Dalhousie]]
+|[[Asha Kumari (politician)|Asha Kumari]]
+| bgcolor=#00BFFF |
+|[[Indian National Congress|INC]]
+|24,224
+|D. S. Thakur
+| bgcolor=#FF9933 |
+|[[Bharatiya Janata Party|BJP]]
+|23,668
+|556
+|-
+|5
+|[[Bhattiyat Assembly constituency|Bhattiyat]]
+|Bikram Singh Jaryal
+| bgcolor=#FF9933 |
+|[[Bharatiya Janata Party|BJP]]
+|29,119
+|Kuldeep Singh Pathania
+| bgcolor=#00BFFF |
+|[[Indian National Congress|INC]]
+|22,234
+|6,885
+|-
+! rowspan="15" |[[Kangra district|Kangra]] 
+|6
+|[[Nurpur Assembly constituency|Nurpur]]
+|[[Rakesh Pathania]]
+| bgcolor="#FF9933" |
+|[[Bharatiya Janata Party|BJP]]
+|34,871
+|Ajay Mahajan
+| bgcolor="#00BFFF" |
+|[[Indian National Congress|INC]]
+|28,229
+|6,642
+|-
+|7
+|[[Indora Assembly constituency|Indora (SC)]]
+|Reeta Devi
+| bgcolor=#FF9933 |
+|[[Bharatiya Janata Party|BJP]]
+|29,213
+|Kamal Kishore
+| bgcolor=#00BFFF |
+|[[Indian National Congress|INC]]
+|28,118
+|1,095
+|-
+|8
+|[[Fatehpur, Himachal Pradesh Assembly constituency|Fatehpur]]
+|Sujan Singh Pathania
+| bgcolor=#00BFFF |
+|[[Indian National Congress|INC]]
+|18,962
+|Kripal Singh Parmar
+| bgcolor=#FF9933 |
+|[[Bharatiya Janata Party|BJP]]
+|17,678
+|1,284
+|-
+|9
+|[[Jawali Assembly constituency|Jawali]]
+|[[Arjun Singh (Himachal Pradesh politician)|Arjun Singh]]
+| bgcolor=#FF9933 |
+|[[Bharatiya Janata Party|BJP]]
+|36,999
+|Chander Kumar
+| bgcolor=#00BFFF |
+|[[Indian National Congress|INC]]
+|28,786
+|8,213
+|-
+|10
+|[[Dehra Assembly constituency|Dehra]]
+|Hoshyar Singh
+| bgcolor=#DDDDDD |
+|[[Independent politician|Ind]]
+|24,206
+|[[Ravinder Singh Ravi]]
+| bgcolor=#FF9933 |
+|[[Bharatiya Janata Party|BJP]]
+|20,292
+|3,914
+|-
+|11
+|[[Jaswan-Pragpur Assembly constituency|Jaswan-Pragpur]]
+|[[Bikram Singh (politician)|Bikram Singh]]
+| bgcolor=#FF9933 |
+|[[Bharatiya Janata Party|BJP]]
+|23,583
+|Surinder Singh Mankotia
+| bgcolor=#00BFFF |
+|[[Indian National Congress|INC]]
+|21,721
+|1,862
+|-
+|12
+|[[Jawalamukhi Assembly constituency|Jawalamukhi]]
+|Ramesh Chand Dhawala
+| bgcolor=#FF9933 |
+|[[Bharatiya Janata Party|BJP]]
+|27,914
+|Sanjay Rattan
+| bgcolor=#00BFFF |
+|[[Indian National Congress|INC]]
+|21,450
+|6,464
+|-
+|13
+|[[Jaisinghpur Assembly constituency|Jaisinghpur (SC)]]
+|[[Ravinder Kumar (politician)|Ravinder Kumar]]
+| bgcolor=#FF9933 |
+|[[Bharatiya Janata Party|BJP]]
+|29,357
+|[[Yadvinder Goma]]
+| bgcolor=#00BFFF |
+|[[Indian National Congress|INC]]
+|18,647
+|10,710
+|-
+|14
+|[[Sullah Assembly constituency|Sullah]]
+|[[Vipin Singh Parmar]]
+| bgcolor=#FF9933 |
+|[[Bharatiya Janata Party|BJP]]
+|38,173
+|Jagjiwan Paul
+| bgcolor=#00BFFF |
+|[[Indian National Congress|INC]]
+|27,882
+|10,291
+|-
+|15
+|[[Nagrota (Himachal Pradesh Assembly constituency)|Nagrota]]
+|[[Arun Kumar (Himachal Pradesh politician)|Arun Kumar]]
+| bgcolor=#FF9933 |
+|[[Bharatiya Janata Party|BJP]]
+|32,039
+|[[G. S. Bali|G S Bali]]
+| bgcolor=#00BFFF |
+|[[Indian National Congress|INC]]
+|31,039
+|1,000
+|-
+|16
+|[[Kangra Assembly constituency|Kangra]]
+|Pawan Kumar Kajal
+| bgcolor=#00BFFF |
+|[[Indian National Congress|INC]]
+|25,549
+|[[Sanjay Chaudhary]]
+| bgcolor=#FF9933 |
+|[[Bharatiya Janata Party|BJP]]
+|19,341
+|6,208
+|-
+|17
+|[[Shahpur (Himachal Pradesh Assembly constituency)|Shahpur]]
+|[[Sarveen Choudhary]]
+| bgcolor=#FF9933 |
+|[[Bharatiya Janata Party|BJP]]
+|23,104
+|[[Vijai Singh Mankotia|Major (Ret.) Vijai Singh Mankotia]]
+| bgcolor=#DDDDDD |
+|[[Independent politician|Ind]]
+|16,957
+|6,147
+|-
+|18
+|[[Dharamshala Assembly constituency|Dharamshala]]
+|[[Kishan Kapoor]]
+| bgcolor=#FF9933 |
+|[[Bharatiya Janata Party|BJP]]
+|26,050
+|[[Sudhir Sharma]]
+| bgcolor=#00BFFF |
+|[[Indian National Congress|INC]]
+|23,053
+|2,997
+|-
+|19
+|[[Palampur Assembly constituency|Palampur]]
+|[[Ashish Butail]]
+| bgcolor=#00BFFF |
+|[[Indian National Congress|INC]]
+|24,252
+|[[Indu Goswami]]
+| bgcolor=#FF9933 |
+|[[Bharatiya Janata Party|BJP]]
+|19,928
+|4,324
+|-
+|20
+|[[Baijnath Assembly constituency|Baijnath (SC)]]
+|Mulkh Raj Premi
+| bgcolor=#FF9933 |
+|[[Bharatiya Janata Party|BJP]]
+|32,102
+|[[Kishori Lal (Kullu politician)|Kishori Lal]]
+| bgcolor=#00BFFF |
+|[[Indian National Congress|INC]]
+|19,433
+|12,669
+|-
+![[Lahaul and Spiti district|Lahaul and<br>Spiti]]
+|21
+|[[Lahaul and Spiti Assembly constituency|Lahaul and Spiti (ST)]]
+|[[Ram Lal Markanda]]
+| bgcolor="#FF9933" |
+|[[Bharatiya Janata Party|BJP]]
+|7,756
+|[[Ravi Thakur (politician)|Ravi Thakur]]
+| bgcolor="#00BFFF" |
+|[[Indian National Congress|INC]]
+|6,278
+|1,478
+|-
+! rowspan="4" |[[Kullu district|Kullu]] 
+|22
+|[[Manali Assembly constituency|Manali]]
+|[[Govind Singh Thakur]]
+| bgcolor="#FF9933" |
+|[[Bharatiya Janata Party|BJP]]
+|27,173
+|Hari Chand Sharma
+| bgcolor="#00BFFF" |
+|[[Indian National Congress|INC]]
+|24,168
+|3,005
+|-
+|23
+|[[Kullu Assembly constituency|Kullu]]
+|Sunder Singh Thakur
+| bgcolor=#00BFFF |
+|[[Indian National Congress|INC]]
+|31,423
+|[[Maheshwar Singh (Kullu politician)|Maheshwar Singh]]
+| bgcolor=#FF9933 |
+|[[Bharatiya Janata Party|BJP]]
+|29,885
+|1,538
+|-
+|24
+|[[Banjar Assembly constituency|Banjar]]
+|[[Surender Shourie]]
+| bgcolor=#FF9933 |
+|[[Bharatiya Janata Party|BJP]]
+|28,007
+|Aditya Vikram Singh
+| bgcolor=#00BFFF |
+|[[Indian National Congress|INC]]
+|24,767
+|3,240
+|-
+|25
+|[[Anni Assembly constituency|Anni (SC)]]
+|Kishori Lal
+| bgcolor=#FF9933 |
+|[[Bharatiya Janata Party|BJP]]
+|30,559
+|Paras Ram
+| bgcolor=#00BFFF |
+|[[Indian National Congress|INC]]
+|24,576
+|5,983
+|-
+! rowspan="10" |[[Mandi district|Mandi]] 
+|26
+|[[Karsog Assembly constituency|Karsog (SC)]]
+|Hira Lal
+| bgcolor="#FF9933" |
+|[[Bharatiya Janata Party|BJP]]
+|22,102
+|[[Mansa Ram]]
+| bgcolor="#00BFFF" |
+|[[Indian National Congress|INC]]
+|17,272
+|4,830
+|-
+|27
+|[[Sundernagar Assembly constituency|Sundernagar]]
+|[[Rakesh Jamwal|Rakesh Kumar Jamwal]]
+| bgcolor=#FF9933 |
+|[[Bharatiya Janata Party|BJP]]
+|32,545
+|Sohan Lal
+| bgcolor=#00BFFF |
+|[[Indian National Congress|INC]]
+|23,282
+|9,263
+|-
+|28
+|[[Nachan Assembly constituency|Nachan (SC)]]
+|Vinod Kumar
+| bgcolor=#FF9933 |
+|[[Bharatiya Janata Party|BJP]]
+|38,154
+|Lal Singh Kaushal
+| bgcolor=#00BFFF |
+|[[Indian National Congress|INC]]
+|22,258
+|15,896
+|-
+|29
+|[[Seraj Assembly constituency|Seraj]]
+|[[Jai Ram Thakur]]
+| bgcolor=#FF9933 |
+|[[Bharatiya Janata Party|BJP]]
+|35,519
+|Chet Ram
+| bgcolor=#00BFFF |
+|[[Indian National Congress|INC]]
+|24,265
+|11,254
+|-
+|30
+|[[Darang Assembly constituency|Darang]]
+|Jawahar Thakur
+| bgcolor=#FF9933 |
+|[[Bharatiya Janata Party|BJP]]
+|31,392
+|[[Kaul Singh Thakur|Kaul Singh]]
+| bgcolor=#00BFFF |
+|[[Indian National Congress|INC]]
+|24,851
+|6,541
+|-
+|31
+|[[Jogindernagar Assembly constituency|Jogindernagar]]
+|Prakash Rana
+| bgcolor=#DDDDDD |
+|[[Independent politician|Ind]]
+|31,214
+|[[Gulab Singh Thakur]]
+| bgcolor=#FF9933 |
+|[[Bharatiya Janata Party|BJP]]
+|24,579
+|6,635
+|-
+|32
+|[[Dharampur, Himachal Pradesh Assembly constituency|Dharampur]]
+|[[Mahender Singh]]
+| bgcolor=#FF9933 |
+|[[Bharatiya Janata Party|BJP]]
+|27,931
+|Chandershekhar
+| bgcolor=#00BFFF |
+|[[Indian National Congress|INC]]
+|15,967
+|11,964
+|-
+|33
+|[[Mandi Assembly constituency|Mandi]]
+|[[Anil Sharma (Himachal Pradesh politician)|Anil Sharma]]
+| bgcolor=#FF9933 |
+|[[Bharatiya Janata Party|BJP]]
+|31,282
+|Champa Thakur
+| bgcolor=#00BFFF |
+|[[Indian National Congress|INC]]
+|21,025
+|10,257
+|-
+|34
+|[[Balh Assembly constituency|Balh (SC)]]
+|[[Inder Singh Gandhi|Colonel Inder Singh Gandhi]]
+| bgcolor=#FF9933 |
+|[[Bharatiya Janata Party|BJP]]
+|34,704
+|Prakash Chaudhary
+| bgcolor=#00BFFF |
+|[[Indian National Congress|INC]]
+|21,893
+|12,811
+|-
+|35
+|[[Sarkaghat Assembly constituency|Sarkaghat]]
+|Colonel Inder Singh
+| bgcolor=#FF9933 |
+|[[Bharatiya Janata Party|BJP]]
+|30,705
+|Pawan Kumar
+| bgcolor=#00BFFF |
+|[[Indian National Congress|INC]]
+|21,403
+|9,302
+|-
+! rowspan="5" |[[Hamirpur district, Himachal Pradesh|Hamirpur]] 
+|36
+|[[Bhoranj Assembly constituency|Bhoranj (SC)]]
+|Kamlesh Kumari
+| bgcolor="#FF9933" |
+|[[Bharatiya Janata Party|BJP]]
+|27,961
+|Suresh Kumar
+| bgcolor="#00BFFF" |
+|[[Indian National Congress|INC]]
+|21,069
+|6,892
+|-
+|37
+|[[Sujanpur (Himachal Pradesh Assembly constituency)|Sujanpur]]
+|[[Rajinder Rana]]
+| bgcolor=#00BFFF |
+|[[Indian National Congress|INC]]
+|25,288
+|[[Prem Kumar Dhumal]]
+| bgcolor=#FF9933 |
+|[[Bharatiya Janata Party|BJP]]
+|23,369
+|1,919
+|-
+|38
+|[[Hamirpur (Himachal Pradesh Vidhan Sabha constituency)|Hamirpur]]
+|[[Narinder Thakur]]
+| bgcolor=#FF9933 |
+|[[Bharatiya Janata Party|BJP]]
+|25,854
+|Kuldeep Singh Pathania
+| bgcolor=#00BFFF |
+|[[Indian National Congress|INC]]
+|18,623
+|7,231
+|-
+|39
+|[[Barsar Assembly constituency|Barsar]]
+|Inder Dutt Lakhanpal
+| bgcolor=#00BFFF |
+|[[Indian National Congress|INC]]
+|25,679
+|Baldev Sharma
+| bgcolor=#FF9933 |
+|[[Bharatiya Janata Party|BJP]]
+|25,240
+|439
+|-
+|40
+|[[Nadaun Assembly constituency|Nadaun]]
+|[[Sukhvinder Singh Sukhu]]
+| bgcolor=#00BFFF |
+|[[Indian National Congress|INC]]
+|30,980
+|Vijay Agnihotri
+| bgcolor=#FF9933 |
+|[[Bharatiya Janata Party|BJP]]
+|28,631
+|2,349
+|-
+! rowspan="5" |[[Una district|Una]] 
+|41
+|[[Chintpurni Assembly constituency|Chintpurni (SC)]]
+|Balvir Singh
+| bgcolor="#FF9933" |
+|[[Bharatiya Janata Party|BJP]]
+|32,488
+|Kuldip Kumar
+| bgcolor="#00BFFF" |
+|[[Indian National Congress|INC]]
+|23,909
+|8,579
+|-
+|42
+|[[Gagret Assembly constituency|Gagret]]
+|Rajesh Thakur
+| bgcolor=#FF9933 |
+|[[Bharatiya Janata Party|BJP]]
+|33,977
+|Rakesh Kalia
+| bgcolor=#00BFFF |
+|[[Indian National Congress|INC]]
+|24,657
+|9,320
+|-
+|43
+|[[Haroli Assembly constituency|Haroli]]
+|[[Mukesh Agnihotri]]
+| bgcolor=#00BFFF |
+|[[Indian National Congress|INC]]
+|35,095
+|Ram Kumar
+| bgcolor=#FF9933 |
+|[[Bharatiya Janata Party|BJP]]
+|27,718
+|7,377
+|-
+|44
+|[[Una (Himachal Pradesh Assembly constituency)|Una]]
+|[[Satpal Raizada]]
+| bgcolor=#00BFFF |
+|[[Indian National Congress|INC]]
+|31,360
+|[[Satpal Singh Satti]]
+| bgcolor=#FF9933 |
+|[[Bharatiya Janata Party|BJP]]
+|28,164
+|3,196
+|-
+|45
+|[[Kutlehar Assembly constituency|Kutlehar]]
+|[[Virender Kanwar]]
+| bgcolor=#FF9933 |
+|[[Bharatiya Janata Party|BJP]]
+|31,101
+|Vivek Sharma
+| bgcolor=#00BFFF |
+|[[Indian National Congress|INC]]
+|25,495
+|5,606
+|-
+! rowspan="4" |[[Bilaspur district, Himachal Pradesh|Bilaspur]] 
+|46
+|[[Jhanduta Assembly constituency|Jhanduta (SC)]]
+|[[Jeet Ram Katwal]]
+| bgcolor="#FF9933" |
+|[[Bharatiya Janata Party|BJP]]
+|29,030
+|Beeru Ram Kishore
+| bgcolor="#00BFFF" |
+|[[Indian National Congress|INC]]
+|24,068
+|4,962
+|-
+|47
+|[[Ghumarwin Assembly constituency|Ghumarwin]]
+|[[Rajinder Garg]]
+| bgcolor=#FF9933 |
+|[[Bharatiya Janata Party|BJP]]
+|34,846
+|Rajesh Dharmani
+| bgcolor=#00BFFF |
+|[[Indian National Congress|INC]]
+|24,411
+|10,435
+|-
+|48
+|[[Bilaspur (Himachal Pradesh Assembly constituency)|Bilaspur]]
+|[[Subhash Thakur]]
+| bgcolor=#FF9933 |
+|[[Bharatiya Janata Party|BJP]]
+|31,547
+|Bumber Thakur
+| bgcolor=#00BFFF |
+|[[Indian National Congress|INC]]
+|24,685
+|6,862
+|-
+|49
+|[[Sri Naina Deviji Assembly constituency|Sri Naina Deviji]]
+|[[Ram Lal Thakur]]
+| bgcolor=#00BFFF |
+|[[Indian National Congress|INC]]
+|28,119
+|Randhir Sharma
+| bgcolor=#FF9933 |
+|[[Bharatiya Janata Party|BJP]]
+|27,077
+|1,042
+|-
+! rowspan="5" |[[Solan district|Solan]] 
+|50
+|[[Arki Assembly constituency|Arki]]
+|[[Virbhadra Singh]]
+| bgcolor="#00BFFF" |
+|[[Indian National Congress|INC]]
+|34,499
+|Rattan Singh Pal
+| bgcolor="#FF9933" |
+|[[Bharatiya Janata Party|BJP]]
+|28,448
+|6,051
+|-
+|51
+|[[Nalagarh Assembly constituency|Nalagarh]]
+|[[Lakhvinder Singh Rana]]
+| bgcolor=#00BFFF |
+|[[Indian National Congress|INC]]
+|25,872
+| [[Krishan Lal Thakur]]
+| bgcolor=#FF9933 |
+|[[Bharatiya Janata Party|BJP]]
+|24,630
+|1,242
+|-
+|52
+|[[Doon Assembly constituency|Doon]]
+|[[Paramjeet Singh Pammi]]
+| bgcolor=#FF9933 |
+|[[Bharatiya Janata Party|BJP]]
+|29,701
+|Ram Kumar
+| bgcolor=#00BFFF |
+|[[Indian National Congress|INC]]
+|25,382
+|4,319
+|-
+|53
+|[[Solan Assembly constituency|Solan (SC)]]
+|[[Dhani Ram Shandil]]
+| bgcolor=#00BFFF |
+|[[Indian National Congress|INC]]
+|26,200
+|Rajesh Kashyap
+| bgcolor=#FF9933 |
+|[[Bharatiya Janata Party|BJP]]
+|25,529
+|671
+|-
+|54
+|[[Kasauli Assembly constituency|Kasauli (SC)]]
+|[[Rajiv Saizal]]
+| bgcolor=#FF9933 |
+|[[Bharatiya Janata Party|BJP]]
+|23,656
+|Vinod Sultanpuri
+| bgcolor=#00BFFF |
+|[[Indian National Congress|INC]]
+|23,214
+|442
+|-
+! rowspan="5" |[[Sirmaur district|Sirmaur]] 
+|55
+|[[Pachhad Assembly constituency|Pachhad (SC)]]
+|[[Suresh Kumar Kashyap]]
+| bgcolor="#FF9933" |
+|[[Bharatiya Janata Party|BJP]]
+|30,243
+|Gangu Ram Musafir
+| bgcolor="#00BFFF" |
+|[[Indian National Congress|INC]]
+|23,816
+|6,427
+|-
+|56
+|[[Nahan Assembly constituency|Nahan]]
+|[[Rajeev Bindal|Dr. Rajeev Bindal]]
+| bgcolor=#FF9933 |
+|[[Bharatiya Janata Party|BJP]]
+|31,563
+|Ajay Solankey
+| bgcolor=#00BFFF |
+|[[Indian National Congress|INC]]
+|27,573
+|3,990
+|-
+|57
+|[[Sri Renukaji Assembly constituency|Sri Renukaji (SC)]]
+|[[Vinay Kumar]]
+| bgcolor=#00BFFF |
+|[[Indian National Congress|INC]]
+|22,028
+|Balbir Singh
+| bgcolor=#FF9933 |
+|[[Bharatiya Janata Party|BJP]]
+|16,868
+|5,160
+|-
+|58
+|[[Paonta Sahib Assembly constituency|Paonta Sahib]]
+|Sukh Ram Chaudhary
+| bgcolor=#FF9933 |
+|[[Bharatiya Janata Party|BJP]]
+|36,011
+|Kirnesh Jung
+| bgcolor=#00BFFF |
+|[[Indian National Congress|INC]]
+|23,392
+|12,619
+|-
+|59
+|[[Shillai Assembly constituency|Shillai]]
+|Harsh Wardhan Singh Chauhan
+| bgcolor=#00BFFF |
+|[[Indian National Congress|INC]]
+|29,171
+|Baldev Singh
+| bgcolor=#FF9933 |
+|[[Bharatiya Janata Party|BJP]]
+|25,046
+|4,125
+|-
+! rowspan="8" |[[Shimla district|Shimla]] 
+|60
+|[[Chopal Assembly constituency|Chopal]]
+|Balbir Singh Verma
+| bgcolor="#FF9933" |
+|[[Bharatiya Janata Party|BJP]]
+|29,537
+|Subhash Chand Manglate
+| bgcolor="#00BFFF" |
+|[[Indian National Congress|INC]]
+|24,950
+|4,587
+|-
+|61
+|[[Theog (Himachal Pradesh Assembly constituency)|Theog]]
+|[[Rakesh Singha]]
+| bgcolor="#FF1D15" |
+|[[Communist Party of India (Marxist)|CPM]]
+|24,791
+|[[Rakesh Verma]]
+| bgcolor="#FF9933" |
+|[[Bharatiya Janata Party|BJP]]
+|22,808
+|1,983
+|-
+|62
+|[[Kasumpati Assembly constituency|Kasumpati]]
+|Anirudh Singh
+| bgcolor=#00BFFF |
+|[[Indian National Congress|INC]]
+|22,061
+|Vijay Jyoti
+| bgcolor=#FF9933 |
+|[[Bharatiya Janata Party|BJP]]
+|12,664
+|9,397
+|-
+|63
+|[[Shimla Assembly constituency|Shimla]]
+|[[Suresh Bhardwaj (politician)|Suresh Bhardwaj]]
+| bgcolor=#FF9933 |
+|[[Bharatiya Janata Party|BJP]]
+|14,012
+|Harish Janartha
+| bgcolor=#DDDDDD |
+|[[Independent politician|Ind]]
+|12,109
+|1,903
+|-
+|64
+|[[Shimla Rural Assembly constituency|Shimla Rural]]
+|[[Vikramaditya Singh (Himachal Pradesh politician)|Vikramaditya Singh]]
+| bgcolor=#00BFFF |
+|[[Indian National Congress|INC]]
+|28,275
+|Dr. Pramod Sharma
+| bgcolor=#FF9933 |
+|[[Bharatiya Janata Party|BJP]]
+|23,395
+|4,880
+|-
+|65
+|[[Jubbal-Kotkhai Assembly constituency|Jubbal-Kotkhai]]
+|[[Narinder Bragta]]
+| bgcolor=#FF9933 |
+|[[Bharatiya Janata Party|BJP]]
+|27,466
+|Rohit Thakur
+| bgcolor=#00BFFF |
+|[[Indian National Congress|INC]]
+|26,404
+|1,062
+|-
+|66
+|[[Rampur (Himachal Pradesh Assembly constituency)|Rampur (SC)]]
+|[[Nand Lal (Himachal Pradesh politician)|Nand Lal]]
+| bgcolor=#00BFFF |
+|[[Indian National Congress|INC]]
+|25,730
+|Prem Singh Daraik
+| bgcolor=#FF9933 |
+|[[Bharatiya Janata Party|BJP]]
+|21,693
+|4,037
+|-
+|67
+|[[Rohru Assembly constituency|Rohru (SC)]]
+|Mohan Lal Brakta
+| bgcolor=#00BFFF |
+|[[Indian National Congress|INC]]
+|29,134
+|Shashi Bala
+| bgcolor=#FF9933 |
+|[[Bharatiya Janata Party|BJP]]
+|19,726
+|9,408
+|-
+![[Kinnaur district|Kinnaur]] 
+|68
+|[[Kinnaur Assembly constituency|Kinnaur (ST)]]
+|[[Jagat Singh Negi]]
+| bgcolor="#00BFFF" |
+|[[Indian National Congress|INC]]
+|20,029
+|Tejwant Singh Negi
+| bgcolor="#FF9933" |
+|[[Bharatiya Janata Party|BJP]]
+|19,909
+|120
+|}
+
+== Bypolls (2017-2022) ==
+{| class="wikitable sortable"
+!S.No
+!Date
+!Constituency
+!MLA before election
+! colspan="2" |Party before election
+!Elected MLA
+! colspan="2" |Party after election
+|-
+!18
+| rowspan="2" |21 October 2019
+|[[Dharamshala (Vidhan Sabha constituency)|Dharamshala]]
+|[[Kishan Kapoor]]
+| {{Full party name with color|Bharatiya Janata Party|rowspan=3}}
+|[[Vishal Nehria]]
+| {{Full party name with color|Bharatiya Janata Party|rowspan=2}}
+|-
+!55
+|[[Pachhad (Vidhan Sabha constituency)|Pachhad]]
+|[[Suresh Kumar Kashyap]]
+|[[Reena Kashyap]]
+|-
+!65
+|Rowspan=3|30 October 2021
+|[[Jubbal-Kotkhai (Vidhan Sabha constituency)|Jubbal-Kotkhai]]
+|[[Narinder Bragta]]
+| [[Rohit Thakur (politician)|Rohit Thakur]]
+|{{Full party name with color|Indian National Congress|rowspan=3}}
+|-
+!8
+|[[Fatehpur, Himachal Pradesh Assembly constituency|Fatehpur]]
+|[[Sujan Singh Pathania]]
+|{{Full party name with color|Indian National Congress|rowspan=2}}                            
+|[[Bhawani Singh Pathania]]
+|-
+!50
+|[[Arki (Vidhan Sabha constituency)|Arki]]
+|[[Virbhadra Singh]]
+|[[Sanjay Awasthy]]<ref name="2021-hp-arki">{{cite web |url=https://results.eci.gov.in/ResultAcByeNov2021/ConstituencywiseS0850.htm?ac=50 |title=Bye election to Vidhan Sabha Trends & Result November 2021 - Himachal Pradesh - Arki |publisher=Election Commission of India |access-date= 2 November 2021 |url-status=live |archive-date=2 November 2021 |archive-url=https://web.archive.org/web/20211102102809/https://results.eci.gov.in/ResultAcByeNov2021/ConstituencywiseS0850.htm?ac=50}}</ref>
+|-
+|}
+
+==References==
+{{Reflist}}
+{{Himachal Pradesh elections}}
+
+[[Category:State Assembly elections in Himachal Pradesh]]
+[[Category:2010s in Himachal Pradesh]]
+[[Category:2017 State Assembly elections in India|Himachal Pradesh]]
+[[Category:November 2017 in India]]

@@ -1,13 +1,13 @@
 {
   "title": "Kshetra W021.5 National Data Coverage Inventory Matrix",
   "directive": "CTO DIRECTIVE 085 / CTO DIRECTIVE 086 / CTO DIRECTIVE 087 / CTO DIRECTIVE 088",
-  "generatedAt": "2026-10-17T14:14:58.610Z",
+  "generatedAt": "2026-10-22T10:46:44.601Z",
   "totalStatesAudited": 31,
   "summary": {
     "canonicalFullStatesCount": 0,
     "partialLocalWithGeoCount": 0,
-    "partialHistoricalNoGeoCount": 8,
-    "seededSingleTermCount": 23,
+    "partialHistoricalNoGeoCount": 31,
+    "seededSingleTermCount": 0,
     "unavailableCount": 0,
     "totalStatutorySeats": 4123,
     "totalSeededConstituencies": 4123,
@@ -965,9 +965,11 @@
       },
       "historicalCoverage": {
         "primaryElectionYear": 2023,
-        "demonstrablePerAcYears": [],
-        "totalElectionYearsRepresented": 1,
-        "stateHistoricalFilePresent": false,
+        "demonstrablePerAcYears": [
+          2018
+        ],
+        "totalElectionYearsRepresented": 2,
+        "stateHistoricalFilePresent": true,
         "inferredYearsRejected": []
       },
       "representativeCoverage": {
@@ -1030,21 +1032,21 @@
       "primaryElectionYear": 2023,
       "primaryElectionType": null,
       "availableElectionYears": [
-        2023
+        2023,
+        2018
       ],
       "mlaProfilesAvailable": 187,
       "demographicsAvailable": 200,
       "affidavitsAvailable": 0,
       "hasGeoJSON": false,
-      "hasHistoricalPerConstituency": false,
-      "hasStateElectionHistory": false,
-      "dataTier": "SEEDED_SINGLE_TERM_PENDING_GEO_HIST",
+      "hasHistoricalPerConstituency": true,
+      "hasStateElectionHistory": true,
+      "dataTier": "SEEDED_HISTORICAL_NO_GEO",
       "dataCompletenessStatus": "FUNCTIONAL_PARTIAL_OFFLINE",
       "provenanceSource": "Election Commission of India (ECI) / State Election Commission",
       "materialGaps": [
         "Candidate financial affidavits pending indexing (all constituencies display Affidavit Pending notice)",
-        "Assembly boundary GeoJSON not indexed in repository data/geo",
-        "Per-constituency historical elections prior to current term not yet seeded"
+        "Assembly boundary GeoJSON not indexed in repository data/geo"
       ],
       "knownExceptions": []
     },
@@ -1076,9 +1078,11 @@
       },
       "historicalCoverage": {
         "primaryElectionYear": 2022,
-        "demonstrablePerAcYears": [],
-        "totalElectionYearsRepresented": 1,
-        "stateHistoricalFilePresent": false,
+        "demonstrablePerAcYears": [
+          2017
+        ],
+        "totalElectionYearsRepresented": 2,
+        "stateHistoricalFilePresent": true,
         "inferredYearsRejected": []
       },
       "representativeCoverage": {
@@ -1141,21 +1145,21 @@
       "primaryElectionYear": 2022,
       "primaryElectionType": null,
       "availableElectionYears": [
-        2022
+        2022,
+        2017
       ],
       "mlaProfilesAvailable": 169,
       "demographicsAvailable": 182,
       "affidavitsAvailable": 0,
       "hasGeoJSON": false,
-      "hasHistoricalPerConstituency": false,
-      "hasStateElectionHistory": false,
-      "dataTier": "SEEDED_SINGLE_TERM_PENDING_GEO_HIST",
+      "hasHistoricalPerConstituency": true,
+      "hasStateElectionHistory": true,
+      "dataTier": "SEEDED_HISTORICAL_NO_GEO",
       "dataCompletenessStatus": "FUNCTIONAL_PARTIAL_OFFLINE",
       "provenanceSource": "Election Commission of India (ECI) / State Election Commission",
       "materialGaps": [
         "Candidate financial affidavits pending indexing (all constituencies display Affidavit Pending notice)",
-        "Assembly boundary GeoJSON not indexed in repository data/geo",
-        "Per-constituency historical elections prior to current term not yet seeded"
+        "Assembly boundary GeoJSON not indexed in repository data/geo"
       ],
       "knownExceptions": []
     },
@@ -1187,9 +1191,11 @@
       },
       "historicalCoverage": {
         "primaryElectionYear": 2024,
-        "demonstrablePerAcYears": [],
-        "totalElectionYearsRepresented": 1,
-        "stateHistoricalFilePresent": false,
+        "demonstrablePerAcYears": [
+          2019
+        ],
+        "totalElectionYearsRepresented": 2,
+        "stateHistoricalFilePresent": true,
         "inferredYearsRejected": []
       },
       "representativeCoverage": {
@@ -1252,21 +1258,21 @@
       "primaryElectionYear": 2024,
       "primaryElectionType": null,
       "availableElectionYears": [
-        2024
+        2024,
+        2019
       ],
       "mlaProfilesAvailable": 73,
       "demographicsAvailable": 81,
       "affidavitsAvailable": 0,
       "hasGeoJSON": false,
-      "hasHistoricalPerConstituency": false,
-      "hasStateElectionHistory": false,
-      "dataTier": "SEEDED_SINGLE_TERM_PENDING_GEO_HIST",
+      "hasHistoricalPerConstituency": true,
+      "hasStateElectionHistory": true,
+      "dataTier": "SEEDED_HISTORICAL_NO_GEO",
       "dataCompletenessStatus": "FUNCTIONAL_PARTIAL_OFFLINE",
       "provenanceSource": "Election Commission of India (ECI) / State Election Commission",
       "materialGaps": [
         "Candidate financial affidavits pending indexing (all constituencies display Affidavit Pending notice)",
-        "Assembly boundary GeoJSON not indexed in repository data/geo",
-        "Per-constituency historical elections prior to current term not yet seeded"
+        "Assembly boundary GeoJSON not indexed in repository data/geo"
       ],
       "knownExceptions": []
     },
@@ -1298,9 +1304,11 @@
       },
       "historicalCoverage": {
         "primaryElectionYear": 2024,
-        "demonstrablePerAcYears": [],
-        "totalElectionYearsRepresented": 1,
-        "stateHistoricalFilePresent": false,
+        "demonstrablePerAcYears": [
+          2019
+        ],
+        "totalElectionYearsRepresented": 2,
+        "stateHistoricalFilePresent": true,
         "inferredYearsRejected": []
       },
       "representativeCoverage": {
@@ -1363,21 +1371,21 @@
       "primaryElectionYear": 2024,
       "primaryElectionType": null,
       "availableElectionYears": [
-        2024
+        2024,
+        2019
       ],
       "mlaProfilesAvailable": 132,
       "demographicsAvailable": 147,
       "affidavitsAvailable": 0,
       "hasGeoJSON": false,
-      "hasHistoricalPerConstituency": false,
-      "hasStateElectionHistory": false,
-      "dataTier": "SEEDED_SINGLE_TERM_PENDING_GEO_HIST",
+      "hasHistoricalPerConstituency": true,
+      "hasStateElectionHistory": true,
+      "dataTier": "SEEDED_HISTORICAL_NO_GEO",
       "dataCompletenessStatus": "FUNCTIONAL_PARTIAL_OFFLINE",
       "provenanceSource": "Election Commission of India (ECI) / State Election Commission",
       "materialGaps": [
         "Candidate financial affidavits pending indexing (all constituencies display Affidavit Pending notice)",
-        "Assembly boundary GeoJSON not indexed in repository data/geo",
-        "Per-constituency historical elections prior to current term not yet seeded"
+        "Assembly boundary GeoJSON not indexed in repository data/geo"
       ],
       "knownExceptions": []
     },
@@ -1411,9 +1419,11 @@
       },
       "historicalCoverage": {
         "primaryElectionYear": 2025,
-        "demonstrablePerAcYears": [],
-        "totalElectionYearsRepresented": 1,
-        "stateHistoricalFilePresent": false,
+        "demonstrablePerAcYears": [
+          2015
+        ],
+        "totalElectionYearsRepresented": 2,
+        "stateHistoricalFilePresent": true,
         "inferredYearsRejected": []
       },
       "representativeCoverage": {
@@ -1476,21 +1486,21 @@
       "primaryElectionYear": 2025,
       "primaryElectionType": null,
       "availableElectionYears": [
-        2025
+        2025,
+        2015
       ],
       "mlaProfilesAvailable": 70,
       "demographicsAvailable": 70,
       "affidavitsAvailable": 0,
       "hasGeoJSON": false,
-      "hasHistoricalPerConstituency": false,
-      "hasStateElectionHistory": false,
-      "dataTier": "SEEDED_SINGLE_TERM_PENDING_GEO_HIST",
+      "hasHistoricalPerConstituency": true,
+      "hasStateElectionHistory": true,
+      "dataTier": "SEEDED_HISTORICAL_NO_GEO",
       "dataCompletenessStatus": "FUNCTIONAL_PARTIAL_OFFLINE",
       "provenanceSource": "Election Commission of India (ECI) / State Election Commission",
       "materialGaps": [
         "Candidate financial affidavits pending indexing (all constituencies display Affidavit Pending notice)",
-        "Assembly boundary GeoJSON not indexed in repository data/geo",
-        "Per-constituency historical elections prior to current term not yet seeded"
+        "Assembly boundary GeoJSON not indexed in repository data/geo"
       ],
       "knownExceptions": [
         "Delhi statutory Assembly is strictly 70 seats. Demographics file contains 151 extra non-assembly records (DL-AC-071 through DL-AC-221) classified as NON_STATUTORY_DEMOGRAPHIC_PLACEHOLDER"
@@ -1524,9 +1534,11 @@
       },
       "historicalCoverage": {
         "primaryElectionYear": 2022,
-        "demonstrablePerAcYears": [],
-        "totalElectionYearsRepresented": 1,
-        "stateHistoricalFilePresent": false,
+        "demonstrablePerAcYears": [
+          2017
+        ],
+        "totalElectionYearsRepresented": 2,
+        "stateHistoricalFilePresent": true,
         "inferredYearsRejected": []
       },
       "representativeCoverage": {
@@ -1589,21 +1601,21 @@
       "primaryElectionYear": 2022,
       "primaryElectionType": null,
       "availableElectionYears": [
-        2022
+        2022,
+        2017
       ],
       "mlaProfilesAvailable": 111,
       "demographicsAvailable": 117,
       "affidavitsAvailable": 0,
       "hasGeoJSON": false,
-      "hasHistoricalPerConstituency": false,
-      "hasStateElectionHistory": false,
-      "dataTier": "SEEDED_SINGLE_TERM_PENDING_GEO_HIST",
+      "hasHistoricalPerConstituency": true,
+      "hasStateElectionHistory": true,
+      "dataTier": "SEEDED_HISTORICAL_NO_GEO",
       "dataCompletenessStatus": "FUNCTIONAL_PARTIAL_OFFLINE",
       "provenanceSource": "Election Commission of India (ECI) / State Election Commission",
       "materialGaps": [
         "Candidate financial affidavits pending indexing (all constituencies display Affidavit Pending notice)",
-        "Assembly boundary GeoJSON not indexed in repository data/geo",
-        "Per-constituency historical elections prior to current term not yet seeded"
+        "Assembly boundary GeoJSON not indexed in repository data/geo"
       ],
       "knownExceptions": []
     },
@@ -1635,9 +1647,11 @@
       },
       "historicalCoverage": {
         "primaryElectionYear": 2024,
-        "demonstrablePerAcYears": [],
-        "totalElectionYearsRepresented": 1,
-        "stateHistoricalFilePresent": false,
+        "demonstrablePerAcYears": [
+          2019
+        ],
+        "totalElectionYearsRepresented": 2,
+        "stateHistoricalFilePresent": true,
         "inferredYearsRejected": []
       },
       "representativeCoverage": {
@@ -1700,21 +1714,21 @@
       "primaryElectionYear": 2024,
       "primaryElectionType": null,
       "availableElectionYears": [
-        2024
+        2024,
+        2019
       ],
       "mlaProfilesAvailable": 80,
       "demographicsAvailable": 90,
       "affidavitsAvailable": 0,
       "hasGeoJSON": false,
-      "hasHistoricalPerConstituency": false,
-      "hasStateElectionHistory": false,
-      "dataTier": "SEEDED_SINGLE_TERM_PENDING_GEO_HIST",
+      "hasHistoricalPerConstituency": true,
+      "hasStateElectionHistory": true,
+      "dataTier": "SEEDED_HISTORICAL_NO_GEO",
       "dataCompletenessStatus": "FUNCTIONAL_PARTIAL_OFFLINE",
       "provenanceSource": "Election Commission of India (ECI) / State Election Commission",
       "materialGaps": [
         "Candidate financial affidavits pending indexing (all constituencies display Affidavit Pending notice)",
-        "Assembly boundary GeoJSON not indexed in repository data/geo",
-        "Per-constituency historical elections prior to current term not yet seeded"
+        "Assembly boundary GeoJSON not indexed in repository data/geo"
       ],
       "knownExceptions": []
     },
@@ -1746,9 +1760,11 @@
       },
       "historicalCoverage": {
         "primaryElectionYear": 2023,
-        "demonstrablePerAcYears": [],
-        "totalElectionYearsRepresented": 1,
-        "stateHistoricalFilePresent": false,
+        "demonstrablePerAcYears": [
+          2018
+        ],
+        "totalElectionYearsRepresented": 2,
+        "stateHistoricalFilePresent": true,
         "inferredYearsRejected": []
       },
       "representativeCoverage": {
@@ -1811,21 +1827,21 @@
       "primaryElectionYear": 2023,
       "primaryElectionType": null,
       "availableElectionYears": [
-        2023
+        2023,
+        2018
       ],
       "mlaProfilesAvailable": 81,
       "demographicsAvailable": 90,
       "affidavitsAvailable": 0,
       "hasGeoJSON": false,
-      "hasHistoricalPerConstituency": false,
-      "hasStateElectionHistory": false,
-      "dataTier": "SEEDED_SINGLE_TERM_PENDING_GEO_HIST",
+      "hasHistoricalPerConstituency": true,
+      "hasStateElectionHistory": true,
+      "dataTier": "SEEDED_HISTORICAL_NO_GEO",
       "dataCompletenessStatus": "FUNCTIONAL_PARTIAL_OFFLINE",
       "provenanceSource": "Election Commission of India (ECI) / State Election Commission",
       "materialGaps": [
         "Candidate financial affidavits pending indexing (all constituencies display Affidavit Pending notice)",
-        "Assembly boundary GeoJSON not indexed in repository data/geo",
-        "Per-constituency historical elections prior to current term not yet seeded"
+        "Assembly boundary GeoJSON not indexed in repository data/geo"
       ],
       "knownExceptions": []
     },
@@ -1857,9 +1873,11 @@
       },
       "historicalCoverage": {
         "primaryElectionYear": 2023,
-        "demonstrablePerAcYears": [],
-        "totalElectionYearsRepresented": 1,
-        "stateHistoricalFilePresent": false,
+        "demonstrablePerAcYears": [
+          2018
+        ],
+        "totalElectionYearsRepresented": 2,
+        "stateHistoricalFilePresent": true,
         "inferredYearsRejected": []
       },
       "representativeCoverage": {
@@ -1922,21 +1940,21 @@
       "primaryElectionYear": 2023,
       "primaryElectionType": null,
       "availableElectionYears": [
-        2023
+        2023,
+        2018
       ],
       "mlaProfilesAvailable": 208,
       "demographicsAvailable": 230,
       "affidavitsAvailable": 0,
       "hasGeoJSON": false,
-      "hasHistoricalPerConstituency": false,
-      "hasStateElectionHistory": false,
-      "dataTier": "SEEDED_SINGLE_TERM_PENDING_GEO_HIST",
+      "hasHistoricalPerConstituency": true,
+      "hasStateElectionHistory": true,
+      "dataTier": "SEEDED_HISTORICAL_NO_GEO",
       "dataCompletenessStatus": "FUNCTIONAL_PARTIAL_OFFLINE",
       "provenanceSource": "Election Commission of India (ECI) / State Election Commission",
       "materialGaps": [
         "Candidate financial affidavits pending indexing (all constituencies display Affidavit Pending notice)",
-        "Assembly boundary GeoJSON not indexed in repository data/geo",
-        "Per-constituency historical elections prior to current term not yet seeded"
+        "Assembly boundary GeoJSON not indexed in repository data/geo"
       ],
       "knownExceptions": []
     },
@@ -1968,9 +1986,11 @@
       },
       "historicalCoverage": {
         "primaryElectionYear": 2020,
-        "demonstrablePerAcYears": [],
-        "totalElectionYearsRepresented": 1,
-        "stateHistoricalFilePresent": false,
+        "demonstrablePerAcYears": [
+          2015
+        ],
+        "totalElectionYearsRepresented": 2,
+        "stateHistoricalFilePresent": true,
         "inferredYearsRejected": []
       },
       "representativeCoverage": {
@@ -2033,21 +2053,21 @@
       "primaryElectionYear": 2020,
       "primaryElectionType": null,
       "availableElectionYears": [
-        2020
+        2020,
+        2015
       ],
       "mlaProfilesAvailable": 227,
       "demographicsAvailable": 243,
       "affidavitsAvailable": 0,
       "hasGeoJSON": false,
-      "hasHistoricalPerConstituency": false,
-      "hasStateElectionHistory": false,
-      "dataTier": "SEEDED_SINGLE_TERM_PENDING_GEO_HIST",
+      "hasHistoricalPerConstituency": true,
+      "hasStateElectionHistory": true,
+      "dataTier": "SEEDED_HISTORICAL_NO_GEO",
       "dataCompletenessStatus": "FUNCTIONAL_PARTIAL_OFFLINE",
       "provenanceSource": "Election Commission of India (ECI) / State Election Commission",
       "materialGaps": [
         "Candidate financial affidavits pending indexing (all constituencies display Affidavit Pending notice)",
-        "Assembly boundary GeoJSON not indexed in repository data/geo",
-        "Per-constituency historical elections prior to current term not yet seeded"
+        "Assembly boundary GeoJSON not indexed in repository data/geo"
       ],
       "knownExceptions": []
     },
@@ -2079,9 +2099,11 @@
       },
       "historicalCoverage": {
         "primaryElectionYear": null,
-        "demonstrablePerAcYears": [],
-        "totalElectionYearsRepresented": 0,
-        "stateHistoricalFilePresent": false,
+        "demonstrablePerAcYears": [
+          2016
+        ],
+        "totalElectionYearsRepresented": 1,
+        "stateHistoricalFilePresent": true,
         "inferredYearsRejected": []
       },
       "representativeCoverage": {
@@ -2143,20 +2165,21 @@
       },
       "primaryElectionYear": null,
       "primaryElectionType": null,
-      "availableElectionYears": [],
+      "availableElectionYears": [
+        2016
+      ],
       "mlaProfilesAvailable": 112,
       "demographicsAvailable": 126,
       "affidavitsAvailable": 0,
       "hasGeoJSON": false,
-      "hasHistoricalPerConstituency": false,
-      "hasStateElectionHistory": false,
-      "dataTier": "SEEDED_SINGLE_TERM_PENDING_GEO_HIST",
+      "hasHistoricalPerConstituency": true,
+      "hasStateElectionHistory": true,
+      "dataTier": "SEEDED_HISTORICAL_NO_GEO",
       "dataCompletenessStatus": "FUNCTIONAL_PARTIAL_OFFLINE",
       "provenanceSource": "Election Commission of India (ECI) / State Election Commission",
       "materialGaps": [
         "Candidate financial affidavits pending indexing (all constituencies display Affidavit Pending notice)",
-        "Assembly boundary GeoJSON not indexed in repository data/geo",
-        "Per-constituency historical elections prior to current term not yet seeded"
+        "Assembly boundary GeoJSON not indexed in repository data/geo"
       ],
       "knownExceptions": []
     },
@@ -2188,9 +2211,11 @@
       },
       "historicalCoverage": {
         "primaryElectionYear": 2022,
-        "demonstrablePerAcYears": [],
-        "totalElectionYearsRepresented": 1,
-        "stateHistoricalFilePresent": false,
+        "demonstrablePerAcYears": [
+          2017
+        ],
+        "totalElectionYearsRepresented": 2,
+        "stateHistoricalFilePresent": true,
         "inferredYearsRejected": []
       },
       "representativeCoverage": {
@@ -2253,21 +2278,21 @@
       "primaryElectionYear": 2022,
       "primaryElectionType": null,
       "availableElectionYears": [
-        2022
+        2022,
+        2017
       ],
       "mlaProfilesAvailable": 34,
       "demographicsAvailable": 40,
       "affidavitsAvailable": 0,
       "hasGeoJSON": false,
-      "hasHistoricalPerConstituency": false,
-      "hasStateElectionHistory": false,
-      "dataTier": "SEEDED_SINGLE_TERM_PENDING_GEO_HIST",
+      "hasHistoricalPerConstituency": true,
+      "hasStateElectionHistory": true,
+      "dataTier": "SEEDED_HISTORICAL_NO_GEO",
       "dataCompletenessStatus": "FUNCTIONAL_PARTIAL_OFFLINE",
       "provenanceSource": "Election Commission of India (ECI) / State Election Commission",
       "materialGaps": [
         "Candidate financial affidavits pending indexing (all constituencies display Affidavit Pending notice)",
-        "Assembly boundary GeoJSON not indexed in repository data/geo",
-        "Per-constituency historical elections prior to current term not yet seeded"
+        "Assembly boundary GeoJSON not indexed in repository data/geo"
       ],
       "knownExceptions": []
     },
@@ -2299,9 +2324,11 @@
       },
       "historicalCoverage": {
         "primaryElectionYear": 2022,
-        "demonstrablePerAcYears": [],
-        "totalElectionYearsRepresented": 1,
-        "stateHistoricalFilePresent": false,
+        "demonstrablePerAcYears": [
+          2017
+        ],
+        "totalElectionYearsRepresented": 2,
+        "stateHistoricalFilePresent": true,
         "inferredYearsRejected": []
       },
       "representativeCoverage": {
@@ -2364,21 +2391,21 @@
       "primaryElectionYear": 2022,
       "primaryElectionType": null,
       "availableElectionYears": [
-        2022
+        2022,
+        2017
       ],
       "mlaProfilesAvailable": 68,
       "demographicsAvailable": 68,
       "affidavitsAvailable": 0,
       "hasGeoJSON": false,
-      "hasHistoricalPerConstituency": false,
-      "hasStateElectionHistory": false,
-      "dataTier": "SEEDED_SINGLE_TERM_PENDING_GEO_HIST",
+      "hasHistoricalPerConstituency": true,
+      "hasStateElectionHistory": true,
+      "dataTier": "SEEDED_HISTORICAL_NO_GEO",
       "dataCompletenessStatus": "FUNCTIONAL_PARTIAL_OFFLINE",
       "provenanceSource": "Election Commission of India (ECI) / State Election Commission",
       "materialGaps": [
         "Candidate financial affidavits pending indexing (all constituencies display Affidavit Pending notice)",
-        "Assembly boundary GeoJSON not indexed in repository data/geo",
-        "Per-constituency historical elections prior to current term not yet seeded"
+        "Assembly boundary GeoJSON not indexed in repository data/geo"
       ],
       "knownExceptions": []
     },
@@ -2410,9 +2437,11 @@
       },
       "historicalCoverage": {
         "primaryElectionYear": 2022,
-        "demonstrablePerAcYears": [],
-        "totalElectionYearsRepresented": 1,
-        "stateHistoricalFilePresent": false,
+        "demonstrablePerAcYears": [
+          2017
+        ],
+        "totalElectionYearsRepresented": 2,
+        "stateHistoricalFilePresent": true,
         "inferredYearsRejected": []
       },
       "representativeCoverage": {
@@ -2475,21 +2504,21 @@
       "primaryElectionYear": 2022,
       "primaryElectionType": null,
       "availableElectionYears": [
-        2022
+        2022,
+        2017
       ],
       "mlaProfilesAvailable": 60,
       "demographicsAvailable": 60,
       "affidavitsAvailable": 0,
       "hasGeoJSON": false,
-      "hasHistoricalPerConstituency": false,
-      "hasStateElectionHistory": false,
-      "dataTier": "SEEDED_SINGLE_TERM_PENDING_GEO_HIST",
+      "hasHistoricalPerConstituency": true,
+      "hasStateElectionHistory": true,
+      "dataTier": "SEEDED_HISTORICAL_NO_GEO",
       "dataCompletenessStatus": "FUNCTIONAL_PARTIAL_OFFLINE",
       "provenanceSource": "Election Commission of India (ECI) / State Election Commission",
       "materialGaps": [
         "Candidate financial affidavits pending indexing (all constituencies display Affidavit Pending notice)",
-        "Assembly boundary GeoJSON not indexed in repository data/geo",
-        "Per-constituency historical elections prior to current term not yet seeded"
+        "Assembly boundary GeoJSON not indexed in repository data/geo"
       ],
       "knownExceptions": []
     },
@@ -2521,9 +2550,11 @@
       },
       "historicalCoverage": {
         "primaryElectionYear": 2023,
-        "demonstrablePerAcYears": [],
-        "totalElectionYearsRepresented": 1,
-        "stateHistoricalFilePresent": false,
+        "demonstrablePerAcYears": [
+          2018
+        ],
+        "totalElectionYearsRepresented": 2,
+        "stateHistoricalFilePresent": true,
         "inferredYearsRejected": []
       },
       "representativeCoverage": {
@@ -2586,21 +2617,21 @@
       "primaryElectionYear": 2023,
       "primaryElectionType": null,
       "availableElectionYears": [
-        2023
+        2023,
+        2018
       ],
       "mlaProfilesAvailable": 60,
       "demographicsAvailable": 60,
       "affidavitsAvailable": 0,
       "hasGeoJSON": false,
-      "hasHistoricalPerConstituency": false,
-      "hasStateElectionHistory": false,
-      "dataTier": "SEEDED_SINGLE_TERM_PENDING_GEO_HIST",
+      "hasHistoricalPerConstituency": true,
+      "hasStateElectionHistory": true,
+      "dataTier": "SEEDED_HISTORICAL_NO_GEO",
       "dataCompletenessStatus": "FUNCTIONAL_PARTIAL_OFFLINE",
       "provenanceSource": "Election Commission of India (ECI) / State Election Commission",
       "materialGaps": [
         "Candidate financial affidavits pending indexing (all constituencies display Affidavit Pending notice)",
-        "Assembly boundary GeoJSON not indexed in repository data/geo",
-        "Per-constituency historical elections prior to current term not yet seeded"
+        "Assembly boundary GeoJSON not indexed in repository data/geo"
       ],
       "knownExceptions": []
     },
@@ -2632,9 +2663,11 @@
       },
       "historicalCoverage": {
         "primaryElectionYear": 2023,
-        "demonstrablePerAcYears": [],
-        "totalElectionYearsRepresented": 1,
-        "stateHistoricalFilePresent": false,
+        "demonstrablePerAcYears": [
+          2018
+        ],
+        "totalElectionYearsRepresented": 2,
+        "stateHistoricalFilePresent": true,
         "inferredYearsRejected": []
       },
       "representativeCoverage": {
@@ -2697,21 +2730,21 @@
       "primaryElectionYear": 2023,
       "primaryElectionType": null,
       "availableElectionYears": [
-        2023
+        2023,
+        2018
       ],
       "mlaProfilesAvailable": 35,
       "demographicsAvailable": 40,
       "affidavitsAvailable": 0,
       "hasGeoJSON": false,
-      "hasHistoricalPerConstituency": false,
-      "hasStateElectionHistory": false,
-      "dataTier": "SEEDED_SINGLE_TERM_PENDING_GEO_HIST",
+      "hasHistoricalPerConstituency": true,
+      "hasStateElectionHistory": true,
+      "dataTier": "SEEDED_HISTORICAL_NO_GEO",
       "dataCompletenessStatus": "FUNCTIONAL_PARTIAL_OFFLINE",
       "provenanceSource": "Election Commission of India (ECI) / State Election Commission",
       "materialGaps": [
         "Candidate financial affidavits pending indexing (all constituencies display Affidavit Pending notice)",
-        "Assembly boundary GeoJSON not indexed in repository data/geo",
-        "Per-constituency historical elections prior to current term not yet seeded"
+        "Assembly boundary GeoJSON not indexed in repository data/geo"
       ],
       "knownExceptions": []
     },
@@ -2743,9 +2776,11 @@
       },
       "historicalCoverage": {
         "primaryElectionYear": 2023,
-        "demonstrablePerAcYears": [],
-        "totalElectionYearsRepresented": 1,
-        "stateHistoricalFilePresent": false,
+        "demonstrablePerAcYears": [
+          2018
+        ],
+        "totalElectionYearsRepresented": 2,
+        "stateHistoricalFilePresent": true,
         "inferredYearsRejected": []
       },
       "representativeCoverage": {
@@ -2808,21 +2843,21 @@
       "primaryElectionYear": 2023,
       "primaryElectionType": null,
       "availableElectionYears": [
-        2023
+        2023,
+        2018
       ],
       "mlaProfilesAvailable": 60,
       "demographicsAvailable": 60,
       "affidavitsAvailable": 0,
       "hasGeoJSON": false,
-      "hasHistoricalPerConstituency": false,
-      "hasStateElectionHistory": false,
-      "dataTier": "SEEDED_SINGLE_TERM_PENDING_GEO_HIST",
+      "hasHistoricalPerConstituency": true,
+      "hasStateElectionHistory": true,
+      "dataTier": "SEEDED_HISTORICAL_NO_GEO",
       "dataCompletenessStatus": "FUNCTIONAL_PARTIAL_OFFLINE",
       "provenanceSource": "Election Commission of India (ECI) / State Election Commission",
       "materialGaps": [
         "Candidate financial affidavits pending indexing (all constituencies display Affidavit Pending notice)",
-        "Assembly boundary GeoJSON not indexed in repository data/geo",
-        "Per-constituency historical elections prior to current term not yet seeded"
+        "Assembly boundary GeoJSON not indexed in repository data/geo"
       ],
       "knownExceptions": []
     },
@@ -2854,9 +2889,11 @@
       },
       "historicalCoverage": {
         "primaryElectionYear": 2023,
-        "demonstrablePerAcYears": [],
-        "totalElectionYearsRepresented": 1,
-        "stateHistoricalFilePresent": false,
+        "demonstrablePerAcYears": [
+          2018
+        ],
+        "totalElectionYearsRepresented": 2,
+        "stateHistoricalFilePresent": true,
         "inferredYearsRejected": []
       },
       "representativeCoverage": {
@@ -2919,21 +2956,21 @@
       "primaryElectionYear": 2023,
       "primaryElectionType": null,
       "availableElectionYears": [
-        2023
+        2023,
+        2018
       ],
       "mlaProfilesAvailable": 60,
       "demographicsAvailable": 60,
       "affidavitsAvailable": 0,
       "hasGeoJSON": false,
-      "hasHistoricalPerConstituency": false,
-      "hasStateElectionHistory": false,
-      "dataTier": "SEEDED_SINGLE_TERM_PENDING_GEO_HIST",
+      "hasHistoricalPerConstituency": true,
+      "hasStateElectionHistory": true,
+      "dataTier": "SEEDED_HISTORICAL_NO_GEO",
       "dataCompletenessStatus": "FUNCTIONAL_PARTIAL_OFFLINE",
       "provenanceSource": "Election Commission of India (ECI) / State Election Commission",
       "materialGaps": [
         "Candidate financial affidavits pending indexing (all constituencies display Affidavit Pending notice)",
-        "Assembly boundary GeoJSON not indexed in repository data/geo",
-        "Per-constituency historical elections prior to current term not yet seeded"
+        "Assembly boundary GeoJSON not indexed in repository data/geo"
       ],
       "knownExceptions": []
     },
@@ -2965,9 +3002,11 @@
       },
       "historicalCoverage": {
         "primaryElectionYear": 2024,
-        "demonstrablePerAcYears": [],
-        "totalElectionYearsRepresented": 1,
-        "stateHistoricalFilePresent": false,
+        "demonstrablePerAcYears": [
+          2019
+        ],
+        "totalElectionYearsRepresented": 2,
+        "stateHistoricalFilePresent": true,
         "inferredYearsRejected": []
       },
       "representativeCoverage": {
@@ -3030,21 +3069,21 @@
       "primaryElectionYear": 2024,
       "primaryElectionType": null,
       "availableElectionYears": [
-        2024
+        2024,
+        2019
       ],
       "mlaProfilesAvailable": 31,
       "demographicsAvailable": 32,
       "affidavitsAvailable": 0,
       "hasGeoJSON": false,
-      "hasHistoricalPerConstituency": false,
-      "hasStateElectionHistory": false,
-      "dataTier": "SEEDED_SINGLE_TERM_PENDING_GEO_HIST",
+      "hasHistoricalPerConstituency": true,
+      "hasStateElectionHistory": true,
+      "dataTier": "SEEDED_HISTORICAL_NO_GEO",
       "dataCompletenessStatus": "FUNCTIONAL_PARTIAL_OFFLINE",
       "provenanceSource": "Election Commission of India (ECI) / State Election Commission",
       "materialGaps": [
         "Candidate financial affidavits pending indexing (all constituencies display Affidavit Pending notice)",
-        "Assembly boundary GeoJSON not indexed in repository data/geo",
-        "Per-constituency historical elections prior to current term not yet seeded"
+        "Assembly boundary GeoJSON not indexed in repository data/geo"
       ],
       "knownExceptions": []
     },
@@ -3076,9 +3115,11 @@
       },
       "historicalCoverage": {
         "primaryElectionYear": 2024,
-        "demonstrablePerAcYears": [],
-        "totalElectionYearsRepresented": 1,
-        "stateHistoricalFilePresent": false,
+        "demonstrablePerAcYears": [
+          2019
+        ],
+        "totalElectionYearsRepresented": 2,
+        "stateHistoricalFilePresent": true,
         "inferredYearsRejected": []
       },
       "representativeCoverage": {
@@ -3141,21 +3182,21 @@
       "primaryElectionYear": 2024,
       "primaryElectionType": null,
       "availableElectionYears": [
-        2024
+        2024,
+        2019
       ],
       "mlaProfilesAvailable": 53,
       "demographicsAvailable": 60,
       "affidavitsAvailable": 0,
       "hasGeoJSON": false,
-      "hasHistoricalPerConstituency": false,
-      "hasStateElectionHistory": false,
-      "dataTier": "SEEDED_SINGLE_TERM_PENDING_GEO_HIST",
+      "hasHistoricalPerConstituency": true,
+      "hasStateElectionHistory": true,
+      "dataTier": "SEEDED_HISTORICAL_NO_GEO",
       "dataCompletenessStatus": "FUNCTIONAL_PARTIAL_OFFLINE",
       "provenanceSource": "Election Commission of India (ECI) / State Election Commission",
       "materialGaps": [
         "Candidate financial affidavits pending indexing (all constituencies display Affidavit Pending notice)",
-        "Assembly boundary GeoJSON not indexed in repository data/geo",
-        "Per-constituency historical elections prior to current term not yet seeded"
+        "Assembly boundary GeoJSON not indexed in repository data/geo"
       ],
       "knownExceptions": []
     },
@@ -3187,9 +3228,11 @@
       },
       "historicalCoverage": {
         "primaryElectionYear": 2022,
-        "demonstrablePerAcYears": [],
-        "totalElectionYearsRepresented": 1,
-        "stateHistoricalFilePresent": false,
+        "demonstrablePerAcYears": [
+          2017
+        ],
+        "totalElectionYearsRepresented": 2,
+        "stateHistoricalFilePresent": true,
         "inferredYearsRejected": []
       },
       "representativeCoverage": {
@@ -3252,21 +3295,21 @@
       "primaryElectionYear": 2022,
       "primaryElectionType": null,
       "availableElectionYears": [
-        2022
+        2022,
+        2017
       ],
       "mlaProfilesAvailable": 70,
       "demographicsAvailable": 70,
       "affidavitsAvailable": 0,
       "hasGeoJSON": false,
-      "hasHistoricalPerConstituency": false,
-      "hasStateElectionHistory": false,
-      "dataTier": "SEEDED_SINGLE_TERM_PENDING_GEO_HIST",
+      "hasHistoricalPerConstituency": true,
+      "hasStateElectionHistory": true,
+      "dataTier": "SEEDED_HISTORICAL_NO_GEO",
       "dataCompletenessStatus": "FUNCTIONAL_PARTIAL_OFFLINE",
       "provenanceSource": "Election Commission of India (ECI) / State Election Commission",
       "materialGaps": [
         "Candidate financial affidavits pending indexing (all constituencies display Affidavit Pending notice)",
-        "Assembly boundary GeoJSON not indexed in repository data/geo",
-        "Per-constituency historical elections prior to current term not yet seeded"
+        "Assembly boundary GeoJSON not indexed in repository data/geo"
       ],
       "knownExceptions": []
     },
@@ -3298,9 +3341,11 @@
       },
       "historicalCoverage": {
         "primaryElectionYear": 2021,
-        "demonstrablePerAcYears": [],
-        "totalElectionYearsRepresented": 1,
-        "stateHistoricalFilePresent": false,
+        "demonstrablePerAcYears": [
+          2016
+        ],
+        "totalElectionYearsRepresented": 2,
+        "stateHistoricalFilePresent": true,
         "inferredYearsRejected": []
       },
       "representativeCoverage": {
@@ -3363,21 +3408,21 @@
       "primaryElectionYear": 2021,
       "primaryElectionType": null,
       "availableElectionYears": [
-        2021
+        2021,
+        2016
       ],
       "mlaProfilesAvailable": 27,
       "demographicsAvailable": 30,
       "affidavitsAvailable": 0,
       "hasGeoJSON": false,
-      "hasHistoricalPerConstituency": false,
-      "hasStateElectionHistory": false,
-      "dataTier": "SEEDED_SINGLE_TERM_PENDING_GEO_HIST",
+      "hasHistoricalPerConstituency": true,
+      "hasStateElectionHistory": true,
+      "dataTier": "SEEDED_HISTORICAL_NO_GEO",
       "dataCompletenessStatus": "FUNCTIONAL_PARTIAL_OFFLINE",
       "provenanceSource": "Election Commission of India (ECI) / State Election Commission",
       "materialGaps": [
         "Candidate financial affidavits pending indexing (all constituencies display Affidavit Pending notice)",
-        "Assembly boundary GeoJSON not indexed in repository data/geo",
-        "Per-constituency historical elections prior to current term not yet seeded"
+        "Assembly boundary GeoJSON not indexed in repository data/geo"
       ],
       "knownExceptions": []
     },
@@ -3409,9 +3454,11 @@
       },
       "historicalCoverage": {
         "primaryElectionYear": 2024,
-        "demonstrablePerAcYears": [],
-        "totalElectionYearsRepresented": 1,
-        "stateHistoricalFilePresent": false,
+        "demonstrablePerAcYears": [
+          2014
+        ],
+        "totalElectionYearsRepresented": 2,
+        "stateHistoricalFilePresent": true,
         "inferredYearsRejected": []
       },
       "representativeCoverage": {
@@ -3474,21 +3521,21 @@
       "primaryElectionYear": 2024,
       "primaryElectionType": null,
       "availableElectionYears": [
-        2024
+        2024,
+        2014
       ],
       "mlaProfilesAvailable": 90,
       "demographicsAvailable": 90,
       "affidavitsAvailable": 0,
       "hasGeoJSON": false,
-      "hasHistoricalPerConstituency": false,
-      "hasStateElectionHistory": false,
-      "dataTier": "SEEDED_SINGLE_TERM_PENDING_GEO_HIST",
+      "hasHistoricalPerConstituency": true,
+      "hasStateElectionHistory": true,
+      "dataTier": "SEEDED_HISTORICAL_NO_GEO",
       "dataCompletenessStatus": "FUNCTIONAL_PARTIAL_OFFLINE",
       "provenanceSource": "Election Commission of India (ECI) / State Election Commission",
       "materialGaps": [
         "Candidate financial affidavits pending indexing (all constituencies display Affidavit Pending notice)",
-        "Assembly boundary GeoJSON not indexed in repository data/geo",
-        "Per-constituency historical elections prior to current term not yet seeded"
+        "Assembly boundary GeoJSON not indexed in repository data/geo"
       ],
       "knownExceptions": []
     }

@@ -1,0 +1,1821 @@
+{{Short description|State assembly election in India}}
+{{Use dmy dates|date=September 2020}}
+{{Use Indian English|date=April 2018}}
+{{For|Lok Sabha election|2014 Indian general election in Jammu and Kashmir}}
+{{Infobox election
+| election_name = 2014 Jammu and Kashmir state assembly elections
+| country = Jammu and Kashmir (state)
+| type = Legislative
+| ongoing = no
+| previous_election = 2008 Jammu and Kashmir Legislative Assembly election
+| previous_year = 2008
+| election_date = 25 November to 20 December 2014
+| next_election = 2024 Jammu and Kashmir Legislative Assembly election
+| next_year = 2024 (UT)
+| seats_for_election = All 87 seats in [[Jammu and Kashmir Legislative Assembly|Legislative Assembly]]
+| majority_seats = 44
+| opinion_polls = 
+| previous_mps = 
+| registered = {{formatnum:7316946}}
+| turnout = 65.91% ({{increase}} 4.75%)
+| party1 = Jammu and Kashmir Peoples Democratic Party
+| image1 = {{CSS image crop|Image=Mufti Mohammad Sayeed.jpg|bSize=100|cWidth=80|cHeight=100|oLeft=10|oTop=03}} 
+| leader1 = [[Mufti Mohammad Sayeed]]
+| leader_since1 = 
+| leaders_seat1 = [[Anantnag Assembly constituency|Anantnag]] (''won'')
+| last_election1 = 21
+| seats1 = '''28'''
+| seat_change1 = {{increase}} 7
+| popular_vote1 = 10,92,203
+| percentage1 = 22.67%
+| swing1 = {{increase}} 7.31 [[Percentage point|pp]]
+| party2 = Bharatiya Janata Party
+| image2 = {{CSS image crop|Image=Dr. Nirmal Singh.png|bSize=100|cWidth=80|cHeight=100|oLeft=10|oTop=03}} 
+| leader2 = [[Nirmal Kumar Singh]]
+| leader_since2 = 
+| leaders_seat2 = [[Billawar Assembly constituency|Billawar]] (''won'')
+| last_election2 = 11
+| seats2 = 25
+| seat_change2 = {{increase}} 14
+| popular_vote2 = '''11,07,194'''
+| percentage2 = '''22.98%'''
+| swing2 = {{increase}} 10.55 [[Percentage point|pp]]
+| party4 = Jammu & Kashmir National Conference
+| image4 = {{CSS image crop|Image=The former Chief Minister of Jammu & Kashmir, Shri Omar Abdullah meeting the Union Home Minister, Shri Rajnath Singh, in Srinagar on August 24, 2016 (cropped).jpg|bSize=100|cWidth=80|cHeight=100|oLeft=10|oTop=03}} 
+| leader4 = [[Omar Abdullah]]
+| leader_since4 = 
+| leaders_seat4 = [[Beerwah Assembly constituency|Beerwah]] (''won''), [[Sonawar Assembly constituency|Sonawar]] <br/> (''lost'')
+| last_election4 = 28
+| seats4 = 15
+| seat_change4 = {{decrease}}  13
+| popular_vote4 = 10,00,693
+| percentage4 = 20.77%
+| swing4 = {{decrease}} 2.27 [[Percentage point|pp]]
+| party5 = Indian National Congress
+| image5 = {{CSS image crop|Image=Ghulam Nabi Azad official.jpg|bSize=100|cWidth=80|cHeight=100|oLeft=10|oTop=03}} 
+| leader5 = [[Ghulam Nabi Azad]]
+| leader_since5 = 
+| leaders_seat5 = ''Did not contest''
+| last_election5 = 17
+| seats5 = 12
+| seat_change5 = {{decrease}}  5
+| popular_vote5 = 8,67,883
+| percentage5 = 18.01%
+| swing5 = {{increase}} 0.29 [[Percentage point|pp]]
+| map_image = Jammu and Kashmir Assembly election 2014.png
+| title = [[Chief Minister of Jammu and Kashmir|Chief Minister]]
+| before_election = [[Omar Abdullah]]
+| before_party = ''[[Jammu & Kashmir National Conference|JKNC]] <br /><small>(in coalition with the [[Indian National Congress|INC]])</small>''
+| after_election = [[Mufti Mohammad Sayeed]]
+| after_party = ''[[Jammu and Kashmir Peoples Democratic Party|PDP]] <br /><small>(in coalition with the [[BJP]])</small>''
+}}
+
+The '''2014 Jammu and Kashmir Legislative Assembly election''' was held in the [[India]]n state of [[Jammu and Kashmir (state)|Jammu and Kashmir]] in five phases from 25 November – 20 December 2014. Voters elected 87 members to the [[Jammu and Kashmir Legislative Assembly]]. The results were declared on 23 December 2014.<ref>{{cite web|url=http://zeenews.india.com/news/india/five-phased-polls-in-jammu-and-kashmir-jharkhand-results-on-december-23_1489504.html |title=EC announces five-phased polls in J&K, Jharkhand; counting on December 23 &#124; Zee News |website=Zeenews.india.com |date=2014-10-26 |access-date=2015-12-05}}</ref><ref>{{cite web|url=http://www.business-standard.com/article/news-ani/ec-announces-five-phased-polling-for-jharkhand-and-j-k-114102500547_1.html |title=EC announces five phased polling for Jharkhand and J-K &#124; Business Standard News |website=Business-standard.com |access-date=2015-12-05}}</ref> [[Voter-verified paper audit trail]] (VVPAT) along with EVMs were used in 3 assembly seats out of 87 in Jammu Kashmir elections.<ref>{{cite web |url=http://jammu.greaterkashmir.com/news/2015/Jan/29/npp-to-challenge-validity-of-jk-assembly-polls-in-sc-35.asp |title=NPP to challenge 'validity' of JK Assembly polls in SC |access-date=2014-12-28 |url-status=dead |archive-url=https://archive.today/20150202110903/http://jammu.greaterkashmir.com/news/2015/Jan/29/npp-to-challenge-validity-of-jk-assembly-polls-in-sc-35.asp |archive-date=2015-02-02 }}</ref><ref>{{cite web|url=http://www.greaterkashmir.com/news/2014/Oct/26/polls-from-nov-25-results-on-dec-23-52.asp |access-date=24 April 2018 |url-status=dead |archive-url=https://web.archive.org/web/20141112041014/http://www.greaterkashmir.com/news/2014/Oct/26/polls-from-nov-25-results-on-dec-23-52.asp |archive-date=12 November 2014 | title=Polls from Nov 25; results on Dec 23 }}</ref><ref>{{cite web |url=http://www.dailypioneer.com/todays-newspaper/5-phase-polls-in-jandk-jkhand-from-nov-25.html |title=5-phase polls in J&K, J'khand from Nov 25 |website=Dailypioneer.com |date=2014-10-26 |access-date=2015-12-05 |archive-date=19 October 2021 |archive-url=https://web.archive.org/web/20211019035905/https://www.dailypioneer.com/todays-newspaper/5-phase-polls-in-jandk-jkhand-from-nov-25.html |url-status=dead }}</ref> Following the election, the [[Jammu & Kashmir People's Democratic Party]] (PDP) formed a coalition government with the [[Bharatiya Janata Party|BJP]] and their leader, [[Mufti Mohammad Sayeed]] became the state's Chief minister. [[Bharatiya Janata Party|BJP]] leader [[Nirmal Kumar Singh]] became the deputy chief minister.                
+                                   
+This was the last assembly election before the territory's [[Revocation of the special status of Jammu and Kashmir|special status was revoked]]<ref name=":2">{{Cite news |agency=PTI |date=2019-08-07 |title=President declares abrogation of provisions of Article 370 |language=en-IN |work=The Hindu |url=https://www.thehindu.com/news/national/president-declares-abrogation-of-provisions-of-article-370/article28842850.ece |access-date=2022-06-27 |issn=0971-751X}}</ref> and [[Jammu and Kashmir Reorganisation Act, 2019|Ladakh separated as union territory]] in 2019.<ref name=":3">{{Cite web |date=2019-08-09 |title=President Kovind gives assent to J&K Reorganisation Bill, two new UTs to come into effect from Oct 31 |url=https://indianexpress.com/article/india/president-ram-nath-kovind-gives-assent-to-jk-reorganisation-bill-two-new-uts-come-into-effect-5892839/ |access-date=2022-06-27 |website=The Indian Express |language=en}}</ref>
+
+== Parties==
+{|class="wikitable sortable" style="text-align:center;"
+!colspan=2|Party	
+!Flag
+!Electoral symbol
+!Leader
+!Seats contested
+|-
+|{{party color cell|Indian National Congress}}
+|[[Indian National Congress]]
+|[[File:Indian National Congress Flag.svg|50px]]
+|[[File:Hand INC.svg|50px]]
+|[[Ghulam Nabi Azad]]
+|86
+|-
+|{{party color cell|Jammu & Kashmir National Conference}}
+|[[Jammu & Kashmir National Conference]]
+|[[File:Flag of Jammu and Kashmir (1936-1953).svg|50px]]
+|[[File:Indian Election Symbol Plough.png|50px]]
+|[[Farooq Abdulla]]
+|85
+|-
+|{{party color cell|Jammu and Kashmir Peoples Democratic Party}}
+|[[Jammu & Kashmir Peoples Democratic Party]]
+| [[File:Blank.svg|50px]]<!-- Do not use placeholder images per WP:IPH -->
+| [[File:Indian Election Symbol Ink Pot and Pen.png|50px]]
+|[[Mufti Mohammed Sayeed]]
+|84
+|-
+|{{party color cell|Bharatiya Janata Party}}
+|[[Bharatiya Janata Party]]
+|[[File:BJP flag.svg|50px]]
+|[[File:Lotus flower symbol.svg|50px]]
+|[[Nirmal Kumar Singh]]
+|75
+|-
+|}
+
+==Background and campaign==
+Before the election, [[Indian National Congress]] broke its alliance with [[Jammu and Kashmir National Conference]] and contested on all seats in the assembly.<ref name="dna14">{{cite news|title=Congress divorces National Conference after five and half years of marriage|publisher=dna|date=21 July 2014|url=http://www.dnaindia.com/india/report-congress-divorces-national-conference-after-five-and-half-years-of-marriage-2003817|access-date=25 December 2014}}</ref>
+
+Campaigning before the elections were aggressive and robust. Following the huge victory of [[Bharatiya Janata Party]] in the Indian parliamentary election, the BJP turned its attention towards J&K and campaigned on the promise of 'development'. This included a visit from the Prime Minister of India, [[Narendra Modi]] in support of the local BJP campaign.
+
+==Boycott Calls==
+*Hardline separatist [[All Parties Hurriyat Conference]] leader [[Syed Ali Shah Geelani]] had appealed to people of Kashmir to boycott the 2014 [[Jammu and Kashmir Legislative Assembly]] elections completely, arguing that "India has been holding elections in the Valley using the power of the gun and so such an exercise is not legitimate." He added, "My appeal to the youth, in particular, is that the sacrifices rendered by the people must be safeguarded and, hence, in no way should vote during elections."<ref name="deccanherald1">{{cite web|url=http://www.deccanherald.com/content/440085/jampk-separatists-call-poll-boycott.html |title=J&K separatists call for poll boycott |website=Deccan Herald |date=2014-11-06 |access-date=2015-12-05}}</ref><ref>{{cite web|url=http://ibnlive.in.com/news/syed-ali-shah-geelanis-jk-election-boycott-call-resonates-in-his-hometown-sopore/516279-37-64.html |archive-url=https://web.archive.org/web/20141204083945/http://ibnlive.in.com/news/syed-ali-shah-geelanis-jk-election-boycott-call-resonates-in-his-hometown-sopore/516279-37-64.html |url-status=dead |archive-date=2014-12-04 |title=Syed Ali Shah Geelani's J&K election boycott call resonates in his hometown Sopore - IBNLive |website=Ibnlive.in.com |date=2014-12-03 |access-date=2015-12-05}}</ref>
+*Separatists were propagating the poll boycott campaign through video clips on social networking sites and applications, including [[Facebook]] and [[WhatsApp]].<ref name="deccanherald1"/>
+*A four-minute video clip has gone viral on social sites with messages of chairmen of both hardline and moderate factions of Hurriyat Conference and Dukhtaran-e-Millat chief [[Asiya Andrabi]]. The video message sent through WhatsApp and shared on Facebook and Twitter asked the people to boycott the coming polls.<ref name="deccanherald1"/> 
+*Video also showed Hurriyat hawk [[Syed Ali Shah Geelani]] addressing a gathering via phone urging youth not to undermine the mission of 'martyrs'. Moderate Hurriyat chairman [[Mirwaiz Umar Farooq]] is seen posing for the camera with the appeal that polls must be boycotted 'en masse'.<ref name="deccanherald1"/>
+
+Despite these calls, voter turnout in the 2014 elections instead increased by 4%, from roughly 61% in the previous election to 65%.
+
+==Voting==
+The polls were carried out in five phases. Despite several boycott calls by hurriyat leaders, elections recorded highest voters turnout in last 25 years. Voters turnout was more than 65% which is higher than usual voting percentage in other states of [[India]].<ref>{{cite news|url = https://www.thehindu.com/elections/assembly2014/jammu-and-kashmir-records-historic-polling-percentage-ec/article6711311.ece|title = J & K records historic polling percentage: EC|date = 20 December 2014|newspaper = The Hindu}}</ref><ref>{{cite web|url=https://www.deccanchronicle.com/141223/nation-current-affairs/article/jammu-and-kashmir-registers-highest-voter-turnout-25-years |title=Jammu and Kashmir registers highest voter turnout in 25 years, Jharkhand breaks records |website=Deccanchronicle.com |date=2014-12-23 |access-date=2015-12-05}}</ref><ref>{{cite web|url=http://ibnlive.in.com/news/jk-polls-76-per-cent-voter-turnout-recorded-in-the-final-phase/519066-3-245.html |archive-url=https://archive.today/20150315203847/http://ibnlive.in.com/news/jk-polls-76-per-cent-voter-turnout-recorded-in-the-final-phase/519066-3-245.html |url-status=dead |archive-date=2015-03-15 |title=J&K polls: 76 per cent voter turnout recorded in the final phase - IBNLive |website=Ibnlive.in.com |date=2014-12-20 |access-date=2015-12-05}}</ref><ref>{{cite web|url=http://www.ndtv.com/assembly/jammu-and-kashmir-registers-highest-voter-turnout-in-25-years-jharkhand-breaks-records-715845 |title=Jammu and Kashmir Registers Highest Voter Turnout in 25 Years, Jharkhand Breaks Records |website=Ndtv.com |access-date=2015-12-05}}</ref>
+[[File:J & K Assembly election 2014.png|thumb|Voting stages]]
+{| class="wikitable"
+|-
+! !! Date !! Seats !! Turnout
+|-
+| style="background:#0f0;"|
+| Tuesday 25 November 
+| 15
+| 71.28
+|-
+| style="background:hotPink;"|
+| Tuesday 2 December 
+| 18 
+| 71.00
+|-
+| style="background:#ff0;"|
+| Tuesday 9 December 
+| 16 
+| 58.89
+|-
+| style="background:#40e0d0;"|
+| Sunday 14 December 
+| 18 
+| 49.00
+|-
+| style="background:orange;"|
+| Saturday 20 December 
+| 20 
+| 76.00
+|-
+| || '''Total''' || '''87''' || '''65.23'''
+|-
+| colspan=4| Source:<ref>{{cite news|url=https://www.thehindu.com/elections/assembly2014/first-phase-of-Jammu-amp-Kashmir-elections/article60318056.ece |title=Impressive turnout in J&K and Jharkhand |newspaper=The Hindu |date=2014-11-25 |access-date=2015-12-05}}</ref><ref name=TO>{{cite web|url=http://timesofindia.indiatimes.com/home/specials/2014-assembly-elections/jammu-kashmir-news/JK-assembly-polls-Voters-defy-separatists-election-boycott-call-71-28-turnout-in-first-phase/articleshow/45273423.cms |title=J&K assembly polls: Voters defy separatists' election boycott call, 71.28% turnout in first phase |website=Timesofindia.indiatimes.com |date=2014-11-25 |access-date=2015-12-05}}</ref><ref>{{cite web|url=http://timesofindia.indiatimes.com/home/specials/2014-assembly-elections/jammu-kashmir-news/71-voting-recorded-in-2nd-phase-of-Jammu-Kashmir-poll/articleshow/45349342.cms|title=71% voting recorded in 2nd phase of Jammu & Kashmir poll|website=Timesofindia.indiatimes.com|date=2 December 2014}}</ref><ref>{{cite web | url=http://www.ndtv.com/article/cheat-sheet/polls-in-the-shadow-of-terror-58-people-vote-in-jammu-and-kashmir-632205 | title=Polls in the Shadow of Terror: 58% People Vote in Jammu and Kashmir | publisher=NDTV | access-date=9 December 2014}}</ref><ref>{{cite web | url=http://www.dnaindia.com/india/report-live-voting-begins-for-third-phase-of-assembly-elections-in-jammu-and-kashmir-jharkhand-2042321 | title=Braving bullets 58% cast ballot in Jammu and Kashmir, 61% voting in Jharkhand in third phase of elections | publisher=dna India | access-date=9 December 2014}}</ref>
+|}
+
+The [[European Parliament]], on the behalf of [[European Union]], welcomed the smooth conduct of the State Legislative Elections in the Jammu and Kashmir.<ref name="prnewswire1">{{cite press release|url=http://www.prnewswire.com/news-releases/the-european-parliament-welcomes-the-elections-in-jammu--kashmir-285354511.html |title=The European Parliament Welcomes the Elections in Jammu & Kashmir - BRUSSELS, December 10, 2014 /PRNewswire/ |website=Prnewswire.com |access-date=2015-12-05}}</ref> The [[EU]] in its message said that, "The high voter turnout figure proves that democracy is firmly rooted in India. The EU would like to congratulate India and its democratic system for conduct of fair elections, unmarred by violence, in the state of Jammu and Kashmir".<ref name="prnewswire1"/><ref name="business-standard1">{{cite web|url=http://www.business-standard.com/article/news-ani/european-parliament-welcomes-elections-in-jammu-and-kashmir-114121101111_1.html |title=European Parliament welcomes elections in Jammu and Kashmir &#124; Business Standard News |website=Business-standard.com |access-date=2015-12-05}}</ref><ref>{{cite web|url=http://www.dailyexcelsior.com/eu-hails-huge-turnout-jk/ |title=EU hails huge turnout in J&K |website=Dailyexcelsior.com |date=11 December 2014 |access-date=2015-12-05}}</ref> The European Parliament also takes cognizance of the fact that a large number of Kashmiri voters turned out despite calls for the boycott of elections by certain separatist forces.<ref name="business-standard1"/> However, elected Jammu and Kashmir Chief Minister Mufti Muhammad Sayeed said, "If God forbid the Hurriyat and the militants tried to disrupt the elections there would not have been as participative as they had been. They (Pakistan) also allowed these elections to take place." Ruling Party president Mehbooba Mufti also defended Mufti's remarks.<ref>{{cite news|title=Mehbooba defends Mufti's remarks on Pakistan|url=https://www.thehindu.com/news/national/Mehbooba-defends-Mufti%E2%80%99s-remarks-on-Pakistan/article60331343.ece|date=2 March 2015|work=The Hindu|access-date=8 June 2015}}</ref> While taking a dig at Mufti's statement former [[List of Chief Ministers of Jammu and Kashmir|Chief minister of Jammu and Kashmir]] and leader of opposition in [[Rajya Sabha]] [[Ghulam Nabi Azad]] said that, "In fact, Pakistan and militant groups tried their best to destabilize the democratic process in the state."<ref>{{cite news|title=Azad slams Mufti remark, asks BJP to explain|url=http://www.greaterkashmir.com/news/national/azad-slams-mufti-remark-asks-bjp-to-explain/1901.html|access-date=14 June 2015|publisher=Greater Kashmir|date=1 March 2015}}</ref><ref>{{cite news|title=Congress' Azad slams CM Mufti's remark, asks BJP to explain|url=http://www.firstpost.com/politics/congress-azad-slams-cm-muftis-remark-asks-bjp-explain-2130245.html|access-date=14 June 2015|work=Firstpost|date=1 March 2015}}</ref>
+
+==Results==
+{| class="wikitable sortable"
+|+Results<ref>{{Cite web|title=Jammu & Kashmir 2014|url=https://old.eci.gov.in/files/file/3797-jammu-kashmir-2014/|access-date=2021-09-12|website=Election Commission of India|language=en-IN}}</ref>
+| colspan="8" align="center" |[[File:India Jammu and Kashmir Legislative Assembly (Vidhan Sabha) Elections 2014.svg]]
+|-
+! colspan="2" rowspan="2" |Party
+! colspan="3" |Popular vote
+! colspan="3" |Seats
+|-
+!Votes
+!%
+!±[[Percentage point|pp]]
+!Contested
+!Won
+!'''+/−'''
+|-
+| bgcolor="{{Party color|Jammu and Kashmir People's Democratic Party}}" |
+|[[Jammu and Kashmir People's Democratic Party]]
+|10,92,203
+|22.67
+|{{up}}7.31
+|84
+|28
+|{{increase}}7
+|-
+| bgcolor="{{Party color|Bharatiya Janata Party}}" |
+|[[Bharatiya Janata Party]]
+|11,07,194
+|22.98
+|{{up}}10.55
+|75
+|25
+|{{increase}}14
+|-
+| bgcolor="{{Party color|Jammu & Kashmir National Conference}}" |
+|[[Jammu & Kashmir National Conference]]
+|10,00,693
+|20.77
+|{{down}}2.27
+|85
+|15
+|{{decrease}}13
+|-
+| bgcolor="{{Party color|Indian National Congress}}" |
+|[[Indian National Congress]]
+|8,67,883
+|18.01
+|{{up}}0.29
+|86
+|12
+|{{decrease}}5
+|-
+| bgcolor="{{Party color|Jammu & Kashmir People's Conference}}" |
+|[[Jammu & Kashmir People's Conference]]
+|93,182
+|1.93
+|{{up}}1.93
+|26
+|2
+|{{increase}}2
+|-
+| bgcolor="{{Party color|Communist Party of India (Marxist)}}" |
+|[[Communist Party of India (Marxist)]]
+|24,017
+|0.50
+|{{down}}0.30
+|3
+|1
+|{{dash}}
+|-
+| bgcolor="{{Party color|Jammu & Kashmir National Panthers Party}}" |
+|[[Jammu & Kashmir National Panthers Party]]
+|95,941
+|1.99
+|{{down}}1.40
+|60
+|0
+|{{decrease}}3
+|-
+| bgcolor="{{Party color|Independents}}" |
+|Independents
+|3,29,881
+|6.85
+|{{down}}9.49
+|274
+|3
+|{{decrease}}1
+|-
+| bgcolor="{{Party color|Others}}" |
+|Others
+|1,57,858
+|3.28
+|{{down}}2.59
+|138
+|1
+|{{down}}1
+|-
+|
+|[[None of the above (India)|NOTA]]
+|49,129
+|1.02
+|{{up}}1.02
+|87
+! colspan="3" style="background-color:#E9E9E9" |
+|-
+! colspan="2" |Total
+!48,17,981
+!100
+! colspan="4" style="background-color:#E9E9E9" |
+|-
+! colspan="8" |
+|-
+| colspan="2" style="text-align:left;" |Valid votes
+| align="right" |48,17,981
+| align="right" |99.90
+! colspan="4" rowspan="5" style="background-color:#E9E9E9" |
+|-
+| colspan="2" style="text-align:left;" |Invalid votes
+| align="right" |4,795
+| align="right" |0.10
+|-
+| colspan="2" style="text-align:left;" |'''Votes cast/ turnout'''
+| align="right" |48,22,776
+| align="right" |65.91
+|-
+| colspan="2" style="text-align:left;" |Abstentions
+| align="right" |24,94,170
+| align="right" |34.09
+|-
+| colspan="2" style="text-align:left;" |'''Registered voters'''
+| align="right" |73,16,946
+| style="background-color:#E9E9E9" |
+|}
+
+=== Result by Division ===
+{| class="wikitable sortable" style="line-height:20px;text-align:center;font-size:94%;"
+|+
+! rowspan=2 |District
+! rowspan=2 |Seats
+| bgcolor="{{party color|Bharatiya Janata Party}}" |
+| bgcolor="{{party color|Jammu & Kashmir National Conference}}" |
+| bgcolor="{{party color|Jammu and Kashmir Peoples Democratic Party}}" |
+| bgcolor="{{party color|Indian National Congress}}" |
+| bgcolor="{{party color|Others}}" |
+|-
+! class="wikitable" |[[Bharatiya Janata Party|BJP]]
+! class="wikitable" |[[Jammu & Kashmir National Conference|NC]]
+! class="wikitable" |[[Jammu and Kashmir Peoples Democratic Party|PDP]]
+! class="wikitable" |[[Indian National Congress|INC]]
+! class="wikitable" |OTH
+|-
+|'''[[Kashmir division|Kashmir]]'''
+!46
+|0
+|12
+|style="background:{{Party color|Jammu and Kashmir Peoples Democratic Party}}; color:white;" |25
+|4
+|5
+|-
+|'''[[Ladakh]]'''
+!4
+|0
+|0
+|0
+|style="background:{{Party color|Indian National Congress}}; color:white;" |3
+|1
+|-
+|'''[[Jammu division|Jammu]]'''
+!37
+|style="background:{{Party color|Bharatiya Janata Party}}; color:white;" |25
+|3
+|3
+|5
+|1
+|-
+|- class="sortbottom"
+!Total
+!87
+!25
+!15
+!28
+!12
+!7
+|}
+
+=== Result by Division (Vote Share)===
+{| class="wikitable sortable" style="line-height:20px;text-align:center;font-size:94%;"
+|+
+! rowspan=2 |Division
+| bgcolor="{{party color|Bharatiya Janata Party}}" |
+| bgcolor="{{party color|Jammu & Kashmir National Conference}}" |
+| bgcolor="{{party color|Jammu and Kashmir Peoples Democratic Party}}" |
+| bgcolor="{{party color|Indian National Congress}}" |
+|-
+! class="wikitable" |[[Bharatiya Janata Party|BJP]]
+! class="wikitable" |[[Jammu & Kashmir National Conference|NC]]
+! class="wikitable" |[[Jammu and Kashmir Peoples Democratic Party|PDP]]
+! class="wikitable" |[[Indian National Congress|INC]]
+|-
+|'''[[Kashmir division|Kashmir]]'''
+|2.24
+|29.20
+|style="background:{{Party color|Jammu and Kashmir Peoples Democratic Party}}; color:white;"|37.43
+|12.76
+|-
+|'''[[Ladakh]]'''
+|22.14
+|8.10
+|11.77
+|style="background:{{Party color|Indian National Congress}}; color:white;"|50.72
+|-
+|'''[[Jammu division|Jammu]]'''
+|style="background:{{Party color|Bharatiya Janata Party}}; color:white;" |40.15
+|14.39
+|10.99
+|20.84
+|-
+|- class="sortbottom"
+!Total
+!22.98
+!20.77
+!22.67
+!18.01
+|}
+'''Note''': All figures used here are expressed as percentages (%).
+
+===Results by District===
+{| class="wikitable sortable" style="line-height:20px;text-align:center;font-size:94%;"
+|+
+! rowspan=2 |Division
+! rowspan=2 |District
+! rowspan=2 |Seats
+| bgcolor="{{party color|Bharatiya Janata Party}}" |
+| bgcolor="{{party color|Jammu & Kashmir National Conference}}" |
+| bgcolor="{{party color|Jammu and Kashmir Peoples Democratic Party}}" |
+| bgcolor="{{party color|Indian National Congress}}" |
+| bgcolor="{{party color|Others}}" |
+|-
+! class="wikitable" |[[Bharatiya Janata Party|BJP]]
+! class="wikitable" |[[Jammu & Kashmir National Conference|NC]]
+! class="wikitable" |[[Jammu and Kashmir Peoples Democratic Party|PDP]]
+! class="wikitable" |[[Indian National Congress|INC]]
+! class="wikitable" |OTH
+|-
+|rowspan="10"|'''[[Kashmir division|Kashmir]]'''
+|'''[[Kupwara district|Kupwara]]'''
+!5
+|0
+|0
+|2
+|0
+|style="background:{{Party color|Independent politician}}; color:black;" |3
+|-
+|'''[[Baramulla district|Baramulla]]'''
+!7
+|0
+|1
+|style="background:{{Party color|Jammu and Kashmir Peoples Democratic Party}}; color:white;" |5
+|1
+|0
+|-
+|'''[[Bandipore district|Bandipora]]'''
+!3
+|0
+|style="background:{{Party color|Jammu & Kashmir National Conference}}; color:white;" |2
+|0
+|1
+|0
+|-
+|'''[[Ganderbal district|Ganderbal]]'''
+!2
+|0
+|style="background:{{Party color|Jammu & Kashmir National Conference}}; color:white;" |2
+|0
+|0
+|0
+|-
+|'''[[Srinagar district|Srinagar]]'''
+!8
+|0
+|3
+|style="background:{{Party color|Jammu and Kashmir Peoples Democratic Party}}; color:white;" |5
+|0
+|0
+|-
+|'''[[Budgam district|Budgam]]'''
+!5
+|0
+|2
+|2
+|0
+|1
+|-
+|'''[[Pulwama district|Pulwama]]'''
+!4
+|0
+|0
+|style="background:{{Party color|Jammu and Kashmir Peoples Democratic Party}}; color:white;" |4
+|0
+|0
+|-
+|'''[[Shopian district|Shopian]]'''
+!2
+|0
+|0
+|style="background:{{Party color|Jammu and Kashmir Peoples Democratic Party}}; color:white;" |2
+|0
+|0
+|-
+|'''[[Kulgam district|Kulgam]]'''
+!4
+|0
+|1
+|1
+|1
+|1
+|-
+|'''[[Anantnag district|Anantnag]]'''
+!6
+|0
+|1
+|style="background:{{Party color|Jammu and Kashmir Peoples Democratic Party}}; color:white;" |4
+|1
+|0
+|-
+|rowspan="2"|'''[[Ladakh]]'''
+|'''[[Leh district|Leh]]'''
+!2
+|0
+|0
+|0
+|style="background:{{Party color|Indian National Congress}}; color:white;" |2
+|0
+|-
+|'''[[Kargil district|Kargil]]'''
+!2
+|0
+|0
+|0
+|1
+|1
+|-
+|rowspan="10"|'''[[Jammu division|Jammu]]'''
+|'''[[Kishtwar district|Kishtwar]]'''
+!2
+|1
+|0
+|0
+|1
+|0
+|-
+|'''[[Doda district|Doda]]'''
+!2
+|style="background:{{Party color|Bharatiya Janata Party}}; color:white;" |2
+|0
+|0
+|0
+|0
+|-
+|'''[[Ramban district|Ramban]]'''
+!2
+|1
+|0
+|0
+|1
+|0
+|-
+|'''[[Reasi district|Reasi]]'''
+!3
+|1
+|0
+|0
+|style="background:{{Party color|Indian National Congress}}; color:white;" |2
+|0
+|-
+|'''[[Udhampur district|Udhampur]]'''
+!3
+|style="background:{{Party color|Bharatiya Janata Party}}; color:white;" |2
+|0
+|0
+|0
+|1
+|-
+|'''[[Kathua district|Kathua]]'''
+!5
+|style="background:{{Party color|Bharatiya Janata Party}}; color:white;" |5
+|0
+|0
+|0
+|0
+|-
+|'''[[Samba district|Samba]]'''
+!2
+|style="background:{{Party color|Bharatiya Janata Party}}; color:white;" |2
+|0
+|0
+|0
+|0
+|-
+|'''[[Jammu district|Jammu]]'''
+!11
+|style="background:{{Party color|Bharatiya Janata Party}}; color:white;" |9
+|2
+|0
+|0
+|0
+|-
+|'''[[Rajouri district|Rajouri]]'''
+!4
+|2
+|0
+|2
+|0
+|0
+|-
+|'''[[Poonch district, India|Poonch]]'''
+!3
+|0
+|1
+|1
+|1
+|0
+|-
+|- class="sortbottom"
+!colspan="2"|Total
+!87
+!style="background:{{Party color|Bharatiya Janata Party}}; color:white;" |25
+!style="background:{{Party color|Jammu & Kashmir National Conference}}; color:white;" |15
+!style="background:{{Party color|Jammu and Kashmir Peoples Democratic Party}}; color:white;" |28
+!style="background:{{Party color|Indian National Congress}}; color:white;" |12
+!style="background:{{Party color|Independent politician}}; color:black;" |7
+|}
+
+===Results by Constituency===
+{| class="wikitable sortable" style="line-height:20px;text-align:center;white-space:nowrap;font-size:94%;"
+! rowspan="2" | District
+! colspan="2" | Constituency
+! colspan="5" | Winner<ref>{{Cite web |date= |title=Jammu & Kashmir 2014 - Jammu & Kashmir - Election Commission of India |url=https://old.eci.gov.in/files/file/3797-jammu-kashmir-2014/ |archive-url=https://web.archive.org/web/20190613150235/https://eci.gov.in/files/file/3797-jammu-kashmir-2014/ |archive-date=2019-06-13 |access-date= |website=eci.gov.in}}</ref>
+! colspan="5" | Runner Up
+! rowspan="2" | Margin
+! rowspan="2" | %
+|-
+! #
+! Name{{efn|name=Reserved|SC indicate constituencies reserved for [[Scheduled Castes]].}}
+! Candidate
+! colspan="2" | Party
+! Votes
+! %
+! Candidate
+! colspan="2" | Party
+! Votes
+! %
+|-
+| rowspan="5" | [[Kupwara district|Kupwara]]
+! 1
+| [[Karnah Assembly constituency|Karnah]]
+| [[Raja Manzoor Ahmad]]
+| {{party name with color|Jammu and Kashmir Peoples Democratic Party}}
+| 12,371
+| 47.75
+| Kifil Ur Rehman Khan
+| {{party name with color|Jammu & Kashmir National Conference}}
+| 6,596
+| 25.46
+| style="background:{{party color|Jammu and Kashmir Peoples Democratic Party}} ; color:white;"|5,775
+| style="background:{{party color|Jammu and Kashmir Peoples Democratic Party}} ; color:white;"|22.29
+|-
+! 2
+| [[Kupwara Assembly constituency|Kupwara]]
+| [[Bashir Ahmad Dar]]
+| {{party name with color|Jammu and Kashmir People's Conference}}
+| 24,754
+| 34.47
+| Mir Mohd Fayaz
+| {{party name with color|Jammu and Kashmir Peoples Democratic Party}}
+| 24,603
+| 34.26
+| style="background:{{party color|Jammu and Kashmir People's Conference}} ; color:white;"|151
+| style="background:{{party color|Jammu and Kashmir People's Conference}} ; color:white;"|0.21
+|-
+! 3
+| [[Lolab Assembly constituency|Lolab]]
+| [[Abdul Haq Khan (advocate)|Abdul Haq Khan]]
+| {{party name with color|Jammu and Kashmir Peoples Democratic Party}}
+| 29,408
+| 41.06
+| [[Qaysar Jamshaid Lone]]
+| {{party name with color|Jammu & Kashmir National Conference}}
+| 26,538
+| 37.06
+| style="background:{{party color|Jammu and Kashmir Peoples Democratic Party}} ; color:white;"|2,870
+| style="background:{{party color|Jammu and Kashmir Peoples Democratic Party}} ; color:white;"|4.00
+|-
+! 4
+| [[Handwara Assembly constituency|Handwara]]
+| [[Sajjad Gani Lone]]
+| {{party name with color|Jammu and Kashmir People's Conference}}
+| 29,355
+| 43.19
+| Ch. Mohd. Ramzan
+| {{party name with color|Jammu & Kashmir National Conference}}
+| 23,932
+| 35.21
+| style="background:{{party color|Jammu and Kashmir People's Conference}} ; color:white;"|5,423
+| style="background:{{party color|Jammu and Kashmir People's Conference}} ; color:white;"|7.98
+|-
+! 5
+| [[Langate Assembly constituency|Langate]]
+| [[Sheikh Abdul Rashid]]
+| {{party name with color|Independent politician|shortname=IND}}
+| 18,172
+| 35.49
+| Ghulam Nabi Ganai
+| {{party name with color|Jammu and Kashmir Peoples Democratic Party}}
+| 15,667
+| 30.60
+| style="background:{{party color|Independent politician}} ; color:black;"|2,505
+| style="background:{{party color|Independent politician}} ; color:black;"|4.89
+|-
+| rowspan="3" | [[Baramulla district|Baramulla]]
+! 6
+| [[Uri Assembly constituency|Uri]]
+| [[Mohammad Shafi (politician)|Md. Shafi]]
+| {{party name with color|Jammu & Kashmir National Conference}}
+| 24,359
+| 39.25
+| Aijaz Ali Khan
+| {{party name with color|Jammu and Kashmir Peoples Democratic Party}}
+| 18,567
+| 29.92
+| style="background:{{party color|Jammu & Kashmir National Conference}} ; color:white;"|5,792
+| style="background:{{party color|Jammu & Kashmir National Conference}} ; color:white;"|9.33
+|-
+! 7
+| [[Rafiabad Assembly constituency|Rafiabad]]
+| [[Yawar Ahmad Mir]]
+| {{party name with color|Jammu and Kashmir Peoples Democratic Party}}
+| 17,918
+| 32.31
+| Abdul Gani Vakil
+| {{party name with color|Indian National Congress}}
+| 15,584
+| 28.10
+| style="background:{{party color|Jammu and Kashmir Peoples Democratic Party}} ; color:white;"|2,334
+| style="background:{{party color|Jammu and Kashmir Peoples Democratic Party}} ; color:white;"|4.21
+|-
+! 8
+| [[Sopore Assembly constituency|Sopore]]
+| [[Abdul Rashid Dar]]
+| {{party name with color|Indian National Congress}}
+| 8,429
+| 26.38
+| Nazir Ahmad Naikoo
+| {{party name with color|Jammu and Kashmir Peoples Democratic Party}}
+| 5,674
+| 17.76
+| style="background:{{party color|Indian National Congress}} ; color:white;"|2,755
+| style="background:{{party color|Indian National Congress}} ; color:white;"|8.62
+|-
+| rowspan="3" | [[Bandipora district|Bandipora]]
+! 9
+| [[Gurez Assembly constituency|Gurez]]
+| [[Nazir Ahmad Khan (Indian politician)|Nazir Ahmad Khan]]
+| {{party name with color|Jammu & Kashmir National Conference}}
+| 6,664
+| 48.29
+| Faqir Mohmad Khan
+| {{party name with color|Indian National Congress}}
+| 6,523
+| 47.26
+| style="background:{{party color|Jammu & Kashmir National Conference}} ; color:white;"|141
+| style="background:{{party color|Jammu & Kashmir National Conference}} ; color:white;"|1.03
+|-
+! 10
+| [[Bandipora Assembly constituency|Bandipora]]
+| [[Usman Abdul Majid]]
+| {{party name with color|Indian National Congress}}
+| 25,084
+| 37.69
+| [[Nizam Uddin Bhat|Nizamuddin Bhat]]
+| {{party name with color|Jammu and Kashmir Peoples Democratic Party}}
+| 21,341
+| 32.06
+| style="background:{{party color|Indian National Congress}} ; color:white;"|3,743
+| style="background:{{party color|Indian National Congress}} ; color:white;"|5.63
+|-
+! 11
+| [[Sonawari Assembly constituency|Sonawari]]
+| [[Mohammad Akbar Lone|Md. Akbar Lone]]
+| {{party name with color|Jammu & Kashmir National Conference}}
+| 32,567
+| 40.53
+| Yasir Reshi
+| {{party name with color|Jammu and Kashmir Peoples Democratic Party}}
+| 32,161
+| 40.02
+| style="background:{{party color|Jammu & Kashmir National Conference}} ; color:white;"|406
+| style="background:{{party color|Jammu & Kashmir National Conference}} ; color:white;"|0.51
+|-
+| rowspan="4" | [[Baramulla district|Baramulla]]
+! 12
+| [[Sangrama Assembly constituency|Sangrama]]
+| [[Syed Basharat Ahmed Bukhari|Basharat Ah. Bukhari]]
+| {{party name with color|Jammu and Kashmir Peoples Democratic Party}}
+| 12,146
+| 31.37
+| Shuib Nabi Lone
+| {{party name with color|Indian National Congress}}
+| 10,392
+| 26.84
+| style="background:{{party color|Jammu and Kashmir Peoples Democratic Party}} ; color:white;"|1,754
+| style="background:{{party color|Jammu and Kashmir Peoples Democratic Party}} ; color:white;"|4.53
+|-
+! 13
+| [[Baramulla Assembly constituency|Baramulla]]
+| [[Javid Hassan Baig]]
+| {{party name with color|Jammu and Kashmir Peoples Democratic Party}}
+| 14,418
+| 43.75
+| Gh. Hassan Rahi
+| {{party name with color|Jammu & Kashmir National Conference}}
+| 7,401
+| 22.46
+| style="background:{{party color|Jammu and Kashmir Peoples Democratic Party}} ; color:white;"|7,017
+| style="background:{{party color|Jammu and Kashmir Peoples Democratic Party}} ; color:white;"|21.29
+|-
+! 14
+| [[Gulmarg Assembly constituency|Gulmarg]]
+| [[Mohammad Abass Wani|Mohd. Abass Wani]]
+| {{party name with color|Jammu and Kashmir Peoples Democratic Party}}
+| 22,957
+| 33.81
+| [[Ghulam Hassan Mir]]
+| bgcolor="{{party color|Telugu Desam Party}}" | 
+| align="left"|JKDPN{{efn|name=JKDPN|Jammu and Kashmir Democratic Party Nationalist}}
+| 20,146
+| 29.67
+| style="background:{{party color|Jammu and Kashmir Peoples Democratic Party}} ; color:white;"|2,811
+| style="background:{{party color|Jammu and Kashmir Peoples Democratic Party}} ; color:white;"|4.14
+|-
+! 15
+| [[Pattan Assembly constituency|Pattan]]
+| [[Imran Reza Ansari]]
+| {{party name with color|Jammu and Kashmir Peoples Democratic Party}}
+| 21,218
+| 40.41
+| Aga Syed Al Mosavi
+| {{party name with color|Jammu & Kashmir National Conference}}
+| 11,884
+| 22.63
+| style="background:{{party color|Jammu and Kashmir Peoples Democratic Party}} ; color:white;"|9,334
+| style="background:{{party color|Jammu and Kashmir Peoples Democratic Party}} ; color:white;"|17.78
+|-
+| rowspan="2" | [[Ganderbal district|Ganderbal]]
+! 16
+| [[Kangan Assembly constituency|Kangan]]
+| [[Mian Altaf Ahmed Larvi|Altaf Ahmad]]
+| {{party name with color|Jammu & Kashmir National Conference}}
+| 25,812
+| 47.12
+| Bashir Ahmad Mir
+| {{party name with color|Jammu and Kashmir Peoples Democratic Party}}
+| 24,380
+| 44.50
+| style="background:{{party color|Jammu & Kashmir National Conference}} ; color:white;"|1,432
+| style="background:{{party color|Jammu & Kashmir National Conference}} ; color:white;"|2.62
+|-
+! 17
+| [[Ganderbal Assembly constituency|Ganderbal]]
+| [[Ishfaq Ahmad Sheikh|Ishfaq Ahmad Sk.]]
+| {{party name with color|Jammu & Kashmir National Conference}}
+| 19,478
+| 36.38
+| [[Qazi Mohammad Afzal|Qazi Md. Afzal]]
+| {{party name with color|Jammu and Kashmir Peoples Democratic Party}}
+| 18,881
+| 35.27
+| style="background:{{party color|Jammu & Kashmir National Conference}} ; color:white;"|597
+| style="background:{{party color|Jammu & Kashmir National Conference}} ; color:white;"|1.11
+|-
+| rowspan="8" | [[Srinagar district|Srinagar]]
+! 18
+| [[Hazratbal Assembly constituency|Hazratbal]]
+| [[Asiya Naqash]]
+| {{party name with color|Jammu and Kashmir Peoples Democratic Party}}
+| 13,234
+| 44.87
+| Mohd. Syed Akhoon
+| {{party name with color|Jammu & Kashmir National Conference}}
+| 9,834
+| 33.34
+| style="background:{{party color|Jammu and Kashmir Peoples Democratic Party}} ; color:white;"|3,400
+| style="background:{{party color|Jammu and Kashmir Peoples Democratic Party}} ; color:white;"|11.53
+|-
+! 19
+| [[Zadibal Assembly constituency|Zadibal]]
+| [[Abid Hussain Ansari]]
+| {{party name with color|Jammu and Kashmir Peoples Democratic Party}}
+| 7,852
+| 42.66
+| Peer Afaq Ahmad
+| {{party name with color|Jammu & Kashmir National Conference}}
+| 4,849
+| 26.35
+| style="background:{{party color|Jammu and Kashmir Peoples Democratic Party}} ; color:white;"|3,003
+| style="background:{{party color|Jammu and Kashmir Peoples Democratic Party}} ; color:white;"|16.31
+|-
+! 20
+| [[Eidgah Assembly constituency|Eidgah]]
+| [[Mubarak Gul]]
+| {{party name with color|Jammu & Kashmir National Conference}}
+| 6,766
+| 41.38
+| Ali Mohammad Wani
+| {{party name with color|Jammu and Kashmir Peoples Democratic Party}}
+| 6,158
+| 37.66
+| style="background:{{party color|Jammu & Kashmir National Conference}} ; color:white;"|608
+| style="background:{{party color|Jammu & Kashmir National Conference}} ; color:white;"|3.72
+|-
+! 21
+| [[Khanyar Assembly constituency|Khanyar]]
+| [[Ali Mohammad Sagar|Ali Md. Sagar]]
+| {{party name with color|Jammu & Kashmir National Conference}}
+| 6,505
+| 48.76
+| Md. Khurshid Alam
+| {{party name with color|Jammu and Kashmir Peoples Democratic Party}}
+| 5,338
+| 40.01
+| style="background:{{party color|Jammu & Kashmir National Conference}} ; color:white;"|1,167
+| style="background:{{party color|Jammu & Kashmir National Conference}} ; color:white;"|8.75
+|-
+! 22
+| [[Habba Kadal Assembly constituency|Habba Kadal]]
+| [[Shamim Firdous]]
+| {{party name with color|Jammu & Kashmir National Conference}}
+| 4,955
+| 42.40
+| Moti Koul
+| {{party name with color|Bharatiya Janata Party}}
+| 2,596
+| 22.21
+| style="background:{{party color|Jammu & Kashmir National Conference}} ; color:white;"|2,359
+| style="background:{{party color|Jammu & Kashmir National Conference}} ; color:white;"|20.19
+|-
+! 23
+| [[Amira Kadal Assembly constituency|Amira Kadal]]
+| [[Altaf Bukhari]]
+| {{party name with color|Jammu and Kashmir Peoples Democratic Party}}
+| 11,726
+| 54.57
+| [[Nasir Aslam Wani]]
+| {{party name with color|Jammu & Kashmir National Conference}}
+| 6,385
+| 29.71
+| style="background:{{party color|Jammu and Kashmir Peoples Democratic Party}} ; color:white;"|5,341
+| style="background:{{party color|Jammu and Kashmir Peoples Democratic Party}} ; color:white;"|24.86
+|-
+! 24
+| [[Sonawar Assembly constituency|Sonawar]]
+| [[Mohammad Ashraf Mir|Md. Ashraf Mir]]
+| {{party name with color|Jammu and Kashmir Peoples Democratic Party}}
+| 14,283
+| 41.88
+| [[Omar Abdullah]]
+| {{party name with color|Jammu & Kashmir National Conference}}
+| 9,500
+| 27.85
+| style="background:{{party color|Jammu and Kashmir Peoples Democratic Party}} ; color:white;"|4,783
+| style="background:{{party color|Jammu and Kashmir Peoples Democratic Party}} ; color:white;"|14.03
+|-
+! 25
+| [[Batmaloo Assembly constituency|Batmaloo]]
+| [[Noor Mohammad Sheikh|Noor Mohd Sheikh]]
+| {{party name with color|Jammu and Kashmir Peoples Democratic Party}}
+| 12,542
+| 42.56
+| Mohd Irfan Shah
+| {{party name with color|Jammu & Kashmir National Conference}}
+| 8,215
+| 27.88
+| style="background:{{party color|Jammu and Kashmir Peoples Democratic Party}} ; color:white;"|4,327
+| style="background:{{party color|Jammu and Kashmir Peoples Democratic Party}} ; color:white;"|14.68
+|-
+| rowspan="5" | [[Budgam district|Budgam]]
+! 26
+| [[Chadoora Assembly constituency|Chadoora]]
+| [[Javaid Mustafa Mir]]
+| {{party name with color|Jammu and Kashmir Peoples Democratic Party}}
+| 25,770
+| 48.26
+| [[Ali Mohammad Dar|Ali Md. Dar]]
+| {{party name with color|Jammu & Kashmir National Conference}}
+| 24,077
+| 45.09
+| style="background:{{party color|Jammu and Kashmir Peoples Democratic Party}} ; color:white;"|1,693
+| style="background:{{party color|Jammu and Kashmir Peoples Democratic Party}} ; color:white;"|3.17
+|-
+! 27
+| [[Budgam Assembly constituency|Budgam]]
+| [[Aga Syed Ruhullah Mehdi|Aga Syed Ruhullah]]
+| {{party name with color|Jammu & Kashmir National Conference}}
+| 30,090
+| 43.76
+| Gh. Moinuddin Bhat
+| {{party name with color|Jammu and Kashmir Peoples Democratic Party}}
+| 27,303
+| 39.71
+| style="background:{{party color|Jammu & Kashmir National Conference}} ; color:white;"|2,787
+| style="background:{{party color|Jammu & Kashmir National Conference}} ; color:white;"|4.05
+|-
+! 28
+| [[Beerwah Assembly constituency|Beerwah]]
+| [[Omar Abdullah]]
+| {{party name with color|Jammu & Kashmir National Conference}}
+| 23,717
+| 34.18
+| Nazir Ahmad Khan
+| {{party name with color|Indian National Congress}}
+| 22,807
+| 32.86
+| style="background:{{party color|Jammu & Kashmir National Conference}} ; color:white;"|910
+| style="background:{{party color|Jammu & Kashmir National Conference}} ; color:white;"|1.32
+|-
+! 29
+| [[Khan Sahib Assembly constituency|Khan Sahib]]
+| [[Hakeem Yasin]]
+| {{party name with color|Jammu and Kashmir People's Democratic Front}}
+| 26,649
+| 38.16
+| [[Saif Ud Din Bhat]]
+| {{party name with color|Jammu and Kashmir Peoples Democratic Party}}
+| 25,540
+| 36.58
+| style="background:{{party color|Jammu and Kashmir People's Democratic Front}} ; color:white;"|1,109
+| style="background:{{party color|Jammu and Kashmir People's Democratic Front}} ; color:white;"|1.58
+|-
+! 30
+| [[Charari Sharief Assembly constituency|Chrar-I-Sharief]]
+| [[Ghulam Nabi Lone]]
+| {{party name with color|Jammu and Kashmir Peoples Democratic Party}}
+| 32,849
+| 50.85
+| [[Abdul Rahim Rather (born 1944)|Ab. Rahim Rather]]
+| {{party name with color|Jammu & Kashmir National Conference}}
+| 27,682
+| 42.85
+| style="background:{{party color|Jammu and Kashmir Peoples Democratic Party}} ; color:white;"|5,167
+| style="background:{{party color|Jammu and Kashmir Peoples Democratic Party}} ; color:white;"|8.00
+|-
+| rowspan="4" | [[Pulwama district|Pulwama]]
+! 31
+| [[Tral Assembly constituency|Tral]]
+| [[Mushtaq Ahmad Shah]]
+| {{party name with color|Jammu and Kashmir Peoples Democratic Party}}
+| 12,415
+| 38.56
+| Mohd. Ashraf Bhat
+| {{party name with color|Jammu & Kashmir National Conference}}
+| 8,305
+| 25.80
+| style="background:{{party color|Jammu and Kashmir Peoples Democratic Party}} ; color:white;"|4,110
+| style="background:{{party color|Jammu and Kashmir Peoples Democratic Party}} ; color:white;"|12.76
+|-
+! 32
+| [[Pampore Assembly constituency|Pampore]]
+| [[Zahoor Ahmad Mir]]
+| {{party name with color|Jammu and Kashmir Peoples Democratic Party}}
+| 16,239
+| 44.38
+| Yawar Ali Abass Masoodi
+| {{party name with color|Jammu & Kashmir National Conference}}
+| 12,741
+| 34.82
+| style="background:{{party color|Jammu and Kashmir Peoples Democratic Party}} ; color:white;"|3,498
+| style="background:{{party color|Jammu and Kashmir Peoples Democratic Party}} ; color:white;"|9.56
+|-
+! 33
+| [[Pulwama Assembly constituency|Pulwama]]
+| [[Mohammad Khalil Bandh|Mohd. Khalil Band]]
+| {{party name with color|Jammu and Kashmir Peoples Democratic Party}}
+| 11,631
+| 38.55
+| [[Ghulam Nabi Ratanpuri]]
+| {{party name with color|Jammu & Kashmir National Conference}}
+| 10,599
+| 35.13
+| style="background:{{party color|Jammu and Kashmir Peoples Democratic Party}} ; color:white;"|1,032
+| style="background:{{party color|Jammu and Kashmir Peoples Democratic Party}} ; color:white;"|3.42
+|-
+! 34
+| [[Rajpora Assembly constituency|Rajpora]]
+| [[Haseeb Drabu]]
+| {{party name with color|Jammu and Kashmir Peoples Democratic Party}}
+| 18,103
+| 36.95
+| [[Ghulam Mohi Uddin Mir|Ghulam Mohiuddin Mir]]
+| {{party name with color|Jammu & Kashmir National Conference}}
+| 13,830
+| 28.23
+| style="background:{{party color|Jammu and Kashmir Peoples Democratic Party}} ; color:white;"|4,273
+| style="background:{{party color|Jammu and Kashmir Peoples Democratic Party}} ; color:white;"|8.72
+|-
+| rowspan="2" | [[Shopian district|Shopian]]
+! 35
+| [[Wachi Assembly constituency|Wachi]]
+| [[Aijaz Ahmad Mir]]
+| {{party name with color|Jammu and Kashmir Peoples Democratic Party}}
+| 15,610
+| 42.47
+| [[Showkat Hussain Ganie]]
+| {{party name with color|Jammu & Kashmir National Conference}}
+| 13,805
+| 37.56
+| style="background:{{party color|Jammu and Kashmir Peoples Democratic Party}} ; color:white;"|1,805
+| style="background:{{party color|Jammu and Kashmir Peoples Democratic Party}} ; color:white;"|4.91
+|-
+! 36
+| [[Shopian Assembly constituency|Shopian]]
+| [[Mohammad Yousuf Bhat|Md. Yousuf Bhat]]
+| {{party name with color|Jammu and Kashmir Peoples Democratic Party}}
+| 14,262
+| 34.20
+| [[Shabir Ahmad Kullay]]
+| {{party name with color|Independent politician|shortname=IND}}
+| 11,896
+| 28.52
+| style="background:{{party color|Jammu and Kashmir Peoples Democratic Party}} ; color:white;"|2,366
+| style="background:{{party color|Jammu and Kashmir Peoples Democratic Party}} ; color:white;"|5.68
+|-
+| rowspan="3" | [[Kulgam district|Kulgam]]
+! 37
+| [[Noorabad Assembly constituency|Noorabad]]
+| [[Abdul Majid Padder|Ab. Majid Padder]]
+| {{party name with color|Jammu and Kashmir Peoples Democratic Party}}
+| 28,698
+| 48.36
+| [[Sakina Itoo]]
+| {{party name with color|Jammu & Kashmir National Conference}}
+| 24,990
+| 42.11
+| style="background:{{party color|Jammu and Kashmir Peoples Democratic Party}} ; color:white;"|3,708
+| style="background:{{party color|Jammu and Kashmir Peoples Democratic Party}} ; color:white;"|6.25
+|-
+! 38
+| [[Kulgam Assembly constituency|Kulgam]]
+| [[Mohamad Yousuf Tarigami|Md. Yousuf Tarigami]]
+| {{party name with color|Communist Party of India (Marxist)}}
+| 20,574
+| 38.69
+| [[Nazir Ahmad Laway]]
+| {{party name with color|Jammu and Kashmir Peoples Democratic Party}}
+| 20,240
+| 38.06
+| style="background:{{party color|Communist Party of India (Marxist)}} ; color:white;"|334
+| style="background:{{party color|Communist Party of India (Marxist)}} ; color:white;"|0.63
+|-
+! 39
+| [[Hom Shali Bugh Assembly constituency|Hom Shali Bugh]]
+| Ab. Majeed
+| {{party name with color|Jammu & Kashmir National Conference}}
+| 11,406
+| 40.00
+| Abdul Gaffar Sofi
+| {{party name with color|Jammu and Kashmir Peoples Democratic Party}}
+| 10,137
+| 35.55
+| style="background:{{party color|Jammu & Kashmir National Conference}} ; color:white;"|1,269
+| style="background:{{party color|Jammu & Kashmir National Conference}} ; color:white;"|4.45
+|-
+| rowspan="1" | [[Anantnag district|Anantnag]]
+! 40
+| [[Anantnag Assembly constituency|Anantnag]]
+| [[Mufti Mohammad Sayeed|Mufti Md. Sayeed]]
+| {{party name with color|Jammu and Kashmir Peoples Democratic Party}}
+| 16,983
+| 51.20
+| Hilal Ahmad Shah
+| {{party name with color|Indian National Congress}}
+| 10,955
+| 33.03
+| style="background:{{party color|Jammu and Kashmir Peoples Democratic Party}} ; color:white;"|6,028
+| style="background:{{party color|Jammu and Kashmir Peoples Democratic Party}} ; color:white;"|18.17
+|-
+| rowspan="1" | [[Kulgam district|Kulgam]]
+! 41
+| [[Devsar, Jammu and Kashmir Assembly constituency|Devsar]]
+| [[Mohammad Amin Bhat|Md. Amin Bhat]]
+| {{party name with color|Indian National Congress}}
+| 20,162
+| 35.08
+| Md. Sartaj Madni
+| {{party name with color|Jammu and Kashmir Peoples Democratic Party}}
+| 18,651
+| 32.45
+| style="background:{{party color|Indian National Congress}} ; color:white;"|1,511
+| style="background:{{party color|Indian National Congress}} ; color:white;"|2.63
+|-
+| rowspan="5" | [[Anantnag district|Anantnag]]
+! 42
+| [[Dooru Assembly constituency|Dooru]]
+| [[Syed Farooq Ahmad Andrabi|Farooq Ahmad Andrabi]]
+| {{party name with color|Jammu and Kashmir Peoples Democratic Party}}
+| 18,150
+| 37.58
+| [[Ghulam Ahmad Mir]]
+| {{party name with color|Indian National Congress}}
+| 17,989
+| 37.24
+| style="background:{{party color|Jammu and Kashmir Peoples Democratic Party}} ; color:white;"|161
+| style="background:{{party color|Jammu and Kashmir Peoples Democratic Party}} ; color:white;"|0.34
+|-
+! 43
+| [[Kokernag Assembly constituency|Kokernag]]
+| [[Abdul Rahim Rather (born 1957)|Ab. Rahim Rather]]
+| {{party name with color|Jammu and Kashmir Peoples Democratic Party}}
+| 24,284
+| 42.30
+| [[Peerzada Mohammad Syed|Peerzada Md. Syed]]
+| {{party name with color|Indian National Congress}}
+| 19,713
+| 34.33
+| style="background:{{party color|Jammu and Kashmir Peoples Democratic Party}} ; color:white;"|4,571
+| style="background:{{party color|Jammu and Kashmir Peoples Democratic Party}} ; color:white;"|7.97
+|-
+! 44
+| [[Shangus Assembly constituency|Shangus]]
+| [[Gulzar Ahmad Wani]]
+| {{party name with color|Indian National Congress}}
+| 21,085
+| 37.08
+| Peerzada M. Hussain
+| {{party name with color|Jammu and Kashmir Peoples Democratic Party}}
+| 18,896
+| 33.23
+| style="background:{{party color|Indian National Congress}} ; color:white;"|2,189
+| style="background:{{party color|Indian National Congress}} ; color:white;"|3.85
+|-
+! 45
+| [[Bijbehara Assembly constituency|Bijbehara]]
+| [[Abdul Rehman Veeri]]
+| {{party name with color|Jammu and Kashmir Peoples Democratic Party}}
+| 23,581
+| 48.79
+| [[Bashir Ahmad Shah Veeri|Bashir Ahmad Shah]]
+| {{party name with color|Jammu & Kashmir National Conference}}
+| 20,713
+| 42.85
+| style="background:{{party color|Jammu and Kashmir Peoples Democratic Party}} ; color:white;"|2,868
+| style="background:{{party color|Jammu and Kashmir Peoples Democratic Party}} ; color:white;"|5.94
+|-
+! 46
+| [[Pahalgam Assembly constituency|Pahalgam]]
+| [[Altaf Ahmad Wani]]
+| {{party name with color|Jammu & Kashmir National Conference}}
+| 25,232
+| 44.67
+| Rafi Ahmad Mir
+| {{party name with color|Jammu and Kashmir Peoples Democratic Party}}
+| 24,328
+| 43.07
+| style="background:{{party color|Jammu & Kashmir National Conference}} ; color:white;"|904
+| style="background:{{party color|Jammu & Kashmir National Conference}} ; color:white;"|1.60
+|-
+| rowspan="2" | [[Leh district|Leh]]
+! 47
+| [[Nubra Assembly constituency|Nubra]]
+| [[Deldan Namgail]]
+| {{party name with color|Indian National Congress}}
+| 3,936
+| 38.00
+| Tsetan Namgyal
+| {{party name with color|Jammu & Kashmir National Conference}}
+| 2,318
+| 22.38
+| style="background:{{party color|Indian National Congress}} ; color:white;"|1,618
+| style="background:{{party color|Indian National Congress}} ; color:white;"|15.62
+|-
+! 48
+| [[Leh Assembly constituency|Leh]]
+| [[Nawang Rigzin Jora]]
+| {{party name with color|Indian National Congress}}
+| 27,585
+| 57.28
+| [[Chering Dorjay]]
+| {{party name with color|Bharatiya Janata Party}}
+| 19,909
+| 41.34
+| style="background:{{party color|Indian National Congress}} ; color:white;"|7,676
+| style="background:{{party color|Indian National Congress}} ; color:white;"|15.94
+|-
+| rowspan="2" | [[Kargil district|Kargil]]
+! 49
+| [[Kargil Assembly constituency|Kargil]]
+| [[Asgar Ali Karbalai]]
+| {{party name with color|Indian National Congress}}
+| 22,911
+| 50.51
+| Anayat Ali
+| {{party name with color|Jammu and Kashmir Peoples Democratic Party}}
+| 12,406
+| 27.35
+| style="background:{{party color|Indian National Congress}} ; color:white;"|10,505
+| style="background:{{party color|Indian National Congress}} ; color:white;"|23.16
+|-
+! 50
+| [[Zanskar Assembly constituency|Zanskar]]
+| [[Syed Mohammad Baqir Rizvi|Syed Md. Baqir Rizvi]]
+| {{party name with color|Independent politician|shortname=IND}}
+| 6,763
+| 43.19
+| Ghulam Raza
+| {{party name with color|Indian National Congress}}
+| 6,197
+| 39.58
+| style="background:{{party color|Independent politician}} ; color:black;"|566
+| style="background:{{party color|Independent politician}} ; color:black;"|3.61
+|-
+| rowspan="2" | [[Kishtwar district|Kishtwar]]
+! 51
+| [[Kishtwar Assembly constituency|Kishtwar]]
+| [[Sunil Kumar Sharma (Jammu and Kashmir politician)|Sunil Kumar Sharma]]
+| {{party name with color|Bharatiya Janata Party}}
+| 28,054
+| 45.37
+| [[Sajjad Ahmad Kichloo]]
+| {{party name with color|Jammu & Kashmir National Conference}}
+| 25,202
+| 40.76
+| style="background:{{party color|Bharatiya Janata Party}} ; color:white;"|2,852
+| style="background:{{party color|Bharatiya Janata Party}} ; color:white;"|4.61
+|-
+! 52
+| [[Inderwal Assembly constituency|Inderwal]]
+| [[Ghulam Mohammad Saroori|Ghulam Md. Saroori]]
+| {{party name with color|Indian National Congress}}
+| 29,754
+| 46.93
+| Tariq Hussain Keen
+| {{party name with color|Bharatiya Janata Party}}
+| 17,384
+| 27.42
+| style="background:{{party color|Indian National Congress}} ; color:white;"|12,370
+| style="background:{{party color|Indian National Congress}} ; color:white;"|19.51
+|-
+| rowspan="2" | [[Doda district|Doda]]
+! 53
+| [[Doda Assembly constituency|Doda]]
+| [[Shakti Raj Parihar]]
+| {{party name with color|Bharatiya Janata Party}}
+| 24,572
+| 36.63
+| Abdul Majid Wani
+| {{party name with color|Indian National Congress}}
+| 20,532
+| 30.61
+| style="background:{{party color|Bharatiya Janata Party}} ; color:white;"|4,040
+| style="background:{{party color|Bharatiya Janata Party}} ; color:white;"|6.02
+|-
+! 54
+| [[Bhaderwah Assembly constituency|Bhaderwah]]
+| [[Daleep Singh Parihar]]
+| {{party name with color|Bharatiya Janata Party}}
+| 25,953
+| 35.33
+| Mohd Sharief Niaz
+| {{party name with color|Indian National Congress}}
+| 24,457
+| 33.29
+| style="background:{{party color|Bharatiya Janata Party}} ; color:white;"|1,496
+| style="background:{{party color|Bharatiya Janata Party}} ; color:white;"|2.04
+|-
+| rowspan="2" | [[Ramban district|Ramban]]
+! 55
+| [[Ramban Assembly constituency|Ramban (SC)]]
+| [[Neelam Kumar Langeh]]
+| {{party name with color|Bharatiya Janata Party}}
+| 25,349
+| 42.30
+| Dr. Chaman Lal
+| {{party name with color|Jammu & Kashmir National Conference}}
+| 19,985
+| 33.35
+| style="background:{{party color|Bharatiya Janata Party}} ; color:white;"|5,364
+| style="background:{{party color|Bharatiya Janata Party}} ; color:white;"|8.95
+|-
+! 56
+| [[Banihal Assembly constituency|Banihal]]
+| [[Vikar Rasool Wani]]
+| {{party name with color|Indian National Congress}}
+| 17,671
+| 30.65
+| Bashir Ahmed Runyal
+| {{party name with color|Jammu and Kashmir Peoples Democratic Party}}
+| 13,322
+| 23.10
+| style="background:{{party color|Indian National Congress}} ; color:white;"|4,349
+| style="background:{{party color|Indian National Congress}} ; color:white;"|7.55
+|-
+| rowspan="3" | [[Reasi district|Reasi]]
+! 57
+| [[Gulabgarh Assembly constituency|Gulab Garh]]
+| [[Mumtaz Ahmed Khan (Jammu and Kashmir politician)|Mumtaz Ahmed]]
+| {{party name with color|Indian National Congress}}
+| 17,964
+| 32.00
+| [[Abdul Ghani Malik (politician)|Ab. Ghani Malik]]
+| {{party name with color|Jammu & Kashmir National Conference}}
+| 16,148
+| 28.77
+| style="background:{{party color|Indian National Congress}} ; color:white;"|1,816
+| style="background:{{party color|Indian National Congress}} ; color:white;"|3.23
+|-
+! 58
+| [[Reasi Assembly constituency|Reasi]]
+| [[Ajay Nanda]]
+| {{party name with color|Bharatiya Janata Party}}
+| 22,017
+| 25.26
+| Saraf Singh
+| {{party name with color|Independent politician|shortname=IND}}
+| 20,130
+| 23.09
+| style="background:{{party color|Bharatiya Janata Party}} ; color:white;"|1,887
+| style="background:{{party color|Bharatiya Janata Party}} ; color:white;"|2.17
+|-
+! 59
+| [[Gool Arnas Assembly constituency|Gool Arnas]]
+| [[Ajaz Ahmad Khan]]
+| {{party name with color|Indian National Congress}}
+| 22,966
+| 45.24
+| [[Kuldeep Raj Dubey]]
+| {{party name with color|Bharatiya Janata Party}}
+| 16,088
+| 31.69
+| style="background:{{party color|Indian National Congress}} ; color:white;"|6,878
+| style="background:{{party color|Indian National Congress}} ; color:white;"|13.55
+|-
+| rowspan="3" | [[Udhampur district|Udhampur]]
+! 60
+| [[Udhampur Assembly constituency|Udhampur]]
+| [[Pawan Kumar Gupta]]
+| {{party name with color|Independent politician|shortname=IND}}
+| 36,226
+| 42.57
+| [[Balwant Singh Mankotia]]
+| {{party name with color|Jammu and Kashmir National Panthers Party}}
+| 21,576
+| 25.36
+| style="background:{{party color|Independent politician}} ; color:black;"|14,650
+| style="background:{{party color|Independent politician}} ; color:black;"|17.21
+|-
+! 61
+| [[Chenani Assembly constituency|Chenani (SC)]]
+| [[Dina Nath Bhagat]]
+| {{party name with color|Bharatiya Janata Party}}
+| 33,047
+| 50.17
+| Krishan Chander
+| {{party name with color|Indian National Congress}}
+| 12,715
+| 19.30
+| style="background:{{party color|Bharatiya Janata Party}} ; color:white;"|20,332
+| style="background:{{party color|Bharatiya Janata Party}} ; color:white;"|30.87
+|-
+! 62
+| [[Ramnagar, Jammu and Kashmir Assembly constituency|Ram Nagar]]
+| [[Ranbir Singh Pathania]]
+| {{party name with color|Bharatiya Janata Party}}
+| 45,891
+| 55.71
+| [[Harsh Dev Singh]]
+| {{party name with color|Jammu and Kashmir National Panthers Party}}
+| 28,471
+| 34.56
+| style="background:{{party color|Bharatiya Janata Party}} ; color:white;"|17,420
+| style="background:{{party color|Bharatiya Janata Party}} ; color:white;"|21.15
+|-
+| rowspan="5" | [[Kathua district|Kathua]]
+! 63
+| [[Bani Assembly constituency|Bani]]
+| [[Jewan Lal]]
+| {{party name with color|Bharatiya Janata Party}}
+| 12,841
+| 39.14
+| Ghulam Hyder Malik
+| {{party name with color|Jammu & Kashmir National Conference}}
+| 8,429
+| 25.69
+| style="background:{{party color|Bharatiya Janata Party}} ; color:white;"|4,412
+| style="background:{{party color|Bharatiya Janata Party}} ; color:white;"|13.45
+|-
+! 64
+| [[Basohli Assembly constituency|Basohli]]
+| [[Chaudhary Lal Singh|Lal Singh]]
+| {{party name with color|Bharatiya Janata Party}}
+| 29,808
+| 53.07
+| Davinder Singh
+| {{party name with color|Jammu & Kashmir National Conference}}
+| 12,007
+| 21.38
+| style="background:{{party color|Bharatiya Janata Party}} ; color:white;"|17,801
+| style="background:{{party color|Bharatiya Janata Party}} ; color:white;"|31.69
+|-
+! 65
+| [[Kathua Assembly constituency|Kathua]]
+| [[Rajiv Jasrotia]]
+| {{party name with color|Bharatiya Janata Party}}
+| 35,670
+| 39.11
+| Som Raj Majotra
+| {{party name with color|Bahujan Samaj Party}}
+| 28,864
+| 31.65
+| style="background:{{party color|Bharatiya Janata Party}} ; color:white;"|6,806
+| style="background:{{party color|Bharatiya Janata Party}} ; color:white;"|7.46
+|-
+! 66
+| [[Billawar Assembly constituency|Billawar]]
+| [[Nirmal Kumar Singh]]
+| {{party name with color|Bharatiya Janata Party}}
+| 43,447
+| 58.30
+| Manohar Lal Sharma
+| {{party name with color|Indian National Congress}}
+| 25,472
+| 34.18
+| style="background:{{party color|Bharatiya Janata Party}} ; color:white;"|17,975
+| style="background:{{party color|Bharatiya Janata Party}} ; color:white;"|24.12
+|-
+! 67
+| [[Hiranagar Assembly constituency|Hira Nagar (SC)]]
+| [[Kuldeep Raj]]
+| {{party name with color|Bharatiya Janata Party}}
+| 55,399
+| 69.15
+| Girdhari Lal Chalotra
+| {{party name with color|Indian National Congress}}
+| 16,115
+| 20.11
+| style="background:{{party color|Bharatiya Janata Party}} ; color:white;"|39,284
+| style="background:{{party color|Bharatiya Janata Party}} ; color:white;"|49.04
+|-
+| rowspan="2" | [[Samba district|Samba]]
+! 68
+| [[Samba Assembly constituency|Samba (SC)]]
+| [[Devinder Kumar Manyal]]
+| {{party name with color|Bharatiya Janata Party}}
+| 34,075
+| 53.08
+| [[Yash Paul Kundal]]
+| {{party name with color|Jammu and Kashmir National Panthers Party}}
+| 11,957
+| 18.63
+| style="background:{{party color|Bharatiya Janata Party}} ; color:white;"|22,118
+| style="background:{{party color|Bharatiya Janata Party}} ; color:white;"|34.45
+|-
+! 69
+| [[Vijaypur, Jammu and Kashmir Assembly constituency|Vijay Pur]]
+| [[Chander Prakash (politician)|Chander Prakash]]
+| {{party name with color|Bharatiya Janata Party}}
+| 38,607
+| 43.45
+| [[Surjeet Singh Slathia|Surjeet Slathia]]
+| {{party name with color|Jammu & Kashmir National Conference}}
+| 26,435
+| 29.75
+| style="background:{{party color|Bharatiya Janata Party}} ; color:white;"|12,172
+| style="background:{{party color|Bharatiya Janata Party}} ; color:white;"|13.70
+|-
+| rowspan="11" | [[Jammu district|Jammu]]
+! 70
+| [[Nagrota, Jammu and Kashmir Assembly constituency|Nagrota]]
+| [[Devender Singh Rana]]
+| {{party name with color|Jammu & Kashmir National Conference}}
+| 23,678
+| 39.03
+| Nand Kishore
+| {{party name with color|Bharatiya Janata Party}}
+| 19,630
+| 32.35
+| style="background:{{party color|Jammu & Kashmir National Conference}} ; color:white;"|4,048
+| style="background:{{party color|Jammu & Kashmir National Conference}} ; color:white;"|6.68
+|-
+! 71
+| [[Gandhinagar, Jammu and Kashmir Assembly constituency|Gandhi Nagar]]
+| [[Kavinder Gupta]]
+| {{party name with color|Bharatiya Janata Party}}
+| 56,679
+| 51.17
+| [[Raman Bhalla]]
+| {{party name with color|Indian National Congress}}
+| 39,902
+| 36.02
+| style="background:{{party color|Bharatiya Janata Party}} ; color:white;"|16,777
+| style="background:{{party color|Bharatiya Janata Party}} ; color:white;"|15.15
+|-
+! 72
+| [[Jammu East Assembly constituency|Jammu East]]
+| Rajesh Gupta
+| {{party name with color|Bharatiya Janata Party}}
+| 21,776
+| 61.69
+| Vikram Malhotra
+| {{party name with color|Indian National Congress}}
+| 9,082
+| 25.73
+| style="background:{{party color|Bharatiya Janata Party}} ; color:white;"|12,694
+| style="background:{{party color|Bharatiya Janata Party}} ; color:white;"|35.96
+|-
+! 73
+| [[Jammu West Assembly constituency|Jammu West]]
+| [[Sat Paul Sharma]]
+| {{party name with color|Bharatiya Janata Party}}
+| 69,626
+| 70.63
+| Surinder Singh Shingari
+| {{party name with color|Indian National Congress}}
+| 18,997
+| 19.27
+| style="background:{{party color|Bharatiya Janata Party}} ; color:white;"|50,629
+| style="background:{{party color|Bharatiya Janata Party}} ; color:white;"|51.36
+|-
+! 74
+| [[Bishnah Assembly constituency|Bishnah]]
+| Kamal Verma
+| {{party name with color|Jammu & Kashmir National Conference}}
+| 29,380
+| 41.62
+| [[Ashwani Kumar Sharma (Jammu and Kashmir politician)|Ashwani Sharma]]
+| {{party name with color|Bharatiya Janata Party}}
+| 26,394
+| 37.39
+| style="background:{{party color|Jammu & Kashmir National Conference}} ; color:white;"|2,986
+| style="background:{{party color|Jammu & Kashmir National Conference}} ; color:white;"|4.23
+|-
+! 75
+| [[Ranbir Singh Pura Assembly constituency|Ranbir Singh Pura (SC)]]
+| [[Gagan Bhagat]]
+| {{party name with color|Bharatiya Janata Party}}
+| 25,696
+| 41.65
+| Bushan Lal
+| {{party name with color|Jammu and Kashmir Peoples Democratic Party}}
+| 12,086
+| 19.59
+| style="background:{{party color|Bharatiya Janata Party}} ; color:white;"|13,610
+| style="background:{{party color|Bharatiya Janata Party}} ; color:white;"|22.06
+|-
+! 76
+| [[Suchetgarh Assembly constituency|Suchet Garh]]
+| [[Sham Lal Choudhary]]
+| {{party name with color|Bharatiya Janata Party}}
+| 19,971
+| 38.82
+| Taranjit Singh Toni
+| {{party name with color|Jammu & Kashmir National Conference}}
+| 10,554
+| 20.51
+| style="background:{{party color|Bharatiya Janata Party}} ; color:white;"|9,417
+| style="background:{{party color|Bharatiya Janata Party}} ; color:white;"|18.31
+|-
+! 77
+| [[Marh Assembly constituency|Marh]]
+| [[Sukh Nandan Kumar]]
+| {{party name with color|Bharatiya Janata Party}}
+| 25,396
+| 42.35
+| [[Ajay Sadhotra]]
+| {{party name with color|Jammu & Kashmir National Conference}}
+| 13,784
+| 22.99
+| style="background:{{party color|Bharatiya Janata Party}} ; color:white;"|11,612
+| style="background:{{party color|Bharatiya Janata Party}} ; color:white;"|19.36
+|-
+! 78
+| [[Raipur Domana Assembly constituency|Raipur Domana (SC)]]
+| [[Bali Bhagat]]
+| {{party name with color|Bharatiya Janata Party}}
+| 49,134
+| 66.99
+| Mula Ram
+| {{party name with color|Indian National Congress}}
+| 16,991
+| 23.17
+| style="background:{{party color|Bharatiya Janata Party}} ; color:white;"|32,143
+| style="background:{{party color|Bharatiya Janata Party}} ; color:white;"|43.82
+|-
+! 79
+| [[Akhnoor Assembly constituency|Akhnoor]]
+| [[Rajeev Sharma (politician)|Rajeev Sharma]]
+| {{party name with color|Bharatiya Janata Party}}
+| 41,901
+| 53.19
+| [[Sham Lal Sharma]]
+| {{party name with color|Indian National Congress}}
+| 32,521
+| 41.29
+| style="background:{{party color|Bharatiya Janata Party}} ; color:white;"|9,380
+| style="background:{{party color|Bharatiya Janata Party}} ; color:white;"|11.90
+|-
+! 80
+| [[Chhamb Assembly constituency|Chhamb (SC)]]
+| [[Kirshan Lal]]
+| {{party name with color|Bharatiya Janata Party}}
+| 36,033
+| 60.53
+| [[Tara Chand (Jammu-Kashmir politician)|Tara Chand]]
+| {{party name with color|Indian National Congress}}
+| 21,243
+| 35.69
+| style="background:{{party color|Bharatiya Janata Party}} ; color:white;"|14,790
+| style="background:{{party color|Bharatiya Janata Party}} ; color:white;"|24.84
+|-
+| rowspan="4" | [[Rajouri district|Rajouri]]
+! 81
+| [[Nowshera Assembly constituency|Nowshera]]
+| [[Ravinder Raina]]
+| {{party name with color|Bharatiya Janata Party}}
+| 37,374
+| 49.51
+| [[Surinder Kumar Choudhary|Surinder Choudhary]]
+| {{party name with color|Jammu and Kashmir Peoples Democratic Party}}
+| 27,871
+| 36.92
+| style="background:{{party color|Bharatiya Janata Party}} ; color:white;"|9,503
+| style="background:{{party color|Bharatiya Janata Party}} ; color:white;"|12.59
+|-
+! 82
+| [[Darhal Assembly constituency|Darhal]]
+| [[Chowdhary Zulfkar Ali|Ch. Zulfkar Ali]]
+| {{party name with color|Jammu and Kashmir Peoples Democratic Party}}
+| 24,381
+| 31.58
+| Ch. Liaqat Ali
+| {{party name with color|Jammu & Kashmir National Conference}}
+| 19,313
+| 25.01
+| style="background:{{party color|Jammu and Kashmir Peoples Democratic Party}} ; color:white;"|5,068
+| style="background:{{party color|Jammu and Kashmir Peoples Democratic Party}} ; color:white;"|6.57
+|-
+! 83
+| [[Rajouri Assembly constituency|Rajouri]]
+| [[Qamar Hussain]]
+| {{party name with color|Jammu and Kashmir Peoples Democratic Party}}
+| 26,954
+| 30.63
+| Ch. Talib Hussain
+| {{party name with color|Bharatiya Janata Party}}
+| 24,464
+| 27.80
+| style="background:{{party color|Jammu and Kashmir Peoples Democratic Party}} ; color:white;"|2,490
+| style="background:{{party color|Jammu and Kashmir Peoples Democratic Party}} ; color:white;"|2.83
+|-
+! 84
+| [[Kalakote Assembly constituency|Kala Kote]]
+| [[Abdul Ghani Kohli]]
+| {{party name with color|Bharatiya Janata Party}}
+| 25,225
+| 38.13
+| Rachhpal Singh
+| {{party name with color|Jammu & Kashmir National Conference}}
+| 19,047
+| 28.79
+| style="background:{{party color|Bharatiya Janata Party}} ; color:white;"|6,178
+| style="background:{{party color|Bharatiya Janata Party}} ; color:white;"|9.34
+|-
+| rowspan="3" | [[Poonch district, India|Poonch]]
+! 85
+| [[Surankote Assembly constituency|Surankote]]
+| [[Choudhary Mohammad Akram|Ch. Mohd Akram]]
+| {{party name with color|Indian National Congress}}
+| 30,584
+| 46.45
+| [[Mushtaq Ahmad Shah]]
+| {{party name with color|Jammu & Kashmir National Conference}}
+| 22,520
+| 34.20
+| style="background:{{party color|Indian National Congress}} ; color:white;"|8,064
+| style="background:{{party color|Indian National Congress}} ; color:white;"|12.25
+|-
+! 86
+| [[Mendhar Assembly constituency|Mendhar]]
+| [[Javed Ahmed Rana]]
+| {{party name with color|Jammu & Kashmir National Conference}}
+| 31,186
+| 47.75
+| Mohd Mahroof Khan
+| {{party name with color|Jammu and Kashmir Peoples Democratic Party}}
+| 22,161
+| 33.93
+| style="background:{{party color|Jammu & Kashmir National Conference}} ; color:white;"|9,025
+| style="background:{{party color|Jammu & Kashmir National Conference}} ; color:white;"|13.82
+|-
+! 87
+| [[Poonch Haveli Assembly constituency|Poonch Haveli]]
+| [[Shah Mohammad Tantray|Shah Mohd. Tantray]]
+| {{party name with color|Jammu and Kashmir Peoples Democratic Party}}
+| 19,488
+| 25.57
+| [[Ajaz Ahmed Jan]]
+| {{party name with color|Jammu & Kashmir National Conference}}
+| 15,976
+| 20.96
+| style="background:{{party color|Jammu and Kashmir Peoples Democratic Party}} ; color:white;"|3,512
+| style="background:{{party color|Jammu and Kashmir Peoples Democratic Party}} ; color:white;"|4.61
+|-
+|}
+
+== Government formation ==
+{{more citations needed|date=June 2016}}
+
+Three days after the results, the [[Jammu and Kashmir National Conference|JKNC]] approached the BJP for a meeting to try and form a government{{Citation needed|date=November 2018}}. As part of the deal, [[Nirmal Kumar Singh]] was to be the chief minister and JKNC's MLA [[Ali Mohammad Sagar]] was to be his deputy.{{Citation needed|date=November 2018}} The deal fell through after a revolt in the JKNC. The BJP also rejected this deal, citing morality issues.{{Citation needed|date=November 2018}}
+
+In the following days, the JKNC also announced its intention to support the [[Jammu and Kashmir Peoples Democratic Party|PDP]] from outside by submitting a letter to the governor [[Narinder Nath Vohra]] after the dialogue with the BJP fell through. The PDP refused.
+
+A week after the results, the PDP and the BJP officially started talks. Both parties had a two-member team to form a Common Minimum Programme (CMP). The PDP was represented by [[Naeem Akhtar (politician)|Naeem Akhtar]] and [[Haseeb Drabu]], while [[Ram Madhav]] and Nirmal Kumar Singh represented the BJP. Minister of State in the PMO, [[Jitendra Singh (BJP politician)|Jitendra Singh]], supervised the dialogue.
+
+[[Omar Abdullah]] resigned as chief minister on 24 December. The Governor [[Narinder Nath Vohra]] accepted his resignation but asked him to continue in an interim capacity until the formation of a new government. [[President's rule]] was imposed on 1 January 2015.
+
+After dealing with issues, both parties turned their attention to the composition of the cabinet. The PDP was initially reluctant for a three-year rotation of the chief minister's post but later agreed. There were also issues related to the joining of the government by separatist-turned-politician [[Sajjad Lone]]. In the run-up to the election, he met Prime Minister [[Narendra Modi]] and praised him by calling him "big brother." The BJP reciprocated by not running a candidate against Lone for the Handwara seat, from where he won, and got elected to the assembly for the first time.
+
+Both parties announced on 25 February that the CMP was almost ready, in a joint press conference called by BJP national President [[Amit Shah]] and PDP President [[Mehbooba Mufti]]. They also stated that the ideological differences had been "ironed out" and both parties were now working on the formation of a cabinet. The dialogue between both parties ended successfully on 18 February - two months and 5 days after the beginning of talks.
+
+The new PDP-BJP government took the oath of office on 1 March in the Zorawar Singh Stadium of Jammu, with [[Mufti Mohammad Sayeed]] as chief minister for the full term of six years and [[Nirmal Kumar Singh]] as his deputy. Modi was also present for the occasion. Twelve cabinet ministers from each party were also sworn in. This was the first time that the BJP was a coalition partner in the Jammu and Kashmir government. Lone and independent MLA for Udhampur, Pawan Kumar Gupta, were also sworn in as cabinet ministers from the BJP's quota.
+
+The CMP was then released in a press conference. The CMP gave a vision of the "all-around development of Jammu and Kashmir" and "Sabka Saath, Sabka Vikas" (with everyone, everyone's development). Contentious issues like [[Article 370]] and [[AFSPA]] would be referred to a high-power committee, with representation from both parties and civil society. The PDP also agreed to join the NDA's central, with Mehbooba Mufti's induction into the union cabinet, at a later date, and also support the Modi government in both houses of parliament.
+
+== Notes ==
+{{notelist}}
+==See also==
+*[[Elections in Jammu and Kashmir]]
+*[[Jammu and Kashmir Legislative Assembly]]
+* [[Indian Armed Forces and the 2014 Jammu and Kashmir floods]]
+* [[2014 Kashmir Valley attacks]]
+* [[2014 elections in India]]
+* [[2024 Jammu and Kashmir Legislative Assembly election]]
+
+==References==
+{{Reflist|colwidth=30em}}
+
+==External links==
+* [http://eci.nic.in/eci/eci.html Website of the Election Commission of India]
+
+{{Jammu and Kashmir elections|state=expanded}}
+{{Indian elections}}
+{{Jammu and Kashmir}}
+
+[[Category:State Assembly elections in Jammu and Kashmir]]
+[[Category:2010s in Jammu and Kashmir]]
+[[Category:2014 State Assembly elections in India|Jammu and Kashmir]]
+[[Category:April 2014 in India]]

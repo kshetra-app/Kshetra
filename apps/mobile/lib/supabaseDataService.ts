@@ -784,28 +784,18 @@ export async function startModule(userId: string, moduleId: string): Promise<boo
 }
 
 export async function completeModule(userId: string, moduleId: string, quizScore?: number): Promise<boolean> {
-  if (!guard()) return false;
   try {
     addBreadcrumb('academy', 'complete_module', { moduleId });
-    const { error } = await supabase
-      .from('module_progress')
-      .update({
-        completed: true,
-        completed_at: new Date().toISOString(),
-        quiz_score: quizScore ?? null,
-      })
-      .eq('user_id', userId)
-      .eq('module_id', moduleId);
-    if (error) throw error;
-
-    // Update aspirant profile modules_completed count (best-effort).
-    try {
-      await supabase.rpc('increment_aspirant_modules', { p_user_id: userId });
-    } catch {
-      /* non-fatal: count will reconcile on next sync */
-    }
-
-    return true;
+    const res = await fetch(`${API_BASE_URL}/api/v1/aspirant/modules/${moduleId}/complete`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-user-id': userId,
+        ...telemetry.getTracingHeaders(),
+      },
+      body: JSON.stringify({ userId, quizScore }),
+    });
+    return res.ok;
   } catch (err) {
     captureException(err as Error, { op: 'complete_module', moduleId });
     return false;
@@ -813,14 +803,18 @@ export async function completeModule(userId: string, moduleId: string, quizScore
 }
 
 export async function joinChallenge(userId: string, challengeId: string): Promise<boolean> {
-  if (!guard()) return false;
   try {
     addBreadcrumb('academy', 'join_challenge', { challengeId });
-    const { error } = await supabase
-      .from('challenge_participation')
-      .insert({ user_id: userId, challenge_id: challengeId });
-    if (error) throw error;
-    return true;
+    const res = await fetch(`${API_BASE_URL}/api/v1/aspirant/challenges/${challengeId}/join`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-user-id': userId,
+        ...telemetry.getTracingHeaders(),
+      },
+      body: JSON.stringify({ userId }),
+    });
+    return res.ok;
   } catch (err) {
     captureException(err as Error, { op: 'join_challenge', challengeId });
     return false;
@@ -828,36 +822,18 @@ export async function joinChallenge(userId: string, challengeId: string): Promis
 }
 
 export async function endorseAspirant(endorserId: string, aspirantId: string, message?: string): Promise<boolean> {
-  if (!guard()) return false;
   try {
     addBreadcrumb('aspirant', 'endorse', { aspirantId });
-    const { error } = await supabase
-      .from('community_endorsements')
-      .insert({ endorser_id: endorserId, aspirant_id: aspirantId, message: message ?? null });
-    if (error) throw error;
-
-    // Look up aspirant's user_id from aspirant_profiles to write notification
-    supabase
-      .from('aspirant_profiles')
-      .select('user_id, display_name')
-      .eq('id', aspirantId)
-      .maybeSingle()
-      .then(({ data: aspData }) => {
-        if (aspData?.user_id && aspData.user_id !== endorserId) {
-          supabase.from('notification_log').insert({
-            user_id: aspData.user_id,
-            trigger_type: 'system',
-            title: 'New Endorsement Received',
-            body: message ? `An endorsement was added: "${message.slice(0, 80)}"` : 'A citizen endorsed your leadership vision!',
-            data: { aspirantId, endorserId },
-            read: false,
-          }).then(({ error: notifErr }) => {
-            if (notifErr) console.warn('[Notification] Failed to log endorsement notification:', notifErr.message);
-          });
-        }
-      });
-
-    return true;
+    const res = await fetch(`${API_BASE_URL}/api/v1/aspirant/${aspirantId}/endorse`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-user-id': endorserId,
+        ...telemetry.getTracingHeaders(),
+      },
+      body: JSON.stringify({ endorserId, message }),
+    });
+    return res.ok;
   } catch (err) {
     captureException(err as Error, { op: 'endorse_aspirant', aspirantId });
     return false;
@@ -891,43 +867,20 @@ export async function submitKYC(userId: string, kyc: {
   termsAcceptedAt?: string;
   termsVersion?: string;
 }): Promise<{ id: string | null; success: boolean }> {
-  if (!guard()) return { id: null, success: false };
   try {
     addBreadcrumb('kyc', 'submit', { userId });
-    const { data, error } = await supabase
-      .from('creator_kyc_records')
-      .upsert({
-        user_id: userId,
-        full_legal_name: kyc.fullLegalName,
-        phone_number: kyc.phoneNumber,
-        phone_verified: kyc.phoneVerified ?? false,
-        selfie_url: kyc.selfieUrl ?? null,
-        selfie_hash: kyc.selfieHash ?? null,
-        device_brand: kyc.deviceBrand ?? null,
-        device_model: kyc.deviceModel ?? null,
-        device_os: kyc.deviceOs ?? null,
-        device_os_version: kyc.deviceOsVersion ?? null,
-        device_unique_id: kyc.deviceUniqueId ?? null,
-        device_name: kyc.deviceName ?? null,
-        ip_address: kyc.ipAddress ?? null,
-        network_type: kyc.networkType ?? null,
-        carrier_name: kyc.carrierName ?? null,
-        latitude: kyc.latitude ?? null,
-        longitude: kyc.longitude ?? null,
-        location_accuracy: kyc.locationAccuracy ?? null,
-        location_address: kyc.locationAddress ?? null,
-        app_version: kyc.appVersion ?? null,
-        app_build: kyc.appBuild ?? null,
-        status: kyc.status ?? 'verified',
-        verified_at: (kyc.status ?? 'verified') === 'verified' ? new Date().toISOString() : null,
-        terms_accepted_at: kyc.termsAcceptedAt ?? new Date().toISOString(),
-        terms_version: kyc.termsVersion ?? '1.0',
-        updated_at: new Date().toISOString(),
-      }, { onConflict: 'user_id' })
-      .select('id')
-      .single();
-    if (error) throw error;
-    return { id: data?.id ?? null, success: true };
+    const res = await fetch(`${API_BASE_URL}/api/v1/contributor/kyc`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-user-id': userId,
+        ...telemetry.getTracingHeaders(),
+      },
+      body: JSON.stringify({ userId, ...kyc }),
+    });
+    if (!res.ok) return { id: null, success: false };
+    const data = await res.json();
+    return { id: data.kycId || null, success: true };
   } catch (err) {
     captureException(err as Error, { op: 'submit_kyc' });
     return { id: null, success: false };
@@ -961,42 +914,18 @@ export async function insertActionFingerprint(fp: {
   screenName?: string | null;
   actionAt?: string;
 }): Promise<{ id: string | null; success: boolean }> {
-  if (!guard()) return { id: null, success: false };
   try {
     addBreadcrumb('cca', 'insert_action_fingerprint', { actionType: fp.actionType, userId: fp.userId });
-    const { data, error } = await supabase
-      .from('action_fingerprints')
-      .insert({
-        user_id: fp.userId,
-        kyc_id: fp.kycId ?? null,
-        action_type: fp.actionType,
-        content_type: fp.contentType ?? null,
-        content_id: fp.contentId ?? null,
-        content_hash: fp.contentHash ?? null,
-        device_brand: fp.deviceBrand ?? null,
-        device_model: fp.deviceModel ?? null,
-        device_os: fp.deviceOs ?? null,
-        device_os_version: fp.deviceOsVersion ?? null,
-        device_unique_id: fp.deviceUniqueId ?? null,
-        device_name: fp.deviceName ?? null,
-        ip_address: fp.ipAddress ?? null,
-        local_ip: fp.localIp ?? null,
-        network_type: fp.networkType ?? null,
-        carrier_name: fp.carrierName ?? null,
-        wifi_ssid: fp.wifiSsid ?? null,
-        latitude: fp.latitude ?? null,
-        longitude: fp.longitude ?? null,
-        location_accuracy: fp.locationAccuracy ?? null,
-        app_version: fp.appVersion ?? null,
-        app_build: fp.appBuild ?? null,
-        session_id: fp.sessionId ?? null,
-        screen_name: fp.screenName ?? null,
-        action_at: fp.actionAt ?? new Date().toISOString(),
-      })
-      .select('id')
-      .single();
-    if (error) throw error;
-    return { id: data?.id ?? null, success: true };
+    const res = await fetch(`${API_BASE_URL}/api/v1/contributor/fingerprint`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-user-id': fp.userId,
+        ...telemetry.getTracingHeaders(),
+      },
+      body: JSON.stringify(fp),
+    });
+    return { id: `fp_${Date.now()}`, success: res.ok };
   } catch (err) {
     captureException(err as Error, { op: 'insert_action_fingerprint', actionType: fp.actionType });
     return { id: null, success: false };
@@ -1014,25 +943,18 @@ export async function upsertContributorDevice(device: {
   deviceMemoryMb?: number | null;
   isTrusted?: boolean;
 }): Promise<boolean> {
-  if (!guard()) return false;
   try {
     addBreadcrumb('cca', 'upsert_contributor_device', { userId: device.userId, deviceUniqueId: device.deviceUniqueId });
-    const { error } = await supabase
-      .from('contributor_devices')
-      .upsert({
-        user_id: device.userId,
-        device_brand: device.deviceBrand ?? null,
-        device_model: device.deviceModel ?? null,
-        device_os: device.deviceOs ?? null,
-        device_os_version: device.deviceOsVersion ?? null,
-        device_unique_id: device.deviceUniqueId,
-        device_name: device.deviceName ?? null,
-        device_memory_mb: device.deviceMemoryMb ?? null,
-        last_seen_at: new Date().toISOString(),
-        is_trusted: device.isTrusted ?? true,
-      }, { onConflict: 'user_id,device_unique_id' });
-    if (error) throw error;
-    return true;
+    const res = await fetch(`${API_BASE_URL}/api/v1/contributor/devices`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-user-id': device.userId,
+        ...telemetry.getTracingHeaders(),
+      },
+      body: JSON.stringify(device),
+    });
+    return res.ok;
   } catch (err) {
     captureException(err as Error, { op: 'upsert_contributor_device' });
     return false;
@@ -1041,32 +963,36 @@ export async function upsertContributorDevice(device: {
 
 // ─── Notifications ───────────────────────────────────────────────────
 
-export async function markNotificationRead(notificationId: string, userId: string): Promise<boolean> {
-  if (!guard()) return false;
+export async function markNotificationRead(notificationId: string, userId?: string): Promise<boolean> {
   try {
-    const { error } = await supabase
-      .from('notification_log')
-      .update({ read: true, read_at: new Date().toISOString() })
-      .eq('id', notificationId)
-      .eq('user_id', userId);
-    if (error) throw error;
-    return true;
+    const res = await fetch(`${API_BASE_URL}/api/v1/notifications/read`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(userId ? { 'x-user-id': userId } : {}),
+        ...telemetry.getTracingHeaders(),
+      },
+      body: JSON.stringify({ notificationId, userId }),
+    });
+    return res.ok;
   } catch (err) {
-    captureException(err as Error, { op: 'mark_notification_read' });
+    captureException(err as Error, { op: 'mark_notification_read', notificationId });
     return false;
   }
 }
 
 export async function markAllNotificationsRead(userId: string): Promise<boolean> {
-  if (!guard()) return false;
   try {
-    const { error } = await supabase
-      .from('notification_log')
-      .update({ read: true, read_at: new Date().toISOString() })
-      .eq('user_id', userId)
-      .eq('read', false);
-    if (error) throw error;
-    return true;
+    const res = await fetch(`${API_BASE_URL}/api/v1/notifications/read`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-user-id': userId,
+        ...telemetry.getTracingHeaders(),
+      },
+      body: JSON.stringify({ all: true, userId }),
+    });
+    return res.ok;
   } catch (err) {
     captureException(err as Error, { op: 'mark_all_read' });
     return false;
@@ -1079,17 +1005,18 @@ export async function registerPushToken(
   token: string,
   platform: 'ios' | 'android',
 ): Promise<boolean> {
-  if (!guard()) return false;
   try {
     addBreadcrumb('notifications', 'register_push_token', { platform });
-    const { error } = await supabase
-      .from('push_tokens')
-      .upsert(
-        { user_id: userId, token, platform, updated_at: new Date().toISOString() },
-        { onConflict: 'user_id,token' },
-      );
-    if (error) throw error;
-    return true;
+    const res = await fetch(`${API_BASE_URL}/api/v1/notifications/register-token`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-user-id': userId,
+        ...telemetry.getTracingHeaders(),
+      },
+      body: JSON.stringify({ token, platform, userId }),
+    });
+    return res.ok;
   } catch (err) {
     captureException(err as Error, { op: 'register_push_token' });
     return false;
@@ -1143,14 +1070,18 @@ export async function fetchIssuesForConstituency(
 // ─── User & Page Follow Graph (Ticket 0.3) ──────────────────────────
 
 export async function followUser(followerId: string, followedId: string): Promise<boolean> {
-  if (!guard()) return false;
   try {
-    addBreadcrumb('social', 'follow_user', { followerId, followedId });
-    const { error } = await supabase
-      .from('user_follows')
-      .upsert({ follower_id: followerId, followed_id: followedId }, { onConflict: 'follower_id,followed_id' });
-    if (error) throw error;
-    return true;
+    addBreadcrumb('social', 'follow_user', { followedId });
+    const res = await fetch(`${API_BASE_URL}/api/v1/users/${followedId}/follow`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-user-id': followerId,
+        ...telemetry.getTracingHeaders(),
+      },
+      body: JSON.stringify({ followerId }),
+    });
+    return res.ok;
   } catch (err) {
     captureException(err as Error, { op: 'follow_user', followedId });
     return false;
@@ -1158,15 +1089,18 @@ export async function followUser(followerId: string, followedId: string): Promis
 }
 
 export async function unfollowUser(followerId: string, followedId: string): Promise<boolean> {
-  if (!guard()) return false;
   try {
-    addBreadcrumb('social', 'unfollow_user', { followerId, followedId });
-    const { error } = await supabase
-      .from('user_follows')
-      .delete()
-      .match({ follower_id: followerId, followed_id: followedId });
-    if (error) throw error;
-    return true;
+    addBreadcrumb('social', 'unfollow_user', { followedId });
+    const res = await fetch(`${API_BASE_URL}/api/v1/users/${followedId}/follow`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-user-id': followerId,
+        ...telemetry.getTracingHeaders(),
+      },
+      body: JSON.stringify({ followerId }),
+    });
+    return res.ok;
   } catch (err) {
     captureException(err as Error, { op: 'unfollow_user', followedId });
     return false;
@@ -1229,23 +1163,24 @@ export async function submitContentReport(report: {
   reason: string;
   description?: string;
 }): Promise<boolean> {
-  if (!guard()) return false;
   try {
     addBreadcrumb('moderation', 'submit_report', { targetId: report.targetId });
-    const payload: any = {
-      reporter_id: report.reporterId,
-      reason: report.reason,
-      description: report.description ?? null,
-      status: 'pending',
-    };
-    if (report.targetType === 'post') {
-      payload.post_id = report.targetId;
-    } else {
-      payload.comment_id = report.targetId;
-    }
-    const { error } = await supabase.from('reports').insert(payload);
-    if (error) throw error;
-    return true;
+    const res = await fetch(`${API_BASE_URL}/api/v1/moderation/report`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-user-id': report.reporterId,
+        ...telemetry.getTracingHeaders(),
+      },
+      body: JSON.stringify({
+        reporterId: report.reporterId,
+        contentId: report.targetId,
+        contentType: report.targetType,
+        reason: report.reason,
+        description: report.description,
+      }),
+    });
+    return res.ok;
   } catch (err) {
     captureException(err as Error, { op: 'submit_content_report' });
     return false;
@@ -1441,42 +1376,36 @@ export async function recordSession(session: {
   deviceModel?: string;
   osVersion?: string;
 }): Promise<string | null> {
-  if (!guard()) return null;
   try {
-    const { data, error } = await supabase
-      .from('user_sessions')
-      .insert({
-        user_id: session.userId ?? null,
-        anonymous_id: session.anonymousId ?? null,
-        state_code: session.stateCode ?? null,
-        platform: session.platform ?? null,
-        app_version: session.appVersion ?? null,
-        device_model: session.deviceModel ?? null,
-        os_version: session.osVersion ?? null,
-      })
-      .select('id')
-      .single();
-    if (error) throw error;
-    return data?.id ?? null;
-  } catch {
+    const res = await fetch(`${API_BASE_URL}/api/v1/analytics/sessions`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...telemetry.getTracingHeaders(),
+      },
+      body: JSON.stringify({ ...session, action: 'start' }),
+    });
+    if (!res.ok) return null;
+    const data = await res.json();
+    return data.sessionId || null;
+  } catch (err) {
+    captureException(err as Error, { op: 'record_session' });
     return null;
   }
 }
 
 export async function endSession(sessionId: string, screensViewed: string[], actionsCount: number): Promise<void> {
-  if (!guard()) return;
   try {
-    await supabase
-      .from('user_sessions')
-      .update({
-        ended_at: new Date().toISOString(),
-        duration_seconds: 0, // computed from started_at - ended_at server-side
-        screens_viewed: screensViewed,
-        actions_count: actionsCount,
-      })
-      .eq('id', sessionId);
-  } catch {
-    // Silent fail — non-critical
+    await fetch(`${API_BASE_URL}/api/v1/analytics/sessions`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...telemetry.getTracingHeaders(),
+      },
+      body: JSON.stringify({ sessionId, action: 'end', durationSeconds: actionsCount }),
+    });
+  } catch (err) {
+    captureException(err as Error, { op: 'end_session', sessionId });
   }
 }
 
@@ -1527,19 +1456,18 @@ export async function fetchShorts(stateCode?: string): Promise<any[]> {
 }
 
 export async function incrementShortView(shortId: string): Promise<boolean> {
-  if (!guard()) return false;
-  if (!isValidUuid(shortId)) return false;
   try {
-    const { error } = await supabase.rpc('increment_short_views', { p_short_id: shortId });
-    if (error) {
-      // Fallback direct update
-      await supabase
-        .from('political_shorts')
-        .update({ view_count: supabase.rpc('increment') as any })
-        .eq('id', shortId);
-    }
-    return true;
-  } catch {
+    const res = await fetch(`${API_BASE_URL}/api/v1/shorts/${shortId}/view`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...telemetry.getTracingHeaders(),
+      },
+      body: JSON.stringify({}),
+    });
+    return res.ok;
+  } catch (err) {
+    captureException(err as Error, { op: 'increment_short_view', shortId });
     return false;
   }
 }
@@ -1555,33 +1483,23 @@ export async function addShortComment(
   if (modCheck.flagged) {
     throw new Error(`This content could not be posted — it violates community guidelines (${modCheck.reason || 'moderation policy'}).`);
   }
-
-  if (!guard()) return { id: null, success: false };
   if (!isValidUuid(shortId) || !isValidUuid(userId)) {
     return { id: null, success: false };
   }
   try {
-    const { data, error } = await supabase
-      .from('short_comments')
-      .insert({
-        short_id: shortId,
-        user_id: userId,
-        author_name: userName,
-        text,
-      })
-      .select('id')
-      .single();
-
-    if (error) throw error;
-    if (!data?.id || !isValidUuid(data.id)) return { id: null, success: false };
-
-    // Increment comment_count on short
-    await supabase
-      .from('political_shorts')
-      .update({ updated_at: new Date().toISOString() })
-      .eq('id', shortId);
-
-    return { id: data.id, success: true };
+    addBreadcrumb('shorts', 'add_comment', { shortId });
+    const res = await fetch(`${API_BASE_URL}/api/v1/shorts/${shortId}/comments`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-user-id': userId,
+        ...telemetry.getTracingHeaders(),
+      },
+      body: JSON.stringify({ userId, userName, content: text }),
+    });
+    if (!res.ok) return { id: null, success: false };
+    const data = await res.json();
+    return { id: data.commentId || null, success: true };
   } catch (err) {
     captureException(err as Error, { op: 'add_short_comment', shortId });
     return { id: null, success: false };
@@ -1621,45 +1539,55 @@ export async function fetchLiveEvents(filters?: {
 
 
 export async function createLiveEvent(event: Record<string, any>): Promise<any | null> {
-  if (!isSupabaseConfigured) return null;
   try {
-    const { data, error } = await supabase
-      .from('live_events')
-      .insert(event)
-      .select()
-      .single();
-    if (error) { console.warn('[LMX] createLiveEvent error:', error.message); return null; }
-    return data;
-  } catch (e) { console.warn('[LMX] createLiveEvent exception:', e); return null; }
+    const res = await fetch(`${API_BASE_URL}/api/v1/lmx/live`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...telemetry.getTracingHeaders(),
+      },
+      body: JSON.stringify(event),
+    });
+    if (!res.ok) return null;
+    return await res.json();
+  } catch (e) {
+    console.warn('[LMX] createLiveEvent exception:', e);
+    return null;
+  }
 }
 
 export async function updateLiveEvent(eventId: string, updates: Record<string, any>): Promise<boolean> {
-  if (!isSupabaseConfigured) return false;
   try {
-    const { error } = await supabase
-      .from('live_events')
-      .update(updates)
-      .eq('id', eventId);
-    if (error) { console.warn('[LMX] updateLiveEvent error:', error.message); return false; }
-    return true;
-  } catch (e) { console.warn('[LMX] updateLiveEvent exception:', e); return false; }
+    const res = await fetch(`${API_BASE_URL}/api/v1/lmx/live/${eventId}/moderate`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...telemetry.getTracingHeaders(),
+      },
+      body: JSON.stringify(updates),
+    });
+    return res.ok;
+  } catch (e) {
+    console.warn('[LMX] updateLiveEvent exception:', e);
+    return false;
+  }
 }
 
 export async function endLiveEvent(eventId: string, contentHash: string): Promise<boolean> {
-  if (!isSupabaseConfigured) return false;
   try {
-    const { error } = await supabase
-      .from('live_events')
-      .update({
-        status: 'ended',
-        ended_at: new Date().toISOString(),
-        content_hash: contentHash,
-        retention_expiry: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString(),
-      })
-      .eq('id', eventId);
-    if (error) { console.warn('[LMX] endLiveEvent error:', error.message); return false; }
-    return true;
-  } catch (e) { console.warn('[LMX] endLiveEvent exception:', e); return false; }
+    const res = await fetch(`${API_BASE_URL}/api/v1/lmx/live/${eventId}/end`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...telemetry.getTracingHeaders(),
+      },
+      body: JSON.stringify({ content_hash: contentHash }),
+    });
+    return res.ok;
+  } catch (e) {
+    console.warn('[LMX] endLiveEvent exception:', e);
+    return false;
+  }
 }
 
 export async function fetchDepartments(stateCode?: string): Promise<any[]> {
@@ -1678,16 +1606,21 @@ export async function fetchDepartments(stateCode?: string): Promise<any[]> {
 }
 
 export async function dispatchDepartmentAlert(alert: Record<string, any>): Promise<any | null> {
-  if (!isSupabaseConfigured) return null;
   try {
-    const { data, error } = await supabase
-      .from('lmx_department_alerts')
-      .insert(alert)
-      .select()
-      .single();
-    if (error) { console.warn('[LMX] dispatchDepartmentAlert error:', error.message); return null; }
-    return data;
-  } catch (e) { console.warn('[LMX] dispatchDepartmentAlert exception:', e); return null; }
+    const res = await fetch(`${API_BASE_URL}/api/v1/lmx/alerts`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...telemetry.getTracingHeaders(),
+      },
+      body: JSON.stringify(alert),
+    });
+    if (!res.ok) return null;
+    return await res.json();
+  } catch (e) {
+    console.warn('[LMX] dispatchDepartmentAlert exception:', e);
+    return null;
+  }
 }
 
 export async function acknowledgeDepartmentAlert(
@@ -1695,20 +1628,20 @@ export async function acknowledgeDepartmentAlert(
   acknowledgment: string,
   acknowledgedBy: string
 ): Promise<boolean> {
-  if (!isSupabaseConfigured) return false;
   try {
-    const { error } = await supabase
-      .from('lmx_department_alerts')
-      .update({
-        acknowledgment,
-        acknowledged_at: new Date().toISOString(),
-        acknowledged_by: acknowledgedBy,
-        delivery_status: 'delivered',
-      })
-      .eq('id', alertId);
-    if (error) { console.warn('[LMX] acknowledgeDepartmentAlert error:', error.message); return false; }
-    return true;
-  } catch (e) { console.warn('[LMX] acknowledgeDepartmentAlert exception:', e); return false; }
+    const res = await fetch(`${API_BASE_URL}/api/v1/lmx/alerts/${alertId}/acknowledge`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...telemetry.getTracingHeaders(),
+      },
+      body: JSON.stringify({ acknowledgment, acknowledged_by: acknowledgedBy }),
+    });
+    return res.ok;
+  } catch (e) {
+    console.warn('[LMX] acknowledgeDepartmentAlert exception:', e);
+    return false;
+  }
 }
 
 export async function fetchDepartmentAlerts(departmentId?: string, departmentType?: string): Promise<any[]> {
@@ -1745,27 +1678,24 @@ export async function createContentAlert(alert: {
   category: string;
   stateCode?: string;
   constituencyId?: string;
-}): Promise<{ id: string | null; success: boolean }> {
-  if (!guard()) return { id: null, success: false };
+}): Promise<{
+  id: string | null;
+  success: boolean;
+}> {
   try {
     addBreadcrumb('content_alerts', 'create', { contentId: alert.contentId, category: alert.category });
-    const isUuid = alert.contentVisibilityId && alert.contentVisibilityId.length === 36 && alert.contentVisibilityId.includes('-');
-    const { data, error } = await supabase
-      .from('content_alerts')
-      .insert({
-        content_visibility_id: isUuid ? alert.contentVisibilityId : null,
-        content_type: alert.contentType,
-        content_id: alert.contentId,
-        user_id: alert.userId,
-        severity: alert.severity,
-        reason: alert.reason,
-        category: alert.category,
-        acknowledged: false,
-      })
-      .select('id')
-      .single();
-    if (error) throw error;
-    return { id: data?.id ?? null, success: true };
+    const res = await fetch(`${API_BASE_URL}/api/v1/lmx/alerts/content`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-user-id': alert.userId,
+        ...telemetry.getTracingHeaders(),
+      },
+      body: JSON.stringify(alert),
+    });
+    if (!res.ok) return { id: null, success: false };
+    const data = await res.json();
+    return { id: data.id || null, success: true };
   } catch (err) {
     captureException(err as Error, { op: 'create_content_alert' });
     return { id: null, success: false };
@@ -1777,20 +1707,16 @@ export async function acknowledgeContentAlert(
   acknowledgedBy: string,
   actionTaken: string
 ): Promise<boolean> {
-  if (!guard()) return false;
   try {
-    const isUuid = acknowledgedBy && acknowledgedBy.length === 36 && acknowledgedBy.includes('-');
-    const { error } = await supabase
-      .from('content_alerts')
-      .update({
-        acknowledged: true,
-        acknowledged_by: isUuid ? acknowledgedBy : null,
-        acknowledged_at: new Date().toISOString(),
-        action_taken: actionTaken,
-      })
-      .eq('id', alertId);
-    if (error) throw error;
-    return true;
+    const res = await fetch(`${API_BASE_URL}/api/v1/lmx/alerts/content/${alertId}/acknowledge`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...telemetry.getTracingHeaders(),
+      },
+      body: JSON.stringify({ acknowledgedBy, actionTaken }),
+    });
+    return res.ok;
   } catch (err) {
     captureException(err as Error, { op: 'acknowledge_content_alert' });
     return false;
@@ -1812,14 +1738,20 @@ export async function fetchReporterCredibility(reporterId: string): Promise<any 
 }
 
 export async function updateReporterCredibility(reporterId: string, updates: Record<string, any>): Promise<boolean> {
-  if (!isSupabaseConfigured) return false;
   try {
-    const { error } = await supabase
-      .from('lmx_credibility')
-      .upsert({ reporter_id: reporterId, ...updates });
-    if (error) { console.warn('[LMX] updateReporterCredibility error:', error.message); return false; }
-    return true;
-  } catch (e) { console.warn('[LMX] updateReporterCredibility exception:', e); return false; }
+    const res = await fetch(`${API_BASE_URL}/api/v1/lmx/credibility`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...telemetry.getTracingHeaders(),
+      },
+      body: JSON.stringify({ reporter_id: reporterId, ...updates }),
+    });
+    return res.ok;
+  } catch (e) {
+    console.warn('[LMX] updateReporterCredibility exception:', e);
+    return false;
+  }
 }
 
 export async function fetchBrandKits(): Promise<any[]> {
@@ -1847,48 +1779,56 @@ export async function fetchAffiliations(contributorId: string): Promise<any[]> {
   } catch (e) { console.warn('[LMX] fetchAffiliations exception:', e); return []; }
 }
 
-export async function addDistributionDestination(dest: Record<string, any>): Promise<any | null> {
-  if (!isSupabaseConfigured) return null;
+export async function addDistributionDestination(destination: Record<string, any>): Promise<any | null> {
   try {
-    const { data, error } = await supabase
-      .from('lmx_distribution_destinations')
-      .insert(dest)
-      .select()
-      .single();
-    if (error) { console.warn('[LMX] addDistributionDestination error:', error.message); return null; }
-    return data;
-  } catch (e) { console.warn('[LMX] addDistributionDestination exception:', e); return null; }
+    const res = await fetch(`${API_BASE_URL}/api/v1/lmx/distribution/destinations`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...telemetry.getTracingHeaders(),
+      },
+      body: JSON.stringify(destination),
+    });
+    if (!res.ok) return null;
+    return await res.json();
+  } catch (e) {
+    console.warn('[LMX] addDistributionDestination exception:', e);
+    return null;
+  }
 }
 
 export async function logModerationEvent(event: Record<string, any>): Promise<boolean> {
-  if (!isSupabaseConfigured) return false;
   try {
-    const { error } = await supabase
-      .from('lmx_moderation_events')
-      .insert(event);
-    if (error) { console.warn('[LMX] logModerationEvent error:', error.message); return false; }
-    return true;
-  } catch (e) { console.warn('[LMX] logModerationEvent exception:', e); return false; }
+    const res = await fetch(`${API_BASE_URL}/api/v1/lmx/moderation-events`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...telemetry.getTracingHeaders(),
+      },
+      body: JSON.stringify(event),
+    });
+    return res.ok;
+  } catch (e) {
+    console.warn('[LMX] logModerationEvent exception:', e);
+    return false;
+  }
 }
 
 export async function incrementViewerCount(eventId: string, delta: number): Promise<boolean> {
-  if (!isSupabaseConfigured) return false;
   try {
-    const { data: current } = await supabase
-      .from('live_events')
-      .select('viewer_count, peak_viewers')
-      .eq('id', eventId)
-      .single();
-    if (!current) return false;
-    const newCount = Math.max(0, (current.viewer_count ?? 0) + delta);
-    const newPeak = Math.max(current.peak_viewers ?? 0, newCount);
-    const { error } = await supabase
-      .from('live_events')
-      .update({ viewer_count: newCount, peak_viewers: newPeak })
-      .eq('id', eventId);
-    if (error) { console.warn('[LMX] incrementViewerCount error:', error.message); return false; }
-    return true;
-  } catch (e) { console.warn('[LMX] incrementViewerCount exception:', e); return false; }
+    const res = await fetch(`${API_BASE_URL}/api/v1/lmx/live/${eventId}/viewers`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...telemetry.getTracingHeaders(),
+      },
+      body: JSON.stringify({ delta }),
+    });
+    return res.ok;
+  } catch (e) {
+    console.warn('[LMX] incrementViewerCount exception:', e);
+    return false;
+  }
 }
 
 // ─── Direct Messaging (Tickets 3.1 - 3.6) ────────────────────────────
@@ -2085,17 +2025,17 @@ export async function blockAndReportDMUser(
 }
 
 export async function markConversationMessagesRead(conversationId: string, userId: string): Promise<boolean> {
-  if (!guard()) return false;
   try {
-    const { error } = await supabase
-      .from('messages')
-      .update({ read_at: new Date().toISOString() })
-      .eq('conversation_id', conversationId)
-      .neq('sender_id', userId)
-      .is('read_at', null);
-
-    if (error) throw error;
-    return true;
+    const res = await fetch(`${API_BASE_URL}/api/v1/dm/messages/read`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-user-id': userId,
+        ...telemetry.getTracingHeaders(),
+      },
+      body: JSON.stringify({ conversationId, userId }),
+    });
+    return res.ok;
   } catch (err) {
     captureException(err as Error, { op: 'mark_messages_read', conversationId });
     return false;

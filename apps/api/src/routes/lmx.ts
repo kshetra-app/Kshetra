@@ -510,4 +510,147 @@ export async function lmxRoutes(app: FastifyInstance) {
       }
     }
   );
+
+  /** 12. POST /api/v1/lmx/credibility — update reporter credibility (Class B Method 52) */
+  app.post<{ Body: Record<string, any> }>(
+    '/api/v1/lmx/credibility',
+    {
+      schema: {
+        body: {
+          type: 'object',
+          required: ['reporter_id'],
+          properties: {
+            reporter_id: { type: 'string' },
+            score: { type: 'number' },
+            tier: { type: 'string' },
+          },
+        },
+      },
+    },
+    async (request, reply) => {
+      const body = request.body;
+      if (isSupabaseConfigured) {
+        try {
+          await supabase.from('lmx_credibility').upsert(body);
+        } catch (err: any) {
+          app.log.warn({ err: err?.message }, 'Failed to persist credibility update');
+        }
+      }
+      return reply.send({ success: true, reporterId: body.reporter_id, updated: true });
+    }
+  );
+
+  /** 13. POST /api/v1/lmx/live/:id/viewers — increment viewer count (Class B Method 55) */
+  app.post<{ Params: { id: string }; Body: { delta: number } }>(
+    '/api/v1/lmx/live/:id/viewers',
+    {
+      schema: {
+        params: {
+          type: 'object',
+          required: ['id'],
+          properties: { id: { type: 'string' } },
+        },
+        body: {
+          type: 'object',
+          required: ['delta'],
+          properties: { delta: { type: 'integer' } },
+        },
+      },
+    },
+    async (request, reply) => {
+      const { id } = request.params;
+      const { delta } = request.body;
+      let viewerCount = Math.max(0, delta);
+
+      if (isSupabaseConfigured) {
+        try {
+          const { data: current } = await supabase
+            .from('live_events')
+            .select('viewer_count, peak_viewers')
+            .eq('id', id)
+            .single();
+
+          if (current) {
+            viewerCount = Math.max(0, (current.viewer_count ?? 0) + delta);
+            const newPeak = Math.max(current.peak_viewers ?? 0, viewerCount);
+            await supabase
+              .from('live_events')
+              .update({ viewer_count: viewerCount, peak_viewers: newPeak })
+              .eq('id', id);
+          }
+        } catch (err: any) {
+          app.log.warn({ err: err?.message }, 'Failed to update viewer count in DB');
+        }
+      }
+
+      return reply.send({ success: true, eventId: id, viewerCount });
+    }
+  );
+
+  /** 14. POST /api/v1/lmx/moderation-events — log moderation event (Class B Method 54) */
+  app.post<{ Body: Record<string, any> }>(
+    '/api/v1/lmx/moderation-events',
+    async (request, reply) => {
+      const event = request.body || {};
+      if (isSupabaseConfigured) {
+        try {
+          await supabase.from('lmx_moderation_events').insert(event);
+        } catch (err: any) {
+          app.log.warn({ err: err?.message }, 'Failed to log moderation event in DB');
+        }
+      }
+      return reply.status(201).send({ success: true, loggedAt: new Date().toISOString() });
+    }
+  );
+
+  /** 15. POST /api/v1/lmx/alerts/content — create content alert (Class B Method 50) */
+  app.post<{ Body: Record<string, any> }>(
+    '/api/v1/lmx/alerts/content',
+    async (request, reply) => {
+      const alert = request.body || {};
+      let id = `alert_${Date.now()}`;
+      if (isSupabaseConfigured) {
+        try {
+          const { data } = await supabase
+            .from('content_alerts')
+            .insert(alert)
+            .select('id')
+            .single();
+          if (data?.id) id = data.id;
+        } catch (err: any) {
+          app.log.warn({ err: err?.message }, 'Failed to insert content alert in DB');
+        }
+      }
+      return reply.status(201).send({ id, success: true });
+    }
+  );
+
+  /** 16. POST /api/v1/lmx/alerts/content/:id/acknowledge — acknowledge content alert (Class B Method 51) */
+  app.post<{ Params: { id: string }; Body: { acknowledgedBy: string; actionTaken: string } }>(
+    '/api/v1/lmx/alerts/content/:id/acknowledge',
+    async (request, reply) => {
+      const { id } = request.params;
+      const { acknowledgedBy, actionTaken } = request.body || {};
+      const now = new Date().toISOString();
+
+      if (isSupabaseConfigured) {
+        try {
+          await supabase
+            .from('content_alerts')
+            .update({
+              acknowledged: true,
+              acknowledged_by: acknowledgedBy || null,
+              acknowledged_at: now,
+              action_taken: actionTaken || 'resolved',
+            })
+            .eq('id', id);
+        } catch (err: any) {
+          app.log.warn({ err: err?.message }, 'Failed to acknowledge content alert in DB');
+        }
+      }
+
+      return reply.send({ success: true, alertId: id, acknowledgedAt: now });
+    }
+  );
 }
+

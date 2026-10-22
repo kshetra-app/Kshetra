@@ -50,6 +50,61 @@ import { getTN2016Result } from '../../../../data/seed/tamil-nadu-historical-res
 import { getKL2016Result } from '../../../../data/seed/kerala-historical-results';
 import { getWB2016Result } from '../../../../data/seed/west-bengal-historical-results';
 import { getUP2017Result } from '../../../../data/seed/uttar-pradesh-historical-results';
+import { getRJ2018Result } from '../../../../data/seed/rajasthan-historical-results';
+import { getGJ2017Result } from '../../../../data/seed/gujarat-historical-results';
+import { getJH2019Result } from '../../../../data/seed/jharkhand-historical-results';
+import { getOD2019Result } from '../../../../data/seed/odisha-historical-results';
+import { getDL2015Result } from '../../../../data/seed/delhi-historical-results';
+import { getPB2017Result } from '../../../../data/seed/punjab-historical-results';
+import { getHR2019Result } from '../../../../data/seed/haryana-historical-results';
+import { getCG2018Result } from '../../../../data/seed/chhattisgarh-historical-results';
+import { getMP2018Result } from '../../../../data/seed/madhya-pradesh-historical-results';
+import { getBR2015Result } from '../../../../data/seed/bihar-historical-results';
+import { getAS2016Result } from '../../../../data/seed/assam-historical-results';
+import { getGA2017Result } from '../../../../data/seed/goa-historical-results';
+import { getMN2017Result } from '../../../../data/seed/manipur-historical-results';
+import { getML2018Result } from '../../../../data/seed/meghalaya-historical-results';
+import { getMZ2018Result } from '../../../../data/seed/mizoram-historical-results';
+import { getNL2018Result } from '../../../../data/seed/nagaland-historical-results';
+import { getTR2018Result } from '../../../../data/seed/tripura-historical-results';
+import { getSK2019Result } from '../../../../data/seed/sikkim-historical-results';
+import { getAR2019Result } from '../../../../data/seed/arunachal-pradesh-historical-results';
+import { getUK2017Result } from '../../../../data/seed/uttarakhand-historical-results';
+import { getPY2016Result } from '../../../../data/seed/puducherry-historical-results';
+import { getHP2017Result } from '../../../../data/seed/himachal-pradesh-historical-results';
+import { getJK2014Result } from '../../../../data/seed/jammu-kashmir-historical-results';
+
+const HISTORICAL_GETTERS: Record<string, (acNo: number) => { year?: number; party: string; winner: string; votes?: number; margin?: number; runnerUp?: string } | undefined> = {
+  KA: getKA2018Result,
+  MH: getMH2019Result,
+  TN: getTN2016Result,
+  KL: getKL2016Result,
+  WB: getWB2016Result,
+  UP: getUP2017Result,
+  RJ: getRJ2018Result,
+  GJ: getGJ2017Result,
+  JH: getJH2019Result,
+  OD: getOD2019Result,
+  DL: getDL2015Result,
+  PB: getPB2017Result,
+  HR: getHR2019Result,
+  CG: getCG2018Result,
+  MP: getMP2018Result,
+  BR: getBR2015Result,
+  AS: getAS2016Result,
+  GA: getGA2017Result,
+  MN: getMN2017Result,
+  ML: getML2018Result,
+  MZ: getMZ2018Result,
+  NL: getNL2018Result,
+  TR: getTR2018Result,
+  SK: getSK2019Result,
+  AR: getAR2019Result,
+  UK: getUK2017Result,
+  PY: getPY2016Result,
+  HP: getHP2017Result,
+  JK: getJK2014Result,
+};
 
 // Generic Mapper
 function genericToBrief(stateCode: string, c: any): ConstituencyBrief {
@@ -450,87 +505,17 @@ export function getConstituencyElectionData(stateCode: string, acNo: number): Co
         marginPercent: null,
       });
     }
-  } else if (code === 'KA') {
-    const h2018 = getKA2018Result(acNo);
-    if (h2018) {
+  } else if (HISTORICAL_GETTERS[code]) {
+    const hist = HISTORICAL_GETTERS[code](acNo);
+    if (hist && hist.year) {
       elections.push({
-        electionYear: 2018,
+        electionYear: hist.year,
         electionType: 'GENERAL',
-        winner: h2018.party,
-        winnerName: h2018.winner,
-        winnerVotes: null,
-        runnerUp: '',
-        margin: null,
-        marginPercent: null,
-      });
-    }
-  } else if (code === 'MH') {
-    const h2019 = getMH2019Result(acNo);
-    if (h2019) {
-      elections.push({
-        electionYear: 2019,
-        electionType: 'GENERAL',
-        winner: h2019.party,
-        winnerName: h2019.winner,
-        winnerVotes: null,
-        runnerUp: '',
-        margin: null,
-        marginPercent: null,
-      });
-    }
-  } else if (code === 'TN') {
-    const h2016 = getTN2016Result(acNo);
-    if (h2016) {
-      elections.push({
-        electionYear: 2016,
-        electionType: 'GENERAL',
-        winner: h2016.party,
-        winnerName: h2016.winner,
-        winnerVotes: null,
-        runnerUp: '',
-        margin: null,
-        marginPercent: null,
-      });
-    }
-  } else if (code === 'KL') {
-    const h2016 = getKL2016Result(acNo);
-    if (h2016) {
-      elections.push({
-        electionYear: 2016,
-        electionType: 'GENERAL',
-        winner: h2016.party,
-        winnerName: h2016.winner,
-        winnerVotes: null,
-        runnerUp: '',
-        margin: null,
-        marginPercent: null,
-      });
-    }
-  } else if (code === 'WB') {
-    const h2016 = getWB2016Result(acNo);
-    if (h2016) {
-      elections.push({
-        electionYear: 2016,
-        electionType: 'GENERAL',
-        winner: h2016.party,
-        winnerName: h2016.winner,
-        winnerVotes: null,
-        runnerUp: '',
-        margin: null,
-        marginPercent: null,
-      });
-    }
-  } else if (code === 'UP') {
-    const h2017 = getUP2017Result(acNo);
-    if (h2017) {
-      elections.push({
-        electionYear: 2017,
-        electionType: 'GENERAL',
-        winner: h2017.party,
-        winnerName: h2017.winner,
-        winnerVotes: null,
-        runnerUp: '',
-        margin: null,
+        winner: hist.party,
+        winnerName: hist.winner,
+        winnerVotes: hist.votes ?? null,
+        runnerUp: hist.runnerUp ?? '',
+        margin: hist.margin ?? null,
         marginPercent: null,
       });
     }

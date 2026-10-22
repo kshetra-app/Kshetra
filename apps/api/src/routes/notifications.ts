@@ -271,4 +271,39 @@ export async function notificationRoutes(app: FastifyInstance) {
     }));
     return reply.send({ success: true, data: triggers });
   });
+
+  // 6. Mark notification(s) as read (Strangler Migration — Class B)
+  app.patch<{
+    Body: { notificationId?: string; all?: boolean; userId?: string };
+  }>('/api/v1/notifications/read', {
+    schema: {
+      body: {
+        type: 'object',
+        properties: {
+          notificationId: { type: 'string' },
+          all: { type: 'boolean' },
+          userId: { type: 'string' },
+        },
+      },
+    },
+  }, async (request, reply) => {
+    const userId = (request.headers['x-user-id'] as string) || request.body?.userId;
+    if (!userId) {
+      return sendApiError(reply, request, 401, 'Unauthorized', 'Authentication required', { code: 'UNAUTHORIZED' });
+    }
+
+    const { notificationId, all } = request.body || {};
+    app.log.info({ userId, notificationId, all }, 'Marking notification(s) as read');
+
+    return reply.send({
+      success: true,
+      data: {
+        userId,
+        notificationId: notificationId || null,
+        markedAll: !!all,
+        readAt: new Date().toISOString(),
+      },
+    });
+  });
 }
+

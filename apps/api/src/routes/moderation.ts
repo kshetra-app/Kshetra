@@ -876,4 +876,61 @@ export async function moderationRoutes(app: FastifyInstance) {
     }));
     return reply.send({ success: true, data: rules });
   });
+
+  // 10. Submit content report (Strangler Migration — Class B Method 40)
+  app.post<{
+    Body: {
+      reporterId?: string;
+      contentId: string;
+      contentType: string;
+      reason: string;
+      description?: string;
+    };
+  }>('/api/v1/moderation/report', {
+    schema: {
+      body: {
+        type: 'object',
+        required: ['contentId', 'contentType', 'reason'],
+        properties: {
+          reporterId: { type: 'string' },
+          contentId: { type: 'string', minLength: 1 },
+          contentType: { type: 'string', minLength: 1 },
+          reason: { type: 'string', minLength: 1 },
+          description: { type: 'string' },
+        },
+      },
+    },
+  }, async (request, reply) => {
+    const reporterId = (request.headers['x-user-id'] as string) || request.body.reporterId || 'anonymous';
+    const { contentId, contentType, reason, description } = request.body;
+    const reportId = `rep_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
+
+    if (isSupabaseConfigured) {
+      try {
+        await supabase.from('reports').insert({
+          id: reportId,
+          reporter_id: reporterId,
+          post_id: contentType === 'post' ? contentId : null,
+          comment_id: contentType === 'comment' ? contentId : null,
+          reason,
+          description: description || null,
+          status: 'pending',
+          created_at: new Date().toISOString(),
+        });
+      } catch (err: any) {
+        app.log.warn({ err: err?.message }, 'Failed to persist report to DB');
+      }
+    }
+
+    return reply.status(201).send({
+      success: true,
+      data: {
+        reportId,
+        contentId,
+        contentType,
+        status: 'pending',
+      },
+    });
+  });
 }
+
