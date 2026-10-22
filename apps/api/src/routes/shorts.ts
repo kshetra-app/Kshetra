@@ -33,52 +33,56 @@ export async function shortsRoutes(app: FastifyInstance) {
     const { id: shortId } = request.params;
     let viewCount = 1;
 
-    if (isSupabaseConfigured) {
+    if (!isSupabaseConfigured) {
+      return sendApiError(reply, request, 503, 'Service Unavailable', 'Database service is not configured', {
+        code: 'SERVICE_UNAVAILABLE',
+      });
+    }
+
+    try {
+      let rpcSucceeded = false;
       try {
-        let rpcSucceeded = false;
-        try {
-          const { error: rpcError } = await supabase.rpc('increment_short_views', { p_short_id: shortId });
-          if (!rpcError) rpcSucceeded = true;
-        } catch {
-          rpcSucceeded = false;
+        const { error: rpcError } = await supabase.rpc('increment_short_views', { p_short_id: shortId });
+        if (!rpcError) rpcSucceeded = true;
+      } catch {
+        rpcSucceeded = false;
+      }
+
+      if (!rpcSucceeded) {
+        // Fallback column increment
+        const { data, error: fetchError } = await supabase
+          .from('political_shorts')
+          .select('view_count')
+          .eq('id', shortId)
+          .maybeSingle();
+
+        if (fetchError) {
+          app.log.error({ err: fetchError.message, shortId }, 'Failed to fetch short for view count update');
+          return sendApiError(reply, request, 500, 'Internal Server Error', 'Database error updating short view count', {
+            code: 'DATABASE_ERROR',
+          });
         }
 
-        if (!rpcSucceeded) {
-          // Fallback column increment
-          const { data, error: fetchError } = await supabase
+        if (data) {
+          viewCount = (data.view_count || 0) + 1;
+          const { error: updateError } = await supabase
             .from('political_shorts')
-            .select('view_count')
-            .eq('id', shortId)
-            .maybeSingle();
+            .update({ view_count: viewCount })
+            .eq('id', shortId);
 
-          if (fetchError) {
-            app.log.error({ err: fetchError.message, shortId }, 'Failed to fetch short for view count update');
+          if (updateError) {
+            app.log.error({ err: updateError.message, shortId }, 'Failed to increment short view in DB');
             return sendApiError(reply, request, 500, 'Internal Server Error', 'Database error updating short view count', {
               code: 'DATABASE_ERROR',
             });
           }
-
-          if (data) {
-            viewCount = (data.view_count || 0) + 1;
-            const { error: updateError } = await supabase
-              .from('political_shorts')
-              .update({ view_count: viewCount })
-              .eq('id', shortId);
-
-            if (updateError) {
-              app.log.error({ err: updateError.message, shortId }, 'Failed to increment short view in DB');
-              return sendApiError(reply, request, 500, 'Internal Server Error', 'Database error updating short view count', {
-                code: 'DATABASE_ERROR',
-              });
-            }
-          }
         }
-      } catch (err: any) {
-        app.log.error({ err: err?.message, shortId }, 'Exception incrementing short view in DB');
-        return sendApiError(reply, request, 500, 'Internal Server Error', 'Database error updating short view count', {
-          code: 'DATABASE_ERROR',
-        });
       }
+    } catch (err: any) {
+      app.log.error({ err: err?.message, shortId }, 'Exception incrementing short view in DB');
+      return sendApiError(reply, request, 500, 'Internal Server Error', 'Database error updating short view count', {
+        code: 'DATABASE_ERROR',
+      });
     }
 
     return reply.send({
@@ -125,30 +129,34 @@ export async function shortsRoutes(app: FastifyInstance) {
     const commentId = `comm_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
     const now = new Date().toISOString();
 
-    if (isSupabaseConfigured) {
-      try {
-        const { error } = await supabase
-          .from('short_comments')
-          .insert({
-            id: commentId,
-            short_id: shortId,
-            user_id: userId,
-            content,
-            created_at: now,
-          });
+    if (!isSupabaseConfigured) {
+      return sendApiError(reply, request, 503, 'Service Unavailable', 'Database service is not configured', {
+        code: 'SERVICE_UNAVAILABLE',
+      });
+    }
 
-        if (error) {
-          app.log.error({ err: error.message, shortId, userId }, 'Failed to insert short comment in DB');
-          return sendApiError(reply, request, 500, 'Internal Server Error', 'Database error recording short comment', {
-            code: 'DATABASE_ERROR',
-          });
-        }
-      } catch (err: any) {
-        app.log.error({ err: err?.message, shortId, userId }, 'Exception inserting short comment in DB');
+    try {
+      const { error } = await supabase
+        .from('short_comments')
+        .insert({
+          id: commentId,
+          short_id: shortId,
+          user_id: userId,
+          content,
+          created_at: now,
+        });
+
+      if (error) {
+        app.log.error({ err: error.message, shortId, userId }, 'Failed to insert short comment in DB');
         return sendApiError(reply, request, 500, 'Internal Server Error', 'Database error recording short comment', {
           code: 'DATABASE_ERROR',
         });
       }
+    } catch (err: any) {
+      app.log.error({ err: err?.message, shortId, userId }, 'Exception inserting short comment in DB');
+      return sendApiError(reply, request, 500, 'Internal Server Error', 'Database error recording short comment', {
+        code: 'DATABASE_ERROR',
+      });
     }
 
     return reply.status(201).send({

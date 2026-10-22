@@ -53,38 +53,42 @@ export async function contributorRoutes(app: FastifyInstance) {
     const body = request.body;
     let kycId = `kyc_${Date.now()}`;
 
-    if (isSupabaseConfigured) {
-      try {
-        const { data, error } = await supabase
-          .from('contributor_kyc')
-          .insert({
-            user_id: userId,
-            full_legal_name: body.fullLegalName,
-            phone_number: body.phoneNumber,
-            phone_verified: body.phoneVerified ?? false,
-            selfie_url: body.selfieUrl ?? null,
-            selfie_hash: body.selfieHash ?? null,
-            device_unique_id: body.deviceUniqueId ?? null,
-            status: 'submitted',
-            created_at: new Date().toISOString(),
-          })
-          .select('id')
-          .single();
+    if (!isSupabaseConfigured) {
+      return sendApiError(reply, request, 503, 'Service Unavailable', 'Database service is not configured', {
+        code: 'SERVICE_UNAVAILABLE',
+      });
+    }
 
-        if (error) {
-          app.log.error({ err: error.message, userId }, 'Failed to insert KYC record in DB');
-          return sendApiError(reply, request, 500, 'Internal Server Error', 'Database error recording KYC submission', {
-            code: 'DATABASE_ERROR',
-          });
-        }
+    try {
+      const { data, error } = await supabase
+        .from('contributor_kyc')
+        .insert({
+          user_id: userId,
+          full_legal_name: body.fullLegalName,
+          phone_number: body.phoneNumber,
+          phone_verified: body.phoneVerified ?? false,
+          selfie_url: body.selfieUrl ?? null,
+          selfie_hash: body.selfieHash ?? null,
+          device_unique_id: body.deviceUniqueId ?? null,
+          status: 'submitted',
+          created_at: new Date().toISOString(),
+        })
+        .select('id')
+        .single();
 
-        if (data?.id) kycId = data.id;
-      } catch (err: any) {
-        app.log.error({ err: err?.message, userId }, 'Exception inserting KYC record in DB');
+      if (error) {
+        app.log.error({ err: error.message, userId }, 'Failed to insert KYC record in DB');
         return sendApiError(reply, request, 500, 'Internal Server Error', 'Database error recording KYC submission', {
           code: 'DATABASE_ERROR',
         });
       }
+
+      if (data?.id) kycId = data.id;
+    } catch (err: any) {
+      app.log.error({ err: err?.message, userId }, 'Exception inserting KYC record in DB');
+      return sendApiError(reply, request, 500, 'Internal Server Error', 'Database error recording KYC submission', {
+        code: 'DATABASE_ERROR',
+      });
     }
 
     return reply.status(201).send({
@@ -144,32 +148,36 @@ export async function contributorRoutes(app: FastifyInstance) {
     const body = request.body;
     const now = new Date().toISOString();
 
-    if (isSupabaseConfigured) {
-      try {
-        const { error } = await supabase
-          .from('action_fingerprints')
-          .insert({
-            user_id: resolvedUserId,
-            action_type: body.actionType,
-            content_type: body.contentType ?? null,
-            content_id: body.contentId ?? null,
-            content_hash: body.contentHash ?? null,
-            device_unique_id: body.deviceUniqueId ?? null,
-            timestamp: now,
-          });
+    if (!isSupabaseConfigured) {
+      return sendApiError(reply, request, 503, 'Service Unavailable', 'Database service is not configured', {
+        code: 'SERVICE_UNAVAILABLE',
+      });
+    }
 
-        if (error) {
-          app.log.error({ err: error.message, userId: resolvedUserId }, 'Failed to insert action fingerprint in DB');
-          return sendApiError(reply, request, 500, 'Internal Server Error', 'Database error recording action fingerprint', {
-            code: 'DATABASE_ERROR',
-          });
-        }
-      } catch (err: any) {
-        app.log.error({ err: err?.message, userId: resolvedUserId }, 'Exception inserting action fingerprint in DB');
+    try {
+      const { error } = await supabase
+        .from('action_fingerprints')
+        .insert({
+          user_id: resolvedUserId,
+          action_type: body.actionType,
+          content_type: body.contentType ?? null,
+          content_id: body.contentId ?? null,
+          content_hash: body.contentHash ?? null,
+          device_unique_id: body.deviceUniqueId ?? null,
+          timestamp: now,
+        });
+
+      if (error) {
+        app.log.error({ err: error.message, userId: resolvedUserId }, 'Failed to insert action fingerprint in DB');
         return sendApiError(reply, request, 500, 'Internal Server Error', 'Database error recording action fingerprint', {
           code: 'DATABASE_ERROR',
         });
       }
+    } catch (err: any) {
+      app.log.error({ err: err?.message, userId: resolvedUserId }, 'Exception inserting action fingerprint in DB');
+      return sendApiError(reply, request, 500, 'Internal Server Error', 'Database error recording action fingerprint', {
+        code: 'DATABASE_ERROR',
+      });
     }
 
     return reply.status(201).send({
@@ -219,31 +227,35 @@ export async function contributorRoutes(app: FastifyInstance) {
     const body = request.body;
     const now = new Date().toISOString();
 
-    if (isSupabaseConfigured) {
-      try {
-        const { error } = await supabase
-          .from('contributor_devices')
-          .upsert({
-            user_id: userId,
-            device_unique_id: body.deviceUniqueId,
-            device_brand: body.deviceBrand ?? null,
-            device_model: body.deviceModel ?? null,
-            device_name: body.deviceName ?? null,
-            last_seen_at: now,
-          }, { onConflict: 'user_id,device_unique_id' });
+    if (!isSupabaseConfigured) {
+      return sendApiError(reply, request, 503, 'Service Unavailable', 'Database service is not configured', {
+        code: 'SERVICE_UNAVAILABLE',
+      });
+    }
 
-        if (error) {
-          app.log.error({ err: error.message, userId }, 'Failed to upsert contributor device in DB');
-          return sendApiError(reply, request, 500, 'Internal Server Error', 'Database error recording contributor device', {
-            code: 'DATABASE_ERROR',
-          });
-        }
-      } catch (err: any) {
-        app.log.error({ err: err?.message, userId }, 'Exception upserting contributor device in DB');
+    try {
+      const { error } = await supabase
+        .from('contributor_devices')
+        .upsert({
+          user_id: userId,
+          device_unique_id: body.deviceUniqueId,
+          device_brand: body.deviceBrand ?? null,
+          device_model: body.deviceModel ?? null,
+          device_name: body.deviceName ?? null,
+          last_seen_at: now,
+        }, { onConflict: 'user_id,device_unique_id' });
+
+      if (error) {
+        app.log.error({ err: error.message, userId }, 'Failed to upsert contributor device in DB');
         return sendApiError(reply, request, 500, 'Internal Server Error', 'Database error recording contributor device', {
           code: 'DATABASE_ERROR',
         });
       }
+    } catch (err: any) {
+      app.log.error({ err: err?.message, userId }, 'Exception upserting contributor device in DB');
+      return sendApiError(reply, request, 500, 'Internal Server Error', 'Database error recording contributor device', {
+        code: 'DATABASE_ERROR',
+      });
     }
 
     return reply.send({

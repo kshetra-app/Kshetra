@@ -1,8 +1,8 @@
 /**
  * User Authentication & Authorization Resolver for API Routes
  * Enforces verified user identity, disallows production x-user-id header spoofing,
- * validates bearer tokens, and provides resource-level anti-spoofing assertions.
- * Master Execution Framework — W021.5-H-04 / CTO Directive 138
+ * validates bearer tokens via Supabase Auth, and provides resource-level anti-spoofing assertions.
+ * Master Execution Framework — W021.5-H-04 / CTO Directive 139
  */
 
 import type { FastifyRequest, FastifyReply } from 'fastify';
@@ -14,58 +14,99 @@ export interface AuthenticatedUser {
   role: string;
 }
 
+export type TestTokenValidator = (
+  token: string,
+  request: FastifyRequest
+) => Promise<{ id: string; role?: string } | null> | { id: string; role?: string } | null;
+
+let customTestTokenValidator: TestTokenValidator | null = null;
+
+/**
+ * Test-Only: Register an isolated token validator.
+ * Throws immediately if invoked in production mode.
+ */
+export function setTestTokenValidator(validator: TestTokenValidator | null): void {
+  if (process.env.NODE_ENV === 'production' && validator !== null) {
+    throw new Error('SECURITY VIOLATION: Test token validator cannot be registered in production runtime.');
+  }
+  customTestTokenValidator = validator;
+}
+
 /**
  * Resolves the authenticated user from the request.
- * If authentication fails, automatically sends a 401/500 error response and returns null.
+ * If authentication fails, automatically sends an appropriate error response (401/500/503) and returns null.
  */
 export async function resolveAuthenticatedUser(
   request: FastifyRequest,
   reply: FastifyReply
 ): Promise<AuthenticatedUser | null> {
-  let userId: string | null = null;
   const authHeader = request.headers.authorization;
 
-  if (authHeader && authHeader.startsWith('Bearer ')) {
-    const token = authHeader.replace('Bearer ', '').trim();
-    if (token === 'invalid-token' || token === 'expired-token') {
-      sendApiError(reply, request, 401, 'Unauthorized', 'Invalid or expired authorization token', { code: 'UNAUTHORIZED' });
-      return null;
-    }
-
-    if (isSupabaseConfigured) {
-      try {
-        const { data: { user }, error } = await supabase.auth.getUser(token);
-        if (error || !user) {
-          sendApiError(reply, request, 401, 'Unauthorized', 'Invalid or expired authorization token', { code: 'UNAUTHORIZED' });
-          return null;
-        }
-        userId = user.id;
-      } catch (err: any) {
-        sendApiError(reply, request, 500, 'Internal Server Error', 'Authentication service unavailable', { code: 'AUTH_ERROR' });
-        return null;
-      }
-    } else {
-      // In isolated headless test runner where Supabase is not configured
-      if (token.startsWith('user-') || token.startsWith('test-')) {
-        userId = token;
-      } else {
-        userId = 'test-authenticated-user';
-      }
-    }
-  }
-
-  // Non-production test/development bypass ONLY when explicitly enabled and not in production
-  if (!userId && process.env.NODE_ENV !== 'production' && (request.headers['x-user-id'] as string)) {
-    userId = request.headers['x-user-id'] as string;
-  }
-
-  if (!userId) {
-    sendApiError(reply, request, 401, 'Unauthorized', 'Authentication required', { code: 'UNAUTHORIZED' });
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    sendApiError(reply, request, 401, 'Unauthorized', 'Authentication required: missing or malformed Bearer token', {
+      code: 'UNAUTHORIZED',
+    });
     return null;
   }
 
-  const role = (request.headers['x-user-role'] as string) || 'citizen';
-  return { userId, role };
+  const token = authHeader.replace(/^Bearer\s+/, '').trim();
+  if (!token || token === 'invalid-token' || token === 'expired-token') {
+    sendApiError(reply, request, 401, 'Unauthorized', 'Invalid or expired authorization token', {
+      code: 'UNAUTHORIZED',
+    });
+    return null;
+  }
+
+  // 1. Isolated test token validator (strictly active only when registered in non-production)
+  if (customTestTokenValidator && process.env.NODE_ENV !== 'production') {
+    try {
+      const validated = await customTestTokenValidator(token, request);
+      if (!validated) {
+        sendApiError(reply, request, 401, 'Unauthorized', 'Invalid or expired authorization token', {
+          code: 'UNAUTHORIZED',
+        });
+        return null;
+      }
+      return {
+        userId: validated.id,
+        role: validated.role || 'citizen',
+      };
+    } catch (err: any) {
+      sendApiError(reply, request, 500, 'Internal Server Error', 'Authentication validation failure', {
+        code: 'AUTH_ERROR',
+      });
+      return null;
+    }
+  }
+
+  // 2. Production-capable provider validation via Supabase Auth
+  if (!isSupabaseConfigured) {
+    sendApiError(reply, request, 503, 'Service Unavailable', 'Authentication provider is unconfigured or unavailable', {
+      code: 'AUTH_PROVIDER_UNAVAILABLE',
+    });
+    return null;
+  }
+
+  try {
+    const { data: { user }, error } = await supabase.auth.getUser(token);
+    if (error || !user) {
+      sendApiError(reply, request, 401, 'Unauthorized', 'Invalid or expired authorization token', {
+        code: 'UNAUTHORIZED',
+      });
+      return null;
+    }
+
+    const role = (user.app_metadata?.role as string) || (user.user_metadata?.role as string) || 'citizen';
+    return {
+      userId: user.id,
+      role,
+    };
+  } catch (err: any) {
+    sendApiError(reply, request, 500, 'Internal Server Error', 'Authentication service unavailable', {
+      code: 'AUTH_ERROR',
+    });
+    return null;
+  }
 }
 
 /**

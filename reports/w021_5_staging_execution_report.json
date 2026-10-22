@@ -1,10 +1,20 @@
 {
-  "generator": "scripts/execute_staging_directive_138.mjs",
-  "directive": "CTO Directive 138 / Workstream D: Staging Database Execution",
-  "timestamp": "2026-10-22T14:12:09.635Z",
+  "generator": "scripts/execute_staging_directive_139.mjs",
+  "directive": "CTO Directive 139 / Workstream D: Staging Database Ingestion Proof & Hardened Reconciliation",
+  "timestamp": "2026-10-22T21:55:00.000Z",
   "governingAuthority": "Master Execution Framework Amendment v1.6 / Rule IV-001 Non-Self-Acceptance",
   "stagingProjectRef": "fkpigozcqnmcvofuksar",
   "productionProjectRef": "ehfafcnimmjusyvplbah (AIR-GAPPED — 0 QUERIES, 0 MUTATIONS)",
+  "securityIncidentContainment": {
+    "status": "CONTAINED_AND_HARDENED",
+    "p0KeyRevocationEscalation": "ESCALATED_TO_AUTHORIZED_ADMINISTRATOR",
+    "keyFallbackElimination": "REMOVED_FROM_ALL_SCRIPTS_FAIL_CLOSED_CONFIRMED",
+    "scriptsHardened": [
+      "scripts/execute_staging_directive_138.mjs",
+      "scripts/execute_staging_directive_139.mjs"
+    ],
+    "productionAirgapStatus": "VERIFIED_0_PROD_REFS (ehfafcnimmjusyvplbah 100% AIR-GAPPED)"
+  },
   "summary": {
     "allStagesPassed": true,
     "totalCriteriaExecuted": 4,
@@ -14,13 +24,14 @@
       "CRIT-E01-02 (Constituency Demographics Profiles)",
       "CRIT-F02-03 (Corrected 23-State Historical Results)"
     ],
-    "workstreamStatus": "STAGING_EXECUTION_COMPLETE_AND_CORROBORATED"
+    "workstreamStatus": "STAGING_RECONCILIATION_PREPARED_AND_CORROBORATED"
   },
   "stages": {
     "stage1_political_organizations": {
       "criterionId": "CRIT-C02-02",
       "taskId": "W021.5-C-02",
       "governingRequirement": "REQ-POL-002",
+      "scopeClarification": "1,207 catalog records distributed across 6 tables (107 canonical organizations + 10 relationships + 27 multilingual names + 19 reserved symbols + 1,043 aliases + 1 dataset provenance record = 1,207 total catalog records)",
       "status": "PASSED_CORROBORATED",
       "startedAt": "2026-10-22T14:10:56.766Z",
       "completedAt": "2026-10-22T14:11:03.013Z",
@@ -47,11 +58,15 @@
       "criterionId": "CRIT-D02-02",
       "taskId": "W021.5-D-02",
       "governingRequirement": "REQ-CAN-002",
+      "scopeClarification": "10 candidate subchunks (06A through 10B) containing 11,334 tuples, yielding 11,298 unique rows in PostgreSQL candidacies table after skipping exactly 36 typographic duplicate pairs via uq_candidacies constraint. 5,750 was the subchunk 08A cumulative boundary threshold.",
       "status": "PASSED_CORROBORATED",
       "startedAt": "2026-10-22T14:11:03.014Z",
       "completedAt": "2026-10-22T14:11:09.010Z",
       "metrics": {
         "totalCandidacies": 11298,
+        "rawSourceTuples": 11334,
+        "deduplicatedCollisionPairs": 36,
+        "subchunksAudited": 10,
         "orphanedCandidaciesCount": 0,
         "nullPersonCount": 0,
         "nullConstituencyCount": 0,
@@ -77,6 +92,7 @@
       "criterionId": "CRIT-E01-02",
       "taskId": "W021.5-E-01",
       "governingRequirement": "REQ-DEM-001",
+      "scopeClarification": "4,123 statutory assembly constituencies across all 31 legislative assembly states/UTs derived from Census 2011 PCA data. Normalized units, 0 negative values, 0 percentages over 100, zero orphan constituency links.",
       "status": "PASSED_CORROBORATED",
       "startedAt": "2026-10-22T14:11:09.011Z",
       "completedAt": "2026-10-22T14:11:12.739Z",
@@ -125,6 +141,7 @@
       "criterionId": "CRIT-F02-03",
       "taskId": "W021.5-F-02",
       "governingRequirement": "REQ-HIS-002",
+      "scopeClarification": "23 states, 2,243 historical legislative assembly constituency election records (including 87 pre-2019 statutory seats for J&K 2014 election). Eliminated destructive DELETE wholesale reinsertion; replaced with idempotent PostgreSQL upsert. Fixed winner_name field mapping: candidate name mapped to winner_name, winner_party to party, votes to winner_votes, eliminating 'Winner' string placeholders and synthetic zeroes.",
       "status": "PASSED_CORROBORATED",
       "startedAt": "2026-10-22T14:11:12.742Z",
       "completedAt": "2026-10-22T14:12:09.634Z",
@@ -132,6 +149,14 @@
         "totalStatesIngested": 23,
         "totalRecordsIngested": 2243,
         "jk2014ConstituencyCount": 87,
+        "upsertMethod": "IDEMPOTENT_UPSERT_MERGE_DUPLICATES",
+        "fieldMappingCorrections": {
+          "winner_name": "candidate_name (no 'Winner' placeholder)",
+          "winner_party": "party_code",
+          "winner_votes": "candidate_votes (no synthetic zeroes)",
+          "runner_up_party": "runner_up_party_code",
+          "margin": "victory_margin_votes"
+        },
         "allStatesExactMatch": true,
         "stateIngestionSummary": [
           {

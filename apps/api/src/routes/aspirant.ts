@@ -45,36 +45,40 @@ export async function aspirantRoutes(app: FastifyInstance) {
     const { quizScore } = request.body || {};
     const now = new Date().toISOString();
 
-    if (isSupabaseConfigured) {
-      try {
-        const { error } = await supabase
-          .from('module_progress')
-          .update({
-            completed: true,
-            completed_at: now,
-            quiz_score: quizScore ?? null,
-          })
-          .eq('user_id', userId)
-          .eq('module_id', moduleId);
+    if (!isSupabaseConfigured) {
+      return sendApiError(reply, request, 503, 'Service Unavailable', 'Database service is not configured', {
+        code: 'SERVICE_UNAVAILABLE',
+      });
+    }
 
-        if (error) {
-          app.log.error({ err: error.message, moduleId, userId }, 'Failed to persist module completion');
-          return sendApiError(reply, request, 500, 'Internal Server Error', 'Database error persisting module progress', {
-            code: 'DATABASE_ERROR',
-          });
-        }
+    try {
+      const { error } = await supabase
+        .from('module_progress')
+        .update({
+          completed: true,
+          completed_at: now,
+          quiz_score: quizScore ?? null,
+        })
+        .eq('user_id', userId)
+        .eq('module_id', moduleId);
 
-        try {
-          await supabase.rpc('increment_aspirant_modules', { p_user_id: userId });
-        } catch {
-          // best-effort increment
-        }
-      } catch (err: any) {
-        app.log.error({ err: err?.message, moduleId, userId }, 'Exception persisting module completion');
+      if (error) {
+        app.log.error({ err: error.message, moduleId, userId }, 'Failed to persist module completion');
         return sendApiError(reply, request, 500, 'Internal Server Error', 'Database error persisting module progress', {
           code: 'DATABASE_ERROR',
         });
       }
+
+      try {
+        await supabase.rpc('increment_aspirant_modules', { p_user_id: userId });
+      } catch {
+        // best-effort increment
+      }
+    } catch (err: any) {
+      app.log.error({ err: err?.message, moduleId, userId }, 'Exception persisting module completion');
+      return sendApiError(reply, request, 500, 'Internal Server Error', 'Database error persisting module progress', {
+        code: 'DATABASE_ERROR',
+      });
     }
 
     return reply.send({
@@ -117,24 +121,28 @@ export async function aspirantRoutes(app: FastifyInstance) {
     const { id: challengeId } = request.params;
     const now = new Date().toISOString();
 
-    if (isSupabaseConfigured) {
-      try {
-        const { error } = await supabase
-          .from('challenge_participation')
-          .insert({ user_id: userId, challenge_id: challengeId });
+    if (!isSupabaseConfigured) {
+      return sendApiError(reply, request, 503, 'Service Unavailable', 'Database service is not configured', {
+        code: 'SERVICE_UNAVAILABLE',
+      });
+    }
 
-        if (error) {
-          app.log.error({ err: error.message, challengeId, userId }, 'Failed to record challenge participation');
-          return sendApiError(reply, request, 500, 'Internal Server Error', 'Database error recording challenge participation', {
-            code: 'DATABASE_ERROR',
-          });
-        }
-      } catch (err: any) {
-        app.log.error({ err: err?.message, challengeId, userId }, 'Exception recording challenge participation');
+    try {
+      const { error } = await supabase
+        .from('challenge_participation')
+        .insert({ user_id: userId, challenge_id: challengeId });
+
+      if (error) {
+        app.log.error({ err: error.message, challengeId, userId }, 'Failed to record challenge participation');
         return sendApiError(reply, request, 500, 'Internal Server Error', 'Database error recording challenge participation', {
           code: 'DATABASE_ERROR',
         });
       }
+    } catch (err: any) {
+      app.log.error({ err: err?.message, challengeId, userId }, 'Exception recording challenge participation');
+      return sendApiError(reply, request, 500, 'Internal Server Error', 'Database error recording challenge participation', {
+        code: 'DATABASE_ERROR',
+      });
     }
 
     return reply.send({
@@ -180,29 +188,33 @@ export async function aspirantRoutes(app: FastifyInstance) {
     const { message } = request.body || {};
     const now = new Date().toISOString();
 
-    if (isSupabaseConfigured) {
-      try {
-        const { error } = await supabase
-          .from('community_endorsements')
-          .insert({
-            endorser_id: endorserId,
-            aspirant_id: aspirantId,
-            message: message ?? null,
-            created_at: now,
-          });
+    if (!isSupabaseConfigured) {
+      return sendApiError(reply, request, 503, 'Service Unavailable', 'Database service is not configured', {
+        code: 'SERVICE_UNAVAILABLE',
+      });
+    }
 
-        if (error) {
-          app.log.error({ err: error.message, aspirantId, endorserId }, 'Failed to record endorsement in DB');
-          return sendApiError(reply, request, 500, 'Internal Server Error', 'Database error recording endorsement', {
-            code: 'DATABASE_ERROR',
-          });
-        }
-      } catch (err: any) {
-        app.log.error({ err: err?.message, aspirantId, endorserId }, 'Exception recording endorsement in DB');
+    try {
+      const { error } = await supabase
+        .from('community_endorsements')
+        .insert({
+          endorser_id: endorserId,
+          aspirant_id: aspirantId,
+          message: message ?? null,
+          created_at: now,
+        });
+
+      if (error) {
+        app.log.error({ err: error.message, aspirantId, endorserId }, 'Failed to record endorsement in DB');
         return sendApiError(reply, request, 500, 'Internal Server Error', 'Database error recording endorsement', {
           code: 'DATABASE_ERROR',
         });
       }
+    } catch (err: any) {
+      app.log.error({ err: err?.message, aspirantId, endorserId }, 'Exception recording endorsement in DB');
+      return sendApiError(reply, request, 500, 'Internal Server Error', 'Database error recording endorsement', {
+        code: 'DATABASE_ERROR',
+      });
     }
 
     return reply.status(201).send({

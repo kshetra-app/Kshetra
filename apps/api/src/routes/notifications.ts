@@ -299,25 +299,29 @@ export async function notificationRoutes(app: FastifyInstance) {
     const { notificationId, all } = request.body || {};
     app.log.info({ userId, notificationId, all }, 'Marking notification(s) as read');
 
-    if (isSupabaseConfigured) {
-      try {
-        let query = supabase.from('notifications').update({ read: true, read_at: new Date().toISOString() }).eq('user_id', userId);
-        if (notificationId && !all) {
-          query = query.eq('id', notificationId);
-        }
-        const { error } = await query;
-        if (error) {
-          app.log.error({ err: error.message, userId, notificationId }, 'Failed to mark notification read in DB');
-          return sendApiError(reply, request, 500, 'Internal Server Error', 'Database error updating notifications', {
-            code: 'DATABASE_ERROR',
-          });
-        }
-      } catch (err: any) {
-        app.log.error({ err: err?.message, userId, notificationId }, 'Exception marking notification read in DB');
+    if (!isSupabaseConfigured) {
+      return sendApiError(reply, request, 503, 'Service Unavailable', 'Database service is not configured', {
+        code: 'SERVICE_UNAVAILABLE',
+      });
+    }
+
+    try {
+      let query = supabase.from('notifications').update({ read: true, read_at: new Date().toISOString() }).eq('user_id', userId);
+      if (notificationId && !all) {
+        query = query.eq('id', notificationId);
+      }
+      const { error } = await query;
+      if (error) {
+        app.log.error({ err: error.message, userId, notificationId }, 'Failed to mark notification read in DB');
         return sendApiError(reply, request, 500, 'Internal Server Error', 'Database error updating notifications', {
           code: 'DATABASE_ERROR',
         });
       }
+    } catch (err: any) {
+      app.log.error({ err: err?.message, userId, notificationId }, 'Exception marking notification read in DB');
+      return sendApiError(reply, request, 500, 'Internal Server Error', 'Database error updating notifications', {
+        code: 'DATABASE_ERROR',
+      });
     }
 
     return reply.send({

@@ -31,9 +31,15 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const REPO_ROOT = path.resolve(__dirname, '..');
 
-const STAGING_URL = 'https://fkpigozcqnmcvofuksar.supabase.co';
-const SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || 
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZrcGlnb3pjcW5tY3ZvZnVrc2FyIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4ODkyMDc5NSwiZXhwIjoyMTA0NDk2Nzk1fQ.JoLO6oWrYk_XRFmFTiDk96t2Mx7-4-qsi_fi-wEPTmg';
+const STAGING_URL = process.env.SUPABASE_URL || 'https://fkpigozcqnmcvofuksar.supabase.co';
+const SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+if (!SERVICE_KEY) {
+  console.error('[FATAL] Missing SUPABASE_SERVICE_ROLE_KEY environment variable.');
+  console.error('[SECURITY] Under CTO Directive 139 P0 Credential Containment, hardcoded secret fallbacks are strictly prohibited.');
+  console.error('[ACTION] Provide authorized credentials via environment or secret manager.');
+  process.exit(1);
+}
 
 const headers = {
   'apikey': SERVICE_KEY,

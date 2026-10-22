@@ -1,11 +1,11 @@
 /**
- * KSHETRA W021.5 — CTO DIRECTIVE 134 / 135 FULL-MANDATE UNIFIED VERIFIER
+ * KSHETRA W021.5 — CTO DIRECTIVE 139 FULL-MANDATE UNIFIED VERIFIER
  * Deterministic Single Entrypoint for Full-Mandate Completion Verification
  * 
  * Master Execution Framework Amendment v1.6 / Rule IV-001 Non-Self-Acceptance
- * CTO Directive 135 Section 4: 16-Point Verification Engine Hardening
+ * CTO Directive 139: Security Containment, Authentication Hardening & Full Data Truth
  * 
- * Executes all 10 mandated verification suites across Stages A through I:
+ * Executes all 15 mandated verification suites across Stages A through I:
  *  1. Working tree cleanliness inspection (git status --porcelain)
  *  2. Commit freshness validator (tests/commit-freshness.test.mjs)
  *  3. Governance consistency test (tests/governance-consistency.test.mjs)
@@ -15,7 +15,12 @@
  *  7. PIN evidence matrix validation (scripts/verify_pin_evidence_matrix.cjs)
  *  8. Financial remediation test suite (tests/financial_remediation.test.mjs)
  *  9. Jest data truth test suite (npm test --prefix apps/api -- src/__tests__/delimitation-citizen-impact-data-truth.test.ts)
- * 10. Specification, Matrix, Ledger, Blocker & Evidence Concordance Engine
+ * 10. Mobile SQLite offline persistence test (tests/mobile-sqlite-offline-sync.test.mjs)
+ * 11. Fastify Class B security & auth integration battery (tests/api-class-b-security-integration.test.mjs)
+ * 12. Mobile strangler endpoints 29-56 mediation (tests/mobile-strangler-class-b-29-56.test.mjs)
+ * 13. Historical election results for 23 states (tests/historical-election-results-23-states.test.mjs)
+ * 14. Production air-gap & cutover preflight (scripts/verify_production_airgap_and_preflight.cjs)
+ * 15. Specification, Matrix, Ledger, Blocker & Evidence Concordance Engine
  * 
  * Generates: reports/w021_5_full_mandate_verification_manifest.json
  */
@@ -61,7 +66,7 @@ let overallPass = true; // Atomically tracked (Directive 135 Item 14)
 function runSuite(index, name, command, fn) {
   const start = Date.now();
   const startedAt = new Date().toISOString();
-  console.log(`[Suite ${index}/10] ${name}`);
+  console.log(`[Suite ${index}/15] ${name}`);
   console.log(`  Command: ${command || 'In-Process Engine Assertion'}`);
   
   let passed = false;
@@ -187,10 +192,35 @@ runSuite(8, 'Financial Remediation Test Suite', 'node tests/financial_remediatio
 runSuite(9, 'Jest Data Truth Test Suite', 'npm test --prefix apps/api -- src/__tests__/delimitation-citizen-impact-data-truth.test.ts');
 
 // -----------------------------------------------------------------------------
-// Suite 10: Specification, Matrix, Ledger, Blocker & Evidence Concordance Engine
+// Suite 10: Mobile SQLite Offline Persistence & Synchronization Engine
+// -----------------------------------------------------------------------------
+runSuite(10, 'Mobile SQLite Offline Persistence & Synchronization Engine', 'node tests/mobile-sqlite-offline-sync.test.mjs');
+
+// -----------------------------------------------------------------------------
+// Suite 11: Fastify Class B Security & Authentication Integration Battery
+// -----------------------------------------------------------------------------
+runSuite(11, 'Fastify Class B Security & Authentication Integration Battery', 'node tests/api-class-b-security-integration.test.mjs');
+
+// -----------------------------------------------------------------------------
+// Suite 12: Mobile Strangler Class B Endpoints 29-56 Mediation
+// -----------------------------------------------------------------------------
+runSuite(12, 'Mobile Strangler Class B Endpoints 29-56 Mediation', 'node tests/mobile-strangler-class-b-29-56.test.mjs');
+
+// -----------------------------------------------------------------------------
+// Suite 13: Historical Election Results for 23 States
+// -----------------------------------------------------------------------------
+runSuite(13, 'Historical Election Results for 23 States', 'node tests/historical-election-results-23-states.test.mjs');
+
+// -----------------------------------------------------------------------------
+// Suite 14: Production Air-Gap & Cutover Preflight
+// -----------------------------------------------------------------------------
+runSuite(14, 'Production Air-Gap & Cutover Preflight', 'node scripts/verify_production_airgap_and_preflight.cjs');
+
+// -----------------------------------------------------------------------------
+// Suite 15: Specification, Matrix, Ledger, Blocker & Evidence Concordance Engine
 // Operationalizes Directive 135 Section 4 (Items 1-10)
 // -----------------------------------------------------------------------------
-runSuite(10, 'Specification, Matrix, Ledger, Blocker & Evidence Concordance Engine', null, () => {
+runSuite(15, 'Specification, Matrix, Ledger, Blocker & Evidence Concordance Engine', null, () => {
   // Check 1: File Existence & JSON Parsing
   if (!fs.existsSync(MATRIX_PATH)) throw new Error(`Matrix file missing: ${MATRIX_PATH}`);
   if (!fs.existsSync(LEDGER_PATH)) throw new Error(`Ledger file missing: ${LEDGER_PATH}`);
@@ -630,8 +660,8 @@ const dynamicDbPendingTasks = Array.from(new Set(
 
 const manifest = {
   evidenceMetadata: {
-    directive: 'CTO Directive 134 / CTO Directive 135 / CTO Directive 136',
-    title: 'KSHETRA W021.5 Full-Mandate Unified Verification Manifest',
+    directive: 'CTO Directive 139',
+    title: 'KSHETRA W021.5 Full-Mandate Unified Verification Manifest (Directive 139)',
     governingAuthority: 'Master Execution Framework Amendment v1.6 / Rule IV-001 Non-Self-Acceptance',
     repository: 'https://github.com/kshetra-app/Kshetra.git',
     branch: gitBranch,

@@ -41,28 +41,32 @@ export async function userRoutes(app: FastifyInstance) {
     const { id: targetUserId } = request.params;
     const now = new Date().toISOString();
 
-    if (isSupabaseConfigured) {
-      try {
-        const { error } = await supabase
-          .from('user_follows')
-          .upsert({
-            follower_id: followerId,
-            following_id: targetUserId,
-            created_at: now,
-          }, { onConflict: 'follower_id,following_id' });
+    if (!isSupabaseConfigured) {
+      return sendApiError(reply, request, 503, 'Service Unavailable', 'Database service is not configured', {
+        code: 'SERVICE_UNAVAILABLE',
+      });
+    }
 
-        if (error) {
-          app.log.error({ err: error.message, followerId, targetUserId }, 'Failed to record user follow in DB');
-          return sendApiError(reply, request, 500, 'Internal Server Error', 'Database error recording follow', {
-            code: 'DATABASE_ERROR',
-          });
-        }
-      } catch (err: any) {
-        app.log.error({ err: err?.message, followerId, targetUserId }, 'Exception recording user follow in DB');
+    try {
+      const { error } = await supabase
+        .from('user_follows')
+        .upsert({
+          follower_id: followerId,
+          followed_id: targetUserId,
+          created_at: now,
+        }, { onConflict: 'follower_id,followed_id' });
+
+      if (error) {
+        app.log.error({ err: error.message, followerId, targetUserId }, 'Failed to record user follow in DB');
         return sendApiError(reply, request, 500, 'Internal Server Error', 'Database error recording follow', {
           code: 'DATABASE_ERROR',
         });
       }
+    } catch (err: any) {
+      app.log.error({ err: err?.message, followerId, targetUserId }, 'Exception recording user follow in DB');
+      return sendApiError(reply, request, 500, 'Internal Server Error', 'Database error recording follow', {
+        code: 'DATABASE_ERROR',
+      });
     }
 
     return reply.status(201).send({
@@ -104,26 +108,30 @@ export async function userRoutes(app: FastifyInstance) {
     const followerId = auth.userId;
     const { id: targetUserId } = request.params;
 
-    if (isSupabaseConfigured) {
-      try {
-        const { error } = await supabase
-          .from('user_follows')
-          .delete()
-          .eq('follower_id', followerId)
-          .eq('following_id', targetUserId);
+    if (!isSupabaseConfigured) {
+      return sendApiError(reply, request, 503, 'Service Unavailable', 'Database service is not configured', {
+        code: 'SERVICE_UNAVAILABLE',
+      });
+    }
 
-        if (error) {
-          app.log.error({ err: error.message, followerId, targetUserId }, 'Failed to remove user follow in DB');
-          return sendApiError(reply, request, 500, 'Internal Server Error', 'Database error removing follow', {
-            code: 'DATABASE_ERROR',
-          });
-        }
-      } catch (err: any) {
-        app.log.error({ err: err?.message, followerId, targetUserId }, 'Exception removing user follow in DB');
+    try {
+      const { error } = await supabase
+        .from('user_follows')
+        .delete()
+        .eq('follower_id', followerId)
+        .eq('followed_id', targetUserId);
+
+      if (error) {
+        app.log.error({ err: error.message, followerId, targetUserId }, 'Failed to remove user follow in DB');
         return sendApiError(reply, request, 500, 'Internal Server Error', 'Database error removing follow', {
           code: 'DATABASE_ERROR',
         });
       }
+    } catch (err: any) {
+      app.log.error({ err: err?.message, followerId, targetUserId }, 'Exception removing user follow in DB');
+      return sendApiError(reply, request, 500, 'Internal Server Error', 'Database error removing follow', {
+        code: 'DATABASE_ERROR',
+      });
     }
 
     return reply.send({

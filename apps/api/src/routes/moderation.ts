@@ -327,31 +327,21 @@ export async function moderationRoutes(app: FastifyInstance) {
    * B. Authenticated user + profile lookup failure -> state: 'DB_ERROR' (MUST NOT downgrade to citizen!)
    * C. Authenticated user + verified role -> state: 'RESOLVED'
    */
-  async function resolveModeratorRole(request: any): Promise<ResolveModeratorResult> {
-    let userId: string | null = null;
-    const authHeader = request.headers.authorization;
-
-    if (authHeader && authHeader.startsWith('Bearer ')) {
-      const token = authHeader.replace('Bearer ', '').trim();
-      const { data: { user }, error } = await supabase.auth.getUser(token);
-      if (!error && user) {
-        userId = user.id;
-      }
+  async function resolveModeratorRole(request: any, reply?: any): Promise<ResolveModeratorResult> {
+    const dummyReply = reply || {
+      status: () => dummyReply,
+      send: () => dummyReply,
+      sent: false,
+    };
+    const auth = await resolveAuthenticatedUser(request, dummyReply);
+    if (!auth) {
+      return { state: 'UNAUTHENTICATED' };
     }
 
-    if (!userId && process.env.NODE_ENV !== 'production' && (request.headers['x-user-id'] as string)) {
-      userId = request.headers['x-user-id'] as string;
-    }
-
-    if (!userId) return { state: 'UNAUTHENTICATED' };
-
-    if (process.env.NODE_ENV !== 'production' && request.headers['x-test-role']) {
-      return { state: 'RESOLVED', userId, role: request.headers['x-test-role'] as UserRole };
-    }
+    const userId = auth.userId;
 
     if (!isSupabaseConfigured) {
-      // In-memory test fallback: default to moderator outside production
-      return { state: 'RESOLVED', userId, role: 'moderator' };
+      return { state: 'RESOLVED', userId, role: (auth.role as UserRole) || 'citizen' };
     }
 
     try {
@@ -362,19 +352,13 @@ export async function moderationRoutes(app: FastifyInstance) {
         .maybeSingle();
 
       if (error) {
-        if (process.env.NODE_ENV !== 'production') {
-          return { state: 'RESOLVED', userId, role: (request.headers['x-user-role'] as UserRole) || 'citizen' };
-        }
         app.log.error({ err: error.message, userId }, 'Failed to query user_profiles for role resolution');
         return { state: 'DB_ERROR' };
       }
 
-      const verifiedRole = (profile?.role as UserRole) || 'citizen';
+      const verifiedRole = (profile?.role as UserRole) || (auth.role as UserRole) || 'citizen';
       return { state: 'RESOLVED', userId, role: verifiedRole };
     } catch (err: any) {
-      if (process.env.NODE_ENV !== 'production') {
-        return { state: 'RESOLVED', userId, role: (request.headers['x-user-role'] as UserRole) || 'citizen' };
-      }
       app.log.error({ err: err?.message, userId }, 'Exception querying user_profiles for role resolution');
       return { state: 'DB_ERROR' };
     }
@@ -386,9 +370,12 @@ export async function moderationRoutes(app: FastifyInstance) {
   }>('/api/v1/moderation/action', {
     schema: moderationActionSchema,
   }, async (request, reply) => {
-    const auth = await resolveModeratorRole(request);
+    const auth = await resolveModeratorRole(request, reply);
     if (auth.state === 'UNAUTHENTICATED') {
-      return sendApiError(reply, request, 401, 'Unauthorized', 'Authentication required', { code: 'UNAUTHORIZED' });
+      if (!reply.sent) {
+        return sendApiError(reply, request, 401, 'Unauthorized', 'Authentication required', { code: 'UNAUTHORIZED' });
+      }
+      return;
     }
     if (auth.state === 'DB_ERROR') {
       return sendApiError(reply, request, 500, 'Internal Server Error', 'Failed to verify moderator role', { code: 'DATABASE_ERROR' });
@@ -536,9 +523,12 @@ export async function moderationRoutes(app: FastifyInstance) {
   app.get('/api/v1/moderation/queue', {
     schema: moderationQueueSchema,
   }, async (request, reply) => {
-    const auth = await resolveModeratorRole(request);
+    const auth = await resolveModeratorRole(request, reply);
     if (auth.state === 'UNAUTHENTICATED') {
-      return sendApiError(reply, request, 401, 'Unauthorized', 'Authentication required', { code: 'UNAUTHORIZED' });
+      if (!reply.sent) {
+        return sendApiError(reply, request, 401, 'Unauthorized', 'Authentication required', { code: 'UNAUTHORIZED' });
+      }
+      return;
     }
     if (auth.state === 'DB_ERROR') {
       return sendApiError(reply, request, 500, 'Internal Server Error', 'Failed to verify moderator role', { code: 'DATABASE_ERROR' });
@@ -641,9 +631,12 @@ export async function moderationRoutes(app: FastifyInstance) {
   }>('/api/v1/moderation/audit-log', {
     schema: auditLogSchema,
   }, async (request, reply) => {
-    const auth = await resolveModeratorRole(request);
+    const auth = await resolveModeratorRole(request, reply);
     if (auth.state === 'UNAUTHENTICATED') {
-      return sendApiError(reply, request, 401, 'Unauthorized', 'Authentication required', { code: 'UNAUTHORIZED' });
+      if (!reply.sent) {
+        return sendApiError(reply, request, 401, 'Unauthorized', 'Authentication required', { code: 'UNAUTHORIZED' });
+      }
+      return;
     }
     if (auth.state === 'DB_ERROR') {
       return sendApiError(reply, request, 500, 'Internal Server Error', 'Failed to verify admin role', { code: 'DATABASE_ERROR' });
@@ -670,9 +663,12 @@ export async function moderationRoutes(app: FastifyInstance) {
   }>('/api/v1/moderation/verify-request', {
     schema: verifyRequestSchema,
   }, async (request, reply) => {
-    const auth = await resolveModeratorRole(request);
+    const auth = await resolveModeratorRole(request, reply);
     if (auth.state === 'UNAUTHENTICATED') {
-      return sendApiError(reply, request, 401, 'Unauthorized', 'Authentication required', { code: 'UNAUTHORIZED' });
+      if (!reply.sent) {
+        return sendApiError(reply, request, 401, 'Unauthorized', 'Authentication required', { code: 'UNAUTHORIZED' });
+      }
+      return;
     }
     if (auth.state === 'DB_ERROR') {
       return sendApiError(reply, request, 500, 'Internal Server Error', 'Failed to resolve user session', { code: 'DATABASE_ERROR' });
@@ -753,9 +749,12 @@ export async function moderationRoutes(app: FastifyInstance) {
   }>('/api/v1/moderation/block', {
     schema: blockUserSchema,
   }, async (request, reply) => {
-    const auth = await resolveModeratorRole(request);
+    const auth = await resolveModeratorRole(request, reply);
     if (auth.state === 'UNAUTHENTICATED') {
-      return sendApiError(reply, request, 401, 'Unauthorized', 'Authentication required', { code: 'UNAUTHORIZED' });
+      if (!reply.sent) {
+        return sendApiError(reply, request, 401, 'Unauthorized', 'Authentication required', { code: 'UNAUTHORIZED' });
+      }
+      return;
     }
     if (auth.state === 'DB_ERROR') {
       return sendApiError(reply, request, 500, 'Internal Server Error', 'Failed to resolve user session', { code: 'DATABASE_ERROR' });
@@ -815,9 +814,12 @@ export async function moderationRoutes(app: FastifyInstance) {
   }>('/api/v1/moderation/block/:userId', {
     schema: unblockUserSchema,
   }, async (request, reply) => {
-    const auth = await resolveModeratorRole(request);
+    const auth = await resolveModeratorRole(request, reply);
     if (auth.state === 'UNAUTHENTICATED') {
-      return sendApiError(reply, request, 401, 'Unauthorized', 'Authentication required', { code: 'UNAUTHORIZED' });
+      if (!reply.sent) {
+        return sendApiError(reply, request, 401, 'Unauthorized', 'Authentication required', { code: 'UNAUTHORIZED' });
+      }
+      return;
     }
     if (auth.state === 'DB_ERROR') {
       return sendApiError(reply, request, 500, 'Internal Server Error', 'Failed to resolve user session', { code: 'DATABASE_ERROR' });
@@ -911,8 +913,6 @@ export async function moderationRoutes(app: FastifyInstance) {
         return;
       }
       reporterId = auth.userId;
-    } else if (process.env.NODE_ENV !== 'production' && (request.headers['x-user-id'] as string)) {
-      reporterId = request.headers['x-user-id'] as string;
     } else {
       reporterId = 'anonymous';
     }
@@ -920,31 +920,35 @@ export async function moderationRoutes(app: FastifyInstance) {
     const { contentId, contentType, reason, description } = request.body;
     const reportId = `rep_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
 
-    if (isSupabaseConfigured) {
-      try {
-        const { error } = await supabase.from('reports').insert({
-          id: reportId,
-          reporter_id: reporterId,
-          post_id: contentType === 'post' ? contentId : null,
-          comment_id: contentType === 'comment' ? contentId : null,
-          reason,
-          description: description || null,
-          status: 'pending',
-          created_at: new Date().toISOString(),
-        });
+    if (!isSupabaseConfigured) {
+      return sendApiError(reply, request, 503, 'Service Unavailable', 'Database service is currently unconfigured or unavailable', {
+        code: 'SERVICE_UNAVAILABLE',
+      });
+    }
 
-        if (error) {
-          app.log.error({ err: error.message, reportId, reporterId }, 'Failed to persist report to DB');
-          return sendApiError(reply, request, 500, 'Internal Server Error', 'Database error persisting report', {
-            code: 'DATABASE_ERROR',
-          });
-        }
-      } catch (err: any) {
-        app.log.error({ err: err?.message, reportId, reporterId }, 'Exception persisting report to DB');
+    try {
+      const { error } = await supabase.from('reports').insert({
+        id: reportId,
+        reporter_id: reporterId,
+        post_id: contentType === 'post' ? contentId : null,
+        comment_id: contentType === 'comment' ? contentId : null,
+        reason,
+        description: description || null,
+        status: 'pending',
+        created_at: new Date().toISOString(),
+      });
+
+      if (error) {
+        app.log.error({ err: error.message, reportId, reporterId }, 'Failed to persist report to DB');
         return sendApiError(reply, request, 500, 'Internal Server Error', 'Database error persisting report', {
           code: 'DATABASE_ERROR',
         });
       }
+    } catch (err: any) {
+      app.log.error({ err: err?.message, reportId, reporterId }, 'Exception persisting report to DB');
+      return sendApiError(reply, request, 500, 'Internal Server Error', 'Database error persisting report', {
+        code: 'DATABASE_ERROR',
+      });
     }
 
     return reply.status(201).send({

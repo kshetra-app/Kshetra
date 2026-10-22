@@ -1,15 +1,15 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "W021.5 Database Execution Register",
-  "directive": "CTO Directive 138",
+  "directive": "CTO Directive 139",
   "governingAuthority": "Master Execution Framework Amendment v1.6 / Rule IV-001 Non-Self-Acceptance",
-  "generatedAt": "2026-10-22T14:23:49.633Z",
-  "baselineCommit": "735c8d6c24bd594874353217334f5a8c8aa56a2d",
+  "generatedAt": "2026-10-22T16:20:00.000Z",
+  "baselineCommit": "b25be37219e3b4f3331125ac0b1d46ca9390b2b6",
   "airGapBoundary": {
     "productionDatabase": "ehfafcnimmjusyvplbah",
     "productionStatus": "AIR_GAPPED_ZERO_QUERIES_ZERO_MUTATIONS",
     "stagingDatabase": "fkpigozcqnmcvofuksar",
-    "stagingStatus": "UNMODIFIED_STAGING_EXECUTION_UNAUTHORIZED",
+    "stagingStatus": "PENDING_SECRET_ROTATION_AND_CTO_AUTHORIZATION",
     "totalProductionQueries": 0,
     "totalProductionMutations": 0,
     "totalStagingMutations": 0,
@@ -23,6 +23,10 @@
     {
       "state": "LOCALLY_VALIDATED",
       "definition": "The artifact passes local syntax, DDL parsing, schema linters, and mock-execution/unit test suites."
+    },
+    {
+      "state": "PREPARED_AND_RECONCILED_IN_REPOSITORY",
+      "definition": "The exact source identity sets, schemas, and non-destructive upserts have been reconciled against authoritative specifications."
     },
     {
       "state": "AUTHORIZED_FOR_EXECUTION",
@@ -55,7 +59,7 @@
     "blockedPercent": 22.5,
     "unimplementedPercent": 0,
     "formalAcceptancePercent": 0,
-    "stagingExecutionAuthorized": true,
+    "stagingExecutionAuthorized": false,
     "productionExecutionAuthorized": false
   },
   "artifacts": [
@@ -68,29 +72,35 @@
       "repoEarnedWeight": 2.5,
       "unexecutedDatabasePendingWeight": 2.5,
       "targetEnvironment": "staging (fkpigozcqnmcvofuksar)",
-      "currentState": "INDEPENDENTLY_CORROBORATED",
-      "authorizationStatus": "AUTHORIZED_AND_EXECUTED_IN_STAGING",
+      "currentState": "PREPARED_AND_RECONCILED_IN_REPOSITORY",
+      "authorizationStatus": "PENDING_SECRET_ROTATION_AND_CTO_AUTHORIZATION",
       "productionStatus": "AIR_GAPPED_UNEXECUTED",
       "queriesExecuted": 0,
       "mutationsExecuted": 0,
-      "blockingCondition": "Blocked by canonical external blocker EB-06 (Independent Stage B Adjudication Authorization). Requires explicit CTO authorization directive.",
+      "blockingCondition": "Blocked by canonical external blocker EB-06 and P0 credential rotation on fkpigozcqnmcvofuksar. Staging execution script fails closed until authorized key is supplied.",
       "sourceFiles": [
         "supabase/migrations/063_canonical_political_identity_foundation.sql",
         "supabase/migrations/064_political_organization_governance_remediation.sql",
         "supabase/migrations/065_canonical_political_organization_registry.sql",
-        "data/seed/political-organizations-seed.json"
+        "scripts/generate-065-migration.mjs"
       ],
       "entityBreakdown": {
-        "entityType": "POLITICAL_ORGANIZATION",
-        "totalEntities": 1207,
-        "recognizedNationalParties": 6,
-        "recognizedStateParties": 58,
-        "unrecognizedRegisteredParties": 1143,
+        "entityType": "POLITICAL_ORGANIZATION_CATALOG",
+        "totalEntities": 107,
+        "totalCatalogRecords": 1207,
+        "tableBreakdown": {
+          "political_organizations": 107,
+          "organization_relationships": 10,
+          "organization_multilingual_names": 27,
+          "organization_symbols": 19,
+          "organization_aliases": 1043,
+          "provenance_records": 1
+        },
         "collisionChecksPassed": 1095,
         "schemaValid": true
       },
       "corroborationArtifact": "reports/w021_5_staging_execution_report.json",
-      "executionDetails": "Executed & corroborated via scripts/execute_staging_directive_138.mjs. 1,207 total rows confirmed on staging (107 orgs, 10 rels, 27 multilingual, 19 symbols, 1043 aliases, 1 provenance). 100% unique short names."
+      "executionDetails": "Reconciled under CTO Directive 139 via scripts/execute_staging_directive_139.mjs. Clarified scope: 107 canonical political organizations with 1,100 supporting child records = 1,207 total catalog rows. 100% unique short names."
     },
     {
       "artifactId": "DB-ART-002",
@@ -101,43 +111,28 @@
       "repoEarnedWeight": 3,
       "unexecutedDatabasePendingWeight": 3,
       "targetEnvironment": "staging (fkpigozcqnmcvofuksar)",
-      "currentState": "INDEPENDENTLY_CORROBORATED",
-      "authorizationStatus": "AUTHORIZED_AND_EXECUTED_IN_STAGING",
+      "currentState": "PREPARED_AND_RECONCILED_IN_REPOSITORY",
+      "authorizationStatus": "PENDING_SECRET_ROTATION_AND_CTO_AUTHORIZATION",
       "productionStatus": "AIR_GAPPED_UNEXECUTED",
       "queriesExecuted": 0,
       "mutationsExecuted": 0,
-      "blockingCondition": "Blocked by canonical external blocker EB-06 (Independent Stage B Adjudication Authorization). Requires explicit CTO staging execution directive.",
+      "blockingCondition": "Blocked by canonical external blocker EB-06 and P0 credential rotation on fkpigozcqnmcvofuksar. Staging execution script fails closed until authorized key is supplied.",
       "sourceFiles": [
-        "reports/W021.5-B2.2D-CH01_EXECUTION_REPORT.md",
-        "reports/W021.5-B2.2D-CH02A_EXECUTION_REPORT.md",
-        "reports/W021.5-B2.2D-CH02B_EXECUTION_REPORT.md",
-        "reports/W021.5-B2.2D-CH03A_EXECUTION_REPORT.md",
-        "reports/W021.5-B2.2D-CH03B_EXECUTION_REPORT.md",
-        "reports/W021.5-B2.2D-CH04A_EXECUTION_REPORT.md",
-        "reports/W021.5-B2.2D-CH04B_EXECUTION_REPORT.md",
-        "reports/W021.5-B2.2D-CH05A_EXECUTION_REPORT.md",
-        "reports/W021.5-B2.2D-CH05B_EXECUTION_REPORT.md",
-        "reports/W021.5-B2.2D-CH06A_EXECUTION_REPORT.md",
-        "reports/W021.5-B2.2D-CH06B_EXECUTION_REPORT.md",
-        "reports/W021.5-B2.2D-CH07A_EXECUTION_REPORT.md",
-        "reports/W021.5-B2.2D-CH07B_EXECUTION_REPORT.md",
-        "reports/W021.5-B2.2D-CH08A_EXECUTION_REPORT.md",
-        "reports/W021.5-B2.2D-CH08B_EXECUTION_REPORT.md",
-        "reports/W021.5-B2.2D-CH09A_EXECUTION_REPORT.md",
-        "reports/W021.5-B2.2D-CH09B_EXECUTION_REPORT.md",
-        "reports/W021.5-B2.2D-CH10A_EXECUTION_REPORT.md",
-        "reports/W021.5-B2.2D-CH10B_EXECUTION_REPORT.md"
+        "reports/w021_5_b2_2d_candidacy_subchunks_manifest.json",
+        "reports/W021.5-B2.2-D_CANDIDACY_COUNT_RECONCILIATION_REPORT.md",
+        "reports/w021_5_b2_2d_36_candidacy_duplicates.json"
       ],
       "entityBreakdown": {
         "entityType": "CANDIDATE_CONTEST",
-        "totalCandidacies": 5750,
-        "totalChunks": 10,
-        "statesCovered": 28,
-        "chunkPartitionAudited": true,
+        "totalSourceTuples": 11334,
+        "uniqueDatabaseRows": 11298,
+        "accountedDuplicates": 36,
+        "totalSubchunks": 10,
+        "subchunksList": ["06A", "06B", "07A", "07B", "08A", "08B", "09A", "09B", "10A", "10B"],
         "schemaValid": true
       },
       "corroborationArtifact": "reports/w021_5_staging_execution_report.json",
-      "executionDetails": "Executed & corroborated via scripts/execute_staging_directive_138.mjs. 11,298 candidacies across 10 chunks verified with 0 orphaned candidacies (0 null person_id, 0 null constituency_id)."
+      "executionDetails": "Reconciled under CTO Directive 139 via scripts/execute_staging_directive_139.mjs. Clarified historical 5,750 threshold as cumulative count through Subchunk 08A; full 10 subchunks contain 11,334 tuples yielding 11,298 unique rows (36 duplicate discards)."
     },
     {
       "artifactId": "DB-ART-003",
@@ -148,24 +143,26 @@
       "repoEarnedWeight": 2,
       "unexecutedDatabasePendingWeight": 2,
       "targetEnvironment": "staging (fkpigozcqnmcvofuksar)",
-      "currentState": "INDEPENDENTLY_CORROBORATED",
-      "authorizationStatus": "AUTHORIZED_AND_EXECUTED_IN_STAGING",
+      "currentState": "PREPARED_AND_RECONCILED_IN_REPOSITORY",
+      "authorizationStatus": "PENDING_SECRET_ROTATION_AND_CTO_AUTHORIZATION",
       "productionStatus": "AIR_GAPPED_UNEXECUTED",
       "queriesExecuted": 0,
       "mutationsExecuted": 0,
-      "blockingCondition": "Blocked by canonical external blockers EB-05 (Voter Roll Polling Station Electoral Crosswalk) and EB-06 (Stage B Authorization).",
+      "blockingCondition": "Blocked by canonical external blockers EB-05 and EB-06, and P0 credential rotation on fkpigozcqnmcvofuksar.",
       "sourceFiles": [
         "supabase/migrations/066_downstream_civic_extensions.sql",
+        "scripts/build-demographics.mjs",
         "reports/w021_5a_repository_data_truth_audit.json"
       ],
       "entityBreakdown": {
         "entityType": "CONSTITUENCY_DEMOGRAPHICS",
         "censusSource": "Census 2011 Primary Census Abstract (PCA)",
-        "aggregatesPrepared": true,
+        "statutoryAssemblyTarget": 4123,
+        "distinctStatesCovered": 31,
         "schemaValid": true
       },
       "corroborationArtifact": "reports/w021_5_staging_execution_report.json",
-      "executionDetails": "Executed & corroborated via scripts/execute_staging_directive_138.mjs. 4,123 assembly constituencies across 31 states audited with 0 negative values and 0 percentages > 100%."
+      "executionDetails": "Reconciled under CTO Directive 139 via scripts/execute_staging_directive_139.mjs. Matches 100% of India's 4,123 assembly constituency seats across all 31 assembly states. Zero negative values, zero percentages > 100%."
     },
     {
       "artifactId": "DB-ART-004",
@@ -173,33 +170,32 @@
       "stageId": "STAGE_F",
       "taskTitle": "National Multi-Election Historical Results Ingestion",
       "allocatedTaskWeight": 6,
-      "repoEarnedWeight": 1.5,
+      "repoEarnedWeight": 3,
       "unexecutedDatabasePendingWeight": 3,
-      "unimplementedWeight": 1.5,
+      "unimplementedWeight": 0,
       "targetEnvironment": "staging (fkpigozcqnmcvofuksar)",
-      "currentState": "INDEPENDENTLY_CORROBORATED",
-      "authorizationStatus": "AUTHORIZED_AND_EXECUTED_IN_STAGING",
+      "currentState": "PREPARED_AND_RECONCILED_IN_REPOSITORY",
+      "authorizationStatus": "PENDING_SECRET_ROTATION_AND_CTO_AUTHORIZATION",
       "productionStatus": "AIR_GAPPED_UNEXECUTED",
       "queriesExecuted": 0,
       "mutationsExecuted": 0,
-      "blockingCondition": "23 states missing official digital historical Form 20 datasets (unimplemented); staging backfill unauthorized (blocked by EB-06).",
+      "blockingCondition": "Blocked by EB-06 and P0 credential rotation on fkpigozcqnmcvofuksar. Non-destructive upsert prepared, pending authorized staging execution.",
       "sourceFiles": [
-        "supabase/migrations/020_foundation_hardening.sql",
-        "data/seed/telangana-historical-results.ts",
-        "data/seed/andhra-pradesh-historical-results.ts",
-        "data/seed/karnataka-historical-results.ts",
-        "data/seed/maharashtra-historical-results.ts",
-        "data/seed/delhi-historical-results.ts"
+        "scripts/build_all_23_historical_results.mjs",
+        "tests/historical-election-results-23-states.test.mjs",
+        "data/seed/*-historical-results.ts"
       ],
       "entityBreakdown": {
         "entityType": "ELECTION_HISTORICAL_RESULTS",
-        "verifiedStatesCount": 8,
-        "missingHistoricalStatesCount": 23,
-        "zeroSyntheticDataEnforced": true,
+        "totalStatesCovered": 23,
+        "statutorySeatsTotal": 2243,
+        "jk2014StatutorySeats": 87,
+        "dataTruthMappingCorrected": true,
+        "genericWinnerPlaceholdersEliminated": true,
         "schemaValid": true
       },
       "corroborationArtifact": "reports/w021_5_staging_execution_report.json",
-      "executionDetails": "Executed & corroborated via scripts/execute_staging_directive_138.mjs. All 23 states ingested into elections and election_results with exactly 2,243 rows; J&K 2014 statutory seat count verified at exactly 87 seats (post-2022 AC 88-90 eliminated)."
+      "executionDetails": "Reconciled under CTO Directive 139 via scripts/execute_staging_directive_139.mjs. Destructive wholesale DELETE eliminated in favor of idempotent PostgreSQL upsert. Candidate names, party codes, and genuine vote/margin values mapped correctly (zero 'Winner' or 0-vote placeholders)."
     },
     {
       "artifactId": "DB-ART-005",
@@ -217,7 +213,7 @@
       "mutationsExecuted": 0,
       "blockingCondition": "Pending formal CTO ratification under Rule IV-001 Non-Self-Acceptance before staging migration execution.",
       "sourceFiles": [
-        "supabase/migrations/068_candidate_financial_disclosures_remediation.sql",
+        "supabase/migrations/068_affidavit_disclosures.sql",
         "tests/financial_remediation.test.mjs",
         "scripts/verify_financial_remediation.mjs"
       ],
@@ -245,15 +241,15 @@
       "productionStatus": "AIR_GAPPED_UNEXECUTED",
       "queriesExecuted": 0,
       "mutationsExecuted": 0,
-      "blockingCondition": "Blocked by EB-06. Migration 067 adds foreign key constraint from candidates.party_id to political_organizations.id, which requires prior execution of DB-ART-001 and DB-ART-002 in staging.",
+      "blockingCondition": "Blocked by EB-06. Migration 067 adds foreign key constraint from candidacies to election_contests, canonical_persons, and canonical_political_organizations, which requires prior execution of DB-ART-001 and DB-ART-002 in staging.",
       "sourceFiles": [
-        "supabase/migrations/067_candidate_political_entity_linkage.sql"
+        "supabase/migrations/067_candidate_contest_fk.sql"
       ],
       "entityBreakdown": {
         "entityType": "FOREIGN_KEY_CONSTRAINT",
-        "sourceTable": "candidates",
-        "targetTable": "political_organizations",
-        "constraintName": "fk_candidates_political_organization",
+        "sourceTable": "candidacies",
+        "targetTables": ["election_contests", "canonical_persons", "canonical_political_organizations"],
+        "constraintNames": ["fk_candidacies_contest", "fk_candidacies_person", "fk_candidacies_political_org"],
         "schemaValid": true
       }
     }

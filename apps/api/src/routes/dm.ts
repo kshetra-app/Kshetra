@@ -690,27 +690,31 @@ export const dmRoutes: FastifyPluginAsync = async (app) => {
     const { conversationId } = request.body;
     const now = new Date().toISOString();
 
-    if (isSupabaseConfigured) {
-      try {
-        const { error } = await supabase
-          .from('messages')
-          .update({ read_at: now })
-          .eq('conversation_id', conversationId)
-          .neq('sender_id', userId)
-          .is('read_at', null);
+    if (!isSupabaseConfigured) {
+      return sendApiError(reply, request, 503, 'Service Unavailable', 'Database service is currently unconfigured or unavailable', {
+        code: 'SERVICE_UNAVAILABLE',
+      });
+    }
 
-        if (error) {
-          app.log.error({ err: error.message, conversationId, userId }, 'Database update for read messages failed');
-          return sendApiError(reply, request, 500, 'Internal Server Error', 'Database error updating message read status', {
-            code: 'DATABASE_ERROR',
-          });
-        }
-      } catch (err: any) {
-        app.log.error({ err: err?.message, conversationId, userId }, 'Exception updating read messages in DB');
+    try {
+      const { error } = await supabase
+        .from('messages')
+        .update({ read_at: now })
+        .eq('conversation_id', conversationId)
+        .neq('sender_id', userId)
+        .is('read_at', null);
+
+      if (error) {
+        app.log.error({ err: error.message, conversationId, userId }, 'Database update for read messages failed');
         return sendApiError(reply, request, 500, 'Internal Server Error', 'Database error updating message read status', {
           code: 'DATABASE_ERROR',
         });
       }
+    } catch (err: any) {
+      app.log.error({ err: err?.message, conversationId, userId }, 'Exception updating read messages in DB');
+      return sendApiError(reply, request, 500, 'Internal Server Error', 'Database error updating message read status', {
+        code: 'DATABASE_ERROR',
+      });
     }
 
     return reply.send({

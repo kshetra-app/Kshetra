@@ -49,8 +49,6 @@ export async function analyticsRoutes(app: FastifyInstance) {
         return;
       }
       resolvedUserId = auth.userId;
-    } else if (process.env.NODE_ENV !== 'production' && (request.headers['x-user-id'] as string)) {
-      resolvedUserId = request.headers['x-user-id'] as string;
     } else {
       resolvedUserId = 'anonymous';
     }
@@ -60,45 +58,49 @@ export async function analyticsRoutes(app: FastifyInstance) {
     const action = body.action || 'start';
     const now = new Date().toISOString();
 
-    if (isSupabaseConfigured) {
-      try {
-        if (action === 'start') {
-          const { error } = await supabase.from('client_sessions').insert({
-            session_id: sessionId,
-            user_id: resolvedUserId,
-            device_brand: body.deviceBrand ?? null,
-            device_model: body.deviceModel ?? null,
-            device_os: body.deviceOs ?? null,
-            device_os_version: body.deviceOsVersion ?? null,
-            network_type: body.networkType ?? null,
-            started_at: now,
-          });
+    if (!isSupabaseConfigured) {
+      return sendApiError(reply, request, 503, 'Service Unavailable', 'Database service is not configured', {
+        code: 'SERVICE_UNAVAILABLE',
+      });
+    }
 
-          if (error) {
-            app.log.error({ err: error.message, sessionId, action }, 'Failed to record session in DB');
-            return sendApiError(reply, request, 500, 'Internal Server Error', 'Database error recording session', {
-              code: 'DATABASE_ERROR',
-            });
-          }
-        } else if (action === 'end') {
-          const { error } = await supabase.from('client_sessions').update({
-            ended_at: now,
-            duration_seconds: body.durationSeconds ?? null,
-          }).eq('session_id', sessionId);
-
-          if (error) {
-            app.log.error({ err: error.message, sessionId, action }, 'Failed to record session end in DB');
-            return sendApiError(reply, request, 500, 'Internal Server Error', 'Database error recording session', {
-              code: 'DATABASE_ERROR',
-            });
-          }
-        }
-      } catch (err: any) {
-        app.log.error({ err: err?.message, sessionId, action }, 'Exception recording session in DB');
-        return sendApiError(reply, request, 500, 'Internal Server Error', 'Database error recording session', {
-          code: 'DATABASE_ERROR',
+    try {
+      if (action === 'start') {
+        const { error } = await supabase.from('client_sessions').insert({
+          session_id: sessionId,
+          user_id: resolvedUserId,
+          device_brand: body.deviceBrand ?? null,
+          device_model: body.deviceModel ?? null,
+          device_os: body.deviceOs ?? null,
+          device_os_version: body.deviceOsVersion ?? null,
+          network_type: body.networkType ?? null,
+          started_at: now,
         });
+
+        if (error) {
+          app.log.error({ err: error.message, sessionId, action }, 'Failed to record session in DB');
+          return sendApiError(reply, request, 500, 'Internal Server Error', 'Database error recording session', {
+            code: 'DATABASE_ERROR',
+          });
+        }
+      } else if (action === 'end') {
+        const { error } = await supabase.from('client_sessions').update({
+          ended_at: now,
+          duration_seconds: body.durationSeconds ?? null,
+        }).eq('session_id', sessionId);
+
+        if (error) {
+          app.log.error({ err: error.message, sessionId, action }, 'Failed to record session end in DB');
+          return sendApiError(reply, request, 500, 'Internal Server Error', 'Database error recording session', {
+            code: 'DATABASE_ERROR',
+          });
+        }
       }
+    } catch (err: any) {
+      app.log.error({ err: err?.message, sessionId, action }, 'Exception recording session in DB');
+      return sendApiError(reply, request, 500, 'Internal Server Error', 'Database error recording session', {
+        code: 'DATABASE_ERROR',
+      });
     }
 
     return reply.status(action === 'start' ? 201 : 200).send({
