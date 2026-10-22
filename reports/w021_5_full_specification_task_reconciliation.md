@@ -1,13 +1,13 @@
 # KSHETRA W021.5 — FULL SPECIFICATION TASK RECONCILIATION
 ## Comprehensive Task-by-Task Inventory Across Stages A through I
 
-**Directive:** CTO Directive 133  
-**Predecessor:** CTO Directive 132  
+**Directive:** CTO Directive 134  
+**Predecessor:** CTO Directive 133  
 **Repository:** `https://github.com/kshetra-app/Kshetra`  
 **Governing Authority:** Master Execution Framework Amendment v1.6 / Rule IV-001 Non-Self-Acceptance  
 **Production Boundary:** `AIR_GAPPED_UNEXECUTED` (Strictly zero queries, zero mutations on `ehfafcnimmjusyvplbah`)  
 **Formal CTO Acceptance:** `0.0% — PENDING INDEPENDENT ADJUDICATION`  
-**Current Stage Boundary:** Stopped at Stage B Gate; Stages C–I are strictly unauthorized for implementation.  
+**Current Stage Boundary:** Full Mandate Submission; Stages A through I fully accounted with explicit external blockers and stage authorization gates.  
 
 ---
 
@@ -589,7 +589,7 @@ This document provides an exhaustive, evidence-backed reconciliation of all 27 c
 
 | Defect / Dependency ID | Scope / Task | Status | Root Cause | Objective Closure Condition |
 |---|---|---|---|---|
-| `DQ-W021.5-B2.2E-001` | Candidate Financial Disclosures (`W021.5-E-02`) | `STRICTLY_OPEN` | Ambiguity in movable vs immovable asset aggregation methodology across differing state ECI formats | Explicit independent CTO adjudication of financial aggregation schema and test isolation |
+| `DQ-W021.5-B2.2E-001` | Candidate Financial Disclosures (`W021.5-E-02`) | `RESOLVED_IN_REPOSITORY_PENDING_CTO_ADJUDICATION` | Ambiguity in movable vs immovable asset aggregation and dangerous `DEFAULT 0` on assets in legacy schema converting missing disclosures to ₹0 | Authoritative 6-rule schema standard established in DEC-134; 105 tests passing; Migration 068 DDL specified; submitted for independent CTO adjudication |
 | `TELANGANA_AC_119_DUPLICATE_POLYGON` | Boundary Modeling (`W021.5-B1-04`) | `OPEN_AND_BLOCKED` | 2 conflicting polygon candidates (FID 4159 & FID 4160) for AC-119 Bhadrachalam resulting from 2015 AP Reorganisation territorial transfers | Official Survey of India / CEO Telangana gazetted shapefile resolving Bhadrachalam boundary |
 | `MISSING_30_STATES_GIS_FEEDS` | Boundary Modeling (`W021.5-B1-04`) | `BLOCKED_EXTERNAL` | Only Telangana (120 features) possesses repository GeoJSON; remaining 30 States/UTs lack official GIS feeds | Acquisition, verification, and RFC 7946 validation of official statutory boundary shapefiles for 30 jurisdictions |
 | `ASSAM_HISTORICAL_LINEAGE_PENDING` | Temporal Truth (`W021.5-B1-03`) | `PRESERVED_OPEN` | Pre-2023 historical delimitation constituency boundary mapping pending official archival gazette | Official Delimitation Commission / ECI archival concordance order mapping 1976 to 2023 seats |

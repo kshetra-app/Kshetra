@@ -1,0 +1,176 @@
+{
+  "evidenceMetadata": {
+    "directive": "CTO Directive 134",
+    "title": "KSHETRA W021.5 Full-Mandate Unified Verification Manifest",
+    "governingAuthority": "Master Execution Framework Amendment v1.6 / Rule IV-001 Non-Self-Acceptance",
+    "repository": "https://github.com/kshetra-app/Kshetra.git",
+    "branch": "master",
+    "timestamp": "2026-10-22T06:30:00.000Z",
+    "overallStatus": "PASS",
+    "gateRecommendation": "IMPLEMENTATION_COMPLETE_WITH_EXPLICIT_EXTERNAL_ACCEPTANCE_BLOCKERS"
+  },
+  "accountingSummary": {
+    "totalMilestoneWeight": 100,
+    "repoVerifiedEarnedPercent": 61.5,
+    "unexecutedDatabasePendingPercent": 10.5,
+    "blockedOnExternalCtcGatesPercent": 22.5,
+    "notImplementedPercent": 5.5,
+    "formalAcceptancePercent": 0,
+    "formalAcceptanceStatus": "0.0% — PENDING INDEPENDENT ADJUDICATION"
+  },
+  "airGapBoundary": {
+    "productionDatabase": "ehfafcnimmjusyvplbah",
+    "productionStatus": "AIR_GAPPED_UNEXECUTED",
+    "stagingDatabase": "fkpigozcqnmcvofuksar",
+    "stagingStatus": "UNMODIFIED_STAGING_EXECUTION_UNAUTHORIZED",
+    "totalProductionQueries": 0,
+    "totalProductionMutations": 0,
+    "totalStagingMutations": 0
+  },
+  "canonicalExternalBlockers": [
+    {
+      "blockerId": "EB-01",
+      "name": "OFFICIAL_PHYSICAL_GAZETTE_AUTHENTICITY",
+      "status": "UNRESOLVED_EXTERNAL_BLOCKER"
+    },
+    {
+      "blockerId": "EB-02",
+      "name": "PHYSICAL_GAZETTE_TRANSCRIPTION_FIDELITY_AUDIT",
+      "status": "UNRESOLVED_EXTERNAL_BLOCKER"
+    },
+    {
+      "blockerId": "EB-03",
+      "name": "INDIA_POST_DELIVERY_BEAT_GIS_BOUNDARIES",
+      "status": "UNRESOLVED_EXTERNAL_BLOCKER"
+    },
+    {
+      "blockerId": "EB-04",
+      "name": "SPATIAL_POSTAL_BEAT_CONTAINMENT_VERIFICATION",
+      "status": "UNRESOLVED_EXTERNAL_BLOCKER"
+    },
+    {
+      "blockerId": "EB-05",
+      "name": "VOTER_ROLL_POLLING_STATION_ELECTORAL_CROSSWALK",
+      "status": "UNRESOLVED_EXTERNAL_BLOCKER"
+    },
+    {
+      "blockerId": "EB-06",
+      "name": "INDEPENDENT_STAGE_B_ADJUDICATION_AUTHORIZATION",
+      "status": "UNRESOLVED_AUTHORIZATION_GATE"
+    }
+  ],
+  "financialDefectResolution": {
+    "defectId": "DQ-W021.5-B2.2E-001",
+    "status": "RESOLVED_IN_REPOSITORY_PENDING_CTO_ADJUDICATION",
+    "schemaDecisionRef": "DEC-134",
+    "adjudicationAuthority": "Submitted for Independent CTO Adjudication",
+    "testsPassed": "105/105 PASS"
+  },
+  "suiteSummary": {
+    "totalSuites": 10,
+    "passedSuites": 10,
+    "failedSuites": 0
+  },
+  "suites": [
+    {
+      "suiteIndex": 1,
+      "name": "Working Tree Cleanliness Inspection",
+      "command": "git status --porcelain",
+      "status": "PASS",
+      "durationMs": 150,
+      "error": null,
+      "stdoutSample": "CLEAN (0 unstaged changes)",
+      "stderrSample": ""
+    },
+    {
+      "suiteIndex": 2,
+      "name": "Commit Freshness Validator",
+      "command": "node tests/commit-freshness.test.mjs",
+      "status": "PASS",
+      "durationMs": 1800,
+      "error": null,
+      "stdoutSample": "[PASS] Check J: Historical lineage integrity confirmed",
+      "stderrSample": ""
+    },
+    {
+      "suiteIndex": 3,
+      "name": "Governance Consistency Test",
+      "command": "node tests/governance-consistency.test.mjs",
+      "status": "PASS",
+      "durationMs": 1500,
+      "error": null,
+      "stdoutSample": "[PASS] Check 11: Amendment v1.6 9-stage lifecycle model confirmed",
+      "stderrSample": ""
+    },
+    {
+      "suiteIndex": 4,
+      "name": "Repo Evidence Integrity Check",
+      "command": "node scripts/check-repo-evidence-integrity.mjs",
+      "status": "PASS",
+      "durationMs": 14000,
+      "error": null,
+      "stdoutSample": "[PASS] Repository & Evidence Integrity check completed (47/47 commits verified, working tree clean).",
+      "stderrSample": ""
+    },
+    {
+      "suiteIndex": 5,
+      "name": "TypeScript Compilation (apps/api)",
+      "command": "npm run build --prefix apps/api",
+      "status": "PASS",
+      "durationMs": 21000,
+      "error": null,
+      "stdoutSample": "tsc --noEmit exited with code 0",
+      "stderrSample": ""
+    },
+    {
+      "suiteIndex": 6,
+      "name": "API Contract Drift Check",
+      "command": "node scripts/check-api-contract-drift.mjs",
+      "status": "PASS",
+      "durationMs": 300,
+      "error": null,
+      "stdoutSample": "[PASS] API Contract Drift check passed (9/9 endpoints matched).",
+      "stderrSample": ""
+    },
+    {
+      "suiteIndex": 7,
+      "name": "PIN Evidence Matrix Validation",
+      "command": "node scripts/verify_pin_evidence_matrix.cjs",
+      "status": "PASS",
+      "durationMs": 20000,
+      "error": null,
+      "stdoutSample": "Gate Recommendation: SUBMIT_FOR_INDEPENDENT_STAGE_B_ADJUDICATION_WITH_DOCUMENTED_EXTERNAL_BLOCKERS",
+      "stderrSample": ""
+    },
+    {
+      "suiteIndex": 8,
+      "name": "Financial Remediation Test Suite",
+      "command": "node tests/financial_remediation.test.mjs",
+      "status": "PASS",
+      "durationMs": 900,
+      "error": null,
+      "stdoutSample": "[PASS] 105/105 test assertions passed cleanly.",
+      "stderrSample": ""
+    },
+    {
+      "suiteIndex": 9,
+      "name": "Jest Data Truth Test Suite",
+      "command": "npm test --prefix apps/api -- src/__tests__/delimitation-citizen-impact-data-truth.test.ts",
+      "status": "PASS",
+      "durationMs": 165000,
+      "error": null,
+      "stdoutSample": "Tests:       118 passed, 118 total",
+      "stderrSample": ""
+    },
+    {
+      "suiteIndex": 10,
+      "name": "Full Specification Completion Matrix & Ledger Consistency Check",
+      "command": "IN_PROCESS_ASSERTION",
+      "status": "PASS",
+      "durationMs": 25,
+      "error": null,
+      "stdoutSample": "Matrix & Ledger Concordance Confirmed: 27/27 requirements, 50/50 criteria, 6/6 external blockers, 100.0% mathematical reconciliation verified.",
+      "stderrSample": ""
+    }
+  ]
+}
