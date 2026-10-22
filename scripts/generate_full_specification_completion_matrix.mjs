@@ -4,24 +4,30 @@
  * scripts/generate_full_specification_completion_matrix.mjs
  *
  * Master Execution Framework Amendment v1.6 / Rule IV-001 Non-Self-Acceptance
- * CTO Directive 134: Full-Specification Requirement Completion Matrix
+ * CTO Directive 134 / CTO Directive 135: Full-Specification Requirement Completion Matrix
  *
  * Mechanically produces reports/w021_5_full_specification_completion_matrix.json
  * covering all 27 canonical specification requirements across Stages A through I.
  *
- * Each record satisfies the mandatory 12-field schema:
- * 1. requirementId (and exact specification reference)
- * 2. requiredBehavior (or invariant)
- * 3. existingImplementation (and relevant file paths)
- * 4. changesRequired (and changes actually made)
- * 5. requiredTests (and their independently observable results)
- * 6. dataAndSourceEvidenceRequired
- * 7. databaseExecutionRequirement (if any)
- * 8. dependenciesAndAuthorizationConditions
- * 9. outstandingDefectsAndExternalBlockers
- * 10. completionEvidence
- * 11. finalDisposition (and rationale; one of the 9 allowed dispositions)
- * 12. independentAdjudicationStatus
+ * Each record satisfies the mandatory 18-field schema:
+ *  1. requirementId (string, non-empty, matching /^REQ-[A-Z]+-\d+$/)
+ *  2. specRef (string, exact specification document and section reference)
+ *  3. taskId (string, canonical task identifier /^W021\.5-[A-I0-9-]+$/)
+ *  4. stageId (string, canonical stage identifier STAGE_A through STAGE_I)
+ *  5. taskTitle (string, canonical human-readable task title)
+ *  6. weight (number, approved task weight in percent, summing to 100.0%)
+ *  7. requiredBehavior (string, required statutory/technical behavior or invariant)
+ *  8. existingImplementation (string, relevant code and migration file paths)
+ *  9. changesRequired (string, changes required and changes actually made)
+ * 10. requiredTests (string, required test suites and observable results)
+ * 11. dataAndSourceEvidenceRequired (string, external data and source evidence)
+ * 12. databaseExecutionRequirement (string, database execution requirements)
+ * 13. dependenciesAndAuthorizationConditions (string, dependencies and gate authorization)
+ * 14. outstandingDefectsAndExternalBlockers (string, defects and canonical blockers EB-01..06)
+ * 15. completionEvidence (string, verifiable repository file paths supporting completion claim)
+ * 16. finalDisposition (string, one of the 9 allowed dispositions)
+ * 17. dispositionRationale (string, rigorous justification for the assigned disposition)
+ * 18. independentAdjudicationStatus (string, strictly PENDING_INDEPENDENT_ADJUDICATION)
  */
 
 import fs from 'fs';
@@ -116,14 +122,14 @@ export const REQUIREMENTS_DATA = [
     taskTitle: 'National 4,123 Assembly Constituency Canonicalization',
     weight: 4.0,
     requiredBehavior: 'Canonicalize national master registry of 4,123 Assembly Constituencies across 31 States/UTs with immutable statutory identifiers, reservation types (GEN/SC/ST), and district hierarchies.',
-    existingImplementation: 'supabase/migrations/059_canonical_constituencies_master.sql, data/seed/ arrays, and packages/shared/src/contracts/delimitation.ts.',
+    existingImplementation: 'supabase/migrations/059_canonical_national_constituency_registry.sql, data/seed/ arrays, and packages/shared/src/contracts/delimitation.ts.',
     changesRequired: 'Normalize constituency codes (STATE-AC-xxx), audit spelling variants against ECI Delimitation Order 2008, enforce unique constraints.',
     requiredTests: 'tests/national-constituency-canonicalization.test.mjs, tests/b1-r1-electoral-geography.test.mjs. All pass.',
     dataAndSourceEvidenceRequired: 'ECI Delimitation of Parliamentary and Assembly Constituencies Order, 2008 Schedules I–XXXI.',
     databaseExecutionRequirement: 'SQL migration 059 authored and bundled. Staging execution unevidenced in this package.',
     dependenciesAndAuthorizationConditions: 'Authorized for repository implementation. Staging migration execution blocked.',
     outstandingDefectsAndExternalBlockers: 'External printed gazette physical authenticity pending (EB-01).',
-    completionEvidence: 'supabase/migrations/059_canonical_constituencies_master.sql, tests/national-constituency-canonicalization.test.mjs.',
+    completionEvidence: 'supabase/migrations/059_canonical_national_constituency_registry.sql, tests/national-constituency-canonicalization.test.mjs.',
     finalDisposition: 'COMPLETE_VERIFIED',
     dispositionRationale: 'All 4,123 assembly constituencies canonicalized and verified in repository code and migrations with zero duplicate identifiers.',
     independentAdjudicationStatus: 'PENDING_INDEPENDENT_ADJUDICATION'
@@ -136,14 +142,14 @@ export const REQUIREMENTS_DATA = [
     taskTitle: 'National AC-to-PC Parliamentary Mapping Registry',
     weight: 3.0,
     requiredBehavior: 'Define national parliamentary mapping registry linking 4,123 Assembly Constituencies to 543 Lok Sabha Parliamentary Constituencies, handling enclave and border anomalies under Delimitation Order 2008.',
-    existingImplementation: 'supabase/migrations/060_geography_remediation.sql, supabase/migrations/061_ac_pc_mapping_registry.sql, and data/seed/ mapping tables.',
+    existingImplementation: 'supabase/migrations/060_canonical_electoral_geography_remediation.sql, supabase/migrations/061_canonical_national_ac_pc_mappings.sql, and data/seed/ mapping tables.',
     changesRequired: 'Build mapping table with composite foreign keys, preserve single-PC and split-district mappings according to statutory schedules.',
     requiredTests: 'tests/b1-r2-temporal-mapping-integrity.test.mjs, tests/b1-r3-all-row-integrity.test.mjs.',
     dataAndSourceEvidenceRequired: 'ECI Delimitation Order 2008 Parliamentary mapping tables across all 28 states and 3 assembly UTs.',
     databaseExecutionRequirement: 'Migrations 060 and 061 authored. Database staging deployment pending.',
     dependenciesAndAuthorizationConditions: 'Authorized for repository implementation.',
     outstandingDefectsAndExternalBlockers: 'None within repository scope.',
-    completionEvidence: 'supabase/migrations/060_geography_remediation.sql, supabase/migrations/061_ac_pc_mapping_registry.sql.',
+    completionEvidence: 'supabase/migrations/060_canonical_electoral_geography_remediation.sql, supabase/migrations/061_canonical_national_ac_pc_mappings.sql.',
     finalDisposition: 'COMPLETE_VERIFIED',
     dispositionRationale: 'National AC-to-PC registry schemas and mappings fully authored, tested, and verified in repository.',
     independentAdjudicationStatus: 'PENDING_INDEPENDENT_ADJUDICATION'
@@ -156,14 +162,14 @@ export const REQUIREMENTS_DATA = [
     taskTitle: 'Temporal Lineage & Assam 2023 Delimitation Modeling',
     weight: 3.0,
     requiredBehavior: 'Model temporal boundary lineage and the Assam 2023 statutory delimitation changes (126 seats reorganized under Notification No. 282/AS/2023) preserving historical 2008 boundaries and new 2023 boundaries.',
-    existingImplementation: 'supabase/migrations/062_assam_2023_delimitation.sql, docs/w021_5b1_r5_assam_2023_reconciliation.md, and data/seed/assam-constituencies.ts.',
+    existingImplementation: 'supabase/migrations/062_canonical_assam_2023_delimitation.sql, docs/w021_5b1_r5_assam_2023_reconciliation.md, and data/seed/assam-constituencies.ts.',
     changesRequired: 'Model CONTINUES_AS, RENAMED_TO, and SPLIT_INTO lineage transitions with effective date bounds.',
     requiredTests: 'tests/b1-r4-lineage-integrity.test.mjs, tests/b1-r5-current-statutory-geography.test.mjs.',
     dataAndSourceEvidenceRequired: 'ECI Notification No. 282/AS/2023 (Assam Delimitation Order, August 2023).',
     databaseExecutionRequirement: 'Migration 062 authored. Live staging execution unevidenced.',
     dependenciesAndAuthorizationConditions: 'Authorized for repository implementation.',
     outstandingDefectsAndExternalBlockers: 'Pre-2008 Assam lineage requires historical gazettes from 1976.',
-    completionEvidence: 'supabase/migrations/062_assam_2023_delimitation.sql, tests/b1-r4-lineage-integrity.test.mjs.',
+    completionEvidence: 'supabase/migrations/062_canonical_assam_2023_delimitation.sql, tests/b1-r4-lineage-integrity.test.mjs.',
     finalDisposition: 'COMPLETE_VERIFIED',
     dispositionRationale: 'Assam 2023 delimitation transitions and temporal lineage models fully verified in repository scope.',
     independentAdjudicationStatus: 'PENDING_INDEPENDENT_ADJUDICATION'
@@ -198,14 +204,14 @@ export const REQUIREMENTS_DATA = [
     taskTitle: 'Political Organization Governance & Multilingual Extension Schema',
     weight: 4.0,
     requiredBehavior: 'Author political organization governance schema, classification (NATIONAL, STATE, UNRECOGNIZED), recognition lifecycle, and multilingual extension tables.',
-    existingImplementation: 'supabase/migrations/064_political_organizations_governance.sql and packages/shared/src/contracts/delimitation.ts.',
+    existingImplementation: 'supabase/migrations/064_political_organization_governance_remediation.sql, supabase/migrations/065_canonical_political_organization_registry.sql, and packages/shared/src/contracts/delimitation.ts.',
     changesRequired: 'Define political_organizations, organization_multilingual_names, organization_symbols, and organization_relationships tables.',
     requiredTests: 'tests/b2-2b-organization-governance.test.mjs, tests/migration-064-readiness.test.mjs.',
     dataAndSourceEvidenceRequired: 'ECI Notification of Political Parties and Election Symbols (September 2024 / March 2024 editions).',
     databaseExecutionRequirement: 'Migration 064 authored in repository. Staging DB execution pending authorization.',
     dependenciesAndAuthorizationConditions: 'Stage C implementation authorized in repository; staging execution unauthorized (EB-06).',
     outstandingDefectsAndExternalBlockers: 'EB-06 (Independent Stage B adjudication required before live DB deployment).',
-    completionEvidence: 'supabase/migrations/064_political_organizations_governance.sql, tests/b2-2b-organization-governance.test.mjs.',
+    completionEvidence: 'supabase/migrations/064_political_organization_governance_remediation.sql, tests/b2-2b-organization-governance.test.mjs.',
     finalDisposition: 'COMPLETE_VERIFIED',
     dispositionRationale: 'Governance schema and multilingual extension tables fully designed, typed, and verified in repository.',
     independentAdjudicationStatus: 'PENDING_INDEPENDENT_ADJUDICATION'
@@ -218,14 +224,14 @@ export const REQUIREMENTS_DATA = [
     taskTitle: '1,207 Canonical Political Organizations Catalog Ingestion',
     weight: 5.0,
     requiredBehavior: 'Ingest catalog of 1,207 political organizations (107 canonical parties, 1,043 aliases, 27 multilingual names, 19 symbols, 10 alliances) with idempotent conflict handling.',
-    existingImplementation: 'supabase/migrations/065_political_organizations_governance.sql, data/seed/political-organizations.ts, and reports/w021_5b2_canonical_org_catalog_raw.json.',
+    existingImplementation: 'supabase/migrations/065_canonical_political_organization_registry.sql, data/seed/political-organizations.ts, and reports/w021_5b2_canonical_org_catalog_raw.json.',
     changesRequired: 'Build idempotent SQL seed bundle and deduplication crosswalks; verify zero unhandled party abbreviation collisions.',
     requiredTests: 'tests/b2-2c-final-pre-migration-gate.test.mjs, tests/b2-2c-independent-post-population-closure.test.mjs.',
     dataAndSourceEvidenceRequired: 'ECI Registered Unrecognized Political Parties (RUPP) gazette notifications and symbol allotment orders.',
     databaseExecutionRequirement: 'SQL migration 065 authored and validated. Staging table population pending authorization (2.5w unexecuted DB pending).',
     dependenciesAndAuthorizationConditions: 'Stage C staging execution unauthorized without explicit CTO directive (EB-06).',
     outstandingDefectsAndExternalBlockers: 'EB-06 (CTO stage authorization gate).',
-    completionEvidence: 'supabase/migrations/065_political_organizations_governance.sql, reports/w021_5b2_organization_reconciliation.json.',
+    completionEvidence: 'supabase/migrations/065_canonical_political_organization_registry.sql, reports/w021_5b2_organization_reconciliation.json.',
     finalDisposition: 'PARTIAL',
     dispositionRationale: 'Repository implementation and seed catalog verified (2.5w earned). Staging database execution remains unexecuted (2.5w DB pending).',
     independentAdjudicationStatus: 'PENDING_INDEPENDENT_ADJUDICATION'
@@ -260,14 +266,14 @@ export const REQUIREMENTS_DATA = [
     taskTitle: 'Canonical Persons & Entity Deduplication Foundation',
     weight: 4.0,
     requiredBehavior: 'Establish canonical natural persons schema, immutable UUIDs, multilingual name transliterations, and multi-factor identity deduplication algorithm.',
-    existingImplementation: 'supabase/migrations/050_political_intelligence_schema.sql, supabase/migrations/063_person_identity_foundation.sql, and packages/shared/src/contracts/delimitation.ts.',
+    existingImplementation: 'supabase/migrations/050_political_entity_model.sql, supabase/migrations/063_canonical_political_identity_foundation.sql, and packages/shared/src/contracts/delimitation.ts.',
     changesRequired: 'Define canonical_persons, person_multilingual_names, and entity resolution matching weights.',
     requiredTests: 'tests/b2-2d-final-pre-migration-gate.test.mjs, tests/migration-063-readiness.test.mjs.',
     dataAndSourceEvidenceRequired: 'ECI Form 21E results and candidate nomination declarations across general and assembly elections.',
     databaseExecutionRequirement: 'Migrations 050 and 063 authored in repo. Staging DB execution pending.',
     dependenciesAndAuthorizationConditions: 'Stage D repository work authorized; staging execution unauthorized (EB-06).',
     outstandingDefectsAndExternalBlockers: 'EB-06 (CTO stage authorization gate).',
-    completionEvidence: 'supabase/migrations/050_political_intelligence_schema.sql, supabase/migrations/063_person_identity_foundation.sql.',
+    completionEvidence: 'supabase/migrations/050_political_entity_model.sql, supabase/migrations/063_canonical_political_identity_foundation.sql.',
     finalDisposition: 'COMPLETE_VERIFIED',
     dispositionRationale: 'Canonical person schema and identity deduplication foundation fully verified in repository.',
     independentAdjudicationStatus: 'PENDING_INDEPENDENT_ADJUDICATION'
@@ -384,14 +390,14 @@ export const REQUIREMENTS_DATA = [
     taskTitle: 'Longitudinal Election Event & Contest Schema Normalization',
     weight: 4.0,
     requiredBehavior: 'Normalize longitudinal election hierarchy: election_events (general/by-election, election_year, date) -> election_contests (constituency_id, event_id, total_votes_polled, turnout_percent).',
-    existingImplementation: 'supabase/migrations/051_election_events_and_contests.sql and packages/shared/src/contracts/delimitation.ts.',
+    existingImplementation: 'supabase/migrations/051_election_data_normalization.sql and packages/shared/src/contracts/delimitation.ts.',
     changesRequired: 'Define election_events and election_contests tables with natural uniqueness constraints (event_id, constituency_id).',
     requiredTests: 'tests/b2-2f-final-pre-migration-gate.test.mjs, tests/b2-2f-master-integration.test.mjs.',
     dataAndSourceEvidenceRequired: 'ECI General Election notifications and state legislative assembly gazettes.',
     databaseExecutionRequirement: 'Migration 051 authored in repository. Staging DB execution pending.',
     dependenciesAndAuthorizationConditions: 'Stage F repository work authorized; staging execution unauthorized (EB-06).',
     outstandingDefectsAndExternalBlockers: 'EB-06 (CTO stage authorization gate).',
-    completionEvidence: 'supabase/migrations/051_election_events_and_contests.sql, tests/b2-2f-master-integration.test.mjs.',
+    completionEvidence: 'supabase/migrations/051_election_data_normalization.sql, tests/b2-2f-master-integration.test.mjs.',
     finalDisposition: 'COMPLETE_VERIFIED',
     dispositionRationale: 'Longitudinal election events and contests schema fully normalized, typed, and verified in repository.',
     independentAdjudicationStatus: 'PENDING_INDEPENDENT_ADJUDICATION'
@@ -488,14 +494,14 @@ export const REQUIREMENTS_DATA = [
     taskTitle: 'Mobile DTO Validation Hardening & Nullable Election Year Support',
     weight: 3.0,
     requiredBehavior: 'Harden mobile DTO validators to support nullable election years, null vote totals, and optional candidate margins without throwing schema validation errors or crashing UI.',
-    existingImplementation: 'apps/mobile/lib/apiClient.ts, apps/mobile/lib/pageService.ts, and shared DTO contracts.',
+    existingImplementation: 'apps/mobile/lib/api/client.ts, apps/mobile/lib/pageService.ts, and shared DTO contracts.',
     changesRequired: 'Update mobile type definitions and response interceptors to accept null electionYear and null margins.',
     requiredTests: 'tests/w008-contract-negative-paths.test.mjs, tests/political-intelligence-directive-085.test.mjs.',
     dataAndSourceEvidenceRequired: 'Fastify API JSON responses with null values.',
     databaseExecutionRequirement: 'None. Mobile client TypeScript code and tests.',
     dependenciesAndAuthorizationConditions: 'Authorized under Directive 085/086.',
     outstandingDefectsAndExternalBlockers: 'None.',
-    completionEvidence: 'apps/mobile/lib/apiClient.ts, passing mobile contract tests.',
+    completionEvidence: 'apps/mobile/lib/api/client.ts, passing mobile contract tests.',
     finalDisposition: 'COMPLETE_VERIFIED',
     dispositionRationale: 'Mobile DTOs compile cleanly and handle nullable election data safely across all mobile screens.',
     independentAdjudicationStatus: 'PENDING_INDEPENDENT_ADJUDICATION'
@@ -508,14 +514,14 @@ export const REQUIREMENTS_DATA = [
     taskTitle: 'Section-Level Provenance Badges in Constituency UI',
     weight: 3.0,
     requiredBehavior: 'Render section-level provenance badges in mobile constituency views attributing data to official sources (ECI, Delimitation Commission, Census 2011) and displaying confidence levels.',
-    existingImplementation: 'apps/mobile/components/ProvenanceBadge.tsx and apps/mobile/app/constituency/[id].tsx.',
+    existingImplementation: 'apps/mobile/components/DataPendingCard.tsx and apps/mobile/app/constituency/[id].tsx.',
     changesRequired: 'Integrate ProvenanceBadge component into constituency summary, candidates card, and delimitation scenario views.',
     requiredTests: 'tests/political-intelligence-directive-086.test.mjs (Asserts badge presence and source attribution).',
     dataAndSourceEvidenceRequired: 'Statutory provenance metadata from API / seed records.',
     databaseExecutionRequirement: 'None. React Native UI component implementation.',
     dependenciesAndAuthorizationConditions: 'Authorized under Directive 086 Workstream C.',
     outstandingDefectsAndExternalBlockers: 'None.',
-    completionEvidence: 'apps/mobile/components/ProvenanceBadge.tsx, tests/political-intelligence-directive-086.test.mjs.',
+    completionEvidence: 'apps/mobile/components/DataPendingCard.tsx, apps/mobile/app/constituency/[id].tsx, tests/political-intelligence-directive-086.test.mjs.',
     finalDisposition: 'COMPLETE_VERIFIED',
     dispositionRationale: 'ProvenanceBadge component implemented and wired into mobile screens with clean JSX/TSX compilation.',
     independentAdjudicationStatus: 'PENDING_INDEPENDENT_ADJUDICATION'
@@ -678,7 +684,7 @@ export function generateCompletionMatrix() {
   const matrix = {
     $schema: 'https://json-schema.org/draft/2020-12/schema',
     title: 'Kshetra W021.5 Full-Specification Requirement Completion Matrix',
-    directive: 'CTO DIRECTIVE 134',
+    directive: 'CTO DIRECTIVE 134 / CTO DIRECTIVE 135',
     governingAuthority: 'Master Execution Framework Amendment v1.6 / Rule IV-001 Non-Self-Acceptance',
     baselineCommit: 'f3803eae67353266e09fbd1c283b10e87265940c',
     generatedAt: new Date().toISOString(),
