@@ -5,7 +5,7 @@
     "governingAuthority": "Master Execution Framework Amendment v1.6 / Rule IV-001 Non-Self-Acceptance",
     "repository": "https://github.com/kshetra-app/Kshetra.git",
     "branch": "master",
-    "timestamp": "2026-10-22T06:30:00.000Z",
+    "timestamp": "2026-10-22T06:38:17.372Z",
     "overallStatus": "PASS",
     "gateRecommendation": "IMPLEMENTATION_COMPLETE_WITH_EXPLICIT_EXTERNAL_ACCEPTANCE_BLOCKERS"
   },
@@ -77,7 +77,7 @@
       "name": "Working Tree Cleanliness Inspection",
       "command": "git status --porcelain",
       "status": "PASS",
-      "durationMs": 150,
+      "durationMs": 180,
       "error": null,
       "stdoutSample": "CLEAN (0 unstaged changes)",
       "stderrSample": ""
@@ -87,9 +87,9 @@
       "name": "Commit Freshness Validator",
       "command": "node tests/commit-freshness.test.mjs",
       "status": "PASS",
-      "durationMs": 1800,
+      "durationMs": 1805,
       "error": null,
-      "stdoutSample": "[PASS] Check J: Historical lineage integrity confirmed",
+      "stdoutSample": "[PASS] Check D: VERIFIED_REMOTE_HEAD matches origin/master (3ec1990ca4ce3baced70dfc470122897649562a3)\n[PASS] Check E: ACCEPTED_W007_IMPLEMENTATION_COMMIT (1d253cd454effb441e7f01e846a568eeddc7f57e) is a verified ancestor of VERIFIED_REMOTE_HEAD\n[PASS] Check F: GOVERNANCE_COMMIT (3ec1990ca4ce3baced70dfc470122897649562a3) is an ancestor of (or equal to) VERIFIED_REMOTE_HEAD\n[PASS] Check G: ACCEPTANCE_REGISTER.md references accepted W007 implementation commit 1d253cd454effb441e7f01e846a568eeddc7f57e and status ACCEPTED / CLOSED\n[PASS] Check H: Current coordinates are not stale historical coordinates.\n[PASS] Check I: Historical W006 coordinates preserved, resolve, and maintain valid ancestry lineage.\n\n========================================================================\n   ALL COMMIT FRESHNESS, PROVENANCE & LINEAGE CHECKS (A-J) PASSED!     \n========================================================================",
       "stderrSample": ""
     },
     {
@@ -97,9 +97,9 @@
       "name": "Governance Consistency Test",
       "command": "node tests/governance-consistency.test.mjs",
       "status": "PASS",
-      "durationMs": 1500,
+      "durationMs": 13089,
       "error": null,
-      "stdoutSample": "[PASS] Check 11: Amendment v1.6 9-stage lifecycle model confirmed",
+      "stdoutSample": "========================================================================================\n   ALL DEDICATED v1.6 INDEPENDENT GOVERNANCE TESTS PASSED (100% EMPIRICALLY VERIFIED)!  \n========================================================================================\n\n\n[PASS] Check 11 (SEMANTIC): Dedicated v1.6 semantic governance suite (tests/governance-v16.test.mjs) passed 100%.\n\n===============================================================\n   ALL GOVERNANCE CONSISTENCY CHECKS PASSED (STRUCTURAL + v1.6 SEMANTIC)!  \n===============================================================",
       "stderrSample": ""
     },
     {
@@ -107,9 +107,9 @@
       "name": "Repo Evidence Integrity Check",
       "command": "node scripts/check-repo-evidence-integrity.mjs",
       "status": "PASS",
-      "durationMs": 14000,
+      "durationMs": 17125,
       "error": null,
-      "stdoutSample": "[PASS] Repository & Evidence Integrity check completed (47/47 commits verified, working tree clean).",
+      "stdoutSample": "=== KSHETRA CI/CD: REPO & EVIDENCE INTEGRITY CHECKER (Amendment v1.4 Part 34) ===\n\n1. Working Tree Status: CLEAN (0 unstaged changes)\n\n2. Extracted 47 Referenced Commit Identifiers from registers.\n   - Verified in Git ancestry: 47\n   - Unresolved / Phantom:     0 (none)\n\n[PASS] Repository & Evidence Integrity check completed (47/47 commits verified, working tree clean).",
       "stderrSample": ""
     },
     {
@@ -117,9 +117,9 @@
       "name": "TypeScript Compilation (apps/api)",
       "command": "npm run build --prefix apps/api",
       "status": "PASS",
-      "durationMs": 21000,
+      "durationMs": 29239,
       "error": null,
-      "stdoutSample": "tsc --noEmit exited with code 0",
+      "stdoutSample": "> @kshetra/api@0.1.0 build\n> tsc --noEmit",
       "stderrSample": ""
     },
     {
@@ -127,9 +127,9 @@
       "name": "API Contract Drift Check",
       "command": "node scripts/check-api-contract-drift.mjs",
       "status": "PASS",
-      "durationMs": 300,
+      "durationMs": 315,
       "error": null,
-      "stdoutSample": "[PASS] API Contract Drift check passed (9/9 endpoints matched).",
+      "stdoutSample": "   [MATCH] GET   /api/v1/pages/:pageId/entitlement    -> Page entitlement check\n\nAPI Contract Drift Report verified: reports/w003_api_contract_drift_report.json\n[PASS] Declared contract check completed: 9/9 matched (100% parity).\n\n2. Running W008 Comprehensive Route Contract Inventory & D0-D9 Drift Audit...\n   [INVENTORY] Total Registered Fastify Routes: 182\n   [INVENTORY] Report written to: reports/w008_api_contract_inventory.json\n   [DRIFT] Zero drift detected strictly across the 34 audited endpoints (does not prove zero drift across 138 routes).\n   [DRIFT] Report written to: reports/w008_contract_drift_report.json",
       "stderrSample": ""
     },
     {
@@ -137,9 +137,9 @@
       "name": "PIN Evidence Matrix Validation",
       "command": "node scripts/verify_pin_evidence_matrix.cjs",
       "status": "PASS",
-      "durationMs": 20000,
+      "durationMs": 20864,
       "error": null,
-      "stdoutSample": "Gate Recommendation: SUBMIT_FOR_INDEPENDENT_STAGE_B_ADJUDICATION_WITH_DOCUMENTED_EXTERNAL_BLOCKERS",
+      "stdoutSample": "- Positive Validation: 10/10 checks PASSED\n- Negative Validation Battery: 38/38 scenarios PASSED\n- Report Generator Failure Battery: 8/8 cases PASSED\n- Complete Artifact Concordance: 36/36 records verified across all artifacts\n- Concordance Regression Battery: 18/18 cases PASSED\n- Execution Order & Stale Overwrite Regression: PASSED\n- Gate Recommendation: SUBMIT_FOR_INDEPENDENT_STAGE_B_ADJUDICATION_WITH_DOCUMENTED_EXTERNAL_BLOCKERS\n- Evidence Closure Status: PENDING_EXTERNAL_OFFICIAL_GAZETTE_AND_GIS_DELIVERY_BEAT_EVIDENCE\n- Canonical External Blockers: 6/6 enumerated and accounted\n================================================================================",
       "stderrSample": ""
     },
     {
@@ -147,9 +147,9 @@
       "name": "Financial Remediation Test Suite",
       "command": "node tests/financial_remediation.test.mjs",
       "status": "PASS",
-      "durationMs": 900,
+      "durationMs": 895,
       "error": null,
-      "stdoutSample": "[PASS] 105/105 test assertions passed cleanly.",
+      "stdoutSample": "[✓ PASS] Test 100: Malformed field type does not enter the liability branch (0ms)\n[✓ PASS] Test 101: Negative or malformed source asset values cannot bypass validation (4ms)\n[✓ PASS] Test 102: Negative or malformed source liability values cannot bypass validation (5ms)\n[✓ PASS] Test 103: Valid positive restoration still succeeds for both ASSET and LIABILITY (5ms)\n[✓ PASS] Test 104: Valid explicit-null missing-disclosure control still succeeds for both ASSET and LIABILITY (6ms)\n[✓ PASS] Test 105: Valid source-backed genuine-zero control still succeeds for both ASSET and LIABILITY (5ms)\n\n================================================================\nTEST SUITE SUMMARY: 105/105 PASSED, 0/105 FAILED\n================================================================",
       "stderrSample": ""
     },
     {
@@ -157,9 +157,9 @@
       "name": "Jest Data Truth Test Suite",
       "command": "npm test --prefix apps/api -- src/__tests__/delimitation-citizen-impact-data-truth.test.ts",
       "status": "PASS",
-      "durationMs": 165000,
+      "durationMs": 177567,
       "error": null,
-      "stdoutSample": "Tests:       118 passed, 118 total",
+      "stdoutSample": "\n  console.log\n    Wrote JSON Evidence Matrix: C:\\Users\\Laven\\OneDrive\\Desktop\\Kshetra\\scratch\\test_report_overwrite_1792651096331\\w021_5_pin_independent_evidence_matrix.json\n\n      at generateEvidenceReports (../../scripts/verify_pin_evidence_matrix.cjs:2155:13)\n\n  console.log\n    Wrote Markdown Evidence Matrix: C:\\Users\\Laven\\OneDrive\\Desktop\\Kshetra\\scratch\\test_report_overwrite_1792651096331\\w021_5_pin_independent_evidence_matrix.md\n\n      at generateEvidenceReports (../../scripts/verify_pin_evidence_matrix.cjs:2159:13)",
       "stderrSample": ""
     },
     {
@@ -167,7 +167,7 @@
       "name": "Full Specification Completion Matrix & Ledger Consistency Check",
       "command": "IN_PROCESS_ASSERTION",
       "status": "PASS",
-      "durationMs": 25,
+      "durationMs": 18,
       "error": null,
       "stdoutSample": "Matrix & Ledger Concordance Confirmed: 27/27 requirements, 50/50 criteria, 6/6 external blockers, 100.0% mathematical reconciliation verified.",
       "stderrSample": ""
