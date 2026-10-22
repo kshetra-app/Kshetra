@@ -88,8 +88,8 @@ function runSuite(index, name, command, fn) {
       exitCode = 0;
       
       // Try extracting test counts from stdout if present
-      const passMatch = output.match(/(\d+)\s+(?:tests?\s+)?(?:passed|checks?\s+passed)/i);
-      const failMatch = output.match(/(\d+)\s+(?:tests?\s+)?failed/i);
+      const passMatch = output.match(/(\d+)(?:\/\d+)?\s*(?:tests?\s+)?(?:passed|checks?\s+passed)/i);
+      const failMatch = output.match(/(\d+)(?:\/\d+)?\s*(?:tests?\s+)?failed/i);
       if (passMatch) {
         testCounts = {
           passed: parseInt(passMatch[1], 10),
