@@ -531,9 +531,18 @@ export async function lmxRoutes(app: FastifyInstance) {
       const body = request.body;
       if (isSupabaseConfigured) {
         try {
-          await supabase.from('lmx_credibility').upsert(body);
+          const { error } = await supabase.from('lmx_credibility').upsert(body);
+          if (error) {
+            app.log.error({ err: error.message }, 'Failed to persist credibility update');
+            return sendApiError(reply, request, 500, 'Internal Server Error', 'Database error updating credibility', {
+              code: 'DATABASE_ERROR',
+            });
+          }
         } catch (err: any) {
-          app.log.warn({ err: err?.message }, 'Failed to persist credibility update');
+          app.log.error({ err: err?.message }, 'Exception persisting credibility update');
+          return sendApiError(reply, request, 500, 'Internal Server Error', 'Database error updating credibility', {
+            code: 'DATABASE_ERROR',
+          });
         }
       }
       return reply.send({ success: true, reporterId: body.reporter_id, updated: true });
@@ -564,22 +573,39 @@ export async function lmxRoutes(app: FastifyInstance) {
 
       if (isSupabaseConfigured) {
         try {
-          const { data: current } = await supabase
+          const { data: current, error: fetchErr } = await supabase
             .from('live_events')
             .select('viewer_count, peak_viewers')
             .eq('id', id)
             .single();
 
+          if (fetchErr) {
+            app.log.error({ err: fetchErr.message, id }, 'Failed to fetch live event for viewers update');
+            return sendApiError(reply, request, 500, 'Internal Server Error', 'Database error updating viewer count', {
+              code: 'DATABASE_ERROR',
+            });
+          }
+
           if (current) {
             viewerCount = Math.max(0, (current.viewer_count ?? 0) + delta);
             const newPeak = Math.max(current.peak_viewers ?? 0, viewerCount);
-            await supabase
+            const { error: updateErr } = await supabase
               .from('live_events')
               .update({ viewer_count: viewerCount, peak_viewers: newPeak })
               .eq('id', id);
+
+            if (updateErr) {
+              app.log.error({ err: updateErr.message, id }, 'Failed to update viewer count in DB');
+              return sendApiError(reply, request, 500, 'Internal Server Error', 'Database error updating viewer count', {
+                code: 'DATABASE_ERROR',
+              });
+            }
           }
         } catch (err: any) {
-          app.log.warn({ err: err?.message }, 'Failed to update viewer count in DB');
+          app.log.error({ err: err?.message, id }, 'Exception updating viewer count in DB');
+          return sendApiError(reply, request, 500, 'Internal Server Error', 'Database error updating viewer count', {
+            code: 'DATABASE_ERROR',
+          });
         }
       }
 
@@ -594,9 +620,18 @@ export async function lmxRoutes(app: FastifyInstance) {
       const event = request.body || {};
       if (isSupabaseConfigured) {
         try {
-          await supabase.from('lmx_moderation_events').insert(event);
+          const { error } = await supabase.from('lmx_moderation_events').insert(event);
+          if (error) {
+            app.log.error({ err: error.message }, 'Failed to log moderation event in DB');
+            return sendApiError(reply, request, 500, 'Internal Server Error', 'Database error recording moderation event', {
+              code: 'DATABASE_ERROR',
+            });
+          }
         } catch (err: any) {
-          app.log.warn({ err: err?.message }, 'Failed to log moderation event in DB');
+          app.log.error({ err: err?.message }, 'Exception logging moderation event in DB');
+          return sendApiError(reply, request, 500, 'Internal Server Error', 'Database error recording moderation event', {
+            code: 'DATABASE_ERROR',
+          });
         }
       }
       return reply.status(201).send({ success: true, loggedAt: new Date().toISOString() });
@@ -611,14 +646,25 @@ export async function lmxRoutes(app: FastifyInstance) {
       let id = `alert_${Date.now()}`;
       if (isSupabaseConfigured) {
         try {
-          const { data } = await supabase
+          const { data, error } = await supabase
             .from('content_alerts')
             .insert(alert)
             .select('id')
             .single();
+
+          if (error) {
+            app.log.error({ err: error.message }, 'Failed to insert content alert in DB');
+            return sendApiError(reply, request, 500, 'Internal Server Error', 'Database error creating content alert', {
+              code: 'DATABASE_ERROR',
+            });
+          }
+
           if (data?.id) id = data.id;
         } catch (err: any) {
-          app.log.warn({ err: err?.message }, 'Failed to insert content alert in DB');
+          app.log.error({ err: err?.message }, 'Exception inserting content alert in DB');
+          return sendApiError(reply, request, 500, 'Internal Server Error', 'Database error creating content alert', {
+            code: 'DATABASE_ERROR',
+          });
         }
       }
       return reply.status(201).send({ id, success: true });
@@ -635,7 +681,7 @@ export async function lmxRoutes(app: FastifyInstance) {
 
       if (isSupabaseConfigured) {
         try {
-          await supabase
+          const { error } = await supabase
             .from('content_alerts')
             .update({
               acknowledged: true,
@@ -644,8 +690,18 @@ export async function lmxRoutes(app: FastifyInstance) {
               action_taken: actionTaken || 'resolved',
             })
             .eq('id', id);
+
+          if (error) {
+            app.log.error({ err: error.message, id }, 'Failed to acknowledge content alert in DB');
+            return sendApiError(reply, request, 500, 'Internal Server Error', 'Database error acknowledging content alert', {
+              code: 'DATABASE_ERROR',
+            });
+          }
         } catch (err: any) {
-          app.log.warn({ err: err?.message }, 'Failed to acknowledge content alert in DB');
+          app.log.error({ err: err?.message, id }, 'Exception acknowledging content alert in DB');
+          return sendApiError(reply, request, 500, 'Internal Server Error', 'Database error acknowledging content alert', {
+            code: 'DATABASE_ERROR',
+          });
         }
       }
 

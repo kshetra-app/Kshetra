@@ -5,12 +5,12 @@
     "governingAuthority": "Master Execution Framework Amendment v1.6 / Rule IV-001 Non-Self-Acceptance",
     "repository": "https://github.com/kshetra-app/Kshetra.git",
     "branch": "master",
-    "testedGitCommitSha": "eac99fdf84b46dc2df5073a19cf761e4af598acb",
-    "workingTreeClean": true,
-    "timestamp": "2026-10-22T11:19:44.999Z",
-    "overallStatus": "PASS",
-    "gateRecommendation": "IMPLEMENTATION_COMPLETE_WITH_EXPLICIT_EXTERNAL_ACCEPTANCE_BLOCKERS",
-    "manifestIdentity": "07149b5b9ff0112a0e5aef625c5a0629fae9c3823d78848b38bb63ab7bc8b8e2"
+    "testedGitCommitSha": "699130ddcc84f5b5abb262e9faa3fdb670e305d1",
+    "workingTreeClean": false,
+    "timestamp": "2026-10-22T14:21:28.189Z",
+    "overallStatus": "FAIL",
+    "gateRecommendation": "VERIFICATION_FAILED_REMEDIATION_REQUIRED",
+    "manifestIdentity": "ee866e1bb2dd201f9a4271878a2660ff44cfa54fc801cadda1199e0a1e252f69"
   },
   "accountingSummary": {
     "totalMilestoneWeight": 100,
@@ -31,10 +31,10 @@
       "unimplementedRequirementsCount": 0
     },
     "automatedTestVerification": {
-      "status": "PASS",
+      "status": "FAIL",
       "totalSuites": 10,
-      "passedSuites": 10,
-      "failedSuites": 0
+      "passedSuites": 8,
+      "failedSuites": 2
     },
     "databaseExecution": {
       "status": "AIR_GAPPED_ZERO_MUTATIONS",
@@ -191,8 +191,8 @@
   },
   "suiteSummary": {
     "totalSuites": 10,
-    "passedSuites": 10,
-    "failedSuites": 0
+    "passedSuites": 8,
+    "failedSuites": 2
   },
   "suites": [
     {
@@ -201,12 +201,12 @@
       "command": "git status --porcelain",
       "status": "PASS",
       "exitCode": 0,
-      "startedAt": "2026-10-22T11:15:45.961Z",
-      "completedAt": "2026-10-22T11:15:46.083Z",
-      "durationMs": 122,
+      "startedAt": "2026-10-22T14:14:05.803Z",
+      "completedAt": "2026-10-22T14:14:06.183Z",
+      "durationMs": 380,
       "testCounts": null,
       "error": null,
-      "stdoutSample": "CLEAN (0 unstaged changes)",
+      "stdoutSample": " M scripts/verify_production_airgap_and_preflight.cjs\n M supabase/migrations/067_candidate_contest_fk.sql\n M supabase/migrations/068_affidavit_disclosures.sql\n M tests/historical-election-results-23-states.test.mjs\n M tests/mobile-sqlite-offline-sync.test.mjs\n?? apps/api/src/lib/userAuth.ts\n?? apps/mobile/lib/database/betterSqliteAdapter.ts\n?? reports/w021_5_staging_execution_report.json\n?? scripts/execute_staging_directive_138.mjs\n?? tests/api-class-b-security-integration.test.mjs",
       "stderrSample": ""
     },
     {
@@ -215,41 +215,41 @@
       "command": "node tests/commit-freshness.test.mjs",
       "status": "PASS",
       "exitCode": 0,
-      "startedAt": "2026-10-22T11:15:46.083Z",
-      "completedAt": "2026-10-22T11:15:47.840Z",
-      "durationMs": 1757,
+      "startedAt": "2026-10-22T14:14:06.183Z",
+      "completedAt": "2026-10-22T14:14:10.620Z",
+      "durationMs": 4438,
       "testCounts": null,
       "error": null,
-      "stdoutSample": "[PASS] Check D: VERIFIED_REMOTE_HEAD matches origin/master (eac99fdf84b46dc2df5073a19cf761e4af598acb)\n[PASS] Check E: ACCEPTED_W007_IMPLEMENTATION_COMMIT (1d253cd454effb441e7f01e846a568eeddc7f57e) is a verified ancestor of VERIFIED_REMOTE_HEAD\n[PASS] Check F: GOVERNANCE_COMMIT (eac99fdf84b46dc2df5073a19cf761e4af598acb) is an ancestor of (or equal to) VERIFIED_REMOTE_HEAD\n[PASS] Check G: ACCEPTANCE_REGISTER.md references accepted W007 implementation commit 1d253cd454effb441e7f01e846a568eeddc7f57e and status ACCEPTED / CLOSED\n[PASS] Check H: Current coordinates are not stale historical coordinates.\n[PASS] Check I: Historical W006 coordinates preserved, resolve, and maintain valid ancestry lineage.\n\n========================================================================\n   ALL COMMIT FRESHNESS, PROVENANCE & LINEAGE CHECKS (A-J) PASSED!     \n========================================================================",
+      "stdoutSample": "[PASS] Check D: VERIFIED_REMOTE_HEAD matches origin/master (699130ddcc84f5b5abb262e9faa3fdb670e305d1)\n[PASS] Check E: ACCEPTED_W007_IMPLEMENTATION_COMMIT (1d253cd454effb441e7f01e846a568eeddc7f57e) is a verified ancestor of VERIFIED_REMOTE_HEAD\n[PASS] Check F: GOVERNANCE_COMMIT (699130ddcc84f5b5abb262e9faa3fdb670e305d1) is an ancestor of (or equal to) VERIFIED_REMOTE_HEAD\n[PASS] Check G: ACCEPTANCE_REGISTER.md references accepted W007 implementation commit 1d253cd454effb441e7f01e846a568eeddc7f57e and status ACCEPTED / CLOSED\n[PASS] Check H: Current coordinates are not stale historical coordinates.\n[PASS] Check I: Historical W006 coordinates preserved, resolve, and maintain valid ancestry lineage.\n\n========================================================================\n   ALL COMMIT FRESHNESS, PROVENANCE & LINEAGE CHECKS (A-J) PASSED!     \n========================================================================",
       "stderrSample": ""
     },
     {
       "suiteIndex": 3,
       "name": "Governance Consistency Test",
       "command": "node tests/governance-consistency.test.mjs",
-      "status": "PASS",
-      "exitCode": 0,
-      "startedAt": "2026-10-22T11:15:47.840Z",
-      "completedAt": "2026-10-22T11:15:59.427Z",
-      "durationMs": 11587,
+      "status": "FAIL",
+      "exitCode": 1,
+      "startedAt": "2026-10-22T14:14:10.621Z",
+      "completedAt": "2026-10-22T14:14:12.424Z",
+      "durationMs": 1803,
       "testCounts": null,
-      "error": null,
-      "stdoutSample": "========================================================================================\n   ALL DEDICATED v1.6 INDEPENDENT GOVERNANCE TESTS PASSED (100% EMPIRICALLY VERIFIED)!  \n========================================================================================\n\n\n[PASS] Check 11 (SEMANTIC): Dedicated v1.6 semantic governance suite (tests/governance-v16.test.mjs) passed 100%.\n\n===============================================================\n   ALL GOVERNANCE CONSISTENCY CHECKS PASSED (STRUCTURAL + v1.6 SEMANTIC)!  \n===============================================================",
-      "stderrSample": ""
+      "error": "Command failed: node tests/governance-consistency.test.mjs\nnode:internal/modules/run_main:107\r\n    triggerUncaughtException(\r\n    ^\r\n\r\nAssertionError [ERR_ASSERTION]: Working tree must be 100% clean; observed uncommitted changes:\r\nM apps/api/src/routes/analytics.ts\r\n M apps/api/src/routes/aspirant.ts\r\n M apps/api/src/routes/constituencies.ts\r\n M apps/api/src/routes/contributor.ts\r\n M apps/api/src/routes/dm.ts\r\n M apps/api/src/routes/lmx.ts\r\n M apps/api/src/routes/moderation.ts\r\n M apps/api/src/routes/notifications.ts\r\n M apps/api/src/routes/shorts.ts\r\n M apps/api/src/routes/users.ts\r\n M apps/mobile/lib/database/database.ts\r\n M apps/mobile/lib/sync/mutationQueue.ts\r\n M apps/mobile/lib/sync/syncEngine.ts\r\n M data/seed/jammu-kashmir-historical-results.ts\r\n M reports/w021_5_national_data_coverage_matrix.json\r\n M reports/w021_5_national_data_coverage_matrix.md\r\n M reports/w021_5_production_airgap_preflight_report.json\r\n M scripts/build_all_23_historical_results.mjs\r\n M scripts/verify_production_airgap_and_preflight.cjs\r\n M supabase/migrations/067_candidate_contest_fk.sql\r\n M supabase/migrations/068_affidavit_disclosures.sql\r\n M tests/historical-election-results-23-states.test.mjs\r\n M tests/mobile-sqlite-offline-sync.test.mjs\r\n?? apps/api/src/lib/userAuth.ts\r\n?? apps/mobile/lib/database/betterSqliteAdapter.ts\r\n?? reports/w021_5_staging_execution_report.json\r\n?? scripts/execute_staging_directive_138.mjs\r\n?? tests/api-class-b-security-integration.test.mjs\r\n+ actual - expected\r\n\r\n+ 'M apps/api/src/routes/analytics.ts\\n' +\r\n+   ' M apps/api/src/routes/aspirant.ts\\n' +\r\n+   ' M apps/api/src/routes/constituencies.ts\\n' +\r\n+   ' M apps/api/src/routes/contributor.ts\\n' +\r\n+   ' M apps/api/src/routes/dm.ts\\n' +\r\n+   ' M apps/api/src/routes/lmx.ts\\n' +\r\n+   ' M apps/api/src/routes/moderation.ts\\n' +\r\n+   ' M apps/api/src/routes/notifications.ts\\n' +\r\n+   ' M apps/api/src/routes/shorts.ts\\n' +\r\n+   ' M apps/api/src/routes/users.ts\\n' +\r\n+   ' M apps/mobile/lib/database/database.ts\\n' +\r\n+   ' M apps/mobile/lib/sync/mutationQueue.ts\\n' +\r\n+   ' M apps/mobile/lib/sync/syncEngine.ts\\n' +\r\n+   ' M data/seed/jammu-kashmir-historical-results.ts\\n' +\r\n+   ' M reports/w021_5_national_data_coverage_matrix.json\\n' +\r\n+   ' M reports/w021_5_national_data_coverage_matrix.md\\n' +\r\n+   ' M reports/w021_5_production_airgap_preflight_report.json\\n' +\r\n+   ' M scripts/build_all_23_historical_results.mjs\\n' +\r\n+   ' M scripts/verify_production_airgap_and_preflight.cjs\\n' +\r\n+   ' M supabase/migrations/067_candidate_contest_fk.sql\\n' +\r\n+   ' M supabase/migrations/068_affidavit_disclosures.sql\\n' +\r\n+   ' M tests/historical-election-results-23-states.test.mjs\\n' +\r\n+   ' M tests/mobile-sqlite-offline-sync.test.mjs\\n' +\r\n+   '?? apps/api/src/lib/userAuth.ts\\n' +\r\n+   '?? apps/mobile/lib/database/betterSqliteAdapter.ts\\n' +\r\n+   '?? reports/w021_5_staging_execution_report.json\\n' +\r\n+   '?? scripts/execute_staging_directive_138.mjs\\n' +\r\n+   '?? tests/api-class-b-security-integration.test.mjs'\r\n- ''\r\n\r\n    at file:///C:/Users/Laven/OneDrive/Desktop/Kshetra/tests/governance-consistency.test.mjs:173:8\r\n    at ModuleJob.run (node:internal/modules/esm/module_job:413:25)\r\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:660:26)\r\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5) {\r\n  generatedMessage: false,\r\n  code: 'ERR_ASSERTION',\r\n  actual: 'M apps/api/src/routes/analytics.ts\\n' +\r\n    ' M apps/api/src/routes/aspirant.ts\\n' +\r\n    ' M apps/api/src/routes/constituencies.ts\\n' +\r\n    ' M apps/api/src/routes/contributor.ts\\n' +\r\n    ' M apps/api/src/routes/dm.ts\\n' +\r\n    ' M apps/api/src/routes/lmx.ts\\n' +\r\n    ' M apps/api/src/routes/moderation.ts\\n' +\r\n    ' M apps/api/src/routes/notifications.ts\\n' +\r\n    ' M apps/api/src/routes/shorts.ts\\n' +\r\n    ' M apps/api/src/routes/users.ts\\n' +\r\n    ' M apps/mobile/lib/database/database.ts\\n' +\r\n    ' M apps/mobile/lib/sync/mutationQueue.ts\\n' +\r\n    ' M apps/mobile/lib/sync/syncEngine.ts\\n' +\r\n    ' M data/seed/jammu-kashmir-historical-results.ts\\n' +\r\n    ' M reports/w021_5_national_data_coverage_matrix.json\\n' +\r\n    ' M reports/w021_5_national_data_coverage_matrix.md\\n' +\r\n    ' M reports/w021_5_production_airgap_preflight_report.json\\n' +\r\n    ' M scripts/build_all_23_historical_results.mjs\\n' +\r\n    ' M scripts/verify_production_airgap_and_preflight.cjs\\n' +\r\n    ' M supabase/migrations/067_candidate_contest_fk.sql\\n' +\r\n    ' M supabase/migrations/068_affidavit_disclosures.sql\\n' +\r\n    ' M tests/historical-election-results-23-states.test.mjs\\n' +\r\n    ' M tests/mobile-sqlite-offline-sync.test.mjs\\n' +\r\n    '?? apps/api/src/lib/userAuth.ts\\n' +\r\n    '?? apps/mobile/lib/database/betterSqliteAdapter.ts\\n' +\r\n    '?? reports/w021_5_staging_execution_report.json\\n' +\r\n    '?? scripts/execute_staging_directive_138.mjs\\n' +\r\n    '?? tests/api-class-b-security-integration.test.mjs',\r\n  expected: '',\r\n  operator: 'strictEqual',\r\n  diff: 'simple'\r\n}\r\n\r\nNode.js v24.13.0\r\n",
+      "stdoutSample": "=== RUNNING GOVERNANCE CONSISTENCY TEST (AMENDMENT v1.5-A REMEDIATED) ===\n\n[PASS] Check 1: AMENDMENT_v1.4.md, AMENDMENT_v1.5.md, AMENDMENT_v1.5-A.md, and AMENDMENT_v1.6.md exist with valid titles.\n[PASS] Check 2: AMENDMENT_v1.5.md immutable parent provenance verified (SHA-256: 8b3505eee995adebd92ba2139173f0a0ab68cdcd0ed6f19f10cdcab3c7a2bfe2, Ratified: 795b9af).\n[PASS] Check 3: AGENT_EXECUTION_PROTOCOL.md authority is Amendment v1.5-A and includes v1.5-A in pre-flight.\n[PASS] Check 4: Protocol proves lifecycle model: 18 intra-job operational states & 19-step project workflow.\n[PASS] Check 5: Canonical approved 22-section planning template verified in both Protocol and AMENDMENT_v1.5-A.md.\n[PASS] Check 6: EXECUTION_STATE.md recognizes Amendment v1.5-A, enforces current vs historical coordinate separation, and strictly preserves historical W006 coordinates.\n[PASS] Check 7: DECISION_LOG.md records DEC-016, DEC-034, DEC-035, DEC-036, and DEC-037 with correct lifecycle separation semantics.",
+      "stderrSample": "    '?? apps/mobile/lib/database/betterSqliteAdapter.ts\\n' +\r\n    '?? reports/w021_5_staging_execution_report.json\\n' +\r\n    '?? scripts/execute_staging_directive_138.mjs\\n' +\r\n    '?? tests/api-class-b-security-integration.test.mjs',\r\n  expected: '',\r\n  operator: 'strictEqual',\r\n  diff: 'simple'\r\n}\r\n\r\nNode.js v24.13.0"
     },
     {
       "suiteIndex": 4,
       "name": "Repo Evidence Integrity Check",
       "command": "node scripts/check-repo-evidence-integrity.mjs",
-      "status": "PASS",
-      "exitCode": 0,
-      "startedAt": "2026-10-22T11:15:59.427Z",
-      "completedAt": "2026-10-22T11:16:19.282Z",
-      "durationMs": 19855,
+      "status": "FAIL",
+      "exitCode": 1,
+      "startedAt": "2026-10-22T14:14:12.424Z",
+      "completedAt": "2026-10-22T14:15:21.924Z",
+      "durationMs": 69501,
       "testCounts": null,
-      "error": null,
-      "stdoutSample": "=== KSHETRA CI/CD: REPO & EVIDENCE INTEGRITY CHECKER (Amendment v1.4 Part 34) ===\n\n1. Working Tree Status: CLEAN (0 unstaged changes)\n\n2. Extracted 47 Referenced Commit Identifiers from registers.\n   - Verified in Git ancestry: 47\n   - Unresolved / Phantom:     0 (none)\n\n[PASS] Repository & Evidence Integrity check completed (47/47 commits verified, working tree clean).",
-      "stderrSample": ""
+      "error": "Command failed: node scripts/check-repo-evidence-integrity.mjs\n\n[FAIL] Working tree is dirty; evidence integrity verification cannot pass.\n",
+      "stdoutSample": "=== KSHETRA CI/CD: REPO & EVIDENCE INTEGRITY CHECKER (Amendment v1.4 Part 34) ===\n\n1. Working Tree Status: DIRTY (28 modified files)\n\n2. Extracted 47 Referenced Commit Identifiers from registers.\n   - Verified in Git ancestry: 47\n   - Unresolved / Phantom:     0 (none)",
+      "stderrSample": "[FAIL] Working tree is dirty; evidence integrity verification cannot pass."
     },
     {
       "suiteIndex": 5,
@@ -257,9 +257,9 @@
       "command": "npm run build --prefix apps/api",
       "status": "PASS",
       "exitCode": 0,
-      "startedAt": "2026-10-22T11:16:19.282Z",
-      "completedAt": "2026-10-22T11:16:50.474Z",
-      "durationMs": 31192,
+      "startedAt": "2026-10-22T14:15:21.925Z",
+      "completedAt": "2026-10-22T14:16:00.918Z",
+      "durationMs": 38993,
       "testCounts": null,
       "error": null,
       "stdoutSample": "> @kshetra/api@0.1.0 build\n> tsc --noEmit",
@@ -271,9 +271,9 @@
       "command": "node scripts/check-api-contract-drift.mjs",
       "status": "PASS",
       "exitCode": 0,
-      "startedAt": "2026-10-22T11:16:50.475Z",
-      "completedAt": "2026-10-22T11:16:50.824Z",
-      "durationMs": 349,
+      "startedAt": "2026-10-22T14:16:00.919Z",
+      "completedAt": "2026-10-22T14:16:01.311Z",
+      "durationMs": 392,
       "testCounts": null,
       "error": null,
       "stdoutSample": "   [MATCH] GET   /api/v1/pages/:pageId/entitlement    -> Page entitlement check\n\nAPI Contract Drift Report verified: reports/w003_api_contract_drift_report.json\n[PASS] Declared contract check completed: 9/9 matched (100% parity).\n\n2. Running W008 Comprehensive Route Contract Inventory & D0-D9 Drift Audit...\n   [INVENTORY] Total Registered Fastify Routes: 201\n   [INVENTORY] Report written to: reports/w008_api_contract_inventory.json\n   [DRIFT] Zero drift detected strictly across the 34 audited endpoints (does not prove zero drift across 138 routes).\n   [DRIFT] Report written to: reports/w008_contract_drift_report.json",
@@ -285,9 +285,9 @@
       "command": "node scripts/verify_pin_evidence_matrix.cjs",
       "status": "PASS",
       "exitCode": 0,
-      "startedAt": "2026-10-22T11:16:50.824Z",
-      "completedAt": "2026-10-22T11:17:11.591Z",
-      "durationMs": 20767,
+      "startedAt": "2026-10-22T14:16:01.311Z",
+      "completedAt": "2026-10-22T14:16:43.854Z",
+      "durationMs": 42543,
       "testCounts": {
         "passed": 10,
         "failed": 0
@@ -302,15 +302,15 @@
       "command": "node tests/financial_remediation.test.mjs",
       "status": "PASS",
       "exitCode": 0,
-      "startedAt": "2026-10-22T11:17:11.591Z",
-      "completedAt": "2026-10-22T11:17:13.072Z",
-      "durationMs": 1481,
+      "startedAt": "2026-10-22T14:16:43.854Z",
+      "completedAt": "2026-10-22T14:16:46.026Z",
+      "durationMs": 2172,
       "testCounts": {
         "passed": 105,
         "failed": 0
       },
       "error": null,
-      "stdoutSample": "[✓ PASS] Test 100: Malformed field type does not enter the liability branch (0ms)\n[✓ PASS] Test 101: Negative or malformed source asset values cannot bypass validation (7ms)\n[✓ PASS] Test 102: Negative or malformed source liability values cannot bypass validation (7ms)\n[✓ PASS] Test 103: Valid positive restoration still succeeds for both ASSET and LIABILITY (9ms)\n[✓ PASS] Test 104: Valid explicit-null missing-disclosure control still succeeds for both ASSET and LIABILITY (14ms)\n[✓ PASS] Test 105: Valid source-backed genuine-zero control still succeeds for both ASSET and LIABILITY (10ms)\n\n================================================================\nTEST SUITE SUMMARY: 105/105 PASSED, 0/105 FAILED\n================================================================",
+      "stdoutSample": "[✓ PASS] Test 100: Malformed field type does not enter the liability branch (0ms)\n[✓ PASS] Test 101: Negative or malformed source asset values cannot bypass validation (12ms)\n[✓ PASS] Test 102: Negative or malformed source liability values cannot bypass validation (15ms)\n[✓ PASS] Test 103: Valid positive restoration still succeeds for both ASSET and LIABILITY (16ms)\n[✓ PASS] Test 104: Valid explicit-null missing-disclosure control still succeeds for both ASSET and LIABILITY (16ms)\n[✓ PASS] Test 105: Valid source-backed genuine-zero control still succeeds for both ASSET and LIABILITY (16ms)\n\n================================================================\nTEST SUITE SUMMARY: 105/105 PASSED, 0/105 FAILED\n================================================================",
       "stderrSample": ""
     },
     {
@@ -319,12 +319,12 @@
       "command": "npm test --prefix apps/api -- src/__tests__/delimitation-citizen-impact-data-truth.test.ts",
       "status": "PASS",
       "exitCode": 0,
-      "startedAt": "2026-10-22T11:17:13.072Z",
-      "completedAt": "2026-10-22T11:19:44.896Z",
-      "durationMs": 151824,
+      "startedAt": "2026-10-22T14:16:46.026Z",
+      "completedAt": "2026-10-22T14:21:28.014Z",
+      "durationMs": 281989,
       "testCounts": null,
       "error": null,
-      "stdoutSample": "\n  console.log\n    Wrote JSON Evidence Matrix: C:\\Users\\Laven\\OneDrive\\Desktop\\Kshetra\\scratch\\test_report_overwrite_1792667983998\\w021_5_pin_independent_evidence_matrix.json\n\n      at generateEvidenceReports (../../scripts/verify_pin_evidence_matrix.cjs:2155:13)\n\n  console.log\n    Wrote Markdown Evidence Matrix: C:\\Users\\Laven\\OneDrive\\Desktop\\Kshetra\\scratch\\test_report_overwrite_1792667983998\\w021_5_pin_independent_evidence_matrix.md\n\n      at generateEvidenceReports (../../scripts/verify_pin_evidence_matrix.cjs:2159:13)",
+      "stdoutSample": "\n  console.log\n    Wrote JSON Evidence Matrix: C:\\Users\\Laven\\OneDrive\\Desktop\\Kshetra\\scratch\\test_report_overwrite_1792678886678\\w021_5_pin_independent_evidence_matrix.json\n\n      at generateEvidenceReports (../../scripts/verify_pin_evidence_matrix.cjs:2155:13)\n\n  console.log\n    Wrote Markdown Evidence Matrix: C:\\Users\\Laven\\OneDrive\\Desktop\\Kshetra\\scratch\\test_report_overwrite_1792678886678\\w021_5_pin_independent_evidence_matrix.md\n\n      at generateEvidenceReports (../../scripts/verify_pin_evidence_matrix.cjs:2159:13)",
       "stderrSample": ""
     },
     {
@@ -333,9 +333,9 @@
       "command": "IN_PROCESS_ASSERTION",
       "status": "PASS",
       "exitCode": 0,
-      "startedAt": "2026-10-22T11:19:44.897Z",
-      "completedAt": "2026-10-22T11:19:44.994Z",
-      "durationMs": 97,
+      "startedAt": "2026-10-22T14:21:28.016Z",
+      "completedAt": "2026-10-22T14:21:28.178Z",
+      "durationMs": 162,
       "testCounts": null,
       "error": null,
       "stdoutSample": "Matrix, Ledger & Specification Concordance Confirmed: 27/27 requirements validated dynamically against master spec, 50/50 criteria reconciled across all weight tiers, 6/6 external blockers tracked, all 18 mandatory fields validated semantically, 100.0% mathematical concordance verified.",

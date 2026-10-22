@@ -397,7 +397,7 @@ export async function constituencyRoutes(app: FastifyInstance) {
     const { stateCode } = request.params as { stateCode: string };
     const code = stateCode.toUpperCase();
 
-    // Strangler pattern: Try live database query when Supabase is configured
+    // Strangler pattern: Query live database when Supabase is configured (fail-closed on error)
     if (isSupabaseConfigured) {
       try {
         const { data: dbData, error } = await supabase
@@ -406,7 +406,14 @@ export async function constituencyRoutes(app: FastifyInstance) {
           .eq('state_code', code)
           .order('ac_no', { ascending: true });
 
-        if (!error && dbData && dbData.length > 0) {
+        if (error) {
+          app.log.error({ err: error.message, stateCode: code }, 'Database query error retrieving constituencies');
+          return sendApiError(reply, request, 500, 'Internal Server Error', 'Database error retrieving constituencies', {
+            code: 'DATABASE_ERROR',
+          });
+        }
+
+        if (dbData && dbData.length > 0) {
           const mapped: ConstituencyBrief[] = dbData.map((row: any) => ({
             id: row.id || `${code}-AC-${row.ac_no}`,
             name: row.name,
@@ -425,7 +432,10 @@ export async function constituencyRoutes(app: FastifyInstance) {
           };
         }
       } catch (err: any) {
-        app.log.warn({ err: err?.message, stateCode: code }, 'Database query fallback to verified seed catalog');
+        app.log.error({ err: err?.message, stateCode: code }, 'Exception querying database for constituencies');
+        return sendApiError(reply, request, 500, 'Internal Server Error', 'Database error retrieving constituencies', {
+          code: 'DATABASE_ERROR',
+        });
       }
     }
 
@@ -461,7 +471,7 @@ export async function constituencyRoutes(app: FastifyInstance) {
         acNo = parseInt(parts[1], 10);
       }
 
-      // Strangler pattern: Try live database query when Supabase is configured
+      // Strangler pattern: Query live database when Supabase is configured (fail-closed on error)
       if (isSupabaseConfigured && !isNaN(acNo)) {
         try {
           const { data: row, error } = await supabase
@@ -471,7 +481,14 @@ export async function constituencyRoutes(app: FastifyInstance) {
             .eq('ac_no', acNo)
             .maybeSingle();
 
-          if (!error && row) {
+          if (error) {
+            app.log.error({ err: error.message, stateCode: code, acNo }, 'Database query error retrieving constituency detail');
+            return sendApiError(reply, request, 500, 'Internal Server Error', 'Database error retrieving constituency detail', {
+              code: 'DATABASE_ERROR',
+            });
+          }
+
+          if (row) {
             const electionData = getConstituencyElectionData(code, acNo);
             const recentElection = electionData?.recentElection ?? {
               electionYear: null,
@@ -498,7 +515,10 @@ export async function constituencyRoutes(app: FastifyInstance) {
             };
           }
         } catch (err: any) {
-          app.log.warn({ err: err?.message, stateCode: code, acNo }, 'Database query fallback to verified seed detail');
+          app.log.error({ err: err?.message, stateCode: code, acNo }, 'Exception querying database for constituency detail');
+          return sendApiError(reply, request, 500, 'Internal Server Error', 'Database error retrieving constituency detail', {
+            code: 'DATABASE_ERROR',
+          });
         }
       }
 

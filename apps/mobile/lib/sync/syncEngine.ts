@@ -32,6 +32,8 @@ export class SyncEngine {
       maxRetries: config.maxRetries ?? 5,
       batchSize: config.batchSize ?? 20
     };
+    // Interruption recovery: restore any operations left IN_FLIGHT during abnormal termination
+    this.queue.recoverInFlight();
   }
 
   setDispatchHandler(handler: DispatchHandler): void {
@@ -118,6 +120,18 @@ export class SyncEngine {
       };
     }
 
+    if (!this.dispatchHandler) {
+      this.state = 'ERROR';
+      return {
+        totalProcessed: 0,
+        succeeded: 0,
+        failed: 0,
+        deadLettered: 0,
+        durationMs: 0,
+        errors: [{ id: 'DISPATCH_HANDLER_MISSING', error: 'No dispatch handler configured; sync aborted and operations remain pending' }]
+      };
+    }
+
     this.state = 'SYNCING';
     const startTime = Date.now();
     const pendingOps = this.queue.getPending().slice(0, this.config.batchSize);
@@ -129,13 +143,6 @@ export class SyncEngine {
 
     for (const op of pendingOps) {
       this.queue.markInFlight(op.id);
-
-      if (!this.dispatchHandler) {
-        // Fallback default: simulate successful dispatch
-        this.queue.markSynced(op.id);
-        succeeded++;
-        continue;
-      }
 
       try {
         const result = await this.dispatchHandler(op);

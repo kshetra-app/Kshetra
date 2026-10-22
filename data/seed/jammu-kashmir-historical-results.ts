@@ -3,8 +3,10 @@
  *
  * SOURCE: TCPD "Lok Dhaba" / Election Commission of India (ECI),
  *         Official Legislative Assembly General Election 2014.
- *         Full per-constituency winner + party, official AC numbering 1-90.
- *         Authored under CTO Directive 137 / CRIT-F02-02.
+ *         Full per-constituency winner + party, official statutory AC numbering 1-87
+ *         under the Constitution of Jammu and Kashmir (pre-2019 delimitation).
+ *         Delimitation to 90 assembly seats occurred in 2022 for the 2024 election.
+ *         Corrected under CTO Directive 138 / CRIT-F02-02 (eliminated fake post-2022 AC 88-90).
  */
 
 export interface JKHistoricalResult {
@@ -106,9 +108,6 @@ export const JK_2014_RESULTS: JKHistoricalResult[] = [
   { acNo: 85, name: 'Surankote', winner: 'Ch. Mohd Akram', party: 'INC', year: 2014, votes: 30584 },
   { acNo: 86, name: 'Mendhar', winner: 'Javed Ahmed Rana', party: 'JKNC', year: 2014, votes: 31186 },
   { acNo: 87, name: 'Poonch Haveli', winner: 'Shah Mohd. Tantray', party: 'JKPDP', year: 2014, votes: 19488 },
-  { acNo: 88, name: 'Padder-Nagseni', winner: 'Sunil Kumar Sharma', party: 'BJP', year: 2014, votes: 28000 },
-  { acNo: 89, name: 'Doda West', winner: 'Shakti Raj', party: 'BJP', year: 2014, votes: 25000 },
-  { acNo: 90, name: 'Thannamandi', winner: 'Qamar Hussain', party: 'JKPDP', year: 2014, votes: 24000 },
 ];
 
 export const jk2014Map = new Map(JK_2014_RESULTS.map((r) => [r.acNo, r]));

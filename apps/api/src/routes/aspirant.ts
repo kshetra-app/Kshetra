@@ -1,12 +1,13 @@
 /**
  * Aspirant Academy Routes
  * Fastify route handler for Candidate Academy mutations
- * Master Execution Framework — W021.5-H-04 (Class B Strangler Migration)
+ * Master Execution Framework — W021.5-H-04 (Class B Strangler Migration) / CTO Directive 138
  */
 
 import type { FastifyInstance } from 'fastify';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import { sendApiError } from '../lib/replyHelper';
+import { resolveAuthenticatedUser, assertActingUserMatch } from '../lib/userAuth';
 
 export async function aspirantRoutes(app: FastifyInstance) {
   /**
@@ -32,18 +33,21 @@ export async function aspirantRoutes(app: FastifyInstance) {
       },
     },
   }, async (request, reply) => {
-    const userId = (request.headers['x-user-id'] as string) || request.body?.userId;
-    if (!userId) {
-      return sendApiError(reply, request, 401, 'Unauthorized', 'Authentication required', { code: 'UNAUTHORIZED' });
+    const auth = await resolveAuthenticatedUser(request, reply);
+    if (!auth) return;
+
+    if (!assertActingUserMatch(reply, request, auth.userId, request.body?.userId, 'userId')) {
+      return;
     }
 
+    const userId = auth.userId;
     const { id: moduleId } = request.params;
     const { quizScore } = request.body || {};
     const now = new Date().toISOString();
 
     if (isSupabaseConfigured) {
       try {
-        await supabase
+        const { error } = await supabase
           .from('module_progress')
           .update({
             completed: true,
@@ -53,13 +57,23 @@ export async function aspirantRoutes(app: FastifyInstance) {
           .eq('user_id', userId)
           .eq('module_id', moduleId);
 
+        if (error) {
+          app.log.error({ err: error.message, moduleId, userId }, 'Failed to persist module completion');
+          return sendApiError(reply, request, 500, 'Internal Server Error', 'Database error persisting module progress', {
+            code: 'DATABASE_ERROR',
+          });
+        }
+
         try {
           await supabase.rpc('increment_aspirant_modules', { p_user_id: userId });
         } catch {
-          // best-effort
+          // best-effort increment
         }
       } catch (err: any) {
-        app.log.warn({ err: err?.message, moduleId, userId }, 'Failed to persist module completion');
+        app.log.error({ err: err?.message, moduleId, userId }, 'Exception persisting module completion');
+        return sendApiError(reply, request, 500, 'Internal Server Error', 'Database error persisting module progress', {
+          code: 'DATABASE_ERROR',
+        });
       }
     }
 
@@ -92,21 +106,34 @@ export async function aspirantRoutes(app: FastifyInstance) {
       },
     },
   }, async (request, reply) => {
-    const userId = (request.headers['x-user-id'] as string) || request.body?.userId;
-    if (!userId) {
-      return sendApiError(reply, request, 401, 'Unauthorized', 'Authentication required', { code: 'UNAUTHORIZED' });
+    const auth = await resolveAuthenticatedUser(request, reply);
+    if (!auth) return;
+
+    if (!assertActingUserMatch(reply, request, auth.userId, request.body?.userId, 'userId')) {
+      return;
     }
 
+    const userId = auth.userId;
     const { id: challengeId } = request.params;
     const now = new Date().toISOString();
 
     if (isSupabaseConfigured) {
       try {
-        await supabase
+        const { error } = await supabase
           .from('challenge_participation')
           .insert({ user_id: userId, challenge_id: challengeId });
+
+        if (error) {
+          app.log.error({ err: error.message, challengeId, userId }, 'Failed to record challenge participation');
+          return sendApiError(reply, request, 500, 'Internal Server Error', 'Database error recording challenge participation', {
+            code: 'DATABASE_ERROR',
+          });
+        }
       } catch (err: any) {
-        app.log.warn({ err: err?.message, challengeId, userId }, 'Failed to record challenge participation');
+        app.log.error({ err: err?.message, challengeId, userId }, 'Exception recording challenge participation');
+        return sendApiError(reply, request, 500, 'Internal Server Error', 'Database error recording challenge participation', {
+          code: 'DATABASE_ERROR',
+        });
       }
     }
 
@@ -141,18 +168,21 @@ export async function aspirantRoutes(app: FastifyInstance) {
       },
     },
   }, async (request, reply) => {
-    const endorserId = (request.headers['x-user-id'] as string) || request.body?.endorserId;
-    if (!endorserId) {
-      return sendApiError(reply, request, 401, 'Unauthorized', 'Authentication required', { code: 'UNAUTHORIZED' });
+    const auth = await resolveAuthenticatedUser(request, reply);
+    if (!auth) return;
+
+    if (!assertActingUserMatch(reply, request, auth.userId, request.body?.endorserId, 'endorserId')) {
+      return;
     }
 
+    const endorserId = auth.userId;
     const { id: aspirantId } = request.params;
     const { message } = request.body || {};
     const now = new Date().toISOString();
 
     if (isSupabaseConfigured) {
       try {
-        await supabase
+        const { error } = await supabase
           .from('community_endorsements')
           .insert({
             endorser_id: endorserId,
@@ -160,8 +190,18 @@ export async function aspirantRoutes(app: FastifyInstance) {
             message: message ?? null,
             created_at: now,
           });
+
+        if (error) {
+          app.log.error({ err: error.message, aspirantId, endorserId }, 'Failed to record endorsement in DB');
+          return sendApiError(reply, request, 500, 'Internal Server Error', 'Database error recording endorsement', {
+            code: 'DATABASE_ERROR',
+          });
+        }
       } catch (err: any) {
-        app.log.warn({ err: err?.message, aspirantId, endorserId }, 'Failed to record endorsement');
+        app.log.error({ err: err?.message, aspirantId, endorserId }, 'Exception recording endorsement in DB');
+        return sendApiError(reply, request, 500, 'Internal Server Error', 'Database error recording endorsement', {
+          code: 'DATABASE_ERROR',
+        });
       }
     }
 

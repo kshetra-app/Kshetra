@@ -1,5 +1,7 @@
 import type { FastifyInstance } from 'fastify';
 import { sendApiError } from '../lib/replyHelper';
+import { supabase, isSupabaseConfigured } from '../lib/supabase';
+import { resolveAuthenticatedUser, assertActingUserMatch } from '../lib/userAuth';
 import {
   TRIGGER_CONFIG,
   type NotificationTrigger,
@@ -172,10 +174,9 @@ export async function notificationRoutes(app: FastifyInstance) {
   }>('/api/v1/notifications/register-token', {
     schema: registerTokenSchema,
   }, async (request, reply) => {
-    const userId = request.headers['x-user-id'] as string;
-    if (!userId) {
-      return sendApiError(reply, request, 401, 'Unauthorized', 'Authentication required', { code: 'UNAUTHORIZED' });
-    }
+    const auth = await resolveAuthenticatedUser(request, reply);
+    if (!auth) return;
+    const userId = auth.userId;
 
     const { token, platform, deviceName } = request.body;
 
@@ -287,13 +288,37 @@ export async function notificationRoutes(app: FastifyInstance) {
       },
     },
   }, async (request, reply) => {
-    const userId = (request.headers['x-user-id'] as string) || request.body?.userId;
-    if (!userId) {
-      return sendApiError(reply, request, 401, 'Unauthorized', 'Authentication required', { code: 'UNAUTHORIZED' });
+    const auth = await resolveAuthenticatedUser(request, reply);
+    if (!auth) return;
+
+    if (!assertActingUserMatch(reply, request, auth.userId, request.body?.userId, 'userId')) {
+      return;
     }
 
+    const userId = auth.userId;
     const { notificationId, all } = request.body || {};
     app.log.info({ userId, notificationId, all }, 'Marking notification(s) as read');
+
+    if (isSupabaseConfigured) {
+      try {
+        let query = supabase.from('notifications').update({ read: true, read_at: new Date().toISOString() }).eq('user_id', userId);
+        if (notificationId && !all) {
+          query = query.eq('id', notificationId);
+        }
+        const { error } = await query;
+        if (error) {
+          app.log.error({ err: error.message, userId, notificationId }, 'Failed to mark notification read in DB');
+          return sendApiError(reply, request, 500, 'Internal Server Error', 'Database error updating notifications', {
+            code: 'DATABASE_ERROR',
+          });
+        }
+      } catch (err: any) {
+        app.log.error({ err: err?.message, userId, notificationId }, 'Exception marking notification read in DB');
+        return sendApiError(reply, request, 500, 'Internal Server Error', 'Database error updating notifications', {
+          code: 'DATABASE_ERROR',
+        });
+      }
+    }
 
     return reply.send({
       success: true,

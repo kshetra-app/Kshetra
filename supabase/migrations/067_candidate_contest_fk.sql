@@ -4,15 +4,18 @@
 -- Target: Staging Supabase & Local PostgreSQL (fkpigozcqnmcvofuksar)
 -- Scope:
 --   1. Enforce referential integrity on public.candidacies:
---      - fk_candidacies_contest: candidacies(contest_id) -> election_contests(id)
---      - fk_candidacies_person: candidacies(person_id) -> canonical_persons(id)
---      - fk_candidacies_org: candidacies(political_organization_id) -> canonical_political_organizations(id)
+--      - fk_candidacies_contest: candidacies(contest_id) -> election_contests(id) ON DELETE RESTRICT
+--      - fk_candidacies_person: candidacies(person_id) -> canonical_persons(id) ON DELETE RESTRICT
+--      - fk_candidacies_org: candidacies(political_organization_id) -> canonical_political_organizations(id) ON DELETE RESTRICT
 --   2. Validate indexing on foreign key columns
+-- Note: ON DELETE RESTRICT is strictly enforced to protect historical candidate
+--       referential integrity against accidental cascading deletions.
+--       Exception swallowers removed under CTO Directive 138 (fail-closed DDL execution).
 -- ==============================================================================
 
 BEGIN;
 
--- 1. Ensure foreign key constraints on public.candidacies
+-- 1. Ensure foreign key constraints on public.candidacies (fail-closed, no exception suppression)
 DO $$ BEGIN
   IF NOT EXISTS (
     SELECT 1 FROM pg_constraint WHERE conname = 'fk_candidacies_contest'
@@ -22,9 +25,6 @@ DO $$ BEGIN
       FOREIGN KEY (contest_id) REFERENCES public.election_contests(id)
       ON DELETE RESTRICT;
   END IF;
-EXCEPTION
-  WHEN undefined_table THEN null;
-  WHEN undefined_column THEN null;
 END $$;
 
 DO $$ BEGIN
@@ -36,9 +36,6 @@ DO $$ BEGIN
       FOREIGN KEY (person_id) REFERENCES public.canonical_persons(id)
       ON DELETE RESTRICT;
   END IF;
-EXCEPTION
-  WHEN undefined_table THEN null;
-  WHEN undefined_column THEN null;
 END $$;
 
 DO $$ BEGIN
@@ -50,9 +47,6 @@ DO $$ BEGIN
       FOREIGN KEY (political_organization_id) REFERENCES public.canonical_political_organizations(id)
       ON DELETE RESTRICT;
   END IF;
-EXCEPTION
-  WHEN undefined_table THEN null;
-  WHEN undefined_column THEN null;
 END $$;
 
 -- 2. Performance indexes on FKs

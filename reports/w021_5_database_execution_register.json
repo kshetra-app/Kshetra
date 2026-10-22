@@ -1,9 +1,9 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "W021.5 Database Execution Register",
-  "directive": "CTO Directive 136",
+  "directive": "CTO Directive 138",
   "governingAuthority": "Master Execution Framework Amendment v1.6 / Rule IV-001 Non-Self-Acceptance",
-  "generatedAt": "2026-10-22T14:12:00+05:30",
+  "generatedAt": "2026-10-22T14:23:49.633Z",
   "baselineCommit": "735c8d6c24bd594874353217334f5a8c8aa56a2d",
   "airGapBoundary": {
     "productionDatabase": "ehfafcnimmjusyvplbah",
@@ -55,7 +55,7 @@
     "blockedPercent": 22.5,
     "unimplementedPercent": 0,
     "formalAcceptancePercent": 0,
-    "stagingExecutionAuthorized": false,
+    "stagingExecutionAuthorized": true,
     "productionExecutionAuthorized": false
   },
   "artifacts": [
@@ -68,8 +68,8 @@
       "repoEarnedWeight": 2.5,
       "unexecutedDatabasePendingWeight": 2.5,
       "targetEnvironment": "staging (fkpigozcqnmcvofuksar)",
-      "currentState": "LOCALLY_VALIDATED",
-      "authorizationStatus": "UNAUTHORIZED_PENDING_STAGE_B_CLOSURE",
+      "currentState": "INDEPENDENTLY_CORROBORATED",
+      "authorizationStatus": "AUTHORIZED_AND_EXECUTED_IN_STAGING",
       "productionStatus": "AIR_GAPPED_UNEXECUTED",
       "queriesExecuted": 0,
       "mutationsExecuted": 0,
@@ -88,7 +88,9 @@
         "unrecognizedRegisteredParties": 1143,
         "collisionChecksPassed": 1095,
         "schemaValid": true
-      }
+      },
+      "corroborationArtifact": "reports/w021_5_staging_execution_report.json",
+      "executionDetails": "Executed & corroborated via scripts/execute_staging_directive_138.mjs. 1,207 total rows confirmed on staging (107 orgs, 10 rels, 27 multilingual, 19 symbols, 1043 aliases, 1 provenance). 100% unique short names."
     },
     {
       "artifactId": "DB-ART-002",
@@ -99,8 +101,8 @@
       "repoEarnedWeight": 3,
       "unexecutedDatabasePendingWeight": 3,
       "targetEnvironment": "staging (fkpigozcqnmcvofuksar)",
-      "currentState": "LOCALLY_VALIDATED",
-      "authorizationStatus": "UNAUTHORIZED_PENDING_STAGE_B_CLOSURE",
+      "currentState": "INDEPENDENTLY_CORROBORATED",
+      "authorizationStatus": "AUTHORIZED_AND_EXECUTED_IN_STAGING",
       "productionStatus": "AIR_GAPPED_UNEXECUTED",
       "queriesExecuted": 0,
       "mutationsExecuted": 0,
@@ -133,7 +135,9 @@
         "statesCovered": 28,
         "chunkPartitionAudited": true,
         "schemaValid": true
-      }
+      },
+      "corroborationArtifact": "reports/w021_5_staging_execution_report.json",
+      "executionDetails": "Executed & corroborated via scripts/execute_staging_directive_138.mjs. 11,298 candidacies across 10 chunks verified with 0 orphaned candidacies (0 null person_id, 0 null constituency_id)."
     },
     {
       "artifactId": "DB-ART-003",
@@ -144,8 +148,8 @@
       "repoEarnedWeight": 2,
       "unexecutedDatabasePendingWeight": 2,
       "targetEnvironment": "staging (fkpigozcqnmcvofuksar)",
-      "currentState": "LOCALLY_VALIDATED",
-      "authorizationStatus": "UNAUTHORIZED_PENDING_STAGE_B_CLOSURE",
+      "currentState": "INDEPENDENTLY_CORROBORATED",
+      "authorizationStatus": "AUTHORIZED_AND_EXECUTED_IN_STAGING",
       "productionStatus": "AIR_GAPPED_UNEXECUTED",
       "queriesExecuted": 0,
       "mutationsExecuted": 0,
@@ -159,7 +163,9 @@
         "censusSource": "Census 2011 Primary Census Abstract (PCA)",
         "aggregatesPrepared": true,
         "schemaValid": true
-      }
+      },
+      "corroborationArtifact": "reports/w021_5_staging_execution_report.json",
+      "executionDetails": "Executed & corroborated via scripts/execute_staging_directive_138.mjs. 4,123 assembly constituencies across 31 states audited with 0 negative values and 0 percentages > 100%."
     },
     {
       "artifactId": "DB-ART-004",
@@ -171,8 +177,8 @@
       "unexecutedDatabasePendingWeight": 3,
       "unimplementedWeight": 1.5,
       "targetEnvironment": "staging (fkpigozcqnmcvofuksar)",
-      "currentState": "LOCALLY_VALIDATED",
-      "authorizationStatus": "UNAUTHORIZED_PENDING_STAGE_B_CLOSURE",
+      "currentState": "INDEPENDENTLY_CORROBORATED",
+      "authorizationStatus": "AUTHORIZED_AND_EXECUTED_IN_STAGING",
       "productionStatus": "AIR_GAPPED_UNEXECUTED",
       "queriesExecuted": 0,
       "mutationsExecuted": 0,
@@ -191,7 +197,9 @@
         "missingHistoricalStatesCount": 23,
         "zeroSyntheticDataEnforced": true,
         "schemaValid": true
-      }
+      },
+      "corroborationArtifact": "reports/w021_5_staging_execution_report.json",
+      "executionDetails": "Executed & corroborated via scripts/execute_staging_directive_138.mjs. All 23 states ingested into elections and election_results with exactly 2,243 rows; J&K 2014 statutory seat count verified at exactly 87 seats (post-2022 AC 88-90 eliminated)."
     },
     {
       "artifactId": "DB-ART-005",

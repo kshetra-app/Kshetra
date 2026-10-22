@@ -1,6 +1,7 @@
 import type { FastifyInstance } from 'fastify';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import { sendApiError } from '../lib/replyHelper';
+import { resolveAuthenticatedUser, assertActingUserMatch } from '../lib/userAuth';
 import {
   canModerate,
   canPerformAction,
@@ -901,13 +902,27 @@ export async function moderationRoutes(app: FastifyInstance) {
       },
     },
   }, async (request, reply) => {
-    const reporterId = (request.headers['x-user-id'] as string) || request.body.reporterId || 'anonymous';
+    let reporterId: string;
+
+    if (request.headers.authorization || request.body.reporterId) {
+      const auth = await resolveAuthenticatedUser(request, reply);
+      if (!auth) return;
+      if (!assertActingUserMatch(reply, request, auth.userId, request.body.reporterId, 'reporterId')) {
+        return;
+      }
+      reporterId = auth.userId;
+    } else if (process.env.NODE_ENV !== 'production' && (request.headers['x-user-id'] as string)) {
+      reporterId = request.headers['x-user-id'] as string;
+    } else {
+      reporterId = 'anonymous';
+    }
+
     const { contentId, contentType, reason, description } = request.body;
     const reportId = `rep_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
 
     if (isSupabaseConfigured) {
       try {
-        await supabase.from('reports').insert({
+        const { error } = await supabase.from('reports').insert({
           id: reportId,
           reporter_id: reporterId,
           post_id: contentType === 'post' ? contentId : null,
@@ -917,8 +932,18 @@ export async function moderationRoutes(app: FastifyInstance) {
           status: 'pending',
           created_at: new Date().toISOString(),
         });
+
+        if (error) {
+          app.log.error({ err: error.message, reportId, reporterId }, 'Failed to persist report to DB');
+          return sendApiError(reply, request, 500, 'Internal Server Error', 'Database error persisting report', {
+            code: 'DATABASE_ERROR',
+          });
+        }
       } catch (err: any) {
-        app.log.warn({ err: err?.message }, 'Failed to persist report to DB');
+        app.log.error({ err: err?.message, reportId, reporterId }, 'Exception persisting report to DB');
+        return sendApiError(reply, request, 500, 'Internal Server Error', 'Database error persisting report', {
+          code: 'DATABASE_ERROR',
+        });
       }
     }
 

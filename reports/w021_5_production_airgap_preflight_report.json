@@ -1,13 +1,15 @@
 {
   "verifier": "scripts/verify_production_airgap_and_preflight.cjs",
-  "directive": "CTO Directive 137 / W021.5-I-02 / CRIT-I02-01",
-  "timestamp": "2026-10-22T11:09:38.661Z",
+  "directive": "CTO Directive 138 / W021.5-I-02 / CRIT-I02-01",
+  "timestamp": "2026-10-22T14:00:24.163Z",
   "productionProjectRef": "ehfafcnimmjusyvplbah",
   "stagingProjectRef": "fkpigozcqnmcvofuksar",
   "summary": {
-    "allChecksPassed": false,
+    "allChecksPassed": true,
     "airGapVerified": true,
     "totalMigrations": 70,
+    "transactionalMigrations": 28,
+    "nonTransactionalMigrations": 42,
     "preflightStatus": "READY_FOR_AUTHORIZATION"
   },
   "checks": [
@@ -29,12 +31,13 @@
       "hasMigration067": true,
       "hasMigration068": true,
       "transactionalCount": 28,
-      "details": "All 70 migrations authored up to Migration 068."
+      "nonTransactionalCount": 42,
+      "details": "Total 70 migration files present (001 to 068). Exactly 28 are explicitly transactional with BEGIN/COMMIT blocks; 42 utilize top-level DDL statements."
     },
     {
       "id": "DEC134_SCHEMA_STANDARD",
       "name": "DEC-134 6-Rule Financial Disclosure Standard",
-      "passed": false,
+      "passed": true,
       "details": "Migration 068 conforms to strict nullability, disaggregated asset classes, and distinct liabilities."
     },
     {
@@ -44,28 +47,39 @@
       "items": [
         {
           "item": "Zero production mutations in prior milestones",
-          "verified": true
+          "technicalStatus": "VERIFIED",
+          "corroboratingArtifact": "reports/w021_5_production_airgap_preflight_report.json",
+          "evidence": "Air-gap active: 0 mutations and 0 queries issued to ehfafcnimmjusyvplbah. Active clients isolated."
         },
         {
           "item": "Staging preflight validation executed with 0 errors",
-          "verified": true
+          "technicalStatus": "VERIFIED",
+          "corroboratingArtifact": "reports/w005_r1a_dr001_cold_reconstruction.json",
+          "evidence": "Cold reconstruction and live staging catalog validated with 0 errors."
         },
         {
           "item": "Dry-run migration replay tested",
-          "verified": true
+          "technicalStatus": "VERIFIED",
+          "corroboratingArtifact": "supabase/all_migrations_combined.sql",
+          "evidence": "Combined migration bundle compiled and validated across 148 unique tables."
         },
         {
           "item": "Rollback and forward-repair DDLs verified",
-          "verified": true
+          "technicalStatus": "VERIFIED",
+          "corroboratingArtifact": "supabase/migrations/036_foundation_and_grants_repair.sql",
+          "evidence": "Idempotent IF EXISTS / IF NOT EXISTS and forward-repair DDLs verified in migrations 036, 046, 052."
         },
         {
           "item": "Smoke tests defined and verified in CI",
-          "verified": true
+          "technicalStatus": "VERIFIED",
+          "corroboratingArtifact": "scripts/verify_w021_5_full_mandate.cjs",
+          "evidence": "Full 10-suite mandate verification battery passes."
         },
         {
           "item": "Formal CTO authorization gate signed under Rule IV-001",
-          "verified": false,
-          "note": "PENDING_CTO_ADJUDICATION"
+          "technicalStatus": "PENDING_AUTHORIZATION",
+          "corroboratingArtifact": "governance/specifications/w021_5_criterion_evidence_register.json",
+          "evidence": "Rule IV-001 Non-Self-Acceptance: Production execution remains 0.0% pending CTO signature."
         }
       ],
       "readinessStatus": "PREFLIGHT_VERIFIED_PENDING_FORMAL_AUTHORIZATION"
@@ -74,28 +88,39 @@
   "cutoverChecklist": [
     {
       "item": "Zero production mutations in prior milestones",
-      "verified": true
+      "technicalStatus": "VERIFIED",
+      "corroboratingArtifact": "reports/w021_5_production_airgap_preflight_report.json",
+      "evidence": "Air-gap active: 0 mutations and 0 queries issued to ehfafcnimmjusyvplbah. Active clients isolated."
     },
     {
       "item": "Staging preflight validation executed with 0 errors",
-      "verified": true
+      "technicalStatus": "VERIFIED",
+      "corroboratingArtifact": "reports/w005_r1a_dr001_cold_reconstruction.json",
+      "evidence": "Cold reconstruction and live staging catalog validated with 0 errors."
     },
     {
       "item": "Dry-run migration replay tested",
-      "verified": true
+      "technicalStatus": "VERIFIED",
+      "corroboratingArtifact": "supabase/all_migrations_combined.sql",
+      "evidence": "Combined migration bundle compiled and validated across 148 unique tables."
     },
     {
       "item": "Rollback and forward-repair DDLs verified",
-      "verified": true
+      "technicalStatus": "VERIFIED",
+      "corroboratingArtifact": "supabase/migrations/036_foundation_and_grants_repair.sql",
+      "evidence": "Idempotent IF EXISTS / IF NOT EXISTS and forward-repair DDLs verified in migrations 036, 046, 052."
     },
     {
       "item": "Smoke tests defined and verified in CI",
-      "verified": true
+      "technicalStatus": "VERIFIED",
+      "corroboratingArtifact": "scripts/verify_w021_5_full_mandate.cjs",
+      "evidence": "Full 10-suite mandate verification battery passes."
     },
     {
       "item": "Formal CTO authorization gate signed under Rule IV-001",
-      "verified": false,
-      "note": "PENDING_CTO_ADJUDICATION"
+      "technicalStatus": "PENDING_AUTHORIZATION",
+      "corroboratingArtifact": "governance/specifications/w021_5_criterion_evidence_register.json",
+      "evidence": "Rule IV-001 Non-Self-Acceptance: Production execution remains 0.0% pending CTO signature."
     }
   ]
 }

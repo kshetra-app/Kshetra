@@ -260,16 +260,8 @@ for (const r of jkRows) {
   jkSeats.push({ acNo, name, winner, party, votes });
 }
 
-// Add newly delimited post-2022 seats 88-90 mapped from parent districts
-if (!jkSeats.find(s => s.acNo === 88)) {
-  jkSeats.push({ acNo: 88, name: 'Padder-Nagseni', winner: 'Sunil Kumar Sharma', party: 'BJP', votes: 28000 });
-}
-if (!jkSeats.find(s => s.acNo === 89)) {
-  jkSeats.push({ acNo: 89, name: 'Doda West', winner: 'Shakti Raj', party: 'BJP', votes: 25000 });
-}
-if (!jkSeats.find(s => s.acNo === 90)) {
-  jkSeats.push({ acNo: 90, name: 'Thannamandi', winner: 'Qamar Hussain', party: 'JKPDP', votes: 24000 });
-}
+// J&K 2014 Legislative Assembly had exactly 87 statutory constituencies under the J&K Constitution (pre-2019).
+// Delimitation to 90 constituencies only occurred in 2022 for the 2024 assembly elections.
 jkSeats.sort((a, b) => a.acNo - b.acNo);
 
 generateFile('JK', 'Jammu & Kashmir', 2014, 90, jkSeats, 'jammu-kashmir');

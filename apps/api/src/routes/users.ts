@@ -1,12 +1,13 @@
 /**
  * Users Follow/Relationship Routes
  * Fastify route handler for user follow / unfollow relationships
- * Master Execution Framework — W021.5-H-04 (Class B Strangler Migration)
+ * Master Execution Framework — W021.5-H-04 (Class B Strangler Migration) / CTO Directive 138
  */
 
 import type { FastifyInstance } from 'fastify';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import { sendApiError } from '../lib/replyHelper';
+import { resolveAuthenticatedUser, assertActingUserMatch } from '../lib/userAuth';
 
 export async function userRoutes(app: FastifyInstance) {
   /**
@@ -24,30 +25,43 @@ export async function userRoutes(app: FastifyInstance) {
         properties: { id: { type: 'string' } },
       },
       body: {
-        type: 'object',
+        type: ['object', 'null'],
         properties: { followerId: { type: 'string' } },
       },
     },
   }, async (request, reply) => {
-    const followerId = (request.headers['x-user-id'] as string) || request.body?.followerId;
-    if (!followerId) {
-      return sendApiError(reply, request, 401, 'Unauthorized', 'Authentication required', { code: 'UNAUTHORIZED' });
+    const auth = await resolveAuthenticatedUser(request, reply);
+    if (!auth) return;
+
+    if (!assertActingUserMatch(reply, request, auth.userId, request.body?.followerId, 'followerId')) {
+      return;
     }
 
+    const followerId = auth.userId;
     const { id: targetUserId } = request.params;
     const now = new Date().toISOString();
 
     if (isSupabaseConfigured) {
       try {
-        await supabase
+        const { error } = await supabase
           .from('user_follows')
           .upsert({
             follower_id: followerId,
             following_id: targetUserId,
             created_at: now,
           }, { onConflict: 'follower_id,following_id' });
+
+        if (error) {
+          app.log.error({ err: error.message, followerId, targetUserId }, 'Failed to record user follow in DB');
+          return sendApiError(reply, request, 500, 'Internal Server Error', 'Database error recording follow', {
+            code: 'DATABASE_ERROR',
+          });
+        }
       } catch (err: any) {
-        app.log.warn({ err: err?.message, followerId, targetUserId }, 'Failed to record user follow in DB');
+        app.log.error({ err: err?.message, followerId, targetUserId }, 'Exception recording user follow in DB');
+        return sendApiError(reply, request, 500, 'Internal Server Error', 'Database error recording follow', {
+          code: 'DATABASE_ERROR',
+        });
       }
     }
 
@@ -75,27 +89,40 @@ export async function userRoutes(app: FastifyInstance) {
         properties: { id: { type: 'string' } },
       },
       body: {
-        type: 'object',
+        type: ['object', 'null'],
         properties: { followerId: { type: 'string' } },
       },
     },
   }, async (request, reply) => {
-    const followerId = (request.headers['x-user-id'] as string) || request.body?.followerId;
-    if (!followerId) {
-      return sendApiError(reply, request, 401, 'Unauthorized', 'Authentication required', { code: 'UNAUTHORIZED' });
+    const auth = await resolveAuthenticatedUser(request, reply);
+    if (!auth) return;
+
+    if (!assertActingUserMatch(reply, request, auth.userId, request.body?.followerId, 'followerId')) {
+      return;
     }
 
+    const followerId = auth.userId;
     const { id: targetUserId } = request.params;
 
     if (isSupabaseConfigured) {
       try {
-        await supabase
+        const { error } = await supabase
           .from('user_follows')
           .delete()
           .eq('follower_id', followerId)
           .eq('following_id', targetUserId);
+
+        if (error) {
+          app.log.error({ err: error.message, followerId, targetUserId }, 'Failed to remove user follow in DB');
+          return sendApiError(reply, request, 500, 'Internal Server Error', 'Database error removing follow', {
+            code: 'DATABASE_ERROR',
+          });
+        }
       } catch (err: any) {
-        app.log.warn({ err: err?.message, followerId, targetUserId }, 'Failed to remove user follow in DB');
+        app.log.error({ err: err?.message, followerId, targetUserId }, 'Exception removing user follow in DB');
+        return sendApiError(reply, request, 500, 'Internal Server Error', 'Database error removing follow', {
+          code: 'DATABASE_ERROR',
+        });
       }
     }
 

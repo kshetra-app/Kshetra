@@ -1,6 +1,7 @@
 import type { FastifyPluginAsync } from 'fastify';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import { sendApiError } from '../lib/replyHelper';
+import { resolveAuthenticatedUser, assertActingUserMatch } from '../lib/userAuth';
 
 interface RateLimitBucket {
   hourTimestamp: number;
@@ -678,24 +679,37 @@ export const dmRoutes: FastifyPluginAsync = async (app) => {
       },
     },
   }, async (request, reply) => {
-    const userId = (request.headers['x-user-id'] as string) || request.body?.userId;
-    if (!userId) {
-      return sendApiError(reply, request, 401, 'Unauthorized', 'Authentication required', { code: 'UNAUTHORIZED' });
+    const auth = await resolveAuthenticatedUser(request, reply);
+    if (!auth) return;
+
+    if (!assertActingUserMatch(reply, request, auth.userId, request.body?.userId, 'userId')) {
+      return;
     }
 
+    const userId = auth.userId;
     const { conversationId } = request.body;
     const now = new Date().toISOString();
 
     if (isSupabaseConfigured) {
       try {
-        await supabase
+        const { error } = await supabase
           .from('messages')
           .update({ read_at: now })
           .eq('conversation_id', conversationId)
           .neq('sender_id', userId)
           .is('read_at', null);
+
+        if (error) {
+          app.log.error({ err: error.message, conversationId, userId }, 'Database update for read messages failed');
+          return sendApiError(reply, request, 500, 'Internal Server Error', 'Database error updating message read status', {
+            code: 'DATABASE_ERROR',
+          });
+        }
       } catch (err: any) {
-        app.log.warn({ err: err?.message, conversationId }, 'Database update for read messages failed');
+        app.log.error({ err: err?.message, conversationId, userId }, 'Exception updating read messages in DB');
+        return sendApiError(reply, request, 500, 'Internal Server Error', 'Database error updating message read status', {
+          code: 'DATABASE_ERROR',
+        });
       }
     }
 

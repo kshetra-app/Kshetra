@@ -126,6 +126,15 @@ export class MutationQueue {
     return res.changes;
   }
 
+  recoverInFlight(): number {
+    const now = new Date().toISOString();
+    const res = this.db.runSync(
+      `UPDATE sync_mutation_queue SET state = 'PENDING', updated_at = ? WHERE state = 'IN_FLIGHT';`,
+      [now]
+    );
+    return res.changes;
+  }
+
   count(): { pending: number; inFlight: number; synced: number; deadLetter: number; total: number } {
     const all = this.db.getAllSync<MutationQueueRecord>(`SELECT * FROM sync_mutation_queue ORDER BY created_at ASC;`);
     let pending = 0;

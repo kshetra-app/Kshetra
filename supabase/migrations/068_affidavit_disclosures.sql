@@ -8,6 +8,10 @@
 --   2. Enforce check constraints on non-negative values.
 --   3. Foreign key linkages to canonical_persons, candidacies, and constituencies.
 --   4. RLS enabled with public read policy.
+-- Note: Check constraints adhere strictly to DEC-134 Rule 1 & Rule 3:
+--       No synthetic zero defaults (COALESCE masking eliminated under CTO Directive 138).
+--       Totals are validated against component sums strictly when all parts are reported;
+--       partial disclosures are preserved as NULL without artificial coercion.
 -- ==============================================================================
 
 BEGIN;
@@ -62,26 +66,34 @@ CREATE TABLE IF NOT EXISTS public.candidate_affidavit_disclosures (
   created_at                  TIMESTAMPTZ NOT NULL DEFAULT now(),
   updated_at                  TIMESTAMPTZ NOT NULL DEFAULT now(),
 
-  -- Rule 1 & 3: Totals must equal sum of disaggregated parts when parts are evidenced
+  -- Rule 1 & 3: Totals must equal sum of disaggregated parts when parts are evidenced.
+  -- Zero COALESCE masking: missing components remain NULL without synthetic 0 coercion.
   CONSTRAINT chk_movable_sum CHECK (
     total_movable_assets IS NULL OR
-    (self_movable_assets IS NULL AND spouse_movable_assets IS NULL AND dependent_movable_assets IS NULL) OR
-    total_movable_assets = (COALESCE(self_movable_assets, 0) + COALESCE(spouse_movable_assets, 0) + COALESCE(dependent_movable_assets, 0))
+    self_movable_assets IS NULL OR
+    spouse_movable_assets IS NULL OR
+    dependent_movable_assets IS NULL OR
+    total_movable_assets = (self_movable_assets + spouse_movable_assets + dependent_movable_assets)
   ),
   CONSTRAINT chk_immovable_sum CHECK (
     total_immovable_assets IS NULL OR
-    (self_immovable_assets IS NULL AND spouse_immovable_assets IS NULL AND dependent_immovable_assets IS NULL) OR
-    total_immovable_assets = (COALESCE(self_immovable_assets, 0) + COALESCE(spouse_immovable_assets, 0) + COALESCE(dependent_immovable_assets, 0))
+    self_immovable_assets IS NULL OR
+    spouse_immovable_assets IS NULL OR
+    dependent_immovable_assets IS NULL OR
+    total_immovable_assets = (self_immovable_assets + spouse_immovable_assets + dependent_immovable_assets)
   ),
   CONSTRAINT chk_gross_assets CHECK (
     total_gross_assets IS NULL OR
-    (total_movable_assets IS NULL AND total_immovable_assets IS NULL) OR
-    total_gross_assets = (COALESCE(total_movable_assets, 0) + COALESCE(total_immovable_assets, 0))
+    total_movable_assets IS NULL OR
+    total_immovable_assets IS NULL OR
+    total_gross_assets = (total_movable_assets + total_immovable_assets)
   ),
   CONSTRAINT chk_liabilities_sum CHECK (
     total_liabilities IS NULL OR
-    (self_liabilities IS NULL AND spouse_liabilities IS NULL AND dependent_liabilities IS NULL) OR
-    total_liabilities = (COALESCE(self_liabilities, 0) + COALESCE(spouse_liabilities, 0) + COALESCE(dependent_liabilities, 0))
+    self_liabilities IS NULL OR
+    spouse_liabilities IS NULL OR
+    dependent_liabilities IS NULL OR
+    total_liabilities = (self_liabilities + spouse_liabilities + dependent_liabilities)
   )
 );
 

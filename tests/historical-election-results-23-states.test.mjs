@@ -53,13 +53,16 @@ for (const code of missing23States) {
 
   const primaryYear = res.demonstrablePerAcYears[0];
   const yearRecords = res.eventsByYear[primaryYear] || [];
-  assert(
-    yearRecords.length >= meta.seats - 3,
-    `${code} must have at least ${meta.seats - 3} records for primary year ${primaryYear} (found ${yearRecords.length})`
+  // For JK in 2014, statutory assembly had exactly 87 seats (pre-2019 Constitution of J&K; 2022 Delimitation set 90 seats for 2024).
+  const expectedSeats = (code === 'JK' && primaryYear === 2014) ? 87 : meta.seats;
+  assert.strictEqual(
+    yearRecords.length,
+    expectedSeats,
+    `${code} must have exactly ${expectedSeats} statutory seats for primary year ${primaryYear} (found ${yearRecords.length})`
   );
 
   passedStates++;
-  console.log(`[PASS] ${code} (${meta.name}): ${yearRecords.length}/${meta.seats} seats verified for ${primaryYear} (0 malformed)`);
+  console.log(`[PASS] ${code} (${meta.name}): ${yearRecords.length}/${expectedSeats} statutory seats verified for ${primaryYear} (0 malformed)`);
 }
 
 // Check 3: Check Fastify stateData service integration
