@@ -1,7 +1,7 @@
 {
   "generator": "scripts/execute_staging_directive_139.mjs",
   "directive": "CTO Directive 140 / Security Incident Containment, Auth Authority & Data Truth Verification",
-  "timestamp": "2026-10-22T17:21:34.852Z",
+  "timestamp": "2026-10-22T17:33:45.963Z",
   "governingAuthority": "Master Execution Framework Amendment v1.6 / Rule IV-001 Non-Self-Acceptance",
   "stagingProjectRef": "fkpigozcqnmcvofuksar",
   "productionProjectRef": "ehfafcnimmjusyvplbah (AIR-GAPPED — 0 QUERIES, 0 MUTATIONS)",
@@ -29,8 +29,8 @@
       "taskId": "W021.5-C-02",
       "governingRequirement": "REQ-POL-002",
       "status": "PASSED_CORROBORATED",
-      "startedAt": "2026-10-22T17:21:34.051Z",
-      "completedAt": "2026-10-22T17:21:34.255Z",
+      "startedAt": "2026-10-22T17:33:45.451Z",
+      "completedAt": "2026-10-22T17:33:45.531Z",
       "metrics": {
         "politicalOrganizationsCount": 107,
         "relationshipsCount": 10,
@@ -54,8 +54,8 @@
       "taskId": "W021.5-D-02",
       "governingRequirement": "REQ-CAN-002",
       "status": "PASSED_CORROBORATED",
-      "startedAt": "2026-10-22T17:21:34.256Z",
-      "completedAt": "2026-10-22T17:21:34.274Z",
+      "startedAt": "2026-10-22T17:33:45.532Z",
+      "completedAt": "2026-10-22T17:33:45.548Z",
       "metrics": {
         "totalCandidacies": 11298,
         "expectedUniqueRows": 11298,
@@ -77,8 +77,8 @@
       "taskId": "W021.5-E-01",
       "governingRequirement": "REQ-DEM-001",
       "status": "PASSED_CORROBORATED",
-      "startedAt": "2026-10-22T17:21:34.275Z",
-      "completedAt": "2026-10-22T17:21:34.318Z",
+      "startedAt": "2026-10-22T17:33:45.549Z",
+      "completedAt": "2026-10-22T17:33:45.581Z",
       "metrics": {
         "totalDemographicsCount": 4123,
         "statutoryAssemblyTarget": 4123,
@@ -126,8 +126,8 @@
       "taskId": "W021.5-F-02",
       "governingRequirement": "REQ-HIS-002",
       "status": "PASSED_CORROBORATED",
-      "startedAt": "2026-10-22T17:21:34.319Z",
-      "completedAt": "2026-10-22T17:21:34.851Z",
+      "startedAt": "2026-10-22T17:33:45.582Z",
+      "completedAt": "2026-10-22T17:33:45.963Z",
       "metrics": {
         "totalStatesIngested": 23,
         "totalRecordsIngested": 2243,
