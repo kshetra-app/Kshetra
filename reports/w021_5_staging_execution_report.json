@@ -1,7 +1,7 @@
 {
   "generator": "scripts/execute_staging_directive_139.mjs",
   "directive": "CTO Directive 141 / Source-to-Truth Reconciliation & Staging Target Hardening",
-  "timestamp": "2026-10-22T18:23:59.856Z",
+  "timestamp": "2026-10-22T18:35:59.912Z",
   "governingAuthority": "Master Execution Framework Amendment v1.6 / Rule IV-001 Non-Self-Acceptance",
   "stagingProjectRef": "fkpigozcqnmcvofuksar",
   "productionProjectRef": "ehfafcnimmjusyvplbah (AIR-GAPPED — 0 QUERIES, 0 MUTATIONS)",
@@ -38,8 +38,8 @@
       "remoteCorroborated": false,
       "remoteCorroborationPending": true,
       "localSourceVerified": true,
-      "startedAt": "2026-10-22T18:23:59.352Z",
-      "completedAt": "2026-10-22T18:23:59.373Z",
+      "startedAt": "2026-10-22T18:35:59.526Z",
+      "completedAt": "2026-10-22T18:35:59.540Z",
       "metrics": {
         "canonicalOrganizations": 107,
         "uniqueOrgIds": 107,
@@ -75,8 +75,8 @@
       "remoteCorroborated": false,
       "remoteCorroborationPending": true,
       "localSourceVerified": true,
-      "startedAt": "2026-10-22T18:23:59.374Z",
-      "completedAt": "2026-10-22T18:23:59.494Z",
+      "startedAt": "2026-10-22T18:35:59.540Z",
+      "completedAt": "2026-10-22T18:35:59.621Z",
       "metrics": {
         "totalSubchunks": 10,
         "subchunkIds": [
@@ -110,8 +110,8 @@
       "remoteCorroborated": false,
       "remoteCorroborationPending": true,
       "localSourceVerified": true,
-      "startedAt": "2026-10-22T18:23:59.495Z",
-      "completedAt": "2026-10-22T18:23:59.555Z",
+      "startedAt": "2026-10-22T18:35:59.621Z",
+      "completedAt": "2026-10-22T18:35:59.664Z",
       "metrics": {
         "totalConstituencies": 4123,
         "statutoryAssemblyTarget": 4123,
@@ -166,8 +166,8 @@
       "remoteCorroborated": false,
       "remoteCorroborationPending": true,
       "localSourceVerified": true,
-      "startedAt": "2026-10-22T18:23:59.555Z",
-      "completedAt": "2026-10-22T18:23:59.856Z",
+      "startedAt": "2026-10-22T18:35:59.664Z",
+      "completedAt": "2026-10-22T18:35:59.911Z",
       "metrics": {
         "totalStatesCovered": 23,
         "totalHistoricalElectionRecords": 2243,
