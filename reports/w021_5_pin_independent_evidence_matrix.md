@@ -1,9 +1,9 @@
 # KSHETRA W021.5 — INDEPENDENT 36-PIN EVIDENCE MATRIX & DATA-TRUTH REPORT
-**Directive:** CTO Directive 131 (Workstreams A, B, C, D, E, F, G)  
+**Directive:** CTO Directive 132 (Workstreams A, B, C, D, E)  
 **Governing Framework:** Master Execution Framework Amendment v1.6 / Rule IV-001 Non-Self-Acceptance  
 **Stage Boundary:** STOP at Stage B Gate (Stages C–I Strictly Unauthorized)  
 **Formal Acceptance:** Strictly `0.0% — PENDING INDEPENDENT ADJUDICATION`  
-**Generated At:** `2026-10-21T18:13:13.396Z`  
+**Generated At:** `2026-10-22T03:03:47.843Z`  
 **Total Curated Entries Audited:** `36`  
 **Overall Validation Status:** `100% PASS`  
 **Gate Recommendation:** `SUBMIT_FOR_INDEPENDENT_STAGE_B_ADJUDICATION_WITH_DOCUMENTED_EXTERNAL_BLOCKERS`  

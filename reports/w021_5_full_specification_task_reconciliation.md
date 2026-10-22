@@ -1,8 +1,8 @@
 # KSHETRA W021.5 — FULL SPECIFICATION TASK RECONCILIATION
 ## Comprehensive Task-by-Task Inventory Across Stages A through I
 
-**Directive:** CTO Directive 131  
-**Predecessor:** CTO Directive 130  
+**Directive:** CTO Directive 132  
+**Predecessor:** CTO Directive 131  
 **Repository:** `https://github.com/kshetra-app/Kshetra`  
 **Governing Authority:** Master Execution Framework Amendment v1.6 / Rule IV-001 Non-Self-Acceptance  
 **Production Boundary:** `AIR_GAPPED_UNEXECUTED` (Strictly zero queries, zero mutations on `ehfafcnimmjusyvplbah`)  

@@ -604,7 +604,7 @@ describe('CTO Directive 123 — Residual Electoral Data-Truth & Provisional Look
     it('verifies independent validation matrix report exists and records 100% check pass rate', () => {
       expect(fs.existsSync(matrixReportPath)).toBe(true);
       const matrixReport = JSON.parse(fs.readFileSync(matrixReportPath, 'utf8'));
-      expect(matrixReport.metadata.directive).toMatch(/CTO Directive 1(2[6789]|3[01])/);
+      expect(matrixReport.metadata.directive).toMatch(/CTO Directive 1(2[6789]|3[012])/);
       expect(matrixReport.metadata.validationSummary.allChecksPassed).toBe(true);
       expect(matrixReport.metadata.validationChecks.every((c: any) => c.passed)).toBe(true);
     });
@@ -975,7 +975,7 @@ describe('CTO Directive 123 — Residual Electoral Data-Truth & Provisional Look
       const reportPath = path.resolve(__dirname, '../../../../reports/w021_5_pin_independent_evidence_matrix.json');
       const report = JSON.parse(fs.readFileSync(reportPath, 'utf8'));
 
-      expect(report.metadata.directive).toMatch(/CTO Directive 1(2[89]|3[01])/);
+      expect(report.metadata.directive).toMatch(/CTO Directive 1(2[89]|3[012])/);
       expect(report.metadata.validationSummary.allChecksPassed).toBe(true);
       expect(report.metadata.validationSummary.eightAcCorrectionsVerified).toBe(true);
       expect(report.metadata.validationSummary.pin500001AmbiguousFailClosed).toBe(true);
@@ -1225,7 +1225,7 @@ describe('CTO Directive 123 — Residual Electoral Data-Truth & Provisional Look
       const jsonReport = JSON.parse(fs.readFileSync(jsonReportPath, 'utf8'));
       const mdReport = fs.readFileSync(mdReportPath, 'utf8');
 
-      expect(jsonReport.metadata.directive).toMatch(/CTO Directive 1(2[89]|3[01])/);
+      expect(jsonReport.metadata.directive).toMatch(/CTO Directive 1(2[89]|3[012])/);
       expect(jsonReport.metadata.validationSummary.structuralValidationStatus).toBe('PASS');
       expect(jsonReport.metadata.validationSummary.sourceResolutionStatus).toMatch(/PARTIAL_IN_REPO_DOSSIERS_EXTERNAL_GAZETTE_PENDING|VERIFIED_CHECKED_IN_EXTRACTS_SHA256_MATCH/);
       expect(jsonReport.metadata.validationSummary.locatorResolutionStatus).toMatch(/EXACT_COORDINATES_DOCUMENTED_EXTERNAL_GAZETTE_PENDING|EXACT_ENTRY_AND_WARD_COORDINATES_VERIFIED_AGAINST_SOURCE_ARTIFACT/);
@@ -1510,7 +1510,7 @@ describe('CTO Directive 123 — Residual Electoral Data-Truth & Provisional Look
       const jsonReport = JSON.parse(fs.readFileSync(jsonReportPath, 'utf8'));
       const mdReport = fs.readFileSync(mdReportPath, 'utf8');
 
-      expect(jsonReport.metadata.directive).toMatch(/CTO Directive 1(29|3[01])/);
+      expect(jsonReport.metadata.directive).toMatch(/CTO Directive 1(29|3[012])/);
       expect(jsonReport.metadata.validationSummary.structuralValidationStatus).toBe('PASS');
       expect(jsonReport.metadata.validationSummary.sourceResolutionStatus).toBe('VERIFIED_CHECKED_IN_EXTRACTS_SHA256_MATCH');
       expect(jsonReport.metadata.validationSummary.locatorResolutionStatus).toBe('EXACT_ENTRY_AND_WARD_COORDINATES_VERIFIED_AGAINST_SOURCE_ARTIFACT');
@@ -1612,11 +1612,11 @@ describe('CTO Directive 123 — Residual Electoral Data-Truth & Provisional Look
       const jsonReport = JSON.parse(fs.readFileSync(jsonReportPath, 'utf8'));
       const mdReport = fs.readFileSync(mdReportPath, 'utf8');
 
-      expect(jsonReport.metadata.directive).toMatch(/CTO Directive 13[01]/);
+      expect(jsonReport.metadata.directive).toMatch(/CTO Directive 13[012]/);
       expect(jsonReport.metadata.validationSummary.evidenceClosureStatus).toBe('PENDING_EXTERNAL_OFFICIAL_GAZETTE_AND_GIS_DELIVERY_BEAT_EVIDENCE');
       expect(jsonReport.metadata.validationSummary.evidenceClosureStatus).not.toBe('COMPLETE');
       expect(jsonReport.metadata.validationSummary.transcriptionFidelityStatus).toBe('UNVERIFIED_PENDING_PHYSICAL_GAZETTE_COMPARISON');
-      expect(mdReport).toMatch(/CTO Directive 13[01]/);
+      expect(mdReport).toMatch(/CTO Directive 13[012]/);
       expect(mdReport).toContain('12 Orthogonal Evidence Status Dimensions');
     });
   });
@@ -1781,7 +1781,7 @@ describe('CTO Directive 123 — Residual Electoral Data-Truth & Provisional Look
       const jsonReport = JSON.parse(fs.readFileSync(jsonReportPath, 'utf8'));
       const mdReport = fs.readFileSync(mdReportPath, 'utf8');
 
-      expect(jsonReport.metadata.directive).toBe('CTO Directive 131');
+      expect(jsonReport.metadata.directive).toMatch(/CTO Directive 13[12]/);
       expect(jsonReport.metadata.validationSummary.structuralValidationStatus).toBe('PASS');
       expect(jsonReport.metadata.validationSummary.gateRecommendation).toBe('SUBMIT_FOR_INDEPENDENT_STAGE_B_ADJUDICATION_WITH_DOCUMENTED_EXTERNAL_BLOCKERS');
       expect(jsonReport.metadata.validationSummary.evidenceClosureStatus).toBe('PENDING_EXTERNAL_OFFICIAL_GAZETTE_AND_GIS_DELIVERY_BEAT_EVIDENCE');
@@ -1789,10 +1789,145 @@ describe('CTO Directive 123 — Residual Electoral Data-Truth & Provisional Look
       expect(jsonReport.metadata.validationSummary.negativeScenariosExecuted).toBe(38);
       expect(jsonReport.metadata.validationSummary.negativeScenariosPassed).toBe(38);
 
-      expect(mdReport).toContain('CTO Directive 131');
+      expect(mdReport).toMatch(/CTO Directive 13[12]/);
       expect(mdReport).toContain('Overall Validation Status:** `100% PASS`');
       expect(mdReport).toContain('SUBMIT_FOR_INDEPENDENT_STAGE_B_ADJUDICATION_WITH_DOCUMENTED_EXTERNAL_BLOCKERS');
       expect(mdReport).toContain('38 Scenarios');
+    });
+  });
+
+  describe('CTO Directive 132 — Final Validation Orchestration, Concordance & Adjudication Package Integrity', () => {
+    const manifestPath = path.resolve(__dirname, '../../../../data/evidence/w021_5/pin_independent_evidence_manifest.json');
+    const validatorModule = require('../../../../scripts/verify_pin_evidence_matrix.cjs');
+
+    it('Workstream A: verifies fail-closed execution order and stale report overwrite regression', () => {
+      const orderTest = validatorModule.runExecutionOrderRegressionTest();
+      expect(orderTest.passed).toBe(true);
+      expect(orderTest.details).toContain('Fail-closed execution order and stale report overwrite verified');
+    });
+
+    it('Workstream A: verifies complete validation orchestrator derives outcome strictly from all required suites', () => {
+      const result = validatorModule.runCompleteValidationProcess({ skipExit: true, writeFiles: false });
+      expect(result.allPassed).toBe(true);
+      expect(result.positiveResults.allPassed).toBe(true);
+      expect(result.negativeResults.allScenariosPassed).toBe(true);
+      expect(result.generatorBatteryResults.allCasesPassed).toBe(true);
+      expect(result.concordanceResults.allPassed).toBe(true);
+      expect(result.gateRecommendation).toBe('SUBMIT_FOR_INDEPENDENT_STAGE_B_ADJUDICATION_WITH_DOCUMENTED_EXTERNAL_BLOCKERS');
+      expect(result.evidenceClosureStatus).toBe('PENDING_EXTERNAL_OFFICIAL_GAZETTE_AND_GIS_DELIVERY_BEAT_EVIDENCE');
+      expect(result.structuralValidationStatus).toBe('PASS');
+      expect(result.errors).toHaveLength(0);
+    });
+
+    it('Workstream B: verifies complete 36-record concordance across manifest, extracts, matrix JSON, matrix MD, and implementation reports', () => {
+      const concordanceResult = validatorModule.verifyConcordanceAcrossArtifacts();
+      expect(concordanceResult.allPassed).toBe(true);
+      expect(concordanceResult.checkedCount).toBe(36);
+      expect(concordanceResult.errors).toHaveLength(0);
+    });
+
+    it('Workstream B: executes genuine 8-case concordance regression battery', () => {
+      const battery = validatorModule.runConcordanceRegressionBattery();
+      expect(battery.allCasesPassed).toBe(true);
+      expect(battery.cases).toHaveLength(8);
+      for (const c of battery.cases) {
+        expect(c.passed).toBe(true);
+      }
+    });
+
+    it('Workstream B (Fixture 1): verifies rejection of wrong constituency name with specific PIN and field identifiers', () => {
+      const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+      const directory = validatorModule.parseDelimitationServiceCuratedPins();
+      const corrupt = {
+        ...manifest,
+        entries: manifest.entries.map((e: any) => e.pinCode === '500002' ? { ...e, assignedAcName: 'WrongConstituencyName' } : e)
+      };
+      const res = validatorModule.verifyConcordanceAcrossArtifacts({ manifest: corrupt, directory });
+      expect(res.allPassed).toBe(false);
+      expect(res.errors.some((err: string) => err.includes('[PIN 500002][assignedAcName]'))).toBe(true);
+    });
+
+    it('Workstream B (Fixture 2): verifies rejection of wrong candidate number with specific PIN and field identifiers', () => {
+      const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+      const directory = validatorModule.parseDelimitationServiceCuratedPins();
+      const corrupt = {
+        ...manifest,
+        entries: manifest.entries.map((e: any) => e.pinCode === '500028' ? { ...e, candidateAcNumbers: [65, 63] } : e)
+      };
+      const res = validatorModule.verifyConcordanceAcrossArtifacts({ manifest: corrupt, directory });
+      expect(res.allPassed).toBe(false);
+      expect(res.errors.some((err: string) => err.includes('[PIN 500028][candidateAcNumbers]'))).toBe(true);
+    });
+
+    it('Workstream B (Fixture 3): verifies rejection of wrong administrative extent with specific PIN and field identifiers', () => {
+      const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+      const directory = validatorModule.parseDelimitationServiceCuratedPins();
+      const corrupt = {
+        ...manifest,
+        entries: manifest.entries.map((e: any) => e.pinCode === '500002' ? { ...e, sourceLocator: 'Schedule XXXI, Table B, Entry 66 (Charminar), Extent: Hyderabad (M.Corp.) (Part) - Ward No. 99.' } : e)
+      };
+      const res = validatorModule.verifyConcordanceAcrossArtifacts({ manifest: corrupt, directory });
+      expect(res.allPassed).toBe(false);
+      expect(res.errors.some((err: string) => err.includes('[PIN 500002][administrativeExtent]'))).toBe(true);
+    });
+
+    it('Workstream B (Fixture 4): verifies rejection of wrong source schedule with specific PIN and field identifiers', () => {
+      const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+      const directory = validatorModule.parseDelimitationServiceCuratedPins();
+      const corrupt = {
+        ...manifest,
+        entries: manifest.entries.map((e: any) => e.pinCode === '500002' ? { ...e, sourceLocator: 'Schedule II, Table B, Entry 66 (Charminar), Extent: Hyderabad (M.Corp.) (Part) - Ward No. 13 and 14.' } : e)
+      };
+      const res = validatorModule.verifyConcordanceAcrossArtifacts({ manifest: corrupt, directory });
+      expect(res.allPassed).toBe(false);
+      expect(res.errors.some((err: string) => err.includes('[PIN 500002][sourceSchedule]'))).toBe(true);
+    });
+
+    it('Workstream B (Fixture 5): verifies rejection of incorrect single-AC assignment for ambiguous PIN', () => {
+      const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+      const directory = validatorModule.parseDelimitationServiceCuratedPins();
+      const corrupt = {
+        ...manifest,
+        entries: manifest.entries.map((e: any) => e.pinCode === '500001' ? { ...e, assignedAcNumber: 65, confidenceTaxonomy: 'PROVISIONALLY_APPROXIMATED' } : e)
+      };
+      const res = validatorModule.verifyConcordanceAcrossArtifacts({ manifest: corrupt, directory });
+      expect(res.allPassed).toBe(false);
+      expect(res.errors.some((err: string) => err.includes('[PIN 500001]'))).toBe(true);
+    });
+
+    it('Workstream B (Fixture 6): verifies rejection of changed historical correction with specific PIN and field identifiers', () => {
+      const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+      const directory = validatorModule.parseDelimitationServiceCuratedPins();
+      const corrupt = {
+        ...manifest,
+        entries: manifest.entries.map((e: any) => e.pinCode === '500002' ? { ...e, assignedAcNumber: 67 } : e)
+      };
+      const res = validatorModule.verifyConcordanceAcrossArtifacts({ manifest: corrupt, directory });
+      expect(res.allPassed).toBe(false);
+      expect(res.errors.some((err: string) => err.includes('[PIN 500002][historicalCorrection]'))).toBe(true);
+    });
+
+    it('Workstream B (Fixture 7): verifies rejection of false claim of complete geographic containment', () => {
+      const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+      const directory = validatorModule.parseDelimitationServiceCuratedPins();
+      const corrupt = {
+        ...manifest,
+        entries: manifest.entries.map((e: any) => e.pinCode === '500002' ? { ...e, geographicContainmentStatus: 'VERIFIED_GIS_CONTAINMENT' } : e)
+      };
+      const res = validatorModule.verifyConcordanceAcrossArtifacts({ manifest: corrupt, directory });
+      expect(res.allPassed).toBe(false);
+      expect(res.errors.some((err: string) => err.includes('[PIN 500002][geographicContainmentStatus]'))).toBe(true);
+    });
+
+    it('Workstream B (Fixture 8): verifies rejection of stale or divergent implementation report table', () => {
+      const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+      const directory = validatorModule.parseDelimitationServiceCuratedPins();
+      const d131ReportPath = path.resolve(__dirname, '../../../../reports/W021.5-CTO-DIRECTIVE-131-IMPLEMENTATION-REPORT.md');
+      const d131Original = fs.readFileSync(d131ReportPath, 'utf8');
+      const d131Corrupt = d131Original.replace('| `500056` | TS | Bowenpally / Hasmathpet / Manovikas Nagar | *(None - Ambiguous)* | [71, 46]', '| `500056` | TS | Bowenpally / Hasmathpet / Manovikas Nagar | *(None - Ambiguous)* | [67, 69]');
+      const res = validatorModule.verifyConcordanceAcrossArtifacts({ manifest, directory, d131ReportMd: d131Corrupt });
+      expect(res.allPassed).toBe(false);
+      expect(res.errors.some((err: string) => err.includes('[PIN 500056][d131Report]'))).toBe(true);
     });
   });
 });

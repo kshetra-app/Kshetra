@@ -1,11 +1,11 @@
 {
   "metadata": {
-    "directive": "CTO Directive 131",
-    "workstream": "Workstream A, B, C, D, E, F, G — Report-to-Evidence Concordance, Genuine Report-Generator Anti-Override Testing, and Final Stage B Evidence Integrity",
+    "directive": "CTO Directive 132",
+    "workstream": "Workstream A, B, C, D, E — Final Validation Orchestration, Complete Report Concordance, and Stage B Adjudication-Package Integrity",
     "governingFramework": "Master Execution Framework Amendment v1.6 / Rule IV-001 Non-Self-Acceptance",
     "stageBoundary": "Stage B Gate — STOP",
     "formalAcceptance": "0.0% — PENDING INDEPENDENT ADJUDICATION",
-    "generatedAt": "2026-10-21T18:13:13.396Z",
+    "generatedAt": "2026-10-22T03:03:47.843Z",
     "evidentiaryIndependenceScope": {
       "structuralSeparation": "Manifest is maintained in a standalone JSON file and build script separate from runtime implementation array.",
       "geographicProofLimitation": "Structural separation does NOT constitute independent geographic proof of postal delivery beat containment.",
@@ -253,6 +253,9 @@
       "allChecksPassed": true,
       "positiveValidationPassed": true,
       "negativeValidationPassed": true,
+      "generatorBatteryPassed": true,
+      "concordancePassed": true,
+      "concordanceVerified": true,
       "totalEntries": 36,
       "provisionalCount": 32,
       "ambiguousCount": 4,
@@ -278,6 +281,8 @@
       "dynamicSummaryIntegrityVerified": true,
       "negativeScenariosExecuted": 38,
       "negativeScenariosPassed": 38,
+      "generatorCasesExecuted": 8,
+      "generatorCasesPassed": 8,
       "gateRecommendation": "SUBMIT_FOR_INDEPENDENT_STAGE_B_ADJUDICATION_WITH_DOCUMENTED_EXTERNAL_BLOCKERS",
       "remainingBlockers": [
         "INDIA_POST_GIS_DELIVERY_BEAT_POLYGONS_UNAVAILABLE: Department of Posts does not publish statutory 6-digit delivery beat GIS polygon shapefiles.",
@@ -574,6 +579,60 @@
         "description": "Real report generator anti-override test proves that failed validation is retained as FAIL, GATE_REJECTED, and CLOSURE_REJECTED in JSON and Markdown",
         "passed": true,
         "details": "Real generator correctly retained FAIL, GATE_REJECTED, and CLOSURE_REJECTED in both JSON and Markdown"
+      },
+      {
+        "checkId": "GEN_CASE_1_FAILED_LOCATOR_EXTENT",
+        "description": "Real report generator handles failed locator-extent check by setting structuralValidationStatus FAIL, locatorResolutionStatus FAIL, gateRecommendation GATE_REJECTED_VALIDATION_FAILURE, and Markdown FAILED",
+        "passed": true,
+        "details": "Real generator correctly produced failing JSON summary and Markdown for locator extent failure"
+      },
+      {
+        "checkId": "GEN_CASE_2_SOURCE_PATH_OR_CHECKSUM_FAILURE",
+        "description": "Real report generator handles source-path or checksum failure with sourceResolutionStatus FAIL and gate rejection",
+        "passed": true,
+        "details": "Real generator correctly reflected source resolution failure in JSON and Markdown"
+      },
+      {
+        "checkId": "GEN_CASE_3_FAILED_MULTI_AC_CANDIDATE_VERIFICATION",
+        "description": "Real report generator handles failed multi-AC candidate verification with pin500001AmbiguousFailClosed false and gate rejection",
+        "passed": true,
+        "details": "Real generator correctly reflected multi-AC verification failure"
+      },
+      {
+        "checkId": "GEN_CASE_4_INCOMPLETE_INVENTORY",
+        "description": "Real report generator handles incomplete inventory parity failure with inventoryParityVerified false and gate rejection",
+        "passed": true,
+        "details": "Real generator correctly reflected inventory parity failure"
+      },
+      {
+        "checkId": "GEN_CASE_5_MANIFEST_ASSERTING_COMPLETE_CLOSURE",
+        "description": "Real report generator enforces closure-status protection: manifest asserting COMPLETE cannot force COMPLETE status in generated report",
+        "passed": true,
+        "details": "Real generator enforced closure-status protection (status: CLOSURE_REJECTED_VALIDATION_FAILED, never COMPLETE)"
+      },
+      {
+        "checkId": "GEN_CASE_6_FORGED_GATE_RECOMMENDATION_ON_FAILURE",
+        "description": "Real report generator prevents manifest forged gate recommendation from overriding validation failure outcome",
+        "passed": true,
+        "details": "Real generator correctly overrode forged recommendation with GATE_REJECTED_VALIDATION_FAILURE"
+      },
+      {
+        "checkId": "GEN_CASE_7_OVERWRITE_PRIOR_PASS_REPORT_ON_FAILURE",
+        "description": "Real report generator overwrites any prior PASS report on disk with FAIL report when validation fails, leaving no stale PASS output",
+        "passed": true,
+        "details": "Real generator successfully overwritten prior PASS report on disk with fail-closed output"
+      },
+      {
+        "checkId": "GEN_CASE_8_UNAVAILABLE_SOURCE_ARTIFACT",
+        "description": "Real report generator handles unavailable source artifact with sourceResolutionStatus FAIL and gate rejection",
+        "passed": true,
+        "details": "Real generator correctly handled unavailable source artifact fail-closed"
+      },
+      {
+        "checkId": "CHECK_CONCORDANCE_INTEGRITY",
+        "description": "Concordance across manifest, extracts, matrix JSON, matrix MD, and implementation reports",
+        "passed": true,
+        "details": "All 36 records exhibit complete concordance across manifest, extracts, matrix JSON, matrix MD, and implementation reports."
       }
     ]
   },
