@@ -5,12 +5,12 @@
     "governingAuthority": "Master Execution Framework Amendment v1.6 / Rule IV-001 Non-Self-Acceptance",
     "repository": "https://github.com/kshetra-app/Kshetra.git",
     "branch": "master",
-    "testedGitCommitSha": "735c8d6c24bd594874353217334f5a8c8aa56a2d",
-    "workingTreeClean": false,
-    "timestamp": "2026-10-22T08:43:59.353Z",
+    "testedGitCommitSha": "a62fb6925ec4b98e9ed920a27cac0ed77824ca0e",
+    "workingTreeClean": true,
+    "timestamp": "2026-10-22T08:53:41.304Z",
     "overallStatus": "FAIL",
     "gateRecommendation": "VERIFICATION_FAILED_REMEDIATION_REQUIRED",
-    "manifestIdentity": "30a23093dfb03f34b51738c344e143ba63f3846de2a884129675229faf401682"
+    "manifestIdentity": "031fe615b4e7b49a549f2af3fc79bfb802efedfa58648a569624ac24ba483433"
   },
   "accountingSummary": {
     "totalMilestoneWeight": 100,
@@ -33,8 +33,8 @@
     "automatedTestVerification": {
       "status": "FAIL",
       "totalSuites": 10,
-      "passedSuites": 7,
-      "failedSuites": 3
+      "passedSuites": 9,
+      "failedSuites": 1
     },
     "databaseExecution": {
       "status": "AIR_GAPPED_ZERO_MUTATIONS",
@@ -191,8 +191,8 @@
   },
   "suiteSummary": {
     "totalSuites": 10,
-    "passedSuites": 7,
-    "failedSuites": 3
+    "passedSuites": 9,
+    "failedSuites": 1
   },
   "suites": [
     {
@@ -201,12 +201,12 @@
       "command": "git status --porcelain",
       "status": "PASS",
       "exitCode": 0,
-      "startedAt": "2026-10-22T08:41:22.127Z",
-      "completedAt": "2026-10-22T08:41:22.261Z",
-      "durationMs": 134,
+      "startedAt": "2026-10-22T08:50:27.439Z",
+      "completedAt": "2026-10-22T08:50:27.610Z",
+      "durationMs": 171,
       "testCounts": null,
       "error": null,
-      "stdoutSample": "DIRTY_PERMITTED:\nM governance/specifications/w021_5_master_specification.json\n M reports/w021_5_full_specification_completion_matrix.json\n M scripts/generate_full_specification_completion_matrix.mjs\n M scripts/verify_w021_5_full_mandate.cjs",
+      "stdoutSample": "CLEAN (0 unstaged changes)",
       "stderrSample": ""
     },
     {
@@ -215,41 +215,41 @@
       "command": "node tests/commit-freshness.test.mjs",
       "status": "PASS",
       "exitCode": 0,
-      "startedAt": "2026-10-22T08:41:22.261Z",
-      "completedAt": "2026-10-22T08:41:25.816Z",
-      "durationMs": 3555,
+      "startedAt": "2026-10-22T08:50:27.612Z",
+      "completedAt": "2026-10-22T08:50:29.371Z",
+      "durationMs": 1759,
       "testCounts": null,
       "error": null,
-      "stdoutSample": "[PASS] Check D: VERIFIED_REMOTE_HEAD matches origin/master (735c8d6c24bd594874353217334f5a8c8aa56a2d)\n[PASS] Check E: ACCEPTED_W007_IMPLEMENTATION_COMMIT (1d253cd454effb441e7f01e846a568eeddc7f57e) is a verified ancestor of VERIFIED_REMOTE_HEAD\n[PASS] Check F: GOVERNANCE_COMMIT (735c8d6c24bd594874353217334f5a8c8aa56a2d) is an ancestor of (or equal to) VERIFIED_REMOTE_HEAD\n[PASS] Check G: ACCEPTANCE_REGISTER.md references accepted W007 implementation commit 1d253cd454effb441e7f01e846a568eeddc7f57e and status ACCEPTED / CLOSED\n[PASS] Check H: Current coordinates are not stale historical coordinates.\n[PASS] Check I: Historical W006 coordinates preserved, resolve, and maintain valid ancestry lineage.\n\n========================================================================\n   ALL COMMIT FRESHNESS, PROVENANCE & LINEAGE CHECKS (A-J) PASSED!     \n========================================================================",
+      "stdoutSample": "[PASS] Check D: VERIFIED_REMOTE_HEAD matches origin/master (a62fb6925ec4b98e9ed920a27cac0ed77824ca0e)\n[PASS] Check E: ACCEPTED_W007_IMPLEMENTATION_COMMIT (1d253cd454effb441e7f01e846a568eeddc7f57e) is a verified ancestor of VERIFIED_REMOTE_HEAD\n[PASS] Check F: GOVERNANCE_COMMIT (a62fb6925ec4b98e9ed920a27cac0ed77824ca0e) is an ancestor of (or equal to) VERIFIED_REMOTE_HEAD\n[PASS] Check G: ACCEPTANCE_REGISTER.md references accepted W007 implementation commit 1d253cd454effb441e7f01e846a568eeddc7f57e and status ACCEPTED / CLOSED\n[PASS] Check H: Current coordinates are not stale historical coordinates.\n[PASS] Check I: Historical W006 coordinates preserved, resolve, and maintain valid ancestry lineage.\n\n========================================================================\n   ALL COMMIT FRESHNESS, PROVENANCE & LINEAGE CHECKS (A-J) PASSED!     \n========================================================================",
       "stderrSample": ""
     },
     {
       "suiteIndex": 3,
       "name": "Governance Consistency Test",
       "command": "node tests/governance-consistency.test.mjs",
-      "status": "FAIL",
-      "exitCode": 1,
-      "startedAt": "2026-10-22T08:41:25.816Z",
-      "completedAt": "2026-10-22T08:41:26.408Z",
-      "durationMs": 592,
+      "status": "PASS",
+      "exitCode": 0,
+      "startedAt": "2026-10-22T08:50:29.371Z",
+      "completedAt": "2026-10-22T08:50:43.290Z",
+      "durationMs": 13919,
       "testCounts": null,
-      "error": "Command failed: node tests/governance-consistency.test.mjs\nnode:internal/modules/run_main:107\r\n    triggerUncaughtException(\r\n    ^\r\n\r\nAssertionError [ERR_ASSERTION]: Working tree must be 100% clean; observed uncommitted changes:\r\nM governance/specifications/w021_5_master_specification.json\r\n M reports/w021_5_full_specification_completion_matrix.json\r\n M scripts/generate_full_specification_completion_matrix.mjs\r\n M scripts/verify_w021_5_full_mandate.cjs\r\n+ actual - expected\r\n\r\n+ 'M governance/specifications/w021_5_master_specification.json\\n' +\r\n+   ' M reports/w021_5_full_specification_completion_matrix.json\\n' +\r\n+   ' M scripts/generate_full_specification_completion_matrix.mjs\\n' +\r\n+   ' M scripts/verify_w021_5_full_mandate.cjs'\r\n- ''\r\n\r\n    at file:///C:/Users/Laven/OneDrive/Desktop/Kshetra/tests/governance-consistency.test.mjs:173:8\r\n    at ModuleJob.run (node:internal/modules/esm/module_job:413:25)\r\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:660:26)\r\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5) {\r\n  generatedMessage: false,\r\n  code: 'ERR_ASSERTION',\r\n  actual: 'M governance/specifications/w021_5_master_specification.json\\n' +\r\n    ' M reports/w021_5_full_specification_completion_matrix.json\\n' +\r\n    ' M scripts/generate_full_specification_completion_matrix.mjs\\n' +\r\n    ' M scripts/verify_w021_5_full_mandate.cjs',\r\n  expected: '',\r\n  operator: 'strictEqual',\r\n  diff: 'simple'\r\n}\r\n\r\nNode.js v24.13.0\r\n",
-      "stdoutSample": "=== RUNNING GOVERNANCE CONSISTENCY TEST (AMENDMENT v1.5-A REMEDIATED) ===\n\n[PASS] Check 1: AMENDMENT_v1.4.md, AMENDMENT_v1.5.md, AMENDMENT_v1.5-A.md, and AMENDMENT_v1.6.md exist with valid titles.\n[PASS] Check 2: AMENDMENT_v1.5.md immutable parent provenance verified (SHA-256: 8b3505eee995adebd92ba2139173f0a0ab68cdcd0ed6f19f10cdcab3c7a2bfe2, Ratified: 795b9af).\n[PASS] Check 3: AGENT_EXECUTION_PROTOCOL.md authority is Amendment v1.5-A and includes v1.5-A in pre-flight.\n[PASS] Check 4: Protocol proves lifecycle model: 18 intra-job operational states & 19-step project workflow.\n[PASS] Check 5: Canonical approved 22-section planning template verified in both Protocol and AMENDMENT_v1.5-A.md.\n[PASS] Check 6: EXECUTION_STATE.md recognizes Amendment v1.5-A, enforces current vs historical coordinate separation, and strictly preserves historical W006 coordinates.\n[PASS] Check 7: DECISION_LOG.md records DEC-016, DEC-034, DEC-035, DEC-036, and DEC-037 with correct lifecycle separation semantics.",
-      "stderrSample": "  actual: 'M governance/specifications/w021_5_master_specification.json\\n' +\r\n    ' M reports/w021_5_full_specification_completion_matrix.json\\n' +\r\n    ' M scripts/generate_full_specification_completion_matrix.mjs\\n' +\r\n    ' M scripts/verify_w021_5_full_mandate.cjs',\r\n  expected: '',\r\n  operator: 'strictEqual',\r\n  diff: 'simple'\r\n}\r\n\r\nNode.js v24.13.0"
+      "error": null,
+      "stdoutSample": "========================================================================================\n   ALL DEDICATED v1.6 INDEPENDENT GOVERNANCE TESTS PASSED (100% EMPIRICALLY VERIFIED)!  \n========================================================================================\n\n\n[PASS] Check 11 (SEMANTIC): Dedicated v1.6 semantic governance suite (tests/governance-v16.test.mjs) passed 100%.\n\n===============================================================\n   ALL GOVERNANCE CONSISTENCY CHECKS PASSED (STRUCTURAL + v1.6 SEMANTIC)!  \n===============================================================",
+      "stderrSample": ""
     },
     {
       "suiteIndex": 4,
       "name": "Repo Evidence Integrity Check",
       "command": "node scripts/check-repo-evidence-integrity.mjs",
-      "status": "FAIL",
-      "exitCode": 1,
-      "startedAt": "2026-10-22T08:41:26.408Z",
-      "completedAt": "2026-10-22T08:41:43.404Z",
-      "durationMs": 16996,
+      "status": "PASS",
+      "exitCode": 0,
+      "startedAt": "2026-10-22T08:50:43.290Z",
+      "completedAt": "2026-10-22T08:50:58.607Z",
+      "durationMs": 15317,
       "testCounts": null,
-      "error": "Command failed: node scripts/check-repo-evidence-integrity.mjs\n\n[FAIL] Working tree is dirty; evidence integrity verification cannot pass.\n",
-      "stdoutSample": "=== KSHETRA CI/CD: REPO & EVIDENCE INTEGRITY CHECKER (Amendment v1.4 Part 34) ===\n\n1. Working Tree Status: DIRTY (4 modified files)\n\n2. Extracted 47 Referenced Commit Identifiers from registers.\n   - Verified in Git ancestry: 47\n   - Unresolved / Phantom:     0 (none)",
-      "stderrSample": "[FAIL] Working tree is dirty; evidence integrity verification cannot pass."
+      "error": null,
+      "stdoutSample": "=== KSHETRA CI/CD: REPO & EVIDENCE INTEGRITY CHECKER (Amendment v1.4 Part 34) ===\n\n1. Working Tree Status: CLEAN (0 unstaged changes)\n\n2. Extracted 47 Referenced Commit Identifiers from registers.\n   - Verified in Git ancestry: 47\n   - Unresolved / Phantom:     0 (none)\n\n[PASS] Repository & Evidence Integrity check completed (47/47 commits verified, working tree clean).",
+      "stderrSample": ""
     },
     {
       "suiteIndex": 5,
@@ -257,9 +257,9 @@
       "command": "npm run build --prefix apps/api",
       "status": "PASS",
       "exitCode": 0,
-      "startedAt": "2026-10-22T08:41:43.404Z",
-      "completedAt": "2026-10-22T08:42:00.909Z",
-      "durationMs": 17505,
+      "startedAt": "2026-10-22T08:50:58.607Z",
+      "completedAt": "2026-10-22T08:51:20.795Z",
+      "durationMs": 22188,
       "testCounts": null,
       "error": null,
       "stdoutSample": "> @kshetra/api@0.1.0 build\n> tsc --noEmit",
@@ -271,9 +271,9 @@
       "command": "node scripts/check-api-contract-drift.mjs",
       "status": "PASS",
       "exitCode": 0,
-      "startedAt": "2026-10-22T08:42:00.909Z",
-      "completedAt": "2026-10-22T08:42:01.280Z",
-      "durationMs": 371,
+      "startedAt": "2026-10-22T08:51:20.795Z",
+      "completedAt": "2026-10-22T08:51:21.092Z",
+      "durationMs": 297,
       "testCounts": null,
       "error": null,
       "stdoutSample": "   [MATCH] GET   /api/v1/pages/:pageId/entitlement    -> Page entitlement check\n\nAPI Contract Drift Report verified: reports/w003_api_contract_drift_report.json\n[PASS] Declared contract check completed: 9/9 matched (100% parity).\n\n2. Running W008 Comprehensive Route Contract Inventory & D0-D9 Drift Audit...\n   [INVENTORY] Total Registered Fastify Routes: 182\n   [INVENTORY] Report written to: reports/w008_api_contract_inventory.json\n   [DRIFT] Zero drift detected strictly across the 34 audited endpoints (does not prove zero drift across 138 routes).\n   [DRIFT] Report written to: reports/w008_contract_drift_report.json",
@@ -285,9 +285,9 @@
       "command": "node scripts/verify_pin_evidence_matrix.cjs",
       "status": "PASS",
       "exitCode": 0,
-      "startedAt": "2026-10-22T08:42:01.280Z",
-      "completedAt": "2026-10-22T08:42:14.707Z",
-      "durationMs": 13427,
+      "startedAt": "2026-10-22T08:51:21.092Z",
+      "completedAt": "2026-10-22T08:51:35.837Z",
+      "durationMs": 14745,
       "testCounts": {
         "passed": 10,
         "failed": 0
@@ -302,15 +302,15 @@
       "command": "node tests/financial_remediation.test.mjs",
       "status": "PASS",
       "exitCode": 0,
-      "startedAt": "2026-10-22T08:42:14.707Z",
-      "completedAt": "2026-10-22T08:42:15.518Z",
-      "durationMs": 811,
+      "startedAt": "2026-10-22T08:51:35.837Z",
+      "completedAt": "2026-10-22T08:51:36.518Z",
+      "durationMs": 681,
       "testCounts": {
         "passed": 105,
         "failed": 0
       },
       "error": null,
-      "stdoutSample": "[✓ PASS] Test 100: Malformed field type does not enter the liability branch (0ms)\n[✓ PASS] Test 101: Negative or malformed source asset values cannot bypass validation (3ms)\n[✓ PASS] Test 102: Negative or malformed source liability values cannot bypass validation (3ms)\n[✓ PASS] Test 103: Valid positive restoration still succeeds for both ASSET and LIABILITY (5ms)\n[✓ PASS] Test 104: Valid explicit-null missing-disclosure control still succeeds for both ASSET and LIABILITY (4ms)\n[✓ PASS] Test 105: Valid source-backed genuine-zero control still succeeds for both ASSET and LIABILITY (3ms)\n\n================================================================\nTEST SUITE SUMMARY: 105/105 PASSED, 0/105 FAILED\n================================================================",
+      "stdoutSample": "[✓ PASS] Test 100: Malformed field type does not enter the liability branch (0ms)\n[✓ PASS] Test 101: Negative or malformed source asset values cannot bypass validation (3ms)\n[✓ PASS] Test 102: Negative or malformed source liability values cannot bypass validation (4ms)\n[✓ PASS] Test 103: Valid positive restoration still succeeds for both ASSET and LIABILITY (5ms)\n[✓ PASS] Test 104: Valid explicit-null missing-disclosure control still succeeds for both ASSET and LIABILITY (5ms)\n[✓ PASS] Test 105: Valid source-backed genuine-zero control still succeeds for both ASSET and LIABILITY (4ms)\n\n================================================================\nTEST SUITE SUMMARY: 105/105 PASSED, 0/105 FAILED\n================================================================",
       "stderrSample": ""
     },
     {
@@ -319,12 +319,12 @@
       "command": "npm test --prefix apps/api -- src/__tests__/delimitation-citizen-impact-data-truth.test.ts",
       "status": "PASS",
       "exitCode": 0,
-      "startedAt": "2026-10-22T08:42:15.518Z",
-      "completedAt": "2026-10-22T08:43:59.330Z",
-      "durationMs": 103812,
+      "startedAt": "2026-10-22T08:51:36.518Z",
+      "completedAt": "2026-10-22T08:53:41.240Z",
+      "durationMs": 124722,
       "testCounts": null,
       "error": null,
-      "stdoutSample": "\n  console.log\n    Wrote JSON Evidence Matrix: C:\\Users\\Laven\\OneDrive\\Desktop\\Kshetra\\scratch\\test_report_overwrite_1792658638672\\w021_5_pin_independent_evidence_matrix.json\n\n      at generateEvidenceReports (../../scripts/verify_pin_evidence_matrix.cjs:2155:13)\n\n  console.log\n    Wrote Markdown Evidence Matrix: C:\\Users\\Laven\\OneDrive\\Desktop\\Kshetra\\scratch\\test_report_overwrite_1792658638672\\w021_5_pin_independent_evidence_matrix.md\n\n      at generateEvidenceReports (../../scripts/verify_pin_evidence_matrix.cjs:2159:13)",
+      "stdoutSample": "\n  console.log\n    Wrote JSON Evidence Matrix: C:\\Users\\Laven\\OneDrive\\Desktop\\Kshetra\\scratch\\test_report_overwrite_1792659220606\\w021_5_pin_independent_evidence_matrix.json\n\n      at generateEvidenceReports (../../scripts/verify_pin_evidence_matrix.cjs:2155:13)\n\n  console.log\n    Wrote Markdown Evidence Matrix: C:\\Users\\Laven\\OneDrive\\Desktop\\Kshetra\\scratch\\test_report_overwrite_1792659220606\\w021_5_pin_independent_evidence_matrix.md\n\n      at generateEvidenceReports (../../scripts/verify_pin_evidence_matrix.cjs:2159:13)",
       "stderrSample": ""
     },
     {
@@ -333,11 +333,11 @@
       "command": "IN_PROCESS_ASSERTION",
       "status": "FAIL",
       "exitCode": 1,
-      "startedAt": "2026-10-22T08:43:59.331Z",
-      "completedAt": "2026-10-22T08:43:59.349Z",
-      "durationMs": 18,
+      "startedAt": "2026-10-22T08:53:41.240Z",
+      "completedAt": "2026-10-22T08:53:41.301Z",
+      "durationMs": 61,
       "testCounts": null,
-      "error": "Criterion CRIT-A01-01 marked PASS but lacks evidence files",
+      "error": "Migration file supabase/migrations/062_canonical_assam_2023_delimitation.sql lacks required DDL statements (CREATE/ALTER TABLE)",
       "stdoutSample": "",
       "stderrSample": ""
     }
