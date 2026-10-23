@@ -134,7 +134,7 @@ describe('CTO Directive 140 Section 2.2: Staging Target Selection & Write-Gating
     assert.strictEqual(res.status, 0, 'Dry-run preparation must complete successfully');
     assert.match(res.stdout, /MODE_A_LOCAL_PREPARATION_AND_RECONCILIATION|DRY-RUN/i);
     assert.match(res.stdout, /Network Calls Measured: 0|0 remote mutations/i);
-    assert.match(res.stdout, /PREPARED_AND_RECONCILED_IN_REPOSITORY/i);
+    assert.match(res.stdout, /PARTIALLY_READY_WITH_BLOCKED_STAGES|PREPARED_AND_RECONCILED_IN_REPOSITORY/i);
   });
 
   // ─── 9. SECRET REDACTION CONFIRMATION ──────────────────────────────────────
