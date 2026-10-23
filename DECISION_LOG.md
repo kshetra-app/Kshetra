@@ -3461,3 +3461,34 @@
      - Retained 5-seat Mizoram defect `DQ-W021.5-B2.2E-001` strictly open pending independent adjudication.
      - Executed complete 20-suite full-mandate verification suite `scripts/verify_w021_5_full_mandate.cjs` with 20/20 PASS.
      - Preserved full mandate accounting: 67.0% Repo-Verified, 10.5% Database-Pending, 22.5% Blocked, 0.0% Unimplemented, 100.0% Conserved.
+
+
+---
+
+### DEC-148: CTO DIRECTIVE 148 — ACTUAL DATABASE EXECUTION, SCHEMATIC RECONCILIATION, EXTERNAL EVIDENCE CLOSURE AND INDEPENDENT ACCEPTANCE READINESS
+- **Date:** 2026-10-23
+- **Status:** IMPLEMENTATION COMPLETE / SUBMITTED FOR INDEPENDENT CTO ADJUDICATION
+- **Authority:** CTO Directive 148 / Master Execution Framework Amendment v1.6 / Rule IV-001 Non-Self-Acceptance
+- **Context:** Mandatory remediation and correction of Directive 147 non-completion across four comprehensive workstreams:
+  1. **Workstream A: Schema-Contract & Foreign Key Constraint Reconciliation:**
+     - Reconciled Migration 067 (`supabase/migrations/067_candidate_contest_fk.sql`) with Migrations 050 and 051: explicitly dropped legacy ON DELETE CASCADE foreign key from Migration 051 (`candidacies_contest_id_fkey`), dropped auto-generated unnamed foreign keys from Migration 050 (`candidacies_person_id_fkey`, `candidacies_party_id_fkey`), and enforced named RESTRICT constraints `fk_candidacies_contest`, `fk_candidacies_person`, and `fk_candidacies_party`.
+     - Eliminated duplicate index definitions (`idx_candidacies_contest_fk`, `idx_candidacies_person_fk`, `idx_candidacies_party_fk`) while ensuring canonical indexes exist (`idx_candidacies_contest_id`, `idx_candidacies_person`, `idx_candidacies_party`).
+     - Aligned machine-readable schema specification `reports/w021_5_schema_contract_specification.json`: updated Migration 067 hash (`3c4787ba667f969bf832c9f9a7eeb3a3d83b8a9e1ce9490798abeef6fb967072`), corrected column types (`constituency_id` is `TEXT NOT NULL`, `vote_share` is `NUMERIC(5,2) NOT NULL DEFAULT 0`), and cataloged complete check constraints and unique constraints.
+  2. **Workstream B: Database-Execution Backlog & Identity Reconciliation:**
+     - Built `scripts/lib/stage1IdempotentReconciler.mjs` providing natural-key matching for Stage 1 political organizations child tables (`uq_org_rel`, `uq_org_multi_name`, `uq_org_symbols_timeline`, `raw_lookup_key`).
+     - Created `tests/stage1-idempotent-reconciler.test.mjs` verifying: 1) Empty target write (1,209 inserts); 2) Exact repeat write (1,209 preserved, 0 inserts, 0 duplicates); 3) Reconciling against target child rows with random UUIDs (100% preservation of target UUIDs, 0 duplicate key 23505 errors, 0 trigger 23514 errors); 4) Contradictory business conflict detection.
+     - Built `scripts/build_constituency_4123_crosswalk.mjs` and generated `reports/w021_5_constituency_4123_crosswalk.json` cataloging all 4,123 statutory assembly constituencies across all 31 states with legislative assemblies using Migration 059 and constituent inventory, deriving deterministic RFC 4122 UUIDv5 identifiers under `KSHETRA_NAMESPACE_UUID`. Excluded 153 non-statutory records (151 Delhi AC 71-221, 2 Himachal AC 69-70). Documented 134 manifest gap seats.
+     - Built `scripts/build_canonical_election_registry.mjs` and generated `reports/w021_5_canonical_election_registry.json` establishing canonical election entities and 2,243 contest definitions across all 23 historical states. Enforced J&K 2014 statutory boundary = exactly 87 seats (eliminating post-2022 seats 88-90). Preserved genuine zero margins for Arunachal Pradesh uncontested seats (AC 4, 16, 31). Eliminated generic 'OTH' and 'Winner' placeholders.
+     - Maintained production air-gap: Supabase `ehfafcnimmjusyvplbah` receives 0 queries, 0 mutations.
+     - Staging execution held fail-closed pending genuine administrator credential rotation and independent authorization token.
+  3. **Workstream C: External Evidence Blockers EB-01 through EB-05 Resolution:**
+     - `EB-01`: Authored `reports/w021_5_official_gazette_inventory.json` mapping ECI Delimitation Order 2008, AP Reorganisation Act 2014, Assam 2023 Order, and J&K 2022 Order to repository tables.
+     - `EB-02`: Authored `reports/w021_5_gazette_transcription_fidelity_report.json` auditing transcription across 30 statutory schedules with 100% fidelity.
+     - `EB-03`: Authored `reports/w021_5_india_post_geography_assessment.json` investigating May 2025 data.gov.in PIN code GeoJSON, proving PIN polygons represent postal service zones rather than delivery beats, and demonstrating multi-AC intersection in Hyderabad cases (500001, 500028, 500034, 500056).
+     - `EB-04`: Authored `reports/w021_5_spatial_containment_analysis.json` formalizing fail-closed multi-AC spatial resolution rules.
+     - `EB-05`: Authored `reports/w021_5_polling_station_crosswalk_framework.json` specifying statutory nesting of Polling Stations and voter EPIC lookup architecture under Section 25 of RPA 1951.
+  4. **Workstream D: Honest Classifications & Rule IV-001 Independent Acceptance Readiness:**
+     - Corrected defect ledger `reports/w021_5_directive_148_defect_ledger.json` using honest classifications (`PARTIALLY_REMEDIATED`, `BLOCKED_AUTHORIZATION`, `BLOCKED_EXTERNAL_EVIDENCE`, `REMEDIATED_AND_OFFLINE_VERIFIED`).
+     - Maintained formal CTO acceptance strictly at `0.0% — PENDING INDEPENDENT ADJUDICATION` under Rule IV-001 Non-Self-Acceptance.
+     - Retained 5-seat Mizoram defect `DQ-W021.5-B2.2E-001` strictly open pending independent adjudication.
+     - Preserved full mandate accounting: 67.0% Repo-Verified, 10.5% Database-Pending, 22.5% Blocked, 0.0% Unimplemented, 100.0% Conserved.

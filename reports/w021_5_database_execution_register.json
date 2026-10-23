@@ -1,10 +1,10 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "W021.5 Database Execution Register",
-  "directive": "CTO Directive 147",
+  "directive": "CTO Directive 148",
   "governingAuthority": "Master Execution Framework Amendment v1.6 / Rule IV-001 Non-Self-Acceptance",
-  "generatedAt": "2026-10-23T15:22:00.000Z",
-  "baselineCommit": "cdc910ac7491a4293b02c95d64857b5a6149bd0b",
+  "generatedAt": "2026-10-23T18:55:00.000Z",
+  "baselineCommit": "526a31fbe699a3e3a272ab538b7d48c85517bf33",
   "airGapBoundary": {
     "productionDatabase": "ehfafcnimmjusyvplbah",
     "productionStatus": "AIR_GAPPED_ZERO_QUERIES_ZERO_MUTATIONS",
@@ -93,7 +93,9 @@
         "supabase/migrations/063_canonical_political_identity_foundation.sql",
         "supabase/migrations/064_political_organization_governance_remediation.sql",
         "supabase/migrations/065_canonical_political_organization_registry.sql",
-        "scripts/generate-065-migration.mjs"
+        "scripts/generate-065-migration.mjs",
+        "scripts/lib/stage1IdempotentReconciler.mjs",
+        "tests/stage1-idempotent-reconciler.test.mjs"
       ],
       "entityBreakdown": {
         "entityType": "POLITICAL_ORGANIZATION_CATALOG",
@@ -168,8 +170,9 @@
       "blockingCondition": "Blocked by absence of authoritative repository crosswalk from statutory constituency identities to public.constituencies(internal_id) UUID foreign keys (4,123 unmapped seats). Stage 3 dispatches exactly 0 rows to staging while blocked under Directive 145 Item 6.",
       "sourceFiles": [
         "supabase/migrations/066_downstream_civic_extensions.sql",
-        "scripts/build-demographics.mjs",
-        "reports/w021_5a_repository_data_truth_audit.json"
+        "scripts/build_constituency_4123_crosswalk.mjs",
+        "reports/w021_5_constituency_4123_crosswalk.json",
+        "reports/w021_5_constituent_inventory_4123.json"
       ],
       "entityBreakdown": {
         "entityType": "CONSTITUENCY_DEMOGRAPHICS",
@@ -204,8 +207,9 @@
       "blockingCondition": "Blocked by absence of canonical election entity linkages for the 23 historical states in repository seed files. Synthetic test-elec-... IDs strictly eliminated (election_id: null). Zero synthetic rows sent to staging under Directive 144.",
       "sourceFiles": [
         "scripts/build_all_23_historical_results.mjs",
-        "tests/historical-election-results-23-states.test.mjs",
-        "data/seed/*-historical-results.ts"
+        "scripts/build_canonical_election_registry.mjs",
+        "reports/w021_5_canonical_election_registry.json",
+        "tests/historical-election-results-23-states.test.mjs"
       ],
       "entityBreakdown": {
         "entityType": "ELECTION_HISTORICAL_RESULTS",
@@ -273,8 +277,8 @@
       "entityBreakdown": {
         "entityType": "FOREIGN_KEY_CONSTRAINT",
         "sourceTable": "public.candidacies",
-        "targetTables": ["public.political_organizations"],
-        "constraintNames": ["fk_candidacies_party"],
+        "targetTables": ["public.election_contests", "public.canonical_persons", "public.political_organizations"],
+        "constraintNames": ["fk_candidacies_contest", "fk_candidacies_person", "fk_candidacies_party"],
         "schemaValid": true
       }
     }

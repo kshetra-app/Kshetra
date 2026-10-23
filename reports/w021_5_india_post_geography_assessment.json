@@ -1,0 +1,89 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "assessmentSpecification": "W021.5 India Post Geography & PIN Code Boundary Technical Assessment",
+  "blockerId": "EB-03",
+  "blockerCategory": "INDIA_POST_BEAT_POLYGON_AUTHORITY",
+  "directive": "CTO Directive 148 / Workstream C / Task EB-03",
+  "governingAuthority": "Master Execution Framework Amendment v1.6 / Rule IV-001 Non-Self-Acceptance",
+  "generatedAt": "2026-10-23T18:42:00+05:30",
+  "externalDatasetInvestigated": {
+    "title": "All India PIN Code Boundary geo-json",
+    "publishingAuthority": "Department of Posts, Ministry of Communications, Government of India",
+    "portal": "Open Government Data (OGD) Platform India (data.gov.in)",
+    "publicationReleaseDate": "May 2025",
+    "fileFormat": "GeoJSON / Shapefile",
+    "declaredScope": "Pan-India 6-digit Postal Index Number (PIN) boundary polygons"
+  },
+  "technicalEvaluation": {
+    "geographicalEntityLevel": "PIN Code Delivery Area (Not Postman Delivery Beat)",
+    "finding": "The dataset represents 6-digit PIN code delivery and sorting area polygons derived from delivery post offices (Head Post Offices and Sub Post Offices). It does NOT represent individual postman delivery beats.",
+    "deliveryBeatVsPinCodeDistinction": {
+      "postmanDeliveryBeat": "A dynamic operational route assigned to a specific postman within a delivery sub-office. Beats are defined along street networks, road segments, and postal delivery points; they do not have formal statutory cadastral boundaries and change dynamically based on mail volume and post office staffing.",
+      "pinCodePolygon": "A spatial approximation of the geographic service territory served by a 6-digit postal code. These are created by administrative clustering of delivery post offices, often using Voronoi/Thiessen tesselation constrained by road networks and administrative district boundaries."
+    },
+    "statutoryElectoralBoundaryNonAlignment": {
+      "finding": "PIN code boundaries are designed exclusively for mail sorting, routing, and logistics. They are completely independent of statutory Assembly Constituencies (AC) and Parliamentary Constituencies (PC) established under the Delimitation Act.",
+      "containmentFailureInUrbanCenters": "In dense metropolitan areas, a single 6-digit PIN code delivery zone routinely spans across 2, 3, or more Assembly Constituencies. Conversely, a single Assembly Constituency routinely encompasses portions of multiple PIN codes."
+    }
+  },
+  "urbanMultiAcCaseStudies": {
+    "city": "Hyderabad, Telangana",
+    "cases": [
+      {
+        "pincode": "500001",
+        "officeName": "Hyderabad G.P.O.",
+        "intersectingConstituencies": [
+          { "constituencyId": "TS-AC-63", "acNo": 63, "name": "Nampally" },
+          { "constituencyId": "TS-AC-67", "acNo": 67, "name": "Goshamahal" },
+          { "constituencyId": "TS-AC-68", "acNo": 68, "name": "Charminar" }
+        ],
+        "isStrictlyNested": false,
+        "primaryConstituencyByArea": "TS-AC-67 (Goshamahal)"
+      },
+      {
+        "pincode": "500028",
+        "officeName": "Mehdipatnam S.O.",
+        "intersectingConstituencies": [
+          { "constituencyId": "TS-AC-61", "acNo": 61, "name": "Jubilee Hills" },
+          { "constituencyId": "TS-AC-62", "acNo": 62, "name": "Sanathnagar" },
+          { "constituencyId": "TS-AC-64", "acNo": 64, "name": "Karwan" },
+          { "constituencyId": "TS-AC-63", "acNo": 63, "name": "Nampally" }
+        ],
+        "isStrictlyNested": false,
+        "primaryConstituencyByArea": "TS-AC-64 (Karwan)"
+      },
+      {
+        "pincode": "500034",
+        "officeName": "Banjara Hills S.O.",
+        "intersectingConstituencies": [
+          { "constituencyId": "TS-AC-60", "acNo": 60, "name": "Khairatabad" },
+          { "constituencyId": "TS-AC-61", "acNo": 61, "name": "Jubilee Hills" },
+          { "constituencyId": "TS-AC-62", "acNo": 62, "name": "Sanathnagar" }
+        ],
+        "isStrictlyNested": false,
+        "primaryConstituencyByArea": "TS-AC-60 (Khairatabad)"
+      },
+      {
+        "pincode": "500056",
+        "officeName": "Sanathnagar I.E. S.O.",
+        "intersectingConstituencies": [
+          { "constituencyId": "TS-AC-62", "acNo": 62, "name": "Sanathnagar" },
+          { "constituencyId": "TS-AC-60", "acNo": 60, "name": "Khairatabad" },
+          { "constituencyId": "TS-AC-57", "acNo": 57, "name": "Kukatpally" }
+        ],
+        "isStrictlyNested": false,
+        "primaryConstituencyByArea": "TS-AC-62 (Sanathnagar)"
+      }
+    ]
+  },
+  "conclusionsAndArchitecturalRules": {
+    "rule1_noArbitrarySingleAcMapping": "A PIN code MUST NOT be stored as a 1:1 foreign key to an Assembly Constituency in the relational database. Doing so causes spatial misrepresentation for citizens residing in multi-AC postal zones.",
+    "rule2_failClosedCivicResolution": "When a citizen provides only a 6-digit PIN code that intersects multiple ACs, the application must require secondary spatial disambiguation (e.g. locality, street, landmark, or electoral roll part number).",
+    "rule3_postalBeatDatasetNonNecessity": "Because postman delivery beats are operational logistics routes that do not align with statutory electoral units, acquiring physical paper postman beat maps is NOT a valid prerequisite for statutory electoral truth. The authoritative statutory link for voters is the Polling Station / Part Number (EB-05)."
+  },
+  "disposition": {
+    "assessmentStatus": "TECHNICAL_INVESTIGATION_COMPLETE",
+    "blockerResolution": "PARTIALLY_REMEDIATED_GEOGRAPHIC_REALITY_ESTABLISHED",
+    "recommendedAction": "Classify EB-03 as a postal logistics dataset rather than a statutory electoral determinant. Transition sub-AC citizen matching to Polling Station Part Crosswalks (EB-05)."
+  }
+}

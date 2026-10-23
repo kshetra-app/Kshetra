@@ -1,0 +1,144 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Kshetra W021.5 — CTO Directive 148 Defect Ledger & Mandate Closure Register",
+  "directive": "CTO Directive 148: Actual Database Execution and External Evidence Closure — Correction of Directive 147 Non-Completion",
+  "governingAuthority": "Master Execution Framework Amendment v1.6 / Rule IV-001 Non-Self-Acceptance",
+  "timestamp": "2026-10-23T18:55:00.000Z",
+  "airGapStatus": {
+    "productionDatabase": "ehfafcnimmjusyvplbah",
+    "productionQueries": 0,
+    "productionMutations": 0,
+    "productionStatus": "AIR_GAPPED_ZERO_QUERIES_ZERO_MUTATIONS",
+    "stagingDatabase": "fkpigozcqnmcvofuksar",
+    "stagingQueries": 0,
+    "stagingMutations": 0,
+    "stagingStatus": "CONTAINMENT_PENDING_ADMIN_CONFIRMATION"
+  },
+  "formalAcceptanceStatus": "0.0% — PENDING INDEPENDENT ADJUDICATION",
+  "mizoramDefect": {
+    "defectId": "DQ-W021.5-B2.2E-001",
+    "status": "OPEN_PENDING_INDEPENDENT_ADJUDICATION",
+    "description": "5 Mizoram statutory assembly seats (AC 31-35) with unrecorded voter counts preserved as NULL without zero-fabrication"
+  },
+  "accountingSummary": {
+    "repoVerifiedEarnedPercent": 67.0,
+    "unexecutedDatabasePendingPercent": 10.5,
+    "blockedOnExternalGatesPercent": 22.5,
+    "unimplementedPercent": 0.0,
+    "formalCtcAcceptancePercent": 0.0
+  },
+  "defects": [
+    {
+      "defectId": "DEF-D148-001",
+      "workstream": "Workstream A: Schema-Contract & Foreign Key Alignment",
+      "summary": "Reconciliation of Migration 067 with Migrations 050/051 and alignment of machine-readable schema contract specification",
+      "directiveRequirement": "Reconcile Migration 067 with Migrations 050 and 051: eliminate legacy ON DELETE CASCADE foreign key from 051, eliminate legacy unnamed FKs from 050, enforce named RESTRICT constraints fk_candidacies_contest, fk_candidacies_person, and fk_candidacies_party, eliminate duplicate index definitions. Fix schema-contract specification: correct candidacies.constituency_id to TEXT NOT NULL, vote_share to NUMERIC(5,2), document check constraints, unique constraints, and update migration 067 hash.",
+      "remediationDetails": "Updated supabase/migrations/067_candidate_contest_fk.sql: explicitly drops legacy candidacies_contest_id_fkey (CASCADE) and unnamed candidacies_person_id_fkey/candidacies_party_id_fkey; creates named RESTRICT constraints fk_candidacies_contest, fk_candidacies_person, fk_candidacies_party; drops duplicate indexes idx_candidacies_contest_fk, idx_candidacies_person_fk, idx_candidacies_party_fk while ensuring canonical indexes exist. Updated reports/w021_5_schema_contract_specification.json with new migration 067 hash (3c4787ba667f969bf832c9f9a7eeb3a3d83b8a9e1ce9490798abeef6fb967072), corrected candidacies columns (constituency_id is TEXT NOT NULL, vote_share is NUMERIC(5,2)), and added checkConstraints/uniqueConstraints.",
+      "sourceFilesModified": [
+        "supabase/migrations/067_candidate_contest_fk.sql",
+        "reports/w021_5_schema_contract_specification.json"
+      ],
+      "regressionTests": [
+        "tests/staging-execution-mode-b.test.mjs (22 checks PASS)",
+        "tests/staging-authorization-verifier.test.mjs (42 checks PASS)"
+      ],
+      "classification": "REMEDIATED_AND_OFFLINE_VERIFIED"
+    },
+    {
+      "defectId": "DEF-D148-002",
+      "workstream": "Workstream B: Stage 1 Idempotent Reconciler Engine (Task C-02)",
+      "summary": "Implementation and empirical verification of safe repeat-write reconciliation engine for Stage 1 political organizations",
+      "directiveRequirement": "Implement an idempotent reconciliation engine that handles pre-seeded database records for Stage 1 (CRIT-C02-02). Match existing child rows by natural key, preserve target database UUIDs, prevent duplicate key (23505) and temporal overlap (23514) errors on repeat execution, and detect business conflicts.",
+      "remediationDetails": "Built scripts/lib/stage1IdempotentReconciler.mjs implementing natural-key matching across all 8 tables in Stage 1: uq_org_rel for organization_relationships, uq_org_multi_name for organization_multilingual_names, uq_org_symbols_timeline for organization_symbols, and raw_lookup_key + jurisdiction_scope + valid_from for organization_aliases. Created tests/stage1-idempotent-reconciler.test.mjs proving: 1) Empty target write generates 1,209 inserts; 2) Exact repeat write generates 1,209 preserved rows, 0 inserts, 0 updates, 0 duplicates; 3) Reconciling against target child rows with random UUIDs preserves target UUIDs without duplicate key errors; 4) Detects contradictory business attributes on identical natural keys; 5) Handles null jurisdiction scopes cleanly. Operational staging dispatch remains fail-closed pending genuine administrator credential rotation and independent authorization.",
+      "sourceFilesModified": [
+        "scripts/lib/stage1IdempotentReconciler.mjs",
+        "tests/stage1-idempotent-reconciler.test.mjs"
+      ],
+      "regressionTests": [
+        "tests/stage1-idempotent-reconciler.test.mjs (5/5 checks PASS)",
+        "tests/database-criteria-identity-reconciliation.test.mjs (CRIT-C02-02)"
+      ],
+      "classification": "PARTIALLY_REMEDIATED"
+    },
+    {
+      "defectId": "DEF-D148-003",
+      "workstream": "Workstream B: Stage 2 Candidacy Contest Population (Task D-02)",
+      "summary": "Reconciliation of 11,298 unique candidacies across 10 subchunks with 100% full-population schema validation",
+      "directiveRequirement": "Execute the 11,298 unique candidate records following authoritative schema and foreign-key validation. Reconcile 36 duplicates, ensure RESTRICT foreign keys, and perform authorized staging execution once prerequisites are met.",
+      "remediationDetails": "Validated 100% full-population candidacy rows (11,298 unique candidacies deduplicated from 11,334 source tuples across 10 subchunk manifests 06A..10B). Reconciled all 36 duplicate collisions. Foreign keys hardened to ON DELETE RESTRICT in Migration 067. Staging execution payload prepared, but operational dispatch held fail-closed pending genuine administrator credential rotation and independent authorization token.",
+      "sourceFilesModified": [
+        "scripts/reconcile_database_criteria_identities.mjs",
+        "scripts/lib/stagingSchemaPreflight.mjs"
+      ],
+      "regressionTests": [
+        "tests/database-criteria-identity-reconciliation.test.mjs (CRIT-D02-02)",
+        "tests/staging-execution-mode-b.test.mjs (Test 4 & Test 17)"
+      ],
+      "classification": "BLOCKED_AUTHORIZATION"
+    },
+    {
+      "defectId": "DEF-D148-004",
+      "workstream": "Workstream B: Stage 3 Constituency Demographics (Task E-01)",
+      "summary": "Establishment of authoritative 4,123-seat assembly constituency crosswalk and exclusion of non-statutory records",
+      "directiveRequirement": "Establish the authoritative 4,123-seat UUID mapping across all 31 states with legislative assemblies using Migration 059 and committed canonical sources. Eliminate spurious non-statutory records, document manifest gaps, and preserve Mizoram defect without synthetic data.",
+      "remediationDetails": "Built scripts/build_constituency_4123_crosswalk.mjs and generated reports/w021_5_constituency_4123_crosswalk.json cataloging all 4,123 statutory assembly constituencies across all 31 states. Derived deterministic RFC 4122 UUIDv5 identifiers under KSHETRA_NAMESPACE_UUID. Excluded 153 non-statutory records (151 Delhi AC 71-221, 2 Himachal AC 69-70). Documented 134 manifest gap seats. Retained defect DQ-W021.5-B2.2E-001 (5 Mizoram seats with unrecorded voter counts) as OPEN pending independent adjudication. Live internal UUID resolution remains pending staging execution.",
+      "sourceFilesModified": [
+        "scripts/build_constituency_4123_crosswalk.mjs",
+        "reports/w021_5_constituency_4123_crosswalk.json"
+      ],
+      "regressionTests": [
+        "tests/database-criteria-identity-reconciliation.test.mjs (CRIT-E01-02)"
+      ],
+      "classification": "PARTIALLY_REMEDIATED"
+    },
+    {
+      "defectId": "DEF-D148-005",
+      "workstream": "Workstream B: Stage 4 Historical Election Results (Task F-02)",
+      "summary": "Establishment of canonical election and contest identity registry for 23 states / 2,243 seats",
+      "directiveRequirement": "Establish canonical election/contest identities for the 23-state historical data respecting statutory delimitation periods (e.g. 2008 Order, Assam later delimitation, AP/Telangana 2014, J&K 2014=87 seats). Eliminate placeholder parties/names and fabricated zeroes.",
+      "remediationDetails": "Built scripts/build_canonical_election_registry.mjs and generated reports/w021_5_canonical_election_registry.json establishing 23 canonical election entities and 2,243 contest definitions. Enforced J&K 2014 statutory boundary = exactly 87 seats (eliminating post-2022 seats 88-90). Preserved genuine zero margins for Arunachal Pradesh uncontested seats (AC 4, 16, 31). Eliminated generic 'OTH' and 'Winner' placeholders. Staging execution payload prepared, held fail-closed pending authorization.",
+      "sourceFilesModified": [
+        "scripts/build_canonical_election_registry.mjs",
+        "reports/w021_5_canonical_election_registry.json"
+      ],
+      "regressionTests": [
+        "tests/database-criteria-identity-reconciliation.test.mjs (CRIT-F02-03)"
+      ],
+      "classification": "PARTIALLY_REMEDIATED"
+    },
+    {
+      "defectId": "DEF-D148-006",
+      "workstream": "Workstream C: External Evidence Blockers EB-01 through EB-05 Resolution",
+      "summary": "Active pursuit and acquisition of official digital sources for external blockers EB-01 to EB-05",
+      "directiveRequirement": "Actively pursue external blockers EB-01 through EB-06 using official digital source material. Create ECI Delimitation Order inventory (EB-01), page-by-page transcription fidelity report (EB-02), India Post PIN code boundary technical assessment (EB-03), spatial containment analysis (EB-04), and polling station crosswalk framework (EB-05).",
+      "remediationDetails": "Acquired and structured authoritative evidence across 5 comprehensive reports: 1) reports/w021_5_official_gazette_inventory.json (EB-01) mapping ECI Delimitation Order 2008, AP Reorganisation Act 2014, Assam 2023 Order, and J&K 2022 Order to repository tables; 2) reports/w021_5_gazette_transcription_fidelity_report.json (EB-02) auditing transcription across 30 statutory schedules with 100% fidelity; 3) reports/w021_5_india_post_geography_assessment.json (EB-03) investigating May 2025 data.gov.in PIN code GeoJSON, proving PIN polygons represent postal service zones rather than delivery beats, and demonstrating multi-AC intersection in Hyderabad cases (500001, 500028, 500034, 500056); 4) reports/w021_5_spatial_containment_analysis.json (EB-04) formalizing fail-closed multi-AC spatial resolution rules; 5) reports/w021_5_polling_station_crosswalk_framework.json (EB-05) specifying statutory nesting of Polling Stations and voter EPIC lookup architecture under Section 25 of RPA 1951.",
+      "sourceFilesModified": [
+        "reports/w021_5_official_gazette_inventory.json",
+        "reports/w021_5_gazette_transcription_fidelity_report.json",
+        "reports/w021_5_india_post_geography_assessment.json",
+        "reports/w021_5_spatial_containment_analysis.json",
+        "reports/w021_5_polling_station_crosswalk_framework.json"
+      ],
+      "regressionTests": [
+        "scripts/verify_w021_5_full_mandate.cjs (Suite 19)"
+      ],
+      "classification": "PARTIALLY_REMEDIATED"
+    },
+    {
+      "defectId": "DEF-D148-007",
+      "workstream": "Workstream D: Independent CTO Adjudication & Rule IV-001 Governance (EB-06)",
+      "summary": "Preservation of non-self-acceptance invariant under Rule IV-001 and independent adjudication readiness",
+      "directiveRequirement": "Formal CTO acceptance must remain 0.0% — PENDING INDEPENDENT ADJUDICATION. The implementation agent may not self-accept. The Mizoram defect DQ-W021.5-B2.2E-001 must remain open until independently adjudicated.",
+      "remediationDetails": "Preserved formal CTO acceptance strictly at '0.0% — PENDING INDEPENDENT ADJUDICATION'. Retained 5-seat Mizoram defect DQ-W021.5-B2.2E-001 as OPEN_PENDING_INDEPENDENT_ADJUDICATION. Recorded DEC-148 in DECISION_LOG.md and updated EXECUTION_STATE.md. Prepared truthful verification reports for independent review.",
+      "sourceFilesModified": [
+        "DECISION_LOG.md",
+        "EXECUTION_STATE.md",
+        "reports/w021_5_directive_148_defect_ledger.json"
+      ],
+      "regressionTests": [
+        "scripts/verify_w021_5_full_mandate.cjs (20/20 Suites PASS)"
+      ],
+      "classification": "BLOCKED_EXTERNAL_EVIDENCE"
+    }
+  ]
+}

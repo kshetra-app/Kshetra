@@ -1,7 +1,7 @@
 {
   "verifier": "scripts/verify_production_airgap_and_preflight.cjs",
   "directive": "CTO Directive 138 / W021.5-I-02 / CRIT-I02-01",
-  "timestamp": "2026-10-23T10:00:35.014Z",
+  "timestamp": "2026-10-23T13:12:35.514Z",
   "productionProjectRef": "ehfafcnimmjusyvplbah",
   "stagingProjectRef": "fkpigozcqnmcvofuksar",
   "summary": {

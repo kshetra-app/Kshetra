@@ -1,10 +1,10 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "contractSpecification": "W021.5 PostgreSQL Schema Contract Specification",
-  "directive": "CTO Directive 147 Section 4: Schema-Contract Alignment & Payload Verification",
+  "directive": "CTO Directive 148: Schema-Contract Alignment & Full Payload Verification",
   "governingAuthority": "Master Execution Framework Amendment v1.6 / Rule IV-001 Non-Self-Acceptance",
-  "generatedAt": "2026-10-23T15:20:00+05:30",
-  "sourceCommit": "cdc910ac7491a4293b02c95d64857b5a6149bd0b",
+  "generatedAt": "2026-10-23T18:25:00+05:30",
+  "sourceCommit": "526a31fbe699a3e3a272ab538b7d48c85517bf33",
   "migrationSequence": {
     "totalMigrations": 14,
     "files": [
@@ -70,8 +70,8 @@
       },
       {
         "path": "supabase/migrations/067_candidate_contest_fk.sql",
-        "sha256": "d6145feaf7dafe5cdcac680d380ac9a37ef42dd2294f969c0148e5f0d3e837fe",
-        "scope": "Foreign key constraint on candidacies.party_id -> public.political_organizations(id)"
+        "sha256": "3c4787ba667f969bf832c9f9a7eeb3a3d83b8a9e1ce9490798abeef6fb967072",
+        "scope": "Referential integrity hardening on candidacies: drops legacy CASCADE FK and unnamed FKs; enforces named RESTRICT constraints fk_candidacies_contest, fk_candidacies_person, and fk_candidacies_party; cleans up redundant duplicate indexes"
       },
       {
         "path": "supabase/migrations/068_affidavit_disclosures.sql",
@@ -207,26 +207,49 @@
       "primaryKey": "id (UUID)",
       "conflictTarget": "person_id,election_year,election_type,constituency_id",
       "uniqueConstraints": [
-        "uq_candidacies (person_id, election_year, election_type, constituency_id)"
+        "uq_candidacies (person_id, election_year, election_type, constituency_id)",
+        "uq_candidacies_contest_person (contest_id, person_id)"
       ],
       "foreignKeys": [
-        { "column": "constituency_id", "references": "public.constituencies(id)" },
-        { "column": "party_id", "references": "public.political_organizations(id)" }
+        { "column": "person_id", "references": "public.canonical_persons(id)", "constraint": "fk_candidacies_person", "onDelete": "RESTRICT" },
+        { "column": "party_id", "references": "public.political_organizations(id)", "constraint": "fk_candidacies_party", "onDelete": "RESTRICT" },
+        { "column": "contest_id", "references": "public.election_contests(id)", "constraint": "fk_candidacies_contest", "onDelete": "RESTRICT" },
+        { "column": "affidavit_id", "references": "public.candidate_affidavits(id)", "onDelete": "SET NULL" },
+        { "column": "provenance_id", "references": "public.provenance_records(id)", "onDelete": "RESTRICT" }
       ],
       "columns": {
         "id": { "type": "UUID", "nullable": false },
         "person_id": { "type": "UUID", "nullable": false },
-        "constituency_id": { "type": "UUID", "nullable": false },
         "election_year": { "type": "INTEGER", "nullable": false },
         "election_type": { "type": "TEXT", "nullable": false, "enum": "public.candidacy_election_types" },
+        "constituency_type": { "type": "TEXT", "nullable": false, "allowedValues": ["parliamentary", "assembly", "local_body_ward", "panchayat"] },
+        "constituency_id": { "type": "TEXT", "nullable": false },
         "party_id": { "type": "TEXT", "nullable": true, "fk": "public.political_organizations(id)" },
-        "votes_received": { "type": "INTEGER", "nullable": true },
-        "vote_share_percentage": { "type": "NUMERIC(5,2)", "nullable": true },
+        "is_independent": { "type": "BOOLEAN", "nullable": false, "default": false },
         "result": { "type": "TEXT", "nullable": false, "enum": "public.candidacy_results" },
+        "votes_received": { "type": "INTEGER", "nullable": false, "default": 0 },
+        "vote_share": { "type": "NUMERIC(5,2)", "nullable": false, "default": 0.00 },
+        "rank": { "type": "INTEGER", "nullable": false, "default": 0 },
+        "affidavit_id": { "type": "UUID", "nullable": true },
+        "contest_id": { "type": "UUID", "nullable": true },
+        "evm_votes": { "type": "INTEGER", "nullable": true },
+        "postal_votes": { "type": "INTEGER", "nullable": true },
         "data_status": { "type": "public.data_status_enum", "nullable": false, "allowedValues": ["OFFICIAL", "UNVERIFIED"] },
+        "provenance_id": { "type": "UUID", "nullable": true },
         "created_at": { "type": "TIMESTAMPTZ", "nullable": false },
         "updated_at": { "type": "TIMESTAMPTZ", "nullable": false }
-      }
+      },
+      "checkConstraints": [
+        "candidacies_election_year_check (election_year >= 1947)",
+        "candidacies_election_type_check (election_type IN ('parliamentary', 'assembly', 'local_body', 'by_election'))",
+        "candidacies_constituency_type_check (constituency_type IN ('parliamentary', 'assembly', 'local_body_ward', 'panchayat'))",
+        "candidacies_result_check (result IN ('won', 'lost', 'forfeited_deposit', 'withdrawn', 'pending', 'won_uncontested'))",
+        "candidacies_votes_received_check (votes_received >= 0)",
+        "candidacies_vote_share_check (vote_share BETWEEN 0 AND 100)",
+        "candidacies_rank_check (rank >= 0)",
+        "candidacies_independent_party_check ((is_independent = true AND party_id IS NULL) OR (is_independent = false AND party_id IS NOT NULL))",
+        "chk_candidate_votes_sum (votes_received = evm_votes + postal_votes OR (evm_votes = 0 AND postal_votes = 0))"
+      ]
     },
     "stage3_constituency_demographics": {
       "criterionId": "CRIT-E01-02",

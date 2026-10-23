@@ -511,7 +511,7 @@ export async function runStagingExecutionEngine(options = {}) {
     // Directive 145 / Directive 146: Distinguish partially ready with blocked stages from fully prepared
     const report = {
       generator: 'scripts/execute_staging_directive_139.mjs',
-      directive: 'CTO Directive 147 / W021.5',
+      directive: 'CTO Directive 148 / W021.5',
       timestamp: new Date().toISOString(),
       governingAuthority: 'Master Execution Framework Amendment v1.6 / Rule IV-001 Non-Self-Acceptance',
       stagingProjectRef: ALLOWED_STAGING_PROJECT_REF,
@@ -762,7 +762,7 @@ export async function runStagingExecutionEngine(options = {}) {
 
     const report = {
       generator: 'scripts/execute_staging_directive_139.mjs',
-      directive: 'CTO Directive 147 / W021.5 / Authorized Staging Execution Output',
+      directive: 'CTO Directive 148 / W021.5 / Authorized Staging Execution Output',
       timestamp: new Date().toISOString(),
       governingAuthority: 'Master Execution Framework Amendment v1.6 / Rule IV-001 Non-Self-Acceptance',
       stagingProjectRef: ALLOWED_STAGING_PROJECT_REF,

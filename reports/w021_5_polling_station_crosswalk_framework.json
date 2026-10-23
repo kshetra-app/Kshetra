@@ -1,0 +1,85 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "frameworkSpecification": "W021.5 Polling Station & Electoral Roll Crosswalk Architecture Framework",
+  "blockerId": "EB-05",
+  "blockerCategory": "VOTER_ROLL_CROSSWALK_AUTHORITY",
+  "directive": "CTO Directive 148 / Workstream C / Task EB-05",
+  "governingAuthority": "Master Execution Framework Amendment v1.6 / Rule IV-001 Non-Self-Acceptance",
+  "generatedAt": "2026-10-23T18:48:00+05:30",
+  "statutoryFramework": {
+    "governingStatute": "Section 25 of the Representation of the People Act, 1951",
+    "districtElectionOfficerRole": "The District Election Officer (DEO) provides a sufficient number of polling stations for each assembly constituency with prior approval of the Election Commission of India.",
+    "electoralRollHierarchy": [
+      {
+        "level": 1,
+        "entity": "State / Union Territory",
+        "statutoryCode": "state_code (e.g. 'TS', 'AP', 'KA')"
+      },
+      {
+        "level": 2,
+        "entity": "Parliamentary Constituency (PC)",
+        "statutoryCode": "pc_no (1..543)"
+      },
+      {
+        "level": 3,
+        "entity": "Assembly Constituency (AC)",
+        "statutoryCode": "ac_no (1..N within State)"
+      },
+      {
+        "level": 4,
+        "entity": "Polling Station (PS) / Polling Booth",
+        "statutoryCode": "ps_no (1..M within AC)"
+      },
+      {
+        "level": 5,
+        "entity": "Electoral Roll Part Number",
+        "statutoryCode": "part_no (Identical to or partitioned from PS)"
+      },
+      {
+        "level": 6,
+        "entity": "Section / Mohalla / Village / Street",
+        "statutoryCode": "section_no within Part"
+      }
+    ],
+    "strictNestingInvariant": "By statutory definition under Section 25 of RPA 1951, a Polling Station and Electoral Roll Part is strictly and 100% nested inside exactly ONE Assembly Constituency. Unlike postal PIN codes, Polling Stations NEVER cross AC boundaries."
+  },
+  "crosswalkDataModel": {
+    "table": "public.polling_stations",
+    "proposedSchema": {
+      "id": "UUID PRIMARY KEY DEFAULT gen_random_uuid()",
+      "constituency_id": "TEXT NOT NULL REFERENCES public.constituencies(id) ON DELETE RESTRICT",
+      "state_code": "TEXT NOT NULL REFERENCES public.states(code)",
+      "ac_no": "INTEGER NOT NULL",
+      "ps_no": "INTEGER NOT NULL",
+      "ps_name": "TEXT NOT NULL",
+      "ps_location": "TEXT",
+      "total_electors": "INTEGER",
+      "male_electors": "INTEGER",
+      "female_electors": "INTEGER",
+      "third_gender_electors": "INTEGER",
+      "latitude": "DOUBLE PRECISION",
+      "longitude": "DOUBLE PRECISION",
+      "data_status": "public.data_status_enum NOT NULL DEFAULT 'OFFICIAL'",
+      "provenance_id": "UUID NOT NULL REFERENCES public.provenance_records(id)"
+    },
+    "uniqueConstraint": "UNIQUE(state_code, ac_no, ps_no)"
+  },
+  "dataAcquisitionChannels": {
+    "channel1_eciElectorSearchApi": {
+      "provider": "Election Commission of India (electoralsearch.eci.gov.in / voters.eci.gov.in)",
+      "mechanism": "EPIC (Voter ID) search returns State, District, AC Number, AC Name, Part Number, Part Name, and Polling Station.",
+      "authoritativeQuality": "100% authoritative primary source directly from the National Electoral Roll (ERNET)",
+      "rateLimitAndAccessRestrictions": "Protected by CAPTCHA and rate limits; bulk programmatic harvesting requires institutional API authorization."
+    },
+    "channel2_stateCeoElectoralRollPdfs": {
+      "provider": "Chief Electoral Officer (CEO) State Portals (e.g. ceotelangana.nic.in, ceoandhra.nic.in)",
+      "mechanism": "Annual final publication of draft/electoral roll PDFs (Form 20 and Electoral Roll Parts) organized by AC and Part Number.",
+      "authoritativeQuality": "Official statutory public documents published under Registration of Electors Rules, 1960."
+    }
+  },
+  "disposition": {
+    "frameworkStatus": "ARCHITECTURE_FORMALIZED_AND_CROSSWALK_SPECIFIED",
+    "blockerResolution": "PARTIALLY_REMEDIATED_FRAMEWORK_ESTABLISHED",
+    "nextPermittedStep": "Integrate voter EPIC lookup via official CEO/ECI voter search endpoints when institutional access credentials are authenticated."
+  }
+}

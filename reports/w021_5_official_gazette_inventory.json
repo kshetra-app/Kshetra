@@ -1,0 +1,98 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "inventorySpecification": "W021.5 Official Gazette & Statutory Instrument Inventory",
+  "blockerId": "EB-01",
+  "blockerCategory": "OFFICIAL_PHYSICAL_GAZETTE_AUTHENTICITY",
+  "directive": "CTO Directive 148 / Workstream C / Task EB-01",
+  "governingAuthority": "Master Execution Framework Amendment v1.6 / Rule IV-001 Non-Self-Acceptance",
+  "generatedAt": "2026-10-23T18:35:00+05:30",
+  "officialGazettePublisher": "Controller of Publications, Department of Publication, Ministry of Housing and Urban Affairs, Government of India / Election Commission of India",
+  "statutoryInstruments": [
+    {
+      "instrumentId": "ECI-DELIM-2008-ORDER",
+      "officialTitle": "Delimitation of Parliamentary and Assembly Constituencies Order, 2008",
+      "gazetteNotificationNumber": "S.O. 383(E) and S.O. 453(E)",
+      "gazettePublicationDate": "2008-02-19",
+      "gazettePart": "The Gazette of India, Extraordinary, Part II, Section 3, Sub-section (iii), No. 71",
+      "digitalSourceHost": "eci.gov.in / egazette.gov.in",
+      "officialUrl": "https://eci.gov.in/delimitation/delimitation-order-2008/",
+      "statutoryAuthority": "Section 10B of the Delimitation Act, 2002 read with Section 8A of the Representation of the People Act, 1950",
+      "tablesCovered": [
+        {
+          "tableName": "Table A",
+          "description": "Parliamentary Constituencies (543 seats)",
+          "statutorySeats": 543,
+          "w021_5_mapping": "public.parliamentary_constituencies, Migration 059"
+        },
+        {
+          "tableName": "Table B",
+          "description": "Assembly Constituencies (4,123 seats across statutory states/UTs)",
+          "statutorySeats": 4123,
+          "w021_5_mapping": "public.constituencies, Migration 059, reports/w021_5_constituency_4123_crosswalk.json"
+        }
+      ],
+      "schedules": [
+        { "schedule": "I", "state": "Andhra Pradesh", "originalSeats": 294, "currentStatus": "Bifurcated under AP Reorganisation Act 2014 into 175 AP + 119 TS" },
+        { "schedule": "II", "state": "Arunachal Pradesh", "seats": 60, "currentStatus": "Unchanged (60 ACs)" },
+        { "schedule": "III", "state": "Assam", "seats": 126, "currentStatus": "Revised by ECI Final Order under Sec 8A, Aug 2023 (126 ACs)" },
+        { "schedule": "IV", "state": "Bihar", "seats": 243, "currentStatus": "Unchanged (243 ACs)" },
+        { "schedule": "V", "state": "Goa", "seats": 40, "currentStatus": "Unchanged (40 ACs)" },
+        { "schedule": "VI", "state": "Gujarat", "seats": 182, "currentStatus": "Unchanged (182 ACs)" },
+        { "schedule": "VII", "state": "Haryana", "seats": 90, "currentStatus": "Unchanged (90 ACs)" },
+        { "schedule": "VIII", "state": "Himachal Pradesh", "seats": 68, "currentStatus": "Unchanged (68 ACs)" },
+        { "schedule": "IX", "state": "Jharkhand", "seats": 81, "currentStatus": "Unchanged (81 ACs)" },
+        { "schedule": "X", "state": "Karnataka", "seats": 224, "currentStatus": "Unchanged (224 ACs)" },
+        { "schedule": "XI", "state": "Kerala", "seats": 140, "currentStatus": "Unchanged (140 ACs)" },
+        { "schedule": "XII", "state": "Madhya Pradesh", "seats": 230, "currentStatus": "Unchanged (230 ACs)" },
+        { "schedule": "XIII", "state": "Maharashtra", "seats": 288, "currentStatus": "Unchanged (288 ACs)" },
+        { "schedule": "XIV", "state": "Manipur", "seats": 60, "currentStatus": "Unchanged (60 ACs)" },
+        { "schedule": "XV", "state": "Meghalaya", "seats": 60, "currentStatus": "Unchanged (60 ACs)" },
+        { "schedule": "XVI", "state": "Mizoram", "seats": 40, "currentStatus": "Unchanged (40 ACs)" },
+        { "schedule": "XVII", "state": "Nagaland", "seats": 60, "currentStatus": "Unchanged (60 ACs)" },
+        { "schedule": "XVIII", "state": "Odisha", "seats": 147, "currentStatus": "Unchanged (147 ACs)" },
+        { "schedule": "XIX", "state": "Punjab", "seats": 117, "currentStatus": "Unchanged (117 ACs)" },
+        { "schedule": "XX", "state": "Rajasthan", "seats": 200, "currentStatus": "Unchanged (200 ACs)" },
+        { "schedule": "XXI", "state": "Sikkim", "seats": 32, "currentStatus": "Unchanged (32 ACs, including 1 Sangha seat)" },
+        { "schedule": "XXII", "state": "Tamil Nadu", "seats": 234, "currentStatus": "Unchanged (234 ACs)" },
+        { "schedule": "XXIII", "state": "Tripura", "seats": 60, "currentStatus": "Unchanged (60 ACs)" },
+        { "schedule": "XXIV", "state": "Uttar Pradesh", "seats": 403, "currentStatus": "Unchanged (403 ACs)" },
+        { "schedule": "XXV", "state": "Uttarakhand", "seats": 70, "currentStatus": "Unchanged (70 ACs)" },
+        { "schedule": "XXVI", "state": "West Bengal", "seats": 294, "currentStatus": "Unchanged (294 ACs)" },
+        { "schedule": "XXVII", "state": "NCT of Delhi", "seats": 70, "currentStatus": "Unchanged (70 ACs)" },
+        { "schedule": "XXVIII", "state": "Puducherry", "seats": 30, "currentStatus": "Unchanged (30 ACs)" }
+      ]
+    },
+    {
+      "instrumentId": "AP-REORG-ACT-2014",
+      "officialTitle": "The Andhra Pradesh Reorganisation Act, 2014 (No. 6 of 2014)",
+      "gazetteNotificationNumber": "Act No. 6 of 2014, published 2014-03-01",
+      "gazettePublicationDate": "2014-03-01",
+      "statutoryAuthority": "Articles 3 and 4 of the Constitution of India",
+      "w021_5_mapping": "Section 15, 17, and 26: 175 seats in Andhra Pradesh Legislative Assembly, 119 seats in Telangana Legislative Assembly"
+    },
+    {
+      "instrumentId": "ECI-ASSAM-DELIM-2023",
+      "officialTitle": "Election Commission of India Final Delimitation Order for Parliamentary and Assembly Constituencies of the State of Assam",
+      "gazetteNotificationNumber": "No. 282/AS/2023(1)",
+      "gazettePublicationDate": "2023-08-11",
+      "digitalSourceHost": "eci.gov.in",
+      "statutoryAuthority": "Section 8A of the Representation of the People Act, 1950",
+      "w021_5_mapping": "Migration 062 (062_canonical_assam_2023_delimitation.sql) — 126 AC boundaries and revised nomenclature"
+    },
+    {
+      "instrumentId": "JK-DELIM-COMMISSION-2022",
+      "officialTitle": "Delimitation Commission Final Order No. 282/J&K/2022 for the Union Territory of Jammu and Kashmir",
+      "gazetteNotificationNumber": "Notification No. 282/J&K/2022",
+      "gazettePublicationDate": "2022-05-05",
+      "digitalSourceHost": "eci.gov.in / egazette.gov.in",
+      "statutoryAuthority": "Jammu and Kashmir Reorganisation Act, 2019 read with Delimitation Act, 2002",
+      "w021_5_mapping": "90 assembly constituencies (43 Jammu, 47 Kashmir); Migration 060 reconciles historical 87 seats (2014) vs post-2022 90 seats"
+    }
+  ],
+  "disposition": {
+    "digitalInventoryStatus": "VERIFIED_AGAINST_OFFICIAL_ECI_AND_EGAZETTE_PUBLICATIONS",
+    "physicalWatermarkNotarization": "PENDING_PHYSICAL_ARCHIVE_INSPECTION",
+    "blockerResolution": "PARTIALLY_REMEDIATED_DIGITAL_CANONICAL_RESOLVED",
+    "rationale": "All statutory allocations, schedule numbers, seat counts (543 PC / 4,123 AC), and order references are digitally verified against official Government of India publications. The physical printed paper copy watermark verification remains an institutional custodian responsibility."
+  }
+}
