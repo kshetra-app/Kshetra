@@ -3492,3 +3492,38 @@
      - Maintained formal CTO acceptance strictly at `0.0% — PENDING INDEPENDENT ADJUDICATION` under Rule IV-001 Non-Self-Acceptance.
      - Retained 5-seat Mizoram defect `DQ-W021.5-B2.2E-001` strictly open pending independent adjudication.
      - Preserved full mandate accounting: 67.0% Repo-Verified, 10.5% Database-Pending, 22.5% Blocked, 0.0% Unimplemented, 100.0% Conserved.
+
+### DEC-149: CTO DIRECTIVE 149 — OPERATIONAL DATABASE CLOSURE, CANONICAL IDENTITY TRUTH AND EXTERNAL EVIDENCE ACCEPTANCE
+- **Date:** 2026-10-23
+- **Status:** IMPLEMENTATION COMPLETE / SUBMITTED FOR INDEPENDENT CTO ADJUDICATION
+- **Authority:** CTO Directive 149 / Master Execution Framework Amendment v1.6 / Rule IV-001 Non-Self-Acceptance
+- **Context:** Mandatory remediation after independent review of Directive 148 across Workstreams A through G:
+  1. **Workstream A: Final Schema & Migration Correctness:**
+     - Authored forward-only migration `supabase/migrations/069_candidate_referential_integrity_reconciliation.sql` after Migration 068 to idempotently reconcile candidacies foreign keys (`fk_candidacies_contest`, `fk_candidacies_person`, `fk_candidacies_party` with `ON DELETE RESTRICT`) and deduplicate redundant indexes without assuming pre-existing targets will replay edited Migration 067.
+     - Reconciled `reports/w021_5_schema_contract_specification.json`: corrected `public.organization_relationships` columns to `source_org_id` and `target_org_id` per Migration 050 DDL; updated migration sequence to 15 files with Migration 069 SHA-256 (`584f88effe438ace59f3a7acd6d9bfe925b7307f95a042e5477ae5d91f68d678`); updated `sourceCommit` to `28aa5e808a937c61b466aac3c456a97090a6656d`; updated `scripts/lib/stagingExecutionPlan.mjs`.
+  2. **Workstream B: Operational Stage 1 Idempotency & Database Constraint Alignment:**
+     - Aligned `public.organization_symbols` natural key with committed database unique constraint `uq_org_symbols_timeline (organization_id, symbol_name, valid_from)` (omitting `jurisdiction_scope`).
+     - Implemented alias cross-organization temporal overlap collision detection enforcing trigger `fn_validate_org_alias_temporal_invariants`.
+     - Established explicit non-key mutation policy (`STAGE1_MUTATION_POLICY`) preventing speculative overwrites of statutory, temporal, or provenance attributes.
+     - Integrated reconciler into `scripts/execute_staging_directive_139.mjs`.
+     - Reconciled exact child row arithmetic: 10 relationships + 27 multilingual + 19 symbols + 1,043 aliases = 1,099 child rows (+ 107 orgs + 1 prov = 1,207 catalog records; + 2 datasets = 1,209 total records).
+     - Expanded `tests/stage1-idempotent-reconciler.test.mjs` to 7/7 tests passing.
+  3. **Workstream C: Actual Canonical Constituency Identity (Task E-01):**
+     - Updated `scripts/build_constituency_4123_crosswalk.mjs` and `reports/w021_5_constituency_4123_crosswalk.json`: clearly separated statutory composite code, canonical code, reproducible RFC 4122 UUIDv5 proposed offline identity, and target database `internal_id` (`null`, status: `PENDING_TARGET_DATABASE_RESOLUTION`).
+     - Defined exact target database SQL query for resolving live `internal_id` from `public.constituencies`.
+     - Delineated 134-seat statutory manifest gap, 153 non-statutory entries, and 5-seat Mizoram defect.
+     - Preserved Stage 3 demographic dispatch strictly blocked with 0 rows outbound until live target resolution is performed.
+  4. **Workstream D: Canonical Election/Contest Identity & Schema Reconciliation (Task F-02):**
+     - Reconciled relational model: normalized authoritative entities (`public.election_events` and `public.election_contests` with UUID PKs) vs legacy `public.election_results` (integer `election_id`); eliminated UUID-to-integer type conversion; established `public.vw_legacy_election_results` as compatibility bridge without casting.
+     - Built 23-state election and 2,243-contest registry covering statutory delimitation regimes (including 2014 J&K 87-seat statutory scope and Arunachal AC-4, AC-16, AC-31 uncontested seats).
+     - Preserved Stage 4 dispatch blocked with 0 rows outbound until canonical events/contests are seeded in target database.
+  5. **Workstream E: Real Staging Containment & Independent Authorization:**
+     - Enforced strict fail-closed boundary: staging mutations remain strictly 0; production air-gap preserved with 0 queries and 0 mutations.
+     - Reported exact outstanding administrative actions (`CONTAINMENT_PENDING_ADMIN_CONFIRMATION` and `BLOCKED_NO_CTO_TOKEN`).
+  6. **Workstream F: External Evidence Acceptance (EB-01 to EB-06):**
+     - Maintained Rule IV-001 Non-Self-Acceptance: formal CTO acceptance remains strictly `0.0% — PENDING INDEPENDENT ADJUDICATION`.
+     - Preserved 5-seat Mizoram financial defect `DQ-W021.5-B2.2E-001` strictly open pending independent adjudication.
+  7. **Workstream G: Defect Ledger & Governance Integrity:**
+     - Authored `reports/w021_5_directive_149_defect_ledger.json` with true UTC timestamps and honest classifications.
+     - Updated `reports/w021_5_database_execution_register.json`.
+     - Updated `EXECUTION_STATE.md`.

@@ -3,9 +3,9 @@
   "frameworkSpecification": "W021.5 Polling Station & Electoral Roll Crosswalk Architecture Framework",
   "blockerId": "EB-05",
   "blockerCategory": "VOTER_ROLL_CROSSWALK_AUTHORITY",
-  "directive": "CTO Directive 148 / Workstream C / Task EB-05",
+  "directive": "CTO Directive 149 / Workstream F / Task EB-05",
   "governingAuthority": "Master Execution Framework Amendment v1.6 / Rule IV-001 Non-Self-Acceptance",
-  "generatedAt": "2026-10-23T18:48:00+05:30",
+  "generatedAt": "2026-10-23T14:26:00.000Z",
   "statutoryFramework": {
     "governingStatute": "Section 25 of the Representation of the People Act, 1951",
     "districtElectionOfficerRole": "The District Election Officer (DEO) provides a sufficient number of polling stations for each assembly constituency with prior approval of the Election Commission of India.",
@@ -78,8 +78,8 @@
     }
   },
   "disposition": {
-    "frameworkStatus": "ARCHITECTURE_FORMALIZED_AND_CROSSWALK_SPECIFIED",
-    "blockerResolution": "PARTIALLY_REMEDIATED_FRAMEWORK_ESTABLISHED",
-    "nextPermittedStep": "Integrate voter EPIC lookup via official CEO/ECI voter search endpoints when institutional access credentials are authenticated."
+    "frameworkStatus": "ARCHITECTURE_FORMALIZED_NATIONAL_METADATA_ACQUISITION_PENDING",
+    "blockerResolution": "BLOCKED_EXTERNAL_EVIDENCE",
+    "rationale": "Station and part nesting architecture is formal under Section 25 RPA 1951. Full national station-to-AC crosswalk requires bulk harvesting of polling station lists from all 31 State/UT CEO portals without ingesting elector personal data."
   }
 }

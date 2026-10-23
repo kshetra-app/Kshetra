@@ -1,0 +1,130 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Kshetra W021.5 — CTO Directive 149 Defect Ledger & Mandate Closure Register",
+  "directive": "CTO Directive 149: Operational Database Closure, Canonical Identity Truth and External Evidence Acceptance",
+  "governingAuthority": "Master Execution Framework Amendment v1.6 / Rule IV-001 Non-Self-Acceptance",
+  "timestamp": "2026-10-23T14:26:00.000Z",
+  "airGapStatus": {
+    "productionDatabase": "ehfafcnimmjusyvplbah",
+    "productionQueries": 0,
+    "productionMutations": 0,
+    "productionStatus": "AIR_GAPPED_ZERO_QUERIES_ZERO_MUTATIONS",
+    "stagingDatabase": "fkpigozcqnmcvofuksar",
+    "stagingQueries": 0,
+    "stagingMutations": 0,
+    "stagingStatus": "CONTAINMENT_PENDING_ADMIN_CONFIRMATION"
+  },
+  "formalAcceptanceStatus": "0.0% — PENDING INDEPENDENT ADJUDICATION",
+  "mizoramDefect": {
+    "defectId": "DQ-W021.5-B2.2E-001",
+    "status": "OPEN_PENDING_INDEPENDENT_ADJUDICATION",
+    "description": "5 Mizoram statutory assembly seats (AC 31-35) with unrecorded voter counts preserved as NULL without zero-fabrication"
+  },
+  "accountingSummary": {
+    "repoVerifiedEarnedPercent": 67.0,
+    "unexecutedDatabasePendingPercent": 10.5,
+    "blockedOnExternalGatesPercent": 22.5,
+    "unimplementedPercent": 0.0,
+    "formalCtcAcceptancePercent": 0.0
+  },
+  "defects": [
+    {
+      "defectId": "DEF-D149-001",
+      "workstream": "Workstream A: Final Schema and Migration Correctness",
+      "summary": "Forward-only Migration 069 and DDL reconciliation of machine-readable schema contract specification",
+      "directiveRequirement": "Reconcile organization_relationships column names (source_org_id, target_org_id per Migration 050 DDL); add forward-only Migration 069 after Migration 068 to idempotently reconcile candidacies foreign keys (ON DELETE RESTRICT) and deduplicate redundant indexes; update schema contract specification with Migration 069 SHA-256 and truthful sourceCommit.",
+      "remediationDetails": "Authored supabase/migrations/069_candidate_referential_integrity_reconciliation.sql: idempotently drops legacy candidacies_contest_id_fkey (CASCADE) and legacy unnamed FKs; creates named RESTRICT constraints fk_candidacies_contest, fk_candidacies_person, fk_candidacies_party; drops duplicate indexes idx_candidacies_contest_fk, idx_candidacies_person_fk, idx_candidacies_party_fk while ensuring canonical base indexes exist. Reconciled reports/w021_5_schema_contract_specification.json: corrected organization_relationships columns to source_org_id and target_org_id; updated migration sequence to 15 files including Migration 069 (SHA-256: 584f88effe438ace59f3a7acd6d9bfe925b7307f95a042e5477ae5d91f68d678); updated sourceCommit to 28aa5e808a937c61b466aac3c456a97090a6656d; updated scripts/lib/stagingExecutionPlan.mjs.",
+      "sourceFilesModified": [
+        "supabase/migrations/069_candidate_referential_integrity_reconciliation.sql",
+        "reports/w021_5_schema_contract_specification.json",
+        "scripts/lib/stagingExecutionPlan.mjs"
+      ],
+      "regressionTests": [
+        "tests/staging-execution-mode-b.test.mjs",
+        "tests/staging-authorization-verifier.test.mjs"
+      ],
+      "classification": "REMEDIATED_AND_OFFLINE_VERIFIED"
+    },
+    {
+      "defectId": "DEF-D149-002",
+      "workstream": "Workstream B: Operational Stage 1 Idempotency & Database Constraint Alignment",
+      "summary": "Correction of natural keys, temporal trigger invariants, non-key mutation policy, and operational runner integration for Stage 1",
+      "directiveRequirement": "Align organization_symbols natural key with committed unique constraint uq_org_symbols_timeline (organization_id, symbol_name, valid_from) without jurisdiction_scope; enforce temporal non-overlap for organization_aliases across organizations under trigger fn_validate_org_alias_temporal_invariants; establish explicit STAGE1_MUTATION_POLICY; integrate reconciler into scripts/execute_staging_directive_139.mjs; reconcile exact child row arithmetic (1,099 child rows + 107 orgs + 1 prov = 1,207 catalog records).",
+      "remediationDetails": "Updated scripts/lib/stage1IdempotentReconciler.mjs: 1) organization_symbols natural key strictly uses (organization_id, symbol_name, valid_from); 2) organization_aliases checks cross-organization temporal collisions and flags TEMPORAL_TRIGGER_COLLISION; 3) established STAGE1_MUTATION_POLICY with protected statutory/temporal attributes; 4) integrated into executeStage1Staging in scripts/execute_staging_directive_139.mjs; 5) verified exact arithmetic: 10 relationships + 27 multilingual + 19 symbols + 1,043 aliases = 1,099 child rows (eliminating references to 1,100). Updated tests/stage1-idempotent-reconciler.test.mjs with 7/7 tests passing.",
+      "sourceFilesModified": [
+        "scripts/lib/stage1IdempotentReconciler.mjs",
+        "tests/stage1-idempotent-reconciler.test.mjs",
+        "scripts/execute_staging_directive_139.mjs"
+      ],
+      "regressionTests": [
+        "tests/stage1-idempotent-reconciler.test.mjs (7/7 checks PASS)"
+      ],
+      "classification": "REMEDIATED_AND_OFFLINE_VERIFIED"
+    },
+    {
+      "defectId": "DEF-D149-003",
+      "workstream": "Workstream C: Actual Canonical Constituency Identity (Task E-01)",
+      "summary": "Delineation of statutory codes, proposed RFC 4122 UUIDv5, and live target database internal_id resolution",
+      "directiveRequirement": "Do not report UUIDv5 as live target UUID. Establish relationship between statutory identity, canonical row, internal_id, canonical code, and delimitation period. Define target internal_id resolution method and account for 134-seat demographic manifest gap, 153 non-statutory entries, and 5-seat Mizoram defect.",
+      "remediationDetails": "Updated scripts/build_constituency_4123_crosswalk.mjs and reports/w021_5_constituency_4123_crosswalk.json: clearly separates statutoryCompositeCode ('AP-AC-1'), canonicalCode ('AP-AC-001'), reproducibleNamespaceUuid (UUIDv5), and targetInternalUuid (null, status: PENDING_TARGET_DATABASE_RESOLUTION). Documented exact target database SQL resolution: SELECT id, internal_id, canonical_code, state_code, constituency_number FROM public.constituencies. Delineated 134-seat statutory manifest gap, 153 non-statutory entries, and DQ-W021.5-B2.2E-001. Stage 3 dispatch strictly blocked from staging with 0 rows outbound until live resolution is corroborated.",
+      "sourceFilesModified": [
+        "scripts/build_constituency_4123_crosswalk.mjs",
+        "reports/w021_5_constituency_4123_crosswalk.json"
+      ],
+      "regressionTests": [
+        "tests/database-criteria-identity-reconciliation.test.mjs"
+      ],
+      "classification": "REMEDIATED_AND_OFFLINE_VERIFIED"
+    },
+    {
+      "defectId": "DEF-D149-004",
+      "workstream": "Workstream D: Canonical Election/Contest Identity & Schema Reconciliation (Task F-02)",
+      "summary": "Architecture reconciliation between normalized UUID models and legacy integer election_results",
+      "directiveRequirement": "Resolve schema mismatch between legacy public.election_results (integer election_id) and normalized public.election_contests (UUID). Zero UUID casting into integer columns. Establish canonical election_events and election_contests entities before binding results. Support 2014 J&K 87 statutory seats and uncontested seats.",
+      "remediationDetails": "Updated scripts/build_canonical_election_registry.mjs and reports/w021_5_canonical_election_registry.json: established architectural reconciliation where normalized public.election_events and public.election_contests (UUID) are the primary authoritative store, candidacies bind via contest_id, and legacy compatibility is provided via public.vw_legacy_election_results without UUID-to-integer casting. Built 23-state election and 2,243-contest registry covering statutory delimitation regimes (including 2014 J&K 87-seat statutory scope and Arunachal AC-4, AC-16, AC-31 uncontested seats). Stage 4 dispatch remains blocked with 0 rows outbound until canonical events/contests are seeded in target database.",
+      "sourceFilesModified": [
+        "scripts/build_canonical_election_registry.mjs",
+        "reports/w021_5_canonical_election_registry.json"
+      ],
+      "regressionTests": [
+        "tests/historical-election-results-23-states.test.mjs"
+      ],
+      "classification": "REMEDIATED_AND_OFFLINE_VERIFIED"
+    },
+    {
+      "defectId": "DEF-D149-005",
+      "workstream": "Workstream E: Real Staging Containment & Independent Authorization",
+      "summary": "Staging write-gating security, administrator containment confirmation, and independent cryptographic authorization token",
+      "directiveRequirement": "Staging execution may proceed only after genuine administrator containment confirmation, verified protected trust anchor, and independently signed authorization token. If prerequisites remain unprovisioned, fail closed with PARTIALLY_READY_WITH_BLOCKED_STAGES and exact outstanding actions.",
+      "remediationDetails": "Audited staging containment and authorization prerequisites: containment remains CONTAINMENT_PENDING_ADMIN_CONFIRMATION; authorization token remains BLOCKED_NO_CTO_TOKEN. Enforced strict fail-closed boundary: staging mutations remain strictly 0; production air-gap preserved with 0 queries and 0 mutations. Reported exact outstanding administrative actions in reports/w021_5_staging_execution_report.json.",
+      "sourceFilesModified": [
+        "scripts/execute_staging_directive_139.mjs",
+        "reports/w021_5_staging_execution_report.json"
+      ],
+      "regressionTests": [
+        "tests/staging-target-selection-security.test.mjs",
+        "tests/staging-authorization-verifier.test.mjs",
+        "tests/staging-transport-isolation.test.mjs"
+      ],
+      "classification": "BLOCKED_AUTHORIZATION"
+    },
+    {
+      "defectId": "DEF-D149-006",
+      "workstream": "Workstream F: External Evidence Blocker Dispositions (EB-01 to EB-06)",
+      "summary": "Authoritative evidence acquisition, digital publication verification, custodian status, and Rule IV-001 adjudication",
+      "directiveRequirement": "Pursue EB-01 through EB-06 with authoritative sources; distinguish digital verification from physical certified copy custody; evaluate PIN boundary GeoJSON vs postman delivery beats; provide reproducible spatial containment and polling station crosswalk; obtain independent adjudication.",
+      "remediationDetails": "Updated external evidence package: EB-01 (official gazette inventory with official ECI digital URLs, SHA-256 hashes, physical copy custody noted as custodian responsibility); EB-02 (reproducible digital transcription comparisons, physical comparison noted); EB-03 (OGD PIN code boundary GeoJSON assessed as 6-digit postal delivery areas, not delivery beats; DoP inquiry logged); EB-04 (reproducible spatial analysis with EPSG:4326/7755 CRS); EB-05 (polling station crosswalk framework with station/part hierarchy and CEO portal status); EB-06 (independent adjudication required; formal CTO acceptance remains strictly 0.0% under Rule IV-001 Non-Self-Acceptance).",
+      "sourceFilesModified": [
+        "reports/w021_5_official_gazette_inventory.json",
+        "reports/w021_5_gazette_transcription_fidelity_report.json",
+        "reports/w021_5_india_post_geography_assessment.json",
+        "reports/w021_5_spatial_containment_analysis.json",
+        "reports/w021_5_polling_station_crosswalk_framework.json"
+      ],
+      "regressionTests": [
+        "tests/governance-consistency.test.mjs"
+      ],
+      "classification": "BLOCKED_EXTERNAL_EVIDENCE"
+    }
+  ]
+}

@@ -109,7 +109,8 @@ export function generateCanonicalExecutionPlan(options = {}) {
     'supabase/migrations/065_canonical_political_organization_registry.sql',
     'supabase/migrations/066_downstream_civic_extensions.sql',
     'supabase/migrations/067_candidate_contest_fk.sql',
-    'supabase/migrations/068_affidavit_disclosures.sql'
+    'supabase/migrations/068_affidavit_disclosures.sql',
+    'supabase/migrations/069_candidate_referential_integrity_reconciliation.sql'
   ];
   const schemaMigrationHashes = {};
   for (const relPath of schemaMigrationFiles) {

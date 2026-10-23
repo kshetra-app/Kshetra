@@ -1,9 +1,9 @@
 /**
- * KSHETRA W021.5 — CTO DIRECTIVE 146 FULL-MANDATE UNIFIED VERIFIER
+ * KSHETRA W021.5 — CTO DIRECTIVE 149 FULL-MANDATE UNIFIED VERIFIER
  * Deterministic Single Entrypoint for Full-Mandate Completion Verification
  * 
  * Master Execution Framework Amendment v1.6 / Rule IV-001 Non-Self-Acceptance
- * CTO Directive 146: Final Residual Security, Least-Privilege, Stage 1 Idempotency and Schema-Truth Closure
+ * CTO Directive 149: Operational Database Closure, Canonical Identity Truth and External Evidence Acceptance
  * 
  * Executes all 20 mandated verification suites across Stages A through I:
  *  1. Working tree cleanliness inspection (git status --porcelain)
@@ -45,10 +45,10 @@ const CRITERIA_PATH = path.join(REPO_ROOT, 'governance/specifications/w021_5_cri
 const ALLOW_DIRTY = process.argv.includes('--allow-dirty');
 
 console.log('================================================================================');
-console.log('KSHETRA W021.5 — CTO DIRECTIVE 148 FULL-MANDATE UNIFIED VERIFIER');
+console.log('KSHETRA W021.5 — CTO DIRECTIVE 149 FULL-MANDATE UNIFIED VERIFIER');
 console.log('Deterministic Single Entrypoint for Stages A through I Evidence Closure');
 console.log('Governing Authority: Amendment v1.6 / Rule IV-001 Non-Self-Acceptance');
-console.log('Directive 148: Actual Database Execution and External Evidence Closure');
+console.log('Directive 149: Operational Database Closure, Canonical Identity Truth and External Evidence Acceptance');
 console.log('================================================================================\n');
 
 // Dynamically obtain Git HEAD commit and branch (Directive 135 Item 16)
@@ -695,8 +695,8 @@ const dynamicDbPendingTasks = Array.from(new Set(
 
 const manifest = {
   evidenceMetadata: {
-    directive: 'CTO Directive 148',
-    title: 'KSHETRA W021.5 Full-Mandate Unified Verification Manifest (Directive 148)',
+    directive: 'CTO Directive 149',
+    title: 'KSHETRA W021.5 Full-Mandate Unified Verification Manifest (Directive 149)',
     governingAuthority: 'Master Execution Framework Amendment v1.6 / Rule IV-001 Non-Self-Acceptance',
     repository: 'https://github.com/kshetra-app/Kshetra.git',
     branch: gitBranch,

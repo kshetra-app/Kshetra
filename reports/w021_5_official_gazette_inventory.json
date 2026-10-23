@@ -3,9 +3,9 @@
   "inventorySpecification": "W021.5 Official Gazette & Statutory Instrument Inventory",
   "blockerId": "EB-01",
   "blockerCategory": "OFFICIAL_PHYSICAL_GAZETTE_AUTHENTICITY",
-  "directive": "CTO Directive 148 / Workstream C / Task EB-01",
+  "directive": "CTO Directive 149 / Workstream F / Task EB-01",
   "governingAuthority": "Master Execution Framework Amendment v1.6 / Rule IV-001 Non-Self-Acceptance",
-  "generatedAt": "2026-10-23T18:35:00+05:30",
+  "generatedAt": "2026-10-23T14:26:00.000Z",
   "officialGazettePublisher": "Controller of Publications, Department of Publication, Ministry of Housing and Urban Affairs, Government of India / Election Commission of India",
   "statutoryInstruments": [
     {
@@ -32,34 +32,174 @@
         }
       ],
       "schedules": [
-        { "schedule": "I", "state": "Andhra Pradesh", "originalSeats": 294, "currentStatus": "Bifurcated under AP Reorganisation Act 2014 into 175 AP + 119 TS" },
-        { "schedule": "II", "state": "Arunachal Pradesh", "seats": 60, "currentStatus": "Unchanged (60 ACs)" },
-        { "schedule": "III", "state": "Assam", "seats": 126, "currentStatus": "Revised by ECI Final Order under Sec 8A, Aug 2023 (126 ACs)" },
-        { "schedule": "IV", "state": "Bihar", "seats": 243, "currentStatus": "Unchanged (243 ACs)" },
-        { "schedule": "V", "state": "Goa", "seats": 40, "currentStatus": "Unchanged (40 ACs)" },
-        { "schedule": "VI", "state": "Gujarat", "seats": 182, "currentStatus": "Unchanged (182 ACs)" },
-        { "schedule": "VII", "state": "Haryana", "seats": 90, "currentStatus": "Unchanged (90 ACs)" },
-        { "schedule": "VIII", "state": "Himachal Pradesh", "seats": 68, "currentStatus": "Unchanged (68 ACs)" },
-        { "schedule": "IX", "state": "Jharkhand", "seats": 81, "currentStatus": "Unchanged (81 ACs)" },
-        { "schedule": "X", "state": "Karnataka", "seats": 224, "currentStatus": "Unchanged (224 ACs)" },
-        { "schedule": "XI", "state": "Kerala", "seats": 140, "currentStatus": "Unchanged (140 ACs)" },
-        { "schedule": "XII", "state": "Madhya Pradesh", "seats": 230, "currentStatus": "Unchanged (230 ACs)" },
-        { "schedule": "XIII", "state": "Maharashtra", "seats": 288, "currentStatus": "Unchanged (288 ACs)" },
-        { "schedule": "XIV", "state": "Manipur", "seats": 60, "currentStatus": "Unchanged (60 ACs)" },
-        { "schedule": "XV", "state": "Meghalaya", "seats": 60, "currentStatus": "Unchanged (60 ACs)" },
-        { "schedule": "XVI", "state": "Mizoram", "seats": 40, "currentStatus": "Unchanged (40 ACs)" },
-        { "schedule": "XVII", "state": "Nagaland", "seats": 60, "currentStatus": "Unchanged (60 ACs)" },
-        { "schedule": "XVIII", "state": "Odisha", "seats": 147, "currentStatus": "Unchanged (147 ACs)" },
-        { "schedule": "XIX", "state": "Punjab", "seats": 117, "currentStatus": "Unchanged (117 ACs)" },
-        { "schedule": "XX", "state": "Rajasthan", "seats": 200, "currentStatus": "Unchanged (200 ACs)" },
-        { "schedule": "XXI", "state": "Sikkim", "seats": 32, "currentStatus": "Unchanged (32 ACs, including 1 Sangha seat)" },
-        { "schedule": "XXII", "state": "Tamil Nadu", "seats": 234, "currentStatus": "Unchanged (234 ACs)" },
-        { "schedule": "XXIII", "state": "Tripura", "seats": 60, "currentStatus": "Unchanged (60 ACs)" },
-        { "schedule": "XXIV", "state": "Uttar Pradesh", "seats": 403, "currentStatus": "Unchanged (403 ACs)" },
-        { "schedule": "XXV", "state": "Uttarakhand", "seats": 70, "currentStatus": "Unchanged (70 ACs)" },
-        { "schedule": "XXVI", "state": "West Bengal", "seats": 294, "currentStatus": "Unchanged (294 ACs)" },
-        { "schedule": "XXVII", "state": "NCT of Delhi", "seats": 70, "currentStatus": "Unchanged (70 ACs)" },
-        { "schedule": "XXVIII", "state": "Puducherry", "seats": 30, "currentStatus": "Unchanged (30 ACs)" }
+        {
+          "schedule": "I",
+          "state": "Andhra Pradesh",
+          "originalSeats": 294,
+          "currentStatus": "Bifurcated under AP Reorganisation Act 2014 into 175 AP + 119 TS"
+        },
+        {
+          "schedule": "II",
+          "state": "Arunachal Pradesh",
+          "seats": 60,
+          "currentStatus": "Unchanged (60 ACs)"
+        },
+        {
+          "schedule": "III",
+          "state": "Assam",
+          "seats": 126,
+          "currentStatus": "Revised by ECI Final Order under Sec 8A, Aug 2023 (126 ACs)"
+        },
+        {
+          "schedule": "IV",
+          "state": "Bihar",
+          "seats": 243,
+          "currentStatus": "Unchanged (243 ACs)"
+        },
+        {
+          "schedule": "V",
+          "state": "Goa",
+          "seats": 40,
+          "currentStatus": "Unchanged (40 ACs)"
+        },
+        {
+          "schedule": "VI",
+          "state": "Gujarat",
+          "seats": 182,
+          "currentStatus": "Unchanged (182 ACs)"
+        },
+        {
+          "schedule": "VII",
+          "state": "Haryana",
+          "seats": 90,
+          "currentStatus": "Unchanged (90 ACs)"
+        },
+        {
+          "schedule": "VIII",
+          "state": "Himachal Pradesh",
+          "seats": 68,
+          "currentStatus": "Unchanged (68 ACs)"
+        },
+        {
+          "schedule": "IX",
+          "state": "Jharkhand",
+          "seats": 81,
+          "currentStatus": "Unchanged (81 ACs)"
+        },
+        {
+          "schedule": "X",
+          "state": "Karnataka",
+          "seats": 224,
+          "currentStatus": "Unchanged (224 ACs)"
+        },
+        {
+          "schedule": "XI",
+          "state": "Kerala",
+          "seats": 140,
+          "currentStatus": "Unchanged (140 ACs)"
+        },
+        {
+          "schedule": "XII",
+          "state": "Madhya Pradesh",
+          "seats": 230,
+          "currentStatus": "Unchanged (230 ACs)"
+        },
+        {
+          "schedule": "XIII",
+          "state": "Maharashtra",
+          "seats": 288,
+          "currentStatus": "Unchanged (288 ACs)"
+        },
+        {
+          "schedule": "XIV",
+          "state": "Manipur",
+          "seats": 60,
+          "currentStatus": "Unchanged (60 ACs)"
+        },
+        {
+          "schedule": "XV",
+          "state": "Meghalaya",
+          "seats": 60,
+          "currentStatus": "Unchanged (60 ACs)"
+        },
+        {
+          "schedule": "XVI",
+          "state": "Mizoram",
+          "seats": 40,
+          "currentStatus": "Unchanged (40 ACs)"
+        },
+        {
+          "schedule": "XVII",
+          "state": "Nagaland",
+          "seats": 60,
+          "currentStatus": "Unchanged (60 ACs)"
+        },
+        {
+          "schedule": "XVIII",
+          "state": "Odisha",
+          "seats": 147,
+          "currentStatus": "Unchanged (147 ACs)"
+        },
+        {
+          "schedule": "XIX",
+          "state": "Punjab",
+          "seats": 117,
+          "currentStatus": "Unchanged (117 ACs)"
+        },
+        {
+          "schedule": "XX",
+          "state": "Rajasthan",
+          "seats": 200,
+          "currentStatus": "Unchanged (200 ACs)"
+        },
+        {
+          "schedule": "XXI",
+          "state": "Sikkim",
+          "seats": 32,
+          "currentStatus": "Unchanged (32 ACs, including 1 Sangha seat)"
+        },
+        {
+          "schedule": "XXII",
+          "state": "Tamil Nadu",
+          "seats": 234,
+          "currentStatus": "Unchanged (234 ACs)"
+        },
+        {
+          "schedule": "XXIII",
+          "state": "Tripura",
+          "seats": 60,
+          "currentStatus": "Unchanged (60 ACs)"
+        },
+        {
+          "schedule": "XXIV",
+          "state": "Uttar Pradesh",
+          "seats": 403,
+          "currentStatus": "Unchanged (403 ACs)"
+        },
+        {
+          "schedule": "XXV",
+          "state": "Uttarakhand",
+          "seats": 70,
+          "currentStatus": "Unchanged (70 ACs)"
+        },
+        {
+          "schedule": "XXVI",
+          "state": "West Bengal",
+          "seats": 294,
+          "currentStatus": "Unchanged (294 ACs)"
+        },
+        {
+          "schedule": "XXVII",
+          "state": "NCT of Delhi",
+          "seats": 70,
+          "currentStatus": "Unchanged (70 ACs)"
+        },
+        {
+          "schedule": "XXVIII",
+          "state": "Puducherry",
+          "seats": 30,
+          "currentStatus": "Unchanged (30 ACs)"
+        }
       ]
     },
     {
@@ -91,8 +231,38 @@
   ],
   "disposition": {
     "digitalInventoryStatus": "VERIFIED_AGAINST_OFFICIAL_ECI_AND_EGAZETTE_PUBLICATIONS",
-    "physicalWatermarkNotarization": "PENDING_PHYSICAL_ARCHIVE_INSPECTION",
-    "blockerResolution": "PARTIALLY_REMEDIATED_DIGITAL_CANONICAL_RESOLVED",
-    "rationale": "All statutory allocations, schedule numbers, seat counts (543 PC / 4,123 AC), and order references are digitally verified against official Government of India publications. The physical printed paper copy watermark verification remains an institutional custodian responsibility."
+    "physicalWatermarkNotarization": "PENDING_PHYSICAL_ARCHIVE_INSPECTION_AND_CUSTODY_CERTIFICATION",
+    "blockerResolution": "BLOCKED_EXTERNAL_EVIDENCE",
+    "rationale": "All statutory allocations, schedule numbers, seat counts (543 PC / 4,123 AC), and order references are digitally verified against official Government of India publications. Certified physical printed paper copy watermark inspection requires institutional custodian access under the EB-01 standard."
+  },
+  "digitalSourceVerification": {
+    "verifierEngine": "scripts/verify_w021_5_full_mandate.cjs",
+    "verifiedAgainst": "ECI Official Publications (old.eci.gov.in / eci.gov.in) and egazette.gov.in",
+    "digitalFilesCovered": [
+      {
+        "title": "Delimitation Order 2008 (Tables A & B, Schedules I-XXVIII)",
+        "url": "https://old.eci.gov.in/files/file/3931-delimitation-2008-order-issued-by-eci/",
+        "sha256": "e51b14a796e95b0e8c8a14b5128362615a6b0c2a792445b23d9a04a6211fa4d0",
+        "notificationRef": "S.O. 383(E) and S.O. 453(E)"
+      },
+      {
+        "title": "Andhra Pradesh Reorganisation Act, 2014 (Act No. 6 of 2014)",
+        "url": "https://egazette.gov.in",
+        "sha256": "68b6a3c4fe8e225fbf5a04eb0429f52f416d8636b13ce8dafa88c5efec423d21",
+        "notificationRef": "Act No. 6 of 2014"
+      },
+      {
+        "title": "ECI Final Delimitation Order for State of Assam (August 2023)",
+        "url": "https://eci.gov.in/files/file/15248-final-order-for-delimitation-of-parliamentary-assembly-constituencies-in-assam/",
+        "sha256": "a2f98e6f11c8413b8606c48325ef00cd3241bc389cb432e0e4125b0451a9bdf1",
+        "notificationRef": "No. 282/AS/2023(1)"
+      },
+      {
+        "title": "Delimitation Commission Final Order No. 282/J&K/2022",
+        "url": "https://eci.gov.in/files/file/14161-final-order-of-delimitation-commission-for-ut-of-jammu-and-kashmir/",
+        "sha256": "c8814fa8d9e29a997d4c2084c6731ad219d3635749f7ba3d8544c017d23f3957",
+        "notificationRef": "No. 282/J&K/2022"
+      }
+    ]
   }
 }

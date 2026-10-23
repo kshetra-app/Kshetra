@@ -1,12 +1,12 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "contractSpecification": "W021.5 PostgreSQL Schema Contract Specification",
-  "directive": "CTO Directive 148: Schema-Contract Alignment & Full Payload Verification",
+  "directive": "CTO Directive 149: Operational Database Closure, Canonical Identity Truth and External Evidence Acceptance",
   "governingAuthority": "Master Execution Framework Amendment v1.6 / Rule IV-001 Non-Self-Acceptance",
-  "generatedAt": "2026-10-23T18:25:00+05:30",
-  "sourceCommit": "526a31fbe699a3e3a272ab538b7d48c85517bf33",
+  "generatedAt": "2026-10-23T19:35:00+05:30",
+  "sourceCommit": "28aa5e808a937c61b466aac3c456a97090a6656d",
   "migrationSequence": {
-    "totalMigrations": 14,
+    "totalMigrations": 15,
     "files": [
       {
         "path": "supabase/migrations/001_initial_schema.sql",
@@ -61,7 +61,7 @@
       {
         "path": "supabase/migrations/065_canonical_political_organization_registry.sql",
         "sha256": "d514c64e8a80b928875f1ea03d0853e5d7e3675e0e3a4134c25958632fe675b7",
-        "scope": "107 canonical political organizations, 1,100 child catalog seeds (10 rels, 27 multilingual, 19 symbols, 1043 aliases)"
+        "scope": "107 canonical political organizations, 1,099 child catalog seeds (10 rels, 27 multilingual, 19 symbols, 1,043 aliases)"
       },
       {
         "path": "supabase/migrations/066_downstream_civic_extensions.sql",
@@ -77,6 +77,11 @@
         "path": "supabase/migrations/068_affidavit_disclosures.sql",
         "sha256": "4f16025aa672fbc6f1b98f1c0ab50d9e8a14010161e4a20a03260cc95fc98b63",
         "scope": "Candidate financial, criminal, educational affidavit disclosure schemas"
+      },
+      {
+        "path": "supabase/migrations/069_candidate_referential_integrity_reconciliation.sql",
+        "sha256": "584f88effe438ace59f3a7acd6d9bfe925b7307f95a042e5477ae5d91f68d678",
+        "scope": "Forward-only referential integrity reconciliation on candidacies: idempotently drops legacy CASCADE FK (candidacies_contest_id_fkey) and legacy unnamed FKs; enforces named RESTRICT constraints fk_candidacies_contest, fk_candidacies_person, and fk_candidacies_party; deduplicates redundant indexes while preserving canonical base indexes"
       }
     ]
   },
@@ -126,7 +131,10 @@
           "conflictTarget": "id",
           "primaryKey": "id (UUID)",
           "foreignKeys": [
-            { "column": "dataset_id", "references": "public.datasets(id)" }
+            {
+              "column": "dataset_id",
+              "references": "public.datasets(id)"
+            }
           ]
         },
         {
@@ -134,7 +142,10 @@
           "conflictTarget": "id",
           "primaryKey": "id (UUID)",
           "foreignKeys": [
-            { "column": "dataset_version_id", "references": "public.dataset_versions(id)" }
+            {
+              "column": "dataset_version_id",
+              "references": "public.dataset_versions(id)"
+            }
           ]
         },
         {
@@ -142,53 +153,105 @@
           "conflictTarget": "id",
           "primaryKey": "id (TEXT)",
           "foreignKeys": [
-            { "column": "provenance_id", "references": "public.provenance_records(id)" }
+            {
+              "column": "provenance_id",
+              "references": "public.provenance_records(id)"
+            }
           ],
-          "uniqueConstraints": ["id", "short_name"]
+          "uniqueConstraints": [
+            "id",
+            "short_name"
+          ]
         },
         {
           "name": "public.organization_relationships",
-          "conflictTarget": "source_organization_id,target_organization_id,relationship_type,valid_from",
+          "conflictTarget": "source_org_id,target_org_id,relationship_type,valid_from",
           "primaryKey": "id (UUID)",
           "foreignKeys": [
-            { "column": "source_organization_id", "references": "public.political_organizations(id)" },
-            { "column": "target_organization_id", "references": "public.political_organizations(id)" },
-            { "column": "provenance_id", "references": "public.provenance_records(id)" }
+            {
+              "column": "source_org_id",
+              "references": "public.political_organizations(id)",
+              "onDelete": "RESTRICT"
+            },
+            {
+              "column": "target_org_id",
+              "references": "public.political_organizations(id)",
+              "onDelete": "RESTRICT"
+            },
+            {
+              "column": "provenance_id",
+              "references": "public.provenance_records(id)",
+              "onDelete": "RESTRICT"
+            }
           ],
-          "uniqueConstraints": ["uq_org_rel (source_organization_id, target_organization_id, relationship_type, valid_from)"]
+          "uniqueConstraints": [
+            "uq_org_rel (source_org_id, target_org_id, relationship_type, valid_from)"
+          ]
         },
         {
           "name": "public.organization_multilingual_names",
           "conflictTarget": "organization_id,language_code,script_code,representation_type,name_value",
           "primaryKey": "id (UUID)",
           "foreignKeys": [
-            { "column": "organization_id", "references": "public.political_organizations(id)" },
-            { "column": "provenance_id", "references": "public.provenance_records(id)" }
+            {
+              "column": "organization_id",
+              "references": "public.political_organizations(id)"
+            },
+            {
+              "column": "provenance_id",
+              "references": "public.provenance_records(id)"
+            }
           ],
-          "uniqueConstraints": ["uq_org_multi_name (organization_id, language_code, script_code, representation_type, name_value)"]
+          "uniqueConstraints": [
+            "uq_org_multi_name (organization_id, language_code, script_code, representation_type, name_value)"
+          ]
         },
         {
           "name": "public.organization_symbols",
           "conflictTarget": "organization_id,symbol_name,valid_from",
           "primaryKey": "id (UUID)",
           "foreignKeys": [
-            { "column": "organization_id", "references": "public.political_organizations(id)" },
-            { "column": "jurisdiction_scope", "references": "public.states(code)" },
-            { "column": "provenance_id", "references": "public.provenance_records(id)" }
+            {
+              "column": "organization_id",
+              "references": "public.political_organizations(id)"
+            },
+            {
+              "column": "jurisdiction_scope",
+              "references": "public.states(code)"
+            },
+            {
+              "column": "provenance_id",
+              "references": "public.provenance_records(id)"
+            }
           ],
-          "uniqueConstraints": ["uq_org_symbols_timeline (organization_id, symbol_name, valid_from)"],
-          "triggers": ["fn_validate_org_symbol_temporal_invariants (temporal non-overlap & current exclusivity with advisory lock)"]
+          "uniqueConstraints": [
+            "uq_org_symbols_timeline (organization_id, symbol_name, valid_from)"
+          ],
+          "triggers": [
+            "fn_validate_org_symbol_temporal_invariants (temporal non-overlap & current exclusivity with advisory lock)"
+          ]
         },
         {
           "name": "public.organization_aliases",
           "conflictTarget": "raw_lookup_key,organization_id,valid_from",
           "primaryKey": "id (UUID)",
           "foreignKeys": [
-            { "column": "organization_id", "references": "public.political_organizations(id)" },
-            { "column": "jurisdiction_scope", "references": "public.states(code)" },
-            { "column": "provenance_id", "references": "public.provenance_records(id)" }
+            {
+              "column": "organization_id",
+              "references": "public.political_organizations(id)"
+            },
+            {
+              "column": "jurisdiction_scope",
+              "references": "public.states(code)"
+            },
+            {
+              "column": "provenance_id",
+              "references": "public.provenance_records(id)"
+            }
           ],
-          "triggers": ["fn_validate_org_alias_temporal_invariants (temporal non-overlap with advisory lock)"]
+          "triggers": [
+            "fn_validate_org_alias_temporal_invariants (temporal non-overlap with advisory lock)"
+          ]
         }
       ]
     },
@@ -211,33 +274,133 @@
         "uq_candidacies_contest_person (contest_id, person_id)"
       ],
       "foreignKeys": [
-        { "column": "person_id", "references": "public.canonical_persons(id)", "constraint": "fk_candidacies_person", "onDelete": "RESTRICT" },
-        { "column": "party_id", "references": "public.political_organizations(id)", "constraint": "fk_candidacies_party", "onDelete": "RESTRICT" },
-        { "column": "contest_id", "references": "public.election_contests(id)", "constraint": "fk_candidacies_contest", "onDelete": "RESTRICT" },
-        { "column": "affidavit_id", "references": "public.candidate_affidavits(id)", "onDelete": "SET NULL" },
-        { "column": "provenance_id", "references": "public.provenance_records(id)", "onDelete": "RESTRICT" }
+        {
+          "column": "person_id",
+          "references": "public.canonical_persons(id)",
+          "constraint": "fk_candidacies_person",
+          "onDelete": "RESTRICT"
+        },
+        {
+          "column": "party_id",
+          "references": "public.political_organizations(id)",
+          "constraint": "fk_candidacies_party",
+          "onDelete": "RESTRICT"
+        },
+        {
+          "column": "contest_id",
+          "references": "public.election_contests(id)",
+          "constraint": "fk_candidacies_contest",
+          "onDelete": "RESTRICT"
+        },
+        {
+          "column": "affidavit_id",
+          "references": "public.candidate_affidavits(id)",
+          "onDelete": "SET NULL"
+        },
+        {
+          "column": "provenance_id",
+          "references": "public.provenance_records(id)",
+          "onDelete": "RESTRICT"
+        }
       ],
       "columns": {
-        "id": { "type": "UUID", "nullable": false },
-        "person_id": { "type": "UUID", "nullable": false },
-        "election_year": { "type": "INTEGER", "nullable": false },
-        "election_type": { "type": "TEXT", "nullable": false, "enum": "public.candidacy_election_types" },
-        "constituency_type": { "type": "TEXT", "nullable": false, "allowedValues": ["parliamentary", "assembly", "local_body_ward", "panchayat"] },
-        "constituency_id": { "type": "TEXT", "nullable": false },
-        "party_id": { "type": "TEXT", "nullable": true, "fk": "public.political_organizations(id)" },
-        "is_independent": { "type": "BOOLEAN", "nullable": false, "default": false },
-        "result": { "type": "TEXT", "nullable": false, "enum": "public.candidacy_results" },
-        "votes_received": { "type": "INTEGER", "nullable": false, "default": 0 },
-        "vote_share": { "type": "NUMERIC(5,2)", "nullable": false, "default": 0.00 },
-        "rank": { "type": "INTEGER", "nullable": false, "default": 0 },
-        "affidavit_id": { "type": "UUID", "nullable": true },
-        "contest_id": { "type": "UUID", "nullable": true },
-        "evm_votes": { "type": "INTEGER", "nullable": true },
-        "postal_votes": { "type": "INTEGER", "nullable": true },
-        "data_status": { "type": "public.data_status_enum", "nullable": false, "allowedValues": ["OFFICIAL", "UNVERIFIED"] },
-        "provenance_id": { "type": "UUID", "nullable": true },
-        "created_at": { "type": "TIMESTAMPTZ", "nullable": false },
-        "updated_at": { "type": "TIMESTAMPTZ", "nullable": false }
+        "id": {
+          "type": "UUID",
+          "nullable": false
+        },
+        "person_id": {
+          "type": "UUID",
+          "nullable": false
+        },
+        "election_year": {
+          "type": "INTEGER",
+          "nullable": false
+        },
+        "election_type": {
+          "type": "TEXT",
+          "nullable": false,
+          "enum": "public.candidacy_election_types"
+        },
+        "constituency_type": {
+          "type": "TEXT",
+          "nullable": false,
+          "allowedValues": [
+            "parliamentary",
+            "assembly",
+            "local_body_ward",
+            "panchayat"
+          ]
+        },
+        "constituency_id": {
+          "type": "TEXT",
+          "nullable": false
+        },
+        "party_id": {
+          "type": "TEXT",
+          "nullable": true,
+          "fk": "public.political_organizations(id)"
+        },
+        "is_independent": {
+          "type": "BOOLEAN",
+          "nullable": false,
+          "default": false
+        },
+        "result": {
+          "type": "TEXT",
+          "nullable": false,
+          "enum": "public.candidacy_results"
+        },
+        "votes_received": {
+          "type": "INTEGER",
+          "nullable": false,
+          "default": 0
+        },
+        "vote_share": {
+          "type": "NUMERIC(5,2)",
+          "nullable": false,
+          "default": 0
+        },
+        "rank": {
+          "type": "INTEGER",
+          "nullable": false,
+          "default": 0
+        },
+        "affidavit_id": {
+          "type": "UUID",
+          "nullable": true
+        },
+        "contest_id": {
+          "type": "UUID",
+          "nullable": true
+        },
+        "evm_votes": {
+          "type": "INTEGER",
+          "nullable": true
+        },
+        "postal_votes": {
+          "type": "INTEGER",
+          "nullable": true
+        },
+        "data_status": {
+          "type": "public.data_status_enum",
+          "nullable": false,
+          "allowedValues": [
+            "OFFICIAL",
+            "UNVERIFIED"
+          ]
+        },
+        "provenance_id": {
+          "type": "UUID",
+          "nullable": true
+        },
+        "created_at": {
+          "type": "TIMESTAMPTZ",
+          "nullable": false
+        },
+        "updated_at": {
+          "type": "TIMESTAMPTZ",
+          "nullable": false
+        }
       },
       "checkConstraints": [
         "candidacies_election_year_check (election_year >= 1947)",
@@ -261,7 +424,10 @@
       "table": "public.constituency_demographics",
       "primaryKey": "id (UUID)",
       "foreignKeys": [
-        { "column": "constituency_id", "references": "public.constituencies(id)" }
+        {
+          "column": "constituency_id",
+          "references": "public.constituencies(id)"
+        }
       ]
     },
     "stage4_historical_election_results": {
@@ -275,8 +441,14 @@
       "primaryKey": "id (UUID)",
       "conflictTarget": "election_id,constituency_id",
       "foreignKeys": [
-        { "column": "election_id", "references": "public.elections(id)" },
-        { "column": "constituency_id", "references": "public.constituencies(id)" }
+        {
+          "column": "election_id",
+          "references": "public.elections(id)"
+        },
+        {
+          "column": "constituency_id",
+          "references": "public.constituencies(id)"
+        }
       ]
     }
   }

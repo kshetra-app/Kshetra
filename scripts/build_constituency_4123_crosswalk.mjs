@@ -2,7 +2,19 @@
  * scripts/build_constituency_4123_crosswalk.mjs
  *
  * Authoritative 4,123-Seat Assembly Constituency Crosswalk Builder
- * Authority: CTO Directive 148 Section 3 / Task W021.5-E-01 / Master Execution Framework Amendment v1.6
+ * Authority: CTO Directive 148 Section 3 / CTO Directive 149 Section 6 / Task W021.5-E-01 / Master Execution Framework Amendment v1.6
+ *
+ * Reconciles the 4,123 statutory assembly constituencies defined in Migration 059
+ * and separates:
+ *   1. statutoryCompositeCode (e.g. 'AP-AC-1')
+ *   2. canonicalCode (e.g. 'AP-AC-001')
+ *   3. reproducibleNamespaceUuid (RFC 4122 UUIDv5 proposed offline identity)
+ *   4. targetInternalUuid (actual live internal_id in public.constituencies, resolved from target database)
+ *
+ * Invariant (Directive 149 Section 6.1):
+ *   UUIDv5 is an offline reproducible statutory identifier; it is NOT the live target UUID
+ *   because public.constituencies.internal_id was populated with gen_random_uuid().
+ *   Stage 3 (constituency_demographics) requires the actual internal_id foreign key.
  */
 
 import fs from 'node:fs';
@@ -57,7 +69,7 @@ export function buildConstituency4123Crosswalk(options = {}) {
     const deterministicUuid = rfc4122UuidV5(KSHETRA_NAMESPACE_UUID, `constituency:${stateCode}:${acNo}`);
 
     const record = {
-      id,
+      statutoryCompositeCode: id,
       canonicalCode,
       acNo,
       name,
@@ -69,8 +81,12 @@ export function buildConstituency4123Crosswalk(options = {}) {
       validFrom,
       isCurrent: isCurrentStr === 'true',
       primaryDatasetVersionId,
-      deterministicNamespaceUuid: deterministicUuid,
-      internalIdResolutionStatus: 'PENDING_STAGING_EXECUTION_CORROBORATION'
+      reproducibleNamespaceUuid: deterministicUuid,
+      targetInternalUuid: null,
+      targetInternalUuidStatus: 'PENDING_TARGET_DATABASE_RESOLUTION',
+      resolutionMethod: 'SQL_SELECT_INTERNAL_ID_BY_CANONICAL_CODE: SELECT id, internal_id, canonical_code, state_code, constituency_number FROM public.constituencies',
+      evidenceBasis: 'ECI Delimitation Order 2008 / Migration 059',
+      verificationStatus: 'STATUTORY_RECONCILED_TARGET_UUID_PENDING'
     };
 
     acList.push(record);
@@ -90,11 +106,14 @@ export function buildConstituency4123Crosswalk(options = {}) {
   const crosswalkPayload = {
     $schema: 'https://json-schema.org/draft/2020-12/schema',
     crosswalkSpecification: 'W021.5 National 4,123 Statutory Assembly Constituency Crosswalk',
-    directive: 'CTO Directive 148 / Task W021.5-E-01',
+    directive: 'CTO Directive 149 / Task W021.5-E-01',
     governingAuthority: 'Master Execution Framework Amendment v1.6 / Rule IV-001 Non-Self-Acceptance',
     generatedAt: new Date().toISOString(),
     sourceMigration: 'supabase/migrations/059_canonical_national_constituency_registry.sql',
     sourceInventory: 'reports/w021_5_constituent_inventory_4123.json',
+    targetDatabaseTable: 'public.constituencies',
+    targetResolutionMethod: 'SELECT id, internal_id, canonical_code, state_code, constituency_number FROM public.constituencies',
+    targetInternalIdResolutionStatus: 'PENDING_TARGET_DATABASE_RESOLUTION',
     statutoryScope: {
       totalConstituencies: 4123,
       totalStatesAndUTs: 31,
@@ -106,9 +125,9 @@ export function buildConstituency4123Crosswalk(options = {}) {
       statutoryConstituencies: 4123,
       manifestRecords: 4142,
       nonStatutoryExcludedRecords: 153,
-      nonStatutoryDetails: '151 non-statutory Delhi entries (AC 71-221) and 2 non-statutory Himachal entries (AC 69-70)',
+      nonStatutoryDetails: '151 non-statutory Delhi entries (AC 71-221) and 2 non-statutory Himachal entries (AC 69-70) excluded to protect statutory integrity',
       statutoryManifestGapSeats: 134,
-      manifestGapDetails: '134 statutory seats missing in demographic manifest across 12 states; marked UNVERIFIED with 0 synthetic estimates',
+      manifestGapDetails: '134 statutory seats missing in demographic manifest across 12 states; preserved as UNVERIFIED with zero synthetic estimates',
       openDefects: [
         {
           defectId: 'DQ-W021.5-B2.2E-001',
@@ -119,6 +138,10 @@ export function buildConstituency4123Crosswalk(options = {}) {
           status: 'OPEN_PENDING_INDEPENDENT_ADJUDICATION'
         }
       ]
+    },
+    stage3DeploymentGate: {
+      status: 'BLOCKED_PENDING_TARGET_INTERNAL_ID_RESOLUTION',
+      reason: 'public.constituency_demographics.constituency_id references public.constituencies(internal_id). The target database assigns internal_id via gen_random_uuid(). Staging demographic write is strictly blocked until authorized read of target internal_id values is performed.'
     },
     constituencies: acList
   };

@@ -1,10 +1,10 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "W021.5 Database Execution Register",
-  "directive": "CTO Directive 148",
+  "directive": "CTO Directive 149",
   "governingAuthority": "Master Execution Framework Amendment v1.6 / Rule IV-001 Non-Self-Acceptance",
-  "generatedAt": "2026-10-23T18:55:00.000Z",
-  "baselineCommit": "526a31fbe699a3e3a272ab538b7d48c85517bf33",
+  "generatedAt": "2026-10-23T14:26:00.000Z",
+  "baselineCommit": "28aa5e808a937c61b466aac3c456a97090a6656d",
   "airGapBoundary": {
     "productionDatabase": "ehfafcnimmjusyvplbah",
     "productionStatus": "AIR_GAPPED_ZERO_QUERIES_ZERO_MUTATIONS",
@@ -88,7 +88,7 @@
       "productionStatus": "AIR_GAPPED_UNEXECUTED",
       "queriesExecuted": 0,
       "mutationsExecuted": 0,
-      "blockingCondition": "Blocked under Directive 146 Section 4: Child tables in Migration 065 use database-generated gen_random_uuid() IDs. Repeat-write idempotency against pre-seeded staging database cannot be proven offline without target-state corroboration. Outbound rows to staging: 0.",
+      "blockingCondition": "Operational Stage 1 reconciler integrated and proven locally; live dispatch to staging remains blocked pending genuine administrator containment confirmation and cryptographic authorization token.",
       "sourceFiles": [
         "supabase/migrations/063_canonical_political_identity_foundation.sql",
         "supabase/migrations/064_political_organization_governance_remediation.sql",
@@ -112,10 +112,12 @@
           "organization_aliases": 1043
         },
         "collisionChecksPassed": 1095,
-        "schemaValid": true
+        "schemaValid": true,
+        "childRowsCount": 1099
       },
       "corroborationArtifact": "reports/w021_5_staging_execution_report.json",
-      "executionDetails": "Reconciled under CTO Directive 144 via scripts/reconcile_database_criteria_identities.mjs and scripts/execute_staging_directive_139.mjs. Validates actual migration 065_canonical_political_organization_registry.sql across all 8 tables: 1,207 catalog/provenance/support rows + 2 dataset metadata anchors (datasets: 1, dataset_versions: 1) = 1,209 total outbound rows. Uses deterministic RFC 4122 namespace UUIDs for child table rows and robust SQL tuple parsing; preserves source confidence strings (such as 'VERIFIED') and date ranges without shifting. Target PostgREST conflictTarget is id. 100% unique short names and verified foreign keys."
+      "executionDetails": "Reconciled under CTO Directive 144 via scripts/reconcile_database_criteria_identities.mjs and scripts/execute_staging_directive_139.mjs. Validates actual migration 065_canonical_political_organization_registry.sql across all 8 tables: 1,207 catalog/provenance/support rows + 2 dataset metadata anchors (datasets: 1, dataset_versions: 1) = 1,209 total outbound rows. Uses deterministic RFC 4122 namespace UUIDs for child table rows and robust SQL tuple parsing; preserves source confidence strings (such as 'VERIFIED') and date ranges without shifting. Target PostgREST conflictTarget is id. 100% unique short names and verified foreign keys.",
+      "reconciliationModel": "IDEMPOTENT_NATURAL_KEY_PRESERVATION (CTO Directive 149 Section 5)"
     },
     {
       "artifactId": "DB-ART-002",
@@ -145,7 +147,18 @@
         "uniqueDatabaseRows": 11298,
         "accountedDuplicates": 36,
         "totalSubchunks": 10,
-        "subchunksList": ["06A", "06B", "07A", "07B", "08A", "08B", "09A", "09B", "10A", "10B"],
+        "subchunksList": [
+          "06A",
+          "06B",
+          "07A",
+          "07B",
+          "08A",
+          "08B",
+          "09A",
+          "09B",
+          "10A",
+          "10B"
+        ],
         "schemaValid": true
       },
       "corroborationArtifact": "reports/w021_5_staging_execution_report.json",
@@ -167,7 +180,7 @@
       "productionStatus": "AIR_GAPPED_UNEXECUTED",
       "queriesExecuted": 0,
       "mutationsExecuted": 0,
-      "blockingCondition": "Blocked by absence of authoritative repository crosswalk from statutory constituency identities to public.constituencies(internal_id) UUID foreign keys (4,123 unmapped seats). Stage 3 dispatches exactly 0 rows to staging while blocked under Directive 145 Item 6.",
+      "blockingCondition": "Stage 3 constituency_demographics.constituency_id references public.constituencies(internal_id). Target database assigns internal_id via gen_random_uuid(). Staging demographic write strictly blocked pending authorized resolution against target database.",
       "sourceFiles": [
         "supabase/migrations/066_downstream_civic_extensions.sql",
         "scripts/build_constituency_4123_crosswalk.mjs",
@@ -185,7 +198,8 @@
         "deploymentStatus": "BLOCKED_NOT_DEPLOYABLE"
       },
       "corroborationArtifact": "reports/w021_5_staging_execution_report.json",
-      "executionDetails": "Reconciled under CTO Directive 145. public.constituency_demographics.constituency_id is a UUID foreign key to public.constituencies(internal_id). Composite strings (e.g. TS-AC-1) are strictly prohibited from being passed as UUIDs. Marked BLOCKED_NOT_DEPLOYABLE with exactly 0 outbound rows to staging pending authoritative repository crosswalk. Preserves total_voters as null; absent manifest seats labeled UNVERIFIED (never ESTIMATE); 134 statutory manifest gap seats separated from 5-seat Mizoram defect DQ-W021.5-B2.2E-001."
+      "executionDetails": "Reconciled under CTO Directive 145. public.constituency_demographics.constituency_id is a UUID foreign key to public.constituencies(internal_id). Composite strings (e.g. TS-AC-1) are strictly prohibited from being passed as UUIDs. Marked BLOCKED_NOT_DEPLOYABLE with exactly 0 outbound rows to staging pending authoritative repository crosswalk. Preserves total_voters as null; absent manifest seats labeled UNVERIFIED (never ESTIMATE); 134 statutory manifest gap seats separated from 5-seat Mizoram defect DQ-W021.5-B2.2E-001.",
+      "targetResolutionStatus": "PENDING_TARGET_DATABASE_RESOLUTION"
     },
     {
       "artifactId": "DB-ART-004",
@@ -204,7 +218,7 @@
       "productionStatus": "AIR_GAPPED_UNEXECUTED",
       "queriesExecuted": 0,
       "mutationsExecuted": 0,
-      "blockingCondition": "Blocked by absence of canonical election entity linkages for the 23 historical states in repository seed files. Synthetic test-elec-... IDs strictly eliminated (election_id: null). Zero synthetic rows sent to staging under Directive 144.",
+      "blockingCondition": "Historical election results cannot be dispatched to staging until canonical election_events and election_contests entities are seeded and corroborated in the target instance.",
       "sourceFiles": [
         "scripts/build_all_23_historical_results.mjs",
         "scripts/build_canonical_election_registry.mjs",
@@ -224,7 +238,8 @@
         "schemaValid": true
       },
       "corroborationArtifact": "reports/w021_5_staging_execution_report.json",
-      "executionDetails": "Reconciled under CTO Directive 144. Eliminated synthetic election IDs (election_id: null). Marked strictly BLOCKED_NOT_DEPLOYABLE with 0 outbound rows sent to staging. Preserves unrecorded margin and votes as null rather than fabricated zeroes; genuine numeric zeroes preserved for uncontested seats (Arunachal AC 4, 16, 31); J&K 2014 statutory boundary preserved at 87 seats; non-destructive upsert target on_conflict=election_id,constituency_id."
+      "executionDetails": "Reconciled under CTO Directive 144. Eliminated synthetic election IDs (election_id: null). Marked strictly BLOCKED_NOT_DEPLOYABLE with 0 outbound rows sent to staging. Preserves unrecorded margin and votes as null rather than fabricated zeroes; genuine numeric zeroes preserved for uncontested seats (Arunachal AC 4, 16, 31); J&K 2014 statutory boundary preserved at 87 seats; non-destructive upsert target on_conflict=election_id,constituency_id.",
+      "architectureReconciliation": "Canonical normalized models (public.election_events and public.election_contests with UUID PKs) reconciled with legacy integer public.election_results via vw_legacy_election_results. Zero UUID casting into integer columns."
     },
     {
       "artifactId": "DB-ART-005",
@@ -277,8 +292,16 @@
       "entityBreakdown": {
         "entityType": "FOREIGN_KEY_CONSTRAINT",
         "sourceTable": "public.candidacies",
-        "targetTables": ["public.election_contests", "public.canonical_persons", "public.political_organizations"],
-        "constraintNames": ["fk_candidacies_contest", "fk_candidacies_person", "fk_candidacies_party"],
+        "targetTables": [
+          "public.election_contests",
+          "public.canonical_persons",
+          "public.political_organizations"
+        ],
+        "constraintNames": [
+          "fk_candidacies_contest",
+          "fk_candidacies_person",
+          "fk_candidacies_party"
+        ],
         "schemaValid": true
       }
     }

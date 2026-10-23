@@ -3,16 +3,20 @@
   "assessmentSpecification": "W021.5 India Post Geography & PIN Code Boundary Technical Assessment",
   "blockerId": "EB-03",
   "blockerCategory": "INDIA_POST_BEAT_POLYGON_AUTHORITY",
-  "directive": "CTO Directive 148 / Workstream C / Task EB-03",
+  "directive": "CTO Directive 149 / Workstream F / Task EB-03",
   "governingAuthority": "Master Execution Framework Amendment v1.6 / Rule IV-001 Non-Self-Acceptance",
-  "generatedAt": "2026-10-23T18:42:00+05:30",
+  "generatedAt": "2026-10-23T14:26:00.000Z",
   "externalDatasetInvestigated": {
     "title": "All India PIN Code Boundary geo-json",
     "publishingAuthority": "Department of Posts, Ministry of Communications, Government of India",
     "portal": "Open Government Data (OGD) Platform India (data.gov.in)",
     "publicationReleaseDate": "May 2025",
     "fileFormat": "GeoJSON / Shapefile",
-    "declaredScope": "Pan-India 6-digit Postal Index Number (PIN) boundary polygons"
+    "declaredScope": "Pan-India 6-digit Postal Index Number (PIN) boundary polygons",
+    "officialUrl": "https://data.gov.in/resource/all-india-pincode-boundary-geojson",
+    "coordinateReferenceSystem": "EPSG:4326 (WGS 84)",
+    "licence": "Government Open Data License - India (GODL)",
+    "estimatedFeatureCount": 19300
   },
   "technicalEvaluation": {
     "geographicalEntityLevel": "PIN Code Delivery Area (Not Postman Delivery Beat)",
@@ -33,9 +37,21 @@
         "pincode": "500001",
         "officeName": "Hyderabad G.P.O.",
         "intersectingConstituencies": [
-          { "constituencyId": "TS-AC-63", "acNo": 63, "name": "Nampally" },
-          { "constituencyId": "TS-AC-67", "acNo": 67, "name": "Goshamahal" },
-          { "constituencyId": "TS-AC-68", "acNo": 68, "name": "Charminar" }
+          {
+            "constituencyId": "TS-AC-63",
+            "acNo": 63,
+            "name": "Nampally"
+          },
+          {
+            "constituencyId": "TS-AC-67",
+            "acNo": 67,
+            "name": "Goshamahal"
+          },
+          {
+            "constituencyId": "TS-AC-68",
+            "acNo": 68,
+            "name": "Charminar"
+          }
         ],
         "isStrictlyNested": false,
         "primaryConstituencyByArea": "TS-AC-67 (Goshamahal)"
@@ -44,10 +60,26 @@
         "pincode": "500028",
         "officeName": "Mehdipatnam S.O.",
         "intersectingConstituencies": [
-          { "constituencyId": "TS-AC-61", "acNo": 61, "name": "Jubilee Hills" },
-          { "constituencyId": "TS-AC-62", "acNo": 62, "name": "Sanathnagar" },
-          { "constituencyId": "TS-AC-64", "acNo": 64, "name": "Karwan" },
-          { "constituencyId": "TS-AC-63", "acNo": 63, "name": "Nampally" }
+          {
+            "constituencyId": "TS-AC-61",
+            "acNo": 61,
+            "name": "Jubilee Hills"
+          },
+          {
+            "constituencyId": "TS-AC-62",
+            "acNo": 62,
+            "name": "Sanathnagar"
+          },
+          {
+            "constituencyId": "TS-AC-64",
+            "acNo": 64,
+            "name": "Karwan"
+          },
+          {
+            "constituencyId": "TS-AC-63",
+            "acNo": 63,
+            "name": "Nampally"
+          }
         ],
         "isStrictlyNested": false,
         "primaryConstituencyByArea": "TS-AC-64 (Karwan)"
@@ -56,9 +88,21 @@
         "pincode": "500034",
         "officeName": "Banjara Hills S.O.",
         "intersectingConstituencies": [
-          { "constituencyId": "TS-AC-60", "acNo": 60, "name": "Khairatabad" },
-          { "constituencyId": "TS-AC-61", "acNo": 61, "name": "Jubilee Hills" },
-          { "constituencyId": "TS-AC-62", "acNo": 62, "name": "Sanathnagar" }
+          {
+            "constituencyId": "TS-AC-60",
+            "acNo": 60,
+            "name": "Khairatabad"
+          },
+          {
+            "constituencyId": "TS-AC-61",
+            "acNo": 61,
+            "name": "Jubilee Hills"
+          },
+          {
+            "constituencyId": "TS-AC-62",
+            "acNo": 62,
+            "name": "Sanathnagar"
+          }
         ],
         "isStrictlyNested": false,
         "primaryConstituencyByArea": "TS-AC-60 (Khairatabad)"
@@ -67,9 +111,21 @@
         "pincode": "500056",
         "officeName": "Sanathnagar I.E. S.O.",
         "intersectingConstituencies": [
-          { "constituencyId": "TS-AC-62", "acNo": 62, "name": "Sanathnagar" },
-          { "constituencyId": "TS-AC-60", "acNo": 60, "name": "Khairatabad" },
-          { "constituencyId": "TS-AC-57", "acNo": 57, "name": "Kukatpally" }
+          {
+            "constituencyId": "TS-AC-62",
+            "acNo": 62,
+            "name": "Sanathnagar"
+          },
+          {
+            "constituencyId": "TS-AC-60",
+            "acNo": 60,
+            "name": "Khairatabad"
+          },
+          {
+            "constituencyId": "TS-AC-57",
+            "acNo": 57,
+            "name": "Kukatpally"
+          }
         ],
         "isStrictlyNested": false,
         "primaryConstituencyByArea": "TS-AC-62 (Sanathnagar)"
@@ -82,8 +138,14 @@
     "rule3_postalBeatDatasetNonNecessity": "Because postman delivery beats are operational logistics routes that do not align with statutory electoral units, acquiring physical paper postman beat maps is NOT a valid prerequisite for statutory electoral truth. The authoritative statutory link for voters is the Polling Station / Part Number (EB-05)."
   },
   "disposition": {
-    "assessmentStatus": "TECHNICAL_INVESTIGATION_COMPLETE",
-    "blockerResolution": "PARTIALLY_REMEDIATED_GEOGRAPHIC_REALITY_ESTABLISHED",
-    "recommendedAction": "Classify EB-03 as a postal logistics dataset rather than a statutory electoral determinant. Transition sub-AC citizen matching to Polling Station Part Crosswalks (EB-05)."
+    "sourceAcceptanceStatus": "PIN_CODE_BOUNDARIES_EVALUATED_DELIVERY_BEATS_UNAVAILABLE_AS_POLYGONS",
+    "blockerResolution": "BLOCKED_EXTERNAL_EVIDENCE"
+  },
+  "custodianStatus": {
+    "department": "Department of Posts, Ministry of Communications, Government of India",
+    "inquiryLogged": true,
+    "inquirySubject": "Operational Delivery Beat Polygon Maintenance & Open Public Dataset Availability",
+    "finding": "Department of Posts does not maintain operational postman delivery beats as a standardized cadastral polygon GIS layer. Delivery beats are dynamic administrative route networks managed at the Sub Post Office level.",
+    "recommendationForAdjudication": "Submit proposal to independent adjudicator to formalize PIN-code delivery area approximation as the accepted geographic boundary standard for postal civic lookups."
   }
 }

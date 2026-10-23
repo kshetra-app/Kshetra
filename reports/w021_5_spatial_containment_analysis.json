@@ -3,9 +3,9 @@
   "analysisSpecification": "W021.5 Spatial Containment Analysis (Postal Geographies vs Assembly Constituencies)",
   "blockerId": "EB-04",
   "blockerCategory": "SPATIAL_BEAT_CONTAINMENT_VERIFICATION",
-  "directive": "CTO Directive 148 / Workstream C / Task EB-04",
+  "directive": "CTO Directive 149 / Workstream F / Task EB-04",
   "governingAuthority": "Master Execution Framework Amendment v1.6 / Rule IV-001 Non-Self-Acceptance",
-  "generatedAt": "2026-10-23T18:45:00+05:30",
+  "generatedAt": "2026-10-23T14:26:00.000Z",
   "spatialAnalysisSummary": {
     "totalSamplePostalCodesAnalyzed": 19300,
     "spatialIntersectionCategories": {
@@ -33,7 +33,7 @@
     {
       "containmentThreshold": "100% (Strict Spatial Subset)",
       "postalZonesCount": 8106,
-      "percentage": 42.0,
+      "percentage": 42,
       "resolutionRisk": "ZERO_RISK"
     },
     {
@@ -45,7 +45,7 @@
     {
       "containmentThreshold": "70% to 95% (Dual AC Split)",
       "postalZonesCount": 3860,
-      "percentage": 20.0,
+      "percentage": 20,
       "resolutionRisk": "HIGH_RISK_MULTI_AC_DISAMBIGUATION_MANDATORY"
     },
     {
@@ -62,7 +62,14 @@
     "verdict": "SPATIAL_CONTAINMENT_MATHEMATICALLY_PROVEN_NON_ISOMORPHIC"
   },
   "disposition": {
-    "blockerResolution": "PARTIALLY_REMEDIATED_CONTAINMENT_MODEL_FORMALIZED",
-    "consequence": "Closes the dependency on full postal-beat survey polygons by formalizing fail-closed multi-AC resolution architecture."
+    "spatialContainmentStatus": "PIN_CODE_CONTAINMENT_EVALUATED_DELIVERY_BEAT_CONTAINMENT_BLOCKED",
+    "blockerResolution": "BLOCKED_EXTERNAL_EVIDENCE"
+  },
+  "geospatialConfiguration": {
+    "inputCrs": "EPSG:4326 (WGS 84)",
+    "projectedCrsForAreaAnalysis": "EPSG:7755 (India National Grid System)",
+    "geometryRepairPolicy": "ST_MakeValid applied on multi-polygons prior to intersection",
+    "testedPostalZones": 19300,
+    "disclaimer": "Spatial analysis performed on 6-digit PIN code delivery areas. Operational postman delivery beat analysis cannot be performed until DoP delivery beat polygon layer is made available."
   }
 }

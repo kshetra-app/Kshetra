@@ -2,7 +2,7 @@
  * scripts/lib/stage1IdempotentReconciler.mjs
  *
  * Stage 1 Political Organizations Idempotent Reconciliation Engine
- * Authority: CTO Directive 148 Section 3 / Task W021.5-C-02 / Master Execution Framework Amendment v1.6
+ * Authority: CTO Directive 148 / CTO Directive 149 Section 5 / Task W021.5-C-02 / Master Execution Framework Amendment v1.6
  *
  * Solves the pre-seeded child-table idempotency challenge:
  * When Migration 065 was executed, child rows (relationships, multilingual names,
@@ -10,18 +10,27 @@
  * generated random UUIDs (gen_random_uuid()).
  *
  * This engine reconciles incoming canonical catalog rows against existing database
- * state using natural keys / unique constraints:
- *   1. uq_org_rel (source_organization_id, target_organization_id, relationship_type, valid_from)
+ * state using exact database natural keys / unique constraints:
+ *   1. uq_org_rel (source_org_id, target_org_id, relationship_type, valid_from)
  *   2. uq_org_multi_name (organization_id, language_code, script_code, representation_type, name_value)
- *   3. uq_org_symbols_timeline (organization_id, symbol_name, valid_from)
- *   4. raw_lookup_key + jurisdiction_scope + organization_id + valid_from
+ *   3. uq_org_symbols_timeline (organization_id, symbol_name, valid_from) [OMITS jurisdiction_scope per DB constraint]
+ *   4. organization_aliases: (raw_lookup_key, jurisdiction_scope, organization_id, valid_from)
+ *      AND enforces trigger fn_validate_org_alias_temporal_invariants:
+ *      no overlapping validity intervals for the same (raw_lookup_key, jurisdiction_scope) across ANY organization.
  *
  * Key Invariants:
  *  - Preserves existing database UUIDs on matching rows to maintain referential integrity.
  *  - Avoids 23505 unique constraint duplicate key errors on repeat execution.
  *  - Avoids 23514 temporal trigger overlap violations.
  *  - Proves exact idempotency: repeat execution against existing state produces 0 inserts and 0 duplicate errors.
- *  - Detects and surfaces genuine business/data conflicts (contradictory attributes on identical natural keys).
+ *  - Explicit Non-Key Mutation Policy (Directive 149 Section 5.2):
+ *    No speculative overwrites of official recognition, alias meaning, statutory symbol allocation,
+ *    temporal validity, provenance or canonical identity. All discrepancies become reviewable CONFLICTs.
+ *  - Exact Catalog Breakdown:
+ *    107 political_organizations + 10 organization_relationships + 27 multilingual_names +
+ *    19 organization_symbols + 1,043 organization_aliases + 1 provenance_record = 1,207 catalog records
+ *    (+ 2 dataset anchors = 1,209 total records across all 8 tables).
+ *    Exact child row count: 10 + 27 + 19 + 1,043 = 1,099 child rows.
  */
 
 import { reconcilePoliticalOrganizations } from '../reconcile_database_criteria_identities.mjs';
@@ -38,9 +47,48 @@ export const STAGE1_TABLE_SEQUENCE = [
 ];
 
 /**
+ * Non-Key Field Mutation Policy (Directive 149 Section 5.2)
+ * Disallows silent/speculative overwrites of statutory, temporal, or provenance attributes.
+ */
+export const STAGE1_MUTATION_POLICY = {
+  PROTECTED_BUSINESS_ATTRIBUTES: new Set([
+    'official_recognition',
+    'party_type',
+    'registration_status',
+    'founded_year',
+    'legal_status',
+    'recognition_level',
+    'symbol_name',
+    'symbol_type',
+    'jurisdiction_scope',
+    'alias_type',
+    'confidence',
+    'meaning_gloss',
+    'relationship_type',
+    'source_org_id',
+    'target_org_id',
+    'organization_id',
+    'valid_from',
+    'valid_to',
+    'data_status',
+    'provenance_id',
+    'dataset_version_id',
+    'language_code',
+    'script_code',
+    'representation_type',
+    'name_value'
+  ]),
+  PERMITTED_UPDATE_ATTRIBUTES: new Set([
+    'description',
+    'notes',
+    'metadata'
+  ])
+};
+
+/**
  * Normalizes field names across source representations and database columns
  */
-function normalizeRow(tableName, row) {
+export function normalizeRow(tableName, row) {
   if (!row || typeof row !== 'object') return {};
   const norm = { ...row };
 
@@ -54,7 +102,7 @@ function normalizeRow(tableName, row) {
 }
 
 /**
- * Computes deterministic natural key for a table row
+ * Computes deterministic natural key for a table row matching exact PostgreSQL constraint semantics
  */
 export function computeNaturalKey(tableName, row) {
   const r = normalizeRow(tableName, row);
@@ -69,6 +117,7 @@ export function computeNaturalKey(tableName, row) {
     case 'public.political_organizations':
       return String(r.id || '').trim().toUpperCase();
     case 'public.organization_relationships': {
+      // DDL constraint: uq_org_rel (source_org_id, target_org_id, relationship_type, valid_from)
       const src = (r.source_org_id || r.source_organization_id || '').trim();
       const tgt = (r.target_org_id || r.target_organization_id || '').trim();
       const rel = (r.relationship_type || '').trim();
@@ -76,6 +125,7 @@ export function computeNaturalKey(tableName, row) {
       return `${src}::${tgt}::${rel}::${vf}`;
     }
     case 'public.organization_multilingual_names': {
+      // DDL constraint: uq_org_multi_name (organization_id, language_code, script_code, representation_type, name_value)
       const org = (r.organization_id || '').trim();
       const lang = (r.language_code || '').trim().toLowerCase();
       const script = (r.script_code || '').trim().toLowerCase();
@@ -84,13 +134,15 @@ export function computeNaturalKey(tableName, row) {
       return `${org}::${lang}::${script}::${rep}::${name}`;
     }
     case 'public.organization_symbols': {
+      // DDL constraint: uq_org_symbols_timeline (organization_id, symbol_name, valid_from)
+      // Directive 149 Section 5.1: jurisdiction_scope is NOT part of the database unique constraint!
       const org = (r.organization_id || '').trim();
       const sym = (r.symbol_name || '').trim();
       const vf = (r.valid_from || '').trim();
-      const jur = (r.jurisdiction_scope || 'NULL').trim();
-      return `${org}::${sym}::${jur}::${vf}`;
+      return `${org}::${sym}::${vf}`;
     }
     case 'public.organization_aliases': {
+      // Natural lookup key within organization
       const rawKey = (r.raw_lookup_key || '').trim().toLowerCase();
       const org = (r.organization_id || '').trim();
       const jur = (r.jurisdiction_scope || 'NULL').trim();
@@ -100,6 +152,18 @@ export function computeNaturalKey(tableName, row) {
     default:
       return String(r.id || '').trim();
   }
+}
+
+/**
+ * Checks whether two temporal intervals [from1, to1] and [from2, to2] overlap.
+ * Uses PostgreSQL convention: valid_to defaults to 9999-12-31 if null.
+ */
+function intervalsOverlap(from1, to1, from2, to2) {
+  const f1 = from1 || '1947-01-01';
+  const t1 = to1 || '9999-12-31';
+  const f2 = from2 || '1947-01-01';
+  const t2 = to2 || '9999-12-31';
+  return f1 <= t2 && t1 >= f2;
 }
 
 /**
@@ -167,20 +231,20 @@ export function reconcileStage1Table(tableName, sourceRows, targetRows = [], opt
           payload: { ...sRow, id: targetId }
         });
       } else {
-        // Evaluate if difference is an allowable update or a conflicting business invariant
+        // Evaluate if difference is an allowable update or a conflicting business invariant (Directive 149 Section 5.2)
         let isBusinessConflict = false;
+        let conflictReason = 'BUSINESS_INVARIANT_CONFLICT: Conflicting non-key attributes on existing target record';
+
         for (const k of diffKeys) {
-          if (k === 'confidence' && diffs[k].source !== diffs[k].target) {
+          if (STAGE1_MUTATION_POLICY.PROTECTED_BUSINESS_ATTRIBUTES.has(k)) {
             isBusinessConflict = true;
+            conflictReason = `PROTECTED_ATTRIBUTE_CONFLICT: Difference on protected attribute "${k}" (source: ${JSON.stringify(diffs[k].source)} vs target: ${JSON.stringify(diffs[k].target)})`;
+            break;
           }
-          if (k === 'alias_type' && diffs[k].source !== diffs[k].target) {
+          if (!STAGE1_MUTATION_POLICY.PERMITTED_UPDATE_ATTRIBUTES.has(k)) {
             isBusinessConflict = true;
-          }
-          if (k === 'recognition_level' && diffs[k].source !== diffs[k].target) {
-            isBusinessConflict = true;
-          }
-          if (k === 'valid_to' && diffs[k].source !== diffs[k].target) {
-            isBusinessConflict = true;
+            conflictReason = `UNAPPROVED_MUTATION_CONFLICT: Field "${k}" has differences but is not an approved mutable field`;
+            break;
           }
         }
 
@@ -190,7 +254,7 @@ export function reconcileStage1Table(tableName, sourceRows, targetRows = [], opt
             naturalKey: key,
             targetId,
             diffs,
-            reason: 'BUSINESS_INVARIANT_CONFLICT: Conflicting non-key attributes on existing target record'
+            reason: conflictReason
           });
           actions.push({
             action: 'CONFLICT',
@@ -212,14 +276,50 @@ export function reconcileStage1Table(tableName, sourceRows, targetRows = [], opt
         }
       }
     } else {
-      insertCount++;
-      actions.push({
-        action: 'INSERT',
-        table: tableName,
-        naturalKey: key,
-        id: sRow.id,
-        payload: { ...sRow }
-      });
+      // Row is not present by exact natural key.
+      // If table is organization_aliases, check for cross-organization temporal trigger collision!
+      // (Trigger fn_validate_org_alias_temporal_invariants prevents overlapping intervals for same raw_lookup_key + scope across ANY org)
+      let isTemporalCollision = false;
+      if (tableName === 'public.organization_aliases') {
+        const rawKey = (sRow.raw_lookup_key || '').trim().toLowerCase();
+        const jur = (sRow.jurisdiction_scope || '').trim();
+
+        for (const tRow of targetRows) {
+          const tRawKey = (tRow.raw_lookup_key || '').trim().toLowerCase();
+          const tJur = (tRow.jurisdiction_scope || '').trim();
+
+          if (rawKey === tRawKey && jur === tJur) {
+            if (intervalsOverlap(sRow.valid_from, sRow.valid_to, tRow.valid_from, tRow.valid_to)) {
+              isTemporalCollision = true;
+              conflicts.push({
+                table: tableName,
+                naturalKey: key,
+                targetId: tRow.id,
+                reason: `TEMPORAL_TRIGGER_COLLISION: Alias "${rawKey}" in scope "${jur || 'NULL'}" has overlapping validity [${sRow.valid_from}..${sRow.valid_to || 'inf'}] with existing target row ${tRow.id} (org: ${tRow.organization_id}, [${tRow.valid_from}..${tRow.valid_to || 'inf'}])`
+              });
+              actions.push({
+                action: 'CONFLICT',
+                table: tableName,
+                naturalKey: key,
+                targetId: tRow.id,
+                reason: 'TEMPORAL_TRIGGER_COLLISION'
+              });
+              break;
+            }
+          }
+        }
+      }
+
+      if (!isTemporalCollision) {
+        insertCount++;
+        actions.push({
+          action: 'INSERT',
+          table: tableName,
+          naturalKey: key,
+          id: sRow.id,
+          payload: { ...sRow }
+        });
+      }
     }
   }
 
@@ -277,9 +377,19 @@ export function reconcileStage1Catalog(targetDatabaseState = {}, options = {}) {
 
   const isExactMatch = totalMatched === totalSourceRows && totalInserts === 0 && totalUpdates === 0 && allConflicts.length === 0;
 
+  // Breakdown verification:
+  // Child tables: 10 rels + 27 multilingual + 19 symbols + 1043 aliases = 1,099 child rows.
+  // 107 canonical organizations + 1 provenance record = 1,207 catalog records (+ 2 datasets = 1,209 total).
+  const childRowsCount =
+    (tableAudits['public.organization_relationships']?.sourceRowCount || 0) +
+    (tableAudits['public.organization_multilingual_names']?.sourceRowCount || 0) +
+    (tableAudits['public.organization_symbols']?.sourceRowCount || 0) +
+    (tableAudits['public.organization_aliases']?.sourceRowCount || 0);
+
   return {
     criterionId: 'CRIT-C02-02',
     taskId: 'W021.5-C-02',
+    directive: 'CTO Directive 149 Section 5',
     timestamp: new Date().toISOString(),
     totalSourceRows,
     totalTargetRows,
@@ -287,6 +397,7 @@ export function reconcileStage1Catalog(targetDatabaseState = {}, options = {}) {
     totalInserts,
     totalUpdates,
     totalPreserved,
+    childRowsCount,
     conflictsCount: allConflicts.length,
     conflicts: allConflicts,
     isExactMatch,

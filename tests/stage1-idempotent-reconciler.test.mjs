@@ -2,7 +2,7 @@
  * tests/stage1-idempotent-reconciler.test.mjs
  *
  * Stage 1 Political Organizations Idempotent Reconciler Battery
- * Authority: CTO Directive 148 Section 3 / Task W021.5-C-02 / Master Execution Framework Amendment v1.6
+ * Authority: CTO Directive 148 / CTO Directive 149 Section 5 / Task W021.5-C-02 / Master Execution Framework Amendment v1.6
  */
 
 import { test, describe } from 'node:test';
@@ -10,6 +10,7 @@ import assert from 'node:assert';
 import crypto from 'node:crypto';
 import {
   STAGE1_TABLE_SEQUENCE,
+  STAGE1_MUTATION_POLICY,
   computeNaturalKey,
   diffRowAttributes,
   reconcileStage1Table,
@@ -18,9 +19,9 @@ import {
 } from '../scripts/lib/stage1IdempotentReconciler.mjs';
 import { reconcilePoliticalOrganizations } from '../scripts/reconcile_database_criteria_identities.mjs';
 
-describe('CTO Directive 148: Stage 1 Political Organizations Idempotent Reconciler Battery', () => {
+describe('CTO Directive 149: Stage 1 Political Organizations Idempotent Reconciler Battery', () => {
 
-  test('1. Empty target write generates exact 1,209 inserts across all 8 tables', () => {
+  test('1. Empty target write generates exact 1,209 inserts and 1,099 child rows across all 8 tables', () => {
     const emptyState = {};
     const plan = reconcileStage1Catalog(emptyState);
 
@@ -30,6 +31,7 @@ describe('CTO Directive 148: Stage 1 Political Organizations Idempotent Reconcil
     assert.strictEqual(plan.totalUpdates, 0, 'Zero updates on empty state');
     assert.strictEqual(plan.totalPreserved, 0, 'Zero preserved on empty state');
     assert.strictEqual(plan.conflictsCount, 0, 'Zero conflicts on empty state');
+    assert.strictEqual(plan.childRowsCount, 1099, 'Child rows count must be exactly 1,099 (10 + 27 + 19 + 1043)');
 
     // Verify per-table counts
     const audits = plan.tableAudits;
@@ -62,7 +64,7 @@ describe('CTO Directive 148: Stage 1 Political Organizations Idempotent Reconcil
     assert.strictEqual(plan2.isIdempotent, true, 'isIdempotent must be true');
   });
 
-  test('3. Reconciles against pre-seeded target with random UUIDs and preserves target UUIDs without duplicate key errors', () => {
+  test('3. Reconciles against pre-seeded target with random UUIDs and preserves all 1,099 child target UUIDs', () => {
     // Simulate PostgreSQL Migration 065 applied directly where child rows were assigned random UUIDs
     const canonical = reconcilePoliticalOrganizations();
     const preSeededState = {};
@@ -113,7 +115,7 @@ describe('CTO Directive 148: Stage 1 Political Organizations Idempotent Reconcil
     }
   });
 
-  test('4. Correctly detects business invariant conflicts on contradictory attributes', () => {
+  test('4. Correctly detects business invariant conflicts under STAGE1_MUTATION_POLICY', () => {
     const canonical = reconcilePoliticalOrganizations();
     const sourceAliases = canonical.rowsByTable['public.organization_aliases'];
 
@@ -134,15 +136,88 @@ describe('CTO Directive 148: Stage 1 Political Organizations Idempotent Reconcil
     assert.ok(audit.conflicts[0].diffs.confidence, 'Diff must identify contradictory confidence');
   });
 
-  test('5. Natural key generation handles edge cases and null jurisdiction scopes cleanly', () => {
+  test('5. Symbol natural key strictly adheres to database unique constraint uq_org_symbols_timeline (organization_id, symbol_name, valid_from)', () => {
+    // Under Migration 064 line 133, uq_org_symbols_timeline is UNIQUE (organization_id, symbol_name, valid_from)
+    // jurisdiction_scope is NOT part of this uniqueness constraint.
     const sym1 = { organization_id: 'ORG-INC', symbol_name: 'Hand', jurisdiction_scope: null, valid_from: '1977-01-01' };
     const sym2 = { organization_id: 'ORG-INC', symbol_name: 'Hand', jurisdiction_scope: 'IN', valid_from: '1977-01-01' };
 
     const key1 = computeNaturalKey('public.organization_symbols', sym1);
     const key2 = computeNaturalKey('public.organization_symbols', sym2);
 
-    assert.strictEqual(key1, 'ORG-INC::Hand::NULL::1977-01-01');
-    assert.strictEqual(key2, 'ORG-INC::Hand::IN::1977-01-01');
-    assert.notStrictEqual(key1, key2, 'Distinct jurisdiction scopes must produce distinct natural keys');
+    assert.strictEqual(key1, 'ORG-INC::Hand::1977-01-01');
+    assert.strictEqual(key2, 'ORG-INC::Hand::1977-01-01');
+    assert.strictEqual(key1, key2, 'Natural keys must match database constraint (organization_id, symbol_name, valid_from)');
+
+    // When reconciling, a diff on jurisdiction_scope on the same timeline key is caught as a protected attribute conflict:
+    const targetSymbol = [{ ...sym1, id: crypto.randomUUID(), jurisdiction_scope: 'IN' }];
+    const audit = reconcileStage1Table('public.organization_symbols', [sym1], targetSymbol);
+    assert.strictEqual(audit.matchedCount, 1);
+    assert.strictEqual(audit.hasConflicts, true);
+    assert.ok(audit.conflicts[0].reason.includes('jurisdiction_scope'));
+  });
+
+  test('6. Alias cross-organization temporal collision is detected (trigger fn_validate_org_alias_temporal_invariants)', () => {
+    // When an incoming alias row has the same raw_lookup_key and scope as an existing target row
+    // for a DIFFERENT organization with overlapping validity, it must be flagged as a TEMPORAL_TRIGGER_COLLISION.
+    const sourceAlias = {
+      id: crypto.randomUUID(),
+      organization_id: 'ORG-NEW',
+      raw_lookup_key: 'congress',
+      jurisdiction_scope: 'IN',
+      alias_type: 'informal',
+      confidence: 'VERIFIED',
+      valid_from: '2020-01-01',
+      valid_to: '2025-01-01'
+    };
+
+    const targetAlias = {
+      id: crypto.randomUUID(),
+      organization_id: 'ORG-INC', // DIFFERENT ORGANIZATION
+      raw_lookup_key: 'congress',
+      jurisdiction_scope: 'IN',
+      alias_type: 'informal',
+      confidence: 'VERIFIED',
+      valid_from: '2019-01-01',
+      valid_to: '2026-01-01' // OVERLAPS!
+    };
+
+    const audit = reconcileStage1Table('public.organization_aliases', [sourceAlias], [targetAlias]);
+    assert.strictEqual(audit.hasConflicts, true);
+    assert.strictEqual(audit.conflicts.length, 1);
+    assert.ok(audit.conflicts[0].reason.includes('TEMPORAL_TRIGGER_COLLISION'));
+    assert.strictEqual(audit.insertCount, 0, 'Must NOT attempt to insert a row that would trigger 23514');
+  });
+
+  test('7. Exact arithmetic verification: 1,099 child rows + 107 orgs + 1 provenance = 1,207 catalog records (+ 2 datasets = 1,209 total)', () => {
+    const canonical = reconcilePoliticalOrganizations();
+    const rows = canonical.rowsByTable;
+
+    const orgs = rows['public.political_organizations'].length;
+    const rels = rows['public.organization_relationships'].length;
+    const multi = rows['public.organization_multilingual_names'].length;
+    const syms = rows['public.organization_symbols'].length;
+    const aliases = rows['public.organization_aliases'].length;
+    const prov = rows['public.provenance_records'].length;
+    const ds = rows['public.datasets'].length;
+    const dsv = rows['public.dataset_versions'].length;
+
+    assert.strictEqual(orgs, 107, '107 political organizations');
+    assert.strictEqual(rels, 10, '10 relationships');
+    assert.strictEqual(multi, 27, '27 multilingual names');
+    assert.strictEqual(syms, 19, '19 symbols');
+    assert.strictEqual(aliases, 1043, '1,043 aliases');
+    assert.strictEqual(prov, 1, '1 provenance record');
+    assert.strictEqual(ds, 1, '1 dataset anchor');
+    assert.strictEqual(dsv, 1, '1 dataset_version anchor');
+
+    const childRows = rels + multi + syms + aliases;
+    assert.strictEqual(childRows, 1099, 'Child rows sum must be exactly 1,099 (NOT 1,100)');
+
+    const catalogTotal = childRows + orgs + prov;
+    assert.strictEqual(catalogTotal, 1207, 'Catalog records must be exactly 1,207');
+
+    const grandTotal = catalogTotal + ds + dsv;
+    assert.strictEqual(grandTotal, 1209, 'Grand total must be exactly 1,209');
   });
 });
