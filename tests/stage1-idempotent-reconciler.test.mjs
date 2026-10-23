@@ -220,4 +220,104 @@ describe('CTO Directive 149: Stage 1 Political Organizations Idempotent Reconcil
     const grandTotal = catalogTotal + ds + dsv;
     assert.strictEqual(grandTotal, 1209, 'Grand total must be exactly 1,209');
   });
+
+  test('8. Partial-batch restart and recovery simulation preserves written tables and resumes remainder', () => {
+    // Simulate a failure midway: datasets, versions, provenance, organizations, and relationships are written
+    // but symbols, multilingual names, and aliases were interrupted.
+    const canonical = reconcilePoliticalOrganizations();
+    const interruptedTargetState = {
+      'public.datasets': canonical.rowsByTable['public.datasets'],
+      'public.dataset_versions': canonical.rowsByTable['public.dataset_versions'],
+      'public.provenance_records': canonical.rowsByTable['public.provenance_records'],
+      'public.political_organizations': canonical.rowsByTable['public.political_organizations'],
+      'public.organization_relationships': canonical.rowsByTable['public.organization_relationships']
+      // multilingual, symbols, aliases are missing (empty in target)
+    };
+
+    const recoveryPlan = reconcileStage1Catalog(interruptedTargetState);
+
+    // Target rows already written must be preserved
+    assert.strictEqual(recoveryPlan.tableAudits['public.political_organizations'].preserveCount, 107);
+    assert.strictEqual(recoveryPlan.tableAudits['public.organization_relationships'].preserveCount, 10);
+    assert.strictEqual(recoveryPlan.tableAudits['public.political_organizations'].insertCount, 0);
+
+    // Missing tables must be identified for insert
+    assert.strictEqual(recoveryPlan.tableAudits['public.organization_multilingual_names'].insertCount, 27);
+    assert.strictEqual(recoveryPlan.tableAudits['public.organization_symbols'].insertCount, 19);
+    assert.strictEqual(recoveryPlan.tableAudits['public.organization_aliases'].insertCount, 1043);
+
+    // No conflicts introduced
+    assert.strictEqual(recoveryPlan.conflictsCount, 0);
+  });
+
+  test('9. Real PostgreSQL constraint error code simulation (23505 unique_violation, 23514 check_violation)', () => {
+    // Test that the reconciler identifies operations that would trigger Postgres 23505/23514
+    // 23505: duplicate key violates unique constraint uq_org_symbols_timeline
+    const existingSymbol = {
+      id: crypto.randomUUID(),
+      organization_id: 'ORG-PARTY-BJP',
+      symbol_name: 'Lotus',
+      valid_from: '1980-04-06',
+      jurisdiction_scope: 'IN'
+    };
+    const incomingCollidingSymbol = {
+      id: crypto.randomUUID(),
+      organization_id: 'ORG-PARTY-BJP',
+      symbol_name: 'Lotus',
+      valid_from: '1980-04-06',
+      jurisdiction_scope: 'STATE_GJ' // different scope, but same (org, symbol, valid_from)
+    };
+    const audit = reconcileStage1Table('public.organization_symbols', [incomingCollidingSymbol], [existingSymbol]);
+    // The reconciler matches the natural key and prevents a duplicate insert that would fail with 23505
+    assert.strictEqual(audit.matchedCount, 1);
+    assert.strictEqual(audit.insertCount, 0);
+
+    // 23514: check_violation / trigger violation fn_validate_org_alias_temporal_invariants
+    const existingAlias = {
+      id: crypto.randomUUID(),
+      organization_id: 'ORG-PARTY-BJP',
+      raw_lookup_key: 'bjp',
+      jurisdiction_scope: 'IN',
+      valid_from: '1980-01-01',
+      valid_to: '2030-01-01'
+    };
+    const overlappingAliasOtherOrg = {
+      id: crypto.randomUUID(),
+      organization_id: 'ORG-PARTY-INC',
+      raw_lookup_key: 'bjp',
+      jurisdiction_scope: 'IN',
+      valid_from: '2000-01-01',
+      valid_to: '2025-01-01'
+    };
+    const aliasAudit = reconcileStage1Table('public.organization_aliases', [overlappingAliasOtherOrg], [existingAlias]);
+    assert.strictEqual(aliasAudit.hasConflicts, true);
+    assert.strictEqual(aliasAudit.insertCount, 0, 'Must not dispatch insert that would trigger 23514 in PostgreSQL');
+  });
+
+  test('10. Pre-seeded Migration 065 target reconciliation preserves 100% of target UUIDs without generating duplicate inserts', () => {
+    // Generate simulated Migration 065 state where child tables have random UUIDs
+    const canonical = reconcilePoliticalOrganizations();
+    const childTables = new Set([
+      'public.organization_relationships',
+      'public.organization_multilingual_names',
+      'public.organization_symbols',
+      'public.organization_aliases'
+    ]);
+    const seededTarget = {};
+    for (const [table, rows] of Object.entries(canonical.rowsByTable)) {
+      if (childTables.has(table)) {
+        seededTarget[table] = rows.map(r => ({
+          ...r,
+          id: crypto.randomUUID() // Different random UUIDs as produced by Migration 065
+        }));
+      } else {
+        seededTarget[table] = rows.map(r => ({ ...r }));
+      }
+    }
+
+    const plan = reconcileStage1Catalog(seededTarget);
+    assert.strictEqual(plan.totalInserts, 0, 'Zero inserts needed against fully seeded target');
+    assert.strictEqual(plan.totalPreserved, 1209, 'All 1,209 rows matched and preserved by natural key');
+    assert.strictEqual(plan.conflictsCount, 0, 'Zero conflicts against canonical seed');
+  });
 });
