@@ -1,10 +1,10 @@
 /**
- * KSHETRA W021.5 — CTO DIRECTIVE 142 FULL-MANDATE UNIFIED VERIFIER
+ * KSHETRA W021.5 — CTO DIRECTIVE 143 FULL-MANDATE UNIFIED VERIFIER
  * Deterministic Single Entrypoint for Full-Mandate Completion Verification
  * 
  * Master Execution Framework Amendment v1.6 / Rule IV-001 Non-Self-Acceptance
- * CTO Directive 142: Final Local Remediation, Cryptographic Authorization Integrity,
- * Executable Staging Readiness, and Evidence-Truth Closure
+ * CTO Directive 143: Execution-Path Truth, Cryptographic Scope Enforcement,
+ * Staging Gate Integrity, and Independent Evidence Closure
  * 
  * Executes all 20 mandated verification suites across Stages A through I:
  *  1. Working tree cleanliness inspection (git status --porcelain)
@@ -696,8 +696,8 @@ const dynamicDbPendingTasks = Array.from(new Set(
 
 const manifest = {
   evidenceMetadata: {
-    directive: 'CTO Directive 142',
-    title: 'KSHETRA W021.5 Full-Mandate Unified Verification Manifest (Directive 142)',
+    directive: 'CTO Directive 143',
+    title: 'KSHETRA W021.5 Full-Mandate Unified Verification Manifest (Directive 143)',
     governingAuthority: 'Master Execution Framework Amendment v1.6 / Rule IV-001 Non-Self-Acceptance',
     repository: 'https://github.com/kshetra-app/Kshetra.git',
     branch: gitBranch,
