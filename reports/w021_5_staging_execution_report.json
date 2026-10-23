@@ -1,7 +1,7 @@
 {
   "generator": "scripts/execute_staging_directive_139.mjs",
   "directive": "CTO Directive 144 / Residual Defect Closure & Staging Execution Readiness",
-  "timestamp": "2026-10-23T06:41:29.511Z",
+  "timestamp": "2026-10-23T06:49:14.928Z",
   "governingAuthority": "Master Execution Framework Amendment v1.6 / Rule IV-001 Non-Self-Acceptance",
   "stagingProjectRef": "fkpigozcqnmcvofuksar",
   "productionProjectRef": "ehfafcnimmjusyvplbah (AIR-GAPPED — 0 QUERIES, 0 MUTATIONS)",
@@ -53,8 +53,8 @@
       ],
       "conflictTarget": "id",
       "rowsAffected": 0,
-      "startedAt": "2026-10-23T06:41:29.075Z",
-      "completedAt": "2026-10-23T06:41:29.105Z",
+      "startedAt": "2026-10-23T06:49:14.744Z",
+      "completedAt": "2026-10-23T06:49:14.755Z",
       "metrics": {
         "canonicalOrganizations": 107,
         "uniqueOrgIds": 107,
@@ -101,8 +101,8 @@
       ],
       "conflictTarget": "person_id,election_year,election_type,constituency_id",
       "rowsAffected": 0,
-      "startedAt": "2026-10-23T06:41:29.105Z",
-      "completedAt": "2026-10-23T06:41:29.207Z",
+      "startedAt": "2026-10-23T06:49:14.755Z",
+      "completedAt": "2026-10-23T06:49:14.810Z",
       "metrics": {
         "totalSubchunks": 10,
         "subchunkIds": [
@@ -146,8 +146,8 @@
       ],
       "conflictTarget": "constituency_id,election_year",
       "rowsAffected": 0,
-      "startedAt": "2026-10-23T06:41:29.207Z",
-      "completedAt": "2026-10-23T06:41:29.288Z",
+      "startedAt": "2026-10-23T06:49:14.810Z",
+      "completedAt": "2026-10-23T06:49:14.851Z",
       "metrics": {
         "totalConstituencies": 4123,
         "statutoryAssemblyTarget": 4123,
@@ -333,8 +333,8 @@
       "conflictTarget": "election_id,constituency_id",
       "rowsAffected": 0,
       "reason": "Canonical election entities are not provisioned in repository for these 23 states. Zero synthetic IDs permitted under Directive 144.",
-      "startedAt": "2026-10-23T06:41:29.288Z",
-      "completedAt": "2026-10-23T06:41:29.511Z",
+      "startedAt": "2026-10-23T06:49:14.851Z",
+      "completedAt": "2026-10-23T06:49:14.928Z",
       "metrics": {
         "totalStatesCovered": 23,
         "totalHistoricalElectionRecords": 2243,
