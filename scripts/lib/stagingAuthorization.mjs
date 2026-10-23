@@ -36,7 +36,18 @@ export const PROHIBITED_PRODUCTION_REF = 'ehfafcnimmjusyvplbah';
 export const EXPECTED_ISSUER = 'kshetra-cto-governance';
 export const EXPECTED_AUDIENCE = 'kshetra-staging-execution';
 export const ALLOWED_ALGORITHMS = ['Ed25519', 'RS256'];
-export const DEFAULT_PUBLIC_KEY_PATH = path.join(REPO_ROOT, 'governance', 'keys', 'cto_staging_auth_public.pem');
+export const CANONICAL_CTO_ROOT_PUBLIC_KEY_PATH = path.join(REPO_ROOT, 'governance', 'authorities', 'cto_root_public_key.pem');
+export const DEFAULT_PUBLIC_KEY_PATH = fs.existsSync(CANONICAL_CTO_ROOT_PUBLIC_KEY_PATH)
+  ? CANONICAL_CTO_ROOT_PUBLIC_KEY_PATH
+  : path.join(REPO_ROOT, 'governance', 'keys', 'cto_staging_auth_public.pem');
+
+// Approved, immutable operational trust anchor fingerprints (Directive 147 Section 3)
+// Pinned out-of-band to governance/authorities/cto_root_public_key.pem (Ed25519)
+export const APPROVED_OPERATIONAL_TRUST_ANCHOR_FINGERPRINTS = Object.freeze([
+  // Canonical CTO Root Authority v1
+  '2a046c4d9b71f5ce4478aa271b778bc80a7b1d3c6b28c7af0286d9f6df5f4e9a'
+]);
+
 export const DEFAULT_MAX_LIFETIME_SECONDS = 3600; // 1 hour hard maximum token lifetime (Directive 144 requirement 4)
 export const CLOCK_SKEW_TOLERANCE_SECONDS = 60; // 60 seconds allowable clock skew
 
@@ -106,38 +117,51 @@ export function base64UrlDecode(str) {
 /**
  * Resolves the operational or test trust anchor (asymmetric public key).
  * Fails closed if not found, malformed, or not an asymmetric public key.
- * Under Directive 146 Section 2: Environment-provided keys must match an approved out-of-band fingerprint.
+ * Under Directive 147 Section 3: Operational trust anchor MUST match an independently approved,
+ * protected fingerprint (APPROVED_OPERATIONAL_TRUST_ANCHOR_FINGERPRINTS).
+ * Caller-supplied keys or fingerprints cannot alter operational trust.
  */
 export function resolvePublicTrustAnchor(options = {}) {
+  const isTest = options.isTestVerification === true;
+
+  // Directive 147 Section 3: Reject caller-supplied fingerprint overrides in operational mode
+  if (!isTest && (options.approvedFingerprint || options.approvedFingerprints)) {
+    const e = new Error(
+      'CALLER_FINGERPRINT_OVERRIDE_FORBIDDEN: Caller-supplied fingerprint overrides are strictly prohibited in operational mode. Operational trust roots must match independently approved, pinned governance configuration.'
+    );
+    e.code = 'CALLER_FINGERPRINT_OVERRIDE_FORBIDDEN';
+    throw e;
+  }
+
   let keyMaterial = options.trustAnchor;
   let isFromEnv = false;
 
-  // 1. Check explicit options (only accepted in isolated test adapter calls)
-  if (!keyMaterial) {
-    // 2. Check environment variable KSHETRA_AUTH_PUBLIC_KEY or KSHETRA_CTO_PUBLIC_KEY
-    if (process.env.KSHETRA_AUTH_PUBLIC_KEY && process.env.KSHETRA_AUTH_PUBLIC_KEY.trim().length > 0) {
-      keyMaterial = process.env.KSHETRA_AUTH_PUBLIC_KEY.trim();
-      isFromEnv = true;
-    } else if (process.env.KSHETRA_CTO_PUBLIC_KEY && process.env.KSHETRA_CTO_PUBLIC_KEY.trim().length > 0) {
-      keyMaterial = process.env.KSHETRA_CTO_PUBLIC_KEY.trim();
-      isFromEnv = true;
-    } else {
-      // 3. Check governance public key file path
-      const keyPath = options.publicKeyPath || DEFAULT_PUBLIC_KEY_PATH;
-      if (fs.existsSync(keyPath)) {
-        try {
-          keyMaterial = fs.readFileSync(keyPath, 'utf8').trim();
-        } catch (err) {
-          const e = new Error(`TRUST_ANCHOR_READ_ERROR: Could not read public key file at ${keyPath}: ${err.message}`);
-          e.code = 'TRUST_ANCHOR_READ_ERROR';
-          throw e;
-        }
-      }
-    }
-  } else {
-    // If trustAnchor was explicitly passed but matches environment key, treat as fromEnv
+  // In test harness mode, caller-supplied test keys are accepted for mock validation
+  if (isTest && keyMaterial) {
     if (keyMaterial === process.env.KSHETRA_AUTH_PUBLIC_KEY || keyMaterial === process.env.KSHETRA_CTO_PUBLIC_KEY) {
       isFromEnv = true;
+    }
+  } else {
+    // In operational mode, check options/env/file
+    if (!keyMaterial) {
+      if (process.env.KSHETRA_AUTH_PUBLIC_KEY && process.env.KSHETRA_AUTH_PUBLIC_KEY.trim().length > 0) {
+        keyMaterial = process.env.KSHETRA_AUTH_PUBLIC_KEY.trim();
+        isFromEnv = true;
+      } else if (process.env.KSHETRA_CTO_PUBLIC_KEY && process.env.KSHETRA_CTO_PUBLIC_KEY.trim().length > 0) {
+        keyMaterial = process.env.KSHETRA_CTO_PUBLIC_KEY.trim();
+        isFromEnv = true;
+      } else {
+        const keyPath = options.publicKeyPath || DEFAULT_PUBLIC_KEY_PATH;
+        if (fs.existsSync(keyPath)) {
+          try {
+            keyMaterial = fs.readFileSync(keyPath, 'utf8').trim();
+          } catch (err) {
+            const e = new Error(`TRUST_ANCHOR_READ_ERROR: Could not read public key file at ${keyPath}: ${err.message}`);
+            e.code = 'TRUST_ANCHOR_READ_ERROR';
+            throw e;
+          }
+        }
+      }
     }
   }
 
@@ -167,26 +191,36 @@ export function resolvePublicTrustAnchor(options = {}) {
     throw e;
   }
 
-  // Directive 146 Section 2: If an environment-provided key is used, its identity
-  // must be checked against an approved, out-of-band trust anchor fingerprint.
-  // Until trustworthy configuration exists, the gate must fail closed.
-  if (isFromEnv) {
+  const spkiDer = keyObject.export({ type: 'spki', format: 'der' });
+  const actualFingerprint = crypto.createHash('sha256').update(spkiDer).digest('hex').toLowerCase();
+
+  // Directive 147 Section 3: Operational trust anchor MUST match independently approved, pinned fingerprint
+  if (!isTest) {
+    if (!APPROVED_OPERATIONAL_TRUST_ANCHOR_FINGERPRINTS.includes(actualFingerprint)) {
+      const e = new Error(
+        `TRUST_ANCHOR_UNAPPROVED: Public key fingerprint "${actualFingerprint}" is not an independently approved operational trust anchor. Self-generated or caller-selected trust anchors are strictly rejected.`
+      );
+      e.code = 'TRUST_ANCHOR_UNAPPROVED';
+      throw e;
+    }
+  } else {
+    // In test mode: check test fingerprint if specified or if key is from environment
     const approvedFingerprint = options.approvedFingerprint || process.env.KSHETRA_APPROVED_TRUST_ANCHOR_FINGERPRINT;
-    if (!approvedFingerprint || typeof approvedFingerprint !== 'string' || approvedFingerprint.trim().length === 0) {
+    if (isFromEnv && (!approvedFingerprint || typeof approvedFingerprint !== 'string' || approvedFingerprint.trim().length === 0)) {
       const e = new Error(
         'TRUST_ANCHOR_UNAPPROVED: Environment-provided public key is not anchored to an approved out-of-band trust anchor fingerprint. Operational gate fails closed.'
       );
       e.code = 'TRUST_ANCHOR_UNAPPROVED';
       throw e;
     }
-    const spkiDer = keyObject.export({ type: 'spki', format: 'der' });
-    const actualFingerprint = crypto.createHash('sha256').update(spkiDer).digest('hex');
-    if (actualFingerprint.toLowerCase() !== approvedFingerprint.trim().toLowerCase()) {
-      const e = new Error(
-        `TRUST_ANCHOR_FINGERPRINT_MISMATCH: Environment-provided public key fingerprint "${actualFingerprint}" does not match approved trust anchor fingerprint "${approvedFingerprint}".`
-      );
-      e.code = 'TRUST_ANCHOR_FINGERPRINT_MISMATCH';
-      throw e;
+    if (approvedFingerprint && typeof approvedFingerprint === 'string' && approvedFingerprint.trim().length > 0) {
+      if (actualFingerprint !== approvedFingerprint.trim().toLowerCase()) {
+        const e = new Error(
+          `TRUST_ANCHOR_FINGERPRINT_MISMATCH: Test public key fingerprint "${actualFingerprint}" does not match approved trust anchor fingerprint "${approvedFingerprint}".`
+        );
+        e.code = 'TRUST_ANCHOR_FINGERPRINT_MISMATCH';
+        throw e;
+      }
     }
   }
 
@@ -211,8 +245,18 @@ export function verifyStagingWriteAuthorization(params = {}) {
     storePath = undefined,
     adminClosureRecord = undefined,
     adminRecordPath = undefined,
-    repoRoot = REPO_ROOT
+    repoRoot = REPO_ROOT,
+    isTestVerification = false
   } = params;
+
+  // Directive 147 Section 3: Reject caller-supplied replay store paths in operational mode
+  if (!isTestVerification && storePath !== undefined) {
+    const e = new Error(
+      'CALLER_REPLAY_STORE_OVERRIDE_FORBIDDEN: Caller-provided replay store paths are forbidden in operational mode. Operational verifier must use the fixed, protected runtime replay store.'
+    );
+    e.code = 'CALLER_REPLAY_STORE_OVERRIDE_FORBIDDEN';
+    throw e;
+  }
 
   // 1. Resolve Trust Anchor (Asymmetric Public Key) - Fails closed if unconfigured
   const publicKey = resolvePublicTrustAnchor(params);

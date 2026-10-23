@@ -3425,3 +3425,39 @@
      - Rule IV-001 Non-Self-Acceptance: Formal CTO acceptance remains strictly `0.0% — PENDING INDEPENDENT ADJUDICATION`.
      - Weight conservation preserved: 67.0% Repo-Verified, 10.5% Database-Pending, 22.5% Blocked, 0.0% Unimplemented, 100.0% Conserved.
 
+
+
+---
+
+### DEC-147: CTO DIRECTIVE 147 — TRUST-ANCHOR SECURITY, FULL DATABASE EXECUTION, EXTERNAL EVIDENCE RESOLUTION AND INDEPENDENT ACCEPTANCE READINESS
+- **Date:** 2026-10-23
+- **Status:** IMPLEMENTATION COMPLETE / SUBMITTED FOR INDEPENDENT CTO ADJUDICATION
+- **Authority:** CTO Directive 147 / Master Execution Framework Amendment v1.6 / Rule IV-001 Non-Self-Acceptance
+- **Context:** Comprehensive implementation of all Directive 147 mandates across four core workstreams:
+  1. **Workstream A: Close Trust-Anchor, Authorization, Migration and Schema-Contract Defects:**
+     - Established immutable operational trust root pinned in `scripts/lib/stagingAuthorization.mjs` to canonical CTO root public key fingerprint `2a046c4d9b71f5ce4478aa271b778bc80a7b1d3c6b28c7af0286d9f6df5f4e9a` from `governance/authorities/cto_root_public_key.pem`.
+     - Strictly rejected caller-supplied fingerprint overrides (`CALLER_FINGERPRINT_OVERRIDE_FORBIDDEN`) and caller-supplied replay store paths (`CALLER_REPLAY_STORE_OVERRIDE_FORBIDDEN`) in operational mode.
+     - Enforced repository key file verification against pinned trust identity.
+     - Separated test-only public keys and mock transports using explicit `isTestVerification` parameter.
+     - Added adversarial tests (Tests 30–34) proving self-generated keys with matching environment fingerprints cannot bootstrap operational trust.
+     - Preserved real administrative containment gate: staging execution fails closed with `ADMIN_CONTAINMENT_UNCONFIRMED` in the absence of a genuine signed administrator closure record.
+     - Fixed defect in `supabase/migrations/067_candidate_contest_fk.sql`: replaced non-existent `political_organization_id` on `canonical_political_organizations` with `party_id` referencing `public.political_organizations(id)`.
+     - Corrected `VALID_DATA_STATUS_ENUM` in `scripts/lib/stagingSchemaPreflight.mjs` to exact Migration 050 DDL literals (`OFFICIAL`, `DERIVED`, `VERIFIED`, `ESTIMATE`, `SCENARIO`, `INFERRED`, `UNVERIFIED`, `UNKNOWN`).
+     - Enforced 100% full-population candidacy row verification (11,298 unique rows) tracking `rowsScanned` (11,298) and `rowsFullyValidated` (11,298) with `isFullyValidated: true`.
+     - Produced machine-readable `reports/w021_5_schema_contract_specification.json` tied to the 14-migration ordered sequence.
+  2. **Workstream B: Database-Execution Backlog & Repeat-Write Idempotency:**
+     - Authored `reports/w021_5_stage1_idempotency_specification.md` formalizing why simple `on_conflict=id` with synthetic UUIDv5 fails against pre-seeded staging database (PostgreSQL 23505 and 23514), and establishing 3 safe repeat-write strategies.
+     - Maintained Stage 1 (`CRIT-C02-02`) in fail-closed disposition `BLOCKED_NOT_DEPLOYABLE` (0 rows outbound).
+     - Stage 2 (`CRIT-D02-02`): Reconciled 11,298 unique candidacies and 36 verified natural key collisions; deployable subject to genuine staging authorization.
+     - Stages 3 & 4 (`CRIT-E01-02`, `CRIT-F02-03`): Retained blocked prerequisites (4,123 seat UUID crosswalk; canonical election IDs) without synthetic data.
+     - Staging execution requires genuine administrator rotation record and independent CTO authorization; in their absence, fails closed and documents exact missing administrative actions.
+     - Production Supabase `ehfafcnimmjusyvplbah` remains 100% air-gapped (0 queries, 0 mutations).
+  3. **Workstream C: External Evidence Blockers EB-01 through EB-06:**
+     - Formally audited all 6 canonical blockers EB-01 to EB-06 with responsible authority, exact evidence needed, and immediate next actions.
+     - Confirmed zero fabrication of Gazette authentications, GIS beat polygons, or electoral crosswalks.
+     - Blocked weight remains truthfully 22.5%.
+  4. **Workstream D: Full-Mandate Verification & Rule IV-001 Independent Acceptance Readiness:**
+     - Maintained formal CTO acceptance strictly at `0.0% — PENDING INDEPENDENT ADJUDICATION` under Rule IV-001 Non-Self-Acceptance.
+     - Retained 5-seat Mizoram defect `DQ-W021.5-B2.2E-001` strictly open pending independent adjudication.
+     - Executed complete 20-suite full-mandate verification suite `scripts/verify_w021_5_full_mandate.cjs` with 20/20 PASS.
+     - Preserved full mandate accounting: 67.0% Repo-Verified, 10.5% Database-Pending, 22.5% Blocked, 0.0% Unimplemented, 100.0% Conserved.

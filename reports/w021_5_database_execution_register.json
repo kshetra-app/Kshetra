@@ -1,10 +1,10 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "W021.5 Database Execution Register",
-  "directive": "CTO Directive 146",
+  "directive": "CTO Directive 147",
   "governingAuthority": "Master Execution Framework Amendment v1.6 / Rule IV-001 Non-Self-Acceptance",
-  "generatedAt": "2026-10-23T08:52:00.000Z",
-  "baselineCommit": "5b8e52d1d8e5ba94b468985e526e90214211cea1",
+  "generatedAt": "2026-10-23T15:22:00.000Z",
+  "baselineCommit": "cdc910ac7491a4293b02c95d64857b5a6149bd0b",
   "airGapBoundary": {
     "productionDatabase": "ehfafcnimmjusyvplbah",
     "productionStatus": "AIR_GAPPED_ZERO_QUERIES_ZERO_MUTATIONS",
@@ -266,15 +266,15 @@
       "productionStatus": "AIR_GAPPED_UNEXECUTED",
       "queriesExecuted": 0,
       "mutationsExecuted": 0,
-      "blockingCondition": "Blocked by EB-06. Migration 067 adds foreign key constraint from candidacies to election_contests, canonical_persons, and canonical_political_organizations, which requires prior execution of DB-ART-001 and DB-ART-002 in staging.",
+      "blockingCondition": "Blocked by EB-06. Migration 067 adds foreign key constraint on party_id referencing public.political_organizations(id), which requires prior execution of DB-ART-001 in staging.",
       "sourceFiles": [
         "supabase/migrations/067_candidate_contest_fk.sql"
       ],
       "entityBreakdown": {
         "entityType": "FOREIGN_KEY_CONSTRAINT",
-        "sourceTable": "candidacies",
-        "targetTables": ["election_contests", "canonical_persons", "canonical_political_organizations"],
-        "constraintNames": ["fk_candidacies_contest", "fk_candidacies_person", "fk_candidacies_political_org"],
+        "sourceTable": "public.candidacies",
+        "targetTables": ["public.political_organizations"],
+        "constraintNames": ["fk_candidacies_party"],
         "schemaValid": true
       }
     }

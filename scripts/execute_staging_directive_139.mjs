@@ -511,7 +511,7 @@ export async function runStagingExecutionEngine(options = {}) {
     // Directive 145 / Directive 146: Distinguish partially ready with blocked stages from fully prepared
     const report = {
       generator: 'scripts/execute_staging_directive_139.mjs',
-      directive: 'CTO Directive 146 / W021.5',
+      directive: 'CTO Directive 147 / W021.5',
       timestamp: new Date().toISOString(),
       governingAuthority: 'Master Execution Framework Amendment v1.6 / Rule IV-001 Non-Self-Acceptance',
       stagingProjectRef: ALLOWED_STAGING_PROJECT_REF,
@@ -606,9 +606,8 @@ export async function runStagingExecutionEngine(options = {}) {
 
     // 2. Controlled Configuration Resolution (Directive 145 Item 2 / Directive 146 Section 2)
     const adminClosureRecord = process.env.KSHETRA_ADMIN_CLOSURE_RECORD || null;
-    const storePath = (process.env.NODE_ENV === 'test' && process.env.KSHETRA_TEST_REPLAY_STORE_PATH)
-      ? process.env.KSHETRA_TEST_REPLAY_STORE_PATH
-      : path.join(REPO_ROOT, '.kshetra_runtime', 'staging_nonce_replay_store.json');
+    const isTestExecution = process.env.NODE_ENV === 'test' && Boolean(process.env.KSHETRA_TEST_REPLAY_STORE_PATH);
+    const storePath = isTestExecution ? process.env.KSHETRA_TEST_REPLAY_STORE_PATH : undefined;
 
     // 3. Verify asymmetric cryptographic authorization & anti-replay store
     // Derive requested criteria and tables strictly from deployable stages in canonical plan (Directive 146 Section 3)
@@ -634,7 +633,8 @@ export async function runStagingExecutionEngine(options = {}) {
       requestedPlanDigest: computedPlanDigest,
       storePath,
       adminClosureRecord,
-      repoRoot: REPO_ROOT
+      repoRoot: REPO_ROOT,
+      isTestVerification: isTestExecution
     });
 
     // 4. Offline Schema-Contract Preflight (Directive 145 Item 8 / Directive 146 Section 5)
@@ -762,7 +762,7 @@ export async function runStagingExecutionEngine(options = {}) {
 
     const report = {
       generator: 'scripts/execute_staging_directive_139.mjs',
-      directive: 'CTO Directive 146 / W021.5 / Authorized Staging Execution Output',
+      directive: 'CTO Directive 147 / W021.5 / Authorized Staging Execution Output',
       timestamp: new Date().toISOString(),
       governingAuthority: 'Master Execution Framework Amendment v1.6 / Rule IV-001 Non-Self-Acceptance',
       stagingProjectRef: ALLOWED_STAGING_PROJECT_REF,

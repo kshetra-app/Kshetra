@@ -6,7 +6,7 @@
 --   1. Enforce referential integrity on public.candidacies:
 --      - fk_candidacies_contest: candidacies(contest_id) -> election_contests(id) ON DELETE RESTRICT
 --      - fk_candidacies_person: candidacies(person_id) -> canonical_persons(id) ON DELETE RESTRICT
---      - fk_candidacies_org: candidacies(political_organization_id) -> canonical_political_organizations(id) ON DELETE RESTRICT
+--      - fk_candidacies_party: candidacies(party_id) -> political_organizations(id) ON DELETE RESTRICT
 --   2. Validate indexing on foreign key columns
 -- Note: ON DELETE RESTRICT is strictly enforced to protect historical candidate
 --       referential integrity against accidental cascading deletions.
@@ -40,11 +40,11 @@ END $$;
 
 DO $$ BEGIN
   IF NOT EXISTS (
-    SELECT 1 FROM pg_constraint WHERE conname = 'fk_candidacies_political_org'
+    SELECT 1 FROM pg_constraint WHERE conname = 'fk_candidacies_party'
   ) THEN
     ALTER TABLE public.candidacies
-      ADD CONSTRAINT fk_candidacies_political_org
-      FOREIGN KEY (political_organization_id) REFERENCES public.canonical_political_organizations(id)
+      ADD CONSTRAINT fk_candidacies_party
+      FOREIGN KEY (party_id) REFERENCES public.political_organizations(id)
       ON DELETE RESTRICT;
   END IF;
 END $$;
@@ -52,6 +52,6 @@ END $$;
 -- 2. Performance indexes on FKs
 CREATE INDEX IF NOT EXISTS idx_candidacies_contest_fk ON public.candidacies(contest_id);
 CREATE INDEX IF NOT EXISTS idx_candidacies_person_fk ON public.candidacies(person_id);
-CREATE INDEX IF NOT EXISTS idx_candidacies_org_fk ON public.candidacies(political_organization_id);
+CREATE INDEX IF NOT EXISTS idx_candidacies_party_fk ON public.candidacies(party_id) WHERE party_id IS NOT NULL;
 
 COMMIT;

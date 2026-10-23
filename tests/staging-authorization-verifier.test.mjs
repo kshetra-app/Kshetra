@@ -28,7 +28,7 @@ import { execSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 
 import {
-  verifyStagingWriteAuthorization,
+  verifyStagingWriteAuthorization as rawVerifyStagingWriteAuthorization,
   resolvePublicTrustAnchor,
   ALLOWED_STAGING_PROJECT_REF,
   PROHIBITED_PRODUCTION_REF,
@@ -36,8 +36,19 @@ import {
   EXPECTED_AUDIENCE,
   ALL_AUTHORIZED_STAGING_TABLES,
   BLOCKED_STAGING_TABLES,
-  BLOCKED_CRITERIA
+  BLOCKED_CRITERIA,
+  APPROVED_OPERATIONAL_TRUST_ANCHOR_FINGERPRINTS,
+  DEFAULT_PUBLIC_KEY_PATH
 } from '../scripts/lib/stagingAuthorization.mjs';
+
+// By default in unit test harness, wrap verifier with isTestVerification: true to isolate test mock tokens.
+// Operational defenses are tested explicitly with isTestVerification: false.
+const verifyStagingWriteAuthorization = (params = {}) => {
+  return rawVerifyStagingWriteAuthorization({
+    isTestVerification: params.isTestVerification !== undefined ? params.isTestVerification : true,
+    ...params
+  });
+};
 
 import {
   reserveNonce,
@@ -888,7 +899,7 @@ describe('CTO Directive 143 / 142: Asymmetric Cryptographic Authorization & Anti
       const storePath = process.env.TEST_STORE;
       const adminClosureRecord = JSON.parse(process.env.TEST_ADMIN_RECORD);
       const requestedPlanDigest = process.env.TEST_DIGEST;
-      verifyStagingWriteAuthorization({ token, trustAnchor, storePath, adminClosureRecord, requestedPlanDigest });
+      verifyStagingWriteAuthorization({ token, trustAnchor, storePath, adminClosureRecord, requestedPlanDigest, isTestVerification: true });
       console.log('CHILD_OK');
     `;
 
@@ -1000,6 +1011,7 @@ describe('CTO Directive 143 / 142: Asymmetric Cryptographic Authorization & Anti
     const result = verifyStagingWriteAuthorization({
       token,
       trustAnchor: rs25519Keys.publicKeyPem,
+      approvedFingerprint: computeKeyFingerprint(rs25519Keys.publicKeyPem),
       requestedCriteria: ['CRIT-D02-02'],
       requestedTables: ['public.candidacies'],
       requestedOperations: ['UPSERT'],
@@ -1075,7 +1087,7 @@ describe('CTO Directive 143 / 142: Asymmetric Cryptographic Authorization & Anti
     try {
       assert.throws(
         () => {
-          resolvePublicTrustAnchor();
+          resolvePublicTrustAnchor({ isTestVerification: false });
         },
         (err) => {
           assert.strictEqual(err.code, 'TRUST_ANCHOR_UNAPPROVED');
@@ -1083,10 +1095,11 @@ describe('CTO Directive 143 / 142: Asymmetric Cryptographic Authorization & Anti
         }
       );
 
-      // Mismatched fingerprint also rejected
+      // Mismatched fingerprint also rejected in test mode
       assert.throws(
         () => {
           resolvePublicTrustAnchor({
+            isTestVerification: true,
             approvedFingerprint: '0000000000000000000000000000000000000000000000000000000000000000'
           });
         },
@@ -1097,6 +1110,105 @@ describe('CTO Directive 143 / 142: Asymmetric Cryptographic Authorization & Anti
       );
     } finally {
       delete process.env.KSHETRA_AUTH_PUBLIC_KEY;
+    }
+  });
+
+  // 30. Adversarial Test: Self-generated key with matching environment fingerprint cannot bootstrap operational trust (Directive 147 Section 3)
+  it('30. Proves self-generated public key and self-selected matching fingerprint in environment cannot bootstrap operational trust', () => {
+    const rogueKey = generateTestKeyPair('Ed25519');
+    const rogueFingerprint = computeKeyFingerprint(rogueKey.publicKeyPem);
+
+    process.env.KSHETRA_AUTH_PUBLIC_KEY = rogueKey.publicKeyPem;
+    process.env.KSHETRA_APPROVED_TRUST_ANCHOR_FINGERPRINT = rogueFingerprint;
+
+    try {
+      assert.throws(
+        () => {
+          // Operational mode: isTestVerification is false (default)
+          rawVerifyStagingWriteAuthorization({
+            token: 'mock.jwt.token',
+            isTestVerification: false
+          });
+        },
+        (err) => {
+          assert.strictEqual(err.code, 'TRUST_ANCHOR_UNAPPROVED');
+          assert.match(err.message, /not an independently approved operational trust anchor/i);
+          return true;
+        }
+      );
+    } finally {
+      delete process.env.KSHETRA_AUTH_PUBLIC_KEY;
+      delete process.env.KSHETRA_APPROVED_TRUST_ANCHOR_FINGERPRINT;
+    }
+  });
+
+  // 31. Operational mode rejects caller-supplied approvedFingerprint override
+  it('31. Operational mode rejects caller-supplied approvedFingerprint with CALLER_FINGERPRINT_OVERRIDE_FORBIDDEN', () => {
+    assert.throws(
+      () => {
+        resolvePublicTrustAnchor({
+          isTestVerification: false,
+          approvedFingerprint: '2a046c4d9b71f5ce4478aa271b778bc80a7b1d3c6b28c7af0286d9f6df5f4e9a'
+        });
+      },
+      (err) => {
+        assert.strictEqual(err.code, 'CALLER_FINGERPRINT_OVERRIDE_FORBIDDEN');
+        return true;
+      }
+    );
+  });
+
+  // 32. Operational mode rejects caller-supplied replay store path
+  it('32. Operational mode rejects caller-supplied storePath with CALLER_REPLAY_STORE_OVERRIDE_FORBIDDEN', () => {
+    assert.throws(
+      () => {
+        rawVerifyStagingWriteAuthorization({
+          token: 'mock.token.here',
+          storePath: '/tmp/rogue_store.json',
+          isTestVerification: false
+        });
+      },
+      (err) => {
+        assert.strictEqual(err.code, 'CALLER_REPLAY_STORE_OVERRIDE_FORBIDDEN');
+        return true;
+      }
+    );
+  });
+
+  // 33. Operational mode verifies repository key file against pinned trust anchor fingerprint
+  it('33. Operational mode verifies repository key file against pinned trust anchor fingerprint', () => {
+    const keyObject = resolvePublicTrustAnchor({ isTestVerification: false });
+    assert.strictEqual(keyObject.type, 'public');
+    const spkiDer = keyObject.export({ type: 'spki', format: 'der' });
+    const fp = crypto.createHash('sha256').update(spkiDer).digest('hex').toLowerCase();
+    assert.ok(
+      APPROVED_OPERATIONAL_TRUST_ANCHOR_FINGERPRINTS.includes(fp),
+      `Repository key fingerprint "${fp}" must be in APPROVED_OPERATIONAL_TRUST_ANCHOR_FINGERPRINTS`
+    );
+  });
+
+  // 34. Operational mode rejects tampered key file that does not match pinned trust anchor
+  it('34. Operational mode rejects tampered key file with TRUST_ANCHOR_UNAPPROVED', () => {
+    const rogueKey = generateTestKeyPair('Ed25519');
+    const tempKeyFile = path.join(REPO_ROOT, '.kshetra_runtime', 'tampered_key.pem');
+    fs.mkdirSync(path.dirname(tempKeyFile), { recursive: true });
+    fs.writeFileSync(tempKeyFile, rogueKey.publicKeyPem, 'utf8');
+
+    try {
+      assert.throws(
+        () => {
+          resolvePublicTrustAnchor({
+            publicKeyPath: tempKeyFile,
+            isTestVerification: false
+          });
+        },
+        (err) => {
+          assert.strictEqual(err.code, 'TRUST_ANCHOR_UNAPPROVED');
+          return true;
+        }
+      );
+    } finally {
+      if (fs.existsSync(tempKeyFile)) fs.unlinkSync(tempKeyFile);
     }
   });
 });

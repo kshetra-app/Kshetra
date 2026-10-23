@@ -21,7 +21,7 @@ const UUIDV5_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-5[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0
 const UUID_ANY_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 export const VALID_DATA_STATUS_ENUM = new Set([
-  'UNVERIFIED', 'OFFICIAL', 'VERIFIED', 'DISPUTED', 'ESTIMATE', 'DERIVED', 'HISTORICAL', 'DEPRECATED'
+  'OFFICIAL', 'DERIVED', 'VERIFIED', 'ESTIMATE', 'SCENARIO', 'INFERRED', 'UNVERIFIED', 'UNKNOWN'
 ]);
 
 export const VALID_ALIAS_CONFIDENCE = new Set([
@@ -106,9 +106,13 @@ export function validatePlanSchemaContracts(planContext, options = {}) {
 
       const idSet = new Set();
       const naturalKeySet = new Set();
+      let rowsScanned = 0;
+      let rowsFullyValidated = 0;
       let rowErrors = 0;
 
       for (let i = 0; i < rows.length; i++) {
+        rowsScanned++;
+        const prevViolationsCount = violations.length;
         const r = rows[i];
         const rowId = r.id;
         const personId = r.person_id || r.personId;
@@ -226,6 +230,9 @@ export function validatePlanSchemaContracts(planContext, options = {}) {
           if (rowErrors > 10) break;
         }
         naturalKeySet.add(naturalKey);
+        if (violations.length === prevViolationsCount) {
+          rowsFullyValidated++;
+        }
       }
 
       stageAudits.stage2 = {
@@ -233,7 +240,10 @@ export function validatePlanSchemaContracts(planContext, options = {}) {
         disposition: 'DEPLOYABLE_SCHEMA_VALID_DATA_READY',
         outboundRowsToStaging: 11298,
         conflictTarget: expectedConflict,
-        validatedRows: rows.length,
+        rowsScanned,
+        rowsFullyValidated,
+        validatedRows: rowsFullyValidated,
+        isFullyValidated: rowErrors === 0 && rowsScanned === 11298 && rowsFullyValidated === 11298,
         uniqueNaturalKeys: naturalKeySet.size,
         uniquePrimaryKeys: idSet.size,
         remoteForeignKeyExistenceCorroboration: 'PENDING_STAGING_EXECUTION'

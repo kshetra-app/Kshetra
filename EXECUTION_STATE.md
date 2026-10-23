@@ -7,9 +7,9 @@
 ## 1. Project & Execution Coordinates
 ```text
 PROJECT:               PANIN (formerly Kshetra)
-CURRENT_JOB:           W021.5 / CTO DIRECTIVE 146 (Final Residual Security, Least-Privilege, Stage 1 Idempotency and Schema-Truth Closure)
-LAST_COMPLETED_JOB:    CTO DIRECTIVE 144 (Residual Defect Closure Before Any Staging Authorization & Non-Self-Acceptance)
-NEXT_PERMITTED_JOB:    INDEPENDENT CTO ADJUDICATION (W021.5 / CTO Directive 146)
+CURRENT_JOB:           W021.5 / CTO DIRECTIVE 147 (Trust-Anchor Security, Full Database Execution, External Evidence Resolution and Independent Acceptance Readiness)
+LAST_COMPLETED_JOB:    CTO DIRECTIVE 146 (Final Residual Security, Least-Privilege, Stage 1 Idempotency and Schema-Truth Closure)
+NEXT_PERMITTED_JOB:    INDEPENDENT CTO ADJUDICATION (W021.5 / CTO Directive 147)
 
 W021_5_B2_2C_STATUS:   ACCEPTED / COMPLETE / CLOSED (CTO Accepted Directive W021.5-CTO-NEXT-002, 2026-10-07)
 W021_5_B2_2C_HASH:     d514c64e8a80b928875f1ea03d0853e5d7e3675e0e3a4134c25958632fe675b7

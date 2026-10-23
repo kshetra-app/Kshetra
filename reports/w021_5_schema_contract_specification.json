@@ -1,0 +1,260 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "contractSpecification": "W021.5 PostgreSQL Schema Contract Specification",
+  "directive": "CTO Directive 147 Section 4: Schema-Contract Alignment & Payload Verification",
+  "governingAuthority": "Master Execution Framework Amendment v1.6 / Rule IV-001 Non-Self-Acceptance",
+  "generatedAt": "2026-10-23T15:20:00+05:30",
+  "sourceCommit": "cdc910ac7491a4293b02c95d64857b5a6149bd0b",
+  "migrationSequence": {
+    "totalMigrations": 14,
+    "files": [
+      {
+        "path": "supabase/migrations/001_initial_schema.sql",
+        "sha256": "fc0050839d0e764591f3ae3f7b19800e6544bd77cc9f1236b22661c6356ac236",
+        "scope": "Base tables: states, constituencies, elections, candidates, candidacies, election_results"
+      },
+      {
+        "path": "supabase/migrations/040_canonical_geography_model.sql",
+        "sha256": "56f28f6f615811a8755a3f234ec8ebc00bb2f5594eccd6501015e684dff98395",
+        "scope": "Spatial boundaries, administrative entities, state codes"
+      },
+      {
+        "path": "supabase/migrations/050_political_entity_model.sql",
+        "sha256": "d89442ff98217b67b3d1d89e657c9c956eb3d3b1447d2fb075b40dd322c00e5b",
+        "scope": "Enums: data_status_enum (OFFICIAL, DERIVED, VERIFIED, ESTIMATE, SCENARIO, INFERRED, UNVERIFIED, UNKNOWN); provenance_records; datasets; dataset_versions"
+      },
+      {
+        "path": "supabase/migrations/051_election_data_normalization.sql",
+        "sha256": "b049f19f01b59d1b170f580739644ba753ce501981ec29bb1fab36a288a5ba90",
+        "scope": "Canonical election normalization, party structures"
+      },
+      {
+        "path": "supabase/migrations/059_canonical_national_constituency_registry.sql",
+        "sha256": "80285b808850f76391860de827e38b6722afb5d5b0a44727d9869f48a24cb03e",
+        "scope": "National 4,123 AC and 543 PC canonical identities"
+      },
+      {
+        "path": "supabase/migrations/060_canonical_electoral_geography_remediation.sql",
+        "sha256": "f3bbd84c02d48b5cf9b140aa92afb693e5fad0839a503dc33a17b9a8886e9d60",
+        "scope": "AC-PC concordance, Jammu & Kashmir 87 vs 90 reconciliation"
+      },
+      {
+        "path": "supabase/migrations/061_canonical_national_ac_pc_mappings.sql",
+        "sha256": "4d8eafa4c0c6d88854bd815227fbf81529ee9d2911c9ed9f44cc799f519726e9",
+        "scope": "National assembly-to-parliamentary mapping tuples"
+      },
+      {
+        "path": "supabase/migrations/062_canonical_assam_2023_delimitation.sql",
+        "sha256": "b5747944360c44db20d3276119b3820e6e935df7896678c893f2140609670208",
+        "scope": "Assam 2023 EC delimitation boundaries and 126 AC numbering"
+      },
+      {
+        "path": "supabase/migrations/063_canonical_political_identity_foundation.sql",
+        "sha256": "f99ceb6d98a762784cc251eb4e6ea355be6e08c97949e084e1d61449b5129368",
+        "scope": "Person multilingual identities, tenure vacancies"
+      },
+      {
+        "path": "supabase/migrations/064_political_organization_governance_remediation.sql",
+        "sha256": "51fc1addc090eb75fb0ef9dbe75727029ff455ed3e2d80a9a48d6c5c6e6e0be1",
+        "scope": "Organization multilingual names, organization_aliases, organization_symbols, advisory lock temporal triggers"
+      },
+      {
+        "path": "supabase/migrations/065_canonical_political_organization_registry.sql",
+        "sha256": "d514c64e8a80b928875f1ea03d0853e5d7e3675e0e3a4134c25958632fe675b7",
+        "scope": "107 canonical political organizations, 1,100 child catalog seeds (10 rels, 27 multilingual, 19 symbols, 1043 aliases)"
+      },
+      {
+        "path": "supabase/migrations/066_downstream_civic_extensions.sql",
+        "sha256": "6c923a4467a0fa605ab3092c452aa94b391431081fdc35fb2926e5538c691dda",
+        "scope": "Civic issue categories, civic extensions"
+      },
+      {
+        "path": "supabase/migrations/067_candidate_contest_fk.sql",
+        "sha256": "d6145feaf7dafe5cdcac680d380ac9a37ef42dd2294f969c0148e5f0d3e837fe",
+        "scope": "Foreign key constraint on candidacies.party_id -> public.political_organizations(id)"
+      },
+      {
+        "path": "supabase/migrations/068_affidavit_disclosures.sql",
+        "sha256": "4f16025aa672fbc6f1b98f1c0ab50d9e8a14010161e4a20a03260cc95fc98b63",
+        "scope": "Candidate financial, criminal, educational affidavit disclosure schemas"
+      }
+    ]
+  },
+  "enumContracts": {
+    "public.data_status_enum": [
+      "OFFICIAL",
+      "DERIVED",
+      "VERIFIED",
+      "ESTIMATE",
+      "SCENARIO",
+      "INFERRED",
+      "UNVERIFIED",
+      "UNKNOWN"
+    ],
+    "public.candidacy_election_types": [
+      "parliamentary",
+      "assembly",
+      "local_body",
+      "by_election"
+    ],
+    "public.candidacy_results": [
+      "won",
+      "lost",
+      "forfeited_deposit",
+      "withdrawn",
+      "pending",
+      "won_uncontested"
+    ]
+  },
+  "stages": {
+    "stage1_political_organizations": {
+      "criterionId": "CRIT-C02-02",
+      "readinessStatus": "PREPARED_AND_RECONCILED_IN_REPOSITORY",
+      "deploymentStatus": "BLOCKED_NOT_DEPLOYABLE",
+      "blockedReason": "PRE_SEEDED_CHILD_TABLE_IDEMPOTENCY_UNPROVEN: Migration 065 child tables lack deterministic seed IDs. Pre-seeded DB repeat-write cannot be proven offline without target-state corroboration.",
+      "outboundRowsToStaging": 0,
+      "reconciledCatalogRows": 1207,
+      "tables": [
+        {
+          "name": "public.datasets",
+          "conflictTarget": "id",
+          "primaryKey": "id (UUID)",
+          "foreignKeys": []
+        },
+        {
+          "name": "public.dataset_versions",
+          "conflictTarget": "id",
+          "primaryKey": "id (UUID)",
+          "foreignKeys": [
+            { "column": "dataset_id", "references": "public.datasets(id)" }
+          ]
+        },
+        {
+          "name": "public.provenance_records",
+          "conflictTarget": "id",
+          "primaryKey": "id (UUID)",
+          "foreignKeys": [
+            { "column": "dataset_version_id", "references": "public.dataset_versions(id)" }
+          ]
+        },
+        {
+          "name": "public.political_organizations",
+          "conflictTarget": "id",
+          "primaryKey": "id (TEXT)",
+          "foreignKeys": [
+            { "column": "provenance_id", "references": "public.provenance_records(id)" }
+          ],
+          "uniqueConstraints": ["id", "short_name"]
+        },
+        {
+          "name": "public.organization_relationships",
+          "conflictTarget": "source_organization_id,target_organization_id,relationship_type,valid_from",
+          "primaryKey": "id (UUID)",
+          "foreignKeys": [
+            { "column": "source_organization_id", "references": "public.political_organizations(id)" },
+            { "column": "target_organization_id", "references": "public.political_organizations(id)" },
+            { "column": "provenance_id", "references": "public.provenance_records(id)" }
+          ],
+          "uniqueConstraints": ["uq_org_rel (source_organization_id, target_organization_id, relationship_type, valid_from)"]
+        },
+        {
+          "name": "public.organization_multilingual_names",
+          "conflictTarget": "organization_id,language_code,script_code,representation_type,name_value",
+          "primaryKey": "id (UUID)",
+          "foreignKeys": [
+            { "column": "organization_id", "references": "public.political_organizations(id)" },
+            { "column": "provenance_id", "references": "public.provenance_records(id)" }
+          ],
+          "uniqueConstraints": ["uq_org_multi_name (organization_id, language_code, script_code, representation_type, name_value)"]
+        },
+        {
+          "name": "public.organization_symbols",
+          "conflictTarget": "organization_id,symbol_name,valid_from",
+          "primaryKey": "id (UUID)",
+          "foreignKeys": [
+            { "column": "organization_id", "references": "public.political_organizations(id)" },
+            { "column": "jurisdiction_scope", "references": "public.states(code)" },
+            { "column": "provenance_id", "references": "public.provenance_records(id)" }
+          ],
+          "uniqueConstraints": ["uq_org_symbols_timeline (organization_id, symbol_name, valid_from)"],
+          "triggers": ["fn_validate_org_symbol_temporal_invariants (temporal non-overlap & current exclusivity with advisory lock)"]
+        },
+        {
+          "name": "public.organization_aliases",
+          "conflictTarget": "raw_lookup_key,organization_id,valid_from",
+          "primaryKey": "id (UUID)",
+          "foreignKeys": [
+            { "column": "organization_id", "references": "public.political_organizations(id)" },
+            { "column": "jurisdiction_scope", "references": "public.states(code)" },
+            { "column": "provenance_id", "references": "public.provenance_records(id)" }
+          ],
+          "triggers": ["fn_validate_org_alias_temporal_invariants (temporal non-overlap with advisory lock)"]
+        }
+      ]
+    },
+    "stage2_candidacies": {
+      "criterionId": "CRIT-D02-02",
+      "readinessStatus": "PREPARED_AND_RECONCILED_IN_REPOSITORY",
+      "deploymentStatus": "DEPLOYABLE_SUBJECT_TO_STAGING_AUTHORIZATION",
+      "outboundRowsToStaging": 11298,
+      "sourceTuples": 11334,
+      "duplicateTuples": 36,
+      "uniqueAuthoritativeCandidacies": 11298,
+      "rowsScanned": 11298,
+      "rowsFullyValidated": 11298,
+      "isFullyValidated": true,
+      "table": "public.candidacies",
+      "primaryKey": "id (UUID)",
+      "conflictTarget": "person_id,election_year,election_type,constituency_id",
+      "uniqueConstraints": [
+        "uq_candidacies (person_id, election_year, election_type, constituency_id)"
+      ],
+      "foreignKeys": [
+        { "column": "constituency_id", "references": "public.constituencies(id)" },
+        { "column": "party_id", "references": "public.political_organizations(id)" }
+      ],
+      "columns": {
+        "id": { "type": "UUID", "nullable": false },
+        "person_id": { "type": "UUID", "nullable": false },
+        "constituency_id": { "type": "UUID", "nullable": false },
+        "election_year": { "type": "INTEGER", "nullable": false },
+        "election_type": { "type": "TEXT", "nullable": false, "enum": "public.candidacy_election_types" },
+        "party_id": { "type": "TEXT", "nullable": true, "fk": "public.political_organizations(id)" },
+        "votes_received": { "type": "INTEGER", "nullable": true },
+        "vote_share_percentage": { "type": "NUMERIC(5,2)", "nullable": true },
+        "result": { "type": "TEXT", "nullable": false, "enum": "public.candidacy_results" },
+        "data_status": { "type": "public.data_status_enum", "nullable": false, "allowedValues": ["OFFICIAL", "UNVERIFIED"] },
+        "created_at": { "type": "TIMESTAMPTZ", "nullable": false },
+        "updated_at": { "type": "TIMESTAMPTZ", "nullable": false }
+      }
+    },
+    "stage3_constituency_demographics": {
+      "criterionId": "CRIT-E01-02",
+      "readinessStatus": "PREPARED_AND_RECONCILED_IN_REPOSITORY",
+      "deploymentStatus": "BLOCKED_NOT_DEPLOYABLE",
+      "blockedReason": "PREREQUISITE_CONSTITUENCY_UUID_CROSSWALK_MISSING: 4,123 statutory assembly seats lack internal database UUID resolution. Synthetic UUID generation prohibited under data-truth rules.",
+      "outboundRowsToStaging": 0,
+      "statutoryAssemblyTarget": 4123,
+      "table": "public.constituency_demographics",
+      "primaryKey": "id (UUID)",
+      "foreignKeys": [
+        { "column": "constituency_id", "references": "public.constituencies(id)" }
+      ]
+    },
+    "stage4_historical_election_results": {
+      "criterionId": "CRIT-F02-03",
+      "readinessStatus": "PREPARED_AND_RECONCILED_IN_REPOSITORY",
+      "deploymentStatus": "BLOCKED_NOT_DEPLOYABLE",
+      "blockedReason": "PREREQUISITE_CANONICAL_ELECTIONS_MISSING: 2,243 statutory seats across 23 states lack canonical election_id bindings. Test/mock election IDs strictly prohibited.",
+      "outboundRowsToStaging": 0,
+      "statutorySeatsTarget": 2243,
+      "table": "public.election_results",
+      "primaryKey": "id (UUID)",
+      "conflictTarget": "election_id,constituency_id",
+      "foreignKeys": [
+        { "column": "election_id", "references": "public.elections(id)" },
+        { "column": "constituency_id", "references": "public.constituencies(id)" }
+      ]
+    }
+  }
+}

@@ -45,10 +45,10 @@ const CRITERIA_PATH = path.join(REPO_ROOT, 'governance/specifications/w021_5_cri
 const ALLOW_DIRTY = process.argv.includes('--allow-dirty');
 
 console.log('================================================================================');
-console.log('KSHETRA W021.5 — CTO DIRECTIVE 146 FULL-MANDATE UNIFIED VERIFIER');
+console.log('KSHETRA W021.5 — CTO DIRECTIVE 147 FULL-MANDATE UNIFIED VERIFIER');
 console.log('Deterministic Single Entrypoint for Stages A through I Evidence Closure');
 console.log('Governing Authority: Amendment v1.6 / Rule IV-001 Non-Self-Acceptance');
-console.log('Directive 146: Final Residual Security, Least-Privilege, Stage 1 Idempotency & Schema Closure');
+console.log('Directive 147: Trust-Anchor Security, Full Database Execution, External Evidence Resolution');
 console.log('================================================================================\n');
 
 // Dynamically obtain Git HEAD commit and branch (Directive 135 Item 16)
@@ -695,8 +695,8 @@ const dynamicDbPendingTasks = Array.from(new Set(
 
 const manifest = {
   evidenceMetadata: {
-    directive: 'CTO Directive 146',
-    title: 'KSHETRA W021.5 Full-Mandate Unified Verification Manifest (Directive 146)',
+    directive: 'CTO Directive 147',
+    title: 'KSHETRA W021.5 Full-Mandate Unified Verification Manifest (Directive 147)',
     governingAuthority: 'Master Execution Framework Amendment v1.6 / Rule IV-001 Non-Self-Acceptance',
     repository: 'https://github.com/kshetra-app/Kshetra.git',
     branch: gitBranch,
@@ -812,7 +812,7 @@ const manifest = {
   financialDefectResolution: {
     defectId: 'DQ-W021.5-B2.2E-001',
     status: 'STRICTLY_OPEN_PENDING_INDEPENDENT_CTO_ADJUDICATION',
-    schemaDecisionRef: 'DEC-146',
+    schemaDecisionRef: 'DEC-147',
     adjudicationAuthority: 'Submitted for Independent CTO Adjudication',
     testsPassed: '105/105 PASS'
   },
