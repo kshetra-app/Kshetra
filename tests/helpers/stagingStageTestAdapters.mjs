@@ -144,3 +144,16 @@ export async function executeStage2TestIsolated(options = {}) {
     rowsAffected: Array.isArray(body) ? body.length : 0
   };
 }
+
+/**
+ * Test-only transport adapter factory (Directive 146 Section 2).
+ * Enforces mock-only dispatch in test environments without exposing operational transport.
+ */
+export function createTestTransportAdapter(mockHandler) {
+  if (typeof mockHandler !== 'function') {
+    throw new Error('TEST_TRANSPORT_MOCK_REQUIRED: createTestTransportAdapter requires a mock handler function');
+  }
+  return async function testTransportAdapter(url, options = {}) {
+    return mockHandler(url, options);
+  };
+}

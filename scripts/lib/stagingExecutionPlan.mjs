@@ -25,7 +25,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const REPO_ROOT = path.resolve(__dirname, '..', '..');
 
-export const CANONICAL_DIRECTIVE = 'CTO Directive 145 / W021.5';
+export const CANONICAL_DIRECTIVE = 'CTO Directive 146 / W021.5';
 export const CANONICAL_STAGING_PROJECT_REF = 'fkpigozcqnmcvofuksar';
 
 /**
@@ -94,16 +94,22 @@ export function generateCanonicalExecutionPlan(options = {}) {
     transformationHashes[relPath] = hashFileSha256(fullPath);
   }
 
-  // 3. Schema Migration Artifacts & Constraint Definitions (Directive 145 Item 4)
+  // 3. Schema Migration Artifacts & Constraint Definitions (Directive 145 Item 4 / Directive 146 Section 5)
   const schemaMigrationFiles = [
     'supabase/migrations/001_initial_schema.sql',
     'supabase/migrations/040_canonical_geography_model.sql',
     'supabase/migrations/050_political_entity_model.sql',
     'supabase/migrations/051_election_data_normalization.sql',
     'supabase/migrations/059_canonical_national_constituency_registry.sql',
+    'supabase/migrations/060_canonical_electoral_geography_remediation.sql',
+    'supabase/migrations/061_canonical_national_ac_pc_mappings.sql',
+    'supabase/migrations/062_canonical_assam_2023_delimitation.sql',
+    'supabase/migrations/063_canonical_political_identity_foundation.sql',
     'supabase/migrations/064_political_organization_governance_remediation.sql',
     'supabase/migrations/065_canonical_political_organization_registry.sql',
-    'supabase/migrations/066_downstream_civic_extensions.sql'
+    'supabase/migrations/066_downstream_civic_extensions.sql',
+    'supabase/migrations/067_candidate_contest_fk.sql',
+    'supabase/migrations/068_affidavit_disclosures.sql'
   ];
   const schemaMigrationHashes = {};
   for (const relPath of schemaMigrationFiles) {
@@ -186,7 +192,7 @@ export function generateCanonicalExecutionPlan(options = {}) {
     directive: CANONICAL_DIRECTIVE,
     targetProjectRef: options.targetProjectRef || CANONICAL_STAGING_PROJECT_REF,
     governingAuthority: 'Master Execution Framework Amendment v1.6 / Rule IV-001 Non-Self-Acceptance',
-    permittedCriteria: ['CRIT-C02-02', 'CRIT-D02-02', 'CRIT-E01-02', 'CRIT-F02-03'],
+    permittedCriteria: ['CRIT-D02-02'],
     executionBoundaryIntegrity: {
       files: executionBoundaryHashes
     },
@@ -214,7 +220,9 @@ export function generateCanonicalExecutionPlan(options = {}) {
       stage1_political_organizations: {
         criterionId: 'CRIT-C02-02',
         taskId: 'W021.5-C-02',
-        deploymentStatus: 'PREPARED_AND_RECONCILED_IN_REPOSITORY',
+        deploymentStatus: 'BLOCKED_NOT_DEPLOYABLE',
+        blockedReason: 'PRE_SEEDED_CHILD_TABLE_IDEMPOTENCY_UNPROVEN: Migration 065 child tables (relationships, multilingual names, symbols, aliases) use database-generated gen_random_uuid() IDs. In an already pre-seeded database, upserting with deterministic UUIDs via on_conflict=id cannot match existing random IDs, causing PostgreSQL unique constraint (23505) and temporal overlap trigger (23514) violations. Safe repeat-write behavior cannot be proven offline without target-state corroboration.',
+        missingPrerequisite: 'Authorized target-state corroboration or database migration reconciling deterministic UUIDs or providing authoritative natural key conflict resolution for Migration 065 child tables.',
         transformationVersion: 'v1.2.0-rfc4122-uuidv5',
         targetTables: [
           'public.datasets',
@@ -241,6 +249,7 @@ export function generateCanonicalExecutionPlan(options = {}) {
           catalogProvenanceSupportRows: 1207,
           datasetMetadataAnchorRows: 2,
           totalRowsAcrossTables: 1209,
+          outboundRowsToStaging: 0,
           byTable: {
             'public.datasets': 1,
             'public.dataset_versions': 1,
@@ -272,7 +281,8 @@ export function generateCanonicalExecutionPlan(options = {}) {
         expectedRecordCounts: {
           totalSourceTuples: 11334,
           accountedDuplicates: 36,
-          uniqueRowsToUpsert: 11298
+          uniqueRowsToUpsert: 11298,
+          outboundRowsToStaging: 11298
         },
         sourceArtifacts: [
           {

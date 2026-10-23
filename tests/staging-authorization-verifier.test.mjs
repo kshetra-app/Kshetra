@@ -34,7 +34,9 @@ import {
   PROHIBITED_PRODUCTION_REF,
   EXPECTED_ISSUER,
   EXPECTED_AUDIENCE,
-  ALL_AUTHORIZED_STAGING_TABLES
+  ALL_AUTHORIZED_STAGING_TABLES,
+  BLOCKED_STAGING_TABLES,
+  BLOCKED_CRITERIA
 } from '../scripts/lib/stagingAuthorization.mjs';
 
 import {
@@ -48,7 +50,8 @@ import {
   generateTestAdminKeyPair,
   createTestSignedAuthorizationToken,
   createTestAdminClosureRecord,
-  base64UrlEncode
+  base64UrlEncode,
+  computeKeyFingerprint
 } from './helpers/stagingAuthTestHelper.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -69,6 +72,7 @@ describe('CTO Directive 143 / 142: Asymmetric Cryptographic Authorization & Anti
     rs25519Keys = generateTestKeyPair('RS256');
     adminKeys = generateTestAdminKeyPair('Ed25519');
     process.env.KSHETRA_ADMIN_PUBLIC_KEY = adminKeys.publicKeyPem;
+    process.env.KSHETRA_APPROVED_TRUST_ANCHOR_FINGERPRINT = computeKeyFingerprint(ed25519Keys.publicKeyPem);
     testAdminRecord = createTestAdminClosureRecord({}, adminKeys.privateKeyPem);
     validPlanDigest = crypto.createHash('sha256').update('canonical-test-execution-plan').digest('hex');
     clearReplayStore({ storePath: TEST_STORE_PATH });
@@ -76,6 +80,7 @@ describe('CTO Directive 143 / 142: Asymmetric Cryptographic Authorization & Anti
 
   afterEach(() => {
     delete process.env.KSHETRA_ADMIN_PUBLIC_KEY;
+    delete process.env.KSHETRA_APPROVED_TRUST_ANCHOR_FINGERPRINT;
     clearReplayStore({ storePath: TEST_STORE_PATH });
     try {
       if (fs.existsSync(TEST_STORE_PATH)) fs.unlinkSync(TEST_STORE_PATH);
@@ -809,7 +814,7 @@ describe('CTO Directive 143 / 142: Asymmetric Cryptographic Authorization & Anti
 
   it('21. Rejects execution when requested table is not granted by token (UNAUTHORIZED_TABLE)', () => {
     const token = createTestSignedAuthorizationToken({
-      tables: ['public.political_organizations'],
+      tables: ['public.candidacies'],
       plan_digest: validPlanDigest
     }, ed25519Keys.privateKeyPem);
 
@@ -818,7 +823,7 @@ describe('CTO Directive 143 / 142: Asymmetric Cryptographic Authorization & Anti
         verifyStagingWriteAuthorization({
           token,
           trustAnchor: ed25519Keys.publicKeyPem,
-          requestedTables: ['public.political_organizations', 'public.candidacies'],
+          requestedTables: ['public.candidacies', 'public.other_table'],
           storePath: TEST_STORE_PATH,
           adminClosureRecord: testAdminRecord,
           requestedPlanDigest: validPlanDigest
@@ -959,8 +964,8 @@ describe('CTO Directive 143 / 142: Asymmetric Cryptographic Authorization & Anti
   // 25. Successful Verification: Ed25519
   it('25. Successfully verifies an authorized token using Ed25519 public key', () => {
     const token = createTestSignedAuthorizationToken({
-      criteria: ['CRIT-C02-02', 'CRIT-D02-02'],
-      tables: ['public.political_organizations', 'public.candidacies'],
+      criteria: ['CRIT-D02-02'],
+      tables: ['public.candidacies'],
       operations: ['INSERT', 'UPSERT'],
       plan_digest: validPlanDigest
     }, ed25519Keys.privateKeyPem, { alg: 'Ed25519' });
@@ -968,8 +973,8 @@ describe('CTO Directive 143 / 142: Asymmetric Cryptographic Authorization & Anti
     const result = verifyStagingWriteAuthorization({
       token,
       trustAnchor: ed25519Keys.publicKeyPem,
-      requestedCriteria: ['CRIT-C02-02'],
-      requestedTables: ['public.political_organizations'],
+      requestedCriteria: ['CRIT-D02-02'],
+      requestedTables: ['public.candidacies'],
       requestedOperations: ['INSERT'],
       requestedPlanDigest: validPlanDigest,
       storePath: TEST_STORE_PATH,
@@ -986,8 +991,8 @@ describe('CTO Directive 143 / 142: Asymmetric Cryptographic Authorization & Anti
   // 26. Successful Verification: RS256
   it('26. Successfully verifies an authorized token using RS256 public key', () => {
     const token = createTestSignedAuthorizationToken({
-      criteria: ['CRIT-E01-02'],
-      tables: ['public.constituency_demographics'],
+      criteria: ['CRIT-D02-02'],
+      tables: ['public.candidacies'],
       operations: ['UPSERT'],
       plan_digest: validPlanDigest
     }, rs25519Keys.privateKeyPem, { alg: 'RS256' });
@@ -995,8 +1000,8 @@ describe('CTO Directive 143 / 142: Asymmetric Cryptographic Authorization & Anti
     const result = verifyStagingWriteAuthorization({
       token,
       trustAnchor: rs25519Keys.publicKeyPem,
-      requestedCriteria: ['CRIT-E01-02'],
-      requestedTables: ['public.constituency_demographics'],
+      requestedCriteria: ['CRIT-D02-02'],
+      requestedTables: ['public.candidacies'],
       requestedOperations: ['UPSERT'],
       requestedPlanDigest: validPlanDigest,
       storePath: TEST_STORE_PATH,
@@ -1006,5 +1011,92 @@ describe('CTO Directive 143 / 142: Asymmetric Cryptographic Authorization & Anti
     assert.strictEqual(result.valid, true);
     assert.strictEqual(result.issuer, EXPECTED_ISSUER);
     assert.strictEqual(result.planDigest, validPlanDigest);
+  });
+
+  // 27. Least-Privilege Blocked Table Rejection (Directive 146 Section 3)
+  it('27. Rejects token attempting to grant blocked table (BLOCKED_TABLE_GRANT_FORBIDDEN)', () => {
+    for (const blockedTable of BLOCKED_STAGING_TABLES) {
+      const token = createTestSignedAuthorizationToken({
+        tables: [blockedTable],
+        plan_digest: validPlanDigest
+      }, ed25519Keys.privateKeyPem);
+
+      assert.throws(
+        () => {
+          verifyStagingWriteAuthorization({
+            token,
+            trustAnchor: ed25519Keys.publicKeyPem,
+            storePath: TEST_STORE_PATH,
+            adminClosureRecord: testAdminRecord,
+            requestedPlanDigest: validPlanDigest
+          });
+        },
+        (err) => {
+          assert.strictEqual(err.code, 'BLOCKED_TABLE_GRANT_FORBIDDEN');
+          assert.match(err.message, /belongs to a blocked stage/);
+          return true;
+        }
+      );
+    }
+  });
+
+  // 28. Least-Privilege Blocked Criteria Rejection (Directive 146 Section 3)
+  it('28. Rejects token attempting to grant blocked criterion (BLOCKED_CRITERION_GRANT_FORBIDDEN)', () => {
+    for (const blockedCrit of BLOCKED_CRITERIA) {
+      const token = createTestSignedAuthorizationToken({
+        criteria: [blockedCrit],
+        plan_digest: validPlanDigest
+      }, ed25519Keys.privateKeyPem);
+
+      assert.throws(
+        () => {
+          verifyStagingWriteAuthorization({
+            token,
+            trustAnchor: ed25519Keys.publicKeyPem,
+            storePath: TEST_STORE_PATH,
+            adminClosureRecord: testAdminRecord,
+            requestedPlanDigest: validPlanDigest
+          });
+        },
+        (err) => {
+          assert.strictEqual(err.code, 'BLOCKED_CRITERION_GRANT_FORBIDDEN');
+          assert.match(err.message, /belongs to a blocked stage/);
+          return true;
+        }
+      );
+    }
+  });
+
+  // 29. Out-of-band Trust Anchor Fingerprint Verification (Directive 146 Section 2)
+  it('29. Rejects environment-provided public key without approved fingerprint (TRUST_ANCHOR_UNAPPROVED)', () => {
+    process.env.KSHETRA_AUTH_PUBLIC_KEY = ed25519Keys.publicKeyPem;
+    delete process.env.KSHETRA_APPROVED_TRUST_ANCHOR_FINGERPRINT;
+
+    try {
+      assert.throws(
+        () => {
+          resolvePublicTrustAnchor();
+        },
+        (err) => {
+          assert.strictEqual(err.code, 'TRUST_ANCHOR_UNAPPROVED');
+          return true;
+        }
+      );
+
+      // Mismatched fingerprint also rejected
+      assert.throws(
+        () => {
+          resolvePublicTrustAnchor({
+            approvedFingerprint: '0000000000000000000000000000000000000000000000000000000000000000'
+          });
+        },
+        (err) => {
+          assert.strictEqual(err.code, 'TRUST_ANCHOR_FINGERPRINT_MISMATCH');
+          return true;
+        }
+      );
+    } finally {
+      delete process.env.KSHETRA_AUTH_PUBLIC_KEY;
+    }
   });
 });

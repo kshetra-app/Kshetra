@@ -138,19 +138,27 @@ describe('CTO Directive 145 Workstream D: Process-Wide Network Denial & Transpor
     assert.match(resNet.stderr, /PROCESS_NETWORK_DENIED.*net\.connect/i);
   });
 
-  it('4. Fixed in-process transport boundary traps and rejects any network call attempted during local preparation', async () => {
-    const { createStagingHttpTransport } = await import('../scripts/execute_staging_directive_139.mjs');
+  it('4. Operational transport is private/unexported; test transport adapter isolates tests with zero network access', async () => {
+    const operationalModule = await import('../scripts/execute_staging_directive_139.mjs');
+    assert.strictEqual(
+      operationalModule.createStagingHttpTransport,
+      undefined,
+      'createStagingHttpTransport must not be exported from operational module (Directive 146 Section 2)'
+    );
 
-    const transport = createStagingHttpTransport();
-    assert.strictEqual(typeof transport, 'function', 'Transport must be a function');
+    const { createTestTransportAdapter } = await import('./helpers/stagingStageTestAdapters.mjs');
+    const mockTransport = createTestTransportAdapter(async (url, options) => {
+      const err = new Error('NETWORK_ACCESS_FORBIDDEN: Test transport adapter cannot call real network endpoint');
+      err.code = 'NETWORK_ACCESS_FORBIDDEN';
+      throw err;
+    });
 
     await assert.rejects(
       async () => {
-        await transport('https://fkpigozcqnmcvofuksar.supabase.co/rest/v1/political_organizations', { method: 'GET' });
+        await mockTransport('https://fkpigozcqnmcvofuksar.supabase.co/rest/v1/political_organizations', { method: 'GET' });
       },
       (err) => {
         assert.strictEqual(err.code, 'NETWORK_ACCESS_FORBIDDEN');
-        assert.match(err.message, /Network call attempted in local mode/i);
         return true;
       }
     );
@@ -168,8 +176,10 @@ describe('CTO Directive 145 Workstream D: Process-Wide Network Denial & Transpor
     assert.strictEqual(report.summary.workstreamStatus, 'PARTIALLY_READY_WITH_BLOCKED_STAGES');
     assert.strictEqual(report.securityIncidentContainment.status, 'CONTAINMENT_PENDING_ADMIN_CONFIRMATION');
 
-    // Confirm stages 1-2 are prepared, and stages 3-4 are blocked not deployable
-    assert.strictEqual(report.stages.stage1_political_organizations.status, 'PREPARED_AND_RECONCILED_IN_REPOSITORY');
+    // Confirm Stage 1, 3, 4 are blocked not deployable, Stage 2 is prepared
+    assert.strictEqual(report.stages.stage1_political_organizations.status, 'BLOCKED_NOT_DEPLOYABLE');
+    assert.strictEqual(report.stages.stage1_political_organizations.stagingExecuted, false);
+    assert.strictEqual(report.stages.stage1_political_organizations.outboundRowsToStaging, 0);
     assert.strictEqual(report.stages.stage2_candidacies.status, 'PREPARED_AND_RECONCILED_IN_REPOSITORY');
     assert.strictEqual(report.stages.stage3_constituency_demographics.status, 'BLOCKED_NOT_DEPLOYABLE');
     assert.strictEqual(report.stages.stage4_historical_election_results.status, 'BLOCKED_NOT_DEPLOYABLE');

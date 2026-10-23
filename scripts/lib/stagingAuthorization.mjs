@@ -43,8 +43,9 @@ export const CLOCK_SKEW_TOLERANCE_SECONDS = 60; // 60 seconds allowable clock sk
 export const PERMITTED_OPERATIONS_ALLOWLIST = ['INSERT', 'UPDATE', 'UPSERT', 'SELECT'];
 export const PROHIBITED_DESTRUCTIVE_OPERATIONS = ['DELETE', 'DROP', 'TRUNCATE', 'ALTER'];
 
-export const ALL_AUTHORIZED_STAGING_TABLES = [
-  // Stage 1: Political Organizations Catalog & Provenance (CRIT-C02-02)
+// Broad documented staging table inventory for documentation purposes (Directive 146 Section 3)
+export const DOCUMENTED_STAGING_TABLE_INVENTORY = [
+  // Stage 1: Political Organizations Catalog & Provenance (CRIT-C02-02 - BLOCKED_NOT_DEPLOYABLE)
   'public.datasets',
   'public.dataset_versions',
   'public.provenance_records',
@@ -53,13 +54,43 @@ export const ALL_AUTHORIZED_STAGING_TABLES = [
   'public.organization_multilingual_names',
   'public.organization_symbols',
   'public.organization_aliases',
-  // Stage 2: Candidate Profiles & Contests (CRIT-D02-02)
+  // Stage 2: Candidate Profiles & Contests (CRIT-D02-02 - DEPLOYABLE)
   'public.candidacies',
-  // Stage 3: Constituency Demographics Baseline (CRIT-E01-02)
+  // Stage 3: Constituency Demographics Baseline (CRIT-E01-02 - BLOCKED_NOT_DEPLOYABLE)
   'public.constituency_demographics',
-  // Stage 4: Historical Election Results (CRIT-F02-03)
+  // Stage 4: Historical Election Results (CRIT-F02-03 - BLOCKED_NOT_DEPLOYABLE)
   'public.election_results'
 ];
+
+// Least-privilege operational table allowlist (Directive 146 Section 3):
+// Tables are authorized strictly if their stage is schema-valid, data-ready, deployable, and eligible.
+// Stages 1, 3, and 4 are blocked, so only public.candidacies is authorized for execution.
+export const ALL_AUTHORIZED_STAGING_TABLES = [
+  'public.candidacies'
+];
+
+export const BLOCKED_STAGING_TABLES = new Set([
+  'public.datasets',
+  'public.dataset_versions',
+  'public.provenance_records',
+  'public.political_organizations',
+  'public.organization_relationships',
+  'public.organization_multilingual_names',
+  'public.organization_symbols',
+  'public.organization_aliases',
+  'public.constituency_demographics',
+  'public.election_results'
+]);
+
+export const BLOCKED_CRITERIA = new Set([
+  'CRIT-C02-02',
+  'CRIT-E01-02',
+  'CRIT-F02-03'
+]);
+
+export const DEPLOYABLE_CRITERIA = new Set([
+  'CRIT-D02-02'
+]);
 
 /**
  * Base64URL decode string
@@ -75,15 +106,21 @@ export function base64UrlDecode(str) {
 /**
  * Resolves the operational or test trust anchor (asymmetric public key).
  * Fails closed if not found, malformed, or not an asymmetric public key.
+ * Under Directive 146 Section 2: Environment-provided keys must match an approved out-of-band fingerprint.
  */
 export function resolvePublicTrustAnchor(options = {}) {
   let keyMaterial = options.trustAnchor;
+  let isFromEnv = false;
 
-  // 1. Check explicit options
+  // 1. Check explicit options (only accepted in isolated test adapter calls)
   if (!keyMaterial) {
-    // 2. Check environment variable KSHETRA_CTO_PUBLIC_KEY
-    if (process.env.KSHETRA_CTO_PUBLIC_KEY && process.env.KSHETRA_CTO_PUBLIC_KEY.trim().length > 0) {
+    // 2. Check environment variable KSHETRA_AUTH_PUBLIC_KEY or KSHETRA_CTO_PUBLIC_KEY
+    if (process.env.KSHETRA_AUTH_PUBLIC_KEY && process.env.KSHETRA_AUTH_PUBLIC_KEY.trim().length > 0) {
+      keyMaterial = process.env.KSHETRA_AUTH_PUBLIC_KEY.trim();
+      isFromEnv = true;
+    } else if (process.env.KSHETRA_CTO_PUBLIC_KEY && process.env.KSHETRA_CTO_PUBLIC_KEY.trim().length > 0) {
       keyMaterial = process.env.KSHETRA_CTO_PUBLIC_KEY.trim();
+      isFromEnv = true;
     } else {
       // 3. Check governance public key file path
       const keyPath = options.publicKeyPath || DEFAULT_PUBLIC_KEY_PATH;
@@ -96,6 +133,11 @@ export function resolvePublicTrustAnchor(options = {}) {
           throw e;
         }
       }
+    }
+  } else {
+    // If trustAnchor was explicitly passed but matches environment key, treat as fromEnv
+    if (keyMaterial === process.env.KSHETRA_AUTH_PUBLIC_KEY || keyMaterial === process.env.KSHETRA_CTO_PUBLIC_KEY) {
+      isFromEnv = true;
     }
   }
 
@@ -123,6 +165,29 @@ export function resolvePublicTrustAnchor(options = {}) {
     const e = new Error(`INVALID_TRUST_ANCHOR: Trust anchor must be an asymmetric public key, but received type "${keyObject.type}"`);
     e.code = 'INVALID_TRUST_ANCHOR';
     throw e;
+  }
+
+  // Directive 146 Section 2: If an environment-provided key is used, its identity
+  // must be checked against an approved, out-of-band trust anchor fingerprint.
+  // Until trustworthy configuration exists, the gate must fail closed.
+  if (isFromEnv) {
+    const approvedFingerprint = options.approvedFingerprint || process.env.KSHETRA_APPROVED_TRUST_ANCHOR_FINGERPRINT;
+    if (!approvedFingerprint || typeof approvedFingerprint !== 'string' || approvedFingerprint.trim().length === 0) {
+      const e = new Error(
+        'TRUST_ANCHOR_UNAPPROVED: Environment-provided public key is not anchored to an approved out-of-band trust anchor fingerprint. Operational gate fails closed.'
+      );
+      e.code = 'TRUST_ANCHOR_UNAPPROVED';
+      throw e;
+    }
+    const spkiDer = keyObject.export({ type: 'spki', format: 'der' });
+    const actualFingerprint = crypto.createHash('sha256').update(spkiDer).digest('hex');
+    if (actualFingerprint.toLowerCase() !== approvedFingerprint.trim().toLowerCase()) {
+      const e = new Error(
+        `TRUST_ANCHOR_FINGERPRINT_MISMATCH: Environment-provided public key fingerprint "${actualFingerprint}" does not match approved trust anchor fingerprint "${approvedFingerprint}".`
+      );
+      e.code = 'TRUST_ANCHOR_FINGERPRINT_MISMATCH';
+      throw e;
+    }
   }
 
   return keyObject;
@@ -348,7 +413,17 @@ export function verifyStagingWriteAuthorization(params = {}) {
     now
   });
 
-  // 11. Criteria Scope Enforcement
+  // 11. Criteria Scope Enforcement & Blocked Criteria Rejection (Directive 146 Section 3)
+  if (Array.isArray(payload.criteria)) {
+    for (const crit of payload.criteria) {
+      if (BLOCKED_CRITERIA.has(crit)) {
+        const err = new Error(`BLOCKED_CRITERION_GRANT_FORBIDDEN: Criterion "${crit}" belongs to a blocked stage and cannot receive an executable authorization grant.`);
+        err.code = 'BLOCKED_CRITERION_GRANT_FORBIDDEN';
+        throw err;
+      }
+    }
+  }
+
   if (requestedCriteria.length > 0) {
     const permittedCriteria = new Set(payload.criteria || []);
     for (const reqCrit of requestedCriteria) {
@@ -360,11 +435,19 @@ export function verifyStagingWriteAuthorization(params = {}) {
     }
   }
 
-  // 12. Strict Table Scope Enforcement (Directive 143 Section 4.3 & 4.4)
+  // 12. Strict Table Scope Enforcement & Blocked Table Rejection (Directive 146 Section 3)
   if (!Array.isArray(payload.tables) || payload.tables.length === 0) {
     const err = new Error('MISSING_TABLE_GRANTS: Token must specify an explicit non-empty "tables" array.');
     err.code = 'MISSING_TABLE_GRANTS';
     throw err;
+  }
+
+  for (const table of payload.tables) {
+    if (BLOCKED_STAGING_TABLES.has(table)) {
+      const err = new Error(`BLOCKED_TABLE_GRANT_FORBIDDEN: Table "${table}" belongs to a blocked stage and cannot receive an executable authorization grant.`);
+      err.code = 'BLOCKED_TABLE_GRANT_FORBIDDEN';
+      throw err;
+    }
   }
 
   const allowedTableSet = new Set(ALL_AUTHORIZED_STAGING_TABLES);

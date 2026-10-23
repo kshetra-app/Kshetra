@@ -3320,6 +3320,41 @@
        - Rule IV-001 Non-Self-Acceptance: Formal CTO acceptance remains strictly `0.0% — PENDING INDEPENDENT ADJUDICATION`.
        - Weight conservation preserved: 67.0% Repo-Verified, 10.5% Database-Pending, 22.5% Blocked, 0.0% Unimplemented, 100.0% Conserved.
 
+---
+
+### DEC-146: CTO DIRECTIVE 146 — FINAL RESIDUAL SECURITY, LEAST-PRIVILEGE, STAGE 1 IDEMPOTENCY AND SCHEMA-TRUTH CLOSURE
+- **Date:** 2026-10-23
+- **Status:** IMPLEMENTATION COMPLETE / SUBMITTED FOR INDEPENDENT CTO ADJUDICATION
+- **Authority:** CTO Directive 146 / Master Execution Framework Amendment v1.6 / Rule IV-001 Non-Self-Acceptance
+- **Context:** Comprehensive remediation of all Directive 145 independent audit findings:
+  1. **Section 2: Closing All Alternate Operational Network Paths:**
+     - Made `createStagingHttpTransport()` strictly private to the operational module.
+     - Removed all ambient flag exceptions (`NODE_ENV=test`, `--write`, `--mode=staging`); real network access strictly requires verified asymmetric cryptographic authorization.
+     - Anchored trust resolution to an approved out-of-band trust anchor fingerprint (`KSHETRA_APPROVED_TRUST_ANCHOR_FINGERPRINT`); unanchored environment keys fail closed with `TRUST_ANCHOR_UNAPPROVED`.
+     - Provided `createTestTransportAdapter()` in `tests/helpers/stagingStageTestAdapters.mjs` for mock-isolated testing.
+  2. **Section 3: Least-Privilege Authorization to Deployable Stages:**
+     - Replaced overbroad global table grant with dynamic scope derived strictly from deployable stages (`plan.stages`).
+     - Restricted `ALL_AUTHORIZED_STAGING_TABLES` to strictly `['public.candidacies']`.
+     - Defined `BLOCKED_STAGING_TABLES` (10 tables) and `BLOCKED_CRITERIA` (`CRIT-C02-02`, `CRIT-E01-02`, `CRIT-F02-03`). Tokens attempting to grant blocked scope fail closed with `BLOCKED_TABLE_GRANT_FORBIDDEN` and `BLOCKED_CRITERION_GRANT_FORBIDDEN`.
+  3. **Section 4: Stage 1 Idempotency Reconciliation against Checked-in Migrations:**
+     - Migration 065 child tables lack deterministic seed IDs (using `gen_random_uuid()`), and Migration 064 enforces temporal triggers and dropped static unique indexes.
+     - PostgREST `on_conflict=id` with deterministic UUIDs cannot match random IDs in a pre-seeded database, causing unique constraint (23505) and temporal trigger (23514) collisions.
+     - Because safe repeat-write idempotency cannot be proven offline without target-state corroboration, Stage 1 is marked `BLOCKED_NOT_DEPLOYABLE` with 0 outbound rows to staging.
+  4. **Section 5: Full Offline Schema-Contract Preflight:**
+     - Refactored `stagingSchemaPreflight.mjs` to validate 100% full-population rows (all 11,298 candidate rows).
+     - Normalized `is_independent = (partyId === null ? true : rawIsIndep)` in `reconcileCandidacies()`, resolving 19 candidate rows violating `candidacies_independent_party_check`.
+     - Expanded execution-plan dependency inventory to cover all 14 migrations: 001, 040, 050, 051, 059, 060, 061, 062, 063, 064, 065, 066, 067, 068.
+  5. **Section 6: Source-Truth Statuses & Blocked Prerequisites:**
+     - Stages 1, 3, 4 strictly `BLOCKED_NOT_DEPLOYABLE` with 0 outbound rows.
+     - Only Stage 2 (`CRIT-D02-02`) is deployable (11,298 rows).
+     - Mizoram defect `DQ-W021.5-B2.2E-001` remains strictly OPEN pending independent CTO adjudication.
+  6. **Invariants Preserved:**
+     - Production Supabase `ehfafcnimmjusyvplbah`: 100% air-gapped (0 queries, 0 mutations).
+     - Staging Supabase `fkpigozcqnmcvofuksar`: strictly 0 live queries, 0 live mutations under Directive 146.
+     - Rule IV-001 Non-Self-Acceptance: Formal CTO acceptance remains strictly `0.0% — PENDING INDEPENDENT ADJUDICATION`.
+     - Weight conservation preserved: 67.0% Repo-Verified, 10.5% Database-Pending, 22.5% Blocked, 0.0% Unimplemented, 100.0% Conserved.
+
+
 
 
 ---
@@ -3355,3 +3390,38 @@
      - Mizoram defect `DQ-W021.5-B2.2E-001`: strictly OPEN / pending independent CTO adjudication.
      - Rule IV-001 Non-Self-Acceptance: Formal CTO acceptance remains strictly `0.0% — PENDING INDEPENDENT ADJUDICATION`.
      - Weight conservation preserved: 67.0% Repo-Verified, 10.5% Database-Pending, 22.5% Blocked, 0.0% Unimplemented, 100.0% Conserved.
+
+---
+
+### DEC-146: CTO DIRECTIVE 146 — FINAL RESIDUAL SECURITY, LEAST-PRIVILEGE, STAGE 1 IDEMPOTENCY AND SCHEMA-TRUTH CLOSURE
+- **Date:** 2026-10-23
+- **Status:** IMPLEMENTATION COMPLETE / SUBMITTED FOR INDEPENDENT CTO ADJUDICATION
+- **Authority:** CTO Directive 146 / Master Execution Framework Amendment v1.6 / Rule IV-001 Non-Self-Acceptance
+- **Context:** Comprehensive remediation of all Directive 145 independent audit findings:
+  1. **Section 2: Closing All Alternate Operational Network Paths:**
+     - Made `createStagingHttpTransport()` strictly private to the operational module.
+     - Removed all ambient flag exceptions (`NODE_ENV=test`, `--write`, `--mode=staging`); real network access strictly requires verified asymmetric cryptographic authorization.
+     - Anchored trust resolution to an approved out-of-band trust anchor fingerprint (`KSHETRA_APPROVED_TRUST_ANCHOR_FINGERPRINT`); unanchored environment keys fail closed with `TRUST_ANCHOR_UNAPPROVED`.
+     - Provided `createTestTransportAdapter()` in `tests/helpers/stagingStageTestAdapters.mjs` for mock-isolated testing.
+  2. **Section 3: Least-Privilege Authorization to Deployable Stages:**
+     - Replaced overbroad global table grant with dynamic scope derived strictly from deployable stages (`plan.stages`).
+     - Restricted `ALL_AUTHORIZED_STAGING_TABLES` to strictly `['public.candidacies']`.
+     - Defined `BLOCKED_STAGING_TABLES` (10 tables) and `BLOCKED_CRITERIA` (`CRIT-C02-02`, `CRIT-E01-02`, `CRIT-F02-03`). Tokens attempting to grant blocked scope fail closed with `BLOCKED_TABLE_GRANT_FORBIDDEN` and `BLOCKED_CRITERION_GRANT_FORBIDDEN`.
+  3. **Section 4: Stage 1 Idempotency Reconciliation against Checked-in Migrations:**
+     - Migration 065 child tables lack deterministic seed IDs (using `gen_random_uuid()`), and Migration 064 enforces temporal triggers and dropped static unique indexes.
+     - PostgREST `on_conflict=id` with deterministic UUIDs cannot match random IDs in a pre-seeded database, causing unique constraint (23505) and temporal trigger (23514) collisions.
+     - Because safe repeat-write idempotency cannot be proven offline without target-state corroboration, Stage 1 is marked `BLOCKED_NOT_DEPLOYABLE` with 0 outbound rows to staging.
+  4. **Section 5: Full Offline Schema-Contract Preflight:**
+     - Refactored `stagingSchemaPreflight.mjs` to validate 100% full-population rows (all 11,298 candidate rows).
+     - Normalized `is_independent = (partyId === null ? true : rawIsIndep)` in `reconcileCandidacies()`, resolving 19 candidate rows violating `candidacies_independent_party_check`.
+     - Expanded execution-plan dependency inventory to cover all 14 migrations: 001, 040, 050, 051, 059, 060, 061, 062, 063, 064, 065, 066, 067, 068.
+  5. **Section 6: Source-Truth Statuses & Blocked Prerequisites:**
+     - Stages 1, 3, 4 strictly `BLOCKED_NOT_DEPLOYABLE` with 0 outbound rows.
+     - Only Stage 2 (`CRIT-D02-02`) is deployable (11,298 rows).
+     - Mizoram defect `DQ-W021.5-B2.2E-001` remains strictly OPEN pending independent CTO adjudication.
+  6. **Invariants Preserved:**
+     - Production Supabase `ehfafcnimmjusyvplbah`: 100% air-gapped (0 queries, 0 mutations).
+     - Staging Supabase `fkpigozcqnmcvofuksar`: strictly 0 live queries, 0 live mutations under Directive 146.
+     - Rule IV-001 Non-Self-Acceptance: Formal CTO acceptance remains strictly `0.0% — PENDING INDEPENDENT ADJUDICATION`.
+     - Weight conservation preserved: 67.0% Repo-Verified, 10.5% Database-Pending, 22.5% Blocked, 0.0% Unimplemented, 100.0% Conserved.
+

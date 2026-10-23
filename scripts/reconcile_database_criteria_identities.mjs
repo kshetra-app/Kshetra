@@ -438,6 +438,12 @@ export function reconcilePoliticalOrganizations(options = {}) {
     taskId: 'W021.5-C-02',
     governingRequirement: 'REQ-POL-002',
     passed,
+    status: 'BLOCKED_NOT_DEPLOYABLE',
+    deploymentStatus: 'BLOCKED_NOT_DEPLOYABLE',
+    blockedReason: 'PRE_SEEDED_CHILD_TABLE_IDEMPOTENCY_UNPROVEN: Migration 065 child tables (relationships, multilingual names, symbols, aliases) use database-generated gen_random_uuid() IDs. In an already pre-seeded database, upserting with deterministic UUIDs via on_conflict=id cannot match existing random IDs, causing PostgreSQL unique constraint (23505) and temporal overlap trigger (23514) violations. Safe repeat-write behavior cannot be proven offline without target-state corroboration.',
+    missingPrerequisite: 'Authorized target-state corroboration or database migration reconciling deterministic UUIDs or providing authoritative natural key conflict resolution for Migration 065 child tables.',
+    outboundRowsToStaging: 0,
+    stagingPayload: [],
     lifecycleState: 'PREPARED_AND_RECONCILED_IN_REPOSITORY',
     migrationFile: 'supabase/migrations/065_canonical_political_organization_registry.sql',
     targetTables: [
@@ -524,9 +530,9 @@ export function reconcileCandidacies(options = {}) {
     }
     verifiedChunkHashes.push({ subId: chunk.subId, sha256: actualHash, verified: true });
 
-    // Parse SQL tuples from the file
+    // Parse SQL tuples from the file with full 14-field extraction (Directive 146 Section 5)
     const content = fileBytes.toString('utf8');
-    const tupleRegex = /\(\s*'([0-9a-f-]+)'::uuid\s*,\s*'([0-9a-f-]+)'::uuid\s*,\s*(\d+)\s*,\s*'([^']+)'\s*,\s*'([^']+)'\s*,\s*'([^']+)'\s*,\s*('([^']+)'|NULL)/g;
+    const tupleRegex = /\(\s*'([0-9a-f-]+)'::uuid\s*,\s*'([0-9a-f-]+)'::uuid\s*,\s*(\d+)\s*,\s*'([^']+)'\s*,\s*'([^']+)'\s*,\s*'([^']+)'\s*,\s*(?:'([^']+)'|NULL)\s*,\s*(true|false)\s*,\s*'([^']+)'\s*,\s*(\d+)\s*,\s*([0-9.]+)\s*,\s*(\d+)\s*,\s*'([^']+)'(?:::public\.data_status_enum)?\s*,\s*'([0-9a-f-]+)'::uuid/g;
     let match;
     let countInChunk = 0;
     while ((match = tupleRegex.exec(content)) !== null) {
@@ -538,10 +544,44 @@ export function reconcileCandidacies(options = {}) {
       const electionType = match[4];
       const constType = match[5];
       const constId = match[6];
-      const partyId = match[8] || null;
+      const partyId = match[7] || null;
+      const rawIsIndep = match[8] === 'true';
+      // Normalize is_independent under Migration 051 constraint:
+      // (is_independent = true AND party_id IS NULL) OR (is_independent = false AND party_id IS NOT NULL)
+      const isIndependent = partyId === null ? true : rawIsIndep;
+      const result = match[9];
+      const votesReceived = parseInt(match[10], 10);
+      const voteShare = parseFloat(match[11]);
+      const rank = parseInt(match[12], 10);
+      const dataStatus = match[13];
+      const provenanceId = match[14];
 
       const naturalKey = `${personId}::${year}::${electionType}::${constId}`;
-      const tupleObj = { id, personId, year, electionType, constType, constId, partyId, naturalKey, subId: chunk.subId };
+      const tupleObj = {
+        id,
+        person_id: personId,
+        election_year: year,
+        election_type: electionType,
+        constituency_type: constType,
+        constituency_id: constId,
+        party_id: partyId,
+        is_independent: isIndependent,
+        result,
+        votes_received: votesReceived,
+        vote_share: voteShare,
+        rank,
+        data_status: dataStatus,
+        provenance_id: provenanceId,
+        // CamelCase aliases for backwards compatibility with tests:
+        personId,
+        year,
+        electionType,
+        constType,
+        constId,
+        partyId,
+        naturalKey,
+        subId: chunk.subId
+      };
 
       if (parsedTuplesById.has(id)) {
         throw new Error(`DUPLICATE_CANDIDATE_PRIMARY_KEY: Candidate ID ${id} appeared multiple times in source`);
@@ -649,7 +689,10 @@ export function reconcileCandidacies(options = {}) {
     governingRequirement: 'REQ-CAN-002',
     passed,
     lifecycleState: 'PREPARED_AND_RECONCILED_IN_REPOSITORY',
+    deploymentStatus: 'PREPARED_AND_RECONCILED_IN_REPOSITORY',
     targetTables: ['public.candidacies'],
+    conflictTarget: 'person_id,election_year,election_type,constituency_id',
+    outboundRowsToStaging: 11298,
     candidateRows,
     uniqueCandidates: candidateRows,
     duplicatesAnalysis: {

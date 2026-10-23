@@ -37,7 +37,6 @@ import { fileURLToPath } from 'node:url';
 import * as operationalModule from '../scripts/execute_staging_directive_139.mjs';
 const {
   runStagingExecutionEngine,
-  createStagingHttpTransport,
   ALLOWED_STAGING_HOSTNAME,
   ALLOWED_STAGING_PROJECT_REF,
   PROHIBITED_PRODUCTION_REF
@@ -47,7 +46,8 @@ import {
   generateTestKeyPair,
   generateTestAdminKeyPair,
   createTestSignedAuthorizationToken,
-  createTestAdminClosureRecord
+  createTestAdminClosureRecord,
+  computeKeyFingerprint
 } from './helpers/stagingAuthTestHelper.mjs';
 
 import {
@@ -58,13 +58,14 @@ import {
 import { computeExecutionPlanDigest } from '../scripts/lib/stagingExecutionPlan.mjs';
 import { clearReplayStore } from '../scripts/lib/stagingReplayStore.mjs';
 import { validatePlanSchemaContracts } from '../scripts/lib/stagingSchemaPreflight.mjs';
+import { BLOCKED_STAGING_TABLES, BLOCKED_CRITERIA } from '../scripts/lib/stagingAuthorization.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const REPO_ROOT = path.resolve(__dirname, '..');
 const TEST_STORE_PATH = path.join(REPO_ROOT, '.kshetra_runtime', 'test_mode_b_replay_store.json');
 
-describe('CTO Directive 145: Mode B Staging Execution & Non-Bypassable Boundary Battery', () => {
+describe('CTO Directive 146: Mode B Staging Execution & Non-Bypassable Boundary Battery', () => {
   let ed25519Keys;
   let adminKeys;
   let validAdminClosure;
@@ -79,6 +80,7 @@ describe('CTO Directive 145: Mode B Staging Execution & Non-Bypassable Boundary 
 
     process.env.NODE_ENV = 'test';
     process.env.KSHETRA_AUTH_PUBLIC_KEY = ed25519Keys.publicKeyPem;
+    process.env.KSHETRA_APPROVED_TRUST_ANCHOR_FINGERPRINT = computeKeyFingerprint(ed25519Keys.publicKeyPem);
     process.env.KSHETRA_ADMIN_PUBLIC_KEY = adminKeys.publicKeyPem;
     process.env.KSHETRA_ADMIN_CLOSURE_RECORD = JSON.stringify(validAdminClosure);
     process.env.KSHETRA_TEST_REPLAY_STORE_PATH = TEST_STORE_PATH;
@@ -94,6 +96,7 @@ describe('CTO Directive 145: Mode B Staging Execution & Non-Bypassable Boundary 
   afterEach(() => {
     delete process.env.NODE_ENV;
     delete process.env.KSHETRA_AUTH_PUBLIC_KEY;
+    delete process.env.KSHETRA_APPROVED_TRUST_ANCHOR_FINGERPRINT;
     delete process.env.KSHETRA_ADMIN_PUBLIC_KEY;
     delete process.env.KSHETRA_ADMIN_CLOSURE_RECORD;
     delete process.env.KSHETRA_TEST_REPLAY_STORE_PATH;
@@ -126,7 +129,7 @@ describe('CTO Directive 145: Mode B Staging Execution & Non-Bypassable Boundary 
         });
       },
       (err) => {
-        assert.match(err.message, /STAGE_1_ROW_COUNT_MISMATCH/);
+        assert.match(err.message, /STAGE_2_ROW_COUNT_MISMATCH/);
         return true;
       }
     );
@@ -138,7 +141,7 @@ describe('CTO Directive 145: Mode B Staging Execution & Non-Bypassable Boundary 
         ok: true,
         status: 200,
         text: async () => JSON.stringify({
-          error: 'permission denied for table datasets',
+          error: 'permission denied for table candidacies',
           code: '42501',
           message: 'insufficient privilege'
         })
@@ -158,7 +161,7 @@ describe('CTO Directive 145: Mode B Staging Execution & Non-Bypassable Boundary 
         });
       },
       (err) => {
-        assert.match(err.message, /STAGE_1_SEMANTIC_ERROR/);
+        assert.match(err.message, /STAGE_2_SEMANTIC_ERROR/);
         return true;
       }
     );
@@ -186,13 +189,13 @@ describe('CTO Directive 145: Mode B Staging Execution & Non-Bypassable Boundary 
         });
       },
       (err) => {
-        assert.match(err.message, /STAGE_1_MALFORMED_RESPONSE/);
+        assert.match(err.message, /STAGE_2_MALFORMED_RESPONSE/);
         return true;
       }
     );
   });
 
-  it('4. Successfully executes Stage 1 & Stage 2 with mock transport; Stage 3 & 4 blocked; status is REDUCED_SCOPE_EXECUTED_WITH_BLOCKED_STAGES_EXCLUDED', async () => {
+  it('4. Successfully executes Stage 2 with mock transport; Stages 1, 3 & 4 blocked; status is REDUCED_SCOPE_EXECUTED_WITH_BLOCKED_STAGES_EXCLUDED', async () => {
     const interceptedRequests = [];
 
     globalThis.fetch = async (url, options = {}) => {
@@ -224,13 +227,12 @@ describe('CTO Directive 145: Mode B Staging Execution & Non-Bypassable Boundary 
 
     assert.strictEqual(report.executionMode, 'MODE_B_AUTHORIZED_WRITE_EXECUTION');
     assert.strictEqual(report.stagingExecutionPerformed, true);
-    // Directive 145 Item 10: Aggregate state when stages are blocked
     assert.strictEqual(report.executionStatus, 'REDUCED_SCOPE_EXECUTED_WITH_BLOCKED_STAGES_EXCLUDED');
 
-    // Stage 1: 8 PostgREST requests for 8 tables (total 1,209 rows)
-    assert.strictEqual(report.stages.stage1_political_organizations.rowsAffected, 1209);
-    assert.strictEqual(report.stages.stage1_political_organizations.status, 'EXECUTED_PENDING_INDEPENDENT_CORROBORATION');
-    assert.strictEqual(report.stages.stage1_political_organizations.conflictTarget, 'id');
+    // Stage 1: Blocked (Directive 146 Section 4: 0 rows to staging)
+    assert.strictEqual(report.stages.stage1_political_organizations.rowsAffected, 0);
+    assert.strictEqual(report.stages.stage1_political_organizations.outboundRowsToStaging, 0);
+    assert.strictEqual(report.stages.stage1_political_organizations.status, 'BLOCKED_NOT_DEPLOYABLE');
 
     // Stage 2: 1 PostgREST request for candidacies (11,298 rows)
     assert.strictEqual(report.stages.stage2_candidacies.rowsAffected, 11298);
@@ -246,17 +248,16 @@ describe('CTO Directive 145: Mode B Staging Execution & Non-Bypassable Boundary 
     assert.strictEqual(report.stages.stage4_historical_election_results.rowsAffected, 0);
     assert.strictEqual(report.stages.stage4_historical_election_results.status, 'BLOCKED_NOT_DEPLOYABLE');
 
-    // Intercepted requests count: exactly 9 requests (8 in Stage 1 + 1 in Stage 2; Stages 3 & 4 send 0 rows)
-    assert.strictEqual(interceptedRequests.length, 9, 'Must send exactly 9 PostgREST requests (8 in Stage 1 + 1 in Stage 2; Stages 3 & 4 blocked)');
+    // Intercepted requests count: exactly 1 request (for candidacies; Stages 1, 3, 4 send 0 rows)
+    assert.strictEqual(interceptedRequests.length, 1, 'Must send exactly 1 PostgREST request for deployable Stage 2; Stages 1, 3, 4 blocked');
 
-    for (const req of interceptedRequests) {
-      assert.ok(req.url.startsWith(`https://${ALLOWED_STAGING_HOSTNAME}/rest/v1/`), `Must target allow-listed staging host: ${req.url}`);
-      assert.strictEqual(req.method, 'POST');
-      assert.strictEqual(req.headers['apikey'], 'test_service_key_for_mock_execution');
-      assert.strictEqual(req.headers['Authorization'], 'Bearer test_service_key_for_mock_execution');
-      assert.strictEqual(req.headers['Prefer'], 'resolution=merge-duplicates,return=representation');
-      assert.ok(req.rowCount > 0, 'Every outbound request must carry genuine data rows');
-    }
+    const req = interceptedRequests[0];
+    assert.ok(req.url.startsWith(`https://${ALLOWED_STAGING_HOSTNAME}/rest/v1/candidacies`), `Must target allow-listed staging host: ${req.url}`);
+    assert.strictEqual(req.method, 'POST');
+    assert.strictEqual(req.headers['apikey'], 'test_service_key_for_mock_execution');
+    assert.strictEqual(req.headers['Authorization'], 'Bearer test_service_key_for_mock_execution');
+    assert.strictEqual(req.headers['Prefer'], 'resolution=merge-duplicates,return=representation');
+    assert.strictEqual(req.rowCount, 11298);
   });
 
   it('5. Denies execution with PLAN_DIGEST_MISMATCH when plan digest does not match canonical computation', async () => {
@@ -280,19 +281,8 @@ describe('CTO Directive 145: Mode B Staging Execution & Non-Bypassable Boundary 
     );
   });
 
-  it('6. Produces accurate partial-execution record (PARTIAL_EXECUTION_FAILURE) when stage failure follows earlier success', async () => {
-    let callCount = 0;
-    // Let Stage 1 succeed (8 calls), then fail on Stage 2 (call 9)
+  it('6. Produces accurate partial-execution record (PARTIAL_EXECUTION_FAILURE) when Stage 2 fails', async () => {
     globalThis.fetch = async (url, options = {}) => {
-      callCount++;
-      if (callCount <= 8) {
-        const rows = JSON.parse(options.body);
-        return {
-          ok: true,
-          status: 200,
-          text: async () => JSON.stringify(rows)
-        };
-      }
       return {
         ok: false,
         status: 503,
@@ -317,8 +307,8 @@ describe('CTO Directive 145: Mode B Staging Execution & Non-Bypassable Boundary 
         assert.ok(err.executionReport, 'Error must attach partial execution report');
         const report = err.executionReport;
         assert.strictEqual(report.executionStatus, 'PARTIAL_EXECUTION_FAILURE');
-        assert.strictEqual(report.stages.stage1_political_organizations.status, 'EXECUTED_PENDING_INDEPENDENT_CORROBORATION');
-        assert.strictEqual(report.stages.stage1_political_organizations.rowsAffected, 1209);
+        assert.strictEqual(report.stages.stage1_political_organizations.status, 'BLOCKED_NOT_DEPLOYABLE');
+        assert.strictEqual(report.stages.stage1_political_organizations.rowsAffected, 0);
         assert.strictEqual(report.stages.stage2_candidacies.status, 'FAILED');
         assert.strictEqual(report.stages.stage3_constituency_demographics.status, 'SKIPPED_DUE_TO_PREVIOUS_FAILURE');
         assert.strictEqual(report.stages.stage4_historical_election_results.status, 'SKIPPED_DUE_TO_PREVIOUS_FAILURE');
@@ -463,15 +453,17 @@ describe('CTO Directive 145: Mode B Staging Execution & Non-Bypassable Boundary 
     assert.strictEqual(report.executionMode, 'MODE_A_LOCAL_PREPARATION_AND_RECONCILIATION');
     assert.strictEqual(report.stagingExecutionPerformed, false);
     assert.strictEqual(report.networkRequestsAttempted, 0);
-    // Directive 145 Item 10: Mode A must not label entire set PREPARED when required stage work remains blocked
+    // Directive 145 / Directive 146: Mode A must not label entire set PREPARED when required stage work remains blocked
     assert.strictEqual(report.summary.workstreamStatus, 'PARTIALLY_READY_WITH_BLOCKED_STAGES');
     assert.strictEqual(report.summary.allStagesPrepared, false);
     assert.deepStrictEqual(report.summary.blockedStages, [
+      'stage1_political_organizations',
       'stage3_constituency_demographics',
       'stage4_historical_election_results'
     ]);
+    assert.deepStrictEqual(report.summary.readyStages, ['stage2_candidacies']);
 
-    assert.strictEqual(report.stages.stage1_political_organizations.status, 'PREPARED_AND_RECONCILED_IN_REPOSITORY');
+    assert.strictEqual(report.stages.stage1_political_organizations.status, 'BLOCKED_NOT_DEPLOYABLE');
     assert.strictEqual(report.stages.stage2_candidacies.status, 'PREPARED_AND_RECONCILED_IN_REPOSITORY');
     assert.strictEqual(report.stages.stage3_constituency_demographics.status, 'BLOCKED_NOT_DEPLOYABLE');
     assert.strictEqual(report.stages.stage4_historical_election_results.status, 'BLOCKED_NOT_DEPLOYABLE');
@@ -479,10 +471,11 @@ describe('CTO Directive 145: Mode B Staging Execution & Non-Bypassable Boundary 
 
   // ─── 2. WORKSTREAM A: AUTHORIZATION & BOUNDARY ADVERSARIAL TESTS ───────────
 
-  it('11. Operational module strictly does NOT export internal execution token, assertContext, test adapters, or stage writers', () => {
+  it('11. Operational module strictly does NOT export internal execution token, assertContext, test adapters, operational transport, or stage writers', () => {
     assert.strictEqual(operationalModule.INTERNAL_EXECUTION_TOKEN, undefined, 'INTERNAL_EXECUTION_TOKEN must be private');
     assert.strictEqual(operationalModule.assertInternalExecutionContext, undefined, 'assertInternalExecutionContext must be private');
     assert.strictEqual(operationalModule.__test_only_adapters__, undefined, '__test_only_adapters__ must be eliminated');
+    assert.strictEqual(operationalModule.createStagingHttpTransport, undefined, 'createStagingHttpTransport must not be exported (Directive 146 Section 2)');
     assert.strictEqual(operationalModule.executeStage1Staging, undefined, 'executeStage1Staging must not be exported');
     assert.strictEqual(operationalModule.executeStage2Staging, undefined, 'executeStage2Staging must not be exported');
     assert.strictEqual(operationalModule.executeStage3Staging, undefined, 'executeStage3Staging must not be exported');
@@ -601,18 +594,33 @@ describe('CTO Directive 145: Mode B Staging Execution & Non-Bypassable Boundary 
     );
   });
 
-  it('15. Fixed operational transport rejects non-https, alternate hosts, and production references before fetch call', async () => {
+  it('15. Operational transport cannot be invoked directly; execution engine rejects insecure protocols, alternate hosts, and production references', async () => {
+    assert.strictEqual(
+      operationalModule.createStagingHttpTransport,
+      undefined,
+      'createStagingHttpTransport must not be exported (Directive 146 Section 2)'
+    );
+
     let rawFetchCalled = false;
     globalThis.fetch = async () => {
       rawFetchCalled = true;
       return { ok: true, status: 200, text: async () => '[]' };
     };
 
-    const transport = createStagingHttpTransport();
+    const token = createTestSignedAuthorizationToken({
+      plan_digest: canonicalPlanDigest
+    }, ed25519Keys.privateKeyPem);
 
-    // Insecure HTTP
+    // Insecure HTTP destination
     await assert.rejects(
-      async () => transport(`http://${ALLOWED_STAGING_HOSTNAME}/rest/v1/test`, {}),
+      async () => {
+        await runStagingExecutionEngine({
+          mode: 'staging',
+          serviceKey: 'test_service_key',
+          authToken: token,
+          targetUrl: `http://${ALLOWED_STAGING_HOSTNAME}`
+        });
+      },
       (err) => {
         assert.strictEqual(err.code, 'INSECURE_PROTOCOL');
         return true;
@@ -621,7 +629,14 @@ describe('CTO Directive 145: Mode B Staging Execution & Non-Bypassable Boundary 
 
     // Alternate destination host
     await assert.rejects(
-      async () => transport('https://attacker-controlled-host.com/rest/v1/test', {}),
+      async () => {
+        await runStagingExecutionEngine({
+          mode: 'staging',
+          serviceKey: 'test_service_key',
+          authToken: token,
+          targetUrl: 'https://attacker-controlled-host.com'
+        });
+      },
       (err) => {
         assert.strictEqual(err.code, 'UNAUTHORIZED_STAGING_HOST');
         return true;
@@ -630,7 +645,14 @@ describe('CTO Directive 145: Mode B Staging Execution & Non-Bypassable Boundary 
 
     // Production host
     await assert.rejects(
-      async () => transport(`https://${PROHIBITED_PRODUCTION_REF}.supabase.co/rest/v1/test`, {}),
+      async () => {
+        await runStagingExecutionEngine({
+          mode: 'staging',
+          serviceKey: 'test_service_key',
+          authToken: token,
+          targetUrl: `https://${PROHIBITED_PRODUCTION_REF}.supabase.co`
+        });
+      },
       (err) => {
         assert.strictEqual(err.code, 'PRODUCTION_HOST_FORBIDDEN');
         return true;
@@ -678,25 +700,31 @@ describe('CTO Directive 145: Mode B Staging Execution & Non-Bypassable Boundary 
 
   it('17. Offline schema-contract preflight validates plan before Stage 1 issues requests and rejects schema violations', () => {
     // 17a. Valid plan context passes preflight
-    const r1 = operationalModule.runStagingExecutionEngine ? {} : {};
     const validPlanContext = {
       stage1: {
-        status: 'PREPARED_AND_RECONCILED_IN_REPOSITORY',
-        rowsByTable: {
-          'public.datasets': [{ id: '00000000-0000-5000-8000-000000000001' }],
-          'public.dataset_versions': [{ id: '00000000-0000-5000-8000-000000000002' }],
-          'public.provenance_records': [{ id: '00000000-0000-5000-8000-000000000003' }],
-          'public.political_organizations': [{ id: '00000000-0000-5000-8000-000000000004' }],
-          'public.organization_relationships': [{ id: '00000000-0000-5000-8000-000000000005' }],
-          'public.organization_multilingual_names': [{ id: '00000000-0000-5000-8000-000000000006' }],
-          'public.organization_symbols': [{ id: '00000000-0000-5000-8000-000000000007' }],
-          'public.organization_aliases': [{ id: '00000000-0000-5000-8000-000000000008', confidence: 'VERIFIED' }]
-        }
+        status: 'BLOCKED_NOT_DEPLOYABLE',
+        outboundRowsToStaging: 0
       },
       stage2: {
         status: 'PREPARED_AND_RECONCILED_IN_REPOSITORY',
         conflictTarget: 'person_id,election_year,election_type,constituency_id',
-        uniqueCandidateCount: 11298
+        uniqueCandidateCount: 11298,
+        candidateRows: Array.from({ length: 11298 }, (_, i) => ({
+          id: `0215b22d-0001-0000-0000-${String(i + 1).padStart(12, '0')}`,
+          person_id: `00000000-0000-0000-0000-${String(i + 1).padStart(12, '0')}`,
+          election_year: 2023,
+          election_type: 'assembly',
+          constituency_type: 'assembly',
+          constituency_id: `00000000-0000-0000-0001-${String(i + 1).padStart(12, '0')}`,
+          party_id: null,
+          is_independent: true,
+          result: 'lost',
+          votes_received: 100,
+          vote_share: 1.5,
+          rank: 2,
+          data_status: 'OFFICIAL',
+          provenance_id: '00000000-0000-0000-0002-000000000001'
+        }))
       },
       stage3: {
         status: 'BLOCKED_NOT_DEPLOYABLE',
@@ -711,14 +739,15 @@ describe('CTO Directive 145: Mode B Staging Execution & Non-Bypassable Boundary 
     const preflightRes = validatePlanSchemaContracts(validPlanContext);
     assert.strictEqual(preflightRes.valid, true);
 
-    // 17b. Invalid child table UUID in Stage 1 fails preflight
+    // 17b. Premature deployable claim for Stage 1 fails preflight (Directive 146 Section 4)
     const invalidPlanContext = JSON.parse(JSON.stringify(validPlanContext));
-    invalidPlanContext.stage1.rowsByTable['public.organization_aliases'][0].id = 'not-a-uuid';
+    invalidPlanContext.stage1.status = 'READY_TO_DEPLOY';
+    invalidPlanContext.stage1.outboundRowsToStaging = 1209;
     assert.throws(
       () => validatePlanSchemaContracts(invalidPlanContext),
       (err) => {
         assert.strictEqual(err.code, 'SCHEMA_PREFLIGHT_VIOLATION');
-        assert.match(err.message, /not a genuine RFC 4122 UUIDv5/);
+        assert.match(err.message, /Child tables in Migration 065 use database-generated gen_random_uuid/);
         return true;
       }
     );
@@ -731,7 +760,7 @@ describe('CTO Directive 145: Mode B Staging Execution & Non-Bypassable Boundary 
       () => validatePlanSchemaContracts(invalidStage3Plan),
       (err) => {
         assert.strictEqual(err.code, 'SCHEMA_PREFLIGHT_VIOLATION');
-        assert.match(err.message, /not a valid UUID foreign key/);
+        assert.match(err.message, /requires authoritative UUID crosswalk/);
         return true;
       }
     );
@@ -782,7 +811,7 @@ describe('CTO Directive 145: Mode B Staging Execution & Non-Bypassable Boundary 
 
       // C. Altering schema migration changes digest
       fs.appendFileSync(
-        path.join(tempRoot, 'supabase', 'migrations', '066_downstream_civic_extensions.sql'),
+        path.join(tempRoot, 'supabase', 'migrations', '067_candidate_contest_fk.sql'),
         '-- Sensitivity test schema migration alteration\n'
       );
       const digestAfterMigration = computeExecutionPlanDigest({
@@ -808,4 +837,117 @@ describe('CTO Directive 145: Mode B Staging Execution & Non-Bypassable Boundary 
     }
   });
 
+  // ─── 5. DIRECTIVE 146 LEAST-PRIVILEGE & NETWORK-ISOLATION ADVERSARIAL TESTS ───
+
+  it('19. Token attempting to grant blocked tables fails closed before network access (BLOCKED_TABLE_GRANT_FORBIDDEN)', async () => {
+    let networkAttempted = false;
+    globalThis.fetch = async () => {
+      networkAttempted = true;
+      return { ok: true, status: 200, text: async () => '[]' };
+    };
+
+    const token = createTestSignedAuthorizationToken({
+      plan_digest: canonicalPlanDigest,
+      tables: ['public.constituency_demographics']
+    }, ed25519Keys.privateKeyPem);
+
+    await assert.rejects(
+      async () => {
+        await runStagingExecutionEngine({
+          mode: 'staging',
+          serviceKey: 'test_service_key',
+          authToken: token
+        });
+      },
+      (err) => {
+        assert.strictEqual(err.code, 'BLOCKED_TABLE_GRANT_FORBIDDEN');
+        return true;
+      }
+    );
+
+    assert.strictEqual(networkAttempted, false, 'No network requests may occur when token scope is invalid');
+  });
+
+  it('20. Token attempting to grant blocked criteria fails closed before network access (BLOCKED_CRITERION_GRANT_FORBIDDEN)', async () => {
+    let networkAttempted = false;
+    globalThis.fetch = async () => {
+      networkAttempted = true;
+      return { ok: true, status: 200, text: async () => '[]' };
+    };
+
+    const token = createTestSignedAuthorizationToken({
+      plan_digest: canonicalPlanDigest,
+      criteria: ['CRIT-C02-02']
+    }, ed25519Keys.privateKeyPem);
+
+    await assert.rejects(
+      async () => {
+        await runStagingExecutionEngine({
+          mode: 'staging',
+          serviceKey: 'test_service_key',
+          authToken: token
+        });
+      },
+      (err) => {
+        assert.strictEqual(err.code, 'BLOCKED_CRITERION_GRANT_FORBIDDEN');
+        return true;
+      }
+    );
+
+    assert.strictEqual(networkAttempted, false, 'No network requests may occur when criterion is blocked');
+  });
+
+  it('21. Environment-provided trust anchor without approved fingerprint fails closed before network access (TRUST_ANCHOR_UNAPPROVED)', async () => {
+    let networkAttempted = false;
+    globalThis.fetch = async () => {
+      networkAttempted = true;
+      return { ok: true, status: 200, text: async () => '[]' };
+    };
+
+    delete process.env.KSHETRA_APPROVED_TRUST_ANCHOR_FINGERPRINT;
+
+    const token = createTestSignedAuthorizationToken({
+      plan_digest: canonicalPlanDigest
+    }, ed25519Keys.privateKeyPem);
+
+    await assert.rejects(
+      async () => {
+        await runStagingExecutionEngine({
+          mode: 'staging',
+          serviceKey: 'test_service_key',
+          authToken: token
+        });
+      },
+      (err) => {
+        assert.strictEqual(err.code, 'TRUST_ANCHOR_UNAPPROVED');
+        return true;
+      }
+    );
+
+    assert.strictEqual(networkAttempted, false, 'No network requests may occur when trust anchor is unapproved');
+  });
+
+  it('22. Ambient flags (NODE_ENV=test, --write, --mode=staging) without valid cryptographic token fail before network access', async () => {
+    let networkAttempted = false;
+    globalThis.fetch = async () => {
+      networkAttempted = true;
+      return { ok: true, status: 200, text: async () => '[]' };
+    };
+
+    await assert.rejects(
+      async () => {
+        await runStagingExecutionEngine({
+          mode: 'staging',
+          serviceKey: 'test_service_key',
+          authToken: null
+        });
+      },
+      (err) => {
+        assert.strictEqual(err.code, 'MISSING_AUTHORIZATION_TOKEN');
+        return true;
+      }
+    );
+
+    assert.strictEqual(networkAttempted, false, 'Ambient test flags must never authorize network access');
+  });
 });

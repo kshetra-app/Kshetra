@@ -62,6 +62,18 @@ export function generateTestAdminKeyPair(alg = 'Ed25519') {
 }
 
 /**
+ * Computes SHA-256 fingerprint of an SPKI-exported public key
+ * Required for KSHETRA_APPROVED_TRUST_ANCHOR_FINGERPRINT (Directive 146 Section 2)
+ */
+export function computeKeyFingerprint(keyMaterial) {
+  const keyObject = (keyMaterial && typeof keyMaterial.export === 'function')
+    ? keyMaterial
+    : crypto.createPublicKey(keyMaterial);
+  const spkiDer = keyObject.export({ type: 'spki', format: 'der' });
+  return crypto.createHash('sha256').update(spkiDer).digest('hex');
+}
+
+/**
  * Creates an authentic signed test administrative closure record fixture
  */
 export function createTestAdminClosureRecord(overrides = {}, adminPrivateKeyPem = null, options = {}) {
@@ -129,7 +141,7 @@ export function createTestSignedAuthorizationToken(payload, privateKeyPem, optio
     exp: nowSeconds + (options.expiresInSeconds || 3600),
     nonce: options.nonce || crypto.randomUUID(),
     incident_closure_ref: options.incidentClosureRef || 'INC-2026-W021.5-ROTATION-VERIFIED',
-    criteria: options.criteria || ['CRIT-C02-02', 'CRIT-D02-02', 'CRIT-E01-02', 'CRIT-F02-03'],
+    criteria: options.criteria || ['CRIT-D02-02'],
     tables: options.tables || [...ALL_AUTHORIZED_STAGING_TABLES],
     operations: options.operations || ['INSERT', 'UPDATE', 'UPSERT'],
     plan_digest: options.planDigest || crypto.createHash('sha256').update('approved-plan-payload').digest('hex'),
