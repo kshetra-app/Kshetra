@@ -1,10 +1,10 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "W021.5 Database Execution Register",
-  "directive": "CTO Directive 141",
+  "directive": "CTO Directive 142",
   "governingAuthority": "Master Execution Framework Amendment v1.6 / Rule IV-001 Non-Self-Acceptance",
-  "generatedAt": "2026-10-22T23:45:00.000Z",
-  "baselineCommit": "d282ea50af48607dd406addf42cd000aa1331f29",
+  "generatedAt": "2026-10-23T02:08:00.000Z",
+  "baselineCommit": "5b8e52d1d8e5ba94b468985e526e90214211cea1",
   "airGapBoundary": {
     "productionDatabase": "ehfafcnimmjusyvplbah",
     "productionStatus": "AIR_GAPPED_ZERO_QUERIES_ZERO_MUTATIONS",
@@ -100,7 +100,7 @@
         "schemaValid": true
       },
       "corroborationArtifact": "reports/w021_5_staging_execution_report.json",
-      "executionDetails": "Reconciled under CTO Directive 141 via scripts/execute_staging_directive_139.mjs. Clarified scope: 107 canonical political organizations with 1,100 supporting child records = 1,207 total catalog rows. 100% unique short names."
+      "executionDetails": "Reconciled under CTO Directive 142 via scripts/reconcile_database_criteria_identities.mjs and scripts/execute_staging_directive_139.mjs. Validates actual migration 065_canonical_political_organization_registry.sql across 6 actual catalog tables (107 canonical political organizations + 1,100 supporting child records = 1,207 total catalog rows). 100% unique short names and verified foreign keys."
     },
     {
       "artifactId": "DB-ART-002",
@@ -132,7 +132,7 @@
         "schemaValid": true
       },
       "corroborationArtifact": "reports/w021_5_staging_execution_report.json",
-      "executionDetails": "Reconciled under CTO Directive 141 via scripts/execute_staging_directive_139.mjs. Clarified historical 5,750 threshold as cumulative count through Subchunk 08A; full 10 subchunks contain 11,334 tuples yielding 11,298 unique rows (36 duplicate discards)."
+      "executionDetails": "Reconciled under CTO Directive 142. Mapped candidate IDs and verified both retainedId and discardedId for all 36 duplicate declarations in reports/w021_5_b2_2d_36_candidacy_duplicates.json, proving both match declared natural keys. 11,334 source tuples yield exactly 11,298 unique rows (36 duplicate discards)."
     },
     {
       "artifactId": "DB-ART-003",
@@ -162,7 +162,7 @@
         "schemaValid": true
       },
       "corroborationArtifact": "reports/w021_5_staging_execution_report.json",
-      "executionDetails": "Reconciled under CTO Directive 141 via scripts/execute_staging_directive_139.mjs. Matches 100% of India's 4,123 assembly constituency seats across all 31 assembly states. Zero negative values, zero percentages > 100%."
+      "executionDetails": "Reconciled under CTO Directive 142. Mathematically resolved 4,142 manifest records against 4,123 statutory assembly seats: 4,123 statutory - 134 missing in seed + 153 extra non-statutory records (151 Delhi AC 71-221, 2 Himachal AC 69-70) = exactly 4,142 manifest records. Field integrity verified (0 missing, 0 null, 0 non-numeric, 0 out-of-range). Mizoram baseline gap (5 seats) preserved under DQ-W021.5-B2.2E-001."
     },
     {
       "artifactId": "DB-ART-004",
@@ -195,7 +195,7 @@
         "schemaValid": true
       },
       "corroborationArtifact": "reports/w021_5_staging_execution_report.json",
-      "executionDetails": "Reconciled under CTO Directive 141 via scripts/execute_staging_directive_139.mjs. Destructive wholesale DELETE eliminated in favor of idempotent PostgreSQL upsert. Candidate names, party codes, and genuine vote/margin values mapped correctly (zero 'Winner' or 0-vote placeholders)."
+      "executionDetails": "Reconciled under CTO Directive 142. Eliminated zero-fabrication: unrecorded margin and votes preserved as null rather than fabricated zeroes; genuine numeric zeroes preserved for uncontested seats (Arunachal AC 4, 16, 31); J&K 2014 statutory boundary preserved at 87 seats; non-destructive upsert target on_conflict=election_id,constituency_id."
     },
     {
       "artifactId": "DB-ART-005",

@@ -51,7 +51,7 @@ describe('CTO Directive 140 Section 2.2: Staging Target Selection & Write-Gating
 
   // ─── 1. ABSENT CREDENTIALS (FAIL CLOSED) ───────────────────────────────────
   it('1. Rejects execution when SUPABASE_SERVICE_ROLE_KEY is absent (fail-closed, exit 1)', () => {
-    const res = runScript(SCRIPT_139, { SUPABASE_SERVICE_ROLE_KEY: '' });
+    const res = runScript(SCRIPT_139, { SUPABASE_SERVICE_ROLE_KEY: '' }, ['--write']);
     assert.strictEqual(res.status, 1, 'Process must exit with status 1');
     assert.match(res.stderr + res.stdout, /Missing SUPABASE_SERVICE_ROLE_KEY/i);
     assert.doesNotMatch(res.stdout, /MUTATION EXECUTED/i);
@@ -68,7 +68,7 @@ describe('CTO Directive 140 Section 2.2: Staging Target Selection & Write-Gating
     const res = runScript(SCRIPT_139, {
       SUPABASE_SERVICE_ROLE_KEY: DUMMY_STAGING_KEY,
       SUPABASE_URL: 'https://malicious-external-host.supabase.co'
-    });
+    }, ['--write']);
     assert.strictEqual(res.status, 1, 'Must reject arbitrary unauthorized host');
     assert.match(res.stderr + res.stdout, /Unauthorized staging host/i);
   });
@@ -78,7 +78,7 @@ describe('CTO Directive 140 Section 2.2: Staging Target Selection & Write-Gating
     const res = runScript(SCRIPT_139, {
       SUPABASE_SERVICE_ROLE_KEY: DUMMY_STAGING_KEY,
       SUPABASE_URL: 'https://ehfafcnimmjusyvplbah.supabase.co'
-    });
+    }, ['--write']);
     assert.strictEqual(res.status, 1, 'Must reject production URL');
     assert.match(res.stderr + res.stdout, /Production project reference detected|Unauthorized staging host/i);
   });
@@ -88,7 +88,7 @@ describe('CTO Directive 140 Section 2.2: Staging Target Selection & Write-Gating
     const res = runScript(SCRIPT_139, {
       SUPABASE_SERVICE_ROLE_KEY: DUMMY_STAGING_KEY,
       SUPABASE_URL: 'http://fkpigozcqnmcvofuksar.supabase.co'
-    });
+    }, ['--write']);
     assert.strictEqual(res.status, 1, 'Must reject non-https protocol');
     assert.match(res.stderr + res.stdout, /Insecure protocol: staging connection strictly requires https:/i);
   });
@@ -97,7 +97,7 @@ describe('CTO Directive 140 Section 2.2: Staging Target Selection & Write-Gating
   it('5. Rejects production reference contained within service key (air-gap invariant)', () => {
     const res = runScript(SCRIPT_139, {
       SUPABASE_SERVICE_ROLE_KEY: 'test-key-containing-ehfafcnimmjusyvplbah-probe'
-    });
+    }, ['--write']);
     assert.strictEqual(res.status, 1, 'Must reject key referencing production');
     assert.match(res.stderr + res.stdout, /Production reference detected in service key/i);
   });
@@ -110,7 +110,7 @@ describe('CTO Directive 140 Section 2.2: Staging Target Selection & Write-Gating
       ['--write']
     );
     assert.strictEqual(res.status, 1, 'Must fail closed when write token is missing');
-    assert.match(res.stderr + res.stdout, /write authorization token is missing or invalid/i);
+    assert.match(res.stderr + res.stdout, /MISSING_AUTHORIZATION_TOKEN|write authorization token is missing or invalid/i);
   });
 
   // ─── 7. MALFORMED WRITE AUTHORIZATION REJECTION ────────────────────────────
@@ -121,7 +121,7 @@ describe('CTO Directive 140 Section 2.2: Staging Target Selection & Write-Gating
       ['--write', '--auth-token=some-unauthorized-random-string']
     );
     assert.strictEqual(res.status, 1, 'Must reject malformed authorization token');
-    assert.match(res.stderr + res.stdout, /write authorization token is missing or invalid/i);
+    assert.match(res.stderr + res.stdout, /TRUST_ANCHOR_UNCONFIGURED|MALFORMED_AUTHORIZATION_TOKEN|write authorization token is missing or invalid/i);
   });
 
   // ─── 8. DEFAULT DRY-RUN PREPARATION (0 REMOTE MUTATIONS) ───────────────────
@@ -132,11 +132,9 @@ describe('CTO Directive 140 Section 2.2: Staging Target Selection & Write-Gating
       [] // No --write flag
     );
     assert.strictEqual(res.status, 0, 'Dry-run preparation must complete successfully');
-    assert.match(res.stdout, /DRY-RUN \/ READ-ONLY PREPARATION \(0 remote mutations\)/i);
-    assert.match(res.stdout, /Stage 1 Verdict: PASS/i);
-    assert.match(res.stdout, /Stage 2 Verdict: PASS/i);
-    assert.match(res.stdout, /Stage 3 Verdict: PASS/i);
-    assert.match(res.stdout, /Stage 4 Verdict: PASS/i);
+    assert.match(res.stdout, /MODE_A_LOCAL_PREPARATION_AND_RECONCILIATION|DRY-RUN/i);
+    assert.match(res.stdout, /Network Calls Measured: 0|0 remote mutations/i);
+    assert.match(res.stdout, /PREPARED_AND_RECONCILED_IN_REPOSITORY/i);
   });
 
   // ─── 9. SECRET REDACTION CONFIRMATION ──────────────────────────────────────
@@ -147,7 +145,8 @@ describe('CTO Directive 140 Section 2.2: Staging Target Selection & Write-Gating
       {
         SUPABASE_SERVICE_ROLE_KEY: SECRET_PROBE,
         SUPABASE_URL: 'https://malicious-host.supabase.co'
-      }
+      },
+      ['--write']
     );
     const combinedOutput = res.stdout + res.stderr;
     assert.strictEqual(

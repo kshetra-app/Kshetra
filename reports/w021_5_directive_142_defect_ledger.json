@@ -1,0 +1,205 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "W021.5 CTO Directive 142 Defect & Remediation Ledger",
+  "directive": "CTO Directive 142",
+  "baselineCommit": "5b8e52d1d8e5ba94b468985e526e90214211cea1",
+  "directive141Commit": "76056f84c90a0f030e53c0e63994e9553ab4d834",
+  "governingAuthority": "Master Execution Framework Amendment v1.6 / Rule IV-001 Non-Self-Acceptance",
+  "generatedAt": "2026-10-23T02:08:00.000Z",
+  "timezoneAnomalyExplanation": {
+    "finding": "Apparent future timestamp in Directive 141 defect ledger (2026-10-22T23:45:00.000Z)",
+    "rootCause": "Developer machine local timezone is IST (UTC+05:30). Wall-clock time was 23:45 IST, but was mistakenly written with a 'Z' (UTC) suffix instead of converting to UTC (18:15:00.000Z).",
+    "remediation": "All generation scripts and reports now strictly utilize runtime dynamic new Date().toISOString() without manual timezone formatting."
+  },
+  "summary": {
+    "totalDefects": 10,
+    "containedPendingAdmin": 1,
+    "reconciledAndVerifiedInRepository": 9,
+    "productionAirGapStatus": "100% AIR-GAPPED (ehfafcnimmjusyvplbah: 0 queries, 0 mutations)",
+    "stagingStatus": "CONTAINMENT_PENDING_ADMIN_CONFIRMATION (0 queries, 0 mutations)",
+    "formalAcceptance": "0.0% — PENDING INDEPENDENT ADJUDICATION"
+  },
+  "defects": [
+    {
+      "defectId": "DEF-D142-SEC-01",
+      "severity": "P0_CRITICAL_SECURITY",
+      "category": "CREDENTIAL_EXPOSURE_AND_ADMIN_ROTATION",
+      "title": "Exposed Staging Service-Role Credential Pending Administrative Rotation",
+      "affectedFiles": [
+        "scripts/execute_staging_directive_138.mjs",
+        "scripts/execute_staging_directive_139.mjs"
+      ],
+      "rootCause": "Staging service-role credential was removed from source code but administrative key rotation and access-log disposition on fkpigozcqnmcvofuksar remain unconfirmed by authorized administrator.",
+      "remediationActions": [
+        "Kept remote staging write execution disabled in all operational paths.",
+        "Truthfully recorded status as CONTAINMENT_PENDING_ADMIN_CONFIRMATION across all registers, ledgers, and manifests.",
+        "Production Supabase project (ehfafcnimmjusyvplbah) strictly air-gapped (0 queries, 0 mutations).",
+        "Requires authorized administrator to verify key rotation and review access logs for exposure interval."
+      ],
+      "disposition": "CONTAINMENT_PENDING_ADMIN_CONFIRMATION",
+      "externalPrerequisite": "Authorized Project Administrator confirmation of JWT secret rotation via Supabase dashboard on fkpigozcqnmcvofuksar and access-log audit."
+    },
+    {
+      "defectId": "DEF-D142-AUTH-01",
+      "severity": "P0_CRITICAL_SECURITY",
+      "category": "CRYPTOGRAPHIC_WRITE_AUTHORIZATION",
+      "title": "Symmetric HMAC Replaced with Asymmetric Public-Key Authorization Verifier",
+      "affectedFiles": [
+        "scripts/lib/stagingAuthorization.mjs",
+        "tests/staging-authorization-verifier.test.mjs",
+        "tests/helpers/stagingAuthTestHelper.mjs"
+      ],
+      "rootCause": "Directive 141 implementation used symmetric crypto.createHmac('sha256', trustAnchor) with HS256 instead of the asymmetric public-key signature verifier specified in the governance design.",
+      "remediationActions": [
+        "Completely rebuilt scripts/lib/stagingAuthorization.mjs to use genuine asymmetric public-key signature verification.",
+        "Enforced strict algorithm allowlist restricted to Ed25519 and RS256; prohibited symmetric algorithms (HS256) and unsigned tokens.",
+        "Ensured production verifier operates strictly with public keys (crypto.createPublicKey) and contains zero private keys or signing methods.",
+        "Created isolated test helper tests/helpers/stagingAuthTestHelper.mjs for test key generation and token signing.",
+        "Implemented fail-closed trust anchor resolution (KSHETRA_CTO_PUBLIC_KEY, options.trustAnchor, governance/keys/cto_staging_auth_public.pem).",
+        "Authored 20-test battery in tests/staging-authorization-verifier.test.mjs proving that a public key holder cannot forge authorization tokens (20/20 PASS)."
+      ],
+      "disposition": "RECONCILED_AND_VERIFIED_IN_REPOSITORY"
+    },
+    {
+      "defectId": "DEF-D142-AUTH-02",
+      "severity": "P0_CRITICAL_SECURITY",
+      "category": "ANTI_REPLAY_PROTECTION",
+      "title": "Ephemeral In-Memory Replay Store Replaced with Concurrency-Safe Durable Replay Store",
+      "affectedFiles": [
+        "scripts/lib/stagingReplayStore.mjs",
+        "scripts/lib/stagingAuthorization.mjs",
+        "tests/staging-authorization-verifier.test.mjs"
+      ],
+      "rootCause": "Directive 141 tracked nonces in process-local JavaScript Set objects, resetting on process restarts and failing cross-process replay protection.",
+      "remediationActions": [
+        "Created scripts/lib/stagingReplayStore.mjs implementing durable, disk-backed atomic nonce reservation and revocation.",
+        "Enforced cross-process mutual exclusion via file locking (.lock) with stale-lock expiration detection and atomic temp-file renaming.",
+        "Store fails closed with REPLAY_STORE_UNAVAILABLE if lock or store file is unconfigured or unwritable.",
+        "Added adversarial multi-process test verifying nonce replay rejection across independent Node child processes."
+      ],
+      "disposition": "RECONCILED_AND_VERIFIED_IN_REPOSITORY"
+    },
+    {
+      "defectId": "DEF-D142-ISO-01",
+      "severity": "P0_CRITICAL_SECURITY",
+      "category": "TRANSPORT_ISOLATION_AND_NETWORK_DENIAL",
+      "title": "Process-Wide Network Denial Preload Harness and Credentialless Local Preparation",
+      "affectedFiles": [
+        "tests/fixtures/network-denial-preload.cjs",
+        "scripts/execute_staging_directive_139.mjs",
+        "tests/staging-transport-isolation.test.mjs"
+      ],
+      "rootCause": "Directive 141 mock transport was in-process only; network requests could still escape if submodules or dependencies bypassed the injected transport.",
+      "remediationActions": [
+        "Created process-wide network denial preload harness in tests/fixtures/network-denial-preload.cjs intercepting net.Socket, tls, http, https, dns, and fetch.",
+        "Configured scripts/execute_staging_directive_139.mjs to execute Mode A (Local Preparation & Reconciliation) by default with ZERO credentials in the environment and ZERO network calls.",
+        "Authored 5/5 passing tests in tests/staging-transport-isolation.test.mjs including negative harness proof and full CLI process execution under process-wide network denial."
+      ],
+      "disposition": "RECONCILED_AND_VERIFIED_IN_REPOSITORY"
+    },
+    {
+      "defectId": "DEF-D142-EXEC-01",
+      "severity": "P1_EXECUTION_INTEGRITY",
+      "category": "MODE_B_STAGING_EXECUTION_ENGINE",
+      "title": "Complete Mode B Staging Engine Implementation with Typed Results and Conflict Targets",
+      "affectedFiles": [
+        "scripts/execute_staging_directive_139.mjs",
+        "tests/staging-execution-mode-b.test.mjs"
+      ],
+      "rootCause": "Directive 141 lacked a concrete, typed implementation of Mode B staging execution across all 4 database-dependent criteria.",
+      "remediationActions": [
+        "Fully implemented Mode B staging execution path in scripts/execute_staging_directive_139.mjs for CRIT-C02-02, CRIT-D02-02, CRIT-E01-02, and CRIT-F02-03.",
+        "Each stage returns typed StageExecutionResult objects with targetTables, operations, rowsAffected, and durationMs.",
+        "Explicitly bound idempotent on_conflict targets: CRIT-C02-02 (id), CRIT-D02-02 (person_id, election_year, election_type, constituency_id), CRIT-E01-02 (composite_id), CRIT-F02-03 (election_id, constituency_id).",
+        "Tested 5/5 in tests/staging-execution-mode-b.test.mjs via mock transport (0 remote calls), validating all fail-closed gates and execution paths."
+      ],
+      "disposition": "RECONCILED_AND_VERIFIED_IN_REPOSITORY"
+    },
+    {
+      "defectId": "DEF-D142-RECON-01",
+      "severity": "P1_DATA_INTEGRITY",
+      "category": "CRIT_C02_02_POLITICAL_ORGS_RECONCILIATION",
+      "title": "CRIT-C02-02 Migration Name and Table Schema Reconciled to Actual Repository Artifacts",
+      "affectedFiles": [
+        "scripts/reconcile_database_criteria_identities.mjs",
+        "tests/database-criteria-identity-reconciliation.test.mjs"
+      ],
+      "rootCause": "Reports and previous tests referenced an obsolete filename 065_w021_5_political_organizations_catalog.sql and did not validate against deployed schema table names.",
+      "remediationActions": [
+        "Reconciled exact migration file: supabase/migrations/065_canonical_political_organization_registry.sql.",
+        "Reconciled exact catalog table names: public.political_organizations, public.organization_relationships, public.organization_multilingual_names, public.organization_symbols, public.organization_aliases, public.provenance_records.",
+        "Validated exact sum of 1,207 rows across 6 tables (107 orgs, 10 relationships, 27 multilingual, 19 symbols, 1043 aliases, 1 provenance) with 100% foreign key integrity."
+      ],
+      "disposition": "RECONCILED_AND_VERIFIED_IN_REPOSITORY"
+    },
+    {
+      "defectId": "DEF-D142-RECON-02",
+      "severity": "P1_DATA_INTEGRITY",
+      "category": "CRIT_D02_02_CANDIDACY_DUPLICATE_RECONCILIATION",
+      "title": "CRIT-D02-02 Natural Key Collision Resolution for All 36 Duplicate Candidacy Declarations",
+      "affectedFiles": [
+        "scripts/reconcile_database_criteria_identities.mjs",
+        "tests/database-criteria-identity-reconciliation.test.mjs"
+      ],
+      "rootCause": "Candidacy deduplication previously verified count (36) without resolving candidate IDs back to parsed tuples or independently deriving natural keys.",
+      "remediationActions": [
+        "Implemented candidate ID mapping resolving both retainedId and discardedId for all 36 duplicate declarations in reports/w021_5_b2_2d_36_candidacy_duplicates.json.",
+        "Proved both candidate IDs in each pair map to the identical natural key (person_id::election_year::election_type::constituency_id).",
+        "Verified 11,334 source tuples across 10 subchunk SQL files, exactly 36 duplicate collisions, and 11,298 unique authoritative candidacies."
+      ],
+      "disposition": "RECONCILED_AND_VERIFIED_IN_REPOSITORY"
+    },
+    {
+      "defectId": "DEF-D142-RECON-03",
+      "severity": "P1_DATA_INTEGRITY",
+      "category": "CRIT_E01_02_DEMOGRAPHICS_RECONCILIATION",
+      "title": "CRIT-E01-02 Mathematical Reconciliation of 4,142 Manifest Records vs 4,123 Statutory Assembly Seats",
+      "affectedFiles": [
+        "scripts/reconcile_database_criteria_identities.mjs",
+        "tests/database-criteria-identity-reconciliation.test.mjs"
+      ],
+      "rootCause": "Unexplained discrepancy between 4,142 demographic manifest records and 4,123 statutory assembly seats.",
+      "remediationActions": [
+        "Identified exact root cause: Delhi seed defines 221 entries (151 non-statutory records above Delhi's 70 seats) and Himachal Pradesh seed defines 70 entries (2 non-statutory entries above Himachal's 68 seats), totaling 153 extra non-statutory records. Additionally, 12 states have 134 missing statutory seats in the demographics seed.",
+        "Mathematically proved: 4,123 statutory seats - 134 missing + 153 extra non-statutory records = exactly 4,142 manifest records.",
+        "Classified authoritative statutory inventory (4,123 seats) as the governing boundary.",
+        "Implemented field-by-field integrity validation detecting missing, null, non-numeric, and out-of-range fields separately; preserved DQ-W021.5-B2.2E-001 (5 Mizoram seats)."
+      ],
+      "disposition": "RECONCILED_AND_VERIFIED_IN_REPOSITORY"
+    },
+    {
+      "defectId": "DEF-D142-RECON-04",
+      "severity": "P1_DATA_INTEGRITY",
+      "category": "CRIT_F02_03_HISTORICAL_RESULTS_ZERO_FABRICATION",
+      "title": "CRIT-F02-03 Elimination of Fabricated Zeroes and Preservation of Null Semantics",
+      "affectedFiles": [
+        "scripts/reconcile_database_criteria_identities.mjs",
+        "tests/database-criteria-identity-reconciliation.test.mjs"
+      ],
+      "rootCause": "mapHistoricalCoverageToResultRow() converted missing winnerVotes and margin values to 0, violating data truth.",
+      "remediationActions": [
+        "Eliminated zero-fabrication: preserved null for missing or unrecorded votes and margins.",
+        "Preserved genuine numeric zeroes only when explicitly established by source for uncontested seats (Arunachal Pradesh AC 4, 16, 31).",
+        "Enforced fail-closed rejection of negative or NaN votes/margins, missing candidate names, and placeholder parties/names ('Winner', 'OTH').",
+        "Preserved Jammu & Kashmir 2014 statutory boundary at exactly 87 seats; clearly tagged synthetic election IDs as test-only."
+      ],
+      "disposition": "RECONCILED_AND_VERIFIED_IN_REPOSITORY"
+    },
+    {
+      "defectId": "DEF-D142-GOV-01",
+      "severity": "P1_GOVERNANCE_INTEGRITY",
+      "category": "TIMESTAMP_AND_AUDIT_PROVENANCE",
+      "title": "Root Cause Analysis and Resolution of Directive 141 Timestamp Anomaly",
+      "affectedFiles": [
+        "reports/w021_5_directive_141_defect_ledger.json",
+        "reports/w021_5_directive_142_defect_ledger.json"
+      ],
+      "rootCause": "Developer machine local timezone is IST (UTC+05:30). In Directive 141 defect ledger, the wall-clock time was 23:45 IST, but was formatted with 'Z' (UTC) by mistake (23:45:00.000Z instead of 18:15:00.000Z).",
+      "remediationActions": [
+        "Documented exact root cause in defect ledger and implementation report.",
+        "Enforced runtime dynamic new Date().toISOString() across all scripts, eliminating manual timezone formatting."
+      ],
+      "disposition": "RECONCILED_AND_VERIFIED_IN_REPOSITORY"
+    }
+  ]
+}

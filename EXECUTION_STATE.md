@@ -7,9 +7,9 @@
 ## 1. Project & Execution Coordinates
 ```text
 PROJECT:               PANIN (formerly Kshetra)
-CURRENT_JOB:           W021.5 / CTO DIRECTIVE 141 (Final Implementation Gap Closure, Security Containment, Source-to-Truth Reconciliation & Evidence-Gated Milestone Handoff)
-LAST_COMPLETED_JOB:    CTO DIRECTIVE 140 (Security Incident Containment, Auth Authority Repair, Database Evidence Integrity & Deterministic Verification)
-NEXT_PERMITTED_JOB:    INDEPENDENT CTO ADJUDICATION (W021.5 / CTO Directive 141)
+CURRENT_JOB:           W021.5 / CTO DIRECTIVE 142 (Final Local Remediation, Cryptographic Authorization Integrity, Executable Staging Readiness & Evidence-Truth Closure)
+LAST_COMPLETED_JOB:    CTO DIRECTIVE 141 (Final Implementation Gap Closure, Security Containment, Source-to-Truth Reconciliation & Evidence-Gated Milestone Handoff)
+NEXT_PERMITTED_JOB:    INDEPENDENT CTO ADJUDICATION (W021.5 / CTO Directive 142)
 
 W021_5_B2_2C_STATUS:   ACCEPTED / COMPLETE / CLOSED (CTO Accepted Directive W021.5-CTO-NEXT-002, 2026-10-07)
 W021_5_B2_2C_HASH:     d514c64e8a80b928875f1ea03d0853e5d7e3675e0e3a4134c25958632fe675b7

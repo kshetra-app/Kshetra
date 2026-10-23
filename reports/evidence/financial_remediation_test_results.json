@@ -2,7 +2,7 @@
   "testSuite": "Directive 068 Test Battery",
   "milestone": "W021.5 / B2.2-E",
   "defect": "DQ-W021.5-B2.2E-001",
-  "executionDate": "2026-10-22T18:33:01.065Z",
+  "executionDate": "2026-10-23T02:12:15.121Z",
   "nodeVersion": "v24.13.0",
   "totalTests": 105,
   "passedCount": 105,
@@ -15,7 +15,7 @@
       "status": "PASS",
       "errorMsg": null,
       "details": "All 19/19 mandatory checks passed",
-      "durationMs": 31
+      "durationMs": 28
     },
     {
       "testId": 2,
@@ -23,7 +23,7 @@
       "status": "PASS",
       "errorMsg": null,
       "details": "Failed as expected with DUPLICATE_MANIFEST_ID: ID: 0215b22e-aff-00000001",
-      "durationMs": 14
+      "durationMs": 13
     },
     {
       "testId": 3,
@@ -31,7 +31,7 @@
       "status": "PASS",
       "errorMsg": null,
       "details": "Rejected missing correction ID as expected",
-      "durationMs": 14
+      "durationMs": 12
     },
     {
       "testId": 4,
@@ -39,7 +39,7 @@
       "status": "PASS",
       "errorMsg": null,
       "details": "Rejected substituted ID: CORRECTION_SET_SUBSET_VIOLATION",
-      "durationMs": 13
+      "durationMs": 12
     },
     {
       "testId": 5,
@@ -47,7 +47,7 @@
       "status": "PASS",
       "errorMsg": null,
       "details": "Rejected duplicate crosswalk entry",
-      "durationMs": 16
+      "durationMs": 12
     },
     {
       "testId": 6,
@@ -55,7 +55,7 @@
       "status": "PASS",
       "errorMsg": null,
       "details": "Rejected missing crosswalk entry",
-      "durationMs": 15
+      "durationMs": 14
     },
     {
       "testId": 7,
@@ -63,7 +63,7 @@
       "status": "PASS",
       "errorMsg": null,
       "details": "Rejected unexpected crosswalk entry",
-      "durationMs": 15
+      "durationMs": 17
     },
     {
       "testId": 8,
@@ -71,7 +71,7 @@
       "status": "PASS",
       "errorMsg": null,
       "details": "Rejected ledger ID not present in manifest",
-      "durationMs": 13
+      "durationMs": 15
     },
     {
       "testId": 9,
@@ -79,7 +79,7 @@
       "status": "PASS",
       "errorMsg": null,
       "details": "Rejected correction ID not present in manifest",
-      "durationMs": 13
+      "durationMs": 15
     },
     {
       "testId": 10,
@@ -87,7 +87,7 @@
       "status": "PASS",
       "errorMsg": null,
       "details": "Rejected nullification of positive wealth disclosure",
-      "durationMs": 1
+      "durationMs": 0
     },
     {
       "testId": 11,
@@ -103,7 +103,7 @@
       "status": "PASS",
       "errorMsg": null,
       "details": "Disagreement between source total and manifest caught via production validator",
-      "durationMs": 0
+      "durationMs": 1
     },
     {
       "testId": 13,
@@ -111,7 +111,7 @@
       "status": "PASS",
       "errorMsg": null,
       "details": "Disagreement between source total and ledger value caught via production validator",
-      "durationMs": 4
+      "durationMs": 3
     },
     {
       "testId": 14,
@@ -119,7 +119,7 @@
       "status": "PASS",
       "errorMsg": null,
       "details": "Commented properties correctly stripped and excluded",
-      "durationMs": 3
+      "durationMs": 4
     },
     {
       "testId": 15,
@@ -127,7 +127,7 @@
       "status": "PASS",
       "errorMsg": null,
       "details": "Strict object boundaries enforced between neighboring objects",
-      "durationMs": 3
+      "durationMs": 4
     },
     {
       "testId": 16,
@@ -135,7 +135,7 @@
       "status": "PASS",
       "errorMsg": null,
       "details": "Escaped quotes and backslashes handled without boundary disruption",
-      "durationMs": 5
+      "durationMs": 4
     },
     {
       "testId": 17,
@@ -143,7 +143,7 @@
       "status": "PASS",
       "errorMsg": null,
       "details": "Detected mismatch between coordinate content and expected identity",
-      "durationMs": 4
+      "durationMs": 3
     },
     {
       "testId": 18,
@@ -167,7 +167,7 @@
       "status": "PASS",
       "errorMsg": null,
       "details": "Unsafe integer rejected before arithmetic",
-      "durationMs": 3
+      "durationMs": 0
     },
     {
       "testId": 21,
@@ -175,7 +175,7 @@
       "status": "PASS",
       "errorMsg": null,
       "details": "Phantom affidavit rejected: CORRECTION_ID_NOT_IN_MANIFEST",
-      "durationMs": 15
+      "durationMs": 18
     },
     {
       "testId": 22,
@@ -183,7 +183,7 @@
       "status": "PASS",
       "errorMsg": null,
       "details": "Phantom affidavit in crosswalk rejected",
-      "durationMs": 14
+      "durationMs": 16
     },
     {
       "testId": 23,
@@ -191,7 +191,7 @@
       "status": "PASS",
       "errorMsg": null,
       "details": "Phantom affidavit in ledger rejected",
-      "durationMs": 15
+      "durationMs": 14
     },
     {
       "testId": 24,
@@ -199,7 +199,7 @@
       "status": "PASS",
       "errorMsg": null,
       "details": "Coercing genuine zero to null rejected under Zero Fabrication Rule",
-      "durationMs": 3
+      "durationMs": 4
     },
     {
       "testId": 25,
@@ -207,7 +207,7 @@
       "status": "PASS",
       "errorMsg": null,
       "details": "Zero fabrication rule prohibits setting missing disclosure to zero",
-      "durationMs": 4
+      "durationMs": 5
     },
     {
       "testId": 26,
@@ -231,7 +231,7 @@
       "status": "PASS",
       "errorMsg": null,
       "details": "Unresolved source conflict fails closed",
-      "durationMs": 1
+      "durationMs": 0
     },
     {
       "testId": 29,
@@ -239,7 +239,7 @@
       "status": "PASS",
       "errorMsg": null,
       "details": "Missing required artifact fails closed",
-      "durationMs": 2
+      "durationMs": 1
     },
     {
       "testId": 30,
@@ -263,7 +263,7 @@
       "status": "PASS",
       "errorMsg": null,
       "details": "CLI exited non-zero (1) as expected on error",
-      "durationMs": 118
+      "durationMs": 109
     },
     {
       "testId": 33,
@@ -271,7 +271,7 @@
       "status": "PASS",
       "errorMsg": null,
       "details": "Single mandatory check failure triggers suite failure",
-      "durationMs": 1
+      "durationMs": 0
     },
     {
       "testId": 34,
@@ -279,7 +279,7 @@
       "status": "PASS",
       "errorMsg": null,
       "details": "Asset and liability correction eligibility evaluated independently",
-      "durationMs": 0
+      "durationMs": 1
     },
     {
       "testId": 35,
@@ -295,7 +295,7 @@
       "status": "PASS",
       "errorMsg": null,
       "details": "Row-level substitution rejected despite count/aggregate agreement",
-      "durationMs": 14
+      "durationMs": 18
     },
     {
       "testId": 37,
@@ -303,7 +303,7 @@
       "status": "PASS",
       "errorMsg": null,
       "details": "Disagreement between positive source value and intended restored total caught",
-      "durationMs": 3
+      "durationMs": 4
     },
     {
       "testId": 38,
@@ -319,7 +319,7 @@
       "status": "PASS",
       "errorMsg": null,
       "details": "Unrelated source record coordinate fails closed",
-      "durationMs": 3
+      "durationMs": 2
     },
     {
       "testId": 40,
@@ -327,7 +327,7 @@
       "status": "PASS",
       "errorMsg": null,
       "details": "Restoration without affirmative source total rejected",
-      "durationMs": 3
+      "durationMs": 4
     },
     {
       "testId": 41,
@@ -351,7 +351,7 @@
       "status": "PASS",
       "errorMsg": null,
       "details": "Nested properties strictly isolated from top-level record",
-      "durationMs": 1
+      "durationMs": 0
     },
     {
       "testId": 44,
@@ -375,7 +375,7 @@
       "status": "PASS",
       "errorMsg": null,
       "details": "formatINR correctly handles null, undefined, 0, and positive amounts",
-      "durationMs": 125
+      "durationMs": 120
     },
     {
       "testId": 47,
@@ -391,7 +391,7 @@
       "status": "PASS",
       "errorMsg": null,
       "details": "Red flags distinguish null liabilities from genuine zero liabilities",
-      "durationMs": 0
+      "durationMs": 1
     },
     {
       "testId": 49,
@@ -407,7 +407,7 @@
       "status": "PASS",
       "errorMsg": null,
       "details": "CLI correctly exited non-zero with code 1",
-      "durationMs": 112
+      "durationMs": 117
     },
     {
       "testId": 51,
@@ -415,7 +415,7 @@
       "status": "PASS",
       "errorMsg": null,
       "details": "Absent ledger record for a corrected row strictly fails closed",
-      "durationMs": 1
+      "durationMs": 0
     },
     {
       "testId": 52,
@@ -423,7 +423,7 @@
       "status": "PASS",
       "errorMsg": null,
       "details": "Missing authoritative field in ledger strictly fails closed",
-      "durationMs": 3
+      "durationMs": 5
     },
     {
       "testId": 53,
@@ -511,7 +511,7 @@
       "status": "PASS",
       "errorMsg": null,
       "details": "getCrorepatiCount contract and pure calculation verified",
-      "durationMs": 4
+      "durationMs": 9
     },
     {
       "testId": 64,
@@ -519,7 +519,7 @@
       "status": "PASS",
       "errorMsg": null,
       "details": "ConstituencyIntegrity requires and verifies assetsDisclosedCandidatesCount denominator",
-      "durationMs": 4
+      "durationMs": 3
     },
     {
       "testId": 65,
@@ -559,7 +559,7 @@
       "status": "PASS",
       "errorMsg": null,
       "details": "Missing authoritative liability value for null correction rejected with MISSING_AUTHORITATIVE_FIELD",
-      "durationMs": 3
+      "durationMs": 4
     },
     {
       "testId": 70,
@@ -583,7 +583,7 @@
       "status": "PASS",
       "errorMsg": null,
       "details": "Null authoritative value for zero preservation rejected with LEDGER_RESTORED_VALUE_MISMATCH",
-      "durationMs": 3
+      "durationMs": 4
     },
     {
       "testId": 73,
@@ -591,7 +591,7 @@
       "status": "PASS",
       "errorMsg": null,
       "details": "Zero authoritative value for missing disclosure rejected with LEDGER_RESTORED_VALUE_MISMATCH",
-      "durationMs": 3
+      "durationMs": 4
     },
     {
       "testId": 74,
@@ -655,7 +655,7 @@
       "status": "PASS",
       "errorMsg": null,
       "details": "Rejected negative intended value with INVALID_INTENDED_VALUE",
-      "durationMs": 1
+      "durationMs": 0
     },
     {
       "testId": 82,
@@ -671,7 +671,7 @@
       "status": "PASS",
       "errorMsg": null,
       "details": "Rejected positive infinity with INVALID_INTENDED_VALUE",
-      "durationMs": 0
+      "durationMs": 1
     },
     {
       "testId": 84,
@@ -703,7 +703,7 @@
       "status": "PASS",
       "errorMsg": null,
       "details": "Rejected string \"0\" with INVALID_INTENDED_VALUE",
-      "durationMs": 1
+      "durationMs": 0
     },
     {
       "testId": 88,
@@ -719,7 +719,7 @@
       "status": "PASS",
       "errorMsg": null,
       "details": "Rejected all boolean, object, and array intended values with INVALID_INTENDED_VALUE",
-      "durationMs": 0
+      "durationMs": 1
     },
     {
       "testId": 90,
@@ -751,7 +751,7 @@
       "status": "PASS",
       "errorMsg": null,
       "details": "Rejected +/- Infinity for LIABILITY with INVALID_INTENDED_VALUE",
-      "durationMs": 1
+      "durationMs": 0
     },
     {
       "testId": 94,
@@ -775,7 +775,7 @@
       "status": "PASS",
       "errorMsg": null,
       "details": "Rejected numeric strings for LIABILITY with INVALID_INTENDED_VALUE",
-      "durationMs": 0
+      "durationMs": 1
     },
     {
       "testId": 97,
@@ -791,7 +791,7 @@
       "status": "PASS",
       "errorMsg": null,
       "details": "Rejected missing/empty field types with UNSUPPORTED_FIELD_TYPE",
-      "durationMs": 1
+      "durationMs": 0
     },
     {
       "testId": 99,
@@ -823,7 +823,7 @@
       "status": "PASS",
       "errorMsg": null,
       "details": "Negative source liability value rejected and prevented from qualifying as missing disclosure",
-      "durationMs": 6
+      "durationMs": 5
     },
     {
       "testId": 103,
@@ -831,7 +831,7 @@
       "status": "PASS",
       "errorMsg": null,
       "details": "Positive restoration controls passed with true for both ASSET and LIABILITY",
-      "durationMs": 6
+      "durationMs": 5
     },
     {
       "testId": 104,
@@ -839,7 +839,7 @@
       "status": "PASS",
       "errorMsg": null,
       "details": "Explicit-null missing disclosure controls passed with true for both ASSET and LIABILITY",
-      "durationMs": 6
+      "durationMs": 8
     },
     {
       "testId": 105,
@@ -847,7 +847,7 @@
       "status": "PASS",
       "errorMsg": null,
       "details": "Genuine-zero controls passed with true for both ASSET and LIABILITY",
-      "durationMs": 7
+      "durationMs": 6
     }
   ]
 }

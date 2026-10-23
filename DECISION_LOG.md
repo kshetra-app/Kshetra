@@ -3201,11 +3201,46 @@
      - Remote staging (`fkpigozcqnmcvofuksar`): strictly 0 queries, 0 mutations under Directive 141.
      - Staging credential rotation: `CONTAINMENT_PENDING_ADMIN_CONFIRMATION` pending external Project Administrator action.
      - Under Rule IV-001, formal CTO acceptance remains strictly `0.0% — PENDING INDEPENDENT ADJUDICATION`.
+---
 
-
-
-
-
-
-
-
+### DEC-142: CTO DIRECTIVE 142 — FINAL LOCAL REMEDIATION, CRYPTOGRAPHIC AUTHORIZATION INTEGRITY, EXECUTABLE STAGING READINESS, AND EVIDENCE-TRUTH CLOSURE
+- **Date:** 2026-10-23
+- **Status:** IMPLEMENTATION COMPLETE / SUBMITTED FOR INDEPENDENT CTO ADJUDICATION
+- **Authority:** CTO Directive 142 / Master Execution Framework Amendment v1.6 / Rule IV-001 Non-Self-Acceptance
+- **Context:** Implementation of required local remediations, asymmetric cryptographic write authorization, durable anti-replay store, process-wide network denial, Mode B staging execution architecture, exact source-to-database identity reconciliation, and synchronized evidence package for W021.5:
+  1. P0 Asymmetric Cryptographic Write Authorization:
+     - Completely replaced symmetric HMAC (`HS256`) in `scripts/lib/stagingAuthorization.mjs` with genuine asymmetric public-key signature verification using explicit algorithm allowlist restricted to `Ed25519` and `RS256`.
+     - Production verifier contains ZERO private keys and ZERO signing helpers; strictly verifies signatures using public keys (`crypto.createPublicKey`).
+     - Authored isolated test-only key pair generation and signing helper `tests/helpers/stagingAuthTestHelper.mjs`.
+     - Proved that a public key holder cannot forge an authorization token (negative verification proof).
+     - Bound token claims to issuer, audience, exact project ref (`fkpigozcqnmcvofuksar`), nonce, issue time, temporal validity (exp/nbf), max lifetime (86,400s), criteria, tables, allowed operations, plan digest, and administrative incident closure reference.
+     - Proved comprehensive 20-test battery in `tests/staging-authorization-verifier.test.mjs` (20/20 PASS).
+  2. P0 Durable, Concurrency-Safe Anti-Replay Store:
+     - Implemented disk-backed atomic nonce reservation and revocation store in `scripts/lib/stagingReplayStore.mjs` surviving process restarts.
+     - Enforced cross-process mutual exclusion via directory file locking (`.lock`) with stale-lock detection and atomic temp-file renaming.
+     - Store fails closed with `REPLAY_STORE_UNAVAILABLE` if lock or store is unconfigured or unwritable.
+     - Verified durable anti-replay across simulated restarts and cross-process child process execution.
+  3. P0 Process-Wide Network Denial & Local Preparation:
+     - Built process-wide network denial preload harness in `tests/fixtures/network-denial-preload.cjs` intercepting `net.Socket.connect`, `tls.connect`, `http.request`, `https.request`, `dns.lookup`, `dns.resolve`, and `fetch`.
+     - Made Mode A (Local Preparation & Reconciliation) the default execution mode in `scripts/execute_staging_directive_139.mjs`, executing cleanly with ZERO credentials in environment and ZERO network calls.
+     - Proved 5/5 passing tests in `tests/staging-transport-isolation.test.mjs` under process-wide network denial.
+  4. P1 Mode B Staging Execution Architecture:
+     - Fully implemented Mode B staging execution path in `scripts/execute_staging_directive_139.mjs` for all 4 database-dependent criteria (`CRIT-C02-02`, `CRIT-D02-02`, `CRIT-E01-02`, `CRIT-F02-03`).
+     - Enforced typed `StageExecutionResult` return structures with explicit target tables, operations, rows affected, and idempotent conflict targets (`on_conflict=...`).
+     - Authored `tests/staging-execution-mode-b.test.mjs` (5/5 PASS) verifying full execution via mock transport (0 remote calls), plan digest binding, and fail-closed security gates.
+  5. P1 Source-to-Truth Deterministic Reconciliation Engine Hardening:
+     - Upgraded `scripts/reconcile_database_criteria_identities.mjs` and `tests/database-criteria-identity-reconciliation.test.mjs` (30/30 PASS):
+       - CRIT-C02-02: Reconciled actual migration `065_canonical_political_organization_registry.sql` and 6 actual catalog tables across 107 canonical orgs, 10 rels, 27 multi, 19 sym, 1043 aliases, 1 prov = 1,207 total records.
+       - CRIT-D02-02: Mapped candidate IDs and verified both `retainedId` and `discardedId` for all 36 duplicate declarations in `reports/w021_5_b2_2d_36_candidacy_duplicates.json`; confirmed independent natural key derivation (`person_id::election_year::election_type::constituency_id`); verified 11,298 unique candidacies.
+       - CRIT-E01-02: Reconciled 4,123 statutory inventory seats vs 4,142 demographic manifest records: proved exact arithmetic ($4,123 - 134 \text{ missing in seed} + 153 \text{ extra [151 DL + 2 HP]} = 4,142$). Detected missing/null/out-of-range fields separately; preserved `DQ-W021.5-B2.2E-001` (5 Mizoram seats).
+       - CRIT-F02-03: Eliminated zero-fabrication in `mapHistoricalCoverageToResultRow`; unrecorded votes/margins preserved as null rather than fabricated zeroes; preserved genuine zeroes for uncontested seats (Arunachal AC 4, 16, 31); locked J&K 2014 statutory boundary at 87 seats; tagged synthetic election IDs as test-only.
+  6. P1 Governance, Defect Ledger & Timestamp Anomaly Root Cause:
+     - Documented root cause of Directive 141 timestamp anomaly: developer machine local timezone was IST (UTC+05:30); wall-clock 23:45 IST was mistakenly formatted with a 'Z' suffix (`23:45:00.000Z`) instead of UTC (`18:15:00.000Z`). Enforced runtime dynamic `new Date().toISOString()`.
+     - Authored `reports/w021_5_directive_142_defect_ledger.json` tracking all 10 Directive 142 findings.
+     - Expanded single-entrypoint unified verifier `scripts/verify_w021_5_full_mandate.cjs` to 20 comprehensive suites.
+     - Preserved mathematical weight conservation: 67.0% Repo-Verified, 10.5% Database-Pending, 22.5% Blocked (EB-01..06, DQ), 0.0% Unimplemented, 0.0% Formal Acceptance (Rule IV-001).
+  7. Invariants Preserved:
+     - Production Supabase (`ehfafcnimmjusyvplbah`): 100% air-gapped (strictly 0 queries, 0 mutations).
+     - Remote staging (`fkpigozcqnmcvofuksar`): strictly 0 live queries, 0 live mutations under Directive 142.
+     - Staging credential rotation: `CONTAINMENT_PENDING_ADMIN_CONFIRMATION` pending external Project Administrator action.
+     - Under Rule IV-001, formal CTO acceptance remains strictly `0.0% — PENDING INDEPENDENT ADJUDICATION`.

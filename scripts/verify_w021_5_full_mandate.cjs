@@ -1,12 +1,12 @@
 /**
- * KSHETRA W021.5 — CTO DIRECTIVE 141 FULL-MANDATE UNIFIED VERIFIER
+ * KSHETRA W021.5 — CTO DIRECTIVE 142 FULL-MANDATE UNIFIED VERIFIER
  * Deterministic Single Entrypoint for Full-Mandate Completion Verification
  * 
  * Master Execution Framework Amendment v1.6 / Rule IV-001 Non-Self-Acceptance
- * CTO Directive 141: Final Implementation Gap Closure, Security Containment,
- * Source-to-Truth Reconciliation, and Evidence-Gated Milestone Handoff
+ * CTO Directive 142: Final Local Remediation, Cryptographic Authorization Integrity,
+ * Executable Staging Readiness, and Evidence-Truth Closure
  * 
- * Executes all 19 mandated verification suites across Stages A through I:
+ * Executes all 20 mandated verification suites across Stages A through I:
  *  1. Working tree cleanliness inspection (git status --porcelain)
  *  2. Commit freshness validator (tests/commit-freshness.test.mjs)
  *  3. Governance consistency test (tests/governance-consistency.test.mjs)
@@ -25,7 +25,8 @@
  * 16. Authoritative database identity & catalog reconciliation suite (tests/database-criteria-identity-reconciliation.test.mjs)
  * 17. Staging write cryptographic authorization & anti-replay battery (tests/staging-authorization-verifier.test.mjs)
  * 18. Staging transport isolation & zero-network verification battery (tests/staging-transport-isolation.test.mjs)
- * 19. Specification, Matrix, Ledger, Blocker & Evidence Concordance Engine
+ * 19. Mode B staging execution architecture battery (tests/staging-execution-mode-b.test.mjs)
+ * 20. Specification, Matrix, Ledger, Blocker & Evidence Concordance Engine
  * 
  * Generates: reports/w021_5_full_mandate_verification_manifest.json
  */
@@ -71,7 +72,7 @@ let overallPass = true; // Atomically tracked (Directive 135 Item 14)
 function runSuite(index, name, command, fn) {
   const start = Date.now();
   const startedAt = new Date().toISOString();
-  console.log(`[Suite ${index}/19] ${name}`);
+  console.log(`[Suite ${index}/20] ${name}`);
   console.log(`  Command: ${command || 'In-Process Engine Assertion'}`);
   
   let passed = false;
@@ -241,15 +242,21 @@ runSuite(17, 'Staging Write Cryptographic Authorization & Anti-Replay Battery', 
 
 // -----------------------------------------------------------------------------
 // Suite 18: Staging Transport Isolation & Zero-Network Verification Battery
-// CTO Directive 141 Section 3.2
+// CTO Directive 142 Section 3.2
 // -----------------------------------------------------------------------------
 runSuite(18, 'Staging Transport Isolation & Zero-Network Verification Battery', 'node tests/staging-transport-isolation.test.mjs');
 
 // -----------------------------------------------------------------------------
-// Suite 19: Specification, Matrix, Ledger, Blocker & Evidence Concordance Engine
+// Suite 19: Mode B Staging Execution Architecture Battery
+// CTO Directive 142 Section 4
+// -----------------------------------------------------------------------------
+runSuite(19, 'Mode B Staging Execution Architecture Battery', 'node tests/staging-execution-mode-b.test.mjs');
+
+// -----------------------------------------------------------------------------
+// Suite 20: Specification, Matrix, Ledger, Blocker & Evidence Concordance Engine
 // Operationalizes Directive 135 Section 4 (Items 1-10)
 // -----------------------------------------------------------------------------
-runSuite(19, 'Specification, Matrix, Ledger, Blocker & Evidence Concordance Engine', null, () => {
+runSuite(20, 'Specification, Matrix, Ledger, Blocker & Evidence Concordance Engine', null, () => {
   // Check 1: File Existence & JSON Parsing
   if (!fs.existsSync(MATRIX_PATH)) throw new Error(`Matrix file missing: ${MATRIX_PATH}`);
   if (!fs.existsSync(LEDGER_PATH)) throw new Error(`Ledger file missing: ${LEDGER_PATH}`);
@@ -689,8 +696,8 @@ const dynamicDbPendingTasks = Array.from(new Set(
 
 const manifest = {
   evidenceMetadata: {
-    directive: 'CTO Directive 141',
-    title: 'KSHETRA W021.5 Full-Mandate Unified Verification Manifest (Directive 141)',
+    directive: 'CTO Directive 142',
+    title: 'KSHETRA W021.5 Full-Mandate Unified Verification Manifest (Directive 142)',
     governingAuthority: 'Master Execution Framework Amendment v1.6 / Rule IV-001 Non-Self-Acceptance',
     repository: 'https://github.com/kshetra-app/Kshetra.git',
     branch: gitBranch,

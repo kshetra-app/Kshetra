@@ -114,6 +114,14 @@ describe('CTO Directive 141 Section 5: Authoritative Database Identity Reconcili
       assert.strictEqual(res.passed, true);
       assert.strictEqual(res.lifecycleState, 'PREPARED_AND_RECONCILED_IN_REPOSITORY');
     });
+
+    it('6. Verifies both retainedId and discardedId for all 36 duplicate declarations match natural keys', () => {
+      assert.strictEqual(res.metrics.matchedDeclaredDuplicates, 36);
+      assert.strictEqual(res.metrics.accountedDuplicateTuples, 36);
+      assert.strictEqual(res.duplicatesAnalysis.duplicateDeclarationsCount, 36);
+      assert.strictEqual(res.duplicatesAnalysis.verifiedDuplicatePairsCount, 36);
+      assert.strictEqual(res.duplicatesAnalysis.allResolved, true);
+    });
   });
 
   // ─── 3. CRIT-E01-02: CONSTITUENCY DEMOGRAPHICS BASELINE ────────────────────
@@ -134,6 +142,29 @@ describe('CTO Directive 141 Section 5: Authoritative Database Identity Reconcili
       assert.strictEqual(res.metrics.demographicBoundsViolations, 0);
       assert.strictEqual(res.passed, true);
       assert.strictEqual(res.lifecycleState, 'PREPARED_AND_RECONCILED_IN_REPOSITORY');
+    });
+
+    it('3. Reconciles 4,123 statutory seats against 4,142 manifest records: 4,123 - 134 + 153 = 4,142', () => {
+      assert.strictEqual(res.metrics.statutoryAssemblyTarget, 4123);
+      assert.strictEqual(res.metrics.demographicManifestRecordCount, 4142);
+      assert.strictEqual(res.metrics.extraNonStatutoryCount, 153);
+      assert.strictEqual(res.metrics.missingStatutoryCount, 134);
+      assert.strictEqual(res.metrics.matchedCount, 3989);
+      assert.strictEqual(res.reconciliationAnalysis.delhiNonStatutoryExcess, 151);
+      assert.strictEqual(res.reconciliationAnalysis.himachalNonStatutoryExcess, 2);
+      assert.strictEqual(
+        res.metrics.statutoryAssemblyTarget - res.metrics.missingStatutoryCount + res.metrics.extraNonStatutoryCount,
+        4142
+      );
+    });
+
+    it('4. Verifies field integrity (0 missing, 0 null, 0 non-numeric, 0 out-of-range) and preserves DQ-W021.5-B2.2E-001', () => {
+      assert.strictEqual(res.metrics.fieldIntegrity.missingFieldsCount, 0);
+      assert.strictEqual(res.metrics.fieldIntegrity.nullFieldsCount, 0);
+      assert.strictEqual(res.metrics.fieldIntegrity.nonNumericFieldsCount, 0);
+      assert.strictEqual(res.metrics.fieldIntegrity.outOfRangeFieldsCount, 0);
+      assert.strictEqual(res.metrics.fieldIntegrity.mizoramGapCount, 5);
+      assert.match(res.reconciliationAnalysis.mizoramBaselineGapDefect, /DQ-W021\.5-B2\.2E-001/);
     });
   });
 
@@ -167,6 +198,21 @@ describe('CTO Directive 141 Section 5: Authoritative Database Identity Reconcili
       assert.strictEqual(res.metrics.eliminatedDestructiveDeletes, true);
       assert.strictEqual(res.passed, true);
       assert.strictEqual(res.lifecycleState, 'PREPARED_AND_RECONCILED_IN_REPOSITORY');
+    });
+
+    it('6. Preserves null for missing margin and votes rather than fabricating zeroes', () => {
+      const row = mapHistoricalCoverageToResultRow({
+        acNo: 1,
+        winner: 'JKPDP',
+        winnerName: 'Raja Manzoor Ahmad',
+        winnerVotes: null,
+        margin: null
+      }, 101, 'JK');
+
+      assert.strictEqual(row.winner_votes, null);
+      assert.strictEqual(row.margin, null);
+      assert.notStrictEqual(row.winner_votes, 0);
+      assert.notStrictEqual(row.margin, 0);
     });
   });
 
@@ -215,6 +261,39 @@ describe('CTO Directive 141 Section 5: Authoritative Database Identity Reconcili
       );
 
       fs.rmSync(tempDir, { recursive: true, force: true });
+    });
+
+    it('5. Fails closed if votes is negative or non-numeric', () => {
+      assert.throws(
+        () => mapHistoricalCoverageToResultRow({ acNo: 1, winner: 'BJP', winnerName: 'Valid Name', winnerVotes: -5 }, 101, 'JK'),
+        /DATA_TRUTH_VIOLATION.*invalid non-numeric or negative winner votes/
+      );
+      assert.throws(
+        () => mapHistoricalCoverageToResultRow({ acNo: 1, winner: 'BJP', winnerName: 'Valid Name', winnerVotes: NaN }, 101, 'JK'),
+        /DATA_TRUTH_VIOLATION.*invalid non-numeric or negative winner votes/
+      );
+    });
+
+    it('6. Fails closed if margin is negative or non-numeric', () => {
+      assert.throws(
+        () => mapHistoricalCoverageToResultRow({ acNo: 1, winner: 'BJP', winnerName: 'Valid Name', margin: -10 }, 101, 'JK'),
+        /DATA_TRUTH_VIOLATION.*invalid non-numeric or negative margin/
+      );
+      assert.throws(
+        () => mapHistoricalCoverageToResultRow({ acNo: 1, winner: 'BJP', winnerName: 'Valid Name', margin: 'large' }, 101, 'JK'),
+        /DATA_TRUTH_VIOLATION.*invalid non-numeric or negative margin/
+      );
+    });
+
+    it('7. Fails closed on placeholder candidate name "WINNER" or placeholder party "OTH"', () => {
+      assert.throws(
+        () => mapHistoricalCoverageToResultRow({ acNo: 1, winner: 'OTH', winnerName: 'Valid Candidate' }, 101, 'JK'),
+        /DATA_TRUTH_VIOLATION.*invalid placeholder party "OTH"/
+      );
+      assert.throws(
+        () => mapHistoricalCoverageToResultRow({ acNo: 1, winner: 'BJP', winnerName: 'WINNER' }, 101, 'JK'),
+        /DATA_TRUTH_VIOLATION.*invalid placeholder candidate name "WINNER"/
+      );
     });
   });
 

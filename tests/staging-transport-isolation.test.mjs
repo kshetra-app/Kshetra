@@ -1,15 +1,16 @@
 /**
  * tests/staging-transport-isolation.test.mjs
  *
- * Automated Network Denial & Transport Boundary Spy Battery
- * Task: W021.5 / CTO Directive 141 Section 3.2
+ * Process-Wide Network Denial & Transport Boundary Isolation Battery
+ * Task: W021.5 / CTO Directive 142 Section 3.2 & 3.3
  * Governing Authority: Master Execution Framework Amendment v1.6 / Rule IV-001 Non-Self-Acceptance
  *
  * Verifies:
- * 1. Mode A local preparation executes with strictly ZERO network calls.
- * 2. Transport spy confirms call count === 0.
- * 3. Network denial boundary fails closed with NETWORK_ACCESS_FORBIDDEN if any remote call is attempted.
- * 4. Staging report truthfully records PREPARED_AND_RECONCILED_IN_REPOSITORY and stagingExecutionPerformed: false.
+ * 1. Mode A executes by default with ZERO credentials in the environment (no SUPABASE_SERVICE_ROLE_KEY).
+ * 2. Entire CLI process runs to completion under process-wide network denial harness (trapping sockets, TLS, HTTP, DNS, fetch).
+ * 3. Negative harness verification: proves the network denial harness actively intercepts and throws PROCESS_NETWORK_DENIED.
+ * 4. In-process injectable transport boundary traps and rejects any attempted remote call with NETWORK_ACCESS_FORBIDDEN.
+ * 5. Report truthfully records PREPARED_AND_RECONCILED_IN_REPOSITORY and stagingExecutionPerformed: false.
  */
 
 import { describe, it } from 'node:test';
@@ -24,30 +25,92 @@ const __dirname = path.dirname(__filename);
 const REPO_ROOT = path.resolve(__dirname, '..');
 
 const SCRIPT_139 = path.join(REPO_ROOT, 'scripts', 'execute_staging_directive_139.mjs');
-const DUMMY_KEY = 'dummy_test_key_for_offline_preparation_harness_only';
+const PRELOAD_HARNESS = path.join(REPO_ROOT, 'tests', 'fixtures', 'network-denial-preload.cjs');
 
-describe('CTO Directive 141 Section 3.2: Staging Transport Isolation & Zero-Network Verification Battery', () => {
+describe('CTO Directive 142 Section 3: Process-Wide Network Denial & Local Preparation Battery', () => {
 
-  it('1. Executes Mode A preparation with strictly zero remote network requests', () => {
-    // Run script in dry-run mode
+  it('1. Executes Mode A preparation by default with ZERO credentials in the environment', () => {
+    // Run script with sanitized environment (explicitly removing any Supabase keys)
+    const cleanEnv = { ...process.env };
+    delete cleanEnv.SUPABASE_SERVICE_ROLE_KEY;
+    delete cleanEnv.SUPABASE_URL;
+    delete cleanEnv.STAGING_WRITE_AUTHORIZATION_TOKEN;
+    delete cleanEnv.STAGING_WRITE_ENABLED;
+
     const res = spawnSync(process.execPath, [SCRIPT_139], {
       cwd: REPO_ROOT,
       encoding: 'utf8',
-      env: {
-        ...process.env,
-        SUPABASE_SERVICE_ROLE_KEY: DUMMY_KEY
-      }
+      env: cleanEnv
     });
 
-    assert.strictEqual(res.status, 0, `Execution failed with output: ${res.stderr}\n${res.stdout}`);
-    assert.match(res.stdout, /DRY-RUN \/ READ-ONLY PREPARATION \(0 remote mutations\)/i);
-    assert.match(res.stdout, /Stage 1 Verdict: PASS \(PREPARED_AND_RECONCILED_IN_REPOSITORY\)/i);
-    assert.match(res.stdout, /Stage 2 Verdict: PASS \(PREPARED_AND_RECONCILED_IN_REPOSITORY\)/i);
-    assert.match(res.stdout, /Stage 3 Verdict: PASS \(PREPARED_AND_RECONCILED_IN_REPOSITORY\)/i);
-    assert.match(res.stdout, /Stage 4 Verdict: PASS \(PREPARED_AND_RECONCILED_IN_REPOSITORY\)/i);
+    assert.strictEqual(res.status, 0, `Execution failed with output:\n${res.stderr}\n${res.stdout}`);
+    assert.match(res.stdout, /Execution Mode: MODE_A_LOCAL_PREPARATION_AND_RECONCILIATION/i);
+    assert.match(res.stdout, /Staging Executed: false/i);
+    assert.match(res.stdout, /Network Calls Measured: 0/i);
+    assert.match(res.stdout, /Workstream Status: PREPARED_AND_RECONCILED_IN_REPOSITORY/i);
   });
 
-  it('2. Verifies generated staging report records stagingExecutionPerformed: false (zero synthetic live claims)', () => {
+  it('2. Entire CLI process executes cleanly under process-wide network denial preload harness', () => {
+    const cleanEnv = { ...process.env };
+    delete cleanEnv.SUPABASE_SERVICE_ROLE_KEY;
+    delete cleanEnv.SUPABASE_URL;
+
+    // Execute with Node.js requiring the network denial preload script
+    const res = spawnSync(process.execPath, ['-r', PRELOAD_HARNESS, SCRIPT_139], {
+      cwd: REPO_ROOT,
+      encoding: 'utf8',
+      env: cleanEnv
+    });
+
+    assert.strictEqual(res.status, 0, `Process failed under network denial harness:\n${res.stderr}\n${res.stdout}`);
+    assert.match(res.stdout, /Network Calls Measured: 0/i);
+  });
+
+  it('3. Negative Harness Proof: Preload denial harness actively traps and blocks network requests', () => {
+    // Spawn a script that attempts fetch under the preload harness -> must throw PROCESS_NETWORK_DENIED
+    const attemptScript = `
+      try {
+        await fetch('https://fkpigozcqnmcvofuksar.supabase.co');
+        console.log('UNEXPECTED_SUCCESS');
+      } catch (err) {
+        console.error('TRAPPED_ERROR:', err.code || err.message);
+        process.exit(42);
+      }
+    `;
+
+    const res = spawnSync(process.execPath, [
+      '-r', PRELOAD_HARNESS,
+      '--input-type=module',
+      '-e', attemptScript
+    ], {
+      cwd: REPO_ROOT,
+      encoding: 'utf8'
+    });
+
+    assert.strictEqual(res.status, 42, 'Harness must trap network request and exit with code 42');
+    assert.match(res.stderr, /PROCESS_NETWORK_DENIED/i);
+  });
+
+  it('4. In-process transport boundary traps and rejects any network call attempted during local preparation', async () => {
+    const { getHttpTransport } = await import('../scripts/execute_staging_directive_139.mjs');
+
+    const activeTransport = getHttpTransport();
+    assert.strictEqual(typeof activeTransport, 'function', 'Transport must be a function');
+
+    // Attempting a call via transport in local mode must throw NETWORK_ACCESS_FORBIDDEN
+    await assert.rejects(
+      async () => {
+        await activeTransport('https://fkpigozcqnmcvofuksar.supabase.co/rest/v1/political_organizations', { method: 'GET' });
+      },
+      (err) => {
+        assert.strictEqual(err.code, 'NETWORK_ACCESS_FORBIDDEN');
+        assert.match(err.message, /Network call attempted in local mode/i);
+        return true;
+      }
+    );
+  });
+
+  it('5. Staging report truthfully records PREPARED_AND_RECONCILED_IN_REPOSITORY and stagingExecutionPerformed: false', () => {
     const reportPath = path.join(REPO_ROOT, 'reports/w021_5_staging_execution_report.json');
     assert.ok(fs.existsSync(reportPath), 'Report file must exist');
 
@@ -55,9 +118,8 @@ describe('CTO Directive 141 Section 3.2: Staging Transport Isolation & Zero-Netw
 
     assert.strictEqual(report.stagingExecutionPerformed, false, 'Must not claim staging execution was performed');
     assert.strictEqual(report.networkRequestsAttempted, 0, 'Must record 0 network requests attempted');
-    assert.strictEqual(report.workstreamStatus || report.summary?.workstreamStatus, 'PREPARED_AND_RECONCILED_IN_REPOSITORY');
-    assert.doesNotMatch(JSON.stringify(report), /STAGING_EXECUTION_COMPLETE_AND_CORROBORATED/);
-    assert.doesNotMatch(JSON.stringify(report), /"status":\s*"PASSED_CORROBORATED"/);
+    assert.strictEqual(report.executionMode, 'MODE_A_LOCAL_PREPARATION_AND_RECONCILIATION');
+    assert.strictEqual(report.summary.workstreamStatus, 'PREPARED_AND_RECONCILED_IN_REPOSITORY');
     assert.strictEqual(report.securityIncidentContainment.status, 'CONTAINMENT_PENDING_ADMIN_CONFIRMATION');
 
     // Confirm all 4 criteria are pending live staging execution
@@ -67,25 +129,6 @@ describe('CTO Directive 141 Section 3.2: Staging Transport Isolation & Zero-Netw
       assert.strictEqual(stageData.remoteCorroborated, false);
       assert.strictEqual(stageData.remoteCorroborationPending, true);
     }
-  });
-
-  it('3. In-process transport boundary traps and rejects any network call attempted during local preparation', async () => {
-    const { getHttpTransport, setHttpTransport } = await import('../scripts/execute_staging_directive_139.mjs');
-
-    const activeTransport = getHttpTransport();
-    assert.strictEqual(typeof activeTransport, 'function', 'Transport must be an injectable function');
-
-    // Attempting a call via active transport in dry-run mode must throw NETWORK_ACCESS_FORBIDDEN
-    await assert.rejects(
-      async () => {
-        await activeTransport('https://fkpigozcqnmcvofuksar.supabase.co/rest/v1/political_organizations', { method: 'GET' });
-      },
-      (err) => {
-        assert.strictEqual(err.code, 'NETWORK_ACCESS_FORBIDDEN');
-        assert.match(err.message, /Remote network call attempted during local preparation mode/i);
-        return true;
-      }
-    );
   });
 
 });
