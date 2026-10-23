@@ -1,7 +1,7 @@
 {
   "generator": "scripts/execute_staging_directive_139.mjs",
   "directive": "CTO Directive 143 / Local Remediation & Staging Execution Readiness",
-  "timestamp": "2026-10-23T05:32:52.861Z",
+  "timestamp": "2026-10-23T05:39:25.222Z",
   "governingAuthority": "Master Execution Framework Amendment v1.6 / Rule IV-001 Non-Self-Acceptance",
   "stagingProjectRef": "fkpigozcqnmcvofuksar",
   "productionProjectRef": "ehfafcnimmjusyvplbah (AIR-GAPPED — 0 QUERIES, 0 MUTATIONS)",
@@ -53,8 +53,8 @@
       ],
       "conflictTarget": "id",
       "rowsAffected": 0,
-      "startedAt": "2026-10-23T05:32:52.684Z",
-      "completedAt": "2026-10-23T05:32:52.692Z",
+      "startedAt": "2026-10-23T05:39:24.857Z",
+      "completedAt": "2026-10-23T05:39:24.874Z",
       "metrics": {
         "canonicalOrganizations": 107,
         "uniqueOrgIds": 107,
@@ -98,8 +98,8 @@
       ],
       "conflictTarget": "person_id,election_year,election_type,constituency_id",
       "rowsAffected": 0,
-      "startedAt": "2026-10-23T05:32:52.692Z",
-      "completedAt": "2026-10-23T05:32:52.746Z",
+      "startedAt": "2026-10-23T05:39:24.874Z",
+      "completedAt": "2026-10-23T05:39:24.990Z",
       "metrics": {
         "totalSubchunks": 10,
         "subchunkIds": [
@@ -143,8 +143,8 @@
       ],
       "conflictTarget": "constituency_id,election_year",
       "rowsAffected": 0,
-      "startedAt": "2026-10-23T05:32:52.746Z",
-      "completedAt": "2026-10-23T05:32:52.794Z",
+      "startedAt": "2026-10-23T05:39:24.990Z",
+      "completedAt": "2026-10-23T05:39:25.082Z",
       "metrics": {
         "totalConstituencies": 4123,
         "statutoryAssemblyTarget": 4123,
@@ -217,8 +217,8 @@
       ],
       "conflictTarget": "election_id,constituency_id",
       "rowsAffected": 0,
-      "startedAt": "2026-10-23T05:32:52.794Z",
-      "completedAt": "2026-10-23T05:32:52.861Z",
+      "startedAt": "2026-10-23T05:39:25.082Z",
+      "completedAt": "2026-10-23T05:39:25.222Z",
       "metrics": {
         "totalStatesCovered": 23,
         "totalHistoricalElectionRecords": 2243,
