@@ -18,7 +18,7 @@
  * 10. Local Mode A runs with zero credentials and network-denial harness enabled.
  */
 
-import { describe, it, beforeEach } from 'node:test';
+import { describe, it, beforeEach, afterEach } from 'node:test';
 import assert from 'node:assert';
 import path from 'node:path';
 import crypto from 'node:crypto';
@@ -30,12 +30,16 @@ import {
   executeStage2Staging,
   executeStage3Staging,
   executeStage4Staging,
+  createStagingHttpTransport,
+  __test_only_adapters__,
   ALLOWED_STAGING_HOSTNAME,
-  ALLOWED_STAGING_PROJECT_REF
+  ALLOWED_STAGING_PROJECT_REF,
+  PROHIBITED_PRODUCTION_REF
 } from '../scripts/execute_staging_directive_139.mjs';
 
 import {
   generateTestKeyPair,
+  generateTestAdminKeyPair,
   createTestSignedAuthorizationToken,
   createTestAdminClosureRecord
 } from './helpers/stagingAuthTestHelper.mjs';
@@ -50,17 +54,24 @@ const TEST_STORE_PATH = path.join(REPO_ROOT, '.kshetra_runtime', 'test_mode_b_re
 
 describe('CTO Directive 143 Section 7: Mode B Staging Execution Adversarial Battery', () => {
   let ed25519Keys;
+  let adminKeys;
   let validAdminClosure;
   let canonicalPlanDigest;
 
   beforeEach(() => {
     ed25519Keys = generateTestKeyPair('Ed25519');
+    adminKeys = generateTestAdminKeyPair('Ed25519');
+    process.env.KSHETRA_ADMIN_PUBLIC_KEY = adminKeys.publicKeyPem;
     clearReplayStore({ storePath: TEST_STORE_PATH });
-    validAdminClosure = createTestAdminClosureRecord();
+    validAdminClosure = createTestAdminClosureRecord({}, adminKeys.privateKeyPem);
     canonicalPlanDigest = computeExecutionPlanDigest({
       repoRoot: REPO_ROOT,
       targetProjectRef: ALLOWED_STAGING_PROJECT_REF
     });
+  });
+
+  afterEach(() => {
+    delete process.env.KSHETRA_ADMIN_PUBLIC_KEY;
   });
 
   it('1. Fails closed with ROW_COUNT_MISMATCH when mock transport returns fewer rows than expected', async () => {
@@ -222,13 +233,13 @@ describe('CTO Directive 143 Section 7: Mode B Staging Execution Adversarial Batt
     assert.strictEqual(report.stages.stage3_constituency_demographics.status, 'EXECUTED_PENDING_INDEPENDENT_CORROBORATION');
     assert.strictEqual(report.stages.stage3_constituency_demographics.conflictTarget, 'constituency_id,election_year');
 
-    // Stage 4: 1 PostgREST request for election_results (2,243 rows)
-    assert.strictEqual(report.stages.stage4_historical_election_results.rowsAffected, 2243);
-    assert.strictEqual(report.stages.stage4_historical_election_results.status, 'EXECUTED_PENDING_INDEPENDENT_CORROBORATION');
+    // Stage 4: Historical election results blocked from staging (Directive 144: zero synthetic data)
+    assert.strictEqual(report.stages.stage4_historical_election_results.rowsAffected, 0);
+    assert.strictEqual(report.stages.stage4_historical_election_results.status, 'BLOCKED_NOT_DEPLOYABLE');
     assert.strictEqual(report.stages.stage4_historical_election_results.conflictTarget, 'election_id,constituency_id');
 
     // Verify all intercepted requests
-    assert.strictEqual(interceptedRequests.length, 11, 'Must send exactly 11 PostgREST requests (8 in Stage 1 + 1 in Stage 2 + 1 in Stage 3 + 1 in Stage 4)');
+    assert.strictEqual(interceptedRequests.length, 10, 'Must send exactly 10 PostgREST requests (8 in Stage 1 + 1 in Stage 2 + 1 in Stage 3; Stage 4 blocked)');
 
     for (const req of interceptedRequests) {
       assert.ok(req.url.startsWith(`https://${ALLOWED_STAGING_HOSTNAME}/rest/v1/`), `Must target allow-listed staging host: ${req.url}`);
@@ -485,6 +496,169 @@ describe('CTO Directive 143 Section 7: Mode B Staging Execution Adversarial Batt
     assert.strictEqual(report.stages.stage1_political_organizations.status, 'PREPARED_AND_RECONCILED_IN_REPOSITORY');
     assert.strictEqual(report.stages.stage2_candidacies.status, 'PREPARED_AND_RECONCILED_IN_REPOSITORY');
     assert.strictEqual(report.stages.stage3_constituency_demographics.status, 'PREPARED_AND_RECONCILED_IN_REPOSITORY');
-    assert.strictEqual(report.stages.stage4_historical_election_results.status, 'PREPARED_AND_RECONCILED_IN_REPOSITORY');
+    assert.strictEqual(report.stages.stage4_historical_election_results.status, 'BLOCKED_NOT_DEPLOYABLE');
+  });
+
+  // 11. Workstream A: Public Operational Access Elimination & Mandatory Internal Context
+  it('11. Direct invocation of individual stage functions without internal context token fails closed (UNAUTHORIZED_STAGE_INVOCATION)', async () => {
+    await assert.rejects(
+      async () => executeStage1Staging({}),
+      (err) => {
+        assert.strictEqual(err.code, 'UNAUTHORIZED_STAGE_INVOCATION');
+        return true;
+      }
+    );
+
+    await assert.rejects(
+      async () => executeStage2Staging({}),
+      (err) => {
+        assert.strictEqual(err.code, 'UNAUTHORIZED_STAGE_INVOCATION');
+        return true;
+      }
+    );
+
+    await assert.rejects(
+      async () => executeStage3Staging({}),
+      (err) => {
+        assert.strictEqual(err.code, 'UNAUTHORIZED_STAGE_INVOCATION');
+        return true;
+      }
+    );
+
+    await assert.rejects(
+      async () => executeStage4Staging({}),
+      (err) => {
+        assert.strictEqual(err.code, 'UNAUTHORIZED_STAGE_INVOCATION');
+        return true;
+      }
+    );
+  });
+
+  // 12. Workstream A: Test-Only Adapters Functionality
+  it('12. __test_only_adapters__ allows isolated testing of stage functions with explicit test adapter', async () => {
+    const mockTransport = async (url, options = {}) => {
+      const rows = JSON.parse(options.body);
+      return {
+        ok: true,
+        status: 200,
+        text: async () => JSON.stringify(rows)
+      };
+    };
+
+    const testCtx = __test_only_adapters__.createTestExecutionContext({
+      transport: mockTransport,
+      targetHost: `https://${ALLOWED_STAGING_HOSTNAME}`
+    });
+
+    const res1 = await __test_only_adapters__.executeStage1({
+      internalContext: testCtx
+    });
+    assert.strictEqual(res1.status, 'EXECUTED_PENDING_INDEPENDENT_CORROBORATION');
+    assert.strictEqual(res1.rowsAffected, 1209);
+  });
+
+  // 13. Workstream A: Production-Host Rejection in Actual Transport Layer
+  it('13. Transport layer unconditionally rejects target URLs referencing production Supabase (PRODUCTION_HOST_FORBIDDEN)', async () => {
+    const prohibitedProdUrl = `https://${PROHIBITED_PRODUCTION_REF}.supabase.co/rest/v1/political_organizations`;
+    const transport = createStagingHttpTransport();
+
+    await assert.rejects(
+      async () => {
+        await transport(prohibitedProdUrl, {
+          method: 'POST',
+          body: JSON.stringify([{ id: 'test' }])
+        });
+      },
+      (err) => {
+        assert.strictEqual(err.code, 'PRODUCTION_HOST_FORBIDDEN');
+        assert.match(err.message, /Strictly (?:prohibited|forbidden) under air-gap governance/);
+        return true;
+      }
+    );
+  });
+
+  // 14. Workstream A: Unauthorized Staging Host Rejection in Transport Layer
+  it('14. Transport layer unconditionally rejects non-staging destination URLs (UNAUTHORIZED_STAGING_HOST)', async () => {
+    const unauthorizedUrl = 'https://malicious-collector.attacker.com/rest/v1/political_organizations';
+    const transport = createStagingHttpTransport();
+
+    await assert.rejects(
+      async () => {
+        await transport(unauthorizedUrl, {
+          method: 'POST',
+          body: JSON.stringify([{ id: 'test' }])
+        });
+      },
+      (err) => {
+        assert.strictEqual(err.code, 'UNAUTHORIZED_STAGING_HOST');
+        return true;
+      }
+    );
+  });
+
+  // 15. Workstream A: Insecure Protocol Rejection in Transport Layer
+  it('15. Transport layer unconditionally rejects non-https URLs (INSECURE_PROTOCOL)', async () => {
+    const insecureUrl = `http://${ALLOWED_STAGING_HOSTNAME}/rest/v1/political_organizations`;
+    const transport = createStagingHttpTransport();
+
+    await assert.rejects(
+      async () => {
+        await transport(insecureUrl, {
+          method: 'POST',
+          body: JSON.stringify([{ id: 'test' }])
+        });
+      },
+      (err) => {
+        assert.strictEqual(err.code, 'INSECURE_PROTOCOL');
+        return true;
+      }
+    );
+  });
+
+  // 16. Workstream A: Caller-Supplied Plan Digest Override Prohibited
+  it('16. Caller-supplied options.planDigest cannot override internally computed execution plan digest (PLAN_DIGEST_OVERRIDE_PROHIBITED)', async () => {
+    const token = createTestSignedAuthorizationToken({
+      plan_digest: canonicalPlanDigest
+    }, ed25519Keys.privateKeyPem);
+
+    const forgedDigest = '0000000000000000000000000000000000000000000000000000000000000000';
+
+    await assert.rejects(
+      async () => {
+        await runStagingExecutionEngine({
+          mode: 'staging',
+          serviceKey: 'test_service_key',
+          authToken: token,
+          planDigest: forgedDigest, // Attempted override
+          trustAnchor: ed25519Keys.publicKeyPem,
+          storePath: TEST_STORE_PATH,
+          adminClosureRecord: validAdminClosure
+        });
+      },
+      (err) => {
+        assert.strictEqual(err.code, 'PLAN_DIGEST_OVERRIDE_PROHIBITED');
+        return true;
+      }
+    );
+  });
+
+  // 17. Workstream A: Plan Digest Dynamism & Sensitivity
+  it('17. Changing transformation code or source artifacts changes the computed execution plan digest', () => {
+    const digestA = computeExecutionPlanDigest({
+      repoRoot: REPO_ROOT,
+      targetProjectRef: ALLOWED_STAGING_PROJECT_REF
+    });
+
+    // Altering project ref changes digest
+    const digestB = computeExecutionPlanDigest({
+      repoRoot: REPO_ROOT,
+      targetProjectRef: 'other_staging_project'
+    });
+
+    assert.notStrictEqual(digestA, digestB, 'Digest must be bound to project ref');
+    assert.strictEqual(typeof digestA, 'string');
+    assert.strictEqual(digestA.length, 64);
+    assert.strictEqual(typeof digestB, 'string');
+    assert.strictEqual(digestB.length, 64);
   });
 });

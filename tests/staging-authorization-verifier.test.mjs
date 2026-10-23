@@ -45,6 +45,7 @@ import {
 
 import {
   generateTestKeyPair,
+  generateTestAdminKeyPair,
   createTestSignedAuthorizationToken,
   createTestAdminClosureRecord,
   base64UrlEncode
@@ -59,18 +60,22 @@ const TEST_STORE_PATH = path.join(REPO_ROOT, '.kshetra_runtime', 'test_staging_r
 describe('CTO Directive 143 / 142: Asymmetric Cryptographic Authorization & Anti-Replay Battery', () => {
   let ed25519Keys;
   let rs25519Keys;
+  let adminKeys;
   let testAdminRecord;
   let validPlanDigest;
 
   beforeEach(() => {
     ed25519Keys = generateTestKeyPair('Ed25519');
     rs25519Keys = generateTestKeyPair('RS256');
-    testAdminRecord = createTestAdminClosureRecord();
+    adminKeys = generateTestAdminKeyPair('Ed25519');
+    process.env.KSHETRA_ADMIN_PUBLIC_KEY = adminKeys.publicKeyPem;
+    testAdminRecord = createTestAdminClosureRecord({}, adminKeys.privateKeyPem);
     validPlanDigest = crypto.createHash('sha256').update('canonical-test-execution-plan').digest('hex');
     clearReplayStore({ storePath: TEST_STORE_PATH });
   });
 
   afterEach(() => {
+    delete process.env.KSHETRA_ADMIN_PUBLIC_KEY;
     clearReplayStore({ storePath: TEST_STORE_PATH });
     try {
       if (fs.existsSync(TEST_STORE_PATH)) fs.unlinkSync(TEST_STORE_PATH);
@@ -392,18 +397,18 @@ describe('CTO Directive 143 / 142: Asymmetric Cryptographic Authorization & Anti
         });
       },
       (err) => {
-        assert.strictEqual(err.code, 'TOKEN_NOT_YET_VALID');
+        assert.strictEqual(err.code, 'CONTRADICTORY_TIME_CLAIMS');
         return true;
       }
     );
   });
 
-  it('13. Rejects token with excessive lifetime (EXCESSIVE_TOKEN_LIFETIME)', () => {
+  it('13. Rejects token with excessive lifetime exceeding 3600s hard cap (EXCESSIVE_TOKEN_LIFETIME)', () => {
     const now = Date.now();
     const nowSec = Math.floor(now / 1000);
     const longToken = createTestSignedAuthorizationToken({
       iat: nowSec,
-      exp: nowSec + 90000, // > 86400s
+      exp: nowSec + 3601, // > 3600s
       plan_digest: validPlanDigest
     }, ed25519Keys.privateKeyPem);
 
@@ -413,7 +418,7 @@ describe('CTO Directive 143 / 142: Asymmetric Cryptographic Authorization & Anti
           token: longToken,
           trustAnchor: ed25519Keys.publicKeyPem,
           now,
-          maxLifetimeSeconds: 86400,
+          maxLifetimeSeconds: 3600,
           storePath: TEST_STORE_PATH,
           adminClosureRecord: testAdminRecord,
           requestedPlanDigest: validPlanDigest
@@ -492,10 +497,10 @@ describe('CTO Directive 143 / 142: Asymmetric Cryptographic Authorization & Anti
     );
   });
 
-  // 17. Fail-Closed Administrative Containment Gate (Directive 143 Section 5)
+  // 17. Fail-Closed Administrative Containment Gate (Directive 143 Section 5 & Directive 144 Workstream A)
   it('17. Fails closed when administrative incident closure record is unprovisioned (ADMIN_CONTAINMENT_UNCONFIRMED)', () => {
     const token = createTestSignedAuthorizationToken({
-      incident_closure_ref: 'INC-2026-UNCONFIRMED-REF',
+      incident_closure_ref: 'INC-2026-W021.5-ROTATION-VERIFIED',
       plan_digest: validPlanDigest
     }, ed25519Keys.privateKeyPem);
 
@@ -513,6 +518,219 @@ describe('CTO Directive 143 / 142: Asymmetric Cryptographic Authorization & Anti
         assert.strictEqual(err.code, 'ADMIN_CONTAINMENT_UNCONFIRMED');
         assert.strictEqual(err.status, 'CONTAINMENT_PENDING_ADMIN_CONFIRMATION');
         assert.ok(Array.isArray(err.unresolvedPrerequisites));
+        return true;
+      }
+    );
+  });
+
+  it('17a. Rejects unauthenticated plain JSON closure record without cryptographic signature (ADMIN_RECORD_UNAUTHENTICATED)', () => {
+    const token = createTestSignedAuthorizationToken({
+      plan_digest: validPlanDigest
+    }, ed25519Keys.privateKeyPem);
+
+    const unsignedRecord = createTestAdminClosureRecord({}, null, { unsigned: true });
+
+    assert.throws(
+      () => {
+        verifyStagingWriteAuthorization({
+          token,
+          trustAnchor: ed25519Keys.publicKeyPem,
+          storePath: TEST_STORE_PATH,
+          requestedPlanDigest: validPlanDigest,
+          adminClosureRecord: unsignedRecord
+        });
+      },
+      (err) => {
+        assert.strictEqual(err.code, 'ADMIN_RECORD_UNAUTHENTICATED');
+        return true;
+      }
+    );
+  });
+
+  it('17b. Rejects administrative closure record with tampered signature (INVALID_ADMIN_SIGNATURE)', () => {
+    const token = createTestSignedAuthorizationToken({
+      plan_digest: validPlanDigest
+    }, ed25519Keys.privateKeyPem);
+
+    const tamperedRecord = createTestAdminClosureRecord({}, adminKeys.privateKeyPem, {
+      signature: 'corrupted-tampered-signature-bytes'
+    });
+
+    assert.throws(
+      () => {
+        verifyStagingWriteAuthorization({
+          token,
+          trustAnchor: ed25519Keys.publicKeyPem,
+          storePath: TEST_STORE_PATH,
+          requestedPlanDigest: validPlanDigest,
+          adminClosureRecord: tamperedRecord
+        });
+      },
+      (err) => {
+        assert.strictEqual(err.code, 'INVALID_ADMIN_SIGNATURE');
+        return true;
+      }
+    );
+  });
+
+  it('17c. Rejects administrative closure record signed with untrusted administrator key (INVALID_ADMIN_SIGNATURE)', () => {
+    const rogueAdminKeys = generateTestAdminKeyPair('Ed25519');
+    const rogueSignedRecord = createTestAdminClosureRecord({}, rogueAdminKeys.privateKeyPem);
+
+    const token = createTestSignedAuthorizationToken({
+      plan_digest: validPlanDigest
+    }, ed25519Keys.privateKeyPem);
+
+    assert.throws(
+      () => {
+        verifyStagingWriteAuthorization({
+          token,
+          trustAnchor: ed25519Keys.publicKeyPem,
+          storePath: TEST_STORE_PATH,
+          requestedPlanDigest: validPlanDigest,
+          adminClosureRecord: rogueSignedRecord
+        });
+      },
+      (err) => {
+        assert.strictEqual(err.code, 'INVALID_ADMIN_SIGNATURE');
+        return true;
+      }
+    );
+  });
+
+  it('17d. Rejects administrative closure verification when admin trust anchor is unconfigured (ADMIN_TRUST_ANCHOR_UNCONFIGURED)', () => {
+    const oldAdminKey = process.env.KSHETRA_ADMIN_PUBLIC_KEY;
+    delete process.env.KSHETRA_ADMIN_PUBLIC_KEY;
+
+    const token = createTestSignedAuthorizationToken({
+      plan_digest: validPlanDigest
+    }, ed25519Keys.privateKeyPem);
+
+    try {
+      assert.throws(
+        () => {
+          verifyStagingWriteAuthorization({
+            token,
+            trustAnchor: ed25519Keys.publicKeyPem,
+            storePath: TEST_STORE_PATH,
+            requestedPlanDigest: validPlanDigest,
+            adminClosureRecord: testAdminRecord,
+            adminTrustAnchor: undefined,
+            adminKeyPath: path.join(REPO_ROOT, 'non_existent_admin_key.pem')
+          });
+        },
+        (err) => {
+          assert.strictEqual(err.code, 'ADMIN_TRUST_ANCHOR_UNCONFIGURED');
+          return true;
+        }
+      );
+    } finally {
+      if (oldAdminKey) process.env.KSHETRA_ADMIN_PUBLIC_KEY = oldAdminKey;
+    }
+  });
+
+  it('17e. Rejects administrative closure record with mismatched incident reference (ADMIN_RECORD_MISMATCH)', () => {
+    // Both are valid canonical incident IDs, but they differ between token and admin record
+    const mismatchedIncidentRecord = createTestAdminClosureRecord({
+      incidentId: 'SEC-INC-2026-10-21-001'
+    }, adminKeys.privateKeyPem);
+
+    const token = createTestSignedAuthorizationToken({
+      incident_closure_ref: 'INC-2026-W021.5-ROTATION-VERIFIED',
+      plan_digest: validPlanDigest
+    }, ed25519Keys.privateKeyPem);
+
+    assert.throws(
+      () => {
+        verifyStagingWriteAuthorization({
+          token,
+          trustAnchor: ed25519Keys.publicKeyPem,
+          storePath: TEST_STORE_PATH,
+          requestedPlanDigest: validPlanDigest,
+          adminClosureRecord: mismatchedIncidentRecord
+        });
+      },
+      (err) => {
+        assert.strictEqual(err.code, 'ADMIN_RECORD_MISMATCH');
+        return true;
+      }
+    );
+  });
+
+  it('17e2. Rejects authorization token with unrecognized incident ID (INVALID_INCIDENT_ID)', () => {
+    const invalidIncidentRecord = createTestAdminClosureRecord({
+      incidentId: 'INC-2026-UNRECOGNIZED-INCIDENT'
+    }, adminKeys.privateKeyPem);
+
+    const token = createTestSignedAuthorizationToken({
+      incident_closure_ref: 'INC-2026-UNRECOGNIZED-INCIDENT',
+      plan_digest: validPlanDigest
+    }, ed25519Keys.privateKeyPem);
+
+    assert.throws(
+      () => {
+        verifyStagingWriteAuthorization({
+          token,
+          trustAnchor: ed25519Keys.publicKeyPem,
+          storePath: TEST_STORE_PATH,
+          requestedPlanDigest: validPlanDigest,
+          adminClosureRecord: invalidIncidentRecord
+        });
+      },
+      (err) => {
+        assert.strictEqual(err.code, 'INVALID_INCIDENT_ID');
+        return true;
+      }
+    );
+  });
+
+  it('17f. Rejects administrative closure record with future certifiedAt timestamp (INVALID_CERTIFICATION_TIMESTAMP)', () => {
+    const futureCertifiedRecord = createTestAdminClosureRecord({}, adminKeys.privateKeyPem, {
+      certifiedAt: new Date(Date.now() + 86400000).toISOString()
+    });
+
+    const token = createTestSignedAuthorizationToken({
+      plan_digest: validPlanDigest
+    }, ed25519Keys.privateKeyPem);
+
+    assert.throws(
+      () => {
+        verifyStagingWriteAuthorization({
+          token,
+          trustAnchor: ed25519Keys.publicKeyPem,
+          storePath: TEST_STORE_PATH,
+          requestedPlanDigest: validPlanDigest,
+          adminClosureRecord: futureCertifiedRecord
+        });
+      },
+      (err) => {
+        assert.strictEqual(err.code, 'INVALID_CERTIFICATION_TIMESTAMP');
+        return true;
+      }
+    );
+  });
+
+  it('17g. Rejects administrative closure record where credential rotation or audit is incomplete (ADMIN_CONTAINMENT_UNCONFIRMED)', () => {
+    const incompleteRecord = createTestAdminClosureRecord({
+      jwtSecretRotated: false
+    }, adminKeys.privateKeyPem);
+
+    const token = createTestSignedAuthorizationToken({
+      plan_digest: validPlanDigest
+    }, ed25519Keys.privateKeyPem);
+
+    assert.throws(
+      () => {
+        verifyStagingWriteAuthorization({
+          token,
+          trustAnchor: ed25519Keys.publicKeyPem,
+          storePath: TEST_STORE_PATH,
+          requestedPlanDigest: validPlanDigest,
+          adminClosureRecord: incompleteRecord
+        });
+      },
+      (err) => {
+        assert.strictEqual(err.code, 'ADMIN_CONTAINMENT_UNCONFIRMED');
         return true;
       }
     );
@@ -675,6 +893,7 @@ describe('CTO Directive 143 / 142: Asymmetric Cryptographic Authorization & Anti
       encoding: 'utf8',
       env: {
         ...process.env,
+        KSHETRA_ADMIN_PUBLIC_KEY: adminKeys.publicKeyPem,
         TEST_TOKEN: token,
         TEST_KEY: ed25519Keys.publicKeyPem,
         TEST_STORE: TEST_STORE_PATH,
@@ -693,6 +912,7 @@ describe('CTO Directive 143 / 142: Asymmetric Cryptographic Authorization & Anti
           stdio: ['ignore', 'pipe', 'pipe'],
           env: {
             ...process.env,
+            KSHETRA_ADMIN_PUBLIC_KEY: adminKeys.publicKeyPem,
             TEST_TOKEN: token,
             TEST_KEY: ed25519Keys.publicKeyPem,
             TEST_STORE: TEST_STORE_PATH,

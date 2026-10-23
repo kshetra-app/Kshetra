@@ -56,6 +56,92 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const REPO_ROOT = path.resolve(__dirname, '..');
 
+/**
+ * Deterministically generates an RFC 4122 v5 UUID from an arbitrary seed string
+ * Ensures idempotent child table inserts without duplicate records.
+ */
+export function deterministicUuid(seed) {
+  const hash = crypto.createHash('sha256').update(seed).digest('hex');
+  const p1 = hash.slice(0, 8);
+  const p2 = hash.slice(8, 12);
+  const p3 = '5' + hash.slice(13, 16);
+  const p4 = ((parseInt(hash.slice(16, 18), 16) & 0x3f) | 0x80).toString(16).padStart(2, '0') + hash.slice(18, 20);
+  const p5 = hash.slice(20, 32);
+  return `${p1}-${p2}-${p3}-${p4}-${p5}`;
+}
+
+/**
+ * Robust SQL row tuple tokenizer (Directive 144 requirement 6)
+ * Preserves quoted strings (including '' escapes), numbers, booleans, dates,
+ * handles NULL / NULL::type without column shifting, and strips Postgres casts.
+ */
+export function parseSqlTuple(line) {
+  const trimmed = line.trim();
+  const startIdx = trimmed.indexOf('(');
+  const endIdx = trimmed.lastIndexOf(')');
+  if (startIdx === -1 || endIdx === -1 || endIdx <= startIdx) {
+    throw new Error(`MALFORMED_SQL_TUPLE: Could not find enclosing parentheses in "${trimmed}"`);
+  }
+  const inner = trimmed.substring(startIdx + 1, endIdx);
+
+  const tokens = [];
+  let i = 0;
+  const len = inner.length;
+
+  while (i < len) {
+    while (i < len && /\s/.test(inner[i])) i++;
+    if (i >= len) break;
+
+    if (inner[i] === "'") {
+      i++; // skip opening quote
+      let val = '';
+      while (i < len) {
+        if (inner[i] === "'") {
+          if (i + 1 < len && inner[i + 1] === "'") {
+            val += "'";
+            i += 2;
+          } else {
+            i++;
+            break;
+          }
+        } else {
+          val += inner[i];
+          i++;
+        }
+      }
+      // skip cast if present until comma or end
+      while (i < len && inner[i] !== ',') i++;
+      if (i < len && inner[i] === ',') i++;
+      tokens.push(val);
+    } else {
+      let raw = '';
+      while (i < len && inner[i] !== ',') {
+        raw += inner[i];
+        i++;
+      }
+      if (i < len && inner[i] === ',') i++;
+      const trimmedRaw = raw.trim();
+
+      if (/^null(?:::.*)?$/i.test(trimmedRaw)) {
+        tokens.push(null);
+      } else if (trimmedRaw === 'true') {
+        tokens.push(true);
+      } else if (trimmedRaw === 'false') {
+        tokens.push(false);
+      } else if (trimmedRaw === 'now()') {
+        tokens.push('now()');
+      } else if (!isNaN(Number(trimmedRaw)) && trimmedRaw !== '') {
+        tokens.push(Number(trimmedRaw));
+      } else {
+        const castIdx = trimmedRaw.indexOf('::');
+        tokens.push(castIdx !== -1 ? trimmedRaw.slice(0, castIdx).trim() : trimmedRaw);
+      }
+    }
+  }
+
+  return tokens;
+}
+
 // ─── 1. RECONCILE CRIT-C02-02: POLITICAL ORGANIZATIONS CATALOG ───────────────
 export function reconcilePoliticalOrganizations(options = {}) {
   const root = options.repoRoot || REPO_ROOT;
@@ -88,8 +174,8 @@ export function reconcilePoliticalOrganizations(options = {}) {
   let provMismatchCount = 0;
 
   for (const line of orgLines) {
-    const matches = [...line.matchAll(/'((?:''|[^'])*)'/g)].map(m => m[1].replace(/''/g, "'"));
-    const [id, orgType, name, shortName, recLevel, hqState, dataStatus, pId] = matches;
+    const tokens = parseSqlTuple(line);
+    const [id, orgType, name, shortName, recLevel, hqState, dataStatus, pId] = tokens;
     if (orgShortNames.has(shortName)) duplicateShortNames++;
     orgsById.set(id, { id, orgType, name, shortName, recLevel, hqState, dataStatus, provenanceId: pId });
     orgShortNames.add(shortName);
@@ -110,11 +196,29 @@ export function reconcilePoliticalOrganizations(options = {}) {
   const relationships = [];
   let relFkValid = 0;
   for (const line of relLines) {
-    const matches = [...line.matchAll(/'((?:''|[^'])*)'/g)].map(m => m[1].replace(/''/g, "'"));
-    const [src, tgt, relType] = matches;
+    const t = parseSqlTuple(line);
+    const [src, tgt, relType, validFrom, validTo, isCurrent, metadataRaw, dataStatus, pId] = t;
     if (orgsById.has(src) && orgsById.has(tgt)) {
       relFkValid++;
-      relationships.push({ source: src, target: tgt, type: relType });
+      let metaObj = {};
+      try {
+        metaObj = typeof metadataRaw === 'string' ? JSON.parse(metadataRaw) : (metadataRaw || {});
+      } catch (_) {
+        metaObj = { raw: metadataRaw };
+      }
+      const deterministicId = deterministicUuid(`rel:${src}:${tgt}:${relType}:${validFrom}`);
+      relationships.push({
+        id: deterministicId,
+        source_org_id: src,
+        target_org_id: tgt,
+        relationship_type: relType,
+        valid_from: validFrom,
+        valid_to: validTo,
+        is_current: isCurrent !== undefined ? isCurrent : true,
+        metadata: metaObj,
+        data_status: dataStatus || 'OFFICIAL',
+        provenance_id: pId || provenanceRecordId
+      });
     } else {
       throw new Error(`FOREIGN_KEY_VIOLATION: Relationship references non-existent org (${src} -> ${tgt})`);
     }
@@ -126,12 +230,28 @@ export function reconcilePoliticalOrganizations(options = {}) {
     throw new Error('MULTILINGUAL_NAMES_NOT_FOUND: Could not parse organization_multilingual_names in Migration 065');
   }
   const multiLines = multiSection[1].split('\n').filter(l => l.trim().startsWith("('ORG-"));
+  const multilingualRows = [];
   let multiFkValid = 0;
   for (const line of multiLines) {
-    const matches = [...line.matchAll(/'((?:''|[^'])*)'/g)].map(m => m[1].replace(/''/g, "'"));
-    const [oId] = matches;
+    const t = parseSqlTuple(line);
+    const [oId, langCode, scriptCode, repType, nameVal, shortNameVal, isPref, isOff, validFrom, dataStatus, pId] = t;
     if (orgsById.has(oId)) {
       multiFkValid++;
+      const deterministicId = deterministicUuid(`multi:${oId}:${langCode}:${scriptCode}:${repType}:${nameVal}`);
+      multilingualRows.push({
+        id: deterministicId,
+        organization_id: oId,
+        language_code: langCode,
+        script_code: scriptCode,
+        representation_type: repType,
+        name_value: nameVal,
+        short_name_value: shortNameVal,
+        is_preferred: Boolean(isPref),
+        is_official: Boolean(isOff),
+        valid_from: validFrom || '1947-08-15',
+        data_status: dataStatus || 'OFFICIAL',
+        provenance_id: pId || provenanceRecordId
+      });
     } else {
       throw new Error(`FOREIGN_KEY_VIOLATION: Multilingual name references non-existent org: ${oId}`);
     }
@@ -143,12 +263,27 @@ export function reconcilePoliticalOrganizations(options = {}) {
     throw new Error('SYMBOLS_NOT_FOUND: Could not parse incoming_symbols in Migration 065');
   }
   const symLines = symSection[1].split('\n').filter(l => l.trim().startsWith("('ORG-"));
+  const symbolRows = [];
   let symFkValid = 0;
   for (const line of symLines) {
-    const matches = [...line.matchAll(/'((?:''|[^'])*)'/g)].map(m => m[1].replace(/''/g, "'"));
-    const [oId] = matches;
+    const t = parseSqlTuple(line);
+    const [oId, symName, symUrl, jurScope, validFrom, validTo, isCurr, statOrderRef, dataStatus, pId] = t;
     if (orgsById.has(oId)) {
       symFkValid++;
+      const deterministicId = deterministicUuid(`sym:${oId}:${symName}:${jurScope || 'NULL'}:${validFrom}`);
+      symbolRows.push({
+        id: deterministicId,
+        organization_id: oId,
+        symbol_name: symName,
+        symbol_url: symUrl,
+        jurisdiction_scope: jurScope,
+        valid_from: validFrom || '1947-08-15',
+        valid_to: validTo,
+        is_current: isCurr !== undefined ? Boolean(isCurr) : true,
+        statutory_order_ref: statOrderRef,
+        data_status: dataStatus || 'OFFICIAL',
+        provenance_id: pId || provenanceRecordId
+      });
     } else {
       throw new Error(`FOREIGN_KEY_VIOLATION: Symbol references non-existent org: ${oId}`);
     }
@@ -160,12 +295,26 @@ export function reconcilePoliticalOrganizations(options = {}) {
     throw new Error('ALIASES_NOT_FOUND: Could not parse incoming_aliases in Migration 065');
   }
   const aliasLines = aliasSection[1].split('\n').filter(l => l.trim().startsWith("('"));
+  const aliasRows = [];
   let aliasFkValid = 0;
   for (const line of aliasLines) {
-    const matches = [...line.matchAll(/'((?:''|[^'])*)'/g)].map(m => m[1].replace(/''/g, "'"));
-    const oId = matches[2]; // 3rd column: organization_id
+    const t = parseSqlTuple(line);
+    const [rawLookupKey, rawOrigStr, oId, aliasType, jurScope, validFrom, validTo, confidence, pId] = t;
     if (orgsById.has(oId)) {
       aliasFkValid++;
+      const deterministicId = deterministicUuid(`alias:${rawLookupKey}:${jurScope || 'NULL'}:${oId}:${validFrom}`);
+      aliasRows.push({
+        id: deterministicId,
+        raw_lookup_key: rawLookupKey,
+        raw_original_string: rawOrigStr,
+        organization_id: oId,
+        alias_type: aliasType,
+        jurisdiction_scope: jurScope,
+        valid_from: validFrom || '1947-08-15',
+        valid_to: validTo,
+        confidence: confidence || 'VERIFIED',
+        provenance_id: pId || provenanceRecordId
+      });
     } else {
       throw new Error(`FOREIGN_KEY_VIOLATION: Alias references non-existent org: ${oId}`);
     }
@@ -176,7 +325,10 @@ export function reconcilePoliticalOrganizations(options = {}) {
   const multiCount = multiLines.length;
   const symCount = symLines.length;
   const aliasCount = aliasLines.length;
-  const totalCatalogRecords = orgCount + relCount + multiCount + symCount + aliasCount + provCount;
+  // Exact arithmetic distinction (Directive 144 requirement 6)
+  const catalogProvenanceSupportRows = orgCount + relCount + multiCount + symCount + aliasCount + provCount; // 1,207
+  const datasetMetadataAnchorRows = 2; // datasets: 1, dataset_versions: 1
+  const totalRowsAcrossAllTables = catalogProvenanceSupportRows + datasetMetadataAnchorRows; // 1,209
 
   const datasetRows = [
     {
@@ -226,62 +378,12 @@ export function reconcilePoliticalOrganizations(options = {}) {
     provenance_id: o.provenanceId
   }));
 
-  const relationshipRows = relationships.map(r => ({
-    source_org_id: r.source,
-    target_org_id: r.target,
-    relationship_type: r.type,
-    data_status: 'OFFICIAL',
-    provenance_id: provenanceRecordId
-  }));
-
-  const multilingualRows = multiLines.map(line => {
-    const matches = [...line.matchAll(/'((?:''|[^'])*)'/g)].map(m => m[1].replace(/''/g, "'"));
-    return {
-      organization_id: matches[0],
-      language_code: matches[1],
-      script_code: matches[2],
-      representation_type: matches[3],
-      name_value: matches[4],
-      short_name_value: matches[5],
-      is_preferred: true,
-      is_official: true,
-      data_status: 'OFFICIAL',
-      provenance_id: provenanceRecordId
-    };
-  });
-
-  const symbolRows = symLines.map(line => {
-    const matches = [...line.matchAll(/'((?:''|[^'])*)'/g)].map(m => m[1].replace(/''/g, "'"));
-    return {
-      organization_id: matches[0],
-      symbol_name: matches[1],
-      symbol_url: matches[2],
-      jurisdiction_scope: matches[3],
-      is_current: true,
-      data_status: 'OFFICIAL',
-      provenance_id: provenanceRecordId
-    };
-  });
-
-  const aliasRows = aliasLines.map(line => {
-    const matches = [...line.matchAll(/'((?:''|[^'])*)'/g)].map(m => m[1].replace(/''/g, "'"));
-    return {
-      raw_lookup_key: matches[0],
-      raw_original_string: matches[1],
-      organization_id: matches[2],
-      alias_type: matches[3],
-      jurisdiction_scope: matches[4],
-      confidence: parseFloat(matches[7]) || 1.0,
-      provenance_id: provenanceRecordId
-    };
-  });
-
   const rowsByTable = {
     'public.datasets': datasetRows,
     'public.dataset_versions': datasetVersionRows,
     'public.provenance_records': provenanceRows,
     'public.political_organizations': politicalOrganizationRows,
-    'public.organization_relationships': relationshipRows,
+    'public.organization_relationships': relationships,
     'public.organization_multilingual_names': multilingualRows,
     'public.organization_symbols': symbolRows,
     'public.organization_aliases': aliasRows
@@ -305,7 +407,8 @@ export function reconcilePoliticalOrganizations(options = {}) {
     aliasFkValid === 1043 &&
     provCount === 1 &&
     provMismatchCount === 0 &&
-    totalCatalogRecords === 1207
+    catalogProvenanceSupportRows === 1207 &&
+    totalRowsAcrossAllTables === 1209
   );
 
   return {
@@ -335,7 +438,10 @@ export function reconcilePoliticalOrganizations(options = {}) {
       aliases: aliasCount,
       provenanceRecords: provCount,
       provenanceRecordId,
-      totalCatalogRecords,
+      catalogProvenanceSupportRows,
+      datasetMetadataAnchorRows,
+      totalCatalogRecords: catalogProvenanceSupportRows,
+      totalRowsAcrossAllTables,
       authoritativeTarget: 1207,
       uniqueShortNames: orgShortNames.size,
       duplicateShortNames,
@@ -698,6 +804,12 @@ export function reconcileConstituencyDemographics(options = {}) {
   const demographicRows = records.map(r => {
     const compId = `${r.jurisdiction}-AC-${r.acNo}`;
     const d = demByCode.get(compId);
+    // Directive 144 requirement 8: Stop assigning registered_voters to total_voters.
+    // Preserve distinction between registered voters, electors, census population and genuine NULL values.
+    // If total_voters in source manifest is merely an artifact duplicating registered_voters,
+    // preserve null unless a distinct, source-backed total_voters value exists.
+    const hasDistinctTotalVoters = d && d.total_voters !== null && d.total_voters !== undefined && d.total_voters !== d.registered_voters;
+    const totalVoters = hasDistinctTotalVoters ? d.total_voters : null;
     return {
       constituency_id: compId,
       constituency_code: compId,
@@ -707,7 +819,7 @@ export function reconcileConstituencyDemographics(options = {}) {
       election_year: 2024,
       total_population: d ? d.total_population : null,
       registered_voters: d ? d.registered_voters : null,
-      total_voters: d ? d.registered_voters : null,
+      total_voters: totalVoters,
       male_voters: d ? d.male_voters : null,
       female_voters: d ? d.female_voters : null,
       turnout_percentage: d ? d.turnout_percentage : null,
@@ -721,6 +833,38 @@ export function reconcileConstituencyDemographics(options = {}) {
     };
   });
 
+  // Directive 144 requirement 8: Calculate null, zero, and completeness percentages on outbound rows
+  const demographicMetricFields = [
+    'total_population', 'registered_voters', 'total_voters', 'male_voters', 'female_voters',
+    'turnout_percentage', 'literacy_rate', 'urban_percentage', 'sc_percentage', 'st_percentage',
+    'area_sq_km', 'polling_stations'
+  ];
+  const outboundRowMetrics = {};
+  for (const field of demographicMetricFields) {
+    let nullCount = 0;
+    let zeroCount = 0;
+    let populatedCount = 0;
+    for (const row of demographicRows) {
+      const val = row[field];
+      if (val === null || val === undefined) {
+        nullCount++;
+      } else if (val === 0) {
+        zeroCount++;
+        populatedCount++;
+      } else {
+        populatedCount++;
+      }
+    }
+    outboundRowMetrics[field] = {
+      nullCount,
+      nullPercentage: Number(((nullCount / demographicRows.length) * 100).toFixed(2)),
+      zeroCount,
+      zeroPercentage: Number(((zeroCount / demographicRows.length) * 100).toFixed(2)),
+      populatedCount,
+      completenessPercentage: Number(((populatedCount / demographicRows.length) * 100).toFixed(2))
+    };
+  }
+
   return {
     criterionId: 'CRIT-E01-02',
     taskId: 'W021.5-E-01',
@@ -733,26 +877,43 @@ export function reconcileConstituencyDemographics(options = {}) {
       authoritativeStatutoryInventorySeats: 4123,
       demographicsManifestRecordCount: 4142,
       matchedStatutoryRecordsCount: matchedStatutoryRecords.length,
-      extraNonStatutoryManifestCount: extraNonStatutoryManifestRecords.length,
-      missingStatutorySeatsInManifestCount: missingFromManifest.length,
+      manifestGapStatutorySeatsCount: missingFromManifest.length, // 134 statutory seats missing in manifest
+      extraNonStatutoryRecordsCount: extraNonStatutoryManifestRecords.length, // 153 extra non-statutory records
+      mizoramReconciliationDefectCount: mizoramGapCount, // 5 unrecorded voter counts (DQ-W021.5-B2.2E-001)
+      mizoramDefectId: 'DQ-W021.5-B2.2E-001',
+      mizoramBaselineGapDefect: 'DQ-W021.5-B2.2E-001 (5 seats with unrecorded turnout/voters preserved without zero-substitution)',
+      mizoramDefectStatus: 'STRICTLY_OPEN_PENDING_INDEPENDENT_CTO_ADJUDICATION',
       arithmeticProof: '4,123 statutory - 134 missing + 153 extra non-statutory (151 DL + 2 HP) = exactly 4,142 manifest records',
       delhiNonStatutoryExcess: 151,
       himachalNonStatutoryExcess: 2,
-      mizoramBaselineGapDefect: 'DQ-W021.5-B2.2E-001 (5 seats with unrecorded turnout/voters preserved without zero-substitution)'
+      outboundRowMetrics
     },
     metrics: {
       totalConstituencies: records.length,
       statutoryAssemblyTarget: 4123,
+      statutoryAssemblySeats: records.length,
       uniqueConstituencyCompositeIds: statutoryCompositeIds.size,
       distinctAssemblyStatesCovered: Object.keys(stateSeatDistribution).length,
       stateSeatMismatches,
       invalidStateCodeCount: invalidStateCode,
       invalidAcNumberCount: invalidAcNumber,
       demographicBoundsViolations: outOfRangeFieldsCount,
+      demographicManifestRecords: demRecords.length,
       demographicManifestRecordCount: demRecords.length,
+      matchedStatutoryRecords: matchedStatutoryRecords.length,
       matchedCount: matchedStatutoryRecords.length,
+      extraNonStatutoryRecords: extraNonStatutoryManifestRecords.length,
       extraNonStatutoryCount: extraNonStatutoryManifestRecords.length,
+      manifestGapStatutorySeats: missingFromManifest.length,
       missingStatutoryCount: missingFromManifest.length,
+      mizoramBaselineGapSeats: mizoramGapCount,
+      mizoramDefectId: 'DQ-W021.5-B2.2E-001',
+      fieldValidationSummary: {
+        missingFields: missingFieldsCount,
+        nullFields: nullFieldsCount,
+        nonNumericFields: nonNumericFieldsCount,
+        outOfRangeFields: outOfRangeFieldsCount
+      },
       fieldIntegrity: {
         missingFieldsCount,
         nullFieldsCount,
@@ -760,7 +921,8 @@ export function reconcileConstituencyDemographics(options = {}) {
         outOfRangeFieldsCount,
         mizoramGapCount
       },
-      stateSeatDistribution
+      stateSeatDistribution,
+      outboundRowMetrics
     }
   };
 }
@@ -821,8 +983,11 @@ export function mapHistoricalCoverageToResultRow(record, electionId, stateCode, 
   }
 
   return {
-    election_id: electionId,
-    test_only_election_id: Boolean(options.testOnly),
+    election_id: electionId !== undefined ? electionId : null,
+    canonical_election_linked: Boolean(electionId),
+    state_code: stateCode,
+    year: options.primaryYear,
+    election_type: options.electionType || 'ASSEMBLY',
     constituency_id: `${stateCode}-AC-${record.acNo}`,
     winner_party: normalizedWinnerParty,
     winner_name: normalizedWinnerName,
@@ -857,12 +1022,14 @@ export function reconcileHistoricalElectionResults(options = {}) {
       throw new Error(`Data mismatch for ${stateCode} (${primaryYear}): expected ${expectedSeats}, found ${recs.length}`);
     }
 
-    // Synthetic test-only election ID clearly tagged as test-only
-    const testElectionId = 1000 + missing23States.indexOf(stateCode);
-
+    // Directive 144 requirement 9: Stop generating synthetic test election IDs.
+    // Zero synthetic data sent to staging. When canonical election entity is unlinked, election_id is null.
     for (const r of recs) {
       totalSeatsAcross23States++;
-      const mapped = mapHistoricalCoverageToResultRow(r, testElectionId, stateCode, { testOnly: true });
+      const mapped = mapHistoricalCoverageToResultRow(r, null, stateCode, {
+        primaryYear,
+        electionType: 'ASSEMBLY'
+      });
       allResultRows.push(mapped);
     }
 
@@ -899,6 +1066,12 @@ export function reconcileHistoricalElectionResults(options = {}) {
     lifecycleState: 'PREPARED_AND_RECONCILED_IN_REPOSITORY',
     targetTables: ['public.election_results'],
     resultRows: allResultRows,
+    deploymentStatus: 'BLOCKED_NOT_DEPLOYABLE',
+    syntheticElectionIdProhibited: true,
+    outboundRowsToStaging: 0,
+    stagingPayload: [],
+    blockReason: 'Canonical election entities are not provisioned in repository for these 23 states. Synthetic election IDs are strictly prohibited under Directive 144.',
+    reason: 'Canonical election entities are not provisioned in repository for these 23 states. Synthetic election IDs are strictly prohibited under Directive 144.',
     upsertConflictTarget: 'on_conflict=election_id,constituency_id',
     metrics: {
       totalStatesCovered: missing23States.length,
@@ -913,6 +1086,9 @@ export function reconcileHistoricalElectionResults(options = {}) {
       missingPartyCount: 0,
       missingCandidateNameCount: 0,
       invalidVoteCount: 0,
+      syntheticIdsEliminated: true,
+      deploymentStatus: 'BLOCKED_NOT_DEPLOYABLE',
+      outboundRowsToStaging: 0,
       upsertConflictTarget: 'on_conflict=election_id,constituency_id',
       eliminatedDestructiveDeletes: true,
       stateBreakdown

@@ -1,7 +1,7 @@
 {
   "generator": "scripts/execute_staging_directive_139.mjs",
-  "directive": "CTO Directive 143 / Local Remediation & Staging Execution Readiness",
-  "timestamp": "2026-10-23T05:39:25.222Z",
+  "directive": "CTO Directive 144 / Residual Defect Closure & Staging Execution Readiness",
+  "timestamp": "2026-10-23T06:41:29.511Z",
   "governingAuthority": "Master Execution Framework Amendment v1.6 / Rule IV-001 Non-Self-Acceptance",
   "stagingProjectRef": "fkpigozcqnmcvofuksar",
   "productionProjectRef": "ehfafcnimmjusyvplbah (AIR-GAPPED — 0 QUERIES, 0 MUTATIONS)",
@@ -13,17 +13,17 @@
     "hardcodedFallbackSecretRemoved": true,
     "missingCredentialsBehavior": "FAIL_CLOSED",
     "exposureScope": "Staging fkpigozcqnmcvofuksar exclusively (Production unexposed)",
-    "actionRequired": "Project Administrator rotation of Supabase JWT Secret via Dashboard and access-log audit"
+    "actionRequired": "Project Administrator rotation of Supabase JWT Secret via Dashboard, service-role key rotation, and access-log audit"
   },
   "summary": {
     "allStagesPrepared": true,
     "stagingExecutionPerformed": false,
     "totalCriteriaPrepared": 4,
     "criteria": [
-      "CRIT-C02-02 (Political Organizations Catalog: 107 orgs + 1,102 support rows across 8 tables = 1,209 rows)",
+      "CRIT-C02-02 (Political Organizations Catalog: 107 orgs + 1,100 support rows + 2 dataset metadata anchors across 8 tables = 1,209 rows)",
       "CRIT-D02-02 (Candidate Contest Chunks: 10 chunks, 11,334 tuples, 11,298 unique rows, 36 duplicates)",
-      "CRIT-E01-02 (Constituency Demographics Baseline: 4,123 statutory assembly seats)",
-      "CRIT-F02-03 (Corrected 23-State Historical Results: 2,243 statutory seats, non-destructive upsert)"
+      "CRIT-E01-02 (Constituency Demographics Baseline: 4,123 statutory assembly seats; total_voters null-safe; 134 manifest gap seats reported separately from DQ-W021.5-B2.2E-001)",
+      "CRIT-F02-03 (Corrected 23-State Historical Results: 2,243 statutory seats; synthetic IDs eliminated; marked BLOCKED_NOT_DEPLOYABLE pending canonical election entities)"
     ],
     "workstreamStatus": "PREPARED_AND_RECONCILED_IN_REPOSITORY",
     "databaseExecutionDisposition": "STAGING_EXECUTION_PENDING_ADMIN_ROTATION_AND_SEPARATE_AUTHORIZATION"
@@ -53,8 +53,8 @@
       ],
       "conflictTarget": "id",
       "rowsAffected": 0,
-      "startedAt": "2026-10-23T05:39:24.857Z",
-      "completedAt": "2026-10-23T05:39:24.874Z",
+      "startedAt": "2026-10-23T06:41:29.075Z",
+      "completedAt": "2026-10-23T06:41:29.105Z",
       "metrics": {
         "canonicalOrganizations": 107,
         "uniqueOrgIds": 107,
@@ -64,7 +64,10 @@
         "aliases": 1043,
         "provenanceRecords": 1,
         "provenanceRecordId": "0215b22c-0000-0000-0000-000000000001",
+        "catalogProvenanceSupportRows": 1207,
+        "datasetMetadataAnchorRows": 2,
         "totalCatalogRecords": 1207,
+        "totalRowsAcrossAllTables": 1209,
         "authoritativeTarget": 1207,
         "uniqueShortNames": 107,
         "duplicateShortNames": 0,
@@ -98,8 +101,8 @@
       ],
       "conflictTarget": "person_id,election_year,election_type,constituency_id",
       "rowsAffected": 0,
-      "startedAt": "2026-10-23T05:39:24.874Z",
-      "completedAt": "2026-10-23T05:39:24.990Z",
+      "startedAt": "2026-10-23T06:41:29.105Z",
+      "completedAt": "2026-10-23T06:41:29.207Z",
       "metrics": {
         "totalSubchunks": 10,
         "subchunkIds": [
@@ -143,21 +146,34 @@
       ],
       "conflictTarget": "constituency_id,election_year",
       "rowsAffected": 0,
-      "startedAt": "2026-10-23T05:39:24.990Z",
-      "completedAt": "2026-10-23T05:39:25.082Z",
+      "startedAt": "2026-10-23T06:41:29.207Z",
+      "completedAt": "2026-10-23T06:41:29.288Z",
       "metrics": {
         "totalConstituencies": 4123,
         "statutoryAssemblyTarget": 4123,
+        "statutoryAssemblySeats": 4123,
         "uniqueConstituencyCompositeIds": 4123,
         "distinctAssemblyStatesCovered": 31,
         "stateSeatMismatches": 0,
         "invalidStateCodeCount": 0,
         "invalidAcNumberCount": 0,
         "demographicBoundsViolations": 0,
+        "demographicManifestRecords": 4142,
         "demographicManifestRecordCount": 4142,
+        "matchedStatutoryRecords": 3989,
         "matchedCount": 3989,
+        "extraNonStatutoryRecords": 153,
         "extraNonStatutoryCount": 153,
+        "manifestGapStatutorySeats": 134,
         "missingStatutoryCount": 134,
+        "mizoramBaselineGapSeats": 5,
+        "mizoramDefectId": "DQ-W021.5-B2.2E-001",
+        "fieldValidationSummary": {
+          "missingFields": 0,
+          "nullFields": 0,
+          "nonNumericFields": 0,
+          "outOfRangeFields": 0
+        },
         "fieldIntegrity": {
           "missingFieldsCount": 0,
           "nullFieldsCount": 0,
@@ -197,6 +213,104 @@
           "UK": 70,
           "PY": 30,
           "JK": 90
+        },
+        "outboundRowMetrics": {
+          "total_population": {
+            "nullCount": 134,
+            "nullPercentage": 3.25,
+            "zeroCount": 0,
+            "zeroPercentage": 0,
+            "populatedCount": 3989,
+            "completenessPercentage": 96.75
+          },
+          "registered_voters": {
+            "nullCount": 134,
+            "nullPercentage": 3.25,
+            "zeroCount": 5,
+            "zeroPercentage": 0.12,
+            "populatedCount": 3989,
+            "completenessPercentage": 96.75
+          },
+          "total_voters": {
+            "nullCount": 4123,
+            "nullPercentage": 100,
+            "zeroCount": 0,
+            "zeroPercentage": 0,
+            "populatedCount": 0,
+            "completenessPercentage": 0
+          },
+          "male_voters": {
+            "nullCount": 134,
+            "nullPercentage": 3.25,
+            "zeroCount": 5,
+            "zeroPercentage": 0.12,
+            "populatedCount": 3989,
+            "completenessPercentage": 96.75
+          },
+          "female_voters": {
+            "nullCount": 134,
+            "nullPercentage": 3.25,
+            "zeroCount": 5,
+            "zeroPercentage": 0.12,
+            "populatedCount": 3989,
+            "completenessPercentage": 96.75
+          },
+          "turnout_percentage": {
+            "nullCount": 134,
+            "nullPercentage": 3.25,
+            "zeroCount": 5,
+            "zeroPercentage": 0.12,
+            "populatedCount": 3989,
+            "completenessPercentage": 96.75
+          },
+          "literacy_rate": {
+            "nullCount": 134,
+            "nullPercentage": 3.25,
+            "zeroCount": 0,
+            "zeroPercentage": 0,
+            "populatedCount": 3989,
+            "completenessPercentage": 96.75
+          },
+          "urban_percentage": {
+            "nullCount": 134,
+            "nullPercentage": 3.25,
+            "zeroCount": 0,
+            "zeroPercentage": 0,
+            "populatedCount": 3989,
+            "completenessPercentage": 96.75
+          },
+          "sc_percentage": {
+            "nullCount": 134,
+            "nullPercentage": 3.25,
+            "zeroCount": 324,
+            "zeroPercentage": 7.86,
+            "populatedCount": 3989,
+            "completenessPercentage": 96.75
+          },
+          "st_percentage": {
+            "nullCount": 134,
+            "nullPercentage": 3.25,
+            "zeroCount": 1094,
+            "zeroPercentage": 26.53,
+            "populatedCount": 3989,
+            "completenessPercentage": 96.75
+          },
+          "area_sq_km": {
+            "nullCount": 134,
+            "nullPercentage": 3.25,
+            "zeroCount": 0,
+            "zeroPercentage": 0,
+            "populatedCount": 3989,
+            "completenessPercentage": 96.75
+          },
+          "polling_stations": {
+            "nullCount": 3611,
+            "nullPercentage": 87.58,
+            "zeroCount": 0,
+            "zeroPercentage": 0,
+            "populatedCount": 512,
+            "completenessPercentage": 12.42
+          }
         }
       }
     },
@@ -204,10 +318,11 @@
       "criterionId": "CRIT-F02-03",
       "taskId": "W021.5-F-02",
       "governingRequirement": "REQ-HIS-002",
-      "status": "PREPARED_AND_RECONCILED_IN_REPOSITORY",
+      "status": "BLOCKED_NOT_DEPLOYABLE",
+      "deploymentStatus": "BLOCKED_NOT_DEPLOYABLE",
       "stagingExecuted": false,
       "remoteCorroborated": false,
-      "remoteCorroborationPending": true,
+      "remoteCorroborationPending": false,
       "localSourceVerified": true,
       "targetTables": [
         "public.election_results"
@@ -217,8 +332,9 @@
       ],
       "conflictTarget": "election_id,constituency_id",
       "rowsAffected": 0,
-      "startedAt": "2026-10-23T05:39:25.082Z",
-      "completedAt": "2026-10-23T05:39:25.222Z",
+      "reason": "Canonical election entities are not provisioned in repository for these 23 states. Zero synthetic IDs permitted under Directive 144.",
+      "startedAt": "2026-10-23T06:41:29.288Z",
+      "completedAt": "2026-10-23T06:41:29.511Z",
       "metrics": {
         "totalStatesCovered": 23,
         "totalHistoricalElectionRecords": 2243,
@@ -232,6 +348,9 @@
         "missingPartyCount": 0,
         "missingCandidateNameCount": 0,
         "invalidVoteCount": 0,
+        "syntheticIdsEliminated": true,
+        "deploymentStatus": "BLOCKED_NOT_DEPLOYABLE",
+        "outboundRowsToStaging": 0,
         "upsertConflictTarget": "on_conflict=election_id,constituency_id",
         "eliminatedDestructiveDeletes": true,
         "stateBreakdown": [

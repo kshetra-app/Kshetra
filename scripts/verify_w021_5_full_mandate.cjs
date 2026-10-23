@@ -1,10 +1,9 @@
 /**
- * KSHETRA W021.5 — CTO DIRECTIVE 143 FULL-MANDATE UNIFIED VERIFIER
+ * KSHETRA W021.5 — CTO DIRECTIVE 144 FULL-MANDATE UNIFIED VERIFIER
  * Deterministic Single Entrypoint for Full-Mandate Completion Verification
  * 
  * Master Execution Framework Amendment v1.6 / Rule IV-001 Non-Self-Acceptance
- * CTO Directive 143: Execution-Path Truth, Cryptographic Scope Enforcement,
- * Staging Gate Integrity, and Independent Evidence Closure
+ * CTO Directive 144: Close Directive 143 Residual Defects Before Any Staging Authorization
  * 
  * Executes all 20 mandated verification suites across Stages A through I:
  *  1. Working tree cleanliness inspection (git status --porcelain)
@@ -46,10 +45,10 @@ const CRITERIA_PATH = path.join(REPO_ROOT, 'governance/specifications/w021_5_cri
 const ALLOW_DIRTY = process.argv.includes('--allow-dirty');
 
 console.log('================================================================================');
-console.log('KSHETRA W021.5 — CTO DIRECTIVE 143 FULL-MANDATE UNIFIED VERIFIER');
+console.log('KSHETRA W021.5 — CTO DIRECTIVE 144 FULL-MANDATE UNIFIED VERIFIER');
 console.log('Deterministic Single Entrypoint for Stages A through I Evidence Closure');
 console.log('Governing Authority: Amendment v1.6 / Rule IV-001 Non-Self-Acceptance');
-console.log('Directive 143: Execution-Path Truth, Cryptographic Scope Enforcement, Staging Gate Integrity & Evidence Closure');
+console.log('Directive 144: Close Directive 143 Residual Defects Before Any Staging Authorization');
 console.log('================================================================================\n');
 
 // Dynamically obtain Git HEAD commit and branch (Directive 135 Item 16)

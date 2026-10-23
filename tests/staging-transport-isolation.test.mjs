@@ -122,12 +122,19 @@ describe('CTO Directive 142 Section 3: Process-Wide Network Denial & Local Prepa
     assert.strictEqual(report.summary.workstreamStatus, 'PREPARED_AND_RECONCILED_IN_REPOSITORY');
     assert.strictEqual(report.securityIncidentContainment.status, 'CONTAINMENT_PENDING_ADMIN_CONFIRMATION');
 
-    // Confirm all 4 criteria are pending live staging execution
+    // Confirm stages 1-3 are prepared and stage 4 is blocked not deployable
     for (const [stageKey, stageData] of Object.entries(report.stages)) {
-      assert.strictEqual(stageData.status, 'PREPARED_AND_RECONCILED_IN_REPOSITORY');
-      assert.strictEqual(stageData.stagingExecuted, false);
-      assert.strictEqual(stageData.remoteCorroborated, false);
-      assert.strictEqual(stageData.remoteCorroborationPending, true);
+      if (stageKey === 'stage4_historical_election_results') {
+        assert.strictEqual(stageData.status, 'BLOCKED_NOT_DEPLOYABLE');
+        assert.strictEqual(stageData.stagingExecuted, false);
+        assert.strictEqual(stageData.remoteCorroborated, false);
+        assert.strictEqual(stageData.remoteCorroborationPending, false);
+      } else {
+        assert.strictEqual(stageData.status, 'PREPARED_AND_RECONCILED_IN_REPOSITORY');
+        assert.strictEqual(stageData.stagingExecuted, false);
+        assert.strictEqual(stageData.remoteCorroborated, false);
+        assert.strictEqual(stageData.remoteCorroborationPending, true);
+      }
     }
   });
 

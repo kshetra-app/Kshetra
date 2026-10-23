@@ -16,6 +16,7 @@ import {
   ALLOWED_STAGING_PROJECT_REF,
   ALL_AUTHORIZED_STAGING_TABLES
 } from '../../scripts/lib/stagingAuthorization.mjs';
+import { canonicalizeObject } from '../../scripts/lib/stagingAdminContainment.mjs';
 
 /**
  * Base64URL encode buffer or string
@@ -56,18 +57,49 @@ export function generateTestKeyPair(alg = 'Ed25519') {
   throw new Error(`UNSUPPORTED_TEST_ALGORITHM: ${alg}`);
 }
 
+export function generateTestAdminKeyPair(alg = 'Ed25519') {
+  return generateTestKeyPair(alg);
+}
+
 /**
- * Creates a valid test administrative closure record fixture
+ * Creates an authentic signed test administrative closure record fixture
  */
-export function createTestAdminClosureRecord(overrides = {}) {
-  return {
+export function createTestAdminClosureRecord(overrides = {}, adminPrivateKeyPem = null, options = {}) {
+  const payload = {
     incidentId: 'INC-2026-W021.5-ROTATION-VERIFIED',
     targetProjectRef: ALLOWED_STAGING_PROJECT_REF,
     credentialRotated: true,
+    jwtSecretRotated: true,
+    serviceRoleKeyRotated: true,
     accessLogsAudited: true,
+    unauthorizedMutationsInvestigated: true,
+    exposureIntervalStart: '2026-10-21T00:00:00.000Z',
     authorizedAdmin: 'test-authorized-project-administrator',
-    certifiedAt: new Date().toISOString(),
+    certifiedAt: (options.certifiedAt !== undefined) ? options.certifiedAt : new Date().toISOString(),
     ...overrides
+  };
+
+  if (options.unsigned) {
+    return payload; // Return raw unsigned object for negative test
+  }
+
+  const keyPem = adminPrivateKeyPem;
+  const alg = options.alg || 'Ed25519';
+  const canonicalPayload = JSON.stringify(canonicalizeObject(payload));
+  let sigBuf = null;
+  if (keyPem) {
+    if (alg === 'Ed25519') {
+      sigBuf = crypto.sign(null, Buffer.from(canonicalPayload, 'utf8'), keyPem);
+    } else if (alg === 'RS256') {
+      sigBuf = crypto.sign('SHA256', Buffer.from(canonicalPayload, 'utf8'), keyPem);
+    }
+  }
+
+  return {
+    payload,
+    algorithm: alg,
+    signature: options.signature !== undefined ? options.signature : (sigBuf ? base64UrlEncode(sigBuf) : 'fake-signature'),
+    keyId: options.keyId || 'test-admin-key-1'
   };
 }
 

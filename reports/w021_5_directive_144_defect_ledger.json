@@ -1,0 +1,197 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Kshetra W021.5 — CTO Directive 144 Defect Ledger & Residual Remediation Register",
+  "directive": "CTO Directive 144: Close Directive 143 Residual Defects Before Any Staging Authorization",
+  "governingAuthority": "Master Execution Framework Amendment v1.6 / Rule IV-001 Non-Self-Acceptance",
+  "timestamp": "2026-10-23T06:35:00.000Z",
+  "airGapStatus": {
+    "productionDatabase": "ehfafcnimmjusyvplbah",
+    "productionQueries": 0,
+    "productionMutations": 0,
+    "productionStatus": "AIR_GAPPED_ZERO_QUERIES_ZERO_MUTATIONS",
+    "stagingDatabase": "fkpigozcqnmcvofuksar",
+    "stagingQueries": 0,
+    "stagingMutations": 0,
+    "stagingStatus": "CONTAINMENT_PENDING_ADMIN_CONFIRMATION"
+  },
+  "formalAcceptanceStatus": "0.0% — PENDING INDEPENDENT ADJUDICATION",
+  "mizoramDefect": {
+    "defectId": "DQ-W021.5-B2.2E-001",
+    "status": "STRICTLY_OPEN_PENDING_INDEPENDENT_CTO_ADJUDICATION",
+    "description": "5 Mizoram statutory assembly seats with unrecorded turnout/voters preserved without zero-substitution"
+  },
+  "defects": [
+    {
+      "defectId": "DEF-D144-001",
+      "workstream": "Workstream A: Operational Authorization & Air-Gap Bypasses",
+      "summary": "Public operational access to individual stage-write functions allowed bypassing the single mandatory authorization and transport boundary",
+      "directiveRequirement": "Item 1: Remove public operational access to individual stage-write functions, or redesign them so there is no path around a single mandatory authorization and transport boundary. Provide explicit __test_only_adapters__.",
+      "remediationDetails": "Introduced INTERNAL_EXECUTION_TOKEN Symbol and assertInternalExecutionContext() guard on all individual stage execution functions (executeStage1Staging through executeStage4Staging). Direct operational calls fail closed with UNAUTHORIZED_STAGE_INVOCATION. Exported explicit __test_only_adapters__ for isolated mock assertions.",
+      "sourceFilesModified": [
+        "scripts/execute_staging_directive_139.mjs"
+      ],
+      "regressionTests": [
+        "tests/staging-execution-mode-b.test.mjs (Tests 11 & 12)"
+      ],
+      "classification": "REMEDIATED_AND_OFFLINE_VERIFIED"
+    },
+    {
+      "defectId": "DEF-D144-002",
+      "workstream": "Workstream A: Operational Authorization & Air-Gap Bypasses",
+      "summary": "Production-host rejection was not enforced in the actual transport layer independent of invocation mode",
+      "directiveRequirement": "Item 2: Enforce production-host rejection in the actual transport layer, independent of invocation mode. Network destination must be fixed authorized staging hostname.",
+      "remediationDetails": "Implemented createStagingHttpTransport() wrapping all outbound fetch calls. Unconditionally validates protocol ('https:') throwing INSECURE_PROTOCOL, rejects production reference 'ehfafcnimmjusyvplbah' throwing PRODUCTION_HOST_FORBIDDEN, and rejects any destination other than 'fkpigozcqnmcvofuksar.supabase.co' throwing UNAUTHORIZED_STAGING_HOST.",
+      "sourceFilesModified": [
+        "scripts/execute_staging_directive_139.mjs"
+      ],
+      "regressionTests": [
+        "tests/staging-execution-mode-b.test.mjs (Tests 13, 14, 15)"
+      ],
+      "classification": "REMEDIATED_AND_OFFLINE_VERIFIED"
+    },
+    {
+      "defectId": "DEF-D144-003",
+      "workstream": "Workstream A: Operational Authorization & Air-Gap Bypasses",
+      "summary": "Caller-supplied options.planDigest allowed replacing computed canonical execution-plan digest",
+      "directiveRequirement": "Item 3: Compute canonical execution-plan digest internally. Do not allow options.planDigest to replace computed value. Bind digest to source artifacts, manifests, transformation code, schema migrations, conflict keys, scopes, and counts. Prove digest dynamism.",
+      "remediationDetails": "runStagingExecutionEngine() computes canonical plan digest deterministically from source files. Throws PLAN_DIGEST_OVERRIDE_PROHIBITED if options.planDigest is supplied with a mismatching value. Expanded computeExecutionPlanDigest() to cover all source manifests, migration SQLs, and transformation scripts (reconcile_database_criteria_identities.mjs, etc.). Verified altering components changes digest.",
+      "sourceFilesModified": [
+        "scripts/execute_staging_directive_139.mjs",
+        "scripts/lib/stagingExecutionPlan.mjs"
+      ],
+      "regressionTests": [
+        "tests/staging-execution-mode-b.test.mjs (Tests 16 & 17)"
+      ],
+      "classification": "REMEDIATED_AND_OFFLINE_VERIFIED"
+    },
+    {
+      "defectId": "DEF-D144-004",
+      "workstream": "Workstream A: Operational Authorization & Air-Gap Bypasses",
+      "summary": "Temporal-claim policy used an 86,400s default instead of 3,600s hard maximum, and contradictory time claims (nbf > exp) were masked by the not-yet-valid check",
+      "directiveRequirement": "Item 4: Enforce a hard maximum lifetime of 3,600 seconds. Ensure contradictory time claims produce a real contradiction rejection and are tested directly without being masked by not-yet-valid check.",
+      "remediationDetails": "In scripts/lib/stagingAuthorization.mjs: DEFAULT_MAX_LIFETIME_SECONDS set to 3600. Math.min(params.maxLifetimeSeconds ?? 3600, 3600) strictly enforces the hard cap. Reordered temporal checks so contradiction (nbf > exp) throws CONTRADICTORY_TIME_CLAIMS before the not-yet-valid (nbf > nowSeconds) check executes.",
+      "sourceFilesModified": [
+        "scripts/lib/stagingAuthorization.mjs"
+      ],
+      "regressionTests": [
+        "tests/staging-authorization-verifier.test.mjs (Tests 12 & 13)"
+      ],
+      "classification": "REMEDIATED_AND_OFFLINE_VERIFIED"
+    },
+    {
+      "defectId": "DEF-D144-005",
+      "workstream": "Workstream A: Operational Authorization & Air-Gap Bypasses",
+      "summary": "Administrative containment check was field-only and accepted plain JSON boolean objects without cryptographic authentication",
+      "directiveRequirement": "Item 5: Replace field-only administrative closure check with authenticated administrative evidence verified against trusted admin key (Ed25519/RS256). Validate incident ID, past timestamp, and require evidence of JWT secret + service-role key rotation, access-log audit, and mutation investigation. Keep operational write gate closed until authentic external evidence arrives.",
+      "remediationDetails": "Completely rewrote scripts/lib/stagingAdminContainment.mjs. Enforces asymmetric cryptographic signature verification (Ed25519/RS256) of canonicalized closure payload against configured admin public key trust anchor. Rejects unsigned objects with ADMIN_RECORD_UNAUTHENTICATED, tampered signatures with INVALID_ADMIN_SIGNATURE, unconfigured trust anchor with ADMIN_TRUST_ANCHOR_UNCONFIGURED, wrong incidents with ADMIN_RECORD_MISMATCH / INVALID_INCIDENT_ID, future timestamps with INVALID_CERTIFICATION_TIMESTAMP, and incomplete rotation with ADMIN_CONTAINMENT_UNCONFIRMED. Operational write gate remains strictly CLOSED pending genuine external admin confirmation.",
+      "sourceFilesModified": [
+        "scripts/lib/stagingAdminContainment.mjs",
+        "scripts/lib/stagingAuthorization.mjs",
+        "tests/helpers/stagingAuthTestHelper.mjs"
+      ],
+      "regressionTests": [
+        "tests/staging-authorization-verifier.test.mjs (Tests 17, 17a, 17b, 17c, 17d, 17e, 17e2, 17f, 17g)"
+      ],
+      "classification": "REMEDIATED_AND_OFFLINE_VERIFIED"
+    },
+    {
+      "defectId": "DEF-D144-006",
+      "workstream": "Workstream B: Correct Source Data Sent by Stages 1–4",
+      "summary": "Stage 1 political organization catalog used brittle quoted-string positional parsing, coerced 'VERIFIED' alias confidence to 1.0, shifted fields on NULL dates, used id conflict target for child rows without IDs, and lacked consistent row arithmetic",
+      "directiveRequirement": "Item 6: Replace brittle parsing with source-preserving parser. Preserve source fields, confidence strings ('VERIFIED'), handle NULLs without shifting. Reconcile 1,207 catalog/provenance rows vs 2 dataset metadata anchors (1,209 total). Provide deterministic identity strategy for child rows. Verify natural-key idempotency.",
+      "remediationDetails": "Implemented parseSqlTuple() SQL tokenizer handling embedded quotes, commas, escaped strings, and NULL literals. Preserves string 'VERIFIED' confidence and dates. Generates RFC 4122 v5 deterministic UUIDs (deterministicUuid) based on natural keys for all child table rows. Explicitly reconciled 1,207 catalog/provenance rows + 2 dataset metadata anchors (datasets + dataset_versions) = 1,209 total outbound rows across 8 tables.",
+      "sourceFilesModified": [
+        "scripts/reconcile_database_criteria_identities.mjs",
+        "scripts/execute_staging_directive_139.mjs"
+      ],
+      "regressionTests": [
+        "tests/database-criteria-identity-reconciliation.test.mjs (CRIT-C02-02 Tests 1-7)",
+        "tests/staging-execution-mode-b.test.mjs (Test 4)"
+      ],
+      "classification": "REMEDIATED_AND_OFFLINE_VERIFIED"
+    },
+    {
+      "defectId": "DEF-D144-007",
+      "workstream": "Workstream B: Correct Source Data Sent by Stages 1–4",
+      "summary": "Stage 2 candidacy reconciliation required confirmation of 11,334 source tuples, 36 declared collisions, and 11,298 unique candidacies under plan digest coverage without claiming remote insertion",
+      "directiveRequirement": "Item 7: Retain 11,334 / 36 / 11,298 reconciliation only if independent offline checks confirm those figures. Ensure plan digest covers code and source artifacts producing exact 11,298 rows.",
+      "remediationDetails": "Reconciled and confirmed all 10 subchunk manifests (06A..10B), SHA-256 chunk hashes, 11,334 parsed source tuples, 36 verified natural key collisions, and 11,298 unique rows. Bound plan digest to all 10 chunk files and duplicate declarations. Zero remote execution or insertion claimed.",
+      "sourceFilesModified": [
+        "scripts/reconcile_database_criteria_identities.mjs",
+        "scripts/lib/stagingExecutionPlan.mjs"
+      ],
+      "regressionTests": [
+        "tests/database-criteria-identity-reconciliation.test.mjs (CRIT-D02-02 Tests 1-6)"
+      ],
+      "classification": "REMEDIATED_AND_OFFLINE_VERIFIED"
+    },
+    {
+      "defectId": "DEF-D144-008",
+      "workstream": "Workstream B: Correct Source Data Sent by Stages 1–4",
+      "summary": "Stage 3 duplicated registered_voters into total_voters, calculated completeness only against manifest rather than 4,123 outbound rows, and conflated 134 missing statutory manifest records with 5-seat Mizoram defect",
+      "directiveRequirement": "Item 8: Stop assigning registered_voters to total_voters. Preserve null. Calculate field-by-field completeness and null metrics across all 4,123 outbound rows. Account for 134 statutory manifest gap seats separately from 5-seat Mizoram defect.",
+      "remediationDetails": "In scripts/reconcile_database_criteria_identities.mjs: total_voters is preserved strictly as null (100% null across 4,123 outbound rows) unless a distinct, source-backed value exists. Computed full field-by-field null, zero, and completeness percentages on all 4,123 outbound rows. Explicitly separated the 134 statutory manifest gap seats (where registered_voters and other metrics are null) from the 5-seat Mizoram turnout/voters defect (DQ-W021.5-B2.2E-001).",
+      "sourceFilesModified": [
+        "scripts/reconcile_database_criteria_identities.mjs",
+        "scripts/execute_staging_directive_139.mjs"
+      ],
+      "regressionTests": [
+        "tests/database-criteria-identity-reconciliation.test.mjs (CRIT-E01-02 Tests 1-6)"
+      ],
+      "classification": "REMEDIATED_AND_OFFLINE_VERIFIED"
+    },
+    {
+      "defectId": "DEF-D144-009",
+      "workstream": "Workstream B: Correct Source Data Sent by Stages 1–4",
+      "summary": "Stage 4 historical election results contained test-only synthetic election IDs ('test-elec-...') and was described as deployable without canonical election entities",
+      "directiveRequirement": "Item 9: Remove test-only election identities from every payload intended for staging database. Map to canonical election ID and actual schema. If canonical election identifiers are missing, explicitly mark stage BLOCKED_NOT_DEPLOYABLE. Never turn synthetic IDs into fake production-ready data.",
+      "remediationDetails": "Eliminated all synthetic 'test-elec-...' strings across Stage 4 payloads, setting election_id to null. Explicitly marked Stage 4 as BLOCKED_NOT_DEPLOYABLE in both Mode A local preparation and Mode B execution engine. Outbound rows to staging set to 0. Zero synthetic records dispatched.",
+      "sourceFilesModified": [
+        "scripts/reconcile_database_criteria_identities.mjs",
+        "scripts/execute_staging_directive_139.mjs",
+        "scripts/lib/stagingExecutionPlan.mjs"
+      ],
+      "regressionTests": [
+        "tests/database-criteria-identity-reconciliation.test.mjs (CRIT-F02-03 Test 7)",
+        "tests/staging-execution-mode-b.test.mjs (Tests 4 & 10)"
+      ],
+      "classification": "REMEDIATED_AND_OFFLINE_VERIFIED"
+    },
+    {
+      "defectId": "DEF-D144-010",
+      "workstream": "Workstream C: Adversarial Regression Coverage",
+      "summary": "Offline test suite lacked direct proofs for authorization bypasses, transport air-gap enforcement, plan digest override rejection, digest dynamism, 3,600s lifetime, contradictory time claims, authenticated admin evidence, and Stage 4 blocked status",
+      "directiveRequirement": "Item 10: Add offline tests proving all protections, boundaries, and data truth invariants.",
+      "remediationDetails": "Expanded tests/staging-authorization-verifier.test.mjs to 34 tests and tests/staging-execution-mode-b.test.mjs to 17 tests. Added tests proving: transport layer production rejection, unauthorized host rejection, insecure protocol rejection, direct invocation rejection, __test_only_adapters__ isolation, planDigest override rejection, plan digest dynamism, 3,600s max lifetime rejection, contradictory time claim rejection, unsigned/tampered/wrong-incident/future-timestamp/untrusted-key admin closure rejection, Stage 1 'VERIFIED' string and UUID preservation, Stage 3 total_voters null preservation, and Stage 4 BLOCKED_NOT_DEPLOYABLE status.",
+      "sourceFilesModified": [
+        "tests/staging-authorization-verifier.test.mjs",
+        "tests/staging-execution-mode-b.test.mjs",
+        "tests/database-criteria-identity-reconciliation.test.mjs"
+      ],
+      "regressionTests": [
+        "tests/staging-authorization-verifier.test.mjs (34/34 PASS)",
+        "tests/staging-execution-mode-b.test.mjs (17/17 PASS)",
+        "tests/database-criteria-identity-reconciliation.test.mjs (36/36 PASS)"
+      ],
+      "classification": "REMEDIATED_AND_OFFLINE_VERIFIED"
+    },
+    {
+      "defectId": "DEF-D144-011",
+      "workstream": "Workstream D: Reconcile Evidence Without Self-Acceptance",
+      "summary": "Evidence ledgers and reports required strict reconciliation to reflect true code enforcement, separate commit coordinates, truthfully isolated network accounting, unclosed external admin containment, open Mizoram defect, and 0.0% CTO acceptance",
+      "directiveRequirement": "Item 11 & 12: Update implementation reports, defect ledger, preparation output, execution plan, and verification manifest. Ensure 0.0% acceptance under Rule IV-001, DQ-W021.5-B2.2E-001 strictly open, separate commit coordinates, and run full offline verification suite.",
+      "remediationDetails": "Updated staging execution report, database execution register, execution state, decision log (DEC-144), and created Directive 144 defect ledger. Executed full test suites offline. Formal CTO acceptance remains strictly 0.0% — PENDING INDEPENDENT ADJUDICATION.",
+      "sourceFilesModified": [
+        "reports/w021_5_staging_execution_report.json",
+        "reports/w021_5_database_execution_register.json",
+        "reports/w021_5_directive_144_defect_ledger.json",
+        "EXECUTION_STATE.md",
+        "DECISION_LOG.md"
+      ],
+      "regressionTests": [
+        "scripts/verify_w021_5_full_mandate.cjs"
+      ],
+      "classification": "REMEDIATED_AND_OFFLINE_VERIFIED"
+    }
+  ]
+}

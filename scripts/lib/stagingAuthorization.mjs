@@ -37,7 +37,7 @@ export const EXPECTED_ISSUER = 'kshetra-cto-governance';
 export const EXPECTED_AUDIENCE = 'kshetra-staging-execution';
 export const ALLOWED_ALGORITHMS = ['Ed25519', 'RS256'];
 export const DEFAULT_PUBLIC_KEY_PATH = path.join(REPO_ROOT, 'governance', 'keys', 'cto_staging_auth_public.pem');
-export const DEFAULT_MAX_LIFETIME_SECONDS = 86400; // 24 hours maximum token lifetime
+export const DEFAULT_MAX_LIFETIME_SECONDS = 3600; // 1 hour hard maximum token lifetime (Directive 144 requirement 4)
 export const CLOCK_SKEW_TOLERANCE_SECONDS = 60; // 60 seconds allowable clock skew
 
 export const PERMITTED_OPERATIONS_ALLOWLIST = ['INSERT', 'UPDATE', 'UPSERT', 'SELECT'];
@@ -304,11 +304,8 @@ export function verifyStagingWriteAuthorization(params = {}) {
       err.code = 'INVALID_NBF';
       throw err;
     }
-    if (payload.nbf > nowSeconds) {
-      const err = new Error(`TOKEN_NOT_YET_VALID: Token not valid before unix timestamp ${payload.nbf} (current: ${nowSeconds}).`);
-      err.code = 'TOKEN_NOT_YET_VALID';
-      throw err;
-    }
+    // Directive 144 requirement 4: Contradiction checks MUST precede temporal validity check
+    // so contradictory time claims are tested and rejected directly without being masked by not-yet-valid.
     if (payload.nbf > payload.exp) {
       const err = new Error(`CONTRADICTORY_TIME_CLAIMS: Token nbf (${payload.nbf}) is after exp (${payload.exp}).`);
       err.code = 'CONTRADICTORY_TIME_CLAIMS';
@@ -319,24 +316,36 @@ export function verifyStagingWriteAuthorization(params = {}) {
       err.code = 'INCONSISTENT_TIME_CLAIMS';
       throw err;
     }
+    if (payload.nbf > nowSeconds) {
+      const err = new Error(`TOKEN_NOT_YET_VALID: Token not valid before unix timestamp ${payload.nbf} (current: ${nowSeconds}).`);
+      err.code = 'TOKEN_NOT_YET_VALID';
+      throw err;
+    }
   }
 
-  // Max lifetime verification
-  if (payload.exp - payload.iat > maxLifetimeSeconds) {
-    const err = new Error(`EXCESSIVE_TOKEN_LIFETIME: Authorization validity duration (${payload.exp - payload.iat}s) exceeds maximum permitted lifetime (${maxLifetimeSeconds}s).`);
+  // Max lifetime verification (Directive 144 requirement 4: hard cap at DEFAULT_MAX_LIFETIME_SECONDS = 3600s)
+  const effectiveMaxLifetime = Math.min(
+    params.maxLifetimeSeconds !== undefined ? params.maxLifetimeSeconds : DEFAULT_MAX_LIFETIME_SECONDS,
+    DEFAULT_MAX_LIFETIME_SECONDS
+  );
+  if (payload.exp - payload.iat > effectiveMaxLifetime) {
+    const err = new Error(`EXCESSIVE_TOKEN_LIFETIME: Authorization validity duration (${payload.exp - payload.iat}s) exceeds maximum permitted lifetime (${effectiveMaxLifetime}s).`);
     err.code = 'EXCESSIVE_TOKEN_LIFETIME';
     throw err;
   }
-  if (payload.nbf && (payload.exp - payload.nbf > maxLifetimeSeconds)) {
-    const err = new Error(`EXCESSIVE_TOKEN_LIFETIME: Authorization validity duration (${payload.exp - payload.nbf}s) exceeds maximum permitted lifetime (${maxLifetimeSeconds}s).`);
+  if (payload.nbf && (payload.exp - payload.nbf > effectiveMaxLifetime)) {
+    const err = new Error(`EXCESSIVE_TOKEN_LIFETIME: Authorization validity duration (${payload.exp - payload.nbf}s) exceeds maximum permitted lifetime (${effectiveMaxLifetime}s).`);
     err.code = 'EXCESSIVE_TOKEN_LIFETIME';
     throw err;
   }
 
-  // 10. Fail-Closed Administrative Credential-Containment Gate (Directive 143 Section 5)
+  // 10. Fail-Closed Administrative Credential-Containment Gate (Directive 143 Section 5 / Directive 144 Section 5)
   verifyAdminIncidentClosure(payload.incident_closure_ref, {
     adminClosureRecord,
-    adminRecordPath
+    adminRecordPath,
+    adminTrustAnchor: params.adminTrustAnchor,
+    adminKeyPath: params.adminKeyPath,
+    now
   });
 
   // 11. Criteria Scope Enforcement

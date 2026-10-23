@@ -82,6 +82,26 @@ describe('CTO Directive 141 Section 5: Authoritative Database Identity Reconcili
       assert.strictEqual(res.passed, true);
       assert.strictEqual(res.lifecycleState, 'PREPARED_AND_RECONCILED_IN_REPOSITORY');
     });
+
+    it('5. Preserves source confidence strings such as VERIFIED in alias rows without coercion to 1.0', () => {
+      const aliasRows = res.rowsByTable['public.organization_aliases'];
+      assert.ok(aliasRows && aliasRows.length > 0);
+      const verifiedAliases = aliasRows.filter(a => a.confidence === 'VERIFIED');
+      assert.ok(verifiedAliases.length > 0, 'Must preserve string VERIFIED confidence from Migration 065');
+    });
+
+    it('6. Reconciles exact sum: 1,207 catalog/provenance rows + 2 dataset metadata anchors = 1,209 total outbound rows across 8 tables', () => {
+      assert.strictEqual(res.metrics.totalRowsAcrossAllTables, 1209);
+      assert.strictEqual(res.metrics.catalogProvenanceSupportRows, 1207);
+      assert.strictEqual(res.metrics.datasetMetadataAnchorRows, 2);
+    });
+
+    it('7. Verifies child table rows generate valid deterministic UUIDs based on natural keys', () => {
+      const aliasRows = res.rowsByTable['public.organization_aliases'];
+      for (const row of aliasRows.slice(0, 10)) {
+        assert.match(row.id, /^[0-9a-f]{8}-[0-9a-f]{4}-[45][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i);
+      }
+    });
   });
 
   // ─── 2. CRIT-D02-02: CANDIDATE CONTEST CHUNKS ──────────────────────────────
@@ -166,6 +186,24 @@ describe('CTO Directive 141 Section 5: Authoritative Database Identity Reconcili
       assert.strictEqual(res.metrics.fieldIntegrity.mizoramGapCount, 5);
       assert.match(res.reconciliationAnalysis.mizoramBaselineGapDefect, /DQ-W021\.5-B2\.2E-001/);
     });
+
+    it('5. Preserves total_voters as null instead of duplicating registered_voters count', () => {
+      const metric = res.reconciliationAnalysis.outboundRowMetrics.total_voters;
+      assert.strictEqual(metric.nullCount, 4123);
+      assert.strictEqual(metric.completenessPercentage, 0);
+      for (const row of res.demographicRows) {
+        assert.strictEqual(row.total_voters, null, 'Must not duplicate registered_voters into total_voters');
+      }
+    });
+
+    it('6. Separates 134 statutory manifest gap seats from 5-seat Mizoram defect and reports field metrics', () => {
+      assert.strictEqual(res.reconciliationAnalysis.manifestGapStatutorySeatsCount, 134);
+      assert.strictEqual(res.reconciliationAnalysis.mizoramReconciliationDefectCount, 5);
+      assert.strictEqual(res.reconciliationAnalysis.mizoramDefectId, 'DQ-W021.5-B2.2E-001');
+      assert.strictEqual(res.reconciliationAnalysis.mizoramDefectStatus, 'STRICTLY_OPEN_PENDING_INDEPENDENT_CTO_ADJUDICATION');
+      assert.strictEqual(res.reconciliationAnalysis.outboundRowMetrics.registered_voters.nullCount, 134);
+      assert.strictEqual(res.reconciliationAnalysis.outboundRowMetrics.registered_voters.populatedCount, 3989);
+    });
   });
 
   // ─── 4. CRIT-F02-03: CORRECTED HISTORICAL ELECTION RESULTS ─────────────────
@@ -213,6 +251,16 @@ describe('CTO Directive 141 Section 5: Authoritative Database Identity Reconcili
       assert.strictEqual(row.margin, null);
       assert.notStrictEqual(row.winner_votes, 0);
       assert.notStrictEqual(row.margin, 0);
+    });
+
+    it('7. Rejects test-only election IDs and marks Stage 4 as BLOCKED_NOT_DEPLOYABLE with zero staging rows', () => {
+      assert.strictEqual(res.deploymentStatus, 'BLOCKED_NOT_DEPLOYABLE');
+      assert.strictEqual(res.outboundRowsToStaging, 0);
+      assert.strictEqual(res.stagingPayload.length, 0);
+      assert.match(res.reason, /Synthetic election IDs are strictly prohibited under Directive 144/);
+      for (const row of res.resultRows) {
+        assert.strictEqual(row.election_id, null, 'Synthetic election IDs must be eliminated');
+      }
     });
   });
 

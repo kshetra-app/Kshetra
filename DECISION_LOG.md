@@ -3286,3 +3286,37 @@
      - Production Supabase (`ehfafcnimmjusyvplbah`): strictly 0 queries, 0 mutations (100% air-gapped).
      - Staging Supabase (`fkpigozcqnmcvofuksar`): strictly 0 live queries, 0 live mutations.
      - Weight conservation preserved: 67.0% Repo-Verified, 10.5% Database-Pending, 22.5% Blocked, 0.0% Unimplemented, 0.0% Formal Acceptance (Rule IV-001).
+
+---
+
+### DEC-144: CTO DIRECTIVE 144 — CLOSING RESIDUAL SECURITY, SOURCE-TO-PAYLOAD, DATABASE-IDENTITY, AND EVIDENCE DEFECTS BEFORE ANY STAGING AUTHORIZATION
+- **Date:** 2026-10-23
+- **Status:** IMPLEMENTATION COMPLETE / SUBMITTED FOR INDEPENDENT CTO ADJUDICATION
+- **Authority:** CTO Directive 144 / Master Execution Framework Amendment v1.6 / Rule IV-001 Non-Self-Acceptance
+- **Context:** Independent remediation of all Directive 143 residual defects across four core workstreams:
+  1. **Workstream A: Operational Authorization & Air-Gap Bypasses:**
+     - Eliminated public operational access to individual stage-write functions via mandatory `INTERNAL_EXECUTION_TOKEN` symbol and `assertInternalExecutionContext()` guard; direct operational calls fail closed with `UNAUTHORIZED_STAGE_INVOCATION`; exported explicit `__test_only_adapters__` for isolated unit assertions.
+     - Enforced production-host rejection in the actual transport layer via `createStagingHttpTransport()`; unconditionally rejects URLs referencing production project ref `ehfafcnimmjusyvplbah` with `PRODUCTION_HOST_FORBIDDEN`, rejects non-staging hosts with `UNAUTHORIZED_STAGING_HOST`, and rejects non-https URLs with `INSECURE_PROTOCOL`.
+     - Prohibited caller-supplied `options.planDigest` overrides in `runStagingExecutionEngine()`, throwing `PLAN_DIGEST_OVERRIDE_PROHIBITED`; expanded `computeExecutionPlanDigest()` to bind to all source manifests, chunk files, transformation code (`reconcile_database_criteria_identities.mjs`, `generate_national_data_coverage_matrix.mjs`, `build_all_23_historical_results.mjs`), schema migrations (001, 050, 051, 064, 065), and verified conflict keys. Proved digest dynamism.
+     - Enforced hard 3,600s maximum token lifetime cap via `Math.min(params.maxLifetimeSeconds ?? 3600, 3600)`; reordered temporal claims so contradiction (`nbf > exp`) throws `CONTRADICTORY_TIME_CLAIMS` before the not-yet-valid check.
+     - Upgraded administrative containment verification to require authentic cryptographic signatures (Ed25519/RS256) on closure evidence, validating canonical incident IDs (`INC-2026-W021.5-ROTATION-VERIFIED`, `SEC-INC-2026-10-21-001`), project ref `fkpigozcqnmcvofuksar`, past certification timestamps, JWT secret rotation, service-role key rotation, access-log audit, and mutation investigation. Unauthenticated plain JSON fails closed with `ADMIN_RECORD_UNAUTHENTICATED`. Operational write gate remains strictly CLOSED.
+  2. **Workstream B: Source Data Correction Sent by Stages 1–4:**
+     - Stage 1 (Political Organizations Catalog): Replaced brittle parsing with robust SQL tuple tokenizer (`parseSqlTuple`); preserved 'VERIFIED' string confidence and dates without value shifting; generated RFC 4122 v5 deterministic UUIDs (`deterministicUuid`) for child table rows; reconciled exact arithmetic: 1,207 catalog/provenance rows + 2 dataset metadata anchors across 8 tables = 1,209 total outbound rows.
+     - Stage 2 (Candidacies): Confirmed 10 chunk manifests, 10 SHA-256 hashes, 11,334 source tuples, 36 natural key collisions, and 11,298 unique rows. Bound plan digest to all chunks and duplicate declarations. Zero remote execution claimed.
+     - Stage 3 (Constituency Demographics): Stopped assigning `registered_voters` to `total_voters` (set `total_voters: null`, 100% null across 4,123 outbound rows); calculated field-by-field completeness and null percentages across all 4,123 outbound rows; separated 134 statutory manifest gap seats from the 5-seat Mizoram defect (`DQ-W021.5-B2.2E-001`).
+     - Stage 4 (Historical Results): Eliminated synthetic `test-elec-...` IDs across all historical results, setting `election_id: null`; marked Stage 4 as `BLOCKED_NOT_DEPLOYABLE` with 0 rows dispatched to staging pending canonical election entity provisioning.
+  3. **Workstream C: Adversarial Regression Coverage:**
+     - Expanded `tests/staging-authorization-verifier.test.mjs` to 34 tests (34/34 PASS) and `tests/staging-execution-mode-b.test.mjs` to 17 tests (17/17 PASS).
+     - Expanded `tests/database-criteria-identity-reconciliation.test.mjs` to 36 tests (36/36 PASS).
+     - Added offline proofs for: direct invocation rejection, adapter isolation, transport layer air-gap enforcement, plan digest override prohibition, plan digest dynamism, 3,600s max lifetime cap, contradictory time claims, cryptographic admin containment verification, Stage 1 'VERIFIED' string and UUID preservation, Stage 3 total_voters null preservation, and Stage 4 BLOCKED_NOT_DEPLOYABLE status.
+  4. **Workstream D: Evidence Reconciliation & Non-Self-Acceptance:**
+     - Created `reports/w021_5_directive_144_defect_ledger.json` documenting defect-by-defect resolution.
+     - Synchronized `reports/w021_5_staging_execution_report.json`, `reports/w021_5_database_execution_register.json`, and `EXECUTION_STATE.md`.
+     - Invariants Preserved:
+       - Production Supabase (`ehfafcnimmjusyvplbah`): strictly 0 queries, 0 mutations (100% air-gapped).
+       - Remote staging (`fkpigozcqnmcvofuksar`): strictly 0 live queries, 0 live mutations under Directive 144.
+       - Admin credential containment: `CONTAINMENT_PENDING_ADMIN_CONFIRMATION` pending genuine external admin confirmation.
+       - Mizoram defect `DQ-W021.5-B2.2E-001`: strictly OPEN / pending independent CTO adjudication.
+       - Rule IV-001 Non-Self-Acceptance: Formal CTO acceptance remains strictly `0.0% — PENDING INDEPENDENT ADJUDICATION`.
+       - Weight conservation preserved: 67.0% Repo-Verified, 10.5% Database-Pending, 22.5% Blocked, 0.0% Unimplemented, 100.0% Conserved.
+
