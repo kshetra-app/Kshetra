@@ -1,9 +1,9 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "W021.5 Database Execution Register",
-  "directive": "CTO Directive 144",
+  "directive": "CTO Directive 145",
   "governingAuthority": "Master Execution Framework Amendment v1.6 / Rule IV-001 Non-Self-Acceptance",
-  "generatedAt": "2026-10-23T06:35:00.000Z",
+  "generatedAt": "2026-10-23T07:25:00.000Z",
   "baselineCommit": "5b8e52d1d8e5ba94b468985e526e90214211cea1",
   "airGapBoundary": {
     "productionDatabase": "ehfafcnimmjusyvplbah",
@@ -160,12 +160,12 @@
       "targetEnvironment": "staging (fkpigozcqnmcvofuksar)",
       "targetTable": "public.constituency_demographics",
       "conflictTarget": "constituency_id,election_year",
-      "currentState": "PREPARED_AND_RECONCILED_IN_REPOSITORY",
-      "authorizationStatus": "PENDING_SECRET_ROTATION_AND_CTO_AUTHORIZATION",
+      "currentState": "BLOCKED_NOT_DEPLOYABLE",
+      "authorizationStatus": "BLOCKED_NOT_DEPLOYABLE",
       "productionStatus": "AIR_GAPPED_UNEXECUTED",
       "queriesExecuted": 0,
       "mutationsExecuted": 0,
-      "blockingCondition": "Blocked by canonical external blockers EB-05 and EB-06, and P0 credential rotation on fkpigozcqnmcvofuksar.",
+      "blockingCondition": "Blocked by absence of authoritative repository crosswalk from statutory constituency identities to public.constituencies(internal_id) UUID foreign keys (4,123 unmapped seats). Stage 3 dispatches exactly 0 rows to staging while blocked under Directive 145 Item 6.",
       "sourceFiles": [
         "supabase/migrations/066_downstream_civic_extensions.sql",
         "scripts/build-demographics.mjs",
@@ -176,10 +176,13 @@
         "censusSource": "Census 2011 Primary Census Abstract (PCA)",
         "statutoryAssemblyTarget": 4123,
         "distinctStatesCovered": 31,
-        "schemaValid": true
+        "schemaValid": true,
+        "missingCanonicalMappingsCount": 4123,
+        "outboundRowsToStaging": 0,
+        "deploymentStatus": "BLOCKED_NOT_DEPLOYABLE"
       },
       "corroborationArtifact": "reports/w021_5_staging_execution_report.json",
-      "executionDetails": "Reconciled under CTO Directive 144. Submits all 4,123 statutory demographic seat rows to target table public.constituency_demographics with conflictTarget=constituency_id,election_year. Stop assigning registered_voters to total_voters: preserves total_voters as null (100% null across 4,123 outbound rows). Field-by-field completeness and null metrics calculated on all 4,123 outbound rows. Separates the 134 statutory manifest gap seats (where registered_voters and other metrics are null) from the 5-seat Mizoram turnout/voters defect (DQ-W021.5-B2.2E-001, strictly OPEN / pending independent CTO adjudication)."
+      "executionDetails": "Reconciled under CTO Directive 145. public.constituency_demographics.constituency_id is a UUID foreign key to public.constituencies(internal_id). Composite strings (e.g. TS-AC-1) are strictly prohibited from being passed as UUIDs. Marked BLOCKED_NOT_DEPLOYABLE with exactly 0 outbound rows to staging pending authoritative repository crosswalk. Preserves total_voters as null; absent manifest seats labeled UNVERIFIED (never ESTIMATE); 134 statutory manifest gap seats separated from 5-seat Mizoram defect DQ-W021.5-B2.2E-001."
     },
     {
       "artifactId": "DB-ART-004",

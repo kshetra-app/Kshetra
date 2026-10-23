@@ -7,9 +7,9 @@
 ## 1. Project & Execution Coordinates
 ```text
 PROJECT:               PANIN (formerly Kshetra)
-CURRENT_JOB:           W021.5 / CTO DIRECTIVE 144 (Residual Defect Closure Before Any Staging Authorization & Non-Self-Acceptance)
-LAST_COMPLETED_JOB:    CTO DIRECTIVE 143 (Execution-Path Truth, Cryptographic Scope Enforcement, Staging Gate Integrity & Independent Evidence Closure)
-NEXT_PERMITTED_JOB:    INDEPENDENT CTO ADJUDICATION (W021.5 / CTO Directive 144)
+CURRENT_JOB:           W021.5 / CTO DIRECTIVE 145 (Residual Defect Closure: Non-Bypassable Authorization, Schema Contracts, Aggregate Statuses & Test Dynamism)
+LAST_COMPLETED_JOB:    CTO DIRECTIVE 144 (Residual Defect Closure Before Any Staging Authorization & Non-Self-Acceptance)
+NEXT_PERMITTED_JOB:    INDEPENDENT CTO ADJUDICATION (W021.5 / CTO Directive 145)
 
 W021_5_B2_2C_STATUS:   ACCEPTED / COMPLETE / CLOSED (CTO Accepted Directive W021.5-CTO-NEXT-002, 2026-10-07)
 W021_5_B2_2C_HASH:     d514c64e8a80b928875f1ea03d0853e5d7e3675e0e3a4134c25958632fe675b7

@@ -1,7 +1,7 @@
 {
   "generator": "scripts/execute_staging_directive_139.mjs",
-  "directive": "CTO Directive 144 / Residual Defect Closure & Staging Execution Readiness",
-  "timestamp": "2026-10-23T06:49:14.928Z",
+  "directive": "CTO Directive 145 / Residual Defect Closure & Staging Execution Readiness",
+  "timestamp": "2026-10-23T07:30:08.242Z",
   "governingAuthority": "Master Execution Framework Amendment v1.6 / Rule IV-001 Non-Self-Acceptance",
   "stagingProjectRef": "fkpigozcqnmcvofuksar",
   "productionProjectRef": "ehfafcnimmjusyvplbah (AIR-GAPPED — 0 QUERIES, 0 MUTATIONS)",
@@ -16,17 +16,26 @@
     "actionRequired": "Project Administrator rotation of Supabase JWT Secret via Dashboard, service-role key rotation, and access-log audit"
   },
   "summary": {
-    "allStagesPrepared": true,
+    "allStagesPrepared": false,
     "stagingExecutionPerformed": false,
-    "totalCriteriaPrepared": 4,
-    "criteria": [
-      "CRIT-C02-02 (Political Organizations Catalog: 107 orgs + 1,100 support rows + 2 dataset metadata anchors across 8 tables = 1,209 rows)",
-      "CRIT-D02-02 (Candidate Contest Chunks: 10 chunks, 11,334 tuples, 11,298 unique rows, 36 duplicates)",
-      "CRIT-E01-02 (Constituency Demographics Baseline: 4,123 statutory assembly seats; total_voters null-safe; 134 manifest gap seats reported separately from DQ-W021.5-B2.2E-001)",
-      "CRIT-F02-03 (Corrected 23-State Historical Results: 2,243 statutory seats; synthetic IDs eliminated; marked BLOCKED_NOT_DEPLOYABLE pending canonical election entities)"
+    "totalCriteriaPrepared": 2,
+    "totalCriteriaBlocked": 2,
+    "blockedStages": [
+      "stage3_constituency_demographics",
+      "stage4_historical_election_results"
     ],
-    "workstreamStatus": "PREPARED_AND_RECONCILED_IN_REPOSITORY",
-    "databaseExecutionDisposition": "STAGING_EXECUTION_PENDING_ADMIN_ROTATION_AND_SEPARATE_AUTHORIZATION"
+    "readyStages": [
+      "stage1_political_organizations",
+      "stage2_candidacies"
+    ],
+    "criteria": [
+      "CRIT-C02-02 (Political Organizations Catalog: 107 orgs + 1,100 support rows + 2 dataset metadata anchors across 8 tables = 1,209 rows; RFC 4122 UUIDv5)",
+      "CRIT-D02-02 (Candidate Contest Chunks: 10 chunks, 11,334 tuples, 11,298 unique rows, 36 duplicates; conflict target: person_id,election_year,election_type,constituency_id)",
+      "CRIT-E01-02 (Constituency Demographics: BLOCKED_NOT_DEPLOYABLE pending authoritative constituency internal_id UUID crosswalk; 0 rows outbound)",
+      "CRIT-F02-03 (Corrected 23-State Historical Results: BLOCKED_NOT_DEPLOYABLE pending canonical election entities; 0 rows outbound)"
+    ],
+    "workstreamStatus": "PARTIALLY_READY_WITH_BLOCKED_STAGES",
+    "databaseExecutionDisposition": "STAGING_EXECUTION_BLOCKED_PENDING_ADMIN_ROTATION_CROSSWALK_AND_AUTHORIZATION"
   },
   "stages": {
     "stage1_political_organizations": {
@@ -34,6 +43,7 @@
       "taskId": "W021.5-C-02",
       "governingRequirement": "REQ-POL-002",
       "status": "PREPARED_AND_RECONCILED_IN_REPOSITORY",
+      "deploymentStatus": "PREPARED_AND_RECONCILED_IN_REPOSITORY",
       "stagingExecuted": false,
       "remoteCorroborated": false,
       "remoteCorroborationPending": true,
@@ -53,8 +63,8 @@
       ],
       "conflictTarget": "id",
       "rowsAffected": 0,
-      "startedAt": "2026-10-23T06:49:14.744Z",
-      "completedAt": "2026-10-23T06:49:14.755Z",
+      "startedAt": "2026-10-23T07:30:07.662Z",
+      "completedAt": "2026-10-23T07:30:07.722Z",
       "metrics": {
         "canonicalOrganizations": 107,
         "uniqueOrgIds": 107,
@@ -89,6 +99,7 @@
       "taskId": "W021.5-D-02",
       "governingRequirement": "REQ-CAN-002",
       "status": "PREPARED_AND_RECONCILED_IN_REPOSITORY",
+      "deploymentStatus": "PREPARED_AND_RECONCILED_IN_REPOSITORY",
       "stagingExecuted": false,
       "remoteCorroborated": false,
       "remoteCorroborationPending": true,
@@ -101,8 +112,8 @@
       ],
       "conflictTarget": "person_id,election_year,election_type,constituency_id",
       "rowsAffected": 0,
-      "startedAt": "2026-10-23T06:49:14.755Z",
-      "completedAt": "2026-10-23T06:49:14.810Z",
+      "startedAt": "2026-10-23T07:30:07.722Z",
+      "completedAt": "2026-10-23T07:30:07.833Z",
       "metrics": {
         "totalSubchunks": 10,
         "subchunkIds": [
@@ -133,10 +144,11 @@
       "criterionId": "CRIT-E01-02",
       "taskId": "W021.5-E-01",
       "governingRequirement": "REQ-DEM-001",
-      "status": "PREPARED_AND_RECONCILED_IN_REPOSITORY",
+      "status": "BLOCKED_NOT_DEPLOYABLE",
+      "deploymentStatus": "BLOCKED_NOT_DEPLOYABLE",
       "stagingExecuted": false,
       "remoteCorroborated": false,
-      "remoteCorroborationPending": true,
+      "remoteCorroborationPending": false,
       "localSourceVerified": true,
       "targetTables": [
         "public.constituency_demographics"
@@ -146,8 +158,11 @@
       ],
       "conflictTarget": "constituency_id,election_year",
       "rowsAffected": 0,
-      "startedAt": "2026-10-23T06:49:14.810Z",
-      "completedAt": "2026-10-23T06:49:14.851Z",
+      "outboundRowsToStaging": 0,
+      "reason": "MISSING_CANONICAL_CONSTITUENCY_UUID_CROSSWALK: public.constituency_demographics.constituency_id is a UUID foreign key to public.constituencies(internal_id). Repository contains composite seat strings (e.g. TS-AC-1) but no authoritative repository crosswalk to static internal_id UUIDs.",
+      "missingCanonicalMappingsCount": 4123,
+      "startedAt": "2026-10-23T07:30:07.833Z",
+      "completedAt": "2026-10-23T07:30:07.951Z",
       "metrics": {
         "totalConstituencies": 4123,
         "statutoryAssemblyTarget": 4123,
@@ -332,9 +347,10 @@
       ],
       "conflictTarget": "election_id,constituency_id",
       "rowsAffected": 0,
-      "reason": "Canonical election entities are not provisioned in repository for these 23 states. Zero synthetic IDs permitted under Directive 144.",
-      "startedAt": "2026-10-23T06:49:14.851Z",
-      "completedAt": "2026-10-23T06:49:14.928Z",
+      "outboundRowsToStaging": 0,
+      "reason": "Canonical election entities are not provisioned in repository for these 23 states. Zero synthetic IDs permitted under Directive 144/145.",
+      "startedAt": "2026-10-23T07:30:07.951Z",
+      "completedAt": "2026-10-23T07:30:08.242Z",
       "metrics": {
         "totalStatesCovered": 23,
         "totalHistoricalElectionRecords": 2243,

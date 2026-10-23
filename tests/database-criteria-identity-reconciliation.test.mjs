@@ -33,7 +33,8 @@ import {
   reconcileConstituencyDemographics,
   reconcileHistoricalElectionResults,
   reconcileAllDatabaseCriteria,
-  mapHistoricalCoverageToResultRow
+  mapHistoricalCoverageToResultRow,
+  rfc4122UuidV5
 } from '../scripts/reconcile_database_criteria_identities.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -96,11 +97,17 @@ describe('CTO Directive 141 Section 5: Authoritative Database Identity Reconcili
       assert.strictEqual(res.metrics.datasetMetadataAnchorRows, 2);
     });
 
-    it('7. Verifies child table rows generate valid deterministic UUIDs based on natural keys', () => {
+    it('7. Verifies child table rows generate valid deterministic UUIDs based on natural keys (RFC 4122 UUIDv5)', () => {
       const aliasRows = res.rowsByTable['public.organization_aliases'];
       for (const row of aliasRows.slice(0, 10)) {
-        assert.match(row.id, /^[0-9a-f]{8}-[0-9a-f]{4}-[45][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i);
+        assert.match(row.id, /^[0-9a-f]{8}-[0-9a-f]{4}-5[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i);
       }
+    });
+
+    it('8. Conforms strictly to RFC 4122 UUIDv5 standard test vector', () => {
+      const dnsNamespace = '6ba7b810-9dad-11d1-80b4-00c04fd430c8';
+      const derived = rfc4122UuidV5(dnsNamespace, 'python.org');
+      assert.strictEqual(derived, '886313e1-3b8a-5372-9b90-0c9aee199e5d');
     });
   });
 
@@ -203,6 +210,25 @@ describe('CTO Directive 141 Section 5: Authoritative Database Identity Reconcili
       assert.strictEqual(res.reconciliationAnalysis.mizoramDefectStatus, 'STRICTLY_OPEN_PENDING_INDEPENDENT_CTO_ADJUDICATION');
       assert.strictEqual(res.reconciliationAnalysis.outboundRowMetrics.registered_voters.nullCount, 134);
       assert.strictEqual(res.reconciliationAnalysis.outboundRowMetrics.registered_voters.populatedCount, 3989);
+    });
+
+    it('7. Marks Stage 3 as BLOCKED_NOT_DEPLOYABLE with 0 outbound rows and 4,123 unmapped seats', () => {
+      assert.strictEqual(res.deploymentStatus, 'BLOCKED_NOT_DEPLOYABLE');
+      assert.strictEqual(res.status, 'BLOCKED_NOT_DEPLOYABLE');
+      assert.strictEqual(res.outboundRowsToStaging, 0);
+      assert.strictEqual(res.stagingPayload.length, 0);
+      assert.strictEqual(res.missingCanonicalMappingsCount, 4123);
+      assert.match(res.blockedReason, /MISSING_CANONICAL_CONSTITUENCY_UUID_CROSSWALK/);
+    });
+
+    it('8. Sets absent manifest seats to data_status UNVERIFIED (never ESTIMATE) and prohibits composite string as constituency_id', () => {
+      const unverifiedRows = res.demographicRows.filter(r => r.data_status === 'UNVERIFIED');
+      assert.strictEqual(unverifiedRows.length, 134);
+      const estimateRows = res.demographicRows.filter(r => r.data_status === 'ESTIMATE');
+      assert.strictEqual(estimateRows.length, 0, 'Absent manifest seats must never be labeled ESTIMATE');
+      for (const row of res.demographicRows) {
+        assert.strictEqual(row.constituency_id, null, 'constituency_id must be null instead of composite string');
+      }
     });
   });
 

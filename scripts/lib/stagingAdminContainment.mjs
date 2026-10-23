@@ -184,6 +184,16 @@ export function verifyAdminIncidentClosure(closureRef, options = {}) {
   let signature;
   let algorithm = 'Ed25519';
 
+  if (typeof adminRecord === 'string' && adminRecord.trim().startsWith('{')) {
+    try {
+      adminRecord = JSON.parse(adminRecord);
+    } catch (e) {
+      const err = new Error(`ADMIN_RECORD_MALFORMED: Could not parse JSON administrative closure record: ${e.message}`);
+      err.code = 'ADMIN_RECORD_MALFORMED';
+      throw err;
+    }
+  }
+
   if (typeof adminRecord === 'string' && adminRecord.split('.').length === 3) {
     // JWS compact string format
     const [hB64, pB64, sB64] = adminRecord.split('.');

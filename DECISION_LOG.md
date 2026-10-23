@@ -3320,3 +3320,38 @@
        - Rule IV-001 Non-Self-Acceptance: Formal CTO acceptance remains strictly `0.0% — PENDING INDEPENDENT ADJUDICATION`.
        - Weight conservation preserved: 67.0% Repo-Verified, 10.5% Database-Pending, 22.5% Blocked, 0.0% Unimplemented, 100.0% Conserved.
 
+
+
+---
+
+### DEC-145: CTO DIRECTIVE 145 — REMEDIATING AUTHORIZATION, SCHEMA, PAYLOAD-TRUTH, AND VERIFICATION EVIDENCE DEFECTS
+- **Date:** 2026-10-23
+- **Status:** IMPLEMENTATION COMPLETE / SUBMITTED FOR INDEPENDENT CTO ADJUDICATION
+- **Authority:** CTO Directive 145 / Master Execution Framework Amendment v1.6 / Rule IV-001 Non-Self-Acceptance
+- **Context:** Comprehensive remediation of all Directive 144 independent audit findings across four core workstreams:
+  1. **Workstream A: Non-Bypassable Authorization & Transport Boundaries:**
+     - Made `INTERNAL_EXECUTION_TOKEN` and `assertInternalExecutionContext()` private to the operational module.
+     - Removed `__test_only_adapters__`, `executeStage1Staging`, `executeStage2Staging`, `executeStage3Staging`, `executeStage4Staging`, `setHttpTransport`, and `getHttpTransport` from operational module exports.
+     - Pinned operational trust anchors and durable replay state to controlled configuration (`process.env.KSHETRA_AUTH_PUBLIC_KEY`, `process.env.KSHETRA_ADMIN_PUBLIC_KEY`, `process.env.KSHETRA_ADMIN_CLOSURE_RECORD`, `.kshetra_runtime/staging_nonce_replay_store.json`).
+     - Strictly prohibited caller-injected options: `trustAnchor` (`CALLER_INJECTED_TRUST_ANCHOR_PROHIBITED`), `adminTrustAnchor`/`adminKeyPath`, `adminClosureRecord`/`adminRecordPath` (`CALLER_INJECTED_ADMIN_RECORD_PROHIBITED`), `storePath` (`CALLER_INJECTED_REPLAY_STORE_PROHIBITED`), `transport`/`customFetch`/`fetch` (`CALLER_INJECTED_TRANSPORT_PROHIBITED`), and `internalContext` (`CALLER_INJECTED_CONTEXT_PROHIBITED`).
+     - Operational transport is fixed and enforces HTTPS, strict staging hostname (`fkpigozcqnmcvofuksar.supabase.co`), and production air-gap rejection (`PRODUCTION_HOST_FORBIDDEN`) before every outbound request.
+     - Isolated direct stage testing into a separate test-only module (`tests/helpers/stagingStageTestAdapters.mjs`) with zero operational exposure.
+  2. **Workstream B: Canonical Plan-Digest Coverage & Sensitivity:**
+     - Extended `stagingExecutionPlan.mjs` canonical digest to hash all operational boundary artifacts (executor, authorization verifier, admin containment verifier, replay store, plan engine, schema preflight), transformation scripts, 8 schema migrations (including 040, 059, 066), 31 historical seed files, and manifests. Removed all optional `NOT_SEPARATELY_MATERIALIZED` placeholders; missing files fail closed.
+     - Replaced target-project-only sensitivity test with an isolated temporary repository copy test proving that altering a transformation script, a source data file, a schema migration, or an operational boundary file alters the computed plan digest without mutating the working repository or contacting a database.
+  3. **Workstream C: Schema Validity & Demographic Crosswalk:**
+     - Stage 3 Demographics: Prohibited composite strings (e.g. `TS-AC-1`) from being coerced to UUID foreign keys (`constituency_id: null`). Marked Stage 3 `BLOCKED_NOT_DEPLOYABLE` with 4,123 unmapped seats and 0 outbound rows to staging pending an authoritative repository crosswalk.
+     - Corrected demographic status semantics: absent manifest seats labeled `data_status: 'UNVERIFIED'` (never `'ESTIMATE'`); total_voters preserved as null; 134 statutory manifest gap seats separated from 5 Mizoram defect seats (`DQ-W021.5-B2.2E-001`).
+     - Built offline schema-contract preflight (`stagingSchemaPreflight.mjs`) validating column names, types, nullability, enums, FKs, and conflict targets before Stage 1 issues any request.
+     - Implemented genuine standards-compliant RFC 4122 UUIDv5 (`rfc4122UuidV5`) using SHA-1, version `0x50` and variant `0x80`, verified against RFC 4122 standard DNS test vector.
+     - Retained Stage 4 `BLOCKED_NOT_DEPLOYABLE` with 0 outbound rows to staging and excluded `public.election_results` from executable table grants.
+  4. **Workstream D: Truthful Execution & Evidence Statuses:**
+     - Corrected aggregate state handling: Mode B runner returns `REDUCED_SCOPE_EXECUTED_WITH_BLOCKED_STAGES_EXCLUDED` when Stages 3 & 4 are blocked; Mode A runner returns `PARTIALLY_READY_WITH_BLOCKED_STAGES` with 0 database execution.
+     - Enhanced network-denial preload harness across all Node.js networking primitives (Socket, HTTP/HTTPS, HTTP2, DGRAM, DNS promises/lookups, fetch, WebSocket).
+     - Reran full 20-suite verification manifest targeting CTO Directive 145.
+  5. **Invariants Preserved:**
+     - Production Supabase `ehfafcnimmjusyvplbah`: 100% air-gapped (0 queries, 0 mutations).
+     - Staging Supabase `fkpigozcqnmcvofuksar`: strictly 0 live queries, 0 live mutations under Directive 145.
+     - Mizoram defect `DQ-W021.5-B2.2E-001`: strictly OPEN / pending independent CTO adjudication.
+     - Rule IV-001 Non-Self-Acceptance: Formal CTO acceptance remains strictly `0.0% — PENDING INDEPENDENT ADJUDICATION`.
+     - Weight conservation preserved: 67.0% Repo-Verified, 10.5% Database-Pending, 22.5% Blocked, 0.0% Unimplemented, 100.0% Conserved.

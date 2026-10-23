@@ -1,0 +1,197 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Kshetra W021.5 — CTO Directive 145 Defect Ledger & Residual Remediation Register",
+  "directive": "CTO Directive 145: Close Residual Security-Boundary, Database-Schema, Payload-Truth, and Verification-Evidence Defects",
+  "governingAuthority": "Master Execution Framework Amendment v1.6 / Rule IV-001 Non-Self-Acceptance",
+  "timestamp": "2026-10-23T07:27:00.000Z",
+  "airGapStatus": {
+    "productionDatabase": "ehfafcnimmjusyvplbah",
+    "productionQueries": 0,
+    "productionMutations": 0,
+    "productionStatus": "AIR_GAPPED_ZERO_QUERIES_ZERO_MUTATIONS",
+    "stagingDatabase": "fkpigozcqnmcvofuksar",
+    "stagingQueries": 0,
+    "stagingMutations": 0,
+    "stagingStatus": "CONTAINMENT_PENDING_ADMIN_CONFIRMATION"
+  },
+  "formalAcceptanceStatus": "0.0% — PENDING INDEPENDENT ADJUDICATION",
+  "mizoramDefect": {
+    "defectId": "DQ-W021.5-B2.2E-001",
+    "status": "STRICTLY_OPEN_PENDING_INDEPENDENT_CTO_ADJUDICATION",
+    "description": "5 Mizoram statutory assembly seats with unrecorded turnout/voters preserved without zero-substitution"
+  },
+  "defects": [
+    {
+      "defectId": "DEF-D145-001",
+      "workstream": "Workstream A: Make authorization and transport boundaries non-bypassable",
+      "summary": "Internal execution token bypass and test adapters were exported from operational module",
+      "directiveRequirement": "Item 1: Make INTERNAL_EXECUTION_TOKEN and assertInternalExecutionContext() private to operational module. Remove production-accessible __test_only_adapters__ and stage-write exports. Put test adapters in a separate test-only module. Add adversarial tests.",
+      "remediationDetails": "Made INTERNAL_EXECUTION_TOKEN and assertInternalExecutionContext() strictly module-private. Removed __test_only_adapters__, executeStage1Staging, executeStage2Staging, executeStage3Staging, and executeStage4Staging from exports in scripts/execute_staging_directive_139.mjs. Created isolated test adapters in tests/helpers/stagingStageTestAdapters.mjs. Added adversarial tests verifying operational module does not export internal token, assertContext, adapters, or stage writers, and that injected internal contexts throw CALLER_INJECTED_CONTEXT_PROHIBITED.",
+      "sourceFilesModified": [
+        "scripts/execute_staging_directive_139.mjs",
+        "tests/helpers/stagingStageTestAdapters.mjs"
+      ],
+      "regressionTests": [
+        "tests/staging-execution-mode-b.test.mjs (Tests 11, 12, 16)"
+      ],
+      "classification": "REMEDIATED_AND_OFFLINE_VERIFIED"
+    },
+    {
+      "defectId": "DEF-D145-002",
+      "workstream": "Workstream A: Make authorization and transport boundaries non-bypassable",
+      "summary": "Operational execution accepted caller-controlled trust-anchor, admin-record, and replay-store injection",
+      "directiveRequirement": "Item 2: Remove caller-controlled trust-anchor injection (options.trustAnchor, options.adminTrustAnchor, adminKeyPath, replay store path). Pin trust roots to controlled configuration and durable persistent store. Add adversarial tests.",
+      "remediationDetails": "In runStagingExecutionEngine(): Strictly prohibited caller options options.trustAnchor (throws CALLER_INJECTED_TRUST_ANCHOR_PROHIBITED), options.adminTrustAnchor / options.adminKeyPath (throws CALLER_INJECTED_TRUST_ANCHOR_PROHIBITED), options.adminClosureRecord / options.adminRecordPath (throws CALLER_INJECTED_ADMIN_RECORD_PROHIBITED), and options.storePath (throws CALLER_INJECTED_REPLAY_STORE_PROHIBITED). Trust roots resolve strictly from process.env.KSHETRA_AUTH_PUBLIC_KEY, process.env.KSHETRA_ADMIN_PUBLIC_KEY, process.env.KSHETRA_ADMIN_CLOSURE_RECORD, and authoritative persistent path .kshetra_runtime/staging_nonce_replay_store.json. Added adversarial tests.",
+      "sourceFilesModified": [
+        "scripts/execute_staging_directive_139.mjs",
+        "scripts/lib/stagingAdminContainment.mjs"
+      ],
+      "regressionTests": [
+        "tests/staging-execution-mode-b.test.mjs (Test 13)",
+        "tests/staging-authorization-verifier.test.mjs (Tests 1, 17, 22, 23)"
+      ],
+      "classification": "REMEDIATED_AND_OFFLINE_VERIFIED"
+    },
+    {
+      "defectId": "DEF-D145-003",
+      "workstream": "Workstream A: Make authorization and transport boundaries non-bypassable",
+      "summary": "Operational execution allowed caller-supplied transport functions and mutable global transport hooks",
+      "directiveRequirement": "Item 3: Do not allow operational execution to use caller-supplied transport functions or mutable global custom-transport hooks. Operational transport must be fixed and enforce HTTPS and sole authorized staging hostname before every outbound request. Tests must prove injected function cannot bypass staging boundary.",
+      "remediationDetails": "Removed setHttpTransport, getHttpTransport, and customTransportFn from scripts/execute_staging_directive_139.mjs. runStagingExecutionEngine() rejects options.transport, options.customFetch, and options.fetch with CALLER_INJECTED_TRANSPORT_PROHIBITED. Operational transport is fixed via createStagingHttpTransport(), enforcing HTTPS, sole authorized staging hostname fkpigozcqnmcvofuksar.supabase.co, and production reference air-gap rejection before forwarding to globalThis.fetch. Added adversarial tests proving transport rejects insecure protocols, alternate hosts, and production hosts.",
+      "sourceFilesModified": [
+        "scripts/execute_staging_directive_139.mjs"
+      ],
+      "regressionTests": [
+        "tests/staging-execution-mode-b.test.mjs (Tests 14 & 15)",
+        "tests/staging-transport-isolation.test.mjs (Tests 1-5)"
+      ],
+      "classification": "REMEDIATED_AND_OFFLINE_VERIFIED"
+    },
+    {
+      "defectId": "DEF-D145-004",
+      "workstream": "Workstream B: Make the execution plan cover the actual executable operation",
+      "summary": "Execution plan digest omitted operational boundary files, missing schema migrations, and used NOT_SEPARATELY_MATERIALIZED placeholder for historical seed files",
+      "directiveRequirement": "Item 4: Extend canonical execution plan to hash operational executor, stage dispatch, verifiers, replay store, parser/reconciliation scripts, Migration 066 and all applicable schema migrations, and all actual source data artifacts (including 31 seed files). Remove NOT_SEPARATELY_MATERIALIZED placeholder; fail closed on missing files.",
+      "remediationDetails": "Extended scripts/lib/stagingExecutionPlan.mjs: Bound plan digest to all 6 operational boundary files (scripts/execute_staging_directive_139.mjs, stagingAuthorization.mjs, stagingAdminContainment.mjs, stagingReplayStore.mjs, stagingExecutionPlan.mjs, stagingSchemaPreflight.mjs), all transformation scripts, all 8 schema migrations (including 040, 059, 066), all 31 historical seed source files in data/seed/*-historical-results.ts, and all candidacy/demographic manifests. Removed NOT_SEPARATELY_MATERIALIZED placeholder. Missing required files fail closed with SOURCE_FILE_MISSING.",
+      "sourceFilesModified": [
+        "scripts/lib/stagingExecutionPlan.mjs"
+      ],
+      "regressionTests": [
+        "tests/staging-execution-mode-b.test.mjs (Tests 5, 8, 18)"
+      ],
+      "classification": "REMEDIATED_AND_OFFLINE_VERIFIED"
+    },
+    {
+      "defectId": "DEF-D145-005",
+      "workstream": "Workstream B: Make the execution plan cover the actual executable operation",
+      "summary": "Digest sensitivity test only changed target project reference without testing source, transformation, migration, or boundary files",
+      "directiveRequirement": "Item 5: Replace digest-sensitivity test that only changes project reference. In an isolated temporary repository copy, change transformation file, source data artifact, schema migration, and boundary changes, proving each alters digest without mutating working repo.",
+      "remediationDetails": "Implemented isolated temporary repository sensitivity test in tests/staging-execution-mode-b.test.mjs (Test 18). Copies required files into scratch/test_digest_sensitivity_repo. Proves modifying scripts/reconcile_database_criteria_identities.mjs alters digest; modifying data/seed/jammu-kashmir-historical-results.ts alters digest; modifying supabase/migrations/066_downstream_civic_extensions.sql alters digest; and modifying scripts/execute_staging_directive_139.mjs alters digest. Cleans up temp directory without mutating working repository or contacting a database.",
+      "sourceFilesModified": [
+        "tests/staging-execution-mode-b.test.mjs"
+      ],
+      "regressionTests": [
+        "tests/staging-execution-mode-b.test.mjs (Test 18)"
+      ],
+      "classification": "REMEDIATED_AND_OFFLINE_VERIFIED"
+    },
+    {
+      "defectId": "DEF-D145-006",
+      "workstream": "Workstream C: Make every stage schema-valid before any execution attempt",
+      "summary": "Stage 3 demographics passed composite strings (e.g. TS-AC-1) to public.constituency_demographics.constituency_id which is a UUID foreign key to public.constituencies(internal_id)",
+      "directiveRequirement": "Item 6: Build deterministic authoritative crosswalk to canonical internal_id UUIDs, or mark Stage 3 BLOCKED_NOT_DEPLOYABLE with explicit count of missing mappings and missing prerequisite. Send zero rows to staging while blocked.",
+      "remediationDetails": "In scripts/reconcile_database_criteria_identities.mjs: Prohibited composite strings from being coerced to UUID foreign keys (constituency_id: null). Because public.constituencies.internal_id UUIDs were generated via gen_random_uuid() without a static repository mapping, Stage 3 is explicitly marked status: 'BLOCKED_NOT_DEPLOYABLE', deploymentStatus: 'BLOCKED_NOT_DEPLOYABLE', outboundRowsToStaging: 0, stagingPayload: [], with missingCanonicalMappingsCount: 4123 and explicit missing prerequisite. Stage 3 dispatches exactly 0 rows to staging.",
+      "sourceFilesModified": [
+        "scripts/reconcile_database_criteria_identities.mjs",
+        "scripts/execute_staging_directive_139.mjs",
+        "scripts/lib/stagingExecutionPlan.mjs"
+      ],
+      "regressionTests": [
+        "tests/database-criteria-identity-reconciliation.test.mjs (CRIT-E01-02 Tests 7 & 8)",
+        "tests/staging-execution-mode-b.test.mjs (Test 4)"
+      ],
+      "classification": "REMEDIATED_AND_OFFLINE_VERIFIED"
+    },
+    {
+      "defectId": "DEF-D145-007",
+      "workstream": "Workstream C: Make every stage schema-valid before any execution attempt",
+      "summary": "Absent demographic manifest data was at risk of misclassification as ESTIMATE, and field-level completeness needed to derive from actual outbound rows",
+      "directiveRequirement": "Item 7: Preserve total_voters nulls. Do not label absent manifest data as ESTIMATE unless supported by authoritative estimation source and explicit policy. Account separately for 134 statutory manifest gap seats and 5-seat Mizoram defect. Calculate field metrics on outbound rows.",
+      "remediationDetails": "In scripts/reconcile_database_criteria_identities.mjs: Set data_status: 'UNVERIFIED' (never 'ESTIMATE') for absent manifest records. total_voters is preserved strictly as null (100% null across 4,123 outbound rows). Field-by-field completeness and null percentages derived directly from all 4,123 outbound rows. Accounted separately for 134 statutory manifest gap seats and 5 Mizoram defect seats (DQ-W021.5-B2.2E-001, strictly OPEN / pending independent CTO adjudication).",
+      "sourceFilesModified": [
+        "scripts/reconcile_database_criteria_identities.mjs"
+      ],
+      "regressionTests": [
+        "tests/database-criteria-identity-reconciliation.test.mjs (CRIT-E01-02 Tests 5, 6, 8)"
+      ],
+      "classification": "REMEDIATED_AND_OFFLINE_VERIFIED"
+    },
+    {
+      "defectId": "DEF-D145-008",
+      "workstream": "Workstream C: Make every stage schema-valid before any execution attempt",
+      "summary": "Offline schema-contract preflight was missing, child table UUIDs were custom non-standard UUIDv5, and Stage 2 conflict target required schema confirmation",
+      "directiveRequirement": "Item 8: Add offline schema-contract preflight for every stage before Stage 1 issues requests. Check columns, types, nullability, enums, FKs, and conflict targets. Confirm Stage 1 child table IDs against actual schema. Correct UUID implementation to genuine namespace-based RFC 4122 UUIDv5. Confirm Stage 2 conflict target against final schema.",
+      "remediationDetails": "Created scripts/lib/stagingSchemaPreflight.mjs: Validates column names, types, nullability, enums (data_status, confidence, election_type), FK formats (UUID format), and conflict targets before Stage 1 issues any request. Implemented standards-compliant RFC 4122 UUIDv5 (rfc4122UuidV5) in scripts/reconcile_database_criteria_identities.mjs using SHA-1 over namespace + name with version nibble 0x50 and variant 0x80, verified against official RFC 4122 DNS test vector ('python.org' -> '886313e1-3b8a-5372-9b90-0c9aee199e5d'). Confirmed Stage 2 conflict target 'person_id,election_year,election_type,constituency_id' against Migration 051 unique constraint.",
+      "sourceFilesModified": [
+        "scripts/lib/stagingSchemaPreflight.mjs",
+        "scripts/reconcile_database_criteria_identities.mjs",
+        "scripts/execute_staging_directive_139.mjs"
+      ],
+      "regressionTests": [
+        "tests/database-criteria-identity-reconciliation.test.mjs (CRIT-C02-02 Tests 7 & 8)",
+        "tests/staging-execution-mode-b.test.mjs (Test 17)"
+      ],
+      "classification": "REMEDIATED_AND_OFFLINE_VERIFIED"
+    },
+    {
+      "defectId": "DEF-D145-009",
+      "workstream": "Workstream C: Make every stage schema-valid before any execution attempt",
+      "summary": "Stage 4 historical election results required strict enforcement of BLOCKED_NOT_DEPLOYABLE with zero staging rows and exclusion from executable table grants",
+      "directiveRequirement": "Item 9: Retain prohibition on synthetic election IDs. Keep Stage 4 BLOCKED_NOT_DEPLOYABLE until canonical election entities and constituency identities are linked from repository evidence. Exclude public.election_results from executable table grants. Report what remains to be provisioned.",
+      "remediationDetails": "In scripts/reconcile_database_criteria_identities.mjs and scripts/execute_staging_directive_139.mjs: Retained election_id: null and status: 'BLOCKED_NOT_DEPLOYABLE', deploymentStatus: 'BLOCKED_NOT_DEPLOYABLE', outboundRowsToStaging: 0, stagingPayload: []. Excluded public.election_results from active staging write execution. Reported missing prerequisite: canonical election entity linkages for 23 states.",
+      "sourceFilesModified": [
+        "scripts/reconcile_database_criteria_identities.mjs",
+        "scripts/execute_staging_directive_139.mjs",
+        "scripts/lib/stagingExecutionPlan.mjs"
+      ],
+      "regressionTests": [
+        "tests/database-criteria-identity-reconciliation.test.mjs (CRIT-F02-03 Test 7)",
+        "tests/staging-execution-mode-b.test.mjs (Tests 4 & 10)"
+      ],
+      "classification": "REMEDIATED_AND_OFFLINE_VERIFIED"
+    },
+    {
+      "defectId": "DEF-D145-010",
+      "workstream": "Workstream D: Make execution and evidence statuses truthful",
+      "summary": "Mode B classified overall operation as ALL_STAGES_EXECUTED when stages were blocked, and Mode A labeled entire set PREPARED when stages were blocked",
+      "directiveRequirement": "Item 10: Mode B runner must not classify overall operation as ALL_STAGES_EXECUTED_PENDING_CORROBORATION when any stage returns BLOCKED_NOT_DEPLOYABLE. Mode A must not label entire set PREPARED_AND_RECONCILED_IN_REPOSITORY when stage work remains blocked. Distinguish partial readiness with blocked stages, failed preflight, and partial execution failure. Mode A must preserve 0 database execution.",
+      "remediationDetails": "In scripts/execute_staging_directive_139.mjs: Mode B runner checks if any stage is BLOCKED_NOT_DEPLOYABLE and sets executionStatus: 'REDUCED_SCOPE_EXECUTED_WITH_BLOCKED_STAGES_EXCLUDED' (not ALL_STAGES_EXECUTED). Mode A runner sets summary.workstreamStatus: 'PARTIALLY_READY_WITH_BLOCKED_STAGES', allStagesPrepared: false, blockedStages: ['stage3_constituency_demographics', 'stage4_historical_election_results'], readyStages: ['stage1_political_organizations', 'stage2_candidacies']. Mode A strictly preserves 0 database execution and 0 network requests.",
+      "sourceFilesModified": [
+        "scripts/execute_staging_directive_139.mjs",
+        "reports/w021_5_staging_execution_report.json"
+      ],
+      "regressionTests": [
+        "tests/staging-execution-mode-b.test.mjs (Tests 4 & 10)",
+        "tests/staging-transport-isolation.test.mjs (Test 5)"
+      ],
+      "classification": "REMEDIATED_AND_OFFLINE_VERIFIED"
+    },
+    {
+      "defectId": "DEF-D145-011",
+      "workstream": "Workstream D: Make execution and evidence statuses truthful",
+      "summary": "Verification manifest was stale (referencing Directive 143 17/20 PASS), and network-denial harness lacked coverage for all Node network primitives",
+      "directiveRequirement": "Item 11: Rerun targeted authorization, execution boundary, reconciliation, and isolation tests. Rerun full applicable verification suite from clean committed state. Update full-mandate verification manifest to reflect Directive 145, tested commit, test timestamps, suite outcomes, and stage execution/blocked statuses. Expand network-denial harness beyond fetch/http/socket/dns to cover all relevant Node network primitives.",
+      "remediationDetails": "Enhanced tests/fixtures/network-denial-preload.cjs to trap net.Socket.prototype.connect, net.connect, net.createConnection, tls.connect, http.request, http.get, https.request, https.get, http2.connect, dgram.createSocket, dgram.Socket.prototype.send, dgram.Socket.prototype.bind, dns.lookup, dns.resolve, dns.resolve4, dns.resolve6, dns.promises.*, globalThis.fetch, and globalThis.WebSocket. Updated scripts/verify_w021_5_full_mandate.cjs to target CTO Directive 145 and generate fresh full-mandate manifest.",
+      "sourceFilesModified": [
+        "tests/fixtures/network-denial-preload.cjs",
+        "tests/staging-transport-isolation.test.mjs",
+        "scripts/verify_w021_5_full_mandate.cjs"
+      ],
+      "regressionTests": [
+        "tests/staging-transport-isolation.test.mjs (Tests 1-5)",
+        "scripts/verify_w021_5_full_mandate.cjs"
+      ],
+      "classification": "REMEDIATED_AND_OFFLINE_VERIFIED"
+    }
+  ]
+}

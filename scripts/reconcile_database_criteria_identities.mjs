@@ -56,18 +56,40 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const REPO_ROOT = path.resolve(__dirname, '..');
 
+export const KSHETRA_NAMESPACE_UUID = '0215b22c-0000-0000-0000-000000000001';
+
+/**
+ * Genuine standards-compliant RFC 4122 UUIDv5 implementation (Directive 145 Item 8)
+ * Hashes namespace bytes (16 bytes) and UTF-8 name bytes using SHA-1,
+ * sets version bits to 0x50 and variant bits to 0x80.
+ */
+export function rfc4122UuidV5(namespaceUuid, name) {
+  const hex = namespaceUuid.replace(/-/g, '');
+  if (hex.length !== 32) {
+    throw new Error(`INVALID_NAMESPACE_UUID: Expected 32 hex chars, received "${namespaceUuid}"`);
+  }
+  const namespaceBytes = Buffer.from(hex, 'hex');
+  const nameBytes = Buffer.from(String(name), 'utf8');
+
+  const hash = crypto.createHash('sha1').update(namespaceBytes).update(nameBytes).digest();
+  const bytes = Buffer.from(hash.subarray(0, 16));
+
+  // Set version 5: (bytes[6] & 0x0f) | 0x50
+  bytes[6] = (bytes[6] & 0x0f) | 0x50;
+  // Set variant RFC 4122: (bytes[8] & 0x3f) | 0x80
+  bytes[8] = (bytes[8] & 0x3f) | 0x80;
+
+  const h = bytes.toString('hex');
+  return `${h.slice(0, 8)}-${h.slice(8, 12)}-${h.slice(12, 16)}-${h.slice(16, 20)}-${h.slice(20, 32)}`;
+}
+
 /**
  * Deterministically generates an RFC 4122 v5 UUID from an arbitrary seed string
+ * using the canonical Kshetra namespace UUID.
  * Ensures idempotent child table inserts without duplicate records.
  */
-export function deterministicUuid(seed) {
-  const hash = crypto.createHash('sha256').update(seed).digest('hex');
-  const p1 = hash.slice(0, 8);
-  const p2 = hash.slice(8, 12);
-  const p3 = '5' + hash.slice(13, 16);
-  const p4 = ((parseInt(hash.slice(16, 18), 16) & 0x3f) | 0x80).toString(16).padStart(2, '0') + hash.slice(18, 20);
-  const p5 = hash.slice(20, 32);
-  return `${p1}-${p2}-${p3}-${p4}-${p5}`;
+export function deterministicUuid(seed, namespace = KSHETRA_NAMESPACE_UUID) {
+  return rfc4122UuidV5(namespace, seed);
 }
 
 /**
@@ -629,6 +651,7 @@ export function reconcileCandidacies(options = {}) {
     lifecycleState: 'PREPARED_AND_RECONCILED_IN_REPOSITORY',
     targetTables: ['public.candidacies'],
     candidateRows,
+    uniqueCandidates: candidateRows,
     duplicatesAnalysis: {
       duplicateDeclarationsCount: duplicateCount,
       verifiedDuplicatePairsCount: matchedDeclaredDuplicates,
@@ -810,8 +833,13 @@ export function reconcileConstituencyDemographics(options = {}) {
     // preserve null unless a distinct, source-backed total_voters value exists.
     const hasDistinctTotalVoters = d && d.total_voters !== null && d.total_voters !== undefined && d.total_voters !== d.registered_voters;
     const totalVoters = hasDistinctTotalVoters ? d.total_voters : null;
+    // Directive 145 Item 6 & 7: constituency_id in public.constituency_demographics is a UUID foreign key
+    // referencing public.constituencies(internal_id). Composite strings such as TS-AC-1 must NOT be coerced to UUIDs.
+    // In the absence of an authoritative repository crosswalk to static internal_id UUIDs,
+    // constituency_id is set to null, and Stage 3 is marked BLOCKED_NOT_DEPLOYABLE with 0 rows sent to staging.
+    // Absent manifest data is preserved as null and labeled UNVERIFIED (never ESTIMATE).
     return {
-      constituency_id: compId,
+      constituency_id: null,
       constituency_code: compId,
       ac_no: r.acNo,
       state_code: r.jurisdiction,
@@ -829,11 +857,11 @@ export function reconcileConstituencyDemographics(options = {}) {
       st_percentage: d ? d.st_percentage : null,
       area_sq_km: d ? d.area_sq_km : null,
       polling_stations: d ? d.polling_stations : null,
-      data_status: d ? 'OFFICIAL' : 'ESTIMATE'
+      data_status: d ? 'OFFICIAL' : 'UNVERIFIED'
     };
   });
 
-  // Directive 144 requirement 8: Calculate null, zero, and completeness percentages on outbound rows
+  // Directive 144/145: Calculate null, zero, and completeness percentages on outbound rows
   const demographicMetricFields = [
     'total_population', 'registered_voters', 'total_voters', 'male_voters', 'female_voters',
     'turnout_percentage', 'literacy_rate', 'urban_percentage', 'sc_percentage', 'st_percentage',
@@ -865,11 +893,20 @@ export function reconcileConstituencyDemographics(options = {}) {
     };
   }
 
+  // Directive 145 Item 6: Stage 3 is BLOCKED_NOT_DEPLOYABLE because public.constituency_demographics.constituency_id
+  // requires a valid UUID foreign key referencing public.constituencies(internal_id).
   return {
     criterionId: 'CRIT-E01-02',
     taskId: 'W021.5-E-01',
     governingRequirement: 'REQ-DEM-001',
     passed,
+    status: 'BLOCKED_NOT_DEPLOYABLE',
+    deploymentStatus: 'BLOCKED_NOT_DEPLOYABLE',
+    blockedReason: 'MISSING_CANONICAL_CONSTITUENCY_UUID_CROSSWALK: public.constituency_demographics.constituency_id is a UUID foreign key to public.constituencies(internal_id). Repository contains composite seat strings (e.g. TS-AC-1) but no authoritative repository crosswalk to static internal_id UUIDs.',
+    missingCanonicalMappingsCount: records.length,
+    missingPrerequisite: 'Authoritative repository crosswalk from statutory constituency identities to public.constituencies(internal_id) UUIDs or migration establishing deterministic UUIDv5 internal_ids for public.constituencies.',
+    outboundRowsToStaging: 0,
+    stagingPayload: [],
     lifecycleState: 'PREPARED_AND_RECONCILED_IN_REPOSITORY',
     targetTables: ['public.constituency_demographics'],
     demographicRows,
