@@ -3,24 +3,28 @@
 /**
  * scripts/execute_staging_directive_139.mjs
  *
- * Master Execution Framework — W021.5 / CTO Directive 142 / Workstream D
+ * Master Execution Framework — W021.5 / CTO Directive 143 / Workstream D
  * Criteria: CRIT-C02-02, CRIT-D02-02, CRIT-E01-02, CRIT-F02-03
  * Governing Requirements: REQ-DB-001, REQ-POL-002, REQ-CAN-002, REQ-DEM-001, REQ-HIS-002
  * Governing Authority: Master Execution Framework Amendment v1.6 / Rule IV-001 Non-Self-Acceptance
  *
- * Execution Modes (CTO Directive 142 Sections 3 & 4):
+ * Execution Modes (CTO Directive 143 Sections 3, 4, 5, 6, 7):
  * 1. Mode A: Local Preparation & Reconciliation (DEFAULT MODE)
  *    - Default execution mode when invoked without flags.
  *    - Strictly ZERO network traffic, ZERO credentials required, ZERO tokens required.
  *    - Reconciles directly from repository source files, migrations, manifests, and tests.
  *    - Emits: PREPARED_AND_RECONCILED_IN_REPOSITORY.
  *    - Never emits fake live-database corroboration labels.
- * 2. Mode B: Authorized Staging Execution
- *    - Gated on external administrative credential rotation (CONTAINMENT_PENDING_ADMIN_CONFIRMATION).
- *    - Requires asymmetric cryptographic authorization token (--token-file=... or STAGING_WRITE_AUTHORIZATION_TOKEN).
+ * 2. Mode B: Authorized Staging Execution (Gated on Admin Containment & Crypto Auth)
+ *    - Fail-closed administrative containment gate: Requires verified incident closure record
+ *      confirming staging credential rotation and access-log audit.
+ *    - Requires asymmetric cryptographic authorization token (Ed25519 or RS256).
+ *    - Mandatory execution plan digest binding computed deterministically from source artifacts.
+ *    - Real data-bearing ingestion: submits actual row records via PostgREST upserts with verified conflict targets.
+ *    - Response verification: derives rowsAffected directly from returned representation; rejects row count mismatches.
+ *    - Partial execution safety: preserves state on partial failure; retries require separate authorization token.
  *    - Strictly targets allow-listed staging project fkpigozcqnmcvofuksar.
  *    - Air-gap invariant: Production ehfafcnimmjusyvplbah is 100% air-gapped (0 queries, 0 mutations).
- *    - Interruption-safe, idempotent upsert targeting explicit unique keys (zero wholesale DELETEs).
  *
  * Generates: reports/w021_5_staging_execution_report.json
  */
@@ -32,26 +36,34 @@ import { fileURLToPath } from 'node:url';
 import {
   verifyStagingWriteAuthorization,
   ALLOWED_STAGING_PROJECT_REF,
-  PROHIBITED_PRODUCTION_REF
+  PROHIBITED_PRODUCTION_REF,
+  ALL_AUTHORIZED_STAGING_TABLES
 } from './lib/stagingAuthorization.mjs';
 import {
   reconcilePoliticalOrganizations,
   reconcileCandidacies,
   reconcileConstituencyDemographics,
-  reconcileHistoricalElectionResults,
-  mapHistoricalCoverageToResultRow
+  reconcileHistoricalElectionResults
 } from './reconcile_database_criteria_identities.mjs';
+import {
+  computeExecutionPlanDigest
+} from './lib/stagingExecutionPlan.mjs';
+import {
+  verifyAdminIncidentClosure,
+  CONTAINMENT_STATUS
+} from './lib/stagingAdminContainment.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const REPO_ROOT = path.resolve(__dirname, '..');
 
+export { ALLOWED_STAGING_PROJECT_REF, PROHIBITED_PRODUCTION_REF, ALL_AUTHORIZED_STAGING_TABLES };
 export const ALLOWED_STAGING_HOSTNAME = `${ALLOWED_STAGING_PROJECT_REF}.supabase.co`;
 
-// ─── 1. MODE & ARGUMENT RESOLUTION (Directive 142 Section 3.2 & 4.1) ──────────
+// ─── 1. MODE & ARGUMENT RESOLUTION ───────────────────────────────────────────
 
 export function parseExecutionArguments(argv = process.argv.slice(2)) {
-  let mode = 'local'; // DEFAULT MODE IS LOCAL PREPARATION (Directive 142 Section 3.2)
+  let mode = 'local'; // DEFAULT MODE IS LOCAL PREPARATION
   let tokenFile = null;
   let authToken = process.env.STAGING_WRITE_AUTHORIZATION_TOKEN || null;
   let planDigest = null;
@@ -87,7 +99,7 @@ export function parseExecutionArguments(argv = process.argv.slice(2)) {
   };
 }
 
-// ─── 2. INJECTABLE TRANSPORT BOUNDARY (Directive 142 Section 3.3) ─────────────
+// ─── 2. INJECTABLE TRANSPORT BOUNDARY & INSTRUMENTATION ───────────────────────
 
 let transportCallCount = 0;
 let customTransportFn = null;
@@ -105,7 +117,13 @@ export function setHttpTransport(transportFn) {
 }
 
 export function getHttpTransport() {
-  return customTransportFn || defaultTransport;
+  if (customTransportFn) {
+    return async (url, options = {}) => {
+      transportCallCount++;
+      return customTransportFn(url, options);
+    };
+  }
+  return defaultTransport;
 }
 
 async function defaultTransport(url, options = {}) {
@@ -120,10 +138,11 @@ async function defaultTransport(url, options = {}) {
   return fetch(url, options);
 }
 
-// ─── 3. MODE B STAGING EXECUTOR IMPLEMENTATION (Directive 142 Section 4.2) ───
+// ─── 3. REAL DATA-BEARING STAGING EXECUTION ENGINE (Directive 143 Section 3) ──
 
 /**
- * Execute Stage 1 (CRIT-C02-02: Political Organizations Catalog) via transport
+ * Executes Stage 1 (CRIT-C02-02: Political Organizations Catalog & Child Tables)
+ * Submits actual row records to the 8 catalog tables via PostgREST upsert.
  */
 export async function executeStage1Staging(options = {}) {
   const startedAt = new Date().toISOString();
@@ -131,31 +150,72 @@ export async function executeStage1Staging(options = {}) {
   const targetHost = options.targetHost || `https://${ALLOWED_STAGING_HOSTNAME}`;
   const serviceKey = options.serviceKey;
 
-  // Read authoritative migration file
-  const migrationPath = path.join(REPO_ROOT, 'supabase', 'migrations', '065_canonical_political_organization_registry.sql');
-  if (!fs.existsSync(migrationPath)) {
-    throw new Error(`MIGRATION_FILE_MISSING: Migration 065 file not found: ${migrationPath}`);
+  const r1 = reconcilePoliticalOrganizations({ repoRoot: REPO_ROOT });
+  if (!r1.passed || !r1.rowsByTable) {
+    throw new Error('STAGE_1_PREPARATION_FAILED: Could not reconcile political organizations catalog from repository');
   }
-  const sqlContent = fs.readFileSync(migrationPath, 'utf8');
 
-  // POST to rpc/exec_sql or batch endpoints
-  const response = await transport(`${targetHost}/rest/v1/rpc/apply_political_organizations_catalog`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'apikey': serviceKey,
-      'Authorization': `Bearer ${serviceKey}`,
-      'Prefer': 'return=minimal'
-    },
-    body: JSON.stringify({
-      migration: '065_canonical_political_organization_registry',
-      expectedRecords: 1207
-    })
-  });
+  let totalRowsAffected = 0;
+  const tableResults = {};
 
-  if (!response.ok) {
-    const errorBody = await response.text();
-    throw new Error(`STAGE_1_REMOTE_EXECUTION_FAILED: Status ${response.status} - ${errorBody}`);
+  // Upsert across all 8 tables in foreign-key dependency order
+  const tableOrder = [
+    'public.datasets',
+    'public.dataset_versions',
+    'public.provenance_records',
+    'public.political_organizations',
+    'public.organization_relationships',
+    'public.organization_multilingual_names',
+    'public.organization_symbols',
+    'public.organization_aliases'
+  ];
+
+  for (const fullTableName of tableOrder) {
+    const rows = r1.rowsByTable[fullTableName];
+    if (!rows || rows.length === 0) continue;
+
+    const endpointName = fullTableName.replace('public.', '');
+    const url = `${targetHost}/rest/v1/${endpointName}?on_conflict=id`;
+
+    const response = await transport(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': serviceKey,
+        'Authorization': `Bearer ${serviceKey}`,
+        'Prefer': 'resolution=merge-duplicates,return=representation'
+      },
+      body: JSON.stringify(rows)
+    });
+
+    if (!response.ok) {
+      const errorBody = await response.text();
+      throw new Error(`STAGE_1_REMOTE_EXECUTION_FAILED: Status ${response.status} on ${endpointName} - ${errorBody}`);
+    }
+
+    const responseText = await response.text();
+    let resultRows;
+    try {
+      resultRows = JSON.parse(responseText);
+    } catch (e) {
+      throw new Error(`STAGE_1_MALFORMED_RESPONSE: Invalid JSON response on ${endpointName}: ${responseText}`);
+    }
+
+    if (!Array.isArray(resultRows)) {
+      if (resultRows && resultRows.error) {
+        throw new Error(`STAGE_1_SEMANTIC_ERROR: Remote database returned semantic error on ${endpointName}: ${JSON.stringify(resultRows)}`);
+      }
+      throw new Error(`STAGE_1_INVALID_RESPONSE_SHAPE: Expected JSON array of affected rows, received: ${responseText}`);
+    }
+
+    if (resultRows.length !== rows.length) {
+      throw new Error(
+        `STAGE_1_ROW_COUNT_MISMATCH: Table ${endpointName} reported ${resultRows.length} affected rows, expected ${rows.length}`
+      );
+    }
+
+    totalRowsAffected += resultRows.length;
+    tableResults[fullTableName] = resultRows.length;
   }
 
   return {
@@ -166,23 +226,19 @@ export async function executeStage1Staging(options = {}) {
     stagingExecuted: true,
     remoteCorroborated: false,
     remoteCorroborationPending: true,
-    targetTables: [
-      'public.political_organizations',
-      'public.organization_relationships',
-      'public.organization_multilingual_names',
-      'public.organization_symbols',
-      'public.organization_aliases',
-      'public.provenance_records'
-    ],
+    targetTables: tableOrder,
     operations: ['UPSERT'],
-    rowsAffected: 1207,
+    conflictTarget: 'id',
+    rowsAffected: totalRowsAffected,
+    tableBreakdown: tableResults,
     startedAt,
     completedAt: new Date().toISOString()
   };
 }
 
 /**
- * Execute Stage 2 (CRIT-D02-02: Candidacy Contest Chunks) via transport
+ * Executes Stage 2 (CRIT-D02-02: Candidate Profiles & Contests)
+ * Submits actual unique candidate rows via PostgREST upsert on uq_candidacies.
  */
 export async function executeStage2Staging(options = {}) {
   const startedAt = new Date().toISOString();
@@ -190,25 +246,50 @@ export async function executeStage2Staging(options = {}) {
   const targetHost = options.targetHost || `https://${ALLOWED_STAGING_HOSTNAME}`;
   const serviceKey = options.serviceKey;
 
-  // Post to batch upsert endpoint targeting unique constraint uq_candidacies
-  const response = await transport(`${targetHost}/rest/v1/rpc/apply_candidate_contest_chunks`, {
+  const r2 = reconcileCandidacies({ repoRoot: REPO_ROOT });
+  if (!r2.passed || !r2.candidateRows) {
+    throw new Error('STAGE_2_PREPARATION_FAILED: Could not reconcile candidate contest population from repository');
+  }
+
+  const candidacyRows = r2.candidateRows;
+  const conflictTarget = 'person_id,election_year,election_type,constituency_id';
+  const url = `${targetHost}/rest/v1/candidacies?on_conflict=${conflictTarget}`;
+
+  const response = await transport(url, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
       'apikey': serviceKey,
       'Authorization': `Bearer ${serviceKey}`,
-      'Prefer': 'resolution=merge-duplicates'
+      'Prefer': 'resolution=merge-duplicates,return=representation'
     },
-    body: JSON.stringify({
-      chunksTotal: 10,
-      uniqueTarget: 11298,
-      onConflict: 'person_id,election_year,election_type,constituency_id'
-    })
+    body: JSON.stringify(candidacyRows)
   });
 
   if (!response.ok) {
     const errorBody = await response.text();
     throw new Error(`STAGE_2_REMOTE_EXECUTION_FAILED: Status ${response.status} - ${errorBody}`);
+  }
+
+  const responseText = await response.text();
+  let resultRows;
+  try {
+    resultRows = JSON.parse(responseText);
+  } catch (e) {
+    throw new Error(`STAGE_2_MALFORMED_RESPONSE: Invalid JSON response on candidacies: ${responseText}`);
+  }
+
+  if (!Array.isArray(resultRows)) {
+    if (resultRows && resultRows.error) {
+      throw new Error(`STAGE_2_SEMANTIC_ERROR: Remote database returned semantic error: ${JSON.stringify(resultRows)}`);
+    }
+    throw new Error(`STAGE_2_INVALID_RESPONSE_SHAPE: Expected JSON array of affected rows, received: ${responseText}`);
+  }
+
+  if (resultRows.length !== candidacyRows.length) {
+    throw new Error(
+      `STAGE_2_ROW_COUNT_MISMATCH: Candidacies reported ${resultRows.length} affected rows, expected ${candidacyRows.length}`
+    );
   }
 
   return {
@@ -221,14 +302,16 @@ export async function executeStage2Staging(options = {}) {
     remoteCorroborationPending: true,
     targetTables: ['public.candidacies'],
     operations: ['UPSERT'],
-    rowsAffected: 11298,
+    conflictTarget,
+    rowsAffected: resultRows.length,
     startedAt,
     completedAt: new Date().toISOString()
   };
 }
 
 /**
- * Execute Stage 3 (CRIT-E01-02: Constituency Demographics Baseline) via transport
+ * Executes Stage 3 (CRIT-E01-02: Constituency Demographics Baseline)
+ * Submits actual statutory demographic rows via PostgREST upsert on uq_constituency_demographics.
  */
 export async function executeStage3Staging(options = {}) {
   const startedAt = new Date().toISOString();
@@ -236,23 +319,50 @@ export async function executeStage3Staging(options = {}) {
   const targetHost = options.targetHost || `https://${ALLOWED_STAGING_HOSTNAME}`;
   const serviceKey = options.serviceKey;
 
-  const response = await transport(`${targetHost}/rest/v1/rpc/apply_constituency_demographics_baseline`, {
+  const r3 = reconcileConstituencyDemographics({ repoRoot: REPO_ROOT });
+  if (!r3.passed || !r3.demographicRows) {
+    throw new Error('STAGE_3_PREPARATION_FAILED: Could not reconcile constituency demographics baseline from repository');
+  }
+
+  const demographicRows = r3.demographicRows;
+  const conflictTarget = 'constituency_id,election_year';
+  const url = `${targetHost}/rest/v1/constituency_demographics?on_conflict=${conflictTarget}`;
+
+  const response = await transport(url, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
       'apikey': serviceKey,
       'Authorization': `Bearer ${serviceKey}`,
-      'Prefer': 'resolution=merge-duplicates'
+      'Prefer': 'resolution=merge-duplicates,return=representation'
     },
-    body: JSON.stringify({
-      totalSeats: 4123,
-      onConflict: 'constituency_code,election_year'
-    })
+    body: JSON.stringify(demographicRows)
   });
 
   if (!response.ok) {
     const errorBody = await response.text();
     throw new Error(`STAGE_3_REMOTE_EXECUTION_FAILED: Status ${response.status} - ${errorBody}`);
+  }
+
+  const responseText = await response.text();
+  let resultRows;
+  try {
+    resultRows = JSON.parse(responseText);
+  } catch (e) {
+    throw new Error(`STAGE_3_MALFORMED_RESPONSE: Invalid JSON response on constituency_demographics: ${responseText}`);
+  }
+
+  if (!Array.isArray(resultRows)) {
+    if (resultRows && resultRows.error) {
+      throw new Error(`STAGE_3_SEMANTIC_ERROR: Remote database returned semantic error: ${JSON.stringify(resultRows)}`);
+    }
+    throw new Error(`STAGE_3_INVALID_RESPONSE_SHAPE: Expected JSON array of affected rows, received: ${responseText}`);
+  }
+
+  if (resultRows.length !== demographicRows.length) {
+    throw new Error(
+      `STAGE_3_ROW_COUNT_MISMATCH: Constituency demographics reported ${resultRows.length} affected rows, expected ${demographicRows.length}`
+    );
   }
 
   return {
@@ -265,14 +375,16 @@ export async function executeStage3Staging(options = {}) {
     remoteCorroborationPending: true,
     targetTables: ['public.constituency_demographics'],
     operations: ['UPSERT'],
-    rowsAffected: 4123,
+    conflictTarget,
+    rowsAffected: resultRows.length,
     startedAt,
     completedAt: new Date().toISOString()
   };
 }
 
 /**
- * Execute Stage 4 (CRIT-F02-03: Historical Election Results) via transport
+ * Executes Stage 4 (CRIT-F02-03: Historical Election Results for 23 States)
+ * Submits actual historical results rows via PostgREST upsert on (election_id, constituency_id).
  */
 export async function executeStage4Staging(options = {}) {
   const startedAt = new Date().toISOString();
@@ -280,24 +392,50 @@ export async function executeStage4Staging(options = {}) {
   const targetHost = options.targetHost || `https://${ALLOWED_STAGING_HOSTNAME}`;
   const serviceKey = options.serviceKey;
 
-  const response = await transport(`${targetHost}/rest/v1/rpc/apply_historical_election_results`, {
+  const r4 = reconcileHistoricalElectionResults({ repoRoot: REPO_ROOT });
+  if (!r4.passed || !r4.resultRows) {
+    throw new Error('STAGE_4_PREPARATION_FAILED: Could not reconcile historical election results from repository');
+  }
+
+  const resultRows = r4.resultRows;
+  const conflictTarget = 'election_id,constituency_id';
+  const url = `${targetHost}/rest/v1/election_results?on_conflict=${conflictTarget}`;
+
+  const response = await transport(url, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
       'apikey': serviceKey,
       'Authorization': `Bearer ${serviceKey}`,
-      'Prefer': 'resolution=merge-duplicates'
+      'Prefer': 'resolution=merge-duplicates,return=representation'
     },
-    body: JSON.stringify({
-      statesCount: 23,
-      totalSeats: 2243,
-      onConflict: 'election_id,constituency_id'
-    })
+    body: JSON.stringify(resultRows)
   });
 
   if (!response.ok) {
     const errorBody = await response.text();
     throw new Error(`STAGE_4_REMOTE_EXECUTION_FAILED: Status ${response.status} - ${errorBody}`);
+  }
+
+  const responseText = await response.text();
+  let returnedRows;
+  try {
+    returnedRows = JSON.parse(responseText);
+  } catch (e) {
+    throw new Error(`STAGE_4_MALFORMED_RESPONSE: Invalid JSON response on election_results: ${responseText}`);
+  }
+
+  if (!Array.isArray(returnedRows)) {
+    if (returnedRows && returnedRows.error) {
+      throw new Error(`STAGE_4_SEMANTIC_ERROR: Remote database returned semantic error: ${JSON.stringify(returnedRows)}`);
+    }
+    throw new Error(`STAGE_4_INVALID_RESPONSE_SHAPE: Expected JSON array of affected rows, received: ${responseText}`);
+  }
+
+  if (returnedRows.length !== resultRows.length) {
+    throw new Error(
+      `STAGE_4_ROW_COUNT_MISMATCH: Election results reported ${returnedRows.length} affected rows, expected ${resultRows.length}`
+    );
   }
 
   return {
@@ -310,7 +448,8 @@ export async function executeStage4Staging(options = {}) {
     remoteCorroborationPending: true,
     targetTables: ['public.election_results'],
     operations: ['UPSERT'],
-    rowsAffected: 2243,
+    conflictTarget,
+    rowsAffected: returnedRows.length,
     startedAt,
     completedAt: new Date().toISOString()
   };
@@ -331,9 +470,6 @@ export async function runStagingExecutionEngine(options = {}) {
   if (isDryRun) {
     // ─── MODE A: LOCAL PREPARATION & RECONCILIATION ──────────────────────────
     // Strictly ZERO network calls, ZERO credentials required, ZERO tokens required.
-    const startOverall = Date.now();
-
-    // Stage 1
     const s1Start = new Date().toISOString();
     const r1 = reconcilePoliticalOrganizations({ repoRoot: REPO_ROOT });
     stageResults.stage1_political_organizations = {
@@ -346,21 +482,23 @@ export async function runStagingExecutionEngine(options = {}) {
       remoteCorroborationPending: true,
       localSourceVerified: true,
       targetTables: [
+        'public.datasets',
+        'public.dataset_versions',
+        'public.provenance_records',
         'public.political_organizations',
         'public.organization_relationships',
         'public.organization_multilingual_names',
         'public.organization_symbols',
-        'public.organization_aliases',
-        'public.provenance_records'
+        'public.organization_aliases'
       ],
       operations: ['UPSERT'],
+      conflictTarget: 'id',
       rowsAffected: 0,
       startedAt: s1Start,
       completedAt: new Date().toISOString(),
       metrics: r1.metrics
     };
 
-    // Stage 2
     const s2Start = new Date().toISOString();
     const r2 = reconcileCandidacies({ repoRoot: REPO_ROOT });
     stageResults.stage2_candidacies = {
@@ -374,13 +512,13 @@ export async function runStagingExecutionEngine(options = {}) {
       localSourceVerified: true,
       targetTables: ['public.candidacies'],
       operations: ['UPSERT'],
+      conflictTarget: 'person_id,election_year,election_type,constituency_id',
       rowsAffected: 0,
       startedAt: s2Start,
       completedAt: new Date().toISOString(),
       metrics: r2.metrics
     };
 
-    // Stage 3
     const s3Start = new Date().toISOString();
     const r3 = reconcileConstituencyDemographics({ repoRoot: REPO_ROOT });
     stageResults.stage3_constituency_demographics = {
@@ -394,13 +532,13 @@ export async function runStagingExecutionEngine(options = {}) {
       localSourceVerified: true,
       targetTables: ['public.constituency_demographics'],
       operations: ['UPSERT'],
+      conflictTarget: 'constituency_id,election_year',
       rowsAffected: 0,
       startedAt: s3Start,
       completedAt: new Date().toISOString(),
       metrics: r3.metrics
     };
 
-    // Stage 4
     const s4Start = new Date().toISOString();
     const r4 = reconcileHistoricalElectionResults({ repoRoot: REPO_ROOT });
     stageResults.stage4_historical_election_results = {
@@ -414,6 +552,7 @@ export async function runStagingExecutionEngine(options = {}) {
       localSourceVerified: true,
       targetTables: ['public.election_results'],
       operations: ['UPSERT'],
+      conflictTarget: 'election_id,constituency_id',
       rowsAffected: 0,
       startedAt: s4Start,
       completedAt: new Date().toISOString(),
@@ -424,29 +563,29 @@ export async function runStagingExecutionEngine(options = {}) {
 
     const report = {
       generator: 'scripts/execute_staging_directive_139.mjs',
-      directive: 'CTO Directive 142 / Final Local Remediation & Staging Execution Readiness',
+      directive: 'CTO Directive 143 / Local Remediation & Staging Execution Readiness',
       timestamp: new Date().toISOString(),
       governingAuthority: 'Master Execution Framework Amendment v1.6 / Rule IV-001 Non-Self-Acceptance',
       stagingProjectRef: ALLOWED_STAGING_PROJECT_REF,
       productionProjectRef: `${PROHIBITED_PRODUCTION_REF} (AIR-GAPPED — 0 QUERIES, 0 MUTATIONS)`,
       executionMode: 'MODE_A_LOCAL_PREPARATION_AND_RECONCILIATION',
       stagingExecutionPerformed: false,
-      networkRequestsAttempted: getTransportCallCount(), // Measured from instrumentation
+      networkRequestsAttempted: getTransportCallCount(),
       securityIncidentContainment: {
-        status: 'CONTAINMENT_PENDING_ADMIN_CONFIRMATION',
+        status: CONTAINMENT_STATUS.PENDING,
         hardcodedFallbackSecretRemoved: true,
         missingCredentialsBehavior: 'FAIL_CLOSED',
         exposureScope: 'Staging fkpigozcqnmcvofuksar exclusively (Production unexposed)',
-        actionRequired: 'Project Administrator rotation of Supabase JWT Secret via Dashboard'
+        actionRequired: 'Project Administrator rotation of Supabase JWT Secret via Dashboard and access-log audit'
       },
       summary: {
         allStagesPrepared: allPrepared,
         stagingExecutionPerformed: false,
         totalCriteriaPrepared: 4,
         criteria: [
-          'CRIT-C02-02 (Political Organizations Catalog: 107 orgs + 1,100 child rows = 1,207 total)',
+          'CRIT-C02-02 (Political Organizations Catalog: 107 orgs + 1,102 support rows across 8 tables = 1,209 rows)',
           'CRIT-D02-02 (Candidate Contest Chunks: 10 chunks, 11,334 tuples, 11,298 unique rows, 36 duplicates)',
-          'CRIT-E01-02 (Constituency Demographics Profiles: 4,123 statutory assembly seats)',
+          'CRIT-E01-02 (Constituency Demographics Baseline: 4,123 statutory assembly seats)',
           'CRIT-F02-03 (Corrected 23-State Historical Results: 2,243 statutory seats, non-destructive upsert)'
         ],
         workstreamStatus: allPrepared ? 'PREPARED_AND_RECONCILED_IN_REPOSITORY' : 'FAILED',
@@ -460,7 +599,7 @@ export async function runStagingExecutionEngine(options = {}) {
     return report;
 
   } else {
-    // ─── MODE B: AUTHORIZED STAGING EXECUTION ─────────────────────────────────
+    // ─── MODE B: AUTHORIZED STAGING WRITE EXECUTION ───────────────────────────
     const targetUrl = options.targetUrl || process.env.SUPABASE_URL || `https://${ALLOWED_STAGING_HOSTNAME}`;
     if (!targetUrl.startsWith('https://')) {
       const err = new Error('INSECURE_PROTOCOL: Insecure protocol: staging connection strictly requires https:');
@@ -499,25 +638,25 @@ export async function runStagingExecutionEngine(options = {}) {
       throw err;
     }
 
-    // Verify asymmetric cryptographic authorization
+    // 1. Compute canonical execution plan digest deterministically from source files
+    const computedPlanDigest = computeExecutionPlanDigest({
+      repoRoot: REPO_ROOT,
+      targetProjectRef: ALLOWED_STAGING_PROJECT_REF
+    });
+
+    // 2. Verify asymmetric cryptographic authorization & anti-replay store
     const authVerification = verifyStagingWriteAuthorization({
       token: authToken,
       trustAnchor: options.trustAnchor,
       targetProject: ALLOWED_STAGING_PROJECT_REF,
       requestedCriteria: ['CRIT-C02-02', 'CRIT-D02-02', 'CRIT-E01-02', 'CRIT-F02-03'],
-      requestedTables: [
-        'public.political_organizations',
-        'public.organization_relationships',
-        'public.organization_multilingual_names',
-        'public.organization_symbols',
-        'public.organization_aliases',
-        'public.candidacies',
-        'public.constituency_demographics',
-        'public.election_results'
-      ],
+      requestedTables: [...ALL_AUTHORIZED_STAGING_TABLES],
       requestedOperations: ['INSERT', 'UPDATE', 'UPSERT'],
-      requestedPlanDigest: options.planDigest || cliArgs.planDigest,
-      storePath: options.storePath
+      requestedPlanDigest: options.planDigest || computedPlanDigest,
+      storePath: options.storePath,
+      adminClosureRecord: options.adminClosureRecord,
+      adminRecordPath: options.adminRecordPath,
+      repoRoot: REPO_ROOT
     });
 
     const execOptions = {
@@ -526,24 +665,92 @@ export async function runStagingExecutionEngine(options = {}) {
       serviceKey
     };
 
-    stageResults.stage1_political_organizations = await executeStage1Staging(execOptions);
-    stageResults.stage2_candidacies = await executeStage2Staging(execOptions);
-    stageResults.stage3_constituency_demographics = await executeStage3Staging(execOptions);
-    stageResults.stage4_historical_election_results = await executeStage4Staging(execOptions);
+    let executionError = null;
+
+    // Sequential stage execution with partial execution tracking (Directive 143 Section 3.4)
+    try {
+      stageResults.stage1_political_organizations = await executeStage1Staging(execOptions);
+    } catch (err) {
+      stageResults.stage1_political_organizations = {
+        criterionId: 'CRIT-C02-02',
+        status: 'FAILED',
+        error: err.message,
+        rowsAffected: 0
+      };
+      stageResults.stage2_candidacies = { criterionId: 'CRIT-D02-02', status: 'SKIPPED_DUE_TO_PREVIOUS_FAILURE', rowsAffected: 0 };
+      stageResults.stage3_constituency_demographics = { criterionId: 'CRIT-E01-02', status: 'SKIPPED_DUE_TO_PREVIOUS_FAILURE', rowsAffected: 0 };
+      stageResults.stage4_historical_election_results = { criterionId: 'CRIT-F02-03', status: 'SKIPPED_DUE_TO_PREVIOUS_FAILURE', rowsAffected: 0 };
+      executionError = err;
+    }
+
+    if (!executionError) {
+      try {
+        stageResults.stage2_candidacies = await executeStage2Staging(execOptions);
+      } catch (err) {
+        stageResults.stage2_candidacies = {
+          criterionId: 'CRIT-D02-02',
+          status: 'FAILED',
+          error: err.message,
+          rowsAffected: 0
+        };
+        stageResults.stage3_constituency_demographics = { criterionId: 'CRIT-E01-02', status: 'SKIPPED_DUE_TO_PREVIOUS_FAILURE', rowsAffected: 0 };
+        stageResults.stage4_historical_election_results = { criterionId: 'CRIT-F02-03', status: 'SKIPPED_DUE_TO_PREVIOUS_FAILURE', rowsAffected: 0 };
+        executionError = err;
+      }
+    }
+
+    if (!executionError) {
+      try {
+        stageResults.stage3_constituency_demographics = await executeStage3Staging(execOptions);
+      } catch (err) {
+        stageResults.stage3_constituency_demographics = {
+          criterionId: 'CRIT-E01-02',
+          status: 'FAILED',
+          error: err.message,
+          rowsAffected: 0
+        };
+        stageResults.stage4_historical_election_results = { criterionId: 'CRIT-F02-03', status: 'SKIPPED_DUE_TO_PREVIOUS_FAILURE', rowsAffected: 0 };
+        executionError = err;
+      }
+    }
+
+    if (!executionError) {
+      try {
+        stageResults.stage4_historical_election_results = await executeStage4Staging(execOptions);
+      } catch (err) {
+        stageResults.stage4_historical_election_results = {
+          criterionId: 'CRIT-F02-03',
+          status: 'FAILED',
+          error: err.message,
+          rowsAffected: 0
+        };
+        executionError = err;
+      }
+    }
 
     const report = {
       generator: 'scripts/execute_staging_directive_139.mjs',
-      directive: 'CTO Directive 142 / Authorized Staging Execution Output',
+      directive: 'CTO Directive 143 / Authorized Staging Execution Output',
       timestamp: new Date().toISOString(),
       governingAuthority: 'Master Execution Framework Amendment v1.6 / Rule IV-001 Non-Self-Acceptance',
       stagingProjectRef: ALLOWED_STAGING_PROJECT_REF,
       productionProjectRef: `${PROHIBITED_PRODUCTION_REF} (AIR-GAPPED — 0 QUERIES, 0 MUTATIONS)`,
       executionMode: 'MODE_B_AUTHORIZED_WRITE_EXECUTION',
       stagingExecutionPerformed: true,
+      executionStatus: executionError ? 'PARTIAL_EXECUTION_FAILURE' : 'ALL_STAGES_EXECUTED_PENDING_CORROBORATION',
       networkRequestsAttempted: getTransportCallCount(),
       authorization: authVerification,
       stages: stageResults
     };
+
+    if (executionError) {
+      report.partialExecutionDetails = {
+        failedStage: executionError.message,
+        retryRequirement: 'Anti-replay consumed this token. Retrying requires an authorized governance token scoped to remaining unexecuted stages.'
+      };
+      executionError.executionReport = report;
+      throw executionError;
+    }
 
     return report;
   }
@@ -555,11 +762,11 @@ if (process.argv[1] && path.resolve(process.argv[1]) === path.resolve(__filename
   runStagingExecutionEngine()
     .then((report) => {
       console.log('================================================================================');
-      console.log('KSHETRA W021.5 — STAGING PREPARATION & EXECUTION ENGINE (DIRECTIVE 142)');
+      console.log('KSHETRA W021.5 — STAGING PREPARATION & EXECUTION ENGINE (DIRECTIVE 143)');
       console.log(`Execution Mode: ${report.executionMode}`);
       console.log(`Staging Executed: ${report.stagingExecutionPerformed}`);
       console.log(`Network Calls Measured: ${report.networkRequestsAttempted}`);
-      console.log(`Workstream Status: ${report.summary?.workstreamStatus || 'EXECUTED'}`);
+      console.log(`Workstream Status: ${report.summary?.workstreamStatus || report.executionStatus}`);
       console.log('================================================================================');
       process.exit(0);
     })

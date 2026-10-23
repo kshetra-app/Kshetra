@@ -3244,3 +3244,45 @@
      - Remote staging (`fkpigozcqnmcvofuksar`): strictly 0 live queries, 0 live mutations under Directive 142.
      - Staging credential rotation: `CONTAINMENT_PENDING_ADMIN_CONFIRMATION` pending external Project Administrator action.
      - Under Rule IV-001, formal CTO acceptance remains strictly `0.0% — PENDING INDEPENDENT ADJUDICATION`.
+
+
+---
+
+### DEC-143: CTO DIRECTIVE 143 — EXECUTION-PATH TRUTH, CRYPTOGRAPHIC SCOPE ENFORCEMENT, STAGING GATE INTEGRITY, AND INDEPENDENT EVIDENCE CLOSURE
+- **Date:** 2026-10-23
+- **Status:** IMPLEMENTATION COMPLETE / SUBMITTED FOR INDEPENDENT CTO ADJUDICATION
+- **Authority:** CTO Directive 143 / Master Execution Framework Amendment v1.6 / Rule IV-001 Non-Self-Acceptance
+- **Context:** Local source remediation, execution-path truth, cryptographic scope hardening, fail-closed credential containment gate, adversarial testing battery, and synchronized evidence package:
+  1. **P0 Real Data-Bearing PostgREST Ingestion (Approach A):**
+     - Completely remediated `scripts/execute_staging_directive_139.mjs` to transmit full source row payloads rather than metadata stubs or counts.
+     - Stage 1 (CRIT-C02-02): Submits 8 table arrays (`datasets`: 1, `dataset_versions`: 1, `provenance_records`: 1, `political_organizations`: 107, `organization_relationships`: 10, `organization_multilingual_names`: 27, `organization_symbols`: 19, `organization_aliases`: 1,043 = 1,209 total catalog records) with `on_conflict=id`.
+     - Stage 2 (CRIT-D02-02): Submits all 11,298 unique candidate rows to `/rest/v1/candidacies` with `on_conflict=person_id,election_year,election_type,constituency_id`.
+     - Stage 3 (CRIT-E01-02): Submits all 4,123 statutory demographic seat rows to `/rest/v1/constituency_demographics` with `on_conflict=constituency_id,election_year`.
+     - Stage 4 (CRIT-F02-03): Submits all 2,243 statutory historical election results rows to `/rest/v1/election_results` with `on_conflict=election_id,constituency_id`.
+     - Derived `rowsAffected` directly from returned row array length (`Prefer: resolution=merge-duplicates,return=representation`). Fails closed on `ROW_COUNT_MISMATCH` if returned count !== expected count.
+  2. **P0 Canonical Execution Plan & Deterministic Digest Engine:**
+     - Authored `scripts/lib/stagingExecutionPlan.mjs` implementing `generateCanonicalExecutionPlan()` and `computeExecutionPlanDigest()`.
+     - Deterministically hashes all source artifacts (migration 065, 10 candidacy subchunks, candidacy duplicates manifest, 4,123 inventory, demographics manifest, 23-state coverage matrix) to generate a 64-character lowercase hexadecimal SHA-256 digest (`5859d9c0c2af6f5dabbc6cebfe08d320fdd5b4c92b0a70d10b9399d70c5883a4`).
+     - Verifier strictly validates `plan_digest` format and compares token claim against computed digest, failing closed on discrepancy (`PLAN_DIGEST_MISMATCH`).
+  3. **P0 Cryptographic Scope Hardening:**
+     - Enforced strict time claims: positive integer `iat`, 60-second clock skew tolerance (`TOKEN_ISSUED_IN_FUTURE`), `exp > iat` (`INVALID_EXPIRY_BEFORE_ISSUANCE`), `nbf <= exp` (`CONTRADICTORY_TIME_CLAIMS`), `nbf >= iat - 60s` (`INCONSISTENT_TIME_CLAIMS`), and max lifetime <= 3,600s (`EXCESSIVE_TOKEN_LIFETIME`).
+     - Proactively rejects any token granting prohibited destructive operations (`DELETE`, `DROP`, `TRUNCATE`, `ALTER`) with `PROHIBITED_DESTRUCTIVE_OPERATION_IN_TOKEN`.
+     - Restricts operations to closed allowlist (`INSERT`, `UPDATE`, `UPSERT`, `SELECT`) with `UNAUTHORIZED_OPERATION_GRANT`.
+     - Restricts target tables to closed staging allowlist (11 tables across the 4 stages, including `public.datasets` and `public.dataset_versions`) with `UNAUTHORIZED_TABLE_GRANT`.
+  4. **P0 Fail-Closed Administrative Credential-Containment Gate:**
+     - Authored `scripts/lib/stagingAdminContainment.mjs` implementing `verifyAdminIncidentClosure()`.
+     - Validates structured incident closure record (`INC-2026-W021.5-ROTATION-VERIFIED`) requiring `credentialRotated: true`, `accessLogsAudited: true`, `authorizedAdmin`, `certifiedAt`, and `targetProjectRef`.
+     - Staging write execution fails closed with `ADMIN_CONTAINMENT_UNCONFIRMED` before transport invocation or database contact while credential rotation remains unconfirmed.
+  5. **P1 Schema and Table Name Reconciliation:**
+     - Reconciled target table names and conflict targets in code, tests, and database execution register to match actual migration schemas (`public.candidacies`, `public.constituency_demographics`, `public.election_results`, and 8 tables for political orgs).
+  6. **P1 Sequential Stage Execution & Partial Failure Safety:**
+     - Implemented sequential stage execution with explicit error handling in `scripts/execute_staging_directive_139.mjs`.
+     - On stage failure, records earlier stages as `EXECUTED_PENDING_INDEPENDENT_CORROBORATION`, current stage as `FAILED`, and downstream stages as `SKIPPED_DUE_TO_PREVIOUS_FAILURE`.
+     - Sets executionStatus `PARTIAL_EXECUTION_FAILURE` and attaches partial execution report to thrown error.
+  7. **P3 Adversarial Testing Battery:**
+     - Expanded `tests/staging-authorization-verifier.test.mjs` to 26 comprehensive tests (26/26 PASS).
+     - Expanded `tests/staging-execution-mode-b.test.mjs` to all 10 adversarial requirements from Directive 143 Section 7 (10/10 PASS).
+  8. **Invariants & Weight Conservation:**
+     - Production Supabase (`ehfafcnimmjusyvplbah`): strictly 0 queries, 0 mutations (100% air-gapped).
+     - Staging Supabase (`fkpigozcqnmcvofuksar`): strictly 0 live queries, 0 live mutations.
+     - Weight conservation preserved: 67.0% Repo-Verified, 10.5% Database-Pending, 22.5% Blocked, 0.0% Unimplemented, 0.0% Formal Acceptance (Rule IV-001).

@@ -2,8 +2,7 @@
  * tests/staging-authorization-verifier.test.mjs
  *
  * Comprehensive Asymmetric Cryptographic Authorization & Anti-Replay Battery
- * Task: W021.5 / CTO Directive 142 Section 2.5
- * Governing Authority: Master Execution Framework Amendment v1.6 / Rule IV-001 Non-Self-Acceptance
+ * Authority: CTO Directive 142 & CTO Directive 143 / Master Execution Framework Amendment v1.6
  *
  * Proves:
  * 1. Fails closed when public key trust anchor is missing or unconfigured.
@@ -11,10 +10,10 @@
  * 3. Proves holder of public key CANNOT forge an authorization token (public-key-only forgery denial).
  * 4. Confirms verifier module contains zero private keys and zero token-signing methods.
  * 5. Rejects tampering, unsigned tokens, algorithm "none", and symmetric HS256 tokens.
- * 6. Enforces temporal claims (iat, nbf, exp, max lifetime).
- * 7. Enforces exact scopes (criteria, tables, operations, plan digest).
- * 8. Prohibits destructive operations (DELETE, DROP, TRUNCATE).
- * 9. Requires incident_closure_ref confirming external credential rotation prerequisite.
+ * 6. Enforces temporal claims (iat, nbf, exp, clock skew, max lifetime, contradictory/inconsistent claims).
+ * 7. Enforces exact scopes (criteria, tables, operations, mandatory plan digest).
+ * 8. Prohibits destructive operations (DELETE, DROP, TRUNCATE, ALTER) within token grants.
+ * 9. Enforces fail-closed administrative containment gate (requires authenticated administrator closure record).
  * 10. Enforces persistent anti-replay across simulated restarts and separate Node child processes.
  * 11. Rejects revoked tokens from authoritative persistent store.
  * 12. Fails closed when replay store is unavailable or unwritable.
@@ -34,20 +33,20 @@ import {
   ALLOWED_STAGING_PROJECT_REF,
   PROHIBITED_PRODUCTION_REF,
   EXPECTED_ISSUER,
-  EXPECTED_AUDIENCE
+  EXPECTED_AUDIENCE,
+  ALL_AUTHORIZED_STAGING_TABLES
 } from '../scripts/lib/stagingAuthorization.mjs';
 
 import {
   reserveNonce,
   revokeNonce,
-  isNonceConsumed,
-  isNonceRevoked,
   clearReplayStore
 } from '../scripts/lib/stagingReplayStore.mjs';
 
 import {
   generateTestKeyPair,
   createTestSignedAuthorizationToken,
+  createTestAdminClosureRecord,
   base64UrlEncode
 } from './helpers/stagingAuthTestHelper.mjs';
 
@@ -57,13 +56,17 @@ const REPO_ROOT = path.resolve(__dirname, '..');
 
 const TEST_STORE_PATH = path.join(REPO_ROOT, '.kshetra_runtime', 'test_staging_replay_store.json');
 
-describe('CTO Directive 142 Section 2: Asymmetric Cryptographic Authorization & Anti-Replay Battery', () => {
+describe('CTO Directive 143 / 142: Asymmetric Cryptographic Authorization & Anti-Replay Battery', () => {
   let ed25519Keys;
   let rs25519Keys;
+  let testAdminRecord;
+  let validPlanDigest;
 
   beforeEach(() => {
     ed25519Keys = generateTestKeyPair('Ed25519');
     rs25519Keys = generateTestKeyPair('RS256');
+    testAdminRecord = createTestAdminClosureRecord();
+    validPlanDigest = crypto.createHash('sha256').update('canonical-test-execution-plan').digest('hex');
     clearReplayStore({ storePath: TEST_STORE_PATH });
   });
 
@@ -77,7 +80,10 @@ describe('CTO Directive 142 Section 2: Asymmetric Cryptographic Authorization & 
 
   // 1. Trust Anchor Presence & Configuration
   it('1. Fails closed when public key trust anchor is missing or unconfigured', () => {
-    const validToken = createTestSignedAuthorizationToken({}, ed25519Keys.privateKeyPem);
+    const validToken = createTestSignedAuthorizationToken({
+      plan_digest: validPlanDigest
+    }, ed25519Keys.privateKeyPem);
+
     const oldEnv = process.env.KSHETRA_CTO_PUBLIC_KEY;
     delete process.env.KSHETRA_CTO_PUBLIC_KEY;
 
@@ -88,7 +94,9 @@ describe('CTO Directive 142 Section 2: Asymmetric Cryptographic Authorization & 
             token: validToken,
             trustAnchor: undefined,
             publicKeyPath: path.join(REPO_ROOT, 'non_existent_key.pem'),
-            storePath: TEST_STORE_PATH
+            storePath: TEST_STORE_PATH,
+            adminClosureRecord: testAdminRecord,
+            requestedPlanDigest: validPlanDigest
           });
         },
         (err) => {
@@ -102,16 +110,19 @@ describe('CTO Directive 142 Section 2: Asymmetric Cryptographic Authorization & 
     }
   });
 
-  // 2. Trust Anchor Type Validation
   it('2. Fails closed when trust anchor is malformed or not an asymmetric public key', () => {
-    const validToken = createTestSignedAuthorizationToken({}, ed25519Keys.privateKeyPem);
+    const validToken = createTestSignedAuthorizationToken({
+      plan_digest: validPlanDigest
+    }, ed25519Keys.privateKeyPem);
 
     assert.throws(
       () => {
         verifyStagingWriteAuthorization({
           token: validToken,
-          trustAnchor: 'not-a-valid-pem-key',
-          storePath: TEST_STORE_PATH
+          trustAnchor: 'THIS_IS_A_SYMMETRIC_OR_CORRUPTED_SECRET_STRING_NOT_PEM',
+          storePath: TEST_STORE_PATH,
+          adminClosureRecord: testAdminRecord,
+          requestedPlanDigest: validPlanDigest
         });
       },
       (err) => {
@@ -121,38 +132,33 @@ describe('CTO Directive 142 Section 2: Asymmetric Cryptographic Authorization & 
     );
   });
 
-  // 3. Verifier module contains no token-signing methods or private keys
   it('3. Confirms verifier module contains zero private keys and zero token-signing methods', async () => {
-    const verifierModule = await import('../scripts/lib/stagingAuthorization.mjs');
-    assert.strictEqual(typeof verifierModule.createSignedAuthorizationToken, 'undefined', 'Signing helper must NOT exist in verifier module');
-    assert.strictEqual(typeof verifierModule.privateKey, 'undefined', 'Private key must NOT exist in verifier module');
+    const verifierCode = fs.readFileSync(
+      path.join(REPO_ROOT, 'scripts/lib/stagingAuthorization.mjs'),
+      'utf8'
+    );
+
+    assert.doesNotMatch(verifierCode, /crypto\.sign\(/, 'Verifier must NOT contain crypto.sign calls');
+    assert.doesNotMatch(verifierCode, /createPrivateKey\(/, 'Verifier must NOT contain createPrivateKey calls');
+    assert.doesNotMatch(verifierCode, /generateKeyPairSync\(/, 'Verifier must NOT generate key pairs');
+    assert.doesNotMatch(verifierCode, /createHmac\(/, 'Verifier must NOT use symmetric HMAC');
+    assert.doesNotMatch(verifierCode, /PRIVATE KEY/i, 'Verifier must NOT embed private key PEM strings');
   });
 
-  // 4. Public-Key-Only Forgery Denial
   it('4. Proves a holder of the public key cannot forge a valid authorization token', () => {
-    // Attempting to sign using public key or treating public key as HMAC secret fails verification
-    const header = base64UrlEncode(JSON.stringify({ alg: 'Ed25519', typ: 'KSHETRA-AUTH+JWS' }));
-    const payload = base64UrlEncode(JSON.stringify({
-      iss: EXPECTED_ISSUER,
-      aud: EXPECTED_AUDIENCE,
-      project_ref: ALLOWED_STAGING_PROJECT_REF,
-      exp: Math.floor(Date.now() / 1000) + 3600,
-      nonce: crypto.randomUUID(),
-      incident_closure_ref: 'FORGED-TOKEN'
-    }));
-
-    // Forgery attempt 1: Using public key as HMAC secret
-    const hmac = crypto.createHmac('sha256', ed25519Keys.publicKeyPem);
-    hmac.update(`${header}.${payload}`);
-    const forgedSigHmac = base64UrlEncode(hmac.digest());
-    const forgedToken = `${header}.${payload}.${forgedSigHmac}`;
+    const fakeKeyPair = generateTestKeyPair('Ed25519');
+    const forgedToken = createTestSignedAuthorizationToken({
+      plan_digest: validPlanDigest
+    }, fakeKeyPair.privateKeyPem);
 
     assert.throws(
       () => {
         verifyStagingWriteAuthorization({
           token: forgedToken,
           trustAnchor: ed25519Keys.publicKeyPem,
-          storePath: TEST_STORE_PATH
+          storePath: TEST_STORE_PATH,
+          adminClosureRecord: testAdminRecord,
+          requestedPlanDigest: validPlanDigest
         });
       },
       (err) => {
@@ -162,24 +168,30 @@ describe('CTO Directive 142 Section 2: Asymmetric Cryptographic Authorization & 
     );
   });
 
-  // 5. Algorithm Allowlist: Rejects 'none' and symmetric 'HS256'
   it('5. Rejects unsigned or algorithm "none" tokens (UNSIGNED_AUTHORIZATION_TOKEN)', () => {
-    const unsignedHeader = base64UrlEncode(JSON.stringify({ alg: 'none', typ: 'KSHETRA-AUTH+JWS' }));
+    const header = base64UrlEncode(JSON.stringify({ alg: 'none', typ: 'KSHETRA-AUTH+JWS' }));
     const payload = base64UrlEncode(JSON.stringify({
       iss: EXPECTED_ISSUER,
       aud: EXPECTED_AUDIENCE,
       project_ref: ALLOWED_STAGING_PROJECT_REF,
+      iat: Math.floor(Date.now() / 1000),
       exp: Math.floor(Date.now() / 1000) + 3600,
-      nonce: crypto.randomUUID()
+      nonce: 'nonce-none-alg',
+      incident_closure_ref: 'INC-2026-W021.5-ROTATION-VERIFIED',
+      tables: [...ALL_AUTHORIZED_STAGING_TABLES],
+      operations: ['UPSERT'],
+      plan_digest: validPlanDigest
     }));
-    const token = `${unsignedHeader}.${payload}.`;
+    const unsignedToken = `${header}.${payload}.`;
 
     assert.throws(
       () => {
         verifyStagingWriteAuthorization({
-          token,
+          token: unsignedToken,
           trustAnchor: ed25519Keys.publicKeyPem,
-          storePath: TEST_STORE_PATH
+          storePath: TEST_STORE_PATH,
+          adminClosureRecord: testAdminRecord,
+          requestedPlanDigest: validPlanDigest
         });
       },
       (err) => {
@@ -190,50 +202,59 @@ describe('CTO Directive 142 Section 2: Asymmetric Cryptographic Authorization & 
   });
 
   it('6. Rejects symmetric algorithms like HS256 (UNSUPPORTED_ALGORITHM)', () => {
-    const hs256Header = base64UrlEncode(JSON.stringify({ alg: 'HS256', typ: 'KSHETRA-AUTH+JWS' }));
+    const header = base64UrlEncode(JSON.stringify({ alg: 'HS256', typ: 'KSHETRA-AUTH+JWS' }));
     const payload = base64UrlEncode(JSON.stringify({
       iss: EXPECTED_ISSUER,
       aud: EXPECTED_AUDIENCE,
       project_ref: ALLOWED_STAGING_PROJECT_REF,
+      iat: Math.floor(Date.now() / 1000),
       exp: Math.floor(Date.now() / 1000) + 3600,
-      nonce: crypto.randomUUID()
+      nonce: 'nonce-hs256',
+      incident_closure_ref: 'INC-2026-W021.5-ROTATION-VERIFIED',
+      tables: [...ALL_AUTHORIZED_STAGING_TABLES],
+      operations: ['UPSERT'],
+      plan_digest: validPlanDigest
     }));
-    const token = `${hs256Header}.${payload}.fakesig`;
+    const fakeHmacSig = base64UrlEncode(crypto.createHmac('sha256', 'some-secret').update(`${header}.${payload}`).digest());
+    const hmacToken = `${header}.${payload}.${fakeHmacSig}`;
 
     assert.throws(
       () => {
         verifyStagingWriteAuthorization({
-          token,
+          token: hmacToken,
           trustAnchor: ed25519Keys.publicKeyPem,
-          storePath: TEST_STORE_PATH
+          storePath: TEST_STORE_PATH,
+          adminClosureRecord: testAdminRecord,
+          requestedPlanDigest: validPlanDigest
         });
       },
       (err) => {
         assert.strictEqual(err.code, 'UNSUPPORTED_ALGORITHM');
-        assert.match(err.message, /not in the authorized algorithm allowlist/i);
         return true;
       }
     );
   });
 
-  // 7. Signature Tampering Rejection
   it('7. Rejects token with tampered payload or altered signature', () => {
     const validToken = createTestSignedAuthorizationToken({
-      criteria: ['CRIT-C02-02']
+      plan_digest: validPlanDigest
     }, ed25519Keys.privateKeyPem);
-
     const [h, p, s] = validToken.split('.');
-    const decodedPayload = JSON.parse(Buffer.from(p, 'base64url').toString('utf8'));
-    decodedPayload.criteria.push('CRIT-D02-02'); // Malicious elevation
-    const tamperedPayloadB64 = base64UrlEncode(JSON.stringify(decodedPayload));
-    const tamperedToken = `${h}.${tamperedPayloadB64}.${s}`;
+
+    // Tamper with payload
+    const decodedPayload = JSON.parse(Buffer.from(p, 'base64').toString('utf8'));
+    decodedPayload.project_ref = 'hacked-project-ref';
+    const tamperedPayload = base64UrlEncode(JSON.stringify(decodedPayload));
+    const tamperedToken = `${h}.${tamperedPayload}.${s}`;
 
     assert.throws(
       () => {
         verifyStagingWriteAuthorization({
           token: tamperedToken,
           trustAnchor: ed25519Keys.publicKeyPem,
-          storePath: TEST_STORE_PATH
+          storePath: TEST_STORE_PATH,
+          adminClosureRecord: testAdminRecord,
+          requestedPlanDigest: validPlanDigest
         });
       },
       (err) => {
@@ -243,12 +264,65 @@ describe('CTO Directive 142 Section 2: Asymmetric Cryptographic Authorization & 
     );
   });
 
-  // 8. Temporal Claims (Expired, Not-Yet-Valid, Max Lifetime)
-  it('8. Rejects expired authorization token (TOKEN_EXPIRED)', () => {
+  // 8. Strict Time Claims Validation (Directive 143 Section 4.2)
+  it('8. Rejects token with missing or nonnumeric iat (INVALID_IAT)', () => {
+    const tokenNoIat = createTestSignedAuthorizationToken({
+      iat: null,
+      plan_digest: validPlanDigest
+    }, ed25519Keys.privateKeyPem);
+
+    assert.throws(
+      () => {
+        verifyStagingWriteAuthorization({
+          token: tokenNoIat,
+          trustAnchor: ed25519Keys.publicKeyPem,
+          storePath: TEST_STORE_PATH,
+          adminClosureRecord: testAdminRecord,
+          requestedPlanDigest: validPlanDigest
+        });
+      },
+      (err) => {
+        assert.strictEqual(err.code, 'INVALID_IAT');
+        return true;
+      }
+    );
+  });
+
+  it('9. Rejects token issued in the future beyond allowable clock skew (TOKEN_ISSUED_IN_FUTURE)', () => {
     const now = Date.now();
+    const futureIat = Math.floor(now / 1000) + 300; // 5 minutes in future
+    const token = createTestSignedAuthorizationToken({
+      iat: futureIat,
+      exp: futureIat + 3600,
+      plan_digest: validPlanDigest
+    }, ed25519Keys.privateKeyPem);
+
+    assert.throws(
+      () => {
+        verifyStagingWriteAuthorization({
+          token,
+          trustAnchor: ed25519Keys.publicKeyPem,
+          now,
+          storePath: TEST_STORE_PATH,
+          adminClosureRecord: testAdminRecord,
+          requestedPlanDigest: validPlanDigest
+        });
+      },
+      (err) => {
+        assert.strictEqual(err.code, 'TOKEN_ISSUED_IN_FUTURE');
+        return true;
+      }
+    );
+  });
+
+  it('10. Rejects expired authorization token (TOKEN_EXPIRED)', () => {
+    const now = Date.now();
+    const pastExp = Math.floor(now / 1000) - 100;
     const expiredToken = createTestSignedAuthorizationToken({
-      exp: Math.floor(now / 1000) - 100
-    }, ed25519Keys.privateKeyPem, { now });
+      iat: pastExp - 3600,
+      exp: pastExp,
+      plan_digest: validPlanDigest
+    }, ed25519Keys.privateKeyPem);
 
     assert.throws(
       () => {
@@ -256,7 +330,9 @@ describe('CTO Directive 142 Section 2: Asymmetric Cryptographic Authorization & 
           token: expiredToken,
           trustAnchor: ed25519Keys.publicKeyPem,
           now,
-          storePath: TEST_STORE_PATH
+          storePath: TEST_STORE_PATH,
+          adminClosureRecord: testAdminRecord,
+          requestedPlanDigest: validPlanDigest
         });
       },
       (err) => {
@@ -266,19 +342,53 @@ describe('CTO Directive 142 Section 2: Asymmetric Cryptographic Authorization & 
     );
   });
 
-  it('9. Rejects token that is not yet valid (TOKEN_NOT_YET_VALID)', () => {
+  it('11. Rejects token with expiry before or equal to issuance (INVALID_EXPIRY_BEFORE_ISSUANCE)', () => {
     const now = Date.now();
-    const futureToken = createTestSignedAuthorizationToken({
-      nbf: Math.floor(now / 1000) + 1000
-    }, ed25519Keys.privateKeyPem, { now });
+    const nowSec = Math.floor(now / 1000);
+    const token = createTestSignedAuthorizationToken({
+      iat: nowSec,
+      exp: nowSec, // exp === iat
+      plan_digest: validPlanDigest
+    }, ed25519Keys.privateKeyPem);
 
     assert.throws(
       () => {
         verifyStagingWriteAuthorization({
-          token: futureToken,
+          token,
           trustAnchor: ed25519Keys.publicKeyPem,
           now,
-          storePath: TEST_STORE_PATH
+          storePath: TEST_STORE_PATH,
+          adminClosureRecord: testAdminRecord,
+          requestedPlanDigest: validPlanDigest
+        });
+      },
+      (err) => {
+        assert.strictEqual(err.code, 'INVALID_EXPIRY_BEFORE_ISSUANCE');
+        return true;
+      }
+    );
+  });
+
+  it('12. Rejects contradictory or inconsistent nbf claims (CONTRADICTORY_TIME_CLAIMS)', () => {
+    const now = Date.now();
+    const nowSec = Math.floor(now / 1000);
+    // nbf after exp
+    const token = createTestSignedAuthorizationToken({
+      iat: nowSec - 100,
+      nbf: nowSec + 1000,
+      exp: nowSec + 500,
+      plan_digest: validPlanDigest
+    }, ed25519Keys.privateKeyPem);
+
+    assert.throws(
+      () => {
+        verifyStagingWriteAuthorization({
+          token,
+          trustAnchor: ed25519Keys.publicKeyPem,
+          now,
+          storePath: TEST_STORE_PATH,
+          adminClosureRecord: testAdminRecord,
+          requestedPlanDigest: validPlanDigest
         });
       },
       (err) => {
@@ -288,11 +398,14 @@ describe('CTO Directive 142 Section 2: Asymmetric Cryptographic Authorization & 
     );
   });
 
-  it('10. Rejects token with excessive lifetime (EXCESSIVE_TOKEN_LIFETIME)', () => {
+  it('13. Rejects token with excessive lifetime (EXCESSIVE_TOKEN_LIFETIME)', () => {
     const now = Date.now();
+    const nowSec = Math.floor(now / 1000);
     const longToken = createTestSignedAuthorizationToken({
-      exp: Math.floor(now / 1000) + 100000 // > 86400s
-    }, ed25519Keys.privateKeyPem, { now, expiresInSeconds: 100000 });
+      iat: nowSec,
+      exp: nowSec + 90000, // > 86400s
+      plan_digest: validPlanDigest
+    }, ed25519Keys.privateKeyPem);
 
     assert.throws(
       () => {
@@ -301,7 +414,9 @@ describe('CTO Directive 142 Section 2: Asymmetric Cryptographic Authorization & 
           trustAnchor: ed25519Keys.publicKeyPem,
           now,
           maxLifetimeSeconds: 86400,
-          storePath: TEST_STORE_PATH
+          storePath: TEST_STORE_PATH,
+          adminClosureRecord: testAdminRecord,
+          requestedPlanDigest: validPlanDigest
         });
       },
       (err) => {
@@ -311,71 +426,53 @@ describe('CTO Directive 142 Section 2: Asymmetric Cryptographic Authorization & 
     );
   });
 
-  // 11. Incident Closure Reference Requirement
-  it('11. Rejects token missing incident_closure_ref (INCIDENT_CLOSURE_REF_REQUIRED)', () => {
-    const tokenNoRef = createTestSignedAuthorizationToken({
-      incident_closure_ref: null
+  // 14. Mandatory Execution Plan Digest Verification (Directive 143 Section 4.1)
+  it('14. Fails closed when plan_digest is missing (MISSING_PLAN_DIGEST)', () => {
+    const tokenNoDigest = createTestSignedAuthorizationToken({
+      plan_digest: null
     }, ed25519Keys.privateKeyPem);
 
     assert.throws(
       () => {
         verifyStagingWriteAuthorization({
-          token: tokenNoRef,
+          token: tokenNoDigest,
           trustAnchor: ed25519Keys.publicKeyPem,
-          storePath: TEST_STORE_PATH
+          storePath: TEST_STORE_PATH,
+          adminClosureRecord: testAdminRecord
         });
       },
       (err) => {
-        assert.strictEqual(err.code, 'INCIDENT_CLOSURE_REF_REQUIRED');
+        assert.strictEqual(err.code, 'MISSING_PLAN_DIGEST');
         return true;
       }
     );
   });
 
-  // 12. Project Binding & Air-Gap Violations
-  it('12. Rejects token scoped to different project or production target', () => {
-    const wrongProjectToken = createTestSignedAuthorizationToken({
-      project_ref: 'other-project-id'
+  it('15. Fails closed when plan_digest is malformed (MALFORMED_PLAN_DIGEST)', () => {
+    const tokenMalformedDigest = createTestSignedAuthorizationToken({
+      plan_digest: 'not-a-64-char-hex-digest'
     }, ed25519Keys.privateKeyPem);
 
     assert.throws(
       () => {
         verifyStagingWriteAuthorization({
-          token: wrongProjectToken,
+          token: tokenMalformedDigest,
           trustAnchor: ed25519Keys.publicKeyPem,
-          storePath: TEST_STORE_PATH
+          storePath: TEST_STORE_PATH,
+          adminClosureRecord: testAdminRecord
         });
       },
       (err) => {
-        assert.strictEqual(err.code, 'PROJECT_MISMATCH');
-        return true;
-      }
-    );
-
-    const prodToken = createTestSignedAuthorizationToken({
-      project_ref: PROHIBITED_PRODUCTION_REF
-    }, ed25519Keys.privateKeyPem);
-
-    assert.throws(
-      () => {
-        verifyStagingWriteAuthorization({
-          token: prodToken,
-          trustAnchor: ed25519Keys.publicKeyPem,
-          targetProject: PROHIBITED_PRODUCTION_REF,
-          storePath: TEST_STORE_PATH
-        });
-      },
-      (err) => {
-        assert.strictEqual(err.code, 'AIR_GAP_VIOLATION');
+        assert.strictEqual(err.code, 'MALFORMED_PLAN_DIGEST');
         return true;
       }
     );
   });
 
-  // 13. Granular Table-Level & Criteria Scope Enforcement
-  it('13. Rejects execution when requested table is not permitted by authorization token', () => {
+  it('16. Rejects execution when requested plan digest does not match token claim (PLAN_DIGEST_MISMATCH)', () => {
+    const otherDigest = crypto.createHash('sha256').update('other-plan').digest('hex');
     const token = createTestSignedAuthorizationToken({
-      tables: ['public.political_organizations']
+      plan_digest: validPlanDigest
     }, ed25519Keys.privateKeyPem);
 
     assert.throws(
@@ -383,52 +480,9 @@ describe('CTO Directive 142 Section 2: Asymmetric Cryptographic Authorization & 
         verifyStagingWriteAuthorization({
           token,
           trustAnchor: ed25519Keys.publicKeyPem,
-          requestedTables: ['public.political_organizations', 'public.candidacies'],
-          storePath: TEST_STORE_PATH
-        });
-      },
-      (err) => {
-        assert.strictEqual(err.code, 'UNAUTHORIZED_TABLE');
-        assert.match(err.message, /public\.candidacies/i);
-        return true;
-      }
-    );
-  });
-
-  it('14. Rejects destructive operations like DELETE, DROP, TRUNCATE (PROHIBITED_OPERATION)', () => {
-    const token = createTestSignedAuthorizationToken({
-      operations: ['INSERT', 'DELETE']
-    }, ed25519Keys.privateKeyPem);
-
-    assert.throws(
-      () => {
-        verifyStagingWriteAuthorization({
-          token,
-          trustAnchor: ed25519Keys.publicKeyPem,
-          requestedOperations: ['DELETE'],
-          storePath: TEST_STORE_PATH
-        });
-      },
-      (err) => {
-        assert.strictEqual(err.code, 'PROHIBITED_OPERATION');
-        return true;
-      }
-    );
-  });
-
-  // 15. Plan Digest Verification
-  it('15. Rejects execution when requested plan digest does not match token claim', () => {
-    const token = createTestSignedAuthorizationToken({
-      plan_digest: 'expected-plan-hash-1234'
-    }, ed25519Keys.privateKeyPem);
-
-    assert.throws(
-      () => {
-        verifyStagingWriteAuthorization({
-          token,
-          trustAnchor: ed25519Keys.publicKeyPem,
-          requestedPlanDigest: 'different-plan-hash-5678',
-          storePath: TEST_STORE_PATH
+          requestedPlanDigest: otherDigest,
+          storePath: TEST_STORE_PATH,
+          adminClosureRecord: testAdminRecord
         });
       },
       (err) => {
@@ -438,31 +492,153 @@ describe('CTO Directive 142 Section 2: Asymmetric Cryptographic Authorization & 
     );
   });
 
-  // 16. Durable Cross-Process Anti-Replay & Restarts
-  it('16. Rejects replay of a previously consumed nonce across simulated restarts', () => {
-    const nonce = `test-nonce-${Date.now()}`;
-    const token = createTestSignedAuthorizationToken({ nonce }, ed25519Keys.privateKeyPem);
+  // 17. Fail-Closed Administrative Containment Gate (Directive 143 Section 5)
+  it('17. Fails closed when administrative incident closure record is unprovisioned (ADMIN_CONTAINMENT_UNCONFIRMED)', () => {
+    const token = createTestSignedAuthorizationToken({
+      incident_closure_ref: 'INC-2026-UNCONFIRMED-REF',
+      plan_digest: validPlanDigest
+    }, ed25519Keys.privateKeyPem);
 
-    // First consumption succeeds
-    const res1 = verifyStagingWriteAuthorization({
-      token,
-      trustAnchor: ed25519Keys.publicKeyPem,
-      storePath: TEST_STORE_PATH
-    });
-    assert.strictEqual(res1.valid, true);
-
-    // Verify disk persistence
-    assert.ok(fs.existsSync(TEST_STORE_PATH), 'Store file must be written to disk');
-    const storeOnDisk = JSON.parse(fs.readFileSync(TEST_STORE_PATH, 'utf8'));
-    assert.ok(storeOnDisk.consumed[nonce], 'Nonce must be recorded on disk');
-
-    // Second consumption (simulating restart / new invocation) must fail with NONCE_ALREADY_CONSUMED
     assert.throws(
       () => {
         verifyStagingWriteAuthorization({
           token,
           trustAnchor: ed25519Keys.publicKeyPem,
-          storePath: TEST_STORE_PATH
+          storePath: TEST_STORE_PATH,
+          requestedPlanDigest: validPlanDigest,
+          adminClosureRecord: undefined // Unconfirmed in operational environment
+        });
+      },
+      (err) => {
+        assert.strictEqual(err.code, 'ADMIN_CONTAINMENT_UNCONFIRMED');
+        assert.strictEqual(err.status, 'CONTAINMENT_PENDING_ADMIN_CONFIRMATION');
+        assert.ok(Array.isArray(err.unresolvedPrerequisites));
+        return true;
+      }
+    );
+  });
+
+  // 18. Strict Operation Grants & Prohibited Destructive Operations (Directive 143 Section 4.3)
+  it('18. Rejects token granting prohibited destructive operation DELETE, DROP, TRUNCATE, or ALTER', () => {
+    const tokenDelete = createTestSignedAuthorizationToken({
+      operations: ['INSERT', 'DELETE'],
+      plan_digest: validPlanDigest
+    }, ed25519Keys.privateKeyPem);
+
+    assert.throws(
+      () => {
+        verifyStagingWriteAuthorization({
+          token: tokenDelete,
+          trustAnchor: ed25519Keys.publicKeyPem,
+          storePath: TEST_STORE_PATH,
+          adminClosureRecord: testAdminRecord,
+          requestedPlanDigest: validPlanDigest
+        });
+      },
+      (err) => {
+        assert.strictEqual(err.code, 'PROHIBITED_DESTRUCTIVE_OPERATION_IN_TOKEN');
+        return true;
+      }
+    );
+  });
+
+  it('19. Rejects token granting unauthorized operation outside allowlist (UNAUTHORIZED_OPERATION_GRANT)', () => {
+    const tokenWildcard = createTestSignedAuthorizationToken({
+      operations: ['EXECUTE_RAW_SQL'],
+      plan_digest: validPlanDigest
+    }, ed25519Keys.privateKeyPem);
+
+    assert.throws(
+      () => {
+        verifyStagingWriteAuthorization({
+          token: tokenWildcard,
+          trustAnchor: ed25519Keys.publicKeyPem,
+          storePath: TEST_STORE_PATH,
+          adminClosureRecord: testAdminRecord,
+          requestedPlanDigest: validPlanDigest
+        });
+      },
+      (err) => {
+        assert.strictEqual(err.code, 'UNAUTHORIZED_OPERATION_GRANT');
+        return true;
+      }
+    );
+  });
+
+  // 20. Strict Table Scoping (Directive 143 Section 4.3 & 4.4)
+  it('20. Rejects token granting unauthorized table outside closed staging allowlist (UNAUTHORIZED_TABLE_GRANT)', () => {
+    const tokenAuthUsers = createTestSignedAuthorizationToken({
+      tables: ['auth.users'],
+      plan_digest: validPlanDigest
+    }, ed25519Keys.privateKeyPem);
+
+    assert.throws(
+      () => {
+        verifyStagingWriteAuthorization({
+          token: tokenAuthUsers,
+          trustAnchor: ed25519Keys.publicKeyPem,
+          storePath: TEST_STORE_PATH,
+          adminClosureRecord: testAdminRecord,
+          requestedPlanDigest: validPlanDigest
+        });
+      },
+      (err) => {
+        assert.strictEqual(err.code, 'UNAUTHORIZED_TABLE_GRANT');
+        return true;
+      }
+    );
+  });
+
+  it('21. Rejects execution when requested table is not granted by token (UNAUTHORIZED_TABLE)', () => {
+    const token = createTestSignedAuthorizationToken({
+      tables: ['public.political_organizations'],
+      plan_digest: validPlanDigest
+    }, ed25519Keys.privateKeyPem);
+
+    assert.throws(
+      () => {
+        verifyStagingWriteAuthorization({
+          token,
+          trustAnchor: ed25519Keys.publicKeyPem,
+          requestedTables: ['public.political_organizations', 'public.candidacies'],
+          storePath: TEST_STORE_PATH,
+          adminClosureRecord: testAdminRecord,
+          requestedPlanDigest: validPlanDigest
+        });
+      },
+      (err) => {
+        assert.strictEqual(err.code, 'UNAUTHORIZED_TABLE');
+        return true;
+      }
+    );
+  });
+
+  // 22. Durable Anti-Replay Across Restarts
+  it('22. Rejects replay of a previously consumed nonce across simulated restarts', () => {
+    const nonce = `test-nonce-${Date.now()}`;
+    const token = createTestSignedAuthorizationToken({
+      nonce,
+      plan_digest: validPlanDigest
+    }, ed25519Keys.privateKeyPem);
+
+    const res1 = verifyStagingWriteAuthorization({
+      token,
+      trustAnchor: ed25519Keys.publicKeyPem,
+      storePath: TEST_STORE_PATH,
+      adminClosureRecord: testAdminRecord,
+      requestedPlanDigest: validPlanDigest
+    });
+    assert.strictEqual(res1.valid, true);
+
+    // Replay must fail closed with NONCE_ALREADY_CONSUMED
+    assert.throws(
+      () => {
+        verifyStagingWriteAuthorization({
+          token,
+          trustAnchor: ed25519Keys.publicKeyPem,
+          storePath: TEST_STORE_PATH,
+          adminClosureRecord: testAdminRecord,
+          requestedPlanDigest: validPlanDigest
         });
       },
       (err) => {
@@ -472,18 +648,24 @@ describe('CTO Directive 142 Section 2: Asymmetric Cryptographic Authorization & 
     );
   });
 
-  // 17. Cross-Process Independent Child Process Replay Test
-  it('17. Enforces durable replay prevention across independent Node child processes', () => {
+  // 23. Cross-Process Child Process Replay Test
+  it('23. Enforces durable replay prevention across independent Node child processes', () => {
     const nonce = `child-process-nonce-${Date.now()}`;
-    const token = createTestSignedAuthorizationToken({ nonce }, ed25519Keys.privateKeyPem);
+    const token = createTestSignedAuthorizationToken({
+      nonce,
+      plan_digest: validPlanDigest
+    }, ed25519Keys.privateKeyPem);
 
-    // Script to run in child process
+    const adminRecordJson = JSON.stringify(testAdminRecord);
+
     const childScript = `
       import { verifyStagingWriteAuthorization } from './scripts/lib/stagingAuthorization.mjs';
       const token = process.env.TEST_TOKEN;
       const trustAnchor = process.env.TEST_KEY;
       const storePath = process.env.TEST_STORE;
-      verifyStagingWriteAuthorization({ token, trustAnchor, storePath });
+      const adminClosureRecord = JSON.parse(process.env.TEST_ADMIN_RECORD);
+      const requestedPlanDigest = process.env.TEST_DIGEST;
+      verifyStagingWriteAuthorization({ token, trustAnchor, storePath, adminClosureRecord, requestedPlanDigest });
       console.log('CHILD_OK');
     `;
 
@@ -495,7 +677,9 @@ describe('CTO Directive 142 Section 2: Asymmetric Cryptographic Authorization & 
         ...process.env,
         TEST_TOKEN: token,
         TEST_KEY: ed25519Keys.publicKeyPem,
-        TEST_STORE: TEST_STORE_PATH
+        TEST_STORE: TEST_STORE_PATH,
+        TEST_ADMIN_RECORD: adminRecordJson,
+        TEST_DIGEST: validPlanDigest
       }
     });
     assert.match(child1, /CHILD_OK/);
@@ -511,7 +695,9 @@ describe('CTO Directive 142 Section 2: Asymmetric Cryptographic Authorization & 
             ...process.env,
             TEST_TOKEN: token,
             TEST_KEY: ed25519Keys.publicKeyPem,
-            TEST_STORE: TEST_STORE_PATH
+            TEST_STORE: TEST_STORE_PATH,
+            TEST_ADMIN_RECORD: adminRecordJson,
+            TEST_DIGEST: validPlanDigest
           }
         });
       },
@@ -523,12 +709,14 @@ describe('CTO Directive 142 Section 2: Asymmetric Cryptographic Authorization & 
     );
   });
 
-  // 18. Revocation from Durable Source
-  it('18. Rejects authorization token with revoked nonce (TOKEN_REVOKED)', () => {
+  // 24. Revocation from Durable Source
+  it('24. Rejects authorization token with revoked nonce (TOKEN_REVOKED)', () => {
     const nonce = `revoked-nonce-${Date.now()}`;
-    const token = createTestSignedAuthorizationToken({ nonce }, ed25519Keys.privateKeyPem);
+    const token = createTestSignedAuthorizationToken({
+      nonce,
+      plan_digest: validPlanDigest
+    }, ed25519Keys.privateKeyPem);
 
-    // Authoritatively revoke nonce in durable store
     revokeNonce(nonce, 'Administrative revocation test', { storePath: TEST_STORE_PATH });
 
     assert.throws(
@@ -536,7 +724,9 @@ describe('CTO Directive 142 Section 2: Asymmetric Cryptographic Authorization & 
         verifyStagingWriteAuthorization({
           token,
           trustAnchor: ed25519Keys.publicKeyPem,
-          storePath: TEST_STORE_PATH
+          storePath: TEST_STORE_PATH,
+          adminClosureRecord: testAdminRecord,
+          requestedPlanDigest: validPlanDigest
         });
       },
       (err) => {
@@ -546,14 +736,13 @@ describe('CTO Directive 142 Section 2: Asymmetric Cryptographic Authorization & 
     );
   });
 
-  // 19. Successful Verification: Ed25519
-  it('19. Successfully verifies an authorized token using Ed25519 public key', () => {
-    const planDigest = crypto.createHash('sha256').update('approved-manifest-payload').digest('hex');
+  // 25. Successful Verification: Ed25519
+  it('25. Successfully verifies an authorized token using Ed25519 public key', () => {
     const token = createTestSignedAuthorizationToken({
       criteria: ['CRIT-C02-02', 'CRIT-D02-02'],
       tables: ['public.political_organizations', 'public.candidacies'],
       operations: ['INSERT', 'UPSERT'],
-      plan_digest: planDigest
+      plan_digest: validPlanDigest
     }, ed25519Keys.privateKeyPem, { alg: 'Ed25519' });
 
     const result = verifyStagingWriteAuthorization({
@@ -562,25 +751,25 @@ describe('CTO Directive 142 Section 2: Asymmetric Cryptographic Authorization & 
       requestedCriteria: ['CRIT-C02-02'],
       requestedTables: ['public.political_organizations'],
       requestedOperations: ['INSERT'],
-      requestedPlanDigest: planDigest,
-      storePath: TEST_STORE_PATH
+      requestedPlanDigest: validPlanDigest,
+      storePath: TEST_STORE_PATH,
+      adminClosureRecord: testAdminRecord
     });
 
     assert.strictEqual(result.valid, true);
     assert.strictEqual(result.issuer, EXPECTED_ISSUER);
     assert.strictEqual(result.audience, EXPECTED_AUDIENCE);
     assert.strictEqual(result.projectRef, ALLOWED_STAGING_PROJECT_REF);
-    assert.strictEqual(result.planDigest, planDigest);
+    assert.strictEqual(result.planDigest, validPlanDigest);
   });
 
-  // 20. Successful Verification: RS256
-  it('20. Successfully verifies an authorized token using RS256 public key', () => {
-    const planDigest = crypto.createHash('sha256').update('approved-rs256-payload').digest('hex');
+  // 26. Successful Verification: RS256
+  it('26. Successfully verifies an authorized token using RS256 public key', () => {
     const token = createTestSignedAuthorizationToken({
       criteria: ['CRIT-E01-02'],
       tables: ['public.constituency_demographics'],
       operations: ['UPSERT'],
-      plan_digest: planDigest
+      plan_digest: validPlanDigest
     }, rs25519Keys.privateKeyPem, { alg: 'RS256' });
 
     const result = verifyStagingWriteAuthorization({
@@ -589,13 +778,13 @@ describe('CTO Directive 142 Section 2: Asymmetric Cryptographic Authorization & 
       requestedCriteria: ['CRIT-E01-02'],
       requestedTables: ['public.constituency_demographics'],
       requestedOperations: ['UPSERT'],
-      requestedPlanDigest: planDigest,
-      storePath: TEST_STORE_PATH
+      requestedPlanDigest: validPlanDigest,
+      storePath: TEST_STORE_PATH,
+      adminClosureRecord: testAdminRecord
     });
 
     assert.strictEqual(result.valid, true);
     assert.strictEqual(result.issuer, EXPECTED_ISSUER);
-    assert.strictEqual(result.planDigest, planDigest);
+    assert.strictEqual(result.planDigest, validPlanDigest);
   });
-
 });

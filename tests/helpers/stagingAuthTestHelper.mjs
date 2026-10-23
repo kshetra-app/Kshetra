@@ -13,7 +13,8 @@ import crypto from 'node:crypto';
 import {
   EXPECTED_ISSUER,
   EXPECTED_AUDIENCE,
-  ALLOWED_STAGING_PROJECT_REF
+  ALLOWED_STAGING_PROJECT_REF,
+  ALL_AUTHORIZED_STAGING_TABLES
 } from '../../scripts/lib/stagingAuthorization.mjs';
 
 /**
@@ -56,6 +57,21 @@ export function generateTestKeyPair(alg = 'Ed25519') {
 }
 
 /**
+ * Creates a valid test administrative closure record fixture
+ */
+export function createTestAdminClosureRecord(overrides = {}) {
+  return {
+    incidentId: 'INC-2026-W021.5-ROTATION-VERIFIED',
+    targetProjectRef: ALLOWED_STAGING_PROJECT_REF,
+    credentialRotated: true,
+    accessLogsAudited: true,
+    authorizedAdmin: 'test-authorized-project-administrator',
+    certifiedAt: new Date().toISOString(),
+    ...overrides
+  };
+}
+
+/**
  * Signs and constructs a standard JWS token using a test private key.
  * Used exclusively for testing verifier defenses.
  */
@@ -82,16 +98,7 @@ export function createTestSignedAuthorizationToken(payload, privateKeyPem, optio
     nonce: options.nonce || crypto.randomUUID(),
     incident_closure_ref: options.incidentClosureRef || 'INC-2026-W021.5-ROTATION-VERIFIED',
     criteria: options.criteria || ['CRIT-C02-02', 'CRIT-D02-02', 'CRIT-E01-02', 'CRIT-F02-03'],
-    tables: options.tables || [
-      'public.political_organizations',
-      'public.organization_relationships',
-      'public.organization_multilingual_names',
-      'public.organization_symbols',
-      'public.organization_aliases',
-      'public.candidacies',
-      'public.constituency_demographics',
-      'public.election_results'
-    ],
+    tables: options.tables || [...ALL_AUTHORIZED_STAGING_TABLES],
     operations: options.operations || ['INSERT', 'UPDATE', 'UPSERT'],
     plan_digest: options.planDigest || crypto.createHash('sha256').update('approved-plan-payload').digest('hex'),
     ...payload

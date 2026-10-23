@@ -1,0 +1,211 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "W021.5 CTO Directive 143 Defect & Remediation Ledger",
+  "directive": "CTO Directive 143",
+  "baselineCommit": "5b8e52d1d8e5ba94b468985e526e90214211cea1",
+  "auditedImplementationCommit": "a1e21079db4802a861a9dc042b7b5ef7d0cf1b15",
+  "auditedEvidenceHead": "26df5595ec6e46eeb2f7f9d4e93793a55d589374",
+  "governingAuthority": "Master Execution Framework Amendment v1.6 / Rule IV-001 Non-Self-Acceptance",
+  "generatedAt": "2026-10-23T05:25:00.000Z",
+  "summary": {
+    "totalDefects": 10,
+    "reconciledAndVerifiedInRepository": 9,
+    "containedPendingAdmin": 1,
+    "productionAirGapStatus": "100% AIR-GAPPED (ehfafcnimmjusyvplbah: 0 queries, 0 mutations)",
+    "stagingStatus": "CONTAINMENT_PENDING_ADMIN_CONFIRMATION (0 queries, 0 mutations)",
+    "formalAcceptance": "0.0% — PENDING INDEPENDENT ADJUDICATION",
+    "weightConservation": {
+      "repoVerifiedEarned": 67.0,
+      "databasePending": 10.5,
+      "blocked": 22.5,
+      "unimplemented": 0.0,
+      "total": 100.0
+    }
+  },
+  "defects": [
+    {
+      "defectId": "DEF-D143-EXEC-01",
+      "severity": "P0_CRITICAL_EXECUTION_TRUTH",
+      "category": "REAL_DATA_BEARING_INGESTION",
+      "title": "Mode B Staging Executor Sent Metadata & Counts Instead of Full Source Rows",
+      "affectedFiles": [
+        "scripts/execute_staging_directive_139.mjs",
+        "scripts/reconcile_database_criteria_identities.mjs"
+      ],
+      "rootCause": "Directive 142 Mode B executor called RPC stubs sending chunk counts, seat counts, and conflict strings instead of transmitting the actual row records. Status 200 was accepted without real database effects.",
+      "remediationActions": [
+        "Implemented Approach A (Direct PostgREST Upserts) across all 4 criteria.",
+        "Stage 1 (CRIT-C02-02): Submits full row arrays to 8 PostgREST endpoints (datasets: 1, dataset_versions: 1, provenance_records: 1, political_organizations: 107, organization_relationships: 10, organization_multilingual_names: 27, organization_symbols: 19, organization_aliases: 1,043 = 1,209 total rows) with on_conflict=id.",
+        "Stage 2 (CRIT-D02-02): Submits all 11,298 unique candidate rows to /rest/v1/candidacies with on_conflict=person_id,election_year,election_type,constituency_id.",
+        "Stage 3 (CRIT-E01-02): Submits all 4,123 statutory demographic seat rows to /rest/v1/constituency_demographics with on_conflict=constituency_id,election_year.",
+        "Stage 4 (CRIT-F02-03): Submits all 2,243 statutory historical election results rows to /rest/v1/election_results with on_conflict=election_id,constituency_id.",
+        "Set Prefer: resolution=merge-duplicates,return=representation and derived rowsAffected directly from returned row array length."
+      ],
+      "disposition": "RECONCILED_AND_VERIFIED_IN_REPOSITORY"
+    },
+    {
+      "defectId": "DEF-D143-TEST-01",
+      "severity": "P0_CRITICAL_TEST_TRUTH",
+      "category": "MOCK_TRANSPORT_AND_ROW_COUNT_VERIFICATION",
+      "title": "Mock Tests Accepted count: 1 Response While Asserting Thousands of Rows Affected",
+      "affectedFiles": [
+        "tests/staging-execution-mode-b.test.mjs",
+        "scripts/execute_staging_directive_139.mjs"
+      ],
+      "rootCause": "Test harness returned { success: true, count: 1 } and executor assigned hard-coded rowsAffected, masking execution failure.",
+      "remediationActions": [
+        "Rebuilt tests/staging-execution-mode-b.test.mjs to enforce exact row array verification.",
+        "Added fail-closed ROW_COUNT_MISMATCH check: throws STAGE_X_ROW_COUNT_MISMATCH if returned row count !== expected row count.",
+        "Added fail-closed SEMANTIC_ERROR check: rejects HTTP 200 responses containing database error objects.",
+        "Added fail-closed MALFORMED_RESPONSE check: rejects non-JSON responses (HTML, broken syntax).",
+        "Mock transport in successful test echoes full payload array, verifying 11 PostgREST calls with correct headers, conflict targets, and payload counts."
+      ],
+      "disposition": "RECONCILED_AND_VERIFIED_IN_REPOSITORY"
+    },
+    {
+      "defectId": "DEF-D143-AUTH-01",
+      "severity": "P0_CRITICAL_SECURITY",
+      "category": "CRYPTOGRAPHIC_SCOPE_ENFORCEMENT",
+      "title": "Plan Digest Checked Only Truthiness Without Exact Canonical Computation",
+      "affectedFiles": [
+        "scripts/lib/stagingExecutionPlan.mjs",
+        "scripts/lib/stagingAuthorization.mjs",
+        "scripts/execute_staging_directive_139.mjs"
+      ],
+      "rootCause": "Directive 142 verifier only checked Boolean(payload.plan_digest) and skipped exact comparison against the requested payload.",
+      "remediationActions": [
+        "Created scripts/lib/stagingExecutionPlan.mjs implementing generateCanonicalExecutionPlan() and computeExecutionPlanDigest().",
+        "Computes 64-character lowercase hexadecimal SHA-256 digest over the canonical representation of all 4 stages and their source artifact hashes.",
+        "Verifier enforces plan_digest format (64-char lowercase hex) and compares token claim against computed digest, failing closed with PLAN_DIGEST_MISMATCH on discrepancy."
+      ],
+      "disposition": "RECONCILED_AND_VERIFIED_IN_REPOSITORY"
+    },
+    {
+      "defectId": "DEF-D143-AUTH-02",
+      "severity": "P0_CRITICAL_SECURITY",
+      "category": "CRYPTOGRAPHIC_TIME_CLAIMS",
+      "title": "Time Claims Permitted Optional iat, Unverified Clock Skew, and Contradictory nbf",
+      "affectedFiles": [
+        "scripts/lib/stagingAuthorization.mjs",
+        "tests/staging-authorization-verifier.test.mjs"
+      ],
+      "rootCause": "Verifier treated iat as optional, did not check for future issuance, permitted contradictory nbf (nbf > exp or nbf < iat), and allowed excessive token lifetime.",
+      "remediationActions": [
+        "Enforced mandatory positive integer iat; rejects missing/invalid iat with INVALID_IAT.",
+        "Enforced future issuance check with 60-second clock skew tolerance (TOKEN_ISSUED_IN_FUTURE).",
+        "Enforced exp > iat check (INVALID_EXPIRY_BEFORE_ISSUANCE).",
+        "Enforced nbf <= exp (CONTRADICTORY_TIME_CLAIMS) and nbf >= iat - 60s (INCONSISTENT_TIME_CLAIMS).",
+        "Enforced maximum token lifetime <= 3,600s against both iat and nbf (EXCESSIVE_TOKEN_LIFETIME)."
+      ],
+      "disposition": "RECONCILED_AND_VERIFIED_IN_REPOSITORY"
+    },
+    {
+      "defectId": "DEF-D143-AUTH-03",
+      "severity": "P0_CRITICAL_SECURITY",
+      "category": "OPERATION_SCOPE_ENFORCEMENT",
+      "title": "Operation Grants Did Not Proactively Reject Prohibited Destructive Operations",
+      "affectedFiles": [
+        "scripts/lib/stagingAuthorization.mjs",
+        "tests/staging-authorization-verifier.test.mjs"
+      ],
+      "rootCause": "Verifier checked operations against requested operations but did not inspect token claims for prohibited operations like DELETE, DROP, TRUNCATE, or ALTER.",
+      "remediationActions": [
+        "Defined PROHIBITED_DESTRUCTIVE_OPERATIONS = ['DELETE', 'DROP', 'TRUNCATE', 'ALTER'].",
+        "Defined closed PERMITTED_OPERATIONS_ALLOWLIST = ['INSERT', 'UPDATE', 'UPSERT', 'SELECT'].",
+        "Verifier inspects all token operation grants and throws PROHIBITED_DESTRUCTIVE_OPERATION_IN_TOKEN if any destructive operation is present.",
+        "Rejects any operation outside allowlist with UNAUTHORIZED_OPERATION_GRANT."
+      ],
+      "disposition": "RECONCILED_AND_VERIFIED_IN_REPOSITORY"
+    },
+    {
+      "defectId": "DEF-D143-AUTH-04",
+      "severity": "P0_CRITICAL_SECURITY",
+      "category": "TABLE_SCOPE_ENFORCEMENT",
+      "title": "Table Scopes Omitted public.datasets and public.dataset_versions",
+      "affectedFiles": [
+        "scripts/lib/stagingAuthorization.mjs",
+        "tests/staging-authorization-verifier.test.mjs"
+      ],
+      "rootCause": "Directive 142 allowlist listed only 6 tables for Stage 1, omitting datasets and dataset_versions modified by Migration 065.",
+      "remediationActions": [
+        "Expanded ALL_AUTHORIZED_STAGING_TABLES to all 11 tables across the 4 stages (datasets, dataset_versions, provenance_records, political_organizations, organization_relationships, organization_multilingual_names, organization_symbols, organization_aliases, candidacies, constituency_demographics, election_results).",
+        "Verifier enforces that any token granting a table outside this closed set is rejected with UNAUTHORIZED_TABLE_GRANT."
+      ],
+      "disposition": "RECONCILED_AND_VERIFIED_IN_REPOSITORY"
+    },
+    {
+      "defectId": "DEF-D143-GATE-01",
+      "severity": "P0_CRITICAL_GOVERNANCE",
+      "category": "CONTAINMENT_GATE_VERIFICATION",
+      "title": "Credential Containment Gate Was String-Only Without Structured Incident Verification",
+      "affectedFiles": [
+        "scripts/lib/stagingAdminContainment.mjs",
+        "scripts/lib/stagingAuthorization.mjs",
+        "scripts/execute_staging_directive_139.mjs"
+      ],
+      "rootCause": "Directive 142 verifier checked if incident_closure_ref was a non-empty string, without verifying the existence or content of an authorized administrative closure record.",
+      "remediationActions": [
+        "Created scripts/lib/stagingAdminContainment.mjs implementing verifyAdminIncidentClosure().",
+        "Requires structured incident closure record confirming credentialRotated: true, accessLogsAudited: true, authorizedAdmin, certifiedAt, and targetProjectRef.",
+        "Fails closed with ADMIN_CONTAINMENT_UNCONFIRMED whenever the administrative record is missing or unverified, printing actionable prerequisites.",
+        "Execution halts before any transport invocation or network contact."
+      ],
+      "disposition": "RECONCILED_AND_VERIFIED_IN_REPOSITORY"
+    },
+    {
+      "defectId": "DEF-D143-SCH-01",
+      "severity": "P1_DATA_INTEGRITY",
+      "category": "SCHEMA_TABLE_NAME_RECONCILIATION",
+      "title": "Discrepancy Between Schema Table Names and Register/Executor Documentation",
+      "affectedFiles": [
+        "scripts/reconcile_database_criteria_identities.mjs",
+        "scripts/execute_staging_directive_139.mjs",
+        "reports/w021_5_database_execution_register.json"
+      ],
+      "rootCause": "Reports referred to candidate_profiles, demographic_profiles, and historical_election_results, while actual migration schema uses candidacies, constituency_demographics, and election_results.",
+      "remediationActions": [
+        "Reconciled all target table names across scripts and registers to match actual schema: public.candidacies, public.constituency_demographics, and public.election_results.",
+        "Reconciled Stage 1 to all 8 tables defined in Migration 065 (1,209 rows total).",
+        "Documented exact PostgREST conflict targets: candidacies (person_id,election_year,election_type,constituency_id), constituency_demographics (constituency_id,election_year), election_results (election_id,constituency_id)."
+      ],
+      "disposition": "RECONCILED_AND_VERIFIED_IN_REPOSITORY"
+    },
+    {
+      "defectId": "DEF-D143-EXEC-02",
+      "severity": "P1_EXECUTION_INTEGRITY",
+      "category": "PARTIAL_EXECUTION_SAFETY",
+      "title": "Stage Execution Did Not Handle Sequential Failure or Attach Partial Execution Report",
+      "affectedFiles": [
+        "scripts/execute_staging_directive_139.mjs",
+        "tests/staging-execution-mode-b.test.mjs"
+      ],
+      "rootCause": "If a downstream stage failed, earlier stage successes were not preserved in the report, and partial execution state was lost.",
+      "remediationActions": [
+        "Implemented sequential stage execution with explicit try/catch blocks for each stage.",
+        "On stage failure, records earlier stages as EXECUTED_PENDING_INDEPENDENT_CORROBORATION, current stage as FAILED, and downstream stages as SKIPPED_DUE_TO_PREVIOUS_FAILURE.",
+        "Sets executionStatus: PARTIAL_EXECUTION_FAILURE and attaches partial execution report to the thrown error.",
+        "Documents that consumed nonce prevents replay and requires a new token scoped to remaining unexecuted stages."
+      ],
+      "disposition": "RECONCILED_AND_VERIFIED_IN_REPOSITORY"
+    },
+    {
+      "defectId": "DEF-D143-SEC-01",
+      "severity": "P0_CRITICAL_SECURITY",
+      "category": "CREDENTIAL_EXPOSURE_AND_ADMIN_ROTATION",
+      "title": "Staging Service-Role Credential Rotation Remains Pending Administrative Confirmation",
+      "affectedFiles": [
+        "governance/security/admin_incident_closure_record.json",
+        "scripts/lib/stagingAdminContainment.mjs"
+      ],
+      "rootCause": "Staging Supabase project (fkpigozcqnmcvofuksar) credentials were exposed in prior sessions. While credentials were removed from code, live rotation in the Supabase console requires human administrator action.",
+      "remediationActions": [
+        "Maintained 100% air-gap on production Supabase (ehfafcnimmjusyvplbah: 0 queries, 0 mutations).",
+        "Maintained operational gate on staging Supabase (fkpigozcqnmcvofuksar: 0 live queries, 0 live mutations).",
+        "Fail-closed verifier blocks all live staging execution until authenticated administrative closure record is provisioned.",
+        "Truthfully reported status as CONTAINMENT_PENDING_ADMIN_CONFIRMATION across all evidence artifacts."
+      ],
+      "disposition": "CONTAINMENT_PENDING_ADMIN_CONFIRMATION",
+      "externalPrerequisite": "Project Administrator confirmation of JWT secret rotation via Supabase dashboard on fkpigozcqnmcvofuksar and access-log audit."
+    }
+  ]
+}

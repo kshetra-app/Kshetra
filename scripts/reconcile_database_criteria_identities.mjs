@@ -178,6 +178,115 @@ export function reconcilePoliticalOrganizations(options = {}) {
   const aliasCount = aliasLines.length;
   const totalCatalogRecords = orgCount + relCount + multiCount + symCount + aliasCount + provCount;
 
+  const datasetRows = [
+    {
+      id: 'eci_political_parties',
+      name: 'ECI Registered Political Parties & Recognized State/National Formations',
+      domain: 'political_profiles',
+      description: 'Statutory political party notification published by the Election Commission of India under Section 29A of the Representation of the People Act, 1951',
+      source_id: 'eci',
+      license: 'Government Open Data'
+    }
+  ];
+
+  const datasetVersionRows = [
+    {
+      id: 'eci_political_parties_2024_v1',
+      dataset_id: 'eci_political_parties',
+      version_tag: '2024_national_parties_107',
+      effective_from: '2024-03-15',
+      default_status: 'OFFICIAL',
+      record_count: 107,
+      metadata: {
+        milestone: 'W021.5-B2.2-C',
+        statutory_authority: 'Election Commission of India',
+        canonical_org_count: 107,
+        total_batch_inserts: 1207
+      }
+    }
+  ];
+
+  const provenanceRows = [
+    {
+      id: provenanceRecordId,
+      dataset_version_id: provenanceVersion,
+      status: 'OFFICIAL',
+      transformation_type: 'canonical_ingest'
+    }
+  ];
+
+  const politicalOrganizationRows = Array.from(orgsById.values()).map(o => ({
+    id: o.id,
+    org_type: o.orgType,
+    name: o.name,
+    short_name: o.shortName,
+    recognition_level: o.recLevel,
+    headquarters_state: o.hqState,
+    data_status: o.dataStatus,
+    provenance_id: o.provenanceId
+  }));
+
+  const relationshipRows = relationships.map(r => ({
+    source_org_id: r.source,
+    target_org_id: r.target,
+    relationship_type: r.type,
+    data_status: 'OFFICIAL',
+    provenance_id: provenanceRecordId
+  }));
+
+  const multilingualRows = multiLines.map(line => {
+    const matches = [...line.matchAll(/'((?:''|[^'])*)'/g)].map(m => m[1].replace(/''/g, "'"));
+    return {
+      organization_id: matches[0],
+      language_code: matches[1],
+      script_code: matches[2],
+      representation_type: matches[3],
+      name_value: matches[4],
+      short_name_value: matches[5],
+      is_preferred: true,
+      is_official: true,
+      data_status: 'OFFICIAL',
+      provenance_id: provenanceRecordId
+    };
+  });
+
+  const symbolRows = symLines.map(line => {
+    const matches = [...line.matchAll(/'((?:''|[^'])*)'/g)].map(m => m[1].replace(/''/g, "'"));
+    return {
+      organization_id: matches[0],
+      symbol_name: matches[1],
+      symbol_url: matches[2],
+      jurisdiction_scope: matches[3],
+      is_current: true,
+      data_status: 'OFFICIAL',
+      provenance_id: provenanceRecordId
+    };
+  });
+
+  const aliasRows = aliasLines.map(line => {
+    const matches = [...line.matchAll(/'((?:''|[^'])*)'/g)].map(m => m[1].replace(/''/g, "'"));
+    return {
+      raw_lookup_key: matches[0],
+      raw_original_string: matches[1],
+      organization_id: matches[2],
+      alias_type: matches[3],
+      jurisdiction_scope: matches[4],
+      confidence: parseFloat(matches[7]) || 1.0,
+      provenance_id: provenanceRecordId
+    };
+  });
+
+  const rowsByTable = {
+    'public.datasets': datasetRows,
+    'public.dataset_versions': datasetVersionRows,
+    'public.provenance_records': provenanceRows,
+    'public.political_organizations': politicalOrganizationRows,
+    'public.organization_relationships': relationshipRows,
+    'public.organization_multilingual_names': multilingualRows,
+    'public.organization_symbols': symbolRows,
+    'public.organization_aliases': aliasRows
+  };
+
   const passed = (
     orgCount === 107 &&
     orgsById.size === 107 &&
@@ -207,13 +316,16 @@ export function reconcilePoliticalOrganizations(options = {}) {
     lifecycleState: 'PREPARED_AND_RECONCILED_IN_REPOSITORY',
     migrationFile: 'supabase/migrations/065_canonical_political_organization_registry.sql',
     targetTables: [
+      'public.datasets',
+      'public.dataset_versions',
+      'public.provenance_records',
       'public.political_organizations',
       'public.organization_relationships',
       'public.organization_multilingual_names',
       'public.organization_symbols',
-      'public.organization_aliases',
-      'public.provenance_records'
+      'public.organization_aliases'
     ],
+    rowsByTable,
     metrics: {
       canonicalOrganizations: orgCount,
       uniqueOrgIds: orgsById.size,
@@ -380,6 +492,16 @@ export function reconcileCandidacies(options = {}) {
     throw new Error(`COLLISION_COUNT_MISMATCH: Source has ${sourceCollisionGroupsCount} collision groups, but duplicate manifest declares ${duplicateCount}`);
   }
 
+  const candidateRows = [];
+  for (const [natKey, tuples] of tuplesByNaturalKey.entries()) {
+    if (tuples.length === 1) {
+      candidateRows.push(tuples[0]);
+    } else {
+      const chosen = tuples.find(t => !verifiedDiscardedIds.has(t.id)) || tuples[0];
+      candidateRows.push(chosen);
+    }
+  }
+
   const uniqueCandidateRows = totalParsedTuples - duplicateCount;
   const passed = (
     totalParsedTuples === 11334 &&
@@ -389,6 +511,7 @@ export function reconcileCandidacies(options = {}) {
     sourceCollisionGroupsCount === 36 &&
     uniqueCandidateRows === 11298 &&
     tuplesByNaturalKey.size === 11298 &&
+    candidateRows.length === 11298 &&
     verifiedChunkHashes.length === 10
   );
 
@@ -399,6 +522,7 @@ export function reconcileCandidacies(options = {}) {
     passed,
     lifecycleState: 'PREPARED_AND_RECONCILED_IN_REPOSITORY',
     targetTables: ['public.candidacies'],
+    candidateRows,
     duplicatesAnalysis: {
       duplicateDeclarationsCount: duplicateCount,
       verifiedDuplicatePairsCount: matchedDeclaredDuplicates,
@@ -566,6 +690,37 @@ export function reconcileConstituencyDemographics(options = {}) {
     mizoramGapCount === 5 // Preserved under DQ-W021.5-B2.2E-001
   );
 
+  const demByCode = new Map();
+  for (const d of demRecords) {
+    demByCode.set(`${d.state_code}-AC-${d.ac_no}`, d);
+  }
+
+  const demographicRows = records.map(r => {
+    const compId = `${r.jurisdiction}-AC-${r.acNo}`;
+    const d = demByCode.get(compId);
+    return {
+      constituency_id: compId,
+      constituency_code: compId,
+      ac_no: r.acNo,
+      state_code: r.jurisdiction,
+      constituency_name: r.name || compId,
+      election_year: 2024,
+      total_population: d ? d.total_population : null,
+      registered_voters: d ? d.registered_voters : null,
+      total_voters: d ? d.registered_voters : null,
+      male_voters: d ? d.male_voters : null,
+      female_voters: d ? d.female_voters : null,
+      turnout_percentage: d ? d.turnout_percentage : null,
+      literacy_rate: d ? d.literacy_rate : null,
+      urban_percentage: d ? d.urban_percentage : null,
+      sc_percentage: d ? d.sc_percentage : null,
+      st_percentage: d ? d.st_percentage : null,
+      area_sq_km: d ? d.area_sq_km : null,
+      polling_stations: d ? d.polling_stations : null,
+      data_status: d ? 'OFFICIAL' : 'ESTIMATE'
+    };
+  });
+
   return {
     criterionId: 'CRIT-E01-02',
     taskId: 'W021.5-E-01',
@@ -573,6 +728,7 @@ export function reconcileConstituencyDemographics(options = {}) {
     passed,
     lifecycleState: 'PREPARED_AND_RECONCILED_IN_REPOSITORY',
     targetTables: ['public.constituency_demographics'],
+    demographicRows,
     reconciliationAnalysis: {
       authoritativeStatutoryInventorySeats: 4123,
       demographicsManifestRecordCount: 4142,
@@ -742,6 +898,7 @@ export function reconcileHistoricalElectionResults(options = {}) {
     passed,
     lifecycleState: 'PREPARED_AND_RECONCILED_IN_REPOSITORY',
     targetTables: ['public.election_results'],
+    resultRows: allResultRows,
     upsertConflictTarget: 'on_conflict=election_id,constituency_id',
     metrics: {
       totalStatesCovered: missing23States.length,

@@ -2,19 +2,21 @@
  * scripts/lib/stagingAuthorization.mjs
  *
  * Asymmetric Public-Key Cryptographic Write Authorization & Anti-Replay Verifier
- * Task: W021.5 / CTO Directive 142 Section 2
- * Governing Authority: Master Execution Framework Amendment v1.6 / Rule IV-001 Non-Self-Acceptance
+ * Authority: CTO Directive 142 & CTO Directive 143 / Master Execution Framework Amendment v1.6
  *
  * Invariants:
  * 1. True asymmetric public-key signature verification (Ed25519 or RS256 with fixed algorithm allowlist).
- * 2. Governance private key NEVER enters repository, executor, logs, reports, or production code.
- * 3. Verifier verifies signatures using ONLY the authorized public key (never treated as HMAC secret).
+ * 2. Governance signing credentials NEVER enter repository, executor, logs, reports, or test suites.
+ * 3. Verifier operates strictly on public keys (never treated as HMAC secret).
  * 4. Fails closed if public key trust anchor is absent, malformed, or unconfigured.
  * 5. Strict issuer ('kshetra-cto-governance') and audience ('kshetra-staging-execution').
  * 6. Exact target project binding ('fkpigozcqnmcvofuksar'), strictly rejecting production ('ehfafcnimmjusyvplbah').
- * 7. Granular criterion, table-level, operation-level, and plan-digest scope enforcement.
- * 8. Replay protection persists across processes and restarts via durable atomic replay store.
- * 9. Explicit incident_closure_ref confirming external credential rotation prerequisite.
+ * 7. Strict time claims: iat, exp, nbf internal consistency, clock-skew protection, and max lifetime.
+ * 8. Strict operation grants: immediate rejection of tokens granting destructive operations (DELETE, DROP, TRUNCATE, ALTER).
+ * 9. Strict table scope: tokens must not grant tables outside authorized staging tables.
+ * 10. Mandatory execution plan digest: independently computes canonical plan digest and asserts exact match.
+ * 11. Fail-closed administrative containment gate: requires authenticated administrator closure record.
+ * 12. Durable cross-process anti-replay reservation store with restart persistence.
  */
 
 import fs from 'node:fs';
@@ -22,6 +24,8 @@ import path from 'node:path';
 import crypto from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 import { reserveNonce } from './stagingReplayStore.mjs';
+import { computeExecutionPlanDigest } from './stagingExecutionPlan.mjs';
+import { verifyAdminIncidentClosure } from './stagingAdminContainment.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -34,6 +38,28 @@ export const EXPECTED_AUDIENCE = 'kshetra-staging-execution';
 export const ALLOWED_ALGORITHMS = ['Ed25519', 'RS256'];
 export const DEFAULT_PUBLIC_KEY_PATH = path.join(REPO_ROOT, 'governance', 'keys', 'cto_staging_auth_public.pem');
 export const DEFAULT_MAX_LIFETIME_SECONDS = 86400; // 24 hours maximum token lifetime
+export const CLOCK_SKEW_TOLERANCE_SECONDS = 60; // 60 seconds allowable clock skew
+
+export const PERMITTED_OPERATIONS_ALLOWLIST = ['INSERT', 'UPDATE', 'UPSERT', 'SELECT'];
+export const PROHIBITED_DESTRUCTIVE_OPERATIONS = ['DELETE', 'DROP', 'TRUNCATE', 'ALTER'];
+
+export const ALL_AUTHORIZED_STAGING_TABLES = [
+  // Stage 1: Political Organizations Catalog & Provenance (CRIT-C02-02)
+  'public.datasets',
+  'public.dataset_versions',
+  'public.provenance_records',
+  'public.political_organizations',
+  'public.organization_relationships',
+  'public.organization_multilingual_names',
+  'public.organization_symbols',
+  'public.organization_aliases',
+  // Stage 2: Candidate Profiles & Contests (CRIT-D02-02)
+  'public.candidacies',
+  // Stage 3: Constituency Demographics Baseline (CRIT-E01-02)
+  'public.constituency_demographics',
+  // Stage 4: Historical Election Results (CRIT-F02-03)
+  'public.election_results'
+];
 
 /**
  * Base64URL decode string
@@ -104,7 +130,7 @@ export function resolvePublicTrustAnchor(options = {}) {
 
 /**
  * Verifies a staging write authorization token under the strict asymmetric verification contract.
- * Fails closed on any inconsistency, missing trust anchor, invalid signature, or replay.
+ * Fails closed on any inconsistency, missing trust anchor, invalid signature, scope violation, or replay.
  */
 export function verifyStagingWriteAuthorization(params = {}) {
   const {
@@ -117,7 +143,10 @@ export function verifyStagingWriteAuthorization(params = {}) {
     now = Date.now(),
     maxLifetimeSeconds = DEFAULT_MAX_LIFETIME_SECONDS,
     consumeNonceOnSuccess = true,
-    storePath = undefined
+    storePath = undefined,
+    adminClosureRecord = undefined,
+    adminRecordPath = undefined,
+    repoRoot = REPO_ROOT
   } = params;
 
   // 1. Resolve Trust Anchor (Asymmetric Public Key) - Fails closed if unconfigured
@@ -230,34 +259,85 @@ export function verifyStagingWriteAuthorization(params = {}) {
     throw err;
   }
 
-  // 9. Temporal Validity (iat, nbf, exp, maxLifetime)
+  // 9. Strict Time-Claim Validation (Directive 143 Section 4.2)
   const nowSeconds = Math.floor(now / 1000);
 
-  if (typeof payload.exp !== 'number' || payload.exp <= nowSeconds) {
+  // iat: must exist, must be an integer > 0
+  if (typeof payload.iat !== 'number' || !Number.isInteger(payload.iat) || payload.iat <= 0) {
+    const err = new Error('INVALID_IAT: Authorization token must contain a positive integer "iat" timestamp.');
+    err.code = 'INVALID_IAT';
+    throw err;
+  }
+
+  // Clock skew tolerance on iat
+  if (payload.iat > nowSeconds + CLOCK_SKEW_TOLERANCE_SECONDS) {
+    const err = new Error(`TOKEN_ISSUED_IN_FUTURE: Token iat (${payload.iat}) exceeds current time (${nowSeconds}) by more than ${CLOCK_SKEW_TOLERANCE_SECONDS}s.`);
+    err.code = 'TOKEN_ISSUED_IN_FUTURE';
+    throw err;
+  }
+
+  // exp: must exist, must be an integer > 0
+  if (typeof payload.exp !== 'number' || !Number.isInteger(payload.exp) || payload.exp <= 0) {
+    const err = new Error('INVALID_EXP: Authorization token must contain a positive integer "exp" timestamp.');
+    err.code = 'INVALID_EXP';
+    throw err;
+  }
+
+  // exp must be strictly greater than iat
+  if (payload.exp <= payload.iat) {
+    const err = new Error(`INVALID_EXPIRY_BEFORE_ISSUANCE: Token exp (${payload.exp}) must be strictly after iat (${payload.iat}).`);
+    err.code = 'INVALID_EXPIRY_BEFORE_ISSUANCE';
+    throw err;
+  }
+
+  // exp must be in the future
+  if (payload.exp <= nowSeconds) {
     const err = new Error(`TOKEN_EXPIRED: Token expired at unix timestamp ${payload.exp} (current: ${nowSeconds}).`);
     err.code = 'TOKEN_EXPIRED';
     throw err;
   }
 
-  if (typeof payload.nbf === 'number' && payload.nbf > nowSeconds) {
-    const err = new Error(`TOKEN_NOT_YET_VALID: Token not valid before unix timestamp ${payload.nbf} (current: ${nowSeconds}).`);
-    err.code = 'TOKEN_NOT_YET_VALID';
-    throw err;
+  // nbf: if present, must be integer > 0
+  if (payload.nbf !== undefined) {
+    if (typeof payload.nbf !== 'number' || !Number.isInteger(payload.nbf) || payload.nbf <= 0) {
+      const err = new Error('INVALID_NBF: Token "nbf" claim must be a positive integer timestamp when present.');
+      err.code = 'INVALID_NBF';
+      throw err;
+    }
+    if (payload.nbf > nowSeconds) {
+      const err = new Error(`TOKEN_NOT_YET_VALID: Token not valid before unix timestamp ${payload.nbf} (current: ${nowSeconds}).`);
+      err.code = 'TOKEN_NOT_YET_VALID';
+      throw err;
+    }
+    if (payload.nbf > payload.exp) {
+      const err = new Error(`CONTRADICTORY_TIME_CLAIMS: Token nbf (${payload.nbf}) is after exp (${payload.exp}).`);
+      err.code = 'CONTRADICTORY_TIME_CLAIMS';
+      throw err;
+    }
+    if (payload.nbf < payload.iat - CLOCK_SKEW_TOLERANCE_SECONDS) {
+      const err = new Error(`INCONSISTENT_TIME_CLAIMS: Token nbf (${payload.nbf}) precedes iat (${payload.iat}) beyond allowable clock skew.`);
+      err.code = 'INCONSISTENT_TIME_CLAIMS';
+      throw err;
+    }
   }
 
-  const effectiveNbf = typeof payload.nbf === 'number' ? payload.nbf : (payload.iat || nowSeconds);
-  if (payload.exp - effectiveNbf > maxLifetimeSeconds) {
-    const err = new Error(`EXCESSIVE_TOKEN_LIFETIME: Authorization validity duration (${payload.exp - effectiveNbf}s) exceeds maximum permitted lifetime (${maxLifetimeSeconds}s).`);
+  // Max lifetime verification
+  if (payload.exp - payload.iat > maxLifetimeSeconds) {
+    const err = new Error(`EXCESSIVE_TOKEN_LIFETIME: Authorization validity duration (${payload.exp - payload.iat}s) exceeds maximum permitted lifetime (${maxLifetimeSeconds}s).`);
+    err.code = 'EXCESSIVE_TOKEN_LIFETIME';
+    throw err;
+  }
+  if (payload.nbf && (payload.exp - payload.nbf > maxLifetimeSeconds)) {
+    const err = new Error(`EXCESSIVE_TOKEN_LIFETIME: Authorization validity duration (${payload.exp - payload.nbf}s) exceeds maximum permitted lifetime (${maxLifetimeSeconds}s).`);
     err.code = 'EXCESSIVE_TOKEN_LIFETIME';
     throw err;
   }
 
-  // 10. Incident Closure Reference
-  if (!payload.incident_closure_ref || typeof payload.incident_closure_ref !== 'string' || payload.incident_closure_ref.trim().length === 0) {
-    const err = new Error('INCIDENT_CLOSURE_REF_REQUIRED: Authorization token must contain an incident_closure_ref confirming external credential rotation.');
-    err.code = 'INCIDENT_CLOSURE_REF_REQUIRED';
-    throw err;
-  }
+  // 10. Fail-Closed Administrative Credential-Containment Gate (Directive 143 Section 5)
+  verifyAdminIncidentClosure(payload.incident_closure_ref, {
+    adminClosureRecord,
+    adminRecordPath
+  });
 
   // 11. Criteria Scope Enforcement
   if (requestedCriteria.length > 0) {
@@ -271,9 +351,24 @@ export function verifyStagingWriteAuthorization(params = {}) {
     }
   }
 
-  // 12. Table-Level Scope Enforcement
+  // 12. Strict Table Scope Enforcement (Directive 143 Section 4.3 & 4.4)
+  if (!Array.isArray(payload.tables) || payload.tables.length === 0) {
+    const err = new Error('MISSING_TABLE_GRANTS: Token must specify an explicit non-empty "tables" array.');
+    err.code = 'MISSING_TABLE_GRANTS';
+    throw err;
+  }
+
+  const allowedTableSet = new Set(ALL_AUTHORIZED_STAGING_TABLES);
+  for (const table of payload.tables) {
+    if (!allowedTableSet.has(table)) {
+      const err = new Error(`UNAUTHORIZED_TABLE_GRANT: Token grants access to unauthorized table "${table}".`);
+      err.code = 'UNAUTHORIZED_TABLE_GRANT';
+      throw err;
+    }
+  }
+
   if (requestedTables.length > 0) {
-    const permittedTables = new Set(payload.tables || []);
+    const permittedTables = new Set(payload.tables);
     for (const reqTable of requestedTables) {
       if (!permittedTables.has(reqTable)) {
         const err = new Error(`UNAUTHORIZED_TABLE: Target table "${reqTable}" is not permitted by this authorization token.`);
@@ -283,31 +378,75 @@ export function verifyStagingWriteAuthorization(params = {}) {
     }
   }
 
-  // 13. Operation-Level Scope Enforcement & Prohibited Destructive Operations
+  // 13. Strict Operation Grants Enforcement & Comprehensive Prohibited Destructive Operations (Directive 143 Section 4.3)
+  if (!Array.isArray(payload.operations) || payload.operations.length === 0) {
+    const err = new Error('MISSING_OPERATION_GRANTS: Token must specify an explicit non-empty "operations" array.');
+    err.code = 'MISSING_OPERATION_GRANTS';
+    throw err;
+  }
+
+  const permittedOpSet = new Set(PERMITTED_OPERATIONS_ALLOWLIST);
+  const prohibitedOpSet = new Set(PROHIBITED_DESTRUCTIVE_OPERATIONS);
+
+  for (const rawOp of payload.operations) {
+    const op = String(rawOp).toUpperCase();
+    if (prohibitedOpSet.has(op)) {
+      const err = new Error(`PROHIBITED_DESTRUCTIVE_OPERATION_IN_TOKEN: Token contains prohibited destructive operation "${op}".`);
+      err.code = 'PROHIBITED_DESTRUCTIVE_OPERATION_IN_TOKEN';
+      throw err;
+    }
+    if (!permittedOpSet.has(op)) {
+      const err = new Error(`UNAUTHORIZED_OPERATION_GRANT: Operation "${op}" is not in the authorized operations allowlist (${PERMITTED_OPERATIONS_ALLOWLIST.join(', ')}).`);
+      err.code = 'UNAUTHORIZED_OPERATION_GRANT';
+      throw err;
+    }
+  }
+
   if (requestedOperations.length > 0) {
-    const permittedOperations = new Set((payload.operations || []).map(o => o.toUpperCase()));
-    for (const op of requestedOperations) {
-      const normalizedOp = op.toUpperCase();
-      if (!permittedOperations.has(normalizedOp)) {
-        const err = new Error(`UNAUTHORIZED_OPERATION: Operation "${op}" is not permitted by this authorization token.`);
+    const tokenOpSet = new Set(payload.operations.map(o => String(o).toUpperCase()));
+    for (const reqOp of requestedOperations) {
+      const normalizedReqOp = String(reqOp).toUpperCase();
+      if (!tokenOpSet.has(normalizedReqOp)) {
+        const err = new Error(`UNAUTHORIZED_OPERATION: Requested operation "${reqOp}" is not permitted by this authorization token.`);
         err.code = 'UNAUTHORIZED_OPERATION';
-        throw err;
-      }
-      if (normalizedOp === 'DELETE' || normalizedOp === 'DROP' || normalizedOp === 'TRUNCATE') {
-        const err = new Error(`PROHIBITED_OPERATION: Destructive operation "${op}" is strictly forbidden on staging.`);
-        err.code = 'PROHIBITED_OPERATION';
         throw err;
       }
     }
   }
 
-  // 14. Plan Digest Binding Verification
-  if (requestedPlanDigest) {
-    if (!payload.plan_digest || payload.plan_digest !== requestedPlanDigest) {
-      const err = new Error(`PLAN_DIGEST_MISMATCH: Execution plan digest mismatch. Token authorizes "${payload.plan_digest || 'none'}", requested execution is "${requestedPlanDigest}".`);
-      err.code = 'PLAN_DIGEST_MISMATCH';
+  // 14. Mandatory Execution Plan Digest Verification (Directive 143 Section 4.1)
+  if (!payload.plan_digest || typeof payload.plan_digest !== 'string' || payload.plan_digest.trim().length === 0) {
+    const err = new Error('MISSING_PLAN_DIGEST: Mode B authorization token must contain a non-empty "plan_digest" claim.');
+    err.code = 'MISSING_PLAN_DIGEST';
+    throw err;
+  }
+
+  const trimmedDigest = payload.plan_digest.trim();
+  if (!/^[0-9a-f]{64}$/.test(trimmedDigest)) {
+    const err = new Error(`MALFORMED_PLAN_DIGEST: Plan digest "${trimmedDigest}" is not a 64-character lowercase hex SHA-256 digest.`);
+    err.code = 'MALFORMED_PLAN_DIGEST';
+    throw err;
+  }
+
+  // Calculate expected canonical digest if not explicitly passed
+  let expectedDigest = requestedPlanDigest;
+  if (!expectedDigest) {
+    try {
+      expectedDigest = computeExecutionPlanDigest({
+        repoRoot,
+        targetProjectRef: targetProject
+      });
+    } catch (e) {
+      const err = new Error(`PLAN_DIGEST_COMPUTATION_FAILED: Could not compute canonical execution plan digest: ${e.message}`);
+      err.code = 'PLAN_DIGEST_COMPUTATION_FAILED';
       throw err;
     }
+  }
+
+  if (trimmedDigest !== expectedDigest) {
+    const err = new Error(`PLAN_DIGEST_MISMATCH: Execution plan digest mismatch. Token authorizes "${trimmedDigest}", required canonical plan is "${expectedDigest}".`);
+    err.code = 'PLAN_DIGEST_MISMATCH';
+    throw err;
   }
 
   // 15. Durable Cross-Process Anti-Replay Reservation
@@ -320,7 +459,7 @@ export function verifyStagingWriteAuthorization(params = {}) {
 
   if (consumeNonceOnSuccess) {
     reserveNonce(nonce, {
-      planDigest: payload.plan_digest || null,
+      planDigest: payload.plan_digest,
       criteria: payload.criteria || [],
       tables: payload.tables || []
     }, { storePath });
