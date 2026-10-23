@@ -3,8 +3,8 @@
   "contractSpecification": "W021.5 PostgreSQL Schema Contract Specification",
   "directive": "CTO Directive 149: Operational Database Closure, Canonical Identity Truth and External Evidence Acceptance",
   "governingAuthority": "Master Execution Framework Amendment v1.6 / Rule IV-001 Non-Self-Acceptance",
-  "generatedAt": "2026-10-23T19:35:00+05:30",
-  "sourceCommit": "28aa5e808a937c61b466aac3c456a97090a6656d",
+  "generatedAt": "2026-10-23T20:07:45+05:30",
+  "sourceCommit": "4ba53a479ff7e93051c5b8d2cb136aeb9dc233be",
   "migrationSequence": {
     "totalMigrations": 15,
     "files": [

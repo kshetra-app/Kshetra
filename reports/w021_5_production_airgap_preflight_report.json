@@ -1,14 +1,14 @@
 {
   "verifier": "scripts/verify_production_airgap_and_preflight.cjs",
   "directive": "CTO Directive 138 / W021.5-I-02 / CRIT-I02-01",
-  "timestamp": "2026-10-23T13:18:41.099Z",
+  "timestamp": "2026-10-23T14:47:54.137Z",
   "productionProjectRef": "ehfafcnimmjusyvplbah",
   "stagingProjectRef": "fkpigozcqnmcvofuksar",
   "summary": {
     "allChecksPassed": true,
     "airGapVerified": true,
-    "totalMigrations": 70,
-    "transactionalMigrations": 28,
+    "totalMigrations": 71,
+    "transactionalMigrations": 29,
     "nonTransactionalMigrations": 42,
     "preflightStatus": "READY_FOR_AUTHORIZATION"
   },
@@ -27,12 +27,12 @@
       "id": "MIGRATION_SEQUENCE_READINESS",
       "name": "Full Migration Sequence Readiness",
       "passed": true,
-      "totalMigrations": 70,
+      "totalMigrations": 71,
       "hasMigration067": true,
       "hasMigration068": true,
-      "transactionalCount": 28,
+      "transactionalCount": 29,
       "nonTransactionalCount": 42,
-      "details": "Total 70 migration files present (001 to 068). Exactly 28 are explicitly transactional with BEGIN/COMMIT blocks; 42 utilize top-level DDL statements."
+      "details": "Total 71 migration files present (001 to 068). Exactly 29 are explicitly transactional with BEGIN/COMMIT blocks; 42 utilize top-level DDL statements."
     },
     {
       "id": "DEC134_SCHEMA_STANDARD",
