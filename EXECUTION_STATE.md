@@ -7,9 +7,9 @@
 ## 1. Project & Execution Coordinates
 ```text
 PROJECT:               PANIN (formerly Kshetra)
-CURRENT_JOB:           W021.5 / CTO DIRECTIVE 149 (Operational Database Closure, Canonical Identity Truth and External Evidence Acceptance)
-LAST_COMPLETED_JOB:    CTO DIRECTIVE 148 (Actual Database Execution and External Evidence Closure)
-NEXT_PERMITTED_JOB:    INDEPENDENT CTO ADJUDICATION (W021.5 / CTO Directive 149)
+CURRENT_JOB:           W021.5 / CTO DIRECTIVE 151 (Directive 150 Source Delivery, Fail-Closed Execution Verification and Repository Evidence Reconciliation)
+LAST_COMPLETED_JOB:    CTO DIRECTIVE 150 (Stage 1 Authorization Integrity, Fail-Closed Reconciliation and Database Contract Verification)
+NEXT_PERMITTED_JOB:    INDEPENDENT CTO ADJUDICATION (W021.5 / CTO Directive 151)
 
 W021_5_B2_2C_STATUS:   ACCEPTED / COMPLETE / CLOSED (CTO Accepted Directive W021.5-CTO-NEXT-002, 2026-10-07)
 W021_5_B2_2C_HASH:     d514c64e8a80b928875f1ea03d0853e5d7e3675e0e3a4134c25958632fe675b7

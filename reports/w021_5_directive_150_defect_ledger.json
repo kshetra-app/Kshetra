@@ -1,0 +1,125 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Kshetra W021.5 — CTO Directive 150 Defect Ledger & Mandate Closure Register",
+  "directive": "CTO Directive 150: Stage 1 Authorization Integrity, Fail-Closed Reconciliation and Database Contract Verification",
+  "governingAuthority": "Master Execution Framework Amendment v1.6 / Rule IV-001 Non-Self-Acceptance",
+  "timestamp": "2026-10-23T22:25:00.000Z",
+  "airGapStatus": {
+    "productionDatabase": "ehfafcnimmjusyvplbah",
+    "productionQueries": 0,
+    "productionMutations": 0,
+    "productionStatus": "AIR_GAPPED_ZERO_QUERIES_ZERO_MUTATIONS",
+    "stagingDatabase": "fkpigozcqnmcvofuksar",
+    "stagingQueries": 0,
+    "stagingMutations": 0,
+    "stagingStatus": "STRICT_ZERO_ACCESS_UNDER_DIRECTIVE_150"
+  },
+  "formalAcceptanceStatus": "0.0% — PENDING INDEPENDENT ADJUDICATION",
+  "mizoramDefect": {
+    "defectId": "DQ-W021.5-B2.2E-001",
+    "status": "OPEN_PENDING_INDEPENDENT_ADJUDICATION",
+    "description": "5 Mizoram statutory assembly seats (AC 31-35) with unrecorded voter counts preserved as NULL without zero-fabrication"
+  },
+  "accountingSummary": {
+    "repoVerifiedEarnedPercent": 67.0,
+    "unexecutedDatabasePendingPercent": 10.5,
+    "blockedOnExternalGatesPercent": 22.5,
+    "unimplementedPercent": 0.0,
+    "formalCtcAcceptancePercent": 0.0
+  },
+  "defects": [
+    {
+      "defectId": "DEF-D150-001",
+      "workstream": "Workstream 1: Stage 1 Authorization & Fail-Closed Execution Gate",
+      "summary": "Eliminated unreachable liveWrite branch; implemented isStage1Authorized gate requiring asymmetric public-key token with CRIT-C02-02, SELECT, and write operations across all 8 tables",
+      "directiveRequirement": "Resolve unreachable liveWrite branch; define explicit authorization scope required for Stage 1 target-state reads and planned writes; implement token and containment gate for exact Stage 1 scope before network requests; return explicit blocked status with 0 requests and 0 mutations until prerequisites are met; document asymmetric public-key operational trust.",
+      "remediationDetails": "Implemented isStage1Authorized(internalContext) in scripts/execute_staging_directive_139.mjs: requires adminContainmentConfirmed: true, explicit grant of CRIT-C02-02, all 8 Stage 1 tables (datasets, dataset_versions, provenance_records, political_organizations, organization_relationships, organization_multilingual_names, organization_symbols, organization_aliases), SELECT operation grant for target-state retrieval, and write operation grants (INSERT + UPDATE or UPSERT). Documented operational trust uses asymmetric Ed25519/RS256 public-key verification without HMAC fallback. Stage 1 returns BLOCKED_NOT_DEPLOYABLE with 0 network requests and 0 mutations when authorization prerequisites are pending.",
+      "sourceFilesModified": [
+        "scripts/execute_staging_directive_139.mjs",
+        "scripts/lib/stagingAuthorization.mjs",
+        "tests/helpers/stagingStageTestAdapters.mjs"
+      ],
+      "regressionTests": [
+        "tests/stage1-target-state-retrieval-security.test.mjs (Check 10: Stage 2-only token denies Stage 1)",
+        "tests/staging-execution-mode-b.test.mjs"
+      ],
+      "classification": "REMEDIATED_AND_OFFLINE_VERIFIED"
+    },
+    {
+      "defectId": "DEF-D150-002",
+      "workstream": "Workstream 1: Target State Retrieval Fail-Closed Semantics & Pagination",
+      "summary": "Implemented fail-closed error handling (HTTP error throws TARGET_STATE_READ_FAILED, malformed JSON throws TARGET_STATE_MALFORMED_JSON) and complete Range pagination with count=exact retrieving all 1,043 aliases without truncation",
+      "directiveRequirement": "fetchTargetDatabaseState must fail closed on non-OK status (500/502/404/403) and malformed JSON; implement complete PostgREST pagination using Range: 0-499, Range-Unit: items, Prefer: count=exact, verify row count against Content-Range total, and retrieve all 1,043 organization_aliases without truncation.",
+      "remediationDetails": "Re-implemented fetchTargetDatabaseState in scripts/execute_staging_directive_139.mjs: checks resp.ok and throws TARGET_STATE_READ_FAILED with status and body; wraps JSON parsing in try/catch throwing TARGET_STATE_MALFORMED_JSON; implements paginated loop with Range: offset-(offset+pageSize-1) and Prefer: count=exact; parses Content-Range total; accumulates and deduplicates by row ID; asserts retrieved count matches totalCount or throws TARGET_STATE_INCOMPLETE_PAGINATION; handles network errors by throwing TARGET_STATE_NETWORK_ERROR.",
+      "sourceFilesModified": [
+        "scripts/execute_staging_directive_139.mjs",
+        "tests/helpers/stagingStageTestAdapters.mjs"
+      ],
+      "regressionTests": [
+        "tests/stage1-target-state-retrieval-security.test.mjs (Checks 1, 2, 3, 4, 5, 6 PASS)"
+      ],
+      "classification": "REMEDIATED_AND_OFFLINE_VERIFIED"
+    },
+    {
+      "defectId": "DEF-D150-003",
+      "workstream": "Workstream 1: Retry-Safe Stage 1 Mutations & Exact Row Validation",
+      "summary": "Hardened Stage 1 mutation dispatch with exact affected row count validation (STAGE_1_ROW_COUNT_MISMATCH) and PATCH zero-match validation (STAGE_1_UPDATE_TARGET_NOT_FOUND)",
+      "directiveRequirement": "Validate exact affected rows from mutation responses; fail closed if POST insert count does not equal batch length or if PATCH update matches 0 target rows; ensure retry-safe idempotent reconciliation.",
+      "remediationDetails": "In scripts/execute_staging_directive_139.mjs executeStage1Staging: POST inserts require return=representation and assert resJson.length === inserts.length, throwing STAGE_1_ROW_COUNT_MISMATCH on mismatch; PATCH updates assert resJson.length > 0, throwing STAGE_1_UPDATE_TARGET_NOT_FOUND if PATCH matches 0 rows in target database. Ensures safe repeats without duplicate rows or silent update drops.",
+      "sourceFilesModified": [
+        "scripts/execute_staging_directive_139.mjs",
+        "tests/helpers/stagingStageTestAdapters.mjs"
+      ],
+      "regressionTests": [
+        "tests/stage1-target-state-retrieval-security.test.mjs (Checks 7, 8 PASS)"
+      ],
+      "classification": "REMEDIATED_AND_OFFLINE_VERIFIED"
+    },
+    {
+      "defectId": "DEF-D150-004",
+      "workstream": "Workstream 2: Execution Plan Digest Binding for Stage 1 Reconciler",
+      "summary": "Included scripts/lib/stage1IdempotentReconciler.mjs in execution boundary artifacts; updated Stage 1 plan metadata to IDEMPOTENT_NATURAL_KEY_PRESERVATION and natural key conflict targets",
+      "directiveRequirement": "Include scripts/lib/stage1IdempotentReconciler.mjs in executionBoundaryFiles in stagingExecutionPlan.mjs; update Stage 1 reconciliationModel to IDEMPOTENT_NATURAL_KEY_PRESERVATION, operations to ['SELECT', 'INSERT', 'UPDATE'], and natural key conflict targets; prove digest sensitivity to reconciler file modifications.",
+      "remediationDetails": "Updated scripts/lib/stagingExecutionPlan.mjs: added scripts/lib/stage1IdempotentReconciler.mjs to executionBoundaryFiles; updated Stage 1 reconciliationModel to IDEMPOTENT_NATURAL_KEY_PRESERVATION; set operations to ['SELECT', 'INSERT', 'UPDATE']; set conflictTargets to actual natural keys (source_org_id,target_org_id,relationship_type for relationships; organization_id,language_code for multilingual; organization_id,symbol_name,valid_from for symbols; organization_id,raw_lookup_key,jurisdiction_scope,valid_from for aliases). Proved in test 9 that mutating stage1IdempotentReconciler.mjs alters computeExecutionPlanDigest().",
+      "sourceFilesModified": [
+        "scripts/lib/stagingExecutionPlan.mjs"
+      ],
+      "regressionTests": [
+        "tests/stage1-target-state-retrieval-security.test.mjs (Check 9: digest sensitivity PASS)",
+        "tests/staging-execution-mode-b.test.mjs (Check 18 PASS)"
+      ],
+      "classification": "REMEDIATED_AND_OFFLINE_VERIFIED"
+    },
+    {
+      "defectId": "DEF-D150-005",
+      "workstream": "Workstream 3: Migration 069 Catalog Introspection & Referential Integrity",
+      "summary": "Hardened Migration 069 with pg_constraint catalog introspection (conrelid, confrelid, confdeltype='r', convalidated=true), dropping malformed/CASCADE constraints and deduplicating redundant indexes",
+      "directiveRequirement": "In Migration 069, validate actual catalog definitions from pg_constraint for fk_candidacies_contest, fk_candidacies_person, and fk_candidacies_party with ON DELETE RESTRICT; drop and recreate if malformed or CASCADE; deduplicate redundant indexes; preserve atomic transaction boundary; update schema contract specification with new SHA-256.",
+      "remediationDetails": "Hardened supabase/migrations/069_candidate_referential_integrity_reconciliation.sql: PL/pgSQL DO blocks query pg_constraint checking conrelid = 'public.candidacies'::regclass, confrelid = referenced table, confdeltype = 'r' (RESTRICT), and convalidated = true; drops and recreates constraint if definition is invalid; drops redundant duplicate indexes (idx_candidacies_contest_fk, idx_candidacies_person_fk, idx_candidacies_party_fk) while ensuring canonical base indexes exist; maintains BEGIN/COMMIT transaction boundary with zero exception swallowing. Recomputed SHA-256 (7d6635e1b2e58bef048a4e5ede470c1cd5c05e4b26cb49e1239018384152646b) and updated reports/w021_5_schema_contract_specification.json.",
+      "sourceFilesModified": [
+        "supabase/migrations/069_candidate_referential_integrity_reconciliation.sql",
+        "reports/w021_5_schema_contract_specification.json"
+      ],
+      "regressionTests": [
+        "tests/migration-069-referential-integrity.test.mjs (8/8 checks PASS)"
+      ],
+      "classification": "REMEDIATED_AND_OFFLINE_VERIFIED"
+    },
+    {
+      "defectId": "DEF-D150-006",
+      "workstream": "Workstream 4: Election View Compatibility Contract & Stage 4 Invariants",
+      "summary": "Clarified vw_legacy_election_results provenance (Migration 051) as a normalized projection view without integer election_id; established schema contract test; maintained Stage 4 as BLOCKED_NOT_DEPLOYABLE with 0 outbound rows",
+      "directiveRequirement": "Clarify that vw_legacy_election_results was defined in Migration 051 (lines 339-363) as a normalized projection view of election_contests JOIN election_events, NOT a drop-in replacement table for legacy election_results(election_id: INTEGER); document 16 columns and types; add schema contract test verifying the view; maintain Stage 4 as BLOCKED_NOT_DEPLOYABLE with 0 outbound rows (0 UUIDs coerced to integer).",
+      "remediationDetails": "Documented vw_legacy_election_results contract in reports/w021_5_canonical_election_registry.json and scripts/build_canonical_election_registry.mjs: details 16 projected columns, explains relational distinction from legacy integer table, and confirms strict zero-coercion policy. Added Check 4 to tests/historical-election-results-23-states.test.mjs: asserts Migration 051 view definition, asserts absence of integer election_id coercion, asserts Stage 4 remains BLOCKED_NOT_DEPLOYABLE with 0 outbound rows in canonical execution plan, and validates registry specification.",
+      "sourceFilesModified": [
+        "reports/w021_5_canonical_election_registry.json",
+        "scripts/build_canonical_election_registry.mjs",
+        "tests/historical-election-results-23-states.test.mjs"
+      ],
+      "regressionTests": [
+        "tests/historical-election-results-23-states.test.mjs (Check 4 PASS)"
+      ],
+      "classification": "REMEDIATED_AND_OFFLINE_VERIFIED"
+    }
+  ]
+}

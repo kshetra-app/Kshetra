@@ -76,5 +76,68 @@ for (const code of missing23States) {
   console.log(`[PASS] Fastify stateData service returns ${sampleData.elections.length} elections for ${code} AC 1`);
 }
 
+// Check 4: Election View Compatibility Contract & Stage 4 Invariants (CTO Directive 150 Section 5)
+console.log('\n--- CHECK 4: Election View Compatibility Contract & Invariants ---');
+const migration051Path = path.join(process.cwd(), 'supabase', 'migrations', '051_election_data_normalization.sql');
+assert(fs.existsSync(migration051Path), 'Migration 051 must exist');
+const migration051Sql = fs.readFileSync(migration051Path, 'utf8');
+
+assert(
+  migration051Sql.includes('CREATE OR REPLACE VIEW public.vw_legacy_election_results AS'),
+  'Migration 051 must define public.vw_legacy_election_results'
+);
+
+const expectedViewColumns = [
+  'contest_id', 'election_code', 'election_year', 'election_type',
+  'constituency_id', 'constituency_name', 'winner_name', 'winner_party_symbol',
+  'winner_party', 'winner_votes', 'runner_up_name', 'runner_up_party',
+  'runner_up_votes', 'margin', 'votes_polled', 'turnout'
+];
+
+for (const col of expectedViewColumns) {
+  assert(
+    migration051Sql.includes(col),
+    `vw_legacy_election_results definition must project column ${col}`
+  );
+}
+
+// Invariant: View does NOT define integer election_id drop-in column for public.election_results
+assert(
+  !migration051Sql.includes('ee.id AS election_id'),
+  'vw_legacy_election_results must not project UUID ee.id as legacy integer election_id'
+);
+
+// Verify canonical execution plan maintains Stage 4 as BLOCKED_NOT_DEPLOYABLE with 0 outbound rows
+const { generateCanonicalExecutionPlan } = await import('../scripts/lib/stagingExecutionPlan.mjs');
+const plan = generateCanonicalExecutionPlan({ repoRoot: process.cwd() });
+const stage4 = plan.stages.stage4_historical_election_results;
+assert(stage4, 'Stage 4 must be defined in canonical execution plan');
+assert.strictEqual(stage4.deploymentStatus, 'BLOCKED_NOT_DEPLOYABLE', 'Stage 4 must remain BLOCKED_NOT_DEPLOYABLE');
+assert.strictEqual(stage4.expectedRecordCounts.outboundRowsToStaging, 0, 'Stage 4 outboundRowsToStaging must be 0');
+
+// Verify registry specification documents view contract and zero-coercion policy
+const registryJsonPath = path.join(process.cwd(), 'reports', 'w021_5_canonical_election_registry.json');
+assert(fs.existsSync(registryJsonPath), 'Canonical election registry must exist');
+const registry = JSON.parse(fs.readFileSync(registryJsonPath, 'utf8'));
+const viewContract = registry.architectureReconciliation.legacyCompatibilityModel.viewContract;
+assert(viewContract, 'Registry must define viewContract');
+assert.strictEqual(
+  viewContract.isDirectDropInForLegacyTable,
+  false,
+  'view must not be claimed as direct drop-in replacement for legacy table'
+);
+
+// Directive 151 Section 7: Assert underlying column types (TEXT for constituency_id & election_type, not UUID/enum)
+assert.strictEqual(viewContract.columns.length, 16, 'viewContract must specify all 16 columns');
+const columnsByName = Object.fromEntries(viewContract.columns.map(c => [c.name, c]));
+assert.strictEqual(columnsByName.constituency_id.type, 'TEXT', 'constituency_id must be TEXT per underlying DDL');
+assert.strictEqual(columnsByName.election_type.type, 'TEXT', 'election_type must be TEXT per underlying DDL');
+assert.strictEqual(columnsByName.winner_party.type, 'TEXT', 'winner_party must be TEXT per underlying DDL');
+assert.strictEqual(columnsByName.runner_up_party.type, 'TEXT', 'runner_up_party must be TEXT per underlying DDL');
+assert.strictEqual(columnsByName.contest_id.type, 'UUID', 'contest_id must be UUID');
+assert.strictEqual(columnsByName.election_year.type, 'INTEGER', 'election_year must be INTEGER');
+assert.strictEqual(columnsByName.margin.type, 'INTEGER', 'margin must be INTEGER');
+console.log('[PASS] Election view compatibility contract and Stage 4 non-deployable invariants verified.');
+
 console.log(`\nALL ${passedStates}/23 RESIDUAL STATES VERIFIED WITH 100% PASS RATE!`);
 console.log('CRIT-F02-02 VERIFICATION SUCCESSFUL.');

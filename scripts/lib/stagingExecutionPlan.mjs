@@ -25,7 +25,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const REPO_ROOT = path.resolve(__dirname, '..', '..');
 
-export const CANONICAL_DIRECTIVE = 'CTO Directive 146 / W021.5';
+export const CANONICAL_DIRECTIVE = 'CTO Directive 151 / W021.5';
 export const CANONICAL_STAGING_PROJECT_REF = 'fkpigozcqnmcvofuksar';
 
 /**
@@ -67,9 +67,10 @@ export function hashFileSha256(filePath) {
 export function generateCanonicalExecutionPlan(options = {}) {
   const root = options.repoRoot || REPO_ROOT;
 
-  // 1. Operational Execution Boundary Artifacts (Directive 145 Item 4)
+  // 1. Operational Execution Boundary Artifacts (Directive 145 Item 4 / Directive 150 Section 3)
   const executionBoundaryFiles = [
     'scripts/execute_staging_directive_139.mjs',
+    'scripts/lib/stage1IdempotentReconciler.mjs',
     'scripts/lib/stagingAuthorization.mjs',
     'scripts/lib/stagingAdminContainment.mjs',
     'scripts/lib/stagingReplayStore.mjs',
@@ -208,10 +209,10 @@ export function generateCanonicalExecutionPlan(options = {}) {
         'public.dataset_versions': 'id',
         'public.provenance_records': 'id',
         'public.political_organizations': 'id',
-        'public.organization_relationships': 'id',
-        'public.organization_multilingual_names': 'id',
-        'public.organization_symbols': 'id',
-        'public.organization_aliases': 'id',
+        'public.organization_relationships': 'source_org_id,target_org_id,relationship_type,valid_from',
+        'public.organization_multilingual_names': 'organization_id,language_code,script_code,representation_type,name_value',
+        'public.organization_symbols': 'organization_id,symbol_name,valid_from',
+        'public.organization_aliases': 'organization_id,raw_lookup_key,jurisdiction_scope,valid_from',
         'public.candidacies': 'person_id,election_year,election_type,constituency_id',
         'public.constituency_demographics': 'constituency_id,election_year',
         'public.election_results': 'election_id,constituency_id'
@@ -222,9 +223,11 @@ export function generateCanonicalExecutionPlan(options = {}) {
         criterionId: 'CRIT-C02-02',
         taskId: 'W021.5-C-02',
         deploymentStatus: 'BLOCKED_NOT_DEPLOYABLE',
-        blockedReason: 'PRE_SEEDED_CHILD_TABLE_IDEMPOTENCY_UNPROVEN: Migration 065 child tables (relationships, multilingual names, symbols, aliases) use database-generated gen_random_uuid() IDs. In an already pre-seeded database, upserting with deterministic UUIDs via on_conflict=id cannot match existing random IDs, causing PostgreSQL unique constraint (23505) and temporal overlap trigger (23514) violations. Safe repeat-write behavior cannot be proven offline without target-state corroboration.',
-        missingPrerequisite: 'Authorized target-state corroboration or database migration reconciling deterministic UUIDs or providing authoritative natural key conflict resolution for Migration 065 child tables.',
+        blockedReason: 'STAGE_1_RECONCILIATION_PREREQUISITES_PENDING: Stage 1 requires verified administrator containment confirmation, asymmetric Ed25519/RS256 authorization token explicitly granting CRIT-C02-02, SELECT, and write operations across all 8 tables, and verified complete target-state pagination. Staging dispatch remains blocked with zero outbound rows until all prerequisites are validated.',
+        missingPrerequisite: 'ADMIN_CONTAINMENT_CONFIRMATION_AND_INDEPENDENT_CTO_TOKEN',
         transformationVersion: 'v1.2.0-rfc4122-uuidv5',
+        reconciliationModel: 'IDEMPOTENT_NATURAL_KEY_PRESERVATION',
+        reconciliationEngine: 'scripts/lib/stage1IdempotentReconciler.mjs',
         targetTables: [
           'public.datasets',
           'public.dataset_versions',
@@ -235,16 +238,16 @@ export function generateCanonicalExecutionPlan(options = {}) {
           'public.organization_symbols',
           'public.organization_aliases'
         ],
-        operations: ['UPSERT'],
+        operations: ['SELECT', 'INSERT', 'UPDATE'],
         conflictTargets: {
           'public.datasets': 'id',
           'public.dataset_versions': 'id',
           'public.provenance_records': 'id',
           'public.political_organizations': 'id',
-          'public.organization_relationships': 'id',
-          'public.organization_multilingual_names': 'id',
-          'public.organization_symbols': 'id',
-          'public.organization_aliases': 'id'
+          'public.organization_relationships': 'source_org_id,target_org_id,relationship_type,valid_from',
+          'public.organization_multilingual_names': 'organization_id,language_code,script_code,representation_type,name_value',
+          'public.organization_symbols': 'organization_id,symbol_name,valid_from',
+          'public.organization_aliases': 'organization_id,raw_lookup_key,jurisdiction_scope,valid_from'
         },
         expectedRecordCounts: {
           catalogProvenanceSupportRows: 1207,

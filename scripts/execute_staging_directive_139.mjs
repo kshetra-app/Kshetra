@@ -185,10 +185,18 @@ function assertInternalExecutionContext(options = {}) {
 
 /**
  * Helper to fetch target database state across all Stage 1 tables for remote reconciliation
+ * Implements strict fail-closed validation and complete pagination per CTO Directive 150 Section 2.2 & 2.3.
  */
-async function fetchTargetDatabaseState(internalContext) {
+async function fetchTargetDatabaseState(internalContext, options = {}) {
   const { transport, targetHost, serviceKey } = internalContext;
+  if (!transport || !targetHost || !serviceKey) {
+    const err = new Error('TARGET_STATE_CONFIG_MISSING: transport, targetHost, and serviceKey are mandatory');
+    err.code = 'TARGET_STATE_CONFIG_MISSING';
+    throw err;
+  }
+
   const targetState = {};
+  const pageSize = options.pageSize || 500;
   const headers = {
     'apikey': serviceKey,
     'Authorization': `Bearer ${serviceKey}`,
@@ -207,26 +215,158 @@ async function fetchTargetDatabaseState(internalContext) {
   ];
 
   for (const table of tables) {
-    try {
-      const resp = await transport(`${targetHost}/rest/v1/${table}?select=*`, {
-        method: 'GET',
-        headers
-      });
-      if (resp.ok) {
-        targetState[`public.${table}`] = await resp.json();
-      } else {
-        targetState[`public.${table}`] = [];
+    const qualifiedTable = `public.${table}`;
+    let offset = 0;
+    const allRows = [];
+    const seenIds = new Set();
+    let totalCount = null;
+
+    while (true) {
+      const rangeHeader = `${offset}-${offset + pageSize - 1}`;
+      const url = `${targetHost}/rest/v1/${table}?select=*`;
+
+      let resp;
+      try {
+        resp = await transport(url, {
+          method: 'GET',
+          headers: {
+            ...headers,
+            'Range': rangeHeader,
+            'Range-Unit': 'items',
+            'Prefer': 'count=exact'
+          }
+        });
+      } catch (networkErr) {
+        const err = new Error(`TARGET_STATE_NETWORK_ERROR: Failed GET on table ${qualifiedTable} at offset ${offset}: ${networkErr.message}`);
+        err.code = 'TARGET_STATE_NETWORK_ERROR';
+        err.table = qualifiedTable;
+        throw err;
       }
-    } catch {
-      targetState[`public.${table}`] = [];
+
+      if (!resp.ok) {
+        let errBody = '';
+        try { errBody = await resp.text(); } catch {}
+        const err = new Error(`TARGET_STATE_READ_FAILED: Table ${qualifiedTable} GET returned HTTP ${resp.status} (${resp.statusText || 'Error'}) - ${errBody}`);
+        err.code = 'TARGET_STATE_READ_FAILED';
+        err.table = qualifiedTable;
+        err.status = resp.status;
+        throw err;
+      }
+
+      // Parse Content-Range header: e.g., "0-499/1043", "0-26/27", or "*/0"
+      const contentRange = (resp.headers?.get ? resp.headers.get('content-range') : resp.headers?.['content-range']) || '';
+      if (contentRange) {
+        const slashIdx = contentRange.lastIndexOf('/');
+        if (slashIdx !== -1) {
+          const totalStr = contentRange.slice(slashIdx + 1).trim();
+          if (totalStr === '*' || contentRange.trim() === '*/0') {
+            if (contentRange.trim() === '*/0') totalCount = 0;
+          } else {
+            const parsed = parseInt(totalStr, 10);
+            if (!Number.isNaN(parsed)) {
+              totalCount = parsed;
+            }
+          }
+        }
+      }
+
+      const rawText = await resp.text();
+      let pageRows;
+      try {
+        pageRows = JSON.parse(rawText);
+      } catch (parseErr) {
+        const err = new Error(`TARGET_STATE_MALFORMED_JSON: Invalid JSON for table ${qualifiedTable} at offset ${offset}: ${parseErr.message}`);
+        err.code = 'TARGET_STATE_MALFORMED_JSON';
+        err.table = qualifiedTable;
+        throw err;
+      }
+
+      if (!Array.isArray(pageRows)) {
+        const err = new Error(`TARGET_STATE_INVALID_SHAPE: Expected JSON array for table ${qualifiedTable}, received ${typeof pageRows}`);
+        err.code = 'TARGET_STATE_INVALID_SHAPE';
+        err.table = qualifiedTable;
+        throw err;
+      }
+
+      // Accumulate and deduplicate
+      for (const row of pageRows) {
+        const rowId = row.id || JSON.stringify(row);
+        if (!seenIds.has(rowId)) {
+          seenIds.add(rowId);
+          allRows.push(row);
+        }
+      }
+
+      // Check pagination termination
+      if (totalCount !== null) {
+        if (allRows.length >= totalCount || pageRows.length === 0) {
+          if (allRows.length !== totalCount) {
+            const err = new Error(`TARGET_STATE_INCOMPLETE_PAGINATION: Table ${qualifiedTable} expected ${totalCount} rows from Content-Range, but retrieved ${allRows.length}`);
+            err.code = 'TARGET_STATE_INCOMPLETE_PAGINATION';
+            err.table = qualifiedTable;
+            throw err;
+          }
+          break;
+        }
+      } else {
+        if (pageRows.length < pageSize) {
+          break;
+        }
+      }
+
+      offset += pageRows.length;
     }
+
+    targetState[qualifiedTable] = allRows;
   }
+
   return targetState;
 }
 
 /**
+ * Evaluates whether the internalContext possesses verified authorization grants for Stage 1
+ * Authority: CTO Directive 150 Section 2.1
+ */
+function isStage1Authorized(internalContext) {
+  if (!internalContext || !internalContext.authGrant) {
+    return false;
+  }
+  const grant = internalContext.authGrant;
+
+  // 1. Administrator containment must be confirmed
+  if (grant.adminContainmentConfirmed !== true) {
+    return false;
+  }
+
+  // 2. CRIT-C02-02 must be explicitly granted
+  if (!grant.criteria || !grant.criteria.has('CRIT-C02-02')) {
+    return false;
+  }
+
+  // 3. SELECT operation must be explicitly granted for target-state retrieval
+  if (!grant.operations || !grant.operations.has('SELECT')) {
+    return false;
+  }
+
+  // 4. Write operations must be explicitly granted (INSERT + UPDATE or UPSERT)
+  const hasWrites = (grant.operations.has('INSERT') && grant.operations.has('UPDATE')) || grant.operations.has('UPSERT');
+  if (!hasWrites) {
+    return false;
+  }
+
+  // 5. All 8 Stage 1 tables must be explicitly granted
+  for (const table of STAGE1_TABLE_SEQUENCE) {
+    if (!grant.tables || !grant.tables.has(table)) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+/**
  * Stage 1 (CRIT-C02-02: Political Organizations Catalog & Child Tables)
- * Directive 149 Section 5: Stage 1 reconciler integrated using stage1IdempotentReconciler.mjs.
+ * Directive 150 Section 2: Stage 1 reconciler integrated using stage1IdempotentReconciler.mjs.
  * Reconciles 1,207 catalog records (107 orgs + 1,099 child rows + 1 provenance) across 8 tables.
  * Implements complete natural-key target-state reconciliation and authorized mutation dispatch.
  * In absence of administrator containment confirmation and cryptographic token, fails closed
@@ -235,31 +375,74 @@ async function fetchTargetDatabaseState(internalContext) {
 async function executeStage1Staging(options = {}) {
   assertInternalExecutionContext(options);
   const startedAt = new Date().toISOString();
-  const transport = options.internalContext?.transport;
-  const targetHost = options.internalContext?.targetHost;
-  const serviceKey = options.internalContext?.serviceKey;
-  const isLiveWrite = options.liveWrite === true || options.internalContext?.liveWrite === true;
+  const internalContext = options.internalContext;
 
-  // In live authorized mode, fetch target state and execute reconciled mutations
-  if (isLiveWrite && transport && targetHost && serviceKey) {
-    const targetState = await fetchTargetDatabaseState(options.internalContext);
+  // 1. Verify authorization scope for Stage 1 (Directive 150 Section 2.1)
+  const authorized = isStage1Authorized(internalContext);
+
+  if (!authorized) {
+    // If not fully authorized, fail closed with BLOCKED_NOT_DEPLOYABLE, 0 requests, 0 mutations
+    const targetState = options.targetDatabaseState || {};
     const plan = reconcileStage1Catalog(targetState, { repoRoot: REPO_ROOT });
 
-    if (plan.conflicts && plan.conflicts.length > 0) {
-      throw new Error(`STAGE_1_RECONCILIATION_CONFLICTS: ${plan.conflicts.length} conflicting records detected`);
-    }
+    return {
+      stage: 'stage1_political_organizations',
+      criterionId: 'CRIT-C02-02',
+      taskId: 'W021.5-C-02',
+      status: 'BLOCKED_NOT_DEPLOYABLE',
+      deploymentStatus: 'BLOCKED_NOT_DEPLOYABLE',
+      reconciliationEngine: 'stage1IdempotentReconciler.mjs (CTO Directive 150 Section 2)',
+      reconciliationModel: 'IDEMPOTENT_NATURAL_KEY_PRESERVATION',
+      stagingExecuted: false,
+      remoteCorroborated: false,
+      remoteCorroborationPending: false,
+      targetTables: STAGE1_TABLE_SEQUENCE,
+      totalSourceRows: plan.totalSourceRows,
+      childRowsCount: plan.childRowsCount,
+      plannedInserts: plan.totalInserts,
+      plannedPreserved: plan.totalPreserved,
+      plannedUpdates: plan.totalUpdates,
+      conflictsCount: plan.conflictsCount,
+      operations: ['SELECT', 'INSERT', 'UPDATE'],
+      conflictTarget: 'natural_key_reconciled',
+      rowsAffected: 0,
+      networkRequestsAttempted: 0,
+      outboundRowsToStaging: 0,
+      reason: 'STAGE_1_RECONCILIATION_PREREQUISITES_PENDING: Stage 1 requires verified administrator containment confirmation, asymmetric Ed25519/RS256 authorization token explicitly granting CRIT-C02-02, SELECT, and write operations across all 8 tables, and verified complete target-state pagination. Staging dispatch remains blocked with zero outbound rows.',
+      missingPrerequisite: 'ADMIN_CONTAINMENT_CONFIRMATION_AND_INDEPENDENT_CTO_TOKEN',
+      startedAt,
+      completedAt: new Date().toISOString()
+    };
+  }
 
-    let rowsAffected = 0;
-    for (const table of STAGE1_TABLE_SEQUENCE) {
-      const tableAudit = plan.tableAudits[table];
-      if (!tableAudit) continue;
+  // 2. Authorized path: perform fail-closed target-state retrieval with pagination
+  const transport = internalContext.transport;
+  const targetHost = internalContext.targetHost;
+  const serviceKey = internalContext.serviceKey;
 
-      const endpoint = table.replace(/^public\./, '');
-      const inserts = plan.plannedOperations.filter(op => op.table === table && op.action === 'INSERT').map(op => op.payload);
-      const updates = plan.plannedOperations.filter(op => op.table === table && op.action === 'UPDATE');
+  const targetState = options.targetDatabaseState || await fetchTargetDatabaseState(internalContext);
+  const plan = reconcileStage1Catalog(targetState, { repoRoot: REPO_ROOT });
 
-      if (inserts.length > 0) {
-        const resp = await transport(`${targetHost}/rest/v1/${endpoint}`, {
+  if (plan.conflicts && plan.conflicts.length > 0) {
+    throw new Error(`STAGE_1_RECONCILIATION_CONFLICTS: ${plan.conflicts.length} conflicting records detected against target database`);
+  }
+
+  // 3. Dispatch mutations table-by-table with exact row validation (Directive 150 Section 2.4)
+  let totalRowsAffected = 0;
+  const completedOperations = [];
+
+  for (const table of STAGE1_TABLE_SEQUENCE) {
+    const tableAudit = plan.tableAudits[table];
+    if (!tableAudit) continue;
+
+    const endpoint = table.replace(/^public\./, '');
+    const inserts = plan.plannedOperations.filter(op => op.table === table && op.action === 'INSERT').map(op => op.payload);
+    const updates = plan.plannedOperations.filter(op => op.table === table && op.action === 'UPDATE');
+
+    if (inserts.length > 0) {
+      let resp;
+      try {
+        resp = await transport(`${targetHost}/rest/v1/${endpoint}`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -269,73 +452,69 @@ async function executeStage1Staging(options = {}) {
           },
           body: JSON.stringify(inserts)
         });
-        if (!resp.ok) {
-          const errBody = await resp.text();
-          throw new Error(`STAGE_1_REMOTE_EXECUTION_FAILED on ${table}: ${resp.status} - ${errBody}`);
-        }
-        const resJson = await resp.json();
-        rowsAffected += Array.isArray(resJson) ? resJson.length : inserts.length;
+      } catch (err) {
+        throw new Error(`STAGE_1_REMOTE_EXECUTION_NETWORK_ERROR on ${table}: ${err.message}`);
       }
 
-      for (const upd of updates) {
-        const resp = await transport(`${targetHost}/rest/v1/${endpoint}?id=eq.${upd.id}`, {
+      if (!resp.ok) {
+        const errBody = await resp.text().catch(() => '');
+        throw new Error(`STAGE_1_REMOTE_EXECUTION_FAILED on ${table}: HTTP ${resp.status} - ${errBody}`);
+      }
+
+      const resJson = await resp.json().catch(() => null);
+      if (!Array.isArray(resJson)) {
+        throw new Error(`STAGE_1_INVALID_RESPONSE_SHAPE on ${table}: Expected JSON array of inserted rows`);
+      }
+      if (resJson.length !== inserts.length) {
+        throw new Error(`STAGE_1_ROW_COUNT_MISMATCH on ${table}: Expected ${inserts.length} inserted rows, received ${resJson.length}`);
+      }
+
+      totalRowsAffected += resJson.length;
+      completedOperations.push({ table, action: 'INSERT', count: resJson.length });
+    }
+
+    for (const upd of updates) {
+      let resp;
+      try {
+        resp = await transport(`${targetHost}/rest/v1/${endpoint}?id=eq.${upd.id}`, {
           method: 'PATCH',
           headers: {
             'Content-Type': 'application/json',
             'apikey': serviceKey,
             'Authorization': `Bearer ${serviceKey}`,
-            'Prefer': 'return=minimal'
+            'Prefer': 'return=representation'
           },
           body: JSON.stringify(upd.payload)
         });
-        if (!resp.ok) {
-          const errBody = await resp.text();
-          throw new Error(`STAGE_1_REMOTE_UPDATE_FAILED on ${table} id ${upd.id}: ${resp.status} - ${errBody}`);
-        }
-        rowsAffected += 1;
+      } catch (err) {
+        throw new Error(`STAGE_1_REMOTE_UPDATE_NETWORK_ERROR on ${table} id ${upd.id}: ${err.message}`);
       }
+
+      if (!resp.ok) {
+        const errBody = await resp.text().catch(() => '');
+        throw new Error(`STAGE_1_REMOTE_UPDATE_FAILED on ${table} id ${upd.id}: HTTP ${resp.status} - ${errBody}`);
+      }
+
+      const resJson = await resp.json().catch(() => null);
+      if (!Array.isArray(resJson) || resJson.length === 0) {
+        throw new Error(`STAGE_1_UPDATE_TARGET_NOT_FOUND: Update on ${table} id ${upd.id} matched 0 target rows`);
+      }
+
+      totalRowsAffected += 1;
+      completedOperations.push({ table, action: 'UPDATE', id: upd.id });
     }
-
-    return {
-      stage: 'stage1_political_organizations',
-      criterionId: 'CRIT-C02-02',
-      taskId: 'W021.5-C-02',
-      status: 'EXECUTED_PENDING_INDEPENDENT_CORROBORATION',
-      reconciliationEngine: 'stage1IdempotentReconciler.mjs (CTO Directive 149 Section 5)',
-      reconciliationModel: 'IDEMPOTENT_NATURAL_KEY_PRESERVATION',
-      stagingExecuted: true,
-      remoteCorroborated: false,
-      remoteCorroborationPending: true,
-      targetTables: STAGE1_TABLE_SEQUENCE,
-      totalSourceRows: plan.totalSourceRows,
-      childRowsCount: plan.childRowsCount,
-      plannedInserts: plan.totalInserts,
-      plannedPreserved: plan.totalPreserved,
-      plannedUpdates: plan.totalUpdates,
-      conflictsCount: plan.conflictsCount,
-      operations: ['INSERT', 'PATCH', 'PRESERVE'],
-      conflictTarget: 'natural_key_reconciled',
-      rowsAffected,
-      startedAt,
-      completedAt: new Date().toISOString()
-    };
   }
-
-  // Fail-closed / dry-run preparation path
-  const targetState = options.targetDatabaseState || {};
-  const plan = reconcileStage1Catalog(targetState, { repoRoot: REPO_ROOT });
 
   return {
     stage: 'stage1_political_organizations',
     criterionId: 'CRIT-C02-02',
     taskId: 'W021.5-C-02',
-    status: 'BLOCKED_NOT_DEPLOYABLE',
-    deploymentStatus: 'BLOCKED_NOT_DEPLOYABLE',
-    reconciliationEngine: 'stage1IdempotentReconciler.mjs (CTO Directive 149 Section 5)',
+    status: 'EXECUTED_PENDING_INDEPENDENT_CORROBORATION',
+    reconciliationEngine: 'stage1IdempotentReconciler.mjs (CTO Directive 150 Section 2)',
     reconciliationModel: 'IDEMPOTENT_NATURAL_KEY_PRESERVATION',
-    stagingExecuted: false,
+    stagingExecuted: true,
     remoteCorroborated: false,
-    remoteCorroborationPending: false,
+    remoteCorroborationPending: true,
     targetTables: STAGE1_TABLE_SEQUENCE,
     totalSourceRows: plan.totalSourceRows,
     childRowsCount: plan.childRowsCount,
@@ -343,12 +522,10 @@ async function executeStage1Staging(options = {}) {
     plannedPreserved: plan.totalPreserved,
     plannedUpdates: plan.totalUpdates,
     conflictsCount: plan.conflictsCount,
-    operations: ['INSERT', 'PATCH', 'PRESERVE'],
+    operations: ['SELECT', 'INSERT', 'UPDATE'],
     conflictTarget: 'natural_key_reconciled',
-    rowsAffected: 0,
-    outboundRowsToStaging: 0,
-    reason: 'PRE_SEEDED_CHILD_TABLE_IDEMPOTENCY_PROVEN_LOCALLY_STAGING_MUTATION_BLOCKED: Integrated Stage 1 reconciler proven locally; remote dispatch blocked pending genuine administrator containment confirmation and cryptographic token.',
-    missingPrerequisite: 'ADMIN_CONTAINMENT_CONFIRMATION_AND_INDEPENDENT_CTO_TOKEN',
+    rowsAffected: totalRowsAffected,
+    completedOperations,
     startedAt,
     completedAt: new Date().toISOString()
   };
@@ -547,7 +724,7 @@ export async function runStagingExecutionEngine(options = {}) {
       governingRequirement: 'REQ-POL-002',
       status: 'BLOCKED_NOT_DEPLOYABLE',
       deploymentStatus: 'BLOCKED_NOT_DEPLOYABLE',
-      reconciliationEngine: 'stage1IdempotentReconciler.mjs (CTO Directive 149 Section 5)',
+      reconciliationEngine: 'stage1IdempotentReconciler.mjs (CTO Directive 150 Section 2)',
       reconciliationModel: 'IDEMPOTENT_NATURAL_KEY_PRESERVATION',
       stagingExecuted: false,
       remoteCorroborated: false,
@@ -644,10 +821,10 @@ export async function runStagingExecutionEngine(options = {}) {
       metrics: r4.metrics
     };
 
-    // Directive 145 / Directive 146 / Directive 149: Distinguish partially ready with blocked stages from fully prepared
+    // Directive 145 / Directive 146 / Directive 149 / Directive 150: Distinguish partially ready with blocked stages from fully prepared
     const report = {
       generator: 'scripts/execute_staging_directive_139.mjs',
-      directive: 'CTO Directive 149 / W021.5',
+      directive: 'CTO Directive 151 / W021.5',
       timestamp: new Date().toISOString(),
       governingAuthority: 'Master Execution Framework Amendment v1.6 / Rule IV-001 Non-Self-Acceptance',
       stagingProjectRef: ALLOWED_STAGING_PROJECT_REF,
@@ -813,7 +990,13 @@ export async function runStagingExecutionEngine(options = {}) {
       __token: INTERNAL_EXECUTION_TOKEN,
       targetHost: `https://${ALLOWED_STAGING_HOSTNAME}`,
       serviceKey,
-      transport: operationalTransport
+      transport: operationalTransport,
+      authGrant: {
+        criteria: new Set(authVerification.criteria || []),
+        tables: new Set(authVerification.tables || []),
+        operations: new Set(authVerification.operations || []),
+        adminContainmentConfirmed: Boolean(authVerification.adminContainmentConfirmed)
+      }
     };
 
     const execOptions = { internalContext };
@@ -898,7 +1081,7 @@ export async function runStagingExecutionEngine(options = {}) {
 
     const report = {
       generator: 'scripts/execute_staging_directive_139.mjs',
-      directive: 'CTO Directive 149 / W021.5 / Authorized Staging Execution Output',
+      directive: 'CTO Directive 151 / W021.5 / Authorized Staging Execution Output',
       timestamp: new Date().toISOString(),
       governingAuthority: 'Master Execution Framework Amendment v1.6 / Rule IV-001 Non-Self-Acceptance',
       stagingProjectRef: ALLOWED_STAGING_PROJECT_REF,

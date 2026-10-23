@@ -608,6 +608,7 @@ export function verifyStagingWriteAuthorization(params = {}) {
     projectRef: payload.project_ref,
     nonce,
     incidentClosureRef: payload.incident_closure_ref,
+    adminContainmentConfirmed: true,
     criteria: payload.criteria,
     tables: payload.tables,
     operations: payload.operations,

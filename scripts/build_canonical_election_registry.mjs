@@ -111,7 +111,7 @@ export function buildCanonicalElectionRegistry(options = {}) {
   const registryPayload = {
     $schema: 'https://json-schema.org/draft/2020-12/schema',
     registrySpecification: 'W021.5 Canonical Election & Contest Registry for 23 Historical States',
-    directive: 'CTO Directive 149 / Task W021.5-F-02',
+    directive: 'CTO Directive 151 / Task W021.5-F-02',
     governingAuthority: 'Master Execution Framework Amendment v1.6 / Rule IV-001 Non-Self-Acceptance',
     generatedAt: new Date().toISOString(),
     sourceCoverageScript: 'scripts/reconcile_database_criteria_identities.mjs',
@@ -124,6 +124,31 @@ export function buildCanonicalElectionRegistry(options = {}) {
       legacyCompatibilityModel: {
         legacyResultsTable: 'public.election_results (election_id INT NOT NULL REFERENCES elections(id))',
         compatibilityMechanism: 'public.vw_legacy_election_results view bridges normalized UUID models to legacy query projections',
+        viewProvenance: 'supabase/migrations/051_election_data_normalization.sql (lines 339-363)',
+        viewContract: {
+          viewName: 'public.vw_legacy_election_results',
+          underlyingJoins: 'public.election_contests ec JOIN public.election_events ee ON ec.election_id = ee.id LEFT JOIN candidacies w_c / r_c',
+          columns: [
+            { name: 'contest_id', type: 'UUID', source: 'ec.id' },
+            { name: 'election_code', type: 'TEXT', source: 'ee.election_code' },
+            { name: 'election_year', type: 'INTEGER', source: 'ee.election_year' },
+            { name: 'election_type', type: 'TEXT', source: 'ee.election_type' },
+            { name: 'constituency_id', type: 'TEXT', source: 'ec.constituency_id' },
+            { name: 'constituency_name', type: 'TEXT', source: 'ec.constituency_name' },
+            { name: 'winner_name', type: 'TEXT', source: 'w_p.canonical_name' },
+            { name: 'winner_party_symbol', type: 'TEXT', source: 'w_org.symbol_url' },
+            { name: 'winner_party', type: 'TEXT', source: 'w_c.party_id' },
+            { name: 'winner_votes', type: 'INTEGER', source: 'w_c.votes_received' },
+            { name: 'runner_up_name', type: 'TEXT', source: 'r_p.canonical_name' },
+            { name: 'runner_up_party', type: 'TEXT', source: 'r_c.party_id' },
+            { name: 'runner_up_votes', type: 'INTEGER', source: 'r_c.votes_received' },
+            { name: 'margin', type: 'INTEGER', source: 'ec.victory_margin' },
+            { name: 'votes_polled', type: 'INTEGER', source: 'ec.total_votes_polled' },
+            { name: 'turnout', type: 'NUMERIC(5,2)', source: 'ec.turnout_percentage' }
+          ],
+          isDirectDropInForLegacyTable: false,
+          legacyTableDifference: 'The legacy table public.election_results requires an integer election_id referencing public.elections(id). The view exposes contest_id (UUID), election_code (TEXT), election_year (INT), and does not expose integer election_id.'
+        },
         zeroCoercionPolicy: 'Zero casting of UUIDs into integer election_id columns. Strict schema separation enforced.'
       },
       executionGateStatus: 'BLOCKED_PENDING_CANONICAL_ELECTION_EVENT_SEEDING',

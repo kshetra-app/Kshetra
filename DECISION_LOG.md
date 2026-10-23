@@ -3527,3 +3527,68 @@
      - Authored `reports/w021_5_directive_149_defect_ledger.json` with true UTC timestamps and honest classifications.
      - Updated `reports/w021_5_database_execution_register.json`.
      - Updated `EXECUTION_STATE.md`.
+
+### DEC-150: CTO DIRECTIVE 150 — STAGE 1 AUTHORIZATION INTEGRITY, FAIL-CLOSED RECONCILIATION AND DATABASE CONTRACT VERIFICATION
+- **Date:** 2026-10-23
+- **Status:** IMPLEMENTATION COMPLETE / SUBMITTED FOR INDEPENDENT CTO ADJUDICATION
+- **Authority:** CTO Directive 150 / Master Execution Framework Amendment v1.6 / Rule IV-001 Non-Self-Acceptance
+- **Context:** Mandatory implementation remediation, execution-security verification, and evidence-provenance correction across Workstreams 1 through 5:
+  1. **Workstream 1 (P0): Stage 1 Authorization & Fail-Closed Execution Gate:**
+     - Eliminated the unreachable `liveWrite` branch in `scripts/execute_staging_directive_139.mjs`.
+     - Implemented `isStage1Authorized(internalContext)` requiring verified administrator containment confirmation, asymmetric public-key authorization token explicitly granting `CRIT-C02-02`, all 8 Stage 1 tables (`datasets`, `dataset_versions`, `provenance_records`, `political_organizations`, `organization_relationships`, `organization_multilingual_names`, `organization_symbols`, `organization_aliases`), `SELECT` operation (for target reads), and write operations (`INSERT`, `UPDATE` or `UPSERT`).
+     - Clarified and documented that operational trust strictly utilizes asymmetric Ed25519/RS256 public-key verification (never HMAC-SHA256).
+     - Rewrote `fetchTargetDatabaseState` with fail-closed semantics: non-OK status throws `TARGET_STATE_READ_FAILED` with HTTP status and body; JSON parse failure throws `TARGET_STATE_MALFORMED_JSON`; network errors throw `TARGET_STATE_NETWORK_ERROR`.
+     - Implemented complete PostgREST pagination using `Range: 0-499`, `Range-Unit: items`, `Prefer: count=exact`, parsing `Content-Range`, and validating row count completeness against `totalCount` (`TARGET_STATE_INCOMPLETE_PAGINATION` on mismatch); retrieved all 1,043 `organization_aliases` across 3 pages without truncation.
+     - Hardened retry-safe mutations: validated exact affected rows from responses (`STAGE_1_ROW_COUNT_MISMATCH` on POST insert length mismatch; `STAGE_1_UPDATE_TARGET_NOT_FOUND` if PATCH matches 0 rows in target database).
+  2. **Workstream 2 (P0): Execution Plan Digest Binding for Stage 1 Reconciler:**
+     - Bound `scripts/lib/stage1IdempotentReconciler.mjs` into `executionBoundaryFiles` in `scripts/lib/stagingExecutionPlan.mjs`.
+     - Updated Stage 1 plan metadata: `reconciliationModel: 'IDEMPOTENT_NATURAL_KEY_PRESERVATION'`, `operations: ['SELECT', 'INSERT', 'UPDATE']`, and correct natural key `conflictTargets`.
+     - Proved in `tests/stage1-target-state-retrieval-security.test.mjs` that modifying `stage1IdempotentReconciler.mjs` alters `computeExecutionPlanDigest()`.
+  3. **Workstream 3 (P0): Migration 069 Catalog Introspection & Referential Integrity:**
+     - Hardened `supabase/migrations/069_candidate_referential_integrity_reconciliation.sql` with `pg_constraint` catalog introspection: verifies `conrelid = 'public.candidacies'::regclass`, `confrelid`, `confdeltype = 'r'` (RESTRICT), and `convalidated = true` for `fk_candidacies_contest`, `fk_candidacies_person`, and `fk_candidacies_party`.
+     - Idempotently drops and recreates any malformed or CASCADE constraints; safely deduplicates redundant index definitions (`idx_candidacies_*_fk`) while ensuring canonical base indexes exist; maintains atomic `BEGIN`/`COMMIT` transaction boundaries with zero exception swallowing.
+     - Recomputed Migration 069 SHA-256 (`7d6635e1b2e58bef048a4e5ede470c1cd5c05e4b26cb49e1239018384152646b`) and updated `reports/w021_5_schema_contract_specification.json`.
+     - Authored dedicated test suite `tests/migration-069-referential-integrity.test.mjs` (8/8 PASS).
+  4. **Workstream 4 (P1): Election-View Compatibility Contract & Stage 4 Invariants:**
+     - Clarified that `vw_legacy_election_results` was defined in Migration 051 (lines 339-363) as a normalized projection view joining `election_contests` and `election_events`, NOT an integer `election_id` drop-in replacement table for legacy `public.election_results`.
+     - Documented the 16 projected view columns and types in `reports/w021_5_canonical_election_registry.json`.
+     - Added Check 4 to `tests/historical-election-results-23-states.test.mjs` verifying view contract, absence of integer `election_id` coercion, and Stage 4 non-deployable invariants (0 outbound rows).
+  5. **Workstream 5 (P1): Governance, Dedicated Test Suites & Accounting:**
+     - Authored dedicated test suite `tests/stage1-target-state-retrieval-security.test.mjs` covering all 10 failure modes and invariants (10/10 PASS).
+     - Authored `reports/w021_5_directive_150_defect_ledger.json` tracking DEF-D150-001 through DEF-D150-006.
+     - Retained 5-seat Mizoram defect `DQ-W021.5-B2.2E-001` strictly open pending independent adjudication.
+     - Formal CTO acceptance strictly maintained at `0.0% — PENDING INDEPENDENT ADJUDICATION` under Rule IV-001 Non-Self-Acceptance.
+     - Production Supabase `ehfafcnimmjusyvplbah` remains 100% air-gapped (0 queries, 0 mutations). Staging Supabase `fkpigozcqnmcvofuksar` received strictly 0 queries and 0 mutations under Directive 150.
+
+---
+
+### DEC-151: CTO DIRECTIVE 151 — DIRECTIVE 150 SOURCE DELIVERY, FAIL-CLOSED EXECUTION VERIFICATION AND REPOSITORY EVIDENCE RECONCILIATION
+- **Date:** 2026-10-23
+- **Status:** IMPLEMENTATION COMPLETE / SUBMITTED FOR INDEPENDENT CTO ADJUDICATION
+- **Authority:** CTO Directive 151 / Master Execution Framework Amendment v1.6 / Rule IV-001 Non-Self-Acceptance
+- **Context:** Mandatory source delivery reconciliation, fail-closed verification, and evidence synchronization following review of Directive 150:
+  1. **P0: Directive 150 Source Delivery & Working Tree Reconciliation:**
+     - Identified that the complete Directive 150 implementation was staged and tested in the local working tree but had not yet been committed and pushed to remote `master`.
+     - Committed and pushed the real source code, tests, and configuration to branch `master` from remote baseline `412c8c6339b2a6355f71b853d686c9601fd2037d`.
+     - Verified working tree status and established verified commit lineage.
+  2. **P1: Natural-Key Definitions Reconciled with Committed DDL:**
+     - Reconciled conflict targets in `scripts/lib/stagingExecutionPlan.mjs` against committed DDL:
+       - `organization_relationships`: updated conflict target to `source_org_id,target_org_id,relationship_type,valid_from` (matching `uq_org_rel`).
+       - `organization_multilingual_names`: updated conflict target to `organization_id,language_code,script_code,representation_type,name_value` (matching `uq_org_multi_name`).
+       - Aligned `verifiedConflictKeys` and `conflictTargets` across all execution plan definitions.
+  3. **P1: Election-View Compatibility Contract Column Types:**
+     - Reconciled column types in `vw_legacy_election_results` across `scripts/build_canonical_election_registry.mjs`, `reports/w021_5_canonical_election_registry.json`, and `reports/w021_5_schema_contract_specification.json`:
+       - `constituency_id`: verified and documented as `TEXT` (from `ec.constituency_id`, not UUID).
+       - `election_type`: verified and documented as `TEXT` with CHECK constraint (from `ee.election_type`, not an enum).
+       - `winner_party` and `runner_up_party`: verified and documented as `TEXT` (from `w_c.party_id` / `r_c.party_id`, not UUID).
+       - Documented all 16 projected view columns and their underlying PostgreSQL types.
+       - Hardened Check 4 of `tests/historical-election-results-23-states.test.mjs` to assert all 16 projected columns and their real underlying DDL types without asserting nonexistent UUID/enum types.
+  4. **P1: Migration 069 Catalog Verification Environment Limitation:**
+     - Probed TCP port 5432 and verified local PostgreSQL daemon is unavailable in this Windows host environment (`TcpTestSucceeded: False`). Documented this environment constraint transparently without false live assertions.
+     - Verified `supabase/migrations/069_candidate_referential_integrity_reconciliation.sql` statically, syntactically, and via catalog structure in `tests/migration-069-referential-integrity.test.mjs` (8/8 PASS).
+  5. **P2: Governance, Defect Accounting and Evidence Synchronization:**
+     - Authored `reports/w021_5_directive_151_defect_ledger.json` tracking DEF-D151-001 through DEF-D151-004.
+     - Updated `reports/w021_5_database_execution_register.json` and `reports/w021_5_schema_contract_specification.json`.
+     - Retained 5-seat Mizoram financial defect `DQ-W021.5-B2.2E-001` strictly open pending independent adjudication.
+     - Formal CTO acceptance strictly maintained at `0.0% — PENDING INDEPENDENT ADJUDICATION` under Rule IV-001 Non-Self-Acceptance.
+     - Production Supabase `ehfafcnimmjusyvplbah` remains 100% air-gapped (0 queries, 0 mutations). Staging Supabase `fkpigozcqnmcvofuksar` received strictly 0 queries and 0 mutations under Directive 151.

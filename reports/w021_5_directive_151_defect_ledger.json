@@ -1,0 +1,104 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Kshetra W021.5 — CTO Directive 151 Defect Ledger & Mandate Closure Register",
+  "directive": "CTO Directive 151: Directive 150 Source Delivery, Fail-Closed Execution Verification and Repository Evidence Reconciliation",
+  "governingAuthority": "Master Execution Framework Amendment v1.6 / Rule IV-001 Non-Self-Acceptance",
+  "timestamp": "2026-10-23T23:40:00.000Z",
+  "airGapStatus": {
+    "productionDatabase": "ehfafcnimmjusyvplbah",
+    "productionQueries": 0,
+    "productionMutations": 0,
+    "productionStatus": "AIR_GAPPED_ZERO_QUERIES_ZERO_MUTATIONS",
+    "stagingDatabase": "fkpigozcqnmcvofuksar",
+    "stagingQueries": 0,
+    "stagingMutations": 0,
+    "stagingStatus": "STRICT_ZERO_ACCESS_UNDER_DIRECTIVE_151"
+  },
+  "formalAcceptanceStatus": "0.0% — PENDING INDEPENDENT ADJUDICATION",
+  "mizoramDefect": {
+    "defectId": "DQ-W021.5-B2.2E-001",
+    "status": "OPEN_PENDING_INDEPENDENT_ADJUDICATION",
+    "description": "5 Mizoram statutory assembly seats (AC 31-35) with unrecorded voter counts preserved as NULL without zero-fabrication"
+  },
+  "accountingSummary": {
+    "repoVerifiedEarnedPercent": 67.0,
+    "unexecutedDatabasePendingPercent": 10.5,
+    "blockedOnExternalGatesPercent": 22.5,
+    "unimplementedPercent": 0.0,
+    "formalCtcAcceptancePercent": 0.0
+  },
+  "defects": [
+    {
+      "defectId": "DEF-D151-001",
+      "workstream": "P0: Repository Source Delivery Reconciliation",
+      "summary": "Directive 150 implementation was staged locally but absent from remote master; delivered in real implementation commit with full test suites and verified lineage",
+      "directiveRequirement": "Establish exact relationship among uploaded report, working tree, implementation commit, and remote HEAD; make source changes available in real implementation commit on master; ensure git log and git diff demonstrate actual source delivery; run tests against the clean commit.",
+      "remediationDetails": "Delivered all Directive 150 source implementations, unit tests, catalog scripts, and adapters in reviewable git commit. Synchronized remote baseline 412c8c6339b2a6355f71b853d686c9601fd2037d to new implementation commit containing all modified operational files (scripts/execute_staging_directive_139.mjs, scripts/lib/stagingAuthorization.mjs, scripts/lib/stagingExecutionPlan.mjs, supabase/migrations/069_candidate_referential_integrity_reconciliation.sql, test suites, and schema reports).",
+      "sourceFilesModified": [
+        "scripts/execute_staging_directive_139.mjs",
+        "scripts/lib/stagingAuthorization.mjs",
+        "scripts/lib/stagingExecutionPlan.mjs",
+        "supabase/migrations/069_candidate_referential_integrity_reconciliation.sql",
+        "tests/helpers/stagingStageTestAdapters.mjs",
+        "tests/stage1-target-state-retrieval-security.test.mjs",
+        "tests/migration-069-referential-integrity.test.mjs",
+        "tests/historical-election-results-23-states.test.mjs"
+      ],
+      "regressionTests": [
+        "tests/stage1-target-state-retrieval-security.test.mjs (10/10 PASS)",
+        "tests/migration-069-referential-integrity.test.mjs (8/8 PASS)",
+        "tests/staging-execution-mode-b.test.mjs (22/22 PASS)",
+        "scripts/verify_w021_5_full_mandate.cjs (20/20 PASS)"
+      ],
+      "classification": "REMEDIATED_AND_OFFLINE_VERIFIED"
+    },
+    {
+      "defectId": "DEF-D151-002",
+      "workstream": "P1: Natural-Key Definitions Reconciled with Committed DDL",
+      "summary": "Reconciled conflict targets in stagingExecutionPlan.mjs: organization_relationships includes valid_from; organization_multilingual_names includes script_code, representation_type, and name_value",
+      "directiveRequirement": "Ensure documented conflict targets in scripts/lib/stagingExecutionPlan.mjs match actual constraints in schema migrations: organization_relationships must use source_org_id,target_org_id,relationship_type,valid_from; organization_multilingual_names must use organization_id,language_code,script_code,representation_type,name_value; update verifiedConflictKeys and conflictTargets mappings.",
+      "remediationDetails": "Updated verifiedConflictKeys and stages.stage1_political_organizations.conflictTargets in scripts/lib/stagingExecutionPlan.mjs: public.organization_relationships set to 'source_org_id,target_org_id,relationship_type,valid_from' (matching uq_org_rel); public.organization_multilingual_names set to 'organization_id,language_code,script_code,representation_type,name_value' (matching uq_org_multi_name). Aligned with reports/w021_5_schema_contract_specification.json and scripts/lib/stage1IdempotentReconciler.mjs.",
+      "sourceFilesModified": [
+        "scripts/lib/stagingExecutionPlan.mjs",
+        "reports/w021_5_schema_contract_specification.json"
+      ],
+      "regressionTests": [
+        "tests/staging-execution-mode-b.test.mjs (22/22 PASS)",
+        "tests/stage1-target-state-retrieval-security.test.mjs (10/10 PASS)"
+      ],
+      "classification": "REMEDIATED_AND_OFFLINE_VERIFIED"
+    },
+    {
+      "defectId": "DEF-D151-003",
+      "workstream": "P1: Election-View Compatibility Contract Reconciliation",
+      "summary": "Corrected column types for vw_legacy_election_results: constituency_id is TEXT (not UUID), election_type is TEXT (not enum), and parties are TEXT (not UUID); asserted in test suite",
+      "directiveRequirement": "Verify exact column types produced by vw_legacy_election_results view against underlying DDL: constituency_id is TEXT, election_type is TEXT with CHECK constraint; document all 16 projected columns and their real PostgreSQL types in reports/w021_5_canonical_election_registry.json; verify tests/historical-election-results-23-states.test.mjs Check 4 asserts underlying column types without asserting nonexistent UUID/enum columns.",
+      "remediationDetails": "Updated scripts/build_canonical_election_registry.mjs and regenerated reports/w021_5_canonical_election_registry.json: constituency_id typed as TEXT (from ec.constituency_id), election_type typed as TEXT (from ee.election_type), winner_party and runner_up_party typed as TEXT (from w_c.party_id / r_c.party_id referencing political_organizations.id). Documented all 16 projected columns in schema contract specification. Hardened tests/historical-election-results-23-states.test.mjs Check 4 to assert all 16 columns and exact underlying DDL types.",
+      "sourceFilesModified": [
+        "scripts/build_canonical_election_registry.mjs",
+        "reports/w021_5_canonical_election_registry.json",
+        "reports/w021_5_schema_contract_specification.json",
+        "tests/historical-election-results-23-states.test.mjs"
+      ],
+      "regressionTests": [
+        "tests/historical-election-results-23-states.test.mjs (Check 4 PASS, 23/23 states PASS)"
+      ],
+      "classification": "REMEDIATED_AND_OFFLINE_VERIFIED"
+    },
+    {
+      "defectId": "DEF-D151-004",
+      "workstream": "P1: Migration 069 Catalog Verification Environment Limitation",
+      "summary": "Local PostgreSQL daemon offline on port 5432 in Windows host environment; offline catalog introspection, AST syntax validation, and constraint definitions maintained and verified without false live claims",
+      "directiveRequirement": "If local PostgreSQL is unavailable in the environment, document this limitation truthfully in verification report rather than claiming it was tested live; verify migration statically and syntactically; ensure test suite falls back gracefully to catalog and syntax validation without failing tests or reporting false live passes.",
+      "remediationDetails": "Probed TCP port 5432 and verified local PostgreSQL daemon is unavailable in this environment (TcpTestSucceeded: False). Documented this constraint transparently in Directive 151 reporting. Executed tests/migration-069-referential-integrity.test.mjs (8/8 PASS) validating AST syntax, DDL structure, PL/pgSQL DO blocks, pg_constraint catalog introspection queries (conrelid, confrelid, confdeltype = 'r', convalidated = true), and transaction boundaries without false live assertions.",
+      "sourceFilesModified": [
+        "tests/migration-069-referential-integrity.test.mjs",
+        "reports/w021_5_schema_contract_specification.json"
+      ],
+      "regressionTests": [
+        "tests/migration-069-referential-integrity.test.mjs (8/8 PASS)"
+      ],
+      "classification": "REMEDIATED_AND_OFFLINE_VERIFIED"
+    }
+  ]
+}
