@@ -100,12 +100,23 @@ export function parseExecutionArguments(argv = process.argv.slice(2)) {
     authToken = fs.readFileSync(tokenFile, 'utf8').trim();
   }
 
+  // Parse execution scope (--scope=stage1 or --scope=stage2)
+  let executionScope = null;
+  const scopeArg = argv.find(a => a.startsWith('--scope='));
+  if (scopeArg) {
+    const raw = scopeArg.split('=')[1].trim().toUpperCase();
+    if (raw === 'STAGE1' || raw === 'STAGE_1') executionScope = 'STAGE_1';
+    else if (raw === 'STAGE2' || raw === 'STAGE_2') executionScope = 'STAGE_2';
+    else executionScope = raw;
+  }
+
   return {
     mode,
     dryRun,
     tokenFile,
     authToken,
-    planDigest
+    planDigest,
+    executionScope
   };
 }
 
@@ -185,9 +196,9 @@ function assertInternalExecutionContext(options = {}) {
 
 /**
  * Helper to fetch target database state across all Stage 1 tables for remote reconciliation
- * Implements strict fail-closed validation and complete pagination per CTO Directive 150 Section 2.2 & 2.3.
+ * Implements strict fail-closed validation and complete pagination per CTO Directive 150 Section 2.2 & Directive 152 Section 5.
  */
-async function fetchTargetDatabaseState(internalContext, options = {}) {
+export async function fetchTargetDatabaseState(internalContext, options = {}) {
   const { transport, targetHost, serviceKey } = internalContext;
   if (!transport || !targetHost || !serviceKey) {
     const err = new Error('TARGET_STATE_CONFIG_MISSING: transport, targetHost, and serviceKey are mandatory');
@@ -253,21 +264,27 @@ async function fetchTargetDatabaseState(internalContext, options = {}) {
         throw err;
       }
 
-      // Parse Content-Range header: e.g., "0-499/1043", "0-26/27", or "*/0"
-      const contentRange = (resp.headers?.get ? resp.headers.get('content-range') : resp.headers?.['content-range']) || '';
-      if (contentRange) {
-        const slashIdx = contentRange.lastIndexOf('/');
-        if (slashIdx !== -1) {
-          const totalStr = contentRange.slice(slashIdx + 1).trim();
-          if (totalStr === '*' || contentRange.trim() === '*/0') {
-            if (contentRange.trim() === '*/0') totalCount = 0;
-          } else {
-            const parsed = parseInt(totalStr, 10);
-            if (!Number.isNaN(parsed)) {
-              totalCount = parsed;
-            }
-          }
-        }
+      // Fail-closed Content-Range header requirement (Directive 152 Section 5.2.A)
+      const rawContentRange = (resp.headers?.get ? resp.headers.get('content-range') : resp.headers?.['content-range']);
+      if (!rawContentRange || typeof rawContentRange !== 'string' || rawContentRange.trim().length === 0) {
+        const err = new Error(`TARGET_STATE_MISSING_CONTENT_RANGE: Mandatory Content-Range header is missing on table ${qualifiedTable} at offset ${offset}.`);
+        err.code = 'TARGET_STATE_MISSING_CONTENT_RANGE';
+        err.table = qualifiedTable;
+        throw err;
+      }
+
+      const trimmedContentRange = rawContentRange.trim();
+      // PostgREST may prefix with "items "
+      const strippedRange = trimmedContentRange.startsWith('items ')
+        ? trimmedContentRange.slice(6).trim()
+        : trimmedContentRange;
+
+      // Fail-closed wildcard total rejection (Directive 152 Section 5.2.A)
+      if (strippedRange === '*' || strippedRange.endsWith('/*') || strippedRange.includes('/*')) {
+        const err = new Error(`TARGET_STATE_WILDCARD_TOTAL_FORBIDDEN: Wildcard total in Content-Range "${rawContentRange}" is strictly forbidden on table ${qualifiedTable}.`);
+        err.code = 'TARGET_STATE_WILDCARD_TOTAL_FORBIDDEN';
+        err.table = qualifiedTable;
+        throw err;
       }
 
       const rawText = await resp.text();
@@ -288,30 +305,87 @@ async function fetchTargetDatabaseState(internalContext, options = {}) {
         throw err;
       }
 
-      // Accumulate and deduplicate
-      for (const row of pageRows) {
-        const rowId = row.id || JSON.stringify(row);
-        if (!seenIds.has(rowId)) {
-          seenIds.add(rowId);
-          allRows.push(row);
+      // Handle valid empty table: Content-Range */0 (Directive 152 Section 5.2.A)
+      if (strippedRange === '*/0') {
+        if (pageRows.length > 0) {
+          const err = new Error(`TARGET_STATE_INVALID_EMPTY_RESPONSE: Table ${qualifiedTable} returned Content-Range "*/0" but response body contained ${pageRows.length} rows.`);
+          err.code = 'TARGET_STATE_INVALID_EMPTY_RESPONSE';
+          err.table = qualifiedTable;
+          throw err;
+        }
+        totalCount = 0;
+        break; // Table is empty and complete
+      }
+
+      // Syntax validation: <start>-<end>/<total>
+      const rangeMatch = strippedRange.match(/^(\d+)-(\d+)\/(\d+)$/);
+      if (!rangeMatch) {
+        const err = new Error(`TARGET_STATE_MALFORMED_CONTENT_RANGE: Malformed Content-Range header "${rawContentRange}" for table ${qualifiedTable}.`);
+        err.code = 'TARGET_STATE_MALFORMED_CONTENT_RANGE';
+        err.table = qualifiedTable;
+        throw err;
+      }
+
+      const rangeStart = parseInt(rangeMatch[1], 10);
+      const rangeEnd = parseInt(rangeMatch[2], 10);
+      const pageTotal = parseInt(rangeMatch[3], 10);
+
+      // Section 5.2.B: Strict offset and range bounds verification
+      if (rangeStart !== offset) {
+        const err = new Error(`TARGET_STATE_PAGINATION_RANGE_INVALID: Range start ${rangeStart} does not match expected offset ${offset} for table ${qualifiedTable}.`);
+        err.code = 'TARGET_STATE_PAGINATION_RANGE_INVALID';
+        err.table = qualifiedTable;
+        throw err;
+      }
+
+      if (pageRows.length > 0) {
+        const expectedEnd = offset + pageRows.length - 1;
+        if (rangeEnd !== expectedEnd) {
+          const err = new Error(`TARGET_STATE_PAGINATION_RANGE_INVALID: Range end ${rangeEnd} does not match expected offset + rows - 1 (${expectedEnd}) for table ${qualifiedTable}.`);
+          err.code = 'TARGET_STATE_PAGINATION_RANGE_INVALID';
+          err.table = qualifiedTable;
+          throw err;
+        }
+        if (rangeEnd >= pageTotal) {
+          const err = new Error(`TARGET_STATE_PAGINATION_RANGE_INVALID: Range end ${rangeEnd} is greater than or equal to total ${pageTotal} for table ${qualifiedTable}.`);
+          err.code = 'TARGET_STATE_PAGINATION_RANGE_INVALID';
+          err.table = qualifiedTable;
+          throw err;
         }
       }
 
-      // Check pagination termination
-      if (totalCount !== null) {
-        if (allRows.length >= totalCount || pageRows.length === 0) {
-          if (allRows.length !== totalCount) {
-            const err = new Error(`TARGET_STATE_INCOMPLETE_PAGINATION: Table ${qualifiedTable} expected ${totalCount} rows from Content-Range, but retrieved ${allRows.length}`);
-            err.code = 'TARGET_STATE_INCOMPLETE_PAGINATION';
-            err.table = qualifiedTable;
-            throw err;
-          }
-          break;
+      // Section 5.2.C: Total count consistency across pages
+      if (totalCount === null) {
+        totalCount = pageTotal;
+      } else if (totalCount !== pageTotal) {
+        const err = new Error(`TARGET_STATE_PAGINATION_TOTAL_CHANGED: Total count changed from ${totalCount} to ${pageTotal} during pagination traversal of table ${qualifiedTable}.`);
+        err.code = 'TARGET_STATE_PAGINATION_TOTAL_CHANGED';
+        err.table = qualifiedTable;
+        throw err;
+      }
+
+      // Section 5.2.D: Detect overlapping or duplicate rows (throw, do NOT silently deduplicate)
+      for (const row of pageRows) {
+        const rowId = row.id !== undefined ? String(row.id) : JSON.stringify(row);
+        if (seenIds.has(rowId)) {
+          const err = new Error(`TARGET_STATE_PAGINATION_OVERLAPPING_ROWS: Duplicate or overlapping row ID "${rowId}" encountered during pagination of table ${qualifiedTable}.`);
+          err.code = 'TARGET_STATE_PAGINATION_OVERLAPPING_ROWS';
+          err.table = qualifiedTable;
+          throw err;
         }
-      } else {
-        if (pageRows.length < pageSize) {
-          break;
+        seenIds.add(rowId);
+        allRows.push(row);
+      }
+
+      // Pagination termination check
+      if (allRows.length >= totalCount || pageRows.length === 0) {
+        if (allRows.length !== totalCount) {
+          const err = new Error(`TARGET_STATE_INCOMPLETE_PAGINATION: Table ${qualifiedTable} expected ${totalCount} rows from Content-Range, but retrieved ${allRows.length}.`);
+          err.code = 'TARGET_STATE_INCOMPLETE_PAGINATION';
+          err.table = qualifiedTable;
+          throw err;
         }
+        break;
       }
 
       offset += pageRows.length;
@@ -320,12 +394,23 @@ async function fetchTargetDatabaseState(internalContext, options = {}) {
     targetState[qualifiedTable] = allRows;
   }
 
+  // Section 5.2.E: Confirm complete table retrieval across all 8 Stage 1 tables
+  for (const table of tables) {
+    const qualifiedTable = `public.${table}`;
+    if (!Array.isArray(targetState[qualifiedTable])) {
+      const err = new Error(`TARGET_STATE_INCOMPLETE_TABLE_SET: Missing table ${qualifiedTable} from target state retrieval.`);
+      err.code = 'TARGET_STATE_INCOMPLETE_TABLE_SET';
+      err.table = qualifiedTable;
+      throw err;
+    }
+  }
+
   return targetState;
 }
 
 /**
  * Evaluates whether the internalContext possesses verified authorization grants for Stage 1
- * Authority: CTO Directive 150 Section 2.1
+ * Authority: CTO Directive 150 Section 2.1 & CTO Directive 152 Section 3
  */
 function isStage1Authorized(internalContext) {
   if (!internalContext || !internalContext.authGrant) {
@@ -333,28 +418,33 @@ function isStage1Authorized(internalContext) {
   }
   const grant = internalContext.authGrant;
 
-  // 1. Administrator containment must be confirmed
+  // 1. Grant executionScope must be STAGE_1 (Directive 152 Section 3)
+  if (grant.executionScope !== 'STAGE_1') {
+    return false;
+  }
+
+  // 2. Administrator containment must be confirmed
   if (grant.adminContainmentConfirmed !== true) {
     return false;
   }
 
-  // 2. CRIT-C02-02 must be explicitly granted
+  // 3. CRIT-C02-02 must be explicitly granted
   if (!grant.criteria || !grant.criteria.has('CRIT-C02-02')) {
     return false;
   }
 
-  // 3. SELECT operation must be explicitly granted for target-state retrieval
+  // 4. SELECT operation must be explicitly granted for target-state retrieval
   if (!grant.operations || !grant.operations.has('SELECT')) {
     return false;
   }
 
-  // 4. Write operations must be explicitly granted (INSERT + UPDATE or UPSERT)
+  // 5. Write operations must be explicitly granted (INSERT + UPDATE or UPSERT)
   const hasWrites = (grant.operations.has('INSERT') && grant.operations.has('UPDATE')) || grant.operations.has('UPSERT');
   if (!hasWrites) {
     return false;
   }
 
-  // 5. All 8 Stage 1 tables must be explicitly granted
+  // 6. All 8 Stage 1 tables must be explicitly granted
   for (const table of STAGE1_TABLE_SEQUENCE) {
     if (!grant.tables || !grant.tables.has(table)) {
       return false;
@@ -824,7 +914,7 @@ export async function runStagingExecutionEngine(options = {}) {
     // Directive 145 / Directive 146 / Directive 149 / Directive 150: Distinguish partially ready with blocked stages from fully prepared
     const report = {
       generator: 'scripts/execute_staging_directive_139.mjs',
-      directive: 'CTO Directive 151 / W021.5',
+      directive: 'CTO Directive 152 / W021.5',
       timestamp: new Date().toISOString(),
       governingAuthority: 'Master Execution Framework Amendment v1.6 / Rule IV-001 Non-Self-Acceptance',
       stagingProjectRef: ALLOWED_STAGING_PROJECT_REF,
@@ -922,27 +1012,46 @@ export async function runStagingExecutionEngine(options = {}) {
     const isTestExecution = process.env.NODE_ENV === 'test' && Boolean(process.env.KSHETRA_TEST_REPLAY_STORE_PATH);
     const storePath = isTestExecution ? process.env.KSHETRA_TEST_REPLAY_STORE_PATH : undefined;
 
+    // Directive 152 Section 3: Resolve execution scope explicitly before authorization
+    const executionScope = options.executionScope ||
+      cliArgs.executionScope ||
+      (process.env.KSHETRA_STAGING_EXECUTION_SCOPE ? process.env.KSHETRA_STAGING_EXECUTION_SCOPE.toUpperCase() : null);
+
+    if (!executionScope) {
+      const err = new Error('EXECUTION_SCOPE_REQUIRED: Mode B staging write execution strictly requires an explicit execution scope (--scope=stage1 or --scope=stage2).');
+      err.code = 'EXECUTION_SCOPE_REQUIRED';
+      throw err;
+    }
+
+    if (!['STAGE_1', 'STAGE_2'].includes(executionScope)) {
+      const err = new Error(`UNSUPPORTED_EXECUTION_SCOPE: Execution scope "${executionScope}" is unsupported. The only permitted execution scopes are STAGE_1 and STAGE_2.`);
+      err.code = 'UNSUPPORTED_EXECUTION_SCOPE';
+      throw err;
+    }
+
     // 3. Verify asymmetric cryptographic authorization & anti-replay store
-    // Derive requested criteria and tables strictly from deployable stages in canonical plan (Directive 146 Section 3)
-    const plan = generateCanonicalExecutionPlan({
-      repoRoot: REPO_ROOT,
-      targetProjectRef: ALLOWED_STAGING_PROJECT_REF
-    });
+    // Request precise criterion, tables and operations for the verified execution scope (Directive 152 Section 3)
+    let requestedCriteria;
+    let requestedTables;
+    let requestedOperations;
 
-    const deployableStages = Object.entries(plan.stages).filter(([stageName, stage]) =>
-      stage.deploymentStatus !== 'BLOCKED_NOT_DEPLOYABLE' &&
-      stage.expectedRecordCounts?.outboundRowsToStaging > 0
-    );
-
-    const deployableCriteria = [...new Set(deployableStages.map(([, stage]) => stage.criterionId))];
-    const deployableTables = [...new Set(deployableStages.flatMap(([, stage]) => stage.targetTables || []))];
+    if (executionScope === 'STAGE_1') {
+      requestedCriteria = ['CRIT-C02-02'];
+      requestedTables = [...STAGE1_TABLE_SEQUENCE];
+      requestedOperations = ['SELECT', 'INSERT', 'UPDATE'];
+    } else {
+      requestedCriteria = ['CRIT-D02-02'];
+      requestedTables = ['public.candidacies'];
+      requestedOperations = ['INSERT', 'UPDATE', 'UPSERT'];
+    }
 
     const authVerification = verifyStagingWriteAuthorization({
       token: authToken,
       targetProject: ALLOWED_STAGING_PROJECT_REF,
-      requestedCriteria: deployableCriteria,
-      requestedTables: deployableTables,
-      requestedOperations: ['INSERT', 'UPDATE', 'UPSERT'],
+      executionScope,
+      requestedCriteria,
+      requestedTables,
+      requestedOperations,
       requestedPlanDigest: computedPlanDigest,
       storePath,
       adminClosureRecord,
@@ -991,11 +1100,13 @@ export async function runStagingExecutionEngine(options = {}) {
       targetHost: `https://${ALLOWED_STAGING_HOSTNAME}`,
       serviceKey,
       transport: operationalTransport,
+      executionScope,
       authGrant: {
         criteria: new Set(authVerification.criteria || []),
         tables: new Set(authVerification.tables || []),
         operations: new Set(authVerification.operations || []),
-        adminContainmentConfirmed: Boolean(authVerification.adminContainmentConfirmed)
+        adminContainmentConfirmed: Boolean(authVerification.adminContainmentConfirmed),
+        executionScope: authVerification.executionScope || executionScope
       }
     };
 
@@ -1003,64 +1114,81 @@ export async function runStagingExecutionEngine(options = {}) {
 
     let executionError = null;
 
-    // Sequential stage execution with partial execution tracking
-    try {
-      stageResults.stage1_political_organizations = await executeStage1Staging(execOptions);
-    } catch (err) {
-      stageResults.stage1_political_organizations = {
-        criterionId: 'CRIT-C02-02',
-        status: 'FAILED',
-        error: err.message,
-        rowsAffected: 0
+    // Scope-bound stage execution (Directive 152 Section 3)
+    if (executionScope === 'STAGE_1') {
+      try {
+        stageResults.stage1_political_organizations = await executeStage1Staging(execOptions);
+      } catch (err) {
+        stageResults.stage1_political_organizations = {
+          stage: 'stage1_political_organizations',
+          criterionId: 'CRIT-C02-02',
+          status: 'FAILED',
+          error: err.message,
+          rowsAffected: 0,
+          outboundRowsToStaging: 0
+        };
+        executionError = err;
+      }
+      stageResults.stage2_candidacies = {
+        stage: 'stage2_candidacies',
+        criterionId: 'CRIT-D02-02',
+        taskId: 'W021.5-D-02',
+        status: 'NOT_REQUESTED_IN_SCOPE',
+        deploymentStatus: 'NOT_REQUESTED_IN_SCOPE',
+        stagingExecuted: false,
+        rowsAffected: 0,
+        outboundRowsToStaging: 0
       };
-      stageResults.stage2_candidacies = { criterionId: 'CRIT-D02-02', status: 'SKIPPED_DUE_TO_PREVIOUS_FAILURE', rowsAffected: 0 };
-      stageResults.stage3_constituency_demographics = { criterionId: 'CRIT-E01-02', status: 'SKIPPED_DUE_TO_PREVIOUS_FAILURE', rowsAffected: 0 };
-      stageResults.stage4_historical_election_results = { criterionId: 'CRIT-F02-03', status: 'SKIPPED_DUE_TO_PREVIOUS_FAILURE', rowsAffected: 0 };
-      executionError = err;
-    }
-
-    if (!executionError) {
+      stageResults.stage3_constituency_demographics = await executeStage3Staging(execOptions);
+      stageResults.stage4_historical_election_results = await executeStage4Staging(execOptions);
+    } else {
+      // STAGE_2 execution scope
+      stageResults.stage1_political_organizations = {
+        stage: 'stage1_political_organizations',
+        criterionId: 'CRIT-C02-02',
+        taskId: 'W021.5-C-02',
+        status: 'BLOCKED_NOT_DEPLOYABLE',
+        deploymentStatus: 'BLOCKED_NOT_DEPLOYABLE',
+        scopeDisposition: 'NOT_REQUESTED_IN_SCOPE',
+        reconciliationEngine: 'stage1IdempotentReconciler.mjs (CTO Directive 150 Section 2)',
+        reconciliationModel: 'IDEMPOTENT_NATURAL_KEY_PRESERVATION',
+        stagingExecuted: false,
+        remoteCorroborated: false,
+        remoteCorroborationPending: false,
+        targetTables: STAGE1_TABLE_SEQUENCE,
+        rowsAffected: 0,
+        networkRequestsAttempted: 0,
+        outboundRowsToStaging: 0,
+        reason: 'STAGE_1_NOT_IN_STAGE_2_EXECUTION_SCOPE: Invocation was scoped strictly to Stage 2 candidacies. Stage 1 was not requested and remains non-deployable with zero outbound rows.'
+      };
       try {
         stageResults.stage2_candidacies = await executeStage2Staging(execOptions);
       } catch (err) {
         stageResults.stage2_candidacies = {
+          stage: 'stage2_candidacies',
           criterionId: 'CRIT-D02-02',
           status: 'FAILED',
           error: err.message,
           rowsAffected: 0
         };
-        stageResults.stage3_constituency_demographics = { criterionId: 'CRIT-E01-02', status: 'SKIPPED_DUE_TO_PREVIOUS_FAILURE', rowsAffected: 0 };
-        stageResults.stage4_historical_election_results = { criterionId: 'CRIT-F02-03', status: 'SKIPPED_DUE_TO_PREVIOUS_FAILURE', rowsAffected: 0 };
         executionError = err;
       }
-    }
-
-    if (!executionError) {
-      try {
+      if (!executionError) {
         stageResults.stage3_constituency_demographics = await executeStage3Staging(execOptions);
-      } catch (err) {
-        stageResults.stage3_constituency_demographics = {
-          criterionId: 'CRIT-E01-02',
-          status: 'FAILED',
-          error: err.message,
-          rowsAffected: 0
-        };
-        stageResults.stage4_historical_election_results = { criterionId: 'CRIT-F02-03', status: 'SKIPPED_DUE_TO_PREVIOUS_FAILURE', rowsAffected: 0 };
-        executionError = err;
-      }
-    }
-
-    if (!executionError) {
-      try {
         stageResults.stage4_historical_election_results = await executeStage4Staging(execOptions);
-      } catch (err) {
-        stageResults.stage4_historical_election_results = {
-          criterionId: 'CRIT-F02-03',
-          status: 'FAILED',
-          error: err.message,
+      } else {
+        stageResults.stage3_constituency_demographics = {
+          stage: 'stage3_constituency_demographics',
+          criterionId: 'CRIT-E01-02',
+          status: 'SKIPPED_DUE_TO_PREVIOUS_FAILURE',
           rowsAffected: 0
         };
-        executionError = err;
+        stageResults.stage4_historical_election_results = {
+          stage: 'stage4_historical_election_results',
+          criterionId: 'CRIT-F02-03',
+          status: 'SKIPPED_DUE_TO_PREVIOUS_FAILURE',
+          rowsAffected: 0
+        };
       }
     }
 
@@ -1081,7 +1209,7 @@ export async function runStagingExecutionEngine(options = {}) {
 
     const report = {
       generator: 'scripts/execute_staging_directive_139.mjs',
-      directive: 'CTO Directive 151 / W021.5 / Authorized Staging Execution Output',
+      directive: 'CTO Directive 152 / W021.5 / Authorized Staging Execution Output',
       timestamp: new Date().toISOString(),
       governingAuthority: 'Master Execution Framework Amendment v1.6 / Rule IV-001 Non-Self-Acceptance',
       stagingProjectRef: ALLOWED_STAGING_PROJECT_REF,

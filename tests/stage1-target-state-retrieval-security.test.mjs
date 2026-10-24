@@ -82,6 +82,7 @@ describe('CTO Directive 150: Stage 1 Target State Retrieval Security & Reconcili
     process.env.KSHETRA_ADMIN_PUBLIC_KEY = adminKeys.publicKeyPem;
     process.env.KSHETRA_ADMIN_CLOSURE_RECORD = JSON.stringify(validAdminClosure);
     process.env.KSHETRA_TEST_REPLAY_STORE_PATH = TEST_STORE_PATH;
+    process.env.KSHETRA_STAGING_EXECUTION_SCOPE = 'STAGE_2';
 
     originalFetch = globalThis.fetch;
   });
@@ -93,6 +94,7 @@ describe('CTO Directive 150: Stage 1 Target State Retrieval Security & Reconcili
     delete process.env.KSHETRA_ADMIN_PUBLIC_KEY;
     delete process.env.KSHETRA_ADMIN_CLOSURE_RECORD;
     delete process.env.KSHETRA_TEST_REPLAY_STORE_PATH;
+    delete process.env.KSHETRA_STAGING_EXECUTION_SCOPE;
 
     globalThis.fetch = originalFetch;
     clearReplayStore({ storePath: TEST_STORE_PATH });
@@ -334,6 +336,7 @@ describe('CTO Directive 150: Stage 1 Target State Retrieval Security & Reconcili
     };
 
     const authGrant = {
+      executionScope: 'STAGE_1',
       adminContainmentConfirmed: true,
       criteria: new Set(['CRIT-C02-02']),
       operations: new Set(['SELECT', 'INSERT', 'UPDATE']),
@@ -385,6 +388,7 @@ describe('CTO Directive 150: Stage 1 Target State Retrieval Security & Reconcili
     };
 
     const authGrant = {
+      executionScope: 'STAGE_1',
       adminContainmentConfirmed: true,
       criteria: new Set(['CRIT-C02-02']),
       operations: new Set(['SELECT', 'INSERT', 'UPDATE']),
@@ -505,5 +509,378 @@ describe('CTO Directive 150: Stage 1 Target State Retrieval Security & Reconcili
     assert.strictEqual(s2.status, 'EXECUTED_PENDING_INDEPENDENT_CORROBORATION');
     assert.strictEqual(s2.stagingExecuted, true);
     assert.strictEqual(s2.rowsAffected, 11298);
+  });
+
+  // ─── 11. POSITIVE PATH: VALID STAGE 1 TOKEN EXECUTES STAGE 1 (Directive 152) ─
+  it('11. Positive path: valid Stage 1 token with executionScope STAGE_1 executes Stage 1 and skips Stage 2', async () => {
+    let rawFetchCalls = 0;
+    globalThis.fetch = async (url, options = {}) => {
+      rawFetchCalls++;
+      // Return empty valid target state for GET requests on all 8 tables
+      if (!options.method || options.method === 'GET') {
+        return {
+          ok: true,
+          status: 200,
+          headers: { 'content-range': '*/0' },
+          text: async () => '[]'
+        };
+      }
+      // Return inserted rows for POST requests
+      if (options.method === 'POST') {
+        const payload = JSON.parse(options.body || '[]');
+        return {
+          ok: true,
+          status: 201,
+          json: async () => payload,
+          text: async () => JSON.stringify(payload)
+        };
+      }
+      // Return modified rows for PATCH requests
+      if (options.method === 'PATCH') {
+        const payload = JSON.parse(options.body || '{}');
+        return {
+          ok: true,
+          status: 200,
+          json: async () => [payload],
+          text: async () => JSON.stringify([payload])
+        };
+      }
+      return { ok: true, status: 200, text: async () => '[]', json: async () => [] };
+    };
+
+    const canonicalPlanDigest = computeExecutionPlanDigest({
+      repoRoot: REPO_ROOT,
+      targetProjectRef: ALLOWED_STAGING_PROJECT_REF
+    });
+
+    const token = createTestSignedAuthorizationToken({
+      execution_scope: 'STAGE_1',
+      criteria: ['CRIT-C02-02'],
+      tables: STAGE1_TABLES,
+      operations: ['SELECT', 'INSERT', 'UPDATE'],
+      plan_digest: canonicalPlanDigest
+    }, ed25519Keys.privateKeyPem);
+
+    const report = await runStagingExecutionEngine({
+      mode: 'staging',
+      executionScope: 'STAGE_1',
+      serviceKey: 'test_service_key',
+      authToken: token
+    });
+
+    assert.strictEqual(report.stagingExecutionPerformed, true);
+    const s1 = report.stages.stage1_political_organizations;
+    assert.strictEqual(s1.criterionId, 'CRIT-C02-02');
+    assert.strictEqual(s1.status, 'EXECUTED_PENDING_INDEPENDENT_CORROBORATION');
+    assert.strictEqual(s1.stagingExecuted, true);
+
+    const s2 = report.stages.stage2_candidacies;
+    assert.strictEqual(s2.status, 'NOT_REQUESTED_IN_SCOPE');
+    assert.strictEqual(s2.stagingExecuted, false);
+    assert.strictEqual(s2.rowsAffected, 0);
+  });
+
+  // ─── 12. CROSS-SCOPE DENIAL: STAGE 1 TOKEN DENIED UNDER STAGE 2 SCOPE ─────
+  it('12. Cross-scope denial: Stage 1 token attempted under Stage 2 scope fails closed', async () => {
+    const canonicalPlanDigest = computeExecutionPlanDigest({
+      repoRoot: REPO_ROOT,
+      targetProjectRef: ALLOWED_STAGING_PROJECT_REF
+    });
+
+    const token = createTestSignedAuthorizationToken({
+      execution_scope: 'STAGE_1',
+      criteria: ['CRIT-C02-02'],
+      tables: STAGE1_TABLES,
+      operations: ['SELECT', 'INSERT', 'UPDATE'],
+      plan_digest: canonicalPlanDigest
+    }, ed25519Keys.privateKeyPem);
+
+    await assert.rejects(
+      async () => {
+        await runStagingExecutionEngine({
+          mode: 'staging',
+          executionScope: 'STAGE_2',
+          serviceKey: 'test_service_key',
+          authToken: token
+        });
+      },
+      (err) => {
+        assert(
+          err.code === 'CROSS_SCOPE_GRANT_FORBIDDEN' ||
+          err.code === 'BLOCKED_CRITERION_GRANT_FORBIDDEN' ||
+          err.code === 'BLOCKED_TABLE_GRANT_FORBIDDEN'
+        );
+        return true;
+      }
+    );
+  });
+
+  // ─── 13. CROSS-SCOPE DENIAL: STAGE 2 TOKEN DENIED UNDER STAGE 1 SCOPE ─────
+  it('13. Cross-scope denial: Stage 2 token attempted under Stage 1 scope fails closed', async () => {
+    const canonicalPlanDigest = computeExecutionPlanDigest({
+      repoRoot: REPO_ROOT,
+      targetProjectRef: ALLOWED_STAGING_PROJECT_REF
+    });
+
+    const token = createTestSignedAuthorizationToken({
+      execution_scope: 'STAGE_2',
+      criteria: ['CRIT-D02-02'],
+      tables: ['public.candidacies'],
+      operations: ['INSERT', 'UPDATE', 'UPSERT'],
+      plan_digest: canonicalPlanDigest
+    }, ed25519Keys.privateKeyPem);
+
+    await assert.rejects(
+      async () => {
+        await runStagingExecutionEngine({
+          mode: 'staging',
+          executionScope: 'STAGE_1',
+          serviceKey: 'test_service_key',
+          authToken: token
+        });
+      },
+      (err) => {
+        assert(
+          err.code === 'CROSS_SCOPE_GRANT_FORBIDDEN' ||
+          err.code === 'UNAUTHORIZED_CRITERION' ||
+          err.code === 'UNAUTHORIZED_TABLE_GRANT'
+        );
+        return true;
+      }
+    );
+  });
+
+  // ─── 14. PAGINATION: MISSING CONTENT-RANGE HEADER ─────────────────────────
+  it('14. Fails closed with TARGET_STATE_MISSING_CONTENT_RANGE when Content-Range header is missing', async () => {
+    const mockTransport = async () => {
+      return {
+        ok: true,
+        status: 200,
+        headers: {},
+        text: async () => '[]'
+      };
+    };
+
+    await assert.rejects(
+      async () => {
+        await fetchTargetDatabaseStateIsolated({
+          transport: mockTransport,
+          targetHost: 'https://fkpigozcqnmcvofuksar.supabase.co',
+          serviceKey: 'test-key'
+        });
+      },
+      (err) => {
+        assert.strictEqual(err.code, 'TARGET_STATE_MISSING_CONTENT_RANGE');
+        return true;
+      }
+    );
+  });
+
+  // ─── 15. PAGINATION: WILDCARD TOTAL FORBIDDEN ─────────────────────────────
+  it('15. Fails closed with TARGET_STATE_WILDCARD_TOTAL_FORBIDDEN when Content-Range contains wildcard total', async () => {
+    const mockTransport = async () => {
+      return {
+        ok: true,
+        status: 200,
+        headers: { 'content-range': '0-99/*' },
+        text: async () => '[]'
+      };
+    };
+
+    await assert.rejects(
+      async () => {
+        await fetchTargetDatabaseStateIsolated({
+          transport: mockTransport,
+          targetHost: 'https://fkpigozcqnmcvofuksar.supabase.co',
+          serviceKey: 'test-key'
+        });
+      },
+      (err) => {
+        assert.strictEqual(err.code, 'TARGET_STATE_WILDCARD_TOTAL_FORBIDDEN');
+        return true;
+      }
+    );
+  });
+
+  // ─── 16. PAGINATION: MALFORMED CONTENT-RANGE ──────────────────────────────
+  it('16. Fails closed with TARGET_STATE_MALFORMED_CONTENT_RANGE when Content-Range is syntactically invalid', async () => {
+    const mockTransport = async () => {
+      return {
+        ok: true,
+        status: 200,
+        headers: { 'content-range': 'invalid-content-range-syntax' },
+        text: async () => '[]'
+      };
+    };
+
+    await assert.rejects(
+      async () => {
+        await fetchTargetDatabaseStateIsolated({
+          transport: mockTransport,
+          targetHost: 'https://fkpigozcqnmcvofuksar.supabase.co',
+          serviceKey: 'test-key'
+        });
+      },
+      (err) => {
+        assert.strictEqual(err.code, 'TARGET_STATE_MALFORMED_CONTENT_RANGE');
+        return true;
+      }
+    );
+  });
+
+  // ─── 17. PAGINATION: RANGE START MISMATCH ─────────────────────────────────
+  it('17. Fails closed with TARGET_STATE_PAGINATION_RANGE_INVALID when range start does not match offset', async () => {
+    const mockTransport = async () => {
+      return {
+        ok: true,
+        status: 200,
+        headers: { 'content-range': '10-19/20' }, // starts at 10 instead of 0
+        text: async () => JSON.stringify(Array.from({ length: 10 }, (_, i) => ({ id: `row-${i}` })))
+      };
+    };
+
+    await assert.rejects(
+      async () => {
+        await fetchTargetDatabaseStateIsolated({
+          transport: mockTransport,
+          targetHost: 'https://fkpigozcqnmcvofuksar.supabase.co',
+          serviceKey: 'test-key'
+        });
+      },
+      (err) => {
+        assert.strictEqual(err.code, 'TARGET_STATE_PAGINATION_RANGE_INVALID');
+        assert.match(err.message, /Range start 10 does not match expected offset 0/);
+        return true;
+      }
+    );
+  });
+
+  // ─── 18. PAGINATION: RANGE END MISMATCH ───────────────────────────────────
+  it('18. Fails closed with TARGET_STATE_PAGINATION_RANGE_INVALID when range end does not match offset + rows - 1', async () => {
+    const mockTransport = async () => {
+      return {
+        ok: true,
+        status: 200,
+        headers: { 'content-range': '0-15/20' }, // reports 0-15 (16 rows) but body only has 10 rows
+        text: async () => JSON.stringify(Array.from({ length: 10 }, (_, i) => ({ id: `row-${i}` })))
+      };
+    };
+
+    await assert.rejects(
+      async () => {
+        await fetchTargetDatabaseStateIsolated({
+          transport: mockTransport,
+          targetHost: 'https://fkpigozcqnmcvofuksar.supabase.co',
+          serviceKey: 'test-key'
+        });
+      },
+      (err) => {
+        assert.strictEqual(err.code, 'TARGET_STATE_PAGINATION_RANGE_INVALID');
+        assert.match(err.message, /Range end 15 does not match expected offset \+ rows - 1/);
+        return true;
+      }
+    );
+  });
+
+  // ─── 19. PAGINATION: TOTAL COUNT CHANGED ACROSS PAGES ─────────────────────
+  it('19. Fails closed with TARGET_STATE_PAGINATION_TOTAL_CHANGED when total count changes across pages', async () => {
+    const mockTransport = async (url, options = {}) => {
+      const range = options.headers?.Range || '';
+      if (range === '0-9') {
+        return {
+          ok: true,
+          status: 200,
+          headers: { 'content-range': '0-9/25' }, // total is 25 on page 0
+          text: async () => JSON.stringify(Array.from({ length: 10 }, (_, i) => ({ id: `row-${i}` })))
+        };
+      } else {
+        return {
+          ok: true,
+          status: 200,
+          headers: { 'content-range': '10-19/30' }, // total changed to 30 on page 1!
+          text: async () => JSON.stringify(Array.from({ length: 10 }, (_, i) => ({ id: `row-${10 + i}` })))
+        };
+      }
+    };
+
+    await assert.rejects(
+      async () => {
+        await fetchTargetDatabaseStateIsolated({
+          transport: mockTransport,
+          targetHost: 'https://fkpigozcqnmcvofuksar.supabase.co',
+          serviceKey: 'test-key'
+        }, { pageSize: 10 });
+      },
+      (err) => {
+        assert.strictEqual(err.code, 'TARGET_STATE_PAGINATION_TOTAL_CHANGED');
+        assert.match(err.message, /Total count changed from 25 to 30/);
+        return true;
+      }
+    );
+  });
+
+  // ─── 20. PAGINATION: OVERLAPPING / DUPLICATE ROWS DETECTED ────────────────
+  it('20. Fails closed with TARGET_STATE_PAGINATION_OVERLAPPING_ROWS when duplicate row ID is returned', async () => {
+    const mockTransport = async (url, options = {}) => {
+      const range = options.headers?.Range || '';
+      if (range === '0-9') {
+        return {
+          ok: true,
+          status: 200,
+          headers: { 'content-range': '0-9/20' },
+          text: async () => JSON.stringify(Array.from({ length: 10 }, (_, i) => ({ id: `row-${i}` })))
+        };
+      } else {
+        // Page 1 re-emits row-9 (overlap with page 0)
+        const rows = [{ id: 'row-9' }, ...Array.from({ length: 9 }, (_, i) => ({ id: `row-${11 + i}` }))];
+        return {
+          ok: true,
+          status: 200,
+          headers: { 'content-range': '10-19/20' },
+          text: async () => JSON.stringify(rows)
+        };
+      }
+    };
+
+    await assert.rejects(
+      async () => {
+        await fetchTargetDatabaseStateIsolated({
+          transport: mockTransport,
+          targetHost: 'https://fkpigozcqnmcvofuksar.supabase.co',
+          serviceKey: 'test-key'
+        }, { pageSize: 10 });
+      },
+      (err) => {
+        assert.strictEqual(err.code, 'TARGET_STATE_PAGINATION_OVERLAPPING_ROWS');
+        assert.match(err.message, /Duplicate or overlapping row ID "row-9"/);
+        return true;
+      }
+    );
+  });
+
+  // ─── 21. PAGINATION: EMPTY TABLE WITH BODY ROWS FORBIDDEN ─────────────────
+  it('21. Fails closed with TARGET_STATE_INVALID_EMPTY_RESPONSE when */0 contains body rows', async () => {
+    const mockTransport = async () => {
+      return {
+        ok: true,
+        status: 200,
+        headers: { 'content-range': '*/0' },
+        text: async () => JSON.stringify([{ id: 'unexpected-row' }])
+      };
+    };
+
+    await assert.rejects(
+      async () => {
+        await fetchTargetDatabaseStateIsolated({
+          transport: mockTransport,
+          targetHost: 'https://fkpigozcqnmcvofuksar.supabase.co',
+          serviceKey: 'test-key'
+        });
+      },
+      (err) => {
+        assert.strictEqual(err.code, 'TARGET_STATE_INVALID_EMPTY_RESPONSE');
+        return true;
+      }
+    );
   });
 });

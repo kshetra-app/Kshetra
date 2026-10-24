@@ -25,7 +25,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const REPO_ROOT = path.resolve(__dirname, '..', '..');
 
-export const CANONICAL_DIRECTIVE = 'CTO Directive 151 / W021.5';
+export const CANONICAL_DIRECTIVE = 'CTO Directive 152 / W021.5';
 export const CANONICAL_STAGING_PROJECT_REF = 'fkpigozcqnmcvofuksar';
 
 /**

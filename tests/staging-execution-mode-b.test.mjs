@@ -84,6 +84,7 @@ describe('CTO Directive 146: Mode B Staging Execution & Non-Bypassable Boundary 
     process.env.KSHETRA_ADMIN_PUBLIC_KEY = adminKeys.publicKeyPem;
     process.env.KSHETRA_ADMIN_CLOSURE_RECORD = JSON.stringify(validAdminClosure);
     process.env.KSHETRA_TEST_REPLAY_STORE_PATH = TEST_STORE_PATH;
+    process.env.KSHETRA_STAGING_EXECUTION_SCOPE = 'STAGE_2';
 
     canonicalPlanDigest = computeExecutionPlanDigest({
       repoRoot: REPO_ROOT,
@@ -100,6 +101,7 @@ describe('CTO Directive 146: Mode B Staging Execution & Non-Bypassable Boundary 
     delete process.env.KSHETRA_ADMIN_PUBLIC_KEY;
     delete process.env.KSHETRA_ADMIN_CLOSURE_RECORD;
     delete process.env.KSHETRA_TEST_REPLAY_STORE_PATH;
+    delete process.env.KSHETRA_STAGING_EXECUTION_SCOPE;
 
     globalThis.fetch = originalFetch;
     clearReplayStore({ storePath: TEST_STORE_PATH });
@@ -949,5 +951,53 @@ describe('CTO Directive 146: Mode B Staging Execution & Non-Bypassable Boundary 
     );
 
     assert.strictEqual(networkAttempted, false, 'Ambient test flags must never authorize network access');
+  });
+
+  it('23. Mode B fails closed with EXECUTION_SCOPE_REQUIRED when execution scope is omitted', async () => {
+    delete process.env.KSHETRA_STAGING_EXECUTION_SCOPE;
+    const token = createTestSignedAuthorizationToken({
+      criteria: ['CRIT-D02-02'],
+      tables: ['public.candidacies'],
+      operations: ['INSERT', 'UPDATE', 'UPSERT'],
+      plan_digest: canonicalPlanDigest
+    }, ed25519Keys.privateKeyPem);
+
+    await assert.rejects(
+      async () => {
+        await runStagingExecutionEngine({
+          mode: 'staging',
+          serviceKey: 'test_service_key',
+          authToken: token
+        });
+      },
+      (err) => {
+        assert.strictEqual(err.code, 'EXECUTION_SCOPE_REQUIRED');
+        return true;
+      }
+    );
+  });
+
+  it('24. Mode B fails closed with UNSUPPORTED_EXECUTION_SCOPE when scope is STAGE_3 or STAGE_4', async () => {
+    const token = createTestSignedAuthorizationToken({
+      criteria: ['CRIT-D02-02'],
+      tables: ['public.candidacies'],
+      operations: ['INSERT', 'UPDATE', 'UPSERT'],
+      plan_digest: canonicalPlanDigest
+    }, ed25519Keys.privateKeyPem);
+
+    await assert.rejects(
+      async () => {
+        await runStagingExecutionEngine({
+          mode: 'staging',
+          serviceKey: 'test_service_key',
+          authToken: token,
+          executionScope: 'STAGE_3'
+        });
+      },
+      (err) => {
+        assert.strictEqual(err.code, 'UNSUPPORTED_EXECUTION_SCOPE');
+        return true;
+      }
+    );
   });
 });

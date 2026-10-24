@@ -54,9 +54,7 @@ export const CLOCK_SKEW_TOLERANCE_SECONDS = 60; // 60 seconds allowable clock sk
 export const PERMITTED_OPERATIONS_ALLOWLIST = ['INSERT', 'UPDATE', 'UPSERT', 'SELECT'];
 export const PROHIBITED_DESTRUCTIVE_OPERATIONS = ['DELETE', 'DROP', 'TRUNCATE', 'ALTER'];
 
-// Broad documented staging table inventory for documentation purposes (Directive 146 Section 3)
-export const DOCUMENTED_STAGING_TABLE_INVENTORY = [
-  // Stage 1: Political Organizations Catalog & Provenance (CRIT-C02-02 - BLOCKED_NOT_DEPLOYABLE)
+export const STAGE1_TABLES = Object.freeze([
   'public.datasets',
   'public.dataset_versions',
   'public.provenance_records',
@@ -64,39 +62,50 @@ export const DOCUMENTED_STAGING_TABLE_INVENTORY = [
   'public.organization_relationships',
   'public.organization_multilingual_names',
   'public.organization_symbols',
-  'public.organization_aliases',
-  // Stage 2: Candidate Profiles & Contests (CRIT-D02-02 - DEPLOYABLE)
-  'public.candidacies',
-  // Stage 3: Constituency Demographics Baseline (CRIT-E01-02 - BLOCKED_NOT_DEPLOYABLE)
+  'public.organization_aliases'
+]);
+
+export const STAGE2_TABLES = Object.freeze([
+  'public.candidacies'
+]);
+
+export const PERMANENTLY_BLOCKED_TABLES = Object.freeze([
   'public.constituency_demographics',
-  // Stage 4: Historical Election Results (CRIT-F02-03 - BLOCKED_NOT_DEPLOYABLE)
   'public.election_results'
+]);
+
+export const PERMANENTLY_BLOCKED_CRITERIA = Object.freeze([
+  'CRIT-E01-02',
+  'CRIT-F02-03'
+]);
+
+export const STAGE1_CRITERIA = Object.freeze(['CRIT-C02-02']);
+export const STAGE2_CRITERIA = Object.freeze(['CRIT-D02-02']);
+
+export const SUPPORTED_EXECUTION_SCOPES = Object.freeze(['STAGE_1', 'STAGE_2']);
+
+// Broad documented staging table inventory for documentation purposes (Directive 146 Section 3)
+export const DOCUMENTED_STAGING_TABLE_INVENTORY = [
+  ...STAGE1_TABLES,
+  ...STAGE2_TABLES,
+  ...PERMANENTLY_BLOCKED_TABLES
 ];
 
-// Least-privilege operational table allowlist (Directive 146 Section 3):
+// Least-privilege operational table allowlist (Directive 146 Section 3 / Directive 152 Section 3):
 // Tables are authorized strictly if their stage is schema-valid, data-ready, deployable, and eligible.
-// Stages 1, 3, and 4 are blocked, so only public.candidacies is authorized for execution.
+// Under default Stage 2 execution scope, only public.candidacies is authorized.
 export const ALL_AUTHORIZED_STAGING_TABLES = [
   'public.candidacies'
 ];
 
 export const BLOCKED_STAGING_TABLES = new Set([
-  'public.datasets',
-  'public.dataset_versions',
-  'public.provenance_records',
-  'public.political_organizations',
-  'public.organization_relationships',
-  'public.organization_multilingual_names',
-  'public.organization_symbols',
-  'public.organization_aliases',
-  'public.constituency_demographics',
-  'public.election_results'
+  ...STAGE1_TABLES,
+  ...PERMANENTLY_BLOCKED_TABLES
 ]);
 
 export const BLOCKED_CRITERIA = new Set([
   'CRIT-C02-02',
-  'CRIT-E01-02',
-  'CRIT-F02-03'
+  ...PERMANENTLY_BLOCKED_CRITERIA
 ]);
 
 export const DEPLOYABLE_CRITERIA = new Set([
@@ -235,6 +244,7 @@ export function verifyStagingWriteAuthorization(params = {}) {
   const {
     token,
     targetProject = ALLOWED_STAGING_PROJECT_REF,
+    executionScope = 'STAGE_2',
     requestedCriteria = [],
     requestedTables = [],
     requestedOperations = [],
@@ -248,6 +258,13 @@ export function verifyStagingWriteAuthorization(params = {}) {
     repoRoot = REPO_ROOT,
     isTestVerification = false
   } = params;
+
+  // Directive 152 Section 3: Require valid supported execution scope
+  if (!SUPPORTED_EXECUTION_SCOPES.includes(executionScope)) {
+    const err = new Error(`UNSUPPORTED_EXECUTION_SCOPE: Execution scope "${executionScope}" is unsupported. The only permitted scopes are STAGE_1 and STAGE_2.`);
+    err.code = 'UNSUPPORTED_EXECUTION_SCOPE';
+    throw err;
+  }
 
   // Directive 147 Section 3: Reject caller-supplied replay store paths in operational mode
   if (!isTestVerification && storePath !== undefined) {
@@ -457,13 +474,52 @@ export function verifyStagingWriteAuthorization(params = {}) {
     now
   });
 
-  // 11. Criteria Scope Enforcement & Blocked Criteria Rejection (Directive 146 Section 3)
+  // 10b. Token Execution Scope Verification (Directive 152 Section 3)
+  const tokenScope = payload.execution_scope || payload.scope;
+  if (tokenScope) {
+    const normalizedTokenScope = String(tokenScope).toUpperCase();
+    if (normalizedTokenScope !== executionScope) {
+      const err = new Error(`CROSS_SCOPE_GRANT_FORBIDDEN: Token scope "${tokenScope}" does not match execution scope "${executionScope}". Cross-scope authorization is strictly forbidden.`);
+      err.code = 'CROSS_SCOPE_GRANT_FORBIDDEN';
+      throw err;
+    }
+  }
+
+  // 11. Criteria Scope Enforcement & Blocked Criteria Rejection (Directive 146 Section 3 / Directive 152 Section 3)
   if (Array.isArray(payload.criteria)) {
     for (const crit of payload.criteria) {
-      if (BLOCKED_CRITERIA.has(crit)) {
+      if (PERMANENTLY_BLOCKED_CRITERIA.includes(crit)) {
         const err = new Error(`BLOCKED_CRITERION_GRANT_FORBIDDEN: Criterion "${crit}" belongs to a blocked stage and cannot receive an executable authorization grant.`);
         err.code = 'BLOCKED_CRITERION_GRANT_FORBIDDEN';
         throw err;
+      }
+    }
+
+    if (executionScope === 'STAGE_1') {
+      for (const crit of payload.criteria) {
+        if (crit === 'CRIT-D02-02') {
+          const err = new Error(`CROSS_SCOPE_GRANT_FORBIDDEN: Stage 1 execution scope cannot receive Stage 2 criterion "${crit}".`);
+          err.code = 'CROSS_SCOPE_GRANT_FORBIDDEN';
+          throw err;
+        }
+        if (!STAGE1_CRITERIA.includes(crit)) {
+          const err = new Error(`UNAUTHORIZED_CRITERION: Criterion "${crit}" is not permitted for Stage 1 execution scope.`);
+          err.code = 'UNAUTHORIZED_CRITERION';
+          throw err;
+        }
+      }
+    } else if (executionScope === 'STAGE_2') {
+      for (const crit of payload.criteria) {
+        if (crit === 'CRIT-C02-02') {
+          const err = new Error(`BLOCKED_CRITERION_GRANT_FORBIDDEN: Criterion "${crit}" belongs to a blocked stage under Stage 2 execution and cannot receive an executable authorization grant.`);
+          err.code = 'BLOCKED_CRITERION_GRANT_FORBIDDEN';
+          throw err;
+        }
+        if (!STAGE2_CRITERIA.includes(crit)) {
+          const err = new Error(`UNAUTHORIZED_CRITERION: Criterion "${crit}" is not permitted for Stage 2 execution scope.`);
+          err.code = 'UNAUTHORIZED_CRITERION';
+          throw err;
+        }
       }
     }
   }
@@ -479,7 +535,7 @@ export function verifyStagingWriteAuthorization(params = {}) {
     }
   }
 
-  // 12. Strict Table Scope Enforcement & Blocked Table Rejection (Directive 146 Section 3)
+  // 12. Strict Table Scope Enforcement & Blocked Table Rejection (Directive 146 Section 3 / Directive 152 Section 3)
   if (!Array.isArray(payload.tables) || payload.tables.length === 0) {
     const err = new Error('MISSING_TABLE_GRANTS: Token must specify an explicit non-empty "tables" array.');
     err.code = 'MISSING_TABLE_GRANTS';
@@ -487,19 +543,38 @@ export function verifyStagingWriteAuthorization(params = {}) {
   }
 
   for (const table of payload.tables) {
-    if (BLOCKED_STAGING_TABLES.has(table)) {
+    if (PERMANENTLY_BLOCKED_TABLES.includes(table)) {
       const err = new Error(`BLOCKED_TABLE_GRANT_FORBIDDEN: Table "${table}" belongs to a blocked stage and cannot receive an executable authorization grant.`);
       err.code = 'BLOCKED_TABLE_GRANT_FORBIDDEN';
       throw err;
     }
   }
 
-  const allowedTableSet = new Set(ALL_AUTHORIZED_STAGING_TABLES);
-  for (const table of payload.tables) {
-    if (!allowedTableSet.has(table)) {
-      const err = new Error(`UNAUTHORIZED_TABLE_GRANT: Token grants access to unauthorized table "${table}".`);
-      err.code = 'UNAUTHORIZED_TABLE_GRANT';
-      throw err;
+  if (executionScope === 'STAGE_1') {
+    for (const table of payload.tables) {
+      if (table === 'public.candidacies') {
+        const err = new Error(`CROSS_SCOPE_GRANT_FORBIDDEN: Stage 1 execution scope cannot receive Stage 2 table "${table}".`);
+        err.code = 'CROSS_SCOPE_GRANT_FORBIDDEN';
+        throw err;
+      }
+      if (!STAGE1_TABLES.includes(table)) {
+        const err = new Error(`UNAUTHORIZED_TABLE_GRANT: Token grants access to unauthorized table "${table}" for Stage 1 execution scope.`);
+        err.code = 'UNAUTHORIZED_TABLE_GRANT';
+        throw err;
+      }
+    }
+  } else if (executionScope === 'STAGE_2') {
+    for (const table of payload.tables) {
+      if (STAGE1_TABLES.includes(table)) {
+        const err = new Error(`BLOCKED_TABLE_GRANT_FORBIDDEN: Table "${table}" belongs to a blocked stage under Stage 2 execution and cannot receive an executable authorization grant.`);
+        err.code = 'BLOCKED_TABLE_GRANT_FORBIDDEN';
+        throw err;
+      }
+      if (!STAGE2_TABLES.includes(table)) {
+        const err = new Error(`UNAUTHORIZED_TABLE_GRANT: Token grants access to unauthorized table "${table}".`);
+        err.code = 'UNAUTHORIZED_TABLE_GRANT';
+        throw err;
+      }
     }
   }
 
@@ -609,6 +684,7 @@ export function verifyStagingWriteAuthorization(params = {}) {
     nonce,
     incidentClosureRef: payload.incident_closure_ref,
     adminContainmentConfirmed: true,
+    executionScope,
     criteria: payload.criteria,
     tables: payload.tables,
     operations: payload.operations,

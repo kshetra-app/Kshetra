@@ -1,0 +1,106 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Kshetra W021.5 — CTO Directive 152 Defect Ledger & Mandate Closure Register",
+  "directive": "CTO Directive 152: Final Surgical Remediation and W021.5 Implementation Closure",
+  "governingAuthority": "Master Execution Framework Amendment v1.6 / Rule IV-001 Non-Self-Acceptance",
+  "timestamp": "2026-10-24T03:30:00.000Z",
+  "airGapStatus": {
+    "productionDatabase": "ehfafcnimmjusyvplbah",
+    "productionQueries": 0,
+    "productionMutations": 0,
+    "productionStatus": "AIR_GAPPED_ZERO_QUERIES_ZERO_MUTATIONS",
+    "stagingDatabase": "fkpigozcqnmcvofuksar",
+    "stagingQueries": 0,
+    "stagingMutations": 0,
+    "stagingStatus": "STRICT_ZERO_ACCESS_UNDER_DIRECTIVE_152"
+  },
+  "formalAcceptanceStatus": "0.0% — PENDING INDEPENDENT ADJUDICATION",
+  "mizoramDefect": {
+    "defectId": "DQ-W021.5-B2.2E-001",
+    "status": "OPEN_PENDING_INDEPENDENT_ADJUDICATION",
+    "description": "5 Mizoram statutory assembly seats (AC 31-35) with unrecorded voter counts preserved as NULL without zero-fabrication"
+  },
+  "accountingSummary": {
+    "repoVerifiedEarnedPercent": 67.0,
+    "unexecutedDatabasePendingPercent": 10.5,
+    "blockedOnExternalGatesPercent": 22.5,
+    "unimplementedPercent": 0.0,
+    "formalCtcAcceptancePercent": 0.0
+  },
+  "defects": [
+    {
+      "defectId": "DEF-D152-001",
+      "workstream": "P0-A: Stage 1 Authorization Contradiction Remediation",
+      "summary": "Reconciled central authorization policy, plan selection, and execution dispatch into an explicit scope-bound model (STAGE_1 vs STAGE_2); distinguished conditional Stage 1 authorization from permanent prohibition of Stages 3 and 4",
+      "directiveRequirement": "Distinguish conditional authorization from permanent prohibition; bind authorization to explicit execution scope before requesting token grant; permit Stage 1 criterion CRIT-C02-02, Stage 1 tables, and write ops under STAGE_1 scope while prohibiting Stage 2; permit CRIT-D02-02 and candidacies under STAGE_2 scope while continuing to reject Stage 1; permanently prohibit Stages 3 and 4 under all scopes; enforce cross-scope denial with CROSS_SCOPE_GRANT_FORBIDDEN; require explicit scope in Mode B, failing closed if omitted or unsupported.",
+      "remediationDetails": "Defined STAGE1_TABLES, STAGE2_TABLES, PERMANENTLY_BLOCKED_TABLES, and PERMANENTLY_BLOCKED_CRITERIA in scripts/lib/stagingAuthorization.mjs. Updated verifyStagingWriteAuthorization() to validate params.executionScope and token scope claims, enforcing scope-bound criteria and table checks. Updated scripts/execute_staging_directive_139.mjs to parse --scope=stage1/stage2 and fail closed with EXECUTION_SCOPE_REQUIRED or UNSUPPORTED_EXECUTION_SCOPE. Updated isStage1Authorized() to require authGrant.executionScope === 'STAGE_1'. Added positive-path and cross-scope denial tests.",
+      "sourceFilesModified": [
+        "scripts/lib/stagingAuthorization.mjs",
+        "scripts/execute_staging_directive_139.mjs",
+        "tests/helpers/stagingStageTestAdapters.mjs",
+        "tests/staging-execution-mode-b.test.mjs",
+        "tests/stage1-target-state-retrieval-security.test.mjs"
+      ],
+      "regressionTests": [
+        "tests/staging-authorization-verifier.test.mjs (42/42 PASS)",
+        "tests/staging-execution-mode-b.test.mjs (24/24 PASS)",
+        "tests/stage1-target-state-retrieval-security.test.mjs (21/21 PASS)"
+      ],
+      "classification": "REMEDIATED_AND_OFFLINE_VERIFIED"
+    },
+    {
+      "defectId": "DEF-D152-002",
+      "workstream": "P0-B: Migration 069 Absent-Constraint Handling & Engine Integration",
+      "summary": "Replaced vulnerable SELECT ... INTO with deterministic existence detection (SELECT EXISTS) and full structural validity verification; proved behavior across 7 engine-level integration scenarios via embedded PostgreSQL",
+      "directiveRequirement": "Replace vulnerable SELECT ... INTO assignment with deterministic existence detection and full validity verification: on candidacies, references intended relation, local and referenced columns match, confdeltype = 'r', and convalidated = true; create missing constraints atomically; drop and recreate malformed, CASCADE, or unvalidated constraints; preserve valid constraints idempotently; execute against a real PostgreSQL engine across 7 explicit scenarios.",
+      "remediationDetails": "Hardened supabase/migrations/069_candidate_referential_integrity_reconciliation.sql using SELECT EXISTS(...) INTO v_exists followed by multi-attribute column-array validation (conkey, confkey, confdeltype = 'r', convalidated = true). Integrated @electric-sql/pglite true PostgreSQL engine into tests/migration-069-referential-integrity.test.mjs, proving all 7 mandated scenarios: 1) absent constraints created; 2) wrong relation/column replaced; 3) CASCADE replaced; 4) NOT VALID replaced; 5) valid constraints preserved; 6) idempotent reapplication; 7) full catalog verification.",
+      "sourceFilesModified": [
+        "supabase/migrations/069_candidate_referential_integrity_reconciliation.sql",
+        "tests/migration-069-referential-integrity.test.mjs",
+        "reports/w021_5_schema_contract_specification.json",
+        "package.json",
+        "package-lock.json"
+      ],
+      "regressionTests": [
+        "tests/migration-069-referential-integrity.test.mjs (15/15 PASS: 8 static catalog checks + 7 real PostgreSQL engine integration tests)"
+      ],
+      "classification": "REMEDIATED_AND_OFFLINE_VERIFIED"
+    },
+    {
+      "defectId": "DEF-D152-003",
+      "workstream": "P1: Target-State Pagination Fail-Closed Remediation",
+      "summary": "Hardened target-state retrieval to strictly fail closed on missing/malformed Content-Range, wildcard totals, range/offset mismatches, count changes between pages, and duplicate/overlapping row IDs",
+      "directiveRequirement": "Require syntactically valid Content-Range header on every page (TARGET_STATE_MISSING_CONTENT_RANGE, TARGET_STATE_MALFORMED_CONTENT_RANGE); reject wildcard totals with TARGET_STATE_WILDCARD_TOTAL_FORBIDDEN; handle empty table */0 with empty body, rejecting non-empty with TARGET_STATE_INVALID_EMPTY_RESPONSE; verify range start equals offset and range end equals offset + rows - 1 (TARGET_STATE_PAGINATION_RANGE_INVALID); verify total count consistency across pages (TARGET_STATE_PAGINATION_TOTAL_CHANGED); detect duplicate/overlapping row IDs (TARGET_STATE_PAGINATION_OVERLAPPING_ROWS); confirm all 8 tables retrieved (TARGET_STATE_INCOMPLETE_TABLE_SET).",
+      "remediationDetails": "Implemented complete fail-closed validation in fetchTargetDatabaseState() in scripts/execute_staging_directive_139.mjs. Exported function and updated tests/helpers/stagingStageTestAdapters.mjs. Added comprehensive test coverage in tests/stage1-target-state-retrieval-security.test.mjs covering all 8 pagination failure modes.",
+      "sourceFilesModified": [
+        "scripts/execute_staging_directive_139.mjs",
+        "tests/helpers/stagingStageTestAdapters.mjs",
+        "tests/stage1-target-state-retrieval-security.test.mjs"
+      ],
+      "regressionTests": [
+        "tests/stage1-target-state-retrieval-security.test.mjs (21/21 PASS)"
+      ],
+      "classification": "REMEDIATED_AND_OFFLINE_VERIFIED"
+    },
+    {
+      "defectId": "DEF-D152-004",
+      "workstream": "P1: Natural Keys, Election View Contract, and Final Mandate Closure",
+      "summary": "Preserved natural key conflict targets in child tables and 16-column TEXT election view contract; reconciled execution registers, execution state, and unified verifier for mandate closure",
+      "directiveRequirement": "Preserve natural key conflict targets in organization child tables; retain vw_legacy_election_results 16-column contract with TEXT column types and non-drop-in status; recompute Migration 069 SHA-256 and update schema contract specification; update execution register, execution state, and decision log (DEC-152); deliver final closure report with definitive disposition.",
+      "remediationDetails": "Retained verified natural-key conflict targets in scripts/lib/stagingExecutionPlan.mjs and reports/w021_5_schema_contract_specification.json. Maintained vw_legacy_election_results contract with TEXT types in tests/historical-election-results-23-states.test.mjs (all 23 states PASS). Recomputed Migration 069 SHA-256 (cebe61606b0c93af6e4859f6e7fb16b45215dd3dab7edff20d2229368343a4be) in schema contract specification. Logged DEC-152 and updated EXECUTION_STATE.md and reports/w021_5_database_execution_register.json.",
+      "sourceFilesModified": [
+        "reports/w021_5_schema_contract_specification.json",
+        "reports/w021_5_database_execution_register.json",
+        "scripts/lib/stagingExecutionPlan.mjs",
+        "DECISION_LOG.md",
+        "EXECUTION_STATE.md"
+      ],
+      "regressionTests": [
+        "tests/historical-election-results-23-states.test.mjs (PASS)",
+        "tests/migration-069-referential-integrity.test.mjs (15/15 PASS)",
+        "scripts/verify_w021_5_full_mandate.cjs (20/20 PASS)"
+      ],
+      "classification": "REMEDIATED_AND_OFFLINE_VERIFIED"
+    }
+  ]
+}

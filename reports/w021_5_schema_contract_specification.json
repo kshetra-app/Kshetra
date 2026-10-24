@@ -1,10 +1,10 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "contractSpecification": "W021.5 PostgreSQL Schema Contract Specification",
-  "directive": "CTO Directive 151: Directive 150 Source Delivery, Fail-Closed Execution Verification and Repository Evidence Reconciliation",
+  "directive": "CTO Directive 152: Final Surgical Remediation and W021.5 Implementation Closure",
   "governingAuthority": "Master Execution Framework Amendment v1.6 / Rule IV-001 Non-Self-Acceptance",
-  "generatedAt": "2026-10-23T23:40:00+05:30",
-  "sourceCommit": "4ba53a479ff7e93051c5b8d2cb136aeb9dc233be",
+  "generatedAt": "2026-10-24T08:18:00+05:30",
+  "sourceCommit": "45df31e5fd747f2562bbab658d732b2afaf6900e",
   "migrationSequence": {
     "totalMigrations": 15,
     "files": [
@@ -80,7 +80,7 @@
       },
       {
         "path": "supabase/migrations/069_candidate_referential_integrity_reconciliation.sql",
-        "sha256": "7d6635e1b2e58bef048a4e5ede470c1cd5c05e4b26cb49e1239018384152646b",
+        "sha256": "cebe61606b0c93af6e4859f6e7fb16b45215dd3dab7edff20d2229368343a4be",
         "scope": "Forward-only referential integrity reconciliation on candidacies: idempotently drops legacy CASCADE FK (candidacies_contest_id_fkey) and legacy unnamed FKs; enforces named RESTRICT constraints fk_candidacies_contest, fk_candidacies_person, and fk_candidacies_party validated via pg_constraint catalog definitions (conrelid, confrelid, confdeltype = 'r', convalidated = true); deduplicates redundant indexes while preserving canonical base indexes"
       }
     ]

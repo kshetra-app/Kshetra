@@ -3592,3 +3592,42 @@
      - Retained 5-seat Mizoram financial defect `DQ-W021.5-B2.2E-001` strictly open pending independent adjudication.
      - Formal CTO acceptance strictly maintained at `0.0% — PENDING INDEPENDENT ADJUDICATION` under Rule IV-001 Non-Self-Acceptance.
      - Production Supabase `ehfafcnimmjusyvplbah` remains 100% air-gapped (0 queries, 0 mutations). Staging Supabase `fkpigozcqnmcvofuksar` received strictly 0 queries and 0 mutations under Directive 151.
+
+
+---
+
+### DEC-152: CTO DIRECTIVE 152 — FINAL SURGICAL REMEDIATION AND W021.5 IMPLEMENTATION CLOSURE
+- **Date:** 2026-10-24
+- **Status:** IMPLEMENTATION COMPLETE / SUBMITTED FOR INDEPENDENT CTO ADJUDICATION
+- **Authority:** CTO Directive 152 / Master Execution Framework Amendment v1.6 / Rule IV-001 Non-Self-Acceptance
+- **Context:** Final implementation-closure cycle executing surgical remediation across Stage 1 authorization reconciliation, Migration 069 catalog handling, fail-closed pagination, and full mandate closure without creating or recommending follow-on directives:
+  1. **P0-A: Stage 1 Authorization Contradiction Remediation:**
+     - Reconciled central authorization policy (`scripts/lib/stagingAuthorization.mjs`), plan selection (`scripts/lib/stagingExecutionPlan.mjs`), and execution dispatch (`scripts/execute_staging_directive_139.mjs`) into a unified scope-bound model (`STAGE_1` vs `STAGE_2`).
+     - Distinguished conditional authorization of Stage 1 (`CRIT-C02-02` / 8 Stage 1 tables under explicit Stage 1 execution scope) from permanent prohibition of Stages 3 and 4 (`CRIT-E01-02`, `CRIT-F02-03`).
+     - Mode B staging write execution parses and requires an explicit execution scope (`--scope=stage1` or `--scope=stage2`), failing closed with `EXECUTION_SCOPE_REQUIRED` or `UNSUPPORTED_EXECUTION_SCOPE` if omitted or unsupported.
+     - Enforced cross-scope denial (`CROSS_SCOPE_GRANT_FORBIDDEN`): a Stage 1 token cannot authorize Stage 2 execution; a Stage 2 token cannot authorize Stage 1 execution.
+     - Updated `isStage1Authorized()` to require `authGrant.executionScope === 'STAGE_1'`.
+  2. **P0-B: Migration 069 Absent-Constraint Handling & Real Engine Integration:**
+     - Replaced vulnerable `SELECT ... INTO` in `supabase/migrations/069_candidate_referential_integrity_reconciliation.sql` with deterministic existence detection (`SELECT EXISTS (...) INTO v_exists`) and full structural validity verification (`c.conkey`, `c.confkey`, `confdeltype = 'r'`, `convalidated = true`).
+     - Resolved local database environment limitation by integrating `@electric-sql/pglite` (embedded true PostgreSQL 18.6 WASM engine running directly in Node.js).
+     - Proved Migration 069 behavior across all 7 mandated engine-level integration scenarios in `tests/migration-069-referential-integrity.test.mjs` (15/15 PASS: 8 catalog checks + 7 real PostgreSQL engine scenarios).
+     - Recomputed Migration 069 SHA-256 (`cebe61606b0c93af6e4859f6e7fb16b45215dd3dab7edff20d2229368343a4be`) and updated `reports/w021_5_schema_contract_specification.json`.
+  3. **P1: Target-State Pagination Fail-Closed Remediation:**
+     - Hardened `fetchTargetDatabaseState()` in `scripts/execute_staging_directive_139.mjs` to enforce strict fail-closed validation:
+       - Mandatory syntactically valid `Content-Range` header on every page (`TARGET_STATE_MISSING_CONTENT_RANGE`, `TARGET_STATE_MALFORMED_CONTENT_RANGE`).
+       - Explicit rejection of wildcard totals (`TARGET_STATE_WILDCARD_TOTAL_FORBIDDEN`).
+       - Strict empty-table validation (`*/0` with empty body, rejecting non-empty bodies with `TARGET_STATE_INVALID_EMPTY_RESPONSE`).
+       - Range start equals offset and range end equals offset + rows - 1 (`TARGET_STATE_PAGINATION_RANGE_INVALID`).
+       - Consistent total count across pages (`TARGET_STATE_PAGINATION_TOTAL_CHANGED`).
+       - Detection of duplicate or overlapping row IDs (`TARGET_STATE_PAGINATION_OVERLAPPING_ROWS`).
+       - Verification of complete 8-table retrieval (`TARGET_STATE_INCOMPLETE_TABLE_SET`).
+  4. **P1: Natural Keys & Election View Contract Preservation:**
+     - Retained natural-key conflict targets in child tables (`organization_relationships`, `organization_multilingual_names`, `organization_symbols`, `organization_aliases`).
+     - Retained `vw_legacy_election_results` contract: 16 projected columns, `constituency_id` TEXT, `election_type` TEXT, party IDs TEXT, non-drop-in designation. Verified across all 23 states in `tests/historical-election-results-23-states.test.mjs` (PASS).
+  5. **Final Mandate Closure & Accounting:**
+     - Authored `reports/w021_5_directive_152_defect_ledger.json` tracking DEF-D152-001 through DEF-D152-004.
+     - Updated `reports/w021_5_database_execution_register.json` and `EXECUTION_STATE.md`.
+     - Preserved open Mizoram defect `DQ-W021.5-B2.2E-001` strictly open pending independent adjudication.
+     - Formal CTO acceptance strictly maintained at `0.0% — PENDING INDEPENDENT ADJUDICATION` under Rule IV-001 Non-Self-Acceptance.
+     - Production Supabase `ehfafcnimmjusyvplbah` remains 100% air-gapped (0 queries, 0 mutations). Staging Supabase `fkpigozcqnmcvofuksar` received strictly 0 queries and 0 mutations under Directive 152.
+     - Final milestone disposition: `REPOSITORY_IMPLEMENTATION_COMPLETE_PENDING_EXTERNAL_GATES`.

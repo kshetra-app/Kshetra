@@ -16,6 +16,7 @@ import {
   reconcileHistoricalElectionResults
 } from '../../scripts/reconcile_database_criteria_identities.mjs';
 import { reconcileStage1Catalog } from '../../scripts/lib/stage1IdempotentReconciler.mjs';
+import { fetchTargetDatabaseState } from '../../scripts/execute_staging_directive_139.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -172,144 +173,15 @@ export const STAGE1_TABLES = [
 
 /**
  * Isolated target state fetcher for testing retrieval security, pagination, and fail-closed errors
- * Authority: CTO Directive 150 Section 2.2 & 2.3
+ * Authority: CTO Directive 150 Section 2.2 & 2.3 / CTO Directive 152 Section 5
  */
 export async function fetchTargetDatabaseStateIsolated(internalContext, options = {}) {
-  const { transport, targetHost, serviceKey } = internalContext;
-  if (!transport || !targetHost || !serviceKey) {
-    const err = new Error('TARGET_STATE_CONFIG_MISSING: transport, targetHost, and serviceKey are mandatory');
-    err.code = 'TARGET_STATE_CONFIG_MISSING';
-    throw err;
-  }
-
-  const targetState = {};
-  const pageSize = options.pageSize || 500;
-  const headers = {
-    'apikey': serviceKey,
-    'Authorization': `Bearer ${serviceKey}`,
-    'Accept': 'application/json'
-  };
-
-  const tables = [
-    'datasets',
-    'dataset_versions',
-    'provenance_records',
-    'political_organizations',
-    'organization_relationships',
-    'organization_multilingual_names',
-    'organization_symbols',
-    'organization_aliases'
-  ];
-
-  for (const table of tables) {
-    const qualifiedTable = `public.${table}`;
-    let offset = 0;
-    const allRows = [];
-    const seenIds = new Set();
-    let totalCount = null;
-
-    while (true) {
-      const rangeHeader = `${offset}-${offset + pageSize - 1}`;
-      const url = `${targetHost}/rest/v1/${table}?select=*`;
-
-      let resp;
-      try {
-        resp = await transport(url, {
-          method: 'GET',
-          headers: {
-            ...headers,
-            'Range': rangeHeader,
-            'Range-Unit': 'items',
-            'Prefer': 'count=exact'
-          }
-        });
-      } catch (networkErr) {
-        const err = new Error(`TARGET_STATE_NETWORK_ERROR: Failed GET on table ${qualifiedTable} at offset ${offset}: ${networkErr.message}`);
-        err.code = 'TARGET_STATE_NETWORK_ERROR';
-        err.table = qualifiedTable;
-        throw err;
-      }
-
-      if (!resp.ok) {
-        let errBody = '';
-        try { errBody = await resp.text(); } catch {}
-        const err = new Error(`TARGET_STATE_READ_FAILED: Table ${qualifiedTable} GET returned HTTP ${resp.status} (${resp.statusText || 'Error'}) - ${errBody}`);
-        err.code = 'TARGET_STATE_READ_FAILED';
-        err.table = qualifiedTable;
-        err.status = resp.status;
-        throw err;
-      }
-
-      const contentRange = (resp.headers?.get ? resp.headers.get('content-range') : resp.headers?.['content-range']) || '';
-      if (contentRange) {
-        const slashIdx = contentRange.lastIndexOf('/');
-        if (slashIdx !== -1) {
-          const totalStr = contentRange.slice(slashIdx + 1).trim();
-          if (totalStr === '*' || contentRange.trim() === '*/0') {
-            if (contentRange.trim() === '*/0') totalCount = 0;
-          } else {
-            const parsed = parseInt(totalStr, 10);
-            if (!Number.isNaN(parsed)) {
-              totalCount = parsed;
-            }
-          }
-        }
-      }
-
-      const rawText = await resp.text();
-      let pageRows;
-      try {
-        pageRows = JSON.parse(rawText);
-      } catch (parseErr) {
-        const err = new Error(`TARGET_STATE_MALFORMED_JSON: Invalid JSON for table ${qualifiedTable} at offset ${offset}: ${parseErr.message}`);
-        err.code = 'TARGET_STATE_MALFORMED_JSON';
-        err.table = qualifiedTable;
-        throw err;
-      }
-
-      if (!Array.isArray(pageRows)) {
-        const err = new Error(`TARGET_STATE_INVALID_SHAPE: Expected JSON array for table ${qualifiedTable}, received ${typeof pageRows}`);
-        err.code = 'TARGET_STATE_INVALID_SHAPE';
-        err.table = qualifiedTable;
-        throw err;
-      }
-
-      for (const row of pageRows) {
-        const rowId = row.id || JSON.stringify(row);
-        if (!seenIds.has(rowId)) {
-          seenIds.add(rowId);
-          allRows.push(row);
-        }
-      }
-
-      if (totalCount !== null) {
-        if (allRows.length >= totalCount || pageRows.length === 0) {
-          if (allRows.length !== totalCount) {
-            const err = new Error(`TARGET_STATE_INCOMPLETE_PAGINATION: Table ${qualifiedTable} expected ${totalCount} rows from Content-Range, but retrieved ${allRows.length}`);
-            err.code = 'TARGET_STATE_INCOMPLETE_PAGINATION';
-            err.table = qualifiedTable;
-            throw err;
-          }
-          break;
-        }
-      } else {
-        if (pageRows.length < pageSize) {
-          break;
-        }
-      }
-
-      offset += pageRows.length;
-    }
-
-    targetState[qualifiedTable] = allRows;
-  }
-
-  return targetState;
+  return fetchTargetDatabaseState(internalContext, options);
 }
 
 /**
  * Isolated Stage 1 test executor using Stage 1 Idempotent Reconciler & PostgREST dispatch
- * Authority: CTO Directive 150 Section 2.1 & 2.4
+ * Authority: CTO Directive 150 Section 2.1 & 2.4 / CTO Directive 152 Section 3
  */
 export async function executeStage1WithReconcilerIsolated(options = {}) {
   const repoRoot = options.repoRoot || REPO_ROOT;
@@ -318,8 +190,9 @@ export async function executeStage1WithReconcilerIsolated(options = {}) {
   const serviceKey = options.serviceKey || 'test-service-key';
   const authGrant = options.authGrant;
 
-  // Authorization check
+  // Authorization check (Directive 152 Section 3: require executionScope === 'STAGE_1' if specified)
   const isAuthorized = authGrant &&
+    (!authGrant.executionScope || authGrant.executionScope === 'STAGE_1') &&
     authGrant.adminContainmentConfirmed === true &&
     authGrant.criteria?.has('CRIT-C02-02') &&
     authGrant.operations?.has('SELECT') &&

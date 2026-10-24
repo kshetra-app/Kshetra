@@ -118,7 +118,7 @@ describe('CTO Directive 140 Section 2.2: Staging Target Selection & Write-Gating
     const res = runScript(
       SCRIPT_139,
       { SUPABASE_SERVICE_ROLE_KEY: DUMMY_STAGING_KEY },
-      ['--write', '--auth-token=some-unauthorized-random-string']
+      ['--write', '--auth-token=some-unauthorized-random-string', '--scope=stage2']
     );
     assert.strictEqual(res.status, 1, 'Must reject malformed authorization token');
     assert.match(res.stderr + res.stdout, /TRUST_ANCHOR_UNCONFIGURED|MALFORMED_AUTHORIZATION_TOKEN|write authorization token is missing or invalid/i);
