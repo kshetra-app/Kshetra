@@ -3,7 +3,7 @@
   "crosswalkSpecification": "W021.5 National 4,123 Statutory Assembly Constituency Crosswalk",
   "directive": "CTO Directive 153 / Task W021.5-E-01",
   "governingAuthority": "Master Execution Framework Amendment v1.6 / Rule IV-001 Non-Self-Acceptance",
-  "generatedAt": "2026-10-24T06:10:32.306Z",
+  "generatedAt": "2026-10-24T06:15:11.115Z",
   "sourceMigration": "supabase/migrations/059_canonical_national_constituency_registry.sql",
   "sourceInventory": "reports/w021_5_constituent_inventory_4123.json",
   "targetDatabaseTable": "public.constituencies",
