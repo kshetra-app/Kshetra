@@ -1,10 +1,10 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "contractSpecification": "W021.5 PostgreSQL Schema Contract Specification",
-  "directive": "CTO Directive 152: Final Surgical Remediation and W021.5 Implementation Closure",
+  "directive": "CTO Directive 153: Terminal W021.5 Closeout, Defect Disposition and Development Freeze",
   "governingAuthority": "Master Execution Framework Amendment v1.6 / Rule IV-001 Non-Self-Acceptance",
-  "generatedAt": "2026-10-24T08:18:00+05:30",
-  "sourceCommit": "45df31e5fd747f2562bbab658d732b2afaf6900e",
+  "generatedAt": "2026-10-24T11:30:00+05:30",
+  "sourceCommit": "6f20cb02a4fd2f71db8aec4422f178274d229273",
   "migrationSequence": {
     "totalMigrations": 15,
     "files": [
@@ -233,7 +233,14 @@
         },
         {
           "name": "public.organization_aliases",
-          "conflictTarget": "raw_lookup_key,organization_id,valid_from",
+          "conflictTarget": null,
+          "reconciliationNaturalKey": "organization_id,raw_lookup_key,jurisdiction_scope,valid_from",
+          "conflictTargetNote": "No database-level UNIQUE constraint on natural key. Migration 064 dropped static unique indexes (uq_org_alias_national, uq_org_alias_jurisdictional) and enforces cross-organization temporal non-overlap via trigger fn_validate_org_alias_temporal_invariants. Client-side reconciler uses organization_id,raw_lookup_key,jurisdiction_scope,valid_from to match existing target IDs without speculative writes.",
+          "databaseUniqueConstraints": ["id (PRIMARY KEY)"],
+          "databaseUniqueIndexes": [],
+          "databaseTriggerInvariants": [
+            "trg_validate_org_alias_temporal -> fn_validate_org_alias_temporal_invariants() (enforces cross-organization non-overlapping temporal windows for identical raw_lookup_key within same jurisdiction_scope)"
+          ],
           "primaryKey": "id (UUID)",
           "foreignKeys": [
             {
@@ -426,7 +433,7 @@
       "foreignKeys": [
         {
           "column": "constituency_id",
-          "references": "public.constituencies(id)"
+          "references": "public.constituencies(internal_id)"
         }
       ]
     },

@@ -1,9 +1,9 @@
 /**
- * KSHETRA W021.5 — CTO DIRECTIVE 152 FULL-MANDATE UNIFIED VERIFIER
+ * KSHETRA W021.5 — CTO DIRECTIVE 153 FULL-MANDATE UNIFIED VERIFIER
  * Deterministic Single Entrypoint for Full-Mandate Completion Verification
  * 
  * Master Execution Framework Amendment v1.6 / Rule IV-001 Non-Self-Acceptance
- * CTO Directive 152: Final Surgical Remediation and W021.5 Implementation Closure
+ * CTO Directive 153: Terminal W021.5 Closeout, Defect Disposition and Development Freeze
  * 
  * Executes all 20 mandated verification suites across Stages A through I:
  *  1. Working tree cleanliness inspection (git status --porcelain)
@@ -45,10 +45,10 @@ const CRITERIA_PATH = path.join(REPO_ROOT, 'governance/specifications/w021_5_cri
 const ALLOW_DIRTY = process.argv.includes('--allow-dirty');
 
 console.log('================================================================================');
-console.log('KSHETRA W021.5 — CTO DIRECTIVE 152 FULL-MANDATE UNIFIED VERIFIER');
+console.log('KSHETRA W021.5 — CTO DIRECTIVE 153 FULL-MANDATE UNIFIED VERIFIER');
 console.log('Deterministic Single Entrypoint for Stages A through I Evidence Closure');
 console.log('Governing Authority: Amendment v1.6 / Rule IV-001 Non-Self-Acceptance');
-console.log('Directive 152: Final Surgical Remediation and W021.5 Implementation Closure');
+console.log('Directive 153: Terminal W021.5 Closeout, Defect Disposition and Development Freeze');
 console.log('================================================================================\n');
 
 // Dynamically obtain Git HEAD commit and branch (Directive 135 Item 16)
@@ -695,8 +695,8 @@ const dynamicDbPendingTasks = Array.from(new Set(
 
 const manifest = {
   evidenceMetadata: {
-    directive: 'CTO Directive 152',
-    title: 'KSHETRA W021.5 Full-Mandate Unified Verification Manifest (Directive 152)',
+    directive: 'CTO Directive 153',
+    title: 'KSHETRA W021.5 Full-Mandate Unified Verification Manifest (Directive 153)',
     governingAuthority: 'Master Execution Framework Amendment v1.6 / Rule IV-001 Non-Self-Acceptance',
     repository: 'https://github.com/kshetra-app/Kshetra.git',
     branch: gitBranch,

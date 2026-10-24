@@ -3631,3 +3631,31 @@
      - Formal CTO acceptance strictly maintained at `0.0% — PENDING INDEPENDENT ADJUDICATION` under Rule IV-001 Non-Self-Acceptance.
      - Production Supabase `ehfafcnimmjusyvplbah` remains 100% air-gapped (0 queries, 0 mutations). Staging Supabase `fkpigozcqnmcvofuksar` received strictly 0 queries and 0 mutations under Directive 152.
      - Final milestone disposition: `REPOSITORY_IMPLEMENTATION_COMPLETE_PENDING_EXTERNAL_GATES`.
+
+---
+
+### DEC-153: CTO DIRECTIVE 153 — TERMINAL W021.5 CLOSEOUT, DEFECT DISPOSITION AND DEVELOPMENT FREEZE
+- **Date:** 2026-10-24
+- **Status:** TERMINAL IMPLEMENTATION COMPLETE / REPOSITORY FREEZE / SUBMITTED FOR INDEPENDENT CTO ADJUDICATION
+- **Authority:** CTO Directive 153 / Master Execution Framework Amendment v1.6 / Rule IV-001 Non-Self-Acceptance
+- **Context:** Terminal W021.5 development-closeout cycle executing final schema-contract correction, alias temporal reconciliation, lineage harmonization, canonical external gate registry creation, and development-phase freeze:
+  1. **P0: Stage 3 Schema Contract Foreign Key Target Concordance:**
+     - Corrected `reports/w021_5_schema_contract_specification.json` to reflect that `public.constituency_demographics.constituency_id` references `public.constituencies(internal_id)` as defined in Migration 066 DDL (never `constituencies.id`).
+     - Added automated regression tests (CRIT-E01-02 tests 9 and 10 in `tests/database-criteria-identity-reconciliation.test.mjs`) asserting DDL concordance, failing closed if `constituencies(id)` is claimed, and proving the 4 distinct identity concepts in `scripts/build_constituency_4123_crosswalk.mjs` (statutory composite code, canonical code, RFC 4122 UUIDv5, and live surrogate internal_id).
+  2. **P0: Organization Aliases Identity, Conflict Target, and Temporal Invariants:**
+     - Reconciled `public.organization_aliases` key semantics across execution plan, reconciler, schema contract, and tests.
+     - Acknowledged that Migration 064 dropped static unique indexes (`uq_org_alias_national`, `uq_org_alias_jurisdictional`) and enforces temporal invariants via trigger `fn_validate_org_alias_temporal_invariants()`.
+     - Set `conflictTarget: null` across schema contract and execution plans, with client-side natural reconciliation key `organization_id,raw_lookup_key,jurisdiction_scope,valid_from`.
+     - Hardened `scripts/lib/stage1IdempotentReconciler.mjs` to detect duplicate incoming keys (`DUPLICATE_INCOMING_KEY`) and internal source temporal collisions (`INTERNAL_SOURCE_TEMPORAL_COLLISION`).
+     - Proved behavior across 17 comprehensive test cases in `tests/stage1-idempotent-reconciler.test.mjs` (17/17 PASS).
+  3. **P1: Evidence Lineage & Historical Commit Accounting Reconciliation:**
+     - Reconciled commit hashes across execution registers, historical reports, and ledgers, properly distinguishing D152 implementation commit `ff93d52` and evidence commit `6f20cb0`.
+     - Updated `reports/w021_5_database_execution_register.json` to cite Directive 153 with baseline `6f20cb0` and staging status `STRICT_ZERO_ACCESS_UNDER_DIRECTIVE_153`.
+  4. **P1: Canonical External Gate Register & Development Phase Freeze:**
+     - Authored `reports/w021_5_external_gate_register.json` formally cataloging EB-01 to EB-06 with custodians, required artifacts, and resolution criteria.
+     - Authored `reports/w021_5_directive_153_defect_ledger.json` (DEF-D153-001 through DEF-D153-004).
+     - Declared formal development freeze: Directive 154 and all further implementation directives are prohibited.
+     - Preserved open Mizoram defect `DQ-W021.5-B2.2E-001` strictly open pending independent adjudication.
+     - Formal CTO acceptance strictly maintained at `0.0% — PENDING INDEPENDENT ADJUDICATION` under Rule IV-001 Non-Self-Acceptance.
+     - Air-gap controls maintained: Production `ehfafcnimmjusyvplbah` strictly 0 queries, 0 mutations; Staging `fkpigozcqnmcvofuksar` strictly 0 queries, 0 mutations.
+     - Final milestone disposition: `REPOSITORY_IMPLEMENTATION_COMPLETE_PENDING_EXTERNAL_GATES`.

@@ -142,12 +142,12 @@ export function computeNaturalKey(tableName, row) {
       return `${org}::${sym}::${vf}`;
     }
     case 'public.organization_aliases': {
-      // Natural lookup key within organization
-      const rawKey = (r.raw_lookup_key || '').trim().toLowerCase();
+      // Deterministic natural key: organization_id, raw_lookup_key, jurisdiction_scope, valid_from
       const org = (r.organization_id || '').trim();
+      const rawKey = (r.raw_lookup_key || '').trim().toLowerCase();
       const jur = (r.jurisdiction_scope || 'NULL').trim();
       const vf = (r.valid_from || '').trim();
-      return `${rawKey}::${jur}::${org}::${vf}`;
+      return `${org}::${rawKey}::${jur}::${vf}`;
     }
     default:
       return String(r.id || '').trim();
@@ -206,6 +206,8 @@ export function reconcileStage1Table(tableName, sourceRows, targetRows = [], opt
 
   const actions = [];
   const conflicts = [];
+  const seenSourceKeys = new Set();
+  const seenAliasScopes = [];
   let matchedCount = 0;
   let insertCount = 0;
   let updateCount = 0;
@@ -213,6 +215,52 @@ export function reconcileStage1Table(tableName, sourceRows, targetRows = [], opt
 
   for (const sRow of sourceRows) {
     const key = computeNaturalKey(tableName, sRow);
+
+    // Duplicate incoming key detection within sourceRows
+    if (seenSourceKeys.has(key)) {
+      conflicts.push({
+        table: tableName,
+        naturalKey: key,
+        reason: `DUPLICATE_INCOMING_KEY: Multiple source rows contain identical natural key "${key}"`
+      });
+      actions.push({
+        action: 'CONFLICT',
+        table: tableName,
+        naturalKey: key,
+        reason: 'DUPLICATE_INCOMING_KEY'
+      });
+      continue;
+    }
+    seenSourceKeys.add(key);
+
+    // Internal temporal overlap detection across incoming alias rows
+    if (tableName === 'public.organization_aliases') {
+      const sRawKey = (sRow.raw_lookup_key || '').trim().toLowerCase();
+      const sJur = (sRow.jurisdiction_scope || '').trim();
+      let internalCollision = false;
+      for (const prev of seenAliasScopes) {
+        if (prev.rawKey === sRawKey && prev.jur === sJur) {
+          if (intervalsOverlap(sRow.valid_from, sRow.valid_to, prev.validFrom, prev.validTo)) {
+            internalCollision = true;
+            conflicts.push({
+              table: tableName,
+              naturalKey: key,
+              reason: `INTERNAL_SOURCE_TEMPORAL_COLLISION: Incoming alias "${sRawKey}" in jurisdiction "${sJur || 'NATIONAL'}" overlaps with another incoming alias validity window`
+            });
+            actions.push({
+              action: 'CONFLICT',
+              table: tableName,
+              naturalKey: key,
+              reason: 'INTERNAL_SOURCE_TEMPORAL_COLLISION'
+            });
+            break;
+          }
+        }
+      }
+      if (internalCollision) continue;
+      seenAliasScopes.push({ rawKey: sRawKey, jur: sJur, validFrom: sRow.valid_from, validTo: sRow.valid_to });
+    }
+
     const existingTarget = targetMap.get(key);
 
     if (existingTarget) {

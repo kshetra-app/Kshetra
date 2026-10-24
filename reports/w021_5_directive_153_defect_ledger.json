@@ -1,0 +1,99 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Kshetra W021.5 — CTO Directive 153 Defect Ledger & Terminal Freeze Register",
+  "directive": "CTO Directive 153: Terminal W021.5 Closeout, Defect Disposition and Development Freeze",
+  "governingAuthority": "Master Execution Framework Amendment v1.6 / Rule IV-001 Non-Self-Acceptance",
+  "timestamp": "2026-10-24T06:00:00.000Z",
+  "baselineCommit": "6f20cb02a4fd2f71db8aec4422f178274d229273",
+  "airGapStatus": {
+    "productionDatabase": "ehfafcnimmjusyvplbah",
+    "productionQueries": 0,
+    "productionMutations": 0,
+    "productionStatus": "AIR_GAPPED_ZERO_QUERIES_ZERO_MUTATIONS",
+    "stagingDatabase": "fkpigozcqnmcvofuksar",
+    "stagingQueries": 0,
+    "stagingMutations": 0,
+    "stagingStatus": "STRICT_ZERO_ACCESS_UNDER_DIRECTIVE_153"
+  },
+  "formalAcceptanceStatus": "0.0% — PENDING INDEPENDENT ADJUDICATION",
+  "mizoramDefect": {
+    "defectId": "DQ-W021.5-B2.2E-001",
+    "status": "STRICTLY_OPEN_PENDING_INDEPENDENT_ADJUDICATION",
+    "description": "5 Mizoram statutory assembly seats (AC 31-35) with unrecorded voter counts preserved as NULL without zero-fabrication"
+  },
+  "accountingSummary": {
+    "repoVerifiedEarnedPercent": 67.0,
+    "unexecutedDatabasePendingPercent": 10.5,
+    "blockedOnExternalGatesPercent": 22.5,
+    "unimplementedPercent": 0.0,
+    "formalCtcAcceptancePercent": 0.0
+  },
+  "defects": [
+    {
+      "defectId": "DEF-D153-001",
+      "workstream": "P0: Stage 3 Schema Contract Foreign Key Target Concordance",
+      "summary": "Corrected constituency_demographics.constituency_id FK reference from public.constituencies(id) to public.constituencies(internal_id) in schema contract specification to match Migration 066 committed DDL",
+      "directiveRequirement": "Correct contract to match committed DDL exactly (public.constituency_demographics.constituency_id -> public.constituencies(internal_id)). Add automated assertion reading authoritative schema definition and verifying referenced table, column, local column, type, nullability. Fail if contract claims constituencies.id. Audit Stage 3 crosswalk contract to distinguish statutory composite identity, canonical external identifier, reproducible namespace UUID, and target-state surrogate key.",
+      "remediationDetails": "Updated reports/w021_5_schema_contract_specification.json under stage3_constituency_demographics to reference public.constituencies(internal_id). Added missingPrerequisite note in scripts/lib/stagingExecutionPlan.mjs clarifying target-state UUID resolution requirement. Added automated assertions in tests/database-criteria-identity-reconciliation.test.mjs (CRIT-E01-02 tests 9 and 10) verifying DDL concordance, failing on constituencies(id), and proving 4-identity crosswalk builder separation.",
+      "sourceFilesModified": [
+        "reports/w021_5_schema_contract_specification.json",
+        "scripts/lib/stagingExecutionPlan.mjs",
+        "tests/database-criteria-identity-reconciliation.test.mjs"
+      ],
+      "regressionTests": [
+        "tests/database-criteria-identity-reconciliation.test.mjs (41/41 PASS)"
+      ],
+      "classification": "REMEDIATED_AND_OFFLINE_VERIFIED"
+    },
+    {
+      "defectId": "DEF-D153-002",
+      "workstream": "P0: Organization Aliases Identity, Conflict Target, and Temporal Invariants",
+      "summary": "Reconciled organization_aliases key semantics across schema contract, staging execution plan, reconciler, and test suites, setting conflictTarget: null and enforcing temporal trigger invariants",
+      "directiveRequirement": "Reconcile public.organization_aliases key semantics. Migration 064 dropped static unique indexes and enforces temporal invariants via trigger fn_validate_org_alias_temporal_invariants(). Set conflictTarget: null in schema contracts and execution plans. Client-side reconciliation key is organization_id,raw_lookup_key,jurisdiction_scope,valid_from. Expand reconciler and tests to cover matching aliases, duplicate incoming keys, conflicting organizations, national vs state scope, and overlapping validity periods.",
+      "remediationDetails": "Updated reports/w021_5_schema_contract_specification.json to set conflictTarget: null, document reconciliationNaturalKey, empty databaseUniqueIndexes, and trigger invariant. Updated scripts/lib/stagingExecutionPlan.mjs verifiedConflictKeys and conflictTargets to null. Updated scripts/lib/stage1IdempotentReconciler.mjs computeNaturalKey to include valid_from, added duplicate incoming key detection (DUPLICATE_INCOMING_KEY) and source temporal overlap detection (INTERNAL_SOURCE_TEMPORAL_COLLISION). Expanded tests/stage1-idempotent-reconciler.test.mjs with tests 11 through 17.",
+      "sourceFilesModified": [
+        "reports/w021_5_schema_contract_specification.json",
+        "scripts/lib/stagingExecutionPlan.mjs",
+        "scripts/lib/stage1IdempotentReconciler.mjs",
+        "tests/stage1-idempotent-reconciler.test.mjs"
+      ],
+      "regressionTests": [
+        "tests/stage1-idempotent-reconciler.test.mjs (17/17 PASS)"
+      ],
+      "classification": "REMEDIATED_AND_OFFLINE_VERIFIED"
+    },
+    {
+      "defectId": "DEF-D153-003",
+      "workstream": "P1: Evidence Lineage & Historical Commit Accounting Reconciliation",
+      "summary": "Reconciled commit hashes across execution registers, historical reports, and ledgers, properly distinguishing D152 implementation commit ff93d52 and evidence commit 6f20cb0",
+      "directiveRequirement": "Reconcile commit and evidence lineage across all reports, registers, and ledgers; ensure exact SHA references distinguish implementation commits from manifest evidence commits without circularity or ambiguity.",
+      "remediationDetails": "Updated reports/W021.5-CTO-DIRECTIVE-152-IMPLEMENTATION-REPORT.md metadata to record baseline HEAD (1cc5714), implementation commit (ff93d52), and evidence commit (6f20cb0). Updated reports/w021_5_directive_152_defect_ledger.json lineage section. Updated reports/w021_5_database_execution_register.json to cite Directive 153 with baseline 6f20cb0 and status STRICT_ZERO_ACCESS_UNDER_DIRECTIVE_153.",
+      "sourceFilesModified": [
+        "reports/W021.5-CTO-DIRECTIVE-152-IMPLEMENTATION-REPORT.md",
+        "reports/w021_5_directive_152_defect_ledger.json",
+        "reports/w021_5_database_execution_register.json"
+      ],
+      "regressionTests": [
+        "tests/governance-consistency.test.mjs (PASS)"
+      ],
+      "classification": "REMEDIATED_AND_OFFLINE_VERIFIED"
+    },
+    {
+      "defectId": "DEF-D153-004",
+      "workstream": "P1: Canonical External Gate Register & Development Phase Freeze",
+      "summary": "Established canonical external gate register documenting EB-01 to EB-06 with owners, missing artifacts, and handoff criteria; declared permanent development freeze under Directive 153",
+      "directiveRequirement": "Document EB-01 through EB-06 with owners, missing artifacts, and handoff. Freeze software development; prohibit Directive 154 and further development directives; hand off remaining externally dependent work to custodians and independent CTO adjudicator.",
+      "remediationDetails": "Authored reports/w021_5_external_gate_register.json documenting EB-01 through EB-06 with custodians, required artifacts, and resolution criteria. Updated EXECUTION_STATE.md setting CURRENT_JOB to Directive 153 and NEXT_PERMITTED_JOB to INDEPENDENT CTO ADJUDICATION. Updated DECISION_LOG.md with DEC-153. Updated scripts/verify_w021_5_full_mandate.cjs references.",
+      "sourceFilesModified": [
+        "reports/w021_5_external_gate_register.json",
+        "EXECUTION_STATE.md",
+        "DECISION_LOG.md",
+        "scripts/verify_w021_5_full_mandate.cjs"
+      ],
+      "regressionTests": [
+        "scripts/verify_w021_5_full_mandate.cjs (20/20 PASS)"
+      ],
+      "classification": "REMEDIATED_AND_OFFLINE_VERIFIED"
+    }
+  ]
+}

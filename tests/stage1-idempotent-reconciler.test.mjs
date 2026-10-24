@@ -8,6 +8,9 @@
 import { test, describe } from 'node:test';
 import assert from 'node:assert';
 import crypto from 'node:crypto';
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import {
   STAGE1_TABLE_SEQUENCE,
   STAGE1_MUTATION_POLICY,
@@ -319,5 +322,184 @@ describe('CTO Directive 149: Stage 1 Political Organizations Idempotent Reconcil
     assert.strictEqual(plan.totalInserts, 0, 'Zero inserts needed against fully seeded target');
     assert.strictEqual(plan.totalPreserved, 1209, 'All 1,209 rows matched and preserved by natural key');
     assert.strictEqual(plan.conflictsCount, 0, 'Zero conflicts against canonical seed');
+  });
+
+  // ─── CTO DIRECTIVE 153 ALIAS IDENTITY, CONFLICT-KEY & TEMPORAL INVARIANT SUITE ──
+
+  test('11. Matching aliases: preserves existing target ID without speculative writes or protected attribute overwrites', () => {
+    const existingTargetId = crypto.randomUUID();
+    const existingAlias = {
+      id: existingTargetId,
+      organization_id: 'ORG-INC',
+      raw_lookup_key: 'inc',
+      raw_original_string: 'INC',
+      alias_type: 'STANDARD_ABBREVIATION',
+      jurisdiction_scope: null,
+      valid_from: '1947-08-15',
+      valid_to: null,
+      confidence: 'VERIFIED',
+      provenance_id: crypto.randomUUID()
+    };
+
+    const incomingMatchingAlias = {
+      ...existingAlias,
+      id: crypto.randomUUID() // Incoming has separate client ID
+    };
+
+    const audit = reconcileStage1Table('public.organization_aliases', [incomingMatchingAlias], [existingAlias]);
+    assert.strictEqual(audit.matchedCount, 1, 'Must match exact natural key');
+    assert.strictEqual(audit.preserveCount, 1, 'Must preserve unchanged matching record');
+    assert.strictEqual(audit.insertCount, 0, 'Zero inserts');
+    assert.strictEqual(audit.actions[0].id, existingTargetId, 'Must preserve existing target database ID');
+  });
+
+  test('12. Duplicate incoming keys: multiple incoming source rows with identical natural key fail closed', () => {
+    const incoming1 = {
+      id: crypto.randomUUID(),
+      organization_id: 'ORG-AAP',
+      raw_lookup_key: 'aap',
+      jurisdiction_scope: 'DL',
+      valid_from: '2012-11-26',
+      valid_to: null
+    };
+    const incoming2 = {
+      id: crypto.randomUUID(),
+      organization_id: 'ORG-AAP',
+      raw_lookup_key: 'aap',
+      jurisdiction_scope: 'DL',
+      valid_from: '2012-11-26',
+      valid_to: null
+    };
+
+    const audit = reconcileStage1Table('public.organization_aliases', [incoming1, incoming2], []);
+    assert.strictEqual(audit.hasConflicts, true, 'Must detect duplicate incoming key');
+    assert.ok(audit.conflicts.some(c => c.reason.includes('DUPLICATE_INCOMING_KEY')), 'Conflict reason must be DUPLICATE_INCOMING_KEY');
+    assert.strictEqual(audit.insertCount, 1, 'Only one distinct insert planned, duplicate blocked');
+  });
+
+  test('13. Conflicting organizations: incoming alias with same raw_lookup_key & scope as existing alias of different org fails closed', () => {
+    const existingAlias = {
+      id: crypto.randomUUID(),
+      organization_id: 'ORG-INC', // Existing owner
+      raw_lookup_key: 'congress',
+      jurisdiction_scope: 'KA',
+      valid_from: '1980-01-01',
+      valid_to: '2030-01-01'
+    };
+    const incomingAliasOtherOrg = {
+      id: crypto.randomUUID(),
+      organization_id: 'ORG-NCP', // Contradictory organization
+      raw_lookup_key: 'congress',
+      jurisdiction_scope: 'KA',
+      valid_from: '2000-01-01',
+      valid_to: '2025-01-01' // Overlaps!
+    };
+
+    const audit = reconcileStage1Table('public.organization_aliases', [incomingAliasOtherOrg], [existingAlias]);
+    assert.strictEqual(audit.hasConflicts, true, 'Cross-org temporal collision must be detected');
+    assert.ok(audit.conflicts[0].reason.includes('TEMPORAL_TRIGGER_COLLISION'));
+    assert.strictEqual(audit.insertCount, 0, 'Must NOT dispatch insert');
+  });
+
+  test('14. National vs jurisdictional scope: identical raw_lookup_key in national (null) vs state scope do NOT collide', () => {
+    const nationalAlias = {
+      id: crypto.randomUUID(),
+      organization_id: 'ORG-INC',
+      raw_lookup_key: 'inc',
+      jurisdiction_scope: null, // National scope
+      valid_from: '1947-08-15',
+      valid_to: null
+    };
+    const stateAlias = {
+      id: crypto.randomUUID(),
+      organization_id: 'ORG-INC',
+      raw_lookup_key: 'inc',
+      jurisdiction_scope: 'MH', // State scope
+      valid_from: '1960-05-01',
+      valid_to: null
+    };
+
+    const keyNat = computeNaturalKey('public.organization_aliases', nationalAlias);
+    const keyState = computeNaturalKey('public.organization_aliases', stateAlias);
+    assert.notStrictEqual(keyNat, keyState, 'National and state scope must have distinct natural keys');
+
+    // When existing target has national alias, incoming state alias must NOT collide
+    const audit = reconcileStage1Table('public.organization_aliases', [stateAlias], [nationalAlias]);
+    assert.strictEqual(audit.hasConflicts, false, 'National vs state scope must not trigger temporal collision');
+    assert.strictEqual(audit.insertCount, 1, 'State alias must be planned for insert');
+  });
+
+  test('15. Overlapping validity periods: same raw_lookup_key & scope with overlapping dates trigger TEMPORAL_TRIGGER_COLLISION', () => {
+    const existingAlias = {
+      id: crypto.randomUUID(),
+      organization_id: 'ORG-CPM',
+      raw_lookup_key: 'cpim',
+      jurisdiction_scope: 'WB',
+      valid_from: '1964-11-07',
+      valid_to: '2000-01-01'
+    };
+    const overlappingIncoming = {
+      id: crypto.randomUUID(),
+      organization_id: 'ORG-CPI',
+      raw_lookup_key: 'cpim',
+      jurisdiction_scope: 'WB',
+      valid_from: '1995-01-01', // Overlaps 1995-2000
+      valid_to: '2010-01-01'
+    };
+
+    const audit = reconcileStage1Table('public.organization_aliases', [overlappingIncoming], [existingAlias]);
+    assert.strictEqual(audit.hasConflicts, true);
+    assert.ok(audit.conflicts[0].reason.includes('TEMPORAL_TRIGGER_COLLISION'));
+    assert.strictEqual(audit.insertCount, 0);
+  });
+
+  test('16. Non-overlapping successive periods: same raw_lookup_key & scope across sequential periods do NOT collide', () => {
+    const historicalAlias = {
+      id: crypto.randomUUID(),
+      organization_id: 'ORG-HISTORICAL',
+      raw_lookup_key: 'lok-dal',
+      jurisdiction_scope: 'UP',
+      valid_from: '1974-01-01',
+      valid_to: '1984-12-31'
+    };
+    const successorAlias = {
+      id: crypto.randomUUID(),
+      organization_id: 'ORG-SUCCESSOR',
+      raw_lookup_key: 'lok-dal',
+      jurisdiction_scope: 'UP',
+      valid_from: '1985-01-01', // Strictly after historical alias
+      valid_to: '2000-12-31'
+    };
+
+    const audit = reconcileStage1Table('public.organization_aliases', [successorAlias], [historicalAlias]);
+    assert.strictEqual(audit.hasConflicts, false, 'Non-overlapping successive periods must not collide');
+    assert.strictEqual(audit.insertCount, 1, 'Successor alias must be planned for insert');
+  });
+
+  test('17. Alias contract concordance: Migration 064 dropped static indexes; schema contract specifies conflictTarget: null and trigger invariant', () => {
+    const dirname = path.dirname(fileURLToPath(import.meta.url));
+    const repoRoot = path.resolve(dirname, '..');
+
+    const mig064Path = path.join(repoRoot, 'supabase', 'migrations', '064_political_organization_governance_remediation.sql');
+    const specPath = path.join(repoRoot, 'reports', 'w021_5_schema_contract_specification.json');
+
+    const mig064Content = fs.readFileSync(mig064Path, 'utf8');
+    const spec = JSON.parse(fs.readFileSync(specPath, 'utf8'));
+
+    // 1. Verify Migration 064 dropped legacy static unique indexes
+    assert.ok(mig064Content.includes('DROP INDEX IF EXISTS public.uq_org_alias_national;'), 'Migration 064 must drop uq_org_alias_national');
+    assert.ok(mig064Content.includes('DROP INDEX IF EXISTS public.uq_org_alias_jurisdictional;'), 'Migration 064 must drop uq_org_alias_jurisdictional');
+
+    // 2. Verify Migration 064 defines trigger trg_validate_org_alias_temporal
+    assert.ok(mig064Content.includes('CREATE OR REPLACE FUNCTION public.fn_validate_org_alias_temporal_invariants()'), 'Must define temporal invariant trigger function');
+    assert.ok(mig064Content.includes('CREATE TRIGGER trg_validate_org_alias_temporal'), 'Must create trigger trg_validate_org_alias_temporal');
+
+    // 3. Verify schema contract specification accurately identifies conflictTarget: null
+    const stage1Tables = spec.stages?.stage1_political_organizations?.tables || [];
+    const aliasSpec = stage1Tables.find(t => t.name === 'public.organization_aliases');
+    assert.ok(aliasSpec, 'public.organization_aliases must be specified in schema contract');
+    assert.strictEqual(aliasSpec.conflictTarget, null, 'public.organization_aliases conflictTarget must be null (no DB UNIQUE constraint)');
+    assert.strictEqual(aliasSpec.reconciliationNaturalKey, 'organization_id,raw_lookup_key,jurisdiction_scope,valid_from');
+    assert.ok(aliasSpec.databaseTriggerInvariants.length > 0, 'Must document databaseTriggerInvariants');
   });
 });

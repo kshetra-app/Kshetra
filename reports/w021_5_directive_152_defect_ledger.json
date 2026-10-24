@@ -3,6 +3,11 @@
   "title": "Kshetra W021.5 — CTO Directive 152 Defect Ledger & Mandate Closure Register",
   "directive": "CTO Directive 152: Final Surgical Remediation and W021.5 Implementation Closure",
   "governingAuthority": "Master Execution Framework Amendment v1.6 / Rule IV-001 Non-Self-Acceptance",
+  "lineage": {
+    "baselineCommit": "1cc5714d385834be0a3852141fb7fe2ad14d8f9b",
+    "implementationCommit": "ff93d5212b34a7d5ea436887ad381427c106b773",
+    "evidenceCommit": "6f20cb02a4fd2f71db8aec4422f178274d229273"
+  },
   "timestamp": "2026-10-24T03:30:00.000Z",
   "airGapStatus": {
     "productionDatabase": "ehfafcnimmjusyvplbah",

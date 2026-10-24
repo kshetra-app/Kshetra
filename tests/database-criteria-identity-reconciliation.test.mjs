@@ -230,6 +230,58 @@ describe('CTO Directive 141 Section 5: Authoritative Database Identity Reconcili
         assert.strictEqual(row.constituency_id, null, 'constituency_id must be null instead of composite string');
       }
     });
+
+    it('9. Asserts Stage 3 foreign-key schema contract concordance with Migration 066 DDL (references internal_id, NOT id)', () => {
+      const mig066Path = path.resolve(REPO_ROOT, 'supabase', 'migrations', '066_downstream_civic_extensions.sql');
+      const specPath = path.resolve(REPO_ROOT, 'reports', 'w021_5_schema_contract_specification.json');
+
+      assert.ok(fs.existsSync(mig066Path), 'Migration 066 must exist');
+      assert.ok(fs.existsSync(specPath), 'Schema contract specification must exist');
+
+      const mig066Content = fs.readFileSync(mig066Path, 'utf8');
+      const spec = JSON.parse(fs.readFileSync(specPath, 'utf8'));
+
+      // 1. DDL verification in Migration 066:
+      // constituency_id UUID NOT NULL REFERENCES public.constituencies(internal_id) ON DELETE RESTRICT
+      const ddlFkRegex = /constituency_id\s+UUID\s+NOT\s+NULL\s+REFERENCES\s+public\.constituencies\s*\(\s*internal_id\s*\)/i;
+      assert.match(mig066Content, ddlFkRegex, 'Migration 066 DDL must define constituency_id UUID NOT NULL REFERENCES public.constituencies(internal_id)');
+
+      // Verify it does NOT reference public.constituencies(id)
+      const invalidDdlRegex = /constituency_id\s+UUID\s+NOT\s+NULL\s+REFERENCES\s+public\.constituencies\s*\(\s*id\s*\)/i;
+      assert.strictEqual(invalidDdlRegex.test(mig066Content), false, 'Migration 066 must NOT reference public.constituencies(id)');
+
+      // 2. Schema contract specification verification:
+      const stage3Spec = spec.stages?.stage3_constituency_demographics;
+      assert.ok(stage3Spec, 'stage3_constituency_demographics must exist in schema contract spec');
+      assert.strictEqual(stage3Spec.table, 'public.constituency_demographics');
+
+      const fk = stage3Spec.foreignKeys.find(f => f.column === 'constituency_id');
+      assert.ok(fk, 'constituency_id must be in foreignKeys');
+      assert.strictEqual(fk.references, 'public.constituencies(internal_id)', 'FK must reference public.constituencies(internal_id)');
+      assert.notStrictEqual(fk.references, 'public.constituencies(id)', 'FK must NOT reference public.constituencies(id)');
+    });
+
+    it('10. Asserts Stage 3 crosswalk builder strictly isolates 4 distinct identity concepts', async () => {
+      const { buildConstituency4123Crosswalk } = await import('../scripts/build_constituency_4123_crosswalk.mjs');
+      const crosswalk = buildConstituency4123Crosswalk();
+
+      assert.strictEqual(crosswalk.statutoryScope.totalConstituencies, 4123);
+      assert.strictEqual(crosswalk.constituencies.length, 4123);
+      assert.strictEqual(crosswalk.targetInternalIdResolutionStatus, 'PENDING_TARGET_DATABASE_RESOLUTION');
+
+      const firstEntry = crosswalk.constituencies[0];
+      // 1. Statutory composite identity: string like 'AP-AC-1'
+      assert.ok(typeof firstEntry.statutoryCompositeCode === 'string' && firstEntry.statutoryCompositeCode.length > 0);
+      assert.strictEqual(firstEntry.statutoryCompositeCode, 'AP-AC-1');
+      // 2. Canonical external identifier: string like 'AP-AC-001'
+      assert.ok(typeof firstEntry.canonicalCode === 'string' && firstEntry.canonicalCode.length > 0);
+      assert.strictEqual(firstEntry.canonicalCode, 'AP-AC-001');
+      // 3. Reproducible namespace UUID: RFC 4122 UUIDv5 (deterministic)
+      assert.match(firstEntry.reproducibleNamespaceUuid, /^[0-9a-f]{8}-[0-9a-f]{4}-5[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i);
+      // 4. Target-state generated surrogate key: null until target database access authorized
+      assert.strictEqual(firstEntry.targetInternalUuid, null);
+      assert.strictEqual(firstEntry.targetInternalUuidStatus, 'PENDING_TARGET_DATABASE_RESOLUTION');
+    });
   });
 
   // ─── 4. CRIT-F02-03: CORRECTED HISTORICAL ELECTION RESULTS ─────────────────

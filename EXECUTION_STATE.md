@@ -7,9 +7,9 @@
 ## 1. Project & Execution Coordinates
 ```text
 PROJECT:               PANIN (formerly Kshetra)
-CURRENT_JOB:           W021.5 / CTO DIRECTIVE 152 (Final Surgical Remediation and W021.5 Implementation Closure)
-LAST_COMPLETED_JOB:    CTO DIRECTIVE 151 (Directive 150 Source Delivery, Fail-Closed Execution Verification and Repository Evidence Reconciliation)
-NEXT_PERMITTED_JOB:    INDEPENDENT CTO ADJUDICATION (W021.5 / CTO Directive 152)
+CURRENT_JOB:           W021.5 / CTO DIRECTIVE 153 (Terminal W021.5 Closeout, Defect Disposition and Development Freeze)
+LAST_COMPLETED_JOB:    CTO DIRECTIVE 152 (Final Surgical Remediation and W021.5 Implementation Closure)
+NEXT_PERMITTED_JOB:    INDEPENDENT CTO ADJUDICATION (W021.5 Development Phase Frozen — Directive 154 Strictly Prohibited)
 
 W021_5_B2_2C_STATUS:   ACCEPTED / COMPLETE / CLOSED (CTO Accepted Directive W021.5-CTO-NEXT-002, 2026-10-07)
 W021_5_B2_2C_HASH:     d514c64e8a80b928875f1ea03d0853e5d7e3675e0e3a4134c25958632fe675b7

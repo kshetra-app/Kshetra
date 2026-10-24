@@ -106,7 +106,7 @@ export function buildConstituency4123Crosswalk(options = {}) {
   const crosswalkPayload = {
     $schema: 'https://json-schema.org/draft/2020-12/schema',
     crosswalkSpecification: 'W021.5 National 4,123 Statutory Assembly Constituency Crosswalk',
-    directive: 'CTO Directive 149 / Task W021.5-E-01',
+    directive: 'CTO Directive 153 / Task W021.5-E-01',
     governingAuthority: 'Master Execution Framework Amendment v1.6 / Rule IV-001 Non-Self-Acceptance',
     generatedAt: new Date().toISOString(),
     sourceMigration: 'supabase/migrations/059_canonical_national_constituency_registry.sql',

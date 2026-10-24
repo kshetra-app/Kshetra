@@ -25,7 +25,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const REPO_ROOT = path.resolve(__dirname, '..', '..');
 
-export const CANONICAL_DIRECTIVE = 'CTO Directive 152 / W021.5';
+export const CANONICAL_DIRECTIVE = 'CTO Directive 153 / W021.5';
 export const CANONICAL_STAGING_PROJECT_REF = 'fkpigozcqnmcvofuksar';
 
 /**
@@ -212,10 +212,13 @@ export function generateCanonicalExecutionPlan(options = {}) {
         'public.organization_relationships': 'source_org_id,target_org_id,relationship_type,valid_from',
         'public.organization_multilingual_names': 'organization_id,language_code,script_code,representation_type,name_value',
         'public.organization_symbols': 'organization_id,symbol_name,valid_from',
-        'public.organization_aliases': 'organization_id,raw_lookup_key,jurisdiction_scope,valid_from',
+        'public.organization_aliases': null, // No database UNIQUE constraint (Migration 064 dropped static unique indexes; temporal non-overlap enforced via trigger fn_validate_org_alias_temporal_invariants)
         'public.candidacies': 'person_id,election_year,election_type,constituency_id',
         'public.constituency_demographics': 'constituency_id,election_year',
         'public.election_results': 'election_id,constituency_id'
+      },
+      reconciliationNaturalKeys: {
+        'public.organization_aliases': 'organization_id,raw_lookup_key,jurisdiction_scope,valid_from'
       }
     },
     stages: {
@@ -247,6 +250,9 @@ export function generateCanonicalExecutionPlan(options = {}) {
           'public.organization_relationships': 'source_org_id,target_org_id,relationship_type,valid_from',
           'public.organization_multilingual_names': 'organization_id,language_code,script_code,representation_type,name_value',
           'public.organization_symbols': 'organization_id,symbol_name,valid_from',
+          'public.organization_aliases': null // No database UNIQUE constraint; client-side natural key organization_id,raw_lookup_key,jurisdiction_scope,valid_from used for target matching
+        },
+        reconciliationNaturalKeys: {
           'public.organization_aliases': 'organization_id,raw_lookup_key,jurisdiction_scope,valid_from'
         },
         expectedRecordCounts: {
@@ -308,7 +314,7 @@ export function generateCanonicalExecutionPlan(options = {}) {
         deploymentStatus: 'BLOCKED_NOT_DEPLOYABLE',
         blockedReason: 'MISSING_CANONICAL_CONSTITUENCY_UUID_CROSSWALK: public.constituency_demographics.constituency_id is a UUID foreign key to public.constituencies(internal_id). Repository contains composite seat strings (e.g. TS-AC-1) but no authoritative repository crosswalk to static internal_id UUIDs.',
         missingCanonicalMappingsCount: 4123,
-        missingPrerequisite: 'Authoritative repository crosswalk from statutory constituency identities to public.constituencies(internal_id) UUIDs or migration establishing deterministic UUIDv5 internal_ids for public.constituencies.',
+        missingPrerequisite: 'Authoritative repository crosswalk from statutory constituency identities to public.constituencies(internal_id) UUIDs supported by target-state evidence under authorized access. Offline reproducible UUIDv5 must never be substituted for database-generated internal_id.',
         transformationVersion: 'v1.2.0-demographics-blocked-not-deployable',
         targetTables: ['public.constituency_demographics'],
         operations: ['UPSERT'],
