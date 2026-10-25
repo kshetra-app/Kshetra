@@ -376,7 +376,7 @@ async function importSeedData(db) {
           row.literacy||0,row.urbanPercent||0,row.scPercent||row.scPopulation||0,row.stPercent||row.stPopulation||0,row.areaSqKm||0);
       }
 
-      const elections = await requireArray(null,path.resolve(rootDir,`data/seed/${sourceName}-election-history.ts`),/ELECTION/i,{optional:true});
+      const elections = await requireArray(path.resolve(rootDir,`data/seed/${sourceName}-election-history.ts`),/ELECTION/i,{optional:true});
       const insE= db.prepare(`INSERT INTO election_history (id,state_code,year,type,total_seats,ruling_party,notes) VALUES (?,?,?,?,?,?,?)`);
       const insER= db.prepare(`INSERT INTO election_history_results (id,election_id,party,seats_won,seats_contested) VALUES (?,?,?,?,?)`);
       for(const row of elections) {
