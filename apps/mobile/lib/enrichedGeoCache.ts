@@ -76,7 +76,7 @@ async function fetchRemoteManifest(): Promise<Record<string, any> | null> {
   remoteManifestPromise = (async () => {
     try {
       const geoBaseUrl = getGeoBaseUrl();
-      const response = await fetch(`${geoBaseUrl}/geo/geo-manifest.json`);
+      const response = await fetch(`${geoBaseUrl}/geo/manifest.json`, { headers: { Accept: 'application/json' } });
       if (!response.ok) return null;
       return await response.json();
     } catch (err) {
