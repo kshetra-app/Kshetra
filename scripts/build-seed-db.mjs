@@ -214,69 +214,38 @@ function initSchema(db) {
 
 async function importSeedData(db) {
   const stateConfigs = [
-  {
     { code: 'TS', year: 2023 },
-  {
     { code: 'AP', year: 2024 },
-  {
     { code: 'KA', year: 2023 },
-  {
     { code: 'MH', year: 2024 },
-  {
     { code: 'TN', year: 2026 },
-  {
     { code: 'KL', year: 2026 },
-  {
     { code: 'WB', year: 2026 },
-  {
     { code: 'UP', year: 2022 },
-  {
     { code: 'RJ', year: 2023 },
-  {
     { code: 'GJ', year: 2022 },
-  {
     { code: 'JH', year: 2024 },
-  {
     { code: 'OD', year: 2024 },
-  {
     { code: 'DL', year: 2022 },
-  {
     { code: 'PB', year: 2022 },
-  {
     { code: 'HR', year: 2024 },
-  {
     { code: 'CG', year: 2023 },
-  {
     { code: 'MP', year: 2023 },
-  {
     { code: 'BR', year: 2020 },
-  {
     { code: 'AS', year: 2026 },
-  {
     { code: 'GA', year: 2022 },
-  {
     { code: 'HP', year: 2022 },
-  {
     { code: 'MN', year: 2022 },
-  {
     { code: 'ML', year: 2023 },
-  {
     { code: 'MZ', year: 2023 },
-  {
     { code: 'NL', year: 2023 },
-  {
     { code: 'TR', year: 2023 },
-  {
     { code: 'SK', year: 2024 },
-  {
     { code: 'AR', year: 2024 },
-  {
     { code: 'UK', year: 2022 },
-  {
     { code: 'PY', year: 2026 },
-  {
-    { code: 'JK', year: 2024 }
-] ;
+    { code: 'JK', year: 2024 },
+  ];
   const manifest = {};
 
   // Table-specific adapters keep TypeScript source exports explicit and fail closed
