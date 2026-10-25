@@ -159,7 +159,7 @@ function validatePayload(value: unknown, requestedCode: string): StateMapData {
   }
   const hierarchyByAcNo: Record<string, StateMapHierarchyAvailability> = {};
   for (const [acKey, value] of Object.entries(item.hierarchyByAcNo)) {
-    if (!/^\\d+$/.test(acKey) || !value || typeof value !== 'object' || Array.isArray(value)) {
+    if (acKey.length === 0 || ![...acKey].every((digit) => digit >= '0' && digit <= '9') || !value || typeof value !== 'object' || Array.isArray(value)) {
       throw new Error('Map-data hierarchy index contains an invalid AC key');
     }
     const entry = value as Record<string, unknown>;
