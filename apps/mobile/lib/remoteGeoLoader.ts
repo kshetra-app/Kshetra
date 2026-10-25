@@ -5,9 +5,8 @@
  * copies are kept in the durable document directory (not the OS-evictable
  * cache directory); the runtime cache is bounded and de-duplicates requests.
  */
-import { createHash } from 'crypto';
+import * as Crypto from 'expo-crypto';
 import * as FileSystem from 'expo-file-system/legacy';
-import { API_BASE_URL } from './constants';
 import { getManifestEntry } from './geoManifest';
 import { sanitizeGeoJSON } from './geoLoader';
 
@@ -63,7 +62,7 @@ function assertFeatureCollection(value: unknown, code: string): asserts value is
 async function readVerified(localPath: string, code: string, expectedHash: string): Promise<GeoJSON.FeatureCollection> {
   const text = await FileSystem.readAsStringAsync(localPath);
   if (expectedHash) {
-    const actualHash = createHash('sha1').update(text).digest('hex').slice(0, expectedHash.length);
+    const actualHash = (await Crypto.digestStringAsync(Crypto.CryptoDigestAlgorithm.SHA1, text)).slice(0, expectedHash.length);
     if (actualHash.toLowerCase() !== expectedHash.toLowerCase()) {
       await FileSystem.deleteAsync(localPath, { idempotent: true });
       throw new Error(`Geometry integrity check failed for ${code} (expected version ${expectedHash})`);
