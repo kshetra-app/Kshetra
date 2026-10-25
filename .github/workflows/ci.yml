@@ -164,10 +164,7 @@ jobs:
       - name: Dependency audit (high and critical)
         run: npm audit --audit-level=high
       - name: OSV vulnerability scan
-        uses: google/osv-scanner-action@v1
-        with:
-          scan-args: |-
-            --lockfile=package-lock.json
+        run: docker run --rm -v "$PWD:/src" -w /src ghcr.io/google/osv-scanner-action:v2.4.0 scan source -r .
       - name: Static analysis (Semgrep)
         run: |
           docker run --rm -v "$PWD:/src" -w /src returntocorp/semgrep semgrep scan --error --config p/typescript --config p/react --config p/nodejsscan --config p/owasp-top-ten --config p/secrets
