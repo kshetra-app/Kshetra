@@ -255,7 +255,7 @@ assert.ok(implAuthCommitField, 'IMPLEMENTATION_AUTHORIZATION_COMMIT must be defi
 if (implAuthField === 'YES') {
   // The authoritative state may include a ratification suffix after the canonical status.
   // Validate the status token, not byte-for-byte equality with the bare word.
-  assert.match(planStatusField, /^APPROVED(?:\\s*\\(.*\\))?$/, 'If IMPLEMENTATION_AUTHORIZATION is YES, PLAN_STATUS must begin with APPROVED and may carry its ratification metadata');
+  assert.match(planStatusField, /^APPROVED(?:\s*\(.*\))?$/, 'If IMPLEMENTATION_AUTHORIZATION is YES, PLAN_STATUS must begin with APPROVED and may carry its ratification metadata');
   assert.ok(
     implAuthCommitField && implAuthCommitField !== 'NONE',
     'If IMPLEMENTATION_AUTHORIZATION is YES, IMPLEMENTATION_AUTHORIZATION_COMMIT must be a valid commit SHA'
