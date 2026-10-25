@@ -7,6 +7,7 @@ on:
     paths:
       - "scripts/acquire_w0215_legal_crosswalk_sources.py"
       - "scripts/parse_w0215_telangana_statutory_ac_roster.py"
+      - "scripts/audit_w0215_telanganaschedule_vs_tgrac.py"
       - ".github/workflows/w0215-legal-crosswalk-source-probe.yml"
   workflow_dispatch:
 
@@ -21,7 +22,7 @@ jobs:
   acquire:
     name: Acquire official legal crosswalk source bytes
     runs-on: ubuntu-latest
-    timeout-minutes: 8
+    timeout-minutes: 12
     steps:
       - name: Checkout authorized W021.5 resumption branch
         uses: actions/checkout@v4
@@ -43,16 +44,23 @@ jobs:
         if: always()
         continue-on-error: true
         run: python scripts/parse_w0215_telangana_statutory_ac_roster.py
-      - name: Upload source bytes, extracted text, roster and manifest
+      - name: Crosswalk statutory roster against TGRAC candidate GIS layers
+        id: crosswalk
+        if: always()
+        continue-on-error: true
+        run: python scripts/audit_w0215_telanganaschedule_vs_tgrac.py
+      - name: Upload legal source bytes, roster, GIS candidate bytes and crosswalk manifest
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: w0215-legal-crosswalk-sources-${{ github.run_id }}
-          path: stage_b_legal_crosswalk/
+          path: |
+            stage_b_legal_crosswalk/
+            stage_b_telanganaschedule_crosswalk/
           if-no-files-found: warn
           retention-days: 30
       - name: Enforce required-source acquisition result
-        if: steps.acquisition.outcome != 'success' || steps.roster.outcome != 'success'
+        if: steps.acquisition.outcome != 'success' || steps.roster.outcome != 'success' || steps.crosswalk.outcome != 'success'
         run: |
-          echo "The required official legal source or statutory roster parse did not pass; inspect the uploaded manifest and parser report."
+          echo "The required legal source, statutory roster parser, or statutory-to-GIS name crosswalk did not pass; inspect all uploaded manifests and evidence reports."
           exit 1
