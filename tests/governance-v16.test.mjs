@@ -304,7 +304,7 @@ const decisionLogContent = fs.readFileSync('DECISION_LOG.md', 'utf8');
 assert.ok(decisionLogContent.includes('### DEC-048: W008-C FORMAL CTO IMPLEMENTATION AUTHORIZATION'), 'DECISION_LOG.md must record DEC-048');
 assert.ok(decisionLogContent.includes('- **Authority:** CTO Decision / Formal Implementation Authorization Mandate (Rule IV-001)'), 'DEC-048 must cite CTO Decision Authority');
 assert.ok(decisionLogContent.includes('36de3d19127019ae00d7900e7d515e74e5892e18adcd991b606338fe5be04b49'), 'Historical DEC-048 canonical scope hash must remain immutable');
-const currentScopeDecisionMatch = decisionLogContent.match(/### DEC-156:[\\s\\S]*?Canonical Scope Hash:\\s*([0-9a-f]{64})/i);
+const currentScopeDecisionMatch = decisionLogContent.match(/### DEC-156:[\s\S]*?Canonical Scope Hash:\s*([0-9a-f]{64})/i);
 assert.ok(currentScopeDecisionMatch, 'DEC-156 must record the current canonical scope hash');
 assert.strictEqual(
   currentScopeDecisionMatch[1],
