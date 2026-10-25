@@ -976,19 +976,29 @@
       "subject": "Bihar official election GIS Assembly layer and Pin Code Boundary layer; endpoint discovery for official AC geometry and separate PIN-boundary evidence",
       "publisher": "Bihar Election Geo-Intelligence System / Government of Bihar",
       "url": "https://gis.bihar.gov.in/DEPTS/ElectionNew.aspx",
-      "relatedUrl": "https://gis.bihar.gov.in/DEPTS/VTR/vtr.aspx",
+      "relatedUrl": "https://gisserver.bihar.gov.in/arcgis/rest/services/ELECTION/AC/MapServer",
       "retrievedAt": "2026-10-25",
       "format": "Public web GIS portal; vector service format/endpoints not yet confirmed",
       "authority": "PRIMARY_STATE_GOVERNMENT_GIS_CANDIDATE",
-      "status": "OFFICIAL_PORTAL_FOUND_ENDPOINT_DISCOVERY_WORKFLOW_QUEUED",
+      "status": "OFFICIAL_SERVICE_ROOT_AND_LAYER_PATHS_DISCOVERED_REPROBE_PENDING",
       "sha256": null,
       "fileBytes": null,
       "limitations": [
         "Portal page advertises an Assembly election layer and Pin Code Boundary layer, but exact service endpoint, source owner, CRS, licence, geometry bytes and effective date are not yet established.",
         "A PIN code boundary is not automatically an India Post delivery-beat polygon.",
-        "Bihar geometry alone does not close national coverage or W021.5-B1-04."
+        "Bihar geometry alone does not close national coverage or W021.5-B1-04.",
+        "The published service root is HTTP in the official JS; probe will try HTTPS first and record transport. Do not accept HTTP-only bytes as canonical without corroboration."
       ],
-      "plannedUse": "Discover and acquire official Bihar AC geometry and investigate whether the portal's PIN layer is a defensible postal geography source."
+      "plannedUse": "Discover and acquire official Bihar AC geometry and investigate whether the portal's PIN layer is a defensible postal geography source.",
+      "pinBoundaryUrl": "https://gisserver.bihar.gov.in/arcgis/rest/services/AdministrativrBoundaries/PIN_Code_Boundary/MapServer",
+      "evidenceReport": "reports/evidence/w021_5_bihar_gis_discovery_40217893573.json",
+      "lastProbe": {
+        "workflowRunId": 40217893573,
+        "workflowUrl": "https://github.com/kshetra-app/Kshetra/actions/runs/40217893573",
+        "artifactId": 12608228156,
+        "artifactSha256": "974bed3362a4e3e8b9fe5233081b24dff3c63eaa6ac00865f9f038266b9ab1d8",
+        "result": "Portal and linked JS fetched; first script missed relative service paths; exact service root/layer paths found in official JS; corrected probe queued."
+      }
     }
   ],
   "unresolvedGates": [
@@ -1505,5 +1515,5 @@
     ],
     "acceptedAsCanonical": false
   },
-  "lastDecision": "Prioritize official India Code statutory bytes plus government state GIS services. Bihar BEGIS is now an explicit read-only endpoint-discovery target; no endpoint or geometry is accepted until raw bytes and provenance are verified."
+  "lastDecision": "Bihar official page is reachable and its JavaScript identifies exact Assembly and PIN Code Boundary service paths; the first discovery failure was a script gap, now corrected. Await the rerun's metadata and geometry artifacts."
 }
