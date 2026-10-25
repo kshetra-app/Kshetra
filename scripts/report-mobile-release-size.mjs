@@ -47,10 +47,17 @@ function jsonMap(file) {
     return null;
   }
 }
+function normalizedSource(source) { return source.replaceAll('\\\\', '/').toLowerCase(); }
 function isGeographySource(source) {
-  const s = source.replace(/\\/g, '/').toLowerCase();
-  return /(^|\/)(data\/seed\/|apps\/mobile\/data\/|\.geojson$)/.test(s)
-    || /(^|\/)(stateDataAdapter|stateTriviaAdapter|stateDataDispatcher|enrichGeoJSON)\\.tsx?$/.test(s);
+  const s = normalizedSource(source);
+  return s.includes('/data/seed/') || s.includes('/apps/mobile/data/') || s.endsWith('.geojson')
+    || /\\/(statedataadapter|statetriviaadapter|statedatadispatcher|enrichgeojson)\\.tsx?$/.test(s);
+}
+function isForbiddenNationalSeed(source) {
+  const s = normalizedSource(source);
+  return (s.includes('/data/seed/') && /-(constituencies|trivia|historical-results|election-history|demographics|political-timeline|mla-profiles)\\.(ts|tsx|js|json)$/.test(s))
+    || /\\/apps\\/mobile\\/lib\\/(statedataadapter|statetriviaadapter|statedatadispatcher|enrichgeojson)\\.tsx?$/.test(s)
+    || /\\/apps\\/mobile\\/data\\/geo-manifest\\.json$/.test(s);
 }
 
 const files = walk(resolve(bundleDir));
