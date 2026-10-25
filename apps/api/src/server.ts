@@ -40,6 +40,9 @@ import { metricsCollector } from './lib/metrics';
 import { errorTracker } from './lib/errorTracker';
 import { saasAuthPlugin } from './lib/saasAuthPlugin';
 import { saasV1Routes } from './routes/saasV1';
+import { webhookService } from './modules/webhooks/webhookService';
+import { InMemoryQueueProvider } from './modules/webhooks/queueProvider';
+import { startWebhookWorker } from './modules/webhooks/webhookWorker';
 import { startNewsScheduler } from './services/news/newsService';
 
 const envToLogger: Record<string, object | boolean> = {
@@ -256,7 +259,18 @@ export async function buildApp() {
   await app.register(saasAuthPlugin);
   await app.register(saasV1Routes);
 
-  return app;
+  // Outbound network dispatch is opt-in and requires the durable queue.
+  if (process.env.WEBHOOK_WORKER_ENABLED === 'true') {
+    if (webhookService.getQueueProvider() instanceof InMemoryQueueProvider) {
+      throw new Error('FATAL_WEBHOOK_CONFIGURATION: WEBHOOK_WORKER_ENABLED requires a durable PostgreSQL queue provider.');
+    }
+    const pollIntervalMs = Number.parseInt(process.env.WEBHOOK_WORKER_POLL_INTERVAL_MS ?? '2000', 10);
+    const batchSize = Number.parseInt(process.env.WEBHOOK_WORKER_BATCH_SIZE ?? '10', 10);
+    const stopWebhookWorker = startWebhookWorker(webhookService.getQueueProvider(), app.log, { pollIntervalMs, batchSize });
+    app.addHook('onClose', async () => { stopWebhookWorker(); });
+  }
+
+  return app;  return app;
 }
 
 export async function start() {
