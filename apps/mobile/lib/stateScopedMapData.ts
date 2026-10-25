@@ -9,7 +9,9 @@ import * as FileSystem from 'expo-file-system/legacy';
 import { apiClient } from './api';
 import type { UnifiedConstituency } from './stateDataAdapter';
 import type { TriviaItem } from '../../../data/seed/telangana-trivia';
-import type { ConstituencyHistoryEntry, ConstituencyDemographics } from './stateDataDispatcher';
+import type { ConstituencyHistoryEntry } from './stateDataDispatcher';
+import type { ConstituencyDemographics } from '../../../data/seed/telangana-demographics';
+import type { MLAProfile } from '../../../data/seed/telangana-mla-profiles';
 
 export const STATE_MAP_DATA_SCHEMA_VERSION = 1 as const;
 export const MAX_CACHED_STATES = 3;
@@ -34,6 +36,9 @@ export interface StateMapData {
   triviaByAcNo: Record<string, TriviaItem[]>;
   historyByAcNo: Record<string, ConstituencyHistoryEntry[]>;
   demographicsByAcNo: Record<string, ConstituencyDemographics>;
+  mlaProfilesByAcNo: Record<string, MLAProfile>;
+  strongholdByAcNo: Record<string, boolean>;
+  hasLocalBodyData: boolean;
 }
 
 export interface StateMapDataSnapshot {
@@ -93,6 +98,13 @@ function validatePayload(value: unknown, requestedCode: string): StateMapData {
   if (!item.demographicsByAcNo || typeof item.demographicsByAcNo !== 'object' || Array.isArray(item.demographicsByAcNo)) {
     throw new Error('Map-data demographics index is invalid');
   }
+  if (!item.mlaProfilesByAcNo || typeof item.mlaProfilesByAcNo !== 'object' || Array.isArray(item.mlaProfilesByAcNo)) {
+    throw new Error('Map-data MLA profile index is invalid');
+  }
+  if (!item.strongholdByAcNo || typeof item.strongholdByAcNo !== 'object' || Array.isArray(item.strongholdByAcNo)) {
+    throw new Error('Map-data stronghold index is invalid');
+  }
+  if (typeof item.hasLocalBodyData !== 'boolean') throw new Error('Map-data local-body availability flag is invalid');
 
   const seenIds = new Set<string>();
   const seenNumbers = new Set<number>();
@@ -121,6 +133,9 @@ function validatePayload(value: unknown, requestedCode: string): StateMapData {
     triviaByAcNo: item.triviaByAcNo as Record<string, TriviaItem[]>,
     historyByAcNo: item.historyByAcNo as Record<string, ConstituencyHistoryEntry[]>,
     demographicsByAcNo: item.demographicsByAcNo as Record<string, ConstituencyDemographics>,
+    mlaProfilesByAcNo: item.mlaProfilesByAcNo as Record<string, MLAProfile>,
+    strongholdByAcNo: item.strongholdByAcNo as Record<string, boolean>,
+    hasLocalBodyData: item.hasLocalBodyData,
   };
   return data;
 }
@@ -202,7 +217,7 @@ async function readDiskCache(code: string): Promise<{ data: StateMapData; update
 async function persistBoundedCache(data: StateMapData): Promise<number | null> {
   if (!CACHE_ROOT || !INDEX_FILE) return null;
   const serialized = JSON.stringify(data);
-  const bytes = new TextEncoder().encode(serialized).length;
+  const bytes = unescape(encodeURIComponent(serialized)).length;
   if (bytes > MAX_SINGLE_STATE_CACHE_BYTES) return null;
   await ensureCacheDirectory();
   const filename = `${data.stateCode}.${data.revision}.json`;
