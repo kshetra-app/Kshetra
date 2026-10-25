@@ -85,12 +85,12 @@ def geom_checks(data: dict) -> dict:
     types: dict[str, int] = {}
     ids: list[str] = []
     names: list[str] = []
-    missing_geometry = empty_coordinates = unclosed_rings = nonfinite = bad_types = 0
+    missing_geometry = empty_coordinates = unclosed_rings = nonfinite = bad_types = non_polygon = 0
     bbox = [math.inf, math.inf, -math.inf, -math.inf]
     ring_min = None
 
-    id_keys = ("AC_NO", "AC_NO_", "AC_NUMBER", "AC_NUM", "AC_CODE", "ACNO", "ac_no", "AC_ID")
-    name_keys = ("AC_NAME", "AC_NAME_EN", "AC_NAME_ENG", "ACNAME", "NAME", "name", "AC_NAME_E")
+    id_keys = ("AC_NO", "AC_NO_", "AC_NUMBER", "AC_NUM", "AC_CODE", "ACNO", "ac_no", "AC_ID", "Assembly", "OBJECTID", "FID")
+    name_keys = ("AC_NAME", "AC_NAME_EN", "AC_NAME_ENG", "ACNAME", "NAME", "name", "AC_NAME_E", "Assembly_Name")
 
     def visit_coords(node):
         nonlocal unclosed_rings, nonfinite, ring_min
@@ -121,6 +121,8 @@ def geom_checks(data: dict) -> dict:
         geom = feature.get("geometry")
         geom_type = geom.get("type") if isinstance(geom, dict) else "MISSING"
         types[geom_type or "MISSING"] = types.get(geom_type or "MISSING", 0) + 1
+        if geom_type not in ("Polygon", "MultiPolygon"):
+            non_polygon += 1
         if not isinstance(geom, dict):
             missing_geometry += 1
             continue
@@ -148,6 +150,7 @@ def geom_checks(data: dict) -> dict:
         "unclosed_rings": unclosed_rings,
         "non_finite_coordinates": nonfinite,
         "non_feature_objects": bad_types,
+        "non_polygon_geometries": non_polygon,
         "id_values_observed": len(ids),
         "unique_ids_observed": len(set(ids)),
         "duplicate_ids_observed": len(ids) - len(set(ids)),
@@ -157,7 +160,7 @@ def geom_checks(data: dict) -> dict:
         "minimum_ring_vertices": ring_min,
         "coordinate_bbox": bbox if math.isfinite(bbox[0]) else None,
         "declared_crs": data.get("crs"),
-        "structural_sanity": "PASS" if feature_count > 0 and not (missing_geometry or empty_coordinates or unclosed_rings or nonfinite or bad_types) else "FAIL",
+        "structural_sanity": "PASS" if feature_count > 0 and not (missing_geometry or empty_coordinates or unclosed_rings or nonfinite or bad_types or non_polygon) and len(ids) == feature_count and len(set(ids)) == feature_count and len(names) == feature_count and len(set(names)) == feature_count else "FAIL",
         "topology_validated": False,
     }
 
