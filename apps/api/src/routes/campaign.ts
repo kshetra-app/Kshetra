@@ -766,30 +766,37 @@ export async function campaignRoutes(app: FastifyInstance) {
       });
     }
 
-    // 2. Locate booth first (to verify existence and extract campaignId)
+    // 2. Resolve the booth from the persistence boundary only.
+    if (!isSupabaseConfigured) {
+      return sendApiError(reply, request, 503, 'Service Unavailable', 'Booth persistence is not configured.', {
+        code: 'DATABASE_UNAVAILABLE',
+      });
+    }
+
     let boothCampaignId: string | null = null;
     let existingDbBooth: any = null;
-
-    if (isSupabaseConfigured) {
-      try {
-        const { data } = await supabase
-          .from('booth_strategies')
-          .select('*')
-          .eq('id', id)
-          .maybeSingle();
-        if (data) {
-          existingDbBooth = data;
-          boothCampaignId = data.campaign_id;
-        }
-      } catch {}
+    try {
+      const { data, error } = await supabase
+        .from('booth_strategies')
+        .select('*')
+        .eq('id', id)
+        .maybeSingle();
+      if (error) {
+        request.log.error({ err: error }, 'Booth lookup failed before mutation');
+        return sendApiError(reply, request, 503, 'Service Unavailable', 'Booth data is temporarily unavailable.', {
+          code: 'DATABASE_ERROR',
+        });
+      }
+      existingDbBooth = data;
+      boothCampaignId = data?.campaign_id ?? null;
+    } catch (err) {
+      request.log.error({ err }, 'Booth lookup threw before mutation');
+      return sendApiError(reply, request, 503, 'Service Unavailable', 'Booth data is temporarily unavailable.', {
+        code: 'DATABASE_ERROR',
+      });
     }
 
-    const memIdx = inMemoryBooths.findIndex((b) => b.id === id || b.boothId === id);
-    if (!boothCampaignId && memIdx >= 0) {
-      boothCampaignId = inMemoryBooths[memIdx].campaignId;
-    }
-
-    if (!boothCampaignId && !existingDbBooth && memIdx < 0) {
+    if (!existingDbBooth || !boothCampaignId) {
       return sendApiError(reply, request, 404, 'Not Found', 'Booth not found', { code: 'NOT_FOUND' });
     }
 
@@ -918,21 +925,20 @@ export async function campaignRoutes(app: FastifyInstance) {
     let verifiedKshetraUser = false;
 
     if (body.isKshetraUser !== undefined) {
-      if (isSupabaseConfigured) {
-        try {
-          const { data: userProfile } = await supabase
-            .from('user_profiles')
-            .select('user_id')
-            .eq('phone', cleanedPhone)
-            .maybeSingle();
-          verifiedKshetraUser = Boolean(userProfile);
-        } catch {}
-      } else {
-        const memMatch = inMemoryVolunteers.find((v) => v.phone.replace(/\D/g, '').slice(-10) === cleanedPhone);
-        verifiedKshetraUser = memMatch ? Boolean(memMatch.isKshetraUser) : false;
+      const { data: userProfile, error: profileError } = await supabase
+        .from('user_profiles')
+        .select('user_id')
+        .eq('phone', cleanedPhone)
+        .maybeSingle();
+      if (profileError) {
+        request.log.error({ err: profileError }, 'Volunteer identity verification failed');
+        return sendApiError(reply, request, 503, 'Service Unavailable', 'Volunteer identity verification is temporarily unavailable.', {
+          code: 'DATABASE_ERROR',
+        });
       }
+      verifiedKshetraUser = Boolean(userProfile);
 
-      // If client claimed isKshetraUser: true but phone is NOT registered, reject privilege spoofing
+      // If client claimed isKshetraUser: true but phone is NOT registered, reject privilege spoofing.
       if (body.isKshetraUser === true && !verifiedKshetraUser) {
         return sendApiError(reply, request, 403, 'Forbidden', 'Unregistered user cannot be marked as verified Kshetra user', {
           code: 'PRIVILEGE_SPOOFING_REJECTED',
