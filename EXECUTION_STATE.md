@@ -34,6 +34,7 @@ W021_5_STAGE_B_STATUS: PARTIAL / NOT ACCEPTED
 W021_5_STAGE_B_SOURCE_RESEARCH: reports/w021_5_stage_b_source_research_2026-10-25.md
 W021_5_STAGE_B_PROBE_MANIFEST: reports/evidence/w021_5_stage_b_acquisition_probe_2026-10-25.json
 W021_5_STAGE_B_SOURCE_ACQUISITION_WORKFLOW: .github/workflows/w0215-source-acquisition.yml
+W021_5_STAGE_B_FOCUSED_GEOMETRY_PROBE: .github/workflows/w0215-official-geometry-probe.yml (run 40212122850 queued)
 W021_5_STAGE_B_NEXT_ACTION: Await official-source acquisition artifact; validate hashes, geometry, temporal/legal applicability, and coverage; do not close EB-01..EB-05
 
 JOB_023_STATUS:        TESTED / IMPLEMENTATION COMPLETE / SUBMITTED FOR CTO ACCEPTANCE
