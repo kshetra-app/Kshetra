@@ -9,10 +9,14 @@
   "artifactSha256": "1d8bd2e9a6ed6ca0fc08a45dc54c16bdad22c15ca5eefe688f49cbeb25ee3e01",
   "summary": {
     "expectedOfficialStateUtArchivesListedOnSourcePage": 27,
-    "archivesDownloadedAndAuditedInThisRun": 10,
-    "totalFeaturesInDownloadedArchives": 14235,
-    "invalidGeometries": 2,
-    "archivesWithMetadataCrsConflict": 1,
+    "latestRunArchivesDownloadedAndAudited": 10,
+    "latestRunTotalFeatures": 21952,
+    "latestRunInvalidGeometries": 7,
+    "latestRunCrsMetadataConflicts": 0,
+    "cumulativeDistinctJurisdictionArchivesAcrossTwoRuns": 12,
+    "cumulativeFeaturesAcrossDistinctArchives": 24068,
+    "cumulativeInvalidGeometriesAcrossDistinctArchives": 8,
+    "cumulativeCrsMetadataConflictsAcrossDistinctArchives": 1,
     "nationalCoverageComplete": false,
     "disposition": "OFFICIAL_VILLAGE_ADMINISTRATIVE_GEOMETRY_ONLY; NOT_ASSEMBLY_CONSTITUENCY_GEOMETRY"
   },
@@ -36,6 +40,243 @@
     "noRuntimeDependenciesAdded": true
   },
   "records": [
+    {
+      "code": "ANB",
+      "name": "Andaman and Nicobar Islands",
+      "archive": "andaman-nicobar-islands.zip",
+      "archiveBytes": 2520239,
+      "archiveSha256": "c0dd58a5d37c2b70ece91848da229b60c132b27394c012aec12e8ce4164f70ae",
+      "features": 582,
+      "invalidGeometries": 1,
+      "nullVillageLgd": 368,
+      "uniqueVillageLgd": 196,
+      "duplicateVillageLgdRows": 396,
+      "boundsEpsg4326": [
+        92.197767,
+        6.752783,
+        94.267398,
+        13.677059
+      ],
+      "xmlCreatedDate": "20241210"
+    },
+    {
+      "code": "CHD",
+      "name": "Chandigarh",
+      "archive": "chandigarh.zip",
+      "archiveBytes": 162993,
+      "archiveSha256": "957912107568f261c234396faeca4703dfc80768085dc32c53ea29479d2c2db4",
+      "features": 35,
+      "invalidGeometries": 0,
+      "nullVillageLgd": 0,
+      "uniqueVillageLgd": 1,
+      "duplicateVillageLgdRows": 35,
+      "boundsEpsg4326": [
+        76.705191,
+        30.66638,
+        76.849413,
+        30.795154
+      ],
+      "xmlCreatedDate": "20241109"
+    },
+    {
+      "code": "DNHDD",
+      "name": "Dadra and Nagar Haveli and Daman and Diu",
+      "archive": "dnh-dd.zip",
+      "archiveBytes": 110827,
+      "archiveSha256": "52620001ecca83b3a6fb9cb5fb712602936dffafb59d587891b92fb8e05dfbc2",
+      "features": 91,
+      "invalidGeometries": 0,
+      "nullVillageLgd": 0,
+      "uniqueVillageLgd": 81,
+      "duplicateVillageLgdRows": 11,
+      "boundsEpsg4326": [
+        70.870788,
+        20.047018,
+        73.218192,
+        20.771437
+      ],
+      "xmlCreatedDate": "20241109"
+    },
+    {
+      "code": "DEL",
+      "name": "Delhi",
+      "archive": "delhi.zip",
+      "archiveBytes": 2009187,
+      "archiveSha256": "2668ca29a5f16c4b1f6bcd06f51e0d4aee0b1a5c1d24cfe885764ce225edf2bc",
+      "features": 369,
+      "invalidGeometries": 0,
+      "nullVillageLgd": 288,
+      "uniqueVillageLgd": 57,
+      "duplicateVillageLgdRows": 314,
+      "boundsEpsg4326": [
+        76.838892,
+        28.404668,
+        77.34757,
+        28.8835
+      ],
+      "xmlCreatedDate": "20241109"
+    },
+    {
+      "code": "GOA",
+      "name": "Goa",
+      "archive": "goa.zip",
+      "archiveBytes": 1078822,
+      "archiveSha256": "dec00aa615023ecba2815c14aa9ffe5dacdcd30780caf38c84e7a8eef6d58d3e",
+      "features": 433,
+      "invalidGeometries": 0,
+      "nullVillageLgd": 2,
+      "uniqueVillageLgd": 431,
+      "duplicateVillageLgdRows": 2,
+      "boundsEpsg4326": [
+        73.676952,
+        14.754209,
+        74.335874,
+        15.801017
+      ],
+      "xmlCreatedDate": "20250731",
+      "xmlModifiedDate": "20240429"
+    },
+    {
+      "code": "HAR",
+      "name": "Haryana",
+      "archive": "haryana.zip",
+      "archiveBytes": 9667232,
+      "archiveSha256": "26cbd66f2f6b3217417b182157b96e4bf2956516789c027668193162076740af",
+      "features": 7006,
+      "invalidGeometries": 0,
+      "nullVillageLgd": 0,
+      "uniqueVillageLgd": 6599,
+      "duplicateVillageLgdRows": 438,
+      "boundsEpsg4326": [
+        74.473259,
+        27.652271,
+        77.604591,
+        30.928543
+      ],
+      "xmlCreatedDate": "20260417",
+      "xmlModifiedDate": "20260409"
+    },
+    {
+      "code": "LAK",
+      "name": "Lakshadweep",
+      "archive": "lakshadweep.zip",
+      "archiveBytes": 25823,
+      "archiveSha256": "5d99655f345b51ed92bcb629a5aa34098fd3d66b4299f74f0c920fc55f7e405d",
+      "features": 30,
+      "invalidGeometries": 0,
+      "nullVillageLgd": 2,
+      "uniqueVillageLgd": 26,
+      "duplicateVillageLgdRows": 5,
+      "boundsEpsg4326": [
+        72.164571,
+        8.26367,
+        73.701639,
+        11.703662
+      ],
+      "xmlCreatedDate": "20241109"
+    },
+    {
+      "code": "PY",
+      "name": "Puducherry",
+      "archive": "puducherry.zip",
+      "archiveBytes": 485176,
+      "archiveSha256": "a9861f28aba9a57b348fcf98b2c3452f7eb69e01da8249fab6b9aea222c6601f",
+      "features": 129,
+      "invalidGeometries": 0,
+      "nullVillageLgd": 5,
+      "uniqueVillageLgd": 123,
+      "duplicateVillageLgdRows": 7,
+      "boundsEpsg4326": [
+        75.526556,
+        10.827826,
+        82.313799,
+        16.760731
+      ],
+      "xmlCreatedDate": "20250820",
+      "xmlModifiedDate": "20250416"
+    },
+    {
+      "code": "PUN",
+      "name": "Punjab",
+      "archive": "punjab.zip",
+      "archiveBytes": 14926409,
+      "archiveSha256": "0e73d87d5eba27ea21a4e7f77f9900fa87ef4e907a633aed2bcc0018820dccf3",
+      "features": 12830,
+      "invalidGeometries": 6,
+      "nullVillageLgd": 0,
+      "uniqueVillageLgd": 12300,
+      "duplicateVillageLgdRows": 654,
+      "boundsEpsg4326": [
+        73.879776,
+        29.54207,
+        76.941461,
+        32.511563
+      ],
+      "xmlCreatedDate": "20241211",
+      "xmlModifiedDate": "20241205"
+    },
+    {
+      "code": "SKM",
+      "name": "Sikkim",
+      "archive": "sikkim.zip",
+      "archiveBytes": 5017958,
+      "archiveSha256": "c2eb3722157e89bce0c5dbce932f3821472d2744915ad7a52224e04947ae91be",
+      "features": 447,
+      "invalidGeometries": 0,
+      "nullVillageLgd": 12,
+      "uniqueVillageLgd": 427,
+      "duplicateVillageLgdRows": 27,
+      "boundsEpsg4326": [
+        88.012332,
+        27.07926,
+        88.91926,
+        28.128691
+      ],
+      "xmlCreatedDate": "20241109"
+    }
+  ],
+  "findings": [
+    "The official Survey of India index lists 27 state/UT village-boundary archives. The latest acquisition downloaded and audited 10 of 27; 17 remain missing because some archives exceed the 50 MiB per-file limit or timed out/terminated.",
+    "The latest run contains 21,952 features and 7 invalid geometries, including six in Punjab and one in Andaman and Nicobar Islands.",
+    "Across two acquisition runs, 12 distinct jurisdiction archives have been recovered; Telangana's prior-run shapefile has a CRS metadata conflict between custom LCC_WGS84 PRJ and XML claiming EPSG:3857.",
+    "These are village administrative boundaries, not Assembly Constituency polygons.",
+    "Many features have null or repeated Vill_LGD codes. Repeated codes may represent multiple urban ward/feature fragments; do not deduplicate without geometry and identity rules.",
+    "Census 2011 population linkage requires a validated village-code crosswalk and accepted AC geometry; no constituency population estimate is inferred from these files alone."
+  ],
+  "decision": "Use acquired files only as source-audited village administrative geometry candidates. Do not insert into the runtime or canonical AC geometry registry until full national coverage, per-file CRS, LGD identity, topology and effective-date checks pass.",
+  "artifactBytes": 46438425,
+  "uncompressedArtifactBytes": 74755552,
+  "artifactExpiresAt": "2026-11-08T16:07:26Z",
+  "previousRun": {
+    "runId": 40209864129,
+    "artifactId": 12605485502,
+    "artifactSha256": "1d8bd2e9a6ed6ca0fc08a45dc54c16bdad22c15ca5eefe688f49cbeb25ee3e01",
+    "artifactBytes": 46438425,
+    "manifestAvailable": false,
+    "manifestFailure": "Previous runner failed while summarizing derived artifacts; individual downloaded file hashes were independently verified from the artifact."
+  },
+  "latestRun": {
+    "runId": 40210513206,
+    "workflowUrl": "https://github.com/kshetra-app/Kshetra/actions/runs/40210513206",
+    "artifactId": 12606100793,
+    "artifactSha256": "87f6127ab8cf1243b9ef8800902db8819001d4aa8de14faedebb9a8e685fd217",
+    "artifactBytes": 56242127,
+    "artifactExpiresAt": "2026-11-08T16:15:56Z",
+    "manifestSha256": "e156210e612fb9fd6169a61e68683300eaf828fdaf60066ab43d5f2c6ed7a345",
+    "villageAuditSha256": "3776d13bd40113f0517597ead369414352320e62dbb91a6a3220368241878f9f",
+    "geometryCandidateAuditSha256": "4c08faef076427408286aa72d4958d732640328e2146c2813fc353bac6b4cf8b",
+    "downloadedBytes": 84543683,
+    "summary": {
+      "expectedArchives": 27,
+      "downloadedAndAuditedArchives": 10,
+      "missingArchives": 17,
+      "auditFailures": 0,
+      "totalFeatures": 21952,
+      "invalidGeometries": 7,
+      "crsMetadataConflicts": 0
+    }
+  },
+  "previousRunRecords": [
     {
       "code": "ANB",
       "name": "Andaman and Nicobar Islands",
@@ -287,17 +528,5 @@
       "crsMetadataConflict": true,
       "crsMetadataFinding": "PRJ declares custom LCC_WGS84 while ESRI XML metadata claims latest WKID 3857; the projected coordinates transform into Telangana under LCC, but metadata conflict must be resolved before canonical spatial joins."
     }
-  ],
-  "findings": [
-    "The Survey of India page lists 27 state/UT village-boundary archives; this acquisition run downloaded 10, so national coverage is incomplete.",
-    "These are village administrative boundaries, not Assembly Constituency polygons.",
-    "The ten archives contain 14,235 features and two invalid geometries.",
-    "Many features have null or repeated Vill_LGD codes. Repeated codes may represent multiple urban ward/feature fragments; do not deduplicate without geometry/metadata rules.",
-    "Telangana's shapefile PRJ and ESRI XML metadata conflict on CRS identification (custom LCC_WGS84 versus EPSG:3857).",
-    "Census 2011 population linkage requires an authoritative village-code crosswalk and accepted AC geometry; no constituency population estimate is inferred from these files alone."
-  ],
-  "decision": "Use acquired files only as source-audited village administrative geometry candidates. Do not insert into the runtime or canonical AC geometry registry until full national coverage, per-file CRS, LGD identity, topology and effective-date checks pass.",
-  "artifactBytes": 46438425,
-  "uncompressedArtifactBytes": 74755552,
-  "artifactExpiresAt": "2026-11-08T16:07:26Z"
+  ]
 }
