@@ -41,7 +41,7 @@ import {
 } from '../services/stateData';
 import { sendApiError } from '../lib/replyHelper';
 import { getCensusDistricts } from '../../../../data/census/india-district-population-2011';
-import { delimitationService } from '../services/delimitationService';
+import { CENSUS_2011_STATES, IDEAL_POP_PER_AC_SEAT_2011 } from '../../../../data/census/india-district-population-2011';
 import {
   getConstituencyDataStatus,
   hasHierarchyData,
@@ -49,6 +49,33 @@ import {
   getBoothsForConstituency,
 } from '../../../mobile/lib/hierarchyData';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
+
+/** Same deterministic expansion-safe scenario used by the former mobile calculation. */
+function stateMapSeatProjection(stateCode: string) {
+  const state = CENSUS_2011_STATES.find((entry) => entry.stateCode === stateCode);
+  if (!state) return null;
+  const statutorySeats: Record<string, number> = { AP: 225, TS: 153, JK: 90, AS: 126 };
+  let projectedSeats = 0;
+  if (state.currentAssemblySeats === 0) projectedSeats = 0;
+  else if (statutorySeats[stateCode] != null) projectedSeats = statutorySeats[stateCode];
+  else {
+    const expansionFactor = state.totalPopulation > 50_000_000 ? 1.15 : 1.10;
+    projectedSeats = Math.min(500, Math.max(state.currentAssemblySeats, Math.round(state.currentAssemblySeats * expansionFactor)));
+  }
+  const seatChange = projectedSeats - state.currentAssemblySeats;
+  const popPerSeat = projectedSeats > 0 ? Math.round(state.totalPopulation / projectedSeats) : 0;
+  return {
+    stateCode,
+    currentSeats: state.currentAssemblySeats,
+    projectedSeats,
+    seatChange,
+    population: state.totalPopulation,
+    popPerSeat,
+    idealPopulationPerSeat: IDEAL_POP_PER_AC_SEAT_2011,
+    outputClassification: 'PANIN_SCENARIO' as const,
+    officialDelimitationOrder: false as const,
+  };
+}
 
 /** Map seed data to ConstituencyBrief for API responses */
 function seedToBrief(c: ConstituencySeed): ConstituencyBrief {
@@ -467,7 +494,7 @@ export async function constituencyRoutes(app: FastifyInstance) {
     }
 
     const info = getStateInfo(code);
-    const seatProjection = delimitationService.getStateProjection(code)?.projection ?? null;
+    const seatProjection = stateMapSeatProjection(code);
     const censusDistricts = getCensusDistricts(code).map((district) => ({
       districtName: district.districtName,
       totalPopulation: district.totalPopulation,
