@@ -755,7 +755,7 @@
       "version": "Order dated 17 December 2008; ECI PDF lists Andhra Pradesh Schedule III on PDF pages 8–32",
       "retrievalStatus": "READ_VIA_WEB_PDF_TEXT; BINARY_NOT_DOWNLOADED_OR_SHA256_VERIFIED",
       "authority": "OFFICIAL_STATUTORY_BASELINE",
-      "status": "WEB_PDF_TEXT_REVIEWED; FIRST_BINARY_ATTEMPT_HTTP_406; SESSION_RETRY_PENDING",
+      "status": "WEB_PDF_TEXT_REVIEWED; BINARY_RETRIEVAL_BLOCKED_HTTP_406_AFTER_SESSION_AND_URL_VARIANTS",
       "partialCrosswalk": {
         "report": "reports/evidence/w021_5_telangana_layer_comparison_2026-10-25.json",
         "constituencies": [
@@ -812,7 +812,39 @@
         "result": "NO_PDF_BINARY; NO_PDF_SHA256; official PDF text was reviewed via web reader"
       },
       "retryWorkflowRunId": 40213895574,
-      "retryWorkflowUrl": "https://github.com/kshetra-app/Kshetra/actions/runs/40213895574"
+      "retryWorkflowUrl": "https://github.com/kshetra-app/Kshetra/actions/runs/40213895574",
+      "binaryProbeRetry": {
+        "workflowRunId": 40213895574,
+        "artifactId": 12606029313,
+        "artifactSha256": "b8b4ab582062b1b2cab192a86940aded57cdd015ae2db214e25635beb20f32a2",
+        "compressedBytes": 2870,
+        "attempts": [
+          {
+            "url": "https://www.eci.gov.in/Documents/Delimitation/DelimitationofParliamentaryAssemblyConstituenciesOrder-2008%28English%29.pdf",
+            "httpStatus": 406,
+            "responseBytes": 1035,
+            "responseSha256": "c83cd2587ece5e0602574662fe67bd6132b5b28dd5cc586b637dd689b6bf95f4"
+          },
+          {
+            "url": "https://www.eci.gov.in/Documents/Delimitation/DelimitationofParliamentaryAssemblyConstituenciesOrder-2008(English).pdf",
+            "httpStatus": 406,
+            "responseBytes": 1035,
+            "responseSha256": "5bdf132d80fc63be3d74e1861efc18ecb9ecac5103c3ab7b11a5c4f46d2b9f56"
+          },
+          {
+            "url": "https://www.eci.gov.in/Documents/Delimitation/DelimitationofParliamentaryAssemblyConstituenciesOrder-2008%28English%29.pdf?download=1",
+            "httpStatus": 406,
+            "responseBytes": 1035,
+            "responseSha256": "919a6384a741c7f515e9fe5229e7d5dfd86981876133efaecbfa853c358311b2"
+          }
+        ],
+        "homepageRequest": {
+          "httpStatus": 406,
+          "bodySha256": "c83cd2587ece5e0602574662fe67bd6132b5b28dd5cc586b637dd689b6bf95f4"
+        },
+        "pdfAcquired": false,
+        "pdfBinarySha256": null
+      }
     },
     {
       "sourceId": "SRC-TELANGANA-ADMIN-NEW-LAYER",
@@ -1298,11 +1330,20 @@
     {
       "runId": 40213895574,
       "workflowUrl": "https://github.com/kshetra-app/Kshetra/actions/runs/40213895574",
-      "artifactId": null,
-      "artifactName": null,
-      "artifactSha256": null,
-      "status": "QUEUED_AT_LAST_CHECK",
-      "scope": "Retry official ECI 2008 order PDF using a persistent browser-impersonated session, homepage cookies and URL-encoding variants; extract Schedule III roster if acquired."
+      "artifactId": 12606029313,
+      "artifactName": "w0215-eci-legal-order-40213895574",
+      "artifactSha256": "b8b4ab582062b1b2cab192a86940aded57cdd015ae2db214e25635beb20f32a2",
+      "status": "COMPLETED_SOURCE_HTTP_UNAVAILABLE; ALL_THREE_URL_VARIANTS_HTTP_406",
+      "scope": "Retry official ECI 2008 order PDF using a persistent browser-impersonated session, homepage cookies and URL-encoding variants; extract Schedule III roster if acquired.",
+      "compressedBytes": 2870,
+      "artifactExpiresAt": "2026-11-24T16:54:39Z",
+      "manifestSummary": {
+        "urlVariantsTried": 3,
+        "httpStatusEach": 406,
+        "responseBytesEach": 1035,
+        "pdfAcquired": false,
+        "webPdfTextReviewed": true
+      }
     },
     {
       "runId": 40213959324,
@@ -1314,7 +1355,7 @@
       "scope": "Repeat four-service Telangana probe after changing the runner to report optional ECI 404/timeouts as warnings while keeping both primary Telangana geometry source checks strict."
     }
   ],
-  "updatedAt": "2026-10-25T16:56:00Z",
+  "updatedAt": "2026-10-25T16:57:00Z",
   "notes": [
     "Actual public source artifacts were downloaded in GitHub Actions run 40209022405 and SHA-256 hashed; detailed geometry findings are in reports/w021_5_datameet_ac_geometry_forensic_audit.json.",
     "Survey of India official ABDB page, Vector Data Catalog 2025 PDF and Metadata_ABDB.zip were downloaded and hashed. The metadata covers state, district, subdistrict and village boundaries, not statutory Assembly Constituency polygons.",
@@ -1329,7 +1370,8 @@
     "Official ECI 2008 Delimitation Order PDF was read through the web PDF reader. Schedule III lists Andhra Pradesh Assembly constituencies and their territorial extents; a partial crosswalk for nine disputed/defective Telangana ACs is recorded in reports/evidence/w021_5_telangana_layer_comparison_2026-10-25.json. The PDF binary was not downloaded in this session, so no binary SHA-256 is claimed.",
     "Additional official Telangana GIS service variants Admin_New layer 12 and Admin_Old layer 13 were discovered in the TGRAC service catalog and queued for comparison in run 40213242722. Do not choose among service names until geometry and legal effective-date evidence are reconciled.",
     "The TGRAC Admin_New layer is byte-for-byte identical to the EndowmentLands_Admin_2026 layer (same 12,463,409-byte payload and SHA-256). Admin_Old is a distinct 12,461,961-byte payload; its 119-feature union has two disconnected components and one invalid Dornakal polygon. The official ECI 2008 PDF binary endpoint returned HTTP 406 (1,035-byte error body, SHA-256 7f512a...); web PDF text was reviewed, but no PDF binary hash is claimed.",
-    "Four Telangana GIS service variants are now acquired. Three EndowmentLands variants form one geometry family; the Admin_New and Admin_2026 payloads are byte-identical, while Admin_Old differs only at sub-millimetre coordinate precision. The older AdministrativeInfoSystem layer is the outlier with six material AC geometry shifts. Prefer the newer family for legal validation, not canonical import."
+    "Four Telangana GIS service variants are now acquired. Three EndowmentLands variants form one geometry family; the Admin_New and Admin_2026 payloads are byte-identical, while Admin_Old differs only at sub-millimetre coordinate precision. The older AdministrativeInfoSystem layer is the outlier with six material AC geometry shifts. Prefer the newer family for legal validation, not canonical import.",
+    "Enhanced ECI PDF retrieval used a persistent Chrome-impersonated session, homepage-cookie attempt, three URL variants and browser headers; all returned HTTP 406 with 1,035-byte HTML bodies. The legal PDF remains readable through the web PDF reader, but its binary bytes/hash are unavailable from this acquisition route."
   ],
   "secondaryGeometryAudit": {
     "sourceRepository": "https://github.com/saisantoshv3/assemnbly_gis_files",
