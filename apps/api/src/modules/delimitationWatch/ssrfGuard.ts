@@ -364,7 +364,11 @@ export function createPinnedAgent(
   hostname: string,
   pinnedIp: string,
   isHttps: boolean,
-  options: { timeoutMs?: number; allowInsecureInTest?: boolean } = {}
+  options: {
+    timeoutMs?: number;
+    allowInsecureInTest?: boolean;
+    ca?: string | Buffer | Array<string | Buffer>;
+  } = {}
 ): http.Agent | https.Agent {
   const timeout = options.timeoutMs ?? 15000;
 
@@ -374,6 +378,7 @@ export function createPinnedAgent(
       minVersion: 'TLSv1.2',
       keepAlive: false,
       timeout,
+      ca: options.ca,
       checkServerIdentity: (host, cert) => {
         // Enforce TLS certificate validation strictly against original hostname
         return tls.checkServerIdentity(hostname, cert);
@@ -385,6 +390,7 @@ export function createPinnedAgent(
         ...opts,
         host: pinnedIp, // Direct IP literal eliminates ambient DNS lookup & defeats DNS rebinding
         servername: hostname, // Hostname in SNI for standard TLS certificate verification
+        ca: options.ca,
         checkServerIdentity: (host: string, cert: any) => {
           return tls.checkServerIdentity(hostname, cert);
         },
@@ -417,8 +423,10 @@ export async function validateAndPinSourceUrl(
   targetUrl: string,
   options: {
     allowLocalhostForTests?: boolean;
+    allowInsecureInTest?: boolean;
     mockDnsResolver?: (host: string) => Promise<string[]>;
     timeoutMs?: number;
+    ca?: string | Buffer | Array<string | Buffer>;
   } = {}
 ): Promise<ValidatedDestination> {
   let parsed: URL;
@@ -473,7 +481,8 @@ export async function validateAndPinSourceUrl(
   // 4. Build socket-pinned agent
   const agent = createPinnedAgent(hostname, pinnedIp, isHttps, {
     timeoutMs: options.timeoutMs,
-    allowInsecureInTest: options.allowLocalhostForTests,
+    allowInsecureInTest: options.allowInsecureInTest,
+    ca: options.ca,
   });
 
   return {

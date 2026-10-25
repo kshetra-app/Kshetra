@@ -12,6 +12,8 @@ import assert from 'node:assert/strict';
 import * as http from 'node:http';
 import * as https from 'node:https';
 import * as tls from 'node:tls';
+import * as fs from 'node:fs';
+import * as path from 'node:path';
 import {
   validateSourceUrl,
   validateAndPinSourceUrl,
@@ -27,12 +29,23 @@ import { InMemoryDelimitationWatchRepository } from '../apps/api/src/modules/del
 describe('Job 023 — Finding B: Hardened SSRF & Transport Security Suite', () => {
   let localServer;
   let localServerPort;
+  let localHttpsServer;
+  let localHttpsServerPort;
   let repo;
   let captureAdapter;
+  let testTlsCa;
+  let testTlsKey;
+  let testTlsCert;
 
   before(async () => {
     repo = new InMemoryDelimitationWatchRepository();
     captureAdapter = new CaptureAdapter(repo);
+
+    // Load TLS test fixtures
+    const tlsDir = path.resolve('tests/fixtures/tls');
+    testTlsCa = fs.readFileSync(path.join(tlsDir, 'ca.crt'));
+    testTlsKey = fs.readFileSync(path.join(tlsDir, 'server.key'));
+    testTlsCert = fs.readFileSync(path.join(tlsDir, 'server.crt'));
 
     // Spin up a test HTTP server for redirect and body streaming tests
     await new Promise((resolve) => {
@@ -83,11 +96,33 @@ describe('Job 023 — Finding B: Hardened SSRF & Transport Security Suite', () =
         resolve();
       });
     });
+
+    // Spin up a test HTTPS server for TLS verification and socket pinning tests
+    await new Promise((resolve) => {
+      localHttpsServer = https.createServer(
+        {
+          key: testTlsKey,
+          cert: testTlsCert,
+        },
+        (req, res) => {
+          res.writeHead(200, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ status: 'secure_ok', host: req.headers.host }));
+        }
+      );
+
+      localHttpsServer.listen(0, '127.0.0.1', () => {
+        localHttpsServerPort = localHttpsServer.address().port;
+        resolve();
+      });
+    });
   });
 
   after(async () => {
     if (localServer) {
       await new Promise((resolve) => localServer.close(resolve));
+    }
+    if (localHttpsServer) {
+      await new Promise((resolve) => localHttpsServer.close(resolve));
     }
   });
 
@@ -443,20 +478,190 @@ describe('Job 023 — Finding B: Hardened SSRF & Transport Security Suite', () =
   });
 
   // 15. TLS certificate hostname verification with socket pinning
-  test('SSRF-15: TLS certificate hostname verification is enforced despite IP socket pinning', () => {
-    // Verify createPinnedAgent HTTPS agent configures checkServerIdentity strictly against hostname
-    const agent = createPinnedAgent('eci.gov.in', '93.184.216.34', true);
+  test('SSRF-15A: Agent checkServerIdentity callback strictly validates hostname', () => {
+    const agent = createPinnedAgent('valid.delimitation.gov.in', '127.0.0.1', true, { ca: testTlsCa });
     assert.ok(agent instanceof https.Agent, 'Must create https.Agent');
+    assert.equal(typeof agent.options.checkServerIdentity, 'function', 'Must configure checkServerIdentity');
 
-    // Test checkServerIdentity behavior with mismatched certificate
-    const mockMismatchedCert = {
-      subject: { CN: 'attacker.com' },
-      subjectaltname: 'DNS:attacker.com',
+    // Matching cert
+    const matchingCert = {
+      subject: { CN: 'valid.delimitation.gov.in' },
+      subjectaltname: 'DNS:valid.delimitation.gov.in',
     };
+    const validResult = agent.options.checkServerIdentity('valid.delimitation.gov.in', matchingCert);
+    assert.equal(validResult, undefined, 'Matching certificate must pass identity check');
 
-    const checkResult = tls.checkServerIdentity('eci.gov.in', mockMismatchedCert);
+    // Mismatched cert
+    const mismatchedCert = {
+      subject: { CN: 'attacker.delimitation.gov.in' },
+      subjectaltname: 'DNS:attacker.delimitation.gov.in',
+    };
+    const checkResult = agent.options.checkServerIdentity('valid.delimitation.gov.in', mismatchedCert);
     assert.ok(checkResult instanceof Error, 'Mismatched TLS certificate must be rejected with Error');
     assert.equal(checkResult.code, 'ERR_TLS_CERT_ALTNAME_INVALID');
+  });
+
+  test('SSRF-15B: End-to-end HTTPS request succeeds over pinned socket when hostname matches TLS cert', async () => {
+    const destination = await validateAndPinSourceUrl(`https://valid.delimitation.gov.in:${localHttpsServerPort}/status`, {
+      allowLocalhostForTests: true,
+      mockDnsResolver: async () => ['127.0.0.1'],
+      ca: testTlsCa,
+    });
+
+    assert.equal(destination.pinnedIp, '127.0.0.1');
+    assert.equal(destination.hostname, 'valid.delimitation.gov.in');
+
+    const result = await new Promise((resolve, reject) => {
+      const req = https.request(
+        {
+          host: destination.hostname,
+          port: destination.port,
+          path: '/status',
+          agent: destination.agent,
+          headers: { Host: destination.hostname },
+        },
+        (res) => {
+          let body = '';
+          res.on('data', (c) => (body += c));
+          res.on('end', () => resolve({ statusCode: res.statusCode, body }));
+        }
+      );
+      req.on('error', reject);
+      req.end();
+    });
+
+    assert.equal(result.statusCode, 200);
+    const parsed = JSON.parse(result.body);
+    assert.equal(parsed.status, 'secure_ok');
+  });
+
+  test('SSRF-15C: End-to-end HTTPS request is rejected with ERR_TLS_CERT_ALTNAME_INVALID on mismatched hostname over pinned socket', async () => {
+    const destination = await validateAndPinSourceUrl(`https://mismatched.delimitation.gov.in:${localHttpsServerPort}/status`, {
+      allowLocalhostForTests: true,
+      mockDnsResolver: async () => ['127.0.0.1'],
+      ca: testTlsCa,
+    });
+
+    await assert.rejects(
+      async () => {
+        await new Promise((resolve, reject) => {
+          const req = https.request(
+            {
+              host: destination.hostname,
+              port: destination.port,
+              path: '/status',
+              agent: destination.agent,
+              headers: { Host: destination.hostname },
+            },
+            (res) => resolve(res)
+          );
+          req.on('error', reject);
+          req.end();
+        });
+      },
+      (err) => {
+        assert.equal(err.code, 'ERR_TLS_CERT_ALTNAME_INVALID', 'Mismatched hostname must fail with ERR_TLS_CERT_ALTNAME_INVALID');
+        return true;
+      }
+    );
+  });
+
+  test('SSRF-15D: End-to-end HTTPS request fails closed when root CA is untrusted/missing', async () => {
+    // Request without supplying custom test CA
+    const destination = await validateAndPinSourceUrl(`https://valid.delimitation.gov.in:${localHttpsServerPort}/status`, {
+      allowLocalhostForTests: true,
+      mockDnsResolver: async () => ['127.0.0.1'],
+    });
+
+    await assert.rejects(
+      async () => {
+        await new Promise((resolve, reject) => {
+          const req = https.request(
+            {
+              host: destination.hostname,
+              port: destination.port,
+              path: '/status',
+              agent: destination.agent,
+              headers: { Host: destination.hostname },
+            },
+            (res) => resolve(res)
+          );
+          req.on('error', reject);
+          req.end();
+        });
+      },
+      (err) => {
+        assert.ok(
+          err.code === 'DEPTH_ZERO_SELF_SIGNED_CERT' ||
+          err.code === 'UNABLE_TO_VERIFY_LEAF_SIGNATURE' ||
+          err.code === 'SELF_SIGNED_CERT_IN_CHAIN',
+          `Untrusted CA must be rejected by TLS certificate verification (got ${err.code})`
+        );
+        return true;
+      }
+    );
+  });
+
+  test('SSRF-15E: CaptureAdapter fails closed when HTTPS source hostname does not match certificate', async () => {
+    const source = {
+      id: 'SRC-SSRF-015E',
+      name: 'Mismatched TLS Source',
+      publisher: 'Election Commission of India',
+      sourceType: 'gazette_extraordinary',
+      canonicalUrl: `https://mismatched.delimitation.gov.in:${localHttpsServerPort}/status`,
+      geographicScope: 'IN-TG',
+      subjectScope: 'delimitation_order',
+      authorityClassification: 'statutory',
+      retrievalMethod: 'http_get',
+      isActive: true,
+      consecutiveFailures: 0,
+      metadata: {},
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+
+    const snapshot = await captureAdapter.capture(source, {
+      allowLocalhost: true,
+      mockDnsResolver: async () => ['127.0.0.1'],
+      ca: testTlsCa,
+    });
+
+    assert.equal(snapshot.captureOutcome, 'FETCH_ERROR');
+    assert.ok(
+      snapshot.diagnostics?.error?.includes('altnames') ||
+      snapshot.diagnostics?.stack?.includes('ERR_TLS_CERT_ALTNAME_INVALID') ||
+      snapshot.diagnostics?.code === 'ERR_TLS_CERT_ALTNAME_INVALID',
+      'CaptureAdapter must record ERR_TLS_CERT_ALTNAME_INVALID on cert mismatch'
+    );
+  });
+
+  test('SSRF-15F: CaptureAdapter captures successfully when HTTPS source hostname matches certificate', async () => {
+    const source = {
+      id: 'SRC-SSRF-015F',
+      name: 'Valid TLS Source',
+      publisher: 'Election Commission of India',
+      sourceType: 'gazette_extraordinary',
+      canonicalUrl: `https://valid.delimitation.gov.in:${localHttpsServerPort}/status`,
+      geographicScope: 'IN-TG',
+      subjectScope: 'delimitation_order',
+      authorityClassification: 'statutory',
+      retrievalMethod: 'http_get',
+      isActive: true,
+      consecutiveFailures: 0,
+      metadata: {},
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+
+    const snapshot = await captureAdapter.capture(source, {
+      allowLocalhost: true,
+      mockDnsResolver: async () => ['127.0.0.1'],
+      ca: testTlsCa,
+    });
+
+    assert.equal(snapshot.captureOutcome, 'SUCCESS');
+    assert.equal(snapshot.httpStatus, 200);
+    assert.ok(snapshot.rawContent.includes('secure_ok'));
   });
 
   // 16. Rapid socket cleanup: aborting request immediately destroys socket

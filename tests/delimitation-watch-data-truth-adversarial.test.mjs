@@ -589,4 +589,304 @@ describe('Job 023 — Finding A: Data-Truth & Provenance Adversarial Battery', (
       /CANONICAL_MUTATION_RESTRICTED/
     );
   });
+
+  // 11. Adversarial: 2018 notification with incorrect date (2018-09-24 instead of statutory 2018-09-22)
+  test('TRUTH-11: 2018 ECI Notification with incorrect date 2018-09-24 fails closed to UNVERIFIED', async () => {
+    const source = {
+      id: 'SRC-ADV-011',
+      name: 'ECI Notification 2018 Date Tampered',
+      publisher: 'Election Commission of India',
+      sourceType: 'gazette_extraordinary',
+      canonicalUrl: 'https://www.eci.gov.in/eci-backend/public/api/download?url=LMAhAK6sOPBp%2FNFF0iRfXbEB1EVSLT41NNLRjYNJJP1KivrUxbfqkDatmHy12e%2FzVx8fLfn2ReU7TfrqYobgIsVIzE4H7zCkL60TDPfde3hSidsZ4fuGUaZAjsPMK3mFe%2FOayCb%2Bc1mgC3WIErfdO%2BA072J7HtGm2kYfstpL5XIZTWrH2JWU7UfZrKWF1BUsH9xccKER%2BJMZVGi7SrzX57%2FMm24zs1eyK2AB5zsjcWKzrILRQG%2FBbbQ%2Fx5bNYVaCn7kX4xoHNibbBVAsqukcOQ%3D%3D',
+      geographicScope: 'IN-AP',
+      subjectScope: 'delimitation_order',
+      authorityClassification: 'statutory',
+      retrievalMethod: 'http_get',
+      isActive: true,
+      consecutiveFailures: 0,
+      metadata: {},
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+
+    const snapshot = {
+      id: randomUUID(),
+      sourceId: source.id,
+      retrievedAt: new Date().toISOString(),
+      httpStatus: 200,
+      contentType: 'application/json',
+      contentSizeBytes: 300,
+      contentSha256: '5'.repeat(64),
+      rawContent: JSON.stringify({
+        proposal: {
+          stateCode: 'AP',
+          title: 'Notification No. 282/AP/2018(DEL)',
+          status: 'final',
+          currentSeats: 175,
+          proposedSeats: 175,
+          currentScSeats: 29,
+          currentStSeats: 7,
+          proposedScSeats: 29,
+          proposedStSeats: 7,
+          instrumentType: 'ELECTION_COMMISSION_NOTIFICATION',
+          instrumentIdentifier: 'Notification No. 282/AP/2018(DEL)',
+          legalEnactmentStatus: 'ENACTED_COMMENCED',
+          publicationDate: '2018-09-24', // INCORRECT: Statutory date is 2018-09-22
+          effectiveDate: '2018-09-22',
+        },
+        constituencyMappings: [],
+      }),
+      captureOutcome: 'SUCCESS',
+      createdAt: new Date().toISOString(),
+    };
+
+    const candidate = await normalizer.normalize(snapshot, source);
+    assert.equal(candidate.normalizedDataStatus, 'UNVERIFIED', 'Incorrect publication date must fail closed');
+    assert.match(candidate.legalEvidenceDecision, /Publication date '2018-09-24' does not match authoritative date/);
+
+    const validation = await validator.validate(candidate, source);
+    assert.equal(validation.validationStatus, 'REJECTED', 'Validator Check 12 must reject corpus mismatch');
+    assert.ok(validation.errors.some(e => e.includes('Publication date') || e.includes('LEGAL_EVIDENCE_ERROR')));
+  });
+
+  // 12. Adversarial: 2018 notification with generic nonmatching source URL
+  test('TRUTH-12: 2018 ECI Notification with generic homepage URL fails closed to UNVERIFIED', async () => {
+    const source = {
+      id: 'SRC-ADV-012',
+      name: 'ECI Notification Generic URL',
+      publisher: 'Election Commission of India',
+      sourceType: 'gazette_extraordinary',
+      canonicalUrl: 'https://www.eci.gov.in/', // Generic homepage instead of exact primary document URL
+      geographicScope: 'IN-AP',
+      subjectScope: 'delimitation_order',
+      authorityClassification: 'statutory',
+      retrievalMethod: 'http_get',
+      isActive: true,
+      consecutiveFailures: 0,
+      metadata: {},
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+
+    const snapshot = {
+      id: randomUUID(),
+      sourceId: source.id,
+      retrievedAt: new Date().toISOString(),
+      httpStatus: 200,
+      contentType: 'application/json',
+      contentSizeBytes: 300,
+      contentSha256: '6'.repeat(64),
+      rawContent: JSON.stringify({
+        proposal: {
+          stateCode: 'AP',
+          title: 'Notification No. 282/AP/2018(DEL)',
+          status: 'final',
+          currentSeats: 175,
+          proposedSeats: 175,
+          currentScSeats: 29,
+          currentStSeats: 7,
+          proposedScSeats: 29,
+          proposedStSeats: 7,
+          instrumentType: 'ELECTION_COMMISSION_NOTIFICATION',
+          instrumentIdentifier: 'Notification No. 282/AP/2018(DEL)',
+          legalEnactmentStatus: 'ENACTED_COMMENCED',
+          publicationDate: '2018-09-22',
+          effectiveDate: '2018-09-22',
+        },
+        constituencyMappings: [],
+      }),
+      captureOutcome: 'SUCCESS',
+      createdAt: new Date().toISOString(),
+    };
+
+    const candidate = await normalizer.normalize(snapshot, source);
+    assert.equal(candidate.normalizedDataStatus, 'UNVERIFIED', 'Generic nonmatching source URL must fail closed');
+    assert.match(candidate.legalEvidenceDecision, /does not match official authoritative URL/);
+  });
+
+  // 13. Adversarial: 2018 boundary-only notification claiming altered seat numbers
+  test('TRUTH-13: 2018 ECI boundary-only amendment claiming altered seat allocations fails closed', async () => {
+    const source = {
+      id: 'SRC-ADV-013',
+      name: 'ECI Notification Seat Alteration Claim',
+      publisher: 'Election Commission of India',
+      sourceType: 'gazette_extraordinary',
+      canonicalUrl: 'https://www.eci.gov.in/eci-backend/public/api/download?url=LMAhAK6sOPBp%2FNFF0iRfXbEB1EVSLT41NNLRjYNJJP1KivrUxbfqkDatmHy12e%2FzVx8fLfn2ReU7TfrqYobgIsVIzE4H7zCkL60TDPfde3hSidsZ4fuGUaZAjsPMK3mFe%2FOayCb%2Bc1mgC3WIErfdO%2BA072J7HtGm2kYfstpL5XIZTWrH2JWU7UfZrKWF1BUsH9xccKER%2BJMZVGi7SrzX57%2FMm24zs1eyK2AB5zsjcWKzrILRQG%2FBbbQ%2Fx5bNYVaCn7kX4xoHNibbBVAsqukcOQ%3D%3D',
+      geographicScope: 'IN-AP',
+      subjectScope: 'delimitation_order',
+      authorityClassification: 'statutory',
+      retrievalMethod: 'http_get',
+      isActive: true,
+      consecutiveFailures: 0,
+      metadata: {},
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+
+    const snapshot = {
+      id: randomUUID(),
+      sourceId: source.id,
+      retrievedAt: new Date().toISOString(),
+      httpStatus: 200,
+      contentType: 'application/json',
+      contentSizeBytes: 300,
+      contentSha256: '7'.repeat(64),
+      rawContent: JSON.stringify({
+        proposal: {
+          stateCode: 'AP',
+          title: 'Notification No. 282/AP/2018(DEL)',
+          status: 'final',
+          currentSeats: 175,
+          proposedSeats: 176, // ILLEGAL: 2018 notification is boundary-only for AC 53 and 67, 0 seat changes
+          currentScSeats: 29,
+          currentStSeats: 7,
+          proposedScSeats: 30,
+          proposedStSeats: 7,
+          instrumentType: 'ELECTION_COMMISSION_NOTIFICATION',
+          instrumentIdentifier: 'Notification No. 282/AP/2018(DEL)',
+          legalEnactmentStatus: 'ENACTED_COMMENCED',
+          publicationDate: '2018-09-22',
+          effectiveDate: '2018-09-22',
+        },
+        constituencyMappings: [],
+      }),
+      captureOutcome: 'SUCCESS',
+      createdAt: new Date().toISOString(),
+    };
+
+    const candidate = await normalizer.normalize(snapshot, source);
+    assert.equal(candidate.normalizedDataStatus, 'UNVERIFIED', 'Seat alteration claim on boundary-only instrument must fail closed');
+    assert.match(candidate.legalEvidenceDecision, /Boundary-only amendment/i);
+
+    const validation = await validator.validate(candidate, source);
+    assert.equal(validation.validationStatus, 'REJECTED', 'Validator Check 12 must reject boundary seat modification');
+    assert.ok(validation.errors.some(e => e.includes('Boundary-only amendment') || e.includes('cannot alter seat totals')));
+  });
+
+  // 14. Adversarial: APRA 2014 claiming invented Schedule XXXI
+  test('TRUTH-14: APRA 2014 citing invented Schedule XXXI fails closed to UNVERIFIED', async () => {
+    const source = {
+      id: 'SRC-ADV-014',
+      name: 'APRA 2014 Fake Schedule',
+      publisher: 'Ministry of Law and Justice, Legislative Department',
+      sourceType: 'gazette_extraordinary',
+      canonicalUrl: 'https://legislative.gov.in/actsofparliamentfromtheyear/andhra-pradesh-reorganisation-act-2014',
+      geographicScope: 'IN-AP',
+      subjectScope: 'delimitation_order',
+      authorityClassification: 'statutory',
+      retrievalMethod: 'http_get',
+      isActive: true,
+      consecutiveFailures: 0,
+      metadata: {},
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+
+    const snapshot = {
+      id: randomUUID(),
+      sourceId: source.id,
+      retrievedAt: new Date().toISOString(),
+      httpStatus: 200,
+      contentType: 'application/json',
+      contentSizeBytes: 300,
+      contentSha256: '8'.repeat(64),
+      rawContent: JSON.stringify({
+        proposal: {
+          stateCode: 'AP',
+          title: 'Andhra Pradesh Reorganisation Act, 2014 (Schedule XXXI)', // ILLEGAL: Schedule XXXI does not exist in Act 6 of 2014
+          status: 'final',
+          currentSeats: 294,
+          proposedSeats: 175,
+          currentScSeats: 48,
+          currentStSeats: 19,
+          proposedScSeats: 29,
+          proposedStSeats: 7,
+          instrumentType: 'PARLIAMENT_ACT',
+          instrumentIdentifier: 'Act No. 6 of 2014 (Schedule XXXI)',
+          legalEnactmentStatus: 'ENACTED_COMMENCED',
+          publicationDate: '2014-03-01',
+          effectiveDate: '2014-06-02',
+        },
+        constituencyMappings: [],
+      }),
+      captureOutcome: 'SUCCESS',
+      createdAt: new Date().toISOString(),
+    };
+
+    const candidate = await normalizer.normalize(snapshot, source);
+    assert.equal(candidate.normalizedDataStatus, 'UNVERIFIED', 'Invented schedule citation must fail closed');
+    assert.match(candidate.legalEvidenceDecision, /unverified in Authoritative Legal Corpus/i);
+  });
+
+  // 15. Positive case: Authentic 2018 ECI notification with exact primary URL, date, and boundary-only scope qualifies as OFFICIAL
+  test('TRUTH-15: Authentic 2018 ECI notification qualifies as OFFICIAL with boundary-only scope', async () => {
+    const source = {
+      id: 'SRC-ADV-015',
+      name: 'ECI Notification 282/AP/2018(DEL) Authentic Source',
+      publisher: 'Election Commission of India',
+      sourceType: 'gazette_extraordinary',
+      canonicalUrl: 'https://www.eci.gov.in/eci-backend/public/api/download?url=LMAhAK6sOPBp%2FNFF0iRfXbEB1EVSLT41NNLRjYNJJP1KivrUxbfqkDatmHy12e%2FzVx8fLfn2ReU7TfrqYobgIsVIzE4H7zCkL60TDPfde3hSidsZ4fuGUaZAjsPMK3mFe%2FOayCb%2Bc1mgC3WIErfdO%2BA072J7HtGm2kYfstpL5XIZTWrH2JWU7UfZrKWF1BUsH9xccKER%2BJMZVGi7SrzX57%2FMm24zs1eyK2AB5zsjcWKzrILRQG%2FBbbQ%2Fx5bNYVaCn7kX4xoHNibbBVAsqukcOQ%3D%3D',
+      geographicScope: 'IN-AP',
+      subjectScope: 'delimitation_order',
+      authorityClassification: 'statutory',
+      retrievalMethod: 'http_get',
+      isActive: true,
+      consecutiveFailures: 0,
+      metadata: {},
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+
+    const snapshot = {
+      id: randomUUID(),
+      sourceId: source.id,
+      retrievedAt: new Date().toISOString(),
+      httpStatus: 200,
+      contentType: 'application/json',
+      contentSizeBytes: 300,
+      contentSha256: '9'.repeat(64),
+      rawContent: JSON.stringify({
+        proposal: {
+          stateCode: 'AP',
+          title: 'Notification No. 282/AP/2018(DEL)',
+          status: 'final',
+          currentSeats: 175,
+          proposedSeats: 175,
+          currentScSeats: 29,
+          currentStSeats: 7,
+          proposedScSeats: 29,
+          proposedStSeats: 7,
+          instrumentType: 'ELECTION_COMMISSION_NOTIFICATION',
+          instrumentIdentifier: 'Notification No. 282/AP/2018(DEL)',
+          legalEnactmentStatus: 'ENACTED_COMMENCED',
+          publicationDate: '2018-09-22',
+          effectiveDate: '2018-09-22',
+        },
+        constituencyMappings: [
+          {
+            constituencyNumber: 53,
+            constituencyName: 'Rampachodavaram (ST)',
+            district: 'East Godavari',
+            extentDescription: 'Rampachodavaram, Devipatnam, Y. Ramavaram, Addateegala, Rajavommangi, Gangavaram Mandals and identified villages of Kunavaram, Chintoor, Vararamachandrapuram and Bhadrachalam Mandals.',
+          },
+          {
+            constituencyNumber: 67,
+            constituencyName: 'Polavaram (ST)',
+            district: 'West Godavari',
+            extentDescription: 'Polavaram, Buttayagudem, Jeelugumilli, Koyyalagudem and T. Narasapuram Mandals, and Kukunoor and Velairpad Mandals.',
+          },
+        ],
+      }),
+      captureOutcome: 'SUCCESS',
+      createdAt: new Date().toISOString(),
+    };
+
+    const candidate = await normalizer.normalize(snapshot, source);
+    assert.equal(candidate.normalizedDataStatus, 'OFFICIAL', 'Authentic 2018 ECI notification must qualify as OFFICIAL');
+    assert.match(candidate.legalEvidenceDecision, /verified in Authoritative Legal Corpus/);
+
+    const validation = await validator.validate(candidate, source);
+    assert.equal(validation.validationStatus, 'PASSED', 'Validator Check 12 must pass for authentic corpus entry');
+    assert.equal(validation.errors.length, 0);
+  });
 });

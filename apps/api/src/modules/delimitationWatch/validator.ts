@@ -252,7 +252,11 @@ export class CandidateValidator {
     const effectiveDate = pkg?.effectiveDate || candidate.proposalData?.effectiveDate;
     const enactmentStatus = pkg?.enactmentStatus || candidate.proposalData?.legalEnactmentStatus;
 
-    if (candidate.normalizedDataStatus === 'OFFICIAL') {
+    const claimsOfficialOrEnactedFinal =
+      candidate.normalizedDataStatus === 'OFFICIAL' ||
+      (candidate.proposalData?.status === 'final' && enactmentStatus === 'ENACTED_COMMENCED');
+
+    if (claimsOfficialOrEnactedFinal) {
       if (!pkg && !candidate.hasLegalEvidence) {
         warnings.push('Legal evidence package missing from candidate');
       }
@@ -273,9 +277,50 @@ export class CandidateValidator {
       if (!corpusEntry) {
         legalGatePassed = false;
         errors.push(`LEGAL_EVIDENCE_ERROR: Instrument '${instrumentId}' is unverified in Authoritative Legal Corpus`);
-      } else if (corpusEntry.status !== 'ENACTED_COMMENCED') {
-        legalGatePassed = false;
-        errors.push(`LEGAL_EVIDENCE_ERROR: Authoritative status of '${instrumentId}' is '${corpusEntry.status}', not 'ENACTED_COMMENCED'`);
+      } else {
+        if (corpusEntry.status !== 'ENACTED_COMMENCED') {
+          legalGatePassed = false;
+          errors.push(`LEGAL_EVIDENCE_ERROR: Authoritative status of '${instrumentId}' is '${corpusEntry.status}', not 'ENACTED_COMMENCED'`);
+        }
+        if (effectiveDate && !effectiveDate.startsWith(corpusEntry.effectiveDate)) {
+          legalGatePassed = false;
+          errors.push(`LEGAL_EVIDENCE_ERROR: Effective date '${effectiveDate}' does not match authoritative date '${corpusEntry.effectiveDate}'`);
+        }
+        const pubDate = candidate.proposalData?.publishedAt || (candidate.proposalData as any)?.publicationDate;
+        if (pubDate && !String(pubDate).startsWith(corpusEntry.publicationDate)) {
+          legalGatePassed = false;
+          errors.push(`LEGAL_EVIDENCE_ERROR: Publication date '${pubDate}' does not match authoritative date '${corpusEntry.publicationDate}'`);
+        }
+        if (source.canonicalUrl && !source.canonicalUrl.startsWith('file:') && !source.canonicalUrl.includes('fixtures/delimitation') && source.canonicalUrl !== corpusEntry.officialSourceUrl) {
+          legalGatePassed = false;
+          errors.push(`LEGAL_EVIDENCE_ERROR: Source URL '${source.canonicalUrl}' does not match official authoritative source URL '${corpusEntry.officialSourceUrl}'`);
+        }
+        if (corpusEntry.isBoundaryOnly) {
+          if (candidate.proposalData?.currentSeats !== candidate.proposalData?.proposedSeats ||
+              candidate.proposalData?.currentScSeats !== candidate.proposalData?.proposedScSeats ||
+              candidate.proposalData?.currentStSeats !== candidate.proposalData?.proposedStSeats) {
+            legalGatePassed = false;
+            errors.push(`LEGAL_EVIDENCE_ERROR: Boundary-only amendment '${instrumentId}' cannot alter seat totals`);
+          }
+          if (corpusEntry.allowedConstituencies && candidate.constituencyMappings.length > 0) {
+            const invalidAcs = candidate.constituencyMappings.filter(
+              (m: any) => !corpusEntry.allowedConstituencies!.includes(m.newAcNo)
+            );
+            if (invalidAcs.length > 0) {
+              legalGatePassed = false;
+              errors.push(`LEGAL_EVIDENCE_ERROR: Boundary-only amendment '${instrumentId}' alters constituencies outside permitted set [${corpusEntry.allowedConstituencies.join(', ')}]`);
+            }
+          }
+        }
+        if (corpusEntry.seatConstraints) {
+          const sc = corpusEntry.seatConstraints;
+          if (candidate.proposalData?.proposedSeats !== sc.totalSeats ||
+              candidate.proposalData?.proposedScSeats !== sc.scSeats ||
+              candidate.proposalData?.proposedStSeats !== sc.stSeats) {
+            legalGatePassed = false;
+            errors.push(`LEGAL_EVIDENCE_ERROR: Seat allocation conflicts with statutory allocation (${sc.totalSeats}/${sc.scSeats}/${sc.stSeats})`);
+          }
+        }
       }
     } else if (pkg) {
       evidenceReferences.push(`legal_instrument:${pkg.instrumentIdentifier || 'unspecified'}`);

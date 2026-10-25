@@ -28,6 +28,8 @@ export interface CaptureOptions {
   timeoutMs?: number;
   maxResponseBytes?: number;
   allowLocalhost?: boolean;
+  allowInsecureInTest?: boolean;
+  ca?: string | Buffer | Array<string | Buffer>;
   mockDnsResolver?: (hostname: string) => Promise<string[]>;
   mockPayloadProvider?: (source: DelimitationWatchSource) => Promise<{ status: number; body: string; headers?: Record<string, string> }>;
 }
@@ -81,6 +83,8 @@ export class CaptureAdapter {
           timeoutMs,
           maxBytes,
           allowLocalhost: options.allowLocalhost ?? false,
+          allowInsecureInTest: options.allowInsecureInTest ?? false,
+          ca: options.ca,
           mockDnsResolver: options.mockDnsResolver,
           lastEtag: source.lastEtag,
           lastModifiedHeader: source.lastModifiedHeader,
@@ -178,7 +182,7 @@ export class CaptureAdapter {
         contentSha256: createHash('sha256').update('').digest('hex'),
         rawContent: '',
         captureOutcome: errorOutcome,
-        diagnostics: { error: err.message, stack: err.stack },
+        diagnostics: { error: err.message, stack: err.stack, code: err.code },
         createdAt: now,
       };
 
@@ -208,6 +212,8 @@ export class CaptureAdapter {
       timeoutMs: number;
       maxBytes: number;
       allowLocalhost: boolean;
+      allowInsecureInTest?: boolean;
+      ca?: string | Buffer | Array<string | Buffer>;
       mockDnsResolver?: (host: string) => Promise<string[]>;
       lastEtag?: string;
       lastModifiedHeader?: string;
@@ -229,8 +235,10 @@ export class CaptureAdapter {
       // 1. SSRF validate and pin destination
       const destination = await validateAndPinSourceUrl(currentUrl, {
         allowLocalhostForTests: opts.allowLocalhost,
+        allowInsecureInTest: opts.allowInsecureInTest,
         mockDnsResolver: opts.mockDnsResolver,
         timeoutMs: opts.timeoutMs,
+        ca: opts.ca,
       });
 
       // 2. Perform raw HTTP/HTTPS request using custom pinned agent

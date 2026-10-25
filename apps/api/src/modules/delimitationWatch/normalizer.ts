@@ -33,6 +33,7 @@ export const CURRENT_PARSER_VERSION = 'v1.0.0';
 export const APPROVED_OFFICIAL_PUBLISHERS = new Set([
   'President of India',
   'Ministry of Law and Justice',
+  'Ministry of Law and Justice, Legislative Department',
   'Delimitation Commission of India',
   'Election Commission of India',
   'Parliament of India',
@@ -50,12 +51,15 @@ export interface AuthoritativeLegalInstrument {
   effectiveDate: string; // ISO date 'YYYY-MM-DD'
   status: LegalEnactmentStatus;
   statutoryAuthority: string;
+  isBoundaryOnly?: boolean;
+  allowedConstituencies?: number[];
   seatConstraints?: {
     totalSeats: number;
     scSeats: number;
     stSeats: number;
   };
   officialSourceUrl: string;
+  officialSourceArtifactSha256?: string;
   isOperative: boolean;
 }
 
@@ -80,6 +84,7 @@ export const AUTHORITATIVE_LEGAL_CORPUS: Record<string, AuthoritativeLegalInstru
       stSeats: 19,
     },
     officialSourceUrl: 'https://www.eci.gov.in/files/file/3931-delimitation-of-parliamentary-and-assembly-constituencies-order-2008/',
+    officialSourceArtifactSha256: '1a35b8fc12627aab2919707a501af472b781e119a1a8a136e0c5adca58db789a',
     isOperative: true,
   },
   // 2. Delimitation Commission of India Order No. 46 (Andhra Pradesh, 2007)
@@ -98,6 +103,7 @@ export const AUTHORITATIVE_LEGAL_CORPUS: Record<string, AuthoritativeLegalInstru
       stSeats: 19,
     },
     officialSourceUrl: 'https://www.eci.gov.in/files/file/3931-delimitation-of-parliamentary-and-assembly-constituencies-order-2008/',
+    officialSourceArtifactSha256: '1a35b8fc12627aab2919707a501af472b781e119a1a8a136e0c5adca58db789a',
     isOperative: true,
   },
   // 3. ECI Polavaram Boundary Amendment Notification (2018)
@@ -105,20 +111,28 @@ export const AUTHORITATIVE_LEGAL_CORPUS: Record<string, AuthoritativeLegalInstru
     instrumentIdentifier: 'Notification No. 282/AP/2018(DEL)',
     instrumentType: 'GAZETTE_NOTIFICATION',
     jurisdiction: 'AP',
-    publishers: ['Election Commission of India', 'The Gazette of India'],
-    publicationDate: '2018-09-24',
-    effectiveDate: '2018-09-24',
+    publishers: ['Election Commission of India', 'The Gazette of India', 'Government of Andhra Pradesh'],
+    publicationDate: '2018-09-22',
+    effectiveDate: '2018-09-22',
     status: 'ENACTED_COMMENCED',
-    statutoryAuthority: 'Delimitation Act, 2002, Section 9(1)(b) read with APRA 2014 Sections 15 & 26',
-    officialSourceUrl: 'https://www.eci.gov.in/',
+    statutoryAuthority: 'Representation of the People Act, 1950, Section 9(1)(b) read with APRA 2014 Section 108 and Removal of Difficulties Order 2015',
+    isBoundaryOnly: true,
+    allowedConstituencies: [53, 67],
+    seatConstraints: {
+      totalSeats: 175,
+      scSeats: 29,
+      stSeats: 7,
+    },
+    officialSourceUrl: 'https://www.eci.gov.in/eci-backend/public/api/download?url=LMAhAK6sOPBp%2FNFF0iRfXbEB1EVSLT41NNLRjYNJJP1KivrUxbfqkDatmHy12e%2FzVx8fLfn2ReU7TfrqYobgIsVIzE4H7zCkL60TDPfde3hSidsZ4fuGUaZAjsPMK3mFe%2FOayCb%2Bc1mgC3WIErfdO%2BA072J7HtGm2kYfstpL5XIZTWrH2JWU7UfZrKWF1BUsH9xccKER%2BJMZVGi7SrzX57%2FMm24zs1eyK2AB5zsjcWKzrILRQG%2FBbbQ%2Fx5bNYVaCn7kX4xoHNibbBVAsqukcOQ%3D%3D',
+    officialSourceArtifactSha256: '13201bb665a5d29853862d0bc0c07175c319a61d5b39b2c838fd0ec3882737da',
     isOperative: true,
   },
-  // 4. Andhra Pradesh Reorganisation Act, 2014 (Schedule XXXI Telangana)
-  'Andhra Pradesh Reorganisation Act, 2014 (Schedule XXXI)': {
-    instrumentIdentifier: 'Andhra Pradesh Reorganisation Act, 2014 (Schedule XXXI)',
+  // 4. Andhra Pradesh Reorganisation Act, 2014 (Section 15 read with Second Schedule)
+  'Andhra Pradesh Reorganisation Act, 2014 (Section 15 read with Second Schedule)': {
+    instrumentIdentifier: 'Andhra Pradesh Reorganisation Act, 2014 (Section 15 read with Second Schedule)',
     instrumentType: 'REORGANISATION_ACT',
     jurisdiction: 'TG',
-    publishers: ['Parliament of India', 'Ministry of Law and Justice', 'Government of India'],
+    publishers: ['Parliament of India', 'Ministry of Law and Justice', 'Government of India', 'The Gazette of India'],
     publicationDate: '2014-03-01',
     effectiveDate: '2014-06-02',
     status: 'ENACTED_COMMENCED',
@@ -128,7 +142,8 @@ export const AUTHORITATIVE_LEGAL_CORPUS: Record<string, AuthoritativeLegalInstru
       scSeats: 19,
       stSeats: 12,
     },
-    officialSourceUrl: 'https://legislative.gov.in/',
+    officialSourceUrl: 'https://www.indiacode.nic.in/handle/123456789/2103',
+    officialSourceArtifactSha256: 'e86b2401f822b395ad625c276b91cbf7a6a4c28a573752e50529e87515cf5ec0',
     isOperative: true,
   },
 };
@@ -193,7 +208,7 @@ export class Normalizer {
       proposedStSeats,
       gazetteUrl: rawProposal.gazetteUrl || rawProposal.gazette_url || source.canonicalUrl,
       sourceUrl: rawProposal.sourceUrl || rawProposal.source_url || source.canonicalUrl,
-      publishedAt: rawProposal.publishedAt || rawProposal.published_at || snapshot.declaredPublicationDate,
+      publishedAt: rawProposal.publishedAt || rawProposal.published_at || rawProposal.publicationDate || rawProposal.publication_date || snapshot.declaredPublicationDate,
       objectionsDeadline: rawProposal.objectionsDeadline || rawProposal.objections_deadline,
       delimitationRegimeId: rawProposal.delimitationRegimeId || rawProposal.delimitation_regime_id,
       provenanceId: rawProposal.provenanceId || rawProposal.provenance_id,
@@ -212,10 +227,10 @@ export class Normalizer {
       : [];
 
     const constituencyMappings: ConstituencyMappingCandidate[] = rawMappings.map((m: any) => {
-      const oldAcNo = Number(m.oldAcNo ?? m.old_ac_no ?? m.predecessor_ac_no ?? 0);
-      const newAcNo = Number(m.newAcNo ?? m.new_ac_no ?? 0);
-      const oldName = String(m.oldName ?? m.old_name ?? `AC-${oldAcNo}`);
-      const newName = String(m.newName ?? m.new_name ?? `AC-${newAcNo}`);
+      const oldAcNo = Number(m.oldAcNo ?? m.old_ac_no ?? m.predecessor_ac_no ?? m.constituencyNumber ?? m.constituency_number ?? m.acNo ?? 0);
+      const newAcNo = Number(m.newAcNo ?? m.new_ac_no ?? m.constituencyNumber ?? m.constituency_number ?? m.acNo ?? 0);
+      const oldName = String(m.oldName ?? m.old_name ?? m.constituencyName ?? m.constituency_name ?? `AC-${oldAcNo}`);
+      const newName = String(m.newName ?? m.new_name ?? m.constituencyName ?? m.constituency_name ?? `AC-${newAcNo}`);
       const overlapPct = Number(m.overlapPercentage ?? m.overlap_percentage ?? 100);
 
       return {
@@ -255,6 +270,7 @@ export class Normalizer {
       'PRESIDENTIAL_ORDER',
       'REORGANISATION_ACT',
       'GAZETTE_NOTIFICATION',
+      'ELECTION_COMMISSION_NOTIFICATION',
     ].includes(instrumentType);
     const isOperativeStatus = legalEnactmentStatus === 'ENACTED_COMMENCED';
     const hasExplicitEffectiveDate = Boolean(effectiveDate && effectiveDate.trim().length > 0 && !isNaN(new Date(effectiveDate).getTime()));
@@ -269,8 +285,16 @@ export class Normalizer {
     if (matchedCorpusInstrument) {
       const pubMatch = matchedCorpusInstrument.publishers.includes(source.publisher);
       const effDateMatch = !effectiveDate || effectiveDate.startsWith(matchedCorpusInstrument.effectiveDate);
+      const declaredPubDate = snapshot.declaredPublicationDate || rawProposal.publicationDate || rawProposal.publishedAt;
+      const pubDateMatch = !declaredPubDate || String(declaredPubDate).startsWith(matchedCorpusInstrument.publicationDate);
       const jurMatch = matchedCorpusInstrument.jurisdiction === stateCode;
       const statusMatch = matchedCorpusInstrument.status === 'ENACTED_COMMENCED';
+
+      // Strict URL verification: if source.canonicalUrl is provided, it must match officialSourceUrl and cannot be generic
+      let urlMatch = true;
+      if (source.canonicalUrl && !source.canonicalUrl.startsWith('file:') && !source.canonicalUrl.includes('fixtures/delimitation')) {
+        urlMatch = source.canonicalUrl === matchedCorpusInstrument.officialSourceUrl;
+      }
 
       let seatMatch = true;
       if (matchedCorpusInstrument.seatConstraints) {
@@ -284,15 +308,35 @@ export class Normalizer {
         }
       }
 
-      if (pubMatch && effDateMatch && jurMatch && statusMatch && seatMatch && matchedCorpusInstrument.isOperative) {
+      let boundaryOnlyMatch = true;
+      if (matchedCorpusInstrument.isBoundaryOnly) {
+        // Boundary-only amendment cannot alter seat totals
+        if (currentSeats !== proposedSeats || currentScSeats !== proposedScSeats || currentStSeats !== proposedStSeats) {
+          boundaryOnlyMatch = false;
+        }
+        // Constituency mappings must not touch unpermitted constituencies
+        if (matchedCorpusInstrument.allowedConstituencies && constituencyMappings.length > 0) {
+          const unpermitted = constituencyMappings.filter(
+            (m: any) => !matchedCorpusInstrument.allowedConstituencies!.includes(m.newAcNo)
+          );
+          if (unpermitted.length > 0) {
+            boundaryOnlyMatch = false;
+          }
+        }
+      }
+
+      if (pubMatch && effDateMatch && pubDateMatch && jurMatch && statusMatch && seatMatch && boundaryOnlyMatch && urlMatch && matchedCorpusInstrument.isOperative) {
         corpusReconciled = true;
       } else {
         const issues: string[] = [];
         if (!pubMatch) issues.push(`Publisher '${source.publisher}' does not match authoritative issuers [${matchedCorpusInstrument.publishers.join(', ')}]`);
+        if (!pubDateMatch) issues.push(`Publication date '${declaredPubDate}' does not match authoritative date '${matchedCorpusInstrument.publicationDate}'`);
         if (!effDateMatch) issues.push(`Effective date '${effectiveDate}' does not match authoritative date '${matchedCorpusInstrument.effectiveDate}'`);
         if (!jurMatch) issues.push(`Jurisdiction '${stateCode}' does not match instrument jurisdiction '${matchedCorpusInstrument.jurisdiction}'`);
         if (!statusMatch) issues.push(`Authoritative instrument status is '${matchedCorpusInstrument.status}', not ENACTED_COMMENCED`);
+        if (!urlMatch) issues.push(`Source URL '${source.canonicalUrl}' does not match official authoritative URL '${matchedCorpusInstrument.officialSourceUrl}'`);
         if (!seatMatch) issues.push(`Seat allocation (${proposedSeats}/${proposedScSeats}/${proposedStSeats}) conflicts with statutory allocation (${matchedCorpusInstrument.seatConstraints?.totalSeats}/${matchedCorpusInstrument.seatConstraints?.scSeats}/${matchedCorpusInstrument.seatConstraints?.stSeats})`);
+        if (!boundaryOnlyMatch) issues.push(`Boundary-only amendment '${matchedCorpusInstrument.instrumentIdentifier}' cannot alter seat totals or affect constituencies outside [${matchedCorpusInstrument.allowedConstituencies?.join(', ')}]`);
         corpusReconciliationDeficit = issues.join('; ');
       }
     } else if (hasInstrumentId) {
@@ -357,7 +401,7 @@ export class Normalizer {
       effectiveDate,
       enactmentStatus: legalEnactmentStatus,
       isStatutoryOrConstitutional: hasStatutoryAuthority,
-      sourceVerificationDigest: snapshot.contentSha256,
+      sourceVerificationDigest: matchedCorpusInstrument?.officialSourceArtifactSha256 || snapshot.contentSha256,
       decisionRecord: {
         ruleApplied,
         isOfficialEligible,

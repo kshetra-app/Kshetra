@@ -3755,7 +3755,7 @@
 - **Status:** REMEDIATED / TESTED / READY FOR INDEPENDENT CTO ADJUDICATION (ROUND 2)
 - **Authority:** CTO DIRECTIVE — JOB 023 REMEDIATION ROUND 2 / Rule IV-001 Non-Self-Acceptance
 - **Baseline Commit:** `ca919ce362d200407ad253848a2611982cb9872a` (incorporating previous remediation commit `a9d468680111b70f53f006bc2c56c64825639fef`)
-- **Remediation Head Commit:** `760094d93ee43e62a12260173669c5e7b415a77c`
+- **Remediation Head Commit:** `760094d5aa06635920ce72f9f656ef82532f2980` (Implementation) / `85ba860269a43fcfa6ab588e514096525272cfe7` (Round 2 Governance)
 - **Context:** Independent CTO review in Round 2 mandated: (1) investigation and correction of conflated legal instruments in the delimitation fixture; (2) evidence-based OFFICIAL classification backed by authoritative legal corpus and anti-spoofing tests; (3) independent closure of SSRF security claims via socket pinning with TLS SNI/certificate hostname verification and streaming/deadline bounds; (4) durable persistence verification on a separate PostgreSQL 16 server including container restart and concurrent lease locking; (5) governance reconciliation.
 - **Decisions & Implementation Measures:**
   1. **Disentanglement of Legal Instruments & Primary Provenance:**
@@ -3779,3 +3779,56 @@
 - **Verification Evidence:** 81/81 automated tests pass across 8 test suites (7 Route Unit, 10 Truth Adversarial, 16 Hardened SSRF, 5 Persistence Lifecycle, 19 Invariants, 5 PGlite Integration, 7 Dedicated PostgreSQL 16 Server Integration, 12 Controlled Acceptance Steps).
 - **Environment Isolation:** Staging database (`fkpigozcqnmcvofuksar`) and Production database (`ehfafcnimmjusyvplbah`) remain 100% untouched and air-gapped (0 queries, 0 mutations).
 - **Submission:** Formally submitted under Rule IV-001 Non-Self-Acceptance as REMEDIATED / TESTED / READY FOR INDEPENDENT CTO ADJUDICATION (ROUND 2).
+
+---
+
+### DEC-157: Job 023 Round 3 Acceptance Blocker Closure (Commit Lineage, 2018 ECI Legal Dossier, TLS Transport Verification, PostgreSQL Test Safety Guard, and Battery Closure)
+- **Date:** 2026-10-25
+- **Status:** REMEDIATED / TESTED / READY FOR INDEPENDENT CTO ADJUDICATION (ROUND 3)
+- **Authority:** CTO DIRECTIVE — JOB 023 ROUND 3: CLOSE REMAINING ACCEPTANCE BLOCKERS / Rule IV-001 Non-Self-Acceptance
+- **Implementation Commit:** `760094d5aa06635920ce72f9f656ef82532f2980`
+- **Round 2 Governance Head:** `85ba860269a43fcfa6ab588e514096525272cfe7`
+- **Current Remote Master Head:** `b51301f5557d8e2f7902d532a8996d6f7ab834ff` (tree: `c02fd849a58a282121474d2a2cccf5c9fd42d333`)
+- **Context:** Independent CTO review of Job 023 Round 2 identified five remaining acceptance blockers:
+  1. Commit identity error: Truncated Git log output was recorded as false SHA `760094d93ee43e62a12260173669c5e7b415a77c`.
+  2. 2018 corpus discrepancy: ECI Notification No. 282/AP/2018(DEL) was recorded with publication/effective date 2018-09-24 instead of official statutory date 22.09.2018; generic ECI homepage URL stored instead of primary source; boundary-only scope lacked constituency/seat constraints; APRA 2014 entry cited non-existent "Schedule XXXI".
+  3. TLS verification path: Testing standalone `tls.checkServerIdentity` did not prove the real transport path (TCP connect to pinned IP + TLS SNI + root CA verification + hostname check).
+  4. PostgreSQL test safety: `tests/delimitation-watch-postgres-server-integration.test.mjs` lacked safety by construction against running destructive SQL on non-test or cloud databases.
+  5. Verification battery execution: Battery required re-execution tying all test receipts to the verified tree.
+- **Decisions & Implementation Measures:**
+  1. **Commit Lineage & Identity Correction (Finding 1):**
+     - Expunged false SHA `760094d93ee43e62a12260173669c5e7b415a77c` across all registers and manifests.
+     - Formally distinguished actual implementation commit `760094d5aa06635920ce72f9f656ef82532f2980`, Round 2 governance head `85ba860269a43fcfa6ab588e514096525272cfe7`, and remote master head `b51301f5557d8e2f7902d532a8996d6f7ab834ff`.
+  2. **ECI 2018 Legal Primary Source Acquisition & Corpus Hardening (Finding 2):**
+     - Discovered exact official ECI download API endpoint and downloaded primary signed statutory PDF: `data/evidence/delimitation/authoritative/eci_notification_282_ap_2018_del.pdf` (artifact SHA-256 `13201bb665a5d29853862d0bc0c07175c319a61d5b39b2c838fd0ec3882737da`).
+     - Reconciled date discrepancy: Notification is dated 22 September 2018 (`2018-09-22`) for Gazette publication on 22.09.2018; 2018-09-24 was the Microsoft Word export metadata timestamp.
+     - Documented legal scope in `data/evidence/delimitation/authoritative/eci_notification_282_ap_2018_polavaram_dossier.md`: operates under RP Act 1950 § 9(1)(b) as a boundary-only amendment for AC-53 (Rampachodavaram) and AC-67 (Polavaram) transferring Polavaram mandals without altering total assembly seats (residual AP seats: 175, SC 29, ST 7).
+     - Encoded boundary constraints in `AUTHORITATIVE_LEGAL_CORPUS` and Check 12 in `validator.ts`.
+     - Corrected APRA 2014 entry to cite Section 15 read with Second Schedule (Schedule XXXI does not exist).
+     - Added adversarial tests TRUTH-11 to TRUTH-15 covering wrong date, generic URL, boundary seat alteration claims, fake schedules, and authentic qualification (15/15 PASS).
+  3. **End-to-End TLS Hostname Verification over Pinned IP Transport (Finding 3):**
+     - Generated controlled test certificate fixtures (`ca.crt`, `ca.key`, `server.crt`, `server.key`) signed by `CN=DelimitationTestRootCA` with SAN `DNS:valid.delimitation.gov.in`.
+     - Enhanced `tests/delimitation-watch-ssrf-hardened.test.mjs` with an isolated HTTPS test server.
+     - Replaced SSRF-15 with SSRF-15A through SSRF-15F proving: agent callback verification, end-to-end HTTPS success when hostname matches cert over pinned socket, rejection with `ERR_TLS_CERT_ALTNAME_INVALID` on hostname mismatch over pinned socket, rejection of untrusted CA, and fail-closed capture adapter behavior (21/21 PASS).
+  4. **PostgreSQL Test Safety Guard by Construction (Finding 4):**
+     - Implemented `assertPostgresIntegrationSafe` helper in `tests/helpers/postgresTestSafety.mjs`.
+     - Refuses destructive SQL unless: (1) explicit opt-in `ENABLE_JOB023_POSTGRES_INTEGRATION=true` is set, (2) host is strictly loopback (`127.0.0.1`), (3) database matches dedicated test pattern (`job023_delimitation_test` or `job023_disposable_*`), (4) live database identity query (`SELECT current_database(), inet_server_addr()`) matches before any DDL or DROP TABLE.
+     - Rejects all cloud managed databases (Supabase, AWS RDS, Railway, Neon, etc.) and production database names (`postgres`, `kshetra`, `production`, etc.).
+     - Built dedicated negative test suite `tests/delimitation-watch-postgres-server-safety.test.mjs` (8/8 PASS).
+  5. **Full Battery Verification & Evidence Closure (Finding 5):**
+     - Full verification battery executed: 99/99 automated tests PASS (100%) across 9 suites.
+     - Package TypeScript builds (`packages/shared`, `apps/api`) verified clean (0 errors).
+     - API contract drift verified (9/9 matched, 100% parity).
+     - Updated portable acceptance manifest `reports/evidence/JOB_023_ACCEPTANCE_MANIFEST.json`.
+- **Verification Evidence:** 99/99 automated tests pass across 9 test suites:
+  1. `delimitation-watch-routes.test.ts`: 7/7 PASS
+  2. `delimitation-watch-data-truth-adversarial.test.mjs`: 15/15 PASS
+  3. `delimitation-watch-ssrf-hardened.test.mjs`: 21/21 PASS
+  4. `delimitation-watch-postgres-server-safety.test.mjs`: 8/8 PASS
+  5. `delimitation-watch-postgres-server-integration.test.mjs` (PostgreSQL 16 Server): 7/7 PASS
+  6. `delimitation-watch-persistence-lifecycle.test.mjs`: 5/5 PASS
+  7. `delimitation-watch-mandatory-invariants.test.mjs`: 19/19 PASS
+  8. `delimitation-watch-postgres-integration.test.mjs` (PGlite): 5/5 PASS
+  9. `delimitation-watch-controlled-e2e.test.mjs`: 12/12 PASS
+- **Environment Isolation:** Staging database (`fkpigozcqnmcvofuksar`) and Production database (`ehfafcnimmjusyvplbah`) remain strictly air-gapped (0 queries, 0 mutations).
+- **Submission:** Formally submitted under Rule IV-001 Non-Self-Acceptance as REMEDIATED / TESTED / READY FOR INDEPENDENT CTO ADJUDICATION (ROUND 3).

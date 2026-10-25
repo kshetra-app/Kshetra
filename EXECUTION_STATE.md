@@ -41,13 +41,15 @@ CURRENT_JOB:           W021.5 STAGE B — SOURCE ACQUISITION & GEOMETRY VALIDATI
 LAST_COMPLETED_JOB:    W022 (B2B SaaS Webhook Engine & Zero-Trust Dispatcher)
 NEXT_PERMITTED_JOB:    W021.5 STAGE B ONLY — COMPLETE EVIDENCE PACKET; STOP FOR CTO ADJUDICATION BEFORE STAGE C
 
-JOB_023_STATUS:        REMEDIATED / TESTED / READY FOR INDEPENDENT CTO ADJUDICATION
-JOB_023_BASELINE:      33945d20f318ae1aa0d9aba35052246599c5bbae
+JOB_023_STATUS:        REMEDIATED / TESTED / READY FOR INDEPENDENT CTO ADJUDICATION (ROUND 3)
+JOB_023_IMPL_COMMIT:   760094d5aa06635920ce72f9f656ef82532f2980
+JOB_023_GOV_HEAD:      85ba860269a43fcfa6ab588e514096525272cfe7
+JOB_023_REMOTE_HEAD:   b51301f5557d8e2f7902d532a8996d6f7ab834ff
 JOB_023_MIGRATION_071: supabase/migrations/071_delimitation_watch_engine.sql
 JOB_023_EVIDENCE:      reports/evidence/JOB_023_ACCEPTANCE_MANIFEST.json
-JOB_023_TEST_BATTERY:  70/70 PASS (10 Truth Adversarial, 12 Hardened SSRF, 5 Persistence Lifecycle, 19 Invariants, 5 DB Integration, 7 Route Unit, 12 Controlled Acceptance Steps)
-JOB_023_STAGING_STATUS: AIR-GAPPED (0 mutations)
-JOB_023_PROD_STATUS:   AIR-GAPPED (0 mutations)
+JOB_023_TEST_BATTERY:  99/99 PASS (7 Unit Routes, 15 Truth Adversarial, 21 Hardened SSRF, 8 PG Safety Guards, 7 PG16 Server, 5 Persistence, 19 Invariants, 5 PGlite, 12 Controlled E2E)
+JOB_023_STAGING_STATUS: AIR-GAPPED (0 mutations, 0 queries)
+JOB_023_PROD_STATUS:   AIR-GAPPED (0 mutations, 0 queries)
 
 W022_PLAN:                            PLAN-W022-REV-1.0.md REVISION 4
 W022_STATUS:                          IMPLEMENTATION PRESENT / CONTINUATION PERMITTED / INDEPENDENT VERIFICATION PENDING
@@ -560,23 +562,26 @@ REMOTE_SYNC:           Up to date with origin/master
 
 ---
 
-## JOB 023 — Delimitation Watch Remediation Execution State (2026-10-25 Round 2)
+## JOB 023 — Delimitation Watch Remediation Execution State (2026-10-25 Round 3)
 
-- **Authority:** CTO DIRECTIVE — JOB 023 REMEDIATION ROUND 2
-- **Baseline Commit:** `ca919ce362d200407ad253848a2611982cb9872a` (incorporating previous remediation commit `a9d468680111b70f53f006bc2c56c64825639fef`)
-- **Remediation Head Commit:** `760094d93ee43e62a12260173669c5e7b415a77c`
-- **Status:** REMEDIATED / TESTED / READY FOR INDEPENDENT CTO ADJUDICATION (ROUND 2) (Rule IV-001 Non-Self-Acceptance strictly enforced)
-- **Finding A (Authoritative Legal Provenance & Data Truth):** Disentangled conflated instruments: Delimitation Commission Order No. 38 (issued Jan 2007 for Madhya Pradesh, not AP) vs Delimitation Commission Order No. 46 (signed 31 May 2007 under Section 10(1), Notification 282/AP/2007-III; status `PROPOSED_DRAFT`) vs Presidential Order S.O. 382(E) (promulgated 19 Feb 2008, bringing Delimitation of Parliamentary and Assembly Constituencies Order, 2008 into legal force across AP under Schedule II; status `ENACTED_COMMENCED`). Reconciled statutory composite AP Assembly seat allocation to 294 Total, 48 SC, 19 ST (eliminating erroneous 31 ST). Compiled primary legal dossier at `data/evidence/delimitation/authoritative/delcom_order_46_2007_and_presidential_order_2008.md` with official ECI source URLs and cryptographic SHA-256 digests. Integrated `AUTHORITATIVE_LEGAL_CORPUS` in `normalizer.ts` and Check 12 in `validator.ts`, guaranteeing that no source can achieve `OFFICIAL` status via plausible metadata alone. Verified by 10/10 adversarial tests in `tests/delimitation-watch-data-truth-adversarial.test.mjs`.
-- **Finding B (Exhaustive SSRF & Transport Security Closure):** Socket pinning with strict TLS SNI and certificate hostname verification (`tls.checkServerIdentity(hostname, cert)`) ensuring certificates are verified against domain names rather than pinned IP addresses; enforced overall request deadline budget (`timeoutMs`); streaming response body 10MB bounds with immediate socket destruction; manual redirect handling bounded to 3 hops with loop detection and HTTPS-to-HTTP downgrade prohibition; zero-trust DNS failing closed on mixed public/private answers. Verified by 16/16 hardened adversarial tests in `tests/delimitation-watch-ssrf-hardened.test.mjs`.
-- **Finding C (Durable Persistence on Dedicated PostgreSQL 16 Server):** Proved durable persistence on isolated Docker PostgreSQL 16 server (`job023-verify-postgres` on `127.0.0.1:54334`), executing Migration 071 DDL. Verified all 9 tables, ON DELETE RESTRICT foreign keys, and indexes. Proved complete 8-stage lifecycle persistence, cross-client recreation, persistence across PostgreSQL container restart, distributed lease locking (`acquireSourceLock`/`releaseSourceLock` token safety and auto-expiry), baseline preservation on invalid fixture rejection, and fail-closed runtime (`NODE_ENV=production` without `DATABASE_URL` throws 503 `PERSISTENCE_CONFIGURATION_ERROR`). Real connection pool using `pg.Pool` with `pool.on('error')` handling. Verified by 7/7 tests in `tests/delimitation-watch-postgres-server-integration.test.mjs` and 5/5 PGlite tests.
-- **Finding D (Evidence Reconciliation & Acceptance Manifest):** Portable machine-readable manifest `reports/evidence/JOB_023_ACCEPTANCE_MANIFEST.json` updated with full suite inventory, accurately differentiating between PGlite and dedicated PostgreSQL 16 server integration, non-enacted proposals classified strictly as `UNVERIFIED`/`PROPOSAL` with `canonicalViewUpdated: false`.
-- **Test Battery:** 81/81 PASS across 8 suites:
+- **Authority:** CTO DIRECTIVE — JOB 023 ROUND 3: CLOSE REMAINING ACCEPTANCE BLOCKERS
+- **Implementation Commit:** `760094d5aa06635920ce72f9f656ef82532f2980`
+- **Round 2 Governance Head:** `85ba860269a43fcfa6ab588e514096525272cfe7`
+- **Current Remote Master Head:** `b51301f5557d8e2f7902d532a8996d6f7ab834ff` (tree: `c02fd849a58a282121474d2a2cccf5c9fd42d333`)
+- **Status:** REMEDIATED / TESTED / READY FOR INDEPENDENT CTO ADJUDICATION (ROUND 3) (Rule IV-001 Non-Self-Acceptance strictly enforced)
+- **Finding 1 (Commit Lineage & Identity Correction):** Corrected truncated false SHA `760094d93ee43e62a12260173669c5e7b415a77c` across all 5 registers and evidence manifests. Accurately recorded implementation commit `760094d5aa06635920ce72f9f656ef82532f2980`, Round 2 governance commit `85ba860269a43fcfa6ab588e514096525272cfe7`, and remote master head `b51301f5557d8e2f7902d532a8996d6f7ab834ff` distinctly.
+- **Finding 2 (ECI 2018 Corpus Reconciliation & Boundary Scope):** Reconciled ECI Notification No. 282/AP/2018(DEL) against primary source document. Discovered official ECI backend download endpoint, downloaded original signed statutory document to `data/evidence/delimitation/authoritative/eci_notification_282_ap_2018_del.pdf` (artifact SHA-256 `13201bb665a5d29853862d0bc0c07175c319a61d5b39b2c838fd0ec3882737da`). Discrepancy resolved: statutory document date is 22 September 2018 (`2018-09-22`) for Gazette publication on 22.09.2018; 2018-09-24 was Word export metadata. Document operates under Section 9(1)(b) of the RP Act, 1950 as a boundary-only amendment for AC-53 (Rampachodavaram) and AC-67 (Polavaram) transferring Polavaram submerged mandals from Khammam (TG) to AP, altering zero seat counts. Encoded boundary constraints in `normalizer.ts` and `validator.ts`. Corrected APRA 2014 entry to Section 15 read with Second Schedule (Schedule XXXI does not exist). Added adversarial tests TRUTH-11 to TRUTH-15 (15/15 PASS).
+- **Finding 3 (End-to-End TLS Hostname Verification over Pinned Socket):** Proven real TLS transport path. Built local HTTPS test server presenting controlled certificates generated by isolated Root CA (`CN=DelimitationTestRootCA`). Pinned HTTPS agent enforces SNI, Root CA verification, and direct IP socket connection to `127.0.0.1`. Rejection with `ERR_TLS_CERT_ALTNAME_INVALID` on hostname mismatch proven end-to-end through real transport in SSRF-15A through SSRF-15F (21/21 PASS).
+- **Finding 4 (PostgreSQL Integration Safe by Construction):** Implemented strict safety guard `assertPostgresIntegrationSafe` in `tests/helpers/postgresTestSafety.mjs`. Refuses destructive SQL unless explicit opt-in is enabled (`ENABLE_JOB023_POSTGRES_INTEGRATION=true`), host is strictly loopback (`127.0.0.1`), database matches dedicated test pattern (`job023_delimitation_test`), and live server identity check (`SELECT current_database(), inet_server_addr()`) matches before any DDL or table dropping. Cloud providers (Supabase, AWS, etc.) and production database names are strictly rejected. Added 8 negative safety tests in `tests/delimitation-watch-postgres-server-safety.test.mjs` (8/8 PASS).
+- **Finding 5 (Verification Battery):** Executed full battery of 9 test suites: 99/99 PASS (100%). Package builds (`packages/shared`, `apps/api`) clean (0 errors), API contract drift check (100% parity, 0 drift).
+- **Test Battery Breakdown (99/99 PASS):**
   1. `delimitation-watch-routes.test.ts`: 7/7 PASS
-  2. `delimitation-watch-data-truth-adversarial.test.mjs`: 10/10 PASS
-  3. `delimitation-watch-ssrf-hardened.test.mjs`: 16/16 PASS
-  4. `delimitation-watch-persistence-lifecycle.test.mjs`: 5/5 PASS
-  5. `delimitation-watch-mandatory-invariants.test.mjs`: 19/19 PASS
-  6. `delimitation-watch-postgres-integration.test.mjs` (PGlite): 5/5 PASS
-  7. `delimitation-watch-postgres-server-integration.test.mjs` (PostgreSQL 16 Server): 7/7 PASS
-  8. `delimitation-watch-controlled-e2e.test.mjs`: 12/12 PASS
-- **Environment Isolation:** Staging database (`fkpigozcqnmcvofuksar`) and Production database (`ehfafcnimmjusyvplbah`) remain 100% untouched and air-gapped (0 queries, 0 mutations).
+  2. `delimitation-watch-data-truth-adversarial.test.mjs`: 15/15 PASS
+  3. `delimitation-watch-ssrf-hardened.test.mjs`: 21/21 PASS
+  4. `tests/delimitation-watch-postgres-server-safety.test.mjs`: 8/8 PASS
+  5. `tests/delimitation-watch-postgres-server-integration.test.mjs` (PostgreSQL 16 Server): 7/7 PASS
+  6. `delimitation-watch-persistence-lifecycle.test.mjs`: 5/5 PASS
+  7. `delimitation-watch-mandatory-invariants.test.mjs`: 19/19 PASS
+  8. `delimitation-watch-postgres-integration.test.mjs` (PGlite): 5/5 PASS
+  9. `delimitation-watch-controlled-e2e.test.mjs`: 12/12 PASS
+- **Environment Isolation:** Staging database (`fkpigozcqnmcvofuksar`) and Production database (`ehfafcnimmjusyvplbah`) remain strictly air-gapped (0 queries, 0 mutations).

@@ -21,6 +21,7 @@ import * as fs from 'node:fs';
 import { execSync } from 'node:child_process';
 import pg from 'pg';
 const { Pool } = pg;
+import { assertPostgresIntegrationSafe } from './helpers/postgresTestSafety.mjs';
 
 import { DelimitationWatchOrchestrator } from '../apps/api/src/modules/delimitationWatch/orchestrator.ts';
 import { PostgresDelimitationWatchRepository } from '../apps/api/src/modules/delimitationWatch/persistence.ts';
@@ -50,6 +51,10 @@ describe('Job 023 — Dedicated PostgreSQL 16 Server Integration Suite', () => {
     // 1. Connect to isolated PostgreSQL 16 server
     pool = new Pool({ connectionString: PG_SERVER_URL });
     pool.on('error', () => {}); // Handle idle socket termination during container restart
+
+    // Safety Guard: Require explicit opt-in, loopback address, dedicated DB name, and live server identity check
+    await assertPostgresIntegrationSafe(pool, PG_SERVER_URL, process.env);
+
     const versionRes = await pool.query('SELECT version();');
     assert.ok(versionRes.rows[0].version.includes('PostgreSQL 16'), 'Must connect to a real PostgreSQL 16 server');
 
