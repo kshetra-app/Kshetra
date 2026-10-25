@@ -6,6 +6,7 @@
 
 | Job ID | Feature / Milestone | Owner | Status | Commit SHA | Automated Tests | Evidence & Artifacts | Verified Prod | Accepted Date |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| **W022** | B2B SaaS Outbound Webhooks & Event Dispatching Engine | BE+SEC+QA | IMPLEMENTATION PRESENT / CONTINUATION AUTHORIZED / INDEPENDENT VERIFICATION PENDING — NOT ACCEPTED | `3ac3f1c0c14d51d60bab9f9d3e88a08716466124` (historical implementation); prospective authorization `39d0b680b7d266e73385edbbb96caff61e23d184` | Fresh tests required on current commit; not independently re-established here | `PLAN-W022-REV-1.0.md` Rev 4; CTO directive; evidence pending | NOT VERIFIED / NO RELEASE AUTHORIZED | — |
 | **W000** | Ground-Truth Baseline & Codebase Audit | ARCH | ACCEPTED (RECONCILED) | `e0b67b9` | `tsc --noEmit` (API + Mobile); `scripts/reconcile-w000.mjs` | `reports/w000_*.json`, `reports/w000_acceptance_report.md` | In-repo verified | 2026-09-08 |
 | **W000-REC** | W000 Evidence Reconciliation & Reproducibility | ARCH | COMPLETE | `e0b67b9` | `scripts/reconcile-w000.mjs`; `tsc` API (0 err) & Mobile (0 err) | `scratch/w000_*.json`, `reports/w000_*.json`, `reports/w000_acceptance_report.md` | Fully reconciled & reproducible | 2026-09-08 |
 | **W000-REC2**| Audit Method & State Reconciliation | ARCH | REOPENED | `7d89b3e` | View parser regex lacked IF NOT EXISTS; false view IF | `reports/w000_rec2_report.*` | Reopened per IV review | 2026-09-08 |
