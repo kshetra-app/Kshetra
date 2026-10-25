@@ -56,11 +56,10 @@ export interface StateMapSeatProjection {
   seatChange: number;
   population: number;
   popPerSeat: number;
-  reservedSC: number;
-  reservedST: number;
-  general: number;
-  deviationPercent: number;
-  [key: string]: unknown;
+  idealPopulationPerSeat?: number;
+  outputClassification?: 'PANIN_SCENARIO';
+  officialDelimitationOrder?: false;
+
 }
 
 export interface StateMapHierarchyAvailability {
