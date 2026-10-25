@@ -2,20 +2,18 @@ name: Security — SAST, SCA & SBOM
 
 on:
   pull_request:
-    branches: [main, develop]
+    branches: [master, main, develop]
   push:
-    branches: [main, develop]
+    branches: [master, main, develop]
   schedule:
-    # Weekly supply-chain re-scan (Mondays 06:00 UTC)
     - cron: "0 6 * * 1"
+
+permissions:
+  contents: read
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
-
-permissions:
-  contents: read
-  security-events: write
 
 jobs:
   sca:
@@ -26,34 +24,31 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: 'npm'
+          cache: npm
+      - name: Install locked dependencies
+        run: npm ci
       - name: npm audit (high+)
         run: npm audit --audit-level=high
-        continue-on-error: true
       - name: OSV Scanner
         uses: google/osv-scanner-action@v1
         with:
           scan-args: |-
             --lockfile=package-lock.json
-        continue-on-error: true
 
   sast:
     name: Static Analysis (SAST)
     runs-on: ubuntu-latest
-    container:
-      image: returntocorp/semgrep
     steps:
       - uses: actions/checkout@v4
       - name: Semgrep scan
-        run: semgrep ci
-        env:
-          SEMGREP_RULES: >-
+        uses: returntocorp/semgrep-action@v1
+        with:
+          config: >-
             p/typescript
             p/react
             p/nodejsscan
             p/owasp-top-ten
             p/secrets
-        continue-on-error: true
 
   sbom:
     name: SBOM (CycloneDX)
@@ -63,15 +58,16 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: 'npm'
-      - name: Install dependencies
+          cache: npm
+      - name: Install locked dependencies
         run: npm ci
       - name: Generate CycloneDX SBOM
         run: npx @cyclonedx/cyclonedx-npm --output-file sbom.cdx.json
-        continue-on-error: true
+      - name: Verify SBOM exists and is non-empty
+        run: test -s sbom.cdx.json
       - name: Upload SBOM artifact
         uses: actions/upload-artifact@v4
         with:
           name: sbom
           path: sbom.cdx.json
-          if-no-files-found: warn
+          if-no-files-found: error
