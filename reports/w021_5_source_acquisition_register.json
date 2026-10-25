@@ -329,7 +329,21 @@
         "officialDownloads": 4,
         "secondaryCandidateDownloads": 4
       },
-      "status": "PARTIAL_ACQUISITION_COMPLETE; OFFICIAL ECI SOURCE RETRY PENDING"
+      "status": "PARTIAL_ACQUISITION_COMPLETE; OFFICIAL ECI SOURCE RETRY PENDING",
+      "artifactZipIntegrity": "INDEPENDENTLY_REHASHED_MATCH",
+      "artifactZipSha256Verified": "87c31c94d7eb302ecba5a966167cb849f114a685d7ebad146721d04a95e69163",
+      "localSourceVerification": {
+        "environment": "GeoPandas 1.1.2 / Shapely 2.1.2 / Fiona 1.10.1 / PyProj 3.7.2",
+        "crs": "EPSG:4326",
+        "features": 4182,
+        "uniqueStateAcNumberPairs": 4102,
+        "duplicateExtraRows": 80,
+        "invalidGeometries": 6,
+        "emptyGeometries": 0,
+        "nullConstituencyNames": 34,
+        "distinctSourceStateNames": 30,
+        "status": "CONFIRMED_REJECTED_AS_PRODUCTION_GEOMETRY"
+      }
     },
     {
       "runId": 40211792541,
@@ -354,7 +368,7 @@
       "scope": "Focused read-only probe of the five official ECI May-2026 AC geometry endpoints plus Telangana official ArcGIS layer metadata and geometry query. Raw response bytes and failed-response bodies are hashed/preserved in the artifact; structural checks are not legal/topology acceptance."
     }
   ],
-  "updatedAt": "2026-10-25T16:32:00Z",
+  "updatedAt": "2026-10-25T16:33:00Z",
   "notes": [
     "Actual public source artifacts were downloaded in GitHub Actions run 40209022405 and SHA-256 hashed; detailed geometry findings are in reports/w021_5_datameet_ac_geometry_forensic_audit.json.",
     "Survey of India official ABDB page, Vector Data Catalog 2025 PDF and Metadata_ABDB.zip were downloaded and hashed. The metadata covers state, district, subdistrict and village boundaries, not statutory Assembly Constituency polygons.",
