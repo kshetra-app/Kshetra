@@ -30,7 +30,7 @@ jobs:
       - name: npm audit (high+)
         run: npm audit --audit-level=high
       - name: OSV Scanner
-        run: docker run --rm -v "$PWD:/src" -w /src ghcr.io/google/osv-scanner-action:v2.4.0 scan source -r .
+        run: docker run --rm -v "$PWD:/src" -w /src ghcr.io/google/osv-scanner:v2.4.0 scan source -r .
 
   sast:
     name: Static Analysis (SAST)
