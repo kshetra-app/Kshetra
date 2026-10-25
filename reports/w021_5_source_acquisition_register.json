@@ -908,13 +908,14 @@
       "retrievedAt": "2026-10-25",
       "format": "PDF",
       "authority": "PRIMARY_OFFICIAL_LEGAL_SOURCE",
-      "status": "PRIMARY_INDIACODE_AND_ECI_FETCHES_TIMED_OUT_FALLBACK_GOVERNMENT_HOSTS_PROBE_QUEUED",
-      "sha256": null,
-      "fileBytes": null,
+      "status": "DOWNLOADED_HASHED_GOVERNMENT_HOSTED_GAZETTE_COPY; STATUTORY_ROSTER_PARSE_WORKFLOW_ADDED",
+      "sha256": "84cd566b917f9a3f600c47f6540520c950166b424a964ad37d64dc3c968114aa",
+      "fileBytes": 231596,
       "version": "Act No. 6 of 2014",
       "limitations": [
         "Must be reconciled with the 2008 order and later ECI notifications/Gazette instruments.",
-        "PDF acquisition/hash and page-level extraction pending workflow evidence."
+        "PDF acquisition/hash and page-level extraction pending workflow evidence.",
+        "The PDF is a government-hosted copy of the Gazette of India; exact byte identity with the India Code-hosted copy has not been compared."
       ],
       "plannedUse": "Establish AP/Telangana statutory partition and source the Second Schedule crosswalk.",
       "alternativeGovernmentHostedCopies": [
@@ -928,7 +929,19 @@
         "artifactSha256": "7c01c54d21f87ff5038b1cd0120462eb0f822845b396a2f9808aecf20e6285d7",
         "result": "India Code, ECI 2024 PDF, and optional IndiaCode order URL each timed out after 60 seconds with zero bytes. No source bytes or source SHA-256 acquired."
       },
-      "nextProbe": "workflow run 40218632258 — retries government-hosted Gazette copy from APSeeds/TGERC first; IndiaCode and ECI press note are fallback/corroborative candidates."
+      "nextProbe": "workflow run 40218632258 — retries government-hosted Gazette copy from APSeeds/TGERC first; IndiaCode and ECI press note are fallback/corroborative candidates.",
+      "selectedUrl": "https://apseeds.ap.gov.in/PDF/apreorg/APRegACT2014.pdf",
+      "pdfPageCount": 71,
+      "evidenceReport": "reports/evidence/w021_5_ap_reorganisation_act_acquisition_40218632258.json",
+      "sourceAuthority": "GAZETTE_OF_INDIA_COPY_HOSTED_ON_AP_GOVERNMENT_DOMAIN",
+      "canonicalByteIdentityComparedToIndiaCode": false,
+      "lastSuccessfulProbe": {
+        "workflowRunId": 40218632258,
+        "workflowUrl": "https://github.com/kshetra-app/Kshetra/actions/runs/40218632258",
+        "artifactId": 12609010429,
+        "artifactSha256": "ca42d6ecc1492656f09bc6406f699ed64541f064bf77d37e42a32c0ba1bda031",
+        "result": "HTTP 200 PDF; 231596 bytes; SHA-256 recorded; 71 pages; Schedule XXVII located on zero-based page index 39; roster parse added to next workflow."
+      }
     },
     {
       "sourceId": "SRC-ECI-GE-2024-PRESS-NOTE-23",
@@ -1572,5 +1585,5 @@
     ],
     "acceptedAsCanonical": false
   },
-  "lastDecision": "Primary source endpoints timed out from the GitHub runner. Do not bypass network controls; use the state-government-hosted original Gazette copy as a fallback, preserve exact bytes/hash, and continue to treat source lineage as a verification requirement."
+  "lastDecision": "The government-hosted Gazette PDF copy is acquired and hashed. Next, parse Schedule XXVII into 119 structured AC records, validate serial sequence and compare names/extents with the Telangana GIS candidates. Keep legal effective-date chain and independent adjudication open."
 }
