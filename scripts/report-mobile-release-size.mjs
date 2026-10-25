@@ -47,7 +47,7 @@ function jsonMap(file) {
     return null;
   }
 }
-function normalizedSource(source) { return source.replaceAll('\\\\', '/').toLowerCase(); }
+function normalizedSource(source) { return source.split(String.fromCharCode(92)).join('/').toLowerCase(); }
 function isGeographySource(source) {
   const s = normalizedSource(source);
   return s.includes('/data/seed/') || s.includes('/apps/mobile/data/') || s.endsWith('.geojson')
@@ -61,8 +61,8 @@ function isForbiddenNationalSeed(source) {
 }
 
 const files = walk(resolve(bundleDir));
-const sourceMaps = files.filter((file) => /\\.(?:js\\.)?map$/.test(file));
-const bundles = files.filter((file) => /\\.(?:bundle|hbc|js)$/.test(file) && !/\\.map$/.test(file));
+const sourceMaps = files.filter((file) => file.endsWith('.map') || file.endsWith('.js.map'));
+const bundles = files.filter((file) => ['.bundle', '.hbc', '.js'].some((suffix) => file.endsWith(suffix)) && !file.endsWith('.map'));
 const sources = new Map();
 for (const file of sourceMaps) {
   const map = jsonMap(file);
@@ -84,8 +84,8 @@ const geoBundledSourceBytes = geoRows.reduce((n, row) => n + (row.bytes ?? 0), 0
 function zipEntries(file) {
   const listing = execFileSync('unzip', ['-l', file], { encoding: 'utf8', maxBuffer: 20 * MiB });
   const rows = [];
-  for (const line of listing.split(/\\r?\\n/)) {
-    const match = line.match(/^\\s*(\\d+)\\s+\\S+\\s+\\S+\\s+(.+)$/);
+  for (const line of listing.split(String.fromCharCode(10))) {
+    const match = line.trim().match(/^([0-9]+)\\s+(.+)$/);
     if (match) rows.push({ name: match[2].trim(), bytes: Number(match[1]) });
   }
   return rows;
@@ -94,10 +94,10 @@ function archiveReport(path, kind) {
   if (!existsSync(path)) throw new Error(`Missing ${kind} release artifact: ${path}`);
   const entries = zipEntries(path);
   const total = (predicate) => entries.filter((e) => predicate(e.name)).reduce((n, e) => n + e.bytes, 0);
-  const js = total((name) => /(^|\\/)assets\\/index\\.android\\.bundle$/.test(name) || /(^|\\/)index\\.android\\.bundle$/.test(name));
-  const assets = total((name) => /(^|\\/)assets\\//.test(name) && !/index\\.android\\.bundle$/.test(name));
-  const native = total((name) => /(^|\\/)lib\\/[^/]+\\/[^/]+\\.so$/.test(name));
-  const dex = total((name) => /(^|\\/)classes(?:[0-9]+)?\\.dex$/.test(name));
+  const js = total((name) => name.endsWith('/assets/index.android.bundle') || name === 'assets/index.android.bundle' || name.endsWith('/index.android.bundle') || name === 'index.android.bundle');
+  const assets = total((name) => (name.includes('/assets/') || name.startsWith('assets/')) && !name.endsWith('index.android.bundle'));
+  const native = total((name) => name.includes('/lib/') && name.endsWith('.so'));
+  const dex = total((name) => name.endsWith('.dex') && (name.includes('/classes') || name.startsWith('classes')));
   return {
     kind,
     path: relative(process.cwd(), resolve(path)),
