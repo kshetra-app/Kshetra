@@ -2,9 +2,11 @@ import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 import dotenv from 'dotenv';
 import path from 'path';
 
-if (!process.env.SUPABASE_URL) {
+// Never source .env or staging credentials in a production process. Production
+// credentials must be injected explicitly by the deployment environment.
+if (process.env.NODE_ENV !== 'production' && !process.env.SUPABASE_URL) {
   dotenv.config({ path: path.resolve(__dirname, '../../.env') });
-  if (!process.env.SUPABASE_URL) {
+  if (!process.env.SUPABASE_URL && process.env.NODE_ENV === 'staging') {
     dotenv.config({ path: path.resolve(__dirname, '../../../../.env.staging') });
   }
 }
@@ -19,22 +21,39 @@ const rawAnonKey = (process.env.SUPABASE_ANON_KEY ?? '').trim();
 export const isValidSupabaseKey = (token: string, type: 'service' | 'anon'): boolean => {
   if (!token || typeof token !== 'string') return false;
   const trimmed = token.trim();
-  if (trimmed.length === 0) return false;
+  if (!trimmed) return false;
   if (type === 'service' && trimmed.startsWith('sb_secret_')) return true;
-  if (type === 'anon' && (trimmed.startsWith('sb_publishable_') || trimmed.startsWith('sb_secret_'))) return true;
-  return trimmed.split('.').length === 3;
+  if (type === 'anon' && trimmed.startsWith('sb_publishable_')) return true;
+
+  const parts = trimmed.split('.');
+  if (parts.length !== 3) return false;
+  try {
+    const payload = JSON.parse(Buffer.from(parts[1], 'base64url').toString('utf8')) as { role?: unknown };
+    return type === 'service' ? payload.role === 'service_role' : payload.role === 'anon';
+  } catch {
+    return false;
+  }
 };
 
 const hasValidServiceKey = isValidSupabaseKey(rawServiceKey, 'service');
 const hasValidAnonKey = isValidSupabaseKey(rawAnonKey, 'anon');
 
-// Prefer service_role key if valid (JWT or sb_secret_); fall back to anon key to prevent total DB outage
-const resolvedKey = hasValidServiceKey
-  ? rawServiceKey
-  : (hasValidAnonKey ? rawAnonKey : (rawServiceKey || 'placeholder-key'));
-
-export let isSupabaseConfigured = !!(supabaseUrl && (hasValidServiceKey || hasValidAnonKey));
+// The server API performs privileged mutations. Production is not allowed to
+// silently degrade to anon/RLS-only credentials or to a placeholder endpoint.
+const resolvedKey = hasValidServiceKey ? rawServiceKey : (hasValidAnonKey ? rawAnonKey : 'unconfigured-key');
+const isProductionConfigurationValid = !!supabaseUrl && hasValidServiceKey;
+export let isSupabaseConfigured = !!supabaseUrl && (hasValidServiceKey || hasValidAnonKey);
 export const isUsingServiceRole = hasValidServiceKey;
+
+if (process.env.NODE_ENV === 'production' && !isProductionConfigurationValid) {
+  throw new Error(
+    'Supabase production configuration invalid: SUPABASE_URL and a valid SUPABASE_SERVICE_ROLE_KEY are required. Staging dotenv fallback and anon-key privilege degradation are prohibited.',
+  );
+}
+
+if (process.env.NODE_ENV !== 'production' && !hasValidServiceKey && hasValidAnonKey) {
+  console.warn('[Supabase API] Service-role key absent; using anon credentials in non-production mode only.');
+}
 
 export const setSupabaseConfiguredForTesting = (configured: boolean) => {
   isSupabaseConfigured = configured;
@@ -47,7 +66,7 @@ if (!hasValidServiceKey && hasValidAnonKey) {
 }
 
 export const supabase: SupabaseClient = createClient(
-  supabaseUrl || 'https://placeholder.supabase.co',
+  supabaseUrl || 'https://unconfigured.invalid',
   resolvedKey,
   {
     auth: {
