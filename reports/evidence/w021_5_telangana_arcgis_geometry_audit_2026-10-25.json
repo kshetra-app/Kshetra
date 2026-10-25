@@ -1,0 +1,127 @@
+{
+  "schemaVersion": 1,
+  "title": "W021.5 Telangana Assembly Constituency Boundary — ArcGIS candidate audit",
+  "auditId": "W0215-TELANGANA-AC-ARC-001",
+  "capturedAtUtc": "2026-10-25T16:34:00Z",
+  "source": {
+    "publisher": "Telangana State Remote Sensing Applications Centre GIS",
+    "service": "AdministrativeInfoSystem_Folder/Administrative_Information_System/MapServer",
+    "layerId": 24,
+    "layerName": "Assembly Constituency Boundary",
+    "metadataUrl": "https://tgrac.telangana.gov.in/arcgis/rest/services/AdministrativeInfoSystem_Folder/Administrative_Information_System/MapServer/24?f=pjson",
+    "queryUrl": "https://tgrac.telangana.gov.in/arcgis/rest/services/AdministrativeInfoSystem_Folder/Administrative_Information_System/MapServer/24/query?where=1%3D1&outFields=%2A&returnGeometry=true&outSR=4326&f=json",
+    "metadataBytes": 4756,
+    "metadataSha256": "fd91d7803f39a8cc9ae9f2f486224cea777c7127ef5659dd2d073b088dbfb26a",
+    "rawEsriJsonBytes": 12465346,
+    "rawEsriJsonSha256": "91cd791317836d8a6a8729b03f08fd3aee8c727c82e123b1659972d949d32f27",
+    "workflowRunId": 40212257196,
+    "workflowUrl": "https://github.com/kshetra-app/Kshetra/actions/runs/40212257196",
+    "artifactId": 12606048429,
+    "artifactZipSha256": "106c8f72e0c1b43e55a65b74f56cb7597fb426a1f1e487885bf9010ad36f0c46",
+    "artifactExpiresAt": "2026-11-24T16:33:33Z",
+    "sourceTemporalValidity": "NOT DECLARED IN SERVICE METADATA",
+    "sourceReuseLicence": "NOT ESTABLISHED BY THIS AUDIT"
+  },
+  "retrieval": {
+    "httpStatusMetadata": 200,
+    "httpStatusGeometry": 200,
+    "responseFormat": "ArcGIS REST ESRI JSON; f=json required. f=geojson returned HTTP 400 output format not supported.",
+    "sourceCrs": {
+      "wkid": 32644,
+      "latestWkid": 32644
+    },
+    "queryOutputCrs": {
+      "wkid": 4326
+    },
+    "maxRecordCount": 1000,
+    "fields": [
+      "OBJECTID",
+      "Shape",
+      "No_HH",
+      "TOT_P",
+      "TOT_M",
+      "TOT_F",
+      "P_06",
+      "M_06",
+      "F_06",
+      "P_SC",
+      "M_SC",
+      "F_SC",
+      "P_ST",
+      "M_ST",
+      "F_ST",
+      "District",
+      "Parliament",
+      "Assembly",
+      "Assembly_Name",
+      "Shape_Length",
+      "Shape_Area",
+      "Remarks_District_Office"
+    ]
+  },
+  "structuralChecks": {
+    "featureCount": 119,
+    "expectedTelanganaAssemblySeats": 119,
+    "featureCountStatus": "PASS",
+    "geometryType": "esriGeometryPolygon",
+    "ringCount": 123,
+    "holeRingCount": 1,
+    "unclosedRings": 0,
+    "ringsTooShort": 0,
+    "nonFiniteCoordinates": 0,
+    "uniqueObjectIds": 119,
+    "duplicateObjectIds": 0,
+    "uniqueAssemblyNames": 119,
+    "duplicateAssemblyNames": 0,
+    "result": "PASS_WITH_TOPOLOGY_DEFECT"
+  },
+  "topologyAudit": {
+    "method": "Converted ESRI rings to Shapely geometries using clockwise exterior / counterclockwise hole convention; no raw source coordinates modified.",
+    "environment": {
+      "geopandas": "1.1.2",
+      "shapely": "2.1.2",
+      "fiona": "1.10.1",
+      "pyproj": "3.7.2"
+    },
+    "validGeometries": 118,
+    "invalidGeometries": 1,
+    "invalidFeature": {
+      "objectId": 89,
+      "name": "Dornakal (ST) Assembly",
+      "reason": "Ring Self-intersection[79.948886655805 17.5141694363122]"
+    },
+    "positiveAreaOverlapPairs": 0,
+    "zeroAreaIntersectionPairs": 314,
+    "unionValid": true,
+    "unionPolygonPartCount": 1,
+    "unionBoundsWgs84": [
+      77.2372545106511,
+      15.836406686071975,
+      81.3166083881545,
+      19.916900080616543
+    ],
+    "sumFeatureAreaDegreesSquared": 9.542138215197859,
+    "unionAreaDegreesSquared": 9.54213821519764,
+    "sumMinusUnionAreaDegreesSquared": 2.184918912462308e-13,
+    "coverageAgainstAuthoritativeStateBoundary": "NOT CHECKED; absence of positive-area overlap does not prove no gaps"
+  },
+  "identityAndLegalChecks": {
+    "canonicalAcNumberField": "NOT PRESENT IN EXPOSED FIELD LIST; OBJECTID IS A DATABASE KEY, NOT A LEGAL AC ID",
+    "uniqueNameCount": 119,
+    "officialStatutoryRosterCrosswalk": "NOT PERFORMED",
+    "applicableDelimitationOrderAndEffectiveDate": "NOT RECONCILED",
+    "serviceOwnerConfirmationAndReuseTerms": "NOT OBTAINED",
+    "physicalGazetteCustodyAndIndependentTranscription": "NOT PERFORMED"
+  },
+  "disposition": "RETAIN AS OFFICIAL-STATE-GIS CANDIDATE ONLY; DO NOT ACCEPT OR IMPORT AS CANONICAL GEOMETRY YET",
+  "requiredNextActions": [
+    "Run the corrected probe against the separate EndowmentLands_Admin_2026/MapServer/12 service and compare hashes, feature identities, extent, geometry and topology.",
+    "Acquire and cite the legally effective constituency roster/order and reconcile all 119 Assembly_Name values to canonical AC numbers.",
+    "Resolve the Dornakal (ST) self-intersection only in a derived artifact, with original geometry preserved and an explicit transformation record; do not overwrite raw source bytes.",
+    "Compare the union against an authoritative Telangana state boundary and verify no gaps, overlaps, slivers or out-of-state geometry.",
+    "Obtain source owner confirmation of effective date and terms for redistribution/use.",
+    "Retain the raw ESRI JSON artifact and manifest; artifact expires after 30 days unless preserved under an approved licensed source-data path."
+  ],
+  "productionDatabaseAccess": "NONE",
+  "stagingDatabaseAccess": "NONE"
+}
