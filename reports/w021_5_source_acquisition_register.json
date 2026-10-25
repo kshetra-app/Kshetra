@@ -18,7 +18,13 @@
       "NEEDS_MANUAL_OR_AUTHORITY_ARTIFACT",
       "DOWNLOADED_HASHED",
       "VALIDATED",
-      "REJECTED"
+      "REJECTED",
+      "FETCH_FAILED",
+      "FETCH_FAILED_HTTP_406",
+      "FETCH_FAILED_HTTP_404",
+      "FETCH_FAILED_TIMEOUT",
+      "CANDIDATE_ONLY",
+      "REJECTED_FOR_PRODUCTION_USE"
     ]
   },
   "sources": [
@@ -31,7 +37,7 @@
       "retrievedAt": "2026-10-25",
       "format": "PDF",
       "authority": "PRIMARY_OFFICIAL_DIGITAL_PUBLICATION",
-      "status": "PRIMARY_SOURCE_PAGE_FOUND",
+      "status": "FETCH_FAILED_HTTP_406",
       "sha256": null,
       "fileBytes": null,
       "version": "Delimitation of Parliamentary and Assembly Constituencies Order, 2008",
@@ -39,25 +45,29 @@
       "limitations": [
         "Digital ECI publication does not satisfy the separate physical Gazette authenticity and notarized transcription gates."
       ],
-      "plannedUse": "Cross-check canonical constituency names, statutory numbers, reservations, extents and effective regimes."
+      "plannedUse": "Cross-check canonical constituency names, statutory numbers, reservations, extents and effective regimes.",
+      "retrievalError": "HTTP_406",
+      "lastAttemptRunId": 40211792541
     },
     {
       "sourceId": "SRC-ECI-STAT-REPORTS",
       "subject": "General election and state assembly statistical reports / Form 20 links",
       "publisher": "Election Commission of India",
-      "url": "https://www.eci.gov.in/statistical-reports/",
+      "url": "https://www.eci.gov.in/statistical-reports",
       "relatedUrl": "https://www.eci.gov.in/election-management",
       "retrievedAt": "2026-10-25",
       "format": "HTML index linking PDFs and election-year resources",
       "authority": "PRIMARY_OFFICIAL_SOURCE_INDEX",
-      "status": "PRIMARY_SOURCE_PAGE_FOUND",
+      "status": "FETCH_FAILED_HTTP_406",
       "sha256": null,
       "fileBytes": null,
       "scope": "National parliamentary reports and state assembly results across multiple election years",
       "limitations": [
         "Each target state/election report must be individually downloaded, hashed, parsed and reconciled; index presence does not prove every target record is available in machine-readable form."
       ],
-      "plannedUse": "Backfill only source-backed historical results and record exact election year/type."
+      "plannedUse": "Backfill only source-backed historical results and record exact election year/type.",
+      "retrievalError": "HTTP_406",
+      "lastAttemptRunId": 40211792541
     },
     {
       "sourceId": "SRC-ECI-AFFIDAVIT",
@@ -68,14 +78,16 @@
       "retrievedAt": "2026-10-25",
       "format": "Web portal / candidate documents",
       "authority": "PRIMARY_OFFICIAL_SOURCE",
-      "status": "PRIMARY_SOURCE_PAGE_FOUND",
+      "status": "FETCH_FAILED_HTTP_406",
       "sha256": null,
       "fileBytes": null,
       "scope": "Candidate nominations and affidavits published through the ECI ENCORE affidavit portal from 2019 onward, as described by ECI",
       "limitations": [
         "Candidate-level documents must be individually captured and linked; portal existence does not prove bulk-download availability or completeness of older records."
       ],
-      "plannedUse": "Source-backed financial disclosure ingestion; do not infer a missing amount as zero."
+      "plannedUse": "Source-backed financial disclosure ingestion; do not infer a missing amount as zero.",
+      "retrievalError": "HTTP_406",
+      "lastAttemptRunId": 40211792541
     },
     {
       "sourceId": "SRC-CENSUS-PCA-SD-2011",
@@ -86,7 +98,7 @@
       "retrievedAt": "2026-10-25",
       "format": "XLSX / web data catalogue",
       "authority": "PRIMARY_OFFICIAL_SOURCE",
-      "status": "PRIMARY_SOURCE_PAGE_FOUND",
+      "status": "FETCH_FAILED",
       "sha256": null,
       "fileBytes": null,
       "version": "PC11_PCA-SD; 2011",
@@ -94,7 +106,9 @@
       "limitations": [
         "These administrative-level aggregates are not automatically constituency-level values. Any spatial allocation would be DERIVED/ESTIMATE and must not be labelled official AC population."
       ],
-      "plannedUse": "Use exact published administrative-level aggregates and document crosswalk/aggregation limits."
+      "plannedUse": "Use exact published administrative-level aggregates and document crosswalk/aggregation limits.",
+      "retrievalError": "Direct catalogue and XLSX download failed in GitHub Actions fetch; exact bytes not acquired.",
+      "lastAttemptRunId": 40211792541
     },
     {
       "sourceId": "SRC-SOI-ABDB",
@@ -105,14 +119,15 @@
       "retrievedAt": "2026-10-25",
       "format": "Shapefile / ZIP or product download",
       "authority": "PRIMARY_OFFICIAL_SOURCE",
-      "status": "PRIMARY_SOURCE_PAGE_FOUND",
-      "sha256": null,
-      "fileBytes": null,
+      "status": "DOWNLOADED_HASHED",
+      "sha256": "088d924ab66d62f6873f851574c89c5b23e6aa61a1b09e803154b948afad14c1",
+      "fileBytes": 113855,
       "scope": "State, district, subdistrict and village administrative boundaries",
       "limitations": [
         "Administrative boundaries do not substitute for statutory Assembly constituency boundaries or India Post delivery-beat polygons."
       ],
-      "plannedUse": "Reference administrative geography only after checking product version, metadata, terms and exact hashes."
+      "plannedUse": "Reference administrative geography only after checking product version, metadata, terms and exact hashes.",
+      "lastAttemptRunId": 40211792541
     },
     {
       "sourceId": "SRC-SOI-VECTOR-CATALOG",
@@ -273,13 +288,14 @@
       "retrievedAt": "2026-10-25",
       "format": "Official data index / linked archive",
       "authority": "PRIMARY_OFFICIAL_SOURCE",
-      "status": "DISCOVERED_RETRYING_IN_CURRENT_ACQUISITION_RUN",
-      "sha256": null,
-      "fileBytes": null,
+      "status": "DOWNLOADED_HASHED",
+      "sha256": "013965f98dc51a6dc0cf2b5a35c4c578d5d4ec5d2e86b1cf61a2bb9f80527f0a",
+      "fileBytes": 115971,
       "limitations": [
         "Village boundaries can support administrative crosswalks but are not AC boundaries; any population overlay would be DERIVED and depends on accepted AC geometry."
       ],
-      "plannedUse": "Acquire and inspect archive/metadata; use only for documented administrative spatial joins."
+      "plannedUse": "Acquire and inspect archive/metadata; use only for documented administrative spatial joins.",
+      "lastAttemptRunId": 40211792541
     },
     {
       "sourceId": "SRC-SECONDARY-ECI-2026-AC-U07-CONNECTOR-PROBE",
@@ -464,6 +480,50 @@
       "manifestSummary": null,
       "status": "QUEUED_AT_LAST_CHECK",
       "scope": "Retry Telangana official ArcGIS polygon query using supported f=json format and structural ring checks."
+    },
+    {
+      "runId": 40211792541,
+      "workflow": "W021.5 Official Source Acquisition",
+      "status": "COMPLETED_WITH_SOURCE_FAILURES",
+      "branch": "w0215-resumption-2026-10-25",
+      "commit": "69bbba485187131f6bacf04a3ef9520c7a83c232",
+      "artifactId": 12606480050,
+      "artifactSha256": "05531bc8037dca81eb4af0ba93cf7e397594a02643b1bb311cb463abd78cfdfa",
+      "artifactBytes": 113470251,
+      "manifestSha256": "0cea961dda70f0268cea930ed665e4bc6bfd734567b7c77b42460e1472d3024a",
+      "downloadedBytes": 142219649,
+      "totalManifestRecords": 61,
+      "downloadedRecords": 31,
+      "failedRecords": 24,
+      "officialDownloads": 21,
+      "secondaryCandidateDownloads": 10,
+      "derivedGeometryCandidates": 0,
+      "derivedGeometryAcceptedAsOfficial": 0,
+      "villageBoundaryArchives": {
+        "expected": 27,
+        "downloadedAndAudited": 14,
+        "missing": 13,
+        "totalFeatures": 71484,
+        "invalidGeometries": 37,
+        "crsMetadataConflicts": 1
+      },
+      "eci": {
+        "indexStatus": "HTTP_406",
+        "directGeometryEndpointsStatus": "HTTP_404",
+        "officialHistoricalResultsDownloaded": 0
+      },
+      "census": {
+        "catalogAndPcaWorkbookStatus": "FETCH_FAILED",
+        "sha256": null
+      },
+      "auditReports": [
+        "reports/w021_5_soi_village_boundary_source_audit.json",
+        "reports/w021_5_eci_geojson_candidate_audit.json",
+        "reports/w021_5_datameet_ac_geometry_forensic_audit.json",
+        "reports/w021_5_telangana_arcgis_layer_audit.json"
+      ],
+      "productionWrites": 0,
+      "stagingWrites": 0
     }
   ],
   "updatedAt": "2026-10-25T16:38:00Z",
@@ -476,5 +536,23 @@
     "Focused official geometry probe 40212122850 was queued to prioritize the five direct ECI endpoints and Telangana state GIS layer; it is separate from the broad source-acquisition retry 40211792541. Inspect its uploaded manifest before making claims.",
     "Focused geometry probe run 40212122850 independently confirmed all five ECI .js URLs return 404 and the Telangana ArcGIS metadata endpoint is reachable. The initial f=geojson query was unsupported; corrected f=json query is queued in 40212257196. The probe ZIP SHA-256 was independently verified as e30baeff7c4ba94b0eee8d0e3fda41ddd7262a9880f7f4ac8e6ad9b9d7ce270e.",
     "Telangana layer 24 geometry was acquired in run 40212257196 (119 features; SHA-256 91cd791317836d8a6a8729b03f08fd3aee8c727c82e123b1659972d949d32f27). Independent Shapely audit found one self-intersection in Dornakal (ST) Assembly; this candidate is not accepted. A second service EndowmentLands_Admin_2026/MapServer/12 is under probe in run 40212441232."
-  ]
+  ],
+  "secondaryGeometryAudit": {
+    "sourceRepository": "https://github.com/saisantoshv3/assemnbly_gis_files",
+    "sourceCommit": "730263a08afa3cf7a0cd12db68bcddc90aefcc03",
+    "candidateCount": 5,
+    "features": 824,
+    "invalidGeometries": 23,
+    "acceptedAsOfficial": 0,
+    "report": "reports/w021_5_eci_geojson_candidate_audit.json"
+  },
+  "officialTelanganaLayerAudit": {
+    "source": "https://tgrac.telangana.gov.in/arcgis/rest/services/AdministrativeInfoSystem_Folder/Administrative_Information_System/MapServer/24",
+    "features": 119,
+    "invalidGeometries": 1,
+    "allRowsHaveZeroTOT_P_TOT_M_TOT_F": true,
+    "disposition": "GEOMETRY_CANDIDATE_ONLY; DEMOGRAPHIC ATTRIBUTES REJECTED",
+    "report": "reports/w021_5_telangana_arcgis_layer_audit.json"
+  },
+  "nationalCoverageStatus": "INCOMPLETE — 14/27 SOI village archives downloaded; no primary national Assembly Constituency geometry or national official historical-results backfill acquired."
 }
