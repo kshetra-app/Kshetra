@@ -128,6 +128,7 @@ def main():
                         # and can be recognized by a parenthetical-only left value.
                         if re.fullmatch(r"\([^)]*\)", left_text):
                             current["name"] = normalize(current["name"] + " " + left_text)
+                            current["extent"] = normalize(current["extent"] + " " + right_text)
                         else:
                             current["extent"] = normalize(current["extent"] + " " + left_text + " " + right_text)
                     else:
