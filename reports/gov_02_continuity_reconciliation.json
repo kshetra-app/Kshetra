@@ -258,7 +258,8 @@
     "666d2236edcfb63a652bb59c06f09c146542f076",
     "a9d69430ccadb478fc6a5aa3d2f8dfe04bfb98b0",
     "c06579783d591646136d99e9de7bede5177c5c03",
-    "8e6b386dc167bc03a6469c6dd2ca3e4fada536a2"
+    "8e6b386dc167bc03a6469c6dd2ca3e4fada536a2",
+    "da98a1c79d185d798626ebb72c132ee261c77d2d"
   ],
-  "commitAccountabilityNote": "Complete repair-branch inventory after immutable sourceSnapshot.commit. The test excludes only current HEAD (the report-containing commit) to avoid self-reference and requires the previous commit to be explicitly listed. Refresh this entire list on every subsequent branch commit."
+  "commitAccountabilityNote": "Complete repair-branch commit inventory after immutable sourceSnapshot.commit. CI compares this list against Git history while excluding current HEAD (the report-containing commit, which cannot hash itself), and separately requires the immediately previous commit to be listed. Refresh when a subsequent branch commit is intentionally added."
 }
