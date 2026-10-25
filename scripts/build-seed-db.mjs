@@ -766,14 +766,58 @@ async function main() {
     db.close();
   }
 
-  // Write an auto-derived version file from the final DB's content hash. The app
-  // imports this JSON and re-copies the bundled DB whenever the hash changes, so
-  // there is no manual version bump to remember after a rebuild.
+  // Compute hash after closing/checkpointing SQLite so the version is for final bytes.
   const dbBytes = fs.readFileSync(dbPath);
   const fullHash = crypto.createHash('sha256').update(dbBytes).digest('hex');
   const hash = fullHash.slice(0, 16);
   const versionPath = path.resolve(dataDir, 'seed-db-version.json');
-  fs.writeFileSync(versionPath, JSON.stringify({ version: hash, sha256: fullHash, sizeBytes: dbBytes.length, builtAt: new Date().toISOString() }, null, 2) + '\n');
+  fs.writeFileSync(versionPath, JSON.stringify({
+    version: hash,
+    sha256: fullHash,
+    sizeBytes: dbBytes.length,
+    builtAt: new Date().toISOString(),
+  }, null, 2) + '\n');
+
+  // Rebuild the sidecar manifest from the actual final SQLite tables, ensuring
+  // reported flags/counts are derived from persisted rows, not source-file presence.
+  const verifyDb = new Database(dbPath, { readonly: true, fileMustExist: true });
+  try {
+    const count = (table, code) => verifyDb.prepare(`SELECT count(*) AS n FROM ${table} WHERE state_code = ?`).get(code).n;
+    const manifest = {};
+    for (const { code } of [{"code":"TS"},{"code":"AP"},{"code":"KA"},{"code":"MH"},{"code":"TN"},{"code":"KL"},{"code":"WB"},{"code":"UP"},{"code":"RJ"},{"code":"GJ"},{"code":"JH"},{"code":"OD"},{"code":"DL"},{"code":"PB"},{"code":"HR"},{"code":"CG"},{"code":"MP"},{"code":"BR"},{"code":"AS"},{"code":"GA"},{"code":"HP"},{"code":"MN"},{"code":"ML"},{"code":"MZ"},{"code":"NL"},{"code":"TR"},{"code":"SK"},{"code":"AR"},{"code":"UK"},{"code":"PY"},{"code":"JK"}]) {
+      const row = {
+        state_code: code,
+        version: crypto.createHash('sha256').update(JSON.stringify({
+          state_code: code,
+          counts: {
+            constituencies: count('constituencies', code),
+            mla_profiles: count('mla_profiles', code),
+            demographics: count('demographics', code),
+            historical_results: count('historical_results', code),
+            political_timeline: count('political_timeline', code),
+            election_history: count('election_history', code),
+          },
+        })).digest('hex').slice(0, 16),
+        has_mla_profiles: count('mla_profiles', code) > 0 ? 1 : 0,
+        has_demographics: count('demographics', code) > 0 ? 1 : 0,
+        has_historical_results: count('historical_results', code) > 0 ? 1 : 0,
+        has_political_timeline: count('political_timeline', code) > 0 ? 1 : 0,
+        has_election_history: count('election_history', code) > 0 ? 1 : 0,
+        constituency_count: count('constituencies', code),
+        last_updated: new Date().toISOString(),
+      };
+      manifest[code] = row;
+    }
+    verifyDb.exec('BEGIN');
+    const updateManifest = verifyDb.prepare(`UPDATE seed_manifest SET version=?,has_mla_profiles=?,has_demographics=?,has_historical_results=?,has_political_timeline=?,has_election_history=?,constituency_count=?,last_updated=? WHERE state_code=?`);
+    for (const row of Object.values(manifest)) {
+      updateManifest.run(row.version,row.has_mla_profiles,row.has_demographics,row.has_historical_results,row.has_political_timeline,row.has_election_history,row.constituency_count,row.last_updated,row.state_code);
+    }
+    verifyDb.exec('COMMIT');
+    fs.writeFileSync(path.resolve(dataDir, 'seed-manifest.json'), JSON.stringify(manifest, null, 2) + '\n');
+  } finally {
+    verifyDb.close();
+  }
   console.log(`✅ Version file written: ${versionPath} (${hash})`);
 
   // If Android assets directory exists, also copy directly so it's baked into APK assets
