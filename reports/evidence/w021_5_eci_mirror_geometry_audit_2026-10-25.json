@@ -1,0 +1,265 @@
+{
+  "schemaVersion": 1,
+  "title": "W021.5 ECI-2026-derived Assembly Constituency mirror geometry forensic audit",
+  "auditId": "W0215-ECI-MIRROR-AC-AUDIT-001",
+  "capturedAtUtc": "2026-10-25T16:36:00Z",
+  "source": {
+    "repository": "https://github.com/saisantoshv3/assemnbly_gis_files",
+    "pinnedCommit": "730263a08afa3cf7a0cd12db68bcddc90aefcc03",
+    "method": "Third-party repository script reports that these GeoJSON files were extracted from the ECI May-2026 result portal. The raw ECI /ac/{STATE_CODE}.js URLs currently return 404, so these are preserved as secondary derived candidates, not direct official source bytes.",
+    "license": "No licence file was found in the reviewed source repository root; redistribution/vendoring is not approved by this audit."
+  },
+  "auditMethod": {
+    "environment": {
+      "geopandas": "1.1.2",
+      "shapely": "2.1.2",
+      "fiona": "1.10.1",
+      "pyproj": "3.7.2"
+    },
+    "rawGeometryValidity": "Shapely is_valid on unmodified source geometries",
+    "overlapCheck": "Pairwise intersection on Shapely make_valid-derived geometries only where raw geometry was invalid; count intersection area > 1e-12 degrees squared as positive-area overlap",
+    "limitations": [
+      "make_valid was used only for overlap diagnostics; no repaired geometry was written back or accepted.",
+      "Area in longitude/latitude degrees squared is a diagnostic, not geodesic area.",
+      "No official state-boundary coverage test, legal instrument reconciliation, or full ECI result-page constituency-name crosswalk was performed.",
+      "Positive-area overlap counts include very small slivers; every candidate requires a suitable projected-CRS review and boundary-edge analysis."
+    ]
+  },
+  "jurisdictions": [
+    {
+      "code": "S03",
+      "name": "Assam",
+      "file": "S03.geojson",
+      "url": "https://raw.githubusercontent.com/saisantoshv3/assemnbly_gis_files/730263a08afa3cf7a0cd12db68bcddc90aefcc03/2026_assembly_election/assam_S03/assam.geojson",
+      "bytes": 11431537,
+      "sha256": "2b3efc17aea2adedf25bb598dd0256f878ed01f74de5299a2e0b02790536fb25",
+      "expectedSeats": 126,
+      "features": 126,
+      "acNoUnique": 126,
+      "acNoRange": [
+        1,
+        126
+      ],
+      "acNoExactly1ToN": true,
+      "missingNames": 0,
+      "uniqueNormalizedNames": 126,
+      "geometryTypes": {
+        "Polygon": 124,
+        "MultiPolygon": 2
+      },
+      "invalidGeometries": 20,
+      "emptyGeometries": 0,
+      "rings": 128,
+      "unclosedRings": 0,
+      "shortRings": 0,
+      "positiveAreaOverlapPairsAfterMakeValid": 133,
+      "zeroAreaIntersectionPairsAfterMakeValid": 180,
+      "unionValidAfterMakeValid": true,
+      "unionPartsAfterMakeValid": 1,
+      "sumMinusUnionAreaDegreesSquared": 0.0000320249200305156,
+      "bbox": [
+        89.69858537802943,
+        24.136275087826174,
+        96.01676371059726,
+        27.97686549714453
+      ],
+      "notableDefects": [
+        "20 self-intersecting polygons in raw geometry.",
+        "133 positive-area overlap pairs after diagnostic make_valid; overlap magnitudes include small slivers."
+      ]
+    },
+    {
+      "code": "U07",
+      "name": "Puducherry",
+      "file": "U07.geojson",
+      "url": "https://raw.githubusercontent.com/saisantoshv3/assemnbly_gis_files/730263a08afa3cf7a0cd12db68bcddc90aefcc03/2026_assembly_election/puducherry_U07/puducherry.geojson",
+      "bytes": 835011,
+      "sha256": "2786e744aa7394c85d977a317a1d1e33cb3eb78dbea45a272375fc9a48e54338",
+      "expectedSeats": 30,
+      "features": 30,
+      "acNoUnique": 30,
+      "acNoRange": [
+        1,
+        30
+      ],
+      "acNoExactly1ToN": true,
+      "missingNames": 0,
+      "uniqueNormalizedNames": 30,
+      "geometryTypes": {
+        "Polygon": 19,
+        "MultiPolygon": 11
+      },
+      "invalidGeometries": 0,
+      "emptyGeometries": 0,
+      "rings": 49,
+      "unclosedRings": 0,
+      "shortRings": 0,
+      "positiveAreaOverlapPairsAfterMakeValid": 26,
+      "zeroAreaIntersectionPairsAfterMakeValid": 24,
+      "unionValidAfterMakeValid": true,
+      "unionPartsAfterMakeValid": 20,
+      "sumMinusUnionAreaDegreesSquared": 8.015785347981197e-8,
+      "bbox": [
+        75.526536,
+        10.827387398809424,
+        82.31379057631047,
+        16.753151316648548
+      ],
+      "notableDefects": [
+        "26 positive-area overlap pairs after raw geometry validation; require projected-CRS edge review."
+      ]
+    },
+    {
+      "code": "S11",
+      "name": "Kerala",
+      "file": "S11.geojson",
+      "url": "https://raw.githubusercontent.com/saisantoshv3/assemnbly_gis_files/730263a08afa3cf7a0cd12db68bcddc90aefcc03/2026_assembly_election/kerala_S11/kerala.geojson",
+      "bytes": 3111688,
+      "sha256": "5077be94e655e748322a0089a94b70f253dcbf856c747b2583530e575dc9aac5",
+      "expectedSeats": 140,
+      "features": 140,
+      "acNoUnique": 140,
+      "acNoRange": [
+        1,
+        140
+      ],
+      "acNoExactly1ToN": true,
+      "missingNames": 0,
+      "uniqueNormalizedNames": 140,
+      "geometryTypes": {
+        "Polygon": 124,
+        "MultiPolygon": 16
+      },
+      "invalidGeometries": 1,
+      "emptyGeometries": 0,
+      "rings": 190,
+      "unclosedRings": 0,
+      "shortRings": 0,
+      "positiveAreaOverlapPairsAfterMakeValid": 171,
+      "zeroAreaIntersectionPairsAfterMakeValid": 159,
+      "unionValidAfterMakeValid": true,
+      "unionPartsAfterMakeValid": 46,
+      "sumMinusUnionAreaDegreesSquared": 0.000014665116892409458,
+      "bbox": [
+        74.86776477818562,
+        8.296189836875895,
+        77.39745559062283,
+        12.789502250970195
+      ],
+      "notableDefects": [
+        "One self-intersecting polygon in raw geometry.",
+        "171 positive-area overlap pairs after diagnostic make_valid."
+      ]
+    },
+    {
+      "code": "S22",
+      "name": "Tamil Nadu",
+      "file": "S22.geojson",
+      "url": "https://raw.githubusercontent.com/saisantoshv3/assemnbly_gis_files/730263a08afa3cf7a0cd12db68bcddc90aefcc03/2026_assembly_election/tamil_nadu_S22/tamil_nadu.geojson",
+      "bytes": 5258525,
+      "sha256": "410d0d16df7fe8397691ea3c2c47d875ce6dc17a9c9dbcd588786d0b36339611",
+      "expectedSeats": 234,
+      "features": 234,
+      "acNoUnique": 234,
+      "acNoRange": [
+        1,
+        234
+      ],
+      "acNoExactly1ToN": true,
+      "missingNames": 0,
+      "uniqueNormalizedNames": 234,
+      "geometryTypes": {
+        "Polygon": 218,
+        "MultiPolygon": 16
+      },
+      "invalidGeometries": 2,
+      "emptyGeometries": 0,
+      "rings": 306,
+      "unclosedRings": 0,
+      "shortRings": 0,
+      "positiveAreaOverlapPairsAfterMakeValid": 484,
+      "zeroAreaIntersectionPairsAfterMakeValid": 139,
+      "unionValidAfterMakeValid": true,
+      "unionPartsAfterMakeValid": 58,
+      "sumMinusUnionAreaDegreesSquared": 0.00009758770519141535,
+      "bbox": [
+        76.2257457308422,
+        8.07651393192618,
+        80.34679800687728,
+        13.551870427422392
+      ],
+      "notableDefects": [
+        "Two self-intersecting polygons in raw geometry.",
+        "484 positive-area overlap pairs after diagnostic make_valid."
+      ]
+    },
+    {
+      "code": "S25",
+      "name": "West Bengal",
+      "file": "S25.geojson",
+      "url": "https://raw.githubusercontent.com/saisantoshv3/assemnbly_gis_files/730263a08afa3cf7a0cd12db68bcddc90aefcc03/2026_assembly_election/west_bengal_S25/west_bengal.geojson",
+      "bytes": 8825360,
+      "sha256": "62755085e5d904d0985e06bdccbe664b7ba22de5bda5c671735a54d19e6eaf2c",
+      "expectedSeats": 294,
+      "features": 294,
+      "acNoUnique": 294,
+      "acNoRange": [
+        1,
+        294
+      ],
+      "acNoExactly1ToN": true,
+      "missingNames": 0,
+      "uniqueNormalizedNames": 293,
+      "geometryTypes": {
+        "Polygon": 275,
+        "MultiPolygon": 19
+      },
+      "invalidGeometries": 0,
+      "emptyGeometries": 0,
+      "rings": 439,
+      "unclosedRings": 0,
+      "shortRings": 0,
+      "positiveAreaOverlapPairsAfterMakeValid": 523,
+      "zeroAreaIntersectionPairsAfterMakeValid": 238,
+      "unionValidAfterMakeValid": true,
+      "unionPartsAfterMakeValid": 130,
+      "sumMinusUnionAreaDegreesSquared": 0.000010413288034527568,
+      "bbox": [
+        85.81344217695471,
+        21.539446368807724,
+        89.87754954318929,
+        27.22103163732586
+      ],
+      "notableDefects": [
+        "Two ACs are both named Bishnupur (AC_NO 255 and 146); canonical numbers disambiguate them.",
+        "523 positive-area overlap pairs, including small slivers; raw polygons individually valid but partition topology is not clean."
+      ]
+    }
+  ],
+  "aggregate": {
+    "expectedFeatureCount": 824,
+    "acquiredFeatureCount": 824,
+    "featureCountMatch": "PASS",
+    "uniqueAcNoCount": 824,
+    "acNoSequencesContiguousWithinEachJurisdiction": true,
+    "rawInvalidGeometryCount": 23,
+    "positiveAreaOverlapPairsAfterMakeValid": 1337,
+    "sumMinusUnionAreaDegreesSquared": 0.000159,
+    "canonicalLegalIdentityCrosswalk": "NOT PERFORMED",
+    "officialRawECIBytes": "NOT ACQUIRED; tested direct .js endpoints return HTTP 404",
+    "productionAcceptance": "REJECTED_PENDING_GEOMETRY_REPAIR_AND_LEGAL_RECONCILIATION"
+  },
+  "workflow": {
+    "runId": 40211792541,
+    "url": "https://github.com/kshetra-app/Kshetra/actions/runs/40211792541",
+    "artifactId": 12606480050,
+    "artifactName": "w0215-source-acquisition-40211792541",
+    "compressedBytes": 113470251,
+    "artifactZipSha256": "05531bc8037dca81eb4af0ba93cf7e397594a02643b1bb311cb463abd78cfdfa",
+    "uncompressedBytes": 142327256,
+    "expiresAt": "2026-11-08T16:35:47Z"
+  },
+  "decision": "Do not import these five mirror datasets as canonical or official geometry. Their seat counts and AC_NO sequences match ECI result-page totals, but raw invalid geometries and overlap pairs require remediation; source is secondary, raw official ECI geometry is unavailable at tested URLs, and no legal boundary crosswalk was completed.",
+  "productionDatabaseAccess": "NONE",
+  "stagingDatabaseAccess": "NONE"
+}
