@@ -493,7 +493,7 @@
       "retrievedAt": "2026-10-25",
       "format": "ArcGIS REST Feature Layer (ESRI JSON query required)",
       "authority": "OFFICIAL_STATE_GIS_CANDIDATE",
-      "status": "GEOMETRY_ACQUIRED_OUTLIER_VS_THREE_SERVICE_FAMILY",
+      "status": "ROSTER_NAME_CROSSWALK_PASS_WITH_ALIASES_GEOMETRY_NOT_ACCEPTED",
       "sha256": "fd91d7803f39a8cc9ae9f2f486224cea777c7127ef5659dd2d073b088dbfb26a",
       "fileBytes": 4756,
       "geometryQueryInitial": {
@@ -508,7 +508,9 @@
         "Geometry payload not yet acquired.",
         "Service metadata is not proof of legal effective date or authoritative boundary completeness.",
         "No topology or Gazette reconciliation has been performed.",
-        "The layer has no canonical AC number field in the exposed schema and its legally effective date is not stated; 119 feature count alone does not prove current legal geometry."
+        "The layer has no canonical AC number field in the exposed schema and its legally effective date is not stated; 119 feature count alone does not prove current legal geometry.",
+        "Statutory Schedule XXVII name crosswalk uses provisional spelling aliases; source field OBJECTID is not a canonical AC number.",
+        "Name crosswalk does not validate legal extents against polygons."
       ],
       "geometryBytes": 12465346,
       "geometrySha256": "91cd791317836d8a6a8729b03f08fd3aee8c727c82e123b1659972d949d32f27",
@@ -526,7 +528,21 @@
         "canonicalAcNumberCrosswalk": "NOT_PERFORMED"
       },
       "comparisonReport": "reports/evidence/w021_5_telangana_layer_comparison_2026-10-25.json",
-      "comparisonFinding": "Six material boundary differences vs EndowmentLands family: Warangal West/East, Ibrahimpatnam, Munugode, Peddapalle, Manthani; Sirpur difference is negligible sub-millimetre precision. Full legal adjudication remains open."
+      "comparisonFinding": "Six material boundary differences vs EndowmentLands family: Warangal West/East, Ibrahimpatnam, Munugode, Peddapalle, Manthani; Sirpur difference is negligible sub-millimetre precision. Full legal adjudication remains open.",
+      "rawGeometryBytes": 12465346,
+      "rawGeometrySha256": "91cd791317836d8a6a8729b03f08fd3aee8c727c82e123b1659972d949d32f27",
+      "featureCount": 119,
+      "crs": "EPSG:4326",
+      "nameCrosswalkStatus": "PASS_WITH_PROVISIONAL_ALIASES_NOT_CANONICAL",
+      "nameCrosswalk": {
+        "report": "reports/evidence/w021_5_telanganaschedule_tgrac_name_crosswalk_40219308671.json",
+        "exactNormalizedNameMatches": 108,
+        "candidateAliasMatches": 11,
+        "unresolved": 0,
+        "sourceLayer": "Administrative_Information_System MapServer layer 24",
+        "workflowRunId": 40219308671
+      },
+      "canonicalIdFieldPresent": false
     },
     {
       "sourceId": "SRC-TELANGANA-2026-AC-LAYER",
@@ -536,12 +552,14 @@
       "retrievedAt": "2026-10-25",
       "format": "ArcGIS REST Feature Layer / ESRI JSON",
       "authority": "OFFICIAL_STATE_GIS_CANDIDATE",
-      "status": "LEADING_TELANGANA_CANDIDATE_FAMILY_NOT_ACCEPTED",
+      "status": "ROSTER_NAME_CROSSWALK_PASS_WITH_ALIASES_GEOMETRY_NOT_ACCEPTED",
       "geometryQueryUrl": "https://tgrac.telangana.gov.in/arcgis/rest/services/EndowmentLands_Folder/EndowmentLands_Admin_2026/MapServer/12/query?where=1%3D1&outFields=%2A&returnGeometry=true&outSR=4326&f=json",
       "workflowRunId": 40212441232,
       "limitations": [
         "The service name includes 2026 but effective date, ownership of AC boundary data, reuse terms, and legal alignment are unverified.",
-        "Do not treat as authoritative until compared with the 119-seat statutory roster and the older service layer."
+        "Do not treat as authoritative until compared with the 119-seat statutory roster and the older service layer.",
+        "Statutory Schedule XXVII name crosswalk uses provisional spelling aliases; source field OBJECTID is not a canonical AC number.",
+        "Name crosswalk does not validate legal extents against polygons."
       ],
       "metadataBytes": 4683,
       "metadataSha256": "850ba55a5017c7b8eeef0967aa2a073057a1fe9396abc54066c3719ddb451737",
@@ -554,7 +572,20 @@
       "positiveAreaOverlapPairs": 0,
       "topologyAudit": "reports/evidence/w021_5_telangana_arcgis_geometry_audit_2026-10-25.json",
       "comparisonReport": "reports/evidence/w021_5_telangana_layer_comparison_2026-10-25.json",
-      "comparisonFinding": "Byte-identical to Endowment_Lands_Admin_New layer 12; Admin_Old layer 13 differs only by sub-millimetre coordinate precision. One invalid Dornakal polygon remains; legal effective date and statutory crosswalk remain open."
+      "comparisonFinding": "Byte-identical to Endowment_Lands_Admin_New layer 12; Admin_Old layer 13 differs only by sub-millimetre coordinate precision. One invalid Dornakal polygon remains; legal effective date and statutory crosswalk remain open.",
+      "rawGeometryBytes": 12463409,
+      "rawGeometrySha256": "ca8cfdc695366d9f04ee6a9fdbf9c52eeefe61d69bc79c9d26d15baa7b84aa03",
+      "crs": "EPSG:4326",
+      "nameCrosswalkStatus": "PASS_WITH_PROVISIONAL_ALIASES_NOT_CANONICAL",
+      "nameCrosswalk": {
+        "report": "reports/evidence/w021_5_telanganaschedule_tgrac_name_crosswalk_40219308671.json",
+        "exactNormalizedNameMatches": 107,
+        "candidateAliasMatches": 12,
+        "unresolved": 0,
+        "sourceLayer": "EndowmentLands_Admin_2026 MapServer layer 12",
+        "workflowRunId": 40219308671
+      },
+      "canonicalIdFieldPresent": false
     },
     {
       "sourceId": "SRC-SECONDARY-ECI-2026-AC-GEO-BUNDLE",
@@ -854,12 +885,14 @@
       "url": "https://tgrac.telangana.gov.in/arcgis/rest/services/EndowmentLands_Folder/Endowment_Lands_Admin_New/MapServer/12?f=pjson",
       "format": "ArcGIS REST Feature Layer / ESRI JSON",
       "authority": "OFFICIAL_STATE_GIS_CANDIDATE",
-      "status": "LEADING_TELANGANA_CANDIDATE_FAMILY_NOT_ACCEPTED",
+      "status": "ROSTER_NAME_CROSSWALK_PASS_WITH_ALIASES_GEOMETRY_NOT_ACCEPTED",
       "layerId": 12,
       "workflowRunId": 40213331746,
       "limitations": [
         "Service name/metadata do not establish legally effective boundary version.",
-        "No canonical AC-number crosswalk, effective date, or legal instrument reconciliation is complete."
+        "No canonical AC-number crosswalk, effective date, or legal instrument reconciliation is complete.",
+        "Statutory Schedule XXVII name crosswalk uses provisional spelling aliases; source field OBJECTID is not a canonical AC number.",
+        "Name crosswalk does not validate legal extents against polygons."
       ],
       "metadataBytes": 4683,
       "metadataSha256": "850ba55a5017c7b8eeef0967aa2a073057a1fe9396abc54066c3719ddb451737",
@@ -871,7 +904,20 @@
       "unionPartCount": 1,
       "topologyAudit": "reports/evidence/w021_5_telangana_arcgis_geometry_audit_2026-10-25.json",
       "comparisonReport": "reports/evidence/w021_5_telangana_layer_comparison_2026-10-25.json",
-      "note": "Byte-for-byte identical to EndowmentLands_Admin_2026 layer 12; this is a duplicated service payload, not an independent boundary version."
+      "note": "Byte-for-byte identical to EndowmentLands_Admin_2026 layer 12; this is a duplicated service payload, not an independent boundary version.",
+      "rawGeometryBytes": 12463409,
+      "rawGeometrySha256": "ca8cfdc695366d9f04ee6a9fdbf9c52eeefe61d69bc79c9d26d15baa7b84aa03",
+      "crs": "EPSG:4326",
+      "nameCrosswalkStatus": "PASS_WITH_PROVISIONAL_ALIASES_NOT_CANONICAL",
+      "nameCrosswalk": {
+        "report": "reports/evidence/w021_5_telanganaschedule_tgrac_name_crosswalk_40219308671.json",
+        "exactNormalizedNameMatches": 107,
+        "candidateAliasMatches": 12,
+        "unresolved": 0,
+        "sourceLayer": "Endowment_Lands_Admin_New MapServer layer 12",
+        "workflowRunId": 40219308671
+      },
+      "canonicalIdFieldPresent": false
     },
     {
       "sourceId": "SRC-TELANGANA-ADMIN-OLD-LAYER",
@@ -880,12 +926,14 @@
       "url": "https://tgrac.telangana.gov.in/arcgis/rest/services/EndowmentLands_Folder/Endowment_Lands_Old/MapServer/13?f=pjson",
       "format": "ArcGIS REST Feature Layer / ESRI JSON",
       "authority": "OFFICIAL_STATE_GIS_CANDIDATE",
-      "status": "NEAR_IDENTICAL_TO_NEW_FAMILY_WITH_SUBMILLIMETRE_COORDINATE_DIFFERENCES",
+      "status": "ROSTER_NAME_CROSSWALK_PASS_WITH_ALIASES_GEOMETRY_NOT_ACCEPTED",
       "layerId": 13,
       "workflowRunId": 40213331746,
       "limitations": [
         "Service name/metadata do not establish legally effective boundary version.",
-        "No canonical AC-number crosswalk, effective date, or legal instrument reconciliation is complete."
+        "No canonical AC-number crosswalk, effective date, or legal instrument reconciliation is complete.",
+        "Statutory Schedule XXVII name crosswalk uses provisional spelling aliases; source field OBJECTID is not a canonical AC number.",
+        "Name crosswalk does not validate legal extents against polygons."
       ],
       "metadataBytes": 4668,
       "metadataSha256": "9e025e3f13bcb77c25fcc5dbee57e82bea364e52dd94518f01b1b7c780c89493",
@@ -898,7 +946,20 @@
       "unionPartCount": 2,
       "topologyAudit": "reports/evidence/w021_5_telangana_arcgis_geometry_audit_2026-10-25.json",
       "comparisonStatus": "No material boundary shifts identified relative to new family; all 119 names and ring vertex counts match, max vertex delta ~6.52e-10 degrees. Union has two parts due Bhadrachalam (ST) ring not merging under lower coordinate precision; normalize and verify against authoritative state boundary.",
-      "note": "Distinct geometry payload. Union of 119 candidate polygons has two disconnected components; this requires investigation against an authoritative Telangana state boundary."
+      "note": "Distinct geometry payload. Union of 119 candidate polygons has two disconnected components; this requires investigation against an authoritative Telangana state boundary.",
+      "rawGeometryBytes": 12461961,
+      "rawGeometrySha256": "6e33ebf7eba139a0f754e5b56f3e3bc155ab2d9b6c9e571b03dc57e77e418b4c",
+      "crs": "EPSG:4326",
+      "nameCrosswalkStatus": "PASS_WITH_PROVISIONAL_ALIASES_NOT_CANONICAL",
+      "nameCrosswalk": {
+        "report": "reports/evidence/w021_5_telanganaschedule_tgrac_name_crosswalk_40219308671.json",
+        "exactNormalizedNameMatches": 107,
+        "candidateAliasMatches": 12,
+        "unresolved": 0,
+        "sourceLayer": "Endowment_Lands_Old MapServer layer 13",
+        "workflowRunId": 40219308671
+      },
+      "canonicalIdFieldPresent": false
     },
     {
       "sourceId": "SRC-INDIACODE-AP-REORG-2014",
@@ -1091,6 +1152,33 @@
       "stateBoundaryUrl": "https://gisserver.bihar.gov.in/arcgis/rest/services/AdministrativrBoundaries/StateBoundary/MapServer/0/query?where=1%3D1&outFields=%2A&returnGeometry=true&outSR=4326&f=json&resultRecordCount=100",
       "stateBoundaryBytes": 784840,
       "stateBoundarySha256": "fce67b09df40e4ca62a54bf58d2caaa2609631eccce00ea0f2b07b6b9be6e446"
+    },
+    {
+      "sourceId": "SRC-CEO-TELANGANA-HOP-2024-SCHEDULE",
+      "subject": "Chief Electoral Officer Telangana, 2024 House of People Schedule of Election; corroborates the AP Reorganisation Act, Removal of Difficulties Order, and 2018 ECI notification chain",
+      "publisher": "Chief Electoral Officer, Telangana",
+      "url": "https://ceotelangana.nic.in/HOP-2024/11301_25-%20Ge%20to%20the%20HoP%202024-%20Schedule%20of%20Election_11zon.pdf",
+      "sourceAuthority": "PRIMARY_STATE_ELECTION_OFFICE_CORROBORATIVE_PDF",
+      "status": "OFFICIAL_SOURCE_DISCOVERED_WEB_INDEXED_RAW_BYTES_NOT_YET_ACQUIRED",
+      "sha256": null,
+      "fileBytes": null,
+      "limitations": [
+        "This is a 2024 election schedule, not the full 2018 notification itself.",
+        "Must be downloaded and hashed before treating it as acquired source bytes."
+      ]
+    },
+    {
+      "sourceId": "SRC-PIB-2015227-DELIMITATION-CHAIN",
+      "subject": "PIB official HTML corroboration of 2014 Act, 2015 Removal of Difficulties Order, 2018 ECI notification, and AP/Telangana seat counts",
+      "publisher": "Press Information Bureau, Government of India",
+      "url": "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2015227&lang=2&reg=48",
+      "sourceAuthority": "PRIMARY_GOVERNMENT_PRESS_RELEASE",
+      "status": "OFFICIAL_HTML_SOURCE_DISCOVERED_WEB_INDEXED_RAW_BYTES_NOT_YET_ACQUIRED",
+      "sha256": null,
+      "fileBytes": null,
+      "limitations": [
+        "Corroborative press release, not a substitute for the Gazette/ECI notification."
+      ]
     }
   ],
   "unresolvedGates": [
@@ -1607,5 +1695,5 @@
     ],
     "acceptedAsCanonical": false
   },
-  "lastDecision": "The combined workflow acquired both TGRAC candidate layers and passed the 119-record name/roster crosswalk: Admin_2026 has 107 exact + 12 provisional alias matches; the older AdministrativeInfoSystem has 108 exact + 11 provisional alias matches. Zero remain unmatched after aliases, but aliases are not canonical and no statutory extent-to-polygon validation has been done. Geometry defects remain open."
+  "lastDecision": "Statutory roster name crosswalk passed against two TGRAC candidate layers with 12/11 provisional aliases, but no polygon extent acceptance. CEO Telangana's official 2024 schedule and PIB's official HTML are additional legal-chain corroboration candidates; raw bytes/hash still needed."
 }
