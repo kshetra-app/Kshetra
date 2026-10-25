@@ -8,12 +8,6 @@ on:
       - "scripts/w0215_acquire_official_geometry.py"
       - "scripts/audit_w0215_telangana_candidate_geometry.py"
       - ".github/workflows/w0215-official-geometry-probe.yml"
-  pull_request:
-    branches:
-      - master
-    paths:
-      - "scripts/w0215_acquire_official_geometry.py"
-      - ".github/workflows/w0215-official-geometry-probe.yml"
   workflow_dispatch:
 
 permissions:
