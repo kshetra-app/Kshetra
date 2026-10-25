@@ -18,7 +18,7 @@ interface BroadcastConstituency {
   margin: number;
 }
 
-function getDetailedConstituencies(stateCode: string): BroadcastConstituency[] {
+function getDetailedConstituencies(stateCode: string): BroadcastConstituency[] | null {
   switch (stateCode.toUpperCase()) {
     case 'TS':
       return TELANGANA_CONSTITUENCIES.map((c) => ({
@@ -59,8 +59,9 @@ function getDetailedConstituencies(stateCode: string): BroadcastConstituency[] {
         runnerUpParty: c.runnerUp2023,
         margin: c.margin2023,
       }));
+    // An empty array means verified absence of records. Unsupported state seed coverage is unavailable, not empty.
     default:
-      return [];
+      return null;
   }
 }
 
@@ -127,6 +128,11 @@ export async function broadcastRoutes(app: FastifyInstance) {
       }
 
       const constituencies = getDetailedConstituencies(code);
+      if (constituencies === null) {
+        return sendApiError(reply, request, 503, 'Service Unavailable', `Election standings are unavailable for state ${code}.`, {
+          code: 'DATASET_UNAVAILABLE',
+        });
+      }
 
       // Compute standings
       const partyCounts: Record<string, { won: number; leading: number }> = {};
@@ -176,6 +182,11 @@ export async function broadcastRoutes(app: FastifyInstance) {
       }
 
       const constituencies = getDetailedConstituencies(code);
+      if (constituencies === null) {
+        return sendApiError(reply, request, 503, 'Service Unavailable', `Election constituency data is unavailable for state ${code}.`, {
+          code: 'DATASET_UNAVAILABLE',
+        });
+      }
       const parsedAcNo = typeof acNo === 'number' ? acNo : parseInt(acNo as any, 10);
       const constituency = constituencies.find((c) => c.acNo === parsedAcNo);
 
