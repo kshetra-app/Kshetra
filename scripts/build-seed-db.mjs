@@ -793,8 +793,6 @@ async function main() {
     db.close();
   }
 
-  const versionPath = path.resolve(dataDir, 'seed-db-version.json');
-
   // Rebuild the sidecar manifest from the actual final SQLite tables, ensuring
   // reported flags/counts are derived from persisted rows, not source-file presence.
   let manifest;
