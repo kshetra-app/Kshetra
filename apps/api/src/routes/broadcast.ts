@@ -127,6 +127,16 @@ export async function broadcastRoutes(app: FastifyInstance) {
       }
 
       const constituencies = getDetailedConstituencies(code);
+      if (constituencies.length === 0) {
+        return sendApiError(
+          reply,
+          request,
+          503,
+          'Service Unavailable',
+          `Broadcast constituency results for ${stateInfo.name} are unavailable until a verified state-scoped data source is configured.`,
+          { code: 'DATA_UNAVAILABLE', dataStatus: 'UNVERIFIED' }
+        );
+      }
 
       // Compute standings
       const partyCounts: Record<string, { won: number; leading: number }> = {};
@@ -176,6 +186,16 @@ export async function broadcastRoutes(app: FastifyInstance) {
       }
 
       const constituencies = getDetailedConstituencies(code);
+      if (constituencies.length === 0) {
+        return sendApiError(
+          reply,
+          request,
+          503,
+          'Service Unavailable',
+          `Broadcast constituency results for ${stateInfo.name} are unavailable until a verified state-scoped data source is configured.`,
+          { code: 'DATA_UNAVAILABLE', dataStatus: 'UNVERIFIED' }
+        );
+      }
       const parsedAcNo = typeof acNo === 'number' ? acNo : parseInt(acNo as any, 10);
       const constituency = constituencies.find((c) => c.acNo === parsedAcNo);
 
