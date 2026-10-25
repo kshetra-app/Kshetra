@@ -17,7 +17,23 @@ const porcelainStatus = execSync('git status --porcelain', { encoding: 'utf8' })
 
 assert.strictEqual(actualHead.length, 40, 'Actual local HEAD SHA must be 40 characters');
 assert.strictEqual(actualOriginMaster.length, 40, 'Actual origin/master SHA must be 40 characters');
-assert.strictEqual(actualBranch, 'master', 'Active branch must be master');
+const isPullRequest = process.env.GITHUB_EVENT_NAME === 'pull_request';
+if (isPullRequest) {
+  const expectedCheckoutSha = process.env.GITHUB_SHA;
+  const baseRef = process.env.GITHUB_BASE_REF;
+  assert.ok(expectedCheckoutSha && /^[0-9a-f]{40}$/i.test(expectedCheckoutSha),
+    'PR governance execution requires canonical GITHUB_SHA');
+  assert.ok(baseRef && /^[A-Za-z0-9._/-]+$/.test(baseRef),
+    'PR governance execution requires a valid base ref');
+  assert.strictEqual(actualHead, expectedCheckoutSha,
+    `PR governance checkout HEAD (${actualHead}) must match GITHUB_SHA (${expectedCheckoutSha})`);
+  assert.strictEqual(actualBranch, 'HEAD', 'GitHub PR checkout must remain detached (not impersonate master)');
+  const baseHead = execSync(`git rev-parse "origin/${baseRef}"`, { encoding: 'utf8' }).trim();
+  assert.match(baseHead, /^[0-9a-f]{40}$/i, 'PR base branch must resolve to a canonical SHA');
+  execSync(`git merge-base --is-ancestor "${baseHead}" "${actualHead}"`, { stdio: 'pipe' });
+} else {
+  assert.strictEqual(actualBranch, 'master', 'Active branch must be master outside PR validation');
+}
 
 console.log(`[REPOSITORY STATE] Branch: ${actualBranch}`);
 console.log(`[REPOSITORY STATE] Local HEAD: ${actualHead}`);
