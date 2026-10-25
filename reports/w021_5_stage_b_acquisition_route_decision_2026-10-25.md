@@ -81,3 +81,15 @@ The live endpoint has not yet been accepted or even confirmed as directly querya
 - The PIN Code Boundary layer is not automatically an India Post delivery-beat polygon; do not equate PIN boundaries with postal delivery beats without source-owner confirmation.
 
 This source is a promising official state-level acquisition route, not evidence of national completeness and not a Stage B acceptance.
+
+
+### Bihar probe results — run 40218024380
+
+The first corrected endpoint probe acquired the official BEGIS **Assembly** layer over HTTPS:
+
+- Service metadata: `https://gisserver.bihar.gov.in/arcgis/rest/services/ELECTION/AC/MapServer?f=pjson`, layer 0 named `AC`, capabilities `Map,Query,Data`, reported CRS EPSG:4326.
+- Geometry query: 243 polygon features, `CONS_CODE` covers 1–243 with 243 unique codes, no missing geometry, all rings closed, and no transfer-limit flag. Raw response size 10,958,178 bytes; SHA-256 `3ab79c2942f27296b08a93bb07fed1fc63bd665a9db66ddaf8fe6ece3fc70b0e`.
+- The separate official PIN Code Boundary service reports 884 features. This is a PIN-code administrative layer, **not** evidence of postal delivery-beat polygons.
+- Preliminary independent Shapely screening of the acquired AC response (EPSG:4326 ring orientation conversion; projected to EPSG:32645 for overlap area) found 3 invalid feature geometries (KURTHA code 215, SAHEBPUR KAMAL code 145, NIRMALI code 41), 76 inter-constituency positive-area overlap pairs above 1 m², and a duplicate name `PIPRA` across two codes. The largest screened overlap is approximately 144,495 m² between BELAGANJ and MAKHDUMPUR (SC).
+
+This is **not acceptance**. The audit is preliminary because multipart ring interpretation and legal vintage need independent review, and the first artifact did not yet include a Bihar state polygon for gap/outside comparison. The updated read-only workflow now also acquires the official StateBoundary layer and runs a reproducible topology/coverage screen; the result must be reviewed before deciding whether any geometry can be used. The candidate must not be promoted or repaired silently.
