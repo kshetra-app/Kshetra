@@ -5,10 +5,11 @@ const path = require('path');
 // failures. Match Expo Router's documented relative-to-entry root semantics
 // and make the runtime argument a literal at transform time.
 const routerEntry = require.resolve('expo-router/entry');
+const appRootAbsolute = path.resolve(__dirname, 'app');
 const routerContextRoot = path.relative(
   path.dirname(routerEntry),
-  path.resolve(__dirname, 'app'),
-);
+  appRootAbsolute,
+).split(path.sep).join('/');
 function inlineExpoRouterAppRoot({ types: t }) {
   return {
     name: 'kshetra-inline-expo-router-app-root',
@@ -18,7 +19,6 @@ function inlineExpoRouterAppRoot({ types: t }) {
         if (
           node.computed ||
           node.property.type !== 'Identifier' ||
-          node.property.name !== 'EXPO_ROUTER_APP_ROOT' ||
           node.object.type !== 'MemberExpression' ||
           node.object.computed ||
           node.object.property.type !== 'Identifier' ||
@@ -26,7 +26,15 @@ function inlineExpoRouterAppRoot({ types: t }) {
           node.object.object.type !== 'Identifier' ||
           node.object.object.name !== 'process'
         ) return;
-        p.replaceWith(t.stringLiteral(routerContextRoot));
+        const replacements = {
+          EXPO_ROUTER_APP_ROOT: routerContextRoot,
+          EXPO_ROUTER_ABS_APP_ROOT: appRootAbsolute,
+          EXPO_ROUTER_IMPORT_MODE: 'sync',
+          EXPO_PROJECT_ROOT: path.resolve(__dirname),
+        };
+        const propertyName = node.property.name;
+        if (!Object.prototype.hasOwnProperty.call(replacements, propertyName)) return;
+        p.replaceWith(t.stringLiteral(replacements[propertyName]));
       },
     },
   };
