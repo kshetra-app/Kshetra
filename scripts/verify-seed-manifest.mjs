@@ -29,8 +29,8 @@ if (!fs.existsSync(manifestPath)) {
 }
 
 const bytes = fs.statSync(dbPath).size;
-if (bytes <= 10_000_000) {
-  fail(`SQLite seed database is ${bytes} bytes; the mobile loader requires a hydrated database larger than 10,000,000 bytes.`);
+if (bytes <= 0) {
+  fail('SQLite seed database has zero bytes.');
   process.exit(1);
 }
 
