@@ -274,6 +274,9 @@ export const politicalAdsRoutes: FastifyPluginAsync = async (app) => {
           MEMORY_ADS.push(fallbackAd);
           return reply.status(201).send({ success: true, ad: fallbackAd });
         }
+        return sendApiError(reply, request, 503, 'Service Unavailable', 'Political ad persistence is temporarily unavailable.', {
+          code: 'DATABASE_ERROR',
+        });
       }
     }
 
@@ -331,7 +334,13 @@ export const politicalAdsRoutes: FastifyPluginAsync = async (app) => {
           .eq('status', 'pending_certification')
           .order('created_at', { ascending: false });
 
-        if (error || (process.env.NODE_ENV !== 'production' && (!data || data.length === 0))) {
+        if (error && process.env.NODE_ENV === 'production') {
+          return sendApiError(reply, request, 503, 'Service Unavailable', 'Political ad data is temporarily unavailable.', {
+            code: 'DATABASE_ERROR',
+          });
+        }
+
+        if (error || (process.env.NODE_ENV !== 'production' && (!data || data.length === 0)))
           const queue = MEMORY_ADS.filter((a) => a.status === 'pending_certification');
           return reply.send({ success: true, queue });
         }
@@ -345,6 +354,11 @@ export const politicalAdsRoutes: FastifyPluginAsync = async (app) => {
       }
     }
 
+    if (process.env.NODE_ENV === 'production') {
+      return sendApiError(reply, request, 503, 'Service Unavailable', 'Political ad review data is temporarily unavailable.', {
+        code: 'DATABASE_UNAVAILABLE',
+      });
+    }
     const queue = MEMORY_ADS.filter((a) => a.status === 'pending_certification');
     return reply.send({ success: true, queue });
   });
@@ -476,7 +490,13 @@ export const politicalAdsRoutes: FastifyPluginAsync = async (app) => {
           .eq('status', 'active');
 
         const { data, error } = await query;
-        if (error || (process.env.NODE_ENV !== 'production' && (!data || data.length === 0))) {
+        if (error && process.env.NODE_ENV === 'production') {
+          return sendApiError(reply, request, 503, 'Service Unavailable', 'Political ad data is temporarily unavailable.', {
+            code: 'DATABASE_ERROR',
+          });
+        }
+
+        if (error || (process.env.NODE_ENV !== 'production' && (!data || data.length === 0)))
           const ads = MEMORY_ADS.filter((a) => a.status === 'active');
           return reply.send({ success: true, ads });
         }
@@ -500,6 +520,11 @@ export const politicalAdsRoutes: FastifyPluginAsync = async (app) => {
       }
     }
 
+    if (process.env.NODE_ENV === 'production') {
+      return sendApiError(reply, request, 503, 'Service Unavailable', 'Political ad data is temporarily unavailable.', {
+        code: 'DATABASE_UNAVAILABLE',
+      });
+    }
     const ads = MEMORY_ADS.filter((a) => a.status === 'active');
     return reply.send({ success: true, ads });
   });
@@ -523,7 +548,13 @@ export const politicalAdsRoutes: FastifyPluginAsync = async (app) => {
           .in('status', ['active', 'ended'])
           .order('created_at', { ascending: false });
 
-        if (error || (process.env.NODE_ENV !== 'production' && (!data || data.length === 0))) {
+        if (error && process.env.NODE_ENV === 'production') {
+          return sendApiError(reply, request, 503, 'Service Unavailable', 'Political ad data is temporarily unavailable.', {
+            code: 'DATABASE_ERROR',
+          });
+        }
+
+        if (error || (process.env.NODE_ENV !== 'production' && (!data || data.length === 0)))
           const ads = MEMORY_ADS.filter((a) => a.status === 'active' || a.status === 'ended');
           return reply.send({ success: true, ads });
         }
@@ -537,6 +568,11 @@ export const politicalAdsRoutes: FastifyPluginAsync = async (app) => {
       }
     }
 
+    if (process.env.NODE_ENV === 'production') {
+      return sendApiError(reply, request, 503, 'Service Unavailable', 'Political ad library data is temporarily unavailable.', {
+        code: 'DATABASE_UNAVAILABLE',
+      });
+    }
     const ads = MEMORY_ADS.filter((a) => a.status === 'active' || a.status === 'ended');
     return reply.send({ success: true, ads });
   });
