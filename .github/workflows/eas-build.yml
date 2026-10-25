@@ -2,11 +2,15 @@ name: EAS Build
 
 on:
   push:
-    branches: [main]
+    branches: [master, main]
     paths:
       - 'apps/mobile/**'
       - 'packages/shared/**'
       - 'data/seed/**'
+      - 'scrapers/output/local-body/**'
+      - 'scripts/build-seed-db.mjs'
+      - 'scripts/validate-seed-db.mjs'
+      - '.github/workflows/eas-build.yml'
   workflow_dispatch:
     inputs:
       platform:
@@ -14,19 +18,13 @@ on:
         required: true
         default: 'all'
         type: choice
-        options:
-          - android
-          - ios
-          - all
+        options: [android, ios, all]
       profile:
         description: 'Build profile'
         required: true
         default: 'preview'
         type: choice
-        options:
-          - development
-          - preview
-          - production
+        options: [development, preview, production]
 
 concurrency:
   group: eas-build-${{ github.ref }}
@@ -36,16 +34,18 @@ jobs:
   build:
     name: EAS Build (${{ github.event.inputs.platform || 'all' }})
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout
+      - name: Checkout canonical inputs
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          lfs: false
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: 'npm'
+          cache: npm
 
       - name: Setup Expo
         uses: expo/expo-github-action@v8
@@ -59,12 +59,27 @@ jobs:
       - name: Build shared package
         run: npm run build -w @kshetra/shared
 
+      - name: Generate seed SQLite from canonical source inputs
+        run: npm run build:seed-db
+
+      - name: Validate generated seed database before remote build
+        run: npm run validate:seed-db
+
+      - name: Upload seed build evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: seed-db-evidence-${{ github.sha }}
+          if-no-files-found: error
+          path: |
+            apps/mobile/data/seed-manifest.json
+            apps/mobile/data/seed-db-version.json
+
       - name: Run tests
         run: |
           npm test -w @kshetra/shared -- --passWithNoTests --forceExit
           npm test -w @kshetra/api -- --passWithNoTests --forceExit
 
-      - name: Build (push to main)
+      - name: Build (push)
         if: github.event_name == 'push'
         run: eas build --platform all --profile preview --non-interactive
         working-directory: apps/mobile
