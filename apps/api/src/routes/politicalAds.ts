@@ -130,13 +130,13 @@ export const politicalAdsRoutes: FastifyPluginAsync = async (app) => {
       }
     }
 
-    if (!userId && process.env.NODE_ENV !== 'production' && (request.headers['x-user-id'] as string)) {
+    if (!userId && process.env.NODE_ENV === 'test' && (request.headers['x-user-id'] as string)) {
       userId = request.headers['x-user-id'] as string;
     }
 
     if (!userId) return null;
 
-    if (process.env.NODE_ENV !== 'production' && (request.headers['x-user-role'] as string)) {
+    if (process.env.NODE_ENV === 'test' && (request.headers['x-user-role'] as string)) {
       return { userId, role: request.headers['x-user-role'] as string };
     }
 
@@ -193,7 +193,7 @@ export const politicalAdsRoutes: FastifyPluginAsync = async (app) => {
           .maybeSingle();
 
         if (pageErr || !page) {
-          if (process.env.NODE_ENV !== 'production') {
+          if (process.env.NODE_ENV === 'test') {
             const newAd: PoliticalAdRow = {
               id: `pad-${Date.now()}`,
               page_id: pageId,
@@ -235,7 +235,7 @@ export const politicalAdsRoutes: FastifyPluginAsync = async (app) => {
           .single();
 
         if (insertErr || !newAd) {
-          if (process.env.NODE_ENV !== 'production') {
+          if (process.env.NODE_ENV === 'test') {
             const fallbackAd: PoliticalAdRow = {
               id: `pad-${Date.now()}`,
               page_id: pageId,
@@ -258,7 +258,7 @@ export const politicalAdsRoutes: FastifyPluginAsync = async (app) => {
 
         return reply.status(201).send({ success: true, ad: newAd });
       } catch (err: any) {
-        if (process.env.NODE_ENV !== 'production') {
+        if (process.env.NODE_ENV === 'test') {
           const fallbackAd: PoliticalAdRow = {
             id: `pad-${Date.now()}`,
             page_id: pageId,
@@ -304,49 +304,36 @@ export const politicalAdsRoutes: FastifyPluginAsync = async (app) => {
 
   /**
    * GET /api/v1/admin/political-ads/review-queue
-   * Compliance review queue screen data.
-   * Access restricted to DB-verified 'admin' or 'moderator'.
+   * Compliance review queue backed exclusively by durable storage.
    */
   app.get('/api/v1/admin/political-ads/review-queue', async (request, reply) => {
     const auth = await resolveAuthUser(request);
     if (!auth) {
       return sendApiError(reply, request, 401, 'Unauthorized', 'Authentication required', { code: 'UNAUTHORIZED' });
     }
-
     if (auth.role !== 'admin' && auth.role !== 'moderator') {
-      return sendApiError(reply, request, 403, 'Forbidden', 'Unauthorized: Review queue requires admin or moderator role', {
-        code: 'FORBIDDEN',
-      });
+      return sendApiError(reply, request, 403, 'Forbidden', 'Review queue requires admin or moderator role', { code: 'FORBIDDEN' });
     }
-
-    if (isSupabaseConfigured) {
-      try {
-        const { data, error } = await supabase
-          .from('political_ads')
-          .select(`
-            id, page_id, post_id, mcmc_certificate_id, status, amount_paid,
-            target_scope, target_value, impressions, created_at,
-            pages:page_id ( id, title, handle, role, avatar_url )
-          `)
-          .eq('status', 'pending_certification')
-          .order('created_at', { ascending: false });
-
-        if (error || (process.env.NODE_ENV !== 'production' && (!data || data.length === 0))) {
-          const queue = MEMORY_ADS.filter((a) => a.status === 'pending_certification');
-          return reply.send({ success: true, queue });
-        }
-
-        return reply.send({ success: true, queue: data ?? [] });
-      } catch (err: any) {
-        if (process.env.NODE_ENV !== 'production') {
-          const queue = MEMORY_ADS.filter((a) => a.status === 'pending_certification');
-          return reply.send({ success: true, queue });
-        }
+    if (!isSupabaseConfigured) {
+      return sendApiError(reply, request, 503, 'Service Unavailable', 'Political-ad review queue is unavailable because database persistence is not configured.', { code: 'DATABASE_UNAVAILABLE' });
+    }
+    try {
+      const { data, error } = await supabase
+        .from('political_ads')
+        .select(`
+          id, page_id, post_id, mcmc_certificate_id, status, amount_paid,
+          target_scope, target_value, impressions, created_at,
+          pages:page_id ( id, title, handle, role, avatar_url )
+        `)
+        .eq('status', 'pending_certification')
+        .order('created_at', { ascending: false });
+      if (error) {
+        return sendApiError(reply, request, 500, 'Internal Server Error', 'Failed to load political-ad review queue from durable storage.', { code: 'DATABASE_ERROR' });
       }
+      return reply.send({ success: true, queue: data ?? [] });
+    } catch {
+      return sendApiError(reply, request, 500, 'Internal Server Error', 'Failed to load political-ad review queue from durable storage.', { code: 'DATABASE_ERROR' });
     }
-
-    const queue = MEMORY_ADS.filter((a) => a.status === 'pending_certification');
-    return reply.send({ success: true, queue });
   });
 
   /**
@@ -391,7 +378,7 @@ export const politicalAdsRoutes: FastifyPluginAsync = async (app) => {
           .single();
 
         if (error || !updated) {
-          if (process.env.NODE_ENV !== 'production') {
+          if (process.env.NODE_ENV === 'test') {
             const target = MEMORY_ADS.find((a) => a.id === adId);
             if (target) {
               target.status = newStatus;
@@ -415,7 +402,7 @@ export const politicalAdsRoutes: FastifyPluginAsync = async (app) => {
           message: `Political ad ${action === 'certify' ? 'certified and activated' : 'rejected'} by reviewer ${auth.userId}`,
         });
       } catch (err: any) {
-        if (process.env.NODE_ENV !== 'production') {
+        if (process.env.NODE_ENV === 'test') {
           const target = MEMORY_ADS.find((a) => a.id === adId);
           if (target) {
             target.status = newStatus;
@@ -462,85 +449,75 @@ export const politicalAdsRoutes: FastifyPluginAsync = async (app) => {
   app.get<{
     Querystring: { state?: string; constituency?: string; limit?: number };
   }>('/api/v1/political-ads/active', { schema: activeAdsQuerySchema }, async (request, reply) => {
-    const { state, constituency } = request.query;
-
-    if (isSupabaseConfigured) {
-      try {
-        let query = supabase
-          .from('political_ads')
-          .select(`
-            id, page_id, post_id, mcmc_certificate_id, amount_paid,
-            target_scope, target_value, impressions, created_at,
-            pages:page_id ( id, title, handle, avatar_url )
-          `)
-          .eq('status', 'active');
-
-        const { data, error } = await query;
-        if (error || (process.env.NODE_ENV !== 'production' && (!data || data.length === 0))) {
-          const ads = MEMORY_ADS.filter((a) => a.status === 'active');
-          return reply.send({ success: true, ads });
-        }
-
-        // Filter by scope if provided
-        let ads = data ?? [];
-        if (state || constituency) {
-          ads = ads.filter((ad: any) => {
-            if (ad.target_scope === 'state' && (!ad.target_value || ad.target_value === state)) return true;
-            if (ad.target_scope === 'constituency' && (!ad.target_value || ad.target_value === constituency)) return true;
-            return false;
-          });
-        }
-
-        return reply.send({ success: true, ads });
-      } catch (err: any) {
-        if (process.env.NODE_ENV !== 'production') {
-          const ads = MEMORY_ADS.filter((a) => a.status === 'active');
-          return reply.send({ success: true, ads });
-        }
-      }
+    const { state, constituency, limit = 50 } = request.query;
+    if (!isSupabaseConfigured) {
+      return sendApiError(reply, request, 503, 'Service Unavailable', 'Political ads are unavailable because database persistence is not configured.', { code: 'DATABASE_UNAVAILABLE' });
     }
-
-    const ads = MEMORY_ADS.filter((a) => a.status === 'active');
-    return reply.send({ success: true, ads });
+    try {
+      const { data, error } = await supabase
+        .from('political_ads')
+        .select(`
+          id, page_id, post_id, mcmc_certificate_id, amount_paid,
+          target_scope, target_value, impressions, created_at,
+          pages:page_id ( id, title, handle, avatar_url )
+        `)
+        .eq('status', 'active')
+        .order('created_at', { ascending: false })
+        .limit(limit);
+      if (error) {
+        return sendApiError(reply, request, 500, 'Internal Server Error', 'Failed to load active political ads from durable storage.', { code: 'DATABASE_ERROR' });
+      }
+      let ads = data ?? [];
+      if (state || constituency) {
+        ads = ads.filter((ad: any) => {
+          if (state && ad.target_scope === 'state' && ad.target_value === state) return true;
+          if (constituency && ad.target_scope === 'constituency' && ad.target_value === constituency) return true;
+          return false;
+        });
+      }
+      return reply.send({ success: true, ads });
+    } catch {
+      return sendApiError(reply, request, 500, 'Internal Server Error', 'Failed to load active political ads from durable storage.', { code: 'DATABASE_ERROR' });
+    }
   });
 
   /**
    * GET /api/v1/political-ads/library
-   * Public unauthenticated JSON API for all certified / active / ended ads.
+   * Public JSON API for ads persisted in the political-ad transparency library.
    */
   app.get<{
     Querystring: { search?: string; state?: string; page?: number; limit?: number };
   }>('/api/v1/political-ads/library', { schema: libraryAdsQuerySchema }, async (request, reply) => {
-    if (isSupabaseConfigured) {
-      try {
-        const { data, error } = await supabase
-          .from('political_ads')
-          .select(`
-            id, page_id, post_id, mcmc_certificate_id, status, amount_paid,
-            target_scope, target_value, impressions, created_at, reviewed_at,
-            pages:page_id ( id, title, handle, avatar_url )
-          `)
-          .in('status', ['active', 'ended'])
-          .order('created_at', { ascending: false });
-
-        if (error || (process.env.NODE_ENV !== 'production' && (!data || data.length === 0))) {
-          const ads = MEMORY_ADS.filter((a) => a.status === 'active' || a.status === 'ended');
-          return reply.send({ success: true, ads });
-        }
-
-        return reply.send({ success: true, ads: data ?? [] });
-      } catch (err: any) {
-        if (process.env.NODE_ENV !== 'production') {
-          const ads = MEMORY_ADS.filter((a) => a.status === 'active' || a.status === 'ended');
-          return reply.send({ success: true, ads });
-        }
-      }
+    const { search, state, page = 1, limit = 50 } = request.query;
+    if (!isSupabaseConfigured) {
+      return sendApiError(reply, request, 503, 'Service Unavailable', 'Political-ad library is unavailable because database persistence is not configured.', { code: 'DATABASE_UNAVAILABLE' });
     }
-
-    const ads = MEMORY_ADS.filter((a) => a.status === 'active' || a.status === 'ended');
-    return reply.send({ success: true, ads });
+    try {
+      const { data, error } = await supabase
+        .from('political_ads')
+        .select(`
+          id, page_id, post_id, mcmc_certificate_id, status, amount_paid,
+          target_scope, target_value, impressions, created_at, reviewed_at,
+          pages:page_id ( id, title, handle, avatar_url )
+        `)
+        .in('status', ['active', 'ended'])
+        .order('created_at', { ascending: false })
+        .range((page - 1) * limit, page * limit - 1);
+      if (error) {
+        return sendApiError(reply, request, 500, 'Internal Server Error', 'Failed to load political-ad library from durable storage.', { code: 'DATABASE_ERROR' });
+      }
+      let ads: any[] = data ?? [];
+      if (state) ads = ads.filter((ad) => ad.target_scope === 'state' && ad.target_value === state);
+      if (search) {
+        const term = search.toLocaleLowerCase();
+        ads = ads.filter((ad) => [ad.post_id, ad.mcmc_certificate_id, ad.pages?.title, ad.pages?.handle]
+          .some((value) => typeof value === 'string' && value.toLocaleLowerCase().includes(term)));
+      }
+      return reply.send({ success: true, ads });
+    } catch {
+      return sendApiError(reply, request, 500, 'Internal Server Error', 'Failed to load political-ad library from durable storage.', { code: 'DATABASE_ERROR' });
+    }
   });
-
 
   /**
    * GET /ad-library
