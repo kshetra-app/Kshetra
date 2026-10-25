@@ -755,7 +755,7 @@
       "version": "Order dated 17 December 2008; ECI PDF lists Andhra Pradesh Schedule III on PDF pages 8–32",
       "retrievalStatus": "READ_VIA_WEB_PDF_TEXT; BINARY_NOT_DOWNLOADED_OR_SHA256_VERIFIED",
       "authority": "OFFICIAL_STATUTORY_BASELINE",
-      "status": "WEB_PDF_TEXT_REVIEWED; BINARY_DOWNLOAD_BLOCKED_HTTP_406; PARTIAL_CROSSWALK_9_OF_119",
+      "status": "WEB_PDF_TEXT_REVIEWED; FIRST_BINARY_ATTEMPT_HTTP_406; SESSION_RETRY_PENDING",
       "partialCrosswalk": {
         "report": "reports/evidence/w021_5_telangana_layer_comparison_2026-10-25.json",
         "constituencies": [
@@ -810,7 +810,9 @@
         "responseBodySha256": "7f512a23553028d1fa2006932589acb1a66dc61f6c18be51c9e03b154ef7a4e5",
         "artifactZipSha256": "b8bfdf3d5016144bf37726462a161dedd38f7cf349a3c4fe7fecef1c82e07e3f",
         "result": "NO_PDF_BINARY; NO_PDF_SHA256; official PDF text was reviewed via web reader"
-      }
+      },
+      "retryWorkflowRunId": 40213895574,
+      "retryWorkflowUrl": "https://github.com/kshetra-app/Kshetra/actions/runs/40213895574"
     },
     {
       "sourceId": "SRC-TELANGANA-ADMIN-NEW-LAYER",
@@ -1292,9 +1294,18 @@
         "pdfAcquired": false,
         "webTextReviewed": true
       }
+    },
+    {
+      "runId": 40213895574,
+      "workflowUrl": "https://github.com/kshetra-app/Kshetra/actions/runs/40213895574",
+      "artifactId": null,
+      "artifactName": null,
+      "artifactSha256": null,
+      "status": "QUEUED_AT_LAST_CHECK",
+      "scope": "Retry official ECI 2008 order PDF using a persistent browser-impersonated session, homepage cookies and URL-encoding variants; extract Schedule III roster if acquired."
     }
   ],
-  "updatedAt": "2026-10-25T16:54:00Z",
+  "updatedAt": "2026-10-25T16:55:00Z",
   "notes": [
     "Actual public source artifacts were downloaded in GitHub Actions run 40209022405 and SHA-256 hashed; detailed geometry findings are in reports/w021_5_datameet_ac_geometry_forensic_audit.json.",
     "Survey of India official ABDB page, Vector Data Catalog 2025 PDF and Metadata_ABDB.zip were downloaded and hashed. The metadata covers state, district, subdistrict and village boundaries, not statutory Assembly Constituency polygons.",
