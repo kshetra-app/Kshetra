@@ -1,4 +1,17 @@
 import type { FastifyInstance } from 'fastify';
+import { createHash } from 'node:crypto';
+import {
+  getUnifiedConstituenciesForState,
+  getAvailableYearsForState,
+} from '../../../mobile/lib/stateDataAdapter';
+import {
+  getAllTriviaForState,
+  getTriviaForConstituencyInState,
+} from '../../../mobile/lib/stateTriviaAdapter';
+import {
+  getDemographicsForState,
+  getHistoryForState,
+} from '../../../mobile/lib/stateDataDispatcher';
 import type { ConstituencyBrief } from '@kshetra/shared';
 import { findConstituencyAtPoint, computeElectionAnalytics } from '@kshetra/shared';
 import type { ConstituencyRecord } from '@kshetra/shared';
@@ -390,6 +403,70 @@ const locateSchema = {
 };
 
 export async function constituencyRoutes(app: FastifyInstance) {
+  /**
+   * Versioned state-scoped map metadata contract (schema v1).
+   *
+   * This API-only adapter reuses the canonical normalization routines on the
+   * server. The mobile entry graph must never import these all-state modules.
+   * Each request returns only the selected state's canonical constituency
+   * rows, trivia, historical summaries and available demographics.
+   */
+  app.get<{ Params: { stateCode: string } }>('/states/:stateCode/map-data', async (request, reply) => {
+    const code = request.params.stateCode.toUpperCase();
+    if (!/^[A-Z]{2}$/.test(code) || !isStateSupported(code)) {
+      return sendApiError(reply, request, 404, 'Not Found', `State map data is unavailable for ${code}`, {
+        code: 'STATE_MAP_DATA_UNAVAILABLE',
+      });
+    }
+
+    const normalized = getUnifiedConstituenciesForState(code).map((c) => ({
+      ...c,
+      id: `${code}-AC-${c.acNo}`,
+      stateCode: code,
+    }));
+    if (normalized.length === 0) {
+      return sendApiError(reply, request, 404, 'Not Found', `No constituency metadata exists for ${code}`, {
+        code: 'STATE_MAP_DATA_UNAVAILABLE',
+      });
+    }
+
+    const triviaByAcNo: Record<string, unknown[]> = {};
+    const historyByAcNo: Record<string, unknown[]> = {};
+    const demographicsByAcNo: Record<string, unknown> = {};
+    for (const c of normalized) {
+      const key = String(c.acNo);
+      const trivia = getTriviaForConstituencyInState(code, c.acNo);
+      if (trivia.length > 0) triviaByAcNo[key] = trivia;
+      const history = getHistoryForState(code, c.acNo);
+      if (history.length > 0) historyByAcNo[key] = history;
+      const demographics = getDemographicsForState(code, c.acNo);
+      if (demographics) demographicsByAcNo[key] = demographics;
+    }
+
+    const info = getStateInfo(code);
+    const contractCore = {
+      schemaVersion: 1 as const,
+      stateCode: code,
+      dataStatus: info?.dataStatus ?? 'stub',
+      constituencies: normalized,
+      availableYears: getAvailableYearsForState(code),
+      trivia: getAllTriviaForState(code),
+      triviaByAcNo,
+      historyByAcNo,
+      demographicsByAcNo,
+    };
+    const revision = createHash('sha1').update(JSON.stringify(contractCore)).digest('hex');
+    const etag = `"${revision}"`;
+    reply
+      .header('ETag', etag)
+      .header('X-State-Map-Schema', '1')
+      .header('X-State-Map-Revision', revision)
+      .header('Cache-Control', 'public, max-age=300, stale-while-revalidate=86400');
+    if (request.headers['if-none-match'] === etag) return reply.code(304).send();
+    return { ...contractCore, revision };
+  });
+
+
   /** 1. GET /states/:stateCode/constituencies */
   app.get('/states/:stateCode/constituencies', {
     schema: listConstituenciesSchema,
