@@ -50,7 +50,7 @@ function jsonMap(file) {
 function normalizedSource(source) { return source.split(String.fromCharCode(92)).join('/').toLowerCase(); }
 function isGeographySource(source) {
   const s = normalizedSource(source);
-  return s.includes('/data/seed/') || s.includes('/apps/mobile/data/') || s.endsWith('.geojson')
+  return s.includes('/data/seed/') || s.includes('/data/census/') || s.includes('/apps/mobile/data/') || s.endsWith('.geojson')
     || ['statedataadapter.ts','statedataadapter.tsx','statetriviaadapter.ts','statetriviaadapter.tsx','statedatadispatcher.ts','statedatadispatcher.tsx','enrichgeojson.ts','enrichgeojson.tsx'].some((name) => s.endsWith('/' + name));
 }
 function isForbiddenNationalSeed(source) {
