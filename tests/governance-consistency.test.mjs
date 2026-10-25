@@ -161,12 +161,31 @@ try {
   assert.fail(`origin/master could not be resolved: ${err.message}`);
 }
 
-// Local HEAD must strictly match origin/master (fail-closed, no exceptions)
-assert.strictEqual(
-  localHead,
-  originMaster,
-  `Local HEAD (${localHead}) must strictly match origin/master (${originMaster})`
-);
+// On master push runs, HEAD must strictly match origin/master. On PR runs,
+// checkout uses GitHub's synthetic merge commit; verify it matches GITHUB_SHA
+// and that the declared base branch is an ancestor. Governance coordinates below
+// remain pinned to origin/master; PR code must not rewrite project provenance.
+const isPullRequest = process.env.GITHUB_EVENT_NAME === 'pull_request';
+if (isPullRequest) {
+  const expectedCheckoutSha = process.env.GITHUB_SHA;
+  const baseRef = process.env.GITHUB_BASE_REF;
+  assert.ok(expectedCheckoutSha && /^[0-9a-f]{40}$/i.test(expectedCheckoutSha),
+    'Pull-request validation requires a canonical GITHUB_SHA');
+  assert.ok(baseRef && /^[A-Za-z0-9._/-]+$/.test(baseRef),
+    'Pull-request validation requires a valid GITHUB_BASE_REF');
+  assert.strictEqual(localHead, expectedCheckoutSha,
+    `PR checkout HEAD (${localHead}) must match GITHUB_SHA (${expectedCheckoutSha})`);
+  const baseHead = execSync(`git rev-parse "origin/${baseRef}"`, { encoding: 'utf8' }).trim();
+  assert.strictEqual(baseHead.length, 40, 'PR base ref must resolve to a 40-character SHA');
+  execSync(`git merge-base --is-ancestor "${baseHead}" "${localHead}"`, { stdio: 'pipe' });
+  console.log(`[PASS] PR checkout HEAD matches GITHUB_SHA and preserves origin/${baseRef} as an ancestor.`);
+} else {
+  assert.strictEqual(
+    localHead,
+    originMaster,
+    `Local HEAD (${localHead}) must strictly match origin/master (${originMaster})`
+  );
+}
 
 // Working tree must be completely clean (fail-closed, no exceptions)
 const porcelainStatus = execSync('git status --porcelain', { encoding: 'utf8' }).trim();
