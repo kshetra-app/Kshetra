@@ -808,16 +808,32 @@ async function main() {
       };
       manifest[code] = row;
     }
-    verifyDb.exec('BEGIN');
-    const updateManifest = verifyDb.prepare(`UPDATE seed_manifest SET version=?,has_mla_profiles=?,has_demographics=?,has_historical_results=?,has_political_timeline=?,has_election_history=?,constituency_count=?,last_updated=? WHERE state_code=?`);
-    for (const row of Object.values(manifest)) {
-      updateManifest.run(row.version,row.has_mla_profiles,row.has_demographics,row.has_historical_results,row.has_political_timeline,row.has_election_history,row.constituency_count,row.last_updated,row.state_code);
+    verifyDb.close();
+    const writableDb = new Database(dbPath);
+    try {
+      writableDb.exec('BEGIN');
+      const updateManifest = writableDb.prepare(`UPDATE seed_manifest SET version=?,has_mla_profiles=?,has_demographics=?,has_historical_results=?,has_political_timeline=?,has_election_history=?,constituency_count=?,last_updated=? WHERE state_code=?`);
+      for (const row of Object.values(manifest)) {
+        const result = updateManifest.run(row.version,row.has_mla_profiles,row.has_demographics,row.has_historical_results,row.has_political_timeline,row.has_election_history,row.constituency_count,row.last_updated,row.state_code);
+        if (result.changes !== 1) throw new Error(`SQLite seed_manifest row missing for ${row.state_code}`);
+      }
+      writableDb.exec('COMMIT');
+      writableDb.pragma('wal_checkpoint(TRUNCATE)');
+      writableDb.pragma('journal_mode = DELETE');
+    } catch (error) {
+      writableDb.exec('ROLLBACK');
+      throw error;
+    } finally {
+      writableDb.close();
     }
-    verifyDb.exec('COMMIT');
     fs.writeFileSync(path.resolve(dataDir, 'seed-manifest.json'), JSON.stringify(manifest, null, 2) + '\n');
   } finally {
-    verifyDb.close();
+    try { verifyDb.close(); } catch {}
   }
+  // Recompute the identity after the in-database manifest was finalized.
+  const finalDbBytes = fs.readFileSync(dbPath);
+  const finalSha256 = crypto.createHash('sha256').update(finalDbBytes).digest('hex');
+  fs.writeFileSync(versionPath, JSON.stringify({ version: finalSha256.slice(0, 16), sha256: finalSha256, sizeBytes: finalDbBytes.length, builtAt: new Date().toISOString() }, null, 2) + '\n');
   console.log(`✅ Version file written: ${versionPath} (${hash})`);
 
   // If Android assets directory exists, also copy directly so it's baked into APK assets
