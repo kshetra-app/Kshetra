@@ -204,79 +204,54 @@ BEGIN
             USING ERRCODE = '23503'; -- foreign_key_violation
     END IF;
 
-    -- 2. Check idempotency if key provided
+    -- Idempotency is enforced atomically by the unique index during INSERT.
+
+    -- 3. Insert event with race-safe, application-scoped idempotency.
+    -- A replay must never mutate historical fan-out or create deliveries for subscriptions
+    -- that were added after the original event was published.
     IF p_idempotency_key IS NOT NULL AND length(p_idempotency_key) > 0 THEN
-        SELECT id INTO v_event_id
-        FROM public.webhook_events
-        WHERE tenant_id = p_tenant_id
-          AND application_id = p_application_id
-          AND idempotency_key = p_idempotency_key;
+        INSERT INTO public.webhook_events (
+            tenant_id, application_id, event_type, idempotency_key,
+            payload, payload_raw, payload_sha256, created_at
+        ) VALUES (
+            p_tenant_id, p_application_id, p_event_type, p_idempotency_key,
+            p_payload, p_payload_raw, p_payload_sha256, timezone('utc', now())
+        )
+        ON CONFLICT (tenant_id, application_id, idempotency_key)
+            WHERE (idempotency_key IS NOT NULL)
+        DO NOTHING
+        RETURNING id INTO v_event_id;
 
-        IF v_event_id IS NOT NULL THEN
-            v_is_duplicate := true;
-            -- Ensure deliveries exist for all currently active subscriptions
-            WITH inserted_deliv AS (
-                INSERT INTO public.webhook_deliveries (
-                    tenant_id,
-                    subscription_id,
-                    event_id,
-                    attempt_count,
-                    status,
-                    created_at
-                )
-                SELECT
-                    p_tenant_id,
-                    s.id,
-                    v_event_id,
-                    1,
-                    'queued',
-                    timezone('utc', now())
-                FROM public.webhook_subscriptions s
-                WHERE s.tenant_id = p_tenant_id
-                  AND s.application_id = p_application_id
-                  AND s.status = 'active'
-                  AND ('*' = ANY(s.subscribed_events) OR p_event_type = ANY(s.subscribed_events))
-                ON CONFLICT (subscription_id, event_id) DO NOTHING
-                RETURNING id
-            )
-            SELECT count(*)::INTEGER INTO v_deliv_count FROM inserted_deliv;
+        IF v_event_id IS NULL THEN
+            -- Another concurrent publisher won the idempotency race. Return the
+            -- original immutable event and report zero newly created deliveries.
+            SELECT id INTO v_event_id
+            FROM public.webhook_events
+            WHERE tenant_id = p_tenant_id
+              AND application_id = p_application_id
+              AND idempotency_key = p_idempotency_key;
 
-            -- Return total deliveries for this existing event
-            SELECT count(*)::INTEGER INTO v_deliv_count
-            FROM public.webhook_deliveries wd
-            WHERE wd.tenant_id = p_tenant_id AND wd.event_id = v_event_id;
+            IF v_event_id IS NULL THEN
+                RAISE EXCEPTION 'IDEMPOTENCY_CONFLICT_UNRESOLVED'
+                    USING ERRCODE = '40001';
+            END IF;
 
             event_id := v_event_id;
-            is_duplicate := v_is_duplicate;
-            deliveries_created := v_deliv_count;
+            is_duplicate := true;
+            deliveries_created := 0;
             RETURN NEXT;
             RETURN;
         END IF;
+    ELSE
+        INSERT INTO public.webhook_events (
+            tenant_id, application_id, event_type, idempotency_key,
+            payload, payload_raw, payload_sha256, created_at
+        ) VALUES (
+            p_tenant_id, p_application_id, p_event_type, NULLIF(p_idempotency_key, ''),
+            p_payload, p_payload_raw, p_payload_sha256, timezone('utc', now())
+        )
+        RETURNING id INTO v_event_id;
     END IF;
-
-    -- 3. Insert new event
-    v_event_id := gen_random_uuid();
-    INSERT INTO public.webhook_events (
-        id,
-        tenant_id,
-        application_id,
-        event_type,
-        idempotency_key,
-        payload,
-        payload_raw,
-        payload_sha256,
-        created_at
-    ) VALUES (
-        v_event_id,
-        p_tenant_id,
-        p_application_id,
-        p_event_type,
-        p_idempotency_key,
-        p_payload,
-        p_payload_raw,
-        p_payload_sha256,
-        timezone('utc', now())
-    );
 
     -- 4. Atomically fan out to matching active subscriptions under this tenant and application
     WITH inserted_deliv AS (
