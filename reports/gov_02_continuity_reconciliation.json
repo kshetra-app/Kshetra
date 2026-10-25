@@ -257,7 +257,8 @@
     "5b20737d449078782080eaf4e4eb6f74c325c118",
     "666d2236edcfb63a652bb59c06f09c146542f076",
     "a9d69430ccadb478fc6a5aa3d2f8dfe04bfb98b0",
-    "c06579783d591646136d99e9de7bede5177c5c03"
+    "c06579783d591646136d99e9de7bede5177c5c03",
+    "8e6b386dc167bc03a6469c6dd2ca3e4fada536a2"
   ],
   "commitAccountabilityNote": "Complete repair-branch inventory after immutable sourceSnapshot.commit. The test excludes only current HEAD (the report-containing commit) to avoid self-reference and requires the previous commit to be explicitly listed. Refresh this entire list on every subsequent branch commit."
 }
