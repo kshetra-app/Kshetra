@@ -146,6 +146,14 @@ export class InMemoryQueueProvider implements WebhookQueueProvider {
         const evt = this.events.get(delivery.eventId);
 
         if (sub && evt) {
+          const previousSecretExpiresAt = (sub as any)._previousSecretExpiresAt as string | undefined;
+          const previousSecret =
+            typeof (sub as any)._previousSecret === 'string' &&
+            previousSecretExpiresAt &&
+            Date.parse(previousSecretExpiresAt) > now.getTime()
+              ? (sub as any)._previousSecret as string
+              : null;
+
           delivery.status = 'leased';
           delivery.leaseToken = leaseToken;
           delivery.leasedUntil = leasedUntil;
@@ -155,6 +163,9 @@ export class InMemoryQueueProvider implements WebhookQueueProvider {
             subscription: sub,
             event: evt,
             leaseToken,
+            secret: typeof (sub as any)._rawSecret === 'string' ? (sub as any)._rawSecret : '',
+            previousSecret,
+            previousSecretExpiresAt: previousSecretExpiresAt ?? null,
           });
         }
       }
