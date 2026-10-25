@@ -135,12 +135,12 @@
       "sourceId": "SRC-DATAMEET-AC",
       "subject": "India assembly constituency polygons",
       "publisher": "DataMeet community maps project",
-      "url": "https://github.com/datameet/maps/tree/master/assembly-constituencies",
-      "relatedUrl": "https://github.com/datameet/maps",
+      "url": "https://github.com/datameet/maps/tree/7a1c21c2e3f059a19aba1023f64ed7e174462ca4/assembly-constituencies",
+      "relatedUrl": "https://github.com/datameet/maps/blob/b2f56f6bd8fdead64f0210c133ab467d26e3621e/assembly-constituencies/README.md",
       "retrievedAt": "2026-10-25",
       "format": "Shapefile set: India_AC.shp, .shx, .dbf, .prj",
       "authority": "SECONDARY_CANDIDATE_GIS",
-      "status": "CANDIDATE_SECONDARY_SOURCE",
+      "status": "DOWNLOADED_HASHED_AND_AUDITED_AS_SECONDARY_CANDIDATE",
       "sha256": null,
       "fileBytes": null,
       "upstreamFiles": [
@@ -165,11 +165,38 @@
           "url": "https://raw.githubusercontent.com/datameet/maps/master/assembly-constituencies/India_AC.prj"
         }
       ],
-      "licenseClaim": "DataMeet repository states CC BY 4.0 unless a dataset specifies otherwise; dataset-specific README/license must be verified before redistribution.",
+      "licenseClaim": "Creative Commons Attribution 2.5 India per dataset README.",
       "limitations": [
-        "Community-maintained, not authoritative merely by hosting; must inspect attribute schema, vintage, topology, duplicate IDs, seat counts and per-state temporal applicability. Do not treat as official until reconciled."
+        "The source README says boundaries for Jammu and Kashmir, Jharkhand, Assam, Manipur, Nagaland and Arunachal Pradesh appear pre-delimitation.",
+        "The source README warns of geometry shifts and missing/incorrect constituency names.",
+        "The source README says Telangana features remain labeled as Andhra Pradesh.",
+        "Forensic audit found 4,182 features, 4,102 unique state-code/AC-number pairs, 80 extra duplicate rows, 6 invalid geometries, 34 missing AC names and only 30 source state names for 31 expected jurisdictions."
       ],
-      "plannedUse": "Candidate geometry source for forensic comparison only; not accepted directly as statutory truth."
+      "plannedUse": "Candidate geometry source for forensic comparison only; not accepted directly as statutory truth.",
+      "sourceCommit": "7a1c21c2e3f059a19aba1023f64ed7e174462ca4",
+      "readmeCommit": "b2f56f6bd8fdead64f0210c133ab467d26e3621e",
+      "sourceFiles": [
+        {
+          "name": "India_AC.shp",
+          "bytes": 6263460,
+          "sha256": "0e89b00a228b5500d0f7802492c615c34dcb67f72acaf6ec4a66575df0e31e70"
+        },
+        {
+          "name": "India_AC.dbf",
+          "bytes": 5721425,
+          "sha256": "687d2487d4aec89a7371bd06e2a7f9566dd2df1dd6e6d8289adc4a0501b2c1fd"
+        },
+        {
+          "name": "India_AC.shx",
+          "bytes": 33556,
+          "sha256": "a3149ac8f825771df09a6a956a485059cbba7d28eabfdf35b8b02d41c6d88561"
+        },
+        {
+          "name": "India_AC.prj",
+          "bytes": 143,
+          "sha256": "98aaf3d1c0ecadf1a424a4536de261c3daf4e373697cb86c40c43b989daf52eb"
+        }
+      ]
     },
     {
       "sourceId": "SRC-INDIAPOST-PIN",
@@ -197,14 +224,47 @@
       "retrievedAt": "2026-10-25",
       "format": "JavaScript-wrapped GeoJSON by state election portal",
       "authority": "PRIMARY_PORTAL_DATA_CANDIDATE",
-      "status": "DISCOVERED_NOT_DOWNLOADED",
+      "status": "INITIAL_DIRECT_FETCH_FAILED; RETRY_WITH_BROWSER_HEADERS",
       "sha256": null,
       "fileBytes": null,
       "scope": "Repository documents five state/UT files for Assam, Puducherry, Kerala, Tamil Nadu and West Bengal for the May 2026 election context",
       "limitations": [
+        "Initial acquisition run returned HTTP 404 for guessed JavaScript URLs; direct retry with browser headers and pinned third-party GeoJSON candidates is in progress.",
         "Election-cycle-specific geometry is not a universal 31-state current boundary release and must be checked for temporal/statutory applicability."
       ],
       "plannedUse": "Investigate portal-native geometry and provenance for the covered jurisdictions only."
+    },
+    {
+      "sourceId": "SRC-SOI-ABDB-ARCHIVE",
+      "subject": "Official India-wide state/district/subdistrict boundary archive",
+      "publisher": "Survey of India",
+      "url": "https://surveyofindia.gov.in/documents/State_District_Subdistrict_PAN%20INDIA.rar",
+      "retrievedAt": "2026-10-25",
+      "format": "RAR archive",
+      "authority": "PRIMARY_OFFICIAL_SOURCE",
+      "status": "DISCOVERED_RETRYING_IN_CURRENT_ACQUISITION_RUN",
+      "sha256": null,
+      "fileBytes": null,
+      "limitations": [
+        "Administrative boundaries are not statutory Assembly Constituency boundaries."
+      ],
+      "plannedUse": "Inspect exact archive contents, metadata, coverage and terms; do not substitute for AC polygons."
+    },
+    {
+      "sourceId": "SRC-SOI-VILLAGE-BOUNDARIES",
+      "subject": "Official national village boundary data base",
+      "publisher": "Survey of India",
+      "url": "https://surveyofindia.gov.in/pages/village-boundary-data-base-of-entire-india",
+      "retrievedAt": "2026-10-25",
+      "format": "Official data index / linked archive",
+      "authority": "PRIMARY_OFFICIAL_SOURCE",
+      "status": "DISCOVERED_RETRYING_IN_CURRENT_ACQUISITION_RUN",
+      "sha256": null,
+      "fileBytes": null,
+      "limitations": [
+        "Village boundaries can support administrative crosswalks but are not AC boundaries; any population overlay would be DERIVED and depends on accepted AC geometry."
+      ],
+      "plannedUse": "Acquire and inspect archive/metadata; use only for documented administrative spatial joins."
     }
   ],
   "unresolvedGates": [
@@ -233,5 +293,28 @@
       "status": "OPEN",
       "reason": "Need state CEO polling-station address/PIN datasets and verified electoral crosswalk."
     }
+  ],
+  "acquisitionRuns": [
+    {
+      "runId": 40209022405,
+      "workflowUrl": "https://github.com/kshetra-app/Kshetra/actions/runs/40209022405",
+      "artifactId": 12604953125,
+      "artifactName": "w0215-source-acquisition-40209022405",
+      "artifactSha256": "87c31c94d7eb302ecba5a966167cb849f114a685d7ebad146721d04a95e69163",
+      "uncompressedBytes": 16343731,
+      "manifestSummary": {
+        "downloaded": 8,
+        "failed": 10,
+        "officialDownloads": 4,
+        "secondaryCandidateDownloads": 4
+      },
+      "status": "PARTIAL_ACQUISITION_COMPLETE; OFFICIAL ECI SOURCE RETRY PENDING"
+    }
+  ],
+  "updatedAt": "2026-10-25",
+  "notes": [
+    "Actual public source artifacts were downloaded in GitHub Actions run 40209022405 and SHA-256 hashed; detailed geometry findings are in reports/w021_5_datameet_ac_geometry_forensic_audit.json.",
+    "Survey of India official ABDB page, Vector Data Catalog 2025 PDF and Metadata_ABDB.zip were downloaded and hashed. The metadata covers state, district, subdistrict and village boundaries, not statutory Assembly Constituency polygons.",
+    "The first ECI direct downloads failed (HTTP 406/404); a retry with browser headers and pinned third-party ECI-portal-derived GeoJSON candidates is running. Do not claim these ECI geometry files downloaded until the second artifact manifest confirms it."
   ]
 }
