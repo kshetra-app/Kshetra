@@ -4,7 +4,7 @@ on:
   pull_request:
     branches: [master, main, develop]
   push:
-    branches: [main, develop]
+    branches: [master, main, develop]
   schedule:
     # Weekly supply-chain re-scan (Mondays 06:00 UTC)
     - cron: "0 6 * * 1"
