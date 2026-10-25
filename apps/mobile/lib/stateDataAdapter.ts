@@ -6,7 +6,7 @@
  *
  * Supports all 28 states + Puducherry + J&K.
  */
-import type { ConstituencyBrief } from '@kshetra/shared';
+import type { ConstituencyBrief, DataTruthStatus } from '@kshetra/shared';
 import {
   TELANGANA_CONSTITUENCIES,
   type ConstituencySeed,
@@ -53,15 +53,35 @@ import { JK_CONSTITUENCIES } from '../../../data/seed/jammu-kashmir-constituenci
 
 // ─── Unified Constituency ─────────────────────────────────────────────────
 
+/** Provenance and epistemic status for facts carried through the mobile adapter.
+ * Freshness (dataStatus) is intentionally separate from whether the fact is
+ * official/verified. Missing source/date/version stays null; it is never inferred.
+ */
+export interface DataTruthMetadata {
+  status: DataTruthStatus;
+  source: {
+    kind: 'official_source' | 'repository_seed' | 'unknown';
+    artifactPath: string | null;
+    url: string | null;
+    publisher: string | null;
+  };
+  retrievalDate: string | null;
+  effectiveDate: string | null;
+  version: string | null;
+  transformationHistory: string[];
+  note?: string;
+}
+
 /** Explicit metadata contract for simulated projections (never returned as actual results) */
 export interface SimulationProjection {
   isSimulation: true;
   electionYear: number;
-  projectedParty: string;
-  projectedWinnerName: string;
-  projectedVotes: number;
-  projectedRunnerUp: string;
-  projectedMargin: number;
+  projectedParty: string | null;
+  projectedWinnerName: string | null;
+  projectedVotes: number | null;
+  projectedRunnerUp: string | null;
+  projectedMargin: number | null;
+  dataTruth: DataTruthMetadata;
   disclaimer: string;
 }
 
@@ -73,25 +93,26 @@ export interface ByElectionRecord {
   winnerParty: string;
   margin?: number;
   defeatedCandidateOrParty?: string;
+  dataTruth?: DataTruthMetadata;
 }
 
 /** State-agnostic constituency shape used by Explore, Map, and Search UIs */
 export interface UnifiedConstituency {
   acNo: number;
   name: string;
-  district: string;
-  type: 'GEN' | 'SC' | 'ST';
+  district: string | null;
+  type: 'GEN' | 'SC' | 'ST' | null;
   stateCode: string;
   /** Winning party in the most recent verified general election */
-  winnerParty: string;
-  winnerName: string;
-  winnerVotes: number;
-  runnerUp: string;
-  margin: number;
+  winnerParty: string | null;
+  winnerName: string | null;
+  winnerVotes: number | null;
+  runnerUp: string | null;
+  margin: number | null;
   /** Current verified party of sitting representative */
-  currentParty: string;
+  currentParty: string | null;
   /** Current sitting representative name */
-  currentMLA?: string;
+  currentMLA?: string | null;
   /** Year of the verified general election result data */
   electionYear: number;
   /** By-election metadata if a subsequent by-election changed or confirmed the seat */
@@ -108,12 +129,69 @@ export interface UnifiedConstituency {
   isStale?: boolean;
   /** Explanatory term status string */
   termStatus?: string;
+  /** Fact-level epistemic provenance; unknown source fields are explicit nulls. */
+  dataTruth: DataTruthMetadata;
+  /** Provenance for a by-election update that may supersede historical results. */
+  currentOfficeholderDataTruth?: DataTruthMetadata;
 }
 
 // ─── Generic adapter for auto-generated seeds ────────────────────────────────
 // All auto-generated seeds have fields like winner{YEAR}, winnerName{YEAR}, etc.
 // This helper picks the right year field.
 type AnyConstituency = Record<string, any>;
+
+const STATE_SEED_SLUGS: Record<string, string> = {
+  TS: 'telangana', AP: 'andhra-pradesh', KA: 'karnataka', MH: 'maharashtra',
+  TN: 'tamil-nadu', KL: 'kerala', WB: 'west-bengal', UP: 'uttar-pradesh',
+  RJ: 'rajasthan', GJ: 'gujarat', JH: 'jharkhand', OD: 'odisha', DL: 'delhi',
+  PB: 'punjab', HR: 'haryana', CG: 'chhattisgarh', MP: 'madhya-pradesh',
+  BR: 'bihar', AS: 'assam', GA: 'goa', HP: 'himachal-pradesh', MN: 'manipur',
+  ML: 'meghalaya', MZ: 'mizoram', NL: 'nagaland', TR: 'tripura', SK: 'sikkim',
+  AR: 'arunachal-pradesh', UK: 'uttarakhand', PY: 'puducherry', JK: 'jammu-kashmir',
+};
+
+function dataTruthFor(
+  record: AnyConstituency,
+  stateCode: string,
+  year: number,
+  scenario = false,
+  byElectionUrl?: string,
+): DataTruthMetadata {
+  const candidateUrl = byElectionUrl ??
+    (typeof record?.sourceUrl === 'string' ? record.sourceUrl : null);
+  let safeUrl: string | null = null;
+  if (candidateUrl) {
+    try {
+      const parsed = new URL(candidateUrl);
+      if (parsed.protocol === 'https:' && parsed.hostname) safeUrl = parsed.toString();
+    } catch {
+      safeUrl = null;
+    }
+  }
+  const artifactPath = STATE_SEED_SLUGS[stateCode]
+    ? `data/seed/${STATE_SEED_SLUGS[stateCode]}-constituencies.ts`
+    : null;
+  const hasOfficialSource = Boolean(byElectionUrl && safeUrl);
+  return {
+    status: scenario ? 'SCENARIO' : hasOfficialSource ? 'UNVERIFIED' : 'UNKNOWN',
+    source: {
+      kind: hasOfficialSource ? 'official_source' : 'repository_seed',
+      artifactPath,
+      url: safeUrl,
+      publisher: hasOfficialSource ? 'Election Commission of India' : null,
+    },
+    retrievalDate: hasOfficialSource ? '2026-10-25' : null,
+    effectiveDate: hasOfficialSource ? '2026-10-09' : null,
+    version: null,
+    transformationHistory: [
+      artifactPath ? `Read ${artifactPath}` : 'Read repository seed record',
+      'Normalize row through apps/mobile/lib/stateDataAdapter.ts',
+      ...(hasOfficialSource ? ['Attach provisional ECI by-election result; final Form-20 was not present in the retrieved page'] : []),
+    ],
+    ...(!scenario && !hasOfficialSource ? { note: `No accepted row-level primary-source provenance for ${stateCode} ${year}; status remains UNKNOWN.` } : {}),
+    ...(hasOfficialSource ? { note: 'ECI results page states final constituency data will be shared in Form-20; retain UNVERIFIED until final return is accepted.' } : {}),
+  };
+}
 
 function genericAdapter(
   c: AnyConstituency,
@@ -126,34 +204,36 @@ function genericAdapter(
   const runnerUpKey = `runnerUp${year}`;
   const marginKey = `margin${year}`;
 
-  // For Assam, actual 2021 election returns were mistakenly keyed as 2026 in seed
-  const isAssam2021Fallback = stateCode === 'AS' && year === 2021;
-  const rawWinner = c[winnerKey] ?? (isAssam2021Fallback ? c.winner2026 : (c.winner ?? ''));
-  const rawWinnerName = c[winnerNameKey] ?? (isAssam2021Fallback ? c.winnerName2026 : (c.winnerName ?? ''));
-  const rawWinnerVotes = c[winnerVotesKey] ?? (isAssam2021Fallback ? c.winnerVotes2026 : 0);
-  const rawRunnerUp = c[runnerUpKey] ?? (isAssam2021Fallback ? c.runnerUp2026 : '');
-  const rawMargin = c[marginKey] ?? (isAssam2021Fallback ? c.margin2026 : 0);
+  // Simulation/projection fields must never be substituted into the actual
+  // election fields, even when a legacy state seed has mis-keyed them.
+  const rawWinner = c[winnerKey] ?? c.winner ?? null;
+  const rawWinnerName = c[winnerNameKey] ?? c.winnerName ?? null;
+  const rawWinnerVotes = c[winnerVotesKey] ?? null;
+  const rawRunnerUp = c[runnerUpKey] ?? null;
+  const rawMargin = c[marginKey] ?? null;
 
   // If a future simulation field exists, preserve it in projection metadata only
-  const hasFutureSimulation = c.winner2026 && year < 2026 && stateCode !== 'AS';
+  const hasFutureSimulation = Boolean(c.winner2026) && year < 2026;
   const projection: SimulationProjection | undefined = hasFutureSimulation
     ? {
         isSimulation: true,
         electionYear: 2026,
         projectedParty: c.winner2026,
-        projectedWinnerName: c.winnerName2026 ?? '',
-        projectedVotes: c.winnerVotes2026 ?? 0,
-        projectedRunnerUp: c.runnerUp2026 ?? '',
-        projectedMargin: c.margin2026 ?? 0,
+        projectedWinnerName: c.winnerName2026 ?? null,
+        projectedVotes: c.winnerVotes2026 ?? null,
+        projectedRunnerUp: c.runnerUp2026 ?? null,
+        projectedMargin: c.margin2026 ?? null,
+        dataTruth: dataTruthFor(c, stateCode, 2026, true),
         disclaimer: 'Simulated Projection — Not an Official Result',
+                dataTruth: dataTruthFor(c, 'TN', 2026, true),
       }
     : undefined;
 
   // Handle by-elections in generic states
   let byElection: ByElectionRecord | undefined = undefined;
   let officeholderStatus: 'INCUMBENT_ACTIVE' | 'BY_ELECTION_SEATED' | 'VACANT' | 'UNRESOLVED' = 'INCUMBENT_ACTIVE';
-  let effectiveCurrentParty = rawWinner ?? '';
-  let effectiveCurrentMLA = rawWinnerName ?? '';
+  let effectiveCurrentParty: string | null = rawWinner;
+  let effectiveCurrentMLA: string | null = rawWinnerName;
 
   if (stateCode === 'PY' && (c.acNo === 9 || c.name === 'Thattanchavady')) { // Thattanchavady (AC 9) by-election Oct 2026
     effectiveCurrentParty = 'AINRC';
@@ -164,7 +244,9 @@ function genericAdapter(
       month: 'October',
       winnerName: 'Ashok Anand',
       winnerParty: 'AINRC',
-      defeatedCandidateOrParty: 'SPA',
+      margin: 8482,
+      defeatedCandidateOrParty: 'INC',
+      dataTruth: dataTruthFor(c, 'PY', 2026, false, 'https://results.eci.gov.in/ResultAcByeOct2026/ConstituencywiseU079.htm'),
     };
   }
 
@@ -182,24 +264,26 @@ function genericAdapter(
   return {
     acNo: c.acNo,
     name: c.name,
-    district: c.district ?? '',
-    type: c.type ?? 'GEN',
+    district: c.district ?? null,
+    type: c.type ?? null,
     stateCode,
-    winnerParty: rawWinner ?? '',
-    winnerName: rawWinnerName ?? '',
-    winnerVotes: rawWinnerVotes ?? 0,
-    runnerUp: rawRunnerUp ?? '',
-    margin: rawMargin ?? 0,
+    winnerParty: rawWinner,
+    winnerName: rawWinnerName,
+    winnerVotes: rawWinnerVotes,
+    runnerUp: rawRunnerUp,
+    margin: rawMargin,
     currentParty: effectiveCurrentParty,
     currentMLA: effectiveCurrentMLA,
     electionYear: year,
     byElection,
     officeholderStatus,
-    localName: c.localName || c.nameTe || c.local_name,
+    localName: c.localName ?? c.nameTe ?? c.local_name ?? null,
     projection,
     dataStatus,
     isStale,
     termStatus,
+    dataTruth: dataTruthFor(c, stateCode, year),
+    ...(byElection?.dataTruth ? { currentOfficeholderDataTruth: byElection.dataTruth } : {}),
   };
 }
 
@@ -214,6 +298,7 @@ export function getUnifiedConstituenciesForState(stateCode: string): UnifiedCons
         district: c.district,
         type: c.type,
         stateCode: 'TS',
+        dataTruth: dataTruthFor(c, 'TS', 2023),
         winnerParty: c.winner2023,
         winnerName: c.winnerName2023,
         winnerVotes: c.winnerVotes2023,
@@ -233,6 +318,7 @@ export function getUnifiedConstituenciesForState(stateCode: string): UnifiedCons
         district: c.district,
         type: c.type,
         stateCode: 'AP',
+        dataTruth: dataTruthFor(c, 'AP', 2024),
         winnerParty: c.winner2024,
         winnerName: c.winnerName2024,
         winnerVotes: c.winnerVotes2024,
@@ -252,6 +338,7 @@ export function getUnifiedConstituenciesForState(stateCode: string): UnifiedCons
         district: c.district,
         type: c.type,
         stateCode: 'KA',
+        dataTruth: dataTruthFor(c, 'KA', 2023),
         winnerParty: c.winner2023,
         winnerName: c.winnerName2023,
         winnerVotes: c.winnerVotes2023,
@@ -271,6 +358,7 @@ export function getUnifiedConstituenciesForState(stateCode: string): UnifiedCons
         district: c.district,
         type: c.type,
         stateCode: 'MH',
+        dataTruth: dataTruthFor(c, 'MH', 2024),
         winnerParty: c.winner2024,
         winnerName: c.winnerName2024,
         winnerVotes: c.winnerVotes2024,
@@ -330,11 +418,12 @@ export function getUnifiedConstituenciesForState(stateCode: string): UnifiedCons
           district: c.district,
           type: c.type,
           stateCode: 'TN',
-          winnerParty: c.winner2021 ?? '',
-          winnerName: c.winnerName2021 ?? '',
-          winnerVotes: c.winnerVotes2021 ?? 0,
-          runnerUp: c.runnerUp2021 ?? '',
-          margin: c.margin2021 ?? 0,
+        dataTruth: dataTruthFor(c, 'TN', 2021),
+          winnerParty: c.winner2021 ?? null,
+          winnerName: c.winnerName2021 ?? null,
+          winnerVotes: c.winnerVotes2021 ?? null,
+          runnerUp: c.runnerUp2021 ?? null,
+          margin: c.margin2021 ?? null,
           currentParty,
           currentMLA,
           electionYear: 2021,
@@ -349,11 +438,12 @@ export function getUnifiedConstituenciesForState(stateCode: string): UnifiedCons
                 isSimulation: true,
                 electionYear: 2026,
                 projectedParty: c.winner2026,
-                projectedWinnerName: c.winnerName2026 ?? '',
-                projectedVotes: c.winnerVotes2026 ?? 0,
-                projectedRunnerUp: c.runnerUp2026 ?? '',
-                projectedMargin: c.margin2026 ?? 0,
+                projectedWinnerName: c.winnerName2026 ?? null,
+                projectedVotes: c.winnerVotes2026 ?? null,
+                projectedRunnerUp: c.runnerUp2026 ?? null,
+                projectedMargin: c.margin2026 ?? null,
                 disclaimer: 'Simulated Projection — Not an Official Result',
+                dataTruth: dataTruthFor(c, 'TN', 2026, true),
               }
             : undefined,
         };
@@ -365,13 +455,14 @@ export function getUnifiedConstituenciesForState(stateCode: string): UnifiedCons
         district: c.district,
         type: c.type,
         stateCode: 'KL',
-        winnerParty: c.winner2021 ?? '',
-        winnerName: c.winnerName2021 ?? '',
-        winnerVotes: c.winnerVotes2021 ?? 0,
-        runnerUp: c.runnerUp2021 ?? '',
-        margin: c.margin2021 ?? 0,
-        currentParty: c.winner2021 ?? '',
-        currentMLA: c.winnerName2021 ?? '',
+        dataTruth: dataTruthFor(c, 'KL', 2021),
+        winnerParty: c.winner2021 ?? null,
+        winnerName: c.winnerName2021 ?? null,
+        winnerVotes: c.winnerVotes2021 ?? null,
+        runnerUp: c.runnerUp2021 ?? null,
+        margin: c.margin2021 ?? null,
+        currentParty: c.winner2021 ?? null,
+        currentMLA: c.winnerName2021 ?? null,
         electionYear: 2021,
         officeholderStatus: 'INCUMBENT_ACTIVE' as const,
         localName: c.localName,
@@ -383,11 +474,12 @@ export function getUnifiedConstituenciesForState(stateCode: string): UnifiedCons
               isSimulation: true,
               electionYear: 2026,
               projectedParty: c.winner2026,
-              projectedWinnerName: c.winnerName2026 ?? '',
-              projectedVotes: c.winnerVotes2026 ?? 0,
-              projectedRunnerUp: c.runnerUp2026 ?? '',
-              projectedMargin: c.margin2026 ?? 0,
+              projectedWinnerName: c.winnerName2026 ?? null,
+              projectedVotes: c.winnerVotes2026 ?? null,
+              projectedRunnerUp: c.runnerUp2026 ?? null,
+              projectedMargin: c.margin2026 ?? null,
               disclaimer: 'Simulated Projection — Not an Official Result',
+                dataTruth: dataTruthFor(c, 'TN', 2026, true),
             }
           : undefined,
       }));
@@ -439,11 +531,12 @@ export function getUnifiedConstituenciesForState(stateCode: string): UnifiedCons
           district: c.district,
           type: c.type,
           stateCode: 'WB',
-          winnerParty: c.winner2021 ?? '',
-          winnerName: c.winnerName2021 ?? '',
-          winnerVotes: c.winnerVotes2021 ?? 0,
-          runnerUp: c.runnerUp2021 ?? '',
-          margin: c.margin2021 ?? 0,
+        dataTruth: dataTruthFor(c, 'WB', 2021),
+          winnerParty: c.winner2021 ?? null,
+          winnerName: c.winnerName2021 ?? null,
+          winnerVotes: c.winnerVotes2021 ?? null,
+          runnerUp: c.runnerUp2021 ?? null,
+          margin: c.margin2021 ?? null,
           currentParty,
           currentMLA,
           electionYear: 2021,
@@ -458,11 +551,12 @@ export function getUnifiedConstituenciesForState(stateCode: string): UnifiedCons
                 isSimulation: true,
                 electionYear: 2026,
                 projectedParty: c.winner2026,
-                projectedWinnerName: c.winnerName2026 ?? '',
-                projectedVotes: c.winnerVotes2026 ?? 0,
-                projectedRunnerUp: c.runnerUp2026 ?? '',
-                projectedMargin: c.margin2026 ?? 0,
+                projectedWinnerName: c.winnerName2026 ?? null,
+                projectedVotes: c.winnerVotes2026 ?? null,
+                projectedRunnerUp: c.runnerUp2026 ?? null,
+                projectedMargin: c.margin2026 ?? null,
                 disclaimer: 'Simulated Projection — Not an Official Result',
+                dataTruth: dataTruthFor(c, 'TN', 2026, true),
               }
             : undefined,
         };
@@ -474,6 +568,7 @@ export function getUnifiedConstituenciesForState(stateCode: string): UnifiedCons
         district: c.district,
         type: c.type,
         stateCode: 'UP',
+        dataTruth: dataTruthFor(c, 'UP', 2022),
         winnerParty: c.winner2022,
         winnerName: c.winnerName2022,
         winnerVotes: c.winnerVotes2022,
