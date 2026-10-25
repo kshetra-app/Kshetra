@@ -149,4 +149,3 @@ jobs:
 
       - name: ESLint
         run: npx eslint "apps/**/*.{ts,tsx}" "packages/**/*.{ts,tsx}" --max-warnings=0
-        continue-on-error: true
