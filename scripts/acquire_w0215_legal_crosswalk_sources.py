@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Acquire official government legal-source bytes for W021.5 Stage B crosswalk work."""
+"""Acquire official/government-hosted legal source bytes for W021.5 Stage B crosswalk."""
 from __future__ import annotations
 import hashlib, json, re, sys
 from datetime import datetime, timezone
@@ -15,28 +15,44 @@ RAW.mkdir(parents=True, exist_ok=True)
 
 SOURCES = [
     {
-        "id": "INDIACODE_AP_REORGANISATION_ACT_2014",
-        "url": "https://www.indiacode.nic.in/bitstream/123456789/2123/1/A2014-6E.pdf",
-        "publisher": "India Code, Legislative Department, Government of India",
+        "id": "AP_REORGANISATION_ACT_2014_GAZETTE_COPY",
+        "urlCandidates": [
+            "https://apseeds.ap.gov.in/PDF/apreorg/APRegACT2014.pdf",
+            "https://tgerc.telangana.gov.in/file_upload/uploads/Acts%20and%20Polices/Acts%20and%20Rules/A.P.Reorganisation%20act%202014.pdf",
+            "https://www.indiacode.nic.in/bitstream/123456789/2123/1/A2014-6E.pdf",
+        ],
+        "publisher": "Government-hosted copy of Gazette of India / India Code",
+        "documentTitle": "Andhra Pradesh Reorganisation Act, 2014 (Act No. 6 of 2014; Gazette dated 1 March 2014)",
         "required": True,
-        "terms": ["SECTION 15", "SECOND SCHEDULE", "AMENDMENTS TO THE DELIMITATION"],
+        "terms": ["SECTION 15", "SECOND SCHEDULE", "SCHEDULE - XXVII", "TELANGANA", "119"],
+        "purpose": "Primary legal schedule and statutory AC roster/extent crosswalk; host/source lineage must be recorded."
     },
     {
-        "id": "ECI_GENERAL_ELECTIONS_2024_DELIMITATION_PRESS_NOTE",
-        "url": "https://elections24.eci.gov.in/docs/press-note-no-23.pdf",
+        "id": "ECI_GENERAL_ELECTIONS_2024_PRESS_NOTE",
+        "urlCandidates": ["https://elections24.eci.gov.in/docs/press-note-no-23.pdf"],
         "publisher": "Election Commission of India",
-        "required": True,
+        "documentTitle": "General Elections 2024 Press Note No. 23",
+        "required": False,
         "terms": ["282/AP/2018", "TELANGANA", "ASSEMBLY CONSTITUENCIES"],
+        "purpose": "Corroborative election-administration evidence; not a replacement for the Act, ECI notification or Gazette."
     },
     {
-        "id": "INDIACODE_AP_REORGANISATION_REMOVAL_DIFFICULTIES_ORDERS",
-        "url": "https://upload.indiacode.nic.in/showfile?actid=AC_CEN_5_5_00058_201406_1517807327989&filename=Andhra+Pradesh+Reorganisation+%28Removal+of+Difficulties%29+First%2C+Second+and+Third+Order.pdf&type=order",
+        "id": "AP_REORGANISATION_REMOVAL_DIFFICULTIES_ORDERS",
+        "urlCandidates": [
+            "https://upload.indiacode.nic.in/showfile?actid=AC_CEN_5_5_00058_201406_1517807327989&filename=Andhra+Pradesh+Reorganisation+%28Removal+of+Difficulties%29+First%2C+Second+and+Third+Order.pdf&type=order"
+        ],
         "publisher": "India Code, Government of India",
+        "documentTitle": "Andhra Pradesh Reorganisation (Removal of Difficulties) First, Second and Third Orders",
         "required": False,
         "terms": ["ANDHRA PRADESH REORGANISATION", "DELIMITATION", "2015"],
+        "purpose": "Check the legal sequence; do not assume relevance to Assembly Constituency extent without reading."
     },
 ]
-ALLOWED_HOSTS = {"www.indiacode.nic.in", "indiacode.nic.in", "upload.indiacode.nic.in", "elections24.eci.gov.in"}
+ALLOWED_HOSTS = {
+    "apseeds.ap.gov.in", "tgerc.telangana.gov.in",
+    "www.indiacode.nic.in", "indiacode.nic.in", "upload.indiacode.nic.in",
+    "elections24.eci.gov.in",
+}
 HEADERS = {
     "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/129.0.0.0 Safari/537.36",
     "Accept": "application/pdf,application/octet-stream;q=0.9,*/*;q=0.8",
@@ -46,7 +62,7 @@ def sha(data: bytes) -> str:
     return hashlib.sha256(data).hexdigest()
 
 manifest = {
-    "schemaVersion": 1,
+    "schemaVersion": 2,
     "title": "W021.5 Stage B official legal crosswalk source acquisition",
     "retrievedAtUtc": datetime.now(timezone.utc).isoformat(),
     "directive": "CTO Directive 154 — Stage B only",
@@ -57,50 +73,69 @@ session = requests.Session(impersonate="chrome124")
 required_failures = []
 for src in SOURCES:
     row = {
-        "sourceId": src["id"], "publisher": src["publisher"], "url": src["url"],
-        "required": src["required"], "retrievedAtUtc": datetime.now(timezone.utc).isoformat(),
-        "status": "NOT_ATTEMPTED",
+        "sourceId": src["id"], "publisher": src["publisher"], "documentTitle": src["documentTitle"],
+        "urlCandidates": src["urlCandidates"], "required": src["required"],
+        "purpose": src["purpose"], "retrievedAtUtc": datetime.now(timezone.utc).isoformat(),
+        "status": "NOT_ATTEMPTED", "attempts": [],
     }
-    try:
-        parsed = urlparse(src["url"])
-        if parsed.scheme != "https" or parsed.hostname not in ALLOWED_HOSTS:
-            raise RuntimeError("URL_HOST_NOT_ALLOWLISTED")
-        response = session.get(src["url"], headers=HEADERS, timeout=60, allow_redirects=True)
-        final = urlparse(response.url)
-        if final.scheme != "https" or final.hostname not in ALLOWED_HOSTS:
-            raise RuntimeError("REDIRECT_HOST_NOT_ALLOWLISTED:" + str(response.url))
-        raw = response.content
-        safe = re.sub(r"[^A-Za-z0-9_.-]", "_", src["id"])
-        path = RAW / f"{safe}.bin"
-        path.write_bytes(raw)
+    selected = None
+    for index, url in enumerate(src["urlCandidates"], 1):
+        attempt = {"candidateIndex": index, "url": url, "retrievedAtUtc": datetime.now(timezone.utc).isoformat()}
+        try:
+            parsed = urlparse(url)
+            if parsed.scheme != "https" or parsed.hostname not in ALLOWED_HOSTS:
+                raise RuntimeError("URL_HOST_NOT_ALLOWLISTED")
+            response = session.get(url, headers=HEADERS, timeout=25, allow_redirects=True)
+            final = urlparse(response.url)
+            if final.scheme != "https" or final.hostname not in ALLOWED_HOSTS:
+                raise RuntimeError("REDIRECT_HOST_NOT_ALLOWLISTED:" + str(response.url))
+            raw = response.content
+            attempt.update({
+                "httpStatus": response.status_code, "contentType": response.headers.get("Content-Type"),
+                "finalUrl": response.url, "byteLength": len(raw), "sha256": sha(raw),
+                "pdfMagic": raw.startswith(b"%PDF-"),
+            })
+            if response.status_code == 200 and raw:
+                safe = re.sub(r"[^A-Za-z0-9_.-]", "_", src["id"])
+                raw_path = RAW / f"{safe}_candidate_{index}.bin"
+                raw_path.write_bytes(raw)
+                attempt["rawArtifact"] = f"raw/{raw_path.name}"
+                if raw.startswith(b"%PDF-"):
+                    selected = (response, raw, safe, index, raw_path)
+                    attempt["selection"] = "SELECTED_PDF_BYTES"
+                    row["attempts"].append(attempt)
+                    break
+                attempt["selection"] = "NON_PDF_BYTES_RETAINED_CONTINUE"
+            else:
+                attempt["selection"] = "HTTP_FAILURE_CONTINUE"
+        except Exception as exc:
+            attempt["error"] = f"{type(exc).__name__}: {exc}"
+        row["attempts"].append(attempt)
+
+    if selected:
+        response, raw, safe, index, raw_path = selected
+        doc = fitz.open(stream=raw, filetype="pdf")
+        full_text = "\n".join(page.get_text("text", sort=True) for page in doc)
+        text_file = OUT / f"{safe}.txt"
+        text_file.write_text(full_text, encoding="utf-8")
         row.update({
-            "httpStatus": response.status_code, "contentType": response.headers.get("Content-Type"),
-            "finalUrl": response.url, "byteLength": len(raw), "sha256": sha(raw),
-            "pdfMagic": raw.startswith(b"%PDF-"), "rawArtifact": f"raw/{path.name}",
-        })
-        if response.status_code != 200 or not raw:
-            raise RuntimeError(f"HTTP_{response.status_code}_OR_EMPTY")
-        if not raw.startswith(b"%PDF-"):
-            row["status"] = "BYTES_ACQUIRED_NON_PDF_REQUIRES_REVIEW"
-            row["error"] = "HTTP 200 but payload is not PDF magic; bytes preserved and hashed."
-        else:
-            doc = fitz.open(stream=raw, filetype="pdf")
-            full_text = "\n".join(page.get_text("text", sort=True) for page in doc)
-            row["pdfPageCount"] = doc.page_count
-            row["termFindings"] = {
+            "status": "DOWNLOADED_HASHED_PDF",
+            "selectedUrl": response.url,
+            "selectedCandidateIndex": index,
+            "byteLength": len(raw),
+            "sha256": sha(raw),
+            "rawArtifact": f"raw/{raw_path.name}",
+            "pdfPageCount": doc.page_count,
+            "textExtractionMethod": "PyMuPDF page text; page indices are zero-based.",
+            "textArtifact": text_file.name,
+            "termFindings": {
                 term: [i for i, page in enumerate(doc) if term.casefold() in page.get_text("text", sort=True).casefold()]
                 for term in src["terms"]
-            }
-            row["textExtractionMethod"] = "PyMuPDF page text; page indices are zero-based."
-            text_file = OUT / f"{safe}.txt"
-            text_file.write_text(full_text, encoding="utf-8")
-            row["textArtifact"] = text_file.name
-            row["status"] = "DOWNLOADED_HASHED_PDF"
-        if src["required"] and row["status"] != "DOWNLOADED_HASHED_PDF":
-            required_failures.append(src["id"])
-    except Exception as exc:
-        row["status"] = "FETCH_FAILED"
-        row["error"] = f"{type(exc).__name__}: {exc}"
+            },
+        })
+    else:
+        row["status"] = "NO_PDF_BYTES_ACQUIRED"
+        row["error"] = "No allowlisted candidate returned a non-empty PDF payload. Review every attempt; do not claim a source hash from error HTML."
         if src["required"]:
             required_failures.append(src["id"])
     manifest["sources"].append(row)
