@@ -1,0 +1,62 @@
+{
+  "schemaVersion": 1,
+  "title": "W021.5 Official ECI 2008 Delimitation Order acquisition probe",
+  "workflowRunId": 40217392689,
+  "workflowUrl": "https://github.com/kshetra-app/Kshetra/actions/runs/40217392689",
+  "artifactId": 12607458650,
+  "artifactName": "w0215-eci-legal-order-40217392689",
+  "artifactZipBytes": 3778,
+  "artifactZipSha256": "581503e5b7a0254a25dea34a3ad44f1c9cb74df387065f5bcfc362abb3b4a234",
+  "retrievedAtUtc": "2026-10-25T17:38:17Z",
+  "source": {
+    "publisher": "Election Commission of India",
+    "title": "Delimitation of Parliamentary and Assembly Constituencies Order, 2008",
+    "primaryPdfUrl": "https://www.eci.gov.in/Documents/Delimitation/DelimitationofParliamentaryAssemblyConstituenciesOrder-2008%28English%29.pdf",
+    "alternateOfficialBackendUrl": "https://www.eci.gov.in/eci-backend/public/api/download?url=LMAhAK6sOPBp%2FNFF0iRfXbEB1EVSLT41NNLRjYNJJP1KivrUxbfqkDatmHy12e%2FzVx8fLfn2ReU7TfrqYobgIgKcdK37FfkoonJSj9Zv9RvViTBqI3f7TwYNpRQavZojQgQeFGGUC%2BoWgMwz8LDSSFisGA9MRBjMisvEPvdZnIV0%2FpRNWHB6xVed36JxpqCFCtTz26GqXjQSC84fYThQWQ%3D%3D",
+    "authority": "PRIMARY_OFFICIAL_SOURCE",
+    "webRenderedTextAvailable": true
+  },
+  "attempts": [
+    {
+      "attempt": 1,
+      "url": "https://www.eci.gov.in/Documents/Delimitation/DelimitationofParliamentaryAssemblyConstituenciesOrder-2008%28English%29.pdf",
+      "httpStatus": 406,
+      "responseBytes": 1038,
+      "responseSha256": "f85f08d6ef7375906748ce89a4cae58753de96959ba3f0fb4884c19e1c88adbf",
+      "pdfMagic": false
+    },
+    {
+      "attempt": 2,
+      "url": "https://www.eci.gov.in/Documents/Delimitation/DelimitationofParliamentaryAssemblyConstituenciesOrder-2008(English).pdf",
+      "httpStatus": 406,
+      "responseBytes": 1038,
+      "responseSha256": "cb402d8910689971b67d672e8b8290b708f8f817b2a22c9d4601fa65b1333d85",
+      "pdfMagic": false
+    },
+    {
+      "attempt": 3,
+      "url": "https://www.eci.gov.in/Documents/Delimitation/DelimitationofParliamentaryAssemblyConstituenciesOrder-2008%28English%29.pdf?download=1",
+      "httpStatus": 406,
+      "responseBytes": 1038,
+      "responseSha256": "f3d2308891bcc5951e649b6728ba2aba08fd62e57d732b41189512153ba8c786",
+      "pdfMagic": false
+    },
+    {
+      "attempt": 4,
+      "url": "https://www.eci.gov.in/eci-backend/public/api/download?url=LMAhAK6sOPBp%2FNFF0iRfXbEB1EVSLT41NNLRjYNJJP1KivrUxbfqkDatmHy12e%2FzVx8fLfn2ReU7TfrqYobgIgKcdK37FfkoonJSj9Zv9RvViTBqI3f7TwYNpRQavZojQgQeFGGUC%2BoWgMwz8LDSSFisGA9MRBjMisvEPvdZnIV0%2FpRNWHB6xVed36JxpqCFCtTz26GqXjQSC84fYThQWQ%3D%3D",
+      "httpStatus": 406,
+      "responseBytes": 1038,
+      "responseSha256": "f925f3f2d34f77e720031dd83e8efc67fc9d37ad5b58ff7f02a8f07b0fabd5f0",
+      "pdfMagic": false
+    }
+  ],
+  "responseBodyClassification": "AppTrana WAF 406 page: 'Request was blocked due to suspicious behavior.'",
+  "disposition": "NO_LEGAL_ORDER_PDF_BYTES_ACQUIRED; response bodies are HTTP 406 HTML, not source PDFs. Do not use their hashes as legal-source hashes. Do not attempt to bypass the WAF; use other official source routes or request a copy from the custodian.",
+  "crosswalk": {
+    "telanganaAssemblySeatCount": 119,
+    "partialStatutoryCrosswalkEntries": 9,
+    "fullCrosswalkComplete": false,
+    "post2014GazetteChainComplete": false
+  },
+  "databaseAccess": "NONE"
+}
