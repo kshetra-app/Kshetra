@@ -59,9 +59,9 @@ export interface SimulationProjection {
   electionYear: number;
   projectedParty: string;
   projectedWinnerName: string;
-  projectedVotes: number;
+  projectedVotes: number | null;
   projectedRunnerUp: string;
-  projectedMargin: number;
+  projectedMargin: number | null;
   disclaimer: string;
 }
 
@@ -69,8 +69,8 @@ export interface SimulationProjection {
 export interface ByElectionRecord {
   year: number;
   month: string;
-  winnerName: string;
-  winnerParty: string;
+  winnerName: string | null;
+  winnerParty: string | null;
   margin?: number;
   defeatedCandidateOrParty?: string;
 }
@@ -83,11 +83,11 @@ export interface UnifiedConstituency {
   type: 'GEN' | 'SC' | 'ST';
   stateCode: string;
   /** Winning party in the most recent verified general election */
-  winnerParty: string;
-  winnerName: string;
-  winnerVotes: number;
-  runnerUp: string;
-  margin: number;
+  winnerParty: string | null;
+  winnerName: string | null;
+  winnerVotes: number | null;
+  runnerUp: string | null;
+  margin: number | null;
   /** Current verified party of sitting representative */
   currentParty: string;
   /** Current sitting representative name */
@@ -142,9 +142,9 @@ function genericAdapter(
         electionYear: 2026,
         projectedParty: c.winner2026,
         projectedWinnerName: c.winnerName2026 ?? '',
-        projectedVotes: c.winnerVotes2026 ?? 0,
+        projectedVotes: c.winnerVotes2026 ?? null,
         projectedRunnerUp: c.runnerUp2026 ?? '',
-        projectedMargin: c.margin2026 ?? 0,
+        projectedMargin: c.margin2026 ?? null,
         disclaimer: 'Simulated Projection — Not an Official Result',
       }
     : undefined;
@@ -182,14 +182,14 @@ function genericAdapter(
   return {
     acNo: c.acNo,
     name: c.name,
-    district: c.district ?? '',
+    district: c.district ?? null,
     type: c.type ?? 'GEN',
     stateCode,
-    winnerParty: rawWinner ?? '',
-    winnerName: rawWinnerName ?? '',
-    winnerVotes: rawWinnerVotes ?? 0,
-    runnerUp: rawRunnerUp ?? '',
-    margin: rawMargin ?? 0,
+    winnerParty: rawWinner ?? null,
+    winnerName: rawWinnerName ?? null,
+    winnerVotes: rawWinnerVotes ?? null,
+    runnerUp: rawRunnerUp ?? null,
+    margin: rawMargin ?? null,
     currentParty: effectiveCurrentParty,
     currentMLA: effectiveCurrentMLA,
     electionYear: year,
@@ -332,9 +332,9 @@ export function getUnifiedConstituenciesForState(stateCode: string): UnifiedCons
           stateCode: 'TN',
           winnerParty: c.winner2021 ?? '',
           winnerName: c.winnerName2021 ?? '',
-          winnerVotes: c.winnerVotes2021 ?? 0,
+          winnerVotes: c.winnerVotes2021 ?? null,
           runnerUp: c.runnerUp2021 ?? '',
-          margin: c.margin2021 ?? 0,
+          margin: c.margin2021 ?? null,
           currentParty,
           currentMLA,
           electionYear: 2021,
@@ -350,9 +350,9 @@ export function getUnifiedConstituenciesForState(stateCode: string): UnifiedCons
                 electionYear: 2026,
                 projectedParty: c.winner2026,
                 projectedWinnerName: c.winnerName2026 ?? '',
-                projectedVotes: c.winnerVotes2026 ?? 0,
+                projectedVotes: c.winnerVotes2026 ?? null,
                 projectedRunnerUp: c.runnerUp2026 ?? '',
-                projectedMargin: c.margin2026 ?? 0,
+                projectedMargin: c.margin2026 ?? null,
                 disclaimer: 'Simulated Projection — Not an Official Result',
               }
             : undefined,
@@ -367,9 +367,9 @@ export function getUnifiedConstituenciesForState(stateCode: string): UnifiedCons
         stateCode: 'KL',
         winnerParty: c.winner2021 ?? '',
         winnerName: c.winnerName2021 ?? '',
-        winnerVotes: c.winnerVotes2021 ?? 0,
+        winnerVotes: c.winnerVotes2021 ?? null,
         runnerUp: c.runnerUp2021 ?? '',
-        margin: c.margin2021 ?? 0,
+        margin: c.margin2021 ?? null,
         currentParty: c.winner2021 ?? '',
         currentMLA: c.winnerName2021 ?? '',
         electionYear: 2021,
@@ -384,9 +384,9 @@ export function getUnifiedConstituenciesForState(stateCode: string): UnifiedCons
               electionYear: 2026,
               projectedParty: c.winner2026,
               projectedWinnerName: c.winnerName2026 ?? '',
-              projectedVotes: c.winnerVotes2026 ?? 0,
+              projectedVotes: c.winnerVotes2026 ?? null,
               projectedRunnerUp: c.runnerUp2026 ?? '',
-              projectedMargin: c.margin2026 ?? 0,
+              projectedMargin: c.margin2026 ?? null,
               disclaimer: 'Simulated Projection — Not an Official Result',
             }
           : undefined,
@@ -441,9 +441,9 @@ export function getUnifiedConstituenciesForState(stateCode: string): UnifiedCons
           stateCode: 'WB',
           winnerParty: c.winner2021 ?? '',
           winnerName: c.winnerName2021 ?? '',
-          winnerVotes: c.winnerVotes2021 ?? 0,
+          winnerVotes: c.winnerVotes2021 ?? null,
           runnerUp: c.runnerUp2021 ?? '',
-          margin: c.margin2021 ?? 0,
+          margin: c.margin2021 ?? null,
           currentParty,
           currentMLA,
           electionYear: 2021,
@@ -459,9 +459,9 @@ export function getUnifiedConstituenciesForState(stateCode: string): UnifiedCons
                 electionYear: 2026,
                 projectedParty: c.winner2026,
                 projectedWinnerName: c.winnerName2026 ?? '',
-                projectedVotes: c.winnerVotes2026 ?? 0,
+                projectedVotes: c.winnerVotes2026 ?? null,
                 projectedRunnerUp: c.runnerUp2026 ?? '',
-                projectedMargin: c.margin2026 ?? 0,
+                projectedMargin: c.margin2026 ?? null,
                 disclaimer: 'Simulated Projection — Not an Official Result',
               }
             : undefined,
