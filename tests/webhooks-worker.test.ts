@@ -28,7 +28,7 @@ async function main() {
   assert.equal(called, 1); assert.equal(outcomes.length, 1); assert.equal(outcomes[0].updated, true);
   assert.equal(outcomes[0].terminalStatus, 'delivered'); assert.equal(provider.deliveries.get(deliveryId)?.status, 'delivered');
   const missing = new InMemoryQueueProvider();
-  missing.subscriptions.set(subscriptionId, { ...subscription, _rawSecret: undefined });
+  missing.subscriptions.set(subscriptionId, { ...subscription, _rawSecret: undefined } as any);
   missing.events.set(eventId, provider.events.get(eventId)!);
   const missingId = '55555555-5555-5555-5555-555555555555';
   missing.deliveries.set(missingId, { id: missingId, tenantId, subscriptionId, eventId,

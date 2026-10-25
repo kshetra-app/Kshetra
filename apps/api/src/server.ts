@@ -270,7 +270,7 @@ export async function buildApp() {
     app.addHook('onClose', async () => { stopWebhookWorker(); });
   }
 
-  return app;  return app;
+  return app;
 }
 
 export async function start() {
