@@ -151,3 +151,68 @@ jobs:
       - name: ESLint
         run: npx eslint "apps/**/*.{ts,tsx}" "packages/**/*.{ts,tsx}" --max-warnings=0
         continue-on-error: true
+
+  webhooks-runtime:
+    name: W022 Webhook Runtime & PostgreSQL Security
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+      - name: Install dependencies
+        run: npm ci
+      - name: Start isolated PostgreSQL 16
+        run: |
+          docker run --detach --name w022-verify-postgres \
+            --env POSTGRES_USER=w022_admin \
+            --env POSTGRES_PASSWORD=w022_local_only \
+            --env POSTGRES_DB=w022_disposable_db \
+            postgres:16
+          for i in $(seq 1 60); do
+            if docker exec w022-verify-postgres pg_isready -U w022_admin -d w022_disposable_db; then exit 0; fi
+            sleep 1
+          done
+          echo "PostgreSQL did not become ready" >&2
+          exit 1
+      - name: Provision isolated Supabase-compatible roles
+        run: |
+          docker exec -i w022-verify-postgres psql -v ON_ERROR_STOP=1 -U w022_admin -d w022_disposable_db <<'SQL'
+          CREATE ROLE anon NOLOGIN;
+          CREATE ROLE authenticated NOLOGIN;
+          CREATE ROLE service_role NOLOGIN BYPASSRLS;
+          SQL
+      - name: Apply actual prerequisite and W022 migrations
+        run: |
+          set -euo pipefail
+          for migration in \
+            supabase/migrations/056_saas_partner_foundation.sql \
+            supabase/migrations/057_w021_saas_tenant_isolation_remediation.sql \
+            supabase/migrations/058_w021_saas_atomic_quota_enforcement.sql \
+            supabase/migrations/070_saas_webhook_engine.sql \
+            supabase/migrations/071_w022_webhook_integrity_remediation.sql; do
+            echo "Applying $migration"
+            docker exec -i w022-verify-postgres psql -v ON_ERROR_STOP=1 -U w022_admin -d w022_disposable_db < "$migration"
+          done
+      - name: Verify W022 behavior and security
+        env:
+          NODE_ENV: test
+          W022_TEST_DB: w022_disposable_db
+        run: |
+          npx tsx tests/webhooks-ssrf-guard.test.ts
+          npx tsx tests/webhooks-hmac-signatures.test.ts
+          npx tsx tests/webhooks-delivery-lifecycle.test.ts
+          npx tsx tests/webhooks-pii-scrubber.test.ts
+          npx tsx tests/webhooks-api-endpoints.test.ts
+          npx tsx tests/webhooks-worker.test.ts
+          npx tsx tests/webhooks-postgres-adapter.test.ts
+          npx tsx tests/webhooks-real-postgres-verification.test.ts
+      - name: Typecheck API
+        run: npx tsc --noEmit
+        working-directory: apps/api
+      - name: Stop disposable PostgreSQL
+        if: always()
+        run: docker rm --force w022-verify-postgres || true

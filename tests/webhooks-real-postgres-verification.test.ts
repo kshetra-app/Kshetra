@@ -107,22 +107,28 @@ async function runAll() {
   });
 
   // ─── 3. TABLE DAC & ROLE EXECUTION GRANTS ───
-  await runCheck('REAL-PG-03', 'Verify table-level DAC privileges: service_role has SELECT/INSERT only on webhook_events', () => {
+  await runCheck('REAL-PG-03', 'Verify direct W022 table access is revoked and service_role can read only required subscription metadata', () => {
     const rows = queryJson(`
-      SELECT 
-        has_table_privilege('service_role', 'public.webhook_events', 'SELECT') AS sr_select,
-        has_table_privilege('service_role', 'public.webhook_events', 'INSERT') AS sr_insert,
-        has_table_privilege('service_role', 'public.webhook_events', 'UPDATE') AS sr_update,
-        has_table_privilege('service_role', 'public.webhook_events', 'DELETE') AS sr_delete,
+      SELECT
+        has_table_privilege('service_role', 'public.webhook_events', 'SELECT') AS sr_event_select,
+        has_table_privilege('service_role', 'public.webhook_events', 'INSERT') AS sr_event_insert,
+        has_table_privilege('service_role', 'public.webhook_deliveries', 'SELECT') AS sr_delivery_select,
+        has_table_privilege('service_role', 'public.webhook_deliveries', 'UPDATE') AS sr_delivery_update,
+        has_table_privilege('webhook_worker', 'public.webhook_events', 'SELECT') AS worker_event_select,
+        has_table_privilege('webhook_worker', 'public.webhook_deliveries', 'SELECT') AS worker_delivery_select,
+        has_column_privilege('service_role', 'public.webhook_subscriptions', 'endpoint_url', 'SELECT') AS endpoint_select,
+        has_column_privilege('service_role', 'public.webhook_subscriptions', 'secret_ciphertext', 'SELECT') AS ciphertext_select,
         has_table_privilege('anon', 'public.webhook_events', 'SELECT') AS anon_select,
         has_table_privilege('authenticated', 'public.webhook_events', 'SELECT') AS auth_select;
     `);
-    assert.strictEqual(rows[0].sr_select, true);
-    assert.strictEqual(rows[0].sr_insert, true);
-    assert.strictEqual(rows[0].sr_update, false);
-    assert.strictEqual(rows[0].sr_delete, false);
-    assert.strictEqual(rows[0].anon_select, false);
-    assert.strictEqual(rows[0].auth_select, false);
+    for (const name of ['sr_event_select','sr_event_insert','sr_delivery_select','sr_delivery_update',
+      'worker_event_select','worker_delivery_select','ciphertext_select','anon_select','auth_select']) {
+      assert.strictEqual(rows[0][name], false, `Unexpected direct W022 privilege: ${name}`);
+    }
+    assert.strictEqual(rows[0].endpoint_select, true);
+    const role = queryJson(`SELECT rolcanlogin, rolinherit, rolsuper, rolcreaterole, rolcreatedb, rolbypassrls
+      FROM pg_catalog.pg_roles WHERE rolname = 'webhook_worker'`)[0];
+    assert.deepStrictEqual(role, { rolcanlogin: false, rolinherit: false, rolsuper: false, rolcreaterole: false, rolcreatedb: false, rolbypassrls: false });
   });
 
   await runCheck('REAL-PG-04', 'Verify function execution grants: service_role has EXECUTE on purge & batch claim; anon/auth revoked', () => {
@@ -486,6 +492,36 @@ async function runAll() {
     `, ['-t', '-A']).trim();
 
     assert.strictEqual(Number.parseInt(countStr, 10), 0, 'Late update with stale lease token must affect 0 rows');
+  });
+
+  await runCheck('REAL-PG-19', 'Atomic enqueue, idempotent fan-out, flat claim result, and lease-fenced completion RPCs', () => {
+    const raw = '{"event_id":"99999999-9999-9999-9999-999999999999","timestamp":"2026-10-24T12:00:00.000Z","message":"rpc-test"}';
+    const hash = 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa';
+    const first = queryJson(`SELECT * FROM public.fn_enqueue_webhook_event(
+      '${tenantA}', 'test.ping', 'atomic-rpc-test-001', '${raw}'::jsonb, '${raw}', '${hash}')`);
+    assert.strictEqual(first[0].deduplicated, false);
+    assert.strictEqual(Number(first[0].enqueued_deliveries), 1);
+    const replay = queryJson(`SELECT * FROM public.fn_enqueue_webhook_event(
+      '${tenantA}', 'test.ping', 'atomic-rpc-test-001', '${raw}'::jsonb, '${raw}', '${hash}')`);
+    assert.strictEqual(replay[0].deduplicated, true);
+    assert.strictEqual(Number(replay[0].enqueued_deliveries), 0);
+    const claim = queryJson(`SELECT delivery_id, tenant_id, subscription_id, event_id, lease_token,
+      endpoint_url, event_type, payload_raw, secret_ciphertext FROM public.fn_claim_webhook_batch(1, 30)`);
+    assert.strictEqual(claim.length, 1);
+    assert.ok(claim[0].delivery_id && claim[0].lease_token && claim[0].endpoint_url);
+    assert.strictEqual(claim[0].event_type, 'test.ping');
+    const completion = queryJson(`SELECT * FROM public.fn_complete_webhook_delivery(
+      '${claim[0].delivery_id}', '${claim[0].lease_token}', true, 204, 8, '{}'::jsonb, '{}'::jsonb, '', NULL)`);
+    assert.strictEqual(completion[0].updated, true);
+    assert.strictEqual(completion[0].terminal_status, 'delivered');
+    const stale = queryJson(`SELECT * FROM public.fn_complete_webhook_delivery(
+      '${claim[0].delivery_id}', '${claim[0].lease_token}', true, 204, 8, '{}'::jsonb, '{}'::jsonb, '', NULL)`);
+    assert.strictEqual(stale[0].updated, false);
+  });
+
+  await runCheck('REAL-PG-20', 'Reject retention upper bound and oversized purge batch', () => {
+    assert.throws(() => queryJson(`SELECT * FROM public.fn_purge_expired_webhook_data(3651, 100)`), /INVALID_RETENTION_BOUNDS/);
+    assert.throws(() => queryJson(`SELECT * FROM public.fn_purge_expired_webhook_data(30, 10001)`), /INVALID_RETENTION_BOUNDS/);
   });
 
   console.log('\n----------------------------------------------------------------');

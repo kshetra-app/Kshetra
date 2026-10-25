@@ -40,6 +40,9 @@ import { metricsCollector } from './lib/metrics';
 import { errorTracker } from './lib/errorTracker';
 import { saasAuthPlugin } from './lib/saasAuthPlugin';
 import { saasV1Routes } from './routes/saasV1';
+import { webhookService } from './modules/webhooks/webhookService';
+import { InMemoryQueueProvider } from './modules/webhooks/queueProvider';
+import { startWebhookWorker } from './modules/webhooks/webhookWorker';
 import { startNewsScheduler } from './services/news/newsService';
 
 const envToLogger: Record<string, object | boolean> = {
@@ -263,9 +266,22 @@ export async function start() {
   const app = await buildApp();
   const port = parseInt(process.env.PORT ?? '3001', 10);
   const host = process.env.HOST ?? '0.0.0.0';
+  const webhookWorkerEnabled = process.env.WEBHOOK_WORKER_ENABLED === 'true';
+  if (webhookWorkerEnabled && webhookService.getQueueProvider() instanceof InMemoryQueueProvider) {
+    throw new Error('FATAL_WEBHOOK_CONFIGURATION: WEBHOOK_WORKER_ENABLED requires a durable PostgreSQL queue provider.');
+  }
+  let stopWebhookWorker: (() => void) | undefined;
+  if (webhookWorkerEnabled) {
+    app.addHook('onClose', async () => { stopWebhookWorker?.(); });
+  }
 
   try {
     await app.listen({ port, host });
+    if (webhookWorkerEnabled) {
+      const pollIntervalMs = Number.parseInt(process.env.WEBHOOK_WORKER_POLL_INTERVAL_MS ?? '2000', 10);
+      const batchSize = Number.parseInt(process.env.WEBHOOK_WORKER_BATCH_SIZE ?? '10', 10);
+      stopWebhookWorker = startWebhookWorker(webhookService.getQueueProvider(), app.log, { pollIntervalMs, batchSize });
+    }
     app.log.info(`KSHETRA API running on http://${host}:${port}`);
     // Prime the news cache and refresh it hourly.
     startNewsScheduler(app.log);

@@ -16,6 +16,8 @@ import {
   extractSecretHint,
   canonicalizeJson,
   computePayloadSha256,
+  encodePostgresBytea,
+  decodePostgresBytea,
 } from './crypto';
 import { validateAndPinEgressTarget } from './antiSsrfGuard';
 import { dispatchWebhook } from './webhookDispatcher';
@@ -55,7 +57,7 @@ export class WebhookService {
   ) {
     if (queueProvider) {
       this.queueProvider = queueProvider;
-    } else if (process.env.NODE_ENV === 'test' || !process.env.DATABASE_URL) {
+    } else if (process.env.NODE_ENV === 'test' || process.env.WEBHOOK_QUEUE_PROVIDER === 'memory') {
       this.queueProvider = new InMemoryQueueProvider();
     } else {
       this.queueProvider = new PostgresQueueProvider(client);
@@ -121,16 +123,16 @@ export class WebhookService {
         tenant_id: tenantId,
         application_id: applicationId,
         endpoint_url: endpointUrl,
-        secret_ciphertext: encrypted.ciphertext,
-        secret_iv: encrypted.iv,
-        secret_tag: encrypted.tag,
+        secret_ciphertext: encodePostgresBytea(encrypted.ciphertext),
+        secret_iv: encodePostgresBytea(encrypted.iv),
+        secret_tag: encodePostgresBytea(encrypted.tag),
         secret_key_version: encrypted.version,
         secret_hash: encrypted.hash,
         secret_hint: encrypted.hint,
         subscribed_events: subscribedEvents,
         status: 'active',
       })
-      .select('*')
+      .select('id, tenant_id, application_id, endpoint_url, secret_hint, secret_hash, subscribed_events, status, consecutive_failure_count, created_at, updated_at')
       .single();
 
     if (error || !data) {
@@ -279,7 +281,7 @@ export class WebhookService {
       .eq('tenant_id', tenantId)
       .eq('application_id', applicationId)
       .eq('id', subscriptionId)
-      .select('*')
+      .select('id, tenant_id, application_id, endpoint_url, secret_hint, secret_hash, subscribed_events, status, consecutive_failure_count, created_at, updated_at')
       .single();
 
     if (error || !data) return null;
@@ -318,63 +320,30 @@ export class WebhookService {
   async rotateSecret(tenantId: string, applicationId: string, subscriptionId: string): Promise<{ newSecret: string; secretHint: string; gracePeriodExpiresAt: string } | null> {
     const existing = await this.getSubscription(tenantId, applicationId, subscriptionId);
     if (!existing) return null;
-
     const newSecret = generateWebhookSecret();
     const newEncrypted = encryptSecret(newSecret, tenantId, subscriptionId);
     const gracePeriodExpiresAt = new Date(Date.now() + 24 * 3600 * 1000).toISOString();
-
     if (this.queueProvider instanceof InMemoryQueueProvider) {
-      const sub = this.queueProvider.subscriptions.get(subscriptionId);
-      if (sub) {
-        sub.secretHint = newEncrypted.hint;
-        sub.secretHash = newEncrypted.hash;
-        sub.updatedAt = new Date().toISOString();
-        (sub as any)._previousSecret = (sub as any)._rawSecret;
-        (sub as any)._rawSecret = newSecret;
-      }
-      return {
-        newSecret,
-        secretHint: newEncrypted.hint,
-        gracePeriodExpiresAt,
-      };
+      const sub = this.queueProvider.subscriptions.get(subscriptionId) as any;
+      if (!sub || sub.tenantId !== tenantId || sub.applicationId !== applicationId) return null;
+      sub._previousSecret = sub._rawSecret;
+      sub._previousSecretExpiresAt = gracePeriodExpiresAt;
+      sub._rawSecret = newSecret;
+      sub.secretHint = newEncrypted.hint;
+      sub.secretHash = newEncrypted.hash;
+      sub.updatedAt = new Date().toISOString();
+      return { newSecret, secretHint: newEncrypted.hint, gracePeriodExpiresAt };
     }
-
-    // In PostgreSQL: Move current secret fields to previous_secret_* and save new
-    const { data: current } = await this.client
-      .from('webhook_subscriptions')
-      .select('secret_ciphertext, secret_iv, secret_tag')
-      .eq('tenant_id', tenantId)
-      .eq('id', subscriptionId)
-      .single();
-
-    const { error } = await this.client
-      .from('webhook_subscriptions')
-      .update({
-        previous_secret_ciphertext: current?.secret_ciphertext,
-        previous_secret_iv: current?.secret_iv,
-        previous_secret_tag: current?.secret_tag,
-        previous_secret_expires_at: gracePeriodExpiresAt,
-        secret_ciphertext: newEncrypted.ciphertext,
-        secret_iv: newEncrypted.iv,
-        secret_tag: newEncrypted.tag,
-        secret_key_version: newEncrypted.version,
-        secret_hash: newEncrypted.hash,
-        secret_hint: newEncrypted.hint,
-        updated_at: new Date().toISOString(),
-      })
-      .eq('tenant_id', tenantId)
-      .eq('application_id', applicationId)
-      .eq('id', subscriptionId);
-
-    if (error) {
-      throw new Error(`SECRET_ROTATION_FAILED: ${error.message}`);
-    }
-
-    return {
-      newSecret,
-      secretHint: newEncrypted.hint,
-      gracePeriodExpiresAt,
-    };
+    const { data, error } = await this.client.rpc('fn_rotate_webhook_secret', {
+      p_tenant_id: tenantId, p_application_id: applicationId, p_subscription_id: subscriptionId,
+      p_secret_ciphertext: encodePostgresBytea(newEncrypted.ciphertext),
+      p_secret_iv: encodePostgresBytea(newEncrypted.iv), p_secret_tag: encodePostgresBytea(newEncrypted.tag),
+      p_secret_key_version: newEncrypted.version, p_secret_hash: newEncrypted.hash,
+      p_secret_hint: newEncrypted.hint, p_previous_secret_expires_at: gracePeriodExpiresAt,
+    });
+    if (error) throw new Error(`SECRET_ROTATION_FAILED: ${error.message}`);
+    if (data !== true) throw new Error('SECRET_ROTATION_FAILED: Subscription was not updated.');
+    return { newSecret, secretHint: newEncrypted.hint, gracePeriodExpiresAt };
   }
 
   /**
@@ -383,70 +352,50 @@ export class WebhookService {
   async testDelivery(tenantId: string, applicationId: string, subscriptionId: string, options: { allowLocalhostInTest?: boolean } = {}): Promise<any> {
     const sub = await this.getSubscription(tenantId, applicationId, subscriptionId);
     if (!sub) return null;
-
+    if (sub.status !== 'active') throw new Error('WEBHOOK_SUBSCRIPTION_NOT_ACTIVE');
     const eventId = crypto.randomUUID();
     const deliveryId = crypto.randomUUID();
-    const testPayload = {
-      event_id: eventId,
-      timestamp: new Date().toISOString(),
-      message: 'PanIN SaaS Webhook Verification Test Ping',
-    };
-
+    const testPayload = { event_id: eventId, timestamp: new Date().toISOString(), message: 'PanIN SaaS Webhook Verification Test Ping' };
     const payloadRaw = canonicalizeJson(testPayload);
     const payloadSha256 = computePayloadSha256(payloadRaw);
-
-    // Retrieve active secret for subscription
-    let rawSecret = 'whsec_0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef';
+    let rawSecret: string;
     let previousSecret: string | null = null;
-
     if (this.queueProvider instanceof InMemoryQueueProvider) {
-      const inMem = this.queueProvider.subscriptions.get(subscriptionId);
-      if ((inMem as any)?._rawSecret) {
-        rawSecret = (inMem as any)._rawSecret;
+      const inMem = this.queueProvider.subscriptions.get(subscriptionId) as any;
+      rawSecret = inMem?._rawSecret;
+      if (!rawSecret) throw new Error('WEBHOOK_SECRET_UNAVAILABLE');
+      if (inMem?._previousSecret && inMem?._previousSecretExpiresAt && Date.parse(inMem._previousSecretExpiresAt) > Date.now()) {
+        previousSecret = inMem._previousSecret;
       }
     } else {
-      const { data } = await this.client
-        .from('webhook_subscriptions')
-        .select('secret_ciphertext, secret_iv, secret_tag, previous_secret_ciphertext, previous_secret_iv, previous_secret_tag')
-        .eq('tenant_id', tenantId)
-        .eq('id', subscriptionId)
-        .single();
-      if (data) {
-        rawSecret = decryptSecret(
-          { ciphertext: data.secret_ciphertext, iv: data.secret_iv, tag: data.secret_tag },
-          tenantId,
-          subscriptionId
-        );
-        if (data.previous_secret_ciphertext) {
-          previousSecret = decryptSecret(
-            { ciphertext: data.previous_secret_ciphertext, iv: data.previous_secret_iv, tag: data.previous_secret_tag },
-            tenantId,
-            subscriptionId
-          );
+      const { data, error } = await this.client.rpc('fn_get_webhook_secret_material', {
+        p_tenant_id: tenantId, p_application_id: applicationId, p_subscription_id: subscriptionId,
+      });
+      const material = Array.isArray(data) ? data[0] : null;
+      if (error || !material) throw new Error(`WEBHOOK_SECRET_UNAVAILABLE: ${error?.message ?? 'Subscription secret not found'}`);
+      try {
+        rawSecret = decryptSecret({
+          ciphertext: decodePostgresBytea(material.secret_ciphertext),
+          iv: decodePostgresBytea(material.secret_iv),
+          tag: decodePostgresBytea(material.secret_tag),
+        }, tenantId, subscriptionId);
+        if (material.previous_secret_ciphertext && material.previous_secret_expires_at &&
+            Number.isFinite(Date.parse(material.previous_secret_expires_at)) && Date.parse(material.previous_secret_expires_at) > Date.now()) {
+          previousSecret = decryptSecret({
+            ciphertext: decodePostgresBytea(material.previous_secret_ciphertext),
+            iv: decodePostgresBytea(material.previous_secret_iv),
+            tag: decodePostgresBytea(material.previous_secret_tag),
+          }, tenantId, subscriptionId);
         }
-      }
+      } catch { throw new Error('WEBHOOK_SECRET_DECRYPTION_FAILED'); }
     }
-
     const result = await dispatchWebhook({
-      endpointUrl: sub.endpointUrl,
-      secret: rawSecret,
-      previousSecret,
-      eventId,
-      deliveryId,
-      payloadRaw,
-      payloadSha256,
-      allowLocalhostInTest: options.allowLocalhostInTest,
+      endpointUrl: sub.endpointUrl, secret: rawSecret, previousSecret, eventId, deliveryId,
+      payloadRaw, payloadSha256, allowLocalhostInTest: options.allowLocalhostInTest,
     });
-
     return {
-      eventId,
-      deliveryId,
-      endpointUrl: sub.endpointUrl,
-      success: result.success,
-      httpStatus: result.httpStatus,
-      executionDurationMs: result.executionDurationMs,
-      responseBodySample: result.responseBodySample,
-      errorMessage: result.errorMessage,
+      eventId, deliveryId, endpointUrl: sub.endpointUrl, success: result.success, httpStatus: result.httpStatus,
+      executionDurationMs: result.executionDurationMs, responseBodySample: result.responseBodySample, errorMessage: result.errorMessage,
     };
   }
 

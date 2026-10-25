@@ -12,3 +12,4 @@ export * from './webhookDispatcher';
 export * from './queueProvider';
 export * from './webhookService';
 export * from './routes';
+export * from './webhookWorker';

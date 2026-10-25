@@ -258,7 +258,9 @@ export async function validateAndPinEgressTarget(
       host: pinnedIp, // Direct IP literal eliminates ambient DNS fallback & defeats DNS rebinding
       servername: hostname, // Hostname passed in SNI for standard TLS certificate verification
     };
-    return tls.connect(socketOpts, oncreate);
+    // https.Agent invokes its own oncreate callback when this returned socket is present.
+    // Do not pass that callback as TLS's secureConnect listener (different signature/event).
+    return tls.connect(socketOpts);
   };
 
   return {
