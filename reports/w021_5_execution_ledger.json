@@ -1192,7 +1192,7 @@
               "verificationStatus": "REPOSITORY_REVIEWED_SOURCE_BYTES_NOT_ACQUIRED"
             }
           ],
-          "remainingWork": "National current-effective AC polygon source bytes are not yet acquired or hashed. Repository data/geo remains Telangana-only; the research found candidate official ECI 2026 geometry routes for five jurisdictions and state GIS polygon services (including Telangana and Bihar), but these are not yet downloaded, reconciled to current legal instruments, or validated against the national statutory inventory. The India Geodata statewise layer is explicitly pre-2014 and rejected as current geometry. EB-01..EB-05 remain open; Stage B is not accepted.",
+          "remainingWork": "National current-effective AC polygon source bytes are not yet acquired or hashed. One 835,011-byte third-party Puducherry GeoJSON mirror was fetched and SHA-256 hashed (2786e744aa7394c85d977a317a1d1e33cb3eb78dbea45a272375fc9a48e54338); structural checks found 30 unique AC numbers/names, Polygon/MultiPolygon geometries, no empty geometry, unclosed rings or non-finite coordinates. It is not raw ECI data, its reuse licence is unconfirmed, and legal/topology reconciliation was not performed. Repository data/geo remains Telangana-only; India Geodata statewise layer is explicitly pre-2014 and rejected as current geometry. EB-01..EB-05 remain open; Stage B is not accepted.",
           "accounting": {
             "repoCompletionRatio": 0.25,
             "repoVerifiedWeight": 0.5,
@@ -1243,7 +1243,8 @@
               "scripts/generate_national_data_coverage_matrix.mjs",
               "data/geo/telangana-assembly.geojson",
               "reports/w021_5_national_data_coverage_matrix.json",
-              "reports/w021_5_stage_b_source_research_2026-10-25.md"
+              "reports/w021_5_stage_b_source_research_2026-10-25.md",
+              "reports/evidence/w021_5_stage_b_acquisition_probe_2026-10-25.json"
             ],
             "deterministicChecksExecuted": [
               "Telangana assembly boundary GeoJSON geometry validation with Indian bbox and closed rings",
@@ -1288,12 +1289,13 @@
             ],
             "limitations": [
               "Blocked External: National statutory boundary completeness across 31 States/UTs and resolution of AC 119 duplicate claim defect",
-              "No raw source geometry was acquired or hashed; no national geometry validation or topology check was run."
+              "No raw source geometry was acquired or hashed; no national geometry validation or topology check was run.",
+              "One third-party Puducherry mirror was structurally checked, but raw ECI bytes, reuse licence, legal reconciliation, topology validation, and national coverage remain unverified."
             ],
             "derivedRepoRatio": 0.25,
             "ratioRationale": "Telangana assembly boundary GeoJSON geometry verified with Indian bounds; remaining 30 states and AC 119 duplicate claim defect blocked.",
             "status": "PARTIAL",
-            "statusDescription": "Source research expanded; official geometry bytes not acquired or validated; partial status unchanged"
+            "statusDescription": "One third-party mirror artifact structurally checked; official source and national geometry not acquired; partial status unchanged"
           }
         }
       ]
@@ -3652,11 +3654,12 @@
     "decisionId": "DEC-154R",
     "report": "reports/w021_5_stage_b_source_research_2026-10-25.md",
     "stageBStatus": "PARTIAL_NOT_ACCEPTED",
-    "sourceAcquisitionStatus": "CANDIDATES_DISCOVERED_BYTES_NOT_ACQUIRED",
+    "sourceAcquisitionStatus": "ONE_THIRD_PARTY_MIRROR_ARTIFACT_ACQUIRED_AND_HASHED; OFFICIAL_RAW_SOURCE_BYTES_NOT_ACQUIRED",
     "completionAccountingChanged": false,
-    "reason": "Research discovered official-source candidates and rejected a pre-2014 statewise layer as current geometry, but no source payload was downloaded, hashed, or geometrically validated. Earned weight and completion ratios therefore remain unchanged.",
+    "reason": "A third-party Puducherry GeoJSON mirror was fetched and SHA-256 hashed, and basic structural checks passed. It is not the raw ECI response, no reuse licence was established, and it has not been vendored, topology-validated, or reconciled to the applicable legal instrument. No national geometry or Stage B completion criterion was closed; earned weight remains unchanged.",
     "productionDatabaseAccess": "NONE",
     "stagingDatabaseAccess": "NONE",
-    "nextAction": "Acquire raw ECI/state GIS payloads and applicable legal instruments, preserve hashes, run geometry and statutory roster validation, then reconcile mapped criteria."
+    "nextAction": "Acquire raw ECI/state GIS payloads and applicable legal instruments, preserve hashes, run geometry and statutory roster validation, then reconcile mapped criteria.",
+    "evidenceManifest": "reports/evidence/w021_5_stage_b_acquisition_probe_2026-10-25.json"
   }
 }
