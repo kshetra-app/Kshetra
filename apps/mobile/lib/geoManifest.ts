@@ -20,7 +20,7 @@ export interface GeoManifestEntry {
 }
 
 const manifestCache = new Map<string, GeoManifestEntry>();
-let manifestPromise: Promise<Record<string, GeoManifestEntry> | null> | null = null;
+let manifestPromise: Promise<Record<string, GeoManifestEntry> | null> | null = null;\nlet bundledManifest: Record<string, GeoManifestEntry> = {};
 
 function validateEntry(value: unknown, code: string): value is GeoManifestEntry {
   if (!value || typeof value !== 'object') return false;
@@ -52,7 +52,7 @@ export async function loadRemoteGeoManifest(
       for (const [code, value] of Object.entries(raw)) {
         if (!/^[A-Z]{2}$/.test(code) || !validateEntry(value, code)) continue;
         result[code] = value;
-        manifestCache.set(code, value);
+        manifestCache.set(code, value);\n        bundledManifest[code] = value;
       }
       return result;
     } catch {
