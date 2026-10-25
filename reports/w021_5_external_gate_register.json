@@ -134,7 +134,10 @@
       "Direct ECI geometry fetches failed in the prior run; browser-header retry and pinned mirror source attempts are underway."
     ],
     "focusedGeometryProbeRun": 40212122850,
-    "focusedGeometryProbeStatus": "QUEUED_AT_LAST_CHECK",
-    "focusedProbeWorkflow": ".github/workflows/w0215-official-geometry-probe.yml"
+    "focusedGeometryProbeStatus": "COMPLETED_WITH_FAILURES; ECI URL 404; TELANGANA METADATA ACQUIRED; GEOMETRY QUERY RETRY PENDING",
+    "focusedProbeWorkflow": ".github/workflows/w0215-official-geometry-probe.yml",
+    "focusedProbeManifest": "reports/evidence/w021_5_official_geometry_probe_40212122850.json",
+    "correctedTelanganaQueryRun": 40212257196,
+    "directEciEndpointFinding": "Five tested /ac/{STATE_CODE}.js endpoints return HTTP 404; this route is not currently usable as a raw source."
   }
 }
