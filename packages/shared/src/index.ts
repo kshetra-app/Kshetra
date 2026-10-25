@@ -12,3 +12,5 @@ export * from './config/environments';
 export * from './contracts';
 
 export * from './dataProvenance';
+
+export * from './dataProvenance';
