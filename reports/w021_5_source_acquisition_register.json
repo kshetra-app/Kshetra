@@ -802,6 +802,36 @@
         "Post-2014 State Reorganisation instrument chain and currently effective Gazette/date not fully reconciled.",
         "No raw PDF binary SHA-256 claimed."
       ]
+    },
+    {
+      "sourceId": "SRC-TELANGANA-ADMIN-NEW-LAYER",
+      "subject": "Assembly Constituency Boundary — Endowment_Lands_Admin_New MapServer layer 12",
+      "publisher": "Telangana State Remote Sensing Applications Centre GIS",
+      "url": "https://tgrac.telangana.gov.in/arcgis/rest/services/EndowmentLands_Folder/Endowment_Lands_Admin_New/MapServer/12?f=pjson",
+      "format": "ArcGIS REST Feature Layer / ESRI JSON",
+      "authority": "OFFICIAL_STATE_GIS_CANDIDATE",
+      "status": "PROBE_QUEUED",
+      "layerId": 12,
+      "workflowRunId": 40213242722,
+      "limitations": [
+        "Service name/metadata do not establish legally effective boundary version.",
+        "No canonical AC-number crosswalk, effective date, or legal instrument reconciliation is complete."
+      ]
+    },
+    {
+      "sourceId": "SRC-TELANGANA-ADMIN-OLD-LAYER",
+      "subject": "Assembly Constituency Boundary — Endowment_Lands_Old MapServer layer 13",
+      "publisher": "Telangana State Remote Sensing Applications Centre GIS",
+      "url": "https://tgrac.telangana.gov.in/arcgis/rest/services/EndowmentLands_Folder/Endowment_Lands_Old/MapServer/13?f=pjson",
+      "format": "ArcGIS REST Feature Layer / ESRI JSON",
+      "authority": "OFFICIAL_STATE_GIS_CANDIDATE",
+      "status": "PROBE_QUEUED",
+      "layerId": 13,
+      "workflowRunId": 40213242722,
+      "limitations": [
+        "Service name/metadata do not establish legally effective boundary version.",
+        "No canonical AC-number crosswalk, effective date, or legal instrument reconciliation is complete."
+      ]
     }
   ],
   "unresolvedGates": [
@@ -1158,9 +1188,18 @@
       ],
       "auditReport": "reports/evidence/w021_5_telangana_arcgis_geometry_audit_2026-10-25.json",
       "comparisonReport": "reports/evidence/w021_5_telangana_layer_comparison_2026-10-25.json"
+    },
+    {
+      "runId": 40213242722,
+      "workflowUrl": "https://github.com/kshetra-app/Kshetra/actions/runs/40213242722",
+      "artifactId": null,
+      "artifactName": null,
+      "artifactSha256": null,
+      "status": "PENDING_AT_LAST_CHECK",
+      "scope": "Compare two additional TGRAC services Endowment_Lands_Admin_New/MapServer/12 and Endowment_Lands_Old/MapServer/13 against the two previously acquired Telangana layers."
     }
   ],
-  "updatedAt": "2026-10-25T16:42:00Z",
+  "updatedAt": "2026-10-25T16:46:00Z",
   "notes": [
     "Actual public source artifacts were downloaded in GitHub Actions run 40209022405 and SHA-256 hashed; detailed geometry findings are in reports/w021_5_datameet_ac_geometry_forensic_audit.json.",
     "Survey of India official ABDB page, Vector Data Catalog 2025 PDF and Metadata_ABDB.zip were downloaded and hashed. The metadata covers state, district, subdistrict and village boundaries, not statutory Assembly Constituency polygons.",
@@ -1172,7 +1211,8 @@
     "Telangana layer 24 geometry was acquired in run 40212257196 (119 features; SHA-256 91cd791317836d8a6a8729b03f08fd3aee8c727c82e123b1659972d949d32f27). Independent Shapely audit found one self-intersection in Dornakal (ST) Assembly; this candidate is not accepted. A second service EndowmentLands_Admin_2026/MapServer/12 is under probe in run 40212441232.",
     "Broad source-acquisition run 40211792541 completed successfully: 31/61 source artifacts downloaded and hashed (142,219,649 source bytes), 24 failed. Five ECI-derived mirror GeoJSONs were acquired but rejected for canonical use after topology audit. Survey of India village boundaries were acquired for 14/27 jurisdictions, with 71,484 features, 37 invalid geometries, one CRS metadata conflict; they are not AC polygons or delivery-beat polygons.",
     "Focused run 40212441232 acquired both the older Telangana Assembly Constituency Boundary layer and the EndowmentLands_Admin_2026 layer (119 features each). Both contain the same invalid Dornakal polygon and zero positive-area overlaps. Cross-layer comparison found 7 geometries differing above 0.01 m² and a maximum Hausdorff distance of about 3.04 km; neither layer can be selected without legal/source-owner adjudication.",
-    "Official ECI 2008 Delimitation Order PDF was read through the web PDF reader. Schedule III lists Andhra Pradesh Assembly constituencies and their territorial extents; a partial crosswalk for nine disputed/defective Telangana ACs is recorded in reports/evidence/w021_5_telangana_layer_comparison_2026-10-25.json. The PDF binary was not downloaded in this session, so no binary SHA-256 is claimed."
+    "Official ECI 2008 Delimitation Order PDF was read through the web PDF reader. Schedule III lists Andhra Pradesh Assembly constituencies and their territorial extents; a partial crosswalk for nine disputed/defective Telangana ACs is recorded in reports/evidence/w021_5_telangana_layer_comparison_2026-10-25.json. The PDF binary was not downloaded in this session, so no binary SHA-256 is claimed.",
+    "Additional official Telangana GIS service variants Admin_New layer 12 and Admin_Old layer 13 were discovered in the TGRAC service catalog and queued for comparison in run 40213242722. Do not choose among service names until geometry and legal effective-date evidence are reconciled."
   ],
   "secondaryGeometryAudit": {
     "sourceRepository": "https://github.com/saisantoshv3/assemnbly_gis_files",
