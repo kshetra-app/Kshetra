@@ -1,0 +1,67 @@
+name: W021.5 Official Source Acquisition
+
+on:
+  push:
+    branches: [w0215-resumption-2026-10-25]
+    paths:
+      - 'scripts/acquire_w021_5_sources.mjs'
+      - 'scripts/audit_w021_5_geometry_candidates.py'
+      - 'scripts/audit_w021_5_soi_village_boundaries.py'
+      - '.github/workflows/w0215-source-acquisition.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: w0215-source-acquisition
+  cancel-in-progress: true
+
+jobs:
+  acquire-public-sources:
+    name: Acquire and hash public W021.5 source artifacts
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Checkout authorized resumption branch
+        uses: actions/checkout@v4
+        with:
+          ref: w0215-resumption-2026-10-25
+
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Acquire allowlisted source artifacts
+        env:
+          W0215_SOURCE_CACHE: ${{ runner.temp }}/w021_5_source_cache
+        run: node scripts/acquire_w021_5_sources.mjs
+
+      - name: Install isolated GIS audit dependencies
+        run: python -m pip install --disable-pip-version-check geopandas==1.1.2 shapely==2.1.2
+
+      - name: Audit secondary national AC geometry candidate
+        env:
+          W0215_SOURCE_CACHE: ${{ runner.temp }}/w021_5_source_cache
+        run: |
+          python scripts/audit_w021_5_geometry_candidates.py \
+            --source "${W0215_SOURCE_CACHE}/secondary/datameet/India_AC.shp" \
+            --output "${W0215_SOURCE_CACHE}/geometry-candidate-audit.json"
+
+      - name: Audit official SOI village boundary archives
+        env:
+          W0215_SOURCE_CACHE: ${{ runner.temp }}/w021_5_source_cache
+        run: |
+          python scripts/audit_w021_5_soi_village_boundaries.py \
+            --source-dir "${W0215_SOURCE_CACHE}/official/soi/village-boundaries" \
+            --output "${W0215_SOURCE_CACHE}/soi-village-boundary-audit.json"
+
+      - name: Upload source artifacts and SHA-256 manifest
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: w0215-source-acquisition-${{ github.run_id }}
+          path: ${{ runner.temp }}/w021_5_source_cache/
+          if-no-files-found: warn
+          retention-days: 14

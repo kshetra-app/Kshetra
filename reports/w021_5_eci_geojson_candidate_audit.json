@@ -1,0 +1,210 @@
+{
+  "title": "W021.5 ECI-Portal-Derived 2026 Assembly GeoJSON Candidate Audit",
+  "auditId": "W0215-ECI-GEOJSON-CANDIDATE-AUDIT-001",
+  "auditedAt": "2026-10-25",
+  "sourceRepository": "https://github.com/saisantoshv3/assemnbly_gis_files",
+  "sourceCommit": "730263a08afa3cf7a0cd12db68bcddc90aefcc03",
+  "sourceMethod": "Third-party GeoJSON extraction claiming ECI May 2026 result-portal origin; direct ECI JavaScript endpoints returned HTTP 404 in the same acquisition run.",
+  "licenseStatus": "No verified license grant recorded in this audit; retain as analysis evidence and do not redistribute source files without rights review.",
+  "acquisitionRun": {
+    "id": 40210513206,
+    "artifactId": 12606100793,
+    "artifactSha256": "87f6127ab8cf1243b9ef8800902db8819001d4aa8de14faedebb9a8e685fd217"
+  },
+  "summary": {
+    "candidateFiles": 5,
+    "totalFeatures": 824,
+    "totalInvalidGeometries": 23,
+    "totalEmptyGeometries": 0,
+    "allACNumbersUniqueAndCompleteRange": true,
+    "officialPrimarySourceVerified": false,
+    "acceptedAsProductionGeometry": 0
+  },
+  "method": {
+    "libraries": {
+      "GeoPandas": "1.1.2",
+      "Shapely": "2.1.2",
+      "PyProj": "3.7.2"
+    },
+    "checks": [
+      "SHA-256 and byte count",
+      "GeoJSON FeatureCollection schema",
+      "CRS",
+      "feature and geometry type counts",
+      "geometry validity and emptiness",
+      "AC_NO uniqueness and complete numeric range",
+      "constituency name duplicates",
+      "geographic bounds"
+    ],
+    "noDatabaseWrites": true
+  },
+  "candidates": [
+    {
+      "state": "Assam",
+      "stateCode": "S03",
+      "url": "https://raw.githubusercontent.com/saisantoshv3/assemnbly_gis_files/730263a08afa3cf7a0cd12db68bcddc90aefcc03/2026_assembly_election/assam_S03/assam.geojson",
+      "file": "S03.geojson",
+      "bytes": 11431537,
+      "sha256": "2b3efc17aea2adedf25bb598dd0256f878ed01f74de5299a2e0b02790536fb25",
+      "expectedSeats": 126,
+      "features": 126,
+      "crs": "EPSG:4326",
+      "geometryTypes": {
+        "Polygon": 124,
+        "MultiPolygon": 2
+      },
+      "invalidGeometries": 20,
+      "emptyGeometries": 0,
+      "uniqueACNumbers": 126,
+      "minACNo": 1,
+      "maxACNo": 126,
+      "missingACNumbers": [],
+      "duplicateACNumbers": [],
+      "duplicateConstituencyNames": [],
+      "bounds": [
+        89.69858537802943,
+        24.136275087826174,
+        96.01676371059726,
+        27.97686549714453
+      ],
+      "disposition": "REJECT_AS_IS_INVALID_GEOMETRY"
+    },
+    {
+      "state": "Puducherry",
+      "stateCode": "U07",
+      "url": "https://raw.githubusercontent.com/saisantoshv3/assemnbly_gis_files/730263a08afa3cf7a0cd12db68bcddc90aefcc03/2026_assembly_election/puducherry_U07/puducherry.geojson",
+      "file": "U07.geojson",
+      "bytes": 835011,
+      "sha256": "2786e7447394c85d977a317a1d1e33cb3eb78dbea45a272375fc9a48e54338",
+      "expectedSeats": 30,
+      "features": 30,
+      "crs": "EPSG:4326",
+      "geometryTypes": {
+        "Polygon": 19,
+        "MultiPolygon": 11
+      },
+      "invalidGeometries": 0,
+      "emptyGeometries": 0,
+      "uniqueACNumbers": 30,
+      "minACNo": 1,
+      "maxACNo": 30,
+      "missingACNumbers": [],
+      "duplicateACNumbers": [],
+      "duplicateConstituencyNames": [],
+      "bounds": [
+        75.526536,
+        10.827387398809424,
+        82.31379057631047,
+        16.753151316648548
+      ],
+      "disposition": "CANDIDATE_ONLY_NEEDS_DIRECT_OFFICIAL_CONFIRMATION"
+    },
+    {
+      "state": "Kerala",
+      "stateCode": "S11",
+      "url": "https://raw.githubusercontent.com/saisantoshv3/assemnbly_gis_files/730263a08afa3cf7a0cd12db68bcddc90aefcc03/2026_assembly_election/kerala_S11/kerala.geojson",
+      "file": "S11.geojson",
+      "bytes": 3111688,
+      "sha256": "5077be94e655e748322a0089a94b70f253dcbf856c747b2583530e575dc9aac5",
+      "expectedSeats": 140,
+      "features": 140,
+      "crs": "EPSG:4326",
+      "geometryTypes": {
+        "Polygon": 124,
+        "MultiPolygon": 16
+      },
+      "invalidGeometries": 1,
+      "emptyGeometries": 0,
+      "uniqueACNumbers": 140,
+      "minACNo": 1,
+      "maxACNo": 140,
+      "missingACNumbers": [],
+      "duplicateACNumbers": [],
+      "duplicateConstituencyNames": [],
+      "bounds": [
+        74.86776477818562,
+        8.296189836875895,
+        77.39745559062283,
+        12.789502250970195
+      ],
+      "disposition": "REJECT_AS_IS_INVALID_GEOMETRY"
+    },
+    {
+      "state": "Tamil Nadu",
+      "stateCode": "S22",
+      "url": "https://raw.githubusercontent.com/saisantoshv3/assemnbly_gis_files/730263a08afa3cf7a0cd12db68bcddc90aefcc03/2026_assembly_election/tamil_nadu_S22/tamil_nadu.geojson",
+      "file": "S22.geojson",
+      "bytes": 5258525,
+      "sha256": "410d0d16df7fe8397691ea3c2c47d875ce6dc17a9c9dbcd588786d0b36339611",
+      "expectedSeats": 234,
+      "features": 234,
+      "crs": "EPSG:4326",
+      "geometryTypes": {
+        "Polygon": 218,
+        "MultiPolygon": 16
+      },
+      "invalidGeometries": 2,
+      "emptyGeometries": 0,
+      "uniqueACNumbers": 234,
+      "minACNo": 1,
+      "maxACNo": 234,
+      "missingACNumbers": [],
+      "duplicateACNumbers": [],
+      "duplicateConstituencyNames": [],
+      "bounds": [
+        76.2257457308422,
+        8.07651393192618,
+        80.34679800687728,
+        13.551870427422392
+      ],
+      "disposition": "REJECT_AS_IS_INVALID_GEOMETRY"
+    },
+    {
+      "state": "West Bengal",
+      "stateCode": "S25",
+      "url": "https://raw.githubusercontent.com/saisantoshv3/assemnbly_gis_files/730263a08afa3cf7a0cd12db68bcddc90aefcc03/2026_assembly_election/west_bengal_S25/west_bengal.geojson",
+      "file": "S25.geojson",
+      "bytes": 8825360,
+      "sha256": "62755085e5d904d0985e06bdccbe664b7ba22de5bda5c671735a54d19e6eaf2c",
+      "expectedSeats": 294,
+      "features": 294,
+      "crs": "EPSG:4326",
+      "geometryTypes": {
+        "Polygon": 275,
+        "MultiPolygon": 19
+      },
+      "invalidGeometries": 0,
+      "emptyGeometries": 0,
+      "uniqueACNumbers": 294,
+      "minACNo": 1,
+      "maxACNo": 294,
+      "missingACNumbers": [],
+      "duplicateACNumbers": [],
+      "duplicateConstituencyNames": [
+        {
+          "name": "Bishnupur",
+          "acNumbers": [
+            146,
+            255
+          ]
+        }
+      ],
+      "bounds": [
+        85.81344217695471,
+        21.539446368807724,
+        89.87754954318929,
+        27.22103163732586
+      ],
+      "disposition": "CANDIDATE_ONLY_DUPLICATE_NAME_REQUIRES_OFFICIAL_RECONCILIATION"
+    }
+  ],
+  "findings": [
+    "All five candidates match the expected seat count and have a complete unique AC_NO sequence from 1 through the expected total.",
+    "Assam has 20 invalid geometries; Kerala has 1; Tamil Nadu has 2. These files cannot be imported as-is.",
+    "West Bengal has duplicate constituency name 'Bishnupur' for AC 146 and AC 255; this requires official verification rather than silent normalization.",
+    "Puducherry passes basic feature count, geometry validity and AC number sequence checks, but remains secondary-source evidence until the direct ECI source and effective-date provenance are verified.",
+    "The five files contain 824 features in total, with 23 invalid geometries.",
+    "No candidate was promoted to OFFICIAL, inserted into canonical runtime geography, or written to any database."
+  ],
+  "finalDisposition": "Useful secondary candidates, not official production boundaries. Direct ECI acquisition remains blocked by HTTP 406 on official index pages and HTTP 404 on guessed geometry endpoints. Continue primary-source acquisition and do not synthesize or silently repair geometry."
+}

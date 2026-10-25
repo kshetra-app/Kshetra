@@ -1184,9 +1184,51 @@
               "evidenceClass": "TEST_VERIFICATION",
               "supportsClaim": "Deterministic test battery asserting 4,123 ACs, 543 PCs, Assam 2023 delimitation cutoff, 7-tier geography pipeline, and precision capability model.",
               "verificationStatus": "VERIFIED_ON_DISK"
+            },
+            {
+              "path": "reports/w021_5_datameet_ac_geometry_forensic_audit.json",
+              "evidenceClass": "FORENSIC_SECONDARY_DATASET_AUDIT",
+              "supportsClaim": "Pinned DataMeet national AC shapefile downloaded, component hashes verified and candidate rejected for production due to count, identity, duplicate, name and geometry defects.",
+              "verificationStatus": "VERIFIED_IN_GITHUB_ACTIONS_ARTIFACT"
+            },
+            {
+              "path": "reports/w021_5_source_acquisition_register.json",
+              "evidenceClass": "SOURCE_PROVENANCE_REGISTER",
+              "supportsClaim": "Official and secondary source URLs, hashes, retrieval statuses, limitations and open gates are recorded.",
+              "verificationStatus": "VERIFIED_ON_BRANCH"
+            },
+            {
+              "path": "reports/w021_5_stage_b_source_research_2026-10-25.md",
+              "evidenceClass": "SOURCE_RESEARCH_NOT_ACCEPTANCE",
+              "supportsClaim": "Layered source strategy, current source acquisition outcomes and outstanding Stage B gates are recorded.",
+              "verificationStatus": "VERIFIED_ON_BRANCH"
+            },
+            {
+              "path": "reports/evidence/w021_5_stage_b_acquisition_probe_2026-10-25.json",
+              "evidenceClass": "SECONDARY_GEOJSON_STRUCTURAL_PROBE",
+              "supportsClaim": "Puducherry mirror SHA-256 and basic structural checks recorded; not accepted as official or vendored.",
+              "verificationStatus": "VERIFIED_ON_BRANCH"
+            },
+            {
+              "path": "reports/evidence/w021_5_official_geometry_probe_40212122850.json",
+              "evidenceClass": "OFFICIAL_ENDPOINT_PROBE_FAILURE_EVIDENCE",
+              "supportsClaim": "Direct ECI geometry URLs returned 404; Telangana ArcGIS metadata was acquired; unsupported GeoJSON query format was diagnosed and a corrected retry queued.",
+              "verificationStatus": "ARTIFACT_HASH_AND_RAW_RESPONSE_HASHES_VERIFIED"
+            },
+            {
+              "path": "reports/evidence/w021_5_telangana_arcgis_geometry_audit_2026-10-25.json",
+              "evidenceClass": "OFFICIAL_STATE_GIS_CANDIDATE_TOPOLOGY_AUDIT",
+              "supportsClaim": "119-feature official state GIS candidate acquired and independently audited; one invalid polygon found; candidate not accepted.",
+              "verificationStatus": "RAW_SHA256_VERIFIED_LOCAL_TOPOLOGY_AUDIT"
+            },
+            {
+              "path": "reports/evidence/w021_5_eci_mirror_geometry_audit_2026-10-25.json",
+              "evidenceClass": "FIVE_JURISDICTION_SECONDARY_GEOMETRY_FORENSIC_AUDIT",
+              "supportsClaim": "All five ECI-derived mirror datasets acquired and hashed; expected counts/AC_NO sequences pass but geometry/topology defects reject them as canonical.",
+              "verificationStatus": "LOCAL_GEOPANDAS_SHAPELY_AUDIT"
             }
           ],
-          "remainingWork": "30 states lack GeoJSON files in data/geo. Only Telangana (119 ACs) is populated.",
+          "remainingWork": "National current-effective AC polygon source package is still missing from data/geo. A pinned DataMeet shapefile candidate was downloaded, SHA-256 hashed and forensically audited in GitHub Actions run 40209022405, then REJECTED for production geometry: 4,182 features vs 4,123 expected, only 30 source state names for 31 jurisdictions, 4,102 unique state-code/AC-number pairs, 80 extra duplicate rows, 6 invalid geometries, 34 null constituency names, and Telangana features mislabeled under Andhra Pradesh. A Puducherry third-party ECI-2026-derived GeoJSON mirror was separately fetched and structurally checked (30 unique features) but is not raw ECI data and its reuse licence is unconfirmed. Direct ECI geometry requests failed in the first acquisition run; a browser-header retry is running. No current-effective official national AC geometry, full topology proof, or legal-instrument reconciliation is complete. EB-01..EB-05 remain open; Stage B not accepted. Focused official probe 40212122850 confirmed the five assumed ECI .js URLs return 404; Telangana layer metadata is reachable but the initial f=geojson query returned HTTP 400 (unsupported format). A corrected f=json query is queued in run 40212257196. Raw response hashes and artifact integrity are recorded in reports/evidence/w021_5_official_geometry_probe_40212122850.json. The older Telangana official GIS layer was acquired (119 features, SHA-256 91cd791317836d8a6a8729b03f08fd3aee8c727c82e123b1659972d949d32f27). Independent topology audit found one invalid polygon (Dornakal (ST) Assembly, self-intersection), zero positive-area overlap pairs, and no authoritative state-boundary coverage proof. Canonical AC-number crosswalk and effective-date/legal-order reconciliation remain open. A separate EndowmentLands_Admin_2026 service is being probed. Completed source-acquisition run 40211792541 retrieved 31/61 sources (142,219,649 bytes); 24 failed. Five ECI-derived mirror GeoJSONs (824 features; AC_NO 1..N contiguous in each jurisdiction) were audited: 23 raw invalid geometries and 1,337 positive-area overlap pairs after diagnostic make_valid. They are rejected for canonical use. Survey of India village-boundary archives were acquired for 14/27 jurisdictions (71,484 features, 37 invalid geometries, one CRS metadata conflict); these are not AC or delivery-beat polygons. Exact per-file hashes are in reports/w021_5_source_acquisition_register.json.",
           "accounting": {
             "repoCompletionRatio": 0.25,
             "repoVerifiedWeight": 0.5,
@@ -1236,11 +1278,21 @@
             "evidenceArtifactsUsed": [
               "scripts/generate_national_data_coverage_matrix.mjs",
               "data/geo/telangana-assembly.geojson",
-              "reports/w021_5_national_data_coverage_matrix.json"
+              "reports/w021_5_national_data_coverage_matrix.json",
+              "reports/w021_5_datameet_ac_geometry_forensic_audit.json",
+              "reports/w021_5_source_acquisition_register.json",
+              "reports/w021_5_stage_b_source_research_2026-10-25.md",
+              "reports/evidence/w021_5_stage_b_acquisition_probe_2026-10-25.json",
+              "reports/evidence/w021_5_official_geometry_probe_40212122850.json",
+              "reports/evidence/w021_5_telangana_arcgis_geometry_audit_2026-10-25.json",
+              "reports/evidence/w021_5_eci_mirror_geometry_audit_2026-10-25.json"
             ],
             "deterministicChecksExecuted": [
               "Telangana assembly boundary GeoJSON geometry validation with Indian bbox and closed rings",
-              "National statutory boundary completeness across 31 States/UTs and resolution of AC 119 duplicate claim defect"
+              "National statutory boundary completeness across 31 States/UTs and resolution of AC 119 duplicate claim defect",
+              "Inspect exact SHA-256 manifest from W021.5 source-acquisition workflow run 40209022405",
+              "Review DataMeet forensic audit: 4,182 features, 4,102 unique keys, 80 duplicate extras, 6 invalid geometries, 34 null names, 30/31 jurisdiction coverage",
+              "Review Puducherry mirror structural probe; no legal or topology acceptance inferred"
             ],
             "evaluations": [
               {
@@ -1277,12 +1329,18 @@
               "National statutory boundary completeness across 31 States/UTs and resolution of AC 119 duplicate claim defect"
             ],
             "limitations": [
-              "Blocked External: National statutory boundary completeness across 31 States/UTs and resolution of AC 119 duplicate claim defect"
+              "Blocked External: National statutory boundary completeness across 31 States/UTs and resolution of AC 119 duplicate claim defect",
+              "National candidate geometry source is rejected; no authoritative current-effective national AC polygon package has been acquired.",
+              "Puducherry GeoJSON is a third-party mirror, not raw ECI bytes; reuse licence is unconfirmed; full topology/legal reconciliation is pending.",
+              "The active direct-source retry workflow has not yet produced a reviewed artifact manifest.",
+              "Five assumed ECI geometry URLs returned 404; Telangana official geometry query is pending corrected ArcGIS JSON format.",
+              "Telangana official GIS candidate contains one self-intersecting polygon and has no completed canonical AC-number/legal effective-date crosswalk or authoritative state-boundary coverage test.",
+              "Five ECI-derived mirror datasets pass seat-count and AC_NO sequence checks but contain 23 invalid raw geometries and 1,337 positive-area overlap pairs; not accepted as canonical."
             ],
             "derivedRepoRatio": 0.25,
             "ratioRationale": "Telangana assembly boundary GeoJSON geometry verified with Indian bounds; remaining 30 states and AC 119 duplicate claim defect blocked.",
             "status": "PARTIAL",
-            "statusDescription": "0.5% earned of 2.0% allocated; 1.5% blocked"
+            "statusDescription": "Partial: secondary national geometry rejected; one single-jurisdiction mirror structurally checked; official national geometry and legal reconciliation remain open."
           }
         }
       ]
@@ -3635,5 +3693,5 @@
       ]
     }
   ],
-  "lastReconciledDate": "2026-10-21T06:00:00.000Z"
+  "lastReconciledDate": "2026-10-25T16:39:00.000Z"
 }

@@ -1,0 +1,454 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "W021.5 National Assembly Constituency Geometry Candidate Forensic Audit",
+  "auditId": "W0215-GEO-CANDIDATE-AUDIT-001",
+  "auditedAt": "2026-10-25",
+  "repositoryBaseline": "33945d20f318ae1aa0d9aba35052246599c5bbae",
+  "branch": "w0215-resumption-2026-10-25",
+  "acquisition": {
+    "workflowRunId": 40209022405,
+    "workflowUrl": "https://github.com/kshetra-app/Kshetra/actions/runs/40209022405",
+    "artifactId": 12604953125,
+    "artifactName": "w0215-source-acquisition-40209022405",
+    "artifactSha256": "87c31c94d7eb302ecba5a966167cb849f114a685d7ebad146721d04a95e69163",
+    "artifactBytes": 7902826,
+    "uncompressedSourceBytes": 16343731,
+    "retrievalDate": "2026-10-25",
+    "sourceManifestPath": "manifest.json",
+    "sourceManifestSummary": {
+      "staticSourceCount": 16,
+      "dynamicallyDiscoveredCount": 2,
+      "downloaded": 8,
+      "failed": 10,
+      "officialDownloads": 4,
+      "secondaryCandidateDownloads": 4,
+      "derivedGeometryCandidates": 0
+    }
+  },
+  "candidateDataset": {
+    "publisher": "DataMeet community maps project",
+    "url": "https://github.com/datameet/maps/tree/master/assembly-constituencies",
+    "sourceCommitForShapefile": "7a1c21c2e3f059a19aba1023f64ed7e174462ca4",
+    "readmeCommit": "b2f56f6bd8fdead64f0210c133ab467d26e3621e",
+    "readmeUrl": "https://github.com/datameet/maps/blob/master/assembly-constituencies/README.md",
+    "sourceClaim": "Assembly constituency boundaries scraped from ECI's Polling Station Locations website",
+    "license": "Creative Commons Attribution 2.5 India per dataset README",
+    "authorityClassification": "SECONDARY_CANDIDATE_GIS",
+    "notAcceptedAsOfficial": true,
+    "sourceFiles": [
+      {
+        "file": "India_AC.shp",
+        "bytes": 6263460,
+        "sha256": "0e89b00a228b5500d0f7802492c615c34dcb67f72acaf6ec4a66575df0e31e70"
+      },
+      {
+        "file": "India_AC.dbf",
+        "bytes": 5721425,
+        "sha256": "687d2487d4aec89a7371bd06e2a7f9566dd2df1dd6e6d8289adc4a0501b2c1fd"
+      },
+      {
+        "file": "India_AC.shx",
+        "bytes": 33556,
+        "sha256": "a3149ac8f825771df09a6a956a485059cbba7d28eabfdf35b8b02d41c6d88561"
+      },
+      {
+        "file": "India_AC.prj",
+        "bytes": 143,
+        "sha256": "98aaf3d1c0ecadf1a424a4536de261c3daf4e373697cb86c40c43b989daf52eb"
+      }
+    ]
+  },
+  "validationEnvironment": {
+    "GeoPandas": "1.1.2",
+    "Shapely": "2.1.2",
+    "Fiona": "1.10.1",
+    "PyProj": "3.7.2",
+    "CRS": "EPSG:4326"
+  },
+  "aggregateFindings": {
+    "sourceFeatureCount": 4182,
+    "canonicalExpectedSeatCount": 4123,
+    "sourceStateNameCount": 30,
+    "expectedJurisdictionCount": 31,
+    "uniqueSourceStateCodeAcNumberPairs": 4102,
+    "extraDuplicateFeatureRows": 80,
+    "rowsBelongingToDuplicateKeys": 130,
+    "invalidGeometries": 6,
+    "emptyGeometries": 0,
+    "nullConstituencyNames": 34,
+    "nullStatusRows": 3658,
+    "boundingBox": [
+      68.09347709739018,
+      8.076644669515929,
+      97.41149826013668,
+      37.07719207475452
+    ],
+    "decision": "REJECTED_FOR_PRODUCTION_GEOMETRY; RETAIN AS FORENSIC CANDIDATE ONLY",
+    "rationale": [
+      "Dataset README explicitly warns that Jammu & Kashmir, Jharkhand, Assam, Manipur, Nagaland and Arunachal Pradesh appear to use pre-delimitation boundaries.",
+      "Dataset README warns of geometry shifts and missing or incorrect constituency names.",
+      "The source has 4,182 features against the 4,123-seat canonical requirement and only 30 distinct source state names for 31 expected Assembly jurisdictions.",
+      "There are 4,102 unique source state-code/AC-number pairs, 80 extra duplicate rows, 6 invalid geometries and 34 missing constituency names.",
+      "Andhra Pradesh source rows include Telangana features under Andhra Pradesh labeling; the source README also acknowledges this defect.",
+      "No feature was promoted to OFFICIAL or inserted into canonical production/runtime geography."
+    ]
+  },
+  "stateSummary": [
+    {
+      "state": "Andhra Pradesh",
+      "expectedSeats": 175,
+      "sourceFeatures": 296,
+      "uniquePairs": 295,
+      "duplicateExtraRows": 1,
+      "invalidGeometries": 0,
+      "nullNames": 2,
+      "status": "STATE_IDENTITY_CONTAMINATION_TELANGANA"
+    },
+    {
+      "state": "Arunachal Pradesh",
+      "expectedSeats": 60,
+      "sourceFeatures": 61,
+      "uniquePairs": 60,
+      "duplicateExtraRows": 1,
+      "invalidGeometries": 0,
+      "nullNames": 0,
+      "preDelimitationRows": 61,
+      "status": "PRE_DELIMITATION"
+    },
+    {
+      "state": "Assam",
+      "expectedSeats": 126,
+      "sourceFeatures": 133,
+      "uniquePairs": 126,
+      "duplicateExtraRows": 7,
+      "invalidGeometries": 0,
+      "nullNames": 0,
+      "preDelimitationRows": 133,
+      "status": "PRE_DELIMITATION_AND_DUPLICATES"
+    },
+    {
+      "state": "Bihar",
+      "expectedSeats": 243,
+      "sourceFeatures": 243,
+      "uniquePairs": 243,
+      "duplicateExtraRows": 0,
+      "invalidGeometries": 0,
+      "nullNames": 0,
+      "status": "COUNT_MATCH_ONLY_NOT_ACCEPTED"
+    },
+    {
+      "state": "Chhattisgarh",
+      "expectedSeats": 90,
+      "sourceFeatures": 90,
+      "uniquePairs": 90,
+      "duplicateExtraRows": 0,
+      "invalidGeometries": 0,
+      "nullNames": 0,
+      "status": "COUNT_MATCH_ONLY_NOT_ACCEPTED"
+    },
+    {
+      "state": "Delhi",
+      "expectedSeats": 70,
+      "sourceFeatures": 70,
+      "uniquePairs": 70,
+      "duplicateExtraRows": 0,
+      "invalidGeometries": 0,
+      "nullNames": 0,
+      "status": "COUNT_MATCH_ONLY_NOT_ACCEPTED"
+    },
+    {
+      "state": "Goa",
+      "expectedSeats": 40,
+      "sourceFeatures": 41,
+      "uniquePairs": 41,
+      "duplicateExtraRows": 0,
+      "invalidGeometries": 0,
+      "nullNames": 1,
+      "status": "COUNT_AND_NAME_MISMATCH"
+    },
+    {
+      "state": "Gujarat",
+      "expectedSeats": 182,
+      "sourceFeatures": 172,
+      "uniquePairs": 163,
+      "duplicateExtraRows": 9,
+      "invalidGeometries": 3,
+      "nullNames": 10,
+      "status": "COUNT_DUPLICATE_NAME_AND_GEOMETRY_DEFECTS"
+    },
+    {
+      "state": "Haryana",
+      "expectedSeats": 90,
+      "sourceFeatures": 90,
+      "uniquePairs": 90,
+      "duplicateExtraRows": 0,
+      "invalidGeometries": 0,
+      "nullNames": 0,
+      "status": "COUNT_MATCH_ONLY_NOT_ACCEPTED"
+    },
+    {
+      "state": "Himachal Pradesh",
+      "expectedSeats": 68,
+      "sourceFeatures": 68,
+      "uniquePairs": 68,
+      "duplicateExtraRows": 0,
+      "invalidGeometries": 0,
+      "nullNames": 0,
+      "status": "COUNT_MATCH_ONLY_NOT_ACCEPTED"
+    },
+    {
+      "state": "Jammu & Kashmir",
+      "expectedSeats": 90,
+      "sourceFeatures": 107,
+      "uniquePairs": 88,
+      "duplicateExtraRows": 19,
+      "invalidGeometries": 1,
+      "nullNames": 2,
+      "preDelimitationRows": 107,
+      "status": "PRE_DELIMITATION_AND_IDENTITY_DEFECTS"
+    },
+    {
+      "state": "Jharkhand",
+      "expectedSeats": 81,
+      "sourceFeatures": 95,
+      "uniquePairs": 81,
+      "duplicateExtraRows": 14,
+      "invalidGeometries": 0,
+      "nullNames": 0,
+      "preDelimitationRows": 95,
+      "status": "PRE_DELIMITATION_AND_DUPLICATES"
+    },
+    {
+      "state": "Karnataka",
+      "expectedSeats": 224,
+      "sourceFeatures": 225,
+      "uniquePairs": 225,
+      "duplicateExtraRows": 0,
+      "invalidGeometries": 0,
+      "nullNames": 1,
+      "status": "COUNT_AND_NAME_MISMATCH"
+    },
+    {
+      "state": "Kerala",
+      "expectedSeats": 140,
+      "sourceFeatures": 141,
+      "uniquePairs": 140,
+      "duplicateExtraRows": 1,
+      "invalidGeometries": 0,
+      "nullNames": 0,
+      "status": "DUPLICATE_FEATURE"
+    },
+    {
+      "state": "Madhya Pradesh",
+      "expectedSeats": 230,
+      "sourceFeatures": 226,
+      "uniquePairs": 226,
+      "duplicateExtraRows": 0,
+      "invalidGeometries": 0,
+      "nullNames": 0,
+      "status": "COUNT_MISMATCH"
+    },
+    {
+      "state": "Maharashtra",
+      "expectedSeats": 288,
+      "sourceFeatures": 302,
+      "uniquePairs": 289,
+      "duplicateExtraRows": 13,
+      "invalidGeometries": 0,
+      "nullNames": 14,
+      "status": "DUPLICATES_AND_MISSING_NAMES"
+    },
+    {
+      "state": "Manipur",
+      "expectedSeats": 60,
+      "sourceFeatures": 68,
+      "uniquePairs": 60,
+      "duplicateExtraRows": 8,
+      "invalidGeometries": 0,
+      "nullNames": 0,
+      "preDelimitationRows": 68,
+      "status": "PRE_DELIMITATION_AND_DUPLICATES"
+    },
+    {
+      "state": "Meghalaya",
+      "expectedSeats": 60,
+      "sourceFeatures": 60,
+      "uniquePairs": 60,
+      "duplicateExtraRows": 0,
+      "invalidGeometries": 0,
+      "nullNames": 0,
+      "status": "COUNT_MATCH_ONLY_NOT_ACCEPTED"
+    },
+    {
+      "state": "Mizoram",
+      "expectedSeats": 40,
+      "sourceFeatures": 40,
+      "uniquePairs": 40,
+      "duplicateExtraRows": 0,
+      "invalidGeometries": 0,
+      "nullNames": 0,
+      "status": "COUNT_MATCH_ONLY_NOT_ACCEPTED"
+    },
+    {
+      "state": "Nagaland",
+      "expectedSeats": 60,
+      "sourceFeatures": 60,
+      "uniquePairs": 60,
+      "duplicateExtraRows": 0,
+      "invalidGeometries": 0,
+      "nullNames": 0,
+      "preDelimitationRows": 60,
+      "status": "PRE_DELIMITATION"
+    },
+    {
+      "state": "Odisha",
+      "expectedSeats": 147,
+      "sourceFeatures": 147,
+      "uniquePairs": 147,
+      "duplicateExtraRows": 0,
+      "invalidGeometries": 1,
+      "nullNames": 0,
+      "status": "INVALID_GEOMETRY"
+    },
+    {
+      "state": "Puducherry",
+      "expectedSeats": 30,
+      "sourceFeatures": 30,
+      "uniquePairs": 30,
+      "duplicateExtraRows": 0,
+      "invalidGeometries": 0,
+      "nullNames": 0,
+      "status": "COUNT_MATCH_ONLY_NOT_ACCEPTED"
+    },
+    {
+      "state": "Punjab",
+      "expectedSeats": 117,
+      "sourceFeatures": 117,
+      "uniquePairs": 117,
+      "duplicateExtraRows": 0,
+      "invalidGeometries": 0,
+      "nullNames": 0,
+      "status": "COUNT_MATCH_ONLY_NOT_ACCEPTED"
+    },
+    {
+      "state": "Rajasthan",
+      "expectedSeats": 200,
+      "sourceFeatures": 201,
+      "uniquePairs": 200,
+      "duplicateExtraRows": 1,
+      "invalidGeometries": 1,
+      "nullNames": 0,
+      "status": "DUPLICATE_AND_INVALID_GEOMETRY"
+    },
+    {
+      "state": "Sikkim",
+      "expectedSeats": 32,
+      "sourceFeatures": 38,
+      "uniquePairs": 32,
+      "duplicateExtraRows": 6,
+      "invalidGeometries": 0,
+      "nullNames": 4,
+      "status": "DUPLICATES_AND_MISSING_NAMES"
+    },
+    {
+      "state": "Tamil Nadu",
+      "expectedSeats": 234,
+      "sourceFeatures": 234,
+      "uniquePairs": 234,
+      "duplicateExtraRows": 0,
+      "invalidGeometries": 0,
+      "nullNames": 0,
+      "status": "COUNT_MATCH_ONLY_NOT_ACCEPTED"
+    },
+    {
+      "state": "Telangana",
+      "expectedSeats": 119,
+      "sourceFeatures": 0,
+      "uniquePairs": 0,
+      "duplicateExtraRows": 0,
+      "invalidGeometries": 0,
+      "nullNames": 0,
+      "status": "MISSING; SOURCE MISLABELS FEATURES UNDER ANDHRA PRADESH"
+    },
+    {
+      "state": "Tripura",
+      "expectedSeats": 60,
+      "sourceFeatures": 60,
+      "uniquePairs": 60,
+      "duplicateExtraRows": 0,
+      "invalidGeometries": 0,
+      "nullNames": 0,
+      "status": "COUNT_MATCH_ONLY_NOT_ACCEPTED"
+    },
+    {
+      "state": "Uttar Pradesh",
+      "expectedSeats": 403,
+      "sourceFeatures": 403,
+      "uniquePairs": 403,
+      "duplicateExtraRows": 0,
+      "invalidGeometries": 0,
+      "nullNames": 0,
+      "status": "COUNT_MATCH_ONLY_NOT_ACCEPTED"
+    },
+    {
+      "state": "Uttarakhand",
+      "expectedSeats": 70,
+      "sourceFeatures": 70,
+      "uniquePairs": 70,
+      "duplicateExtraRows": 0,
+      "invalidGeometries": 0,
+      "nullNames": 0,
+      "status": "COUNT_MATCH_ONLY_NOT_ACCEPTED"
+    },
+    {
+      "state": "West Bengal",
+      "expectedSeats": 294,
+      "sourceFeatures": 294,
+      "uniquePairs": 294,
+      "duplicateExtraRows": 0,
+      "invalidGeometries": 0,
+      "nullNames": 0,
+      "status": "COUNT_MATCH_ONLY_NOT_ACCEPTED"
+    }
+  ],
+  "officialSourceAcquisition": {
+    "surveyOfIndiaABDBPage": {
+      "url": "https://surveyofindia.gov.in/pages/administrative-boundary-data-base-abdb-",
+      "bytes": 113855,
+      "sha256": "088d924ab66d62f6873f851574c89c5b23e6aa61a1b09e803154b948afad14c1",
+      "status": "DOWNLOADED_HASHED"
+    },
+    "surveyOfIndiaVectorCatalog2025": {
+      "url": "https://www.surveyofindia.gov.in/UserFiles/files/Vector%20Data%20Catalog%202025%281%29.pdf",
+      "bytes": 3567252,
+      "sha256": "efd758b6dfa1ee08ad06ba8a591b1e0bcc3c27bd214804154561b5648c77b7f3",
+      "status": "DOWNLOADED_HASHED"
+    },
+    "surveyOfIndiaMetadataABDB": {
+      "url": "https://surveyofindia.gov.in/documents/Metadata_ABDB.zip",
+      "bytes": 38879,
+      "sha256": "1a14716b73f00fc8391f2708a7975c2f2c1ad4a4e91aafb6dce6546a039e9514",
+      "status": "DOWNLOADED_HASHED",
+      "metadataSays": [
+        "State boundary",
+        "District boundary",
+        "Sub-district boundary",
+        "Village boundary"
+      ],
+      "metadataDates": [
+        "2026-05-06",
+        "2026-05-08"
+      ],
+      "limitation": "Official administrative boundaries do not constitute official Assembly Constituency polygons."
+    },
+    "eciDirectSourceStatusAtRun": {
+      "status": "FETCH_FAILED",
+      "reasons": [
+        "ECI index/PDF endpoints returned HTTP 406 to the initial automated request",
+        "The five guessed ECI geometry JavaScript endpoints returned HTTP 404"
+      ],
+      "action": "Request headers and pinned third-party extraction URLs have since been corrected in the acquisition runner; a new run is pending. No direct ECI geometry is claimed as downloaded in this audit."
+    }
+  },
+  "finalDisposition": "The DataMeet dataset is rejected as production/canonical geography and retained only as forensic candidate evidence. The audit proves that source availability is not equivalent to canonical coverage. Official SOI administrative boundary data is acquired and hashed but is not a substitute for statutory AC polygons. EB-03 and EB-04 remain open."
+}

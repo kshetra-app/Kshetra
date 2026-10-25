@@ -88,6 +88,15 @@ jobs:
         run: npx jest --config jest.config.js --forceExit
         working-directory: data/seed
 
+      - name: W021.5 affidavit truth hardening regression
+        run: node --test scripts/tests/w021_5_affidavit_truth_hardening.test.mjs
+
+      - name: W021.5 migration 072 PostgreSQL integration test
+        run: node --test scripts/tests/w021_5_affidavit_truth_hardening.pglite.test.mjs
+
+      - name: Validate W021.5 source acquisition runner syntax
+        run: node --check scripts/acquire_w021_5_sources.mjs
+
       - name: Test census data
         run: npx jest --config jest.config.js --forceExit
         working-directory: data/census

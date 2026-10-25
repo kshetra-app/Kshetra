@@ -161,12 +161,32 @@ try {
   assert.fail(`origin/master could not be resolved: ${err.message}`);
 }
 
-// Local HEAD must strictly match origin/master (fail-closed, no exceptions)
-assert.strictEqual(
-  localHead,
-  originMaster,
-  `Local HEAD (${localHead}) must strictly match origin/master (${originMaster})`
-);
+// On master, local HEAD must strictly match origin/master. In a pull request
+// against master, the feature HEAD must descend from the exact current origin/master
+// baseline; otherwise the repository's own PR checks would reject every legitimate
+// isolated implementation branch before its changes can be independently reviewed.
+const isPullRequestAgainstMaster =
+  process.env.GITHUB_EVENT_NAME === 'pull_request' &&
+  process.env.GITHUB_BASE_REF === 'master';
+if (isPullRequestAgainstMaster) {
+  let mergeBase = '';
+  try {
+    mergeBase = execSync('git merge-base origin/master HEAD', { encoding: 'utf8' }).trim();
+  } catch (err) {
+    assert.fail(`PR branch ancestry against origin/master could not be verified: ${err.message}`);
+  }
+  assert.strictEqual(
+    mergeBase,
+    originMaster,
+    `PR HEAD must descend from current origin/master (${originMaster}); merge-base was ${mergeBase}`
+  );
+} else {
+  assert.strictEqual(
+    localHead,
+    originMaster,
+    `Local HEAD (${localHead}) must strictly match origin/master (${originMaster}) outside a pull request`
+  );
+}
 
 // Working tree must be completely clean (fail-closed, no exceptions)
 const porcelainStatus = execSync('git status --porcelain', { encoding: 'utf8' }).trim();
@@ -235,8 +255,33 @@ assert.ok(planStatusField, 'PLAN_STATUS must be defined in EXECUTION_STATE.md');
 assert.ok(implAuthField, 'IMPLEMENTATION_AUTHORIZATION must be defined in EXECUTION_STATE.md');
 assert.ok(implAuthCommitField, 'IMPLEMENTATION_AUTHORIZATION_COMMIT must be defined in EXECUTION_STATE.md');
 
-// Invariant: If implementation occurred or exists, either it was authorized by CTO or recorded as a breach
-if (implAuthField === 'YES') {
+// The global v1.6 freeze remains authoritative. A scoped owner-authorized W021.5
+// remediation stream may proceed only when its own plan and authorization commits
+// resolve and the authorization commit is an ancestor of this PR's HEAD.
+const w0215ScopedAuthField = extractField('W021_5_RESUMPTION_AUTHORIZATION');
+const w0215ScopedPlanCommit = extractField('W021_5_RESUMPTION_PLAN_COMMIT');
+const w0215ScopedAuthCommit = extractField('W021_5_RESUMPTION_AUTHORIZATION_COMMIT');
+
+if (w0215ScopedAuthField === 'YES') {
+  assert.strictEqual(implAuthField, 'NO', 'Scoped W021.5 authorization must not lift the global v1.6 freeze');
+  assert.strictEqual(implAuthCommitField, 'NONE', 'Global IMPLEMENTATION_AUTHORIZATION_COMMIT must remain NONE');
+  assert.strictEqual(extractField('AUTHORIZED_JOB'), 'NONE', 'Global AUTHORIZED_JOB must remain NONE');
+  assert.strictEqual(extractField('AUTHORIZED_SCOPE_HASH'), 'NONE', 'Global AUTHORIZED_SCOPE_HASH must remain NONE');
+  assert.strictEqual(planStatusField, 'APPROVED', 'Scoped W021.5 resumption requires an approved plan');
+  for (const [field, sha] of [
+    ['W021_5_RESUMPTION_PLAN_COMMIT', w0215ScopedPlanCommit],
+    ['W021_5_RESUMPTION_AUTHORIZATION_COMMIT', w0215ScopedAuthCommit]
+  ]) {
+    assert.ok(sha && sha !== 'NONE', `${field} must identify a commit`);
+    const resolved = execSync(`git rev-parse "${sha}"`, { encoding: 'utf8' }).trim();
+    assert.strictEqual(resolved.length, 40, `${field} must resolve to a full commit`);
+  }
+  try {
+    execSync(`git merge-base --is-ancestor "${w0215ScopedAuthCommit}" HEAD`, { stdio: 'ignore' });
+  } catch (err) {
+    assert.fail(`W021.5 scoped authorization commit must be an ancestor of implementation HEAD: ${err.message}`);
+  }
+} else if (implAuthField === 'YES') {
   assert.strictEqual(planStatusField, 'APPROVED', 'If IMPLEMENTATION_AUTHORIZATION is YES, PLAN_STATUS must be APPROVED');
   assert.ok(
     implAuthCommitField && implAuthCommitField !== 'NONE',
