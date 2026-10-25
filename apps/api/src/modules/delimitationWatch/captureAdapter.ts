@@ -159,7 +159,10 @@ export class CaptureAdapter {
     } catch (err: any) {
       // Fail-closed: record failure snapshot without overwriting prior good snapshots
       const errorOutcome: CaptureOutcome =
-        err.name === 'AbortError' || err.message?.includes('timeout')
+        err.name === 'AbortError' ||
+        err.message?.includes('timeout') ||
+        err.message?.includes('TIMEOUT') ||
+        err.message?.includes('DEADLINE_EXCEEDED')
           ? 'TIMEOUT'
           : err.message?.includes('404')
           ? 'NOT_FOUND'
@@ -315,6 +318,19 @@ export class CaptureAdapter {
         headers['If-Modified-Since'] = opts.lastModifiedHeader;
       }
 
+      let isCompleted = false;
+      const cleanup = () => {
+        if (!isCompleted) {
+          isCompleted = true;
+          clearTimeout(deadlineTimer);
+        }
+      };
+
+      const deadlineTimer = setTimeout(() => {
+        cleanup();
+        req.destroy(new Error(`DEADLINE_EXCEEDED: Overall HTTP request exceeded deadline of ${opts.timeoutMs}ms`));
+      }, opts.timeoutMs);
+
       const req = client.request(
         {
           method: 'GET',
@@ -330,6 +346,7 @@ export class CaptureAdapter {
 
           // If 304, no body expected
           if (statusCode === 304) {
+            cleanup();
             res.resume();
             return resolve({ statusCode, headers: res.headers, body: '' });
           }
@@ -340,6 +357,7 @@ export class CaptureAdapter {
           res.on('data', (chunk: Buffer) => {
             bytesReceived += chunk.length;
             if (bytesReceived > opts.maxBytes) {
+              cleanup();
               req.destroy();
               res.destroy();
               reject(new Error(`RESPONSE_SIZE_EXCEEDED (PAYLOAD_TOO_LARGE): Response exceeded maximum allowed size of ${opts.maxBytes} bytes`));
@@ -349,6 +367,7 @@ export class CaptureAdapter {
           });
 
           res.on('end', () => {
+            cleanup();
             const body = Buffer.concat(chunks).toString('utf8');
             resolve({
               statusCode,
@@ -358,17 +377,29 @@ export class CaptureAdapter {
           });
 
           res.on('error', (err) => {
+            cleanup();
             reject(err);
           });
         }
       );
 
+      req.on('socket', (socket) => {
+        socket.setTimeout(opts.timeoutMs);
+        socket.on('timeout', () => {
+          cleanup();
+          socket.destroy();
+          req.destroy(new Error(`HTTP_TIMEOUT: Socket timed out after ${opts.timeoutMs}ms`));
+        });
+      });
+
       req.on('timeout', () => {
+        cleanup();
         req.destroy();
         reject(new Error(`HTTP_TIMEOUT: Request timed out after ${opts.timeoutMs}ms`));
       });
 
       req.on('error', (err) => {
+        cleanup();
         reject(err);
       });
 

@@ -85,7 +85,7 @@ export interface IDelimitationWatchRepository {
 
   // Distributed Concurrency & Health
   acquireSourceLock(sourceId: string, lockToken: string, ttlMs?: number): Promise<boolean>;
-  releaseSourceLock(sourceId: string, lockToken: string): Promise<void>;
+  releaseSourceLock(sourceId: string, lockToken: string): Promise<boolean>;
   isDurable(): boolean;
   checkHealth(): Promise<{ healthy: boolean; details?: string }>;
 }
@@ -296,11 +296,13 @@ export class InMemoryDelimitationWatchRepository implements IDelimitationWatchRe
     return true;
   }
 
-  async releaseSourceLock(sourceId: string, lockToken: string): Promise<void> {
+  async releaseSourceLock(sourceId: string, lockToken: string): Promise<boolean> {
     const existing = this.sourceLocks.get(sourceId);
     if (existing && existing.token === lockToken) {
       this.sourceLocks.delete(sourceId);
+      return true;
     }
+    return false;
   }
 
   isDurable(): boolean {
@@ -348,13 +350,15 @@ export class PostgresDelimitationWatchRepository implements IDelimitationWatchRe
     return res.rows.length > 0;
   }
 
-  async releaseSourceLock(sourceId: string, lockToken: string): Promise<void> {
+  async releaseSourceLock(sourceId: string, lockToken: string): Promise<boolean> {
     const query = `
       UPDATE delimitation_watch_sources
       SET locked_by = NULL, locked_until = NULL
-      WHERE id = $1 AND locked_by = $2;
+      WHERE id = $1 AND locked_by = $2
+      RETURNING id;
     `;
-    await this.db.query(query, [sourceId, lockToken]);
+    const res = await this.db.query(query, [sourceId, lockToken]);
+    return res.rows.length > 0;
   }
 
   async saveSource(s: DelimitationWatchSource): Promise<void> {

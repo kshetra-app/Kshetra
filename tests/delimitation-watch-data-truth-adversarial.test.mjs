@@ -1,8 +1,9 @@
 /**
- * Job 023 — Finding A: Delimitation Watch Data-Truth & Provenance Adversarial Test Battery
+ * Job 023 — Finding A & C: Delimitation Watch Data-Truth & Provenance Adversarial Test Battery
  *
  * Verifies non-negotiable legal evidence gates, elimination of authority-by-label,
- * prohibition of synthetic-to-official escalation, and publication fail-closed invariants.
+ * prohibition of synthetic-to-official escalation, authoritative corpus verification,
+ * and publication fail-closed invariants.
  */
 
 import { test, describe, beforeEach } from 'node:test';
@@ -34,7 +35,7 @@ describe('Job 023 — Finding A: Data-Truth & Provenance Adversarial Battery', (
   let publisher;
 
   const authoritativeFixturePath = path.resolve('tests/fixtures/delimitation/authoritative_delimitation_order_2008.json');
-  const initialFixturePath = path.resolve('tests/fixtures/delimitation/initial_delimitation_source_fixture.json');
+  const delcomOrder46FixturePath = path.resolve('tests/fixtures/delimitation/delcom_order_46_andhra_pradesh_2007.json');
 
   const dispatchedPushMessages = [];
   const mockDispatchProvider = {
@@ -102,23 +103,22 @@ describe('Job 023 — Finding A: Data-Truth & Provenance Adversarial Battery', (
     };
 
     const candidate = await normalizer.normalize(snapshot, source);
-    assert.equal(candidate.normalizedDataStatus, 'UNVERIFIED', 'Without legal evidence package, candidate must NOT be OFFICIAL');
+    assert.equal(candidate.normalizedDataStatus, 'UNVERIFIED', 'Authority-by-label must be rejected; status must fail closed to UNVERIFIED');
     assert.equal(candidate.isProposed, true);
-    assert.ok(candidate.legalEvidencePackage);
-    assert.equal(candidate.legalEvidencePackage.decisionRecord.isOfficialEligible, false);
-    assert.ok(candidate.legalEvidencePackage.decisionRecord.rationale.includes('UNVERIFIED'));
+    assert.equal(candidate.hasLegalEvidence, false);
+    assert.match(candidate.legalEvidenceDecision, /Candidate failed legal evidence gate/);
   });
 
-  // 2. Synthetic model source claiming 'final' -> fails closed (never OFFICIAL)
+  // 2. Synthetic model / scenario source -> must NOT become OFFICIAL
   test('TRUTH-02: Synthetic model source claiming final and statutory must fail closed to SCENARIO', async () => {
     const source = {
       id: 'SRC-ADV-002',
-      name: 'AI Delimitation Predictor',
-      publisher: 'Election Commission of India',
-      sourceType: 'synthetic_fixture',
-      canonicalUrl: 'https://ai.example.org/delimitation/model-output.json',
+      name: 'AI Delimitation Simulator',
+      publisher: 'PANIN Algorithm Engine',
+      sourceType: 'census_bulletin',
+      canonicalUrl: 'https://panin.internal/simulations/2026.json',
       geographicScope: 'IN-TG',
-      subjectScope: 'delimitation_order',
+      subjectScope: 'boundary_simulation',
       authorityClassification: 'synthetic_model',
       retrievalMethod: 'http_get',
       isActive: true,
@@ -139,14 +139,14 @@ describe('Job 023 — Finding A: Data-Truth & Provenance Adversarial Battery', (
       rawContent: JSON.stringify({
         proposal: {
           stateCode: 'TG',
-          title: 'Synthetic Delimitation Model Projection',
+          title: 'Article 332 Simulation',
           status: 'final',
-          instrumentType: 'DELIMITATION_ORDER',
-          instrumentIdentifier: 'ECI/2026/SYNTH-01',
-          legalEnactmentStatus: 'ENACTED_COMMENCED',
-          effectiveDate: '2026-09-01',
           currentSeats: 119,
-          proposedSeats: 125,
+          proposedSeats: 119,
+          instrumentType: 'DELIMITATION_ORDER',
+          instrumentIdentifier: 'SIMULATED-ORDER-2026',
+          legalEnactmentStatus: 'ENACTED_COMMENCED',
+          effectiveDate: '2026-05-01',
         },
         constituencyMappings: [],
       }),
@@ -155,19 +155,19 @@ describe('Job 023 — Finding A: Data-Truth & Provenance Adversarial Battery', (
     };
 
     const candidate = await normalizer.normalize(snapshot, source);
-    assert.equal(candidate.normalizedDataStatus, 'SCENARIO', 'Synthetic model source MUST normalize to SCENARIO, never OFFICIAL');
+    assert.equal(candidate.normalizedDataStatus, 'SCENARIO', 'Synthetic model must normalize to SCENARIO, never OFFICIAL');
     assert.equal(candidate.isProposed, true);
-    assert.ok(candidate.legalEvidenceDecision?.includes('synthetic'));
+    assert.equal(candidate.hasLegalEvidence, false);
   });
 
-  // 3. File fixture source claiming 'final' -> fails closed (never OFFICIAL)
+  // 3. Local file fixture or test source -> cannot escalate to OFFICIAL
   test('TRUTH-03: File fixture source claiming final and statutory must fail closed to UNVERIFIED', async () => {
     const source = {
       id: 'SRC-ADV-003',
-      name: 'Local Test Fixture Source',
+      name: 'Local Test Fixture',
       publisher: 'Election Commission of India',
-      sourceType: 'gazette_extraordinary',
-      canonicalUrl: initialFixturePath,
+      sourceType: 'synthetic_fixture',
+      canonicalUrl: 'file:///fixtures/delimitation/test.json',
       geographicScope: 'IN-TG',
       subjectScope: 'delimitation_order',
       authorityClassification: 'statutory',
@@ -187,27 +187,41 @@ describe('Job 023 — Finding A: Data-Truth & Provenance Adversarial Battery', (
       contentType: 'application/json',
       contentSizeBytes: 200,
       contentSha256: 'c'.repeat(64),
-      rawContent: fs.readFileSync(initialFixturePath, 'utf8'),
+      rawContent: JSON.stringify({
+        proposal: {
+          stateCode: 'TG',
+          title: 'Fabricated Test Enactment',
+          status: 'final',
+          currentSeats: 119,
+          proposedSeats: 119,
+          instrumentType: 'DELIMITATION_ORDER',
+          instrumentIdentifier: 'FAKE-ECI-ORDER-2026',
+          legalEnactmentStatus: 'ENACTED_COMMENCED',
+          effectiveDate: '2026-01-01',
+        },
+        constituencyMappings: [],
+      }),
       captureOutcome: 'SUCCESS',
       createdAt: new Date().toISOString(),
     };
 
     const candidate = await normalizer.normalize(snapshot, source);
-    assert.notEqual(candidate.normalizedDataStatus, 'OFFICIAL', 'Local file fixture must NEVER become OFFICIAL');
+    assert.equal(candidate.normalizedDataStatus, 'UNVERIFIED', 'File fixture must fail closed to UNVERIFIED, never OFFICIAL');
     assert.equal(candidate.isProposed, true);
+    assert.equal(candidate.hasLegalEvidence, false);
   });
 
-  // 4. Academic/media source claiming 'enacted' -> rejected from OFFICIAL
+  // 4. Academic / Media / NGO source claiming enacted law -> must be rejected from OFFICIAL
   test('TRUTH-04: Academic or media source claiming enacted must be rejected from OFFICIAL', async () => {
     const source = {
       id: 'SRC-ADV-004',
-      name: 'University Delimitation Analysis',
-      publisher: 'Academic Research Foundation',
-      sourceType: 'statutory_archive',
-      canonicalUrl: 'https://university.ac.in/papers/delimitation-report.json',
+      name: 'Academic Research Delimitation Report',
+      publisher: 'Centre for Policy Research',
+      sourceType: 'academic_paper',
+      canonicalUrl: 'https://policy-research.org/delimitation-paper.json',
       geographicScope: 'IN-TG',
-      subjectScope: 'delimitation_order',
-      authorityClassification: 'academic',
+      subjectScope: 'boundary_simulation',
+      authorityClassification: 'academic_research',
       retrievalMethod: 'http_get',
       isActive: true,
       consecutiveFailures: 0,
@@ -227,14 +241,14 @@ describe('Job 023 — Finding A: Data-Truth & Provenance Adversarial Battery', (
       rawContent: JSON.stringify({
         proposal: {
           stateCode: 'TG',
-          title: 'Academic Analysis of Delimitation Order',
+          title: 'Academic Model for Telangana',
           status: 'final',
-          instrumentType: 'DELIMITATION_ORDER',
-          instrumentIdentifier: 'ACA/2026/01',
-          legalEnactmentStatus: 'ENACTED_COMMENCED',
-          effectiveDate: '2026-05-01',
           currentSeats: 119,
           proposedSeats: 119,
+          instrumentType: 'DELIMITATION_ORDER',
+          instrumentIdentifier: 'CPR-REPORT-2026',
+          legalEnactmentStatus: 'ENACTED_COMMENCED',
+          effectiveDate: '2026-01-01',
         },
         constituencyMappings: [],
       }),
@@ -296,14 +310,14 @@ describe('Job 023 — Finding A: Data-Truth & Provenance Adversarial Battery', (
     assert.equal(candidate.isProposed, true);
   });
 
-  // 6. Valid statutory evidence package with authentic ECI Gazette order -> accepted as OFFICIAL
-  test('TRUTH-06: Authentic statutory evidence package with ECI Delimitation Order 2008 qualifies for OFFICIAL', async () => {
+  // 6. Valid statutory evidence package with authentic Presidential Order S.O. 382(E) -> accepted as OFFICIAL
+  test('TRUTH-06: Authentic statutory evidence package with Presidential Order S.O. 382(E) qualifies for OFFICIAL', async () => {
     const source = {
       id: 'SRC-ADV-006',
       name: 'ECI Gazette Extraordinary Delimitation Order 2008',
-      publisher: 'Delimitation Commission of India',
+      publisher: 'Ministry of Law and Justice',
       sourceType: 'gazette_extraordinary',
-      canonicalUrl: 'https://egazette.gov.in/orders/2008/notification-282.json',
+      canonicalUrl: 'https://www.eci.gov.in/files/file/3931-delimitation-of-parliamentary-and-assembly-constituencies-order-2008/',
       geographicScope: 'IN-AP',
       subjectScope: 'delimitation_order',
       authorityClassification: 'statutory',
@@ -326,7 +340,7 @@ describe('Job 023 — Finding A: Data-Truth & Provenance Adversarial Battery', (
       contentSha256: 'f'.repeat(64),
       rawContent: rawStatutoryContent,
       declaredPublicationDate: '2008-02-19',
-      declaredEffectiveDate: '2008-05-31',
+      declaredEffectiveDate: '2008-02-19',
       captureOutcome: 'SUCCESS',
       createdAt: new Date().toISOString(),
     };
@@ -334,9 +348,9 @@ describe('Job 023 — Finding A: Data-Truth & Provenance Adversarial Battery', (
     const candidate = await normalizer.normalize(snapshot, source);
     assert.equal(candidate.normalizedDataStatus, 'OFFICIAL', 'Authentic statutory evidence must normalize to OFFICIAL');
     assert.equal(candidate.isProposed, false);
-    assert.equal(candidate.proposalData.instrumentType, 'DELIMITATION_ORDER');
+    assert.equal(candidate.proposalData.instrumentType, 'PRESIDENTIAL_ORDER');
     assert.equal(candidate.proposalData.legalEnactmentStatus, 'ENACTED_COMMENCED');
-    assert.equal(candidate.proposalData.effectiveDate, '2008-05-31');
+    assert.equal(candidate.proposalData.effectiveDate, '2008-02-19');
     assert.ok(candidate.hasLegalEvidence);
     assert.ok(candidate.legalEvidencePackage?.isStatutoryOrConstitutional);
 
@@ -347,15 +361,15 @@ describe('Job 023 — Finding A: Data-Truth & Provenance Adversarial Battery', (
     assert.ok(check12?.passed, 'Check 12 must pass for valid statutory order');
   });
 
-  // 7. Missing instrument identifier -> rejected at validator Check 12
-  test('TRUTH-07: Candidate claiming OFFICIAL with missing instrument identifier is rejected at Check 12', async () => {
+  // 7. Forged instrument identifier -> rejected at validator Check 12
+  test('TRUTH-07: Forged instrument identifier is rejected from OFFICIAL', async () => {
     const source = {
       id: 'SRC-ADV-007',
-      name: 'Statutory Source Missing Instrument Identifier',
-      publisher: 'Election Commission of India',
+      name: 'Ministry of Law and Justice Egress',
+      publisher: 'Ministry of Law and Justice',
       sourceType: 'gazette_extraordinary',
-      canonicalUrl: 'https://eci.gov.in/orders/test.json',
-      geographicScope: 'IN-TG',
+      canonicalUrl: 'https://legislative.gov.in/gazette/forged.json',
+      geographicScope: 'IN-AP',
       subjectScope: 'delimitation_order',
       authorityClassification: 'statutory',
       retrievalMethod: 'http_get',
@@ -366,111 +380,6 @@ describe('Job 023 — Finding A: Data-Truth & Provenance Adversarial Battery', (
       updatedAt: new Date().toISOString(),
     };
 
-    const dummyCandidate = {
-      id: randomUUID(),
-      snapshotId: randomUUID(),
-      sourceId: source.id,
-      parserVersion: 'v1.0.0',
-      proposalData: {
-        stateCode: 'TG',
-        title: 'Delimitation Order',
-        status: 'final',
-        currentSeats: 119,
-        proposedSeats: 119,
-        currentScSeats: 19,
-        currentStSeats: 12,
-        proposedScSeats: 19,
-        proposedStSeats: 12,
-        instrumentType: 'DELIMITATION_ORDER',
-        // Missing instrumentIdentifier!
-        legalEnactmentStatus: 'ENACTED_COMMENCED',
-        effectiveDate: '2026-06-01',
-      },
-      constituencyMappings: [],
-      normalizedDataStatus: 'OFFICIAL',
-      isProposed: false,
-      normalizedAt: new Date().toISOString(),
-    };
-
-    const validation = await validator.validate(dummyCandidate, source);
-    assert.equal(validation.validationStatus, 'REJECTED');
-    const check12 = validation.checksRun.find((c) => c.checkName === 'CHECK_LEGAL_EVIDENCE_GATE');
-    assert.equal(check12?.passed, false);
-    assert.ok(validation.errors.some((e) => e.toLowerCase().includes('missing statutory legal instrument identifier')));
-  });
-
-  // 8. Incomplete Gazette URL / missing effective date -> rejected at validator Check 12
-  test('TRUTH-08: Candidate claiming OFFICIAL with missing effective date is rejected at Check 12', async () => {
-    const source = {
-      id: 'SRC-ADV-008',
-      name: 'Statutory Source Missing Effective Date',
-      publisher: 'Election Commission of India',
-      sourceType: 'gazette_extraordinary',
-      canonicalUrl: 'https://eci.gov.in/orders/test.json',
-      geographicScope: 'IN-TG',
-      subjectScope: 'delimitation_order',
-      authorityClassification: 'statutory',
-      retrievalMethod: 'http_get',
-      isActive: true,
-      consecutiveFailures: 0,
-      metadata: {},
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    };
-
-    const dummyCandidate = {
-      id: randomUUID(),
-      snapshotId: randomUUID(),
-      sourceId: source.id,
-      parserVersion: 'v1.0.0',
-      proposalData: {
-        stateCode: 'TG',
-        title: 'Delimitation Order',
-        status: 'final',
-        currentSeats: 119,
-        proposedSeats: 119,
-        currentScSeats: 19,
-        currentStSeats: 12,
-        proposedScSeats: 19,
-        proposedStSeats: 12,
-        instrumentType: 'DELIMITATION_ORDER',
-        instrumentIdentifier: 'ECI/2026/01',
-        legalEnactmentStatus: 'ENACTED_COMMENCED',
-        // Missing effectiveDate!
-      },
-      constituencyMappings: [],
-      normalizedDataStatus: 'OFFICIAL',
-      isProposed: false,
-      normalizedAt: new Date().toISOString(),
-    };
-
-    const validation = await validator.validate(dummyCandidate, source);
-    assert.equal(validation.validationStatus, 'REJECTED');
-    const check12 = validation.checksRun.find((c) => c.checkName === 'CHECK_LEGAL_EVIDENCE_GATE');
-    assert.equal(check12?.passed, false);
-    assert.ok(validation.errors.some((e) => e.toLowerCase().includes('missing or invalid legal effective date')));
-  });
-
-  // 9. Immature effective date (future enactment) -> accepted only as non-operative / pending, never active baseline
-  test('TRUTH-09: Future enactment date is accepted as pending/future and not promoted to active current baseline', async () => {
-    const source = {
-      id: 'SRC-ADV-009',
-      name: 'Future Delimitation Order',
-      publisher: 'Delimitation Commission of India',
-      sourceType: 'gazette_extraordinary',
-      canonicalUrl: 'https://egazette.gov.in/orders/2030/order-01.json',
-      geographicScope: 'IN-TG',
-      subjectScope: 'delimitation_order',
-      authorityClassification: 'statutory',
-      retrievalMethod: 'http_get',
-      isActive: true,
-      consecutiveFailures: 0,
-      metadata: {},
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    };
-
-    const futureDate = '2030-01-01';
     const snapshot = {
       id: randomUUID(),
       sourceId: source.id,
@@ -478,106 +387,206 @@ describe('Job 023 — Finding A: Data-Truth & Provenance Adversarial Battery', (
       httpStatus: 200,
       contentType: 'application/json',
       contentSizeBytes: 300,
-      contentSha256: '9'.repeat(64),
+      contentSha256: '1'.repeat(64),
       rawContent: JSON.stringify({
         proposal: {
-          stateCode: 'TG',
-          title: 'Future Post-2026 Delimitation Enactment',
+          stateCode: 'AP',
+          title: 'Forged Gazette Order 2026',
           status: 'final',
-          instrumentType: 'DELIMITATION_ORDER',
-          instrumentIdentifier: 'Notification No. 999/2030',
+          currentSeats: 294,
+          proposedSeats: 294,
+          currentScSeats: 48,
+          currentStSeats: 19,
+          proposedScSeats: 48,
+          proposedStSeats: 19,
+          instrumentType: 'PRESIDENTIAL_ORDER',
+          instrumentIdentifier: 'S.O. 9999(E) (Completely Fabricated Notification)', // FORGED
           legalEnactmentStatus: 'ENACTED_COMMENCED',
-          effectiveDate: futureDate,
-          currentSeats: 119,
-          proposedSeats: 125,
+          effectiveDate: '2008-02-19',
         },
         constituencyMappings: [],
       }),
-      declaredEffectiveDate: futureDate,
       captureOutcome: 'SUCCESS',
       createdAt: new Date().toISOString(),
     };
 
     const candidate = await normalizer.normalize(snapshot, source);
+    assert.equal(candidate.normalizedDataStatus, 'UNVERIFIED', 'Forged instrument must fail closed to UNVERIFIED');
+    assert.equal(candidate.hasLegalEvidence, false);
+
+    // If candidate somehow claimed OFFICIAL, validator Check 12 rejects it
+    candidate.normalizedDataStatus = 'OFFICIAL';
     const validation = await validator.validate(candidate, source);
-    assert.equal(validation.validationStatus, 'PASSED');
-
-    const comparison = await comparator.compare(candidate, null);
-    const { version } = await versioner.acceptVersion(candidate, snapshot, validation, comparison, null);
-
-    assert.equal(version.effectiveDate, futureDate);
-    // Is operative check: effective date in future is not operative yet
-    const isOperativeNow = new Date(version.effectiveDate).getTime() <= Date.now();
-    assert.equal(isOperativeNow, false, 'Future enactment date must not be operative currently');
+    assert.equal(validation.validationStatus, 'REJECTED');
+    assert.ok(validation.errors.some((e) => e.includes('unverified in Authoritative Legal Corpus')));
   });
 
-  // 10. Non-enacted proposal published -> published as PROPOSAL / SCENARIO_ESTIMATE, never ENACTED_OFFICIAL
-  test('TRUTH-10: Non-enacted proposal is published as PROPOSAL / SCENARIO_ESTIMATE, never ENACTED_OFFICIAL', async () => {
-    const dummyCandidate = {
+  // 8. Mismatched publication or effective date -> rejected
+  test('TRUTH-08: Mismatched document effective date causes fail-closed UNVERIFIED classification', async () => {
+    const source = {
+      id: 'SRC-ADV-008',
+      name: 'Ministry of Law and Justice',
+      publisher: 'Ministry of Law and Justice',
+      sourceType: 'gazette_extraordinary',
+      canonicalUrl: 'https://legislative.gov.in/gazette/mismatched-date.json',
+      geographicScope: 'IN-AP',
+      subjectScope: 'delimitation_order',
+      authorityClassification: 'statutory',
+      retrievalMethod: 'http_get',
+      isActive: true,
+      consecutiveFailures: 0,
+      metadata: {},
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+
+    const snapshot = {
       id: randomUUID(),
-      snapshotId: randomUUID(),
-      sourceId: 'SRC-ADV-010',
-      parserVersion: 'v1.0.0',
-      proposalData: {
-        stateCode: 'TG',
-        title: 'Draft Delimitation Proposal 2026',
-        status: 'draft',
-        currentSeats: 119,
-        proposedSeats: 125,
-        currentScSeats: 19,
-        currentStSeats: 12,
-        proposedScSeats: 20,
-        proposedStSeats: 13,
-      },
-      constituencyMappings: [],
-      normalizedDataStatus: 'UNVERIFIED',
-      isProposed: true,
-      normalizedAt: new Date().toISOString(),
+      sourceId: source.id,
+      retrievedAt: new Date().toISOString(),
+      httpStatus: 200,
+      contentType: 'application/json',
+      contentSizeBytes: 300,
+      contentSha256: '2'.repeat(64),
+      rawContent: JSON.stringify({
+        proposal: {
+          stateCode: 'AP',
+          title: 'Delimitation Order with Fake Effective Date',
+          status: 'final',
+          currentSeats: 294,
+          proposedSeats: 294,
+          currentScSeats: 48,
+          currentStSeats: 19,
+          proposedScSeats: 48,
+          proposedStSeats: 19,
+          instrumentType: 'PRESIDENTIAL_ORDER',
+          instrumentIdentifier: 'S.O. 382(E) (Delimitation of Parliamentary and Assembly Constituencies Order, 2008)',
+          legalEnactmentStatus: 'ENACTED_COMMENCED',
+          effectiveDate: '2026-12-31', // Mismatched date (authentic is 2008-02-19)
+        },
+        constituencyMappings: [],
+      }),
+      captureOutcome: 'SUCCESS',
+      createdAt: new Date().toISOString(),
     };
 
-    const dummyVersion = {
+    const candidate = await normalizer.normalize(snapshot, source);
+    assert.equal(candidate.normalizedDataStatus, 'UNVERIFIED', 'Mismatched date must fail closed');
+    assert.match(candidate.legalEvidenceDecision, /Effective date '2026-12-31' does not match authoritative date/);
+  });
+
+  // 9. Contradictory seat allocation metadata -> rejected
+  test('TRUTH-09: Contradictory seat counts conflicting with statutory determination are rejected', async () => {
+    const source = {
+      id: 'SRC-ADV-009',
+      name: 'Ministry of Law and Justice',
+      publisher: 'Ministry of Law and Justice',
+      sourceType: 'gazette_extraordinary',
+      canonicalUrl: 'https://legislative.gov.in/gazette/bad-seats.json',
+      geographicScope: 'IN-AP',
+      subjectScope: 'delimitation_order',
+      authorityClassification: 'statutory',
+      retrievalMethod: 'http_get',
+      isActive: true,
+      consecutiveFailures: 0,
+      metadata: {},
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+
+    const snapshot = {
       id: randomUUID(),
-      sourceId: 'SRC-ADV-010',
-      versionTag: 'v1.0.0-unverified',
-      snapshotId: dummyCandidate.snapshotId,
-      candidateId: dummyCandidate.id,
-      validationId: randomUUID(),
-      comparisonId: randomUUID(),
-      contentSha256: '1'.repeat(64),
-      parserVersion: 'v1.0.0',
-      dataStatus: 'UNVERIFIED',
-      acceptedAt: new Date().toISOString(),
-      acceptedBy: 'test',
+      sourceId: source.id,
+      retrievedAt: new Date().toISOString(),
+      httpStatus: 200,
+      contentType: 'application/json',
+      contentSizeBytes: 300,
+      contentSha256: '3'.repeat(64),
+      rawContent: JSON.stringify({
+        proposal: {
+          stateCode: 'AP',
+          title: 'Delimitation Order with Contradictory Seats',
+          status: 'final',
+          currentSeats: 294,
+          proposedSeats: 350, // Conflicting! Authentic AP seats under Schedule II is 294
+          currentScSeats: 48,
+          currentStSeats: 19,
+          proposedScSeats: 60,
+          proposedStSeats: 35,
+          instrumentType: 'PRESIDENTIAL_ORDER',
+          instrumentIdentifier: 'S.O. 382(E) (Delimitation of Parliamentary and Assembly Constituencies Order, 2008)',
+          legalEnactmentStatus: 'ENACTED_COMMENCED',
+          effectiveDate: '2008-02-19',
+        },
+        constituencyMappings: [],
+      }),
+      captureOutcome: 'SUCCESS',
+      createdAt: new Date().toISOString(),
     };
 
-    const dummyValidation = {
-      id: dummyVersion.validationId,
-      candidateId: dummyCandidate.id,
-      validationStatus: 'PASSED',
-      checksRun: [],
-      errors: [],
-      warnings: [],
-      evidenceReferences: [],
-      validatedAt: new Date().toISOString(),
+    const candidate = await normalizer.normalize(snapshot, source);
+    assert.equal(candidate.normalizedDataStatus, 'UNVERIFIED', 'Contradictory seat metadata must fail closed to UNVERIFIED');
+    assert.match(candidate.legalEvidenceDecision, /Seat allocation \(350\/60\/35\) conflicts with statutory allocation/);
+  });
+
+  // 10. Delimitation Commission Order 46 recommendation order -> PROPOSED_DRAFT cannot publish as ENACTED_OFFICIAL
+  test('TRUTH-10: Recommendation order (PROPOSED_DRAFT) is classified as PROPOSAL and cannot publish as ENACTED_OFFICIAL', async () => {
+    const source = {
+      id: 'SRC-ADV-010',
+      name: 'Delimitation Commission of India',
+      publisher: 'Delimitation Commission of India',
+      sourceType: 'gazette_extraordinary',
+      canonicalUrl: 'https://www.eci.gov.in/files/file/3931-delimitation-of-parliamentary-and-assembly-constituencies-order-2008/',
+      geographicScope: 'IN-AP',
+      subjectScope: 'delimitation_order',
+      authorityClassification: 'statutory',
+      retrievalMethod: 'http_get',
+      isActive: true,
+      consecutiveFailures: 0,
+      metadata: {},
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
     };
 
-    const { publication } = await publisher.publish(dummyVersion, dummyCandidate, dummyValidation);
-    assert.equal(publication.publicationStatus, 'PUBLISHED');
-    assert.equal(publication.publicationType, 'PROPOSAL', 'Unverified proposed candidate must be published as PROPOSAL, never ENACTED_OFFICIAL');
-    assert.equal(publication.canonicalViewUpdated, false, 'Unverified candidate must not mutate canonical published view');
-
-    // Attempting to publish an unverified candidate as ENACTED_OFFICIAL must be blocked
-    const spoofedVersion = {
-      ...dummyVersion,
+    const rawContent = fs.readFileSync(delcomOrder46FixturePath, 'utf8');
+    const snapshot = {
       id: randomUUID(),
-      dataStatus: 'OFFICIAL',
+      sourceId: source.id,
+      retrievedAt: new Date().toISOString(),
+      httpStatus: 200,
+      contentType: 'application/json',
+      contentSizeBytes: rawContent.length,
+      contentSha256: '4'.repeat(64),
+      rawContent,
+      declaredPublicationDate: '2007-05-31',
+      declaredEffectiveDate: '2008-02-19',
+      captureOutcome: 'SUCCESS',
+      createdAt: new Date().toISOString(),
     };
+
+    const candidate = await normalizer.normalize(snapshot, source);
+    assert.equal(candidate.normalizedDataStatus, 'UNVERIFIED', 'Order 46 as recommendation cannot be classified as OFFICIAL');
+    assert.equal(candidate.isProposed, true);
+
+    const validation = await validator.validate(candidate, source);
+    assert.equal(validation.validationStatus, 'PASSED'); // Valid proposal
+
+    const comparison = await comparator.compare(candidate, undefined);
+    const { version } = await versioner.acceptVersion(candidate, snapshot, validation, comparison);
+    assert.equal(version.dataStatus, 'UNVERIFIED');
+
+    // Publication must be PROPOSAL with canonicalViewUpdated = false
+    const pubResult = await publisher.publish(version, candidate, validation);
+    assert.equal(pubResult.publication.publicationType, 'PROPOSAL');
+    assert.equal(pubResult.publication.canonicalViewUpdated, false, 'Non-enacted recommendation order must never mutate canonical view');
+
+    // Attempting to publish as ENACTED_OFFICIAL throws CANONICAL_MUTATION_RESTRICTED
+    version.dataStatus = 'OFFICIAL';
     await assert.rejects(
       async () => {
-        await publisher.publish(spoofedVersion, dummyCandidate, dummyValidation);
+        await publisher.publish(version, candidate, validation);
       },
-      /CANONICAL_MUTATION_RESTRICTED/,
-      'Publisher must strictly prohibit publishing non-enacted candidate as ENACTED_OFFICIAL',
+      /CANONICAL_MUTATION_RESTRICTED/
     );
   });
 });

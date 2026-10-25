@@ -374,6 +374,10 @@ export function createPinnedAgent(
       minVersion: 'TLSv1.2',
       keepAlive: false,
       timeout,
+      checkServerIdentity: (host, cert) => {
+        // Enforce TLS certificate validation strictly against original hostname
+        return tls.checkServerIdentity(hostname, cert);
+      },
     });
 
     (agent as any).createConnection = (opts: any, oncreate: any) => {
@@ -381,6 +385,9 @@ export function createPinnedAgent(
         ...opts,
         host: pinnedIp, // Direct IP literal eliminates ambient DNS lookup & defeats DNS rebinding
         servername: hostname, // Hostname in SNI for standard TLS certificate verification
+        checkServerIdentity: (host: string, cert: any) => {
+          return tls.checkServerIdentity(hostname, cert);
+        },
       };
       return tls.connect(socketOpts, oncreate);
     };

@@ -20,16 +20,8 @@ let watchRepository: IDelimitationWatchRepository | null = null;
 export function getWatchRepository(): IDelimitationWatchRepository {
   if (!watchRepository) {
     if (process.env.DATABASE_URL) {
-      try {
-        const { Pool } = require('pg');
-        const pool = new Pool({ connectionString: process.env.DATABASE_URL });
-        watchRepository = new PostgresDelimitationWatchRepository({
-          query: async (sql: string, params?: any[]) => {
-            const res = await pool.query(sql, params);
-            return { rows: res.rows };
-          },
-        });
-      } catch {
+      if (process.env.DATABASE_URL.startsWith('pglite://')) {
+        // Explicit PGlite connection for fast test suites
         try {
           const { PGlite } = require('@electric-sql/pglite');
           const pglite = new PGlite();
@@ -39,8 +31,25 @@ export function getWatchRepository(): IDelimitationWatchRepository {
               return { rows: res.rows };
             },
           });
-        } catch {
-          throw new Error('PERSISTENCE_CONFIGURATION_ERROR: Neither pg nor @electric-sql/pglite is available to connect to PostgreSQL.');
+        } catch (err: any) {
+          throw new Error(`PERSISTENCE_CONFIGURATION_ERROR: Failed to initialize PGlite: ${err.message}`);
+        }
+      } else {
+        // Real PostgreSQL server connection via pg.Pool
+        try {
+          const { Pool } = require('pg');
+          const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+          pool.on('error', (err: any) => {
+            console.error('[DelimitationWatch] Unexpected error on idle database client', err);
+          });
+          watchRepository = new PostgresDelimitationWatchRepository({
+            query: async (sql: string, params?: any[]) => {
+              const res = await pool.query(sql, params);
+              return { rows: res.rows };
+            },
+          });
+        } catch (err: any) {
+          throw new Error(`PERSISTENCE_CONFIGURATION_ERROR: Failed to initialize PostgreSQL pool: ${err.message}`);
         }
       }
     } else if (process.env.NODE_ENV === 'test') {

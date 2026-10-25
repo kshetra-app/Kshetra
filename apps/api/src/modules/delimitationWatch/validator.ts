@@ -25,6 +25,7 @@ import type {
   ValidationCheckResult,
 } from '@kshetra/shared';
 import type { IDelimitationWatchRepository } from './persistence';
+import { AUTHORITATIVE_LEGAL_CORPUS } from './normalizer';
 
 // Approved canonical 2-letter Indian state / UT codes
 const CANONICAL_STATE_CODES = new Set([
@@ -266,6 +267,15 @@ export class CandidateValidator {
       if (enactmentStatus !== 'ENACTED_COMMENCED') {
         legalGatePassed = false;
         errors.push(`LEGAL_EVIDENCE_ERROR: Candidate enactment status is '${enactmentStatus}', must be 'ENACTED_COMMENCED' for OFFICIAL status`);
+      }
+      // Authoritative Legal Corpus Verification Check
+      const corpusEntry = instrumentId ? AUTHORITATIVE_LEGAL_CORPUS[instrumentId] : undefined;
+      if (!corpusEntry) {
+        legalGatePassed = false;
+        errors.push(`LEGAL_EVIDENCE_ERROR: Instrument '${instrumentId}' is unverified in Authoritative Legal Corpus`);
+      } else if (corpusEntry.status !== 'ENACTED_COMMENCED') {
+        legalGatePassed = false;
+        errors.push(`LEGAL_EVIDENCE_ERROR: Authoritative status of '${instrumentId}' is '${corpusEntry.status}', not 'ENACTED_COMMENCED'`);
       }
     } else if (pkg) {
       evidenceReferences.push(`legal_instrument:${pkg.instrumentIdentifier || 'unspecified'}`);

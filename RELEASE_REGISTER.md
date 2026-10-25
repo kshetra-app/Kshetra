@@ -28,7 +28,7 @@
 
 
 | `v0.1.0-w022-pending` | Not released — source only | Outbound Webhooks & Event Dispatching Engine | N/A | N/A | v1 | `3ac3f1c0c14d51d60bab9f9d3e88a08716466124` (existing source; not a release coordinate) | IMPLEMENTATION PERMITTED / INDEPENDENT VERIFICATION PENDING / STAGING EXECUTION NOT AUTHORIZED / PRODUCTION AIR-GAPPED | BE+SEC+QA | NOT RELEASED — no staging or production deployment evidence claimed |
-| `v0.1.0-job023-pending` | Not released — source only | Delimitation Watch Engine (8-Stage Lifecycle) | N/A | N/A | v1 | `2f01a20` | REMEDIATED / TESTED / READY FOR INDEPENDENT CTO ADJUDICATION — RELEASE HOLD ACTIVE (Staging execution strictly blocked; Production strictly air-gapped) | DATA | NOT RELEASED — Staging execution blocked pending separate CTO authorization; Production strictly air-gapped |
+| `v0.1.0-job023-pending` | Not released — source only | Delimitation Watch Engine (8-Stage Lifecycle, Authoritative Legal Corpus, SSRF Hardening & PostgreSQL 16 Server Verification) | N/A | N/A | v1 | Pending Submission Commit (Lineage `ca919ce362d200407ad253848a2611982cb9872a` -> `a9d468680111b70f53f006bc2c56c64825639fef`) | REMEDIATED / TESTED / READY FOR INDEPENDENT CTO ADJUDICATION (ROUND 2) — RELEASE HOLD ACTIVE (Staging execution strictly blocked; Production strictly air-gapped) | DATA | NOT RELEASED — Staging execution blocked pending separate CTO authorization; Production strictly air-gapped |
 
 
 ### Release Size & Performance Gates

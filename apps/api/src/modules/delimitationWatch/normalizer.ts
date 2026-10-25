@@ -7,7 +7,8 @@
  * - Deterministic parsing using parser version 'v1.0.0'
  * - Preserves provenance and source document references
  * - Strict Data-Truth Invariant: Eliminates authority-by-label
- * - Mandatory Legal Evidence Gate evaluation (prohibits synthetic-to-official escalation)
+ * - Mandatory Evidence-Based Legal Gate evaluation (prohibits synthetic-to-official escalation)
+ * - Verifies candidate against Authoritative Legal Corpus
  * - Ignores/overrides client-supplied dataStatus claims
  * - Preserves uncertainty: defaults to UNVERIFIED or SCENARIO rather than guessing
  */
@@ -29,15 +30,108 @@ import type { IDelimitationWatchRepository } from './persistence';
 export const CURRENT_PARSER_VERSION = 'v1.0.0';
 
 // Approved statutory/constitutional issuing authorities
-const APPROVED_OFFICIAL_PUBLISHERS = new Set([
+export const APPROVED_OFFICIAL_PUBLISHERS = new Set([
+  'President of India',
+  'Ministry of Law and Justice',
   'Delimitation Commission of India',
   'Election Commission of India',
-  'Ministry of Law and Justice',
-  'Government of India',
   'Parliament of India',
+  'Government of India',
   'Chief Electoral Officer',
   'The Gazette of India',
 ]);
+
+export interface AuthoritativeLegalInstrument {
+  instrumentIdentifier: string;
+  instrumentType: LegalInstrumentType;
+  jurisdiction: string;
+  publishers: string[];
+  publicationDate: string; // ISO date 'YYYY-MM-DD'
+  effectiveDate: string; // ISO date 'YYYY-MM-DD'
+  status: LegalEnactmentStatus;
+  statutoryAuthority: string;
+  seatConstraints?: {
+    totalSeats: number;
+    scSeats: number;
+    stSeats: number;
+  };
+  officialSourceUrl: string;
+  isOperative: boolean;
+}
+
+/**
+ * Authoritative Legal Instrument Corpus
+ * Canonical repository of verified statutory delimitation instruments.
+ */
+export const AUTHORITATIVE_LEGAL_CORPUS: Record<string, AuthoritativeLegalInstrument> = {
+  // 1. Presidential Order S.O. 382(E) / Delimitation Order 2008 Schedule II (AP)
+  'S.O. 382(E) (Delimitation of Parliamentary and Assembly Constituencies Order, 2008)': {
+    instrumentIdentifier: 'S.O. 382(E) (Delimitation of Parliamentary and Assembly Constituencies Order, 2008)',
+    instrumentType: 'PRESIDENTIAL_ORDER',
+    jurisdiction: 'AP',
+    publishers: ['President of India', 'Ministry of Law and Justice', 'Election Commission of India', 'Government of India', 'The Gazette of India'],
+    publicationDate: '2008-02-19',
+    effectiveDate: '2008-02-19',
+    status: 'ENACTED_COMMENCED',
+    statutoryAuthority: 'Delimitation Act, 2002, Section 10(2)',
+    seatConstraints: {
+      totalSeats: 294,
+      scSeats: 48,
+      stSeats: 19,
+    },
+    officialSourceUrl: 'https://www.eci.gov.in/files/file/3931-delimitation-of-parliamentary-and-assembly-constituencies-order-2008/',
+    isOperative: true,
+  },
+  // 2. Delimitation Commission of India Order No. 46 (Andhra Pradesh, 2007)
+  'Notification No. 282/AP/2007-III (Order No. 46)': {
+    instrumentIdentifier: 'Notification No. 282/AP/2007-III (Order No. 46)',
+    instrumentType: 'DELIMITATION_ORDER',
+    jurisdiction: 'AP',
+    publishers: ['Delimitation Commission of India', 'The Gazette of India'],
+    publicationDate: '2007-05-31',
+    effectiveDate: '2008-02-19', // Commenced upon S.O. 382(E)
+    status: 'PROPOSED_DRAFT',
+    statutoryAuthority: 'Delimitation Act, 2002, Section 10(1)',
+    seatConstraints: {
+      totalSeats: 294,
+      scSeats: 48,
+      stSeats: 19,
+    },
+    officialSourceUrl: 'https://www.eci.gov.in/files/file/3931-delimitation-of-parliamentary-and-assembly-constituencies-order-2008/',
+    isOperative: true,
+  },
+  // 3. ECI Polavaram Boundary Amendment Notification (2018)
+  'Notification No. 282/AP/2018(DEL)': {
+    instrumentIdentifier: 'Notification No. 282/AP/2018(DEL)',
+    instrumentType: 'GAZETTE_NOTIFICATION',
+    jurisdiction: 'AP',
+    publishers: ['Election Commission of India', 'The Gazette of India'],
+    publicationDate: '2018-09-24',
+    effectiveDate: '2018-09-24',
+    status: 'ENACTED_COMMENCED',
+    statutoryAuthority: 'Delimitation Act, 2002, Section 9(1)(b) read with APRA 2014 Sections 15 & 26',
+    officialSourceUrl: 'https://www.eci.gov.in/',
+    isOperative: true,
+  },
+  // 4. Andhra Pradesh Reorganisation Act, 2014 (Schedule XXXI Telangana)
+  'Andhra Pradesh Reorganisation Act, 2014 (Schedule XXXI)': {
+    instrumentIdentifier: 'Andhra Pradesh Reorganisation Act, 2014 (Schedule XXXI)',
+    instrumentType: 'REORGANISATION_ACT',
+    jurisdiction: 'TG',
+    publishers: ['Parliament of India', 'Ministry of Law and Justice', 'Government of India'],
+    publicationDate: '2014-03-01',
+    effectiveDate: '2014-06-02',
+    status: 'ENACTED_COMMENCED',
+    statutoryAuthority: 'Constitution of India, Article 3 & APRA 2014 Section 15',
+    seatConstraints: {
+      totalSeats: 119,
+      scSeats: 19,
+      stSeats: 12,
+    },
+    officialSourceUrl: 'https://legislative.gov.in/',
+    isOperative: true,
+  },
+};
 
 export class Normalizer {
   private readonly repo: IDelimitationWatchRepository;
@@ -74,9 +168,15 @@ export class Normalizer {
     const proposedStSeats = Number(rawProposal.proposedStSeats ?? rawProposal.proposed_st_seats ?? 0);
 
     const instrumentType: LegalInstrumentType = rawProposal.instrumentType || rawProposal.instrument_type || 'UNKNOWN';
-    const instrumentIdentifier: string | undefined = rawProposal.instrumentIdentifier || rawProposal.instrument_identifier || rawProposal.orderNumber || rawProposal.order_number;
-    const legalEnactmentStatus: LegalEnactmentStatus = rawProposal.legalEnactmentStatus || rawProposal.legal_enactment_status || 'UNVERIFIED';
-    const effectiveDate: string | undefined = rawProposal.effectiveDate || rawProposal.effective_date || snapshot.declaredEffectiveDate;
+    const instrumentIdentifier: string | undefined =
+      rawProposal.instrumentIdentifier ||
+      rawProposal.instrument_identifier ||
+      rawProposal.orderNumber ||
+      rawProposal.order_number;
+    const legalEnactmentStatus: LegalEnactmentStatus =
+      rawProposal.legalEnactmentStatus || rawProposal.legal_enactment_status || 'UNVERIFIED';
+    const effectiveDate: string | undefined =
+      rawProposal.effectiveDate || rawProposal.effective_date || snapshot.declaredEffectiveDate;
 
     const proposalData: DelimitationProposalCandidate = {
       stateCode,
@@ -131,11 +231,12 @@ export class Normalizer {
       };
     });
 
-    // 3. Finding A: Strict Legal Evidence Gate Evaluation
+    // 3. Evidence-Based Legal Gate Evaluation
     // Non-Negotiable Invariants:
-    // a. Authority-by-label elimination: statutory classification + status: final does NOT establish OFFICIAL.
+    // a. Authority-by-label eliminated: statutory classification + status: final does NOT establish OFFICIAL.
     // b. Synthetic-to-official prohibition: file_fixture, synthetic_model, mock URLs, or local files CANNOT become OFFICIAL.
-    // c. Client-supplied override rejection: rawProposal.dataStatus = 'OFFICIAL' is ignored.
+    // c. Client-supplied override rejection: client rawProposal.dataStatus = 'OFFICIAL' is ignored.
+    // d. Corpus-backed verification: Instrument must reconcile with authoritative legal determinations.
     const isSyntheticOrFixture =
       source.sourceType === 'synthetic_fixture' ||
       source.authorityClassification === 'synthetic_model' ||
@@ -159,7 +260,46 @@ export class Normalizer {
     const hasExplicitEffectiveDate = Boolean(effectiveDate && effectiveDate.trim().length > 0 && !isNaN(new Date(effectiveDate).getTime()));
     const isMarkedFinal = proposalStatus === 'final';
 
-    // A candidate is eligible for OFFICIAL ONLY when ALL 8 conditions are met simultaneously
+    // Cross-check against Authoritative Legal Corpus
+    const matchedCorpusInstrument = instrumentIdentifier ? AUTHORITATIVE_LEGAL_CORPUS[instrumentIdentifier] : undefined;
+
+    let corpusReconciled = false;
+    let corpusReconciliationDeficit: string | undefined;
+
+    if (matchedCorpusInstrument) {
+      const pubMatch = matchedCorpusInstrument.publishers.includes(source.publisher);
+      const effDateMatch = !effectiveDate || effectiveDate.startsWith(matchedCorpusInstrument.effectiveDate);
+      const jurMatch = matchedCorpusInstrument.jurisdiction === stateCode;
+      const statusMatch = matchedCorpusInstrument.status === 'ENACTED_COMMENCED';
+
+      let seatMatch = true;
+      if (matchedCorpusInstrument.seatConstraints) {
+        const sc = matchedCorpusInstrument.seatConstraints;
+        if (
+          proposedSeats !== sc.totalSeats ||
+          proposedScSeats !== sc.scSeats ||
+          proposedStSeats !== sc.stSeats
+        ) {
+          seatMatch = false;
+        }
+      }
+
+      if (pubMatch && effDateMatch && jurMatch && statusMatch && seatMatch && matchedCorpusInstrument.isOperative) {
+        corpusReconciled = true;
+      } else {
+        const issues: string[] = [];
+        if (!pubMatch) issues.push(`Publisher '${source.publisher}' does not match authoritative issuers [${matchedCorpusInstrument.publishers.join(', ')}]`);
+        if (!effDateMatch) issues.push(`Effective date '${effectiveDate}' does not match authoritative date '${matchedCorpusInstrument.effectiveDate}'`);
+        if (!jurMatch) issues.push(`Jurisdiction '${stateCode}' does not match instrument jurisdiction '${matchedCorpusInstrument.jurisdiction}'`);
+        if (!statusMatch) issues.push(`Authoritative instrument status is '${matchedCorpusInstrument.status}', not ENACTED_COMMENCED`);
+        if (!seatMatch) issues.push(`Seat allocation (${proposedSeats}/${proposedScSeats}/${proposedStSeats}) conflicts with statutory allocation (${matchedCorpusInstrument.seatConstraints?.totalSeats}/${matchedCorpusInstrument.seatConstraints?.scSeats}/${matchedCorpusInstrument.seatConstraints?.stSeats})`);
+        corpusReconciliationDeficit = issues.join('; ');
+      }
+    } else if (hasInstrumentId) {
+      corpusReconciliationDeficit = `Instrument identifier '${instrumentIdentifier}' is unverified in Authoritative Legal Corpus`;
+    }
+
+    // A candidate is eligible for OFFICIAL ONLY when ALL conditions are met simultaneously
     const isOfficialEligible =
       !isSyntheticOrFixture &&
       hasStatutoryAuthority &&
@@ -168,7 +308,8 @@ export class Normalizer {
       isEnactedInstrumentType &&
       isOperativeStatus &&
       hasExplicitEffectiveDate &&
-      isMarkedFinal;
+      isMarkedFinal &&
+      corpusReconciled;
 
     let normalizedDataStatus: W012DataStatus;
     let isProposed: boolean;
@@ -179,9 +320,9 @@ export class Normalizer {
       normalizedDataStatus = 'OFFICIAL';
       isProposed = false;
       ruleApplied = 'RULE_STATUTORY_ENACTED_LEGAL_EVIDENCE_PASSED';
-      decisionRationale = `Legitimate official enactment confirmed: instrument '${instrumentIdentifier}' (${instrumentType}) published by '${source.publisher}' effective on ${effectiveDate}.`;
+      decisionRationale = `Legitimate official enactment confirmed: instrument '${instrumentIdentifier}' (${instrumentType}) published by '${source.publisher}' verified in Authoritative Legal Corpus with effective date ${effectiveDate}.`;
     } else {
-      // Determine fail-closed status: SCENARIO or UNVERIFIED
+      // Fail-closed status: SCENARIO or UNVERIFIED
       isProposed = true;
 
       if (source.authorityClassification === 'synthetic_model' || rawProposal.isScenario) {
@@ -201,6 +342,7 @@ export class Normalizer {
         if (!isOperativeStatus) deficits.push(`Enactment status is '${legalEnactmentStatus}', not 'ENACTED_COMMENCED'`);
         if (!hasExplicitEffectiveDate) deficits.push('Missing or invalid legal effective date');
         if (!isMarkedFinal) deficits.push('Proposal is marked as draft / consultation, not final');
+        if (!corpusReconciled && corpusReconciliationDeficit) deficits.push(corpusReconciliationDeficit);
 
         decisionRationale = `Candidate failed legal evidence gate and is classified as UNVERIFIED. Deficits: ${deficits.join('; ')}.`;
       }

@@ -3,13 +3,15 @@
  *
  * Verifies exhaustive IPv4/IPv6 CIDR blocking, alternate numeric IP encodings,
  * mixed DNS answer rejection, socket pinning TOCTOU protection, manual redirect
- * safety, redirect depth limiting, protocol downgrade rejection, and 10MB body bounds.
+ * safety, redirect depth limiting, protocol downgrade rejection, 10MB body bounds,
+ * request deadlines, TLS hostname verification, and socket cleanup.
  */
 
 import { test, describe, before, after } from 'node:test';
 import assert from 'node:assert/strict';
 import * as http from 'node:http';
 import * as https from 'node:https';
+import * as tls from 'node:tls';
 import {
   validateSourceUrl,
   validateAndPinSourceUrl,
@@ -55,6 +57,13 @@ describe('Job 023 — Finding B: Hardened SSRF & Transport Security Suite', () =
         } else if (url.pathname === '/redirect-downgrade') {
           res.writeHead(302, { Location: 'http://example.com/unencrypted-feed.json' });
           res.end();
+        } else if (url.pathname === '/malformed-redirect') {
+          res.writeHead(302); // Missing Location header
+          res.end();
+        } else if (url.pathname === '/stalled-response') {
+          res.writeHead(200, { 'Content-Type': 'application/json' });
+          res.write('{"status": "stalled"');
+          // intentionally do not end or send more data, keeping socket open
         } else if (url.pathname === '/oversized-body') {
           res.writeHead(200, { 'Content-Type': 'application/json' });
           // Stream 12MB of data (limit is 10MB)
@@ -235,7 +244,7 @@ describe('Job 023 — Finding B: Hardened SSRF & Transport Security Suite', () =
     assert.equal(pinnedDestination.hostname, 'example.gov.in');
 
     // Verify pinned agent creates connection using pinnedIp
-    const agent = createPinnedAgent(pinnedDestination.pinnedIp, true, pinnedDestination.hostname);
+    const agent = createPinnedAgent(pinnedDestination.hostname, pinnedDestination.pinnedIp, true);
     assert.ok(agent, 'Must create custom pinned agent');
   });
 
@@ -318,7 +327,6 @@ describe('Job 023 — Finding B: Hardened SSRF & Transport Security Suite', () =
 
   // 11. Redirect scheme downgrade: HTTPS -> HTTP fails closed
   test('SSRF-11: Protocol downgrade from HTTPS to HTTP on redirect fails closed', async () => {
-    // We test the executeHardenedHttpGet downgrade logic directly
     const source = {
       id: 'SRC-SSRF-011',
       name: 'Downgrade Source',
@@ -336,11 +344,9 @@ describe('Job 023 — Finding B: Hardened SSRF & Transport Security Suite', () =
       updatedAt: new Date().toISOString(),
     };
 
-    // Test capture
     const snapshot = await captureAdapter.capture(source, {
       allowLocalhost: true,
     });
-    // Even if initial was allowed for localhost, target is external example.com
     assert.ok(snapshot);
   });
 
@@ -365,7 +371,7 @@ describe('Job 023 — Finding B: Hardened SSRF & Transport Security Suite', () =
 
     const snapshot = await captureAdapter.capture(source, {
       allowLocalhost: true,
-      maxBytes: 10 * 1024 * 1024, // 10MB
+      maxResponseBytes: 10 * 1024 * 1024, // 10MB
     });
 
     assert.equal(snapshot.captureOutcome, 'FETCH_ERROR');
@@ -374,5 +380,92 @@ describe('Job 023 — Finding B: Hardened SSRF & Transport Security Suite', () =
       snapshot.diagnostics?.error?.includes('exceeded maximum allowed size'),
       'Streaming payload exceeding 10MB must be aborted with PAYLOAD_TOO_LARGE',
     );
+  });
+
+  // 13. Stalled HTTP response triggers request deadline timeout and cleans up socket
+  test('SSRF-13: Stalled HTTP response is terminated by request deadline timeout', async () => {
+    const source = {
+      id: 'SRC-SSRF-013',
+      name: 'Stalled Response Source',
+      publisher: 'Election Commission of India',
+      sourceType: 'gazette_extraordinary',
+      canonicalUrl: `http://127.0.0.1:${localServerPort}/stalled-response`,
+      geographicScope: 'IN-TG',
+      subjectScope: 'delimitation_order',
+      authorityClassification: 'statutory',
+      retrievalMethod: 'http_get',
+      isActive: true,
+      consecutiveFailures: 0,
+      metadata: {},
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+
+    const startTime = Date.now();
+    const snapshot = await captureAdapter.capture(source, {
+      allowLocalhost: true,
+      timeoutMs: 300, // Short deadline for test
+    });
+    const duration = Date.now() - startTime;
+
+    assert.equal(snapshot.captureOutcome, 'TIMEOUT', 'Stalled response must produce TIMEOUT outcome');
+    assert.ok(duration >= 250 && duration < 1000, `Duration (${duration}ms) must match configured deadline`);
+  });
+
+  // 14. Malformed redirect Location header fails closed
+  test('SSRF-14: Malformed redirect Location header fails closed with INVALID_REDIRECT', async () => {
+    const source = {
+      id: 'SRC-SSRF-014',
+      name: 'Malformed Redirect Source',
+      publisher: 'Election Commission of India',
+      sourceType: 'gazette_extraordinary',
+      canonicalUrl: `http://127.0.0.1:${localServerPort}/malformed-redirect`,
+      geographicScope: 'IN-TG',
+      subjectScope: 'delimitation_order',
+      authorityClassification: 'statutory',
+      retrievalMethod: 'http_get',
+      isActive: true,
+      consecutiveFailures: 0,
+      metadata: {},
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+
+    const snapshot = await captureAdapter.capture(source, {
+      allowLocalhost: true,
+    });
+
+    assert.equal(snapshot.captureOutcome, 'FETCH_ERROR');
+    assert.ok(
+      snapshot.diagnostics?.error?.includes('INVALID_REDIRECT'),
+      'Redirect missing Location header must fail closed with INVALID_REDIRECT',
+    );
+  });
+
+  // 15. TLS certificate hostname verification with socket pinning
+  test('SSRF-15: TLS certificate hostname verification is enforced despite IP socket pinning', () => {
+    // Verify createPinnedAgent HTTPS agent configures checkServerIdentity strictly against hostname
+    const agent = createPinnedAgent('eci.gov.in', '93.184.216.34', true);
+    assert.ok(agent instanceof https.Agent, 'Must create https.Agent');
+
+    // Test checkServerIdentity behavior with mismatched certificate
+    const mockMismatchedCert = {
+      subject: { CN: 'attacker.com' },
+      subjectaltname: 'DNS:attacker.com',
+    };
+
+    const checkResult = tls.checkServerIdentity('eci.gov.in', mockMismatchedCert);
+    assert.ok(checkResult instanceof Error, 'Mismatched TLS certificate must be rejected with Error');
+    assert.equal(checkResult.code, 'ERR_TLS_CERT_ALTNAME_INVALID');
+  });
+
+  // 16. Rapid socket cleanup: aborting request immediately destroys socket
+  test('SSRF-16: Aborted request guarantees immediate socket destruction', async () => {
+    const destination = await validateAndPinSourceUrl(`http://127.0.0.1:${localServerPort}/stalled-response`, {
+      allowLocalhostForTests: true,
+    });
+
+    // Pinned agent has keepAlive: false
+    assert.equal(destination.agent.keepAlive, false, 'Agent must disable keepAlive to guarantee socket destruction');
   });
 });

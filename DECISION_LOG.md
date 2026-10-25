@@ -3747,3 +3747,34 @@
 - **Verification Evidence:** 70/70 automated tests pass across 7 test suites (10 Truth Adversarial, 12 Hardened SSRF, 5 Persistence Lifecycle, 19 Invariants, 5 DB Integration, 7 Route Unit, 12 Controlled Acceptance Steps).
 - **Environment Isolation:** Staging database (`fkpigozcqnmcvofuksar`) and Production database (`ehfafcnimmjusyvplbah`) remain 100% untouched and air-gapped (0 queries, 0 mutations).
 - **Submission:** Formally submitted under Rule IV-001 Non-Self-Acceptance as REMEDIATED / TESTED / READY FOR INDEPENDENT CTO ADJUDICATION.
+
+---
+
+### DEC-156: Job 023 Remediation Round 2 (Authoritative Legal Corpus, SSRF SNI Hardening, Dedicated PostgreSQL 16 Server Verification, and Governance Reconciliation)
+- **Date:** 2026-10-25
+- **Status:** REMEDIATED / TESTED / READY FOR INDEPENDENT CTO ADJUDICATION (ROUND 2)
+- **Authority:** CTO DIRECTIVE — JOB 023 REMEDIATION ROUND 2 / Rule IV-001 Non-Self-Acceptance
+- **Baseline Commit:** `ca919ce362d200407ad253848a2611982cb9872a` (incorporating previous remediation commit `a9d468680111b70f53f006bc2c56c64825639fef`)
+- **Context:** Independent CTO review in Round 2 mandated: (1) investigation and correction of conflated legal instruments in the delimitation fixture; (2) evidence-based OFFICIAL classification backed by authoritative legal corpus and anti-spoofing tests; (3) independent closure of SSRF security claims via socket pinning with TLS SNI/certificate hostname verification and streaming/deadline bounds; (4) durable persistence verification on a separate PostgreSQL 16 server including container restart and concurrent lease locking; (5) governance reconciliation.
+- **Decisions & Implementation Measures:**
+  1. **Disentanglement of Legal Instruments & Primary Provenance:**
+     - Disentangled four previously conflated instruments: Order No. 38 (MP, Jan 2007), Order No. 46 (AP recommendation under Delimitation Act § 10(1), 31 May 2007), Presidential Order S.O. 382(E) (statutory commencement under § 10(2), 19 Feb 2008), and Schedule II Assembly seat breakdown (294 Total, 48 SC, 19 ST).
+     - Compiled authoritative primary-source dossier (`data/evidence/delimitation/authoritative/delcom_order_46_2007_and_presidential_order_2008.md`, SHA-256: `1a35b8fc12627aab2919707a501af472b781e119a1a8a136e0c5adca58db789a`).
+     - Corrected primary fixture `tests/fixtures/delimitation/authoritative_delimitation_order_2008.json` and established companion recommendation fixture `tests/fixtures/delimitation/delcom_order_46_andhra_pradesh_2007.json`.
+  2. **Authoritative Legal Corpus Matching Gate:**
+     - Built `AUTHORITATIVE_LEGAL_CORPUS` in `normalizer.ts` and integrated Check 12 in `validator.ts`.
+     - Eliminated any metadata-only escalation to `OFFICIAL`. Falsified identifiers, date mismatches, publisher mismatches, or seat allocation discrepancies strictly fail closed to `UNVERIFIED`.
+     - Non-enacted recommendation orders (`PROPOSED_DRAFT`) fail closed to `PROPOSAL` / `SCENARIO_ESTIMATE` with `canonicalViewUpdated: false`.
+  3. **Hardened SSRF Transport Security:**
+     - Socket pinning in `createPinnedAgent` now strictly enforces TLS SNI (`servername: hostname`) and certificate hostname verification (`checkServerIdentity: (host, cert) => tls.checkServerIdentity(hostname, cert)`).
+     - Added overall request deadline timeout (`timeoutMs`) and strict 10MB streaming response checks with immediate socket destruction.
+  4. **Dedicated PostgreSQL 16 Server Verification:**
+     - Deployed isolated Docker container `job023-verify-postgres` on `127.0.0.1:54334`.
+     - Applied Migration 071 DDL and verified all 9 tables, foreign key constraints (ON DELETE RESTRICT), and indexes.
+     - Proved full 8-stage lifecycle persistence, cross-client recreation, persistence across PostgreSQL container restart, distributed lease locking (`acquireSourceLock`/`releaseSourceLock` token safety, mutual exclusion, auto-expiry), baseline preservation on invalid fixture rejection, and fail-closed runtime (`NODE_ENV=production` without `DATABASE_URL` fails with 503 `PERSISTENCE_CONFIGURATION_ERROR`).
+  5. **Governance & Evidence Reconciliation:**
+     - Acceptance manifest `reports/evidence/JOB_023_ACCEPTANCE_MANIFEST.json` updated with full suite breakdown, distinguishing unit tests, PGlite, and dedicated PostgreSQL 16 server runs.
+     - All 5 continuity registers reconciled.
+- **Verification Evidence:** 81/81 automated tests pass across 8 test suites (7 Route Unit, 10 Truth Adversarial, 16 Hardened SSRF, 5 Persistence Lifecycle, 19 Invariants, 5 PGlite Integration, 7 Dedicated PostgreSQL 16 Server Integration, 12 Controlled Acceptance Steps).
+- **Environment Isolation:** Staging database (`fkpigozcqnmcvofuksar`) and Production database (`ehfafcnimmjusyvplbah`) remain 100% untouched and air-gapped (0 queries, 0 mutations).
+- **Submission:** Formally submitted under Rule IV-001 Non-Self-Acceptance as REMEDIATED / TESTED / READY FOR INDEPENDENT CTO ADJUDICATION (ROUND 2).
