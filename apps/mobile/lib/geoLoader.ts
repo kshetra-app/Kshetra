@@ -15,8 +15,9 @@ const cache = new Map<string, GeoJSON.FeatureCollection>();
 
 /** Bundled state code → require function (Metro resolves at build time). */
 const loaders: Record<string, () => GeoJSON.FeatureCollection> = {
+  // Only the national overview is allowed in the always-bundled runtime.
+  // Assembly-constituency layers must be source-verified and streamed on demand.
   IN: () => require('../data/india-states.json') as GeoJSON.FeatureCollection,
-  TS: () => require('../data/telangana-assembly.json') as GeoJSON.FeatureCollection,
 };
 
 /** A linear ring is only valid with >= 4 positions (a closed triangle). */
@@ -65,6 +66,10 @@ export function sanitizeGeoJSON(fc: GeoJSON.FeatureCollection): GeoJSON.FeatureC
 export function getStateGeoJSON(stateCode: string): GeoJSON.FeatureCollection | null {
   const code = stateCode.toUpperCase();
 
+  // A local file or manifest row is not proof of an authoritative boundary.
+  // Keep any jurisdiction marked unavailable out of the canonical map path.
+  if (!manifestHas(code)) return null;
+
   // Check cache first
   const cached = cache.get(code);
   if (cached) return cached;
@@ -84,7 +89,8 @@ export function getStateGeoJSON(stateCode: string): GeoJSON.FeatureCollection | 
 
 /** A bundled state is served synchronously from the JS bundle. */
 export function isBundledGeoJSON(stateCode: string): boolean {
-  return stateCode.toUpperCase() in loaders;
+  const code = stateCode.toUpperCase();
+  return code in loaders && manifestHas(code);
 }
 
 /** Check if a state has polygon GeoJSON data (bundled or streamed). */
