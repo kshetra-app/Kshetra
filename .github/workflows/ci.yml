@@ -29,6 +29,9 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Verify Migration Version Uniqueness
+        run: node scripts/verify-migration-version-uniqueness.mjs
+
       - name: Verify Geo Runtime Truth (source-authority gate)
         run: node scripts/verify-geo-runtime-truth.mjs
 
@@ -138,6 +141,13 @@ jobs:
   mobile-build:
     name: Mobile Metro Export & Asset Budget
     runs-on: ubuntu-latest
+    # This job measures the dependency graph only. Its fixture endpoint is
+    # deliberately non-routable and must never be used as a release profile.
+    env:
+      EXPO_PUBLIC_SUPABASE_URL: https://test-fixture.supabase.co
+      EXPO_PUBLIC_SUPABASE_ANON_KEY: test-analysis-only-not-a-real-key
+      EXPO_PUBLIC_API_URL: https://api-fixture.invalid
+      MOBILE_BUILD_MODE: analysis
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -150,6 +160,8 @@ jobs:
         run: npm ci
       - name: Build shared package
         run: npm run build -w @kshetra/shared
+      - name: Validate CI-only runtime fixture
+        run: node scripts/verify-mobile-runtime-config.mjs --analysis
       - name: Export real Android Metro bundle
         run: npm run build -w @kshetra/mobile
       - name: Verify Metro output, asset budget and SHA-256 manifest

@@ -64,6 +64,7 @@ const report = {
   generatedAt: new Date().toISOString(),
   gitSha: process.env.GITHUB_SHA || null,
   platform: 'android',
+  runtimeConfigMode: process.env.MOBILE_BUILD_MODE || 'unspecified',
   exportDirectory: 'apps/mobile/dist',
   fileCount: files.length,
   totalPayloadBytes,
