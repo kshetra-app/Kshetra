@@ -385,7 +385,7 @@ if (eciIndex) {
 /* Convert ECI's JavaScript-wrapped FeatureCollection responses into a derived
  * GeoJSON artifact without evaluating JavaScript. The result remains a
  * candidate until identity, statutory vintage, topology and seat-count checks pass. */
-for (const sourceResult of manifest.results.filter(r => /^SRC-ECI-2026-AC-/.test(r.id) && r.status==='DOWNLOADED_HASHED')) {
+for (const sourceResult of manifest.results.filter(r => /^SRC-ECI-2026-AC-/.test(r.id || '') && r.status==='DOWNLOADED_HASHED')) {
   try {
     const raw = await fs.readFile(sourceResult.localPath, 'utf8');
     const first = raw.indexOf('{');
@@ -433,7 +433,7 @@ for (const sourceResult of manifest.results.filter(r => /^SRC-ECI-2026-AC-/.test
 
 /* Audit third-party GeoJSON extractions independently. These are not promoted
  * to official; their hashes and feature counts are recorded for comparison. */
-for (const sourceResult of manifest.results.filter(r => /^SRC-SECONDARY-ECI-2026-AC-/.test(r.id) && r.status==='DOWNLOADED_HASHED')) {
+for (const sourceResult of manifest.results.filter(r => /^SRC-SECONDARY-ECI-2026-AC-/.test(r.id || '') && r.status==='DOWNLOADED_HASHED')) {
   try {
     const parsed = JSON.parse(await fs.readFile(sourceResult.localPath, 'utf8'));
     if (parsed?.type !== 'FeatureCollection' || !Array.isArray(parsed.features)) throw new Error('NOT_A_GEOJSON_FEATURE_COLLECTION');
