@@ -300,7 +300,7 @@ async function importSeedData(db) {
                 );
                 count++;
               } catch (e) {
-                // Skip malformed constituencies
+                throw new Error(`Invalid constituency row ${c?.acNo ?? '?'} for ${code}: ${e.message}`, { cause: e });
               }
             }
 
@@ -310,7 +310,7 @@ async function importSeedData(db) {
             }
           }
         } catch (e) {
-          console.warn(`  ⚠ Could not import constituencies for ${code}:`, e.message);
+          throw new Error(`Could not import constituencies for ${code}: ${e.message}`, { cause: e });
         }
       }
 
@@ -354,7 +354,7 @@ async function importSeedData(db) {
               );
               count++;
             } catch (e) {
-              // Skip malformed profiles
+              throw new Error(`Invalid MLA profile row ${p?.acNo ?? '?'} for ${code}: ${e.message}`, { cause: e });
             }
           }
 
@@ -396,7 +396,7 @@ async function importSeedData(db) {
               );
               count++;
             } catch (e) {
-              // Skip malformed demographics
+              throw new Error(`Invalid demographics row ${d?.acNo ?? '?'} for ${code}: ${e.message}`, { cause: e });
             }
           }
 
@@ -455,7 +455,7 @@ async function importSeedData(db) {
 
               count++;
             } catch (e) {
-              // Skip malformed elections
+              throw new Error(`Invalid election history row ${e?.year ?? '?'} for ${code}: ${e.message}`, { cause: e });
             }
           }
 
@@ -468,12 +468,15 @@ async function importSeedData(db) {
       const histPath = path.resolve(rootDir, `data/seed/${sourceName}-historical-results.ts`);
       if (fs.existsSync(histPath)) {
         const mod = await import(`file://${histPath}`);
-        const key = Object.keys(mod).find(k => /historical|result/i.test(k));
-        const rows = key ? mod[key] : null;
-        if (Array.isArray(rows)) {
-          const insert = db.prepare('INSERT OR REPLACE INTO historical_results (id,state_code,ac_no,year,winner,party) VALUES (?,?,?,?,?,?)');
+        const resultArrays = Object.entries(mod).filter(([key, value]) =>
+          /RESULTS?$/i.test(key) && Array.isArray(value)
+        );
+        const insert = db.prepare('INSERT OR REPLACE INTO historical_results (id,state_code,ac_no,year,winner,party) VALUES (?,?,?,?,?,?)');
+        for (const [key, rows] of resultArrays) {
           for (const row of rows) {
-            if (!Number.isInteger(Number(row.acNo)) || !Number.isInteger(Number(row.year))) continue;
+            if (!Number.isInteger(Number(row.acNo)) || !Number.isInteger(Number(row.year))) {
+              throw new Error(`Invalid historical result row in ${sourceName}-historical-results.ts export ${key}`);
+            }
             insert.run(`${code}-HIST-${row.acNo}-${row.year}`, code, Number(row.acNo), Number(row.year), row.winner || row.winnerName || '', row.party || row.winnerParty || '');
           }
         }
@@ -483,18 +486,20 @@ async function importSeedData(db) {
       const timelinePath = path.resolve(rootDir, `data/seed/${sourceName}-political-timeline.ts`);
       if (fs.existsSync(timelinePath)) {
         const mod = await import(`file://${timelinePath}`);
-        const key = Object.keys(mod).find(k => /timeline/i.test(k));
-        const rows = key ? mod[key] : null;
-        if (Array.isArray(rows)) {
-          const insert = db.prepare(`INSERT OR REPLACE INTO political_timeline
-            (id,state_code,ac_no,date,assembly,event_type,member_names,debit_party,credit_party,seats,explanation,details,legal_status,verified)
-            VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)`);
+        const ledgerArrays = Object.entries(mod).filter(([key, value]) =>
+          /(LEDGER|TIMELINE)/i.test(key) && Array.isArray(value)
+        );
+        const insert = db.prepare(`INSERT OR REPLACE INTO political_timeline
+          (id,state_code,ac_no,date,assembly,event_type,member_names,debit_party,credit_party,seats,explanation,details,legal_status,verified)
+          VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)`);
+        for (const [key, rows] of ledgerArrays) {
           for (const row of rows) {
             const rowHash = crypto.createHash('sha1').update(JSON.stringify(row)).digest('hex').slice(0, 8);
             insert.run(
-              row.id || `${code}-TL-${row.acNo || 'NA'}-${row.date || row.year || 'NA'}-${rowHash}`,
-              code, row.acNo ?? null, row.date || '', row.assembly ?? row.year ?? null,
-              row.eventType || row.type || '', row.memberNames || row.member || '',
+              row.id || `${code}-TL-${row.acNo ?? 'NA'}-${row.date || row.year || 'NA'}-${rowHash}`,
+              code, Array.isArray(row.acNos) && row.acNos.length === 1 ? row.acNos[0] : (row.acNo ?? null),
+              row.date || '', row.assembly ?? row.year ?? null,
+              row.eventType || row.type || '', Array.isArray(row.memberNames) ? row.memberNames.join(', ') : (row.memberNames || row.member || ''),
               row.debitParty || '', row.creditParty || '', row.seats ?? 0,
               row.explanation || '', row.details || '', row.legalStatus || '', row.verified ? 1 : 0
             );
@@ -766,17 +771,7 @@ async function main() {
     db.close();
   }
 
-  // Compute hash after closing/checkpointing SQLite so the version is for final bytes.
-  const dbBytes = fs.readFileSync(dbPath);
-  const fullHash = crypto.createHash('sha256').update(dbBytes).digest('hex');
-  const hash = fullHash.slice(0, 16);
   const versionPath = path.resolve(dataDir, 'seed-db-version.json');
-  fs.writeFileSync(versionPath, JSON.stringify({
-    version: hash,
-    sha256: fullHash,
-    sizeBytes: dbBytes.length,
-    builtAt: new Date().toISOString(),
-  }, null, 2) + '\n');
 
   // Rebuild the sidecar manifest from the actual final SQLite tables, ensuring
   // reported flags/counts are derived from persisted rows, not source-file presence.
