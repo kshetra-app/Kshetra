@@ -1,0 +1,71 @@
+name: Dependency Remediation Preview
+
+on:
+  push:
+    branches:
+      - cto/full-master-audit-remediation-2026-10-25
+
+permissions:
+  contents: read
+
+concurrency:
+  group: dependency-preview-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  preview:
+    name: Calculate Semver-Safe Lockfile Fixes
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          lfs: true
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Capture current advisory report
+        shell: bash
+        run: |
+          set +e
+          npm audit --json > audit-before.json
+          echo "$?" > audit-before.exit
+          exit 0
+      - name: Apply semver-compatible lockfile updates only
+        id: fix
+        shell: bash
+        run: |
+          set +e
+          npm audit fix --package-lock-only --ignore-scripts
+          code=$?
+          echo "$code" > audit-fix.exit
+          echo "exit_code=$code" >> "$GITHUB_OUTPUT"
+          git diff -- package-lock.json > package-lock-audit-fix.patch
+          exit "$code"
+      - name: Capture post-fix advisory report
+        if: always()
+        shell: bash
+        run: |
+          set +e
+          npm audit --json > audit-after.json
+          echo "$?" > audit-after.exit
+          git diff --stat -- package-lock.json > package-lock-diffstat.txt
+          exit 0
+      - name: Publish review artifact (including failure output)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: dependency-remediation-preview
+          if-no-files-found: error
+          retention-days: 3
+          path: |
+            package-lock.json
+            package-lock-audit-fix.patch
+            package-lock-diffstat.txt
+            audit-before.json
+            audit-before.exit
+            audit-fix.exit
+            audit-after.json
+            audit-after.exit
