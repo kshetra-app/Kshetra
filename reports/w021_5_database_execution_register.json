@@ -17,32 +17,32 @@
   },
   "lifecycleTaxonomy": [
     {
-      "state": "AUTHORED_IN_REPOSITORY",
-      "definition": "The migration, seed script, or ingestion script exists in the repository with complete DDL/DML."
+      "state": "authored",
+      "definition": "Artifact or implementation exists in version-controlled source; no validation or runtime claim implied."
     },
     {
-      "state": "LOCALLY_VALIDATED",
-      "definition": "The artifact passes local syntax, DDL parsing, schema linters, and mock-execution/unit test suites."
+      "state": "locally validated",
+      "definition": "Local syntax, unit, contract, or isolated-engine checks passed with recorded evidence for the exact artifact/version."
     },
     {
-      "state": "PREPARED_AND_RECONCILED_IN_REPOSITORY",
-      "definition": "The exact source identity sets, schemas, and non-destructive upserts have been reconciled against authoritative specifications."
+      "state": "prepared",
+      "definition": "Inputs, schemas, identities, prerequisites, and an execution/evidence plan are reconciled; not execution authorization."
     },
     {
-      "state": "AUTHORIZED_FOR_EXECUTION",
-      "definition": "Formal CTO authorization has been granted for execution in a specified environment (e.g. via explicit directive)."
+      "state": "authorized",
+      "definition": "Explicit, scope- and environment-bound authorization exists for the specific operation."
     },
     {
-      "state": "EXECUTED_IN_ENVIRONMENT",
-      "definition": "The artifact has actually been executed against the specified database environment (staging or production)."
+      "state": "executed",
+      "definition": "The action actually ran in the specified environment with contemporaneous auditable evidence."
     },
     {
-      "state": "INDEPENDENTLY_CORROBORATED",
-      "definition": "Execution has been confirmed by independent inspection of the target database catalog (pg_catalog / tables)."
+      "state": "independently corroborated",
+      "definition": "An independent verifier checked the exact result against source/environment evidence and recorded artifact and commit coordinates."
     },
     {
-      "state": "FORMALLY_ACCEPTED",
-      "definition": "The resulting database state has been formally accepted by the authorized independent CTO adjudicator under Rule IV-001."
+      "state": "formally accepted",
+      "definition": "The designated acceptance authority recorded final acceptance for the exact scope and evidence; never inferred from implementation or tests."
     }
   ],
   "databaseDependentTasksSummary": {
@@ -60,7 +60,8 @@
     "unimplementedPercent": 0,
     "formalAcceptancePercent": 0,
     "stagingExecutionAuthorized": false,
-    "productionExecutionAuthorized": false
+    "productionExecutionAuthorized": false,
+    "statusMeaning": "W021.5 parent milestone formal acceptance remains 0%; an accepted child task does not imply parent milestone acceptance."
   },
   "artifacts": [
     {
@@ -117,7 +118,11 @@
       },
       "corroborationArtifact": "reports/w021_5_staging_execution_report.json",
       "executionDetails": "Reconciled under CTO Directive 144 via scripts/reconcile_database_criteria_identities.mjs and scripts/execute_staging_directive_139.mjs. Validates actual migration 065_canonical_political_organization_registry.sql across all 8 tables: 1,207 catalog/provenance/support rows + 2 dataset metadata anchors (datasets: 1, dataset_versions: 1) = 1,209 total outbound rows. Uses deterministic RFC 4122 namespace UUIDs for child table rows and robust SQL tuple parsing; preserves source confidence strings (such as 'VERIFIED') and date ranges without shifting. Target PostgREST conflictTarget is id. 100% unique short names and verified foreign keys.",
-      "reconciliationModel": "IDEMPOTENT_NATURAL_KEY_PRESERVATION (CTO Directive 149 Section 5)"
+      "reconciliationModel": "IDEMPOTENT_NATURAL_KEY_PRESERVATION (CTO Directive 149 Section 5)",
+      "lifecycleState": "prepared",
+      "executed": false,
+      "independentlyCorroborated": false,
+      "formallyAccepted": false
     },
     {
       "artifactId": "DB-ART-002",
@@ -162,7 +167,11 @@
         "schemaValid": true
       },
       "corroborationArtifact": "reports/w021_5_staging_execution_report.json",
-      "executionDetails": "Reconciled under CTO Directive 143. Submits all 11,298 unique candidate rows to target table public.candidacies with conflictTarget=person_id,election_year,election_type,constituency_id. Mapped candidate IDs and verified both retainedId and discardedId for all 36 duplicate declarations in reports/w021_5_b2_2d_36_candidacy_duplicates.json, proving both match declared natural keys. 11,334 source tuples yield exactly 11,298 unique rows (36 duplicate discards)."
+      "executionDetails": "Reconciled under CTO Directive 143. Submits all 11,298 unique candidate rows to target table public.candidacies with conflictTarget=person_id,election_year,election_type,constituency_id. Mapped candidate IDs and verified both retainedId and discardedId for all 36 duplicate declarations in reports/w021_5_b2_2d_36_candidacy_duplicates.json, proving both match declared natural keys. 11,334 source tuples yield exactly 11,298 unique rows (36 duplicate discards).",
+      "lifecycleState": "prepared",
+      "executed": false,
+      "independentlyCorroborated": false,
+      "formallyAccepted": false
     },
     {
       "artifactId": "DB-ART-003",
@@ -199,7 +208,11 @@
       },
       "corroborationArtifact": "reports/w021_5_staging_execution_report.json",
       "executionDetails": "Reconciled under CTO Directive 145. public.constituency_demographics.constituency_id is a UUID foreign key to public.constituencies(internal_id). Composite strings (e.g. TS-AC-1) are strictly prohibited from being passed as UUIDs. Marked BLOCKED_NOT_DEPLOYABLE with exactly 0 outbound rows to staging pending authoritative repository crosswalk. Preserves total_voters as null; absent manifest seats labeled UNVERIFIED (never ESTIMATE); 134 statutory manifest gap seats separated from 5-seat Mizoram defect DQ-W021.5-B2.2E-001.",
-      "targetResolutionStatus": "PENDING_TARGET_DATABASE_RESOLUTION"
+      "targetResolutionStatus": "PENDING_TARGET_DATABASE_RESOLUTION",
+      "lifecycleState": "prepared",
+      "executed": false,
+      "independentlyCorroborated": false,
+      "formallyAccepted": false
     },
     {
       "artifactId": "DB-ART-004",
@@ -239,7 +252,11 @@
       },
       "corroborationArtifact": "reports/w021_5_staging_execution_report.json",
       "executionDetails": "Reconciled under CTO Directive 144. Eliminated synthetic election IDs (election_id: null). Marked strictly BLOCKED_NOT_DEPLOYABLE with 0 outbound rows sent to staging. Preserves unrecorded margin and votes as null rather than fabricated zeroes; genuine numeric zeroes preserved for uncontested seats (Arunachal AC 4, 16, 31); J&K 2014 statutory boundary preserved at 87 seats; non-destructive upsert target on_conflict=election_id,constituency_id.",
-      "architectureReconciliation": "Canonical normalized models (public.election_events and public.election_contests with UUID PKs) reconciled with legacy integer public.election_results via vw_legacy_election_results. Zero UUID casting into integer columns."
+      "architectureReconciliation": "Canonical normalized models (public.election_events and public.election_contests with UUID PKs) reconciled with legacy integer public.election_results via vw_legacy_election_results. Zero UUID casting into integer columns.",
+      "lifecycleState": "prepared",
+      "executed": false,
+      "independentlyCorroborated": false,
+      "formallyAccepted": false
     },
     {
       "artifactId": "DB-ART-005",
@@ -269,7 +286,11 @@
         "strictNullability": true,
         "zeroSyntheticDefaults": true,
         "schemaValid": true
-      }
+      },
+      "lifecycleState": "locally validated",
+      "executed": false,
+      "independentlyCorroborated": false,
+      "formallyAccepted": false
     },
     {
       "artifactId": "DB-ART-006",
@@ -303,7 +324,22 @@
           "fk_candidacies_party"
         ],
         "schemaValid": true
-      }
+      },
+      "lifecycleState": "authored",
+      "executed": false,
+      "independentlyCorroborated": false,
+      "formallyAccepted": false
     }
-  ]
+  ],
+  "continuityReconciliation": {
+    "report": "reports/gov_02_continuity_reconciliation.json",
+    "asOf": "2026-10-25",
+    "sourceSnapshotCommit": "b9179efeeb2f24bcf1da8ec8339bfb25be7313fb",
+    "recordScope": "W021.5 historical database execution and weight evidence",
+    "lifecycleState": "prepared",
+    "migrationInventoryCurrentThrough": "supabase/migrations/070_saas_webhook_engine.sql",
+    "currentRepositoryJob": "W022",
+    "currentRepositoryJobNote": "W022 implementation and local verification are prospectively permitted under a separate 2026-10-25 authorization; staging database access, production access/deployment, and webhook activation are not authorized.",
+    "historicalMeaning": "Retains Directive 153 baseline and zero-access counters. Do not rewrite its baseline as current HEAD or treat the W021.5 report as W022 execution evidence."
+  }
 }

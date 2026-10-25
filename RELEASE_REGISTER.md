@@ -6,6 +6,8 @@
 
 ## Production & Staging Releases
 
+**GOV-02 source snapshot (2026-10-25):** `reports/gov_02_continuity_reconciliation.json`. W021.5 remains blocked on 22.5% external-gate weight with 10.5% database execution pending and 0% parent formal acceptance. Migration/source existence is not a release. W022 remains unreleased; no staging or production operation is authorized by this reconciliation.
+
 | Release Tag | Target Env | Target Binary | Measured Size (AAB/APK) | JS Bundle Size | API Version | Git Commit | Release Gate Status | Verified By | Independent Verifier |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
 | `v0.1.0-audit` | Dev Baseline | Android Universal | Pending measurement | TBD | v1 | `0f7e104` | Baseline Audit | ARCH / DEVOPS | N/A |
@@ -27,7 +29,7 @@
 ---
 
 
-| `v0.1.0-w022-pending` | Not released — source only | Outbound Webhooks & Event Dispatching Engine | N/A | N/A | v1 | `3ac3f1c0c14d51d60bab9f9d3e88a08716466124` (existing source; not a release coordinate) | IMPLEMENTATION PERMITTED / INDEPENDENT VERIFICATION PENDING / STAGING EXECUTION NOT AUTHORIZED / PRODUCTION AIR-GAPPED | BE+SEC+QA | NOT RELEASED — no staging or production deployment evidence claimed |
+| `v0.1.0-w022-pending` | Not released — source only | Outbound Webhooks & Event Dispatching Engine | N/A | N/A | v1 | `3ac3f1c0c14d51d60bab9f9d3e88a08716466124` (historical source commit, pre-authorization; not a release coordinate) | authored — implementation continuation and local verification permitted prospectively; independent corroboration and formal acceptance pending; staging DB execution NOT AUTHORIZED; production air-gapped | BE+SEC+QA | NOT RELEASED — Migration 070 is source only; no staging/production execution or webhook activation evidence claimed |
 
 ### Release Size & Performance Gates
 - **Max Consumer AAB:** 30 MB (Target: ≤ 25 MB)

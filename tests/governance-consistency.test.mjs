@@ -161,12 +161,28 @@ try {
   assert.fail(`origin/master could not be resolved: ${err.message}`);
 }
 
-// Local HEAD must strictly match origin/master (fail-closed, no exceptions)
-assert.strictEqual(
-  localHead,
-  originMaster,
-  `Local HEAD (${localHead}) must strictly match origin/master (${originMaster})`
-);
+// On a push to master, HEAD must match origin/master. On a pull request,
+// GitHub checks out a synthetic merge commit; require it to contain both the
+// current origin/master base and the PR head instead of incorrectly requiring
+// the synthetic merge SHA to equal origin/master.
+const eventName = process.env.GITHUB_EVENT_NAME || '';
+const isPullRequest = eventName === 'pull_request' || eventName === 'pull_request_target';
+if (isPullRequest) {
+  execSync(`git merge-base --is-ancestor "${originMaster}" "${localHead}"`, { stdio: 'pipe' });
+  const prHead = process.env.GITHUB_HEAD_REF
+    ? execSync(`git rev-parse "origin/${process.env.GITHUB_HEAD_REF}"`, { encoding: 'utf8' }).trim()
+    : '';
+  if (prHead) {
+    execSync(`git merge-base --is-ancestor "${prHead}" "${localHead}"`, { stdio: 'pipe' });
+  }
+  console.log(`[PASS] Check 8a: PR merge HEAD (${localHead}) contains origin/master (${originMaster}) and PR head ancestry.`);
+} else {
+  assert.strictEqual(
+    localHead,
+    originMaster,
+    `Push checkout HEAD (${localHead}) must strictly match origin/master (${originMaster})`
+  );
+}
 
 // Working tree must be completely clean (fail-closed, no exceptions)
 const porcelainStatus = execSync('git status --porcelain', { encoding: 'utf8' }).trim();
@@ -186,7 +202,7 @@ try {
   assert.fail(`CURRENT_REMOTE_HEAD "${currentRemoteHeadField}" cannot be resolved in git history: ${err.message}`);
 }
 
-// CURRENT_REMOTE_HEAD must strictly match origin/master (DEC-013 / DEC-022)
+// Current repository coordinate remains synchronized to origin/master even during PR checks.
 assert.strictEqual(
   currentRemoteHeadResolved,
   originMaster,

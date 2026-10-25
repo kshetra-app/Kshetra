@@ -14,7 +14,7 @@
       "gateId": "EB-01",
       "canonicalCode": "OFFICIAL_PHYSICAL_GAZETTE_AUTHENTICITY",
       "targetStage": "Stage B (W021.5-B1-01..03)",
-      "weightPercent": 4.0,
+      "weightPercent": 4,
       "owner": "Controller of Publications, Government of India / Legal Custodian",
       "description": "Full physical printed gazette publication of ECI Delimitation Order 2008 with official seal and watermark is an external physical instrument not stored in git repository.",
       "missingArtifacts": [
@@ -29,7 +29,7 @@
       "gateId": "EB-02",
       "canonicalCode": "PHYSICAL_GAZETTE_TRANSCRIPTION_FIDELITY_AUDIT",
       "targetStage": "Stage B (W021.5-B1-01..03)",
-      "weightPercent": 4.0,
+      "weightPercent": 4,
       "owner": "Independent Legal & Forensic Notary Authority",
       "description": "Independent physical notary/third-party audit comparing checked-in text extracts against the physical printed gazette remains pending.",
       "missingArtifacts": [
@@ -45,7 +45,7 @@
       "gateId": "EB-03",
       "canonicalCode": "INDIA_POST_DELIVERY_BEAT_GIS_BOUNDARIES",
       "targetStage": "Stage B (W021.5-B1-04)",
-      "weightPercent": 4.0,
+      "weightPercent": 4,
       "owner": "Department of Posts / Survey of India (National Spatial Data Infrastructure)",
       "description": "Authoritative vector polygon GIS boundaries for Department of Posts 6-digit PIN delivery beats are not published or made available by India Post.",
       "missingArtifacts": [
@@ -104,16 +104,34 @@
     }
   ],
   "accountingSummary": {
-    "repositoryVerifiedEarned": 67.0,
+    "repositoryVerifiedEarned": 67,
     "unexecutedDatabasePending": 10.5,
     "blockedOnExternalGates": 22.5,
-    "totalMilestoneAllocation": 100.0,
-    "formalCtcAcceptance": 0.0
+    "totalMilestoneAllocation": 100,
+    "formalCtcAcceptance": 0
   },
   "freezeDeclaration": {
     "developmentFrozen": true,
     "freezeDirective": "CTO Directive 153",
     "directive154Prohibited": true,
     "nextPermittedAction": "INDEPENDENT_CTO_ADJUDICATION"
-  }
+  },
+  "continuityReconciliation": {
+    "report": "reports/gov_02_continuity_reconciliation.json",
+    "asOf": "2026-10-25",
+    "sourceSnapshotCommit": "b9179efeeb2f24bcf1da8ec8339bfb25be7313fb",
+    "recordScope": "historical W021.5 external-gate snapshot",
+    "lifecycleState": "prepared",
+    "note": "Directive 153's development freeze and external gates apply to W021.5 scope. Later W022-specific prospective authorization permits W022 implementation, correction, tests, and local verification only. It does not authorize W021.5 staging work, W022 staging database execution, production access/deployment, or live webhook activation. W021.5 formal acceptance remains 0.0% pending independent adjudication.",
+    "currentStatusSource": "reports/w021_5_database_execution_register.json"
+  },
+  "canonicalLifecycleTaxonomy": [
+    "authored",
+    "locally validated",
+    "prepared",
+    "authorized",
+    "executed",
+    "independently corroborated",
+    "formally accepted"
+  ]
 }

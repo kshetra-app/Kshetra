@@ -22,11 +22,11 @@
     "description": "5 Mizoram statutory assembly seats (AC 31-35) with unrecorded voter counts preserved as NULL without zero-fabrication"
   },
   "accountingSummary": {
-    "repoVerifiedEarnedPercent": 67.0,
+    "repoVerifiedEarnedPercent": 67,
     "unexecutedDatabasePendingPercent": 10.5,
     "blockedOnExternalGatesPercent": 22.5,
-    "unimplementedPercent": 0.0,
-    "formalCtcAcceptancePercent": 0.0
+    "unimplementedPercent": 0,
+    "formalCtcAcceptancePercent": 0
   },
   "defects": [
     {
@@ -95,5 +95,23 @@
       ],
       "classification": "REMEDIATED_AND_OFFLINE_VERIFIED"
     }
+  ],
+  "continuityReconciliation": {
+    "report": "reports/gov_02_continuity_reconciliation.json",
+    "asOf": "2026-10-25",
+    "sourceSnapshotCommit": "b9179efeeb2f24bcf1da8ec8339bfb25be7313fb",
+    "recordScope": "historical W021.5 Directive 153 defect ledger",
+    "lifecycleState": "prepared",
+    "note": "Retains W021.5 historical defects and explicit zero-access counters. The open Mizoram defect and 0.0% W021.5 formal acceptance remain unresolved. It is not a current W022 execution or release record.",
+    "currentStatusSource": "reports/w021_5_database_execution_register.json"
+  },
+  "canonicalLifecycleTaxonomy": [
+    "authored",
+    "locally validated",
+    "prepared",
+    "authorized",
+    "executed",
+    "independently corroborated",
+    "formally accepted"
   ]
 }

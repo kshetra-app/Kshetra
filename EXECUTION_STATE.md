@@ -304,9 +304,9 @@ UNAUTHORIZED_IMPLEMENTATION_COMMIT:      0d75d29c02512d5bc17839a5ef4730bdc5d389d
 
 # REPOSITORY & REMOTE COORDINATES
 CURRENT_BRANCH:        master
-CURRENT_REMOTE_HEAD:   origin/master
-VERIFIED_REMOTE_HEAD:  origin/master
-GOVERNANCE_COMMIT:     origin/master
+CURRENT_REMOTE_HEAD:   b9179efeeb2f24bcf1da8ec8339bfb25be7313fb
+VERIFIED_REMOTE_HEAD:  b9179efeeb2f24bcf1da8ec8339bfb25be7313fb
+GOVERNANCE_COMMIT:     b9179efeeb2f24bcf1da8ec8339bfb25be7313fb
 
 # HISTORICAL W006 PROVENANCE (Preserved Prior Milestone Lineage - DEC-035 / DEC-037)
 HISTORICAL_W006_VERIFIED_REMOTE_HEAD: c1fe56a
@@ -401,8 +401,8 @@ REMOTE_SYNC:           Up to date with origin/master
 ---
 
 ## 3. Defect & Blocker Summary
-- **Open P0 (Production Blockers):** 0
-- **Open P1 (Major Architectural Flaws):** 0
+- **Open P0 (Production / Governance Blockers):** Do not hard-code a zero. GOV-01 and GOV-02 are P0 governance findings; see `DEFECT_REGISTER.md`. CI derives and checks live register consistency.
+- **Open P1 (Major Architectural Flaws):** See `DEFECT_REGISTER.md`; CI checks the live state rather than this document asserting a stale zero.
   - *(DEF-001: RESOLVED — VERIFIED in W010 Batch L1)*
   - *(DEF-002: RESOLVED — VERIFIED in W010 Batch L3)*
   - *(DEF-003: DEFERRED — EXPLICIT FUTURE JOB / ACCEPTED DEPENDENCY to W052)*
@@ -410,7 +410,7 @@ REMOTE_SYNC:           Up to date with origin/master
   - *(DEF-009: RESOLVED — VERIFIED in W001-R1)*
   - *(DEF-014: RESOLVED — VERIFIED in W010 / Migration 038)*
   - *(DEF-015: RESOLVED — VERIFIED in W010 / Migration 038)*
-- **Open P2 (Moderate Technical Debt):** 0 (excluding accepted deferred dependencies)
+- **Open P2 (Moderate Technical Debt):** See `DEFECT_REGISTER.md`; accepted, deferred, blocked, and locally validated states are not interchangeable.
   - *(DEF-005: SUPERSEDED — VERIFIED by W006, W007, W008-E, W009-B4)*
   - *(DEF-006: DEFERRED — EXPLICIT FUTURE JOB / ACCEPTED DEPENDENCY to W013–W017)*
   - *(DEF-007: RESOLVED — VERIFIED in W010 Batch L1)*
@@ -511,6 +511,15 @@ REMOTE_SYNC:           Up to date with origin/master
 
 
 ---
+
+## Continuity / Evidence Integrity Summary (GOV-02, 2026-10-25)
+
+- **Canonical report:** `reports/gov_02_continuity_reconciliation.json`; enforced by `tests/continuity-register-reconciliation.test.mjs` in CI.
+- **Verified source snapshot before reconciliation:** `b9179efeeb2f24bcf1da8ec8339bfb25be7313fb`; 72 SQL migrations were present, latest `supabase/migrations/070_saas_webhook_engine.sql` (W022).
+- **W021.5 evidence accounting:** repository-verified 67.0%; database execution pending 10.5%; blocked on external gates 22.5%; unimplemented 0.0%; parent milestone formal acceptance 0.0%. These dimensions conserve 100% of milestone weight; formal acceptance is a separate gate.
+- **Environment truth:** W021.5 Directive 153 records zero staging and production queries/mutations. Current W022 implementation permission does not authorize staging DB execution, production access/deployment, or real webhook delivery.
+- **Lifecycle rule:** use only `authored`, `locally validated`, `prepared`, `authorized`, `executed`, `independently corroborated`, `formally accepted`. Source existence and local tests are never synonyms for production-complete.
+- **Historical records:** the 2026-10-07 blocker snapshot remains historical; Directive 153 gate/defect records retain their evidence baselines and cannot override later W022-specific authorization or masquerade as fresh W022 evidence.
 
 ## W022 — Current Authorization and Execution State (2026-10-25)
 

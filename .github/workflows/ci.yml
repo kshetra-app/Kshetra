@@ -32,6 +32,9 @@ jobs:
       - name: Verify Governance Consistency
         run: node tests/governance-consistency.test.mjs
 
+      - name: Verify Continuity Registers, Migrations & Acceptance Drift (GOV-02)
+        run: node tests/continuity-register-reconciliation.test.mjs
+
       - name: Verify Commit Freshness & Lineage
         run: node tests/commit-freshness.test.mjs
 
