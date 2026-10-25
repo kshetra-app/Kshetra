@@ -453,6 +453,31 @@ async function importSeedData(db) {
         }
       }
 
+      // Derive a stable, content-addressed version for this state's actual rows.
+      // Do not hash the build timestamp or row counts alone: those can make the
+      // same data look like a new version (or different data look identical).
+      const stateHash = crypto.createHash('sha256');
+      for (const table of [
+        'constituencies',
+        'mla_profiles',
+        'demographics',
+        'historical_results',
+        'political_timeline',
+        'election_history',
+        'representatives',
+      ]) {
+        const rows = db.prepare(`SELECT * FROM ${table} WHERE state_code = ? ORDER BY id`).all(code);
+        stateHash.update(table).update(JSON.stringify(rows));
+      }
+      const resultRows = db.prepare(`
+        SELECT r.* FROM election_history_results r
+        JOIN election_history e ON e.id = r.election_id
+        WHERE e.state_code = ?
+        ORDER BY r.election_id, r.party
+      `).all(code);
+      stateHash.update('election_history_results').update(JSON.stringify(resultRows));
+      stateManifest.version = stateHash.digest('hex').slice(0, 12);
+
       // Insert state manifest
       const insertManifest = db.prepare(`
         INSERT OR REPLACE INTO seed_manifest
@@ -461,7 +486,7 @@ async function importSeedData(db) {
       `);
       insertManifest.run(
         stateManifest.state_code,
-        crypto.createHash('sha256').update(JSON.stringify(stateManifest)).digest('hex').slice(0, 12),
+        stateManifest.version,
         stateManifest.has_mla_profiles,
         stateManifest.has_demographics,
         stateManifest.has_historical_results,
