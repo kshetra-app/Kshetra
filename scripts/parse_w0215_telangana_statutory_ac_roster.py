@@ -160,7 +160,21 @@ def main():
     empty_names = [x["number"] for x in roster if not x["name"]]
     empty_extents = [x["number"] for x in roster if not x["extent"]]
     districts = sorted(set(x["district"] for x in roster if x.get("district")))
-    status = "PASS" if len(roster) == 119 and numbers == list(range(1,120)) and not empty_names and not empty_extents and len(districts) == 10 else "PARTIAL_PARSE_REQUIRES_REVIEW"
+    by_number = {x["number"]: x for x in roster}
+    semantic_checks = [
+        {"ac":18,"field":"extent","contains":"Nizamabad Mandal (Part)"},
+        {"ac":18,"field":"extent","contains":"Dichpalle"},
+        {"ac":46,"field":"extent","contains":"Ward No. 5 to 16"},
+        {"ac":50,"field":"extent","contains":"Meerpet (CT)"},
+        {"ac":71,"field":"extent","contains":"Secunderabad Cantonment Board"},
+        {"ac":119,"field":"extent","contains":"V.R. Puram Mandals"},
+    ]
+    for check in semantic_checks:
+        value = str(by_number.get(check["ac"], {}).get(check["field"], ""))
+        check["pass"] = check["contains"].casefold() in value.casefold()
+        check["observedValue"] = value
+    semantic_pass = all(x["pass"] for x in semantic_checks)
+    status = "PASS" if len(roster) == 119 and numbers == list(range(1,120)) and not empty_names and not empty_extents and len(districts) == 10 and semantic_pass else "PARTIAL_PARSE_REQUIRES_REVIEW"
     payload = {
         "schemaVersion": 1,
         "title": "Telangana statutory Assembly Constituency roster — Schedule XXVII, Table A",
@@ -198,6 +212,8 @@ def main():
             "districtCount": len(districts),
             "districts": districts,
             "duplicateRowsRemoved": duplicates,
+            "semanticChecks": semantic_checks,
+            "semanticChecksPass": semantic_pass,
             "status": status,
         },
         "roster": roster,
