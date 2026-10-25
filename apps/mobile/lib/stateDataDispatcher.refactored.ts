@@ -204,7 +204,7 @@ export function getElectionHistoryForState(
     year: r.year,
     type: 'assembly' as const,
     totalSeats: r.total_seats,
-    partyResults: [], // TODO: fetch from election_history_results table
+    partyResults: r.party_results ? JSON.parse(r.party_results) : undefined, // absent source data stays unavailable
     notes: r.notes,
   }));
 }
