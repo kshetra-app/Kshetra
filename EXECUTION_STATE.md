@@ -14,9 +14,9 @@ W021_5_STAGE_B_STATUS: PARTIAL / NOT ACCEPTED — NO CANONICAL NATIONAL AC GEOME
 W021_5_STAGE_B_EVIDENCE: PR #25 branch (not yet merged) — reports/w021_5_stage_b_source_research_2026-10-25.md
 W021_5_STAGE_B_PROBE_MANIFEST: PR #25 branch (not yet merged) — reports/evidence/w021_5_stage_b_acquisition_probe_2026-10-25.json
 W021_5_STAGE_B_ACQUISITION_RUN: 40211792541 — 31/61 source artifacts fetched; 24 failed; 0 canonical geometry accepted
-W021_5_STAGE_B_LEGAL_ORDER_PROBE: 40213536854 — browser-impersonated acquisition of official ECI 2008 order PDF and Schedule III roster extraction pending
+W021_5_STAGE_B_LEGAL_ORDER_PROBE: 40213536854 — official PDF binary endpoint returned HTTP 406; web PDF text reviewed; no binary SHA-256 claimed; partial statutory crosswalk 9/119 ACs
 W021_5_STAGE_B_ECI_MIRROR_AUDIT: 824 features, 23 invalid raw polygons, 1,337 positive-area overlap pairs; REJECTED for canonical use
-W021_5_STAGE_B_TELANGANA_GIS: four TGRAC service variants being compared; two 119-feature layers acquired with one invalid Dornakal polygon each; seven material differences between first two layers; ECI 2008 Schedule III crosswalk partial for 9/119 names; effective-date chain open; probe run 40213331746 pending (prior run 40213242722 cancelled before job start)
+W021_5_STAGE_B_TELANGANA_GIS: four TGRAC service variants acquired; Admin_2026/Admin_New are byte-identical and Admin_Old differs only by sub-millimetre precision; older AdministrativeInfoSystem layer is the outlier with six material AC shifts; all variants share one invalid Dornakal polygon; leading family NOT CANONICAL (prior run 40213242722 cancelled before job start)
 W021_5_STAGE_B_SOVILLAGE: 14/27 archives acquired; 71,484 features, 37 invalid geometries, one CRS metadata conflict; NOT AC geometry
 W021_5_STAGE_B_EXTERNAL_GATES: EB-01..EB-05 OPEN; W021.5-B1-04 OPEN
 W021_5_PRODUCTION: STRICTLY AIR-GAPPED; NO ACCESS OR MUTATION
