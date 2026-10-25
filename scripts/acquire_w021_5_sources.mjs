@@ -35,7 +35,7 @@ const SOURCES = [
     url:'https://www.eci.gov.in/Documents/Delimitation/DelimitationofParliamentaryAssemblyConstituenciesOrder-2008%28English%29.pdf',
     effectiveDate:'2008-11-26', purpose:'Statutory names, reservation and constituency extents; digital copy does not satisfy physical-gazette gate.' },
   { id:'SRC-ECI-STATISTICAL-INDEX', authority:'PRIMARY_OFFICIAL_INDEX', path:'official/eci/statistical-reports-index.html',
-    url:'https://www.eci.gov.in/statistical-reports/', purpose:'Index to official election statistical reports; individual reports must be separately registered.' },
+    url:'https://www.eci.gov.in/statistical-reports', purpose:'Index to official election statistical reports; individual reports must be separately registered.' },
   { id:'SRC-ECI-ELECTION-MANAGEMENT', authority:'PRIMARY_OFFICIAL_INDEX', path:'official/eci/election-management.html',
     url:'https://www.eci.gov.in/election-management', purpose:'Official index to Form 20 and election results.' },
   { id:'SRC-ECI-AFFIDAVIT-PORTAL', authority:'PRIMARY_OFFICIAL_PORTAL', path:'official/eci/affidavit-portal.html',
@@ -126,58 +126,83 @@ async function fetchBounded(initialUrl) {
   let current = initialUrl;
   for (let hop = 0; hop <= MAX_REDIRECTS; hop++) {
     if (!hostAllowed(current)) throw new Error('HOST_NOT_ALLOWLISTED: ' + new URL(current).hostname);
-    const requestHeaders = {
-      'User-Agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36',
-      'Accept':'text/html,application/pdf,application/json,application/zip,application/octet-stream,*/*',
-      'Accept-Language':'en-IN,en;q=0.9'
-    };
-    if (new URL(current).hostname.toLowerCase() === 'results.eci.gov.in') {
-      requestHeaders.Referer = 'https://results.eci.gov.in/';
-    }
     const sourceUrl = new URL(current);
     const isSoiArchive = sourceUrl.hostname.toLowerCase().endsWith('surveyofindia.gov.in') && /\.zip$/i.test(sourceUrl.pathname);
-    const response = await fetch(current, {
-      redirect: 'manual',
-      signal: AbortSignal.timeout(isSoiArchive ? 30000 : 15000),
-      headers: requestHeaders
+    const timeoutMs = isSoiArchive ? 30000 : 15000;
+    const controller = new AbortController();
+    let timeoutId;
+    const timeoutPromise = new Promise((_, reject) => {
+      timeoutId = setTimeout(() => {
+        controller.abort();
+        reject(new Error('SOURCE_TIMEOUT_' + timeoutMs + 'MS'));
+      }, timeoutMs);
     });
-    if ([301,302,303,307,308].includes(response.status)) {
-      const location = response.headers.get('location');
-      if (!location) throw new Error('REDIRECT_WITHOUT_LOCATION');
-      current = new URL(location, current).toString();
-      continue;
-    }
-    if (!response.ok) throw new Error('HTTP_' + response.status);
-    const declared = Number(response.headers.get('content-length') || 0);
-    if (declared > MAX_BYTES) throw new Error('CONTENT_LENGTH_EXCEEDS_LIMIT');
-    const chunks = [];
-    let received = 0;
-    if (!response.body) throw new Error('EMPTY_SOURCE_BODY');
-    const reader = response.body.getReader();
-    try {
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        received += value.byteLength;
-        if (received > MAX_BYTES) {
-          await reader.cancel();
-          throw new Error('BODY_EXCEEDS_LIMIT');
-        }
-        chunks.push(Buffer.from(value));
-      }
-    } finally {
-      reader.releaseLock();
-    }
-    const bytes = Buffer.concat(chunks, received);
-    if (bytes.byteLength === 0) throw new Error('EMPTY_SOURCE_BODY');
-    return {
-      bytes,
-      finalUrl: current,
-      status: response.status,
-      contentType: response.headers.get('content-type'),
-      etag: response.headers.get('etag'),
-      lastModified: response.headers.get('last-modified')
+    const requestHeaders = {
+      'User-Agent':'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0 Safari/605.1.15',
+      'Accept':'text/html,application/pdf,application/json,application/zip,application/octet-stream,*/*',
+      'Accept-Language':'en-IN,en;q=0.9',
+      'Origin':sourceUrl.origin
     };
+    if (sourceUrl.hostname.toLowerCase() === 'results.eci.gov.in') {
+      requestHeaders.Referer = 'https://results.eci.gov.in/ResultAcGenMay2026/';
+    } else if (sourceUrl.hostname.toLowerCase().endsWith('eci.gov.in')) {
+      requestHeaders.Referer = 'https://www.eci.gov.in/';
+    }
+    try {
+      const response = await Promise.race([
+        fetch(current, { redirect:'manual', signal:controller.signal, headers:requestHeaders }),
+        timeoutPromise
+      ]);
+      if ([301,302,303,307,308].includes(response.status)) {
+        const location = response.headers.get('location');
+        await response.body?.cancel().catch(()=>{});
+        if (!location) throw new Error('REDIRECT_WITHOUT_LOCATION');
+        current = new URL(location, current).toString();
+        continue;
+      }
+      if (!response.ok) {
+        await response.body?.cancel().catch(()=>{});
+        throw new Error('HTTP_' + response.status);
+      }
+      const declared = Number(response.headers.get('content-length') || 0);
+      if (declared > MAX_BYTES) {
+        await response.body?.cancel().catch(()=>{});
+        throw new Error('CONTENT_LENGTH_EXCEEDS_LIMIT:' + declared);
+      }
+      const chunks = [];
+      let received = 0;
+      if (!response.body) throw new Error('EMPTY_SOURCE_BODY');
+      const reader = response.body.getReader();
+      try {
+        while (true) {
+          const { done, value } = await Promise.race([reader.read(), timeoutPromise]);
+          if (done) break;
+          received += value.byteLength;
+          if (received > MAX_BYTES) {
+            await reader.cancel().catch(()=>{});
+            throw new Error('BODY_EXCEEDS_LIMIT:' + received);
+          }
+          chunks.push(Buffer.from(value));
+        }
+      } catch (error) {
+        await reader.cancel().catch(()=>{});
+        throw error;
+      } finally {
+        reader.releaseLock();
+      }
+      const bytes = Buffer.concat(chunks, received);
+      if (bytes.byteLength === 0) throw new Error('EMPTY_SOURCE_BODY');
+      return {
+        bytes,
+        finalUrl: current,
+        status: response.status,
+        contentType: response.headers.get('content-type'),
+        etag: response.headers.get('etag'),
+        lastModified: response.headers.get('last-modified')
+      };
+    } finally {
+      clearTimeout(timeoutId);
+    }
   }
   throw new Error('TOO_MANY_REDIRECTS');
 }
@@ -195,6 +220,7 @@ const manifest = {
 };
 
 for (const source of SOURCES) {
+  console.log('[FETCH START] ' + source.id + ' ' + source.url);
   const result = { ...source, retrievedAt:new Date().toISOString(), status:'PENDING', sha256:null, bytes:null, finalUrl:null, contentType:null };
   try {
     const fetched = await fetchBounded(source.url);
