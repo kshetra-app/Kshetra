@@ -44,8 +44,8 @@ class FakeDatabase implements WorkerDatabase {
   constructor(private readonly claimRows: ClaimedWebhookRow[]) {}
   async query<Row = Record<string, unknown>>(sql: string, values?: unknown[]): Promise<WorkerQueryResult<Row>> {
     this.calls.push({ sql, values });
-    if (sql.includes('fn_claim_webhook_batch')) return { rows: this.claimRows as unknown as Row[] };
-    if (sql.includes('fn_complete_webhook_delivery')) return { rows: [{ updated: true, terminal_status: 'delivered' } as Row] };
+    if (sql.includes('panin_webhook_worker.claim_webhook_batch')) return { rows: this.claimRows as unknown as Row[] };
+    if (sql.includes('panin_webhook_worker.complete_webhook_delivery')) return { rows: [{ updated: true, terminal_status: 'delivered' } as Row] };
     throw new Error('Unexpected SQL path: ' + sql);
   }
   async end(): Promise<void> {}
