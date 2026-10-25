@@ -50,14 +50,17 @@ function jsonMap(file) {
 function normalizedSource(source) { return source.split(String.fromCharCode(92)).join('/').toLowerCase(); }
 function isGeographySource(source) {
   const s = normalizedSource(source);
-  return s.includes('/data/seed/') || s.includes('/apps/mobile/data/') || s.endsWith('.geojson')
-    || /\\/(statedataadapter|statetriviaadapter|statedatadispatcher|enrichgeojson)\\.tsx?$/.test(s);
+  return s.includes('/data/seed/') || s.includes('/apps/mobile/data/') || s.endsWith('.geojson') || ['statedataadapter.ts','statedataadapter.tsx','statetriviaadapter.ts','statetriviaadapter.tsx','statedatadispatcher.ts','statedatadispatcher.tsx','enrichgeojson.ts','enrichgeojson.tsx'].some((name) => s.endsWith('/' + name));
+    || s.endsWith('/apps/mobile/lib/statedataadapter.ts') || s.endsWith('/apps/mobile/lib/statedataadapter.tsx') || s.endsWith('/apps/mobile/lib/statetriviaadapter.ts') || s.endsWith('/apps/mobile/lib/statetriviaadapter.tsx') || s.endsWith('/apps/mobile/lib/statedatadispatcher.ts') || s.endsWith('/apps/mobile/lib/statedatadispatcher.tsx') || s.endsWith('/apps/mobile/lib/enrichgeojson.ts') || s.endsWith('/apps/mobile/lib/enrichgeojson.tsx')
 }
 function isForbiddenNationalSeed(source) {
   const s = normalizedSource(source);
-  return (s.includes('/data/seed/') && /-(constituencies|trivia|historical-results|election-history|demographics|political-timeline|mla-profiles)\\.(ts|tsx|js|json)$/.test(s))
-    || /\\/apps\\/mobile\\/lib\\/(statedataadapter|statetriviaadapter|statedatadispatcher|enrichgeojson)\\.tsx?$/.test(s)
-    || /\\/apps\\/mobile\\/data\\/geo-manifest\\.json$/.test(s);
+  const seedData = s.includes('/data/seed/') && ['-constituencies.ts','-trivia.ts','-historical-results.ts','-election-history.ts','-demographics.ts','-political-timeline.ts','-mla-profiles.ts'].some((suffix) => s.endsWith(suffix));
+  return seedData || s.endsWith('/apps/mobile/lib/statedataadapter.ts') || s.endsWith('/apps/mobile/lib/statedataadapter.tsx')
+    || s.endsWith('/apps/mobile/lib/statetriviaadapter.ts') || s.endsWith('/apps/mobile/lib/statetriviaadapter.tsx')
+    || s.endsWith('/apps/mobile/lib/statedatadispatcher.ts') || s.endsWith('/apps/mobile/lib/statedatadispatcher.tsx')
+    || s.endsWith('/apps/mobile/lib/enrichgeojson.ts') || s.endsWith('/apps/mobile/lib/enrichgeojson.tsx')
+    || s.endsWith('/apps/mobile/data/geo-manifest.json');
 }
 
 const files = walk(resolve(bundleDir));
