@@ -123,19 +123,12 @@ def main():
                 # Some long constituency names have a second left-column line,
                 # while extent text continues in the right column.
                 if left_text and not re.match(r"^\d+\s*$", left_text):
+                    # The left table column is the constituency name. If the name
+                    # wraps, every non-number continuation belongs to the name,
+                    # even when the right extent column also has text on this line.
+                    current["name"] = normalize(current["name"] + " " + left_text)
                     if right_text:
-                        # Preserve both columns; a continuation of the name is rare
-                        # and can be recognized by a parenthetical-only left value.
-                        if re.fullmatch(r"\([^)]*\)", left_text):
-                            current["name"] = normalize(current["name"] + " " + left_text)
-                            current["extent"] = normalize(current["extent"] + " " + right_text)
-                        else:
-                            current["extent"] = normalize(current["extent"] + " " + left_text + " " + right_text)
-                    else:
-                        if re.fullmatch(r"\([^)]*\)", left_text):
-                            current["name"] = normalize(current["name"] + " " + left_text)
-                        else:
-                            current["extent"] = normalize(current["extent"] + " " + left_text)
+                        current["extent"] = normalize(current["extent"] + " " + right_text)
                 elif right_text:
                     current["extent"] = normalize(current["extent"] + " " + right_text)
     if current:
@@ -166,12 +159,16 @@ def main():
         {"ac":18,"field":"extent","contains":"Dichpalle"},
         {"ac":46,"field":"extent","contains":"Ward No. 5 to 16"},
         {"ac":50,"field":"extent","contains":"Meerpet (CT)"},
+        {"ac":71,"field":"name","equals":"Secunderabad Cantt. (SC)"},
         {"ac":71,"field":"extent","contains":"Secunderabad Cantonment Board"},
         {"ac":119,"field":"extent","contains":"V.R. Puram Mandals"},
     ]
     for check in semantic_checks:
         value = str(by_number.get(check["ac"], {}).get(check["field"], ""))
-        check["pass"] = check["contains"].casefold() in value.casefold()
+        if "equals" in check:
+            check["pass"] = check["equals"].casefold() == value.casefold()
+        else:
+            check["pass"] = check["contains"].casefold() in value.casefold()
         check["observedValue"] = value
     semantic_pass = all(x["pass"] for x in semantic_checks)
     status = "PASS" if len(roster) == 119 and numbers == list(range(1,120)) and not empty_names and not empty_extents and len(districts) == 10 and semantic_pass else "PARTIAL_PARSE_REQUIRES_REVIEW"
