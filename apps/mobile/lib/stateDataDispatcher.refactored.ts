@@ -94,10 +94,10 @@ export function getMLAProfileForState(
   if (!constituency) return adapted;
 
   // If names already match, return as-is
-  if (namesMatch(adapted.name, constituency.winnerName)) return adapted;
+  if (constituency.winnerName && namesMatch(adapted.name, constituency.winnerName)) return adapted;
 
   // Override profile name with seed's winnerName to prevent "two MLAs" display
-  return { ...adapted, name: constituency.winnerName };
+  return { ...adapted, name: constituency.winnerName ?? adapted.name };
 }
 
 // ═════════════════════════════════════════════════════════════════════════
