@@ -143,14 +143,15 @@ export function getDemographicsForState(
 
 export interface ConstituencyHistoryEntry {
   year: number;
-  winner: string;
-  party: string;
+  winner: string | null;
+  party: string | null;
 }
 
 /**
  * Get per-constituency historical results for any supported state.
  * Returns an array of { year, winner, party } for prior elections.
  */
+/** Maps absent source fields to null; history is not silently completed with synthetic labels. */
 export function getHistoryForState(
   stateCode: string,
   acNo: number,
@@ -203,8 +204,8 @@ export function getElectionHistoryForState(
   return rows.map(r => ({
     year: r.year,
     type: 'assembly' as const,
-    totalSeats: r.total_seats,
-    partyResults: r.party_results ? JSON.parse(r.party_results) : undefined, // absent source data stays unavailable
+    totalSeats: r.total_seats ?? null,
+    partyResults: r.party_results ? JSON.parse(r.party_results) : null, // absent source data stays unavailable
     notes: r.notes,
   }));
 }
