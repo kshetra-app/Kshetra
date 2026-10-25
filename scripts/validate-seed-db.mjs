@@ -54,7 +54,8 @@ const version = JSON.parse(fs.readFileSync(versionPath, 'utf8'));
 if (!/^[a-f0-9]{64}$/.test(version.sha256 || '') || version.sha256 !== fullSha256) {
   fail('seed-db-version.json SHA-256 does not match generated database bytes');
 }
-if (version.sizeBytes !== stat.size) fail('seed-db-version.json sizeBytes does not match database size');\nif (version.version !== fullSha256.slice(0, 16)) fail('seed-db-version.json version prefix does not match database SHA-256');
+if (version.sizeBytes !== stat.size) fail('seed-db-version.json sizeBytes does not match database size');
+if (version.version !== fullSha256.slice(0, 16)) fail('seed-db-version.json version prefix does not match database SHA-256');
 
 const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
 const db = new Database(dbPath, { readonly: true, fileMustExist: true });
@@ -83,6 +84,7 @@ try {
     }
     if (!declared.version || declared.version !== stored.version) fail(`${code} manifest version missing or inconsistent`);
     const actualConstituencies = db.prepare('SELECT count(*) AS n FROM constituencies WHERE state_code=?').get(code).n;
+    if (actualConstituencies <= 0) fail(`${code} has zero constituencies; every supported jurisdiction needs real seed rows`);
     if (Number(declared.constituency_count) !== actualConstituencies) fail(`${code} constituency count does not match database (${declared.constituency_count} vs ${actualConstituencies})`);
     for (const [table, flag] of TABLE_FLAGS) {
       const count = db.prepare(`SELECT count(*) AS n FROM ${table} WHERE state_code=?`).get(code).n;
