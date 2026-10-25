@@ -1,0 +1,59 @@
+name: W021.5 Stage B Source Acquisition Probe
+
+on:
+  push:
+    branches:
+      - cto/w0215-resume-directive154-20261025
+    paths:
+      - "scripts/w0215_acquire_stage_b_geometry.py"
+      - ".github/workflows/w0215-stage-b-source-acquisition.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: w0215-stage-b-source-acquisition
+  cancel-in-progress: false
+
+jobs:
+  acquire-and-validate:
+    name: Acquire official-source candidates (read-only)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout authorized Stage B branch
+        uses: actions/checkout@v4
+        with:
+          ref: cto/w0215-resume-directive154-20261025
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install pinned HTTP client
+        run: python -m pip install --disable-pip-version-check "curl_cffi==0.13.0"
+
+      - name: Acquire source bytes and run structural checks
+        id: acquire
+        continue-on-error: true
+        run: python scripts/w0215_acquire_stage_b_geometry.py
+
+      - name: Upload raw sources and manifest even on partial failure
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: w0215-stage-b-source-evidence
+          path: stage_b_acquisition/
+          if-no-files-found: warn
+          retention-days: 30
+
+      - name: Enforce acquisition result
+        if: steps.acquire.outcome != 'success'
+        run: |
+          echo "Stage B source acquisition/structural gate failed or was partial."
+          echo "Inspect the uploaded manifest and raw response artifacts; do not mark Stage B accepted."
+          exit 1
