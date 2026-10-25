@@ -9,6 +9,12 @@ const supabaseAnonKey = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY ?? '';
 /** Whether Supabase credentials are configured */
 export const isSupabaseConfigured = !!(supabaseUrl && supabaseAnonKey);
 
+if (!isSupabaseConfigured && process.env.NODE_ENV !== 'test') {
+  throw new Error(
+    'CONFIG_ERROR: EXPO_PUBLIC_SUPABASE_URL and EXPO_PUBLIC_SUPABASE_ANON_KEY are required. Missing runtime configuration must not silently create a placeholder client.'
+  );
+}
+
 /**
  * Secure storage adapter for Supabase Auth.
  * Uses expo-secure-store on native, localStorage on web.
@@ -46,12 +52,12 @@ const SecureStoreAdapter = {
 
 /**
  * Supabase client — works when credentials are configured.
- * When credentials are missing, createClient gets a dummy URL so it
- * won't crash at construction, but auth calls will fail gracefully.
+ * Missing configuration is rejected before client construction. Only isolated
+ * tests receive a local non-routable fixture so importing the module is safe.
  */
 export const supabase: SupabaseClient = createClient(
-  supabaseUrl || 'https://placeholder.supabase.co',
-  supabaseAnonKey || 'placeholder-anon-key',
+  supabaseUrl || 'https://test-fixture.supabase.co',
+  supabaseAnonKey || 'test-only-anon-key',
   {
     auth: {
       storage: SecureStoreAdapter,
