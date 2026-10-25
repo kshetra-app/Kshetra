@@ -40,6 +40,14 @@ import {
   getConstituencyElectionData,
 } from '../services/stateData';
 import { sendApiError } from '../lib/replyHelper';
+import { getCensusDistricts } from '../../../../data/census/india-district-population-2011';
+import { delimitationService } from '../services/delimitationService';
+import {
+  getConstituencyDataStatus,
+  hasHierarchyData,
+  hasBoothData,
+  getBoothsForConstituency,
+} from '../../../mobile/lib/hierarchyData';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 
 /** Map seed data to ConstituencyBrief for API responses */
@@ -438,6 +446,7 @@ export async function constituencyRoutes(app: FastifyInstance) {
     const demographicsByAcNo: Record<string, unknown> = {};
     const mlaProfilesByAcNo: Record<string, unknown> = {};
     const strongholdByAcNo: Record<string, boolean> = {};
+    const hierarchyByAcNo: Record<string, { status: 'verified' | 'data_pending'; hasHierarchyData: boolean; hasBoothData: boolean }> = {};
     for (const c of normalized) {
       const key = String(c.acNo);
       const trivia = getTriviaForConstituencyInState(code, c.acNo);
@@ -449,9 +458,20 @@ export async function constituencyRoutes(app: FastifyInstance) {
       const profile = getMLAProfileForState(code, c.acNo);
       if (profile?.name) mlaProfilesByAcNo[key] = profile;
       if (history.length > 0 && c.winnerParty) strongholdByAcNo[key] = isStrongholdForState(code, c.acNo, c.winnerParty);
+      const hasHierarchy = hasHierarchyData(code, c.acNo);
+      hierarchyByAcNo[key] = {
+        status: getConstituencyDataStatus(code, c.acNo),
+        hasHierarchyData: hasHierarchy,
+        hasBoothData: hasBoothData(code, c.acNo),
+      };
     }
 
     const info = getStateInfo(code);
+    const seatProjection = delimitationService.getStateProjection(code)?.projection ?? null;
+    const censusDistricts = getCensusDistricts(code).map((district) => ({
+      districtName: district.districtName,
+      totalPopulation: district.totalPopulation,
+    }));
     let hasLocalBodyData = false;
     if (isSupabaseConfigured) {
       try {
@@ -479,6 +499,9 @@ export async function constituencyRoutes(app: FastifyInstance) {
       mlaProfilesByAcNo,
       strongholdByAcNo,
       hasLocalBodyData,
+      seatProjection,
+      censusDistricts,
+      hierarchyByAcNo,
     };
     const revision = createHash('sha1').update(JSON.stringify(contractCore)).digest('hex');
     const etag = `"${revision}"`;
@@ -491,6 +514,42 @@ export async function constituencyRoutes(app: FastifyInstance) {
     return { ...contractCore, revision };
   });
 
+
+  /**
+   * Download historical booth coordinates only for the selected constituency.
+   * The national booth-location seed stays on the server; the mobile app gets
+   * a versioned, bounded payload only after the user zooms into an AC.
+   */
+  app.get<{ Params: { stateCode: string; acNo: string } }>('/states/:stateCode/constituencies/:acNo/booths', async (request, reply) => {
+    const code = request.params.stateCode.toUpperCase();
+    const acNo = Number(request.params.acNo);
+    if (!/^[A-Z]{2}$/.test(code) || !Number.isSafeInteger(acNo) || acNo < 1 || !isStateSupported(code)) {
+      return sendApiError(reply, request, 404, 'Not Found', 'Selected constituency booth data is unavailable', {
+        code: 'CONSTITUENCY_BOOTH_DATA_UNAVAILABLE',
+      });
+    }
+    const booths = getBoothsForConstituency(code, acNo);
+    if (booths.length === 0) {
+      return sendApiError(reply, request, 404, 'Not Found', 'No verified booth locations are available for this constituency', {
+        code: 'CONSTITUENCY_BOOTH_DATA_UNAVAILABLE',
+      });
+    }
+    const contractCore = {
+      schemaVersion: 1 as const,
+      stateCode: code,
+      acNo,
+      dataStatus: 'verified' as const,
+      booths,
+    };
+    const revision = createHash('sha1').update(JSON.stringify(contractCore)).digest('hex');
+    const etag = `"${revision}"`;
+    reply.header('ETag', etag)
+      .header('X-State-Map-Schema', '1')
+      .header('X-State-Map-Revision', revision)
+      .header('Cache-Control', 'public, max-age=300, stale-while-revalidate=86400');
+    if (request.headers['if-none-match'] === etag) return reply.code(304).send();
+    return { ...contractCore, revision };
+  });
 
   /** 1. GET /states/:stateCode/constituencies */
   app.get('/states/:stateCode/constituencies', {
