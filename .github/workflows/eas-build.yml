@@ -39,7 +39,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 1
-          lfs: true
+          lfs: false
 
       - name: Materialize canonical local-body LFS inputs without fetching stale DB object
         shell: bash
