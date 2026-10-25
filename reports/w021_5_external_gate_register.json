@@ -147,6 +147,35 @@
       "topologyStatus": "ONE_INVALID_GEOMETRY; ZERO_POSITIVE_AREA_OVERLAP_PAIRS; COVERAGE_NOT_PROVEN",
       "audit": "reports/evidence/w021_5_telangana_arcgis_geometry_audit_2026-10-25.json",
       "acceptance": "NOT_ACCEPTED_PENDING_REPAIR_LEGAL_CROSSWALK_AND_STATE_BOUNDARY_COMPARISON"
+    },
+    "broadSourceAcquisitionRun": 40211792541,
+    "broadSourceAcquisitionStatus": "COMPLETED_SUCCESS_WITH_PARTIAL_SOURCE_COVERAGE",
+    "broadSourceManifestSummary": {
+      "totalSources": 61,
+      "downloaded": 31,
+      "failed": 24,
+      "totalDownloadedBytes": 142219649,
+      "officialDownloads": 21,
+      "secondaryCandidateDownloads": 10,
+      "derivedGeometryAcceptedAsOfficial": 0
+    },
+    "eciMirrorAudit": {
+      "report": "reports/evidence/w021_5_eci_mirror_geometry_audit_2026-10-25.json",
+      "features": 824,
+      "expectedFeatures": 824,
+      "rawInvalidGeometries": 23,
+      "positiveAreaOverlapPairsAfterMakeValid": 1337,
+      "canonicalAcceptance": "REJECTED"
+    },
+    "soiVillageBoundaryAudit": {
+      "expectedArchives": 27,
+      "downloadedAndAudited": 14,
+      "missing": 13,
+      "totalFeatures": 71484,
+      "invalidGeometries": 37,
+      "crsMetadataConflicts": 1,
+      "acceptedAsACGeometry": false,
+      "acceptedAsDeliveryBeatGeometry": false
     }
   }
 }
