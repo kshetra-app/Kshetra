@@ -6,15 +6,11 @@
  */
 import { STATES } from '@kshetra/shared';
 import type { StateInfo, ConstituencyBrief } from '@kshetra/shared';
-import {
-  TELANGANA_CONSTITUENCIES,
-  type ConstituencySeed,
-} from './data';
-import { getConstituenciesForState, hasFullData as checkFullData } from './stateDataAdapter';
+import type { ConstituencySeed } from './data';
 
 export interface StateData {
   info: StateInfo;
-  /** Raw seed data (Telangana only — other states use adapter) */
+  /** Empty in the base bundle; selected-state rows are served by the map-data contract. */
   constituencies: ConstituencySeed[];
   hasGeoJSON: boolean;
   /** Whether this state has full data or just stubs */
@@ -28,11 +24,11 @@ export interface StateData {
 const registry: Record<string, StateData> = {
   TS: {
     info: STATES.TS,
-    constituencies: TELANGANA_CONSTITUENCIES,
+    // Selected-state constituency rows are fetched at runtime.\n    constituencies: [],
     hasGeoJSON: true,
     hasFullData: true,
     totalSeats: 119,
-    loadedCount: TELANGANA_CONSTITUENCIES.length,
+    loadedCount: 119,
   },
   AP: {
     info: STATES.AP,
@@ -117,7 +113,7 @@ const registry: Record<string, StateData> = {
 
 /** Get state data by code. Returns null if not yet supported. */
 export function getStateData(stateCode: string): StateData | null {
-  return registry[stateCode] ?? null;
+  return registry[stateCode.toUpperCase()] ?? null;
 }
 
 /** Get all state codes that have full data (constituencies + GeoJSON). */
@@ -132,5 +128,5 @@ export function getAllStateCodes(): string[] {
 
 /** Check if a state has constituency data loaded. */
 export function isStateSupported(stateCode: string): boolean {
-  return stateCode in registry;
+  return stateCode.toUpperCase() in registry;
 }
