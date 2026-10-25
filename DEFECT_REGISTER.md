@@ -1,5 +1,16 @@
 # DEFECT REGISTER: PANIN / KSHETRA
-**Last Updated:** 2026-09-23
+**Last Updated:** 2026-10-25
+
+## GOV-01 — W022 Authorization / Repository-State Conflict
+- **Severity:** P0
+- **Status:** OPEN — GOVERNANCE REMEDIATION AND INDEPENDENT VERIFICATION REQUIRED
+- **Finding:** W022 implementation commit `3ac3f1c0c14d51d60bab9f9d3e88a08716466124` predates prospective authorization directive commit `39d0b680b7d266e73385edbbb96caff61e23d184`, while the prior plan declared implementation unauthorized. The mismatch must remain historically visible; no retrospective ancestry claim is valid.
+- **Current control:** W022 continuation is permitted prospectively under Revision 4. Production remains air-gapped; staging DB execution requires a separate explicit token.
+- **Closure criteria:** (1) authorization and registers reconcile; (2) governance CI proves missing/mismatched/non-ancestor authorization fails closed; (3) fresh W022 technical/security tests pass; (4) independent verification passes; (5) no unauthorized environment execution occurred.
+
+**Prior register timestamp retained in history; current update date: 2026-10-25.**
+
+## Historical entries23
 **Classification:** P0 (Production Blocker), P1 (Major / Architectural), P2 (Moderate / Debt), P3 (Minor / Polish)
 
 ---
