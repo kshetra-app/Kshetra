@@ -259,17 +259,6 @@ export async function buildApp() {
   await app.register(saasAuthPlugin);
   await app.register(saasV1Routes);
 
-  // Outbound network dispatch is opt-in and requires the durable queue.
-  if (process.env.WEBHOOK_WORKER_ENABLED === 'true') {
-    if (webhookService.getQueueProvider() instanceof InMemoryQueueProvider) {
-      throw new Error('FATAL_WEBHOOK_CONFIGURATION: WEBHOOK_WORKER_ENABLED requires a durable PostgreSQL queue provider.');
-    }
-    const pollIntervalMs = Number.parseInt(process.env.WEBHOOK_WORKER_POLL_INTERVAL_MS ?? '2000', 10);
-    const batchSize = Number.parseInt(process.env.WEBHOOK_WORKER_BATCH_SIZE ?? '10', 10);
-    const stopWebhookWorker = startWebhookWorker(webhookService.getQueueProvider(), app.log, { pollIntervalMs, batchSize });
-    app.addHook('onClose', async () => { stopWebhookWorker(); });
-  }
-
   return app;
 }
 
@@ -277,9 +266,22 @@ export async function start() {
   const app = await buildApp();
   const port = parseInt(process.env.PORT ?? '3001', 10);
   const host = process.env.HOST ?? '0.0.0.0';
+  const webhookWorkerEnabled = process.env.WEBHOOK_WORKER_ENABLED === 'true';
+  if (webhookWorkerEnabled && webhookService.getQueueProvider() instanceof InMemoryQueueProvider) {
+    throw new Error('FATAL_WEBHOOK_CONFIGURATION: WEBHOOK_WORKER_ENABLED requires a durable PostgreSQL queue provider.');
+  }
+  let stopWebhookWorker: (() => void) | undefined;
+  if (webhookWorkerEnabled) {
+    app.addHook('onClose', async () => { stopWebhookWorker?.(); });
+  }
 
   try {
     await app.listen({ port, host });
+    if (webhookWorkerEnabled) {
+      const pollIntervalMs = Number.parseInt(process.env.WEBHOOK_WORKER_POLL_INTERVAL_MS ?? '2000', 10);
+      const batchSize = Number.parseInt(process.env.WEBHOOK_WORKER_BATCH_SIZE ?? '10', 10);
+      stopWebhookWorker = startWebhookWorker(webhookService.getQueueProvider(), app.log, { pollIntervalMs, batchSize });
+    }
     app.log.info(`KSHETRA API running on http://${host}:${port}`);
     // Prime the news cache and refresh it hourly.
     startNewsScheduler(app.log);
