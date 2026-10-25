@@ -1303,9 +1303,18 @@
       "artifactSha256": null,
       "status": "QUEUED_AT_LAST_CHECK",
       "scope": "Retry official ECI 2008 order PDF using a persistent browser-impersonated session, homepage cookies and URL-encoding variants; extract Schedule III roster if acquired."
+    },
+    {
+      "runId": 40213959324,
+      "workflowUrl": "https://github.com/kshetra-app/Kshetra/actions/runs/40213959324",
+      "artifactId": null,
+      "artifactName": null,
+      "artifactSha256": null,
+      "status": "IN_PROGRESS_AT_LAST_CHECK",
+      "scope": "Repeat four-service Telangana probe after changing the runner to report optional ECI 404/timeouts as warnings while keeping both primary Telangana geometry source checks strict."
     }
   ],
-  "updatedAt": "2026-10-25T16:55:00Z",
+  "updatedAt": "2026-10-25T16:56:00Z",
   "notes": [
     "Actual public source artifacts were downloaded in GitHub Actions run 40209022405 and SHA-256 hashed; detailed geometry findings are in reports/w021_5_datameet_ac_geometry_forensic_audit.json.",
     "Survey of India official ABDB page, Vector Data Catalog 2025 PDF and Metadata_ABDB.zip were downloaded and hashed. The metadata covers state, district, subdistrict and village boundaries, not statutory Assembly Constituency polygons.",
