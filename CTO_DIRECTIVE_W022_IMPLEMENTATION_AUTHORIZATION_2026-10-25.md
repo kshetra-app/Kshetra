@@ -4,7 +4,7 @@
 **Issued:** 2026-10-25  
 **Authority:** Explicit user instruction in the active ChatGPT session, acting as project owner and final human authority  
 **Status:** APPROVED — PROSPECTIVE IMPLEMENTATION AUTHORIZATION  
-**Plan:** PLAN-W022-REV-1.0.md, Revision 3, subject to the scope and controls below  
+**Plan:** `PLAN-W022-REV-1.0.md`, Revision 4 (ratified prospectively under this directive and recorded in `DECISION_LOG.md` DEC-044), subject to the scope and controls below  
 **Production:** STRICTLY AIR-GAPPED  
 **Staging database execution / deployment:** NOT AUTHORIZED by this directive alone
 
