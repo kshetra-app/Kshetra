@@ -106,9 +106,9 @@ for (const requiredId of ['W021.5', 'W022', 'GOV-01', 'GOV-02']) {
   assert.ok(acceptanceIds.has(requiredId), 'Acceptance register is missing required current milestone/defect row ' + requiredId);
 }
 for (const defectId of ['GOV-01', 'GOV-02']) {
-  const defectRow = defects.split(/\\r?\\n/).find((line) => line.startsWith('| **' + defectId + '** |'));
+  const defectRow = defects.split(/\r?\n/).find((line) => line.startsWith('| **' + defectId + '** |'));
   assert.ok(defectRow, 'Defect register is missing the table row for ' + defectId);
-  assert.match(defectRow, /\\| \\*\\*P0\\*\\* \\|/, 'Expected ' + defectId + ' to remain P0 until formally closed');
+  assert.match(defectRow, /\| \*\*P0\*\* \|/, 'Expected ' + defectId + ' to remain P0 until formally closed');
 }
 assert.match(defects, /^## GOV-02 — Continuity Registers Stale \/ Conflicting Blocker Evidence$/m);
 assert.match(defects, /^\| \*\*GOV-02\*\* \| \*\*P0\*\*/m);
