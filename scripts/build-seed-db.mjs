@@ -464,7 +464,6 @@ async function importSeedData(db) {
         'historical_results',
         'political_timeline',
         'election_history',
-        'representatives',
       ]) {
         const rows = db.prepare(`SELECT * FROM ${table} WHERE state_code = ? ORDER BY id`).all(code);
         stateHash.update(table).update(JSON.stringify(rows));
