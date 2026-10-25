@@ -766,7 +766,7 @@ async function main() {
       const count = globalCount(table);
       if (count <= 0) throw new Error(`Required seed table ${table} has no rows`);
     }
-    for (const code of ["TS","TN","RJ","PB","BR","MN","TR","PY"]) {
+    for (const code of ["TS","AP","KA","MH","TN","KL","WB","UP","RJ","GJ","JH","OD","DL","PB","HR","CG","MP","BR","AS","GA","HP","MN","ML","MZ","NL","TR","SK","AR","UK","PY","JK"]) {
       const n = db.prepare('SELECT count(*) AS n FROM constituencies WHERE state_code=?').get(code).n;
       if (n <= 0) throw new Error(`Jurisdiction ${code} has no real constituency records; refusing to emit a placeholder manifest`);
     }
