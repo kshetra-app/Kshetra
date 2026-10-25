@@ -39,6 +39,34 @@ export interface StateMapData {
   mlaProfilesByAcNo: Record<string, MLAProfile>;
   strongholdByAcNo: Record<string, boolean>;
   hasLocalBodyData: boolean;
+  seatProjection: StateMapSeatProjection | null;
+  censusDistricts: StateMapCensusDistrict[];
+  hierarchyByAcNo: Record<string, StateMapHierarchyAvailability>;
+}
+
+export interface StateMapCensusDistrict {
+  districtName: string;
+  totalPopulation: number;
+}
+
+export interface StateMapSeatProjection {
+  stateCode: string;
+  currentSeats: number;
+  projectedSeats: number;
+  seatChange: number;
+  population: number;
+  popPerSeat: number;
+  reservedSC: number;
+  reservedST: number;
+  general: number;
+  deviationPercent: number;
+  [key: string]: unknown;
+}
+
+export interface StateMapHierarchyAvailability {
+  status: 'verified' | 'data_pending';
+  hasHierarchyData: boolean;
+  hasBoothData: boolean;
 }
 
 export interface StateMapDataSnapshot {
@@ -105,6 +133,47 @@ function validatePayload(value: unknown, requestedCode: string): StateMapData {
     throw new Error('Map-data stronghold index is invalid');
   }
   if (typeof item.hasLocalBodyData !== 'boolean') throw new Error('Map-data local-body availability flag is invalid');
+  if (!Array.isArray(item.censusDistricts)) throw new Error('Map-data Census district list is invalid');
+  const censusDistricts = item.censusDistricts.map((entry, index) => {
+    if (!entry || typeof entry !== 'object' || Array.isArray(entry)) throw new Error(`Invalid Census district row ${index}`);
+    const row = entry as Record<string, unknown>;
+    if (typeof row.districtName !== 'string' || !row.districtName.trim()
+      || typeof row.totalPopulation !== 'number' || !Number.isFinite(row.totalPopulation) || row.totalPopulation <= 0) {
+      throw new Error(`Invalid Census district values at row ${index}`);
+    }
+    return { districtName: row.districtName, totalPopulation: row.totalPopulation };
+  });
+  let seatProjection: StateMapSeatProjection | null = null;
+  if (item.seatProjection != null) {
+    if (typeof item.seatProjection !== 'object' || Array.isArray(item.seatProjection)) throw new Error('Map-data seat projection is invalid');
+    const projection = item.seatProjection as Record<string, unknown>;
+    if (projection.stateCode !== requestedCode
+      || !Number.isInteger(projection.currentSeats) || !Number.isInteger(projection.projectedSeats)
+      || !Number.isInteger(projection.seatChange) || typeof projection.population !== 'number'
+      || typeof projection.popPerSeat !== 'number') {
+      throw new Error('Map-data seat projection does not match the requested state or has invalid metrics');
+    }
+    seatProjection = projection as unknown as StateMapSeatProjection;
+  }
+  if (!item.hierarchyByAcNo || typeof item.hierarchyByAcNo !== 'object' || Array.isArray(item.hierarchyByAcNo)) {
+    throw new Error('Map-data hierarchy availability index is invalid');
+  }
+  const hierarchyByAcNo: Record<string, StateMapHierarchyAvailability> = {};
+  for (const [acKey, value] of Object.entries(item.hierarchyByAcNo)) {
+    if (!/^\\d+$/.test(acKey) || !value || typeof value !== 'object' || Array.isArray(value)) {
+      throw new Error('Map-data hierarchy index contains an invalid AC key');
+    }
+    const entry = value as Record<string, unknown>;
+    if (!['verified', 'data_pending'].includes(String(entry.status))
+      || typeof entry.hasHierarchyData !== 'boolean' || typeof entry.hasBoothData !== 'boolean') {
+      throw new Error(`Map-data hierarchy availability is invalid for AC ${acKey}`);
+    }
+    hierarchyByAcNo[acKey] = {
+      status: entry.status as StateMapHierarchyAvailability['status'],
+      hasHierarchyData: entry.hasHierarchyData,
+      hasBoothData: entry.hasBoothData,
+    };
+  }
 
   const seenIds = new Set<string>();
   const seenNumbers = new Set<number>();
@@ -136,12 +205,15 @@ function validatePayload(value: unknown, requestedCode: string): StateMapData {
     mlaProfilesByAcNo: item.mlaProfilesByAcNo as Record<string, MLAProfile>,
     strongholdByAcNo: item.strongholdByAcNo as Record<string, boolean>,
     hasLocalBodyData: item.hasLocalBodyData,
+    seatProjection,
+    censusDistricts,
+    hierarchyByAcNo,
   };
   return data;
 }
 
 // Dependency-free SHA-1 so native payload verification doesn't add a crypto library to the mobile app.
-function sha1Hex(text: string): string {
+export function sha1Hex(text: string): string {
   const bytes = Array.from(unescape(encodeURIComponent(text)), (character) => character.charCodeAt(0));
   const bitLength = bytes.length * 8;
   bytes.push(0x80);
