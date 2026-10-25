@@ -341,14 +341,26 @@
       "manifestSummary": null,
       "status": "IN_PROGRESS_AT_LAST_CHECK; DO NOT CLAIM SOURCE ACQUISITION UNTIL ARTIFACT MANIFEST IS INSPECTED",
       "scope": "Retry of allowlisted public-source acquisition with browser headers, pinned DataMeet components, official ECI result-portal geometry URLs, Survey of India administrative/village boundary resources, and bounded ECI statistical-report discovery."
+    },
+    {
+      "runId": 40212122850,
+      "workflowUrl": "https://github.com/kshetra-app/Kshetra/actions/runs/40212122850",
+      "artifactId": null,
+      "artifactName": null,
+      "artifactSha256": null,
+      "uncompressedBytes": null,
+      "manifestSummary": null,
+      "status": "QUEUED_AT_LAST_CHECK",
+      "scope": "Focused read-only probe of the five official ECI May-2026 AC geometry endpoints plus Telangana official ArcGIS layer metadata and geometry query. Raw response bytes and failed-response bodies are hashed/preserved in the artifact; structural checks are not legal/topology acceptance."
     }
   ],
-  "updatedAt": "2026-10-25T16:30:00Z",
+  "updatedAt": "2026-10-25T16:32:00Z",
   "notes": [
     "Actual public source artifacts were downloaded in GitHub Actions run 40209022405 and SHA-256 hashed; detailed geometry findings are in reports/w021_5_datameet_ac_geometry_forensic_audit.json.",
     "Survey of India official ABDB page, Vector Data Catalog 2025 PDF and Metadata_ABDB.zip were downloaded and hashed. The metadata covers state, district, subdistrict and village boundaries, not statutory Assembly Constituency polygons.",
     "The first ECI direct downloads failed (HTTP 406/404); a retry with browser headers and pinned third-party ECI-portal-derived GeoJSON candidates is running. Do not claim these ECI geometry files downloaded until the second artifact manifest confirms it.",
     "Additional connected-source probe: a 835,011-byte Puducherry GeoJSON mirror was acquired and SHA-256 hashed (2786e744aa7394c85d977a317a1d1e33cb3eb78dbea45a272375fc9a48e54338); its structural checks are documented in reports/evidence/w021_5_stage_b_acquisition_probe_2026-10-25.json. It is secondary, licence status is unconfirmed, and it does not close any external gate.",
-    "Retry workflow 40211792541 is currently in progress; no artifact has been published at last check. The prior completed run 40209022405 remains the only workflow artifact reviewed so far. Do not assume the retry succeeded."
+    "Retry workflow 40211792541 is currently in progress; no artifact has been published at last check. The prior completed run 40209022405 remains the only workflow artifact reviewed so far. Do not assume the retry succeeded.",
+    "Focused official geometry probe 40212122850 was queued to prioritize the five direct ECI endpoints and Telangana state GIS layer; it is separate from the broad source-acquisition retry 40211792541. Inspect its uploaded manifest before making claims."
   ]
 }
