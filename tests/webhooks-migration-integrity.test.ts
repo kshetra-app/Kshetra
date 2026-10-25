@@ -134,6 +134,13 @@ async function runAll() {
     await db.exec(sqlContent);
   });
 
+  await runCheck('PG-02B', 'Execute forward migration 071 after migration 070 on the isolated database', async () => {
+    const forwardMigrationPath = path.resolve('supabase/migrations/071_w022_atomic_event_dispatch_and_worker_security.sql');
+    assert.ok(fs.existsSync(forwardMigrationPath), 'Forward migration 071 must exist');
+    const forwardSql = fs.readFileSync(forwardMigrationPath, 'utf8');
+    await db.exec(forwardSql);
+  });
+
   // Seed sample tenant & app
   const tenantId = 'a1a1a1a1-a1a1-a1a1-a1a1-a1a1a1a1a1a1';
   const saasAppRowId = 'b2b2b2b2-b2b2-b2b2-b2b2-b2b2b2b2b2b2';
@@ -275,6 +282,21 @@ async function runAll() {
     }
   });
 
+  await runCheck('PG-11B', 'fn_purge_expired_webhook_data rejects NULL retention and batch bounds', async () => {
+    await assert.rejects(
+      db.query(`SELECT * FROM public.fn_purge_expired_webhook_data(NULL, 100)`),
+      /INVALID_RETENTION_PERIOD|22023/
+    );
+    await assert.rejects(
+      db.query(`SELECT * FROM public.fn_purge_expired_webhook_data(30, NULL)`),
+      /INVALID_BATCH_SIZE|22023/
+    );
+    await assert.rejects(
+      db.query(`SELECT * FROM public.fn_purge_expired_webhook_data(30, 5001)`),
+      /INVALID_BATCH_SIZE|22023/
+    );
+  });
+
   const delivId = 'e5e5e5e5-e5e5-e5e5-e5e5-e5e5e5e5e5e5';
   await runCheck('PG-09', 'Insert webhook_delivery with composite FKs referencing subscription and event', async () => {
     await db.query(`
@@ -365,6 +387,60 @@ async function runAll() {
   await runCheck('PG-14', 'Concurrent worker claim skips actively leased delivery (SKIP LOCKED returns 0 rows)', async () => {
     const secondClaim = await db.query(`SELECT * FROM public.fn_claim_webhook_batch(10, 30);`);
     assert.strictEqual(secondClaim.rows.length, 0);
+  });
+
+  await runCheck('PG-15', 'Atomic enqueue fans out once and duplicate idempotency key creates no extra delivery', async () => {
+    const payloadRaw = '{"ping":true}';
+    const payloadHash = 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa';
+    const first = await db.query(
+      `SELECT * FROM public.fn_enqueue_webhook_event(
+        '${tenantId}'::uuid, 'test.ping', 'atomic-enqueue-contract-01',
+        '{"ping":true}'::jsonb, '${payloadRaw}', '${payloadHash}'
+      )`
+    );
+    assert.strictEqual(first.rows.length, 1);
+    assert.strictEqual(first.rows[0].deduplicated, false);
+    assert.strictEqual(Number(first.rows[0].enqueued_deliveries), 1);
+    const eventId = first.rows[0].event_id;
+    const second = await db.query(
+      `SELECT * FROM public.fn_enqueue_webhook_event(
+        '${tenantId}'::uuid, 'test.ping', 'atomic-enqueue-contract-01',
+        '{"ping":true}'::jsonb, '${payloadRaw}', '${payloadHash}'
+      )`
+    );
+    assert.strictEqual(second.rows[0].event_id, eventId);
+    assert.strictEqual(second.rows[0].deduplicated, true);
+    assert.strictEqual(Number(second.rows[0].enqueued_deliveries), 0);
+    const counts = await db.query(
+      `SELECT
+        (SELECT count(*) FROM public.webhook_events WHERE id = '${eventId}')::int AS events,
+        (SELECT count(*) FROM public.webhook_deliveries WHERE event_id = '${eventId}')::int AS deliveries`
+    );
+    assert.strictEqual(counts.rows[0].events, 1);
+    assert.strictEqual(counts.rows[0].deliveries, 1);
+  });
+
+  await runCheck('PG-16', 'Worker gets only isolated wrappers, no direct webhook table access, and no public W022 RPC execute grants', async () => {
+    const privileges = await db.query(`
+      SELECT
+        has_schema_privilege('webhook_worker', 'panin_webhook_worker', 'USAGE') AS private_schema_usage,
+        has_schema_privilege('webhook_worker', 'public', 'CREATE') AS public_schema_create,
+        has_table_privilege('webhook_worker', 'public.webhook_events', 'SELECT') AS event_select,
+        has_table_privilege('webhook_worker', 'public.webhook_events', 'INSERT') AS event_insert,
+        has_table_privilege('webhook_worker', 'public.webhook_deliveries', 'SELECT') AS delivery_select,
+        has_table_privilege('webhook_worker', 'public.webhook_deliveries', 'UPDATE') AS delivery_update,
+        has_function_privilege('webhook_worker', 'public.fn_claim_webhook_batch(integer, integer)', 'EXECUTE') AS public_claim,
+        has_function_privilege('webhook_worker', 'public.fn_complete_webhook_delivery(uuid, uuid, boolean, integer, integer, jsonb, text, text)', 'EXECUTE') AS public_complete,
+        has_function_privilege('webhook_worker', 'panin_webhook_worker.claim_webhook_batch(integer, integer)', 'EXECUTE') AS private_claim,
+        has_function_privilege('webhook_worker', 'panin_webhook_worker.complete_webhook_delivery(uuid, uuid, boolean, integer, integer, jsonb, text, text)', 'EXECUTE') AS private_complete
+    `);
+    assert.strictEqual(privileges.rows[0].private_schema_usage, true);
+    assert.strictEqual(privileges.rows[0].public_schema_create, false);
+    for (const key of ['event_select', 'event_insert', 'delivery_select', 'delivery_update', 'public_claim', 'public_complete']) {
+      assert.strictEqual(privileges.rows[0][key], false, key + ' must be denied');
+    }
+    assert.strictEqual(privileges.rows[0].private_claim, true);
+    assert.strictEqual(privileges.rows[0].private_complete, true);
   });
 
   await db.close();

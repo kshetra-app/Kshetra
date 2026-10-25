@@ -16,6 +16,8 @@ import {
   extractSecretHint,
   canonicalizeJson,
   computePayloadSha256,
+  decodeBytea,
+  encodeBytea,
 } from './crypto';
 import { validateAndPinEgressTarget } from './antiSsrfGuard';
 import { dispatchWebhook } from './webhookDispatcher';
@@ -55,9 +57,20 @@ export class WebhookService {
   ) {
     if (queueProvider) {
       this.queueProvider = queueProvider;
-    } else if (process.env.NODE_ENV === 'test' || !process.env.DATABASE_URL) {
+      return;
+    }
+
+    const requestedProvider = process.env.WEBHOOK_QUEUE_PROVIDER;
+    if (requestedProvider === 'memory') {
+      if (process.env.NODE_ENV === 'production') {
+        throw new Error('FATAL_QUEUE_CONFIGURATION: in-memory webhook queue is forbidden in production');
+      }
+      this.queueProvider = new InMemoryQueueProvider();
+    } else if (process.env.NODE_ENV === 'test' && requestedProvider !== 'postgres') {
       this.queueProvider = new InMemoryQueueProvider();
     } else {
+      // Persistent storage is the default in every non-test runtime; missing DATABASE_URL
+      // must never silently convert a production queue into volatile in-memory state.
       this.queueProvider = new PostgresQueueProvider(client);
     }
   }
@@ -67,6 +80,9 @@ export class WebhookService {
   }
 
   setQueueProvider(provider: WebhookQueueProvider) {
+    if (provider instanceof InMemoryQueueProvider && process.env.NODE_ENV === 'production') {
+      throw new Error('FATAL_QUEUE_CONFIGURATION: in-memory webhook queue is forbidden in production');
+    }
     this.queueProvider = provider;
   }
 
@@ -121,9 +137,9 @@ export class WebhookService {
         tenant_id: tenantId,
         application_id: applicationId,
         endpoint_url: endpointUrl,
-        secret_ciphertext: encrypted.ciphertext,
-        secret_iv: encrypted.iv,
-        secret_tag: encrypted.tag,
+        secret_ciphertext: encodeBytea(encrypted.ciphertext),
+        secret_iv: encodeBytea(encrypted.iv),
+        secret_tag: encodeBytea(encrypted.tag),
         secret_key_version: encrypted.version,
         secret_hash: encrypted.hash,
         secret_hint: encrypted.hint,
@@ -330,6 +346,7 @@ export class WebhookService {
         sub.secretHash = newEncrypted.hash;
         sub.updatedAt = new Date().toISOString();
         (sub as any)._previousSecret = (sub as any)._rawSecret;
+        (sub as any)._previousSecretExpiresAt = Date.parse(gracePeriodExpiresAt);
         (sub as any)._rawSecret = newSecret;
       }
       return {
@@ -340,23 +357,28 @@ export class WebhookService {
     }
 
     // In PostgreSQL: Move current secret fields to previous_secret_* and save new
-    const { data: current } = await this.client
+    const { data: current, error: currentError } = await this.client
       .from('webhook_subscriptions')
       .select('secret_ciphertext, secret_iv, secret_tag')
       .eq('tenant_id', tenantId)
+      .eq('application_id', applicationId)
       .eq('id', subscriptionId)
-      .single();
+      .maybeSingle();
+
+    if (currentError || !current) {
+      throw new Error('SECRET_ROTATION_FAILED: Existing encrypted signing secret is unavailable.');
+    }
 
     const { error } = await this.client
       .from('webhook_subscriptions')
       .update({
-        previous_secret_ciphertext: current?.secret_ciphertext,
-        previous_secret_iv: current?.secret_iv,
-        previous_secret_tag: current?.secret_tag,
+        previous_secret_ciphertext: encodeBytea(decodeBytea(current.secret_ciphertext, 'secret_ciphertext')),
+        previous_secret_iv: encodeBytea(decodeBytea(current.secret_iv, 'secret_iv')),
+        previous_secret_tag: encodeBytea(decodeBytea(current.secret_tag, 'secret_tag')),
         previous_secret_expires_at: gracePeriodExpiresAt,
-        secret_ciphertext: newEncrypted.ciphertext,
-        secret_iv: newEncrypted.iv,
-        secret_tag: newEncrypted.tag,
+        secret_ciphertext: encodeBytea(newEncrypted.ciphertext),
+        secret_iv: encodeBytea(newEncrypted.iv),
+        secret_tag: encodeBytea(newEncrypted.tag),
         secret_key_version: newEncrypted.version,
         secret_hash: newEncrypted.hash,
         secret_hint: newEncrypted.hint,
@@ -395,35 +417,64 @@ export class WebhookService {
     const payloadRaw = canonicalizeJson(testPayload);
     const payloadSha256 = computePayloadSha256(payloadRaw);
 
-    // Retrieve active secret for subscription
-    let rawSecret = 'whsec_0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef';
+    // Resolve the exact current secret; never dispatch using a hard-coded/default credential.
+    let rawSecret: string;
     let previousSecret: string | null = null;
 
     if (this.queueProvider instanceof InMemoryQueueProvider) {
       const inMem = this.queueProvider.subscriptions.get(subscriptionId);
-      if ((inMem as any)?._rawSecret) {
-        rawSecret = (inMem as any)._rawSecret;
+      rawSecret = (inMem as any)?._rawSecret;
+      if (!rawSecret) throw new Error('WEBHOOK_SECRET_UNAVAILABLE: Current signing secret is unavailable.');
+      const previous = (inMem as any)?._previousSecret;
+      const previousExpiry = (inMem as any)?._previousSecretExpiresAt;
+      if (typeof previous === 'string' && typeof previousExpiry === 'number' && previousExpiry > Date.now()) {
+        previousSecret = previous;
       }
     } else {
-      const { data } = await this.client
+      const { data, error } = await this.client
         .from('webhook_subscriptions')
-        .select('secret_ciphertext, secret_iv, secret_tag, previous_secret_ciphertext, previous_secret_iv, previous_secret_tag')
+        .select('secret_ciphertext, secret_iv, secret_tag, previous_secret_ciphertext, previous_secret_iv, previous_secret_tag, previous_secret_expires_at')
         .eq('tenant_id', tenantId)
+        .eq('application_id', applicationId)
         .eq('id', subscriptionId)
-        .single();
-      if (data) {
+        .maybeSingle();
+
+      if (error || !data) {
+        throw new Error('WEBHOOK_SECRET_UNAVAILABLE: Current signing secret could not be loaded.');
+      }
+
+      try {
         rawSecret = decryptSecret(
-          { ciphertext: data.secret_ciphertext, iv: data.secret_iv, tag: data.secret_tag },
+          {
+            ciphertext: decodeBytea(data.secret_ciphertext, 'secret_ciphertext'),
+            iv: decodeBytea(data.secret_iv, 'secret_iv'),
+            tag: decodeBytea(data.secret_tag, 'secret_tag'),
+          },
           tenantId,
           subscriptionId
         );
-        if (data.previous_secret_ciphertext) {
+        const previousExpiresAt = data.previous_secret_expires_at
+          ? new Date(data.previous_secret_expires_at).getTime()
+          : 0;
+        if (
+          data.previous_secret_ciphertext &&
+          data.previous_secret_iv &&
+          data.previous_secret_tag &&
+          Number.isFinite(previousExpiresAt) &&
+          previousExpiresAt > Date.now()
+        ) {
           previousSecret = decryptSecret(
-            { ciphertext: data.previous_secret_ciphertext, iv: data.previous_secret_iv, tag: data.previous_secret_tag },
+            {
+              ciphertext: decodeBytea(data.previous_secret_ciphertext, 'previous_secret_ciphertext'),
+              iv: decodeBytea(data.previous_secret_iv, 'previous_secret_iv'),
+              tag: decodeBytea(data.previous_secret_tag, 'previous_secret_tag'),
+            },
             tenantId,
             subscriptionId
           );
         }
+      } catch {
+        throw new Error('WEBHOOK_SECRET_UNAVAILABLE: Signing secret decryption failed.');
       }
     }
 

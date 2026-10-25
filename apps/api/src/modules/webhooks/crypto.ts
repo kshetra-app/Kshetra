@@ -13,14 +13,33 @@ const DEFAULT_TEST_MASTER_KEY = '0123456789abcdef0123456789abcdef0123456789abcde
 
 export function getMasterEncryptionKey(): Buffer {
   const envKey = process.env.WEBHOOK_SECRETS_ENCRYPTION_KEY;
-  if (envKey && envKey.trim().length >= 64) {
-    return Buffer.from(envKey.trim().slice(0, 64), 'hex');
+  if (envKey !== undefined) {
+    const normalized = envKey.trim();
+    if (!/^[0-9a-fA-F]{64}$/.test(normalized)) {
+      throw new Error('FATAL_SECURITY_ERROR: WEBHOOK_SECRETS_ENCRYPTION_KEY must be exactly 64 hexadecimal characters');
+    }
+    return Buffer.from(normalized, 'hex');
   }
-  // Allow test fallback only in non-production environments
-  if (process.env.NODE_ENV === 'test' || !process.env.NODE_ENV) {
+  // The deterministic fallback is available only to explicitly marked test runs.
+  if (process.env.NODE_ENV === 'test') {
     return Buffer.from(DEFAULT_TEST_MASTER_KEY, 'hex');
   }
   throw new Error('FATAL_SECURITY_ERROR: WEBHOOK_SECRETS_ENCRYPTION_KEY missing or invalid in deployed environment');
+}
+
+/** Convert a binary value to PostgREST's canonical PostgreSQL BYTEA text representation. */
+export function encodeBytea(value: Buffer | Uint8Array): string {
+  return `\\x${Buffer.from(value).toString('hex')}`;
+}
+
+/** Decode common PostgreSQL BYTEA representations returned by node-postgres or PostgREST. */
+export function decodeBytea(value: unknown, fieldName = 'BYTEA'): Buffer {
+  if (Buffer.isBuffer(value)) return Buffer.from(value);
+  if (value instanceof Uint8Array) return Buffer.from(value);
+  if (typeof value === 'string' && /^\\x(?:[0-9a-fA-F]{2})*$/.test(value)) {
+    return Buffer.from(value.slice(2), 'hex');
+  }
+  throw new Error(`INVALID_BYTEA_VALUE: ${fieldName} is not a valid PostgreSQL BYTEA value`);
 }
 
 export interface EncryptedSecretRecord {

@@ -18,7 +18,7 @@
 import assert from 'node:assert';
 import http from 'node:http';
 import { isPrivateOrReservedIp, validateWebhookUrl } from '../apps/api/src/modules/webhooks/antiSsrfGuard.ts';
-import { dispatchWebhook, MAX_WEBHOOK_PAYLOAD_BYTES } from '../apps/api/src/modules/webhooks/webhookDispatcher.ts';
+import { dispatchWebhook, MAX_WEBHOOK_PAYLOAD_BYTES, sanitizeResponseHeaders } from '../apps/api/src/modules/webhooks/webhookDispatcher.ts';
 
 console.log('================================================================');
 console.log('W022: ZERO-TRUST ANTI-SSRF GUARD VERIFICATION SUITE');
@@ -406,6 +406,24 @@ async function runAll() {
   } finally {
     testServer.close();
   }
+
+  await runCheck('SSRF-33', 'Stored response headers exclude credentials and bound metadata values', () => {
+    const result = sanitizeResponseHeaders({
+      'content-type': 'application/json',
+      'set-cookie': 'session=secret',
+      authorization: 'Bearer secret',
+      'x-request-id': 'req-123',
+      'content-length': '12',
+      'x-large': 'ignored',
+    });
+    assert.deepStrictEqual(result, {
+      'content-type': 'application/json',
+      'x-request-id': 'req-123',
+      'content-length': '12',
+    });
+    assert.ok(!('set-cookie' in result));
+    assert.ok(!('authorization' in result));
+  });
 
   // --- Summary ---
   console.log('\n----------------------------------------------------------------');
