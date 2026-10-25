@@ -206,20 +206,17 @@ assert.equal(packageJson.name, 'kshetra', 'Unexpected root package identity; tes
 pass('W022 implementation/authentication/execution/acceptance/release separation');
 
 // 9. Recent commits since the source snapshot must be accounted for in governance records.
-const recentCommits = exec(['log', '--format=%H%x09%s', report.sourceSnapshot.commit + '..HEAD'])
-  .split(/\r?\n/).filter(Boolean).map((line) => {
-    const tab = line.indexOf('\t');
-    return { sha: line.slice(0, tab), subject: line.slice(tab + 1) };
-  });
-const decisionUpper = decisions.toUpperCase();
-const unrecorded = recentCommits.filter(({ subject }) => {
-  const normalized = subject.toUpperCase();
-  return !decisionUpper.includes(normalized) &&
-    !/(GOV-02|CONTINUITY REGISTER|REGISTER RECONCILIATION|CONTINUITY RECONCILIATION)/.test(normalized);
-});
-assert.deepEqual(unrecorded, [],
-  'Commits after the recorded source snapshot must be explicitly reflected in DECISION_LOG.md or be clearly identified as the GOV-02 reconciliation: ' +
-  unrecorded.map((c) => c.sha.slice(0, 12) + ' ' + c.subject).join('; '));
+const recentCommits = exec(['log', '--format=%H', report.sourceSnapshot.commit + '..HEAD'])
+  .split(/\r?\n/).filter(Boolean).sort();
+const registeredCommits = [...report.commitsAfterSourceSnapshot].sort();
+assert.equal(new Set(registeredCommits).size, registeredCommits.length,
+  'Commit accountability manifest contains duplicate commit IDs');
+assert.deepEqual(recentCommits, registeredCommits,
+  'Unrecorded commit detected after source snapshot; update reports/gov_02_continuity_reconciliation.json with the complete post-snapshot commit set');
+for (const sha of registeredCommits) {
+  assert.match(sha, /^[0-9a-f]{40}$/i, 'Commit accountability entry must be a full SHA');
+  exec(['cat-file', '-e', sha + '^{commit}']);
+}
 pass('Post-snapshot commit accountability (' + recentCommits.length + ' commits checked)');
 
 console.log('\nGOV-02 continuity register reconciliation: PASS');
