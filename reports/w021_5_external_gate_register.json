@@ -191,6 +191,15 @@
       "crsMetadataConflicts": 1,
       "acceptedAsACGeometry": false,
       "acceptedAsDeliveryBeatGeometry": false
+    },
+    "legalBaseline": {
+      "source": "ECI Delimitation of Parliamentary and Assembly Constituencies Order, 2008, Schedule III — Andhra Pradesh Assembly Constituencies",
+      "url": "https://www.eci.gov.in/Documents/Delimitation/DelimitationofParliamentaryAssemblyConstituenciesOrder-2008%28English%29.pdf",
+      "partialCrosswalkCount": 9,
+      "report": "reports/evidence/w021_5_telangana_layer_comparison_2026-10-25.json",
+      "full119Crosswalk": "OPEN",
+      "post2014StateReorganisationAndEffectiveDateChain": "OPEN",
+      "binarySha256": "NOT_CLAIMED; PDF read through web text, binary not downloaded"
     }
   }
 }
