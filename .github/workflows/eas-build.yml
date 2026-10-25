@@ -41,9 +41,11 @@ jobs:
           fetch-depth: 1
           lfs: true
 
-      - name: Verify canonical local-body LFS inputs are materialized
+      - name: Materialize canonical local-body LFS inputs without fetching stale DB object
         shell: bash
         run: |
+          git lfs install --local
+          git lfs pull --include='scrapers/output/local-body/*.json' --exclude='apps/mobile/data/seed-data.db'
           shopt -s nullglob
           inputs=(scrapers/output/local-body/*.json)
           if ((${#inputs[@]} == 0)); then
