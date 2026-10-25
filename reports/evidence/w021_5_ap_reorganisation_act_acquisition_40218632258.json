@@ -1,0 +1,107 @@
+{
+  "schemaVersion": 1,
+  "title": "Andhra Pradesh Reorganisation Act 2014 — government-hosted Gazette PDF acquisition evidence",
+  "workflowRunId": 40218632258,
+  "workflowUrl": "https://github.com/kshetra-app/Kshetra/actions/runs/40218632258",
+  "artifactId": 12609010429,
+  "artifactName": "w0215-legal-crosswalk-sources-40218632258",
+  "artifactZipBytes": 247526,
+  "artifactZipSha256": "ca42d6ecc1492656f09bc6406f699ed64541f064bf77d37e42a32c0ba1bda031",
+  "retrievedAtUtc": "2026-10-25T17:54:42Z",
+  "source": {
+    "documentTitle": "Andhra Pradesh Reorganisation Act, 2014 (Act No. 6 of 2014)",
+    "gazetteDate": "2014-03-01",
+    "host": "Government of Andhra Pradesh-hosted PDF copy of Gazette of India",
+    "url": "https://apseeds.ap.gov.in/PDF/apreorg/APRegACT2014.pdf",
+    "httpStatus": 200,
+    "contentType": "application/pdf",
+    "byteLength": 231596,
+    "sha256": "84cd566b917f9a3f600c47f6540520c950166b424a964ad37d64dc3c968114aa",
+    "pdfPageCount": 71,
+    "pdfMagic": true,
+    "canonicalIndiaCodeByteIdentityCompared": false,
+    "termFindingsZeroBasedPageIndices": {
+      "119": [
+        3,
+        4,
+        6,
+        29,
+        35,
+        39,
+        45,
+        46
+      ],
+      "SECTION 15": [
+        6,
+        24,
+        28
+      ],
+      "SECOND SCHEDULE": [
+        2,
+        3,
+        4,
+        28
+      ],
+      "SCHEDULE - XXVII": [
+        39
+      ],
+      "TELANGANA": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        39,
+        48,
+        49,
+        51,
+        67,
+        68,
+        69,
+        70
+      ]
+    },
+    "rawArtifact": "raw/AP_REORGANISATION_ACT_2014_GAZETTE_COPY_candidate_1.bin",
+    "extractedTextArtifact": "AP_REORGANISATION_ACT_2014_GAZETTE_COPY.txt",
+    "extractedTextBytes": 252193,
+    "extractedTextSha256": "dca27319b8f5d4b280d9d6a2b010409b0b94208eda4c37c518fcd8e281dda9e1"
+  },
+  "otherCandidates": [
+    {
+      "url": "https://elections24.eci.gov.in/docs/press-note-no-23.pdf",
+      "status": "TIMEOUT_ZERO_BYTES",
+      "timeoutSeconds": 25,
+      "required": false
+    },
+    {
+      "url": "https://upload.indiacode.nic.in/showfile?actid=AC_CEN_5_5_00058_201406_1517807327989&filename=Andhra+Pradesh+Reorganisation+%28Removal+of+Difficulties%29+First%2C+Second+and+Third+Order.pdf&type=order",
+      "status": "TIMEOUT_ZERO_BYTES",
+      "timeoutSeconds": 25,
+      "required": false
+    }
+  ],
+  "disposition": "REQUIRED_GOVERNMENT-HOSTED GAZETTE/ACT PDF ACQUIRED AND HASHED. Source is a government-hosted copy; byte identity with India Code's canonical copy is not yet verified. Use it for provisional statutory extraction, retain provenance and keep independent legal/effective-date review open.",
+  "databaseAccess": "NONE"
+}
