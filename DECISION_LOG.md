@@ -3709,3 +3709,20 @@
   10. **Automated Verification:**
       - 42/42 automated tests pass across 4 suites: 19 mandatory criteria (19/19 PASS), 5 PostgreSQL integration (5/5 PASS), 6 Fastify route unit tests (6/6 PASS), and 12 controlled acceptance steps (12/12 PASS).
       - Production Supabase `ehfafcnimmjusyvplbah` and staging Supabase `fkpigozcqnmcvofuksar` remain 100% untouched and air-gapped.
+
+
+---
+
+### DEC-154R: W021.5 Stage B Resumption and National Assembly Geometry Acquisition Strategy
+- **Date:** 2026-10-25
+- **Status:** APPROVED — STAGE B RESEARCH/IMPLEMENTATION ONLY; FORMAL STAGE ACCEPTANCE PENDING
+- **Authority:** Explicit project-owner instruction in the current conversation; CTO Directive 154.
+- **Baseline:** `33945d20f318ae1aa0d9aba35052246599c5bbae`
+- **Directive:** `governance/directives/CTO-DIRECTIVE-154-W021.5-RESUMPTION.md`
+- **Plan:** `governance/plans/W021.5-RESUMPTION-REV-1.0.md`
+- **Source evidence:** `reports/w021_5_stage_b_source_research_2026-10-25.md`
+- **Decision:** Select a layered acquisition strategy: (1) legal truth from ECI delimitation orders, final publications, corrigenda and relevant Gazette instruments; (2) state-wise official digital geometry from ECI/CEO/state GIS services where available; (3) national/community datasets strictly as comparison/discrepancy references; (4) formal custodian requests for missing sources and physical evidence.
+- **Key findings:** The India Geodata statewise folder explicitly identifies its S01–S28/U05/U07 shapefiles as pre-2014; do not treat them as current. ECI's 2026 results-portal geometry route is reported for five election jurisdictions but has not yet been byte-acquired or verified. Telangana ArcGIS metadata identifies a polygon AC layer (EPSG:32644); Bihar and NE government electoral GIS portals expose additional discovery paths. Survey of India administrative boundaries are not AC polygons.
+- **Open criteria:** W021.5-B1-04 and EB-01..EB-05 remain open; no Stage B acceptance is granted. Physical Gazette custody, independent transcription audit, India Post beat polygons, containment, and the verified national polling-station/PIN crosswalk are not evidenced as complete.
+- **Execution boundary:** No database accessed or mutated; production remains air-gapped. No Stage C or later stage is authorized. Stage B must stop for adjudication at its boundary.
+- **Governance reconciliation:** Branch-scoped `EXECUTION_STATE.md` now records Directive 154. The canonical `master` branch remains unchanged until this PR is reviewed and merged; do not describe the master register as reconciled before then.
