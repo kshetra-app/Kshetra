@@ -6,8 +6,8 @@
  * from the API and cached on-device (see remoteGeoLoader.ts).
  *
  * Only the small national overview ("IN", ~0.5 MB) stays bundled so the default
- * landing map paints instantly and works offline. The require() below is the
- * sole boundary asset Metro inlines.
+ * landing map paints instantly and works offline. All assembly boundaries,
+ * including Telangana, are downloaded by remoteGeoLoader on demand.
  */
 import { getStatesWithGeoJSON as manifestStates, hasStateGeoJSON as manifestHas } from './geoManifest';
 
@@ -16,7 +16,6 @@ const cache = new Map<string, GeoJSON.FeatureCollection>();
 /** Bundled state code → require function (Metro resolves at build time). */
 const loaders: Record<string, () => GeoJSON.FeatureCollection> = {
   IN: () => require('../data/india-states.json') as GeoJSON.FeatureCollection,
-  TS: () => require('../data/telangana-assembly.json') as GeoJSON.FeatureCollection,
 };
 
 /** A linear ring is only valid with >= 4 positions (a closed triangle). */
