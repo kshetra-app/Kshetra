@@ -55,7 +55,7 @@ TELANGANA_LAYER = "https://tgrac.telangana.gov.in/arcgis/rest/services/Administr
 SOURCES.extend([
     {"id": "telangana-layer-metadata", "kind": "official_state_gis_metadata_candidate", "url": TELANGANA_LAYER + "?f=pjson"},
     {"id": "telangana-ac-geometry", "kind": "official_state_gis_geometry_candidate", "url": TELANGANA_LAYER + "/query?" + urlencode({
-        "where": "1=1", "outFields": "*", "returnGeometry": "true", "outSR": "4326", "f": "geojson"
+        "where": "1=1", "outFields": "*", "returnGeometry": "true", "outSR": "4326", "f": "json"
     })},
 ])
 
@@ -243,11 +243,60 @@ for source in SOURCES:
                 raise RuntimeError("GeoJSON structural sanity or expected feature count failed")
         elif source["id"] == "telangana-ac-geometry":
             data = json.loads(raw.decode("utf-8-sig"))
-            if data.get("type") != "FeatureCollection" or not isinstance(data.get("features"), list):
-                raise RuntimeError("ArcGIS query did not return a GeoJSON FeatureCollection")
-            record["geometry_checks"] = geom_checks(data)
+            if data.get("error"):
+                raise RuntimeError("ArcGIS query error: " + json.dumps(data["error"], ensure_ascii=False))
+            features = data.get("features")
+            if not isinstance(features, list) or not features:
+                raise RuntimeError("ArcGIS query did not return a non-empty feature array")
+            ids, names, assembly_values = [], [], []
+            missing_geometry = empty_rings = unclosed_rings = nonfinite = 0
+            bbox = [float("inf"), float("inf"), -float("inf"), -float("inf")]
+            ring_count = 0
+            for feature in features:
+                attrs = feature.get("attributes") or {}
+                if attrs.get("OBJECTID") not in (None, ""): ids.append(str(attrs["OBJECTID"]))
+                if attrs.get("Assembly_Name") not in (None, ""): names.append(str(attrs["Assembly_Name"]))
+                if attrs.get("Assembly") not in (None, ""): assembly_values.append(str(attrs["Assembly"]))
+                geometry = feature.get("geometry") or {}
+                rings = geometry.get("rings")
+                if not isinstance(rings, list) or not rings:
+                    missing_geometry += 1
+                    continue
+                for ring in rings:
+                    ring_count += 1
+                    if not isinstance(ring, list) or len(ring) < 4:
+                        empty_rings += 1
+                        continue
+                    if ring[0][:2] != ring[-1][:2]:
+                        unclosed_rings += 1
+                    for point in ring:
+                        if not isinstance(point, list) or len(point) < 2 or not all(isinstance(v, (int, float)) and math.isfinite(v) for v in point[:2]):
+                            nonfinite += 1
+                        else:
+                            x, y = point[0], point[1]
+                            bbox[0] = min(bbox[0], x); bbox[1] = min(bbox[1], y)
+                            bbox[2] = max(bbox[2], x); bbox[3] = max(bbox[3], y)
+            record["geometry_checks"] = {
+                "feature_count": len(features),
+                "geometry_type": data.get("geometryType"),
+                "geometry_types": {"esriGeometryPolygon": len(features)} if data.get("geometryType") == "esriGeometryPolygon" else {"UNKNOWN": len(features)},
+                "ring_count": ring_count,
+                "missing_geometry_features": missing_geometry,
+                "rings_too_short": empty_rings,
+                "unclosed_rings": unclosed_rings,
+                "non_finite_coordinates": nonfinite,
+                "unique_object_ids": len(set(ids)),
+                "duplicate_object_ids": len(ids) - len(set(ids)),
+                "unique_assembly_names": len(set(names)),
+                "duplicate_assembly_names": len(names) - len(set(names)),
+                "unique_assembly_values": len(set(assembly_values)),
+                "coordinate_bbox": bbox if math.isfinite(bbox[0]) else None,
+                "spatial_reference": data.get("spatialReference"),
+                "structural_sanity": "PASS" if len(features) > 0 and len(ids) == len(features) and len(set(ids)) == len(features) and len(names) == len(features) and len(set(names)) == len(features) and not (missing_geometry or empty_rings or unclosed_rings or nonfinite) else "FAIL",
+                "topology_validated": False
+            }
             if record["geometry_checks"]["structural_sanity"] != "PASS":
-                raise RuntimeError("Telangana geometry structural sanity failed")
+                raise RuntimeError("Telangana ArcGIS polygon structural sanity failed")
         else:
             data = json.loads(raw.decode("utf-8-sig"))
             record["metadata_json_parse"] = "PASS" if isinstance(data, dict) else "FAIL"
