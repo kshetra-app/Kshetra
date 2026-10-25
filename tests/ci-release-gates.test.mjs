@@ -27,12 +27,12 @@ for (const source of [ci, security]) {
 assert.match(section(ci, 'governance'), /verify-13-locales\.mjs --strict/, 'CI must enforce strict locale parity');
 assert.match(section(ci, 'lint'), /prettier --check/);
 assert.match(section(ci, 'lint'), /eslint .*--max-warnings=0/);
-assert.match(section(sec, 'sca'), /npm audit --audit-level=high/);
-assert.match(section(sec, 'sca'), /ghcr\.io\/google\/osv-scanner:v2\.4\.0 scan source -r/);
-assert.match(section(sec, 'sast'), /semgrep/i);
-assert.match(section(sec, 'sbom'), /cyclonedx/);
-assert.match(section(sec, 'sbom'), /test -s sbom\.cdx\.json/);
-assert.match(section(sec, 'sbom'), /if-no-files-found:\s*error/);
+assert.match(section(security, 'sca'), /npm audit --audit-level=high/);
+assert.match(section(security, 'sca'), /ghcr\.io\/google\/osv-scanner:v2\.4\.0 scan source -r/);
+assert.match(section(security, 'sast'), /semgrep/i);
+assert.match(section(security, 'sbom'), /cyclonedx/);
+assert.match(section(security, 'sbom'), /test -s sbom\.cdx\.json/);
+assert.match(section(security, 'sbom'), /if-no-files-found:\s*error/);
 assert.ok(/--strict/.test(localeVerifier), 'locale verifier must expose strict mode');
 
 // Negative-path probe helper: each deliberate failure must be observed as non-zero.
