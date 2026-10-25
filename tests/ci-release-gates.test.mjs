@@ -50,17 +50,13 @@ try {
   fs.writeFileSync(unformatted, '{"a":1}\n');
   expectFailure('Prettier formatting violation', 'npx', ['--no-install', 'prettier', '--check', unformatted]);
 
-  // ESLint: run a self-contained config and a guaranteed rule violation.
+  // ESLint: use a named temporary config, then assert the known unused binding is rejected.
   const lintFixture = path.join(temp, 'lint-fixture.js');
   fs.writeFileSync(lintFixture, 'const deliberatelyUnused = 1;\n');
   const eslintConfig = path.join(temp, 'eslint.config.mjs');
-  fs.writeFileSync(eslintConfig, `export default [{ files: ['**/*.js'], rules: { 'no-unused-vars': ['error', { vars: 'all', args: 'after-used', ignoreRestSiblings: false }] } }];\n`);
-  expectFailure(
-    'ESLint deliberate lint error',
-    process.execPath,
-    [path.join(root, 'node_modules', 'eslint', 'bin', 'eslint.js'), '--no-config-lookup', '--config', eslintConfig, lintFixture],
-  );
-
+  fs.writeFileSync(eslintConfig, `export default [{ files: ['**/*.js'], rules: { 'no-unused-vars': 'error' } }];\n`);
+  const eslintBin = path.join(root, 'node_modules', 'eslint', 'bin', 'eslint.js');
+  expectFailure('ESLint deliberate lint error', process.execPath, [eslintBin, '--no-config-lookup', '--config', eslintConfig, lintFixture]);
 
   // npm audit: a disposable project with a known vulnerable direct dependency.
   const vulnerable = path.join(temp, 'vulnerable');
