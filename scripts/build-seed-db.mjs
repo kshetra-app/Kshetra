@@ -761,6 +761,17 @@ async function main() {
     if (Object.keys(manifest).length !== 31) throw new Error(`Expected 31 state manifests, got ${Object.keys(manifest).length}`);
     const stateRowCount = db.prepare('SELECT count(*) AS n FROM seed_manifest').get().n;
     if (stateRowCount !== 31) throw new Error(`Expected 31 seed_manifest rows, got ${stateRowCount}`);
+    const globalCount = (table) => db.prepare(`SELECT count(*) AS n FROM ${table}`).get().n;
+    for (const table of ['constituencies','mla_profiles','demographics','historical_results','political_timeline','election_history','election_history_results']) {
+      const count = globalCount(table);
+      if (count <= 0) throw new Error(`Required seed table ${table} has no rows`);
+    }
+    for (const code of ["TS","TN","RJ","PB","BR","MN","TR","PY"]) {
+      const n = db.prepare('SELECT count(*) AS n FROM constituencies WHERE state_code=?').get(code).n;
+      if (n <= 0) throw new Error(`Jurisdiction ${code} has no real constituency records; refusing to emit a placeholder manifest`);
+    }
+    const representativeCount = globalCount('representatives');
+    if (representativeCount <= 100000) throw new Error(`representatives contains ${representativeCount} rows; runtime requires more than 100000`);
 
     console.log('\n⚙️  Optimizing database...');
     db.exec('VACUUM; ANALYZE;');
