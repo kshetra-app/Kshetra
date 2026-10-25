@@ -84,6 +84,38 @@ jobs:
           SUPABASE_URL: https://test-fixture.supabase.co
           SUPABASE_ANON_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRlc3QiLCJyb2xlIjoiYW5vbiIsImlhdCI6MTYwMDAwMDAwMCwiZXhwIjoxOTAwMDAwMDAwfQ.dummy_signature_for_test_environment_only
 
+      - name: Test seed data
+        run: npx jest --config jest.config.js --forceExit
+        working-directory: data/seed
+
+      - name: Test census data
+        run: npx jest --config jest.config.js --forceExit
+        working-directory: data/census
+
+      - name: Test mobile (node-safe lib units)
+        run: npm test -w @kshetra/mobile -- --forceExit
+
+  w022-verification:
+    name: W022 Security & Persistence Verification
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build shared package
+        run: npm run build -w @kshetra/shared
+
       - name: Start isolated PostgreSQL 16 and apply the exact W022 migration chain
         run: |
           docker run -d --name w022-verify-postgres \
@@ -106,7 +138,7 @@ jobs:
             docker exec -i w022-verify-postgres psql -U w022_admin -d w022_disposable_db -v ON_ERROR_STOP=1 < "$migration"
           done
 
-      - name: Test W022 atomic queue and worker security contracts
+      - name: Run all W022 local regression suites
         run: npm run test:w022 -w @kshetra/api
         env:
           NODE_ENV: test
@@ -119,16 +151,11 @@ jobs:
         env:
           W022_TEST_DB: w022_disposable_db
 
-      - name: Test seed data
-        run: npx jest --config jest.config.js --forceExit
-        working-directory: data/seed
+      - name: Verify SaaS OpenAPI contract and drift
+        run: node tests/saas-openapi-contract-drift.test.mjs
 
-      - name: Test census data
-        run: npx jest --config jest.config.js --forceExit
-        working-directory: data/census
-
-      - name: Test mobile (node-safe lib units)
-        run: npm test -w @kshetra/mobile -- --forceExit
+      - name: Verify SaaS G6 tenant-isolation and air-gap probes
+        run: node tests/saas-g6-security-probes.test.mjs
 
   typecheck:
     name: Typecheck
