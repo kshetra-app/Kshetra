@@ -1,0 +1,146 @@
+{
+  "schemaVersion": 1,
+  "title": "W021.5 Telangana Assembly Constituency layer comparison",
+  "comparisonId": "W0215-TELANGANA-AC-LAYER-COMPARE-001",
+  "capturedAtUtc": "2026-10-25T16:40:00Z",
+  "layers": [
+    {
+      "id": "TGRAC-ADMIN-INFO-LAYER-24",
+      "name": "Assembly Constituency Boundary",
+      "url": "https://tgrac.telangana.gov.in/arcgis/rest/services/AdministrativeInfoSystem_Folder/Administrative_Information_System/MapServer/24/query?where=1%3D1&outFields=%2A&returnGeometry=true&outSR=4326&f=json",
+      "bytes": 12465346,
+      "sha256": "91cd791317836d8a6a8729b03f08fd3aee8c727c82e123b1659972d949d32f27",
+      "sourceCrs": {
+        "wkid": 32644,
+        "latestWkid": 32644
+      },
+      "queryOutputCrs": {
+        "wkid": 4326
+      },
+      "featureCount": 119,
+      "invalidGeometryCount": 1,
+      "invalidFeature": "Dornakal (ST) Assembly / OBJECTID 89"
+    },
+    {
+      "id": "TGRAC-ENDOWMENT-ADMIN-2026-LAYER-12",
+      "name": "Assembly Constituency Boundary",
+      "url": "https://tgrac.telangana.gov.in/arcgis/rest/services/EndowmentLands_Folder/EndowmentLands_Admin_2026/MapServer/12/query?where=1%3D1&outFields=%2A&returnGeometry=true&outSR=4326&f=json",
+      "bytes": 12463409,
+      "sha256": "ca8cfdc695366d9f04ee6a9fdbf9c52eeefe61d69bc79c9d26d15baa7b84aa03",
+      "sourceCrs": {
+        "wkid": 4326,
+        "latestWkid": 4326
+      },
+      "queryOutputCrs": {
+        "wkid": 4326
+      },
+      "featureCount": 119,
+      "invalidGeometryCount": 1,
+      "invalidFeature": "Dornakal (ST) / OBJECTID 89"
+    }
+  ],
+  "comparisonMethod": {
+    "geometryConversion": "ESRI rings converted to Polygon/MultiPolygon using ESRI clockwise exterior / counterclockwise hole convention.",
+    "invalidGeometryHandling": "make_valid applied to derived in-memory copies only for cross-layer comparison; raw geometry files remain unchanged.",
+    "measurementCrs": "EPSG:32644",
+    "nameMatching": "casefolded Assembly/ASSEMBLY_N; fuzzy name match for Jangaon/Jangoan; Madhira reservation suffix differs only by case.",
+    "thresholds": "Near-identical means symmetric difference area < 0.01 m². No legal acceptance is inferred from geometric similarity."
+  },
+  "findings": {
+    "featuresPerLayer": 119,
+    "matchedConstituencies": 119,
+    "unmatchedNamesBeforeFuzzyMatch": {
+      "older": [
+        "Jangaon"
+      ],
+      "newer": [
+        "Jangoan"
+      ]
+    },
+    "fuzzyNamePairs": [
+      [
+        "Jangaon",
+        "Jangoan"
+      ],
+      [
+        "Madhira (Sc)",
+        "Madhira (SC)"
+      ]
+    ],
+    "geometriesNearIdenticalWithin0_01m2": 112,
+    "relativeSymmetricDifferenceBelow1eMinus8": 113,
+    "featuresWithSymmetricDifferenceAbove0_01m2": 7,
+    "largestSymmetricDifferenceAreaM2": 1260606.0718752474,
+    "largestHausdorffDistanceM": 3042.0718885005717,
+    "materiallyDifferingFeatures": [
+      {
+        "name": "Warangal West",
+        "symmetricDifferenceAreaM2": 1260606.0718752474,
+        "relativeSymmetricDifference": 0.08770699225145881,
+        "hausdorffDistanceM": 662.1469505289109
+      },
+      {
+        "name": "Warangal East",
+        "symmetricDifferenceAreaM2": 1260606.0705730405,
+        "relativeSymmetricDifference": 0.06051937607499165,
+        "hausdorffDistanceM": 658.4774377213129
+      },
+      {
+        "name": "Ibrahimpatnam",
+        "symmetricDifferenceAreaM2": 3988349.561872594,
+        "relativeSymmetricDifference": 0.003620359257193256,
+        "hausdorffDistanceM": 3042.0718885005717
+      },
+      {
+        "name": "Munugode",
+        "symmetricDifferenceAreaM2": 3988349.5621025166,
+        "relativeSymmetricDifference": 0.002678724942385308,
+        "hausdorffDistanceM": 3042.0718885005717
+      },
+      {
+        "name": "Peddapalle",
+        "symmetricDifferenceAreaM2": 717292.9604252592,
+        "relativeSymmetricDifference": 0.0007764068859084461,
+        "hausdorffDistanceM": 769.4854591774312
+      },
+      {
+        "name": "Manthani",
+        "symmetricDifferenceAreaM2": 717292.9604252592,
+        "relativeSymmetricDifference": 0.0002926425540244103,
+        "hausdorffDistanceM": 769.4854591774312
+      },
+      {
+        "name": "Sirpur",
+        "symmetricDifferenceAreaM2": 0.028517095153477272,
+        "relativeSymmetricDifference": 1.380683340897272e-11,
+        "hausdorffDistanceM": 0.00009938467893928988
+      }
+    ],
+    "topology": {
+      "olderLayer": {
+        "invalidGeometries": 1,
+        "positiveAreaOverlapPairs": 0,
+        "unionValid": true,
+        "unionPartCount": 1
+      },
+      "newerLayer": {
+        "invalidGeometries": 1,
+        "positiveAreaOverlapPairs": 0,
+        "unionValid": true,
+        "unionPartCount": 1
+      },
+      "sharedInvalidFeature": "Dornakal (ST) Assembly; same self-intersection location in both layers.",
+      "coverageAgainstAuthoritativeStateBoundary": "NOT CHECKED"
+    }
+  },
+  "decision": "The two official-state-GIS service layers are not interchangeable. The 2026-named layer differs materially from the older layer in at least six constituencies (and seven above the 0.01 m² threshold), with maximum Hausdorff distance about 3.04 km. Neither may be selected as canonical until the data owner/effective date is established, AC numbers are crosswalked to the legally effective ECI roster/order, and the discrepant boundaries are adjudicated. Both share one invalid Dornakal polygon.",
+  "requiredNextActions": [
+    "Obtain service owner confirmation of which layer represents legally effective boundaries and its effective date.",
+    "Crosswalk all 119 names to official ECI statutory AC numbers and the applicable delimitation order/State reorganisation instruments.",
+    "Inspect official maps/order extents for Warangal East/West, Ibrahimpatnam, Munugode, Peddapalle, Manthani and Sirpur.",
+    "Repair Dornakal only in a separate derived candidate, preserve raw hashes and transformation history, and compare the union against an authoritative Telangana state boundary.",
+    "Do not import either layer into canonical production data before these gates pass."
+  ],
+  "productionDatabaseAccess": "NONE",
+  "stagingDatabaseAccess": "NONE"
+}
