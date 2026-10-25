@@ -4,6 +4,12 @@
 
 ---
 
+## Current plan status for this isolated remediation branch
+
+PLAN_STATUS: APPROVED
+PLAN_SCOPE: governance/plans/PLAN-MASTER-AUDIT-REMEDIATION-2026-10-25.md — source changes on the isolated PR branch only.
+PLAN_AUTHORIZATION_BOUNDARY: W021.5 Stage B only; no Stage C, staging/production access, database query/mutation, deployment, or release is authorized by this field.
+
 ## W021.5 RESUMPTION CONTROL — DIRECTIVE 154 (2026-10-25)
 
 ```text
