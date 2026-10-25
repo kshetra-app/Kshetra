@@ -140,28 +140,27 @@
     "correctedTelanganaQueryRun": 40212257196,
     "directEciEndpointFinding": "Five tested /ac/{STATE_CODE}.js endpoints return HTTP 404; this route is not currently usable as a raw source.",
     "officialStateGeometryCandidate": {
-      "oldLayer": {
-        "layerId": 24,
-        "features": 119,
-        "sha256": "91cd791317836d8a6a8729b03f08fd3aee8c727c82e123b1659972d949d32f27",
-        "invalidGeometries": 1,
-        "positiveAreaOverlapPairs": 0
-      },
-      "newerNamedLayer": {
-        "layerId": 12,
-        "features": 119,
-        "sha256": "ca8cfdc695366d9f04ee6a9fdbf9c52eeefe61d69bc79c9d26d15baa7b84aa03",
-        "invalidGeometries": 1,
-        "positiveAreaOverlapPairs": 0
-      },
+      "leadingFamily": [
+        "EndowmentLands_Admin_2026/MapServer/12",
+        "Endowment_Lands_Admin_New/MapServer/12",
+        "Endowment_Lands_Old/MapServer/13"
+      ],
+      "familyFinding": "Admin_2026 and Admin_New raw payloads byte-identical; Admin_Old differs only by sub-millimetre coordinate precision; all have 119 features and one invalid Dornakal polygon.",
+      "outlier": "AdministrativeInfoSystem_Folder/Administrative_Information_System/MapServer/24",
+      "materialDifferences": [
+        "Warangal West",
+        "Warangal East",
+        "Ibrahimpatnam",
+        "Munugode",
+        "Peddapalle",
+        "Manthani"
+      ],
+      "negligiblePrecisionDifference": [
+        "Sirpur"
+      ],
+      "maxHausdorffDistanceMeters": 3042.0718885005717,
       "comparisonReport": "reports/evidence/w021_5_telangana_layer_comparison_2026-10-25.json",
-      "crossLayerDifferences": {
-        "matchedConstituencies": 119,
-        "nearIdenticalWithin0_01m2": 112,
-        "featuresDifferingAbove0_01m2": 7,
-        "maxHausdorffDistanceMeters": 3042.0718885005717
-      },
-      "acceptance": "NEITHER_LAYER_ACCEPTED; SOURCE_VERSION_AND_LEGAL_EFFECTIVE_DATE_UNRESOLVED"
+      "acceptance": "LEADING_CANDIDATE_FAMILY_ONLY; NOT_CANONICAL"
     },
     "broadSourceAcquisitionRun": 40211792541,
     "broadSourceAcquisitionStatus": "COMPLETED_SUCCESS_WITH_PARTIAL_SOURCE_COVERAGE",
@@ -199,7 +198,8 @@
       "report": "reports/evidence/w021_5_telangana_layer_comparison_2026-10-25.json",
       "full119Crosswalk": "OPEN",
       "post2014StateReorganisationAndEffectiveDateChain": "OPEN",
-      "binarySha256": "NOT_CLAIMED; PDF read through web text, binary not downloaded"
+      "binarySha256": "NOT_CLAIMED; PDF read through web text, binary not downloaded",
+      "binaryFetchStatus": "HTTP_406; WEB_PDF_TEXT_REVIEWED; NO_BINARY_SHA256_CLAIMED"
     },
     "additionalTelanganaServiceProbe": {
       "cancelledRunId": 40213242722,
