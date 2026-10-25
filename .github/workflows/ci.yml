@@ -49,7 +49,7 @@ jobs:
       - name: Declared API Contract Drift Check
         run: node scripts/check-api-contract-drift.mjs
       - name: Audit 13-Language i18n Parity
-        run: node scripts/verify-13-locales.mjs
+        run: node scripts/verify-13-locales.mjs --strict
 
   test:
     name: Test
@@ -117,6 +117,8 @@ jobs:
         run: npx prettier --check "**/*.{ts,tsx,json,md}" --ignore-path .gitignore
       - name: ESLint
         run: npx eslint "apps/**/*.{ts,tsx}" "packages/**/*.{ts,tsx}" --max-warnings=0
+      - name: CI release-gate negative-path regression tests
+        run: node tests/ci-release-gates.test.mjs
 
   contract:
     name: API Contract
