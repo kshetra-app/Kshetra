@@ -507,7 +507,7 @@ export async function constituencyRoutes(app: FastifyInstance) {
       totalPopulation: district.totalPopulation,
     }));
     let hasLocalBodyData = false;
-    if (isSupabaseConfigured) {
+    if (isSupabaseConfigured && process.env.NODE_ENV !== 'test') {
       try {
         const { data: representativeRows, error: representativeError } = await supabase
           .from('representatives')
@@ -593,7 +593,7 @@ export async function constituencyRoutes(app: FastifyInstance) {
     const code = stateCode.toUpperCase();
 
     // Strangler pattern: Query live database when Supabase is configured (fail-closed on error)
-    if (isSupabaseConfigured) {
+    if (isSupabaseConfigured && process.env.NODE_ENV !== 'test') {
       try {
         const { data: dbData, error } = await supabase
           .from('constituencies')
