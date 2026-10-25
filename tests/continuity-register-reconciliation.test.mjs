@@ -105,6 +105,10 @@ for (const feature of report.registeredFeatures) {
 for (const requiredId of ['W021.5', 'W022', 'GOV-01', 'GOV-02']) {
   assert.ok(acceptanceIds.has(requiredId), 'Acceptance register is missing required current milestone/defect row ' + requiredId);
 }
+for (const defectId of ['GOV-01', 'GOV-02']) {
+  assert.match(defects, new RegExp('^\\| \\*\\*' + defectId + '\\\\*\\* \\| \\*\\*P0\\*\\*', 'm'),
+    'Defect register is missing the P0 row for ' + defectId);
+}
 assert.match(defects, /^## GOV-02 — Continuity Registers Stale \/ Conflicting Blocker Evidence$/m);
 assert.match(defects, /^\| \*\*GOV-02\*\* \| \*\*P0\*\*/m);
 assert.match(state, /Continuity \/ Evidence Integrity Summary \(GOV-02/);
