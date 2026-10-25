@@ -49,7 +49,10 @@ export async function loadRemoteGeoManifest(
       while (base.endsWith('/')) base = base.slice(0, -1);
       if (base.endsWith('/api')) base = base.slice(0, -4);
       const apiVersion = base.lastIndexOf('/api/v');
-      if (apiVersion >= 0 && base.slice(apiVersion).startsWith('/api/v') && /^[0-9]+$/.test(base.slice(apiVersion + 6))) base = base.slice(0, apiVersion);
+      if (apiVersion >= 0) {
+        const versionSuffix = base.slice(apiVersion + 6);
+        if (versionSuffix.length > 0 && [...versionSuffix].every((char) => char >= '0' && char <= '9')) base = base.slice(0, apiVersion);
+      }
       const response = await fetch(base + '/geo/manifest.json', {
         headers: { Accept: 'application/json' },
       });
