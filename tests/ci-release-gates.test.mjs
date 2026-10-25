@@ -50,6 +50,15 @@ try {
   fs.writeFileSync(unformatted, '{"a":1}\n');
   expectFailure('Prettier formatting violation', 'npx', ['--no-install', 'prettier', '--check', unformatted]);
 
+  // ESLint: a deliberately undefined identifier must be rejected by the lint command.
+  const lintFixture = path.join(temp, 'lint-fixture.js');
+  fs.writeFileSync(lintFixture, 'missingIdentifier();\n');
+  expectFailure(
+    'ESLint deliberate lint error',
+    'npx',
+    ['--no-install', 'eslint', '--no-config-lookup', '--no-ignore', '--rule', '{"no-undef":"error"}', lintFixture],
+  );
+
   // npm audit: a disposable project with a known vulnerable direct dependency.
   const vulnerable = path.join(temp, 'vulnerable');
   fs.mkdirSync(vulnerable);
