@@ -58,6 +58,11 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Rebuild and verify bundled SQLite seed data
+        run: |
+          npx tsx scripts/build-seed-db.mjs
+          node scripts/verify-seed-manifest.mjs
+
       - name: Build shared package
         run: npm run build -w @kshetra/shared
 
@@ -66,7 +71,7 @@ jobs:
           npm test -w @kshetra/shared -- --passWithNoTests --forceExit
           npm test -w @kshetra/api -- --passWithNoTests --forceExit
 
-      - name: Build (push to main)
+      - name: Build (push to master or main)
         if: github.event_name == 'push'
         run: eas build --platform all --profile preview --non-interactive
         working-directory: apps/mobile
