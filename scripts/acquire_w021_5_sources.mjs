@@ -47,14 +47,21 @@ const SOURCES = [
   { id:'SRC-SOI-VECTOR-CATALOG-2025', authority:'PRIMARY_OFFICIAL_METADATA', path:'official/soi/vector-data-catalog-2025.pdf',
     url:'https://www.surveyofindia.gov.in/UserFiles/files/Vector%20Data%20Catalog%202025%281%29.pdf', purpose:'Metadata for available administrative boundary products.' },
   { id:'SRC-DATAMEET-AC-SHP', authority:'SECONDARY_CANDIDATE_GIS', path:'secondary/datameet/India_AC.shp',
-    url:'https://raw.githubusercontent.com/datameet/maps/master/assembly-constituencies/India_AC.shp', license:'CC BY 2.5 India per dataset README',
+    url:'https://raw.githubusercontent.com/datameet/maps/7a1c21c2e3f059a19aba1023f64ed7e174462ca4/assembly-constituencies/India_AC.shp', license:'CC BY 2.5 India per dataset README',
     purpose:'Candidate geometry only. Dataset README warns about shifted geometry, missing/wrong names and pre-delimitation boundaries in several states.' },
   { id:'SRC-DATAMEET-AC-DBF', authority:'SECONDARY_CANDIDATE_GIS', path:'secondary/datameet/India_AC.dbf',
-    url:'https://raw.githubusercontent.com/datameet/maps/master/assembly-constituencies/India_AC.dbf', license:'CC BY 2.5 India per dataset README', purpose:'Attribute companion for candidate geometry; not official truth.' },
+    url:'https://raw.githubusercontent.com/datameet/maps/7a1c21c2e3f059a19aba1023f64ed7e174462ca4/assembly-constituencies/India_AC.dbf', license:'CC BY 2.5 India per dataset README', purpose:'Attribute companion for candidate geometry; not official truth.' },
   { id:'SRC-DATAMEET-AC-SHX', authority:'SECONDARY_CANDIDATE_GIS', path:'secondary/datameet/India_AC.shx',
-    url:'https://raw.githubusercontent.com/datameet/maps/master/assembly-constituencies/India_AC.shx', license:'CC BY 2.5 India per dataset README', purpose:'Shapefile index companion.' },
+    url:'https://raw.githubusercontent.com/datameet/maps/7a1c21c2e3f059a19aba1023f64ed7e174462ca4/assembly-constituencies/India_AC.shx', license:'CC BY 2.5 India per dataset README', purpose:'Shapefile index companion.' },
   { id:'SRC-DATAMEET-AC-PRJ', authority:'SECONDARY_CANDIDATE_GIS', path:'secondary/datameet/India_AC.prj',
-    url:'https://raw.githubusercontent.com/datameet/maps/master/assembly-constituencies/India_AC.prj', license:'CC BY 2.5 India per dataset README', purpose:'Shapefile CRS companion.' },
+    url:'https://raw.githubusercontent.com/datameet/maps/7a1c21c2e3f059a19aba1023f64ed7e174462ca4/assembly-constituencies/India_AC.prj', license:'CC BY 2.5 India per dataset README', purpose:'Shapefile CRS companion.' },
+  ...[
+    ['S03','assam','assam.geojson'],['U07','puducherry','puducherry.geojson'],['S11','kerala','kerala.geojson'],['S22','tamil_nadu','tamil_nadu.geojson'],['S25','west_bengal','west_bengal.geojson']
+  ].map(([stateCode,slug,file]) => ({
+    id:'SRC-SECONDARY-ECI-2026-AC-'+stateCode, authority:'SECONDARY_ECI_PORTAL_EXTRACTION', path:'secondary/eci-2026-extraction/'+stateCode+'.geojson',
+    url:'https://raw.githubusercontent.com/saisantoshv3/assemnbly_gis_files/730263a08afa3cf7a0cd12db68bcddc90aefcc03/2026_assembly_election/'+slug+'_'+stateCode+'/'+file,
+    purpose:'Third-party GeoJSON extraction claiming ECI May 2026 results-portal origin. Compare with direct ECI response; do not accept as official without direct source and temporal validation.'
+  })),
   ...[
     ['S03','assam'],['U07','puducherry'],['S11','kerala'],['S22','tamil-nadu'],['S25','west-bengal']
   ].map(([stateCode,slug]) => ({
@@ -78,10 +85,18 @@ async function fetchBounded(initialUrl) {
   let current = initialUrl;
   for (let hop = 0; hop <= MAX_REDIRECTS; hop++) {
     if (!hostAllowed(current)) throw new Error('HOST_NOT_ALLOWLISTED: ' + new URL(current).hostname);
+    const requestHeaders = {
+      'User-Agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36',
+      'Accept':'text/html,application/pdf,application/json,application/zip,application/octet-stream,*/*',
+      'Accept-Language':'en-IN,en;q=0.9'
+    };
+    if (new URL(current).hostname.toLowerCase() === 'results.eci.gov.in') {
+      requestHeaders.Referer = 'https://results.eci.gov.in/';
+    }
     const response = await fetch(current, {
       redirect: 'manual',
       signal: AbortSignal.timeout(60000),
-      headers: { 'User-Agent':'Kshetra-W021.5-Source-Acquisition/1.0 (+source provenance; non-automated bulk scraping avoided)' }
+      headers: requestHeaders
     });
     if ([301,302,303,307,308].includes(response.status)) {
       const location = response.headers.get('location');
@@ -212,6 +227,35 @@ for (const sourceResult of manifest.results.filter(r => /^SRC-ECI-2026-AC-/.test
       error:String(error?.message||error)
     });
     console.error('[DERIVATION_FAILED]',sourceResult.id,String(error?.message||error));
+  }
+}
+
+
+/* Audit third-party GeoJSON extractions independently. These are not promoted
+ * to official; their hashes and feature counts are recorded for comparison. */
+for (const sourceResult of manifest.results.filter(r => /^SRC-SECONDARY-ECI-2026-AC-/.test(r.id) && r.status==='DOWNLOADED_HASHED')) {
+  try {
+    const parsed = JSON.parse(await fs.readFile(sourceResult.localPath, 'utf8'));
+    if (parsed?.type !== 'FeatureCollection' || !Array.isArray(parsed.features)) throw new Error('NOT_A_GEOJSON_FEATURE_COLLECTION');
+    const stateCode = sourceResult.id.slice('SRC-SECONDARY-ECI-2026-AC-'.length);
+    const expectedSeats = { S03:126, U07:30, S11:140, S22:234, S25:294 }[stateCode];
+    manifest.results.push({
+      artifactId:'AUDIT-SECONDARY-ECI-2026-AC-'+stateCode,
+      sourceId:sourceResult.id,
+      sourceSha256:sourceResult.sha256,
+      featureCount:parsed.features.length,
+      expectedStatutorySeatCount:expectedSeats,
+      status:parsed.features.length===expectedSeats ? 'COUNT_MATCH_CANDIDATE_ONLY' : 'REJECTED_COUNT_MISMATCH',
+      authorityClassification:'SECONDARY_EXTRACTION_NOT_OFFICIAL',
+      acceptedAsOfficialGeometry:false
+    });
+  } catch(error) {
+    manifest.results.push({
+      artifactId:'AUDIT-SECONDARY-ECI-2026-AC-'+sourceResult.id.slice('SRC-SECONDARY-ECI-2026-AC-'.length),
+      sourceId:sourceResult.id,
+      status:'AUDIT_FAILED',
+      error:String(error?.message||error)
+    });
   }
 }
 
