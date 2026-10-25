@@ -1,7 +1,7 @@
 {
   "jobId": "JOB 023",
   "jobName": "DELIMITATION WATCH",
-  "timestamp": "2026-10-25T18:15:00.000Z",
+  "timestamp": "2026-10-25T18:20:35.423Z",
   "governance": {
     "ruleIV001Status": "REMEDIATED / TESTED / READY FOR INDEPENDENT CTO ADJUDICATION (ROUND 3)",
     "stagingProductionAirGap": "STRICTLY_ENFORCED (0 queries, 0 mutations)",
@@ -11,8 +11,7 @@
   "evidenceCommitLineage": {
     "round2ImplementationCommitSha": "760094d5aa06635920ce72f9f656ef82532f2980",
     "round2GovernanceCommitSha": "85ba860269a43fcfa6ab588e514096525272cfe7",
-    "remoteMasterHeadSha": "b51301f5557d8e2f7902d532a8996d6f7ab834ff",
-    "remoteMasterTreeSha": "c02fd849a58a282121474d2a2cccf5c9fd42d333",
+    "remoteMasterHeadSha": "b4f41ed2cd01eac604bfa4d07e15e013cf7b4b65",
     "eliminatedFalseSha": "760094d93ee43e62a12260173669c5e7b415a77c"
   },
   "findingsClosure": {
@@ -47,13 +46,13 @@
     },
     "step_2_initial_pipeline_run": {
       "status": "PASS",
-      "snapshotId": "b6c65566-04b5-4228-a969-0e1fad36f584",
+      "snapshotId": "fcfa9fad-f6a9-4d9c-929a-823e839e1b73",
       "contentSha256": "858f789acb0547fd678402efd97697c1b492ba302c38414f94b33cc81edb6db1",
-      "versionId": "b248b9e7-4533-4786-b43f-8389225aa104",
+      "versionId": "702c43a9-2d88-462f-90d9-83105cd1dcfd",
       "versionTag": "v1.0.0-TG-20261025-858f789a",
       "dataStatus": "UNVERIFIED",
-      "notificationId": "56b0a04c-12af-4d11-b05b-b7ea36dc028e",
-      "publicationId": "32e13000-7df1-4821-b219-de6f65104baa"
+      "notificationId": "38136126-dc0b-4530-9f9b-8a9abd34847f",
+      "publicationId": "47d9bcd7-e0ee-4cae-b9c9-f80ede7f03fb"
     },
     "step_3_modify_fixture": {
       "status": "PASS",
@@ -63,47 +62,47 @@
     },
     "step_4_run_production_pipeline": {
       "status": "PASS",
-      "runId": "9a25de5b-28a4-49a1-8f4d-8e0bd7e570ad",
+      "runId": "a5bef6cb-6dd8-4fbb-a062-d0ac7870fb3a",
       "outcome": "SUCCESS",
-      "totalDurationMs": 44
+      "totalDurationMs": 28
     },
     "step_5_verify_snapshot": {
       "status": "PASS",
-      "snapshotId": "9498894a-6dbd-42a2-a87b-52db17a54026",
+      "snapshotId": "d20568a4-242d-431d-9ae4-95ecf7aeab44",
       "contentSha256": "90398afec2c30110b49bc237c22a956b16255678658de25e771e89a9cc9ca8bd",
       "sizeBytes": 1799
     },
     "step_6_verify_candidate_and_validation": {
       "status": "PASS",
-      "candidateId": "1733f892-595f-46d0-be8e-97c33859c5ac",
+      "candidateId": "8553d6ef-2762-4288-92cd-bf194ebfbd58",
       "validationStatus": "PASSED",
       "checksCount": 12
     },
     "step_7_verify_comparison": {
       "status": "PASS",
-      "comparisonId": "65cc83e2-15f6-43d0-a11d-54369792131b",
+      "comparisonId": "4fd5cfcb-b066-4b3b-90eb-3628fb35f9fc",
       "isMaterialChange": true,
       "classification": "MATERIAL_CHANGE",
       "summary": "Total seats changed from 119 to 125; Reservation breakdown modified: SC 19->20, ST 12->13; Modified AC-58: oldAc 58->58, name 'Malakpet'->'Malakpet Central', overlap 100%->75%; Added new constituency mapping AC-120 (Chanchalguda)"
     },
     "step_8_verify_version_lineage": {
       "status": "PASS",
-      "v1Id": "b248b9e7-4533-4786-b43f-8389225aa104",
-      "v2Id": "aa71ef6a-192a-4230-8438-4b13d3c5af60",
-      "previousVersionPointer": "b248b9e7-4533-4786-b43f-8389225aa104",
+      "v1Id": "702c43a9-2d88-462f-90d9-83105cd1dcfd",
+      "v2Id": "a4645417-b308-49ae-88d3-597e17ad9bff",
+      "previousVersionPointer": "702c43a9-2d88-462f-90d9-83105cd1dcfd",
       "v2Tag": "v2.0.0-TG-20261025-90398afe"
     },
     "step_9_verify_notification": {
       "status": "PASS",
-      "eventId": "209ff2c5-31e0-4101-99fe-5842c85e1c22",
+      "eventId": "5a6b719e-c792-4a7d-81dd-54228f3061a7",
       "category": "PROPOSAL_NOTICE",
       "dispatchStatus": "SENT",
-      "deepLink": "/delimitation/proposals/aa71ef6a-192a-4230-8438-4b13d3c5af60"
+      "deepLink": "/delimitation/proposals/a4645417-b308-49ae-88d3-597e17ad9bff"
     },
     "step_10_verify_publication": {
       "status": "PASS",
-      "publicationId": "f8a4a077-236e-422c-8537-38455ef04a00",
-      "versionId": "aa71ef6a-192a-4230-8438-4b13d3c5af60",
+      "publicationId": "337dc1e5-12e0-41df-a1e8-702432c52990",
+      "versionId": "a4645417-b308-49ae-88d3-597e17ad9bff",
       "publicationType": "PROPOSAL",
       "canonicalViewUpdated": false
     },
@@ -120,7 +119,7 @@
         "Invariant violated: proposed seats (0) must exceed 0 and SC (50) + ST (60) <= total",
         "Mapping Invalid -> Invalid has invalid overlap percentage 150 (must be [0..100])"
       ],
-      "preservedLatestVersionId": "aa71ef6a-192a-4230-8438-4b13d3c5af60"
+      "preservedLatestVersionId": "a4645417-b308-49ae-88d3-597e17ad9bff"
     }
   },
   "summary": {

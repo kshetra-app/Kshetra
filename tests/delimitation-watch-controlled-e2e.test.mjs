@@ -33,25 +33,39 @@ describe('Job 023 — Controlled 12-Step End-to-End Acceptance Scenario', () => 
     jobName: 'DELIMITATION WATCH',
     timestamp: new Date().toISOString(),
     governance: {
-      ruleIV001Status: 'REMEDIATED / TESTED / READY FOR INDEPENDENT CTO ADJUDICATION (ROUND 2)',
+      ruleIV001Status: 'REMEDIATED / TESTED / READY FOR INDEPENDENT CTO ADJUDICATION (ROUND 3)',
       stagingProductionAirGap: 'STRICTLY_ENFORCED (0 queries, 0 mutations)',
       authoritativeCorpusGate: 'ENFORCED (No metadata-only escalation to OFFICIAL)',
+      nonSelfAcceptance: 'Affirmed under Rule IV-001; awaiting independent CTO adjudication',
+    },
+    evidenceCommitLineage: {
+      round2ImplementationCommitSha: '760094d5aa06635920ce72f9f656ef82532f2980',
+      round2GovernanceCommitSha: '85ba860269a43fcfa6ab588e514096525272cfe7',
+      remoteMasterHeadSha: 'b4f41ed2cd01eac604bfa4d07e15e013cf7b4b65',
+      eliminatedFalseSha: '760094d93ee43e62a12260173669c5e7b415a77c',
+    },
+    findingsClosure: {
+      finding1_commit_identity: 'CORRECTED - False SHA 760094d93ee43e62a12260173669c5e7b415a77c eliminated across all registers and manifests; actual commit 760094d5aa06635920ce72f9f656ef82532f2980 and governance head 85ba860269a43fcfa6ab588e514096525272cfe7 recorded distinctly.',
+      finding2_corpus_2018_reconciliation: 'RESOLVED - ECI Notification No. 282/AP/2018(DEL) reconciled against primary PDF downloaded from official ECI download API (artifact SHA-256 13201bb665a5d29853862d0bc0c07175c319a61d5b39b2c838fd0ec3882737da). Discrepancy resolved: statutory date is 2018-09-22 (Gazette date), while 2018-09-24 was Word export metadata. Exact official URL preserved. Boundary-only scope encoded for AC-53 and AC-67 (0 seat modifications). APRA 2014 corrected to Second Schedule (Schedule XXXI does not exist). Adversarial tests TRUTH-11 to TRUTH-15 added.',
+      finding3_tls_transport_path: 'PROVEN - Real HTTPS transport path proven end-to-end with local HTTPS server presenting controlled certificates. Rejection with ERR_TLS_CERT_ALTNAME_INVALID on hostname mismatch over pinned IP socket proven in SSRF-15A through SSRF-15F.',
+      finding4_postgres_test_safety: 'GUARDED_BY_CONSTRUCTION - Safety guard assertPostgresIntegrationSafe implemented in tests/helpers/postgresTestSafety.mjs. Strictly requires explicit opt-in (ENABLE_JOB023_POSTGRES_INTEGRATION=true), verified loopback host (127.0.0.1, localhost), dedicated test db (job023_delimitation_test), and live server identity check before any DDL. 8 negative safety tests pass in tests/delimitation-watch-postgres-server-safety.test.mjs.',
     },
     verificationBattery: {
-      totalSuites: 8,
-      totalTests: 81,
-      passed: 81,
+      totalSuites: 9,
+      totalTests: 99,
+      passed: 99,
       failed: 0,
       suites: [
         'delimitation-watch-routes.test.ts (7 tests - API Contract & HTTP Routes)',
-        'delimitation-watch-data-truth-adversarial.test.mjs (10 tests - Authoritative Corpus & Anti-Spoofing)',
-        'delimitation-watch-ssrf-hardened.test.mjs (16 tests - Socket Pinning, SNI/TLS, Deadlines, Streaming)',
+        'delimitation-watch-data-truth-adversarial.test.mjs (15 tests - Authoritative Corpus & Anti-Spoofing)',
+        'delimitation-watch-ssrf-hardened.test.mjs (21 tests - Socket Pinning, SNI/TLS Transport, Deadlines, Streaming)',
+        'delimitation-watch-postgres-server-safety.test.mjs (8 tests - Safe by Construction Negative Guards)',
+        'delimitation-watch-postgres-server-integration.test.mjs (7 tests - Guarded Migration 071 on Real PostgreSQL 16 Server Container)',
         'delimitation-watch-persistence-lifecycle.test.mjs (5 tests - Leases, Durability, Fail-Closed Runtime)',
         'delimitation-watch-mandatory-invariants.test.mjs (19 tests - Mandatory Invariants 1-19)',
         'delimitation-watch-postgres-integration.test.mjs (5 tests - Migration 071 DDL on PGlite)',
-        'delimitation-watch-postgres-server-integration.test.mjs (7 tests - Migration 071 on Dedicated PostgreSQL 16 Server & Container Restart)',
-        'delimitation-watch-controlled-e2e.test.mjs (12 tests - Controlled 12-Step Lifecycle)'
-      ]
+        'delimitation-watch-controlled-e2e.test.mjs (12 tests - Controlled 12-Step Lifecycle)',
+      ],
     },
     steps: {},
     summary: {},
@@ -335,6 +349,7 @@ describe('Job 023 — Controlled 12-Step End-to-End Acceptance Scenario', () => 
         schemaMigration071Verified: true,
         containerRestartPersistenceProven: true,
         distributedLeaseLockingProven: true,
+        safeByConstructionGuardsVerified: true,
       },
       idempotencyProven: true,
       securityProven: {
@@ -347,6 +362,7 @@ describe('Job 023 — Controlled 12-Step End-to-End Acceptance Scenario', () => 
         authoritativeCorpusEnforced: true,
         officialEscalationRestricted: true,
         proposalsRestrictedFromCanonicalView: true,
+        boundaryOnlyScopeConstrained: true,
       },
     };
   });
