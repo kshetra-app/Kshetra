@@ -19,7 +19,7 @@
     "lint": "turbo run lint",
     "test": "turbo run test",
     "clean": "turbo run clean",
-    "build:seed-db": "node scripts/build-seed-db.mjs",
+    "build:seed-db": "node --import tsx scripts/build-seed-db.mjs",
     "validate:seed-db": "node scripts/validate-seed-db.mjs"
   },
   "devDependencies": {
