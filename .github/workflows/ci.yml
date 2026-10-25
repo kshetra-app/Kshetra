@@ -29,6 +29,9 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Verify Geo Runtime Truth (source-authority gate)
+        run: node scripts/verify-geo-runtime-truth.mjs
+
       - name: Verify Governance Consistency
         run: node tests/governance-consistency.test.mjs
 
