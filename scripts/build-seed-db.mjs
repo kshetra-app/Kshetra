@@ -24,6 +24,16 @@ const dbPath = path.resolve(dataDir, 'seed-data.db');
 const localBodyDir = path.resolve(rootDir, 'scrapers/output/local-body');
 
 const NO_MANDAL = '__no_mandal__';
+const STATE_SOURCE_NAMES = {
+  TS: 'telangana', AP: 'andhra-pradesh', KA: 'karnataka', MH: 'maharashtra',
+  TN: 'tamil-nadu', KL: 'kerala', WB: 'west-bengal', UP: 'uttar-pradesh',
+  RJ: 'rajasthan', GJ: 'gujarat', JH: 'jharkhand', OD: 'odisha', DL: 'delhi',
+  PB: 'punjab', HR: 'haryana', CG: 'chhattisgarh', MP: 'madhya-pradesh',
+  BR: 'bihar', AS: 'assam', GA: 'goa', HP: 'himachal-pradesh',
+  MN: 'manipur', ML: 'meghalaya', MZ: 'mizoram', NL: 'nagaland',
+  TR: 'tripura', SK: 'sikkim', AR: 'arunachal-pradesh', UK: 'uttarakhand',
+  PY: 'puducherry', JK: 'jammu-kashmir',
+};
 
 // ═════════════════════════════════════════════════════════════════════════
 // ── Schema ──────────────────────────────────────────────────────────────
@@ -249,8 +259,9 @@ async function importSeedData(db) {
     };
 
     try {
-      // Import constituencies
-      const constPath = path.resolve(rootDir, `data/seed/${code.toLowerCase()}-constituencies.ts`);
+      // Import constituencies using canonical human-readable source filenames.
+      const sourceName = STATE_SOURCE_NAMES[code];
+      const constPath = path.resolve(rootDir, `data/seed/${sourceName}-constituencies.ts`);
       if (fs.existsSync(constPath)) {
         try {
           const mod = await import(`file://${constPath}`);
@@ -304,7 +315,7 @@ async function importSeedData(db) {
       }
 
       // Import MLA profiles
-      const mlaPath = path.resolve(rootDir, `data/seed/${code.toLowerCase()}-mla-profiles.ts`);
+      const mlaPath = path.resolve(rootDir, `data/seed/${sourceName}-mla-profiles.ts`);
       if (fs.existsSync(mlaPath)) {
         const mod = await import(`file://${mlaPath}`);
         const mlaKey = Object.keys(mod).find(k => k.includes('MLA') || k.includes('PROFILE'));
@@ -347,13 +358,13 @@ async function importSeedData(db) {
             }
           }
 
-          stateManifest.has_mla_profiles = 1;
+          stateManifest.has_mla_profiles = count > 0 ? 1 : 0;
           console.log(`  ✓ MLA Profiles: ${count}`);
         }
       }
 
       // Import demographics
-      const demoPath = path.resolve(rootDir, `data/seed/${code.toLowerCase()}-demographics.ts`);
+      const demoPath = path.resolve(rootDir, `data/seed/${sourceName}-demographics.ts`);
       if (fs.existsSync(demoPath)) {
         const mod = await import(`file://${demoPath}`);
         const demoKey = Object.keys(mod).find(k => k.includes('DEMO'));
@@ -389,13 +400,13 @@ async function importSeedData(db) {
             }
           }
 
-          stateManifest.has_demographics = 1;
+          stateManifest.has_demographics = count > 0 ? 1 : 0;
           console.log(`  ✓ Demographics: ${count}`);
         }
       }
 
       // Import election history
-      const elecPath = path.resolve(rootDir, `data/seed/${code.toLowerCase()}-election-history.ts`);
+      const elecPath = path.resolve(rootDir, `data/seed/${sourceName}-election-history.ts`);
       if (fs.existsSync(elecPath)) {
         const mod = await import(`file://${elecPath}`);
         const elecKey = Object.keys(mod).find(k => k.includes('ELECTION'));
@@ -448,10 +459,68 @@ async function importSeedData(db) {
             }
           }
 
-          stateManifest.has_election_history = 1;
+          stateManifest.has_election_history = count > 0 ? 1 : 0;
           console.log(`  ✓ Election History: ${count}`);
         }
       }
+
+      // Import the canonical per-state historical results.
+      const histPath = path.resolve(rootDir, `data/seed/${sourceName}-historical-results.ts`);
+      if (fs.existsSync(histPath)) {
+        const mod = await import(`file://${histPath}`);
+        const key = Object.keys(mod).find(k => /historical|result/i.test(k));
+        const rows = key ? mod[key] : null;
+        if (Array.isArray(rows)) {
+          const insert = db.prepare('INSERT OR REPLACE INTO historical_results (id,state_code,ac_no,year,winner,party) VALUES (?,?,?,?,?,?)');
+          for (const row of rows) {
+            if (!Number.isInteger(Number(row.acNo)) || !Number.isInteger(Number(row.year))) continue;
+            insert.run(`${code}-HIST-${row.acNo}-${row.year}`, code, Number(row.acNo), Number(row.year), row.winner || row.winnerName || '', row.party || row.winnerParty || '');
+          }
+        }
+      }
+
+      // Import the political timeline; empty flags are never assumed from file presence.
+      const timelinePath = path.resolve(rootDir, `data/seed/${sourceName}-political-timeline.ts`);
+      if (fs.existsSync(timelinePath)) {
+        const mod = await import(`file://${timelinePath}`);
+        const key = Object.keys(mod).find(k => /timeline/i.test(k));
+        const rows = key ? mod[key] : null;
+        if (Array.isArray(rows)) {
+          const insert = db.prepare(`INSERT OR REPLACE INTO political_timeline
+            (id,state_code,ac_no,date,assembly,event_type,member_names,debit_party,credit_party,seats,explanation,details,legal_status,verified)
+            VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)`);
+          for (const row of rows) {
+            const rowHash = crypto.createHash('sha1').update(JSON.stringify(row)).digest('hex').slice(0, 8);
+            insert.run(
+              row.id || `${code}-TL-${row.acNo || 'NA'}-${row.date || row.year || 'NA'}-${rowHash}`,
+              code, row.acNo ?? null, row.date || '', row.assembly ?? row.year ?? null,
+              row.eventType || row.type || '', row.memberNames || row.member || '',
+              row.debitParty || '', row.creditParty || '', row.seats ?? 0,
+              row.explanation || '', row.details || '', row.legalStatus || '', row.verified ? 1 : 0
+            );
+          }
+        }
+      }
+
+      const countForState = (table) =>
+        db.prepare(`SELECT count(*) AS count FROM ${table} WHERE state_code = ?`).get(code).count;
+      stateManifest.constituency_count = countForState('constituencies');
+      stateManifest.has_mla_profiles = countForState('mla_profiles') > 0 ? 1 : 0;
+      stateManifest.has_demographics = countForState('demographics') > 0 ? 1 : 0;
+      stateManifest.has_historical_results = countForState('historical_results') > 0 ? 1 : 0;
+      stateManifest.has_political_timeline = countForState('political_timeline') > 0 ? 1 : 0;
+      stateManifest.has_election_history = countForState('election_history') > 0 ? 1 : 0;
+      stateManifest.version = crypto.createHash('sha256').update(JSON.stringify({
+        state_code: code,
+        counts: {
+          constituencies: stateManifest.constituency_count,
+          mla_profiles: countForState('mla_profiles'),
+          demographics: countForState('demographics'),
+          historical_results: countForState('historical_results'),
+          political_timeline: countForState('political_timeline'),
+          election_history: countForState('election_history'),
+        },
+      })).digest('hex').slice(0, 16);
 
       // Insert state manifest
       const insertManifest = db.prepare(`
@@ -461,7 +530,7 @@ async function importSeedData(db) {
       `);
       insertManifest.run(
         stateManifest.state_code,
-        crypto.createHash('sha256').update(JSON.stringify(stateManifest)).digest('hex').slice(0, 12),
+        stateManifest.version,
         stateManifest.has_mla_profiles,
         stateManifest.has_demographics,
         stateManifest.has_historical_results,
@@ -474,6 +543,7 @@ async function importSeedData(db) {
       manifest[code] = stateManifest;
     } catch (err) {
       console.error(`  ✗ Error importing ${code}:`, err.message);
+      throw new Error(`Seed generation failed for state ${code}: ${err.message}`, { cause: err });
     }
   }
 
@@ -699,9 +769,11 @@ async function main() {
   // Write an auto-derived version file from the final DB's content hash. The app
   // imports this JSON and re-copies the bundled DB whenever the hash changes, so
   // there is no manual version bump to remember after a rebuild.
-  const hash = crypto.createHash('sha256').update(fs.readFileSync(dbPath)).digest('hex').slice(0, 16);
+  const dbBytes = fs.readFileSync(dbPath);
+  const fullHash = crypto.createHash('sha256').update(dbBytes).digest('hex');
+  const hash = fullHash.slice(0, 16);
   const versionPath = path.resolve(dataDir, 'seed-db-version.json');
-  fs.writeFileSync(versionPath, JSON.stringify({ version: hash, builtAt: new Date().toISOString() }, null, 2) + '\n');
+  fs.writeFileSync(versionPath, JSON.stringify({ version: hash, sha256: fullHash, sizeBytes: dbBytes.length, builtAt: new Date().toISOString() }, null, 2) + '\n');
   console.log(`✅ Version file written: ${versionPath} (${hash})`);
 
   // If Android assets directory exists, also copy directly so it's baked into APK assets
