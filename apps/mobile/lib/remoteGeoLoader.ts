@@ -8,6 +8,7 @@
 import * as Crypto from 'expo-crypto';
 import * as FileSystem from 'expo-file-system/legacy';
 import { getManifestEntry } from './geoManifest';
+import { API_BASE_URL } from './constants';
 import { sanitizeGeoJSON } from './geoLoader';
 
 const memCache = new Map<string, GeoJSON.FeatureCollection>();
