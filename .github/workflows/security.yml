@@ -34,7 +34,7 @@ jobs:
         with:
           scan-args: |-
             --lockfile=package-lock.json
- 
+
 
   sast:
     name: Static Analysis (SAST)
@@ -43,15 +43,15 @@ jobs:
       image: returntocorp/semgrep
     steps:
       - uses: actions/checkout@v4
-      - name: Semgrep scan
-        run: semgrep ci
-        env:
-          SEMGREP_RULES: >-
-            p/typescript
-            p/react
-            p/nodejsscan
-            p/owasp-top-ten
-            p/secrets
+      - name: Semgrep scan (explicit rules, offline-friendly exit semantics)
+        run: >-
+          semgrep scan
+          --config p/typescript
+          --config p/react
+          --config p/nodejsscan
+          --config p/owasp-top-ten
+          --config p/secrets
+          --error
 
 
   sbom:
