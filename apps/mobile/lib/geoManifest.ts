@@ -63,7 +63,13 @@ export function isVerifiedRemoteStateGeoJSON(code: string): boolean {
   const entry = getManifestEntry(code);
   if (!entry || entry.bundled === true || entry.hasPolygons !== true) return false;
   if (entry.status !== 'official_verified') return false;
-  if (!entry.sourceUrl || !/^https?:\\/\\//i.test(entry.sourceUrl)) return false;
+  if (!entry.sourceUrl) return false;
+  try {
+    const source = new URL(entry.sourceUrl);
+    if (source.protocol !== 'https:' || !source.hostname || /(?:^|\\.)invalid$/i.test(source.hostname)) return false;
+  } catch {
+    return false;
+  }
   if (!entry.retrievedAt || Number.isNaN(Date.parse(entry.retrievedAt))) return false;
   if (!entry.effectiveDate || Number.isNaN(Date.parse(entry.effectiveDate))) return false;
   if (!entry.version || !entry.transformationVersion) return false;
