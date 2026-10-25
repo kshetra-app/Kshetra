@@ -1,5 +1,10 @@
 #!/usr/bin/env node
-/** GEO-02 fail-closed gate against Metro source maps and Android release archives. */
+/**
+ * Fail-closed GEO-02 gate. In addition to archive size budgets, this rejects
+ * a Metro graph containing state-wide geography/seed adapters. Source-map
+ * inspection is necessary: dynamic imports still get bundled if statically
+ * reachable or included by the production export.
+ */
 import { existsSync, readFileSync, writeFileSync, resolve, dirname } from 'node:fs';
 const args = process.argv.slice(2);
 function flag(name, fallback) { const i = args.indexOf(name); return i < 0 ? fallback : args[i + 1]; }
