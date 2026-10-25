@@ -31,18 +31,11 @@ jobs:
           distribution: temurin
           java-version: '17'
 
-      - name: Setup Android SDK
-        uses: android-actions/setup-android@v3
-      - name: Install Android SDK packages
-        run: yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses || true
-      - name: Install platform-tools
-        run: "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "platform-tools"
-      - name: Install Android platform
-        run: "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "platforms;android-35"
-      - name: Install Android build tools
-        run: "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "build-tools;35.0.0"
-      - name: Install Android NDK
-        run: "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "ndk;27.1.12297006"
+      - name: Verify runner Android SDK
+        run: |
+          test -d "$ANDROID_HOME/platform-tools"
+          ls "$ANDROID_HOME/platforms"
+          ls "$ANDROID_HOME/build-tools"
 
       - name: Install dependencies
         run: npm ci
