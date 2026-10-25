@@ -242,7 +242,9 @@
     "2e76180c66505b802e56c0828572c1fd2cb48623",
     "2504312bd86001d7926b18c2061f56d01f68172e",
     "a70f181fa62dc6ae9ba584bcdfade2e5cfec41bf",
-    "b3fa56d1fe8c29d0f233a14785c79f489a12d25c"
+    "b3fa56d1fe8c29d0f233a14785c79f489a12d25c",
+    "fef2c52c968dd7e2b1a6a74c9807da5aa9894b14",
+    "8e73218c957139e5f8ed818d381a262abd413654"
   ],
-  "commitAccountabilityNote": "Complete repair-branch commit inventory since the immutable sourceSnapshot.commit. The CI test compares every commit except the current HEAD (which contains this report and so cannot be recorded into itself), and explicitly requires the previous manifest commit to appear in the inventory. On subsequent updates refresh this complete list, including the previous report-update commit."
+  "commitAccountabilityNote": "Complete repair-branch commit inventory since the immutable sourceSnapshot.commit. The CI test compares these registered IDs with git history after excluding only checked-out HEAD, whose tree contains this manifest and cannot be recorded into itself; a separate assertion requires the previous manifest revision to be listed. Refresh the full inventory whenever adding later branch commits."
 }
