@@ -654,35 +654,40 @@ export async function campaignRoutes(app: FastifyInstance) {
       });
     }
 
-    if (isSupabaseConfigured) {
-      try {
-        const { data } = await supabase
-          .from('user_profiles')
-          .select('user_id, display_name, avatar_url, role')
-          .eq('phone', cleaned)
-          .maybeSingle();
-
-        if (data) {
-          return {
-            isKshetraUser: true,
-            userId: data.user_id,
-            displayName: data.display_name,
-            avatarUrl: data.avatar_url,
-            role: data.role,
-          };
-        }
-      } catch {
-        // fall back to mock check
-      }
+    if (!isSupabaseConfigured) {
+      return sendApiError(reply, request, 503, 'Service Unavailable', 'User lookup is not configured.', {
+        code: 'DATABASE_UNAVAILABLE',
+      });
     }
 
-    // Check in-memory volunteers/cadre
-    const match = inMemoryVolunteers.find((v) => v.phone.replace(/\D/g, '').slice(-10) === cleaned);
-    return {
-      isKshetraUser: match ? match.isKshetraUser : false,
-      displayName: match ? match.name : undefined,
-      phone: cleaned,
-    };
+    try {
+      const { data, error } = await supabase
+        .from('user_profiles')
+        .select('user_id, display_name, avatar_url, role')
+        .eq('phone', cleaned)
+        .maybeSingle();
+
+      if (error) {
+        request.log.error({ err: error }, 'Campaign user lookup failed');
+        return sendApiError(reply, request, 503, 'Service Unavailable', 'User lookup is temporarily unavailable.', {
+          code: 'DATABASE_ERROR',
+        });
+      }
+      if (!data) return { isKshetraUser: false, phone: cleaned };
+      return {
+        isKshetraUser: true,
+        userId: data.user_id,
+        displayName: data.display_name,
+        avatarUrl: data.avatar_url,
+        role: data.role,
+        phone: cleaned,
+      };
+    } catch (err) {
+      request.log.error({ err }, 'Campaign user lookup threw');
+      return sendApiError(reply, request, 503, 'Service Unavailable', 'User lookup is temporarily unavailable.', {
+        code: 'DATABASE_ERROR',
+      });
+    }
   });
 
   /** GET /api/v1/campaign/campaigns — list campaigns */
