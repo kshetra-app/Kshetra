@@ -10,7 +10,7 @@ const security = fs.readFileSync('.github/workflows/security.yml', 'utf8');
 const localeVerifier = fs.readFileSync('scripts/verify-13-locales.mjs', 'utf8');
 
 function section(source, name) {
-  const marker = new RegExp('^  ' + name + ':\\s*$', 'm');
+  const marker = new RegExp('^  ' + name + ':\s*$', 'm');
   const match = marker.exec(source);
   const start = match.index;
   const next = source.slice(match.index + match[0].length).search(/^  [a-zA-Z0-9_-]+:\s*$/m);
@@ -30,7 +30,7 @@ assert.match(section(security, 'sca'), /npm audit --audit-level=high/);
 assert.match(section(security, 'sca'), /ghcr\.io\/google\/osv-scanner:v2\.4\.0 scan source -r/);
 assert.match(section(security, 'sast'), /semgrep/i);
 assert.match(section(security, 'sbom'), /License policy gate/);
-assert.match(section(security, 'sbom'), /license-checker@25\\.0\\.1/);
+assert.match(section(security, 'sbom'), /license-checker@25\.0\.1/);
 assert.match(section(security, 'sbom'), /cyclonedx/);
 assert.match(section(security, 'sbom'), /test -s sbom\.cdx\.json/);
 assert.match(section(security, 'sbom'), /if-no-files-found:\s*error/);
