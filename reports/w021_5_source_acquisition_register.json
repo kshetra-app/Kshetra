@@ -957,9 +957,13 @@
       "statutoryToGisCrosswalkWorkflow": {
         "runId": 40219308671,
         "url": "https://github.com/kshetra-app/Kshetra/actions/runs/40219308671",
-        "status": "IN_PROGRESS",
-        "purpose": "Fetch TGRAC 2026 and AdministrativeInfoSystem candidate geometry, hash raw bytes, crosswalk all 119 legal names, separate exact matches from inferred aliases."
-      }
+        "status": "PASS_WITH_CANDIDATE_ALIASES",
+        "artifactId": 12608482581,
+        "artifactSha256": "8439368e86d5c6179c35a6bd8525cc430e4897aa6705b0df8fc815da54d3220e",
+        "crosswalkJsonSha256": "c30e088eae279b9c2e9d71106e00f638f13a25ec3ff3b062ef874e14dd1a4ac6",
+        "summary": "119/119 matched by 107 exact + 12 inferred aliases in Admin_2026; 108 exact + 11 inferred aliases in older AdministrativeInfoSystem; zero unresolved after aliases."
+      },
+      "crosswalkReport": "reports/evidence/w021_5_telanganaschedule_tgrac_name_crosswalk_40219308671.json"
     },
     {
       "sourceId": "SRC-ECI-GE-2024-PRESS-NOTE-23",
@@ -1603,5 +1607,5 @@
     ],
     "acceptedAsCanonical": false
   },
-  "lastDecision": "Schedule XXVII roster parser passed 119/119 serials, 10 districts, and seven semantic regression anchors. Next, the combined crosswalk workflow will compare the legal roster against TGRAC candidate GIS layers; name matching alone will not accept polygon extents."
+  "lastDecision": "The combined workflow acquired both TGRAC candidate layers and passed the 119-record name/roster crosswalk: Admin_2026 has 107 exact + 12 provisional alias matches; the older AdministrativeInfoSystem has 108 exact + 11 provisional alias matches. Zero remain unmatched after aliases, but aliases are not canonical and no statutory extent-to-polygon validation has been done. Geometry defects remain open."
 }
