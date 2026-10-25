@@ -531,14 +531,20 @@ function importRepresentatives(db) {
 
   const all = [];
   for (const file of files) {
-    try {
-      const data = JSON.parse(fs.readFileSync(path.join(localBodyDir, file), 'utf8'));
-      const reps = buildRepsFromKYR(data);
-      for (const rep of reps) all.push(rep); // loop, not spread (142k+ overflows arg stack)
-      console.log(`  ${file}: ${reps.length} winners`);
-    } catch (err) {
-      console.error(`  ✗ ${file}: ${err.message}`);
+    const sourcePath = path.join(localBodyDir, file);
+    const sourceText = fs.readFileSync(sourcePath, 'utf8');
+    if (sourceText.startsWith('version https://git-lfs.github.com/spec/v1')) {
+      throw new Error(`SEED_SOURCE_NOT_HYDRATED: ${sourcePath} is a Git LFS pointer, not the source JSON. Ensure checkout uses lfs: true.`);
     }
+    let data;
+    try {
+      data = JSON.parse(sourceText);
+    } catch (err) {
+      throw new Error(`SEED_SOURCE_INVALID_JSON: ${sourcePath}: ${err.message}`, { cause: err });
+    }
+    const reps = buildRepsFromKYR(data);
+    for (const rep of reps) all.push(rep); // loop, not spread (142k+ overflows arg stack)
+    console.log(`  ${file}: ${reps.length} winners`);
   }
 
   // ── Ward-derived mandal pool per (state, district, GP name) ──────────────
@@ -679,6 +685,12 @@ async function main() {
     // Import data
     console.log('📥 Importing seed data...');
     const manifest = await importSeedData(db);
+    const emptyStates = Object.entries(manifest)
+      .filter(([, item]) => !Number.isInteger(item.constituency_count) || item.constituency_count <= 0)
+      .map(([stateCode]) => stateCode);
+    if (emptyStates.length > 0) {
+      throw new Error(`SEED_DATA_INCOMPLETE: zero/missing constituency rows for ${emptyStates.join(', ')}. Refusing to write a false-success seed database.`);
+    }
 
     // Import local-body representatives (SEC KYR → representatives table)
     console.log('\n📥 Importing local-body representatives...');
@@ -739,5 +751,14 @@ async function main() {
 
 main().catch(err => {
   console.error('❌ Build failed:', err);
+  // A failed build must not leave a partial DB or stale manifest that another
+  // job could mistake for a valid bundle artifact.
+  for (const artifact of [
+    dbPath,
+    path.resolve(dataDir, 'seed-manifest.json'),
+    path.resolve(dataDir, 'seed-db-version.json'),
+  ]) {
+    try { if (fs.existsSync(artifact)) fs.unlinkSync(artifact); } catch { /* preserve primary failure */ }
+  }
   process.exit(1);
 });
