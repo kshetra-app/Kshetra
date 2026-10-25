@@ -1,0 +1,162 @@
+{
+  "schemaVersion": 1,
+  "title": "Preliminary topology audit of official Bihar BEGIS Assembly layer candidate",
+  "workflowRunId": 40218024380,
+  "workflowUrl": "https://github.com/kshetra-app/Kshetra/actions/runs/40218024380",
+  "artifactId": 12607499271,
+  "artifactName": "w0215-bihar-gis-discovery-40218024380",
+  "artifactZipBytes": 3857352,
+  "artifactZipSha256": "dfa752a1374b1313c13c5155fcdb42555701d0bf915a9d50fd33de4f29182e45",
+  "sourceQueryUrl": "https://gisserver.bihar.gov.in/arcgis/rest/services/ELECTION/AC/MapServer/0/query?where=1%3D1&outFields=%2A&returnGeometry=true&outSR=4326&f=json&resultRecordCount=1000",
+  "retrievedAtUtc": "2026-10-25T17:46:34Z",
+  "sourceResponseBytes": 10958178,
+  "sourceResponseSha256": "3ab79c2942f27296b08a93bb07fed1fc63bd665a9db66ddaf8fe6ece3fc70b0e",
+  "featureCount": 243,
+  "geometryType": "esriGeometryPolygon",
+  "spatialReference": {
+    "wkid": 4326,
+    "latestWkid": 4326
+  },
+  "fields": [
+    "OBJECTID",
+    "ST_NAME",
+    "ST_CODE",
+    "DIST_CODE",
+    "CONST_NAME",
+    "CONS_NAME",
+    "PC_NAME",
+    "PC_NO",
+    "CONS_CODE",
+    "ERO_NAME",
+    "DESG",
+    "MOBILENO",
+    "DIST_NAME",
+    "Shape_Length",
+    "Shape_Area",
+    "Naxal"
+  ],
+  "uniqueConsCodeCount": 243,
+  "consCodeRange": [
+    1,
+    243
+  ],
+  "missingConsCodeCount": 0,
+  "duplicateConsCodes": {},
+  "uniqueConsNameCount": 242,
+  "duplicateConsNames": {
+    "PIPRA": 2
+  },
+  "uniqueObjectIdCount": 243,
+  "preliminaryTopology": {
+    "method": "Shapely 2.1.2; ArcGIS ring orientation used to classify exterior/hole rings; projected to EPSG:32645 for overlap area; >1 m² threshold",
+    "invalidFeatureGeometryCount": 3,
+    "invalidFeatureGeometry": [
+      {
+        "code": 215,
+        "name": "KURTHA",
+        "reason": "Ring Self-intersection[84.803413183 25.2206802850001]"
+      },
+      {
+        "code": 145,
+        "name": "SAHEBPUR KAMAL",
+        "reason": "Ring Self-intersection[86.3216093200001 25.452861225]"
+      },
+      {
+        "code": 41,
+        "name": "NIRMALI",
+        "reason": "Ring Self-intersection[86.647804374 26.298913913]"
+      }
+    ],
+    "unclosedOrShortRingCount": 0,
+    "orphanHoleRingCount": 0,
+    "multipleExteriorPartsFeatureCount": 21,
+    "positiveOverlapPairsOver1m2": 76,
+    "largestOverlapPairs": [
+      {
+        "a": 232,
+        "an": "BELAGANJ",
+        "b": 218,
+        "bn": "MAKHDUMPUR (SC)",
+        "areaM2": 144494.75
+      },
+      {
+        "a": 201,
+        "an": "DUMRAON",
+        "b": 210,
+        "bn": "DINARA",
+        "areaM2": 50386.96
+      },
+      {
+        "a": 214,
+        "an": "ARWAL",
+        "b": 196,
+        "bn": "TARARI",
+        "areaM2": 44419.73
+      },
+      {
+        "a": 207,
+        "an": "CHENARI (SC)",
+        "b": 206,
+        "bn": "CHAINPUR",
+        "areaM2": 38971.93
+      },
+      {
+        "a": 129,
+        "an": "MAHNAR",
+        "b": 135,
+        "bn": "MORWA",
+        "areaM2": 38832.94
+      },
+      {
+        "a": 179,
+        "an": "BARH",
+        "b": 137,
+        "bn": "MOHIUDDINAGAR",
+        "areaM2": 30337.53
+      },
+      {
+        "a": 199,
+        "an": "BARHAMPUR",
+        "b": 197,
+        "bn": "JAGDISHPUR",
+        "areaM2": 17874.97
+      },
+      {
+        "a": 178,
+        "an": "MOKAMEH",
+        "b": 168,
+        "bn": "LAKHISARAI",
+        "areaM2": 11801.71
+      },
+      {
+        "a": 231,
+        "an": "TIKARI",
+        "b": 215,
+        "bn": "KURTHA",
+        "areaM2": 10155.95
+      },
+      {
+        "a": 144,
+        "an": "MATIHANI",
+        "b": 168,
+        "bn": "LAKHISARAI",
+        "areaM2": 7506.58
+      }
+    ],
+    "tinyPositiveOverlapPairsAtOrBelow1m2": 132,
+    "stateBoundaryComparison": "NOT_AVAILABLE_IN_THIS_RUN"
+  },
+  "pinCodeBoundary": {
+    "featureCount": 884,
+    "geometryAcquired": false,
+    "deliveryBeatEquivalence": "NOT_ESTABLISHED"
+  },
+  "limitations": [
+    "Preliminary audit only. ArcGIS ring orientation conversion and multipart handling require independent review.",
+    "No official Bihar state polygon was included in this run; gap/outside coverage was not assessed.",
+    "Invalid geometries were not repaired in source data. Any make_valid use was only for screening comparisons.",
+    "Legal vintage, licence, Gazette chain and independent custodian confirmation remain open."
+  ],
+  "disposition": "OFFICIAL GOVERNMENT GEOMETRY CANDIDATE ACQUIRED; TOPOLOGY SCREEN FAILS; NOT CANONICAL; DO NOT PROMOTE TO PRODUCTION",
+  "databaseAccess": "NONE"
+}
