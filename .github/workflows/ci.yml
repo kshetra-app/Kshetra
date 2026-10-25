@@ -207,6 +207,7 @@ jobs:
           npx tsx tests/webhooks-pii-scrubber.test.ts
           npx tsx tests/webhooks-api-endpoints.test.ts
           npx tsx tests/webhooks-worker.test.ts
+          npx tsx tests/webhooks-postgres-adapter.test.ts
           npx tsx tests/webhooks-real-postgres-verification.test.ts
       - name: Typecheck API
         run: npx tsc --noEmit
