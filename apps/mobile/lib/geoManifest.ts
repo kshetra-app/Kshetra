@@ -45,7 +45,12 @@ export async function loadRemoteGeoManifest(
   if (manifestPromise && !refresh) return manifestPromise;
   const pending = (async () => {
     try {
-      const response = await fetch(`${(process.env.EXPO_PUBLIC_GEO_BASE_URL || API_BASE_URL).replace(/\\/+$/, '').replace(/\\/api(\\/v\\d+)?$/, '')}/geo/manifest.json`, {
+      let base = (process.env.EXPO_PUBLIC_GEO_BASE_URL || API_BASE_URL).trim();
+      while (base.endsWith('/')) base = base.slice(0, -1);
+      if (base.endsWith('/api')) base = base.slice(0, -4);
+      const apiVersion = base.lastIndexOf('/api/v');
+      if (apiVersion >= 0 && base.slice(apiVersion).startsWith('/api/v') && /^[0-9]+$/.test(base.slice(apiVersion + 6))) base = base.slice(0, apiVersion);
+      const response = await fetch(base + '/geo/manifest.json', {
         headers: { Accept: 'application/json' },
       });
       if (!response.ok) return null;
