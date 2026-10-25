@@ -703,7 +703,7 @@ export async function campaignRoutes(app: FastifyInstance) {
   });
 
   /** GET /api/v1/campaign/campaigns — list campaigns */
-  app.get('/api/v1/campaign/campaigns', { schema: campaignsQuerySchema }, async (request) => {
+  app.get('/api/v1/campaign/campaigns', { schema: campaignsQuerySchema }, async (request, reply) => {
     const { status, politicianId } = request.query as { status?: string; politicianId?: string };
 
     if (isSupabaseConfigured) {
@@ -712,12 +712,27 @@ export async function campaignRoutes(app: FastifyInstance) {
         if (status) query = query.eq('status', status);
         if (politicianId) query = query.eq('politician_id', politicianId);
         const { data, error } = await query;
+        if (process.env.NODE_ENV === 'production') {
+          if (error) {
+            return sendApiError(reply, request, 503, 'Service Unavailable', 'Campaign data is temporarily unavailable.', {
+              code: 'DATABASE_ERROR',
+            });
+          }
+          const campaigns = data ?? [];
+          return { campaigns, total: campaigns.length };
+        }
         if (!error && data && data.length > 0) {
           return { campaigns: data, total: data.length };
         }
       } catch {
         // fall through to mock
       }
+    }
+
+    if (process.env.NODE_ENV === 'production') {
+      return sendApiError(reply, request, 503, 'Service Unavailable', 'Campaign database is unavailable.', {
+        code: 'DATABASE_UNAVAILABLE',
+      });
     }
 
     return {
@@ -746,7 +761,7 @@ export async function campaignRoutes(app: FastifyInstance) {
   });
 
   /** GET /api/v1/campaign/booths — booth strategy and in-charge management */
-  app.get('/api/v1/campaign/booths', { schema: boothsQuerySchema }, async (request) => {
+  app.get('/api/v1/campaign/booths', { schema: boothsQuerySchema }, async (request, reply) => {
     const { campaignId, priority } = request.query as { campaignId?: string; priority?: string };
 
     if (isSupabaseConfigured) {
@@ -755,12 +770,28 @@ export async function campaignRoutes(app: FastifyInstance) {
         if (campaignId) query = query.eq('campaign_id', campaignId);
         if (priority) query = query.eq('priority', priority);
         const { data, error } = await query;
+        if (process.env.NODE_ENV === 'production') {
+          if (error) {
+            return sendApiError(reply, request, 503, 'Service Unavailable', 'Booth strategy data is temporarily unavailable.', {
+              code: 'DATABASE_ERROR',
+            });
+          }
+          const booths = data ?? [];
+          const assignedCount = booths.filter((b: any) => !!(b.agent_phone ?? b.agentPhone)).length;
+          return { booths, total: booths.length, assignedCount, unassignedCount: booths.length - assignedCount };
+        }
         if (!error && data && data.length > 0) {
           return { booths: data, total: data.length };
         }
       } catch {
         // fallback
       }
+    }
+
+    if (process.env.NODE_ENV === 'production') {
+      return sendApiError(reply, request, 503, 'Service Unavailable', 'Booth strategy database is unavailable.', {
+        code: 'DATABASE_UNAVAILABLE',
+      });
     }
 
     let filtered = inMemoryBooths;
@@ -855,7 +886,7 @@ export async function campaignRoutes(app: FastifyInstance) {
   });
 
   /** GET /api/v1/campaign/volunteers — list ground cadre */
-  app.get('/api/v1/campaign/volunteers', { schema: volunteersQuerySchema }, async (request) => {
+  app.get('/api/v1/campaign/volunteers', { schema: volunteersQuerySchema }, async (request, reply) => {
     const { campaignId, role } = request.query as { campaignId?: string; role?: string };
 
     if (isSupabaseConfigured) {
@@ -864,10 +895,25 @@ export async function campaignRoutes(app: FastifyInstance) {
         if (campaignId) query = query.eq('campaign_id', campaignId);
         if (role) query = query.eq('role', role);
         const { data, error } = await query;
+        if (process.env.NODE_ENV === 'production') {
+          if (error) {
+            return sendApiError(reply, request, 503, 'Service Unavailable', 'Campaign volunteer data is temporarily unavailable.', {
+              code: 'DATABASE_ERROR',
+            });
+          }
+          const volunteers = data ?? [];
+          return { volunteers, total: volunteers.length };
+        }
         if (!error && data && data.length > 0) {
           return { volunteers: data, total: data.length };
         }
       } catch {}
+    }
+
+    if (process.env.NODE_ENV === 'production') {
+      return sendApiError(reply, request, 503, 'Service Unavailable', 'Campaign volunteer database is unavailable.', {
+        code: 'DATABASE_UNAVAILABLE',
+      });
     }
 
     let filtered = inMemoryVolunteers;
