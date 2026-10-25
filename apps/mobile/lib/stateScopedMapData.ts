@@ -258,12 +258,26 @@ async function readIndex(): Promise<CacheIndex> {
     if (!info.exists) return {};
     const parsed: unknown = JSON.parse(await FileSystem.readAsStringAsync(INDEX_FILE));
     if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) return {};
-    return parsed as CacheIndex;
+    const safe: CacheIndex = {};
+    for (const [stateCode, value] of Object.entries(parsed)) {
+      if (!/^[A-Z]{2}$/.test(stateCode) || !value || typeof value !== 'object' || Array.isArray(value)) continue;
+      const record = value as Record<string, unknown>;
+      const revision = record.revision;
+      const fileName = record.fileName;
+      const savedAt = record.savedAt;
+      const bytes = record.bytes;
+      if (typeof revision !== 'string' || !/^[a-f0-9]{40}$/i.test(revision)
+        || fileName !== `${stateCode}.${revision.toLowerCase()}.json`
+        || typeof savedAt !== 'number' || !Number.isFinite(savedAt) || savedAt < 0
+        || typeof bytes !== 'number' || !Number.isSafeInteger(bytes)
+        || bytes < 0 || bytes > MAX_SINGLE_STATE_CACHE_BYTES) continue;
+      safe[stateCode] = { fileName, revision: revision.toLowerCase(), savedAt, bytes };
+    }
+    return safe;
   } catch {
     return {};
   }
 }
-
 async function ensureCacheDirectory(): Promise<void> {
   if (!CACHE_ROOT) throw new Error('No writable local directory is available for offline map metadata');
   const info = await FileSystem.getInfoAsync(CACHE_ROOT);
@@ -296,7 +310,23 @@ async function persistBoundedCache(data: StateMapData): Promise<number | null> {
   const tempPath = `${finalPath}.part`;
   await FileSystem.deleteAsync(tempPath, { idempotent: true });
   await FileSystem.writeAsStringAsync(tempPath, serialized);
-  await FileSystem.moveAsync({ from: tempPath, to: finalPath });
+  const existingFile = await FileSystem.getInfoAsync(finalPath);
+  if (existingFile.exists) {
+    try {
+      const existingText = await FileSystem.readAsStringAsync(finalPath);
+      const existingData = validatePayload(JSON.parse(existingText), data.stateCode);
+      verifyRevision(existingData);
+      if (existingData.revision !== data.revision) {
+        await FileSystem.deleteAsync(finalPath, { idempotent: true });
+      } else {
+        await FileSystem.deleteAsync(tempPath, { idempotent: true });
+      }
+    } catch {
+      await FileSystem.deleteAsync(finalPath, { idempotent: true });
+    }
+  }
+  const finalAfterCheck = await FileSystem.getInfoAsync(finalPath);
+  if (!finalAfterCheck.exists) await FileSystem.moveAsync({ from: tempPath, to: finalPath });
 
   const index = await readIndex();
   const now = Date.now();
@@ -321,7 +351,11 @@ async function persistBoundedCache(data: StateMapData): Promise<number | null> {
     totalBytes += record.bytes;
     count++;
   }
-  await FileSystem.writeAsStringAsync(INDEX_FILE, JSON.stringify(keep));
+  const indexTemp = `${INDEX_FILE}.part`;
+  await FileSystem.deleteAsync(indexTemp, { idempotent: true });
+  await FileSystem.writeAsStringAsync(indexTemp, JSON.stringify(keep));
+  await FileSystem.deleteAsync(INDEX_FILE, { idempotent: true });
+  await FileSystem.moveAsync({ from: indexTemp, to: INDEX_FILE });
   return now;
 }
 
