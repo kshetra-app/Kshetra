@@ -17,7 +17,31 @@ const porcelainStatus = execSync('git status --porcelain', { encoding: 'utf8' })
 
 assert.strictEqual(actualHead.length, 40, 'Actual local HEAD SHA must be 40 characters');
 assert.strictEqual(actualOriginMaster.length, 40, 'Actual origin/master SHA must be 40 characters');
-assert.strictEqual(actualBranch, 'master', 'Active branch must be master');
+
+const githubEventName = process.env.GITHUB_EVENT_NAME || '';
+const githubEventPath = process.env.GITHUB_EVENT_PATH;
+let githubPrEvent = null;
+if ((githubEventName === 'pull_request' || githubEventName === 'pull_request_target') &&
+    githubEventPath && fs.existsSync(githubEventPath)) {
+  githubPrEvent = JSON.parse(fs.readFileSync(githubEventPath, 'utf8'));
+}
+if (githubPrEvent) {
+  const prBaseSha = githubPrEvent.pull_request?.base?.sha;
+  const prHeadSha = githubPrEvent.pull_request?.head?.sha;
+  assert.ok(prBaseSha && prHeadSha, 'Pull-request event must expose exact base/head SHAs');
+  assert.ok(
+    ['HEAD', 'master', githubPrEvent.pull_request.head.ref].includes(actualBranch),
+    `PR checkout must be detached or name the PR branch; got ${actualBranch}`
+  );
+  for (const [label, sha] of [['PR base', prBaseSha], ['PR head', prHeadSha]]) {
+    const resolved = execSync(`git rev-parse --verify "${sha}^{commit}"`, { encoding: 'utf8' }).trim();
+    assert.strictEqual(resolved, sha, `${label} SHA must resolve exactly`);
+    execSync(`git merge-base --is-ancestor "${sha}" "${actualHead}"`, { stdio: 'ignore' });
+  }
+  assert.strictEqual(prBaseSha, actualOriginMaster, 'PR base must match origin/master');
+} else {
+  assert.strictEqual(actualBranch, 'master', 'Non-PR verification must execute on master');
+}
 
 console.log(`[REPOSITORY STATE] Branch: ${actualBranch}`);
 console.log(`[REPOSITORY STATE] Local HEAD: ${actualHead}`);
