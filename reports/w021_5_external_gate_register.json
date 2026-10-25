@@ -198,8 +198,9 @@
       "report": "reports/evidence/w021_5_telangana_layer_comparison_2026-10-25.json",
       "full119Crosswalk": "OPEN",
       "post2014StateReorganisationAndEffectiveDateChain": "OPEN",
-      "binarySha256": "NOT_CLAIMED; PDF read through web text, binary not downloaded",
-      "binaryFetchStatus": "HTTP_406; WEB_PDF_TEXT_REVIEWED; NO_BINARY_SHA256_CLAIMED"
+      "binarySha256": "NOT_AVAILABLE",
+      "binaryFetchStatus": "HTTP_406_ON_THREE_URL_VARIANTS_AFTER_SESSION_COOKIE_RETRY",
+      "textAccess": "OFFICIAL ECI PDF TEXT REVIEWED VIA WEB PDF READER"
     },
     "additionalTelanganaServiceProbe": {
       "cancelledRunId": 40213242722,
