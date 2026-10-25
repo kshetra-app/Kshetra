@@ -11,7 +11,8 @@ permissions:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  # Do not cancel active release gates while a newer commit queues; every attempted revision must finish verification.
+  cancel-in-progress: false
 
 jobs:
   install:
