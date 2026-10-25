@@ -230,7 +230,7 @@ function adaptTimelineFromDB(row: any): PoliticalLedgerEntry {
     explanation: row.explanation,
     details: row.details,
     legalStatus: row.legal_status as any,
-    sources: [],
+    sources: row.sources ? JSON.parse(row.sources) : undefined,
     verified: row.verified === 1,
   };
 }
