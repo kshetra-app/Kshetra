@@ -119,11 +119,12 @@
   },
   "sourceAcquisitionDecision": {
     "decisionId": "DEC-154R",
-    "status": "SOURCE_STRATEGY_SELECTED_ACQUISITION_AND_VERIFICATION_PENDING",
+    "status": "ONE_THIRD_PARTY_MIRROR_ARTIFACT_ACQUIRED; OFFICIAL_RAW_SOURCE_AND_NATIONAL_COVERAGE_PENDING",
     "report": "reports/w021_5_stage_b_source_research_2026-10-25.md",
     "strategy": "Legal instruments as legal truth; official ECI/CEO/state GIS layers as candidate digital geometry; community/national layers for discrepancy discovery only; formal custodian requests for missing data and physical evidence.",
-    "notableFinding": "India Geodata statewise shapefiles are explicitly labelled pre-2014 in their directory README and are not accepted as current geometry.",
+    "notableFinding": "One Puducherry GeoJSON mirror (30 features) was structurally checked and SHA-256 hashed; its source repo has no established reuse licence in the reviewed root, so it was not vendored. It is not raw ECI source and does not close any gate.",
     "noArtifactHashClaimed": true,
-    "stageBAccepted": false
+    "stageBAccepted": false,
+    "evidenceManifest": "reports/evidence/w021_5_stage_b_acquisition_probe_2026-10-25.json"
   }
 }
