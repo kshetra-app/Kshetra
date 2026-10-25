@@ -182,7 +182,8 @@ for (const field of ['CURRENT_REMOTE_HEAD', 'VERIFIED_REMOTE_HEAD', 'GOVERNANCE_
   const coordinate = coordinateLine?.slice((field + ':').length).trim();
   assert.equal(coordinate, report.sourceSnapshot.commit,
     field + ' must remain pinned to the verified pre-reconciliation source snapshot; PR HEAD is not the previously accepted master coordinate');
-}pass('Staging/production authorization and zero-access boundary');
+}
+pass('Staging/production authorization and zero-access boundary');
 
 // 8. Current W022 source, plan, authorization, migration, acceptance and release are separate lifecycle facts.
 const w022 = report.currentRepositoryState;
