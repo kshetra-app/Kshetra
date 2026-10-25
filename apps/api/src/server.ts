@@ -41,6 +41,7 @@ import { errorTracker } from './lib/errorTracker';
 import { saasAuthPlugin } from './lib/saasAuthPlugin';
 import { saasV1Routes } from './routes/saasV1';
 import { startNewsScheduler } from './services/news/newsService';
+import { isSupabaseConfigured, isUsingServiceRole } from './lib/supabase';
 
 const envToLogger: Record<string, object | boolean> = {
   development: {
@@ -260,6 +261,18 @@ export async function buildApp() {
 }
 
 export async function start() {
+  // Fail closed instead of starting an operational API against fake credentials
+  // or silently downgrading privileged server operations to an anon key.
+  if (process.env.NODE_ENV === 'production') {
+    if (!isSupabaseConfigured) {
+      throw new Error('CONFIG_ERROR: Valid SUPABASE_URL and Supabase API credentials are required in production.');
+    }
+    if (!isUsingServiceRole) {
+      throw new Error(
+        'CONFIG_ERROR: SUPABASE_SERVICE_ROLE_KEY must be valid for this privileged API runtime; do not silently downgrade to anon credentials.'
+      );
+    }
+  }
   const app = await buildApp();
   const port = parseInt(process.env.PORT ?? '3001', 10);
   const host = process.env.HOST ?? '0.0.0.0';
