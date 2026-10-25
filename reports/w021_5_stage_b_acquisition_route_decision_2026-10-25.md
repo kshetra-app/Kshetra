@@ -109,3 +109,10 @@ The best next attempt is now to fetch the **original Gazette of India PDF as hos
 - India Code original PDF: https://www.indiacode.nic.in/bitstream/123456789/2123/1/A2014-6E.pdf
 
 A new acquisition probe is queued as [run 40218632258](https://github.com/kshetra-app/Kshetra/actions/runs/40218632258). The script now tries these government-hosted copies first and falls back to India Code; each candidate's final URL, byte length, exact SHA-256, PDF magic, and page-level term findings will be recorded. A state-hosted mirror is not silently treated as the canonical custodian copy: the original Gazette text and source lineage must be corroborated, and the exact 2018 ECI notification/effective-date chain remains separately open.
+
+
+### Gazette copy successfully acquired; statutory roster extraction underway
+
+The fallback route succeeded in run [40218632258](https://github.com/kshetra-app/Kshetra/actions/runs/40218632258): the Andhra Pradesh government-hosted copy of the Gazette of India / Andhra Pradesh Reorganisation Act, 2014 returned HTTP 200 as a 71-page PDF (231,596 bytes), SHA-256 `84cd566b917f9a3f600c47f6540520c950166b424a964ad37d64dc3c968114aa`. Schedule XXVII — Telangana, Table A (Assembly Constituencies) is located on zero-based PDF page index 39 (printed page 40). The acquisition evidence is preserved in `reports/evidence/w021_5_ap_reorganisation_act_acquisition_40218632258.json`.
+
+The PDF is hosted on an Andhra Pradesh government domain, but its byte identity has **not** been compared with the India Code copy. The ECI 2024 press note and Removal-of-Difficulties order endpoints still timed out and remain open corroboration gaps. A parser has been added to extract the 119 statutory AC serials, names, districts and extents from Schedule XXVII, verify the 1–119 sequence and preserve the PDF hash and extraction history. Its CI run must pass before this roster is used for GIS adjudication.
