@@ -40,12 +40,17 @@ export function isBundledState(code: string): boolean {
   return getManifestEntry(code)?.bundled === true;
 }
 
-/** Whether the app knows about boundary data for this state at all. */
+/** Whether approved polygon data is available for this state. */
 export function hasStateGeoJSON(code: string): boolean {
-  return getManifestEntry(code) !== undefined;
+  const entry = getManifestEntry(code);
+  return Boolean(
+    entry?.hasPolygons &&
+      entry.status !== 'placeholder' &&
+      entry.status !== 'quarantined_count_mismatch',
+  );
 }
 
-/** All state codes the app can render boundaries for. */
+/** Only states with non-placeholder, non-quarantined polygon data. */
 export function getStatesWithGeoJSON(): string[] {
-  return Object.keys(MANIFEST);
+  return Object.keys(MANIFEST).filter(hasStateGeoJSON);
 }
