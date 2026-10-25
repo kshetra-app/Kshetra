@@ -130,9 +130,9 @@ function genericAdapter(
   const isAssam2021Fallback = stateCode === 'AS' && year === 2021;
   const rawWinner = c[winnerKey] ?? (isAssam2021Fallback ? c.winner2026 : (c.winner ?? ''));
   const rawWinnerName = c[winnerNameKey] ?? (isAssam2021Fallback ? c.winnerName2026 : (c.winnerName ?? ''));
-  const rawWinnerVotes = c[winnerVotesKey] ?? (isAssam2021Fallback ? c.winnerVotes2026 : 0);
+  const rawWinnerVotes = c[winnerVotesKey] ?? (isAssam2021Fallback ? c.winnerVotes2026 : null);
   const rawRunnerUp = c[runnerUpKey] ?? (isAssam2021Fallback ? c.runnerUp2026 : '');
-  const rawMargin = c[marginKey] ?? (isAssam2021Fallback ? c.margin2026 : 0);
+  const rawMargin = c[marginKey] ?? (isAssam2021Fallback ? c.margin2026 : null);
 
   // If a future simulation field exists, preserve it in projection metadata only
   const hasFutureSimulation = c.winner2026 && year < 2026 && stateCode !== 'AS';
