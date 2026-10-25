@@ -38,6 +38,7 @@ export interface WebhookDeliveryModel {
 export interface WebhookEventModel {
   id: string;
   tenantId: string;
+  applicationId: string;
   eventType: string;
   idempotencyKey?: string | null;
   payload: Record<string, unknown>;

@@ -94,12 +94,12 @@ async function runAll() {
   await runCheck('REAL-PG-02', 'Verify SECURITY DEFINER and fixed search_path on engine functions', () => {
     const rows = queryJson(`
       SELECT proname, prosecdef, proconfig::text AS proconfig
-      FROM pg_proc 
-      WHERE proname IN ('fn_webhook_events_prevent_mutation', 'fn_purge_expired_webhook_data', 'fn_claim_webhook_batch')
+      FROM pg_proc
+      WHERE proname IN ('fn_webhook_events_prevent_mutation', 'fn_purge_expired_webhook_data', 'fn_claim_webhook_batch', 'fn_publish_webhook_event')
         AND pronamespace = 'public'::regnamespace
       ORDER BY proname;
     `);
-    assert.strictEqual(rows.length, 3, 'Must find all 3 engine functions');
+    assert.strictEqual(rows.length, 4, 'Must find all 4 engine functions');
     for (const r of rows) {
       assert.strictEqual(r.prosecdef, true, `Function ${r.proname} must be SECURITY DEFINER`);
       assert.ok(r.proconfig.includes('search_path=pg_catalog, pg_temp'), `Function ${r.proname} must have fixed search_path=pg_catalog, pg_temp`);
@@ -109,7 +109,7 @@ async function runAll() {
   // ─── 3. TABLE DAC & ROLE EXECUTION GRANTS ───
   await runCheck('REAL-PG-03', 'Verify table-level DAC privileges: service_role has SELECT/INSERT only on webhook_events', () => {
     const rows = queryJson(`
-      SELECT 
+      SELECT
         has_table_privilege('service_role', 'public.webhook_events', 'SELECT') AS sr_select,
         has_table_privilege('service_role', 'public.webhook_events', 'INSERT') AS sr_insert,
         has_table_privilege('service_role', 'public.webhook_events', 'UPDATE') AS sr_update,
@@ -125,15 +125,18 @@ async function runAll() {
     assert.strictEqual(rows[0].auth_select, false);
   });
 
-  await runCheck('REAL-PG-04', 'Verify function execution grants: service_role has EXECUTE on purge & batch claim; anon/auth revoked', () => {
+  await runCheck('REAL-PG-04', 'Verify function execution grants: service_role has EXECUTE on purge, claim & publish; anon/auth revoked', () => {
     const rows = queryJson(`
-      SELECT 
+      SELECT
         has_function_privilege('service_role', 'public.fn_purge_expired_webhook_data(integer, integer)', 'EXECUTE') AS sr_purge,
         has_function_privilege('anon', 'public.fn_purge_expired_webhook_data(integer, integer)', 'EXECUTE') AS anon_purge,
         has_function_privilege('authenticated', 'public.fn_purge_expired_webhook_data(integer, integer)', 'EXECUTE') AS auth_purge,
         has_function_privilege('service_role', 'public.fn_claim_webhook_batch(integer, integer)', 'EXECUTE') AS sr_claim,
         has_function_privilege('anon', 'public.fn_claim_webhook_batch(integer, integer)', 'EXECUTE') AS anon_claim,
-        has_function_privilege('authenticated', 'public.fn_claim_webhook_batch(integer, integer)', 'EXECUTE') AS auth_claim;
+        has_function_privilege('authenticated', 'public.fn_claim_webhook_batch(integer, integer)', 'EXECUTE') AS auth_claim,
+        has_function_privilege('service_role', 'public.fn_publish_webhook_event(uuid, uuid, text, text, jsonb, text, character varying)', 'EXECUTE') AS sr_pub,
+        has_function_privilege('anon', 'public.fn_publish_webhook_event(uuid, uuid, text, text, jsonb, text, character varying)', 'EXECUTE') AS anon_pub,
+        has_function_privilege('authenticated', 'public.fn_publish_webhook_event(uuid, uuid, text, text, jsonb, text, character varying)', 'EXECUTE') AS auth_pub;
     `);
     assert.strictEqual(rows[0].sr_purge, true);
     assert.strictEqual(rows[0].anon_purge, false);
@@ -141,6 +144,9 @@ async function runAll() {
     assert.strictEqual(rows[0].sr_claim, true);
     assert.strictEqual(rows[0].anon_claim, false);
     assert.strictEqual(rows[0].auth_claim, false);
+    assert.strictEqual(rows[0].sr_pub, true);
+    assert.strictEqual(rows[0].anon_pub, false);
+    assert.strictEqual(rows[0].auth_pub, false);
   });
 
   // ─── 4. SEED TEST FIXTURES ───
@@ -153,7 +159,7 @@ async function runAll() {
 
   await runCheck('REAL-PG-05', 'Seed tenants, applications, and subscriptions', () => {
     runPsql(`
-      INSERT INTO public.saas_tenants (id, name, slug, contact_email) VALUES 
+      INSERT INTO public.saas_tenants (id, name, slug, contact_email) VALUES
         ('${tenantA}', 'Tenant Alpha', 'tenant-alpha', 'alpha@example.com'),
         ('${tenantB}', 'Tenant Beta', 'tenant-beta', 'beta@example.com')
       ON CONFLICT (id) DO NOTHING;
@@ -211,9 +217,9 @@ async function runAll() {
   await runCheck('REAL-PG-08', 'Insert valid webhook_event and reject cross-tenant delivery insertion', () => {
     runPsql(`
       INSERT INTO public.webhook_events (
-        id, tenant_id, event_type, idempotency_key, payload, payload_raw, payload_sha256
+        id, tenant_id, application_id, event_type, idempotency_key, payload, payload_raw, payload_sha256
       ) VALUES (
-        '${eventA1}', '${tenantA}', 'election.results.published', 'idemp-real-01',
+        '${eventA1}', '${tenantA}', '${appA}', 'election.results.published', 'idemp-real-01',
         '{"status":"declared"}'::jsonb, '{"status":"declared"}', 'sha256_mock_01'
       ) ON CONFLICT (id) DO NOTHING;
     `);
@@ -270,7 +276,7 @@ async function runAll() {
     assert.throws(
       () => {
         runPsql(`
-          CREATE OR REPLACE FUNCTION pg_temp.fn_purge_expired_webhook_data(p1 integer, p2 integer) 
+          CREATE OR REPLACE FUNCTION pg_temp.fn_purge_expired_webhook_data(p1 integer, p2 integer)
           RETURNS void LANGUAGE plpgsql AS $$
           BEGIN
             PERFORM set_config('app.retention_cleanup_authorized', 'true', true);
@@ -290,7 +296,7 @@ async function runAll() {
         runPsql(`
           DROP SCHEMA IF EXISTS hacker_schema CASCADE;
           CREATE SCHEMA hacker_schema;
-          CREATE OR REPLACE FUNCTION hacker_schema.fn_purge_expired_webhook_data(p1 integer, p2 integer) 
+          CREATE OR REPLACE FUNCTION hacker_schema.fn_purge_expired_webhook_data(p1 integer, p2 integer)
           RETURNS void LANGUAGE plpgsql AS $$
           BEGIN
             PERFORM set_config('app.retention_cleanup_authorized', 'true', true);
@@ -310,7 +316,7 @@ async function runAll() {
     assert.throws(
       () => {
         runPsql(`
-          CREATE OR REPLACE FUNCTION public.unauthorized_wrapper_purge() 
+          CREATE OR REPLACE FUNCTION public.unauthorized_wrapper_purge()
           RETURNS void LANGUAGE plpgsql AS $$
           BEGIN
             PERFORM set_config('app.retention_cleanup_authorized', 'true', true);
@@ -329,7 +335,7 @@ async function runAll() {
     assert.throws(
       () => {
         runPsql(`
-          CREATE OR REPLACE FUNCTION public.fake_fn_purge_expired_webhook_data(p1 integer, p2 integer) 
+          CREATE OR REPLACE FUNCTION public.fake_fn_purge_expired_webhook_data(p1 integer, p2 integer)
           RETURNS void LANGUAGE plpgsql AS $$
           BEGIN
             PERFORM set_config('app.retention_cleanup_authorized', 'true', true);
@@ -375,9 +381,9 @@ async function runAll() {
     // Insert old event and old delivered delivery (completed 40 days ago)
     runPsql(`
       INSERT INTO public.webhook_events (
-        id, tenant_id, event_type, idempotency_key, payload, payload_raw, payload_sha256, created_at
+        id, tenant_id, application_id, event_type, idempotency_key, payload, payload_raw, payload_sha256, created_at
       ) VALUES (
-        '${oldEventId}', '${tenantA}', 'test.ping', 'idemp-old-01',
+        '${oldEventId}', '${tenantA}', '${appA}', 'test.ping', 'idemp-old-01',
         '{"ping":true}'::jsonb, '{"ping":true}', 'sha_old', timezone('utc', now()) - interval '40 days'
       ) ON CONFLICT (id) DO NOTHING;
 
@@ -424,8 +430,8 @@ async function runAll() {
     for (let i = 0; i < delivIds.length; i++) {
       const evtId = `b0000000-0000-0000-0000-00000000000${i + 1}`;
       runPsql(`
-        INSERT INTO public.webhook_events (id, tenant_id, event_type, idempotency_key, payload, payload_raw, payload_sha256)
-        VALUES ('${evtId}', '${tenantA}', 'test.ping', 'idemp-conc-${i}', '{}'::jsonb, '{}', 'sha')
+        INSERT INTO public.webhook_events (id, tenant_id, application_id, event_type, idempotency_key, payload, payload_raw, payload_sha256)
+        VALUES ('${evtId}', '${tenantA}', '${appA}', 'test.ping', 'idemp-conc-${i}', '{}'::jsonb, '{}', 'sha')
         ON CONFLICT (id) DO NOTHING;
 
         INSERT INTO public.webhook_deliveries (id, tenant_id, subscription_id, event_id, status, attempt_count, created_at)
@@ -457,7 +463,7 @@ async function runAll() {
     // Fast-forward leased_until of one delivery into past to simulate crashed worker
     const crashedId = 'a0000000-0000-0000-0000-000000000001';
     runPsql(`
-      UPDATE public.webhook_deliveries 
+      UPDATE public.webhook_deliveries
       SET leased_until = timezone('utc', now()) - interval '10 seconds'
       WHERE id = '${crashedId}';
     `);

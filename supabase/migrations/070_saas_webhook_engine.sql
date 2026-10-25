@@ -2,19 +2,22 @@
 -- 070_saas_webhook_engine.sql
 --
 -- Milestone: W022 — B2B SaaS Outbound Webhooks & Event Dispatching Engine
--- Authority: Master Execution Framework Amendments v1.2-v1.6 & CTO Directive W022-CTO-EXEC-001
+-- Authority: Master Execution Framework Amendments v1.2-v1.6 & CTO Directives
+--            W022-CTO-EXEC-001 through W022-CTO-REMEDIATION-006
 -- Target: PanIN Staging (fkpigozcqnmcvofuksar) & Local Test PostgreSQL
 -- Production: STRICTLY PROHIBITED & AIR-GAPPED (ehfafcnimmjusyvplbah)
 --
 -- Persistence Scope:
 --   1. public.webhook_subscriptions (Partner endpoints, encrypted secrets, status)
---   2. public.webhook_events (Append-only immutable audit log, canonical payload bytes)
+--   2. public.webhook_events (Append-only immutable audit log, application scoped)
 --   3. public.webhook_deliveries (Queue state machine, lease tokens, attempts, latencies)
---   4. public.fn_purge_expired_webhook_data() (Audited security-definer retention purge)
+--   4. public.fn_publish_webhook_event() (Atomic event insert, idempotency & fanout)
+--   5. public.fn_purge_expired_webhook_data() (Audited security-definer retention purge)
+--   6. public.fn_claim_webhook_batch() (Atomic SKIP LOCKED queue claim)
 --
 -- Integrity & Security Controls:
 --   - Preflight runtime assertion checking uq_saas_applications_tenant_app constraint.
---   - Mathematical composite foreign keys guaranteeing cross-tenant isolation.
+--   - Mathematical composite foreign keys guaranteeing cross-tenant and cross-app isolation.
 --   - Append-only immutability trigger blocking direct UPDATE/DELETE on webhook_events (SQLSTATE 55000).
 --   - Row Level Security (RLS) ENABLED and FORCED on all 3 tables.
 --   - Direct public access REVOKED from anon, authenticated, public.
@@ -27,8 +30,8 @@ BEGIN;
 DO $$
 BEGIN
     IF NOT EXISTS (
-        SELECT 1 FROM pg_constraint 
-        WHERE conname = 'uq_saas_applications_tenant_app' 
+        SELECT 1 FROM pg_constraint
+        WHERE conname = 'uq_saas_applications_tenant_app'
           AND conrelid = 'public.saas_applications'::regclass
     ) THEN
         RAISE EXCEPTION 'PREREQUISITE_CONSTRAINT_MISSING: uq_saas_applications_tenant_app on public.saas_applications does not exist. Migration 057 must be applied prior to Migration 070.'
@@ -65,31 +68,32 @@ CREATE TABLE public.webhook_subscriptions (
     CONSTRAINT ck_webhook_endpoint_length CHECK (length(endpoint_url) <= 2048)
 );
 
-CREATE INDEX idx_webhook_sub_app 
+CREATE INDEX idx_webhook_sub_app
     ON public.webhook_subscriptions(tenant_id, application_id, status);
 
 -- ─── 2. IMMUTABLE WEBHOOK EVENTS LOG ───────────────────────────────────────────
 CREATE TABLE public.webhook_events (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     tenant_id UUID NOT NULL,
+    application_id UUID NOT NULL,
     event_type TEXT NOT NULL,
     idempotency_key TEXT,
     payload JSONB NOT NULL,
     payload_raw TEXT NOT NULL,
     payload_sha256 VARCHAR(64) NOT NULL,
     created_at TIMESTAMPTZ NOT NULL DEFAULT timezone('utc', now()),
-    CONSTRAINT fk_webhook_events_tenant FOREIGN KEY (tenant_id)
-        REFERENCES public.saas_tenants(id) ON DELETE RESTRICT,
+    CONSTRAINT fk_webhook_events_tenant_app FOREIGN KEY (tenant_id, application_id)
+        REFERENCES public.saas_applications(tenant_id, id) ON DELETE RESTRICT,
     CONSTRAINT uq_webhook_events_tenant_id UNIQUE (tenant_id, id),
     CONSTRAINT ck_event_type_format CHECK (event_type ~* '^[a-z0-9_.-]+$')
 );
 
-CREATE UNIQUE INDEX uq_webhook_events_tenant_idempotency 
-    ON public.webhook_events (tenant_id, idempotency_key) 
+CREATE UNIQUE INDEX uq_webhook_events_tenant_app_idempotency
+    ON public.webhook_events (tenant_id, application_id, idempotency_key)
     WHERE idempotency_key IS NOT NULL;
 
-CREATE INDEX idx_webhook_events_tenant_created 
-    ON public.webhook_events(tenant_id, created_at DESC);
+CREATE INDEX idx_webhook_events_tenant_app_created
+    ON public.webhook_events(tenant_id, application_id, created_at DESC);
 
 -- Trigger: Immutability enforcement (UPDATE is prohibited; DELETE permitted ONLY via fn_purge_expired_webhook_data)
 CREATE OR REPLACE FUNCTION public.fn_webhook_events_prevent_mutation()
@@ -156,17 +160,158 @@ CREATE TABLE public.webhook_deliveries (
     CONSTRAINT ck_attempt_bounds CHECK (attempt_count >= 1 AND attempt_count <= 5)
 );
 
-CREATE INDEX idx_webhook_deliv_worker_poll 
-    ON public.webhook_deliveries(status, next_retry_at, leased_until) 
+CREATE INDEX idx_webhook_deliv_worker_poll
+    ON public.webhook_deliveries(status, next_retry_at, leased_until)
     WHERE status IN ('queued', 'retrying', 'leased');
 
-CREATE INDEX idx_webhook_deliv_tenant_event 
+CREATE INDEX idx_webhook_deliv_tenant_event
     ON public.webhook_deliveries(tenant_id, event_id);
 
-CREATE INDEX idx_webhook_deliv_tenant_sub_created 
+CREATE INDEX idx_webhook_deliv_tenant_sub_created
     ON public.webhook_deliveries(tenant_id, subscription_id, created_at DESC);
 
--- ─── 4. AUDITED RETENTION PURGE FUNCTION ───────────────────────────────────────
+-- ─── 4. ATOMIC EVENT PUBLICATION & FAN-OUT FUNCTION ────────────────────────────
+CREATE OR REPLACE FUNCTION public.fn_publish_webhook_event(
+    p_tenant_id UUID,
+    p_application_id UUID,
+    p_event_type TEXT,
+    p_idempotency_key TEXT,
+    p_payload JSONB,
+    p_payload_raw TEXT,
+    p_payload_sha256 VARCHAR(64)
+)
+RETURNS TABLE (
+    event_id UUID,
+    is_duplicate BOOLEAN,
+    deliveries_created INTEGER
+)
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = pg_catalog, pg_temp
+AS $$
+#variable_conflict use_column
+DECLARE
+    v_event_id UUID;
+    v_is_duplicate BOOLEAN := false;
+    v_deliv_count INTEGER := 0;
+BEGIN
+    -- 1. Validate application exists and belongs to tenant
+    IF NOT EXISTS (
+        SELECT 1 FROM public.saas_applications
+        WHERE tenant_id = p_tenant_id AND id = p_application_id
+    ) THEN
+        RAISE EXCEPTION 'APPLICATION_NOT_FOUND: Application % does not belong to tenant %', p_application_id, p_tenant_id
+            USING ERRCODE = '23503'; -- foreign_key_violation
+    END IF;
+
+    -- 2. Check idempotency if key provided
+    IF p_idempotency_key IS NOT NULL AND length(p_idempotency_key) > 0 THEN
+        SELECT id INTO v_event_id
+        FROM public.webhook_events
+        WHERE tenant_id = p_tenant_id
+          AND application_id = p_application_id
+          AND idempotency_key = p_idempotency_key;
+
+        IF v_event_id IS NOT NULL THEN
+            v_is_duplicate := true;
+            -- Ensure deliveries exist for all currently active subscriptions
+            WITH inserted_deliv AS (
+                INSERT INTO public.webhook_deliveries (
+                    tenant_id,
+                    subscription_id,
+                    event_id,
+                    attempt_count,
+                    status,
+                    created_at
+                )
+                SELECT
+                    p_tenant_id,
+                    s.id,
+                    v_event_id,
+                    1,
+                    'queued',
+                    timezone('utc', now())
+                FROM public.webhook_subscriptions s
+                WHERE s.tenant_id = p_tenant_id
+                  AND s.application_id = p_application_id
+                  AND s.status = 'active'
+                  AND ('*' = ANY(s.subscribed_events) OR p_event_type = ANY(s.subscribed_events))
+                ON CONFLICT (subscription_id, event_id) DO NOTHING
+                RETURNING id
+            )
+            SELECT count(*)::INTEGER INTO v_deliv_count FROM inserted_deliv;
+
+            -- Return total deliveries for this existing event
+            SELECT count(*)::INTEGER INTO v_deliv_count
+            FROM public.webhook_deliveries wd
+            WHERE wd.tenant_id = p_tenant_id AND wd.event_id = v_event_id;
+
+            event_id := v_event_id;
+            is_duplicate := v_is_duplicate;
+            deliveries_created := v_deliv_count;
+            RETURN NEXT;
+            RETURN;
+        END IF;
+    END IF;
+
+    -- 3. Insert new event
+    v_event_id := gen_random_uuid();
+    INSERT INTO public.webhook_events (
+        id,
+        tenant_id,
+        application_id,
+        event_type,
+        idempotency_key,
+        payload,
+        payload_raw,
+        payload_sha256,
+        created_at
+    ) VALUES (
+        v_event_id,
+        p_tenant_id,
+        p_application_id,
+        p_event_type,
+        p_idempotency_key,
+        p_payload,
+        p_payload_raw,
+        p_payload_sha256,
+        timezone('utc', now())
+    );
+
+    -- 4. Atomically fan out to matching active subscriptions under this tenant and application
+    WITH inserted_deliv AS (
+        INSERT INTO public.webhook_deliveries (
+            tenant_id,
+            subscription_id,
+            event_id,
+            attempt_count,
+            status,
+            created_at
+        )
+        SELECT
+            p_tenant_id,
+            s.id,
+            v_event_id,
+            1,
+            'queued',
+            timezone('utc', now())
+        FROM public.webhook_subscriptions s
+        WHERE s.tenant_id = p_tenant_id
+          AND s.application_id = p_application_id
+          AND s.status = 'active'
+          AND ('*' = ANY(s.subscribed_events) OR p_event_type = ANY(s.subscribed_events))
+        RETURNING id
+    )
+    SELECT count(*)::INTEGER INTO v_deliv_count FROM inserted_deliv;
+
+    event_id := v_event_id;
+    is_duplicate := false;
+    deliveries_created := v_deliv_count;
+    RETURN NEXT;
+END;
+$$;
+
+-- ─── 5. AUDITED RETENTION PURGE FUNCTION ───────────────────────────────────────
 CREATE OR REPLACE FUNCTION public.fn_purge_expired_webhook_data(
     p_retention_days INTEGER DEFAULT 30,
     p_batch_size INTEGER DEFAULT 1000
@@ -211,8 +356,8 @@ BEGIN
             SELECT evt.id FROM public.webhook_events evt
             WHERE evt.created_at < v_cutoff
               AND NOT EXISTS (
-                  SELECT 1 FROM public.webhook_deliveries d 
-                  WHERE d.tenant_id = evt.tenant_id 
+                  SELECT 1 FROM public.webhook_deliveries d
+                  WHERE d.tenant_id = evt.tenant_id
                     AND d.event_id = evt.id
               )
             ORDER BY evt.created_at ASC
@@ -231,7 +376,7 @@ BEGIN
 END;
 $$;
 
--- ─── 5. ATOMIC QUEUE BATCH CLAIM FUNCTION (SKIP LOCKED) ────────────────────────
+-- ─── 6. ATOMIC QUEUE BATCH CLAIM FUNCTION (SKIP LOCKED) ────────────────────────
 CREATE OR REPLACE FUNCTION public.fn_claim_webhook_batch(
     p_batch_size INTEGER DEFAULT 10,
     p_lease_seconds INTEGER DEFAULT 30
@@ -239,6 +384,7 @@ CREATE OR REPLACE FUNCTION public.fn_claim_webhook_batch(
 RETURNS TABLE (
     delivery_id UUID,
     tenant_id UUID,
+    application_id UUID,
     subscription_id UUID,
     event_id UUID,
     attempt_count INTEGER,
@@ -288,9 +434,10 @@ BEGIN
         WHERE d.id = c.id
         RETURNING d.id, d.tenant_id, d.subscription_id, d.event_id, d.attempt_count, d.lease_token, d.leased_until
     )
-    SELECT 
+    SELECT
         c.id AS delivery_id,
         c.tenant_id,
+        s.application_id,
         c.subscription_id,
         c.event_id,
         c.attempt_count,
@@ -310,11 +457,11 @@ BEGIN
         e.payload_sha256
     FROM claimed c
     JOIN public.webhook_subscriptions s ON s.id = c.subscription_id AND s.tenant_id = c.tenant_id
-    JOIN public.webhook_events e ON e.id = c.event_id AND e.tenant_id = c.tenant_id;
+    JOIN public.webhook_events e ON e.id = c.event_id AND e.tenant_id = c.tenant_id AND e.application_id = s.application_id;
 END;
 $$;
 
--- ─── 6. SECURITY & ROLE PRIVILEGE BOUNDARIES ──────────────────────────────────
+-- ─── 7. SECURITY & ROLE PRIVILEGE BOUNDARIES ──────────────────────────────────
 ALTER TABLE public.webhook_subscriptions ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.webhook_subscriptions FORCE ROW LEVEL SECURITY;
 ALTER TABLE public.webhook_events ENABLE ROW LEVEL SECURITY;
@@ -325,6 +472,7 @@ ALTER TABLE public.webhook_deliveries FORCE ROW LEVEL SECURITY;
 REVOKE ALL ON public.webhook_subscriptions FROM anon, authenticated, public;
 REVOKE ALL ON public.webhook_events FROM anon, authenticated, public;
 REVOKE ALL ON public.webhook_deliveries FROM anon, authenticated, public;
+REVOKE EXECUTE ON FUNCTION public.fn_publish_webhook_event(UUID, UUID, TEXT, TEXT, JSONB, TEXT, VARCHAR) FROM anon, authenticated, public;
 REVOKE EXECUTE ON FUNCTION public.fn_purge_expired_webhook_data(INTEGER, INTEGER) FROM anon, authenticated, public;
 REVOKE EXECUTE ON FUNCTION public.fn_claim_webhook_batch(INTEGER, INTEGER) FROM anon, authenticated, public;
 
@@ -334,6 +482,7 @@ REVOKE UPDATE, DELETE ON public.webhook_events FROM service_role;
 GRANT SELECT, INSERT, UPDATE, DELETE ON public.webhook_subscriptions TO service_role;
 GRANT SELECT, INSERT ON public.webhook_events TO service_role;
 GRANT SELECT, INSERT, UPDATE, DELETE ON public.webhook_deliveries TO service_role;
+GRANT EXECUTE ON FUNCTION public.fn_publish_webhook_event(UUID, UUID, TEXT, TEXT, JSONB, TEXT, VARCHAR) TO service_role;
 GRANT EXECUTE ON FUNCTION public.fn_purge_expired_webhook_data(INTEGER, INTEGER) TO service_role;
 GRANT EXECUTE ON FUNCTION public.fn_claim_webhook_batch(INTEGER, INTEGER) TO service_role;
 
@@ -360,7 +509,8 @@ COMMIT;
 -- DROP FUNCTION IF EXISTS public.fn_webhook_events_prevent_mutation();
 -- DROP FUNCTION IF EXISTS public.fn_claim_webhook_batch(INTEGER, INTEGER);
 -- DROP FUNCTION IF EXISTS public.fn_purge_expired_webhook_data(INTEGER, INTEGER);
+-- DROP FUNCTION IF EXISTS public.fn_publish_webhook_event(UUID, UUID, TEXT, TEXT, JSONB, TEXT, VARCHAR);
 -- DROP TABLE IF EXISTS public.webhook_deliveries;    -- Dropped first: references subscriptions & events
--- DROP TABLE IF EXISTS public.webhook_events;        -- Dropped second: references saas_tenants
+-- DROP TABLE IF EXISTS public.webhook_events;        -- Dropped second: references saas_applications
 -- DROP TABLE IF EXISTS public.webhook_subscriptions; -- Dropped third: references saas_applications
 -- COMMIT;

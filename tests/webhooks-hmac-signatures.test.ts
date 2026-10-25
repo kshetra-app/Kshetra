@@ -13,6 +13,9 @@
  * 6. Secret redaction helper for zero plaintext leak in logs.
  */
 
+process.env.NODE_ENV = 'test';
+process.env.WEBHOOK_SECRETS_ENCRYPTION_KEY = '0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef';
+
 import assert from 'node:assert';
 import crypto from 'node:crypto';
 import {

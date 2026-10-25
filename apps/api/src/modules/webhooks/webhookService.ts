@@ -16,6 +16,7 @@ import {
   extractSecretHint,
   canonicalizeJson,
   computePayloadSha256,
+  getMasterEncryptionKey,
 } from './crypto';
 import { validateAndPinEgressTarget } from './antiSsrfGuard';
 import { dispatchWebhook } from './webhookDispatcher';
@@ -55,9 +56,16 @@ export class WebhookService {
   ) {
     if (queueProvider) {
       this.queueProvider = queueProvider;
-    } else if (process.env.NODE_ENV === 'test' || !process.env.DATABASE_URL) {
+    } else if (process.env.NODE_ENV === 'test') {
       this.queueProvider = new InMemoryQueueProvider();
     } else {
+      // In deployed/production/staging runtimes, require valid database configuration
+      const dbUrl = process.env.DATABASE_URL;
+      if (!dbUrl || dbUrl.trim() === '') {
+        throw new Error('CONFIG_ERROR: DATABASE_URL must be configured for WebhookService in deployed environment.');
+      }
+      // Require WEBHOOK_SECRETS_ENCRYPTION_KEY to be present and valid
+      getMasterEncryptionKey();
       this.queueProvider = new PostgresQueueProvider(client);
     }
   }
@@ -455,11 +463,16 @@ export class WebhookService {
    */
   async publishEvent(params: {
     tenantId: string;
+    applicationId: string;
     eventType: string;
     idempotencyKey?: string;
     payload: Record<string, unknown>;
   }): Promise<{ eventId: string; deduplicated: boolean; enqueuedDeliveries: number }> {
-    const { tenantId, eventType, idempotencyKey, payload } = params;
+    const { tenantId, applicationId, eventType, idempotencyKey, payload } = params;
+
+    if (!applicationId) {
+      throw new Error('VALIDATION_ERROR: applicationId is required for webhook event publication.');
+    }
 
     // 1. Validate payload against allowlist (additionalProperties: false)
     const validation = validateEventPayload(eventType, payload);
@@ -474,6 +487,7 @@ export class WebhookService {
     // 3. Atomically enqueue
     return this.queueProvider.enqueueEvent({
       tenantId,
+      applicationId,
       eventType,
       idempotencyKey,
       payload,
@@ -483,4 +497,30 @@ export class WebhookService {
   }
 }
 
-export const webhookService = new WebhookService();
+let _defaultWebhookService: WebhookService | null = null;
+export function getWebhookService(): WebhookService {
+  if (!_defaultWebhookService) {
+    _defaultWebhookService = new WebhookService();
+  }
+  return _defaultWebhookService;
+}
+
+export const webhookService = new Proxy({} as WebhookService, {
+  get(_target, prop) {
+    if (!_defaultWebhookService) {
+      _defaultWebhookService = new WebhookService();
+    }
+    const val = (_defaultWebhookService as any)[prop];
+    if (typeof val === 'function') {
+      return val.bind(_defaultWebhookService);
+    }
+    return val;
+  },
+  set(_target, prop, value) {
+    if (!_defaultWebhookService) {
+      _defaultWebhookService = new WebhookService();
+    }
+    (_defaultWebhookService as any)[prop] = value;
+    return true;
+  },
+});

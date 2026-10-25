@@ -58,6 +58,7 @@ function runCheck(id, description, fn) {
 
 const openapiSaasPath = path.resolve('apps/api/openapi-saas-v1.yaml');
 const saasV1RoutesPath = path.resolve('apps/api/src/routes/saasV1.ts');
+const webhookRoutesPath = path.resolve('apps/api/src/modules/webhooks/routes.ts');
 const legacyOpenApiPath = path.resolve('apps/api/openapi.yaml');
 
 // ─── 1. FILE EXISTENCE & SYNTAX PARSING ───
@@ -119,7 +120,8 @@ runCheck('W021-G5-SRV-02', 'Regression Invariant: Supabase project URL is never 
 // ─── 2. RUNTIME EXTRACTION & 100% ROUTE PARITY ───
 
 const runtimeRoutes = [];
-runCheck('W021-G5-ROUTES-01', 'Extract exact 15 accepted SaaS routes from apps/api/src/routes/saasV1.ts', () => {
+runCheck('W021-G5-ROUTES-01', 'Extract all 23 accepted SaaS & Webhook routes from runtime controllers', () => {
+  // 1. Base SaaS V1 routes
   const content = fs.readFileSync(saasV1RoutesPath, 'utf8');
   const routeRegex = /app\.(get|post|put|delete|patch)(?:<[\s\S]*?>)?\s*\(\s*['"]([^'"]+)['"]/g;
   let match;
@@ -127,15 +129,31 @@ runCheck('W021-G5-ROUTES-01', 'Extract exact 15 accepted SaaS routes from apps/a
     runtimeRoutes.push({
       method: match[1].toLowerCase(),
       fastifyPath: match[2],
-      // Convert Fastify :param to OpenAPI {param}
       openApiPath: match[2].replace(/:([a-zA-Z0-9_]+)/g, '{$1}')
     });
   }
-  assert.strictEqual(runtimeRoutes.length, 15, `Expected 15 routes, found ${runtimeRoutes.length}`);
-  return { observed: `${runtimeRoutes.length} Fastify routes registered` };
+
+  // 2. Webhook routes under /api/vsaas/v1/webhooks
+  if (fs.existsSync(webhookRoutesPath)) {
+    const whContent = fs.readFileSync(webhookRoutesPath, 'utf8');
+    const whRegex = /fastify\.(get|post|put|delete|patch)\s*\(\s*['"]([^'"]+)['"]/g;
+    let whMatch;
+    while ((whMatch = whRegex.exec(whContent)) !== null) {
+      const subPath = whMatch[2] === '/' ? '' : whMatch[2];
+      const fullFastifyPath = `/api/vsaas/v1/webhooks${subPath}`;
+      runtimeRoutes.push({
+        method: whMatch[1].toLowerCase(),
+        fastifyPath: fullFastifyPath,
+        openApiPath: fullFastifyPath.replace(/:([a-zA-Z0-9_]+)/g, '{$1}')
+      });
+    }
+  }
+
+  assert.strictEqual(runtimeRoutes.length, 23, `Expected 23 routes (15 base + 8 webhooks), found ${runtimeRoutes.length}`);
+  return { observed: `${runtimeRoutes.length} Fastify routes registered (15 base + 8 webhooks)` };
 });
 
-runCheck('W021-G5-DRIFT-01', 'Zero Contract Drift: All 15 runtime routes exist in OpenAPI specification', () => {
+runCheck('W021-G5-DRIFT-01', 'Zero Contract Drift: All 23 runtime routes exist in OpenAPI specification', () => {
   assert.ok(openapiDoc.paths, 'OpenAPI paths object is missing');
   const docPaths = openapiDoc.paths;
 
@@ -143,12 +161,12 @@ runCheck('W021-G5-DRIFT-01', 'Zero Contract Drift: All 15 runtime routes exist i
     assert.ok(docPaths[r.openApiPath], `Route path missing from OpenAPI: ${r.openApiPath}`);
     assert.ok(docPaths[r.openApiPath][r.method], `Method ${r.method.toUpperCase()} missing on path ${r.openApiPath}`);
   }
-  return { observed: `15 / 15 runtime routes matched in OpenAPI paths` };
+  return { observed: `${runtimeRoutes.length} / ${runtimeRoutes.length} runtime routes matched in OpenAPI paths` };
 });
 
-runCheck('W021-G5-DRIFT-02', 'Zero Orphaned Routes: OpenAPI contains exactly the 15 runtime routes (no phantom endpoints)', () => {
+runCheck('W021-G5-DRIFT-02', 'Zero Orphaned Routes: OpenAPI contains exactly the 21 runtime paths (no phantom endpoints)', () => {
   const docPathKeys = Object.keys(openapiDoc.paths);
-  assert.strictEqual(docPathKeys.length, 15, `Expected exactly 15 paths in OpenAPI, found ${docPathKeys.length}`);
+  assert.strictEqual(docPathKeys.length, 21, `Expected exactly 21 paths in OpenAPI, found ${docPathKeys.length}`);
 
   for (const pathKey of docPathKeys) {
     const matchingRuntime = runtimeRoutes.find(r => r.openApiPath === pathKey);
@@ -170,7 +188,7 @@ runCheck('W021-G5-OPID-01', 'Every operation defines a unique, non-empty operati
       }
     }
   }
-  assert.strictEqual(opIds.size, 15);
+  assert.strictEqual(opIds.size, 23);
   return { observed: `${opIds.size} unique operationIds verified: ${Array.from(opIds).join(', ')}` };
 });
 
@@ -206,22 +224,24 @@ runCheck('W021-G5-SEC-02', 'Security schemes strictly define canonical regex ^pa
 
 // ─── 5. RATE LIMITING & QUOTA HEADERS ───
 
-runCheck('W021-G5-HEADERS-01', 'All 15 endpoints document x-ratelimit-* and x-monthly-quota-* response headers', () => {
+runCheck('W021-G5-HEADERS-01', 'All 23 endpoints document correlation and rate-limiting headers', () => {
+  let count = 0;
   for (const [pathKey, pathItem] of Object.entries(openapiDoc.paths)) {
     for (const [method, op] of Object.entries(pathItem)) {
       if (['get', 'post', 'put', 'delete', 'patch'].includes(method)) {
-        const resp200 = op.responses?.['200'];
-        assert.ok(resp200, `Missing 200 response on ${method.toUpperCase()} ${pathKey}`);
-        assert.ok(resp200.headers, `Missing headers on 200 response of ${method.toUpperCase()} ${pathKey}`);
-        assert.ok(resp200.headers['x-request-id'], `Missing x-request-id on ${pathKey}`);
-        assert.ok(resp200.headers['x-response-time'], `Missing x-response-time on ${pathKey}`);
-        assert.ok(resp200.headers['x-ratelimit-limit'], `Missing x-ratelimit-limit on ${pathKey}`);
-        assert.ok(resp200.headers['x-ratelimit-remaining'], `Missing x-ratelimit-remaining on ${pathKey}`);
-        assert.ok(resp200.headers['x-ratelimit-reset'], `Missing x-ratelimit-reset on ${pathKey}`);
+        const successResp = op.responses?.['200'] || op.responses?.['201'];
+        assert.ok(successResp, `Missing 200 or 201 response on ${method.toUpperCase()} ${pathKey}`);
+        assert.ok(successResp.headers, `Missing headers on success response of ${method.toUpperCase()} ${pathKey}`);
+        assert.ok(successResp.headers['x-request-id'], `Missing x-request-id on ${pathKey}`);
+        assert.ok(successResp.headers['x-response-time'], `Missing x-response-time on ${pathKey}`);
+        assert.ok(successResp.headers['x-ratelimit-limit'], `Missing x-ratelimit-limit on ${pathKey}`);
+        assert.ok(successResp.headers['x-ratelimit-remaining'], `Missing x-ratelimit-remaining on ${pathKey}`);
+        assert.ok(successResp.headers['x-ratelimit-reset'], `Missing x-ratelimit-reset on ${pathKey}`);
+        count++;
       }
     }
   }
-  return { observed: '15 / 15 endpoints document correlation and rate-limiting headers' };
+  return { observed: `${count} / ${count} endpoints document correlation and rate-limiting headers` };
 });
 
 // ─── 6. PROVENANCE INTEGRITY & ZERO PII ───
@@ -366,7 +386,7 @@ runCheck('W021-G5-RECON-01', 'Legacy apps/api/openapi.yaml is reconciled with cl
 
 runCheck('W021-G5-SEM-01', 'Derived Metrics invariant: turnout, margin, rank, voteShare, and counts are classified as [Derived Metric]', () => {
   const schemas = openapiDoc.components?.schemas;
-  
+
   // StateListItem / StateDetail: loadedConstituencies
   assert.ok(schemas.StateListItem.properties.loadedConstituencies.description.includes('[Derived Metric]'), 'StateListItem.loadedConstituencies missing [Derived Metric]');
   assert.ok(schemas.StateDetail.properties.loadedConstituencies.description.includes('[Derived Metric]'), 'StateDetail.loadedConstituencies missing [Derived Metric]');
@@ -476,7 +496,7 @@ runCheck('W021-G5-SEM-05', 'Normalized Entities invariant: canonical names, alia
 runCheck('W021-G5-AJV-01', 'All component schemas compile cleanly under Ajv (Draft 2020-12 / Draft 07 engine)', () => {
   const ajv = new Ajv({ strict: false, allErrors: true });
   const schemas = openapiDoc.components?.schemas || {};
-  
+
   // Register full document or all schemas into ajv instance first to resolve $ref
   for (const [name, schema] of Object.entries(schemas)) {
     ajv.addSchema(schema, `#/components/schemas/${name}`);

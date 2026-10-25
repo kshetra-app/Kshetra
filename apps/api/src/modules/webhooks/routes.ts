@@ -262,6 +262,7 @@ export const webhookRoutes: FastifyPluginAsync = async (fastify) => {
     try {
       const result = await webhookService.publishEvent({
         tenantId: auth.tenantId,
+        applicationId: auth.applicationId,
         eventType: body.eventType,
         idempotencyKey: body.idempotencyKey,
         payload: body.payload,

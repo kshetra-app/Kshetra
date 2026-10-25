@@ -14,16 +14,16 @@
  * 7. SSRF prevention at API ingress: Reject private IPs or non-HTTPS URLs on creation/update.
  */
 
+// Set test environment before any module imports
+process.env.NODE_ENV = 'test';
+process.env.WEBHOOK_SECRETS_ENCRYPTION_KEY =
+  process.env.WEBHOOK_SECRETS_ENCRYPTION_KEY || '0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef';
+
 import assert from 'node:assert';
 import Fastify from 'fastify';
 import { webhookRoutes } from '../apps/api/src/modules/webhooks/routes.ts';
 import { webhookService } from '../apps/api/src/modules/webhooks/webhookService.ts';
 import { InMemoryQueueProvider } from '../apps/api/src/modules/webhooks/queueProvider.ts';
-
-// Set test environment
-process.env.NODE_ENV = 'test';
-process.env.WEBHOOK_MASTER_ENCRYPTION_KEY =
-  process.env.WEBHOOK_MASTER_ENCRYPTION_KEY || '0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef';
 
 console.log('================================================================');
 console.log('W022: FASTIFY REST API & MULTI-TENANT ISOLATION SUITE');

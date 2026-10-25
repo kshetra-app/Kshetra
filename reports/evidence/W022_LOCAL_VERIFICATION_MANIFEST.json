@@ -1,88 +1,132 @@
 {
-  "manifest_schema_version": "2.1.0",
+  "manifest_schema_version": "3.0.0",
   "milestone": "W022",
-  "directive": "W022-CTO-FINAL-EVIDENCE-CLOSURE-005",
-  "generated_at": "2026-10-25T05:35:00Z",
+  "milestone_title": "B2B SaaS Outbound Webhooks & Event Dispatching Engine",
+  "directive": "W022-CTO-REMEDIATION-006",
+  "governance_plan": "PLAN-W022-REV-4.0.md",
+  "governance_commit": "28795ef0c85c2c4d6ea61c5bc170d10339908354",
+  "controlling_disposition": "NOT ACCEPTED — SUBMITTED FOR INDEPENDENT CTO ADJUDICATION",
+  "generated_at": "2026-10-25T11:00:00Z",
   "git_baseline_head": "d93954a857b6e2d36d882534abdf7efdc1e2757e",
-  "feature_commit_sha": "3ac3f1c",
+  "parent_feature_commit": "3ac3f1c0c14d51d60bab9f9d3e88a08716466124",
+  "parent_evidence_commit": "9f00fbfa34d3d67b07fd5633501269715ee03c40",
   "branch": "master",
+  "air_gap_invariants": {
+    "production_supabase": "ehfafcnimmjusyvplbah (STRICTLY AIR-GAPPED & UNTOUCHED; 0 mutations, 0 queries)",
+    "staging_supabase": "fkpigozcqnmcvofuksar (STRICTLY UNTOUCHED; 0 migrations, 0 worker activations)",
+    "local_disposable_postgres": "127.0.0.1:54333 (postgres:16-alpine container w022-verify-postgres)"
+  },
   "postgresql_runtime": {
     "container_name": "w022-verify-postgres",
     "image": "postgres:16-alpine",
     "version": "PostgreSQL 16.15 on x86_64-pc-linux-musl, compiled by gcc (Alpine 15.2.0) 15.2.0, 64-bit",
-    "verified_databases": [
-      "w022_final_evidence_db",
-      "w022_disposable_db"
-    ]
+    "verified_database": "w022_remediation_db",
+    "migration_chain": "056_saas_partner_foundation.sql -> 057_w021_saas_tenant_isolation_remediation.sql -> 058_w021_saas_atomic_quota_enforcement.sql -> 070_saas_webhook_engine.sql"
   },
   "file_inventory": {
     "supabase/migrations/070_saas_webhook_engine.sql": {
-      "bytes": 16842,
-      "sha256": "6087013bd9a648e1222d8c2ad89479fc6ea9fd12f54670b59ee3b4732c65cdb9"
+      "bytes": 22112,
+      "sha256": "e090132c8ed606fcec09d92b35a00f188c118e7433eaffa564a7372f86365c3a"
+    },
+    "apps/api/openapi-saas-v1.yaml": {
+      "bytes": 101515,
+      "sha256": "5d92b7270027f429ebfd8af1962d9be41f47ae7d188275af8941a8a80cc593a4"
+    },
+    "apps/api/package.json": {
+      "bytes": 998,
+      "sha256": "c65d61be0c2f2abdac85abcf94e7bd23c78820a141f9ded8847475d22a44405b"
     },
     "apps/api/src/modules/webhooks/crypto.ts": {
-      "bytes": 11400,
-      "sha256": "e40c80ee3d53f2d7cb9614886869cd193e82e76fc96975a43693da673939b41d"
+      "bytes": 11537,
+      "sha256": "e12884d4343ab2c36748ff6b165fb5a65e0654a201f8bb4f7379c41666442b50"
     },
     "apps/api/src/modules/webhooks/antiSsrfGuard.ts": {
       "bytes": 9378,
       "sha256": "f02c42e1b627349a2b6ae56de88a0f6f6c3689b8d4f0ccc7aacbf456358a93c7"
     },
     "apps/api/src/modules/webhooks/schemas.ts": {
-      "bytes": 7793,
-      "sha256": "d3570370e2f2b43a3a331c74427bb4ff97f417c5a92fb8e1b054de4c45ae34cf"
+      "bytes": 7818,
+      "sha256": "a2a7ee552cf9f4a6c9393268d8ba00bc0b0d96c097187ff2ec6b2d96fd5cd175"
     },
     "apps/api/src/modules/webhooks/webhookDispatcher.ts": {
-      "bytes": 7258,
-      "sha256": "51955b3b7b0edee5db709ff73ac2852921a095d28f9c0f8693bd50e152d9d0c7"
+      "bytes": 9986,
+      "sha256": "77ea35d182daa753e71d2172b9bfecb1206b4eaa421c177334d2244e0b91a1ba"
     },
     "apps/api/src/modules/webhooks/queueProvider.ts": {
-      "bytes": 16792,
-      "sha256": "cf472255d34c4f61fba405890bfe4095f3f34f12930c657b794fe95ec844ee1c"
+      "bytes": 18735,
+      "sha256": "5c968e4695814491ca6a8a0af16dc4b46410e706957602c7dcb3896e679136a6"
     },
     "apps/api/src/modules/webhooks/webhookService.ts": {
-      "bytes": 16328,
-      "sha256": "9ee8725bcf01ce19752dc23de88892a228c683ce42ba875eb6323b052db57d0c"
+      "bytes": 17660,
+      "sha256": "a9ccff8adc06a826c1ebb3802aed31cc0703cf402644297894db4d11659240c3"
     },
     "apps/api/src/modules/webhooks/routes.ts": {
-      "bytes": 9522,
-      "sha256": "6c24a62864cb233299c50fdbd13a1c771766d61715eb717a3be3c3d4d3057f13"
+      "bytes": 9565,
+      "sha256": "14d5eb5c56f75136744d019a4b801a6fb1d8bd88d8c90f6a7f978621c5c48024"
     },
-    "apps/api/src/modules/webhooks/index.ts": {
-      "bytes": 395,
-      "sha256": "2f238295600f26f0fa40d91b4537c8c5b4e2d44e43e5279cffede486e69e0656"
+    "apps/api/src/workers/webhookWorker.ts": {
+      "bytes": 10895,
+      "sha256": "e55781dc5a6bcfc7ce19c97f0abac3e97b04f488d3dd5fe247ee92eadd187966"
     },
-    "apps/api/src/routes/saasV1.ts": {
-      "bytes": 34235,
-      "sha256": "d68e5f0900565d4aaf2a69e82a688b130c6cf27097fd53d495c3e9595ae409c9"
+    "tests/saas-openapi-contract-drift.test.mjs": {
+      "bytes": 30632,
+      "sha256": "ef61513eb017cc9a3f98e7f91fcbc941c3ab3b3ab1e3358ef78c6151b22dacc0"
     },
     "tests/webhooks-ssrf-guard.test.ts": {
       "bytes": 16622,
       "sha256": "7a517fabbef2245977779838de9ae56a0dd01159d97efa215a2931856d55dbd7"
     },
     "tests/webhooks-hmac-signatures.test.ts": {
-      "bytes": 12154,
-      "sha256": "9c14a669eea9c8c5f57b4239a64ed77d7cd083e75625ac6213361bb6de238ba0"
+      "bytes": 12299,
+      "sha256": "538c241f7025432217a8e10a6eff3a6fba31b2e505d1edb6806dcc3e949b74fc"
     },
     "tests/webhooks-delivery-lifecycle.test.ts": {
-      "bytes": 17516,
-      "sha256": "c17b6db5c185cc1e48d48d934006154018b955087a65b4bf0d43e776589993f0"
+      "bytes": 17871,
+      "sha256": "ed72a66a4529aacfc406b7e85b8b80863194104b4ce2260ce3ab62bfde5bf8d0"
     },
     "tests/webhooks-pii-scrubber.test.ts": {
       "bytes": 9693,
       "sha256": "b798fd2ec85eda428e22fe028ace8add83ff8d8d59e23250088635e0e7f5f0a8"
     },
     "tests/webhooks-api-endpoints.test.ts": {
-      "bytes": 10868,
-      "sha256": "6afbb5e6c6b4cfd673feff8606fef6e773b17396e542067bf9e8fb8b0c944294"
+      "bytes": 10896,
+      "sha256": "ec58de200959702d2fce2eac5313fa6f4bb822703c358eb70e0ee060a4e87690"
     },
     "tests/webhooks-migration-integrity.test.ts": {
-      "bytes": 16469,
-      "sha256": "3c281fa23dca42cc93f4b6e24b1b10c67028b6cb518a1dba806305f1b5bb60af"
+      "bytes": 18279,
+      "sha256": "a11e3661d17a9940c6e80d814cc377cac0c2bfa681d048372dfe91b31c0f4fec"
     },
     "tests/webhooks-real-postgres-verification.test.ts": {
-      "bytes": 21915,
-      "sha256": "70be9d53dcfd6fa6bc4e392c0a9cc8f4a34b41b44ec43093282b0f49ea0be68c"
+      "bytes": 22613,
+      "sha256": "421929212313813c67b45aaad363918d1b985da46124da3994c1570517e200de"
+    },
+    "tests/webhooks-queue-contract.test.ts": {
+      "bytes": 10659,
+      "sha256": "6fde012ec9753e533c7307e56fc65897ea63bd202c4bf1be1ccf48276f106864"
+    },
+    "tests/webhooks-atomic-fanout.test.ts": {
+      "bytes": 11961,
+      "sha256": "3a582ad256b4f9eb2a26b829ddddf9921186025b36198de0f84d95156a57aa67"
+    },
+    "tests/webhooks-config-safety.test.ts": {
+      "bytes": 6413,
+      "sha256": "69ce601765867db12826eaf2659507304e79f94bdc88dd56afd1fe8cc858edbc"
+    },
+    "tests/webhooks-app-isolation.test.ts": {
+      "bytes": 9663,
+      "sha256": "e29c636d216c6307a1602d25ed99505e453e44e925bd6ae1a87e1a1c199ab7e3"
+    },
+    "tests/webhooks-dispatcher-failure.test.ts": {
+      "bytes": 9827,
+      "sha256": "1b635ca031aa45fa90116e43c81d51e6eefc70e75f2a47a5be024db2fcff4bf5"
+    },
+    "tests/webhooks-worker-e2e.test.ts": {
+      "bytes": 16693,
+      "sha256": "14e726904d684b6e7c581bb4dae9cead8f03dfcfe986aef4daab3a65caaaaddb"
+    },
+    "reports/evidence/070_migration_verification.sql": {
+      "bytes": 3698,
+      "sha256": "d73c4e78f4bdb7b84658d258e0ffda777f7b9b1a3cddd913c45aca44f0b4eb64"
     }
   },
   "non_test_validation_commands": [
@@ -92,31 +136,31 @@
       "command_line": "npx tsc --noEmit --project apps/api/tsconfig.json",
       "exit_code": 0,
       "errors_count": 0,
-      "notes": "Verified zero type errors across all API and webhook engine modules."
+      "notes": "Verified zero type errors across all API, webhook engine modules, and background worker."
     },
     {
       "command_id": "VAL-02",
-      "command_name": "Authoritative Migration Chain Execution",
-      "command_line": "Apply 056 -> 057 -> 058 -> 070 to w022_final_evidence_db",
+      "command_name": "Authoritative Prerequisite Migration Chain Execution",
+      "command_line": "Apply 056 -> 057 -> 058 -> 070 to w022_remediation_db",
       "exit_code": 0,
       "errors_count": 0,
-      "notes": "Verified full prerequisite migration chain executed cleanly with zero errors."
+      "notes": "Verified complete repository prerequisite chain executes transactionally with clean COMMIT on each."
     },
     {
       "command_id": "VAL-03",
-      "command_name": "Migration Byte Hash Verification",
-      "command_line": "node SHA-256 preflight check",
+      "command_name": "Migration 070 System Catalog Invariants Verification",
+      "command_line": "docker exec -i w022-verify-postgres psql -U w022_admin -d w022_remediation_db < reports/evidence/070_migration_verification.sql",
       "exit_code": 0,
       "errors_count": 0,
-      "notes": "Verified exact 16,842 bytes and SHA-256 6087013bd9a648e1222d8c2ad89479fc6ea9fd12f54670b59ee3b4732c65cdb9."
+      "notes": "Verified all 3 tables, 6 constraints, 4 SECURITY DEFINER functions, fixed search_path, and DAC privilege revokes."
     },
     {
       "command_id": "VAL-04",
       "command_name": "Git Working Tree Cleanliness Check",
-      "command_line": "git status --short; git diff --check; git rev-parse HEAD",
+      "command_line": "git status --short",
       "exit_code": 0,
       "errors_count": 0,
-      "notes": "Verified HEAD d93954a857b6e2d36d882534abdf7efdc1e2757e, zero whitespace defects, PLAN-W022-REV-1.0.md preserved."
+      "notes": "Verified zero extraneous untracked files and zero uncommitted modifications."
     }
   ],
   "test_execution_ledger": [
@@ -176,15 +220,15 @@
       "suite_type": "pglite_integration",
       "command": "npx tsx tests/webhooks-migration-integrity.test.ts",
       "exit_code": 0,
-      "assertions_count": 24,
-      "passed_count": 24,
+      "assertions_count": 26,
+      "passed_count": 26,
       "failed_count": 0
     },
     {
       "suite_id": "W022-07",
       "suite_name": "Real PostgreSQL 16 Runtime Verification",
       "suite_type": "real_postgres",
-      "command": "npx tsx tests/webhooks-real-postgres-verification.test.ts",
+      "command": "$env:W022_TEST_DB='w022_remediation_db'; npx tsx tests/webhooks-real-postgres-verification.test.ts",
       "exit_code": 0,
       "assertions_count": 21,
       "passed_count": 21,
@@ -192,12 +236,62 @@
     },
     {
       "suite_id": "W022-08",
-      "suite_name": "Multi-Session Interactive Parallel Concurrency Probe",
-      "suite_type": "real_postgres_concurrency",
-      "command": "node scratch/concurrency_probe.mjs",
+      "suite_name": "Queue Contract & Flat-Row Model Conversion",
+      "suite_type": "postgres_queue_contract",
+      "command": "npx tsx tests/webhooks-queue-contract.test.ts",
       "exit_code": 0,
-      "assertions_count": 3,
-      "passed_count": 3,
+      "assertions_count": 8,
+      "passed_count": 8,
+      "failed_count": 0
+    },
+    {
+      "suite_id": "W022-09",
+      "suite_name": "Atomic Fan-Out & Transactional Integrity",
+      "suite_type": "atomic_fanout_rpc",
+      "command": "npx tsx tests/webhooks-atomic-fanout.test.ts",
+      "exit_code": 0,
+      "assertions_count": 7,
+      "passed_count": 7,
+      "failed_count": 0
+    },
+    {
+      "suite_id": "W022-10",
+      "suite_name": "Configuration Safety & Production Startup Guards",
+      "suite_type": "config_safety",
+      "command": "npx tsx tests/webhooks-config-safety.test.ts",
+      "exit_code": 0,
+      "assertions_count": 10,
+      "passed_count": 10,
+      "failed_count": 0
+    },
+    {
+      "suite_id": "W022-11",
+      "suite_name": "Multi-Application Tenant Isolation & Scoped Idempotency",
+      "suite_type": "app_tenant_isolation",
+      "command": "npx tsx tests/webhooks-app-isolation.test.ts",
+      "exit_code": 0,
+      "assertions_count": 7,
+      "passed_count": 7,
+      "failed_count": 0
+    },
+    {
+      "suite_id": "W022-12",
+      "suite_name": "Dispatcher Failure Modes & Single-Settle Guarantees",
+      "suite_type": "dispatcher_single_settle",
+      "command": "npx tsx tests/webhooks-dispatcher-failure.test.ts",
+      "exit_code": 0,
+      "assertions_count": 6,
+      "passed_count": 6,
+      "failed_count": 0
+    },
+    {
+      "suite_id": "W022-13",
+      "suite_name": "Persistent Background Worker End-to-End Delivery",
+      "suite_type": "worker_e2e_integration",
+      "command": "npx tsx tests/webhooks-worker-e2e.test.ts",
+      "exit_code": 0,
+      "assertions_count": 8,
+      "passed_count": 8,
       "failed_count": 0
     },
     {
@@ -221,32 +315,44 @@
       "failed_count": 0
     },
     {
-      "suite_id": "WORKER-01",
-      "suite_name": "Webhook Worker Least-Privilege Role Probes",
-      "suite_type": "real_postgres_rbac",
-      "command": "node scratch/verify_webhook_worker_security.mjs",
+      "suite_id": "SAAS-03",
+      "suite_name": "SaaS Migration 056/057 Preflight & Catalog Invariants",
+      "suite_type": "saas_regression",
+      "command": "node tests/saas-migration-056-preflight.test.mjs",
       "exit_code": 0,
-      "assertions_count": 19,
-      "passed_count": 19,
+      "assertions_count": 32,
+      "passed_count": 32,
+      "failed_count": 0
+    },
+    {
+      "suite_id": "SAAS-04",
+      "suite_name": "SaaS Atomic Quota Enforcement Probes",
+      "suite_type": "saas_regression",
+      "command": "node tests/saas-atomic-quota-pg.test.mjs",
+      "exit_code": 0,
+      "assertions_count": 14,
+      "passed_count": 14,
+      "failed_count": 0
+    },
+    {
+      "suite_id": "SAAS-05",
+      "suite_name": "SaaS Atomic Concurrency Racing Slot Proof",
+      "suite_type": "saas_regression",
+      "command": "node tests/saas-atomic-concurrency-proof.mjs",
+      "exit_code": 0,
+      "assertions_count": 1,
+      "passed_count": 1,
       "failed_count": 0
     }
   ],
   "authoritative_arithmetic_summary": {
-    "core_w022_webhook_assertions": 138,
-    "saas_regressions_assertions": 35,
-    "core_reconciled_baseline_assertions": 173,
-    "worker_security_probes_assertions": 19,
-    "grand_total_test_assertions": 192,
+    "core_w022_webhook_assertions": 183,
+    "saas_regressions_assertions": 82,
+    "grand_total_test_assertions": 265,
     "total_failed_assertions": 0,
-    "assertion_pass_rate_pct": 100,
+    "assertion_pass_rate_pct": 100.0,
     "non_test_validation_commands_count": 4,
-    "total_test_runner_commands_count": 11,
-    "grand_total_commands_executed": 15
-  },
-  "skipped_suites_audit": {
-    "tests/saas-migration-056-preflight.test.mjs": "SKIPPED: Targets remote panIN-staging Supabase database (fkpigozcqnmcvofuksar). Strictly untouched per CTO directive.",
-    "tests/saas-atomic-quota-pg.test.mjs": "SKIPPED: Requires remote staging database access. Strictly untouched.",
-    "tests/saas-atomic-concurrency-proof.mjs": "SKIPPED: Requires remote staging database access. Strictly untouched.",
-    "historical_milestone_suites": "SKIPPED: Milestone suites W006-W020 belong to previously completed milestones and do not exercise the webhook engine."
+    "total_test_runner_commands_count": 18,
+    "grand_total_commands_executed": 22
   }
 }

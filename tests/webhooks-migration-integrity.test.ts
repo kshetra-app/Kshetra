@@ -61,10 +61,12 @@ async function runAll() {
     assert.ok(sqlContent.includes('previous_secret_ciphertext BYTEA'));
   });
 
-  await runCheck('DDL-03', 'webhook_events defines composite unique key (tenant_id, id) and tenant scoped idempotency', () => {
+  await runCheck('DDL-03', 'webhook_events defines composite unique key (tenant_id, id), application_id FK, and scoped idempotency', () => {
     assert.ok(sqlContent.includes('CONSTRAINT uq_webhook_events_tenant_id UNIQUE (tenant_id, id)'));
-    assert.ok(sqlContent.includes('CREATE UNIQUE INDEX uq_webhook_events_tenant_idempotency'));
-    assert.ok(sqlContent.includes('ON public.webhook_events (tenant_id, idempotency_key)'));
+    assert.ok(sqlContent.includes('application_id UUID NOT NULL'));
+    assert.ok(sqlContent.includes('CONSTRAINT fk_webhook_events_tenant_app FOREIGN KEY (tenant_id, application_id)'));
+    assert.ok(sqlContent.includes('CREATE UNIQUE INDEX uq_webhook_events_tenant_app_idempotency'));
+    assert.ok(sqlContent.includes('ON public.webhook_events (tenant_id, application_id, idempotency_key)'));
     assert.ok(sqlContent.includes('payload_raw TEXT NOT NULL'));
   });
 
@@ -93,6 +95,11 @@ async function runAll() {
 
   await runCheck('DDL-07', 'Revoke direct UPDATE/DELETE on webhook_events from service_role', () => {
     assert.ok(sqlContent.includes('REVOKE UPDATE, DELETE ON public.webhook_events FROM service_role'));
+  });
+
+  await runCheck('DDL-08', 'fn_publish_webhook_event defines atomic publication and fan-out', () => {
+    assert.ok(sqlContent.includes('CREATE OR REPLACE FUNCTION public.fn_publish_webhook_event'));
+    assert.ok(sqlContent.includes('INSERT INTO public.webhook_deliveries'));
   });
 
   // ─── Part 2: Dynamic Execution in Isolated In-Memory PGlite Engine ───
@@ -184,9 +191,9 @@ async function runAll() {
   await runCheck('PG-06', 'Insert webhook_event with payload_raw and composite key', async () => {
     await db.query(`
       INSERT INTO public.webhook_events (
-        id, tenant_id, event_type, idempotency_key, payload, payload_raw, payload_sha256
+        id, tenant_id, application_id, event_type, idempotency_key, payload, payload_raw, payload_sha256
       ) VALUES (
-        '${eventId}', '${tenantId}', 'election.results.published', 'idemp-pg-01',
+        '${eventId}', '${tenantId}', '${saasAppRowId}', 'election.results.published', 'idemp-pg-01',
         '{"status":"declared"}'::jsonb, '{"status":"declared"}', 'sha256_mock'
       );
     `);
@@ -293,9 +300,9 @@ async function runAll() {
     // Insert distinct second event
     await db.query(`
       INSERT INTO public.webhook_events (
-        id, tenant_id, event_type, idempotency_key, payload, payload_raw, payload_sha256
+        id, tenant_id, application_id, event_type, idempotency_key, payload, payload_raw, payload_sha256
       ) VALUES (
-        '${eventId2}', '${tenantId}', 'election.results.published', 'idemp-pg-02',
+        '${eventId2}', '${tenantId}', '${saasAppRowId}', 'election.results.published', 'idemp-pg-02',
         '{}'::jsonb, '{}', 'sha256_mock_2'
       );
     `);
@@ -365,6 +372,40 @@ async function runAll() {
   await runCheck('PG-14', 'Concurrent worker claim skips actively leased delivery (SKIP LOCKED returns 0 rows)', async () => {
     const secondClaim = await db.query(`SELECT * FROM public.fn_claim_webhook_batch(10, 30);`);
     assert.strictEqual(secondClaim.rows.length, 0);
+  });
+
+  await runCheck('PG-15', 'fn_publish_webhook_event atomically creates event and deliveries', async () => {
+    const pubRes = await db.query(`
+      SELECT * FROM public.fn_publish_webhook_event(
+        '${tenantId}',
+        '${saasAppRowId}',
+        'candidate.nominated',
+        'idemp-atomic-pg-01',
+        '{"candidate_id":"c1"}'::jsonb,
+        '{"candidate_id":"c1"}',
+        'sha256_mock_atomic'
+      );
+    `);
+    assert.strictEqual(pubRes.rows.length, 1);
+    assert.strictEqual(pubRes.rows[0].deliveries_created, 1);
+    assert.ok(pubRes.rows[0].event_id);
+
+    // Verify idempotency replay returns same event_id and 0 new deliveries
+    const replayRes = await db.query(`
+      SELECT * FROM public.fn_publish_webhook_event(
+        '${tenantId}',
+        '${saasAppRowId}',
+        'candidate.nominated',
+        'idemp-atomic-pg-01',
+        '{"candidate_id":"c1"}'::jsonb,
+        '{"candidate_id":"c1"}',
+        'sha256_mock_atomic'
+      );
+    `);
+    assert.strictEqual(replayRes.rows.length, 1);
+    assert.strictEqual(replayRes.rows[0].event_id, pubRes.rows[0].event_id);
+    assert.strictEqual(replayRes.rows[0].is_duplicate, true);
+    assert.strictEqual(replayRes.rows[0].deliveries_created, 1);
   });
 
   await db.close();

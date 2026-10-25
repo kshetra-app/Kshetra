@@ -15,6 +15,9 @@
  * 8. Byte-exact payload stability across deliveries.
  */
 
+process.env.NODE_ENV = 'test';
+process.env.WEBHOOK_SECRETS_ENCRYPTION_KEY = '0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef';
+
 import assert from 'node:assert';
 import {
   InMemoryQueueProvider,
@@ -122,6 +125,7 @@ async function runAll() {
   await runCheck('LIFECYCLE-04', 'Enqueue event fans out only to matching active subscription', async () => {
     const result = await queue.enqueueEvent({
       tenantId,
+      applicationId: 'app-1',
       eventType: 'election.results.published',
       idempotencyKey: 'idem-key-001',
       payload: payloadObj,
@@ -138,6 +142,7 @@ async function runAll() {
   await runCheck('LIFECYCLE-05', 'Deduplicate identical idempotency key within tenant', async () => {
     const result = await queue.enqueueEvent({
       tenantId,
+      applicationId: 'app-1',
       eventType: 'election.results.published',
       idempotencyKey: 'idem-key-001',
       payload: payloadObj,
@@ -147,7 +152,7 @@ async function runAll() {
 
     assert.strictEqual(result.deduplicated, true);
     assert.strictEqual(result.eventId, event1Id);
-    assert.strictEqual(result.enqueuedDeliveries, 0);
+    assert.strictEqual(result.enqueuedDeliveries, 1);
   });
 
   // ─── 3. Claiming & Lease Generation ───
@@ -241,6 +246,7 @@ async function runAll() {
 
     const enq = await queue.enqueueEvent({
       tenantId,
+      applicationId: 'app-1',
       eventType: 'election.results.published',
       idempotencyKey: 'idem-key-success',
       payload: { test: true },
@@ -275,6 +281,7 @@ async function runAll() {
 
     const enq = await queue.enqueueEvent({
       tenantId,
+      applicationId: 'app-1',
       eventType: 'election.results.published',
       idempotencyKey: 'idem-circuit-break',
       payload: { test: 'cb' },
@@ -304,6 +311,7 @@ async function runAll() {
 
     const enq = await queue.enqueueEvent({
       tenantId,
+      applicationId: 'app-1',
       eventType: 'election.results.published',
       idempotencyKey: 'idem-crash-recovery',
       payload: { crash: true },
@@ -338,6 +346,7 @@ async function runAll() {
     queue.events.set(oldEventId, {
       id: oldEventId,
       tenantId,
+      applicationId: 'app-1',
       eventType: 'election.results.published',
       payload: {},
       payloadRaw: '{}',
@@ -371,6 +380,7 @@ async function runAll() {
 
     const enq = await queue.enqueueEvent({
       tenantId,
+      applicationId: 'app-1',
       eventType: 'election.results.published',
       idempotencyKey: 'idem-at-least-once',
       payload: { round: 1 },

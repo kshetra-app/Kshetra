@@ -922,6 +922,442 @@ paths:
         '500':
           $ref: '#/components/responses/500InternalError'
 
+
+  # ════════════════════════════════════════════════════════════════════════════
+  # 5. OUTBOUND WEBHOOKS & EVENT DISPATCHING ENGINE
+  # ════════════════════════════════════════════════════════════════════════════
+
+  /api/vsaas/v1/webhooks:
+    get:
+      operationId: listWebhookSubscriptions
+      tags:
+        - Webhooks
+      summary: List registered webhook subscriptions
+      description: Returns all active and configured outbound webhook endpoints for the authenticated SaaS application.
+      responses:
+        '200':
+          description: Subscriptions retrieved successfully.
+          headers:
+            x-request-id:
+              $ref: '#/components/headers/XRequestId'
+            x-response-time:
+              $ref: '#/components/headers/XResponseTime'
+            x-ratelimit-limit:
+              $ref: '#/components/headers/XRatelimitLimit'
+            x-ratelimit-remaining:
+              $ref: '#/components/headers/XRatelimitRemaining'
+            x-ratelimit-reset:
+              $ref: '#/components/headers/XRatelimitReset'
+            x-monthly-quota-limit:
+              $ref: '#/components/headers/XMonthlyQuotaLimit'
+            x-monthly-quota-remaining:
+              $ref: '#/components/headers/XMonthlyQuotaRemaining'
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiSuccessEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        required:
+                          - subscriptions
+                          - total
+                        properties:
+                          total:
+                            type: integer
+                            example: 1
+                          subscriptions:
+                            type: array
+                            items:
+                              $ref: '#/components/schemas/WebhookSubscriptionItem'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+        '429':
+          $ref: '#/components/responses/429TooManyRequests'
+        '500':
+          $ref: '#/components/responses/500InternalError'
+    post:
+      operationId: createWebhookSubscription
+      tags:
+        - Webhooks
+      summary: Register a new webhook subscription
+      description: Registers a new HTTPS webhook destination for the authenticated SaaS application. Generates a signing secret returned exactly once upon creation.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateWebhookSubscriptionRequest'
+      responses:
+        '201':
+          description: Webhook subscription registered successfully.
+          headers:
+            x-request-id:
+              $ref: '#/components/headers/XRequestId'
+            x-response-time:
+              $ref: '#/components/headers/XResponseTime'
+            x-ratelimit-limit:
+              $ref: '#/components/headers/XRatelimitLimit'
+            x-ratelimit-remaining:
+              $ref: '#/components/headers/XRatelimitRemaining'
+            x-ratelimit-reset:
+              $ref: '#/components/headers/XRatelimitReset'
+            x-monthly-quota-limit:
+              $ref: '#/components/headers/XMonthlyQuotaLimit'
+            x-monthly-quota-remaining:
+              $ref: '#/components/headers/XMonthlyQuotaRemaining'
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiSuccessEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/CreateWebhookSubscriptionResponse'
+        '400':
+          $ref: '#/components/responses/400BadRequest'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+        '429':
+          $ref: '#/components/responses/429TooManyRequests'
+        '500':
+          $ref: '#/components/responses/500InternalError'
+
+  /api/vsaas/v1/webhooks/{id}:
+    get:
+      operationId: getWebhookSubscription
+      tags:
+        - Webhooks
+      summary: Get webhook subscription details
+      description: Retrieves subscription configuration, delivery health, and failure counts for a specific webhook ID.
+      parameters:
+        - $ref: '#/components/parameters/EntityIdPathParam'
+      responses:
+        '200':
+          description: Subscription details retrieved.
+          headers:
+            x-request-id:
+              $ref: '#/components/headers/XRequestId'
+            x-response-time:
+              $ref: '#/components/headers/XResponseTime'
+            x-ratelimit-limit:
+              $ref: '#/components/headers/XRatelimitLimit'
+            x-ratelimit-remaining:
+              $ref: '#/components/headers/XRatelimitRemaining'
+            x-ratelimit-reset:
+              $ref: '#/components/headers/XRatelimitReset'
+            x-monthly-quota-limit:
+              $ref: '#/components/headers/XMonthlyQuotaLimit'
+            x-monthly-quota-remaining:
+              $ref: '#/components/headers/XMonthlyQuotaRemaining'
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiSuccessEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        required:
+                          - subscription
+                        properties:
+                          subscription:
+                            $ref: '#/components/schemas/WebhookSubscriptionItem'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+        '429':
+          $ref: '#/components/responses/429TooManyRequests'
+        '500':
+          $ref: '#/components/responses/500InternalError'
+    patch:
+      operationId: updateWebhookSubscription
+      tags:
+        - Webhooks
+      summary: Update webhook subscription
+      description: Updates endpoint URL, subscribed event filters, or status (active/paused/disabled).
+      parameters:
+        - $ref: '#/components/parameters/EntityIdPathParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateWebhookSubscriptionRequest'
+      responses:
+        '200':
+          description: Webhook subscription updated successfully.
+          headers:
+            x-request-id:
+              $ref: '#/components/headers/XRequestId'
+            x-response-time:
+              $ref: '#/components/headers/XResponseTime'
+            x-ratelimit-limit:
+              $ref: '#/components/headers/XRatelimitLimit'
+            x-ratelimit-remaining:
+              $ref: '#/components/headers/XRatelimitRemaining'
+            x-ratelimit-reset:
+              $ref: '#/components/headers/XRatelimitReset'
+            x-monthly-quota-limit:
+              $ref: '#/components/headers/XMonthlyQuotaLimit'
+            x-monthly-quota-remaining:
+              $ref: '#/components/headers/XMonthlyQuotaRemaining'
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiSuccessEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        required:
+                          - subscription
+                        properties:
+                          subscription:
+                            $ref: '#/components/schemas/WebhookSubscriptionItem'
+        '400':
+          $ref: '#/components/responses/400BadRequest'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+        '429':
+          $ref: '#/components/responses/429TooManyRequests'
+        '500':
+          $ref: '#/components/responses/500InternalError'
+
+  /api/vsaas/v1/webhooks/{id}/disable:
+    post:
+      operationId: disableWebhookSubscription
+      tags:
+        - Webhooks
+      summary: Disable webhook subscription
+      description: Transitions subscription status to disabled and immediately stops queuing new deliveries.
+      parameters:
+        - $ref: '#/components/parameters/EntityIdPathParam'
+      responses:
+        '200':
+          description: Webhook subscription disabled.
+          headers:
+            x-request-id:
+              $ref: '#/components/headers/XRequestId'
+            x-response-time:
+              $ref: '#/components/headers/XResponseTime'
+            x-ratelimit-limit:
+              $ref: '#/components/headers/XRatelimitLimit'
+            x-ratelimit-remaining:
+              $ref: '#/components/headers/XRatelimitRemaining'
+            x-ratelimit-reset:
+              $ref: '#/components/headers/XRatelimitReset'
+            x-monthly-quota-limit:
+              $ref: '#/components/headers/XMonthlyQuotaLimit'
+            x-monthly-quota-remaining:
+              $ref: '#/components/headers/XMonthlyQuotaRemaining'
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiSuccessEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        required:
+                          - subscription
+                        properties:
+                          subscription:
+                            $ref: '#/components/schemas/WebhookSubscriptionItem'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+        '429':
+          $ref: '#/components/responses/429TooManyRequests'
+        '500':
+          $ref: '#/components/responses/500InternalError'
+
+  /api/vsaas/v1/webhooks/{id}/rotate-secret:
+    post:
+      operationId: rotateWebhookSecret
+      tags:
+        - Webhooks
+      summary: Rotate webhook signing secret
+      description: Generates a new HMAC secret with a 24-hour dual-signing grace period for zero-downtime rotation.
+      parameters:
+        - $ref: '#/components/parameters/EntityIdPathParam'
+      responses:
+        '200':
+          description: Secret rotated successfully.
+          headers:
+            x-request-id:
+              $ref: '#/components/headers/XRequestId'
+            x-response-time:
+              $ref: '#/components/headers/XResponseTime'
+            x-ratelimit-limit:
+              $ref: '#/components/headers/XRatelimitLimit'
+            x-ratelimit-remaining:
+              $ref: '#/components/headers/XRatelimitRemaining'
+            x-ratelimit-reset:
+              $ref: '#/components/headers/XRatelimitReset'
+            x-monthly-quota-limit:
+              $ref: '#/components/headers/XMonthlyQuotaLimit'
+            x-monthly-quota-remaining:
+              $ref: '#/components/headers/XMonthlyQuotaRemaining'
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiSuccessEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/RotateWebhookSecretResponse'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+        '429':
+          $ref: '#/components/responses/429TooManyRequests'
+        '500':
+          $ref: '#/components/responses/500InternalError'
+
+  /api/vsaas/v1/webhooks/{id}/test:
+    post:
+      operationId: testWebhookDelivery
+      tags:
+        - Webhooks
+      summary: Send test delivery ping
+      description: Sends an immediate synchronous test ping to verify endpoint reachability and signature computation.
+      parameters:
+        - $ref: '#/components/parameters/EntityIdPathParam'
+      responses:
+        '200':
+          description: Test delivery attempted.
+          headers:
+            x-request-id:
+              $ref: '#/components/headers/XRequestId'
+            x-response-time:
+              $ref: '#/components/headers/XResponseTime'
+            x-ratelimit-limit:
+              $ref: '#/components/headers/XRatelimitLimit'
+            x-ratelimit-remaining:
+              $ref: '#/components/headers/XRatelimitRemaining'
+            x-ratelimit-reset:
+              $ref: '#/components/headers/XRatelimitReset'
+            x-monthly-quota-limit:
+              $ref: '#/components/headers/XMonthlyQuotaLimit'
+            x-monthly-quota-remaining:
+              $ref: '#/components/headers/XMonthlyQuotaRemaining'
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiSuccessEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        required:
+                          - delivery
+                        properties:
+                          delivery:
+                            $ref: '#/components/schemas/WebhookTestDeliveryResult'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+        '429':
+          $ref: '#/components/responses/429TooManyRequests'
+        '500':
+          $ref: '#/components/responses/500InternalError'
+
+  /api/vsaas/v1/webhooks/events:
+    post:
+      operationId: publishWebhookEvent
+      tags:
+        - Webhooks
+      summary: Publish domain event to webhook engine
+      description: Validates and atomically enqueues an outbound domain event for subscriber dispatch.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PublishWebhookEventRequest'
+      responses:
+        '200':
+          description: Idempotent event recognized (duplicate publication).
+          headers:
+            x-request-id:
+              $ref: '#/components/headers/XRequestId'
+            x-response-time:
+              $ref: '#/components/headers/XResponseTime'
+            x-ratelimit-limit:
+              $ref: '#/components/headers/XRatelimitLimit'
+            x-ratelimit-remaining:
+              $ref: '#/components/headers/XRatelimitRemaining'
+            x-ratelimit-reset:
+              $ref: '#/components/headers/XRatelimitReset'
+            x-monthly-quota-limit:
+              $ref: '#/components/headers/XMonthlyQuotaLimit'
+            x-monthly-quota-remaining:
+              $ref: '#/components/headers/XMonthlyQuotaRemaining'
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiSuccessEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/PublishWebhookEventResponse'
+        '201':
+          description: Event accepted and enqueued for dispatch.
+          headers:
+            x-request-id:
+              $ref: '#/components/headers/XRequestId'
+            x-response-time:
+              $ref: '#/components/headers/XResponseTime'
+            x-ratelimit-limit:
+              $ref: '#/components/headers/XRatelimitLimit'
+            x-ratelimit-remaining:
+              $ref: '#/components/headers/XRatelimitRemaining'
+            x-ratelimit-reset:
+              $ref: '#/components/headers/XRatelimitReset'
+            x-monthly-quota-limit:
+              $ref: '#/components/headers/XMonthlyQuotaLimit'
+            x-monthly-quota-remaining:
+              $ref: '#/components/headers/XMonthlyQuotaRemaining'
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiSuccessEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/PublishWebhookEventResponse'
+        '400':
+          $ref: '#/components/responses/400BadRequest'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+        '422':
+          description: Event payload schema validation failed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorEnvelope'
+        '429':
+          $ref: '#/components/responses/429TooManyRequests'
+        '500':
+          $ref: '#/components/responses/500InternalError'
+
 components:
   # ════════════════════════════════════════════════════════════════════════════
   # SECURITY SCHEMES
@@ -2092,3 +2528,172 @@ components:
             type: object
         provenance:
           $ref: '#/components/schemas/PaninScenarioProvenance'
+
+    WebhookSubscriptionItem:
+      type: object
+      required:
+        - id
+        - tenantId
+        - applicationId
+        - endpointUrl
+        - secretHint
+        - subscribedEvents
+        - status
+        - consecutiveFailureCount
+        - createdAt
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+        tenantId:
+          type: string
+          format: uuid
+        applicationId:
+          type: string
+          format: uuid
+        endpointUrl:
+          type: string
+          format: uri
+          example: https://api.consumer.com/webhooks
+        secretHint:
+          type: string
+          example: abcdef12
+        subscribedEvents:
+          type: array
+          items:
+            type: string
+          example: ["election.results.published"]
+        status:
+          type: string
+          enum: [active, paused, disabled, failed]
+          example: active
+        consecutiveFailureCount:
+          type: integer
+          example: 0
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    CreateWebhookSubscriptionRequest:
+      type: object
+      required:
+        - endpointUrl
+      properties:
+        endpointUrl:
+          type: string
+          format: uri
+          example: https://api.consumer.com/webhooks
+        subscribedEvents:
+          type: array
+          items:
+            type: string
+          example: ["election.results.published"]
+
+    CreateWebhookSubscriptionResponse:
+      type: object
+      required:
+        - subscription
+        - secret
+      properties:
+        subscription:
+          $ref: '#/components/schemas/WebhookSubscriptionItem'
+        secret:
+          type: string
+          example: whsec_0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef
+
+    UpdateWebhookSubscriptionRequest:
+      type: object
+      properties:
+        endpointUrl:
+          type: string
+          format: uri
+        subscribedEvents:
+          type: array
+          items:
+            type: string
+        status:
+          type: string
+          enum: [active, paused, disabled]
+
+    RotateWebhookSecretResponse:
+      type: object
+      required:
+        - newSecret
+        - secretHint
+        - gracePeriodExpiresAt
+      properties:
+        newSecret:
+          type: string
+          example: whsec_newsecret123456789abcdef0123456789abcdef0123456789abcdef012345
+        secretHint:
+          type: string
+          example: cdef0123
+        gracePeriodExpiresAt:
+          type: string
+          format: date-time
+
+    WebhookTestDeliveryResult:
+      type: object
+      required:
+        - eventId
+        - deliveryId
+        - endpointUrl
+        - success
+      properties:
+        eventId:
+          type: string
+          format: uuid
+        deliveryId:
+          type: string
+          format: uuid
+        endpointUrl:
+          type: string
+          format: uri
+        success:
+          type: boolean
+        httpStatus:
+          type: integer
+          nullable: true
+          example: 200
+        executionDurationMs:
+          type: integer
+          example: 45
+        responseBodySample:
+          type: string
+        errorMessage:
+          type: string
+
+    PublishWebhookEventRequest:
+      type: object
+      required:
+        - eventType
+        - payload
+      properties:
+        eventType:
+          type: string
+          example: election.results.published
+        idempotencyKey:
+          type: string
+          example: ik_election_2026_001
+        payload:
+          type: object
+
+    PublishWebhookEventResponse:
+      type: object
+      required:
+        - eventId
+        - deduplicated
+        - enqueuedDeliveries
+      properties:
+        eventId:
+          type: string
+          format: uuid
+        deduplicated:
+          type: boolean
+        enqueuedDeliveries:
+          type: integer
+          example: 2

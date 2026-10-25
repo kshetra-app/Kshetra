@@ -99,10 +99,24 @@ export async function dispatchWebhook(params: DispatchParams): Promise<DispatchR
     };
   }
 
-  // 3. Execute HTTP request with socket pinning
+  // 3. Execute HTTP request with socket pinning, hard timeout, and single-settle guarantee
   return new Promise<DispatchResult>((resolve) => {
     const isHttps = target.parsedUrl.protocol.toLowerCase() === 'https:';
     const requestFn = isHttps ? https.request : http.request;
+    const HARD_TIMEOUT_MS = 10000;
+
+    let isSettled = false;
+    let hardTimer: NodeJS.Timeout | null = null;
+
+    const finish = (result: DispatchResult) => {
+      if (isSettled) return;
+      isSettled = true;
+      if (hardTimer) {
+        clearTimeout(hardTimer);
+        hardTimer = null;
+      }
+      resolve(result);
+    };
 
     const requestOptions = {
       method: 'POST',
@@ -111,16 +125,24 @@ export async function dispatchWebhook(params: DispatchParams): Promise<DispatchR
       port: target.port,
       path: `${target.parsedUrl.pathname}${target.parsedUrl.search}`,
       headers: requestHeaders,
-      timeout: 10000, // Total timeout 10 seconds
+      timeout: HARD_TIMEOUT_MS,
     };
 
-    let settled = false;
-    const finish = (result: DispatchResult) => {
-      if (!settled) {
-        settled = true;
-        resolve(result);
-      }
-    };
+    hardTimer = setTimeout(() => {
+      try {
+        req.destroy();
+      } catch (_) {}
+      const duration = Date.now() - startTime;
+      finish({
+        success: false,
+        httpStatus: null,
+        executionDurationMs: duration,
+        requestHeaders,
+        responseHeaders: {},
+        responseBodySample: '',
+        errorMessage: `DELIVERY_HARD_TIMEOUT: End-to-end request exceeded limit of ${HARD_TIMEOUT_MS} ms`,
+      });
+    }, HARD_TIMEOUT_MS);
 
     const req = requestFn(requestOptions, (res) => {
       const statusCode = res.statusCode || 0;
@@ -135,7 +157,9 @@ export async function dispatchWebhook(params: DispatchParams): Promise<DispatchR
 
       // Check for 3xx redirect: Strictly prohibited (no follow)
       if (statusCode >= 300 && statusCode < 400) {
-        req.destroy();
+        try {
+          req.destroy();
+        } catch (_) {}
         const duration = Date.now() - startTime;
         return finish({
           success: false,
@@ -155,9 +179,21 @@ export async function dispatchWebhook(params: DispatchParams): Promise<DispatchR
       res.on('data', (chunk: Buffer) => {
         totalStreamBytes += chunk.length;
         if (totalStreamBytes > MAX_RESPONSE_STREAM_BYTES) {
-          // Abort socket to prevent runaway memory/streaming from malicious remote receiver
-          res.destroy();
-          return;
+          // Abort socket immediately to prevent runaway memory/streaming from malicious remote receiver
+          try {
+            res.destroy();
+            req.destroy();
+          } catch (_) {}
+          const duration = Date.now() - startTime;
+          return finish({
+            success: false,
+            httpStatus: statusCode,
+            executionDurationMs: duration,
+            requestHeaders,
+            responseHeaders,
+            responseBodySample: Buffer.concat(chunks).toString('utf8'),
+            errorMessage: `RESPONSE_STREAM_OVERFLOW: Response exceeded maximum allowed size of ${MAX_RESPONSE_STREAM_BYTES} bytes.`,
+          });
         }
 
         if (totalSampleBytes < MAX_RESPONSE_SAMPLE_BYTES) {
@@ -182,10 +218,45 @@ export async function dispatchWebhook(params: DispatchParams): Promise<DispatchR
           errorMessage: success ? undefined : `HTTP_STATUS_${statusCode}`,
         });
       });
+
+      res.on('error', (err: any) => {
+        try {
+          req.destroy();
+        } catch (_) {}
+        const duration = Date.now() - startTime;
+        finish({
+          success: false,
+          httpStatus: statusCode || null,
+          executionDurationMs: duration,
+          requestHeaders,
+          responseHeaders,
+          responseBodySample: Buffer.concat(chunks).toString('utf8'),
+          errorMessage: err?.message || 'RESPONSE_STREAM_ERROR',
+        });
+      });
+
+      res.on('close', () => {
+        if (!isSettled) {
+          const duration = Date.now() - startTime;
+          const responseBodySample = Buffer.concat(chunks).toString('utf8');
+          const success = statusCode >= 200 && statusCode < 300;
+          finish({
+            success,
+            httpStatus: statusCode,
+            executionDurationMs: duration,
+            requestHeaders,
+            responseHeaders,
+            responseBodySample,
+            errorMessage: success ? undefined : `CONNECTION_CLOSED_PREMATURELY: HTTP_${statusCode}`,
+          });
+        }
+      });
     });
 
     req.on('timeout', () => {
-      req.destroy();
+      try {
+        req.destroy();
+      } catch (_) {}
       const duration = Date.now() - startTime;
       finish({
         success: false,
@@ -194,7 +265,7 @@ export async function dispatchWebhook(params: DispatchParams): Promise<DispatchR
         requestHeaders,
         responseHeaders: {},
         responseBodySample: '',
-        errorMessage: 'DELIVERY_TIMEOUT: Request timed out after 10000 ms',
+        errorMessage: `DELIVERY_TIMEOUT: Request socket timed out after ${HARD_TIMEOUT_MS} ms`,
       });
     });
 
@@ -211,8 +282,21 @@ export async function dispatchWebhook(params: DispatchParams): Promise<DispatchR
       });
     });
 
-    // Transmit exact persisted bytes
-    req.write(bodyBuffer);
-    req.end();
+    try {
+      // Transmit exact persisted bytes
+      req.write(bodyBuffer);
+      req.end();
+    } catch (writeErr: any) {
+      const duration = Date.now() - startTime;
+      finish({
+        success: false,
+        httpStatus: null,
+        executionDurationMs: duration,
+        requestHeaders,
+        responseHeaders: {},
+        responseBodySample: '',
+        errorMessage: writeErr.message || 'SOCKET_WRITE_ERROR',
+      });
+    }
   });
 }

@@ -6,6 +6,7 @@
     "dev": "tsx watch src/server.ts",
     "build": "tsc --noEmit",
     "start": "tsx src/server.ts",
+    "worker:webhooks": "tsx src/workers/webhookWorker.ts",
     "smoke": "node ../../scripts/smoke-api.mjs",
     "test": "node ../../node_modules/jest/bin/jest.js --passWithNoTests --forceExit",
     "test:coverage": "node ../../node_modules/jest/bin/jest.js --coverage",

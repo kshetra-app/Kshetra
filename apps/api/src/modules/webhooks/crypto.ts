@@ -13,14 +13,18 @@ const DEFAULT_TEST_MASTER_KEY = '0123456789abcdef0123456789abcdef0123456789abcde
 
 export function getMasterEncryptionKey(): Buffer {
   const envKey = process.env.WEBHOOK_SECRETS_ENCRYPTION_KEY;
-  if (envKey && envKey.trim().length >= 64) {
-    return Buffer.from(envKey.trim().slice(0, 64), 'hex');
+  if (envKey) {
+    const trimmed = envKey.trim();
+    if (/^[0-9a-fA-F]{64}$/.test(trimmed)) {
+      return Buffer.from(trimmed, 'hex');
+    }
+    throw new Error('CONFIG_ERROR: WEBHOOK_SECRETS_ENCRYPTION_KEY must be exactly 64 hexadecimal characters (32 bytes).');
   }
-  // Allow test fallback only in non-production environments
-  if (process.env.NODE_ENV === 'test' || !process.env.NODE_ENV) {
+  // Allow test fallback strictly when NODE_ENV is explicitly 'test'
+  if (process.env.NODE_ENV === 'test') {
     return Buffer.from(DEFAULT_TEST_MASTER_KEY, 'hex');
   }
-  throw new Error('FATAL_SECURITY_ERROR: WEBHOOK_SECRETS_ENCRYPTION_KEY missing or invalid in deployed environment');
+  throw new Error('CONFIG_ERROR: WEBHOOK_SECRETS_ENCRYPTION_KEY missing or invalid in deployed environment');
 }
 
 export interface EncryptedSecretRecord {

@@ -13,6 +13,7 @@ import type { DispatchResult } from './webhookDispatcher';
 
 export interface EnqueueEventParams {
   tenantId: string;
+  applicationId: string;
   eventType: string;
   idempotencyKey?: string | null;
   payload: Record<string, unknown>;
@@ -20,9 +21,31 @@ export interface EnqueueEventParams {
   payloadSha256: string;
 }
 
+export function parseBytea(val: any): Buffer {
+  if (Buffer.isBuffer(val)) return val;
+  if (val instanceof Uint8Array) return Buffer.from(val);
+  if (typeof val === 'string') {
+    if (val.startsWith('\\x') || val.startsWith('0x')) {
+      return Buffer.from(val.slice(2), 'hex');
+    }
+    return Buffer.from(val, 'hex');
+  }
+  throw new Error(`INVALID_BYTEA: Expected Buffer, Uint8Array or hex string, got ${typeof val}`);
+}
+
 export interface LeasedDeliveryJob {
   delivery: WebhookDeliveryModel;
-  subscription: WebhookSubscriptionModel;
+  subscription: WebhookSubscriptionModel & {
+    secretCiphertext?: Buffer;
+    secretIv?: Buffer;
+    secretTag?: Buffer;
+    secretKeyVersion?: number;
+    previousSecretCiphertext?: Buffer | null;
+    previousSecretIv?: Buffer | null;
+    previousSecretTag?: Buffer | null;
+    previousSecretExpiresAt?: string | null;
+    rawSecret?: string;
+  };
   event: WebhookEventModel;
   leaseToken: string;
 }
@@ -68,16 +91,20 @@ export class InMemoryQueueProvider implements WebhookQueueProvider {
   public tenantIdempotencyIndex = new Set<string>();
 
   async enqueueEvent(params: EnqueueEventParams): Promise<{ eventId: string; deduplicated: boolean; enqueuedDeliveries: number }> {
-    const { tenantId, eventType, idempotencyKey, payload, payloadRaw, payloadSha256 } = params;
+    const { tenantId, applicationId, eventType, idempotencyKey, payload, payloadRaw, payloadSha256 } = params;
 
-    // Check scoped tenant idempotency
+    // Check scoped tenant and application idempotency
     if (idempotencyKey) {
-      const scopedKey = `${tenantId}:${idempotencyKey}`;
+      const scopedKey = `${tenantId}:${applicationId}:${idempotencyKey}`;
       if (this.tenantIdempotencyIndex.has(scopedKey)) {
         // Find existing event
         for (const evt of this.events.values()) {
-          if (evt.tenantId === tenantId && evt.idempotencyKey === idempotencyKey) {
-            return { eventId: evt.id, deduplicated: true, enqueuedDeliveries: 0 };
+          if (evt.tenantId === tenantId && evt.applicationId === applicationId && evt.idempotencyKey === idempotencyKey) {
+            let existingDeliveriesCount = 0;
+            for (const d of this.deliveries.values()) {
+              if (d.eventId === evt.id) existingDeliveriesCount++;
+            }
+            return { eventId: evt.id, deduplicated: true, enqueuedDeliveries: existingDeliveriesCount };
           }
         }
       }
@@ -88,6 +115,7 @@ export class InMemoryQueueProvider implements WebhookQueueProvider {
     const event: WebhookEventModel = {
       id: eventId,
       tenantId,
+      applicationId,
       eventType,
       idempotencyKey,
       payload,
@@ -97,10 +125,10 @@ export class InMemoryQueueProvider implements WebhookQueueProvider {
     };
     this.events.set(eventId, event);
 
-    // Fan out to matching active subscriptions
+    // Fan out to matching active subscriptions under this tenant and application
     let enqueued = 0;
     for (const sub of this.subscriptions.values()) {
-      if (sub.tenantId === tenantId && sub.status === 'active') {
+      if (sub.tenantId === tenantId && sub.applicationId === applicationId && sub.status === 'active') {
         const matchesEvent = sub.subscribedEvents.includes('*') || sub.subscribedEvents.includes(eventType);
         if (matchesEvent) {
           const deliveryId = crypto.randomUUID();
@@ -282,100 +310,119 @@ export class PostgresQueueProvider implements WebhookQueueProvider {
   constructor(private readonly supabaseClient: SupabaseClient) {}
 
   async enqueueEvent(params: EnqueueEventParams): Promise<{ eventId: string; deduplicated: boolean; enqueuedDeliveries: number }> {
-    const { tenantId, eventType, idempotencyKey, payload, payloadRaw, payloadSha256 } = params;
+    const { tenantId, applicationId, eventType, idempotencyKey, payload, payloadRaw, payloadSha256 } = params;
 
-    // 1. Insert event (ON CONFLICT DO NOTHING if idempotencyKey present)
-    const { data: event, error: eventErr } = await this.supabaseClient
-      .from('webhook_events')
-      .insert({
-        tenant_id: tenantId,
-        event_type: eventType,
-        idempotency_key: idempotencyKey || null,
-        payload,
-        payload_raw: payloadRaw,
-        payload_sha256: payloadSha256,
-      })
-      .select('id')
-      .maybeSingle();
+    const { data, error } = await this.supabaseClient.rpc('fn_publish_webhook_event', {
+      p_tenant_id: tenantId,
+      p_application_id: applicationId,
+      p_event_type: eventType,
+      p_idempotency_key: idempotencyKey || null,
+      p_payload: payload,
+      p_payload_raw: payloadRaw,
+      p_payload_sha256: payloadSha256,
+    });
 
-    if (eventErr) {
-      // Check if duplicate idempotency key error
-      if (eventErr.code === '23505' && idempotencyKey) {
-        const { data: existing } = await this.supabaseClient
-          .from('webhook_events')
-          .select('id')
-          .eq('tenant_id', tenantId)
-          .eq('idempotency_key', idempotencyKey)
-          .single();
-        if (existing) {
-          return { eventId: existing.id, deduplicated: true, enqueuedDeliveries: 0 };
-        }
-      }
-      throw new Error(`DATABASE_ENQUEUE_ERROR: Failed to insert webhook event: ${eventErr.message}`);
+    if (error) {
+      throw new Error(`DATABASE_ENQUEUE_ERROR: Failed to publish webhook event: ${error.message}`);
     }
 
-    if (!event) {
-      throw new Error('DATABASE_ENQUEUE_ERROR: Event record was not returned upon insert.');
+    if (!data || data.length === 0) {
+      throw new Error('DATABASE_ENQUEUE_ERROR: No rows returned from fn_publish_webhook_event');
     }
 
-    // 2. Query active subscriptions for tenant
-    const { data: subs, error: subErr } = await this.supabaseClient
-      .from('webhook_subscriptions')
-      .select('id, subscribed_events')
-      .eq('tenant_id', tenantId)
-      .eq('status', 'active');
-
-    if (subErr) {
-      throw new Error(`DATABASE_FANOUT_ERROR: Failed to query subscriptions: ${subErr.message}`);
-    }
-
-    // Filter matching subscriptions
-    const matchingSubs = (subs || []).filter(
-      (s: any) => s.subscribed_events.includes('*') || s.subscribed_events.includes(eventType)
-    );
-
-    if (matchingSubs.length === 0) {
-      return { eventId: event.id, deduplicated: false, enqueuedDeliveries: 0 };
-    }
-
-    // 3. Insert deliveries
-    const deliveryRows = matchingSubs.map((s: any) => ({
-      tenant_id: tenantId,
-      subscription_id: s.id,
-      event_id: event.id,
-      status: 'queued',
-      attempt_count: 1,
-    }));
-
-    const { error: delivErr } = await this.supabaseClient
-      .from('webhook_deliveries')
-      .insert(deliveryRows);
-
-    if (delivErr) {
-      throw new Error(`DATABASE_DELIVERY_INSERT_ERROR: Failed to insert delivery records: ${delivErr.message}`);
-    }
-
-    return { eventId: event.id, deduplicated: false, enqueuedDeliveries: deliveryRows.length };
+    const row = data[0];
+    return {
+      eventId: row.event_id,
+      deduplicated: Boolean(row.is_duplicate),
+      enqueuedDeliveries: Number(row.deliveries_created) || 0,
+    };
   }
 
   async claimBatch(batchSize: number): Promise<LeasedDeliveryJob[]> {
-    // Uses RPC or atomic poll query with lease update
     const { data, error } = await this.supabaseClient.rpc('fn_claim_webhook_batch', {
       p_batch_size: batchSize,
       p_lease_seconds: 30,
     });
 
     if (error) {
-      // Fallback: direct select and update if RPC not present in test harness
+      throw new Error(`RPC_CLAIM_BATCH_FAILED: ${error.message}`);
+    }
+
+    if (!Array.isArray(data)) {
       return [];
     }
 
-    return (data || []).map((row: any) => ({
-      delivery: row.delivery,
-      subscription: row.subscription,
-      event: row.event,
-      leaseToken: row.lease_token,
-    }));
+    return data.map((row: any) => {
+      if (!row.delivery_id || !row.tenant_id || !row.subscription_id || !row.event_id || !row.lease_token) {
+        throw new Error(`MALFORMED_CLAIM_BATCH_ROW: Required field missing from fn_claim_webhook_batch row: ${JSON.stringify(row)}`);
+      }
+
+      const delivery: WebhookDeliveryModel = {
+        id: row.delivery_id,
+        tenantId: row.tenant_id,
+        subscriptionId: row.subscription_id,
+        eventId: row.event_id,
+        attemptCount: row.attempt_count,
+        status: 'leased',
+        createdAt: row.leased_until || new Date().toISOString(),
+      };
+
+      const subscription: WebhookSubscriptionModel & {
+        secretCiphertext: Buffer;
+        secretIv: Buffer;
+        secretTag: Buffer;
+        secretKeyVersion: number;
+        previousSecretCiphertext?: Buffer | null;
+        previousSecretIv?: Buffer | null;
+        previousSecretTag?: Buffer | null;
+        previousSecretExpiresAt?: string | null;
+      } = {
+        id: row.subscription_id,
+        tenantId: row.tenant_id,
+        applicationId: row.application_id || '',
+        endpointUrl: row.endpoint_url,
+        secretHint: '',
+        secretHash: '',
+        subscribedEvents: [],
+        status: 'active',
+        consecutiveFailureCount: 0,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        secretCiphertext: parseBytea(row.secret_ciphertext),
+        secretIv: parseBytea(row.secret_iv),
+        secretTag: parseBytea(row.secret_tag),
+        secretKeyVersion: row.secret_key_version,
+        previousSecretCiphertext: row.previous_secret_ciphertext ? parseBytea(row.previous_secret_ciphertext) : null,
+        previousSecretIv: row.previous_secret_iv ? parseBytea(row.previous_secret_iv) : null,
+        previousSecretTag: row.previous_secret_tag ? parseBytea(row.previous_secret_tag) : null,
+        previousSecretExpiresAt: row.previous_secret_expires_at || null,
+      };
+
+      let parsedPayload: Record<string, unknown> = {};
+      try {
+        parsedPayload = JSON.parse(row.payload_raw);
+      } catch (_) {
+        parsedPayload = {};
+      }
+
+      const event: WebhookEventModel = {
+        id: row.event_id,
+        tenantId: row.tenant_id,
+        applicationId: row.application_id || '',
+        eventType: row.event_type,
+        payload: parsedPayload,
+        payloadRaw: row.payload_raw,
+        payloadSha256: row.payload_sha256,
+        createdAt: new Date().toISOString(),
+      };
+
+      return {
+        delivery,
+        subscription,
+        event,
+        leaseToken: row.lease_token,
+      };
+    });
   }
 
   async completeDelivery(
