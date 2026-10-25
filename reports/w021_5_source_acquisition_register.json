@@ -810,9 +810,9 @@
       "url": "https://tgrac.telangana.gov.in/arcgis/rest/services/EndowmentLands_Folder/Endowment_Lands_Admin_New/MapServer/12?f=pjson",
       "format": "ArcGIS REST Feature Layer / ESRI JSON",
       "authority": "OFFICIAL_STATE_GIS_CANDIDATE",
-      "status": "PROBE_QUEUED",
+      "status": "PROBE_PENDING_RUN_40213331746",
       "layerId": 12,
-      "workflowRunId": 40213242722,
+      "workflowRunId": 40213331746,
       "limitations": [
         "Service name/metadata do not establish legally effective boundary version.",
         "No canonical AC-number crosswalk, effective date, or legal instrument reconciliation is complete."
@@ -825,9 +825,9 @@
       "url": "https://tgrac.telangana.gov.in/arcgis/rest/services/EndowmentLands_Folder/Endowment_Lands_Old/MapServer/13?f=pjson",
       "format": "ArcGIS REST Feature Layer / ESRI JSON",
       "authority": "OFFICIAL_STATE_GIS_CANDIDATE",
-      "status": "PROBE_QUEUED",
+      "status": "PROBE_PENDING_RUN_40213331746",
       "layerId": 13,
-      "workflowRunId": 40213242722,
+      "workflowRunId": 40213331746,
       "limitations": [
         "Service name/metadata do not establish legally effective boundary version.",
         "No canonical AC-number crosswalk, effective date, or legal instrument reconciliation is complete."
@@ -1195,11 +1195,20 @@
       "artifactId": null,
       "artifactName": null,
       "artifactSha256": null,
-      "status": "PENDING_AT_LAST_CHECK",
+      "status": "CANCELLED_BEFORE_JOB_START_DUE_TO_CONCURRENT_BRANCH_PUSH",
       "scope": "Compare two additional TGRAC services Endowment_Lands_Admin_New/MapServer/12 and Endowment_Lands_Old/MapServer/13 against the two previously acquired Telangana layers."
+    },
+    {
+      "runId": 40213331746,
+      "workflowUrl": "https://github.com/kshetra-app/Kshetra/actions/runs/40213331746",
+      "artifactId": null,
+      "artifactName": null,
+      "artifactSha256": null,
+      "status": "PENDING_AT_LAST_CHECK",
+      "scope": "Probe TGRAC Endowment_Lands_Admin_New/MapServer/12 and Endowment_Lands_Old/MapServer/13 metadata and geometry, then audit all acquired Telangana AC layers."
     }
   ],
-  "updatedAt": "2026-10-25T16:46:00Z",
+  "updatedAt": "2026-10-25T16:48:00Z",
   "notes": [
     "Actual public source artifacts were downloaded in GitHub Actions run 40209022405 and SHA-256 hashed; detailed geometry findings are in reports/w021_5_datameet_ac_geometry_forensic_audit.json.",
     "Survey of India official ABDB page, Vector Data Catalog 2025 PDF and Metadata_ABDB.zip were downloaded and hashed. The metadata covers state, district, subdistrict and village boundaries, not statutory Assembly Constituency polygons.",
