@@ -22,7 +22,7 @@ import { InMemoryQueueProvider } from '../apps/api/src/modules/webhooks/queuePro
 
 // Set test environment
 process.env.NODE_ENV = 'test';
-process.env.WEBHOOK_MASTER_ENCRYPTION_KEY =
+process.env.WEBHOOK_SECRETS_ENCRYPTION_KEY =
   process.env.WEBHOOK_MASTER_ENCRYPTION_KEY || '0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef';
 
 console.log('================================================================');

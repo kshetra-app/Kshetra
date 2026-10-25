@@ -221,6 +221,38 @@ runCheck('PII-13', 'Reject boundary.delimitation.updated containing unvetted dem
   assert.ok(result.error?.includes("'survey_respondent_names'"));
 });
 
+
+runCheck('PII-14', 'Reject wrong integer type in election summary', () => {
+  const bad = { event_id: '22222222-2222-2222-2222-222222222222', timestamp: '2026-10-24T14:30:00.000Z',
+    election_id: 'telangana-assembly-2023', state_code: 'TG', constituency_code: 'TG-072',
+    counting_round: '14', status: 'in_progress',
+    summary: { total_votes_counted: 10, margin: 2, leading_candidate_id: '33333333-3333-3333-3333-333333333333', leading_party_code: 'INC' } };
+  assert.strictEqual(validateEventPayload('election.results.published', bad).valid, false);
+});
+runCheck('PII-15', 'Reject malformed ISO date-time timestamp', () => {
+  assert.strictEqual(validateEventPayload('test.ping', { event_id: '11111111-1111-1111-1111-111111111111', timestamp: 'tomorrow', message: 'test' }).valid, false);
+});
+runCheck('PII-16', 'Reject enum outside the event allowlist', () => {
+  const bad = { event_id: '22222222-2222-2222-2222-222222222222', timestamp: '2026-10-24T14:30:00.000Z',
+    election_id: 'telangana-assembly-2023', state_code: 'TG', constituency_code: 'TG-072',
+    counting_round: 1, status: 'maybe', summary: { total_votes_counted: 10, margin: 2, leading_candidate_id: '33333333-3333-3333-3333-333333333333', leading_party_code: 'INC' } };
+  assert.strictEqual(validateEventPayload('election.results.published', bad).valid, false);
+});
+runCheck('PII-17', 'Reject malformed state-code pattern', () => {
+  const bad = { event_id: '66666666-6666-6666-6666-666666666666', timestamp: '2026-10-24T09:00:00.000Z',
+    state_code: 'Telangana', constituency_code: 'TG-072', gazette_notification_number: 'ECI/042', boundary_geojson_sha256: 'a'.repeat(64) };
+  assert.strictEqual(validateEventPayload('boundary.delimitation.updated', bad).valid, false);
+});
+runCheck('PII-18', 'Reject negative election summary margin', () => {
+  const bad = { event_id: '22222222-2222-2222-2222-222222222222', timestamp: '2026-10-24T14:30:00.000Z',
+    election_id: 'telangana-assembly-2023', state_code: 'TG', constituency_code: 'TG-072',
+    counting_round: 1, status: 'declared', summary: { total_votes_counted: 10, margin: -1, leading_candidate_id: '33333333-3333-3333-3333-333333333333', leading_party_code: 'INC' } };
+  assert.strictEqual(validateEventPayload('election.results.published', bad).valid, false);
+});
+runCheck('PII-19', 'Reject oversized test-ping message', () => {
+  assert.strictEqual(validateEventPayload('test.ping', { event_id: '11111111-1111-1111-1111-111111111111', timestamp: '2026-10-24T12:00:00.000Z', message: 'x'.repeat(257) }).valid, false);
+});
+
 // ─── Summary ───
 console.log('\n----------------------------------------------------------------');
 console.log(`Results: ${passCount} passed, ${failCount} failed.`);
