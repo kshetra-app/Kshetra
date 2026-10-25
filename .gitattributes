@@ -1,3 +1,5 @@
 *.db filter=lfs diff=lfs merge=lfs -text
 *.tmp filter=lfs diff=lfs merge=lfs -text
 scrapers/output/local-body/*.json filter=lfs diff=lfs merge=lfs -text
+# seed-data.db is a generated build output; never fetch the stale LFS object.
+apps/mobile/data/seed-data.db -filter -diff -merge text
