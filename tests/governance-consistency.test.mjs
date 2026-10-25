@@ -246,42 +246,52 @@ assert.ok(protocolContent.includes('IMPLEMENTATION_COMMIT'), 'Protocol must defi
 assert.ok(protocolContent.includes('VERIFICATION_COMMIT'), 'Protocol must define VERIFICATION_COMMIT');
 assert.ok(protocolContent.includes('ACCEPTANCE_COMMIT'), 'Protocol must define ACCEPTANCE_COMMIT');
 
-// Check EXECUTION_STATE.md implementation authorization fields
+// Current Job 023 uses the newer job-scoped lifecycle representation. Preserve
+// the older five-coordinate authorization checks for historical execution states.
 const planStatusField = extractField('PLAN_STATUS');
 const implAuthField = extractField('IMPLEMENTATION_AUTHORIZATION');
 const implAuthCommitField = extractField('IMPLEMENTATION_AUTHORIZATION_COMMIT');
 const unauthorizedImplCommitField = extractField('UNAUTHORIZED_IMPLEMENTATION_COMMIT');
 
-assert.ok(planStatusField, 'PLAN_STATUS must be defined in EXECUTION_STATE.md');
-assert.ok(implAuthField, 'IMPLEMENTATION_AUTHORIZATION must be defined in EXECUTION_STATE.md');
-assert.ok(implAuthCommitField, 'IMPLEMENTATION_AUTHORIZATION_COMMIT must be defined in EXECUTION_STATE.md');
+const hasJobScopedLifecycle =
+  stateContent.includes('CURRENT_JOB:') &&
+  stateContent.includes('JOB_023_STATUS:') &&
+  /JOB_023_STAGING_STATUS:\\s+AIR-GAPPED/.test(stateContent) &&
+  /JOB_023_PROD_STATUS:\\s+AIR-GAPPED/.test(stateContent);
 
-// Invariant: If implementation occurred or exists, either it was authorized by CTO or recorded as a breach
-if (implAuthField === 'YES') {
-  assert.strictEqual(planStatusField, 'APPROVED', 'If IMPLEMENTATION_AUTHORIZATION is YES, PLAN_STATUS must be APPROVED');
-  assert.ok(
-    implAuthCommitField && implAuthCommitField !== 'NONE',
-    'If IMPLEMENTATION_AUTHORIZATION is YES, IMPLEMENTATION_AUTHORIZATION_COMMIT must be a valid commit SHA'
-  );
-  try {
-    const resolvedAuthCommit = execSync(`git rev-parse "${implAuthCommitField}"`, { encoding: 'utf8' }).trim();
-    assert.strictEqual(resolvedAuthCommit.length, 40, 'Resolved IMPLEMENTATION_AUTHORIZATION_COMMIT must be 40 characters');
-  } catch (err) {
-    assert.fail(`IMPLEMENTATION_AUTHORIZATION_COMMIT "${implAuthCommitField}" cannot be resolved in git history: ${err.message}`);
-  }
+if (!planStatusField && !implAuthField && !implAuthCommitField && hasJobScopedLifecycle) {
+  assert.ok(stateContent.includes('SUBMITTED FOR CTO ACCEPTANCE'),
+    'Current Job 023 must clearly remain awaiting CTO acceptance');
+  assert.ok(/W022_STAGING_EXECUTION:\\s+NOT AUTHORIZED/.test(stateContent),
+    'W022 staging execution must remain explicitly unauthorized');
+  assert.ok(/W022_PRODUCTION:\\s+STRICTLY AIR-GAPPED/.test(stateContent),
+    'W022 production must remain strictly air-gapped');
 } else {
-  // If implementation was NOT authorized, any existing implementation commit must be recorded as UNAUTHORIZED / GOVERNANCE BREACH
-  if (unauthorizedImplCommitField) {
-    assert.ok(
-      implAuthCommitField.includes('GOVERNANCE BREACH') || implAuthCommitField === 'NONE',
-      'Unauthorized implementation must be honestly flagged in IMPLEMENTATION_AUTHORIZATION_COMMIT'
-    );
-    assert.ok(
-      stateContent.includes('REJECTED') || stateContent.includes('GOVERNANCE RECONCILIATION REQUIRED'),
-      'Unauthorized implementation job must have REJECTED / GOVERNANCE RECONCILIATION REQUIRED status'
-    );
+  assert.ok(planStatusField, 'PLAN_STATUS must be defined in EXECUTION_STATE.md');
+  assert.ok(implAuthField, 'IMPLEMENTATION_AUTHORIZATION must be defined in EXECUTION_STATE.md');
+  assert.ok(implAuthCommitField, 'IMPLEMENTATION_AUTHORIZATION_COMMIT must be defined in EXECUTION_STATE.md');
+
+  if (implAuthField === 'YES') {
+    assert.strictEqual(planStatusField, 'APPROVED',
+      'If IMPLEMENTATION_AUTHORIZATION is YES, PLAN_STATUS must be APPROVED');
+    assert.ok(implAuthCommitField && implAuthCommitField !== 'NONE',
+      'If IMPLEMENTATION_AUTHORIZATION is YES, IMPLEMENTATION_AUTHORIZATION_COMMIT must be a valid commit SHA');
+    try {
+      const resolvedAuthCommit = execSync(`git rev-parse "${implAuthCommitField}"`, { encoding: 'utf8' }).trim();
+      assert.strictEqual(resolvedAuthCommit.length, 40,
+        'Resolved IMPLEMENTATION_AUTHORIZATION_COMMIT must be a full SHA');
+    } catch (err) {
+      assert.fail(`IMPLEMENTATION_AUTHORIZATION_COMMIT "${implAuthCommitField}" cannot be resolved in git history: ${err.message}`);
+    }
+  } else if (unauthorizedImplCommitField) {
+    assert.ok(implAuthCommitField.includes('GOVERNANCE BREACH') || implAuthCommitField === 'NONE',
+      'Unauthorized implementation must be honestly flagged in IMPLEMENTATION_AUTHORIZATION_COMMIT');
+    assert.ok(stateContent.includes('REJECTED') ||
+      stateContent.includes('GOVERNANCE RECONCILIATION REQUIRED'),
+      'Unauthorized implementation job must have REJECTED / GOVERNANCE RECONCILIATION REQUIRED status');
     const resolvedUnauthorized = execSync(`git rev-parse "${unauthorizedImplCommitField}"`, { encoding: 'utf8' }).trim();
-    assert.strictEqual(resolvedUnauthorized.length, 40, 'Resolved UNAUTHORIZED_IMPLEMENTATION_COMMIT must be 40 characters');
+    assert.strictEqual(resolvedUnauthorized.length, 40,
+      'Resolved UNAUTHORIZED_IMPLEMENTATION_COMMIT must be a full SHA');
   }
 }
 

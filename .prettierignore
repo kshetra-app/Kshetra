@@ -1,0 +1,5 @@
+# Raw scraper outputs are evidence/data artifacts, not source files to format.
+/scrapers/output/**
+# Legacy seed snapshots are binary content despite their .ts suffix.
+/scripts/py-old-seed.ts
+/scripts/tripura-old-seed.ts
