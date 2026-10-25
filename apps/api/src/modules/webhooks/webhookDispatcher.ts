@@ -58,7 +58,7 @@ export function sanitizeResponseHeaders(
     const key = name.toLowerCase();
     if (!SAFE_RESPONSE_HEADER_NAMES.has(key) || value === undefined || Object.keys(safe).length >= 9) continue;
     const normalized = Array.isArray(value) ? value.join(', ') : String(value);
-    safe[key] = normalized.replace(/[\\r\\n\\0]/g, ' ').slice(0, 256);
+    safe[key] = normalized.replace(/[\r\n\0]/g, ' ').slice(0, 256);
   }
   return safe;
 }
