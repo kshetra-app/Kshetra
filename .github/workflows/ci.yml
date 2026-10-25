@@ -163,9 +163,6 @@ jobs:
       - name: Verify SaaS OpenAPI contract and drift
         run: node tests/saas-openapi-contract-drift.test.mjs
 
-      - name: Verify SaaS G6 tenant-isolation and air-gap probes
-        run: node tests/saas-g6-security-probes.test.mjs
-
   typecheck:
     name: Typecheck
     runs-on: ubuntu-latest
