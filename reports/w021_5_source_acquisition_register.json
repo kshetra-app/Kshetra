@@ -523,7 +523,9 @@
         "zeroAreaIntersectionPairs": 314,
         "authoritativeStateBoundaryCoverage": "NOT_CHECKED",
         "canonicalAcNumberCrosswalk": "NOT_PERFORMED"
-      }
+      },
+      "comparisonReport": "reports/evidence/w021_5_telangana_layer_comparison_2026-10-25.json",
+      "comparisonFinding": "The separate 2026-named layer has the same 119-feature roster but differs materially in at least 7 geometries; neither layer selected as canonical."
     },
     {
       "sourceId": "SRC-TELANGANA-2026-AC-LAYER",
@@ -533,13 +535,25 @@
       "retrievedAt": "2026-10-25",
       "format": "ArcGIS REST Feature Layer / ESRI JSON",
       "authority": "OFFICIAL_STATE_GIS_CANDIDATE",
-      "status": "PROBE_IN_PROGRESS",
+      "status": "GEOMETRY_ACQUIRED_TOPOLOGY_DEFECT_FOUND_LAYER_CONFLICT_OPEN",
       "geometryQueryUrl": "https://tgrac.telangana.gov.in/arcgis/rest/services/EndowmentLands_Folder/EndowmentLands_Admin_2026/MapServer/12/query?where=1%3D1&outFields=%2A&returnGeometry=true&outSR=4326&f=json",
       "workflowRunId": 40212441232,
       "limitations": [
         "The service name includes 2026 but effective date, ownership of AC boundary data, reuse terms, and legal alignment are unverified.",
         "Do not treat as authoritative until compared with the 119-seat statutory roster and the older service layer."
-      ]
+      ],
+      "metadataBytes": 4683,
+      "metadataSha256": "850ba55a5017c7b8eeef0967aa2a073057a1fe9396abc54066c3719ddb451737",
+      "geometryBytes": 12463409,
+      "geometrySha256": "ca8cfdc695366d9f04ee6a9fdbf9c52eeefe61d69bc79c9d26d15baa7b84aa03",
+      "featureCount": 119,
+      "expectedFeatureCount": 119,
+      "invalidGeometryCount": 1,
+      "invalidFeature": "Dornakal (ST) / OBJECTID 89",
+      "positiveAreaOverlapPairs": 0,
+      "topologyAudit": "reports/evidence/w021_5_telangana_arcgis_geometry_audit_2026-10-25.json",
+      "comparisonReport": "reports/evidence/w021_5_telangana_layer_comparison_2026-10-25.json",
+      "comparisonFinding": "119 names matched after normalizing two spelling/case variants; 112 geometries near-identical within 0.01 m²; 7 differ above 0.01 m²; maximum Hausdorff distance 3,042 m. Both layers share the same invalid Dornakal polygon."
     },
     {
       "sourceId": "SRC-SECONDARY-ECI-2026-AC-GEO-BUNDLE",
@@ -1046,9 +1060,51 @@
       ],
       "productionWrites": 0,
       "stagingWrites": 0
+    },
+    {
+      "runId": 40212441232,
+      "workflowUrl": "https://github.com/kshetra-app/Kshetra/actions/runs/40212441232",
+      "artifactId": 12606470712,
+      "artifactName": "w0215-official-geometry-probe-40212441232",
+      "artifactSha256": "299b259082ba51f36b9f9a4c05e94021eaa89d6cba737e9395f3182095f8a056",
+      "compressedBytes": 9968653,
+      "artifactExpiresAt": "2026-11-24T16:39:42Z",
+      "status": "COMPLETED_WITH_FAILURES; BOTH TELANGANA LAYERS ACQUIRED AND AUDITED; DIRECT ECI ENDPOINTS FAILED",
+      "manifestSummary": {
+        "eciDirect404": 3,
+        "eciDirectTimeout": 2,
+        "telanganaMetadataAcquired": 2,
+        "telanganaGeometryAcquired": 2,
+        "featureCountPerTelanganaLayer": 119,
+        "invalidGeometryPerLayer": 1
+      },
+      "downloadedFiles": [
+        {
+          "id": "telangana-layer-metadata",
+          "bytes": 4756,
+          "sha256": "fd91d7803f39a8cc9ae9f2f486224cea777c7127ef5659dd2d073b088dbfb26a"
+        },
+        {
+          "id": "telangana-ac-geometry",
+          "bytes": 12465346,
+          "sha256": "91cd791317836d8a6a8729b03f08fd3aee8c727c82e123b1659972d949d32f27"
+        },
+        {
+          "id": "telangana-2026-layer-metadata",
+          "bytes": 4683,
+          "sha256": "850ba55a5017c7b8eeef0967aa2a073057a1fe9396abc54066c3719ddb451737"
+        },
+        {
+          "id": "telangana-2026-ac-geometry",
+          "bytes": 12463409,
+          "sha256": "ca8cfdc695366d9f04ee6a9fdbf9c52eeefe61d69bc79c9d26d15baa7b84aa03"
+        }
+      ],
+      "auditReport": "reports/evidence/w021_5_telangana_arcgis_geometry_audit_2026-10-25.json",
+      "comparisonReport": "reports/evidence/w021_5_telangana_layer_comparison_2026-10-25.json"
     }
   ],
-  "updatedAt": "2026-10-25T16:39:00Z",
+  "updatedAt": "2026-10-25T16:41:00Z",
   "notes": [
     "Actual public source artifacts were downloaded in GitHub Actions run 40209022405 and SHA-256 hashed; detailed geometry findings are in reports/w021_5_datameet_ac_geometry_forensic_audit.json.",
     "Survey of India official ABDB page, Vector Data Catalog 2025 PDF and Metadata_ABDB.zip were downloaded and hashed. The metadata covers state, district, subdistrict and village boundaries, not statutory Assembly Constituency polygons.",
@@ -1058,7 +1114,8 @@
     "Focused official geometry probe 40212122850 was queued to prioritize the five direct ECI endpoints and Telangana state GIS layer; it is separate from the broad source-acquisition retry 40211792541. Inspect its uploaded manifest before making claims.",
     "Focused geometry probe run 40212122850 independently confirmed all five ECI .js URLs return 404 and the Telangana ArcGIS metadata endpoint is reachable. The initial f=geojson query was unsupported; corrected f=json query is queued in 40212257196. The probe ZIP SHA-256 was independently verified as e30baeff7c4ba94b0eee8d0e3fda41ddd7262a9880f7f4ac8e6ad9b9d7ce270e.",
     "Telangana layer 24 geometry was acquired in run 40212257196 (119 features; SHA-256 91cd791317836d8a6a8729b03f08fd3aee8c727c82e123b1659972d949d32f27). Independent Shapely audit found one self-intersection in Dornakal (ST) Assembly; this candidate is not accepted. A second service EndowmentLands_Admin_2026/MapServer/12 is under probe in run 40212441232.",
-    "Broad source-acquisition run 40211792541 completed successfully: 31/61 source artifacts downloaded and hashed (142,219,649 source bytes), 24 failed. Five ECI-derived mirror GeoJSONs were acquired but rejected for canonical use after topology audit. Survey of India village boundaries were acquired for 14/27 jurisdictions, with 71,484 features, 37 invalid geometries, one CRS metadata conflict; they are not AC polygons or delivery-beat polygons."
+    "Broad source-acquisition run 40211792541 completed successfully: 31/61 source artifacts downloaded and hashed (142,219,649 source bytes), 24 failed. Five ECI-derived mirror GeoJSONs were acquired but rejected for canonical use after topology audit. Survey of India village boundaries were acquired for 14/27 jurisdictions, with 71,484 features, 37 invalid geometries, one CRS metadata conflict; they are not AC polygons or delivery-beat polygons.",
+    "Focused run 40212441232 acquired both the older Telangana Assembly Constituency Boundary layer and the EndowmentLands_Admin_2026 layer (119 features each). Both contain the same invalid Dornakal polygon and zero positive-area overlaps. Cross-layer comparison found 7 geometries differing above 0.01 m² and a maximum Hausdorff distance of about 3.04 km; neither layer can be selected without legal/source-owner adjudication."
   ],
   "secondaryGeometryAudit": {
     "sourceRepository": "https://github.com/saisantoshv3/assemnbly_gis_files",
