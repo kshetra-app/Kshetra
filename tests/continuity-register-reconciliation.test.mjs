@@ -208,7 +208,9 @@ pass('W022 implementation/authentication/execution/acceptance/release separation
 // 9. Recent commits since the source snapshot must be accounted for in governance records.
 const recentCommits = exec(['log', '--format=%H', report.sourceSnapshot.commit + '..HEAD'])
   .split(/\r?\n/).filter(Boolean).sort();
-const registeredCommits = [...report.commitsAfterSourceSnapshot].sort();
+const registeredCommits = [...report.commitsAfterSourceSnapshot]
+  .filter((sha) => sha !== exec(['rev-parse', 'HEAD']))
+  .sort();
 assert.equal(new Set(registeredCommits).size, registeredCommits.length,
   'Commit accountability manifest contains duplicate commit IDs');
 assert.deepEqual(recentCommits, registeredCommits,
