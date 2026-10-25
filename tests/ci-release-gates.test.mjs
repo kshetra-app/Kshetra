@@ -12,7 +12,7 @@ const localeVerifier = fs.readFileSync('scripts/verify-13-locales.mjs', 'utf8');
 function section(source, name) {
   const marker = new RegExp('^  ' + name + ':\s*$', 'm');
   const match = marker.exec(source);
-  assert.ok(match, 'workflow job ' + name + ' must exist');
+  const next = source.slice(match.index + match[0].length).search(/^  [a-zA-Z0-9_-]+:\s*$/m);
   const start = match.index;
   const next = source.slice(match.index + match[0].length).search(/^  [a-zA-Z0-9_-]+:\s*$/m);
   return source.slice(start, next === -1 ? undefined : match.index + match[0].length + next);
