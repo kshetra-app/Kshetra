@@ -225,7 +225,6 @@ function genericAdapter(
         projectedMargin: c.margin2026 ?? null,
         dataTruth: dataTruthFor(c, stateCode, 2026, true),
         disclaimer: 'Simulated Projection — Not an Official Result',
-                dataTruth: dataTruthFor(c, 'TN', 2026, true),
       }
     : undefined;
 
@@ -394,6 +393,11 @@ export function getUnifiedConstituenciesForState(stateCode: string): UnifiedCons
             winnerParty: 'TVK',
             margin: 20040,
             defeatedCandidateOrParty: 'DMK',
+            winnerVotes: 74048,
+            runnerUpName: 'I. Paranthamen',
+            runnerUpParty: 'DMK',
+            runnerUpVotes: 54008,
+            dataTruth: dataTruthFor(c, 'TN', 2026, false, 'https://results.eci.gov.in/ResultAcByeOct2026/ConstituencywiseS2235.htm'),
           };
         } else if (c.acNo === 101) {
           currentParty = 'TVK';
@@ -409,6 +413,11 @@ export function getUnifiedConstituenciesForState(stateCode: string): UnifiedCons
             winnerParty: 'TVK',
             margin: 9471,
             defeatedCandidateOrParty: 'DMK',
+            winnerVotes: 66841,
+            runnerUpName: 'Suganya S',
+            runnerUpParty: 'DMK',
+            runnerUpVotes: 57370,
+            dataTruth: dataTruthFor(c, 'TN', 2026, false, 'https://results.eci.gov.in/ResultAcByeOct2026/ConstituencywiseS22101.htm'),
           };
         }
 
@@ -442,8 +451,8 @@ export function getUnifiedConstituenciesForState(stateCode: string): UnifiedCons
                 projectedVotes: c.winnerVotes2026 ?? null,
                 projectedRunnerUp: c.runnerUp2026 ?? null,
                 projectedMargin: c.margin2026 ?? null,
-                disclaimer: 'Simulated Projection — Not an Official Result',
                 dataTruth: dataTruthFor(c, 'TN', 2026, true),
+                disclaimer: 'Simulated Projection — Not an Official Result',
               }
             : undefined,
         };
@@ -478,8 +487,8 @@ export function getUnifiedConstituenciesForState(stateCode: string): UnifiedCons
               projectedVotes: c.winnerVotes2026 ?? null,
               projectedRunnerUp: c.runnerUp2026 ?? null,
               projectedMargin: c.margin2026 ?? null,
+              dataTruth: dataTruthFor(c, 'KL', 2026, true),
               disclaimer: 'Simulated Projection — Not an Official Result',
-                dataTruth: dataTruthFor(c, 'TN', 2026, true),
             }
           : undefined,
       }));
@@ -507,6 +516,11 @@ export function getUnifiedConstituenciesForState(stateCode: string): UnifiedCons
             winnerParty: 'BJP',
             margin: 122753,
             defeatedCandidateOrParty: 'INC',
+            winnerVotes: 164427,
+            runnerUpName: 'Milan Pradhan',
+            runnerUpParty: 'INC',
+            runnerUpVotes: 41674,
+            dataTruth: dataTruthFor(c, 'WB', 2026, false, 'https://results.eci.gov.in/ResultAcByeOct2026/ConstituencywiseS25210.htm'),
           };
         } else if (c.acNo === 70) {
           currentParty = 'BJP';
@@ -522,6 +536,11 @@ export function getUnifiedConstituenciesForState(stateCode: string): UnifiedCons
             winnerParty: 'BJP',
             margin: 75816,
             defeatedCandidateOrParty: 'AJUP',
+            winnerVotes: 129914,
+            runnerUpName: 'Golam Nabi Azad (Robin)',
+            runnerUpParty: 'Aam Janata Unnayan Party',
+            runnerUpVotes: 54098,
+            dataTruth: dataTruthFor(c, 'WB', 2026, false, 'https://results.eci.gov.in/ResultAcByeOct2026/ConstituencywiseS2570.htm'),
           };
         }
 
@@ -555,8 +574,8 @@ export function getUnifiedConstituenciesForState(stateCode: string): UnifiedCons
                 projectedVotes: c.winnerVotes2026 ?? null,
                 projectedRunnerUp: c.runnerUp2026 ?? null,
                 projectedMargin: c.margin2026 ?? null,
+                dataTruth: dataTruthFor(c, 'WB', 2026, true),
                 disclaimer: 'Simulated Projection — Not an Official Result',
-                dataTruth: dataTruthFor(c, 'TN', 2026, true),
               }
             : undefined,
         };
