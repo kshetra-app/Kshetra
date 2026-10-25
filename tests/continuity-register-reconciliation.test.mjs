@@ -182,8 +182,7 @@ for (const field of ['CURRENT_REMOTE_HEAD', 'VERIFIED_REMOTE_HEAD', 'GOVERNANCE_
   const coordinate = coordinateLine?.slice((field + ':').length).trim();
   assert.equal(coordinate, report.sourceSnapshot.commit,
     field + ' must remain pinned to the verified pre-reconciliation source snapshot; PR HEAD is not the previously accepted master coordinate');
-}
-pass('Staging/production authorization, zero-access and immutable source coordinates');
+}pass('Staging/production authorization and zero-access boundary');
 
 // 8. Current W022 source, plan, authorization, migration, acceptance and release are separate lifecycle facts.
 const w022 = report.currentRepositoryState;
@@ -221,56 +220,6 @@ const registeredCommits = [...report.commitsAfterSourceSnapshot]
   .sort();
 assert.ok(report.commitsAfterSourceSnapshot.includes(previousManifestCommit),
   'Commit manifest must include the previous report revision; current HEAD is excluded to avoid self-reference.');
-assert.equal(new Set(registeredCommits).size, registeredCommits.length,
-  'Commit accountability manifest contains duplicate commit IDs');
-assert.deepEqual(recentCommits, registeredCommits,
-  'Unrecorded commit detected after source snapshot; update reports/gov_02_continuity_reconciliation.json with the complete post-snapshot commit set');
-for (const sha of registeredCommits) {
-  assert.match(sha, /^[0-9a-f]{40}$/i, 'Commit accountability entry must be a full SHA');
-  exec(['cat-file', '-e', sha + '^{commit}']);
-}
-pass('Post-snapshot commit accountability (' + recentCommits.length + ' commits checked)');
-
-console.log('\nGOV-02 continuity register reconciliation: PASS');
-, 'm'))?.[1]?.trim(), report.sourceSnapshot.commit,
-    field + ' must remain pinned to the verified pre-reconciliation source snapshot; PR HEAD is not the previously accepted master coordinate');
-}
-pass('Staging/production authorization and zero-access boundary');
-
-// 8. Current W022 source, plan, authorization, migration, acceptance and release are separate lifecycle facts.
-const w022 = report.currentRepositoryState;
-assert.equal(w022.currentJob, 'W022');
-assert.equal(w022.plan, 'PLAN-W022-REV-1.0.md Revision 4');
-assert.equal(w022.featureLifecycleState, 'authored');
-assert.equal(w022.featureAcceptanceState, 'not formally accepted');
-assert.equal(w022.featureReleaseState, 'not released');
-assert.equal(w022.stagingDatabaseExecution, 'not authorized');
-assert.equal(w022.productionAccess, 'strictly air-gapped');
-assert.equal(w022.externalWebhookActivation, 'not authorized');
-assert.match(read('PLAN-W022-REV-1.0.md'), /Revision 4/i);
-assert.match(read('CTO_DIRECTIVE_W022_IMPLEMENTATION_AUTHORIZATION_2026-10-25.md'), /STAGING database execution \/ deployment:\s*NOT AUTHORIZED/i);
-assert.match(read('supabase/migrations/070_saas_webhook_engine.sql'), /Milestone:\s*W022/i);
-assert.ok(acceptance.includes('**W022**') && /NOT ACCEPTED/.test(acceptance));
-const w022Release = releases.split(/\r?\n/).find((line) => line.includes('v0.1.0-w022-pending'));
-assert.ok(w022Release, 'Release register must contain the W022 pending row');
-assert.match(w022Release, /NOT RELEASED/i);
-assert.match(w022Release, /STAGING DB EXECUTION NOT AUTHORIZED/i);
-assert.match(w022Release, /PRODUCTION air-gapped/i);
-assert.match(w022Release, /Migration 070 is source only/i);
-assert.ok(!/Open P0 \(Production Blockers\):\*\*\s*0/.test(state));
-assert.ok(!/Open P1 \(Major Architectural Flaws\):\*\*\s*0/.test(state));
-assert.ok(read('.github/workflows/ci.yml').includes('node tests/continuity-register-reconciliation.test.mjs'));
-assert.equal(packageJson.name, 'kshetra', 'Unexpected root package identity; test is intended for the Kshetra monorepo');
-pass('W022 implementation/authentication/execution/acceptance/release separation');
-
-// 9. Recent commits since the source snapshot must be accounted for in governance records.
-const recentCommits = exec(['log', '--format=%H', report.sourceSnapshot.commit + '..HEAD'])
-  .split(/\r?\n/).filter(Boolean).sort();
-const registeredCommits = [...report.commitsAfterSourceSnapshot]
-  .filter((sha) => sha !== exec(['rev-parse', 'HEAD']))
-  .sort();
-const reportedSelfCommit = report.commitsAfterSourceSnapshot.includes(exec(['rev-parse', 'HEAD']));
-assert.ok(reportedSelfCommit, 'Commit manifest must account for its previous snapshot commit; the current report commit is excluded from the history comparison to avoid self-reference.');
 assert.equal(new Set(registeredCommits).size, registeredCommits.length,
   'Commit accountability manifest contains duplicate commit IDs');
 assert.deepEqual(recentCommits, registeredCommits,
