@@ -55,8 +55,9 @@ jobs:
 
       - name: Build release AAB and APK
         working-directory: apps/mobile/android
-        run: ./gradlew --no-daemon :app:bundleRelease :app:assembleRelease
+        run: ./gradlew --no-daemon --stacktrace :app:bundleRelease :app:assembleRelease
         continue-on-error: true
+        timeout-minutes: 20
 
       - name: Create actual release size and dependency report
         if: always()
