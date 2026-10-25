@@ -1,51 +1,83 @@
 /**
- * Boundary GeoJSON manifest (Performance Phase 3).
+ * Boundary manifest facade.
  *
- * The manifest is tiny (a few KB) and IS bundled with the app. It maps each
- * state code to the remote file name, content version (cache-busting hash) and
- * size metadata produced by `scripts/build-geo-assets.mjs`. The large polygon
- * files themselves are streamed on demand from the API (see remoteGeoLoader),
- * except states flagged `bundled` (the national "IN" overview) which ship in
- * the JS bundle for an instant, offline first paint.
+ * Keep only the small national overview in the app bundle. The manifest
+ * itself is downloaded from the API and is deliberately not populated from
+ * source assets at runtime, so per-state metadata cannot pull source geometry
+ * into the Metro graph.
  */
-import manifest from '../data/geo-manifest.json';
+import { getGeoBaseUrl } from './remoteGeoLoader';
 
 export interface GeoManifestEntry {
-  /** Remote file name, e.g. "up-assembly.json". */
   file: string;
-  /** Number of constituencies (informational). */
   count: number;
-  /** Whether this state has real polygon geometry. */
   hasPolygons: boolean;
-  /** "placeholder" for states without verified boundaries. */
   status?: string;
-  /** Uncompressed byte size of the optimised file. */
   bytes?: number;
-  /** Gzipped (over-the-wire) byte size. */
   gzipBytes?: number;
-  /** Content hash — used for cache-busting (URL ?v= + on-disk file name). */
   version?: string;
-  /** True if shipped inside the JS bundle instead of streamed. */
   bundled?: boolean;
 }
 
-const MANIFEST = manifest as Record<string, GeoManifestEntry>;
+const manifestCache = new Map<string, GeoManifestEntry>();
+let manifestPromise: Promise<Record<string, GeoManifestEntry> | null> | null = null;
 
+function validateEntry(value: unknown, code: string): value is GeoManifestEntry {
+  if (!value || typeof value !== 'object') return false;
+  const entry = value as Partial<GeoManifestEntry>;
+  return typeof entry.file === 'string'
+    && /^[a-z0-9-]+\.json$/.test(entry.file)
+    && typeof entry.count === 'number'
+    && Number.isFinite(entry.count)
+    && typeof entry.hasPolygons === 'boolean'
+    && typeof entry.version === 'string'
+    && /^[a-f0-9]{12,40}$/i.test(entry.version)
+    && (!entry.status || typeof entry.status === 'string');
+}
+
+/** Fetch the canonical API manifest once; null means offline/unavailable. */
+export async function loadRemoteGeoManifest(
+  refresh = false,
+): Promise<Record<string, GeoManifestEntry> | null> {
+  if (manifestPromise && !refresh) return manifestPromise;
+  manifestPromise = (async () => {
+    try {
+      const response = await fetch(`${getGeoBaseUrl()}/geo/manifest.json`, {
+        headers: { Accept: 'application/json' },
+      });
+      if (!response.ok) return null;
+      const raw: unknown = await response.json();
+      if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return null;
+      const result: Record<string, GeoManifestEntry> = {};
+      for (const [code, value] of Object.entries(raw)) {
+        if (!/^[A-Z]{2}$/.test(code) || !validateEntry(value, code)) continue;
+        result[code] = value;
+        manifestCache.set(code, value);
+      }
+      return result;
+    } catch {
+      return null;
+    } finally {
+      if (refresh) manifestPromise = null;
+    }
+  })();
+  return manifestPromise;
+}
+
+/** Synchronous lookup only for entries already downloaded from the API. */
 export function getManifestEntry(code: string): GeoManifestEntry | undefined {
-  return MANIFEST[code.toUpperCase()];
+  return manifestCache.get(code.toUpperCase());
 }
 
-/** A bundled state's GeoJSON is required directly (no network). */
-export function isBundledState(code: string): boolean {
-  return getManifestEntry(code)?.bundled === true;
-}
-
-/** Whether the app knows about boundary data for this state at all. */
+/** Manifest availability is explicit; unknown/offline is not treated as geometry. */
 export function hasStateGeoJSON(code: string): boolean {
-  return getManifestEntry(code) !== undefined;
+  return manifestCache.has(code.toUpperCase());
 }
 
-/** All state codes the app can render boundaries for. */
+export function isBundledState(code: string): boolean {
+  return code.toUpperCase() === 'IN';
+}
+
 export function getStatesWithGeoJSON(): string[] {
-  return Object.keys(MANIFEST);
+  return [...manifestCache.keys()];
 }
