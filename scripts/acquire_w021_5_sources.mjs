@@ -282,7 +282,7 @@ for (const index of indexSources) {
       if (!hostAllowed(absolute)) continue;
       const pathLower = new URL(absolute).pathname.toLowerCase();
       const labelLower = label.toLowerCase();
-      const isDataFile = /\.(pdf|xlsx?|csv|zip|geojson|shp)(?:$|\?)/i.test(absolute);
+      const isDataFile = /\.(pdf|xlsx?|csv|zip|rar|7z|geojson|shp|gpkg|kml|kmz)(?:$|\?)/i.test(absolute);
       const isRelevantLabel = /(form\s*20|statistical report|assembly election|election results|primary census abstract|pca|administrative boundary|vector data)/i.test(labelLower);
       if (!(isDataFile || isRelevantLabel)) continue;
       if (discovered.size < 40) {
