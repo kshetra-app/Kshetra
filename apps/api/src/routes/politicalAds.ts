@@ -130,13 +130,13 @@ export const politicalAdsRoutes: FastifyPluginAsync = async (app) => {
       }
     }
 
-    if (!userId && process.env.NODE_ENV !== 'production' && (request.headers['x-user-id'] as string)) {
+    if (!userId && process.env.NODE_ENV === 'test' && (request.headers['x-user-id'] as string)) {
       userId = request.headers['x-user-id'] as string;
     }
 
     if (!userId) return null;
 
-    if (process.env.NODE_ENV !== 'production' && (request.headers['x-user-role'] as string)) {
+    if (process.env.NODE_ENV === 'test' && (request.headers['x-user-role'] as string)) {
       return { userId, role: request.headers['x-user-role'] as string };
     }
 
@@ -193,7 +193,7 @@ export const politicalAdsRoutes: FastifyPluginAsync = async (app) => {
           .maybeSingle();
 
         if (pageErr || !page) {
-          if (process.env.NODE_ENV !== 'production') {
+          if (process.env.NODE_ENV === 'test') {
             const newAd: PoliticalAdRow = {
               id: `pad-${Date.now()}`,
               page_id: pageId,
@@ -235,7 +235,7 @@ export const politicalAdsRoutes: FastifyPluginAsync = async (app) => {
           .single();
 
         if (insertErr || !newAd) {
-          if (process.env.NODE_ENV !== 'production') {
+          if (process.env.NODE_ENV === 'test') {
             const fallbackAd: PoliticalAdRow = {
               id: `pad-${Date.now()}`,
               page_id: pageId,
@@ -258,7 +258,7 @@ export const politicalAdsRoutes: FastifyPluginAsync = async (app) => {
 
         return reply.status(201).send({ success: true, ad: newAd });
       } catch (err: any) {
-        if (process.env.NODE_ENV !== 'production') {
+        if (process.env.NODE_ENV === 'test') {
           const fallbackAd: PoliticalAdRow = {
             id: `pad-${Date.now()}`,
             page_id: pageId,
@@ -396,7 +396,7 @@ export const politicalAdsRoutes: FastifyPluginAsync = async (app) => {
           .single();
 
         if (error || !updated) {
-          if (process.env.NODE_ENV !== 'production') {
+          if (process.env.NODE_ENV === 'test') {
             const target = MEMORY_ADS.find((a) => a.id === adId);
             if (target) {
               target.status = newStatus;
@@ -420,7 +420,7 @@ export const politicalAdsRoutes: FastifyPluginAsync = async (app) => {
           message: `Political ad ${action === 'certify' ? 'certified and activated' : 'rejected'} by reviewer ${auth.userId}`,
         });
       } catch (err: any) {
-        if (process.env.NODE_ENV !== 'production') {
+        if (process.env.NODE_ENV === 'test') {
           const target = MEMORY_ADS.find((a) => a.id === adId);
           if (target) {
             target.status = newStatus;
