@@ -32,6 +32,15 @@ jobs:
       - name: Verify Governance Consistency
         run: node tests/governance-consistency.test.mjs
 
+      - name: Enforce Authorization Against Actual Commit Range
+        run: node scripts/verify-implementation-authorization.mjs
+
+      - name: Verify Authorization Gate Negative and Positive Paths
+        run: node tests/governance-authorization-gate.test.mjs
+
+      - name: Verify W022 Plan/Directive/Register Concordance
+        run: node tests/w022-governance-concordance.test.mjs
+
       - name: Verify Commit Freshness & Lineage
         run: node tests/commit-freshness.test.mjs
 

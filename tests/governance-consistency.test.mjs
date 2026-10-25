@@ -161,12 +161,37 @@ try {
   assert.fail(`origin/master could not be resolved: ${err.message}`);
 }
 
-// Local HEAD must strictly match origin/master (fail-closed, no exceptions)
-assert.strictEqual(
-  localHead,
-  originMaster,
-  `Local HEAD (${localHead}) must strictly match origin/master (${originMaster})`
-);
+// Verify checked-out commit lineage for the actual GitHub event.
+// A pull_request workflow checks out a synthetic merge commit; comparing that
+// commit directly with origin/master is incorrect. Validate the PR base/head
+// coordinates and require both to be present in the checked-out object graph.
+const githubEventName = process.env.GITHUB_EVENT_NAME || '';
+const githubEventPath = process.env.GITHUB_EVENT_PATH;
+let pullRequestEvent = null;
+if ((githubEventName === 'pull_request' || githubEventName === 'pull_request_target') &&
+    githubEventPath && fs.existsSync(githubEventPath)) {
+  pullRequestEvent = JSON.parse(fs.readFileSync(githubEventPath, 'utf8'));
+}
+if (pullRequestEvent) {
+  const prBaseSha = pullRequestEvent.pull_request?.base?.sha;
+  const prHeadSha = pullRequestEvent.pull_request?.head?.sha;
+  assert.ok(prBaseSha && prHeadSha, 'PR event must provide base/head SHAs');
+  assert.strictEqual(prBaseSha, originMaster, 'PR base must match fetched origin/master');
+  for (const [label, sha] of [['PR base', prBaseSha], ['PR head', prHeadSha]]) {
+    const resolved = execSync(`git rev-parse --verify "${sha}^{commit}"`, { encoding: 'utf8' }).trim();
+    assert.strictEqual(resolved, sha, `${label} SHA must resolve exactly in checked-out Git history`);
+  }
+  execSync(`git merge-base --is-ancestor "${prBaseSha}" "${localHead}"`, { stdio: 'ignore' });
+  execSync(`git merge-base --is-ancestor "${prHeadSha}" "${localHead}"`, { stdio: 'ignore' });
+  console.log(`[PASS] PR lineage: base ${prBaseSha}, head ${prHeadSha}, checkout ${localHead}`);
+} else {
+  // Push/branch verification retains the strict equality invariant.
+  assert.strictEqual(
+    localHead,
+    originMaster,
+    `Local HEAD (${localHead}) must strictly match origin/master (${originMaster}) outside PR events`
+  );
+}
 
 // Working tree must be completely clean (fail-closed, no exceptions)
 const porcelainStatus = execSync('git status --porcelain', { encoding: 'utf8' }).trim();
@@ -216,59 +241,76 @@ assert.strictEqual(
 
 console.log(`[PASS] Check 8: Comprehensive Git HEAD (${localHead}), origin/master (${originMaster}), clean working tree, and strict CURRENT_REMOTE_HEAD equality verified.`);
 
-// 9. Machine-Verifiable Implementation Authorization Gate & Five-Coordinate Model (Control M / DEC-043)
+// 9. Machine-verifiable implementation authorization gate (Control M / GOV-01).
 assert.ok(protocolContent.includes('CONTROL M — MACHINE-VERIFIABLE IMPLEMENTATION AUTHORIZATION GATE'), 'Protocol must document Control M');
-assert.ok(protocolContent.includes('Five-Coordinate Lifecycle Model'), 'Protocol must document Five-Coordinate Lifecycle Model');
-assert.ok(protocolContent.includes('PLANNING_COMMIT'), 'Protocol must define PLANNING_COMMIT');
-assert.ok(protocolContent.includes('IMPLEMENTATION_AUTHORIZATION_COMMIT'), 'Protocol must define IMPLEMENTATION_AUTHORIZATION_COMMIT');
-assert.ok(protocolContent.includes('IMPLEMENTATION_COMMIT'), 'Protocol must define IMPLEMENTATION_COMMIT');
-assert.ok(protocolContent.includes('VERIFICATION_COMMIT'), 'Protocol must define VERIFICATION_COMMIT');
-assert.ok(protocolContent.includes('ACCEPTANCE_COMMIT'), 'Protocol must define ACCEPTANCE_COMMIT');
-
-// Check EXECUTION_STATE.md implementation authorization fields
+assert.ok(protocolContent.includes('authorization commit is reachable from'), 'Control M must require authorization ancestry for implementation commits');
+assert.ok(fs.existsSync('PLAN-W022-REV-1.0.md'), 'The ratified W022 plan must exist');
+const w022PlanText = fs.readFileSync('PLAN-W022-REV-1.0.md', 'utf8');
+const w022DirectiveText = fs.readFileSync('CTO_DIRECTIVE_W022_IMPLEMENTATION_AUTHORIZATION_2026-10-25.md', 'utf8');
+assert.ok(w022PlanText.includes('REVISION 4 — CTO RATIFIED') && w022PlanText.includes('IMPLEMENTATION PERMITTED PROSPECTIVELY'), 'W022 plan must show ratified prospective authorization');
+assert.ok(w022DirectiveText.includes('Revision 4 (ratified prospectively'), 'W022 directive plan revision must match the ratified plan');
+assert.ok(decisionContent.includes('DEC-044: W022 Prospective Implementation Authorization'), 'DEC-044 must record W022 authorization');
 const planStatusField = extractField('PLAN_STATUS');
 const implAuthField = extractField('IMPLEMENTATION_AUTHORIZATION');
 const implAuthCommitField = extractField('IMPLEMENTATION_AUTHORIZATION_COMMIT');
-const unauthorizedImplCommitField = extractField('UNAUTHORIZED_IMPLEMENTATION_COMMIT');
+const w022HistoricalImpl = extractField('W022_EXISTING_IMPLEMENTATION_COMMIT');
+assert.ok(planStatusField && planStatusField.startsWith('APPROVED'), 'Current plan must be approved');
+assert.strictEqual(implAuthField, 'YES', 'Current scoped W022 continuation must be prospectively authorized');
+assert.match(implAuthCommitField || '', /^[0-9a-f]{40}$/, 'Authorization SHA must be full 40-hex');
+assert.ok(w022HistoricalImpl && w022HistoricalImpl.startsWith('3ac3f1c0c14d51d60bab9f9d3e88a08716466124'), 'Historical W022 implementation commit must be preserved');
+assert.ok(stateContent.includes('NOT RETROACTIVELY AUTHORIZED'), 'Historical W022 implementation must not be retroactively authorized');
+assert.ok(stateContent.includes('GOVERNANCE BREACH PRESERVED'), 'Historical W022 governance breach must be explicitly preserved');
 
-assert.ok(planStatusField, 'PLAN_STATUS must be defined in EXECUTION_STATE.md');
-assert.ok(implAuthField, 'IMPLEMENTATION_AUTHORIZATION must be defined in EXECUTION_STATE.md');
-assert.ok(implAuthCommitField, 'IMPLEMENTATION_AUTHORIZATION_COMMIT must be defined in EXECUTION_STATE.md');
-
-// Invariant: If implementation occurred or exists, either it was authorized by CTO or recorded as a breach
-if (implAuthField === 'YES') {
-  assert.strictEqual(planStatusField, 'APPROVED', 'If IMPLEMENTATION_AUTHORIZATION is YES, PLAN_STATUS must be APPROVED');
-  assert.ok(
-    implAuthCommitField && implAuthCommitField !== 'NONE',
-    'If IMPLEMENTATION_AUTHORIZATION is YES, IMPLEMENTATION_AUTHORIZATION_COMMIT must be a valid commit SHA'
-  );
+function gitResolveCommit(ref) {
   try {
-    const resolvedAuthCommit = execSync(`git rev-parse "${implAuthCommitField}"`, { encoding: 'utf8' }).trim();
-    assert.strictEqual(resolvedAuthCommit.length, 40, 'Resolved IMPLEMENTATION_AUTHORIZATION_COMMIT must be 40 characters');
-  } catch (err) {
-    assert.fail(`IMPLEMENTATION_AUTHORIZATION_COMMIT "${implAuthCommitField}" cannot be resolved in git history: ${err.message}`);
-  }
-} else {
-  // If implementation was NOT authorized, any existing implementation commit must be recorded as UNAUTHORIZED / GOVERNANCE BREACH
-  if (unauthorizedImplCommitField) {
-    assert.ok(
-      implAuthCommitField.includes('GOVERNANCE BREACH') || implAuthCommitField === 'NONE',
-      'Unauthorized implementation must be honestly flagged in IMPLEMENTATION_AUTHORIZATION_COMMIT'
-    );
-    assert.ok(
-      stateContent.includes('REJECTED') || stateContent.includes('GOVERNANCE RECONCILIATION REQUIRED'),
-      'Unauthorized implementation job must have REJECTED / GOVERNANCE RECONCILIATION REQUIRED status'
-    );
-    const resolvedUnauthorized = execSync(`git rev-parse "${unauthorizedImplCommitField}"`, { encoding: 'utf8' }).trim();
-    assert.strictEqual(resolvedUnauthorized.length, 40, 'Resolved UNAUTHORIZED_IMPLEMENTATION_COMMIT must be 40 characters');
+    return execSync('git rev-parse --verify "' + ref + '^{commit}"', { encoding: 'utf8', stdio: ['ignore','pipe','pipe'] }).trim();
+  } catch {
+    return null;
   }
 }
+function isAncestor(ancestor, descendant) {
+  try {
+    execSync('git merge-base --is-ancestor "' + ancestor + '" "' + descendant + '"', { stdio: 'ignore' });
+    return true;
+  } catch { return false; }
+}
+function validateImplementationAuthorization(input) {
+  if (input.planStatus !== 'APPROVED') throw new Error('AUTHORIZATION_REJECTED: plan not approved');
+  if (input.implementationAuthorization !== 'YES') throw new Error('AUTHORIZATION_REJECTED: implementation not authorized');
+  if (!/^[0-9a-f]{40}$/.test(input.authorizationCommit || '')) throw new Error('AUTHORIZATION_REJECTED: malformed authorization SHA');
+  const resolved = gitResolveCommit(input.authorizationCommit);
+  if (!resolved || resolved !== input.authorizationCommit) throw new Error('AUTHORIZATION_REJECTED: authorization commit missing or non-canonical');
+  if (input.decisionLogMissing) throw new Error('AUTHORIZATION_REJECTED: explicit decision record missing');
+  if (!input.planRatified) throw new Error('AUTHORIZATION_REJECTED: plan is not ratified');
+  if (!Array.isArray(input.changedFiles) || input.changedFiles.some(f => !input.approvedFiles.includes(f))) {
+    throw new Error('AUTHORIZATION_REJECTED: changed files exceed approved scope');
+  }
+  if (!isAncestor(resolved, input.implementationCommit)) {
+    throw new Error('AUTHORIZATION_REJECTED: authorization is not an ancestor of implementation commit');
+  }
+  return true;
+}
+const authCommitResolved = gitResolveCommit(implAuthCommitField);
+assert.ok(authCommitResolved, 'Authorization commit must resolve in the current Git object database');
+assert.ok(decisionContent.includes(implAuthCommitField), 'Authorization commit must be recorded in DECISION_LOG.md');
+assert.ok(w022DirectiveText.includes('project owner explicitly directs') && w022DirectiveText.includes('authorizes prospective W022 implementation'), 'Authorization directive must explicitly grant prospective implementation');
+assert.ok(isAncestor(authCommitResolved, 'HEAD'), 'W022 authorization commit must be ancestor of current HEAD for new scoped work');
+assert.ok(!isAncestor(authCommitResolved, w022HistoricalImpl.split(/\s/)[0]), 'W022 historical implementation must remain before and outside prospective authorization');
 
-// DEC-042 and DEC-043 semantic recording
-assert.ok(decisionContent.includes('DEC-042'), 'DECISION_LOG.md must record DEC-042');
-assert.ok(decisionContent.includes('DEC-043: W008 CTO REJECTION, GOVERNANCE BREACH RECORDING'), 'DECISION_LOG.md must record DEC-043');
-
-console.log('[PASS] Check 9: Machine-Verifiable Implementation Authorization Gate, Five-Coordinate Model, and fail-closed authorization checks verified.');
+// Positive and negative synthetic policy checks with Git ancestry exercised.
+const approvedFiles = ['apps/api/src/routes/saasV1.ts', 'apps/api/src/modules/webhooks/webhookDispatcher.ts', 'supabase/migrations/070_saas_webhook_engine.sql'];
+const goodAuthorization = { planStatus:'APPROVED', implementationAuthorization:'YES', authorizationCommit:implAuthCommitField, implementationCommit:'HEAD', decisionLogMissing:false, planRatified:true, changedFiles:[approvedFiles[0]], approvedFiles };
+assert.strictEqual(validateImplementationAuthorization(goodAuthorization), true, 'A descendant in-scope implementation must pass');
+assert.throws(() => validateImplementationAuthorization({...goodAuthorization, implementationAuthorization:'NO'}), /implementation not authorized/);
+assert.throws(() => validateImplementationAuthorization({...goodAuthorization, planStatus:'PLANNING ONLY'}), /plan not approved/);
+assert.throws(() => validateImplementationAuthorization({...goodAuthorization, authorizationCommit:'not-a-sha'}), /malformed authorization SHA/);
+assert.throws(() => validateImplementationAuthorization({...goodAuthorization, authorizationCommit:'f'.repeat(40)}), /missing or non-canonical/);
+assert.throws(() => validateImplementationAuthorization({...goodAuthorization, authorizationCommit:'3ac3f1c0c14d51d60bab9f9d3e88a08716466124', implementationCommit:'3ac3f1c0c14d51d60bab9f9d3e88a08716466124'}), /not an ancestor of implementation commit/);
+assert.throws(() => validateImplementationAuthorization({...goodAuthorization, decisionLogMissing:true}), /decision record missing/);
+assert.throws(() => validateImplementationAuthorization({...goodAuthorization, planRatified:false}), /not ratified/);
+assert.throws(() => validateImplementationAuthorization({...goodAuthorization, changedFiles:['apps/mobile/app/index.tsx']}), /exceed approved scope/);
+assert.throws(() => validateImplementationAuthorization({...goodAuthorization, changedFiles:[]}), /ancestor of implementation commit/);
+console.log('[PASS] GOV-01 authorization gate: valid prospective authorization accepted; missing, malformed, mismatched, non-ancestor, planning-only and out-of-scope cases rejected.');
 
 // 10. Amendment v1.6 Structural Architecture & Control Register Verification (STRUCTURAL ONLY)
 // Note: Check 10 proves structural text presence. Full semantic enforcement is proven by tests/governance-v16.test.mjs.
