@@ -59,7 +59,6 @@ import { useFavoritesStore } from '../../stores/favorites';
 import { useMyConstituencyStore } from '../../stores/myConstituency';
 import { useStateScopedMapData } from '../../lib/useStateScopedMapData';
 import { selectFreshTrivia } from '../../lib/triviaSelector';
-import { computeAllSeatAllocations } from '../../lib/delimitation/seatCalculator';
 import { styles } from '../../lib/mapScreenStyles';
 import MapTimeSlider from '../../components/MapTimeSlider';
 import { tapLight, selectionChanged } from '../../lib/haptics';
@@ -70,7 +69,7 @@ import {
   getLocalizedReservation,
   getLocalizedConstituencyName,
 } from '../../lib/stateTranslations';
-import { getBoothsForConstituency, hasHierarchyData, hasBoothData } from '../../lib/hierarchyData';
+import { useStateScopedBooths } from '../../lib/stateScopedBooths';
 
 interface SelectedConstituency {
   acNo: number;
@@ -185,7 +184,8 @@ function FullMapScreen() {
   const stateCode = useActiveStateStore((s) => s.stateCode);
   const setStateCode = useActiveStateStore((s) => s.setStateCode);
   const stateMapDataState = useStateScopedMapData(stateCode);
-  const hasLocalBodyData = stateMapDataState.data?.stateCode === stateCode && stateMapDataState.data.hasLocalBodyData;
+  const currentStateMapData = stateMapDataState.data?.stateCode === stateCode ? stateMapDataState.data : null;
+  const hasLocalBodyData = currentStateMapData?.hasLocalBodyData ?? false;
   const mapOnlyMode = useActiveStateStore((s) => s.mapOnlyMode);
   const broadcastMode = usePreferencesStore((s) => s.broadcastMode);
   const currentState = STATES[stateCode];
@@ -212,12 +212,8 @@ function FullMapScreen() {
   const [selectedBooth, setSelectedBooth] = useState<any | null>(null);
   const [hideOverlays, setHideOverlays] = useState(false);
 
-  /** Delimitation seat projections (computed once) */
-  const delimitationProjections = useMemo(() => computeAllSeatAllocations(), []);
-  const stateProjection = useMemo(
-    () => delimitationProjections.find((p) => p.stateCode === stateCode),
-    [delimitationProjections, stateCode],
-  );
+  /** Projection is part of the verified state-scoped API snapshot. */
+  const stateProjection = currentStateMapData?.seatProjection ?? null;
 
   /**
    * District-level seat density for delimitation overlay.
@@ -228,14 +224,11 @@ function FullMapScreen() {
    * while seed data uses current 33. This map resolves that.
    */
   const districtDensityMap = useMemo(
-    () => computeDistrictDensityMap(stateCode, !!stateProjection),
-    [stateCode, stateProjection],
+    () => computeDistrictDensityMap(stateCode, !!stateProjection, currentStateMapData),
+    [stateCode, stateProjection, currentStateMapData],
   );
 
-  /** Load only the selected state's versioned metadata. */
-  const currentStateMapData = stateMapDataState.data?.stateCode === stateCode
-    ? stateMapDataState.data
-    : null;
+  /** State metadata is fetched and cached by useStateScopedMapData above. */
   const availableYears = currentStateMapData?.availableYears ?? [];
   const stateConstituencies = useMemo(
     () => currentStateMapData?.constituencies ?? [],
@@ -473,6 +466,12 @@ function FullMapScreen() {
   );
 
   const BOOTH_ZOOM_THRESHOLD = 12.5;
+  const selectedBoothAvailability = selected ? currentStateMapData?.hierarchyByAcNo[String(selected.acNo)] : undefined;
+  const boothSnapshot = useStateScopedBooths(
+    stateCode,
+    selected?.acNo ?? null,
+    Boolean(selected && currentZoom >= BOOTH_ZOOM_THRESHOLD && selectedBoothAvailability?.hasBoothData),
+  );
 
   const handleRegionDidChange = useCallback((event: any) => {
     const zoom = event.properties?.zoomLevel;
@@ -497,51 +496,14 @@ function FullMapScreen() {
 
   const boothGeoJSON = useMemo(() => {
     if (!selected || currentZoom < BOOTH_ZOOM_THRESHOLD) return null;
-    const booths = getBoothsForConstituency(stateCode, selected.acNo);
-    if (!booths || booths.length === 0) return null;
+    const booths = boothSnapshot.data?.booths ?? [];
+    if (booths.length === 0) return null;
 
-    // Calculate constituency centroid if needed for booths without coordinates
-    let constituencyCenter: [number, number] | null = null;
-    const hasMissingLocation = booths.some(
-      (b) => !b.location || typeof b.location.latitude !== 'number' || typeof b.location.longitude !== 'number'
-    );
-    if (hasMissingLocation && activeGeoJSON) {
-      const feature = activeGeoJSON.features.find((f: any) => Number(f.properties?.AC_NO) === selected.acNo);
-      if (feature && feature.geometry) {
-        let sumLng = 0;
-        let sumLat = 0;
-        let count = 0;
-        const processCoords = (coords: any) => {
-          if (Array.isArray(coords[0])) {
-            coords.forEach(processCoords);
-          } else if (typeof coords[0] === 'number') {
-            sumLng += coords[0];
-            sumLat += coords[1];
-            count++;
-          }
-        };
-        processCoords(feature.geometry.coordinates);
-        if (count > 0) {
-          constituencyCenter = [sumLng / count, sumLat / count];
-        }
-      }
-    }
-
+    // Only authoritative coordinates are plotted; missing locations are omitted.
     const features = booths
       .map((b) => {
-        let coords: [number, number] | null = null;
-        if (b.location && typeof b.location.latitude === 'number' && typeof b.location.longitude === 'number') {
-          coords = [b.location.longitude, b.location.latitude];
-        } else if (constituencyCenter) {
-          const angle = (b.boothNumber * 137.5) * (Math.PI / 180);
-          const radius = 0.003 + (b.boothNumber * 0.0001); // ~300m to 1km spread
-          coords = [
-            constituencyCenter[0] + radius * Math.cos(angle),
-            constituencyCenter[1] + radius * Math.sin(angle)
-          ];
-        }
-
-        if (!coords) return null;
+        if (!b.location || typeof b.location.latitude !== 'number' || typeof b.location.longitude !== 'number') return null;
+        const coords: [number, number] = [b.location.longitude, b.location.latitude];
 
         return {
           type: 'Feature' as const,
@@ -572,16 +534,10 @@ function FullMapScreen() {
       type: 'FeatureCollection' as const,
       features,
     };
-  }, [selected, currentZoom, stateCode, activeGeoJSON]);
+  }, [selected, currentZoom, boothSnapshot.data]);
 
-  /** Whether the selected constituency has any booth data to plot — either the
-   *  richer official pilot seed or the real 2017-ECI historical locations
-   *  (TS + AP). Gates the "Show booths" affordance so we never invite the user
-   *  to zoom in on a constituency that has no booth data to reveal. */
-  const selectedHasBoothData = useMemo(
-    () => (selected ? hasBoothData(stateCode, selected.acNo) : false),
-    [selected, stateCode],
-  );
+  /** Only show the booth affordance when the server confirmed data for this AC. */
+  const selectedHasBoothData = Boolean(selectedBoothAvailability?.hasBoothData);
 
   /** Compute the centroid [lng, lat] of a constituency polygon from activeGeoJSON. */
   const getConstituencyCentroid = useCallback(
@@ -2270,7 +2226,7 @@ function FullMapScreen() {
                 })()}
 
                 {/* Explore Hierarchy trigger */}
-                {!mapOnlyMode && hasHierarchyData(stateCode, selected.acNo) && (
+                {!mapOnlyMode && currentStateMapData?.hierarchyByAcNo[String(selected.acNo)]?.hasHierarchyData && (
                   <Pressable
                     style={[styles.sheetCompareButton, { borderColor: '#4F8EF750', backgroundColor: '#4F8EF715', marginBottom: 10 }]}
                     onPress={() => {
