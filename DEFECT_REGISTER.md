@@ -8,9 +8,7 @@
 - **Current control:** W022 continuation is permitted prospectively under Revision 4. Production remains air-gapped; staging DB execution requires a separate explicit token.
 - **Closure criteria:** (1) authorization and registers reconcile; (2) governance CI proves missing/mismatched/non-ancestor authorization fails closed; (3) fresh W022 technical/security tests pass; (4) independent verification passes; (5) no unauthorized environment execution occurred.
 
-**Prior register timestamp retained in history; current update date: 2026-10-25.**
-
-## Historical entries23
+## Existing Defect Register
 **Classification:** P0 (Production Blocker), P1 (Major / Architectural), P2 (Moderate / Debt), P3 (Minor / Polish)
 
 ---
