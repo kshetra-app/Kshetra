@@ -11,6 +11,8 @@ import {
 import {
   getDemographicsForState,
   getHistoryForState,
+  getMLAProfileForState,
+  isStrongholdForState,
 } from '../../../mobile/lib/stateDataDispatcher';
 import type { ConstituencyBrief } from '@kshetra/shared';
 import { findConstituencyAtPoint, computeElectionAnalytics } from '@kshetra/shared';
@@ -434,6 +436,8 @@ export async function constituencyRoutes(app: FastifyInstance) {
     const triviaByAcNo: Record<string, unknown[]> = {};
     const historyByAcNo: Record<string, unknown[]> = {};
     const demographicsByAcNo: Record<string, unknown> = {};
+    const mlaProfilesByAcNo: Record<string, unknown> = {};
+    const strongholdByAcNo: Record<string, boolean> = {};
     for (const c of normalized) {
       const key = String(c.acNo);
       const trivia = getTriviaForConstituencyInState(code, c.acNo);
@@ -442,9 +446,26 @@ export async function constituencyRoutes(app: FastifyInstance) {
       if (history.length > 0) historyByAcNo[key] = history;
       const demographics = getDemographicsForState(code, c.acNo);
       if (demographics) demographicsByAcNo[key] = demographics;
+      const profile = getMLAProfileForState(code, c.acNo);
+      if (profile?.name) mlaProfilesByAcNo[key] = profile;
+      if (history.length > 0 && c.winnerParty) strongholdByAcNo[key] = isStrongholdForState(code, c.acNo, c.winnerParty);
     }
 
     const info = getStateInfo(code);
+    let hasLocalBodyData = false;
+    if (isSupabaseConfigured) {
+      try {
+        const { data: representativeRows, error: representativeError } = await supabase
+          .from('representatives')
+          .select('id')
+          .eq('state_code', code)
+          .eq('is_current', true)
+          .limit(1);
+        if (!representativeError) hasLocalBodyData = Boolean(representativeRows?.length);
+      } catch {
+        // Local-body feature is disabled when the source cannot confirm availability.
+      }
+    }
     const contractCore = {
       schemaVersion: 1 as const,
       stateCode: code,
@@ -455,6 +476,9 @@ export async function constituencyRoutes(app: FastifyInstance) {
       triviaByAcNo,
       historyByAcNo,
       demographicsByAcNo,
+      mlaProfilesByAcNo,
+      strongholdByAcNo,
+      hasLocalBodyData,
     };
     const revision = createHash('sha1').update(JSON.stringify(contractCore)).digest('hex');
     const etag = `"${revision}"`;
