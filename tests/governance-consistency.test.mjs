@@ -161,12 +161,37 @@ try {
   assert.fail(`origin/master could not be resolved: ${err.message}`);
 }
 
-// Local HEAD must strictly match origin/master (fail-closed, no exceptions)
-assert.strictEqual(
-  localHead,
-  originMaster,
-  `Local HEAD (${localHead}) must strictly match origin/master (${originMaster})`
-);
+// Verify checked-out commit lineage for the actual GitHub event.
+// A pull_request workflow checks out a synthetic merge commit; comparing that
+// commit directly with origin/master is incorrect. Validate the PR base/head
+// coordinates and require both to be present in the checked-out object graph.
+const githubEventName = process.env.GITHUB_EVENT_NAME || '';
+const githubEventPath = process.env.GITHUB_EVENT_PATH;
+let pullRequestEvent = null;
+if ((githubEventName === 'pull_request' || githubEventName === 'pull_request_target') &&
+    githubEventPath && fs.existsSync(githubEventPath)) {
+  pullRequestEvent = JSON.parse(fs.readFileSync(githubEventPath, 'utf8'));
+}
+if (pullRequestEvent) {
+  const prBaseSha = pullRequestEvent.pull_request?.base?.sha;
+  const prHeadSha = pullRequestEvent.pull_request?.head?.sha;
+  assert.ok(prBaseSha && prHeadSha, 'PR event must provide base/head SHAs');
+  assert.strictEqual(prBaseSha, originMaster, 'PR base must match fetched origin/master');
+  for (const [label, sha] of [['PR base', prBaseSha], ['PR head', prHeadSha]]) {
+    const resolved = execSync(`git rev-parse --verify "${sha}^{commit}"`, { encoding: 'utf8' }).trim();
+    assert.strictEqual(resolved, sha, `${label} SHA must resolve exactly in checked-out Git history`);
+  }
+  execSync(`git merge-base --is-ancestor "${prBaseSha}" "${localHead}"`, { stdio: 'ignore' });
+  execSync(`git merge-base --is-ancestor "${prHeadSha}" "${localHead}"`, { stdio: 'ignore' });
+  console.log(`[PASS] PR lineage: base ${prBaseSha}, head ${prHeadSha}, checkout ${localHead}`);
+} else {
+  // Push/branch verification retains the strict equality invariant.
+  assert.strictEqual(
+    localHead,
+    originMaster,
+    `Local HEAD (${localHead}) must strictly match origin/master (${originMaster}) outside PR events`
+  );
+}
 
 // Working tree must be completely clean (fail-closed, no exceptions)
 const porcelainStatus = execSync('git status --porcelain', { encoding: 'utf8' }).trim();
@@ -273,7 +298,7 @@ assert.ok(isAncestor(authCommitResolved, 'HEAD'), 'W022 authorization commit mus
 assert.ok(!isAncestor(authCommitResolved, w022HistoricalImpl.split(/\s/)[0]), 'W022 historical implementation must remain before and outside prospective authorization');
 
 // Positive and negative synthetic policy checks with Git ancestry exercised.
-const approvedFiles = ['apps/api/src/routes/saasV1.ts', 'apps/api/src/services/webhookDispatcher.ts', 'supabase/migrations/070_w022_webhook_dispatch.sql'];
+const approvedFiles = ['apps/api/src/routes/saasV1.ts', 'apps/api/src/modules/webhooks/webhookDispatcher.ts', 'supabase/migrations/070_saas_webhook_engine.sql'];
 const goodAuthorization = { planStatus:'APPROVED', implementationAuthorization:'YES', authorizationCommit:implAuthCommitField, implementationCommit:'HEAD', decisionLogMissing:false, planRatified:true, changedFiles:[approvedFiles[0]], approvedFiles };
 assert.strictEqual(validateImplementationAuthorization(goodAuthorization), true, 'A descendant in-scope implementation must pass');
 assert.throws(() => validateImplementationAuthorization({...goodAuthorization, implementationAuthorization:'NO'}), /implementation not authorized/);
