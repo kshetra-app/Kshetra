@@ -91,6 +91,24 @@ try {
     }
     if (!declared.version || declared.version !== stored.version) fail(`${code} manifest version missing or inconsistent`);
     const actualConstituencies = db.prepare('SELECT count(*) AS n FROM constituencies WHERE state_code=?').get(code).n;
+    const actualMla = db.prepare('SELECT count(*) AS n FROM mla_profiles WHERE state_code=?').get(code).n;
+    const actualDemographics = db.prepare('SELECT count(*) AS n FROM demographics WHERE state_code=?').get(code).n;
+    const actualHistory = db.prepare('SELECT count(*) AS n FROM historical_results WHERE state_code=?').get(code).n;
+    const actualTimeline = db.prepare('SELECT count(*) AS n FROM political_timeline WHERE state_code=?').get(code).n;
+    const actualElectionHistory = db.prepare('SELECT count(*) AS n FROM election_history WHERE state_code=?').get(code).n;
+    if (!declared.version || !/^[a-f0-9]{16}$/.test(declared.version)) fail(`${code} state version is missing or invalid`);
+    const expectedStateVersion = crypto.createHash('sha256').update(JSON.stringify({
+      state_code: code,
+      counts: {
+        constituencies: actualConstituencies,
+        mla_profiles: actualMla,
+        demographics: actualDemographics,
+        historical_results: actualHistory,
+        political_timeline: actualTimeline,
+        election_history: actualElectionHistory,
+      },
+    })).digest('hex').slice(0, 16);
+    if (declared.version !== expectedStateVersion) fail(`${code} manifest version does not match actual row counts`);
     if (actualConstituencies <= 0) fail(`${code} has zero constituencies; every supported jurisdiction needs real seed rows`);
     if (Number(declared.constituency_count) !== actualConstituencies) fail(`${code} constituency count does not match database (${declared.constituency_count} vs ${actualConstituencies})`);
     for (const [table, flag] of TABLE_FLAGS) {
