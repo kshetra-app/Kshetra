@@ -7,6 +7,12 @@ on:
     paths:
       - "scripts/w0215_acquire_stage_b_geometry.py"
       - ".github/workflows/w0215-stage-b-source-acquisition.yml"
+  pull_request:
+    branches:
+      - master
+    paths:
+      - "scripts/w0215_acquire_stage_b_geometry.py"
+      - ".github/workflows/w0215-stage-b-source-acquisition.yml"
   workflow_dispatch:
 
 permissions:
