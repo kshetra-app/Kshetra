@@ -70,7 +70,7 @@
     "geometriesNearIdenticalWithin0_01m2": 112,
     "relativeSymmetricDifferenceBelow1eMinus8": 113,
     "featuresWithSymmetricDifferenceAbove0_01m2": 7,
-    "largestSymmetricDifferenceAreaM2": 1260606.0718752474,
+    "largestSymmetricDifferenceAreaM2": 3988349.5621025166,
     "largestHausdorffDistanceM": 3042.0718885005717,
     "materiallyDifferingFeatures": [
       {
@@ -108,12 +108,6 @@
         "symmetricDifferenceAreaM2": 717292.9604252592,
         "relativeSymmetricDifference": 0.0002926425540244103,
         "hausdorffDistanceM": 769.4854591774312
-      },
-      {
-        "name": "Sirpur",
-        "symmetricDifferenceAreaM2": 0.028517095153477272,
-        "relativeSymmetricDifference": 1.380683340897272e-11,
-        "hausdorffDistanceM": 0.00009938467893928988
       }
     ],
     "topology": {
@@ -131,9 +125,19 @@
       },
       "sharedInvalidFeature": "Dornakal (ST) Assembly; same self-intersection location in both layers.",
       "coverageAgainstAuthoritativeStateBoundary": "NOT CHECKED"
-    }
+    },
+    "featuresWithRelativeSymmetricDifferenceAbove1eMinus8": 6,
+    "negligibleDifferences": [
+      {
+        "name": "Sirpur",
+        "symmetricDifferenceAreaM2": 0.028517095153477272,
+        "relativeSymmetricDifference": 1.380683340897272e-11,
+        "hausdorffDistanceM": 0.00009938467893928988,
+        "interpretation": "Sub-millimetre precision difference; not treated as a material boundary shift."
+      }
+    ]
   },
-  "decision": "The two official-state-GIS service layers are not interchangeable. The 2026-named layer differs materially from the older layer in at least six constituencies (and seven above the 0.01 m² threshold), with maximum Hausdorff distance about 3.04 km. Neither may be selected as canonical until the data owner/effective date is established, AC numbers are crosswalked to the legally effective ECI roster/order, and the discrepant boundaries are adjudicated. Both share one invalid Dornakal polygon.",
+  "decision": "The three EndowmentLands service variants form one geometry family (Admin_New and Admin_2026 are byte-identical; Admin_Old differs only by sub-millimetre coordinate precision). The older AdministrativeInfoSystem layer is the outlier, with six material constituency geometry shifts relative to the new family. Prefer the new-family data as the leading Telangana candidate for statutory crosswalk and boundary validation, but do not mark it canonical until the ECI Schedule III/State Reorganisation effective-date chain, all-119 AC-number mapping, Dornakal repair, and authoritative state-boundary coverage tests pass.",
   "requiredNextActions": [
     "Obtain service owner confirmation of which layer represents legally effective boundaries and its effective date.",
     "Crosswalk all 119 names to official ECI statutory AC numbers and the applicable delimitation order/State reorganisation instruments.",
@@ -200,5 +204,44 @@
       "statutoryExtent": "Cherial, Maddur, Bachannapet, Narmetta and Jangaon mandals."
     }
   ],
-  "legalCrosswalkStatus": "PARTIAL_FOR_NINE_DISCREPANCY/DEFECT_NAMES; FULL_119_NAME/NUMBER/EXTENT_CROSSWALK_AND_EFFECTIVE_DATE_CHAIN_REMAIN_OPEN"
+  "legalCrosswalkStatus": "PARTIAL_FOR_NINE_DISCREPANCY/DEFECT_NAMES; FULL_119_NAME/NUMBER/EXTENT_CROSSWALK_AND_EFFECTIVE_DATE_CHAIN_REMAIN_OPEN",
+  "layerFamilyAnalysis": {
+    "newerFamily": [
+      {
+        "service": "EndowmentLands_Admin_2026/MapServer/12",
+        "bytes": 12463409,
+        "sha256": "ca8cfdc695366d9f04ee6a9fdbf9c52eeefe61d69bc79c9d26d15baa7b84aa03"
+      },
+      {
+        "service": "Endowment_Lands_Admin_New/MapServer/12",
+        "bytes": 12463409,
+        "sha256": "ca8cfdc695366d9f04ee6a9fdbf9c52eeefe61d69bc79c9d26d15baa7b84aa03",
+        "rawPayloadIdenticalTo": "EndowmentLands_Admin_2026/MapServer/12"
+      },
+      {
+        "service": "Endowment_Lands_Old/MapServer/13",
+        "bytes": 12461961,
+        "sha256": "6e33ebf7eba139a0f754e5b56f3e3bc155ab2d9b6c9e571b03dc57e77e418b4c",
+        "rawPayloadDifferent": true,
+        "geometryDifferenceFromNewFamily": "Vertex deltas max 6.524222738930257e-10 degrees (~sub-millimetre); same 119 names and ring vertex counts; no material boundary shift identified."
+      }
+    ],
+    "outlier": "AdministrativeInfoSystem_Folder/Administrative_Information_System/MapServer/24",
+    "outlierVsNewFamily": {
+      "matchedNames": 118,
+      "unmatchedNameVariants": [
+        "Jangaon/Jangoan"
+      ],
+      "sixMaterialBoundaryDifferences": [
+        "Warangal West",
+        "Warangal East",
+        "Ibrahimpatnam",
+        "Munugode",
+        "Peddapalle",
+        "Manthani"
+      ],
+      "oneNegligiblePrecisionDifference": "Sirpur"
+    },
+    "adminOldUnionNote": "Admin_Old's union reports two parts because the Bhadrachalam (ST) detached ring does not merge under its lower coordinate precision; the same ring exists in the other layers. Treat this as a precision/topology artifact pending normalization, not evidence of a different statutory boundary."
+  }
 }
