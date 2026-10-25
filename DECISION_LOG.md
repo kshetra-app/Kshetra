@@ -3658,7 +3658,7 @@
      - Preserved open Mizoram defect `DQ-W021.5-B2.2E-001` strictly open pending independent adjudication.
      - Formal CTO acceptance strictly maintained at `0.0% — PENDING INDEPENDENT ADJUDICATION` under Rule IV-001 Non-Self-Acceptance.
      - Air-gap controls maintained: Production `ehfafcnimmjusyvplbah` strictly 0 queries, 0 mutations; Staging `fkpigozcqnmcvofuksar` strictly 0 queries, 0 mutations.
-     - Final milestone disposition: `REPOSITORY_IMPLEMENTATION_COMPLETE_PENDING_EXTERNAL_GATES`.
+- Final milestone disposition: `REPOSITORY_IMPLEMENTATION_COMPLETE_PENDING_EXTERNAL_GATES`.
 
 
 ---
@@ -3674,3 +3674,38 @@
 - **Boundaries:** Production remains strictly air-gapped. Staging database execution and deployment require a separate explicit execution token. No production release is authorized.
 - **Acceptance:** W022 remains unaccepted until fresh, commit-bound evidence and independent verification pass. Implementation permission, plan ratification, verification, and final acceptance are separate lifecycle states.
 - **Governance requirement:** The authorization gate must reject future product implementation changes without a valid ratified plan and a verifiable authorization commit that is an ancestor of the implementation commit.
+
+---
+
+- Final milestone disposition: `REPOSITORY_IMPLEMENTATION_COMPLETE_PENDING_EXTERNAL_GATES`.
+
+---
+
+### DEC-154: JOB 023 — DELIMITATION WATCH ENGINE ARCHITECTURE, 8-STAGE LIFECYCLE, AND CANONICAL INTEGRATION
+- **Date:** 2026-10-25
+- **Status:** IMPLEMENTATION COMPLETE / SUBMITTED FOR INDEPENDENT CTO ADJUDICATION
+- **Authority:** CTO Implementation Directive — JOB 023: DELIMITATION WATCH / Rule IV-001 Non-Self-Acceptance
+- **Context:** Implementation of production-grade Delimitation Watch capability detecting and processing delimitation changes through the exact 8-stage ordered lifecycle: `SOURCE → CAPTURE → NORMALIZE → VALIDATE → COMPARE → VERSION → NOTIFY → PUBLISH`.
+  1. **Stage 1 (Source Registration & Capture):**
+     - Canonical source registry with enabled/disabled toggles, health metrics, and failure handling.
+     - Capture adapters (`http_get`, `file_fixture`, `mock_api`) preserving raw immutable snapshots, content-type, timestamps, ETag/validators, and SHA-256 cryptographic digests. Unchanged sources (matching ETag or SHA-256) short-circuit without redownload.
+     - Strict SSRF protection rejecting internal IP ranges (RFC 1918, RFC 3927, loopback, multicast, link-local metadata) and non-HTTP schemes.
+  2. **Stage 2 (Normalize into Canonical Records):**
+     - Parser version `v1.0.0` maps raw JSON/text into canonical `DelimitationCandidate` structures preserving original source identifiers, transformation history, and distinguishing proposed vs enacted/official changes.
+  3. **Stage 3 (Deterministic Validation Gate):**
+     - 11-point validation gate enforcing: source identity, provenance completeness, schema types, canonical geography ID validity, referential integrity, duplicate rejection, temporal boundaries, numeric invariants, baseline consistency, data status semantics (W012 invariant: official published proposals do not automatically become enacted official law), and geometry/topology checks.
+  4. **Stage 4 (Deterministic Baseline Comparison):**
+     - Reviewable, deterministic diffs against prior accepted baseline versions, classifying changes as material vs immaterial.
+  5. **Stage 5 (Immutable Versioning DAG):**
+     - Immutable versions created only upon passing validation gates. Database-level idempotency on `(source_id, content_sha256)` prevents duplicate versions from redundant triggers.
+  6. **Stage 6 (Notification Dispatch):**
+     - Multi-channel notification engine (Expo mobile push `delimitation_alert` and B2B SaaS webhooks `delimitation.version_accepted`) with deterministic deduplication keys preventing duplicate alerts.
+  7. **Stage 7 (Publication Gate):**
+     - Controlled publication updating `delimitation_publications` with unique constraint on `version_id`. Invalid or unverified versions are strictly barred from publication.
+  8. **Stage 8 (Pipeline Orchestration & Run Logging):**
+     - Orchestrator (`DelimitationWatchOrchestrator`) coordinating the complete lifecycle, supporting ad-hoc runs and historical snapshot replay, with in-flight source locking and execution run audit trails in `delimitation_watch_runs`.
+  9. **Database DDL & Constraints (Migration 071):**
+     - 9 relational tables created in `supabase/migrations/071_delimitation_watch_engine.sql` with unique constraints, foreign keys with `ON DELETE RESTRICT`, RLS enabled, and PostgreSQL 16+ compatibility.
+  10. **Automated Verification:**
+      - 42/42 automated tests pass across 4 suites: 19 mandatory criteria (19/19 PASS), 5 PostgreSQL integration (5/5 PASS), 6 Fastify route unit tests (6/6 PASS), and 12 controlled acceptance steps (12/12 PASS).
+      - Production Supabase `ehfafcnimmjusyvplbah` and staging Supabase `fkpigozcqnmcvofuksar` remain 100% untouched and air-gapped.

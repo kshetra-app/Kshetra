@@ -10,6 +10,7 @@ import { notificationRoutes } from './routes/notifications';
 import { moderationRoutes } from './routes/moderation';
 import { stateRoutes } from './routes/states';
 import { delimitationRoutes } from './routes/delimitation';
+import { delimitationWatchRoutes } from './routes/delimitationWatch';
 import { journalistRoutes } from './routes/journalist';
 import { politicianRoutes } from './routes/politician';
 import { campaignRoutes } from './routes/campaign';
@@ -232,6 +233,7 @@ export async function buildApp() {
   await app.register(moderationRoutes);
   await app.register(stateRoutes);
   await app.register(delimitationRoutes);
+  await app.register(delimitationWatchRoutes);
   await app.register(journalistRoutes);
   await app.register(politicianRoutes);
   await app.register(campaignRoutes);

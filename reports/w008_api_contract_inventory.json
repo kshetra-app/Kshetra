@@ -3,10 +3,10 @@
     "job": "W008",
     "title": "Fastify API Route Contract Inventory",
     "specification": "Master Execution Framework Amendment v1.5-A / DEC-041",
-    "timestamp": "2026-10-24T06:12:10.634Z"
+    "timestamp": "2026-10-25T14:37:41.704Z"
   },
   "summary": {
-    "totalRoutesRegistered": 201,
+    "totalRoutesRegistered": 207,
     "pioneerAndPhase1Routes": 63,
     "schemaCoveredRoutes": 162
   },
@@ -748,6 +748,60 @@
       "schemaDefined": true,
       "preValidationDefined": false,
       "standardizedEnvelope": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/delimitation/watch/sources",
+      "file": "delimitationWatch.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": false,
+      "preValidationDefined": false,
+      "standardizedEnvelope": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/delimitation/watch/sources",
+      "file": "delimitationWatch.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": false,
+      "preValidationDefined": false,
+      "standardizedEnvelope": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/delimitation/watch/trigger/:sourceId",
+      "file": "delimitationWatch.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": false,
+      "preValidationDefined": false,
+      "standardizedEnvelope": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/delimitation/watch/replay/:snapshotId",
+      "file": "delimitationWatch.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": false,
+      "preValidationDefined": false,
+      "standardizedEnvelope": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/delimitation/watch/runs/:sourceId",
+      "file": "delimitationWatch.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": false,
+      "preValidationDefined": false,
+      "standardizedEnvelope": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/delimitation/watch/versions/:sourceId",
+      "file": "delimitationWatch.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": false,
+      "preValidationDefined": false,
+      "standardizedEnvelope": false
     },
     {
       "method": "GET",

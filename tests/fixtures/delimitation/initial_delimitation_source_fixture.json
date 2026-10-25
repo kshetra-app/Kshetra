@@ -1,0 +1,53 @@
+{
+  "declaredPublicationDate": "2026-08-15",
+  "declaredEffectiveDate": "2026-09-01",
+  "proposal": {
+    "stateCode": "TG",
+    "proposalNumber": "ECI-DELIM-TG-2026-001",
+    "title": "Telangana Assembly Delimitation Notification 2026",
+    "description": "Statutory delimitation of assembly constituencies in Telangana under the Delimitation Act",
+    "status": "final",
+    "commissionId": "DELIM-COMM-2026",
+    "currentSeats": 119,
+    "proposedSeats": 119,
+    "currentScSeats": 19,
+    "currentStSeats": 12,
+    "proposedScSeats": 19,
+    "proposedStSeats": 12,
+    "gazetteUrl": "https://egazette.gov.in/orders/2026/TG-DELIM-001.pdf",
+    "sourceUrl": "https://eci.gov.in/notifications/2026/tg-delimitation",
+    "publishedAt": "2026-08-15T00:00:00.000Z"
+  },
+  "constituencyMappings": [
+    {
+      "stateCode": "TG",
+      "oldAcNo": 58,
+      "oldName": "Malakpet",
+      "newAcNo": 58,
+      "newName": "Malakpet",
+      "overlapPercentage": 100,
+      "populationTransferred": 298450,
+      "votersTransferred": 210400
+    },
+    {
+      "stateCode": "TG",
+      "oldAcNo": 63,
+      "oldName": "Nampally",
+      "newAcNo": 63,
+      "newName": "Nampally",
+      "overlapPercentage": 100,
+      "populationTransferred": 312000,
+      "votersTransferred": 225100
+    },
+    {
+      "stateCode": "TG",
+      "oldAcNo": 65,
+      "oldName": "Goshamahal",
+      "newAcNo": 65,
+      "newName": "Goshamahal",
+      "overlapPercentage": 100,
+      "populationTransferred": 284000,
+      "votersTransferred": 198000
+    }
+  ]
+}

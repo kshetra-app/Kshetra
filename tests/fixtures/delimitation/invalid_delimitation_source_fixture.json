@@ -1,0 +1,25 @@
+{
+  "declaredPublicationDate": "2026-10-10",
+  "proposal": {
+    "stateCode": "INVALID_STATE",
+    "proposalNumber": "INVALID-001",
+    "title": "Invalid Delimitation Order",
+    "status": "final",
+    "currentSeats": 119,
+    "proposedSeats": 0,
+    "currentScSeats": 19,
+    "currentStSeats": 12,
+    "proposedScSeats": 50,
+    "proposedStSeats": 60
+  },
+  "constituencyMappings": [
+    {
+      "stateCode": "INVALID_STATE",
+      "oldAcNo": 999,
+      "oldName": "Invalid",
+      "newAcNo": 999,
+      "newName": "Invalid",
+      "overlapPercentage": 150
+    }
+  ]
+}

@@ -1,0 +1,63 @@
+{
+  "declaredPublicationDate": "2026-10-01",
+  "declaredEffectiveDate": "2026-11-01",
+  "proposal": {
+    "stateCode": "TG",
+    "proposalNumber": "ECI-DELIM-TG-2026-002",
+    "title": "Telangana Assembly Delimitation Amendment Order 2026",
+    "description": "Statutory amendment increasing total seats from 119 to 125 with bifurcated constituencies",
+    "status": "final",
+    "commissionId": "DELIM-COMM-2026",
+    "currentSeats": 119,
+    "proposedSeats": 125,
+    "currentScSeats": 19,
+    "currentStSeats": 12,
+    "proposedScSeats": 20,
+    "proposedStSeats": 13,
+    "gazetteUrl": "https://egazette.gov.in/orders/2026/TG-DELIM-002.pdf",
+    "sourceUrl": "https://eci.gov.in/notifications/2026/tg-delimitation-amendment",
+    "publishedAt": "2026-10-01T00:00:00.000Z"
+  },
+  "constituencyMappings": [
+    {
+      "stateCode": "TG",
+      "oldAcNo": 58,
+      "oldName": "Malakpet",
+      "newAcNo": 58,
+      "newName": "Malakpet Central",
+      "overlapPercentage": 75,
+      "populationTransferred": 220000,
+      "votersTransferred": 155000
+    },
+    {
+      "stateCode": "TG",
+      "oldAcNo": 58,
+      "oldName": "Malakpet",
+      "newAcNo": 120,
+      "newName": "Chanchalguda",
+      "overlapPercentage": 25,
+      "populationTransferred": 78450,
+      "votersTransferred": 55400
+    },
+    {
+      "stateCode": "TG",
+      "oldAcNo": 63,
+      "oldName": "Nampally",
+      "newAcNo": 63,
+      "newName": "Nampally",
+      "overlapPercentage": 100,
+      "populationTransferred": 312000,
+      "votersTransferred": 225100
+    },
+    {
+      "stateCode": "TG",
+      "oldAcNo": 65,
+      "oldName": "Goshamahal",
+      "newAcNo": 65,
+      "newName": "Goshamahal",
+      "overlapPercentage": 100,
+      "populationTransferred": 284000,
+      "votersTransferred": 198000
+    }
+  ]
+}
