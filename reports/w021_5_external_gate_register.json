@@ -134,10 +134,19 @@
       "Direct ECI geometry fetches failed in the prior run; browser-header retry and pinned mirror source attempts are underway."
     ],
     "focusedGeometryProbeRun": 40212122850,
-    "focusedGeometryProbeStatus": "COMPLETED_WITH_FAILURES; ECI URL 404; TELANGANA METADATA ACQUIRED; GEOMETRY QUERY RETRY PENDING",
+    "focusedGeometryProbeStatus": "OLDER TELANGANA LAYER ACQUIRED; NEWER 2026-NAMED LAYER PROBE IN PROGRESS",
     "focusedProbeWorkflow": ".github/workflows/w0215-official-geometry-probe.yml",
     "focusedProbeManifest": "reports/evidence/w021_5_official_geometry_probe_40212122850.json",
     "correctedTelanganaQueryRun": 40212257196,
-    "directEciEndpointFinding": "Five tested /ac/{STATE_CODE}.js endpoints return HTTP 404; this route is not currently usable as a raw source."
+    "directEciEndpointFinding": "Five tested /ac/{STATE_CODE}.js endpoints return HTTP 404; this route is not currently usable as a raw source.",
+    "officialStateGeometryCandidate": {
+      "source": "Telangana State Remote Sensing Applications Centre GIS layer 24",
+      "featureCount": 119,
+      "rawBytes": 12465346,
+      "rawSha256": "91cd791317836d8a6a8729b03f08fd3aee8c727c82e123b1659972d949d32f27",
+      "topologyStatus": "ONE_INVALID_GEOMETRY; ZERO_POSITIVE_AREA_OVERLAP_PAIRS; COVERAGE_NOT_PROVEN",
+      "audit": "reports/evidence/w021_5_telangana_arcgis_geometry_audit_2026-10-25.json",
+      "acceptance": "NOT_ACCEPTED_PENDING_REPAIR_LEGAL_CROSSWALK_AND_STATE_BOUNDARY_COMPARISON"
+    }
   }
 }
