@@ -492,7 +492,7 @@
       "retrievedAt": "2026-10-25",
       "format": "ArcGIS REST Feature Layer (ESRI JSON query required)",
       "authority": "OFFICIAL_STATE_GIS_CANDIDATE",
-      "status": "GEOMETRY_ACQUIRED_TOPOLOGY_DEFECT_FOUND",
+      "status": "GEOMETRY_ACQUIRED_OUTLIER_VS_THREE_SERVICE_FAMILY",
       "sha256": "fd91d7803f39a8cc9ae9f2f486224cea777c7127ef5659dd2d073b088dbfb26a",
       "fileBytes": 4756,
       "geometryQueryInitial": {
@@ -525,7 +525,7 @@
         "canonicalAcNumberCrosswalk": "NOT_PERFORMED"
       },
       "comparisonReport": "reports/evidence/w021_5_telangana_layer_comparison_2026-10-25.json",
-      "comparisonFinding": "The separate 2026-named layer has the same 119-feature roster but differs materially in at least 7 geometries; neither layer selected as canonical."
+      "comparisonFinding": "Six material boundary differences vs EndowmentLands family: Warangal West/East, Ibrahimpatnam, Munugode, Peddapalle, Manthani; Sirpur difference is negligible sub-millimetre precision. Full legal adjudication remains open."
     },
     {
       "sourceId": "SRC-TELANGANA-2026-AC-LAYER",
@@ -535,7 +535,7 @@
       "retrievedAt": "2026-10-25",
       "format": "ArcGIS REST Feature Layer / ESRI JSON",
       "authority": "OFFICIAL_STATE_GIS_CANDIDATE",
-      "status": "GEOMETRY_ACQUIRED_TOPOLOGY_DEFECT_FOUND_LAYER_CONFLICT_OPEN",
+      "status": "LEADING_TELANGANA_CANDIDATE_FAMILY_NOT_ACCEPTED",
       "geometryQueryUrl": "https://tgrac.telangana.gov.in/arcgis/rest/services/EndowmentLands_Folder/EndowmentLands_Admin_2026/MapServer/12/query?where=1%3D1&outFields=%2A&returnGeometry=true&outSR=4326&f=json",
       "workflowRunId": 40212441232,
       "limitations": [
@@ -553,7 +553,7 @@
       "positiveAreaOverlapPairs": 0,
       "topologyAudit": "reports/evidence/w021_5_telangana_arcgis_geometry_audit_2026-10-25.json",
       "comparisonReport": "reports/evidence/w021_5_telangana_layer_comparison_2026-10-25.json",
-      "comparisonFinding": "119 names matched after normalizing two spelling/case variants; 112 geometries near-identical within 0.01 m²; 7 differ above 0.01 m²; maximum Hausdorff distance 3,042 m. Both layers share the same invalid Dornakal polygon."
+      "comparisonFinding": "Byte-identical to Endowment_Lands_Admin_New layer 12; Admin_Old layer 13 differs only by sub-millimetre coordinate precision. One invalid Dornakal polygon remains; legal effective date and statutory crosswalk remain open."
     },
     {
       "sourceId": "SRC-SECONDARY-ECI-2026-AC-GEO-BUNDLE",
@@ -755,7 +755,7 @@
       "version": "Order dated 17 December 2008; ECI PDF lists Andhra Pradesh Schedule III on PDF pages 8–32",
       "retrievalStatus": "READ_VIA_WEB_PDF_TEXT; BINARY_NOT_DOWNLOADED_OR_SHA256_VERIFIED",
       "authority": "OFFICIAL_STATUTORY_BASELINE",
-      "status": "WEB_PDF_TEXT_REVIEWED; BINARY_DOWNLOAD_BLOCKED_HTTP_406",
+      "status": "WEB_PDF_TEXT_REVIEWED; BINARY_DOWNLOAD_BLOCKED_HTTP_406; PARTIAL_CROSSWALK_9_OF_119",
       "partialCrosswalk": {
         "report": "reports/evidence/w021_5_telangana_layer_comparison_2026-10-25.json",
         "constituencies": [
@@ -819,7 +819,7 @@
       "url": "https://tgrac.telangana.gov.in/arcgis/rest/services/EndowmentLands_Folder/Endowment_Lands_Admin_New/MapServer/12?f=pjson",
       "format": "ArcGIS REST Feature Layer / ESRI JSON",
       "authority": "OFFICIAL_STATE_GIS_CANDIDATE",
-      "status": "GEOMETRY_ACQUIRED_IDENTICAL_TO_ENDOWMENTLANDS_ADMIN_2026",
+      "status": "LEADING_TELANGANA_CANDIDATE_FAMILY_NOT_ACCEPTED",
       "layerId": 12,
       "workflowRunId": 40213331746,
       "limitations": [
@@ -836,7 +836,7 @@
       "unionPartCount": 1,
       "topologyAudit": "reports/evidence/w021_5_telangana_arcgis_geometry_audit_2026-10-25.json",
       "comparisonReport": "reports/evidence/w021_5_telangana_layer_comparison_2026-10-25.json",
-      "note": "Raw response byte length and SHA-256 exactly match EndowmentLands_Admin_2026 layer 12; this is the same geometry payload, not an independent version."
+      "note": "Byte-for-byte identical to EndowmentLands_Admin_2026 layer 12; this is a duplicated service payload, not an independent boundary version."
     },
     {
       "sourceId": "SRC-TELANGANA-ADMIN-OLD-LAYER",
@@ -845,7 +845,7 @@
       "url": "https://tgrac.telangana.gov.in/arcgis/rest/services/EndowmentLands_Folder/Endowment_Lands_Old/MapServer/13?f=pjson",
       "format": "ArcGIS REST Feature Layer / ESRI JSON",
       "authority": "OFFICIAL_STATE_GIS_CANDIDATE",
-      "status": "GEOMETRY_ACQUIRED_ADDITIONAL_VERSION_REVIEW_REQUIRED",
+      "status": "NEAR_IDENTICAL_TO_NEW_FAMILY_WITH_SUBMILLIMETRE_COORDINATE_DIFFERENCES",
       "layerId": 13,
       "workflowRunId": 40213331746,
       "limitations": [
@@ -862,7 +862,7 @@
       "positiveAreaOverlapPairs": 0,
       "unionPartCount": 2,
       "topologyAudit": "reports/evidence/w021_5_telangana_arcgis_geometry_audit_2026-10-25.json",
-      "comparisonStatus": "FULL_PAIRWISE_COMPARISON_NOT_YET_PERFORMED",
+      "comparisonStatus": "No material boundary shifts identified relative to new family; all 119 names and ring vertex counts match, max vertex delta ~6.52e-10 degrees. Union has two parts due Bhadrachalam (ST) ring not merging under lower coordinate precision; normalize and verify against authoritative state boundary.",
       "note": "Distinct geometry payload. Union of 119 candidate polygons has two disconnected components; this requires investigation against an authoritative Telangana state boundary."
     }
   ],
@@ -1294,7 +1294,7 @@
       }
     }
   ],
-  "updatedAt": "2026-10-25T16:52:00Z",
+  "updatedAt": "2026-10-25T16:54:00Z",
   "notes": [
     "Actual public source artifacts were downloaded in GitHub Actions run 40209022405 and SHA-256 hashed; detailed geometry findings are in reports/w021_5_datameet_ac_geometry_forensic_audit.json.",
     "Survey of India official ABDB page, Vector Data Catalog 2025 PDF and Metadata_ABDB.zip were downloaded and hashed. The metadata covers state, district, subdistrict and village boundaries, not statutory Assembly Constituency polygons.",
@@ -1308,7 +1308,8 @@
     "Focused run 40212441232 acquired both the older Telangana Assembly Constituency Boundary layer and the EndowmentLands_Admin_2026 layer (119 features each). Both contain the same invalid Dornakal polygon and zero positive-area overlaps. Cross-layer comparison found 7 geometries differing above 0.01 m² and a maximum Hausdorff distance of about 3.04 km; neither layer can be selected without legal/source-owner adjudication.",
     "Official ECI 2008 Delimitation Order PDF was read through the web PDF reader. Schedule III lists Andhra Pradesh Assembly constituencies and their territorial extents; a partial crosswalk for nine disputed/defective Telangana ACs is recorded in reports/evidence/w021_5_telangana_layer_comparison_2026-10-25.json. The PDF binary was not downloaded in this session, so no binary SHA-256 is claimed.",
     "Additional official Telangana GIS service variants Admin_New layer 12 and Admin_Old layer 13 were discovered in the TGRAC service catalog and queued for comparison in run 40213242722. Do not choose among service names until geometry and legal effective-date evidence are reconciled.",
-    "The TGRAC Admin_New layer is byte-for-byte identical to the EndowmentLands_Admin_2026 layer (same 12,463,409-byte payload and SHA-256). Admin_Old is a distinct 12,461,961-byte payload; its 119-feature union has two disconnected components and one invalid Dornakal polygon. The official ECI 2008 PDF binary endpoint returned HTTP 406 (1,035-byte error body, SHA-256 7f512a...); web PDF text was reviewed, but no PDF binary hash is claimed."
+    "The TGRAC Admin_New layer is byte-for-byte identical to the EndowmentLands_Admin_2026 layer (same 12,463,409-byte payload and SHA-256). Admin_Old is a distinct 12,461,961-byte payload; its 119-feature union has two disconnected components and one invalid Dornakal polygon. The official ECI 2008 PDF binary endpoint returned HTTP 406 (1,035-byte error body, SHA-256 7f512a...); web PDF text was reviewed, but no PDF binary hash is claimed.",
+    "Four Telangana GIS service variants are now acquired. Three EndowmentLands variants form one geometry family; the Admin_New and Admin_2026 payloads are byte-identical, while Admin_Old differs only at sub-millimetre coordinate precision. The older AdministrativeInfoSystem layer is the outlier with six material AC geometry shifts. Prefer the newer family for legal validation, not canonical import."
   ],
   "secondaryGeometryAudit": {
     "sourceRepository": "https://github.com/saisantoshv3/assemnbly_gis_files",
@@ -1327,5 +1328,27 @@
     "disposition": "GEOMETRY_CANDIDATE_ONLY; DEMOGRAPHIC ATTRIBUTES REJECTED",
     "report": "reports/w021_5_telangana_arcgis_layer_audit.json"
   },
-  "nationalCoverageStatus": "INCOMPLETE — 14/27 SOI village archives downloaded; no primary national Assembly Constituency geometry or national official historical-results backfill acquired."
+  "nationalCoverageStatus": "INCOMPLETE — 14/27 SOI village archives downloaded; no primary national Assembly Constituency geometry or national official historical-results backfill acquired.",
+  "layerFamilyComparison": {
+    "report": "reports/evidence/w021_5_telangana_layer_comparison_2026-10-25.json",
+    "leadingCandidateFamily": [
+      "EndowmentLands_Admin_2026/MapServer/12",
+      "Endowment_Lands_Admin_New/MapServer/12",
+      "Endowment_Lands_Old/MapServer/13"
+    ],
+    "familyFinding": "First two payloads byte-identical; third differs only by sub-millimetre coordinate precision; all three have 119 features and the same invalid Dornakal polygon.",
+    "outlier": "AdministrativeInfoSystem_Folder/Administrative_Information_System/MapServer/24",
+    "outlierDifferences": [
+      "Warangal West",
+      "Warangal East",
+      "Ibrahimpatnam",
+      "Munugode",
+      "Peddapalle",
+      "Manthani"
+    ],
+    "negligiblePrecisionDifference": [
+      "Sirpur"
+    ],
+    "acceptedAsCanonical": false
+  }
 }
