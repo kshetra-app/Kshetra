@@ -45,7 +45,7 @@ jobs:
         run: node scripts/check-api-contract-drift.mjs
 
       - name: Audit 13-Language i18n Parity (DEF-012 Monitoring)
-        run: node scripts/verify-13-locales.mjs
+        run: node scripts/verify-13-locales.mjs --strict
 
   test:
     name: Test
@@ -146,7 +146,6 @@ jobs:
 
       - name: Prettier check
         run: npx prettier --check "**/*.{ts,tsx,json,md}" --ignore-path .gitignore
-        continue-on-error: true
 
       - name: ESLint
         run: npx eslint "apps/**/*.{ts,tsx}" "packages/**/*.{ts,tsx}" --max-warnings=0
