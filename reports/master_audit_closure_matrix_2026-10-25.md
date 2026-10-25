@@ -1,6 +1,6 @@
 # Full Audit Closure Matrix — 2026-10-25
 
-**Scope:** All 34 findings in the master blueprint audit (**17 P0, 17 P1**).  
+**Scope:** All 34 findings in the master blueprint audit (**17 P0, 19 P1**).  
 **Branch:** `cto/full-master-audit-remediation-2026-10-25`  
 **Observed branch head when this matrix was authored:** `f308042fadaf92e0f622232b7a242c95bf8ac533` (subsequent commits must update this exact SHA).  
 **Draft PR:** https://github.com/kshetra-app/Kshetra/pull/28  
@@ -12,6 +12,8 @@
 | GOV-02 | P0 | `PARTIAL` | Recorded branch scope and source baseline; planning a 36-item matrix. | Reconcile every continuity register and W021.5 register totals to the full 36 findings without overwriting historical statuses or claiming external acceptance. |
 | GOV-03 | P0 | `BLOCKED_EXTERNAL_ADMIN` | Blocking CI/security jobs were configured on the branch and master-trigger coverage corrected. | Repository administrator must enable PR-only changes, required checks, CODEOWNERS/approvals, no force-push and no bypass. This connector session has not changed repository protection settings. |
 | CI-01 | P0 | `PARTIAL_FAILING_CHECKS` | Removed fail-open continue-on-error patterns; enabled strict locale checks and master workflow coverage; made npm audit, OSV, SAST and SBOM blocking. | Current OSV and npm audit gates still report dependency advisories, and SBOM plus main CI checks are not yet green on final HEAD. Fix advisories and rerun all checks; do not suppress scanner failures. |
+| I18N-01 | P1 | `PARTIAL_PENDING_CI` | Changed the locale gate to strict mode so discrepancies cannot pass silently. | Run the strict 13-language check, fill missing/incorrect translations across routes and notification/email templates, and verify formatting/accessibility fallback behavior. |
+| DB-01 | P1 | `PARTIAL_BLOCKED_DB_HISTORY` | Added a whole-tree version uniqueness gate; removed duplicate active 023 file and represented its schema/grants as forward reconciliation migrations 072 and 073. | Do not execute until authorized DBA confirms real applied migration history and validates idempotency, ownership, grants, triggers, policies and schema dependency order in disposable PostgreSQL first. |
 | CI-02 | P1 | `PARTIAL_PENDING_CI` | Replaced mobile build and API/shared lint echoes with actual commands. | Confirm clean-install API/shared/mobile lint, build and typecheck; address all newly exposed errors. |
 | CI-03 | P1 | `PARTIAL_PENDING_CI` | Corrected master trigger and configured LFS checkout for EAS/build jobs. | Prove LFS object hydration in real EAS/CI checkout, produce signed/unsigned build artifacts as allowed and capture size report. |
 | GEO-01 | P0 | `BLOCKED_EXTERNAL_DATA` | Geography manifest now keeps only India overview bundled; assembly geometry is hidden unless source/effective/retrieval/version/hash/count provenance qualifies. Gate verified zero accepted remote boundary datasets; 31 assembly jurisdictions remain explicitly unavailable. | Obtain and reconcile primary-source boundary artifacts, canonical AC identifiers/counts, legal-effective versions and topology; no placeholder/alternate mirror may be promoted to official. |
