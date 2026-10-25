@@ -527,3 +527,24 @@ REMOTE_SYNC:           Up to date with origin/master
 - **Staging database execution:** NOT AUTHORIZED; separate explicit execution token required.
 - **Production:** STRICTLY AIR-GAPPED; no access, queries, mutations, deployment, or release.
 - **Acceptance:** BLOCKED pending fresh evidence and independent verification. Implementation permission is not acceptance.
+
+
+## W021.5 Controlled Resumption — 2026-10-25
+
+**Status:** SCOPED RESUMPTION AUTHORIZED / IMPLEMENTATION IN PROGRESS / NOT ACCEPTED  
+**Baseline:** `33945d20f318ae1aa0d9aba35052246599c5bbae`  
+**Branch:** `w0215-resumption-2026-10-25`  
+**Authorization:** `governance/authorizations/W021.5_RESUMPTION_AUTHORIZATION_2026-10-25.md`  
+**Plan:** `governance/plans/PLAN-W021.5-RESUMPTION-REV-1.0.md`  
+**Source Register:** `reports/w021_5_source_acquisition_register.json`  
+**Status Register:** `reports/w021_5_resumption_status.json`
+
+- The project owner's explicit 2026-10-25 instruction supersedes DEC-153's development freeze for the scoped W021.5 resumption only.
+- Production remains air-gapped. The agent does not access or mutate staging; staging SQL is prepared for project-owner execution only.
+- Acting CTO technical adjudication W021.5-CTO-ADJ-001 approves the financial-disclosure schema design with execution conditions; Migration 068 is not yet considered staging-verified.
+- New forward migration 072 addresses zero defaults for criminal-disclosure counts, the unsafe OFFICIAL default, source-evidence enforcement, and the canonical constituency foreign key.
+- The source-acquisition register documents official ECI, Census of India and Survey of India source indexes and a secondary DataMeet candidate GIS dataset. DataMeet geometry is not accepted as official; its README warns of shifts, missing/incorrect names, and pre-delimitation boundaries.
+- Source acquisition runner and regression tests have been committed to the branch but have not been executed in this environment. No download hash manifest or live staging evidence is claimed.
+- Current W021.5 overall acceptance remains PENDING. All source, geometry, database execution, external evidence and final verification gates remain tracked explicitly.
+
+**Next permitted actions:** execute and validate the source-acquisition runner; validate Migration 072 locally; prepare/validate the remaining staging packages; project owner runs approved SQL only in staging; reconcile fresh evidence before final CTO acceptance.
