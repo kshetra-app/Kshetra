@@ -134,19 +134,34 @@
       "Direct ECI geometry fetches failed in the prior run; browser-header retry and pinned mirror source attempts are underway."
     ],
     "focusedGeometryProbeRun": 40212122850,
-    "focusedGeometryProbeStatus": "OLDER TELANGANA LAYER ACQUIRED; NEWER 2026-NAMED LAYER PROBE IN PROGRESS",
+    "focusedGeometryProbeStatus": "COMPLETED_WITH_FAILURES; BOTH TELANGANA LAYERS ACQUIRED; CROSS-LAYER CONFLICT OPEN",
     "focusedProbeWorkflow": ".github/workflows/w0215-official-geometry-probe.yml",
     "focusedProbeManifest": "reports/evidence/w021_5_official_geometry_probe_40212122850.json",
     "correctedTelanganaQueryRun": 40212257196,
     "directEciEndpointFinding": "Five tested /ac/{STATE_CODE}.js endpoints return HTTP 404; this route is not currently usable as a raw source.",
     "officialStateGeometryCandidate": {
-      "source": "Telangana State Remote Sensing Applications Centre GIS layer 24",
-      "featureCount": 119,
-      "rawBytes": 12465346,
-      "rawSha256": "91cd791317836d8a6a8729b03f08fd3aee8c727c82e123b1659972d949d32f27",
-      "topologyStatus": "ONE_INVALID_GEOMETRY; ZERO_POSITIVE_AREA_OVERLAP_PAIRS; COVERAGE_NOT_PROVEN",
-      "audit": "reports/evidence/w021_5_telangana_arcgis_geometry_audit_2026-10-25.json",
-      "acceptance": "NOT_ACCEPTED_PENDING_REPAIR_LEGAL_CROSSWALK_AND_STATE_BOUNDARY_COMPARISON"
+      "oldLayer": {
+        "layerId": 24,
+        "features": 119,
+        "sha256": "91cd791317836d8a6a8729b03f08fd3aee8c727c82e123b1659972d949d32f27",
+        "invalidGeometries": 1,
+        "positiveAreaOverlapPairs": 0
+      },
+      "newerNamedLayer": {
+        "layerId": 12,
+        "features": 119,
+        "sha256": "ca8cfdc695366d9f04ee6a9fdbf9c52eeefe61d69bc79c9d26d15baa7b84aa03",
+        "invalidGeometries": 1,
+        "positiveAreaOverlapPairs": 0
+      },
+      "comparisonReport": "reports/evidence/w021_5_telangana_layer_comparison_2026-10-25.json",
+      "crossLayerDifferences": {
+        "matchedConstituencies": 119,
+        "nearIdenticalWithin0_01m2": 112,
+        "featuresDifferingAbove0_01m2": 7,
+        "maxHausdorffDistanceMeters": 3042.0718885005717
+      },
+      "acceptance": "NEITHER_LAYER_ACCEPTED; SOURCE_VERSION_AND_LEGAL_EFFECTIVE_DATE_UNRESOLVED"
     },
     "broadSourceAcquisitionRun": 40211792541,
     "broadSourceAcquisitionStatus": "COMPLETED_SUCCESS_WITH_PARTIAL_SOURCE_COVERAGE",
