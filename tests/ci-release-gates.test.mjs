@@ -10,7 +10,7 @@ const security = fs.readFileSync('.github/workflows/security.yml', 'utf8');
 const localeVerifier = fs.readFileSync('scripts/verify-13-locales.mjs', 'utf8');
 
 function section(source, name) {
-  const marker = new RegExp('^  ' + name + ':\s*$', 'm');
+  const marker = new RegExp('^  ' + name + ':\\s*$', 'm');
   const match = marker.exec(source);
   assert.ok(match, 'workflow job ' + name + ' must exist');
   const start = match.index;
