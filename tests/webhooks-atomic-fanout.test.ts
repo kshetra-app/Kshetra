@@ -195,9 +195,9 @@ async function runAll() {
     // Note: only previous successful events should exist
   });
 
-  // 5. Idempotency replay with interim newly added subscription
+  // 5. Idempotency replay must preserve the original fan-out
   const subNewId = 'bbbbbbbb-4444-4444-4444-444444444444';
-  await runCheck('AF-06', 'Idempotency replay with new interim subscription fans out missing delivery without duplicates', async () => {
+  await runCheck('AF-06', 'Idempotency replay with newly added subscription preserves original fan-out', async () => {
     // Add new subscription for the application
     await db.query(`
       INSERT INTO public.webhook_subscriptions (
