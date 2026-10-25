@@ -211,6 +211,8 @@ const recentCommits = exec(['log', '--format=%H', report.sourceSnapshot.commit +
 const registeredCommits = [...report.commitsAfterSourceSnapshot]
   .filter((sha) => sha !== exec(['rev-parse', 'HEAD']))
   .sort();
+const reportedSelfCommit = report.commitsAfterSourceSnapshot.includes(exec(['rev-parse', 'HEAD']));
+assert.ok(reportedSelfCommit, 'Commit manifest must account for its previous snapshot commit; the current report commit is excluded from the history comparison to avoid self-reference.');
 assert.equal(new Set(registeredCommits).size, registeredCommits.length,
   'Commit accountability manifest contains duplicate commit IDs');
 assert.deepEqual(recentCommits, registeredCommits,
