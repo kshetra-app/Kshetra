@@ -60,7 +60,7 @@ export interface SimulationProjection {
   projectedParty: string;
   projectedWinnerName: string;
   projectedVotes: number | null;
-  projectedRunnerUp: string;
+  projectedRunnerUp: string | null;
   projectedMargin: number | null;
   disclaimer: string;
 }
@@ -79,8 +79,8 @@ export interface ByElectionRecord {
 export interface UnifiedConstituency {
   acNo: number;
   name: string;
-  district: string;
-  type: 'GEN' | 'SC' | 'ST';
+  district: string | null;
+  type: 'GEN' | 'SC' | 'ST' | null;
   stateCode: string;
   /** Winning party in the most recent verified general election */
   winnerParty: string | null;
@@ -89,9 +89,9 @@ export interface UnifiedConstituency {
   runnerUp: string | null;
   margin: number | null;
   /** Current verified party of sitting representative */
-  currentParty: string;
+  currentParty: string | null;
   /** Current sitting representative name */
-  currentMLA?: string;
+  currentMLA?: string | null;
   /** Year of the verified general election result data */
   electionYear: number;
   /** By-election metadata if a subsequent by-election changed or confirmed the seat */
@@ -128,10 +128,10 @@ function genericAdapter(
 
   // For Assam, actual 2021 election returns were mistakenly keyed as 2026 in seed
   const isAssam2021Fallback = stateCode === 'AS' && year === 2021;
-  const rawWinner = c[winnerKey] ?? (isAssam2021Fallback ? c.winner2026 : (c.winner ?? ''));
-  const rawWinnerName = c[winnerNameKey] ?? (isAssam2021Fallback ? c.winnerName2026 : (c.winnerName ?? ''));
+  const rawWinner = c[winnerKey] ?? (isAssam2021Fallback ? c.winner2026 : c.winner ?? null);
+  const rawWinnerName = c[winnerNameKey] ?? (isAssam2021Fallback ? c.winnerName2026 : c.winnerName ?? null);
   const rawWinnerVotes = c[winnerVotesKey] ?? (isAssam2021Fallback ? c.winnerVotes2026 : null);
-  const rawRunnerUp = c[runnerUpKey] ?? (isAssam2021Fallback ? c.runnerUp2026 : '');
+  const rawRunnerUp = c[runnerUpKey] ?? (isAssam2021Fallback ? c.runnerUp2026 : null);
   const rawMargin = c[marginKey] ?? (isAssam2021Fallback ? c.margin2026 : null);
 
   // If a future simulation field exists, preserve it in projection metadata only
@@ -141,9 +141,9 @@ function genericAdapter(
         isSimulation: true,
         electionYear: 2026,
         projectedParty: c.winner2026,
-        projectedWinnerName: c.winnerName2026 ?? '',
+        projectedWinnerName: c.winnerName2026 ?? null,
         projectedVotes: c.winnerVotes2026 ?? null,
-        projectedRunnerUp: c.runnerUp2026 ?? '',
+        projectedRunnerUp: c.runnerUp2026 ?? null,
         projectedMargin: c.margin2026 ?? null,
         disclaimer: 'Simulated Projection — Not an Official Result',
       }
@@ -152,8 +152,8 @@ function genericAdapter(
   // Handle by-elections in generic states
   let byElection: ByElectionRecord | undefined = undefined;
   let officeholderStatus: 'INCUMBENT_ACTIVE' | 'BY_ELECTION_SEATED' | 'VACANT' | 'UNRESOLVED' = 'INCUMBENT_ACTIVE';
-  let effectiveCurrentParty = rawWinner ?? '';
-  let effectiveCurrentMLA = rawWinnerName ?? '';
+  let effectiveCurrentParty = rawWinner;
+  let effectiveCurrentMLA = rawWinnerName;
 
   if (stateCode === 'PY' && (c.acNo === 9 || c.name === 'Thattanchavady')) { // Thattanchavady (AC 9) by-election Oct 2026
     effectiveCurrentParty = 'AINRC';
@@ -185,10 +185,10 @@ function genericAdapter(
     district: c.district ?? null,
     type: c.type ?? 'GEN',
     stateCode,
-    winnerParty: rawWinner ?? null,
-    winnerName: rawWinnerName ?? null,
+    winnerParty: rawWinner,
+    winnerName: rawWinnerName,
     winnerVotes: rawWinnerVotes ?? null,
-    runnerUp: rawRunnerUp ?? null,
+    runnerUp: rawRunnerUp,
     margin: rawMargin ?? null,
     currentParty: effectiveCurrentParty,
     currentMLA: effectiveCurrentMLA,
@@ -284,8 +284,8 @@ export function getUnifiedConstituenciesForState(stateCode: string): UnifiedCons
       }));
     case 'TN':
       return TN_CONSTITUENCIES.map((c) => {
-        let currentParty = c.winner2021 ?? '';
-        let currentMLA = c.winnerName2021 ?? '';
+        let currentParty = c.winner2021 ?? null;
+        let currentMLA = c.winnerName2021 ?? null;
         let byElection: ByElectionRecord | undefined = undefined;
         let officeholderStatus: 'INCUMBENT_ACTIVE' | 'BY_ELECTION_SEATED' | 'VACANT' | 'UNRESOLVED' = 'INCUMBENT_ACTIVE';
         let dataStatus: 'CURRENT' | 'STALE_PENDING_INGESTION' | 'BY_ELECTION_UPDATED' = 'STALE_PENDING_INGESTION';
@@ -330,10 +330,10 @@ export function getUnifiedConstituenciesForState(stateCode: string): UnifiedCons
           district: c.district,
           type: c.type,
           stateCode: 'TN',
-          winnerParty: c.winner2021 ?? '',
-          winnerName: c.winnerName2021 ?? '',
+          winnerParty: c.winner2021 ?? null,
+          winnerName: c.winnerName2021 ?? null,
           winnerVotes: c.winnerVotes2021 ?? null,
-          runnerUp: c.runnerUp2021 ?? '',
+          runnerUp: c.runnerUp2021 ?? null,
           margin: c.margin2021 ?? null,
           currentParty,
           currentMLA,
@@ -365,13 +365,13 @@ export function getUnifiedConstituenciesForState(stateCode: string): UnifiedCons
         district: c.district,
         type: c.type,
         stateCode: 'KL',
-        winnerParty: c.winner2021 ?? '',
-        winnerName: c.winnerName2021 ?? '',
+        winnerParty: c.winner2021 ?? null,
+        winnerName: c.winnerName2021 ?? null,
         winnerVotes: c.winnerVotes2021 ?? null,
-        runnerUp: c.runnerUp2021 ?? '',
+        runnerUp: c.runnerUp2021 ?? null,
         margin: c.margin2021 ?? null,
-        currentParty: c.winner2021 ?? '',
-        currentMLA: c.winnerName2021 ?? '',
+        currentParty: c.winner2021 ?? null,
+        currentMLA: c.winnerName2021 ?? null,
         electionYear: 2021,
         officeholderStatus: 'INCUMBENT_ACTIVE' as const,
         localName: c.localName,
@@ -393,8 +393,8 @@ export function getUnifiedConstituenciesForState(stateCode: string): UnifiedCons
       }));
     case 'WB':
       return WB_CONSTITUENCIES.map((c) => {
-        let currentParty = c.winner2021 ?? '';
-        let currentMLA = c.winnerName2021 ?? '';
+        let currentParty = c.winner2021 ?? null;
+        let currentMLA = c.winnerName2021 ?? null;
         let byElection: ByElectionRecord | undefined = undefined;
         let officeholderStatus: 'INCUMBENT_ACTIVE' | 'BY_ELECTION_SEATED' | 'VACANT' | 'UNRESOLVED' = 'INCUMBENT_ACTIVE';
         let dataStatus: 'CURRENT' | 'STALE_PENDING_INGESTION' | 'BY_ELECTION_UPDATED' = 'STALE_PENDING_INGESTION';
@@ -439,10 +439,10 @@ export function getUnifiedConstituenciesForState(stateCode: string): UnifiedCons
           district: c.district,
           type: c.type,
           stateCode: 'WB',
-          winnerParty: c.winner2021 ?? '',
-          winnerName: c.winnerName2021 ?? '',
+          winnerParty: c.winner2021 ?? null,
+          winnerName: c.winnerName2021 ?? null,
           winnerVotes: c.winnerVotes2021 ?? null,
-          runnerUp: c.runnerUp2021 ?? '',
+          runnerUp: c.runnerUp2021 ?? null,
           margin: c.margin2021 ?? null,
           currentParty,
           currentMLA,
@@ -576,8 +576,8 @@ function mhAdapter(c: MHConstituencySeed): ConstituencyBrief {
 
 /** Adapt TN seed → ConstituencyBrief */
 function tnAdapter(c: TNConstituencySeed): ConstituencyBrief {
-  let currentParty = c.winner2021 ?? '';
-  let currentMLA = c.winnerName2021 ?? '';
+  let currentParty = c.winner2021 ?? null;
+  let currentMLA = c.winnerName2021 ?? null;
   if (c.acNo === 35) {
     currentParty = 'TVK';
     currentMLA = 'K. Maragatham Kumaravel';
@@ -606,15 +606,15 @@ function klAdapter(c: KLConstituencySeed): ConstituencyBrief {
     stateCode: 'KL',
     district: c.district,
     reservationStatus: c.type,
-    currentParty: c.winner2021 ?? '',
-    currentMLA: c.winnerName2021 ?? '',
+    currentParty: c.winner2021 ?? null,
+    currentMLA: c.winnerName2021 ?? null,
   };
 }
 
 /** Adapt WB seed → ConstituencyBrief */
 function wbAdapter(c: WBConstituencySeed): ConstituencyBrief {
-  let currentParty = c.winner2021 ?? '';
-  let currentMLA = c.winnerName2021 ?? '';
+  let currentParty = c.winner2021 ?? null;
+  let currentMLA = c.winnerName2021 ?? null;
   if (c.acNo === 210) {
     currentParty = 'BJP';
     currentMLA = 'Hasi Rani Rath';
