@@ -96,7 +96,11 @@ export async function fetchStateGeoJSON(
 ): Promise<GeoJSON.FeatureCollection | null> {
   const key = code.toUpperCase();
   const entry = getManifestEntry(key);
-  if (!entry) return null;
+  if (!entry || !entry.hasPolygons || entry.status === 'placeholder') {
+    // Null means the jurisdiction is known but verified polygons are unavailable.
+    // Never download or cache placeholder geometry as if it were canonical.
+    return null;
+  }
 
   const version = versionOverride ?? entry.version ?? '';
   const cacheKey = `${key}_${version}`;
