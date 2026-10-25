@@ -1,5 +1,5 @@
 # RELEASE REGISTER: PANIN / KSHETRA
-**Last Updated:** 2026-09-29
+**Last Updated:** 2026-10-25
 **Standard:** AI Agent Master Execution Job Book & Amendment v1.2 (Sections 0.8, Parts 9–14)
 
 ---
@@ -26,6 +26,8 @@
 
 ---
 
+
+| `v0.1.0-w022-pending` | Not released — source only | Outbound Webhooks & Event Dispatching Engine | N/A | N/A | v1 | `3ac3f1c0c14d51d60bab9f9d3e88a08716466124` (existing source; not a release coordinate) | IMPLEMENTATION PERMITTED / INDEPENDENT VERIFICATION PENDING / STAGING EXECUTION NOT AUTHORIZED / PRODUCTION AIR-GAPPED | BE+SEC+QA | NOT RELEASED — no staging or production deployment evidence claimed |
 
 ### Release Size & Performance Gates
 - **Max Consumer AAB:** 30 MB (Target: ≤ 25 MB)
