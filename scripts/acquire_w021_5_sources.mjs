@@ -118,6 +118,20 @@ function sha256(buffer) {
 function safeName(value) {
   return value.replace(/[^a-zA-Z0-9._-]/g, '_');
 }
+
+async function mapWithConcurrency(items, limit, worker) {
+  const results = new Array(items.length);
+  let nextIndex = 0;
+  const workers = Array.from({ length: Math.min(limit, items.length) }, async () => {
+    while (true) {
+      const index = nextIndex++;
+      if (index >= items.length) return;
+      results[index] = await worker(items[index], index);
+    }
+  });
+  await Promise.all(workers);
+  return results;
+}
 function hostAllowed(url) {
   return ALLOWED_HOSTS.has(new URL(url).hostname.toLowerCase());
 }
@@ -289,7 +303,7 @@ if (eciIndex) {
     }
 
     const reportPages=[...byState.values()].flat().slice(0,62);
-    for (const page of reportPages) {
+    await mapWithConcurrency(reportPages, 4, async (page) => {
       const stateSlug=safeName(page.stateName.toLowerCase().replace(/\s+/g,'-'));
       const source={
         id:'SRC-ECI-AE-'+page.year+'-'+page.code,
@@ -304,6 +318,7 @@ if (eciIndex) {
       const result={...source,retrievedAt:new Date().toISOString(),status:'PENDING',sha256:null,bytes:null,finalUrl:null,contentType:null};
       let reportHtml='';
       try {
+        console.log('[ECI REPORT START]', source.id, source.url);
         const fetched=await fetchBounded(source.url);
         if (totalDownloadedBytes + fetched.bytes.byteLength > MAX_TOTAL_BYTES) throw new Error('TOTAL_DOWNLOAD_BUDGET_EXCEEDED');
         totalDownloadedBytes+=fetched.bytes.byteLength;
@@ -322,13 +337,13 @@ if (eciIndex) {
         result.error=String(error?.message||error);
       }
       manifest.results.push(result);
-      if (result.status!=='DOWNLOADED_HASHED') continue;
+      if (result.status!=='DOWNLOADED_HASHED') return;
 
       const headingPattern=/10\s*[-–.]\s*Detailed Results/i;
       const heading=headingPattern.exec(reportHtml);
       if (!heading) {
         manifest.results.push({id:source.id+'-DETAILS',state:page.stateName,electionYear:page.year,status:'DETAILS_SECTION_NOT_FOUND',sourceReportSha256:result.sha256});
-        continue;
+        return;
       }
       const section=reportHtml.slice(heading.index,heading.index+12000);
       const xlsxAnchors=[...section.matchAll(/<a\b[^>]*href\s*=\s*["']([^"']+)["'][^>]*>([\s\S]*?)<\/a>/gi)]
@@ -337,7 +352,7 @@ if (eciIndex) {
       const xlsx=xlsxAnchors.find(a=>/xlsx|excel/i.test(a.label)) || xlsxAnchors[1] || xlsxAnchors[0];
       if (!xlsx) {
         manifest.results.push({id:source.id+'-DETAILS',state:page.stateName,electionYear:page.year,status:'DETAILED_RESULTS_XLSX_LINK_NOT_FOUND',sourceReportSha256:result.sha256});
-        continue;
+        return;
       }
       const dataSource={
         id:source.id+'-DETAILED-RESULTS-XLSX',
@@ -370,7 +385,7 @@ if (eciIndex) {
         dataResult.error=String(error?.message||error);
       }
       manifest.results.push(dataResult);
-    }
+    });
     manifest.eciStateReportDiscovery={
       stateRowsDiscovered:byState.size,
       reportPagesSelected:reportPages.length,
