@@ -10,3 +10,5 @@ export * from './analytics/election-analytics';
 export * from './config/features';
 export * from './config/environments';
 export * from './contracts';
+
+export * from './dataProvenance';
