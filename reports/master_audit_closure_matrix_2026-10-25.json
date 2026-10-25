@@ -5,9 +5,9 @@
     "audit_date": "2026-10-25",
     "source_file": "PANIN_Kshetra_Master_Blueprint_Repository_Audit_2026-10-25.md",
     "source_observed_head": "9f00fbfa34d3d67b07fd5633501269715ee03c40",
-    "scope_count": 34,
+    "scope_count": 36,
     "p0_count": 17,
-    "p1_count": 17
+    "p1_count": 19
   },
   "execution": {
     "repository": "kshetra-app/Kshetra",
@@ -326,6 +326,24 @@
       "work": "Added export/report gate, but no accepted signed AAB/APK evidence yet.",
       "remaining": "Run permitted build; measure AAB, universal/split APK, JS, assets, native libraries and app start/map/feed latency on target devices.",
       "closureEvidence": "Reproducible artifact-size and device performance report."
+    },
+    {
+      "id": "I18N-01",
+      "priority": "P1",
+      "status": "PARTIAL_PENDING_CI",
+      "finding": "Locale parity and completeness have not been demonstrated uniformly across all 13 required languages.",
+      "work": "Changed the locale gate to strict mode so discrepancies cannot pass silently.",
+      "remaining": "Run the strict 13-language check, fill missing/incorrect translations across routes and notification/email templates, and verify formatting/accessibility fallback behavior.",
+      "closureEvidence": "Strict locale verifier passes with exact key parity or approved, machine-checked intentional exceptions; screenshots/string tests cover critical workflows."
+    },
+    {
+      "id": "DB-01",
+      "priority": "P1",
+      "status": "PARTIAL_BLOCKED_DB_HISTORY",
+      "finding": "Two migration files share version prefix 023 and migration identity is not unique.",
+      "work": "Added a whole-tree version uniqueness gate; removed duplicate active 023 file and represented its schema/grants as forward reconciliation migrations 072 and 073.",
+      "remaining": "Do not execute until authorized DBA confirms real applied migration history and validates idempotency, ownership, grants, triggers, policies and schema dependency order in disposable PostgreSQL first.",
+      "closureEvidence": "Unique migration versions; disposable PostgreSQL applies all migrations cleanly; DBA-approved applied-history reconciliation for target environment."
     }
   ]
 }
