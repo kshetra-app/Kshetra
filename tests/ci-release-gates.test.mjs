@@ -51,12 +51,14 @@ try {
   expectFailure('Prettier formatting violation', 'npx', ['--no-install', 'prettier', '--check', unformatted]);
 
   // ESLint: use the repository's installed ESLint and an explicit rule that must fail.
-  const lintFixture = path.join(temp, 'lint-fixture.ts');
-  fs.writeFileSync(lintFixture, 'const deliberatelyUnused: number = 1;\n');
+  const lintFixture = path.join(temp, 'lint-fixture.js');
+  fs.writeFileSync(lintFixture, 'const deliberatelyUnused = 1;\n');
+  const eslintConfig = path.join(temp, 'eslint.config.mjs');
+  fs.writeFileSync(eslintConfig, `export default [{ files: ['**/*.js'], rules: { 'no-unused-vars': 'error' } }];\n`);
   expectFailure(
     'ESLint deliberate lint error',
     'npx',
-    ['--no-install', 'eslint', '--no-ignore', '--no-warn-ignored', '--rule', '{"no-unused-vars":"error"}', lintFixture],
+    ['--no-install', 'eslint', '--no-config-lookup', '--config', eslintConfig, lintFixture],
   );
 
   // npm audit: a disposable project with a known vulnerable direct dependency.
