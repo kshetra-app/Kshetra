@@ -239,14 +239,15 @@
       "retrievedAt": "2026-10-25",
       "format": "JavaScript-wrapped GeoJSON by state election portal",
       "authority": "PRIMARY_PORTAL_DATA_CANDIDATE",
-      "status": "DIRECT_JS_URLS_404_CONFIRMED_FOR_FIVE_2026_JURISDICTIONS",
+      "status": "DIRECT_JS_URLS_404; SECONDARY_MIRROR_BUNDLE_ACQUIRED_AND_AUDITED",
       "sha256": null,
       "fileBytes": null,
       "scope": "Repository documents five state/UT files for Assam, Puducherry, Kerala, Tamil Nadu and West Bengal for the May 2026 election context",
       "limitations": [
         "Initial acquisition run returned HTTP 404 for guessed JavaScript URLs; direct retry with browser headers and pinned third-party GeoJSON candidates is in progress.",
         "Election-cycle-specific geometry is not a universal 31-state current boundary release and must be checked for temporal/statutory applicability.",
-        "Focused probe 40212122850 returned HTTP 404 for all five /ac/{STATE_CODE}.js URLs; no raw official geometry was acquired."
+        "Focused probe 40212122850 returned HTTP 404 for all five /ac/{STATE_CODE}.js URLs; no raw official geometry was acquired.",
+        "All five direct ECI /ac/{STATE_CODE}.js URLs returned HTTP 404. Pinned third-party mirror GeoJSONs were acquired and audited; 824 features and AC_NO sequences match expected counts, but 23 raw geometries are invalid and 1,337 positive-area overlap pairs were detected after diagnostic make_valid. Not accepted for canonical geometry."
       ],
       "plannedUse": "Investigate portal-native geometry and provenance for the covered jurisdictions only.",
       "lastProbe": {
@@ -262,7 +263,60 @@
         "errorBodyBytes": 196,
         "errorBodySha256": "80c3fe2ae1062abf56456f52518bd670f9ec3917b7f85e152b347ac6b6faf880",
         "conclusion": "Do not repeat these exact URLs as a presumed source; investigate current ECI portal HTML/routes or request source from ECI/CEO custodians."
-      }
+      },
+      "secondaryBundleAudit": "reports/evidence/w021_5_eci_mirror_geometry_audit_2026-10-25.json",
+      "secondaryBundleFiles": [
+        {
+          "code": "S03",
+          "name": "Assam",
+          "bytes": 11431537,
+          "sha256": "2b3efc17aea2adedf25bb598dd0256f878ed01f74de5299a2e0b02790536fb25",
+          "features": 126,
+          "invalid": 20,
+          "overlapPairs": 133,
+          "url": "https://raw.githubusercontent.com/saisantoshv3/assemnbly_gis_files/730263a08afa3cf7a0cd12db68bcddc90aefcc03/2026_assembly_election/assam_S03/assam.geojson"
+        },
+        {
+          "code": "U07",
+          "name": "Puducherry",
+          "bytes": 835011,
+          "sha256": "2786e744aa7394c85d977a317a1d1e33cb3eb78dbea45a272375fc9a48e54338",
+          "features": 30,
+          "invalid": 0,
+          "overlapPairs": 26,
+          "url": "https://raw.githubusercontent.com/saisantoshv3/assemnbly_gis_files/730263a08afa3cf7a0cd12db68bcddc90aefcc03/2026_assembly_election/puducherry_U07/puducherry.geojson"
+        },
+        {
+          "code": "S11",
+          "name": "Kerala",
+          "bytes": 3111688,
+          "sha256": "5077be94e655e748322a0089a94b70f253dcbf856c747b2583530e575dc9aac5",
+          "features": 140,
+          "invalid": 1,
+          "overlapPairs": 171,
+          "url": "https://raw.githubusercontent.com/saisantoshv3/assemnbly_gis_files/730263a08afa3cf7a0cd12db68bcddc90aefcc03/2026_assembly_election/kerala_S11/kerala.geojson"
+        },
+        {
+          "code": "S22",
+          "name": "Tamil Nadu",
+          "bytes": 5258525,
+          "sha256": "410d0d16df7fe8397691ea3c2c47d875ce6dc17a9c9dbcd588786d0b36339611",
+          "features": 234,
+          "invalid": 2,
+          "overlapPairs": 484,
+          "url": "https://raw.githubusercontent.com/saisantoshv3/assemnbly_gis_files/730263a08afa3cf7a0cd12db68bcddc90aefcc03/2026_assembly_election/tamil_nadu_S22/tamil_nadu.geojson"
+        },
+        {
+          "code": "S25",
+          "name": "West Bengal",
+          "bytes": 8825360,
+          "sha256": "62755085e5d904d0985e06bdccbe664b7ba22de5bda5c671735a54d19e6eaf2c",
+          "features": 294,
+          "invalid": 0,
+          "overlapPairs": 523,
+          "url": "https://raw.githubusercontent.com/saisantoshv3/assemnbly_gis_files/730263a08afa3cf7a0cd12db68bcddc90aefcc03/2026_assembly_election/west_bengal_S25/west_bengal.geojson"
+        }
+      ]
     },
     {
       "sourceId": "SRC-SOI-ABDB-ARCHIVE",
@@ -288,14 +342,126 @@
       "retrievedAt": "2026-10-25",
       "format": "Official data index / linked archive",
       "authority": "PRIMARY_OFFICIAL_SOURCE",
-      "status": "DOWNLOADED_HASHED",
+      "status": "PARTIAL_14_OF_27_ARCHIVES_DOWNLOADED_AND_AUDITED",
       "sha256": "013965f98dc51a6dc0cf2b5a35c4c578d5d4ec5d2e86b1cf61a2bb9f80527f0a",
       "fileBytes": 115971,
       "limitations": [
-        "Village boundaries can support administrative crosswalks but are not AC boundaries; any population overlay would be DERIVED and depends on accepted AC geometry."
+        "Village boundaries can support administrative crosswalks but are not AC boundaries; any population overlay would be DERIVED and depends on accepted AC geometry.",
+        "These are village/administrative boundary polygons, not AC polygons or India Post delivery-beat polygons. 13/27 archives remain missing; the 14 audited archives contain 37 invalid geometries and one CRS metadata conflict."
       ],
       "plannedUse": "Acquire and inspect archive/metadata; use only for documented administrative spatial joins.",
-      "lastAttemptRunId": 40211792541
+      "lastAttemptRunId": 40211792541,
+      "acquisitionRunId": 40211792541,
+      "auditSummary": {
+        "expectedArchives": 27,
+        "downloadedAndAuditedArchives": 14,
+        "missingArchives": 13,
+        "auditFailures": 0,
+        "totalFeatures": 71484,
+        "invalidGeometries": 37,
+        "crsMetadataConflicts": 1,
+        "acceptedAsAssemblyConstituencyGeometry": false
+      },
+      "downloadedArchives": [
+        {
+          "state": "Andaman and Nicobar Islands",
+          "slug": "ANB",
+          "bytes": 2520239,
+          "sha256": "c0dd58a5d37c2b70ece91848da229b60c132b27394c012aec12e8ce4164f70ae",
+          "url": "https://surveyofindia.gov.in/documents/ANDAMAN_%26_NICOBAR_ISLANDS.zip"
+        },
+        {
+          "state": "Chandigarh",
+          "slug": "CHD",
+          "bytes": 162993,
+          "sha256": "957912107568f261c234396faeca4703dfc80768085dc32c53ea29479d2c2db4",
+          "url": "https://surveyofindia.gov.in/documents/CHANDIGARH.zip"
+        },
+        {
+          "state": "Dadra Nagar Haveli and Daman Diu",
+          "slug": "DNHDD",
+          "bytes": 110827,
+          "sha256": "52620001ecca83b3a6fb9cb5fb712602936dffafb59d587891b92fb8e05dfbc2",
+          "url": "https://surveyofindia.gov.in/documents/Dadra%20Nagar%20Haveli%20%26%20Daman%20Diu.zip"
+        },
+        {
+          "state": "Delhi",
+          "slug": "DEL",
+          "bytes": 2009187,
+          "sha256": "2668ca29a5f16c4b1f6bcd06f51e0d4aee0b1a5c1d24cfe885764ce225edf2bc",
+          "url": "https://surveyofindia.gov.in/documents/DELHI.zip"
+        },
+        {
+          "state": "Goa",
+          "slug": "GOA",
+          "bytes": 1078822,
+          "sha256": "dec00aa615023ecba2815c14aa9ffe5dacdcd30780caf38c84e7a8eef6d58d3e",
+          "url": "https://surveyofindia.gov.in/documents/GOA.zip"
+        },
+        {
+          "state": "Haryana",
+          "slug": "HAR",
+          "bytes": 9667232,
+          "sha256": "26cbd66f2f6b3217417b182157b96e4bf2956516789c027668193162076740af",
+          "url": "https://surveyofindia.gov.in/documents/HARYANA.zip"
+        },
+        {
+          "state": "Jharkhand",
+          "slug": "JHA",
+          "bytes": 19134070,
+          "sha256": "6c4840611e0f06381c5fa5d1f32add1ec51ce8f5ba50f7fac9e2f2cd9c3852f0",
+          "url": "https://surveyofindia.gov.in/documents/JHARKHAND.zip"
+        },
+        {
+          "state": "Kerala",
+          "slug": "KER",
+          "bytes": 4182966,
+          "sha256": "d022f7ac68639b1c4ce663bd95eaf3130f72a61502ff75d46b1122bee141d32c",
+          "url": "https://surveyofindia.gov.in/documents/KERALA.zip"
+        },
+        {
+          "state": "Lakshadweep",
+          "slug": "LAK",
+          "bytes": 25823,
+          "sha256": "5d99655f345b51ed92bcb629a5aa34098fd3d66b4299f74f0c920fc55f7e405d",
+          "url": "https://surveyofindia.gov.in/documents/LAKSHYADWEEP.zip"
+        },
+        {
+          "state": "Puducherry",
+          "slug": "PY",
+          "bytes": 485176,
+          "sha256": "a9861f28aba9a57b348fcf98b2c3452f7eb69e01da8249fab6b9aea222c6601f",
+          "url": "https://surveyofindia.gov.in/documents/PUNDUCHERRY.zip"
+        },
+        {
+          "state": "Sikkim",
+          "slug": "SKM",
+          "bytes": 5017958,
+          "sha256": "c2eb3722157e89bce0c5dbce932f3821472d2744915ad7a52224e04947ae91be",
+          "url": "https://surveyofindia.gov.in/documents/SIKKIM.zip"
+        },
+        {
+          "state": "Telangana",
+          "slug": "TS",
+          "bytes": 13253610,
+          "sha256": "7549e9ebd84b7bc2ec36265afcd2077a97f12d8d73a65aa3968f137f8958b9ea",
+          "url": "https://surveyofindia.gov.in/documents/TELANGANA.zip"
+        },
+        {
+          "state": "Tripura",
+          "slug": "TRI",
+          "bytes": 19775520,
+          "sha256": "f8759d866f8712462b7838c847b7175e29d76547721f010ab5b9e5944a15b0a8",
+          "url": "https://surveyofindia.gov.in/documents/TRIPURA.zip"
+        },
+        {
+          "state": "Uttarakhand",
+          "slug": "UK",
+          "bytes": 16256209,
+          "sha256": "82e03667949eeb8810f8cc2e3a846b284be940c74b057e21354e236119576b14",
+          "url": "https://surveyofindia.gov.in/documents/UTTARAKHAND.zip"
+        }
+      ]
     },
     {
       "sourceId": "SRC-SECONDARY-ECI-2026-AC-U07-CONNECTOR-PROBE",
@@ -374,6 +540,198 @@
         "The service name includes 2026 but effective date, ownership of AC boundary data, reuse terms, and legal alignment are unverified.",
         "Do not treat as authoritative until compared with the 119-seat statutory roster and the older service layer."
       ]
+    },
+    {
+      "sourceId": "SRC-SECONDARY-ECI-2026-AC-GEO-BUNDLE",
+      "subject": "Five 2026 assembly constituency GeoJSON mirror files for Assam, Puducherry, Kerala, Tamil Nadu and West Bengal",
+      "publisher": "saisantoshv3/assemnbly_gis_files, pinned commit 730263a08afa3cf7a0cd12db68bcddc90aefcc03",
+      "authority": "SECONDARY_DERIVED_FROM_ECI_RESULT_PORTAL",
+      "status": "DOWNLOADED_HASHED_AND_FORENSICALLY_AUDITED_NOT_ACCEPTED",
+      "sourceRepositoryCommit": "730263a08afa3cf7a0cd12db68bcddc90aefcc03",
+      "files": [
+        {
+          "code": "S03",
+          "name": "Assam",
+          "bytes": 11431537,
+          "sha256": "2b3efc17aea2adedf25bb598dd0256f878ed01f74de5299a2e0b02790536fb25",
+          "features": 126,
+          "invalid": 20,
+          "overlapPairs": 133,
+          "url": "https://raw.githubusercontent.com/saisantoshv3/assemnbly_gis_files/730263a08afa3cf7a0cd12db68bcddc90aefcc03/2026_assembly_election/assam_S03/assam.geojson"
+        },
+        {
+          "code": "U07",
+          "name": "Puducherry",
+          "bytes": 835011,
+          "sha256": "2786e744aa7394c85d977a317a1d1e33cb3eb78dbea45a272375fc9a48e54338",
+          "features": 30,
+          "invalid": 0,
+          "overlapPairs": 26,
+          "url": "https://raw.githubusercontent.com/saisantoshv3/assemnbly_gis_files/730263a08afa3cf7a0cd12db68bcddc90aefcc03/2026_assembly_election/puducherry_U07/puducherry.geojson"
+        },
+        {
+          "code": "S11",
+          "name": "Kerala",
+          "bytes": 3111688,
+          "sha256": "5077be94e655e748322a0089a94b70f253dcbf856c747b2583530e575dc9aac5",
+          "features": 140,
+          "invalid": 1,
+          "overlapPairs": 171,
+          "url": "https://raw.githubusercontent.com/saisantoshv3/assemnbly_gis_files/730263a08afa3cf7a0cd12db68bcddc90aefcc03/2026_assembly_election/kerala_S11/kerala.geojson"
+        },
+        {
+          "code": "S22",
+          "name": "Tamil Nadu",
+          "bytes": 5258525,
+          "sha256": "410d0d16df7fe8397691ea3c2c47d875ce6dc17a9c9dbcd588786d0b36339611",
+          "features": 234,
+          "invalid": 2,
+          "overlapPairs": 484,
+          "url": "https://raw.githubusercontent.com/saisantoshv3/assemnbly_gis_files/730263a08afa3cf7a0cd12db68bcddc90aefcc03/2026_assembly_election/tamil_nadu_S22/tamil_nadu.geojson"
+        },
+        {
+          "code": "S25",
+          "name": "West Bengal",
+          "bytes": 8825360,
+          "sha256": "62755085e5d904d0985e06bdccbe664b7ba22de5bda5c671735a54d19e6eaf2c",
+          "features": 294,
+          "invalid": 0,
+          "overlapPairs": 523,
+          "url": "https://raw.githubusercontent.com/saisantoshv3/assemnbly_gis_files/730263a08afa3cf7a0cd12db68bcddc90aefcc03/2026_assembly_election/west_bengal_S25/west_bengal.geojson"
+        }
+      ],
+      "auditReport": "reports/evidence/w021_5_eci_mirror_geometry_audit_2026-10-25.json",
+      "aggregateAudit": {
+        "expectedFeatures": 824,
+        "acNoUnique": 824,
+        "acNoSequencesContiguous": true,
+        "rawInvalidGeometries": 23,
+        "positiveAreaOverlapPairsAfterMakeValid": 1337,
+        "officialRawEciBytesAcquired": false
+      },
+      "licenseStatus": "NO_LICENSE_FILE_FOUND_IN_REVIEWED_SOURCE_REPOSITORY_ROOT; DO NOT VENDOR UNTIL REUSE RIGHTS ARE ESTABLISHED",
+      "plannedUse": "Secondary discrepancy/reference layer only; no canonical import."
+    },
+    {
+      "sourceId": "SRC-SOI-VILLAGE-ARCHIVES-PARTIAL-2026",
+      "subject": "Survey of India official village boundary archives — partial national acquisition",
+      "publisher": "Survey of India",
+      "authority": "OFFICIAL_ADMINISTRATIVE_GEOMETRY_NOT_AC_GEOMETRY",
+      "status": "PARTIAL_14_OF_27_DOWNLOADED_AND_AUDITED",
+      "files": [
+        {
+          "state": "Andaman and Nicobar Islands",
+          "slug": "ANB",
+          "bytes": 2520239,
+          "sha256": "c0dd58a5d37c2b70ece91848da229b60c132b27394c012aec12e8ce4164f70ae",
+          "url": "https://surveyofindia.gov.in/documents/ANDAMAN_%26_NICOBAR_ISLANDS.zip"
+        },
+        {
+          "state": "Chandigarh",
+          "slug": "CHD",
+          "bytes": 162993,
+          "sha256": "957912107568f261c234396faeca4703dfc80768085dc32c53ea29479d2c2db4",
+          "url": "https://surveyofindia.gov.in/documents/CHANDIGARH.zip"
+        },
+        {
+          "state": "Dadra Nagar Haveli and Daman Diu",
+          "slug": "DNHDD",
+          "bytes": 110827,
+          "sha256": "52620001ecca83b3a6fb9cb5fb712602936dffafb59d587891b92fb8e05dfbc2",
+          "url": "https://surveyofindia.gov.in/documents/Dadra%20Nagar%20Haveli%20%26%20Daman%20Diu.zip"
+        },
+        {
+          "state": "Delhi",
+          "slug": "DEL",
+          "bytes": 2009187,
+          "sha256": "2668ca29a5f16c4b1f6bcd06f51e0d4aee0b1a5c1d24cfe885764ce225edf2bc",
+          "url": "https://surveyofindia.gov.in/documents/DELHI.zip"
+        },
+        {
+          "state": "Goa",
+          "slug": "GOA",
+          "bytes": 1078822,
+          "sha256": "dec00aa615023ecba2815c14aa9ffe5dacdcd30780caf38c84e7a8eef6d58d3e",
+          "url": "https://surveyofindia.gov.in/documents/GOA.zip"
+        },
+        {
+          "state": "Haryana",
+          "slug": "HAR",
+          "bytes": 9667232,
+          "sha256": "26cbd66f2f6b3217417b182157b96e4bf2956516789c027668193162076740af",
+          "url": "https://surveyofindia.gov.in/documents/HARYANA.zip"
+        },
+        {
+          "state": "Jharkhand",
+          "slug": "JHA",
+          "bytes": 19134070,
+          "sha256": "6c4840611e0f06381c5fa5d1f32add1ec51ce8f5ba50f7fac9e2f2cd9c3852f0",
+          "url": "https://surveyofindia.gov.in/documents/JHARKHAND.zip"
+        },
+        {
+          "state": "Kerala",
+          "slug": "KER",
+          "bytes": 4182966,
+          "sha256": "d022f7ac68639b1c4ce663bd95eaf3130f72a61502ff75d46b1122bee141d32c",
+          "url": "https://surveyofindia.gov.in/documents/KERALA.zip"
+        },
+        {
+          "state": "Lakshadweep",
+          "slug": "LAK",
+          "bytes": 25823,
+          "sha256": "5d99655f345b51ed92bcb629a5aa34098fd3d66b4299f74f0c920fc55f7e405d",
+          "url": "https://surveyofindia.gov.in/documents/LAKSHYADWEEP.zip"
+        },
+        {
+          "state": "Puducherry",
+          "slug": "PY",
+          "bytes": 485176,
+          "sha256": "a9861f28aba9a57b348fcf98b2c3452f7eb69e01da8249fab6b9aea222c6601f",
+          "url": "https://surveyofindia.gov.in/documents/PUNDUCHERRY.zip"
+        },
+        {
+          "state": "Sikkim",
+          "slug": "SKM",
+          "bytes": 5017958,
+          "sha256": "c2eb3722157e89bce0c5dbce932f3821472d2744915ad7a52224e04947ae91be",
+          "url": "https://surveyofindia.gov.in/documents/SIKKIM.zip"
+        },
+        {
+          "state": "Telangana",
+          "slug": "TS",
+          "bytes": 13253610,
+          "sha256": "7549e9ebd84b7bc2ec36265afcd2077a97f12d8d73a65aa3968f137f8958b9ea",
+          "url": "https://surveyofindia.gov.in/documents/TELANGANA.zip"
+        },
+        {
+          "state": "Tripura",
+          "slug": "TRI",
+          "bytes": 19775520,
+          "sha256": "f8759d866f8712462b7838c847b7175e29d76547721f010ab5b9e5944a15b0a8",
+          "url": "https://surveyofindia.gov.in/documents/TRIPURA.zip"
+        },
+        {
+          "state": "Uttarakhand",
+          "slug": "UK",
+          "bytes": 16256209,
+          "sha256": "82e03667949eeb8810f8cc2e3a846b284be940c74b057e21354e236119576b14",
+          "url": "https://surveyofindia.gov.in/documents/UTTARAKHAND.zip"
+        }
+      ],
+      "auditReportArtifact": "w0215-source-acquisition-40211792541/soi-village-boundary-audit.json",
+      "summary": {
+        "expectedArchives": 27,
+        "downloadedAndAuditedArchives": 14,
+        "missingArchives": 13,
+        "auditFailures": 0,
+        "totalFeatures": 71484,
+        "invalidGeometries": 37,
+        "crsMetadataConflicts": 1
+      },
+      "limitations": [
+        "Village boundaries are not AC boundaries or India Post delivery-beat polygons.",
+        "The source is incomplete and has geometry/CRS defects; no AC containment conclusion is supported."
+      ]
     }
   ],
   "unresolvedGates": [
@@ -436,13 +794,177 @@
     {
       "runId": 40211792541,
       "workflowUrl": "https://github.com/kshetra-app/Kshetra/actions/runs/40211792541",
-      "artifactId": null,
-      "artifactName": null,
-      "artifactSha256": null,
-      "uncompressedBytes": null,
-      "manifestSummary": null,
-      "status": "IN_PROGRESS_AT_LAST_CHECK; DO NOT CLAIM SOURCE ACQUISITION UNTIL ARTIFACT MANIFEST IS INSPECTED",
-      "scope": "Retry of allowlisted public-source acquisition with browser headers, pinned DataMeet components, official ECI result-portal geometry URLs, Survey of India administrative/village boundary resources, and bounded ECI statistical-report discovery."
+      "artifactId": 12606480050,
+      "artifactName": "w0215-source-acquisition-40211792541",
+      "artifactSha256": "05531bc8037dca81eb4af0ba93cf7e397594a02643b1bb311cb463abd78cfdfa",
+      "uncompressedBytes": 142327256,
+      "manifestSummary": {
+        "totalSources": 61,
+        "downloaded": 31,
+        "failed": 24,
+        "totalDownloadedBytes": 142219649,
+        "officialDownloads": 21,
+        "secondaryCandidateDownloads": 10,
+        "derivedGeometryAcceptedAsOfficial": 0
+      },
+      "status": "COMPLETED_SUCCESS_WITH_PARTIAL_SOURCE_COVERAGE",
+      "scope": "Retry of allowlisted public-source acquisition with browser headers, pinned DataMeet components, official ECI result-portal geometry URLs, Survey of India administrative/village boundary resources, and bounded ECI statistical-report discovery.",
+      "compressedBytes": 113470251,
+      "artifactExpiresAt": "2026-11-08T16:35:47Z",
+      "downloadedFiles": {
+        "eciMirrorGeoJSON": [
+          {
+            "code": "S03",
+            "name": "Assam",
+            "bytes": 11431537,
+            "sha256": "2b3efc17aea2adedf25bb598dd0256f878ed01f74de5299a2e0b02790536fb25",
+            "features": 126,
+            "invalid": 20,
+            "overlapPairs": 133,
+            "url": "https://raw.githubusercontent.com/saisantoshv3/assemnbly_gis_files/730263a08afa3cf7a0cd12db68bcddc90aefcc03/2026_assembly_election/assam_S03/assam.geojson"
+          },
+          {
+            "code": "U07",
+            "name": "Puducherry",
+            "bytes": 835011,
+            "sha256": "2786e744aa7394c85d977a317a1d1e33cb3eb78dbea45a272375fc9a48e54338",
+            "features": 30,
+            "invalid": 0,
+            "overlapPairs": 26,
+            "url": "https://raw.githubusercontent.com/saisantoshv3/assemnbly_gis_files/730263a08afa3cf7a0cd12db68bcddc90aefcc03/2026_assembly_election/puducherry_U07/puducherry.geojson"
+          },
+          {
+            "code": "S11",
+            "name": "Kerala",
+            "bytes": 3111688,
+            "sha256": "5077be94e655e748322a0089a94b70f253dcbf856c747b2583530e575dc9aac5",
+            "features": 140,
+            "invalid": 1,
+            "overlapPairs": 171,
+            "url": "https://raw.githubusercontent.com/saisantoshv3/assemnbly_gis_files/730263a08afa3cf7a0cd12db68bcddc90aefcc03/2026_assembly_election/kerala_S11/kerala.geojson"
+          },
+          {
+            "code": "S22",
+            "name": "Tamil Nadu",
+            "bytes": 5258525,
+            "sha256": "410d0d16df7fe8397691ea3c2c47d875ce6dc17a9c9dbcd588786d0b36339611",
+            "features": 234,
+            "invalid": 2,
+            "overlapPairs": 484,
+            "url": "https://raw.githubusercontent.com/saisantoshv3/assemnbly_gis_files/730263a08afa3cf7a0cd12db68bcddc90aefcc03/2026_assembly_election/tamil_nadu_S22/tamil_nadu.geojson"
+          },
+          {
+            "code": "S25",
+            "name": "West Bengal",
+            "bytes": 8825360,
+            "sha256": "62755085e5d904d0985e06bdccbe664b7ba22de5bda5c671735a54d19e6eaf2c",
+            "features": 294,
+            "invalid": 0,
+            "overlapPairs": 523,
+            "url": "https://raw.githubusercontent.com/saisantoshv3/assemnbly_gis_files/730263a08afa3cf7a0cd12db68bcddc90aefcc03/2026_assembly_election/west_bengal_S25/west_bengal.geojson"
+          }
+        ],
+        "soiVillageArchives": [
+          {
+            "state": "Andaman and Nicobar Islands",
+            "slug": "ANB",
+            "bytes": 2520239,
+            "sha256": "c0dd58a5d37c2b70ece91848da229b60c132b27394c012aec12e8ce4164f70ae",
+            "url": "https://surveyofindia.gov.in/documents/ANDAMAN_%26_NICOBAR_ISLANDS.zip"
+          },
+          {
+            "state": "Chandigarh",
+            "slug": "CHD",
+            "bytes": 162993,
+            "sha256": "957912107568f261c234396faeca4703dfc80768085dc32c53ea29479d2c2db4",
+            "url": "https://surveyofindia.gov.in/documents/CHANDIGARH.zip"
+          },
+          {
+            "state": "Dadra Nagar Haveli and Daman Diu",
+            "slug": "DNHDD",
+            "bytes": 110827,
+            "sha256": "52620001ecca83b3a6fb9cb5fb712602936dffafb59d587891b92fb8e05dfbc2",
+            "url": "https://surveyofindia.gov.in/documents/Dadra%20Nagar%20Haveli%20%26%20Daman%20Diu.zip"
+          },
+          {
+            "state": "Delhi",
+            "slug": "DEL",
+            "bytes": 2009187,
+            "sha256": "2668ca29a5f16c4b1f6bcd06f51e0d4aee0b1a5c1d24cfe885764ce225edf2bc",
+            "url": "https://surveyofindia.gov.in/documents/DELHI.zip"
+          },
+          {
+            "state": "Goa",
+            "slug": "GOA",
+            "bytes": 1078822,
+            "sha256": "dec00aa615023ecba2815c14aa9ffe5dacdcd30780caf38c84e7a8eef6d58d3e",
+            "url": "https://surveyofindia.gov.in/documents/GOA.zip"
+          },
+          {
+            "state": "Haryana",
+            "slug": "HAR",
+            "bytes": 9667232,
+            "sha256": "26cbd66f2f6b3217417b182157b96e4bf2956516789c027668193162076740af",
+            "url": "https://surveyofindia.gov.in/documents/HARYANA.zip"
+          },
+          {
+            "state": "Jharkhand",
+            "slug": "JHA",
+            "bytes": 19134070,
+            "sha256": "6c4840611e0f06381c5fa5d1f32add1ec51ce8f5ba50f7fac9e2f2cd9c3852f0",
+            "url": "https://surveyofindia.gov.in/documents/JHARKHAND.zip"
+          },
+          {
+            "state": "Kerala",
+            "slug": "KER",
+            "bytes": 4182966,
+            "sha256": "d022f7ac68639b1c4ce663bd95eaf3130f72a61502ff75d46b1122bee141d32c",
+            "url": "https://surveyofindia.gov.in/documents/KERALA.zip"
+          },
+          {
+            "state": "Lakshadweep",
+            "slug": "LAK",
+            "bytes": 25823,
+            "sha256": "5d99655f345b51ed92bcb629a5aa34098fd3d66b4299f74f0c920fc55f7e405d",
+            "url": "https://surveyofindia.gov.in/documents/LAKSHYADWEEP.zip"
+          },
+          {
+            "state": "Puducherry",
+            "slug": "PY",
+            "bytes": 485176,
+            "sha256": "a9861f28aba9a57b348fcf98b2c3452f7eb69e01da8249fab6b9aea222c6601f",
+            "url": "https://surveyofindia.gov.in/documents/PUNDUCHERRY.zip"
+          },
+          {
+            "state": "Sikkim",
+            "slug": "SKM",
+            "bytes": 5017958,
+            "sha256": "c2eb3722157e89bce0c5dbce932f3821472d2744915ad7a52224e04947ae91be",
+            "url": "https://surveyofindia.gov.in/documents/SIKKIM.zip"
+          },
+          {
+            "state": "Telangana",
+            "slug": "TS",
+            "bytes": 13253610,
+            "sha256": "7549e9ebd84b7bc2ec36265afcd2077a97f12d8d73a65aa3968f137f8958b9ea",
+            "url": "https://surveyofindia.gov.in/documents/TELANGANA.zip"
+          },
+          {
+            "state": "Tripura",
+            "slug": "TRI",
+            "bytes": 19775520,
+            "sha256": "f8759d866f8712462b7838c847b7175e29d76547721f010ab5b9e5944a15b0a8",
+            "url": "https://surveyofindia.gov.in/documents/TRIPURA.zip"
+          },
+          {
+            "state": "Uttarakhand",
+            "slug": "UK",
+            "bytes": 16256209,
+            "sha256": "82e03667949eeb8810f8cc2e3a846b284be940c74b057e21354e236119576b14",
+            "url": "https://surveyofindia.gov.in/documents/UTTARAKHAND.zip"
+          }
+        ]
+      }
     },
     {
       "runId": 40212122850,
@@ -526,7 +1048,7 @@
       "stagingWrites": 0
     }
   ],
-  "updatedAt": "2026-10-25T16:38:00Z",
+  "updatedAt": "2026-10-25T16:39:00Z",
   "notes": [
     "Actual public source artifacts were downloaded in GitHub Actions run 40209022405 and SHA-256 hashed; detailed geometry findings are in reports/w021_5_datameet_ac_geometry_forensic_audit.json.",
     "Survey of India official ABDB page, Vector Data Catalog 2025 PDF and Metadata_ABDB.zip were downloaded and hashed. The metadata covers state, district, subdistrict and village boundaries, not statutory Assembly Constituency polygons.",
@@ -535,7 +1057,8 @@
     "Retry workflow 40211792541 is currently in progress; no artifact has been published at last check. The prior completed run 40209022405 remains the only workflow artifact reviewed so far. Do not assume the retry succeeded.",
     "Focused official geometry probe 40212122850 was queued to prioritize the five direct ECI endpoints and Telangana state GIS layer; it is separate from the broad source-acquisition retry 40211792541. Inspect its uploaded manifest before making claims.",
     "Focused geometry probe run 40212122850 independently confirmed all five ECI .js URLs return 404 and the Telangana ArcGIS metadata endpoint is reachable. The initial f=geojson query was unsupported; corrected f=json query is queued in 40212257196. The probe ZIP SHA-256 was independently verified as e30baeff7c4ba94b0eee8d0e3fda41ddd7262a9880f7f4ac8e6ad9b9d7ce270e.",
-    "Telangana layer 24 geometry was acquired in run 40212257196 (119 features; SHA-256 91cd791317836d8a6a8729b03f08fd3aee8c727c82e123b1659972d949d32f27). Independent Shapely audit found one self-intersection in Dornakal (ST) Assembly; this candidate is not accepted. A second service EndowmentLands_Admin_2026/MapServer/12 is under probe in run 40212441232."
+    "Telangana layer 24 geometry was acquired in run 40212257196 (119 features; SHA-256 91cd791317836d8a6a8729b03f08fd3aee8c727c82e123b1659972d949d32f27). Independent Shapely audit found one self-intersection in Dornakal (ST) Assembly; this candidate is not accepted. A second service EndowmentLands_Admin_2026/MapServer/12 is under probe in run 40212441232.",
+    "Broad source-acquisition run 40211792541 completed successfully: 31/61 source artifacts downloaded and hashed (142,219,649 source bytes), 24 failed. Five ECI-derived mirror GeoJSONs were acquired but rejected for canonical use after topology audit. Survey of India village boundaries were acquired for 14/27 jurisdictions, with 71,484 features, 37 invalid geometries, one CRS metadata conflict; they are not AC polygons or delivery-beat polygons."
   ],
   "secondaryGeometryAudit": {
     "sourceRepository": "https://github.com/saisantoshv3/assemnbly_gis_files",
