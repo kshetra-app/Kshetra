@@ -1,3 +1,4 @@
+import type { FactProvenance } from '../dataProvenance';
 import type { ConstituencyHierarchy } from './hierarchy';
 
 export type ConstituencyType = 'ASSEMBLY' | 'PARLIAMENTARY';
@@ -119,7 +120,9 @@ export interface ConstituencyBrief {
   district: string;
   reservationStatus: ReservationStatus;
   currentParty: string;
-  currentMLA: string;
+  currentMLA: string | null;
+  /** Source truth for fields carried by this DTO. Field-level provenance remains authoritative. */
+  provenance?: Record<string, FactProvenance>;
 }
 
 export interface ConstituencyDetail extends ConstituencyBrief {
@@ -136,31 +139,36 @@ export interface ConstituencyDetail extends ConstituencyBrief {
 }
 
 export interface ConstituencyDemographics {
-  population: number;
-  literacyRate: number;
-  urbanRural: { urban: number; rural: number };
-  genderRatio: number;
-  scPercentage: number;
-  stPercentage: number;
+  population: number | null;
+  literacyRate: number | null;
+  urbanRural: { urban: number | null; rural: number | null };
+  genderRatio: number | null;
+  scPercentage: number | null;
+  stPercentage: number | null;
+  /** Provenance is per metric; missing metrics must remain null. */
+  provenance?: Record<string, FactProvenance>;
 }
 
 export interface ElectionResult {
   year: number;
   electionType: 'GENERAL' | 'BYPOLL';
-  winner: CandidateResult;
-  runnerUp: CandidateResult;
-  totalVoters: number;
-  votesPolled: number;
-  turnout: number;
-  margin: number;
+  winner: CandidateResult | null;
+  runnerUp: CandidateResult | null;
+  totalVoters: number | null;
+  votesPolled: number | null;
+  turnout: number | null;
+  margin: number | null;
   candidates: CandidateResult[];
+  /** Provenance by fact key; no status is inferred from numeric values. */
+  provenance?: Record<string, FactProvenance>;
 }
 
 export interface CandidateResult {
-  name: string;
-  party: PartyCode;
-  votes: number;
-  voteShare: number;
+  name: string | null;
+  party: PartyCode | null;
+  votes: number | null;
+  voteShare: number | null;
+  provenance?: Record<string, FactProvenance>;
 }
 
 export interface StateInfo {
