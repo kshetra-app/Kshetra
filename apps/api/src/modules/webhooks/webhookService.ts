@@ -403,8 +403,9 @@ export class WebhookService {
     const payloadRaw = canonicalizeJson(testPayload);
     const payloadSha256 = computePayloadSha256(payloadRaw);
 
-    // Retrieve active secret for subscription
-    let rawSecret = 'whsec_0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef';
+    // Never dispatch a test delivery with a fabricated fallback secret.
+    // A missing persisted secret is a configuration/data-integrity error, not success.
+    let rawSecret = '';
     let previousSecret: string | null = null;
 
     if (this.queueProvider instanceof InMemoryQueueProvider) {
@@ -433,6 +434,10 @@ export class WebhookService {
           );
         }
       }
+    }
+
+    if (!rawSecret) {
+      throw new Error('WEBHOOK_SECRET_UNAVAILABLE: No active signing secret is available for the subscription.');
     }
 
     const result = await dispatchWebhook({

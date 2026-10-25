@@ -11,184 +11,206 @@
   "TS": {
     "file": "telangana-assembly.json",
     "count": 119,
-    "hasPolygons": true,
+    "hasPolygons": false,
     "bytes": 1861197,
     "gzipBytes": 532675,
-    "version": "9bc5be4c40b3"
+    "version": "9bc5be4c40b3",
+    "status": "defect_open"
   },
   "AP": {
     "file": "ap-assembly.json",
     "count": 175,
-    "hasPolygons": true,
+    "hasPolygons": false,
     "bytes": 858571,
     "gzipBytes": 210117,
-    "version": "02c298342807"
+    "version": "02c298342807",
+    "status": "blocked_external"
   },
   "KA": {
     "file": "ka-assembly.json",
     "count": 225,
-    "hasPolygons": true,
+    "hasPolygons": false,
     "bytes": 4258444,
     "gzipBytes": 688044,
-    "version": "927a10f680a1"
+    "version": "927a10f680a1",
+    "status": "blocked_external"
   },
   "MH": {
     "file": "mh-assembly.json",
     "count": 288,
-    "hasPolygons": true,
+    "hasPolygons": false,
     "bytes": 3841762,
     "gzipBytes": 688205,
-    "version": "45dca62beef1"
+    "version": "45dca62beef1",
+    "status": "blocked_external"
   },
   "TN": {
     "file": "tn-assembly.json",
     "count": 235,
-    "hasPolygons": true,
+    "hasPolygons": false,
     "bytes": 3276453,
     "gzipBytes": 518118,
-    "version": "4007e0f919f1"
+    "version": "4007e0f919f1",
+    "status": "blocked_external"
   },
   "KL": {
     "file": "kl-assembly.json",
     "count": 141,
-    "hasPolygons": true,
+    "hasPolygons": false,
     "bytes": 1494434,
     "gzipBytes": 243035,
-    "version": "c99c68447a52"
+    "version": "c99c68447a52",
+    "status": "blocked_external"
   },
   "WB": {
     "file": "wb-assembly.json",
     "count": 294,
-    "hasPolygons": true,
+    "hasPolygons": false,
     "bytes": 3433501,
     "gzipBytes": 541320,
-    "version": "4f44787cf838"
+    "version": "4f44787cf838",
+    "status": "blocked_external"
   },
   "UP": {
     "file": "up-assembly.json",
     "count": 403,
-    "hasPolygons": true,
+    "hasPolygons": false,
     "bytes": 6978407,
     "gzipBytes": 1160382,
-    "version": "22ffc71914cc"
+    "version": "22ffc71914cc",
+    "status": "blocked_external"
   },
   "RJ": {
     "file": "rj-assembly.json",
     "count": 201,
-    "hasPolygons": true,
+    "hasPolygons": false,
     "bytes": 3532974,
     "gzipBytes": 649566,
-    "version": "0e520d19a99a"
+    "version": "0e520d19a99a",
+    "status": "blocked_external"
   },
   "GJ": {
     "file": "gj-assembly.json",
     "count": 165,
-    "hasPolygons": true,
+    "hasPolygons": false,
     "bytes": 4565521,
     "gzipBytes": 727653,
-    "version": "f71d8d86090e"
+    "version": "f71d8d86090e",
+    "status": "blocked_external"
   },
   "DL": {
     "file": "dl-assembly.json",
     "count": 70,
-    "hasPolygons": true,
+    "hasPolygons": false,
     "bytes": 102256,
     "gzipBytes": 16768,
-    "version": "bb19462911c6"
+    "version": "bb19462911c6",
+    "status": "blocked_external"
   },
   "OD": {
     "file": "od-assembly.json",
     "count": 147,
-    "hasPolygons": true,
+    "hasPolygons": false,
     "bytes": 3677886,
     "gzipBytes": 613214,
-    "version": "a996d5023df4"
+    "version": "a996d5023df4",
+    "status": "blocked_external"
   },
   "JH": {
     "file": "jh-assembly.json",
     "count": 95,
-    "hasPolygons": true,
+    "hasPolygons": false,
     "bytes": 1188148,
     "gzipBytes": 205076,
-    "version": "1d119bd2bde3"
+    "version": "1d119bd2bde3",
+    "status": "blocked_external"
   },
   "BR": {
     "file": "br-assembly.json",
     "count": 243,
-    "hasPolygons": true,
+    "hasPolygons": false,
     "bytes": 4513109,
     "gzipBytes": 670481,
-    "version": "80b8efdaaeed"
+    "version": "80b8efdaaeed",
+    "status": "blocked_external"
   },
   "PB": {
     "file": "pb-assembly.json",
     "count": 117,
-    "hasPolygons": true,
+    "hasPolygons": false,
     "bytes": 1842869,
     "gzipBytes": 306983,
-    "version": "0ac18d9da202"
+    "version": "0ac18d9da202",
+    "status": "blocked_external"
   },
   "HR": {
     "file": "hr-assembly.json",
     "count": 90,
-    "hasPolygons": true,
+    "hasPolygons": false,
     "bytes": 926162,
     "gzipBytes": 162840,
-    "version": "bcea39860b07"
+    "version": "bcea39860b07",
+    "status": "blocked_external"
   },
   "CG": {
     "file": "cg-assembly.json",
     "count": 90,
-    "hasPolygons": true,
+    "hasPolygons": false,
     "bytes": 1846546,
     "gzipBytes": 318838,
-    "version": "5c357018acad"
+    "version": "5c357018acad",
+    "status": "blocked_external"
   },
   "MP": {
     "file": "mp-assembly.json",
     "count": 226,
-    "hasPolygons": true,
+    "hasPolygons": false,
     "bytes": 5011521,
     "gzipBytes": 863445,
-    "version": "0d81410a3c41"
+    "version": "0d81410a3c41",
+    "status": "blocked_external"
   },
   "AS": {
     "file": "as-assembly.json",
     "count": 133,
-    "hasPolygons": true,
+    "hasPolygons": false,
     "bytes": 1127651,
     "gzipBytes": 192107,
-    "version": "d61e0e37695c"
+    "version": "d61e0e37695c",
+    "status": "blocked_external"
   },
   "GA": {
     "file": "ga-assembly.json",
     "count": 40,
-    "hasPolygons": true,
+    "hasPolygons": false,
     "bytes": 111097,
     "gzipBytes": 19773,
-    "version": "89f2d1324094"
+    "version": "89f2d1324094",
+    "status": "blocked_external"
   },
   "HP": {
     "file": "hp-assembly.json",
     "count": 68,
-    "hasPolygons": true,
+    "hasPolygons": false,
     "bytes": 1316619,
     "gzipBytes": 215904,
-    "version": "f45805d97e47"
+    "version": "f45805d97e47",
+    "status": "blocked_external"
   },
   "JK": {
     "file": "jk-assembly.json",
     "count": 107,
-    "hasPolygons": true,
+    "hasPolygons": false,
     "bytes": 330515,
     "gzipBytes": 77528,
-    "version": "ad16db4c2da5"
+    "version": "ad16db4c2da5",
+    "status": "blocked_external"
   },
   "PY": {
     "file": "py-assembly.json",
     "count": 30,
     "hasPolygons": false,
-    "status": "placeholder",
+    "status": "blocked_external",
     "bytes": 118230,
     "gzipBytes": 26563,
     "version": "95b698524d96"
@@ -197,7 +219,7 @@
     "file": "tr-assembly.json",
     "count": 60,
     "hasPolygons": false,
-    "status": "placeholder",
+    "status": "blocked_external",
     "bytes": 439942,
     "gzipBytes": 100305,
     "version": "bfff94b6811d"
@@ -206,7 +228,7 @@
     "file": "ml-assembly.json",
     "count": 60,
     "hasPolygons": false,
-    "status": "placeholder",
+    "status": "blocked_external",
     "bytes": 431259,
     "gzipBytes": 104740,
     "version": "20965caea9cc"
@@ -215,7 +237,7 @@
     "file": "mn-assembly.json",
     "count": 60,
     "hasPolygons": false,
-    "status": "placeholder",
+    "status": "blocked_external",
     "bytes": 892792,
     "gzipBytes": 196561,
     "version": "baa6ccf38adb"
@@ -224,7 +246,7 @@
     "file": "nl-assembly.json",
     "count": 60,
     "hasPolygons": false,
-    "status": "placeholder",
+    "status": "blocked_external",
     "bytes": 679774,
     "gzipBytes": 153716,
     "version": "86d3c3d8d3e0"
@@ -233,7 +255,7 @@
     "file": "uk-assembly.json",
     "count": 70,
     "hasPolygons": false,
-    "status": "placeholder",
+    "status": "blocked_external",
     "bytes": 1468320,
     "gzipBytes": 361430,
     "version": "2180764b2d73"
@@ -242,7 +264,7 @@
     "file": "sk-assembly.json",
     "count": 32,
     "hasPolygons": false,
-    "status": "placeholder",
+    "status": "blocked_external",
     "bytes": 122256,
     "gzipBytes": 26727,
     "version": "3645cc5cc086"
@@ -251,7 +273,7 @@
     "file": "ar-assembly.json",
     "count": 60,
     "hasPolygons": false,
-    "status": "placeholder",
+    "status": "blocked_external",
     "bytes": 562142,
     "gzipBytes": 134917,
     "version": "9aaca5498a24"
@@ -260,7 +282,7 @@
     "file": "mz-assembly.json",
     "count": 40,
     "hasPolygons": false,
-    "status": "placeholder",
+    "status": "blocked_external",
     "bytes": 403168,
     "gzipBytes": 91350,
     "version": "462e7ffef605"

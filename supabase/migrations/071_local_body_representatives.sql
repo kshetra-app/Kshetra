@@ -1,5 +1,7 @@
 -- ============================================================================
--- 023: Local-Body Representatives & Urban/Rural Body Hierarchy
+-- 071: Local-Body Representatives & Urban/Rural Body Hierarchy
+-- Renumbered from 023 because two migration files shared the same migration version.
+-- No later migrations depend on these tables; runtime database migration history must be inspected before deployment.
 -- ============================================================================
 -- Extends 022 (mandals, gram_panchayats, polling_booths, local_body_elections)
 -- with first-class URBAN local bodies, ward/division sub-units for every

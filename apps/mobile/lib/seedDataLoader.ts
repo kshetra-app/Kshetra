@@ -11,7 +11,7 @@
 import * as SQLite from 'expo-sqlite';
 import { Asset } from 'expo-asset';
 import * as FileSystem from 'expo-file-system/legacy';
-import { useEffect, useRef } from 'react';
+import { useEffect } from 'react';
 import { Platform } from 'react-native';
 
 // ═════════════════════════════════════════════════════════════════════════
@@ -495,14 +495,18 @@ export async function loadAllSeedDataForState(stateCode: string): Promise<void> 
 // ═════════════════════════════════════════════════════════════════════════
 
 export function useSeedDataLoader(stateCode: string) {
-  const loadingRef = useRef(false);
-
   useEffect(() => {
-    if (loadingRef.current) return;
-    loadingRef.current = true;
+    const normalizedStateCode = stateCode.trim().toUpperCase();
+    if (!normalizedStateCode) return;
 
-    loadAllSeedDataForState(stateCode).catch(err => {
-      console.error(`[useSeedDataLoader] Failed to load seed data for ${stateCode}:`, err);
+    // The per-table loaders are independently idempotent and cache by state.
+    // Do not gate this effect with a one-way boolean: navigation between states
+    // must initiate loading for every newly selected state.
+    void loadAllSeedDataForState(normalizedStateCode).catch((err) => {
+      console.error(
+        `[useSeedDataLoader] Failed to load seed data for ${normalizedStateCode}:`,
+        err
+      );
     });
   }, [stateCode]);
 }

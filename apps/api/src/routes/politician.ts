@@ -407,12 +407,16 @@ export async function politicianRoutes(app: FastifyInstance) {
   }>('/api/v1/politician/manifestos', {
     schema: manifestosListSchema,
   }, async (request) => {
-    const { politicianId, state } = request.query;
-    return {
-      manifestos: [],
-      total: 0,
-      filters: { politicianId, state },
-    };
+    // This capability has no persistence table in the deployed schema. Never
+    // encode an unavailable service as a successful empty catalogue.
+    return sendApiError(
+      reply,
+      request,
+      503,
+      'Service Unavailable',
+      'Manifesto persistence is not available in this deployment yet.',
+      { code: 'PERSISTENCE_TARGET_UNAVAILABLE', dataStatus: 'UNAVAILABLE' }
+    );
   });
 
   /** 6. POST /api/v1/politician/manifestos/:manifestoId/items/:itemId/vote — vote on manifesto item (BLOCKED in B4 per CTO directive: no persistence table) */
@@ -438,12 +442,14 @@ export async function politicianRoutes(app: FastifyInstance) {
   }>('/api/v1/politician/surveys', {
     schema: surveysListSchema,
   }, async (request) => {
-    const { state, status } = request.query;
-    return {
-      surveys: [],
-      total: 0,
-      filters: { state, status },
-    };
+    return sendApiError(
+      reply,
+      request,
+      503,
+      'Service Unavailable',
+      'Survey catalog persistence is not available in this deployment yet.',
+      { code: 'PERSISTENCE_TARGET_UNAVAILABLE', dataStatus: 'UNAVAILABLE' }
+    );
   });
 
   /** 8. POST /api/v1/politician/surveys/:id/respond — submit survey response */

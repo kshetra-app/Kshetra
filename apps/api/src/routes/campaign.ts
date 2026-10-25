@@ -509,26 +509,22 @@ interface PendingRechargeOrder {
 const PENDING_RECHARGE_ORDERS = new Map<string, PendingRechargeOrder>();
 
 /**
- * Authoritative campaign lookup: DB first, then fallback to in-memory store.
+ * Authoritative campaign lookup. Synthetic in-memory campaigns must never
+ * authorize a real request or impersonate persisted campaign state.
  */
 async function findCampaignById(campaignId: string): Promise<{ id: string; politician_id: string } | null> {
-  if (isSupabaseConfigured) {
-    try {
-      const { data, error } = await supabase
-        .from('campaigns')
-        .select('id, politician_id')
-        .eq('id', campaignId)
-        .maybeSingle();
-      if (!error && data) {
-        return { id: data.id, politician_id: data.politician_id };
-      }
-    } catch {}
+  if (!isSupabaseConfigured) return null;
+  try {
+    const { data, error } = await supabase
+      .from('campaigns')
+      .select('id, politician_id')
+      .eq('id', campaignId)
+      .maybeSingle();
+    if (error || !data) return null;
+    return { id: data.id, politician_id: data.politician_id };
+  } catch {
+    return null;
   }
-  const mem = inMemoryCampaigns.find((c) => c.id === campaignId);
-  if (mem) {
-    return { id: mem.id, politician_id: mem.politicianId };
-  }
-  return null;
 }
 
 /**
@@ -554,11 +550,6 @@ async function verifyCampaignAuthority(
     return { authorized: true, campaign };
   }
 
-  // Campaign coordinator
-  if (auth.role === 'coordinator') {
-    return { authorized: true, campaign };
-  }
-
   if (isSupabaseConfigured) {
     try {
       const { data: vol } = await supabase
@@ -573,14 +564,6 @@ async function verifyCampaignAuthority(
         return { authorized: true, campaign };
       }
     } catch {}
-  }
-
-  // In-memory volunteer coordinator check
-  const memVol = inMemoryVolunteers.find(
-    (v) => v.campaignId === campaignId && (v.id === auth.userId || v.name === auth.userId) && v.role === 'coordinator'
-  );
-  if (memVol) {
-    return { authorized: true, campaign };
   }
 
   return { authorized: false, campaign, reason: 'Caller lacks authority over this campaign' };
@@ -671,106 +654,103 @@ export async function campaignRoutes(app: FastifyInstance) {
       });
     }
 
-    if (isSupabaseConfigured) {
-      try {
-        const { data } = await supabase
-          .from('user_profiles')
-          .select('user_id, display_name, avatar_url, role')
-          .eq('phone', cleaned)
-          .maybeSingle();
-
-        if (data) {
-          return {
-            isKshetraUser: true,
-            userId: data.user_id,
-            displayName: data.display_name,
-            avatarUrl: data.avatar_url,
-            role: data.role,
-          };
-        }
-      } catch {
-        // fall back to mock check
-      }
+    if (!isSupabaseConfigured) {
+      return sendApiError(reply, request, 503, 'Service Unavailable', 'User lookup is not configured.', {
+        code: 'DATABASE_UNAVAILABLE',
+      });
     }
 
-    // Check in-memory volunteers/cadre
-    const match = inMemoryVolunteers.find((v) => v.phone.replace(/\D/g, '').slice(-10) === cleaned);
-    return {
-      isKshetraUser: match ? match.isKshetraUser : false,
-      displayName: match ? match.name : undefined,
-      phone: cleaned,
-    };
+    try {
+      const { data, error } = await supabase
+        .from('user_profiles')
+        .select('user_id, display_name, avatar_url, role')
+        .eq('phone', cleaned)
+        .maybeSingle();
+
+      if (error) {
+        request.log.error({ err: error }, 'Campaign user lookup failed');
+        return sendApiError(reply, request, 503, 'Service Unavailable', 'User lookup is temporarily unavailable.', {
+          code: 'DATABASE_ERROR',
+        });
+      }
+      if (!data) return { isKshetraUser: false, phone: cleaned };
+      return {
+        isKshetraUser: true,
+        userId: data.user_id,
+        displayName: data.display_name,
+        avatarUrl: data.avatar_url,
+        role: data.role,
+        phone: cleaned,
+      };
+    } catch (err) {
+      request.log.error({ err }, 'Campaign user lookup threw');
+      return sendApiError(reply, request, 503, 'Service Unavailable', 'User lookup is temporarily unavailable.', {
+        code: 'DATABASE_ERROR',
+      });
+    }
   });
 
   /** GET /api/v1/campaign/campaigns — list campaigns */
-  app.get('/api/v1/campaign/campaigns', { schema: campaignsQuerySchema }, async (request) => {
+  app.get('/api/v1/campaign/campaigns', { schema: campaignsQuerySchema }, async (request, reply) => {
     const { status, politicianId } = request.query as { status?: string; politicianId?: string };
-
-    if (isSupabaseConfigured) {
-      try {
-        let query = supabase.from('campaigns').select('*');
-        if (status) query = query.eq('status', status);
-        if (politicianId) query = query.eq('politician_id', politicianId);
-        const { data, error } = await query;
-        if (!error && data && data.length > 0) {
-          return { campaigns: data, total: data.length };
-        }
-      } catch {
-        // fall through to mock
-      }
+    if (!isSupabaseConfigured) {
+      return sendApiError(reply, request, 503, 'Service Unavailable', 'Campaign persistence is not configured.', {
+        code: 'DATABASE_UNAVAILABLE',
+      });
     }
-
-    return {
-      campaigns: [
-        {
-          id: 'c1',
-          politicianId: politicianId || 'pp1',
-          name: 'Nampally AC 2026 People Campaign',
-          description: 'Grassroots voter outreach across all 185 polling stations in Nampally.',
-          type: 'election',
-          status: 'active',
-          stateCode: 'TS',
-          targetConstituencies: [56],
-          totalBudgetINR: 500000,
-          spentBudgetINR: 145000,
-          totalBooths: 185,
-          boothsCovered: 112,
-          volunteerCount: 42,
-          impressions: 450000,
-          reach: 85000,
-          sentimentScore: 72,
-        },
-      ],
-      total: 1,
-    };
+    try {
+      let query = supabase.from('campaigns').select('*');
+      if (status) query = query.eq('status', status);
+      if (politicianId) query = query.eq('politician_id', politicianId);
+      const { data, error } = await query;
+      if (error) {
+        request.log.error({ err: error }, 'Campaign list query failed');
+        return sendApiError(reply, request, 503, 'Service Unavailable', 'Campaign data is temporarily unavailable.', {
+          code: 'DATABASE_ERROR',
+        });
+      }
+      const campaigns = data ?? [];
+      return { campaigns, total: campaigns.length };
+    } catch (err) {
+      request.log.error({ err }, 'Campaign list query threw');
+      return sendApiError(reply, request, 503, 'Service Unavailable', 'Campaign data is temporarily unavailable.', {
+        code: 'DATABASE_ERROR',
+      });
+    }
   });
 
   /** GET /api/v1/campaign/booths — booth strategy and in-charge management */
-  app.get('/api/v1/campaign/booths', { schema: boothsQuerySchema }, async (request) => {
+  app.get('/api/v1/campaign/booths', { schema: boothsQuerySchema }, async (request, reply) => {
     const { campaignId, priority } = request.query as { campaignId?: string; priority?: string };
-
-    if (isSupabaseConfigured) {
-      try {
-        let query = supabase.from('booth_strategies').select('*');
-        if (campaignId) query = query.eq('campaign_id', campaignId);
-        if (priority) query = query.eq('priority', priority);
-        const { data, error } = await query;
-        if (!error && data && data.length > 0) {
-          return { booths: data, total: data.length };
-        }
-      } catch {
-        // fallback
-      }
+    if (!isSupabaseConfigured) {
+      return sendApiError(reply, request, 503, 'Service Unavailable', 'Booth persistence is not configured.', {
+        code: 'DATABASE_UNAVAILABLE',
+      });
     }
-
-    let filtered = inMemoryBooths;
-    if (priority) filtered = filtered.filter((b) => b.priority === priority);
-    return {
-      booths: filtered,
-      total: filtered.length,
-      assignedCount: filtered.filter((b) => !!b.agentPhone).length,
-      unassignedCount: filtered.filter((b) => !b.agentPhone).length,
-    };
+    try {
+      let query = supabase.from('booth_strategies').select('*');
+      if (campaignId) query = query.eq('campaign_id', campaignId);
+      if (priority) query = query.eq('priority', priority);
+      const { data, error } = await query;
+      if (error) {
+        request.log.error({ err: error }, 'Booth list query failed');
+        return sendApiError(reply, request, 503, 'Service Unavailable', 'Booth data is temporarily unavailable.', {
+          code: 'DATABASE_ERROR',
+        });
+      }
+      const booths = data ?? [];
+      return {
+        booths,
+        total: booths.length,
+        assignedCount: booths.filter((b: any) => Boolean(b.agent_phone ?? b.agentPhone)).length,
+        unassignedCount: booths.filter((b: any) => !Boolean(b.agent_phone ?? b.agentPhone)).length,
+      };
+    } catch (err) {
+      request.log.error({ err }, 'Booth list query threw');
+      return sendApiError(reply, request, 503, 'Service Unavailable', 'Booth data is temporarily unavailable.', {
+        code: 'DATABASE_ERROR',
+      });
+    }
   });
 
   /** PATCH /api/v1/campaign/booths/:id — assign in-charge or update notes */
@@ -786,30 +766,37 @@ export async function campaignRoutes(app: FastifyInstance) {
       });
     }
 
-    // 2. Locate booth first (to verify existence and extract campaignId)
+    // 2. Resolve the booth from the persistence boundary only.
+    if (!isSupabaseConfigured) {
+      return sendApiError(reply, request, 503, 'Service Unavailable', 'Booth persistence is not configured.', {
+        code: 'DATABASE_UNAVAILABLE',
+      });
+    }
+
     let boothCampaignId: string | null = null;
     let existingDbBooth: any = null;
-
-    if (isSupabaseConfigured) {
-      try {
-        const { data } = await supabase
-          .from('booth_strategies')
-          .select('*')
-          .eq('id', id)
-          .maybeSingle();
-        if (data) {
-          existingDbBooth = data;
-          boothCampaignId = data.campaign_id;
-        }
-      } catch {}
+    try {
+      const { data, error } = await supabase
+        .from('booth_strategies')
+        .select('*')
+        .eq('id', id)
+        .maybeSingle();
+      if (error) {
+        request.log.error({ err: error }, 'Booth lookup failed before mutation');
+        return sendApiError(reply, request, 503, 'Service Unavailable', 'Booth data is temporarily unavailable.', {
+          code: 'DATABASE_ERROR',
+        });
+      }
+      existingDbBooth = data;
+      boothCampaignId = data?.campaign_id ?? null;
+    } catch (err) {
+      request.log.error({ err }, 'Booth lookup threw before mutation');
+      return sendApiError(reply, request, 503, 'Service Unavailable', 'Booth data is temporarily unavailable.', {
+        code: 'DATABASE_ERROR',
+      });
     }
 
-    const memIdx = inMemoryBooths.findIndex((b) => b.id === id || b.boothId === id);
-    if (!boothCampaignId && memIdx >= 0) {
-      boothCampaignId = inMemoryBooths[memIdx].campaignId;
-    }
-
-    if (!boothCampaignId && !existingDbBooth && memIdx < 0) {
+    if (!existingDbBooth || !boothCampaignId) {
       return sendApiError(reply, request, 404, 'Not Found', 'Booth not found', { code: 'NOT_FOUND' });
     }
 
@@ -855,24 +842,32 @@ export async function campaignRoutes(app: FastifyInstance) {
   });
 
   /** GET /api/v1/campaign/volunteers — list ground cadre */
-  app.get('/api/v1/campaign/volunteers', { schema: volunteersQuerySchema }, async (request) => {
+  app.get('/api/v1/campaign/volunteers', { schema: volunteersQuerySchema }, async (request, reply) => {
     const { campaignId, role } = request.query as { campaignId?: string; role?: string };
-
-    if (isSupabaseConfigured) {
-      try {
-        let query = supabase.from('campaign_volunteers').select('*');
-        if (campaignId) query = query.eq('campaign_id', campaignId);
-        if (role) query = query.eq('role', role);
-        const { data, error } = await query;
-        if (!error && data && data.length > 0) {
-          return { volunteers: data, total: data.length };
-        }
-      } catch {}
+    if (!isSupabaseConfigured) {
+      return sendApiError(reply, request, 503, 'Service Unavailable', 'Volunteer persistence is not configured.', {
+        code: 'DATABASE_UNAVAILABLE',
+      });
     }
-
-    let filtered = inMemoryVolunteers;
-    if (role) filtered = filtered.filter((v) => v.role === role);
-    return { volunteers: filtered, total: filtered.length };
+    try {
+      let query = supabase.from('campaign_volunteers').select('*');
+      if (campaignId) query = query.eq('campaign_id', campaignId);
+      if (role) query = query.eq('role', role);
+      const { data, error } = await query;
+      if (error) {
+        request.log.error({ err: error }, 'Volunteer list query failed');
+        return sendApiError(reply, request, 503, 'Service Unavailable', 'Volunteer data is temporarily unavailable.', {
+          code: 'DATABASE_ERROR',
+        });
+      }
+      const volunteers = data ?? [];
+      return { volunteers, total: volunteers.length };
+    } catch (err) {
+      request.log.error({ err }, 'Volunteer list query threw');
+      return sendApiError(reply, request, 503, 'Service Unavailable', 'Volunteer data is temporarily unavailable.', {
+        code: 'DATABASE_ERROR',
+      });
+    }
   });
 
   /** POST /api/v1/campaign/volunteers — add new cadre member */
@@ -884,7 +879,10 @@ export async function campaignRoutes(app: FastifyInstance) {
       });
     }
 
-    const campaignId = body.campaignId || 'c1';
+    const campaignId = typeof body.campaignId === 'string' ? body.campaignId.trim() : '';
+    if (!campaignId) {
+      return sendApiError(reply, request, 400, 'Bad Request', 'campaignId is required.', { code: 'VALIDATION_ERROR' });
+    }
 
     // 1. Authenticate caller
     const auth = await resolveAuthUser(request, campaignId);
@@ -927,21 +925,20 @@ export async function campaignRoutes(app: FastifyInstance) {
     let verifiedKshetraUser = false;
 
     if (body.isKshetraUser !== undefined) {
-      if (isSupabaseConfigured) {
-        try {
-          const { data: userProfile } = await supabase
-            .from('user_profiles')
-            .select('user_id')
-            .eq('phone', cleanedPhone)
-            .maybeSingle();
-          verifiedKshetraUser = Boolean(userProfile);
-        } catch {}
-      } else {
-        const memMatch = inMemoryVolunteers.find((v) => v.phone.replace(/\D/g, '').slice(-10) === cleanedPhone);
-        verifiedKshetraUser = memMatch ? Boolean(memMatch.isKshetraUser) : false;
+      const { data: userProfile, error: profileError } = await supabase
+        .from('user_profiles')
+        .select('user_id')
+        .eq('phone', cleanedPhone)
+        .maybeSingle();
+      if (profileError) {
+        request.log.error({ err: profileError }, 'Volunteer identity verification failed');
+        return sendApiError(reply, request, 503, 'Service Unavailable', 'Volunteer identity verification is temporarily unavailable.', {
+          code: 'DATABASE_ERROR',
+        });
       }
+      verifiedKshetraUser = Boolean(userProfile);
 
-      // If client claimed isKshetraUser: true but phone is NOT registered, reject privilege spoofing
+      // If client claimed isKshetraUser: true but phone is NOT registered, reject privilege spoofing.
       if (body.isKshetraUser === true && !verifiedKshetraUser) {
         return sendApiError(reply, request, 403, 'Forbidden', 'Unregistered user cannot be marked as verified Kshetra user', {
           code: 'PRIVILEGE_SPOOFING_REJECTED',
