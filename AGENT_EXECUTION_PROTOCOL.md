@@ -337,12 +337,20 @@ Only when all 15 items are verified may the agent submit for CTO review.
 
 ### CONTROL M — MACHINE-VERIFIABLE IMPLEMENTATION AUTHORIZATION GATE
 No agent may modify product code or create an implementation commit without an explicit, machine-verifiable implementation authorization coordinate.
-Transition from `PLAN_SUBMITTED` to `IMPLEMENTATION_AUTHORIZED` strictly requires:
-1. `PLAN_STATUS = APPROVED` in `EXECUTION_STATE.md`.
-2. `IMPLEMENTATION_AUTHORIZATION = YES` in `EXECUTION_STATE.md`.
-3. `IMPLEMENTATION_AUTHORIZATION_COMMIT = <SHA>` resolving to a verified Git commit in ancestry whose commit message or associated `DECISION_LOG.md` entry records explicit CTO authorization.
 
-Natural language claims of "approved" without a resolving `IMPLEMENTATION_AUTHORIZATION_COMMIT` are strictly invalid. Any implementation occurring without this coordinate constitutes a GOVERNANCE BREACH, freezing implementation and blocking CTO acceptance.
+Before any implementation change is accepted, the governance gate MUST verify all of the following from the checked-out Git object graph and the canonical current state:
+1. `PLAN_STATUS = APPROVED` in `EXECUTION_STATE.md`, and the named plan exists with a ratified/approved status.
+2. `IMPLEMENTATION_AUTHORIZATION = YES` in `EXECUTION_STATE.md`.
+3. `IMPLEMENTATION_AUTHORIZATION_COMMIT` is a full 40-hex commit SHA that resolves to a commit in the checked-out object database.
+4. The authorization commit is reachable from (is an ancestor of) every implementation commit governed by that authorization. A commit already present before the authorization is historical, not retroactively authorized.
+5. The authorization commit is substantiated by an explicit authorization decision in `DECISION_LOG.md` and a directive/plan reference, not inferred from an implementation or evidence commit title.
+6. The changed file set is within the scope of the approved plan; unknown scope, missing evidence, malformed SHA, failed ancestry, contradictory register values, or missing workflow history must fail closed.
+7. Negative tests prove that absent authorization, invalid/non-resolving SHA, wrong/mismatched authorization, non-ancestor authorization, planning-only status, and out-of-scope changes are rejected. Positive tests prove that an authorized in-scope descendant passes.
+8. Historical breaches are recorded and remain visible. Do not rewrite or retroactively legitimize their ancestry. New authorization only permits subsequent work.
+
+For pull requests, the gate must inspect the actual proposed commit range against the approved plan and verify that the authorization commit is a parent/ancestor of each implementation commit. The push and pull-request workflows must execute this gate with full Git history. Documentation-only changes to governance registers may reconcile records but may not silently grant authorization.
+
+Natural-language claims of approval and the existence of a commit SHA alone are insufficient. Any implementation occurring without this coordinate constitutes a GOVERNANCE BREACH, freezing implementation and blocking CTO acceptance.
 
 ---
 
