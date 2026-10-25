@@ -5,6 +5,7 @@ on:
     branches: [w0215-resumption-2026-10-25]
     paths:
       - 'scripts/acquire_w021_5_sources.mjs'
+      - 'scripts/audit_w021_5_geometry_candidates.py'
       - '.github/workflows/w0215-source-acquisition.yml'
   workflow_dispatch:
 
@@ -35,6 +36,17 @@ jobs:
         env:
           W0215_SOURCE_CACHE: ${{ runner.temp }}/w021_5_source_cache
         run: node scripts/acquire_w021_5_sources.mjs
+
+      - name: Install isolated GIS audit dependencies
+        run: python -m pip install --disable-pip-version-check geopandas==1.1.2 shapely==2.1.2
+
+      - name: Audit secondary national AC geometry candidate
+        env:
+          W0215_SOURCE_CACHE: ${{ runner.temp }}/w021_5_source_cache
+        run: |
+          python scripts/audit_w021_5_geometry_candidates.py \
+            --source "${W0215_SOURCE_CACHE}/secondary/datameet/India_AC.shp" \
+            --output "${W0215_SOURCE_CACHE}/geometry-candidate-audit.json"
 
       - name: Upload source artifacts and SHA-256 manifest
         uses: actions/upload-artifact@v4
