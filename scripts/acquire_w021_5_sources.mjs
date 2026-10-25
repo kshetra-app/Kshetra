@@ -19,8 +19,10 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const OUT = process.env.W0215_SOURCE_CACHE
   ? path.resolve(process.env.W0215_SOURCE_CACHE)
   : path.join(ROOT, 'artifacts', 'w021_5_source_cache');
-const MAX_BYTES = 100 * 1024 * 1024;
+const MAX_BYTES = 50 * 1024 * 1024;
+const MAX_TOTAL_BYTES = 500 * 1024 * 1024;
 const MAX_REDIRECTS = 5;
+let totalDownloadedBytes = 0;
 const ALLOWED_HOSTS = new Set([
   'eci.gov.in','www.eci.gov.in','old.eci.gov.in','results.eci.gov.in',
   'censusindia.gov.in','www.censusindia.gov.in',
@@ -138,6 +140,8 @@ for (const source of SOURCES) {
   const result = { ...source, retrievedAt:new Date().toISOString(), status:'PENDING', sha256:null, bytes:null, finalUrl:null, contentType:null };
   try {
     const fetched = await fetchBounded(source.url);
+    if (totalDownloadedBytes + fetched.bytes.byteLength > MAX_TOTAL_BYTES) throw new Error('TOTAL_DOWNLOAD_BUDGET_EXCEEDED');
+    totalDownloadedBytes += fetched.bytes.byteLength;
     const destination = path.join(OUT, source.path);
     await fs.mkdir(path.dirname(destination), { recursive:true });
     await fs.writeFile(destination, fetched.bytes, { flag:'w' });
@@ -235,7 +239,7 @@ for (const index of indexSources) {
       const isDataFile = /\\.(pdf|xlsx?|csv|zip|geojson|shp)(?:$|\\?)/i.test(absolute);
       const isRelevantLabel = /(form\\s*20|statistical report|assembly election|election results|primary census abstract|pca|administrative boundary|vector data)/i.test(labelLower);
       if (!(isDataFile || isRelevantLabel)) continue;
-      if (discovered.size < 120) {
+      if (discovered.size < 40) {
         discovered.set(absolute, {url:absolute,label:label.slice(0,240),indexSourceId:index.id,extension:path.extname(pathLower).slice(1)||'html'});
       }
     }
@@ -257,6 +261,8 @@ for (const [url, candidate] of discovered) {
   const result={...source,retrievedAt:new Date().toISOString(),status:'PENDING',sha256:null,bytes:null,finalUrl:null,contentType:null};
   try {
     const fetched=await fetchBounded(source.url);
+    if (totalDownloadedBytes + fetched.bytes.byteLength > MAX_TOTAL_BYTES) throw new Error('TOTAL_DOWNLOAD_BUDGET_EXCEEDED');
+    totalDownloadedBytes += fetched.bytes.byteLength;
     const destination=path.join(OUT,source.path);
     await fs.mkdir(path.dirname(destination),{recursive:true});
     await fs.writeFile(destination,fetched.bytes,{flag:'w'});
@@ -280,6 +286,8 @@ for (const [url, candidate] of discovered) {
 manifest.completedAt=new Date().toISOString();
 manifest.summary={
   total:manifest.results.length,
+  totalDownloadedBytes,
+  totalDownloadBudgetBytes:MAX_TOTAL_BYTES,
   staticSourceCount:SOURCES.length,
   dynamicallyDiscoveredCount:manifest.results.filter(r=>r.id.startsWith('DISCOVERED-')).length,
   downloaded:manifest.results.filter(r=>r.status==='DOWNLOADED_HASHED').length,
