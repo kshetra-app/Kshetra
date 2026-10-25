@@ -468,45 +468,46 @@ export const politicalAdsRoutes: FastifyPluginAsync = async (app) => {
     Querystring: { state?: string; constituency?: string; limit?: number };
   }>('/api/v1/political-ads/active', { schema: activeAdsQuerySchema }, async (request, reply) => {
     const { state, constituency } = request.query;
-
-    if (isSupabaseConfigured) {
-      try {
-        let query = supabase
-          .from('political_ads')
-          .select(`
-            id, page_id, post_id, mcmc_certificate_id, amount_paid,
-            target_scope, target_value, impressions, created_at,
-            pages:page_id ( id, title, handle, avatar_url )
-          `)
-          .eq('status', 'active');
-
-        const { data, error } = await query;
-        if (error || (process.env.NODE_ENV !== 'production' && (!data || data.length === 0))) {
-          const ads = MEMORY_ADS.filter((a) => a.status === 'active');
-          return reply.send({ success: true, ads });
-        }
-
-        // Filter by scope if provided
-        let ads = data ?? [];
-        if (state || constituency) {
-          ads = ads.filter((ad: any) => {
-            if (ad.target_scope === 'state' && (!ad.target_value || ad.target_value === state)) return true;
-            if (ad.target_scope === 'constituency' && (!ad.target_value || ad.target_value === constituency)) return true;
-            return false;
-          });
-        }
-
-        return reply.send({ success: true, ads });
-      } catch (err: any) {
-        if (process.env.NODE_ENV !== 'production') {
-          const ads = MEMORY_ADS.filter((a) => a.status === 'active');
-          return reply.send({ success: true, ads });
-        }
-      }
+    if (!isSupabaseConfigured) {
+      return sendApiError(reply, request, 503, 'Service Unavailable', 'Political-ad delivery is not configured.', {
+        code: 'DATABASE_UNAVAILABLE',
+      });
     }
 
-    const ads = MEMORY_ADS.filter((a) => a.status === 'active');
-    return reply.send({ success: true, ads });
+    try {
+      const { data, error } = await supabase
+        .from('political_ads')
+        .select(`
+          id, page_id, post_id, mcmc_certificate_id, amount_paid,
+          target_scope, target_value, impressions, created_at,
+          pages:page_id ( id, title, handle, avatar_url )
+        `)
+        .eq('status', 'active');
+
+      if (error) {
+        request.log.error({ err: error }, 'Political-ad distribution query failed');
+        return sendApiError(reply, request, 503, 'Service Unavailable', 'Political-ad delivery data is temporarily unavailable.', {
+          code: 'DATABASE_ERROR',
+        });
+      }
+
+      // Empty query results are authoritative. Never serve seeded/demo ads as fallback.
+      let ads = data ?? [];
+      if (state || constituency) {
+        ads = ads.filter((ad: any) => {
+          if (ad.target_scope === 'state' && (!ad.target_value || ad.target_value === state)) return true;
+          if (ad.target_scope === 'constituency' && (!ad.target_value || ad.target_value === constituency)) return true;
+          return false;
+        });
+      }
+
+      return reply.send({ success: true, ads });
+    } catch (err) {
+      request.log.error({ err }, 'Political-ad distribution query threw');
+      return sendApiError(reply, request, 503, 'Service Unavailable', 'Political-ad delivery data is temporarily unavailable.', {
+        code: 'DATABASE_ERROR',
+      });
+    }
   });
 
   /**
@@ -516,34 +517,36 @@ export const politicalAdsRoutes: FastifyPluginAsync = async (app) => {
   app.get<{
     Querystring: { search?: string; state?: string; page?: number; limit?: number };
   }>('/api/v1/political-ads/library', { schema: libraryAdsQuerySchema }, async (request, reply) => {
-    if (isSupabaseConfigured) {
-      try {
-        const { data, error } = await supabase
-          .from('political_ads')
-          .select(`
-            id, page_id, post_id, mcmc_certificate_id, status, amount_paid,
-            target_scope, target_value, impressions, created_at, reviewed_at,
-            pages:page_id ( id, title, handle, avatar_url )
-          `)
-          .in('status', ['active', 'ended'])
-          .order('created_at', { ascending: false });
-
-        if (error || (process.env.NODE_ENV !== 'production' && (!data || data.length === 0))) {
-          const ads = MEMORY_ADS.filter((a) => a.status === 'active' || a.status === 'ended');
-          return reply.send({ success: true, ads });
-        }
-
-        return reply.send({ success: true, ads: data ?? [] });
-      } catch (err: any) {
-        if (process.env.NODE_ENV !== 'production') {
-          const ads = MEMORY_ADS.filter((a) => a.status === 'active' || a.status === 'ended');
-          return reply.send({ success: true, ads });
-        }
-      }
+    if (!isSupabaseConfigured) {
+      return sendApiError(reply, request, 503, 'Service Unavailable', 'Political-ad library persistence is not configured.', {
+        code: 'DATABASE_UNAVAILABLE',
+      });
     }
 
-    const ads = MEMORY_ADS.filter((a) => a.status === 'active' || a.status === 'ended');
-    return reply.send({ success: true, ads });
+    try {
+      const { data, error } = await supabase
+        .from('political_ads')
+        .select(`
+          id, page_id, post_id, mcmc_certificate_id, status, amount_paid,
+          target_scope, target_value, impressions, created_at, reviewed_at,
+          pages:page_id ( id, title, handle, avatar_url )
+        `)
+        .in('status', ['active', 'ended'])
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        request.log.error({ err: error }, 'Political-ad library query failed');
+        return sendApiError(reply, request, 503, 'Service Unavailable', 'Political-ad library data is temporarily unavailable.', {
+          code: 'DATABASE_ERROR',
+        });
+      }
+      return reply.send({ success: true, ads: data ?? [] });
+    } catch (err) {
+      request.log.error({ err }, 'Political-ad library query threw');
+      return sendApiError(reply, request, 503, 'Service Unavailable', 'Political-ad library data is temporarily unavailable.', {
+        code: 'DATABASE_ERROR',
+      });
+    }
   });
 
 
