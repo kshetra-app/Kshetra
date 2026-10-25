@@ -18,13 +18,13 @@ WHERE table_schema='public'
     OR (column_name IN ('criminal_cases_count','serious_ipc_count','convictions_count','charges_framed_count') AND is_nullable <> 'YES')
   );
 
--- 2. Mandatory constraints and FK target.
-SELECT 'CRIT-072-02' AS check_id, c.conname, pg_get_constraintdef(c.oid) AS definition
-FROM pg_constraint c
-WHERE c.conrelid='public.candidate_affidavit_disclosures'::regclass
-  AND c.conname IN ('chk_affidavit_official_requires_source','fk_affidavit_disclosures_constituency')
-GROUP BY c.conname,c.oid
-HAVING count(*) = 0;
+-- 2. Missing mandatory constraints/FK target. Expected result: zero rows.
+SELECT 'CRIT-072-02' AS check_id, expected.constraint_name
+FROM (VALUES ('chk_affidavit_official_requires_source'), ('fk_affidavit_disclosures_constituency')) AS expected(constraint_name)
+LEFT JOIN pg_constraint c
+  ON c.conrelid='public.candidate_affidavit_disclosures'::regclass
+ AND c.conname=expected.constraint_name
+WHERE c.oid IS NULL;
 
 -- 3. No OFFICIAL row without source hash + provenance + source identifier.
 SELECT 'CRIT-072-03' AS check_id, id, data_status, provenance_id, source_hash
@@ -50,11 +50,13 @@ JOIN pg_namespace n ON n.oid=c.relnamespace
 WHERE n.nspname='public' AND c.relname='candidate_affidavit_disclosures'
   AND c.relrowsecurity IS NOT TRUE;
 
-SELECT 'CRIT-072-06' AS check_id, p.polname, p.polcmd, p.polroles
-FROM pg_policy p
-WHERE p.polrelid='public.candidate_affidavit_disclosures'::regclass
-  AND p.polname='p_select_candidate_affidavit_disclosures'
-HAVING count(*) = 0;
+SELECT 'CRIT-072-06' AS check_id, 'p_select_candidate_affidavit_disclosures' AS expected_policy
+WHERE NOT EXISTS (
+  SELECT 1 FROM pg_policy p
+  WHERE p.polrelid='public.candidate_affidavit_disclosures'::regclass
+    AND p.polname='p_select_candidate_affidavit_disclosures'
+    AND p.polcmd='r'
+);
 
 -- 6. Single-row aggregate gate. PASS means the critical invariants above
 -- should have returned zero rows; do not ignore any row returned by checks 1-5.
