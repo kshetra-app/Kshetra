@@ -149,7 +149,7 @@ assert.equal(e.repositoryVerifiedEarned, w.repoVerifiedEarnedPercent);
 assert.equal(e.unexecutedDatabasePending, w.databasePendingPercent);
 assert.equal(e.blockedOnExternalGates, w.blockedOnExternalGatesPercent);
 assert.equal(e.totalMilestoneAllocation, 100);
-assert.equal(e.formalAcceptance, 0);
+assert.equal(e.formalCtcAcceptance, 0);
 assert.equal(l.repoVerifiedEarnedPercent, w.repoVerifiedEarnedPercent);
 assert.equal(l.unexecutedDatabasePendingPercent, w.databasePendingPercent);
 assert.equal(l.blockedOnExternalGatesPercent, w.blockedOnExternalGatesPercent);
@@ -178,8 +178,12 @@ assert.equal(ledger?.airGapStatus?.productionStatus, 'AIR_GAPPED_ZERO_QUERIES_ZE
 assert.match(state, /W022_STAGING_EXECUTION:\s+NOT AUTHORIZED/i);
 assert.match(state, /W022_PRODUCTION:\s+STRICTLY AIR-GAPPED/i);
 for (const field of ['CURRENT_REMOTE_HEAD', 'VERIFIED_REMOTE_HEAD', 'GOVERNANCE_COMMIT']) {
-  assert.equal(state.match(new RegExp('^' + field + ':\\s*(.+)
-pass('Staging/production authorization and zero-access boundary');
+  const coordinateLine = state.split(/\r?\n/).find((line) => line.startsWith(field + ':'));
+  const coordinate = coordinateLine?.slice((field + ':').length).trim();
+  assert.equal(coordinate, report.sourceSnapshot.commit,
+    field + ' must remain pinned to the verified pre-reconciliation source snapshot; PR HEAD is not the previously accepted master coordinate');
+}
+pass('Staging/production authorization, zero-access and immutable source coordinates');
 
 // 8. Current W022 source, plan, authorization, migration, acceptance and release are separate lifecycle facts.
 const w022 = report.currentRepositoryState;
@@ -208,13 +212,15 @@ assert.equal(packageJson.name, 'kshetra', 'Unexpected root package identity; tes
 pass('W022 implementation/authentication/execution/acceptance/release separation');
 
 // 9. Recent commits since the source snapshot must be accounted for in governance records.
+const currentHead = exec(['rev-parse', 'HEAD']);
+const previousManifestCommit = exec(['rev-parse', 'HEAD^']);
 const recentCommits = exec(['log', '--format=%H', report.sourceSnapshot.commit + '..HEAD'])
   .split(/\r?\n/).filter(Boolean).sort();
 const registeredCommits = [...report.commitsAfterSourceSnapshot]
-  .filter((sha) => sha !== exec(['rev-parse', 'HEAD']))
+  .filter((sha) => sha !== currentHead)
   .sort();
-const reportedSelfCommit = report.commitsAfterSourceSnapshot.includes(exec(['rev-parse', 'HEAD']));
-assert.ok(reportedSelfCommit, 'Commit manifest must account for its previous snapshot commit; the current report commit is excluded from the history comparison to avoid self-reference.');
+assert.ok(report.commitsAfterSourceSnapshot.includes(previousManifestCommit),
+  'Commit manifest must include the previous report revision; current HEAD is excluded to avoid self-reference.');
 assert.equal(new Set(registeredCommits).size, registeredCommits.length,
   'Commit accountability manifest contains duplicate commit IDs');
 assert.deepEqual(recentCommits, registeredCommits,
