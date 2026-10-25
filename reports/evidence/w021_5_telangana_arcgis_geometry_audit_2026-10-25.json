@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
-  "title": "W021.5 Telangana Assembly Constituency Boundary — ArcGIS candidate audit",
+  "title": "W021.5 Telangana Assembly Constituency Boundary — two-service ArcGIS candidate audit",
   "auditId": "W0215-TELANGANA-AC-ARC-001",
-  "capturedAtUtc": "2026-10-25T16:34:00Z",
+  "capturedAtUtc": "2026-10-25T16:41:00Z",
   "source": {
     "publisher": "Telangana State Remote Sensing Applications Centre GIS",
     "service": "AdministrativeInfoSystem_Folder/Administrative_Information_System/MapServer",
@@ -123,5 +123,75 @@
     "Retain the raw ESRI JSON artifact and manifest; artifact expires after 30 days unless preserved under an approved licensed source-data path."
   ],
   "productionDatabaseAccess": "NONE",
-  "stagingDatabaseAccess": "NONE"
+  "stagingDatabaseAccess": "NONE",
+  "additionalLayer": {
+    "source": {
+      "publisher": "Telangana State Remote Sensing Applications Centre GIS",
+      "service": "EndowmentLands_Folder/EndowmentLands_Admin_2026/MapServer",
+      "layerId": 12,
+      "layerName": "Assembly Constituency Boundary",
+      "metadataUrl": "https://tgrac.telangana.gov.in/arcgis/rest/services/EndowmentLands_Folder/EndowmentLands_Admin_2026/MapServer/12?f=pjson",
+      "queryUrl": "https://tgrac.telangana.gov.in/arcgis/rest/services/EndowmentLands_Folder/EndowmentLands_Admin_2026/MapServer/12/query?where=1%3D1&outFields=%2A&returnGeometry=true&outSR=4326&f=json",
+      "metadataBytes": 4683,
+      "metadataSha256": "850ba55a5017c7b8eeef0967aa2a073057a1fe9396abc54066c3719ddb451737",
+      "rawEsriJsonBytes": 12463409,
+      "rawEsriJsonSha256": "ca8cfdc695366d9f04ee6a9fdbf9c52eeefe61d69bc79c9d26d15baa7b84aa03",
+      "workflowRunId": 40212441232,
+      "artifactId": 12606470712,
+      "artifactZipSha256": "299b259082ba51f36b9f9a4c05e94021eaa89d6cba737e9395f3182095f8a056",
+      "serviceNameContains2026": true,
+      "sourceTemporalValidity": "NOT DECLARED IN SERVICE METADATA",
+      "sourceReuseLicence": "NOT ESTABLISHED BY THIS AUDIT"
+    },
+    "structuralChecks": {
+      "featureCount": 119,
+      "expectedTelanganaAssemblySeats": 119,
+      "featureCountStatus": "PASS",
+      "geometryType": "esriGeometryPolygon",
+      "ringCount": 123,
+      "holeRingCount": 1,
+      "unclosedRings": 0,
+      "ringsTooShort": 0,
+      "nonFiniteCoordinates": 0,
+      "uniqueObjectIds": 119,
+      "duplicateObjectIds": 0,
+      "uniqueAssemblyNames": 119,
+      "duplicateAssemblyNames": 0,
+      "result": "PASS_WITH_TOPOLOGY_DEFECT"
+    },
+    "topologyAudit": {
+      "method": "Reproducible Shapely audit script scripts/audit_w0215_telangana_candidate_geometry.py",
+      "validGeometries": 118,
+      "invalidGeometries": 1,
+      "invalidFeature": {
+        "objectId": 89,
+        "name": "Dornakal (ST)",
+        "reason": "Ring Self-intersection[79.948886655805 17.5141694363122]"
+      },
+      "positiveAreaOverlapPairs": 0,
+      "zeroAreaIntersectionPairs": 314,
+      "unionValid": true,
+      "unionPolygonPartCount": 1,
+      "unionBoundsWgs84": [
+        77.2372545106511,
+        15.836406686071975,
+        81.3166083881545,
+        19.916900080616543
+      ],
+      "sumFeatureAreaDegreesSquared": 9.542138215198028,
+      "unionAreaDegreesSquared": 9.54213821519764,
+      "sumMinusUnionAreaDegreesSquared": 3.872457909892546e-13,
+      "coverageAgainstAuthoritativeStateBoundary": "NOT CHECKED"
+    },
+    "decision": "This second state-GIS layer is not a proven current-effective source. It has the same 119-seat count and same invalid Dornakal polygon as the older layer, but the comparison audit finds seven materially differing constituency geometries. Neither layer is accepted as canonical.",
+    "comparisonReport": "reports/evidence/w021_5_telangana_layer_comparison_2026-10-25.json"
+  },
+  "comparison": {
+    "report": "reports/evidence/w021_5_telangana_layer_comparison_2026-10-25.json",
+    "matchedConstituencies": 119,
+    "nearIdenticalWithin0_01m2": 112,
+    "featuresDifferingAbove0_01m2": 7,
+    "maxHausdorffDistanceMeters": 3042.0718885005717,
+    "canonicalLayerSelected": false
+  }
 }
