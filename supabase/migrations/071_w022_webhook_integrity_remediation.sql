@@ -62,7 +62,7 @@ BEGIN
   FROM public.webhook_subscriptions AS s
   WHERE s.tenant_id = p_tenant_id AND s.status = 'active'
     AND ('*' = ANY(s.subscribed_events) OR p_event_type = ANY(s.subscribed_events))
-  ON CONFLICT ON CONSTRAINT uq_webhook_deliv_sub_event DO NOTHING;
+  ON CONFLICT DO NOTHING;
   GET DIAGNOSTICS v_rows = ROW_COUNT;
   event_id := v_event_id; deduplicated := FALSE; enqueued_deliveries := v_rows;
   RETURN NEXT;
