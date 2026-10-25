@@ -495,15 +495,28 @@ export async function loadAllSeedDataForState(stateCode: string): Promise<void> 
 // ═════════════════════════════════════════════════════════════════════════
 
 export function useSeedDataLoader(stateCode: string) {
-  const loadingRef = useRef(false);
+  // Track in-flight work per state instead of globally. A single boolean meant
+  // the first state loaded forever blocked every later state-code change.
+  const loadingStatesRef = useRef<Set<string>>(new Set());
 
   useEffect(() => {
-    if (loadingRef.current) return;
-    loadingRef.current = true;
+    const normalizedStateCode = stateCode?.trim().toUpperCase();
+    if (!normalizedStateCode) return;
+    if (isSeedDataLoadedForState(normalizedStateCode)) return;
+    if (loadingStatesRef.current.has(normalizedStateCode)) return;
 
-    loadAllSeedDataForState(stateCode).catch(err => {
-      console.error(`[useSeedDataLoader] Failed to load seed data for ${stateCode}:`, err);
-    });
+    loadingStatesRef.current.add(normalizedStateCode);
+    void loadAllSeedDataForState(normalizedStateCode)
+      .catch((err) => {
+        console.error(
+          `[useSeedDataLoader] Failed to load seed data for ${normalizedStateCode}:`,
+          err,
+        );
+      })
+      .finally(() => {
+        // Always release the state lock so a failed load can be retried.
+        loadingStatesRef.current.delete(normalizedStateCode);
+      });
   }, [stateCode]);
 }
 

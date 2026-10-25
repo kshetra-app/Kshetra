@@ -17,12 +17,22 @@ const clientExpectations = [
   { method: 'GET', path: '/api/v1/pages/:pageId/entitlement', purpose: 'Page entitlement check', client: 'Mobile pageService.ts' },
 ];
 
-const apiRoutesDir = path.resolve('apps/api/src/routes');
-const serverFilePath = path.resolve('apps/api/src/server.ts');
+const apiSourceDir = path.resolve('apps/api/src');
 const registeredRoutes = [];
 
+function scanApiSourceTree(directory, scanner) {
+  if (!fs.existsSync(directory)) return;
+  for (const entry of fs.readdirSync(directory, { withFileTypes: true })) {
+    const fullPath = path.join(directory, entry.name);
+    if (entry.isDirectory()) {
+      if (!['__tests__', 'node_modules', 'dist'].includes(entry.name)) scanApiSourceTree(fullPath, scanner);
+    } else if (entry.isFile() && entry.name.endsWith('.ts') && !entry.name.endsWith('.test.ts')) {
+      scanner(fullPath);
+    }
+  }
+}
+
 function scanFileRoutes(filePath) {
-  if (!fs.existsSync(filePath)) return;
   const content = fs.readFileSync(filePath, 'utf8');
   const routeRegex = /(?:app|fastify)\.(get|post|put|delete|patch|options|head)(?:<[\s\S]*?>)?\s*\(\s*['"`]([^'"`]+)['"`]/gi;
   let match;
@@ -30,17 +40,12 @@ function scanFileRoutes(filePath) {
     registeredRoutes.push({
       method: match[1].toUpperCase(),
       path: match[2],
-      file: path.basename(filePath)
+      file: path.relative(apiSourceDir, filePath)
     });
   }
 }
 
-scanFileRoutes(serverFilePath);
-if (fs.existsSync(apiRoutesDir)) {
-  fs.readdirSync(apiRoutesDir)
-    .filter(f => f.endsWith('.ts') && !f.endsWith('.test.ts'))
-    .forEach(f => scanFileRoutes(path.join(apiRoutesDir, f)));
-}
+scanApiSourceTree(apiSourceDir, scanFileRoutes);
 
 registeredRoutes.push({ method: 'GET', path: '/api/health', file: 'health.ts' });
 registeredRoutes.push({ method: 'GET', path: '/api/health/db', file: 'health.ts' });
@@ -137,12 +142,7 @@ function scanDetailedRoutes(filePath) {
   }
 }
 
-scanDetailedRoutes(serverFilePath);
-if (fs.existsSync(apiRoutesDir)) {
-  fs.readdirSync(apiRoutesDir)
-    .filter(f => f.endsWith('.ts') && !f.endsWith('.test.ts'))
-    .forEach(f => scanDetailedRoutes(path.join(apiRoutesDir, f)));
-}
+scanApiSourceTree(apiSourceDir, scanDetailedRoutes);
 
 // Add known synthetic health routes
 fullInventory.push({ method: 'GET', path: '/api/health', file: 'health.ts', phase: 'System & Diagnostics', schemaDefined: true, preValidationDefined: false, standardizedEnvelope: true });
@@ -171,7 +171,7 @@ console.log(`   [INVENTORY] Total Registered Fastify Routes: ${fullInventory.len
 console.log(`   [INVENTORY] Report written to: reports/w008_api_contract_inventory.json`);
 
 // D0-D9 Drift Audit Matrix for Standardized Endpoints (Pioneer + Phase 1)
-const auditedContracts = [
+const declaredContracts = [
   // Pioneer & System Endpoints
   { endpoint: 'GET /health', expectedMethod: 'GET', path: '/health', phase: 'System', driftTaxonomy: 'D0_IN_SYNC' },
   { endpoint: 'GET /api/health', expectedMethod: 'GET', path: '/api/health', phase: 'System', driftTaxonomy: 'D0_IN_SYNC' },
@@ -216,6 +216,81 @@ const auditedContracts = [
   { endpoint: 'GET /api/v1/civic/hearings', expectedMethod: 'GET', path: '/api/v1/civic/hearings', phase: 'Phase 1', driftTaxonomy: 'D0_IN_SYNC' },
   { endpoint: 'GET /api/v1/civic/cdi/:constituencyId', expectedMethod: 'GET', path: '/api/v1/civic/cdi/:constituencyId', phase: 'Phase 1', driftTaxonomy: 'D0_IN_SYNC' },
 ];
+
+// Verify declared methods and paths against scanned source instead of trusting
+// hand-authored D0 labels. Schema and authorization parity remain separate tests.
+function pathPattern(expectedPath) {
+  const pattern = expectedPath.split('/').map(segment => segment.startsWith(':') ? '[^/]+' : segment).join('/');
+  return new RegExp('^' + pattern + '
+  metadata: {
+    job: 'W008',
+    title: 'API Contract Drift Report (D0-D9 Taxonomy)',
+    specification: 'Master Execution Framework Amendment v1.5-A / DEC-041',
+    timestamp: new Date().toISOString(),
+  },
+  taxonomyLegend: {
+    D0: 'IN_SYNC — No contract drift detected',
+    D1: 'MISSING_ENDPOINT — Endpoint expected by client missing from server',
+    D2: 'METHOD_MISMATCH — HTTP verb differs between client and server',
+    D3: 'PATH_PARAM_MISMATCH — Path parameter structure or naming differs',
+    D4: 'QUERY_PARAM_MISMATCH — Query parameter names or types differ',
+    D5: 'REQUEST_BODY_MISMATCH — Request body schema differs',
+    D6: 'RESPONSE_ENVELOPE_MISMATCH — Response envelope does not conform to ApiSuccessEnvelope',
+    D7: 'ERROR_PAYLOAD_MISMATCH — Error response does not conform to ApiErrorEnvelope',
+    D8: 'AUTH_POLICY_MISMATCH — Auth requirement differs between client and server',
+    D9: 'UNVERSIONED_OR_DEPRECATED — Client targets legacy unversioned path',
+  },
+  summary: {
+    dualLayerAuditReconciliation: {
+      layer1_legacyDeclaredClientContractsCheck: {
+        sourceArtifact: 'reports/w003_api_contract_drift_report.json',
+        auditedContracts: clientExpectations.length,
+        matchedContracts: matchedCount,
+        driftCount: driftCount,
+        parityPercentage: report.parityPercentage,
+        note: 'Verifies 9 explicitly declared client contract expectations against registered server routes (Part 34E baseline).'
+      },
+      layer2_w008D0D9TaxonomyAudit: {
+        sourceArtifact: 'reports/w008_contract_drift_report.json',
+        auditedEndpoints: auditedContracts.length,
+        inSyncCount: auditedContracts.filter(c => c.driftTaxonomy === 'D0_IN_SYNC').length,
+        driftCount: auditedContracts.filter(c => c.driftTaxonomy !== 'D0_IN_SYNC').length,
+        taxonomy: 'D0-D9',
+        status: auditedContracts.some(c => c.driftTaxonomy !== 'D0_IN_SYNC') ? 'FAIL_CONTRACT_DRIFT' : 'PASS',
+        note: 'Checks declared endpoint/method pairs against the recursively scanned API source. It does not independently prove request/response schema or authorization parity.'
+      }
+    },
+    totalAuditedEndpoints: auditedContracts.length,
+    inSyncCount: auditedContracts.filter(c => c.driftTaxonomy === 'D0_IN_SYNC').length,
+    driftCount: auditedContracts.filter(c => c.driftTaxonomy !== 'D0_IN_SYNC').length,
+    driftStatus: auditedContracts.some(c => c.driftTaxonomy !== 'D0_IN_SYNC') ? 'CONTRACT_DRIFT_FOUND' : 'ZERO_DRIFT_AMONG_AUDITED_ENDPOINTS',
+    scopeNote: 'Audit is strictly restricted to 10 declared endpoints under D0-D9 taxonomy. Does not prove zero drift across the entire 138-route catalog.',
+  },
+  auditResults: auditedContracts,
+};
+
+const driftReportPath = path.resolve('reports/w008_contract_drift_report.json');
+fs.writeFileSync(driftReportPath, JSON.stringify(driftReport, null, 2));
+const declaredDrift = auditedContracts.filter(c => c.driftTaxonomy !== 'D0_IN_SYNC');
+console.log(`[DRIFT] Source-verified endpoint/method parity: ${auditedContracts.length - declaredDrift.length}/${auditedContracts.length}.`);
+console.log(`[DRIFT] Report written to: reports/w008_contract_drift_report.json\\n`);
+if (driftCount > 0 || declaredDrift.length > 0) {
+  console.error(`[FAIL] API contract drift detected: legacy=${driftCount}, declared=${declaredDrift.length}.`);
+  process.exitCode = 1;
+}
+}
+
+const auditedContracts = declaredContracts.map(contract => {
+  const pattern = pathPattern(contract.path);
+  const samePath = fullInventory.filter(route => pattern.test(route.path));
+  const exact = samePath.some(route => route.method === contract.expectedMethod);
+  const driftTaxonomy = exact ? 'D0_IN_SYNC' : samePath.length > 0 ? 'D2_METHOD_MISMATCH' : 'D1_MISSING_ENDPOINT';
+  return {
+    ...contract,
+    driftTaxonomy,
+    matchedRoutes: samePath.filter(route => route.method === contract.expectedMethod).map(route => route.file),
+  };
+});
 
 const driftReport = {
   metadata: {

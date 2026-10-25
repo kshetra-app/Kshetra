@@ -161,12 +161,33 @@ try {
   assert.fail(`origin/master could not be resolved: ${err.message}`);
 }
 
-// Local HEAD must strictly match origin/master (fail-closed, no exceptions)
-assert.strictEqual(
-  localHead,
-  originMaster,
-  `Local HEAD (${localHead}) must strictly match origin/master (${originMaster})`
-);
+// A push/build on master must match origin/master exactly. A GitHub
+// pull_request checkout intentionally uses a synthetic merge commit; validate
+// both of its parents against the event's exact PR head and base instead of
+// incorrectly requiring that merge commit to equal the base branch.
+if (process.env.GITHUB_EVENT_NAME === 'pull_request') {
+  const eventPath = process.env.GITHUB_EVENT_PATH;
+  assert.ok(eventPath && fs.existsSync(eventPath), 'Pull-request event payload must be available');
+  const event = JSON.parse(fs.readFileSync(eventPath, 'utf8'));
+  const pullRequest = event.pull_request;
+  const prHead = pullRequest?.head?.sha;
+  const prBase = pullRequest?.base?.sha;
+  assert.match(prHead ?? '', /^[0-9a-f]{40}$/i, 'PR head must be a full commit SHA');
+  assert.match(prBase ?? '', /^[0-9a-f]{40}$/i, 'PR base must be a full commit SHA');
+  assert.strictEqual(originMaster, prBase, 'origin/master must match the pull request base SHA');
+  const parents = execSync(`git rev-list --parents -n 1 ${localHead}`, { encoding: 'utf8' })
+    .trim()
+    .split(/\\s+/)
+    .slice(1);
+  assert.ok(parents.includes(prHead), `Synthetic PR merge commit must include PR head ${prHead} as a parent`);
+  assert.ok(parents.includes(prBase), `Synthetic PR merge commit must include PR base ${prBase} as a parent`);
+} else {
+  assert.strictEqual(
+    localHead,
+    originMaster,
+    `Local HEAD (${localHead}) must strictly match origin/master (${originMaster})`
+  );
+}
 
 // Working tree must be completely clean (fail-closed, no exceptions)
 const porcelainStatus = execSync('git status --porcelain', { encoding: 'utf8' }).trim();
