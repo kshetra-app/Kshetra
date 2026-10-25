@@ -96,3 +96,16 @@ This is **not acceptance**. The audit is preliminary because multipart ring inte
 
 
 The corrected CI audit is now complete: [run 40218393964](https://github.com/kshetra-app/Kshetra/actions/runs/40218393964), artifact SHA-256 `befc11117a50a8b0ea33f294f87593b1f81839818eb65957a9873cddb1a24abe`. It recognizes the official state's `State_Name=Bihar` field and reproduces the state-coverage comparison. Coverage is approximately 99.999568%, but the three invalid AC geometries and 76 positive-area overlap pairs remain; therefore the result is a topology **failure**, not a source acceptance. See `reports/evidence/w021_5_bihar_ac_geometry_audit_40218393964.json`.
+
+
+### Legal crosswalk download failure and fallback decision
+
+The first official legal-source acquisition run `40218092567` timed out with zero bytes from India Code, the ECI 2024 press-note PDF, and the optional India Code order URL. This is a transport timeout, not evidence that the documents are absent. A direct call through the linked GitHub connector was also rejected because that connector only accepts URLs from the linked GitHub instance.
+
+The best next attempt is now to fetch the **original Gazette of India PDF as hosted by government state portals**, while retaining India Code as the preferred canonical index and ECI material as corroboration:
+
+- Andhra Pradesh government-hosted Gazette copy: https://apseeds.ap.gov.in/PDF/apreorg/APRegACT2014.pdf
+- Telangana state-government-hosted copy: https://tgerc.telangana.gov.in/file_upload/uploads/Acts%20and%20Polices/Acts%20and%20Rules/A.P.Reorganisation%20act%202014.pdf
+- India Code original PDF: https://www.indiacode.nic.in/bitstream/123456789/2123/1/A2014-6E.pdf
+
+A new acquisition probe is queued as [run 40218632258](https://github.com/kshetra-app/Kshetra/actions/runs/40218632258). The script now tries these government-hosted copies first and falls back to India Code; each candidate's final URL, byte length, exact SHA-256, PDF magic, and page-level term findings will be recorded. A state-hosted mirror is not silently treated as the canonical custodian copy: the original Gazette text and source lineage must be corroborated, and the exact 2018 ECI notification/effective-date chain remains separately open.
