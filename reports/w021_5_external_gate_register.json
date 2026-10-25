@@ -1,9 +1,9 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "Kshetra W021.5 — Canonical External Gate Register & Custodian Handoff",
-  "directive": "CTO Directive 153: Terminal W021.5 Closeout, Defect Disposition and Development Freeze",
+  "directive": "CTO Directive 154: W021.5 Stage B-only resumption; Directive 153 superseded prospectively only within stated scope",
   "governingAuthority": "Master Execution Framework Amendment v1.6 / Rule IV-001 Non-Self-Acceptance",
-  "timestamp": "2026-10-24T06:00:00.000Z",
+  "timestamp": "2026-10-25T19:30:00+05:30",
   "baselineCommit": "6f20cb02a4fd2f71db8aec4422f178274d229273",
   "milestone": "W021.5 — India-Wide Canonical Political Intelligence Architecture",
   "milestoneDisposition": "REPOSITORY_IMPLEMENTATION_COMPLETE_PENDING_EXTERNAL_GATES",
@@ -14,14 +14,14 @@
       "gateId": "EB-01",
       "canonicalCode": "OFFICIAL_PHYSICAL_GAZETTE_AUTHENTICITY",
       "targetStage": "Stage B (W021.5-B1-01..03)",
-      "weightPercent": 4.0,
+      "weightPercent": 4,
       "owner": "Controller of Publications, Government of India / Legal Custodian",
       "description": "Full physical printed gazette publication of ECI Delimitation Order 2008 with official seal and watermark is an external physical instrument not stored in git repository.",
       "missingArtifacts": [
         "Physical printed Gazette of India Extraordinary Part II Section 3(iii) Delimitation Order 2008 with authenticated seal"
       ],
       "repositoryStatus": "DIGITAL_EXTRACTS_AUTHENTICATED_PHYSICAL_PAPER_EXTERNAL",
-      "currentMitigation": "All 4,123 statutory assembly constituencies verified against official digital gazette releases, state CEO gazette extracts, and Migration 059 schema contract.",
+      "currentMitigation": "Digital legal extracts and repository roster evidence may support textual reconciliation, but physical Gazette custody/authenticity inspection remains unperformed in this Stage B research; do not treat this gate as closed.",
       "handoffCustodian": "Legal Compliance & Notary Review Board",
       "resolutionCriteria": "Physical inspection and archival custody certification by authorized legal notary."
     },
@@ -29,7 +29,7 @@
       "gateId": "EB-02",
       "canonicalCode": "PHYSICAL_GAZETTE_TRANSCRIPTION_FIDELITY_AUDIT",
       "targetStage": "Stage B (W021.5-B1-01..03)",
-      "weightPercent": 4.0,
+      "weightPercent": 4,
       "owner": "Independent Legal & Forensic Notary Authority",
       "description": "Independent physical notary/third-party audit comparing checked-in text extracts against the physical printed gazette remains pending.",
       "missingArtifacts": [
@@ -37,7 +37,7 @@
         "Line-by-line physical gazette comparison audit report"
       ],
       "repositoryStatus": "OFFLINE_PARSING_VERIFIED_PENDING_THIRD_PARTY_AUDIT",
-      "currentMitigation": "Automated AST and regex parsing validates 100% of 4,123 assembly constituencies across all 31 states with zero synthetic IDs.",
+      "currentMitigation": "Repository parsing/tests do not substitute for independent physical transcription fidelity audit; no independent physical audit was performed in this Stage B research.",
       "handoffCustodian": "Independent External Quality Auditor",
       "resolutionCriteria": "Signed independent audit certificate verifying bitwise/character fidelity against physical gazette."
     },
@@ -45,14 +45,14 @@
       "gateId": "EB-03",
       "canonicalCode": "INDIA_POST_DELIVERY_BEAT_GIS_BOUNDARIES",
       "targetStage": "Stage B (W021.5-B1-04)",
-      "weightPercent": 4.0,
+      "weightPercent": 4,
       "owner": "Department of Posts / Survey of India (National Spatial Data Infrastructure)",
-      "description": "Authoritative vector polygon GIS boundaries for Department of Posts 6-digit PIN delivery beats are not published or made available by India Post.",
+      "description": "A complete authoritative vector polygon GIS boundary dataset for Department of Posts 6-digit PIN delivery beats has not been acquired. Publication/availability status is not conclusively established by the current source search.",
       "missingArtifacts": [
         "Official national India Post GIS delivery beat polygon shapefile / GeoJSON dataset for 31 States/UTs"
       ],
-      "repositoryStatus": "CENTROIDS_MAPPED_VECTOR_POLYGONS_UNAVAILABLE",
-      "currentMitigation": "1,544 verified PIN centroid mappings cataloged; multi-AC PINs fail closed; synthetic polygon generation strictly prohibited under data-truth rules.",
+      "repositoryStatus": "OFFICIAL_BEAT_POLYGONS_NOT_ACQUIRED_AVAILABILITY_UNCONFIRMED",
+      "currentMitigation": "Existing PIN centroid mapping may assist lookup only; it does not establish polygon containment. Multi-AC PINs must fail closed and synthetic polygon generation remains prohibited.",
       "handoffCustodian": "Geospatial Data Operations / India Post Liaison",
       "resolutionCriteria": "Formal release and ingestion of official GIS delivery beat polygon layers from India Post GIS division."
     },
@@ -67,7 +67,7 @@
         "PostGIS ST_Contains topological containment matrix for all postal delivery beats against 4,123 AC boundaries"
       ],
       "repositoryStatus": "CONTAINMENT_FRAMEWORK_AUTHORED_AWAITING_BEAT_POLYGONS",
-      "currentMitigation": "Framework authored in reports/w021_5_spatial_containment_analysis.json; unambiguous PINs mapped, split PINs fail closed.",
+      "currentMitigation": "Containment framework is reported in the repository, but no complete official delivery-beat polygons were acquired in this Stage B research; no full national containment result is claimed.",
       "handoffCustodian": "GIS Spatial Analysis Team",
       "resolutionCriteria": "Topological containment execution over official polygons demonstrating verified intersection/containment."
     },
@@ -82,7 +82,7 @@
         "State CEO Polling Station Address Registers with verified 6-digit PIN mappings for 4,123 ACs"
       ],
       "repositoryStatus": "INGESTION_FRAMEWORK_AUTHORED_AWAITING_STATE_DATA",
-      "currentMitigation": "Framework and schema contract defined in reports/w021_5_polling_station_crosswalk_framework.json; zero synthetic mappings fabricated.",
+      "currentMitigation": "Schema/framework may be present, but a complete independently verified all-state polling-station/PIN crosswalk was not acquired in this Stage B research; no synthetic mappings are permitted.",
       "handoffCustodian": "Electoral Data Operations / State CEO Liaisons",
       "resolutionCriteria": "Ingestion and validation of official polling station address datasets from 31 State CEOs."
     },
@@ -104,16 +104,26 @@
     }
   ],
   "accountingSummary": {
-    "repositoryVerifiedEarned": 67.0,
+    "repositoryVerifiedEarned": 67,
     "unexecutedDatabasePending": 10.5,
     "blockedOnExternalGates": 22.5,
-    "totalMilestoneAllocation": 100.0,
-    "formalCtcAcceptance": 0.0
+    "totalMilestoneAllocation": 100,
+    "formalCtcAcceptance": 0
   },
   "freezeDeclaration": {
     "developmentFrozen": true,
-    "freezeDirective": "CTO Directive 153",
-    "directive154Prohibited": true,
-    "nextPermittedAction": "INDEPENDENT_CTO_ADJUDICATION"
+    "freezeDirective": "CTO Directive 153 remains historical; Directive 154 supersedes it prospectively only for Stage B repository research/implementation",
+    "directive154Prohibited": false,
+    "authorizedScope": "STAGE_B_ONLY_ON_RESUMPTION_BRANCH",
+    "nextPermittedAction": "Continue Stage B source acquisition and geometry validation; stop at Stage B boundary for adjudication. Stage C and later stages remain unauthorized."
+  },
+  "sourceAcquisitionDecision": {
+    "decisionId": "DEC-154R",
+    "status": "SOURCE_STRATEGY_SELECTED_ACQUISITION_AND_VERIFICATION_PENDING",
+    "report": "reports/w021_5_stage_b_source_research_2026-10-25.md",
+    "strategy": "Legal instruments as legal truth; official ECI/CEO/state GIS layers as candidate digital geometry; community/national layers for discrepancy discovery only; formal custodian requests for missing data and physical evidence.",
+    "notableFinding": "India Geodata statewise shapefiles are explicitly labelled pre-2014 in their directory README and are not accepted as current geometry.",
+    "noArtifactHashClaimed": true,
+    "stageBAccepted": false
   }
 }
