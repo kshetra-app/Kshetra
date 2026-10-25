@@ -162,7 +162,7 @@ export function getHistoryForState(
 
   const rows = getHistoryFromDB(stateCode, acNo);
   return rows.map(r => ({
-    year: r.year ?? null,
+    year: r.year,
     winner: r.winner ?? null,
     party: r.party ?? null,
   }));
