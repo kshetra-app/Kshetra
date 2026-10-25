@@ -3674,3 +3674,15 @@
 - **Boundaries:** Production remains strictly air-gapped. Staging database execution and deployment require a separate explicit execution token. No production release is authorized.
 - **Acceptance:** W022 remains unaccepted until fresh, commit-bound evidence and independent verification pass. Implementation permission, plan ratification, verification, and final acceptance are separate lifecycle states.
 - **Governance requirement:** The authorization gate must reject future product implementation changes without a valid ratified plan and a verifiable authorization commit that is an ancestor of the implementation commit.
+
+### DEC-045: GOV-02 — Continuity Register Reconciliation and CI Drift Guard
+- **Date:** 2026-10-25
+- **Status:** IMPLEMENTATION AUTHORED; CI EXECUTION / INDEPENDENT CORROBORATION / FORMAL ACCEPTANCE PENDING
+- **Authority:** GOV-02 continuity defect; W022 prospective implementation authorization directive dated 2026-10-25; Rule IV-001 Non-Self-Acceptance.
+- **Source snapshot:** `b9179efeeb2f24bcf1da8ec8339bfb25be7313fb` (the `master` HEAD inspected immediately before the GOV-02 repair branch). It is an evidence anchor, not the repair commit and not an environment-execution claim.
+- **Decision:** Use the exact canonical lifecycle states: `authored`, `locally validated`, `prepared`, `authorized`, `executed`, `independently corroborated`, `formally accepted`. Keep source existence, local validation, environment authorization, execution, independent corroboration, and final acceptance as separate evidence-backed stages.
+- **W021.5 reconciliation:** preserve Directive 153 historical baselines and zero-access counters; record repository-verified 67.0%, DB execution pending 10.5%, external-gate blocked 22.5%, unimplemented 0.0%, and parent formal acceptance 0.0%. Weight categories conserve 100%; formal acceptance is a separate gate. The 2026-10-07 blocker register remains explicitly historical.
+- **W022 reconciliation:** Migration 070 exists in source and is registered as W022 `authored`; plan Revision 4 authorizes prospective implementation and local verification only. Existing implementation commit `3ac3f1c0c14d51d60bab9f9d3e88a08716466124` remains pre-authorization; prospective authorization commit `39d0b680b7d266e73385edbbb96caff61e23d184` is not claimed as its ancestor. Staging DB execution, production access/deployment, and real webhook activation remain unauthorized. W022 is not accepted or released.
+- **Controls added:** `reports/gov_02_continuity_reconciliation.json`; cross-register updates to execution, acceptance, defect, decision and release registers and W021.5 source reports; `tests/continuity-register-reconciliation.test.mjs` invoked in CI.
+- **Consequence:** Directive 153 is scoped to its W021.5 disposition. It is not treated as overriding later W022-specific prospective authorization. No staging or production operation was performed by this change.
+- **Acceptance:** this decision records authored reconciliation only. GOV-02 must not be formally accepted until CI passes on the reviewed commit and independent corroboration is recorded.
