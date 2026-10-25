@@ -55,11 +55,20 @@ function isGeographySource(source) {
 }
 function isForbiddenNationalSeed(source) {
   const s = normalizedSource(source);
-  const seedData = s.includes('/data/seed/') && ['-constituencies.ts','-trivia.ts','-historical-results.ts','-election-history.ts','-demographics.ts','-political-timeline.ts','-mla-profiles.ts'].some((suffix) => s.endsWith(suffix));
-  return seedData || s.endsWith('/apps/mobile/lib/statedataadapter.ts') || s.endsWith('/apps/mobile/lib/statedataadapter.tsx')
-    || s.endsWith('/apps/mobile/lib/statetriviaadapter.ts') || s.endsWith('/apps/mobile/lib/statetriviaadapter.tsx')
-    || s.endsWith('/apps/mobile/lib/statedatadispatcher.ts') || s.endsWith('/apps/mobile/lib/statedatadispatcher.tsx')
-    || s.endsWith('/apps/mobile/lib/enrichgeojson.ts') || s.endsWith('/apps/mobile/lib/enrichgeojson.tsx')
+  const basename = s.split('/').pop() ?? s;
+  const forbiddenBasenames = new Set([
+    'statedataadapter.ts', 'statedataadapter.tsx',
+    'statetriviaadapter.ts', 'statetriviaadapter.tsx',
+    'statedatadispatcher.ts', 'statedatadispatcher.tsx',
+    'enrichgeojson.ts', 'enrichgeojson.tsx',
+    'hierarchydata.ts', 'hierarchydata.tsx',
+    'seedDataLoader.ts'.toLowerCase(), 'representativesdata.ts',
+    'delimitationdensity.ts', 'seatcalculator.ts',
+  ]);
+  return forbiddenBasenames.has(basename)
+    || s.includes('/data/seed/')
+    || s.includes('/data/census/')
+    || basename === 'booth-locations-2017.json'
     || s.endsWith('/apps/mobile/data/geo-manifest.json');
 }
 
@@ -88,8 +97,12 @@ function zipEntries(file) {
   const listing = execFileSync('unzip', ['-l', file], { encoding: 'utf8', maxBuffer: 20 * MiB });
   const rows = [];
   for (const line of listing.split(String.fromCharCode(10))) {
-    const match = line.trim().match(/^([0-9]+)\\s+(.+)$/);
-    if (match) rows.push({ name: match[2].trim(), bytes: Number(match[1]) });
+    const columns = line.trim().split(/\s+/);
+    // unzip -l rows are: uncompressed-bytes date time entry-path.
+    // Ignore headers/footers by requiring a numeric first column and >= 4 columns.
+    if (columns.length >= 4 && columns[0] !== '' && Number.isFinite(Number(columns[0]))) {
+      rows.push({ name: columns.slice(3).join(' ').trim(), bytes: Number(columns[0]) });
+    }
   }
   return rows;
 }
