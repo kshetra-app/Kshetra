@@ -238,7 +238,7 @@ console.log('[PASS] [REPOSITORY INTEGRATION] Test R1: Scope chain of custody ver
 // [REPOSITORY INTEGRATION] Test R2: Real-state Control M validation (W022 prospective authorization).
 const stateRaw = fs.readFileSync('EXECUTION_STATE.md', 'utf8');
 function parseExecutionStateField(fieldKey) {
-  const match = stateRaw.match(new RegExp('^' + fieldKey + ':\\\\s*(.+)', 'm'));
+  const match = stateRaw.match(new RegExp('^' + fieldKey + ':\\s*(.+)', 'm'));
   return match ? match[1].trim() : null;
 }
 const realCurrentJob = parseExecutionStateField('CURRENT_JOB');
