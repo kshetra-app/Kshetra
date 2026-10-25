@@ -495,15 +495,23 @@ export async function loadAllSeedDataForState(stateCode: string): Promise<void> 
 // ═════════════════════════════════════════════════════════════════════════
 
 export function useSeedDataLoader(stateCode: string) {
-  const loadingRef = useRef(false);
+  // Track in-flight states rather than a one-way boolean. A component can
+  // navigate TS -> AP -> TS, and a failed request must be retryable.
+  const inFlightStatesRef = useRef(new Set<string>());
 
   useEffect(() => {
-    if (loadingRef.current) return;
-    loadingRef.current = true;
+    if (!stateCode || isSeedDataLoadedForState(stateCode) || inFlightStatesRef.current.has(stateCode)) {
+      return;
+    }
 
-    loadAllSeedDataForState(stateCode).catch(err => {
-      console.error(`[useSeedDataLoader] Failed to load seed data for ${stateCode}:`, err);
-    });
+    inFlightStatesRef.current.add(stateCode);
+    loadAllSeedDataForState(stateCode)
+      .catch(err => {
+        console.error(`[useSeedDataLoader] Failed to load seed data for ${stateCode}:`, err);
+      })
+      .finally(() => {
+        inFlightStatesRef.current.delete(stateCode);
+      });
   }, [stateCode]);
 }
 
