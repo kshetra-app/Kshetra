@@ -23,6 +23,26 @@ export function getMasterEncryptionKey(): Buffer {
   throw new Error('FATAL_SECURITY_ERROR: WEBHOOK_SECRETS_ENCRYPTION_KEY missing or invalid in deployed environment');
 }
 
+
+/** Encodes Node buffers using PostgreSQL bytea text format for PostgREST JSON. */
+export function encodePostgresBytea(value: Buffer): string {
+  if (!Buffer.isBuffer(value)) throw new TypeError('BYTEA_ENCODE_FAILED: Expected Buffer');
+  return String.fromCharCode(92) + 'x' + value.toString('hex');
+}
+
+/** Decodes PostgREST bytea strings or driver-provided byte buffers fail-closed. */
+export function decodePostgresBytea(value: unknown): Buffer {
+  if (Buffer.isBuffer(value)) return value;
+  if (value instanceof Uint8Array) return Buffer.from(value);
+  if (Array.isArray(value) && value.every((n) => Number.isInteger(n) && n >= 0 && n <= 255)) return Buffer.from(value);
+  if (typeof value === 'string') {
+    const prefix = String.fromCharCode(92) + 'x';
+    const hex = value.startsWith(prefix) ? value.slice(prefix.length) : value;
+    if (hex.length % 2 === 0 && /^[a-f0-9]*$/i.test(hex)) return Buffer.from(hex, 'hex');
+  }
+  throw new Error('BYTEA_DECODE_FAILED: Database returned invalid bytea data');
+}
+
 export interface EncryptedSecretRecord {
   ciphertext: Buffer;
   iv: Buffer;

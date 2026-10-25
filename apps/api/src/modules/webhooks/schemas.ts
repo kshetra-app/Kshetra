@@ -73,7 +73,7 @@ export const EVENT_PAYLOAD_SCHEMAS: Record<string, Record<string, unknown>> = {
     ],
     properties: {
       event_id: { type: 'string', pattern: '^[0-9a-fA-F-]{36}$' },
-      timestamp: { type: 'string' },
+      timestamp: { type: 'string', format: 'date-time' },
       election_id: { type: 'string', pattern: '^[a-z0-9_-]+$' },
       state_code: { type: 'string', pattern: '^[A-Z]{2}$' },
       constituency_code: { type: 'string', pattern: '^[A-Z0-9_-]+$' },
@@ -99,7 +99,7 @@ export const EVENT_PAYLOAD_SCHEMAS: Record<string, Record<string, unknown>> = {
     required: ['event_id', 'timestamp', 'candidate_id', 'election_id', 'nomination_status', 'affidavit_hash'],
     properties: {
       event_id: { type: 'string', pattern: '^[0-9a-fA-F-]{36}$' },
-      timestamp: { type: 'string' },
+      timestamp: { type: 'string', format: 'date-time' },
       candidate_id: { type: 'string', pattern: '^[0-9a-fA-F-]{36}$' },
       election_id: { type: 'string', pattern: '^[a-z0-9_-]+$' },
       nomination_status: { type: 'string', enum: ['submitted', 'scrutinized_valid', 'rejected', 'withdrawn'] },
@@ -113,7 +113,7 @@ export const EVENT_PAYLOAD_SCHEMAS: Record<string, Record<string, unknown>> = {
     required: ['event_id', 'timestamp', 'state_code', 'constituency_code', 'gazette_notification_number', 'boundary_geojson_sha256'],
     properties: {
       event_id: { type: 'string', pattern: '^[0-9a-fA-F-]{36}$' },
-      timestamp: { type: 'string' },
+      timestamp: { type: 'string', format: 'date-time' },
       state_code: { type: 'string', pattern: '^[A-Z]{2}$' },
       constituency_code: { type: 'string', pattern: '^[A-Z0-9_-]+$' },
       gazette_notification_number: { type: 'string' },
@@ -127,70 +127,86 @@ export const EVENT_PAYLOAD_SCHEMAS: Record<string, Record<string, unknown>> = {
     required: ['event_id', 'timestamp', 'message'],
     properties: {
       event_id: { type: 'string', pattern: '^[0-9a-fA-F-]{36}$' },
-      timestamp: { type: 'string' },
+      timestamp: { type: 'string', format: 'date-time' },
       message: { type: 'string', maxLength: 256 },
     },
   },
 };
 
 /**
- * Validates an event payload against the authoritative allowlisted schema.
- * Rejects unknown properties at any level (additionalProperties: false).
+ * Recursively enforces the event allowlist schema (types, formats, patterns,
+ * enums, numeric bounds, required keys and unknown-property rejection).
  */
-export function validateEventPayload(
-  eventType: string,
-  payload: unknown
-): { valid: boolean; error?: string } {
+function validateSchemaValue(path: string, value: unknown, schemaValue: unknown): string | undefined {
+  if (!schemaValue || typeof schemaValue !== 'object' || Array.isArray(schemaValue)) {
+    return `SCHEMA_INVALID: Schema definition for '${path}' is invalid.`;
+  }
+  const schema = schemaValue as Record<string, unknown>;
+  const displayPath = path || 'payload';
+  if (schema.type === 'object') {
+    if (value === null || typeof value !== 'object' || Array.isArray(value)) {
+      return `INVALID_FIELD_VALUE: '${displayPath}' must be an object.`;
+    }
+    const record = value as Record<string, unknown>;
+    const required = Array.isArray(schema.required) ? schema.required as string[] : [];
+    const properties = schema.properties && typeof schema.properties === 'object'
+      ? schema.properties as Record<string, unknown> : {};
+    for (const field of required) {
+      if (record[field] === undefined || record[field] === null) {
+        return `MISSING_REQUIRED_FIELD: ${path ? `${path}.` : ''}${field} is required.`;
+      }
+    }
+    for (const key of Object.keys(record)) {
+      if (!Object.prototype.hasOwnProperty.call(properties, key)) {
+        if (schema.additionalProperties === false) {
+          return `UNRECOGNIZED_PAYLOAD_FIELD: Property '${path ? `${path}.` : ''}${key}' is prohibited by allowlisted schema.`;
+        }
+        continue;
+      }
+      const nestedError = validateSchemaValue(path ? `${path}.${key}` : key, record[key], properties[key]);
+      if (nestedError) return nestedError;
+    }
+    return undefined;
+  }
+  if (schema.type === 'string') {
+    if (typeof value !== 'string') return `INVALID_FIELD_VALUE: '${displayPath}' must be a string.`;
+    if (typeof schema.pattern === 'string' && !(new RegExp(schema.pattern)).test(value)) {
+      return `INVALID_FIELD_VALUE: '${displayPath}' does not match the required format.`;
+    }
+    if (Array.isArray(schema.enum) && !schema.enum.includes(value)) {
+      return `INVALID_FIELD_VALUE: '${displayPath}' is not an allowed value.`;
+    }
+    if (typeof schema.maxLength === 'number' && value.length > schema.maxLength) {
+      return `INVALID_FIELD_VALUE: '${displayPath}' exceeds the maximum length.`;
+    }
+    if (schema.format === 'date-time') {
+      const iso = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,9})?(?:Z|[+-]\d{2}:\d{2})$/;
+      if (!iso.test(value) || !Number.isFinite(Date.parse(value))) {
+        return `INVALID_FIELD_VALUE: '${displayPath}' must be an ISO-8601 date-time with timezone.`;
+      }
+    }
+    return undefined;
+  }
+  if (schema.type === 'integer') {
+    if (typeof value !== 'number' || !Number.isInteger(value)) return `INVALID_FIELD_VALUE: '${displayPath}' must be an integer.`;
+    if (typeof schema.minimum === 'number' && value < schema.minimum) return `INVALID_FIELD_VALUE: '${displayPath}' is below its minimum.`;
+    if (typeof schema.maximum === 'number' && value > schema.maximum) return `INVALID_FIELD_VALUE: '${displayPath}' exceeds its maximum.`;
+    return undefined;
+  }
+  return `SCHEMA_INVALID: Unsupported schema type for '${displayPath}'.`;
+}
+
+export function validateEventPayload(eventType: string, payload: unknown): { valid: boolean; error?: string } {
   if (!ALLOWED_EVENT_TYPES.includes(eventType as AllowedEventType)) {
     return { valid: false, error: `UNSUPPORTED_EVENT_TYPE: Event '${eventType}' is not an authorized webhook event.` };
   }
-
   const schema = EVENT_PAYLOAD_SCHEMAS[eventType];
-  if (!schema) {
-    return { valid: false, error: `SCHEMA_MISSING: No schema registered for event '${eventType}'.` };
-  }
-
+  if (!schema) return { valid: false, error: `SCHEMA_MISSING: No schema registered for event '${eventType}'.` };
   if (payload === null || typeof payload !== 'object' || Array.isArray(payload)) {
     return { valid: false, error: 'INVALID_PAYLOAD_TYPE: Payload must be a JSON object.' };
   }
-
-  const record = payload as Record<string, unknown>;
-
-  // Check required root properties
-  const required = (schema.required as string[]) || [];
-  for (const field of required) {
-    if (record[field] === undefined || record[field] === null) {
-      return { valid: false, error: `MISSING_REQUIRED_FIELD: Field '${field}' is required.` };
-    }
-  }
-
-  // Check for unknown root properties (additionalProperties: false)
-  const allowedProperties = schema.properties as Record<string, any>;
-  for (const key of Object.keys(record)) {
-    if (!allowedProperties[key]) {
-      return { valid: false, error: `UNRECOGNIZED_PAYLOAD_FIELD: Property '${key}' is prohibited by allowlisted schema.` };
-    }
-  }
-
-  // Validate nested objects
-  if (eventType === 'election.results.published' && record.summary) {
-    const summary = record.summary as Record<string, unknown>;
-    const summarySchema = allowedProperties.summary;
-    const summaryRequired = (summarySchema.required as string[]) || [];
-    for (const field of summaryRequired) {
-      if (summary[field] === undefined || summary[field] === null) {
-        return { valid: false, error: `MISSING_REQUIRED_FIELD: summary.${field} is required.` };
-      }
-    }
-    const allowedSummaryProps = summarySchema.properties as Record<string, any>;
-    for (const key of Object.keys(summary)) {
-      if (!allowedSummaryProps[key]) {
-        return { valid: false, error: `UNRECOGNIZED_PAYLOAD_FIELD: Property 'summary.${key}' is prohibited.` };
-      }
-    }
-  }
-
-  return { valid: true };
+  const error = validateSchemaValue('', payload, schema);
+  return error ? { valid: false, error } : { valid: true };
 }
 
 // ─── FASTIFY ROUTE VALIDATION SCHEMAS ───
