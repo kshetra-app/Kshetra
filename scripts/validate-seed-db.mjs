@@ -96,6 +96,13 @@ try {
     const actualHistory = db.prepare('SELECT count(*) AS n FROM historical_results WHERE state_code=?').get(code).n;
     const actualTimeline = db.prepare('SELECT count(*) AS n FROM political_timeline WHERE state_code=?').get(code).n;
     const actualElectionHistory = db.prepare('SELECT count(*) AS n FROM election_history WHERE state_code=?').get(code).n;
+    if (Number(declared.mla_profile_count) !== actualMla ||
+        Number(declared.demographics_count) !== actualDemographics ||
+        Number(declared.historical_results_count) !== actualHistory ||
+        Number(declared.political_timeline_count) !== actualTimeline ||
+        Number(declared.election_history_count) !== actualElectionHistory) {
+      fail(`${code} JSON manifest record counts do not match the actual database rows`);
+    }
     if (!declared.version || !/^[a-f0-9]{16}$/.test(declared.version)) fail(`${code} state version is missing or invalid`);
     const expectedStateVersion = crypto.createHash('sha256').update(JSON.stringify({
       state_code: code,
