@@ -994,11 +994,11 @@
       "pinBoundaryUrl": "https://gisserver.bihar.gov.in/arcgis/rest/services/AdministrativrBoundaries/PIN_Code_Boundary/MapServer",
       "evidenceReport": "reports/evidence/w021_5_bihar_gis_discovery_40217893573.json",
       "lastProbe": {
-        "workflowRunId": 40218024380,
-        "workflowUrl": "https://github.com/kshetra-app/Kshetra/actions/runs/40218024380",
-        "artifactId": 12607499271,
-        "artifactSha256": "dfa752a1374b1313c13c5155fcdb42555701d0bf915a9d50fd33de4f29182e45",
-        "result": "AC geometry raw bytes acquired (243 features); preliminary topology screen found 3 invalid geometries and 76 positive-area overlaps >1m²; PIN boundary count 884; no acceptance."
+        "workflowRunId": 40218292706,
+        "workflowUrl": "https://github.com/kshetra-app/Kshetra/actions/runs/40218292706",
+        "artifactId": 12608390999,
+        "artifactSha256": "5d70b1b2277bf6c4564645ac1e08d957fcd344523981d433a44dd366ba1a5418",
+        "result": "AC geometry, PIN count and Bihar state boundary acquired; 3 invalid AC geometries and 76 overlap pairs >1m²; CI audit selector missed State_Name; fixed in 46380877e0d27d6f10d6bc827ef27246416bf377; rerun pending."
       },
       "geometryQueryUrl": "https://gisserver.bihar.gov.in/arcgis/rest/services/ELECTION/AC/MapServer/0/query?where=1%3D1&outFields=%2A&returnGeometry=true&outSR=4326&f=json&resultRecordCount=1000",
       "geometryBytes": 10958178,
@@ -1028,10 +1028,20 @@
         "duplicateNames": {
           "PIPRA": 2
         },
-        "stateBoundaryComparison": "PENDING_NEW_PROBE"
+        "stateBoundaryComparison": "PENDING_NEW_PROBE",
+        "stateCoverageScreen": {
+          "coveragePercent": 99.99956829322835,
+          "uncoveredAreaM2": 406790.2045589393,
+          "outsideAreaM2": 2881.9138108641555,
+          "status": "PRELIMINARY_LOCAL_SCREEN"
+        }
       },
       "pinBoundaryFeatureCount": 884,
-      "auditReport": "reports/evidence/w021_5_bihar_ac_geometry_audit_40218024380.json"
+      "auditReport": "reports/evidence/w021_5_bihar_ac_geometry_audit_40218024380.json",
+      "coverageReport": "reports/evidence/w021_5_bihar_state_coverage_comparison_40218257634.json",
+      "stateBoundaryUrl": "https://gisserver.bihar.gov.in/arcgis/rest/services/AdministrativrBoundaries/StateBoundary/MapServer/0/query?where=1%3D1&outFields=%2A&returnGeometry=true&outSR=4326&f=json&resultRecordCount=100",
+      "stateBoundaryBytes": 784840,
+      "stateBoundarySha256": "fce67b09df40e4ca62a54bf58d2caaa2609631eccce00ea0f2b07b6b9be6e446"
     }
   ],
   "unresolvedGates": [
@@ -1548,5 +1558,5 @@
     ],
     "acceptedAsCanonical": false
   },
-  "lastDecision": "Bihar BEGIS yielded a public official AC layer with 243 features and exact source-byte hash, but preliminary topology checks found defects. Preserve it as a candidate and do not promote until the reproducible state-coverage/topology audit, legal-vintage review and independent adjudication pass."
+  "lastDecision": "Bihar official AC geometry and state polygon are now available as reproducible source-byte candidates. Coverage screen is nearly complete, but topology defects remain; the workflow state-field selector has been fixed and must rerun. Do not accept or promote this layer."
 }
