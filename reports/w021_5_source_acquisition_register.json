@@ -224,15 +224,30 @@
       "retrievedAt": "2026-10-25",
       "format": "JavaScript-wrapped GeoJSON by state election portal",
       "authority": "PRIMARY_PORTAL_DATA_CANDIDATE",
-      "status": "INITIAL_DIRECT_FETCH_FAILED; RETRY_WITH_BROWSER_HEADERS",
+      "status": "DIRECT_JS_URLS_404_CONFIRMED_FOR_FIVE_2026_JURISDICTIONS",
       "sha256": null,
       "fileBytes": null,
       "scope": "Repository documents five state/UT files for Assam, Puducherry, Kerala, Tamil Nadu and West Bengal for the May 2026 election context",
       "limitations": [
         "Initial acquisition run returned HTTP 404 for guessed JavaScript URLs; direct retry with browser headers and pinned third-party GeoJSON candidates is in progress.",
-        "Election-cycle-specific geometry is not a universal 31-state current boundary release and must be checked for temporal/statutory applicability."
+        "Election-cycle-specific geometry is not a universal 31-state current boundary release and must be checked for temporal/statutory applicability.",
+        "Focused probe 40212122850 returned HTTP 404 for all five /ac/{STATE_CODE}.js URLs; no raw official geometry was acquired."
       ],
-      "plannedUse": "Investigate portal-native geometry and provenance for the covered jurisdictions only."
+      "plannedUse": "Investigate portal-native geometry and provenance for the covered jurisdictions only.",
+      "lastProbe": {
+        "workflowRunId": 40212122850,
+        "manifest": "reports/evidence/w021_5_official_geometry_probe_40212122850.json",
+        "statusByCode": {
+          "S03": 404,
+          "U07": 404,
+          "S11": 404,
+          "S22": 404,
+          "S25": 404
+        },
+        "errorBodyBytes": 196,
+        "errorBodySha256": "80c3fe2ae1062abf56456f52518bd670f9ec3917b7f85e152b347ac6b6faf880",
+        "conclusion": "Do not repeat these exact URLs as a presumed source; investigate current ECI portal HTML/routes or request source from ECI/CEO custodians."
+      }
     },
     {
       "sourceId": "SRC-SOI-ABDB-ARCHIVE",
@@ -286,6 +301,31 @@
         "No full topology, overlap/gap, legal instrument/effective-date, or national coverage validation was performed."
       ],
       "plannedUse": "Discrepancy detection and reproducibility probe only; compare to direct ECI response and applicable legal instrument before any authoritative use."
+    },
+    {
+      "sourceId": "SRC-TELANGANA-AC-LAYER",
+      "subject": "Telangana Assembly Constituency Boundary polygon layer",
+      "publisher": "Telangana State Remote Sensing Applications Centre GIS",
+      "url": "https://tgrac.telangana.gov.in/arcgis/rest/services/AdministrativeInfoSystem_Folder/Administrative_Information_System/MapServer/24?f=pjson",
+      "retrievedAt": "2026-10-25",
+      "format": "ArcGIS REST Feature Layer (ESRI JSON query required)",
+      "authority": "OFFICIAL_STATE_GIS_CANDIDATE",
+      "status": "METADATA_ACQUIRED_GEOMETRY_QUERY_RETRY_PENDING",
+      "sha256": "fd91d7803f39a8cc9ae9f2f486224cea777c7127ef5659dd2d073b088dbfb26a",
+      "fileBytes": 4756,
+      "geometryQueryInitial": {
+        "url": "https://tgrac.telangana.gov.in/arcgis/rest/services/AdministrativeInfoSystem_Folder/Administrative_Information_System/MapServer/24/query?where=1%3D1&outFields=%2A&returnGeometry=true&outSR=4326&f=geojson",
+        "httpStatus": 400,
+        "responseBytes": 602,
+        "responseBodySha256": "078ce75da3d26b3bd38f567b920f290dab72cbeebe6e49b277ef782332fd80da",
+        "reason": "Output format not supported; service advertises JSON and AMF formats."
+      },
+      "geometryQueryRetryRunId": 40212257196,
+      "limitations": [
+        "Geometry payload not yet acquired.",
+        "Service metadata is not proof of legal effective date or authoritative boundary completeness.",
+        "No topology or Gazette reconciliation has been performed."
+      ]
     }
   ],
   "unresolvedGates": [
@@ -366,15 +406,42 @@
       "manifestSummary": null,
       "status": "QUEUED_AT_LAST_CHECK",
       "scope": "Focused read-only probe of the five official ECI May-2026 AC geometry endpoints plus Telangana official ArcGIS layer metadata and geometry query. Raw response bytes and failed-response bodies are hashed/preserved in the artifact; structural checks are not legal/topology acceptance."
+    },
+    {
+      "runId": 40212122850,
+      "workflowUrl": "https://github.com/kshetra-app/Kshetra/actions/runs/40212122850",
+      "artifactId": 12605509052,
+      "artifactName": "w0215-official-geometry-probe-40212122850",
+      "artifactSha256": "e30baeff7c4ba94b0eee8d0e3fda41ddd7262a9880f7f4ac8e6ad9b9d7ce270e",
+      "uncompressedBytes": 12426,
+      "manifestSummary": {
+        "directEciGeometryUrls": 5,
+        "eciHttp404": 5,
+        "telanganaMetadataHttp200": 1,
+        "telanganaGeometryQueryHttp400": 1
+      },
+      "status": "COMPLETED_WITH_FAILURES; RAW RESPONSE HASHES VERIFIED; CORRECTED TELANGANA QUERY RETRY QUEUED"
+    },
+    {
+      "runId": 40212257196,
+      "workflowUrl": "https://github.com/kshetra-app/Kshetra/actions/runs/40212257196",
+      "artifactId": null,
+      "artifactName": null,
+      "artifactSha256": null,
+      "uncompressedBytes": null,
+      "manifestSummary": null,
+      "status": "QUEUED_AT_LAST_CHECK",
+      "scope": "Retry Telangana official ArcGIS polygon query using supported f=json format and structural ring checks."
     }
   ],
-  "updatedAt": "2026-10-25T16:33:00Z",
+  "updatedAt": "2026-10-25T16:34:00Z",
   "notes": [
     "Actual public source artifacts were downloaded in GitHub Actions run 40209022405 and SHA-256 hashed; detailed geometry findings are in reports/w021_5_datameet_ac_geometry_forensic_audit.json.",
     "Survey of India official ABDB page, Vector Data Catalog 2025 PDF and Metadata_ABDB.zip were downloaded and hashed. The metadata covers state, district, subdistrict and village boundaries, not statutory Assembly Constituency polygons.",
     "The first ECI direct downloads failed (HTTP 406/404); a retry with browser headers and pinned third-party ECI-portal-derived GeoJSON candidates is running. Do not claim these ECI geometry files downloaded until the second artifact manifest confirms it.",
     "Additional connected-source probe: a 835,011-byte Puducherry GeoJSON mirror was acquired and SHA-256 hashed (2786e744aa7394c85d977a317a1d1e33cb3eb78dbea45a272375fc9a48e54338); its structural checks are documented in reports/evidence/w021_5_stage_b_acquisition_probe_2026-10-25.json. It is secondary, licence status is unconfirmed, and it does not close any external gate.",
     "Retry workflow 40211792541 is currently in progress; no artifact has been published at last check. The prior completed run 40209022405 remains the only workflow artifact reviewed so far. Do not assume the retry succeeded.",
-    "Focused official geometry probe 40212122850 was queued to prioritize the five direct ECI endpoints and Telangana state GIS layer; it is separate from the broad source-acquisition retry 40211792541. Inspect its uploaded manifest before making claims."
+    "Focused official geometry probe 40212122850 was queued to prioritize the five direct ECI endpoints and Telangana state GIS layer; it is separate from the broad source-acquisition retry 40211792541. Inspect its uploaded manifest before making claims.",
+    "Focused geometry probe run 40212122850 independently confirmed all five ECI .js URLs return 404 and the Telangana ArcGIS metadata endpoint is reachable. The initial f=geojson query was unsupported; corrected f=json query is queued in 40212257196. The probe ZIP SHA-256 was independently verified as e30baeff7c4ba94b0eee8d0e3fda41ddd7262a9880f7f4ac8e6ad9b9d7ce270e."
   ]
 }
