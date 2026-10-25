@@ -7,18 +7,19 @@
 ## W021.5 RESUMPTION CONTROL — DIRECTIVE 154 (2026-10-25)
 
 ```text
-W021_5_RESUMPTION_PLAN: governance/plans/W021.5-RESUMPTION-REV-1.0.md
-W021_5_CTO_DIRECTIVE: governance/directives/CTO-DIRECTIVE-154-W021.5-RESUMPTION.md
+W021_5_RESUMPTION_PLAN: PR #25 branch (not yet merged) — governance/plans/PLAN-W021.5-RESUMPTION-REV-1.0.md
+W021_5_CTO_DIRECTIVE: PR #25 branch (not yet merged) — governance/authorizations/W021.5_RESUMPTION_AUTHORIZATION_2026-10-25.md; see DEC-155
 W021_5_AUTHORIZATION: YES — STAGE B ONLY (branch-scoped; directive commit c37667526af49d15878be6985800e872d871d57c)
 W021_5_STAGE_B_STATUS: IN PROGRESS / NOT ACCEPTED
-W021_5_STAGE_B_EVIDENCE: reports/w021_5_stage_b_source_research_2026-10-25.md
+W021_5_STAGE_B_EVIDENCE: PR #25 branch (not yet merged) — reports/w021_5_stage_b_source_research_2026-10-25.md
+W021_5_STAGE_B_PROBE_MANIFEST: PR #25 branch (not yet merged) — reports/evidence/w021_5_stage_b_acquisition_probe_2026-10-25.json
 W021_5_STAGE_B_EXTERNAL_GATES: EB-01..EB-05 OPEN; W021.5-B1-04 OPEN
 W021_5_PRODUCTION: STRICTLY AIR-GAPPED; NO ACCESS OR MUTATION
 W021_5_STAGING: NO DATABASE ACCESS OR MUTATION UNDER DIRECTIVE 154
 W021_5_NEXT_PERMITTED_ACTION: Continue Stage B source acquisition, provenance capture, and geometry validation; stop at Stage B boundary
 ```
 
-**Governance reconciliation note:** Directive 154 prospectively supersedes Directive 153 only within the authorized Stage B scope. W021.5 remains unaccepted; no Stage C or later stage is authorized. Production remains air-gapped and no database operation was performed. The execution ledger and acceptance register must not be advanced without the required evidence and adjudication.
+**Governance reconciliation note:** Directive 154 prospectively supersedes Directive 153 only within the authorized Stage B scope. W021.5 remains unaccepted; no Stage C or later stage is authorized. Production remains air-gapped and no database operation was performed. The execution ledger and acceptance register must not be advanced without the required evidence and adjudication. The supplemental source report and probe manifest are currently in PR #25's resumption branch and are not yet present on master.
 
 ---
 
