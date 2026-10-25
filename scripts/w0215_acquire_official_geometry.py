@@ -58,6 +58,14 @@ SOURCES.extend([
         "where": "1=1", "outFields": "*", "returnGeometry": "true", "outSR": "4326", "f": "json"
     })},
 ])
+TELANGANA_2026_LAYER = "https://tgrac.telangana.gov.in/arcgis/rest/services/EndowmentLands_Folder/EndowmentLands_Admin_2026/MapServer/12"
+SOURCES.extend([
+    {"id": "telangana-2026-layer-metadata", "kind": "official_state_gis_2026_service_candidate", "url": TELANGANA_2026_LAYER + "?f=pjson"},
+    {"id": "telangana-2026-ac-geometry", "kind": "official_state_gis_2026_geometry_candidate", "url": TELANGANA_2026_LAYER + "/query?" + urlencode({
+        "where": "1=1", "outFields": "*", "returnGeometry": "true", "outSR": "4326", "f": "json"
+    }), "expected_features": 119},
+])
+
 
 def sha256(data: bytes) -> str:
     return hashlib.sha256(data).hexdigest()
@@ -241,7 +249,7 @@ for source in SOURCES:
             record["normalised_artifact"] = f"normalized/{source['state_code']}_{source['state_name']}.geojson"
             if checks["structural_sanity"] != "PASS" or checks["expected_feature_count_status"] != "PASS":
                 raise RuntimeError("GeoJSON structural sanity or expected feature count failed")
-        elif source["id"] == "telangana-ac-geometry":
+        elif source["id"].startswith("telangana") and source["id"].endswith("-ac-geometry"):
             data = json.loads(raw.decode("utf-8-sig"))
             if data.get("error"):
                 raise RuntimeError("ArcGIS query error: " + json.dumps(data["error"], ensure_ascii=False))
@@ -255,8 +263,12 @@ for source in SOURCES:
             for feature in features:
                 attrs = feature.get("attributes") or {}
                 if attrs.get("OBJECTID") not in (None, ""): ids.append(str(attrs["OBJECTID"]))
-                if attrs.get("Assembly_Name") not in (None, ""): names.append(str(attrs["Assembly_Name"]))
-                if attrs.get("Assembly") not in (None, ""): assembly_values.append(str(attrs["Assembly"]))
+                for name_key in ("Assembly_Name", "ASSEMBLY_N", "Ass_Name", "AC_NAME"):
+                    if attrs.get(name_key) not in (None, ""):
+                        names.append(str(attrs[name_key])); break
+                for assembly_key in ("Assembly", "Ass_Name", "ASSEMBLY_N"):
+                    if attrs.get(assembly_key) not in (None, ""):
+                        assembly_values.append(str(attrs[assembly_key])); break
                 geometry = feature.get("geometry") or {}
                 rings = geometry.get("rings")
                 if not isinstance(rings, list) or not rings:
@@ -295,8 +307,11 @@ for source in SOURCES:
                 "structural_sanity": "PASS" if len(features) > 0 and len(ids) == len(features) and len(set(ids)) == len(features) and len(names) == len(features) and len(set(names)) == len(features) and not (missing_geometry or empty_rings or unclosed_rings or nonfinite) else "FAIL",
                 "topology_validated": False
             }
-            if record["geometry_checks"]["structural_sanity"] != "PASS":
-                raise RuntimeError("Telangana ArcGIS polygon structural sanity failed")
+            if source.get("expected_features") is not None:
+                record["geometry_checks"]["expected_feature_count"] = source["expected_features"]
+                record["geometry_checks"]["expected_feature_count_status"] = "PASS" if record["geometry_checks"]["feature_count"] == source["expected_features"] else "FAIL"
+            if record["geometry_checks"]["structural_sanity"] != "PASS" or record["geometry_checks"].get("expected_feature_count_status", "PASS") != "PASS":
+                raise RuntimeError("Telangana ArcGIS polygon structural sanity or expected feature count failed")
         else:
             data = json.loads(raw.decode("utf-8-sig"))
             record["metadata_json_parse"] = "PASS" if isinstance(data, dict) else "FAIL"
