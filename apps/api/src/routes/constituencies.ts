@@ -1,4 +1,20 @@
 import type { FastifyInstance } from 'fastify';
+import { createHash } from 'node:crypto';
+import {
+  getUnifiedConstituenciesForState,
+  getConstituenciesForState,
+  getAvailableYearsForState,
+} from '../../../mobile/lib/stateDataAdapter';
+import {
+  getAllTriviaForState,
+  getTriviaForConstituencyInState,
+} from '../../../mobile/lib/stateTriviaAdapter';
+import {
+  getDemographicsForState,
+  getHistoryForState,
+  getMLAProfileForState,
+  isStrongholdForState,
+} from '../../../mobile/lib/stateDataDispatcher';
 import type { ConstituencyBrief } from '@kshetra/shared';
 import { findConstituencyAtPoint, computeElectionAnalytics } from '@kshetra/shared';
 import type { ConstituencyRecord } from '@kshetra/shared';
@@ -20,11 +36,47 @@ import {
   getConstituency,
   getRawConstituency,
   getStateInfo,
+  isStateSupported,
   searchConstituencies,
   getConstituencyElectionData,
 } from '../services/stateData';
 import { sendApiError } from '../lib/replyHelper';
+import { getCensusDistricts } from '../../../../data/census/india-district-population-2011';
+import { CENSUS_2011_STATES, IDEAL_POP_PER_AC_SEAT_2011 } from '../../../../data/census/india-district-population-2011';
+import {
+  getConstituencyDataStatus,
+  hasHierarchyData,
+  hasBoothData,
+  getBoothsForConstituency,
+} from '../../../mobile/lib/hierarchyData';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
+
+/** Same deterministic expansion-safe scenario used by the former mobile calculation. */
+function stateMapSeatProjection(stateCode: string) {
+  const state = CENSUS_2011_STATES.find((entry) => entry.stateCode === stateCode);
+  if (!state) return null;
+  const statutorySeats: Record<string, number> = { AP: 225, TS: 153, JK: 90, AS: 126 };
+  let projectedSeats = 0;
+  if (state.currentAssemblySeats === 0) projectedSeats = 0;
+  else if (statutorySeats[stateCode] != null) projectedSeats = statutorySeats[stateCode];
+  else {
+    const expansionFactor = state.totalPopulation > 50_000_000 ? 1.15 : 1.10;
+    projectedSeats = Math.min(500, Math.max(state.currentAssemblySeats, Math.round(state.currentAssemblySeats * expansionFactor)));
+  }
+  const seatChange = projectedSeats - state.currentAssemblySeats;
+  const popPerSeat = projectedSeats > 0 ? Math.round(state.totalPopulation / projectedSeats) : 0;
+  return {
+    stateCode,
+    currentSeats: state.currentAssemblySeats,
+    projectedSeats,
+    seatChange,
+    population: state.totalPopulation,
+    popPerSeat,
+    idealPopulationPerSeat: IDEAL_POP_PER_AC_SEAT_2011,
+    outputClassification: 'PANIN_SCENARIO' as const,
+    officialDelimitationOrder: false as const,
+  };
+}
 
 /** Map seed data to ConstituencyBrief for API responses */
 function seedToBrief(c: ConstituencySeed): ConstituencyBrief {
@@ -390,6 +442,149 @@ const locateSchema = {
 };
 
 export async function constituencyRoutes(app: FastifyInstance) {
+  /**
+   * Versioned state-scoped map metadata contract (schema v1).
+   *
+   * This API-only adapter reuses the canonical normalization routines on the
+   * server. The mobile entry graph must never import these all-state modules.
+   * Each request returns only the selected state's canonical constituency
+   * rows, trivia, historical summaries and available demographics.
+   */
+  app.get<{ Params: { stateCode: string } }>('/states/:stateCode/map-data', async (request, reply) => {
+    const code = request.params.stateCode.toUpperCase();
+    if (!/^[A-Z]{2}$/.test(code) || !isStateSupported(code)) {
+      return sendApiError(reply, request, 404, 'Not Found', `State map data is unavailable for ${code}`, {
+        code: 'STATE_MAP_DATA_UNAVAILABLE',
+      });
+    }
+
+    const unifiedRows = getUnifiedConstituenciesForState(code);
+    const canonicalRows = getConstituenciesForState(code);
+    const canonicalByAcNo = new Map(canonicalRows.map((row) => [row.acNo, row]));
+    if (unifiedRows.length === 0 || canonicalRows.length === 0
+      || unifiedRows.some((row) => {
+        const canonical = canonicalByAcNo.get(row.acNo);
+        return !canonical || canonical.stateCode !== code || typeof canonical.id !== 'string' || !canonical.id;
+      })) {
+      return sendApiError(reply, request, 500, 'Internal Server Error', `Canonical constituency identity reconciliation failed for ${code}`, {
+        code: 'STATE_MAP_DATA_INTEGRITY_ERROR',
+      });
+    }
+    const normalized = unifiedRows.map((row) => {
+      const canonical = canonicalByAcNo.get(row.acNo)!;
+      return { ...row, id: canonical.id, stateCode: canonical.stateCode };
+    });
+
+    const triviaByAcNo: Record<string, unknown[]> = {};
+    const historyByAcNo: Record<string, unknown[]> = {};
+    const demographicsByAcNo: Record<string, unknown> = {};
+    const mlaProfilesByAcNo: Record<string, unknown> = {};
+    const strongholdByAcNo: Record<string, boolean> = {};
+    const hierarchyByAcNo: Record<string, { status: 'verified' | 'data_pending'; hasHierarchyData: boolean; hasBoothData: boolean }> = {};
+    for (const c of normalized) {
+      const key = String(c.acNo);
+      const trivia = getTriviaForConstituencyInState(code, c.acNo);
+      if (trivia.length > 0) triviaByAcNo[key] = trivia;
+      const history = getHistoryForState(code, c.acNo);
+      if (history.length > 0) historyByAcNo[key] = history;
+      const demographics = getDemographicsForState(code, c.acNo);
+      if (demographics) demographicsByAcNo[key] = demographics;
+      const profile = getMLAProfileForState(code, c.acNo);
+      if (profile?.name) mlaProfilesByAcNo[key] = profile;
+      if (history.length > 0 && c.winnerParty) strongholdByAcNo[key] = isStrongholdForState(code, c.acNo, c.winnerParty);
+      const hasHierarchy = hasHierarchyData(code, c.acNo);
+      hierarchyByAcNo[key] = {
+        status: getConstituencyDataStatus(code, c.acNo),
+        hasHierarchyData: hasHierarchy,
+        hasBoothData: hasBoothData(code, c.acNo),
+      };
+    }
+
+    const info = getStateInfo(code);
+    const seatProjection = stateMapSeatProjection(code);
+    const censusDistricts = getCensusDistricts(code).map((district) => ({
+      districtName: district.districtName,
+      totalPopulation: district.totalPopulation,
+    }));
+    let hasLocalBodyData = false;
+    if (isSupabaseConfigured && process.env.NODE_ENV !== 'test') {
+      try {
+        const { data: representativeRows, error: representativeError } = await supabase
+          .from('representatives')
+          .select('id')
+          .eq('state_code', code)
+          .eq('is_current', true)
+          .limit(1);
+        if (!representativeError) hasLocalBodyData = Boolean(representativeRows?.length);
+      } catch {
+        // Local-body feature is disabled when the source cannot confirm availability.
+      }
+    }
+    const contractCore = {
+      schemaVersion: 1 as const,
+      stateCode: code,
+      dataStatus: info?.dataStatus ?? 'stub',
+      constituencies: normalized,
+      availableYears: getAvailableYearsForState(code),
+      trivia: getAllTriviaForState(code),
+      triviaByAcNo,
+      historyByAcNo,
+      demographicsByAcNo,
+      mlaProfilesByAcNo,
+      strongholdByAcNo,
+      hasLocalBodyData,
+      seatProjection,
+      censusDistricts,
+      hierarchyByAcNo,
+    };
+    const revision = createHash('sha1').update(JSON.stringify(contractCore)).digest('hex');
+    const etag = `"${revision}"`;
+    reply
+      .header('ETag', etag)
+      .header('X-State-Map-Schema', '1')
+      .header('X-State-Map-Revision', revision)
+      .header('Cache-Control', 'public, max-age=300, stale-while-revalidate=86400');
+    if (request.headers['if-none-match'] === etag) return reply.code(304).send();
+    return { ...contractCore, revision };
+  });
+
+
+  /**
+   * Download historical booth coordinates only for the selected constituency.
+   * The national booth-location seed stays on the server; the mobile app gets
+   * a versioned, bounded payload only after the user zooms into an AC.
+   */
+  app.get<{ Params: { stateCode: string; acNo: string } }>('/states/:stateCode/constituencies/:acNo/booths', async (request, reply) => {
+    const code = request.params.stateCode.toUpperCase();
+    const acNo = Number(request.params.acNo);
+    if (!/^[A-Z]{2}$/.test(code) || !Number.isSafeInteger(acNo) || acNo < 1 || !isStateSupported(code)) {
+      return sendApiError(reply, request, 404, 'Not Found', 'Selected constituency booth data is unavailable', {
+        code: 'CONSTITUENCY_BOOTH_DATA_UNAVAILABLE',
+      });
+    }
+    const booths = getBoothsForConstituency(code, acNo);
+    if (booths.length === 0) {
+      return sendApiError(reply, request, 404, 'Not Found', 'No verified booth locations are available for this constituency', {
+        code: 'CONSTITUENCY_BOOTH_DATA_UNAVAILABLE',
+      });
+    }
+    const contractCore = {
+      schemaVersion: 1 as const,
+      stateCode: code,
+      acNo,
+      dataStatus: 'verified' as const,
+      booths,
+    };
+    const revision = createHash('sha1').update(JSON.stringify(contractCore)).digest('hex');
+    const etag = `"${revision}"`;
+    reply.header('ETag', etag)
+      .header('X-State-Map-Schema', '1')
+      .header('X-State-Map-Revision', revision)
+      .header('Cache-Control', 'public, max-age=300, stale-while-revalidate=86400');
+    if (request.headers['if-none-match'] === etag) return reply.code(304).send();
+    return { ...contractCore, revision };
+  });
+
   /** 1. GET /states/:stateCode/constituencies */
   app.get('/states/:stateCode/constituencies', {
     schema: listConstituenciesSchema,
@@ -398,7 +593,7 @@ export async function constituencyRoutes(app: FastifyInstance) {
     const code = stateCode.toUpperCase();
 
     // Strangler pattern: Query live database when Supabase is configured (fail-closed on error)
-    if (isSupabaseConfigured) {
+    if (isSupabaseConfigured && process.env.NODE_ENV !== 'test') {
       try {
         const { data: dbData, error } = await supabase
           .from('constituencies')

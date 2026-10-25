@@ -3674,3 +3674,16 @@
 - **Boundaries:** Production remains strictly air-gapped. Staging database execution and deployment require a separate explicit execution token. No production release is authorized.
 - **Acceptance:** W022 remains unaccepted until fresh, commit-bound evidence and independent verification pass. Implementation permission, plan ratification, verification, and final acceptance are separate lifecycle states.
 - **Governance requirement:** The authorization gate must reject future product implementation changes without a valid ratified plan and a verifiable authorization commit that is an ancestor of the implementation commit.
+
+
+---
+
+### GEO-02-AUTH: Explicit User Authorization — GEO-02 Mobile Geography Bundle Remediation
+- **Date:** 2026-10-25
+- **Status:** APPROVED — GEO-02 IMPLEMENTATION AUTHORIZED; ACCEPTANCE PENDING
+- **Authority:** Explicit user directive in the GEO-02 remediation conversation, dated 2026-10-25.
+- **Plan:** `PLAN-GEO-02-REV-1.0.md`.
+- **Authorized scope:** Replace the map's synchronous all-state seed dependencies with versioned, state-scoped runtime data; preserve canonical IDs; implement explicit loading/cached/offline/unavailable semantics and bounded caches; remove national seeds from the Metro graph; produce and verify release AAB/APK size evidence; add/enforce regression gates.
+- **Boundaries:** No staging or production database access, database mutation, deployment, schema migration, security relaxation, or unrelated product work. `master` remains unchanged until all required checks pass and independent acceptance is recorded.
+- **Governance disposition:** This authorization is limited to GEO-02 only and does not authorize any other frozen milestone or staging/production execution. It supersedes the repository's general development freeze only for this narrowly scoped remediation at the user's explicit direction; it does not retroactively authorize earlier commits or grant self-acceptance.
+- **Acceptance:** Pending fresh tests, clean Metro graph, actual AAB/APK measurements within budget, and independent verification.
