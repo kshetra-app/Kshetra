@@ -14,6 +14,7 @@ const errors = [];
 const metro = report.metro ?? {};
 if (metro.sourceMapCount < 1 || metro.uniqueSourceCount < 1) errors.push('Metro source-map graph is missing.');
 if (metro.geographyAndStateDataSourceBytes > maxGeoSourceBytes) errors.push('Geography/state data sources exceed byte budget: ' + metro.geographyAndStateDataSourceBytes + ' > ' + maxGeoSourceBytes);
+if ((metro.forbiddenNationalSeedModuleCount ?? 0) > 0) errors.push('Forbidden national seed/adapters remain in Metro graph: ' + (metro.forbiddenNationalSeedModules ?? []).join(', '));
 const artifacts = report.releaseArtifacts ?? [];
 const aab = artifacts.find((artifact) => artifact.kind === 'AAB');
 const apk = artifacts.find((artifact) => artifact.kind === 'APK');
