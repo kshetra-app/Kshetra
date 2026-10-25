@@ -1,15 +1,20 @@
 import { buildApp } from '../server';
 import type { FastifyInstance } from 'fastify';
+import { isSupabaseConfigured, setSupabaseConfiguredForTesting } from '../lib/supabase';
 
 describe('Constituency Routes', () => {
   let app: FastifyInstance;
+  let originalSupabaseConfigured: boolean;
 
   beforeEach(async () => {
+    originalSupabaseConfigured = isSupabaseConfigured;
+    setSupabaseConfiguredForTesting(false);
     app = await buildApp();
   });
 
   afterEach(async () => {
     await app.close();
+    setSupabaseConfiguredForTesting(originalSupabaseConfigured);
   });
 
   // ─── LIST ───

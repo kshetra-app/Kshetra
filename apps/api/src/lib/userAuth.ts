@@ -66,6 +66,31 @@ export async function resolveAuthenticatedUser(
 ): Promise<AuthenticatedUser | null> {
   const authHeader = request.headers.authorization;
 
+  // Compatibility for legacy header-based fixtures is confined to the explicit
+  // Jest harness. Production/staging never trust x-user-id or x-user-role.
+  const testUserHeader = request.headers['x-user-id'];
+  if (
+    (!authHeader || !authHeader.startsWith('Bearer ')) &&
+    process.env.NODE_ENV === 'test' &&
+    process.env.TEST_HARNESS_ACTIVE === 'true' &&
+    typeof testUserHeader === 'string' &&
+    testUserHeader.trim() !== '' &&
+    customTestTokenValidator
+  ) {
+    try {
+      const validated = await customTestTokenValidator(`test-harness:${testUserHeader.trim()}`, request);
+      if (validated) {
+        const rawRole = typeof validated.role === 'string' ? validated.role.trim().toLowerCase() : '';
+        return {
+          userId: validated.id,
+          role: VALID_ROLES.has(rawRole) ? rawRole : 'citizen',
+        };
+      }
+    } catch {
+      // Test-harness identity errors fail closed through the normal 401 response.
+    }
+  }
+
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
     sendApiError(reply, request, 401, 'Unauthorized', 'Authentication required: missing or malformed Bearer token', {
       code: 'UNAUTHORIZED',
@@ -82,7 +107,7 @@ export async function resolveAuthenticatedUser(
   }
 
   // 1. Isolated test token validator (strictly active only when registered in isolated test harness)
-  if (customTestTokenValidator && process.env.NODE_ENV === 'test' && process.env.TEST_HARNESS_ACTIVE === 'true') {
+  if (customTestTokenValidator && process.env.NODE_ENV === 'test' && process.env.TEST_HARNESS_ACTIVE === 'true' && token.startsWith('test-harness:')) {
     try {
       const validated = await customTestTokenValidator(token, request);
       if (!validated) {

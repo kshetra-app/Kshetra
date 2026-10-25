@@ -50,7 +50,7 @@ const SecureStoreAdapter = {
  * won't crash at construction, but auth calls will fail gracefully.
  */
 export const supabase: SupabaseClient = createClient(
-  supabaseUrl || 'https://placeholder.supabase.co',
+  supabaseUrl || 'https://unconfigured.invalid',
   supabaseAnonKey || 'placeholder-anon-key',
   {
     auth: {

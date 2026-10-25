@@ -1,0 +1,49 @@
+name: CTO Temporary Dependency Remediation
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    branches: [master]
+
+permissions:
+  contents: write
+
+jobs:
+  safe-audit-fix:
+    if: >-
+      github.event.pull_request.head.ref == 'cto/full-audit-remediation-2026-10-25' &&
+      github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout remediation branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+          fetch-depth: 0
+          persist-credentials: true
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - name: Update the SBOM generator and regenerate lockfile
+        run: |
+          node -e "const fs=require('fs');const p=JSON.parse(fs.readFileSync('package.json','utf8'));p.devDependencies['@cyclonedx/cyclonedx-npm']='^6.0.1';fs.writeFileSync('package.json',JSON.stringify(p,null,2)+'\\n')"
+          npm install --package-lock-only --ignore-scripts --legacy-peer-deps
+      - name: Apply only non-major advisory fixes
+        run: npm audit fix --package-lock-only --ignore-scripts --legacy-peer-deps || true
+      - name: Report remaining advisories (do not mask permanent security gate)
+        run: npm audit --audit-level=high || true
+      - name: Commit dependency updates to this isolated remediation branch
+        env:
+          PR_HEAD_REF: ${{ github.event.pull_request.head.ref }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add package.json package-lock.json
+          if git diff --cached --quiet; then
+            echo "No compatible dependency updates were produced."
+            exit 0
+          fi
+          git commit -m "fix(security): update vulnerable dependency resolutions"
+          git push origin "HEAD:$PR_HEAD_REF"

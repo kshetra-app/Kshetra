@@ -2,7 +2,7 @@ name: EAS Build
 
 on:
   push:
-    branches: [main]
+    branches: [master, main]
     paths:
       - 'apps/mobile/**'
       - 'packages/shared/**'
@@ -40,6 +40,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          lfs: true
 
       - name: Setup Node.js
         uses: actions/setup-node@v4

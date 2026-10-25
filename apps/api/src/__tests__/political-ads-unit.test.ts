@@ -130,6 +130,35 @@ describe('Political Ads Unit Tests (Direct Route Injection)', () => {
       expect(Array.isArray(body.ads)).toBe(true);
     });
 
+    it('fails closed in production instead of returning memory ads when the database fails', async () => {
+      const originalEnv = process.env.NODE_ENV;
+      process.env.NODE_ENV = 'production';
+      try {
+        jest.spyOn(supabase, 'from').mockImplementation(((table: string) => {
+          if (table === 'political_ads') {
+            return {
+              select: () => ({
+                in: () => ({
+                  order: async () => ({ data: null, error: { message: 'DB down' } }),
+                }),
+              }),
+            } as any;
+          }
+          return {} as any;
+        }) as any);
+
+        const res = await app.inject({
+          method: 'GET',
+          url: '/api/v1/political-ads/library',
+        });
+
+        expect(res.statusCode).toBe(503);
+        expect(JSON.parse(res.payload).code).toBe('DATABASE_ERROR');
+      } finally {
+        process.env.NODE_ENV = originalEnv;
+      }
+    });
+
     it('returns memory ads when Supabase is not configured', async () => {
       setSupabaseConfiguredForTesting(false);
       const res = await app.inject({
