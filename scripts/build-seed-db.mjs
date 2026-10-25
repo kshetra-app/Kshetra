@@ -316,37 +316,41 @@ async function importSeedData(db) {
           const insertMLA = db.prepare(`
             INSERT OR REPLACE INTO mla_profiles
             (id, state_code, ac_no, name, party, gender, terms_served, age, dob, dob_estimated, education, profession, criminal_cases, total_assets, total_liabilities, marital_status, photo_url, constituency_name, district, source_url)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            VALUES (@id, @state_code, @ac_no, @name, @party, @gender, @terms_served, @age, @dob, @dob_estimated, @education, @profession, @criminal_cases, @total_assets, @total_liabilities, @marital_status, @photo_url, @constituency_name, @district, @source_url)
           `);
 
           let count = 0;
           for (const p of profiles) {
             try {
-              insertMLA.run(
-                `${code}-MLA-${p.acNo || count}`,
-                code,
-                p.acNo || count,
-                p.name || '',
-                p.party || p.currentParty || '',
-                p.gender || '',
-                p.terms || p.termsServed || 0,
-                p.age || 0,
-                p.dob || '',
-                p.dobEstimated ? 1 : 0,
-                p.education || '',
-                p.profession || '',
-                p.criminalCases || 0,
-                p.totalAssets || 0,
-                p.totalLiabilities || 0,
-                p.maritalStatus || '',
-                p.photoUrl || '',
-                p.constituencyName || '',
-                p.district || '',
-                p.sourceUrl || p.mynetaUrl || '',
-              );
+              if (!p || !Number.isInteger(p.acNo) || p.acNo <= 0) {
+                throw new Error('A canonical positive AC number is required; ordinal fallback IDs are forbidden.');
+              }
+              const numericOrNull = (value) => typeof value === 'number' && Number.isFinite(value) ? value : null;
+              insertMLA.run({
+                id: `${code}-MLA-${p.acNo}`,
+                state_code: code,
+                ac_no: p.acNo,
+                name: typeof p.name === 'string' && p.name.trim() ? p.name.trim() : null,
+                party: p.party ?? p.currentParty ?? null,
+                gender: p.gender ?? null,
+                terms_served: numericOrNull(p.terms ?? p.termsServed),
+                age: numericOrNull(p.age),
+                dob: p.dob ?? null,
+                dob_estimated: typeof p.dobEstimated === 'boolean' ? (p.dobEstimated ? 1 : 0) : null,
+                education: p.education ?? null,
+                profession: p.profession ?? null,
+                criminal_cases: numericOrNull(p.criminalCases),
+                total_assets: numericOrNull(p.totalAssets),
+                total_liabilities: numericOrNull(p.totalLiabilities),
+                marital_status: p.maritalStatus ?? null,
+                photo_url: p.photoUrl ?? null,
+                constituency_name: p.constituencyName ?? null,
+                district: p.district ?? null,
+                source_url: p.sourceUrl ?? p.mynetaUrl ?? null,
+              });
               count++;
             } catch (e) {
-              throw new Error(`Invalid MLA profile row ${code}/${p?.acNo ?? 'UNKNOWN'}: ${e.message}`);
+              throw new Error(`Invalid MLA profile row ${code}/${p?.acNo ?? 'UNKNOWN'}: ${e.message}`, { cause: e });
             }
           }
 
