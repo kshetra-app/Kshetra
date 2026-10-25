@@ -101,7 +101,7 @@ async function fetchBounded(initialUrl) {
     }
     const response = await fetch(current, {
       redirect: 'manual',
-      signal: AbortSignal.timeout(60000),
+      signal: AbortSignal.timeout(15000),
       headers: requestHeaders
     });
     if ([301,302,303,307,308].includes(response.status)) {
@@ -225,7 +225,7 @@ if (eciIndex) {
       if (chosen.length) byState.set(stateName,chosen);
     }
 
-    const reportPages=[...byState.values()].flat().slice(0,80);
+    const reportPages=[...byState.values()].flat().slice(0,62);
     for (const page of reportPages) {
       const stateSlug=safeName(page.stateName.toLowerCase().replace(/\s+/g,'-'));
       const source={
