@@ -54,6 +54,16 @@
       "path": "scripts/tests/w021_5_affidavit_truth_hardening.test.mjs",
       "status": "COMMITTED; NOT YET EXECUTED IN THIS ENVIRONMENT",
       "commit": "6ebd46aeb068a3550b1a0a9a954868d753f67555"
+    },
+    {
+      "path": "scripts/tests/w021_5_affidavit_truth_hardening.pglite.test.mjs",
+      "status": "COMMITTED; CI EXECUTION PENDING",
+      "commit": "0b1574277e93fb33857a82ed0775fbc80fef2e5c"
+    },
+    {
+      "path": ".github/workflows/ci.yml",
+      "status": "UPDATED TO RUN RESUMPTION REGRESSION AND MIGRATION INTEGRATION TESTS",
+      "commit": "77e6091ab90987f4871ad5b90ec1620539e26ac2"
     }
   ],
   "ctoAdjudication": {
@@ -88,7 +98,8 @@
       "EB-03",
       "EB-04",
       "EB-05"
-    ]
+    ],
+    "geometryTransformation": "Source runner now converts downloaded ECI JavaScript-wrapped FeatureCollections to hashed derived GeoJSON candidates for five 2026 election jurisdictions; they remain unaccepted until identity, seat-count and topology validation."
   },
   "knownDefectFoundDuringResumption": {
     "id": "DEF-W0215-072-001",
