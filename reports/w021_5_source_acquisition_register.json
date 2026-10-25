@@ -898,6 +898,77 @@
       "topologyAudit": "reports/evidence/w021_5_telangana_arcgis_geometry_audit_2026-10-25.json",
       "comparisonStatus": "No material boundary shifts identified relative to new family; all 119 names and ring vertex counts match, max vertex delta ~6.52e-10 degrees. Union has two parts due Bhadrachalam (ST) ring not merging under lower coordinate precision; normalize and verify against authoritative state boundary.",
       "note": "Distinct geometry payload. Union of 119 candidate polygons has two disconnected components; this requires investigation against an authoritative Telangana state boundary."
+    },
+    {
+      "sourceId": "SRC-INDIACODE-AP-REORG-2014",
+      "subject": "Andhra Pradesh Reorganisation Act, 2014; Section 15 and Second Schedule for AP/Telangana AC crosswalk",
+      "publisher": "India Code, Legislative Department, Government of India",
+      "url": "https://www.indiacode.nic.in/bitstream/123456789/2123/1/A2014-6E.pdf",
+      "retrievedAt": "2026-10-25",
+      "format": "PDF",
+      "authority": "PRIMARY_OFFICIAL_LEGAL_SOURCE",
+      "status": "ACQUISITION_WORKFLOW_ADDED_PENDING_RESULT",
+      "sha256": null,
+      "fileBytes": null,
+      "version": "Act No. 6 of 2014",
+      "limitations": [
+        "Must be reconciled with the 2008 order and later ECI notifications/Gazette instruments.",
+        "PDF acquisition/hash and page-level extraction pending workflow evidence."
+      ],
+      "plannedUse": "Establish AP/Telangana statutory partition and source the Second Schedule crosswalk."
+    },
+    {
+      "sourceId": "SRC-ECI-GE-2024-PRESS-NOTE-23",
+      "subject": "Official ECI press note confirming delimitation basis and AP/Telangana constituency counts",
+      "publisher": "Election Commission of India",
+      "url": "https://elections24.eci.gov.in/docs/press-note-no-23.pdf",
+      "retrievedAt": "2026-10-25",
+      "format": "PDF",
+      "authority": "PRIMARY_OFFICIAL_CORROBORATIVE_SOURCE",
+      "status": "ACQUISITION_WORKFLOW_ADDED_PENDING_RESULT",
+      "sha256": null,
+      "fileBytes": null,
+      "version": "General Elections 2024 Press Note No. 23",
+      "limitations": [
+        "Corroborative election administration evidence; not a replacement for the legal order or 2018 notification.",
+        "PDF acquisition/hash pending workflow evidence."
+      ],
+      "plannedUse": "Corroborate current legal regime references and AP/Telangana seat totals."
+    },
+    {
+      "sourceId": "SRC-ECI-NOTIFICATION-282-AP-2018-DEL",
+      "subject": "ECI Notification No. 282/AP/2018(DEL), dated 22 September 2018, concerning AP/Telangana constituency allocation and legal chain",
+      "publisher": "Election Commission of India",
+      "url": "https://www.eci.gov.in/eci-backend/public/api/download?url=LMAhAK6sOPBp%2FNFF0iRfXbEB1EVSLT41NNLRjYNJJP1KivrUxbfqkDatmHy12e%2FzVx8fLfn2ReU7TfrqYobgIsVIzE4H7zCkL60TDPfde3hSidsZ4fuGUaZAjsPMK3mFe%2FOayCb%2Bc1mgC3WIErfdO%2BA072J7HtGm2kYfstpL5XIZTWrH2JWU7UfZrKWF1BUsH9xccKER%2BJMZVGi7SrzX57%2FMm24zs1eyK2AB5zsjcWKzrILRQG%2FBbbQ%2Fx5bNYVaCn7kX4xoHNibbBVAsqukcOQ%3D%3D",
+      "retrievedAt": "2026-10-25",
+      "format": "ECI official backend download endpoint",
+      "authority": "PRIMARY_OFFICIAL_SOURCE",
+      "status": "OFFICIAL_TEXT_DISCOVERED_BINARY_FETCH_FAILED_HTTP_406",
+      "sha256": null,
+      "fileBytes": null,
+      "version": "No. 282/AP/2018(DEL), 2018-09-22",
+      "limitations": [
+        "Official indexed text found through ECI search result; exact binary could not be downloaded (HTTP 406).",
+        "Do not claim binary SHA-256 or close Gazette authenticity/effective-date gates based on search-rendered text."
+      ],
+      "plannedUse": "Resolve statutory crosswalk and legal effective-date chain once exact notification/Gazette bytes or custodian-certified copy is obtained."
+    },
+    {
+      "sourceId": "SRC-INDIACODE-AP-REMOVAL-DIFFICULTIES-ORDERS",
+      "subject": "Andhra Pradesh Reorganisation (Removal of Difficulties) First, Second and Third Orders",
+      "publisher": "India Code, Government of India",
+      "url": "https://upload.indiacode.nic.in/showfile?actid=AC_CEN_5_5_00058_201406_1517807327989&filename=Andhra+Pradesh+Reorganisation+%28Removal+of+Difficulties%29+First%2C+Second+and+Third+Order.pdf&type=order",
+      "retrievedAt": "2026-10-25",
+      "format": "PDF",
+      "authority": "PRIMARY_OFFICIAL_LEGAL_SOURCE_CANDIDATE",
+      "status": "ACQUISITION_WORKFLOW_ADDED_OPTIONAL_PENDING_RESULT",
+      "sha256": null,
+      "fileBytes": null,
+      "limitations": [
+        "Applicability to Assembly Constituency extent must be established from the document text.",
+        "Not accepted as a direct AC-boundary source."
+      ],
+      "plannedUse": "Check the post-2014 legal chain for any instrument relevant to AP/Telangana geography and distinguish AC from Legislative Council delimitation."
     }
   ],
   "unresolvedGates": [
@@ -1355,7 +1426,7 @@
       "scope": "Repeat four-service Telangana probe after changing the runner to report optional ECI 404/timeouts as warnings while keeping both primary Telangana geometry source checks strict."
     }
   ],
-  "updatedAt": "2026-10-25T16:57:00Z",
+  "updatedAt": "2026-10-25",
   "notes": [
     "Actual public source artifacts were downloaded in GitHub Actions run 40209022405 and SHA-256 hashed; detailed geometry findings are in reports/w021_5_datameet_ac_geometry_forensic_audit.json.",
     "Survey of India official ABDB page, Vector Data Catalog 2025 PDF and Metadata_ABDB.zip were downloaded and hashed. The metadata covers state, district, subdistrict and village boundaries, not statutory Assembly Constituency polygons.",
@@ -1412,5 +1483,6 @@
       "Sirpur"
     ],
     "acceptedAsCanonical": false
-  }
+  },
+  "lastDecision": "Use official India Code legal bytes and ECI 2024 press note for reproducible legal crosswalk evidence; the 2018 ECI notification binary remains blocked and requires another official retrieval/custodian path."
 }
