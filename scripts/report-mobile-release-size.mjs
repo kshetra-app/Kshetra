@@ -14,7 +14,7 @@
  */
 import { createHash } from 'node:crypto';
 import { existsSync, mkdirSync, readFileSync, readdirSync, statSync, writeFileSync } from 'node:fs';
-import { basename, join, relative, resolve } from 'node:path';
+import { join, relative, resolve } from 'node:path';
 import { execFileSync } from 'node:child_process';
 
 const args = process.argv.slice(2);
@@ -70,6 +70,7 @@ for (const file of sourceMaps) {
 }
 const graphRows = [...sources.values()].sort((a, b) => (b.bytes ?? -1) - (a.bytes ?? -1));
 const geoRows = graphRows.filter((row) => isGeographySource(row.source));
+const forbiddenRows = graphRows.filter((row) => isForbiddenNationalSeed(row.source));
 const bundleStats = bundles.map((file) => ({ path: relative(resolve(bundleDir), file), bytes: statSync(file).size }));
 const geoBundledSourceBytes = geoRows.reduce((n, row) => n + (row.bytes ?? 0), 0);
 
@@ -121,6 +122,8 @@ const report = {
     uniqueSourceCount: sources.size,
     geographyAndStateDataSourceCount: geoRows.length,
     geographyAndStateDataSourceBytes: geoBundledSourceBytes,
+    forbiddenNationalSeedModuleCount: forbiddenRows.length,
+    forbiddenNationalSeedModules: forbiddenRows.map((row) => row.source).sort(),
     largestGeographyAndStateDataSources: geoRows.slice(0, 40),
   },
   releaseArtifacts: release,
@@ -140,10 +143,15 @@ const lines = [
   `- Unique module sources: ${sources.size}`,
   `- Geography/state-data module sources: ${geoRows.length}`,
   `- Geography/state-data source bytes where sourceContent is available: ${geoBundledSourceBytes.toLocaleString()}`,
+  `- Forbidden national seed/adapters in this Metro graph: ${forbiddenRows.length}`,
   '',
   '| Bundle | Bytes |',
   '|---|---:|',
   ...bundleStats.map((b) => `| ${b.path} | ${b.bytes.toLocaleString()} |`),
+  '',
+  '### Forbidden national modules detected in the base graph',
+  '',
+  ...(forbiddenRows.length ? forbiddenRows.map((row) => `- ${row.source}`) : ['- None detected.']),
   '',
   '### Largest geography/state-data modules',
   '',
