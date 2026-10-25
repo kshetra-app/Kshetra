@@ -176,17 +176,21 @@ for key, rel in known_services.items():
                     if response.status_code == 200:
                         data = response.json()
                         features = data.get("features", [])
-                        ids, names = [], []
+                        object_ids, ac_numbers, names = [], [], []
                         missing_geometry = 0
                         unclosed_rings = 0
                         nonfinite_coordinates = 0
                         for feature in features:
                             attrs = feature.get("attributes") or {}
                             oid_field = data.get("objectIdFieldName")
-                            if oid_field and attrs.get(oid_field) is not None: ids.append(str(attrs[oid_field]))
+                            if oid_field and attrs.get(oid_field) is not None: object_ids.append(str(attrs[oid_field]))
                             for k in ("AC_NO", "ACNO", "AC_NUMBER", "AC_CODE", "AC_NAME", "AC_NAME_EN", "NAME", "Assembly_Name"):
                                 if attrs.get(k) not in (None, ""):
-                                    (names if "NAME" in k else ids).append(str(attrs[k])); break
+                                    if k in ("AC_NO", "ACNO", "AC_NUMBER", "AC_CODE"):
+                                        ac_numbers.append(str(attrs[k]))
+                                    else:
+                                        names.append(str(attrs[k]))
+                                    break
                             geom = feature.get("geometry")
                             if not isinstance(geom, dict) or not geom.get("rings"):
                                 missing_geometry += 1
@@ -203,7 +207,8 @@ for key, rel in known_services.items():
                             "expectedFeatureCountFromPortal": 243,
                             "expectedCountStatus": "PASS" if len(features) == 243 else "MISMATCH",
                             "objectIdFieldName": data.get("objectIdFieldName"),
-                            "uniqueObjectIdsObserved": len(set(ids)),
+                            "uniqueObjectIdsObserved": len(set(object_ids)),
+                            "uniqueACNumbersObserved": len(set(ac_numbers)),
                             "uniqueNamesObserved": len(set(names)),
                             "missingGeometryFeatures": missing_geometry,
                             "unclosedOrShortRings": unclosed_rings,
