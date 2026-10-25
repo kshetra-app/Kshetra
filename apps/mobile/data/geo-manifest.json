@@ -264,5 +264,645 @@
     "bytes": 403168,
     "gzipBytes": 91350,
     "version": "462e7ffef605"
+  },
+  "_geographyReleaseContract": {
+    "schemaVersion": "1.0.0",
+    "purpose": "Fail-closed geography publication contract. A bundled file is not production-approved merely because it parses or contains polygons.",
+    "currentStatutoryBaseline": {
+      "assemblyConstituencies": 4123,
+      "parliamentaryConstituencies": 543,
+      "sourceMatrix": "reports/w021_5b1_r5_current_regime_matrix.json",
+      "asOf": "2026-10-03T08:12:24.960Z"
+    },
+    "releasePolicy": {
+      "geometryApprovalRequires": [
+        "feature_count_equals_official_count",
+        "unique_official_ids",
+        "polygon_or_multipolygon_only",
+        "valid_nonempty_rings_and_closed_rings",
+        "all_coordinates_finite_and_within_wgs84_bounds",
+        "jurisdiction_bounds_match_verified_reference",
+        "no_unexplained_gaps_or_overlaps_against_authoritative_topology",
+        "source_url_or_document_reference",
+        "source_version_or_hash",
+        "source_publication_date",
+        "effective_date",
+        "canonical_relationship_reconciled"
+      ],
+      "failClosed": true,
+      "noPlaceholderGeometryInProduction": true,
+      "unexplainedCountDifferenceBudget": 0,
+      "missingSourceOrDateBlocksRelease": true,
+      "topologyVerificationRequiresSpatialEngine": true
+    },
+    "jurisdictions": {
+      "AP": {
+        "name": "Andhra Pradesh",
+        "count": 175,
+        "source": "Andhra Pradesh Reorganisation Act, 2014 (Act No. 6 of 2014) Sec 15 & 22",
+        "source_reference": "Gazette of India Extraordinary Part II Sec 1 No. 6",
+        "source_publication_date": "2014-03-01",
+        "effective_date": "2014-06-02",
+        "regime": "eci_delimitation_2014_ap_ts",
+        "geometryFile": "ap-assembly.json",
+        "manifestFeatureCount": 175,
+        "declaredHasPolygons": true,
+        "geometryStatus": "UNVERIFIED_NOT_RELEASE_APPROVED",
+        "releaseApproved": false,
+        "releaseBlockers": [
+          "geometry_topology_and_bounds_not_independently_verified",
+          "canonical_feature_ids_and_relationships_not_reconciled",
+          "legacy_manifest_lacks_complete_source_version_hash_and_effective_date"
+        ]
+      },
+      "AR": {
+        "name": "Arunachal Pradesh",
+        "count": 60,
+        "source": "ECI Delimitation Order 2008 Schedule II",
+        "source_reference": "Delimitation Commission Order No. 37",
+        "source_publication_date": "2008-02-19",
+        "effective_date": "2008-02-19",
+        "regime": "eci_delimitation_2008",
+        "geometryFile": "ar-assembly.json",
+        "manifestFeatureCount": 60,
+        "declaredHasPolygons": false,
+        "geometryStatus": "UNAVAILABLE_PLACEHOLDER",
+        "releaseApproved": false,
+        "releaseBlockers": [
+          "official_polygon_geometry_not_verified",
+          "geometry_topology_and_bounds_not_independently_verified",
+          "canonical_feature_ids_and_relationships_not_reconciled",
+          "legacy_manifest_lacks_complete_source_version_hash_and_effective_date"
+        ]
+      },
+      "AS": {
+        "name": "Assam",
+        "count": 126,
+        "source": "ECI Final Order No. 282/AS/2023(DEL)/Vol.V under Sec 8A RP Act 1950",
+        "source_reference": "Gazette of India Extraordinary No. 434",
+        "source_publication_date": "2023-08-11",
+        "effective_date": "2023-08-16",
+        "regime": "eci_delimitation_2023_as",
+        "geometryFile": "as-assembly.json",
+        "manifestFeatureCount": 133,
+        "declaredHasPolygons": true,
+        "geometryStatus": "QUARANTINED_COUNT_MISMATCH",
+        "releaseApproved": false,
+        "releaseBlockers": [
+          "feature_count_must_equal_statutory_count",
+          "geometry_topology_and_bounds_not_independently_verified",
+          "canonical_feature_ids_and_relationships_not_reconciled",
+          "legacy_manifest_lacks_complete_source_version_hash_and_effective_date"
+        ]
+      },
+      "BR": {
+        "name": "Bihar",
+        "count": 243,
+        "source": "ECI Delimitation Order 2008 Schedule IV",
+        "source_reference": "Delimitation Commission Order No. 39",
+        "source_publication_date": "2008-02-19",
+        "effective_date": "2008-02-19",
+        "regime": "eci_delimitation_2008",
+        "geometryFile": "br-assembly.json",
+        "manifestFeatureCount": 243,
+        "declaredHasPolygons": true,
+        "geometryStatus": "UNVERIFIED_NOT_RELEASE_APPROVED",
+        "releaseApproved": false,
+        "releaseBlockers": [
+          "geometry_topology_and_bounds_not_independently_verified",
+          "canonical_feature_ids_and_relationships_not_reconciled",
+          "legacy_manifest_lacks_complete_source_version_hash_and_effective_date"
+        ]
+      },
+      "CG": {
+        "name": "Chhattisgarh",
+        "count": 90,
+        "source": "ECI Delimitation Order 2008 Schedule V",
+        "source_reference": "Delimitation Commission Order No. 40",
+        "source_publication_date": "2008-02-19",
+        "effective_date": "2008-02-19",
+        "regime": "eci_delimitation_2008",
+        "geometryFile": "cg-assembly.json",
+        "manifestFeatureCount": 90,
+        "declaredHasPolygons": true,
+        "geometryStatus": "UNVERIFIED_NOT_RELEASE_APPROVED",
+        "releaseApproved": false,
+        "releaseBlockers": [
+          "geometry_topology_and_bounds_not_independently_verified",
+          "canonical_feature_ids_and_relationships_not_reconciled",
+          "legacy_manifest_lacks_complete_source_version_hash_and_effective_date"
+        ]
+      },
+      "GA": {
+        "name": "Goa",
+        "count": 40,
+        "source": "ECI Delimitation Order 2008 Schedule VI",
+        "source_reference": "Delimitation Commission Order No. 41",
+        "source_publication_date": "2008-02-19",
+        "effective_date": "2008-02-19",
+        "regime": "eci_delimitation_2008",
+        "geometryFile": "ga-assembly.json",
+        "manifestFeatureCount": 40,
+        "declaredHasPolygons": true,
+        "geometryStatus": "UNVERIFIED_NOT_RELEASE_APPROVED",
+        "releaseApproved": false,
+        "releaseBlockers": [
+          "geometry_topology_and_bounds_not_independently_verified",
+          "canonical_feature_ids_and_relationships_not_reconciled",
+          "legacy_manifest_lacks_complete_source_version_hash_and_effective_date"
+        ]
+      },
+      "GJ": {
+        "name": "Gujarat",
+        "count": 182,
+        "source": "ECI Delimitation Order 2008 Schedule VII",
+        "source_reference": "Delimitation Commission Order No. 42",
+        "source_publication_date": "2008-02-19",
+        "effective_date": "2008-02-19",
+        "regime": "eci_delimitation_2008",
+        "geometryFile": "gj-assembly.json",
+        "manifestFeatureCount": 165,
+        "declaredHasPolygons": true,
+        "geometryStatus": "QUARANTINED_COUNT_MISMATCH",
+        "releaseApproved": false,
+        "releaseBlockers": [
+          "feature_count_must_equal_statutory_count",
+          "geometry_topology_and_bounds_not_independently_verified",
+          "canonical_feature_ids_and_relationships_not_reconciled",
+          "legacy_manifest_lacks_complete_source_version_hash_and_effective_date"
+        ]
+      },
+      "HR": {
+        "name": "Haryana",
+        "count": 90,
+        "source": "ECI Delimitation Order 2008 Schedule VIII",
+        "source_reference": "Delimitation Commission Order No. 43",
+        "source_publication_date": "2008-02-19",
+        "effective_date": "2008-02-19",
+        "regime": "eci_delimitation_2008",
+        "geometryFile": "hr-assembly.json",
+        "manifestFeatureCount": 90,
+        "declaredHasPolygons": true,
+        "geometryStatus": "UNVERIFIED_NOT_RELEASE_APPROVED",
+        "releaseApproved": false,
+        "releaseBlockers": [
+          "geometry_topology_and_bounds_not_independently_verified",
+          "canonical_feature_ids_and_relationships_not_reconciled",
+          "legacy_manifest_lacks_complete_source_version_hash_and_effective_date"
+        ]
+      },
+      "HP": {
+        "name": "Himachal Pradesh",
+        "count": 68,
+        "source": "ECI Delimitation Order 2008 Schedule IX",
+        "source_reference": "Delimitation Commission Order No. 44",
+        "source_publication_date": "2008-02-19",
+        "effective_date": "2008-02-19",
+        "regime": "eci_delimitation_2008",
+        "geometryFile": "hp-assembly.json",
+        "manifestFeatureCount": 68,
+        "declaredHasPolygons": true,
+        "geometryStatus": "UNVERIFIED_NOT_RELEASE_APPROVED",
+        "releaseApproved": false,
+        "releaseBlockers": [
+          "geometry_topology_and_bounds_not_independently_verified",
+          "canonical_feature_ids_and_relationships_not_reconciled",
+          "legacy_manifest_lacks_complete_source_version_hash_and_effective_date"
+        ]
+      },
+      "JH": {
+        "name": "Jharkhand",
+        "count": 81,
+        "source": "ECI Delimitation Order 2008 Schedule X",
+        "source_reference": "Delimitation Commission Order No. 45",
+        "source_publication_date": "2008-02-19",
+        "effective_date": "2008-02-19",
+        "regime": "eci_delimitation_2008",
+        "geometryFile": "jh-assembly.json",
+        "manifestFeatureCount": 95,
+        "declaredHasPolygons": true,
+        "geometryStatus": "QUARANTINED_COUNT_MISMATCH",
+        "releaseApproved": false,
+        "releaseBlockers": [
+          "feature_count_must_equal_statutory_count",
+          "geometry_topology_and_bounds_not_independently_verified",
+          "canonical_feature_ids_and_relationships_not_reconciled",
+          "legacy_manifest_lacks_complete_source_version_hash_and_effective_date"
+        ]
+      },
+      "KA": {
+        "name": "Karnataka",
+        "count": 224,
+        "source": "ECI Delimitation Order 2008 Schedule XI",
+        "source_reference": "Delimitation Commission Order No. 46",
+        "source_publication_date": "2008-02-19",
+        "effective_date": "2008-02-19",
+        "regime": "eci_delimitation_2008",
+        "geometryFile": "ka-assembly.json",
+        "manifestFeatureCount": 225,
+        "declaredHasPolygons": true,
+        "geometryStatus": "QUARANTINED_COUNT_MISMATCH",
+        "releaseApproved": false,
+        "releaseBlockers": [
+          "feature_count_must_equal_statutory_count",
+          "geometry_topology_and_bounds_not_independently_verified",
+          "canonical_feature_ids_and_relationships_not_reconciled",
+          "legacy_manifest_lacks_complete_source_version_hash_and_effective_date"
+        ]
+      },
+      "KL": {
+        "name": "Kerala",
+        "count": 140,
+        "source": "ECI Delimitation Order 2008 Schedule XII",
+        "source_reference": "Delimitation Commission Order No. 47",
+        "source_publication_date": "2008-02-19",
+        "effective_date": "2008-02-19",
+        "regime": "eci_delimitation_2008",
+        "geometryFile": "kl-assembly.json",
+        "manifestFeatureCount": 141,
+        "declaredHasPolygons": true,
+        "geometryStatus": "QUARANTINED_COUNT_MISMATCH",
+        "releaseApproved": false,
+        "releaseBlockers": [
+          "feature_count_must_equal_statutory_count",
+          "geometry_topology_and_bounds_not_independently_verified",
+          "canonical_feature_ids_and_relationships_not_reconciled",
+          "legacy_manifest_lacks_complete_source_version_hash_and_effective_date"
+        ]
+      },
+      "MP": {
+        "name": "Madhya Pradesh",
+        "count": 230,
+        "source": "ECI Delimitation Order 2008 Schedule XIII",
+        "source_reference": "Delimitation Commission Order No. 48",
+        "source_publication_date": "2008-02-19",
+        "effective_date": "2008-02-19",
+        "regime": "eci_delimitation_2008",
+        "geometryFile": "mp-assembly.json",
+        "manifestFeatureCount": 226,
+        "declaredHasPolygons": true,
+        "geometryStatus": "QUARANTINED_COUNT_MISMATCH",
+        "releaseApproved": false,
+        "releaseBlockers": [
+          "feature_count_must_equal_statutory_count",
+          "geometry_topology_and_bounds_not_independently_verified",
+          "canonical_feature_ids_and_relationships_not_reconciled",
+          "legacy_manifest_lacks_complete_source_version_hash_and_effective_date"
+        ]
+      },
+      "MH": {
+        "name": "Maharashtra",
+        "count": 288,
+        "source": "ECI Delimitation Order 2008 Schedule XIV",
+        "source_reference": "Delimitation Commission Order No. 49",
+        "source_publication_date": "2008-02-19",
+        "effective_date": "2008-02-19",
+        "regime": "eci_delimitation_2008",
+        "geometryFile": "mh-assembly.json",
+        "manifestFeatureCount": 288,
+        "declaredHasPolygons": true,
+        "geometryStatus": "UNVERIFIED_NOT_RELEASE_APPROVED",
+        "releaseApproved": false,
+        "releaseBlockers": [
+          "geometry_topology_and_bounds_not_independently_verified",
+          "canonical_feature_ids_and_relationships_not_reconciled",
+          "legacy_manifest_lacks_complete_source_version_hash_and_effective_date"
+        ]
+      },
+      "MN": {
+        "name": "Manipur",
+        "count": 60,
+        "source": "ECI Delimitation Order 2008 Schedule XV",
+        "source_reference": "Delimitation Commission Order No. 50",
+        "source_publication_date": "2008-02-19",
+        "effective_date": "2008-02-19",
+        "regime": "eci_delimitation_2008",
+        "geometryFile": "mn-assembly.json",
+        "manifestFeatureCount": 60,
+        "declaredHasPolygons": false,
+        "geometryStatus": "UNAVAILABLE_PLACEHOLDER",
+        "releaseApproved": false,
+        "releaseBlockers": [
+          "official_polygon_geometry_not_verified",
+          "geometry_topology_and_bounds_not_independently_verified",
+          "canonical_feature_ids_and_relationships_not_reconciled",
+          "legacy_manifest_lacks_complete_source_version_hash_and_effective_date"
+        ]
+      },
+      "ML": {
+        "name": "Meghalaya",
+        "count": 60,
+        "source": "ECI Delimitation Order 2008 Schedule XVI",
+        "source_reference": "Delimitation Commission Order No. 51",
+        "source_publication_date": "2008-02-19",
+        "effective_date": "2008-02-19",
+        "regime": "eci_delimitation_2008",
+        "geometryFile": "ml-assembly.json",
+        "manifestFeatureCount": 60,
+        "declaredHasPolygons": false,
+        "geometryStatus": "UNAVAILABLE_PLACEHOLDER",
+        "releaseApproved": false,
+        "releaseBlockers": [
+          "official_polygon_geometry_not_verified",
+          "geometry_topology_and_bounds_not_independently_verified",
+          "canonical_feature_ids_and_relationships_not_reconciled",
+          "legacy_manifest_lacks_complete_source_version_hash_and_effective_date"
+        ]
+      },
+      "MZ": {
+        "name": "Mizoram",
+        "count": 40,
+        "source": "ECI Delimitation Order 2008 Schedule XVII",
+        "source_reference": "Delimitation Commission Order No. 52",
+        "source_publication_date": "2008-02-19",
+        "effective_date": "2008-02-19",
+        "regime": "eci_delimitation_2008",
+        "geometryFile": "mz-assembly.json",
+        "manifestFeatureCount": 40,
+        "declaredHasPolygons": false,
+        "geometryStatus": "UNAVAILABLE_PLACEHOLDER",
+        "releaseApproved": false,
+        "releaseBlockers": [
+          "official_polygon_geometry_not_verified",
+          "geometry_topology_and_bounds_not_independently_verified",
+          "canonical_feature_ids_and_relationships_not_reconciled",
+          "legacy_manifest_lacks_complete_source_version_hash_and_effective_date"
+        ]
+      },
+      "NL": {
+        "name": "Nagaland",
+        "count": 60,
+        "source": "ECI Delimitation Order 2008 Schedule XVIII",
+        "source_reference": "Delimitation Commission Order No. 53",
+        "source_publication_date": "2008-02-19",
+        "effective_date": "2008-02-19",
+        "regime": "eci_delimitation_2008",
+        "geometryFile": "nl-assembly.json",
+        "manifestFeatureCount": 60,
+        "declaredHasPolygons": false,
+        "geometryStatus": "UNAVAILABLE_PLACEHOLDER",
+        "releaseApproved": false,
+        "releaseBlockers": [
+          "official_polygon_geometry_not_verified",
+          "geometry_topology_and_bounds_not_independently_verified",
+          "canonical_feature_ids_and_relationships_not_reconciled",
+          "legacy_manifest_lacks_complete_source_version_hash_and_effective_date"
+        ]
+      },
+      "OD": {
+        "name": "Odisha",
+        "count": 147,
+        "source": "ECI Delimitation Order 2008 Schedule XIX",
+        "source_reference": "Delimitation Commission Order No. 54",
+        "source_publication_date": "2008-02-19",
+        "effective_date": "2008-02-19",
+        "regime": "eci_delimitation_2008",
+        "geometryFile": "od-assembly.json",
+        "manifestFeatureCount": 147,
+        "declaredHasPolygons": true,
+        "geometryStatus": "UNVERIFIED_NOT_RELEASE_APPROVED",
+        "releaseApproved": false,
+        "releaseBlockers": [
+          "geometry_topology_and_bounds_not_independently_verified",
+          "canonical_feature_ids_and_relationships_not_reconciled",
+          "legacy_manifest_lacks_complete_source_version_hash_and_effective_date"
+        ]
+      },
+      "PB": {
+        "name": "Punjab",
+        "count": 117,
+        "source": "ECI Delimitation Order 2008 Schedule XX",
+        "source_reference": "Delimitation Commission Order No. 55",
+        "source_publication_date": "2008-02-19",
+        "effective_date": "2008-02-19",
+        "regime": "eci_delimitation_2008",
+        "geometryFile": "pb-assembly.json",
+        "manifestFeatureCount": 117,
+        "declaredHasPolygons": true,
+        "geometryStatus": "UNVERIFIED_NOT_RELEASE_APPROVED",
+        "releaseApproved": false,
+        "releaseBlockers": [
+          "geometry_topology_and_bounds_not_independently_verified",
+          "canonical_feature_ids_and_relationships_not_reconciled",
+          "legacy_manifest_lacks_complete_source_version_hash_and_effective_date"
+        ]
+      },
+      "RJ": {
+        "name": "Rajasthan",
+        "count": 200,
+        "source": "ECI Delimitation Order 2008 Schedule XXI",
+        "source_reference": "Delimitation Commission Order No. 56",
+        "source_publication_date": "2008-02-19",
+        "effective_date": "2008-02-19",
+        "regime": "eci_delimitation_2008",
+        "geometryFile": "rj-assembly.json",
+        "manifestFeatureCount": 201,
+        "declaredHasPolygons": true,
+        "geometryStatus": "QUARANTINED_COUNT_MISMATCH",
+        "releaseApproved": false,
+        "releaseBlockers": [
+          "feature_count_must_equal_statutory_count",
+          "geometry_topology_and_bounds_not_independently_verified",
+          "canonical_feature_ids_and_relationships_not_reconciled",
+          "legacy_manifest_lacks_complete_source_version_hash_and_effective_date"
+        ]
+      },
+      "SK": {
+        "name": "Sikkim",
+        "count": 32,
+        "source": "ECI Delimitation Order 2008 Schedule XXII",
+        "source_reference": "Delimitation Commission Order No. 57",
+        "source_publication_date": "2008-02-19",
+        "effective_date": "2008-02-19",
+        "regime": "eci_delimitation_2008",
+        "geometryFile": "sk-assembly.json",
+        "manifestFeatureCount": 32,
+        "declaredHasPolygons": false,
+        "geometryStatus": "UNAVAILABLE_PLACEHOLDER",
+        "releaseApproved": false,
+        "releaseBlockers": [
+          "official_polygon_geometry_not_verified",
+          "geometry_topology_and_bounds_not_independently_verified",
+          "canonical_feature_ids_and_relationships_not_reconciled",
+          "legacy_manifest_lacks_complete_source_version_hash_and_effective_date"
+        ]
+      },
+      "TN": {
+        "name": "Tamil Nadu",
+        "count": 234,
+        "source": "ECI Delimitation Order 2008 Schedule XXIII",
+        "source_reference": "Delimitation Commission Order No. 58",
+        "source_publication_date": "2008-02-19",
+        "effective_date": "2008-02-19",
+        "regime": "eci_delimitation_2008",
+        "geometryFile": "tn-assembly.json",
+        "manifestFeatureCount": 235,
+        "declaredHasPolygons": true,
+        "geometryStatus": "QUARANTINED_COUNT_MISMATCH",
+        "releaseApproved": false,
+        "releaseBlockers": [
+          "feature_count_must_equal_statutory_count",
+          "geometry_topology_and_bounds_not_independently_verified",
+          "canonical_feature_ids_and_relationships_not_reconciled",
+          "legacy_manifest_lacks_complete_source_version_hash_and_effective_date"
+        ]
+      },
+      "TS": {
+        "name": "Telangana",
+        "count": 119,
+        "source": "Andhra Pradesh Reorganisation Act, 2014 (Act No. 6 of 2014) Sec 15 & 22",
+        "source_reference": "Gazette of India Extraordinary Part II Sec 1 No. 6",
+        "source_publication_date": "2014-03-01",
+        "effective_date": "2014-06-02",
+        "regime": "eci_delimitation_2014_ap_ts",
+        "geometryFile": "telangana-assembly.json",
+        "manifestFeatureCount": 119,
+        "declaredHasPolygons": true,
+        "geometryStatus": "UNVERIFIED_NOT_RELEASE_APPROVED",
+        "releaseApproved": false,
+        "releaseBlockers": [
+          "geometry_topology_and_bounds_not_independently_verified",
+          "canonical_feature_ids_and_relationships_not_reconciled",
+          "legacy_manifest_lacks_complete_source_version_hash_and_effective_date"
+        ]
+      },
+      "TR": {
+        "name": "Tripura",
+        "count": 60,
+        "source": "ECI Delimitation Order 2008 Schedule XXIV",
+        "source_reference": "Delimitation Commission Order No. 59",
+        "source_publication_date": "2008-02-19",
+        "effective_date": "2008-02-19",
+        "regime": "eci_delimitation_2008",
+        "geometryFile": "tr-assembly.json",
+        "manifestFeatureCount": 60,
+        "declaredHasPolygons": false,
+        "geometryStatus": "UNAVAILABLE_PLACEHOLDER",
+        "releaseApproved": false,
+        "releaseBlockers": [
+          "official_polygon_geometry_not_verified",
+          "geometry_topology_and_bounds_not_independently_verified",
+          "canonical_feature_ids_and_relationships_not_reconciled",
+          "legacy_manifest_lacks_complete_source_version_hash_and_effective_date"
+        ]
+      },
+      "UP": {
+        "name": "Uttar Pradesh",
+        "count": 403,
+        "source": "ECI Delimitation Order 2008 Schedule XXV",
+        "source_reference": "Delimitation Commission Order No. 60",
+        "source_publication_date": "2008-02-19",
+        "effective_date": "2008-02-19",
+        "regime": "eci_delimitation_2008",
+        "geometryFile": "up-assembly.json",
+        "manifestFeatureCount": 403,
+        "declaredHasPolygons": true,
+        "geometryStatus": "UNVERIFIED_NOT_RELEASE_APPROVED",
+        "releaseApproved": false,
+        "releaseBlockers": [
+          "geometry_topology_and_bounds_not_independently_verified",
+          "canonical_feature_ids_and_relationships_not_reconciled",
+          "legacy_manifest_lacks_complete_source_version_hash_and_effective_date"
+        ]
+      },
+      "UK": {
+        "name": "Uttarakhand",
+        "count": 70,
+        "source": "ECI Delimitation Order 2008 Schedule XXVI",
+        "source_reference": "Delimitation Commission Order No. 61",
+        "source_publication_date": "2008-02-19",
+        "effective_date": "2008-02-19",
+        "regime": "eci_delimitation_2008",
+        "geometryFile": "uk-assembly.json",
+        "manifestFeatureCount": 70,
+        "declaredHasPolygons": false,
+        "geometryStatus": "UNAVAILABLE_PLACEHOLDER",
+        "releaseApproved": false,
+        "releaseBlockers": [
+          "official_polygon_geometry_not_verified",
+          "geometry_topology_and_bounds_not_independently_verified",
+          "canonical_feature_ids_and_relationships_not_reconciled",
+          "legacy_manifest_lacks_complete_source_version_hash_and_effective_date"
+        ]
+      },
+      "WB": {
+        "name": "West Bengal",
+        "count": 294,
+        "source": "ECI Delimitation Order 2008 Schedule XXVII",
+        "source_reference": "Delimitation Commission Order No. 62",
+        "source_publication_date": "2008-02-19",
+        "effective_date": "2008-02-19",
+        "regime": "eci_delimitation_2008",
+        "geometryFile": "wb-assembly.json",
+        "manifestFeatureCount": 294,
+        "declaredHasPolygons": true,
+        "geometryStatus": "UNVERIFIED_NOT_RELEASE_APPROVED",
+        "releaseApproved": false,
+        "releaseBlockers": [
+          "geometry_topology_and_bounds_not_independently_verified",
+          "canonical_feature_ids_and_relationships_not_reconciled",
+          "legacy_manifest_lacks_complete_source_version_hash_and_effective_date"
+        ]
+      },
+      "DL": {
+        "name": "Delhi",
+        "count": 70,
+        "source": "ECI Delimitation Order 2008 Schedule XXVIII",
+        "source_reference": "Delimitation Commission Order No. 63",
+        "source_publication_date": "2008-02-19",
+        "effective_date": "2008-02-19",
+        "regime": "eci_delimitation_2008",
+        "geometryFile": "dl-assembly.json",
+        "manifestFeatureCount": 70,
+        "declaredHasPolygons": true,
+        "geometryStatus": "UNVERIFIED_NOT_RELEASE_APPROVED",
+        "releaseApproved": false,
+        "releaseBlockers": [
+          "geometry_topology_and_bounds_not_independently_verified",
+          "canonical_feature_ids_and_relationships_not_reconciled",
+          "legacy_manifest_lacks_complete_source_version_hash_and_effective_date"
+        ]
+      },
+      "JK": {
+        "name": "Jammu & Kashmir",
+        "count": 90,
+        "source": "Delimitation Commission Order No. 2 (J&K) / S.O. 2223(E)",
+        "source_reference": "Gazette of India Extraordinary Part II Sec 3(ii) No. 2005",
+        "source_publication_date": "2022-05-05",
+        "effective_date": "2022-05-20",
+        "regime": "eci_delimitation_2022_jk",
+        "geometryFile": "jk-assembly.json",
+        "manifestFeatureCount": 107,
+        "declaredHasPolygons": true,
+        "geometryStatus": "QUARANTINED_COUNT_MISMATCH",
+        "releaseApproved": false,
+        "releaseBlockers": [
+          "feature_count_must_equal_statutory_count",
+          "geometry_topology_and_bounds_not_independently_verified",
+          "canonical_feature_ids_and_relationships_not_reconciled",
+          "legacy_manifest_lacks_complete_source_version_hash_and_effective_date"
+        ]
+      },
+      "PY": {
+        "name": "Puducherry",
+        "count": 30,
+        "source": "ECI Delimitation Order 2008 Schedule XXX",
+        "source_reference": "Delimitation Commission Order No. 65",
+        "source_publication_date": "2008-02-19",
+        "effective_date": "2008-02-19",
+        "regime": "eci_delimitation_2008",
+        "geometryFile": "py-assembly.json",
+        "manifestFeatureCount": 30,
+        "declaredHasPolygons": false,
+        "geometryStatus": "UNAVAILABLE_PLACEHOLDER",
+        "releaseApproved": false,
+        "releaseBlockers": [
+          "official_polygon_geometry_not_verified",
+          "geometry_topology_and_bounds_not_independently_verified",
+          "canonical_feature_ids_and_relationships_not_reconciled",
+          "legacy_manifest_lacks_complete_source_version_hash_and_effective_date"
+        ]
+      }
+    }
   }
 }
