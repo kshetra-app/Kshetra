@@ -43,6 +43,7 @@ import { getAllStatesInfo, getStateInfo, getConstituencies, getConstituency } fr
 import { electionService } from '../services/electionService';
 import { politicalEntityService } from '../services/politicalEntityService';
 import { delimitationService, MIN_SAFE_REQUESTED_SEATS, MAX_SAFE_REQUESTED_SEATS } from '../services/delimitationService';
+import { webhookRoutes } from '../modules/webhooks';
 
 // ─── CANONICAL RESPONSE ENVELOPE HELPER ───
 
@@ -154,6 +155,9 @@ const delimSimulationQuerySchema = {
 };
 
 export async function saasV1Routes(app: FastifyInstance): Promise<void> {
+  // Mount Milestone W022 Outbound Webhooks & Event Engine sub-routes
+  await app.register(webhookRoutes, { prefix: '/api/vsaas/v1/webhooks' });
+
   // Pre-validation guard: Strictly block client-supplied scenario overrides on all SaaS routes
   app.addHook('preValidation', async (request, reply) => {
     const q = request.query as Record<string, unknown> | undefined;
