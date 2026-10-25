@@ -177,7 +177,7 @@ if (process.env.GITHUB_EVENT_NAME === 'pull_request') {
   assert.strictEqual(originMaster, prBase, 'origin/master must match the pull request base SHA');
   const parents = execSync(`git rev-list --parents -n 1 ${localHead}`, { encoding: 'utf8' })
     .trim()
-    .split(/\\s+/)
+    .split(/\s+/)
     .slice(1);
   assert.ok(parents.includes(prHead), `Synthetic PR merge commit must include PR head ${prHead} as a parent`);
   assert.ok(parents.includes(prBase), `Synthetic PR merge commit must include PR base ${prBase} as a parent`);
