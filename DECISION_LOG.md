@@ -3709,3 +3709,41 @@
   10. **Automated Verification:**
       - 42/42 automated tests pass across 4 suites: 19 mandatory criteria (19/19 PASS), 5 PostgreSQL integration (5/5 PASS), 6 Fastify route unit tests (6/6 PASS), and 12 controlled acceptance steps (12/12 PASS).
       - Production Supabase `ehfafcnimmjusyvplbah` and staging Supabase `fkpigozcqnmcvofuksar` remain 100% untouched and air-gapped.
+
+---
+
+### DEC-155: Remediation of Job 023 Findings A-D (Delimitation Watch Integrity, SSRF Guard, Durable Persistence, and Evidence Reconciliation)
+- **Date:** 2026-10-25
+- **Status:** REMEDIATED / TESTED / READY FOR INDEPENDENT CTO ADJUDICATION
+- **Authority:** CTO MASTER REMEDIATION DIRECTIVE — JOB 023 / Rule IV-001 Non-Self-Acceptance
+- **Baseline Commit:** `33945d20f318ae1aa0d9aba35052246599c5bbae`
+- **Context:** Independent CTO review of Job 023 identified four mandatory closure findings: Finding A (authority-by-label and legal evidence enforcement), Finding B (SSRF protection completeness and transport safety), Finding C (durable persistence, migration safety, and runtime error semantics), and Finding D (portable evidence manifest, commit lineage, and governance reconciliation).
+- **Decisions & Remediation Measures:**
+  1. **Finding A (Official-data truth & provenance):**
+     - Eliminated authority-by-label in `normalizer.ts`. A source's statutory classification combined with `status: final` no longer grants `OFFICIAL` classification.
+     - Implemented 8-point legal evidence evaluation gate requiring verifiable publisher, instrument identifier, Gazette/order citation, effective date, and authenticity corroboration.
+     - Prohibited synthetic/fixture/model sources from official promotion (fail closed to `SCENARIO` or `UNVERIFIED`).
+     - Overrode client-injected `dataStatus` in normalizer and validator.
+     - Gated publication such that non-enacted proposals fail closed with `canonicalViewUpdated: false`.
+     - Ingested authentic Gazette fixture `tests/fixtures/delimitation/authoritative_delimitation_order_2008.json` (Notification No. 282/AP/2008, Order No. 38, dated 2008-02-19, effective 2008-05-31).
+  2. **Finding B (Exhaustive SSRF protection & transport safety):**
+     - Hardened `ssrfGuard.ts` to enforce exhaustive RFC 1918, RFC 3927, RFC 4193, RFC 4291, RFC 5952, and cloud metadata CIDR blocklists with bracket-safe IPv6 parsing.
+     - Added parser for alternate numeric IPv4 encodings (dword integer, hex, octal).
+     - Enforced fail-closed behavior on mixed public/private DNS lookup results.
+     - Hardened `captureAdapter.ts` with socket pinning via custom `http.Agent` / `https.Agent` connecting directly to pre-verified IP addresses to defeat DNS rebinding TOCTOU.
+     - Implemented manual redirect handling bounded to 3 hops with loop detection and HTTPS-to-HTTP downgrade prohibition.
+     - Bounded HTTP response body streaming to a strict 10MB limit, aborting oversized responses.
+  3. **Finding C (Durable persistence & fail-closed runtime):**
+     - Completely eliminated unsafe `pg_raw_exec` RPC invocations.
+     - Enforced fail-closed persistence in deployed runtimes: when `NODE_ENV !== 'test'` without `DATABASE_URL`, requests fail with HTTP 503 `PERSISTENCE_CONFIGURATION_ERROR`.
+     - Implemented database-backed atomic lease locking in PostgreSQL (`acquireSourceLock` / `releaseSourceLock`) eliminating single-process in-memory lock sets.
+     - Aligned `PostgresDelimitationWatchRepository` DDL insert and select mapping with Migration 071 columns (`instrument_type`, `instrument_identifier`, `legal_enactment_status`, `effective_date`, `official_decision_record`, `publication_type`).
+     - Added health probe route `GET /api/v1/delimitation/watch/health` returning repository type and durability status.
+  4. **Finding D (Reconcile evidence, commits, & governance):**
+     - Eliminated machine-specific absolute paths (`C:\Users\Laven\...`) in `reports/evidence/JOB_023_ACCEPTANCE_MANIFEST.json` converting to portable repository-relative paths.
+     - Updated manifest candidate and publication payloads to represent genuine non-enacted proposal status (`UNVERIFIED`, `PROPOSAL`).
+     - Reconciled commit lineage from baseline `33945d20f318ae1aa0d9aba35052246599c5bbae`.
+     - Updated continuity registers (`EXECUTION_STATE.md`, `ACCEPTANCE_REGISTER.md`, `DEFECT_REGISTER.md`, `DECISION_LOG.md`, `RELEASE_REGISTER.md`).
+- **Verification Evidence:** 70/70 automated tests pass across 7 test suites (10 Truth Adversarial, 12 Hardened SSRF, 5 Persistence Lifecycle, 19 Invariants, 5 DB Integration, 7 Route Unit, 12 Controlled Acceptance Steps).
+- **Environment Isolation:** Staging database (`fkpigozcqnmcvofuksar`) and Production database (`ehfafcnimmjusyvplbah`) remain 100% untouched and air-gapped (0 queries, 0 mutations).
+- **Submission:** Formally submitted under Rule IV-001 Non-Self-Acceptance as REMEDIATED / TESTED / READY FOR INDEPENDENT CTO ADJUDICATION.

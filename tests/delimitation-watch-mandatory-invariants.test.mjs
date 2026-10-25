@@ -137,7 +137,7 @@ describe('Job 023 — Delimitation Watch Mandatory 19 Invariants Battery', () =>
 
     const run1 = await orchestrator.runPipeline('SRC-TG-003');
     assert.equal(run1.outcome, 'SUCCESS');
-    assert.equal(run1.acceptedVersion.dataStatus, 'OFFICIAL');
+    assert.equal(run1.acceptedVersion.dataStatus, 'UNVERIFIED');
 
     // Update source to point to changed fixture (119 seats -> 125 seats)
     source.canonicalUrl = changedFixturePath;
@@ -481,7 +481,7 @@ describe('Job 023 — Delimitation Watch Mandatory 19 Invariants Battery', () =>
     assert.equal(run.outcome, 'SUCCESS');
     assert.ok(run.notificationEvent, 'Must generate notification event');
     assert.equal(run.notificationEvent.stateCode, 'TG');
-    assert.equal(run.notificationEvent.eventCategory, 'OFFICIAL_PUBLICATION');
+    assert.equal(run.notificationEvent.eventCategory, 'PROPOSAL_NOTICE');
     assert.ok(run.notificationEvent.deduplicationKey.startsWith('delim-notif-'));
   });
 

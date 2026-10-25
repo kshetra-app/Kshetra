@@ -2,7 +2,7 @@
  * Delimitation Watch API Routes (Job 023)
  *
  * Exposes endpoints for managing sources, triggering runs, querying run status,
- * replaying snapshots, and retrieving accepted version history.
+ * replaying snapshots, retrieving accepted version history, and checking persistence health.
  */
 
 import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
@@ -13,37 +13,66 @@ import {
   PostgresDelimitationWatchRepository,
   type IDelimitationWatchRepository,
 } from '../modules/delimitationWatch';
-import { supabase, isSupabaseConfigured } from '../lib/supabase';
 
 // Shared repository singleton (or memory fallback in non-configured test runs)
-let watchRepository: IDelimitationWatchRepository;
+let watchRepository: IDelimitationWatchRepository | null = null;
 
 export function getWatchRepository(): IDelimitationWatchRepository {
   if (!watchRepository) {
-    if (isSupabaseConfigured && supabase) {
-      // Postgres-backed repository
-      watchRepository = new PostgresDelimitationWatchRepository({
-        query: async (sql: string, params?: any[]) => {
-          // Wrap Supabase RPC or raw query
-          const { data, error } = await (supabase as any).rpc('pg_raw_exec', { query: sql, params });
-          if (error) throw error;
-          return { rows: data || [] };
-        },
-      });
-    } else {
+    if (process.env.DATABASE_URL) {
+      try {
+        const { Pool } = require('pg');
+        const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+        watchRepository = new PostgresDelimitationWatchRepository({
+          query: async (sql: string, params?: any[]) => {
+            const res = await pool.query(sql, params);
+            return { rows: res.rows };
+          },
+        });
+      } catch {
+        try {
+          const { PGlite } = require('@electric-sql/pglite');
+          const pglite = new PGlite();
+          watchRepository = new PostgresDelimitationWatchRepository({
+            query: async (sql: string, params?: any[]) => {
+              const res = await pglite.query(sql, params);
+              return { rows: res.rows };
+            },
+          });
+        } catch {
+          throw new Error('PERSISTENCE_CONFIGURATION_ERROR: Neither pg nor @electric-sql/pglite is available to connect to PostgreSQL.');
+        }
+      }
+    } else if (process.env.NODE_ENV === 'test') {
       watchRepository = new InMemoryDelimitationWatchRepository();
+    } else {
+      throw new Error(
+        'PERSISTENCE_CONFIGURATION_ERROR: Database persistence is unconfigured in deployed runtime (NODE_ENV !== "test"). Set DATABASE_URL to a valid PostgreSQL instance.',
+      );
     }
   }
   return watchRepository;
 }
 
-export function setWatchRepositoryForTesting(repo: IDelimitationWatchRepository): void {
+export function setWatchRepositoryForTesting(repo: IDelimitationWatchRepository | null): void {
   watchRepository = repo;
+}
+
+function resolveRepository(): { repo?: IDelimitationWatchRepository; error?: string } {
+  try {
+    const repo = getWatchRepository();
+    return { repo };
+  } catch (err: any) {
+    return { error: err.message };
+  }
 }
 
 function verifyWatchAdminAuthorization(request: FastifyRequest): boolean {
   const authHeader = request.headers.authorization;
-  const expectedSecret = process.env.KSHETRA_MONITOR_SECRET || process.env.MONITOR_WEBHOOK_SECRET || process.env.DELIMITATION_WATCH_SECRET;
+  const expectedSecret =
+    process.env.KSHETRA_MONITOR_SECRET ||
+    process.env.MONITOR_WEBHOOK_SECRET ||
+    process.env.DELIMITATION_WATCH_SECRET;
 
   if (expectedSecret) {
     return authHeader === `Bearer ${expectedSecret}`;
@@ -52,11 +81,59 @@ function verifyWatchAdminAuthorization(request: FastifyRequest): boolean {
 }
 
 export async function delimitationWatchRoutes(app: FastifyInstance) {
-  const repo = getWatchRepository();
-  const orchestrator = new DelimitationWatchOrchestrator(repo);
+  // 0. GET /api/v1/delimitation/watch/health — Persistence health and durability probe
+  app.get('/api/v1/delimitation/watch/health', async (request: FastifyRequest, reply: FastifyReply) => {
+    const { repo, error } = resolveRepository();
+    const isTest = process.env.NODE_ENV === 'test';
+
+    if (!repo) {
+      return reply.status(503).send({
+        status: 'UNHEALTHY',
+        repositoryType: 'unconfigured',
+        durable: false,
+        error: error || 'PERSISTENCE_CONFIGURATION_ERROR: Database persistence unconfigured',
+      });
+    }
+
+    const isDurable = repo.isDurable();
+    const health = await repo.checkHealth();
+
+    if (!health.healthy) {
+      return reply.status(503).send({
+        status: 'UNHEALTHY',
+        repositoryType: isDurable ? 'postgres' : 'in_memory',
+        durable: isDurable,
+        details: health.details,
+      });
+    }
+
+    if (!isDurable && !isTest) {
+      return reply.status(503).send({
+        status: 'UNHEALTHY',
+        repositoryType: 'in_memory',
+        durable: false,
+        error: 'PERSISTENCE_CONFIGURATION_ERROR: Ephemeral in-memory repository not permitted in deployed runtime',
+      });
+    }
+
+    return reply.status(200).send({
+      status: 'HEALTHY',
+      repositoryType: isDurable ? 'postgres' : 'in_memory',
+      durable: isDurable,
+      details: health.details,
+    });
+  });
 
   // 1. GET /api/v1/delimitation/watch/sources — List registered sources
   app.get('/api/v1/delimitation/watch/sources', async (request: FastifyRequest, reply: FastifyReply) => {
+    const { repo, error } = resolveRepository();
+    if (!repo) {
+      return reply.status(503).send({
+        success: false,
+        error: { code: 'PERSISTENCE_CONFIGURATION_ERROR', message: error },
+      });
+    }
+
     try {
       const sources = await repo.listSources();
       return reply.status(200).send({
@@ -73,6 +150,14 @@ export async function delimitationWatchRoutes(app: FastifyInstance) {
 
   // 2. POST /api/v1/delimitation/watch/sources — Register a new source (Authorized)
   app.post('/api/v1/delimitation/watch/sources', async (request: FastifyRequest, reply: FastifyReply) => {
+    const { repo, error } = resolveRepository();
+    if (!repo) {
+      return reply.status(503).send({
+        success: false,
+        error: { code: 'PERSISTENCE_CONFIGURATION_ERROR', message: error },
+      });
+    }
+
     if (!verifyWatchAdminAuthorization(request)) {
       return sendApiError(reply, request, 401, 'Unauthorized', 'Admin or monitor token required to register sources');
     }
@@ -109,12 +194,21 @@ export async function delimitationWatchRoutes(app: FastifyInstance) {
 
   // 3. POST /api/v1/delimitation/watch/trigger/:sourceId — Trigger Delimitation Watch run
   app.post('/api/v1/delimitation/watch/trigger/:sourceId', async (request: FastifyRequest<{ Params: { sourceId: string } }>, reply: FastifyReply) => {
+    const { repo, error } = resolveRepository();
+    if (!repo) {
+      return reply.status(503).send({
+        success: false,
+        error: { code: 'PERSISTENCE_CONFIGURATION_ERROR', message: error },
+      });
+    }
+
     if (!verifyWatchAdminAuthorization(request)) {
       return sendApiError(reply, request, 401, 'Unauthorized', 'Admin or monitor token required to trigger pipeline');
     }
 
     const { sourceId } = request.params;
     try {
+      const orchestrator = new DelimitationWatchOrchestrator(repo);
       const result = await orchestrator.runPipeline(sourceId, {
         correlationId: request.id,
       });
@@ -124,18 +218,39 @@ export async function delimitationWatchRoutes(app: FastifyInstance) {
         data: { result },
       });
     } catch (err: any) {
+      if (
+        err.message &&
+        (err.message.includes('CONCURRENT_RUN_CONFLICT') || err.message.includes('CONCURRENT_RUN_IN_PROGRESS'))
+      ) {
+        return reply.status(409).send({
+          success: false,
+          error: {
+            code: 'CONCURRENT_RUN_IN_PROGRESS',
+            message: err.message,
+          },
+        });
+      }
       return sendApiError(reply, request, 500, 'PipelineExecutionError', err.message);
     }
   });
 
   // 4. POST /api/v1/delimitation/watch/replay/:snapshotId — Replay existing snapshot
   app.post('/api/v1/delimitation/watch/replay/:snapshotId', async (request: FastifyRequest<{ Params: { snapshotId: string } }>, reply: FastifyReply) => {
+    const { repo, error } = resolveRepository();
+    if (!repo) {
+      return reply.status(503).send({
+        success: false,
+        error: { code: 'PERSISTENCE_CONFIGURATION_ERROR', message: error },
+      });
+    }
+
     if (!verifyWatchAdminAuthorization(request)) {
       return sendApiError(reply, request, 401, 'Unauthorized', 'Admin or monitor token required to replay snapshots');
     }
 
     const { snapshotId } = request.params;
     try {
+      const orchestrator = new DelimitationWatchOrchestrator(repo);
       const result = await orchestrator.replaySnapshot(snapshotId, {
         correlationId: request.id,
       });
@@ -145,12 +260,32 @@ export async function delimitationWatchRoutes(app: FastifyInstance) {
         data: { result },
       });
     } catch (err: any) {
+      if (
+        err.message &&
+        (err.message.includes('CONCURRENT_RUN_CONFLICT') || err.message.includes('CONCURRENT_RUN_IN_PROGRESS'))
+      ) {
+        return reply.status(409).send({
+          success: false,
+          error: {
+            code: 'CONCURRENT_RUN_IN_PROGRESS',
+            message: err.message,
+          },
+        });
+      }
       return sendApiError(reply, request, 500, 'ReplayExecutionError', err.message);
     }
   });
 
   // 5. GET /api/v1/delimitation/watch/runs/:sourceId — Query run history for source
   app.get('/api/v1/delimitation/watch/runs/:sourceId', async (request: FastifyRequest<{ Params: { sourceId: string } }>, reply: FastifyReply) => {
+    const { repo, error } = resolveRepository();
+    if (!repo) {
+      return reply.status(503).send({
+        success: false,
+        error: { code: 'PERSISTENCE_CONFIGURATION_ERROR', message: error },
+      });
+    }
+
     const { sourceId } = request.params;
     try {
       const runs = await repo.listRunsForSource(sourceId);
@@ -169,6 +304,14 @@ export async function delimitationWatchRoutes(app: FastifyInstance) {
 
   // 6. GET /api/v1/delimitation/watch/versions/:sourceId — Query accepted versions for source
   app.get('/api/v1/delimitation/watch/versions/:sourceId', async (request: FastifyRequest<{ Params: { sourceId: string } }>, reply: FastifyReply) => {
+    const { repo, error } = resolveRepository();
+    if (!repo) {
+      return reply.status(503).send({
+        success: false,
+        error: { code: 'PERSISTENCE_CONFIGURATION_ERROR', message: error },
+      });
+    }
+
     const { sourceId } = request.params;
     try {
       const versions = await repo.listAcceptedVersionsForSource(sourceId);

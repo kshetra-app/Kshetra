@@ -122,6 +122,19 @@ describe('Delimitation Watch HTTP Routes (/api/v1/delimitation/watch/*)', () => 
     const body = JSON.parse(res.body);
     expect(body.success).toBe(true);
     expect(body.data.versions.length).toBe(1);
-    expect(body.data.versions[0].dataStatus).toBe('OFFICIAL');
+    expect(body.data.versions[0].dataStatus).toBe('UNVERIFIED');
+  });
+
+  test('GET /api/v1/delimitation/watch/health returns health and durability status (200)', async () => {
+    const res = await app.inject({
+      method: 'GET',
+      url: '/api/v1/delimitation/watch/health',
+    });
+
+    expect(res.statusCode).toBe(200);
+    const body = JSON.parse(res.body);
+    expect(body.status).toBe('HEALTHY');
+    expect(body.repositoryType).toBe('in_memory');
+    expect(body.durable).toBe(false);
   });
 });

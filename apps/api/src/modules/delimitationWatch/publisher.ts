@@ -15,12 +15,17 @@ import type {
   DelimitationCandidate,
   DelimitationValidation,
   DelimitationPublication,
+  DelimitationPublicationType,
   PublicationStatus,
 } from '@kshetra/shared';
 import type { IDelimitationWatchRepository } from './persistence';
 
 export class Publisher {
-  constructor(private readonly repo: IDelimitationWatchRepository) {}
+  private readonly repo: IDelimitationWatchRepository;
+
+  constructor(repo: IDelimitationWatchRepository) {
+    this.repo = repo;
+  }
 
   async publish(
     version: DelimitationAcceptedVersion,
@@ -29,8 +34,28 @@ export class Publisher {
     publishedBy: string = 'system_delimitation_watch',
   ): Promise<{ publication: DelimitationPublication; created: boolean }> {
     // 1. Validation Gate Enforcement
-    if (validation.validationStatus === 'REJECTED') {
-      throw new Error(`PUBLICATION_GATE_FAILED: Cannot publish rejected candidate ${candidate.id}`);
+    if (validation.validationStatus === 'REJECTED' || validation.validationStatus === 'REVIEW_REQUIRED') {
+      throw new Error(`PUBLICATION_GATE_FAILED: Cannot publish candidate ${candidate.id} in state '${validation.validationStatus}'`);
+    }
+
+    // Determine honest publication type
+    let publicationType: DelimitationPublicationType;
+    if (version.dataStatus === 'OFFICIAL' && !candidate.isProposed) {
+      publicationType = 'ENACTED_OFFICIAL';
+    } else if (candidate.isProposed) {
+      publicationType = 'PROPOSAL';
+    } else if (version.dataStatus === 'SCENARIO') {
+      publicationType = 'SCENARIO_ESTIMATE';
+    } else {
+      publicationType = 'UNVERIFIED_NOTICE';
+    }
+
+    // Invariant: Proposed or unverified candidate cannot be published as OFFICIAL
+    if (version.dataStatus === 'OFFICIAL' && candidate.isProposed) {
+      throw new Error(`CANONICAL_MUTATION_RESTRICTED: Proposed or unverified candidate cannot be published as ENACTED_OFFICIAL`);
+    }
+    if (publicationType === 'ENACTED_OFFICIAL' && (candidate.isProposed || version.dataStatus !== 'OFFICIAL')) {
+      throw new Error(`CANONICAL_MUTATION_RESTRICTED: Proposed or unverified candidate cannot be published as ENACTED_OFFICIAL`);
     }
 
     // 2. Check existing publication for this version (Idempotency)
@@ -46,11 +71,12 @@ export class Publisher {
     const publication: DelimitationPublication = {
       id: publicationId,
       versionId: version.id,
+      publicationType,
       publicationStatus: 'PUBLISHED',
       publishedAt: now,
       publishedBy,
       publishedProposalId: candidate.proposalData.proposalNumber ? candidate.id : undefined,
-      canonicalViewUpdated: true,
+      canonicalViewUpdated: publicationType === 'ENACTED_OFFICIAL',
       createdAt: now,
     };
 

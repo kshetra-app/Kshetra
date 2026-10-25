@@ -23,9 +23,9 @@ describe('Job 023 — Controlled 12-Step End-to-End Acceptance Scenario', () => 
   let orchestrator;
   let sourceRegistry;
 
-  const initialFixturePath = path.resolve('tests/fixtures/delimitation/initial_delimitation_source_fixture.json');
-  const changedFixturePath = path.resolve('tests/fixtures/delimitation/changed_delimitation_source_fixture.json');
-  const invalidFixturePath = path.resolve('tests/fixtures/delimitation/invalid_delimitation_source_fixture.json');
+  const initialFixturePath = 'tests/fixtures/delimitation/initial_delimitation_source_fixture.json';
+  const changedFixturePath = 'tests/fixtures/delimitation/changed_delimitation_source_fixture.json';
+  const invalidFixturePath = 'tests/fixtures/delimitation/invalid_delimitation_source_fixture.json';
 
   const dispatchedNotifications = [];
   const manifestData = {
@@ -110,7 +110,7 @@ describe('Job 023 — Controlled 12-Step End-to-End Acceptance Scenario', () => 
     assert.equal(result.validation.validationStatus, 'PASSED');
     assert.equal(result.comparison.isMaterialChange, true);
     assert.ok(result.acceptedVersion);
-    assert.equal(result.acceptedVersion.dataStatus, 'OFFICIAL');
+    assert.equal(result.acceptedVersion.dataStatus, 'UNVERIFIED');
     assert.ok(result.notificationEvent);
     assert.equal(result.notificationEvent.dispatchStatus, 'SENT');
     assert.ok(result.publication);
@@ -257,6 +257,7 @@ describe('Job 023 — Controlled 12-Step End-to-End Acceptance Scenario', () => 
       status: 'PASS',
       publicationId: changedResult.publication.id,
       versionId: changedResult.publication.versionId,
+      publicationType: changedResult.publication.publicationType,
       canonicalViewUpdated: changedResult.publication.canonicalViewUpdated,
     };
   });

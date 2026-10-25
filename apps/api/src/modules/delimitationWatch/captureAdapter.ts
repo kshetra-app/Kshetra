@@ -1,33 +1,47 @@
 /**
+ * apps/api/src/modules/delimitationWatch/captureAdapter.ts
+ *
  * Stage 1: Capture Adapter
  *
  * Implements deterministic, immutable retrieval of source evidence:
  * - SHA-256 cryptographic verification
  * - HTTP validator caching (ETag, Last-Modified, 304 handling)
- * - SSRF-guarded HTTP fetching
- * - Local fixture file loading
- * - In-memory mock hooks for test isolation
+ * - Zero-trust SSRF-guarded HTTP fetching with pre-connect DNS resolution and socket pinning
+ * - Safe manual redirect handling (loop detection, protocol downgrade rejection, re-resolved target validation)
+ * - Streaming response size bounding (max 10MB limit)
  * - Fail-closed error handling (no false success, no overwriting good snapshots)
  */
 
 import * as fs from 'fs';
 import * as path from 'path';
+import http from 'node:http';
+import https from 'node:https';
 import { createHash, randomUUID } from 'crypto';
 import type { DelimitationWatchSource, DelimitationSnapshot, CaptureOutcome } from '@kshetra/shared';
 import type { IDelimitationWatchRepository } from './persistence';
-import { validateSourceUrl } from './ssrfGuard';
+import { validateAndPinSourceUrl, SsrfSecurityError } from './ssrfGuard';
+
+export const MAX_CAPTURE_RESPONSE_BYTES = 10 * 1024 * 1024; // 10 MB limit
+export const MAX_REDIRECT_DEPTH = 3;
 
 export interface CaptureOptions {
   timeoutMs?: number;
+  maxResponseBytes?: number;
   allowLocalhost?: boolean;
+  mockDnsResolver?: (hostname: string) => Promise<string[]>;
   mockPayloadProvider?: (source: DelimitationWatchSource) => Promise<{ status: number; body: string; headers?: Record<string, string> }>;
 }
 
 export class CaptureAdapter {
-  constructor(private readonly repo: IDelimitationWatchRepository) {}
+  private readonly repo: IDelimitationWatchRepository;
+
+  constructor(repo: IDelimitationWatchRepository) {
+    this.repo = repo;
+  }
 
   async capture(source: DelimitationWatchSource, options: CaptureOptions = {}): Promise<DelimitationSnapshot> {
     const timeoutMs = options.timeoutMs ?? 15000;
+    const maxBytes = options.maxResponseBytes ?? MAX_CAPTURE_RESPONSE_BYTES;
     const now = new Date().toISOString();
 
     let rawContent = '';
@@ -41,8 +55,8 @@ export class CaptureAdapter {
     const diagnostics: Record<string, unknown> = {};
 
     try {
-      // 1. Retrieval execution according to source.retrievalMethod
       if (options.mockPayloadProvider) {
+        // Test hook: mock payload provider
         const mockRes = await options.mockPayloadProvider(source);
         httpStatus = mockRes.status;
         rawContent = mockRes.body;
@@ -50,6 +64,7 @@ export class CaptureAdapter {
         lastModified = mockRes.headers?.['last-modified'] || mockRes.headers?.['Last-Modified'];
         contentType = mockRes.headers?.['content-type'] || 'application/json';
       } else if (source.retrievalMethod === 'file_fixture') {
+        // Local file fixture retrieval
         const filePath = path.isAbsolute(source.canonicalUrl)
           ? source.canonicalUrl
           : path.resolve(process.cwd(), source.canonicalUrl);
@@ -61,46 +76,29 @@ export class CaptureAdapter {
         httpStatus = 200;
         contentType = filePath.endsWith('.json') ? 'application/json' : 'text/plain';
       } else if (source.retrievalMethod === 'http_get') {
-        // SSRF guard
-        validateSourceUrl(source.canonicalUrl, options.allowLocalhost ?? false);
+        // Zero-trust SSRF guarded HTTP/HTTPS retrieval with manual redirect following
+        const fetchResult = await this.executeHardenedHttpGet(source.canonicalUrl, {
+          timeoutMs,
+          maxBytes,
+          allowLocalhost: options.allowLocalhost ?? false,
+          mockDnsResolver: options.mockDnsResolver,
+          lastEtag: source.lastEtag,
+          lastModifiedHeader: source.lastModifiedHeader,
+        });
 
-        const controller = new AbortController();
-        const timer = setTimeout(() => controller.abort(), timeoutMs);
+        httpStatus = fetchResult.status;
+        etag = fetchResult.etag;
+        lastModified = fetchResult.lastModified;
+        contentType = fetchResult.contentType;
+        rawContent = fetchResult.body;
+        diagnostics.resolvedIp = fetchResult.pinnedIp;
+        diagnostics.redirectCount = fetchResult.redirectCount;
 
-        const reqHeaders: Record<string, string> = {
-          'User-Agent': 'Kshetra-Delimitation-Watch/1.0 (authoritative; civic-tech)',
-          'Accept': 'application/json, text/html, text/plain;q=0.9',
-        };
-
-        if (source.lastEtag) {
-          reqHeaders['If-None-Match'] = source.lastEtag;
-        }
-        if (source.lastModifiedHeader) {
-          reqHeaders['If-Modified-Since'] = source.lastModifiedHeader;
-        }
-
-        try {
-          const res = await fetch(source.canonicalUrl, {
-            method: 'GET',
-            headers: reqHeaders,
-            signal: controller.signal,
-          });
-
-          httpStatus = res.status;
-          etag = res.headers.get('etag') || undefined;
-          lastModified = res.headers.get('last-modified') || undefined;
-          contentType = res.headers.get('content-type') || 'text/plain';
-
-          if (res.status === 304) {
-            captureOutcome = 'UNCHANGED';
-            rawContent = '';
-          } else if (!res.ok) {
-            throw new Error(`HTTP_ERROR: Received status ${res.status} ${res.statusText}`);
-          } else {
-            rawContent = await res.text();
-          }
-        } finally {
-          clearTimeout(timer);
+        if (fetchResult.status === 304) {
+          captureOutcome = 'UNCHANGED';
+          rawContent = '';
+        } else if (fetchResult.status < 200 || fetchResult.status >= 300) {
+          throw new Error(`HTTP_ERROR: Received status ${fetchResult.status}`);
         }
       } else {
         throw new Error(`UNSUPPORTED_RETRIEVAL_METHOD: ${source.retrievalMethod}`);
@@ -150,46 +148,231 @@ export class CaptureAdapter {
         lastAttemptedAt: now,
         lastSuccessfulAt: now,
         lastHttpStatus: httpStatus,
-        lastEtag: etag,
-        lastModifiedHeader: lastModified,
-        lastContentHash: contentHash,
+        lastEtag: etag || source.lastEtag,
+        lastModifiedHeader: lastModified || source.lastModifiedHeader,
+        lastContentHash: captureOutcome === 'UNCHANGED' ? source.lastContentHash : contentHash,
         consecutiveFailures: 0,
         lastError: undefined,
       });
 
       return snapshot;
     } catch (err: any) {
-      const isTimeout = err.name === 'AbortError' || err.message.includes('timeout') || err.message.includes('TIMEOUT');
-      captureOutcome = isTimeout ? 'TIMEOUT' : 'FETCH_ERROR';
+      // Fail-closed: record failure snapshot without overwriting prior good snapshots
+      const errorOutcome: CaptureOutcome =
+        err.name === 'AbortError' || err.message?.includes('timeout')
+          ? 'TIMEOUT'
+          : err.message?.includes('404')
+          ? 'NOT_FOUND'
+          : 'FETCH_ERROR';
 
-      // Record snapshot with failure outcome
-      const failedSnapshot: DelimitationSnapshot = {
+      const failureSnapshot: DelimitationSnapshot = {
         id: randomUUID(),
         sourceId: source.id,
         retrievedAt: now,
-        httpStatus: httpStatus || (isTimeout ? 408 : 500),
-        etag: undefined,
-        lastModified: undefined,
+        httpStatus: httpStatus || 500,
         contentType: 'text/plain',
         contentSizeBytes: 0,
-        contentSha256: createHash('sha256').update('', 'utf8').digest('hex'),
+        contentSha256: createHash('sha256').update('').digest('hex'),
         rawContent: '',
-        captureOutcome,
+        captureOutcome: errorOutcome,
         diagnostics: { error: err.message, stack: err.stack },
         createdAt: now,
       };
 
-      await this.repo.saveSnapshot(failedSnapshot);
+      await this.repo.saveSnapshot(failureSnapshot);
 
-      // Record source health failure without overwriting last good snapshot
       await this.repo.updateSourceHealth(source.id, {
         lastAttemptedAt: now,
-        lastHttpStatus: failedSnapshot.httpStatus,
-        consecutiveFailures: (source.consecutiveFailures || 0) + 1,
+        lastHttpStatus: httpStatus || 500,
+        consecutiveFailures: source.consecutiveFailures + 1,
         lastError: err.message,
       });
 
-      return failedSnapshot;
+      return failureSnapshot;
     }
+  }
+
+  /**
+   * Hardened HTTP GET execution:
+   * - Pre-resolves DNS and pins connection socket
+   * - Manual redirect loop and depth control
+   * - Protocol downgrade protection
+   * - Streaming body size limit
+   */
+  private async executeHardenedHttpGet(
+    initialUrl: string,
+    opts: {
+      timeoutMs: number;
+      maxBytes: number;
+      allowLocalhost: boolean;
+      mockDnsResolver?: (host: string) => Promise<string[]>;
+      lastEtag?: string;
+      lastModifiedHeader?: string;
+    }
+  ): Promise<{
+    status: number;
+    etag?: string;
+    lastModified?: string;
+    contentType: string;
+    body: string;
+    pinnedIp: string;
+    redirectCount: number;
+  }> {
+    let currentUrl = initialUrl;
+    let redirectCount = 0;
+    const visitedUrls = new Set<string>([currentUrl]);
+
+    while (redirectCount <= MAX_REDIRECT_DEPTH) {
+      // 1. SSRF validate and pin destination
+      const destination = await validateAndPinSourceUrl(currentUrl, {
+        allowLocalhostForTests: opts.allowLocalhost,
+        mockDnsResolver: opts.mockDnsResolver,
+        timeoutMs: opts.timeoutMs,
+      });
+
+      // 2. Perform raw HTTP/HTTPS request using custom pinned agent
+      const response = await this.performPinnedHttpRequest(destination, {
+        timeoutMs: opts.timeoutMs,
+        maxBytes: opts.maxBytes,
+        lastEtag: redirectCount === 0 ? opts.lastEtag : undefined,
+        lastModifiedHeader: redirectCount === 0 ? opts.lastModifiedHeader : undefined,
+      });
+
+      // 3. Handle redirects (301, 302, 303, 307, 308)
+      if ([301, 302, 303, 307, 308].includes(response.statusCode)) {
+        redirectCount++;
+        if (redirectCount > MAX_REDIRECT_DEPTH) {
+          throw new SsrfSecurityError(`REDIRECT_LIMIT_EXCEEDED (MAX_REDIRECTS_EXCEEDED): Redirect depth exceeded maximum allowed (${MAX_REDIRECT_DEPTH})`);
+        }
+
+        const locationHeader = response.headers.location;
+        if (!locationHeader) {
+          throw new SsrfSecurityError(`INVALID_REDIRECT: Received HTTP ${response.statusCode} without Location header`);
+        }
+
+        const nextUrl = new URL(locationHeader, currentUrl).toString();
+
+        // Prevent redirect loops
+        if (visitedUrls.has(nextUrl)) {
+          throw new SsrfSecurityError(`REDIRECT_LOOP_DETECTED: Target '${nextUrl}' previously encountered in redirect chain`);
+        }
+        visitedUrls.add(nextUrl);
+
+        // Protocol downgrade check: https cannot redirect to http
+        const currentIsHttps = currentUrl.startsWith('https:');
+        const nextIsHttps = nextUrl.startsWith('https:');
+        if (currentIsHttps && !nextIsHttps && !opts.allowLocalhost) {
+          throw new SsrfSecurityError(`PROTOCOL_DOWNGRADE_FORBIDDEN: Redirect from HTTPS to plain HTTP is prohibited ('${nextUrl}')`);
+        }
+
+        currentUrl = nextUrl;
+        continue;
+      }
+
+      return {
+        status: response.statusCode,
+        etag: (response.headers.etag as string) || undefined,
+        lastModified: (response.headers['last-modified'] as string) || undefined,
+        contentType: (response.headers['content-type'] as string) || 'text/plain',
+        body: response.body,
+        pinnedIp: destination.pinnedIp,
+        redirectCount,
+      };
+    }
+
+    throw new SsrfSecurityError(`MAX_REDIRECTS_EXCEEDED: Exceeded redirect limit`);
+  }
+
+  /**
+   * Issues raw HTTP/HTTPS request over pinned socket with streaming size bounds
+   */
+  private performPinnedHttpRequest(
+    destination: import('./ssrfGuard').ValidatedDestination,
+    opts: {
+      timeoutMs: number;
+      maxBytes: number;
+      lastEtag?: string;
+      lastModifiedHeader?: string;
+    }
+  ): Promise<{
+    statusCode: number;
+    headers: http.IncomingHttpHeaders;
+    body: string;
+  }> {
+    return new Promise((resolve, reject) => {
+      const client = destination.isHttps ? https : http;
+
+      const headers: Record<string, string> = {
+        'User-Agent': 'Kshetra-Delimitation-Watch/1.0 (authoritative; civic-tech; anti-ssrf)',
+        'Accept': 'application/json, text/html, text/plain;q=0.9',
+        'Host': destination.hostname,
+      };
+
+      if (opts.lastEtag) {
+        headers['If-None-Match'] = opts.lastEtag;
+      }
+      if (opts.lastModifiedHeader) {
+        headers['If-Modified-Since'] = opts.lastModifiedHeader;
+      }
+
+      const req = client.request(
+        {
+          method: 'GET',
+          host: destination.hostname,
+          port: destination.port,
+          path: destination.parsedUrl.pathname + destination.parsedUrl.search,
+          headers,
+          agent: destination.agent,
+          timeout: opts.timeoutMs,
+        },
+        (res) => {
+          const statusCode = res.statusCode || 500;
+
+          // If 304, no body expected
+          if (statusCode === 304) {
+            res.resume();
+            return resolve({ statusCode, headers: res.headers, body: '' });
+          }
+
+          let bytesReceived = 0;
+          const chunks: Buffer[] = [];
+
+          res.on('data', (chunk: Buffer) => {
+            bytesReceived += chunk.length;
+            if (bytesReceived > opts.maxBytes) {
+              req.destroy();
+              res.destroy();
+              reject(new Error(`RESPONSE_SIZE_EXCEEDED (PAYLOAD_TOO_LARGE): Response exceeded maximum allowed size of ${opts.maxBytes} bytes`));
+              return;
+            }
+            chunks.push(chunk);
+          });
+
+          res.on('end', () => {
+            const body = Buffer.concat(chunks).toString('utf8');
+            resolve({
+              statusCode,
+              headers: res.headers,
+              body,
+            });
+          });
+
+          res.on('error', (err) => {
+            reject(err);
+          });
+        }
+      );
+
+      req.on('timeout', () => {
+        req.destroy();
+        reject(new Error(`HTTP_TIMEOUT: Request timed out after ${opts.timeoutMs}ms`));
+      });
+
+      req.on('error', (err) => {
+        reject(err);
+      });
+
+      req.end();
+    });
   }
 }

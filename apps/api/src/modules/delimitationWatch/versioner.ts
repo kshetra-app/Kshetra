@@ -20,7 +20,11 @@ import type {
 import type { IDelimitationWatchRepository } from './persistence';
 
 export class Versioner {
-  constructor(private readonly repo: IDelimitationWatchRepository) {}
+  private readonly repo: IDelimitationWatchRepository;
+
+  constructor(repo: IDelimitationWatchRepository) {
+    this.repo = repo;
+  }
 
   async acceptVersion(
     candidate: DelimitationCandidate,
@@ -33,6 +37,13 @@ export class Versioner {
     // 1. Validation Gate
     if (validation.validationStatus === 'REJECTED') {
       throw new Error(`VERSION_ACCEPTANCE_BLOCKED: Candidate ${candidate.id} was REJECTED during validation: ${validation.errors.join(', ')}`);
+    }
+
+    // Invariant: Unverified or proposed candidate cannot be accepted as OFFICIAL
+    if (candidate.normalizedDataStatus === 'OFFICIAL') {
+      if (candidate.isProposed || !candidate.legalEvidencePackage?.decisionRecord.isOfficialEligible) {
+        throw new Error(`VERSION_ACCEPTANCE_BLOCKED: Candidate ${candidate.id} cannot be accepted as OFFICIAL without passing legal evidence gate`);
+      }
     }
 
     // 2. Idempotency Check: (sourceId, contentSha256)
@@ -68,7 +79,11 @@ export class Versioner {
       contentSha256: snapshot.contentSha256,
       parserVersion: candidate.parserVersion,
       dataStatus: candidate.normalizedDataStatus,
-      effectiveDate: snapshot.declaredEffectiveDate,
+      effectiveDate: candidate.proposalData.effectiveDate || snapshot.declaredEffectiveDate,
+      instrumentType: candidate.proposalData.instrumentType,
+      instrumentIdentifier: candidate.proposalData.instrumentIdentifier,
+      legalEnactmentStatus: candidate.proposalData.legalEnactmentStatus,
+      legalEvidencePackage: candidate.legalEvidencePackage,
       proposalId: undefined, // Linked during publication
       acceptedAt: new Date().toISOString(),
       acceptedBy,

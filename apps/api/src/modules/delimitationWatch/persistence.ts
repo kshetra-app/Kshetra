@@ -82,6 +82,12 @@ export interface IDelimitationWatchRepository {
   saveRun(run: DelimitationWatchRun): Promise<void>;
   getRun(runId: string): Promise<DelimitationWatchRun | null>;
   listRunsForSource(sourceId: string): Promise<DelimitationWatchRun[]>;
+
+  // Distributed Concurrency & Health
+  acquireSourceLock(sourceId: string, lockToken: string, ttlMs?: number): Promise<boolean>;
+  releaseSourceLock(sourceId: string, lockToken: string): Promise<void>;
+  isDurable(): boolean;
+  checkHealth(): Promise<{ healthy: boolean; details?: string }>;
 }
 
 /**
@@ -98,6 +104,7 @@ export class InMemoryDelimitationWatchRepository implements IDelimitationWatchRe
   private notificationEvents = new Map<string, DelimitationNotificationEvent>();
   private publications = new Map<string, DelimitationPublication>();
   private runs = new Map<string, DelimitationWatchRun>();
+  private sourceLocks = new Map<string, { token: string; expiresAt: number }>();
 
   async saveSource(source: DelimitationWatchSource): Promise<void> {
     this.sources.set(source.id, { ...source });
@@ -278,6 +285,31 @@ export class InMemoryDelimitationWatchRepository implements IDelimitationWatchRe
     forSource.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
     return forSource.map((r) => ({ ...r }));
   }
+
+  async acquireSourceLock(sourceId: string, lockToken: string, ttlMs = 60000): Promise<boolean> {
+    const existing = this.sourceLocks.get(sourceId);
+    const now = Date.now();
+    if (existing && existing.expiresAt > now && existing.token !== lockToken) {
+      return false;
+    }
+    this.sourceLocks.set(sourceId, { token: lockToken, expiresAt: now + ttlMs });
+    return true;
+  }
+
+  async releaseSourceLock(sourceId: string, lockToken: string): Promise<void> {
+    const existing = this.sourceLocks.get(sourceId);
+    if (existing && existing.token === lockToken) {
+      this.sourceLocks.delete(sourceId);
+    }
+  }
+
+  isDurable(): boolean {
+    return false;
+  }
+
+  async checkHealth(): Promise<{ healthy: boolean; details?: string }> {
+    return { healthy: true, details: 'in_memory' };
+  }
 }
 
 /**
@@ -285,7 +317,45 @@ export class InMemoryDelimitationWatchRepository implements IDelimitationWatchRe
  * Backed by either pg client or PGlite instance conforming to Migration 071.
  */
 export class PostgresDelimitationWatchRepository implements IDelimitationWatchRepository {
-  constructor(private readonly db: { query: (sql: string, params?: any[]) => Promise<{ rows: any[] }> }) {}
+  private readonly db: { query: (sql: string, params?: any[]) => Promise<{ rows: any[] }> };
+
+  constructor(db: { query: (sql: string, params?: any[]) => Promise<{ rows: any[] }> }) {
+    this.db = db;
+  }
+
+  isDurable(): boolean {
+    return true;
+  }
+
+  async checkHealth(): Promise<{ healthy: boolean; details?: string }> {
+    try {
+      await this.db.query('SELECT 1 FROM delimitation_watch_sources LIMIT 1');
+      return { healthy: true, details: 'postgres' };
+    } catch (err: any) {
+      return { healthy: false, details: err.message };
+    }
+  }
+
+  async acquireSourceLock(sourceId: string, lockToken: string, ttlMs = 60000): Promise<boolean> {
+    const expiresAt = new Date(Date.now() + ttlMs).toISOString();
+    const query = `
+      UPDATE delimitation_watch_sources
+      SET locked_by = $1, locked_until = $2::timestamptz
+      WHERE id = $3 AND (locked_until IS NULL OR locked_until < now() OR locked_by = $1)
+      RETURNING id;
+    `;
+    const res = await this.db.query(query, [lockToken, expiresAt, sourceId]);
+    return res.rows.length > 0;
+  }
+
+  async releaseSourceLock(sourceId: string, lockToken: string): Promise<void> {
+    const query = `
+      UPDATE delimitation_watch_sources
+      SET locked_by = NULL, locked_until = NULL
+      WHERE id = $1 AND locked_by = $2;
+    `;
+    await this.db.query(query, [sourceId, lockToken]);
+  }
 
   async saveSource(s: DelimitationWatchSource): Promise<void> {
     const query = `
@@ -433,8 +503,9 @@ export class PostgresDelimitationWatchRepository implements IDelimitationWatchRe
       INSERT INTO delimitation_candidates (
         id, snapshot_id, source_id, parser_version, proposal_data,
         constituency_mappings, normalized_data_status, is_proposed,
+        instrument_type, instrument_identifier, legal_enactment_status, effective_date, official_decision_record,
         provenance_id, metadata, normalized_at
-      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16)
     `;
     await this.db.query(query, [
       c.id,
@@ -445,6 +516,11 @@ export class PostgresDelimitationWatchRepository implements IDelimitationWatchRe
       JSON.stringify(c.constituencyMappings || []),
       c.normalizedDataStatus,
       c.isProposed,
+      c.proposalData?.instrumentType || c.legalEvidencePackage?.instrumentType || null,
+      c.proposalData?.instrumentIdentifier || c.legalEvidencePackage?.instrumentIdentifier || null,
+      c.proposalData?.legalEnactmentStatus || c.legalEvidencePackage?.enactmentStatus || null,
+      c.proposalData?.effectiveDate || c.legalEvidencePackage?.effectiveDate || null,
+      c.legalEvidenceRecord ? JSON.stringify(c.legalEvidenceRecord) : (c.legalEvidencePackage ? JSON.stringify(c.legalEvidencePackage) : null),
       c.provenanceId || null,
       JSON.stringify(c.metadata || {}),
       c.normalizedAt,
@@ -526,9 +602,10 @@ export class PostgresDelimitationWatchRepository implements IDelimitationWatchRe
       INSERT INTO delimitation_accepted_versions (
         id, source_id, version_tag, snapshot_id, candidate_id,
         validation_id, comparison_id, previous_version_id, content_sha256,
-        parser_version, data_status, effective_date, proposal_id,
-        accepted_at, accepted_by, metadata
-      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16)
+        parser_version, data_status, effective_date,
+        instrument_type, instrument_identifier, legal_enactment_status,
+        proposal_id, accepted_at, accepted_by, metadata
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19)
     `;
     await this.db.query(query, [
       v.id,
@@ -543,6 +620,9 @@ export class PostgresDelimitationWatchRepository implements IDelimitationWatchRe
       v.parserVersion,
       v.dataStatus,
       v.effectiveDate || null,
+      v.instrumentType || v.legalInstrumentType || v.legalEvidencePackage?.instrumentType || null,
+      v.instrumentIdentifier || v.legalEvidencePackage?.instrumentIdentifier || null,
+      v.legalEnactmentStatus || v.legalEvidencePackage?.enactmentStatus || null,
       v.proposalId || null,
       v.acceptedAt,
       v.acceptedBy,
@@ -653,14 +733,15 @@ export class PostgresDelimitationWatchRepository implements IDelimitationWatchRe
   async savePublication(p: DelimitationPublication): Promise<void> {
     const query = `
       INSERT INTO delimitation_publications (
-        id, version_id, publication_status, published_at, published_by,
+        id, version_id, publication_status, publication_type, published_at, published_by,
         published_proposal_id, canonical_view_updated, error_message, created_at
-      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
     `;
     await this.db.query(query, [
       p.id,
       p.versionId,
       p.publicationStatus,
+      p.publicationType || 'UNVERIFIED_NOTICE',
       p.publishedAt || null,
       p.publishedBy,
       p.publishedProposalId || null,
@@ -778,6 +859,9 @@ export class PostgresDelimitationWatchRepository implements IDelimitationWatchRe
       provenanceId: row.provenance_id || undefined,
       metadata: typeof row.metadata === 'string' ? JSON.parse(row.metadata) : row.metadata || {},
       normalizedAt: new Date(row.normalized_at).toISOString(),
+      hasLegalEvidence: Boolean(row.instrument_identifier && row.effective_date),
+      legalEvidenceDecision: row.official_decision_record ? (typeof row.official_decision_record === 'string' ? JSON.parse(row.official_decision_record).decisionRationale : row.official_decision_record.decisionRationale) : undefined,
+      legalEvidenceRecord: typeof row.official_decision_record === 'string' ? JSON.parse(row.official_decision_record) : row.official_decision_record || undefined,
     };
   }
 
@@ -825,6 +909,11 @@ export class PostgresDelimitationWatchRepository implements IDelimitationWatchRe
       parserVersion: row.parser_version,
       dataStatus: row.data_status,
       effectiveDate: row.effective_date ? new Date(row.effective_date).toISOString().split('T')[0] : undefined,
+      instrumentType: row.instrument_type || undefined,
+      instrumentIdentifier: row.instrument_identifier || undefined,
+      legalEnactmentStatus: row.legal_enactment_status || undefined,
+      hasLegalEvidence: Boolean(row.instrument_identifier && row.effective_date),
+      legalInstrumentType: row.instrument_type || undefined,
       proposalId: row.proposal_id || undefined,
       acceptedAt: new Date(row.accepted_at).toISOString(),
       acceptedBy: row.accepted_by,
@@ -859,6 +948,7 @@ export class PostgresDelimitationWatchRepository implements IDelimitationWatchRe
       id: row.id,
       versionId: row.version_id,
       publicationStatus: row.publication_status,
+      publicationType: row.publication_type || 'UNVERIFIED_NOTICE',
       publishedAt: row.published_at ? new Date(row.published_at).toISOString() : undefined,
       publishedBy: row.published_by,
       publishedProposalId: row.published_proposal_id || undefined,

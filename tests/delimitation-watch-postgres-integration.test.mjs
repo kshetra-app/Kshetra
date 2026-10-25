@@ -103,6 +103,9 @@ describe('Job 023 — PostgreSQL Runtime Integration Suite (Migration 071)', () 
     });
 
     const result = await orchestrator.runPipeline('SRC-PG-001');
+    if (result.outcome !== 'SUCCESS') {
+      console.error('DB-02 FAILED WITH:', result.errorMessage);
+    }
     assert.equal(result.outcome, 'SUCCESS');
 
     // Query each table directly from PostgreSQL
@@ -116,7 +119,7 @@ describe('Job 023 — PostgreSQL Runtime Integration Suite (Migration 071)', () 
 
     const candRow = await pg.query(`SELECT * FROM delimitation_candidates WHERE source_id = 'SRC-PG-001'`);
     assert.equal(candRow.rows.length, 1);
-    assert.equal(candRow.rows[0].normalized_data_status, 'OFFICIAL');
+    assert.equal(candRow.rows[0].normalized_data_status, 'UNVERIFIED');
 
     const valRow = await pg.query(`SELECT * FROM delimitation_validations WHERE candidate_id = $1`, [result.candidate.id]);
     assert.equal(valRow.rows.length, 1);
@@ -128,7 +131,7 @@ describe('Job 023 — PostgreSQL Runtime Integration Suite (Migration 071)', () 
 
     const verRow = await pg.query(`SELECT * FROM delimitation_accepted_versions WHERE source_id = 'SRC-PG-001'`);
     assert.equal(verRow.rows.length, 1);
-    assert.equal(verRow.rows[0].data_status, 'OFFICIAL');
+    assert.equal(verRow.rows[0].data_status, 'UNVERIFIED');
 
     const notifRow = await pg.query(`SELECT * FROM delimitation_notification_events WHERE version_id = $1`, [result.acceptedVersion.id]);
     assert.equal(notifRow.rows.length, 1);

@@ -30,7 +30,11 @@ export interface RegisterSourceInput {
 }
 
 export class SourceRegistry {
-  constructor(private readonly repo: IDelimitationWatchRepository) {}
+  private readonly repo: IDelimitationWatchRepository;
+
+  constructor(repo: IDelimitationWatchRepository) {
+    this.repo = repo;
+  }
 
   async registerSource(input: RegisterSourceInput): Promise<DelimitationWatchSource> {
     if (!input.id || !input.name || !input.publisher || !input.canonicalUrl) {

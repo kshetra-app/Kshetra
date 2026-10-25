@@ -29,11 +29,11 @@ CURRENT_JOB:           W021.5 STAGE B — SOURCE ACQUISITION & GEOMETRY VALIDATI
 LAST_COMPLETED_JOB:    W022 (B2B SaaS Webhook Engine & Zero-Trust Dispatcher)
 NEXT_PERMITTED_JOB:    W021.5 STAGE B ONLY — COMPLETE EVIDENCE PACKET; STOP FOR CTO ADJUDICATION BEFORE STAGE C
 
-JOB_023_STATUS:        TESTED / IMPLEMENTATION COMPLETE / SUBMITTED FOR CTO ACCEPTANCE
-JOB_023_BASELINE:      b9179ef2a2f89f28d84a7e93da4c2226871a996f
+JOB_023_STATUS:        REMEDIATED / TESTED / READY FOR INDEPENDENT CTO ADJUDICATION
+JOB_023_BASELINE:      33945d20f318ae1aa0d9aba35052246599c5bbae
 JOB_023_MIGRATION_071: supabase/migrations/071_delimitation_watch_engine.sql
 JOB_023_EVIDENCE:      reports/evidence/JOB_023_ACCEPTANCE_MANIFEST.json
-JOB_023_TEST_BATTERY:  42/42 PASS (19 Invariants, 5 DB Integration, 6 Route Unit, 12 Controlled Acceptance Steps)
+JOB_023_TEST_BATTERY:  70/70 PASS (10 Truth Adversarial, 12 Hardened SSRF, 5 Persistence Lifecycle, 19 Invariants, 5 DB Integration, 7 Route Unit, 12 Controlled Acceptance Steps)
 JOB_023_STAGING_STATUS: AIR-GAPPED (0 mutations)
 JOB_023_PROD_STATUS:   AIR-GAPPED (0 mutations)
 
@@ -545,3 +545,17 @@ REMOTE_SYNC:           Up to date with origin/master
 - **Staging database execution:** NOT AUTHORIZED; separate explicit execution token required.
 - **Production:** STRICTLY AIR-GAPPED; no access, queries, mutations, deployment, or release.
 - **Acceptance:** BLOCKED pending fresh evidence and independent verification. Implementation permission is not acceptance.
+
+---
+
+## JOB 023 — Delimitation Watch Remediation Execution State (2026-10-25)
+
+- **Authority:** CTO MASTER REMEDIATION DIRECTIVE — JOB 023
+- **Baseline Commit:** `33945d20f318ae1aa0d9aba35052246599c5bbae`
+- **Status:** REMEDIATED / TESTED / READY FOR INDEPENDENT CTO ADJUDICATION (Rule IV-001 Non-Self-Acceptance strictly enforced)
+- **Finding A (Official-data truth & provenance):** Eliminated authority-by-label (`statutory` source + `status: final` alone does not produce `OFFICIAL`); implemented 8-point statutory evidence evaluation requiring canonical instrument identification and effective dates; prohibited synthetic fixtures/localhost from escalating to `OFFICIAL`; client-supplied `dataStatus` overridden by server-side evaluation; non-enacted proposals fail closed and cannot mutate canonical views. Verified by 10/10 adversarial tests in `tests/delimitation-watch-data-truth-adversarial.test.mjs` and authentic Gazette fixture `tests/fixtures/delimitation/authoritative_delimitation_order_2008.json`.
+- **Finding B (Exhaustive SSRF protection):** Implemented comprehensive IPv4 and IPv6 private/reserved/link-local CIDR filtering with bracket-safe parsing; rejected alternate numeric IP encodings (dword, hex, octal); fail-closed on mixed public/private DNS answers; implemented socket pinning via custom Agent connecting directly to pre-verified IP; manual redirect handling bounded to 3 hops with loop detection and HTTPS->HTTP downgrade prevention; response body streaming bounded to 10MB ceiling. Verified by 12/12 hardened tests in `tests/delimitation-watch-ssrf-hardened.test.mjs`.
+- **Finding C (Durable persistence & fail-closed runtime):** Eliminated all `pg_raw_exec` RPC invocations; eliminated deceptive in-memory fallback in deployed environments (`NODE_ENV !== 'test'` without `DATABASE_URL` returns HTTP 503 `PERSISTENCE_CONFIGURATION_ERROR`); implemented database-backed atomic lease locking in PostgreSQL; updated Migration 071 DDL and row mapping; added health probe endpoint `GET /api/v1/delimitation/watch/health`. Verified by 5/5 lifecycle tests in `tests/delimitation-watch-persistence-lifecycle.test.mjs` and 5/5 PostgreSQL integration tests.
+- **Finding D (Reconcile evidence, commits, & governance):** Eliminated machine-specific paths (`C:\Users\Laven\...`) in `reports/evidence/JOB_023_ACCEPTANCE_MANIFEST.json` converting to portable relative paths; updated manifest candidate and publication statuses to reflect genuine non-enacted proposal status (`UNVERIFIED`, `PROPOSAL`); reconciled commit lineage from baseline `33945d20f318ae1aa0d9aba35052246599c5bbae`; reconciled continuity registers.
+- **Test Battery:** 70/70 PASS (63 suite checks across 6 suites + 7 Fastify route unit tests).
+- **Environment Isolation:** Staging database (`fkpigozcqnmcvofuksar`) and Production database (`ehfafcnimmjusyvplbah`) remain 100% untouched and air-gapped (0 queries, 0 mutations).

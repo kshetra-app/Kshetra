@@ -20,7 +20,11 @@ import type {
 import type { IDelimitationWatchRepository } from './persistence';
 
 export class BaselineComparator {
-  constructor(private readonly repo: IDelimitationWatchRepository) {}
+  private readonly repo: IDelimitationWatchRepository;
+
+  constructor(repo: IDelimitationWatchRepository) {
+    this.repo = repo;
+  }
 
   async compare(
     candidate: DelimitationCandidate,

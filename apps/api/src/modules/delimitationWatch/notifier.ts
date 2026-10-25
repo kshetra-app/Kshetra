@@ -36,24 +36,40 @@ export interface NotificationDispatchProvider {
 }
 
 export class Notifier {
+  private readonly repo: IDelimitationWatchRepository;
+  private readonly dispatchProvider?: NotificationDispatchProvider;
+
   constructor(
-    private readonly repo: IDelimitationWatchRepository,
-    private readonly dispatchProvider?: NotificationDispatchProvider,
-  ) {}
+    repo: IDelimitationWatchRepository,
+    dispatchProvider?: NotificationDispatchProvider,
+  ) {
+    this.repo = repo;
+    this.dispatchProvider = dispatchProvider;
+  }
 
   async createNotificationEvent(
     version: DelimitationAcceptedVersion,
     candidate: DelimitationCandidate,
     comparison: DelimitationComparison,
   ): Promise<{ event: DelimitationNotificationEvent; created: boolean }> {
-    // 1. Determine Category
-    let category: DelimitationNotificationCategory = 'MATERIAL_UPDATE';
-    if (version.dataStatus === 'OFFICIAL') {
-      category = 'OFFICIAL_PUBLICATION';
-    } else if (!version.previousVersionId) {
-      category = candidate.isProposed ? 'DRAFT_PROPOSAL' : 'OFFICIAL_PUBLICATION';
+    // 1. Determine Category and Title (Finding A: Unmistakable Status Representation)
+    let category: DelimitationNotificationCategory;
+    let title: string;
+
+    const stateCode = candidate.proposalData.stateCode;
+
+    if (version.dataStatus === 'OFFICIAL' && !candidate.isProposed) {
+      category = 'OFFICIAL_ENACTMENT';
+      title = `Official Delimitation Order Enacted: ${stateCode} (${candidate.proposalData.instrumentIdentifier || 'Statutory'})`;
+    } else if (candidate.isProposed) {
+      category = 'PROPOSAL_NOTICE';
+      title = `Delimitation Proposal Published: ${candidate.proposalData.title} (Draft Consultation — Non-Enacted)`;
     } else if (version.dataStatus === 'SCENARIO') {
       category = 'SCENARIO_UPDATE';
+      title = `Delimitation Scenario Simulation: ${candidate.proposalData.title} (Mathematical Model — Not Law)`;
+    } else {
+      category = 'SOURCE_CORRECTION';
+      title = `Delimitation Unverified Data Update: ${candidate.proposalData.title} (Pending Verification)`;
     }
 
     // 2. Generate stable deduplication key
@@ -69,11 +85,6 @@ export class Notifier {
     const affectedGeographyIds = Array.from(
       new Set(candidate.constituencyMappings.map((m) => `${m.stateCode}-AC-${m.newAcNo}`)),
     );
-
-    const stateCode = candidate.proposalData.stateCode;
-    const title = category === 'OFFICIAL_PUBLICATION'
-      ? `Gazette Delimitation Order Enacted: ${stateCode}`
-      : `Delimitation Update: ${candidate.proposalData.title}`;
 
     const body = comparison.comparisonSummary || `Delimitation version ${version.versionTag} accepted with ${candidate.proposalData.proposedSeats} seats.`;
     const deepLink = `/delimitation/proposals/${version.id}`;

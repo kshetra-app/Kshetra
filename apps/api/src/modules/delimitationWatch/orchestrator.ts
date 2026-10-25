@@ -38,6 +38,7 @@ import { Notifier, type NotificationDispatchProvider } from './notifier';
 import { Publisher } from './publisher';
 
 export class DelimitationWatchOrchestrator {
+  private readonly repo: IDelimitationWatchRepository;
   private readonly sourceRegistry: SourceRegistry;
   private readonly captureAdapter: CaptureAdapter;
   private readonly normalizer: Normalizer;
@@ -47,13 +48,11 @@ export class DelimitationWatchOrchestrator {
   private readonly notifier: Notifier;
   private readonly publisher: Publisher;
 
-  // Active in-flight locks per source
-  private readonly activeSourceLocks = new Set<string>();
-
   constructor(
-    private readonly repo: IDelimitationWatchRepository,
+    repo: IDelimitationWatchRepository,
     dispatchProvider?: NotificationDispatchProvider,
   ) {
+    this.repo = repo;
     this.sourceRegistry = new SourceRegistry(this.repo);
     this.captureAdapter = new CaptureAdapter(this.repo);
     this.normalizer = new Normalizer(this.repo);
@@ -76,12 +75,13 @@ export class DelimitationWatchOrchestrator {
     const startTime = Date.now();
     const stageDurations: Record<string, number> = {};
 
-    // 1. Concurrency guard per source
-    if (this.activeSourceLocks.has(sourceId)) {
+    // 1. Distributed concurrency guard per source
+    const lockToken = randomUUID();
+    const lockTtlMs = 60000;
+    const lockAcquired = await this.repo.acquireSourceLock(sourceId, lockToken, lockTtlMs);
+    if (!lockAcquired) {
       throw new Error(`CONCURRENT_RUN_CONFLICT: A Delimitation Watch run is already active for source '${sourceId}'`);
     }
-
-    this.activeSourceLocks.add(sourceId);
 
     let snapshot: DelimitationSnapshot | undefined;
     let candidate: DelimitationCandidate | undefined;
@@ -264,7 +264,7 @@ export class DelimitationWatchOrchestrator {
         errorMessage,
       });
     } finally {
-      this.activeSourceLocks.delete(sourceId);
+      await this.repo.releaseSourceLock(sourceId, lockToken).catch(() => {});
     }
   }
 

@@ -1,23 +1,23 @@
 {
   "jobId": "JOB 023",
   "jobName": "DELIMITATION WATCH",
-  "timestamp": "2026-10-25T14:37:32.334Z",
+  "timestamp": "2026-10-25T16:18:24.693Z",
   "steps": {
     "step_1_register_source": {
       "status": "PASS",
       "sourceId": "SRC-E2E-CONTROLLED",
       "authorityClassification": "statutory",
-      "canonicalUrl": "C:\\Users\\Laven\\OneDrive\\Desktop\\Kshetra\\tests\\fixtures\\delimitation\\initial_delimitation_source_fixture.json"
+      "canonicalUrl": "tests/fixtures/delimitation/initial_delimitation_source_fixture.json"
     },
     "step_2_initial_pipeline_run": {
       "status": "PASS",
-      "snapshotId": "19e536f8-182d-4f52-a5cf-4b9321a769a1",
+      "snapshotId": "9a1a4db3-638e-415f-b7cf-1de12e4087b0",
       "contentSha256": "858f789acb0547fd678402efd97697c1b492ba302c38414f94b33cc81edb6db1",
-      "versionId": "2a5f7854-5f4f-4144-969c-3dfa76964022",
+      "versionId": "cfccb887-e5da-41e8-ba02-0052429ad37f",
       "versionTag": "v1.0.0-TG-20261025-858f789a",
-      "dataStatus": "OFFICIAL",
-      "notificationId": "ffa0efec-4c2e-4598-bd74-418782d61c59",
-      "publicationId": "0936465b-1e0e-4d3c-8d3e-d9f90ae5502c"
+      "dataStatus": "UNVERIFIED",
+      "notificationId": "5792c455-3925-491f-84a4-1dd2cd44feca",
+      "publicationId": "f05d5d61-bcba-4041-b387-46e2f3e569fa"
     },
     "step_3_modify_fixture": {
       "status": "PASS",
@@ -27,48 +27,49 @@
     },
     "step_4_run_production_pipeline": {
       "status": "PASS",
-      "runId": "deed192b-d888-4a7e-b698-67f7552491c7",
+      "runId": "d7825989-acbe-4b9c-9cc1-6bc1914f438c",
       "outcome": "SUCCESS",
-      "totalDurationMs": 21
+      "totalDurationMs": 92
     },
     "step_5_verify_snapshot": {
       "status": "PASS",
-      "snapshotId": "7d8d9b4e-e783-404e-85e4-7f25294a0131",
+      "snapshotId": "655d1a3b-1829-4755-8099-05abcfc579d7",
       "contentSha256": "90398afec2c30110b49bc237c22a956b16255678658de25e771e89a9cc9ca8bd",
       "sizeBytes": 1799
     },
     "step_6_verify_candidate_and_validation": {
       "status": "PASS",
-      "candidateId": "2a46e3f1-be6e-4f62-9562-560a7c7b9345",
+      "candidateId": "452b1f12-c8cc-49b7-850e-391162655647",
       "validationStatus": "PASSED",
-      "checksCount": 11
+      "checksCount": 12
     },
     "step_7_verify_comparison": {
       "status": "PASS",
-      "comparisonId": "7081c495-003a-4941-bac8-a8b61282945e",
+      "comparisonId": "db885644-9fb4-4ce7-9578-e348a55968a8",
       "isMaterialChange": true,
       "classification": "MATERIAL_CHANGE",
       "summary": "Total seats changed from 119 to 125; Reservation breakdown modified: SC 19->20, ST 12->13; Modified AC-58: oldAc 58->58, name 'Malakpet'->'Malakpet Central', overlap 100%->75%; Added new constituency mapping AC-120 (Chanchalguda)"
     },
     "step_8_verify_version_lineage": {
       "status": "PASS",
-      "v1Id": "2a5f7854-5f4f-4144-969c-3dfa76964022",
-      "v2Id": "d6d59c9e-d52e-4e7e-ab0d-5a0f23ae2a92",
-      "previousVersionPointer": "2a5f7854-5f4f-4144-969c-3dfa76964022",
+      "v1Id": "cfccb887-e5da-41e8-ba02-0052429ad37f",
+      "v2Id": "fd3c6f29-80f2-4cd2-9264-ba210f0a051d",
+      "previousVersionPointer": "cfccb887-e5da-41e8-ba02-0052429ad37f",
       "v2Tag": "v2.0.0-TG-20261025-90398afe"
     },
     "step_9_verify_notification": {
       "status": "PASS",
-      "eventId": "cdca75e0-507f-4de6-970c-e1c6fcddbabe",
-      "category": "OFFICIAL_PUBLICATION",
+      "eventId": "2aad0126-9356-48b7-b034-c8cb998b0886",
+      "category": "PROPOSAL_NOTICE",
       "dispatchStatus": "SENT",
-      "deepLink": "/delimitation/proposals/d6d59c9e-d52e-4e7e-ab0d-5a0f23ae2a92"
+      "deepLink": "/delimitation/proposals/fd3c6f29-80f2-4cd2-9264-ba210f0a051d"
     },
     "step_10_verify_publication": {
       "status": "PASS",
-      "publicationId": "f2c6cafc-649d-4f42-a90d-d65eba10149a",
-      "versionId": "d6d59c9e-d52e-4e7e-ab0d-5a0f23ae2a92",
-      "canonicalViewUpdated": true
+      "publicationId": "7b85a1ff-40a4-40a4-b9e7-9853150e7840",
+      "versionId": "fd3c6f29-80f2-4cd2-9264-ba210f0a051d",
+      "publicationType": "PROPOSAL",
+      "canonicalViewUpdated": false
     },
     "step_11_verify_idempotency": {
       "status": "PASS",
@@ -83,7 +84,7 @@
         "Invariant violated: proposed seats (0) must exceed 0 and SC (50) + ST (60) <= total",
         "Mapping Invalid -> Invalid has invalid overlap percentage 150 (must be [0..100])"
       ],
-      "preservedLatestVersionId": "d6d59c9e-d52e-4e7e-ab0d-5a0f23ae2a92"
+      "preservedLatestVersionId": "fd3c6f29-80f2-4cd2-9264-ba210f0a051d"
     }
   },
   "summary": {

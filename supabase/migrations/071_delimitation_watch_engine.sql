@@ -86,6 +86,8 @@ CREATE TABLE IF NOT EXISTS public.delimitation_watch_sources (
   retrieval_method TEXT NOT NULL DEFAULT 'http_get' CHECK (retrieval_method IN ('http_get', 'file_fixture', 'mock_api')),
   polling_schedule TEXT,          -- Cron or descriptive policy
   is_active BOOLEAN NOT NULL DEFAULT true,
+  locked_by TEXT DEFAULT NULL,
+  locked_until TIMESTAMPTZ DEFAULT NULL,
   last_attempted_at TIMESTAMPTZ,
   last_successful_at TIMESTAMPTZ,
   last_http_status INTEGER,
@@ -98,6 +100,8 @@ CREATE TABLE IF NOT EXISTS public.delimitation_watch_sources (
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
+
+CREATE INDEX IF NOT EXISTS idx_delim_sources_lock ON public.delimitation_watch_sources(locked_until);
 
 COMMENT ON TABLE public.delimitation_watch_sources IS 'Registered delimitation data sources tracked by Delimitation Watch (Stage 1).';
 
@@ -138,6 +142,11 @@ CREATE TABLE IF NOT EXISTS public.delimitation_candidates (
   constituency_mappings JSONB NOT NULL DEFAULT '[]'::jsonb,
   normalized_data_status data_status_enum NOT NULL DEFAULT 'UNVERIFIED',
   is_proposed BOOLEAN NOT NULL DEFAULT true,
+  instrument_type TEXT,
+  instrument_identifier TEXT,
+  legal_enactment_status TEXT,
+  effective_date DATE,
+  official_decision_record JSONB,
   provenance_id UUID,
   metadata JSONB NOT NULL DEFAULT '{}'::jsonb,
   normalized_at TIMESTAMPTZ NOT NULL DEFAULT now()
@@ -210,6 +219,9 @@ CREATE TABLE IF NOT EXISTS public.delimitation_accepted_versions (
   parser_version VARCHAR(50) NOT NULL,
   data_status data_status_enum NOT NULL,
   effective_date DATE,
+  instrument_type TEXT,
+  instrument_identifier TEXT,
+  legal_enactment_status TEXT,
   proposal_id UUID,
   accepted_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   accepted_by TEXT NOT NULL DEFAULT 'system_delimitation_watch',
@@ -241,7 +253,9 @@ CREATE TABLE IF NOT EXISTS public.delimitation_notification_events (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   version_id UUID NOT NULL REFERENCES public.delimitation_accepted_versions(id) ON DELETE RESTRICT,
   event_category TEXT NOT NULL CHECK (event_category IN (
+    'OFFICIAL_ENACTMENT',
     'OFFICIAL_PUBLICATION',
+    'PROPOSAL_NOTICE',
     'DRAFT_PROPOSAL',
     'MATERIAL_UPDATE',
     'SCENARIO_UPDATE',
@@ -274,6 +288,7 @@ COMMENT ON TABLE public.delimitation_notification_events IS 'Durable notificatio
 CREATE TABLE IF NOT EXISTS public.delimitation_publications (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   version_id UUID NOT NULL REFERENCES public.delimitation_accepted_versions(id) ON DELETE RESTRICT,
+  publication_type TEXT NOT NULL DEFAULT 'PROPOSAL' CHECK (publication_type IN ('ENACTED_OFFICIAL', 'PROPOSAL', 'SCENARIO_ESTIMATE', 'UNVERIFIED_NOTICE')),
   publication_status TEXT NOT NULL CHECK (publication_status IN ('PUBLISHED', 'FAILED', 'RETRY_PENDING')),
   published_at TIMESTAMPTZ,
   published_by TEXT NOT NULL DEFAULT 'system_delimitation_watch',

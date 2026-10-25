@@ -34,7 +34,11 @@ const CANONICAL_STATE_CODES = new Set([
 ]);
 
 export class CandidateValidator {
-  constructor(private readonly repo: IDelimitationWatchRepository) {}
+  private readonly repo: IDelimitationWatchRepository;
+
+  constructor(repo: IDelimitationWatchRepository) {
+    this.repo = repo;
+  }
 
   async validate(
     candidate: DelimitationCandidate,
@@ -196,7 +200,8 @@ export class CandidateValidator {
 
     // ─── 10. Correct data-status semantics (Non-negotiable) ───
     // An officially published proposal is NOT automatically an enacted or effective legal change.
-    // A candidate claiming OFFICIAL must NOT be a draft proposal, and must have statutory authority.
+    // A candidate claiming OFFICIAL must NOT be a draft proposal, must have statutory authority,
+    // and must satisfy the complete legal evidence gate (no synthetic escalation).
     let statusSemanticsValid = true;
     if (candidate.normalizedDataStatus === 'OFFICIAL') {
       if (candidate.isProposed || prop.status !== 'final') {
@@ -207,13 +212,21 @@ export class CandidateValidator {
         statusSemanticsValid = false;
         errors.push(`DATA_STATUS_VIOLATION: Source authority '${source.authorityClassification}' cannot grant 'OFFICIAL' data status`);
       }
+      if (source.sourceType === 'synthetic_fixture' || source.retrievalMethod === 'file_fixture') {
+        statusSemanticsValid = false;
+        errors.push("DATA_STATUS_VIOLATION: Synthetic test fixture cannot produce 'OFFICIAL' data status");
+      }
+      if (!candidate.legalEvidencePackage?.decisionRecord.isOfficialEligible) {
+        statusSemanticsValid = false;
+        errors.push("DATA_STATUS_VIOLATION: Candidate failed legal evidence gate and cannot claim 'OFFICIAL' data status");
+      }
     }
     checksRun.push({
       checkName: 'CHECK_DATA_STATUS_SEMANTICS',
       passed: statusSemanticsValid,
       details: statusSemanticsValid
-        ? `Data status '${candidate.normalizedDataStatus}' conforms to authority '${source.authorityClassification}' and proposal state (isProposed=${candidate.isProposed})`
-        : 'Data status semantics violated: cannot claim OFFICIAL without statutory finality',
+        ? `Data status '${candidate.normalizedDataStatus}' conforms to authority '${source.authorityClassification}' and legal evidence gate`
+        : 'Data status semantics violated: cannot claim OFFICIAL without statutory finality and verified legal evidence',
     });
 
     // ─── 11. Boundary and overlap invariants ───
@@ -229,6 +242,41 @@ export class CandidateValidator {
       checkName: 'CHECK_BOUNDARY_INVARIANTS',
       passed: overlapValid,
       details: overlapValid ? 'Constituency mapping overlap percentages valid in [0..100] range' : 'Invalid overlap percentage',
+    });
+
+    // ─── 12. Legal Evidence Gate Verification (Finding A) ───
+    let legalGatePassed = true;
+    const pkg = candidate.legalEvidencePackage;
+    const instrumentId = pkg?.instrumentIdentifier || candidate.proposalData?.instrumentIdentifier;
+    const effectiveDate = pkg?.effectiveDate || candidate.proposalData?.effectiveDate;
+    const enactmentStatus = pkg?.enactmentStatus || candidate.proposalData?.legalEnactmentStatus;
+
+    if (candidate.normalizedDataStatus === 'OFFICIAL') {
+      if (!pkg && !candidate.hasLegalEvidence) {
+        warnings.push('Legal evidence package missing from candidate');
+      }
+      if (!effectiveDate || isNaN(new Date(effectiveDate).getTime())) {
+        legalGatePassed = false;
+        errors.push('LEGAL_EVIDENCE_ERROR: Candidate claims OFFICIAL status with missing or invalid legal effective date');
+      }
+      if (!instrumentId || instrumentId.trim().length === 0 || instrumentId === 'UNSPECIFIED_INSTRUMENT') {
+        legalGatePassed = false;
+        errors.push('LEGAL_EVIDENCE_ERROR: Candidate claims OFFICIAL status with missing statutory legal instrument identifier');
+      }
+      if (enactmentStatus !== 'ENACTED_COMMENCED') {
+        legalGatePassed = false;
+        errors.push(`LEGAL_EVIDENCE_ERROR: Candidate enactment status is '${enactmentStatus}', must be 'ENACTED_COMMENCED' for OFFICIAL status`);
+      }
+    } else if (pkg) {
+      evidenceReferences.push(`legal_instrument:${pkg.instrumentIdentifier || 'unspecified'}`);
+    }
+
+    checksRun.push({
+      checkName: 'CHECK_LEGAL_EVIDENCE_GATE',
+      passed: legalGatePassed,
+      details: legalGatePassed
+        ? `Legal evidence gate verified: instrument='${instrumentId || 'N/A'}', enactment='${enactmentStatus || 'N/A'}'`
+        : 'Legal evidence gate failed: candidate missing mandatory legal enactment proof',
     });
 
     // ─── Outcome Determination ───

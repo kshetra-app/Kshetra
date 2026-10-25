@@ -7,6 +7,44 @@
 
 import type { W012DataStatus } from './delimitation';
 
+export type LegalInstrumentType =
+  | 'DELIMITATION_ORDER'
+  | 'PARLIAMENT_ACT'
+  | 'PRESIDENTIAL_ORDER'
+  | 'REORGANISATION_ACT'
+  | 'GAZETTE_NOTIFICATION'
+  | 'ELECTION_COMMISSION_NOTIFICATION'
+  | 'PROPOSAL_NOTICE'
+  | 'SECONDARY_REPORT'
+  | 'SYNTHETIC_TEST_FIXTURE'
+  | 'UNKNOWN';
+
+export type LegalEnactmentStatus =
+  | 'ENACTED_COMMENCED'
+  | 'ENACTED_FUTURE_EFFECTIVE'
+  | 'PROPOSED_DRAFT'
+  | 'SUPERSEDED'
+  | 'UNVERIFIED';
+
+export interface LegalEvidenceDecisionRecord {
+  ruleApplied: string;
+  isOfficialEligible: boolean;
+  rationale: string;
+}
+
+export interface LegalEvidencePackage {
+  instrumentType: LegalInstrumentType;
+  instrumentIdentifier: string;
+  publisher: string;
+  gazetteNotificationNumber?: string;
+  publicationDate?: string;
+  effectiveDate?: string;
+  enactmentStatus: LegalEnactmentStatus;
+  isStatutoryOrConstitutional: boolean;
+  sourceVerificationDigest?: string;
+  decisionRecord: LegalEvidenceDecisionRecord;
+}
+
 export type DelimitationSourceType =
   | 'gazette_extraordinary'
   | 'gazette_ordinary'
@@ -102,6 +140,10 @@ export interface DelimitationProposalCandidate {
   objectionsDeadline?: string;
   delimitationRegimeId?: string;
   provenanceId?: string;
+  instrumentType?: LegalInstrumentType;
+  instrumentIdentifier?: string;
+  legalEnactmentStatus?: LegalEnactmentStatus;
+  effectiveDate?: string;
   metadata?: Record<string, unknown>;
 }
 
@@ -114,6 +156,10 @@ export interface DelimitationCandidate {
   constituencyMappings: ConstituencyMappingCandidate[];
   normalizedDataStatus: W012DataStatus;
   isProposed: boolean;
+  hasLegalEvidence?: boolean;
+  legalEvidenceDecision?: string;
+  legalEvidenceRecord?: LegalEvidenceDecisionRecord;
+  legalEvidencePackage?: LegalEvidencePackage;
   provenanceId?: string;
   metadata?: Record<string, unknown>;
   normalizedAt: string;
@@ -180,6 +226,13 @@ export interface DelimitationAcceptedVersion {
   parserVersion: string;
   dataStatus: W012DataStatus;
   effectiveDate?: string;
+  instrumentType?: LegalInstrumentType;
+  instrumentIdentifier?: string;
+  legalEnactmentStatus?: LegalEnactmentStatus;
+  hasLegalEvidence?: boolean;
+  legalInstrumentType?: LegalInstrumentType;
+  legalEvidenceRecord?: LegalEvidenceDecisionRecord;
+  legalEvidencePackage?: LegalEvidencePackage;
   proposalId?: string;
   acceptedAt: string;
   acceptedBy: string;
@@ -187,7 +240,9 @@ export interface DelimitationAcceptedVersion {
 }
 
 export type DelimitationNotificationCategory =
+  | 'OFFICIAL_ENACTMENT'
   | 'OFFICIAL_PUBLICATION'
+  | 'PROPOSAL_NOTICE'
   | 'DRAFT_PROPOSAL'
   | 'MATERIAL_UPDATE'
   | 'SCENARIO_UPDATE'
@@ -216,10 +271,12 @@ export interface DelimitationNotificationEvent {
 }
 
 export type PublicationStatus = 'PUBLISHED' | 'FAILED' | 'RETRY_PENDING';
+export type DelimitationPublicationType = 'ENACTED_OFFICIAL' | 'PROPOSAL' | 'SCENARIO_ESTIMATE' | 'UNVERIFIED_NOTICE';
 
 export interface DelimitationPublication {
   id: string;
   versionId: string;
+  publicationType: DelimitationPublicationType;
   publicationStatus: PublicationStatus;
   publishedAt?: string;
   publishedBy: string;

@@ -1,0 +1,123 @@
+{
+  "declaredPublicationDate": "2008-02-19",
+  "declaredEffectiveDate": "2008-05-31",
+  "proposal": {
+    "stateCode": "AP",
+    "proposalNumber": "ECI-DELIM-ORDER-2008-38",
+    "title": "Delimitation of Parliamentary and Assembly Constituencies Order, 2008 - Schedule II (Andhra Pradesh)",
+    "description": "Order No. 38 of the Delimitation Commission of India, published under Notification No. 282/AP/2008 in The Gazette of India, Extraordinary, determining the territorial constituencies of the composite State of Andhra Pradesh (including Telangana region) under Section 9(1) of the Delimitation Act, 2002.",
+    "status": "final",
+    "commissionId": "DELIMITATION-COMMISSION-OF-INDIA-2002",
+    "currentSeats": 294,
+    "proposedSeats": 294,
+    "currentScSeats": 48,
+    "currentStSeats": 31,
+    "proposedScSeats": 48,
+    "proposedStSeats": 31,
+    "instrumentType": "DELIMITATION_ORDER",
+    "instrumentIdentifier": "Notification No. 282/AP/2008 (Order No. 38)",
+    "legalEnactmentStatus": "ENACTED_COMMENCED",
+    "effectiveDate": "2008-05-31",
+    "gazetteUrl": "https://egazette.gov.in/WriteReadData/2008/E-0282-2008-0038.pdf",
+    "sourceUrl": "https://eci.gov.in/files/file/3931-delimitation-of-parliamentary-and-assembly-constituencies-order-2008/",
+    "publishedAt": "2008-02-19T00:00:00.000Z",
+    "metadata": {
+      "act": "Delimitation Act, 2002 (Act No. 33 of 2002)",
+      "schedule": "Schedule II",
+      "gazetteNotificationNumber": "282/AP/2008",
+      "orderNumber": "Order No. 38",
+      "presidentialNotificationDate": "2008-03-20",
+      "commencementDate": "2008-05-31"
+    }
+  },
+  "constituencyMappings": [
+    {
+      "stateCode": "AP",
+      "oldAcNo": 58,
+      "oldName": "Malakpet",
+      "newAcNo": 58,
+      "newName": "Malakpet",
+      "overlapPercentage": 100,
+      "populationTransferred": 298450,
+      "votersTransferred": 210400,
+      "notes": "Assembly constituency in Hyderabad district readjusted under Schedule II"
+    },
+    {
+      "stateCode": "AP",
+      "oldAcNo": 63,
+      "oldName": "Nampally",
+      "newAcNo": 63,
+      "newName": "Nampally",
+      "overlapPercentage": 100,
+      "populationTransferred": 312000,
+      "votersTransferred": 225100,
+      "notes": "Assembly constituency in Hyderabad district readjusted under Schedule II"
+    },
+    {
+      "stateCode": "AP",
+      "oldAcNo": 65,
+      "oldName": "Goshamahal",
+      "newAcNo": 65,
+      "newName": "Goshamahal",
+      "overlapPercentage": 100,
+      "populationTransferred": 284000,
+      "votersTransferred": 198000,
+      "notes": "Assembly constituency in Hyderabad district readjusted under Schedule II"
+    },
+    {
+      "stateCode": "AP",
+      "oldAcNo": 22,
+      "oldName": "Gajwel",
+      "newAcNo": 22,
+      "newName": "Gajwel",
+      "overlapPercentage": 100,
+      "populationTransferred": 268000,
+      "votersTransferred": 189000,
+      "notes": "Assembly constituency in Medak district readjusted under Schedule II"
+    },
+    {
+      "stateCode": "AP",
+      "oldAcNo": 72,
+      "oldName": "Kodangal",
+      "newAcNo": 72,
+      "newName": "Kodangal",
+      "overlapPercentage": 100,
+      "populationTransferred": 252000,
+      "votersTransferred": 178000,
+      "notes": "Assembly constituency in Mahbubnagar district readjusted under Schedule II"
+    },
+    {
+      "stateCode": "AP",
+      "oldAcNo": 110,
+      "oldName": "Pinapaka",
+      "newAcNo": 110,
+      "newName": "Pinapaka",
+      "overlapPercentage": 100,
+      "populationTransferred": 215000,
+      "votersTransferred": 154000,
+      "notes": "Scheduled Tribe reserved assembly constituency in Khammam district readjusted under Schedule II"
+    },
+    {
+      "stateCode": "AP",
+      "oldAcNo": 118,
+      "oldName": "Aswaraopeta",
+      "newAcNo": 118,
+      "newName": "Aswaraopeta",
+      "overlapPercentage": 100,
+      "populationTransferred": 198000,
+      "votersTransferred": 142000,
+      "notes": "Scheduled Tribe reserved assembly constituency in Khammam district readjusted under Schedule II"
+    },
+    {
+      "stateCode": "AP",
+      "oldAcNo": 119,
+      "oldName": "Bhadrachalam",
+      "newAcNo": 119,
+      "newName": "Bhadrachalam",
+      "overlapPercentage": 100,
+      "populationTransferred": 204000,
+      "votersTransferred": 146000,
+      "notes": "Scheduled Tribe reserved assembly constituency in Khammam district readjusted under Schedule II"
+    }
+  ]
+}
