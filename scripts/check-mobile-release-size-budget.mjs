@@ -5,7 +5,8 @@
  * inspection is necessary: dynamic imports still get bundled if statically
  * reachable or included by the production export.
  */
-import { existsSync, readFileSync, writeFileSync, resolve, dirname } from 'node:fs';
+import { existsSync, readFileSync, writeFileSync } from 'node:fs';
+import { resolve, dirname } from 'node:path';
 const args = process.argv.slice(2);
 function flag(name, fallback) { const i = args.indexOf(name); return i < 0 ? fallback : args[i + 1]; }
 const reportPath = flag('--report', 'reports/geo-02-mobile-release-size/mobile-release-size.json');
