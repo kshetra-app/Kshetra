@@ -44,6 +44,21 @@ BEGIN
   ) THEN
     RAISE EXCEPTION 'W0215_072_PREFLIGHT_FAILED: required provenance columns are absent';
   END IF;
+
+  IF to_regclass('public.constituencies') IS NULL OR NOT EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_schema='public' AND table_name='constituencies' AND column_name='id'
+  ) THEN
+    RAISE EXCEPTION 'W0215_072_PREFLIGHT_FAILED: canonical public.constituencies(id) target is absent';
+  END IF;
+
+  IF EXISTS (
+    SELECT 1 FROM public.candidate_affidavit_disclosures d
+    LEFT JOIN public.constituencies c ON c.id = d.constituency_id
+    WHERE c.id IS NULL
+  ) THEN
+    RAISE EXCEPTION 'W0215_072_PREFLIGHT_FAILED: orphan affidavit constituency_id values exist; reconcile identity before adding FK';
+  END IF;
 END
 $preflight$;
 
@@ -96,7 +111,24 @@ ALTER TABLE public.candidate_affidavit_disclosures
   ALTER COLUMN charges_framed_count DROP NOT NULL,
   ALTER COLUMN data_status DROP DEFAULT;
 
--- D. Enforce source-backed OFFICIAL classification for future and existing rows.
+-- D. Enforce canonical constituency identity and source-backed OFFICIAL classification.
+DO $fk$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint
+    WHERE conrelid = 'public.candidate_affidavit_disclosures'::regclass
+      AND conname = 'fk_affidavit_disclosures_constituency'
+  ) THEN
+    ALTER TABLE public.candidate_affidavit_disclosures
+      ADD CONSTRAINT fk_affidavit_disclosures_constituency
+      FOREIGN KEY (constituency_id)
+      REFERENCES public.constituencies(id)
+      ON DELETE RESTRICT;
+  END IF;
+END
+$fk$;
+
+-- E. Enforce source-backed OFFICIAL classification for future and existing rows.
 ALTER TABLE public.candidate_affidavit_disclosures
   DROP CONSTRAINT IF EXISTS chk_affidavit_official_requires_source;
 
