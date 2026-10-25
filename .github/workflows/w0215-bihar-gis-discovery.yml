@@ -6,6 +6,7 @@ on:
       - cto/w0215-stage-b-evidence-20261025
     paths:
       - "scripts/discover_w0215_bihar_election_gis.py"
+      - "scripts/audit_w0215_bihar_ac_geometry.py"
       - ".github/workflows/w0215-bihar-gis-discovery.yml"
   workflow_dispatch:
 
@@ -33,11 +34,19 @@ jobs:
           python-version: "3.12"
       - name: Install pinned HTTP client
         run: python -m pip install --disable-pip-version-check "curl_cffi==0.13.0"
-      - name: Discover official page, linked scripts and same-host service metadata
+      - name: Discover official page, linked scripts, service metadata and candidate geometry
         id: discovery
         continue-on-error: true
         run: python scripts/discover_w0215_bihar_election_gis.py
-      - name: Upload raw page/service bytes and manifest
+      - name: Install pinned geometry audit dependencies
+        if: always()
+        run: python -m pip install --disable-pip-version-check "shapely==2.1.2" "pyproj==3.7.2"
+      - name: Run reproducible AC topology and state-coverage screening
+        id: topology
+        if: always()
+        continue-on-error: true
+        run: python scripts/audit_w0215_bihar_ac_geometry.py
+      - name: Upload raw page/service bytes, manifests and topology report
         if: always()
         uses: actions/upload-artifact@v4
         with:
@@ -46,7 +55,7 @@ jobs:
           if-no-files-found: warn
           retention-days: 30
       - name: Enforce endpoint discovery result
-        if: steps.discovery.outcome != 'success'
+        if: steps.discovery.outcome != 'success' || steps.topology.outcome != 'success'
         run: |
           echo "No same-host public service endpoint was discovered; inspect manifest and use official custodian route."
           exit 1
