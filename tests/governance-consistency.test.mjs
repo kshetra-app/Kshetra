@@ -293,7 +293,7 @@ function validateImplementationAuthorization(input) {
 const authCommitResolved = gitResolveCommit(implAuthCommitField);
 assert.ok(authCommitResolved, 'Authorization commit must resolve in the current Git object database');
 assert.ok(decisionContent.includes(implAuthCommitField), 'Authorization commit must be recorded in DECISION_LOG.md');
-assert.ok(w022DirectiveText.includes('explicit project-owner instruction') && w022DirectiveText.includes('PROSPECTIVE IMPLEMENTATION AUTHORIZATION'), 'Authorization directive must explicitly grant prospective implementation');
+assert.ok(w022DirectiveText.includes('project owner explicitly directs') && w022DirectiveText.includes('authorizes prospective W022 implementation'), 'Authorization directive must explicitly grant prospective implementation');
 assert.ok(isAncestor(authCommitResolved, 'HEAD'), 'W022 authorization commit must be ancestor of current HEAD for new scoped work');
 assert.ok(!isAncestor(authCommitResolved, w022HistoricalImpl.split(/\s/)[0]), 'W022 historical implementation must remain before and outside prospective authorization');
 
