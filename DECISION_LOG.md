@@ -3709,3 +3709,24 @@
   10. **Automated Verification:**
       - 42/42 automated tests pass across 4 suites: 19 mandatory criteria (19/19 PASS), 5 PostgreSQL integration (5/5 PASS), 6 Fastify route unit tests (6/6 PASS), and 12 controlled acceptance steps (12/12 PASS).
       - Production Supabase `ehfafcnimmjusyvplbah` and staging Supabase `fkpigozcqnmcvofuksar` remain 100% untouched and air-gapped.
+
+
+---
+
+### DEC-155: W021.5 Scoped Resumption and CTO Technical Adjudication
+- **Date:** 2026-10-25
+- **Status:** SCOPED RESUMPTION AUTHORIZED; OVERALL MILESTONE ACCEPTANCE PENDING
+- **Authority:** Explicit project-owner instruction in the 2026-10-25 conversation.
+- **Baseline:** `33945d20f318ae1aa0d9aba35052246599c5bbae`
+- **Branch:** `w0215-resumption-2026-10-25`
+- **Authorization artifact:** `governance/authorizations/W021.5_RESUMPTION_AUTHORIZATION_2026-10-25.md`
+- **Plan:** `governance/plans/PLAN-W021.5-RESUMPTION-REV-1.0.md`
+- **Decision:** The owner explicitly authorized the acting CTO to supersede the development freeze recorded by DEC-153 for the scoped W021.5 remediation. Implementation may proceed on the isolated resumption branch and must be proposed by pull request. No direct master writes are permitted.
+- **Boundaries:** Production remains strictly air-gapped. The agent does not query or mutate staging. Staging SQL may be prepared for owner execution in the Supabase staging SQL Editor. Missing source facts and external evidence must never be fabricated.
+- **Source discovery:** The official ECI delimitation order, ECI statistical reports/Form 20 index, ECI affidavit portal, Census of India PCA catalogue, and Survey of India administrative-boundary resources were identified. DataMeet's assembly-constituency shapefile is a secondary candidate only; its README explicitly warns about geometry shifts, missing/wrong names, and pre-delimitation boundaries for several states. It is not accepted as official.
+- **Financial disclosure adjudication:** Acting CTO decision `W021.5-CTO-ADJ-001` accepts the normalized nullable/disaggregated disclosure schema design with execution conditions. This is a technical schema ruling, not a live database execution receipt or third-party independent certification.
+- **Additional P0/P1 schema finding:** Migration 068 also defines criminal-disclosure counts as `NOT NULL DEFAULT 0` and `data_status DEFAULT 'OFFICIAL'`, and omits a canonical FK from `constituency_id` despite its stated linkage. These violate fail-closed data-truth semantics. Forward-only Migration 072 was authored to remove synthetic defaults, demote source-less records to `UNKNOWN`, require source evidence for `OFFICIAL`, and enforce the canonical constituency FK.
+- **Evidence artifacts:** `reports/w021_5_source_acquisition_register.json`, `reports/w021_5_resumption_status.json`, `supabase/migrations/072_w021_5_affidavit_truth_hardening.sql`, `supabase/staging_packages/072_w021_5_affidavit_truth_hardening.sql`, `supabase/staging_checkpoints/w021_5_post_072_affidavit_truth_gate.sql`, `scripts/acquire_w021_5_sources.mjs`, `scripts/tests/w021_5_affidavit_truth_hardening.test.mjs`.
+- **Verification limits:** The source-acquisition runner and new regression suite have not been executed in this environment; no SHA-256 download manifest or staging catalog evidence is claimed. The owner must execute staging SQL and return raw results before database-dependent acceptance.
+- **Final disposition:** W021.5 resumption is in progress. Overall W021.5 formal acceptance remains pending. External gates EB-01 through EB-05 remain open until their actual evidence is obtained and validated.
+
