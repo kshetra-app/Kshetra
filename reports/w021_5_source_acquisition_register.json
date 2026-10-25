@@ -970,6 +970,25 @@
         "Not accepted as a direct AC-boundary source."
       ],
       "plannedUse": "Check the post-2014 legal chain for any instrument relevant to AP/Telangana geography and distinguish AC from Legislative Council delimitation."
+    },
+    {
+      "sourceId": "SRC-BIHAR-BEGIS-ASSEMBLY-AND-PIN-LAYERS",
+      "subject": "Bihar official election GIS Assembly layer and Pin Code Boundary layer; endpoint discovery for official AC geometry and separate PIN-boundary evidence",
+      "publisher": "Bihar Election Geo-Intelligence System / Government of Bihar",
+      "url": "https://gis.bihar.gov.in/DEPTS/ElectionNew.aspx",
+      "relatedUrl": "https://gis.bihar.gov.in/DEPTS/VTR/vtr.aspx",
+      "retrievedAt": "2026-10-25",
+      "format": "Public web GIS portal; vector service format/endpoints not yet confirmed",
+      "authority": "PRIMARY_STATE_GOVERNMENT_GIS_CANDIDATE",
+      "status": "OFFICIAL_PORTAL_FOUND_ENDPOINT_DISCOVERY_WORKFLOW_QUEUED",
+      "sha256": null,
+      "fileBytes": null,
+      "limitations": [
+        "Portal page advertises an Assembly election layer and Pin Code Boundary layer, but exact service endpoint, source owner, CRS, licence, geometry bytes and effective date are not yet established.",
+        "A PIN code boundary is not automatically an India Post delivery-beat polygon.",
+        "Bihar geometry alone does not close national coverage or W021.5-B1-04."
+      ],
+      "plannedUse": "Discover and acquire official Bihar AC geometry and investigate whether the portal's PIN layer is a defensible postal geography source."
     }
   ],
   "unresolvedGates": [
@@ -1486,5 +1505,5 @@
     ],
     "acceptedAsCanonical": false
   },
-  "lastDecision": "Use official India Code legal bytes and ECI 2024 press note for reproducible legal crosswalk evidence; the 2018 ECI notification binary remains blocked and requires another official retrieval/custodian path."
+  "lastDecision": "Prioritize official India Code statutory bytes plus government state GIS services. Bihar BEGIS is now an explicit read-only endpoint-discovery target; no endpoint or geometry is accepted until raw bytes and provenance are verified."
 }
