@@ -2,6 +2,7 @@ import type { FastifyInstance } from 'fastify';
 import { createHash } from 'node:crypto';
 import {
   getUnifiedConstituenciesForState,
+  getConstituenciesForState,
   getAvailableYearsForState,
 } from '../../../mobile/lib/stateDataAdapter';
 import {
@@ -457,16 +458,22 @@ export async function constituencyRoutes(app: FastifyInstance) {
       });
     }
 
-    const normalized = getUnifiedConstituenciesForState(code).map((c) => ({
-      ...c,
-      id: `${code}-AC-${c.acNo}`,
-      stateCode: code,
-    }));
-    if (normalized.length === 0) {
-      return sendApiError(reply, request, 404, 'Not Found', `No constituency metadata exists for ${code}`, {
-        code: 'STATE_MAP_DATA_UNAVAILABLE',
+    const unifiedRows = getUnifiedConstituenciesForState(code);
+    const canonicalRows = getConstituenciesForState(code);
+    const canonicalByAcNo = new Map(canonicalRows.map((row) => [row.acNo, row]));
+    if (unifiedRows.length === 0 || canonicalRows.length === 0
+      || unifiedRows.some((row) => {
+        const canonical = canonicalByAcNo.get(row.acNo);
+        return !canonical || canonical.stateCode !== code || typeof canonical.id !== 'string' || !canonical.id;
+      })) {
+      return sendApiError(reply, request, 500, 'Internal Server Error', `Canonical constituency identity reconciliation failed for ${code}`, {
+        code: 'STATE_MAP_DATA_INTEGRITY_ERROR',
       });
     }
+    const normalized = unifiedRows.map((row) => {
+      const canonical = canonicalByAcNo.get(row.acNo)!;
+      return { ...row, id: canonical.id, stateCode: canonical.stateCode };
+    });
 
     const triviaByAcNo: Record<string, unknown[]> = {};
     const historyByAcNo: Record<string, unknown[]> = {};
