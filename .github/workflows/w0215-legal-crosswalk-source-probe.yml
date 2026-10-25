@@ -6,6 +6,7 @@ on:
       - cto/w0215-stage-b-evidence-20261025
     paths:
       - "scripts/acquire_w0215_legal_crosswalk_sources.py"
+      - "scripts/parse_w0215_telangana_statutory_ac_roster.py"
       - ".github/workflows/w0215-legal-crosswalk-source-probe.yml"
   workflow_dispatch:
 
@@ -37,7 +38,12 @@ jobs:
         id: acquisition
         continue-on-error: true
         run: python scripts/acquire_w0215_legal_crosswalk_sources.py
-      - name: Upload source bytes, extracted text and manifest
+      - name: Parse statutory Telangana AC roster from acquired Gazette PDF
+        id: roster
+        if: always()
+        continue-on-error: true
+        run: python scripts/parse_w0215_telangana_statutory_ac_roster.py
+      - name: Upload source bytes, extracted text, roster and manifest
         if: always()
         uses: actions/upload-artifact@v4
         with:
@@ -46,7 +52,7 @@ jobs:
           if-no-files-found: warn
           retention-days: 30
       - name: Enforce required-source acquisition result
-        if: steps.acquisition.outcome != 'success'
+        if: steps.acquisition.outcome != 'success' || steps.roster.outcome != 'success'
         run: |
-          echo "One or more required official legal sources were not acquired; inspect the uploaded manifest."
+          echo "The required official legal source or statutory roster parse did not pass; inspect the uploaded manifest and parser report."
           exit 1
