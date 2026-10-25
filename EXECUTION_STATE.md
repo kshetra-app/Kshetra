@@ -4,12 +4,30 @@
 
 ---
 
+## W021.5 RESUMPTION CONTROL — DIRECTIVE 154 (2026-10-25)
+
+```text
+W021_5_RESUMPTION_PLAN: governance/plans/W021.5-RESUMPTION-REV-1.0.md
+W021_5_CTO_DIRECTIVE: governance/directives/CTO-DIRECTIVE-154-W021.5-RESUMPTION.md
+W021_5_AUTHORIZATION: YES — STAGE B ONLY (branch-scoped; directive commit c37667526af49d15878be6985800e872d871d57c)
+W021_5_STAGE_B_STATUS: IN PROGRESS / NOT ACCEPTED
+W021_5_STAGE_B_EVIDENCE: reports/w021_5_stage_b_source_research_2026-10-25.md
+W021_5_STAGE_B_EXTERNAL_GATES: EB-01..EB-05 OPEN; W021.5-B1-04 OPEN
+W021_5_PRODUCTION: STRICTLY AIR-GAPPED; NO ACCESS OR MUTATION
+W021_5_STAGING: NO DATABASE ACCESS OR MUTATION UNDER DIRECTIVE 154
+W021_5_NEXT_PERMITTED_ACTION: Continue Stage B source acquisition, provenance capture, and geometry validation; stop at Stage B boundary
+```
+
+**Governance reconciliation note:** Directive 154 prospectively supersedes Directive 153 only within the authorized Stage B scope. W021.5 remains unaccepted; no Stage C or later stage is authorized. Production remains air-gapped and no database operation was performed. The execution ledger and acceptance register must not be advanced without the required evidence and adjudication.
+
+---
+
 ## 1. Project & Execution Coordinates
 ```text
 PROJECT:               PANIN (formerly Kshetra)
-CURRENT_JOB:           JOB 023: DELIMITATION WATCH
+CURRENT_JOB:           W021.5 STAGE B — SOURCE ACQUISITION & GEOMETRY VALIDATION (DIRECTIVE 154)
 LAST_COMPLETED_JOB:    W022 (B2B SaaS Webhook Engine & Zero-Trust Dispatcher)
-NEXT_PERMITTED_JOB:    INDEPENDENT CTO ADJUDICATION / CTO ACCEPTANCE REVIEW (JOB 023)
+NEXT_PERMITTED_JOB:    W021.5 STAGE B ONLY — COMPLETE EVIDENCE PACKET; STOP FOR CTO ADJUDICATION BEFORE STAGE C
 
 JOB_023_STATUS:        TESTED / IMPLEMENTATION COMPLETE / SUBMITTED FOR CTO ACCEPTANCE
 JOB_023_BASELINE:      b9179ef2a2f89f28d84a7e93da4c2226871a996f
