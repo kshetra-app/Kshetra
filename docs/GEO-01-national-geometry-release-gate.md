@@ -6,7 +6,7 @@
 The current statutory register, `reports/w021_5b1_r5_current_regime_matrix.json`, specifies 31 assembly jurisdictions, 4,123 ACs and 543 PCs. The legacy mobile manifest differs in Assam (+7), Gujarat (-17), Jharkhand (+14), Karnataka (+1), Kerala (+1), Madhya Pradesh (-4), Rajasthan (+1), Tamil Nadu (+1) and Jammu & Kashmir (+17). Nine jurisdictions are marked placeholders. File existence or polygon presence is not proof of official provenance or topology validity.
 
 ## Implemented guardrails
-- `apps/mobile/data/geo-manifest.json` adds a versioned `_geographyReleaseContract` for each of the 31 jurisdictions. Every jurisdiction has `releaseApproved: false` until independent verification, and known mismatches/placeholders are distinctly classified.
+- `apps/mobile/data/geo-manifest.json` and `apps/mobile/data/geo-release-contract.json` adds a versioned `_geographyReleaseContract` for each of the 31 jurisdictions. Every jurisdiction has `releaseApproved: false` until independent verification, and known mismatches/placeholders are distinctly classified.
 - `scripts/validate-national-geography.mjs` compares the manifest and actual GeoJSON feature counts against the statutory matrix; checks FeatureCollection shape, IDs, Polygon/MultiPolygon types, closed rings, finite WGS84 bounds and jurisdiction codes; writes a detailed report and exits nonzero while blockers remain.
 - `reports/geo-01-reconciliation-baseline.json` captures the pre-remediation per-jurisdiction differences.
 - `tests/geo-01-national-geometry.test.mjs` locks the baseline, explicit deltas and fail-closed policy.
