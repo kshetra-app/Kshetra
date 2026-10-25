@@ -259,7 +259,17 @@ assert.ok(stateRaw.includes('GOVERNANCE BREACH PRESERVED'), 'Historical authoriz
 const resolvedW022Authorization = execSync(`git rev-parse --verify "${realAuthCommit}^{commit}"`, { encoding: 'utf8' }).trim();
 assert.strictEqual(resolvedW022Authorization, realAuthCommit, 'W022 authorization commit must resolve canonically');
 execSync(`git merge-base --is-ancestor "${realAuthCommit}" HEAD`, { stdio: 'ignore' });
-assert.throws(() => execSync(`git merge-base --is-ancestor "${realAuthCommit}" "${historicalImpl.split(/\\s/)[0]}"`, { stdio: 'ignore' }), 'Historical implementation must not descend from prospective authorization');
+let prospectiveAuthIsAncestorOfHistoricalImplementation = true;
+try {
+  execSync(`git merge-base --is-ancestor "${realAuthCommit}" "${historicalImpl.split(/\\s/)[0]}"`, { stdio: 'ignore' });
+} catch {
+  prospectiveAuthIsAncestorOfHistoricalImplementation = false;
+}
+assert.strictEqual(
+  prospectiveAuthIsAncestorOfHistoricalImplementation,
+  false,
+  'Historical implementation must not descend from prospective authorization'
+);
 const w022Directive = fs.readFileSync('CTO_DIRECTIVE_W022_IMPLEMENTATION_AUTHORIZATION_2026-10-25.md', 'utf8');
 assert.ok(w022Directive.includes('Revision 4 (ratified prospectively'), 'Authorization directive and active plan revision must match');
 assert.ok(w022Directive.includes('PRODUCTION: STRICTLY AIR-GAPPED'), 'Production air gap must remain declared');
