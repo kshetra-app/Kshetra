@@ -780,10 +780,11 @@ async function main() {
 
   // Rebuild the sidecar manifest from the actual final SQLite tables, ensuring
   // reported flags/counts are derived from persisted rows, not source-file presence.
+  let manifest;
   const verifyDb = new Database(dbPath, { readonly: true, fileMustExist: true });
   try {
     const count = (table, code) => verifyDb.prepare(`SELECT count(*) AS n FROM ${table} WHERE state_code = ?`).get(code).n;
-    const manifest = {};
+    manifest = {};
     for (const { code } of [{"code":"TS"},{"code":"AP"},{"code":"KA"},{"code":"MH"},{"code":"TN"},{"code":"KL"},{"code":"WB"},{"code":"UP"},{"code":"RJ"},{"code":"GJ"},{"code":"JH"},{"code":"OD"},{"code":"DL"},{"code":"PB"},{"code":"HR"},{"code":"CG"},{"code":"MP"},{"code":"BR"},{"code":"AS"},{"code":"GA"},{"code":"HP"},{"code":"MN"},{"code":"ML"},{"code":"MZ"},{"code":"NL"},{"code":"TR"},{"code":"SK"},{"code":"AR"},{"code":"UK"},{"code":"PY"},{"code":"JK"}]) {
       const row = {
         state_code: code,
@@ -814,7 +815,8 @@ async function main() {
       writableDb.exec('BEGIN');
       const updateManifest = writableDb.prepare(`UPDATE seed_manifest SET version=?,has_mla_profiles=?,has_demographics=?,has_historical_results=?,has_political_timeline=?,has_election_history=?,constituency_count=?,last_updated=? WHERE state_code=?`);
       for (const row of Object.values(manifest)) {
-        const result = updateManifest.run(row.version,row.has_mla_profiles,row.has_demographics,row.has_historical_results,row.has_political_timeline,row.has_election_history,row.constituency_count,row.last_updated,row.state_code);
+        const result = const updated = updateManifest.run(row.version,row.has_mla_profiles,row.has_demographics,row.has_historical_results,row.has_political_timeline,row.has_election_history,row.constituency_count,row.last_updated,row.state_code);
+        if (updated.changes !== 1) throw new Error(`SQLite manifest missing row for ${row.state_code}`);
         if (result.changes !== 1) throw new Error(`SQLite seed_manifest row missing for ${row.state_code}`);
       }
       writableDb.exec('COMMIT');
