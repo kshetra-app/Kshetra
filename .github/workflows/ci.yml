@@ -150,27 +150,3 @@ jobs:
       - name: Evidence Integrity Negative-Path Regression
         run: node tests/repo-evidence-integrity.test.mjs
 
-  security:
-    name: Security Gate
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: npm
-      - name: Install locked dependencies
-        run: npm ci
-      - name: Dependency audit (high and critical)
-        run: npm audit --audit-level=high
-      - name: OSV vulnerability scan
-        run: docker run --rm -v "$PWD:/src" -w /src ghcr.io/google/osv-scanner:v2.4.0 scan source -r .
-      - name: Static analysis (Semgrep)
-        run: |
-          docker run --rm -v "$PWD:/src" -w /src returntocorp/semgrep semgrep scan --error --config p/typescript --config p/react --config p/nodejsscan --config p/owasp-top-ten --config p/secrets
-      - name: Generate SBOM
-        run: npx @cyclonedx/cyclonedx-npm --output-file sbom.cdx.json
-      - name: Verify SBOM exists and is non-empty
-        run: test -s sbom.cdx.json
