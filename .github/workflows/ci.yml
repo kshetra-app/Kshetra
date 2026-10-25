@@ -29,6 +29,12 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Verify Migration Version Uniqueness
+        run: node scripts/verify-migration-version-uniqueness.mjs
+
+      - name: Verify Geo Runtime Truth (source-authority gate)
+        run: node scripts/verify-geo-runtime-truth.mjs
+
       - name: Verify Governance Consistency
         run: node tests/governance-consistency.test.mjs
 
@@ -45,7 +51,7 @@ jobs:
         run: node scripts/check-api-contract-drift.mjs
 
       - name: Audit 13-Language i18n Parity (DEF-012 Monitoring)
-        run: node scripts/verify-13-locales.mjs
+        run: node scripts/verify-13-locales.mjs --strict
 
   test:
     name: Test
@@ -66,6 +72,11 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
+
+      - name: Rebuild and verify bundled SQLite seed data
+        run: |
+          npx tsx scripts/build-seed-db.mjs
+          node scripts/verify-seed-manifest.mjs
 
       - name: Build shared package
         run: npm run build -w @kshetra/shared
@@ -127,6 +138,44 @@ jobs:
         run: npx tsc --noEmit
         working-directory: apps/mobile
 
+  mobile-build:
+    name: Mobile Metro Export & Asset Budget
+    runs-on: ubuntu-latest
+    # This job measures the dependency graph only. Its fixture endpoint is
+    # deliberately non-routable and must never be used as a release profile.
+    env:
+      EXPO_PUBLIC_SUPABASE_URL: https://test-fixture.supabase.co
+      EXPO_PUBLIC_SUPABASE_ANON_KEY: test-analysis-only-not-a-real-key
+      EXPO_PUBLIC_API_URL: https://api-fixture.invalid
+      MOBILE_BUILD_MODE: analysis
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
+      - name: Build shared package
+        run: npm run build -w @kshetra/shared
+      - name: Validate CI-only runtime fixture
+        run: node scripts/verify-mobile-runtime-config.mjs --analysis
+      - name: Export real Android Metro bundle
+        run: npm run build -w @kshetra/mobile
+      - name: Verify Metro output, asset budget and SHA-256 manifest
+        run: node scripts/verify-mobile-export.mjs
+      - name: Upload Metro graph and measured payload report
+        uses: actions/upload-artifact@v4
+        with:
+          name: mobile-metro-export-${{ github.sha }}
+          path: |
+            apps/mobile/dist
+            reports/mobile-metro-export-report.json
+          if-no-files-found: error
+          retention-days: 30
+
   lint:
     name: Lint
     runs-on: ubuntu-latest
@@ -146,8 +195,6 @@ jobs:
 
       - name: Prettier check
         run: npx prettier --check "**/*.{ts,tsx,json,md}" --ignore-path .gitignore
-        continue-on-error: true
 
       - name: ESLint
         run: npx eslint "apps/**/*.{ts,tsx}" "packages/**/*.{ts,tsx}" --max-warnings=0
-        continue-on-error: true
