@@ -1,0 +1,76 @@
+name: GEO-02 — Android release size and Metro geography graph
+
+on:
+  pull_request:
+    branches: [master, main, develop]
+  push:
+    branches: [master, main, develop]
+
+concurrency:
+  group: geo-02-mobile-size-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  android-release-size:
+    name: Metro graph + release AAB/APK budget
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Setup Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build shared package
+        run: npm run build -w @kshetra/shared
+
+      - name: Export production Metro graph
+        working-directory: apps/mobile
+        run: npx expo export --platform android --clear --dump-sourcemap --output-dir dist
+
+      - name: Prebuild native Android project
+        working-directory: apps/mobile
+        run: npx expo prebuild --platform android --non-interactive --clean
+
+      - name: Build release AAB and APK
+        working-directory: apps/mobile/android
+        run: ./gradlew --no-daemon :app:bundleRelease :app:assembleRelease
+
+      - name: Create actual release size and dependency report
+        run: |
+          node scripts/report-mobile-release-size.mjs \
+            --bundle-dir apps/mobile/dist \
+            --aab apps/mobile/android/app/build/outputs/bundle/release/app-release.aab \
+            --apk apps/mobile/android/app/build/outputs/apk/release/app-release.apk \
+            --out reports/geo-02-mobile-release-size
+
+      - name: Enforce GEO-02 size budgets
+        run: node scripts/check-mobile-release-size-budget.mjs --report reports/geo-02-mobile-release-size/mobile-release-size.json
+
+      - name: Upload release size report and build artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: geo-02-android-release-size-${{ github.sha }}
+          path: |
+            reports/geo-02-mobile-release-size/
+            apps/mobile/android/app/build/outputs/bundle/release/app-release.aab
+            apps/mobile/android/app/build/outputs/apk/release/app-release.apk
+          if-no-files-found: warn
+          retention-days: 30
