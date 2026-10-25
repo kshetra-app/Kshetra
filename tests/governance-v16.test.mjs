@@ -235,40 +235,36 @@ assert.strictEqual(
 
 console.log('[PASS] [REPOSITORY INTEGRATION] Test R1: Scope chain of custody verified (Git changed files -> authorized manifest -> derived canonical scope hash).');
 
-// [REPOSITORY INTEGRATION] Test R2: Real-State Control M Active Freeze Verification
+// [REPOSITORY INTEGRATION] Test R2: Real-state Control M validation (W022 prospective authorization).
 const stateRaw = fs.readFileSync('EXECUTION_STATE.md', 'utf8');
-
 function parseExecutionStateField(fieldKey) {
-  const match = stateRaw.match(new RegExp(`^${fieldKey}:\\s*(.+)`, 'm'));
+  const match = stateRaw.match(new RegExp('^' + fieldKey + ':\\\\s*(.+)', 'm'));
   return match ? match[1].trim() : null;
 }
-
 const realCurrentJob = parseExecutionStateField('CURRENT_JOB');
 const realPlanStatus = parseExecutionStateField('PLAN_STATUS');
 const realImplAuth = parseExecutionStateField('IMPLEMENTATION_AUTHORIZATION');
-const realAuthJob = parseExecutionStateField('AUTHORIZED_JOB');
-const realAuthScopeHash = parseExecutionStateField('AUTHORIZED_SCOPE_HASH');
 const realAuthCommit = parseExecutionStateField('IMPLEMENTATION_AUTHORIZATION_COMMIT');
-
+const historicalImpl = parseExecutionStateField('W022_EXISTING_IMPLEMENTATION_COMMIT');
 console.log(`[REAL-STATE CONTROL M] Current Job: ${realCurrentJob}`);
 console.log(`[REAL-STATE CONTROL M] Plan Status: ${realPlanStatus}`);
 console.log(`[REAL-STATE CONTROL M] Impl Auth: ${realImplAuth}`);
 console.log(`[REAL-STATE CONTROL M] Auth Commit: ${realAuthCommit}`);
-
-// Assert that currently, implementation authorization is strictly NO / FROZEN in real repo
-assert.strictEqual(realImplAuth, 'NO', 'Real-state IMPLEMENTATION_AUTHORIZATION must be NO in active frozen state');
-assert.ok(
-  realAuthJob === 'NONE' || realAuthJob.includes('NOT Authorized') || realAuthJob.includes('Planning Only'),
-  'Real-state AUTHORIZED_JOB must indicate no implementation authorized'
-);
-assert.ok(
-  realAuthScopeHash === 'NONE' || realAuthScopeHash === null || realAuthScopeHash === undefined,
-  'Real-state AUTHORIZED_SCOPE_HASH must be NONE or not set in frozen state'
-);
-assert.ok(
-  realAuthCommit === 'NONE' || realAuthCommit === null,
-  'Real-state IMPLEMENTATION_AUTHORIZATION_COMMIT must be NONE'
-);
+assert.ok(realCurrentJob?.startsWith('W022'), 'Current job must be W022');
+assert.ok(realPlanStatus?.startsWith('APPROVED'), 'W022 plan status must be approved');
+assert.strictEqual(realImplAuth, 'YES', 'W022 implementation continuation must be prospectively authorized');
+assert.match(realAuthCommit || '', /^[0-9a-f]{40}$/, 'W022 authorization commit must be full SHA');
+assert.ok(historicalImpl?.startsWith('3ac3f1c0c14d51d60bab9f9d3e88a08716466124'), 'Historical implementation coordinate must remain visible');
+assert.ok(stateRaw.includes('GOVERNANCE BREACH PRESERVED'), 'Historical authorization breach must remain disclosed');
+const resolvedW022Authorization = execSync(`git rev-parse --verify "${realAuthCommit}^{commit}"`, { encoding: 'utf8' }).trim();
+assert.strictEqual(resolvedW022Authorization, realAuthCommit, 'W022 authorization commit must resolve canonically');
+execSync(`git merge-base --is-ancestor "${realAuthCommit}" HEAD`, { stdio: 'ignore' });
+assert.throws(() => execSync(`git merge-base --is-ancestor "${realAuthCommit}" "${historicalImpl.split(/\\s/)[0]}"`, { stdio: 'ignore' }), 'Historical implementation must not descend from prospective authorization');
+const w022Directive = fs.readFileSync('CTO_DIRECTIVE_W022_IMPLEMENTATION_AUTHORIZATION_2026-10-25.md', 'utf8');
+assert.ok(w022Directive.includes('Revision 4 (ratified prospectively'), 'Authorization directive and active plan revision must match');
+assert.ok(w022Directive.includes('PRODUCTION: STRICTLY AIR-GAPPED'), 'Production air gap must remain declared');
+assert.ok(w022Directive.includes('Staging database execution / deployment:** NOT AUTHORIZED'), 'Staging DB execution remains separately blocked');
+console.log('[PASS] [REPOSITORY INTEGRATION] Test R2: W022 authorization, ancestry, historical breach, plan revision, and environment boundary reconcile.');
 
 // Historical W008-C authorization verification directly from Git history and DECISION_LOG.md
 const w008cAuthCommit = parseExecutionStateField('W008_C_IMPLEMENTATION_AUTHORIZATION_COMMIT');
