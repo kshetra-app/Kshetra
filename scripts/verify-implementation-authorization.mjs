@@ -113,7 +113,14 @@ function classifyFiles(files) {
     f.startsWith('tests/webhooks-') ||
     f === 'tests/saas-api-contract-drift.test.mjs'
   );
-  return { productChanges, governanceOnly: isGovernanceOnly(files) };
+  const governanceOnly = isGovernanceOnly(files);
+  const unknown = files.filter(f =>
+    !planAllowedFiles.has(f) &&
+    !f.startsWith('reports/') &&
+    !f.startsWith('docs/') &&
+    !f.startsWith('governance/')
+  );
+  return { productChanges, governanceOnly, unknown };
 }
 
 function gateRange(base, head) {
@@ -122,11 +129,14 @@ function gateRange(base, head) {
     console.log(`[PASS] GOV-01: no changed files in ${base}...${head}; no implementation authority inferred.`);
     return;
   }
-  const { productChanges, governanceOnly } = classifyFiles(files);
-  const notAllowed = files.filter(f => !planAllowedFiles.has(f) && !f.startsWith('reports/') && !f.startsWith('docs/') && !f.startsWith('governance/'));
-  if (notAllowed.length) throw new Error('GOV-01: changed paths outside W022 approved scope or governance gate: ' + notAllowed.join(', '));
-  const forbidden = files.filter(f => immutablePrefixes.some(p => f.startsWith(p)) || immutableHistoricalMigrations.test(f));
+  const { productChanges, governanceOnly, unknown } = classifyFiles(files);
+  if (unknown.length) throw new Error('GOV-01: changed paths outside W022 approved scope or recognized governance artifacts: ' + unknown.join(', '));
+  const forbidden = files.filter(f => immutablePrefixes.some(p => f.startsWith(p) || (p === 'packages/shared/' && f.startsWith(p))) || immutableHistoricalMigrations.test(f));
   if (forbidden.length) throw new Error('GOV-01: immutable mobile/shared/historical migration paths changed: ' + forbidden.join(', '));
+  // Product/runtime changes must never be smuggled through a governance-only classification.
+  if (productChanges.length && governanceOnly) {
+    throw new Error('GOV-01: mixed product and governance changes must be evaluated as implementation changes.');
+  }
 
   if (productChanges.length) {
     requireCurrentW022Authorization();
