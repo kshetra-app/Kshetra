@@ -161,12 +161,32 @@ try {
   assert.fail(`origin/master could not be resolved: ${err.message}`);
 }
 
-// Local HEAD must strictly match origin/master (fail-closed, no exceptions)
-assert.strictEqual(
-  localHead,
-  originMaster,
-  `Local HEAD (${localHead}) must strictly match origin/master (${originMaster})`
-);
+// On master, local HEAD must strictly match origin/master. In a pull request
+// against master, the feature HEAD must descend from the exact current origin/master
+// baseline; otherwise the repository's own PR checks would reject every legitimate
+// isolated implementation branch before its changes can be independently reviewed.
+const isPullRequestAgainstMaster =
+  process.env.GITHUB_EVENT_NAME === 'pull_request' &&
+  process.env.GITHUB_BASE_REF === 'master';
+if (isPullRequestAgainstMaster) {
+  let mergeBase = '';
+  try {
+    mergeBase = execSync('git merge-base origin/master HEAD', { encoding: 'utf8' }).trim();
+  } catch (err) {
+    assert.fail(`PR branch ancestry against origin/master could not be verified: ${err.message}`);
+  }
+  assert.strictEqual(
+    mergeBase,
+    originMaster,
+    `PR HEAD must descend from current origin/master (${originMaster}); merge-base was ${mergeBase}`
+  );
+} else {
+  assert.strictEqual(
+    localHead,
+    originMaster,
+    `Local HEAD (${localHead}) must strictly match origin/master (${originMaster}) outside a pull request`
+  );
+}
 
 // Working tree must be completely clean (fail-closed, no exceptions)
 const porcelainStatus = execSync('git status --porcelain', { encoding: 'utf8' }).trim();
