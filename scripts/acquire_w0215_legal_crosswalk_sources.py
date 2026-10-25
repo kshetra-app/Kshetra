@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Acquire official/government-hosted legal source bytes for W021.5 Stage B crosswalk."""
 from __future__ import annotations
-import hashlib, json, re, sys
+import hashlib, json, re, sys\nfrom html.parser import HTMLParser
 from datetime import datetime, timezone
 from pathlib import Path
 from urllib.parse import urlparse
@@ -28,6 +28,15 @@ SOURCES = [
         "purpose": "Primary legal schedule and statutory AC roster/extent crosswalk; host/source lineage must be recorded."
     },
     {
+        "id": "CEO_TELANGANA_HOP_2024_SCHEDULE",
+        "urlCandidates": ["https://ceotelangana.nic.in/HOP-2024/11301_25-%20Ge%20to%20the%20HoP%202024-%20Schedule%20of%20Election_11zon.pdf"],
+        "publisher": "Chief Electoral Officer, Telangana",
+        "documentTitle": "General Elections to the House of People 2024 — Schedule of Election",
+        "required": False,
+        "terms": ["282/AP/2018(DEL)", "Removal of Difficulties", "119", "175", "TELANGANA"],
+        "purpose": "Official state-election-office corroboration of the legal chain; not the original 2018 notification itself."
+    },
+    {
         "id": "ECI_GENERAL_ELECTIONS_2024_PRESS_NOTE",
         "urlCandidates": ["https://elections24.eci.gov.in/docs/press-note-no-23.pdf"],
         "publisher": "Election Commission of India",
@@ -51,7 +60,7 @@ SOURCES = [
 ALLOWED_HOSTS = {
     "apseeds.ap.gov.in", "tgerc.telangana.gov.in",
     "www.indiacode.nic.in", "indiacode.nic.in", "upload.indiacode.nic.in",
-    "elections24.eci.gov.in",
+    "elections24.eci.gov.in", "ceotelangana.nic.in", "www.pib.gov.in", "pib.gov.in",
 }
 HEADERS = {
     "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/129.0.0.0 Safari/537.36",
@@ -61,13 +70,32 @@ HEADERS = {
 def sha(data: bytes) -> str:
     return hashlib.sha256(data).hexdigest()
 
+HTML_SOURCES = [
+    {
+        "id": "PIB_AP_TELANGANA_DELIMITATION_LEGAL_CHAIN",
+        "url": "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2015227&lang=2&reg=48",
+        "publisher": "Press Information Bureau, Government of India",
+        "documentTitle": "PIB press release corroborating the AP/Telangana delimitation legal chain",
+        "terms": ["282/AP/2018(DEL)", "Removal of Difficulties", "119", "175", "Andhra Pradesh Reorganisation"],
+        "purpose": "Official HTML corroboration; not a substitute for the Act, Gazette, or ECI notification."
+    }
+]
+
+class PlainText(HTMLParser):
+    def __init__(self):
+        super().__init__()
+        self.parts = []
+    def handle_data(self, data):
+        if data and data.strip():
+            self.parts.append(data.strip())
+
 manifest = {
     "schemaVersion": 2,
     "title": "W021.5 Stage B official legal crosswalk source acquisition",
     "retrievedAtUtc": datetime.now(timezone.utc).isoformat(),
     "directive": "CTO Directive 154 — Stage B only",
     "databaseAccess": "NONE",
-    "sources": [],
+    "sources": [],\n    "htmlSources": [],
 }
 session = requests.Session(impersonate="chrome124")
 required_failures = []
@@ -139,6 +167,40 @@ for src in SOURCES:
         if src["required"]:
             required_failures.append(src["id"])
     manifest["sources"].append(row)
+
+# Acquire official HTML corroboration separately; a failure here is recorded but does not
+# invalidate the required Gazette PDF acquisition.
+for src in HTML_SOURCES:
+    row = {"sourceId":src["id"],"url":src["url"],"publisher":src["publisher"],"documentTitle":src["documentTitle"],
+           "purpose":src["purpose"],"retrievedAtUtc":datetime.now(timezone.utc).isoformat()}
+    try:
+        parsed = urlparse(src["url"])
+        if parsed.scheme != "https" or parsed.hostname not in ALLOWED_HOSTS:
+            raise RuntimeError("URL_HOST_NOT_ALLOWLISTED")
+        response = session.get(src["url"], headers=HEADERS, timeout=25, allow_redirects=True)
+        final = urlparse(response.url)
+        if final.scheme != "https" or final.hostname not in ALLOWED_HOSTS:
+            raise RuntimeError("REDIRECT_HOST_NOT_ALLOWLISTED:" + response.url)
+        raw = response.content
+        row.update({"httpStatus":response.status_code,"finalUrl":response.url,
+                    "contentType":response.headers.get("Content-Type"),"byteLength":len(raw),"sha256":sha(raw)})
+        if response.status_code == 200 and raw:
+            safe = re.sub(r"[^A-Za-z0-9_.-]", "_", src["id"])
+            raw_path = RAW / f"{safe}.html"
+            raw_path.write_bytes(raw)
+            parser = PlainText()
+            parser.feed(raw.decode(response.encoding or "utf-8", errors="replace"))
+            text_value = re.sub(r"\\s+", " ", " ".join(parser.parts)).strip()
+            text_path = OUT / f"{safe}.txt"
+            text_path.write_text(text_value, encoding="utf-8")
+            row.update({"status":"DOWNLOADED_HASHED_HTML","rawArtifact":f"raw/{raw_path.name}",
+                        "textArtifact":text_path.name,"textSha256":sha(text_value.encode("utf-8")),
+                        "termFindings":{term:term.casefold() in text_value.casefold() for term in src["terms"]}})
+        else:
+            row["status"] = "HTTP_FAILURE"
+    except Exception as exc:
+        row.update({"status":"FETCH_FAILED","error":f"{type(exc).__name__}: {exc}"})
+    manifest["htmlSources"].append(row)
 
 manifest["requiredFailures"] = required_failures
 manifest["overallStatus"] = "REQUIRED_SOURCE_FAILURES" if required_failures else "REQUIRED_SOURCE_BYTES_ACQUIRED"
