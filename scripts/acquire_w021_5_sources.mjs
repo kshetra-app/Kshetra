@@ -514,7 +514,7 @@ manifest.summary={
   totalDownloadedBytes,
   totalDownloadBudgetBytes:MAX_TOTAL_BYTES,
   staticSourceCount:SOURCES.length,
-  dynamicallyDiscoveredCount:manifest.results.filter(r=>r.id.startsWith('DISCOVERED-')).length,
+  dynamicallyDiscoveredCount:manifest.results.filter(r=>(r.id || '').startsWith('DISCOVERED-')).length,
   downloaded:manifest.results.filter(r=>r.status==='DOWNLOADED_HASHED').length,
   failed:manifest.results.filter(r=>r.status==='FETCH_FAILED').length,
   officialDownloads:manifest.results.filter(r=>r.status==='DOWNLOADED_HASHED' && !r.authority.startsWith('SECONDARY')).length,
