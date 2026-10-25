@@ -155,6 +155,11 @@ function initSchema(db) {
       has_political_timeline INTEGER,
       has_election_history INTEGER,
       constituency_count INTEGER,
+      mla_profile_count INTEGER NOT NULL DEFAULT 0,
+      demographics_count INTEGER NOT NULL DEFAULT 0,
+      historical_results_count INTEGER NOT NULL DEFAULT 0,
+      political_timeline_count INTEGER NOT NULL DEFAULT 0,
+      election_history_count INTEGER NOT NULL DEFAULT 0,
       last_updated TEXT
     );
 
@@ -255,6 +260,11 @@ async function importSeedData(db) {
       has_political_timeline: 0,
       has_election_history: 0,
       constituency_count: 0,
+      mla_profile_count: 0,
+      demographics_count: 0,
+      historical_results_count: 0,
+      political_timeline_count: 0,
+      election_history_count: 0,
       last_updated: new Date().toISOString(),
     };
 
@@ -530,8 +540,8 @@ async function importSeedData(db) {
       // Insert state manifest
       const insertManifest = db.prepare(`
         INSERT OR REPLACE INTO seed_manifest
-        (state_code, version, has_mla_profiles, has_demographics, has_historical_results, has_political_timeline, has_election_history, constituency_count, last_updated)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+        (state_code, version, has_mla_profiles, has_demographics, has_historical_results, has_political_timeline, has_election_history, constituency_count, mla_profile_count, demographics_count, historical_results_count, political_timeline_count, election_history_count, last_updated)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       `);
       insertManifest.run(
         stateManifest.state_code,
@@ -542,6 +552,11 @@ async function importSeedData(db) {
         stateManifest.has_political_timeline,
         stateManifest.has_election_history,
         stateManifest.constituency_count,
+        stateManifest.mla_profile_count,
+        stateManifest.demographics_count,
+        stateManifest.historical_results_count,
+        stateManifest.political_timeline_count,
+        stateManifest.election_history_count,
         stateManifest.last_updated,
       );
 
@@ -571,24 +586,27 @@ async function importSeedData(db) {
  */
 function importRepresentatives(db) {
   if (!fs.existsSync(localBodyDir)) {
-    console.log('  (no scrapers/output/local-body dir — skipping representatives)');
-    return { total: 0, byState: {} };
+    throw new Error('Required canonical input directory scrapers/output/local-body is missing');
   }
   const files = fs.readdirSync(localBodyDir).filter((f) => f.endsWith('-kyr.json'));
   if (files.length === 0) {
-    console.log('  (no *-kyr.json files — skipping representatives)');
-    return { total: 0, byState: {} };
+    throw new Error('No *-kyr.json canonical representative input files found');
   }
 
   const all = [];
   for (const file of files) {
     try {
-      const data = JSON.parse(fs.readFileSync(path.join(localBodyDir, file), 'utf8'));
+      const sourcePath = path.join(localBodyDir, file);
+      const sourceText = fs.readFileSync(sourcePath, 'utf8');
+      if (sourceText.startsWith('version https://git-lfs.github.com/spec/v1')) {
+        throw new Error('input is an unmaterialized Git LFS pointer; checkout canonical inputs with Git LFS enabled');
+      }
+      const data = JSON.parse(sourceText);
       const reps = buildRepsFromKYR(data);
       for (const rep of reps) all.push(rep); // loop, not spread (142k+ overflows arg stack)
       console.log(`  ${file}: ${reps.length} winners`);
     } catch (err) {
-      console.error(`  ✗ ${file}: ${err.message}`);
+      throw new Error(`Cannot import canonical representative input ${file}: ${err.message}`, { cause: err });
     }
   }
 
@@ -783,6 +801,11 @@ async function main() {
     for (const { code } of [{"code":"TS"},{"code":"AP"},{"code":"KA"},{"code":"MH"},{"code":"TN"},{"code":"KL"},{"code":"WB"},{"code":"UP"},{"code":"RJ"},{"code":"GJ"},{"code":"JH"},{"code":"OD"},{"code":"DL"},{"code":"PB"},{"code":"HR"},{"code":"CG"},{"code":"MP"},{"code":"BR"},{"code":"AS"},{"code":"GA"},{"code":"HP"},{"code":"MN"},{"code":"ML"},{"code":"MZ"},{"code":"NL"},{"code":"TR"},{"code":"SK"},{"code":"AR"},{"code":"UK"},{"code":"PY"},{"code":"JK"}]) {
       const row = {
         state_code: code,
+        mla_profile_count: count('mla_profiles', code),
+        demographics_count: count('demographics', code),
+        historical_results_count: count('historical_results', code),
+        political_timeline_count: count('political_timeline', code),
+        election_history_count: count('election_history', code),
         version: crypto.createHash('sha256').update(JSON.stringify({
           state_code: code,
           counts: {
@@ -808,9 +831,9 @@ async function main() {
     const writableDb = new Database(dbPath);
     try {
       writableDb.exec('BEGIN');
-      const updateManifest = writableDb.prepare(`UPDATE seed_manifest SET version=?,has_mla_profiles=?,has_demographics=?,has_historical_results=?,has_political_timeline=?,has_election_history=?,constituency_count=?,last_updated=? WHERE state_code=?`);
+      const updateManifest = writableDb.prepare(`UPDATE seed_manifest SET version=?,has_mla_profiles=?,has_demographics=?,has_historical_results=?,has_political_timeline=?,has_election_history=?,constituency_count=?,mla_profile_count=?,demographics_count=?,historical_results_count=?,political_timeline_count=?,election_history_count=?,last_updated=? WHERE state_code=?`);
       for (const row of Object.values(manifest)) {
-        const updated = updateManifest.run(row.version,row.has_mla_profiles,row.has_demographics,row.has_historical_results,row.has_political_timeline,row.has_election_history,row.constituency_count,row.last_updated,row.state_code);
+        const updated = updateManifest.run(row.version,row.has_mla_profiles,row.has_demographics,row.has_historical_results,row.has_political_timeline,row.has_election_history,row.constituency_count,row.mla_profile_count,row.demographics_count,row.historical_results_count,row.political_timeline_count,row.election_history_count,row.last_updated,row.state_code);
         if (updated.changes !== 1) throw new Error(`SQLite manifest missing row for ${row.state_code}`);
       }
       writableDb.exec('COMMIT');
