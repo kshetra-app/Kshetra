@@ -484,7 +484,7 @@ manifest.summary={
   failed:manifest.results.filter(r=>r.status==='FETCH_FAILED').length,
   officialDownloads:manifest.results.filter(r=>r.status==='DOWNLOADED_HASHED' && !r.authority.startsWith('SECONDARY')).length,
   secondaryCandidateDownloads:manifest.results.filter(r=>r.status==='DOWNLOADED_HASHED' && r.authority.startsWith('SECONDARY')).length,
-  derivedGeometryCandidates:manifest.results.filter(r=>r.artifactId && r.artifactId.startsWith('DERIVED-ECI-2026-AC-')).length,
+  derivedGeometryCandidates:manifest.results.filter(r=>(r.artifactId || '').startsWith('DERIVED-ECI-2026-AC-')).length,
   derivedGeometryAcceptedAsOfficial:manifest.results.filter(r=>r.acceptedAsOfficialGeometry===true).length
 };
 const manifestPath=path.join(OUT,'manifest.json');
