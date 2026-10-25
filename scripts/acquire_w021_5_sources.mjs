@@ -197,19 +197,19 @@ const eciIndex = manifest.results.find(r => r.id==='SRC-ECI-STATISTICAL-INDEX' &
 if (eciIndex) {
   try {
     const html = await fs.readFile(eciIndex.localPath, 'utf8');
-    const rows = html.match(/<tr\\b[\\s\\S]*?<\\/tr>/gi) || [];
+    const rows = html.match(/<tr\b[\s\S]*?<\/tr>/gi) || [];
     const byState = new Map();
-    const strip = value => value.replace(/<[^>]+>/g,' ').replace(/&amp;/g,'&').replace(/&nbsp;/g,' ').replace(/\\s+/g,' ').trim();
+    const strip = value => value.replace(/<[^>]+>/g,' ').replace(/&amp;/g,'&').replace(/&nbsp;/g,' ').replace(/\s+/g,' ').trim();
     for (const row of rows) {
-      const cells = [...row.matchAll(/<td\\b[^>]*>([\\s\\S]*?)<\\/td>/gi)];
+      const cells = [...row.matchAll(/<td\b[^>]*>([\s\S]*?)<\/td>/gi)];
       if (cells.length < 2) continue;
       const stateName = strip(cells[0][1]);
       if (!stateName || /^(states|years|state)$/i.test(stateName)) continue;
-      const anchors = [...row.matchAll(/<a\\b[^>]*href\\s*=\\s*["']([^"']+)["'][^>]*>([\\s\\S]*?)<\\/a>/gi)];
+      const anchors = [...row.matchAll(/<a\b[^>]*href\s*=\s*["']([^"']+)["'][^>]*>([\s\S]*?)<\/a>/gi)];
       const links = [];
       for (const anchor of anchors) {
         const href = new URL(anchor[1].replace(/&amp;/g,'&'), eciIndex.finalUrl).toString();
-        const match = new URL(href).pathname.match(/\\/statistical-report\\/ae\\/(\\d{4})\\/(\\d+)/i);
+        const match = new URL(href).pathname.match(/\/statistical-report\/ae\/(\d{4})\/(\d+)/i);
         if (!match || !hostAllowed(href)) continue;
         links.push({url:href,year:Number(match[1]),code:match[2],label:strip(anchor[2])});
       }
@@ -227,7 +227,7 @@ if (eciIndex) {
 
     const reportPages=[...byState.values()].flat().slice(0,80);
     for (const page of reportPages) {
-      const stateSlug=safeName(page.stateName.toLowerCase().replace(/\\s+/g,'-'));
+      const stateSlug=safeName(page.stateName.toLowerCase().replace(/\s+/g,'-'));
       const source={
         id:'SRC-ECI-AE-'+page.year+'-'+page.code,
         authority:'PRIMARY_OFFICIAL_STATISTICAL_REPORT',
@@ -261,14 +261,14 @@ if (eciIndex) {
       manifest.results.push(result);
       if (result.status!=='DOWNLOADED_HASHED') continue;
 
-      const headingPattern=/10\\s*[-–.]\\s*Detailed Results/i;
+      const headingPattern=/10\s*[-–.]\s*Detailed Results/i;
       const heading=headingPattern.exec(reportHtml);
       if (!heading) {
         manifest.results.push({id:source.id+'-DETAILS',state:page.stateName,electionYear:page.year,status:'DETAILS_SECTION_NOT_FOUND',sourceReportSha256:result.sha256});
         continue;
       }
       const section=reportHtml.slice(heading.index,heading.index+12000);
-      const xlsxAnchors=[...section.matchAll(/<a\\b[^>]*href\\s*=\\s*["']([^"']+)["'][^>]*>([\\s\\S]*?)<\\/a>/gi)]
+      const xlsxAnchors=[...section.matchAll(/<a\b[^>]*href\s*=\s*["']([^"']+)["'][^>]*>([\s\S]*?)<\/a>/gi)]
         .map(a=>({url:new URL(a[1].replace(/&amp;/g,'&'),result.finalUrl).toString(),label:strip(a[2])}))
         .filter(a=>/xlsx|excel|download/i.test(a.label) && hostAllowed(a.url));
       const xlsx=xlsxAnchors.find(a=>/xlsx|excel/i.test(a.label)) || xlsxAnchors[1] || xlsxAnchors[0];
@@ -337,7 +337,7 @@ for (const sourceResult of manifest.results.filter(r => /^SRC-ECI-2026-AC-/.test
     const geojson = JSON.stringify(parsed);
     const destination = path.join(OUT, 'derived/eci-2026-ac-geometry', stateCode + '.geojson');
     await fs.mkdir(path.dirname(destination), {recursive:true});
-    await fs.writeFile(destination, geojson + '\\n', {flag:'w'});
+     await fs.writeFile(destination, geojson + '\n', {flag:'w'});
     const featureCount = parsed.features.length;
     const derived = {
       artifactId:'DERIVED-ECI-2026-AC-'+stateCode,
@@ -346,8 +346,8 @@ for (const sourceResult of manifest.results.filter(r => /^SRC-ECI-2026-AC-/.test
       transformation:'Extract first JSON object from ECI JavaScript wrapper; JSON.parse; serialize compact GeoJSON; no geometry edits',
       transformationVersion:'w0215-eci-js-to-geojson-v1',
       localPath:destination,
-      sha256:sha256(Buffer.from(geojson + '\\n','utf8')),
-      bytes:Buffer.byteLength(geojson + '\\n','utf8'),
+       sha256:sha256(Buffer.from(geojson + '\n','utf8')),
+       bytes:Buffer.byteLength(geojson + '\n','utf8'),
       featureCount,
       expectedStatutorySeatCount:expectedSeats,
       status:featureCount===expectedSeats ? 'CANDIDATE_PENDING_IDENTITY_AND_TOPOLOGY_VALIDATION' : 'REJECTED_COUNT_MISMATCH',
@@ -416,7 +416,7 @@ for (const index of indexSources) {
       const absolute = new URL(href, index.finalUrl).toString();
       if (!hostAllowed(absolute)) continue;
       const pathLower = new URL(absolute).pathname.toLowerCase();
-      if (/\\.rar$/i.test(pathLower) && /PAN[%\\s_-]*INDIA/i.test(pathLower)) {
+      if (/\.rar$/i.test(pathLower) && /PAN[%\s_-]*INDIA/i.test(pathLower)) {
         const sourceId='DISCOVERED-SOI-15GB-ABDB-ARCHIVE';
         if (!manifest.results.some(r=>r.id===sourceId)) manifest.results.push({
           id:sourceId, authority:'PRIMARY_OFFICIAL_METADATA_ONLY', url:absolute, discoveredFrom:index.id,
