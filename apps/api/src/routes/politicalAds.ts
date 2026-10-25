@@ -257,7 +257,7 @@ export const politicalAdsRoutes: FastifyPluginAsync = async (app) => {
         }
 
         return reply.status(201).send({ success: true, ad: newAd });
-      } catch (err: any) {
+      } catch {
         if (process.env.NODE_ENV === 'test') {
           const fallbackAd: PoliticalAdRow = {
             id: `pad-${Date.now()}`,
@@ -274,6 +274,7 @@ export const politicalAdsRoutes: FastifyPluginAsync = async (app) => {
           MEMORY_ADS.push(fallbackAd);
           return reply.status(201).send({ success: true, ad: fallbackAd });
         }
+        return sendApiError(reply, request, 500, 'Internal Server Error', 'Failed to create political ad due to a database failure.', { code: 'DATABASE_ERROR' });
       }
     }
 
@@ -401,7 +402,7 @@ export const politicalAdsRoutes: FastifyPluginAsync = async (app) => {
           ad: updated,
           message: `Political ad ${action === 'certify' ? 'certified and activated' : 'rejected'} by reviewer ${auth.userId}`,
         });
-      } catch (err: any) {
+      } catch {
         if (process.env.NODE_ENV === 'test') {
           const target = MEMORY_ADS.find((a) => a.id === adId);
           if (target) {
@@ -415,6 +416,7 @@ export const politicalAdsRoutes: FastifyPluginAsync = async (app) => {
             });
           }
         }
+        return sendApiError(reply, request, 500, 'Internal Server Error', 'Failed to update political-ad certification due to a database failure.', { code: 'DATABASE_ERROR' });
       }
     }
 
