@@ -463,7 +463,7 @@ async function importSeedData(db) {
       let historicalCount = 0;
       if (fs.existsSync(historicalPath)) {
         const historyModule = await import(`file://${historicalPath}`);
-        const resultKeys = Object.keys(historyModule).filter((key) => /_\\d{4}_RESULTS$/.test(key) && Array.isArray(historyModule[key]));
+        const resultKeys = Object.keys(historyModule).filter((key) => /_\d{4}_RESULTS$/.test(key) && Array.isArray(historyModule[key]));
         const insertHistorical = db.prepare(`
           INSERT OR REPLACE INTO historical_results
           (id, state_code, ac_no, year, winner, party)
@@ -503,7 +503,7 @@ async function importSeedData(db) {
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
           `);
           for (const event of timelineModule[timelineKey]) {
-            if (!event?.id || !/^\\d{4}-\\d{2}-\\d{2}$/.test(event.date) || !Number.isInteger(event.assembly) || !event.eventType) {
+            if (!event?.id || !/^\d{4}-\d{2}-\d{2}$/.test(event.date) || !Number.isInteger(event.assembly) || !event.eventType) {
               throw new Error(`Invalid political timeline event in ${slug}/${timelineKey}.`);
             }
             const affectedAcs = Array.isArray(event.acNos) && event.acNos.length
