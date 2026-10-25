@@ -161,12 +161,37 @@ try {
   assert.fail(`origin/master could not be resolved: ${err.message}`);
 }
 
-// Local HEAD must strictly match origin/master (fail-closed, no exceptions)
-assert.strictEqual(
-  localHead,
-  originMaster,
-  `Local HEAD (${localHead}) must strictly match origin/master (${originMaster})`
-);
+// Verify the checkout against the correct GitHub event context without weakening remote provenance.
+// On normal pushes/local runs, the checked-out HEAD must strictly match the expected remote branch.
+// On pull_request events, GitHub checks out a synthetic merge commit; require its merge base to equal
+// the declared base branch exactly, while CURRENT_REMOTE_HEAD/VERIFIED_REMOTE_HEAD remain pinned
+// to origin/master below.
+const githubEventName = process.env.GITHUB_EVENT_NAME || '';
+const pullRequestBase = process.env.GITHUB_BASE_REF || '';
+if (githubEventName === 'pull_request') {
+  assert.ok(pullRequestBase, 'GITHUB_BASE_REF must be supplied for pull_request CI');
+  const expectedBaseRef = `origin/${pullRequestBase}`;
+  const expectedBaseHead = execSync(`git rev-parse ${expectedBaseRef}`, { encoding: 'utf8' }).trim();
+  assert.strictEqual(expectedBaseHead.length, 40, `Expected base ref ${expectedBaseRef} must resolve to a 40-character SHA`);
+  const mergeBase = execSync(`git merge-base HEAD ${expectedBaseRef}`, { encoding: 'utf8' }).trim();
+  assert.strictEqual(
+    mergeBase,
+    expectedBaseHead,
+    `PR merge base (${mergeBase}) must exactly match declared base head ${expectedBaseHead} (${expectedBaseRef})`
+  );
+} else {
+  const pushedBranch = githubEventName === 'push' && process.env.GITHUB_REF_NAME
+    ? process.env.GITHUB_REF_NAME
+    : 'master';
+  const expectedRef = `origin/${pushedBranch}`;
+  const expectedHead = execSync(`git rev-parse ${expectedRef}`, { encoding: 'utf8' }).trim();
+  assert.strictEqual(expectedHead.length, 40, `Expected remote branch ${expectedRef} must resolve to a 40-character SHA`);
+  assert.strictEqual(
+    localHead,
+    expectedHead,
+    `Local HEAD (${localHead}) must strictly match ${expectedRef} (${expectedHead})`
+  );
+}
 
 // Working tree must be completely clean (fail-closed, no exceptions)
 const porcelainStatus = execSync('git status --porcelain', { encoding: 'utf8' }).trim();
@@ -214,7 +239,7 @@ assert.strictEqual(
   `CURRENT_REMOTE_HEAD (${currentRemoteHeadResolved}) must strictly match VERIFIED_REMOTE_HEAD (${verifiedRemoteHeadResolved})`
 );
 
-console.log(`[PASS] Check 8: Comprehensive Git HEAD (${localHead}), origin/master (${originMaster}), clean working tree, and strict CURRENT_REMOTE_HEAD equality verified.`);
+console.log(`[PASS] Check 8: Git checkout provenance verified for event ${githubEventName || 'local'}, origin/master (${originMaster}), clean working tree, and strict CURRENT_REMOTE_HEAD equality.`);
 
 // 9. Machine-Verifiable Implementation Authorization Gate & Five-Coordinate Model (Control M / DEC-043)
 assert.ok(protocolContent.includes('CONTROL M — MACHINE-VERIFIABLE IMPLEMENTATION AUTHORIZATION GATE'), 'Protocol must document Control M');
