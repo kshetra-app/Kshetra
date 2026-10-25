@@ -103,6 +103,8 @@ async function runAll() {
     assert.ok(correctiveSqlContent.includes('ON CONFLICT (tenant_id, idempotency_key) WHERE idempotency_key IS NOT NULL DO NOTHING'));
     assert.ok(correctiveSqlContent.includes('fn_complete_webhook_delivery'));
     assert.ok(correctiveSqlContent.includes('fn_recover_expired_webhook_leases'));
+    assert.ok(correctiveSqlContent.includes("CASE WHEN d.attempt_count >= 5 THEN 'dead_letter' ELSE 'queued' END"));
+    assert.ok(correctiveSqlContent.includes('LEASE_EXPIRED_AT_MAX_ATTEMPTS'));
     assert.ok(correctiveSqlContent.includes('p_retention_days > 3650'));
     assert.ok(correctiveSqlContent.includes('p_batch_size > 5000'));
   });

@@ -219,7 +219,14 @@ BEGIN
          ORDER BY d.leased_until ASC, d.id ASC LIMIT p_batch_size FOR UPDATE SKIP LOCKED
     ), recovered AS (
         UPDATE public.webhook_deliveries AS d
-           SET status = 'queued', lease_token = NULL, leased_at = NULL, leased_until = NULL
+           SET status = CASE WHEN d.attempt_count >= 5 THEN 'dead_letter' ELSE 'queued' END,
+               completed_at = CASE WHEN d.attempt_count >= 5 THEN pg_catalog.clock_timestamp() ELSE NULL END,
+               next_retry_at = NULL,
+               error_message = CASE
+                   WHEN d.attempt_count >= 5 THEN COALESCE(d.error_message, 'LEASE_EXPIRED_AT_MAX_ATTEMPTS')
+                   ELSE d.error_message
+               END,
+               lease_token = NULL, leased_at = NULL, leased_until = NULL
           FROM expired AS e WHERE d.id = e.id RETURNING d.id
     )
     SELECT pg_catalog.count(*)::INTEGER INTO v_recovered FROM recovered;
