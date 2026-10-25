@@ -215,5 +215,25 @@
       "source snapshot commit exists and is ancestor of checked-out commit",
       "W022 migration, historical implementation, prospective authorization, acceptance and release remain distinct"
     ]
-  }
+  },
+  "commitsAfterSourceSnapshot": [
+    "56423a857a5ee40a14cacd1d439a6aca85505878",
+    "6a89cf9201584e42ed049c5494f779e375d76a6e",
+    "8a0c3e00c399b15ce62c71468a88bde5d0170f02",
+    "657837b307153671fa9c6b745063d3fe0aa1097b",
+    "678385b3ed1aedc796cf180bbe38b76123cf35f6",
+    "d585e95670bf4dae909540695c0d2c1b6e09a59e",
+    "18b4e5617472d0d0ed7a4df5889cbc35cfe2cdf2",
+    "9fccf3de7ae3864d44c9c95a15a972fb8e9a1986",
+    "050bb38f40998ce93622b6fd2f862858d5479f28",
+    "7c2584710f78cfe81113a6b169c6ae9698494465",
+    "cac3b6f089c4f6137b8d91234f1a9bd91363ca0b",
+    "d28f2d44b4d12117d749bbb14ca31f00a1cadee6",
+    "9b4d0b11b3d39bc24d356760cd548f0337b15222",
+    "22f78ca17dcf99a9e176c13978799739894c14ce",
+    "afc0d632a0a7c86e1853f8323b4e2557a3ff84aa",
+    "e2dd97c5f0f8c4b22668023847a3b2463bb27039",
+    "bbd88cd25512bc9aada7fa5130b0a2c86d306662"
+  ],
+  "commitAccountabilityNote": "Commit IDs are the complete repair-branch commit set after sourceSnapshot.commit captured when this report was authored. The test compares this registered list with git log and fails on an unrecorded commit. Updating the report to add a newer commit changes the manifest commit itself; refresh the list with all commits from the preceding snapshot plus that new report commit, not with a claimed current HEAD self-hash."
 }
