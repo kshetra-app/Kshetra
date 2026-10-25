@@ -95,6 +95,74 @@ jobs:
       - name: Test mobile (node-safe lib units)
         run: npm test -w @kshetra/mobile -- --forceExit
 
+  w022-verification:
+    name: W022 Security & Persistence Verification
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build shared package
+        run: npm run build -w @kshetra/shared
+
+      - name: Start isolated PostgreSQL 16 and apply the exact W022 migration chain
+        run: |
+          docker run -d --name w022-verify-postgres \
+            -e POSTGRES_USER=w022_admin \
+            -e POSTGRES_PASSWORD=w022_local_only \
+            -e POSTGRES_DB=w022_disposable_db \
+            -p 127.0.0.1:54333:5432 postgres:16-alpine
+          ready=0
+          for attempt in $(seq 1 60); do
+            if docker exec w022-verify-postgres psql -U w022_admin -d w022_disposable_db -v ON_ERROR_STOP=1 -c "SELECT 1" >/dev/null 2>&1; then
+              ready=1
+              break
+            fi
+            sleep 1
+          done
+          if [ "$ready" -ne 1 ]; then
+            docker logs w022-verify-postgres
+            echo "Disposable PostgreSQL database did not finish initialization." >&2
+            exit 1
+          fi
+          docker exec w022-verify-postgres psql -U w022_admin -d w022_disposable_db -v ON_ERROR_STOP=1 -c "CREATE ROLE anon NOLOGIN; CREATE ROLE authenticated NOLOGIN; CREATE ROLE service_role NOLOGIN;"
+          for migration in \
+            supabase/migrations/056_saas_partner_foundation.sql \
+            supabase/migrations/057_w021_saas_tenant_isolation_remediation.sql \
+            supabase/migrations/058_w021_saas_atomic_quota_enforcement.sql \
+            supabase/migrations/070_saas_webhook_engine.sql \
+            supabase/migrations/071_w022_atomic_event_dispatch_and_worker_security.sql; do
+            echo "Applying exact source migration: $migration"
+            docker exec -i w022-verify-postgres psql -U w022_admin -d w022_disposable_db -v ON_ERROR_STOP=1 < "$migration"
+          done
+
+      - name: Run all W022 local regression suites
+        run: npm run test:w022 -w @kshetra/api
+        env:
+          NODE_ENV: test
+          WEBHOOK_SECRETS_ENCRYPTION_KEY: 0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef
+          SUPABASE_URL: https://test-fixture.supabase.co
+          SUPABASE_ANON_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRlc3QiLCJyb2xlIjoiYW5vbiIsImlhdCI6MTYwMDAwMDAwMCwiZXhwIjoxOTAwMDAwMDAwfQ.dummy_signature_for_test_environment_only
+
+      - name: Verify W022 against disposable PostgreSQL 16
+        run: npx tsx tests/webhooks-real-postgres-verification.test.ts
+        env:
+          W022_TEST_DB: w022_disposable_db
+
+      - name: Verify SaaS OpenAPI contract and drift
+        run: node tests/saas-openapi-contract-drift.test.mjs
+
   typecheck:
     name: Typecheck
     runs-on: ubuntu-latest

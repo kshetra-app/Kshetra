@@ -2,8 +2,8 @@
  * tests/webhooks-real-postgres-verification.test.ts
  *
  * Milestone W022 — B2B SaaS Outbound Webhooks & Event Dispatching Engine
- * Directive: W022-CTO-PG-UNBLOCK-002
- * Target: Real Disposable Local PostgreSQL 16 Container (127.0.0.1:54333)
+ * Directive: W022-CTO-PG-UNBLOCK-002 / W022-G10
+ * Target: Real Disposable Local PostgreSQL 16 Container (127.0.0.1:54333), migrations 056 -> 057 -> 058 -> 070 -> 071
  *
  * Scope: Real PostgreSQL runtime verification of:
  * 1. Server version, function ownership, SECURITY DEFINER, fixed search_path.
@@ -91,56 +91,104 @@ async function runAll() {
   });
 
   // ─── 2. FUNCTION METADATA, SECURITY DEFINER & SEARCH_PATH ───
-  await runCheck('REAL-PG-02', 'Verify SECURITY DEFINER and fixed search_path on engine functions', () => {
+  await runCheck('REAL-PG-02', 'Verify all six webhook SECURITY DEFINER functions use a fixed search_path', () => {
     const rows = queryJson(`
       SELECT proname, prosecdef, proconfig::text AS proconfig
-      FROM pg_proc 
-      WHERE proname IN ('fn_webhook_events_prevent_mutation', 'fn_purge_expired_webhook_data', 'fn_claim_webhook_batch')
-        AND pronamespace = 'public'::regnamespace
+      FROM pg_proc
+      WHERE proname IN (
+        'fn_webhook_events_prevent_mutation', 'fn_purge_expired_webhook_data',
+        'fn_claim_webhook_batch', 'fn_enqueue_webhook_event',
+        'fn_complete_webhook_delivery', 'fn_recover_expired_webhook_leases'
+      )
+      AND pronamespace = 'public'::regnamespace
       ORDER BY proname;
     `);
-    assert.strictEqual(rows.length, 3, 'Must find all 3 engine functions');
+    assert.strictEqual(rows.length, 6, 'Must find all 6 webhook engine functions after migration 071');
     for (const r of rows) {
-      assert.strictEqual(r.prosecdef, true, `Function ${r.proname} must be SECURITY DEFINER`);
-      assert.ok(r.proconfig.includes('search_path=pg_catalog, pg_temp'), `Function ${r.proname} must have fixed search_path=pg_catalog, pg_temp`);
+      assert.strictEqual(r.prosecdef, true, 'Function ' + r.proname + ' must be SECURITY DEFINER');
+      assert.ok(r.proconfig.includes('search_path=pg_catalog, pg_temp'), 'Function ' + r.proname + ' must have fixed search_path');
     }
   });
 
   // ─── 3. TABLE DAC & ROLE EXECUTION GRANTS ───
-  await runCheck('REAL-PG-03', 'Verify table-level DAC privileges: service_role has SELECT/INSERT only on webhook_events', () => {
+  await runCheck('REAL-PG-03', 'Verify service_role, anon, authenticated, and worker have no direct event/delivery table rights', () => {
     const rows = queryJson(`
-      SELECT 
-        has_table_privilege('service_role', 'public.webhook_events', 'SELECT') AS sr_select,
-        has_table_privilege('service_role', 'public.webhook_events', 'INSERT') AS sr_insert,
-        has_table_privilege('service_role', 'public.webhook_events', 'UPDATE') AS sr_update,
-        has_table_privilege('service_role', 'public.webhook_events', 'DELETE') AS sr_delete,
-        has_table_privilege('anon', 'public.webhook_events', 'SELECT') AS anon_select,
-        has_table_privilege('authenticated', 'public.webhook_events', 'SELECT') AS auth_select;
+      SELECT
+        has_table_privilege('service_role', 'public.webhook_events', 'SELECT') AS sr_event_select,
+        has_table_privilege('service_role', 'public.webhook_events', 'INSERT') AS sr_event_insert,
+        has_table_privilege('service_role', 'public.webhook_events', 'UPDATE') AS sr_event_update,
+        has_table_privilege('service_role', 'public.webhook_events', 'DELETE') AS sr_event_delete,
+        has_table_privilege('service_role', 'public.webhook_deliveries', 'SELECT') AS sr_delivery_select,
+        has_table_privilege('service_role', 'public.webhook_deliveries', 'UPDATE') AS sr_delivery_update,
+        has_table_privilege('webhook_worker', 'public.webhook_events', 'SELECT') AS worker_event_select,
+        has_table_privilege('webhook_worker', 'public.webhook_events', 'INSERT') AS worker_event_insert,
+        has_table_privilege('webhook_worker', 'public.webhook_deliveries', 'SELECT') AS worker_delivery_select,
+        has_table_privilege('webhook_worker', 'public.webhook_deliveries', 'UPDATE') AS worker_delivery_update,
+        has_table_privilege('anon', 'public.webhook_events', 'SELECT') AS anon_event_select,
+        has_table_privilege('authenticated', 'public.webhook_events', 'SELECT') AS auth_event_select;
     `);
-    assert.strictEqual(rows[0].sr_select, true);
-    assert.strictEqual(rows[0].sr_insert, true);
-    assert.strictEqual(rows[0].sr_update, false);
-    assert.strictEqual(rows[0].sr_delete, false);
-    assert.strictEqual(rows[0].anon_select, false);
-    assert.strictEqual(rows[0].auth_select, false);
+    for (const [key, value] of Object.entries(rows[0])) assert.strictEqual(value, false, key + ' must be denied');
   });
 
-  await runCheck('REAL-PG-04', 'Verify function execution grants: service_role has EXECUTE on purge & batch claim; anon/auth revoked', () => {
+  await runCheck('REAL-PG-04', 'Verify intended RPC grants and no worker administrative function access', () => {
     const rows = queryJson(`
-      SELECT 
+      SELECT
         has_function_privilege('service_role', 'public.fn_purge_expired_webhook_data(integer, integer)', 'EXECUTE') AS sr_purge,
-        has_function_privilege('anon', 'public.fn_purge_expired_webhook_data(integer, integer)', 'EXECUTE') AS anon_purge,
-        has_function_privilege('authenticated', 'public.fn_purge_expired_webhook_data(integer, integer)', 'EXECUTE') AS auth_purge,
         has_function_privilege('service_role', 'public.fn_claim_webhook_batch(integer, integer)', 'EXECUTE') AS sr_claim,
+        has_function_privilege('service_role', 'public.fn_enqueue_webhook_event(uuid, text, text, jsonb, text, text)', 'EXECUTE') AS sr_enqueue,
+        has_function_privilege('service_role', 'public.fn_complete_webhook_delivery(uuid, uuid, boolean, integer, integer, jsonb, text, text)', 'EXECUTE') AS sr_complete,
+        has_function_privilege('service_role', 'public.fn_recover_expired_webhook_leases()', 'EXECUTE') AS sr_recover,
+        has_function_privilege('webhook_worker', 'public.fn_claim_webhook_batch(integer, integer)', 'EXECUTE') AS worker_public_claim,
+        has_function_privilege('webhook_worker', 'panin_webhook_worker.claim_webhook_batch(integer, integer)', 'EXECUTE') AS worker_claim,
+        has_function_privilege('webhook_worker', 'public.fn_complete_webhook_delivery(uuid, uuid, boolean, integer, integer, jsonb, text, text)', 'EXECUTE') AS worker_public_complete,
+        has_function_privilege('webhook_worker', 'panin_webhook_worker.complete_webhook_delivery(uuid, uuid, boolean, integer, integer, jsonb, text, text)', 'EXECUTE') AS worker_complete,
+        has_function_privilege('webhook_worker', 'public.fn_enqueue_webhook_event(uuid, text, text, jsonb, text, text)', 'EXECUTE') AS worker_enqueue,
+        has_function_privilege('webhook_worker', 'public.fn_purge_expired_webhook_data(integer, integer)', 'EXECUTE') AS worker_purge,
         has_function_privilege('anon', 'public.fn_claim_webhook_batch(integer, integer)', 'EXECUTE') AS anon_claim,
         has_function_privilege('authenticated', 'public.fn_claim_webhook_batch(integer, integer)', 'EXECUTE') AS auth_claim;
     `);
-    assert.strictEqual(rows[0].sr_purge, true);
-    assert.strictEqual(rows[0].anon_purge, false);
-    assert.strictEqual(rows[0].auth_purge, false);
-    assert.strictEqual(rows[0].sr_claim, true);
-    assert.strictEqual(rows[0].anon_claim, false);
-    assert.strictEqual(rows[0].auth_claim, false);
+    for (const key of ['sr_purge', 'sr_claim', 'sr_enqueue', 'sr_complete', 'sr_recover', 'worker_claim', 'worker_complete']) {
+      assert.strictEqual(rows[0][key], true, key + ' must be granted');
+    }
+    for (const key of ['worker_public_claim', 'worker_public_complete', 'worker_enqueue', 'worker_purge', 'anon_claim', 'auth_claim']) {
+      assert.strictEqual(rows[0][key], false, key + ' must be denied');
+    }
+  });
+
+  await runCheck('REAL-PG-04B', 'Verify worker role cannot login directly or assume service_role', () => {
+    const rows = queryJson(`
+      SELECT rolcanlogin, rolsuper, rolcreatedb, rolcreaterole, rolbypassrls,
+        pg_has_role('webhook_worker', 'service_role', 'MEMBER') AS in_service_role,
+        has_schema_privilege('webhook_worker', 'public', 'CREATE') AS public_schema_create,
+        has_schema_privilege('webhook_worker', 'panin_webhook_worker', 'USAGE') AS worker_schema_usage
+      FROM pg_roles WHERE rolname = 'webhook_worker';
+    `);
+    assert.strictEqual(rows.length, 1);
+    for (const key of ['rolcanlogin', 'rolsuper', 'rolcreatedb', 'rolcreaterole', 'rolbypassrls', 'in_service_role', 'public_schema_create']) {
+      assert.strictEqual(rows[0][key], false, key + ' must be false');
+    }
+    assert.strictEqual(rows[0].worker_schema_usage, true);
+  });
+
+  await runCheck('REAL-PG-04C', 'SET ROLE webhook_worker can execute its private claim wrapper but nothing else is needed to reach it', () => {
+    runPsql(`
+      SET ROLE webhook_worker;
+      SELECT * FROM panin_webhook_worker.claim_webhook_batch(1, 60);
+      RESET ROLE;
+    `);
+  });
+
+  await runCheck('REAL-PG-04D', 'SET ROLE webhook_worker is denied direct SELECT from webhook_events', () => {
+    assert.throws(
+      () => runPsql('SET ROLE webhook_worker; SELECT count(*) FROM public.webhook_events;'),
+      /permission denied for table webhook_events/
+    );
+  });
+
+  await runCheck('REAL-PG-04E', 'Retention RPC rejects NULL and out-of-range retention batches', () => {
+    assert.throws(() => runPsql('SELECT * FROM public.fn_purge_expired_webhook_data(NULL, 100);'), /INVALID_RETENTION_PERIOD/);
+    assert.throws(() => runPsql('SELECT * FROM public.fn_purge_expired_webhook_data(30, NULL);'), /INVALID_BATCH_SIZE/);
+    assert.throws(() => runPsql('SELECT * FROM public.fn_purge_expired_webhook_data(30, 5001);'), /INVALID_BATCH_SIZE/);
   });
 
   // ─── 4. SEED TEST FIXTURES ───

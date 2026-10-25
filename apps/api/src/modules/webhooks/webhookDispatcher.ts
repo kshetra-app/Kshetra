@@ -37,6 +37,32 @@ export const MAX_WEBHOOK_PAYLOAD_BYTES = 256 * 1024; // 256 KB max outbound payl
 export const MAX_RESPONSE_SAMPLE_BYTES = 1024; // 1 KB max stored response sample
 export const MAX_RESPONSE_STREAM_BYTES = 64 * 1024; // 64 KB max response stream before aborting socket
 
+const SAFE_RESPONSE_HEADER_NAMES = new Set([
+  'content-type',
+  'content-length',
+  'date',
+  'retry-after',
+  'etag',
+  'last-modified',
+  'x-request-id',
+  'traceparent',
+  'server-timing',
+]);
+
+/** Keep only bounded, non-credential response metadata; never persist cookies or arbitrary headers. */
+export function sanitizeResponseHeaders(
+  headers: Record<string, string | string[] | number | undefined>
+): Record<string, string> {
+  const safe: Record<string, string> = {};
+  for (const [name, value] of Object.entries(headers)) {
+    const key = name.toLowerCase();
+    if (!SAFE_RESPONSE_HEADER_NAMES.has(key) || value === undefined || Object.keys(safe).length >= 9) continue;
+    const normalized = Array.isArray(value) ? value.join(', ') : String(value);
+    safe[key] = normalized.replace(/[\r\n\0]/g, ' ').slice(0, 256);
+  }
+  return safe;
+}
+
 /**
  * Dispatches an outbound webhook HTTP POST request.
  * Transmits the exact persisted canonical UTF-8 bytes.
@@ -124,14 +150,7 @@ export async function dispatchWebhook(params: DispatchParams): Promise<DispatchR
 
     const req = requestFn(requestOptions, (res) => {
       const statusCode = res.statusCode || 0;
-      const responseHeaders: Record<string, string> = {};
-      for (const [k, v] of Object.entries(res.headers)) {
-        if (typeof v === 'string') {
-          responseHeaders[k.toLowerCase()] = v;
-        } else if (Array.isArray(v)) {
-          responseHeaders[k.toLowerCase()] = v.join(', ');
-        }
-      }
+      const responseHeaders = sanitizeResponseHeaders(res.headers);
 
       // Check for 3xx redirect: Strictly prohibited (no follow)
       if (statusCode >= 300 && statusCode < 400) {

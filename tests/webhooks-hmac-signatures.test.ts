@@ -16,6 +16,9 @@
 import assert from 'node:assert';
 import crypto from 'node:crypto';
 import {
+  getMasterEncryptionKey,
+  encodeBytea,
+  decodeBytea,
   canonicalizeJson,
   generateWebhookSecret,
   encryptSecret,
@@ -48,8 +51,9 @@ function runCheck(id: string, description: string, fn: () => void) {
 }
 
 // Ensure mock master key for testing
-process.env.WEBHOOK_MASTER_ENCRYPTION_KEY =
-  process.env.WEBHOOK_MASTER_ENCRYPTION_KEY || '0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef';
+process.env.NODE_ENV = 'test';
+process.env.WEBHOOK_SECRETS_ENCRYPTION_KEY =
+  process.env.WEBHOOK_SECRETS_ENCRYPTION_KEY || '0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef';
 
 // ─── 1. RFC 8785 JSON Canonicalization Tests ───
 runCheck('CRYPTO-01', 'RFC 8785: Sort top-level keys lexicographically by UTF-16 code units', () => {
@@ -266,6 +270,48 @@ runCheck('CRYPTO-17', 'Redact plaintext secrets in logging helper to prevent cre
   const redacted = redactSecretsForLogging({ secret, tenant: 'test-tenant' });
   assert.strictEqual(redacted.secret, 'whsec_***');
   assert.strictEqual(redacted.tenant, 'test-tenant');
+});
+
+
+runCheck('CRYPTO-18', 'Encryption key accepts exactly 32 bytes encoded as 64 hex characters', () => {
+  const previous = process.env.WEBHOOK_SECRETS_ENCRYPTION_KEY;
+  try {
+    process.env.WEBHOOK_SECRETS_ENCRYPTION_KEY = 'ab'.repeat(32);
+    assert.strictEqual(getMasterEncryptionKey().length, 32);
+    process.env.WEBHOOK_SECRETS_ENCRYPTION_KEY = 'z'.repeat(64);
+    assert.throws(() => getMasterEncryptionKey(), /exactly 64 hexadecimal characters/);
+    process.env.WEBHOOK_SECRETS_ENCRYPTION_KEY = 'a'.repeat(65);
+    assert.throws(() => getMasterEncryptionKey(), /exactly 64 hexadecimal characters/);
+  } finally {
+    if (previous === undefined) delete process.env.WEBHOOK_SECRETS_ENCRYPTION_KEY;
+    else process.env.WEBHOOK_SECRETS_ENCRYPTION_KEY = previous;
+  }
+});
+
+runCheck('CRYPTO-20', 'PostgreSQL BYTEA encodes and decodes exactly without a text coercion loss', () => {
+  const input = Buffer.from([0, 1, 2, 127, 128, 254, 255]);
+  const encoded = encodeBytea(input);
+  assert.strictEqual(encoded, '\\x0001027f80feff');
+  assert.deepStrictEqual(decodeBytea(encoded), input);
+  assert.deepStrictEqual(decodeBytea(Buffer.from(input)), input);
+  assert.throws(() => decodeBytea('\\x01z2'), /INVALID_BYTEA_VALUE/);
+});
+
+runCheck('CRYPTO-19', 'Encryption key has no silent non-test or unset-environment fallback', () => {
+  const previousEnv = process.env.NODE_ENV;
+  const previousKey = process.env.WEBHOOK_SECRETS_ENCRYPTION_KEY;
+  try {
+    process.env.NODE_ENV = 'production';
+    delete process.env.WEBHOOK_SECRETS_ENCRYPTION_KEY;
+    assert.throws(() => getMasterEncryptionKey(), /missing or invalid/);
+    delete process.env.NODE_ENV;
+    assert.throws(() => getMasterEncryptionKey(), /missing or invalid/);
+  } finally {
+    if (previousEnv === undefined) delete process.env.NODE_ENV;
+    else process.env.NODE_ENV = previousEnv;
+    if (previousKey === undefined) delete process.env.WEBHOOK_SECRETS_ENCRYPTION_KEY;
+    else process.env.WEBHOOK_SECRETS_ENCRYPTION_KEY = previousKey;
+  }
 });
 
 // ─── Summary ───
