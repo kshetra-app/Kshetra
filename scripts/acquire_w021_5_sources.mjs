@@ -19,8 +19,8 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const OUT = process.env.W0215_SOURCE_CACHE
   ? path.resolve(process.env.W0215_SOURCE_CACHE)
   : path.join(ROOT, 'artifacts', 'w021_5_source_cache');
-const MAX_BYTES = 250 * 1024 * 1024;
-const MAX_TOTAL_BYTES = 750 * 1024 * 1024;
+const MAX_BYTES = 50 * 1024 * 1024;
+const MAX_TOTAL_BYTES = 500 * 1024 * 1024;
 const MAX_REDIRECTS = 5;
 let totalDownloadedBytes = 0;
 const ALLOWED_HOSTS = new Set([
@@ -42,6 +42,10 @@ const SOURCES = [
     url:'https://www.eci.gov.in/affidavitt-portal', purpose:'Official candidate affidavit portal discovery page; individual affidavit files require record-level capture.' },
   { id:'SRC-CENSUS-PCA-SD-2011', authority:'PRIMARY_OFFICIAL_CATALOG', path:'official/census/pca-sd-2011-catalog.html',
     url:'https://censusindia.gov.in/nada/index.php/catalog/6191', effectiveDate:'2011', purpose:'Official PCA state/district catalogue; download links and exact workbook are captured separately when available.' },
+  { id:'SRC-CENSUS-PCA-SD-2011-XLSX', authority:'PRIMARY_OFFICIAL_DATASET', path:'official/census/DDW_PCA0000_2011_Indiastatedist.xlsx',
+    url:'https://censusindia.gov.in/nada/index.php/catalog/6191/download/9268/DDW_PCA0000_2011_Indiastatedist.xlsx', effectiveDate:'2011', purpose:'Official state/district-level PCA workbook. Not constituency-level data; do not label as AC population.' },
+  { id:'SRC-DATAMEET-AC-README', authority:'SECONDARY_SOURCE_METADATA', path:'secondary/datameet/assembly-constituencies-README.md',
+    url:'https://raw.githubusercontent.com/datameet/maps/b2f56f6bd8fdead64f0210c133ab467d26e3621e/assembly-constituencies/README.md', purpose:'Pinned dataset caveats and license metadata.' },
   { id:'SRC-SOI-ABDB', authority:'PRIMARY_OFFICIAL_CATALOG', path:'official/soi/administrative-boundary-database.html',
     url:'https://surveyofindia.gov.in/pages/administrative-boundary-data-base-abdb-', purpose:'Official administrative boundaries; not a substitute for AC statutory boundaries or postal delivery beats.' },
   { id:'SRC-SOI-VILLAGE-BOUNDARIES', authority:'PRIMARY_OFFICIAL_CATALOG', path:'official/soi/village-boundary-database.html',
@@ -184,6 +188,137 @@ for (const source of SOURCES) {
 
 
 
+
+/* Crawl the official ECI statistical-report index by state row. For each state,
+ * retrieve the two most recent report pages linked by ECI and the XLSX linked
+ * from the "10 - Detailed Results" section. This is deliberately bounded and
+ * source-year/state tagged; it does not infer missing results. */
+const eciIndex = manifest.results.find(r => r.id==='SRC-ECI-STATISTICAL-INDEX' && r.status==='DOWNLOADED_HASHED');
+if (eciIndex) {
+  try {
+    const html = await fs.readFile(eciIndex.localPath, 'utf8');
+    const rows = html.match(/<tr\\b[\\s\\S]*?<\\/tr>/gi) || [];
+    const byState = new Map();
+    const strip = value => value.replace(/<[^>]+>/g,' ').replace(/&amp;/g,'&').replace(/&nbsp;/g,' ').replace(/\\s+/g,' ').trim();
+    for (const row of rows) {
+      const cells = [...row.matchAll(/<td\\b[^>]*>([\\s\\S]*?)<\\/td>/gi)];
+      if (cells.length < 2) continue;
+      const stateName = strip(cells[0][1]);
+      if (!stateName || /^(states|years|state)$/i.test(stateName)) continue;
+      const anchors = [...row.matchAll(/<a\\b[^>]*href\\s*=\\s*["']([^"']+)["'][^>]*>([\\s\\S]*?)<\\/a>/gi)];
+      const links = [];
+      for (const anchor of anchors) {
+        const href = new URL(anchor[1].replace(/&amp;/g,'&'), eciIndex.finalUrl).toString();
+        const match = new URL(href).pathname.match(/\\/statistical-report\\/ae\\/(\\d{4})\\/(\\d+)/i);
+        if (!match || !hostAllowed(href)) continue;
+        links.push({url:href,year:Number(match[1]),code:match[2],label:strip(anchor[2])});
+      }
+      links.sort((a,b)=>b.year-a.year || (/(including)/i.test(b.label)?-1:0));
+      const chosen=[];
+      const seenYears=new Set();
+      for (const link of links) {
+        if (seenYears.has(link.year)) continue;
+        chosen.push({...link,stateName});
+        seenYears.add(link.year);
+        if (chosen.length===2) break;
+      }
+      if (chosen.length) byState.set(stateName,chosen);
+    }
+
+    const reportPages=[...byState.values()].flat().slice(0,80);
+    for (const page of reportPages) {
+      const stateSlug=safeName(page.stateName.toLowerCase().replace(/\\s+/g,'-'));
+      const source={
+        id:'SRC-ECI-AE-'+page.year+'-'+page.code,
+        authority:'PRIMARY_OFFICIAL_STATISTICAL_REPORT',
+        path:'official/eci/statistical-reports/'+stateSlug+'/'+page.year+'-'+page.code+'.html',
+        url:page.url,
+        state:page.stateName,
+        electionYear:page.year,
+        eciReportCode:page.code,
+        purpose:'Official state assembly election statistical report; download detailed results XLSX for this state/year.'
+      };
+      const result={...source,retrievedAt:new Date().toISOString(),status:'PENDING',sha256:null,bytes:null,finalUrl:null,contentType:null};
+      let reportHtml='';
+      try {
+        const fetched=await fetchBounded(source.url);
+        if (totalDownloadedBytes + fetched.bytes.byteLength > MAX_TOTAL_BYTES) throw new Error('TOTAL_DOWNLOAD_BUDGET_EXCEEDED');
+        totalDownloadedBytes+=fetched.bytes.byteLength;
+        const destination=path.join(OUT,source.path);
+        await fs.mkdir(path.dirname(destination),{recursive:true});
+        await fs.writeFile(destination,fetched.bytes,{flag:'w'});
+        reportHtml=fetched.bytes.toString('utf8');
+        result.status='DOWNLOADED_HASHED';
+        result.sha256=sha256(fetched.bytes);
+        result.bytes=fetched.bytes.byteLength;
+        result.finalUrl=fetched.finalUrl;
+        result.contentType=fetched.contentType;
+        result.localPath=destination;
+      } catch(error) {
+        result.status='FETCH_FAILED';
+        result.error=String(error?.message||error);
+      }
+      manifest.results.push(result);
+      if (result.status!=='DOWNLOADED_HASHED') continue;
+
+      const headingPattern=/10\\s*[-–.]\\s*Detailed Results/i;
+      const heading=headingPattern.exec(reportHtml);
+      if (!heading) {
+        manifest.results.push({id:source.id+'-DETAILS',state:page.stateName,electionYear:page.year,status:'DETAILS_SECTION_NOT_FOUND',sourceReportSha256:result.sha256});
+        continue;
+      }
+      const section=reportHtml.slice(heading.index,heading.index+12000);
+      const xlsxAnchors=[...section.matchAll(/<a\\b[^>]*href\\s*=\\s*["']([^"']+)["'][^>]*>([\\s\\S]*?)<\\/a>/gi)]
+        .map(a=>({url:new URL(a[1].replace(/&amp;/g,'&'),result.finalUrl).toString(),label:strip(a[2])}))
+        .filter(a=>/xlsx|excel|download/i.test(a.label) && hostAllowed(a.url));
+      const xlsx=xlsxAnchors.find(a=>/xlsx|excel/i.test(a.label)) || xlsxAnchors[1] || xlsxAnchors[0];
+      if (!xlsx) {
+        manifest.results.push({id:source.id+'-DETAILS',state:page.stateName,electionYear:page.year,status:'DETAILED_RESULTS_XLSX_LINK_NOT_FOUND',sourceReportSha256:result.sha256});
+        continue;
+      }
+      const dataSource={
+        id:source.id+'-DETAILED-RESULTS-XLSX',
+        authority:'PRIMARY_OFFICIAL_ECI_DETAILED_RESULTS',
+        path:'official/eci/detailed-results/'+stateSlug+'/'+page.year+'-'+page.code+'-detailed-results.xlsx',
+        url:xlsx.url,
+        state:page.stateName,
+        electionYear:page.year,
+        eciReportCode:page.code,
+        sourceReportUrl:result.finalUrl,
+        sourceReportSha256:result.sha256,
+        purpose:'Official ECI Detailed Results workbook. Parse only after checking headers, AC regime, totals and provenance.'
+      };
+      const dataResult={...dataSource,retrievedAt:new Date().toISOString(),status:'PENDING',sha256:null,bytes:null,finalUrl:null,contentType:null};
+      try {
+        const fetched=await fetchBounded(dataSource.url);
+        if (totalDownloadedBytes + fetched.bytes.byteLength > MAX_TOTAL_BYTES) throw new Error('TOTAL_DOWNLOAD_BUDGET_EXCEEDED');
+        totalDownloadedBytes+=fetched.bytes.byteLength;
+        const destination=path.join(OUT,dataSource.path);
+        await fs.mkdir(path.dirname(destination),{recursive:true});
+        await fs.writeFile(destination,fetched.bytes,{flag:'w'});
+        dataResult.status='DOWNLOADED_HASHED';
+        dataResult.sha256=sha256(fetched.bytes);
+        dataResult.bytes=fetched.bytes.byteLength;
+        dataResult.finalUrl=fetched.finalUrl;
+        dataResult.contentType=fetched.contentType;
+        dataResult.localPath=destination;
+      } catch(error) {
+        dataResult.status='FETCH_FAILED';
+        dataResult.error=String(error?.message||error);
+      }
+      manifest.results.push(dataResult);
+    }
+    manifest.eciStateReportDiscovery={
+      stateRowsDiscovered:byState.size,
+      reportPagesSelected:reportPages.length,
+      reportPagesDownloaded:manifest.results.filter(r=>r.id.startsWith('SRC-ECI-AE-') && !r.id.endsWith('-DETAILS') && r.status==='DOWNLOADED_HASHED').length,
+      detailedResultsWorkbooksDownloaded:manifest.results.filter(r=>r.id.endsWith('-DETAILED-RESULTS-XLSX') && r.status==='DOWNLOADED_HASHED').length
+    };
+  } catch(error) {
+    manifest.eciStateReportDiscovery={status:'CRAWL_FAILED',error:String(error?.message||error)};
+  }
+}
+
 /* Convert ECI's JavaScript-wrapped FeatureCollection responses into a derived
  * GeoJSON artifact without evaluating JavaScript. The result remains a
  * candidate until identity, statutory vintage, topology and seat-count checks pass. */
@@ -281,6 +416,15 @@ for (const index of indexSources) {
       const absolute = new URL(href, index.finalUrl).toString();
       if (!hostAllowed(absolute)) continue;
       const pathLower = new URL(absolute).pathname.toLowerCase();
+      if (/\\.rar$/i.test(pathLower) && /PAN[%\\s_-]*INDIA/i.test(pathLower)) {
+        const sourceId='DISCOVERED-SOI-15GB-ABDB-ARCHIVE';
+        if (!manifest.results.some(r=>r.id===sourceId)) manifest.results.push({
+          id:sourceId, authority:'PRIMARY_OFFICIAL_METADATA_ONLY', url:absolute, discoveredFrom:index.id,
+          status:'NOT_DOWNLOADED_SIZE_LIMITED', reason:'Survey of India Vector Data Catalog 2025 lists the entire-India administrative-boundary archive at approximately 15 GB; do not download the full archive in this bounded CI acquisition job.',
+          note:'The official catalog metadata is retained; obtain a scoped state/UT product through the official portal if needed.'
+        });
+        continue;
+      }
       const labelLower = label.toLowerCase();
       const isDataFile = /\.(pdf|xlsx?|csv|zip|rar|7z|geojson|shp|gpkg|kml|kmz)(?:$|\?)/i.test(absolute);
       const isRelevantLabel = /(form\s*20|statistical report|assembly election|election results|primary census abstract|pca|administrative boundary|vector data)/i.test(labelLower);
