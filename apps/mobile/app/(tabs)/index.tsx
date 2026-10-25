@@ -25,7 +25,7 @@ import { findConstituencyAtPoint, STATES } from '@kshetra/shared';
 import { useActiveStateStore } from '../../stores/activeState';
 import { usePreferencesStore } from '../../stores/preferences';
 import { useFeedStore } from '../../stores/feed';
-import { isStateSupported, getStateData } from '../../lib/stateRegistry';
+import { isStateSupported } from '../../lib/stateRegistry';
 import { MapboxGL, mapboxAvailable } from '../../lib/maplibreCompat';
 import { apiClient, type SpatialProvenance } from '../../lib/api';
 import { telemetry } from '../../lib/telemetry';
@@ -71,7 +71,6 @@ import {
   getLocalizedConstituencyName,
 } from '../../lib/stateTranslations';
 import { getBoothsForConstituency, hasHierarchyData, hasBoothData } from '../../lib/hierarchyData';
-import { useHasRepresentativeData } from '../../lib/representativesData';
 
 interface SelectedConstituency {
   acNo: number;
@@ -185,10 +184,11 @@ function FullMapScreen() {
   const favoriteIds = useFavoritesStore((s) => s.favoriteIds);
   const stateCode = useActiveStateStore((s) => s.stateCode);
   const setStateCode = useActiveStateStore((s) => s.setStateCode);
+  const stateMapDataState = useStateScopedMapData(stateCode);
+  const hasLocalBodyData = stateMapDataState.data?.stateCode === stateCode && stateMapDataState.data.hasLocalBodyData;
   const mapOnlyMode = useActiveStateStore((s) => s.mapOnlyMode);
   const broadcastMode = usePreferencesStore((s) => s.broadcastMode);
   const currentState = STATES[stateCode];
-  const hasLocalBodyData = useHasRepresentativeData(stateCode);
 
   // Spatial UI local tab selections
   const [spatialTab, setSpatialTab] = useState<'feed' | 'stats' | 'list'>('feed');
@@ -233,7 +233,6 @@ function FullMapScreen() {
   );
 
   /** Load only the selected state's versioned metadata. */
-  const stateMapDataState = useStateScopedMapData(stateCode);
   const currentStateMapData = stateMapDataState.data?.stateCode === stateCode
     ? stateMapDataState.data
     : null;
@@ -1828,7 +1827,6 @@ function FullMapScreen() {
             <ScrollView style={styles.spatialHubScroll}>
               {stateCode === 'IN' ? (
                 Object.values(STATES).map((state) => {
-                  const data = getStateData(state.code);
                   const supported = isStateSupported(state.code);
                   return (
                     <Pressable
