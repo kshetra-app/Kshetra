@@ -12,7 +12,7 @@
     "clean": "rm -rf dist",
     "lint": "echo lint",
     "webhook-worker": "tsx src/modules/webhooks/webhookWorker.ts",
-    "test:w022": "cd ../.. && tsx tests/webhooks-postgres-queue-contract.test.ts && tsx tests/webhooks-worker-runtime.test.ts && tsx tests/webhooks-hmac-signatures.test.ts && tsx tests/webhooks-api-endpoints.test.ts && tsx tests/webhooks-ssrf-guard.test.ts && tsx tests/webhooks-migration-integrity.test.ts"
+    "test:w022": "cd ../.. && tsx tests/webhooks-postgres-queue-contract.test.ts && tsx tests/webhooks-worker-runtime.test.ts && tsx tests/webhooks-hmac-signatures.test.ts && tsx tests/webhooks-pii-scrubber.test.ts && tsx tests/webhooks-delivery-lifecycle.test.ts && tsx tests/webhooks-api-endpoints.test.ts && tsx tests/webhooks-ssrf-guard.test.ts && tsx tests/webhooks-migration-integrity.test.ts"
   },
   "dependencies": {
     "@fastify/cors": "^10.0.0",

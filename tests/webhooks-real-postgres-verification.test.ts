@@ -185,6 +185,12 @@ async function runAll() {
     );
   });
 
+  await runCheck('REAL-PG-04E', 'Retention RPC rejects NULL and out-of-range retention batches', () => {
+    assert.throws(() => runPsql('SELECT * FROM public.fn_purge_expired_webhook_data(NULL, 100);'), /INVALID_RETENTION_PERIOD/);
+    assert.throws(() => runPsql('SELECT * FROM public.fn_purge_expired_webhook_data(30, NULL);'), /INVALID_BATCH_SIZE/);
+    assert.throws(() => runPsql('SELECT * FROM public.fn_purge_expired_webhook_data(30, 5001);'), /INVALID_BATCH_SIZE/);
+  });
+
   // ─── 4. SEED TEST FIXTURES ───
   const tenantA = '11111111-1111-1111-1111-111111111111';
   const tenantB = '22222222-2222-2222-2222-222222222222';
