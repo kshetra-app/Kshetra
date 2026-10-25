@@ -132,6 +132,9 @@
       "DataMeet secondary candidate downloaded and audited: 4,182 features, 4,102 unique state-code/AC-number pairs, 80 extra duplicate rows, 6 invalid geometries, 34 missing constituency names, and only 30 source state names for 31 expected jurisdictions; rejected for production geometry.",
       "One Puducherry mirror derived from ECI 2026 results was fetched and structurally checked; SHA-256 2786e744aa7394c85d977a317a1d1e33cb3eb78dbea45a272375fc9a48e54338, 835011 bytes, 30 unique features; not raw ECI and not vendored due unconfirmed licence.",
       "Direct ECI geometry fetches failed in the prior run; browser-header retry and pinned mirror source attempts are underway."
-    ]
+    ],
+    "focusedGeometryProbeRun": 40212122850,
+    "focusedGeometryProbeStatus": "QUEUED_AT_LAST_CHECK",
+    "focusedProbeWorkflow": ".github/workflows/w0215-official-geometry-probe.yml"
   }
 }
