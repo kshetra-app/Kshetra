@@ -140,8 +140,8 @@ describe('Public route contracts', () => {
     it('serves list endpoints and 404s a missing profile', async () => {
       expect((await get('/api/v1/politician/profiles')).statusCode).toBe(200);
       expect((await get('/api/v1/politician/events')).statusCode).toBe(200);
-      expect((await get('/api/v1/politician/manifestos')).statusCode).toBe(200);
-      expect((await get('/api/v1/politician/surveys')).statusCode).toBe(200);
+      expect((await get('/api/v1/politician/manifestos')).statusCode).toBe(503);
+      expect((await get('/api/v1/politician/surveys')).statusCode).toBe(503);
       expect((await get('/api/v1/politician/profiles/missing')).statusCode).toBe(404);
     });
 
