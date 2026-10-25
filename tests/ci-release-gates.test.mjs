@@ -50,13 +50,18 @@ try {
   fs.writeFileSync(unformatted, '{"a":1}\n');
   expectFailure('Prettier formatting violation', 'npx', ['--no-install', 'prettier', '--check', unformatted]);
 
-  // ESLint: use a named temporary config, then assert the known unused binding is rejected.
+  // ESLint must reject an explicitly enabled rule violation. Use a side-effect-free
+  // statement that reliably violates no-debugger under ESLint's flat config.
   const lintFixture = path.join(temp, 'lint-fixture.js');
-  fs.writeFileSync(lintFixture, 'const deliberatelyUnused = 1;\n');
+  fs.writeFileSync(lintFixture, 'debugger;\n');
   const eslintConfig = path.join(temp, 'eslint.config.mjs');
-  fs.writeFileSync(eslintConfig, `export default [{ files: ['**/*.js'], rules: { 'no-unused-vars': 'error' } }];\n`);
+  fs.writeFileSync(eslintConfig, `export default [{ files: ['**/*.js'], rules: { 'no-debugger': 'error' } }];\n`);
   const eslintBin = path.join(root, 'node_modules', 'eslint', 'bin', 'eslint.js');
-  expectFailure('ESLint deliberate lint error', process.execPath, [eslintBin, '--no-config-lookup', '--config', eslintConfig, lintFixture]);
+  const eslintProbe = spawnSync(process.execPath, [eslintBin, '--no-config-lookup', '--config', eslintConfig, lintFixture], { cwd: temp, encoding: 'utf8' });
+  assert.notEqual(eslintProbe.status, 0, 'ESLint deliberate lint error must exit non-zero');
+  assert.match(eslintProbe.stdout + eslintProbe.stderr, /no-debugger|Unexpected 'debugger'/, 'ESLint fixture must fail because the deliberately invalid debugger statement is detected');
+  console.log('[PASS] Negative path rejected: ESLint deliberate lint error (exit=' + eslintProbe.status + ')');
+
 
   // npm audit: a disposable project with a known vulnerable direct dependency.
   const vulnerable = path.join(temp, 'vulnerable');
