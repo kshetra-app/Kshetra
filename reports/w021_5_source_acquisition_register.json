@@ -310,7 +310,7 @@
       "retrievedAt": "2026-10-25",
       "format": "ArcGIS REST Feature Layer (ESRI JSON query required)",
       "authority": "OFFICIAL_STATE_GIS_CANDIDATE",
-      "status": "METADATA_ACQUIRED_GEOMETRY_QUERY_RETRY_PENDING",
+      "status": "GEOMETRY_ACQUIRED_TOPOLOGY_DEFECT_FOUND",
       "sha256": "fd91d7803f39a8cc9ae9f2f486224cea777c7127ef5659dd2d073b088dbfb26a",
       "fileBytes": 4756,
       "geometryQueryInitial": {
@@ -318,13 +318,45 @@
         "httpStatus": 400,
         "responseBytes": 602,
         "responseBodySha256": "078ce75da3d26b3bd38f567b920f290dab72cbeebe6e49b277ef782332fd80da",
-        "reason": "Output format not supported; service advertises JSON and AMF formats."
+        "reason": "Output format not supported; corrected to f=json."
       },
       "geometryQueryRetryRunId": 40212257196,
       "limitations": [
         "Geometry payload not yet acquired.",
         "Service metadata is not proof of legal effective date or authoritative boundary completeness.",
-        "No topology or Gazette reconciliation has been performed."
+        "No topology or Gazette reconciliation has been performed.",
+        "The layer has no canonical AC number field in the exposed schema and its legally effective date is not stated; 119 feature count alone does not prove current legal geometry."
+      ],
+      "geometryBytes": 12465346,
+      "geometrySha256": "91cd791317836d8a6a8729b03f08fd3aee8c727c82e123b1659972d949d32f27",
+      "geometryWorkflowRunId": 40212257196,
+      "geometryFeatureCount": 119,
+      "geometryStructuralStatus": "PASS",
+      "topologyAudit": {
+        "auditReport": "reports/evidence/w021_5_telangana_arcgis_geometry_audit_2026-10-25.json",
+        "invalidGeometries": 1,
+        "invalidFeature": "Dornakal (ST) Assembly / OBJECTID 89",
+        "invalidReason": "Ring Self-intersection[79.948886655805 17.5141694363122]",
+        "positiveAreaOverlapPairs": 0,
+        "zeroAreaIntersectionPairs": 314,
+        "authoritativeStateBoundaryCoverage": "NOT_CHECKED",
+        "canonicalAcNumberCrosswalk": "NOT_PERFORMED"
+      }
+    },
+    {
+      "sourceId": "SRC-TELANGANA-2026-AC-LAYER",
+      "subject": "Telangana Assembly Constituency Boundary layer in EndowmentLands_Admin_2026 service",
+      "publisher": "Telangana State Remote Sensing Applications Centre GIS",
+      "url": "https://tgrac.telangana.gov.in/arcgis/rest/services/EndowmentLands_Folder/EndowmentLands_Admin_2026/MapServer/12?f=pjson",
+      "retrievedAt": "2026-10-25",
+      "format": "ArcGIS REST Feature Layer / ESRI JSON",
+      "authority": "OFFICIAL_STATE_GIS_CANDIDATE",
+      "status": "PROBE_IN_PROGRESS",
+      "geometryQueryUrl": "https://tgrac.telangana.gov.in/arcgis/rest/services/EndowmentLands_Folder/EndowmentLands_Admin_2026/MapServer/12/query?where=1%3D1&outFields=%2A&returnGeometry=true&outSR=4326&f=json",
+      "workflowRunId": 40212441232,
+      "limitations": [
+        "The service name includes 2026 but effective date, ownership of AC boundary data, reuse terms, and legal alignment are unverified.",
+        "Do not treat as authoritative until compared with the 119-seat statutory roster and the older service layer."
       ]
     }
   ],
@@ -434,7 +466,7 @@
       "scope": "Retry Telangana official ArcGIS polygon query using supported f=json format and structural ring checks."
     }
   ],
-  "updatedAt": "2026-10-25T16:34:00Z",
+  "updatedAt": "2026-10-25T16:38:00Z",
   "notes": [
     "Actual public source artifacts were downloaded in GitHub Actions run 40209022405 and SHA-256 hashed; detailed geometry findings are in reports/w021_5_datameet_ac_geometry_forensic_audit.json.",
     "Survey of India official ABDB page, Vector Data Catalog 2025 PDF and Metadata_ABDB.zip were downloaded and hashed. The metadata covers state, district, subdistrict and village boundaries, not statutory Assembly Constituency polygons.",
@@ -442,6 +474,7 @@
     "Additional connected-source probe: a 835,011-byte Puducherry GeoJSON mirror was acquired and SHA-256 hashed (2786e744aa7394c85d977a317a1d1e33cb3eb78dbea45a272375fc9a48e54338); its structural checks are documented in reports/evidence/w021_5_stage_b_acquisition_probe_2026-10-25.json. It is secondary, licence status is unconfirmed, and it does not close any external gate.",
     "Retry workflow 40211792541 is currently in progress; no artifact has been published at last check. The prior completed run 40209022405 remains the only workflow artifact reviewed so far. Do not assume the retry succeeded.",
     "Focused official geometry probe 40212122850 was queued to prioritize the five direct ECI endpoints and Telangana state GIS layer; it is separate from the broad source-acquisition retry 40211792541. Inspect its uploaded manifest before making claims.",
-    "Focused geometry probe run 40212122850 independently confirmed all five ECI .js URLs return 404 and the Telangana ArcGIS metadata endpoint is reachable. The initial f=geojson query was unsupported; corrected f=json query is queued in 40212257196. The probe ZIP SHA-256 was independently verified as e30baeff7c4ba94b0eee8d0e3fda41ddd7262a9880f7f4ac8e6ad9b9d7ce270e."
+    "Focused geometry probe run 40212122850 independently confirmed all five ECI .js URLs return 404 and the Telangana ArcGIS metadata endpoint is reachable. The initial f=geojson query was unsupported; corrected f=json query is queued in 40212257196. The probe ZIP SHA-256 was independently verified as e30baeff7c4ba94b0eee8d0e3fda41ddd7262a9880f7f4ac8e6ad9b9d7ce270e.",
+    "Telangana layer 24 geometry was acquired in run 40212257196 (119 features; SHA-256 91cd791317836d8a6a8729b03f08fd3aee8c727c82e123b1659972d949d32f27). Independent Shapely audit found one self-intersection in Dornakal (ST) Assembly; this candidate is not accepted. A second service EndowmentLands_Admin_2026/MapServer/12 is under probe in run 40212441232."
   ]
 }
