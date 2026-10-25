@@ -319,34 +319,39 @@ export const politicalAdsRoutes: FastifyPluginAsync = async (app) => {
       });
     }
 
-    if (isSupabaseConfigured) {
-      try {
-        const { data, error } = await supabase
-          .from('political_ads')
-          .select(`
-            id, page_id, post_id, mcmc_certificate_id, status, amount_paid,
-            target_scope, target_value, impressions, created_at,
-            pages:page_id ( id, title, handle, role, avatar_url )
-          `)
-          .eq('status', 'pending_certification')
-          .order('created_at', { ascending: false });
-
-        if (error || (process.env.NODE_ENV !== 'production' && (!data || data.length === 0))) {
-          const queue = MEMORY_ADS.filter((a) => a.status === 'pending_certification');
-          return reply.send({ success: true, queue });
-        }
-
-        return reply.send({ success: true, queue: data ?? [] });
-      } catch (err: any) {
-        if (process.env.NODE_ENV !== 'production') {
-          const queue = MEMORY_ADS.filter((a) => a.status === 'pending_certification');
-          return reply.send({ success: true, queue });
-        }
-      }
+    if (!isSupabaseConfigured) {
+      return sendApiError(reply, request, 503, 'Service Unavailable', 'Political-ad review persistence is not configured.', {
+        code: 'DATABASE_UNAVAILABLE',
+      });
     }
 
-    const queue = MEMORY_ADS.filter((a) => a.status === 'pending_certification');
-    return reply.send({ success: true, queue });
+    try {
+      const { data, error } = await supabase
+        .from('political_ads')
+        .select(`
+          id, page_id, post_id, mcmc_certificate_id, status, amount_paid,
+          target_scope, target_value, impressions, created_at,
+          pages:page_id ( id, title, handle, role, avatar_url )
+        `)
+        .eq('status', 'pending_certification')
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        request.log.error({ err: error }, 'Political-ad review queue query failed');
+        return sendApiError(reply, request, 503, 'Service Unavailable', 'Political-ad review data is temporarily unavailable.', {
+          code: 'DATABASE_ERROR',
+        });
+      }
+
+      // A successful empty database result is a real empty queue, not a reason
+      // to substitute demo ads (which could mislead compliance reviewers).
+      return reply.send({ success: true, queue: data ?? [] });
+    } catch (err) {
+      request.log.error({ err }, 'Political-ad review queue query threw');
+      return sendApiError(reply, request, 503, 'Service Unavailable', 'Political-ad review data is temporarily unavailable.', {
+        code: 'DATABASE_ERROR',
+      });
+    }
   });
 
   /**
