@@ -219,3 +219,17 @@
 
 
 
+
+
+---
+
+## Section 15: W021.5 Resumption Findings — 2026-10-25
+
+| Defect ID | Severity | Description | Disposition | Evidence | Remaining gate |
+|---|---|---|---|---|---|
+| **DEF-W0215-072-001** | P0 / DATA-TRUTH | Migration 068 defines criminal-disclosure counts as `NOT NULL DEFAULT 0`, allowing missing disclosure values to be represented as zero; `data_status` defaults to `OFFICIAL` without mandatory source proof; `constituency_id` lacks the canonical constituency FK described by the migration. | **FORWARD REMEDIATION AUTHORED — NOT YET VERIFIED** in Migration 072. Removes defaults and NOT NULL from criminal counts; converts source-less default zero counts to NULL; demotes unsupported OFFICIAL rows to UNKNOWN; requires source identifier, 64-hex SHA-256 and provenance for OFFICIAL; adds restrictive FK to `public.constituencies(id)`. | `supabase/migrations/072_w021_5_affidavit_truth_hardening.sql`; `supabase/staging_packages/072_w021_5_affidavit_truth_hardening.sql`; `supabase/staging_checkpoints/w021_5_post_072_affidavit_truth_gate.sql`; `scripts/tests/w021_5_affidavit_truth_hardening.test.mjs` | Must pass local PostgreSQL validation and owner-executed staging postflight. No production execution. |
+
+### W021.5 Source Acquisition Finding — EB-03 / EB-04
+
+The DataMeet assembly-constituency dataset is a **secondary candidate source**, not authoritative geometry. Its own README warns of shifted geometry, missing/incorrect constituency names, and pre-delimitation boundaries for Jammu & Kashmir, Jharkhand, Assam, Manipur, Nagaland and Arunachal Pradesh. Do not import it directly as official truth. Reconcile any candidate geometry against primary ECI statutory descriptions, temporal regime and canonical 4,123 identity set. India Post delivery-beat polygons were not found in the official sources checked; EB-03 and EB-04 remain open. The bounded source acquisition runner is committed but has not yet been executed, so no download hashes are claimed.
+
