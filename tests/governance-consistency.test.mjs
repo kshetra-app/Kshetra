@@ -167,7 +167,13 @@ try {
 // local HEAD == origin/master invariant exactly as before.
 const isPullRequestContext = process.env.GITHUB_EVENT_NAME === 'pull_request';
 if (isPullRequestContext) {
-  const includesOriginMaster = execSync('git merge-base --is-ancestor origin/master HEAD', { stdio: 'ignore' }) === '';
+  let includesOriginMaster = false;
+  try {
+    execSync('git merge-base --is-ancestor origin/master HEAD', { stdio: 'ignore' });
+    includesOriginMaster = true;
+  } catch {
+    includesOriginMaster = false;
+  }
   assert.ok(includesOriginMaster, `PR merge HEAD (${localHead}) must include origin/master (${originMaster}) as an ancestor`);
   console.log(`[PASS] Check 8: PR merge ref contains origin/master ancestor (${originMaster}); synthetic HEAD (${localHead}) is expected.`);
 } else {
