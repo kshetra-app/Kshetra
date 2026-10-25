@@ -22,8 +22,8 @@ const CACHE_DIR = `${CACHE_ROOT}geo/`;
 
 export function getGeoBaseUrl(): string {
   const override = process.env.EXPO_PUBLIC_GEO_BASE_URL;
-  if (override) return override.replace(/\\/+$/, '');
-  return API_BASE_URL.replace(/\\/+$/, '').replace(/\\/api(\\/v\\d+)?$/, '');
+  if (override) return override.replace(/\/+$/, '');
+  return API_BASE_URL.replace(/\/+$/, '').replace(/\/api(\/v\d+)?$/, '');
 }
 
 async function ensureDir(): Promise<void> {
