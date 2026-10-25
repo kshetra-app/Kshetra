@@ -1,34 +1,98 @@
 {
   "schemaVersion": "1.0.0",
-  "status": "NOT_YET_EXECUTED_IN_REPOSITORY_RUNTIME",
-  "purpose": "Output schema/documented gate state. Run scripts/validate-national-geography.mjs in CI or a checkout to generate the authoritative report from exact committed GeoJSON bytes.",
+  "generatedAt": "2026-10-25T17:25:00+05:30",
+  "sourceMatrix": "reports/w021_5b1_r5_current_regime_matrix.json",
+  "manifest": "apps/mobile/data/geo-manifest.json",
+  "notice": "Static forensic baseline only. The deterministic validator must be run in CI/checkout to inspect actual committed GeoJSON bytes; this report is not a substitute for runtime validation.",
   "canonicalBaseline": {
     "assemblyConstituencies": 4123,
     "parliamentaryConstituencies": 543,
     "assemblyJurisdictions": 31
   },
-  "knownUnresolvedDifferences": {
-    "AS": 7,
-    "GJ": -17,
-    "JH": 14,
-    "KA": 1,
-    "KL": 1,
-    "MP": -4,
-    "RJ": 1,
-    "TN": 1,
-    "JK": 17
+  "totals": {
+    "jurisdictionsCompared": 31,
+    "observedManifestCountSum": 4144,
+    "countMismatches": 9,
+    "placeholderJurisdictions": 9,
+    "releaseApproved": 0
   },
-  "placeholderJurisdictions": [
-    "PY",
-    "TR",
-    "ML",
-    "MN",
-    "NL",
-    "UK",
-    "SK",
+  "knownDifferences": [
+    {
+      "code": "AS",
+      "expected": 126,
+      "manifest": 133,
+      "status": "QUARANTINED_COUNT_MISMATCH",
+      "delta": 7
+    },
+    {
+      "code": "GJ",
+      "expected": 182,
+      "manifest": 165,
+      "status": "QUARANTINED_COUNT_MISMATCH",
+      "delta": -17
+    },
+    {
+      "code": "JH",
+      "expected": 81,
+      "manifest": 95,
+      "status": "QUARANTINED_COUNT_MISMATCH",
+      "delta": 14
+    },
+    {
+      "code": "KA",
+      "expected": 224,
+      "manifest": 225,
+      "status": "QUARANTINED_COUNT_MISMATCH",
+      "delta": 1
+    },
+    {
+      "code": "KL",
+      "expected": 140,
+      "manifest": 141,
+      "status": "QUARANTINED_COUNT_MISMATCH",
+      "delta": 1
+    },
+    {
+      "code": "MP",
+      "expected": 230,
+      "manifest": 226,
+      "status": "QUARANTINED_COUNT_MISMATCH",
+      "delta": -4
+    },
+    {
+      "code": "RJ",
+      "expected": 200,
+      "manifest": 201,
+      "status": "QUARANTINED_COUNT_MISMATCH",
+      "delta": 1
+    },
+    {
+      "code": "TN",
+      "expected": 234,
+      "manifest": 235,
+      "status": "QUARANTINED_COUNT_MISMATCH",
+      "delta": 1
+    },
+    {
+      "code": "JK",
+      "expected": 90,
+      "manifest": 107,
+      "status": "QUARANTINED_COUNT_MISMATCH",
+      "delta": 17
+    }
+  ],
+  "placeholders": [
     "AR",
-    "MZ"
+    "MN",
+    "ML",
+    "MZ",
+    "NL",
+    "SK",
+    "TR",
+    "UK",
+    "PY"
   ],
   "verdict": "BLOCKED",
-  "requiredNextStep": "Run the validator from repository root; replace official source data and rerun; do not approve geometry before independent spatial-engine validation."
+  "independentTopologyVerification": "NOT PERFORMED",
+  "runtimeValidatorExecution": "NOT PERFORMED BY CONNECTOR"
 }
