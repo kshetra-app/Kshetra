@@ -145,9 +145,78 @@ for (const source of SOURCES) {
   manifest.results.push(result);
 }
 
+
+/* Discover report/data files linked by the official indexes. This is bounded,
+ * provenance-preserving retrieval, not unbounded scraping. */
+const indexSources = manifest.results.filter(r =>
+  r.status==='DOWNLOADED_HASHED' &&
+  ['SRC-ECI-STATISTICAL-INDEX','SRC-ECI-ELECTION-MANAGEMENT','SRC-CENSUS-PCA-SD-2011','SRC-SOI-ABDB'].includes(r.id) &&
+  r.contentType && /html|text/i.test(r.contentType)
+);
+const discovered = new Map();
+for (const index of indexSources) {
+  try {
+    const html = await fs.readFile(index.localPath, 'utf8');
+    const anchorPattern = /<a\\b[^>]*href\\s*=\\s*["']([^"']+)["'][^>]*>([\\s\\S]*?)<\\/a>/gi;
+    let match;
+    while ((match = anchorPattern.exec(html)) !== null) {
+      const href = match[1].replace(/&amp;/g, '&').trim();
+      const label = match[2].replace(/<[^>]+>/g, ' ').replace(/\\s+/g, ' ').trim();
+      if (!href || /^(#|javascript:|mailto:)/i.test(href)) continue;
+      const absolute = new URL(href, index.finalUrl).toString();
+      if (!hostAllowed(absolute)) continue;
+      const pathLower = new URL(absolute).pathname.toLowerCase();
+      const labelLower = label.toLowerCase();
+      const isDataFile = /\\.(pdf|xlsx?|csv|zip|geojson|shp)(?:$|\\?)/i.test(absolute);
+      const isRelevantLabel = /(form\\s*20|statistical report|assembly election|election results|primary census abstract|pca|administrative boundary|vector data)/i.test(labelLower);
+      if (!(isDataFile || isRelevantLabel)) continue;
+      if (discovered.size < 120) {
+        discovered.set(absolute, {url:absolute,label:label.slice(0,240),indexSourceId:index.id,extension:path.extname(pathLower).slice(1)||'html'});
+      }
+    }
+  } catch (error) {
+    console.error('[INDEX_PARSE_FAILED]', index.id, String(error?.message || error));
+  }
+}
+for (const [url, candidate] of discovered) {
+  if (manifest.results.some(r => r.url === url)) continue;
+  const source = {
+    id:'DISCOVERED-'+crypto.createHash('sha256').update(url).digest('hex').slice(0,12),
+    authority:'DISCOVERED_FROM_OFFICIAL_INDEX',
+    path:'discovered/'+safeName(candidate.indexSourceId)+'/'+safeName(path.basename(new URL(url).pathname)||'download.'+candidate.extension),
+    url,
+    discoveredLabel:candidate.label,
+    discoveredFrom:candidate.indexSourceId,
+    purpose:'Dynamically linked official source artifact; inspect document identity, state/year, effective date, terms and data completeness before use.'
+  };
+  const result={...source,retrievedAt:new Date().toISOString(),status:'PENDING',sha256:null,bytes:null,finalUrl:null,contentType:null};
+  try {
+    const fetched=await fetchBounded(source.url);
+    const destination=path.join(OUT,source.path);
+    await fs.mkdir(path.dirname(destination),{recursive:true});
+    await fs.writeFile(destination,fetched.bytes,{flag:'w'});
+    result.status='DOWNLOADED_HASHED';
+    result.sha256=sha256(fetched.bytes);
+    result.bytes=fetched.bytes.byteLength;
+    result.finalUrl=fetched.finalUrl;
+    result.contentType=fetched.contentType;
+    result.etag=fetched.etag;
+    result.lastModified=fetched.lastModified;
+    result.localPath=destination;
+    console.log('[DISCOVERED_DOWNLOADED_HASHED]',source.id,result.bytes,result.sha256);
+  } catch(error) {
+    result.status='FETCH_FAILED';
+    result.error=String(error?.message||error);
+    console.error('[DISCOVERED_FETCH_FAILED]',source.id,result.error);
+  }
+  manifest.results.push(result);
+}
+
 manifest.completedAt=new Date().toISOString();
 manifest.summary={
-  total:SOURCES.length,
+  total:manifest.results.length,
+  staticSourceCount:SOURCES.length,
+  dynamicallyDiscoveredCount:manifest.results.filter(r=>r.id.startsWith('DISCOVERED-')).length,
   downloaded:manifest.results.filter(r=>r.status==='DOWNLOADED_HASHED').length,
   failed:manifest.results.filter(r=>r.status==='FETCH_FAILED').length,
   officialDownloads:manifest.results.filter(r=>r.status==='DOWNLOADED_HASHED' && !r.authority.startsWith('SECONDARY')).length,
