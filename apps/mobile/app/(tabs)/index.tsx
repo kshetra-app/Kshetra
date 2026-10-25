@@ -57,13 +57,7 @@ import ChiefMinisterBadge from '../../components/ChiefMinisterBadge';
 import PhotoViewerModal from '../../components/PhotoViewerModal';
 import { useFavoritesStore } from '../../stores/favorites';
 import { useMyConstituencyStore } from '../../stores/myConstituency';
-import {
-  getUnifiedConstituenciesForState,
-  getAvailableYearsForState,
-  type UnifiedConstituency,
-} from '../../lib/stateDataAdapter';
-import { getTriviaForConstituencyInState, getAllTriviaForState } from '../../lib/stateTriviaAdapter';
-import { getHistoryForState } from '../../lib/stateDataDispatcher';
+import { useStateScopedMapData } from '../../lib/useStateScopedMapData';
 import { selectFreshTrivia } from '../../lib/triviaSelector';
 import { computeAllSeatAllocations } from '../../lib/delimitation/seatCalculator';
 import { styles } from '../../lib/mapScreenStyles';
@@ -238,13 +232,18 @@ function FullMapScreen() {
     [stateCode, stateProjection],
   );
 
-  /** Unified constituency list + lookup map for the active state */
+  /** Load only the selected state's versioned metadata. */
+  const stateMapDataState = useStateScopedMapData(stateCode);
+  const currentStateMapData = stateMapDataState.data?.stateCode === stateCode
+    ? stateMapDataState.data
+    : null;
+  const availableYears = currentStateMapData?.availableYears ?? [];
   const stateConstituencies = useMemo(
-    () => getUnifiedConstituenciesForState(stateCode),
-    [stateCode],
+    () => currentStateMapData?.constituencies ?? [],
+    [currentStateMapData?.constituencies],
   );
   const seedMap = useMemo(
-    () => new Map<number, UnifiedConstituency>(stateConstituencies.map((c) => [c.acNo, c])),
+    () => new Map(stateConstituencies.map((c) => [c.acNo, c])),
     [stateConstituencies],
   );
 
@@ -395,9 +394,9 @@ function FullMapScreen() {
 
   /** Random trivia for idle map — re-fetched when state changes */
   const stateIdleTrivia = useMemo(() => {
-    const all = getAllTriviaForState(stateCode);
+    const all = currentStateMapData?.trivia ?? [];
     return selectFreshTrivia(all, 8);
-  }, [stateCode]);
+  }, [stateCode, currentStateMapData?.revision]);
 
   const allPosts = useFeedStore((s) => s.posts);
   const spatialPosts = useMemo(() => {
@@ -425,7 +424,7 @@ function FullMapScreen() {
 
   const hasBottomContent = !!(
     myHome ||
-    getAvailableYearsForState(stateCode).length > 1 ||
+    availableYears.length > 1 ||
     (stateIdleTrivia && stateIdleTrivia.length > 0)
   );
 
@@ -809,8 +808,8 @@ function FullMapScreen() {
     setFocusedDistrict('');
     bottomSheetRef.current?.close();
 
-    const years = getAvailableYearsForState(stateCode);
-    setSelectedYear(years[years.length - 1]);
+    const years = availableYears;
+    if (years.length > 0) setSelectedYear(years[years.length - 1]);
     setSelectedBooth(null);
 
     const cam = getDynamicStateCamera(stateCode, activeGeoJSON);
@@ -1897,10 +1896,10 @@ function FullMapScreen() {
           )}
 
           {/* Time-Travel History Slider (conditional on state data availability) */}
-          {getAvailableYearsForState(stateCode).length > 1 && (
+          {availableYears.length > 1 && (
             <View style={styles.timeSliderWrapper}>
               <MapTimeSlider
-                years={getAvailableYearsForState(stateCode)}
+                years={availableYears}
                 selectedYear={selectedYear}
                 onYearChange={(year) => {
                   selectionChanged();
@@ -2201,7 +2200,7 @@ function FullMapScreen() {
 
                 {/* Contextual trivia */}
                 {(() => {
-                  const allConstituencyTrivia = getTriviaForConstituencyInState(stateCode, selected.acNo).filter(
+                  const allConstituencyTrivia = (currentStateMapData?.triviaByAcNo[String(selected.acNo)] ?? []).filter(
                     (t) => !t.contexts.every((c) => c.type === 'GLOBAL'),
                   );
                   const items = selectFreshTrivia(allConstituencyTrivia, 5);
@@ -2214,7 +2213,7 @@ function FullMapScreen() {
 
                 {/* Historical snapshot — all states */}
                 {(() => {
-                  const pastElections = getHistoryForState(stateCode, selected.acNo);
+                  const pastElections = currentStateMapData?.historyByAcNo[String(selected.acNo)] ?? [];
                   if (pastElections.length === 0) return null;
                   return (
                     <View style={styles.histRow}>
