@@ -27,10 +27,11 @@
   "KA": {
     "file": "ka-assembly.json",
     "count": 225,
-    "hasPolygons": true,
+    "hasPolygons": false,
     "bytes": 4258444,
     "gzipBytes": 688044,
-    "version": "927a10f680a1"
+    "version": "927a10f680a1",
+    "status": "quarantined_count_mismatch"
   },
   "MH": {
     "file": "mh-assembly.json",
@@ -43,18 +44,20 @@
   "TN": {
     "file": "tn-assembly.json",
     "count": 235,
-    "hasPolygons": true,
+    "hasPolygons": false,
     "bytes": 3276453,
     "gzipBytes": 518118,
-    "version": "4007e0f919f1"
+    "version": "4007e0f919f1",
+    "status": "quarantined_count_mismatch"
   },
   "KL": {
     "file": "kl-assembly.json",
     "count": 141,
-    "hasPolygons": true,
+    "hasPolygons": false,
     "bytes": 1494434,
     "gzipBytes": 243035,
-    "version": "c99c68447a52"
+    "version": "c99c68447a52",
+    "status": "quarantined_count_mismatch"
   },
   "WB": {
     "file": "wb-assembly.json",
@@ -75,18 +78,20 @@
   "RJ": {
     "file": "rj-assembly.json",
     "count": 201,
-    "hasPolygons": true,
+    "hasPolygons": false,
     "bytes": 3532974,
     "gzipBytes": 649566,
-    "version": "0e520d19a99a"
+    "version": "0e520d19a99a",
+    "status": "quarantined_count_mismatch"
   },
   "GJ": {
     "file": "gj-assembly.json",
     "count": 165,
-    "hasPolygons": true,
+    "hasPolygons": false,
     "bytes": 4565521,
     "gzipBytes": 727653,
-    "version": "f71d8d86090e"
+    "version": "f71d8d86090e",
+    "status": "quarantined_count_mismatch"
   },
   "DL": {
     "file": "dl-assembly.json",
@@ -107,10 +112,11 @@
   "JH": {
     "file": "jh-assembly.json",
     "count": 95,
-    "hasPolygons": true,
+    "hasPolygons": false,
     "bytes": 1188148,
     "gzipBytes": 205076,
-    "version": "1d119bd2bde3"
+    "version": "1d119bd2bde3",
+    "status": "quarantined_count_mismatch"
   },
   "BR": {
     "file": "br-assembly.json",
@@ -147,18 +153,20 @@
   "MP": {
     "file": "mp-assembly.json",
     "count": 226,
-    "hasPolygons": true,
+    "hasPolygons": false,
     "bytes": 5011521,
     "gzipBytes": 863445,
-    "version": "0d81410a3c41"
+    "version": "0d81410a3c41",
+    "status": "quarantined_count_mismatch"
   },
   "AS": {
     "file": "as-assembly.json",
     "count": 133,
-    "hasPolygons": true,
+    "hasPolygons": false,
     "bytes": 1127651,
     "gzipBytes": 192107,
-    "version": "d61e0e37695c"
+    "version": "d61e0e37695c",
+    "status": "quarantined_count_mismatch"
   },
   "GA": {
     "file": "ga-assembly.json",
@@ -179,10 +187,11 @@
   "JK": {
     "file": "jk-assembly.json",
     "count": 107,
-    "hasPolygons": true,
+    "hasPolygons": false,
     "bytes": 330515,
     "gzipBytes": 77528,
-    "version": "ad16db4c2da5"
+    "version": "ad16db4c2da5",
+    "status": "quarantined_count_mismatch"
   },
   "PY": {
     "file": "py-assembly.json",

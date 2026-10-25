@@ -97,6 +97,9 @@ export async function fetchStateGeoJSON(
   const key = code.toUpperCase();
   const entry = getManifestEntry(key);
   if (!entry) return null;
+  // Fail closed: placeholder and count-mismatched AC datasets must never be rendered.
+  // The national IN overview is handled by the bundled loader and is unaffected.
+  if (!entry.hasPolygons || entry.status === 'placeholder' || entry.status === 'quarantined_count_mismatch') return null;
 
   const version = versionOverride ?? entry.version ?? '';
   const cacheKey = `${key}_${version}`;

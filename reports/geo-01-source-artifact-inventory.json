@@ -1,0 +1,252 @@
+{
+  "schemaVersion": "1.0.0",
+  "generatedAt": "2026-10-25",
+  "purpose": "Forensic inventory of the exact current repository geometry artifacts and an independently inspected public candidate source. This is not a certification of official provenance or topology.",
+  "currentRepository": {
+    "repository": "https://github.com/kshetra-app/Kshetra",
+    "commit": "33dcb49aa14552f51f79630c62c593df412a8331",
+    "geometryArtifacts": [
+      {
+        "path": "apps/mobile/data/ap-assembly.json",
+        "gitBlobSha1": "4858104adaab799a917591d0821f181e17c3b102",
+        "sizeBytes": 859778
+      },
+      {
+        "path": "apps/mobile/data/ar-assembly.json",
+        "gitBlobSha1": "863e67b2b4030b419f958eec74f6671ec46d260b",
+        "sizeBytes": 625188
+      },
+      {
+        "path": "apps/mobile/data/as-assembly.json",
+        "gitBlobSha1": "98052de068302555bbdcbaaab64329639cb33f45",
+        "sizeBytes": 1127651
+      },
+      {
+        "path": "apps/mobile/data/br-assembly.json",
+        "gitBlobSha1": "88df83545a9c36219b3a78b78fbfc20a70f41b1b",
+        "sizeBytes": 4513109
+      },
+      {
+        "path": "apps/mobile/data/cg-assembly.json",
+        "gitBlobSha1": "32adf05591f9c17e1f471d64fa94cbc04ad71037",
+        "sizeBytes": 1846546
+      },
+      {
+        "path": "apps/mobile/data/dl-assembly.json",
+        "gitBlobSha1": "230d2cf66d6098f8f079fbb0260d538dec392bd8",
+        "sizeBytes": 102256
+      },
+      {
+        "path": "apps/mobile/data/ga-assembly.json",
+        "gitBlobSha1": "fe12c2d32c0e7f350cab50fa92f941219d66cfd3",
+        "sizeBytes": 124837
+      },
+      {
+        "path": "apps/mobile/data/gj-assembly.json",
+        "gitBlobSha1": "fcd1eebfa5ba508c937e94d50228df1bf4d52463",
+        "sizeBytes": 4565521
+      },
+      {
+        "path": "apps/mobile/data/hp-assembly.json",
+        "gitBlobSha1": "b3526f09ba83893c951af1a046af9c86f400b1e7",
+        "sizeBytes": 1316619
+      },
+      {
+        "path": "apps/mobile/data/hr-assembly.json",
+        "gitBlobSha1": "ef5ceb753c81a2adde8da42d53d0d0c1c062c141",
+        "sizeBytes": 926162
+      },
+      {
+        "path": "apps/mobile/data/india-states.json",
+        "gitBlobSha1": "4dd5901196e31b312c7307533188ecff7c48ef96",
+        "sizeBytes": 1024198
+      },
+      {
+        "path": "apps/mobile/data/jh-assembly.json",
+        "gitBlobSha1": "e22422365ef96a6380062aad506c105000e0372c",
+        "sizeBytes": 1188148
+      },
+      {
+        "path": "apps/mobile/data/jk-assembly.json",
+        "gitBlobSha1": "0809d1d3276ce9d39a76b51aef41db70535d2bbc",
+        "sizeBytes": 330675
+      },
+      {
+        "path": "apps/mobile/data/ka-assembly.json",
+        "gitBlobSha1": "554c300a331ed1fd33da5ff5f0396d46f65d3488",
+        "sizeBytes": 4796396
+      },
+      {
+        "path": "apps/mobile/data/kl-assembly.json",
+        "gitBlobSha1": "de0419351479f6c0764a433a7942802c4933c2f2",
+        "sizeBytes": 1687038
+      },
+      {
+        "path": "apps/mobile/data/mh-assembly.json",
+        "gitBlobSha1": "166a9e5188340bdabed103092004b66247ac8109",
+        "sizeBytes": 3841762
+      },
+      {
+        "path": "apps/mobile/data/ml-assembly.json",
+        "gitBlobSha1": "029655f1cb3ace0e9c7df9e8be4fdcdb457609b7",
+        "sizeBytes": 431259
+      },
+      {
+        "path": "apps/mobile/data/mn-assembly.json",
+        "gitBlobSha1": "7dd6decaa331a6d8063e3474d6ac21ab283b09c0",
+        "sizeBytes": 992884
+      },
+      {
+        "path": "apps/mobile/data/mp-assembly.json",
+        "gitBlobSha1": "b1322a805b183afe8f7115e49e549926da34d538",
+        "sizeBytes": 5011521
+      },
+      {
+        "path": "apps/mobile/data/mz-assembly.json",
+        "gitBlobSha1": "515372b88ccb2d1161259050d4d320efe8f12e5a",
+        "sizeBytes": 403168
+      },
+      {
+        "path": "apps/mobile/data/nl-assembly.json",
+        "gitBlobSha1": "2901206c40221acf581a42f4473120625c2b1167",
+        "sizeBytes": 679774
+      },
+      {
+        "path": "apps/mobile/data/od-assembly.json",
+        "gitBlobSha1": "9a8d6a9bd59fcfc1234a95e56b7f1e044e05f50d",
+        "sizeBytes": 3677886
+      },
+      {
+        "path": "apps/mobile/data/pb-assembly.json",
+        "gitBlobSha1": "288f24ecfa97e463508c3189de3da47178ae99f6",
+        "sizeBytes": 1842869
+      },
+      {
+        "path": "apps/mobile/data/py-assembly.json",
+        "gitBlobSha1": "fdc6de07440835a702fc8991599020f3bfda8f7f",
+        "sizeBytes": 118230
+      },
+      {
+        "path": "apps/mobile/data/rj-assembly.json",
+        "gitBlobSha1": "78561ca36eb2dee4554912955bc1ca2c95dc4bc9",
+        "sizeBytes": 3532974
+      },
+      {
+        "path": "apps/mobile/data/sk-assembly.json",
+        "gitBlobSha1": "2ac3ecc6a63dc97e75d9beb6b26006c4ed43f30b",
+        "sizeBytes": 135893
+      },
+      {
+        "path": "apps/mobile/data/telangana-assembly.json",
+        "gitBlobSha1": "bb0c689ae40ba8cc6693f370d41a3f2a3697e821",
+        "sizeBytes": 3762805
+      },
+      {
+        "path": "apps/mobile/data/tn-assembly.json",
+        "gitBlobSha1": "14abf60f0d993389ec48e1c46a1d2c6004071d14",
+        "sizeBytes": 3694219
+      },
+      {
+        "path": "apps/mobile/data/tr-assembly.json",
+        "gitBlobSha1": "bf00290cfd48957689279b234dcddc6ca1d13a18",
+        "sizeBytes": 439942
+      },
+      {
+        "path": "apps/mobile/data/uk-assembly.json",
+        "gitBlobSha1": "ce17ba195e1f14d10892c6e00255c770c578513f",
+        "sizeBytes": 1468320
+      },
+      {
+        "path": "apps/mobile/data/up-assembly.json",
+        "gitBlobSha1": "482c46506fec879e7106b137fceedcc656b82175",
+        "sizeBytes": 6978407
+      },
+      {
+        "path": "apps/mobile/data/wb-assembly.json",
+        "gitBlobSha1": "501632c65267b7c0a4055a7562f206b28fac0fd7",
+        "sizeBytes": 3433501
+      }
+    ],
+    "hashNote": "gitBlobSha1 is the Git object SHA-1 for the exact committed file bytes, not a SHA-256 checksum of the raw file."
+  },
+  "candidateSource": {
+    "repository": "https://github.com/skthewimp/india-constituency-maps",
+    "branch": "main",
+    "commit": "efceae39d3922f04fc5ea91106b7b316bf8ddf8f",
+    "commitDate": "2026-07-14T10:25:00Z",
+    "licenseNote": "Repository states MIT for build code; boundary geometry is derived from third-party sources and is reference data.",
+    "artifacts": [
+      {
+        "path": "README.md",
+        "gitBlobSha1": "e1c8179dccf3b8a66be04f941f09873426de154c",
+        "sizeBytes": 6443
+      },
+      {
+        "path": "manifest.csv",
+        "gitBlobSha1": "673f8e68583b5072698e1ad8783fb1227ad39899",
+        "sizeBytes": 5116
+      },
+      {
+        "path": "redelimited/assam2023_assembly_list.csv",
+        "gitBlobSha1": "d59e8bd85ea64d0b91a022d46f607c1f40d38a72",
+        "sizeBytes": 4745
+      },
+      {
+        "path": "redelimited/assembly/U08_AC.dbf",
+        "gitBlobSha1": "ee47b9d1be2dcb7678381495cb7ac8f83d3e84e9",
+        "sizeBytes": 16007
+      },
+      {
+        "path": "redelimited/assembly/U08_AC.shp",
+        "gitBlobSha1": "84e9418f73bffdc1352821ba9840f1c6f58bc1d6",
+        "sizeBytes": 2314540
+      },
+      {
+        "path": "redelimited/assembly/U08_AC.shx",
+        "gitBlobSha1": "2e667d466c07e0cb4016417a006b2c2569271898",
+        "sizeBytes": 820
+      },
+      {
+        "path": "redelimited/source/assam_ls_new_borders.geojson",
+        "gitBlobSha1": "b54493f9b3f3e6cf9af173885437af5ea05a28f4",
+        "sizeBytes": 1103477
+      },
+      {
+        "path": "redelimited/source/j_and_k_assembly_new_borders.geojson",
+        "gitBlobSha1": "27f3a00f8aef1e5773ee2fac2e0b59305db5105a",
+        "sizeBytes": 6516297
+      },
+      {
+        "path": "redelimited/source/j_and_k_ls_new_borders.geojson",
+        "gitBlobSha1": "d054327ae7657fe09e378d961a2fb1099a19a90d",
+        "sizeBytes": 448161
+      },
+      {
+        "path": "redelimited/source/ladakh_ls_new_borders.geojson",
+        "gitBlobSha1": "b1a6bad588f7be7a4642a8760354c3bb6d2db7b1",
+        "sizeBytes": 419182
+      },
+      {
+        "path": "scripts/add_redelimited.py",
+        "gitBlobSha1": "2ba7a8004c6744ea94cbef2ad1db45507779dedf",
+        "sizeBytes": 3256
+      }
+    ],
+    "knownLimitations": [
+      "Post-2008 assembly layer is a mixed-source 2018-derived layer and its README says counts match official totals for only 27 of 30 states before manual supplements.",
+      "Gujarat post-2008 layer is reported one short (181 vs official 182).",
+      "Assam's 2023 assembly roster is available but no corresponding polygon geometry is supplied.",
+      "The post-2008 Assam boundaries predate 2023 delimitation; do not substitute them for current boundaries.",
+      "The post-2008 Jammu & Kashmir boundaries predate 2022 delimitation; use the separately sourced 90-AC redelimited layer, which has a known geographic clipping caveat.",
+      "Source README explicitly identifies missing/limited layers for some union territories; it is not a complete official national geometry snapshot."
+    ]
+  },
+  "conclusion": {
+    "officialNationalGeometrySnapshotAcquired": false,
+    "allJurisdictionsProvenanceAndEffectiveDatesVerified": false,
+    "topologyValidatedWithIndependentSpatialEngine": false,
+    "releaseApproved": false,
+    "verdict": "BLOCKED",
+    "reason": "Candidate datasets are incomplete or mixed-source and explicitly document missing/current-boundary caveats. Using them to replace production geometry would silently misrepresent source authority and current geography. Keep fail-closed runtime quarantine until official/current geometry can be independently sourced and spatially validated."
+  }
+}

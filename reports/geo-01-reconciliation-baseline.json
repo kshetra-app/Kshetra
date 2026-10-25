@@ -1,0 +1,440 @@
+{
+  "schemaVersion": "1.0.0",
+  "generatedAgainst": {
+    "manifestPath": "apps/mobile/data/geo-manifest.json",
+    "statutoryMatrixPath": "reports/w021_5b1_r5_current_regime_matrix.json",
+    "statutoryMatrixVersion": "1.0.0",
+    "statutoryMatrixGeneratedAt": "2026-10-03T08:12:24.960Z"
+  },
+  "canonicalBaseline": {
+    "assemblyConstituencies": 4123,
+    "parliamentaryConstituencies": 543,
+    "jurisdictions": 31
+  },
+  "policy": "No difference is accepted unless tied to a documented statutory transition with source document, effective date, source version/hash and independent verification evidence.",
+  "reconciliations": [
+    {
+      "jurisdictionCode": "AP",
+      "jurisdictionName": "Andhra Pradesh",
+      "expectedStatutoryACCount": 175,
+      "manifestFeatureCount": 175,
+      "delta": 0,
+      "status": "COUNT_MATCH_GEOMETRY_STILL_UNVERIFIED",
+      "blockers": [
+        "Unique ECI/official identifiers and canonical relationship not yet verified",
+        "Polygon validity, bounds, gaps, overlaps and topology require independent spatial validation",
+        "Legacy manifest lacks complete official source/version/effective-date provenance per geometry release"
+      ]
+    },
+    {
+      "jurisdictionCode": "AR",
+      "jurisdictionName": "Arunachal Pradesh",
+      "expectedStatutoryACCount": 60,
+      "manifestFeatureCount": 60,
+      "delta": 0,
+      "status": "BLOCKED",
+      "blockers": [
+        "Polygon geometry unavailable/not production-approved",
+        "Unique ECI/official identifiers and canonical relationship not yet verified",
+        "Polygon validity, bounds, gaps, overlaps and topology require independent spatial validation",
+        "Legacy manifest lacks complete official source/version/effective-date provenance per geometry release"
+      ]
+    },
+    {
+      "jurisdictionCode": "AS",
+      "jurisdictionName": "Assam",
+      "expectedStatutoryACCount": 126,
+      "manifestFeatureCount": 133,
+      "delta": 7,
+      "status": "BLOCKED",
+      "blockers": [
+        "Feature count differs from statutory baseline",
+        "Unique ECI/official identifiers and canonical relationship not yet verified",
+        "Polygon validity, bounds, gaps, overlaps and topology require independent spatial validation",
+        "Legacy manifest lacks complete official source/version/effective-date provenance per geometry release"
+      ]
+    },
+    {
+      "jurisdictionCode": "BR",
+      "jurisdictionName": "Bihar",
+      "expectedStatutoryACCount": 243,
+      "manifestFeatureCount": 243,
+      "delta": 0,
+      "status": "COUNT_MATCH_GEOMETRY_STILL_UNVERIFIED",
+      "blockers": [
+        "Unique ECI/official identifiers and canonical relationship not yet verified",
+        "Polygon validity, bounds, gaps, overlaps and topology require independent spatial validation",
+        "Legacy manifest lacks complete official source/version/effective-date provenance per geometry release"
+      ]
+    },
+    {
+      "jurisdictionCode": "CG",
+      "jurisdictionName": "Chhattisgarh",
+      "expectedStatutoryACCount": 90,
+      "manifestFeatureCount": 90,
+      "delta": 0,
+      "status": "COUNT_MATCH_GEOMETRY_STILL_UNVERIFIED",
+      "blockers": [
+        "Unique ECI/official identifiers and canonical relationship not yet verified",
+        "Polygon validity, bounds, gaps, overlaps and topology require independent spatial validation",
+        "Legacy manifest lacks complete official source/version/effective-date provenance per geometry release"
+      ]
+    },
+    {
+      "jurisdictionCode": "GA",
+      "jurisdictionName": "Goa",
+      "expectedStatutoryACCount": 40,
+      "manifestFeatureCount": 40,
+      "delta": 0,
+      "status": "COUNT_MATCH_GEOMETRY_STILL_UNVERIFIED",
+      "blockers": [
+        "Unique ECI/official identifiers and canonical relationship not yet verified",
+        "Polygon validity, bounds, gaps, overlaps and topology require independent spatial validation",
+        "Legacy manifest lacks complete official source/version/effective-date provenance per geometry release"
+      ]
+    },
+    {
+      "jurisdictionCode": "GJ",
+      "jurisdictionName": "Gujarat",
+      "expectedStatutoryACCount": 182,
+      "manifestFeatureCount": 165,
+      "delta": -17,
+      "status": "BLOCKED",
+      "blockers": [
+        "Feature count differs from statutory baseline",
+        "Unique ECI/official identifiers and canonical relationship not yet verified",
+        "Polygon validity, bounds, gaps, overlaps and topology require independent spatial validation",
+        "Legacy manifest lacks complete official source/version/effective-date provenance per geometry release"
+      ]
+    },
+    {
+      "jurisdictionCode": "HR",
+      "jurisdictionName": "Haryana",
+      "expectedStatutoryACCount": 90,
+      "manifestFeatureCount": 90,
+      "delta": 0,
+      "status": "COUNT_MATCH_GEOMETRY_STILL_UNVERIFIED",
+      "blockers": [
+        "Unique ECI/official identifiers and canonical relationship not yet verified",
+        "Polygon validity, bounds, gaps, overlaps and topology require independent spatial validation",
+        "Legacy manifest lacks complete official source/version/effective-date provenance per geometry release"
+      ]
+    },
+    {
+      "jurisdictionCode": "HP",
+      "jurisdictionName": "Himachal Pradesh",
+      "expectedStatutoryACCount": 68,
+      "manifestFeatureCount": 68,
+      "delta": 0,
+      "status": "COUNT_MATCH_GEOMETRY_STILL_UNVERIFIED",
+      "blockers": [
+        "Unique ECI/official identifiers and canonical relationship not yet verified",
+        "Polygon validity, bounds, gaps, overlaps and topology require independent spatial validation",
+        "Legacy manifest lacks complete official source/version/effective-date provenance per geometry release"
+      ]
+    },
+    {
+      "jurisdictionCode": "JH",
+      "jurisdictionName": "Jharkhand",
+      "expectedStatutoryACCount": 81,
+      "manifestFeatureCount": 95,
+      "delta": 14,
+      "status": "BLOCKED",
+      "blockers": [
+        "Feature count differs from statutory baseline",
+        "Unique ECI/official identifiers and canonical relationship not yet verified",
+        "Polygon validity, bounds, gaps, overlaps and topology require independent spatial validation",
+        "Legacy manifest lacks complete official source/version/effective-date provenance per geometry release"
+      ]
+    },
+    {
+      "jurisdictionCode": "KA",
+      "jurisdictionName": "Karnataka",
+      "expectedStatutoryACCount": 224,
+      "manifestFeatureCount": 225,
+      "delta": 1,
+      "status": "BLOCKED",
+      "blockers": [
+        "Feature count differs from statutory baseline",
+        "Unique ECI/official identifiers and canonical relationship not yet verified",
+        "Polygon validity, bounds, gaps, overlaps and topology require independent spatial validation",
+        "Legacy manifest lacks complete official source/version/effective-date provenance per geometry release"
+      ]
+    },
+    {
+      "jurisdictionCode": "KL",
+      "jurisdictionName": "Kerala",
+      "expectedStatutoryACCount": 140,
+      "manifestFeatureCount": 141,
+      "delta": 1,
+      "status": "BLOCKED",
+      "blockers": [
+        "Feature count differs from statutory baseline",
+        "Unique ECI/official identifiers and canonical relationship not yet verified",
+        "Polygon validity, bounds, gaps, overlaps and topology require independent spatial validation",
+        "Legacy manifest lacks complete official source/version/effective-date provenance per geometry release"
+      ]
+    },
+    {
+      "jurisdictionCode": "MP",
+      "jurisdictionName": "Madhya Pradesh",
+      "expectedStatutoryACCount": 230,
+      "manifestFeatureCount": 226,
+      "delta": -4,
+      "status": "BLOCKED",
+      "blockers": [
+        "Feature count differs from statutory baseline",
+        "Unique ECI/official identifiers and canonical relationship not yet verified",
+        "Polygon validity, bounds, gaps, overlaps and topology require independent spatial validation",
+        "Legacy manifest lacks complete official source/version/effective-date provenance per geometry release"
+      ]
+    },
+    {
+      "jurisdictionCode": "MH",
+      "jurisdictionName": "Maharashtra",
+      "expectedStatutoryACCount": 288,
+      "manifestFeatureCount": 288,
+      "delta": 0,
+      "status": "COUNT_MATCH_GEOMETRY_STILL_UNVERIFIED",
+      "blockers": [
+        "Unique ECI/official identifiers and canonical relationship not yet verified",
+        "Polygon validity, bounds, gaps, overlaps and topology require independent spatial validation",
+        "Legacy manifest lacks complete official source/version/effective-date provenance per geometry release"
+      ]
+    },
+    {
+      "jurisdictionCode": "MN",
+      "jurisdictionName": "Manipur",
+      "expectedStatutoryACCount": 60,
+      "manifestFeatureCount": 60,
+      "delta": 0,
+      "status": "BLOCKED",
+      "blockers": [
+        "Polygon geometry unavailable/not production-approved",
+        "Unique ECI/official identifiers and canonical relationship not yet verified",
+        "Polygon validity, bounds, gaps, overlaps and topology require independent spatial validation",
+        "Legacy manifest lacks complete official source/version/effective-date provenance per geometry release"
+      ]
+    },
+    {
+      "jurisdictionCode": "ML",
+      "jurisdictionName": "Meghalaya",
+      "expectedStatutoryACCount": 60,
+      "manifestFeatureCount": 60,
+      "delta": 0,
+      "status": "BLOCKED",
+      "blockers": [
+        "Polygon geometry unavailable/not production-approved",
+        "Unique ECI/official identifiers and canonical relationship not yet verified",
+        "Polygon validity, bounds, gaps, overlaps and topology require independent spatial validation",
+        "Legacy manifest lacks complete official source/version/effective-date provenance per geometry release"
+      ]
+    },
+    {
+      "jurisdictionCode": "MZ",
+      "jurisdictionName": "Mizoram",
+      "expectedStatutoryACCount": 40,
+      "manifestFeatureCount": 40,
+      "delta": 0,
+      "status": "BLOCKED",
+      "blockers": [
+        "Polygon geometry unavailable/not production-approved",
+        "Unique ECI/official identifiers and canonical relationship not yet verified",
+        "Polygon validity, bounds, gaps, overlaps and topology require independent spatial validation",
+        "Legacy manifest lacks complete official source/version/effective-date provenance per geometry release"
+      ]
+    },
+    {
+      "jurisdictionCode": "NL",
+      "jurisdictionName": "Nagaland",
+      "expectedStatutoryACCount": 60,
+      "manifestFeatureCount": 60,
+      "delta": 0,
+      "status": "BLOCKED",
+      "blockers": [
+        "Polygon geometry unavailable/not production-approved",
+        "Unique ECI/official identifiers and canonical relationship not yet verified",
+        "Polygon validity, bounds, gaps, overlaps and topology require independent spatial validation",
+        "Legacy manifest lacks complete official source/version/effective-date provenance per geometry release"
+      ]
+    },
+    {
+      "jurisdictionCode": "OD",
+      "jurisdictionName": "Odisha",
+      "expectedStatutoryACCount": 147,
+      "manifestFeatureCount": 147,
+      "delta": 0,
+      "status": "COUNT_MATCH_GEOMETRY_STILL_UNVERIFIED",
+      "blockers": [
+        "Unique ECI/official identifiers and canonical relationship not yet verified",
+        "Polygon validity, bounds, gaps, overlaps and topology require independent spatial validation",
+        "Legacy manifest lacks complete official source/version/effective-date provenance per geometry release"
+      ]
+    },
+    {
+      "jurisdictionCode": "PB",
+      "jurisdictionName": "Punjab",
+      "expectedStatutoryACCount": 117,
+      "manifestFeatureCount": 117,
+      "delta": 0,
+      "status": "COUNT_MATCH_GEOMETRY_STILL_UNVERIFIED",
+      "blockers": [
+        "Unique ECI/official identifiers and canonical relationship not yet verified",
+        "Polygon validity, bounds, gaps, overlaps and topology require independent spatial validation",
+        "Legacy manifest lacks complete official source/version/effective-date provenance per geometry release"
+      ]
+    },
+    {
+      "jurisdictionCode": "RJ",
+      "jurisdictionName": "Rajasthan",
+      "expectedStatutoryACCount": 200,
+      "manifestFeatureCount": 201,
+      "delta": 1,
+      "status": "BLOCKED",
+      "blockers": [
+        "Feature count differs from statutory baseline",
+        "Unique ECI/official identifiers and canonical relationship not yet verified",
+        "Polygon validity, bounds, gaps, overlaps and topology require independent spatial validation",
+        "Legacy manifest lacks complete official source/version/effective-date provenance per geometry release"
+      ]
+    },
+    {
+      "jurisdictionCode": "SK",
+      "jurisdictionName": "Sikkim",
+      "expectedStatutoryACCount": 32,
+      "manifestFeatureCount": 32,
+      "delta": 0,
+      "status": "BLOCKED",
+      "blockers": [
+        "Polygon geometry unavailable/not production-approved",
+        "Unique ECI/official identifiers and canonical relationship not yet verified",
+        "Polygon validity, bounds, gaps, overlaps and topology require independent spatial validation",
+        "Legacy manifest lacks complete official source/version/effective-date provenance per geometry release"
+      ]
+    },
+    {
+      "jurisdictionCode": "TN",
+      "jurisdictionName": "Tamil Nadu",
+      "expectedStatutoryACCount": 234,
+      "manifestFeatureCount": 235,
+      "delta": 1,
+      "status": "BLOCKED",
+      "blockers": [
+        "Feature count differs from statutory baseline",
+        "Unique ECI/official identifiers and canonical relationship not yet verified",
+        "Polygon validity, bounds, gaps, overlaps and topology require independent spatial validation",
+        "Legacy manifest lacks complete official source/version/effective-date provenance per geometry release"
+      ]
+    },
+    {
+      "jurisdictionCode": "TS",
+      "jurisdictionName": "Telangana",
+      "expectedStatutoryACCount": 119,
+      "manifestFeatureCount": 119,
+      "delta": 0,
+      "status": "COUNT_MATCH_GEOMETRY_STILL_UNVERIFIED",
+      "blockers": [
+        "Unique ECI/official identifiers and canonical relationship not yet verified",
+        "Polygon validity, bounds, gaps, overlaps and topology require independent spatial validation",
+        "Legacy manifest lacks complete official source/version/effective-date provenance per geometry release"
+      ]
+    },
+    {
+      "jurisdictionCode": "TR",
+      "jurisdictionName": "Tripura",
+      "expectedStatutoryACCount": 60,
+      "manifestFeatureCount": 60,
+      "delta": 0,
+      "status": "BLOCKED",
+      "blockers": [
+        "Polygon geometry unavailable/not production-approved",
+        "Unique ECI/official identifiers and canonical relationship not yet verified",
+        "Polygon validity, bounds, gaps, overlaps and topology require independent spatial validation",
+        "Legacy manifest lacks complete official source/version/effective-date provenance per geometry release"
+      ]
+    },
+    {
+      "jurisdictionCode": "UP",
+      "jurisdictionName": "Uttar Pradesh",
+      "expectedStatutoryACCount": 403,
+      "manifestFeatureCount": 403,
+      "delta": 0,
+      "status": "COUNT_MATCH_GEOMETRY_STILL_UNVERIFIED",
+      "blockers": [
+        "Unique ECI/official identifiers and canonical relationship not yet verified",
+        "Polygon validity, bounds, gaps, overlaps and topology require independent spatial validation",
+        "Legacy manifest lacks complete official source/version/effective-date provenance per geometry release"
+      ]
+    },
+    {
+      "jurisdictionCode": "UK",
+      "jurisdictionName": "Uttarakhand",
+      "expectedStatutoryACCount": 70,
+      "manifestFeatureCount": 70,
+      "delta": 0,
+      "status": "BLOCKED",
+      "blockers": [
+        "Polygon geometry unavailable/not production-approved",
+        "Unique ECI/official identifiers and canonical relationship not yet verified",
+        "Polygon validity, bounds, gaps, overlaps and topology require independent spatial validation",
+        "Legacy manifest lacks complete official source/version/effective-date provenance per geometry release"
+      ]
+    },
+    {
+      "jurisdictionCode": "WB",
+      "jurisdictionName": "West Bengal",
+      "expectedStatutoryACCount": 294,
+      "manifestFeatureCount": 294,
+      "delta": 0,
+      "status": "COUNT_MATCH_GEOMETRY_STILL_UNVERIFIED",
+      "blockers": [
+        "Unique ECI/official identifiers and canonical relationship not yet verified",
+        "Polygon validity, bounds, gaps, overlaps and topology require independent spatial validation",
+        "Legacy manifest lacks complete official source/version/effective-date provenance per geometry release"
+      ]
+    },
+    {
+      "jurisdictionCode": "DL",
+      "jurisdictionName": "Delhi",
+      "expectedStatutoryACCount": 70,
+      "manifestFeatureCount": 70,
+      "delta": 0,
+      "status": "COUNT_MATCH_GEOMETRY_STILL_UNVERIFIED",
+      "blockers": [
+        "Unique ECI/official identifiers and canonical relationship not yet verified",
+        "Polygon validity, bounds, gaps, overlaps and topology require independent spatial validation",
+        "Legacy manifest lacks complete official source/version/effective-date provenance per geometry release"
+      ]
+    },
+    {
+      "jurisdictionCode": "JK",
+      "jurisdictionName": "Jammu & Kashmir",
+      "expectedStatutoryACCount": 90,
+      "manifestFeatureCount": 107,
+      "delta": 17,
+      "status": "BLOCKED",
+      "blockers": [
+        "Feature count differs from statutory baseline",
+        "Unique ECI/official identifiers and canonical relationship not yet verified",
+        "Polygon validity, bounds, gaps, overlaps and topology require independent spatial validation",
+        "Legacy manifest lacks complete official source/version/effective-date provenance per geometry release"
+      ]
+    },
+    {
+      "jurisdictionCode": "PY",
+      "jurisdictionName": "Puducherry",
+      "expectedStatutoryACCount": 30,
+      "manifestFeatureCount": 30,
+      "delta": 0,
+      "status": "BLOCKED",
+      "blockers": [
+        "Polygon geometry unavailable/not production-approved",
+        "Unique ECI/official identifiers and canonical relationship not yet verified",
+        "Polygon validity, bounds, gaps, overlaps and topology require independent spatial validation",
+        "Legacy manifest lacks complete official source/version/effective-date provenance per geometry release"
+      ]
+    }
+  ],
+  "verdict": "BLOCKED",
+  "zeroUnexplainedDifferencesRequired": true
+}
