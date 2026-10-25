@@ -416,7 +416,7 @@ for (const index of indexSources) {
       const absolute = new URL(href, index.finalUrl).toString();
       if (!hostAllowed(absolute)) continue;
       const pathLower = new URL(absolute).pathname.toLowerCase();
-      if (/\.rar$/i.test(pathLower) && /PAN[%\s_-]*INDIA/i.test(pathLower)) {
+      if (/\.rar$/i.test(pathLower) && /PAN(?:%20|[\s_-])*INDIA/i.test(pathLower)) {
         const sourceId='DISCOVERED-SOI-15GB-ABDB-ARCHIVE';
         if (!manifest.results.some(r=>r.id===sourceId)) manifest.results.push({
           id:sourceId, authority:'PRIMARY_OFFICIAL_METADATA_ONLY', url:absolute, discoveredFrom:index.id,
