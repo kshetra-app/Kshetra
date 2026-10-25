@@ -3730,3 +3730,14 @@
 - **Verification limits:** The source-acquisition runner and new regression suite have not been executed in this environment; no SHA-256 download manifest or staging catalog evidence is claimed. The owner must execute staging SQL and return raw results before database-dependent acceptance.
 - **Final disposition:** W021.5 resumption is in progress. Overall W021.5 formal acceptance remains pending. External gates EB-01 through EB-05 remain open until their actual evidence is obtained and validated.
 
+
+
+---
+
+### DEC-156: Branch-Aware Governance Verification and Canonical Scope Refresh
+- **Date:** 2026-10-25
+- **Status:** HASH RECONCILIATION PENDING
+- **Authority:** Explicit project-owner authorization for W021.5 resumption; Master Execution Framework Amendment v1.6 / Rule IV-001.
+- **Scope:** Permit governance CI on a pull-request merge ref only when its merge base is the exact current `origin/master`; preserve the strict `master` branch requirement for non-PR executions. Historical DEC-048 scope hash remains immutable.
+- **Canonical Scope Hash:** PENDING — to be replaced with the live SHA-256 emitted by the amended `tests/governance-v16.test.mjs`.
+- **Acceptance Boundary:** This change does not accept W021.5, authorize staging database writes, or authorize production access. It only allows the existing governance suite to verify an isolated PR branch without weakening the master baseline check.
