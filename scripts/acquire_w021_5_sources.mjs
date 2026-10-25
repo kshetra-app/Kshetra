@@ -19,8 +19,8 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const OUT = process.env.W0215_SOURCE_CACHE
   ? path.resolve(process.env.W0215_SOURCE_CACHE)
   : path.join(ROOT, 'artifacts', 'w021_5_source_cache');
-const MAX_BYTES = 50 * 1024 * 1024;
-const MAX_TOTAL_BYTES = 500 * 1024 * 1024;
+const MAX_BYTES = 250 * 1024 * 1024;
+const MAX_TOTAL_BYTES = 750 * 1024 * 1024;
 const MAX_REDIRECTS = 5;
 let totalDownloadedBytes = 0;
 const ALLOWED_HOSTS = new Set([
@@ -44,6 +44,8 @@ const SOURCES = [
     url:'https://censusindia.gov.in/nada/index.php/catalog/6191', effectiveDate:'2011', purpose:'Official PCA state/district catalogue; download links and exact workbook are captured separately when available.' },
   { id:'SRC-SOI-ABDB', authority:'PRIMARY_OFFICIAL_CATALOG', path:'official/soi/administrative-boundary-database.html',
     url:'https://surveyofindia.gov.in/pages/administrative-boundary-data-base-abdb-', purpose:'Official administrative boundaries; not a substitute for AC statutory boundaries or postal delivery beats.' },
+  { id:'SRC-SOI-VILLAGE-BOUNDARIES', authority:'PRIMARY_OFFICIAL_CATALOG', path:'official/soi/village-boundary-database.html',
+    url:'https://surveyofindia.gov.in/pages/village-boundary-data-base-of-entire-india', purpose:'Official village boundary database discovery page; candidate for Census-village spatial joins only after exact version and coverage validation.' },
   { id:'SRC-SOI-VECTOR-CATALOG-2025', authority:'PRIMARY_OFFICIAL_METADATA', path:'official/soi/vector-data-catalog-2025.pdf',
     url:'https://www.surveyofindia.gov.in/UserFiles/files/Vector%20Data%20Catalog%202025%281%29.pdf', purpose:'Metadata for available administrative boundary products.' },
   { id:'SRC-DATAMEET-AC-SHP', authority:'SECONDARY_CANDIDATE_GIS', path:'secondary/datameet/India_AC.shp',
@@ -263,7 +265,7 @@ for (const sourceResult of manifest.results.filter(r => /^SRC-SECONDARY-ECI-2026
  * provenance-preserving retrieval, not unbounded scraping. */
 const indexSources = manifest.results.filter(r =>
   r.status==='DOWNLOADED_HASHED' &&
-  ['SRC-ECI-STATISTICAL-INDEX','SRC-ECI-ELECTION-MANAGEMENT','SRC-CENSUS-PCA-SD-2011','SRC-SOI-ABDB'].includes(r.id) &&
+  ['SRC-ECI-STATISTICAL-INDEX','SRC-ECI-ELECTION-MANAGEMENT','SRC-CENSUS-PCA-SD-2011','SRC-SOI-ABDB','SRC-SOI-VILLAGE-BOUNDARIES'].includes(r.id) &&
   r.contentType && /html|text/i.test(r.contentType)
 );
 const discovered = new Map();
