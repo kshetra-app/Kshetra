@@ -65,6 +65,15 @@ SOURCES.extend([
         "where": "1=1", "outFields": "*", "returnGeometry": "true", "outSR": "4326", "f": "json"
     }), "expected_features": 119},
 ])
+TELANGANA_ADMIN_NEW = "https://tgrac.telangana.gov.in/arcgis/rest/services/EndowmentLands_Folder/Endowment_Lands_Admin_New/MapServer/12"
+TELANGANA_ADMIN_OLD = "https://tgrac.telangana.gov.in/arcgis/rest/services/EndowmentLands_Folder/Endowment_Lands_Old/MapServer/13"
+SOURCES.extend([
+    {"id": "telangana-admin-new-layer-metadata", "kind": "official_state_gis_new_service_candidate", "url": TELANGANA_ADMIN_NEW + "?f=pjson"},
+    {"id": "telangana-admin-new-ac-geometry", "kind": "official_state_gis_new_geometry_candidate", "url": TELANGANA_ADMIN_NEW + "/query?" + urlencode({"where":"1=1","outFields":"*","returnGeometry":"true","outSR":"4326","f":"json"}), "expected_features":119},
+    {"id": "telangana-admin-old-layer-metadata", "kind": "official_state_gis_old_service_candidate", "url": TELANGANA_ADMIN_OLD + "?f=pjson"},
+    {"id": "telangana-admin-old-ac-geometry", "kind": "official_state_gis_old_geometry_candidate", "url": TELANGANA_ADMIN_OLD + "/query?" + urlencode({"where":"1=1","outFields":"*","returnGeometry":"true","outSR":"4326","f":"json"}), "expected_features":119},
+])
+
 
 
 def sha256(data: bytes) -> str:
