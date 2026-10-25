@@ -1,94 +1,16 @@
-import { TELANGANA_CONSTITUENCIES, type ConstituencySeed, TELANGANA_DEMOGRAPHICS, type ConstituencyDemographics } from './data';
-import { getUnifiedConstituenciesForState, type UnifiedConstituency } from './stateDataAdapter';
-import { getDemographicsForState, getHistoryForState } from './stateDataDispatcher';
 import { STATES } from '@kshetra/shared';
-
-/** Lookup map from AC_NO to seed data for O(1) access */
-const seedByAcNo = new Map<number, ConstituencySeed>(
-  TELANGANA_CONSTITUENCIES.map((c) => [c.acNo, c]),
-);
-
-/** Lookup map from AC_NO to demographics for O(1) access */
-const demoByAcNo = new Map<number, ConstituencyDemographics>(
-  TELANGANA_DEMOGRAPHICS.map((d) => [d.acNo, d]),
-);
+import type { StateMapData } from './stateScopedMapData';
 
 /**
- * Enrich a GeoJSON FeatureCollection with constituency seed data.
- * Adds WINNER_PARTY, WINNER_NAME, MARGIN, TYPE properties to each feature.
- * Also merges demographics data for heatmap overlays.
- * This is done once at import time (offline, no API call).
- * NOTE: This function is Telangana-specific (uses demographics). For other
- * states, use enrichGeoJSONForState() below.
+ * Backward-compatible name for Telangana enrichment. All state records are
+ * injected from the selected state's versioned API snapshot; no seed modules
+ * are imported into the mobile map graph.
  */
 export function enrichGeoJSON(
   geojson: GeoJSON.FeatureCollection,
+  data?: StateMapData | null,
 ): GeoJSON.FeatureCollection {
-  return {
-    ...geojson,
-    features: geojson.features.map((feature) => {
-      const acNo = feature.properties?.AC_NO;
-      const seed = acNo != null ? seedByAcNo.get(acNo) : undefined;
-      const demo = acNo != null ? demoByAcNo.get(acNo) : undefined;
-
-      const history = acNo != null ? getHistoryForState('TS', acNo) : [];
-      const historyProps: Record<string, string> = {};
-      for (const h of history) {
-        historyProps[`WINNER_PARTY_${h.year}`] = h.party;
-        historyProps[`WINNER_NAME_${h.year}`] = h.winner;
-      }
-      historyProps['WINNER_PARTY_2023'] = seed?.winner2023 ?? 'IND';
-      historyProps['WINNER_NAME_2023'] = seed?.winnerName2023 ?? '';
-
-      // Determine Battleground status
-      const margin = seed?.margin2023 ?? 0;
-      let battleground = 'safe';
-      if (margin > 0 && margin < 2000) {
-        battleground = 'critical';
-      } else if (margin >= 2000 && margin < 5000) {
-        battleground = 'competitive';
-      }
-
-      // Determine Swing status
-      let isSwing = false;
-      const hasHistory = history.length > 0;
-      if (hasHistory) {
-        const sortedHistory = [...history].sort((a, b) => b.year - a.year);
-        const prevWinnerParty = sortedHistory[0]?.party;
-        const currentWinnerParty = seed?.winner2023;
-        const normParty = (p: string) => {
-          const up = p.toUpperCase();
-          if (up === 'TRS' || up === 'BRS') return 'BRS';
-          return up;
-        };
-        if (prevWinnerParty && currentWinnerParty && normParty(prevWinnerParty) !== normParty(currentWinnerParty)) {
-          isSwing = true;
-        }
-      }
-      const swingStatus = isSwing ? 'swing' : (hasHistory ? 'retained' : 'unknown');
-
-      return {
-        ...feature,
-        properties: {
-          ...feature.properties,
-          WINNER_PARTY: seed?.winner2023 ?? 'IND',
-          WINNER_NAME: seed?.winnerName2023 ?? '',
-          RUNNER_UP: seed?.runnerUp2023 ?? '',
-          MARGIN: seed?.margin2023 ?? 0,
-          RESERVATION: seed?.type ?? 'GEN',
-          DISTRICT: seed?.district ?? '',
-          POPULATION: demo?.population ?? 0,
-          LITERACY: demo?.literacy ?? 0,
-          TURNOUT: demo?.turnout2023 ?? 0,
-          URBAN_PCT: demo?.urbanPercent ?? 0,
-          TOTAL_VOTERS: demo?.totalVoters ?? 0,
-          BATTLEGROUND: battleground,
-          IS_SWING: swingStatus,
-          ...historyProps,
-        },
-      };
-    }),
-  };
+  return data ? enrichGeoJSONForState(geojson, 'TS', data) : geojson;
 }
 
 /**
@@ -159,16 +81,17 @@ const NAME_ALIASES: Record<string, string> = {
 export function enrichGeoJSONForState(
   geojson: GeoJSON.FeatureCollection,
   stateCode: string,
+  data?: StateMapData | null,
 ): GeoJSON.FeatureCollection {
-  const constituencies = getUnifiedConstituenciesForState(stateCode);
-  const byAcNo = new Map<number, UnifiedConstituency>(
+  const constituencies = data?.stateCode === stateCode.toUpperCase() ? data.constituencies : [];
+  const byAcNo = new Map<number, StateMapData['constituencies'][number]>(
     constituencies.map((c) => [c.acNo, c]),
   );
-  const byName = new Map<string, UnifiedConstituency>(
+  const byName = new Map<string, StateMapData['constituencies'][number]>(
     constituencies.map((c) => [normalizeName(c.name), c]),
   );
   // Space-stripped index for fuzzy matching
-  const byNameStripped = new Map<string, UnifiedConstituency>(
+  const byNameStripped = new Map<string, StateMapData['constituencies'][number]>(
     constituencies.map((c) => [stripSpaces(normalizeName(c.name)), c]),
   );
 
@@ -203,68 +126,53 @@ export function enrichGeoJSONForState(
       // Merge demographics so the map's Data overlays (population / literacy /
       // turnout) render for every state, not just Telangana. Missing data
       // falls back to 0 (renders at the low end of the heatmap scale).
-      const demo =
-        resolvedAcNo != null ? getDemographicsForState(stateCode, resolvedAcNo) : undefined;
-
-      const history = resolvedAcNo != null ? getHistoryForState(stateCode, resolvedAcNo) : [];
+      const demo = resolvedAcNo != null ? data?.demographicsByAcNo[String(resolvedAcNo)] : undefined;
+      const history = resolvedAcNo != null ? data?.historyByAcNo[String(resolvedAcNo)] ?? [] : [];
       const historyProps: Record<string, string> = {};
       for (const h of history) {
         historyProps[`WINNER_PARTY_${h.year}`] = h.party;
         historyProps[`WINNER_NAME_${h.year}`] = h.winner;
       }
-      const currentYear = c?.electionYear ?? 2024;
-      historyProps[`WINNER_PARTY_${currentYear}`] = c?.winnerParty ?? 'IND';
-      historyProps[`WINNER_NAME_${currentYear}`] = c?.winnerName ?? '';
+      if (c?.electionYear && c.winnerParty) historyProps[`WINNER_PARTY_${c.electionYear}`] = c.winnerParty;
+      if (c?.electionYear && c.winnerName) historyProps[`WINNER_NAME_${c.electionYear}`] = c.winnerName;
 
-      // Determine Battleground status
-      const margin = c?.margin ?? 0;
-      let battleground = 'safe';
-      if (margin > 0 && margin < 2000) {
-        battleground = 'critical';
-      } else if (margin >= 2000 && margin < 5000) {
-        battleground = 'competitive';
+      const margin = c?.margin;
+      let battleground: string | undefined;
+      if (c && Number.isFinite(margin) && (c.winnerParty || c.winnerName)) {
+        battleground = (margin! > 0 && margin! < 2000) ? 'critical'
+          : (margin! >= 2000 && margin! < 5000) ? 'competitive' : 'safe';
       }
-
-      // Determine Swing status
       let isSwing = false;
       const hasHistory = history.length > 0;
-      if (hasHistory) {
+      if (hasHistory && c?.winnerParty) {
         const sortedHistory = [...history].sort((a, b) => b.year - a.year);
-        const prevWinnerParty = sortedHistory[0]?.party;
-        const currentWinnerParty = c?.winnerParty;
-        const normParty = (p: string) => {
-          const up = p.toUpperCase();
-          if (up === 'TRS' || up === 'BRS') return 'BRS';
-          return up;
+        const previousParty = sortedHistory[0]?.party;
+        const normalizeParty = (party: string) => {
+          const upper = party.toUpperCase();
+          return upper === 'TRS' || upper === 'BRS' ? 'BRS' : upper;
         };
-        if (prevWinnerParty && currentWinnerParty && normParty(prevWinnerParty) !== normParty(currentWinnerParty)) {
-          isSwing = true;
-        }
+        if (previousParty && normalizeParty(previousParty) !== normalizeParty(c.winnerParty)) isSwing = true;
       }
-      const swingStatus = isSwing ? 'swing' : (hasHistory ? 'retained' : 'unknown');
 
-      return {
-        ...feature,
-        properties: {
-          ...feature.properties,
-          AC_NO: resolvedAcNo,
-          AC_NAME: c?.name ?? geoName,
-          WINNER_PARTY: c?.winnerParty ?? 'IND',
-          WINNER_NAME: c?.winnerName ?? '',
-          RUNNER_UP: c?.runnerUp ?? '',
-          RESERVATION: c?.type ?? 'GEN',
-          MARGIN: c?.margin ?? 0,
-          DISTRICT: c?.district ?? feature.properties?.DIST_NAME ?? '',
-          POPULATION: demo?.population ?? 0,
-          LITERACY: demo?.literacy ?? 0,
-          TURNOUT: demo?.turnout2023 ?? 0,
-          URBAN_PCT: demo?.urbanPercent ?? 0,
-          TOTAL_VOTERS: demo?.totalVoters ?? 0,
-          BATTLEGROUND: battleground,
-          IS_SWING: swingStatus,
-          ...historyProps,
-        },
+      const properties: Record<string, unknown> = {
+        ...feature.properties,
+        ...(resolvedAcNo != null ? { AC_NO: resolvedAcNo } : {}),
+        ...(c ? { CONSTITUENCY_ID: c.id, AC_NAME: c.name } : { AC_NAME: geoName }),
+        ...(c?.winnerParty ? { WINNER_PARTY: c.winnerParty } : {}),
+        ...(c?.winnerName ? { WINNER_NAME: c.winnerName } : {}),
+        ...(c?.runnerUp ? { RUNNER_UP: c.runnerUp } : {}),
+        ...(c ? { RESERVATION: c.type, DISTRICT: c.district || feature.properties?.DIST_NAME } : {}),
+        ...(typeof margin === 'number' && (c?.winnerParty || c?.winnerName) ? { MARGIN: margin } : {}),
+        ...(typeof demo?.population === 'number' ? { POPULATION: demo.population } : {}),
+        ...(typeof demo?.literacy === 'number' ? { LITERACY: demo.literacy } : {}),
+        ...(typeof demo?.turnout2023 === 'number' ? { TURNOUT: demo.turnout2023 } : {}),
+        ...(typeof demo?.urbanPercent === 'number' ? { URBAN_PCT: demo.urbanPercent } : {}),
+        ...(typeof demo?.totalVoters === 'number' ? { TOTAL_VOTERS: demo.totalVoters } : {}),
+        ...(battleground ? { BATTLEGROUND: battleground } : {}),
+        ...(c ? { IS_SWING: isSwing ? 'swing' : hasHistory ? 'retained' : 'unknown' } : {}),
+        ...historyProps,
       };
+      return { ...feature, properties };
     }),
   };
 }

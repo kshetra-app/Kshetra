@@ -25,7 +25,7 @@ import { findConstituencyAtPoint, STATES } from '@kshetra/shared';
 import { useActiveStateStore } from '../../stores/activeState';
 import { usePreferencesStore } from '../../stores/preferences';
 import { useFeedStore } from '../../stores/feed';
-import { isStateSupported, getStateData } from '../../lib/stateRegistry';
+import { isStateSupported } from '../../lib/stateRegistry';
 import { MapboxGL, mapboxAvailable } from '../../lib/maplibreCompat';
 import { apiClient, type SpatialProvenance } from '../../lib/api';
 import { telemetry } from '../../lib/telemetry';
@@ -57,15 +57,8 @@ import ChiefMinisterBadge from '../../components/ChiefMinisterBadge';
 import PhotoViewerModal from '../../components/PhotoViewerModal';
 import { useFavoritesStore } from '../../stores/favorites';
 import { useMyConstituencyStore } from '../../stores/myConstituency';
-import {
-  getUnifiedConstituenciesForState,
-  getAvailableYearsForState,
-  type UnifiedConstituency,
-} from '../../lib/stateDataAdapter';
-import { getTriviaForConstituencyInState, getAllTriviaForState } from '../../lib/stateTriviaAdapter';
-import { getHistoryForState } from '../../lib/stateDataDispatcher';
+import { useStateScopedMapData } from '../../lib/useStateScopedMapData';
 import { selectFreshTrivia } from '../../lib/triviaSelector';
-import { computeAllSeatAllocations } from '../../lib/delimitation/seatCalculator';
 import { styles } from '../../lib/mapScreenStyles';
 import MapTimeSlider from '../../components/MapTimeSlider';
 import { tapLight, selectionChanged } from '../../lib/haptics';
@@ -76,8 +69,7 @@ import {
   getLocalizedReservation,
   getLocalizedConstituencyName,
 } from '../../lib/stateTranslations';
-import { getBoothsForConstituency, hasHierarchyData, hasBoothData } from '../../lib/hierarchyData';
-import { useHasRepresentativeData } from '../../lib/representativesData';
+import { useStateScopedBooths } from '../../lib/stateScopedBooths';
 
 interface SelectedConstituency {
   acNo: number;
@@ -191,10 +183,12 @@ function FullMapScreen() {
   const favoriteIds = useFavoritesStore((s) => s.favoriteIds);
   const stateCode = useActiveStateStore((s) => s.stateCode);
   const setStateCode = useActiveStateStore((s) => s.setStateCode);
+  const stateMapDataState = useStateScopedMapData(stateCode);
+  const currentStateMapData = stateMapDataState.data?.stateCode === stateCode ? stateMapDataState.data : null;
+  const hasLocalBodyData = currentStateMapData?.hasLocalBodyData ?? false;
   const mapOnlyMode = useActiveStateStore((s) => s.mapOnlyMode);
   const broadcastMode = usePreferencesStore((s) => s.broadcastMode);
   const currentState = STATES[stateCode];
-  const hasLocalBodyData = useHasRepresentativeData(stateCode);
 
   // Spatial UI local tab selections
   const [spatialTab, setSpatialTab] = useState<'feed' | 'stats' | 'list'>('feed');
@@ -218,12 +212,8 @@ function FullMapScreen() {
   const [selectedBooth, setSelectedBooth] = useState<any | null>(null);
   const [hideOverlays, setHideOverlays] = useState(false);
 
-  /** Delimitation seat projections (computed once) */
-  const delimitationProjections = useMemo(() => computeAllSeatAllocations(), []);
-  const stateProjection = useMemo(
-    () => delimitationProjections.find((p) => p.stateCode === stateCode),
-    [delimitationProjections, stateCode],
-  );
+  /** Projection is part of the verified state-scoped API snapshot. */
+  const stateProjection = currentStateMapData?.seatProjection ?? null;
 
   /**
    * District-level seat density for delimitation overlay.
@@ -234,17 +224,18 @@ function FullMapScreen() {
    * while seed data uses current 33. This map resolves that.
    */
   const districtDensityMap = useMemo(
-    () => computeDistrictDensityMap(stateCode, !!stateProjection),
-    [stateCode, stateProjection],
+    () => computeDistrictDensityMap(stateCode, !!stateProjection, currentStateMapData),
+    [stateCode, stateProjection, currentStateMapData],
   );
 
-  /** Unified constituency list + lookup map for the active state */
+  /** State metadata is fetched and cached by useStateScopedMapData above. */
+  const availableYears = currentStateMapData?.availableYears ?? [];
   const stateConstituencies = useMemo(
-    () => getUnifiedConstituenciesForState(stateCode),
-    [stateCode],
+    () => currentStateMapData?.constituencies ?? [],
+    [currentStateMapData?.constituencies],
   );
   const seedMap = useMemo(
-    () => new Map<number, UnifiedConstituency>(stateConstituencies.map((c) => [c.acNo, c])),
+    () => new Map(stateConstituencies.map((c) => [c.acNo, c])),
     [stateConstituencies],
   );
 
@@ -395,9 +386,9 @@ function FullMapScreen() {
 
   /** Random trivia for idle map — re-fetched when state changes */
   const stateIdleTrivia = useMemo(() => {
-    const all = getAllTriviaForState(stateCode);
+    const all = currentStateMapData?.trivia ?? [];
     return selectFreshTrivia(all, 8);
-  }, [stateCode]);
+  }, [stateCode, currentStateMapData?.revision]);
 
   const allPosts = useFeedStore((s) => s.posts);
   const spatialPosts = useMemo(() => {
@@ -425,7 +416,7 @@ function FullMapScreen() {
 
   const hasBottomContent = !!(
     myHome ||
-    getAvailableYearsForState(stateCode).length > 1 ||
+    availableYears.length > 1 ||
     (stateIdleTrivia && stateIdleTrivia.length > 0)
   );
 
@@ -475,6 +466,12 @@ function FullMapScreen() {
   );
 
   const BOOTH_ZOOM_THRESHOLD = 12.5;
+  const selectedBoothAvailability = selected ? currentStateMapData?.hierarchyByAcNo[String(selected.acNo)] : undefined;
+  const boothSnapshot = useStateScopedBooths(
+    stateCode,
+    selected?.acNo ?? null,
+    Boolean(selected && currentZoom >= BOOTH_ZOOM_THRESHOLD && selectedBoothAvailability?.hasBoothData),
+  );
 
   const handleRegionDidChange = useCallback((event: any) => {
     const zoom = event.properties?.zoomLevel;
@@ -499,51 +496,14 @@ function FullMapScreen() {
 
   const boothGeoJSON = useMemo(() => {
     if (!selected || currentZoom < BOOTH_ZOOM_THRESHOLD) return null;
-    const booths = getBoothsForConstituency(stateCode, selected.acNo);
-    if (!booths || booths.length === 0) return null;
+    const booths = boothSnapshot.data?.booths ?? [];
+    if (booths.length === 0) return null;
 
-    // Calculate constituency centroid if needed for booths without coordinates
-    let constituencyCenter: [number, number] | null = null;
-    const hasMissingLocation = booths.some(
-      (b) => !b.location || typeof b.location.latitude !== 'number' || typeof b.location.longitude !== 'number'
-    );
-    if (hasMissingLocation && activeGeoJSON) {
-      const feature = activeGeoJSON.features.find((f: any) => Number(f.properties?.AC_NO) === selected.acNo);
-      if (feature && feature.geometry) {
-        let sumLng = 0;
-        let sumLat = 0;
-        let count = 0;
-        const processCoords = (coords: any) => {
-          if (Array.isArray(coords[0])) {
-            coords.forEach(processCoords);
-          } else if (typeof coords[0] === 'number') {
-            sumLng += coords[0];
-            sumLat += coords[1];
-            count++;
-          }
-        };
-        processCoords(feature.geometry.coordinates);
-        if (count > 0) {
-          constituencyCenter = [sumLng / count, sumLat / count];
-        }
-      }
-    }
-
+    // Only authoritative coordinates are plotted; missing locations are omitted.
     const features = booths
       .map((b) => {
-        let coords: [number, number] | null = null;
-        if (b.location && typeof b.location.latitude === 'number' && typeof b.location.longitude === 'number') {
-          coords = [b.location.longitude, b.location.latitude];
-        } else if (constituencyCenter) {
-          const angle = (b.boothNumber * 137.5) * (Math.PI / 180);
-          const radius = 0.003 + (b.boothNumber * 0.0001); // ~300m to 1km spread
-          coords = [
-            constituencyCenter[0] + radius * Math.cos(angle),
-            constituencyCenter[1] + radius * Math.sin(angle)
-          ];
-        }
-
-        if (!coords) return null;
+        if (!b.location || typeof b.location.latitude !== 'number' || typeof b.location.longitude !== 'number') return null;
+        const coords: [number, number] = [b.location.longitude, b.location.latitude];
 
         return {
           type: 'Feature' as const,
@@ -574,16 +534,10 @@ function FullMapScreen() {
       type: 'FeatureCollection' as const,
       features,
     };
-  }, [selected, currentZoom, stateCode, activeGeoJSON]);
+  }, [selected, currentZoom, boothSnapshot.data]);
 
-  /** Whether the selected constituency has any booth data to plot — either the
-   *  richer official pilot seed or the real 2017-ECI historical locations
-   *  (TS + AP). Gates the "Show booths" affordance so we never invite the user
-   *  to zoom in on a constituency that has no booth data to reveal. */
-  const selectedHasBoothData = useMemo(
-    () => (selected ? hasBoothData(stateCode, selected.acNo) : false),
-    [selected, stateCode],
-  );
+  /** Only show the booth affordance when the server confirmed data for this AC. */
+  const selectedHasBoothData = Boolean(selectedBoothAvailability?.hasBoothData);
 
   /** Compute the centroid [lng, lat] of a constituency polygon from activeGeoJSON. */
   const getConstituencyCentroid = useCallback(
@@ -809,8 +763,6 @@ function FullMapScreen() {
     setFocusedDistrict('');
     bottomSheetRef.current?.close();
 
-    const years = getAvailableYearsForState(stateCode);
-    setSelectedYear(years[years.length - 1]);
     setSelectedBooth(null);
 
     const cam = getDynamicStateCamera(stateCode, activeGeoJSON);
@@ -824,6 +776,11 @@ function FullMapScreen() {
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [stateCode]);
+
+  // Adopt the newest verified year when this state's dataset arrives or updates.
+  useEffect(() => {
+    if (availableYears.length > 0) setSelectedYear(availableYears[availableYears.length - 1]);
+  }, [stateCode, currentStateMapData?.revision]);
 
   // When activeGeoJSON loads, dynamically frame the entire state geometry to the device screen
   useEffect(() => {
@@ -1277,6 +1234,43 @@ function FullMapScreen() {
             {t('map.boundariesFailed', "Couldn't load this map")}
           </Text>
           <Pressable style={styles.geoRetryButton} onPress={retryGeo}>
+            <Ionicons name="refresh" size={16} color="#0A0A1A" />
+            <Text style={styles.geoRetryText}>{t('common.retry', 'Retry')}</Text>
+          </Pressable>
+        </View>
+      )}
+
+      {/* Explicit state-metadata cache/network state. Missing data stays missing; no local national seeds are substituted. */}
+      {stateCode !== 'IN' && stateMapDataState.status === 'loading' && !currentStateMapData && (
+        <View style={{ position: 'absolute', top: mapTopOffset + 8, left: 16, right: 16, alignItems: 'center' }} pointerEvents="none">
+          <Text style={[styles.geoOverlayText, { backgroundColor: '#111827E8', borderRadius: 8, paddingHorizontal: 12, paddingVertical: 7 }]}>
+            Loading state information…
+          </Text>
+        </View>
+      )}
+      {stateCode !== 'IN' && stateMapDataState.status === 'cached' && currentStateMapData && (
+        <View style={{ position: 'absolute', top: mapTopOffset + 8, left: 16, right: 16, alignItems: 'center' }} pointerEvents="none">
+          <Text style={[styles.geoOverlayText, { backgroundColor: '#111827E8', borderRadius: 8, paddingHorizontal: 12, paddingVertical: 7 }]}>
+            Using saved state information while checking for updates
+          </Text>
+        </View>
+      )}
+      {stateCode !== 'IN' && stateMapDataState.status === 'offline' && currentStateMapData && (
+        <View style={{ position: 'absolute', top: mapTopOffset + 8, left: 16, right: 16, alignItems: 'center' }} pointerEvents="none">
+          <Text style={[styles.geoOverlayText, { backgroundColor: '#7C2D12E8', borderRadius: 8, paddingHorizontal: 12, paddingVertical: 7 }]}>
+            Offline — showing saved state information
+          </Text>
+        </View>
+      )}
+      {stateCode !== 'IN' && (stateMapDataState.status === 'offline' || stateMapDataState.status === 'unavailable') && !currentStateMapData && (
+        <View style={[styles.geoOverlay, { zIndex: 20 }]}>
+          <Ionicons name="cloud-offline-outline" size={30} color="#F87171" />
+          <Text style={styles.geoOverlayText}>
+            {stateMapDataState.status === 'unavailable'
+              ? 'State information is unavailable from the service'
+              : 'State information could not be loaded offline'}
+          </Text>
+          <Pressable style={styles.geoRetryButton} onPress={stateMapDataState.retry}>
             <Ionicons name="refresh" size={16} color="#0A0A1A" />
             <Text style={styles.geoRetryText}>{t('common.retry', 'Retry')}</Text>
           </Pressable>
@@ -1789,7 +1783,6 @@ function FullMapScreen() {
             <ScrollView style={styles.spatialHubScroll}>
               {stateCode === 'IN' ? (
                 Object.values(STATES).map((state) => {
-                  const data = getStateData(state.code);
                   const supported = isStateSupported(state.code);
                   return (
                     <Pressable
@@ -1897,10 +1890,10 @@ function FullMapScreen() {
           )}
 
           {/* Time-Travel History Slider (conditional on state data availability) */}
-          {getAvailableYearsForState(stateCode).length > 1 && (
+          {availableYears.length > 1 && (
             <View style={styles.timeSliderWrapper}>
               <MapTimeSlider
-                years={getAvailableYearsForState(stateCode)}
+                years={availableYears}
                 selectedYear={selectedYear}
                 onYearChange={(year) => {
                   selectionChanged();
@@ -2201,7 +2194,7 @@ function FullMapScreen() {
 
                 {/* Contextual trivia */}
                 {(() => {
-                  const allConstituencyTrivia = getTriviaForConstituencyInState(stateCode, selected.acNo).filter(
+                  const allConstituencyTrivia = (currentStateMapData?.triviaByAcNo[String(selected.acNo)] ?? []).filter(
                     (t) => !t.contexts.every((c) => c.type === 'GLOBAL'),
                   );
                   const items = selectFreshTrivia(allConstituencyTrivia, 5);
@@ -2214,7 +2207,7 @@ function FullMapScreen() {
 
                 {/* Historical snapshot — all states */}
                 {(() => {
-                  const pastElections = getHistoryForState(stateCode, selected.acNo);
+                  const pastElections = currentStateMapData?.historyByAcNo[String(selected.acNo)] ?? [];
                   if (pastElections.length === 0) return null;
                   return (
                     <View style={styles.histRow}>
@@ -2233,7 +2226,7 @@ function FullMapScreen() {
                 })()}
 
                 {/* Explore Hierarchy trigger */}
-                {!mapOnlyMode && hasHierarchyData(stateCode, selected.acNo) && (
+                {!mapOnlyMode && currentStateMapData?.hierarchyByAcNo[String(selected.acNo)]?.hasHierarchyData && (
                   <Pressable
                     style={[styles.sheetCompareButton, { borderColor: '#4F8EF750', backgroundColor: '#4F8EF715', marginBottom: 10 }]}
                     onPress={() => {

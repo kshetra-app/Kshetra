@@ -16,14 +16,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { getPartyColor } from '../lib/constants';
 import CandidateAvatar from './CandidateAvatar';
-import {
-  getMLAProfileForState,
-  getDemographicsForState,
-  getHistoryForState,
-  isStrongholdForState,
-  hasFullDataForState,
-} from '../lib/stateDataDispatcher';
-import { getUnifiedConstituenciesForState, type UnifiedConstituency } from '../lib/stateDataAdapter';
+import { useStateScopedMapData } from '../lib/useStateScopedMapData';
+import type { StateMapConstituency } from '../lib/stateScopedMapData';
 import { useActiveStateStore } from '../stores/activeState';
 
 interface CompareSheetProps {
@@ -71,8 +65,8 @@ function ConstituencyPicker({
   constituencies,
   onSelect,
 }: {
-  constituencies: UnifiedConstituency[];
-  onSelect: (c: UnifiedConstituency) => void;
+  constituencies: StateMapConstituency[];
+  onSelect: (c: StateMapConstituency) => void;
 }) {
   const [q, setQ] = useState('');
 
@@ -122,10 +116,12 @@ function ConstituencyPicker({
 export default function CompareSheet({ visible, initialAcNo, onClose }: CompareSheetProps) {
   const { t } = useTranslation();
   const stateCode = useActiveStateStore((s) => s.stateCode);
-  const hasFull = hasFullDataForState(stateCode);
+  const mapDataState = useStateScopedMapData(stateCode);
+  const mapData = mapDataState.data?.stateCode === stateCode ? mapDataState.data : null;
+  const hasFull = mapData?.dataStatus === 'full';
   const stateConstituencies = useMemo(
-    () => getUnifiedConstituenciesForState(stateCode),
-    [stateCode],
+    () => mapData?.constituencies ?? [],
+    [mapData?.constituencies],
   );
 
   const [leftAcNo, setLeftAcNo] = useState<number | null>(initialAcNo ?? null);
@@ -141,15 +137,15 @@ export default function CompareSheet({ visible, initialAcNo, onClose }: CompareS
     [rightAcNo, stateConstituencies],
   );
 
-  const leftDemo = hasFull && leftAcNo ? getDemographicsForState(stateCode, leftAcNo) : null;
-  const rightDemo = hasFull && rightAcNo ? getDemographicsForState(stateCode, rightAcNo) : null;
-  const leftMLA = hasFull && leftAcNo ? getMLAProfileForState(stateCode, leftAcNo) : null;
-  const rightMLA = hasFull && rightAcNo ? getMLAProfileForState(stateCode, rightAcNo) : null;
-  const leftHistory = hasFull && leftAcNo ? getHistoryForState(stateCode, leftAcNo) : [];
-  const rightHistory = hasFull && rightAcNo ? getHistoryForState(stateCode, rightAcNo) : [];
+  const leftDemo = hasFull && leftAcNo ? mapData?.demographicsByAcNo[String(leftAcNo)] ?? null : null;
+  const rightDemo = hasFull && rightAcNo ? mapData?.demographicsByAcNo[String(rightAcNo)] ?? null : null;
+  const leftMLA = hasFull && leftAcNo ? mapData?.mlaProfilesByAcNo[String(leftAcNo)] ?? null : null;
+  const rightMLA = hasFull && rightAcNo ? mapData?.mlaProfilesByAcNo[String(rightAcNo)] ?? null : null;
+  const leftHistory = hasFull && leftAcNo ? mapData?.historyByAcNo[String(leftAcNo)] ?? [] : [];
+  const rightHistory = hasFull && rightAcNo ? mapData?.historyByAcNo[String(rightAcNo)] ?? [] : [];
 
   const handlePick = useCallback(
-    (c: UnifiedConstituency) => {
+    (c: StateMapConstituency) => {
       if (pickingSide === 'left') setLeftAcNo(c.acNo);
       else setRightAcNo(c.acNo);
       setPickingSide(null);
@@ -314,9 +310,11 @@ export default function CompareSheet({ visible, initialAcNo, onClose }: CompareS
                     </View>
                   );
                 })}
+                {typeof (leftAcNo ? mapData?.strongholdByAcNo[String(leftAcNo)] : undefined) === 'boolean'
+                  && typeof (rightAcNo ? mapData?.strongholdByAcNo[String(rightAcNo)] : undefined) === 'boolean' && (
                 <View style={styles.statRow}>
                   <View style={styles.badgeWrap}>
-                    {leftAcNo && isStrongholdForState(stateCode, leftAcNo, left.winnerParty) ? (
+                    {leftAcNo && mapData?.strongholdByAcNo[String(leftAcNo)] === true ? (
                       <View style={styles.strongholdBadge}>
                         <Ionicons name="shield-checkmark" size={12} color="#10B981" />
                         <Text style={styles.strongholdText}>Stronghold</Text>
@@ -330,7 +328,7 @@ export default function CompareSheet({ visible, initialAcNo, onClose }: CompareS
                   </View>
                   <Text style={styles.statLabel}>Loyalty</Text>
                   <View style={styles.badgeWrap}>
-                    {rightAcNo && isStrongholdForState(stateCode, rightAcNo, right.winnerParty) ? (
+                    {rightAcNo && mapData?.strongholdByAcNo[String(rightAcNo)] === true ? (
                       <View style={styles.strongholdBadge}>
                         <Ionicons name="shield-checkmark" size={12} color="#10B981" />
                         <Text style={styles.strongholdText}>Stronghold</Text>
@@ -343,6 +341,7 @@ export default function CompareSheet({ visible, initialAcNo, onClose }: CompareS
                     )}
                   </View>
                 </View>
+                )}
               </>
             )}
           </ScrollView>

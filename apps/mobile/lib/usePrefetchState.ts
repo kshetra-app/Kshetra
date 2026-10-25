@@ -1,46 +1,29 @@
 /**
- * usePrefetchState — Prefetch data for a state before navigation
+ * Prefetch the selected state's versioned map contract and boundary.
  *
- * Loads GeoJSON and seed data in the background when the user hovers/focuses on a state.
- * Improves perceived performance by having data ready before the screen renders.
- *
- * Phase 4b: Prefetch optimization
+ * Deliberately avoids the bundled national seed SQLite database: the map
+ * requests only this state's server snapshot and immutable geometry asset.
  */
-
 import { useCallback, useRef } from 'react';
-import { loadAllSeedDataForState } from './seedDataLoader';
+import { loadStateScopedMapData } from './stateScopedMapData';
 import { loadEnrichedGeoForState } from './enrichedGeoCache';
 
-/**
- * Prefetch all data for a state.
- * Safe to call multiple times; uses internal caching to avoid redundant loads.
- */
 export function usePrefetchState() {
   const prefetchingRef = useRef(new Set<string>());
-
   const prefetch = useCallback(async (stateCode: string) => {
-    // Avoid duplicate prefetch requests
-    if (prefetchingRef.current.has(stateCode)) {
-      return;
-    }
-
-    prefetchingRef.current.add(stateCode);
-
+    const code = stateCode.toUpperCase();
+    if (prefetchingRef.current.has(code)) return;
+    prefetchingRef.current.add(code);
     try {
-      // Prefetch in parallel
       await Promise.all([
-        loadAllSeedDataForState(stateCode).catch(() => {
-          // Silently fail; data will load on-demand if prefetch fails
-        }),
-        loadEnrichedGeoForState(stateCode).catch(() => {
-          // Silently fail; GeoJSON will load on-demand if prefetch fails
-        }),
+        loadStateScopedMapData(code),
+        loadEnrichedGeoForState(code),
       ]);
-    } catch (err) {
-      // Silently fail; prefetch is best-effort
-      console.debug(`[usePrefetchState] Prefetch failed for ${stateCode}:`, err);
+    } catch (error) {
+      console.debug(`[usePrefetchState] State-scoped prefetch failed for ${code}:`, error);
+    } finally {
+      prefetchingRef.current.delete(code);
     }
   }, []);
-
   return { prefetch };
 }

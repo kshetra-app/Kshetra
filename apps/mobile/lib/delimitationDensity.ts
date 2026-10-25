@@ -1,5 +1,4 @@
-import { getUnifiedConstituenciesForState } from './stateDataAdapter';
-import { getCensusDistricts } from '../../../data/census/india-district-population-2011';
+import type { StateMapData } from './stateScopedMapData';
 
 /**
  * District-level seat density for the delimitation overlay.
@@ -12,17 +11,19 @@ import { getCensusDistricts } from '../../../data/census/india-district-populati
  * Extracted verbatim from app/(tabs)/index.tsx — behaviour unchanged.
  *
  * @param stateCode      Active state code.
- * @param hasProjection  Whether a delimitation projection exists for the state
- *                       (mirrors the original `!stateProjection` guard).
+ * @param hasProjection  Whether a state-scoped projection exists for the state.
+ * @param mapData        Version-verified selected-state snapshot; no national seed imports.
  */
 export function computeDistrictDensityMap(
   stateCode: string,
   hasProjection: boolean,
+  mapData?: StateMapData | null,
 ): Map<string, number> {
-  const censusDistricts = getCensusDistricts(stateCode);
-  if (!censusDistricts.length || !hasProjection) return new Map<string, number>();
-
-  const constituencies = getUnifiedConstituenciesForState(stateCode);
+  const code = stateCode.toUpperCase();
+  if (!hasProjection || mapData?.stateCode !== code) return new Map<string, number>();
+  const censusDistricts = mapData.censusDistricts;
+  const constituencies = mapData.constituencies;
+  if (censusDistricts.length === 0 || constituencies.length === 0) return new Map<string, number>();
   const totalPop = censusDistricts.reduce((s, d) => s + d.totalPopulation, 0);
   const totalSeats = constituencies.length;
   const idealPopPerSeat = totalPop / totalSeats;

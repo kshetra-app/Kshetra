@@ -1,32 +1,28 @@
 /**
- * Remote boundary GeoJSON loader (Performance Phase 3).
+ * Remote boundary GeoJSON loader.
  *
- * Streams per-state constituency polygons from the API (served gzipped) and
- * caches them on-device. After the first view of a state, the file is read
- * straight from disk — no network, instant display. Cache keys embed the
- * content `version` from the manifest, so a new build automatically supersedes
- * stale copies.
- *
- * Bundled states (e.g. "IN") are served by geoLoader directly and never reach
- * this module.
+ * Geometry is downloaded one state at a time. Verified, version-addressed
+ * copies are kept in the durable document directory (not the OS-evictable
+ * cache directory); the runtime cache is bounded and de-duplicates requests.
  */
 import * as FileSystem from 'expo-file-system/legacy';
-import { API_BASE_URL } from './constants';
 import { getManifestEntry } from './geoManifest';
+import { API_BASE_URL } from './constants';
 import { sanitizeGeoJSON } from './geoLoader';
+import { sha1Hex } from './stateScopedMapData';
 
-/** In-memory cache so repeated reads in one session never touch disk. */
 const memCache = new Map<string, GeoJSON.FeatureCollection>();
-/** De-dupe concurrent loads of the same state. */
 const inFlight = new Map<string, Promise<GeoJSON.FeatureCollection | null>>();
+const MAX_MEMORY_STATES = 2;
+const MAX_PERSISTED_GEOMETRY_STATES = 3;
+const MAX_SINGLE_PERSISTED_GEOMETRY_BYTES = 5 * 1024 * 1024;
+const MAX_TOTAL_PERSISTED_GEOMETRY_BYTES = 8 * 1024 * 1024;
+const CACHE_ROOT = FileSystem.documentDirectory ?? FileSystem.cacheDirectory;
+if (!CACHE_ROOT) {
+  throw new Error('No writable file-system directory is available for geography cache.');
+}
+const CACHE_DIR = `${CACHE_ROOT}geo/`;
 
-const CACHE_DIR = `${FileSystem.cacheDirectory ?? FileSystem.documentDirectory}geo/`;
-
-/**
- * Resolve the host that serves /geo/* assets. The geo route lives at the
- * server root (not under /api/v1), so strip any API path suffix. An explicit
- * EXPO_PUBLIC_GEO_BASE_URL always wins.
- */
 export function getGeoBaseUrl(): string {
   const override = process.env.EXPO_PUBLIC_GEO_BASE_URL;
   if (override) return override.replace(/\/+$/, '');
@@ -35,87 +31,161 @@ export function getGeoBaseUrl(): string {
 
 async function ensureDir(): Promise<void> {
   const info = await FileSystem.getInfoAsync(CACHE_DIR);
-  if (!info.exists) {
-    await FileSystem.makeDirectoryAsync(CACHE_DIR, { intermediates: true });
-  }
+  if (!info.exists) await FileSystem.makeDirectoryAsync(CACHE_DIR, { intermediates: true });
 }
 
-/** Best-effort removal of stale-version copies for a state. */
 async function purgeOldVersions(code: string, keepFile: string): Promise<void> {
   try {
     const entries = await FileSystem.readDirectoryAsync(CACHE_DIR);
-    const prefix = `${code}.`;
-    await Promise.all(
-      entries
-        .filter((name) => name.startsWith(prefix) && name !== keepFile)
-        .map((name) => FileSystem.deleteAsync(CACHE_DIR + name, { idempotent: true })),
-    );
+    await Promise.all(entries
+      .filter((name) => name.startsWith(`${code}.`) && name !== keepFile)
+      .map((name) => FileSystem.deleteAsync(CACHE_DIR + name, { idempotent: true })));
   } catch {
-    /* non-fatal */
+    // Cache cleanup is best-effort; load success must not depend on cleanup.
   }
 }
 
-async function loadFromNetwork(
-  code: string,
-  fileName: string,
-  version: string,
-): Promise<GeoJSON.FeatureCollection | null> {
-  const entry = getManifestEntry(code);
-  if (!entry) return null;
-
-  await ensureDir();
-  const localFile = `${code}.${version}.json`;
-  const localPath = CACHE_DIR + localFile;
-
-  // Disk hit?
-  const info = await FileSystem.getInfoAsync(localPath);
-  if (!info.exists) {
-    const v = version ? `?v=${version}` : '';
-    const url = `${getGeoBaseUrl()}/geo/${entry.file}${v}`;
-    const res = await FileSystem.downloadAsync(url, localPath);
-    if (res.status !== 200) {
-      await FileSystem.deleteAsync(localPath, { idempotent: true });
-      throw new Error(`Boundary download failed for ${code}: HTTP ${res.status}`);
+async function trimPersistedGeometry(): Promise<void> {
+  try {
+    const names = (await FileSystem.readDirectoryAsync(CACHE_DIR))
+      .filter((name) => /^[A-Z]{2}\.(?:[a-f0-9]{12,40}|unversioned)\.json$/i.test(name));
+    const files = await Promise.all(names.map(async (name) => {
+      const info = await FileSystem.getInfoAsync(CACHE_DIR + name);
+      return {
+        name,
+        stateCode: name.split('.')[0],
+        modifiedAt: info.exists && typeof info.modificationTime === 'number' ? info.modificationTime : 0,
+        bytes: info.exists && typeof info.size === 'number' ? info.size : 0,
+      };
+    }));
+    files.sort((a, b) => b.modifiedAt - a.modifiedAt);
+    const keepStates = new Set<string>();
+    let totalBytes = 0;
+    for (const file of files) {
+      if (keepStates.has(file.stateCode)
+        || file.bytes > MAX_SINGLE_PERSISTED_GEOMETRY_BYTES
+        || keepStates.size >= MAX_PERSISTED_GEOMETRY_STATES
+        || totalBytes + file.bytes > MAX_TOTAL_PERSISTED_GEOMETRY_BYTES) {
+        await FileSystem.deleteAsync(CACHE_DIR + file.name, { idempotent: true });
+        continue;
+      }
+      keepStates.add(file.stateCode);
+      totalBytes += file.bytes;
     }
-    void purgeOldVersions(code, localFile);
+  } catch {
+    // A cache trim failure must never invalidate the already verified payload.
   }
+}
 
+function assertFeatureCollection(value: unknown, code: string): asserts value is GeoJSON.FeatureCollection {
+  if (!value || typeof value !== 'object') throw new Error(`Invalid geometry payload for ${code}: not an object`);
+  const candidate = value as Partial<GeoJSON.FeatureCollection>;
+  if (candidate.type !== 'FeatureCollection' || !Array.isArray(candidate.features)) {
+    throw new Error(`Invalid geometry payload for ${code}: expected FeatureCollection`);
+  }
+  for (const feature of candidate.features) {
+    if (!feature || feature.type !== 'Feature' || !feature.geometry || !feature.properties) {
+      throw new Error(`Invalid geometry payload for ${code}: malformed feature`);
+    }
+    const props = feature.properties as Record<string, unknown>;
+    const featureCode = props.STATE_CODE;
+    if (featureCode && String(featureCode).toUpperCase() !== code && code !== 'IN') {
+      throw new Error(`Invalid geometry payload for ${code}: feature state ID mismatch`);
+    }
+  }
+}
+
+async function hashTextSha1Prefix(text: string, length: number): Promise<string> {
+  return sha1Hex(text).slice(0, length);
+}
+
+async function readVerified(localPath: string, code: string, expectedHash: string): Promise<GeoJSON.FeatureCollection> {
   const text = await FileSystem.readAsStringAsync(localPath);
-  const parsed = JSON.parse(text) as GeoJSON.FeatureCollection;
+  if (expectedHash) {
+    // The immutable version in the API manifest is checked by exact expected
+    // content when the cache is first written. Reuse validation also checks
+    // valid GeoJSON structure below; do not import Node crypto into React Native.
+    const actualHash = await hashTextSha1Prefix(text, expectedHash.length);
+    if (actualHash.toLowerCase() !== expectedHash.toLowerCase()) {
+      await FileSystem.deleteAsync(localPath, { idempotent: true });
+      throw new Error(`Geometry integrity check failed for ${code} (expected version ${expectedHash})`);
+    }
+  }
+  const parsed: unknown = JSON.parse(text);
+  assertFeatureCollection(parsed, code);
+  if (parsed.features.length === 0) throw new Error(`Geometry dataset for ${code} is empty`);
   return sanitizeGeoJSON(parsed);
 }
 
-/**
- * Fetch (or read from cache) the raw boundary GeoJSON for a streamed state.
- * Returns null when no manifest entry exists. Throws on network failure so the
- * caller can surface a retry affordance.
- */
-export async function fetchStateGeoJSON(
-  code: string,
-  versionOverride?: string,
-): Promise<GeoJSON.FeatureCollection | null> {
+async function loadFromNetwork(code: string, version: string): Promise<GeoJSON.FeatureCollection | null> {
+  const entry = getManifestEntry(code);
+  if (!entry) return null;
+  if (!entry.hasPolygons || entry.status === 'placeholder') {
+    throw new Error(`Verified polygon geometry is unavailable for ${code}; no placeholder geometry will be rendered.`);
+  }
+  await ensureDir();
+  const localFile = `${code}.${version || 'unversioned'}.json`;
+  const localPath = CACHE_DIR + localFile;
+  const info = await FileSystem.getInfoAsync(localPath);
+  if (info.exists) {
+    try {
+      return await readVerified(localPath, code, version);
+    } catch {
+      await FileSystem.deleteAsync(localPath, { idempotent: true });
+    }
+  }
+
+  const url = `${getGeoBaseUrl()}/geo/${entry.file}${version ? `?v=${encodeURIComponent(version)}` : ''}`;
+  const tempPath = `${localPath}.part`;
+  await FileSystem.deleteAsync(tempPath, { idempotent: true });
+  const response = await FileSystem.downloadAsync(url, tempPath);
+  if (response.status !== 200) {
+    await FileSystem.deleteAsync(tempPath, { idempotent: true });
+    throw new Error(`Geometry download failed for ${code}: HTTP ${response.status}`);
+  }
+  try {
+    const checked = await readVerified(tempPath, code, version);
+    await FileSystem.moveAsync({ from: tempPath, to: localPath });
+    await purgeOldVersions(code, localFile);
+    await trimPersistedGeometry();
+    return checked;
+  } catch (error) {
+    await FileSystem.deleteAsync(tempPath, { idempotent: true });
+    throw error;
+  }
+}
+
+/** Fetch a state boundary or return a verified cached copy; null means no manifest entry. */
+export async function fetchStateGeoJSON(code: string, versionOverride?: string): Promise<GeoJSON.FeatureCollection | null> {
   const key = code.toUpperCase();
   const entry = getManifestEntry(key);
   if (!entry) return null;
-
+  if (!entry.hasPolygons || entry.status === 'placeholder') {
+    throw new Error(`Verified polygon geometry is unavailable for ${key}; the app will not fabricate boundaries.`);
+  }
   const version = versionOverride ?? entry.version ?? '';
   const cacheKey = `${key}_${version}`;
-
   const cached = memCache.get(cacheKey);
-  if (cached) return cached;
-
+  if (cached) {
+    // Touch insertion order for LRU.
+    memCache.delete(cacheKey);
+    memCache.set(cacheKey, cached);
+    return cached;
+  }
   const existing = inFlight.get(cacheKey);
   if (existing) return existing;
 
-  const promise = loadFromNetwork(key, entry.file, version)
-    .then((fc) => {
-      if (fc) memCache.set(cacheKey, fc);
-      return fc;
-    })
-    .finally(() => {
-      inFlight.delete(cacheKey);
-    });
-
+  const promise = loadFromNetwork(key, version).then((fc) => {
+    if (fc) {
+      memCache.set(cacheKey, fc);
+      while (memCache.size > MAX_MEMORY_STATES) {
+        const oldest = memCache.keys().next().value;
+        if (oldest === undefined) break;
+        memCache.delete(oldest);
+      }
+    }
+    return fc;
+  }).finally(() => inFlight.delete(cacheKey));
   inFlight.set(cacheKey, promise);
   return promise;
 }
