@@ -18,7 +18,9 @@
     "start:api": "tsx apps/api/src/server.ts",
     "lint": "turbo run lint",
     "test": "turbo run test",
-    "clean": "turbo run clean"
+    "clean": "turbo run clean",
+    "build:seed-db": "node scripts/build-seed-db.mjs",
+    "validate:seed-db": "node scripts/validate-seed-db.mjs"
   },
   "devDependencies": {
     "@cyclonedx/cyclonedx-npm": "^1.19.3",
