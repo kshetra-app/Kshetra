@@ -54,8 +54,8 @@ function isGeographySource(source) {
 }
 
 const files = walk(resolve(bundleDir));
-const sourceMaps = files.filter((file) => file.endsWith('.map'));
-const bundles = files.filter((file) => file.endsWith('.bundle') || file.endsWith('.hbc'));
+const sourceMaps = files.filter((file) => /\\.(?:js\\.)?map$/.test(file));
+const bundles = files.filter((file) => /\\.(?:bundle|hbc|js)$/.test(file) && !/\\.map$/.test(file));
 const sources = new Map();
 for (const file of sourceMaps) {
   const map = jsonMap(file);
