@@ -1,0 +1,68 @@
+# W021.5 Stage B Source Research and Acquisition Decision
+
+**As of:** 2026-10-25  
+**Stage status:** PARTIAL — NOT ACCEPTED  
+**Scope:** W021.5-B1-04 and external evidence gates EB-01..EB-05  
+**Production/staging:** No database access or mutation; production remains air-gapped.
+
+## Executive decision
+
+Use a **layered authoritative-source acquisition strategy**, not a single national third-party shapefile:
+
+1. **Legal truth:** ECI-published delimitation orders, final publications, corrigenda, and the corresponding Central/State Gazette notifications; retain original documents and page-level references. ECI states delimitation orders have force of law and publishes Assam 2023 and J&K 2020/2022 material in its official index. These documents define the legally effective boundaries, but their PDFs/maps are not automatically a ready-to-use national vector package.
+2. **Official digital geometry:** acquire state-wise layers from ECI/Chief Electoral Officer/state GIS endpoints where they expose polygon data. A confirmed example is the Telangana State Remote Sensing Applications Centre ArcGIS service's **Assembly Constituency Boundary** polygon layer (layer 24, EPSG:32644, query capability advertised). Bihar's Election Geo-Intelligence System publicly lists an Assembly Boundary layer. ECI's 2026 election results portal is reported to serve state-wise polygon GeoJSON wrapped in JavaScript for Assam, Puducherry, Kerala, Tamil Nadu and West Bengal; treat these as official-source candidate geometry requiring byte-level acquisition, provenance and legal reconciliation—not as a blanket national source.
+3. **National completeness/reference layer:** use community/national datasets only as a discovery index and discrepancy detector, never as legal truth or as a criterion-closing source. Reconcile every feature against the statutory roster and the applicable official legal instrument.
+4. **Unavailable evidence:** prepare formal custodian requests for any missing official digital source and separately record physical Gazette custody/inspection, independent transcription, India Post delivery-beat polygons, containment, and verified all-state polling-station/PIN crosswalk. Do not mark these closed based on web-page existence or inferred geometry.
+
+## Source search and disposition matrix
+
+| Candidate | What was verified | Decision for W021.5 |
+|---|---|---|
+| ECI delimitation index — https://www.eci.gov.in/delimitation/ | Official index contains Assam 2023 draft/final publications, book, presidential order and corrigendum; also J&K Delimitation Commission 2020 draft/final publications, book and final papers. | Primary legal-source discovery path. Retrieve exact applicable final instruments, corrigenda, Gazette publication/effective dates and preserve byte hashes. Does not alone supply a national vector layer. |
+| ECI 2008 Delimitation Order — https://www.eci.gov.in/Documents/Delimitation/DelimitationofParliamentaryAssemblyConstituenciesOrder-2008%28English%29.pdf | Official legal/textual order identified. | Use as historical legal instrument only where still effective; must reconcile state-specific subsequent orders and amendments. |
+| ECI 2026 result-portal geometry — URL pattern reported as https://results.eci.gov.in/ResultAcGenMay2026/ac/{STATE_CODE}.js | Public repository documentation reports that election pages serve a GeoJSON FeatureCollection in a JavaScript wrapper for S03 Assam, U07 Puducherry, S11 Kerala, S22 Tamil Nadu, S25 West Bengal. The raw ECI .js endpoint was not retrievable through the connected source reader, but a 835,011-byte Puducherry GeoJSON mirror was acquired and hashed (manifest: reports/evidence/w021_5_stage_b_acquisition_probe_2026-10-25.json). | Highest-priority digital acquisition experiment for these five jurisdictions; acquire the raw official response where possible and compare it byte-for-byte/semantically with the mirror. The mirror's structural sanity checks passed (30 features, 30 unique AC numbers/names, 19 Polygon + 11 MultiPolygon, no empty geometry, unclosed rings, or non-finite coordinates), but it is not the raw ECI payload, is not topology-validated, and its reuse licence was not established. The endpoint is not national coverage. |
+| Telangana GIS — https://tgrac.telangana.gov.in/arcgis/rest/services/AdministrativeInfoSystem_Folder/Administrative_Information_System/MapServer/24?f=pjson | Service metadata identifies layer 24 “Assembly Constituency Boundary”, polygon geometry, display field Assembly_Name, EPSG:32644, max record count 1000, JSON query support. | Strong official state GIS candidate. Next step is a read-only layer query with all records and geometry, then compare feature semantics and legal inventory. No feature export or hash was acquired in this session. |
+| Bihar Election Geo-Intelligence System — https://gis.bihar.gov.in/DEPTS/VTR/vtr.aspx | Government-hosted electoral GIS lists Booth, Assembly Boundary and Parliamentary Boundary layers, plus PIN Code Boundary. | Official state-level candidate; inspect its layer/service endpoints and export permissions. Current data version/effective date and downloadable source are not yet established. |
+| NE Election e-ATLAS — https://apps.nesdr.gov.in/election/ | Government-hosted application reports participation from the NE states' remote-sensing centres and says public access is for visualization. | Useful source/custodian discovery path; public visualization alone is not evidence of lawful downloadable polygons. Request export/data provenance from responsible CEO/state GIS custodians. |
+| Survey of India — https://onlinemaps.surveyofindia.gov.in/AboutPortal.aspx | National administrative boundaries described up to state/district/taluk/subdistrict, not AC polygons. | Use for state/district context and edge diagnostics only; not a substitute for AC geometry. |
+| India Geodata repository — https://github.com/yashveeeeeer/india-geodata/tree/main/data/electoral/assembly-constituencies | Directory README says the statewise ECI/ECI-DataMeet files cover S01–S28 and U05/U07 and explicitly calls them **pre-2014 delimitation**. Its national subfolder is DataMeet. Its separate metadata file labels a dataset “2024” and lists ECI, DataMeet and LGD sources, but this does not resolve the older statewise layer's explicit pre-2014 status or establish one consistent current national source. | Do not use the pre-2014 statewise layer as current geometry. Keep only as a historical comparison/reference dataset. The metadata's “2024” label is not proof that every bundled file reflects 2024 effective boundaries. |
+| DataMeet maps — https://github.com/datameet/maps/tree/master/assembly-constituencies | Community map candidate; prior review records known spatial shifts, naming issues and state-boundary inconsistencies. | Reference/discrepancy detection only; not statutory acceptance evidence. |
+| skthewimp/india-constituency-maps — https://github.com/skthewimp/india-constituency-maps | Prior repository review reported 4,119 post-2008 AC features across 30 jurisdictions, Gujarat 181/182, no Assam 2023 assembly polygons in its general layer, old Assam/J&K layers and incomplete northern J&K geometry. | Reject as complete national baseline; may assist discrepancy discovery only. |
+| Survey of India / Census / LGD / OSM / commercial GIS | Survey of India admin boundaries, Census-derived administrative data, LGD codes, OSM-derived community layers and commercial GIS datasets were considered as adjacent sources. | Useful for crosswalks, administrative containment checks and independent diagnostics; none is a substitute for legal AC geometry. Commercial data also requires explicit licence clearance. |
+| ECI statistical reports / OGD | ECI state/year statistical reports and OGD catalog provide seat/contest/result tables. | Cross-check official seat inventory, AC names/codes and temporal validity, but tabular reports do not prove polygon boundaries. |
+| Physical Gazette and custodian evidence | No physical Gazette inspection, custody chain, independent physical transcription audit, or signed custodian confirmation was performed. | EB-01 and EB-02 remain open. Do not imply completion. |
+| India Post delivery-beat polygons and verified national polling-station/PIN crosswalk | No complete authoritative national beat polygon package or independently verified all-state polling-station/PIN crosswalk was acquired. | EB-03, EB-04 and EB-05 remain open. No polygon containment conclusion can be made. |
+
+## Acquisition/verification actions that remain to be executed
+
+1. The Puducherry mirror artifact has been fetched and structurally checked; see reports/evidence/w021_5_stage_b_acquisition_probe_2026-10-25.json. Next, download state-wise ECI result-portal source bytes for the five 2026 jurisdictions; capture URL, UTC retrieval time, status, content type, ETag/Last-Modified if present, byte length, SHA-256 and unmodified raw files.
+2. Enumerate and export Telangana's ArcGIS layer through a bounded, read-only query (where=1=1, outFields=*, returnGeometry=true, JSON; page/offset where needed). Save service metadata and raw response pages; do not assume the layer is authoritative until owner, temporal validity and legal alignment are established.
+3. Inspect Bihar's GIS application network/service endpoints and establish whether the Assembly Boundary layer supports export; preserve terms and metadata.
+4. Search each CEO/State GIS portal and the ECI official publication archive state by state. Map all 36 State/UT code jurisdictions against the current statutory AC inventory; report coverage and gaps.
+5. Acquire each jurisdiction's currently effective delimitation order, Gazette publication and subsequent corrigenda. Record document page references for every roster/identity reconciliation and retain original PDFs plus SHA-256.
+6. Build an evidence bundle from acquired files; validate file hashes, archive integrity, CRS, geometry type, empty/invalid/self-intersecting geometries, duplicate canonical IDs, feature counts, overlap/gap anomalies, boundary coverage and statutory roster reconciliation. Run topology in a suitable projected CRS and preserve both raw and normalized artifacts with transformation history.
+7. Send precise formal requests to ECI, the relevant CEOs/state GIS custodians, India Post and other custodians for missing authoritative digital datasets and physical-Gazette access. Requests must identify exact jurisdiction, instrument, file format, licence/terms, date/version, custody chain and desired response/evidence.
+8. Reconcile the external gate register, source manifest, defect register, execution ledger and acceptance register only after the source search/acquisition outputs are committed. Do not mark Stage B accepted while any mapped required criterion remains unmet.
+
+## Acquisition status and integrity
+
+- Official ECI index, Survey of India portal, Telangana ArcGIS metadata, Bihar election GIS, NE e-ATLAS, ECI 2026 results-portal source pattern and multiple national/community repositories were discovered and assessed.
+- A GitHub web page exposing a binary .shp is not acquisition of the source bytes. The raw ECI .js endpoint was inaccessible through the web reader. One third-party Puducherry GeoJSON mirror was acquired via the connected GitHub fetch service and hashed: SHA-256 `2786e744aa7394c85d977a317a1d1e33cb3eb78dbea45a272375fc9a48e54338` (835,011 UTF-8 bytes; Git blob SHA `d08bddb2ed68014428696cbcf4bec3a9b7b97cd4`). Its upstream repo documents a conversion from ECI's result portal, but this is not raw official ECI source data, no licence file was found in that repo root, and the file has not been vendored. Structural checks passed, but no legal reconciliation or full topology check was run; no national coverage result is claimed.
+- No polygon was fabricated. No centroid was substituted for containment. No database was accessed. No staging or production mutation occurred.
+- **Current disposition: Stage B research expanded; one non-vendored third-party mirror artifact acquired and structurally checked; raw official ECI source and national geometry remain unacquired; implementation/evidence gates remain OPEN; Stage B NOT ACCEPTED.**
+
+## Sources
+
+- ECI delimitation index: https://www.eci.gov.in/delimitation/
+- ECI 2008 order: https://www.eci.gov.in/Documents/Delimitation/DelimitationofParliamentaryAssemblyConstituenciesOrder-2008%28English%29.pdf
+- ECI 2026 result geometry repository documentation: https://github.com/numfocusin/assembly_gis_files
+- Acquired Puducherry mirror artifact manifest and structural checks: reports/evidence/w021_5_stage_b_acquisition_probe_2026-10-25.json
+- ECI/Statewise candidate directory and README: https://github.com/yashveeeeeer/india-geodata/tree/main/data/electoral/assembly-constituencies/eci-statewise
+- India Geodata metadata: https://github.com/yashveeeeeer/india-geodata/blob/main/data/electoral/assembly-constituencies/metadata.json
+- Telangana layer metadata: https://tgrac.telangana.gov.in/arcgis/rest/services/AdministrativeInfoSystem_Folder/Administrative_Information_System/MapServer/24?f=pjson
+- Bihar Election Geo-Intelligence System: https://gis.bihar.gov.in/DEPTS/VTR/vtr.aspx
+- NE Election e-ATLAS: https://apps.nesdr.gov.in/election/
+- Survey of India boundary products: https://onlinemaps.surveyofindia.gov.in/AboutPortal.aspx
+- DataMeet: https://github.com/datameet/maps/tree/master/assembly-constituencies
+- ECI statistical reports: https://www.eci.gov.in/statistical-reports
+- OGD Lok Sabha 2024 statistical reports: https://data.gov.in/catalog/general-election-lok-sabha-2024-statistical-reports-data
