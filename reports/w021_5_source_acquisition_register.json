@@ -1,0 +1,237 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "W021.5 Source Acquisition Register — Resumption R1",
+  "milestone": "W021.5",
+  "baselineCommit": "33945d20f318ae1aa0d9aba35052246599c5bbae",
+  "branch": "w0215-resumption-2026-10-25",
+  "createdAt": "2026-10-25",
+  "retrievalMethod": "Web discovery plus repository connector review. A discovered page is not equivalent to a downloaded, hashed source artifact.",
+  "rules": {
+    "hashPolicy": "SHA-256 must be computed over exact downloaded bytes; never use a Git blob SHA as a file SHA-256.",
+    "authorityPolicy": "Government sources are primary only for the specific subject they publish. Community GIS is candidate/secondary data until reconciled to primary source.",
+    "missingDataPolicy": "Missing values remain NULL/UNKNOWN; no fabricated election result, geometry, PIN crosswalk, or financial disclosure.",
+    "statusVocabulary": [
+      "DISCOVERED_NOT_DOWNLOADED",
+      "PRIMARY_SOURCE_PAGE_FOUND",
+      "CANDIDATE_SECONDARY_SOURCE",
+      "DATASET_NOT_FOUND",
+      "NEEDS_MANUAL_OR_AUTHORITY_ARTIFACT",
+      "DOWNLOADED_HASHED",
+      "VALIDATED",
+      "REJECTED"
+    ]
+  },
+  "sources": [
+    {
+      "sourceId": "SRC-ECI-DELIM-2008",
+      "subject": "Statutory Assembly/Parliamentary constituency descriptions and schedules",
+      "publisher": "Election Commission of India",
+      "url": "https://www.eci.gov.in/Documents/Delimitation/DelimitationofParliamentaryAssemblyConstituenciesOrder-2008%28English%29.pdf",
+      "publicationDate": "2008-11-26",
+      "retrievedAt": "2026-10-25",
+      "format": "PDF",
+      "authority": "PRIMARY_OFFICIAL_DIGITAL_PUBLICATION",
+      "status": "PRIMARY_SOURCE_PAGE_FOUND",
+      "sha256": null,
+      "fileBytes": null,
+      "version": "Delimitation of Parliamentary and Assembly Constituencies Order, 2008",
+      "scope": "2008 delimitation schedules; document itself notes exceptions including deferred states and Jharkhand legal-effect treatment",
+      "limitations": [
+        "Digital ECI publication does not satisfy the separate physical Gazette authenticity and notarized transcription gates."
+      ],
+      "plannedUse": "Cross-check canonical constituency names, statutory numbers, reservations, extents and effective regimes."
+    },
+    {
+      "sourceId": "SRC-ECI-STAT-REPORTS",
+      "subject": "General election and state assembly statistical reports / Form 20 links",
+      "publisher": "Election Commission of India",
+      "url": "https://www.eci.gov.in/statistical-reports/",
+      "relatedUrl": "https://www.eci.gov.in/election-management",
+      "retrievedAt": "2026-10-25",
+      "format": "HTML index linking PDFs and election-year resources",
+      "authority": "PRIMARY_OFFICIAL_SOURCE_INDEX",
+      "status": "PRIMARY_SOURCE_PAGE_FOUND",
+      "sha256": null,
+      "fileBytes": null,
+      "scope": "National parliamentary reports and state assembly results across multiple election years",
+      "limitations": [
+        "Each target state/election report must be individually downloaded, hashed, parsed and reconciled; index presence does not prove every target record is available in machine-readable form."
+      ],
+      "plannedUse": "Backfill only source-backed historical results and record exact election year/type."
+    },
+    {
+      "sourceId": "SRC-ECI-AFFIDAVIT",
+      "subject": "Candidate nomination and sworn affidavit documents",
+      "publisher": "Election Commission of India",
+      "url": "https://www.eci.gov.in/affidavitt-portal",
+      "relatedUrl": "https://affidavit.eci.gov.in/",
+      "retrievedAt": "2026-10-25",
+      "format": "Web portal / candidate documents",
+      "authority": "PRIMARY_OFFICIAL_SOURCE",
+      "status": "PRIMARY_SOURCE_PAGE_FOUND",
+      "sha256": null,
+      "fileBytes": null,
+      "scope": "Candidate nominations and affidavits published through the ECI ENCORE affidavit portal from 2019 onward, as described by ECI",
+      "limitations": [
+        "Candidate-level documents must be individually captured and linked; portal existence does not prove bulk-download availability or completeness of older records."
+      ],
+      "plannedUse": "Source-backed financial disclosure ingestion; do not infer a missing amount as zero."
+    },
+    {
+      "sourceId": "SRC-CENSUS-PCA-SD-2011",
+      "subject": "Census 2011 Primary Census Abstract state/district aggregates",
+      "publisher": "Office of the Registrar General & Census Commissioner, India",
+      "url": "https://censusindia.gov.in/nada/index.php/catalog/6191",
+      "relatedUrl": "https://censusindia.gov.in/census.website/en/data/population-finder",
+      "retrievedAt": "2026-10-25",
+      "format": "XLSX / web data catalogue",
+      "authority": "PRIMARY_OFFICIAL_SOURCE",
+      "status": "PRIMARY_SOURCE_PAGE_FOUND",
+      "sha256": null,
+      "fileBytes": null,
+      "version": "PC11_PCA-SD; 2011",
+      "scope": "Population indicators at India/state/district level; broader PCA catalogue also includes subdistrict, town, village and ward levels",
+      "limitations": [
+        "These administrative-level aggregates are not automatically constituency-level values. Any spatial allocation would be DERIVED/ESTIMATE and must not be labelled official AC population."
+      ],
+      "plannedUse": "Use exact published administrative-level aggregates and document crosswalk/aggregation limits."
+    },
+    {
+      "sourceId": "SRC-SOI-ABDB",
+      "subject": "Official administrative boundary database",
+      "publisher": "Survey of India",
+      "url": "https://surveyofindia.gov.in/pages/administrative-boundary-data-base-abdb-",
+      "relatedUrl": "https://onlinemaps.surveyofindia.gov.in/Digital_Products.aspx",
+      "retrievedAt": "2026-10-25",
+      "format": "Shapefile / ZIP or product download",
+      "authority": "PRIMARY_OFFICIAL_SOURCE",
+      "status": "PRIMARY_SOURCE_PAGE_FOUND",
+      "sha256": null,
+      "fileBytes": null,
+      "scope": "State, district, subdistrict and village administrative boundaries",
+      "limitations": [
+        "Administrative boundaries do not substitute for statutory Assembly constituency boundaries or India Post delivery-beat polygons."
+      ],
+      "plannedUse": "Reference administrative geography only after checking product version, metadata, terms and exact hashes."
+    },
+    {
+      "sourceId": "SRC-SOI-VECTOR-CATALOG",
+      "subject": "Survey of India vector data catalogue",
+      "publisher": "Survey of India",
+      "url": "https://www.surveyofindia.gov.in/UserFiles/files/Vector%20Data%20Catalog%202025%281%29.pdf",
+      "retrievedAt": "2026-10-25",
+      "format": "PDF",
+      "authority": "PRIMARY_OFFICIAL_METADATA",
+      "status": "PRIMARY_SOURCE_PAGE_FOUND",
+      "sha256": null,
+      "fileBytes": null,
+      "scope": "Catalogue describes available state/UT, district, subdistrict and village vector boundaries",
+      "limitations": [
+        "Catalogue metadata is not itself the boundary data file."
+      ],
+      "plannedUse": "Identify appropriate administrative boundary products and verify state/UT coverage."
+    },
+    {
+      "sourceId": "SRC-DATAMEET-AC",
+      "subject": "India assembly constituency polygons",
+      "publisher": "DataMeet community maps project",
+      "url": "https://github.com/datameet/maps/tree/master/assembly-constituencies",
+      "relatedUrl": "https://github.com/datameet/maps",
+      "retrievedAt": "2026-10-25",
+      "format": "Shapefile set: India_AC.shp, .shx, .dbf, .prj",
+      "authority": "SECONDARY_CANDIDATE_GIS",
+      "status": "CANDIDATE_SECONDARY_SOURCE",
+      "sha256": null,
+      "fileBytes": null,
+      "upstreamFiles": [
+        {
+          "name": "India_AC.shp",
+          "bytes": 6263460,
+          "url": "https://raw.githubusercontent.com/datameet/maps/master/assembly-constituencies/India_AC.shp"
+        },
+        {
+          "name": "India_AC.dbf",
+          "bytes": 5721425,
+          "url": "https://raw.githubusercontent.com/datameet/maps/master/assembly-constituencies/India_AC.dbf"
+        },
+        {
+          "name": "India_AC.shx",
+          "bytes": 33556,
+          "url": "https://raw.githubusercontent.com/datameet/maps/master/assembly-constituencies/India_AC.shx"
+        },
+        {
+          "name": "India_AC.prj",
+          "bytes": 143,
+          "url": "https://raw.githubusercontent.com/datameet/maps/master/assembly-constituencies/India_AC.prj"
+        }
+      ],
+      "licenseClaim": "DataMeet repository states CC BY 4.0 unless a dataset specifies otherwise; dataset-specific README/license must be verified before redistribution.",
+      "limitations": [
+        "Community-maintained, not authoritative merely by hosting; must inspect attribute schema, vintage, topology, duplicate IDs, seat counts and per-state temporal applicability. Do not treat as official until reconciled."
+      ],
+      "plannedUse": "Candidate geometry source for forensic comparison only; not accepted directly as statutory truth."
+    },
+    {
+      "sourceId": "SRC-INDIAPOST-PIN",
+      "subject": "Postal PIN code metadata and delivery beat polygons",
+      "publisher": "Department of Posts, India Post",
+      "url": "https://www.indiapost.gov.in/",
+      "retrievedAt": "2026-10-25",
+      "format": "Portal / lookup resources",
+      "authority": "PRIMARY_OFFICIAL_SOURCE",
+      "status": "DATASET_NOT_FOUND",
+      "sha256": null,
+      "fileBytes": null,
+      "scope": "Postal PIN lookup / office metadata discovery",
+      "limitations": [
+        "No public authoritative national vector polygon dataset for delivery beats was located in the sources checked. PIN centroids or post-office points are not delivery-beat polygons."
+      ],
+      "plannedUse": "Search further for official downloadable data or obtain written data release; keep EB-03 and EB-04 open until genuine polygon data is obtained."
+    },
+    {
+      "sourceId": "SRC-ECI-2026-AC-GEO",
+      "subject": "Assembly election portal geometry for selected 2026 elections",
+      "publisher": "Election Commission of India results portal; discovery via third-party extraction repository",
+      "url": "https://results.eci.gov.in/ResultAcGenMay2026/",
+      "relatedUrl": "https://github.com/saisantoshv3/assemnbly_gis_files",
+      "retrievedAt": "2026-10-25",
+      "format": "JavaScript-wrapped GeoJSON by state election portal",
+      "authority": "PRIMARY_PORTAL_DATA_CANDIDATE",
+      "status": "DISCOVERED_NOT_DOWNLOADED",
+      "sha256": null,
+      "fileBytes": null,
+      "scope": "Repository documents five state/UT files for Assam, Puducherry, Kerala, Tamil Nadu and West Bengal for the May 2026 election context",
+      "limitations": [
+        "Election-cycle-specific geometry is not a universal 31-state current boundary release and must be checked for temporal/statutory applicability."
+      ],
+      "plannedUse": "Investigate portal-native geometry and provenance for the covered jurisdictions only."
+    }
+  ],
+  "unresolvedGates": [
+    {
+      "gateId": "EB-01",
+      "status": "OPEN",
+      "reason": "Physical sealed Gazette inspection/custody evidence not digitally substitutable."
+    },
+    {
+      "gateId": "EB-02",
+      "status": "OPEN",
+      "reason": "Independent physical-gazette transcription fidelity audit not available online."
+    },
+    {
+      "gateId": "EB-03",
+      "status": "OPEN",
+      "reason": "Authoritative national India Post delivery-beat polygons not located."
+    },
+    {
+      "gateId": "EB-04",
+      "status": "OPEN",
+      "reason": "Cannot prove polygon containment without EB-03 geometry."
+    },
+    {
+      "gateId": "EB-05",
+      "status": "OPEN",
+      "reason": "Need state CEO polling-station address/PIN datasets and verified electoral crosswalk."
+    }
+  ]
+}
