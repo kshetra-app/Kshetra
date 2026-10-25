@@ -16,7 +16,7 @@ W021_5_STAGE_B_PROBE_MANIFEST: PR #25 branch (not yet merged) — reports/eviden
 W021_5_STAGE_B_ACQUISITION_RUN: 40211792541 — 31/61 source artifacts fetched; 24 failed; 0 canonical geometry accepted
 W021_5_STAGE_B_LEGAL_ORDER_PROBE: first binary attempt 40213536854 returned HTTP 406; enhanced session/cookie retry 40213895574 queued; web PDF text reviewed; partial statutory crosswalk 9/119 ACs
 W021_5_STAGE_B_ECI_MIRROR_AUDIT: 824 features, 23 invalid raw polygons, 1,337 positive-area overlap pairs; REJECTED for canonical use
-W021_5_STAGE_B_TELANGANA_GIS: four TGRAC service variants acquired; Admin_2026/Admin_New are byte-identical and Admin_Old differs only by sub-millimetre precision; older AdministrativeInfoSystem layer is the outlier with six material AC shifts; all variants share one invalid Dornakal polygon; leading family NOT CANONICAL (prior run 40213242722 cancelled before job start)
+W021_5_STAGE_B_TELANGANA_GIS: four TGRAC service variants acquired; Admin_2026/Admin_New are byte-identical and Admin_Old differs only by sub-millimetre precision; older AdministrativeInfoSystem layer is the outlier with six material AC shifts; all variants share one invalid Dornakal polygon; leading family NOT CANONICAL; warning-aware repeat probe 40213959324 in progress (prior run 40213242722 cancelled before job start)
 W021_5_STAGE_B_SOVILLAGE: 14/27 archives acquired; 71,484 features, 37 invalid geometries, one CRS metadata conflict; NOT AC geometry
 W021_5_STAGE_B_EXTERNAL_GATES: EB-01..EB-05 OPEN; W021.5-B1-04 OPEN
 W021_5_PRODUCTION: STRICTLY AIR-GAPPED; NO ACCESS OR MUTATION
