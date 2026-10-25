@@ -1,0 +1,34 @@
+{
+  "schemaVersion": "1.0.0",
+  "status": "NOT_YET_EXECUTED_IN_REPOSITORY_RUNTIME",
+  "purpose": "Output schema/documented gate state. Run scripts/validate-national-geography.mjs in CI or a checkout to generate the authoritative report from exact committed GeoJSON bytes.",
+  "canonicalBaseline": {
+    "assemblyConstituencies": 4123,
+    "parliamentaryConstituencies": 543,
+    "assemblyJurisdictions": 31
+  },
+  "knownUnresolvedDifferences": {
+    "AS": 7,
+    "GJ": -17,
+    "JH": 14,
+    "KA": 1,
+    "KL": 1,
+    "MP": -4,
+    "RJ": 1,
+    "TN": 1,
+    "JK": 17
+  },
+  "placeholderJurisdictions": [
+    "PY",
+    "TR",
+    "ML",
+    "MN",
+    "NL",
+    "UK",
+    "SK",
+    "AR",
+    "MZ"
+  ],
+  "verdict": "BLOCKED",
+  "requiredNextStep": "Run the validator from repository root; replace official source data and rerun; do not approve geometry before independent spatial-engine validation."
+}
