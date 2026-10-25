@@ -17,7 +17,7 @@ export function getMasterEncryptionKey(): Buffer {
     return Buffer.from(envKey.trim().slice(0, 64), 'hex');
   }
   // Allow test fallback only in non-production environments
-  if (process.env.NODE_ENV === 'test' || !process.env.NODE_ENV) {
+  if (process.env.NODE_ENV === 'test') {
     return Buffer.from(DEFAULT_TEST_MASTER_KEY, 'hex');
   }
   throw new Error('FATAL_SECURITY_ERROR: WEBHOOK_SECRETS_ENCRYPTION_KEY missing or invalid in deployed environment');

@@ -199,6 +199,7 @@ jobs:
           done
       - name: Verify W022 behavior and security
         env:
+          NODE_ENV: test
           W022_TEST_DB: w022_disposable_db
         run: |
           npx tsx tests/webhooks-ssrf-guard.test.ts

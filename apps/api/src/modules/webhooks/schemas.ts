@@ -158,7 +158,7 @@ function validateSchemaValue(path: string, value: unknown, schemaValue: unknown)
     }
     for (const key of Object.keys(record)) {
       if (!Object.prototype.hasOwnProperty.call(properties, key)) {
-        if (schema.additionalProperties === false) {
+        if (schema.additionalProperties !== true) {
           return `UNRECOGNIZED_PAYLOAD_FIELD: Property '${path ? `${path}.` : ''}${key}' is prohibited by allowlisted schema.`;
         }
         continue;

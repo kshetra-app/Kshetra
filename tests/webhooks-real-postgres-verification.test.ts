@@ -519,6 +519,11 @@ async function runAll() {
     assert.strictEqual(stale[0].updated, false);
   });
 
+  await runCheck('REAL-PG-20', 'Reject retention upper bound and oversized purge batch', () => {
+    assert.throws(() => queryJson(`SELECT * FROM public.fn_purge_expired_webhook_data(3651, 100)`), /INVALID_RETENTION_BOUNDS/);
+    assert.throws(() => queryJson(`SELECT * FROM public.fn_purge_expired_webhook_data(30, 10001)`), /INVALID_RETENTION_BOUNDS/);
+  });
+
   console.log('\n----------------------------------------------------------------');
   console.log(`Results: ${passCount} passed, ${failCount} failed.`);
   console.log('----------------------------------------------------------------\n');

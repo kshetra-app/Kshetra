@@ -62,7 +62,7 @@ BEGIN
   FROM public.webhook_subscriptions AS s
   WHERE s.tenant_id = p_tenant_id AND s.status = 'active'
     AND ('*' = ANY(s.subscribed_events) OR p_event_type = ANY(s.subscribed_events))
-  ON CONFLICT (subscription_id, event_id) DO NOTHING;
+  ON CONFLICT ON CONSTRAINT uq_webhook_deliv_sub_event DO NOTHING;
   GET DIAGNOSTICS v_rows = ROW_COUNT;
   event_id := v_event_id; deduplicated := FALSE; enqueued_deliveries := v_rows;
   RETURN NEXT;
@@ -265,8 +265,11 @@ LANGUAGE plpgsql SECURITY DEFINER SET search_path = pg_catalog, pg_temp
 AS $$
 DECLARE v_deliv_count INTEGER := 0; v_event_count INTEGER := 0; v_cutoff TIMESTAMPTZ;
 BEGIN
-  IF p_retention_days IS NULL OR p_retention_days < 7 OR p_retention_days > 3650
-     OR p_batch_size IS NULL OR p_batch_size < 1 OR p_batch_size > 10000 THEN
+  IF p_retention_days IS NULL OR p_retention_days < 7 THEN
+    RAISE EXCEPTION 'INVALID_RETENTION_PERIOD: Retention cannot be purged below 7 days.'
+      USING ERRCODE = '22023';
+  END IF;
+  IF p_retention_days > 3650 OR p_batch_size IS NULL OR p_batch_size < 1 OR p_batch_size > 10000 THEN
     RAISE EXCEPTION 'INVALID_RETENTION_BOUNDS' USING ERRCODE = '22023';
   END IF;
   v_cutoff := pg_catalog.now() - pg_catalog.make_interval(days => p_retention_days);
