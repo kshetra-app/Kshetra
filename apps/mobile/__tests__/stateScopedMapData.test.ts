@@ -14,6 +14,7 @@ import {
   getCachedStateMapData,
   loadStateScopedMapData,
   MAX_CACHED_STATES,
+  sha1Hex,
 } from '../lib/stateScopedMapData';
 
 const get = apiClient.get as jest.Mock;
@@ -59,6 +60,10 @@ function payload(stateCode: string, acNo = 1) {
 
 describe('state-scoped map data contract', () => {
   beforeEach(() => get.mockReset());
+
+  it('uses a correct dependency-free SHA-1 digest for revisions', () => {
+    expect(sha1Hex('abc')).toBe('a9993e364706816aba3e25717850c26c9cd0d89d');
+  });
 
   it('loads one state, verifies its revision, and preserves the canonical constituency ID', async () => {
     get.mockResolvedValueOnce({ data: payload('TS', 65) });
