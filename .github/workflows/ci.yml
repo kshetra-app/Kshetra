@@ -65,11 +65,11 @@ jobs:
           git lfs pull --include='scrapers/output/local-body/*.json' --exclude='apps/mobile/data/seed-data.db'
           shopt -s nullglob
           inputs=(scrapers/output/local-body/*.json)
-          if (\${#inputs[@]} == 0); then
+          if (${#inputs[@]} == 0); then
             echo 'No canonical local-body JSON inputs found.' >&2
             exit 1
           fi
-          for file in "\${inputs[@]}"; do
+          for file in "${inputs[@]}"; do
             if head -c 80 "$file" | grep -q 'git-lfs.github.com/spec/v1'; then
               echo "Unmaterialized Git LFS pointer: $file" >&2
               exit 1
