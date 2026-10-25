@@ -202,13 +202,14 @@
       "binarySha256": "NOT_CLAIMED; PDF read through web text, binary not downloaded"
     },
     "additionalTelanganaServiceProbe": {
-      "runId": 40213242722,
-      "status": "PENDING_AT_LAST_CHECK",
+      "cancelledRunId": 40213242722,
+      "status": "CANCELLED_BEFORE_JOB_START_DUE_TO_CONCURRENT_BRANCH_PUSH",
+      "replacementRunId": 40213331746,
+      "replacementStatus": "PENDING_AT_LAST_CHECK",
       "services": [
         "Endowment_Lands_Admin_New/MapServer/12",
         "Endowment_Lands_Old/MapServer/13"
-      ],
-      "reason": "Determine whether these official GIS service variants match either of the two already acquired but conflicting 119-feature layers."
+      ]
     }
   }
 }
