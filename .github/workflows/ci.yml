@@ -55,9 +55,26 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 1
-          # Required for canonical local-body scraper inputs; seed-data.db itself
-          # is explicitly excluded from LFS and regenerated below.
-          lfs: true
+          # Do not fetch the stale generated DB. Pull canonical local-body JSON explicitly below.
+          lfs: false
+
+      - name: Materialize canonical local-body source inputs
+        shell: bash
+        run: |
+          git lfs install --local
+          git lfs pull --include='scrapers/output/local-body/*.json' --exclude='apps/mobile/data/seed-data.db'
+          shopt -s nullglob
+          inputs=(scrapers/output/local-body/*.json)
+          if (\${#inputs[@]} == 0); then
+            echo 'No canonical local-body JSON inputs found.' >&2
+            exit 1
+          fi
+          for file in "\${inputs[@]}"; do
+            if head -c 80 "$file" | grep -q 'git-lfs.github.com/spec/v1'; then
+              echo "Unmaterialized Git LFS pointer: $file" >&2
+              exit 1
+            fi
+          done
 
       - name: Setup Node.js 20
         uses: actions/setup-node@v4
