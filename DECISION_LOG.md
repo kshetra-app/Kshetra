@@ -3659,3 +3659,18 @@
      - Formal CTO acceptance strictly maintained at `0.0% — PENDING INDEPENDENT ADJUDICATION` under Rule IV-001 Non-Self-Acceptance.
      - Air-gap controls maintained: Production `ehfafcnimmjusyvplbah` strictly 0 queries, 0 mutations; Staging `fkpigozcqnmcvofuksar` strictly 0 queries, 0 mutations.
      - Final milestone disposition: `REPOSITORY_IMPLEMENTATION_COMPLETE_PENDING_EXTERNAL_GATES`.
+
+
+---
+
+### DEC-044: W022 Prospective Implementation Authorization and Governance Reconciliation
+- **Date:** 2026-10-25
+- **Status:** APPROVED — PROSPECTIVE IMPLEMENTATION PERMITTED; ACCEPTANCE PENDING
+- **Authority:** Explicit project-owner instruction; `CTO_DIRECTIVE_W022_IMPLEMENTATION_AUTHORIZATION_2026-10-25.md`; `PLAN-W022-REV-1.0.md` Revision 4.
+- **Authorization Commit:** `39d0b680b7d266e73385edbbb96caff61e23d184`
+- **Plan Revision Commit:** `e77643db4c70e9fcbd548704f4f7ab1b0faa9fa6`
+- **Context:** The W022 implementation commit `3ac3f1c0c14d51d60bab9f9d3e88a08716466124` exists while the prior plan declared implementation unauthorized.
+- **Decision:** W022 implementation, correction, tests, evidence generation, and local verification are authorized prospectively within Revision 4 scope from the authorization directive onward. The historical implementation commit remains a pre-directive coordinate and is not retroactively represented as authorized by an ancestor authorization commit.
+- **Boundaries:** Production remains strictly air-gapped. Staging database execution and deployment require a separate explicit execution token. No production release is authorized.
+- **Acceptance:** W022 remains unaccepted until fresh, commit-bound evidence and independent verification pass. Implementation permission, plan ratification, verification, and final acceptance are separate lifecycle states.
+- **Governance requirement:** The authorization gate must reject future product implementation changes without a valid ratified plan and a verifiable authorization commit that is an ancestor of the implementation commit.
