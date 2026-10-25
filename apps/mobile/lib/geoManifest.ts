@@ -2,7 +2,7 @@
  * Boundary manifest facade. Only the small national overview geometry is
  * bundled. The full geography manifest is fetched from the API at runtime.
  */
-import { getGeoBaseUrl } from './remoteGeoLoader';
+import { API_BASE_URL } from './constants';
 
 export interface GeoManifestEntry {
   file: string;
@@ -45,7 +45,7 @@ export async function loadRemoteGeoManifest(
   if (manifestPromise && !refresh) return manifestPromise;
   const pending = (async () => {
     try {
-      const response = await fetch(`${getGeoBaseUrl()}/geo/manifest.json`, {
+      const response = await fetch(`${(process.env.EXPO_PUBLIC_GEO_BASE_URL || API_BASE_URL).replace(/\\/+$/, '').replace(/\\/api(\\/v\\d+)?$/, '')}/geo/manifest.json`, {
         headers: { Accept: 'application/json' },
       });
       if (!response.ok) return null;
