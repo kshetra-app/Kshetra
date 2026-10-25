@@ -808,8 +808,6 @@ function FullMapScreen() {
     setFocusedDistrict('');
     bottomSheetRef.current?.close();
 
-    const years = availableYears;
-    if (years.length > 0) setSelectedYear(years[years.length - 1]);
     setSelectedBooth(null);
 
     const cam = getDynamicStateCamera(stateCode, activeGeoJSON);
@@ -823,6 +821,11 @@ function FullMapScreen() {
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [stateCode]);
+
+  // Adopt the newest verified year when this state's dataset arrives or updates.
+  useEffect(() => {
+    if (availableYears.length > 0) setSelectedYear(availableYears[availableYears.length - 1]);
+  }, [stateCode, currentStateMapData?.revision]);
 
   // When activeGeoJSON loads, dynamically frame the entire state geometry to the device screen
   useEffect(() => {
@@ -1276,6 +1279,43 @@ function FullMapScreen() {
             {t('map.boundariesFailed', "Couldn't load this map")}
           </Text>
           <Pressable style={styles.geoRetryButton} onPress={retryGeo}>
+            <Ionicons name="refresh" size={16} color="#0A0A1A" />
+            <Text style={styles.geoRetryText}>{t('common.retry', 'Retry')}</Text>
+          </Pressable>
+        </View>
+      )}
+
+      {/* Explicit state-metadata cache/network state. Missing data stays missing; no local national seeds are substituted. */}
+      {stateCode !== 'IN' && stateMapDataState.status === 'loading' && !currentStateMapData && (
+        <View style={{ position: 'absolute', top: mapTopOffset + 8, left: 16, right: 16, alignItems: 'center' }} pointerEvents="none">
+          <Text style={[styles.geoOverlayText, { backgroundColor: '#111827E8', borderRadius: 8, paddingHorizontal: 12, paddingVertical: 7 }]}>
+            Loading state information…
+          </Text>
+        </View>
+      )}
+      {stateCode !== 'IN' && stateMapDataState.status === 'cached' && currentStateMapData && (
+        <View style={{ position: 'absolute', top: mapTopOffset + 8, left: 16, right: 16, alignItems: 'center' }} pointerEvents="none">
+          <Text style={[styles.geoOverlayText, { backgroundColor: '#111827E8', borderRadius: 8, paddingHorizontal: 12, paddingVertical: 7 }]}>
+            Using saved state information while checking for updates
+          </Text>
+        </View>
+      )}
+      {stateCode !== 'IN' && stateMapDataState.status === 'offline' && currentStateMapData && (
+        <View style={{ position: 'absolute', top: mapTopOffset + 8, left: 16, right: 16, alignItems: 'center' }} pointerEvents="none">
+          <Text style={[styles.geoOverlayText, { backgroundColor: '#7C2D12E8', borderRadius: 8, paddingHorizontal: 12, paddingVertical: 7 }]}>
+            Offline — showing saved state information
+          </Text>
+        </View>
+      )}
+      {stateCode !== 'IN' && (stateMapDataState.status === 'offline' || stateMapDataState.status === 'unavailable') && !currentStateMapData && (
+        <View style={[styles.geoOverlay, { zIndex: 20 }]}>
+          <Ionicons name="cloud-offline-outline" size={30} color="#F87171" />
+          <Text style={styles.geoOverlayText}>
+            {stateMapDataState.status === 'unavailable'
+              ? 'State information is unavailable from the service'
+              : 'State information could not be loaded offline'}
+          </Text>
+          <Pressable style={styles.geoRetryButton} onPress={stateMapDataState.retry}>
             <Ionicons name="refresh" size={16} color="#0A0A1A" />
             <Text style={styles.geoRetryText}>{t('common.retry', 'Retry')}</Text>
           </Pressable>
