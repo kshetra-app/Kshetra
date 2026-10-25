@@ -9,7 +9,7 @@
     "test": "node ../../node_modules/jest/bin/jest.js --passWithNoTests --forceExit",
     "test:coverage": "node ../../node_modules/jest/bin/jest.js --coverage",
     "clean": "rm -rf dist",
-    "lint": "echo lint"
+    "lint": "eslint \"src/**/*.{ts,tsx}\" --max-warnings=0"
   },
   "devDependencies": {
     "@types/geojson": "^7946.0.16",
