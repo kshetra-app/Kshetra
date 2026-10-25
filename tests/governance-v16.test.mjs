@@ -17,7 +17,24 @@ const porcelainStatus = execSync('git status --porcelain', { encoding: 'utf8' })
 
 assert.strictEqual(actualHead.length, 40, 'Actual local HEAD SHA must be 40 characters');
 assert.strictEqual(actualOriginMaster.length, 40, 'Actual origin/master SHA must be 40 characters');
-assert.strictEqual(actualBranch, 'master', 'Active branch must be master');
+const isPullRequestAgainstMaster =
+  process.env.GITHUB_EVENT_NAME === 'pull_request' &&
+  process.env.GITHUB_BASE_REF === 'master';
+if (isPullRequestAgainstMaster) {
+  let mergeBase = '';
+  try {
+    mergeBase = execSync('git merge-base origin/master HEAD', { encoding: 'utf8' }).trim();
+  } catch (err) {
+    assert.fail(`PR branch ancestry against origin/master could not be verified: ${err.message}`);
+  }
+  assert.strictEqual(
+    mergeBase,
+    actualOriginMaster,
+    `PR HEAD must descend from current origin/master (${actualOriginMaster}); merge-base was ${mergeBase}`
+  );
+} else {
+  assert.strictEqual(actualBranch, 'master', 'Active branch must be master outside a pull request');
+}
 
 console.log(`[REPOSITORY STATE] Branch: ${actualBranch}`);
 console.log(`[REPOSITORY STATE] Local HEAD: ${actualHead}`);
@@ -286,7 +303,14 @@ assert.strictEqual(isAuthAncestor, 'YES', 'W008-C auth commit must be an ancesto
 const decisionLogContent = fs.readFileSync('DECISION_LOG.md', 'utf8');
 assert.ok(decisionLogContent.includes('### DEC-048: W008-C FORMAL CTO IMPLEMENTATION AUTHORIZATION'), 'DECISION_LOG.md must record DEC-048');
 assert.ok(decisionLogContent.includes('- **Authority:** CTO Decision / Formal Implementation Authorization Mandate (Rule IV-001)'), 'DEC-048 must cite CTO Decision Authority');
-assert.ok(decisionLogContent.includes('36de3d19127019ae00d7900e7d515e74e5892e18adcd991b606338fe5be04b49'), 'DEC-048 must record exact canonical scope hash');
+assert.ok(decisionLogContent.includes('36de3d19127019ae00d7900e7d515e74e5892e18adcd991b606338fe5be04b49'), 'Historical DEC-048 canonical scope hash must remain immutable');
+const currentScopeDecisionMatch = decisionLogContent.match(/### DEC-156:[\\s\\S]*?Canonical Scope Hash:\\s*([0-9a-f]{64})/i);
+assert.ok(currentScopeDecisionMatch, 'DEC-156 must record the current canonical scope hash');
+assert.strictEqual(
+  currentScopeDecisionMatch[1],
+  ACTUAL_CANONICAL_SCOPE_HASH,
+  'DEC-156 canonical scope hash must match the live authorized scope manifest'
+);
 assert.ok(decisionLogContent.includes('70b18f55dc9864070688a0949aaf60c79a9c0657'), 'DEC-048 must record exact authorized base HEAD');
 
 console.log('[PASS] [REPOSITORY INTEGRATION] Test R2: Real-state Control M freeze verified, and historical W008-C CTO authorization commit and DEC-048 verified from actual repository state.');
