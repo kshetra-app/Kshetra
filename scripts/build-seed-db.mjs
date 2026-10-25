@@ -456,6 +456,79 @@ async function importSeedData(db) {
         }
       }
 
+      // Import per-constituency historical results from the state-specific,
+      // provenance-bearing source module when one exists. Preserve each source
+      // year separately; never relabel projections as actual results.
+      const historicalPath = path.resolve(rootDir, `data/seed/${slug}-historical-results.ts`);
+      let historicalCount = 0;
+      if (fs.existsSync(historicalPath)) {
+        const historyModule = await import(`file://${historicalPath}`);
+        const resultKeys = Object.keys(historyModule).filter((key) => /_\\d{4}_RESULTS$/.test(key) && Array.isArray(historyModule[key]));
+        const insertHistorical = db.prepare(`
+          INSERT OR REPLACE INTO historical_results
+          (id, state_code, ac_no, year, winner, party)
+          VALUES (?, ?, ?, ?, ?, ?)
+        `);
+        for (const key of resultKeys) {
+          for (const row of historyModule[key]) {
+            if (!Number.isInteger(row?.acNo) || !Number.isInteger(row?.year) || row.year < 1900 || row.year > new Date().getFullYear()) {
+              throw new Error(`Invalid historical result in ${slug}/${key}: AC/year missing or invalid.`);
+            }
+            insertHistorical.run(
+              `${code}-HIST-${row.acNo}-${row.year}`, code, row.acNo, row.year,
+              row.winner ?? null, row.party ?? null,
+            );
+            historicalCount++;
+          }
+        }
+      }
+      stateManifest.has_historical_results = historicalCount > 0 ? 1 : 0;
+
+      // Import political ledger events into the offline browse table. A bulk
+      // event is expanded into one row per affected AC while keeping source
+      // event identity and its source URLs in the stored details payload.
+      const timelinePath = path.resolve(rootDir, `data/seed/${slug}-political-timeline.ts`);
+      let timelineCount = 0;
+      if (fs.existsSync(timelinePath)) {
+        const timelineModule = await import(`file://${timelinePath}`);
+        const timelineKey = Object.keys(timelineModule).find((key) =>
+          Array.isArray(timelineModule[key]) &&
+          timelineModule[key].some((event) => event && typeof event.date === 'string' && typeof event.eventType === 'string' && Array.isArray(event.acNos))
+        );
+        if (timelineKey) {
+          const insertTimeline = db.prepare(`
+            INSERT OR REPLACE INTO political_timeline
+            (id, state_code, ac_no, date, assembly, event_type, member_names,
+             debit_party, credit_party, seats, explanation, details, legal_status, verified)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+          `);
+          for (const event of timelineModule[timelineKey]) {
+            if (!event?.id || !/^\\d{4}-\\d{2}-\\d{2}$/.test(event.date) || !Number.isInteger(event.assembly) || !event.eventType) {
+              throw new Error(`Invalid political timeline event in ${slug}/${timelineKey}.`);
+            }
+            const affectedAcs = Array.isArray(event.acNos) && event.acNos.length
+              ? [...new Set(event.acNos)]
+              : [null];
+            for (const acNo of affectedAcs) {
+              if (acNo !== null && (!Number.isInteger(acNo) || acNo <= 0)) {
+                throw new Error(`Invalid AC number in political event ${event.id}.`);
+              }
+              insertTimeline.run(
+                `${code}-${event.id}${acNo === null ? '' : `-AC-${acNo}`}`,
+                code, acNo, event.date, event.assembly, event.eventType,
+                JSON.stringify(event.memberNames ?? []),
+                event.debitParty ?? null, event.creditParty ?? null,
+                event.seats ?? null, event.explanation ?? null,
+                JSON.stringify({ details: event.details ?? null, sources: event.sources ?? [] }),
+                event.legalStatus ?? null, event.verified === true ? 1 : 0,
+              );
+              timelineCount++;
+            }
+          }
+        }
+      }
+      stateManifest.has_political_timeline = timelineCount > 0 ? 1 : 0;
+
       // Derive a stable, content-addressed version for this state's actual rows.
       // Do not hash the build timestamp or row counts alone: those can make the
       // same data look like a new version (or different data look identical).
