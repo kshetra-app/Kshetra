@@ -67,6 +67,11 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Rebuild and verify bundled SQLite seed data
+        run: |
+          npx tsx scripts/build-seed-db.mjs
+          node scripts/verify-seed-manifest.mjs
+
       - name: Build shared package
         run: npm run build -w @kshetra/shared
 
