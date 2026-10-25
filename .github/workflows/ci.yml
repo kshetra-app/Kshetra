@@ -148,3 +148,16 @@ jobs:
       - name: Evidence Integrity Negative-Path Regression
         run: node tests/repo-evidence-integrity.test.mjs
 
+
+  release-gate-regression:
+    name: Release Gate Regression
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - name: CI release-gate negative-path regression tests
+        run: node tests/ci-release-gates.test.mjs
