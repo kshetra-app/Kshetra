@@ -10,9 +10,9 @@ import { resolve, dirname } from 'node:path';
 const args = process.argv.slice(2);
 function flag(name, fallback) { const i = args.indexOf(name); return i < 0 ? fallback : args[i + 1]; }
 const reportPath = flag('--report', 'reports/geo-02-mobile-release-size/mobile-release-size.json');
-const maxAabMiB = Number(process.env.MAX_ANDROID_AAB_MIB ?? '80');
-const maxApkMiB = Number(process.env.MAX_ANDROID_APK_MIB ?? '90');
-const maxGeoSourceBytes = Number(process.env.MAX_GEOGRAPHY_SOURCE_BYTES ?? String(5 * 1024 * 1024));
+const maxAabMiB = Number(process.env.MAX_ANDROID_AAB_MIB ?? '30');
+const maxApkMiB = Number(process.env.MAX_ANDROID_APK_MIB ?? '35');
+const maxGeoSourceBytes = Number(process.env.MAX_GEOGRAPHY_SOURCE_BYTES ?? String(2 * 1024 * 1024));
 const MiB = 1024 * 1024;
 if (!existsSync(reportPath)) { console.error('GEO-02: release report missing: ' + reportPath); process.exit(2); }
 const report = JSON.parse(readFileSync(reportPath, 'utf8'));
