@@ -3739,5 +3739,5 @@
 - **Status:** RECORDED — CURRENT LIVE SCOPE HASH VERIFIED BY CI
 - **Authority:** Explicit project-owner authorization for W021.5 resumption; Master Execution Framework Amendment v1.6 / Rule IV-001.
 - **Scope:** Permit governance CI on a pull-request merge ref only when its merge base is the exact current `origin/master`; preserve the strict `master` branch requirement for non-PR executions. Historical DEC-048 scope hash remains immutable.
-- **Canonical Scope Hash:** `5c3bd50772666e8980c637954d755d9d97025ff351f29d966fbf80379bc7a595` (CI-emitted; serialization: `AMENDMENT_v1.6.md` + `tests/governance-consistency.test.mjs` + `tests/governance-v16.test.mjs`).
+- **Canonical Scope Hash:** 5c3bd50772666e8980c637954d755d9d97025ff351f29d966fbf80379bc7a595 (CI-emitted; serialization: `AMENDMENT_v1.6.md` + `tests/governance-consistency.test.mjs` + `tests/governance-v16.test.mjs`).
 - **Acceptance Boundary:** This change does not accept W021.5, authorize staging database writes, or authorize production access. It only allows the existing governance suite to verify an isolated PR branch without weakening the master baseline check.
