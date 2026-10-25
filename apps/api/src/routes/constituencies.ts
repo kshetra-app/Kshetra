@@ -431,6 +431,27 @@ export async function constituencyRoutes(app: FastifyInstance) {
             data: mapped,
           };
         }
+
+        // A successful empty DB response is not permission to substitute the
+        // unrelated bundled seed registry. Assembly constituencies must have a
+        // canonical persisted row set before this endpoint claims availability.
+        const stateInfo = getStateInfo(code);
+        if (!stateInfo) {
+          return sendApiError(reply, request, 404, 'Not Found', `State ${code} not found`, {
+            code: 'NOT_FOUND',
+          });
+        }
+        if (stateInfo.totalSeats > 0) {
+          return sendApiError(
+            reply,
+            request,
+            503,
+            'Service Unavailable',
+            `Canonical constituency records for ${stateInfo.name} are not populated in the database.`,
+            { code: 'DATA_UNAVAILABLE', dataStatus: 'UNKNOWN' }
+          );
+        }
+        return { state: code, count: 0, data: [] };
       } catch (err: any) {
         app.log.error({ err: err?.message, stateCode: code }, 'Exception querying database for constituencies');
         return sendApiError(reply, request, 500, 'Internal Server Error', 'Database error retrieving constituencies', {
