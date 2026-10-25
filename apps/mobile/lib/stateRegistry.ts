@@ -24,7 +24,8 @@ export interface StateData {
 const registry: Record<string, StateData> = {
   TS: {
     info: STATES.TS,
-    // Selected-state constituency rows are fetched at runtime.\n    constituencies: [],
+    // Selected-state constituency rows are fetched at runtime.
+    constituencies: [],
     hasGeoJSON: true,
     hasFullData: true,
     totalSeats: 119,
