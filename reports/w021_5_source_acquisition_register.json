@@ -980,25 +980,57 @@
       "retrievedAt": "2026-10-25",
       "format": "Public web GIS portal; vector service format/endpoints not yet confirmed",
       "authority": "PRIMARY_STATE_GOVERNMENT_GIS_CANDIDATE",
-      "status": "OFFICIAL_SERVICE_ROOT_AND_LAYER_PATHS_DISCOVERED_REPROBE_PENDING",
+      "status": "RAW_AC_GEOMETRY_ACQUIRED_PRELIMINARY_TOPOLOGY_SCREEN_FAILS_NOT_CANONICAL",
       "sha256": null,
       "fileBytes": null,
       "limitations": [
         "Portal page advertises an Assembly election layer and Pin Code Boundary layer, but exact service endpoint, source owner, CRS, licence, geometry bytes and effective date are not yet established.",
         "A PIN code boundary is not automatically an India Post delivery-beat polygon.",
         "Bihar geometry alone does not close national coverage or W021.5-B1-04.",
-        "The published service root is HTTP in the official JS; probe will try HTTPS first and record transport. Do not accept HTTP-only bytes as canonical without corroboration."
+        "The published service root is HTTP in the official JS; probe will try HTTPS first and record transport. Do not accept HTTP-only bytes as canonical without corroboration.",
+        "Preliminary topology screen is not independently adjudicated; current layer is not canonical. A state-boundary coverage comparison is being added."
       ],
       "plannedUse": "Discover and acquire official Bihar AC geometry and investigate whether the portal's PIN layer is a defensible postal geography source.",
       "pinBoundaryUrl": "https://gisserver.bihar.gov.in/arcgis/rest/services/AdministrativrBoundaries/PIN_Code_Boundary/MapServer",
       "evidenceReport": "reports/evidence/w021_5_bihar_gis_discovery_40217893573.json",
       "lastProbe": {
-        "workflowRunId": 40217893573,
-        "workflowUrl": "https://github.com/kshetra-app/Kshetra/actions/runs/40217893573",
-        "artifactId": 12608228156,
-        "artifactSha256": "974bed3362a4e3e8b9fe5233081b24dff3c63eaa6ac00865f9f038266b9ab1d8",
-        "result": "Portal and linked JS fetched; first script missed relative service paths; exact service root/layer paths found in official JS; corrected probe queued."
-      }
+        "workflowRunId": 40218024380,
+        "workflowUrl": "https://github.com/kshetra-app/Kshetra/actions/runs/40218024380",
+        "artifactId": 12607499271,
+        "artifactSha256": "dfa752a1374b1313c13c5155fcdb42555701d0bf915a9d50fd33de4f29182e45",
+        "result": "AC geometry raw bytes acquired (243 features); preliminary topology screen found 3 invalid geometries and 76 positive-area overlaps >1m²; PIN boundary count 884; no acceptance."
+      },
+      "geometryQueryUrl": "https://gisserver.bihar.gov.in/arcgis/rest/services/ELECTION/AC/MapServer/0/query?where=1%3D1&outFields=%2A&returnGeometry=true&outSR=4326&f=json&resultRecordCount=1000",
+      "geometryBytes": 10958178,
+      "geometrySha256": "3ab79c2942f27296b08a93bb07fed1fc63bd665a9db66ddaf8fe6ece3fc70b0e",
+      "geometryFeatureCount": 243,
+      "uniqueACCodeCount": 243,
+      "acCodeRange": "1..243",
+      "crs": "EPSG:4326",
+      "topologyAudit": {
+        "method": "Preliminary Shapely 2.1.2; ArcGIS ring orientation conversion; overlap areas screened in EPSG:32645 with >1 m² threshold",
+        "invalidFeatureCount": 3,
+        "invalidFeatures": [
+          {
+            "code": 215,
+            "name": "KURTHA"
+          },
+          {
+            "code": 145,
+            "name": "SAHEBPUR KAMAL"
+          },
+          {
+            "code": 41,
+            "name": "NIRMALI"
+          }
+        ],
+        "overlapPairsOver1m2": 76,
+        "duplicateNames": {
+          "PIPRA": 2
+        },
+        "stateBoundaryComparison": "PENDING_NEW_PROBE"
+      },
+      "pinBoundaryFeatureCount": 884
     }
   ],
   "unresolvedGates": [
@@ -1515,5 +1547,5 @@
     ],
     "acceptedAsCanonical": false
   },
-  "lastDecision": "Bihar official page is reachable and its JavaScript identifies exact Assembly and PIN Code Boundary service paths; the first discovery failure was a script gap, now corrected. Await the rerun's metadata and geometry artifacts."
+  "lastDecision": "Bihar BEGIS yielded a public official AC layer with 243 features and exact source-byte hash, but preliminary topology checks found defects. Preserve it as a candidate and do not promote until the reproducible state-coverage/topology audit, legal-vintage review and independent adjudication pass."
 }
