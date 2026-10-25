@@ -135,7 +135,7 @@ async function fetchBounded(initialUrl) {
       requestHeaders.Referer = 'https://results.eci.gov.in/';
     }
     const sourceUrl = new URL(current);
-    const isSoiArchive = sourceUrl.hostname.toLowerCase().endsWith('surveyofindia.gov.in') && /\\.zip$/i.test(sourceUrl.pathname);
+    const isSoiArchive = sourceUrl.hostname.toLowerCase().endsWith('surveyofindia.gov.in') && /\.zip$/i.test(sourceUrl.pathname);
     const response = await fetch(current, {
       redirect: 'manual',
       signal: AbortSignal.timeout(isSoiArchive ? 30000 : 15000),
