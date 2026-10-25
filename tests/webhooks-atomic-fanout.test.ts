@@ -7,7 +7,7 @@
  * Scope:
  * 1. Proves atomicity of event publication and subscription fan-out via fn_publish_webhook_event.
  * 2. Proves that transactional failure (e.g. invalid application, FK violation) leaves ZERO partial state.
- * 3. Verifies idempotency replay deterministically returns existing event and fans out to newly added subscriptions.
+ * 3. Verifies idempotency replay returns the immutable original event without changing fan-out.
  * 4. Verifies PostgresQueueProvider.enqueueEvent() RPC contract.
  */
 
@@ -225,13 +225,14 @@ async function runAll() {
     assert.strictEqual(replay.rows.length, 1);
     assert.strictEqual(replay.rows[0].is_duplicate, true, 'Must indicate is_duplicate: true');
     assert.strictEqual(replay.rows[0].event_id, event1Id, 'Must return same original event_id');
-    assert.strictEqual(replay.rows[0].deliveries_created, 3, 'Must now have total 3 deliveries');
+    assert.strictEqual(replay.rows[0].deliveries_created, 0, 'A duplicate replay creates zero deliveries');
 
-    // Verify all 3 subscriptions now have exactly 1 delivery for event1
+    // The original event's fan-out is immutable: the newly added subscription gets no retroactive delivery.
     const delivs = await db.query(`SELECT subscription_id FROM public.webhook_deliveries WHERE event_id = '${event1Id}'`);
-    assert.strictEqual(delivs.rows.length, 3);
+    assert.strictEqual(delivs.rows.length, 2, 'Replay must not mutate the original fan-out');
     const delivSubIds = delivs.rows.map((r: any) => r.subscription_id);
-    assert.strictEqual(new Set(delivSubIds).size, 3, 'Zero duplicate deliveries per subscription');
+    assert.strictEqual(new Set(delivSubIds).size, 2, 'No duplicate deliveries per subscription');
+    assert.ok(!delivSubIds.includes(subNewId), 'New subscriptions must not receive retroactive deliveries on replay');
   });
 
   // 6. Test PostgresQueueProvider.enqueueEvent integration
