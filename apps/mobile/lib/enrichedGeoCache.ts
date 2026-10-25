@@ -1,7 +1,7 @@
 import { enrichGeoJSON, enrichGeoJSONForState, enrichIndiaGeoJSON } from './enrichGeoJSON';
 import { getStateGeoJSON, isBundledGeoJSON } from './geoLoader';
 import { fetchStateGeoJSON, getGeoBaseUrl } from './remoteGeoLoader';
-import { getManifestEntry } from './geoManifest';
+import { getManifestEntry, loadRemoteGeoManifest } from './geoManifest';
 
 /**
  * Universal enriched GeoJSON cache — keyed by state code.
@@ -68,26 +68,6 @@ export function getCachedEnrichedGeo(code: string): GeoJSON.FeatureCollection | 
  * raw boundary from the API when it isn't bundled. Enrichment runs once per
  * state, then the stable reference is reused on every switch-back.
  */
-let remoteManifestPromise: Promise<Record<string, any> | null> | null = null;
-
-async function fetchRemoteManifest(): Promise<Record<string, any> | null> {
-  if (remoteManifestPromise) return remoteManifestPromise;
-
-  remoteManifestPromise = (async () => {
-    try {
-      const geoBaseUrl = getGeoBaseUrl();
-      const response = await fetch(`${geoBaseUrl}/geo/manifest.json`, { headers: { Accept: 'application/json' } });
-      if (!response.ok) return null;
-      return await response.json();
-    } catch (err) {
-      console.warn('[enrichedGeoCache] Failed to fetch remote geo-manifest:', err);
-      return null;
-    }
-  })();
-
-  return remoteManifestPromise;
-}
-
 /**
  * Full loader: returns enriched GeoJSON for any state, streaming + caching the
  * raw boundary from the API when it isn't bundled. Enrichment runs once per
@@ -102,16 +82,12 @@ export async function loadEnrichedGeoForState(
   // Asynchronously trigger remote manifest & update check in the background
   const triggerBackgroundCheck = async () => {
     try {
-      const remoteManifest = await fetchRemoteManifest();
+      const remoteManifest = await loadRemoteGeoManifest(true);
       const remoteEntry = remoteManifest ? remoteManifest[key] : null;
       const localEntry = getManifestEntry(key);
-
-      if (remoteEntry && remoteEntry.version && remoteEntry.version !== localEntry?.version) {
-        // A newer version is available remotely! Fetch and enrich it
+      if (remoteEntry && remoteEntry.hasPolygons && remoteEntry.version && remoteEntry.version !== localEntry?.version) {
         const updatedRaw = await fetchStateGeoJSON(key, remoteEntry.version);
-        if (updatedRaw) {
-          enrichRaw(key, updatedRaw);
-        }
+        if (updatedRaw) enrichRaw(key, updatedRaw);
       }
     } catch (err) {
       console.warn(`[enrichedGeoCache] Background update check failed for ${key}:`, err);
@@ -131,24 +107,13 @@ export async function loadEnrichedGeoForState(
     return baseline;
   }
 
-  // Not bundled, not cached: fetch using the remote manifest (or local entry fallback)
-  try {
-    const remoteManifest = await fetchRemoteManifest();
-    const remoteEntry = remoteManifest ? remoteManifest[key] : null;
-    const version = remoteEntry?.version ?? getManifestEntry(key)?.version ?? '';
-    const remoteRaw = await fetchStateGeoJSON(key, version);
-    if (remoteRaw) {
-      return enrichRaw(key, remoteRaw);
-    }
-  } catch (err) {
-    console.warn(`[enrichedGeoCache] Synchronous remote load failed for ${key}:`, err);
-  }
-
-  // Fallback to fetchStateGeoJSON default
-  const fallback = await fetchStateGeoJSON(key);
-  if (fallback) {
-    return enrichRaw(key, fallback);
-  }
-
-  return null;
+  // Load the manifest from its canonical API route before fetching state geometry.
+  // When offline, the streamed state's manifest is unavailable and this returns
+  // null; no fabricated or unverified geometry is substituted.
+  const remoteManifest = await loadRemoteGeoManifest();
+  const remoteEntry = remoteManifest?.[key];
+  if (!remoteEntry) return null;
+  if (!remoteEntry.hasPolygons || remoteEntry.status === 'placeholder') return null;
+  const raw = await fetchStateGeoJSON(key, remoteEntry.version);
+  return raw ? enrichRaw(key, raw) : null;
 }
