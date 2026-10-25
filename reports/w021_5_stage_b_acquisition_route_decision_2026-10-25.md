@@ -68,3 +68,16 @@ These sources materially improve the Telangana/AP statutory crosswalk route and 
 - **India Code — Andhra Pradesh Reorganisation (Removal of Difficulties) First, Second and Third Orders PDF:** https://upload.indiacode.nic.in/showfile?actid=AC_CEN_5_5_00058_201406_1517807327989&filename=Andhra+Pradesh+Reorganisation+%28Removal+of+Difficulties%29+First%2C+Second+and+Third+Order.pdf&type=order . This is a separate official legal-source candidate for the 2015 chain; its applicability to AC extent must be established from the extracted text, not inferred from its title.
 
 A new read-only acquisition workflow, `.github/workflows/w0215-legal-crosswalk-source-probe.yml`, and script, `scripts/acquire_w0215_legal_crosswalk_sources.py`, fetch and hash the India Code Act and ECI 2024 press note, preserve raw bytes, extract PDF page text and report page-indexed term hits. The Removal of Difficulties orders are an optional candidate. These are evidence-acquisition steps only: they do not close the 119-AC crosswalk or establish canonical geometry.
+
+
+## 7. Additional official state-GIS candidate: Bihar Election Geo-Intelligence System
+
+The official Bihar Election Geo-Intelligence System (BEGIS) is now a first-priority state-level endpoint-discovery target: https://gis.bihar.gov.in/DEPTS/ElectionNew.aspx . Its public page advertises an **Assembly** election layer and a **Pin Code Boundary** administrative layer, plus assembly/booth selection and electoral layers. This is stronger than a generic map screenshot because it indicates a government-maintained GIS service and may help with two independent evidence gates.
+
+The live endpoint has not yet been accepted or even confirmed as directly queryable from this environment. A read-only workflow `.github/workflows/w0215-bihar-gis-discovery.yml` fetches the public page and same-host linked scripts, hashes every retrieved response, and inspects discovered same-host MapServer/FeatureServer metadata. It does not bypass access controls or fetch cross-host endpoints. Run evidence will determine the next step:
+
+- If a public service endpoint is discovered, acquire raw layer metadata and polygon bytes, then validate AC count/IDs, CRS, topology, legal vintage, licence, and the 2024/2025 election regime.
+- If the portal or service times out, returns errors, or hides its API behind a restricted workflow, do not work around the control. Request the layer package and metadata from the Bihar CEO/State GIS custodian.
+- The PIN Code Boundary layer is not automatically an India Post delivery-beat polygon; do not equate PIN boundaries with postal delivery beats without source-owner confirmation.
+
+This source is a promising official state-level acquisition route, not evidence of national completeness and not a Stage B acceptance.
