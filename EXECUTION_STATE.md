@@ -16,7 +16,7 @@ W021_5_STAGE_B_EXTERNAL_GATES: EB-01..EB-05 OPEN; W021.5-B1-04 OPEN
 W021_5_PRODUCTION: STRICTLY AIR-GAPPED; NO ACCESS OR MUTATION
 W021_5_STAGING: NO DATABASE ACCESS OR MUTATION UNDER DIRECTIVE 154
 W021_5_NEXT_PERMITTED_ACTION: Continue Stage B source acquisition, provenance capture, and geometry validation; stop at Stage B boundary
-W021_5_CANONICAL_MASTER_STATUS: NOT UPDATED BY THIS BRANCH COMMIT; reconcile through review/merge before treating as canonical
+W021_5_CANONICAL_MASTER_STATUS: MASTER STILL UNCHANGED; this branch copy is reconciled but becomes canonical only after review/merge
 ```
 
 **Governance reconciliation note:** Directive 154 authorizes Stage B only on the resumption branch and does not authorize Stage C or later stages. This branch copy records the current branch state; it does not change the canonical state on `master` until merged. The previous master record still lists Job 023 adjudication as next permitted action and must not be represented as reconciled until this section is integrated into the canonical file.
@@ -26,9 +26,9 @@ W021_5_CANONICAL_MASTER_STATUS: NOT UPDATED BY THIS BRANCH COMMIT; reconcile thr
 ## 1. Project & Execution Coordinates
 ```text
 PROJECT:               PANIN (formerly Kshetra)
-CURRENT_JOB:           JOB 023: DELIMITATION WATCH
+CURRENT_JOB:           W021.5 STAGE B — SOURCE ACQUISITION & GEOMETRY VALIDATION (BRANCH-SCOPED)
 LAST_COMPLETED_JOB:    W022 (B2B SaaS Webhook Engine & Zero-Trust Dispatcher)
-NEXT_PERMITTED_JOB:    INDEPENDENT CTO ADJUDICATION / CTO ACCEPTANCE REVIEW (JOB 023)
+NEXT_PERMITTED_JOB:    W021.5 STAGE B ONLY — COMPLETE EVIDENCE PACKET; STOP FOR CTO ADJUDICATION BEFORE STAGE C
 
 JOB_023_STATUS:        TESTED / IMPLEMENTATION COMPLETE / SUBMITTED FOR CTO ACCEPTANCE
 JOB_023_BASELINE:      b9179ef2a2f89f28d84a7e93da4c2226871a996f
