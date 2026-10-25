@@ -251,7 +251,8 @@
     "dc0b4733d30e1554ceefe1a27202483e9e931fbd",
     "9da4c05c06743c162e353d30ab957246953d434a",
     "db7a64216df66da52b5f3f7b0cb240579895c357",
-    "bdb4eec1bb1b9427a48db756f007e64e0b7f698f"
+    "bdb4eec1bb1b9427a48db756f007e64e0b7f698f",
+    "0610b2405427848a385f3367bdd37be461171654"
   ],
   "commitAccountabilityNote": "Complete PR #16 commit inventory after immutable sourceSnapshot.commit. The CI test compares the inventory to Git history while excluding only the current report-containing HEAD to avoid self-reference; it additionally requires the previous commit (which contains this manifest version) to be included. Refresh this array whenever a further commit is added."
 }
