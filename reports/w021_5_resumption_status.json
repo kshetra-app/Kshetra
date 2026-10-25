@@ -64,6 +64,18 @@
       "path": ".github/workflows/ci.yml",
       "status": "UPDATED TO RUN RESUMPTION REGRESSION AND MIGRATION INTEGRATION TESTS",
       "commit": "77e6091ab90987f4871ad5b90ec1620539e26ac2"
+    },
+    {
+      "path": "reports/w021_5_eci_geojson_candidate_audit.json",
+      "status": "COMMITTED; 5 SECONDARY GEOJSONS AUDITED; NONE ACCEPTED AS OFFICIAL"
+    },
+    {
+      "path": "reports/w021_5_telangana_arcgis_layer_audit.json",
+      "status": "COMMITTED; GEOMETRY CANDIDATE ONLY; DEMOGRAPHIC ATTRIBUTES REJECTED"
+    },
+    {
+      "path": "reports/w021_5_soi_village_boundary_source_audit.json",
+      "status": "COMMITTED; 14/27 OFFICIAL SOI VILLAGE ARCHIVES AUDITED"
     }
   ],
   "ctoAdjudication": {
@@ -83,15 +95,20 @@
       "https://www.eci.gov.in/affidavitt-portal",
       "https://censusindia.gov.in/nada/index.php/catalog/6191",
       "https://surveyofindia.gov.in/pages/administrative-boundary-data-base-abdb-",
-      "https://www.surveyofindia.gov.in/UserFiles/files/Vector%20Data%20Catalog%202025%281%29.pdf"
+      "https://www.surveyofindia.gov.in/UserFiles/files/Vector%20Data%20Catalog%202025%281%29.pdf",
+      "https://surveyofindia.gov.in/pages/village-boundary-data-base-of-entire-india",
+      "https://surveyofindia.gov.in/pages/administrative-boundary-data-base-abdb-",
+      "https://www.surveyofindia.gov.in/UserFiles/files/Vector%20Data%20Catalog%202025%281%29.pdf",
+      "https://tgrac.telangana.gov.in/arcgis/rest/services/AdministrativeInfoSystem_Folder/Administrative_Information_System/MapServer/24"
     ],
     "secondaryCandidateSources": [
-      "https://github.com/datameet/maps/tree/master/assembly-constituencies"
+      "https://github.com/datameet/maps/tree/master/assembly-constituencies",
+      "https://github.com/saisantoshv3/assemnbly_gis_files/tree/730263a08afa3cf7a0cd12db68bcddc90aefcc03/2026_assembly_election"
     ],
     "sourceAcquisitionScript": "scripts/acquire_w021_5_sources.mjs",
-    "sourceFilesDownloadedByAssistant": 0,
-    "sourceSha256ManifestProduced": false,
-    "importantFinding": "DataMeet's assembly-boundary README explicitly warns of geometry shifts, incorrect/missing names, and pre-delimitation boundaries in several states. It is candidate data only, not authoritative geometry.",
+    "sourceFilesDownloadedByAssistant": 31,
+    "sourceSha256ManifestProduced": true,
+    "importantFinding": "The DataMeet AC boundary file is rejected for production geometry (4,182 features, 4,102 unique state/AC keys, 80 extra duplicate rows, 6 invalid geometries, 34 null AC names, and source README warnings). Five ECI-portal-derived secondary GeoJSON candidates match their expected seat counts but have 23 invalid geometries and duplicate West Bengal constituency name; none is promoted to OFFICIAL. The official TGRAC Telangana layer returns 119 features but has one invalid geometry and TOT_P/TOT_M/TOT_F all zero, so its demographic attributes are rejected. The Survey of India village index lists 27 archives; 14 were acquired and audited (71,484 features, 37 invalid geometries, one CRS metadata conflict), 13 remain unavailable. ECI index returned HTTP 406, guessed ECI JS endpoints returned HTTP 404, and Census PCA direct downloads failed. No canonical database writes were made.",
     "remainingExternalGates": [
       "EB-01",
       "EB-02",
@@ -99,7 +116,20 @@
       "EB-04",
       "EB-05"
     ],
-    "geometryTransformation": "Source runner now converts downloaded ECI JavaScript-wrapped FeatureCollections to hashed derived GeoJSON candidates for five 2026 election jurisdictions; they remain unaccepted until identity, seat-count and topology validation."
+    "geometryTransformation": "No derived geometry accepted as official. Five secondary ECI-portal-derived GeoJSON candidates were hashed and audited; 23 invalid geometries and a duplicate West Bengal constituency name prevent direct production use. The official Telangana GIS response is retained as a geometry candidate only; its population attributes are rejected. Primary national AC geometry and official Form 20/PCA data remain unresolved.",
+    "latestAcquisitionRun": {
+      "runId": 40211792541,
+      "status": "COMPLETED_WITH_SOURCE_FAILURES",
+      "artifactId": 12606480050,
+      "artifactSha256": "05531bc8037dca81eb4af0ba93cf7e397594a02643b1bb311cb463abd78cfdfa",
+      "manifestSha256": "0cea961dda70f0268cea930ed665e4bc6bfd734567b7c77b42460e1472d3024a",
+      "downloadedBytes": 142219649,
+      "downloadedRecords": 31,
+      "failedRecords": 24,
+      "officialDownloads": 21,
+      "secondaryCandidateDownloads": 10,
+      "derivedGeometryAcceptedAsOfficial": 0
+    }
   },
   "knownDefectFoundDuringResumption": {
     "id": "DEF-W0215-072-001",
@@ -149,5 +179,17 @@
     "stagingExecuted": false,
     "productionTouched": false,
     "formalAcceptance": false
-  }
+  },
+  "currentStatus": {
+    "overall": "W021.5 RESUMPTION IN PROGRESS — NOT COMPLETE / NOT ACCEPTED",
+    "stageB": "PARTIAL — PRIMARY NATIONAL AC GEOMETRY AND REQUIRED EXTERNAL GATES REMAIN OPEN",
+    "stageE": "DESIGN ADJUDICATION ISSUED; EXECUTION HELD UNTIL REQUIRED STAGE SEQUENCE AND STAGING PREFLIGHT",
+    "staging": "READ-ONLY PREFLIGHT SQL PREPARED; OWNER EXECUTION AND OUTPUT PENDING",
+    "production": "AIR-GAPPED; NO ACCESS OR MUTATION",
+    "formalAcceptance": "NOT GRANTED"
+  },
+  "ownerActionRequired": [
+    "Run supabase/staging_checkpoints/w021_5_resumption_readonly_preflight.sql in the Kshetra STAGING Supabase SQL Editor only and return the full result set.",
+    "Do not run migration 072 or any DDL/DML until the read-only preflight is reviewed and the applicable stage gate is explicitly cleared."
+  ]
 }
