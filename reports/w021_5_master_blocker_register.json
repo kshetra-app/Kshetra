@@ -101,5 +101,22 @@
       "local_dry_run": "ENFORCED",
       "staging_status": "HELD"
     }
+  ],
+  "continuityReconciliation": {
+    "report": "reports/gov_02_continuity_reconciliation.json",
+    "recordScope": "historical W021.5 blocker snapshot",
+    "recordStatus": "prepared",
+    "currentStatusSource": "reports/w021_5_database_execution_register.json",
+    "snapshotDatePreserved": true,
+    "note": "The 2026-10-07 generated_at date and legacy blocker taxonomy remain historical evidence. This is not a fresh current-status snapshot. Use the canonical database register and GOV-02 report for current conclusions. Historical blockers are not additional percentage weight without canonical weight allocation."
+  },
+  "canonicalLifecycleTaxonomy": [
+    "authored",
+    "locally validated",
+    "prepared",
+    "authorized",
+    "executed",
+    "independently corroborated",
+    "formally accepted"
   ]
 }
