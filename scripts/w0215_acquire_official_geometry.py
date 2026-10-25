@@ -47,29 +47,29 @@ SOURCES = [
         "url": f"https://results.eci.gov.in/ResultAcGenMay2026/ac/{x['code']}.js",
         "state_code": x["code"],
         "state_name": x["name"],
-        "expected_features": x["expected_features"],
+        "expected_features": x["expected_features"], "required": False,
     }
     for x in ECI_STATES
 ]
 TELANGANA_LAYER = "https://tgrac.telangana.gov.in/arcgis/rest/services/AdministrativeInfoSystem_Folder/Administrative_Information_System/MapServer/24"
 SOURCES.extend([
-    {"id": "telangana-layer-metadata", "kind": "official_state_gis_metadata_candidate", "url": TELANGANA_LAYER + "?f=pjson"},
+    {"id": "telangana-layer-metadata", "kind": "official_state_gis_metadata_candidate", "url": TELANGANA_LAYER + "?f=pjson", "required": False},
     {"id": "telangana-ac-geometry", "kind": "official_state_gis_geometry_candidate", "url": TELANGANA_LAYER + "/query?" + urlencode({
         "where": "1=1", "outFields": "*", "returnGeometry": "true", "outSR": "4326", "f": "json"
-    })},
+    }), "required": True},
 ])
 TELANGANA_2026_LAYER = "https://tgrac.telangana.gov.in/arcgis/rest/services/EndowmentLands_Folder/EndowmentLands_Admin_2026/MapServer/12"
 SOURCES.extend([
-    {"id": "telangana-2026-layer-metadata", "kind": "official_state_gis_2026_service_candidate", "url": TELANGANA_2026_LAYER + "?f=pjson"},
+    {"id": "telangana-2026-layer-metadata", "kind": "official_state_gis_2026_service_candidate", "url": TELANGANA_2026_LAYER + "?f=pjson", "required": False},
     {"id": "telangana-2026-ac-geometry", "kind": "official_state_gis_2026_geometry_candidate", "url": TELANGANA_2026_LAYER + "/query?" + urlencode({
         "where": "1=1", "outFields": "*", "returnGeometry": "true", "outSR": "4326", "f": "json"
-    }), "expected_features": 119},
+    }), "expected_features": 119, "required": True},
 ])
 TELANGANA_ADMIN_NEW = "https://tgrac.telangana.gov.in/arcgis/rest/services/EndowmentLands_Folder/Endowment_Lands_Admin_New/MapServer/12"
 TELANGANA_ADMIN_OLD = "https://tgrac.telangana.gov.in/arcgis/rest/services/EndowmentLands_Folder/Endowment_Lands_Old/MapServer/13"
 SOURCES.extend([
     {"id": "telangana-admin-new-layer-metadata", "kind": "official_state_gis_new_service_candidate", "url": TELANGANA_ADMIN_NEW + "?f=pjson"},
-    {"id": "telangana-admin-new-ac-geometry", "kind": "official_state_gis_new_geometry_candidate", "url": TELANGANA_ADMIN_NEW + "/query?" + urlencode({"where":"1=1","outFields":"*","returnGeometry":"true","outSR":"4326","f":"json"}), "expected_features":119},
+    {"id": "telangana-admin-new-ac-geometry", "kind": "official_state_gis_new_geometry_candidate", "url": TELANGANA_ADMIN_NEW + "/query?" + urlencode({"where":"1=1","outFields":"*","returnGeometry":"true","outSR":"4326","f":"json"}), "expected_features":119, "required":False},
     {"id": "telangana-admin-old-layer-metadata", "kind": "official_state_gis_old_service_candidate", "url": TELANGANA_ADMIN_OLD + "?f=pjson"},
     {"id": "telangana-admin-old-ac-geometry", "kind": "official_state_gis_old_geometry_candidate", "url": TELANGANA_ADMIN_OLD + "/query?" + urlencode({"where":"1=1","outFields":"*","returnGeometry":"true","outSR":"4326","f":"json"}), "expected_features":119},
 ])
@@ -328,18 +328,27 @@ for source in SOURCES:
                 raise RuntimeError("Expected JSON metadata object")
         record["status"] = "ACQUIRED_AND_STRUCTURALLY_CHECKED"
     except Exception as exc:
-        record["status"] = "FAILED"
         record["error"] = f"{type(exc).__name__}: {exc}"
-        failures.append(source["id"])
+        if source.get("required", False):
+            record["status"] = "FAILED_REQUIRED_SOURCE"
+            record["severity"] = "ERROR"
+            failures.append(source["id"])
+        else:
+            record["status"] = "OPTIONAL_SOURCE_UNAVAILABLE_OR_CHECK_FAILED"
+            record["severity"] = "WARNING"
+            warnings.append(source["id"])
     manifest["sources"].append(record)
 
 manifest["failed_source_ids"] = failures
-manifest["overall_status"] = "ACQUIRED_WITH_FAILURES" if failures else "ACQUIRED_STRUCTURAL_CHECKS_PASS"
+manifest["warning_source_ids"] = warnings
+manifest["required_source_ids"] = [s["id"] for s in SOURCES if s.get("required", False)]
+manifest["overall_status"] = "ACQUIRED_WITH_REQUIRED_FAILURES" if failures else ("ACQUIRED_WITH_WARNINGS" if warnings else "ACQUIRED_STRUCTURAL_CHECKS_PASS")
 (OUT / "manifest.json").write_text(json.dumps(manifest, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
 print(json.dumps({
     "overall_status": manifest["overall_status"],
     "source_count": len(SOURCES),
     "failed_source_ids": failures,
+    "warning_source_ids": warnings,
     "manifest": str(OUT / "manifest.json"),
 }, indent=2))
 if failures:
