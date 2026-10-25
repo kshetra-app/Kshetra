@@ -1,0 +1,247 @@
+{
+  "schemaVersion": 1,
+  "title": "W021.5 Telangana Assembly Constituency layer comparison",
+  "comparisonId": "W0215-TELANGANA-AC-LAYER-COMPARE-001",
+  "capturedAtUtc": "2026-10-25T16:40:00Z",
+  "layers": [
+    {
+      "id": "TGRAC-ADMIN-INFO-LAYER-24",
+      "name": "Assembly Constituency Boundary",
+      "url": "https://tgrac.telangana.gov.in/arcgis/rest/services/AdministrativeInfoSystem_Folder/Administrative_Information_System/MapServer/24/query?where=1%3D1&outFields=%2A&returnGeometry=true&outSR=4326&f=json",
+      "bytes": 12465346,
+      "sha256": "91cd791317836d8a6a8729b03f08fd3aee8c727c82e123b1659972d949d32f27",
+      "sourceCrs": {
+        "wkid": 32644,
+        "latestWkid": 32644
+      },
+      "queryOutputCrs": {
+        "wkid": 4326
+      },
+      "featureCount": 119,
+      "invalidGeometryCount": 1,
+      "invalidFeature": "Dornakal (ST) Assembly / OBJECTID 89"
+    },
+    {
+      "id": "TGRAC-ENDOWMENT-ADMIN-2026-LAYER-12",
+      "name": "Assembly Constituency Boundary",
+      "url": "https://tgrac.telangana.gov.in/arcgis/rest/services/EndowmentLands_Folder/EndowmentLands_Admin_2026/MapServer/12/query?where=1%3D1&outFields=%2A&returnGeometry=true&outSR=4326&f=json",
+      "bytes": 12463409,
+      "sha256": "ca8cfdc695366d9f04ee6a9fdbf9c52eeefe61d69bc79c9d26d15baa7b84aa03",
+      "sourceCrs": {
+        "wkid": 4326,
+        "latestWkid": 4326
+      },
+      "queryOutputCrs": {
+        "wkid": 4326
+      },
+      "featureCount": 119,
+      "invalidGeometryCount": 1,
+      "invalidFeature": "Dornakal (ST) / OBJECTID 89"
+    }
+  ],
+  "comparisonMethod": {
+    "geometryConversion": "ESRI rings converted to Polygon/MultiPolygon using ESRI clockwise exterior / counterclockwise hole convention.",
+    "invalidGeometryHandling": "make_valid applied to derived in-memory copies only for cross-layer comparison; raw geometry files remain unchanged.",
+    "measurementCrs": "EPSG:32644",
+    "nameMatching": "casefolded Assembly/ASSEMBLY_N; fuzzy name match for Jangaon/Jangoan; Madhira reservation suffix differs only by case.",
+    "thresholds": "Near-identical means symmetric difference area < 0.01 m². No legal acceptance is inferred from geometric similarity."
+  },
+  "findings": {
+    "featuresPerLayer": 119,
+    "matchedConstituencies": 119,
+    "unmatchedNamesBeforeFuzzyMatch": {
+      "older": [
+        "Jangaon"
+      ],
+      "newer": [
+        "Jangoan"
+      ]
+    },
+    "fuzzyNamePairs": [
+      [
+        "Jangaon",
+        "Jangoan"
+      ],
+      [
+        "Madhira (Sc)",
+        "Madhira (SC)"
+      ]
+    ],
+    "geometriesNearIdenticalWithin0_01m2": 112,
+    "relativeSymmetricDifferenceBelow1eMinus8": 113,
+    "featuresWithSymmetricDifferenceAbove0_01m2": 7,
+    "largestSymmetricDifferenceAreaM2": 3988349.5621025166,
+    "largestHausdorffDistanceM": 3042.0718885005717,
+    "materiallyDifferingFeatures": [
+      {
+        "name": "Warangal West",
+        "symmetricDifferenceAreaM2": 1260606.0718752474,
+        "relativeSymmetricDifference": 0.08770699225145881,
+        "hausdorffDistanceM": 662.1469505289109
+      },
+      {
+        "name": "Warangal East",
+        "symmetricDifferenceAreaM2": 1260606.0705730405,
+        "relativeSymmetricDifference": 0.06051937607499165,
+        "hausdorffDistanceM": 658.4774377213129
+      },
+      {
+        "name": "Ibrahimpatnam",
+        "symmetricDifferenceAreaM2": 3988349.561872594,
+        "relativeSymmetricDifference": 0.003620359257193256,
+        "hausdorffDistanceM": 3042.0718885005717
+      },
+      {
+        "name": "Munugode",
+        "symmetricDifferenceAreaM2": 3988349.5621025166,
+        "relativeSymmetricDifference": 0.002678724942385308,
+        "hausdorffDistanceM": 3042.0718885005717
+      },
+      {
+        "name": "Peddapalle",
+        "symmetricDifferenceAreaM2": 717292.9604252592,
+        "relativeSymmetricDifference": 0.0007764068859084461,
+        "hausdorffDistanceM": 769.4854591774312
+      },
+      {
+        "name": "Manthani",
+        "symmetricDifferenceAreaM2": 717292.9604252592,
+        "relativeSymmetricDifference": 0.0002926425540244103,
+        "hausdorffDistanceM": 769.4854591774312
+      }
+    ],
+    "topology": {
+      "olderLayer": {
+        "invalidGeometries": 1,
+        "positiveAreaOverlapPairs": 0,
+        "unionValid": true,
+        "unionPartCount": 1
+      },
+      "newerLayer": {
+        "invalidGeometries": 1,
+        "positiveAreaOverlapPairs": 0,
+        "unionValid": true,
+        "unionPartCount": 1
+      },
+      "sharedInvalidFeature": "Dornakal (ST) Assembly; same self-intersection location in both layers.",
+      "coverageAgainstAuthoritativeStateBoundary": "NOT CHECKED"
+    },
+    "featuresWithRelativeSymmetricDifferenceAbove1eMinus8": 6,
+    "negligibleDifferences": [
+      {
+        "name": "Sirpur",
+        "symmetricDifferenceAreaM2": 0.028517095153477272,
+        "relativeSymmetricDifference": 1.380683340897272e-11,
+        "hausdorffDistanceM": 0.00009938467893928988,
+        "interpretation": "Sub-millimetre precision difference; not treated as a material boundary shift."
+      }
+    ]
+  },
+  "decision": "The three EndowmentLands service variants form one geometry family (Admin_New and Admin_2026 are byte-identical; Admin_Old differs only by sub-millimetre coordinate precision). The older AdministrativeInfoSystem layer is the outlier, with six material constituency geometry shifts relative to the new family. Prefer the new-family data as the leading Telangana candidate for statutory crosswalk and boundary validation, but do not mark it canonical until the ECI Schedule III/State Reorganisation effective-date chain, all-119 AC-number mapping, Dornakal repair, and authoritative state-boundary coverage tests pass.",
+  "requiredNextActions": [
+    "Obtain service owner confirmation of which layer represents legally effective boundaries and its effective date.",
+    "Crosswalk all 119 names to official ECI statutory AC numbers and the applicable delimitation order/State reorganisation instruments.",
+    "Inspect official maps/order extents for Warangal East/West, Ibrahimpatnam, Munugode, Peddapalle, Manthani and Sirpur.",
+    "Repair Dornakal only in a separate derived candidate, preserve raw hashes and transformation history, and compare the union against an authoritative Telangana state boundary.",
+    "Do not import either layer into canonical production data before these gates pass.",
+    "Crosswalk all 119 state-GIS feature names to Schedule III AC numbers and compare the named disputed geometries against the order's mandal/municipal-ward extents."
+  ],
+  "productionDatabaseAccess": "NONE",
+  "stagingDatabaseAccess": "NONE",
+  "legalReference": {
+    "title": "Delimitation of Parliamentary and Assembly Constituencies Order, 2008",
+    "publisher": "Election Commission of India",
+    "url": "https://www.eci.gov.in/Documents/Delimitation/DelimitationofParliamentaryAssemblyConstituenciesOrder-2008%28English%29.pdf",
+    "schedule": "Schedule III — Andhra Pradesh, Assembly Constituencies",
+    "pages": "PDF pages 8–16 for the named constituencies below",
+    "status": "AUTHORITATIVE_BASELINE_IDENTIFIED; FULL_EFFECTIVE_DATE/POST-2014_INSTRUMENT_CHAIN_NOT_YET_CLOSED",
+    "note": "The order enumerates Andhra Pradesh AC numbers and territorial extents. Telangana's current 119-seat set appears as AC numbers 1–119 in that schedule; final current-effectiveness must also reconcile the State Reorganisation instruments and any later effective Gazette/order."
+  },
+  "statutoryCrosswalkPartial": [
+    {
+      "name": "Sirpur",
+      "acNumber": 1,
+      "statutoryExtent": "Kouthala, Bejjur, Kagaznagar, Sirpur (T) and Dahegaon mandals."
+    },
+    {
+      "name": "Ibrahimpatnam",
+      "acNumber": 48,
+      "statutoryExtent": "Hayathnagar, Ibrahimpatnam, Manchal and Yacharam mandals."
+    },
+    {
+      "name": "Dornakal (ST)",
+      "acNumber": 101,
+      "statutoryExtent": "Narsimhulapet, Maripeda, Kuravi and Dornakal mandals."
+    },
+    {
+      "name": "Warangal West",
+      "acNumber": 105,
+      "statutoryExtent": "Warangal mandal (part) and municipal wards 1–7, 15, 21 and 23–25."
+    },
+    {
+      "name": "Warangal East",
+      "acNumber": 106,
+      "statutoryExtent": "Warangal mandal (part) and municipal wards 8–14, 16–20 and 22."
+    },
+    {
+      "name": "Manthani",
+      "acNumber": 24,
+      "statutoryExtent": "Kamanpur, Manthani, Kataram, Mahadevpur, Mutharam (Mahadevapur), Malharrao and Mutharam (Manthani) mandals."
+    },
+    {
+      "name": "Peddapalle",
+      "acNumber": 25,
+      "statutoryExtent": "Peddapalle, Julapalle, Eligaid, Sultanabad, Odela and Srirampur mandals."
+    },
+    {
+      "name": "Munugode",
+      "acNumber": 93,
+      "statutoryExtent": "Munugode, Narayanapur, Marriguda, Nampalle, Chandur and Choutuppal mandals."
+    },
+    {
+      "name": "Jangaon / Jangoan",
+      "acNumber": 98,
+      "statutoryExtent": "Cherial, Maddur, Bachannapet, Narmetta and Jangaon mandals."
+    }
+  ],
+  "legalCrosswalkStatus": "PARTIAL_FOR_NINE_DISCREPANCY/DEFECT_NAMES; FULL_119_NAME/NUMBER/EXTENT_CROSSWALK_AND_EFFECTIVE_DATE_CHAIN_REMAIN_OPEN",
+  "layerFamilyAnalysis": {
+    "newerFamily": [
+      {
+        "service": "EndowmentLands_Admin_2026/MapServer/12",
+        "bytes": 12463409,
+        "sha256": "ca8cfdc695366d9f04ee6a9fdbf9c52eeefe61d69bc79c9d26d15baa7b84aa03"
+      },
+      {
+        "service": "Endowment_Lands_Admin_New/MapServer/12",
+        "bytes": 12463409,
+        "sha256": "ca8cfdc695366d9f04ee6a9fdbf9c52eeefe61d69bc79c9d26d15baa7b84aa03",
+        "rawPayloadIdenticalTo": "EndowmentLands_Admin_2026/MapServer/12"
+      },
+      {
+        "service": "Endowment_Lands_Old/MapServer/13",
+        "bytes": 12461961,
+        "sha256": "6e33ebf7eba139a0f754e5b56f3e3bc155ab2d9b6c9e571b03dc57e77e418b4c",
+        "rawPayloadDifferent": true,
+        "geometryDifferenceFromNewFamily": "Vertex deltas max 6.524222738930257e-10 degrees (~sub-millimetre); same 119 names and ring vertex counts; no material boundary shift identified."
+      }
+    ],
+    "outlier": "AdministrativeInfoSystem_Folder/Administrative_Information_System/MapServer/24",
+    "outlierVsNewFamily": {
+      "matchedNames": 118,
+      "unmatchedNameVariants": [
+        "Jangaon/Jangoan"
+      ],
+      "sixMaterialBoundaryDifferences": [
+        "Warangal West",
+        "Warangal East",
+        "Ibrahimpatnam",
+        "Munugode",
+        "Peddapalle",
+        "Manthani"
+      ],
+      "oneNegligiblePrecisionDifference": "Sirpur"
+    },
+    "adminOldUnionNote": "Admin_Old's union reports two parts because the Bhadrachalam (ST) detached ring does not merge under its lower coordinate precision; the same ring exists in the other layers. Treat this as a precision/topology artifact pending normalization, not evidence of a different statutory boundary."
+  }
+}

@@ -1,0 +1,62 @@
+{
+  "title": "W021.5 Stage B — External Geometry Acquisition Probe",
+  "capturedAt": "2026-10-25T14:40:00Z",
+  "stageStatus": "PARTIAL_NOT_ACCEPTED",
+  "artifact": {
+    "name": "puducherry.geojson",
+    "jurisdiction": "Puducherry (U07)",
+    "retrievalUrl": "https://raw.githubusercontent.com/numfocusin/assembly_gis_files/main/2026_assembly_election/puducherry_U07/puducherry.geojson",
+    "sourceRepository": "https://github.com/numfocusin/assembly_gis_files",
+    "sourceRepositoryCommit": "730263a08afa3cf7a0cd12db68bcddc90aefcc03",
+    "sourceScriptPath": "main.py",
+    "sourceScriptGitBlobSha": "eed245280356f42df013f07e6183a1d106ce178d",
+    "sourceFileGitBlobSha": "d08bddb2ed68014428696cbcf4bec3a9b7b97cd4",
+    "byteLengthUtf8": 835011,
+    "sha256Utf8Content": "2786e744aa7394c85d977a317a1d1e33cb3eb78dbea45a272375fc9a48e54338",
+    "acquisitionClass": "THIRD_PARTY_MIRROR_DERIVED_FROM_REPORTED_ECI_RESULT_PORTAL_SOURCE",
+    "rawOfficialEciResponseAcquired": false,
+    "licenseStatus": "NO_LICENSE_FILE_FOUND_IN_SOURCE_REPOSITORY_ROOT; DO NOT REDISTRIBUTE OR VENDOR UNTIL REUSE RIGHTS ARE ESTABLISHED",
+    "officialReference": "https://results.eci.gov.in/ResultAcGenMay2026/partywiseresult-U07.htm"
+  },
+  "structuralChecks": {
+    "jsonParse": "PASS",
+    "topLevelType": "FeatureCollection",
+    "featureCount": 30,
+    "geometryTypes": {
+      "Polygon": 19,
+      "MultiPolygon": 11
+    },
+    "uniqueAC_NO": 30,
+    "duplicateAC_NO": 0,
+    "uniqueAC_NAME": 30,
+    "duplicateAC_NAME": 0,
+    "missingGeometry": 0,
+    "emptyCoordinates": 0,
+    "unclosedRings": 0,
+    "nonFiniteCoordinates": 0,
+    "minimumRingVertices": 4,
+    "declaredCrs": "urn:ogc:def:crs:OGC:1.3:CRS84",
+    "bboxWGS84": [
+      75.526536,
+      10.827387398809424,
+      82.31379057631047,
+      16.753151316648548
+    ],
+    "status": "STRUCTURAL_SANITY_ONLY"
+  },
+  "notChecked": [
+    "Raw bytes from the official ECI .js endpoint",
+    "Applicable Gazette/order and legal effective-date reconciliation",
+    "Canonical AC ID crosswalk against PANIN's statutory inventory",
+    "Polygon self-intersection and full topology validity",
+    "Inter-AC overlap/gap detection",
+    "National geometry coverage",
+    "Physical Gazette custody/authenticity",
+    "Independent transcription audit",
+    "India Post delivery-beat containment",
+    "All-state polling-station/PIN crosswalk"
+  ],
+  "decision": "Useful proof that official-result-derived candidate geometry can be discovered and structurally checked through the connected GitHub service; insufficient for statutory acceptance and not vendored into Kshetra because the mirror repository's reuse licence was not established.",
+  "productionDatabaseAccess": "NONE",
+  "stagingDatabaseAccess": "NONE"
+}

@@ -1,9 +1,9 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "Kshetra W021.5 — Canonical External Gate Register & Custodian Handoff",
-  "directive": "CTO Directive 153: Terminal W021.5 Closeout, Defect Disposition and Development Freeze",
+  "directive": "CTO Directive 155 / DEC-155: scoped W021.5 resumption; Stage B source acquisition and validation only; formal acceptance pending",
   "governingAuthority": "Master Execution Framework Amendment v1.6 / Rule IV-001 Non-Self-Acceptance",
-  "timestamp": "2026-10-24T06:00:00.000Z",
+  "timestamp": "2026-10-25T16:30:00.000Z",
   "baselineCommit": "6f20cb02a4fd2f71db8aec4422f178274d229273",
   "milestone": "W021.5 — India-Wide Canonical Political Intelligence Architecture",
   "milestoneDisposition": "REPOSITORY_IMPLEMENTATION_COMPLETE_PENDING_EXTERNAL_GATES",
@@ -14,7 +14,7 @@
       "gateId": "EB-01",
       "canonicalCode": "OFFICIAL_PHYSICAL_GAZETTE_AUTHENTICITY",
       "targetStage": "Stage B (W021.5-B1-01..03)",
-      "weightPercent": 4.0,
+      "weightPercent": 4,
       "owner": "Controller of Publications, Government of India / Legal Custodian",
       "description": "Full physical printed gazette publication of ECI Delimitation Order 2008 with official seal and watermark is an external physical instrument not stored in git repository.",
       "missingArtifacts": [
@@ -29,7 +29,7 @@
       "gateId": "EB-02",
       "canonicalCode": "PHYSICAL_GAZETTE_TRANSCRIPTION_FIDELITY_AUDIT",
       "targetStage": "Stage B (W021.5-B1-01..03)",
-      "weightPercent": 4.0,
+      "weightPercent": 4,
       "owner": "Independent Legal & Forensic Notary Authority",
       "description": "Independent physical notary/third-party audit comparing checked-in text extracts against the physical printed gazette remains pending.",
       "missingArtifacts": [
@@ -45,14 +45,14 @@
       "gateId": "EB-03",
       "canonicalCode": "INDIA_POST_DELIVERY_BEAT_GIS_BOUNDARIES",
       "targetStage": "Stage B (W021.5-B1-04)",
-      "weightPercent": 4.0,
+      "weightPercent": 4,
       "owner": "Department of Posts / Survey of India (National Spatial Data Infrastructure)",
-      "description": "Authoritative vector polygon GIS boundaries for Department of Posts 6-digit PIN delivery beats are not published or made available by India Post.",
+      "description": "A complete authoritative vector polygon GIS boundary dataset for Department of Posts 6-digit PIN delivery beats has not been acquired. Current web/source searches did not locate a complete national package, but publication/availability status is not conclusively established.",
       "missingArtifacts": [
         "Official national India Post GIS delivery beat polygon shapefile / GeoJSON dataset for 31 States/UTs"
       ],
-      "repositoryStatus": "CENTROIDS_MAPPED_VECTOR_POLYGONS_UNAVAILABLE",
-      "currentMitigation": "1,544 verified PIN centroid mappings cataloged; multi-AC PINs fail closed; synthetic polygon generation strictly prohibited under data-truth rules.",
+      "repositoryStatus": "OFFICIAL_BEAT_POLYGONS_NOT_ACQUIRED_AVAILABILITY_UNCONFIRMED",
+      "currentMitigation": "Existing PIN centroid mappings may assist lookup only; they do not establish polygon containment. Multi-AC PINs fail closed and synthetic polygon generation remains prohibited.",
       "handoffCustodian": "Geospatial Data Operations / India Post Liaison",
       "resolutionCriteria": "Formal release and ingestion of official GIS delivery beat polygon layers from India Post GIS division."
     },
@@ -104,16 +104,113 @@
     }
   ],
   "accountingSummary": {
-    "repositoryVerifiedEarned": 67.0,
+    "repositoryVerifiedEarned": 67,
     "unexecutedDatabasePending": 10.5,
     "blockedOnExternalGates": 22.5,
-    "totalMilestoneAllocation": 100.0,
-    "formalCtcAcceptance": 0.0
+    "totalMilestoneAllocation": 100,
+    "formalCtcAcceptance": 0
   },
   "freezeDeclaration": {
     "developmentFrozen": true,
     "freezeDirective": "CTO Directive 153",
     "directive154Prohibited": true,
     "nextPermittedAction": "INDEPENDENT_CTO_ADJUDICATION"
+  },
+  "stageBSourceAcquisitionFindings": {
+    "sourceResearchReport": "reports/w021_5_stage_b_source_research_2026-10-25.md",
+    "acquisitionProbeManifest": "reports/evidence/w021_5_stage_b_acquisition_probe_2026-10-25.json",
+    "sourceRegister": "reports/w021_5_source_acquisition_register.json",
+    "datameetAudit": "reports/w021_5_datameet_ac_geometry_forensic_audit.json",
+    "previousWorkflowRun": 40209022405,
+    "previousWorkflowArtifactSha256": "87c31c94d7eb302ecba5a966167cb849f114a685d7ebad146721d04a95e69163",
+    "currentRetryWorkflowRun": 40211792541,
+    "currentRetryStatus": "IN_PROGRESS_AT_LAST_CHECK",
+    "officialNationalACGeometry": "NOT_ACQUIRED",
+    "stageBAccepted": false,
+    "earnedCompletionChanged": false,
+    "findings": [
+      "DataMeet secondary candidate downloaded and audited: 4,182 features, 4,102 unique state-code/AC-number pairs, 80 extra duplicate rows, 6 invalid geometries, 34 missing constituency names, and only 30 source state names for 31 expected jurisdictions; rejected for production geometry.",
+      "One Puducherry mirror derived from ECI 2026 results was fetched and structurally checked; SHA-256 2786e744aa7394c85d977a317a1d1e33cb3eb78dbea45a272375fc9a48e54338, 835011 bytes, 30 unique features; not raw ECI and not vendored due unconfirmed licence.",
+      "Direct ECI geometry fetches failed in the prior run; browser-header retry and pinned mirror source attempts are underway."
+    ],
+    "focusedGeometryProbeRun": 40212122850,
+    "focusedGeometryProbeStatus": "COMPLETED_WITH_FAILURES; BOTH TELANGANA LAYERS ACQUIRED; CROSS-LAYER CONFLICT OPEN",
+    "focusedProbeWorkflow": ".github/workflows/w0215-official-geometry-probe.yml",
+    "focusedProbeManifest": "reports/evidence/w021_5_official_geometry_probe_40212122850.json",
+    "correctedTelanganaQueryRun": 40212257196,
+    "directEciEndpointFinding": "Five tested /ac/{STATE_CODE}.js endpoints return HTTP 404; this route is not currently usable as a raw source.",
+    "officialStateGeometryCandidate": {
+      "leadingFamily": [
+        "EndowmentLands_Admin_2026/MapServer/12",
+        "Endowment_Lands_Admin_New/MapServer/12",
+        "Endowment_Lands_Old/MapServer/13"
+      ],
+      "familyFinding": "Admin_2026 and Admin_New raw payloads byte-identical; Admin_Old differs only by sub-millimetre coordinate precision; all have 119 features and one invalid Dornakal polygon.",
+      "outlier": "AdministrativeInfoSystem_Folder/Administrative_Information_System/MapServer/24",
+      "materialDifferences": [
+        "Warangal West",
+        "Warangal East",
+        "Ibrahimpatnam",
+        "Munugode",
+        "Peddapalle",
+        "Manthani"
+      ],
+      "negligiblePrecisionDifference": [
+        "Sirpur"
+      ],
+      "maxHausdorffDistanceMeters": 3042.0718885005717,
+      "comparisonReport": "reports/evidence/w021_5_telangana_layer_comparison_2026-10-25.json",
+      "acceptance": "LEADING_CANDIDATE_FAMILY_ONLY; NOT_CANONICAL"
+    },
+    "broadSourceAcquisitionRun": 40211792541,
+    "broadSourceAcquisitionStatus": "COMPLETED_SUCCESS_WITH_PARTIAL_SOURCE_COVERAGE",
+    "broadSourceManifestSummary": {
+      "totalSources": 61,
+      "downloaded": 31,
+      "failed": 24,
+      "totalDownloadedBytes": 142219649,
+      "officialDownloads": 21,
+      "secondaryCandidateDownloads": 10,
+      "derivedGeometryAcceptedAsOfficial": 0
+    },
+    "eciMirrorAudit": {
+      "report": "reports/evidence/w021_5_eci_mirror_geometry_audit_2026-10-25.json",
+      "features": 824,
+      "expectedFeatures": 824,
+      "rawInvalidGeometries": 23,
+      "positiveAreaOverlapPairsAfterMakeValid": 1337,
+      "canonicalAcceptance": "REJECTED"
+    },
+    "soiVillageBoundaryAudit": {
+      "expectedArchives": 27,
+      "downloadedAndAudited": 14,
+      "missing": 13,
+      "totalFeatures": 71484,
+      "invalidGeometries": 37,
+      "crsMetadataConflicts": 1,
+      "acceptedAsACGeometry": false,
+      "acceptedAsDeliveryBeatGeometry": false
+    },
+    "legalBaseline": {
+      "source": "ECI Delimitation of Parliamentary and Assembly Constituencies Order, 2008, Schedule III — Andhra Pradesh Assembly Constituencies",
+      "url": "https://www.eci.gov.in/Documents/Delimitation/DelimitationofParliamentaryAssemblyConstituenciesOrder-2008%28English%29.pdf",
+      "partialCrosswalkCount": 9,
+      "report": "reports/evidence/w021_5_telangana_layer_comparison_2026-10-25.json",
+      "full119Crosswalk": "OPEN",
+      "post2014StateReorganisationAndEffectiveDateChain": "OPEN",
+      "binarySha256": "NOT_AVAILABLE",
+      "binaryFetchStatus": "HTTP_406_ON_THREE_URL_VARIANTS_AFTER_SESSION_COOKIE_RETRY",
+      "textAccess": "OFFICIAL ECI PDF TEXT REVIEWED VIA WEB PDF READER"
+    },
+    "additionalTelanganaServiceProbe": {
+      "cancelledRunId": 40213242722,
+      "status": "CANCELLED_BEFORE_JOB_START_DUE_TO_CONCURRENT_BRANCH_PUSH",
+      "replacementRunId": 40213331746,
+      "replacementStatus": "PENDING_AT_LAST_CHECK",
+      "services": [
+        "Endowment_Lands_Admin_New/MapServer/12",
+        "Endowment_Lands_Old/MapServer/13"
+      ]
+    }
   }
 }

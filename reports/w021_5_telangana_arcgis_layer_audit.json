@@ -1,0 +1,144 @@
+{
+  "title": "W021.5 Telangana Official GIS Layer Forensic Audit",
+  "auditId": "W0215-TELANGANA-ARCGIS-AUDIT-001",
+  "acquiredAt": "2026-10-25T16:33:53.952307Z",
+  "sourceAuthority": "Telangana Geospatial Data / TGRAC ArcGIS REST service",
+  "layerMetadataUrl": "https://tgrac.telangana.gov.in/arcgis/rest/services/AdministrativeInfoSystem_Folder/Administrative_Information_System/MapServer/24?f=pjson",
+  "geometryQueryUrl": "https://tgrac.telangana.gov.in/arcgis/rest/services/AdministrativeInfoSystem_Folder/Administrative_Information_System/MapServer/24/query?where=1%3D1&outFields=%2A&returnGeometry=true&outSR=4326&f=json",
+  "layerId": 24,
+  "layerName": "Assembly Constituency Boundary",
+  "metadataEtag": "f4b3427c",
+  "metadataBytes": 4756,
+  "metadataSha256": "fd91d7803f39a8cc9ae9f2f486224cea777c7127ef5659dd2d073b088dbfb26a",
+  "geometryResponseBytes": 12465346,
+  "geometryResponseSha256": "91cd791317836d8a6a8729b03f08fd3aee8c727c82e123b1659972d949d32f27",
+  "acquisitionWorkflowRun": 40212257196,
+  "artifactId": 12606048429,
+  "artifactSha256": "106c8f72e0c1b43e55a65b74f56cb7597fb426a1f1e487885bf9010ad36f0c46",
+  "artifactBytes": 4985192,
+  "geometry": {
+    "responseSpatialReference": {
+      "wkid": 4326,
+      "latestWkid": 4326
+    },
+    "metadataExtentSpatialReference": {
+      "wkid": 32644,
+      "latestWkid": 32644
+    },
+    "features": 119,
+    "uniqueObjectIds": 119,
+    "uniqueAssemblyNames": 119,
+    "duplicateAssemblyNames": [],
+    "geometryTypes": {
+      "Polygon": 116,
+      "MultiPolygon": 3
+    },
+    "invalidGeometries": 1,
+    "invalidGeometryNames": [
+      "Dornakal (ST)"
+    ],
+    "emptyGeometries": 0,
+    "boundsEpsg4326": [
+      77.2372545106511,
+      15.836406686071975,
+      81.3166083881545,
+      19.916900080616543
+    ],
+    "acNumberFieldPresent": false,
+    "sourceIdFieldPresent": false
+  },
+  "attributeQuality": {
+    "No_HH": {
+      "zero": 17,
+      "null": 0,
+      "min": 0,
+      "max": 156521
+    },
+    "TOT_P": {
+      "zero": 119,
+      "null": 0,
+      "min": 0,
+      "max": 0
+    },
+    "TOT_M": {
+      "zero": 119,
+      "null": 0,
+      "min": 0,
+      "max": 0
+    },
+    "TOT_F": {
+      "zero": 119,
+      "null": 0,
+      "min": 0,
+      "max": 0
+    },
+    "P_06": {
+      "zero": 17,
+      "null": 0,
+      "min": 0,
+      "max": 68218
+    },
+    "M_06": {
+      "zero": 119,
+      "null": 0,
+      "min": 0,
+      "max": 0
+    },
+    "F_06": {
+      "zero": 17,
+      "null": 0,
+      "min": 0,
+      "max": 32980
+    },
+    "P_SC": {
+      "zero": 119,
+      "null": 0,
+      "min": 0,
+      "max": 0
+    },
+    "M_SC": {
+      "zero": 17,
+      "null": 0,
+      "min": 0,
+      "max": 61271
+    },
+    "F_SC": {
+      "zero": 119,
+      "null": 0,
+      "min": 0,
+      "max": 0
+    },
+    "P_ST": {
+      "zero": 119,
+      "null": 0,
+      "min": 0,
+      "max": 0
+    },
+    "M_ST": {
+      "zero": 17,
+      "null": 0,
+      "min": 0,
+      "max": 66545
+    },
+    "F_ST": {
+      "zero": 119,
+      "null": 0,
+      "min": 0,
+      "max": 0
+    }
+  },
+  "findings": [
+    "The official TGRAC layer returns 119 Assembly-name features, matching Telangana's assembly-seat count, with 119 unique Assembly names and OBJECTIDs.",
+    "One geometry, Dornakal (ST), is invalid and must not be silently repaired or promoted.",
+    "The layer has no statutory AC number or canonical constituency ID field; name-only mapping is insufficient for canonical identity.",
+    "All 119 features report TOT_P=0, TOT_M=0 and TOT_F=0. The sex-disaggregated and category fields are internally inconsistent (e.g. M_06, P_SC, F_SC, P_ST and F_ST are zero for all 119 while corresponding nonzero fields exist). These population attributes are unusable as factual demographic values.",
+    "Metadata reports source extent WKID 32644, while the query response is explicitly transformed to EPSG:4326. This is a projection conversion, not a conflict by itself, but the raw source CRS and transformation must be preserved.",
+    "The service metadata has no layer description or copyright text. The official endpoint establishes publisher provenance but does not by itself establish data effective date, legal authority or fitness for production."
+  ],
+  "disposition": {
+    "geometry": "CANDIDATE_ONLY; requires invalid-geometry resolution, statutory AC number crosswalk, effective-date reconciliation, and topology comparison against the official delimitation source.",
+    "demographics": "REJECTED; do not ingest any of the returned population attributes.",
+    "productionImport": "PROHIBITED_PENDING_INDEPENDENT_VALIDATION",
+    "databaseWrites": "NONE"
+  }
+}
