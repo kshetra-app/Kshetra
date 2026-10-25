@@ -47,6 +47,62 @@ jobs:
       - name: Audit 13-Language i18n Parity (DEF-012 Monitoring)
         run: node scripts/verify-13-locales.mjs
 
+  seed-db:
+    name: Build & validate generated seed SQLite
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout canonical source inputs
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          # Do not fetch the stale generated DB. Pull canonical local-body JSON explicitly below.
+          lfs: false
+
+      - name: Materialize canonical local-body source inputs
+        shell: bash
+        run: |
+          git lfs install --local
+          git lfs pull --include='scrapers/output/local-body/*.json' --exclude='apps/mobile/data/seed-data.db'
+          shopt -s nullglob
+          inputs=(scrapers/output/local-body/*.json)
+          if (${#inputs[@]} == 0); then
+            echo 'No canonical local-body JSON inputs found.' >&2
+            exit 1
+          fi
+          for file in "${inputs[@]}"; do
+            if head -c 80 "$file" | grep -q 'git-lfs.github.com/spec/v1'; then
+              echo "Unmaterialized Git LFS pointer: $file" >&2
+              exit 1
+            fi
+          done
+
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build shared package
+        run: npm run build -w @kshetra/shared
+
+      - name: Generate seed database from canonical inputs
+        run: npm run build:seed-db
+
+      - name: Validate schema, counts, manifest, hash and runtime query
+        run: npm run validate:seed-db
+
+      - name: Publish reproducible seed metadata
+        uses: actions/upload-artifact@v4
+        with:
+          name: seed-db-validation-${{ github.sha }}
+          if-no-files-found: error
+          path: |
+            apps/mobile/data/seed-manifest.json
+            apps/mobile/data/seed-db-version.json
+
   test:
     name: Test
     runs-on: ubuntu-latest

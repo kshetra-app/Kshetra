@@ -24,6 +24,16 @@ const dbPath = path.resolve(dataDir, 'seed-data.db');
 const localBodyDir = path.resolve(rootDir, 'scrapers/output/local-body');
 
 const NO_MANDAL = '__no_mandal__';
+const STATE_SOURCE_NAMES = {
+  TS: 'telangana', AP: 'andhra-pradesh', KA: 'karnataka', MH: 'maharashtra',
+  TN: 'tamil-nadu', KL: 'kerala', WB: 'west-bengal', UP: 'uttar-pradesh',
+  RJ: 'rajasthan', GJ: 'gujarat', JH: 'jharkhand', OD: 'odisha', DL: 'delhi',
+  PB: 'punjab', HR: 'haryana', CG: 'chhattisgarh', MP: 'madhya-pradesh',
+  BR: 'bihar', AS: 'assam', GA: 'goa', HP: 'himachal-pradesh',
+  MN: 'manipur', ML: 'meghalaya', MZ: 'mizoram', NL: 'nagaland',
+  TR: 'tripura', SK: 'sikkim', AR: 'arunachal-pradesh', UK: 'uttarakhand',
+  PY: 'puducherry', JK: 'jammu-kashmir',
+};
 
 // ═════════════════════════════════════════════════════════════════════════
 // ── Schema ──────────────────────────────────────────────────────────────
@@ -145,6 +155,11 @@ function initSchema(db) {
       has_political_timeline INTEGER,
       has_election_history INTEGER,
       constituency_count INTEGER,
+      mla_profile_count INTEGER NOT NULL DEFAULT 0,
+      demographics_count INTEGER NOT NULL DEFAULT 0,
+      historical_results_count INTEGER NOT NULL DEFAULT 0,
+      political_timeline_count INTEGER NOT NULL DEFAULT 0,
+      election_history_count INTEGER NOT NULL DEFAULT 0,
       last_updated TEXT
     );
 
@@ -231,11 +246,12 @@ async function importSeedData(db) {
     { code: 'PY', year: 2026 },
     { code: 'JK', year: 2024 },
   ];
-
   const manifest = {};
 
+  // Table-specific adapters keep TypeScript source exports explicit and fail closed
+  // whenever a canonical jurisdiction asset is absent or cannot be parsed.
   for (const { code, year } of stateConfigs) {
-    console.log(`\n[${code}] Importing seed data...`);
+    const sourceName = STATE_SOURCE_NAMES[code];
     const stateManifest = {
       state_code: code,
       version: '',
@@ -245,238 +261,183 @@ async function importSeedData(db) {
       has_political_timeline: 0,
       has_election_history: 0,
       constituency_count: 0,
+      mla_profile_count: 0,
+      demographics_count: 0,
+      historical_results_count: 0,
+      political_timeline_count: 0,
+      election_history_count: 0,
       last_updated: new Date().toISOString(),
     };
-
+    const requireArray = (file, pattern, { optional = false } = {}) => {
+      if (!fs.existsSync(file)) {
+        if (optional) return [];
+        throw new Error(`Required source file missing: ${path.relative(rootDir, file)}`);
+      }
+      return import(`file://${file}`).then(mod => {
+        const matches = Object.entries(mod).filter(([key,value]) => pattern.test(key) && Array.isArray(value));
+        if (matches.length !== 1) throw new Error(`${path.relative(rootDir,file)} expected exactly one array matching ${pattern}, got ${matches.map(([k])=>k).join(',') || 'none'}`);
+        return matches[0][1];
+      });
+    };
     try {
-      // Import constituencies
-      const constPath = path.resolve(rootDir, `data/seed/${code.toLowerCase()}-constituencies.ts`);
-      if (fs.existsSync(constPath)) {
-        try {
-          const mod = await import(`file://${constPath}`);
-          const constKey = Object.keys(mod).find(k => k.includes('CONSTITUENCIES'));
-          if (constKey && mod[constKey]) {
-            const constituencies = mod[constKey];
-            const insertConst = db.prepare(`
-              INSERT OR REPLACE INTO constituencies
-              (id, state_code, ac_no, name, district, type, winner_party, winner_name, winner_votes, runner_up, margin, current_party, election_year)
-              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-            `);
-
-            let count = 0;
-            for (const c of constituencies) {
-              try {
-                const winnerKey = `winner${year}`;
-                const winnerNameKey = `winnerName${year}`;
-                const winnerVotesKey = `winnerVotes${year}`;
-                const runnerUpKey = `runnerUp${year}`;
-                const marginKey = `margin${year}`;
-
-                insertConst.run(
-                  `${code}-AC-${c.acNo}`,
-                  code,
-                  c.acNo,
-                  c.name,
-                  c.district || '',
-                  c.type || 'GEN',
-                  c[winnerKey] || c.winner || '',
-                  c[winnerNameKey] || c.winnerName || '',
-                  c[winnerVotesKey] || 0,
-                  c[runnerUpKey] || '',
-                  c[marginKey] || 0,
-                  c.currentParty || c[winnerKey] || '',
-                  year,
-                );
-                count++;
-              } catch (e) {
-                // Skip malformed constituencies
-              }
-            }
-
-            stateManifest.constituency_count = count;
-            if (count > 0) {
-              console.log(`  ✓ Constituencies: ${count}`);
-            }
-          }
-        } catch (e) {
-          console.warn(`  ⚠ Could not import constituencies for ${code}:`, e.message);
-        }
+      const constituencyPath = path.resolve(rootDir,`data/seed/${sourceName}-constituencies.ts`);
+      const constituencyModule = await import(`file://${constituencyPath}`);
+      const constituencyKey = ({
+        TS:'TELANGANA_CONSTITUENCIES', AP:'AP_CONSTITUENCIES', KA:'KA_CONSTITUENCIES',
+        MH:'MH_CONSTITUENCIES', TN:'TN_CONSTITUENCIES', KL:'KL_CONSTITUENCIES',
+        WB:'WB_CONSTITUENCIES', UP:'UP_CONSTITUENCIES', RJ:'RJ_CONSTITUENCIES',
+        GJ:'GJ_CONSTITUENCIES', JH:'JH_CONSTITUENCIES', OD:'OD_CONSTITUENCIES',
+        DL:'DL_CONSTITUENCIES', PB:'PB_CONSTITUENCIES', HR:'HR_CONSTITUENCIES',
+        CG:'CG_CONSTITUENCIES', MP:'MP_CONSTITUENCIES', BR:'BR_CONSTITUENCIES',
+        AS:'AS_CONSTITUENCIES', GA:'GA_CONSTITUENCIES', HP:'HP_CONSTITUENCIES',
+        MN:'MN_CONSTITUENCIES', ML:'ML_CONSTITUENCIES', MZ:'MZ_CONSTITUENCIES',
+        NL:'NL_CONSTITUENCIES', TR:'TR_CONSTITUENCIES', SK:'SK_CONSTITUENCIES',
+        AR:'AR_CONSTITUENCIES', UK:'UK_CONSTITUENCIES', PY:'PY_CONSTITUENCIES',
+        JK:'JK_CONSTITUENCIES',
+      })[code];
+      const constituencies = constituencyKey ? constituencyModule[constituencyKey] : null;
+      if (!Array.isArray(constituencies)) throw new Error(`Canonical constituency export missing for ${code}`);
+      if (constituencies.length === 0) throw new Error(`${code} has no constituency seed rows`);
+      const insertConst = db.prepare(`INSERT INTO constituencies
+        (id,state_code,ac_no,name,district,type,winner_party,winner_name,winner_votes,runner_up,margin,current_party,election_year)
+        VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)`);
+      const seenAc = new Set();
+      for (const row of constituencies) {
+        if (!Number.isInteger(Number(row.acNo)) || !row.name || seenAc.has(Number(row.acNo))) throw new Error(`Invalid/duplicate constituency ${row?.acNo} in ${code}`);
+        seenAc.add(Number(row.acNo));
+        insertConst.run(`${code}-AC-${row.acNo}`,code,Number(row.acNo),row.name,row.district||'',row.type||'GEN',
+          row[`winner${year}`]||row.winner||'',row[`winnerName${year}`]||row.winnerName||'',
+          row[`winnerVotes${year}`]||0,row[`runnerUp${year}`]||'',row[`margin${year}`]||0,
+          row.currentParty||row[`winner${year}`]||'',year);
       }
 
-      // Import MLA profiles
-      const mlaPath = path.resolve(rootDir, `data/seed/${code.toLowerCase()}-mla-profiles.ts`);
-      if (fs.existsSync(mlaPath)) {
-        const mod = await import(`file://${mlaPath}`);
-        const mlaKey = Object.keys(mod).find(k => k.includes('MLA') || k.includes('PROFILE'));
-        if (mlaKey) {
-          const profiles = mod[mlaKey];
-          const insertMLA = db.prepare(`
-            INSERT OR REPLACE INTO mla_profiles
-            (id, state_code, ac_no, name, party, gender, terms_served, age, dob, dob_estimated, education, profession, criminal_cases, total_assets, total_liabilities, marital_status, photo_url, constituency_name, district, source_url)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-          `);
-
-          let count = 0;
-          for (const p of profiles) {
-            try {
-              insertMLA.run(
-                `${code}-MLA-${p.acNo || count}`,
-                code,
-                p.acNo || count,
-                p.name || '',
-                p.party || p.currentParty || '',
-                p.gender || '',
-                p.terms || p.termsServed || 0,
-                p.age || 0,
-                p.dob || '',
-                p.dobEstimated ? 1 : 0,
-                p.education || '',
-                p.profession || '',
-                p.criminalCases || 0,
-                p.totalAssets || 0,
-                p.totalLiabilities || 0,
-                p.maritalStatus || '',
-                p.photoUrl || '',
-                p.constituencyName || '',
-                p.district || '',
-                p.sourceUrl || p.mynetaUrl || '',
-              );
-              count++;
-            } catch (e) {
-              // Skip malformed profiles
-            }
-          }
-
-          stateManifest.has_mla_profiles = 1;
-          console.log(`  ✓ MLA Profiles: ${count}`);
-        }
+      const profilesPath = path.resolve(rootDir,`data/seed/${sourceName}-mla-profiles.ts`);
+      const profilesModule = fs.existsSync(profilesPath) ? await import(`file://${profilesPath}`) : null;
+      const preferredProfileKey = {
+  "TS": "TS_MLA_PROFILES",
+  "AP": "AP_MLA_PROFILES",
+  "KA": "KA_MLA_PROFILES",
+  "MH": "MH_MLA_PROFILES",
+  "TN": "TN_MLA_PROFILES",
+  "KL": "KL_MLA_PROFILES",
+  "WB": "WB_MLA_PROFILES",
+  "UP": "UP_MLA_PROFILES",
+  "RJ": "RJ_MLA_PROFILES",
+  "GJ": "GJ_MLA_PROFILES",
+  "JH": "JH_MLA_PROFILES",
+  "OD": "OD_MLA_PROFILES",
+  "DL": "DL_MLA_PROFILES",
+  "PB": "PB_MLA_PROFILES",
+  "HR": "HR_MLA_PROFILES",
+  "CG": "CG_MLA_PROFILES",
+  "MP": "MP_MLA_PROFILES",
+  "BR": "BR_MLA_PROFILES",
+  "AS": "AS_MLA_PROFILES",
+  "GA": "GA_MLA_PROFILES",
+  "HP": "HP_MLA_PROFILES",
+  "MN": "MN_MLA_PROFILES",
+  "ML": "ML_MLA_PROFILES",
+  "MZ": "MZ_MLA_PROFILES",
+  "NL": "NL_MLA_PROFILES",
+  "TR": "TR_MLA_PROFILES",
+  "SK": "SK_MLA_PROFILES",
+  "AR": "AR_MLA_PROFILES",
+  "UK": "UK_MLA_PROFILES",
+  "PY": "PY_MLA_PROFILES",
+  "JK": "JK_MLA_PROFILES"
+}[code];
+      const profileArrayExports = profilesModule
+        ? Object.entries(profilesModule).filter(([key,value]) => /MLA.*PROFILES$/i.test(key) && Array.isArray(value))
+        : [];
+      const profiles = profilesModule
+        ? (Array.isArray(profilesModule[preferredProfileKey])
+          ? profilesModule[preferredProfileKey]
+          : profileArrayExports.length === 1 ? profileArrayExports[0][1] : [])
+        : [];
+      const insertMla = db.prepare(`INSERT INTO mla_profiles
+        (id,state_code,ac_no,name,party,gender,terms_served,age,dob,dob_estimated,education,profession,criminal_cases,total_assets,total_liabilities,marital_status,photo_url,constituency_name,district,source_url)
+        VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`);
+      for(const row of profiles) {
+        if(!Number.isInteger(Number(row.acNo))||!row.name) throw new Error(`Invalid MLA profile in ${code}`);
+        insertMla.run(`${code}-MLA-${row.acNo}`,code,Number(row.acNo),row.name,row.party||row.currentParty||'',row.gender||'',
+          row.terms||row.termsServed||0,row.age||0,row.dob||'',row.dobEstimated?1:0,row.education||'',row.profession||'',
+          row.criminalCases||0,row.totalAssets||0,row.totalLiabilities||0,row.maritalStatus||'',row.photoUrl||'',
+          row.constituencyName||'',row.district||'',row.sourceUrl||row.mynetaUrl||'');
       }
 
-      // Import demographics
-      const demoPath = path.resolve(rootDir, `data/seed/${code.toLowerCase()}-demographics.ts`);
-      if (fs.existsSync(demoPath)) {
-        const mod = await import(`file://${demoPath}`);
-        const demoKey = Object.keys(mod).find(k => k.includes('DEMO'));
-        if (demoKey) {
-          const demos = mod[demoKey];
-          const insertDemo = db.prepare(`
-            INSERT OR REPLACE INTO demographics
-            (id, state_code, ac_no, population, total_voters, turnout_2023, male_voters, female_voters, literacy, urban_percent, sc_percent, st_percent, area_sq_km)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-          `);
-
-          let count = 0;
-          for (const d of demos) {
-            try {
-              insertDemo.run(
-                `${code}-DEMO-${d.acNo || count}`,
-                code,
-                d.acNo || count,
-                d.population || 0,
-                d.totalVoters || d.totalElectors || 0,
-                d.turnout || d.turnout2023 || 0,
-                d.maleVoters || d.maleElectors || 0,
-                d.femaleVoters || d.femaleElectors || 0,
-                d.literacy || 0,
-                d.urbanPercent || 0,
-                d.scPercent || d.scPopulation || 0,
-                d.stPercent || d.stPopulation || 0,
-                d.areaSqKm || 0,
-              );
-              count++;
-            } catch (e) {
-              // Skip malformed demographics
-            }
-          }
-
-          stateManifest.has_demographics = 1;
-          console.log(`  ✓ Demographics: ${count}`);
-        }
+      const demos = await requireArray(path.resolve(rootDir,`data/seed/${sourceName}-demographics.ts`),/DEMO/i,{optional:true});
+      const insertDemo = db.prepare(`INSERT INTO demographics
+        (id,state_code,ac_no,population,total_voters,turnout_2023,male_voters,female_voters,literacy,urban_percent,sc_percent,st_percent,area_sq_km)
+        VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)`);
+      for(const row of demos) {
+        if(!Number.isInteger(Number(row.acNo))) throw new Error(`Invalid demographics row in ${code}`);
+        insertDemo.run(`${code}-DEMO-${row.acNo}`,code,Number(row.acNo),row.population||0,row.totalVoters||row.totalElectors||0,
+          row.turnout||row.turnout2023||0,row.maleVoters||row.maleElectors||0,row.femaleVoters||row.femaleElectors||0,
+          row.literacy||0,row.urbanPercent||0,row.scPercent||row.scPopulation||0,row.stPercent||row.stPopulation||0,row.areaSqKm||0);
       }
 
-      // Import election history
-      const elecPath = path.resolve(rootDir, `data/seed/${code.toLowerCase()}-election-history.ts`);
-      if (fs.existsSync(elecPath)) {
-        const mod = await import(`file://${elecPath}`);
-        const elecKey = Object.keys(mod).find(k => k.includes('ELECTION'));
-        if (elecKey) {
-          const elections = mod[elecKey];
-          const insertElec = db.prepare(`
-            INSERT OR REPLACE INTO election_history
-            (id, state_code, year, type, total_seats, ruling_party, notes)
-            VALUES (?, ?, ?, ?, ?, ?, ?)
-          `);
-          const insertElecResult = db.prepare(`
-            INSERT OR REPLACE INTO election_history_results
-            (id, election_id, party, seats_won, seats_contested)
-            VALUES (?, ?, ?, ?, ?)
-          `);
-
-          let count = 0;
-          for (const e of elections) {
-            try {
-              const elecId = `${code}-ELEC-${e.year}`;
-              insertElec.run(
-                elecId,
-                code,
-                e.year,
-                'assembly',
-                e.totalSeats || 0,
-                e.rulingParty || '',
-                e.notes || '',
-              );
-
-              // Handle both Record-based and array-based party results
-              const partyResults = e.partyResults || {};
-              const entries = Array.isArray(partyResults)
-                ? partyResults
-                : Object.entries(partyResults).map(([party, seats]) => ({ party, seatsWon: seats, seatContested: seats }));
-
-              for (const pr of entries) {
-                insertElecResult.run(
-                  `${elecId}-${pr.party || ''}`,
-                  elecId,
-                  pr.party || '',
-                  pr.seatsWon || 0,
-                  pr.seatContested || 0,
-                );
-              }
-
-              count++;
-            } catch (e) {
-              // Skip malformed elections
-            }
-          }
-
-          stateManifest.has_election_history = 1;
-          console.log(`  ✓ Election History: ${count}`);
-        }
+      const elections = await requireArray(path.resolve(rootDir,`data/seed/${sourceName}-election-history.ts`),/ELECTION/i,{optional:true});
+      const insE= db.prepare(`INSERT INTO election_history (id,state_code,year,type,total_seats,ruling_party,notes) VALUES (?,?,?,?,?,?,?)`);
+      const insER= db.prepare(`INSERT INTO election_history_results (id,election_id,party,seats_won,seats_contested) VALUES (?,?,?,?,?)`);
+      for(const row of elections) {
+        const id=`${code}-ELEC-${row.year}`;
+        insE.run(id,code,row.year,row.type||'assembly',row.totalSeats||0,row.rulingParty||'',row.notes||'');
+        const results=Array.isArray(row.partyResults)?row.partyResults:Object.entries(row.partyResults||{}).map(([party,seats])=>({party,seatsWon:seats,seatContested:seats}));
+        for(const pr of results) insER.run(`${id}-${pr.party||''}`,id,pr.party||'',pr.seatsWon||0,pr.seatContested||0);
       }
 
-      // Insert state manifest
-      const insertManifest = db.prepare(`
-        INSERT OR REPLACE INTO seed_manifest
-        (state_code, version, has_mla_profiles, has_demographics, has_historical_results, has_political_timeline, has_election_history, constituency_count, last_updated)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-      `);
-      insertManifest.run(
-        stateManifest.state_code,
-        crypto.createHash('sha256').update(JSON.stringify(stateManifest)).digest('hex').slice(0, 12),
-        stateManifest.has_mla_profiles,
-        stateManifest.has_demographics,
-        stateManifest.has_historical_results,
-        stateManifest.has_political_timeline,
-        stateManifest.has_election_history,
-        stateManifest.constituency_count,
-        stateManifest.last_updated,
-      );
+      const historicalPath = path.resolve(rootDir,`data/seed/${sourceName}-historical-results.ts`);
+      const historicalModule = await import(`file://${historicalPath}`).catch(error => { if (error?.code === 'ERR_MODULE_NOT_FOUND') return null; throw error; });
+      const historical = historicalModule ? Object.entries(historicalModule).filter(([key,value]) => /RESULTS?$/i.test(key) && Array.isArray(value)).flatMap(([,value]) => value) : [];
+      const insHist=db.prepare(`INSERT INTO historical_results (id,state_code,ac_no,year,winner,party) VALUES (?,?,?,?,?,?)`);
+      for(const row of historical) {
+        if(!Number.isInteger(Number(row.acNo))||!Number.isInteger(Number(row.year))) throw new Error(`Invalid historical result in ${code}`);
+        insHist.run(`${code}-HIST-${row.acNo}-${row.year}`,code,Number(row.acNo),Number(row.year),row.winner||row.winnerName||'',row.party||row.winnerParty||'');
+      }
 
-      manifest[code] = stateManifest;
-    } catch (err) {
-      console.error(`  ✗ Error importing ${code}:`, err.message);
+      const timelinePath = path.resolve(rootDir,`data/seed/${sourceName}-political-timeline.ts`);
+      const timelineModule = await import(`file://${timelinePath}`).catch(error => { if (error?.code === 'ERR_MODULE_NOT_FOUND') return null; throw error; });
+      const ledgerKey = timelineModule && Object.keys(timelineModule).find(key => /LEDGER|TIMELINE/i.test(key) && Array.isArray(timelineModule[key]));
+      const ledger = ledgerKey ? timelineModule[ledgerKey] : [];
+      const insTimeline=db.prepare(`INSERT INTO political_timeline (id,state_code,ac_no,date,assembly,event_type,member_names,debit_party,credit_party,seats,explanation,details,legal_status,verified) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)`);
+      for(const row of ledger) {
+        const hash=crypto.createHash('sha1').update(JSON.stringify(row)).digest('hex').slice(0,8);
+        insTimeline.run(row.id||`${code}-TL-${row.date||'NA'}-${hash}`,code,
+          Array.isArray(row.acNos)&&row.acNos.length===1?row.acNos[0]:(row.acNo??null),row.date||'',
+          row.assembly??row.year??null,row.eventType||row.type||'',Array.isArray(row.memberNames)?row.memberNames.join(', '):(row.memberNames||''),
+          row.debitParty||'',row.creditParty||'',row.seats??0,row.explanation||'',row.details||'',row.legalStatus||'',row.verified?1:0);
+      }
+
+      stateManifest.constituency_count=constituencies.length;
+      const count=(table)=>db.prepare(`SELECT count(*) AS n FROM ${table} WHERE state_code=?`).get(code).n;
+      stateManifest.mla_profile_count=count('mla_profiles');
+      stateManifest.demographics_count=count('demographics');
+      stateManifest.historical_results_count=count('historical_results');
+      stateManifest.political_timeline_count=count('political_timeline');
+      stateManifest.election_history_count=count('election_history');
+      stateManifest.has_mla_profiles=stateManifest.mla_profile_count>0?1:0;
+      stateManifest.has_demographics=stateManifest.demographics_count>0?1:0;
+      stateManifest.has_historical_results=stateManifest.historical_results_count>0?1:0;
+      stateManifest.has_political_timeline=stateManifest.political_timeline_count>0?1:0;
+      stateManifest.has_election_history=stateManifest.election_history_count>0?1:0;
+      stateManifest.version=crypto.createHash('sha256').update(JSON.stringify({
+        state_code:code,
+        counts:{constituencies:stateManifest.constituency_count,mla_profiles:stateManifest.mla_profile_count,
+          demographics:stateManifest.demographics_count,historical_results:stateManifest.historical_results_count,
+          political_timeline:stateManifest.political_timeline_count,election_history:stateManifest.election_history_count},
+      })).digest('hex').slice(0,16);
+
+      db.prepare(`INSERT INTO seed_manifest
+        (state_code,version,has_mla_profiles,has_demographics,has_historical_results,has_political_timeline,has_election_history,constituency_count,mla_profile_count,demographics_count,historical_results_count,political_timeline_count,election_history_count,last_updated)
+        VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)`).run(code,stateManifest.version,stateManifest.has_mla_profiles,stateManifest.has_demographics,
+        stateManifest.has_historical_results,stateManifest.has_political_timeline,stateManifest.has_election_history,stateManifest.constituency_count,
+        stateManifest.mla_profile_count,stateManifest.demographics_count,stateManifest.historical_results_count,stateManifest.political_timeline_count,
+        stateManifest.election_history_count,stateManifest.last_updated);
+      manifest[code]=stateManifest;
+    } catch(error) {
+      throw new Error(`Seed generation failed for ${code}: ${error.message}`,{cause:error});
     }
   }
-
   return manifest;
 }
 
@@ -496,24 +457,27 @@ async function importSeedData(db) {
  */
 function importRepresentatives(db) {
   if (!fs.existsSync(localBodyDir)) {
-    console.log('  (no scrapers/output/local-body dir — skipping representatives)');
-    return { total: 0, byState: {} };
+    throw new Error('Required canonical input directory scrapers/output/local-body is missing');
   }
   const files = fs.readdirSync(localBodyDir).filter((f) => f.endsWith('-kyr.json'));
   if (files.length === 0) {
-    console.log('  (no *-kyr.json files — skipping representatives)');
-    return { total: 0, byState: {} };
+    throw new Error('No *-kyr.json canonical representative input files found');
   }
 
   const all = [];
   for (const file of files) {
     try {
-      const data = JSON.parse(fs.readFileSync(path.join(localBodyDir, file), 'utf8'));
+      const sourcePath = path.join(localBodyDir, file);
+      const sourceText = fs.readFileSync(sourcePath, 'utf8');
+      if (sourceText.startsWith('version https://git-lfs.github.com/spec/v1')) {
+        throw new Error('input is an unmaterialized Git LFS pointer; checkout canonical inputs with Git LFS enabled');
+      }
+      const data = JSON.parse(sourceText);
       const reps = buildRepsFromKYR(data);
       for (const rep of reps) all.push(rep); // loop, not spread (142k+ overflows arg stack)
       console.log(`  ${file}: ${reps.length} winners`);
     } catch (err) {
-      console.error(`  ✗ ${file}: ${err.message}`);
+      throw new Error(`Cannot import canonical representative input ${file}: ${err.message}`, { cause: err });
     }
   }
 
@@ -665,6 +629,21 @@ async function main() {
     }
 
     // Optimize
+    if (Object.keys(manifest).length !== 31) throw new Error(`Expected 31 state manifests, got ${Object.keys(manifest).length}`);
+    const stateRowCount = db.prepare('SELECT count(*) AS n FROM seed_manifest').get().n;
+    if (stateRowCount !== 31) throw new Error(`Expected 31 seed_manifest rows, got ${stateRowCount}`);
+    const globalCount = (table) => db.prepare(`SELECT count(*) AS n FROM ${table}`).get().n;
+    for (const table of ['constituencies','mla_profiles','demographics','historical_results','political_timeline','election_history','election_history_results']) {
+      const count = globalCount(table);
+      if (count <= 0) throw new Error(`Required seed table ${table} has no rows`);
+    }
+    for (const code of ["TS","AP","KA","MH","TN","KL","WB","UP","RJ","GJ","JH","OD","DL","PB","HR","CG","MP","BR","AS","GA","HP","MN","ML","MZ","NL","TR","SK","AR","UK","PY","JK"]) {
+      const n = db.prepare('SELECT count(*) AS n FROM constituencies WHERE state_code=?').get(code).n;
+      if (n <= 0) throw new Error(`Jurisdiction ${code} has no real constituency records; refusing to emit a placeholder manifest`);
+    }
+    const representativeCount = globalCount('representatives');
+    if (representativeCount <= 100000) throw new Error(`representatives contains ${representativeCount} rows; runtime requires more than 100000`);
+
     console.log('\n⚙️  Optimizing database...');
     db.exec('VACUUM; ANALYZE;');
 
@@ -696,13 +675,69 @@ async function main() {
     db.close();
   }
 
-  // Write an auto-derived version file from the final DB's content hash. The app
-  // imports this JSON and re-copies the bundled DB whenever the hash changes, so
-  // there is no manual version bump to remember after a rebuild.
-  const hash = crypto.createHash('sha256').update(fs.readFileSync(dbPath)).digest('hex').slice(0, 16);
-  const versionPath = path.resolve(dataDir, 'seed-db-version.json');
-  fs.writeFileSync(versionPath, JSON.stringify({ version: hash, builtAt: new Date().toISOString() }, null, 2) + '\n');
-  console.log(`✅ Version file written: ${versionPath} (${hash})`);
+  // Rebuild the sidecar manifest from the actual final SQLite tables, ensuring
+  // reported flags/counts are derived from persisted rows, not source-file presence.
+  let manifest;
+  const verifyDb = new Database(dbPath, { readonly: true, fileMustExist: true });
+  try {
+    const count = (table, code) => verifyDb.prepare(`SELECT count(*) AS n FROM ${table} WHERE state_code = ?`).get(code).n;
+    manifest = {};
+    for (const { code } of [{"code":"TS"},{"code":"AP"},{"code":"KA"},{"code":"MH"},{"code":"TN"},{"code":"KL"},{"code":"WB"},{"code":"UP"},{"code":"RJ"},{"code":"GJ"},{"code":"JH"},{"code":"OD"},{"code":"DL"},{"code":"PB"},{"code":"HR"},{"code":"CG"},{"code":"MP"},{"code":"BR"},{"code":"AS"},{"code":"GA"},{"code":"HP"},{"code":"MN"},{"code":"ML"},{"code":"MZ"},{"code":"NL"},{"code":"TR"},{"code":"SK"},{"code":"AR"},{"code":"UK"},{"code":"PY"},{"code":"JK"}]) {
+      const row = {
+        state_code: code,
+        mla_profile_count: count('mla_profiles', code),
+        demographics_count: count('demographics', code),
+        historical_results_count: count('historical_results', code),
+        political_timeline_count: count('political_timeline', code),
+        election_history_count: count('election_history', code),
+        version: crypto.createHash('sha256').update(JSON.stringify({
+          state_code: code,
+          counts: {
+            constituencies: count('constituencies', code),
+            mla_profiles: count('mla_profiles', code),
+            demographics: count('demographics', code),
+            historical_results: count('historical_results', code),
+            political_timeline: count('political_timeline', code),
+            election_history: count('election_history', code),
+          },
+        })).digest('hex').slice(0, 16),
+        has_mla_profiles: count('mla_profiles', code) > 0 ? 1 : 0,
+        has_demographics: count('demographics', code) > 0 ? 1 : 0,
+        has_historical_results: count('historical_results', code) > 0 ? 1 : 0,
+        has_political_timeline: count('political_timeline', code) > 0 ? 1 : 0,
+        has_election_history: count('election_history', code) > 0 ? 1 : 0,
+        constituency_count: count('constituencies', code),
+        last_updated: new Date().toISOString(),
+      };
+      manifest[code] = row;
+    }
+    verifyDb.close();
+    const writableDb = new Database(dbPath);
+    try {
+      writableDb.exec('BEGIN');
+      const updateManifest = writableDb.prepare(`UPDATE seed_manifest SET version=?,has_mla_profiles=?,has_demographics=?,has_historical_results=?,has_political_timeline=?,has_election_history=?,constituency_count=?,mla_profile_count=?,demographics_count=?,historical_results_count=?,political_timeline_count=?,election_history_count=?,last_updated=? WHERE state_code=?`);
+      for (const row of Object.values(manifest)) {
+        const updated = updateManifest.run(row.version,row.has_mla_profiles,row.has_demographics,row.has_historical_results,row.has_political_timeline,row.has_election_history,row.constituency_count,row.mla_profile_count,row.demographics_count,row.historical_results_count,row.political_timeline_count,row.election_history_count,row.last_updated,row.state_code);
+        if (updated.changes !== 1) throw new Error(`SQLite manifest missing row for ${row.state_code}`);
+      }
+      writableDb.exec('COMMIT');
+      writableDb.pragma('wal_checkpoint(TRUNCATE)');
+      writableDb.pragma('journal_mode = DELETE');
+    } catch (error) {
+      try { writableDb.exec('ROLLBACK'); } catch {}
+      throw error;
+    } finally {
+      writableDb.close();
+    }
+    fs.writeFileSync(path.resolve(dataDir, 'seed-manifest.json'), JSON.stringify(manifest, null, 2) + '\n');
+  } finally {
+    try { verifyDb.close(); } catch {}
+  }
+  // Recompute the identity after the in-database manifest was finalized.
+  const finalDbBytes = fs.readFileSync(dbPath);
+  const finalSha256 = crypto.createHash('sha256').update(finalDbBytes).digest('hex');
+  fs.writeFileSync(versionPath, JSON.stringify({ version: finalSha256.slice(0, 16), sha256: finalSha256, sizeBytes: finalDbBytes.length, builtAt: new Date().toISOString() }, null, 2) + '\n');
+  console.log(`✅ Version file written: ${versionPath} (${finalSha256.slice(0, 16)})`);
 
   // If Android assets directory exists, also copy directly so it's baked into APK assets
   const androidAssetsDir = path.resolve(rootDir, 'apps/mobile/android/app/src/main/assets');
