@@ -78,14 +78,15 @@
       "regime": "eci_delimitation_2023_as",
       "geometryFile": "as-assembly.json",
       "manifestFeatureCount": 133,
-      "declaredHasPolygons": true,
+      "declaredHasPolygons": false,
       "geometryStatus": "QUARANTINED_COUNT_MISMATCH",
       "releaseApproved": false,
       "releaseBlockers": [
         "feature_count_must_equal_statutory_count",
         "geometry_topology_and_bounds_not_independently_verified",
         "canonical_feature_ids_and_relationships_not_reconciled",
-        "legacy_manifest_lacks_complete_source_version_hash_and_effective_date"
+        "legacy_manifest_lacks_complete_source_version_hash_and_effective_date",
+        "runtime_geometry_access_gated"
       ]
     },
     "BR": {
@@ -155,14 +156,15 @@
       "regime": "eci_delimitation_2008",
       "geometryFile": "gj-assembly.json",
       "manifestFeatureCount": 165,
-      "declaredHasPolygons": true,
+      "declaredHasPolygons": false,
       "geometryStatus": "QUARANTINED_COUNT_MISMATCH",
       "releaseApproved": false,
       "releaseBlockers": [
         "feature_count_must_equal_statutory_count",
         "geometry_topology_and_bounds_not_independently_verified",
         "canonical_feature_ids_and_relationships_not_reconciled",
-        "legacy_manifest_lacks_complete_source_version_hash_and_effective_date"
+        "legacy_manifest_lacks_complete_source_version_hash_and_effective_date",
+        "runtime_geometry_access_gated"
       ]
     },
     "HR": {
@@ -213,14 +215,15 @@
       "regime": "eci_delimitation_2008",
       "geometryFile": "jh-assembly.json",
       "manifestFeatureCount": 95,
-      "declaredHasPolygons": true,
+      "declaredHasPolygons": false,
       "geometryStatus": "QUARANTINED_COUNT_MISMATCH",
       "releaseApproved": false,
       "releaseBlockers": [
         "feature_count_must_equal_statutory_count",
         "geometry_topology_and_bounds_not_independently_verified",
         "canonical_feature_ids_and_relationships_not_reconciled",
-        "legacy_manifest_lacks_complete_source_version_hash_and_effective_date"
+        "legacy_manifest_lacks_complete_source_version_hash_and_effective_date",
+        "runtime_geometry_access_gated"
       ]
     },
     "KA": {
@@ -233,14 +236,15 @@
       "regime": "eci_delimitation_2008",
       "geometryFile": "ka-assembly.json",
       "manifestFeatureCount": 225,
-      "declaredHasPolygons": true,
+      "declaredHasPolygons": false,
       "geometryStatus": "QUARANTINED_COUNT_MISMATCH",
       "releaseApproved": false,
       "releaseBlockers": [
         "feature_count_must_equal_statutory_count",
         "geometry_topology_and_bounds_not_independently_verified",
         "canonical_feature_ids_and_relationships_not_reconciled",
-        "legacy_manifest_lacks_complete_source_version_hash_and_effective_date"
+        "legacy_manifest_lacks_complete_source_version_hash_and_effective_date",
+        "runtime_geometry_access_gated"
       ]
     },
     "KL": {
@@ -253,14 +257,15 @@
       "regime": "eci_delimitation_2008",
       "geometryFile": "kl-assembly.json",
       "manifestFeatureCount": 141,
-      "declaredHasPolygons": true,
+      "declaredHasPolygons": false,
       "geometryStatus": "QUARANTINED_COUNT_MISMATCH",
       "releaseApproved": false,
       "releaseBlockers": [
         "feature_count_must_equal_statutory_count",
         "geometry_topology_and_bounds_not_independently_verified",
         "canonical_feature_ids_and_relationships_not_reconciled",
-        "legacy_manifest_lacks_complete_source_version_hash_and_effective_date"
+        "legacy_manifest_lacks_complete_source_version_hash_and_effective_date",
+        "runtime_geometry_access_gated"
       ]
     },
     "MP": {
@@ -273,14 +278,15 @@
       "regime": "eci_delimitation_2008",
       "geometryFile": "mp-assembly.json",
       "manifestFeatureCount": 226,
-      "declaredHasPolygons": true,
+      "declaredHasPolygons": false,
       "geometryStatus": "QUARANTINED_COUNT_MISMATCH",
       "releaseApproved": false,
       "releaseBlockers": [
         "feature_count_must_equal_statutory_count",
         "geometry_topology_and_bounds_not_independently_verified",
         "canonical_feature_ids_and_relationships_not_reconciled",
-        "legacy_manifest_lacks_complete_source_version_hash_and_effective_date"
+        "legacy_manifest_lacks_complete_source_version_hash_and_effective_date",
+        "runtime_geometry_access_gated"
       ]
     },
     "MH": {
@@ -430,14 +436,15 @@
       "regime": "eci_delimitation_2008",
       "geometryFile": "rj-assembly.json",
       "manifestFeatureCount": 201,
-      "declaredHasPolygons": true,
+      "declaredHasPolygons": false,
       "geometryStatus": "QUARANTINED_COUNT_MISMATCH",
       "releaseApproved": false,
       "releaseBlockers": [
         "feature_count_must_equal_statutory_count",
         "geometry_topology_and_bounds_not_independently_verified",
         "canonical_feature_ids_and_relationships_not_reconciled",
-        "legacy_manifest_lacks_complete_source_version_hash_and_effective_date"
+        "legacy_manifest_lacks_complete_source_version_hash_and_effective_date",
+        "runtime_geometry_access_gated"
       ]
     },
     "SK": {
@@ -470,14 +477,15 @@
       "regime": "eci_delimitation_2008",
       "geometryFile": "tn-assembly.json",
       "manifestFeatureCount": 235,
-      "declaredHasPolygons": true,
+      "declaredHasPolygons": false,
       "geometryStatus": "QUARANTINED_COUNT_MISMATCH",
       "releaseApproved": false,
       "releaseBlockers": [
         "feature_count_must_equal_statutory_count",
         "geometry_topology_and_bounds_not_independently_verified",
         "canonical_feature_ids_and_relationships_not_reconciled",
-        "legacy_manifest_lacks_complete_source_version_hash_and_effective_date"
+        "legacy_manifest_lacks_complete_source_version_hash_and_effective_date",
+        "runtime_geometry_access_gated"
       ]
     },
     "TS": {
@@ -606,14 +614,15 @@
       "regime": "eci_delimitation_2022_jk",
       "geometryFile": "jk-assembly.json",
       "manifestFeatureCount": 107,
-      "declaredHasPolygons": true,
+      "declaredHasPolygons": false,
       "geometryStatus": "QUARANTINED_COUNT_MISMATCH",
       "releaseApproved": false,
       "releaseBlockers": [
         "feature_count_must_equal_statutory_count",
         "geometry_topology_and_bounds_not_independently_verified",
         "canonical_feature_ids_and_relationships_not_reconciled",
-        "legacy_manifest_lacks_complete_source_version_hash_and_effective_date"
+        "legacy_manifest_lacks_complete_source_version_hash_and_effective_date",
+        "runtime_geometry_access_gated"
       ]
     },
     "PY": {
