@@ -7,9 +7,9 @@
 ## 1. Project & Execution Coordinates
 ```text
 PROJECT:               PANIN (formerly Kshetra)
-CURRENT_JOB:           JOB 023: DELIMITATION WATCH
+CURRENT_JOB:           W021.5 STAGE B — OFFICIAL SOURCE ACQUISITION & GEOMETRY VALIDATION
 LAST_COMPLETED_JOB:    W022 (B2B SaaS Webhook Engine & Zero-Trust Dispatcher)
-NEXT_PERMITTED_JOB:    INDEPENDENT CTO ADJUDICATION / CTO ACCEPTANCE REVIEW (JOB 023)
+NEXT_PERMITTED_JOB:    COMPLETE STAGE B SOURCE EVIDENCE; STOP FOR CTO ADJUDICATION BEFORE STAGE C
 
 # Global v1.6 freeze remains active. The W021.5 work is a narrowly scoped,
 # owner-authorized remediation exception; it does not authorize other jobs or production.
@@ -30,6 +30,11 @@ W021_5_RESUMPTION_AUTHORIZATION_COMMIT: cf0a3e0e6ed5894d1b10a6dbb98e7b8b73d5eaf9
 W021_5_RESUMPTION_IMPLEMENTATION_COMMIT: 592e8b00377176dc6402103c2827a4b2c71588ec
 W021_5_RESUMPTION_VERIFICATION_COMMIT: NONE
 W021_5_RESUMPTION_ACCEPTANCE_COMMIT: NONE
+W021_5_STAGE_B_STATUS: PARTIAL / NOT ACCEPTED
+W021_5_STAGE_B_SOURCE_RESEARCH: reports/w021_5_stage_b_source_research_2026-10-25.md
+W021_5_STAGE_B_PROBE_MANIFEST: reports/evidence/w021_5_stage_b_acquisition_probe_2026-10-25.json
+W021_5_STAGE_B_SOURCE_ACQUISITION_WORKFLOW: .github/workflows/w0215-source-acquisition.yml
+W021_5_STAGE_B_NEXT_ACTION: Await official-source acquisition artifact; validate hashes, geometry, temporal/legal applicability, and coverage; do not close EB-01..EB-05
 
 JOB_023_STATUS:        TESTED / IMPLEMENTATION COMPLETE / SUBMITTED FOR CTO ACCEPTANCE
 JOB_023_BASELINE:      b9179ef2a2f89f28d84a7e93da4c2226871a996f
