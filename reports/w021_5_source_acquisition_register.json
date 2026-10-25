@@ -755,7 +755,7 @@
       "version": "Order dated 17 December 2008; ECI PDF lists Andhra Pradesh Schedule III on PDF pages 8–32",
       "retrievalStatus": "READ_VIA_WEB_PDF_TEXT; BINARY_NOT_DOWNLOADED_OR_SHA256_VERIFIED",
       "authority": "OFFICIAL_STATUTORY_BASELINE",
-      "status": "LEGAL_BASELINE_IDENTIFIED; PARTIAL_CROSSWALK_ONLY",
+      "status": "LEGAL_BASELINE_IDENTIFIED; BINARY_HASH_ACQUISITION_PROBE_PENDING",
       "partialCrosswalk": {
         "report": "reports/evidence/w021_5_telangana_layer_comparison_2026-10-25.json",
         "constituencies": [
@@ -801,7 +801,9 @@
         "Full 119-name/number/extent crosswalk not completed.",
         "Post-2014 State Reorganisation instrument chain and currently effective Gazette/date not fully reconciled.",
         "No raw PDF binary SHA-256 claimed."
-      ]
+      ],
+      "probeWorkflowRunId": 40213536854,
+      "probeWorkflowUrl": "https://github.com/kshetra-app/Kshetra/actions/runs/40213536854"
     },
     {
       "sourceId": "SRC-TELANGANA-ADMIN-NEW-LAYER",
@@ -1206,9 +1208,18 @@
       "artifactSha256": null,
       "status": "PENDING_AT_LAST_CHECK",
       "scope": "Probe TGRAC Endowment_Lands_Admin_New/MapServer/12 and Endowment_Lands_Old/MapServer/13 metadata and geometry, then audit all acquired Telangana AC layers."
+    },
+    {
+      "runId": 40213536854,
+      "workflowUrl": "https://github.com/kshetra-app/Kshetra/actions/runs/40213536854",
+      "artifactId": null,
+      "artifactName": null,
+      "artifactSha256": null,
+      "status": "PENDING_AT_LAST_CHECK",
+      "scope": "Attempt browser-impersonated raw PDF acquisition and extract Schedule III AC-number/name roster candidate with PyMuPDF."
     }
   ],
-  "updatedAt": "2026-10-25T16:48:00Z",
+  "updatedAt": "2026-10-25T16:50:00Z",
   "notes": [
     "Actual public source artifacts were downloaded in GitHub Actions run 40209022405 and SHA-256 hashed; detailed geometry findings are in reports/w021_5_datameet_ac_geometry_forensic_audit.json.",
     "Survey of India official ABDB page, Vector Data Catalog 2025 PDF and Metadata_ABDB.zip were downloaded and hashed. The metadata covers state, district, subdistrict and village boundaries, not statutory Assembly Constituency polygons.",
