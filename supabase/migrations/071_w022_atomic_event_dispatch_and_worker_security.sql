@@ -57,7 +57,7 @@ RETURNS TABLE (purged_deliveries_count INTEGER, purged_events_count INTEGER)
 LANGUAGE plpgsql
 SECURITY DEFINER
 SET search_path = pg_catalog, pg_temp
-AS $
+AS $$
 DECLARE
     v_deliv_count INTEGER := 0;
     v_event_count INTEGER := 0;
@@ -115,7 +115,7 @@ BEGIN
     purged_events_count := v_event_count;
     RETURN NEXT;
 END;
-$;
+$$;
 
 -- Recreate the claim function with a stable, explicit row contract and active-subscription gate.
 DROP FUNCTION IF EXISTS public.fn_claim_webhook_batch(INTEGER, INTEGER);
