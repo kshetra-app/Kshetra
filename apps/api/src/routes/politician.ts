@@ -406,13 +406,23 @@ export async function politicianRoutes(app: FastifyInstance) {
     Querystring: { politicianId?: string; state?: string };
   }>('/api/v1/politician/manifestos', {
     schema: manifestosListSchema,
-  }, async (request) => {
+  }, async (request, reply) => {
     const { politicianId, state } = request.query;
-    return {
-      manifestos: [],
-      total: 0,
-      filters: { politicianId, state },
-    };
+    if (!isSupabaseConfigured) return sendApiError(reply, request, 503, 'Service Unavailable', 'Manifesto data is temporarily unavailable.', { code: 'DATABASE_UNAVAILABLE' });
+
+    let query = supabase.from('e_manifestos').select('id, politician_id, title, published_at, created_at, state_code').eq('status', 'published').order('published_at', { ascending: false, nullsFirst: false });
+    if (politicianId) query = query.eq('politician_id', politicianId);
+    if (state) query = query.eq('state_code', state);
+    const { data, error } = await query;
+    if (error) {
+      request.log.error({ err: error }, 'Failed to read published manifestos');
+      return sendApiError(reply, request, 503, 'Service Unavailable', 'Manifesto data is temporarily unavailable.', { code: 'DATABASE_ERROR' });
+    }
+    const manifestos = (data ?? []).map((row) => ({
+      id: row.id, politicianId: row.politician_id, title: row.title,
+      year: new Date(row.published_at ?? row.created_at).getUTCFullYear(),
+    }));
+    return { manifestos, total: manifestos.length, filters: { politicianId, state } };
   });
 
   /** 6. POST /api/v1/politician/manifestos/:manifestoId/items/:itemId/vote — vote on manifesto item (BLOCKED in B4 per CTO directive: no persistence table) */
@@ -437,13 +447,26 @@ export async function politicianRoutes(app: FastifyInstance) {
     Querystring: { state?: string; status?: string };
   }>('/api/v1/politician/surveys', {
     schema: surveysListSchema,
-  }, async (request) => {
+  }, async (request, reply) => {
     const { state, status } = request.query;
-    return {
-      surveys: [],
-      total: 0,
-      filters: { state, status },
-    };
+    // Public listing is deliberately limited to active surveys; the server client can bypass RLS.
+    if (status && status !== 'active') return sendApiError(reply, request, 400, 'Bad Request', 'Only active surveys are available through the public listing.', { code: 'INVALID_STATUS_FILTER' });
+    if (!isSupabaseConfigured) return sendApiError(reply, request, 503, 'Service Unavailable', 'Survey data is temporarily unavailable.', { code: 'DATABASE_UNAVAILABLE' });
+
+    const today = new Date().toISOString().slice(0, 10);
+    let query = supabase.from('politician_surveys').select('id, politician_id, title, description, status, target_state_code, questions, response_count, start_date, end_date, created_at').eq('status', 'active').lte('start_date', today).gte('end_date', today).order('start_date', { ascending: false });
+    if (state) query = query.eq('target_state_code', state);
+    const { data, error } = await query;
+    if (error) {
+      request.log.error({ err: error }, 'Failed to read active surveys');
+      return sendApiError(reply, request, 503, 'Service Unavailable', 'Survey data is temporarily unavailable.', { code: 'DATABASE_ERROR' });
+    }
+    const surveys = (data ?? []).map((row) => ({
+      id: row.id, title: row.title, politicianId: row.politician_id, description: row.description,
+      state: row.target_state_code, status: row.status, questions: row.questions ?? [],
+      responseCount: row.response_count ?? 0, startDate: row.start_date, endDate: row.end_date, createdAt: row.created_at,
+    }));
+    return { surveys, total: surveys.length, filters: { state, status: 'active' } };
   });
 
   /** 8. POST /api/v1/politician/surveys/:id/respond — submit survey response */
@@ -473,12 +496,8 @@ export async function politicianRoutes(app: FastifyInstance) {
         { onConflict: 'survey_id,user_id' }
       );
     if (error) {
-      if (process.env.NODE_ENV !== 'production') {
-        return { success: true, surveyId: id, message: 'Response submitted' };
-      }
-      return sendApiError(reply, request, 500, 'Internal Server Error', error.message, {
-        code: 'DATABASE_ERROR',
-      });
+      request.log.error({ err: error, surveyId: id }, 'Failed to persist survey response');
+      return sendApiError(reply, request, 503, 'Service Unavailable', 'Survey response could not be saved. Please retry.', { code: 'DATABASE_ERROR' });
     }
     return { success: true, surveyId: id, message: 'Response submitted' };
   });
