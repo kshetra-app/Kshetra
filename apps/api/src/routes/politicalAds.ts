@@ -340,7 +340,7 @@ export const politicalAdsRoutes: FastifyPluginAsync = async (app) => {
           });
         }
 
-        if (error || (process.env.NODE_ENV !== 'production' && (!data || data.length === 0)))
+        if (error || (process.env.NODE_ENV !== 'production' && (!data || data.length === 0))) {
           const queue = MEMORY_ADS.filter((a) => a.status === 'pending_certification');
           return reply.send({ success: true, queue });
         }
@@ -496,7 +496,7 @@ export const politicalAdsRoutes: FastifyPluginAsync = async (app) => {
           });
         }
 
-        if (error || (process.env.NODE_ENV !== 'production' && (!data || data.length === 0)))
+        if (error || (process.env.NODE_ENV !== 'production' && (!data || data.length === 0))) {
           const ads = MEMORY_ADS.filter((a) => a.status === 'active');
           return reply.send({ success: true, ads });
         }
@@ -554,7 +554,7 @@ export const politicalAdsRoutes: FastifyPluginAsync = async (app) => {
           });
         }
 
-        if (error || (process.env.NODE_ENV !== 'production' && (!data || data.length === 0)))
+        if (error || (process.env.NODE_ENV !== 'production' && (!data || data.length === 0))) {
           const ads = MEMORY_ADS.filter((a) => a.status === 'active' || a.status === 'ended');
           return reply.send({ success: true, ads });
         }
