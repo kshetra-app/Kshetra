@@ -47,6 +47,9 @@ function payload(stateCode: string, acNo = 1) {
     mlaProfilesByAcNo: {},
     strongholdByAcNo: {},
     hasLocalBodyData: false,
+    seatProjection: null,
+    censusDistricts: [],
+    hierarchyByAcNo: {},
   };
   return {
     ...core,
