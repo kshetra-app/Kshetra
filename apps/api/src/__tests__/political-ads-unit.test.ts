@@ -98,9 +98,9 @@ describe('Political Ads Unit Tests (Direct Route Injection)', () => {
         url: '/api/v1/political-ads/library',
       });
 
-      expect(res.statusCode).toBe(503);
+      expect(res.statusCode).toBe(200);
       const body = JSON.parse(res.payload);
-      expect(body.code).toBe('DATABASE_ERROR');
+      expect(body.success).toBe(true);
       expect(body.ads.length).toBe(1);
       expect(body.ads[0].id).toBe('pad-101');
     });
@@ -215,21 +215,21 @@ describe('Political Ads Unit Tests (Direct Route Injection)', () => {
         url: '/api/v1/political-ads/active',
       });
 
-      expect(res.statusCode).toBe(200);
+      expect(res.statusCode).toBe(503);
       const body = JSON.parse(res.payload);
-      expect(body.success).toBe(true);
+      expect(body.code).toBe('DATABASE_ERROR');
     });
 
-    it('returns memory ads when Supabase is not configured', async () => {
+    it('returns 503 when active-ad persistence is not configured', async () => {
       setSupabaseConfiguredForTesting(false);
       const res = await app.inject({
         method: 'GET',
         url: '/api/v1/political-ads/active',
       });
 
-      expect(res.statusCode).toBe(200);
+      expect(res.statusCode).toBe(503);
       const body = JSON.parse(res.payload);
-      expect(body.success).toBe(true);
+      expect(body.code).toBe('DATABASE_UNAVAILABLE');
     });
   });
 
@@ -753,10 +753,9 @@ describe('Political Ads Unit Tests (Direct Route Injection)', () => {
         },
       });
 
-      expect(res.statusCode).toBe(200);
+      expect(res.statusCode).toBe(503);
       const body = JSON.parse(res.payload);
-      expect(body.success).toBe(true);
-      expect(Array.isArray(body.queue)).toBe(true);
+      expect(body.code).toBe('DATABASE_ERROR');
     });
 
     it('returns 503 when review queue persistence is not configured', async () => {
@@ -771,10 +770,9 @@ describe('Political Ads Unit Tests (Direct Route Injection)', () => {
         },
       });
 
-      expect(res.statusCode).toBe(200);
+      expect(res.statusCode).toBe(503);
       const body = JSON.parse(res.payload);
-      expect(body.success).toBe(true);
-      expect(Array.isArray(body.queue)).toBe(true);
+      expect(body.code).toBe('DATABASE_UNAVAILABLE');
     });
   });
 
