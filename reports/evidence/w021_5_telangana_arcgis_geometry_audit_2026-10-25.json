@@ -193,5 +193,41 @@
     "featuresDifferingAbove0_01m2": 7,
     "maxHausdorffDistanceMeters": 3042.0718885005717,
     "canonicalLayerSelected": false
+  },
+  "additionalServiceVariants": {
+    "probeWorkflowRunId": 40213331746,
+    "probeArtifactSha256": "71f19cdde380eed19da92817521f6e55b622c690c70174b4222a0214a4be7b88",
+    "variants": [
+      {
+        "service": "EndowmentLands_Admin_2026/MapServer/12",
+        "bytes": 12463409,
+        "sha256": "ca8cfdc695366d9f04ee6a9fdbf9c52eeefe61d69bc79c9d26d15baa7b84aa03",
+        "featureCount": 119,
+        "invalidGeometries": 1,
+        "positiveAreaOverlapPairs": 0,
+        "unionPartCount": 1
+      },
+      {
+        "service": "Endowment_Lands_Admin_New/MapServer/12",
+        "bytes": 12463409,
+        "sha256": "ca8cfdc695366d9f04ee6a9fdbf9c52eeefe61d69bc79c9d26d15baa7b84aa03",
+        "featureCount": 119,
+        "invalidGeometries": 1,
+        "positiveAreaOverlapPairs": 0,
+        "unionPartCount": 1,
+        "identicalTo": "EndowmentLands_Admin_2026/MapServer/12"
+      },
+      {
+        "service": "Endowment_Lands_Old/MapServer/13",
+        "bytes": 12461961,
+        "sha256": "6e33ebf7eba139a0f754e5b56f3e3bc155ab2d9b6c9e571b03dc57e77e418b4c",
+        "featureCount": 119,
+        "invalidGeometries": 1,
+        "positiveAreaOverlapPairs": 0,
+        "unionPartCount": 2,
+        "fullPairwiseComparison": "PENDING"
+      }
+    ],
+    "note": "All four services returned 119 features; all have the same Dornakal self-intersection. The Admin_New and Admin_2026 payloads are identical. Admin_Old has a distinct payload and a two-component union, so it needs an authoritative state-boundary coverage comparison."
   }
 }
