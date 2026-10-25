@@ -109,7 +109,7 @@ def main():
         bihar = []
         for f in state_features:
             attrs = f.get("attributes") or {}
-            state_name = str(attrs.get("ST_NAME") or attrs.get("STATE_NAME") or attrs.get("NAME_1") or "").strip().upper()
+            state_name = str(attrs.get("State_Name") or attrs.get("ST_NAME") or attrs.get("STATE_NAME") or attrs.get("NAME_1") or "").strip().upper()
             if state_name in ("BIHAR", "BIHAR STATE"):
                 sg, _, _, _ = esri_polygon(f.get("geometry"))
                 bihar.append(sg)
