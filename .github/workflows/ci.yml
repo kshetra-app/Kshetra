@@ -6,123 +6,99 @@ on:
   push:
     branches: [master, main, develop]
 
+permissions:
+  contents: read
+
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
+  install:
+    name: Install
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - name: Install locked dependencies
+        run: npm ci
+
   governance:
     name: Governance & Drift Integrity
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-
-      - name: Setup Node.js 20
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: 'npm'
-
-      - name: Install dependencies
-        run: npm ci
-
+          cache: npm
+      - run: npm ci
       - name: Verify Governance Consistency
         run: node tests/governance-consistency.test.mjs
-
       - name: Verify Commit Freshness & Lineage
         run: node tests/commit-freshness.test.mjs
-
-      - name: Audit Repository & Evidence Integrity (Part 34)
+      - name: Audit Repository & Evidence Integrity
         run: node scripts/check-repo-evidence-integrity.mjs
-
-      - name: "Regression Test: Evidence Integrity & Dirty-Tree Rejection"
+      - name: Regression Test — Evidence Integrity & Dirty-Tree Rejection
         run: node tests/repo-evidence-integrity.test.mjs
-
-      - name: Declared API Contract Drift Check (Part 34E)
+      - name: Declared API Contract Drift Check
         run: node scripts/check-api-contract-drift.mjs
-
-      - name: Audit 13-Language i18n Parity (DEF-012 Monitoring)
+      - name: Audit 13-Language i18n Parity
         run: node scripts/verify-13-locales.mjs
 
   test:
     name: Test
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node-version: [20]
-
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
-          node-version: ${{ matrix.node-version }}
-          cache: 'npm'
-
-      - name: Install dependencies
-        run: npm ci
-
+          node-version: 20
+          cache: npm
+      - run: npm ci
       - name: Build shared package
         run: npm run build -w @kshetra/shared
-
       - name: Test shared package
         run: npm test -w @kshetra/shared -- --forceExit
-
       - name: Test Environment Separation
         run: npx tsx tests/environment-separation.test.mjs
         env:
           NODE_ENV: test
-
       - name: Test API (with coverage gate)
         run: npm run test:coverage -w @kshetra/api
         env:
           SUPABASE_URL: https://test-fixture.supabase.co
-          SUPABASE_ANON_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRlc3QiLCJyb2xlIjoiYW5vbiIsImlhdCI6MTYwMDAwMDAwMCwiZXhwIjoxOTAwMDAwMDAwfQ.dummy_signature_for_test_environment_only
-
+          SUPABASE_ANON_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwczovL3Rlc3QuZXhhbXBsZSIsInJlZiI6InRlc3QiLCJyb2xlIjoiYW5vbiIsImlhdCI6MTYwMDAwMDAwMCwiZXhwIjoxOTAwMDAwMDAwfQ.test_fixture_only
       - name: Test seed data
         run: npx jest --config jest.config.js --forceExit
         working-directory: data/seed
-
       - name: Test census data
         run: npx jest --config jest.config.js --forceExit
         working-directory: data/census
-
       - name: Test mobile (node-safe lib units)
         run: npm test -w @kshetra/mobile -- --forceExit
 
   typecheck:
     name: Typecheck
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: 'npm'
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Build shared
-        run: npm run build -w @kshetra/shared
-
+          cache: npm
+      - run: npm ci
       - name: Typecheck API
         run: npx tsc --noEmit
         working-directory: apps/api
-
       - name: Typecheck shared
         run: npx tsc --noEmit
         working-directory: packages/shared
-
       - name: Typecheck mobile
         run: npx tsc --noEmit
         working-directory: apps/mobile
@@ -130,24 +106,72 @@ jobs:
   lint:
     name: Lint
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: 'npm'
-
-      - name: Install dependencies
-        run: npm ci
-
+          cache: npm
+      - run: npm ci
       - name: Prettier check
         run: npx prettier --check "**/*.{ts,tsx,json,md}" --ignore-path .gitignore
-        continue-on-error: true
-
       - name: ESLint
         run: npx eslint "apps/**/*.{ts,tsx}" "packages/**/*.{ts,tsx}" --max-warnings=0
-        continue-on-error: true
+
+  contract:
+    name: API Contract
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - name: Declared API Contract Drift Check
+        run: node scripts/check-api-contract-drift.mjs
+
+  evidence-integrity:
+    name: Evidence Integrity
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - name: Repository Evidence Integrity
+        run: node scripts/check-repo-evidence-integrity.mjs
+      - name: Evidence Integrity Negative-Path Regression
+        run: node tests/repo-evidence-integrity.test.mjs
+
+  security:
+    name: Security Gate
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - name: Install locked dependencies
+        run: npm ci
+      - name: Dependency audit (high and critical)
+        run: npm audit --audit-level=high
+      - name: OSV vulnerability scan
+        uses: google/osv-scanner-action@v1
+        with:
+          scan-args: |-
+            --lockfile=package-lock.json
+      - name: Static analysis (Semgrep)
+        run: |
+          docker run --rm -v "$PWD:/src" -w /src returntocorp/semgrep semgrep scan --error --config p/typescript --config p/react --config p/nodejsscan --config p/owasp-top-ten --config p/secrets
+      - name: Generate SBOM
+        run: npx @cyclonedx/cyclonedx-npm --output-file sbom.cdx.json
+      - name: Verify SBOM exists and is non-empty
+        run: test -s sbom.cdx.json
