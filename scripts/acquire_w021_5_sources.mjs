@@ -90,9 +90,25 @@ async function fetchBounded(initialUrl) {
     if (!response.ok) throw new Error('HTTP_' + response.status);
     const declared = Number(response.headers.get('content-length') || 0);
     if (declared > MAX_BYTES) throw new Error('CONTENT_LENGTH_EXCEEDS_LIMIT');
-    const arrayBuffer = await response.arrayBuffer();
-    const bytes = Buffer.from(arrayBuffer);
-    if (bytes.byteLength > MAX_BYTES) throw new Error('BODY_EXCEEDS_LIMIT');
+    const chunks = [];
+    let received = 0;
+    if (!response.body) throw new Error('EMPTY_SOURCE_BODY');
+    const reader = response.body.getReader();
+    try {
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        received += value.byteLength;
+        if (received > MAX_BYTES) {
+          await reader.cancel();
+          throw new Error('BODY_EXCEEDS_LIMIT');
+        }
+        chunks.push(Buffer.from(value));
+      }
+    } finally {
+      reader.releaseLock();
+    }
+    const bytes = Buffer.concat(chunks, received);
     if (bytes.byteLength === 0) throw new Error('EMPTY_SOURCE_BODY');
     return {
       bytes,
