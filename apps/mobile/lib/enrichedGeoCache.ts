@@ -1,7 +1,7 @@
 import { enrichGeoJSON, enrichGeoJSONForState, enrichIndiaGeoJSON } from './enrichGeoJSON';
 import { getStateGeoJSON, isBundledGeoJSON } from './geoLoader';
-import { fetchStateGeoJSON, getGeoBaseUrl } from './remoteGeoLoader';
-import { getManifestEntry } from './geoManifest';
+import { fetchStateGeoJSON } from './remoteGeoLoader';
+import { getManifestEntry, isVerifiedRemoteStateGeoJSON } from './geoManifest';
 
 /**
  * Universal enriched GeoJSON cache — keyed by state code.
@@ -43,7 +43,7 @@ function enrichRaw(code: string, raw: GeoJSON.FeatureCollection): GeoJSON.Featur
     return enriched;
   } catch (err) {
     console.error(`[enrichedGeoCache] Enrichment FAILED for state "${code}":`, err);
-    return raw; // fall back to un-enriched polygons so the map still renders
+    throw new Error(`GEOMETRY_ENRICHMENT_FAILED: ${code} boundary enrichment failed; refusing to show a partially enriched canonical map.`);
   }
 }
 
@@ -68,87 +68,34 @@ export function getCachedEnrichedGeo(code: string): GeoJSON.FeatureCollection | 
  * raw boundary from the API when it isn't bundled. Enrichment runs once per
  * state, then the stable reference is reused on every switch-back.
  */
-let remoteManifestPromise: Promise<Record<string, any> | null> | null = null;
-
-async function fetchRemoteManifest(): Promise<Record<string, any> | null> {
-  if (remoteManifestPromise) return remoteManifestPromise;
-
-  remoteManifestPromise = (async () => {
-    try {
-      const geoBaseUrl = getGeoBaseUrl();
-      const response = await fetch(`${geoBaseUrl}/geo/geo-manifest.json`);
-      if (!response.ok) return null;
-      return await response.json();
-    } catch (err) {
-      console.warn('[enrichedGeoCache] Failed to fetch remote geo-manifest:', err);
-      return null;
-    }
-  })();
-
-  return remoteManifestPromise;
-}
-
-/**
- * Full loader: returns enriched GeoJSON for any state, streaming + caching the
- * raw boundary from the API when it isn't bundled. Enrichment runs once per
- * state, then the stable reference is reused on every switch-back.
- */
 export async function loadEnrichedGeoForState(
   code: string,
 ): Promise<GeoJSON.FeatureCollection | null> {
-  const cached = _enrichedGeoCache.get(code);
   const key = code.toUpperCase();
+  const cached = _enrichedGeoCache.get(key);
+  if (cached && (isBundledGeoJSON(key) || isVerifiedRemoteStateGeoJSON(key))) return cached;
 
-  // Asynchronously trigger remote manifest & update check in the background
-  const triggerBackgroundCheck = async () => {
-    try {
-      const remoteManifest = await fetchRemoteManifest();
-      const remoteEntry = remoteManifest ? remoteManifest[key] : null;
-      const localEntry = getManifestEntry(key);
-
-      if (remoteEntry && remoteEntry.version && remoteEntry.version !== localEntry?.version) {
-        // A newer version is available remotely! Fetch and enrich it
-        const updatedRaw = await fetchStateGeoJSON(key, remoteEntry.version);
-        if (updatedRaw) {
-          enrichRaw(key, updatedRaw);
-        }
-      }
-    } catch (err) {
-      console.warn(`[enrichedGeoCache] Background update check failed for ${key}:`, err);
-    }
-  };
-
-  if (cached) {
-    void triggerBackgroundCheck();
-    return cached;
+  // The national overview is the only always-bundled geometry. Assembly
+  // boundaries are streamed only when this app's versioned manifest attests
+  // source, effective/retrieved dates, checksum and canonical-count parity.
+  if (isBundledGeoJSON(key)) {
+    const raw = getStateGeoJSON(key);
+    if (raw) return enrichRaw(key, raw);
+    throw new Error(`GEOMETRY_UNAVAILABLE: bundled overview geometry for ${key} could not be loaded.`);
   }
 
-  // Baseline load: use bundled if available
-  let raw = isBundledGeoJSON(key) ? getStateGeoJSON(key) : null;
-  if (raw) {
-    const baseline = enrichRaw(key, raw);
-    void triggerBackgroundCheck();
-    return baseline;
+  if (!isVerifiedRemoteStateGeoJSON(key)) {
+    throw new Error(`GEOMETRY_UNAVAILABLE: ${key} has no accepted authoritative boundary provenance; placeholder geometry is intentionally unavailable.`);
   }
 
-  // Not bundled, not cached: fetch using the remote manifest (or local entry fallback)
-  try {
-    const remoteManifest = await fetchRemoteManifest();
-    const remoteEntry = remoteManifest ? remoteManifest[key] : null;
-    const version = remoteEntry?.version ?? getManifestEntry(key)?.version ?? '';
-    const remoteRaw = await fetchStateGeoJSON(key, version);
-    if (remoteRaw) {
-      return enrichRaw(key, remoteRaw);
-    }
-  } catch (err) {
-    console.warn(`[enrichedGeoCache] Synchronous remote load failed for ${key}:`, err);
+  const entry = getManifestEntry(key);
+  if (!entry?.version) {
+    throw new Error(`GEOMETRY_UNAVAILABLE: ${key} has no versioned boundary asset.`);
   }
 
-  // Fallback to fetchStateGeoJSON default
-  const fallback = await fetchStateGeoJSON(key);
-  if (fallback) {
-    return enrichRaw(key, fallback);
+  const raw = await fetchStateGeoJSON(key, entry.version);
+  if (!raw) {
+    throw new Error(`GEOMETRY_UNAVAILABLE: versioned boundary asset for ${key} is unavailable from the configured data service.`);
   }
-
-  return null;
+  return enrichRaw(key, raw);
 }
