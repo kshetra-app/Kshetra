@@ -268,7 +268,7 @@ async function importSeedData(db) {
       election_history_count: 0,
       last_updated: new Date().toISOString(),
     };
-    const requireArray = (module, file, pattern, { optional = false } = {}) => {
+    const requireArray = (file, pattern, { optional = false } = {}) => {
       if (!fs.existsSync(file)) {
         if (optional) return [];
         throw new Error(`Required source file missing: ${path.relative(rootDir, file)}`);
@@ -280,7 +280,10 @@ async function importSeedData(db) {
       });
     };
     try {
-      const constituencies = await requireArray(null, path.resolve(rootDir,`data/seed/${sourceName}-constituencies.ts`), /CONSTITUENCIES/i);
+      const constituencyModule = await import(`file://${path.resolve(rootDir,`data/seed/${sourceName}-constituencies.ts`)}`);
+      const constituencyKey = Object.keys(constituencyModule).find(key => key.toUpperCase() === `${code === 'TS' ? 'TELANGANA' : code}_CONSTITUENCIES` || key.toUpperCase().endsWith('_CONSTITUENCIES') && Array.isArray(constituencyModule[key]));
+      const constituencies = constituencyKey ? constituencyModule[constituencyKey] : null;
+      if (!Array.isArray(constituencies)) throw new Error(`Canonical constituency export missing for ${code}`);
       if (constituencies.length === 0) throw new Error(`${code} has no constituency seed rows`);
       const insertConst = db.prepare(`INSERT INTO constituencies
         (id,state_code,ac_no,name,district,type,winner_party,winner_name,winner_votes,runner_up,margin,current_party,election_year)
@@ -295,7 +298,8 @@ async function importSeedData(db) {
           row.currentParty||row[`winner${year}`]||'',year);
       }
 
-      const profiles = await requireArray(null,path.resolve(rootDir,`data/seed/${sourceName}-mla-profiles.ts`),/(MLA|PROFILE)/i,{optional:true});
+      const profilesModule = await import(`file://${path.resolve(rootDir,`data/seed/${sourceName}-mla-profiles.ts`)}`).catch(error => { if (error?.code === 'ERR_MODULE_NOT_FOUND') return null; throw error; });
+      const profiles = profilesModule ? (profilesModule[`${code}_MLA_PROFILES`] || profilesModule[`${({TS:'TS',AP:'AP',KA:'KA',MH:'MH',TN:'TN',KL:'KL',WB:'WB',UP:'UP',RJ:'RJ',GJ:'GJ',JH:'JH',OD:'OD',DL:'DL',PB:'PB',HR:'HR',CG:'CG',MP:'MP',BR:'BR',AS:'AS',GA:'GA',HP:'HP',MN:'MN',ML:'ML',MZ:'MZ',NL:'NL',TR:'TR',SK:'SK',AR:'AR',UK:'UK',PY:'PY',JK:'JK'})[code]}_MLA_PROFILES`] || profilesModule[Object.keys(profilesModule).find(key => /MLA.*PROFILES/i.test(key))] || []) : [];
       const insertMla = db.prepare(`INSERT INTO mla_profiles
         (id,state_code,ac_no,name,party,gender,terms_served,age,dob,dob_estimated,education,profession,criminal_cases,total_assets,total_liabilities,marital_status,photo_url,constituency_name,district,source_url)
         VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`);
@@ -307,7 +311,7 @@ async function importSeedData(db) {
           row.constituencyName||'',row.district||'',row.sourceUrl||row.mynetaUrl||'');
       }
 
-      const demos = await requireArray(null,path.resolve(rootDir,`data/seed/${sourceName}-demographics.ts`),/DEMO/i,{optional:true});
+      const demos = await requireArray(path.resolve(rootDir,`data/seed/${sourceName}-demographics.ts`),/DEMO/i,{optional:true});
       const insertDemo = db.prepare(`INSERT INTO demographics
         (id,state_code,ac_no,population,total_voters,turnout_2023,male_voters,female_voters,literacy,urban_percent,sc_percent,st_percent,area_sq_km)
         VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)`);
@@ -328,14 +332,19 @@ async function importSeedData(db) {
         for(const pr of results) insER.run(`${id}-${pr.party||''}`,id,pr.party||'',pr.seatsWon||0,pr.seatContested||0);
       }
 
-      const historical = await requireArray(null,path.resolve(rootDir,`data/seed/${sourceName}-historical-results.ts`),/RESULTS?$/i,{optional:true});
+      const historicalPath = path.resolve(rootDir,`data/seed/${sourceName}-historical-results.ts`);
+      const historicalModule = await import(`file://${historicalPath}`).catch(error => { if (error?.code === 'ERR_MODULE_NOT_FOUND') return null; throw error; });
+      const historical = historicalModule ? Object.entries(historicalModule).filter(([key,value]) => /RESULTS?$/i.test(key) && Array.isArray(value)).flatMap(([,value]) => value) : [];
       const insHist=db.prepare(`INSERT INTO historical_results (id,state_code,ac_no,year,winner,party) VALUES (?,?,?,?,?,?)`);
       for(const row of historical) {
         if(!Number.isInteger(Number(row.acNo))||!Number.isInteger(Number(row.year))) throw new Error(`Invalid historical result in ${code}`);
         insHist.run(`${code}-HIST-${row.acNo}-${row.year}`,code,Number(row.acNo),Number(row.year),row.winner||row.winnerName||'',row.party||row.winnerParty||'');
       }
 
-      const ledger = await requireArray(null,path.resolve(rootDir,`data/seed/${sourceName}-political-timeline.ts`),/(LEDGER|TIMELINE)/i,{optional:true});
+      const timelinePath = path.resolve(rootDir,`data/seed/${sourceName}-political-timeline.ts`);
+      const timelineModule = await import(`file://${timelinePath}`).catch(error => { if (error?.code === 'ERR_MODULE_NOT_FOUND') return null; throw error; });
+      const ledgerKey = timelineModule && Object.keys(timelineModule).find(key => /LEDGER|TIMELINE/i.test(key) && Array.isArray(timelineModule[key]));
+      const ledger = ledgerKey ? timelineModule[ledgerKey] : [];
       const insTimeline=db.prepare(`INSERT INTO political_timeline (id,state_code,ac_no,date,assembly,event_type,member_names,debit_party,credit_party,seats,explanation,details,legal_status,verified) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)`);
       for(const row of ledger) {
         const hash=crypto.createHash('sha1').update(JSON.stringify(row)).digest('hex').slice(0,8);
