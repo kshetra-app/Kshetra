@@ -93,6 +93,10 @@ export interface ByElectionRecord {
   winnerParty: string;
   margin?: number;
   defeatedCandidateOrParty?: string;
+  winnerVotes?: number;
+  runnerUpName?: string;
+  runnerUpParty?: string;
+  runnerUpVotes?: number;
   dataTruth?: DataTruthMetadata;
 }
 
@@ -371,8 +375,8 @@ export function getUnifiedConstituenciesForState(stateCode: string): UnifiedCons
       }));
     case 'TN':
       return TN_CONSTITUENCIES.map((c) => {
-        let currentParty = c.winner2021 ?? '';
-        let currentMLA = c.winnerName2021 ?? '';
+        let currentParty: string | null = c.winner2021 ?? null;
+        let currentMLA: string | null = c.winnerName2021 ?? null;
         let byElection: ByElectionRecord | undefined = undefined;
         let officeholderStatus: 'INCUMBENT_ACTIVE' | 'BY_ELECTION_SEATED' | 'VACANT' | 'UNRESOLVED' = 'INCUMBENT_ACTIVE';
         let dataStatus: 'CURRENT' | 'STALE_PENDING_INGESTION' | 'BY_ELECTION_UPDATED' = 'STALE_PENDING_INGESTION';
@@ -427,7 +431,8 @@ export function getUnifiedConstituenciesForState(stateCode: string): UnifiedCons
           district: c.district,
           type: c.type,
           stateCode: 'TN',
-        dataTruth: dataTruthFor(c, 'TN', 2021),
+          dataTruth: dataTruthFor(c, 'TN', 2021),
+          currentOfficeholderDataTruth: byElection?.dataTruth ?? dataTruthFor(c, 'TN', 2021),
           winnerParty: c.winner2021 ?? null,
           winnerName: c.winnerName2021 ?? null,
           winnerVotes: c.winnerVotes2021 ?? null,
@@ -550,7 +555,8 @@ export function getUnifiedConstituenciesForState(stateCode: string): UnifiedCons
           district: c.district,
           type: c.type,
           stateCode: 'WB',
-        dataTruth: dataTruthFor(c, 'WB', 2021),
+          dataTruth: dataTruthFor(c, 'WB', 2021),
+          currentOfficeholderDataTruth: byElection?.dataTruth ?? dataTruthFor(c, 'WB', 2021),
           winnerParty: c.winner2021 ?? null,
           winnerName: c.winnerName2021 ?? null,
           winnerVotes: c.winnerVotes2021 ?? null,
