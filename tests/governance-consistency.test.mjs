@@ -161,12 +161,21 @@ try {
   assert.fail(`origin/master could not be resolved: ${err.message}`);
 }
 
-// Local HEAD must strictly match origin/master (fail-closed, no exceptions)
-assert.strictEqual(
-  localHead,
-  originMaster,
-  `Local HEAD (${localHead}) must strictly match origin/master (${originMaster})`
-);
+// On pull_request events, GitHub checks out a synthetic merge commit. Do not
+// compare it for equality with the base branch: prove the actual base is an
+// ancestor instead. Pushes directly to master must still match exactly.
+const eventName = process.env.GITHUB_EVENT_NAME ?? '';
+const baseBranch = process.env.GITHUB_BASE_REF ?? '';
+if (eventName === 'pull_request' || eventName === 'pull_request_target') {
+  assert.strictEqual(baseBranch, 'master', `Pull request base must be master, received ${baseBranch || '(unset)'}`);
+  execSync(`git merge-base --is-ancestor "${originMaster}" "${localHead}"`, { stdio: 'pipe' });
+  console.log('[PASS] PR merge HEAD includes origin/master as an ancestor.');
+} else if (process.env.GITHUB_REF === 'refs/heads/master') {
+  assert.strictEqual(localHead, originMaster, `Master HEAD (${localHead}) must strictly match origin/master (${originMaster})`);
+} else {
+  execSync(`git merge-base --is-ancestor "${originMaster}" "${localHead}"`, { stdio: 'pipe' });
+  console.log('[PASS] Non-master HEAD is based on origin/master.');
+}
 
 // Working tree must be completely clean (fail-closed, no exceptions)
 const porcelainStatus = execSync('git status --porcelain', { encoding: 'utf8' }).trim();
