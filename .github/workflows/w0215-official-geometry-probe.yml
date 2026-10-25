@@ -1,0 +1,63 @@
+name: W021.5 Official Geometry Probe
+
+on:
+  push:
+    branches:
+      - w0215-resumption-2026-10-25
+    paths:
+      - "scripts/w0215_acquire_official_geometry.py"
+      - ".github/workflows/w0215-official-geometry-probe.yml"
+  pull_request:
+    branches:
+      - master
+    paths:
+      - "scripts/w0215_acquire_official_geometry.py"
+      - ".github/workflows/w0215-official-geometry-probe.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: w0215-official-geometry-probe
+  cancel-in-progress: false
+
+jobs:
+  acquire:
+    name: Fetch and structurally check official-source candidates
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Checkout authorized W021.5 resumption branch
+        uses: actions/checkout@v4
+        with:
+          ref: w0215-resumption-2026-10-25
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install pinned HTTP client
+        run: python -m pip install --disable-pip-version-check "curl_cffi==0.13.0"
+
+      - name: Acquire allowlisted source bytes and validate structure
+        id: probe
+        continue-on-error: true
+        run: python scripts/w0215_acquire_official_geometry.py
+
+      - name: Upload raw responses and manifest even on failure
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: w0215-official-geometry-probe-${{ github.run_id }}
+          path: stage_b_acquisition/
+          if-no-files-found: warn
+          retention-days: 30
+
+      - name: Enforce source probe result
+        if: steps.probe.outcome != 'success'
+        run: |
+          echo "Official geometry probe failed or was partial; inspect raw responses and manifest."
+          exit 1
