@@ -4,9 +4,9 @@
   "auditedAt": "2026-10-25",
   "sourceIndex": "https://surveyofindia.gov.in/pages/village-boundary-data-base-of-entire-india",
   "sourcePageSha256": "013965f98dc51a6dc0cf2b5a35c4c578d5d4ec5d2e86b1cf61a2bb9f80527f0a",
-  "acquisitionRunId": 40209864129,
-  "artifactId": 12605485502,
-  "artifactSha256": "1d8bd2e9a6ed6ca0fc08a45dc54c16bdad22c15ca5eefe688f49cbeb25ee3e01",
+  "acquisitionRunId": 40210513206,
+  "artifactId": 12606100793,
+  "artifactSha256": "87f6127ab8cf1243b9ef8800902db8819001d4aa8de14faedebb9a8e685fd217",
   "summary": {
     "expectedOfficialStateUtArchivesListedOnSourcePage": 27,
     "latestRunArchivesDownloadedAndAudited": 10,
@@ -244,9 +244,9 @@
     "Census 2011 population linkage requires a validated village-code crosswalk and accepted AC geometry; no constituency population estimate is inferred from these files alone."
   ],
   "decision": "Use acquired files only as source-audited village administrative geometry candidates. Do not insert into the runtime or canonical AC geometry registry until full national coverage, per-file CRS, LGD identity, topology and effective-date checks pass.",
-  "artifactBytes": 46438425,
+  "artifactBytes": 56242127,
   "uncompressedArtifactBytes": 74755552,
-  "artifactExpiresAt": "2026-11-08T16:07:26Z",
+  "artifactExpiresAt": "2026-11-08T16:15:56Z",
   "previousRun": {
     "runId": 40209864129,
     "artifactId": 12605485502,
@@ -528,5 +528,6 @@
       "crsMetadataConflict": true,
       "crsMetadataFinding": "PRJ declares custom LCC_WGS84 while ESRI XML metadata claims latest WKID 3857; the projected coordinates transform into Telangana under LCC, but metadata conflict must be resolved before canonical spatial joins."
     }
-  ]
+  ],
+  "manifestSha256": "e156210e612fb9fd6169a61e68683300eaf828fdaf60066ab43d5f2c6ed7a345"
 }
