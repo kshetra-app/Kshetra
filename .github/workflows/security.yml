@@ -30,10 +30,7 @@ jobs:
       - name: npm audit (high+)
         run: npm audit --audit-level=high
       - name: OSV Scanner
-        uses: google/osv-scanner-action@v1
-        with:
-          scan-args: |-
-            --lockfile=package-lock.json
+        run: docker run --rm -v "$PWD:/src" -w /src ghcr.io/google/osv-scanner-action:v2.4.0 scan source -r .
 
   sast:
     name: Static Analysis (SAST)
