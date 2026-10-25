@@ -139,8 +139,66 @@
     "Crosswalk all 119 names to official ECI statutory AC numbers and the applicable delimitation order/State reorganisation instruments.",
     "Inspect official maps/order extents for Warangal East/West, Ibrahimpatnam, Munugode, Peddapalle, Manthani and Sirpur.",
     "Repair Dornakal only in a separate derived candidate, preserve raw hashes and transformation history, and compare the union against an authoritative Telangana state boundary.",
-    "Do not import either layer into canonical production data before these gates pass."
+    "Do not import either layer into canonical production data before these gates pass.",
+    "Crosswalk all 119 state-GIS feature names to Schedule III AC numbers and compare the named disputed geometries against the order's mandal/municipal-ward extents."
   ],
   "productionDatabaseAccess": "NONE",
-  "stagingDatabaseAccess": "NONE"
+  "stagingDatabaseAccess": "NONE",
+  "legalReference": {
+    "title": "Delimitation of Parliamentary and Assembly Constituencies Order, 2008",
+    "publisher": "Election Commission of India",
+    "url": "https://www.eci.gov.in/Documents/Delimitation/DelimitationofParliamentaryAssemblyConstituenciesOrder-2008%28English%29.pdf",
+    "schedule": "Schedule III — Andhra Pradesh, Assembly Constituencies",
+    "pages": "PDF pages 8–16 for the named constituencies below",
+    "status": "AUTHORITATIVE_BASELINE_IDENTIFIED; FULL_EFFECTIVE_DATE/POST-2014_INSTRUMENT_CHAIN_NOT_YET_CLOSED",
+    "note": "The order enumerates Andhra Pradesh AC numbers and territorial extents. Telangana's current 119-seat set appears as AC numbers 1–119 in that schedule; final current-effectiveness must also reconcile the State Reorganisation instruments and any later effective Gazette/order."
+  },
+  "statutoryCrosswalkPartial": [
+    {
+      "name": "Sirpur",
+      "acNumber": 1,
+      "statutoryExtent": "Kouthala, Bejjur, Kagaznagar, Sirpur (T) and Dahegaon mandals."
+    },
+    {
+      "name": "Ibrahimpatnam",
+      "acNumber": 48,
+      "statutoryExtent": "Hayathnagar, Ibrahimpatnam, Manchal and Yacharam mandals."
+    },
+    {
+      "name": "Dornakal (ST)",
+      "acNumber": 101,
+      "statutoryExtent": "Narsimhulapet, Maripeda, Kuravi and Dornakal mandals."
+    },
+    {
+      "name": "Warangal West",
+      "acNumber": 105,
+      "statutoryExtent": "Warangal mandal (part) and municipal wards 1–7, 15, 21 and 23–25."
+    },
+    {
+      "name": "Warangal East",
+      "acNumber": 106,
+      "statutoryExtent": "Warangal mandal (part) and municipal wards 8–14, 16–20 and 22."
+    },
+    {
+      "name": "Manthani",
+      "acNumber": 24,
+      "statutoryExtent": "Kamanpur, Manthani, Kataram, Mahadevpur, Mutharam (Mahadevapur), Malharrao and Mutharam (Manthani) mandals."
+    },
+    {
+      "name": "Peddapalle",
+      "acNumber": 25,
+      "statutoryExtent": "Peddapalle, Julapalle, Eligaid, Sultanabad, Odela and Srirampur mandals."
+    },
+    {
+      "name": "Munugode",
+      "acNumber": 93,
+      "statutoryExtent": "Munugode, Narayanapur, Marriguda, Nampalle, Chandur and Choutuppal mandals."
+    },
+    {
+      "name": "Jangaon / Jangoan",
+      "acNumber": 98,
+      "statutoryExtent": "Cherial, Maddur, Bachannapet, Narmetta and Jangaon mandals."
+    }
+  ],
+  "legalCrosswalkStatus": "PARTIAL_FOR_NINE_DISCREPANCY/DEFECT_NAMES; FULL_119_NAME/NUMBER/EXTENT_CROSSWALK_AND_EFFECTIVE_DATE_CHAIN_REMAIN_OPEN"
 }
