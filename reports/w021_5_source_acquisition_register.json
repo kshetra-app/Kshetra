@@ -941,6 +941,24 @@
         "artifactId": 12609010429,
         "artifactSha256": "ca42d6ecc1492656f09bc6406f699ed64541f064bf77d37e42a32c0ba1bda031",
         "result": "HTTP 200 PDF; 231596 bytes; SHA-256 recorded; 71 pages; Schedule XXVII located on zero-based page index 39; roster parse added to next workflow."
+      },
+      "rosterParseEvidence": "reports/evidence/w021_5_telanganaschedule_roster_parse_40218995782.json",
+      "rosterParse": {
+        "workflowRunId": 40218995782,
+        "artifactId": 12609460380,
+        "artifactSha256": "b5c186012f5240015a004960a7c5330d927d761bf4c5cd33694e68afbee10cc8",
+        "rosterSha256": "4a162263c05bfaaae70013830205d97ffd009a2285c113e8ff03b82b796665e9",
+        "parsedCount": 119,
+        "sequencePass": true,
+        "districtCount": 10,
+        "semanticChecksPass": 7,
+        "status": "PASS"
+      },
+      "statutoryToGisCrosswalkWorkflow": {
+        "runId": 40219308671,
+        "url": "https://github.com/kshetra-app/Kshetra/actions/runs/40219308671",
+        "status": "IN_PROGRESS",
+        "purpose": "Fetch TGRAC 2026 and AdministrativeInfoSystem candidate geometry, hash raw bytes, crosswalk all 119 legal names, separate exact matches from inferred aliases."
       }
     },
     {
@@ -1585,5 +1603,5 @@
     ],
     "acceptedAsCanonical": false
   },
-  "lastDecision": "The government-hosted Gazette PDF copy is acquired and hashed. Next, parse Schedule XXVII into 119 structured AC records, validate serial sequence and compare names/extents with the Telangana GIS candidates. Keep legal effective-date chain and independent adjudication open."
+  "lastDecision": "Schedule XXVII roster parser passed 119/119 serials, 10 districts, and seven semantic regression anchors. Next, the combined crosswalk workflow will compare the legal roster against TGRAC candidate GIS layers; name matching alone will not accept polygon extents."
 }
