@@ -2,7 +2,7 @@ name: Security — SAST, SCA & SBOM
 
 on:
   pull_request:
-    branches: [main, develop]
+    branches: [master, main, develop]
   push:
     branches: [main, develop]
   schedule:
@@ -29,13 +29,12 @@ jobs:
           cache: 'npm'
       - name: npm audit (high+)
         run: npm audit --audit-level=high
-        continue-on-error: true
       - name: OSV Scanner
         uses: google/osv-scanner-action@v1
         with:
           scan-args: |-
             --lockfile=package-lock.json
-        continue-on-error: true
+ 
 
   sast:
     name: Static Analysis (SAST)
@@ -53,7 +52,7 @@ jobs:
             p/nodejsscan
             p/owasp-top-ten
             p/secrets
-        continue-on-error: true
+
 
   sbom:
     name: SBOM (CycloneDX)
@@ -68,10 +67,9 @@ jobs:
         run: npm ci
       - name: Generate CycloneDX SBOM
         run: npx @cyclonedx/cyclonedx-npm --output-file sbom.cdx.json
-        continue-on-error: true
       - name: Upload SBOM artifact
         uses: actions/upload-artifact@v4
         with:
           name: sbom
           path: sbom.cdx.json
-          if-no-files-found: warn
+          if-no-files-found: error
