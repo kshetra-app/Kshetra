@@ -147,6 +147,15 @@ async function runAll() {
     assert.strictEqual(res.blocked, true);
   });
 
+  await runCheck('SSRF-25', 'Reject fully expanded IPv4-mapped private IPv6 addresses', () => {
+    assert.strictEqual(isPrivateOrReservedIp('0000:0000:0000:0000:0000:ffff:7f00:0001').blocked, true);
+    assert.strictEqual(isPrivateOrReservedIp('0:0:0:0:0:ffff:a9fe:a9fe').blocked, true);
+  });
+
+  await runCheck('SSRF-26', 'Reject fully expanded IPv6 documentation address', () => {
+    assert.strictEqual(isPrivateOrReservedIp('2001:0db8:0000:0000:0000:0000:0000:0001').blocked, true);
+  });
+
   // --- Public IPs Allowed ---
   await runCheck('SSRF-17', 'Allow public IPv4 addresses', () => {
     assert.strictEqual(isPrivateOrReservedIp('8.8.8.8').blocked, false);

@@ -32,6 +32,23 @@ export interface EncryptedSecretRecord {
   hint: string;
 }
 
+/** Encode Buffer bytes as PostgreSQL bytea text for PostgREST JSON writes. */
+export function encodePostgrestBytea(value: Buffer): string {
+  if (!Buffer.isBuffer(value)) throw new TypeError('POSTGREST_BYTEA_EXPECTED_BUFFER');
+  return '\\x' + value.toString('hex');
+}
+
+/** Decode canonical PostgreSQL bytea text returned from PostgREST; no alternate-format guesses. */
+export function decodePostgrestBytea(value: unknown): Buffer {
+  if (Buffer.isBuffer(value)) return value;
+  if (typeof value !== 'string' || value.charAt(0) !== '\\' || value.charAt(1) !== 'x') {
+    throw new TypeError('POSTGREST_BYTEA_INVALID_FORMAT');
+  }
+  const hex = value.slice(2);
+  if (hex.length % 2 !== 0 || !/^[0-9a-f]*$/i.test(hex)) throw new TypeError('POSTGREST_BYTEA_INVALID_HEX');
+  return Buffer.from(hex, 'hex');
+}
+
 /**
  * Generates a cryptographically secure random webhook secret.
  * Format: whsec_<64 hex chars>
