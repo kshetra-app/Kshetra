@@ -578,42 +578,6 @@ export async function constituencyRoutes(app: FastifyInstance) {
     return { ...contractCore, revision };
   });
 
-  /**
-   * State/constituency-scoped booth endpoint. The complete historical booth
-   * directory is read only on the server; a mobile client receives one AC
-   * after requesting it at map zoom, never the national JSON asset.
-   */
-  app.get<{ Params: { stateCode: string; acNo: string } }>('/states/:stateCode/constituencies/:acNo/booths', async (request, reply) => {
-    const code = request.params.stateCode.toUpperCase();
-    const acNo = Number(request.params.acNo);
-    if (!/^[A-Z]{2}$/.test(code) || !Number.isSafeInteger(acNo) || acNo < 1 || !isStateSupported(code)) {
-      return sendApiError(reply, request, 404, 'Not Found', 'Selected constituency booth data is unavailable', {
-        code: 'CONSTITUENCY_BOOTH_DATA_UNAVAILABLE',
-      });
-    }
-    const booths = getBoothsForConstituency(code, acNo);
-    if (booths.length === 0) {
-      return sendApiError(reply, request, 404, 'Not Found', 'No verified booth locations are available for this constituency', {
-        code: 'CONSTITUENCY_BOOTH_DATA_UNAVAILABLE',
-      });
-    }
-    const contractCore = {
-      schemaVersion: 1 as const,
-      stateCode: code,
-      acNo,
-      dataStatus: 'verified' as const,
-      booths,
-    };
-    const revision = createHash('sha1').update(JSON.stringify(contractCore)).digest('hex');
-    const etag = `"${revision}"`;
-    reply.header('ETag', etag)
-      .header('X-State-Map-Schema', '1')
-      .header('X-State-Map-Revision', revision)
-      .header('Cache-Control', 'public, max-age=300, stale-while-revalidate=86400');
-    if (request.headers['if-none-match'] === etag) return reply.code(304).send();
-    return { ...contractCore, revision };
-  });
-
   /** 1. GET /states/:stateCode/constituencies */
   app.get('/states/:stateCode/constituencies', {
     schema: listConstituenciesSchema,
