@@ -1,17 +1,17 @@
 # PANIN / KSHETRA
-# PRE-IMPLEMENTATION PLAN: MILESTONE W022 (REVISION 3)
+# IMPLEMENTATION PLAN: MILESTONE W022 (REVISION 4 — CTO RATIFIED)
 ## Outbound Webhooks & Event Dispatching Engine (Architecture, Security, State Transitions & Queue Specification)
 
 **Document Identifier:** `PLAN-W022-REV-1.0.md`  
-**Revision:** Rev 3.0 (CTO Review Revision 3 — Systematically Resolving Findings F-01 through F-21)  
+**Revision:** Rev 4.0 (CTO Ratification and Prospective Implementation Authorization, 2026-10-25)  
 **Milestone:** W022 — Dedicated Outbound Event / Webhooks Engine  
 **Governing Authority:** Master Execution Framework Amendment v1.5 (`AMENDMENT_v1.5.md`) & Amendment v1.5-A (`AMENDMENT_v1.5-A.md`)  
-**Authorization Directive:** CTO Directive `W022-CTO-PLAN-001`, `CTO DIRECTIVE — W022 PLAN REVISION 1`, `CTO DIRECTIVE — W022 PLAN REVISION 2`, and `CTO DIRECTIVE — W022 PLAN REVISION 3`  
-**Status:** `PLANNING ONLY — NOT RATIFIED — IMPLEMENTATION NOT AUTHORIZED`  
+**Authorization Directive:** `CTO_DIRECTIVE_W022_IMPLEMENTATION_AUTHORIZATION_2026-10-25.md` (authorization commit `39d0b680b7d266e73385edbbb96caff61e23d184`), together with historical W022 planning directives  
+**Status:** `CTO RATIFIED — IMPLEMENTATION PERMITTED PROSPECTIVELY WITHIN APPROVED SCOPE`  
 **Parent Baseline Commit:** `d93954a857b6e2d36d882534abdf7efdc1e2757e`  
 **Parent Architectural Baseline:** `PLAN-W021-MASTER-REV-1.0.md` (Commit `dcc9f22` / `b51fe20`)  
 **Date of Revision:** 2026-10-24  
-**Lifecycle State:** `PLAN-ONLY PHASE` (Submitted for CTO Adversarial Review & Ratification)  
+**Lifecycle State:** `IMPLEMENTATION AUTHORIZED — INDEPENDENT VERIFICATION AND ACCEPTANCE PENDING`  
 
 ---
 
@@ -22,11 +22,11 @@
 * **Parent Milestone:** W021 (B2B Political SaaS & Public/Partner Developer API Foundation)
 * **Author / Submitter:** AI Autonomous Agent (Engineering & Architecture)
 * **Designated Plan Reviewer:** CTO Executive Office / Architecture Review Board
-* **Document Status:** `DRAFT REVISION 3 — SUBMITTED FOR CTO RATIFICATION`
-* **Implementation Permission:** `STRICTLY PROHIBITED (ZERO CODE / ZERO SQL EXECUTION)`
+* **Document Status:** `REVISION 4 — CTO RATIFIED FOR PROSPECTIVE IMPLEMENTATION`
+* **Implementation Permission:** `PERMITTED PROSPECTIVELY WITHIN THIS PLAN AND CTO DIRECTIVE; STAGING DB EXECUTION AND PRODUCTION ACCESS REMAIN PROHIBITED WITHOUT SEPARATE AUTHORIZATION`
 * **Air-Gap Boundary:** Production Supabase (`ehfafcnimmjusyvplbah`) **STRICTLY AIR-GAPPED** (0 queries, 0 mutations).
 * **Target Staging Environment:** Staging Supabase (`fkpigozcqnmcvofuksar`) — deployment blocked pending separate execution token.
-* **Governing Register Boundary:** This planning document does **NOT** modify or authorize modifying `EXECUTION_STATE.md`, `ACCEPTANCE_REGISTER.md`, `DEFECT_REGISTER.md`, `DECISION_LOG.md`, or `RELEASE_REGISTER.md`. All register synchronizations remain deferred until a separate CTO implementation directive and formal milestone adjudication.
+* **Governing Register Boundary:** Register reconciliation is governed by `CTO_DIRECTIVE_W022_IMPLEMENTATION_AUTHORIZATION_2026-10-25.md`. Changes must truthfully preserve historical coordinates, distinguish prospective authorization from historical implementation, and must not imply staging execution, production release, or acceptance without evidence.
 
 ---
 
@@ -1063,10 +1063,12 @@ In accordance with findings F-07, F-14, F-18, and F-20, all acceptance criteria 
 
 ## 19. Artifact & Commit Lineage Map
 
-* **Authorizing Directive:** `W022-CTO-PLAN-001`, `CTO DIRECTIVE — W022 PLAN REVISION 1`, `CTO DIRECTIVE — W022 PLAN REVISION 2`, and `CTO DIRECTIVE — W022 PLAN REVISION 3`
-* **Planning Baseline HEAD:** `d93954a857b6e2d36d882534abdf7efdc1e2757e`
+* **Authorizing Directive:** `CTO_DIRECTIVE_W022_IMPLEMENTATION_AUTHORIZATION_2026-10-25.md` (commit `39d0b680b7d266e73385edbbb96caff61e23d184`)
+* **Planning Baseline HEAD:** `d93954a857b6e2d36d882534abdf7efdc1e2757e`  
+* **Existing Implementation Commit (historical; predates this directive):** `3ac3f1c0c14d51d60bab9f9d3e88a08716466124`  
+* **Prospective Authorization Commit:** `39d0b680b7d266e73385edbbb96caff61e23d184`
 * **Document Location:** `PLAN-W022-REV-1.0.md` (Repository Root)
-* **Target Delivery Commit (Plan Only):** To be created upon plan completion.
+* **Target Delivery Commit:** Existing implementation is not independently accepted. Subsequent implementation commits must descend from authorization commit `39d0b680b7d266e73385edbbb96caff61e23d184`.
 
 ---
 
@@ -1076,7 +1078,7 @@ In accordance with findings F-07, F-14, F-18, and F-20, all acceptance criteria 
 | :--- | :--- | :--- |
 | **v1.5 Section 3** | Mandatory Planning & Review Gate | Plan created before any implementation or code modification. |
 | **v1.5 Section 6** | Pre-Implementation Plan Contents | Incorporates task understanding, root cause, exact files, test & evidence strategy. |
-| **v1.5-A Section 3** | Mandatory Execution States | Operates strictly in `PLAN-ONLY PHASE` awaiting CTO Ratification. |
+| **v1.5-A Section 3** | Mandatory Execution States | Revision 4 is CTO-ratified; implementation is permitted prospectively, while verification and acceptance remain separate. |
 | **v1.5-A Section 7** | Distinguish Facts from Assumptions | Explicit Section 4 Fact/Inference/Assumption/Unknown register included. |
 | **v1.5-A Section 9** | Alternative Solutions Considered | Detailed evaluation of Redis/BullMQ vs PostgreSQL Outbox in Section 5.3. |
 | **v1.5-A Section 10**| Exact Change Boundary | Exact files to create and modify specified in Section 7. |
@@ -1093,17 +1095,17 @@ In accordance with Section 27 of `AMENDMENT_v1.5-A.md`:
 
 ```text
 ================================================================================
-PRE-IMPLEMENTATION OPERATIONAL DECLARATION: W022 (REVISION 3)
+W022 IMPLEMENTATION AUTHORIZATION DECLARATION (REVISION 4)
 ================================================================================
-PLAN STATUS:                     DRAFT REVISION 3 — SUBMITTED FOR CTO RATIFICATION
-APPROVED PLAN VERSION:           NONE (PLANNING ONLY)
-PLAN APPROVAL EVIDENCE:          PENDING CTO ADJUDICATION
-IMPLEMENTATION MAY BEGIN:        NO
-DATABASE ACCESS AUTHORIZED:      NO
-STAGING EXECUTION AUTHORIZED:    NO
+PLAN STATUS:                     APPROVED — REVISION 4
+APPROVED PLAN VERSION:           REVISION 4
+PLAN APPROVAL EVIDENCE:          CTO directive commit 39d0b680b7d266e73385edbbb96caff61e23d184
+IMPLEMENTATION MAY BEGIN:        YES — PROSPECTIVELY, WITHIN APPROVED SCOPE
+DATABASE ACCESS AUTHORIZED:      LOCAL ISOLATED TESTS ONLY; STAGING EXECUTION REQUIRES SEPARATE TOKEN
+STAGING EXECUTION AUTHORIZED:    NO — SEPARATE EXPLICIT EXECUTION TOKEN REQUIRED
 PRODUCTION ACCESS AUTHORIZED:    NO (STRICTLY AIR-GAPPED)
-WORKING-TREE WRITE BOUNDARY:     PLAN-W022-REV-1.0.md ONLY (VERIFIED CLEAN)
-GIT COMMITS / PUSHES CREATED:    ZERO (0)
+WORKING-TREE WRITE BOUNDARY:     W022 PLAN-SCOPED SOURCE, TESTS, EVIDENCE, AND GOVERNANCE FILES ONLY
+GIT COMMITS / PUSHES CREATED:    AUTHORIZATION COMMIT RECORDED; SUBSEQUENT WORK MUST PRESERVE LINEAGE
 ================================================================================
 ```
 
@@ -1117,4 +1119,4 @@ GIT COMMITS / PUSHES CREATED:    ZERO (0)
 3. **Allowlisted Schema Enforcement:** Does the CTO approve the allowlisted JSON Schema specification with `additionalProperties: false` as the formal privacy control, with zero-PII status classified as proposed pending implementation test evidence?
 
 ### 22.2 Plan Submission & Stopping Rule
-This document concludes the formal planning deliverable authorized under `W022-CTO-PLAN-001` and revised under `CTO DIRECTIVE — W022 PLAN REVISION 3`. All activities are stopped. The implementing agent awaits CTO Adversarial Review and formal Plan Ratification.
+This revision records prospective CTO ratification under `CTO_DIRECTIVE_W022_IMPLEMENTATION_AUTHORIZATION_2026-10-25.md`. W022 implementation and remediation may proceed within the approved scope. The historical implementation commit remains distinct from the prospective authorization coordinate; independent verification, staging execution authorization, production access, and final acceptance remain separate gates.
