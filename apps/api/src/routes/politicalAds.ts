@@ -192,7 +192,14 @@ export const politicalAdsRoutes: FastifyPluginAsync = async (app) => {
           .eq('id', pageId)
           .maybeSingle();
 
-        if (pageErr || !page) {
+        if (pageErr) {
+          request.log.error({ err: pageErr }, 'Political-ad page ownership lookup failed');
+          return sendApiError(reply, request, 503, 'Service Unavailable', 'Page ownership verification is temporarily unavailable.', {
+            code: 'DATABASE_ERROR',
+          });
+        }
+
+        if (!page) {
           if (process.env.NODE_ENV === 'test') {
             const newAd: PoliticalAdRow = {
               id: `pad-${Date.now()}`,
@@ -274,6 +281,10 @@ export const politicalAdsRoutes: FastifyPluginAsync = async (app) => {
           MEMORY_ADS.push(fallbackAd);
           return reply.status(201).send({ success: true, ad: fallbackAd });
         }
+        request.log.error({ err }, 'Political-ad submission threw');
+        return sendApiError(reply, request, 503, 'Service Unavailable', 'Political-ad submission is temporarily unavailable.', {
+          code: 'DATABASE_ERROR',
+        });
       }
     }
 
@@ -433,6 +444,10 @@ export const politicalAdsRoutes: FastifyPluginAsync = async (app) => {
             });
           }
         }
+        request.log.error({ err }, 'Political-ad certification mutation threw');
+        return sendApiError(reply, request, 503, 'Service Unavailable', 'Political-ad certification is temporarily unavailable.', {
+          code: 'DATABASE_ERROR',
+        });
       }
     }
 
