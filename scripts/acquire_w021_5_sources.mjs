@@ -162,6 +162,55 @@ for (const source of SOURCES) {
 }
 
 
+
+/* Convert ECI's JavaScript-wrapped FeatureCollection responses into a derived
+ * GeoJSON artifact without evaluating JavaScript. The result remains a
+ * candidate until identity, statutory vintage, topology and seat-count checks pass. */
+for (const sourceResult of manifest.results.filter(r => /^SRC-ECI-2026-AC-/.test(r.id) && r.status==='DOWNLOADED_HASHED')) {
+  try {
+    const raw = await fs.readFile(sourceResult.localPath, 'utf8');
+    const first = raw.indexOf('{');
+    const last = raw.lastIndexOf('}');
+    if (first < 0 || last <= first) throw new Error('NO_JSON_OBJECT_FOUND');
+    const parsed = JSON.parse(raw.slice(first, last + 1));
+    if (parsed?.type !== 'FeatureCollection' || !Array.isArray(parsed.features)) {
+      throw new Error('NOT_A_GEOJSON_FEATURE_COLLECTION');
+    }
+    const stateCode = sourceResult.id.slice('SRC-ECI-2026-AC-'.length);
+    const expectedSeats = { S03:126, U07:30, S11:140, S22:234, S25:294 }[stateCode];
+    const geojson = JSON.stringify(parsed);
+    const destination = path.join(OUT, 'derived/eci-2026-ac-geometry', stateCode + '.geojson');
+    await fs.mkdir(path.dirname(destination), {recursive:true});
+    await fs.writeFile(destination, geojson + '\\n', {flag:'w'});
+    const featureCount = parsed.features.length;
+    const derived = {
+      artifactId:'DERIVED-ECI-2026-AC-'+stateCode,
+      sourceId:sourceResult.id,
+      sourceSha256:sourceResult.sha256,
+      transformation:'Extract first JSON object from ECI JavaScript wrapper; JSON.parse; serialize compact GeoJSON; no geometry edits',
+      transformationVersion:'w0215-eci-js-to-geojson-v1',
+      localPath:destination,
+      sha256:sha256(Buffer.from(geojson + '\\n','utf8')),
+      bytes:Buffer.byteLength(geojson + '\\n','utf8'),
+      featureCount,
+      expectedStatutorySeatCount:expectedSeats,
+      status:featureCount===expectedSeats ? 'CANDIDATE_PENDING_IDENTITY_AND_TOPOLOGY_VALIDATION' : 'REJECTED_COUNT_MISMATCH',
+      authorityClassification:'OFFICIAL_SOURCE_DERIVED_CANDIDATE_NOT_YET_ACCEPTED',
+      acceptedAsOfficialGeometry:false
+    };
+    manifest.results.push(derived);
+    console.log('[DERIVED_GEOJSON]', stateCode, featureCount, expectedSeats, derived.status, derived.sha256);
+  } catch(error) {
+    manifest.results.push({
+      artifactId:'DERIVED-ECI-2026-AC-'+sourceResult.id.slice('SRC-ECI-2026-AC-'.length),
+      sourceId:sourceResult.id,
+      status:'DERIVATION_FAILED',
+      error:String(error?.message||error)
+    });
+    console.error('[DERIVATION_FAILED]',sourceResult.id,String(error?.message||error));
+  }
+}
+
 /* Discover report/data files linked by the official indexes. This is bounded,
  * provenance-preserving retrieval, not unbounded scraping. */
 const indexSources = manifest.results.filter(r =>
@@ -236,7 +285,9 @@ manifest.summary={
   downloaded:manifest.results.filter(r=>r.status==='DOWNLOADED_HASHED').length,
   failed:manifest.results.filter(r=>r.status==='FETCH_FAILED').length,
   officialDownloads:manifest.results.filter(r=>r.status==='DOWNLOADED_HASHED' && !r.authority.startsWith('SECONDARY')).length,
-  secondaryCandidateDownloads:manifest.results.filter(r=>r.status==='DOWNLOADED_HASHED' && r.authority.startsWith('SECONDARY')).length
+  secondaryCandidateDownloads:manifest.results.filter(r=>r.status==='DOWNLOADED_HASHED' && r.authority.startsWith('SECONDARY')).length,
+  derivedGeometryCandidates:manifest.results.filter(r=>r.artifactId && r.artifactId.startsWith('DERIVED-ECI-2026-AC-')).length,
+  derivedGeometryAcceptedAsOfficial:manifest.results.filter(r=>r.acceptedAsOfficialGeometry===true).length
 };
 const manifestPath=path.join(OUT,'manifest.json');
 await fs.writeFile(manifestPath, JSON.stringify(manifest,null,2)+'\n', 'utf8');
