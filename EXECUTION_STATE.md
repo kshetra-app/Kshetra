@@ -10,16 +10,20 @@
 W021_5_RESUMPTION_PLAN: PR #25 branch (not yet merged) — governance/plans/PLAN-W021.5-RESUMPTION-REV-1.0.md
 W021_5_CTO_DIRECTIVE: PR #25 branch (not yet merged) — governance/authorizations/W021.5_RESUMPTION_AUTHORIZATION_2026-10-25.md; see DEC-155
 W021_5_AUTHORIZATION: YES — STAGE B ONLY (branch-scoped; directive commit c37667526af49d15878be6985800e872d871d57c)
-W021_5_STAGE_B_STATUS: IN PROGRESS / NOT ACCEPTED
+W021_5_STAGE_B_STATUS: PARTIAL / NOT ACCEPTED — NO CANONICAL NATIONAL AC GEOMETRY
 W021_5_STAGE_B_EVIDENCE: PR #25 branch (not yet merged) — reports/w021_5_stage_b_source_research_2026-10-25.md
 W021_5_STAGE_B_PROBE_MANIFEST: PR #25 branch (not yet merged) — reports/evidence/w021_5_stage_b_acquisition_probe_2026-10-25.json
+W021_5_STAGE_B_ACQUISITION_RUN: 40211792541 — 31/61 source artifacts fetched; 24 failed; 0 canonical geometry accepted
+W021_5_STAGE_B_ECI_MIRROR_AUDIT: 824 features, 23 invalid raw polygons, 1,337 positive-area overlap pairs; REJECTED for canonical use
+W021_5_STAGE_B_TELANGANA_GIS: two 119-feature layers acquired; each has one invalid Dornakal polygon; seven material cross-layer geometry differences; source version/effective date unresolved
+W021_5_STAGE_B_SOVILLAGE: 14/27 archives acquired; 71,484 features, 37 invalid geometries, one CRS metadata conflict; NOT AC geometry
 W021_5_STAGE_B_EXTERNAL_GATES: EB-01..EB-05 OPEN; W021.5-B1-04 OPEN
 W021_5_PRODUCTION: STRICTLY AIR-GAPPED; NO ACCESS OR MUTATION
 W021_5_STAGING: NO DATABASE ACCESS OR MUTATION UNDER DIRECTIVE 154
-W021_5_NEXT_PERMITTED_ACTION: Continue Stage B source acquisition, provenance capture, and geometry validation; stop at Stage B boundary
+W021_5_NEXT_PERMITTED_ACTION: Continue Stage B source-owner/version discovery, canonical AC-number and legal-instrument crosswalk, resolve Telangana layer conflict, complete national coverage and topology validation; stop at Stage B boundary
 ```
 
-**Governance reconciliation note:** Directive 154 prospectively supersedes Directive 153 only within the authorized Stage B scope. W021.5 remains unaccepted; no Stage C or later stage is authorized. Production remains air-gapped and no database operation was performed. The execution ledger and acceptance register must not be advanced without the required evidence and adjudication. The supplemental source report and probe manifest are currently in PR #25's resumption branch and are not yet present on master.
+**Governance reconciliation note:** Directive 154 prospectively supersedes Directive 153 only within the authorized Stage B scope. W021.5 remains unaccepted; no Stage C or later stage is authorized. Production remains air-gapped and no database operation was performed. The execution ledger and acceptance register must not be advanced without the required evidence and adjudication. The supplemental source report, source register, geometry audit reports and detailed probe manifests are currently in PR #25's resumption branch and are not yet present on master. A completed source sweep found no acceptable canonical national AC geometry; ECI direct .js URLs returned 404; secondary mirror geometry was rejected for topology defects; two official Telangana GIS layers conflict in seven AC geometries. Stage B remains open.
 
 ---
 
