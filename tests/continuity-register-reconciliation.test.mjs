@@ -62,7 +62,7 @@ assert.equal(report.severity, 'P0');
 assert.ok(TAXONOMY.includes(report.status), 'Report status must use the canonical lifecycle taxonomy');
 assert.match(report.sourceSnapshot.commit, /^[0-9a-f]{40}$/i, 'Source snapshot must be a full commit SHA');
 exec(['cat-file', '-e', report.sourceSnapshot.commit + '^{commit}']);
-assert.equal(exec(['merge-base', '--is-ancestor', report.sourceSnapshot.commit, 'HEAD']) || '', '', 'Source snapshot commit must be an ancestor of the checked-out commit');
+execFileSync('git', ['merge-base', '--is-ancestor', report.sourceSnapshot.commit, 'HEAD'], { stdio: 'ignore' });
 pass('Canonical lifecycle taxonomy and immutable source-snapshot lineage');
 
 // 2. Active continuity documents must be current; genuinely old evidence must be explicitly historical.
@@ -106,8 +106,9 @@ for (const requiredId of ['W021.5', 'W022', 'GOV-01', 'GOV-02']) {
   assert.ok(acceptanceIds.has(requiredId), 'Acceptance register is missing required current milestone/defect row ' + requiredId);
 }
 for (const defectId of ['GOV-01', 'GOV-02']) {
-  assert.match(defects, new RegExp('^\\| \\*\\*' + defectId + '\\\\*\\* \\| \\*\\*P0\\*\\*', 'm'),
-    'Defect register is missing the P0 row for ' + defectId);
+  const defectRow = defects.split(/\\r?\\n/).find((line) => line.startsWith('| **' + defectId + '** |'));
+  assert.ok(defectRow, 'Defect register is missing the table row for ' + defectId);
+  assert.match(defectRow, /\\| \\*\\*P0\\*\\* \\|/, 'Expected ' + defectId + ' to remain P0 until formally closed');
 }
 assert.match(defects, /^## GOV-02 — Continuity Registers Stale \/ Conflicting Blocker Evidence$/m);
 assert.match(defects, /^\| \*\*GOV-02\*\* \| \*\*P0\*\*/m);
@@ -172,6 +173,8 @@ assert.equal(ledger?.airGapStatus?.stagingQueries, 0);
 assert.equal(ledger?.airGapStatus?.stagingMutations, 0);
 assert.equal(ledger?.airGapStatus?.productionQueries, 0);
 assert.equal(ledger?.airGapStatus?.productionMutations, 0);
+assert.equal(ledger?.airGapStatus?.stagingStatus, 'STRICT_ZERO_ACCESS_UNDER_DIRECTIVE_153');
+assert.equal(ledger?.airGapStatus?.productionStatus, 'AIR_GAPPED_ZERO_QUERIES_ZERO_MUTATIONS');
 assert.match(state, /W022_STAGING_EXECUTION:\s+NOT AUTHORIZED/i);
 assert.match(state, /W022_PRODUCTION:\s+STRICTLY AIR-GAPPED/i);
 pass('Staging/production authorization and zero-access boundary');
