@@ -8,6 +8,7 @@ module.exports = {
   testEnvironment: 'node',
   testTimeout: 30000,
   forceExit: true,
+  setupFilesAfterEnv: ['<rootDir>/src/__tests__/testAuthSetup.ts'],
   roots: ['<rootDir>/src'],
   testMatch: ['**/__tests__/**/*.test.ts'],
   moduleFileExtensions: ['ts', 'js', 'json'],

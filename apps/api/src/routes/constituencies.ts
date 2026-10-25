@@ -439,6 +439,19 @@ export async function constituencyRoutes(app: FastifyInstance) {
       }
     }
 
+    // In production, an empty canonical query must not silently turn into
+    // compile-time seed data. Distinguish missing population (503) from unknown state (404).
+    if (isSupabaseConfigured && process.env.NODE_ENV === 'production') {
+      if (getConstituencies(code).length > 0) {
+        return sendApiError(reply, request, 503, 'Service Unavailable', 'Canonical constituency data is not populated for this state.', {
+          code: 'DATASET_UNAVAILABLE',
+        });
+      }
+      return sendApiError(reply, request, 404, 'Not Found', `State ${code} has no constituency data available`, {
+        code: 'NOT_FOUND',
+      });
+    }
+
     const data = getConstituencies(code);
 
     if (data.length === 0) {
@@ -466,20 +479,15 @@ export async function constituencyRoutes(app: FastifyInstance) {
       const { stateCode, constituencyId } = request.params;
       const code = stateCode.toUpperCase();
       let acNo = parseInt(constituencyId, 10);
-      if (isNaN(acNo) && constituencyId.includes('-AC-')) {
-        const parts = constituencyId.split('-AC-');
-        acNo = parseInt(parts[1], 10);
-      }
+      const canonicalIdMatch = constituencyId.match(/(?:^|-)AC-(\\d+)$/i);
+      if (Number.isNaN(acNo) && canonicalIdMatch) acNo = parseInt(canonicalIdMatch[1], 10);
 
       // Strangler pattern: Query live database when Supabase is configured (fail-closed on error)
-      if (isSupabaseConfigured && !isNaN(acNo)) {
+      if (isSupabaseConfigured) {
         try {
-          const { data: row, error } = await supabase
-            .from('constituencies')
-            .select('*')
-            .eq('state_code', code)
-            .eq('ac_no', acNo)
-            .maybeSingle();
+          let query = supabase.from('constituencies').select('*').eq('state_code', code);
+          query = !Number.isNaN(acNo) ? query.eq('ac_no', acNo) : query.ilike('name', constituencyId);
+          const { data: row, error } = await query.maybeSingle();
 
           if (error) {
             app.log.error({ err: error.message, stateCode: code, acNo }, 'Database query error retrieving constituency detail');
@@ -513,6 +521,20 @@ export async function constituencyRoutes(app: FastifyInstance) {
               recentElection,
               elections: electionData?.elections ?? [recentElection],
             };
+          }
+
+          if (process.env.NODE_ENV === 'production') {
+            const knownSeed = !Number.isNaN(acNo)
+              ? getConstituency(code, acNo)
+              : getConstituencies(code).find((item) => item.name.toLowerCase() === constituencyId.toLowerCase());
+            if (knownSeed) {
+              return sendApiError(reply, request, 503, 'Service Unavailable', 'Canonical constituency record is not populated.', {
+                code: 'DATASET_UNAVAILABLE',
+              });
+            }
+            return sendApiError(reply, request, 404, 'Not Found', `Constituency ${constituencyId} in ${code} not found`, {
+              code: 'NOT_FOUND',
+            });
           }
         } catch (err: any) {
           app.log.error({ err: err?.message, stateCode: code, acNo }, 'Exception querying database for constituency detail');

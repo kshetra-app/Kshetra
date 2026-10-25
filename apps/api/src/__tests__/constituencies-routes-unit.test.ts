@@ -1,12 +1,16 @@
 import Fastify, { FastifyInstance } from 'fastify';
 import { constituencyRoutes } from '../routes/constituencies';
+import { isSupabaseConfigured, setSupabaseConfiguredForTesting } from '../lib/supabase';
 import * as stateData from '../services/stateData';
 import * as mlaProfiles from '../../../../data/seed/telangana-mla-profiles';
 
 describe('Constituencies Routes Unit Tests (Exhaustive Branch Coverage)', () => {
   let app: FastifyInstance;
+  let originalSupabaseConfigured: boolean;
 
   beforeAll(async () => {
+    originalSupabaseConfigured = isSupabaseConfigured;
+    setSupabaseConfiguredForTesting(false);
     app = Fastify({ logger: false });
     await app.register(constituencyRoutes);
     await app.ready();
@@ -14,6 +18,7 @@ describe('Constituencies Routes Unit Tests (Exhaustive Branch Coverage)', () => 
 
   afterAll(async () => {
     await app.close();
+    setSupabaseConfiguredForTesting(originalSupabaseConfigured);
   });
 
   afterEach(() => {
