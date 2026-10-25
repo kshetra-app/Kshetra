@@ -1,6 +1,6 @@
 import { enrichGeoJSON, enrichGeoJSONForState, enrichIndiaGeoJSON } from './enrichGeoJSON';
 import { getStateGeoJSON, isBundledGeoJSON } from './geoLoader';
-import { fetchStateGeoJSON, getGeoBaseUrl } from './remoteGeoLoader';
+import { fetchStateGeoJSON } from './remoteGeoLoader';
 import { getManifestEntry, loadRemoteGeoManifest } from './geoManifest';
 
 /**
