@@ -755,7 +755,7 @@
       "version": "Order dated 17 December 2008; ECI PDF lists Andhra Pradesh Schedule III on PDF pages 8–32",
       "retrievalStatus": "READ_VIA_WEB_PDF_TEXT; BINARY_NOT_DOWNLOADED_OR_SHA256_VERIFIED",
       "authority": "OFFICIAL_STATUTORY_BASELINE",
-      "status": "LEGAL_BASELINE_IDENTIFIED; BINARY_HASH_ACQUISITION_PROBE_PENDING",
+      "status": "WEB_PDF_TEXT_REVIEWED; BINARY_DOWNLOAD_BLOCKED_HTTP_406",
       "partialCrosswalk": {
         "report": "reports/evidence/w021_5_telangana_layer_comparison_2026-10-25.json",
         "constituencies": [
@@ -803,7 +803,14 @@
         "No raw PDF binary SHA-256 claimed."
       ],
       "probeWorkflowRunId": 40213536854,
-      "probeWorkflowUrl": "https://github.com/kshetra-app/Kshetra/actions/runs/40213536854"
+      "probeWorkflowUrl": "https://github.com/kshetra-app/Kshetra/actions/runs/40213536854",
+      "binaryProbe": {
+        "httpStatus": 406,
+        "responseBytes": 1035,
+        "responseBodySha256": "7f512a23553028d1fa2006932589acb1a66dc61f6c18be51c9e03b154ef7a4e5",
+        "artifactZipSha256": "b8bfdf3d5016144bf37726462a161dedd38f7cf349a3c4fe7fecef1c82e07e3f",
+        "result": "NO_PDF_BINARY; NO_PDF_SHA256; official PDF text was reviewed via web reader"
+      }
     },
     {
       "sourceId": "SRC-TELANGANA-ADMIN-NEW-LAYER",
@@ -812,13 +819,24 @@
       "url": "https://tgrac.telangana.gov.in/arcgis/rest/services/EndowmentLands_Folder/Endowment_Lands_Admin_New/MapServer/12?f=pjson",
       "format": "ArcGIS REST Feature Layer / ESRI JSON",
       "authority": "OFFICIAL_STATE_GIS_CANDIDATE",
-      "status": "PROBE_PENDING_RUN_40213331746",
+      "status": "GEOMETRY_ACQUIRED_IDENTICAL_TO_ENDOWMENTLANDS_ADMIN_2026",
       "layerId": 12,
       "workflowRunId": 40213331746,
       "limitations": [
         "Service name/metadata do not establish legally effective boundary version.",
         "No canonical AC-number crosswalk, effective date, or legal instrument reconciliation is complete."
-      ]
+      ],
+      "metadataBytes": 4683,
+      "metadataSha256": "850ba55a5017c7b8eeef0967aa2a073057a1fe9396abc54066c3719ddb451737",
+      "geometryBytes": 12463409,
+      "geometrySha256": "ca8cfdc695366d9f04ee6a9fdbf9c52eeefe61d69bc79c9d26d15baa7b84aa03",
+      "featureCount": 119,
+      "invalidGeometryCount": 1,
+      "positiveAreaOverlapPairs": 0,
+      "unionPartCount": 1,
+      "topologyAudit": "reports/evidence/w021_5_telangana_arcgis_geometry_audit_2026-10-25.json",
+      "comparisonReport": "reports/evidence/w021_5_telangana_layer_comparison_2026-10-25.json",
+      "note": "Raw response byte length and SHA-256 exactly match EndowmentLands_Admin_2026 layer 12; this is the same geometry payload, not an independent version."
     },
     {
       "sourceId": "SRC-TELANGANA-ADMIN-OLD-LAYER",
@@ -827,13 +845,25 @@
       "url": "https://tgrac.telangana.gov.in/arcgis/rest/services/EndowmentLands_Folder/Endowment_Lands_Old/MapServer/13?f=pjson",
       "format": "ArcGIS REST Feature Layer / ESRI JSON",
       "authority": "OFFICIAL_STATE_GIS_CANDIDATE",
-      "status": "PROBE_PENDING_RUN_40213331746",
+      "status": "GEOMETRY_ACQUIRED_ADDITIONAL_VERSION_REVIEW_REQUIRED",
       "layerId": 13,
       "workflowRunId": 40213331746,
       "limitations": [
         "Service name/metadata do not establish legally effective boundary version.",
         "No canonical AC-number crosswalk, effective date, or legal instrument reconciliation is complete."
-      ]
+      ],
+      "metadataBytes": 4668,
+      "metadataSha256": "9e025e3f13bcb77c25fcc5dbee57e82bea364e52dd94518f01b1b7c780c89493",
+      "geometryBytes": 12461961,
+      "geometrySha256": "6e33ebf7eba139a0f754e5b56f3e3bc155ab2d9b6c9e571b03dc57e77e418b4c",
+      "featureCount": 119,
+      "invalidGeometryCount": 1,
+      "invalidFeature": "Dornakal (ST) / OBJECTID 89",
+      "positiveAreaOverlapPairs": 0,
+      "unionPartCount": 2,
+      "topologyAudit": "reports/evidence/w021_5_telangana_arcgis_geometry_audit_2026-10-25.json",
+      "comparisonStatus": "FULL_PAIRWISE_COMPARISON_NOT_YET_PERFORMED",
+      "note": "Distinct geometry payload. Union of 119 candidate polygons has two disconnected components; this requires investigation against an authoritative Telangana state boundary."
     }
   ],
   "unresolvedGates": [
@@ -1203,23 +1233,68 @@
     {
       "runId": 40213331746,
       "workflowUrl": "https://github.com/kshetra-app/Kshetra/actions/runs/40213331746",
-      "artifactId": null,
-      "artifactName": null,
-      "artifactSha256": null,
-      "status": "PENDING_AT_LAST_CHECK",
-      "scope": "Probe TGRAC Endowment_Lands_Admin_New/MapServer/12 and Endowment_Lands_Old/MapServer/13 metadata and geometry, then audit all acquired Telangana AC layers."
+      "artifactId": 12606726593,
+      "artifactName": "w0215-official-geometry-probe-40213331746",
+      "artifactSha256": "71f19cdde380eed19da92817521f6e55b622c690c70174b4222a0214a4be7b88",
+      "status": "COMPLETED_WITH_FAILURES; FOUR TELANGANA SERVICE LAYERS ACQUIRED AND AUDITED",
+      "scope": "Probe TGRAC Endowment_Lands_Admin_New/MapServer/12 and Endowment_Lands_Old/MapServer/13 metadata and geometry, then audit all acquired Telangana AC layers.",
+      "compressedBytes": 19223889,
+      "artifactExpiresAt": "2026-11-24T16:50:05Z",
+      "manifestSummary": {
+        "eciDirect404": 5,
+        "telanganaGeometryLayersAcquired": 4,
+        "featureCountPerLayer": 119,
+        "invalidGeometryPerLayer": 1,
+        "positiveAreaOverlapPairsPerLayer": 0,
+        "unionPartCounts": {
+          "olderLayer24": 1,
+          "endowment2026Layer12": 1,
+          "adminNewLayer12": 1,
+          "adminOldLayer13": 2
+        }
+      },
+      "downloadedFiles": [
+        {
+          "id": "telangana-ac-geometry",
+          "bytes": 12465346,
+          "sha256": "91cd791317836d8a6a8729b03f08fd3aee8c727c82e123b1659972d949d32f27"
+        },
+        {
+          "id": "telangana-2026-ac-geometry",
+          "bytes": 12463409,
+          "sha256": "ca8cfdc695366d9f04ee6a9fdbf9c52eeefe61d69bc79c9d26d15baa7b84aa03"
+        },
+        {
+          "id": "telangana-admin-new-ac-geometry",
+          "bytes": 12463409,
+          "sha256": "ca8cfdc695366d9f04ee6a9fdbf9c52eeefe61d69bc79c9d26d15baa7b84aa03"
+        },
+        {
+          "id": "telangana-admin-old-ac-geometry",
+          "bytes": 12461961,
+          "sha256": "6e33ebf7eba139a0f754e5b56f3e3bc155ab2d9b6c9e571b03dc57e77e418b4c"
+        }
+      ]
     },
     {
       "runId": 40213536854,
       "workflowUrl": "https://github.com/kshetra-app/Kshetra/actions/runs/40213536854",
-      "artifactId": null,
-      "artifactName": null,
-      "artifactSha256": null,
-      "status": "PENDING_AT_LAST_CHECK",
-      "scope": "Attempt browser-impersonated raw PDF acquisition and extract Schedule III AC-number/name roster candidate with PyMuPDF."
+      "artifactId": 12605978917,
+      "artifactName": "w0215-eci-legal-order-40213536854",
+      "artifactSha256": "b8bfdf3d5016144bf37726462a161dedd38f7cf349a3c4fe7fecef1c82e07e3f",
+      "status": "COMPLETED_WITH_SOURCE_UNAVAILABLE; ECI HTTP 406",
+      "scope": "Attempt browser-impersonated raw PDF acquisition and extract Schedule III AC-number/name roster candidate with PyMuPDF.",
+      "compressedBytes": 1381,
+      "manifestSummary": {
+        "httpStatus": 406,
+        "responseBytes": 1035,
+        "responseBodySha256": "7f512a23553028d1fa2006932589acb1a66dc61f6c18be51c9e03b154ef7a4e5",
+        "pdfAcquired": false,
+        "webTextReviewed": true
+      }
     }
   ],
-  "updatedAt": "2026-10-25T16:50:00Z",
+  "updatedAt": "2026-10-25T16:52:00Z",
   "notes": [
     "Actual public source artifacts were downloaded in GitHub Actions run 40209022405 and SHA-256 hashed; detailed geometry findings are in reports/w021_5_datameet_ac_geometry_forensic_audit.json.",
     "Survey of India official ABDB page, Vector Data Catalog 2025 PDF and Metadata_ABDB.zip were downloaded and hashed. The metadata covers state, district, subdistrict and village boundaries, not statutory Assembly Constituency polygons.",
@@ -1232,7 +1307,8 @@
     "Broad source-acquisition run 40211792541 completed successfully: 31/61 source artifacts downloaded and hashed (142,219,649 source bytes), 24 failed. Five ECI-derived mirror GeoJSONs were acquired but rejected for canonical use after topology audit. Survey of India village boundaries were acquired for 14/27 jurisdictions, with 71,484 features, 37 invalid geometries, one CRS metadata conflict; they are not AC polygons or delivery-beat polygons.",
     "Focused run 40212441232 acquired both the older Telangana Assembly Constituency Boundary layer and the EndowmentLands_Admin_2026 layer (119 features each). Both contain the same invalid Dornakal polygon and zero positive-area overlaps. Cross-layer comparison found 7 geometries differing above 0.01 m² and a maximum Hausdorff distance of about 3.04 km; neither layer can be selected without legal/source-owner adjudication.",
     "Official ECI 2008 Delimitation Order PDF was read through the web PDF reader. Schedule III lists Andhra Pradesh Assembly constituencies and their territorial extents; a partial crosswalk for nine disputed/defective Telangana ACs is recorded in reports/evidence/w021_5_telangana_layer_comparison_2026-10-25.json. The PDF binary was not downloaded in this session, so no binary SHA-256 is claimed.",
-    "Additional official Telangana GIS service variants Admin_New layer 12 and Admin_Old layer 13 were discovered in the TGRAC service catalog and queued for comparison in run 40213242722. Do not choose among service names until geometry and legal effective-date evidence are reconciled."
+    "Additional official Telangana GIS service variants Admin_New layer 12 and Admin_Old layer 13 were discovered in the TGRAC service catalog and queued for comparison in run 40213242722. Do not choose among service names until geometry and legal effective-date evidence are reconciled.",
+    "The TGRAC Admin_New layer is byte-for-byte identical to the EndowmentLands_Admin_2026 layer (same 12,463,409-byte payload and SHA-256). Admin_Old is a distinct 12,461,961-byte payload; its 119-feature union has two disconnected components and one invalid Dornakal polygon. The official ECI 2008 PDF binary endpoint returned HTTP 406 (1,035-byte error body, SHA-256 7f512a...); web PDF text was reviewed, but no PDF binary hash is claimed."
   ],
   "secondaryGeometryAudit": {
     "sourceRepository": "https://github.com/saisantoshv3/assemnbly_gis_files",
