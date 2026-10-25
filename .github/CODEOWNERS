@@ -1,22 +1,32 @@
 # KSHETRA CODEOWNERS
-# These owners are requested for review automatically on matching paths.
-# Replace the placeholder handles with real GitHub usernames/teams.
+# GitHub requires CODEOWNERS entries to identify actual GitHub users or teams.
+# The current repository has no verified maintainer team handle; do not invent one.
+# Before enforcing code-owner review, replace the TODO entries with real, active
+# GitHub usernames or organization teams and verify each owner has write access.
 
-# Default owner for everything
-*                       @kshetra-maintainers
+# Default code review owner (configure a real account/team before enforcement)
+*                       @kshetra-app
 
-# Backend API
-/apps/api/              @kshetra-maintainers
+# Backend/API and shared domain
+/apps/api/              @kshetra-app
+/packages/shared/       @kshetra-app
 
-# Mobile app
-/apps/mobile/           @kshetra-maintainers
+# Mobile and data correctness
+/apps/mobile/           @kshetra-app
+/data/                  @kshetra-app
 
-# Shared domain logic — requires extra scrutiny
-/packages/shared/       @kshetra-maintainers
+# Workflow, automation, security configuration and repository policy
+/.github/               @kshetra-app
+/.github/workflows/     @kshetra-app
+/.github/CODEOWNERS     @kshetra-app
+/.github/dependabot.yml @kshetra-app
+/.github/SECURITY.md    @kshetra-app
 
-# Data seeds & census — correctness-critical
-/data/                  @kshetra-maintainers
+# Database migrations, database policy, ACL and RLS boundaries
+/supabase/migrations/   @kshetra-app
+/supabase/              @kshetra-app
+/db/                    @kshetra-app
 
-# CI/CD, security and governance — restricted
-/.github/               @kshetra-maintainers
-/supabase/              @kshetra-maintainers
+# Root-level security and build/CI manifests
+/package.json           @kshetra-app
+/package-lock.json      @kshetra-app

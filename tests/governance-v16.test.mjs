@@ -17,7 +17,22 @@ const porcelainStatus = execSync('git status --porcelain', { encoding: 'utf8' })
 
 assert.strictEqual(actualHead.length, 40, 'Actual local HEAD SHA must be 40 characters');
 assert.strictEqual(actualOriginMaster.length, 40, 'Actual origin/master SHA must be 40 characters');
-assert.strictEqual(actualBranch, 'master', 'Active branch must be master');
+// Pull-request Actions checks out a synthetic merge commit, so the symbolic ref is
+// detached HEAD. Preserve the strict master assertion for ordinary synchronized runs;
+// in PR context, validate target branch metadata and ancestry rather than the synthetic ref name.
+if (process.env.GITHUB_EVENT_NAME === 'pull_request') {
+  assert.strictEqual(process.env.GITHUB_BASE_REF, 'master', 'Governance PR target must be master');
+  let includesOriginMaster = false;
+  try {
+    execSync('git merge-base --is-ancestor origin/master HEAD', { stdio: 'ignore' });
+    includesOriginMaster = true;
+  } catch {
+    includesOriginMaster = false;
+  }
+  assert.ok(includesOriginMaster, 'Synthetic PR merge HEAD must include origin/master as an ancestor');
+} else {
+  assert.strictEqual(actualBranch, 'master', 'Active branch must be master outside PR context');
+}
 
 console.log(`[REPOSITORY STATE] Branch: ${actualBranch}`);
 console.log(`[REPOSITORY STATE] Local HEAD: ${actualHead}`);

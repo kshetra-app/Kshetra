@@ -1,0 +1,19 @@
+# Git LFS pointer-backed data files are metadata stubs in Actions checkouts.
+scrapers/output/local-body/**/*.json
+scrapers/output/local-body/*.json
+
+# Generated scraper and evidence datasets: formatting is controlled by their generators.
+scrapers/output/**/*.json
+scripts/output/**/*.json
+scripts/tests/fixtures/**/*.json
+scripts/assam_statutory_table.json
+scripts/gujarat_statutory_ac_pc_map.json
+scripts/hp-parsed-seats.json
+
+# Legacy UTF-16 / binary-encoded seed scripts are not Prettier source files.
+scripts/py-old-seed.ts
+scripts/tripura-old-seed.ts
+
+# Large generated reports / datasets not intended for manual formatting.
+*.db
+*.tmp
