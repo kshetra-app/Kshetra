@@ -280,8 +280,21 @@ async function importSeedData(db) {
       });
     };
     try {
-      const constituencyModule = await import(`file://${path.resolve(rootDir,`data/seed/${sourceName}-constituencies.ts`)}`);
-      const constituencyKey = Object.keys(constituencyModule).find(key => key.toUpperCase() === `${code === 'TS' ? 'TELANGANA' : code}_CONSTITUENCIES` || key.toUpperCase().endsWith('_CONSTITUENCIES') && Array.isArray(constituencyModule[key]));
+      const constituencyPath = path.resolve(rootDir,`data/seed/${sourceName}-constituencies.ts`);
+      const constituencyModule = await import(`file://${constituencyPath}`);
+      const constituencyKey = ({
+        TS:'TELANGANA_CONSTITUENCIES', AP:'AP_CONSTITUENCIES', KA:'KA_CONSTITUENCIES',
+        MH:'MH_CONSTITUENCIES', TN:'TN_CONSTITUENCIES', KL:'KL_CONSTITUENCIES',
+        WB:'WB_CONSTITUENCIES', UP:'UP_CONSTITUENCIES', RJ:'RJ_CONSTITUENCIES',
+        GJ:'GJ_CONSTITUENCIES', JH:'JH_CONSTITUENCIES', OD:'OD_CONSTITUENCIES',
+        DL:'DL_CONSTITUENCIES', PB:'PB_CONSTITUENCIES', HR:'HR_CONSTITUENCIES',
+        CG:'CG_CONSTITUENCIES', MP:'MP_CONSTITUENCIES', BR:'BR_CONSTITUENCIES',
+        AS:'AS_CONSTITUENCIES', GA:'GA_CONSTITUENCIES', HP:'HP_CONSTITUENCIES',
+        MN:'MN_CONSTITUENCIES', ML:'ML_CONSTITUENCIES', MZ:'MZ_CONSTITUENCIES',
+        NL:'NL_CONSTITUENCIES', TR:'TR_CONSTITUENCIES', SK:'SK_CONSTITUENCIES',
+        AR:'AR_CONSTITUENCIES', UK:'UK_CONSTITUENCIES', PY:'PY_CONSTITUENCIES',
+        JK:'JK_CONSTITUENCIES',
+      })[code];
       const constituencies = constituencyKey ? constituencyModule[constituencyKey] : null;
       if (!Array.isArray(constituencies)) throw new Error(`Canonical constituency export missing for ${code}`);
       if (constituencies.length === 0) throw new Error(`${code} has no constituency seed rows`);
