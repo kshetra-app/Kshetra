@@ -58,6 +58,15 @@ jobs:
           cache: npm
       - name: Install locked dependencies
         run: npm ci
+      - name: License policy gate
+        shell: bash
+        run: |
+          set -euo pipefail
+          # Kshetra is proprietary; dependency license grants must be explicitly reviewed.
+          # Fail closed on unknown/guessed licenses and on copyleft or source-available
+          # licenses needing legal review. Review findings and update this deny list only
+          # through an approved license-policy change with legal sign-off.
+          npx --yes license-checker@25.0.1 --production --unknown --failOn "GPL;GPL-2.0-only;GPL-2.0-or-later;GPL-3.0-only;GPL-3.0-or-later;AGPL;AGPL-3.0-only;AGPL-3.0-or-later;SSPL-1.0;BUSL-1.1;Commons-Clause;UNKNOWN" --summary
       - name: Generate CycloneDX SBOM
         run: npx @cyclonedx/cyclonedx-npm --output-file sbom.cdx.json
       - name: Verify SBOM exists and is non-empty
