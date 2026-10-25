@@ -37,7 +37,7 @@
       "retrievedAt": "2026-10-25",
       "format": "PDF",
       "authority": "PRIMARY_OFFICIAL_DIGITAL_PUBLICATION",
-      "status": "FETCH_FAILED_HTTP_406",
+      "status": "FETCH_FAILED_HTTP_406_WAF_BLOCKED_AFTER_FOUR_OFFICIAL_URL_VARIANTS",
       "sha256": null,
       "fileBytes": null,
       "version": "Delimitation of Parliamentary and Assembly Constituencies Order, 2008",
@@ -46,8 +46,9 @@
         "Digital ECI publication does not satisfy the separate physical Gazette authenticity and notarized transcription gates."
       ],
       "plannedUse": "Cross-check canonical constituency names, statutory numbers, reservations, extents and effective regimes.",
-      "retrievalError": "HTTP_406",
-      "lastAttemptRunId": 40211792541
+      "retrievalError": "ECI origin returned HTTP 406 AppTrana WAF HTML ('Request was blocked due to suspicious behavior') for three PDF URL variants and the alternate official backend URL. Response hashes are hashes of error HTML, not legal-source hashes.",
+      "lastAttemptRunId": 40217392689,
+      "evidenceReport": "reports/evidence/w021_5_eci_legal_order_probe_40217392689.json"
     },
     {
       "sourceId": "SRC-ECI-STAT-REPORTS",
