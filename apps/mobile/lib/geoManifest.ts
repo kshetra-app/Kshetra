@@ -27,6 +27,20 @@ export interface GeoManifestEntry {
   version?: string;
   /** True if shipped inside the JS bundle instead of streamed. */
   bundled?: boolean;
+  /** Accepted primary source URL (not a proxy/error page). */
+  sourceUrl?: string;
+  /** UTC retrieval time for exact source bytes. */
+  retrievedAt?: string;
+  /** Legal/data effective date. */
+  effectiveDate?: string;
+  /** Source-published version, when present. */
+  sourceVersion?: string;
+  /** SHA-256 of the accepted artifact. */
+  sha256?: string;
+  /** Reproducible transformation pipeline identifier. */
+  transformationVersion?: string;
+  /** Reconciled canonical feature count. */
+  canonicalCount?: number;
 }
 
 const MANIFEST = manifest as Record<string, GeoManifestEntry>;
@@ -41,18 +55,37 @@ export function isBundledState(code: string): boolean {
 }
 
 /**
- * True only when the manifest certifies real polygon boundaries as available.
- * A jurisdiction appearing in the manifest is not proof that polygon data is
- * verified; placeholder entries are deliberately reported as unavailable.
+ * A remote assembly boundary is accepted only when its full provenance chain
+ * and count reconciliation are recorded. Asset presence or a short cache key
+ * alone cannot promote a boundary to canonical geography.
  */
-export function hasStateGeoJSON(code: string): boolean {
+export function isVerifiedRemoteStateGeoJSON(code: string): boolean {
   const entry = getManifestEntry(code);
-  return Boolean(entry && entry.hasPolygons && entry.status !== 'placeholder');
+  if (!entry || entry.bundled === true || entry.hasPolygons !== true) return false;
+  if (entry.status !== 'official_verified') return false;
+  if (!entry.sourceUrl || !/^https?:\\/\\//i.test(entry.sourceUrl)) return false;
+  if (!entry.retrievedAt || Number.isNaN(Date.parse(entry.retrievedAt))) return false;
+  if (!entry.effectiveDate || Number.isNaN(Date.parse(entry.effectiveDate))) return false;
+  if (!entry.version || !entry.transformationVersion) return false;
+  if (!entry.sha256 || !/^[a-f0-9]{64}$/i.test(entry.sha256)) return false;
+  return typeof entry.count === 'number' && entry.count > 0 && entry.canonicalCount === entry.count;
 }
 
-/** All jurisdictions whose manifest explicitly marks verified polygons available. */
+export type StateGeoAvailability = 'BUNDLED' | 'REMOTE_VERIFIED' | 'UNAVAILABLE';
+
+export function getStateGeoAvailability(code: string): StateGeoAvailability {
+  const entry = getManifestEntry(code);
+  if (!entry || entry.hasPolygons !== true) return 'UNAVAILABLE';
+  if (entry.bundled === true) return 'BUNDLED';
+  return isVerifiedRemoteStateGeoJSON(code) ? 'REMOTE_VERIFIED' : 'UNAVAILABLE';
+}
+
+/** True only for bundled overview geometry or fully accepted remote AC boundaries. */
+export function hasStateGeoJSON(code: string): boolean {
+  return getStateGeoAvailability(code) !== 'UNAVAILABLE';
+}
+
+/** Jurisdictions whose current manifest qualifies for map geometry use. */
 export function getStatesWithGeoJSON(): string[] {
-  return Object.entries(MANIFEST)
-    .filter(([, entry]) => entry.hasPolygons && entry.status !== 'placeholder')
-    .map(([code]) => code);
+  return Object.keys(MANIFEST).filter((code) => hasStateGeoJSON(code));
 }
