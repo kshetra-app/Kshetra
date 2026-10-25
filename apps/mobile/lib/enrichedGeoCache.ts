@@ -1,119 +1,128 @@
-import { enrichGeoJSON, enrichGeoJSONForState, enrichIndiaGeoJSON } from './enrichGeoJSON';
+import { enrichGeoJSONForState, enrichIndiaGeoJSON } from './enrichGeoJSON';
 import { getStateGeoJSON, isBundledGeoJSON } from './geoLoader';
 import { fetchStateGeoJSON } from './remoteGeoLoader';
 import { getManifestEntry, loadRemoteGeoManifest } from './geoManifest';
+import {
+  getCachedStateMapData,
+  loadStateScopedMapData,
+  subscribeToStateMapData,
+  type StateMapData,
+} from './stateScopedMapData';
 
-/**
- * Universal enriched GeoJSON cache — keyed by state code.
- * Each state's GeoJSON is enriched once (constituency + party data merged)
- * and then cached for the lifetime of the app. This gives:
- *   1. Stable object references (no unnecessary MapLibre re-renders)
- *   2. Instant re-display when switching back to a previously viewed state
- *   3. TS uses the richer demographics-aware enrichGeoJSON(); others use enrichGeoJSONForState()
- *
- * Extracted verbatim from app/(tabs)/index.tsx — behaviour unchanged.
- */
-const _enrichedGeoCache = new Map<string, GeoJSON.FeatureCollection>();
+const MAX_ENRICHED_GEOMETRY_STATES = 2;
+const enrichedCache = new Map<string, GeoJSON.FeatureCollection>();
+const enrichedRevision = new Map<string, string>();
+const listeners = new Set<(code: string, data: GeoJSON.FeatureCollection) => void>();
+const inFlight = new Map<string, Promise<GeoJSON.FeatureCollection | null>>();
 
 export type GeoCacheListener = (code: string, data: GeoJSON.FeatureCollection) => void;
-const listeners = new Set<GeoCacheListener>();
+
+function publish(code: string, data: GeoJSON.FeatureCollection, revision?: string): void {
+  const key = code.toUpperCase();
+  enrichedCache.delete(key);
+  enrichedCache.set(key, data);
+  if (revision) enrichedRevision.set(key, revision);
+  while (enrichedCache.size > MAX_ENRICHED_GEOMETRY_STATES) {
+    const oldest = enrichedCache.keys().next().value as string | undefined;
+    if (!oldest) break;
+    enrichedCache.delete(oldest);
+    enrichedRevision.delete(oldest);
+  }
+  for (const listener of listeners) listener(key, data);
+}
 
 export function subscribeToGeoCache(listener: GeoCacheListener): () => void {
   listeners.add(listener);
-  return () => {
-    listeners.delete(listener);
-  };
+  return () => listeners.delete(listener);
 }
 
-/** Merge constituency/party data into raw polygons (per-state strategy). */
-function enrichRaw(code: string, raw: GeoJSON.FeatureCollection): GeoJSON.FeatureCollection {
+function enrichRaw(
+  code: string,
+  raw: GeoJSON.FeatureCollection,
+  stateData?: StateMapData | null,
+): GeoJSON.FeatureCollection {
+  const key = code.toUpperCase();
   try {
-    const enriched = code === 'IN'
+    const enriched = key === 'IN'
       ? enrichIndiaGeoJSON(raw)
-      : code === 'TS'
-      ? enrichGeoJSON(raw)
-      : enrichGeoJSONForState(raw, code);
-    _enrichedGeoCache.set(code, enriched);
-
-    // Notify listeners of updates (critical for background updates)
-    for (const listener of listeners) {
-      listener(code, enriched);
-    }
-
+      : enrichGeoJSONForState(raw, key, stateData ?? null);
+    publish(key, enriched, stateData?.revision);
     return enriched;
-  } catch (err) {
-    console.error(`[enrichedGeoCache] Enrichment FAILED for state "${code}":`, err);
-    return raw; // fall back to un-enriched polygons so the map still renders
+  } catch (error) {
+    console.error(`[enrichedGeoCache] Enrichment failed for ${key}; displaying verified raw boundaries:`, error);
+    publish(key, raw, stateData?.revision);
+    return raw;
   }
 }
 
-/**
- * Synchronous fast-path: returns the enriched GeoJSON only if it is already in
- * memory, or if the state is bundled (e.g. "IN") and can be required inline.
- * Returns null for streamed states that haven't been fetched yet — callers
- * should fall back to {@link loadEnrichedGeoForState}.
- */
+// Re-enrich an already viewed region when a newer state-scoped metadata
+// revision arrives. Geometry is fetched by its own immutable version.
+subscribeToStateMapData((code, snapshot) => {
+  const key = code.toUpperCase();
+  if (key === 'IN' || snapshot.status !== 'loaded' || !snapshot.data) return;
+  if (!enrichedCache.has(key) || enrichedRevision.get(key) === snapshot.data.revision) return;
+  void (async () => {
+    const manifest = await loadRemoteGeoManifest();
+    const entry = manifest?.[key] ?? getManifestEntry(key);
+    if (!entry?.hasPolygons || entry.status === 'placeholder') return;
+    const raw = await fetchStateGeoJSON(key, entry.version);
+    if (raw) enrichRaw(key, raw, snapshot.data);
+  })().catch((error) => {
+    console.warn(`[enrichedGeoCache] Background re-enrichment failed for ${key}:`, error);
+  });
+});
+
+/** Fast path for geometry that is already in memory or is the bundled India shell. */
 export function getCachedEnrichedGeo(code: string): GeoJSON.FeatureCollection | null {
-  const cached = _enrichedGeoCache.get(code);
-  if (cached) return cached;
-  if (isBundledGeoJSON(code)) {
-    const raw = getStateGeoJSON(code);
-    if (raw) return enrichRaw(code, raw);
+  const key = code.toUpperCase();
+  const cached = enrichedCache.get(key);
+  if (cached) {
+    enrichedCache.delete(key);
+    enrichedCache.set(key, cached);
+    return cached;
+  }
+  if (isBundledGeoJSON(key)) {
+    const raw = getStateGeoJSON(key);
+    if (raw) return enrichRaw(key, raw);
   }
   return null;
 }
 
-/**
- * Full loader: returns enriched GeoJSON for any state, streaming + caching the
- * raw boundary from the API when it isn't bundled. Enrichment runs once per
- * state, then the stable reference is reused on every switch-back.
- */
-/**
- * Full loader: returns enriched GeoJSON for any state, streaming + caching the
- * raw boundary from the API when it isn't bundled. Enrichment runs once per
- * state, then the stable reference is reused on every switch-back.
- */
-export async function loadEnrichedGeoForState(
-  code: string,
-): Promise<GeoJSON.FeatureCollection | null> {
-  const cached = _enrichedGeoCache.get(code);
+/** Fetch only the selected state's metadata and geometry. */
+export async function loadEnrichedGeoForState(code: string): Promise<GeoJSON.FeatureCollection | null> {
   const key = code.toUpperCase();
+  const existing = inFlight.get(key);
+  if (existing) return existing;
 
-  // Asynchronously trigger remote manifest & update check in the background
-  const triggerBackgroundCheck = async () => {
-    try {
-      const remoteManifest = await loadRemoteGeoManifest(true);
-      const remoteEntry = remoteManifest ? remoteManifest[key] : null;
-      const localEntry = getManifestEntry(key);
-      if (remoteEntry && remoteEntry.hasPolygons && remoteEntry.version && remoteEntry.version !== localEntry?.version) {
-        const updatedRaw = await fetchStateGeoJSON(key, remoteEntry.version);
-        if (updatedRaw) enrichRaw(key, updatedRaw);
-      }
-    } catch (err) {
-      console.warn(`[enrichedGeoCache] Background update check failed for ${key}:`, err);
+  const task = (async () => {
+    if (key === 'IN') {
+      const national = getStateGeoJSON('IN');
+      return national ? enrichRaw('IN', national) : null;
     }
-  };
 
-  if (cached) {
-    void triggerBackgroundCheck();
-    return cached;
-  }
+    const current = enrichedCache.get(key);
+    if (current) {
+      // Revalidate selected-state metadata in the background without blocking
+      // a cached boundary from painting immediately.
+      void loadStateScopedMapData(key);
+      void loadRemoteGeoManifest(true).catch(() => null);
+      return current;
+    }
 
-  // Baseline load: use bundled if available
-  let raw = isBundledGeoJSON(key) ? getStateGeoJSON(key) : null;
-  if (raw) {
-    const baseline = enrichRaw(key, raw);
-    void triggerBackgroundCheck();
-    return baseline;
-  }
-
-  // Load the manifest from its canonical API route before fetching state geometry.
-  // When offline, the streamed state's manifest is unavailable and this returns
-  // null; no fabricated or unverified geometry is substituted.
-  const remoteManifest = await loadRemoteGeoManifest();
-  const remoteEntry = remoteManifest?.[key];
-  if (!remoteEntry) return null;
-  if (!remoteEntry.hasPolygons || remoteEntry.status === 'placeholder') return null;
-  const raw = await fetchStateGeoJSON(key, remoteEntry.version);
-  return raw ? enrichRaw(key, raw) : null;
+    const [stateSnapshot, manifest] = await Promise.all([
+      loadStateScopedMapData(key),
+      loadRemoteGeoManifest(),
+    ]);
+    const entry = manifest?.[key] ?? getManifestEntry(key);
+    if (!entry?.hasPolygons || entry.status === 'placeholder') {
+      // The data contract can be available even when authoritative polygons
+      // are not. Never create fallback or fabricated geometry.
+      return null;
+    }
+    const raw = await fetchStateGeoJSON(key, entry.version);
+    if (!raw) return null;
+    return enrichRaw(key, raw, stateSnapshot.data);
+  })().finally(() => inFlight.delete(key));
+  inFlight.set(key, task);
+  return task;
 }
