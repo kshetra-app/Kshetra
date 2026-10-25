@@ -33,6 +33,13 @@ const TABLE_FLAGS = [
   ['political_timeline','has_political_timeline'],
   ['election_history','has_election_history'],
 ];
+const TABLE_COUNTS = [
+  ['mla_profiles','mla_profile_count'],
+  ['demographics','demographics_count'],
+  ['historical_results','historical_results_count'],
+  ['political_timeline','political_timeline_count'],
+  ['election_history','election_history_count'],
+];
 
 function fail(message) {
   console.error(`[seed-db-preflight] FAIL: ${message}`);
@@ -79,7 +86,7 @@ try {
     const declared = manifest[code];
     const stored = dbManifest[code];
     if (!declared || !stored) fail(`manifest entry missing for ${code}`);
-    for (const key of ['has_mla_profiles','has_demographics','has_historical_results','has_political_timeline','has_election_history','constituency_count']) {
+    for (const key of ['has_mla_profiles','has_demographics','has_historical_results','has_political_timeline','has_election_history','constituency_count',...TABLE_COUNTS.map(([,key])=>key)]) {
       if (Number(declared[key]) !== Number(stored[key])) fail(`${code} ${key} differs between JSON and SQLite`);
     }
     if (!declared.version || declared.version !== stored.version) fail(`${code} manifest version missing or inconsistent`);
@@ -89,6 +96,11 @@ try {
     for (const [table, flag] of TABLE_FLAGS) {
       const count = db.prepare(`SELECT count(*) AS n FROM ${table} WHERE state_code=?`).get(code).n;
       if (Number(declared[flag]) !== (count > 0 ? 1 : 0)) fail(`${code} ${flag} does not reflect actual ${table} rows (${count})`);
+    }
+    for (const [table, key] of TABLE_COUNTS) {
+      const count = db.prepare(`SELECT count(*) AS n FROM ${table} WHERE state_code=?`).get(code).n;
+      if (Number(declared[key]) !== count) fail(`${code} ${key} differs from actual ${table} rows (${declared[key]} vs ${count})`);
+      if (declared[key] < 0) fail(`${code} ${key} cannot be negative`);
     }
   }
 
