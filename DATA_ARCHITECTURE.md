@@ -587,3 +587,35 @@ Track health of the entire data pipeline:
 │  Events this week: 3 defections, 1 appointment         │
 └────────────────────────────────────────────────────────┘
 ```
+
+
+---
+
+## 9. DATA-TRUTH AND PROVENANCE CONTRACT (DATA-03 / P0)
+
+### 9.1 Nullable is not zero
+
+Critical numeric facts must be represented as `T | null` until a source supplies a value. A true numeric zero remains `0`; a missing, unverified, or unavailable number is `null` and must carry a `missingReason`. Empty strings and numeric fallbacks such as `value ?? 0` are forbidden for source-backed facts. UI surfaces must render null/empty facts as **Not available**, never as zero.
+
+### 9.2 Required field-level provenance
+
+The shared `packages/shared/src/dataProvenance.ts` contract defines the following statuses and serializable provenance fields:
+
+- Status: `OFFICIAL`, `DERIVED`, `VERIFIED`, `ESTIMATE`, `SCENARIO`, `INFERRED`, `UNVERIFIED`, `UNKNOWN`.
+- Every critical fact carries `source`, `retrievedAt`, `effectiveFrom`, `effectiveTo`, `version`, `status`, `valueStatus`, and `transformationHistory`.
+- Missing facts use `value: null` and a reason such as `NOT_PROVIDED`, `NOT_APPLICABLE`, `NOT_VERIFIED`, `SOURCE_UNAVAILABLE`, or `UNKNOWN`.
+- Estimates and scenarios must have a named, versioned transformation step. A label alone is not evidence.
+- Effective dates may not conflict. Source retrieval date/version must never be fabricated to satisfy validation.
+- An `UNKNOWN` or `UNVERIFIED` fact cannot carry an asserted concrete value.
+
+### 9.3 Dataset-level release gate
+
+Use `assertDatasetProvenance` before publishing a critical dataset. The validator must fail the batch for missing/duplicate IDs, invalid state/constituency identifiers, missing fact provenance, invalid dates or effective-date windows, missing source/version, unlabeled estimates/scenarios, contradictory value/status pairs, and fabricated defaults. Keep a real zero distinct from null in both DTO and UI tests.
+
+### 9.4 Seed manifest trust status
+
+`apps/mobile/data/seed-manifest.json` is not evidence of an actual SQLite seed build merely because it exists. Until the manifest is generated from the verified database artifact, entries use nullable unknown metadata and `manifest_status: UNVERIFIED_NOT_REBUILT`. Do not claim zero rows or invent a release version. The release process must rebuild the SQLite artifact and manifest together, then add concrete source/effective-date/version values from build evidence before changing that status.
+
+### 9.5 DTO and display rules
+
+API/shared DTOs should use nullable types for data which sources can omit and may expose field-level `provenance`. Mobile code should pass `ProvenancedFact<T>` through the reusable `FactValue` component or an equivalent data-truth-aware display path. Legacy records without provenance are not silently upgraded to official data; they remain unverified until their source metadata is backfilled.

@@ -70,6 +70,9 @@ jobs:
       - name: Build shared package
         run: npm run build -w @kshetra/shared
 
+      - name: Validate Data Truth Manifest (DATA-03 P0)
+        run: npm run validate:data-truth
+
       - name: Test shared package
         run: npm test -w @kshetra/shared -- --forceExit
 
@@ -146,8 +149,6 @@ jobs:
 
       - name: Prettier check
         run: npx prettier --check "**/*.{ts,tsx,json,md}" --ignore-path .gitignore
-        continue-on-error: true
 
       - name: ESLint
         run: npx eslint "apps/**/*.{ts,tsx}" "packages/**/*.{ts,tsx}" --max-warnings=0
-        continue-on-error: true

@@ -18,7 +18,8 @@
     "start:api": "tsx apps/api/src/server.ts",
     "lint": "turbo run lint",
     "test": "turbo run test",
-    "clean": "turbo run clean"
+    "clean": "turbo run clean",
+    "validate:data-truth": "node scripts/validate-data-truth.mjs"
   },
   "devDependencies": {
     "@cyclonedx/cyclonedx-npm": "^1.19.3",

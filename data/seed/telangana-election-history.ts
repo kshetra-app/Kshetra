@@ -13,17 +13,17 @@
 export interface ElectionHistoryEntry {
   year: number;
   type: 'assembly' | 'parliament';
-  totalSeats: number;
-  partyResults: PartyElectionResult[];
-  turnout?: number;
-  notes?: string;
+  totalSeats: number | null;
+  partyResults: PartyElectionResult[] | null;
+  turnout?: number | null;
+  notes?: string | null;
 }
 
 export interface PartyElectionResult {
-  party: string;
-  seatsWon: number;
-  seatContested: number;
-  voteShare?: number;
+  party: string | null;
+  seatsWon: number | null;
+  seatContested: number | null;
+  voteShare?: number | null;
 }
 
 /**

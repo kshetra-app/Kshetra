@@ -17,25 +17,25 @@
 export interface ConstituencyDemographics {
   acNo: number;
   /** Approximate population (Census 2011 projection) */
-  population: number;
+  population: number | null;
   /** Total registered voters (ECI 2023) */
-  totalVoters: number;
+  totalVoters: number | null;
   /** Voter turnout % in 2023 */
-  turnout2023: number;
+  turnout2023: number | null;
   /** Male voters */
-  maleVoters: number;
+  maleVoters: number | null;
   /** Female voters */
-  femaleVoters: number;
+  femaleVoters: number | null;
   /** Literacy rate % */
-  literacy: number;
+  literacy: number | null;
   /** Urban population % */
-  urbanPercent: number;
+  urbanPercent: number | null;
   /** SC population % */
-  scPercent: number;
+  scPercent: number | null;
   /** ST population % */
-  stPercent: number;
+  stPercent: number | null;
   /** Area in sq km */
-  areaSqKm: number;
+  areaSqKm: number | null;
 }
 
 /**

@@ -40,18 +40,18 @@ function adaptMLAProfileFromDB(row: any): MLAProfile | undefined {
     gender: row.gender,
     terms: row.terms_served,
     age: row.age,
-    dob: row.dob,
+    dob: row.dob ?? null,
     dobEstimated: row.dob_estimated === 1,
-    education: row.education,
-    profession: row.profession,
+    education: row.education ?? null,
+    profession: row.profession ?? null,
     criminalCases: row.criminal_cases,
     totalAssets: row.total_assets,
     totalLiabilities: row.total_liabilities,
-    maritalStatus: row.marital_status,
-    photoUrl: row.photo_url,
+    maritalStatus: row.marital_status ?? null,
+    photoUrl: row.photo_url ?? null,
     constituencyName: row.constituency_name,
-    district: row.district,
-    sourceUrl: row.source_url,
+    district: row.district ?? null,
+    sourceUrl: row.source_url ?? null,
   };
 }
 
@@ -94,10 +94,10 @@ export function getMLAProfileForState(
   if (!constituency) return adapted;
 
   // If names already match, return as-is
-  if (namesMatch(adapted.name, constituency.winnerName)) return adapted;
+  if (constituency.winnerName && namesMatch(adapted.name, constituency.winnerName)) return adapted;
 
   // Override profile name with seed's winnerName to prevent "two MLAs" display
-  return { ...adapted, name: constituency.winnerName };
+  return { ...adapted, name: constituency.winnerName ?? adapted.name };
 }
 
 // ═════════════════════════════════════════════════════════════════════════
@@ -111,16 +111,16 @@ function adaptDemographicsFromDB(row: any): ConstituencyDemographics | undefined
   if (!row) return undefined;
   return {
     acNo: row.ac_no,
-    population: row.population,
-    totalVoters: row.total_voters,
-    turnout2023: row.turnout_2023,
-    maleVoters: row.male_voters,
-    femaleVoters: row.female_voters,
-    literacy: row.literacy,
-    urbanPercent: row.urban_percent,
-    scPercent: row.sc_percent,
-    stPercent: row.st_percent,
-    areaSqKm: row.area_sq_km,
+    population: row.population ?? null,
+    totalVoters: row.total_voters ?? null,
+    turnout2023: row.turnout_2023 ?? null,
+    maleVoters: row.male_voters ?? null,
+    femaleVoters: row.female_voters ?? null,
+    literacy: row.literacy ?? null,
+    urbanPercent: row.urban_percent ?? null,
+    scPercent: row.sc_percent ?? null,
+    stPercent: row.st_percent ?? null,
+    areaSqKm: row.area_sq_km ?? null,
   };
 }
 
@@ -143,14 +143,15 @@ export function getDemographicsForState(
 
 export interface ConstituencyHistoryEntry {
   year: number;
-  winner: string;
-  party: string;
+  winner: string | null;
+  party: string | null;
 }
 
 /**
  * Get per-constituency historical results for any supported state.
  * Returns an array of { year, winner, party } for prior elections.
  */
+/** Maps absent source fields to null; history is not silently completed with synthetic labels. */
 export function getHistoryForState(
   stateCode: string,
   acNo: number,
@@ -163,8 +164,8 @@ export function getHistoryForState(
   const rows = getHistoryFromDB(stateCode, acNo);
   return rows.map(r => ({
     year: r.year,
-    winner: r.winner,
-    party: r.party,
+    winner: r.winner ?? null,
+    party: r.party ?? null,
   }));
 }
 
@@ -203,8 +204,8 @@ export function getElectionHistoryForState(
   return rows.map(r => ({
     year: r.year,
     type: 'assembly' as const,
-    totalSeats: r.total_seats,
-    partyResults: [], // TODO: fetch from election_history_results table
+    totalSeats: r.total_seats ?? null,
+    partyResults: r.party_results ? JSON.parse(r.party_results) : null, // absent source data stays unavailable
     notes: r.notes,
   }));
 }
@@ -230,7 +231,7 @@ function adaptTimelineFromDB(row: any): PoliticalLedgerEntry {
     explanation: row.explanation,
     details: row.details,
     legalStatus: row.legal_status as any,
-    sources: [],
+    sources: row.sources ? JSON.parse(row.sources) : undefined,
     verified: row.verified === 1,
   };
 }

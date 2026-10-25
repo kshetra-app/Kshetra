@@ -12,7 +12,8 @@
     "typecheck": "tsc --noEmit",
     "test": "node ../../node_modules/jest/bin/jest.js --forceExit",
     "test:coverage": "node ../../node_modules/jest/bin/jest.js --coverage --forceExit",
-    "clean": "rm -rf .expo node_modules"
+    "clean": "rm -rf .expo node_modules",
+    "validate:data-truth": "node ../../scripts/validate-data-truth.mjs"
   },
   "dependencies": {
     "@babel/types": "^7.29.0",
