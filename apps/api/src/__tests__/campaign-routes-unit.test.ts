@@ -231,7 +231,7 @@ describe('Campaign Routes Unit Test Suite (Direct Route Injection)', () => {
       expect(body.campaigns[0].id).toBe('camp-101');
     });
 
-    it('falls back to mock campaign when database returns empty/error', async () => {
+    it('returns a truthful empty campaign list when the database has no campaigns', async () => {
       jest.spyOn(supabase, 'from').mockImplementation(((table: string) => {
         if (table === 'campaigns') {
           return {
@@ -250,8 +250,8 @@ describe('Campaign Routes Unit Test Suite (Direct Route Injection)', () => {
 
       expect(res.statusCode).toBe(200);
       const body = JSON.parse(res.payload);
-      expect(body.total).toBeGreaterThanOrEqual(1);
-      expect(body.campaigns[0].id).toBe('c1');
+      expect(body.total).toBe(0);
+      expect(body.campaigns).toEqual([]);
     });
   });
 
