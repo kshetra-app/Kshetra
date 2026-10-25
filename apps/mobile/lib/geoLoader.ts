@@ -9,7 +9,7 @@
  * landing map paints instantly and works offline. All assembly boundaries,
  * including Telangana, are downloaded by remoteGeoLoader on demand.
  */
-import { getStatesWithGeoJSON as manifestStates, hasStateGeoJSON as manifestHas } from './geoManifest';
+import { getStatesWithGeoJSON as manifestStates, hasStateGeoJSON as manifestHas, getManifestEntry } from './geoManifest';
 
 const cache = new Map<string, GeoJSON.FeatureCollection>();
 
