@@ -543,6 +543,33 @@ export async function constituencyRoutes(app: FastifyInstance) {
         }
       }
 
+      if (isSupabaseConfigured) {
+        const stateInfo = getStateInfo(code);
+        if (!stateInfo) {
+          return sendApiError(reply, request, 404, 'Not Found', `State ${code} not found`, {
+            code: 'NOT_FOUND',
+          });
+        }
+        if (!Number.isNaN(acNo) && acNo > stateInfo.totalSeats) {
+          return sendApiError(
+            reply,
+            request,
+            404,
+            'Not Found',
+            `Constituency number ${acNo} is outside the published ${stateInfo.totalSeats}-seat registry for ${stateInfo.name}.`,
+            { code: 'NOT_FOUND' }
+          );
+        }
+        return sendApiError(
+          reply,
+          request,
+          503,
+          'Service Unavailable',
+          `Canonical constituency record ${constituencyId} is absent from the database; bundled seeds are not used as a fallback.`,
+          { code: 'DATA_UNAVAILABLE', dataStatus: 'UNKNOWN' }
+        );
+      }
+
       const brief = !isNaN(acNo)
         ? getConstituency(code, acNo)
         : getConstituencies(code).find(
