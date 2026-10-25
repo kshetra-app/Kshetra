@@ -56,6 +56,10 @@ for (const file of files) {
   }
 }
 
+if (totalPayloadBytes > maximumPayloadBytes) {
+  failures.push(`Expo JS + runtime + asset payload ${totalPayloadBytes} bytes exceeds ${maximumPayloadBytes} byte budget.`);
+}
+
 const report = {
   generatedAt: new Date().toISOString(),
   gitSha: process.env.GITHUB_SHA || null,
@@ -77,9 +81,6 @@ const report = {
 fs.mkdirSync(path.dirname(reportPath), { recursive: true });
 fs.writeFileSync(reportPath, JSON.stringify(report, null, 2) + '\n');
 console.log(JSON.stringify({ ...report, assetManifest: `omitted in stdout; ${assetFiles.length} rows in report` }, null, 2));
-if (totalPayloadBytes > maximumPayloadBytes) {
-  failures.push(`Expo JS + runtime + asset payload ${totalPayloadBytes} bytes exceeds ${maximumPayloadBytes} byte budget.`);
-}
 if (failures.length) {
   console.error('MOBILE_EXPORT_GATE: FAIL');
   for (const failure of failures) console.error(` - ${failure}`);
