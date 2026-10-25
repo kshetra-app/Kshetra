@@ -2,7 +2,7 @@ name: Security — SAST, SCA & SBOM
 
 on:
   pull_request:
-    branches: [main, develop]
+    branches: [master, main, develop]
   push:
     branches: [main, develop]
   schedule:
@@ -29,7 +29,6 @@ jobs:
           cache: 'npm'
       - name: npm audit (high+)
         run: npm audit --audit-level=high
-        continue-on-error: true
       - name: OSV Scanner
         uses: google/osv-scanner-action@v1
         with:
@@ -45,7 +44,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Semgrep scan
-        run: semgrep ci
+        run: semgrep scan --config p/typescript --config p/react --config p/nodejsscan --config p/owasp-top-ten --config p/secrets .
         env:
           SEMGREP_RULES: >-
             p/typescript
@@ -74,4 +73,4 @@ jobs:
         with:
           name: sbom
           path: sbom.cdx.json
-          if-no-files-found: warn
+          if-no-files-found: error
