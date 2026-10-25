@@ -4,6 +4,25 @@
 
 ---
 
+## W021.5 RESUMPTION CONTROL — DIRECTIVE 154 (2026-10-25)
+
+```text
+W021_5_RESUMPTION_PLAN: governance/plans/W021.5-RESUMPTION-REV-1.0.md
+W021_5_CTO_DIRECTIVE: governance/directives/CTO-DIRECTIVE-154-W021.5-RESUMPTION.md
+W021_5_AUTHORIZATION: YES — STAGE B ONLY (branch-scoped)
+W021_5_STAGE_B_STATUS: IN PROGRESS / NOT ACCEPTED
+W021_5_STAGE_B_EVIDENCE: reports/w021_5_stage_b_source_research_2026-10-25.md
+W021_5_STAGE_B_EXTERNAL_GATES: EB-01..EB-05 OPEN; W021.5-B1-04 OPEN
+W021_5_PRODUCTION: STRICTLY AIR-GAPPED; NO ACCESS OR MUTATION
+W021_5_STAGING: NO DATABASE ACCESS OR MUTATION UNDER DIRECTIVE 154
+W021_5_NEXT_PERMITTED_ACTION: Continue Stage B source acquisition, provenance capture, and geometry validation; stop at Stage B boundary
+W021_5_CANONICAL_MASTER_STATUS: NOT UPDATED BY THIS BRANCH COMMIT; reconcile through review/merge before treating as canonical
+```
+
+**Governance reconciliation note:** Directive 154 authorizes Stage B only on the resumption branch and does not authorize Stage C or later stages. This branch copy records the current branch state; it does not change the canonical state on `master` until merged. The previous master record still lists Job 023 adjudication as next permitted action and must not be represented as reconciled until this section is integrated into the canonical file.
+
+---
+
 ## 1. Project & Execution Coordinates
 ```text
 PROJECT:               PANIN (formerly Kshetra)
