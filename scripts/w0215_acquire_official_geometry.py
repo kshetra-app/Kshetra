@@ -200,6 +200,7 @@ manifest = {
     ],
 }
 failures = []
+warnings = []
 
 def fetch_allowlisted(initial_url: str):
     current = initial_url
