@@ -908,7 +908,7 @@
       "retrievedAt": "2026-10-25",
       "format": "PDF",
       "authority": "PRIMARY_OFFICIAL_LEGAL_SOURCE",
-      "status": "ACQUISITION_WORKFLOW_ADDED_PENDING_RESULT",
+      "status": "PRIMARY_INDIACODE_AND_ECI_FETCHES_TIMED_OUT_FALLBACK_GOVERNMENT_HOSTS_PROBE_QUEUED",
       "sha256": null,
       "fileBytes": null,
       "version": "Act No. 6 of 2014",
@@ -916,7 +916,19 @@
         "Must be reconciled with the 2008 order and later ECI notifications/Gazette instruments.",
         "PDF acquisition/hash and page-level extraction pending workflow evidence."
       ],
-      "plannedUse": "Establish AP/Telangana statutory partition and source the Second Schedule crosswalk."
+      "plannedUse": "Establish AP/Telangana statutory partition and source the Second Schedule crosswalk.",
+      "alternativeGovernmentHostedCopies": [
+        "https://apseeds.ap.gov.in/PDF/apreorg/APRegACT2014.pdf",
+        "https://tgerc.telangana.gov.in/file_upload/uploads/Acts%20and%20Polices/Acts%20and%20Rules/A.P.Reorganisation%20act%202014.pdf"
+      ],
+      "lastFailedProbe": {
+        "workflowRunId": 40218092567,
+        "workflowUrl": "https://github.com/kshetra-app/Kshetra/actions/runs/40218092567",
+        "artifactId": 12608825080,
+        "artifactSha256": "7c01c54d21f87ff5038b1cd0120462eb0f822845b396a2f9808aecf20e6285d7",
+        "result": "India Code, ECI 2024 PDF, and optional IndiaCode order URL each timed out after 60 seconds with zero bytes. No source bytes or source SHA-256 acquired."
+      },
+      "nextProbe": "workflow run 40218632258 — retries government-hosted Gazette copy from APSeeds/TGERC first; IndiaCode and ECI press note are fallback/corroborative candidates."
     },
     {
       "sourceId": "SRC-ECI-GE-2024-PRESS-NOTE-23",
@@ -1560,5 +1572,5 @@
     ],
     "acceptedAsCanonical": false
   },
-  "lastDecision": "The Bihar official geometry candidate is reproducibly acquired and audited in CI. It matches the expected count and nearly covers the official state polygon, but 3 invalid geometries and 76 overlap pairs remain. Keep candidate-only until resolved or independently adjudicated."
+  "lastDecision": "Primary source endpoints timed out from the GitHub runner. Do not bypass network controls; use the state-government-hosted original Gazette copy as a fallback, preserve exact bytes/hash, and continue to treat source lineage as a verification requirement."
 }
