@@ -265,6 +265,27 @@
         "Village boundaries can support administrative crosswalks but are not AC boundaries; any population overlay would be DERIVED and depends on accepted AC geometry."
       ],
       "plannedUse": "Acquire and inspect archive/metadata; use only for documented administrative spatial joins."
+    },
+    {
+      "sourceId": "SRC-SECONDARY-ECI-2026-AC-U07-CONNECTOR-PROBE",
+      "subject": "Puducherry 2026 Assembly Constituency candidate geometry",
+      "publisher": "Third-party GitHub mirror repository (saisantoshv3/assemnbly_gis_files)",
+      "url": "https://raw.githubusercontent.com/saisantoshv3/assemnbly_gis_files/730263a08afa3cf7a0cd12db68bcddc90aefcc03/2026_assembly_election/puducherry_U07/puducherry.geojson",
+      "retrievedAt": "2026-10-25",
+      "format": "GeoJSON",
+      "authority": "SECONDARY_DERIVED_FROM_ECI_PORTAL",
+      "status": "DOWNLOADED_HASHED_STRUCTURAL_SANITY_ONLY",
+      "sha256": "2786e744aa7394c85d977a317a1d1e33cb3eb78dbea45a272375fc9a48e54338",
+      "fileBytes": 835011,
+      "version": "Upstream repository commit 730263a08afa3cf7a0cd12db68bcddc90aefcc03; Git blob d08bddb2ed68014428696cbcf4bec3a9b7b97cd4",
+      "scope": "Puducherry U07; 30 GeoJSON features",
+      "limitations": [
+        "Third-party mirror states its data is derived from the ECI May 2026 result portal; raw official ECI .js bytes were not acquired in this probe.",
+        "No licence file was found in the reviewed source repository root; do not redistribute or vendor until reuse rights are established.",
+        "Structural sanity checks only: 30 unique AC_NO values/names, 19 Polygon + 11 MultiPolygon, no empty geometries, unclosed rings or non-finite coordinates.",
+        "No full topology, overlap/gap, legal instrument/effective-date, or national coverage validation was performed."
+      ],
+      "plannedUse": "Discrepancy detection and reproducibility probe only; compare to direct ECI response and applicable legal instrument before any authoritative use."
     }
   ],
   "unresolvedGates": [
@@ -315,6 +336,7 @@
   "notes": [
     "Actual public source artifacts were downloaded in GitHub Actions run 40209022405 and SHA-256 hashed; detailed geometry findings are in reports/w021_5_datameet_ac_geometry_forensic_audit.json.",
     "Survey of India official ABDB page, Vector Data Catalog 2025 PDF and Metadata_ABDB.zip were downloaded and hashed. The metadata covers state, district, subdistrict and village boundaries, not statutory Assembly Constituency polygons.",
-    "The first ECI direct downloads failed (HTTP 406/404); a retry with browser headers and pinned third-party ECI-portal-derived GeoJSON candidates is running. Do not claim these ECI geometry files downloaded until the second artifact manifest confirms it."
+    "The first ECI direct downloads failed (HTTP 406/404); a retry with browser headers and pinned third-party ECI-portal-derived GeoJSON candidates is running. Do not claim these ECI geometry files downloaded until the second artifact manifest confirms it.",
+    "Additional connected-source probe: a 835,011-byte Puducherry GeoJSON mirror was acquired and SHA-256 hashed (2786e744aa7394c85d977a317a1d1e33cb3eb78dbea45a272375fc9a48e54338); its structural checks are documented in reports/evidence/w021_5_stage_b_acquisition_probe_2026-10-25.json. It is secondary, licence status is unconfirmed, and it does not close any external gate."
   ]
 }
