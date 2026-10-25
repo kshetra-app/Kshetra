@@ -1,8 +1,9 @@
 import type { FastifyReply, FastifyRequest } from 'fastify';
-import type { ApiErrorEnvelope, ApiErrorDetail } from '@kshetra/shared';
+import type { ApiErrorEnvelope, ApiErrorDetail, DataTruthStatus } from '@kshetra/shared';
 
 export interface SendErrorOptions {
   code?: string;
+  dataStatus?: DataTruthStatus;
   details?: ApiErrorDetail[];
 }
 
@@ -25,6 +26,7 @@ export function sendApiError(
     requestId: request.id,
     timestamp: new Date().toISOString(),
     ...(options?.code ? { code: options.code } : {}),
+    ...(options?.dataStatus ? { dataStatus: options.dataStatus } : {}),
     ...(options?.details ? { details: options.details } : {}),
   };
   return reply.status(statusCode).send(envelope);

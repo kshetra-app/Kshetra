@@ -1,5 +1,5 @@
 -- ============================================================================
--- 023: Local-Body Representatives & Urban/Rural Body Hierarchy
+-- 072: Forward reconciliation of Local-Body Representatives & Urban/Rural Body Hierarchy
 -- ============================================================================
 -- Extends 022 (mandals, gram_panchayats, polling_booths, local_body_elections)
 -- with first-class URBAN local bodies, ward/division sub-units for every
@@ -22,6 +22,8 @@
 --     (`digital_fingerprint`) and flow through a moderation queue before they
 --     mutate the canonical `representatives` row.
 --
+-- Forward reconciliation: safe whether legacy version 023 was applied, skipped, or partially observed.
+-- No staging/production database is touched by this repository change.
 -- Dependencies: 001_initial_schema.sql, 022_administrative_hierarchy.sql
 -- ============================================================================
 
@@ -449,27 +451,35 @@ CREATE INDEX IF NOT EXISTS idx_rep_edits_submitted  ON representative_edits(subm
 -- ╚══════════════════════════════════════════════════════════════════════════╝
 
 -- Reuse fn_set_updated_at() defined in 022.
+DROP TRIGGER IF EXISTS trg_ulb_updated_at ON urban_local_bodies;
 CREATE TRIGGER trg_ulb_updated_at
   BEFORE UPDATE ON urban_local_bodies
   FOR EACH ROW EXECUTE FUNCTION fn_set_updated_at();
+DROP TRIGGER IF EXISTS trg_ulb_wards_updated_at ON ulb_wards;
 CREATE TRIGGER trg_ulb_wards_updated_at
   BEFORE UPDATE ON ulb_wards
   FOR EACH ROW EXECUTE FUNCTION fn_set_updated_at();
+DROP TRIGGER IF EXISTS trg_zp_updated_at ON zilla_parishads;
 CREATE TRIGGER trg_zp_updated_at
   BEFORE UPDATE ON zilla_parishads
   FOR EACH ROW EXECUTE FUNCTION fn_set_updated_at();
+DROP TRIGGER IF EXISTS trg_zptc_updated_at ON zptc_divisions;
 CREATE TRIGGER trg_zptc_updated_at
   BEFORE UPDATE ON zptc_divisions
   FOR EACH ROW EXECUTE FUNCTION fn_set_updated_at();
+DROP TRIGGER IF EXISTS trg_mp_updated_at ON mandal_parishads;
 CREATE TRIGGER trg_mp_updated_at
   BEFORE UPDATE ON mandal_parishads
   FOR EACH ROW EXECUTE FUNCTION fn_set_updated_at();
+DROP TRIGGER IF EXISTS trg_mptc_updated_at ON mptc_divisions;
 CREATE TRIGGER trg_mptc_updated_at
   BEFORE UPDATE ON mptc_divisions
   FOR EACH ROW EXECUTE FUNCTION fn_set_updated_at();
+DROP TRIGGER IF EXISTS trg_gp_wards_updated_at ON gp_wards;
 CREATE TRIGGER trg_gp_wards_updated_at
   BEFORE UPDATE ON gp_wards
   FOR EACH ROW EXECUTE FUNCTION fn_set_updated_at();
+DROP TRIGGER IF EXISTS trg_representatives_updated_at ON representatives;
 CREATE TRIGGER trg_representatives_updated_at
   BEFORE UPDATE ON representatives
   FOR EACH ROW EXECUTE FUNCTION fn_set_updated_at();
@@ -495,6 +505,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+DROP TRIGGER IF EXISTS trg_retire_prior_representative ON representatives;
 CREATE TRIGGER trg_retire_prior_representative
   AFTER INSERT ON representatives
   FOR EACH ROW EXECUTE FUNCTION fn_retire_prior_representative();
@@ -558,33 +569,52 @@ ALTER TABLE representatives      ENABLE ROW LEVEL SECURITY;
 ALTER TABLE representative_edits ENABLE ROW LEVEL SECURITY;
 
 -- Public read for structural + representative data
+DROP POLICY IF EXISTS "Public read urban_local_bodies" ON urban_local_bodies;
 CREATE POLICY "Public read urban_local_bodies"  ON urban_local_bodies  FOR SELECT USING (true);
+DROP POLICY IF EXISTS "Public read ulb_wards" ON ulb_wards;
 CREATE POLICY "Public read ulb_wards"            ON ulb_wards            FOR SELECT USING (true);
+DROP POLICY IF EXISTS "Public read zilla_parishads" ON zilla_parishads;
 CREATE POLICY "Public read zilla_parishads"      ON zilla_parishads      FOR SELECT USING (true);
+DROP POLICY IF EXISTS "Public read zptc_divisions" ON zptc_divisions;
 CREATE POLICY "Public read zptc_divisions"       ON zptc_divisions       FOR SELECT USING (true);
+DROP POLICY IF EXISTS "Public read mandal_parishads" ON mandal_parishads;
 CREATE POLICY "Public read mandal_parishads"     ON mandal_parishads     FOR SELECT USING (true);
+DROP POLICY IF EXISTS "Public read mptc_divisions" ON mptc_divisions;
 CREATE POLICY "Public read mptc_divisions"       ON mptc_divisions       FOR SELECT USING (true);
+DROP POLICY IF EXISTS "Public read gp_wards" ON gp_wards;
 CREATE POLICY "Public read gp_wards"             ON gp_wards             FOR SELECT USING (true);
+DROP POLICY IF EXISTS "Public read representatives" ON representatives;
 CREATE POLICY "Public read representatives"      ON representatives      FOR SELECT USING (true);
 
 -- Service-role write on structural + representative tables
+DROP POLICY IF EXISTS "Service write urban_local_bodies" ON urban_local_bodies;
 CREATE POLICY "Service write urban_local_bodies" ON urban_local_bodies  FOR ALL USING (auth.role() = 'service_role') WITH CHECK (auth.role() = 'service_role');
+DROP POLICY IF EXISTS "Service write ulb_wards" ON ulb_wards;
 CREATE POLICY "Service write ulb_wards"          ON ulb_wards            FOR ALL USING (auth.role() = 'service_role') WITH CHECK (auth.role() = 'service_role');
+DROP POLICY IF EXISTS "Service write zilla_parishads" ON zilla_parishads;
 CREATE POLICY "Service write zilla_parishads"    ON zilla_parishads      FOR ALL USING (auth.role() = 'service_role') WITH CHECK (auth.role() = 'service_role');
+DROP POLICY IF EXISTS "Service write zptc_divisions" ON zptc_divisions;
 CREATE POLICY "Service write zptc_divisions"     ON zptc_divisions       FOR ALL USING (auth.role() = 'service_role') WITH CHECK (auth.role() = 'service_role');
+DROP POLICY IF EXISTS "Service write mandal_parishads" ON mandal_parishads;
 CREATE POLICY "Service write mandal_parishads"   ON mandal_parishads     FOR ALL USING (auth.role() = 'service_role') WITH CHECK (auth.role() = 'service_role');
+DROP POLICY IF EXISTS "Service write mptc_divisions" ON mptc_divisions;
 CREATE POLICY "Service write mptc_divisions"     ON mptc_divisions       FOR ALL USING (auth.role() = 'service_role') WITH CHECK (auth.role() = 'service_role');
+DROP POLICY IF EXISTS "Service write gp_wards" ON gp_wards;
 CREATE POLICY "Service write gp_wards"           ON gp_wards             FOR ALL USING (auth.role() = 'service_role') WITH CHECK (auth.role() = 'service_role');
+DROP POLICY IF EXISTS "Service write representatives" ON representatives;
 CREATE POLICY "Service write representatives"    ON representatives      FOR ALL USING (auth.role() = 'service_role') WITH CHECK (auth.role() = 'service_role');
 
 -- representative_edits: public read; authenticated users may submit; service/admin moderate.
+DROP POLICY IF EXISTS "Public read representative_edits" ON representative_edits;
 CREATE POLICY "Public read representative_edits"
   ON representative_edits FOR SELECT USING (true);
 
+DROP POLICY IF EXISTS "Authenticated submit representative_edits" ON representative_edits;
 CREATE POLICY "Authenticated submit representative_edits"
   ON representative_edits FOR INSERT
   WITH CHECK (auth.uid() = editor_user_id);
 
+DROP POLICY IF EXISTS "Service moderate representative_edits" ON representative_edits;
 CREATE POLICY "Service moderate representative_edits"
   ON representative_edits FOR UPDATE
   USING (auth.role() = 'service_role')

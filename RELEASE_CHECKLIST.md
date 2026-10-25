@@ -29,12 +29,13 @@
 - [ ] GeoJSON lazy-loading works per state
 - [ ] MMKV cache operational (verified in dev)
 - [ ] Image assets optimized (<100KB each)
-- [ ] Bundle size audit (`npx expo export --dump-sourcemap`)
+- [ ] Record actual release AAB and APK byte sizes, Metro dependency graph, native libraries, bundled data/assets, and cold-start/performance measurements; do not certify the 25 MB target from JS size alone
 
 ## Build
 
 ### EAS Build
-- [ ] `eas.json` profiles configured (development/preview/production)
+- [ ] `eas.json` profiles configured (development/preview/production); all production EXPO_PUBLIC endpoints/keys set in EAS environment and verified non-placeholder
+- [ ] Replace Apple ID, App Store Connect ID, Team ID, and Google service-account placeholders with real store-account values before submission
 - [ ] Mapbox download token set as EAS secret
 - [ ] Sentry DSN set as EAS secret (when ready)
 - [ ] `expo-dev-client` present for dev builds
@@ -43,7 +44,7 @@
 
 ### App Configuration
 - [ ] `app.json` version/buildNumber incremented
-- [ ] Bundle identifier correct: `com.kshetra.app`
+- [ ] Bundle identifier verified against `apps/mobile/app.json`: `in.kshetra.app` (all console listings must match)
 - [ ] Splash screen and icon assets present
 - [ ] Notification channels configured (Android)
 

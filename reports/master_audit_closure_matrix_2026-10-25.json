@@ -1,0 +1,349 @@
+{
+  "schema_version": "1.0",
+  "audit": {
+    "title": "PANIN / Kshetra — Master Blueprint vs Repository Audit",
+    "audit_date": "2026-10-25",
+    "source_file": "PANIN_Kshetra_Master_Blueprint_Repository_Audit_2026-10-25.md",
+    "source_observed_head": "9f00fbfa34d3d67b07fd5633501269715ee03c40",
+    "scope_count": 36,
+    "p0_count": 17,
+    "p1_count": 19
+  },
+  "execution": {
+    "repository": "kshetra-app/Kshetra",
+    "branch": "cto/full-master-audit-remediation-2026-10-25",
+    "observed_head": "f308042fadaf92e0f622232b7a242c95bf8ac533",
+    "base_snapshot_initial": "b51301f5557d8e2f7902d532a8996d6f7ab834ff",
+    "plan": "governance/plans/PLAN-MASTER-AUDIT-REMEDIATION-2026-10-25.md",
+    "pull_request": "https://github.com/kshetra-app/Kshetra/pull/28",
+    "production_or_staging_access": "NOT PERFORMED",
+    "database_sql_execution": "NOT PERFORMED",
+    "merge_or_final_acceptance": "NOT AUTHORIZED / NOT CLAIMED"
+  },
+  "findings": [
+    {
+      "id": "GOV-01",
+      "priority": "P0",
+      "status": "PARTIAL",
+      "finding": "Execution authority and repository state disagree.",
+      "work": "Added a 22-section scoped remediation plan and explicit branch-only authorization. Kept Stage B-only and external environment boundaries.",
+      "remaining": "Preserve historical W022 state while reconcile all current plan/decision/acceptance registers through the approved governance procedure; validate plan-gated CI against deliberate unauthorized changes.",
+      "closureEvidence": "Governance checks pass on the final head; independent reviewer verifies plan/directive lineage and register reconciliation."
+    },
+    {
+      "id": "GOV-02",
+      "priority": "P0",
+      "status": "PARTIAL",
+      "finding": "Continuity registers are stale and contradict current blocker evidence.",
+      "work": "Recorded branch scope and source baseline; planning a 36-item matrix.",
+      "remaining": "Reconcile every continuity register and W021.5 register totals to the full 36 findings without overwriting historical statuses or claiming external acceptance.",
+      "closureEvidence": "Machine-checked reconciliation report and register consistency tests against the actual current master."
+    },
+    {
+      "id": "GOV-03",
+      "priority": "P0",
+      "status": "BLOCKED_EXTERNAL_ADMIN",
+      "finding": "master is not protected by required branch rules.",
+      "work": "Blocking CI/security jobs were configured on the branch and master-trigger coverage corrected.",
+      "remaining": "Repository administrator must enable PR-only changes, required checks, CODEOWNERS/approvals, no force-push and no bypass. This connector session has not changed repository protection settings.",
+      "closureEvidence": "GitHub branch-protection/ruleset query and negative test proving a deliberately failing required check blocks merge."
+    },
+    {
+      "id": "CI-01",
+      "priority": "P0",
+      "status": "PARTIAL_FAILING_CHECKS",
+      "finding": "CI/security/locale gates can falsely pass.",
+      "work": "Removed fail-open continue-on-error patterns; enabled strict locale checks and master workflow coverage; made npm audit, OSV, SAST and SBOM blocking.",
+      "remaining": "Current OSV and npm audit gates still report dependency advisories, and SBOM plus main CI checks are not yet green on final HEAD. Fix advisories and rerun all checks; do not suppress scanner failures.",
+      "closureEvidence": "All required workflow jobs green on exact head; deliberate lint, locale, vulnerability and missing-SBOM tests fail non-zero."
+    },
+    {
+      "id": "CI-02",
+      "priority": "P1",
+      "status": "PARTIAL_PENDING_CI",
+      "finding": "Build/lint package scripts were no-op placeholders.",
+      "work": "Replaced mobile build and API/shared lint echoes with actual commands.",
+      "remaining": "Confirm clean-install API/shared/mobile lint, build and typecheck; address all newly exposed errors.",
+      "closureEvidence": "Required jobs execute real commands on final SHA and pass."
+    },
+    {
+      "id": "CI-03",
+      "priority": "P1",
+      "status": "PARTIAL_PENDING_CI",
+      "finding": "EAS workflow did not cover active master branch and LFS.",
+      "work": "Corrected master trigger and configured LFS checkout for EAS/build jobs.",
+      "remaining": "Prove LFS object hydration in real EAS/CI checkout, produce signed/unsigned build artifacts as allowed and capture size report.",
+      "closureEvidence": "Successful master-triggered build with hydrated DB/data and archived verified artifact-size report."
+    },
+    {
+      "id": "GEO-01",
+      "priority": "P0",
+      "status": "BLOCKED_EXTERNAL_DATA",
+      "finding": "Canonical state/constituency geography has placeholder or conflicting counts.",
+      "work": "Geography manifest now keeps only India overview bundled; assembly geometry is hidden unless source/effective/retrieval/version/hash/count provenance qualifies. Gate verified zero accepted remote boundary datasets; 31 assembly jurisdictions remain explicitly unavailable.",
+      "remaining": "Obtain and reconcile primary-source boundary artifacts, canonical AC identifiers/counts, legal-effective versions and topology; no placeholder/alternate mirror may be promoted to official.",
+      "closureEvidence": "Per-jurisdiction signed source/provenance/count/topology reconciliation report with zero unexplained differences."
+    },
+    {
+      "id": "GEO-02",
+      "priority": "P0",
+      "status": "OPEN_STATIC_IMPORTS",
+      "finding": "Large national geometry/election seed datasets remain in the mobile dependency graph.",
+      "work": "Removed/bounded national polygon runtime path and made unsupported polygons unavailable.",
+      "remaining": "stateDataAdapter.ts and dispatcher still statically import constituency/election datasets; isolate state-scoped data from the consumer Metro graph, preserve IDs and measure actual AAB/APK size.",
+      "closureEvidence": "Metro dependency graph proves state-lazy data loading; verified APK/AAB/JS/native asset report within agreed target."
+    },
+    {
+      "id": "GEO-03",
+      "priority": "P1",
+      "status": "OPEN",
+      "finding": "Competing static-seed and SQLite data paths exist; map still calls legacy dispatcher.",
+      "work": "Hardened SQLite seed builder/manifest gates and state-loader reset behavior.",
+      "remaining": "Migrate all map/data callers to one state-scoped versioned contract; explicit loading/offline/cached/unavailable states and retry/cancellation tests.",
+      "closureEvidence": "AST inventory and caller tests prove no synchronous all-state seed imports in critical map paths."
+    },
+    {
+      "id": "DATA-01",
+      "priority": "P0",
+      "status": "PARTIAL_PENDING_BUILD",
+      "finding": "SQLite seed database and committed manifest are inconsistent and LFS object might not hydrate.",
+      "work": "Enabled LFS checkouts; seed builder uses canonical source slugs, fails on LFS pointers, malformed rows and empty constituency jurisdictions; imports historical results/timeline and removes false success artifacts.",
+      "remaining": "Current CI must build actual DB; verify representative/history/timeline rows, checksums, counts and manifest against database bytes from clean checkout.",
+      "closureEvidence": "Verified database artifact and SHA-256, per-table/state row counts, manifest parity and clean CI/EAS build evidence."
+    },
+    {
+      "id": "DATA-02",
+      "priority": "P1",
+      "status": "PARTIAL_PENDING_TESTS",
+      "finding": "Seed loader can skip all subsequent state changes after one load.",
+      "work": "Ported state-switch load guard fix.",
+      "remaining": "Verify state A→B→A, overlapping requests, cancellation, failure/retry and empty-vs-error behavior with tests.",
+      "closureEvidence": "Automated lifecycle tests pass with bounded state-scoped cache."
+    },
+    {
+      "id": "DATA-03",
+      "priority": "P0",
+      "status": "PARTIAL_CROSS_ADAPTER",
+      "finding": "Mobile data-truth metadata is inconsistently represented; unknown values become zero/empty.",
+      "work": "Added explicit dataTruth metadata to UnifiedConstituency, null preservation, scenario labeling, unknown source semantics, separated Assam projection from 2021 actual and ECI result URLs/votes with UNVERIFIED status pending Form-20.",
+      "remaining": "Apply the same source/retrieval/effective/version/status/transformation contract across all critical mobile/API adapters and seed schemas; fix consumers to render null as unavailable rather than coercing.",
+      "closureEvidence": "Full adapter inventory, static gate prohibiting default-zero for unknown critical facts, source-level fixtures and all call-site tests pass."
+    },
+    {
+      "id": "DATA-04",
+      "priority": "P0",
+      "status": "BLOCKED_EXTERNAL_DB_AUTHORIZATION",
+      "finding": "Canonical DB/geometry population and staging/production data state are not proven.",
+      "work": "Added forward reconciliation migration source only and preserved isolation boundary.",
+      "remaining": "A separately authorized disposable/Postgres then staging read-only catalog/source reconciliation must prove schema, RLS, canonical counts, geometry/demographic FKs and actual migration history; no staging/production access occurred.",
+      "closureEvidence": "Authorized DB catalog results plus independent reconciliation and formal acceptance; production remains untouched."
+    },
+    {
+      "id": "API-01",
+      "priority": "P0",
+      "status": "PARTIAL_PENDING_TESTS",
+      "finding": "Campaign endpoints can return synthetic fixtures for empty/error DB.",
+      "work": "Removed selected campaign demo/in-memory fallbacks; updated route unit tests.",
+      "remaining": "Audit all campaign list/create/booth/volunteer/budget/analytics endpoints and verify no fallback in any production path.",
+      "closureEvidence": "DB-error, zero-row, provider outage, auth and persisted success/failure tests all pass against disposable Postgres."
+    },
+    {
+      "id": "API-02",
+      "priority": "P0",
+      "status": "PARTIAL_PENDING_TESTS",
+      "finding": "Political-ad review queue can fall back to in-memory demo ads.",
+      "work": "Removed selected MEMORY_ADS production fallthrough and amended tests.",
+      "remaining": "Inspect all political-ad routes, certification/approval gates, auditing and state persistence across retries.",
+      "closureEvidence": "Negative test proves DB error cannot return demo ads and only human-certified ads enter delivery."
+    },
+    {
+      "id": "API-03",
+      "priority": "P1",
+      "status": "OPEN",
+      "finding": "Manifesto voting and politician grievance workflows return 501 or fabricated empty results.",
+      "work": "No evidence of durable end-to-end implementation in this branch.",
+      "remaining": "Implement schema-backed workflow or return typed unavailable state without fake success; include auth, transitions, history, retry and notification/deep-link integration.",
+      "closureEvidence": "Actual persistent test journey from submission through vote/grievance state transitions."
+    },
+    {
+      "id": "API-04",
+      "priority": "P1",
+      "status": "PARTIAL",
+      "finding": "Broadcast geography returns empty assembly results for all but three states.",
+      "work": "Removed several deceptive fallback paths in adjacent broadcast route changes.",
+      "remaining": "Complete canonical state-scoped result contract or explicitly typed unavailable status for unsupported state; no silent [] on unsupported/error.",
+      "closureEvidence": "State-by-state tests verify supported, unsupported, empty, offline and provider failure semantics."
+    },
+    {
+      "id": "API-05",
+      "priority": "P1",
+      "status": "OPEN",
+      "finding": "Mobile direct Supabase queries can mask exceptions as empty data and mix API paths.",
+      "work": "Added broader API error dataStatus contract; hardened config failure paths.",
+      "remaining": "Inventory every direct Supabase/raw fetch operation; standardize EMPTY versus ERROR/OFFLINE/UNAVAILABLE; move sensitive writes through validated API.",
+      "closureEvidence": "Complete operation ownership matrix and negative adapter tests."
+    },
+    {
+      "id": "CFG-01",
+      "priority": "P1",
+      "status": "PARTIAL_PENDING_RUNTIME",
+      "finding": "Supabase clients can use placeholder config or fall back from service role to anon.",
+      "work": "API Supabase bootstrap fails closed in production on invalid/missing URL or service-role credential; placeholders are test-only; mobile config verifier and runtime guards added.",
+      "remaining": "Verify all production callers fail readiness before use and public Expo variables cannot include privileged keys; run deployed-config tests only under authorization.",
+      "closureEvidence": "Unit/config negative tests and actual deployment environment audit."
+    },
+    {
+      "id": "CFG-02",
+      "priority": "P1",
+      "status": "PARTIAL",
+      "finding": "Environment templates mix server-only secrets with mobile public variables.",
+      "work": "Updated .env example/mobile config boundary and runtime validation.",
+      "remaining": "Audit all env files/build workflows, secret scanning and EAS/Railway variables; separate server-only/public variable templates.",
+      "closureEvidence": "Secret scan clean, bundle inspection shows no privileged credentials, variable ownership matrix reviewed."
+    },
+    {
+      "id": "NEWS-01",
+      "priority": "P1",
+      "status": "OPEN",
+      "finding": "News ingestion remains a process-local RSS cache, lacking durable provenance and geographic/entity association.",
+      "work": "Not addressed beyond general governance/security gates.",
+      "remaining": "Implement durable source snapshots, provenance, transformed payload/version, canonical entity/geography mapping, errors and restart-safe ingestion; retain AI optional.",
+      "closureEvidence": "Replayable ingestion fixture and restart/retry tests with provenance records."
+    },
+    {
+      "id": "WEB-01",
+      "priority": "P0",
+      "status": "OPEN",
+      "finding": "Webhook worker startup missing and SQL claim result shape mismatches TypeScript queue mapper.",
+      "work": "Webhook audit is included in plan and requires persistent claim mapping/worker verification.",
+      "remaining": "Implement real worker entrypoint/startup, map flat fn_claim_webhook_batch rows exactly, lease/ack semantics, bounded dispatch and shutdown; do not use in-memory mode in production.",
+      "closureEvidence": "Disposable PostgreSQL integration test claims row, dispatches once, settles and retries with leases; worker process observed running."
+    },
+    {
+      "id": "WEB-02",
+      "priority": "P0",
+      "status": "OPEN",
+      "finding": "Webhook event persistence and delivery fan-out are non-atomic; duplicate retry may lose fan-out.",
+      "work": "No atomic DB RPC/transaction implementation yet.",
+      "remaining": "Move event insertion + scoped subscription resolution + delivery fan-out into one transactional DB function/transaction with idempotent repair semantics.",
+      "closureEvidence": "Fault injection between event/fan-out proves all-or-nothing; duplicate idempotency retries repair missing deliveries."
+    },
+    {
+      "id": "WEB-03",
+      "priority": "P0",
+      "status": "PARTIAL",
+      "finding": "Webhook persistence silently becomes in-memory; encryption key has test fallback and mismatched env names.",
+      "work": "API service role config fail-closed, but webhook crypto/provider path still needs focused remediation.",
+      "remaining": "Require explicit durable queue config outside tests; unify env key names, fail startup/readiness on absent/invalid key, key rotation tests.",
+      "closureEvidence": "Negative startup tests and env matrix; production-like mode cannot choose in-memory queue or default encryption secret."
+    },
+    {
+      "id": "WEB-04",
+      "priority": "P1",
+      "status": "OPEN",
+      "finding": "Webhook tenant/app scope, response overflow, and SaaS OpenAPI coverage incomplete.",
+      "work": "No confirmed full fix yet.",
+      "remaining": "Scope subscription selection to app ID, settle exactly once on overflow/error, add documented webhook operations to authoritative OpenAPI.",
+      "closureEvidence": "Cross-application negative isolation tests, response overflow tests, schema/spec parity gate."
+    },
+    {
+      "id": "WEB-05",
+      "priority": "P1",
+      "status": "OPEN",
+      "finding": "W022 evidence bundle is not reproducible from tracked scripts/output.",
+      "work": "A general evidence-plan and branch CI artifacts are defined.",
+      "remaining": "Track all referenced concurrency/worker/security probes with exact commands, stdout, versions and hashes.",
+      "closureEvidence": "Clean-checkout evidence runner reproduces claimed result counts and hashes."
+    },
+    {
+      "id": "API-06",
+      "priority": "P1",
+      "status": "OPEN",
+      "finding": "API contract drift gate covers only a narrow subset of routes/callers.",
+      "work": "No full AST inventory of all clients/routes completed.",
+      "remaining": "Expand route and client operation inventory to Fastify, raw fetch, Supabase and background jobs; derive OpenAPI/contract assertions.",
+      "closureEvidence": "Automated full operation inventory with unclassified operations = 0."
+    },
+    {
+      "id": "PRIV-01",
+      "priority": "P0",
+      "status": "BLOCKED_EXTERNAL_AUTHORIZATION",
+      "finding": "Account deletion, DPDP consent, retention and full privacy lifecycle are not demonstrated.",
+      "work": "No production-complete deletion lifecycle in this branch.",
+      "remaining": "Implement/validate data inventory, consent history, export/delete, retention and third-party erasure. Production/provider execution requires explicit authorization and compliance review.",
+      "closureEvidence": "End-to-end test account deletion across DB/storage/providers and compliance sign-off; audit event proves deletion completion."
+    },
+    {
+      "id": "E2E-01",
+      "priority": "P0",
+      "status": "BLOCKED_EXTERNAL_SANDBOX",
+      "finding": "Blueprint end-to-end citizen/creator/aspirant/journalist/campaign/advertiser/developer journeys are unverified.",
+      "work": "Unit/source-level gates improved; no end-to-end run claimed.",
+      "remaining": "Use disposable Postgres and provider sandboxes to execute all journeys; retain assertions, logs and generated artifacts.",
+      "closureEvidence": "Reproducible full persona journey matrix with no fixture-only completion."
+    },
+    {
+      "id": "PROD-01",
+      "priority": "P0",
+      "status": "BLOCKED_EXTERNAL_AUTHORIZATION",
+      "finding": "Live production/staging health and actual APK/AAB/runtime are not verified.",
+      "work": "No production/staging traffic or database mutation was performed.",
+      "remaining": "After separate authorization, verify current deploy health/DB readiness, real AAB/APK and rollback; keep air-gap in place meanwhile.",
+      "closureEvidence": "Timestamped read-only health, build artifact hashes, latency/error logs, restore/rollback and independent acceptance."
+    },
+    {
+      "id": "PROD-02",
+      "priority": "P1",
+      "status": "BLOCKED_EXTERNAL_SANDBOX",
+      "finding": "Commercial, campaign, media and developer billing workflows are not certified end-to-end.",
+      "work": "No external payment/live-media/provider account action performed.",
+      "remaining": "Run sandbox transactions through ledger/spend/invoice/refund/replay and media/API billing journeys; require compliance/revenue review.",
+      "closureEvidence": "Provider IDs, transaction=ledger=spend=invoice reconciliation, playback/archive/analytics and API quota invoice records."
+    },
+    {
+      "id": "RELEASE-01",
+      "priority": "P1",
+      "status": "OPEN_EXTERNAL_RELEASE_SETUP",
+      "finding": "Store package IDs and EAS/store credentials contain placeholders or contradictions.",
+      "work": "No store/app-store configuration mutation performed.",
+      "remaining": "Resolve canonical Android package identifier, replace placeholder ASC/team/service files only with owner-provided credentials and validate store signing identities.",
+      "closureEvidence": "EAS profile validation and signed bundle metadata match approved store IDs and credentials."
+    },
+    {
+      "id": "PERF-01",
+      "priority": "P1",
+      "status": "OPEN_STATIC_DEPENDENCY",
+      "finding": "react-native-webrtc remains in consumer mobile dependency graph.",
+      "work": "No measured dependency removal completed.",
+      "remaining": "Determine whether required broadcaster features can be separated into a separate app/optional bundle; measure native sizes before removal, keep no hidden regression.",
+      "closureEvidence": "Dependency graph and before/after APK/AAB native-library report prove target and broadcaster behavior."
+    },
+    {
+      "id": "PERF-02",
+      "priority": "P1",
+      "status": "BLOCKED_ARTIFACT_EVIDENCE",
+      "finding": "No actual APK/AAB/JS/native size or performance evidence for blueprint target.",
+      "work": "Added export/report gate, but no accepted signed AAB/APK evidence yet.",
+      "remaining": "Run permitted build; measure AAB, universal/split APK, JS, assets, native libraries and app start/map/feed latency on target devices.",
+      "closureEvidence": "Reproducible artifact-size and device performance report."
+    },
+    {
+      "id": "I18N-01",
+      "priority": "P1",
+      "status": "PARTIAL_PENDING_CI",
+      "finding": "Locale parity and completeness have not been demonstrated uniformly across all 13 required languages.",
+      "work": "Changed the locale gate to strict mode so discrepancies cannot pass silently.",
+      "remaining": "Run the strict 13-language check, fill missing/incorrect translations across routes and notification/email templates, and verify formatting/accessibility fallback behavior.",
+      "closureEvidence": "Strict locale verifier passes with exact key parity or approved, machine-checked intentional exceptions; screenshots/string tests cover critical workflows."
+    },
+    {
+      "id": "DB-01",
+      "priority": "P1",
+      "status": "PARTIAL_BLOCKED_DB_HISTORY",
+      "finding": "Two migration files share version prefix 023 and migration identity is not unique.",
+      "work": "Added a whole-tree version uniqueness gate; removed duplicate active 023 file and represented its schema/grants as forward reconciliation migrations 072 and 073.",
+      "remaining": "Do not execute until authorized DBA confirms real applied migration history and validates idempotency, ownership, grants, triggers, policies and schema dependency order in disposable PostgreSQL first.",
+      "closureEvidence": "Unique migration versions; disposable PostgreSQL applies all migrations cleanly; DBA-approved applied-history reconciliation for target environment."
+    }
+  ]
+}
