@@ -758,6 +758,10 @@ async function main() {
     }
 
     // Optimize
+    if (Object.keys(manifest).length !== 31) throw new Error(`Expected 31 state manifests, got ${Object.keys(manifest).length}`);
+    const stateRowCount = db.prepare('SELECT count(*) AS n FROM seed_manifest').get().n;
+    if (stateRowCount !== 31) throw new Error(`Expected 31 seed_manifest rows, got ${stateRowCount}`);
+
     console.log('\n⚙️  Optimizing database...');
     db.exec('VACUUM; ANALYZE;');
 
