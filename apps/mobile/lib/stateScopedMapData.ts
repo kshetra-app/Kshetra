@@ -180,12 +180,12 @@ function validatePayload(value: unknown, requestedCode: string): StateMapData {
     if (!value || typeof value !== 'object' || Array.isArray(value)) throw new Error(`Invalid constituency row ${index}`);
     const row = value as Record<string, unknown>;
     if (typeof row.acNo !== 'number' || !Number.isInteger(row.acNo) || row.acNo < 1) throw new Error(`Invalid canonical AC number at row ${index}`);
-    const expectedId = `${requestedCode}-AC-${row.acNo}`;
-    if (row.id !== expectedId) throw new Error(`Canonical constituency ID mismatch at row ${index}; expected ${expectedId}`);
-    if (row.stateCode !== requestedCode) throw new Error(`State code mismatch in constituency ${expectedId}`);
-    if (typeof row.name !== 'string' || !row.name.trim()) throw new Error(`Constituency name missing for ${expectedId}`);
-    if (seenIds.has(expectedId) || seenNumbers.has(row.acNo)) throw new Error(`Duplicate canonical constituency ID ${expectedId}`);
-    seenIds.add(expectedId);
+    if (typeof row.id !== 'string' || !row.id.trim()) throw new Error(`Canonical constituency ID missing at row ${index}`);
+    const canonicalId = row.id;
+    if (row.stateCode !== requestedCode) throw new Error(`State code mismatch in canonical constituency ${canonicalId}`);
+    if (typeof row.name !== 'string' || !row.name.trim()) throw new Error(`Constituency name missing for ${canonicalId}`);
+    if (seenIds.has(canonicalId) || seenNumbers.has(row.acNo)) throw new Error(`Duplicate canonical constituency ID ${canonicalId}`);
+    seenIds.add(canonicalId);
     seenNumbers.add(row.acNo);
     return row as unknown as StateMapConstituency;
   });
