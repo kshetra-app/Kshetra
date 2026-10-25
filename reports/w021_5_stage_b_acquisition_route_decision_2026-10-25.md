@@ -116,3 +116,21 @@ A new acquisition probe is queued as [run 40218632258](https://github.com/kshetr
 The fallback route succeeded in run [40218632258](https://github.com/kshetra-app/Kshetra/actions/runs/40218632258): the Andhra Pradesh government-hosted copy of the Gazette of India / Andhra Pradesh Reorganisation Act, 2014 returned HTTP 200 as a 71-page PDF (231,596 bytes), SHA-256 `84cd566b917f9a3f600c47f6540520c950166b424a964ad37d64dc3c968114aa`. Schedule XXVII — Telangana, Table A (Assembly Constituencies) is located on zero-based PDF page index 39 (printed page 40). The acquisition evidence is preserved in `reports/evidence/w021_5_ap_reorganisation_act_acquisition_40218632258.json`.
 
 The PDF is hosted on an Andhra Pradesh government domain, but its byte identity has **not** been compared with the India Code copy. The ECI 2024 press note and Removal-of-Difficulties order endpoints still timed out and remain open corroboration gaps. A parser has been added to extract the 119 statutory AC serials, names, districts and extents from Schedule XXVII, verify the 1–119 sequence and preserve the PDF hash and extraction history. Its CI run must pass before this roster is used for GIS adjudication.
+
+
+### Statutory roster vs TGRAC candidate layers — run 40219308671
+
+The combined workflow acquired both candidate layers and completed a 119-record name crosswalk against Schedule XXVII:
+
+- `EndowmentLands_Admin_2026`: 119 features, 119 unique names; 107 exact normalized-name matches and 12 provisional spelling aliases; zero unresolved after aliases.
+- `Administrative_Information_System`: 119 features, 119 unique names; 108 exact normalized-name matches and 11 provisional spelling aliases; zero unresolved after aliases.
+- The three EndowmentLands variants are also recorded in the source register. `Admin_2026` and `Admin_New` raw responses are byte-identical; `Admin_Old` differs.
+- Provisional spelling variants include Bellampalli/Bellampalle, Armur/Armoor, Jagtial/Jagatial, Sircilla/Sirisilla, Huzurabad/Huzarabad, Vicarabad/Vikarabad, Secunderabad Cantt./Cont, Mahbubnagar/Mahabubnagar, Devarkadra/Devarakdra, Nagarjuna Sagar/Nagarjunasagar, Huzurnagar/Huzuranagar, and Jangaon/Jangoan. The older AdministrativeInfoSystem layer spells Jangaon exactly, while the 2026 layer uses Jangoan.
+
+Full evidence summary: `reports/evidence/w021_5_telanganaschedule_tgrac_name_crosswalk_40219308671.json`. The full crosswalk output is retained in run 40219308671's artifact (artifact SHA-256 `8439368e86d5c6179c35a6bd8525cc430e4897aa6705b0df8fc815da54d3220e`).
+
+This is only a **name/roster crosswalk**. The aliases are inferred, not official declarations. TGRAC `OBJECTID` is not a canonical AC number. No statutory extent-to-polygon validation was performed, because Schedule XXVII references administrative units as of 15 February 2004 and Census 2001 municipal wards. The existing geometry audit still shows material disagreement for seven ACs and the shared invalid Dornakal polygon. Therefore, no TGRAC layer is accepted as canonical.
+
+### Additional legal-chain corroboration candidates
+
+The official Chief Electoral Officer, Telangana 2024 election schedule PDF and PIB release `PRID=2015227` both corroborate the chain involving the 2014 Reorganisation Act, the 2015 Removal of Difficulties Order, and the 2018 ECI notification. They are recorded in the source register as additional official candidates; raw bytes and SHA-256 still need acquisition. They do not replace the 2018 notification or Gazette itself.
