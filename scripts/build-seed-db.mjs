@@ -298,8 +298,27 @@ async function importSeedData(db) {
           row.currentParty||row[`winner${year}`]||'',year);
       }
 
-      const profilesModule = await import(`file://${path.resolve(rootDir,`data/seed/${sourceName}-mla-profiles.ts`)}`).catch(error => { if (error?.code === 'ERR_MODULE_NOT_FOUND') return null; throw error; });
-      const profiles = profilesModule ? (profilesModule[`${code}_MLA_PROFILES`] || profilesModule[`${({TS:'TS',AP:'AP',KA:'KA',MH:'MH',TN:'TN',KL:'KL',WB:'WB',UP:'UP',RJ:'RJ',GJ:'GJ',JH:'JH',OD:'OD',DL:'DL',PB:'PB',HR:'HR',CG:'CG',MP:'MP',BR:'BR',AS:'AS',GA:'GA',HP:'HP',MN:'MN',ML:'ML',MZ:'MZ',NL:'NL',TR:'TR',SK:'SK',AR:'AR',UK:'UK',PY:'PY',JK:'JK'})[code]}_MLA_PROFILES`] || profilesModule[Object.keys(profilesModule).find(key => /MLA.*PROFILES/i.test(key))] || []) : [];
+      const profilesPath = path.resolve(rootDir,`data/seed/${sourceName}-mla-profiles.ts`);
+      const profilesModule = fs.existsSync(profilesPath) ? await import(`file://${profilesPath}`) : null;
+      // Prefer the one canonical export explicitly named in the actual source file.
+      const profileArrays = profilesModule
+        ? Object.entries(profilesModule).filter(([key,value]) => /MLA.*PROFILES$/i.test(key) && Array.isArray(value))
+        : [];
+      const preferredProfileKey = profilesModule && Object.keys(profilesModule).find(key =>
+        key === ({
+          TS:'TS_MLA_PROFILES', AP:'AP_MLA_PROFILES', KA:'KA_MLA_PROFILES', MH:'MH_MLA_PROFILES',
+          TN:'TN_MLA_PROFILES', KL:'KL_MLA_PROFILES', WB:'WB_MLA_PROFILES', UP:'UP_MLA_PROFILES',
+          RJ:'RJ_MLA_PROFILES', GJ:'GJ_MLA_PROFILES', JH:'JH_MLA_PROFILES', OD:'OD_MLA_PROFILES',
+          DL:'DL_MLA_PROFILES', PB:'PB_MLA_PROFILES', HR:'HR_MLA_PROFILES', CG:'CG_MLA_PROFILES',
+          MP:'MP_MLA_PROFILES', BR:'BR_MLA_PROFILES', AS:'AS_MLA_PROFILES', GA:'GA_MLA_PROFILES',
+          HP:'HP_MLA_PROFILES', MN:'MN_MLA_PROFILES', ML:'ML_MLA_PROFILES', MZ:'MZ_MLA_PROFILES',
+          NL:'NL_MLA_PROFILES', TR:'TR_MLA_PROFILES', SK:'SK_MLA_PROFILES', AR:'AR_MLA_PROFILES',
+          UK:'UK_MLA_PROFILES', PY:'PY_MLA_PROFILES', JK:'JK_MLA_PROFILES',
+        })[code]
+      );
+      const profiles = preferredProfileKey && Array.isArray(profilesModule[preferredProfileKey])
+        ? profilesModule[preferredProfileKey]
+        : profileArrays.length === 1 ? profileArrays[0][1] : [];
       const insertMla = db.prepare(`INSERT INTO mla_profiles
         (id,state_code,ac_no,name,party,gender,terms_served,age,dob,dob_estimated,education,profession,criminal_cases,total_assets,total_liabilities,marital_status,photo_url,constituency_name,district,source_url)
         VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`);
