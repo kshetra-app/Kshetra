@@ -112,8 +112,8 @@ try {
   if (totals.representatives < MIN_REPRESENTATIVES) {
     fail(`representatives has ${totals.representatives} rows; minimum expected by runtime loader is ${MIN_REPRESENTATIVES}`);
   }
-  if (totals.mla_profiles <= 0 || totals.demographics <= 0 || totals.election_history <= 0) {
-    fail('required seed datasets are empty (MLA profiles, demographics, and election history must be populated)');
+  if (totals.mla_profiles <= 0 || totals.demographics <= 0 || totals.historical_results <= 0 || totals.political_timeline <= 0 || totals.election_history <= 0 || totals.election_history_results <= 0) {
+    fail('required seed datasets are empty (MLA profiles, demographics, historical results, political timeline, election history and party-result rows must be populated');
   }
   // Match the production loader's representative query, not just file size.
   const smoke = db.prepare('SELECT id, state_code, office_type, name FROM representatives ORDER BY state_code LIMIT 1').get();
