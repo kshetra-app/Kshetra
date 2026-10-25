@@ -28,7 +28,7 @@ assert.match(section(ci, 'governance'), /verify-13-locales\.mjs --strict/, 'CI m
 assert.match(section(ci, 'lint'), /prettier --check/);
 assert.match(section(ci, 'lint'), /eslint .*--max-warnings=0/);
 assert.match(section(sec, 'sca'), /npm audit --audit-level=high/);
-assert.match(section(sec, 'sca'), /osv/i);
+assert.match(section(sec, 'sca'), /ghcr\.io\/google\/osv-scanner:v2\.4\.0 scan source -r/);
 assert.match(section(sec, 'sast'), /semgrep/i);
 assert.match(section(sec, 'sbom'), /cyclonedx/);
 assert.match(section(sec, 'sbom'), /test -s sbom\.cdx\.json/);
