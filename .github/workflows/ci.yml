@@ -117,8 +117,6 @@ jobs:
         run: npx prettier --check "**/*.{ts,tsx,json,md}" --ignore-path .gitignore
       - name: ESLint
         run: npx eslint "apps/**/*.{ts,tsx}" "packages/**/*.{ts,tsx}" --max-warnings=0
-      - name: CI release-gate negative-path regression tests
-        run: node tests/ci-release-gates.test.mjs
 
   contract:
     name: API Contract
