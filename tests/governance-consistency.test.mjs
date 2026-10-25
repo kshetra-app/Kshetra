@@ -253,7 +253,9 @@ assert.ok(implAuthCommitField, 'IMPLEMENTATION_AUTHORIZATION_COMMIT must be defi
 
 // Invariant: If implementation occurred or exists, either it was authorized by CTO or recorded as a breach
 if (implAuthField === 'YES') {
-  assert.strictEqual(planStatusField, 'APPROVED', 'If IMPLEMENTATION_AUTHORIZATION is YES, PLAN_STATUS must be APPROVED');
+  // The authoritative state may include a ratification suffix after the canonical status.
+  // Validate the status token, not byte-for-byte equality with the bare word.
+  assert.match(planStatusField, /^APPROVED(?:\\s*\\(.*\\))?$/, 'If IMPLEMENTATION_AUTHORIZATION is YES, PLAN_STATUS must begin with APPROVED and may carry its ratification metadata');
   assert.ok(
     implAuthCommitField && implAuthCommitField !== 'NONE',
     'If IMPLEMENTATION_AUTHORIZATION is YES, IMPLEMENTATION_AUTHORIZATION_COMMIT must be a valid commit SHA'
