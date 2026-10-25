@@ -54,7 +54,7 @@ const version = JSON.parse(fs.readFileSync(versionPath, 'utf8'));
 if (!/^[a-f0-9]{64}$/.test(version.sha256 || '') || version.sha256 !== fullSha256) {
   fail('seed-db-version.json SHA-256 does not match generated database bytes');
 }
-if (version.sizeBytes !== stat.size) fail('seed-db-version.json sizeBytes does not match database size');
+if (version.sizeBytes !== stat.size) fail('seed-db-version.json sizeBytes does not match database size');\nif (version.version !== fullSha256.slice(0, 16)) fail('seed-db-version.json version prefix does not match database SHA-256');
 
 const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
 const db = new Database(dbPath, { readonly: true, fileMustExist: true });
