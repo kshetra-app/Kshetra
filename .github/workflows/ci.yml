@@ -135,6 +135,35 @@ jobs:
         run: npx tsc --noEmit
         working-directory: apps/mobile
 
+  mobile-build:
+    name: Mobile Metro Export & Asset Budget
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
+      - name: Build shared package
+        run: npm run build -w @kshetra/shared
+      - name: Export real Android Metro bundle
+        run: npm run build -w @kshetra/mobile
+      - name: Verify Metro output, asset budget and SHA-256 manifest
+        run: node scripts/verify-mobile-export.mjs
+      - name: Upload Metro graph and measured payload report
+        uses: actions/upload-artifact@v4
+        with:
+          name: mobile-metro-export-${{ github.sha }}
+          path: |
+            apps/mobile/dist
+            reports/mobile-metro-export-report.json
+          if-no-files-found: error
+          retention-days: 30
+
   lint:
     name: Lint
     runs-on: ubuntu-latest
