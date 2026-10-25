@@ -155,11 +155,8 @@ def audit_file(path: Path):
 
 results = []
 errors = []
-for name in ("telangana-ac-geometry.bin", "telangana-2026-ac-geometry.bin"):
-    path = RAW / name
-    if not path.exists():
-        results.append({"sourceFile": str(path), "status": "NOT_PRESENT_IN_THIS_RUN"})
-        continue
+for path in sorted(RAW.glob("telangana*-ac-geometry.bin")):
+    name = path.name
     try:
         results.append({"status": "AUDITED", **audit_file(path)})
     except Exception as exc:
