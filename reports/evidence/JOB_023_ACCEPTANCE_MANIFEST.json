@@ -2,6 +2,7 @@
   "jobId": "JOB 023",
   "jobName": "DELIMITATION WATCH",
   "timestamp": "2026-10-25T17:07:53.083Z",
+  "commitSha": "760094d93ee43e62a12260173669c5e7b415a77c",
   "governance": {
     "ruleIV001Status": "REMEDIATED / TESTED / READY FOR INDEPENDENT CTO ADJUDICATION (ROUND 2)",
     "stagingProductionAirGap": "STRICTLY_ENFORCED (0 queries, 0 mutations)",

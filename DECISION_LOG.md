@@ -3755,6 +3755,7 @@
 - **Status:** REMEDIATED / TESTED / READY FOR INDEPENDENT CTO ADJUDICATION (ROUND 2)
 - **Authority:** CTO DIRECTIVE — JOB 023 REMEDIATION ROUND 2 / Rule IV-001 Non-Self-Acceptance
 - **Baseline Commit:** `ca919ce362d200407ad253848a2611982cb9872a` (incorporating previous remediation commit `a9d468680111b70f53f006bc2c56c64825639fef`)
+- **Remediation Head Commit:** `760094d93ee43e62a12260173669c5e7b415a77c`
 - **Context:** Independent CTO review in Round 2 mandated: (1) investigation and correction of conflated legal instruments in the delimitation fixture; (2) evidence-based OFFICIAL classification backed by authoritative legal corpus and anti-spoofing tests; (3) independent closure of SSRF security claims via socket pinning with TLS SNI/certificate hostname verification and streaming/deadline bounds; (4) durable persistence verification on a separate PostgreSQL 16 server including container restart and concurrent lease locking; (5) governance reconciliation.
 - **Decisions & Implementation Measures:**
   1. **Disentanglement of Legal Instruments & Primary Provenance:**
