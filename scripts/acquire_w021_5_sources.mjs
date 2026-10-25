@@ -226,18 +226,18 @@ const discovered = new Map();
 for (const index of indexSources) {
   try {
     const html = await fs.readFile(index.localPath, 'utf8');
-    const anchorPattern = /<a\\b[^>]*href\\s*=\\s*["']([^"']+)["'][^>]*>([\\s\\S]*?)<\\/a>/gi;
+    const anchorPattern = /<a\b[^>]*href\s*=\s*["']([^"']+)["'][^>]*>([\s\S]*?)<\/a>/gi;
     let match;
     while ((match = anchorPattern.exec(html)) !== null) {
       const href = match[1].replace(/&amp;/g, '&').trim();
-      const label = match[2].replace(/<[^>]+>/g, ' ').replace(/\\s+/g, ' ').trim();
+      const label = match[2].replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
       if (!href || /^(#|javascript:|mailto:)/i.test(href)) continue;
       const absolute = new URL(href, index.finalUrl).toString();
       if (!hostAllowed(absolute)) continue;
       const pathLower = new URL(absolute).pathname.toLowerCase();
       const labelLower = label.toLowerCase();
-      const isDataFile = /\\.(pdf|xlsx?|csv|zip|geojson|shp)(?:$|\\?)/i.test(absolute);
-      const isRelevantLabel = /(form\\s*20|statistical report|assembly election|election results|primary census abstract|pca|administrative boundary|vector data)/i.test(labelLower);
+      const isDataFile = /\.(pdf|xlsx?|csv|zip|geojson|shp)(?:$|\?)/i.test(absolute);
+      const isRelevantLabel = /(form\s*20|statistical report|assembly election|election results|primary census abstract|pca|administrative boundary|vector data)/i.test(labelLower);
       if (!(isDataFile || isRelevantLabel)) continue;
       if (discovered.size < 40) {
         discovered.set(absolute, {url:absolute,label:label.slice(0,240),indexSourceId:index.id,extension:path.extname(pathLower).slice(1)||'html'});
