@@ -198,43 +198,46 @@ function initSchema(db) {
 // ═════════════════════════════════════════════════════════════════════════
 
 async function importSeedData(db) {
+  // Slugs are canonical source filenames, not derived from state codes.
+  // Years point only to already represented election-source fields; proposed or
+  // projection-only 2026 fields must not be imported as certified results.
   const stateConfigs = [
-    { code: 'TS', year: 2023 },
-    { code: 'AP', year: 2024 },
-    { code: 'KA', year: 2023 },
-    { code: 'MH', year: 2024 },
-    { code: 'TN', year: 2026 },
-    { code: 'KL', year: 2026 },
-    { code: 'WB', year: 2026 },
-    { code: 'UP', year: 2022 },
-    { code: 'RJ', year: 2023 },
-    { code: 'GJ', year: 2022 },
-    { code: 'JH', year: 2024 },
-    { code: 'OD', year: 2024 },
-    { code: 'DL', year: 2022 },
-    { code: 'PB', year: 2022 },
-    { code: 'HR', year: 2024 },
-    { code: 'CG', year: 2023 },
-    { code: 'MP', year: 2023 },
-    { code: 'BR', year: 2020 },
-    { code: 'AS', year: 2026 },
-    { code: 'GA', year: 2022 },
-    { code: 'HP', year: 2022 },
-    { code: 'MN', year: 2022 },
-    { code: 'ML', year: 2023 },
-    { code: 'MZ', year: 2023 },
-    { code: 'NL', year: 2023 },
-    { code: 'TR', year: 2023 },
-    { code: 'SK', year: 2024 },
-    { code: 'AR', year: 2024 },
-    { code: 'UK', year: 2022 },
-    { code: 'PY', year: 2026 },
-    { code: 'JK', year: 2024 },
+    { code: 'TS', slug: 'telangana', year: 2023 },
+    { code: 'AP', slug: 'andhra-pradesh', year: 2024 },
+    { code: 'KA', slug: 'karnataka', year: 2023 },
+    { code: 'MH', slug: 'maharashtra', year: 2024 },
+    { code: 'TN', slug: 'tamil-nadu', year: 2021 },
+    { code: 'KL', slug: 'kerala', year: 2021 },
+    { code: 'WB', slug: 'west-bengal', year: 2021 },
+    { code: 'UP', slug: 'uttar-pradesh', year: 2022 },
+    { code: 'RJ', slug: 'rajasthan', year: 2023 },
+    { code: 'GJ', slug: 'gujarat', year: 2022 },
+    { code: 'JH', slug: 'jharkhand', year: 2024 },
+    { code: 'OD', slug: 'odisha', year: 2024 },
+    { code: 'DL', slug: 'delhi', year: 2020 },
+    { code: 'PB', slug: 'punjab', year: 2022 },
+    { code: 'HR', slug: 'haryana', year: 2024 },
+    { code: 'CG', slug: 'chhattisgarh', year: 2023 },
+    { code: 'MP', slug: 'madhya-pradesh', year: 2023 },
+    { code: 'BR', slug: 'bihar', year: 2020 },
+    { code: 'AS', slug: 'assam', year: 2021 },
+    { code: 'GA', slug: 'goa', year: 2022 },
+    { code: 'HP', slug: 'himachal-pradesh', year: 2022 },
+    { code: 'MN', slug: 'manipur', year: 2022 },
+    { code: 'ML', slug: 'meghalaya', year: 2023 },
+    { code: 'MZ', slug: 'mizoram', year: 2023 },
+    { code: 'NL', slug: 'nagaland', year: 2023 },
+    { code: 'TR', slug: 'tripura', year: 2023 },
+    { code: 'SK', slug: 'sikkim', year: 2024 },
+    { code: 'AR', slug: 'arunachal-pradesh', year: 2024 },
+    { code: 'UK', slug: 'uttarakhand', year: 2022 },
+    { code: 'PY', slug: 'puducherry', year: 2021 },
+    { code: 'JK', slug: 'jammu-kashmir', year: 2024 },
   ];
 
   const manifest = {};
 
-  for (const { code, year } of stateConfigs) {
+  for (const { code, slug, year } of stateConfigs) {
     console.log(`\n[${code}] Importing seed data...`);
     const stateManifest = {
       state_code: code,
@@ -250,7 +253,7 @@ async function importSeedData(db) {
 
     try {
       // Import constituencies
-      const constPath = path.resolve(rootDir, `data/seed/${code.toLowerCase()}-constituencies.ts`);
+      const constPath = path.resolve(rootDir, `data/seed/${slug}-constituencies.ts`);
       if (fs.existsSync(constPath)) {
         try {
           const mod = await import(`file://${constPath}`);
@@ -277,19 +280,19 @@ async function importSeedData(db) {
                   code,
                   c.acNo,
                   c.name,
-                  c.district || '',
-                  c.type || 'GEN',
-                  c[winnerKey] || c.winner || '',
-                  c[winnerNameKey] || c.winnerName || '',
-                  c[winnerVotesKey] || 0,
-                  c[runnerUpKey] || '',
-                  c[marginKey] || 0,
-                  c.currentParty || c[winnerKey] || '',
+                  c.district ?? null,
+                  c.type ?? null,
+                  c[winnerKey] ?? c.winner ?? null,
+                  c[winnerNameKey] ?? c.winnerName ?? null,
+                  c[winnerVotesKey] ?? null,
+                  c[runnerUpKey] ?? null,
+                  c[marginKey] ?? null,
+                  c.currentParty ?? c[winnerKey] ?? null,
                   year,
                 );
                 count++;
               } catch (e) {
-                // Skip malformed constituencies
+                throw new Error(`Invalid constituency row ${code}/${c?.acNo ?? 'UNKNOWN'}: ${e.message}`);
               }
             }
 
@@ -299,12 +302,12 @@ async function importSeedData(db) {
             }
           }
         } catch (e) {
-          console.warn(`  ⚠ Could not import constituencies for ${code}:`, e.message);
+          throw new Error(`Could not import constituencies for ${code} from ${constPath}: ${e.message}`, { cause: e });
         }
       }
 
       // Import MLA profiles
-      const mlaPath = path.resolve(rootDir, `data/seed/${code.toLowerCase()}-mla-profiles.ts`);
+      const mlaPath = path.resolve(rootDir, `data/seed/${slug}-mla-profiles.ts`);
       if (fs.existsSync(mlaPath)) {
         const mod = await import(`file://${mlaPath}`);
         const mlaKey = Object.keys(mod).find(k => k.includes('MLA') || k.includes('PROFILE'));
@@ -343,17 +346,17 @@ async function importSeedData(db) {
               );
               count++;
             } catch (e) {
-              // Skip malformed profiles
+              throw new Error(`Invalid MLA profile row ${code}/${p?.acNo ?? 'UNKNOWN'}: ${e.message}`);
             }
           }
 
-          stateManifest.has_mla_profiles = 1;
+          stateManifest.has_mla_profiles = count > 0 ? 1 : 0;
           console.log(`  ✓ MLA Profiles: ${count}`);
         }
       }
 
       // Import demographics
-      const demoPath = path.resolve(rootDir, `data/seed/${code.toLowerCase()}-demographics.ts`);
+      const demoPath = path.resolve(rootDir, `data/seed/${slug}-demographics.ts`);
       if (fs.existsSync(demoPath)) {
         const mod = await import(`file://${demoPath}`);
         const demoKey = Object.keys(mod).find(k => k.includes('DEMO'));
@@ -385,17 +388,17 @@ async function importSeedData(db) {
               );
               count++;
             } catch (e) {
-              // Skip malformed demographics
+              throw new Error(`Invalid demographics row ${code}/${d?.acNo ?? 'UNKNOWN'}: ${e.message}`);
             }
           }
 
-          stateManifest.has_demographics = 1;
+          stateManifest.has_demographics = count > 0 ? 1 : 0;
           console.log(`  ✓ Demographics: ${count}`);
         }
       }
 
       // Import election history
-      const elecPath = path.resolve(rootDir, `data/seed/${code.toLowerCase()}-election-history.ts`);
+      const elecPath = path.resolve(rootDir, `data/seed/${slug}-election-history.ts`);
       if (fs.existsSync(elecPath)) {
         const mod = await import(`file://${elecPath}`);
         const elecKey = Object.keys(mod).find(k => k.includes('ELECTION'));
@@ -421,9 +424,9 @@ async function importSeedData(db) {
                 code,
                 e.year,
                 'assembly',
-                e.totalSeats || 0,
-                e.rulingParty || '',
-                e.notes || '',
+                e.totalSeats ?? null,
+                e.rulingParty ?? null,
+                e.notes ?? null,
               );
 
               // Handle both Record-based and array-based party results
@@ -437,18 +440,18 @@ async function importSeedData(db) {
                   `${elecId}-${pr.party || ''}`,
                   elecId,
                   pr.party || '',
-                  pr.seatsWon || 0,
-                  pr.seatContested || 0,
+                  pr.seatsWon ?? null,
+                  pr.seatContested ?? pr.seatsContested ?? null,
                 );
               }
 
               count++;
             } catch (e) {
-              // Skip malformed elections
+              throw new Error(`Invalid election-history row ${code}/${e?.year ?? 'UNKNOWN'}: ${e.message}`);
             }
           }
 
-          stateManifest.has_election_history = 1;
+          stateManifest.has_election_history = count > 0 ? 1 : 0;
           console.log(`  ✓ Election History: ${count}`);
         }
       }
@@ -498,6 +501,7 @@ async function importSeedData(db) {
       manifest[code] = stateManifest;
     } catch (err) {
       console.error(`  ✗ Error importing ${code}:`, err.message);
+      throw new Error(`Seed import failed for ${code} (${slug}): ${err.message}`, { cause: err });
     }
   }
 
