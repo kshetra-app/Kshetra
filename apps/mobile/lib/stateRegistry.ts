@@ -27,9 +27,9 @@ const registry: Record<string, StateData> = {
     // Selected-state constituency rows are fetched at runtime.
     constituencies: [],
     hasGeoJSON: true,
-    hasFullData: true,
+    hasFullData: false,
     totalSeats: 119,
-    loadedCount: 119,
+    loadedCount: 0,
   },
   AP: {
     info: STATES.AP,
