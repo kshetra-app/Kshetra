@@ -50,8 +50,8 @@ function jsonMap(file) {
 function normalizedSource(source) { return source.split(String.fromCharCode(92)).join('/').toLowerCase(); }
 function isGeographySource(source) {
   const s = normalizedSource(source);
-  return s.includes('/data/seed/') || s.includes('/apps/mobile/data/') || s.endsWith('.geojson') || ['statedataadapter.ts','statedataadapter.tsx','statetriviaadapter.ts','statetriviaadapter.tsx','statedatadispatcher.ts','statedatadispatcher.tsx','enrichgeojson.ts','enrichgeojson.tsx'].some((name) => s.endsWith('/' + name));
-    || s.endsWith('/apps/mobile/lib/statedataadapter.ts') || s.endsWith('/apps/mobile/lib/statedataadapter.tsx') || s.endsWith('/apps/mobile/lib/statetriviaadapter.ts') || s.endsWith('/apps/mobile/lib/statetriviaadapter.tsx') || s.endsWith('/apps/mobile/lib/statedatadispatcher.ts') || s.endsWith('/apps/mobile/lib/statedatadispatcher.tsx') || s.endsWith('/apps/mobile/lib/enrichgeojson.ts') || s.endsWith('/apps/mobile/lib/enrichgeojson.tsx')
+  return s.includes('/data/seed/') || s.includes('/apps/mobile/data/') || s.endsWith('.geojson')
+    || ['statedataadapter.ts','statedataadapter.tsx','statetriviaadapter.ts','statetriviaadapter.tsx','statedatadispatcher.ts','statedatadispatcher.tsx','enrichgeojson.ts','enrichgeojson.tsx'].some((name) => s.endsWith('/' + name));
 }
 function isForbiddenNationalSeed(source) {
   const s = normalizedSource(source);
