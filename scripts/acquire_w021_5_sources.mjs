@@ -19,8 +19,8 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const OUT = process.env.W0215_SOURCE_CACHE
   ? path.resolve(process.env.W0215_SOURCE_CACHE)
   : path.join(ROOT, 'artifacts', 'w021_5_source_cache');
-const MAX_BYTES = 50 * 1024 * 1024;
-const MAX_TOTAL_BYTES = 500 * 1024 * 1024;
+const MAX_BYTES = 150 * 1024 * 1024;
+const MAX_TOTAL_BYTES = 1024 * 1024 * 1024;
 const MAX_REDIRECTS = 5;
 let totalDownloadedBytes = 0;
 const ALLOWED_HOSTS = new Set([
@@ -134,9 +134,11 @@ async function fetchBounded(initialUrl) {
     if (new URL(current).hostname.toLowerCase() === 'results.eci.gov.in') {
       requestHeaders.Referer = 'https://results.eci.gov.in/';
     }
+    const sourceUrl = new URL(current);
+    const isSoiArchive = sourceUrl.hostname.toLowerCase().endsWith('surveyofindia.gov.in') && /\\.zip$/i.test(sourceUrl.pathname);
     const response = await fetch(current, {
       redirect: 'manual',
-      signal: AbortSignal.timeout(15000),
+      signal: AbortSignal.timeout(isSoiArchive ? 30000 : 15000),
       headers: requestHeaders
     });
     if ([301,302,303,307,308].includes(response.status)) {
