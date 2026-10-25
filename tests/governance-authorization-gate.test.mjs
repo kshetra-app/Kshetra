@@ -50,8 +50,8 @@ assert.equal(ancestor(auth, historic), false, 'prospective directive must not re
 
 const approvedFiles = [
   'apps/api/src/routes/saasV1.ts',
-  'apps/api/src/services/webhookDispatcher.ts',
-  'supabase/migrations/070_w022_webhook_dispatch.sql',
+  'apps/api/src/modules/webhooks/webhookDispatcher.ts',
+  'supabase/migrations/070_saas_webhook_engine.sql',
   'tests/governance-authorization-gate.test.mjs',
   'tests/w022-governance-concordance.test.mjs'
 ];
