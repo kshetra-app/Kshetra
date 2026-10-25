@@ -1030,7 +1030,8 @@
         },
         "stateBoundaryComparison": "PENDING_NEW_PROBE"
       },
-      "pinBoundaryFeatureCount": 884
+      "pinBoundaryFeatureCount": 884,
+      "auditReport": "reports/evidence/w021_5_bihar_ac_geometry_audit_40218024380.json"
     }
   ],
   "unresolvedGates": [
