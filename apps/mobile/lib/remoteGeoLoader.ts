@@ -13,6 +13,7 @@ import { sanitizeGeoJSON } from './geoLoader';
 const memCache = new Map<string, GeoJSON.FeatureCollection>();
 const inFlight = new Map<string, Promise<GeoJSON.FeatureCollection | null>>();
 const MAX_MEMORY_STATES = 2;
+const MAX_PERSISTED_GEOMETRY_STATES = 3;
 const CACHE_ROOT = FileSystem.documentDirectory ?? FileSystem.cacheDirectory;
 if (!CACHE_ROOT) {
   throw new Error('No writable file-system directory is available for geography cache.');
@@ -38,6 +39,36 @@ async function purgeOldVersions(code: string, keepFile: string): Promise<void> {
       .map((name) => FileSystem.deleteAsync(CACHE_DIR + name, { idempotent: true })));
   } catch {
     // Cache cleanup is best-effort; load success must not depend on cleanup.
+  }
+}
+
+async function trimPersistedGeometry(): Promise<void> {
+  try {
+    const names = (await FileSystem.readDirectoryAsync(CACHE_DIR))
+      .filter((name) => /^[A-Z]{2}\.(?:[a-f0-9]{12,40}|unversioned)\.json$/i.test(name));
+    const files = await Promise.all(names.map(async (name) => {
+      const info = await FileSystem.getInfoAsync(CACHE_DIR + name);
+      return {
+        name,
+        stateCode: name.split('.')[0],
+        modifiedAt: info.exists && typeof info.modificationTime === 'number' ? info.modificationTime : 0,
+      };
+    }));
+    files.sort((a, b) => b.modifiedAt - a.modifiedAt);
+    const keepStates = new Set<string>();
+    for (const file of files) {
+      if (keepStates.has(file.stateCode)) {
+        await FileSystem.deleteAsync(CACHE_DIR + file.name, { idempotent: true });
+        continue;
+      }
+      if (keepStates.size >= MAX_PERSISTED_GEOMETRY_STATES) {
+        await FileSystem.deleteAsync(CACHE_DIR + file.name, { idempotent: true });
+        continue;
+      }
+      keepStates.add(file.stateCode);
+    }
+  } catch {
+    // A cache trim failure must never invalidate the already verified payload.
   }
 }
 
@@ -142,7 +173,8 @@ async function loadFromNetwork(code: string, version: string): Promise<GeoJSON.F
   try {
     const checked = await readVerified(tempPath, code, version);
     await FileSystem.moveAsync({ from: tempPath, to: localPath });
-    void purgeOldVersions(code, localFile);
+    await purgeOldVersions(code, localFile);
+    await trimPersistedGeometry();
     return checked;
   } catch (error) {
     await FileSystem.deleteAsync(tempPath, { idempotent: true });
