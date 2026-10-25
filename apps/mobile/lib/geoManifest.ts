@@ -3,6 +3,7 @@
  * bundled. The full geography manifest is fetched from the API at runtime.
  */
 import { API_BASE_URL } from './constants';
+import * as FileSystem from 'expo-file-system/legacy';
 
 export interface GeoManifestEntry {
   file: string;
@@ -17,6 +18,11 @@ export interface GeoManifestEntry {
 
 const manifestCache = new Map<string, GeoManifestEntry>();
 let manifestPromise: Promise<Record<string, GeoManifestEntry> | null> | null = null;
+const MANIFEST_CACHE_PATH = FileSystem.documentDirectory
+  ? `${FileSystem.documentDirectory}geo-manifest-cache.json`
+  : FileSystem.cacheDirectory
+    ? `${FileSystem.cacheDirectory}geo-manifest-cache.json`
+    : null;
 const BUILT_IN_OVERVIEW: GeoManifestEntry = {
   file: 'india-states.json',
   count: 36,
@@ -38,6 +44,37 @@ function validateEntry(value: unknown): value is GeoManifestEntry {
     && (!entry.status || typeof entry.status === 'string');
 }
 
+async function readCachedManifest(): Promise<Record<string, GeoManifestEntry> | null> {
+  if (!MANIFEST_CACHE_PATH) return null;
+  try {
+    const info = await FileSystem.getInfoAsync(MANIFEST_CACHE_PATH);
+    if (!info.exists) return null;
+    const raw: unknown = JSON.parse(await FileSystem.readAsStringAsync(MANIFEST_CACHE_PATH));
+    if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return null;
+    const entries: Record<string, GeoManifestEntry> = {};
+    for (const [code, value] of Object.entries(raw)) {
+      if (!/^[A-Z]{2}$/.test(code) || !validateEntry(value)) continue;
+      entries[code] = value;
+      manifestCache.set(code, value);
+    }
+    return Object.keys(entries).length ? entries : null;
+  } catch {
+    return null;
+  }
+}
+
+async function persistManifest(manifest: Record<string, GeoManifestEntry>): Promise<void> {
+  if (!MANIFEST_CACHE_PATH) return;
+  try {
+    const temporary = `${MANIFEST_CACHE_PATH}.part`;
+    await FileSystem.deleteAsync(temporary, { idempotent: true });
+    await FileSystem.writeAsStringAsync(temporary, JSON.stringify(manifest));
+    await FileSystem.moveAsync({ from: temporary, to: MANIFEST_CACHE_PATH });
+  } catch {
+    // Network data stays usable even if the local cache cannot be written.
+  }
+}
+
 /** Fetch the canonical API manifest; null means offline/unavailable. */
 export async function loadRemoteGeoManifest(
   refresh = false,
@@ -56,7 +93,7 @@ export async function loadRemoteGeoManifest(
       const response = await fetch(base + '/geo/manifest.json', {
         headers: { Accept: 'application/json' },
       });
-      if (!response.ok) return null;
+      if (!response.ok) return await readCachedManifest();
       const raw: unknown = await response.json();
       if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return null;
       const result: Record<string, GeoManifestEntry> = {};
@@ -65,9 +102,11 @@ export async function loadRemoteGeoManifest(
         result[code] = value;
         manifestCache.set(code, value);
       }
+      if (Object.keys(result).length === 0) return await readCachedManifest();
+      await persistManifest(result);
       return result;
     } catch {
-      return null;
+      return await readCachedManifest();
     }
   })();
   manifestPromise = pending;
