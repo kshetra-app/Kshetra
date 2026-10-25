@@ -239,7 +239,8 @@
     "35121174a2111be1d344842db06d6044ffe36b36",
     "3f2ff3d43ffcee1bb9015467b91aa20481283725",
     "293d8f8cca566600d6321de2ffa1f7e181025b9b",
-    "2e76180c66505b802e56c0828572c1fd2cb48623"
+    "2e76180c66505b802e56c0828572c1fd2cb48623",
+    "a70f181fa62dc6ae9ba584bcdfade2e5cfec41bf"
   ],
   "commitAccountabilityNote": "Complete set of commits in GOV-02 PR #16 after immutable sourceSnapshot.commit. CI compares these commit IDs against git history while excluding only the HEAD commit whose tree contains this manifest (self-reference avoidance). When adding subsequent commits to this branch, refresh this complete list, including all earlier PR commits and the prior manifest commit."
 }
