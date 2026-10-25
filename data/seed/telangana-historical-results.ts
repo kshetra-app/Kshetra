@@ -26,9 +26,9 @@
 export interface HistoricalResult {
   acNo: number;
   name: string;
-  winner: string;
-  party: string;
-  year?: number;
+  winner: string | null;
+  party: string | null;
+  year?: number | null;
 }
 
 /** TRS and BRS are the same party (renamed Oct 2022) */
