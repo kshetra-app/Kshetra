@@ -234,7 +234,8 @@
     "afc0d632a0a7c86e1853f8323b4e2557a3ff84aa",
     "e2dd97c5f0f8c4b22668023847a3b2463bb27039",
     "bbd88cd25512bc9aada7fa5130b0a2c86d306662",
-    "33a792f2cba83b5a76f539ecf1962282ef0c6418"
+    "33a792f2cba83b5a76f539ecf1962282ef0c6418",
+    "35121174a2111be1d344842db06d6044ffe36b36"
   ],
   "commitAccountabilityNote": "Commit IDs are the complete repair-branch commit set after sourceSnapshot.commit captured when this report was authored. The test compares this registered list with git log and fails on an unrecorded commit. Updating the report to add a newer commit changes the manifest commit itself; refresh the list with all commits from the preceding snapshot plus that new report commit, not with a claimed current HEAD self-hash."
 }
