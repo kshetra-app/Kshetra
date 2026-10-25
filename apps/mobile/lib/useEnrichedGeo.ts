@@ -48,8 +48,15 @@ export function useEnrichedGeo(stateCode: string): EnrichedGeoState {
 
     loadEnrichedGeoForState(stateCode)
       .then((fc) => {
-        if (!cancelled && fc) {
+        if (cancelled) return;
+        if (fc) {
           setState({ data: fc, loading: false, error: null });
+        } else {
+          setState({
+            data: null,
+            loading: false,
+            error: new Error('GEOMETRY_UNAVAILABLE: no accepted boundary geometry exists for this jurisdiction.'),
+          });
         }
       })
       .catch((err: unknown) => {
