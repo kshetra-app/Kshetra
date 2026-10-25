@@ -12,7 +12,7 @@
  */
 import * as FileSystem from 'expo-file-system/legacy';
 import { API_BASE_URL } from './constants';
-import { getManifestEntry } from './geoManifest';
+import { getManifestEntry, isVerifiedRemoteStateGeoJSON } from './geoManifest';
 import { sanitizeGeoJSON } from './geoLoader';
 
 /** In-memory cache so repeated reads in one session never touch disk. */
@@ -20,7 +20,10 @@ const memCache = new Map<string, GeoJSON.FeatureCollection>();
 /** De-dupe concurrent loads of the same state. */
 const inFlight = new Map<string, Promise<GeoJSON.FeatureCollection | null>>();
 
-const CACHE_DIR = `${FileSystem.cacheDirectory ?? FileSystem.documentDirectory}geo/`;
+const CACHE_DIR = `${FileSystem.cacheDirectory ?? FileSystem.documentDirectory ?? ''}geo/`;
+const MAX_CACHE_BYTES = 20 * 1024 * 1024;
+const MAX_CACHE_FILES = 3;
+const MAX_SINGLE_FILE_BYTES = 15 * 1024 * 1024;
 
 /**
  * Resolve the host that serves /geo/* assets. The geo route lives at the
@@ -34,6 +37,9 @@ export function getGeoBaseUrl(): string {
 }
 
 async function ensureDir(): Promise<void> {
+  if (!FileSystem.cacheDirectory && !FileSystem.documentDirectory) {
+    throw new Error('GEO_CACHE_UNAVAILABLE: No local cache or document directory is available.');
+  }
   const info = await FileSystem.getInfoAsync(CACHE_DIR);
   if (!info.exists) {
     await FileSystem.makeDirectoryAsync(CACHE_DIR, { intermediates: true });
@@ -51,7 +57,34 @@ async function purgeOldVersions(code: string, keepFile: string): Promise<void> {
         .map((name) => FileSystem.deleteAsync(CACHE_DIR + name, { idempotent: true })),
     );
   } catch {
-    /* non-fatal */
+    /* Cache cleanup is best-effort; it must not reclassify source truth. */
+  }
+  await enforceCacheBudget(keepFile);
+}
+
+/** Bound offline geography to at most three state files / 20 MiB total. */
+async function enforceCacheBudget(keepFile: string): Promise<void> {
+  try {
+    const names = (await FileSystem.readDirectoryAsync(CACHE_DIR)).filter((name) => name.endsWith('.json'));
+    const records = await Promise.all(names.map(async (name) => {
+      const info = await FileSystem.getInfoAsync(CACHE_DIR + name);
+      return {
+        name,
+        size: info.exists && 'size' in info ? Number(info.size ?? 0) : 0,
+        modified: info.exists && 'modificationTime' in info ? Number(info.modificationTime ?? 0) : 0,
+      };
+    }));
+    let totalBytes = records.reduce((sum, item) => sum + item.size, 0);
+    let fileCount = records.length;
+    const candidates = records.filter((item) => item.name !== keepFile).sort((a, b) => a.modified - b.modified);
+    for (const item of candidates) {
+      if (fileCount <= MAX_CACHE_FILES && totalBytes <= MAX_CACHE_BYTES) break;
+      await FileSystem.deleteAsync(CACHE_DIR + item.name, { idempotent: true });
+      fileCount -= 1;
+      totalBytes -= item.size;
+    }
+  } catch {
+    /* Storage pressure is observable elsewhere; cache cleanup remains non-fatal. */
   }
 }
 
@@ -62,6 +95,9 @@ async function loadFromNetwork(
 ): Promise<GeoJSON.FeatureCollection | null> {
   const entry = getManifestEntry(code);
   if (!entry) return null;
+  if (!entry.bundled && !isVerifiedRemoteStateGeoJSON(code)) {
+    throw new Error(`GEOMETRY_UNAVAILABLE: ${code} lacks accepted source provenance; placeholder geometry is forbidden.`);
+  }
 
   await ensureDir();
   const localFile = `${code}.${version}.json`;
@@ -77,7 +113,13 @@ async function loadFromNetwork(
       await FileSystem.deleteAsync(localPath, { idempotent: true });
       throw new Error(`Boundary download failed for ${code}: HTTP ${res.status}`);
     }
-    void purgeOldVersions(code, localFile);
+    const downloaded = await FileSystem.getInfoAsync(localPath);
+    const downloadedBytes = downloaded.exists && 'size' in downloaded ? Number(downloaded.size ?? 0) : 0;
+    if (downloadedBytes <= 0 || downloadedBytes > MAX_SINGLE_FILE_BYTES) {
+      await FileSystem.deleteAsync(localPath, { idempotent: true });
+      throw new Error(`GEO_CACHE_BUDGET_EXCEEDED: ${code} geometry size ${downloadedBytes} exceeds the per-state limit.`);
+    }
+    await purgeOldVersions(code, localFile);
   }
 
   const text = await FileSystem.readAsStringAsync(localPath);
@@ -96,9 +138,9 @@ export async function fetchStateGeoJSON(
 ): Promise<GeoJSON.FeatureCollection | null> {
   const key = code.toUpperCase();
   const entry = getManifestEntry(key);
-  if (!entry || !entry.hasPolygons || entry.status === 'placeholder') {
-    // Null means the jurisdiction is known but verified polygons are unavailable.
-    // Never download or cache placeholder geometry as if it were canonical.
+  if (!entry) return null;
+  if (!entry.bundled && !isVerifiedRemoteStateGeoJSON(key)) {
+    // Unverified or placeholder source assets are never fetched/cached.
     return null;
   }
 
