@@ -752,7 +752,7 @@ export function getAvailableYearsForState(stateCode: string, includeSimulations:
       if (constituencies.length > 0) {
         return [constituencies[0].electionYear];
       }
-      return [2024]; // default fallback
+      return []; // no evidence-backed election year available
     }
   }
 }
