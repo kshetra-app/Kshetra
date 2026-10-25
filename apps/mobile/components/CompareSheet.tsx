@@ -310,6 +310,8 @@ export default function CompareSheet({ visible, initialAcNo, onClose }: CompareS
                     </View>
                   );
                 })}
+                {typeof (leftAcNo ? mapData?.strongholdByAcNo[String(leftAcNo)] : undefined) === 'boolean'
+                  && typeof (rightAcNo ? mapData?.strongholdByAcNo[String(rightAcNo)] : undefined) === 'boolean' && (
                 <View style={styles.statRow}>
                   <View style={styles.badgeWrap}>
                     {leftAcNo && mapData?.strongholdByAcNo[String(leftAcNo)] === true ? (
@@ -339,6 +341,7 @@ export default function CompareSheet({ visible, initialAcNo, onClose }: CompareS
                     )}
                   </View>
                 </View>
+                )}
               </>
             )}
           </ScrollView>
