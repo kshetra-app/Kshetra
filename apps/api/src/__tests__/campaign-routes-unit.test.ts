@@ -231,6 +231,36 @@ describe('Campaign Routes Unit Test Suite (Direct Route Injection)', () => {
       expect(body.campaigns[0].id).toBe('camp-101');
     });
 
+    it('fails closed in production instead of returning a demo campaign when the database fails', async () => {
+      const originalEnv = process.env.NODE_ENV;
+      const originallyConfigured = isSupabaseConfigured;
+      process.env.NODE_ENV = 'production';
+      setSupabaseConfiguredForTesting(true);
+      try {
+        jest.spyOn(supabase, 'from').mockImplementation(((table: string) => {
+          if (table === 'campaigns') {
+            return {
+              select: () => ({
+                then: (resolve: any) => resolve({ data: null, error: { message: 'DB down' } }),
+              }),
+            } as any;
+          }
+          return {} as any;
+        }) as any);
+
+        const res = await app.inject({
+          method: 'GET',
+          url: '/api/v1/campaign/campaigns',
+        });
+
+        expect(res.statusCode).toBe(503);
+        expect(JSON.parse(res.payload).code).toBe('DATABASE_ERROR');
+      } finally {
+        process.env.NODE_ENV = originalEnv;
+        setSupabaseConfiguredForTesting(originallyConfigured);
+      }
+    });
+
     it('falls back to mock campaign when database returns empty/error', async () => {
       jest.spyOn(supabase, 'from').mockImplementation(((table: string) => {
         if (table === 'campaigns') {
