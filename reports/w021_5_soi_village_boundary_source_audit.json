@@ -3,10 +3,10 @@
   "auditId": "W0215-SOI-VILLAGE-AUDIT-001",
   "auditedAt": "2026-10-25",
   "sourceIndex": "https://surveyofindia.gov.in/pages/village-boundary-data-base-of-entire-india",
-  "sourcePageSha256": "6d3f9f0a3d98f2b6e9c31e5a3e91c1c8b9b7e8d3a3eaeef4a3d8d7c4f8e1c3d0",
-  "acquisitionRunId": 40209616925,
+  "sourcePageSha256": "013965f98dc51a6dc0cf2b5a35c4c578d5d4ec5d2e86b1cf61a2bb9f80527f0a",
+  "acquisitionRunId": 40209864129,
   "artifactId": 12605485502,
-  "artifactSha256": "4a8d1e6f72c1b8b5e1d2a4c7f6e9d0b3a1c5e7f9d2b4a6c8e0f1a3b5c7d9e2f4",
+  "artifactSha256": "1d8bd2e9a6ed6ca0fc08a45dc54c16bdad22c15ca5eefe688f49cbeb25ee3e01",
   "summary": {
     "expectedOfficialStateUtArchivesListedOnSourcePage": 27,
     "archivesDownloadedAndAuditedInThisRun": 10,
@@ -296,5 +296,8 @@
     "Telangana's shapefile PRJ and ESRI XML metadata conflict on CRS identification (custom LCC_WGS84 versus EPSG:3857).",
     "Census 2011 population linkage requires an authoritative village-code crosswalk and accepted AC geometry; no constituency population estimate is inferred from these files alone."
   ],
-  "decision": "Use acquired files only as source-audited village administrative geometry candidates. Do not insert into the runtime or canonical AC geometry registry until full national coverage, per-file CRS, LGD identity, topology and effective-date checks pass."
+  "decision": "Use acquired files only as source-audited village administrative geometry candidates. Do not insert into the runtime or canonical AC geometry registry until full national coverage, per-file CRS, LGD identity, topology and effective-date checks pass.",
+  "artifactBytes": 46438425,
+  "uncompressedArtifactBytes": 74755552,
+  "artifactExpiresAt": "2026-11-08T16:07:26Z"
 }
