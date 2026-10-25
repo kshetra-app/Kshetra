@@ -431,6 +431,27 @@ export async function constituencyRoutes(app: FastifyInstance) {
             data: mapped,
           };
         }
+
+        // A successful empty DB response is not permission to substitute the
+        // unrelated bundled seed registry. Assembly constituencies must have a
+        // canonical persisted row set before this endpoint claims availability.
+        const stateInfo = getStateInfo(code);
+        if (!stateInfo) {
+          return sendApiError(reply, request, 404, 'Not Found', `State ${code} not found`, {
+            code: 'NOT_FOUND',
+          });
+        }
+        if (stateInfo.totalSeats > 0) {
+          return sendApiError(
+            reply,
+            request,
+            503,
+            'Service Unavailable',
+            `Canonical constituency records for ${stateInfo.name} are not populated in the database.`,
+            { code: 'DATA_UNAVAILABLE', dataStatus: 'UNKNOWN' }
+          );
+        }
+        return { state: code, count: 0, data: [] };
       } catch (err: any) {
         app.log.error({ err: err?.message, stateCode: code }, 'Exception querying database for constituencies');
         return sendApiError(reply, request, 500, 'Internal Server Error', 'Database error retrieving constituencies', {
@@ -522,6 +543,33 @@ export async function constituencyRoutes(app: FastifyInstance) {
         }
       }
 
+      if (isSupabaseConfigured) {
+        const stateInfo = getStateInfo(code);
+        if (!stateInfo) {
+          return sendApiError(reply, request, 404, 'Not Found', `State ${code} not found`, {
+            code: 'NOT_FOUND',
+          });
+        }
+        if (!Number.isNaN(acNo) && acNo > stateInfo.totalSeats) {
+          return sendApiError(
+            reply,
+            request,
+            404,
+            'Not Found',
+            `Constituency number ${acNo} is outside the published ${stateInfo.totalSeats}-seat registry for ${stateInfo.name}.`,
+            { code: 'NOT_FOUND' }
+          );
+        }
+        return sendApiError(
+          reply,
+          request,
+          503,
+          'Service Unavailable',
+          `Canonical constituency record ${constituencyId} is absent from the database; bundled seeds are not used as a fallback.`,
+          { code: 'DATA_UNAVAILABLE', dataStatus: 'UNKNOWN' }
+        );
+      }
+
       const brief = !isNaN(acNo)
         ? getConstituency(code, acNo)
         : getConstituencies(code).find(
@@ -585,14 +633,78 @@ export async function constituencyRoutes(app: FastifyInstance) {
     };
   }>('/states/:stateCode/constituencies/search', {
     schema: searchConstituenciesSchema,
-  }, async (request) => {
+  }, async (request, reply) => {
     const { stateCode } = request.params;
     const { q, party, district, type, minMargin, maxMargin, sort } = request.query;
     const code = stateCode.toUpperCase();
-    const allBriefs = getConstituencies(code);
+    let allBriefs: Array<ConstituencyBrief & { margin?: number }>;
 
-    if (allBriefs.length === 0) {
-      return { state: code, count: 0, data: [] };
+    if (isSupabaseConfigured) {
+      try {
+        const { data, error } = await supabase
+          .from('constituencies')
+          .select('*')
+          .eq('state_code', code)
+          .order('ac_no', { ascending: true });
+
+        if (error) {
+          app.log.error({ err: error.message, stateCode: code }, 'Database query error searching constituencies');
+          return sendApiError(reply, request, 503, 'Service Unavailable', 'Constituency search data is temporarily unavailable.', {
+            code: 'DATABASE_ERROR',
+          });
+        }
+
+        if (!data || data.length === 0) {
+          const stateInfo = getStateInfo(code);
+          if (!stateInfo) {
+            return sendApiError(reply, request, 404, 'Not Found', `State ${code} not found`, {
+              code: 'NOT_FOUND',
+            });
+          }
+          if (stateInfo.totalSeats > 0) {
+            return sendApiError(reply, request, 503, 'Service Unavailable', `Canonical constituency records for ${stateInfo.name} are not populated in the database.`, {
+              code: 'DATA_UNAVAILABLE', dataStatus: 'UNKNOWN',
+            });
+          }
+          return { state: code, count: 0, data: [], dataStatus: 'UNKNOWN' };
+        }
+
+        allBriefs = data.map((row: any) => ({
+          id: row.id || `${code}-AC-${row.ac_no}`,
+          name: row.name,
+          acNo: Number(row.ac_no),
+          stateCode: row.state_code || code,
+          district: row.district || '',
+          reservationStatus: (row.reservation_status as 'GEN' | 'SC' | 'ST') || 'GEN',
+          currentParty: row.current_party || '',
+          currentMLA: row.current_mla || '',
+          margin: typeof row.margin === 'number' ? row.margin : undefined,
+        }));
+      } catch (err: any) {
+        app.log.error({ err: err?.message, stateCode: code }, 'Exception searching canonical constituencies');
+        return sendApiError(reply, request, 503, 'Service Unavailable', 'Constituency search data is temporarily unavailable.', {
+          code: 'DATABASE_ERROR',
+        });
+      }
+    } else {
+      allBriefs = getConstituencies(code);
+      if (allBriefs.length === 0) {
+        const stateInfo = getStateInfo(code);
+        if (!stateInfo) {
+          return sendApiError(reply, request, 404, 'Not Found', `State ${code} not found`, {
+            code: 'NOT_FOUND',
+          });
+        }
+        return sendApiError(reply, request, 503, 'Service Unavailable', 'Bundled constituency seeds are unavailable for this state.', {
+          code: 'DATA_UNAVAILABLE', dataStatus: 'UNVERIFIED',
+        });
+      }
+    }
+
+    if ((minMargin || maxMargin) && isSupabaseConfigured && allBriefs.some((c) => typeof c.margin !== 'number')) {
+      return sendApiError(reply, request, 503, 'Service Unavailable', 'Margin-range filtering is unavailable because canonical margin values are missing.', {
+        code: 'DATA_UNAVAILABLE', dataStatus: 'UNKNOWN',
+      });
     }
 
     let results = allBriefs;
@@ -624,8 +736,10 @@ export async function constituencyRoutes(app: FastifyInstance) {
       const min = minMargin ? parseInt(minMargin, 10) : -Infinity;
       const max = maxMargin ? parseInt(maxMargin, 10) : Infinity;
       results = results.filter((c) => {
-        const raw = getRawConstituency(code, c.acNo);
-        const m = raw?.margin2025 ?? raw?.margin2024 ?? raw?.margin2023 ?? raw?.margin2022 ?? raw?.margin2021 ?? raw?.margin ?? 0;
+        const raw = isSupabaseConfigured ? undefined : getRawConstituency(code, c.acNo);
+        const m = isSupabaseConfigured
+          ? (c.margin as number)
+          : (raw?.margin2025 ?? raw?.margin2024 ?? raw?.margin2023 ?? raw?.margin2022 ?? raw?.margin2021 ?? raw?.margin ?? 0);
         return m >= min && m <= max;
       });
     }
@@ -661,6 +775,11 @@ export async function constituencyRoutes(app: FastifyInstance) {
       state: code,
       count: sorted.length,
       data: sorted,
+      dataStatus: isSupabaseConfigured ? 'UNKNOWN' : 'UNVERIFIED',
+      source: isSupabaseConfigured ? 'supabase.constituencies' : 'repository_seed',
+      retrievedAt: new Date().toISOString(),
+      effectiveDate: null,
+      version: null,
     };
   });
 
