@@ -8,6 +8,8 @@
 
 import crypto from 'node:crypto';
 import type { SupabaseClient } from '@supabase/supabase-js';
+import { decodePostgrestBytea, decryptSecret } from './crypto';
+import { getWebhookWorkerClient } from './webhookWorkerAuth';
 import type { WebhookDeliveryModel, WebhookEventModel, WebhookSubscriptionModel } from './schemas';
 import type { DispatchResult } from './webhookDispatcher';
 
@@ -25,6 +27,10 @@ export interface LeasedDeliveryJob {
   subscription: WebhookSubscriptionModel;
   event: WebhookEventModel;
   leaseToken: string;
+  /** Internal-only signing material; never serialize a leased job in an API response. */
+  secret: string;
+  previousSecret?: string | null;
+  previousSecretExpiresAt?: string | null;
 }
 
 export interface WebhookQueueProvider {
@@ -140,6 +146,14 @@ export class InMemoryQueueProvider implements WebhookQueueProvider {
         const evt = this.events.get(delivery.eventId);
 
         if (sub && evt) {
+          const previousSecretExpiresAt = (sub as any)._previousSecretExpiresAt as string | undefined;
+          const previousSecret =
+            typeof (sub as any)._previousSecret === 'string' &&
+            previousSecretExpiresAt &&
+            Date.parse(previousSecretExpiresAt) > now.getTime()
+              ? (sub as any)._previousSecret as string
+              : null;
+
           delivery.status = 'leased';
           delivery.leaseToken = leaseToken;
           delivery.leasedUntil = leasedUntil;
@@ -149,6 +163,9 @@ export class InMemoryQueueProvider implements WebhookQueueProvider {
             subscription: sub,
             event: evt,
             leaseToken,
+            secret: typeof (sub as any)._rawSecret === 'string' ? (sub as any)._rawSecret : '',
+            previousSecret,
+            previousSecretExpiresAt: previousSecretExpiresAt ?? null,
           });
         }
       }
@@ -279,217 +296,115 @@ export class InMemoryQueueProvider implements WebhookQueueProvider {
 // ─── POSTGRES / SUPABASE QUEUE PROVIDER (FOR DEPLOYED RUNTIMES) ───
 
 export class PostgresQueueProvider implements WebhookQueueProvider {
-  constructor(private readonly supabaseClient: SupabaseClient) {}
+  constructor(
+    private readonly supabaseClient: SupabaseClient,
+    private readonly workerClientFactory: () => SupabaseClient = getWebhookWorkerClient,
+  ) {}
 
   async enqueueEvent(params: EnqueueEventParams): Promise<{ eventId: string; deduplicated: boolean; enqueuedDeliveries: number }> {
     const { tenantId, eventType, idempotencyKey, payload, payloadRaw, payloadSha256 } = params;
-
-    // 1. Insert event (ON CONFLICT DO NOTHING if idempotencyKey present)
-    const { data: event, error: eventErr } = await this.supabaseClient
-      .from('webhook_events')
-      .insert({
-        tenant_id: tenantId,
-        event_type: eventType,
-        idempotency_key: idempotencyKey || null,
-        payload,
-        payload_raw: payloadRaw,
-        payload_sha256: payloadSha256,
-      })
-      .select('id')
-      .maybeSingle();
-
-    if (eventErr) {
-      // Check if duplicate idempotency key error
-      if (eventErr.code === '23505' && idempotencyKey) {
-        const { data: existing } = await this.supabaseClient
-          .from('webhook_events')
-          .select('id')
-          .eq('tenant_id', tenantId)
-          .eq('idempotency_key', idempotencyKey)
-          .single();
-        if (existing) {
-          return { eventId: existing.id, deduplicated: true, enqueuedDeliveries: 0 };
-        }
-      }
-      throw new Error(`DATABASE_ENQUEUE_ERROR: Failed to insert webhook event: ${eventErr.message}`);
+    // Atomic event + fan-out: independent REST requests can strand an event without deliveries.
+    const { data, error } = await this.supabaseClient.rpc('fn_enqueue_webhook_event', {
+      p_tenant_id: tenantId, p_event_type: eventType, p_idempotency_key: idempotencyKey ?? null,
+      p_payload: payload, p_payload_raw: payloadRaw, p_payload_sha256: payloadSha256,
+    });
+    if (error) throw new Error(`DATABASE_ENQUEUE_ERROR: Atomic event enqueue failed: ${error.message}`);
+    const row = Array.isArray(data) ? data[0] : data;
+    if (!row?.event_id || typeof row.deduplicated !== 'boolean') {
+      throw new Error('DATABASE_ENQUEUE_ERROR: Atomic enqueue RPC returned an invalid result.');
     }
-
-    if (!event) {
-      throw new Error('DATABASE_ENQUEUE_ERROR: Event record was not returned upon insert.');
-    }
-
-    // 2. Query active subscriptions for tenant
-    const { data: subs, error: subErr } = await this.supabaseClient
-      .from('webhook_subscriptions')
-      .select('id, subscribed_events')
-      .eq('tenant_id', tenantId)
-      .eq('status', 'active');
-
-    if (subErr) {
-      throw new Error(`DATABASE_FANOUT_ERROR: Failed to query subscriptions: ${subErr.message}`);
-    }
-
-    // Filter matching subscriptions
-    const matchingSubs = (subs || []).filter(
-      (s: any) => s.subscribed_events.includes('*') || s.subscribed_events.includes(eventType)
-    );
-
-    if (matchingSubs.length === 0) {
-      return { eventId: event.id, deduplicated: false, enqueuedDeliveries: 0 };
-    }
-
-    // 3. Insert deliveries
-    const deliveryRows = matchingSubs.map((s: any) => ({
-      tenant_id: tenantId,
-      subscription_id: s.id,
-      event_id: event.id,
-      status: 'queued',
-      attempt_count: 1,
-    }));
-
-    const { error: delivErr } = await this.supabaseClient
-      .from('webhook_deliveries')
-      .insert(deliveryRows);
-
-    if (delivErr) {
-      throw new Error(`DATABASE_DELIVERY_INSERT_ERROR: Failed to insert delivery records: ${delivErr.message}`);
-    }
-
-    return { eventId: event.id, deduplicated: false, enqueuedDeliveries: deliveryRows.length };
+    return { eventId: String(row.event_id), deduplicated: row.deduplicated, enqueuedDeliveries: Number(row.enqueued_deliveries) || 0 };
   }
 
   async claimBatch(batchSize: number): Promise<LeasedDeliveryJob[]> {
-    // Uses RPC or atomic poll query with lease update
-    const { data, error } = await this.supabaseClient.rpc('fn_claim_webhook_batch', {
-      p_batch_size: batchSize,
-      p_lease_seconds: 30,
-    });
-
-    if (error) {
-      // Fallback: direct select and update if RPC not present in test harness
-      return [];
+    if (!Number.isInteger(batchSize) || batchSize < 1 || batchSize > 100) {
+      throw new Error('INVALID_BATCH_SIZE: Batch size must be between 1 and 100.');
     }
+    const { data, error } = await this.workerClientFactory().rpc('fn_claim_webhook_batch', {
+      p_batch_size: batchSize, p_lease_seconds: 30,
+    });
+    if (error) throw new Error(`DATABASE_CLAIM_ERROR: Failed to claim webhook deliveries: ${error.message}`);
 
-    return (data || []).map((row: any) => ({
-      delivery: row.delivery,
-      subscription: row.subscription,
-      event: row.event,
-      leaseToken: row.lease_token,
-    }));
+    return (Array.isArray(data) ? data : []).map((row: any): LeasedDeliveryJob => {
+      const tenantId = String(row.tenant_id);
+      const subscriptionId = String(row.subscription_id);
+      const eventId = String(row.event_id);
+      const previousSecretExpiresAt = row.previous_secret_expires_at ? String(row.previous_secret_expires_at) : null;
+      const secret = decryptSecret({
+        ciphertext: decodePostgrestBytea(row.secret_ciphertext),
+        iv: decodePostgrestBytea(row.secret_iv),
+        tag: decodePostgrestBytea(row.secret_tag),
+      }, tenantId, subscriptionId);
+      let previousSecret: string | null = null;
+      if (row.previous_secret_ciphertext && row.previous_secret_iv && row.previous_secret_tag &&
+          previousSecretExpiresAt && Date.parse(previousSecretExpiresAt) > Date.now()) {
+        previousSecret = decryptSecret({
+          ciphertext: decodePostgrestBytea(row.previous_secret_ciphertext),
+          iv: decodePostgrestBytea(row.previous_secret_iv),
+          tag: decodePostgrestBytea(row.previous_secret_tag),
+        }, tenantId, subscriptionId);
+      }
+      const payload = row.payload && typeof row.payload === 'object'
+        ? row.payload as Record<string, unknown>
+        : JSON.parse(String(row.payload_raw)) as Record<string, unknown>;
+      return {
+        delivery: {
+          id: String(row.delivery_id), tenantId, subscriptionId, eventId,
+          attemptCount: Number(row.attempt_count), status: 'leased',
+          httpStatus: row.http_status == null ? null : Number(row.http_status),
+          executionDurationMs: row.execution_duration_ms == null ? null : Number(row.execution_duration_ms),
+          errorMessage: row.error_message == null ? null : String(row.error_message),
+          nextRetryAt: row.next_retry_at == null ? null : String(row.next_retry_at),
+          createdAt: String(row.delivery_created_at),
+          completedAt: row.completed_at == null ? null : String(row.completed_at),
+        },
+        subscription: {
+          id: subscriptionId, tenantId, applicationId: String(row.application_id),
+          endpointUrl: String(row.endpoint_url), secretHint: String(row.secret_hint), secretHash: String(row.secret_hash),
+          subscribedEvents: Array.isArray(row.subscribed_events) ? row.subscribed_events.map(String) : [],
+          status: row.subscription_status, consecutiveFailureCount: Number(row.consecutive_failure_count) || 0,
+          createdAt: String(row.subscription_created_at), updatedAt: String(row.subscription_updated_at),
+        },
+        event: {
+          id: eventId, tenantId, eventType: String(row.event_type),
+          idempotencyKey: row.idempotency_key == null ? null : String(row.idempotency_key),
+          payload, payloadRaw: String(row.payload_raw), payloadSha256: String(row.payload_sha256),
+          createdAt: String(row.event_created_at),
+        },
+        leaseToken: String(row.lease_token), secret, previousSecret, previousSecretExpiresAt,
+      };
+    });
   }
 
   async completeDelivery(
-    deliveryId: string,
-    leaseToken: string,
-    result: DispatchResult
+    deliveryId: string, leaseToken: string, result: DispatchResult
   ): Promise<{ updated: boolean; terminalStatus?: string }> {
-    // 1. Fetch existing delivery with lease token verification
-    const { data: existing, error: fetchErr } = await this.supabaseClient
-      .from('webhook_deliveries')
-      .select('id, attempt_count, subscription_id')
-      .eq('id', deliveryId)
-      .eq('lease_token', leaseToken)
-      .maybeSingle();
-
-    if (fetchErr || !existing) {
-      return { updated: false };
-    }
-
-    const isSuccess = result.success;
-    let nextStatus: string;
-    let nextRetryAt: string | null = null;
-    let nextAttemptCount = existing.attempt_count;
-
-    if (isSuccess) {
-      nextStatus = 'delivered';
-    } else if (existing.attempt_count >= 5) {
-      nextStatus = 'dead_letter';
-    } else {
-      nextStatus = 'retrying';
-      nextAttemptCount = existing.attempt_count + 1;
-      const retryDate = calculateNextRetryAt(existing.attempt_count);
-      nextRetryAt = retryDate ? retryDate.toISOString() : null;
-    }
-
-    const { data, error } = await this.supabaseClient
-      .from('webhook_deliveries')
-      .update({
-        status: nextStatus,
-        attempt_count: nextAttemptCount,
-        next_retry_at: nextRetryAt,
-        http_status: result.httpStatus,
-        execution_duration_ms: result.executionDurationMs,
-        response_headers: result.responseHeaders,
-        response_body_sample: result.responseBodySample,
-        error_message: result.errorMessage || null,
-        completed_at: isSuccess || nextStatus === 'dead_letter' ? new Date().toISOString() : null,
-        lease_token: null,
-        leased_until: null,
-      })
-      .eq('id', deliveryId)
-      .eq('lease_token', leaseToken)
-      .select('id, status');
-
-    if (error || !data || data.length === 0) {
-      return { updated: false };
-    }
-
-    // 2. Update subscription circuit-breaker status
-    if (existing.subscription_id) {
-      if (isSuccess) {
-        await this.supabaseClient
-          .from('webhook_subscriptions')
-          .update({ consecutive_failure_count: 0 })
-          .eq('id', existing.subscription_id);
-      } else {
-        const { data: sub } = await this.supabaseClient
-          .from('webhook_subscriptions')
-          .select('consecutive_failure_count')
-          .eq('id', existing.subscription_id)
-          .single();
-        const failures = (sub?.consecutive_failure_count || 0) + 1;
-        await this.supabaseClient
-          .from('webhook_subscriptions')
-          .update({
-            consecutive_failure_count: failures,
-            ...(failures >= 20 ? { status: 'failed' } : {}),
-          })
-          .eq('id', existing.subscription_id);
-      }
-    }
-
-    return { updated: true, terminalStatus: data[0].status };
+    const { data, error } = await this.workerClientFactory().rpc('fn_complete_webhook_delivery', {
+      p_delivery_id: deliveryId, p_lease_token: leaseToken, p_success: result.success,
+      p_http_status: result.httpStatus, p_execution_duration_ms: Math.max(0, Math.trunc(result.executionDurationMs || 0)),
+      p_request_headers: result.requestHeaders || {}, p_response_headers: result.responseHeaders || {},
+      p_response_body_sample: (result.responseBodySample || '').slice(0, 1024),
+      p_error_message: result.errorMessage ? result.errorMessage.slice(0, 1024) : null,
+    });
+    if (error) throw new Error(`DATABASE_COMPLETION_ERROR: Fenced completion RPC failed: ${error.message}`);
+    const row = Array.isArray(data) ? data[0] : data;
+    if (!row) return { updated: false };
+    return { updated: row.updated === true, terminalStatus: row.terminal_status == null ? undefined : String(row.terminal_status) };
   }
 
   async recoverExpiredLeases(): Promise<number> {
-    const { data, error } = await this.supabaseClient
-      .from('webhook_deliveries')
-      .update({
-        status: 'queued',
-        lease_token: null,
-        leased_until: null,
-      })
-      .eq('status', 'leased')
-      .lt('leased_until', new Date().toISOString())
-      .select('id');
-
-    if (error) return 0;
-    return (data || []).length;
+    const { data, error } = await this.workerClientFactory().rpc('fn_recover_expired_webhook_leases', { p_batch_size: 100 });
+    if (error) throw new Error(`DATABASE_LEASE_RECOVERY_ERROR: Failed to recover expired leases: ${error.message}`);
+    return Number(data) || 0;
   }
 
   async purgeExpiredData(retentionDays = 30, batchSize = 1000): Promise<{ purgedDeliveries: number; purgedEvents: number }> {
-    const { data, error } = await this.supabaseClient.rpc('fn_purge_expired_webhook_data', {
-      p_retention_days: retentionDays,
-      p_batch_size: batchSize,
+    const { data, error } = await this.workerClientFactory().rpc('fn_purge_expired_webhook_data', {
+      p_retention_days: retentionDays, p_batch_size: batchSize,
     });
-
-    if (error || !data || data.length === 0) {
-      return { purgedDeliveries: 0, purgedEvents: 0 };
-    }
-
-    return {
-      purgedDeliveries: data[0].purged_deliveries_count || 0,
-      purgedEvents: data[0].purged_events_count || 0,
-    };
+    if (error) throw new Error(`DATABASE_RETENTION_PURGE_ERROR: Failed to purge expired webhook data: ${error.message}`);
+    const row = Array.isArray(data) ? data[0] : data;
+    if (!row) return { purgedDeliveries: 0, purgedEvents: 0 };
+    return { purgedDeliveries: Number(row.purged_deliveries_count) || 0, purgedEvents: Number(row.purged_events_count) || 0 };
   }
 }

@@ -47,6 +47,9 @@ async function runAll() {
   const migrationPath = path.resolve('supabase/migrations/070_saas_webhook_engine.sql');
   assert.ok(fs.existsSync(migrationPath), 'Migration file 070_saas_webhook_engine.sql must exist.');
   const sqlContent = fs.readFileSync(migrationPath, 'utf8');
+  const correctiveMigrationPath = path.resolve('supabase/migrations/071_w022_webhook_runtime_security_and_atomicity.sql');
+  assert.ok(fs.existsSync(correctiveMigrationPath), 'Corrective migration 071 must exist.');
+  const correctiveSqlContent = fs.readFileSync(correctiveMigrationPath, 'utf8');
 
   // ─── Part 1: Static DDL & Contract Invariants ───
   await runCheck('DDL-01', 'Preflight check verifies uq_saas_applications_tenant_app with SQLSTATE 55000', () => {
@@ -95,6 +98,24 @@ async function runAll() {
     assert.ok(sqlContent.includes('REVOKE UPDATE, DELETE ON public.webhook_events FROM service_role'));
   });
 
+  await runCheck('DDL-08', '071 implements atomic enqueue and fenced worker state transitions', () => {
+    assert.ok(correctiveSqlContent.includes('fn_enqueue_webhook_event'));
+    assert.ok(correctiveSqlContent.includes('ON CONFLICT (tenant_id, idempotency_key) WHERE idempotency_key IS NOT NULL DO NOTHING'));
+    assert.ok(correctiveSqlContent.includes('fn_complete_webhook_delivery'));
+    assert.ok(correctiveSqlContent.includes('fn_recover_expired_webhook_leases'));
+    assert.ok(correctiveSqlContent.includes("CASE WHEN d.attempt_count >= 5 THEN 'dead_letter' ELSE 'queued' END"));
+    assert.ok(correctiveSqlContent.includes('LEASE_EXPIRED_AT_MAX_ATTEMPTS'));
+    assert.ok(correctiveSqlContent.includes('p_retention_days > 3650'));
+    assert.ok(correctiveSqlContent.includes('p_batch_size > 5000'));
+  });
+
+  await runCheck('DDL-09', '071 provisions a non-login worker role and prevents direct table access', () => {
+    assert.ok(correctiveSqlContent.includes('CREATE ROLE webhook_worker NOLOGIN NOINHERIT NOSUPERUSER'));
+    assert.ok(correctiveSqlContent.includes('GRANT webhook_worker TO authenticator'));
+    assert.ok(correctiveSqlContent.includes('REVOKE ALL ON public.webhook_events, public.webhook_deliveries FROM service_role'));
+    assert.ok(correctiveSqlContent.includes('GRANT EXECUTE ON FUNCTION public.fn_claim_webhook_batch(INTEGER, INTEGER) TO webhook_worker'));
+  });
+
   // ─── Part 2: Dynamic Execution in Isolated In-Memory PGlite Engine ───
   const db = new PGlite();
 
@@ -126,12 +147,16 @@ async function runAll() {
         IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'service_role') THEN
           CREATE ROLE service_role;
         END IF;
+        IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'authenticator') THEN
+          CREATE ROLE authenticator NOINHERIT;
+        END IF;
       END $$;
     `);
   });
 
   await runCheck('PG-02', 'Execute migration 070_saas_webhook_engine.sql cleanly against PostgreSQL', async () => {
     await db.exec(sqlContent);
+    await db.exec(correctiveSqlContent);
   });
 
   // Seed sample tenant & app

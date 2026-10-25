@@ -40,6 +40,8 @@ import { metricsCollector } from './lib/metrics';
 import { errorTracker } from './lib/errorTracker';
 import { saasAuthPlugin } from './lib/saasAuthPlugin';
 import { saasV1Routes } from './routes/saasV1';
+import { startWebhookWorker } from './modules/webhooks/webhookWorker';
+import { assertWebhookWorkerRuntimeConfiguration } from './modules/webhooks/webhookWorkerAuth';
 import { startNewsScheduler } from './services/news/newsService';
 
 const envToLogger: Record<string, object | boolean> = {
@@ -255,6 +257,18 @@ export async function buildApp() {
   await app.register(debugRoutes, { prefix: '/api' });
   await app.register(saasAuthPlugin);
   await app.register(saasV1Routes);
+
+  // Explicit opt-in; config faults stop startup rather than silently downgrading worker security.
+  if (process.env.WEBHOOK_WORKER_ENABLED === 'true') {
+    let stopWebhookWorker: (() => Promise<void>) | undefined;
+    app.addHook('onReady', async () => {
+      assertWebhookWorkerRuntimeConfiguration();
+      stopWebhookWorker = startWebhookWorker(app.log);
+    });
+    app.addHook('onClose', async () => {
+      await stopWebhookWorker?.();
+    });
+  }
 
   return app;
 }

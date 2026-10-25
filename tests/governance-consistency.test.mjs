@@ -161,12 +161,25 @@ try {
   assert.fail(`origin/master could not be resolved: ${err.message}`);
 }
 
-// Local HEAD must strictly match origin/master (fail-closed, no exceptions)
-assert.strictEqual(
-  localHead,
-  originMaster,
-  `Local HEAD (${localHead}) must strictly match origin/master (${originMaster})`
-);
+// On a pull_request workflow GitHub checks out a synthetic two-parent merge commit.
+// Preserve the strict origin/master invariant for normal runs; on PR CI, require the
+// synthetic merge's first parent to be origin/master and its second parent to be a real SHA.
+if (process.env.GITHUB_EVENT_NAME === 'pull_request') {
+  const firstParent = execSync('git rev-parse HEAD^1', { encoding: 'utf8' }).trim();
+  const secondParent = execSync('git rev-parse HEAD^2', { encoding: 'utf8' }).trim();
+  assert.strictEqual(
+    firstParent,
+    originMaster,
+    `PR synthetic merge first parent (${firstParent}) must strictly match origin/master (${originMaster})`
+  );
+  assert.strictEqual(secondParent.length, 40, 'PR synthetic merge second parent must be a valid commit SHA');
+} else {
+  assert.strictEqual(
+    localHead,
+    originMaster,
+    `Local HEAD (${localHead}) must strictly match origin/master (${originMaster})`
+  );
+}
 
 // Working tree must be completely clean (fail-closed, no exceptions)
 const porcelainStatus = execSync('git status --porcelain', { encoding: 'utf8' }).trim();

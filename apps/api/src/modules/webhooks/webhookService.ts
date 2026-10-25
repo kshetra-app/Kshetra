@@ -16,9 +16,11 @@ import {
   extractSecretHint,
   canonicalizeJson,
   computePayloadSha256,
+  encodePostgrestBytea,
+  decodePostgrestBytea,
 } from './crypto';
 import { validateAndPinEgressTarget } from './antiSsrfGuard';
-import { dispatchWebhook } from './webhookDispatcher';
+import { dispatchWebhook, type DispatchResult } from './webhookDispatcher';
 import {
   type WebhookSubscriptionModel,
   type WebhookDeliveryModel,
@@ -55,7 +57,10 @@ export class WebhookService {
   ) {
     if (queueProvider) {
       this.queueProvider = queueProvider;
-    } else if (process.env.NODE_ENV === 'test' || !process.env.DATABASE_URL) {
+    } else if (
+      process.env.NODE_ENV === 'test' ||
+      (process.env.WEBHOOK_QUEUE_PROVIDER === 'in-memory' && process.env.NODE_ENV !== 'production')
+    ) {
       this.queueProvider = new InMemoryQueueProvider();
     } else {
       this.queueProvider = new PostgresQueueProvider(client);
@@ -121,9 +126,9 @@ export class WebhookService {
         tenant_id: tenantId,
         application_id: applicationId,
         endpoint_url: endpointUrl,
-        secret_ciphertext: encrypted.ciphertext,
-        secret_iv: encrypted.iv,
-        secret_tag: encrypted.tag,
+        secret_ciphertext: encodePostgrestBytea(encrypted.ciphertext),
+        secret_iv: encodePostgrestBytea(encrypted.iv),
+        secret_tag: encodePostgrestBytea(encrypted.tag),
         secret_key_version: encrypted.version,
         secret_hash: encrypted.hash,
         secret_hint: encrypted.hint,
@@ -330,6 +335,7 @@ export class WebhookService {
         sub.secretHash = newEncrypted.hash;
         sub.updatedAt = new Date().toISOString();
         (sub as any)._previousSecret = (sub as any)._rawSecret;
+        (sub as any)._previousSecretExpiresAt = gracePeriodExpiresAt;
         (sub as any)._rawSecret = newSecret;
       }
       return {
@@ -340,23 +346,28 @@ export class WebhookService {
     }
 
     // In PostgreSQL: Move current secret fields to previous_secret_* and save new
-    const { data: current } = await this.client
+    const { data: current, error: currentError } = await this.client
       .from('webhook_subscriptions')
       .select('secret_ciphertext, secret_iv, secret_tag')
       .eq('tenant_id', tenantId)
+      .eq('application_id', applicationId)
       .eq('id', subscriptionId)
       .single();
+
+    if (currentError || !current?.secret_ciphertext || !current?.secret_iv || !current?.secret_tag) {
+      throw new Error('SECRET_ROTATION_FAILED: Existing encrypted secret could not be retrieved.');
+    }
 
     const { error } = await this.client
       .from('webhook_subscriptions')
       .update({
-        previous_secret_ciphertext: current?.secret_ciphertext,
-        previous_secret_iv: current?.secret_iv,
-        previous_secret_tag: current?.secret_tag,
+        previous_secret_ciphertext: current.secret_ciphertext,
+        previous_secret_iv: current.secret_iv,
+        previous_secret_tag: current.secret_tag,
         previous_secret_expires_at: gracePeriodExpiresAt,
-        secret_ciphertext: newEncrypted.ciphertext,
-        secret_iv: newEncrypted.iv,
-        secret_tag: newEncrypted.tag,
+        secret_ciphertext: encodePostgrestBytea(newEncrypted.ciphertext),
+        secret_iv: encodePostgrestBytea(newEncrypted.iv),
+        secret_tag: encodePostgrestBytea(newEncrypted.tag),
         secret_key_version: newEncrypted.version,
         secret_hash: newEncrypted.hash,
         secret_hint: newEncrypted.hint,
@@ -395,35 +406,48 @@ export class WebhookService {
     const payloadRaw = canonicalizeJson(testPayload);
     const payloadSha256 = computePayloadSha256(payloadRaw);
 
-    // Retrieve active secret for subscription
-    let rawSecret = 'whsec_0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef';
+    // Fail closed: never dispatch using a synthetic or default signing secret.
+    let rawSecret: string;
     let previousSecret: string | null = null;
 
     if (this.queueProvider instanceof InMemoryQueueProvider) {
-      const inMem = this.queueProvider.subscriptions.get(subscriptionId);
-      if ((inMem as any)?._rawSecret) {
-        rawSecret = (inMem as any)._rawSecret;
+      const inMem = this.queueProvider.subscriptions.get(subscriptionId) as any;
+      if (!inMem || typeof inMem._rawSecret !== 'string' || inMem._rawSecret.length === 0) {
+        throw new Error('WEBHOOK_SECRET_UNAVAILABLE: Stored signing secret is missing.');
       }
+      rawSecret = inMem._rawSecret;
+      if (
+        typeof inMem._previousSecret === 'string' &&
+        typeof inMem._previousSecretExpiresAt === 'string' &&
+        Date.parse(inMem._previousSecretExpiresAt) > Date.now()
+      ) previousSecret = inMem._previousSecret;
     } else {
-      const { data } = await this.client
+      const { data, error } = await this.client
         .from('webhook_subscriptions')
-        .select('secret_ciphertext, secret_iv, secret_tag, previous_secret_ciphertext, previous_secret_iv, previous_secret_tag')
+        .select('secret_ciphertext, secret_iv, secret_tag, previous_secret_ciphertext, previous_secret_iv, previous_secret_tag, previous_secret_expires_at')
         .eq('tenant_id', tenantId)
+        .eq('application_id', applicationId)
         .eq('id', subscriptionId)
         .single();
-      if (data) {
-        rawSecret = decryptSecret(
-          { ciphertext: data.secret_ciphertext, iv: data.secret_iv, tag: data.secret_tag },
-          tenantId,
-          subscriptionId
-        );
-        if (data.previous_secret_ciphertext) {
-          previousSecret = decryptSecret(
-            { ciphertext: data.previous_secret_ciphertext, iv: data.previous_secret_iv, tag: data.previous_secret_tag },
-            tenantId,
-            subscriptionId
-          );
-        }
+
+      if (error || !data?.secret_ciphertext || !data?.secret_iv || !data?.secret_tag) {
+        throw new Error('WEBHOOK_SECRET_UNAVAILABLE: Stored signing secret could not be retrieved.');
+      }
+      rawSecret = decryptSecret({
+        ciphertext: decodePostgrestBytea(data.secret_ciphertext),
+        iv: decodePostgrestBytea(data.secret_iv),
+        tag: decodePostgrestBytea(data.secret_tag),
+      }, tenantId, subscriptionId);
+
+      if (
+        data.previous_secret_ciphertext && data.previous_secret_iv && data.previous_secret_tag &&
+        data.previous_secret_expires_at && Date.parse(String(data.previous_secret_expires_at)) > Date.now()
+      ) {
+        previousSecret = decryptSecret({
+          ciphertext: decodePostgrestBytea(data.previous_secret_ciphertext),
+          iv: decodePostgrestBytea(data.previous_secret_iv),
+          tag: decodePostgrestBytea(data.previous_secret_tag),
+        }, tenantId, subscriptionId);
       }
     }
 
@@ -448,6 +472,48 @@ export class WebhookService {
       responseBodySample: result.responseBodySample,
       errorMessage: result.errorMessage,
     };
+  }
+
+  /**
+   * Claims and dispatches one bounded batch. Missing signing material always fails closed.
+   * Completion updates are persisted through a lease-token-fenced atomic database RPC.
+   */
+  async dispatchPendingBatch(batchSize = 10): Promise<{ claimed: number; updated: number; stale: number }> {
+    if (!Number.isInteger(batchSize) || batchSize < 1 || batchSize > 100) {
+      throw new Error('INVALID_BATCH_SIZE: Batch size must be between 1 and 100.');
+    }
+    const jobs = await this.queueProvider.claimBatch(batchSize);
+    let updated = 0;
+    let stale = 0;
+    for (const job of jobs) {
+      let result: DispatchResult;
+      if (!job.secret) {
+        result = {
+          success: false, httpStatus: null, executionDurationMs: 0,
+          requestHeaders: {}, responseHeaders: {}, responseBodySample: '',
+          errorMessage: 'WEBHOOK_SECRET_UNAVAILABLE: No signing secret could be decrypted.',
+        };
+      } else {
+        try {
+          result = await dispatchWebhook({
+            endpointUrl: job.subscription.endpointUrl, secret: job.secret,
+            previousSecret: job.previousSecret ?? null, eventId: job.event.id,
+            deliveryId: job.delivery.id, payloadRaw: job.event.payloadRaw,
+            payloadSha256: job.event.payloadSha256,
+          });
+        } catch (err: unknown) {
+          result = {
+            success: false, httpStatus: null, executionDurationMs: 0,
+            requestHeaders: {}, responseHeaders: {}, responseBodySample: '',
+            errorMessage: err instanceof Error ? err.message.slice(0, 1024) : 'WEBHOOK_DISPATCH_FAILED',
+          };
+        }
+      }
+      const completion = await this.queueProvider.completeDelivery(job.delivery.id, job.leaseToken, result);
+      if (completion.updated) updated++;
+      else stale++;
+    }
+    return { claimed: jobs.length, updated, stale };
   }
 
   /**
