@@ -225,9 +225,10 @@
         "invalidGeometries": 1,
         "positiveAreaOverlapPairs": 0,
         "unionPartCount": 2,
-        "fullPairwiseComparison": "PENDING"
+        "precisionComparedToNewFamily": "max vertex delta 6.524222738930257e-10 degrees (~sub-millimetre); same 119 names and ring vertex counts",
+        "unionPartNote": "Bhadrachalam (ST) detached ring remains a separate union component under lower precision; the same ring exists in the other layers."
       }
     ],
-    "note": "All four services returned 119 features; all have the same Dornakal self-intersection. The Admin_New and Admin_2026 payloads are identical. Admin_Old has a distinct payload and a two-component union, so it needs an authoritative state-boundary coverage comparison."
+    "canonicalCandidateDecision": "The EndowmentLands_Admin_2026 and Endowment_Lands_Admin_New services are byte-identical; Endowment_Lands_Old is geometrically near-identical within sub-millimetre coordinate precision. The older AdministrativeInfoSystem layer is the outlier. Prefer the newer service family for further statutory validation, but do not accept as canonical until legal version/effective date, all-119 crosswalk, Dornakal repair and state-boundary coverage pass."
   }
 }
