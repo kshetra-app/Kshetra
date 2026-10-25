@@ -1274,12 +1274,16 @@ function FullMapScreen() {
         <View style={styles.geoOverlay}>
           <Ionicons name="cloud-offline-outline" size={32} color="#F87171" />
           <Text style={styles.geoOverlayText}>
-            {t('map.boundariesFailed', "Couldn't load this map")}
+            {geoError.message.startsWith('GEOMETRY_UNAVAILABLE')
+              ? t('map.boundariesUnavailable', 'Verified constituency boundaries are not yet available for this jurisdiction. Unverified placeholder boundaries are intentionally hidden.')
+              : t('map.boundariesFailed', "Couldn't load this map")}
           </Text>
-          <Pressable style={styles.geoRetryButton} onPress={retryGeo}>
-            <Ionicons name="refresh" size={16} color="#0A0A1A" />
-            <Text style={styles.geoRetryText}>{t('common.retry', 'Retry')}</Text>
-          </Pressable>
+          {!geoError.message.startsWith('GEOMETRY_UNAVAILABLE') && (
+            <Pressable style={styles.geoRetryButton} onPress={retryGeo}>
+              <Ionicons name="refresh" size={16} color="#0A0A1A" />
+              <Text style={styles.geoRetryText}>{t('common.retry', 'Retry')}</Text>
+            </Pressable>
+          )}
         </View>
       )}
 
