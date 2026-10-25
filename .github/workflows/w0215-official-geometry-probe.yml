@@ -6,6 +6,7 @@ on:
       - w0215-resumption-2026-10-25
     paths:
       - "scripts/w0215_acquire_official_geometry.py"
+      - "scripts/audit_w0215_telangana_candidate_geometry.py"
       - ".github/workflows/w0215-official-geometry-probe.yml"
   pull_request:
     branches:
@@ -46,6 +47,14 @@ jobs:
         id: probe
         continue-on-error: true
         run: python scripts/w0215_acquire_official_geometry.py
+
+      - name: Install pinned GIS audit dependency
+        if: always()
+        run: python -m pip install --disable-pip-version-check "shapely==2.1.2"
+
+      - name: Run reproducible topology audit on acquired Telangana layers
+        if: always()
+        run: python scripts/audit_w0215_telangana_candidate_geometry.py
 
       - name: Upload raw responses and manifest even on failure
         if: always()
