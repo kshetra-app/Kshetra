@@ -40,12 +40,19 @@ export function isBundledState(code: string): boolean {
   return getManifestEntry(code)?.bundled === true;
 }
 
-/** Whether the app knows about boundary data for this state at all. */
+/**
+ * True only when the manifest certifies real polygon boundaries as available.
+ * A jurisdiction appearing in the manifest is not proof that polygon data is
+ * verified; placeholder entries are deliberately reported as unavailable.
+ */
 export function hasStateGeoJSON(code: string): boolean {
-  return getManifestEntry(code) !== undefined;
+  const entry = getManifestEntry(code);
+  return Boolean(entry && entry.hasPolygons && entry.status !== 'placeholder');
 }
 
-/** All state codes the app can render boundaries for. */
+/** All jurisdictions whose manifest explicitly marks verified polygons available. */
 export function getStatesWithGeoJSON(): string[] {
-  return Object.keys(MANIFEST);
+  return Object.entries(MANIFEST)
+    .filter(([, entry]) => entry.hasPolygons && entry.status !== 'placeholder')
+    .map(([code]) => code);
 }
