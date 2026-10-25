@@ -244,7 +244,7 @@
     "acNoSequencesContiguousWithinEachJurisdiction": true,
     "rawInvalidGeometryCount": 23,
     "positiveAreaOverlapPairsAfterMakeValid": 1337,
-    "sumMinusUnionAreaDegreesSquared": 0.000159,
+    "sumMinusUnionAreaDegreesSquared": 0.0001547711880023478,
     "canonicalLegalIdentityCrosswalk": "NOT PERFORMED",
     "officialRawECIBytes": "NOT ACQUIRED; tested direct .js endpoints return HTTP 404",
     "productionAcceptance": "REJECTED_PENDING_GEOMETRY_REPAIR_AND_LEGAL_RECONCILIATION"
