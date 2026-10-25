@@ -126,6 +126,7 @@ def save_response(prefix: str, response):
 known_services = {
     "bihar-assembly": "ELECTION/AC/MapServer",
     "bihar-pin-code-boundary": "AdministrativrBoundaries/PIN_Code_Boundary/MapServer",
+    "bihar-state-boundary": "AdministrativrBoundaries/StateBoundary/MapServer",
 }
 for key, rel in known_services.items():
     candidates = [
@@ -218,6 +219,22 @@ for key, rel in known_services.items():
                             "topologyValidated": False,
                             "acceptance": "CANDIDATE_ONLY",
                         }
+                    manifest["geometryProbes"].append(row)
+                except Exception as exc:
+                    manifest["geometryProbes"].append({"serviceId": key, "layerId": layer_id, "error": f"{type(exc).__name__}: {exc}"})
+        elif key == "bihar-state-boundary":
+            layer_rows = metadata.get("layers", [])
+            candidate_ids = [x.get("id") for x in layer_rows if re.search(r"state", str(x.get("name", "")), re.I)] or ([0] if not layer_rows else [x.get("id") for x in layer_rows])
+            for layer_id in candidate_ids:
+                query_url = chosen_url.rstrip("/") + f"/{layer_id}/query"
+                try:
+                    response, target = request_service(query_url, {"where":"1=1","outFields":"*","returnGeometry":"true","outSR":"4326","f":"json","resultRecordCount":"100"})
+                    row = {"serviceId": key, "layerId": layer_id, "requestUrl": target, **save_response(key + "_geometry", response)}
+                    if response.status_code == 200:
+                        data = response.json()
+                        features = data.get("features", [])
+                        names = [str((f.get("attributes") or {}).get("ST_NAME") or (f.get("attributes") or {}).get("STATE_NAME") or "") for f in features]
+                        row["geometrySummary"] = {"featureCount":len(features),"stateNames":sorted(set(x for x in names if x)),"geometryType":data.get("geometryType"),"spatialReference":data.get("spatialReference"),"topologyValidated":False,"acceptance":"COMPARISON_CANDIDATE_ONLY"}
                     manifest["geometryProbes"].append(row)
                 except Exception as exc:
                     manifest["geometryProbes"].append({"serviceId": key, "layerId": layer_id, "error": f"{type(exc).__name__}: {exc}"})
