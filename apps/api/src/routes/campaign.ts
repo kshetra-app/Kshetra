@@ -524,10 +524,6 @@ async function findCampaignById(campaignId: string): Promise<{ id: string; polit
       }
     } catch {}
   }
-  const mem = inMemoryCampaigns.find((c) => c.id === campaignId);
-  if (mem) {
-    return { id: mem.id, politician_id: mem.politicianId };
-  }
   return null;
 }
 
@@ -573,14 +569,6 @@ async function verifyCampaignAuthority(
         return { authorized: true, campaign };
       }
     } catch {}
-  }
-
-  // In-memory volunteer coordinator check
-  const memVol = inMemoryVolunteers.find(
-    (v) => v.campaignId === campaignId && (v.id === auth.userId || v.name === auth.userId) && v.role === 'coordinator'
-  );
-  if (memVol) {
-    return { authorized: true, campaign };
   }
 
   return { authorized: false, campaign, reason: 'Caller lacks authority over this campaign' };
@@ -703,74 +691,62 @@ export async function campaignRoutes(app: FastifyInstance) {
   });
 
   /** GET /api/v1/campaign/campaigns — list campaigns */
-  app.get('/api/v1/campaign/campaigns', { schema: campaignsQuerySchema }, async (request) => {
-    const { status, politicianId } = request.query as { status?: string; politicianId?: string };
-
-    if (isSupabaseConfigured) {
-      try {
-        let query = supabase.from('campaigns').select('*');
-        if (status) query = query.eq('status', status);
-        if (politicianId) query = query.eq('politician_id', politicianId);
-        const { data, error } = await query;
-        if (!error && data && data.length > 0) {
-          return { campaigns: data, total: data.length };
-        }
-      } catch {
-        // fall through to mock
-      }
-    }
-
-    return {
-      campaigns: [
-        {
-          id: 'c1',
-          politicianId: politicianId || 'pp1',
-          name: 'Nampally AC 2026 People Campaign',
-          description: 'Grassroots voter outreach across all 185 polling stations in Nampally.',
-          type: 'election',
-          status: 'active',
-          stateCode: 'TS',
-          targetConstituencies: [56],
-          totalBudgetINR: 500000,
-          spentBudgetINR: 145000,
-          totalBooths: 185,
-          boothsCovered: 112,
-          volunteerCount: 42,
-          impressions: 450000,
-          reach: 85000,
-          sentimentScore: 72,
-        },
-      ],
-      total: 1,
+  app.get('/api/v1/campaign/campaigns', { schema: campaignsQuerySchema }, async (request, reply) => {
+    const { status, politicianId, limit = 50 } = request.query as {
+      status?: string; politicianId?: string; limit?: number;
     };
+    if (!isSupabaseConfigured) {
+      return sendApiError(reply, request, 503, 'Service Unavailable', 'Campaign data is unavailable because database persistence is not configured.', {
+        code: 'DATABASE_UNAVAILABLE',
+      });
+    }
+    try {
+      let query = supabase.from('campaigns').select('*');
+      if (status) query = query.eq('status', status);
+      if (politicianId) query = query.eq('politician_id', politicianId);
+      const { data, error } = await query.limit(limit);
+      if (error) {
+        return sendApiError(reply, request, 500, 'Internal Server Error', 'Failed to load campaigns from durable storage.', {
+          code: 'DATABASE_ERROR',
+        });
+      }
+      const campaigns = data ?? [];
+      return { campaigns, total: campaigns.length };
+    } catch {
+      return sendApiError(reply, request, 500, 'Internal Server Error', 'Failed to load campaigns from durable storage.', {
+        code: 'DATABASE_ERROR',
+      });
+    }
   });
 
   /** GET /api/v1/campaign/booths — booth strategy and in-charge management */
-  app.get('/api/v1/campaign/booths', { schema: boothsQuerySchema }, async (request) => {
+  app.get('/api/v1/campaign/booths', { schema: boothsQuerySchema }, async (request, reply) => {
     const { campaignId, priority } = request.query as { campaignId?: string; priority?: string };
-
-    if (isSupabaseConfigured) {
-      try {
-        let query = supabase.from('booth_strategies').select('*');
-        if (campaignId) query = query.eq('campaign_id', campaignId);
-        if (priority) query = query.eq('priority', priority);
-        const { data, error } = await query;
-        if (!error && data && data.length > 0) {
-          return { booths: data, total: data.length };
-        }
-      } catch {
-        // fallback
-      }
+    if (!isSupabaseConfigured) {
+      return sendApiError(reply, request, 503, 'Service Unavailable', 'Booth data is unavailable because database persistence is not configured.', {
+        code: 'DATABASE_UNAVAILABLE',
+      });
     }
-
-    let filtered = inMemoryBooths;
-    if (priority) filtered = filtered.filter((b) => b.priority === priority);
-    return {
-      booths: filtered,
-      total: filtered.length,
-      assignedCount: filtered.filter((b) => !!b.agentPhone).length,
-      unassignedCount: filtered.filter((b) => !b.agentPhone).length,
-    };
+    try {
+      let query = supabase.from('booth_strategies').select('*');
+      if (campaignId) query = query.eq('campaign_id', campaignId);
+      if (priority) query = query.eq('priority', priority);
+      const { data, error } = await query;
+      if (error) {
+        return sendApiError(reply, request, 500, 'Internal Server Error', 'Failed to load booth strategies from durable storage.', {
+          code: 'DATABASE_ERROR',
+        });
+      }
+      const booths = data ?? [];
+      return { booths, total: booths.length,
+        assignedCount: booths.filter((b: any) => Boolean(b.agent_phone ?? b.agentPhone)).length,
+        unassignedCount: booths.filter((b: any) => !Boolean(b.agent_phone ?? b.agentPhone)).length,
+      };
+    } catch {
+      return sendApiError(reply, request, 500, 'Internal Server Error', 'Failed to load booth strategies from durable storage.', {
+        code: 'DATABASE_ERROR',
+      });
+    }
   });
 
   /** PATCH /api/v1/campaign/booths/:id — assign in-charge or update notes */
@@ -855,24 +831,30 @@ export async function campaignRoutes(app: FastifyInstance) {
   });
 
   /** GET /api/v1/campaign/volunteers — list ground cadre */
-  app.get('/api/v1/campaign/volunteers', { schema: volunteersQuerySchema }, async (request) => {
+  app.get('/api/v1/campaign/volunteers', { schema: volunteersQuerySchema }, async (request, reply) => {
     const { campaignId, role } = request.query as { campaignId?: string; role?: string };
-
-    if (isSupabaseConfigured) {
-      try {
-        let query = supabase.from('campaign_volunteers').select('*');
-        if (campaignId) query = query.eq('campaign_id', campaignId);
-        if (role) query = query.eq('role', role);
-        const { data, error } = await query;
-        if (!error && data && data.length > 0) {
-          return { volunteers: data, total: data.length };
-        }
-      } catch {}
+    if (!isSupabaseConfigured) {
+      return sendApiError(reply, request, 503, 'Service Unavailable', 'Volunteer data is unavailable because database persistence is not configured.', {
+        code: 'DATABASE_UNAVAILABLE',
+      });
     }
-
-    let filtered = inMemoryVolunteers;
-    if (role) filtered = filtered.filter((v) => v.role === role);
-    return { volunteers: filtered, total: filtered.length };
+    try {
+      let query = supabase.from('campaign_volunteers').select('*');
+      if (campaignId) query = query.eq('campaign_id', campaignId);
+      if (role) query = query.eq('role', role);
+      const { data, error } = await query;
+      if (error) {
+        return sendApiError(reply, request, 500, 'Internal Server Error', 'Failed to load volunteers from durable storage.', {
+          code: 'DATABASE_ERROR',
+        });
+      }
+      const volunteers = data ?? [];
+      return { volunteers, total: volunteers.length };
+    } catch {
+      return sendApiError(reply, request, 500, 'Internal Server Error', 'Failed to load volunteers from durable storage.', {
+        code: 'DATABASE_ERROR',
+      });
+    }
   });
 
   /** POST /api/v1/campaign/volunteers — add new cadre member */
