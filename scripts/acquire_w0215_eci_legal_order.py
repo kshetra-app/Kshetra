@@ -18,6 +18,10 @@ URL_VARIANTS = [
     URL,
     URL.replace("%28", "(").replace("%29", ")"),
     URL + "?download=1",
+    # Official ECI backend download link surfaced by the ECI publications index.
+    # It may return a legacy Word document rather than a PDF; the exact response
+    # bytes are still preserved and hashed, but are not passed to the PDF parser.
+    "https://www.eci.gov.in/eci-backend/public/api/download?url=LMAhAK6sOPBp%2FNFF0iRfXbEB1EVSLT41NNLRjYNJJP1KivrUxbfqkDatmHy12e%2FzVx8fLfn2ReU7TfrqYobgIgKcdK37FfkoonJSj9Zv9RvViTBqI3f7TwYNpRQavZojQgQeFGGUC%2BoWgMwz8LDSSFisGA9MRBjMisvEPvdZnIV0%2FpRNWHB6xVed36JxpqCFCtTz26GqXjQSC84fYThQWQ%3D%3D",
 ]
 HOME = "https://www.eci.gov.in/"
 ALLOWED_HOSTS = {"www.eci.gov.in", "eci.gov.in"}
@@ -101,6 +105,9 @@ if selected is None:
     if manifest["attempts"]:
         last=manifest["attempts"][-1]
         manifest.update({"httpStatus":last.get("httpStatus"),"contentType":last.get("contentType"),"rawBytes":last.get("responseBytes"),"rawSha256":last.get("responseSha256"),"finalUrl":last.get("finalUrl"),"rawArtifact":last.get("artifact")})
+        if last.get("httpStatus") == 200 and last.get("responseBytes", 0) > 0:
+            manifest["status"]="OFFICIAL_BYTES_ACQUIRED_NON_PDF_REQUIRES_EXTRACTION"
+            manifest["error"]="The official backend returned non-empty bytes that are not PDF magic; preserve the byte hash and inspect the actual file format before choosing an extractor."
 else:
     response,raw,final_url,name=selected
     manifest.update({
