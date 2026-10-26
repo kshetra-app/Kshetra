@@ -1,3 +1,6 @@
+// Enable header-based identity/role fixtures only in the explicit Jest test harness.
+process.env.TEST_HARNESS_ACTIVE = process.env.NODE_ENV === 'test' ? 'true' : 'false';
+
 // Inject fallback test environment credentials for isolated unit tests so isSupabaseConfigured is initialized
 process.env.SUPABASE_URL = process.env.SUPABASE_URL || 'https://test-fixture.supabase.co';
 process.env.SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRlc3QiLCJyb2xlIjoiYW5vbiIsImlhdCI6MTYwMDAwMDAwMCwiZXhwIjoxOTAwMDAwMDAwfQ.dummy_signature_for_test_environment_only';
