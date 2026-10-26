@@ -1867,25 +1867,30 @@
       "sourceId": "SRC-POSTS-TELEGRAPHS-MANUAL-DELIVERY-BEAT-LISTS-2026-10-26",
       "subject": "Department of Posts manual text on postal maps and postman delivery-beat lists",
       "publisher": "Department of Posts / India Post",
-      "url": "https://www.indiapost.gov.in/api/documents/file/U2FsdGVkX1-31j0trfGI5vDmpEsjVxN2Xv-3Jie_3Cs0-Tpl_k886_ydGwGAImacVButzBzrxqQaOpTPEhakEw",
+      "url": "https://www.indiapost.gov.in/api/documents/file/103agyc2pefr0gwex390y3063nq01vfi0s5c40iq8b3eols02v6i3fnf43afyt",
       "retrievedAt": "2026-10-26",
-      "format": "Official-host search-indexed PDF text; Rules/paragraphs 309-310 refer to postal map and delivery beat list books",
+      "format": "Official India Post Postal Manual Vol. VIII PDF and extracted text retained in evidence-only branch",
       "authority": "OFFICIAL_MANUAL_TEXT_DISCOVERY_RAW_BYTES_NOT_ACQUIRED",
-      "status": "INDEXED_MANUAL_TEXT_DISCOVERY_BYTES_NOT_ACQUIRED",
-      "sha256": null,
-      "fileBytes": null,
-      "rawArtifact": null,
+      "status": "SUPERSEDED_BY_HASH_VERIFIED_OFFICIAL_POSTAL_MANUAL_VOL_VIII; OLD_TOKEN_URL_RETURNED_404",
+      "sha256": "c373de5e152d9dd0599358594f5ea9eb488dbd4b630dea3023879e27a043ff6e",
+      "fileBytes": 833948,
+      "rawArtifact": "data/evidence/w021_5/indiapost_postal_manuals/raw/Postal_Manual_Vol._VIII.pdf",
       "facts": [
-        "The indexed text says a Town Inspector maintains a postal map of the town jurisdiction.",
-        "The indexed text says the postmaster prepares a book containing a complete list of the town's delivery beats and streets/quarters in each beat, plus an alphabetical street/place-to-beat index.",
-        "The same text says delivery-beat lists should be corrected as changes are ordered by the postmaster."
+        "Supersedes the earlier unacquired/HTTP-404 PDF candidate URL record only; actual official bytes now exist from the current India Post catalogue token.",
+        "The current manual's extracted Rules 309–310 describe town postal maps and delivery-beat list books, including main quarters, streets, chief business places and an alphabetical street-to-beat index.",
+        "Rules 274–275 describe fixed and unfixed village postman beats and route lists/maps."
       ],
       "limitations": [
-        "The direct download URL returned HTTP 404 in this session; raw document bytes and SHA-256 were not acquired.",
-        "This is a textual/manual description of local operational records, not national GIS delivery-beat polygons.",
-        "The manual edition, current applicability, and custody/retention status must be confirmed with India Post."
+        "The manual is an operational publication; it does not prove a nationwide public delivery-beat polygon dataset exists.",
+        "Catalogue date 01-04-1979 is not sufficient to confirm current effective status of every rule in the volume.",
+        "No authenticated custodian reply or request-sent evidence exists."
       ],
-      "plannedUse": "Support an evidence-based custodian request for current postal maps and delivery-beat records at appropriate Postal Divisions; do not use it as proof that a nationwide digital polygon dataset exists."
+      "plannedUse": "Support an evidence-based custodian request for current postal maps and delivery-beat records at appropriate Postal Divisions; do not use it as proof that a nationwide digital polygon dataset exists.",
+      "pdfPageCount": 317,
+      "textArtifact": "data/evidence/w021_5/indiapost_postal_manuals/text/Postal_Manual_Vol._VIII.txt",
+      "sourcePackageManifestGitBlobSha": "de80f276f019acc396ba03e49a10e7488f4c43e8",
+      "workflowRunId": 40350138447,
+      "workflowUrl": "https://github.com/kshetra-app/Kshetra/actions/runs/40350138447"
     },
     {
       "sourceId": "SRC-NIC-BHARATMAPS-CUSTODIAN-DISCOVERY-2026-10-26",
@@ -2340,6 +2345,485 @@
         "A similarity/difference calculation is not proof of statutory boundary correctness and does not resolve the Telangana geometry-family disagreement."
       ],
       "plannedUse": "Cross-source forensic comparison only; independently adjudicate every discrepancy against primary legal extents and the source custodian before acceptance."
+    },
+    {
+      "sourceId": "SRC-INDIAPOST-POSTAL-MANUAL-VOL-II-2026-10-26",
+      "subject": "Postal Manual Vol. II — official India Post catalogue PDF acquired, hashed and text-parsed for operational postal-map/delivery-beat evidence",
+      "publisher": "Department of Posts, Ministry of Communications, Government of India",
+      "url": "https://www.indiapost.gov.in/api/documents/file/10047ys2m6a93hic901g0n3bvnq3ctfs0s5ea0hbnv3agcn08vh50gv2p08gle",
+      "retrievedAt": "2026-10-26",
+      "catalogueRecord": {
+        "documentId": "ec009bac-c5da-4e70-8ada-6044ba553456",
+        "title": "Postal Manual Vol. II",
+        "catalogueDisplayedDate": "16-08-2025",
+        "language": "English",
+        "catalogueVersion": "English Version",
+        "sourceCatalogue": "https://www.indiapost.gov.in/documents/guidelines"
+      },
+      "format": "Official-host PDF response bytes + PyMuPDF extracted text; raw bytes retained unchanged",
+      "authority": "OFFICIAL_INDIA_POST_MANUAL_DOCUMENT_NOT_GIS_DATASET",
+      "status": "OFFICIAL_PDF_BYTES_ACQUIRED_SHA256_VERIFIED_AND_PARSED",
+      "sha256": "622422edb352966113c4a9e7958329b80b1e93761c3494363562f14b032e836f",
+      "fileBytes": 870818,
+      "pdfVersion": "1.6",
+      "pdfPageCount": 287,
+      "artifactPath": "data/evidence/w021_5/indiapost_postal_manuals/raw/Postal_Manual_Vol._II.pdf",
+      "textArtifactPath": "data/evidence/w021_5/indiapost_postal_manuals/text/Postal_Manual_Vol._II.txt",
+      "sourcePackageManifestPath": "data/evidence/w021_5/indiapost_postal_manuals/manifest.json",
+      "sourcePackageManifestGitBlobSha": "de80f276f019acc396ba03e49a10e7488f4c43e8",
+      "workflowRunId": 40350138447,
+      "workflowUrl": "https://github.com/kshetra-app/Kshetra/actions/runs/40350138447",
+      "workflowArtifactId": 12663576810,
+      "workflowArtifactBytes": 15153862,
+      "workflowArtifactSha256": "80ffc5c7a35ee4c4d5f5d4664f402ccca30e3f0dcd66e7dd114f14ba4822f01f",
+      "retrievalValidation": {
+        "httpStatus": 200,
+        "pdfMagic": true,
+        "pdfParseStatus": "PASS",
+        "rawResponseSha256MatchesManifest": true
+      },
+      "termSearchCounts": {
+        "deliveryBeat": 0,
+        "beatList": 0,
+        "postalMap": 3
+      },
+      "facts": [
+        "Downloaded through the exact document URL observed in an official India Post catalogue page; the catalogue page's raw bytes and SHA-256 were validated against the prior source acquisition manifest.",
+        "PDF payload is 870818 bytes with SHA-256 622422edb352966113c4a9e7958329b80b1e93761c3494363562f14b032e836f; PDF parser opened 287 pages.",
+        "This is postal manual/policy documentation, not delivery-beat vector geometry."
+      ],
+      "limitations": [
+        "The date 16-08-2025 is the value displayed in the official catalogue, not an independently established current effective date of every rule in the volume.",
+        "A manual describes departmental rules and recordkeeping; it does not establish that a public national delivery-beat polygon GIS exists.",
+        "For legal/civic resolution, any operational postal record needs appropriate custodian provenance, effective date, coverage and licence; PIN-code polygons remain separate.",
+        "No authenticated Department of Posts custodian response or request receipt has been retained."
+      ],
+      "plannedUse": "Use as primary official operational-document evidence only; derive precise rule passages for a custodian request, and keep the national delivery-beat GIS gate open."
+    },
+    {
+      "sourceId": "SRC-INDIAPOST-POSTAL-MANUAL-VOL-III-2026-10-26",
+      "subject": "Postal Manual Vol. III — official India Post catalogue PDF acquired, hashed and text-parsed for operational postal-map/delivery-beat evidence",
+      "publisher": "Department of Posts, Ministry of Communications, Government of India",
+      "url": "https://www.indiapost.gov.in/api/documents/file/103afkn2qs7r0baxl0a9sb00hdy3bv9r0sjr935suj3ag5e01erk0l3kq34dtt",
+      "retrievedAt": "2026-10-26",
+      "catalogueRecord": {
+        "documentId": "2235ad05-eb84-4fb7-a690-671328618b15",
+        "title": "Postal Manual Vol. III",
+        "catalogueDisplayedDate": "01-07-1986",
+        "language": "English",
+        "catalogueVersion": "English Version",
+        "sourceCatalogue": "https://www.indiapost.gov.in/documents/guidelines"
+      },
+      "format": "Official-host PDF response bytes + PyMuPDF extracted text; raw bytes retained unchanged",
+      "authority": "OFFICIAL_INDIA_POST_MANUAL_DOCUMENT_NOT_GIS_DATASET",
+      "status": "OFFICIAL_PDF_BYTES_ACQUIRED_SHA256_VERIFIED_AND_PARSED",
+      "sha256": "126c4ad1f911070b721417195ca94e5ea72b68fa1dcba7ddbe1ea6bed1d4b031",
+      "fileBytes": 1082974,
+      "pdfVersion": "1.6",
+      "pdfPageCount": 194,
+      "artifactPath": "data/evidence/w021_5/indiapost_postal_manuals/raw/Postal_Manual_Vol._III.pdf",
+      "textArtifactPath": "data/evidence/w021_5/indiapost_postal_manuals/text/Postal_Manual_Vol._III.txt",
+      "sourcePackageManifestPath": "data/evidence/w021_5/indiapost_postal_manuals/manifest.json",
+      "sourcePackageManifestGitBlobSha": "de80f276f019acc396ba03e49a10e7488f4c43e8",
+      "workflowRunId": 40350138447,
+      "workflowUrl": "https://github.com/kshetra-app/Kshetra/actions/runs/40350138447",
+      "workflowArtifactId": 12663576810,
+      "workflowArtifactBytes": 15153862,
+      "workflowArtifactSha256": "80ffc5c7a35ee4c4d5f5d4664f402ccca30e3f0dcd66e7dd114f14ba4822f01f",
+      "retrievalValidation": {
+        "httpStatus": 200,
+        "pdfMagic": true,
+        "pdfParseStatus": "PASS",
+        "rawResponseSha256MatchesManifest": true
+      },
+      "termSearchCounts": {
+        "deliveryBeat": 0,
+        "beatList": 0,
+        "postalMap": 0
+      },
+      "facts": [
+        "Downloaded through the exact document URL observed in an official India Post catalogue page; the catalogue page's raw bytes and SHA-256 were validated against the prior source acquisition manifest.",
+        "PDF payload is 1082974 bytes with SHA-256 126c4ad1f911070b721417195ca94e5ea72b68fa1dcba7ddbe1ea6bed1d4b031; PDF parser opened 194 pages.",
+        "This is postal manual/policy documentation, not delivery-beat vector geometry."
+      ],
+      "limitations": [
+        "The date 01-07-1986 is the value displayed in the official catalogue, not an independently established current effective date of every rule in the volume.",
+        "A manual describes departmental rules and recordkeeping; it does not establish that a public national delivery-beat polygon GIS exists.",
+        "For legal/civic resolution, any operational postal record needs appropriate custodian provenance, effective date, coverage and licence; PIN-code polygons remain separate.",
+        "No authenticated Department of Posts custodian response or request receipt has been retained."
+      ],
+      "plannedUse": "Use as primary official operational-document evidence only; derive precise rule passages for a custodian request, and keep the national delivery-beat GIS gate open."
+    },
+    {
+      "sourceId": "SRC-INDIAPOST-POSTAL-MANUAL-VOL-IV-PART-I-2026-10-26",
+      "subject": "Postal Manual Vol. IV Part-I — official India Post catalogue PDF acquired, hashed and text-parsed for operational postal-map/delivery-beat evidence",
+      "publisher": "Department of Posts, Ministry of Communications, Government of India",
+      "url": "https://www.indiapost.gov.in/api/documents/file/10368e80patn0fj8905o913da863da190s5e83g28b3agxy02tst0lil6063io",
+      "retrievedAt": "2026-10-26",
+      "catalogueRecord": {
+        "documentId": "71da1836-f86b-4ec5-8c0f-63500e6e86dd",
+        "title": "Postal Manual Vol. IV Part-I",
+        "catalogueDisplayedDate": "22-07-2019",
+        "language": "English",
+        "catalogueVersion": "English Version",
+        "sourceCatalogue": "https://www.indiapost.gov.in/documents/guidelines"
+      },
+      "format": "Official-host PDF response bytes + PyMuPDF extracted text; raw bytes retained unchanged",
+      "authority": "OFFICIAL_INDIA_POST_MANUAL_DOCUMENT_NOT_GIS_DATASET",
+      "status": "OFFICIAL_PDF_BYTES_ACQUIRED_SHA256_VERIFIED_AND_PARSED",
+      "sha256": "50418ef924b16302248254ae56ad41786c624caa7025819520e17d3c449ceb6a",
+      "fileBytes": 9837458,
+      "pdfVersion": "1.4",
+      "pdfPageCount": 57,
+      "artifactPath": "data/evidence/w021_5/indiapost_postal_manuals/raw/Postal_Manual_Vol._IV_Part-I.pdf",
+      "textArtifactPath": "data/evidence/w021_5/indiapost_postal_manuals/text/Postal_Manual_Vol._IV_Part-I.txt",
+      "sourcePackageManifestPath": "data/evidence/w021_5/indiapost_postal_manuals/manifest.json",
+      "sourcePackageManifestGitBlobSha": "de80f276f019acc396ba03e49a10e7488f4c43e8",
+      "workflowRunId": 40350138447,
+      "workflowUrl": "https://github.com/kshetra-app/Kshetra/actions/runs/40350138447",
+      "workflowArtifactId": 12663576810,
+      "workflowArtifactBytes": 15153862,
+      "workflowArtifactSha256": "80ffc5c7a35ee4c4d5f5d4664f402ccca30e3f0dcd66e7dd114f14ba4822f01f",
+      "retrievalValidation": {
+        "httpStatus": 200,
+        "pdfMagic": true,
+        "pdfParseStatus": "PASS",
+        "rawResponseSha256MatchesManifest": true
+      },
+      "termSearchCounts": {
+        "deliveryBeat": 0,
+        "beatList": 0,
+        "postalMap": 0
+      },
+      "facts": [
+        "Downloaded through the exact document URL observed in an official India Post catalogue page; the catalogue page's raw bytes and SHA-256 were validated against the prior source acquisition manifest.",
+        "PDF payload is 9837458 bytes with SHA-256 50418ef924b16302248254ae56ad41786c624caa7025819520e17d3c449ceb6a; PDF parser opened 57 pages.",
+        "This is postal manual/policy documentation, not delivery-beat vector geometry."
+      ],
+      "limitations": [
+        "The date 22-07-2019 is the value displayed in the official catalogue, not an independently established current effective date of every rule in the volume.",
+        "A manual describes departmental rules and recordkeeping; it does not establish that a public national delivery-beat polygon GIS exists.",
+        "For legal/civic resolution, any operational postal record needs appropriate custodian provenance, effective date, coverage and licence; PIN-code polygons remain separate.",
+        "No authenticated Department of Posts custodian response or request receipt has been retained."
+      ],
+      "plannedUse": "Use as primary official operational-document evidence only; derive precise rule passages for a custodian request, and keep the national delivery-beat GIS gate open."
+    },
+    {
+      "sourceId": "SRC-INDIAPOST-POSTAL-MANUAL-VOL-IV-PART-II-APPENDICES-2026-10-26",
+      "subject": "Postal Manual Vol. IV Part-II (Appendices) — official India Post catalogue PDF acquired, hashed and text-parsed for operational postal-map/delivery-beat evidence",
+      "publisher": "Department of Posts, Ministry of Communications, Government of India",
+      "url": "https://www.indiapost.gov.in/api/documents/file/1004ok30ws1s3mpsp3ig3q0abd208gsh0sjr535t8r377t10aayp3g1ub3d9u5",
+      "retrievedAt": "2026-10-26",
+      "catalogueRecord": {
+        "documentId": "e77dd3e6-8753-4539-a292-0b65e9ad1de9",
+        "title": "Postal Manual Vol. IV Part-II (Appendices)",
+        "catalogueDisplayedDate": "15-03-2004",
+        "language": "English",
+        "catalogueVersion": "English Version",
+        "sourceCatalogue": "https://www.indiapost.gov.in/documents/guidelines"
+      },
+      "format": "Official-host PDF response bytes + PyMuPDF extracted text; raw bytes retained unchanged",
+      "authority": "OFFICIAL_INDIA_POST_MANUAL_DOCUMENT_NOT_GIS_DATASET",
+      "status": "OFFICIAL_PDF_BYTES_ACQUIRED_SHA256_VERIFIED_AND_PARSED",
+      "sha256": "0632de111363f4820f6ca74c38eaf6f3bdad3e66343c5399aeb774bb9cea151d",
+      "fileBytes": 440686,
+      "pdfVersion": "1.6",
+      "pdfPageCount": 39,
+      "artifactPath": "data/evidence/w021_5/indiapost_postal_manuals/raw/Postal_Manual_Vol._IV_Part-II_Appendices.pdf",
+      "textArtifactPath": "data/evidence/w021_5/indiapost_postal_manuals/text/Postal_Manual_Vol._IV_Part-II_Appendices.txt",
+      "sourcePackageManifestPath": "data/evidence/w021_5/indiapost_postal_manuals/manifest.json",
+      "sourcePackageManifestGitBlobSha": "de80f276f019acc396ba03e49a10e7488f4c43e8",
+      "workflowRunId": 40350138447,
+      "workflowUrl": "https://github.com/kshetra-app/Kshetra/actions/runs/40350138447",
+      "workflowArtifactId": 12663576810,
+      "workflowArtifactBytes": 15153862,
+      "workflowArtifactSha256": "80ffc5c7a35ee4c4d5f5d4664f402ccca30e3f0dcd66e7dd114f14ba4822f01f",
+      "retrievalValidation": {
+        "httpStatus": 200,
+        "pdfMagic": true,
+        "pdfParseStatus": "PASS",
+        "rawResponseSha256MatchesManifest": true
+      },
+      "termSearchCounts": {
+        "deliveryBeat": 0,
+        "beatList": 0,
+        "postalMap": 0
+      },
+      "facts": [
+        "Downloaded through the exact document URL observed in an official India Post catalogue page; the catalogue page's raw bytes and SHA-256 were validated against the prior source acquisition manifest.",
+        "PDF payload is 440686 bytes with SHA-256 0632de111363f4820f6ca74c38eaf6f3bdad3e66343c5399aeb774bb9cea151d; PDF parser opened 39 pages.",
+        "This is postal manual/policy documentation, not delivery-beat vector geometry."
+      ],
+      "limitations": [
+        "The date 15-03-2004 is the value displayed in the official catalogue, not an independently established current effective date of every rule in the volume.",
+        "A manual describes departmental rules and recordkeeping; it does not establish that a public national delivery-beat polygon GIS exists.",
+        "For legal/civic resolution, any operational postal record needs appropriate custodian provenance, effective date, coverage and licence; PIN-code polygons remain separate.",
+        "No authenticated Department of Posts custodian response or request receipt has been retained."
+      ],
+      "plannedUse": "Use as primary official operational-document evidence only; derive precise rule passages for a custodian request, and keep the national delivery-beat GIS gate open."
+    },
+    {
+      "sourceId": "SRC-INDIAPOST-POSTAL-MANUAL-VOL-V-2026-10-26",
+      "subject": "Postal Manual Vol. V — official India Post catalogue PDF acquired, hashed and text-parsed for operational postal-map/delivery-beat evidence",
+      "publisher": "Department of Posts, Ministry of Communications, Government of India",
+      "url": "https://www.indiapost.gov.in/api/documents/file/1009umo0pbh23lq1l3kav63eosm34dn30sjr83pgej01vde34dfk3g28h0732q",
+      "retrievedAt": "2026-10-26",
+      "catalogueRecord": {
+        "documentId": "aa4a4edc-9e1c-4c57-a776-c1ab38af378f",
+        "title": "Postal Manual Vol. V",
+        "catalogueDisplayedDate": "27-09-2025",
+        "language": "English",
+        "catalogueVersion": "English Version",
+        "sourceCatalogue": "https://www.indiapost.gov.in/documents/guidelines"
+      },
+      "format": "Official-host PDF response bytes + PyMuPDF extracted text; raw bytes retained unchanged",
+      "authority": "OFFICIAL_INDIA_POST_MANUAL_DOCUMENT_NOT_GIS_DATASET",
+      "status": "OFFICIAL_PDF_BYTES_ACQUIRED_SHA256_VERIFIED_AND_PARSED",
+      "sha256": "3e6faf1f45c524416a8dee71ba4d60152c27b2e4dffa3f587a2a1c05f9cd9f62",
+      "fileBytes": 442093,
+      "pdfVersion": "1.2",
+      "pdfPageCount": 187,
+      "artifactPath": "data/evidence/w021_5/indiapost_postal_manuals/raw/Postal_Manual_Vol._V.pdf",
+      "textArtifactPath": "data/evidence/w021_5/indiapost_postal_manuals/text/Postal_Manual_Vol._V.txt",
+      "sourcePackageManifestPath": "data/evidence/w021_5/indiapost_postal_manuals/manifest.json",
+      "sourcePackageManifestGitBlobSha": "de80f276f019acc396ba03e49a10e7488f4c43e8",
+      "workflowRunId": 40350138447,
+      "workflowUrl": "https://github.com/kshetra-app/Kshetra/actions/runs/40350138447",
+      "workflowArtifactId": 12663576810,
+      "workflowArtifactBytes": 15153862,
+      "workflowArtifactSha256": "80ffc5c7a35ee4c4d5f5d4664f402ccca30e3f0dcd66e7dd114f14ba4822f01f",
+      "retrievalValidation": {
+        "httpStatus": 200,
+        "pdfMagic": true,
+        "pdfParseStatus": "PASS",
+        "rawResponseSha256MatchesManifest": true
+      },
+      "termSearchCounts": {
+        "deliveryBeat": 0,
+        "beatList": 0,
+        "postalMap": 0
+      },
+      "facts": [
+        "Downloaded through the exact document URL observed in an official India Post catalogue page; the catalogue page's raw bytes and SHA-256 were validated against the prior source acquisition manifest.",
+        "PDF payload is 442093 bytes with SHA-256 3e6faf1f45c524416a8dee71ba4d60152c27b2e4dffa3f587a2a1c05f9cd9f62; PDF parser opened 187 pages.",
+        "This is postal manual/policy documentation, not delivery-beat vector geometry."
+      ],
+      "limitations": [
+        "The date 27-09-2025 is the value displayed in the official catalogue, not an independently established current effective date of every rule in the volume.",
+        "A manual describes departmental rules and recordkeeping; it does not establish that a public national delivery-beat polygon GIS exists.",
+        "For legal/civic resolution, any operational postal record needs appropriate custodian provenance, effective date, coverage and licence; PIN-code polygons remain separate.",
+        "No authenticated Department of Posts custodian response or request receipt has been retained."
+      ],
+      "plannedUse": "Use as primary official operational-document evidence only; derive precise rule passages for a custodian request, and keep the national delivery-beat GIS gate open."
+    },
+    {
+      "sourceId": "SRC-INDIAPOST-POSTAL-MANUAL-VOL-VI-PART-III-2026-10-26",
+      "subject": "Postal Manual Vol. VI Part-III — official India Post catalogue PDF acquired, hashed and text-parsed for operational postal-map/delivery-beat evidence",
+      "publisher": "Department of Posts, Ministry of Communications, Government of India",
+      "url": "https://www.indiapost.gov.in/api/documents/file/103e8sh0nw4101h5l01gqz08wsm00fsw0sj8534tor3bv9t0a9zg0joeo0fx8j",
+      "retrievedAt": "2026-10-26",
+      "catalogueRecord": {
+        "documentId": "1eeb0b94-c982-43d8-bf8f-72b5b47629e7",
+        "title": "Postal Manual Vol. VI Part-III",
+        "catalogueDisplayedDate": "18-05-2021",
+        "language": "English",
+        "catalogueVersion": "English Version",
+        "sourceCatalogue": "https://www.indiapost.gov.in/documents/guidelines"
+      },
+      "format": "Official-host PDF response bytes + PyMuPDF extracted text; raw bytes retained unchanged",
+      "authority": "OFFICIAL_INDIA_POST_MANUAL_DOCUMENT_NOT_GIS_DATASET",
+      "status": "OFFICIAL_PDF_BYTES_ACQUIRED_SHA256_VERIFIED_AND_PARSED",
+      "sha256": "5871d20f7a44eade6f97a7d4ad37a7b7069a98895ccea7fcdb9d16de982d7b79",
+      "fileBytes": 1274245,
+      "pdfVersion": "1.7",
+      "pdfPageCount": 67,
+      "artifactPath": "data/evidence/w021_5/indiapost_postal_manuals/raw/Postal_Manual_Vol._VI_Part-III.pdf",
+      "textArtifactPath": "data/evidence/w021_5/indiapost_postal_manuals/text/Postal_Manual_Vol._VI_Part-III.txt",
+      "sourcePackageManifestPath": "data/evidence/w021_5/indiapost_postal_manuals/manifest.json",
+      "sourcePackageManifestGitBlobSha": "de80f276f019acc396ba03e49a10e7488f4c43e8",
+      "workflowRunId": 40350138447,
+      "workflowUrl": "https://github.com/kshetra-app/Kshetra/actions/runs/40350138447",
+      "workflowArtifactId": 12663576810,
+      "workflowArtifactBytes": 15153862,
+      "workflowArtifactSha256": "80ffc5c7a35ee4c4d5f5d4664f402ccca30e3f0dcd66e7dd114f14ba4822f01f",
+      "retrievalValidation": {
+        "httpStatus": 200,
+        "pdfMagic": true,
+        "pdfParseStatus": "PASS",
+        "rawResponseSha256MatchesManifest": true
+      },
+      "termSearchCounts": {
+        "deliveryBeat": 0,
+        "beatList": 1,
+        "postalMap": 0
+      },
+      "facts": [
+        "Downloaded through the exact document URL observed in an official India Post catalogue page; the catalogue page's raw bytes and SHA-256 were validated against the prior source acquisition manifest.",
+        "PDF payload is 1274245 bytes with SHA-256 5871d20f7a44eade6f97a7d4ad37a7b7069a98895ccea7fcdb9d16de982d7b79; PDF parser opened 67 pages.",
+        "This is postal manual/policy documentation, not delivery-beat vector geometry."
+      ],
+      "limitations": [
+        "The date 18-05-2021 is the value displayed in the official catalogue, not an independently established current effective date of every rule in the volume.",
+        "A manual describes departmental rules and recordkeeping; it does not establish that a public national delivery-beat polygon GIS exists.",
+        "For legal/civic resolution, any operational postal record needs appropriate custodian provenance, effective date, coverage and licence; PIN-code polygons remain separate.",
+        "No authenticated Department of Posts custodian response or request receipt has been retained."
+      ],
+      "plannedUse": "Use as primary official operational-document evidence only; derive precise rule passages for a custodian request, and keep the national delivery-beat GIS gate open."
+    },
+    {
+      "sourceId": "SRC-INDIAPOST-POSTAL-MANUAL-VOL-VII-2026-10-26",
+      "subject": "Postal Manual Vol. VII — official India Post catalogue PDF acquired, hashed and text-parsed for operational postal-map/delivery-beat evidence",
+      "publisher": "Department of Posts, Ministry of Communications, Government of India",
+      "url": "https://www.indiapost.gov.in/api/documents/file/10000np2vyhe01g613ifyu063nq02ue30sjtd0fxhn3afk701eu10bpsq3agoz",
+      "retrievedAt": "2026-10-26",
+      "catalogueRecord": {
+        "documentId": "fa190a91-86e0-412c-abcc-64432a1c8fe7",
+        "title": "Postal Manual Vol. VII",
+        "catalogueDisplayedDate": "27-09-2025",
+        "language": "English",
+        "catalogueVersion": "English Version",
+        "sourceCatalogue": "https://www.indiapost.gov.in/documents/guidelines"
+      },
+      "format": "Official-host PDF response bytes + PyMuPDF extracted text; raw bytes retained unchanged",
+      "authority": "OFFICIAL_INDIA_POST_MANUAL_DOCUMENT_NOT_GIS_DATASET",
+      "status": "OFFICIAL_PDF_BYTES_ACQUIRED_SHA256_VERIFIED_AND_PARSED",
+      "sha256": "6e6ad2c6ae079f783845f555aa4258d2d00263330a2b2bafb9afef908e2101d7",
+      "fileBytes": 381845,
+      "pdfVersion": "1.2",
+      "pdfPageCount": 189,
+      "artifactPath": "data/evidence/w021_5/indiapost_postal_manuals/raw/Postal_Manual_Vol._VII.pdf",
+      "textArtifactPath": "data/evidence/w021_5/indiapost_postal_manuals/text/Postal_Manual_Vol._VII.txt",
+      "sourcePackageManifestPath": "data/evidence/w021_5/indiapost_postal_manuals/manifest.json",
+      "sourcePackageManifestGitBlobSha": "de80f276f019acc396ba03e49a10e7488f4c43e8",
+      "workflowRunId": 40350138447,
+      "workflowUrl": "https://github.com/kshetra-app/Kshetra/actions/runs/40350138447",
+      "workflowArtifactId": 12663576810,
+      "workflowArtifactBytes": 15153862,
+      "workflowArtifactSha256": "80ffc5c7a35ee4c4d5f5d4664f402ccca30e3f0dcd66e7dd114f14ba4822f01f",
+      "retrievalValidation": {
+        "httpStatus": 200,
+        "pdfMagic": true,
+        "pdfParseStatus": "PASS",
+        "rawResponseSha256MatchesManifest": true
+      },
+      "termSearchCounts": {
+        "deliveryBeat": 0,
+        "beatList": 0,
+        "postalMap": 0
+      },
+      "facts": [
+        "Downloaded through the exact document URL observed in an official India Post catalogue page; the catalogue page's raw bytes and SHA-256 were validated against the prior source acquisition manifest.",
+        "PDF payload is 381845 bytes with SHA-256 6e6ad2c6ae079f783845f555aa4258d2d00263330a2b2bafb9afef908e2101d7; PDF parser opened 189 pages.",
+        "This is postal manual/policy documentation, not delivery-beat vector geometry."
+      ],
+      "limitations": [
+        "The date 27-09-2025 is the value displayed in the official catalogue, not an independently established current effective date of every rule in the volume.",
+        "A manual describes departmental rules and recordkeeping; it does not establish that a public national delivery-beat polygon GIS exists.",
+        "For legal/civic resolution, any operational postal record needs appropriate custodian provenance, effective date, coverage and licence; PIN-code polygons remain separate.",
+        "No authenticated Department of Posts custodian response or request receipt has been retained."
+      ],
+      "plannedUse": "Use as primary official operational-document evidence only; derive precise rule passages for a custodian request, and keep the national delivery-beat GIS gate open."
+    },
+    {
+      "sourceId": "SRC-INDIAPOST-POSTAL-MANUAL-VOL-VIII-2026-10-26",
+      "subject": "Postal Manual Vol. VIII — official India Post catalogue PDF acquired, hashed and text-parsed for operational postal-map/delivery-beat evidence",
+      "publisher": "Department of Posts, Ministry of Communications, Government of India",
+      "url": "https://www.indiapost.gov.in/api/documents/file/103agyc2pefr0gwex390y3063nq01vfi0s5c40iq8b3eols02v6i3fnf43afyt",
+      "retrievedAt": "2026-10-26",
+      "catalogueRecord": {
+        "documentId": "2506ed41-1b80-42af-87ea-53c09ba32faa",
+        "title": "Postal Manual Vol. VIII",
+        "catalogueDisplayedDate": "01-04-1979",
+        "language": "English",
+        "catalogueVersion": "English Version",
+        "sourceCatalogue": "https://www.indiapost.gov.in/documents/guidelines"
+      },
+      "format": "Official-host PDF response bytes + PyMuPDF extracted text; raw bytes retained unchanged",
+      "authority": "OFFICIAL_INDIA_POST_MANUAL_DOCUMENT_NOT_GIS_DATASET",
+      "status": "OFFICIAL_PDF_BYTES_ACQUIRED_SHA256_VERIFIED_AND_PARSED",
+      "sha256": "c373de5e152d9dd0599358594f5ea9eb488dbd4b630dea3023879e27a043ff6e",
+      "fileBytes": 833948,
+      "pdfVersion": "1.2",
+      "pdfPageCount": 317,
+      "artifactPath": "data/evidence/w021_5/indiapost_postal_manuals/raw/Postal_Manual_Vol._VIII.pdf",
+      "textArtifactPath": "data/evidence/w021_5/indiapost_postal_manuals/text/Postal_Manual_Vol._VIII.txt",
+      "sourcePackageManifestPath": "data/evidence/w021_5/indiapost_postal_manuals/manifest.json",
+      "sourcePackageManifestGitBlobSha": "de80f276f019acc396ba03e49a10e7488f4c43e8",
+      "workflowRunId": 40350138447,
+      "workflowUrl": "https://github.com/kshetra-app/Kshetra/actions/runs/40350138447",
+      "workflowArtifactId": 12663576810,
+      "workflowArtifactBytes": 15153862,
+      "workflowArtifactSha256": "80ffc5c7a35ee4c4d5f5d4664f402ccca30e3f0dcd66e7dd114f14ba4822f01f",
+      "retrievalValidation": {
+        "httpStatus": 200,
+        "pdfMagic": true,
+        "pdfParseStatus": "PASS",
+        "rawResponseSha256MatchesManifest": true
+      },
+      "termSearchCounts": {
+        "deliveryBeat": 8,
+        "beatList": 5,
+        "postalMap": 4
+      },
+      "facts": [
+        "Downloaded through the exact document URL observed in an official India Post catalogue page; the catalogue page's raw bytes and SHA-256 were validated against the prior source acquisition manifest.",
+        "PDF payload is 833948 bytes with SHA-256 c373de5e152d9dd0599358594f5ea9eb488dbd4b630dea3023879e27a043ff6e; PDF parser opened 317 pages.",
+        "This is postal manual/policy documentation, not delivery-beat vector geometry."
+      ],
+      "limitations": [
+        "The date 01-04-1979 is the value displayed in the official catalogue, not an independently established current effective date of every rule in the volume.",
+        "A manual describes departmental rules and recordkeeping; it does not establish that a public national delivery-beat polygon GIS exists.",
+        "For legal/civic resolution, any operational postal record needs appropriate custodian provenance, effective date, coverage and licence; PIN-code polygons remain separate.",
+        "No authenticated Department of Posts custodian response or request receipt has been retained."
+      ],
+      "plannedUse": "Use as primary official operational-document evidence only; derive precise rule passages for a custodian request, and keep the national delivery-beat GIS gate open."
+    },
+    {
+      "sourceId": "SRC-INDIAPOST-POSTAL-MANUAL-CATALOGUE-ARCHIVE-2026-10-26",
+      "subject": "Official India Post catalogue acquisition run: eight postal manual PDFs and extracted text, verified against source-page hashes",
+      "publisher": "Department of Posts, Ministry of Communications, Government of India",
+      "url": "https://www.indiapost.gov.in/documents/guidelines",
+      "relatedUrls": [
+        "https://www.indiapost.gov.in/documents/actsandpolicies"
+      ],
+      "retrievedAt": "2026-10-26",
+      "format": "Reproducible ZIP artifact plus durable evidence-only GitHub package containing 8 raw PDFs, 8 extracted text files, README and machine-readable manifest",
+      "authority": "OFFICIAL_CATALOGUE_AND_OFFICIAL_MANUAL_BYTES_OPERATIONAL_DOCUMENTS_ONLY",
+      "status": "PASS_8_OF_8_CATALOGUE_PAGES_HASH_VALIDATED_AND_8_OF_8_MANUAL_PDFS_ACQUIRED_PARSED",
+      "sha256": "80ffc5c7a35ee4c4d5f5d4664f402ccca30e3f0dcd66e7dd114f14ba4822f01f",
+      "fileBytes": 15153862,
+      "sourcePackagePath": "data/evidence/w021_5/indiapost_postal_manuals/",
+      "sourcePackageManifestPath": "data/evidence/w021_5/indiapost_postal_manuals/manifest.json",
+      "sourcePackageManifestGitBlobSha": "de80f276f019acc396ba03e49a10e7488f4c43e8",
+      "repositoryBranch": "cto/w0215-stage-b-evidence-20261025",
+      "repositoryCommit": "abe518b925ef7193b543d6a1c012dada51cbbb3f",
+      "workflowRunId": 40350138447,
+      "workflowUrl": "https://github.com/kshetra-app/Kshetra/actions/runs/40350138447",
+      "workflowArtifactId": 12663576810,
+      "summary": {
+        "officialCataloguePagesHashValidated": 8,
+        "officialCataloguePagesExpected": 8,
+        "catalogueHashOrFetchErrors": 0,
+        "manualRecordsObserved": 8,
+        "manualPDFsAcquiredAndParsed": 8,
+        "manualPDFsFailedOrUnavailable": 0,
+        "manualsContainingDeliveryBeatOrBeatListOrPostalMapText": 3,
+        "officialDeliveryBeatPolygonDatasetAcquired": false,
+        "nationalDeliveryBeatGeometryDisposition": "OPEN_NO_NATIONAL_GIS_DATASET_ACQUIRED_OR_VERIFIED"
+      },
+      "facts": [
+        "All eight retained official India Post catalogue HTML source pages were rechecked against their previously recorded response byte lengths and SHA-256 values: 8/8 passed.",
+        "All eight exact PDF URLs were extracted from the embedded document records in those source pages; no download token was guessed.",
+        "All eight official-host PDF responses returned HTTP 200, PDF magic, valid PyMuPDF parse, exact byte lengths and SHA-256 hashes.",
+        "Three of eight manuals contained explicit delivery-beat/beat-list/postal-map phrase matches; Vol. VIII had 8 delivery-beat matches, 5 beat-list matches, 4 postal-map matches and one alphabetized street-to-beat index passage.",
+        "The evidence confirms local operational records/maps are documented, but the workflow did not acquire any national delivery-beat GIS/polygon dataset."
+      ],
+      "limitations": [
+        "No custodian-issued reply or sent-request acknowledgement was acquired. The previous assessment's assertion that India Post had directly confirmed no standardized national GIS layer is not supported by a retained response; it remains unverified.",
+        "The current national delivery-beat geometry gate remains open unless real, authorized vector data and source coverage metadata are acquired or a formal authenticated custodian answer is evaluated.",
+        "PIN-code boundary data is not equivalent to delivery-beat geometry."
+      ],
+      "plannedUse": "Use the exact Rule 309/310 and fixed/unfixed village-beat passages from Vol. VIII to refine a formal custodian request for current local and national operational records; do not mark the national GIS gate closed."
     }
   ],
   "unresolvedGates": [
@@ -2962,6 +3446,50 @@
         "eci2018NotificationArchiveSearch": "NO_EXACT_URL_PDF_CAPTURE; direct ECI response is HTTP 406; repo dossier records an ECI notification PDF",
         "indiaPostManual": "NO_EXACT_URL_PDF_CAPTURE; direct document API returned HTTP 400"
       }
+    },
+    {
+      "runId": 40350138447,
+      "workflowUrl": "https://github.com/kshetra-app/Kshetra/actions/runs/40350138447",
+      "workflowArtifactId": 12663576810,
+      "workflowArtifactName": "w0215-indiapost-postal-manuals-40350138447",
+      "workflowArtifactBytes": 15153862,
+      "workflowArtifactSha256": "80ffc5c7a35ee4c4d5f5d4664f402ccca30e3f0dcd66e7dd114f14ba4822f01f",
+      "branch": "cto/w0215-stage-b-evidence-20261025",
+      "commit": "abe518b925ef7193b543d6a1c012dada51cbbb3f",
+      "packageRoot": "data/evidence/w021_5/indiapost_postal_manuals/",
+      "manifestPath": "data/evidence/w021_5/indiapost_postal_manuals/manifest.json",
+      "manifestGitBlobSha": "de80f276f019acc396ba03e49a10e7488f4c43e8",
+      "readmePath": "data/evidence/w021_5/indiapost_postal_manuals/README.md",
+      "manifestSummary": {
+        "officialCataloguePagesHashValidated": 8,
+        "officialCataloguePagesExpected": 8,
+        "catalogueHashOrFetchErrors": 0,
+        "manualRecordsObserved": 8,
+        "manualPDFsAcquiredAndParsed": 8,
+        "manualPDFsFailedOrUnavailable": 0,
+        "manualsContainingDeliveryBeatOrBeatListOrPostalMapText": 3,
+        "officialDeliveryBeatPolygonDatasetAcquired": false,
+        "nationalDeliveryBeatGeometryDisposition": "OPEN_NO_NATIONAL_GIS_DATASET_ACQUIRED_OR_VERIFIED"
+      },
+      "status": "SUCCESS_8_OF_8_OFFICIAL_POSTAL_MANUAL_PDFS_ACQUIRED_HASHED_PARSED; NATIONAL_DELIVERY_BEAT_GIS_STILL_OPEN",
+      "result": {
+        "sourcePagesHashValidated": 8,
+        "sourcePagesExpected": 8,
+        "manualPDFsDownloaded": 8,
+        "manualPDFsParsed": 8,
+        "manualPDFsFailed": 0,
+        "manualPDFContainingDeliveryBeatOrPostalMapTerms": 3,
+        "officialNationalDeliveryBeatGISAcquired": false,
+        "volVIII": {
+          "bytes": 833948,
+          "sha256": "c373de5e152d9dd0599358594f5ea9eb488dbd4b630dea3023879e27a043ff6e",
+          "pages": 317,
+          "deliveryBeatMatches": 8,
+          "beatListMatches": 5,
+          "postalMapMatches": 4,
+          "displayedCatalogueDate": "01-04-1979"
+        }
+      }
     }
   ],
   "updatedAt": "2026-10-26",
@@ -2984,7 +3512,8 @@
     "Evidence-only branch created from master to isolate W021.5 Stage B source research, legal acquisition, and geometry-probe evidence from the broader PR #25 implementation.",
     "Additional 2026-10-26 official-source exploration: official ECI 2008-order catalogue plus IndiaCode index reviewed; 2008 Order binary still blocked/unacquired. Official 2023 Gazette recital identifies the original publication as S.O.382(E), 19 February 2008, which is a stronger exact-issue search key but not the 2008 Gazette itself. India Post manual indexed text describes local postal-map/delivery-beat-list books prepared by postmasters; direct PDF URL returned 404 in this session, so no hash or bytes claimed. NIC Bharat Maps identified as national GIS custodian route but no public AC layer was verified. Esri India identifies an AC-boundary commercial dataset sourced from ECI, but licence/data bytes/version were not acquired. CEO Delhi offers AC/PC maps and polling-location GIS, but is a jurisdiction-only candidate.",
     "2026-10-26 audit reconciliation: found internal inconsistency between reports/w021_5_official_gazette_inventory.json (S.O.383(E)/S.O.453(E)) and the S.O.382(E) references in the 2008 legal dossier / Gazette recital discovery. Keep all as conflicting references pending original Gazette/ECI binary verification rather than choosing one from secondary internal text. Also flagged reports/w021_5_india_post_geography_assessment.json custodianStatus.inquiryLogged/finding: no custodian-issued response or sent-request receipt is present in the evidence inventory; this is not an independently verified Department of Posts statement.",
-    "2026-10-26 pinned nationwide non-official AC boundary candidate acquired and audited in workflow run 40329997952. Public upstream commit 3e4e9f347b260040278c36f563fb2efa28e2a476 contains 4129 per-AC GeoJSON files across 36 state/UT codes. Audit found 65 invalid geometries, 4129 files with unresolved/TBD provenance and 154 valid-polygon positive-area overlap pairs over 1 m². Candidate snapshot and per-file raw hashes are durable only on evidence branch cto/w0215-stage-b-evidence-20261025 at commit 32dc58769af29b2e8233db87873824b548836cf6. This is a non-official candidate, not national canonical geometry."
+    "2026-10-26 pinned nationwide non-official AC boundary candidate acquired and audited in workflow run 40329997952. Public upstream commit 3e4e9f347b260040278c36f563fb2efa28e2a476 contains 4129 per-AC GeoJSON files across 36 state/UT codes. Audit found 65 invalid geometries, 4129 files with unresolved/TBD provenance and 154 valid-polygon positive-area overlap pairs over 1 m². Candidate snapshot and per-file raw hashes are durable only on evidence branch cto/w0215-stage-b-evidence-20261025 at commit 32dc58769af29b2e8233db87873824b548836cf6. This is a non-official candidate, not national canonical geometry.",
+    "2026-10-26 official India Post catalogue acquisition run 40350138447: verified 8/8 retained India Post catalogue HTML pages and acquired/parsed 8/8 exact linked postal-manual PDFs; no failures. Postal Manual Vol. VIII (catalogue date 01-04-1979) 833,948 bytes SHA-256 c373de5e152d9dd0599358594f5ea9eb488dbd4b630dea3023879e27a043ff6e, 317 pages; Rules 309/310 describe local town postal maps and delivery-beat list books with streets/quarters and an alphabetical street-to-beat index; Rules 274/275 describe fixed/unfixed village postman beats and routes. This is official operational documentation, not national vector geometry. No India Post custodian reply is retained; the old assessment custodianStatus.inquiryLogged/finding assertion remains unsupported and must be corrected. Source package lives on evidence branch abe518b925ef7193b543d6a1c012dada51cbbb3f. National delivery-beat geometry remains OPEN."
   ],
   "secondaryGeometryAudit": {
     "sourceRepository": "https://github.com/saisantoshv3/assemnbly_gis_files",
@@ -3026,7 +3555,7 @@
     ],
     "acceptedAsCanonical": false
   },
-  "lastDecision": "The exact 572-page ECI consolidated Delimitation Order PDF has now been acquired from a Wayback capture of the exact official ECI URL, parsed, and hash-verified (1,340,728 bytes; SHA-256 9e1ac49aa952febc8e4f57ed23abd28218a21887f355f8dad1502ab5c0d65e69). Two additional ECI/legacy URL captures returned identical bytes. A later official Gazette recital PDF (3 pages; 1,204,886 bytes; SHA-256 43d99d7ba5d23cc033752637ac7f55ce11133fc27346f1cad9ac5223f77501c5) confirms publication reference S.O.382(E), dated 19 February 2008. Official Lok Sabha proceedings PDF is also captured from the live official Sansad host (638,561 bytes; SHA-256 e4be3f9256b1b1db9fe74fdb6e3f19985b2bca355a1df686b822cb97cf89b1a1) and corroborates O.N.55(E) dated 22 September 2018, Library ref LT 10017/16/18. These are now hash-verified records; the original 2008 Gazette issue, actual O.N.55(E) Gazette issue PDF, AP State Gazette counterpart/certified copy, and authenticated India Post delivery-beat evidence remain open. The 2008 PDF is not itself a Gazette copy. Delhi polling evidence is closed only for Delhi; national geometry candidate rejected. Stage B remains PARTIAL / NOT ACCEPTED.",
+  "lastDecision": "Official India Post operational evidence materially improved: 8/8 retained official catalogue HTML pages hash-validated; 8/8 exact-token linked postal-manual PDFs acquired from official India Post host, PDF-parsed, byte-counted and SHA-256 verified in workflow run 40350138447. Postal Manual Vol. VIII (displayed catalogue date 01-04-1979) contains explicit Rules 309/310 on town postal maps and delivery-beat lists, with streets/quarters and alphabetical street-to-beat index, plus Rules 274/275 on fixed/unfixed village beats and route lists/maps. This establishes documented local operational records, not a national digital delivery-beat polygon dataset. No authenticated Department of Posts reply or request-sent receipt exists; the prior assertion that the Department had directly said no national layer is unsupported. EB-03 remains OPEN. Original Gazette issues remain open; the 2008 ECI consolidated order and later official Gazette recital are byte-verified archival/corroborating copies only. No Stage C or database access.",
   "latestRouteAdjudication": {
     "recordedAt": "2026-10-26",
     "reportPath": "reports/w021_5_stage_b_evidence_route_adjudication_2026-10-26.md",
