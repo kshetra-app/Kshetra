@@ -1,28 +1,15 @@
-AUTHORITATIVE STATUTORY EXTRACT: ECI DELIMITATION ORDER 2008
-==============================================================================
-Source Authority: Delimitation Commission of India / Election Commission of India
-Document: Delimitation of Parliamentary and Assembly Constituencies Order, 2008
-Statutory Enactment:
-  - Schedule II (State of Andhra Pradesh), Promulgated 19 February 2008
-  - Published in The Gazette of India, Extraordinary, Notification No. 282/AP/2008
-Source URL: https://eci.gov.in/files/file/3931-delimitation-of-parliamentary-assembly-constituencies-order-2008/
-Retrieval Date: 2026-09-22
-Effective Date: 2008-02-19
-Publication Date: 2008-02-19
+INVALIDATED — DO NOT USE AS AUTHORITATIVE SOURCE DATA
+===============================================
 
-SCHEDULE II: ANDHRA PRADESH
-TABLE B — ASSEMBLY CONSTITUENCIES
-------------------------------------------------------------------------------
-Serial No. & Name of Constituency | Extent of the Constituency
-------------------------------------------------------------------------------
-22. Visakhapatnam South            | Visakhapatnam (Urban) Mandal (Part), Visakhapatnam (M.Corp.) (Part) - Ward No. 12 to 34, 42 to 43 and 46 to 48.
-------------------------------------------------------------------------------
-79. Vijayawada West                | Vijayawada (Urban) Mandal (Part), Vijayawada (M.Corp.) (Part) - Ward No. 1 to 14, 16 to 22 and 42 to 44.
-------------------------------------------------------------------------------
-80. Vijayawada Central             | Vijayawada (Urban) Mandal (Part), Vijayawada (M.Corp.) (Part) - Ward No. 15, 23 to 34, 45 to 48 and 50 to 53.
-------------------------------------------------------------------------------
-137. Kurnool                       | Kurnool Mandal (Part), Kurnool (M.Corp.) (Part) - Ward No. 1 to 48.
-------------------------------------------------------------------------------
-167. Tirupati                      | Tirupati (Urban) Mandal (Part), Tirupati (M) (Part) - Ward No. 1 to 30.
-------------------------------------------------------------------------------
-==============================================================================
+This legacy extract was found to misidentify the 2008 ECI Order's Schedule II as the State of Andhra Pradesh. It is retained only as a historical Git path so consumers do not mistake a missing file for an unreviewed document.
+
+Primary-source correction:
+- The original ECI Order PDF, verified from three byte-identical Internet Archive captures of the official ECI URL, has SHA-256 9e1ac49aa952febc8e4f57ed23abd28218a21887f355f8dad1502ab5c0d65e69, size 1,340,728 bytes, and 572 pages.
+- Its table of contents states: Schedule II = table of the number of seats in various Legislative Assemblies; Schedule III = Andhra Pradesh (pages 8–32).
+- The Andhra Pradesh Reorganisation Act, 2014 (government-hosted Gazette/Act PDF, 231,596 bytes, SHA-256 84cd566b917f9a3f600c47f6540520c950166b424a964ad37d64dc3c968114aa), Section 15 and Second Schedule replace Schedule III with successor-State Andhra Pradesh's 175-AC extents and insert Schedule XXVII — Telangana (119 ACs), Table A.
+- The original Gazette issue for S.O.382(E) and certified issue metadata remain OPEN. This extract's prior Gazette claim “Notification No. 282/AP/2008” is not accepted.
+
+Use the verified schedule index and 2014 amendment note:
+data/evidence/w021_5/authoritative/verified_2008_order_schedule_index_and_2014_amendment_note.md
+
+Old Git blob SHA of the invalidated content: e9d52261b391d2c66990499330b357dbd926a53d.
