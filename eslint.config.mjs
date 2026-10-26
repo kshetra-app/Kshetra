@@ -18,7 +18,7 @@ export default [
       'no-debugger': 'error',
       'no-constant-condition': 'error',
       'no-unreachable': 'error',
-      'no-duplicate-imports': 'error',
+      'no-duplicate-imports': ['error', { allowSeparateTypeImports: true }],
       '@typescript-eslint/no-explicit-any': 'off',
       '@typescript-eslint/no-unused-vars': 'off',
     },
