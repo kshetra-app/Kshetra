@@ -88,7 +88,7 @@ class LinkParser(HTMLParser):
   if self._a is not None and data and data.strip(): self._a["text_parts"].append(data.strip())
  def handle_endtag(self,tag):
   if tag.lower()=="a" and self._a is not None:
-   self._a["text"]=" ".join(self._a.pop("text_parts")); self._a["attribute"]="href"; self.links.append(self._a); self._a=None
+   self._a["text"]=" ".join(self._a.pop("text_parts")); self._a["url"]=self._a.pop("href"); self._a["attribute"]="href"; self.links.append(self._a); self._a=None
   if tag.lower()=="form": self._form=None
 
 S=requests.Session()
@@ -140,7 +140,7 @@ def probe_root(p):
   parser=LinkParser(r.url);parser.feed(text)
   candidates=[]
   for link in parser.links:
-   u=link.get("url","")
+   u=link.get("url") or link.get("href") or ""
    if not approved(u): continue
    if not is_candidate(link): continue
    uparsed=urlparse(u)
@@ -149,6 +149,13 @@ def probe_root(p):
      "fetchAllowed":not eci_lookup_only,"classification":"OFFICIAL_ECI_LOOKUP_DISCOVERY_ONLY" if eci_lookup_only else "OFFICIAL_CEO_LINK_CANDIDATE"})
   unique={}
   for x in candidates: unique[(x["url"],x["text"])]=x
+  row["linkParserDiagnostics"]={
+   "observedHrefOrEmbeddedLinks":len(parser.links),
+   "linksWithResolvedDestination":sum(1 for l in parser.links if l.get("url") or l.get("href")),
+   "pollingKeywordLinksBeforePolicyFilter":sum(1 for l in parser.links if POLL_RE.search((l.get("text") or "")+" "+(l.get("url") or l.get("href") or ""))),
+   "electorRollKeywordLinksExcluded":sum(1 for l in parser.links if ROLL_RE.search((l.get("text") or "")+" "+(l.get("url") or l.get("href") or "")) and not (urlparse(l.get("url") or l.get("href") or "").hostname=="electoralsearch.eci.gov.in" and urlparse(l.get("url") or l.get("href") or "").path.rstrip("/").lower()=="/pollingstation")),
+   "linksWithPollingListCandidateAfterPolicy":len(unique)
+  }
   row["discoveredCandidateLinks"]=sorted(unique.values(),key=lambda x:(x["url"],x["text"]))[:100]
   row["discoveredCandidateCount"]=len(unique)
   row["formsObserved"]=parser.forms[:20]
