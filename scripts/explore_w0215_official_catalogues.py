@@ -194,25 +194,48 @@ def probe_live_page(url: str, label: str) -> dict:
                     "post office guide", "delivery beat", "postal map", "Pincode Boundary"
                 )},
             })
-            # India Post publishes document catalogue metadata in serialized page JSON.
-            # Extract title/url pairs only from actual retrieved HTML; never invent IDs.
-            embedded = []
-            for m in re.finditer(r'"title"\s*:\s*"([^"]{1,300})".{0,1200}?"url"\s*:\s*"([^"]{1,300})"', body, re.I | re.S):
-                title, path = m.group(1), m.group(2).replace("\\/", "/")
-                if path.startswith("/api/documents/file/"):
-                    embedded.append({"title": html.unescape(title), "url": urljoin(final, path)})
+            # India Post pages serialize catalogue records inside escaped React/Next payload.
+            # Normalize only escaped JSON delimiters, then parse exact title/date/file-token pairs.
+            # Every URL below is derived from actual retrieved official page bytes; no token is guessed.
+            normalized_payload = body.replace("\\\"", "\"").replace("\\/", "/")
+            record_pattern = re.compile(
+                r'\{"id":"([^"]{1,120})","slug":"([^"]{0,500})","title":"([^"]{0,500})",'
+                r'"date":"([^"]{0,80})","size":"([^"]{0,80})","version":"([^"]{0,150})",'
+                r'"type":"([^"]{0,40})","url":"([^"]{1,600})"\}'
+            )
             dedup = {}
-            for x in embedded:
-                dedup[(x["title"], x["url"])] = x
+            for m in record_pattern.finditer(normalized_payload):
+                record_id, slug, title, date, size, version, doc_type, path = m.groups()
+                path = html.unescape(path).replace("\\/", "/")
+                if not path.startswith("/api/documents/file/"):
+                    continue
+                doc_url = urljoin(final, path)
+                parsed_doc_url = urlparse(doc_url)
+                if parsed_doc_url.scheme != "https" or parsed_doc_url.hostname not in ("www.indiapost.gov.in", "indiapost.gov.in"):
+                    continue
+                row_item = {
+                    "id": record_id, "slug": html.unescape(slug), "title": html.unescape(title),
+                    "date": date, "size": size, "version": html.unescape(version),
+                    "type": doc_type, "url": doc_url, "discoveredFromPage": final
+                }
+                dedup[(row_item["title"], row_item["url"])] = row_item
             doc_mentions = list(dedup.values())
+            relevance = re.compile(
+                r"postal.?manual|post.?office.?manual|post.?office.?guide|postal.?guide|"
+                r"delivery.?beat|beat.?list|postal.?map|delivery.?office|delivery.?area|"
+                r"post.?office.?rules|postman.{0,35}(manual|guide)",
+                re.I
+            )
             row["embeddedDocumentLinkCount"] = len(doc_mentions)
-            row["relevantDocumentLinks"] = [
-                x for x in doc_mentions if re.search(
-                    r"postal manual|post office guide|delivery.?beat|postman.{0,35}(manual|guide)|manual.{0,35}post office|postal operations|post office rules|post office manual",
-                    x["title"], re.I
-                )
-            ][:250]
-            row["documentTitleSamples"] = doc_mentions[:40]
+            row["relevantDocumentLinks"] = [x for x in doc_mentions if relevance.search(x["title"])][:250]
+            row["documentTitleSamples"] = doc_mentions[:80]
+            row["documentCatalogueExtract"] = {
+                "method": "Exact title/date/type/url tuples parsed from the observed embedded official page payload",
+                "sourcePageUrl": final,
+                "allDocumentRecords": len(doc_mentions),
+                "relevantRecords": len(row["relevantDocumentLinks"]),
+                "candidateRecordSamples": row["relevantDocumentLinks"][:100]
+            }
         return row
     except Exception as e:
         row.update({"status": "FETCH_FAILED_TLS_VERIFICATION_RETAINED", "error": f"{type(e).__name__}: {e}"})
@@ -385,6 +408,24 @@ def main():
         "output":"json","fl":"timestamp,original,statuscode,mimetype,digest,length",
         "filter":["statuscode:200","mimetype:application/pdf"],"collapse":"urlkey","limit":"4000"
       }),
+      ("EGazetteGovIn2018Pdfs2018To2020",{
+        "url":"https://egazette.gov.in/WriteReadData/2018/","matchType":"prefix",
+        "from":"20180922","to":"20201231","output":"json",
+        "fl":"timestamp,original,statuscode,mimetype,digest,length",
+        "filter":["statuscode:200","mimetype:application/pdf"],"collapse":"urlkey","limit":"1000"
+      }),
+      ("EGazetteGovIn2018Pdfs2021To2023",{
+        "url":"https://egazette.gov.in/WriteReadData/2018/","matchType":"prefix",
+        "from":"20210101","to":"20231231","output":"json",
+        "fl":"timestamp,original,statuscode,mimetype,digest,length",
+        "filter":["statuscode:200","mimetype:application/pdf"],"collapse":"urlkey","limit":"1000"
+      }),
+      ("EGazetteGovIn2018Pdfs2024To2026",{
+        "url":"https://egazette.gov.in/WriteReadData/2018/","matchType":"prefix",
+        "from":"20240101","to":"20261231","output":"json",
+        "fl":"timestamp,original,statuscode,mimetype,digest,length",
+        "filter":["statuscode:200","mimetype:application/pdf"],"collapse":"urlkey","limit":"1000"
+      }),
       ("EGazetteNicIn2018PdfsCaptured2018To2026",{
         "url":"https://egazette.nic.in/WriteReadData/2018/","matchType":"prefix",
         "from":"20180922","to":"20261231","output":"json",
@@ -517,14 +558,20 @@ def main():
                 row["status"]="POSTAL_PDF_PARSE_FAILED";return row
             text_body=pdf["text"]
             terms={
-              "deliveryBeat":bool(re.search(r"delivery\s+beat|beat\s+list|delivery\s+list",text_body,re.I)),
-              "postalMap":bool(re.search(r"postal\s+map|postman.?s\s+map",text_body,re.I)),
+              "deliveryBeat":bool(re.search(r"delivery\s+beat|beat\s+list|delivery\s+list|beat\s+system",text_body,re.I)),
+              "postalMap":bool(re.search(r"postal\s+map|postman.?s\s+map|delivery\s+map",text_body,re.I)),
               "postmaster":bool(re.search(r"postmaster",text_body,re.I)),
-              "postalManual":bool(re.search(r"postal\s+manual|post\s+office\s+manual|post\s+office\s+guide",text_body,re.I)),
-              "nationalPolygon":bool(re.search(r"geo.?json|shapefile|geospatial\s+data|GIS",text_body,re.I)),
+              "postalManual":bool(re.search(r"postal\s+manual|post\s+office\s+manual|post\s+office\s+guide|postal\s+guide",text_body,re.I)),
+              "streetOrBeatIndex":bool(re.search(r"street.{0,80}beat|beat.{0,80}street|alphabetical.{0,80}beat|beat.{0,80}index",text_body,re.I)),
+              "nationalPolygon":bool(re.search(r"geo.?json|shapefile|geospatial\s+data|GIS|vector\s+polygon",text_body,re.I)),
             }
             row["termFindings"]=terms
-            row["textPreview"]=text_body[:2000]
+            row["textPreview"]=text_body[:2500]
+            row["termContextSnippets"] = {}
+            for term in ("delivery beat", "beat list", "postal map", "street", "postmaster", "alphabetical", "geojson", "shapefile"):
+                match = re.search(term.replace(" ", r"\s+"), text_body, re.I)
+                if match:
+                    row["termContextSnippets"][term] = text_body[max(0,match.start()-250):min(len(text_body),match.end()+500)]
             name=safe(x["title"])+"_postal_document.pdf"
             row["rawArtifact"]=save_bytes(name,raw)
             row["textArtifact"]=save_text(safe(x["title"])+"_postal_document.txt",text_body)
@@ -550,8 +597,11 @@ def main():
       "archivePdfCandidateRecordsParsed":len(candidates),
       "archivedPdfUrlsAttempted":sum(1 for x in manifest["archivedPdfAttempts"] if ("2018Pdfs" in x.get("queryLabel","") or "2008Pdfs" in x.get("queryLabel","")) and x.get("pdfMagic") is not None),
       "officialPostalDocumentCandidatesDiscovered":len(doc_links),
-      "officialPostalPdfsAcquired":len(manifest["postalDocumentAttempts"]),
+      "officialPostalPdfDownloadAttempts":len(manifest["postalDocumentAttempts"]),
+      "officialPostalPdfsAcquired":sum(1 for x in manifest["postalDocumentAttempts"] if x.get("status")=="OFFICIAL_POSTAL_PDF_ACQUIRED"),
+      "officialPostalPdfDownloadFailures":sum(1 for x in manifest["postalDocumentAttempts"] if x.get("status")!="OFFICIAL_POSTAL_PDF_ACQUIRED"),
       "postalPdfsMentioningDeliveryBeatOrPostalMap":len(usable_postal),
+      "postalManualCandidates":sorted({x["title"] for x in doc_links.values()}),
       "interpretation":"A strict Gazette candidate must still be reconciled against its issue metadata and ECI source. No candidate URL or archive record alone establishes authenticity. PIN-code polygons are not delivery-beat polygons.",
     }
     mb=(json.dumps(manifest,indent=2,ensure_ascii=False)+"\n").encode()
