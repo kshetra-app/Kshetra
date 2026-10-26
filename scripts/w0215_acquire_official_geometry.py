@@ -67,6 +67,13 @@ SOURCES.extend([
 ])
 TELANGANA_ADMIN_NEW = "https://tgrac.telangana.gov.in/arcgis/rest/services/EndowmentLands_Folder/Endowment_Lands_Admin_New/MapServer/12"
 TELANGANA_ADMIN_OLD = "https://tgrac.telangana.gov.in/arcgis/rest/services/EndowmentLands_Folder/Endowment_Lands_Old/MapServer/13"
+# Newly discovered official TGRAC master administrative-boundary service (EPSG:4326).
+# Treat it as an additional candidate only; acquisition and topology/legal review decide its disposition.
+TELANGANA_MASTER_LAYER = "https://tgrac.telangana.gov.in/arcgis/rest/services/Master_Administrative_Folder/Master_Administrative_Boundary/MapServer/0"
+SOURCES.extend([
+    {"id": "telangana-master-layer-metadata", "kind": "official_state_gis_master_service_candidate", "url": TELANGANA_MASTER_LAYER + "?f=pjson", "required": False},
+    {"id": "telangana-master-ac-geometry", "kind": "official_state_gis_master_geometry_candidate", "url": TELANGANA_MASTER_LAYER + "/query?" + urlencode({"where":"1=1","outFields":"*","returnGeometry":"true","outSR":"4326","f":"json"}), "expected_features":119, "required": False},
+])
 SOURCES.extend([
     {"id": "telangana-admin-new-layer-metadata", "kind": "official_state_gis_new_service_candidate", "url": TELANGANA_ADMIN_NEW + "?f=pjson"},
     {"id": "telangana-admin-new-ac-geometry", "kind": "official_state_gis_new_geometry_candidate", "url": TELANGANA_ADMIN_NEW + "/query?" + urlencode({"where":"1=1","outFields":"*","returnGeometry":"true","outSR":"4326","f":"json"}), "expected_features":119, "required":False},
