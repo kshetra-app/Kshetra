@@ -1,0 +1,150 @@
+{
+  "schemaVersion": 1,
+  "title": "W021.5 Stage B — Official Legal Crosswalk Source Probe",
+  "capturedAtUtc": "2026-10-26T02:49:22Z",
+  "directive": "CTO Directive 154 — Stage B only",
+  "workflow": {
+    "runId": 40260777545,
+    "url": "https://github.com/kshetra-app/Kshetra/actions/runs/40260777545",
+    "conclusion": "success",
+    "artifactId": 12623479706,
+    "artifactName": "w0215-legal-crosswalk-sources-40260777545",
+    "artifactBytes": 11488316,
+    "artifactSha256": "db87f8074cac8039c8302f5ed7d2c1a806e411a79e8c1340879aa9fec3db9c9f",
+    "artifactSha256RecomputedLocally": true,
+    "artifactExpiresAt": "2026-11-25T02:49:22Z"
+  },
+  "manifest": {
+    "pathInsideArtifact": "stage_b_legal_crosswalk/manifest.json",
+    "bytes": 13987,
+    "sha256": "13154b0b1571306ca0c2eec3d67ca29d85920793116d69056ff3e312912b90ef",
+    "overallStatus": "REQUIRED_SOURCE_BYTES_ACQUIRED",
+    "requiredFailures": []
+  },
+  "legalAct": {
+    "title": "Andhra Pradesh Reorganisation Act, 2014 (Act No. 6 of 2014), Schedule XXVII — Telangana Table A",
+    "publisher": "Government of Andhra Pradesh-hosted copy of Gazette/Act",
+    "url": "https://apseeds.ap.gov.in/PDF/apreorg/APRegACT2014.pdf",
+    "httpStatus": 200,
+    "bytes": 231596,
+    "sha256": "84cd566b917f9a3f600c47f6540520c950166b424a964ad37d64dc3c968114aa",
+    "pdfPageCount": 71,
+    "extractedTextPath": "stage_b_legal_crosswalk/AP_REORGANISATION_ACT_2014_GAZETTE_COPY.txt",
+    "extractedTextBytes": 252193,
+    "extractedTextSha256": "dca27319b8f5d4b280d9d6a2b010409b0b94208eda4c37c518fcd8e281dda9e1",
+    "canonicalByteIdentityComparedToIndiaCode": false,
+    "roster": {
+      "pathInsideArtifact": "stage_b_legal_crosswalk/telangana_statutory_ac_roster.json",
+      "bytes": 34415,
+      "sha256": "2be8b75f595a80b089a6d88337e3b51951aaeae185c40de143b99b6642e55350",
+      "overallStatus": "PASS",
+      "parsedRosterCount": 119,
+      "expectedRosterCount": 119,
+      "serialSequencePass": true,
+      "emptyNames": 0,
+      "emptyExtents": 0,
+      "districtCount": 10,
+      "semanticChecksPass": true
+    },
+    "legalNote": "Schedule XXVII references territorial units as of 15 February 2004 and municipal wards as defined in the Census of India 2001 Report."
+  },
+  "pibHtmlSources": [
+    {
+      "id": "PIB_AP_TELANGANA_DELIMITATION_LEGAL_CHAIN",
+      "url": "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2015227&lang=2&reg=48",
+      "httpStatus": 200,
+      "rawBytes": 1211607,
+      "rawSha256": "4eef52437040ca8f083d9c839e65a4a431f85e0fb5d437c8a1fb89b272eb4066",
+      "textPath": "stage_b_legal_crosswalk/PIB_AP_TELANGANA_DELIMITATION_LEGAL_CHAIN.txt",
+      "textBytes": 255420,
+      "textSha256": "7da8c4a644191375567f638e9edfd6d88b88de9cd4f976fc84d06ba164c2da43",
+      "termFindings": {
+        "119": true,
+        "175": true,
+        "282/AP/2018(DEL)": true,
+        "Removal of Difficulties": true,
+        "Andhra Pradesh Reorganisation": true
+      }
+    },
+    {
+      "id": "PIB_AP_TELANGANA_DELIMITATION_LEGAL_CHAIN_IFRAME",
+      "url": "https://www.pib.gov.in/PressReleaseIframePage.aspx?PRID=2015227&lang=2&reg=48",
+      "httpStatus": 200,
+      "rawBytes": 1212709,
+      "rawSha256": "fc43efff8bc9d341cff190d5135ea1825ce484f92a896ef0353c99a388e00bf6",
+      "textPath": "stage_b_legal_crosswalk/PIB_AP_TELANGANA_DELIMITATION_LEGAL_CHAIN_IFRAME.txt",
+      "textBytes": 256873,
+      "textSha256": "9154b8e3036401ad80a40680e3642d44380ba635971b3ea6790b00f492a8ef73",
+      "termFindings": {
+        "119": true,
+        "175": true,
+        "282/AP/2018(DEL)": true,
+        "Removal of Difficulties": true,
+        "Andhra Pradesh Reorganisation": true
+      }
+    }
+  ],
+  "eciNotification": {
+    "title": "ECI Notification No. 282/AP/2018(DEL), dated 22 September 2018",
+    "officialUrl": "https://www.eci.gov.in/eci-backend/public/api/download?url=LMAhAK6sOPBp%2FNFF0iRfXbEB1EVSLT41NNLRjYNJJP1KivrUxbfqkDatmHy12e%2FzVx8fLfn2ReU7TfrqYobgIsVIzE4H7zCkL60TDPfde3hSidsZ4fuGUaZAjsPMK3mFe%2FOayCb%2Bc1mgC3WIErfdO%2BA072J7HtGm2kYfstpL5XIZTWrH2JWU7UfZrKWF1BUsH9xccKER%2BJMZVGi7SrzX57%2FMm24zs1eyK2AB5zsjcWKzrILRQG%2FBbbQ%2Fx5bNYVaCn7kX4xoHNibbBVAsqukcOQ%3D%3D",
+    "attempts": [
+      {
+        "host": "www.eci.gov.in",
+        "httpStatus": 406,
+        "errorBodyBytes": 1035,
+        "errorBodySha256": "8f14ef818fea5334fa7bc2ed40e6808c3227dc36a413fb67f326d1591e03675a"
+      },
+      {
+        "host": "eci.gov.in",
+        "httpStatus": 406,
+        "errorBodyBytes": 1035,
+        "errorBodySha256": "8f14ef818fea5334fa7bc2ed40e6808c3227dc36a413fb67f326d1591e03675a"
+      }
+    ],
+    "sourceDocumentBytesAcquired": false,
+    "disposition": "DO NOT TREAT ERROR HTML AS NOTIFICATION BYTES OR DOCUMENT SHA-256. Official ECI search result and PIB HTML corroborate notification number/date and 119/175 totals, but original notification/Gazette remains outstanding."
+  },
+  "otherSources": [
+    {
+      "id": "CEO_TELANGANA_HOP_2024_SCHEDULE",
+      "urlCandidates": [
+        "https://ceotelangana.nic.in/HOP-2024/11301_25-%20Ge%20to%20the%20HoP%202024-%20Schedule%20of%20Election_11zon.pdf",
+        "https://ceotelangana.nic.in/HOP-2024/11301_25-%20Ge%20to%20the%20HoP%202024-%20Schedule%20of%20Election.pdf"
+      ],
+      "status": "NO_BYTES",
+      "attempts": 2,
+      "eachTimeoutSeconds": 25
+    },
+    {
+      "id": "ECI_GENERAL_ELECTIONS_2024_PRESS_NOTE",
+      "url": "https://elections24.eci.gov.in/docs/press-note-no-23.pdf",
+      "status": "NO_BYTES",
+      "reason": "25-second timeout"
+    },
+    {
+      "id": "AP_REORGANISATION_REMOVAL_DIFFICULTIES_ORDERS",
+      "url": "https://upload.indiacode.nic.in/showfile?actid=AC_CEN_5_5_00058_201406_1517807327989&filename=Andhra+Pradesh+Reorganisation+%28Removal+of+Difficulties%29+First%2C+Second+and+Third+Order.pdf&type=order",
+      "status": "NO_BYTES",
+      "reason": "25-second timeout"
+    }
+  ],
+  "crosswalk": {
+    "pathInsideArtifact": "stage_b_telanganaschedule_crosswalk/telangana_statutory_vs_tgrac_crosswalk.json",
+    "bytes": 113541,
+    "sha256": "0acefffcc49be3e01360a5fff7a2258dcb09fb988315baa41979fd5a075e1bab",
+    "overallStatus": "PASS_WITH_CANDIDATE_ALIASES",
+    "statutoryRosterCount": 119,
+    "tgracFeatures": 119,
+    "candidateAliasStatus": "INFERRED_NAME_ALIAS_REQUIRES_CUSTODIAN_CONFIRMATION",
+    "limitations": [
+      "No legal extent-to-polygon comparison was performed.",
+      "TGRAC OBJECTID is not a canonical AC number.",
+      "The known seven-AC geometry-family discrepancy and invalid Dornakal polygon remain.",
+      "Aliases are inferred, not official declarations."
+    ]
+  },
+  "disposition": "LEGAL CROSSWALK SOURCE ACQUISITION PARTIAL: AP REORGANISATION ACT COPY AND OFFICIAL PIB HTML ACQUIRED/HASHED; STATUTORY 119-ROW ROSTER PARSED; NAME CROSSWALK PASS WITH INFERRED ALIASES. ORIGINAL ECI 2018 NOTIFICATION/Gazette, CEO schedule PDF and ECI 2024 press-note PDF remain unavailable in this run. This does not close EB-01/EB-02 or W021.5-B1-04.",
+  "productionDatabaseAccess": "NONE",
+  "stagingDatabaseAccess": "NONE",
+  "acceptance": "STAGE_B_PARTIAL_NOT_ACCEPTED"
+}
