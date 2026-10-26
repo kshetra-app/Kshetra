@@ -17,7 +17,24 @@ const porcelainStatus = execSync('git status --porcelain', { encoding: 'utf8' })
 
 assert.strictEqual(actualHead.length, 40, 'Actual local HEAD SHA must be 40 characters');
 assert.strictEqual(actualOriginMaster.length, 40, 'Actual origin/master SHA must be 40 characters');
-assert.strictEqual(actualBranch, 'master', 'Active branch must be master');
+const githubEventName = process.env.GITHUB_EVENT_NAME || '';
+if (githubEventName === 'pull_request') {
+  const baseRef = process.env.GITHUB_BASE_REF || '';
+  const headRef = process.env.GITHUB_HEAD_REF || '';
+  const githubSha = process.env.GITHUB_SHA || '';
+  assert.strictEqual(baseRef, 'master', 'Governance PR base must be canonical master');
+  assert.strictEqual(actualBranch, 'HEAD', 'GitHub pull_request checkout must use detached merge HEAD');
+  assert.strictEqual(actualHead, githubSha, 'PR checkout HEAD must match GITHUB_SHA');
+  const firstParent = execSync('git rev-parse HEAD^1', { encoding: 'utf8' }).trim();
+  const secondParent = execSync('git rev-parse HEAD^2', { encoding: 'utf8' }).trim();
+  assert.strictEqual(firstParent, actualOriginMaster, 'PR merge first parent must match origin/master');
+  assert.match(headRef, /^[A-Za-z0-9._/-]+$/, 'PR head branch must be a safe branch name');
+  assert.ok(!headRef.includes('..'), 'PR head branch must not contain a path traversal segment');
+  const originHead = execSync(`git rev-parse "origin/${headRef}"`, { encoding: 'utf8' }).trim();
+  assert.strictEqual(secondParent, originHead, 'PR merge second parent must match origin/<head>');
+} else {
+  assert.strictEqual(actualBranch, 'master', 'Active branch must be master for non-PR governance execution');
+}
 
 console.log(`[REPOSITORY STATE] Branch: ${actualBranch}`);
 console.log(`[REPOSITORY STATE] Local HEAD: ${actualHead}`);
@@ -255,20 +272,57 @@ console.log(`[REAL-STATE CONTROL M] Plan Status: ${realPlanStatus}`);
 console.log(`[REAL-STATE CONTROL M] Impl Auth: ${realImplAuth}`);
 console.log(`[REAL-STATE CONTROL M] Auth Commit: ${realAuthCommit}`);
 
-// Assert that currently, implementation authorization is strictly NO / FROZEN in real repo
-assert.strictEqual(realImplAuth, 'NO', 'Real-state IMPLEMENTATION_AUTHORIZATION must be NO in active frozen state');
-assert.ok(
-  realAuthJob === 'NONE' || realAuthJob.includes('NOT Authorized') || realAuthJob.includes('Planning Only'),
-  'Real-state AUTHORIZED_JOB must indicate no implementation authorized'
-);
-assert.ok(
-  realAuthScopeHash === 'NONE' || realAuthScopeHash === null || realAuthScopeHash === undefined,
-  'Real-state AUTHORIZED_SCOPE_HASH must be NONE or not set in frozen state'
-);
-assert.ok(
-  realAuthCommit === 'NONE' || realAuthCommit === null,
-  'Real-state IMPLEMENTATION_AUTHORIZATION_COMMIT must be NONE'
-);
+// Current-state authorization must be either fully frozen or explicitly scoped by CTO Directive 154.
+// Directive 154 supersedes the prior global freeze only for W021.5 Stage B repository/evidence work;
+// it does not authorize product code, migrations, database mutation, Stage C+, or final acceptance.
+const realW0215Authorization = parseExecutionStateField('W021_5_AUTHORIZATION') || '';
+const realAuthorizationScope = parseExecutionStateField('IMPLEMENTATION_AUTHORIZATION_SCOPE') || '';
+const realDirectivePath = parseExecutionStateField('W021_5_CTO_DIRECTIVE') || '';
+const realImplementationCommit = parseExecutionStateField('IMPLEMENTATION_COMMIT') || '';
+const realVerificationCommit = parseExecutionStateField('VERIFICATION_COMMIT') || '';
+const realAcceptanceCommit = parseExecutionStateField('ACCEPTANCE_COMMIT') || '';
+const frozenState =
+  realImplAuth === 'NO' &&
+  (realAuthJob === 'NONE' || realAuthJob.includes('NOT Authorized') || realAuthJob.includes('Planning Only')) &&
+  (realAuthScopeHash === 'NONE' || realAuthScopeHash === null || realAuthScopeHash === undefined) &&
+  (realAuthCommit === 'NONE' || realAuthCommit === null);
+
+let scopedStageBAuthorization = false;
+if (realImplAuth === 'YES') {
+  const directivePath = 'governance/directives/CTO-DIRECTIVE-154-W021.5-RESUMPTION.md';
+  const planPath = 'governance/plans/W021.5-RESUMPTION-REV-1.0.md';
+  assert.strictEqual(realPlanStatus, 'APPROVED', 'Scoped Stage B authorization requires PLAN_STATUS APPROVED');
+  assert.ok(realCurrentJob.includes('W021.5') && realCurrentJob.toLowerCase().includes('stage b'), 'Scoped authorization must be limited to the current W021.5 Stage B job');
+  assert.ok(realW0215Authorization.includes('STAGE B ONLY'), 'W021.5 authorization record must explicitly limit scope to Stage B');
+  assert.ok(realAuthorizationScope.includes('Stage B repository/evidence acquisition only'), 'Authorization scope must be evidence/tooling only');
+  assert.ok(realAuthorizationScope.includes('no product code or migrations'), 'Authorization must explicitly prohibit product code and migrations');
+  assert.ok(realAuthorizationScope.includes('no staging/production database access'), 'Authorization must explicitly prohibit staging/production DB access');
+  assert.ok(realAuthorizationScope.includes('no Stage C or later stage'), 'Authorization must explicitly stop before Stage C');
+  assert.ok(realDirectivePath.includes(directivePath), 'State must reference canonical Directive 154');
+  assert.ok(fs.existsSync(directivePath) && fs.existsSync(planPath), 'Directive 154 and its approved plan must exist');
+  const directiveText = fs.readFileSync(directivePath, 'utf8').toLowerCase();
+  const planText = fs.readFileSync(planPath, 'utf8').toLowerCase();
+  assert.ok(directiveText.includes('stage b only'), 'Directive 154 must explicitly authorize Stage B only');
+  assert.ok(planText.includes('stage b'), 'Approved plan must define the Stage B scope');
+  assert.strictEqual(realAuthCommit, 'e2d44d029a9539466ae8cef2d472aec1e57548c1', 'Authorization commit must be the canonical Directive 154 commit');
+  const resolvedDirectiveCommit = execSync(`git rev-parse ${realAuthCommit}`, { encoding: 'utf8' }).trim();
+  assert.strictEqual(resolvedDirectiveCommit, realAuthCommit, 'Directive 154 authorization commit must resolve exactly');
+  assert.strictEqual(execSync(`git merge-base --is-ancestor ${realAuthCommit} HEAD && echo YES`, { encoding: 'utf8' }).trim(), 'YES', 'Directive 154 must be an ancestor of current HEAD');
+  const authRecord = execSync(`git show ${realAuthCommit}:DECISION_LOG.md`, { encoding: 'utf8' });
+  assert.ok(authRecord.includes('DEC-158'), 'Authorization commit must preserve the W021.5 CTO decision record');
+  assert.ok(authRecord.includes('CTO Decision'), 'Authorization commit must preserve explicit CTO decision authority');
+  assert.ok(realImplementationCommit.startsWith('NONE'), 'Scoped evidence authorization must not claim product implementation');
+  assert.ok(realVerificationCommit.startsWith('NONE'), 'Independent verification must remain pending');
+  assert.ok(realAcceptanceCommit.startsWith('NONE'), 'Formal acceptance must remain pending');
+  scopedStageBAuthorization = true;
+}
+
+assert.ok(frozenState || scopedStageBAuthorization, 'Real state must be either fully frozen or covered by a validated, narrowly scoped CTO Directive 154 authorization');
+if (frozenState) {
+  console.log('[PASS] [REAL-STATE CONTROL M] Global implementation freeze verified.');
+} else {
+  console.log('[PASS] [REAL-STATE CONTROL M] Scoped Directive 154 Stage B evidence/tooling authorization verified; product code/migrations, database access, Stage C+, independent acceptance remain prohibited/pending.');
+}
 
 // Historical W008-C authorization verification directly from Git history and DECISION_LOG.md
 const w008cAuthCommit = parseExecutionStateField('W008_C_IMPLEMENTATION_AUTHORIZATION_COMMIT');
