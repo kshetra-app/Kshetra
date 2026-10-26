@@ -1,0 +1,108 @@
+{
+  "schemaVersion": 1,
+  "title": "W021.5 focused official geometry probe — raw-response findings",
+  "probeId": "W0215-OFFICIAL-GEOMETRY-PROBE-001",
+  "workflowRunId": 40212122850,
+  "workflowUrl": "https://github.com/kshetra-app/Kshetra/actions/runs/40212122850",
+  "artifactId": 12605509052,
+  "artifactName": "w0215-official-geometry-probe-40212122850",
+  "artifactZipBytes": 4781,
+  "artifactZipSha256": "e30baeff7c4ba94b0eee8d0e3fda41ddd7262a9880f7f4ac8e6ad9b9d7ce270e",
+  "artifactExpiresAt": "2026-11-24T16:32:18Z",
+  "retrievedAt": "2026-10-25T16:32:19Z",
+  "sources": [
+    {
+      "id": "ECI-2026-AC-S03",
+      "url": "https://results.eci.gov.in/ResultAcGenMay2026/ac/S03.js",
+      "httpStatus": 404,
+      "contentType": "text/html; charset=iso-8859-1",
+      "responseBytes": 196,
+      "responseBodySha256": "80c3fe2ae1062abf56456f52518bd670f9ec3917b7f85e152b347ac6b6faf880",
+      "result": "NO_GEOMETRY_BYTES; URL_CURRENTLY_NOT_FOUND"
+    },
+    {
+      "id": "ECI-2026-AC-U07",
+      "url": "https://results.eci.gov.in/ResultAcGenMay2026/ac/U07.js",
+      "httpStatus": 404,
+      "contentType": "text/html; charset=iso-8859-1",
+      "responseBytes": 196,
+      "responseBodySha256": "80c3fe2ae1062abf56456f52518bd670f9ec3917b7f85e152b347ac6b6faf880",
+      "result": "NO_GEOMETRY_BYTES; URL_CURRENTLY_NOT_FOUND"
+    },
+    {
+      "id": "ECI-2026-AC-S11",
+      "url": "https://results.eci.gov.in/ResultAcGenMay2026/ac/S11.js",
+      "httpStatus": 404,
+      "contentType": "text/html; charset=iso-8859-1",
+      "responseBytes": 196,
+      "responseBodySha256": "80c3fe2ae1062abf56456f52518bd670f9ec3917b7f85e152b347ac6b6faf880",
+      "result": "NO_GEOMETRY_BYTES; URL_CURRENTLY_NOT_FOUND"
+    },
+    {
+      "id": "ECI-2026-AC-S22",
+      "url": "https://results.eci.gov.in/ResultAcGenMay2026/ac/S22.js",
+      "httpStatus": 404,
+      "contentType": "text/html; charset=iso-8859-1",
+      "responseBytes": 196,
+      "responseBodySha256": "80c3fe2ae1062abf56456f52518bd670f9ec3917b7f85e152b347ac6b6faf880",
+      "result": "NO_GEOMETRY_BYTES; URL_CURRENTLY_NOT_FOUND"
+    },
+    {
+      "id": "ECI-2026-AC-S25",
+      "url": "https://results.eci.gov.in/ResultAcGenMay2026/ac/S25.js",
+      "httpStatus": 404,
+      "contentType": "text/html; charset=iso-8859-1",
+      "responseBytes": 196,
+      "responseBodySha256": "80c3fe2ae1062abf56456f52518bd670f9ec3917b7f85e152b347ac6b6faf880",
+      "result": "NO_GEOMETRY_BYTES; URL_CURRENTLY_NOT_FOUND"
+    },
+    {
+      "id": "TELANGANA-AC-LAYER-METADATA",
+      "url": "https://tgrac.telangana.gov.in/arcgis/rest/services/AdministrativeInfoSystem_Folder/Administrative_Information_System/MapServer/24?f=pjson",
+      "httpStatus": 200,
+      "contentType": null,
+      "responseBytes": 4756,
+      "responseBodySha256": "fd91d7803f39a8cc9ae9f2f486224cea777c7127ef5659dd2d073b088dbfb26a",
+      "result": "METADATA_ACQUIRED",
+      "metadataFacts": {
+        "layerId": 24,
+        "name": "Assembly Constituency Boundary",
+        "geometryType": "esriGeometryPolygon",
+        "fields": [
+          "OBJECTID",
+          "District",
+          "Parliament",
+          "Assembly",
+          "Assembly_Name"
+        ],
+        "queryFormats": [
+          "JSON",
+          "AMF"
+        ],
+        "maxRecordCount": 1000
+      }
+    },
+    {
+      "id": "TELANGANA-AC-GEOMETRY-QUERY-INITIAL",
+      "url": "https://tgrac.telangana.gov.in/arcgis/rest/services/AdministrativeInfoSystem_Folder/Administrative_Information_System/MapServer/24/query?where=1%3D1&outFields=%2A&returnGeometry=true&outSR=4326&f=geojson",
+      "httpStatus": 400,
+      "contentType": null,
+      "responseBytes": 602,
+      "responseBodySha256": "078ce75da3d26b3bd38f567b920f290dab72cbeebe6e49b277ef782332fd80da",
+      "result": "OUTPUT_FORMAT_NOT_SUPPORTED",
+      "remediation": "Changed the query to ArcGIS REST f=json and added ESRI polygon-ring validation; retry workflow 40212257196 queued."
+    }
+  ],
+  "verification": {
+    "zipSha256RecomputedLocally": true,
+    "rawResponseSha256RecomputedFromArtifact": true,
+    "officialECIGeometryAcquired": false,
+    "TelanganaGeometryAcquired": false,
+    "topologyValidated": false,
+    "legalInstrumentReconciled": false,
+    "nationalCoverageValidated": false
+  },
+  "decision": "Do not accept direct ECI .js endpoints as available source URLs; investigate current portal HTML/data routes and preserve official press-note maps as legal-context evidence. Prioritize state GIS layers where a documented query format exists. This probe closes no Stage B criterion.",
+  "productionDatabaseAccess": "NONE",
+  "stagingDatabaseAccess": "NONE"
+}
