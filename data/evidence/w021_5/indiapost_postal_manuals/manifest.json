@@ -1,0 +1,970 @@
+{
+  "schemaVersion": 1,
+  "title": "Official India Post postal manual acquisition and delivery-beat text scan",
+  "startedAtUtc": "2026-10-26T15:31:39.358956+00:00",
+  "authority": "Department of Posts, Ministry of Communications, Government of India",
+  "officialCatalogueBranchSource": "Previously captured official India Post pages committed in stage_b_catalogue_expansion/",
+  "tlsVerification": "ENABLED",
+  "tlsTrustStore": "/etc/ssl/certs/ca-certificates.crt",
+  "databaseAccess": "NONE",
+  "sourceCatalogueValidation": [
+    {
+      "label": "IndiaPost_ActsAndPolicies",
+      "requestedUrl": "https://www.indiapost.gov.in/documents/actsandpolicies",
+      "finalUrl": "https://www.indiapost.gov.in/documents/actsandpolicies",
+      "rawArtifactPath": "raw/IndiaPost_ActsAndPolicies_live.html",
+      "expectedByteLength": 129705,
+      "expectedSha256": "5fbce71525a0120e9cefa42f0d45b386a85ac7d4b51152b34f6666b36421f7c8",
+      "status": "RAW_CATALOGUE_HASH_VERIFIED",
+      "actualByteLength": 129705,
+      "actualSha256": "5fbce71525a0120e9cefa42f0d45b386a85ac7d4b51152b34f6666b36421f7c8",
+      "documentRecordsParsed": 5,
+      "relevantManualRecords": 0,
+      "parsedDocumentRecordsSha256": "d24e4cc959ee3be10ca2a503b20ad1382ddf00f8f3b7c59d04c1be35bc5044ef"
+    },
+    {
+      "label": "IndiaPost_Ebooks",
+      "requestedUrl": "https://www.indiapost.gov.in/documents/ebooks",
+      "finalUrl": "https://www.indiapost.gov.in/documents/ebooks",
+      "rawArtifactPath": "raw/IndiaPost_Ebooks_live.html",
+      "expectedByteLength": 220048,
+      "expectedSha256": "fe9dec5deda320605a067f58a2414a0be91686d6b3286c560a68de05d6bf2b87",
+      "status": "RAW_CATALOGUE_HASH_VERIFIED",
+      "actualByteLength": 220048,
+      "actualSha256": "fe9dec5deda320605a067f58a2414a0be91686d6b3286c560a68de05d6bf2b87",
+      "documentRecordsParsed": 196,
+      "relevantManualRecords": 0,
+      "parsedDocumentRecordsSha256": "487edb96303d43eb018581688511a3f0f975982aa47278cce0fd149018752034"
+    },
+    {
+      "label": "IndiaPost_Guidelines",
+      "requestedUrl": "https://www.indiapost.gov.in/documents/guidelines",
+      "finalUrl": "https://www.indiapost.gov.in/documents/guidelines",
+      "rawArtifactPath": "raw/IndiaPost_Guidelines_live.html",
+      "expectedByteLength": 165534,
+      "expectedSha256": "c67d8f58c9fce9ce2107af305416d3f87d51400478fa7473b974b4a70d3800d8",
+      "status": "RAW_CATALOGUE_HASH_VERIFIED",
+      "actualByteLength": 165534,
+      "actualSha256": "c67d8f58c9fce9ce2107af305416d3f87d51400478fa7473b974b4a70d3800d8",
+      "documentRecordsParsed": 45,
+      "relevantManualRecords": 8,
+      "parsedDocumentRecordsSha256": "7b8eadfd2a0a25e4b8f09dfab2d9a541d11e97c57bcb6588a2ec9ac5266b82a5"
+    },
+    {
+      "label": "IndiaPost_Publications",
+      "requestedUrl": "https://www.indiapost.gov.in/documents/publications",
+      "finalUrl": "https://www.indiapost.gov.in/documents/publications",
+      "rawArtifactPath": "raw/IndiaPost_Publications_live.html",
+      "expectedByteLength": 114828,
+      "expectedSha256": "4530e43234f0fddc51bcd51447b9b1ab870cefd8aff61b4e044df19f93f3d465",
+      "status": "RAW_CATALOGUE_HASH_VERIFIED",
+      "actualByteLength": 114828,
+      "actualSha256": "4530e43234f0fddc51bcd51447b9b1ab870cefd8aff61b4e044df19f93f3d465",
+      "documentRecordsParsed": 1,
+      "relevantManualRecords": 0,
+      "parsedDocumentRecordsSha256": "5327ba0e77f23b0b75cfd100a7ba8a2e7865c2aa98c137cbf3466f009cb1837f"
+    },
+    {
+      "label": "IndiaPost_OrdersAndNotices",
+      "requestedUrl": "https://www.indiapost.gov.in/documents/ordersandnotices",
+      "finalUrl": "https://www.indiapost.gov.in/documents/ordersandnotices",
+      "rawArtifactPath": "raw/IndiaPost_OrdersAndNotices_live.html",
+      "expectedByteLength": 156151,
+      "expectedSha256": "d3f175a571d4c3c8d94ff512ac508f6a1aa874dc5be1ddf2457a2b0f8f3398f5",
+      "status": "RAW_CATALOGUE_HASH_VERIFIED",
+      "actualByteLength": 156151,
+      "actualSha256": "d3f175a571d4c3c8d94ff512ac508f6a1aa874dc5be1ddf2457a2b0f8f3398f5",
+      "documentRecordsParsed": 25,
+      "relevantManualRecords": 0,
+      "parsedDocumentRecordsSha256": "c226dc9b031cc494b06fc7759b95df465e45d502e2711bab82f5959b5d300409"
+    },
+    {
+      "label": "IndiaPost_RecruitmentRules",
+      "requestedUrl": "https://www.indiapost.gov.in/documents/recruitmentrules",
+      "finalUrl": "https://www.indiapost.gov.in/documents/recruitmentrules",
+      "rawArtifactPath": "raw/IndiaPost_RecruitmentRules_live.html",
+      "expectedByteLength": 161023,
+      "expectedSha256": "567e672d802a4d7a595389b3d5fd9cf9eb9db5401cf660d0b1e39e7a3c3bb872",
+      "status": "RAW_CATALOGUE_HASH_VERIFIED",
+      "actualByteLength": 161023,
+      "actualSha256": "567e672d802a4d7a595389b3d5fd9cf9eb9db5401cf660d0b1e39e7a3c3bb872",
+      "documentRecordsParsed": 32,
+      "relevantManualRecords": 0,
+      "parsedDocumentRecordsSha256": "0365da7e6dcd49bcc25863b036ac228a222ec5e95811f3fc2778e0c0dbbff995"
+    },
+    {
+      "label": "IndiaPost_GazetteNotifications",
+      "requestedUrl": "https://www.indiapost.gov.in/documents/gazzettenotifications",
+      "finalUrl": "https://www.indiapost.gov.in/documents/gazzettenotifications",
+      "rawArtifactPath": "raw/IndiaPost_GazetteNotifications_live.html",
+      "expectedByteLength": 126862,
+      "expectedSha256": "042a89959ea0f012856bdd8e7e07770fd98d0c483709005f0165eb2debe28703",
+      "status": "RAW_CATALOGUE_HASH_VERIFIED",
+      "actualByteLength": 126862,
+      "actualSha256": "042a89959ea0f012856bdd8e7e07770fd98d0c483709005f0165eb2debe28703",
+      "documentRecordsParsed": 4,
+      "relevantManualRecords": 0,
+      "parsedDocumentRecordsSha256": "b8ed01d4416d63c6b759eef9a48d68394c036888f992fd20a82d415365f23f96"
+    },
+    {
+      "label": "IndiaPost_Home",
+      "requestedUrl": "https://www.indiapost.gov.in/",
+      "finalUrl": "https://www.indiapost.gov.in/",
+      "rawArtifactPath": "raw/IndiaPost_Home_live.html",
+      "expectedByteLength": 401001,
+      "expectedSha256": "e55cef04514c3c5f307498e5883c372194156bf52b198500e97777e489692038",
+      "status": "RAW_CATALOGUE_HASH_VERIFIED",
+      "actualByteLength": 401001,
+      "actualSha256": "e55cef04514c3c5f307498e5883c372194156bf52b198500e97777e489692038",
+      "documentRecordsParsed": 314,
+      "relevantManualRecords": 0,
+      "parsedDocumentRecordsSha256": "7d9374c1bbf3fa0b9d1c2e19c64a0ad118fb5feaa112abd017f031179e86065f"
+    }
+  ],
+  "sourceCatalogueErrors": [],
+  "manualCandidatesObserved": 8,
+  "manualCandidateRecords": [
+    {
+      "documentId": "ec009bac-c5da-4e70-8ada-6044ba553456",
+      "slug": "postal-manual-vol-ii-20250816-a46fb6",
+      "title": "Postal Manual Vol. II",
+      "catalogueDate": "16-08-2025",
+      "displayedSize": "850.4 KB",
+      "version": "English Version",
+      "documentType": "PDF",
+      "downloadUrl": "https://www.indiapost.gov.in/api/documents/file/10047ys2m6a93hic901g0n3bvnq3ctfs0s5ea0hbnv3agcn08vh50gv2p08gle",
+      "discoveredOnPage": "https://www.indiapost.gov.in/documents/guidelines"
+    },
+    {
+      "documentId": "2235ad05-eb84-4fb7-a690-671328618b15",
+      "slug": "postal-manual-vol-iii-20250927-a9662e",
+      "title": "Postal Manual Vol. III",
+      "catalogueDate": "01-07-1986",
+      "displayedSize": "1 MB",
+      "version": "English Version",
+      "documentType": "PDF",
+      "downloadUrl": "https://www.indiapost.gov.in/api/documents/file/103afkn2qs7r0baxl0a9sb00hdy3bv9r0sjr935suj3ag5e01erk0l3kq34dtt",
+      "discoveredOnPage": "https://www.indiapost.gov.in/documents/guidelines"
+    },
+    {
+      "documentId": "71da1836-f86b-4ec5-8c0f-63500e6e86dd",
+      "slug": "postal-manual-vol-iv-part-i-20251217-3678ca",
+      "title": "Postal Manual Vol. IV Part-I",
+      "catalogueDate": "22-07-2019",
+      "displayedSize": "9.4 MB",
+      "version": "English Version",
+      "documentType": "PDF",
+      "downloadUrl": "https://www.indiapost.gov.in/api/documents/file/10368e80patn0fj8905o913da863da190s5e83g28b3agxy02tst0lil6063io",
+      "discoveredOnPage": "https://www.indiapost.gov.in/documents/guidelines"
+    },
+    {
+      "documentId": "e77dd3e6-8753-4539-a292-0b65e9ad1de9",
+      "slug": "postal-manual-vol-iv-part-ii-appendices-20250927-443d19",
+      "title": "Postal Manual Vol. IV Part-II (Appendices)",
+      "catalogueDate": "15-03-2004",
+      "displayedSize": "430.4 KB",
+      "version": "English Version",
+      "documentType": "PDF",
+      "downloadUrl": "https://www.indiapost.gov.in/api/documents/file/1004ok30ws1s3mpsp3ig3q0abd208gsh0sjr535t8r377t10aayp3g1ub3d9u5",
+      "discoveredOnPage": "https://www.indiapost.gov.in/documents/guidelines"
+    },
+    {
+      "documentId": "aa4a4edc-9e1c-4c57-a776-c1ab38af378f",
+      "slug": "postal-manual-vol-v-20250927-d472dd",
+      "title": "Postal Manual Vol. V",
+      "catalogueDate": "27-09-2025",
+      "displayedSize": "431.7 KB",
+      "version": "English Version",
+      "documentType": "PDF",
+      "downloadUrl": "https://www.indiapost.gov.in/api/documents/file/1009umo0pbh23lq1l3kav63eosm34dn30sjr83pgej01vde34dfk3g28h0732q",
+      "discoveredOnPage": "https://www.indiapost.gov.in/documents/guidelines"
+    },
+    {
+      "documentId": "1eeb0b94-c982-43d8-bf8f-72b5b47629e7",
+      "slug": "postal-manual-vol-vi-part-iii-20250927-34c6b1",
+      "title": "Postal Manual Vol. VI Part-III",
+      "catalogueDate": "18-05-2021",
+      "displayedSize": "1.2 MB",
+      "version": "English Version",
+      "documentType": "PDF",
+      "downloadUrl": "https://www.indiapost.gov.in/api/documents/file/103e8sh0nw4101h5l01gqz08wsm00fsw0sj8534tor3bv9t0a9zg0joeo0fx8j",
+      "discoveredOnPage": "https://www.indiapost.gov.in/documents/guidelines"
+    },
+    {
+      "documentId": "fa190a91-86e0-412c-abcc-64432a1c8fe7",
+      "slug": "postal-manual-vol-vii-20250927-d98515",
+      "title": "Postal Manual Vol. VII",
+      "catalogueDate": "27-09-2025",
+      "displayedSize": "372.9 KB",
+      "version": "English Version",
+      "documentType": "PDF",
+      "downloadUrl": "https://www.indiapost.gov.in/api/documents/file/10000np2vyhe01g613ifyu063nq02ue30sjtd0fxhn3afk701eu10bpsq3agoz",
+      "discoveredOnPage": "https://www.indiapost.gov.in/documents/guidelines"
+    },
+    {
+      "documentId": "2506ed41-1b80-42af-87ea-53c09ba32faa",
+      "slug": "postal-manual-vol-viii-20250927-1b7f01",
+      "title": "Postal Manual Vol. VIII",
+      "catalogueDate": "01-04-1979",
+      "displayedSize": "814.4 KB",
+      "version": "English Version",
+      "documentType": "PDF",
+      "downloadUrl": "https://www.indiapost.gov.in/api/documents/file/103agyc2pefr0gwex390y3063nq01vfi0s5c40iq8b3eols02v6i3fnf43afyt",
+      "discoveredOnPage": "https://www.indiapost.gov.in/documents/guidelines"
+    }
+  ],
+  "downloads": [
+    {
+      "documentId": "ec009bac-c5da-4e70-8ada-6044ba553456",
+      "slug": "postal-manual-vol-ii-20250816-a46fb6",
+      "title": "Postal Manual Vol. II",
+      "catalogueDate": "16-08-2025",
+      "displayedSize": "850.4 KB",
+      "version": "English Version",
+      "documentType": "PDF",
+      "downloadUrl": "https://www.indiapost.gov.in/api/documents/file/10047ys2m6a93hic901g0n3bvnq3ctfs0s5ea0hbnv3agcn08vh50gv2p08gle",
+      "discoveredOnPage": "https://www.indiapost.gov.in/documents/guidelines",
+      "requestedAtUtc": "2026-10-26T15:31:39.405916+00:00",
+      "classification": "OFFICIAL_POSTAL_MANUAL_CANDIDATE",
+      "finalUrl": "https://www.indiapost.gov.in/api/documents/file/10047ys2m6a93hic901g0n3bvnq3ctfs0s5ea0hbnv3agcn08vh50gv2p08gle",
+      "httpStatus": 200,
+      "contentType": "application/pdf",
+      "byteLength": 870818,
+      "sha256": "622422edb352966113c4a9e7958329b80b1e93761c3494363562f14b032e836f",
+      "pdfMagic": true,
+      "pdfParseStatus": "PASS",
+      "pdfVersion": "1.6",
+      "pdfPageCount": 287,
+      "textSha256": "8a87c53d7d212e76dd0e68b54d8391b9501248b571215dd2a4a47b0e7f59dd94",
+      "termFindings": {
+        "deliveryBeat": {
+          "found": false,
+          "matchCount": 0,
+          "snippets": []
+        },
+        "beatList": {
+          "found": false,
+          "matchCount": 0,
+          "snippets": []
+        },
+        "postalMap": {
+          "found": true,
+          "matchCount": 3,
+          "snippets": [
+            "Circle’s office corrected up-to- date for official use. A copy of this map should be supplied to the Director General. Legend for Postal Map of a circle Circle Boundary — — — — — — — — — — State Boundary - - - - - - - - - Circle and State Boundary ———————————— Divisional Boundary — — — — — — — — — — Railway routes",
+            "ffice. (c) It is of special importance that both the maps should be kept corrected up-to-date and the Head of Circle concerned should from time to time satisfy himself that they are so kept. (d) A skeleton Postal map of the Circle should be submitted to the Director General in the month of June each year in which all the corrections necessitated by changes during the past year must be incorporated to enable the map retained by the Director General to be brought up-to-date. This procedure should be followed every year until such time as the issue of a new map is considered necessary. II.",
+            "of the record offices and mail offices and the beats of the sections (sorting and transit) under the Superintendent’s control. (c) Superintendents of Post Offices will be supplied by the Head of the Circle with a Postal map of the Circle and the latest survey maps of the districts comprised in the Division. Superintendents of Railway Mail Service may also be supplied by the Head of the Circle with a map of the Postal Circle or Circles in which the Division is situated. All these maps must be kept corrected up-to-date. The Superintendent must take special care of maps supplied to him and in case of damage he may be h"
+          ]
+        },
+        "postmaster": {
+          "found": true,
+          "matchCount": 302,
+          "snippets": [
+            "njab Circle (which has within its administrative jurisdiction, the Union Territory of Chandigarh); and Tamilnadu Circle (which also administers the Union Territory of Pondicherry). Eighteen Circles are headed by a Chief Postmaster General and three circles are headed by Principal Chief Postmaster General. Every Circle is divided into Regions comprising field units, called Divisions (Postal/RMS Divisions). Each Region is headed by a Postmaster General who is the Postal Manager of the area. In the Circles and Regions there are other functional units like Circle Stamp Depots, Postal Stores Depots and Mail Motor Service, etc.",
+            "Union Territory of Chandigarh); and Tamilnadu Circle (which also administers the Union Territory of Pondicherry). Eighteen Circles are headed by a Chief Postmaster General and three circles are headed by Principal Chief Postmaster General. Every Circle is divided into Regions comprising field units, called Divisions (Postal/RMS Divisions). Each Region is headed by a Postmaster General who is the Postal Manager of the area. In the Circles and Regions there are other functional units like Circle Stamp Depots, Postal Stores Depots and Mail Motor Service, etc. Besides these twenty two Circles, there is another Circle, called B",
+            "ief Postmaster General and three circles are headed by Principal Chief Postmaster General. Every Circle is divided into Regions comprising field units, called Divisions (Postal/RMS Divisions). Each Region is headed by a Postmaster General who is the Postal Manager of the area. In the Circles and Regions there are other functional units like Circle Stamp Depots, Postal Stores Depots and Mail Motor Service, etc. Besides these twenty two Circles, there is another Circle, called Base Circle, to cater to the postal communication needs of the Armed Forces. The Base Circle is headed by an officer in the rank of Major General call",
+            "Duties 6. Deleted. Circles 7. For the purpose of proper control, the Indian Postal Department is divided into 22 Postal Circles under the charge of Principal/Chief Postmaster General. Name of Circle Headquarters 1. Andhra Pradesh Circle Hyderabad 2. Assam Circle Guwahati 3. Bihar Circle Patna 4. Chhattisgarh Circle Raipur 5. Delhi Circle",
+            "or, Postal Services. (6) Accounts Officer. (7) Welfare Officer. (8) Hindi Officer. At Regional Level 7. (b) Each Circle is divided into Regions which are under the control of Postmasters General. (a) PMG (b) Asstt. Director Postal Services. (c) Accounts Officer (where sanctioned) 7(c)—8] ORGANISATION 4 7. (c) At Divisional Level 1. Senior Superintendents of Post Offices and Senior Superintendents of Railway Mail Service in-charge Postal/R.M.S. Divisi",
+            "7. Assistant Superintendents of Posts and Assistant Superintendents Railway Mail Service. 8. Inspectors Posts/Inspector, Railway Mail Service in-charge of Sub-Divisions. 9. Head Postmasters (including Presidency Postmasters). 10. Sub Postmasters. 11. Mail/Cash Overseers. 12. GDS Branch Postmasters. 7. (d) Civil Engineering (a) (i) Superintending Surveyor of Works (ii) Surveyor of Works (iii) Assistant Surveyor of Works (b) (i) Superintending Engineer",
+            "ntendents of Posts and Assistant Superintendents Railway Mail Service. 8. Inspectors Posts/Inspector, Railway Mail Service in-charge of Sub-Divisions. 9. Head Postmasters (including Presidency Postmasters). 10. Sub Postmasters. 11. Mail/Cash Overseers. 12. GDS Branch Postmasters. 7. (d) Civil Engineering (a) (i) Superintending Surveyor of Works (ii) Surveyor of Works (iii) Assistant Surveyor of Works (b) (i) Superintending Engineer (ii) Engineer officer",
+            "Superintendents Railway Mail Service. 8. Inspectors Posts/Inspector, Railway Mail Service in-charge of Sub-Divisions. 9. Head Postmasters (including Presidency Postmasters). 10. Sub Postmasters. 11. Mail/Cash Overseers. 12. GDS Branch Postmasters. 7. (d) Civil Engineering (a) (i) Superintending Surveyor of Works (ii) Surveyor of Works (iii) Assistant Surveyor of Works (b) (i) Superintending Engineer (ii) Engineer officers (iii)"
+          ]
+        },
+        "streetOrQuarter": {
+          "found": true,
+          "matchCount": 148,
+          "snippets": [
+            "m copies of G.Os. should be supplied. Appendix-10 Statement showing different classes of fire extinguishers and the characteristics of each class. Appendix-11 Rules for the occupation of inspection quarters of the Indian Postal Department. Appendix-12 Model rules governing maintenance, etc., of inventories of Government Stores. Appendix-12A Deleted. Appendix-13 Deleted. Appendix-14 Deleted. Appendix-15 Deleted. Apppendix-16 Reconciliation of Departmental figures for Postal fluctuating heads controlled by Heads of C",
+            "Os. should be supplied. 236 10.—Statement showing different classes of fire extinguishers and the characteristics of each class 237—239 11.—Rules for the occupation of inspection quarters of the Indian Postal Department 240—250 12.—Model rules governing maintenance, etc., of inventories of Government Stores 251—252 12A.—Deleted. 13.—Deleted 14.—Deleted 15.—Deleted 16.—Reconciliation of Departmental figures for Postal fluctuating heads controlled by Heads 253—259 of Circles with those booked in the Audit Office.",
+            "d is assisted by a senior staff officer of the Directorate as Secretary to the Board. Deputy Directors General, Directors and Assistant Directors General provide the necessary functional support for the Board at the Headquarters. 2. For providing postal services, the whole country has been divided into twenty two postal circles. Each Circle is coterminous with a State except Gujarat (which also administers the Union Territories of Daman & Diu and Dadra & Nagar Haveli) Kerala Circle (which includes the Union Territory of Lakshdweep) Maharashtra Circle (which has within its jurisdiction the State of Goa) North Easter",
+            ". are of the Service from which they are drawn. All officers are drawn from various services like the Indian Postal Service/P and T Finance and Accounts Service/Central Secretariat Service/General Central Service. Headquarters 5. The Headquarters of the Postal Services Board, the Director-General and other officers of the Director- General are at New Delhi. Duties 6. Deleted. Circles 7. For the purpose of proper control, the Indian Postal Department is divided into 22 Postal Circles under the charge of Principal/Chief Postmaster General. Name",
+            "which they are drawn. All officers are drawn from various services like the Indian Postal Service/P and T Finance and Accounts Service/Central Secretariat Service/General Central Service. Headquarters 5. The Headquarters of the Postal Services Board, the Director-General and other officers of the Director- General are at New Delhi. Duties 6. Deleted. Circles 7. For the purpose of proper control, the Indian Postal Department is divided into 22 Postal Circles under the charge of Principal/Chief Postmaster General. Name of Circle",
+            "For the purpose of proper control, the Indian Postal Department is divided into 22 Postal Circles under the charge of Principal/Chief Postmaster General. Name of Circle Headquarters 1. Andhra Pradesh Circle Hyderabad 2. Assam Circle Guwahati 3. Bihar Circle Patna 4. Chhattisgarh Circle Raipur 5. Delhi Circle New Delhi 6. Gujarat Circle",
+            "ice; (ii) in a case where no notice is given, from the date of termination of service. 121. The Head of a Circle or any other authority directly subordinate to the Director General will forward quarterly to the Director General a list of petitions withheld under rule 120. Petitions to the President 122. The instructions for the submission of petitions to the President are reproduced in the succeeding rules. The petitions may also be addressed to the Secretary of the Government of India, Department of Posts, Ministry of Communi- cations & IT. The",
+            "s withheld under Instruction 6, the authority shall inform the petitioner of the withholding and the reasons therefor. 8. List of petitions withheld.—The authorities mentioned in the Scheduled shall send a quarterly return to the President specifying all petitions, withheld under Instruction 6 and the reasons for withholding them. PART IV TRANSMISSION OF PETITIONS BY SUBORDINATE AUTHORITIES 9. Procedure for Transmission.— (1) The authorities referred to in Sub-instructions (a) and (b) of Instruction 5 shall transmit to the Presi-"
+          ]
+        },
+        "alphabeticalBeatIndex": {
+          "found": false,
+          "matchCount": 0,
+          "snippets": []
+        },
+        "gisOrPolygon": {
+          "found": true,
+          "matchCount": 306,
+          "snippets": [
+            "ancing a claim of an obviously unsub- stantial character; or (b) so belated that its consideration is clearly impossible. (8) the petition makes a proposal regarding legislation which the authority is not prepared to support; (9) the petition is a representation against the action of a private individual or of a body of private individuals regarding the private relations of the petitioner or such individual or body; (10) the petition relates to a matter in which the petitioner has no direct personal interest; 123—123-A]",
+            "m amount or locality, beyond the jurisdiction of a Small Cause Court, the officer-filing the suit will refer the matter to the district officer i.e. (the officer in general administrative charge of a district, be he a Magistrate, Collector, Deputy Commissioner, Supdt. or any body else), and ascertain from that officer whether the services of the Govt. Pleader are available and what steps should be taken to bring the matter before the court in such a way as to give fair protection to the interests of Government. In important cases at or near Kolkata, Chennai, Mumbai or other places at which a Govt. Solicitor or other",
+            "remembered that an offence under section 52 cannot be tried except by a Court of Sessions (see item I of Schedule II—“Offences against other law’’ of the Criminal Procedure Code), and can be enquired into only by the Magistrate specified in section 206(i) of the Criminal Procedure Code. 131. In non-cognisable cases, an officer deputed by the Head of the Circle, or the Superintendent of Post Offices or Railway Mail Service, as the case may be, must take up the investigation with the least possible delay; but if it is necessary or advisable to obtain the aid of the police, the facts should be placed in writing befo",
+            "Service, as the case may be, must take up the investigation with the least possible delay; but if it is necessary or advisable to obtain the aid of the police, the facts should be placed in writing before the nearest Magistrate having jurisdiction, and he should be requested, under section 155 of the Criminal Procedure Code to direct the police also to hold an investigation. When the offences committed are falsification of accounts or postal documents, the sanction of the Head of the Circle should be obtained before the Magistrate is approached, unless there is reason to fear that the offender will abscond or immed",
+            "al Procedure Code to direct the police also to hold an investigation. When the offences committed are falsification of accounts or postal documents, the sanction of the Head of the Circle should be obtained before the Magistrate is approached, unless there is reason to fear that the offender will abscond or immediate action is necessary in order to secure evidence. It should be remem- bered that any undue delay in invoking the aid of the police, makes it difficult for them to make a successful enquiry. When, therefore, police aid is necessary, no time should be lost in obtaining it. 132. When the offender in a cogn",
+            "ing it. 132. When the offender in a cognisable or non-cognisable case is an officer appointed by the Director-General or higher authority, under no circumstances should information be laid against him either before a Magistrate or with the police without the previous sanction of the Director-General. All such cases should be reported to the Head of the Circle with a view to the orders of Director General being obtained. Institution of criminal proceedings 133. A criminal prosecution in a non-cognisable case must not be instituted without the previous sanction of the Head of",
+            "he case has already been placed in the hands of the police for investigation, the institution of criminal proceedings must be detemined mainly by the police report, but before proceedings are actually commenced in the Magistrate’s Court, the officer concerned should submit a report to the Head of the Circle embodying the view of the case taken by the police. 134. When the offender is an officer appointed by the Director-General or higher authority, criminal proceedings against him should in no circumstances be instituted without the sanction of the Director-General. Conduct of crimin",
+            "Conduct of criminal prosecutions 135. An officer on receiving the orders of the Head of the Circle to prosecute in a non-cognisable case, should at once prefer a written complaint to the nearest Magistrate empowered to take cognisance of the case. The complaint should show, in detail, the charges against the official to be prosecuted and should be accompanied by such documen- tary evidence as may be available. In this complaint, the officer should ask the Magistrate to issue a process against the offender, and should attach a preliminary list of the witnesses whom it is desired to produce on b"
+          ]
+        }
+      },
+      "rawArtifact": "raw/Postal_Manual_Vol._II.pdf",
+      "textArtifact": "text/Postal_Manual_Vol._II.txt",
+      "textLength": 1157964,
+      "status": "OFFICIAL_POSTAL_PDF_BYTES_ACQUIRED_AND_PARSED"
+    },
+    {
+      "documentId": "2235ad05-eb84-4fb7-a690-671328618b15",
+      "slug": "postal-manual-vol-iii-20250927-a9662e",
+      "title": "Postal Manual Vol. III",
+      "catalogueDate": "01-07-1986",
+      "displayedSize": "1 MB",
+      "version": "English Version",
+      "documentType": "PDF",
+      "downloadUrl": "https://www.indiapost.gov.in/api/documents/file/103afkn2qs7r0baxl0a9sb00hdy3bv9r0sjr935suj3ag5e01erk0l3kq34dtt",
+      "discoveredOnPage": "https://www.indiapost.gov.in/documents/guidelines",
+      "requestedAtUtc": "2026-10-26T15:31:39.406317+00:00",
+      "classification": "OFFICIAL_POSTAL_MANUAL_CANDIDATE",
+      "finalUrl": "https://www.indiapost.gov.in/api/documents/file/103afkn2qs7r0baxl0a9sb00hdy3bv9r0sjr935suj3ag5e01erk0l3kq34dtt",
+      "httpStatus": 200,
+      "contentType": "application/pdf",
+      "byteLength": 1082974,
+      "sha256": "126c4ad1f911070b721417195ca94e5ea72b68fa1dcba7ddbe1ea6bed1d4b031",
+      "pdfMagic": true,
+      "pdfParseStatus": "PASS",
+      "pdfVersion": "1.6",
+      "pdfPageCount": 194,
+      "textSha256": "6021e4f5a0f64115ab3685ac0fca9d9d4a3ac346896afd4079b552887aedba1b",
+      "termFindings": {
+        "deliveryBeat": {
+          "found": false,
+          "matchCount": 0,
+          "snippets": []
+        },
+        "beatList": {
+          "found": false,
+          "matchCount": 0,
+          "snippets": []
+        },
+        "postalMap": {
+          "found": false,
+          "matchCount": 0,
+          "snippets": []
+        },
+        "postmaster": {
+          "found": true,
+          "matchCount": 181,
+          "snippets": [
+            "OF ADMINISTRATIVE POWERS OF 183-184 INSPECTOR OF POST OFFICES. (OTHER THAN A TOWN INSPECTOR) 5. SCHEDULE OF ADMINISTRATIVE POWERS OF A 184-186 POSTMASTER 6. SCHEDULE OF ADMINISTRATIVE POWERS OF A SENIOR 186-188 SUPERINTENDENT AND SUPERINTENDENT, RAILWAY MAIL SERVICE 6-A SCHEDULE OF ADMINISTRATIVE POWERS OF 188-189 SUPERINTENDENT (SORTING), RAILWAY MAIL SERVICE 7. SCHEDULE OF ADMINISTRATIVE POWERS OF AN 189 INSPECTOR, RAILWAY MAIL SERVICE. 8. SCHEDULE OF ADMINISTRATIVE POWER",
+            "ting to the Government servant in General Central Service Grade “C” or Grade “D” against whom a departmental enquiry may be held, and working under the concerned authority. 1. Secretary, Postal Board. 2. Postmaster General 3. Director, Postal Life Insurance. 91. (d) The enquiring authority should note that as provided in the Code of Civil Procedure, every summon issued by it shall (a) be in duplicate (b) be signed by the officer constituting such authority (c) be sealed with the seal of such officer or bear a stamp bearing his name and designation (d) specify the date on, and the",
+            "han six months have elapsed from the date of the order to be reviewed, the question of recommending a review by the P&T Board should be taken up through the respective Heads of Circles and Administrative Offices. 147. Postmasters or other officers who are responsible for ensuring the implementation of punishment orders relating to withholding of increment, reduction of pay etc. issued by the Divisional Officer/Circle Office should be required to send an acknowledgement on receipt of the punishment orders to the Divisional Officer/Circle Office. They should also be required to confirm that appropriate entries have been ma",
+            ": In the case of the non-gazetted officers whose pay is drawn in Establishment pay bills, (a) a Head of the Circle RDPS in respect of the officials employed in his office (b) a Head Postmaster in respect of officials of the Post office; (c) a head record clerk in respect of officials of the Railway Mail Service, NOTE 2: Although rule 48 of Order XXI, Civil Procedure Code, imposes an obligation upon the disbursing officer to remit to the court concerned the amount deducted under its prohibitory order from the pay of a Government servant, it does not",
+            "officer should be entered. 167. If the employee whose pay has been attached is employed in a subordinate office or a Rai9lway Mail Service section attached to it, the disbursing officer should at once furnish the sub-postmaster or the record clerk concerned, as the case may be with an extract from the attachment register together with instructions to make the necessary recoveries and to remit the amounts recovered direct to the court concerned until the entire debt is liquidated. He should also instruct the sub-postmaster or record clerk to furnish him every month with the information necessary to fill in particulars in",
+            "m the attachment register together with instructions to make the necessary recoveries and to remit the amounts recovered direct to the court concerned until the entire debt is liquidated. He should also instruct the sub-postmaster or record clerk to furnish him every month with the information necessary to fill in particulars in columns (6), (7), (9) and (10) in the register as soon as each recovery has been made, and also with the court’s receipt when received. 168. In the event of an employee, whose pay is under attachment, being transferred to the account jurisdiction of another disbursing officer, an extract from th",
+            "P.M.G. D.D.G.(V)/D.G. (8) Labour Officers, Welfare Director P.M.G. Officers and other Class II Officers (in the Circle Office). (9) Presidency Postmasters. Director P.M.G. (10) Postmaster, Group ‘B’ Senior Supdt. of Post Director Offices (11) Postmasters, Class II in Presidency Director Presidency Post Offices Postmaster (12) Gazetted Postmasters not Director Postmaster General under the control of Senior",
+            "Officers, Welfare Director P.M.G. Officers and other Class II Officers (in the Circle Office). (9) Presidency Postmasters. Director P.M.G. (10) Postmaster, Group ‘B’ Senior Supdt. of Post Director Offices (11) Postmasters, Class II in Presidency Director Presidency Post Offices Postmaster (12) Gazetted Postmasters not Director Postmaster General under the control of Senior Supdt. of Post Offices (13) Supdt. Sorting"
+          ]
+        },
+        "streetOrQuarter": {
+          "found": true,
+          "matchCount": 23,
+          "snippets": [
+            "vices (Classification, Control and Appeal) Rules, 1965, an order of suspension will normally take effect to from a back date. In a case in which the officer to be suspended (a) is stationed at a place other than the headquarters of the competent authority or his is on tour (b) he is holding charge of stores and/or cash the order of suspension will not take effect from the date of issue of the orders. In a case of the type (a) above, the orders of suspension will take effect from the date of receipt of the orders by the employee or the date of his relief to be specified by the Competent authority. In a case of type (b) a",
+            "or cash should commence on receipt of the orders of suspension and be completed by a specified date from which suspension should take effect. 20. The station of posting immediately before his suspension will be the headquarters of the suspended officer. The disciplinary authority may, however, for reasons to be recorded in writing, fix any other place as his headquarters in the interest of public service (vide Govt. of India’s decision No. 3 below S.R. 153-A). A change of headquarters can be also be ordered at the request of the suspended officer if the competent authority is satisfied that it will not put Government t",
+            "The station of posting immediately before his suspension will be the headquarters of the suspended officer. The disciplinary authority may, however, for reasons to be recorded in writing, fix any other place as his headquarters in the interest of public service (vide Govt. of India’s decision No. 3 below S.R. 153-A). A change of headquarters can be also be ordered at the request of the suspended officer if the competent authority is satisfied that it will not put Government to any extra expenditure in the shape of T.A. etc or create difficulty in investigation or in processing of departmental proceedings. 21. A suspen",
+            "ciplinary authority may, however, for reasons to be recorded in writing, fix any other place as his headquarters in the interest of public service (vide Govt. of India’s decision No. 3 below S.R. 153-A). A change of headquarters can be also be ordered at the request of the suspended officer if the competent authority is satisfied that it will not put Government to any extra expenditure in the shape of T.A. etc or create difficulty in investigation or in processing of departmental proceedings. 21. A suspended officer is subject to all conditions of services applicable to Government servants. He should not accordingly le",
+            "eate difficulty in investigation or in processing of departmental proceedings. 21. A suspended officer is subject to all conditions of services applicable to Government servants. He should not accordingly leave his headquarters without the permission of the disciplinary authority. 22. Suspension should not be continued beyond the minimum period for which it is essentially required. If the finalisation of the court case or departmental proceedings is likely top be delayed, the feasibility of revoking the orders of suspension and transferring the official to any other post or office, if necessary, should be considered.",
+            "Rent Allowance during suspension 33. A Government servant who has been in occupation of rent-free accommodation will cease to enjoy the concession from the date of suspension but he will not be required to vacate the quarter unless it is attached to any particular post. However, rent at the usual rate will be recovered from him. If ultimately the employee is allowed full pay and allowances for the period of suspension, the concession of rent-free accommodation will stand restored and rent, if recovered, for the period of suspension will be refunded. If however, the employee had been made to vacate the quarter, he",
+            "s for the period of suspension, the concession of rent-free accommodation will stand restored and rent, if recovered, for the period of suspension will be refunded. If however, the employee had been made to vacate the quarter, he will be entitled to house rent allowance in lieu of rent-free accommodation only if house rent allowance is otherwise admissible at the headquarters of his suspension. The house-rent allowance will be calculated with reference to the pay that he was drawing for the period of suspension. Subsistence Allowance in the case when paid prior & reinstatement is regulated as suspension 34. In the",
+            "l be refunded. If however, the employee had been made to vacate the quarter, he will be entitled to house rent allowance in lieu of rent-free accommodation only if house rent allowance is otherwise admissible at the headquarters of his suspension. The house-rent allowance will be calculated with reference to the pay that he was drawing for the period of suspension. Subsistence Allowance in the case when paid prior & reinstatement is regulated as suspension 34. In the case of Government servant dismissed, removed or compulsorily retired from service who is subsequently deemed to have been placed under suspension or t"
+          ]
+        },
+        "alphabeticalBeatIndex": {
+          "found": false,
+          "matchCount": 0,
+          "snippets": []
+        },
+        "gisOrPolygon": {
+          "found": true,
+          "matchCount": 36,
+          "snippets": [
+            "38 Proceedings after retirement 38-39 Filling up of posts rendered vacant by punishment of the incumbent. 39 Punishment Register 40 Forwarding of Petitions to Directorate 41 41-42 Promotion or confirmation during suspension or during pendency of enquiries Promotion of an officer whose increments have been withheld or who has 42-43 been reduced to a lower stage in time sc",
+            "emorandum, to state whether he desires to be heard in person, and thereafter, to put in a written statement of his defence. NOTE: When the Memorandum of charges is sent by post, it should be enclosed in a Registered Cover with acknowledgement due. 5. Third state : (i) On receipt of the statement of defence of the accused officer, a preliminary examination should be made by the disciplinary authority with a view to finding out whether the official has admitted any or all the charges leveled against him. In the cases of proceedings for a major penalty, enquiry into such of the charges as are no",
+            "e provisions of the rule referred to above. Normally it is not advisable that any orders revising the rate of subsistence allowance, are given retrospective effete. Suspending authorities should, therefore, maintain a register for noting all the suspension cases to enable them to undertake reviews as soon as a suspended officer has completed three months under suspension,. In each case, specific orders should be passed by the competent authority placing on record the reasons for the decision decreasing/increasing or allowing the rate of subsistence allowance to remain unaltered. NOTE 1 : In a case where the period",
+            "dings, reference to the various clauses of the Indian Penal Code should be avoided. The proceedings should be based on the failure to observe departmental rules and regulations. For instance, in the case of theft of a registered or insured articles, the charge against an employee may not be theft of that articles but failure to account for the articles entrusted to him. 58. In cases of burglary, theft, highway robbery, fire etc. the primary offender is usually an outsider but in some cases collusion of a departmental official may also be suspected. In such cases, sufficient evidence to make the conduct of the off",
+            "ements are not known or he fails to reply to official communications, the disciplinary authority may initiate action under Rule 14 of the CCS (CCA) Rules, 1965. In all such cases, the competent authority should, by a registered A.D. letter addressed to the official at his last known address, issue a chargesheet in the form prescribed for the purpose and call upon the official to submit a written statement of defence within a reasonable period to be specified by that authority. If the letter is received undelivered or if the letter having been delivered, the official does not submit a written statement of defence o",
+            "uple with the announcement of the dismissal a statement of the grounds upon which it has been ordered. List of conviction & dismissals 120. In the beginning of each quarter, as soon as copies of all punishment registers have been received from the officers concerned, the Head of a Circle should issue a circular furnishing a list of employees who were dismissed or convicted during the preceding quarter. The list should furnish information on the following points in respect of each employee entered in it :- (1) Name, Caste and residence. (2) Father’s name. (3) Appointment last held.",
+            "e of penalty, is more than the officiating pay, he may be allowed, during the currency of the penalty, his substantive pay as permissible by the note under F.R. 31. 40 Punishment Register 145. All officers including non-gazetted supervisory officers having disciplinary powers must keep punishment registers in form App. 32 containing particulars of punishments imposed by them and also by other authorities on employees under their respective control. The register should show the names, designations and pay of the employees punished, the nature of their offences, and the penalt",
+            "y as permissible by the note under F.R. 31. 40 Punishment Register 145. All officers including non-gazetted supervisory officers having disciplinary powers must keep punishment registers in form App. 32 containing particulars of punishments imposed by them and also by other authorities on employees under their respective control. The register should show the names, designations and pay of the employees punished, the nature of their offences, and the penalties imposed, as for example, dismissal, reduction to a lower post etc. the punishment against each employee should be ent"
+          ]
+        }
+      },
+      "rawArtifact": "raw/Postal_Manual_Vol._III.pdf",
+      "textArtifact": "text/Postal_Manual_Vol._III.txt",
+      "textLength": 725552,
+      "status": "OFFICIAL_POSTAL_PDF_BYTES_ACQUIRED_AND_PARSED"
+    },
+    {
+      "documentId": "71da1836-f86b-4ec5-8c0f-63500e6e86dd",
+      "slug": "postal-manual-vol-iv-part-i-20251217-3678ca",
+      "title": "Postal Manual Vol. IV Part-I",
+      "catalogueDate": "22-07-2019",
+      "displayedSize": "9.4 MB",
+      "version": "English Version",
+      "documentType": "PDF",
+      "downloadUrl": "https://www.indiapost.gov.in/api/documents/file/10368e80patn0fj8905o913da863da190s5e83g28b3agxy02tst0lil6063io",
+      "discoveredOnPage": "https://www.indiapost.gov.in/documents/guidelines",
+      "requestedAtUtc": "2026-10-26T15:31:39.408303+00:00",
+      "classification": "OFFICIAL_POSTAL_MANUAL_CANDIDATE",
+      "finalUrl": "https://www.indiapost.gov.in/api/documents/file/10368e80patn0fj8905o913da863da190s5e83g28b3agxy02tst0lil6063io",
+      "httpStatus": 200,
+      "contentType": "application/pdf",
+      "byteLength": 9837458,
+      "sha256": "50418ef924b16302248254ae56ad41786c624caa7025819520e17d3c449ceb6a",
+      "pdfMagic": true,
+      "pdfParseStatus": "PASS",
+      "pdfVersion": "1.4",
+      "pdfPageCount": 57,
+      "textSha256": "a1265b96a76686d7bd0e9420761a71b7cd8d51c73f16dfa86cf64cb66b3123e1",
+      "termFindings": {
+        "deliveryBeat": {
+          "found": false,
+          "matchCount": 0,
+          "snippets": []
+        },
+        "beatList": {
+          "found": false,
+          "matchCount": 0,
+          "snippets": []
+        },
+        "postalMap": {
+          "found": false,
+          "matchCount": 0,
+          "snippets": []
+        },
+        "postmaster": {
+          "found": true,
+          "matchCount": 48,
+          "snippets": [
+            "thethe casecasecasecase ofofofof extra-extra-extra-extra- -devartmental-devartmental-devartmental-devartmental branchbranchbranchbranch postmasterspostmasterspostmasterspostmasters beingbeingbeingbeing attestedattestedattestedattested bybybyby thethethethe inspocipeinspocipeinspocipeinspocipe ofofofof post-office.post-office.post-office.post-office. 7777 3.63.63.63.6 firafieratfirafieratfirafieratfirafierat sitesitesite",
+            "ecasecasecase ofofofof extra-extra-extra-extra- -devartmental-devartmental-devartmental-devartmental branchbranchbranchbranch postmasterspostmasterspostmasterspostmasters beingbeingbeingbeing attestedattestedattestedattested bybybyby thethethethe inspocipeinspocipeinspocipeinspocipe ofofofof post-office.post-office.post-office.post-office. 7777 3.63.63.63.6 firafieratfirafieratfirafieratfirafierat sitesitesitesite aateaf",
+            "se ofofofof extra-extra-extra-extra- -devartmental-devartmental-devartmental-devartmental branchbranchbranchbranch postmasterspostmasterspostmasterspostmasters beingbeingbeingbeing attestedattestedattestedattested bybybyby thethethethe inspocipeinspocipeinspocipeinspocipe ofofofof post-office.post-office.post-office.post-office. 7777 3.63.63.63.6 firafieratfirafieratfirafieratfirafierat sitesitesitesite aateafeat—araraaa",
+            "f extra-extra-extra-extra- -devartmental-devartmental-devartmental-devartmental branchbranchbranchbranch postmasterspostmasterspostmasterspostmasters beingbeingbeingbeing attestedattestedattestedattested bybybyby thethethethe inspocipeinspocipeinspocipeinspocipe ofofofof post-office.post-office.post-office.post-office. 7777 3.63.63.63.6 firafieratfirafieratfirafieratfirafierat sitesitesitesite aateafeat—araraaateafeat—ara",
+            "eenreee wtwtwt wtwtwt stystysty orevorevorev frrtfrrtfrrt froarzfroarzfroarz sasasa earaiaftaearaiaftaearaiafta arfarfarf aaa copycopycopy willwillwill alsoalsoalso bebebe sentsentsent tototo thethethe postmasterpostmasterpostmaster bybyby whomwhomwhom thethethe payofpayofpayof thethethe wrwrwr ®aa®aa®aa feeerarfeeerarfeeerar aryaryary personpersonperson transferredtransferredtransferred waswaswas lastlastlast drawn.drawn.drawn. 16(1)16(1)16(1) oaoaoa tetete oxferoxferoxfer fretfretfret oeoeoe oeoeoe aaaaaa faqtafaqtafaqta gtgtgt atatat",
+            "wtwt wtwtwt stystysty orevorevorev frrtfrrtfrrt froarzfroarzfroarz sasasa earaiaftaearaiaftaearaiafta arfarfarf aaa copycopycopy willwillwill alsoalsoalso bebebe sentsentsent tototo thethethe postmasterpostmasterpostmaster bybyby whomwhomwhom thethethe payofpayofpayof thethethe wrwrwr ®aa®aa®aa feeerarfeeerarfeeerar aryaryary personpersonperson transferredtransferredtransferred waswaswas lastlastlast drawn.drawn.drawn. 16(1)16(1)16(1) oaoaoa tetete oxferoxferoxfer fretfretfret oeoeoe oeoeoe aaaaaa faqtafaqtafaqta gtgtgt atatat gagaga",
+            "t stystysty orevorevorev frrtfrrtfrrt froarzfroarzfroarz sasasa earaiaftaearaiaftaearaiafta arfarfarf aaa copycopycopy willwillwill alsoalsoalso bebebe sentsentsent tototo thethethe postmasterpostmasterpostmaster bybyby whomwhomwhom thethethe payofpayofpayof thethethe wrwrwr ®aa®aa®aa feeerarfeeerarfeeerar aryaryary personpersonperson transferredtransferredtransferred waswaswas lastlastlast drawn.drawn.drawn. 16(1)16(1)16(1) oaoaoa tetete oxferoxferoxfer fretfretfret oeoeoe oeoeoe aaaaaa faqtafaqtafaqta gtgtgt atatat gagaga",
+            "ofofof thethethe Postmasters-GeneralPostmasters-GeneralPostmasters-General andandand DirectorsDirectorsDirectors ofofof"
+          ]
+        },
+        "streetOrQuarter": {
+          "found": true,
+          "matchCount": 5,
+          "snippets": [
+            "Manual,Manual, VolumeVolume III.III. aveave HtHt wwww TITI 35.35. AllAll transfers,transfers, changeschanges ofof headquartersheadquarters andand specialspecial dutiesduties Director-Director- thethe",
+            "Manual,Manual, VolumeVolume III.III. aveave HtHt wwww TITI 35.35. AllAll transfers,transfers, changeschanges ofof headquartersheadquarters andand specialspecial dutiesduties Director-Director- thethe",
+            "office,office, byby thethe additionaddition ofof thethe wordswords inin thethe RemarksRemarks columncolumn ofof thethe orderorder “Headquarters“Headquarters remainatremainat .................. :: “FRNA...“FRNA... HH atat ceacea 1”1” aa aneane aeae aravataaravata Far,Far, factafacta solsol aa aftremPeal,aftremPeal, areare rezrez",
+            "office,office, byby thethe additionaddition ofof thethe wordswords inin thethe RemarksRemarks columncolumn ofof thethe orderorder “Headquarters“Headquarters remainatremainat .................. :: “FRNA...“FRNA... HH atat ceacea 1”1” aa aneane aeae aravataaravata Far,Far, factafacta solsol aa aftremPeal,aftremPeal, areare rezrez",
+            "station. headquarter at the if any, officer,"
+          ]
+        },
+        "alphabeticalBeatIndex": {
+          "found": false,
+          "matchCount": 0,
+          "snippets": []
+        },
+        "gisOrPolygon": {
+          "found": true,
+          "matchCount": 33,
+          "snippets": [
+            "remarksremarksremarksremarks inininin thethethethe registerregisterregisterregister ofofofof securitysecuritysecuritysecurityaaaa faafaafaafaa areareareare saasaasaasaa",
+            "remarksremarksremarksremarks inininin thethethethe registerregisterregisterregister ofofofof securitysecuritysecuritysecurityaaaa faafaafaafaa areareareare saasaasaasaa",
+            "remarksremarksremarksremarks inininin thethethethe registerregisterregisterregister ofofofof securitysecuritysecuritysecurityaaaa faafaafaafaa areareareare saasaasaasaa ameamea",
+            "remarksremarksremarksremarks inininin thethethethe registerregisterregisterregister ofofofof securitysecuritysecuritysecurityaaaa faafaafaafaa areareareare saasaasaasaa ameameameame am",
+            "ddfaaddfaaddfaaddfaa sicalsicalsicalsical beenbeenbeenbeen kept,kept,kept,kept, @.e.,@.e.,@.e.,@.e., inininin thethethethe orderorderorderorder ofofofof entriesentriesentriesentries inininin thethethethe registerregisterregisterregister ofofofof securitysecuritysecuritysecurity frafadfrafadfrafadfrafad afaardafaardafaardafaard grgrgrgr acafiaacafiaacafiaacafia omomomom faafaafaafaa ofofofof bondsbondsbondsbonds hadhadhadhad hehehehe notnotnotnot beenbeenbeenbeen sosososo exempted,exempted,exempted,exempted, necessarynecessarynecessarynecessary remarkremarkremarkremark beingbei",
+            "aaddfaaddfaa sicalsicalsicalsical beenbeenbeenbeen kept,kept,kept,kept, @.e.,@.e.,@.e.,@.e., inininin thethethethe orderorderorderorder ofofofof entriesentriesentriesentries inininin thethethethe registerregisterregisterregister ofofofof securitysecuritysecuritysecurity frafadfrafadfrafadfrafad afaardafaardafaardafaard grgrgrgr acafiaacafiaacafiaacafia omomomom faafaafaafaa ofofofof bondsbondsbondsbonds hadhadhadhad hehehehe notnotnotnot beenbeenbeenbeen sosososo exempted,exempted,exempted,exempted, necessarynecessarynecessarynecessary remarkremarkremarkremark beingbeingbeingb",
+            "dfaa sicalsicalsicalsical beenbeenbeenbeen kept,kept,kept,kept, @.e.,@.e.,@.e.,@.e., inininin thethethethe orderorderorderorder ofofofof entriesentriesentriesentries inininin thethethethe registerregisterregisterregister ofofofof securitysecuritysecuritysecurity frafadfrafadfrafadfrafad afaardafaardafaardafaard grgrgrgr acafiaacafiaacafiaacafia omomomom faafaafaafaa ofofofof bondsbondsbondsbonds hadhadhadhad hehehehe notnotnotnot beenbeenbeenbeen sosososo exempted,exempted,exempted,exempted, necessarynecessarynecessarynecessary remarkremarkremarkremark beingbeingbeingbeing",
+            "alsicalsicalsical beenbeenbeenbeen kept,kept,kept,kept, @.e.,@.e.,@.e.,@.e., inininin thethethethe orderorderorderorder ofofofof entriesentriesentriesentries inininin thethethethe registerregisterregisterregister ofofofof securitysecuritysecuritysecurity frafadfrafadfrafadfrafad afaardafaardafaardafaard grgrgrgr acafiaacafiaacafiaacafia omomomom faafaafaafaa ofofofof bondsbondsbondsbonds hadhadhadhad hehehehe notnotnotnot beenbeenbeenbeen sosososo exempted,exempted,exempted,exempted, necessarynecessarynecessarynecessary remarkremarkremarkremark beingbeingbeingbeing HHH"
+          ]
+        }
+      },
+      "rawArtifact": "raw/Postal_Manual_Vol._IV_Part-I.pdf",
+      "textArtifact": "text/Postal_Manual_Vol._IV_Part-I.txt",
+      "textLength": 697191,
+      "status": "OFFICIAL_POSTAL_PDF_BYTES_ACQUIRED_AND_PARSED"
+    },
+    {
+      "documentId": "e77dd3e6-8753-4539-a292-0b65e9ad1de9",
+      "slug": "postal-manual-vol-iv-part-ii-appendices-20250927-443d19",
+      "title": "Postal Manual Vol. IV Part-II (Appendices)",
+      "catalogueDate": "15-03-2004",
+      "displayedSize": "430.4 KB",
+      "version": "English Version",
+      "documentType": "PDF",
+      "downloadUrl": "https://www.indiapost.gov.in/api/documents/file/1004ok30ws1s3mpsp3ig3q0abd208gsh0sjr535t8r377t10aayp3g1ub3d9u5",
+      "discoveredOnPage": "https://www.indiapost.gov.in/documents/guidelines",
+      "requestedAtUtc": "2026-10-26T15:31:51.506724+00:00",
+      "classification": "OFFICIAL_POSTAL_MANUAL_CANDIDATE",
+      "finalUrl": "https://www.indiapost.gov.in/api/documents/file/1004ok30ws1s3mpsp3ig3q0abd208gsh0sjr535t8r377t10aayp3g1ub3d9u5",
+      "httpStatus": 200,
+      "contentType": "application/pdf",
+      "byteLength": 440686,
+      "sha256": "0632de111363f4820f6ca74c38eaf6f3bdad3e66343c5399aeb774bb9cea151d",
+      "pdfMagic": true,
+      "pdfParseStatus": "PASS",
+      "pdfVersion": "1.6",
+      "pdfPageCount": 39,
+      "textSha256": "03250beb51d3039a24ebaa8047e329df130c325efcb4693ede84afb953da2e1d",
+      "termFindings": {
+        "deliveryBeat": {
+          "found": false,
+          "matchCount": 0,
+          "snippets": []
+        },
+        "beatList": {
+          "found": false,
+          "matchCount": 0,
+          "snippets": []
+        },
+        "postalMap": {
+          "found": false,
+          "matchCount": 0,
+          "snippets": []
+        },
+        "postmaster": {
+          "found": true,
+          "matchCount": 3,
+          "snippets": [
+            "ve includes dearness and all other allowances”. 5. All claims for payments to substitutes under these rules should be submitted for approval before payment, to the Divisional Superintendent or first Class Postmaster concerned, accompanied by the leave applications and any other documents necessary to establish the validity of the claims. The head of the office must certify on the claims that the employment of the casual leave in accordance with rule 3. 6. When granting casual leave to a postman or class IV official in circumstances necessitating the employment of a substitute, the Head of the office",
+            "ecord, or Sub- record officer in the Selection Grade. As the case may be, in charge of the office. (2) The powers of Divisional Superintendents and/or First Class Postmasters under rules 5 and 7 will be exercised by the Superintendent of R.M.S.). Note:-- For the purpose of rule(1), each set of a section or mail office will be treated as a separate unit. The employment of paid substitutes should be resorted to only when no leave reserve hand is available in the Record Office to which the set, section or mail office is attached and a certificat",
+            "insured post, being insured for Rs. 100/- only irrespective of the number of answer books. They should invariably be despatched on the day of the examination itself, by making special arrangements with the local Postmasters, if necessary. (b) For preparing the list of candidates referred to in Sub-rule (a) above, paper of a superior quality should be used. Absorbent paper should not be used as the entries of marks in ink (to be made by the examiner) would not be legible thereon. In the list, sufficient space should be left under each column for entering marks by the examiners (both in figures and in words)."
+          ]
+        },
+        "streetOrQuarter": {
+          "found": true,
+          "matchCount": 4,
+          "snippets": [
+            "(ii) write the subject of the Examination and other particular on the top of the title page of their answer books; (iii) write on both sides of the paper, leaving a quarter margin. The margin should be on the left hand on the front side and on the right hand on the back side; (iv) NOT write any irrelevant matter or anything else except the actual answers in their answer books; and (v) NOT write anything on the question paper or on the sheet of blotting paper supplied to th",
+            "ir books and they write the roll number, Circle Index No., the subject of the examination and other particulars on the top of the title page of their answer books and that they write on both sides of the paper leaving a quarter margin. Before accepting the answer book he should see that the candidate has entered his correct roll number on the answer book and that he has not written his name on the cover of the answer book. No script in which the candidate has not written his roll number and the Circle Index No. should be accepted. 18. Candidates to have no communication and those going out to be accompan",
+            "anywhere inside your provided above. answer book. 2. Do not leave any pages unused ex- 2. Do use both sides of the paper in cept at the end of the answers. the answer book leaving a quarter margin on the left hand on the front side and on the right hand on the back side. (You may use, for rough notes or calculations, the inner side of the cover and, if",
+            "ace provided for fold pages. the purpose. 3. Do not tear off any leaves from your 3. Do use both sides of the papers in the answer books. answer book leaving a quarter margin on the left hand on the front side and on the right hand on the backside.(you may use, for rough notes or calcula- tions, the inner side of the cover and, if necessary, a page or pa"
+          ]
+        },
+        "alphabeticalBeatIndex": {
+          "found": false,
+          "matchCount": 0,
+          "snippets": []
+        },
+        "gisOrPolygon": {
+          "found": true,
+          "matchCount": 4,
+          "snippets": [
+            "will not apply to the Post Office and R.M.S. Accountants Examination or for any other departmental examination. 17. Preservation of result sheets and answer books - (a) Tabulated result sheets or mark sheet registers of departmental examinations should be preserved for a period of ten years from the date of announcement of the respective results. (b) Answer books in respect of all departmental examinations should be preserved for a period of twelve months from the date of announcement of the respective results. 18. Treatment of candidates using unfair means - (a) If a departmental ca",
+            "he covers and a specimen of it should be given on the list referred to above. 25. Statement of candidates - (a) On the conclusion of the examination in the last paper, the Supervising Officer should send by registered post and to the Head of the Circle (or Head of the Telephone District, as the case may be), a statement showing the Roll numbers with Circle index letters and the names of the candidates who actually appeared at the examination and the subject or subjects in which they appeared in the form shown in Annexure VIII. Care should be taken that no mistake occurs in the names of the candidates. T",
+            "kept in the Circle Office etc. for record and reference when required. 26. Supervision Certificate - (a) On the conclusion of the examination in the last paper, the Supervising Officer should also send by registered post, to the Directorate or to the Head of the Circle/District as the case may be, a certificate in the following form. \"I certify that I personally opened the covers containing the question papers five minutes before the commencement of the examination in each subject of the ___________ Examination held at ___________ Centre on the ___________, 200__ . That I supervise",
+            "Steps are to be taken to ensure that no used blotting paper or any crumpled paper is lying on any table or floor. On the conclusion of the examination in the last paper the Supervising Officer should send by registered post a statement of candidates who actually took the examination in the form as laid down in Annexure VIII of Appendix 37 of Vol. IV. This will be accompanied by the diagram of the seating arrangement. He will also send the certificate to the authorities concerned as laid down in Rule 26 of Appendix 37 of Volume IV. ANNEXURE 'B' DONT's"
+          ]
+        }
+      },
+      "rawArtifact": "raw/Postal_Manual_Vol._IV_Part-II_Appendices.pdf",
+      "textArtifact": "text/Postal_Manual_Vol._IV_Part-II_Appendices.txt",
+      "textLength": 87127,
+      "status": "OFFICIAL_POSTAL_PDF_BYTES_ACQUIRED_AND_PARSED"
+    },
+    {
+      "documentId": "aa4a4edc-9e1c-4c57-a776-c1ab38af378f",
+      "slug": "postal-manual-vol-v-20250927-d472dd",
+      "title": "Postal Manual Vol. V",
+      "catalogueDate": "27-09-2025",
+      "displayedSize": "431.7 KB",
+      "version": "English Version",
+      "documentType": "PDF",
+      "downloadUrl": "https://www.indiapost.gov.in/api/documents/file/1009umo0pbh23lq1l3kav63eosm34dn30sjr83pgej01vde34dfk3g28h0732q",
+      "discoveredOnPage": "https://www.indiapost.gov.in/documents/guidelines",
+      "requestedAtUtc": "2026-10-26T15:31:57.182786+00:00",
+      "classification": "OFFICIAL_POSTAL_MANUAL_CANDIDATE",
+      "finalUrl": "https://www.indiapost.gov.in/api/documents/file/1009umo0pbh23lq1l3kav63eosm34dn30sjr83pgej01vde34dfk3g28h0732q",
+      "httpStatus": 200,
+      "contentType": "application/pdf",
+      "byteLength": 442093,
+      "sha256": "3e6faf1f45c524416a8dee71ba4d60152c27b2e4dffa3f587a2a1c05f9cd9f62",
+      "pdfMagic": true,
+      "pdfParseStatus": "PASS",
+      "pdfVersion": "1.2",
+      "pdfPageCount": 187,
+      "textSha256": "06c29255587c6070f4002478ffa9746cb4b1c2ae06858999d801d88e89abacb6",
+      "termFindings": {
+        "deliveryBeat": {
+          "found": false,
+          "matchCount": 0,
+          "snippets": []
+        },
+        "beatList": {
+          "found": false,
+          "matchCount": 0,
+          "snippets": []
+        },
+        "postalMap": {
+          "found": false,
+          "matchCount": 0,
+          "snippets": []
+        },
+        "postmaster": {
+          "found": true,
+          "matchCount": 263,
+          "snippets": [
+            "APPENDIX-II Issue of Due Mail and Sorting Lists and Conventions ANNEXURE-A Period of Preservation of Records CONTENTS OF CHAPTER I Definitions RULE 1. Postmaster-General 2. Railway Mail Service 3. Deleted 4. Superintendent 5. Head Office 5-A. V-Sat Centres 5-B. ESMO Centres 5-C. Hybrid Mail Service 6. General Post Office 7. Sub-Office 8. Branchy Office 9-A. Transit Office 9-B. Transit Mail Office 9-C. Computerized Transit Mail Office 10. Sorting Office 1",
+            "ce 56-A. Late letters and too late letters 57. Mis-sent and mis-directed articles 57-A. Trial Cards CHAPTER I Definitions 1. Postmaster-General.- The expression ‘Postmaster-General’ means a Principal Chief Postmaster-General, Chief Postmaster-General, Regional Postmaster General, or a Director of Postal Services and includes any other officer exercising the powers of the Principal Chief Postmaster-General, Chief Postmaster-General or Regional Postmaster-General. 2. Railway Mail Service.- The expression Railway M",
+            "letters 57. Mis-sent and mis-directed articles 57-A. Trial Cards CHAPTER I Definitions 1. Postmaster-General.- The expression ‘Postmaster-General’ means a Principal Chief Postmaster-General, Chief Postmaster-General, Regional Postmaster General, or a Director of Postal Services and includes any other officer exercising the powers of the Principal Chief Postmaster-General, Chief Postmaster-General or Regional Postmaster-General. 2. Railway Mail Service.- The expression Railway Mail Service means the service responsib",
+            "d articles 57-A. Trial Cards CHAPTER I Definitions 1. Postmaster-General.- The expression ‘Postmaster-General’ means a Principal Chief Postmaster-General, Chief Postmaster-General, Regional Postmaster General, or a Director of Postal Services and includes any other officer exercising the powers of the Principal Chief Postmaster-General, Chief Postmaster-General or Regional Postmaster-General. 2. Railway Mail Service.- The expression Railway Mail Service means the service responsible for the carriage of mails by rail, road, r",
+            "al Cards CHAPTER I Definitions 1. Postmaster-General.- The expression ‘Postmaster-General’ means a Principal Chief Postmaster-General, Chief Postmaster-General, Regional Postmaster General, or a Director of Postal Services and includes any other officer exercising the powers of the Principal Chief Postmaster-General, Chief Postmaster-General or Regional Postmaster-General. 2. Railway Mail Service.- The expression Railway Mail Service means the service responsible for the carriage of mails by rail, road, river and air and for the c",
+            "CHAPTER I Definitions 1. Postmaster-General.- The expression ‘Postmaster-General’ means a Principal Chief Postmaster-General, Chief Postmaster-General, Regional Postmaster General, or a Director of Postal Services and includes any other officer exercising the powers of the Principal Chief Postmaster-General, Chief Postmaster-General or Regional Postmaster-General. 2. Railway Mail Service.- The expression Railway Mail Service means the service responsible for the carriage of mails by rail, road, river and air and for the collection and distribution of",
+            "General’ means a Principal Chief Postmaster-General, Chief Postmaster-General, Regional Postmaster General, or a Director of Postal Services and includes any other officer exercising the powers of the Principal Chief Postmaster-General, Chief Postmaster-General or Regional Postmaster-General. 2. Railway Mail Service.- The expression Railway Mail Service means the service responsible for the carriage of mails by rail, road, river and air and for the collection and distribution of mails received from Post Offices by Mail Offices and sections. NOTE- The abbreviation RMS is used for Railway Mail Service.",
+            "Chief Postmaster-General, Chief Postmaster-General, Regional Postmaster General, or a Director of Postal Services and includes any other officer exercising the powers of the Principal Chief Postmaster-General, Chief Postmaster-General or Regional Postmaster-General. 2. Railway Mail Service.- The expression Railway Mail Service means the service responsible for the carriage of mails by rail, road, river and air and for the collection and distribution of mails received from Post Offices by Mail Offices and sections. NOTE- The abbreviation RMS is used for Railway Mail Service. 3. Deleted."
+          ]
+        },
+        "streetOrQuarter": {
+          "found": true,
+          "matchCount": 21,
+          "snippets": [
+            "g computer terminals connected through V- SAT which can be delivered to one or more than one addressee at the receiving station. 6. General Post Office.- The first class Head Office situated at the Headquarters of the Head of a Circle or, where there are more than one such Head Office, the one attached to the Headquarters, is termed General Post Office. NOTE.- Classes of Head Offices: First Class Head Offices under the control land supervision of Senior Time Scale Officer. He is called Chief Postmaster. Second Class Head Offices under the control and supervision of a Group ‘B’ Officer. He report",
+            "iving station. 6. General Post Office.- The first class Head Office situated at the Headquarters of the Head of a Circle or, where there are more than one such Head Office, the one attached to the Headquarters, is termed General Post Office. NOTE.- Classes of Head Offices: First Class Head Offices under the control land supervision of Senior Time Scale Officer. He is called Chief Postmaster. Second Class Head Offices under the control and supervision of a Group ‘B’ Officer. He reports to Sr. Superintendent of Post Offices. 7. Sub-Office.- (1) A sub-office is Post Office subordinate to",
+            "clude them in respective bags for the PO/Sorting Office concerned for delivery/further transmission, as the case may be. 12. Returned Letter Office.- A Returned Letter Office is established at the Headquarters of a Postal Circle and deals with unclaimed and refused articles and articles without addresses or with undecipherable or incomplete addresses. NOTE- The abbreviation RLO is used for Returned Letter Office. 12-A. Transcription Centre.- A transcription center is a cell established in a Sorting Office, situated normally at the Headquarters of the Circle or at any other convenient So",
+            "omplete addresses. NOTE- The abbreviation RLO is used for Returned Letter Office. 12-A. Transcription Centre.- A transcription center is a cell established in a Sorting Office, situated normally at the Headquarters of the Circle or at any other convenient Sorting Office in the Circle. Transcription center transcribes into English the addresses written in regional languages on postal articles posted in Post or Mail Offices. 13. Office of Exchange, Offices of exchange of transit bags, Foreign Post Offices and Sub-Foreign Post Offices.- (a) A Post Office or Sorting Office or Section which exchanges ma",
+            "stationery required for the use of those sections are supplied. The official in-charge of a Record Office is designated a Record Officer. 17. Head Record Office.- It is a stationary office situated at the Headquarters of RMS Division which, in addition to the ordinary duties of a Record Office is entrusted, with the preparation salary and contingent bills for the entire Division and the accounts connected therewith is termed a Head Record Office. The official in- charge of a Head Record Office is designated a Head Record Officer. 18. Sub-record office.- A sub-record office is a stationary office of th",
+            "in respect of UBO attached to them. In exceptional cases, Head Post Offices can also function as DBO. (3) Circle Bag Office (CBO)- The Postal Stores Depot situated at the Headquarters of Postal Circle is identified as Circle Bag Office. This office is responsible for inspection of DBOs and UBOs and verification of balances. This office is also responsible for procurement of bags, distribution of bags, repair and auction of bags. (4) Central Bag Office.- ‘D’ Section of Postal Directorate works as Central Bag Office. Th",
+            "2”, “Bangalore City TMO Set 1” and “Bangalore City TMO Set 2”. 22. Trip.- A journey performed by a set of a section traveling on duty from one end of its beat to the other is called a trip. The trip from the Headquarters of the set towards its out-station is called the Out-trip, while that towards its Headquarters is called the In-trip. 23. Station and sorting articles.- Station articles are articles intended for delivery from the Post Office to which they are sent but unpaid and insufficiently paid articles of the letter mail intended for delivery from sub and branch offices are, when sent to the H",
+            "formed by a set of a section traveling on duty from one end of its beat to the other is called a trip. The trip from the Headquarters of the set towards its out-station is called the Out-trip, while that towards its Headquarters is called the In-trip. 23. Station and sorting articles.- Station articles are articles intended for delivery from the Post Office to which they are sent but unpaid and insufficiently paid articles of the letter mail intended for delivery from sub and branch offices are, when sent to the Head Office or the sub-office, treated as station articles for the Head Office or the sub-office"
+          ]
+        },
+        "alphabeticalBeatIndex": {
+          "found": false,
+          "matchCount": 0,
+          "snippets": []
+        },
+        "gisOrPolygon": {
+          "found": true,
+          "matchCount": 570,
+          "snippets": [
+            "anchy Office 9-A. Transit Office 9-B. Transit Mail Office 9-C. Computerized Transit Mail Office 10. Sorting Office 10-A. Automatic Mail Processing Centre (AMPC) 10-B. Computerized Registration Sorting Centre (CRC) 11. Sorting sub-office 11-A. Nodal PO Sorting Offices 11-B. Kendriya Bag Unit (KBU) 12. Returned Letter Office 12-A. Transcription Centre 13. Office of foreign exchange, offices of exchange of transit foreign Post Offices and sub-foreign Post Offices 14. Transit Section 15. Mail Office 15-A. Corpora",
+            "t of Mail Office 22. Trip 23. Station and Sorting articles 24. Labelled bundle 25. Check-slip 25-A. Money Order Check-slip 26. Mail bags 26-A. Airmail bag 27. Registered bundle 27-A. Regd. Bundles from Customers 28. Registered bag 28-A. Speed Post Bag 29. Insured bundle 30. Parcel bag 31. Insured bag 32. Registered packet bag 33. Transit bag 34. Account bag 35. Branch Office bag 36. Cash bag 37. Special bag 37-A. Camp bag 38. Deleted 39. Telegraph cover",
+            "ticles 24. Labelled bundle 25. Check-slip 25-A. Money Order Check-slip 26. Mail bags 26-A. Airmail bag 27. Registered bundle 27-A. Regd. Bundles from Customers 28. Registered bag 28-A. Speed Post Bag 29. Insured bundle 30. Parcel bag 31. Insured bag 32. Registered packet bag 33. Transit bag 34. Account bag 35. Branch Office bag 36. Cash bag 37. Special bag 37-A. Camp bag 38. Deleted 39. Telegraph cover 40. Changing station 41. Connecting section 42. O",
+            "rmail bag 27. Registered bundle 27-A. Regd. Bundles from Customers 28. Registered bag 28-A. Speed Post Bag 29. Insured bundle 30. Parcel bag 31. Insured bag 32. Registered packet bag 33. Transit bag 34. Account bag 35. Branch Office bag 36. Cash bag 37. Special bag 37-A. Camp bag 38. Deleted 39. Telegraph cover 40. Changing station 41. Connecting section 42. Overtime duty 43. Rest house 44. Deleted 44-A. Cage TB 45. Press packet 46. ‘A’ orders 47.",
+            "ntres.- In important cities where mail traffic is high, sorting machine have been provided which have high speed of sorting. At present, these machines are functioning in Mumbai and Chennai. 10-B. Computerized Registration Centres.- The Registration Branch of the Mail Office, where the processing of registration work is done on computers, is called Computerized Registration Sorting Centre (CRC). A CRC can be situated in the Mail Office itself or in a separate location. 11. Sorting sub-office – A sorting sub-office is a sub-office which is selected from its position at or near the junction of severa",
+            "where mail traffic is high, sorting machine have been provided which have high speed of sorting. At present, these machines are functioning in Mumbai and Chennai. 10-B. Computerized Registration Centres.- The Registration Branch of the Mail Office, where the processing of registration work is done on computers, is called Computerized Registration Sorting Centre (CRC). A CRC can be situated in the Mail Office itself or in a separate location. 11. Sorting sub-office – A sorting sub-office is a sub-office which is selected from its position at or near the junction of several mail lines, to serve as a",
+            "which have high speed of sorting. At present, these machines are functioning in Mumbai and Chennai. 10-B. Computerized Registration Centres.- The Registration Branch of the Mail Office, where the processing of registration work is done on computers, is called Computerized Registration Sorting Centre (CRC). A CRC can be situated in the Mail Office itself or in a separate location. 11. Sorting sub-office – A sorting sub-office is a sub-office which is selected from its position at or near the junction of several mail lines, to serve as a Sorting Office for articles addressed to, or received from, offi",
+            "e functioning in Mumbai and Chennai. 10-B. Computerized Registration Centres.- The Registration Branch of the Mail Office, where the processing of registration work is done on computers, is called Computerized Registration Sorting Centre (CRC). A CRC can be situated in the Mail Office itself or in a separate location. 11. Sorting sub-office – A sorting sub-office is a sub-office which is selected from its position at or near the junction of several mail lines, to serve as a Sorting Office for articles addressed to, or received from, offices to which the route lies through the sorting sub-office. I"
+          ]
+        }
+      },
+      "rawArtifact": "raw/Postal_Manual_Vol._V.pdf",
+      "textArtifact": "text/Postal_Manual_Vol._V.txt",
+      "textLength": 487965,
+      "status": "OFFICIAL_POSTAL_PDF_BYTES_ACQUIRED_AND_PARSED"
+    },
+    {
+      "documentId": "1eeb0b94-c982-43d8-bf8f-72b5b47629e7",
+      "slug": "postal-manual-vol-vi-part-iii-20250927-34c6b1",
+      "title": "Postal Manual Vol. VI Part-III",
+      "catalogueDate": "18-05-2021",
+      "displayedSize": "1.2 MB",
+      "version": "English Version",
+      "documentType": "PDF",
+      "downloadUrl": "https://www.indiapost.gov.in/api/documents/file/103e8sh0nw4101h5l01gqz08wsm00fsw0sj8534tor3bv9t0a9zg0joeo0fx8j",
+      "discoveredOnPage": "https://www.indiapost.gov.in/documents/guidelines",
+      "requestedAtUtc": "2026-10-26T15:31:57.731379+00:00",
+      "classification": "OFFICIAL_POSTAL_MANUAL_CANDIDATE",
+      "finalUrl": "https://www.indiapost.gov.in/api/documents/file/103e8sh0nw4101h5l01gqz08wsm00fsw0sj8534tor3bv9t0a9zg0joeo0fx8j",
+      "httpStatus": 200,
+      "contentType": "application/pdf",
+      "byteLength": 1274245,
+      "sha256": "5871d20f7a44eade6f97a7d4ad37a7b7069a98895ccea7fcdb9d16de982d7b79",
+      "pdfMagic": true,
+      "pdfParseStatus": "PASS",
+      "pdfVersion": "1.7",
+      "pdfPageCount": 67,
+      "textSha256": "35780988bb913b09d65125a95b4ac9ac99aa3b59cb80db9902d79435fd19a508",
+      "termFindings": {
+        "deliveryBeat": {
+          "found": false,
+          "matchCount": 0,
+          "snippets": []
+        },
+        "beatList": {
+          "found": true,
+          "matchCount": 1,
+          "snippets": [
+            "Utilizing the services for data entry of RPLI/PLI Proposals and generating acceptance memos for policies on payment of some incentive. Preparing the beat list and the beat map of the beat and updating the same on a regular basis. i) IPPB and IPPB third party transactions(i.e., Aadhar update) and door step banking are also a part of their duty j) Any other duty assigned by the Department/Head of the o"
+          ]
+        },
+        "postalMap": {
+          "found": false,
+          "matchCount": 0,
+          "snippets": []
+        },
+        "postmaster": {
+          "found": true,
+          "matchCount": 119,
+          "snippets": [
+            "INDEX CHAPTER: 1 Rule No Rule Pages 1 Supervision of subordinate offices by postmaster––– 1 2 Examination of B. O. daily transaction report in sub-offices 1-2 3 Relations of sub and branch offices to their account offices 2 4 Short receipt of vouchers by account office 2 5 Inadmissible vouchers",
+            "f SO Daily Transactions Report 26 53 Examination of sub-office balances by head office 26-27 Action to be taken by head postmaster on irregularities in connection with sub-office 54 balances 28 55 Receipt of S.P. M’s Monthly report 28 56 Contents of B.O. Bags 29-30 57 Mode of sending remittances to branch",
+            "lity for accounts, cash etc. 36-37 69(A) 37 Roles and responsibilities of Postmaster in ATM (Automated Teller Machine) attached with their office 70 Verification of balances by sub-postmaster 37-38 71 Treasurer's cash book 38 72 Custody of postage and other (non-postal) stamps, etc. 38",
+            "37 Roles and responsibilities of Postmaster in ATM (Automated Teller Machine) attached with their office 70 Verification of balances by sub-postmaster 37-38 71 Treasurer's cash book 38 72 Custody of postage and other (non-postal) stamps, etc. 38 73 Disbursement of pay 38 74 Disposal of acquittance rolls",
+            "302 206233/2021/PO-DoP 1 CHAPTER: 1 1. Supervision of subordinate offices by postmaster. — (1) The Postmaster is not only responsible for the correctness of the accounts rendered by the subordinate offices, but he should also ascertain from their accounts whether the subordinate postmasters understand and perform their duties in an efficient manner. The HO shall check",
+            "PO-DoP 1 CHAPTER: 1 1. Supervision of subordinate offices by postmaster. — (1) The Postmaster is not only responsible for the correctness of the accounts rendered by the subordinate offices, but he should also ascertain from their accounts whether the subordinate postmasters understand and perform their duties in an efficient manner. The HO shall check the SO/BO accounts by",
+            "esponsible for the correctness of the accounts rendered by the subordinate offices, but he should also ascertain from their accounts whether the subordinate postmasters understand and perform their duties in an efficient manner. The HO shall check the SO/BO accounts by accessing the data online. No need for taking print outs for rendering accounts to HO by SOs. The Postmaster concerned shall have to nominate such employees and role be authorized. It is",
+            "s in an efficient manner. The HO shall check the SO/BO accounts by accessing the data online. No need for taking print outs for rendering accounts to HO by SOs. The Postmaster concerned shall have to nominate such employees and role be authorized. It is the duty of the Postmaster to ensure check on day to day basis and raise such objections deemed fit and also raise tickets with TCS. Postmaster is expected to bring to the notice of the Superintendent o"
+          ]
+        },
+        "streetOrQuarter": {
+          "found": true,
+          "matchCount": 6,
+          "snippets": [
+            "bag should be noted both in words and figures by the S.P.M. NOTE.—In the case of a remittance from one S.O. to another (which is a cash office) and where the headquarters of the carrier is at the receiving sub-office, the latter should acknowledge its receipts both in the carrier's book or diary and in SAP. (5) The amount received should be compared by the S.P.M. with the entry in the S.O. slip in which it is entered, which will in many ca",
+            "' showing (a) the actual \"cash in hand\", and (b) the actual \"liabilities\" i.e., the amount of the eM.Os, P.O. certificates, S.B. warrants remaining unpaid, a quarter of an hour before the time fixed for the despatch of the account bag:— Rs. p. Actual cash in hand at (hour) on (date) Actual liabilities existing at (hour) on (date) Note: The S.O. account need not be made up during the day in or",
+            "de up during the day in order to arrive at the amount of the cash in hand; but the entry should be made after simply counting all the cash actually in the office at a quarter of an hour before the time for despatch, without verifying the amount. 31. Details of remittances received and sent.—Particulars of remittances received or sent whether from or to the head office or other S.Os should be entered in the place provided for the purpose on the bac",
+            "in the columns headed \"To be filled up by S.O. at treasury/bank station should also show the state of the funds at credit of the S.O. in the treasury/bank, at a quarter of an hour before the time fixed for the despatch of the account bag. (3) In the case of S.Os not situated at treasury or bank stations, the authorized maximum amount of cash that may be drawn from the cash office without reference to the H.O. the additional credits placed by",
+            "remittances to the overseer should also ensure with reference to the entries in the Diary made by the different offices from the time the overseer left his headquarters that the prescribed limit of cash to be conveyed by the overseer is not exceeded. (4) The S.P.M. will make suitable remarks in the System generated daily transaction report to be sent to the account office on that date about the remittances detained because of limit of cash",
+            "egistered parcels, if the addressee is not personally known to the postman, delivery should be made in the presence of a respectable witness residing in the locality, whose name should be noted on the receipt. In the case of insured articles for a person unknown to the postman, the same procedure should be followed, but the witness in whose presence delivery is made must also be able to identify the addressee. (3) e-Money orders"
+          ]
+        },
+        "alphabeticalBeatIndex": {
+          "found": false,
+          "matchCount": 0,
+          "snippets": []
+        },
+        "gisOrPolygon": {
+          "found": true,
+          "matchCount": 85,
+          "snippets": [
+            "ions for delivery 50 95 Realisation of postage before delivery 50 96 Receipts of addressees for registered articles delivered 51 97 Delivery to illiterate addressees 52 99 Delivery of insured articles addressed to minors 52 100 Payments of e-money orders 52-55 101 Payment of e-money or",
+            "nors 55 103 Payment of e-money orders addressed to persons without hands or fingers 55 104 Payment of e-money orders and delivery of registered letters to lunatics 56 105 Responsibility for correct delivery of articles and payment of e- money orders 56-57 106 Loss of articles reported 57 107 Return of undelivered articles 57-58 108 Payment of postage and",
+            "eans of transit the remittance may be sent in cash bag detailed in an extra S.O. slip, and enclosed in an extra account bag which should be advised in the mail list, or registered list, if no mail list accompanies the despatch, as a \"due mail\" an explanation being given at the foot of the mail list, in the place provided for the purpose, of the excess despatch. A note regarding the despatch of the extra account bag should be made in the next usual S.O. sl",
+            "separate treasurer, the S.P.M should record his orders for the remittance on the S.O. slip in case remittance has been ordered by the H.O. to another S.O. and in registered list when the requisition is made by another S.O. in the registered list. In the latter case a copy of the message containing the S.P.M's orders should be filed with registered lists. 16. Manner of exchanging remittances between sub-offices.— (1) The Superintendent will prescribe,",
+            "mittance on the S.O. slip in case remittance has been ordered by the H.O. to another S.O. and in registered list when the requisition is made by another S.O. in the registered list. In the latter case a copy of the message containing the S.P.M's orders should be filed with registered lists. 16. Manner of exchanging remittances between sub-offices.— (1) The Superintendent will prescribe, in accordance with the system ordered by the Head of the Circle, the met",
+            "when the requisition is made by another S.O. in the registered list. In the latter case a copy of the message containing the S.P.M's orders should be filed with registered lists. 16. Manner of exchanging remittances between sub-offices.— (1) The Superintendent will prescribe, in accordance with the system ordered by the Head of the Circle, the method by which remittances are to be exchanged between two sub-offices. (2)",
+            "notes or stamps should be enclosed in a cash bag in accordance with the directions of rules on the subject. The cash bag should be forwarded to the S.O. enclosed in the registered bag. The locked and sealed cash bag should be made over by the Treasurer or the S.P.M to the deputy or Assistant S.P.M of the Registration Branch for inclusion in the registered bag. If there is no deputy or Assistant S.P.M the cash bag should be included by the S.P.M in the registere",
+            "the S.O. enclosed in the registered bag. The locked and sealed cash bag should be made over by the Treasurer or the S.P.M to the deputy or Assistant S.P.M of the Registration Branch for inclusion in the registered bag. If there is no deputy or Assistant S.P.M the cash bag should be included by the S.P.M in the registered bag. Details of the cash including stamps remitted should be shown by an entry on the registered list enclosed in the mail bag and the entry"
+          ]
+        }
+      },
+      "rawArtifact": "raw/Postal_Manual_Vol._VI_Part-III.pdf",
+      "textArtifact": "text/Postal_Manual_Vol._VI_Part-III.txt",
+      "textLength": 272022,
+      "status": "OFFICIAL_POSTAL_PDF_BYTES_ACQUIRED_AND_PARSED"
+    },
+    {
+      "documentId": "fa190a91-86e0-412c-abcc-64432a1c8fe7",
+      "slug": "postal-manual-vol-vii-20250927-d98515",
+      "title": "Postal Manual Vol. VII",
+      "catalogueDate": "27-09-2025",
+      "displayedSize": "372.9 KB",
+      "version": "English Version",
+      "documentType": "PDF",
+      "downloadUrl": "https://www.indiapost.gov.in/api/documents/file/10000np2vyhe01g613ifyu063nq02ue30sjtd0fxhn3afk701eu10bpsq3agoz",
+      "discoveredOnPage": "https://www.indiapost.gov.in/documents/guidelines",
+      "requestedAtUtc": "2026-10-26T15:31:58.118906+00:00",
+      "classification": "OFFICIAL_POSTAL_MANUAL_CANDIDATE",
+      "finalUrl": "https://www.indiapost.gov.in/api/documents/file/10000np2vyhe01g613ifyu063nq02ue30sjtd0fxhn3afk701eu10bpsq3agoz",
+      "httpStatus": 200,
+      "contentType": "application/pdf",
+      "byteLength": 381845,
+      "sha256": "6e6ad2c6ae079f783845f555aa4258d2d00263330a2b2bafb9afef908e2101d7",
+      "pdfMagic": true,
+      "pdfParseStatus": "PASS",
+      "pdfVersion": "1.2",
+      "pdfPageCount": 189,
+      "textSha256": "aa40cc13f1b96b87260f4c3f019ae4a7582ddbf807a5598386d66f49ce3be10f",
+      "termFindings": {
+        "deliveryBeat": {
+          "found": false,
+          "matchCount": 0,
+          "snippets": []
+        },
+        "beatList": {
+          "found": false,
+          "matchCount": 0,
+          "snippets": []
+        },
+        "postalMap": {
+          "found": false,
+          "matchCount": 0,
+          "snippets": []
+        },
+        "postmaster": {
+          "found": true,
+          "matchCount": 20,
+          "snippets": [
+            "ed type when such officials travel on duty with mails in a vehicle or compartment reserved for the Post Office. The metal token should be of that Railway Mail Service Division which covers the post office concerned. The Postmaster of the Post Office to which the mail carrier is attached will perform the functions of the local Record Officer, and the Superintendent of Post Offices will exercise the functions of the Superintendent, Railway Mail Service. 15. Relaxation of work on Sundays and PO Holidays. – (1) Record Offices may be entirely closed, provided that adequate arrangements are made for",
+            "of sanctioned establishment should be destroyed at the end of the year after new ones have been supplied or prepared. NOTE 2 - Director General’s circulars and General Orders and Postmaster General’s circular should be destroyed after the lapse of three years counted from the month of April following the close of the official year in which they were issued. NOTE 3 - In addition, to the correspondence referred to in Paragraph (1), the Head of the Circle may order the preservation of any other classes of corres",
+            "gh the door / window of the van. Mails exchanged between a mail office and the local Post Office should be received and delivered at the door of the mail office, the carrier not being permitted to enter. NOTE: 1 – The Postmaster-General may where considered necessary, permit officials of mail office to enter the mail van of a section to help in loading or unloading mails. NOTE: 2 - The Head Sorting Assistant, Mail Agent or any other official of a mail office may enter the mail van of a section for opening or closing cage TBs prescribed in the due mail list. NOTE : 3 - The exchange of mail should",
+            "gh the door / window of the van. Mails exchanged between a mail office and the local Post Office should be received and delivered at the door of the mail office, the carrier not being permitted to enter. NOTE: 1 – The Postmaster-General may where considered necessary, permit officials of mail office to enter the mail van of a section to help in loading or unloading mails. NOTE: 2 - The Head Sorting Assistant, Mail Agent or any other official of a mail office may enter the mail van of a section for opening or closing cage TBs prescribed in the due mail list. NOTE : 3 - The exchange of mail should",
+            "s bundles are picked out and disposed of first. He must have every mail bag, after being emptied, turned inside out and carefully examined to see that none of the contents remain in it. EXCEPTION – The Postmaster-General may relax the provision of this in the case of any sorting office in which he considers such relaxation to be necessary. 55. Registered bags received – The registered bag, taken from each mail bag, should be examined to see that it is in good condition, and that the cord and seal are intact, and it should then be transferred, under receipt (to be taken in the r",
+            "ed bag accompanied by a blank registered list, the list should be examined to see that it bears the work ‘‘Nil’’ in the place for the total and that it has been duly signed and date-stamped. NOTE: The Postmaster-General may supplement the provision of this rule in the case of sorting office so far as the transfer of registered bags to the Registration Sorting Assistant is concerned. In an office where separate registration Head Sorting Assistant/Supervisor is sanctioned, and mail list containing entries of registered bags is issued to him by the Head Sorti",
+            "for the misappropriation of an insured parcel or any of the contents of an insured bag, as between the offices of dispatc h and receipt. NOTE: In an office where there is a separate mail opener, the Postmaster-General may prescribe that the parcel lists received inside a mail bag will be entered in a separate mail list and transferred to the Parcel Sorting Assistant direct who will give acquittance in this mail list in token of having received and parcel list along with parcel mail articles invoiced in them. 57. Opening of other bags – The branch office bags addressed to the m",
+            "(e) and attending to bag account corresponding work. In the case of a selection grade Record Office, he may correspond direct with other Divisional Superintendent and Postmasters in regard to cases relating the bag accounts of his Record Office. NOTE- Staff attending the Record Offices should not be detained there any longer than is absolutely necessary for the performance of the work required of them. 127. Importance of proper examination of work-papers.- The most important duty of the Record Officer is the examination and filing of the w"
+          ]
+        },
+        "streetOrQuarter": {
+          "found": true,
+          "matchCount": 23,
+          "snippets": [
+            "custody of the Head sorting Assistant/Mail Guard who will be responsible for its safety, and to enable him to do so, the means for locking up or securing portfolio will be provided both at headquarters and outstation. (4) In a sealed bag should be carried : Sweeping brush ; Labels for bags; Late fee notice board; Just twine; Ball twine; The seal holders and wooden blocks Sealing wax; Stamp brush; Covers, etc. (5) Both at Headquarters and outstations, the portfolio, the sack bag containing empty bags (f",
+            "Labels for bags; Late fee notice board; Just twine; Ball twine; The seal holders and wooden blocks Sealing wax; Stamp brush; Covers, etc. (5) Both at Headquarters and outstations, the portfolio, the sack bag containing empty bags (for the use of the section with mails or those to be returned to Record Office) and the sealed bag referred to in Para. (4) above should be dispatched to and received from the mail, record or Post Offices by the set of the section concerned with a remark on the mail list. These entries should",
+            "custody of the Head sorting Assistant/Mail Guard who will be responsible for its safety, and to enable him to do so, the means for locking up or securing portfolio will be provided both at headquarters and outstation. (8) In a sealed bag should be carried : Sweeping brush ; Labels for bags; Late fee notice board; Just twine; Ball twine; The seal holders and wooden blocks Sealing wax; Stamp brush; Covers, etc. (9) Both at Headquarters and outstations, the portfolio, the sack bag containing empty bags (f",
+            "Labels for bags; Late fee notice board; Just twine; Ball twine; The seal holders and wooden blocks Sealing wax; Stamp brush; Covers, etc. (9) Both at Headquarters and outstations, the portfolio, the sack bag containing empty bags (for the use of the section with mails or those to be returned to Record Office) and the sealed bag referred to in Para. (4) above should be dispatched to and received from the mail, record or Post Offices by the set of the section concerned with a remark on the mail list. These entries should",
+            "de up by mail office within the Division which should be sent attached to the daily report to the Divisional Superintendent or the Deputy Superintendent, as the case may be. NOTE- If the Record Office is at the headquarters of the Division, the daily report of each set should be submitted to the Superintendent before the set leaves the office, so that if any information is required by that officer or the inspector, the Sorting Assistants may be on the spot to give it. 130. Issue of forms to sets.- After the work-papers for the previous trips or working hours of each set have been examined and filed, the",
+            "ffices for which it is the focal inward point. (b) Closing of bags from each mail office to each inward Mail Office in the same Circle and from the State Capital to each District headquarters and vice versa within the same Circle. (c) Closing of bags from each Mail Office for the principal concentration centres of the destination Circle in case no other bags are justified. (3) Bags to be closed only when there is a dispatch.- A bag should be closed only when there is a dispatch or there is sufficient traffic. If there is no dispatch from a set",
+            "week to mail offices; each night set once a fortnight, one Post Office a week. (b) SSRMs/SRMs/ASRMs of Divisional Office of non-city- division.- Once a week visit to a mail office at headquarter, 3 mail offices in a month outside the headquarter. All the sets are to be visited including the SRO as well as one Post Office in that place. (c) SRMs (Sorting) attached to mail offices.- Should visit one set of the Mail Office daily. Of these, two visits will be to the night set every week. (d) Sub-Divisional IRMs",
+            "ight, one Post Office a week. (b) SSRMs/SRMs/ASRMs of Divisional Office of non-city- division.- Once a week visit to a mail office at headquarter, 3 mail offices in a month outside the headquarter. All the sets are to be visited including the SRO as well as one Post Office in that place. (c) SRMs (Sorting) attached to mail offices.- Should visit one set of the Mail Office daily. Of these, two visits will be to the night set every week. (d) Sub-Divisional IRMs.- Once a week visit to each Mail Office at head"
+          ]
+        },
+        "alphabeticalBeatIndex": {
+          "found": false,
+          "matchCount": 0,
+          "snippets": []
+        },
+        "gisOrPolygon": {
+          "found": true,
+          "matchCount": 318,
+          "snippets": [
+            "ons and Mail Offices CONTENTS OF CHAPTER 1 MISCELLANEOUS RULES RULE 1. Departments of a set of a Sorting Mail Office 2. Posting of prepaid unregistered articles in trains and Mail Offices 3. Mention of sections in official correspondence 4. Interception or redirection of articles 5. Information not to be made public 6. Date on stamps and seals 7. Interruptions to mail movement 8. Extra reserved accommodation in trains 9. Misconnection of",
+            "onsibility, into the following departments :- Department Designation of official in charge a) Mail Department Head Sorting Assistant b) Sorting Department Sorting Assistant c) Registration Department Registration Sorting Assistant d) Parcel Department Parcel Sorting Assistant (2) In sets where the number of Sorting Assistants employed is less than the number of departments, the work is distributed according to the establishment sanctioned, the duties appertaining to two or more departments being assigned to one Sort",
+            "departments :- Department Designation of official in charge a) Mail Department Head Sorting Assistant b) Sorting Department Sorting Assistant c) Registration Department Registration Sorting Assistant d) Parcel Department Parcel Sorting Assistant (2) In sets where the number of Sorting Assistants employed is less than the number of departments, the work is distributed according to the establishment sanctioned, the duties appertaining to two or more departments being assigned to one Sorting Assistant. (3) Wher",
+            "appertaining to two or more departments being assigned to one Sorting Assistant. (3) Where a separate parcel Sorting Assistant is not employed, the duties of parcel department are assigned to the registration Sorting Assistant and in sets consisting of only two Sorting Assistants, the Head Sorting Assistant performs, in addition to his own work, all the duties of the sorting department and the Sorting Assistant, the duties of the registration and parcel departments. (4) In sets in charge of a selection grade Head Sorting Assistant, the duties o",
+            "s consisting of only two Sorting Assistants, the Head Sorting Assistant performs, in addition to his own work, all the duties of the sorting department and the Sorting Assistant, the duties of the registration and parcel departments. (4) In sets in charge of a selection grade Head Sorting Assistant, the duties of the mail department connected with receipt and dispatch of mails and opening and closing of mail bags will be assigned to a senior Sorting Assistant or Sorting Assistant who will be designated as mail Sorting Assistant. NOTE: Sorting work is",
+            "bags will be assigned to a senior Sorting Assistant or Sorting Assistant who will be designated as mail Sorting Assistant. NOTE: Sorting work is no longer performed in trains. 2 Posting of prepaid unregistered articles in trains and mail offices. – (1) The posting of unregistered articles (i.e. letters, postcards and packets) in train letter-boxes at any time during the day or night and in the letter boxes attached to RMS offices during the time prescribed for late fee collection in respect of each mail carrying train is subject to the prepayment of late fee pr",
+            "ssistant who will be designated as mail Sorting Assistant. NOTE: Sorting work is no longer performed in trains. 2 Posting of prepaid unregistered articles in trains and mail offices. – (1) The posting of unregistered articles (i.e. letters, postcards and packets) in train letter-boxes at any time during the day or night and in the letter boxes attached to RMS offices during the time prescribed for late fee collection in respect of each mail carrying train is subject to the prepayment of late fee prescribed in addition to the postage due. (2) Articles posted in the va",
+            "1) In addition to the rules laid down elsewhere prescribing the transfer of bags or articles from one section or mail office to another or from one set to another, it is here laid down as a general rule, that whenever registered and parcel articles have to be transferred loose, the procedure described below should be followed: - When the number of registered or parcel mail articles to be made over is large, they should be enclosed in a registered or parcel bag, for which receipt should be taken in the registered or parcel abstract of the relieved set. Where the number of such articles is small and the time at"
+          ]
+        }
+      },
+      "rawArtifact": "raw/Postal_Manual_Vol._VII.pdf",
+      "textArtifact": "text/Postal_Manual_Vol._VII.txt",
+      "textLength": 351835,
+      "status": "OFFICIAL_POSTAL_PDF_BYTES_ACQUIRED_AND_PARSED"
+    },
+    {
+      "documentId": "2506ed41-1b80-42af-87ea-53c09ba32faa",
+      "slug": "postal-manual-vol-viii-20250927-1b7f01",
+      "title": "Postal Manual Vol. VIII",
+      "catalogueDate": "01-04-1979",
+      "displayedSize": "814.4 KB",
+      "version": "English Version",
+      "documentType": "PDF",
+      "downloadUrl": "https://www.indiapost.gov.in/api/documents/file/103agyc2pefr0gwex390y3063nq01vfi0s5c40iq8b3eols02v6i3fnf43afyt",
+      "discoveredOnPage": "https://www.indiapost.gov.in/documents/guidelines",
+      "requestedAtUtc": "2026-10-26T15:32:06.578695+00:00",
+      "classification": "OFFICIAL_POSTAL_MANUAL_CANDIDATE",
+      "finalUrl": "https://www.indiapost.gov.in/api/documents/file/103agyc2pefr0gwex390y3063nq01vfi0s5c40iq8b3eols02v6i3fnf43afyt",
+      "httpStatus": 200,
+      "contentType": "application/pdf",
+      "byteLength": 833948,
+      "sha256": "c373de5e152d9dd0599358594f5ea9eb488dbd4b630dea3023879e27a043ff6e",
+      "pdfMagic": true,
+      "pdfParseStatus": "PASS",
+      "pdfVersion": "1.2",
+      "pdfPageCount": 317,
+      "textSha256": "c3bea881c95e21b52a802a187505a18efa1bd78daf3ca29e49624895e982b333",
+      "termFindings": {
+        "deliveryBeat": {
+          "found": true,
+          "matchCount": 8,
+          "snippets": [
+            "spective sub-divisions ( including first class head offices) for record in his office. (2) There are two systems under which village postmaster beats can be arranged, viz., (a) the fixed beat and (b) the unfixed beat system – see Rules 274 and 275. NOTE .- The term ‘village postmen’ mentioned in this rule including postmen and extra departmental delivery agents not serving all the villages in their beats daily. 133. Omitted. 134. Village return. – The yearly village returns (MS-88) submitted by the Inspector should be carefully studied by the Superintendent to see whether the work perfo",
+            "perintendent for record in his office and also to the account office of the branch office concerned. There are two systems under which village postmen’s beats can be arranged, viz.,(a) the fixed beat, and(b) the unfixed beat system. NOTE:- see Note below Rule 132. 274 “Fixed Beat” system :- In the case of fixed beats, the route lists supplied to each village postman should be accompanied by a map of the beat and should show, in addition to the names of the villages to be visited by him, the route to be followed by him, the days fixed for his departure from and return to the post office, the day on which each v",
+            "laid down must be rigidly adhered to. No discretion is given, and the prescribed visits must be paid on the days, fixed, even though it be well known that there is no correspondence for collection or delivery. The fixed beat system is best adapted to populous localities, where there is ordinarily some correspondence for every village. NOTE:- See Note below Rule 132. 275. “Unfixed Beat” system:-In the case of unfixed beats, the village postman’s visit to a particular village depends, not on a prescribed tour, but on whether there is correspondence for any particular village, the more frequent will be the deli",
+            "essor. 309. Postal map of town – The Town Inspector should maintain a postal map of his jurisdiction in accordance with the instructions on the subject in the Posts and Telegraphs Manual, Volume II. 310. Delivery beat lists - (1) the Town Inspector must make himself familiar with the delivery beats of all the postmen in the town. To enable him to do so, the postmaster will prepare and furnish him with a book which will be in two parts :- (a) A complete list of all the delivery bears into which the town is divided with a list of the main quarters of the town, the streets, and chief places of publ",
+            "tal map of his jurisdiction in accordance with the instructions on the subject in the Posts and Telegraphs Manual, Volume II. 310. Delivery beat lists - (1) the Town Inspector must make himself familiar with the delivery beats of all the postmen in the town. To enable him to do so, the postmaster will prepare and furnish him with a book which will be in two parts :- (a) A complete list of all the delivery bears into which the town is divided with a list of the main quarters of the town, the streets, and chief places of public business or trade in each beat, arranged according to the order of de",
+            "nt residents. For this purpose, he should, from time to time, test each postman’s knowledge of his beat by examining him in the beat list, and should record the result in his diary for the postmaster’s information. The delivery beat lists should be added to, or corrected, from time to time as changes are ordered by the postmaster, and the book should be made over by the Inspector to his successor. 311.Tests – It is the Town Inspector’s duty to see that outside letter-boxes are cleared punctually at the hour fixed, and that they are in good condition and properly painted. When he passes a letter-box he should satisfy",
+            "changes sanctioned by Superintendents in designation of - 103 Powers of Superintendents in regard to the relaxation of duties of – on Sundays and Post Office holidays 123 Delivery beat – Test of acquaintance of a postman with – the localities of his 310 Delivery beat lists – Preparation and supply of - 310 Departmental buildings – Duties of Inspector in connection with the construction and repairs of - 288 RULES Deposit –",
+            "gard to the relaxation of duties of – on Sundays and Post Office holidays 123 Delivery beat – Test of acquaintance of a postman with – the localities of his 310 Delivery beat lists – Preparation and supply of - 310 Departmental buildings – Duties of Inspector in connection with the construction and repairs of - 288 RULES Deposit – Checking of articles in – in a R.L.O. with the entries in the Register 424 Deposit account –"
+          ]
+        },
+        "beatList": {
+          "found": true,
+          "matchCount": 5,
+          "snippets": [
+            "309. Postal map of town – The Town Inspector should maintain a postal map of his jurisdiction in accordance with the instructions on the subject in the Posts and Telegraphs Manual, Volume II. 310. Delivery beat lists - (1) the Town Inspector must make himself familiar with the delivery beats of all the postmen in the town. To enable him to do so, the postmaster will prepare and furnish him with a book which will be in two parts :- (a) A complete list of all the delivery bears into which the town is divided with a list of the main quarters of the town, the streets, and chief places of public bu",
+            "localities in his own beat and is familiar with the names and addresses of all the permanent residents. For this purpose, he should, from time to time, test each postman’s knowledge of his beat by examining him in the beat list, and should record the result in his diary for the postmaster’s information. The delivery beat lists should be added to, or corrected, from time to time as changes are ordered by the postmaster, and the book should be made over by the Inspector to his successor. 311.Tests – It is the Town Inspector’s duty to see that outside letter-boxes are cleared punctually at the hour fixed, and that",
+            "nts. For this purpose, he should, from time to time, test each postman’s knowledge of his beat by examining him in the beat list, and should record the result in his diary for the postmaster’s information. The delivery beat lists should be added to, or corrected, from time to time as changes are ordered by the postmaster, and the book should be made over by the Inspector to his successor. 311.Tests – It is the Town Inspector’s duty to see that outside letter-boxes are cleared punctually at the hour fixed, and that they are in good condition and properly painted. When he passes a letter-box he should satisfy hims",
+            "stamps exists either in cash or stamps: (f) the special pads for taking thumb-impressions are kept clean; and that they are properly inked; (g) each postman has in his bag a correct copy of his beat list signed by the head delivery clerk and countersigned by the postmaster. (2) If any irregularity is detected, a note should be recorded in the diary (genl.3) and in the postman’s book (M.S.-27). The postman’s book should be initiated each time his bag is examined. 314. Undelivered articles – Articles incorrectly treated as refused or unclaimed, or those on which the remark",
+            "he relaxation of duties of – on Sundays and Post Office holidays 123 Delivery beat – Test of acquaintance of a postman with – the localities of his 310 Delivery beat lists – Preparation and supply of - 310 Departmental buildings – Duties of Inspector in connection with the construction and repairs of - 288 RULES Deposit – Checking of articles in – in a R.L.O. with the entries in the Register 424 Deposit account –"
+          ]
+        },
+        "postalMap": {
+          "found": true,
+          "matchCount": 4,
+          "snippets": [
+            "ors Pages 303 Jurisdiction 304 Powers 305 Duties 306 Personal knowledge of subordinates 307 Knowledge of Post Office Rules 308 Memorandum book 309 Postal map of town 310 Delivery best lists 311 Tests 312 Supervision over postmen 313 Examination of postmen’s bags 314 Undelivered articles 315 Enquiries 316 Hours of despatch of mails 317 Diary of Public Relations Inspectors (Postal) Head Postmen 318 Duties of head postmen 319 Diaries of head postmen",
+            "which can be used subsequently for the application of checks on the offices under him or on the working of postmen or letter-box peons, should be noted in this book, which should be handed to his successor. 309. Postal map of town – The Town Inspector should maintain a postal map of his jurisdiction in accordance with the instructions on the subject in the Posts and Telegraphs Manual, Volume II. 310. Delivery beat lists - (1) the Town Inspector must make himself familiar with the delivery beats of all the postmen in the town. To enable him to do so, the postmaster will prepare and furnish him with a book wh",
+            "ks on the offices under him or on the working of postmen or letter-box peons, should be noted in this book, which should be handed to his successor. 309. Postal map of town – The Town Inspector should maintain a postal map of his jurisdiction in accordance with the instructions on the subject in the Posts and Telegraphs Manual, Volume II. 310. Delivery beat lists - (1) the Town Inspector must make himself familiar with the delivery beats of all the postmen in the town. To enable him to do so, the postmaster will prepare and furnish him with a book which will be in two parts :- (a) A complete list o",
+            "317 RULES Maintenance by a – of rough memorandum book 308 Maintenance of a postal map of town by - 309 Modification of rules relating to – by Heads of Circles in the case of those employed at Calcutta, Madras and Bombay N.B. at top of Chapter 4 Not to correspond with the public 305 Personal knowledge of the charac"
+          ]
+        },
+        "postmaster": {
+          "found": true,
+          "matchCount": 348,
+          "snippets": [
+            "fices 9 Enquiries with local Offices 10 Verification of balances of headquarters office 11 Responsibility for postal arrangements at Headquarters MISCELLANEOUS RULES 12 Assistant Postmasters-General 13 Registers and records in a circle office 14 Register of Complaints 15 Register of losses and frauds 16 Disposal of records 17 Jurisdiction and head quarters of Superintendents 18 Jurisdiction and head quarters of Inspectors 19 Accommodation for Superintendents offices 21 Inspection of offices and sections 22 Director-General’s circulars 2",
+            "HEADS OF CIRCLES PERSONAL DUTIES 1. Head of a Circle. – The term Head of a Circle means the chief officer in a Post and Telegraph Circle and includes Postmaster General and Directors, Posts and Telegraphs in independent charge of circles. Senior Superintendents, Superintendents, Inspectors, Postmasters and all other officers in a Circle are subordinate to the Head of the Circle. The administrative and financial powers of the Head of a Circle. The administrative and financial powers of the Head of a Circle are defined in the Postal Manual, Volume III,",
+            "cle means the chief officer in a Post and Telegraph Circle and includes Postmaster General and Directors, Posts and Telegraphs in independent charge of circles. Senior Superintendents, Superintendents, Inspectors, Postmasters and all other officers in a Circle are subordinate to the Head of the Circle. The administrative and financial powers of the Head of a Circle. The administrative and financial powers of the Head of a Circle are defined in the Postal Manual, Volume III, and in the Schedule of Financial Powers, respectively. NOTE 1.- The word “superintendent” wherever it occurs in the rules includes the “Se",
+            "irst inspection of the Stock Depot in the half-year ending 31st September. During this inspection the physical verification of all articles of stores and stock should also be carried out, the assistance of the Assistant Postmaster-General or the Assistant Director, incharge of the Stock Depot, and of the Inspectors attached to the Circle Office being utilised, if necessary. The second inspection of the Stock Depot for the half-year ending 31st March should be carried out by the Assistant Postmaster-General or the Assistant Director, incharge of the Stock Depot. During this second inspection it should be seen that al",
+            "e Stock Depot, and of the Inspectors attached to the Circle Office being utilised, if necessary. The second inspection of the Stock Depot for the half-year ending 31st March should be carried out by the Assistant Postmaster-General or the Assistant Director, incharge of the Stock Depot. During this second inspection it should be seen that all orders passed in the course of the first inspection in that financial year have been carried out and that discrepancies noticed during the physical verification have been reconciled, in the case of minor Circles the first inspection and the physical verification of articles of",
+            "o sorting mail offices and sections in the circle should be visited by the Head of the Circle as often as he conveniently can. At each visit to a Presidency or first class head office, the administrative work of the postmaster should be examined with reference to the standard inspection questions relating thereto. A Postmaster General should, if possible visit every station which is the headquarters of a district at least once in two years. While visiting the headquarters of a Superintendent, R.M.S. he should carefully scrutinise the accounts work of the head record office. It is important that the Head of the Circ",
+            "he conveniently can. At each visit to a Presidency or first class head office, the administrative work of the postmaster should be examined with reference to the standard inspection questions relating thereto. A Postmaster General should, if possible visit every station which is the headquarters of a district at least once in two years. While visiting the headquarters of a Superintendent, R.M.S. he should carefully scrutinise the accounts work of the head record office. It is important that the Head of the Circle should be personally acquainted with the leading district or ordinates. He should examine the working",
+            "r pensions or gratuities are sanctioned by him, and that the papers on which his signature is necessary are also signed by him. NOTE. – In a circle in which a Director of Postal Services is appointed to help the Postmaster-General, the duties prescribed by this rule may be performed by the former. 8. Inspection of Returned Letter Offices. – (1) The Heads of the Circle or Director Postal Services must inspect the returned Letter Office in their circle once every year during the period ending of 30th September, in accordance with the standard questions. In addition to this, the Asstt. Postmaster-General/Asst"
+          ]
+        },
+        "streetOrQuarter": {
+          "found": true,
+          "matchCount": 116,
+          "snippets": [
+            "f Diaries 6 Examination of copies of punishment registers 7 Control over pension work 8 Inspection of Returned Letter offices 9 Enquiries with local Offices 10 Verification of balances of headquarters office 11 Responsibility for postal arrangements at Headquarters MISCELLANEOUS RULES 12 Assistant Postmasters-General 13 Registers and records in a circle office 14 Register of Complaints 15 Register of losses and frauds 16 Disposal of records 17 Jurisdiction and head quarters of Superintendents 18 Jurisdiction and head quarters of In",
+            "Control over pension work 8 Inspection of Returned Letter offices 9 Enquiries with local Offices 10 Verification of balances of headquarters office 11 Responsibility for postal arrangements at Headquarters MISCELLANEOUS RULES 12 Assistant Postmasters-General 13 Registers and records in a circle office 14 Register of Complaints 15 Register of losses and frauds 16 Disposal of records 17 Jurisdiction and head quarters of Superintendents 18 Jurisdiction and head quarters of Inspectors 19 Accommodation for Superintendents offices 21 Insp",
+            "ULES 12 Assistant Postmasters-General 13 Registers and records in a circle office 14 Register of Complaints 15 Register of losses and frauds 16 Disposal of records 17 Jurisdiction and head quarters of Superintendents 18 Jurisdiction and head quarters of Inspectors 19 Accommodation for Superintendents offices 21 Inspection of offices and sections 22 Director-General’s circulars 23 Circulars of Heads of Circles 24 Omitted 25 Applications1 for interception of articles 26 Return to senders of articles posted 27 Application for information from Post",
+            "s and records in a circle office 14 Register of Complaints 15 Register of losses and frauds 16 Disposal of records 17 Jurisdiction and head quarters of Superintendents 18 Jurisdiction and head quarters of Inspectors 19 Accommodation for Superintendents offices 21 Inspection of offices and sections 22 Director-General’s circulars 23 Circulars of Heads of Circles 24 Omitted 25 Applications1 for interception of articles 26 Return to senders of articles posted 27 Application for information from Post office records 28 Monthly statistics 29 Irregular",
+            "ffice, the administrative work of the postmaster should be examined with reference to the standard inspection questions relating thereto. A Postmaster General should, if possible visit every station which is the headquarters of a district at least once in two years. While visiting the headquarters of a Superintendent, R.M.S. he should carefully scrutinise the accounts work of the head record office. It is important that the Head of the Circle should be personally acquainted with the leading district or ordinates. He should examine the working in all its branches of every office or section he visits, enquire whether",
+            "reference to the standard inspection questions relating thereto. A Postmaster General should, if possible visit every station which is the headquarters of a district at least once in two years. While visiting the headquarters of a Superintendent, R.M.S. he should carefully scrutinise the accounts work of the head record office. It is important that the Head of the Circle should be personally acquainted with the leading district or ordinates. He should examine the working in all its branches of every office or section he visits, enquire whether the convenience of the public is met in every legitimate way and, pay par",
+            "Superintendents do not allow their inspection and verifications to fall into arrears, and should take care that inspection is not rendered unnecessarily expensive by officers returning (unless for urgent reasons) to headquarters before finishing the inspection of all the offices, sections or mail offices in the quarter to which they had proceeded. NOTE – In major Circles, the Head of the Circle may, at his description, permit the Director of Postal Services to scrutinise the weekly diaries. 6. Examination of Copies of Punishment Registers. – The Head of the Circle must examine the copies of punishment reg",
+            "uld take care that inspection is not rendered unnecessarily expensive by officers returning (unless for urgent reasons) to headquarters before finishing the inspection of all the offices, sections or mail offices in the quarter to which they had proceeded. NOTE – In major Circles, the Head of the Circle may, at his description, permit the Director of Postal Services to scrutinise the weekly diaries. 6. Examination of Copies of Punishment Registers. – The Head of the Circle must examine the copies of punishment registers (APP 32(a)) submitted by subordinate offices so as to keep a close watch on the punish"
+          ]
+        },
+        "alphabeticalBeatIndex": {
+          "found": true,
+          "matchCount": 1,
+          "snippets": [
+            "n is divided with a list of the main quarters of the town, the streets, and chief places of public business or trade in each beat, arranged according to the order of delivery in the beats. (b) An alphabetical list of all the main queries of the town, the streets, and chief places of public business or trade in the town with the numbers of the beats in which they are located. (2) The Town Inspector should see that every postman is thoroughly acquainted with the localities in his own beat and is familiar with the names and addresses of all the permanent residents. For this purpose, he should, from time to time, test each postman’s"
+          ]
+        },
+        "gisOrPolygon": {
+          "found": true,
+          "matchCount": 633,
+          "snippets": [
+            "Depots 2-A Inspection of Circle office 3 Visits to offices, Sections and Mail lines 4 Disposal of copies of order Book remarks 5 Examination of Diaries 6 Examination of copies of punishment registers 7 Control over pension work 8 Inspection of Returned Letter offices 9 Enquiries with local Offices 10 Verification of balances of headquarters office 11 Responsibility for postal arrangements at Headquarters MISCELLANEOUS RULES 12 Assistant Postmasters-General 13 Registers and records in a circle office 14 Register of Complaints 1",
+            "ocal Offices 10 Verification of balances of headquarters office 11 Responsibility for postal arrangements at Headquarters MISCELLANEOUS RULES 12 Assistant Postmasters-General 13 Registers and records in a circle office 14 Register of Complaints 15 Register of losses and frauds 16 Disposal of records 17 Jurisdiction and head quarters of Superintendents 18 Jurisdiction and head quarters of Inspectors 19 Accommodation for Superintendents offices 21 Inspection of offices and sections 22 Director-General’s circulars 23 Circulars of Hea",
+            "headquarters office 11 Responsibility for postal arrangements at Headquarters MISCELLANEOUS RULES 12 Assistant Postmasters-General 13 Registers and records in a circle office 14 Register of Complaints 15 Register of losses and frauds 16 Disposal of records 17 Jurisdiction and head quarters of Superintendents 18 Jurisdiction and head quarters of Inspectors 19 Accommodation for Superintendents offices 21 Inspection of offices and sections 22 Director-General’s circulars 23 Circulars of Heads of Circles 24 Omitted 25 Applications",
+            "ponsibility for postal arrangements at Headquarters MISCELLANEOUS RULES 12 Assistant Postmasters-General 13 Registers and records in a circle office 14 Register of Complaints 15 Register of losses and frauds 16 Disposal of records 17 Jurisdiction and head quarters of Superintendents 18 Jurisdiction and head quarters of Inspectors 19 Accommodation for Superintendents offices 21 Inspection of offices and sections 22 Director-General’s circulars 23 Circulars of Heads of Circles 24 Omitted 25 Applications1 for interception of articles",
+            "rception of articles 26 Return to senders of articles posted 27 Application for information from Post office records 28 Monthly statistics 29 Irregularities in service messages despatched. 30 Registered News papers 31 Half –yearly enumeration report 32 Half –yearly list of volunteers for field service 33 Mobilisation of postal officials for field service 34 Estimate of expenditure on field postal arrangements 35 Report on field postal arrangements 36 Memo of authorised balances and advances 37 Countersignature of travelling allowance bills 38 Limit of w",
+            "ints relating to v.p. articles sent dishonestly or fraudulently 71 Correspondence with Foreign Administrations 71-A Disposal of enquiries or complaints relating to the loss or non- delivery of unregistered or registered articles of the letter mail and of foreign parcels posted in and addressed to a country other than India 71-B Procedure for dealing with complaints and enquiries relating to foreign Postal articles. 72 Special procedure for Presidency offices 73 Deleted. 74 Licences for the use of franking machines 75 Prepayment of postage in cash",
+            "to v.p. articles sent dishonestly or fraudulently 71 Correspondence with Foreign Administrations 71-A Disposal of enquiries or complaints relating to the loss or non- delivery of unregistered or registered articles of the letter mail and of foreign parcels posted in and addressed to a country other than India 71-B Procedure for dealing with complaints and enquiries relating to foreign Postal articles. 72 Special procedure for Presidency offices 73 Deleted. 74 Licences for the use of franking machines 75 Prepayment of postage in cash on unregistere",
+            "nd enquiries relating to foreign Postal articles. 72 Special procedure for Presidency offices 73 Deleted. 74 Licences for the use of franking machines 75 Prepayment of postage in cash on unregistered packets 76 Enumeration of articles by R.L.O. 77. Half-yearly R.L.O. return 78. Unusual bag account 79. Deleted. 80. Compensation for loss of or damage to inland insured articles 81. Compensation for loss of or damage to inland uninsured registered articles. 82. Compensation for loss or damage to articles of the foreign post 83. Omitted 84. Omit"
+          ]
+        }
+      },
+      "rawArtifact": "raw/Postal_Manual_Vol._VIII.pdf",
+      "textArtifact": "text/Postal_Manual_Vol._VIII.txt",
+      "textLength": 906778,
+      "status": "OFFICIAL_POSTAL_PDF_BYTES_ACQUIRED_AND_PARSED"
+    }
+  ],
+  "summary": {
+    "officialCataloguePagesHashValidated": 8,
+    "officialCataloguePagesExpected": 8,
+    "catalogueHashOrFetchErrors": 0,
+    "manualRecordsObserved": 8,
+    "manualPDFsAcquiredAndParsed": 8,
+    "manualPDFsFailedOrUnavailable": 0,
+    "manualsContainingDeliveryBeatOrBeatListOrPostalMapText": 3,
+    "manualsContainingGISOrPolygonText": 8,
+    "officialDeliveryBeatPolygonDatasetAcquired": false,
+    "nationalDeliveryBeatGeometryDisposition": "OPEN_NO_NATIONAL_GIS_DATASET_ACQUIRED_OR_VERIFIED"
+  },
+  "disposition": "OFFICIAL_POSTAL_MANUALS_ACQUIRED_AND_SCANNED; DELIVERY_BEAT_GIS_STILL_OPEN",
+  "completedAtUtc": "2026-10-26T15:32:18.359249+00:00"
+}
