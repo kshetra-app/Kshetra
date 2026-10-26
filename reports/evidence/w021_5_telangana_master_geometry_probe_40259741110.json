@@ -1,0 +1,112 @@
+{
+  "schemaVersion": 1,
+  "title": "W021.5 Stage B — TGRAC Master Assembly Constituency Geometry Candidate Probe",
+  "capturedAtUtc": "2026-10-26T02:36:14Z",
+  "directive": "CTO Directive 154 — Stage B only",
+  "branch": "cto/w0215-stage-b-evidence-20261025",
+  "commit": "00c8e589978c66d58ca5f47e3dfb833a0a637ffe",
+  "workflow": {
+    "runId": 40259741110,
+    "url": "https://github.com/kshetra-app/Kshetra/actions/runs/40259741110",
+    "conclusion": "success",
+    "artifactId": 12624067291,
+    "artifactName": "w0215-official-geometry-probe-40259741110",
+    "artifactBytes": 23293504,
+    "artifactSha256": "6d274d901e622c34252d010c1e41913bea1c7bab883a1af7f128e065b37eea87",
+    "artifactSha256RecomputedLocally": true,
+    "artifactExpiresAt": "2026-11-25T02:36:14Z"
+  },
+  "source": {
+    "publisher": "Telangana State Remote Sensing Applications Centre (TGRAC), official public ArcGIS REST service",
+    "serviceUrl": "https://tgrac.telangana.gov.in/arcgis/rest/services/Master_Administrative_Folder/Master_Administrative_Boundary/MapServer",
+    "layerId": 0,
+    "layerName": "Assembly_Constituency_Boundary",
+    "metadataUrl": "https://tgrac.telangana.gov.in/arcgis/rest/services/Master_Administrative_Folder/Master_Administrative_Boundary/MapServer/0?f=pjson",
+    "metadataHttpStatus": 200,
+    "metadataBytes": 3709,
+    "metadataSha256": "78130181060c9fb1a0eeba400748cf285ba7e973db75d1600b82ca2ab9135988",
+    "metadataETag": "107de246",
+    "queryUrl": "https://tgrac.telangana.gov.in/arcgis/rest/services/Master_Administrative_Folder/Master_Administrative_Boundary/MapServer/0/query?where=1%3D1&outFields=%2A&returnGeometry=true&outSR=4326&f=json",
+    "queryHttpStatus": 200,
+    "responseBytes": 12469989,
+    "responseSha256": "c5d0cbf55f5079cd91b0ce3a8733ce11701a70f0ea474cdd96025ec8c651e444",
+    "responseETag": "1760440268",
+    "retrievedAtUtc": "2026-10-26T02:35:08.900312Z",
+    "sourceCRS": "EPSG:4326",
+    "legalEffectiveDate": "NOT_DECLARED_OR_NOT_VERIFIED",
+    "version": "NOT_DECLARED_IN_ACQUIRED_LAYER_METADATA",
+    "reuseLicence": "NOT_ESTABLISHED",
+    "artifactPathInsideZip": "raw/telangana-master-ac-geometry.bin"
+  },
+  "structuralChecks": {
+    "status": "PASS",
+    "featureCount": 119,
+    "expectedFeatureCount": 119,
+    "geometryType": "esriGeometryPolygon",
+    "uniqueObjectIds": 119,
+    "duplicateObjectIds": 0,
+    "uniqueAssemblyNames": 119,
+    "duplicateAssemblyNames": 0,
+    "uniqueAssemblyValues": 119,
+    "ringCount": 123,
+    "missingGeometryFeatures": 0,
+    "ringsTooShort": 0,
+    "unclosedRings": 0,
+    "nonFiniteCoordinates": 0,
+    "bboxWGS84": [
+      77.23725451100006,
+      15.836406686000032,
+      81.31660838800008,
+      19.91690008100005
+    ],
+    "topologyValidatedSeparately": true
+  },
+  "topologyAudit": {
+    "method": "Existing read-only Shapely 2.1.2 audit; ESRI exterior/hole ring orientation respected; raw bytes untouched",
+    "validFeatureGeometries": 118,
+    "invalidFeatureGeometries": 1,
+    "invalidFeature": {
+      "objectId": 89,
+      "name": "Dornakal (ST) Assembly",
+      "reason": "Ring Self-intersection[79.9488866560001 17.514169436]"
+    },
+    "positiveAreaOverlapPairs": 0,
+    "unionValid": true,
+    "unionPolygonPartCount": 1,
+    "stateBoundaryCoverage": "NOT CHECKED",
+    "legalExtentToPolygonReconciliation": "NOT PERFORMED",
+    "canonicalAcNumberCrosswalk": "NOT PRESENT IN LAYER; OBJECTID IS NOT A STATUTORY AC NUMBER",
+    "crossVariantFullGeometryComparison": "NOT YET PERFORMED FOR THIS NEW MASTER SERVICE"
+  },
+  "otherProbeFindings": {
+    "eci2026ResultGeometryPaths": {
+      "attempted": 5,
+      "statuses": [
+        404,
+        404,
+        404,
+        404,
+        404
+      ],
+      "responseBytesEach": 196,
+      "identicalErrorBodySha256": "80c3fe2ae1062abf56456f52518bd670f9ec3917b7f85e152b347ac6b6faf880",
+      "disposition": "NO OFFICIAL GEOMETRY BYTES ACQUIRED FROM THESE GUESSED URLS; DO NOT HASH AS SOURCE GEOMETRY"
+    },
+    "priorTgracCandidates": {
+      "2026AndAdminNew": "Byte-identical response bodies (12,463,409 bytes; SHA-256 ca8cfdc695366d9f04ee6a9fdbf9c52eeefe61d69bc79c9d26d15baa7b84aa03)",
+      "olderAdministrativeInfoSystem": "12,465,346 bytes; SHA-256 91cd791317836d8a6a8729b03f08fd3aee8c727c82e123b1659972d949d32f27",
+      "oldEndowmentLayer": "12,461,961 bytes; SHA-256 6e33ebf7eba139a0f754e5b56f3e3bc155ab2d9b6c9e571b03dc57e77e418b4c"
+    }
+  },
+  "disposition": "OFFICIAL STATE-GIS CANDIDATE ACQUIRED AND HASHED; STRUCTURAL CHECKS PASS; TOPOLOGY FAILS ON DORNAKAL SELF-INTERSECTION; NOT CANONICAL",
+  "requiredNextActions": [
+    "Compare this master service against all other acquired TGRAC candidates using the existing cross-variant geometry comparator and preserve per-AC discrepancy results.",
+    "Obtain TGRAC source owner confirmation of data lineage, publication/version date, effective legal boundary regime and reuse terms.",
+    "Reconcile every polygon to the statutory roster and applicable delimitation/Gazette instruments; do not equate names or OBJECTID with canonical AC IDs.",
+    "Resolve Dornakal only in a derived, provenance-recorded artifact; preserve raw source bytes.",
+    "Continue national state/UT coverage, topology, physical Gazette and postal/polling-station external gates."
+  ],
+  "productionDatabaseAccess": "NONE",
+  "stagingDatabaseAccess": "NONE",
+  "acceptance": "STAGE_B_PARTIAL_NOT_ACCEPTED"
+}
