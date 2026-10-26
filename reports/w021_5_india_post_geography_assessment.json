@@ -5,7 +5,7 @@
   "blockerCategory": "INDIA_POST_BEAT_POLYGON_AUTHORITY",
   "directive": "CTO Directive 149 / Workstream F / Task EB-03",
   "governingAuthority": "Master Execution Framework Amendment v1.6 / Rule IV-001 Non-Self-Acceptance",
-  "generatedAt": "2026-10-23T14:26:00.000Z",
+  "generatedAt": "2026-10-26",
   "externalDatasetInvestigated": {
     "title": "All India PIN Code Boundary geo-json",
     "publishingAuthority": "Department of Posts, Ministry of Communications, Government of India",
@@ -138,14 +138,49 @@
     "rule3_postalBeatDatasetNonNecessity": "Because postman delivery beats are operational logistics routes that do not align with statutory electoral units, acquiring physical paper postman beat maps is NOT a valid prerequisite for statutory electoral truth. The authoritative statutory link for voters is the Polling Station / Part Number (EB-05)."
   },
   "disposition": {
-    "sourceAcceptanceStatus": "PIN_CODE_BOUNDARIES_EVALUATED_DELIVERY_BEATS_UNAVAILABLE_AS_POLYGONS",
-    "blockerResolution": "BLOCKED_EXTERNAL_EVIDENCE"
+    "sourceAcceptanceStatus": "OFFICIAL_POSTAL_PIN_BOUNDARY_CATALOGUE_DISCOVERY; 8_OFFICIAL_MANUAL_PDFS_ACQUIRED; DELIVERY_BEAT_GIS_NOT_ACQUIRED",
+    "blockerResolution": "BLOCKED_EXTERNAL_EVIDENCE",
+    "updatedAt": "2026-10-26",
+    "resolutionNotes": [
+      "Official postal manuals now establish that operational postal maps and delivery-beat books are documented departmental records in the published manual text.",
+      "No actual national/division beat polygon dataset was acquired, and no authenticated Department response is in the retained evidence.",
+      "The old claim that the Department directly confirmed nonavailability is withdrawn as unverified.",
+      "PIN-code polygon boundaries remain a distinct geographic level and are not a substitute for delivery-beat geometry."
+    ]
   },
   "custodianStatus": {
     "department": "Department of Posts, Ministry of Communications, Government of India",
-    "inquiryLogged": true,
+    "inquiryLogged": false,
+    "inquiryStatus": "NO_AUTHENTICATED_SUBMISSION_OR_ACKNOWLEDGEMENT_PRESENT_IN_RETAINED_EVIDENCE",
     "inquirySubject": "Operational Delivery Beat Polygon Maintenance & Open Public Dataset Availability",
-    "finding": "Department of Posts does not maintain operational postman delivery beats as a standardized cadastral polygon GIS layer. Delivery beats are dynamic administrative route networks managed at the Sub Post Office level.",
-    "recommendationForAdjudication": "Submit proposal to independent adjudicator to formalize PIN-code delivery area approximation as the accepted geographic boundary standard for postal civic lookups."
-  }
+    "finding": null,
+    "findingStatus": "UNKNOWN_PENDING_AUTHENTICATED_CUSTODIAN_RESPONSE",
+    "retainedEvidenceSummary": {
+      "officialManualsAcquired": 8,
+      "sourcePackageManifest": "data/evidence/w021_5/indiapost_postal_manuals/manifest.json",
+      "sourcePackageManifestGitBlobSha": "de80f276f019acc396ba03e49a10e7488f4c43e8",
+      "workflowRunId": 40350138447,
+      "workflowUrl": "https://github.com/kshetra-app/Kshetra/actions/runs/40350138447",
+      "postalManualVolVIII": {
+        "catalogueDate": "01-04-1979",
+        "url": "https://www.indiapost.gov.in/api/documents/file/103agyc2pefr0gwex390y3063nq01vfi0s5c40iq8b3eols02v6i3fnf43afyt",
+        "byteLength": 833948,
+        "sha256": "c373de5e152d9dd0599358594f5ea9eb488dbd4b630dea3023879e27a043ff6e",
+        "pageCount": 317,
+        "rule309": "Town Inspector maintains a postal map of the town jurisdiction.",
+        "rule310": "Postmaster supplies a book with delivery beats, town quarters/streets/places within each beat, and an alphabetical street/place index with beat numbers; lists are corrected as changes are ordered by the postmaster.",
+        "rules274275": "Describe fixed and unfixed village postman beat systems and accompanying route lists/maps."
+      }
+    },
+    "correctionNote": "An earlier assessment version set inquiryLogged=true and stated that the Department directly confirmed no standardized cadastral delivery-beat GIS layer. No authenticated response, submission receipt, correspondence reference, or signed Department record supporting that assertion was present in the reviewed evidence inventory. That assertion is withdrawn as unverified; it must not be represented as a direct custodian finding.",
+    "recommendationForAdjudication": "Keep EB-03 open. Send the approved custodian request through an authorized channel, retain its delivery/acknowledgement and any authenticated reply. Ask for current beat-list/map retention, whether a national or division-level geospatial dataset exists, coverage/version/CRS/licence/access, and if not, a formal non-availability response. Do not accept PIN-code polygons as delivery beats."
+  },
+  "correctionHistory": [
+    {
+      "correctedAt": "2026-10-26",
+      "correction": "Removed unsupported custodianStatus.inquiryLogged=true and unverified direct Department finding. Replaced it with explicit unknown status pending authenticated correspondence.",
+      "evidenceAdded": "8 hash-verified PDFs from official India Post catalogue; Postal Manual Vol. VIII rules 309/310 and 274/275 document local postal maps/beat lists/route maps.",
+      "remainingGate": "No national beat geometry or authenticated custodian response acquired; EB-03 remains OPEN."
+    }
+  ]
 }
