@@ -744,7 +744,7 @@ function validateEvidenceMatrix({ directory, manifest, seedNames }) {
     // Reject a legacy artifact by its own invalidation notice before considering
     // path or checksum. A matching digest must never rehabilitate invalidated bytes.
     const declaredSourceHeader = fs.readFileSync(resolvedDiskPath, 'utf8').slice(0, 2048);
-    if (/STATUS:\\s*INVALIDATED/i.test(declaredSourceHeader) ||
+    if (/STATUS:\s*INVALIDATED/i.test(declaredSourceHeader) ||
         /INVALIDATED — DO NOT USE AS AUTHORITATIVE/i.test(declaredSourceHeader) ||
         /DO NOT USE AS AN AUTHORITATIVE/i.test(declaredSourceHeader)) {
       sourceResolutionPassed = false;
