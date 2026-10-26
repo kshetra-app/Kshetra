@@ -1,0 +1,164 @@
+# W021.5 Stage B — Acquisition Route Exhaustion and Next-Method Decision
+
+**As of:** 2026-10-25 UTC  
+**Authority:** CTO Directive 154; Stage B only  
+**Status:** Evidence acquisition in progress; Stage B remains PARTIAL / NOT ACCEPTED  
+**Production/staging:** No database access or mutation.
+
+## 1. Decision
+
+Do not continue repeating the same ECI URL or promote a third-party national shapefile. The most defensible path is a **jurisdiction-by-jurisdiction, source-layered evidence pipeline**:
+
+1. Treat the applicable ECI delimitation order, amendments/corrigenda, and Central/State Gazette effective dates as legal truth.
+2. Acquire vector geometry from official ECI/CEO/state GIS endpoints when they expose polygons, preserving raw response bytes, HTTP metadata, SHA-256, retrieval timestamp, source CRS, layer metadata and licence/temporal-validity statements.
+3. Use official results portals only as discovery/secondary corroboration until the exact geometry endpoint and source lineage are proven.
+4. Reconcile every polygon to a canonical statutory AC roster, topology checks, state coverage and legal effective-date chain. A structurally valid polygon is not automatically the legally effective boundary.
+5. Where a custodian does not publish usable bytes, issue a specific official data request (and RTI request where appropriate) for the GIS layer/source files, data dictionary, release date, coordinate reference system, legal order version, licence/reuse terms and correction history. Keep the gate open until the response is received and independently checked.
+6. Do not build or ship national geometry from inferred administrative boundaries, community data, raster tracing or name matching. Such sources may locate gaps only.
+
+## 2. Acquisition routes assessed
+
+| Route | Use | Current evidence / decision |
+|---|---|---|
+| ECI delimitation index and legal orders | Legal descriptions, schedules, reservation and effective-date chain | Official index found: https://www.eci.gov.in/delimitation/ . ECI's 2008 order is discoverable, but the binary fetch returned HTTP 406 for three URL variants in run 40213895574. Web-rendered text is not a binary-hashable source artifact. Continue via alternate ECI publication/backend links and official Gazette custodians. |
+| ECI May 2026 result portal geometry paths | Possible official polygon feed | Guessed direct paths for S03, U07, S11, S22 and S25 returned HTTP 404 in run 40212122850; do not keep retrying the same pattern without a newly observed link/script reference. Result pages prove election results exist, not that the guessed geometry API exists. |
+| Official state CEO portals | State-level constituency rosters, maps, polling-station links and sometimes GIS | Search each CEO portal for downloadable constituency maps, GIS services, polling-station map services, data downloads and linked official repositories. Verify legal vintage and coverage individually; not yet closed nationally. |
+| Official state GIS / ArcGIS REST services | Raw vector geometry and layer metadata | Telangana TGRAC yielded four service variants with 119 features, but one invalid Dornakal polygon is shared; the older Administrative Information System layer materially differs for seven ACs. No variant selected as canonical until legal provenance/version is resolved. Use as a source candidate, not accepted truth. |
+| Survey of India / NSDI / Bhuvan | Administrative boundary framework, map index, possible service discovery | Survey of India village archives were acquired for 14/27 jurisdictions (71,484 features, 37 invalid geometries, one CRS metadata conflict); these are village administrative polygons, not AC polygons. Useful for containment/coverage checks only, not a substitute for constituency geometry. |
+| Government Gazette repositories (Central and State e-Gazettes) | Primary legal instrument and effective date | Required next path for post-2014 amendments, corrections and publication/effective-date chain. Each downloaded original must be byte-hashed and linked to the exact jurisdiction and statutory schedule. |
+| Official election result/download APIs and election management portals | Roster, AC IDs, results and crosswalk clues | Use only documented/live links discovered from current official pages or page scripts. Do not infer a geometry endpoint from URL naming conventions. |
+| Government open-data catalogues / Census / LGD | Official identifiers, administrative hierarchy, population and codes | Useful for canonical IDs and administrative crosswalks, but not evidence of legal AC polygon boundaries unless the dataset explicitly publishes that subject. |
+| RTI / formal custodian request | Obtain unpublished GIS data and provenance from ECI, state CEO, state GIS or Gazette custodian | Preferred escalation when public digital source is absent or blocked. Request shapefile/GeoPackage/GeoJSON or geodatabase, metadata, coordinate system, release/effective date, applicable order/corrigenda, licence and source lineage. Track request ID/date and response bytes. |
+| Web archives / caches | Discover older page scripts, vanished endpoints and historical versions | Discovery only. An archived page or cached file does not establish current legal effectiveness; use to identify source-owner/version, then validate with official custodian. |
+| Community GIS (DataMeet, GitHub mirrors, third-party GeoJSON) | Differential testing and candidate discovery | Not canonical. DataMeet national candidate was rejected: 4,182 features vs 4,123 expected, 30 vs 31 jurisdictions, 4,102 unique state/AC pairs, 80 duplicate rows, six invalid geometries and 34 null names. ECI-portal-derived mirror audit found 824 features and 23 invalid polygons. Do not vendor unlicensed mirror data. |
+| Raster tracing / inferred polygons / administrative overlays | None for legal truth | Rejected as a way to fill missing AC geometry. Can create misleading false precision and cannot establish legal boundary/effective date. |
+| Physical Gazette inspection / notarized transcription | Authenticity/transcription gates | Requires designated custodian or project-owner evidence. A web copy alone does not close the physical-authenticity gate. |
+| India Post delivery-beat polygons / polling-station-to-PIN crosswalk | Separate external gates | Not acquired or established. Request from relevant custodians and retain independent verification; never infer delivery beats or complete crosswalks from centroids. |
+
+## 3. Latest workflow diagnosis
+
+- Run 40213959324 (https://github.com/kshetra-app/Kshetra/actions/runs/40213959324) failed for two distinct reasons: the direct ECI geometry URL returned HTTP 404, then the error-handling path raised `NameError: name 'warnings' is not defined`. This is a **probe-harness defect** that obscured clean reporting of optional-source failures; it is not evidence that every source request failed.
+- Fix committed on the resumption branch: commit `2f2cda87b39d72f8bf4c711e4a3e58064edd7fee`, initializing `warnings = []` alongside `failures = []`. The branch push should retrigger the official-geometry workflow; inspect the next run's complete manifest and logs before accepting any source.
+- The 40213959324 artifact was only 688 bytes (ZIP digest `12943d0b2320aa1e67f0b49b7b5ecdc2353034795e7da2693de628dc104ccdbc`) and contained only a minimal geometry audit; it does not contain the full raw response set because the script aborted before writing the final manifest.
+- Run 40213895574 completed its workflow, but its acquisition result says no URL variant returned a PDF: all three attempts returned HTTP 406, 1,035 bytes each, and `pdfMagic=false`. No binary PDF SHA-256 can be claimed. Do not mistake workflow success (artifact uploaded) for source acquisition success.
+- Run 40211792541 completed successfully and produced artifact `12606480050` (113,470,251 bytes; artifact digest `05531bc8037dca81eb4af0ba93cf7e397594a02643b1bb311cb463abd78cfdfa`). Its SOI audit confirms incomplete coverage and non-AC subject matter; the run does not establish canonical national AC geometry.
+
+## 4. Required next actions (Stage B only)
+
+1. Review the next run triggered by commit `2f2cda87b39d72f8bf4c711e4a3e58064edd7fee`; preserve the complete manifest, response hashes, source status and artifact digest.
+2. Correct the probe so a required-source failure and optional-source warning are both recorded, and the final manifest is written even when any request or parser fails. Add a regression test for optional HTTP 404 and required-source HTTP failure; workflow must fail only after the evidence manifest is safely written.
+3. Replace guessed ECI endpoint retries with link discovery from the live ECI result page, referenced scripts, and official publication API/link targets. Record the discovered source URL before requesting it. Do not bypass access controls or represent web-rendered text as downloaded binary bytes.
+4. Build a jurisdiction-by-jurisdiction inventory of official CEO/GIS endpoints. Each source row must have owner, subject, source URL, legal vintage, retrieval timestamp, exact byte SHA-256, CRS, licence, coverage count, topology result and statutory crosswalk status.
+5. Complete the all-119 Telangana statutory AC-number/extent crosswalk and post-2014 legal-effective-date chain. Resolve the seven material layer differences and shared Dornakal invalidity against the relevant legal schedules or custodian confirmation.
+6. Send formal, scoped requests for official national/state GIS layers and the outstanding EB-01..EB-05 evidence. A request being sent is not a gate closure.
+7. Stop at Stage B boundary and submit the full evidence dossier for independent adjudication. Do not begin Stage C, run staging SQL, or touch production under this directive.
+
+## 5. Acceptance criteria
+
+Stage B is not accepted until all required source/evidence gates have explicit dispositions, the national AC roster and geometry coverage reconcile, raw official-source bytes and hashes are reproducible, topology and legal effective dates are validated, unresolved discrepancies are documented, and independent adjudication is recorded. Until then, `W021.5-B1-04` and `EB-01..EB-05` remain OPEN; no completion percentage or formal acceptance may be increased on the basis of source discovery alone.
+
+
+## 6. Additional primary legal sources discovered after the first probe
+
+These sources materially improve the Telangana/AP statutory crosswalk route and are being acquired as exact bytes where possible:
+
+- **India Code — Andhra Pradesh Reorganisation Act, 2014 (official government PDF):** https://www.indiacode.nic.in/bitstream/123456789/2123/1/A2014-6E.pdf . Section 15 and the Second Schedule are directly relevant to the 2014 state split and constituency extent amendments. Treat the official PDF as primary legal text; retain the byte SHA-256 and page-indexed extracted text once the acquisition run returns.
+- **ECI — General Elections 2024 Press Note No. 23 (official ECI PDF):** https://elections24.eci.gov.in/docs/press-note-no-23.pdf . The ECI reiterates the applicable basis for 2024 elections and records AP/Telangana totals as 175 and 119 Assembly constituencies, respectively. This is corroborative and does not replace the underlying order, Act or notification.
+- **ECI Notification No. 282/AP/2018(DEL), dated 22 September 2018:** the ECI's indexed official text states that the 2014 Reorganisation Act and the 2015 Removal of Difficulties Order were part of the sequence and identifies the 2018 notification. The surfaced ECI backend URL is https://www.eci.gov.in/eci-backend/public/api/download?url=LMAhAK6sOPBp%2FNFF0iRfXbEB1EVSLT41NNLRjYNJJP1KivrUxbfqkDatmHy12e%2FzVx8fLfn2ReU7TfrqYobgIsVIzE4H7zCkL60TDPfde3hSidsZ4fuGUaZAjsPMK3mFe%2FOayCb%2Bc1mgC3WIErfdO%2BA072J7HtGm2kYfstpL5XIZTWrH2JWU7UfZrKWF1BUsH9xccKER%2BJMZVGi7SrzX57%2FMm24zs1eyK2AB5zsjcWKzrILRQG%2FBbbQ%2Fx5bNYVaCn7kX4xoHNibbBVAsqukcOQ%3D%3D . The same ECI backend host returned HTTP 406 in the current probe environment; no raw binary hash is claimed. Source text discovery is useful, but the exact signed notification and Gazette publication still require byte acquisition or custodian confirmation.
+- **India Code — Andhra Pradesh Reorganisation (Removal of Difficulties) First, Second and Third Orders PDF:** https://upload.indiacode.nic.in/showfile?actid=AC_CEN_5_5_00058_201406_1517807327989&filename=Andhra+Pradesh+Reorganisation+%28Removal+of+Difficulties%29+First%2C+Second+and+Third+Order.pdf&type=order . This is a separate official legal-source candidate for the 2015 chain; its applicability to AC extent must be established from the extracted text, not inferred from its title.
+
+A new read-only acquisition workflow, `.github/workflows/w0215-legal-crosswalk-source-probe.yml`, and script, `scripts/acquire_w0215_legal_crosswalk_sources.py`, fetch and hash the India Code Act and ECI 2024 press note, preserve raw bytes, extract PDF page text and report page-indexed term hits. The Removal of Difficulties orders are an optional candidate. These are evidence-acquisition steps only: they do not close the 119-AC crosswalk or establish canonical geometry.
+
+
+## 7. Additional official state-GIS candidate: Bihar Election Geo-Intelligence System
+
+The official Bihar Election Geo-Intelligence System (BEGIS) is now a first-priority state-level endpoint-discovery target: https://gis.bihar.gov.in/DEPTS/ElectionNew.aspx . Its public page advertises an **Assembly** election layer and a **Pin Code Boundary** administrative layer, plus assembly/booth selection and electoral layers. This is stronger than a generic map screenshot because it indicates a government-maintained GIS service and may help with two independent evidence gates.
+
+The live endpoint has not yet been accepted or even confirmed as directly queryable from this environment. A read-only workflow `.github/workflows/w0215-bihar-gis-discovery.yml` fetches the public page and same-host linked scripts, hashes every retrieved response, and inspects discovered same-host MapServer/FeatureServer metadata. It does not bypass access controls or fetch cross-host endpoints. Run evidence will determine the next step:
+
+- If a public service endpoint is discovered, acquire raw layer metadata and polygon bytes, then validate AC count/IDs, CRS, topology, legal vintage, licence, and the 2024/2025 election regime.
+- If the portal or service times out, returns errors, or hides its API behind a restricted workflow, do not work around the control. Request the layer package and metadata from the Bihar CEO/State GIS custodian.
+- The PIN Code Boundary layer is not automatically an India Post delivery-beat polygon; do not equate PIN boundaries with postal delivery beats without source-owner confirmation.
+
+This source is a promising official state-level acquisition route, not evidence of national completeness and not a Stage B acceptance.
+
+
+### Bihar probe results — run 40218024380
+
+The first corrected endpoint probe acquired the official BEGIS **Assembly** layer over HTTPS:
+
+- Service metadata: `https://gisserver.bihar.gov.in/arcgis/rest/services/ELECTION/AC/MapServer?f=pjson`, layer 0 named `AC`, capabilities `Map,Query,Data`, reported CRS EPSG:4326.
+- Geometry query: 243 polygon features, `CONS_CODE` covers 1–243 with 243 unique codes, no missing geometry, all rings closed, and no transfer-limit flag. Raw response size 10,958,178 bytes; SHA-256 `3ab79c2942f27296b08a93bb07fed1fc63bd665a9db66ddaf8fe6ece3fc70b0e`.
+- The separate official PIN Code Boundary service reports 884 features. This is a PIN-code administrative layer, **not** evidence of postal delivery-beat polygons.
+- Preliminary independent Shapely screening of the acquired AC response (EPSG:4326 ring orientation conversion; projected to EPSG:32645 for overlap area) found 3 invalid feature geometries (KURTHA code 215, SAHEBPUR KAMAL code 145, NIRMALI code 41), 76 inter-constituency positive-area overlap pairs above 1 m², and a duplicate name `PIPRA` across two codes. The largest screened overlap is approximately 144,495 m² between BELAGANJ and MAKHDUMPUR (SC).
+
+This is **not acceptance**. The audit is preliminary because multipart ring interpretation and legal vintage need independent review, and the first artifact did not yet include a Bihar state polygon for gap/outside comparison. The updated read-only workflow now also acquires the official StateBoundary layer and runs a reproducible topology/coverage screen; the result must be reviewed before deciding whether any geometry can be used. The candidate must not be promoted or repaired silently.
+
+
+The corrected CI audit is now complete: [run 40218393964](https://github.com/kshetra-app/Kshetra/actions/runs/40218393964), artifact SHA-256 `befc11117a50a8b0ea33f294f87593b1f81839818eb65957a9873cddb1a24abe`. It recognizes the official state's `State_Name=Bihar` field and reproduces the state-coverage comparison. Coverage is approximately 99.999568%, but the three invalid AC geometries and 76 positive-area overlap pairs remain; therefore the result is a topology **failure**, not a source acceptance. See `reports/evidence/w021_5_bihar_ac_geometry_audit_40218393964.json`.
+
+
+### Legal crosswalk download failure and fallback decision
+
+The first official legal-source acquisition run `40218092567` timed out with zero bytes from India Code, the ECI 2024 press-note PDF, and the optional India Code order URL. This is a transport timeout, not evidence that the documents are absent. A direct call through the linked GitHub connector was also rejected because that connector only accepts URLs from the linked GitHub instance.
+
+The best next attempt is now to fetch the **original Gazette of India PDF as hosted by government state portals**, while retaining India Code as the preferred canonical index and ECI material as corroboration:
+
+- Andhra Pradesh government-hosted Gazette copy: https://apseeds.ap.gov.in/PDF/apreorg/APRegACT2014.pdf
+- Telangana state-government-hosted copy: https://tgerc.telangana.gov.in/file_upload/uploads/Acts%20and%20Polices/Acts%20and%20Rules/A.P.Reorganisation%20act%202014.pdf
+- India Code original PDF: https://www.indiacode.nic.in/bitstream/123456789/2123/1/A2014-6E.pdf
+
+A new acquisition probe is queued as [run 40218632258](https://github.com/kshetra-app/Kshetra/actions/runs/40218632258). The script now tries these government-hosted copies first and falls back to India Code; each candidate's final URL, byte length, exact SHA-256, PDF magic, and page-level term findings will be recorded. A state-hosted mirror is not silently treated as the canonical custodian copy: the original Gazette text and source lineage must be corroborated, and the exact 2018 ECI notification/effective-date chain remains separately open.
+
+
+### Gazette copy successfully acquired; statutory roster extraction underway
+
+The fallback route succeeded in run [40218632258](https://github.com/kshetra-app/Kshetra/actions/runs/40218632258): the Andhra Pradesh government-hosted copy of the Gazette of India / Andhra Pradesh Reorganisation Act, 2014 returned HTTP 200 as a 71-page PDF (231,596 bytes), SHA-256 `84cd566b917f9a3f600c47f6540520c950166b424a964ad37d64dc3c968114aa`. Schedule XXVII — Telangana, Table A (Assembly Constituencies) is located on zero-based PDF page index 39 (printed page 40). The acquisition evidence is preserved in `reports/evidence/w021_5_ap_reorganisation_act_acquisition_40218632258.json`.
+
+The PDF is hosted on an Andhra Pradesh government domain, but its byte identity has **not** been compared with the India Code copy. The ECI 2024 press note and Removal-of-Difficulties order endpoints still timed out and remain open corroboration gaps. A parser has been added to extract the 119 statutory AC serials, names, districts and extents from Schedule XXVII, verify the 1–119 sequence and preserve the PDF hash and extraction history. Its CI run must pass before this roster is used for GIS adjudication.
+
+
+### Statutory roster vs TGRAC candidate layers — run 40219308671
+
+The combined workflow acquired both candidate layers and completed a 119-record name crosswalk against Schedule XXVII:
+
+- `EndowmentLands_Admin_2026`: 119 features, 119 unique names; 107 exact normalized-name matches and 12 provisional spelling aliases; zero unresolved after aliases.
+- `Administrative_Information_System`: 119 features, 119 unique names; 108 exact normalized-name matches and 11 provisional spelling aliases; zero unresolved after aliases.
+- The three EndowmentLands variants are also recorded in the source register. `Admin_2026` and `Admin_New` raw responses are byte-identical; `Admin_Old` differs.
+- Provisional spelling variants include Bellampalli/Bellampalle, Armur/Armoor, Jagtial/Jagatial, Sircilla/Sirisilla, Huzurabad/Huzarabad, Vicarabad/Vikarabad, Secunderabad Cantt./Cont, Mahbubnagar/Mahabubnagar, Devarkadra/Devarakdra, Nagarjuna Sagar/Nagarjunasagar, Huzurnagar/Huzuranagar, and Jangaon/Jangoan. The older AdministrativeInfoSystem layer spells Jangaon exactly, while the 2026 layer uses Jangoan.
+
+Full evidence summary: `reports/evidence/w021_5_telanganaschedule_tgrac_name_crosswalk_40219308671.json`. The full crosswalk output is retained in run 40219308671's artifact (artifact SHA-256 `8439368e86d5c6179c35a6bd8525cc430e4897aa6705b0df8fc815da54d3220e`).
+
+This is only a **name/roster crosswalk**. The aliases are inferred, not official declarations. TGRAC `OBJECTID` is not a canonical AC number. No statutory extent-to-polygon validation was performed, because Schedule XXVII references administrative units as of 15 February 2004 and Census 2001 municipal wards. The existing geometry audit still shows material disagreement for seven ACs and the shared invalid Dornakal polygon. Therefore, no TGRAC layer is accepted as canonical.
+
+### Additional legal-chain corroboration candidates
+
+The official Chief Electoral Officer, Telangana 2024 election schedule PDF and PIB release `PRID=2015227` both corroborate the chain involving the 2014 Reorganisation Act, the 2015 Removal of Difficulties Order, and the 2018 ECI notification. They are recorded in the source register as additional official candidates; raw bytes and SHA-256 still need acquisition. They do not replace the 2018 notification or Gazette itself.
+
+## 2026-10-26 additional official-source discovery (candidate-only)
+
+An additional official TGRAC service was discovered and acquired: https://tgrac.telangana.gov.in/arcgis/rest/services/Master_Administrative_Folder/Master_Administrative_Boundary/MapServer . Layer 0 exposes 119 polygons in EPSG:4326. The raw ESRI JSON is 12,469,989 bytes, SHA-256 c5d0cbf55f5079cd91b0ce3a8733ce11701a70f0ea474cdd96025ec8c651e444; metadata is 3,709 bytes, SHA-256 78130181060c9fb1a0eeba400748cf285ba7e973db75d1600b82ca2ab9135988. Workflow run 40259741110 succeeded; its 23,293,504-byte artifact ZIP SHA-256 6d274d901e622c34252d010c1e41913bea1c7bab883a1af7f128e065b37eea87 was recomputed locally and matched the GitHub artifact digest. Evidence: reports/evidence/w021_5_telangana_master_geometry_probe_40259741110.json.
+
+Structural checks pass (119 unique OBJECTIDs/names, 123 rings, no missing geometry, unclosed rings or non-finite coordinates). The independent topology audit still finds one invalid Dornakal (ST) Assembly polygon (ring self-intersection), 118 valid feature geometries, zero positive-area overlap pairs and one union polygon part. The layer has no canonical AC number field; OBJECTID is not a statutory identifier. Legal vintage, version, licence, source lineage, state-boundary coverage and statutory extent-to-polygon reconciliation remain unverified. This source is therefore official-state-GIS candidate only, not canonical.
+
+The expanded probe completed successfully in run 40259909774 (artifact 12624382089; 38,240,490 bytes; SHA-256 c7b587e7591983cd81b527b8a3824229f812bed94a123e4e68b5a824932e3629, recomputed locally). AdministrativeInfoSystem_Query layer 1 returned byte-identical geometry to the older AdministrativeInfoSystem layer 24 (12,465,346 bytes; SHA-256 91cd791317836d8a6a8729b03f08fd3aee8c727c82e123b1659972d949d32f27). RnB_Admin layer 8 and MusiRiver project layer 59 returned byte-identical geometry to each other (12,463,409 bytes; SHA-256 c6d0d8725e157cbb7d4b140ad91514d0f4be532d35879f6d0f654072b58d285f). The RnB/MusiRiver family is near-identical to Admin_2026/Admin_New: all 119 feature names, ring-length vectors, point counts and bboxes align; maximum pointwise coordinate difference is below 1e-9 degrees. These are not independent confirmations.
+
+The new variant-family comparison confirms the Master layer aligns with the older AdministrativeInfoSystem geometry family to sub-millimetre coordinate precision for all 119 ACs. Against the newer family, 112 matched ACs have the same ring-length/point-count structure and sub-millimetre coordinate differences, while six matched ACs have different ring structures and Jangaon/Jangoan remains a name mismatch—the known seven-AC discrepancy persists. Every acquired TGRAC candidate audited in these runs has one invalid Dornakal self-intersection and zero positive-area overlap pairs; no state-boundary gap/coverage proof or statutory extent validation has been performed. Evidence: reports/evidence/w021_5_telangana_variant_family_comparison_20261026.json. All candidates remain non-canonical.
+
+ECI's official 2026 election publication page also exposes the 2026 Assam, Kerala, Tamil Nadu, West Bengal and Puducherry election publications (https://www.eci.gov.in/eci-publication/), and the official press note includes constituency maps/rosters. These are useful to cross-check the current electoral roster and identify applicable publications, but a map marked 'not to scale' is not a substitute for vector geometry or legal extent validation.
+
+**EB-03 postal geography route adjudication (2026-10-26):** The official OGD catalog exposes “All India Pincode Boundary Geo JSON”, published 2025-05-09 by the Ministry of Communications / Department of Posts under GODL: https://sikkim.data.gov.in/catalog/all-india-pincode-boundary-geo-json and https://www.data.gov.in/catalog/all-india-pincode-boundary-geo-json. The catalog page did not expose downloadable resource bytes in this acquisition attempt, so no PIN-polygon file/hash/feature count is claimed. More importantly, this dataset is PIN-code service-area geometry, not individual postman delivery-beat polygons; it cannot close EB-03 or justify strict PIN-to-AC containment. The most apt next route is a specific written data request to the Department of Posts/CEPT CDO (General Manager, CEPT; gmcept@indiapost.gov.in) asking whether national delivery-beat polygons exist and, if so, for the vector bytes, CRS, version/effective date, licence, data dictionary and change history. If no shareable beat dataset exists, obtain written custodian confirmation and keep EB-03/EB-04 blocked rather than substitute PIN polygons or centroids.
+
+**Decision:** the TGRAC candidate acquisition and cross-variant probes are complete, but no layer is canonical. Continue with source-owner/legal-lineage requests and national jurisdiction-by-jurisdiction official geometry acquisition. Physical Gazette authenticity and independent transcription (EB-01/EB-02) require a custodian-certified original/physical inspection and independent transcription audit; web-indexed text alone cannot close them. Stage B remains PARTIAL / NOT ACCEPTED.
+
+## 2026-10-26 legal source acquisition result
+
+Read-only workflow run 40260777545 succeeded and acquired a Government of Andhra Pradesh-hosted copy of the AP Reorganisation Act PDF (231,596 bytes, SHA-256 84cd566b917f9a3f600c47f6540520c950166b424a964ad37d64dc3c968114aa). Schedule XXVII was parsed into 119 statutory AC rows with serial sequence, names/extents and semantic checks passing. This is an APSeeds-hosted government copy; the IndiaCode URL remains unacquired and its hash is explicitly null. Do not attribute the APSeeds hash to IndiaCode.
+
+Two official PIB HTML variants were acquired and hashed: 1,211,607 bytes / SHA-256 4eef52437040ca8f083d9c839e65a4a431f85e0fb5d437c8a1fb89b272eb4066, and 1,212,709 bytes / SHA-256 fc43efff8bc9d341cff190d5135ea1825ce484f92a896ef0353c99a388e00bf6. Both contain the expected legal-chain terms, but they are corroborative press-release HTML, not the original ECI notification or Gazette.
+
+The official ECI 2018 notification API returned HTTP 406 on both www and bare host variants (same 1,035-byte error body SHA-256 8f14ef818fea5334fa7bc2ed40e6808c3227dc36a413fb67f326d1591e03675a); this hash is for the error response, not the document. The CEO Telangana schedule and ECI 2024 press-note PDFs timed out on all tested routes; the removal-of-difficulties order also timed out. No raw source hash is claimed for these missing documents. Evidence: reports/evidence/w021_5_legal_crosswalk_source_probe_40260777545.json. The full source-acquisition register now separates these outcomes by URL and provenance.
+
+The statutory-to-GIS crosswalk reports PASS_WITH_CANDIDATE_ALIASES (119 statutory rows; 119 GIS features) but 11/12 aliases remain inferred depending on the candidate layer, OBJECTID is not a legal AC ID, and no legal extent-to-polygon comparison was performed. This is a name-roster crosswalk only, not boundary acceptance.
+
+**Selected next route:** stop retrying the same blocked/time-out URLs. Use the prepared custodian request pack at reports/w021_5_stage_b_custodian_request_pack_2026-10-26.md to obtain a certified original ECI notification/Gazette, TGRAC source lineage/correction record, and official delivery-beat/polling-station datasets. The requests are drafted but not sent; no acknowledgement IDs are claimed. Stage B remains PARTIAL / NOT ACCEPTED.
