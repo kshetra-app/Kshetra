@@ -59,6 +59,19 @@ SOURCES = [
         "purpose": "Primary legal notification for AP/Telangana constituency extent lineage; if binary bytes remain blocked, preserve the exact failed attempts and use official HTML only as corroboration, never as a replacement for the Gazette."
     },
     {
+        "id": "ECI_DELIMITATION_ORDER_2008",
+        "urlCandidates": [
+            "https://upload.indiacode.nic.in/showfile?actid=AC_CEN_3_20_00030_200233_1517807324510&filename=Delimitation+Order%2C2008.pdf&type=order",
+            "https://upload.indiacode.nic.in/showfile?actid=AC_CEN_3_20_00030_200233_1517807324510&type=order&filename=Delimitation%20Order%2C2008.pdf",
+            "https://www.eci.gov.in/Documents/Delimitation/DelimitationofParliamentaryAssemblyConstituenciesOrder-2008%28English%29.pdf"
+        ],
+        "publisher": "India Code / Election Commission of India",
+        "documentTitle": "Delimitation of Parliamentary and Assembly Constituencies Order, 2008",
+        "required": False,
+        "terms": ["SCHEDULE - III", "ASSEMBLY CONSTITUENCIES", "TELANGANA", "ANDHRA PRADESH"],
+        "purpose": "Primary historical delimitation order; acquire original PDF bytes if the exact official host permits access. Must be reconciled with later jurisdiction-specific orders and amendments; not alone proof of present legal extent."
+    },
+    {
         "id": "AP_REORGANISATION_REMOVAL_DIFFICULTIES_ORDERS",
         "urlCandidates": [
             "https://upload.indiacode.nic.in/showfile?actid=AC_CEN_5_5_00058_201406_1517807327989&filename=Andhra+Pradesh+Reorganisation+%28Removal+of+Difficulties%29+First%2C+Second+and+Third+Order.pdf&type=order"
@@ -73,7 +86,7 @@ SOURCES = [
 ALLOWED_HOSTS = {
     "apseeds.ap.gov.in", "tgerc.telangana.gov.in",
     "www.indiacode.nic.in", "indiacode.nic.in", "upload.indiacode.nic.in",
-    "elections24.eci.gov.in", "www.eci.gov.in", "eci.gov.in", "ceotelangana.nic.in", "www.pib.gov.in", "pib.gov.in",
+    "elections24.eci.gov.in", "www.eci.gov.in", "eci.gov.in", "ceotelangana.nic.in", "www.pib.gov.in", "pib.gov.in", "apegazette.cgg.gov.in", "www.telangana.gov.in", "tggazette.cgg.gov.in", "indiankanoon.org",
 }
 HEADERS = {
     "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/129.0.0.0 Safari/537.36",
@@ -84,6 +97,46 @@ def sha(data: bytes) -> str:
     return hashlib.sha256(data).hexdigest()
 
 HTML_SOURCES = [
+    {
+        "id": "ECI_PUBLICATIONS_CATALOGUE",
+        "url": "https://www.eci.gov.in/eci-publication/",
+        "publisher": "Election Commission of India",
+        "documentTitle": "Official ECI publications catalogue — exact legal PDF link discovery",
+        "terms": ["Delimitation of Parliamentary & Assembly Constituencies Order - 2008", "Assam", "Jammu & Kashmir", "PDF"],
+        "purpose": "First-party catalogue and link discovery only; HTML is not the underlying legal instrument. Extract and retry only exact discovered PDF hrefs."
+    },
+    {
+        "id": "ECI_DELIMITATION_LANDING",
+        "url": "https://www.eci.gov.in/delimitation/",
+        "publisher": "Election Commission of India",
+        "documentTitle": "Official ECI delimitation landing page and jurisdiction-specific legal-source index",
+        "terms": ["Assam 2023", "Jammu & Kashmir", "Delimitation Commission", "Old Delimitation Orders"],
+        "purpose": "Discover applicable jurisdiction-specific orders and corrigenda; landing page alone does not establish a complete legal chain."
+    },
+    {
+        "id": "AP_EGAZETTE_CATALOGUE",
+        "url": "https://apegazette.cgg.gov.in/",
+        "publisher": "Government of Andhra Pradesh — Gazette publication portal",
+        "documentTitle": "Official Andhra Pradesh e-Gazette portal",
+        "terms": ["Gazette", "Search", "2018", "Notification"],
+        "purpose": "Find the 22 September 2018 extraordinary Gazette counterpart for ECI Notification 282/AP/2018(DEL). Portal response is discovery evidence until the exact Gazette issue and PDF bytes are acquired."
+    },
+    {
+        "id": "TELANGANA_GAZETTE_CATALOGUE",
+        "url": "https://www.telangana.gov.in/gazette/",
+        "publisher": "Government of Telangana",
+        "documentTitle": "Official Telangana Gazette catalogue information page",
+        "terms": ["tggazette.cgg.gov.in", "extraordinary", "authentic", "Gazette"],
+        "purpose": "Custodian/portal discovery only; target notification is stated to be in the Andhra Pradesh State Gazette and Gazette of India, so do not substitute Telangana Gazette without evidence."
+    },
+    {
+        "id": "TELANGANA_HIGH_COURT_2018_DELIMITATION_JUDGMENT",
+        "url": "https://indiankanoon.org/doc/71192582/",
+        "publisher": "Telangana High Court judgment (secondary online text reproduction)",
+        "documentTitle": "Marri Shasidhar Reddy v. Election Commission of India, decision dated 16 November 2018",
+        "terms": ["282/AP/2018(DEL)", "53-Rampachodavaram", "67-Polavaram", "Telangana"],
+        "purpose": "Independent judicial-context cross-check for the notification's legal effect; not a replacement for original ECI notification or Gazette bytes."
+    },
     {
         "id": "PIB_AP_TELANGANA_DELIMITATION_LEGAL_CHAIN_IFRAME",
         "url": "https://www.pib.gov.in/PressReleaseIframePage.aspx?PRID=2015227&lang=2&reg=48",
