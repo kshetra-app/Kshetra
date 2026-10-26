@@ -76,7 +76,7 @@ function installRequestMock(options: {
     }
   });
   let responseCallback: ((response: unknown) => void) | undefined;
-  jest.spyOn(https, 'request').mockImplementation(((...args: any[]) => {
+  const spy = jest.spyOn(https, 'request').mockImplementation(((...args: any[]) => {
     responseCallback = args[1];
     return req;
   }) as any);
