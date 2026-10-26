@@ -74,6 +74,19 @@ SOURCES.extend([
     {"id": "telangana-master-layer-metadata", "kind": "official_state_gis_master_service_candidate", "url": TELANGANA_MASTER_LAYER + "?f=pjson", "required": False},
     {"id": "telangana-master-ac-geometry", "kind": "official_state_gis_master_geometry_candidate", "url": TELANGANA_MASTER_LAYER + "/query?" + urlencode({"where":"1=1","outFields":"*","returnGeometry":"true","outSR":"4326","f":"json"}), "expected_features":119, "required": False},
 ])
+# Additional public TGRAC service families discovered during expanded source search.
+TELANGANA_QUERY_LAYER = "https://tgrac.telangana.gov.in/arcgis/rest/services/AdministrativeInfoSystem_Folder/Administrative_Information_System_Query/MapServer/1"
+TELANGANA_RNB_LAYER = "https://tgrac.telangana.gov.in/arcgis/rest/services/RnB_Folder/RnB_Admin/MapServer/8"
+TELANGANA_MUSI_LAYER = "https://tgrac.telangana.gov.in/arcgis/rest/services/MusiRiver/Musi_Basin_Web_Publication_vector/MapServer/59"
+for source_id, kind, layer_url in [
+    ("telangana-query", "official_state_gis_query_service_candidate", TELANGANA_QUERY_LAYER),
+    ("telangana-rnb", "official_state_gis_roads_admin_service_candidate", TELANGANA_RNB_LAYER),
+    ("telangana-musiriver", "official_state_gis_project_service_candidate", TELANGANA_MUSI_LAYER),
+]:
+    SOURCES.extend([
+        {"id": f"{source_id}-layer-metadata", "kind": kind + "_metadata", "url": layer_url + "?f=pjson", "required": False},
+        {"id": f"{source_id}-ac-geometry", "kind": kind + "_geometry", "url": layer_url + "/query?" + urlencode({"where":"1=1","outFields":"*","returnGeometry":"true","outSR":"4326","f":"json"}), "expected_features":119, "required": False},
+    ])
 SOURCES.extend([
     {"id": "telangana-admin-new-layer-metadata", "kind": "official_state_gis_new_service_candidate", "url": TELANGANA_ADMIN_NEW + "?f=pjson"},
     {"id": "telangana-admin-new-ac-geometry", "kind": "official_state_gis_new_geometry_candidate", "url": TELANGANA_ADMIN_NEW + "/query?" + urlencode({"where":"1=1","outFields":"*","returnGeometry":"true","outSR":"4326","f":"json"}), "expected_features":119, "required":False},
