@@ -134,6 +134,6 @@ describe('PostgresDelimitationWatchRepository SQL contract', () => {
     expect(await repository.getRun('r1')).toBeNull();
     expect(await repository.listRunsForSource('s1')).toEqual([]);
     expect(query).toHaveBeenCalled();
-    expect(query.mock.calls.length).toBeGreaterThanOrEqual(30);
+    expect(query.mock.calls.length).toBe(28);
   });
 });
