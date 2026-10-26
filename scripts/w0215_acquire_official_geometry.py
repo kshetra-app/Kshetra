@@ -229,7 +229,7 @@ def fetch_allowlisted(initial_url: str):
         if parsed.scheme != "https" or parsed.hostname not in ALLOWED_HOSTS:
             raise RuntimeError(f"URL_NOT_ALLOWLISTED: {current}")
         response = requests.get(
-            current, headers=HEADERS, timeout=45,
+            current, headers=HEADERS, timeout=20,
             impersonate="chrome124", allow_redirects=False
         )
         if response.status_code in (301, 302, 303, 307, 308):
