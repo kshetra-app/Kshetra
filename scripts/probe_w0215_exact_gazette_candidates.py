@@ -208,18 +208,18 @@ def main():
  ]: probe_live_page(url,label,manifest)
 
  exact2008=[
-  ("E71_2008_001_http","http://egazette.nic.in/WriteReadData/2008/E_71_2008_001.pdf"),
-  ("E71_2008_002_http","http://egazette.nic.in/WriteReadData/2008/E_71_2008_002.pdf"),
   ("E71_2008_001_https","https://egazette.gov.in/WriteReadData/2008/E_71_2008_001.pdf"),
-  ("E382_2008_001_http","http://egazette.nic.in/WriteReadData/2008/E_382_2008_001.pdf"),
-  ("E383_2008_001_http","http://egazette.nic.in/WriteReadData/2008/E_383_2008_001.pdf"),
-  ("E453_2008_001_http","http://egazette.nic.in/WriteReadData/2008/E_453_2008_001.pdf"),
+  ("E71_2008_002_https","https://egazette.gov.in/WriteReadData/2008/E_71_2008_002.pdf"),
+  ("E71_2008_001_https","https://egazette.gov.in/WriteReadData/2008/E_71_2008_001.pdf"),
+  ("E382_2008_001_https","https://egazette.gov.in/WriteReadData/2008/E_382_2008_001.pdf"),
+  ("E383_2008_001_https","https://egazette.gov.in/WriteReadData/2008/E_383_2008_001.pdf"),
+  ("E453_2008_001_https","https://egazette.gov.in/WriteReadData/2008/E_453_2008_001.pdf"),
   ("KnownE248_2008","http://egazette.nic.in:80/WriteReadData/2008/E_248_2008_001.pdf"),
   ("KnownE55_2008","https://egazette.gov.in/WriteReadData/2008/E_55_2008_002.pdf"),
  ]
  exact2018=[
-  ("E55_2018_001_http","http://egazette.nic.in/WriteReadData/2018/E_55_2018_001.pdf"),
-  ("E55_2018_002_http","http://egazette.nic.in/WriteReadData/2018/E_55_2018_002.pdf"),
+  ("E55_2018_001_https","https://egazette.gov.in/WriteReadData/2018/E_55_2018_001.pdf"),
+  ("E55_2018_002_https","https://egazette.gov.in/WriteReadData/2018/E_55_2018_002.pdf"),
   ("Weekly190018","https://egazette.gov.in/WriteReadData/2018/190018.pdf"),
   ("Weekly190383","https://egazette.gov.in/WriteReadData/2018/190383.pdf"),
   ("Weekly190468","https://egazette.gov.in/WriteReadData/2018/190468.pdf"),
@@ -239,7 +239,7 @@ def main():
  # A previous evidence manifest already enumerated these exact Wayback AP Gazette URLs; this
  # CDX retry refreshes that set. Never infer the document from a random file identifier.
  for item in cdx_ap[:40]:
-  item=dict(item);item["archiveUrl"]=capture_url(str(item.get("timestamp") or "" ,str(item.get("original") or ""))
+  item=dict(item);item["archiveUrl"]=capture_url(str(item.get("timestamp") or ""),str(item.get("original") or ""))
   tasks.append((item,"APGazetteArchiveCapture","2018"))
  cdx2008=query_cdx("EGazetteNic2008ExactIssue71AndLegalIds",{
   "url":"http://egazette.nic.in/WriteReadData/2008/E_","matchType":"prefix",
@@ -261,7 +261,7 @@ def main():
   ("Weekly190466Capture","https://egazette.gov.in/WriteReadData/2018/190466.pdf","20181024231236","2018"),
  ]
  for cohort,original,ts,kind in known:
-  tasks.append(({"timestamp":ts,"original":original,"archiveUrl":capture_url(ts,original)},cohort,kind)
+  tasks.append(({"timestamp":ts,"original":original,"archiveUrl":capture_url(ts,original)},cohort,kind))
  # De-duplicate while preserving the capture chosen; each different capture remains a separate provenance record.
  dedup={}
  for item,cohort,kind in tasks:
