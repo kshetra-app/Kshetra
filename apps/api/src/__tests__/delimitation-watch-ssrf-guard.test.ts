@@ -124,8 +124,8 @@ describe('Delimitation Watch SSRF guard', () => {
       ['https://host.internal/', 'Local and loopback'],
       ['https://host.lan/', 'Local and loopback'],
       ['https://host.home/', 'Local and loopback'],
-      ['https://127.0.0.1/', 'prohibited range'],
-      ['https://2130706433/', 'prohibited range'],
+      ['https://127.0.0.1/', 'Local and loopback'],
+      ['https://2130706433/', 'Local and loopback'],
     ])('rejects unsafe URL %s', async (url, message) => {
       await expect(validateAndPinSourceUrl(url)).rejects.toThrow(message);
     });
