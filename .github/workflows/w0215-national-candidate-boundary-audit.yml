@@ -1,0 +1,80 @@
+name: W021.5 Pinned National AC Geometry Candidate Audit
+
+on:
+  push:
+    branches:
+      - cto/w0215-stage-b-evidence-20261025
+    paths:
+      - "scripts/audit_w0215_national_candidate_boundaries.py"
+      - ".github/workflows/w0215-national-candidate-boundary-audit.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: w0215-national-candidate-boundary-audit
+  cancel-in-progress: false
+
+jobs:
+  audit:
+    name: Acquire and independently audit pinned public AC candidate
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Checkout authorized W021.5 evidence-only branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: true
+      - name: Set up pinned Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install pinned geometry audit libraries
+        run: python -m pip install --disable-pip-version-check "shapely==2.1.2" "pyproj==3.7.2"
+      - name: Clone and pin third-party source repository
+        env:
+          SOURCE_COMMIT: "3e4e9f347b260040278c36f563fb2efa28e2a476"
+        run: |
+          set -eu
+          git clone --quiet https://github.com/Marma-Fintech-Organization/india-electoral-boundaries.git "$RUNNER_TEMP/india-electoral-boundaries"
+          git -C "$RUNNER_TEMP/india-electoral-boundaries" checkout --quiet --detach "$SOURCE_COMMIT"
+          test "$(git -C "$RUNNER_TEMP/india-electoral-boundaries" rev-parse HEAD)" = "$SOURCE_COMMIT"
+      - name: Acquire exact candidate source snapshot and audit topology/provenance
+        id: audit
+        continue-on-error: true
+        run: |
+          python scripts/audit_w0215_national_candidate_boundaries.py \
+            --source "$RUNNER_TEMP/india-electoral-boundaries" \
+            --out data/evidence/w021_5/national_candidate_boundaries
+      - name: Upload original snapshot and audit artifacts even on failure
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: w0215-national-ac-candidate-audit-${{ github.run_id }}
+          path: data/evidence/w021_5/national_candidate_boundaries/
+          if-no-files-found: warn
+          retention-days: 30
+      - name: Persist verified candidate archive and audit reports to the evidence-only branch
+        if: steps.audit.outcome == 'success'
+        env:
+          BRANCH_NAME: ${{ github.ref_name }}
+        run: |
+          set -eu
+          test "$GITHUB_REF" = "refs/heads/cto/w0215-stage-b-evidence-20261025"
+          test -s data/evidence/w021_5/national_candidate_boundaries/manifest.json
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/evidence/w021_5/national_candidate_boundaries/
+          if git diff --cached --quiet; then
+            echo "The candidate source snapshot and reports are already current."
+          else
+            git commit -m "evidence(w0215): preserve pinned national AC candidate audit"
+            git push origin "HEAD:$BRANCH_NAME"
+          fi
+      - name: Require full source snapshot audit (not official geometry acceptance)
+        if: steps.audit.outcome != 'success'
+        run: |
+          echo "Candidate acquisition or forensic audit failed; inspect logs and uploaded raw evidence. No canonical geometry acceptance is implied by this workflow."
+          exit 1
