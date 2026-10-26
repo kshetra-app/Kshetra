@@ -161,12 +161,25 @@ try {
   assert.fail(`origin/master could not be resolved: ${err.message}`);
 }
 
-// Local HEAD must strictly match origin/master (fail-closed, no exceptions)
-assert.strictEqual(
-  localHead,
-  originMaster,
-  `Local HEAD (${localHead}) must strictly match origin/master (${originMaster})`
-);
+// On a pull request, CI checks out GitHub's synthetic merge commit; requiring that
+// commit to equal origin/master makes every nontrivial PR fail before lineage checks.
+// Preserve strict equality on master pushes, and on PRs require the checked-out merge
+// commit to include the actual target-branch head as an ancestor.
+const eventName = process.env.GITHUB_EVENT_NAME || '';
+if (eventName === 'pull_request' || eventName === 'pull_request_target') {
+  const baseRef = process.env.GITHUB_BASE_REF;
+  assert.ok(baseRef, 'Pull-request CI must expose GITHUB_BASE_REF');
+  const baseHead = execSync(`git rev-parse origin/${baseRef}`, { encoding: 'utf8' }).trim();
+  assert.strictEqual(baseHead.length, 40, `PR target origin/${baseRef} must resolve to a full commit SHA`);
+  execSync(`git merge-base --is-ancestor ${baseHead} ${localHead}`);
+  console.log(`[PASS] Check 8a: PR merge HEAD (${localHead}) descends from target branch origin/${baseRef} (${baseHead}).`);
+} else {
+  assert.strictEqual(
+    localHead,
+    originMaster,
+    `Local HEAD (${localHead}) must strictly match origin/master (${originMaster}) outside pull-request CI`
+  );
+}
 
 // Working tree must be completely clean (fail-closed, no exceptions)
 const porcelainStatus = execSync('git status --porcelain', { encoding: 'utf8' }).trim();
