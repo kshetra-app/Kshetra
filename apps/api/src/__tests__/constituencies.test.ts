@@ -1,8 +1,19 @@
 import { buildApp } from '../server';
 import type { FastifyInstance } from 'fastify';
+import { isSupabaseConfigured, setSupabaseConfiguredForTesting } from '../lib/supabase';
 
 describe('Constituency Routes', () => {
   let app: FastifyInstance;
+  let originalConfigured: boolean;
+
+  beforeAll(() => {
+    originalConfigured = isSupabaseConfigured;
+    setSupabaseConfiguredForTesting(false);
+  });
+
+  afterAll(() => {
+    setSupabaseConfiguredForTesting(originalConfigured);
+  });
 
   beforeEach(async () => {
     app = await buildApp();

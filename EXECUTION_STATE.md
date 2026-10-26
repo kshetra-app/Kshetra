@@ -60,10 +60,18 @@ CURRENT_JOB:           W021.5 STAGE B — SOURCE ACQUISITION & GEOMETRY VALIDATI
 LAST_COMPLETED_JOB:    W022 (B2B SaaS Webhook Engine & Zero-Trust Dispatcher)
 NEXT_PERMITTED_JOB:    W021.5 STAGE B ONLY — COMPLETE EVIDENCE PACKET; STOP FOR CTO ADJUDICATION BEFORE STAGE C
 
-JOB_023_STATUS:        REMEDIATED / TESTED / READY FOR INDEPENDENT CTO ADJUDICATION (ROUND 3)
-JOB_023_IMPL_COMMIT:   760094d5aa06635920ce72f9f656ef82532f2980
-JOB_023_GOV_HEAD:      85ba860269a43fcfa6ab588e514096525272cfe7
-JOB_023_REMOTE_HEAD:   b51301f5557d8e2f7902d532a8996d6f7ab834ff
+PLAN_STATUS:                          SUBMITTED (W021.5 Stage B Resumption / Planning Only)
+IMPLEMENTATION_AUTHORIZATION:         NO
+AUTHORIZED_JOB:                       NONE (Planning Only; Implementation NOT Authorized)
+AUTHORIZED_SCOPE_HASH:                NONE
+IMPLEMENTATION_AUTHORIZATION_COMMIT:  NONE
+
+JOB_023_STATUS:        REMEDIATED / TESTED / READY FOR INDEPENDENT CTO ADJUDICATION (ROUND 4)
+JOB_023_R2_IMPL:       760094d5aa06635920ce72f9f656ef82532f2980
+JOB_023_R2_GOV:        85ba860269a43fcfa6ab588e514096525272cfe7
+JOB_023_R3_REMED:      3fbce8bcede1e9c6b6f2e4c6a6b0d4690593b34a
+JOB_023_R3_SUBMIT:     784aef41953f89ba09385f117dd02ad32df1578e
+JOB_023_HEAD:          27f4d050bf5d71ffbc9503d57f3ae62abb038175
 JOB_023_MIGRATION_071: supabase/migrations/071_delimitation_watch_engine.sql
 JOB_023_EVIDENCE:      reports/evidence/JOB_023_ACCEPTANCE_MANIFEST.json
 JOB_023_TEST_BATTERY:  99/99 PASS (7 Unit Routes, 15 Truth Adversarial, 21 Hardened SSRF, 8 PG Safety Guards, 7 PG16 Server, 5 Persistence, 19 Invariants, 5 PGlite, 12 Controlled E2E)
@@ -581,14 +589,16 @@ REMOTE_SYNC:           Up to date with origin/master
 
 ---
 
-## JOB 023 — Delimitation Watch Remediation Execution State (2026-10-25 Round 3)
+## JOB 023 — Delimitation Watch Remediation Execution State (2026-10-26 Round 4)
 
-- **Authority:** CTO DIRECTIVE — JOB 023 ROUND 3: CLOSE REMAINING ACCEPTANCE BLOCKERS
-- **Implementation Commit:** `760094d5aa06635920ce72f9f656ef82532f2980`
+- **Authority:** CTO DIRECTIVE — JOB 023 ROUND 4: CLOSE CI AND GOVERNANCE BLOCKERS
+- **Round 2 Implementation Commit:** `760094d5aa06635920ce72f9f656ef82532f2980`
 - **Round 2 Governance Head:** `85ba860269a43fcfa6ab588e514096525272cfe7`
-- **Current Remote Master Head:** `b51301f5557d8e2f7902d532a8996d6f7ab834ff` (tree: `c02fd849a58a282121474d2a2cccf5c9fd42d333`)
-- **Status:** REMEDIATED / TESTED / READY FOR INDEPENDENT CTO ADJUDICATION (ROUND 3) (Rule IV-001 Non-Self-Acceptance strictly enforced)
-- **Finding 1 (Commit Lineage & Identity Correction):** Corrected truncated false SHA `760094d93ee43e62a12260173669c5e7b415a77c` across all 5 registers and evidence manifests. Accurately recorded implementation commit `760094d5aa06635920ce72f9f656ef82532f2980`, Round 2 governance commit `85ba860269a43fcfa6ab588e514096525272cfe7`, and remote master head `b51301f5557d8e2f7902d532a8996d6f7ab834ff` distinctly.
+- **Round 3 Remediation Commit:** `3fbce8bcede1e9c6b6f2e4c6a6b0d4690593b34a`
+- **Round 3 Submission Commit:** `784aef41953f89ba09385f117dd02ad32df1578e`
+- **Current Candidate Head:** `27f4d050bf5d71ffbc9503d57f3ae62abb038175`
+- **Status:** REMEDIATED / TESTED / READY FOR INDEPENDENT CTO ADJUDICATION (ROUND 4) (Rule IV-001 Non-Self-Acceptance strictly enforced)
+- **Finding 1 (Commit Lineage & Identity Correction):** Corrected truncated false SHA 760094d93ee43e62a12260173669c5e7b415a77c (eliminated) across all registers and manifests. Accurately recorded implementation commit `760094d5aa06635920ce72f9f656ef82532f2980`, Round 2 governance commit `85ba860269a43fcfa6ab588e514096525272cfe7`, Round 3 remediation `3fbce8bcede1e9c6b6f2e4c6a6b0d4690593b34a`, Round 3 submission `784aef41953f89ba09385f117dd02ad32df1578e`, and repository head `27f4d050bf5d71ffbc9503d57f3ae62abb038175` distinctly.
 - **Finding 2 (ECI 2018 Corpus Reconciliation & Boundary Scope):** Reconciled ECI Notification No. 282/AP/2018(DEL) against primary source document. Discovered official ECI backend download endpoint, downloaded original signed statutory document to `data/evidence/delimitation/authoritative/eci_notification_282_ap_2018_del.pdf` (artifact SHA-256 `13201bb665a5d29853862d0bc0c07175c319a61d5b39b2c838fd0ec3882737da`). Discrepancy resolved: statutory document date is 22 September 2018 (`2018-09-22`) for Gazette publication on 22.09.2018; 2018-09-24 was Word export metadata. Document operates under Section 9(1)(b) of the RP Act, 1950 as a boundary-only amendment for AC-53 (Rampachodavaram) and AC-67 (Polavaram) transferring Polavaram submerged mandals from Khammam (TG) to AP, altering zero seat counts. Encoded boundary constraints in `normalizer.ts` and `validator.ts`. Corrected APRA 2014 entry to Section 15 read with Second Schedule (Schedule XXXI does not exist). Added adversarial tests TRUTH-11 to TRUTH-15 (15/15 PASS).
 - **Finding 3 (End-to-End TLS Hostname Verification over Pinned Socket):** Proven real TLS transport path. Built local HTTPS test server presenting controlled certificates generated by isolated Root CA (`CN=DelimitationTestRootCA`). Pinned HTTPS agent enforces SNI, Root CA verification, and direct IP socket connection to `127.0.0.1`. Rejection with `ERR_TLS_CERT_ALTNAME_INVALID` on hostname mismatch proven end-to-end through real transport in SSRF-15A through SSRF-15F (21/21 PASS).
 - **Finding 4 (PostgreSQL Integration Safe by Construction):** Implemented strict safety guard `assertPostgresIntegrationSafe` in `tests/helpers/postgresTestSafety.mjs`. Refuses destructive SQL unless explicit opt-in is enabled (`ENABLE_JOB023_POSTGRES_INTEGRATION=true`), host is strictly loopback (`127.0.0.1`), database matches dedicated test pattern (`job023_delimitation_test`), and live server identity check (`SELECT current_database(), inet_server_addr()`) matches before any DDL or table dropping. Cloud providers (Supabase, AWS, etc.) and production database names are strictly rejected. Added 8 negative safety tests in `tests/delimitation-watch-postgres-server-safety.test.mjs` (8/8 PASS).
