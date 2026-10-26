@@ -36,6 +36,9 @@ import {
 } from '../services/delimitationService';
 import * as stateDataModule from '../services/stateData';
 
+// Shared absolute path for evidence assertions across Directive 125–133 test scopes.
+const manifestPath = path.resolve(__dirname, '../../../../data/evidence/w021_5/pin_independent_evidence_manifest.json');
+
 describe('CTO Directive 123 — Residual Electoral Data-Truth & Provisional Lookup Integrity', () => {
   let app: FastifyInstance;
 
