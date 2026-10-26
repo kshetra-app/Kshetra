@@ -33,6 +33,8 @@ import {
 } from '../modules/webhooks/queueProvider';
 import { SourceRegistry } from '../modules/delimitationWatch/sourceRegistry';
 import { BaselineComparator } from '../modules/delimitationWatch/comparator';
+import { InMemoryDelimitationWatchRepository } from '../modules/delimitationWatch/persistence';
+import { WebhookService } from '../modules/webhooks/webhookService';
 import { Versioner } from '../modules/delimitationWatch/versioner';
 import { Publisher } from '../modules/delimitationWatch/publisher';
 import { parseAlternateIpv4, validateSourceUrl, validateAndPinSourceUrl } from '../modules/delimitationWatch/ssrfGuard';
@@ -750,5 +752,189 @@ describe('delimitation baseline comparator branches', () => {
     } as any);
     expect(result.classification).toBe('NO_CHANGE');
     expect(result.comparisonSummary).toContain('Zero substantive or material changes');
+  });
+});
+
+
+describe('delimitation-watch in-memory repository lifecycle branches', () => {
+  test('covers source, snapshot, candidate, validation, comparison, and version reads and writes', async () => {
+    const repo = new InMemoryDelimitationWatchRepository();
+    const source: any = {
+      id: 'source-a', name: 'ECI', publisher: 'ECI', sourceType: 'eci_notification',
+      canonicalUrl: 'https://eci.gov.in/example.pdf', geographicScope: 'IN', subjectScope: 'delimitation',
+      authorityClassification: 'statutory', retrievalMethod: 'http_get', isActive: true,
+      consecutiveFailures: 0, metadata: {}, createdAt: '2026-01-01T00:00:00.000Z', updatedAt: '2026-01-01T00:00:00.000Z',
+    };
+    await repo.saveSource(source);
+    expect((await repo.getSource('source-a'))?.name).toBe('ECI');
+    expect(await repo.listSources()).toHaveLength(1);
+    await repo.updateSourceHealth('missing', { consecutiveFailures: 9 });
+    await repo.updateSourceHealth('source-a', { consecutiveFailures: 2, lastHttpStatus: 503, lastError: 'timeout' });
+    expect((await repo.getSource('source-a'))?.consecutiveFailures).toBe(2);
+
+    const older: any = { id: 'snap-old', sourceId: 'source-a', retrievedAt: '2025-01-01T00:00:00.000Z' };
+    const newer: any = { id: 'snap-new', sourceId: 'source-a', retrievedAt: '2026-01-01T00:00:00.000Z' };
+    await repo.saveSnapshot(older);
+    await repo.saveSnapshot(newer);
+    expect((await repo.getSnapshot('snap-old'))?.id).toBe('snap-old');
+    expect((await repo.getSnapshot('missing-snapshot'))).toBeNull();
+    expect((await repo.getLatestSnapshotForSource('source-a'))?.id).toBe('snap-new');
+    expect(await repo.getLatestSnapshotForSource('missing-source')).toBeNull();
+
+    const candidate: any = { id: 'candidate-a', sourceId: 'source-a' };
+    const validation: any = { id: 'validation-a', candidateId: 'candidate-a', validationStatus: 'PASSED' };
+    const comparison: any = { id: 'comparison-a', candidateId: 'candidate-a' };
+    await repo.saveCandidate(candidate);
+    await repo.saveValidation(validation);
+    await repo.saveComparison(comparison);
+    expect((await repo.getCandidate('candidate-a'))?.id).toBe('candidate-a');
+    expect(await repo.getCandidate('missing-candidate')).toBeNull();
+    expect((await repo.getValidation('validation-a'))?.id).toBe('validation-a');
+    expect(await repo.getValidation('missing-validation')).toBeNull();
+    expect((await repo.getValidationByCandidateId('candidate-a'))?.id).toBe('validation-a');
+    expect(await repo.getValidationByCandidateId('missing-candidate')).toBeNull();
+    expect((await repo.getComparison('comparison-a'))?.id).toBe('comparison-a');
+    expect(await repo.getComparison('missing-comparison')).toBeNull();
+
+    const version: any = {
+      id: 'version-a', sourceId: 'source-a', contentSha256: 'a'.repeat(64),
+      acceptedAt: '2026-01-01T00:00:00.000Z',
+    };
+    const newerVersion: any = {
+      id: 'version-b', sourceId: 'source-a', contentSha256: 'b'.repeat(64),
+      acceptedAt: '2026-02-01T00:00:00.000Z',
+    };
+    await repo.saveAcceptedVersion(version);
+    await repo.saveAcceptedVersion(newerVersion);
+    expect((await repo.getAcceptedVersion('version-a'))?.id).toBe('version-a');
+    expect(await repo.getAcceptedVersion('missing-version')).toBeNull();
+    expect((await repo.getAcceptedVersionByHash('source-a', 'a'.repeat(64)))?.id).toBe('version-a');
+    expect(await repo.getAcceptedVersionByHash('source-a', 'c'.repeat(64))).toBeNull();
+    expect((await repo.getLatestAcceptedVersionForSource('source-a'))?.id).toBe('version-b');
+    expect((await repo.listAcceptedVersionsForSource('source-a')).map((v: any) => v.id)).toEqual(['version-b', 'version-a']);
+    expect(await repo.getLatestAcceptedVersionForSource('none')).toBeNull();
+    await expect(repo.saveAcceptedVersion({ ...version, id: 'duplicate-version' })).rejects.toThrow(/UNIQUE_CONSTRAINT_VIOLATION/);
+  });
+
+  test('covers notification deduplication, dispatch updates, publication uniqueness, runs and lock fencing', async () => {
+    const repo = new InMemoryDelimitationWatchRepository();
+    const event: any = {
+      id: 'notification-a', deduplicationKey: 'dedup-a', dispatchStatus: 'PENDING',
+      deliveredCount: 0, failedCount: 0, createdAt: '2026-01-01T00:00:00.000Z',
+    };
+    await repo.saveNotificationEvent(event);
+    expect((await repo.getNotificationEvent('notification-a'))?.id).toBe('notification-a');
+    expect(await repo.getNotificationEvent('missing-event')).toBeNull();
+    expect((await repo.getNotificationEventByDedupKey('dedup-a'))?.id).toBe('notification-a');
+    expect(await repo.getNotificationEventByDedupKey('missing-dedup')).toBeNull();
+    await expect(repo.saveNotificationEvent({ ...event, id: 'notification-duplicate' })).rejects.toThrow(/UNIQUE_CONSTRAINT_VIOLATION/);
+    await repo.updateNotificationDispatchStatus('missing-event', 'FAILED' as any);
+    await repo.updateNotificationDispatchStatus('notification-a', 'RETRYING' as any);
+    expect((await repo.getNotificationEvent('notification-a'))?.dispatchStatus).toBe('RETRYING');
+    await repo.updateNotificationDispatchStatus('notification-a', 'FAILED' as any, {
+      deliveredCount: 1, failedCount: 2, errorMessage: 'provider unavailable',
+    });
+    expect(await repo.getNotificationEvent('notification-a')).toEqual(expect.objectContaining({
+      deliveredCount: 1, failedCount: 2, errorMessage: 'provider unavailable',
+    }));
+
+    const publication: any = { id: 'publication-a', versionId: 'version-a', publicationStatus: 'PUBLISHED' };
+    await repo.savePublication(publication);
+    expect((await repo.getPublicationByVersionId('version-a'))?.id).toBe('publication-a');
+    expect(await repo.getPublicationByVersionId('missing-version')).toBeNull();
+    await expect(repo.savePublication({ ...publication, id: 'publication-duplicate' })).rejects.toThrow(/UNIQUE_CONSTRAINT_VIOLATION/);
+
+    await repo.saveRun({ id: 'run-old', sourceId: 'source-a', createdAt: '2025-01-01T00:00:00.000Z' } as any);
+    await repo.saveRun({ id: 'run-new', sourceId: 'source-a', createdAt: '2026-01-01T00:00:00.000Z' } as any);
+    expect((await repo.getRun('run-old'))?.id).toBe('run-old');
+    expect(await repo.getRun('missing-run')).toBeNull();
+    expect((await repo.listRunsForSource('source-a')).map((run: any) => run.id)).toEqual(['run-new', 'run-old']);
+    expect(await repo.listRunsForSource('missing-source')).toEqual([]);
+
+    expect(await repo.acquireSourceLock('source-a', 'token-a')).toBe(true);
+    expect(await repo.acquireSourceLock('source-a', 'token-b')).toBe(false);
+    expect(await repo.acquireSourceLock('source-a', 'token-a')).toBe(true);
+    expect(await repo.releaseSourceLock('source-a', 'wrong-token')).toBe(false);
+    expect(await repo.releaseSourceLock('source-a', 'token-a')).toBe(true);
+    expect(await repo.acquireSourceLock('source-a', 'token-expired', -1)).toBe(true);
+    expect(await repo.acquireSourceLock('source-a', 'token-next')).toBe(true);
+    expect(repo.isDurable()).toBe(false);
+    expect(await repo.checkHealth()).toEqual({ healthy: true, details: 'in_memory' });
+  });
+});
+
+describe('webhook service in-memory lifecycle branches', () => {
+  beforeAll(() => {
+    process.env.NODE_ENV = 'test';
+    process.env.WEBHOOK_SECRETS_ENCRYPTION_KEY = KEY;
+  });
+
+  test('creates, scopes, updates, rotates, publishes, and test-dispatches webhook subscriptions', async () => {
+    const queue = new InMemoryQueueProvider();
+    const service = new WebhookService(undefined as any, queue);
+    const created = await service.createSubscription({
+      tenantId: TENANT,
+      applicationId: 'app-a',
+      endpointUrl: 'http://127.0.0.1:1/hook',
+      subscribedEvents: ['test.ping'],
+      allowLocalhostInTest: true,
+    });
+    expect(created.secret).toMatch(/^whsec_[a-f0-9]{64}$/);
+    expect(created.subscription.secretHash).toHaveLength(64);
+    expect((created.subscription as any)._rawSecret).toBeUndefined();
+    expect((await service.listSubscriptions(TENANT, 'app-a'))).toHaveLength(1);
+    expect(await service.listSubscriptions('other-tenant', 'app-a')).toEqual([]);
+    expect((await service.getSubscription(TENANT, 'app-a', created.subscription.id))?.id).toBe(created.subscription.id);
+    expect(await service.getSubscription('other-tenant', 'app-a', created.subscription.id)).toBeNull();
+    expect(await service.getSubscription(TENANT, 'other-app', created.subscription.id)).toBeNull();
+
+    const updated = await service.updateSubscription({
+      tenantId: TENANT, applicationId: 'app-a', subscriptionId: created.subscription.id,
+      subscribedEvents: ['test.ping', 'election.results.published'], status: 'active',
+    });
+    expect(updated?.subscribedEvents).toHaveLength(2);
+    expect(await service.updateSubscription({
+      tenantId: TENANT, applicationId: 'app-a', subscriptionId: 'missing',
+      status: 'paused',
+    })).toBeNull();
+
+    const rotated = await service.rotateSecret(TENANT, 'app-a', created.subscription.id);
+    expect(rotated?.newSecret).toMatch(/^whsec_[a-f0-9]{64}$/);
+    expect(rotated?.gracePeriodExpiresAt).toBeTruthy();
+    expect(await service.rotateSecret(TENANT, 'app-a', 'missing')).toBeNull();
+
+    const event = await service.publishEvent({
+      tenantId: TENANT, applicationId: 'app-a', eventType: 'test.ping',
+      idempotencyKey: 'service-event-1',
+      payload: {
+        event_id: '11111111-1111-1111-1111-111111111111',
+        timestamp: '2026-10-26T00:00:00.000Z',
+        message: 'service test',
+      },
+    });
+    expect(event.enqueuedDeliveries).toBe(1);
+    await expect(service.publishEvent({
+      tenantId: TENANT, applicationId: 'app-a', eventType: 'not-allowed', payload: {},
+    })).rejects.toThrow(/VALIDATION_ERROR/);
+    await expect(service.publishEvent({
+      tenantId: TENANT, applicationId: '', eventType: 'test.ping', payload: {},
+    })).rejects.toThrow(/applicationId is required/);
+
+    const testResult = await service.testDelivery(TENANT, 'app-a', created.subscription.id, {
+      allowLocalhostInTest: true,
+    });
+    expect(testResult.success).toBe(false);
+    expect(testResult.errorMessage).toBeTruthy();
+
+    expect((await service.disableSubscription(TENANT, 'app-a', created.subscription.id))?.status).toBe('disabled');
+    expect(await service.disableSubscription(TENANT, 'app-a', 'missing')).toBeNull();
+  });
+
+  test('rejects unsafe egress on creation and update before changing persisted state', async () => {
+    const service = new WebhookService(undefined as any, new InMemoryQueueProvider());
+    await expect(service.createSubscription({
+      tenantId: TENANT, applicationId: 'app-a',
+      endpointUrl: 'http://example.com/hook',
+    })).rejects.toThrow(/HTTPS_REQUIRED/);
   });
 });
