@@ -3,7 +3,7 @@
   "title": "W021.5 CTO Directive 117 Stage B Criterion-by-Criterion Evidence Matrix",
   "directive": "CTO Directive 117",
   "governingAuthority": "Master Execution Framework Amendment v1.6 / Rule IV-001 Non-Self-Acceptance",
-  "allocatedStageWeight": 12.0,
+  "allocatedStageWeight": 12,
   "repoVerifiedEarnedWeight": 10.5,
   "blockedWeight": 1.5,
   "formalAcceptanceStatus": "UNACCEPTED (0.0%)",
@@ -20,7 +20,7 @@
       "taskId": "W021.5-B1-01",
       "criterionId": "CRIT-B101-01",
       "title": "Canonical 4,123 Assembly Constituencies Across 31 Jurisdictions",
-      "weight": 2.0,
+      "weight": 2,
       "status": "REPO_VERIFIED",
       "evidenceClassification": {
         "A_staticEvidence": "supabase/migrations/059_canonical_national_constituency_registry.sql contains DDL and DML for all 4,123 ACs",
@@ -34,7 +34,7 @@
       "taskId": "W021.5-B1-01",
       "criterionId": "CRIT-B101-02",
       "title": "Immutable Canonical Constituency Identifier Formulation",
-      "weight": 2.0,
+      "weight": 2,
       "status": "REPO_VERIFIED",
       "evidenceClassification": {
         "A_staticEvidence": "Schema enforces UNIQUE(state_code, ac_no) and format {STATE}-AC-{NUMBER}",
@@ -122,12 +122,32 @@
       "status": "BLOCKED",
       "evidenceClassification": {
         "A_staticEvidence": "reports/w021_5_source_provenance_and_missing_data_register.json documents missing boundaries for 30 States/UTs",
-        "B_executedDeterministic": "Direct parser executed on telangana-assembly.geojson confirmed AC 119 has 2 distinct polygon features (FID 4159 & 4160); AC 119 flagged with hasGeoJSON = false in client constant",
+        "B_executedDeterministic": "Read-only GitHub Actions runs 40259741110 and 40259909774 acquired and hashed additional TGRAC Master, Query, RnB and MusiRiver geometry variants. Structural checks pass at 119 features per candidate, but all audited variants retain one invalid Dornakal polygon. Variant-family screen shows duplicate/near-duplicate sources and the known seven-AC discrepancy remains. Evidence reports: reports/evidence/w021_5_telangana_master_geometry_probe_40259741110.json and reports/evidence/w021_5_telangana_variant_family_comparison_20261026.json.",
         "C_databaseExecution": "N/A — Boundary defect is geometric/statutory, not database-internal",
-        "D_externalAuthority": "Requires official Andhra Pradesh / Telangana bifurcation revenue department gazette",
-        "E_ctoAdjudication": "OPEN_AND_BLOCKED — Defect preserved strictly open per Directive 117 Rule 8"
-      }
+        "D_externalAuthority": "Government of Andhra Pradesh-hosted Act copy acquired and parsed to 119 statutory rows; official PIB HTML corroborates the legal chain. Exact ECI Notification 282/AP/2018(DEL) still returns HTTP 406; CEO schedule/ECI press-note PDFs time out; original Gazette/physical authenticity and legal extent-to-polygon reconciliation remain unavailable. Evidence: reports/evidence/w021_5_legal_crosswalk_source_probe_40260777545.json.",
+        "E_ctoAdjudication": "OPEN_AND_BLOCKED — no national canonical AC geometry accepted; W021.5-B1-04 and EB-01..EB-05 remain open; EB-06 independent Stage B adjudication pending. Custodian request pack is drafted but not sent."
+      },
+      "supplementalEvidence": [
+        {
+          "runId": 40259741110,
+          "path": "reports/evidence/w021_5_telangana_master_geometry_probe_40259741110.json"
+        },
+        {
+          "runId": 40259909774,
+          "path": "reports/evidence/w021_5_telangana_variant_family_comparison_20261026.json"
+        },
+        {
+          "runId": 40260777545,
+          "path": "reports/evidence/w021_5_legal_crosswalk_source_probe_40260777545.json"
+        },
+        {
+          "path": "reports/w021_5_stage_b_custodian_request_pack_2026-10-26.md",
+          "status": "DRAFTED_NOT_SENT"
+        }
+      ],
+      "lastEvidenceSupplementAt": "2026-10-26T02:53:37.187Z"
     }
   ],
-  "generatedAt": "2026-10-20T12:51:00.000Z"
+  "generatedAt": "2026-10-20T12:51:00.000Z",
+  "lastEvidenceSupplementAt": "2026-10-26T02:53:37.187Z"
 }
