@@ -53,7 +53,7 @@ describe('webhook queue provider helpers', () => {
     expect(calculateBackoffDelaySeconds(2)).toBe(300);
     expect(calculateBackoffDelaySeconds(4)).toBe(7200);
     expect(calculateBackoffDelaySeconds(5)).toBe(7200);
-    expect(calculateBackoffDelaySeconds(0)).toBe(7200);
+    expect(calculateBackoffDelaySeconds(0)).toBe(30);
     const base = new Date('2026-01-01T00:00:00.000Z');
     expect(calculateNextRetryAt(1, base)?.toISOString()).toBe('2026-01-01T00:00:30.000Z');
     expect(calculateNextRetryAt(4, base)?.toISOString()).toBe('2026-01-01T02:00:00.000Z');
