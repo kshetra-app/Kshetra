@@ -814,7 +814,7 @@
       "version": "Order dated 17 December 2008; ECI PDF lists Andhra Pradesh Schedule III on PDF pages 8–32",
       "retrievalStatus": "READ_VIA_WEB_PDF_TEXT; BINARY_NOT_DOWNLOADED_OR_SHA256_VERIFIED",
       "authority": "OFFICIAL_STATUTORY_BASELINE",
-      "status": "WEB_PDF_TEXT_REVIEWED; BINARY_RETRIEVAL_BLOCKED_HTTP_406_AFTER_SESSION_AND_URL_VARIANTS",
+      "status": "OFFICIAL_ECI_AND_INDIACODE_TEXT_INDEXED; RAW_PDF_BYTES_NOT_ACQUIRED",
       "partialCrosswalk": {
         "report": "reports/evidence/w021_5_telangana_layer_comparison_2026-10-25.json",
         "constituencies": [
@@ -857,9 +857,11 @@
         ]
       },
       "limitations": [
-        "Full 119-name/number/extent crosswalk not completed.",
-        "Post-2014 State Reorganisation instrument chain and currently effective Gazette/date not fully reconciled.",
-        "No raw PDF binary SHA-256 claimed."
+        "Official ECI publication catalogue lists the document under Delimitation Documents as 'Delimitation of Parliamentary & Assembly Constituencies Order - 2008' with the main PDF listed as 1 MB.",
+        "Search indexing exposes the full ECI order and Schedule structure; India Code also indexes the consolidated PDF text.",
+        "Direct retrieval of the ECI PDF returned HTTP 406; the India Code direct URL timed out. Raw original PDF bytes, byte length, page count, and SHA-256 remain unacquired.",
+        "Official Gazette of India 2023 document at https://egazette.gov.in/WriteReadData/2023/248113.pdf states that the 2008 Order was published via notification S.O.382(E), dated 19 February 2008. This is authoritative secondary Gazette recitation of the publication reference, not the original 2008 issue.",
+        "No binary hash is claimed for the 2008 Order."
       ],
       "probeWorkflowRunId": 40213536854,
       "probeWorkflowUrl": "https://github.com/kshetra-app/Kshetra/actions/runs/40213536854",
@@ -903,7 +905,19 @@
         },
         "pdfAcquired": false,
         "pdfBinarySha256": null
-      }
+      },
+      "urlsVerifiedThisPass": [
+        "https://www.eci.gov.in/Documents/Delimitation/DelimitationofParliamentaryAssemblyConstituenciesOrder-2008%28English%29.pdf",
+        "https://upload.indiacode.nic.in/showfile?actid=AC_CEN_3_20_00030_200233_1517807324510&filename=Delimitation+Order%2C2008.pdf&type=order"
+      ],
+      "legalPublicationReference": {
+        "gazetteNotification": "S.O.382(E)",
+        "publicationDate": "2008-02-19",
+        "evidenceUrl": "https://egazette.gov.in/WriteReadData/2023/248113.pdf",
+        "evidenceKind": "Official 2023 Gazette recital identifies the 2008 Order's publication reference; this is not the 2008 Gazette issue itself."
+      },
+      "lastExplorationAt": "2026-10-26",
+      "lastExplorationOutcome": "OFFICIAL_ECI_CATALOGUE_AND_INDIACODE_SEARCH_INDEX_CONFIRMED; DIRECT_ORIGINAL_BINARY_DOWNLOAD_STILL_BLOCKED"
     },
     {
       "sourceId": "SRC-TELANGANA-ADMIN-NEW-LAYER",
@@ -1714,6 +1728,116 @@
         "No raw PDF bytes were downloaded or hashed in this pass."
       ],
       "plannedUse": "Use O.N.55(E), publication date, Part II Section 3(iii), and subject as search keys in the official Gazette of India directory; preserve the Gazette itself as a separate required source."
+    },
+    {
+      "sourceId": "SRC-GOI-SO382E-2008-ORDER-PUBLICATION-REFERENCE",
+      "subject": "Official Gazette of India recital identifying original publication of Delimitation Order, 2008 as S.O.382(E), dated 19 February 2008",
+      "publisher": "Government of India, Gazette of India Extraordinary / Ministry of Law and Justice",
+      "url": "https://egazette.gov.in/WriteReadData/2023/248113.pdf",
+      "retrievedAt": "2026-10-26",
+      "format": "Official 2023 Gazette PDF containing the legal recital of the 2008 Order's publication reference",
+      "authority": "OFFICIAL_GAZETTE_RECITAL_CORROBORATION_NOT_ORIGINAL_2008_GAZETTE",
+      "status": "PUBLICATION_REFERENCE_CORROBORATED_ORIGINAL_2008_ISSUE_BYTES_NOT_ACQUIRED",
+      "sha256": null,
+      "fileBytes": null,
+      "rawArtifact": null,
+      "facts": [
+        "Delimitation Order, 2008 for all states except Assam, Arunachal Pradesh, Manipur and Nagaland was published via notification number S.O.382(E), dated 19 February 2008."
+      ],
+      "limitations": [
+        "This is a 2023 Gazette document and only recites the 2008 Order's publication reference; it is not the original 2008 Gazette issue and has not been downloaded as raw bytes in this pass.",
+        "No SHA-256 or byte count claimed."
+      ],
+      "plannedUse": "Locate the original Gazette issue by exact notification number/date through the official eGazette directory and compare it against the official ECI PDF."
+    },
+    {
+      "sourceId": "SRC-POSTS-TELEGRAPHS-MANUAL-DELIVERY-BEAT-LISTS-2026-10-26",
+      "subject": "Department of Posts manual text on postal maps and postman delivery-beat lists",
+      "publisher": "Department of Posts / India Post",
+      "url": "https://www.indiapost.gov.in/api/documents/file/U2FsdGVkX1-31j0trfGI5vDmpEsjVxN2Xv-3Jie_3Cs0-Tpl_k886_ydGwGAImacVButzBzrxqQaOpTPEhakEw",
+      "retrievedAt": "2026-10-26",
+      "format": "Official-host search-indexed PDF text; Rules/paragraphs 309-310 refer to postal map and delivery beat list books",
+      "authority": "OFFICIAL_MANUAL_TEXT_DISCOVERY_RAW_BYTES_NOT_ACQUIRED",
+      "status": "INDEXED_MANUAL_TEXT_DISCOVERY_BYTES_NOT_ACQUIRED",
+      "sha256": null,
+      "fileBytes": null,
+      "rawArtifact": null,
+      "facts": [
+        "The indexed text says a Town Inspector maintains a postal map of the town jurisdiction.",
+        "The indexed text says the postmaster prepares a book containing a complete list of the town's delivery beats and streets/quarters in each beat, plus an alphabetical street/place-to-beat index.",
+        "The same text says delivery-beat lists should be corrected as changes are ordered by the postmaster."
+      ],
+      "limitations": [
+        "The direct download URL returned HTTP 404 in this session; raw document bytes and SHA-256 were not acquired.",
+        "This is a textual/manual description of local operational records, not national GIS delivery-beat polygons.",
+        "The manual edition, current applicability, and custody/retention status must be confirmed with India Post."
+      ],
+      "plannedUse": "Support an evidence-based custodian request for current postal maps and delivery-beat records at appropriate Postal Divisions; do not use it as proof that a nationwide digital polygon dataset exists."
+    },
+    {
+      "sourceId": "SRC-NIC-BHARATMAPS-CUSTODIAN-DISCOVERY-2026-10-26",
+      "subject": "National Informatics Centre Bharat Maps / NIC GIS services as national geospatial custodian route",
+      "publisher": "National Informatics Centre, MeitY, Government of India",
+      "url": "https://www.nic.gov.in/service/remote-sensing-gis/",
+      "retrievedAt": "2026-10-26",
+      "format": "Official NIC service page and official Bharat Maps portal route",
+      "authority": "OFFICIAL_NATIONAL_GIS_SERVICE_DISCOVERY",
+      "status": "OFFICIAL_NATIONAL_GIS_ROUTE_DISCOVERED_AC_LAYER_NOT_VERIFIED",
+      "sha256": null,
+      "fileBytes": null,
+      "rawArtifact": null,
+      "facts": [
+        "NIC states Bharat Maps is an integrated GIS service using reference data from multiple government agencies.",
+        "NIC describes open-to-citizen visualization services and broader GIS integration/service endpoints; map services are a separate, controlled route.",
+        "The page does not identify a publicly downloadable national statutory Assembly Constituency polygon layer."
+      ],
+      "limitations": [
+        "Bharat Maps and mapservice.gov.in home pages timed out during direct page retrieval; no map service bytes or national AC layer metadata were downloaded.",
+        "General administrative basemaps are not legal AC geometry."
+      ],
+      "plannedUse": "Ask NIC/GSTS division whether any ECI-supplied national AC geometry service is public or requires formal access; require source vintage, schema, licence, and legal-effective date."
+    },
+    {
+      "sourceId": "SRC-ESRI-INDIA-AC-BOUNDARY-SOURCE-LEAD-2026-10-26",
+      "subject": "Esri India Business Analyst / India Admin Boundary dataset lists Assembly Constituency (ECI) as an election-boundary source",
+      "publisher": "Esri India",
+      "url": "https://www.esri.in/en-in/products/about-arcgis/arcgis-business-analyst/data-infographics",
+      "retrievedAt": "2026-10-26",
+      "format": "Commercial product and source-lineage documentation",
+      "authority": "COMMERCIAL_DATASET_DISCOVERY_NOT_PRIMARY_EVIDENCE",
+      "status": "LICENSED_CANDIDATE_LEAD_NO_DATA_BYTES_OR_LICENCE",
+      "sha256": null,
+      "fileBytes": null,
+      "rawArtifact": null,
+      "facts": [
+        "Esri India describes India Admin Boundary as including assembly/parliamentary constituency boundaries and identifies ECI among sources of election boundaries."
+      ],
+      "limitations": [
+        "This is a commercial product source description; no geometry bytes, item-level metadata, licence/redistribution permission, vintage, full national coverage, or source-owner lineage statement was acquired.",
+        "Not canonical or accepted; not a substitute for primary ECI/state CEO boundary evidence without legal/licence review."
+      ],
+      "plannedUse": "Ask Esri India for lineage statement, current version/vintage, state/UT coverage, data-use rights, original ECI source identifiers, and a read-only sample for independent comparison."
+    },
+    {
+      "sourceId": "SRC-CEO-DELHI-AC-MAP-AND-POLLING-LOCATION-PORTAL-2026-10-26",
+      "subject": "Chief Electoral Officer Delhi official maps for assembly constituencies, parliamentary constituencies, and polling locations",
+      "publisher": "Chief Electoral Officer, Government of NCT of Delhi",
+      "url": "https://ceodelhi.gov.in/MapPage.aspx",
+      "retrievedAt": "2026-10-26",
+      "format": "Official state CEO maps portal",
+      "authority": "OFFICIAL_JURISDICTIONAL_MAP_DISCOVERY",
+      "status": "OFFICIAL_DELHI_ONLY_MAPS_DISCOVERED_DIGITAL_GEOMETRY_NOT_ACQUIRED",
+      "sha256": null,
+      "fileBytes": null,
+      "rawArtifact": null,
+      "facts": [
+        "Portal advertises a Delhi GIS map with polling locations, digital draft AC maps, PC maps, and delimitation-commission-approved AC/PC maps."
+      ],
+      "limitations": [
+        "Delhi-only; map portal discovery is not a download of raw geometry nor proof of nationwide coverage.",
+        "Published maps may be cartographic documents rather than structured polygons; inspect each asset and its licence/version before acceptance."
+      ],
+      "plannedUse": "Acquire and audit Delhi official map assets and polling-location list as one jurisdictional test slice; do not generalize to national acceptance."
     }
   ],
   "unresolvedGates": [
@@ -2188,7 +2312,8 @@
     "The TGRAC Admin_New layer is byte-for-byte identical to the EndowmentLands_Admin_2026 layer (same 12,463,409-byte payload and SHA-256). Admin_Old is a distinct 12,461,961-byte payload; its 119-feature union has two disconnected components and one invalid Dornakal polygon. The official ECI 2008 PDF binary endpoint returned HTTP 406 (1,035-byte error body, SHA-256 7f512a...); web PDF text was reviewed, but no PDF binary hash is claimed.",
     "Four Telangana GIS service variants are now acquired. Three EndowmentLands variants form one geometry family; the Admin_New and Admin_2026 payloads are byte-identical, while Admin_Old differs only at sub-millimetre coordinate precision. The older AdministrativeInfoSystem layer is the outlier with six material AC geometry shifts. Prefer the newer family for legal validation, not canonical import.",
     "Enhanced ECI PDF retrieval used a persistent Chrome-impersonated session, homepage-cookie attempt, three URL variants and browser headers; all returned HTTP 406 with 1,035-byte HTML bodies. The legal PDF remains readable through the web PDF reader, but its binary bytes/hash are unavailable from this acquisition route.",
-    "Evidence-only branch created from master to isolate W021.5 Stage B source research, legal acquisition, and geometry-probe evidence from the broader PR #25 implementation."
+    "Evidence-only branch created from master to isolate W021.5 Stage B source research, legal acquisition, and geometry-probe evidence from the broader PR #25 implementation.",
+    "Additional 2026-10-26 official-source exploration: official ECI 2008-order catalogue plus IndiaCode index reviewed; 2008 Order binary still blocked/unacquired. Official 2023 Gazette recital identifies the original publication as S.O.382(E), 19 February 2008, which is a stronger exact-issue search key but not the 2008 Gazette itself. India Post manual indexed text describes local postal-map/delivery-beat-list books prepared by postmasters; direct PDF URL returned 404 in this session, so no hash or bytes claimed. NIC Bharat Maps identified as national GIS custodian route but no public AC layer was verified. Esri India identifies an AC-boundary commercial dataset sourced from ECI, but licence/data bytes/version were not acquired. CEO Delhi offers AC/PC maps and polling-location GIS, but is a jurisdiction-only candidate."
   ],
   "secondaryGeometryAudit": {
     "sourceRepository": "https://github.com/saisantoshv3/assemnbly_gis_files",
