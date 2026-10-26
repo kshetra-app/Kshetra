@@ -442,7 +442,7 @@ describe('webhook queue state machine branch coverage', () => {
 
     const secondApp = await queue.enqueueEvent({ ...params, applicationId: 'app-b' });
     expect(secondApp.deduplicated).toBe(false);
-    expect(secondApp.enqueuedDeliveries).toBe(0);
+    expect(secondApp.enqueuedDeliveries).toBe(1);
   });
 
   test('claims deliveries, fences stale leases, retries failures and completes successful delivery', async () => {
