@@ -1,5 +1,5 @@
 # DECISION LOG: PANIN / KSHETRA
-**Last Updated:** 2026-10-25
+**Last Updated:** 2026-10-26
 **Standard:** AI Agent Master Execution Job Book (Section 0.9, 0.10, Part 12)
 
 ---
@@ -3832,3 +3832,15 @@
   9. `delimitation-watch-controlled-e2e.test.mjs`: 12/12 PASS
 - **Environment Isolation:** Staging database (`fkpigozcqnmcvofuksar`) and Production database (`ehfafcnimmjusyvplbah`) remain strictly air-gapped (0 queries, 0 mutations).
 - **Submission:** Formally submitted under Rule IV-001 Non-Self-Acceptance as REMEDIATED / TESTED / READY FOR INDEPENDENT CTO ADJUDICATION (ROUND 3).
+
+---
+
+### DEC-158: W021.5 Stage B Acquisition Route Adjudication and Additional Official TGRAC Probe
+- **Date:** 2026-10-26
+- **Status:** ACTIVE — STAGE B PARTIAL / NOT ACCEPTED
+- **Authority:** CTO Directive 154; explicit project-owner request to exhaust evidence-acquisition routes and reconcile records
+- **Decision:** Use a layered, jurisdiction-by-jurisdiction pipeline. Legal truth comes from the applicable ECI delimitation order, amendments/corrigenda, and Central/State Gazette publication/effective-date chain. Geometry should be acquired as raw bytes from official ECI/CEO/state-GIS services where the endpoint is discoverable and downloadable. Official result pages/scripts are discovery and corroboration sources until legal vintage and source lineage are proven. Community/mirror geometry is comparison-only and cannot close statutory acceptance.
+- **Evidence considered:** Official Bihar BEGIS layer acquired with 243 AC features/unique codes, but audit fails on 3 invalid geometries and 76 positive-area overlap pairs; TGRAC candidate layers have 119-feature name crosswalks but 11/12 inferred aliases and no legal extent validation; TGRAC variants materially disagree for seven ACs and share invalid Dornakal geometry; direct ECI PDF attempts returned HTTP 406 WAF HTML and guessed result-portal geometry paths returned 404. Error responses must not be recorded as source-document hashes and no WAF bypass is authorized.
+- **Additional acquisition route:** The official TGRAC Master_Administrative_Folder/Master_Administrative_Boundary/MapServer/0 Assembly Constituency Boundary layer was discovered on 2026-10-26. It advertises EPSG:4326 and query support. A read-only probe was added to scripts/w0215_acquire_official_geometry.py on evidence branch cto/w0215-stage-b-evidence-20261025, commit 00c8e589978c66d58ca5f47e3dfb833a0a637ffe; GitHub Actions run [40259741110](https://github.com/kshetra-app/Kshetra/actions/runs/40259741110) is pending/completing at the time of this entry. This is a candidate-only probe; no result or acceptance is pre-judged.
+- **Operational rule:** If public official bytes or legal lineage are unavailable, issue a narrowly scoped official custodian request (and RTI where appropriate) for vector format, source/version/effective date, CRS, data dictionary, licence, legal instrument, correction history and request/response identifiers. Do not infer/fabricate polygons, treat PIN-code polygons as India Post delivery beats, or substitute centroid containment for polygon evidence.
+- **Acceptance boundary:** W021.5-B1-04 and EB-01..EB-05 remain OPEN. No national canonical AC geometry has been accepted. Stage C+ remains unauthorized; production remains air-gapped; no database access/mutation was performed.
