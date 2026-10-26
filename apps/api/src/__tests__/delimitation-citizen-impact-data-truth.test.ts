@@ -1986,6 +1986,27 @@ describe('CTO Directive 123 — Residual Electoral Data-Truth & Provisional Look
       }
     });
 
+    it('fails closed when a referenced statutory extract is explicitly invalidated, even if its digest matches the manifest', () => {
+      const tsPath = path.resolve(__dirname, '../../../../data/evidence/w021_5/authoritative/eci_delimitation_2008_schedule_xxxi_table_b_extract.txt');
+      const apPath = path.resolve(__dirname, '../../../../data/evidence/w021_5/authoritative/eci_delimitation_2008_schedule_ii_table_b_extract.txt');
+      const tsBytes = fs.readFileSync(tsPath, 'utf8').slice(0, 2048);
+      const apBytes = fs.readFileSync(apPath, 'utf8').slice(0, 2048);
+      expect(tsBytes).toMatch(/STATUS:\\s*INVALIDATED/i);
+      expect(apBytes).toMatch(/STATUS:\\s*INVALIDATED/i);
+
+      const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+      const validation = validatorModule.validateEvidenceMatrix({
+        directory: validatorModule.parseDelimitationServiceCuratedPins(),
+        manifest,
+        seedNames: validatorModule.parseSeedConstituencyNames(),
+      });
+      const sourceCheck = validation.checks.find((check: any) => check.checkId === 'CHECK_6_SOURCE_RESOLUTION');
+      expect(sourceCheck).toBeDefined();
+      expect(sourceCheck.passed).toBe(false);
+      expect(validation.allPassed).toBe(false);
+      expect(validation.errors.some((error: string) => /explicitly INVALIDATED/i.test(error))).toBe(true);
+    });
+
     it('Workstream F: verifies 8 historical corrections and Kurnool baseline preserved across all artifacts', () => {
       const manifestPath = path.resolve(__dirname, '../../../../data/evidence/w021_5/pin_independent_evidence_manifest.json');
       const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
