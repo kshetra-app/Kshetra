@@ -741,6 +741,17 @@ function validateEvidenceMatrix({ directory, manifest, seedNames }) {
       continue;
     }
 
+    // Reject a legacy artifact by its own invalidation notice before considering
+    // path or checksum. A matching digest must never rehabilitate invalidated bytes.
+    const declaredSourceHeader = fs.readFileSync(resolvedDiskPath, 'utf8').slice(0, 2048);
+    if (/STATUS:\\s*INVALIDATED/i.test(declaredSourceHeader) ||
+        /INVALIDATED — DO NOT USE AS AUTHORITATIVE/i.test(declaredSourceHeader) ||
+        /DO NOT USE AS AN AUTHORITATIVE/i.test(declaredSourceHeader)) {
+      sourceResolutionPassed = false;
+      results.errors.push(`PIN ${entry.pinCode} references explicitly INVALIDATED source artifact '${refPath}'; digest equality cannot establish legal applicability.`);
+      continue;
+    }
+
     if (entry.stateCode === 'TS' && refPath !== TS_TABLE_B_EXTRACT_REL) {
       sourceResolutionPassed = false;
       results.errors.push(`PIN ${entry.pinCode} (state TS) declared source path '${refPath}' does not match expected Telangana Schedule XXVII Table A extract '${TS_TABLE_B_EXTRACT_REL}'`);
