@@ -1,45 +1,41 @@
-# AUTHORITATIVE SOURCE DOSSIER: ECI DELIMITATION ORDER 2008 (SCHEDULE II)
+# Corrected source dossier: ECI Delimitation Order, 2008 — composite Andhra Pradesh
 
-**Dossier Identifier:** `DOSSIER-W020-ECI-DELIM-2008`  
-**Source ID:** `ECI-DELIM-2008-AP`  
-**Statutory Date:** `2008-02-19`  
-**Statutory Authority:** Delimitation Commission of India / Delimitation Act, 2002  
-**Publication:** Notification No. 282/AP/2008, Delimitation Commission of India, published in The Gazette of India, Extraordinary  
-**Governing Schedule:** Schedule II (State of Andhra Pradesh)  
-**Primary Evidentiary Scope:** Original statutory territorial extents of all 294 Assembly Constituencies in composite Andhra Pradesh (119 in Telangana region, 175 in residuary Andhra Pradesh region) and 42 Parliamentary Constituencies.  
+**Source ID:** ECI-DELIM-2008-AP  
+**Status:** ARCHIVAL ECI CONSOLIDATED PDF ACQUIRED/HASH VERIFIED; original Gazette issue and physical/certified-copy gate remain open  
+**Updated:** 2026-10-26
 
----
+## 1. Correct legal identity and provenance
 
-## 1. Statutory Background & Authority
+The official ECI consolidated document is titled Delimitation of Parliamentary and Assembly Constituencies Order, 2008. A byte-verified archival copy of the exact ECI official URL has been obtained:
+- Exact original ECI URL: https://www.eci.gov.in/Documents/Delimitation/DelimitationofParliamentaryAssemblyConstituenciesOrder-2008%28English%29.pdf
+- Archive URL: https://web.archive.org/web/20260804161908id_/https://www.eci.gov.in/Documents/Delimitation/DelimitationofParliamentaryAssemblyConstituenciesOrder-2008(English).pdf
+- Capture timestamp: 2026-08-04T16:19:08Z
+- Bytes: 1,340,728; SHA-256: 9e1ac49aa952febc8e4f57ed23abd28218a21887f355f8dad1502ab5c0d65e69; PDF page count: 572.
+- Workflow: https://github.com/kshetra-app/Kshetra/actions/runs/40335906727; evidence-only commit b0e825de6b1c5870f95c5a8ca46d2a3d4bd1dfa8.
+- This is an archival copy of the ECI document, not a direct current ECI response and not the original Gazette of India issue.
 
-Under Section 9(1) of the Delimitation Act, 2002 (Act No. 33 of 2002), the Delimitation Commission readjusted the division of the State of Andhra Pradesh into territorial constituencies for the purpose of elections to the House of the People and the Legislative Assembly.
+The official 2023 Gazette of India PDF, recovered from an exact-URL archive capture, recites that the 2008 Order was published vide S.O.382(E), dated 19 February 2008. This confirms the publication reference/date through a later official Gazette recital; it does not replace the original 2008 Gazette issue or establish its full issue/page metadata. The old statement “Notification No. 282/AP/2008” in this dossier was a conflation with Notification No. 282/AP/2007-III recorded for the 2007 Delimitation Commission Order No. 46.
 
-Order was finalized on 19 February 2008 following public sittings across the state and published in the Gazette of India Extraordinary.
+## 2. What the 2008 Order actually contains
 
----
+The recovered PDF’s contents page states:
+- Schedule I: seat allocation in the Lok Sabha.
+- Schedule II: number of seats in the various Legislative Assemblies.
+- Schedule III: Andhra Pradesh (the composite state at the time), pages 8–32.
+- Schedule XXXI: Delhi, pages 543–556.
+- Schedule XXXII: Puducherry, pages 557–560.
+- Jammu and Kashmir Assembly Constituency extents are in the Annexure, pages 561–571.
 
-## 2. Established Legal Facts
+Within Schedule III, Table A lists Assembly Constituencies and their territorial extents; Table B lists Parliamentary Constituencies and their territorial extents. These are the opposite of the schedule/table references previously stored in this dossier.
 
-1. **Composite State Seat Total:**
-   - Legislative Assembly: 294 seats.
-   - House of the People: 42 seats.
-2. **Regional Allocation (later partitioned by APRA 2014):**
-   - Telangana Region (10 districts): 119 Assembly Constituencies (AC-001 Sirpur through AC-119 Bhadrachalam).
-   - Andhra & Rayalaseema Regions (13 districts): 175 Assembly Constituencies.
-3. **Reservation Quotas (Composite):**
-   - Scheduled Castes (SC): 48 Assembly Constituencies (19 in Telangana region, 29 in Andhra/Rayalaseema).
-   - Scheduled Tribes (ST): 31 Assembly Constituencies (12 in Telangana region, 19 in Andhra/Rayalaseema).
-   - General: 215 Assembly Constituencies (88 in Telangana region, 127 in Andhra/Rayalaseema).
-4. **Baseline Boundary Descriptions:**
-   - Every Assembly Constituency extent is defined by enumerated administrative units (mandals, villages, wards) as they existed on the date of delimitation.
-   - AC-110 Pinapaka (ST): Extent established under Schedule II.
-   - AC-118 Aswaraopeta (ST): Extent established under Schedule II.
-   - AC-119 Bhadrachalam (ST): Extent established under Schedule II.
+In the 2008 legal period, composite Andhra Pradesh had 294 Assembly Constituencies (48 SC, 19 ST, 227 general) and 42 Parliamentary Constituencies (7 SC, 3 ST, 32 general). The 2008 PDF’s Schedule II shows those assembly seat-allocation totals in the historical regime. The order does not contain a separate schedule named Telangana, because the successor State did not yet exist as a separate State schedule in the 2008 document.
 
----
+## 3. Post-2014 and 2018 legal lineage — separate instruments
 
-## 3. Strict Negative Boundaries & Prohibited Over-Claims
+- The Andhra Pradesh Reorganisation Act, 2014 split the earlier 294 Assembly Constituencies into 175 for Andhra Pradesh and 119 for Telangana. That successor-state allocation and any later territorial changes must be sourced to the Act and later instruments; do not label the 2008 Order’s Schedule XXXI as Telangana.
+- ECI Notification No. 282/AP/2018(DEL) (master file data/evidence/delimitation/authoritative/eci_notification_282_ap_2018_del.pdf, 102,133 bytes, SHA-256 13201bb665a5d29853862d0bc0c07175c319a61d5b39b2c838fd0ec3882737da) is a boundary-extent amendment of Schedule III, Table A for Andhra Pradesh, limited to constituencies 53-Rampachodavaram (ST) and 67-Polavaram (ST). It does not establish a new Telangana schedule and is not itself the Gazette issue.
+- The archived later official Gazette recital confirms S.O.382(E), not the previously listed S.O.383(E)/S.O.453(E), as publication reference for the 2008 Order. The original issue still must be acquired.
 
-- **Does NOT Establish Successor States:** The 2008 Order was promulgated 6 years prior to bifurcation and does not establish Telangana or Andhra Pradesh as separate successor states.
-- **Does NOT Establish 2015 Territorial Transfers:** The 2008 Order predates the Polavaram project territorial transfers enacted under G.S.R. 311(E) in 2015.
-- **Does NOT Account for Post-2008 Demographic Changes:** Based exclusively on Census 2001 population figures, frozen by Articles 82 and 170 of the Constitution of India.
+## 4. Disposition
+
+This dossier’s prior claims of “Schedule II (Andhra Pradesh)”, “Schedule XXXI (Telangana)”, “Table A (Parliamentary)”, “Table B (Assembly)”, and the 2008 publication identifier “Notification No. 282/AP/2008” are superseded and invalid. The 2008 ECI consolidated PDF’s raw archived bytes are acquired and SHA-256 verified, while the original Gazette issue/certified copy, 2014/AP follow-on legal chain and 2018 Gazette issue/AP State Gazette counterpart remain open. No national AC geometry or current Telangana polygon is accepted by this source PDF alone.
