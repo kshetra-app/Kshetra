@@ -111,7 +111,9 @@ def is_candidate(link):
  return True
 
 def save_raw(code,kind,body):
- name=safe(f"{code}_{kind}")+".bin"
+ name=safe(f"{code}_{kind}")
+ if not Path(name).suffix:
+  name += ".bin"
  (RAW/name).write_bytes(body)
  return "raw/"+name
 
