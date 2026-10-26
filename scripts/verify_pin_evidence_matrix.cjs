@@ -691,7 +691,23 @@ function validateEvidenceMatrix({ directory, manifest, seedNames }) {
   // ──────────────────────────────────────────────────────────────────────────
   // CHECK 6: Single source-resolution chain & artifact integrity (Workstream B & E)
   // ──────────────────────────────────────────────────────────────────────────
-  let sourceResolutionPassed = true;
+  // A checksum only proves byte identity. It does NOT make an artifact authoritative.
+  // These legacy extracts were explicitly invalidated on 2026-10-26 because their
+  // schedule provenance was wrong. Fail closed before any derived positive claim can
+  // be accepted, even if a manifest's recorded digest matches the invalidated bytes.
+  const tsExtractText = fs.existsSync(tsExtractFullPath) ? fs.readFileSync(tsExtractFullPath, 'utf8') : '';
+  const apExtractText = fs.existsSync(apExtractFullPath) ? fs.readFileSync(apExtractFullPath, 'utf8') : '';
+  const tsExtractInvalidated = /STATUS:\\s*INVALIDATED/i.test(tsExtractText.slice(0, 2048)) ||
+    /DO NOT USE AS AN AUTHORITATIVE/i.test(tsExtractText.slice(0, 2048));
+  const apExtractInvalidated = /STATUS:\\s*INVALIDATED/i.test(apExtractText.slice(0, 2048)) ||
+    /DO NOT USE AS AN AUTHORITATIVE/i.test(apExtractText.slice(0, 2048));
+  let sourceResolutionPassed = !tsExtractInvalidated && !apExtractInvalidated;
+  if (tsExtractInvalidated) {
+    results.errors.push('TS source extract is explicitly INVALIDATED; matching SHA-256 cannot establish statutory authority. Replace with a verified, legally applicable Telangana source before accepting derived claims.');
+  }
+  if (apExtractInvalidated) {
+    results.errors.push('AP source extract is explicitly INVALIDATED; matching SHA-256 cannot establish statutory authority. Replace with a verified, legally applicable Andhra Pradesh source before accepting derived claims.');
+  }
 
   // Verify in-repo authoritative source extract files exist on disk
   if (!fs.existsSync(tsExtractFullPath)) {
