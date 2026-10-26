@@ -38,3 +38,7 @@ The verification performed here independently recomputed the hash and structural
 ## Acceptance and safety
 
 W021.5 Stage B remains **PARTIAL / NOT ACCEPTED**. EB-01–EB-05 and W021.5-B1-04 remain open; EB-06 remains pending independent adjudication. No national canonical AC geometry is accepted. No staging/production database access or mutation occurred; Stage C remains unauthorized.
+
+## Gazette item identifier found in official parliamentary record
+
+The official Lok Sabha proceedings for 19 December 2018 identify Notification **O.N.55(E)** as published in the Gazette of India dated **22 September 2018**, concerning delimitation of constituencies in Andhra Pradesh and updating Schedule III of the 2008 Order. The record is on printed page 36 (PDF page index 35): https://sansad.in/getFile/debatestextmk/16/XVI/19.12.2018.pdf?source=loksabhadocs. This materially improves the exact-issue search keys, but it is not the Gazette itself and does not close the Gazette-byte requirement. The source register records this distinction under SRC-LOKSABHA-GAZETTE-ON-55E-REFERENCE-2018-12-19 (register commit 3a3ceb9f44fbdd67410ac5f0e997f54ee6330d06).
