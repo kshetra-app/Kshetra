@@ -134,3 +134,13 @@ This is only a **name/roster crosswalk**. The aliases are inferred, not official
 ### Additional legal-chain corroboration candidates
 
 The official Chief Electoral Officer, Telangana 2024 election schedule PDF and PIB release `PRID=2015227` both corroborate the chain involving the 2014 Reorganisation Act, the 2015 Removal of Difficulties Order, and the 2018 ECI notification. They are recorded in the source register as additional official candidates; raw bytes and SHA-256 still need acquisition. They do not replace the 2018 notification or Gazette itself.
+
+## 2026-10-26 additional official-source discovery (candidate-only)
+
+An additional official TGRAC service was discovered after the previous route decision: https://tgrac.telangana.gov.in/arcgis/rest/services/Master_Administrative_Folder/Master_Administrative_Boundary/MapServer . Its service metadata lists an Assembly_Constituency_Boundary layer (layer 0), spatial reference EPSG:4326, max record count 1000, and JSON query support. The connected web reader could inspect the service index but could not retrieve the feature-query response; therefore no raw geometry bytes, byte count, SHA-256, feature count, legal vintage or topology result is claimed yet.
+
+A read-only probe was added to scripts/w0215_acquire_official_geometry.py on commit 00c8e589978c66d58ca5f47e3dfb833a0a637ffe. GitHub Actions run 40259741110 (https://github.com/kshetra-app/Kshetra/actions/runs/40259741110) was triggered on 2026-10-26 to capture metadata and full geometry response, if the service permits it, and to run the existing structural/topology checks. This source is an additional candidate, not a preferred/canonical layer by virtue of being called 'Master'. It must be compared with the existing TGRAC variants and statutory source before disposition.
+
+ECI's official 2026 election publication page also exposes the 2026 Assam, Kerala, Tamil Nadu, West Bengal and Puducherry election publications (https://www.eci.gov.in/eci-publication/), and the official press note includes constituency maps/rosters. These are useful to cross-check the current electoral roster and identify applicable publications, but a map marked 'not to scale' is not a substitute for vector geometry or legal extent validation.
+
+**Decision:** await the probe result; do not infer success from service metadata. If the response is unavailable or still non-canonical, continue with official custodian requests for the raw source, lineage, effective date, licence and correction history. Stage B remains PARTIAL / NOT ACCEPTED.
