@@ -1,0 +1,69 @@
+name: W021.5 Official India Post Postal Manual Acquisition
+
+on:
+  push:
+    branches:
+      - cto/w0215-stage-b-evidence-20261025
+    paths:
+      - "scripts/acquire_w0215_indiapost_postal_manuals.py"
+      - ".github/workflows/w0215-indiapost-postal-manuals.yml"
+      - "stage_b_catalogue_expansion/manifest.json"
+      - "stage_b_catalogue_expansion/raw/IndiaPost_*.html"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: w0215-indiapost-postal-manuals
+  cancel-in-progress: false
+
+jobs:
+  acquire:
+    name: Acquire official postal manuals and inspect delivery-beat references
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Checkout evidence-only branch with retained catalogue HTML
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: true
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install pinned verified HTTP and PDF parsers
+        run: python -m pip install --disable-pip-version-check "requests==2.32.5" "PyMuPDF==1.26.4"
+      - name: Acquire manuals using only exact URLs observed in official source HTML
+        id: acquire
+        continue-on-error: true
+        run: python scripts/acquire_w0215_indiapost_postal_manuals.py
+      - name: Upload raw manuals, extracted text and provenance manifest
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: w0215-indiapost-postal-manuals-${{ github.run_id }}
+          path: data/evidence/w021_5/indiapost_postal_manuals/
+          if-no-files-found: warn
+          retention-days: 30
+      - name: Persist acquired manual bytes and manifest to evidence-only branch
+        if: steps.acquire.outcome == 'success'
+        env:
+          BRANCH_NAME: ${{ github.ref_name }}
+        run: |
+          set -eu
+          test "$GITHUB_REF" = "refs/heads/cto/w0215-stage-b-evidence-20261025"
+          test -s data/evidence/w021_5/indiapost_postal_manuals/manifest.json
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/evidence/w021_5/indiapost_postal_manuals/
+          git commit -m "evidence(w0215): archive official India Post manuals and source hashes"
+          git fetch origin "$BRANCH_NAME"
+          git rebase FETCH_HEAD
+          git push origin "HEAD:$BRANCH_NAME"
+      - name: Fail if no valid official manual bytes were acquired
+        if: steps.acquire.outcome != 'success'
+        run: |
+          echo "No valid official postal manual PDF was acquired; inspect the artifact/manifest. Delivery-beat GIS remains open regardless of manual outcome."
+          exit 1
