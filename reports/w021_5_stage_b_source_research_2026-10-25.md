@@ -79,7 +79,8 @@ The DataMeet component SHA-256 values recorded in the forensic audit are: SHP `0
 
 ## Update — 2026-10-26 additional official route
 
-- TGRAC service index discovered: https://tgrac.telangana.gov.in/arcgis/rest/services/Master_Administrative_Folder/Master_Administrative_Boundary/MapServer . It advertises layer 0 as Assembly_Constituency_Boundary in EPSG:4326 with JSON query support. The connected web reader could not retrieve the feature-query response; raw geometry and hashes are not yet available from that route.
-- A candidate-only acquisition probe was added on evidence branch commit 00c8e589978c66d58ca5f47e3dfb833a0a637ffe; run 40259741110 was triggered to acquire the service metadata and feature bytes and run existing checks. Do not treat the layer's name as proof of authority or current legal extent.
+- TGRAC Master Administrative Boundary layer 0 was acquired through read-only workflow run 40259741110: 119 polygons, EPSG:4326, raw response 12,469,989 bytes, SHA-256 c5d0cbf55f5079cd91b0ce3a8733ce11701a70f0ea474cdd96025ec8c651e444; metadata SHA-256 78130181060c9fb1a0eeba400748cf285ba7e973db75d1600b82ca2ab9135988. Evidence: reports/evidence/w021_5_telangana_master_geometry_probe_40259741110.json.
+- Structural sanity passed, but topology audit found one invalid Dornakal (ST) Assembly polygon; there is no canonical AC number field, and legal vintage, licence, source lineage, coverage and legal extent validation remain open. The source is candidate-only, not canonical.
+- An expanded read-only probe for TGRAC Administrative_Information_System_Query layer 1, RnB_Admin layer 8 and MusiRiver project layer 59 was queued as run 40259909774; do not pre-judge its results.
 - ECI official publications list 2026 election publications for Assam, Kerala, Tamil Nadu, West Bengal and Puducherry at https://www.eci.gov.in/eci-publication/ . Their official maps/rosters help establish current election context, but maps marked not-to-scale are not canonical vector geometry.
 - Disposition unchanged until probe artifacts are reviewed: Stage B PARTIAL / NOT ACCEPTED; B1-04 and EB-01..EB-05 OPEN.
