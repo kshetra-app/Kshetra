@@ -5,7 +5,7 @@
   "baselineCommit": "33945d20f318ae1aa0d9aba35052246599c5bbae",
   "branch": "cto/w0215-stage-b-evidence-20261025",
   "createdAt": "2026-10-25",
-  "retrievalMethod": "Web discovery plus repository connector review. A discovered page is not equivalent to a downloaded, hashed source artifact. Additional official TGRAC service discovery and raw-geometry probe executed 2026-10-26 through a read-only GitHub Actions workflow. Expanded TGRAC service-family probe completed 2026-10-26; duplicate/near-duplicate candidate responses are recorded separately and not counted as independent corroboration. Legal source acquisition run 40260777545 acquired and hashed the APSeeds-hosted AP Reorganisation Act copy and two official PIB HTML variants; the exact ECI 2018 notification returned HTTP 406 and the CEO/ECI PDFs timed out. Hashes are assigned only to actual source bytes, never to error pages as if they were documents. Reproducible TGRAC family comparison run 40261390903 succeeded: 8 candidate layers, 28 pairwise comparisons, 3 duplicate raw-response groups; generated report variant_comparison.json SHA-256 76b1565e7b2308c3e4fe1288a7ed198d05d35e65aa8566ddb67d8bcd7ff6bc35 inside artifact ZIP SHA-256 a2752bb4906e33d826fe4e5ce4292c1d46ea5a0f32172937d34c91893ecea3ee. Supplemental discovery sweep on 2026-10-26 reviewed the ECI publications index, ECI delimitation landing page, IndiaCode-hosted 2008 order URL, India Geodata candidate index and NIC admin2024 GIS metadata. These are recorded as discovery-only unless raw source bytes were actually acquired; no hashes or byte sizes are claimed for page-only leads. Direct IndiaCode download attempt in this session failed; exact URL is queued for a controlled read-only retry.",
+  "retrievalMethod": "Web discovery plus repository connector review. A discovered page is not equivalent to a downloaded, hashed source artifact. Additional official TGRAC service discovery and raw-geometry probe executed 2026-10-26 through a read-only GitHub Actions workflow. Expanded TGRAC service-family probe completed 2026-10-26; duplicate/near-duplicate candidate responses are recorded separately and not counted as independent corroboration. Legal source acquisition run 40260777545 acquired and hashed the APSeeds-hosted AP Reorganisation Act copy and two official PIB HTML variants; the exact ECI 2018 notification returned HTTP 406 and the CEO/ECI PDFs timed out. Hashes are assigned only to actual source bytes, never to error pages as if they were documents. Reproducible TGRAC family comparison run 40261390903 succeeded: 8 candidate layers, 28 pairwise comparisons, 3 duplicate raw-response groups; generated report variant_comparison.json SHA-256 76b1565e7b2308c3e4fe1288a7ed198d05d35e65aa8566ddb67d8bcd7ff6bc35 inside artifact ZIP SHA-256 a2752bb4906e33d826fe4e5ce4292c1d46ea5a0f32172937d34c91893ecea3ee. Supplemental discovery sweep on 2026-10-26 reviewed the ECI publications index, ECI delimitation landing page, IndiaCode-hosted 2008 order URL, India Geodata candidate index and NIC admin2024 GIS metadata. These are recorded as discovery-only unless raw source bytes were actually acquired; no hashes or byte sizes are claimed for page-only leads. Direct IndiaCode download attempt in this session failed; exact URL is queued for a controlled read-only retry. Additional official-source discovery 2026-10-26: web search indexed substantial text from the official ECI 2008 order PDF and ECI Notification 282/AP/2018(DEL); this is search-indexed text, not raw PDF bytes. The Telangana High Court judgment reproduction was found as independent legal context, and the official Andhra Pradesh e-Gazette portal was identified as a potential route to the State Gazette counterpart. All are explicitly marked discovery/corroboration-only with null byte counts and hashes until raw files are actually acquired.",
   "rules": {
     "hashPolicy": "SHA-256 must be computed over exact downloaded bytes; never use a Git blob SHA as a file SHA-256.",
     "authorityPolicy": "Government sources are primary only for the specific subject they publish. Community GIS is candidate/secondary data until reconciled to primary source.",
@@ -1544,6 +1544,99 @@
         "Administrative boundaries cannot establish statutory AC extents."
       ],
       "plannedUse": "Exclude from AC geometry acceptance unless a distinct AC-specific layer with explicit source lineage is found."
+    },
+    {
+      "sourceId": "SRC-ECI-DELIMITATION-ORDER-2008-INDEXED-TEXT-2026-10-26",
+      "subject": "ECI Delimitation of Parliamentary and Assembly Constituencies Order, 2008 — search-indexed text of official PDF",
+      "publisher": "Election Commission of India",
+      "url": "https://www.eci.gov.in/Documents/Delimitation/DelimitationofParliamentaryAssemblyConstituenciesOrder-2008%28English%29.pdf",
+      "retrievedAt": "2026-10-26",
+      "format": "Official PDF URL with search-indexed text; raw PDF bytes not acquired in this session",
+      "authority": "OFFICIAL_SOURCE_TEXT_DISCOVERY",
+      "status": "INDEXED_TEXT_DISCOVERY_RAW_BYTES_NOT_ACQUIRED",
+      "sha256": null,
+      "fileBytes": null,
+      "scope": "Historical legal schedule and source for jurisdiction-specific legal chain",
+      "limitations": [
+        "Web search returned extracted text from the official PDF, but direct page fetch failed HTTP 406 and no raw PDF bytes were obtained here.",
+        "The order is not a universal current-geometry source: subsequent jurisdiction-specific orders, amendments and corrigenda must be reconciled.",
+        "No binary SHA-256 is claimed."
+      ],
+      "plannedUse": "The exact URL is included in the W021.5 acquisition script on draft PR #27 for a controlled retry; use indexed text only as a discovery aid, not binary evidence."
+    },
+    {
+      "sourceId": "SRC-ECI-NOTIFICATION-282-AP-2018-INDEXED-TEXT-2026-10-26",
+      "subject": "ECI Notification No. 282/AP/2018(DEL), dated 22 September 2018 — indexed official document text",
+      "publisher": "Election Commission of India",
+      "url": "https://www.eci.gov.in/eci-backend/public/api/download?url=LMAhAK6sOPBp%2FNFF0iRfXbEB1EVSLT41NNLRjYNJJP1KivrUxbfqkDatmHy12e%2FzVx8fLfn2ReU7TfrqYobgIsVIzE4H7zCkL60TDPfde3hSidsZ4fuGUaZAjsPMK3mFe%2FOayCb%2Bc1mgC3WIErfdO%2BA072J7HtGm2kYfstpL5XIZTWrH2JWU7UfZrKWF1BUsH9xccKER%2BJMZVGi7SrzX57%2FMm24zs1eyK2AB5zsjcWKzrILRQG%2FBbbQ%2Fx5bNYVaCn7kX4xoHNibbBVAsqukcOQ%3D%3D",
+      "retrievedAt": "2026-10-26",
+      "format": "Official PDF endpoint with search-indexed text; raw notification bytes not acquired",
+      "authority": "OFFICIAL_SOURCE_TEXT_DISCOVERY",
+      "status": "INDEXED_TEXT_DISCOVERY_RAW_BYTES_NOT_ACQUIRED",
+      "sha256": null,
+      "fileBytes": null,
+      "scope": "2018 legal amendment lineage for Andhra Pradesh/Telangana AC schedule",
+      "limitations": [
+        "The search engine exposes substantial notification text, including date and schedule context, but raw bytes remain unavailable because direct ECI requests return HTTP 406.",
+        "Indexed text is not the original Gazette binary and cannot close EB-01 or EB-02.",
+        "No hash is claimed for the notification."
+      ],
+      "plannedUse": "Use text to target legal cross-checks while continuing exact-byte retrieval via official hosts and custodians."
+    },
+    {
+      "sourceId": "SRC-TSHC-DELIMITATION-2018-JUDGMENT-INDEX-2026-10-26",
+      "subject": "Telangana High Court judgment in Marri Shasidhar Reddy v Election Commission of India (16 November 2018) — searchable reproduction",
+      "publisher": "Telangana High Court judgment; online text reproduction hosted by Indian Kanoon",
+      "url": "https://indiankanoon.org/doc/71192582/",
+      "retrievedAt": "2026-10-26",
+      "format": "Search-indexed HTML reproduction of judicial decision",
+      "authority": "JUDICIAL_CORROBORATION_SECONDARY_HOST",
+      "status": "DISCOVERY_ONLY_RAW_JUDGMENT_BYTES_NOT_ACQUIRED",
+      "sha256": null,
+      "fileBytes": null,
+      "scope": "Independent legal-context check of ECI Notification 282/AP/2018(DEL) and territorial scope",
+      "limitations": [
+        "Third-party text reproduction, not a certified court copy or the Gazette/ECI notification.",
+        "The judgment text states the 2018 notification amended extents of 53-Rampachodavaram and 67-Polavaram in Andhra Pradesh and did not alter Telangana AC names/extents; this is contextual legal corroboration, not polygon proof.",
+        "No raw file/hash acquired."
+      ],
+      "plannedUse": "Cross-check statutory interpretation and ensure the 2018 notification is not incorrectly treated as changing Telangana AC geometry; obtain official/certified judgment if needed."
+    },
+    {
+      "sourceId": "SRC-AP-EGAZETTE-PORTAL-DISCOVERY-2026-10-26",
+      "subject": "Andhra Pradesh e-Gazette official portal — discovery route for the 22 September 2018 state Gazette counterpart",
+      "publisher": "Government of Andhra Pradesh / Commissionerate of Printing",
+      "url": "https://apegazette.cgg.gov.in/",
+      "retrievedAt": "2026-10-26",
+      "format": "Official Gazette portal discovery lead",
+      "authority": "OFFICIAL_CUSTODIAN_PORTAL_DISCOVERY",
+      "status": "PORTAL_DISCOVERED_SPECIFIC_GAZETTE_NOT_ACQUIRED",
+      "sha256": null,
+      "fileBytes": null,
+      "scope": "Find the extraordinary Andhra Pradesh State Gazette dated 22 September 2018 associated with ECI Notification 282/AP/2018(DEL)",
+      "limitations": [
+        "The exact issue/document identifier and raw PDF bytes have not been acquired.",
+        "Portal discovery is not proof of the specific Gazette's identity or content."
+      ],
+      "plannedUse": "Exact-issue search and byte acquisition via authorized portal workflow; if unavailable, request certified copy from the Commissionerate of Printing."
+    },
+    {
+      "sourceId": "SRC-TELANGANA-EGAZETTE-CUSTODIAN-PORTAL-DISCOVERY-2026-10-26",
+      "subject": "Government of Telangana Gazette information page and official portal referral",
+      "publisher": "Government of Telangana",
+      "url": "https://www.telangana.gov.in/gazette/",
+      "retrievedAt": "2026-10-26",
+      "format": "Official custodian portal information page",
+      "authority": "OFFICIAL_CUSTODIAN_DISCOVERY",
+      "status": "PORTAL_DISCOVERY_ONLY",
+      "sha256": null,
+      "fileBytes": null,
+      "scope": "Identify Gazette custodian and portal; cross-check only if applicable to the relevant notification",
+      "limitations": [
+        "The ECI notification states publication in Gazette of India and Andhra Pradesh State Gazette; Telangana Gazette is not presumed to be the correct legal publication.",
+        "No exact relevant Gazette bytes acquired."
+      ],
+      "plannedUse": "Custodian discovery only; prioritize Gazette of India and Andhra Pradesh State Gazette sources."
     }
   ],
   "unresolvedGates": [
@@ -2060,7 +2153,7 @@
     ],
     "acceptedAsCanonical": false
   },
-  "lastDecision": "The statutory roster crosswalk and geometry-family probes remain candidate evidence only. Supplemental sweep selected an exact IndiaCode-hosted 2008-order retry plus exact-link enumeration from ECI's official publications page, in parallel with custodian requests and jurisdiction-by-jurisdiction official GIS. IndiaCode PDF raw bytes were not acquired in this sweep; do not claim binary acquisition or hash. Stage B remains PARTIAL / NOT ACCEPTED.",
+  "lastDecision": "The exact official ECI 2008 order and 2018 notification texts are discoverable in search indexing, but original PDF bytes remain unacquired. A court judgment text reproduction states the 2018 notification amended two Andhra Pradesh AC extents and did not change Telangana AC extents; use only as independent legal context, not as substitute for original notification/Gazette. Next priority: controlled acquisition of ECI order/notification bytes, exact-issue search at Andhra Pradesh e-Gazette, and custodian certified copy if those routes fail. Stage B remains PARTIAL / NOT ACCEPTED.",
   "latestRouteAdjudication": {
     "recordedAt": "2026-10-26",
     "reportPath": "reports/w021_5_stage_b_evidence_route_adjudication_2026-10-26.md",
@@ -2143,6 +2236,32 @@
         "No inferred polygons",
         "No staging/production database access",
         "Stage C remains unauthorized"
+      ]
+    },
+    "additionalDiscoveries": {
+      "recordedAt": "2026-10-26",
+      "officialEci2008Order": {
+        "url": "https://www.eci.gov.in/Documents/Delimitation/DelimitationofParliamentaryAssemblyConstituenciesOrder-2008%28English%29.pdf",
+        "status": "INDEXED_TEXT_DISCOVERY_RAW_BYTES_NOT_ACQUIRED"
+      },
+      "officialEci2018Notification": {
+        "url": "https://www.eci.gov.in/eci-backend/public/api/download?url=LMAhAK6sOPBp%2FNFF0iRfXbEB1EVSLT41NNLRjYNJJP1KivrUxbfqkDatmHy12e%2FzVx8fLfn2ReU7TfrqYobgIsVIzE4H7zCkL60TDPfde3hSidsZ4fuGUaZAjsPMK3mFe%2FOayCb%2Bc1mgC3WIErfdO%2BA072J7HtGm2kYfstpL5XIZTWrH2JWU7UfZrKWF1BUsH9xccKER%2BJMZVGi7SrzX57%2FMm24zs1eyK2AB5zsjcWKzrILRQG%2FBbbQ%2Fx5bNYVaCn7kX4xoHNibbBVAsqukcOQ%3D%3D",
+        "status": "INDEXED_TEXT_DISCOVERY_RAW_BYTES_NOT_ACQUIRED"
+      },
+      "courtJudgment": {
+        "url": "https://indiankanoon.org/doc/71192582/",
+        "status": "SECONDARY_JUDICIAL_CONTEXT_ONLY"
+      },
+      "apGazettePortal": {
+        "url": "https://apegazette.cgg.gov.in/",
+        "status": "OFFICIAL_PORTAL_DISCOVERED_SPECIFIC_ISSUE_NOT_ACQUIRED"
+      },
+      "newSourceIds": [
+        "SRC-ECI-DELIMITATION-ORDER-2008-INDEXED-TEXT-2026-10-26",
+        "SRC-ECI-NOTIFICATION-282-AP-2018-INDEXED-TEXT-2026-10-26",
+        "SRC-TSHC-DELIMITATION-2018-JUDGMENT-INDEX-2026-10-26",
+        "SRC-AP-EGAZETTE-PORTAL-DISCOVERY-2026-10-26",
+        "SRC-TELANGANA-EGAZETTE-CUSTODIAN-PORTAL-DISCOVERY-2026-10-26"
       ]
     }
   }
