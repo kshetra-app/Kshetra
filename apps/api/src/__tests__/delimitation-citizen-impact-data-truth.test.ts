@@ -1633,7 +1633,7 @@ describe('CTO Directive 123 — Residual Electoral Data-Truth & Provisional Look
 
     it('Workstream A: verifies 100% report-to-evidence concordance across all 36 records including reconciled PINs 500001, 500028, and 500056', () => {
       const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
-      const tableBExtractPath = path.resolve(__dirname, '../../../../data/evidence/w021_5/authoritative/eci_delimitation_2008_schedule_xxxi_table_b_extract.txt');
+      const tableBExtractPath = path.resolve(__dirname, '../../../../data/evidence/w021_5/authoritative/ap_reorganisation_act_2014_schedule_xxvii_telangana_table_a_extract.txt');
       const tableBEntries = validatorModule.parseStatutoryTableBExtract(tableBExtractPath);
 
       // Reconciled PIN 500001: AC 65 is Goshamahal (Ward 4, 14, 15, 21), AC 63 is Nampally, AC 58 is Malakpet
@@ -2016,8 +2016,8 @@ describe('CTO Directive 123 — Residual Electoral Data-Truth & Provisional Look
     });
 
     it('fails closed when a referenced statutory extract is explicitly invalidated, even if its digest matches the manifest', () => {
-      const tsPath = path.resolve(__dirname, '../../../../data/evidence/w021_5/authoritative/eci_delimitation_2008_schedule_xxxi_table_b_extract.txt');
-      const apPath = path.resolve(__dirname, '../../../../data/evidence/w021_5/authoritative/eci_delimitation_2008_schedule_ii_table_b_extract.txt');
+      const tsPath = path.resolve(__dirname, '../../../../data/evidence/w021_5/authoritative/ap_reorganisation_act_2014_schedule_xxvii_telangana_table_a_extract.txt');
+      const apPath = path.resolve(__dirname, '../../../../data/evidence/w021_5/authoritative/ap_reorganisation_act_2014_schedule_iii_andhra_pradesh_table_a_extract.txt');
       const tsBytes = fs.readFileSync(tsPath, 'utf8').slice(0, 2048);
       const apBytes = fs.readFileSync(apPath, 'utf8').slice(0, 2048);
       expect(tsBytes).toMatch(/STATUS:\s*INVALIDATED/i);
