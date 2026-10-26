@@ -6,7 +6,6 @@ personal data scraping, database access, or inferred station-to-AC mappings are 
 """
 from __future__ import annotations
 
-import concurrent.futures
 import hashlib
 import json
 import re
@@ -31,6 +30,11 @@ HEADERS = {
 
 def sha(data: bytes) -> str:
     return hashlib.sha256(data).hexdigest()
+
+# Reuse one session so the observed ASP.NET form can be submitted with the source
+# page's legitimate cookies and hidden view-state tokens.
+SESSION = requests.Session(impersonate="chrome124")
+SESSION.headers.update(HEADERS)
 
 class PageLinkParser(HTMLParser):
     def __init__(self, base_url: str):
@@ -69,7 +73,8 @@ class TableParser(HTMLParser):
         tag = tag.lower()
         if tag == "table":
             if self._table is None:
-                self._table = {"rows": []}
+                attrs = dict(attrs)
+                self._table = {"id": attrs.get("id"), "class": attrs.get("class"), "rows": []}
         elif self._table is not None and tag == "tr":
             self._row = []
         elif self._row is not None and tag in ("td", "th"):
@@ -138,7 +143,7 @@ def validate_url(url: str, require_detail: bool = False) -> None:
 
 def get_html(url: str) -> tuple[object, bytes]:
     validate_url(url)
-    response = requests.get(url, headers=HEADERS, timeout=12, allow_redirects=True, impersonate="chrome124")
+    response = SESSION.get(url, headers=HEADERS, timeout=12, allow_redirects=True)
     validate_url(response.url)
     return response, response.content
 
@@ -224,6 +229,7 @@ try:
         if u.scheme == "https" and u.hostname in ALLOWED_HOSTS and u.path.rstrip("/").lower() == "/ceodelhiweb/psl.aspx":
             psl_links.append(link)
     manifest["auxiliaryPages"] = []
+    psl_form_state = None
     for i, link in enumerate({x["url"]: x for x in psl_links}.values(), 1):
         aux = {"sourceId": "CEO_DELHI_PSL_RELATIVE_LINK", "requestedUrl": link["url"], "indexLinkText": link.get("text", ""), "retrievedAtUtc": datetime.now(timezone.utc).isoformat()}
         try:
@@ -240,6 +246,8 @@ try:
                 form_parser = FormOptionParser()
                 form_parser.feed(aux_raw.decode(aux_response.encoding or "utf-8", errors="replace"))
                 aux["forms"] = form_parser.forms
+                if urlparse(aux_response.url).path.rstrip("/").lower() == "/ceodelhiweb/psl.aspx":
+                    psl_form_state = {"url": aux_response.url, "forms": form_parser.forms}
                 table_parser = TableParser()
                 table_parser.feed(aux_raw.decode(aux_response.encoding or "utf-8", errors="replace"))
                 aux["tables"] = [{"rowCount": len(t["rows"]), "sampleRows": [[cell["text"] for cell in row] for row in t["rows"][:4]]} for t in table_parser.tables]
@@ -263,93 +271,184 @@ except Exception as exc:
     print(json.dumps(manifest, indent=2))
     sys.exit(1)
 
-def acquire_one(item):
+def normalized_name(value: str) -> str:
+    return " ".join((value or "").strip().upper().split())
+
+def parse_tables(raw: bytes, encoding: str = "utf-8") -> list[dict]:
+    parser = TableParser()
+    parser.feed(raw.decode(encoding or "utf-8", errors="replace"))
+    output = []
+    for i, table in enumerate(parser.tables, 1):
+        rows = table["rows"]
+        header = [cell["text"] for cell in rows[0]] if rows and all(cell.get("tag") == "th" for cell in rows[0]) else []
+        data_rows = rows[1:] if header else rows
+        output.append({
+            "tableIndex": i,
+            "tableId": table.get("id"),
+            "tableClass": table.get("class"),
+            "header": header,
+            "rowCount": len(rows),
+            "dataRowCount": len(data_rows),
+            "sampleRows": [[cell["text"] for cell in row] for row in data_rows[:5]],
+        })
+    return output
+
+def parse_form(raw: bytes, encoding: str = "utf-8") -> list[dict]:
+    parser = FormOptionParser()
+    parser.feed(raw.decode(encoding or "utf-8", errors="replace"))
+    return parser.forms
+
+def hidden_payload(form: dict, select_name: str, ac_no: int) -> dict[str, str]:
+    fields = {}
+    for item in form.get("inputs", []):
+        if item.get("name") and (item.get("type") or "").lower() == "hidden":
+            fields[item["name"]] = item.get("value") or ""
+    required = {"__VIEWSTATE", "__EVENTVALIDATION", "__EVENTTARGET", "__EVENTARGUMENT"}
+    missing = sorted(required - set(fields))
+    if missing:
+        raise ValueError("ASP_NET_FORM_MISSING_STATE_FIELDS:" + ",".join(missing))
+    fields["__EVENTTARGET"] = select_name
+    fields["__EVENTARGUMENT"] = ""
+    fields[select_name] = str(ac_no)
+    return fields
+
+def acquire_one_ac_postback(item: dict, form_state: dict) -> tuple[dict, dict | None]:
     ac_no = item["acNo"]
-    url = item["url"]
     record = {
-        "sourceId": f"CEO_DELHI_PS_2024_AC_{ac_no:02d}",
+        "sourceId": f"CEO_DELHI_PSL_AC_{ac_no:02d}",
         "acNo": ac_no,
         "acNameFromIndex": item["acName"],
-        "requestedUrl": url,
         "indexLinkText": item["indexLinkText"],
-        "retrievedAtUtc": datetime.now(timezone.utc).isoformat(),
+        "formUrl": form_state["url"],
+        "requestMethod": "POST",
+        "requestedAtUtc": datetime.now(timezone.utc).isoformat(),
     }
     try:
-        validate_url(url, require_detail=True)
-        response = requests.get(url, headers=HEADERS, timeout=12, allow_redirects=True, impersonate="chrome124")
-        validate_url(response.url, require_detail=True)
+        forms = form_state.get("forms") or []
+        form = next((x for x in forms if x.get("method") == "post" and x.get("selects")), None)
+        if form is None:
+            raise ValueError("OFFICIAL_POSTBACK_FORM_OR_SELECT_NOT_FOUND")
+        select = next((x for x in form["selects"] if "DropDownListDistNO" in (x.get("name") or "") or "Select AC Name" in (x.get("id") or "")), None)
+        if select is None:
+            raise ValueError("ASSEMBLY_CONSTITUENCY_SELECT_NOT_FOUND")
+        options = {str(option.get("value")): option.get("text", "") for option in select["options"]}
+        option_text = options.get(str(ac_no))
+        if not option_text:
+            raise ValueError(f"AC_OPTION_NOT_PRESENT_IN_OFFICIAL_FORM:{ac_no}")
+        selected_label = re.sub(r"^\\s*\\d+\\s*[-–:]\\s*", "", option_text).strip()
+        if normalized_name(selected_label) != normalized_name(item["acName"]):
+            raise ValueError(f"INDEX_DROPDOWN_AC_NAME_MISMATCH:{item['acName']}!={selected_label}")
+        post_url = urljoin(form_state["url"], form.get("action") or form_state["url"])
+        validate_url(post_url)
+        payload = hidden_payload(form, select["name"], ac_no)
+        host = urlparse(form_state["url"])
+        response = SESSION.post(
+            post_url,
+            data=payload,
+            headers={
+                **HEADERS,
+                "Origin": f"{host.scheme}://{host.netloc}",
+                "Referer": form_state["url"],
+            },
+            timeout=12,
+            allow_redirects=True,
+        )
+        validate_url(response.url)
         raw = response.content
         record.update({
+            "requestedUrl": post_url,
             "finalUrl": response.url,
             "httpStatus": response.status_code,
             "contentType": response.headers.get("Content-Type"),
             "byteLength": len(raw),
             "sha256": sha(raw) if raw else None,
+            "selectedDropdownValue": str(ac_no),
+            "selectedDropdownLabel": option_text,
+            "selectedDropdownNameMatchesIndex": True,
         })
-        if response.status_code == 200 and raw:
-            name = f"CEO_DELHI_POLLING_STATIONS_AC_{ac_no:02d}.html"
-            (RAW / name).write_bytes(raw)
-            record["rawArtifact"] = f"raw/{name}"
-            record["status"] = "DOWNLOADED_HASHED_HTML"
-            parser = TableParser()
-            parser.feed(raw.decode(response.encoding or "utf-8", errors="replace"))
-            table_summaries = []
-            for table_i, table in enumerate(parser.tables, 1):
-                rows = table["rows"]
-                header = []
-                if rows and all(c.get("tag") == "th" for c in rows[0]):
-                    header = [c["text"] for c in rows[0]]
-                    data_rows = rows[1:]
-                else:
-                    data_rows = rows
-                table_summaries.append({
-                    "tableIndex": table_i,
-                    "header": header,
-                    "rowCount": len(rows),
-                    "dataRowCount": len(data_rows),
-                    "sampleRows": [[c["text"] for c in row] for row in data_rows[:5]],
-                })
-            record["tables"] = table_summaries
-            record["tableCount"] = len(table_summaries)
-            record["tableDataRowCount"] = sum(t["dataRowCount"] for t in table_summaries)
-            text_parser = PageLinkParser(response.url)
-            text_parser.feed(raw.decode(response.encoding or "utf-8", errors="replace"))
-            record["pdfLinksObserved"] = [
-                {"url": x["url"], "text": x.get("text", "")}
-                for x in text_parser.links if urlparse(x["url"]).path.lower().endswith(".pdf")
-            ][:50]
-        else:
-            record["status"] = "HTTP_FAILURE_NO_SOURCE_BYTES_ACCEPTED"
+        content_type = (response.headers.get("Content-Type") or "").lower()
+        if response.status_code == 200 and raw and ("html" in content_type or b"<html" in raw[:500].lower()):
+            filename = f"CEO_DELHI_POLLING_STATIONS_AC_{ac_no:02d}_POSTBACK.html"
+            (RAW / filename).write_bytes(raw)
+            record["rawArtifact"] = f"raw/{filename}"
+            record["status"] = "DOWNLOADED_HASHED_OFFICIAL_POSTBACK_HTML"
+            record["tables"] = parse_tables(raw, response.encoding or "utf-8")
+            record["tableCount"] = len(record["tables"])
+            record["tableDataRowCount"] = sum(t["dataRowCount"] for t in record["tables"])
+            # A selected AC returning its own form state is the minimum proof that the
+            # controlled same-host ASP.NET postback worked. Keep new state for next AC.
+            new_forms = parse_form(raw, response.encoding or "utf-8")
+            next_state = {"url": response.url, "forms": new_forms} if new_forms else None
+            record["updatedFormStatePresent"] = bool(next_state)
+            if not next_state:
+                record["stateWarning"] = "NO_FORM_STATE_IN_RESPONSE; subsequent AC submissions cannot safely reuse old view-state"
+            return record, next_state
+        record["status"] = "HTTP_FAILURE_NO_HTML_SOURCE_ACCEPTED"
     except Exception as exc:
         record["status"] = "FETCH_FAILED"
         record["error"] = f"{type(exc).__name__}: {exc}"
-    return record
+    return record, None
 
-# Modest concurrency limits load on this public government service while staying reproducible.
-with concurrent.futures.ThreadPoolExecutor(max_workers=3) as pool:
-    futures = [pool.submit(acquire_one, item) for item in selected]
-    for future in concurrent.futures.as_completed(futures):
-        manifest["records"].append(future.result())
+# The public CEO index exposes an ASP.NET dropdown whose official on-change postback
+# populates the selected AC's polling-station listing on the same host. Use its current
+# hidden view-state/event-validation fields and exact observed select field; do not call
+# the separate ceodelhi.gov.in detail URLs that timed out on all 70 known AC links.
+manifest["records"] = []
+if not psl_form_state:
+    manifest["formPostback"] = {"status": "BLOCKED_NO_OBSERVED_PSL_FORM"}
+    manifest["summary"] = {"distinctACLinksObserved": len(selected), "distinctACPagesAttempted": 0, "pagesDownloadedHashed": 0, "pagesFailed": len(selected), "uniqueSuccessfulACNumbers": [], "missingSuccessfulACNumbers": list(range(1, 71))}
+else:
+    psl_form = next((x for x in psl_form_state.get("forms", []) if x.get("method") == "post" and x.get("selects")), None)
+    select = next((x for x in (psl_form or {}).get("selects", []) if "DropDownListDistNO" in (x.get("name") or "")), None)
+    option_map = {str(x.get("value")): x.get("text", "") for x in (select or {}).get("options", [])}
+    observed_dropdown = []
+    for ac_no in range(1, 71):
+        label = option_map.get(str(ac_no))
+        observed_dropdown.append({"acNo": ac_no, "label": label, "matchesIndex": normalized_name(re.sub(r"^\\s*\\d+\\s*[-–:]\\s*", "", label or "")) == normalized_name(next((x["acName"] for x in selected if x["acNo"] == ac_no), ""))})
+    manifest["formPostback"] = {
+        "status": "OFFICIAL_FORM_DISCOVERED",
+        "formUrl": psl_form_state["url"],
+        "postbackMethod": (psl_form or {}).get("method"),
+        "selectName": (select or {}).get("name"),
+        "dropdownOptionCount": len(option_map),
+        "observedDropdownCoverage": observed_dropdown,
+        "initialStateFieldsPresent": sorted([x["name"] for x in (psl_form or {}).get("inputs", []) if x.get("type") == "hidden" and x.get("name")]),
+    }
+    current_state = psl_form_state
+    stop_after = 1 if "--pilot-one-ac" in sys.argv else 70
+    for item in selected[:stop_after]:
+        record, next_state = acquire_one_ac_postback(item, current_state)
+        manifest["records"].append(record)
+        if next_state is not None:
+            current_state = next_state
+        else:
+            manifest["formPostback"]["status"] = "PARTIAL_FORM_POSTBACK_FAILURE"
+            # If this page did not return updated form state, the next source cannot be
+            # submitted reliably with a stale ASP.NET __VIEWSTATE token. Stop, retain gap.
+            manifest["formPostback"]["stoppedAtAC"] = item["acNo"]
+            break
 
 manifest["records"].sort(key=lambda r: r["acNo"])
+success = [r for r in manifest["records"] if r.get("status") == "DOWNLOADED_HASHED_OFFICIAL_POSTBACK_HTML"]
 manifest["summary"] = {
     "distinctACLinksObserved": len(selected),
-    "distinctACPagesAttempted": len(selected),
-    "pagesDownloadedHashed": sum(1 for r in manifest["records"] if r.get("status") == "DOWNLOADED_HASHED_HTML"),
-    "pagesFailed": sum(1 for r in manifest["records"] if r.get("status") != "DOWNLOADED_HASHED_HTML"),
-    "uniqueSuccessfulACNumbers": sorted({r["acNo"] for r in manifest["records"] if r.get("status") == "DOWNLOADED_HASHED_HTML"}),
-    "missingSuccessfulACNumbers": sorted(set(range(1, 71)) - {r["acNo"] for r in manifest["records"] if r.get("status") == "DOWNLOADED_HASHED_HTML"}),
+    "distinctACPagesAttempted": len(manifest["records"]),
+    "pagesDownloadedHashed": len(success),
+    "pagesFailed": len(manifest["records"]) - len(success),
+    "uniqueSuccessfulACNumbers": sorted({r["acNo"] for r in success}),
+    "missingSuccessfulACNumbers": sorted(set(range(1, 71)) - {r["acNo"] for r in success}),
+    "postbackRowsObserved": sum(r.get("tableDataRowCount", 0) for r in success),
+    "recordsWithUpdatedFormState": sum(1 for r in success if r.get("updatedFormStatePresent")),
 }
 manifest["overallStatus"] = (
-    "PASS_70_OF_70_POLLING_STATION_PAGES_ACQUIRED"
-    if manifest["summary"]["pagesDownloadedHashed"] == 70
-       and manifest["index"].get("distinctAssemblyConstituencyLinks") == 70
-       and not manifest["index"].get("missingACNumbers")
-       and not manifest["index"].get("duplicateUrlConflicts")
+    "PASS_70_OF_70_OFFICIAL_AC_POSTBACKS_ACQUIRED"
+    if len(success) == 70 and len(manifest["index"].get("acNumbersObserved", [])) == 70
+        and manifest["formPostback"].get("status") == "OFFICIAL_FORM_DISCOVERED"
+        and manifest["summary"]["recordsWithUpdatedFormState"] == 70
     else "PARTIAL_OFFICIAL_DELHI_POLLING_STATION_ACQUISITION"
 )
 manifest["completedAtUtc"] = datetime.now(timezone.utc).isoformat()
 (OUT / "manifest.json").write_text(json.dumps(manifest, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
 print(json.dumps(manifest, indent=2, ensure_ascii=False))
-if manifest["overallStatus"] != "PASS_70_OF_70_POLLING_STATION_PAGES_ACQUIRED":
+if manifest["overallStatus"] != "PASS_70_OF_70_OFFICIAL_AC_POSTBACKS_ACQUIRED":
     sys.exit(1)
