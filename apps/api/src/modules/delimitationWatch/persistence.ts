@@ -107,16 +107,20 @@ export class InMemoryDelimitationWatchRepository implements IDelimitationWatchRe
   private sourceLocks = new Map<string, { token: string; expiresAt: number }>();
 
   async saveSource(source: DelimitationWatchSource): Promise<void> {
-    this.sources.set(source.id, { ...source });
+    // Metadata is mutable nested state; isolate it from caller-owned objects.
+    this.sources.set(source.id, { ...source, metadata: structuredClone(source.metadata ?? {}) });
   }
 
   async getSource(sourceId: string): Promise<DelimitationWatchSource | null> {
-    const s = this.sources.get(sourceId);
-    return s ? { ...s } : null;
+    const source = this.sources.get(sourceId);
+    return source ? { ...source, metadata: structuredClone(source.metadata ?? {}) } : null;
   }
 
   async listSources(): Promise<DelimitationWatchSource[]> {
-    return Array.from(this.sources.values()).map((s) => ({ ...s }));
+    return Array.from(this.sources.values()).map((source) => ({
+      ...source,
+      metadata: structuredClone(source.metadata ?? {}),
+    }));
   }
 
   async updateSourceHealth(
