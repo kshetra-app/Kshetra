@@ -1842,7 +1842,7 @@
       "retrievedAt": "2026-10-26",
       "format": "Official state CEO maps portal",
       "authority": "OFFICIAL_JURISDICTIONAL_MAP_DISCOVERY",
-      "status": "OFFICIAL_DELHI_POLLING_STATION_INDEX_BYTES_ACQUIRED_70_AC_LINKS; DETAIL_PAGE_ACQUISITION_IN_PROGRESS",
+      "status": "OFFICIAL_DELHI_AC_MAP_AND_POLLING_LOCATION_PORTAL_DISCOVERY; POLLING TABLE SLICE COMPLETED; VECTOR GEOMETRY NOT ACQUIRED",
       "sha256": null,
       "fileBytes": null,
       "rawArtifact": null,
@@ -1851,8 +1851,7 @@
       ],
       "limitations": [
         "Delhi-only; map portal discovery is not a download of raw geometry nor proof of nationwide coverage.",
-        "Published maps may be cartographic documents rather than structured polygons; inspect each asset and its licence/version before acceptance.",
-        "Only the official Delhi polling-station index HTML is acquired at this point; its 70 AC detail pages are being separately downloaded and hashed. Delhi-only coverage is not national polling-station-to-AC crosswalk completion."
+        "The map/GIS page has not yielded raw vector AC geometry in this pass; the separate polling-station table evidence is archived at data/evidence/w021_5/delhi_2024/."
       ],
       "plannedUse": "Acquire and audit Delhi official map assets and polling-location list as one jurisdictional test slice; do not generalize to national acceptance.",
       "indexArtifact": {
@@ -1940,7 +1939,7 @@
       "retrievedAt": "2026-10-26",
       "format": "Raw official HTML index acquired from GitHub Actions artifact",
       "authority": "OFFICIAL_JURISDICTIONAL_PRIMARY_INDEX_NOT_NATIONAL_CROSSWALK",
-      "status": "DOWNLOADED_HASHED_HTML_200; 70_DISTINCT_AC_LINKS_OBSERVED",
+      "status": "OFFICIAL_DELHI_INDEX_AND_70_AC_DETAIL_PAGES_ARCHIVED_HASHED_AND_VALIDATED; DELHI_ONLY",
       "sha256": "765f6a915862415634ec2ed31fcc5d0518bd73d418d8771dc9c52bf2745ae4cb",
       "fileBytes": 84517,
       "artifactPath": "stage_b_legal_crosswalk/raw/CEO_DELHI_POLLING_STATION_LIST_INDEX.html",
@@ -1949,16 +1948,41 @@
       "workflowArtifactId": 12647819336,
       "workflowArtifactSha256": "d2124127bcae9c43bf3f89a061fc4c883f08e28db9a3537a32dfb4fceefe9cdf",
       "facts": [
-        "HTTP 200; raw HTML bytes retained in workflow artifact and SHA-256 computed from the downloaded bytes.",
-        "Observed 70 distinct AC-specific page links, with AC numbers 1 through 70, each pointing to an official 2024 polling station page.",
-        "The exact downstream page URLs were derived from actual hrefs found in the downloaded index; no AC URL template was used to invent source evidence."
+        "Official index downloaded as raw HTML, HTTP 200, 84,517 bytes, SHA-256 765f6a915862415634ec2ed31fcc5d0518bd73d418d8771dc9c52bf2745ae4cb.",
+        "Observed 70 AC-specific links, AC numbers 1..70.",
+        "Followed the official same-host PSL.aspx form using its current ASP.NET viewstate/eventvalidation, not guessed AC URLs; official other-host detail endpoints had timed out.",
+        "Acquired and independently validated 70/70 detail pages and 14,947 station rows; every row's source-page hash link matches its page manifest record.",
+        "Lossless archive and normalized crosswalk are committed on the evidence-only branch; per-AC raw URLs, byte sizes and SHA-256 are in the committed source manifest."
       ],
       "limitations": [
-        "This is a Delhi-only index, not nationwide polling-station coverage.",
-        "The detailed AC pages are being fetched and hashed by workflow run 40321161890; this record only attests to the index HTML and observed links.",
-        "The 30-day workflow artifact is the immediate raw-byte retention channel; durable repository retention still needs to be completed/reviewed."
+        "This is Delhi-only evidence; national EB-05 remains open until each jurisdiction's official polling-station list and AC mapping is acquired and validated.",
+        "Polling-station points/addresses are not AC polygons and do not prove legal extent-to-polygon containment.",
+        "No voter/elector-level records were collected.",
+        "The captured hashes identify exact HTTP response bodies in this retrieval, not checksums published by the CEO."
       ],
-      "plannedUse": "Acquire the 70 linked detail pages, validate that each page's AC number/name matches its official index link, parse station identifiers/counts and permitted non-sensitive metadata, preserve raw HTML and per-page hashes; then expand the same procedure to other state/UT CEOs."
+      "plannedUse": "Acquire the 70 linked detail pages, validate that each page's AC number/name matches its official index link, parse station identifiers/counts and permitted non-sensitive metadata, preserve raw HTML and per-page hashes; then expand the same procedure to other state/UT CEOs.",
+      "rawArtifact": "data/evidence/w021_5/delhi_2024/ceo_delhi_polling_source_html_2024.tar.gz",
+      "archive": {
+        "repositoryBranch": "cto/w0215-stage-b-evidence-20261025",
+        "repositoryCommit": "0ac13e0312035c8b5374750dc5cefdab91427a81",
+        "manifestPath": "data/evidence/w021_5/delhi_2024/source_manifest.json",
+        "manifestGitBlobSha": "3218492f50fa6816a3a3eb9684604b5155b6d314",
+        "runId": 40327184603,
+        "workflowUrl": "https://github.com/kshetra-app/Kshetra/actions/runs/40327184603",
+        "workflowArtifactId": 12652195546,
+        "workflowArtifactBytes": 7352603,
+        "workflowArtifactSha256": "28bf18b0f0c8b2a637ac9db065b90740f51559956950f7f11465cabf4f887ca0",
+        "rawIndexBytes": 84517,
+        "rawIndexSha256": "765f6a915862415634ec2ed31fcc5d0518bd73d418d8771dc9c52bf2745ae4cb",
+        "observedACLinks": 70,
+        "acDetailPagesDownloaded": 70,
+        "acDetailPagesValidated": 70,
+        "pollingStationRows": 14947,
+        "uniqueACStationPairs": 14947,
+        "sourcePageHashMismatches": 0,
+        "duplicateACStationPairs": 0,
+        "completenessScope": "Delhi only; not national coverage"
+      }
     },
     {
       "sourceId": "SRC-DEPT-PUBLICATION-EXACT-LEGAL-IDENTIFIER-SEARCH-2026-10-26",
@@ -2016,6 +2040,77 @@
         "Raw query-response pages are retained in the workflow artifact; no Gazette-document hash is claimed."
       ],
       "plannedUse": "Retain query evidence as documented negative discovery; continue with custodian certification and alternate verified publication indexes rather than repeatedly treating these nonmatching query responses as Gazette evidence."
+    },
+    {
+      "sourceId": "SRC-CEO-DELHI-2024-AC-POLLING-STATION-CROSSWALK-ARCHIVE-2026-10-26",
+      "subject": "Official CEO Delhi 2024 Assembly Constituency-to-polling-station crosswalk with lossless raw source HTML archive",
+      "publisher": "Chief Electoral Officer, Government of NCT of Delhi",
+      "url": "https://ceodelhinet.nic.in/ceodelhiweb/ListofPollingStation.aspx",
+      "relatedSourceUrl": "https://ceodelhinet.nic.in/ceodelhiweb/PSL.aspx",
+      "retrievedAt": "2026-10-26",
+      "format": "Derived normalized JSON crosswalk plus gzip archive of original official HTML response bytes; full provenance manifest stored alongside",
+      "authority": "OFFICIAL_JURISDICTIONAL_PRIMARY_POLLING_SOURCE_AND_DERIVED_CROSSWALK_NOT_NATIONAL",
+      "status": "DELHI_ONLY_70_OF_70_AC_PAGES_HASHED_AND_INDEPENDENTLY_VALIDATED; DURABLE_ARCHIVE_PASS",
+      "sha256": "f4ab4319b5809e8946a53219980623f544983c80bd80733288a7321766af5368",
+      "fileBytes": 494591,
+      "artifactPath": "data/evidence/w021_5/delhi_2024/polling_station_crosswalk_2024.json.gz",
+      "uncompressedArtifactPath": "data/evidence/w021_5/delhi_2024/polling_station_crosswalk_2024.json",
+      "uncompressedByteLength": 13760029,
+      "uncompressedSha256": "d4d882a8abae8136b8f25f4e2a0a2ae08eb3e48a12d0d81b7c731c5b2a5602fa",
+      "rawHtmlArchivePath": "data/evidence/w021_5/delhi_2024/ceo_delhi_polling_source_html_2024.tar.gz",
+      "rawHtmlArchiveBytes": 2831391,
+      "rawHtmlArchiveSha256": "b24fe2ff24981289f2588a7c3188e5557ecd32348b861119c74728a3e68735f5",
+      "sourceManifestPath": "data/evidence/w021_5/delhi_2024/source_manifest.json",
+      "sourceManifestBytes": 90669,
+      "sourceManifestSha256": "52420b9ad52ada68c65611b0689dd2b599e2a1fc75ed2f135470ea061e5e557e",
+      "sourceManifestGitBlobSha": "3218492f50fa6816a3a3eb9684604b5155b6d314",
+      "repositoryBranch": "cto/w0215-stage-b-evidence-20261025",
+      "repositoryCommit": "0ac13e0312035c8b5374750dc5cefdab91427a81",
+      "workflowRunId": 40327184603,
+      "workflowUrl": "https://github.com/kshetra-app/Kshetra/actions/runs/40327184603",
+      "workflowArtifactId": 12652195546,
+      "workflowArtifactBytes": 7352603,
+      "workflowArtifactSha256": "28bf18b0f0c8b2a637ac9db065b90740f51559956950f7f11465cabf4f887ca0",
+      "pageCounts": {
+        "acPagesFound": 70,
+        "acPagesDownloaded": 70,
+        "independentlyValidated": 70,
+        "stationRows": 14947,
+        "uniqueACStationPairs": 14947,
+        "missingACs": 0,
+        "failedPages": 0,
+        "duplicateStationPairs": 0,
+        "sourceHashLinkMismatches": 0
+      },
+      "validation": {
+        "rawHttpResponseBytesRetained": "PASS",
+        "pageByteLengthAndSHA256RecomputedAgainstManifest": "PASS_70_OF_70",
+        "officialIndexLinksObserved": "PASS_70_AC_LINKS",
+        "officialPSLFormPostback": "PASS_SAME_HOST_USING_CURRENT_VIEWSTATE",
+        "tableHeaderAndRowWidth": "PASS_70_OF_70",
+        "rowACNumberAndNameMatchesIndex": "PASS_70_OF_70",
+        "stationNumberIntegrity": "PASS_70_OF_70",
+        "uniqueACStationPairs": "PASS_14947_OF_14947",
+        "jsonCrosswalkParse": "PASS",
+        "rowToSourcePageHashLinks": "PASS_ZERO_MISMATCHES",
+        "rawTarGzReadbackByteEquality": "PASS_ALL_72_HTML_MEMBERS",
+        "gzCrosswalkReadbackJSON": "PASS"
+      },
+      "facts": [
+        "Official CEO Delhi index and detail pages are stored as exact HTTP response body snapshots with byte length and SHA-256 for each source page.",
+        "70 of 70 Delhi AC pages passed independent table checks; 14,947 unique AC/polling-station pairs were produced.",
+        "Crosswalk JSON was parsed independently; the row source-page SHA-256 links and byte lengths match the per-AC manifest; zero duplicates or hash-link mismatches were found.",
+        "Archive workflow re-opened the gzip crosswalk and tar.gz HTML source archive and compared every archived raw HTML member byte-for-byte with the captured files before committing.",
+        "Full per-AC URLs, timestamps, response byte lengths, SHA-256 hashes, row counts, validation checks and raw archive member names are in source_manifest.json."
+      ],
+      "limitations": [
+        "Delhi jurisdiction only. This does not complete nationwide EB-05 or prove national polling-station coverage.",
+        "This is not Assembly Constituency polygon geometry and cannot prove extent-to-polygon containment or boundary accuracy.",
+        "The crosswalk is a derived transcription of the official HTML tables; original raw bytes are also archived and linked.",
+        "Official site content may change; hashes identify the captured 26 October 2026 snapshot.",
+        "The evidence package is committed to the evidence-only branch and has not been merged to master while Stage B overall acceptance remains blocked."
+      ],
+      "plannedUse": "Use as an independently validated jurisdictional pilot for the national polling-station crosswalk pipeline, then acquire equivalent official CEO/ECI source snapshots for all remaining states/UTs without generalizing Delhi data."
     }
   ],
   "unresolvedGates": [
@@ -2527,6 +2622,50 @@
         "eci2008Order": "IndiaCode variants timed out; ECI direct PDF returned HTTP 406 error HTML; no original 2008 PDF bytes"
       },
       "completedAtUtc": "2026-10-26T12:15:21.992730+00:00"
+    },
+    {
+      "runId": 40327184603,
+      "workflowUrl": "https://github.com/kshetra-app/Kshetra/actions/runs/40327184603",
+      "artifactId": 12652195546,
+      "artifactName": "w0215-ceo-delhi-polling-stations-40327184603",
+      "artifactBytes": 7352603,
+      "artifactSha256": "28bf18b0f0c8b2a637ac9db065b90740f51559956950f7f11465cabf4f887ca0",
+      "status": "PASS_DELHI_ONLY_70_AC_POLLING_STATION_PAGES_ACQUIRED_VALIDATED_AND_DURABLY_ARCHIVED",
+      "branch": "cto/w0215-stage-b-evidence-20261025",
+      "workflowHeadCommit": "9a2dcec8169c0fb7e7a0218c7d7d6ec0fca6c6d7",
+      "durableEvidenceCommit": "0ac13e0312035c8b5374750dc5cefdab91427a81",
+      "result": {
+        "indexHtml": {
+          "bytes": 84517,
+          "sha256": "765f6a915862415634ec2ed31fcc5d0518bd73d418d8771dc9c52bf2745ae4cb"
+        },
+        "formHtml": {
+          "bytes": 58023,
+          "sha256": "c334114462061dfa9933d98b71b264464e3b1f6378706871e686c32ae8683f3d"
+        },
+        "acPages": 70,
+        "verifiedPages": 70,
+        "failedPages": 0,
+        "stationRows": 14947,
+        "uniqueACStationPairs": 14947,
+        "crosswalkJson": {
+          "bytes": 13760029,
+          "sha256": "d4d882a8abae8136b8f25f4e2a0a2ae08eb3e48a12d0d81b7c731c5b2a5602fa"
+        },
+        "crosswalkGzip": {
+          "bytes": 494591,
+          "sha256": "f4ab4319b5809e8946a53219980623f544983c80bd80733288a7321766af5368"
+        },
+        "rawHtmlTarGz": {
+          "bytes": 2831391,
+          "sha256": "b24fe2ff24981289f2588a7c3188e5557ecd32348b861119c74728a3e68735f5"
+        },
+        "sourceManifest": {
+          "bytes": 90669,
+          "sha256": "52420b9ad52ada68c65611b0689dd2b599e2a1fc75ed2f135470ea061e5e557e"
+        }
+      },
+      "overallW0215StageBAcceptance": "NOT_ACCEPTED; DELHI SLICE ONLY; NATIONAL CROSSWALK STILL OPEN"
     }
   ],
   "updatedAt": "2026-10-26",
@@ -2590,7 +2729,7 @@
     ],
     "acceptedAsCanonical": false
   },
-  "lastDecision": "Acquisition run 40320265206 completed with critical-source failures but acquired and hashed the official CEO Delhi polling-station index HTML (84,517 bytes, SHA-256 765f6a915862415634ec2ed31fcc5d0518bd73d418d8771dc9c52bf2745ae4cb) showing 70 distinct 2024 AC-specific polling-station links, the official Telangana Gazette information page HTML, four Department of Publication query response snapshots, and secondary judgment HTML. A second workflow 40321161890 is acquiring the 70 observed Delhi detail pages; no page coverage is claimed until its manifest is inspected. Neither the 2008 Order PDF nor actual Gazette issue was acquired in run 40320265206. ECI 2018 binary remains available/hash-verified on master from earlier source acquisition.",
+  "lastDecision": "A genuine evidence milestone is now durable: the official CEO Delhi index and all 70 linked 2024 AC polling-station tables were acquired, hashed, independently validated and archived on evidence branch commit 0ac13e0312035c8b5374750dc5cefdab91427a81. The derived crosswalk contains 14,947 unique AC/station pairs; zero pages failed and zero per-row source hash links mismatched. Raw HTML archive (2,831,391 bytes, SHA-256 b24fe2ff24981289f2588a7c3188e5557ecd32348b861119c74728a3e68735f5), normalized crosswalk gzip (494,591 bytes, SHA-256 f4ab4319b5809e8946a53219980623f544983c80bd80733288a7321766af5368), uncompressed JSON (13,760,029 bytes, SHA-256 d4d882a8abae8136b8f25f4e2a0a2ae08eb3e48a12d0d81b7c731c5b2a5602fa) and per-AC source manifest are recorded. This closes only the Delhi slice; nationwide EB-05 remains open and no national canonical AC geometry is accepted. Exact 2008 order/Gazette issue, AP Gazette counterpart, national legal chain, remaining CEO polling crosswalks, national geometry validation and India Post delivery-beat evidence remain open.",
   "latestRouteAdjudication": {
     "recordedAt": "2026-10-26",
     "reportPath": "reports/w021_5_stage_b_evidence_route_adjudication_2026-10-26.md",
