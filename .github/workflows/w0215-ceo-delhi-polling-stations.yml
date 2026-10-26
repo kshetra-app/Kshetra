@@ -20,7 +20,7 @@ jobs:
   acquire:
     name: Acquire official Delhi AC-to-polling-station source pages
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 18
     steps:
       - name: Checkout authorized W021.5 Stage B evidence branch
         uses: actions/checkout@v4
@@ -36,7 +36,7 @@ jobs:
       - name: Acquire and validate official polling station pages
         id: acquisition
         continue-on-error: true
-        run: python scripts/acquire_w0215_ceo_delhi_polling_stations.py
+        run: python scripts/acquire_w0215_ceo_delhi_polling_stations.py --pilot-one-ac
       - name: Upload source bytes and page-by-page provenance manifest
         if: always()
         uses: actions/upload-artifact@v4
