@@ -134,7 +134,7 @@ describe('Delimitation Watch hardened HTTP capture', () => {
 
   it('sends conditional validators and handles a conditional 304 response', async () => {
     const result = await capture('/conditional', {
-      lastEtag: '"old-etag',
+      lastEtag: '"old-etag"',
       lastModifiedHeader: 'Mon, 02 Feb 2026 00:00:00 GMT',
       lastContentHash: 'known-hash',
     });
