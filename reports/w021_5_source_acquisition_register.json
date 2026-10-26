@@ -1838,6 +1838,50 @@
         "Published maps may be cartographic documents rather than structured polygons; inspect each asset and its licence/version before acceptance."
       ],
       "plannedUse": "Acquire and audit Delhi official map assets and polling-location list as one jurisdictional test slice; do not generalize to national acceptance."
+    },
+    {
+      "sourceId": "SRC-W0215-LEGAL-PROVENANCE-CONFLICT-AUDIT-2026-10-26",
+      "subject": "Cross-record conflict audit for 2008 delimitation legal instrument identifiers and unsupported India Post custodian-response assertion",
+      "publisher": "PANIN/Kshetra internal evidence reconciliation; cites official ECI/Gazette records but is not itself an external source",
+      "retrievedAt": "2026-10-26",
+      "format": "Internal evidence audit record cross-referencing committed dossiers, Gazette inventory, official Gazette recital discovery, and source-register custodian history",
+      "authority": "INTERNAL_AUDIT_FINDING_NOT_PRIMARY_LEGAL_EVIDENCE",
+      "status": "PROVENANCE_CONFLICTS_IDENTIFIED_PRIMARY_SOURCE_RECONCILIATION_REQUIRED",
+      "sha256": null,
+      "fileBytes": null,
+      "rawArtifact": null,
+      "findings": [
+        {
+          "id": "LEGAL-2008-INSTRUMENT-IDENTIFIER-CONFLICT",
+          "recordsCompared": [
+            "reports/w021_5_official_gazette_inventory.json",
+            "data/evidence/delimitation/authoritative/delcom_order_46_2007_and_presidential_order_2008.md",
+            "data/evidence/w020/authoritative/eci_delimitation_order_2008_source_dossier.md",
+            "reports/w021_5_source_acquisition_register.json: SRC-GOI-SO382E-2008-ORDER-PUBLICATION-REFERENCE"
+          ],
+          "conflict": "The Gazette inventory identifies the 2008 Order's Gazette notification numbers as S.O.383(E) and S.O.453(E), while the legal dossier separately identifies S.O.382(E) as the President's commencement order and the Gazette-recital discovery cites S.O.382(E) as publication reference. The W020 dossier also conflates the 2007 Delimitation Commission Order No.46/Notification No.282/AP/2007-III with the 2008 Presidential commencement order.",
+          "disposition": "DO_NOT_SELECT_OR_NORMALIZE_A_NUMBER_FROM_INTERNAL_TEXT_ALONE. Acquire the original Gazette issue(s), ECI consolidated Order PDF and any corrigenda/commencement notification; reconcile issuer, date, part/section, Gazette serial and instrument text independently.",
+          "rawExternalBytesAcquired": false
+        },
+        {
+          "id": "INDIAPOST-CUSTODIAN-RESPONSE-PROVENANCE-GAP",
+          "recordsCompared": [
+            "reports/w021_5_india_post_geography_assessment.json",
+            "reports/w021_5_source_acquisition_register.json: SRC-INDIAPOST-PIN",
+            "reports/w021_5_source_acquisition_register.json: SRC-POSTS-TELEGRAPHS-MANUAL-DELIVERY-BEAT-LISTS-2026-10-26",
+            "reports/w021_5_stage_b_custodian_request_pack_2026-10-26.md"
+          ],
+          "conflict": "The internal India Post assessment states `custodianStatus.inquiryLogged: true` and attributes a finding to the Department that no standardized delivery-beat cadastral GIS layer is maintained. The evidence inventory available in the repository does not include a custodian-issued reply, correspondence reference, submission acknowledgement, signed note, or source bytes supporting that as a direct official response; the custodian request pack remains drafted/not sent.",
+          "disposition": "Treat the no-standardized-layer statement as an internal working hypothesis only, not a verified Department of Posts reply. Preserve the distinction between operational beat records, postal maps, PIN-code areas and geospatial polygon availability. No custodian response is claimed until a real reply/acknowledgement and its provenance are retained.",
+          "rawExternalBytesAcquired": false
+        }
+      ],
+      "limitations": [
+        "This audit does not establish which 2008 notification number is correct; it identifies a conflict requiring primary-source reconciliation.",
+        "No original 2008 Gazette issue was acquired or hashed in this audit.",
+        "No Department of Posts response was acquired or hashed in this audit."
+      ],
+      "plannedUse": "Prevent legal instrument metadata and custodian findings from being promoted to OFFICIAL without a verifiable primary source."
     }
   ],
   "unresolvedGates": [
@@ -2313,7 +2357,8 @@
     "Four Telangana GIS service variants are now acquired. Three EndowmentLands variants form one geometry family; the Admin_New and Admin_2026 payloads are byte-identical, while Admin_Old differs only at sub-millimetre coordinate precision. The older AdministrativeInfoSystem layer is the outlier with six material AC geometry shifts. Prefer the newer family for legal validation, not canonical import.",
     "Enhanced ECI PDF retrieval used a persistent Chrome-impersonated session, homepage-cookie attempt, three URL variants and browser headers; all returned HTTP 406 with 1,035-byte HTML bodies. The legal PDF remains readable through the web PDF reader, but its binary bytes/hash are unavailable from this acquisition route.",
     "Evidence-only branch created from master to isolate W021.5 Stage B source research, legal acquisition, and geometry-probe evidence from the broader PR #25 implementation.",
-    "Additional 2026-10-26 official-source exploration: official ECI 2008-order catalogue plus IndiaCode index reviewed; 2008 Order binary still blocked/unacquired. Official 2023 Gazette recital identifies the original publication as S.O.382(E), 19 February 2008, which is a stronger exact-issue search key but not the 2008 Gazette itself. India Post manual indexed text describes local postal-map/delivery-beat-list books prepared by postmasters; direct PDF URL returned 404 in this session, so no hash or bytes claimed. NIC Bharat Maps identified as national GIS custodian route but no public AC layer was verified. Esri India identifies an AC-boundary commercial dataset sourced from ECI, but licence/data bytes/version were not acquired. CEO Delhi offers AC/PC maps and polling-location GIS, but is a jurisdiction-only candidate."
+    "Additional 2026-10-26 official-source exploration: official ECI 2008-order catalogue plus IndiaCode index reviewed; 2008 Order binary still blocked/unacquired. Official 2023 Gazette recital identifies the original publication as S.O.382(E), 19 February 2008, which is a stronger exact-issue search key but not the 2008 Gazette itself. India Post manual indexed text describes local postal-map/delivery-beat-list books prepared by postmasters; direct PDF URL returned 404 in this session, so no hash or bytes claimed. NIC Bharat Maps identified as national GIS custodian route but no public AC layer was verified. Esri India identifies an AC-boundary commercial dataset sourced from ECI, but licence/data bytes/version were not acquired. CEO Delhi offers AC/PC maps and polling-location GIS, but is a jurisdiction-only candidate.",
+    "2026-10-26 audit reconciliation: found internal inconsistency between reports/w021_5_official_gazette_inventory.json (S.O.383(E)/S.O.453(E)) and the S.O.382(E) references in the 2008 legal dossier / Gazette recital discovery. Keep all as conflicting references pending original Gazette/ECI binary verification rather than choosing one from secondary internal text. Also flagged reports/w021_5_india_post_geography_assessment.json custodianStatus.inquiryLogged/finding: no custodian-issued response or sent-request receipt is present in the evidence inventory; this is not an independently verified Department of Posts statement."
   ],
   "secondaryGeometryAudit": {
     "sourceRepository": "https://github.com/saisantoshv3/assemnbly_gis_files",
