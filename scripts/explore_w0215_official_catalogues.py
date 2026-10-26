@@ -303,7 +303,9 @@ def archived_pdf_probe(item: dict, query_label: str) -> dict:
             row["status"] = "ARCHIVED_PDF_PARSE_FAILED"
             return row
         findings = gazette_match(pdf["text"])
+        old_findings = gazette_2008_order_match(pdf["text"])
         row["termFindings"] = findings
+        row["2008GazetteTermFindings"] = old_findings
         row["textPreview"] = pdf["text"][:1200]
         if findings["strictGazetteCandidate"]:
             raw_name = safe(f"GAZETTE_ON55E_{ts}") + ".pdf"
@@ -311,8 +313,14 @@ def archived_pdf_probe(item: dict, query_label: str) -> dict:
             row["rawArtifact"] = save_bytes(raw_name, raw)
             row["textArtifact"] = save_text(text_name, pdf["text"])
             row["status"] = "STRICT_GAZETTE_ON55E_CANDIDATE_ACQUIRED"
-        elif findings["on55EExactMarker"] or findings["eci2018NotificationNumberMarker"]:
-            raw_name = safe(f"GAZETTE_NEAR_MATCH_{ts}") + ".pdf"
+        elif old_findings["strict2008GazetteCandidate"]:
+            raw_name = safe(f"GAZETTE_SO382E_2008_{ts}") + ".pdf"
+            text_name = safe(f"GAZETTE_SO382E_2008_{ts}") + ".txt"
+            row["rawArtifact"] = save_bytes(raw_name, raw)
+            row["textArtifact"] = save_text(text_name, pdf["text"])
+            row["status"] = "STRICT_GAZETTE_SO382E_2008_CANDIDATE_ACQUIRED"
+        elif findings["on55EExactMarker"] or findings["eci2018NotificationNumberMarker"] or old_findings["so382EMarker"]:
+            raw_name = safe(f"GAZETTE_LEGAL_IDENTIFIER_NEAR_MATCH_{ts}") + ".pdf"
             row["candidateRawArtifact"] = save_bytes(raw_name, raw)
             row["status"] = "LEGAL_IDENTIFIER_NEAR_MATCH_NOT_ACCEPTED_AS_GAZETTE"
         else:
@@ -459,11 +467,16 @@ def main():
             if score(ts)<score(prev_ts):
                 by_url[original]=(qlabel,x)
     candidates=list(by_url.values())
-    candidates.sort(key=lambda pair:(
-        0 if pair[1].get("timestamp","")[:4] in ("2018","2019") else 1,
-        abs(int(pair[1].get("timestamp","20180922000000")[:8])-20180922),
-        -int(pair[1].get("length") or 0)
-    ))
+    def candidate_sort(pair):
+        label, item = pair
+        ts = str(item.get("timestamp") or "")
+        year = ts[:4]
+        if "2008Pdfs" in label:
+            date_score = abs(int(ts[:8])-20080219) if ts[:8].isdigit() else 99999999
+            return (0, date_score, -int(item.get("length") or 0))
+        date_score = abs(int(ts[:8])-20180922) if ts[:8].isdigit() else 99999999
+        return (1 if year in ("2018","2019") else 2, date_score, -int(item.get("length") or 0))
+    candidates.sort(key=candidate_sort)
     selected=candidates[:MAX_GAZETTE_PDF_ATTEMPTS]
     def try_pdf(pair):
         label,item=pair
@@ -526,12 +539,15 @@ def main():
             manifest["postalDocumentAttempts"].append(fut.result())
     manifest["completedAtUtc"]=now()
     matched=[x for x in manifest["archivedPdfAttempts"] if x.get("status")=="STRICT_GAZETTE_ON55E_CANDIDATE_ACQUIRED"]
+    matched_2008=[x for x in manifest["archivedPdfAttempts"] if x.get("status")=="STRICT_GAZETTE_SO382E_2008_CANDIDATE_ACQUIRED"]
     near=[x for x in manifest["archivedPdfAttempts"] if x.get("status")=="LEGAL_IDENTIFIER_NEAR_MATCH_NOT_ACCEPTED_AS_GAZETTE"]
     usable_postal=[x for x in manifest["postalDocumentAttempts"] if x.get("status")=="OFFICIAL_POSTAL_PDF_ACQUIRED" and (x.get("termFindings",{}).get("deliveryBeat") or x.get("termFindings",{}).get("postalMap"))]
     manifest["disposition"]={
       "strictGazetteON55ECandidateCount":len(matched),
+      "strictGazetteSO382E2008CandidateCount":len(matched_2008),
       "nearMatchPdfCount":len(near),
-      "archivedPdfUrlsAttempted":sum(1 for x in manifest["archivedPdfAttempts"] if x.get("queryLabel","").find("2018Pdfs")>=0 and x.get("pdfMagic") is not None),
+      "archivePdfCandidateRecordsParsed":len(candidates),
+      "archivedPdfUrlsAttempted":sum(1 for x in manifest["archivedPdfAttempts"] if ("2018Pdfs" in x.get("queryLabel","") or "2008Pdfs" in x.get("queryLabel","")) and x.get("pdfMagic") is not None),
       "officialPostalDocumentCandidatesDiscovered":len(doc_links),
       "officialPostalPdfsAcquired":len(manifest["postalDocumentAttempts"]),
       "postalPdfsMentioningDeliveryBeatOrPostalMap":len(usable_postal),
@@ -551,6 +567,7 @@ def main():
       "cdxQueries":[{"label":x["label"],"status":x["status"],"records":x.get("recordCount")} for x in manifest["cdxQueries"]],
       "livePages":[{"label":x["label"],"status":x.get("status"),"httpStatus":x.get("httpStatus"),"bytes":x.get("byteLength"),"sha256":x.get("sha256"),"relevantDocumentLinks":len(x.get("relevantDocumentLinks",[]))} for x in manifest["livePages"]],
       "strictMatches":[{"url":x.get("originalUrl"),"archiveUrl":x.get("archiveUrl"),"bytes":x.get("byteLength"),"sha256":x.get("sha256"),"pages":x.get("pdfPageCount")} for x in matched],
+      "strict2008Matches":[{"url":x.get("originalUrl"),"archiveUrl":x.get("archiveUrl"),"bytes":x.get("byteLength"),"sha256":x.get("sha256"),"pages":x.get("pdfPageCount")} for x in matched_2008],
       "postalManualMatches":[{"title":x.get("title"),"url":x.get("finalUrl"),"bytes":x.get("byteLength"),"sha256":x.get("sha256"),"terms":x.get("termFindings")} for x in usable_postal],
     },indent=2))
 if __name__=="__main__":
