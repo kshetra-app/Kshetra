@@ -486,7 +486,7 @@ describe('CTO Directive 123 — Residual Electoral Data-Truth & Provisional Look
 
     it('verifies independent PIN evidence manifest exists with exact 36 entries and complete traceability', () => {
       expect(fs.existsSync(manifestPath)).toBe(true);
-      const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+      const manifest = JSON.parse(fs.readFileSync(path.resolve(__dirname, '../../../../data/evidence/w021_5/pin_independent_evidence_manifest.json'), 'utf8'));
       expect(manifest.entries).toHaveLength(36);
 
       for (const entry of manifest.entries) {
