@@ -3650,7 +3650,7 @@ function runCompleteValidationProcess(options = {}) {
     ...(!generatorBatteryResults.allCasesPassed ? ['Report generator failure battery failed'] : []),
     ...(concordanceResults.errors || []),
     ...(!executionOrderResults.passed ? [`Execution order regression test failed: ${executionOrderResults.details}`] : []),
-    ...(!concordanceBatteryResults.allCasesPassed ? ['Concordance regression battery failed'] : [])
+    ...(!concordanceBatteryResults.allCasesPassed ? [`Concordance regression battery failed: ${concordanceBatteryResults.cases.filter(testCase => !testCase.passed).map(testCase => `${testCase.caseId}: ${testCase.details}`).join('; ')}`] : [])
   ];
 
   // Generate and write reports
