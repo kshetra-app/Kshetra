@@ -202,6 +202,38 @@ HTML_SOURCES = [
         "purpose": "Discover exact official map and polling-location asset links; map links are not raw vector geometries unless the underlying file format proves that."
     },
     {
+        "id": "DEPT_PUBLICATION_RSS_SEARCH_O_N_55E",
+        "url": "https://deptpub.gov.in/search/O.N.55%28E%29/feed/rss2/",
+        "publisher": "Government of India, Department of Publication",
+        "documentTitle": "Official publisher RSS search feed for Gazette identifier O.N.55(E)",
+        "terms": ["O.N.55(E)", "22 September 2018", "Gazette of India", "Andhra Pradesh", "Delimitation"],
+        "purpose": "Follow the exact RSS link observed in the official Department of Publication search response; extract actual result items and item links rather than infer them from search form text."
+    },
+    {
+        "id": "DEPT_PUBLICATION_RSS_SEARCH_DELIMITATION_2008",
+        "url": "https://deptpub.gov.in/search/Delimitation+Order+2008/feed/rss2/",
+        "publisher": "Government of India, Department of Publication",
+        "documentTitle": "Official publisher RSS search feed for Delimitation Order 2008",
+        "terms": ["Delimitation Order 2008", "S.O.382(E)", "S.O.383(E)", "S.O.453(E)", "19 February 2008"],
+        "purpose": "Follow the exact RSS link observed in the official search response to discover any matching issue/item records."
+    },
+    {
+        "id": "DEPT_PUBLICATION_RSS_SEARCH_SO_382E",
+        "url": "https://deptpub.gov.in/search/S.O.+382%28E%29/feed/rss2/",
+        "publisher": "Government of India, Department of Publication",
+        "documentTitle": "Official publisher RSS search feed for notification S.O.382(E)",
+        "terms": ["S.O.382(E)", "19 February 2008", "Delimitation"],
+        "purpose": "Query the original publication-reference number in the official publisher RSS feed; any nonmatching result remains discovery only."
+    },
+    {
+        "id": "DEPT_PUBLICATION_RSS_SEARCH_282_AP_2018",
+        "url": "https://deptpub.gov.in/search/282/AP/2018/feed/rss2/",
+        "publisher": "Government of India, Department of Publication",
+        "documentTitle": "Official publisher RSS search feed for ECI Notification 282/AP/2018(DEL)",
+        "terms": ["282/AP/2018", "O.N.55(E)", "22 September 2018", "Andhra Pradesh"],
+        "purpose": "Query the specific ECI instrument identifier through the publication site's observed RSS search route."
+    },
+    {
         "id": "TELANGANA_HIGH_COURT_2018_DELIMITATION_JUDGMENT",
         "url": "https://indiankanoon.org/doc/71192582/",
         "publisher": "Telangana High Court judgment (secondary online text reproduction)",
@@ -283,6 +315,34 @@ class LinkAndFormCollector(HTMLParser):
             self._link = None
         elif tag.lower() == "form":
             self._form = None
+
+class RssParser(HTMLParser):
+    """Extract exact item title/link/date/description from a publisher's RSS XML feed."""
+    def __init__(self):
+        super().__init__(convert_charrefs=True)
+        self.items = []
+        self._item = None
+        self._field = None
+        self._parts = []
+    def handle_starttag(self, tag, attrs):
+        tag = tag.lower()
+        if tag == "item":
+            self._item = {}
+        elif self._item is not None and tag in ("title", "link", "guid", "pubdate", "description", "dc:date"):
+            self._field = tag
+            self._parts = []
+    def handle_data(self, data):
+        if self._field is not None and data:
+            self._parts.append(data.strip())
+    def handle_endtag(self, tag):
+        tag = tag.lower()
+        if self._item is not None and self._field == tag:
+            self._item[self._field] = " ".join(x for x in self._parts if x)
+            self._field = None
+            self._parts = []
+        elif tag == "item" and self._item is not None:
+            self.items.append(self._item)
+            self._item = None
 
 manifest = {
     "schemaVersion": 2,
@@ -392,10 +452,16 @@ for src in HTML_SOURCES:
             text_path.write_text(text_value, encoding="utf-8")
             collector = LinkAndFormCollector()
             collector.feed(decoded_html)
+            extra = {}
+            if "/feed/rss2/" in src["url"]:
+                rss = RssParser()
+                rss.feed(decoded_html)
+                extra = {"rssItems": rss.items, "rssItemCount": len(rss.items)}
             row.update({"status":"DOWNLOADED_HASHED_HTML","rawArtifact":f"raw/{raw_path.name}",
                         "textArtifact":text_path.name,"textSha256":sha(text_value.encode("utf-8")),
                         "discoveredLinks":collector.links,
                         "searchForms":collector.forms,
+                        **extra,
                         "termFindings":{term:term.casefold() in text_value.casefold() for term in src["terms"]}})
         else:
             row["status"] = "HTTP_FAILURE"
