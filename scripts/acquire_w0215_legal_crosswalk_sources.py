@@ -311,7 +311,7 @@ for src in HTML_SOURCES:
             decoded_html = raw.decode(response.encoding or "utf-8", errors="replace")
             parser = PlainText()
             parser.feed(decoded_html)
-            text_value = re.sub(r"\\s+", " ", " ".join(parser.parts)).strip()
+            text_value = re.sub(r"\s+", " ", " ".join(parser.parts)).strip()
             text_path = OUT / f"{safe}.txt"
             text_path.write_text(text_value, encoding="utf-8")
             collector = LinkAndFormCollector()
@@ -328,9 +328,12 @@ for src in HTML_SOURCES:
     manifest["htmlSources"].append(row)
 
 manifest["requiredFailures"] = required_failures
-manifest["overallStatus"] = "REQUIRED_SOURCE_FAILURES" if required_failures else "REQUIRED_SOURCE_BYTES_ACQUIRED"
+critical_ids = {"ECI_DELIMITATION_ORDER_2008", "ECI_NOTIFICATION_282_AP_2018_DEL"}
+critical_source_failures = [row["sourceId"] for row in manifest["sources"] if row["sourceId"] in critical_ids and row["status"] != "DOWNLOADED_HASHED_PDF"]
+manifest["criticalSourceFailures"] = critical_source_failures
+manifest["overallStatus"] = ("REQUIRED_SOURCE_FAILURES" if required_failures else "PARTIAL_CRITICAL_SOURCE_FAILURES" if critical_source_failures else "REQUIRED_SOURCE_BYTES_ACQUIRED")
 manifest["completedAtUtc"] = datetime.now(timezone.utc).isoformat()
 (OUT / "manifest.json").write_text(json.dumps(manifest, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
 print(json.dumps(manifest, indent=2, ensure_ascii=False))
-if required_failures:
+if required_failures or critical_source_failures:
     sys.exit(1)
