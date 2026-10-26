@@ -99,9 +99,32 @@
           "weight": 1.5,
           "status": "BLOCKED",
           "scope": "BLOCKED_EXTERNAL",
-          "evaluation": "National statutory boundary completeness across 31 States/UTs blocked pending 30 remaining state authoritative GeoJSON feeds and official CEO Telangana AC 119 defect resolution."
+          "evaluation": "Expanded read-only official-source acquisition completed: TGRAC master/query/RnB/MusiRiver candidate layers were acquired and hashed; duplicate/near-duplicate geometry families confirmed; the known seven-AC discrepancy and invalid Dornakal polygon persist. APSeeds-hosted Act copy parsed to a 119-row statutory roster and official PIB HTML corroboration acquired, but the original ECI 2018 notification/Gazette and a complete national authoritative AC geometry set remain unavailable. Keep BLOCKED.",
+          "supplementalEvidence": [
+            {
+              "runId": 40259741110,
+              "path": "reports/evidence/w021_5_telangana_master_geometry_probe_40259741110.json",
+              "result": "119 features; 118 valid/1 invalid; candidate only"
+            },
+            {
+              "runId": 40259909774,
+              "path": "reports/evidence/w021_5_telangana_variant_family_comparison_20261026.json",
+              "result": "duplicate/near-duplicate families; seven-AC discrepancy persists"
+            },
+            {
+              "runId": 40260777545,
+              "path": "reports/evidence/w021_5_legal_crosswalk_source_probe_40260777545.json",
+              "result": "119-row statutory roster PASS; official PIB HTML acquired; original ECI notification/Gazette not acquired"
+            },
+            {
+              "path": "reports/w021_5_stage_b_custodian_request_pack_2026-10-26.md",
+              "result": "custodian requests drafted, not sent"
+            }
+          ],
+          "lastEvidenceSupplementAt": "2026-10-26T02:53:37.187Z"
         }
       ]
     }
-  ]
+  ],
+  "lastEvidenceSupplementAt": "2026-10-26T02:53:37.187Z"
 }
