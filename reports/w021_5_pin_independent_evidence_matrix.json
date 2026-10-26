@@ -5,7 +5,7 @@
     "governingFramework": "Master Execution Framework Amendment v1.6 / Rule IV-001 Non-Self-Acceptance",
     "stageBoundary": "Stage B Gate — STOP",
     "formalAcceptance": "0.0% — PENDING INDEPENDENT ADJUDICATION",
-    "generatedAt": "2026-10-24T06:12:30.023Z",
+    "generatedAt": "2026-10-26T16:22:32.832Z",
     "canonicalExternalBlockers": [
       {
         "id": "EB-01",
@@ -294,14 +294,14 @@
       }
     },
     "validationSummary": {
-      "allChecksPassed": true,
-      "positiveValidationPassed": true,
-      "negativeValidationPassed": true,
-      "generatorBatteryPassed": true,
-      "concordancePassed": true,
-      "concordanceVerified": true,
-      "executionOrderRegressionPassed": true,
-      "concordanceBatteryPassed": true,
+      "allChecksPassed": false,
+      "positiveValidationPassed": false,
+      "negativeValidationPassed": false,
+      "generatorBatteryPassed": false,
+      "concordancePassed": false,
+      "concordanceVerified": false,
+      "executionOrderRegressionPassed": false,
+      "concordanceBatteryPassed": false,
       "concordanceCasesExecuted": 18,
       "concordanceCasesPassed": 18,
       "totalEntries": 36,
@@ -309,29 +309,29 @@
       "ambiguousCount": 4,
       "authoritativeCount": 0,
       "unverifiedOrBlockedCount": 0,
-      "structuralValidationStatus": "PASS",
+      "structuralValidationStatus": "BLOCKED_INVALIDATED_STATUTORY_SOURCE",
       "evidenceClosureStatus": "PENDING_EXTERNAL_OFFICIAL_GAZETTE_AND_GIS_DELIVERY_BEAT_EVIDENCE",
-      "sourceResolutionStatus": "VERIFIED_CHECKED_IN_EXTRACTS_SHA256_MATCH",
-      "locatorResolutionStatus": "EXACT_ENTRY_AND_WARD_COORDINATES_VERIFIED_AGAINST_SOURCE_ARTIFACT",
-      "substantiveSourceClaimStatus": "PARTIALLY_SUPPORTED_IDENTITY_VERIFIED_POSTAL_UNPROVEN",
+      "sourceResolutionStatus": "FAILED_INVALIDATED_EXTRACTS",
+      "locatorResolutionStatus": "NOT_ACCEPTED_SOURCE_INVALIDATED",
+      "substantiveSourceClaimStatus": "UNVERIFIED_SOURCE_INVALIDATED",
       "externalPublicationAuthenticityStatus": "UNVERIFIED_EXTERNAL_PUBLICATION_NOT_CHECKED_IN",
       "transcriptionFidelityStatus": "UNVERIFIED_PENDING_PHYSICAL_GAZETTE_COMPARISON",
       "geographicContainmentStatus": "UNVERIFIED_NO_GIS_DELIVERY_BEAT_POLYGON",
       "inventoryParityVerified": true,
       "pin500001AmbiguousFailClosed": true,
       "completeTaxonomyEnforced": true,
-      "eightAcCorrectionsVerified": true,
+      "eightAcCorrectionsVerified": false,
       "documentaryFieldCompletenessVerified": true,
-      "sourceResolutionVerified": true,
-      "locatorResolutionVerified": true,
-      "claimSupportVerified": true,
+      "sourceResolutionVerified": false,
+      "locatorResolutionVerified": false,
+      "claimSupportVerified": false,
       "dateConsistencyVerified": true,
       "dynamicSummaryIntegrityVerified": true,
       "negativeScenariosExecuted": 38,
       "negativeScenariosPassed": 38,
       "generatorCasesExecuted": 8,
       "generatorCasesPassed": 8,
-      "gateRecommendation": "SUBMIT_FOR_INDEPENDENT_STAGE_B_ADJUDICATION_WITH_DOCUMENTED_EXTERNAL_BLOCKERS",
+      "gateRecommendation": "STOP_INVALIDATED_SOURCE_REQUIRES_LEGALLY_APPLICABLE_REPLACEMENT",
       "canonicalExternalBlockers": [
         {
           "id": "EB-01",
@@ -384,350 +384,351 @@
         "EB-04 (SPATIAL_POSTAL_BEAT_CONTAINMENT_VERIFICATION): Rigorous geometric GIS polygon overlay proving 100% spatial containment of postal delivery beats within statutory assembly constituency boundaries cannot be performed without delivery beat polygons.",
         "EB-05 (VOTER_ROLL_POLLING_STATION_ELECTORAL_CROSSWALK): Empirical crosswalk linking voter registration addresses and polling station locations to 6-digit PIN codes has not been ingested or verified against official electoral rolls.",
         "EB-06 (INDEPENDENT_STAGE_B_ADJUDICATION_AUTHORIZATION): Formal Stage B adjudication verdict and explicit CTO authorization required before any Stage C migration or runtime code modifications can proceed (Rule IV-001)."
-      ]
+      ],
+      "sourceInvalidationNotice": "This report's previous positive results are superseded: both source extracts now declare STATUS: INVALIDATED. Historical negative-battery results are not accepted as evidence until rerun against a valid baseline."
     },
     "validationChecks": [
       {
         "checkId": "CHECK_1_EXACT_INVENTORY_PARITY",
         "description": "Directory and independent evidence manifest have exact 36-entry inventory parity with zero duplicate PINs",
         "passed": true,
-        "details": "Directory: 36, Manifest: 36, Duplicates: 0"
+        "details": "Structural inventory count only; does not establish source validity."
       },
       {
         "checkId": "CHECK_2_MULTI_AC_FAIL_CLOSED_AMBIGUITY",
         "description": "All 4 multi-AC records fail closed (canonicalAcNo undefined, candidates >= 2, status AMBIGUOUS_MULTI_CONSTITUENCY)",
-        "passed": true,
-        "details": "Verified PINs: 500001, 500028, 500034, 500056"
+        "passed": false,
+        "details": "Verified PINs: 500001, 500028, 500034, 500056 BLOCKED: source baseline invalidated; previous result superseded."
       },
       {
         "checkId": "CHECK_3_TAXONOMY_ENFORCEMENT_AND_DISTRIBUTION",
         "description": "Enforces complete 4-tier mutually exclusive taxonomy: 32 provisional, 4 ambiguous, 0 authoritative, 0 unverified",
-        "passed": true,
-        "details": "Provisional: 32/32, Ambiguous: 4/4, Authoritative: 0/0, Unverified: 0/0"
+        "passed": false,
+        "details": "Provisional: 32/32, Ambiguous: 4/4, Authoritative: 0/0, Unverified: 0/0 BLOCKED: source baseline invalidated; previous result superseded."
       },
       {
         "checkId": "CHECK_4_CORRECTION_CONSISTENCY_AND_SOURCE_EVIDENCE",
         "description": "All 8 reported AC corrections verified against parsed source content on disk with separate Identity (A) and Postal Linkage (B) conclusions and exact extents",
-        "passed": true,
-        "details": "Verified 8 corrections strictly across AP (5) and TS (3); Kurnool 137 verified as existing single-AC provisional record"
+        "passed": false,
+        "details": "Verified 8 corrections strictly across AP (5) and TS (3); Kurnool 137 verified as existing single-AC provisional record BLOCKED: source baseline invalidated; previous result superseded."
       },
       {
         "checkId": "CHECK_5_DOCUMENTARY_FIELD_COMPLETENESS",
         "description": "All 36 entries possess all required documentary metadata fields, source-binding fields, and 12 orthogonal status dimensions",
-        "passed": true,
-        "details": "Required fields validated across all 36 entries"
+        "passed": false,
+        "details": "Required fields validated across all 36 entries BLOCKED: source baseline invalidated; previous result superseded."
       },
       {
         "checkId": "CHECK_6_SOURCE_RESOLUTION",
         "description": "Enforces single source-resolution chain from declared path to resolved file with live SHA-256 verification and state-schedule concordance",
-        "passed": true,
-        "details": "Resolved Schedule XXXI (TS) and Schedule II (AP) authoritative extracts with live SHA-256 verification across 36 entries"
+        "passed": false,
+        "details": "Resolved Schedule XXXI (TS) and Schedule II (AP) authoritative extracts with live SHA-256 verification across 36 entries BLOCKED: source baseline invalidated; previous result superseded."
       },
       {
         "checkId": "CHECK_7_LOCATOR_RESOLUTION",
         "description": "Documentary locators identify specific Schedule, Table, Entry, and exact administrative-unit extent; verified directly from parsed source files on disk",
-        "passed": true,
-        "details": "Locators and administrative extents verified against parsed source extracts on disk across all 36 entries"
+        "passed": false,
+        "details": "Locators and administrative extents verified against parsed source extracts on disk across all 36 entries BLOCKED: source baseline invalidated; previous result superseded."
       },
       {
         "checkId": "CHECK_8_CLAIM_SUPPORT",
         "description": "Cited passages strictly derive from resolved source extracts; claim support taxonomy enforced; spatial containment explicitly unproven",
-        "passed": true,
-        "details": "Proposition, state-schedule concordance, seed agreement, passage derivation, and claim taxonomy verified across 36 entries"
+        "passed": false,
+        "details": "Proposition, state-schedule concordance, seed agreement, passage derivation, and claim taxonomy verified across 36 entries BLOCKED: source baseline invalidated; previous result superseded."
       },
       {
         "checkId": "CHECK_9_DATE_CONSISTENCY",
         "description": "Source publication and effective dates are valid ISO 8601 calendar dates with effective date <= publication date",
-        "passed": true,
-        "details": "Publication and effective dates verified consistent across all 36 entries"
+        "passed": false,
+        "details": "Publication and effective dates verified consistent across all 36 entries BLOCKED: source baseline invalidated; previous result superseded."
       },
       {
         "checkId": "CHECK_10_DYNAMIC_SUMMARY_INTEGRITY",
         "description": "Metadata summary counts, evidence closure status, and gate recommendation dynamically match computed metrics with zero contradiction",
-        "passed": true,
-        "details": "Metadata summary dynamically reconciled with computed metrics; external blockers acknowledged"
+        "passed": false,
+        "details": "Metadata summary dynamically reconciled with computed metrics; external blockers acknowledged BLOCKED: source baseline invalidated; previous result superseded."
       },
       {
         "checkId": "NEG_SCENARIO_1_MISSING_ENTRY",
         "description": "Manifest fixture with missing record (35 entries) is rejected by validator",
-        "passed": true,
-        "details": "Correctly rejected missing record (CHECK_1 failed)"
+        "passed": false,
+        "details": "Correctly rejected missing record (CHECK_1 failed) BLOCKED: source baseline invalidated; previous result superseded."
       },
       {
         "checkId": "NEG_SCENARIO_2_DUPLICATE_PIN",
         "description": "Manifest fixture with duplicate PIN code is rejected by validator",
-        "passed": true,
-        "details": "Correctly rejected duplicate PIN (CHECK_1 failed)"
+        "passed": false,
+        "details": "Correctly rejected duplicate PIN (CHECK_1 failed) BLOCKED: source baseline invalidated; previous result superseded."
       },
       {
         "checkId": "NEG_SCENARIO_3_CONTRADICTORY_AC_CORRECTION",
         "description": "Manifest fixture with tampered AC number (999 on 500002) is rejected by validator",
-        "passed": true,
-        "details": "Correctly rejected contradictory AC assignment (CHECK_4 failed)"
+        "passed": false,
+        "details": "Correctly rejected contradictory AC assignment (CHECK_4 failed) BLOCKED: source baseline invalidated; previous result superseded."
       },
       {
         "checkId": "NEG_SCENARIO_4_MULTI_AC_CANONICAL_BREACH",
         "description": "Manifest fixture with canonical AC assigned to multi-AC PIN (500001) is rejected by validator",
-        "passed": true,
-        "details": "Correctly rejected assignedAcNumber on multi-AC PIN (CHECK_2 failed)"
+        "passed": false,
+        "details": "Correctly rejected assignedAcNumber on multi-AC PIN (CHECK_2 failed) BLOCKED: source baseline invalidated; previous result superseded."
       },
       {
         "checkId": "NEG_SCENARIO_5_UNAUTHORIZED_AUTHORITATIVE_PROMOTION",
         "description": "Manifest fixture with unauthorized AUTHORITATIVELY_VERIFIED classification is rejected by validator",
-        "passed": true,
-        "details": "Correctly rejected unauthorized authoritative promotion (CHECK_3 failed)"
+        "passed": false,
+        "details": "Correctly rejected unauthorized authoritative promotion (CHECK_3 failed) BLOCKED: source baseline invalidated; previous result superseded."
       },
       {
         "checkId": "NEG_SCENARIO_6_MISSING_DOCUMENTARY_FIELD",
         "description": "Manifest fixture with empty sourceLocator is rejected by validator",
-        "passed": true,
-        "details": "Correctly rejected missing documentary field (CHECK_5 failed)"
+        "passed": false,
+        "details": "Correctly rejected missing documentary field (CHECK_5 failed) BLOCKED: source baseline invalidated; previous result superseded."
       },
       {
         "checkId": "NEG_SCENARIO_7_UNKNOWN_TAXONOMY_CLASSIFICATION",
         "description": "Manifest fixture with unknown confidenceTaxonomy (\"PROVISIONAL_GUESS\") is rejected by validator",
-        "passed": true,
-        "details": "Correctly rejected unknown classification (CHECK_3 failed)"
+        "passed": false,
+        "details": "Correctly rejected unknown classification (CHECK_3 failed) BLOCKED: source baseline invalidated; previous result superseded."
       },
       {
         "checkId": "NEG_SCENARIO_8_INCONSISTENT_CLASSIFICATION_AND_ASSIGNMENT",
         "description": "Manifest fixture with PROVISIONALLY_APPROXIMATED but null assignedAcNumber is rejected by validator",
-        "passed": true,
-        "details": "Correctly rejected inconsistent classification and assignment (CHECK_3 failed)"
+        "passed": false,
+        "details": "Correctly rejected inconsistent classification and assignment (CHECK_3 failed) BLOCKED: source baseline invalidated; previous result superseded."
       },
       {
         "checkId": "NEG_SCENARIO_9_INCORRECT_CLASSIFICATION_DISTRIBUTION",
         "description": "Manifest fixture with altered classification distribution (31 provisional, 5 ambiguous) is rejected by validator",
-        "passed": true,
-        "details": "Correctly rejected invalid taxonomy distribution (CHECK_3 failed)"
+        "passed": false,
+        "details": "Correctly rejected invalid taxonomy distribution (CHECK_3 failed) BLOCKED: source baseline invalidated; previous result superseded."
       },
       {
         "checkId": "NEG_SCENARIO_10_NONEXISTENT_SOURCE_DOCUMENT",
         "description": "Manifest fixture referencing nonexistent source document is rejected by validator",
-        "passed": true,
-        "details": "Correctly rejected nonexistent source document (CHECK_6 failed)"
+        "passed": false,
+        "details": "Correctly rejected nonexistent source document (CHECK_6 failed) BLOCKED: source baseline invalidated; previous result superseded."
       },
       {
         "checkId": "NEG_SCENARIO_11_INVALID_DOCUMENTARY_LOCATOR",
         "description": "Manifest fixture with invalid documentary locator (\"Schedule XCIX\") is rejected by validator",
-        "passed": true,
-        "details": "Correctly rejected invalid locator (CHECK_7 failed)"
+        "passed": false,
+        "details": "Correctly rejected invalid locator (CHECK_7 failed) BLOCKED: source baseline invalidated; previous result superseded."
       },
       {
         "checkId": "NEG_SCENARIO_12_LOCATOR_NOT_SUPPORTING_CLAIM",
         "description": "Manifest fixture where locator does not support claim (state TS cites AP Schedule II) is rejected by validator",
-        "passed": true,
-        "details": "Correctly rejected discordant state-schedule locator (CHECK_8 failed)"
+        "passed": false,
+        "details": "Correctly rejected discordant state-schedule locator (CHECK_8 failed) BLOCKED: source baseline invalidated; previous result superseded."
       },
       {
         "checkId": "NEG_SCENARIO_13_MATERIAL_SOURCE_DATE_INCONSISTENCY",
         "description": "Manifest fixture with sourceEffectiveDate (2026-12-31) after sourcePublicationDate (2008-08-17) is rejected by validator",
-        "passed": true,
-        "details": "Correctly rejected inconsistent source dates (CHECK_9 failed)"
+        "passed": false,
+        "details": "Correctly rejected inconsistent source dates (CHECK_9 failed) BLOCKED: source baseline invalidated; previous result superseded."
       },
       {
         "checkId": "NEG_SCENARIO_14_TAMPERED_SUMMARY_ASSERTION",
         "description": "Manifest fixture with tampered metadata summary assertion (claims 1 authoritative) is rejected by validator",
-        "passed": true,
-        "details": "Correctly rejected tampered metadata summary (CHECK_10 failed)"
+        "passed": false,
+        "details": "Correctly rejected tampered metadata summary (CHECK_10 failed) BLOCKED: source baseline invalidated; previous result superseded."
       },
       {
         "checkId": "NEG_SCENARIO_15_UNRESOLVABLE_IN_REPO_FILE",
         "description": "Manifest fixture with recognized document name but unresolvable disk file path is rejected by validator",
-        "passed": true,
-        "details": "Correctly rejected unresolvable file path (CHECK_6 failed)"
+        "passed": false,
+        "details": "Correctly rejected unresolvable file path (CHECK_6 failed) BLOCKED: source baseline invalidated; previous result superseded."
       },
       {
         "checkId": "NEG_SCENARIO_16_NONEXISTENT_ENTRY_IN_RESOLVED_SOURCE",
         "description": "Manifest fixture referencing existing extract file but citing nonexistent Entry 999 is rejected by validator",
-        "passed": true,
-        "details": "Correctly rejected missing entry in resolved source (CHECK_7 failed)"
+        "passed": false,
+        "details": "Correctly rejected missing entry in resolved source (CHECK_7 failed) BLOCKED: source baseline invalidated; previous result superseded."
       },
       {
         "checkId": "NEG_SCENARIO_17_WRONG_ENTRY_IN_CORRECT_SCHEDULE",
         "description": "Manifest fixture citing correct Schedule XXXI but discordant Entry 67 for Charminar 66 is rejected by validator",
-        "passed": true,
-        "details": "Correctly rejected discordant entry in locator (CHECK_7 failed)"
+        "passed": false,
+        "details": "Correctly rejected discordant entry in locator (CHECK_7 failed) BLOCKED: source baseline invalidated; previous result superseded."
       },
       {
         "checkId": "NEG_SCENARIO_18_ENTRY_DOES_NOT_SUPPORT_CLAIM",
         "description": "Manifest fixture citing Entry 66 with discordant name (\"Secunderabad\" instead of \"Charminar\") is rejected by validator",
-        "passed": true,
-        "details": "Correctly rejected claim unsupported by cited entry (CHECK_8/CHECK_4 failed)"
+        "passed": false,
+        "details": "Correctly rejected claim unsupported by cited entry (CHECK_8/CHECK_4 failed) BLOCKED: source baseline invalidated; previous result superseded."
       },
       {
         "checkId": "NEG_SCENARIO_19_UNWARRANTED_SPATIAL_CONTAINMENT_CLAIM",
         "description": "Manifest fixture claiming spatialContainmentVerified === true on administrative delimitation source is rejected by validator",
-        "passed": true,
-        "details": "Correctly rejected unwarranted spatial containment assertion (CHECK_8 failed)"
+        "passed": false,
+        "details": "Correctly rejected unwarranted spatial containment assertion (CHECK_8 failed) BLOCKED: source baseline invalidated; previous result superseded."
       },
       {
         "checkId": "NEG_SCENARIO_20_PASSAGE_CONTRADICTS_SEED_NAME",
         "description": "Manifest fixture where inspected passage contradicts assigned AC name is rejected by validator",
-        "passed": true,
-        "details": "Correctly rejected contradicting passage extract (CHECK_8 failed)"
+        "passed": false,
+        "details": "Correctly rejected contradicting passage extract (CHECK_8 failed) BLOCKED: source baseline invalidated; previous result superseded."
       },
       {
         "checkId": "NEG_SCENARIO_21_UNVERIFIED_GAZETTE_AUTHENTICITY_CLAIM",
         "description": "Manifest fixture claiming AUTHORITATIVELY_VERIFIED_OFFICIAL_GAZETTE without physical gazette audit is rejected by validator",
-        "passed": true,
-        "details": "Correctly rejected premature gazette authenticity claim (CHECK_6 failed)"
+        "passed": false,
+        "details": "Correctly rejected premature gazette authenticity claim (CHECK_6 failed) BLOCKED: source baseline invalidated; previous result superseded."
       },
       {
         "checkId": "NEG_SCENARIO_22_EXTERNAL_SOURCE_FALSELY_CLAIMED_INSPECTED",
         "description": "Manifest fixture claiming external source status for referenceDocumentPath is rejected by validator",
-        "passed": true,
-        "details": "Correctly rejected external path without checked-in extract (CHECK_6 failed)"
+        "passed": false,
+        "details": "Correctly rejected external path without checked-in extract (CHECK_6 failed) BLOCKED: source baseline invalidated; previous result superseded."
       },
       {
         "checkId": "NEG_SCENARIO_23_FALSE_EVIDENCE_CLOSURE_CLAIM",
         "description": "Manifest fixture falsely claiming evidenceClosureStatus === \"COMPLETE\" is rejected by validator",
-        "passed": true,
-        "details": "Correctly rejected false evidence closure claim (CHECK_10 failed)"
+        "passed": false,
+        "details": "Correctly rejected false evidence closure claim (CHECK_10 failed) BLOCKED: source baseline invalidated; previous result superseded."
       },
       {
         "checkId": "NEG_SCENARIO_24_FAILED_CHECK_CANNOT_RENDER_PASS",
         "description": "Real report generator ensures a failed validation check renders **FAIL** and overall status renders FAILED in Markdown",
-        "passed": true,
-        "details": "Real generator correctly rendered **FAIL** and rejected **PASS** in Markdown"
+        "passed": false,
+        "details": "Real generator correctly rendered **FAIL** and rejected **PASS** in Markdown BLOCKED: source baseline invalidated; previous result superseded."
       },
       {
         "checkId": "NEG_SCENARIO_25_CORRECTION_SUBSTANTIVE_CLAIM_FAILURE",
         "description": "Correction fixture passing structural checks but marked UNSUPPORTED_BY_INSPECTED_SOURCE is rejected by validator",
-        "passed": true,
-        "details": "Correctly rejected correction with unsupported claim (CHECK_4/CHECK_8 failed)"
+        "passed": false,
+        "details": "Correctly rejected correction with unsupported claim (CHECK_4/CHECK_8 failed) BLOCKED: source baseline invalidated; previous result superseded."
       },
       {
         "checkId": "NEG_SCENARIO_26_INCONSISTENT_GATE_RECOMMENDATION",
         "description": "Manifest fixture with inconsistent gate recommendation during validation failure is rejected by validator",
-        "passed": true,
-        "details": "Correctly rejected inconsistent gate recommendation (CHECK_10 failed)"
+        "passed": false,
+        "details": "Correctly rejected inconsistent gate recommendation (CHECK_10 failed) BLOCKED: source baseline invalidated; previous result superseded."
       },
       {
         "checkId": "NEG_SCENARIO_27_LOCATOR_EXTENT_MISMATCH",
         "description": "Manifest entry with contradictory locator extent (PIN 500053 claiming GHMC Ward 15 part instead of Wards 16-18) is rejected by validator",
-        "passed": true,
-        "details": "Correctly rejected locator-extent mismatch (CHECK_7 failed)"
+        "passed": false,
+        "details": "Correctly rejected locator-extent mismatch (CHECK_7 failed) BLOCKED: source baseline invalidated; previous result superseded."
       },
       {
         "checkId": "NEG_SCENARIO_28_WRONG_STATE_SCHEDULE_MATCHING_DIGEST",
         "description": "Telangana record declaring Andhra Pradesh Schedule II extract path and digest is rejected by source-resolution chain",
-        "passed": true,
-        "details": "Correctly rejected wrong-state/wrong-schedule source file (CHECK_6 failed)"
+        "passed": false,
+        "details": "Correctly rejected wrong-state/wrong-schedule source file (CHECK_6 failed) BLOCKED: source baseline invalidated; previous result superseded."
       },
       {
         "checkId": "NEG_SCENARIO_29_CONTRADICTORY_WARD_EXTENT_IN_PASSAGE",
         "description": "Manifest entry with contradictory ward extent in source passage is rejected by validator",
-        "passed": true,
-        "details": "Correctly rejected contradictory ward extent in passage (CHECK_8 failed)"
+        "passed": false,
+        "details": "Correctly rejected contradictory ward extent in passage (CHECK_8 failed) BLOCKED: source baseline invalidated; previous result superseded."
       },
       {
         "checkId": "NEG_SCENARIO_30_FABRICATED_PASSAGE_ABSENT_FROM_SOURCE",
         "description": "Manifest entry with fabricated passage absent from source extract is rejected by validator",
-        "passed": true,
-        "details": "Correctly rejected fabricated passage (CHECK_8 failed)"
+        "passed": false,
+        "details": "Correctly rejected fabricated passage (CHECK_8 failed) BLOCKED: source baseline invalidated; previous result superseded."
       },
       {
         "checkId": "NEG_SCENARIO_31_PASSAGE_FROM_DIFFERENT_SOURCE",
         "description": "Manifest entry referencing TS Schedule XXXI but presenting passage from AP Schedule II is rejected by validator",
-        "passed": true,
-        "details": "Correctly rejected passage from discordant source (CHECK_8 failed)"
+        "passed": false,
+        "details": "Correctly rejected passage from discordant source (CHECK_8 failed) BLOCKED: source baseline invalidated; previous result superseded."
       },
       {
         "checkId": "NEG_SCENARIO_32_ALTERED_TEMPORARY_SOURCE_ARTIFACT",
         "description": "Altered temporary source artifact on disk evaluated against recorded digest and actual parser is rejected by validator",
-        "passed": true,
-        "details": "Correctly rejected altered source artifact on disk (CHECK_6 failed)"
+        "passed": false,
+        "details": "Correctly rejected altered source artifact on disk (CHECK_6 failed) BLOCKED: source baseline invalidated; previous result superseded."
       },
       {
         "checkId": "NEG_SCENARIO_33_SOURCE_FILE_UNAVAILABLE_AT_VALIDATION",
         "description": "Manifest entry referencing unreadable or deleted source file is rejected by validator",
-        "passed": true,
-        "details": "Correctly rejected missing source file (CHECK_6 failed)"
+        "passed": false,
+        "details": "Correctly rejected missing source file (CHECK_6 failed) BLOCKED: source baseline invalidated; previous result superseded."
       },
       {
         "checkId": "NEG_SCENARIO_34_MULTI_AC_CANDIDATE_NAME_OR_EXTENT_MISMATCH",
         "description": "Multi-AC entry with candidate name or extent mismatch is rejected by validator",
-        "passed": true,
-        "details": "Correctly rejected multi-AC candidate name mismatch (CHECK_7/CHECK_2 failed)"
+        "passed": false,
+        "details": "Correctly rejected multi-AC candidate name mismatch (CHECK_7/CHECK_2 failed) BLOCKED: source baseline invalidated; previous result superseded."
       },
       {
         "checkId": "NEG_SCENARIO_35_UNSUPPORTED_POSTAL_GEOGRAPHY_ASSERTION",
         "description": "Manifest entry whose source passage asserts postal delivery beat spatial containment is rejected by validator",
-        "passed": true,
-        "details": "Correctly rejected unsupported postal geography claim in passage (CHECK_8 failed)"
+        "passed": false,
+        "details": "Correctly rejected unsupported postal geography claim in passage (CHECK_8 failed) BLOCKED: source baseline invalidated; previous result superseded."
       },
       {
         "checkId": "NEG_SCENARIO_36_CORRECTION_SOURCE_UNSUPPORTED",
         "description": "Correction entry where seed agrees but source conclusion A is unsupported is rejected by validator",
-        "passed": true,
-        "details": "Correctly rejected unsupported correction source claim (CHECK_4 failed)"
+        "passed": false,
+        "details": "Correctly rejected unsupported correction source claim (CHECK_4 failed) BLOCKED: source baseline invalidated; previous result superseded."
       },
       {
         "checkId": "NEG_SCENARIO_37_VALIDATOR_FAILURE_WITH_PASS_RECOMMENDATION",
         "description": "Validator failure producing adjudication-ready recommendation is rejected by validator",
-        "passed": true,
-        "details": "Correctly rejected inconsistent gate recommendation during failure (CHECK_10 failed)"
+        "passed": false,
+        "details": "Correctly rejected inconsistent gate recommendation during failure (CHECK_10 failed) BLOCKED: source baseline invalidated; previous result superseded."
       },
       {
         "checkId": "NEG_SCENARIO_38_FAILED_SOURCE_RESULT_LOST_IN_REPORT_REGENERATION",
         "description": "Real report generator anti-override test proves that failed validation is retained as FAIL, GATE_REJECTED, and CLOSURE_REJECTED in JSON and Markdown",
-        "passed": true,
-        "details": "Real generator correctly retained FAIL, GATE_REJECTED, and CLOSURE_REJECTED in both JSON and Markdown"
+        "passed": false,
+        "details": "Real generator correctly retained FAIL, GATE_REJECTED, and CLOSURE_REJECTED in both JSON and Markdown BLOCKED: source baseline invalidated; previous result superseded."
       },
       {
         "checkId": "GEN_CASE_1_FAILED_LOCATOR_EXTENT",
         "description": "Real report generator handles failed locator-extent check by setting structuralValidationStatus FAIL, locatorResolutionStatus FAIL, gateRecommendation GATE_REJECTED_VALIDATION_FAILURE, and Markdown FAILED",
-        "passed": true,
-        "details": "Real generator correctly produced failing JSON summary and Markdown for locator extent failure"
+        "passed": false,
+        "details": "Real generator correctly produced failing JSON summary and Markdown for locator extent failure BLOCKED: source baseline invalidated; previous result superseded."
       },
       {
         "checkId": "GEN_CASE_2_SOURCE_PATH_OR_CHECKSUM_FAILURE",
         "description": "Real report generator handles source-path or checksum failure with sourceResolutionStatus FAIL and gate rejection",
-        "passed": true,
-        "details": "Real generator correctly reflected source resolution failure in JSON and Markdown"
+        "passed": false,
+        "details": "Real generator correctly reflected source resolution failure in JSON and Markdown BLOCKED: source baseline invalidated; previous result superseded."
       },
       {
         "checkId": "GEN_CASE_3_FAILED_MULTI_AC_CANDIDATE_VERIFICATION",
         "description": "Real report generator handles failed multi-AC candidate verification with pin500001AmbiguousFailClosed false and gate rejection",
-        "passed": true,
-        "details": "Real generator correctly reflected multi-AC verification failure"
+        "passed": false,
+        "details": "Real generator correctly reflected multi-AC verification failure BLOCKED: source baseline invalidated; previous result superseded."
       },
       {
         "checkId": "GEN_CASE_4_INCOMPLETE_INVENTORY",
         "description": "Real report generator handles incomplete inventory parity failure with inventoryParityVerified false and gate rejection",
-        "passed": true,
-        "details": "Real generator correctly reflected inventory parity failure"
+        "passed": false,
+        "details": "Real generator correctly reflected inventory parity failure BLOCKED: source baseline invalidated; previous result superseded."
       },
       {
         "checkId": "GEN_CASE_5_MANIFEST_ASSERTING_COMPLETE_CLOSURE",
         "description": "Real report generator enforces closure-status protection: manifest asserting COMPLETE cannot force COMPLETE status in generated report",
-        "passed": true,
-        "details": "Real generator enforced closure-status protection (status: CLOSURE_REJECTED_VALIDATION_FAILED, never COMPLETE)"
+        "passed": false,
+        "details": "Real generator enforced closure-status protection (status: CLOSURE_REJECTED_VALIDATION_FAILED, never COMPLETE) BLOCKED: source baseline invalidated; previous result superseded."
       },
       {
         "checkId": "GEN_CASE_6_FORGED_GATE_RECOMMENDATION_ON_FAILURE",
         "description": "Real report generator prevents manifest forged gate recommendation from overriding validation failure outcome",
-        "passed": true,
-        "details": "Real generator correctly overrode forged recommendation with GATE_REJECTED_VALIDATION_FAILURE"
+        "passed": false,
+        "details": "Real generator correctly overrode forged recommendation with GATE_REJECTED_VALIDATION_FAILURE BLOCKED: source baseline invalidated; previous result superseded."
       },
       {
         "checkId": "GEN_CASE_7_OVERWRITE_PRIOR_PASS_REPORT_ON_FAILURE",
         "description": "Real report generator overwrites any prior PASS report on disk with FAIL report when validation fails, leaving no stale PASS output",
-        "passed": true,
-        "details": "Real generator successfully overwritten prior PASS report on disk with fail-closed output"
+        "passed": false,
+        "details": "Real generator successfully overwritten prior PASS report on disk with fail-closed output BLOCKED: source baseline invalidated; previous result superseded."
       },
       {
         "checkId": "GEN_CASE_8_UNAVAILABLE_SOURCE_ARTIFACT",
         "description": "Real report generator handles unavailable source artifact with sourceResolutionStatus FAIL and gate rejection",
-        "passed": true,
-        "details": "Real generator correctly handled unavailable source artifact fail-closed"
+        "passed": false,
+        "details": "Real generator correctly handled unavailable source artifact fail-closed BLOCKED: source baseline invalidated; previous result superseded."
       },
       {
         "checkId": "CHECK_CONCORDANCE_INTEGRITY",
         "description": "Concordance across manifest, extracts, matrix JSON, matrix MD, and implementation reports",
-        "passed": true,
-        "details": "All 36 records exhibit complete concordance across manifest, extracts, matrix JSON, matrix MD, and implementation reports."
+        "passed": false,
+        "details": "All 36 records exhibit complete concordance across manifest, extracts, matrix JSON, matrix MD, and implementation reports. BLOCKED: source baseline invalidated; previous result superseded."
       }
     ]
   },
