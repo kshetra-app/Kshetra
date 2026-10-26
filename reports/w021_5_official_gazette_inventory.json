@@ -5,200 +5,314 @@
   "blockerCategory": "OFFICIAL_PHYSICAL_GAZETTE_AUTHENTICITY",
   "directive": "CTO Directive 149 / Workstream F / Task EB-01",
   "governingAuthority": "Master Execution Framework Amendment v1.6 / Rule IV-001 Non-Self-Acceptance",
-  "generatedAt": "2026-10-23T14:26:00.000Z",
+  "generatedAt": "2026-10-26T14:17:06.499Z",
   "officialGazettePublisher": "Controller of Publications, Department of Publication, Ministry of Housing and Urban Affairs, Government of India / Election Commission of India",
   "statutoryInstruments": [
     {
       "instrumentId": "ECI-DELIM-2008-ORDER",
-      "officialTitle": "Delimitation of Parliamentary and Assembly Constituencies Order, 2008",
-      "gazetteNotificationNumber": "S.O. 383(E) and S.O. 453(E)",
+      "officialTitle": "Delimitation of Parliamentary and Assembly Constituencies Order, 2008 — ECI consolidated historical order",
+      "gazetteNotificationNumber": "S.O. 382(E), dated 19 February 2008 (publication reference confirmed by a later official Gazette recital)",
       "gazettePublicationDate": "2008-02-19",
-      "gazettePart": "The Gazette of India, Extraordinary, Part II, Section 3, Sub-section (iii), No. 71",
-      "digitalSourceHost": "eci.gov.in / egazette.gov.in",
-      "officialUrl": "https://eci.gov.in/delimitation/delimitation-order-2008/",
-      "statutoryAuthority": "Section 10B of the Delimitation Act, 2002 read with Section 8A of the Representation of the People Act, 1950",
+      "gazettePart": null,
+      "digitalSourceHost": "Election Commission of India (original URL); the byte-verified copy presently retained is an Internet Archive capture of that exact official URL",
+      "officialUrl": "https://www.eci.gov.in/Documents/Delimitation/DelimitationofParliamentaryAssemblyConstituenciesOrder-2008%28English%29.pdf",
+      "statutoryAuthority": "Delimitation of Parliamentary and Assembly Constituencies Order, 2008; later Gazette recital cites notification S.O. 382(E), 19 February 2008",
       "tablesCovered": [
         {
           "tableName": "Table A",
-          "description": "Parliamentary Constituencies (543 seats)",
-          "statutorySeats": 543,
-          "w021_5_mapping": "public.parliamentary_constituencies, Migration 059"
+          "description": "Assembly Constituencies and their territorial extents in the respective schedule",
+          "historicalAssemblySeats": 4120,
+          "currentMappingContext": "Original 2008 historical schedule count is not the same period as the current 4,123 AC registry; Jammu and Kashmir was then 87 ACs (including 24 seats reserved for Pakistan-occupied territory) and the combined State of Andhra Pradesh had 294 ACs."
         },
         {
           "tableName": "Table B",
-          "description": "Assembly Constituencies (4,123 seats across statutory states/UTs)",
-          "statutorySeats": 4123,
-          "w021_5_mapping": "public.constituencies, Migration 059, reports/w021_5_constituency_4123_crosswalk.json"
+          "description": "Parliamentary Constituencies and their territorial extents in the respective schedule",
+          "historicalParliamentarySeats": 543
         }
       ],
       "schedules": [
         {
           "schedule": "I",
-          "state": "Andhra Pradesh",
-          "originalSeats": 294,
-          "currentStatus": "Bifurcated under AP Reorganisation Act 2014 into 175 AP + 119 TS"
+          "state": "All States and Union Territories",
+          "content": "Table showing allocation of seats in the Lok Sabha",
+          "pages": "4–5",
+          "seatCount": 543,
+          "classification": "ALLOCATION_TABLE_NOT_STATE_AC_SCHEDULE"
         },
         {
           "schedule": "II",
-          "state": "Arunachal Pradesh",
-          "seats": 60,
-          "currentStatus": "Unchanged (60 ACs)"
+          "state": "All States and Union Territories",
+          "content": "Table showing number of seats in various Legislative Assemblies",
+          "pages": "6–7",
+          "seatCount": 4120,
+          "classification": "ALLOCATION_TABLE_NOT_STATE_AC_SCHEDULE"
         },
         {
           "schedule": "III",
-          "state": "Assam",
-          "seats": 126,
-          "currentStatus": "Revised by ECI Final Order under Sec 8A, Aug 2023 (126 ACs)"
+          "state": "Andhra Pradesh (composite state as at 2008)",
+          "seats": 294,
+          "pages": "8–32",
+          "currentStatus": "Original combined AP schedule; successor State seat allocations and any later territorial modifications require separate 2014/2015/2018 instruments; not a Telangana schedule."
         },
         {
           "schedule": "IV",
-          "state": "Bihar",
-          "seats": 243,
-          "currentStatus": "Unchanged (243 ACs)"
+          "state": "Arunachal Pradesh",
+          "seats": 60,
+          "pages": "33–41",
+          "currentStatus": "2008 schedule; applicable later regime must be checked separately."
         },
         {
           "schedule": "V",
-          "state": "Goa",
-          "seats": 40,
-          "currentStatus": "Unchanged (40 ACs)"
+          "state": "Assam",
+          "seats": 126,
+          "pages": "42–73",
+          "currentStatus": "2008 schedule; later final delimitation order in 2023 supersedes applicable extents."
         },
         {
           "schedule": "VI",
-          "state": "Gujarat",
-          "seats": 182,
-          "currentStatus": "Unchanged (182 ACs)"
+          "state": "Bihar",
+          "seats": 243,
+          "pages": "74–96",
+          "currentStatus": "2008 schedule; later regime not adjudicated by this inventory update."
         },
         {
           "schedule": "VII",
-          "state": "Haryana",
+          "state": "Chhattisgarh",
           "seats": 90,
-          "currentStatus": "Unchanged (90 ACs)"
+          "pages": "97–109",
+          "currentStatus": "2008 schedule."
         },
         {
           "schedule": "VIII",
-          "state": "Himachal Pradesh",
-          "seats": 68,
-          "currentStatus": "Unchanged (68 ACs)"
+          "state": "Goa",
+          "seats": 40,
+          "pages": "110–114",
+          "currentStatus": "2008 schedule."
         },
         {
           "schedule": "IX",
-          "state": "Jharkhand",
-          "seats": 81,
-          "currentStatus": "Unchanged (81 ACs)"
+          "state": "Gujarat",
+          "seats": 182,
+          "pages": "115–147",
+          "currentStatus": "2008 schedule."
         },
         {
           "schedule": "X",
-          "state": "Karnataka",
-          "seats": 224,
-          "currentStatus": "Unchanged (224 ACs)"
+          "state": "Haryana",
+          "seats": 90,
+          "pages": "148–157",
+          "currentStatus": "2008 schedule."
         },
         {
           "schedule": "XI",
-          "state": "Kerala",
-          "seats": 140,
-          "currentStatus": "Unchanged (140 ACs)"
+          "state": "Himachal Pradesh",
+          "seats": 68,
+          "pages": "158–164",
+          "currentStatus": "2008 schedule."
         },
         {
           "schedule": "XII",
-          "state": "Madhya Pradesh",
-          "seats": 230,
-          "currentStatus": "Unchanged (230 ACs)"
+          "state": "Jammu and Kashmir",
+          "content": "Parliamentary constituencies only",
+          "pages": "165",
+          "seatCount": 6,
+          "classification": "PARLIAMENTARY_ONLY_SCHEDULE; ACs are in the Annexure"
         },
         {
           "schedule": "XIII",
-          "state": "Maharashtra",
-          "seats": 288,
-          "currentStatus": "Unchanged (288 ACs)"
+          "state": "Jharkhand",
+          "seats": 81,
+          "pages": "166–174",
+          "currentStatus": "2008 schedule."
         },
         {
           "schedule": "XIV",
-          "state": "Manipur",
-          "seats": 60,
-          "currentStatus": "Unchanged (60 ACs)"
+          "state": "Karnataka",
+          "seats": 224,
+          "pages": "175–208",
+          "currentStatus": "2008 schedule."
         },
         {
           "schedule": "XV",
-          "state": "Meghalaya",
-          "seats": 60,
-          "currentStatus": "Unchanged (60 ACs)"
+          "state": "Kerala",
+          "seats": 140,
+          "pages": "209–225",
+          "currentStatus": "2008 schedule."
         },
         {
           "schedule": "XVI",
-          "state": "Mizoram",
-          "seats": 40,
-          "currentStatus": "Unchanged (40 ACs)"
+          "state": "Madhya Pradesh",
+          "seats": 230,
+          "pages": "226–252",
+          "currentStatus": "2008 schedule."
         },
         {
           "schedule": "XVII",
-          "state": "Nagaland",
-          "seats": 60,
-          "currentStatus": "Unchanged (60 ACs)"
+          "state": "Maharashtra",
+          "seats": 288,
+          "pages": "253–279",
+          "currentStatus": "2008 schedule."
         },
         {
           "schedule": "XVIII",
-          "state": "Odisha",
-          "seats": 147,
-          "currentStatus": "Unchanged (147 ACs)"
+          "state": "Manipur",
+          "seats": 60,
+          "pages": "280–293",
+          "currentStatus": "2008 schedule; the order's operation was subject to the applicable deferral regime."
         },
         {
           "schedule": "XIX",
-          "state": "Punjab",
-          "seats": 117,
-          "currentStatus": "Unchanged (117 ACs)"
+          "state": "Meghalaya",
+          "seats": 60,
+          "pages": "294–301",
+          "currentStatus": "2008 schedule; note the commencement/order provisions in the actual instrument."
         },
         {
           "schedule": "XX",
-          "state": "Rajasthan",
-          "seats": 200,
-          "currentStatus": "Unchanged (200 ACs)"
+          "state": "Mizoram",
+          "seats": 40,
+          "pages": "302–310",
+          "currentStatus": "2008 schedule."
         },
         {
           "schedule": "XXI",
-          "state": "Sikkim",
-          "seats": 32,
-          "currentStatus": "Unchanged (32 ACs, including 1 Sangha seat)"
+          "state": "Nagaland",
+          "seats": 60,
+          "pages": "311–318",
+          "currentStatus": "2008 schedule; the order's operation was subject to the applicable deferral regime."
         },
         {
           "schedule": "XXII",
-          "state": "Tamil Nadu",
-          "seats": 234,
-          "currentStatus": "Unchanged (234 ACs)"
+          "state": "Orissa (now Odisha)",
+          "seats": 147,
+          "pages": "319–335",
+          "currentStatus": "2008 schedule."
         },
         {
           "schedule": "XXIII",
-          "state": "Tripura",
-          "seats": 60,
-          "currentStatus": "Unchanged (60 ACs)"
+          "state": "Punjab",
+          "seats": 117,
+          "pages": "336–349",
+          "currentStatus": "2008 schedule."
         },
         {
           "schedule": "XXIV",
-          "state": "Uttar Pradesh",
-          "seats": 403,
-          "currentStatus": "Unchanged (403 ACs)"
+          "state": "Rajasthan",
+          "seats": 200,
+          "pages": "350–366",
+          "currentStatus": "2008 schedule."
         },
         {
           "schedule": "XXV",
-          "state": "Uttarakhand",
-          "seats": 70,
-          "currentStatus": "Unchanged (70 ACs)"
+          "state": "Sikkim",
+          "seats": 32,
+          "pages": "367–371",
+          "currentStatus": "2008 schedule; includes special reserved-seat footnote in Table II."
         },
         {
           "schedule": "XXVI",
-          "state": "West Bengal",
-          "seats": 294,
-          "currentStatus": "Unchanged (294 ACs)"
+          "state": "Tamil Nadu",
+          "seats": 234,
+          "pages": "372–449",
+          "currentStatus": "2008 schedule."
         },
         {
           "schedule": "XXVII",
-          "state": "NCT of Delhi",
-          "seats": 70,
-          "currentStatus": "Unchanged (70 ACs)"
+          "state": "Tripura",
+          "seats": 60,
+          "pages": "450–457",
+          "currentStatus": "2008 schedule; note the commencement/order provisions in the actual instrument."
         },
         {
           "schedule": "XXVIII",
+          "state": "Uttar Pradesh",
+          "seats": 403,
+          "pages": "458–505",
+          "currentStatus": "2008 schedule."
+        },
+        {
+          "schedule": "XXIX",
+          "state": "Uttarakhand",
+          "seats": 70,
+          "pages": "506–515",
+          "currentStatus": "2008 schedule."
+        },
+        {
+          "schedule": "XXX",
+          "state": "West Bengal",
+          "seats": 294,
+          "pages": "516–542",
+          "currentStatus": "2008 schedule."
+        },
+        {
+          "schedule": "XXXI",
+          "state": "Delhi",
+          "seats": 70,
+          "pages": "543–556",
+          "currentStatus": "Delhi, not Telangana."
+        },
+        {
+          "schedule": "XXXII",
           "state": "Puducherry",
           "seats": 30,
-          "currentStatus": "Unchanged (30 ACs)"
+          "pages": "557–560",
+          "currentStatus": "2008 schedule."
+        },
+        {
+          "schedule": "Annexure",
+          "state": "Jammu and Kashmir",
+          "seats": 87,
+          "pages": "561–571",
+          "currentStatus": "Assembly constituency extents are in this annexure; includes 24 seats earmarked for Pakistan-occupied territory under the then-applicable legal framework."
+        }
+      ],
+      "gazetteIssueNumber": null,
+      "gazetteIssueMetadataStatus": "OPEN — original 2008 Gazette issue bytes not acquired; do not infer part/section/issue number from the ECI consolidated PDF or later Gazette recital",
+      "archivalOrderCopy": {
+        "classification": "ARCHIVAL_COPY_OF_ECI_OFFICIAL_URL_NOT_A_DIRECT_LIVE_DOWNLOAD_OR_CERTIFIED_PHYSICAL_COPY",
+        "exactOriginalUrl": "https://www.eci.gov.in/Documents/Delimitation/DelimitationofParliamentaryAssemblyConstituenciesOrder-2008(English).pdf",
+        "archiveUrl": "https://web.archive.org/web/20260804161908id_/https://www.eci.gov.in/Documents/Delimitation/DelimitationofParliamentaryAssemblyConstituenciesOrder-2008(English).pdf",
+        "archiveCaptureTimestampUtc": "2026-08-04T16:19:08Z",
+        "alternativeCaptureUrl": "https://web.archive.org/web/20101005180821id_/http://eci.nic.in/eci_main/CurrentElections/CONSOLIDATED_ORDER%20_ECI%20.pdf",
+        "retrievalWorkflowUrl": "https://github.com/kshetra-app/Kshetra/actions/runs/40335906727",
+        "workflowArtifactId": 12655404407,
+        "workflowArtifactBytes": 8227705,
+        "workflowArtifactZipSha256": "009c7f5270187c3cd8bfe3639c042979d35f8be3d390beea2bac289ed489a70f",
+        "evidenceOnlyBranch": "cto/w0215-stage-b-evidence-20261025",
+        "evidenceOnlyCommit": "b0e825de6b1c5870f95c5a8ca46d2a3d4bd1dfa8",
+        "rawArtifactPath": "stage_b_archival_recovery/raw/ECI_2008_ORDER_CURRENT_URL_wayback_20260804161908.pdf",
+        "byteLength": 1340728,
+        "sha256": "9e1ac49aa952febc8e4f57ed23abd28218a21887f355f8dad1502ab5c0d65e69",
+        "pdfVersion": "1.5",
+        "pdfPageCount": 572,
+        "independentChecks": [
+          "%PDF- magic validated",
+          "PyMuPDF opened/parsed 572 pages",
+          "Exact raw response SHA-256 computed",
+          "Three captures of exact ECI official/legacy URL variants returned byte-identical payloads with same SHA-256",
+          "Table of contents and specific schedule/table headers reviewed"
+        ],
+        "limitations": [
+          "This is a preserved copy captured by Internet Archive from the exact ECI official URL, not a direct 2026 HTTP response from ECI.",
+          "This PDF is not itself the original Gazette of India issue and does not satisfy a physical watermark/certified-copy requirement.",
+          "The actual original Gazette issue for S.O.382(E), including issue/page metadata and source bytes or a certified copy, remains OPEN."
+        ]
+      },
+      "priorInventoryConflicts": [
+        {
+          "field": "gazetteNotificationNumber",
+          "priorValue": "S.O. 383(E) and S.O. 453(E)",
+          "correction": "S.O. 382(E), dated 19 February 2008, is confirmed as the 2008 Order publication reference in the later official Gazette recital recovered from the exact egazette.gov.in PDF URL. S.O.383(E)/S.O.453(E) are not supported as this Order's publication reference by the evidence reviewed here."
+        },
+        {
+          "field": "tablesCovered",
+          "priorValue": "Table A Parliamentary Constituencies / Table B Assembly Constituencies",
+          "correction": "Reversed. The original ECI Order labels Table A as Assembly Constituencies and Table B as Parliamentary Constituencies."
+        },
+        {
+          "field": "schedules",
+          "priorValue": "Andhra Pradesh Schedule I, Arunachal Schedule II, Assam Schedule III, ... Telangana Schedule XXXI",
+          "correction": "Incorrect. Schedules I and II are seat-allocation summary tables; Schedule III is composite Andhra Pradesh; Schedule XXXI is Delhi; Schedule XXXII is Puducherry; Jammu & Kashmir ACs appear in the Annexure."
         }
       ]
     },
@@ -230,39 +344,88 @@
     }
   ],
   "disposition": {
-    "digitalInventoryStatus": "VERIFIED_AGAINST_OFFICIAL_ECI_AND_EGAZETTE_PUBLICATIONS",
+    "digitalInventoryStatus": "PARTIALLY_RECONCILED — archived copy of exact official ECI 2008 Order and later official Gazette recital acquired and reviewed; original 2008 Gazette issue/certified copy, 2018 Gazette issue, and AP State Gazette counterpart remain open",
     "physicalWatermarkNotarization": "PENDING_PHYSICAL_ARCHIVE_INSPECTION_AND_CUSTODY_CERTIFICATION",
     "blockerResolution": "BLOCKED_EXTERNAL_EVIDENCE",
-    "rationale": "All statutory allocations, schedule numbers, seat counts (543 PC / 4,123 AC), and order references are digitally verified against official Government of India publications. Certified physical printed paper copy watermark inspection requires institutional custodian access under the EB-01 standard."
+    "rationale": "The ECI 2008 consolidated PDF's exact bytes have now been acquired from an Internet Archive capture of the exact official ECI URL and independently parsed; a later official Gazette PDF recites publication notification S.O.382(E), dated 19 February 2008. These resolve prior internal schedule/table and publication-reference errors. Neither the consolidated ECI PDF nor a later Gazette recital is a substitute for the original 2008 Gazette issue, its exact issue metadata, or an authenticated physical/certified copy. The actual Gazette issue for O.N.55(E) and Andhra Pradesh State Gazette counterpart/certified copy remain unacquired."
   },
   "digitalSourceVerification": {
-    "verifierEngine": "scripts/verify_w021_5_full_mandate.cjs",
-    "verifiedAgainst": "ECI Official Publications (old.eci.gov.in / eci.gov.in) and egazette.gov.in",
+    "verifierEngine": "scripts/recover_w0215_legal_sources_from_exact_archives.py (source capture) plus independent PDF-byte/PyMuPDF contents verification; master inventory correction on 2026-10-26",
+    "verifiedAgainst": "Exact-URL Internet Archive capture of official ECI 2008 Order PDF plus exact-URL archival capture of official Gazette of India 2023 recital; official live Lok Sabha proceedings PDF",
     "digitalFilesCovered": [
       {
-        "title": "Delimitation Order 2008 (Tables A & B, Schedules I-XXVIII)",
-        "url": "https://old.eci.gov.in/files/file/3931-delimitation-2008-order-issued-by-eci/",
-        "sha256": "e51b14a796e95b0e8c8a14b5128362615a6b0c2a792445b23d9a04a6211fa4d0",
-        "notificationRef": "S.O. 383(E) and S.O. 453(E)"
+        "title": "ECI Delimitation Order, 2008 (572-page ECI consolidated PDF; archival copy of exact ECI official URL)",
+        "url": "https://www.eci.gov.in/Documents/Delimitation/DelimitationofParliamentaryAssemblyConstituenciesOrder-2008%28English%29.pdf",
+        "archiveUrl": "https://web.archive.org/web/20260804161908id_/https://www.eci.gov.in/Documents/Delimitation/DelimitationofParliamentaryAssemblyConstituenciesOrder-2008(English).pdf",
+        "archiveCaptureTimestampUtc": "2026-08-04T16:19:08Z",
+        "sha256": "9e1ac49aa952febc8e4f57ed23abd28218a21887f355f8dad1502ab5c0d65e69",
+        "byteLength": 1340728,
+        "pageCount": 572,
+        "notificationRef": "S.O.382(E) publication reference corroborated by later official Gazette recital; original issue bytes still open",
+        "authority": "ARCHIVAL_COPY_OF_PRIMARY_ECI_SOURCE_NOT_GAZETTE"
       },
       {
-        "title": "Andhra Pradesh Reorganisation Act, 2014 (Act No. 6 of 2014)",
+        "title": "Official Gazette of India 2023 instrument which recites the 2008 Order was published vide S.O.382(E), dated 19 February 2008",
+        "url": "https://egazette.gov.in/WriteReadData/2023/248113.pdf",
+        "archiveUrl": "https://web.archive.org/web/20231224180839id_/https://egazette.gov.in/WriteReadData/2023/248113.pdf",
+        "archiveCaptureTimestampUtc": "2023-12-24T18:08:39Z",
+        "sha256": "43d99d7ba5d23cc033752637ac7f55ce11133fc27346f1cad9ac5223f77501c5",
+        "byteLength": 1204886,
+        "pageCount": 3,
+        "notificationRef": "S.O.382(E), 19 February 2008 (recital only, not the original 2008 issue)",
+        "authority": "ARCHIVAL_COPY_OF_OFFICIAL_2023_GAZETTE_RECITAL"
+      },
+      {
+        "title": "Lok Sabha proceedings, 19 December 2018, page 36–37, recording O.N.55(E) published in Gazette of India dated 22 September 2018",
+        "url": "https://sansad.in/getFile/debatestextmk/16/XVI/19.12.2018.pdf?source=loksabhadocs",
+        "sha256": "e4be3f9256b1b1db9fe74fdb6e3f19985b2bca355a1df686b822cb97cf89b1a1",
+        "byteLength": 638561,
+        "pageCount": 136,
+        "publicationDateOfProceedings": "2018-12-19",
+        "evidenceLocation": "PDF page 36–37; Library receipt LT 10017/16/18",
+        "authority": "DIRECT_OFFICIAL_PARLIAMENTARY_CORROBORATION_NOT_THE_GAZETTE_ISSUE"
+      },
+      {
+        "title": "Andhra Pradesh Reorganisation Act, 2014 (previously inventoried source; separate source identity and period)",
         "url": "https://egazette.gov.in",
         "sha256": "68b6a3c4fe8e225fbf5a04eb0429f52f416d8636b13ce8dafa88c5efec423d21",
-        "notificationRef": "Act No. 6 of 2014"
+        "notificationRef": "Act No. 6 of 2014",
+        "authority": "PREVIOUSLY_INVENTORIED_SOURCE_REQUIRES_SEPARATE_RECHECK_IN_THIS_RECONCILIATION"
       },
       {
-        "title": "ECI Final Delimitation Order for State of Assam (August 2023)",
+        "title": "ECI Final Delimitation Order for State of Assam (August 2023; previous inventory item, not rechecked in the present archival pass)",
         "url": "https://eci.gov.in/files/file/15248-final-order-for-delimitation-of-parliamentary-assembly-constituencies-in-assam/",
         "sha256": "a2f98e6f11c8413b8606c48325ef00cd3241bc389cb432e0e4125b0451a9bdf1",
-        "notificationRef": "No. 282/AS/2023(1)"
+        "notificationRef": "No. 282/AS/2023(1)",
+        "authority": "PREVIOUSLY_INVENTORIED_SOURCE_REQUIRES_SEPARATE_RECHECK_IN_THIS_RECONCILIATION"
       },
       {
-        "title": "Delimitation Commission Final Order No. 282/J&K/2022",
+        "title": "Delimitation Commission Final Order No. 282/J&K/2022 (previous inventory item, not rechecked in the present archival pass)",
         "url": "https://eci.gov.in/files/file/14161-final-order-of-delimitation-commission-for-ut-of-jammu-and-kashmir/",
         "sha256": "c8814fa8d9e29a997d4c2084c6731ad219d3635749f7ba3d8544c017d23f3957",
-        "notificationRef": "No. 282/J&K/2022"
+        "notificationRef": "No. 282/J&K/2022",
+        "authority": "PREVIOUSLY_INVENTORIED_SOURCE_REQUIRES_SEPARATE_RECHECK_IN_THIS_RECONCILIATION"
       }
     ]
-  }
+  },
+  "correctionHistory": [
+    {
+      "correctedAt": "2026-10-26",
+      "evidenceWorkflowUrl": "https://github.com/kshetra-app/Kshetra/actions/runs/40335906727",
+      "sourceArtifactZipSha256": "009c7f5270187c3cd8bfe3639c042979d35f8be3d390beea2bac289ed489a70f",
+      "sourceBranch": "cto/w0215-stage-b-evidence-20261025",
+      "sourceCommit": "b0e825de6b1c5870f95c5a8ca46d2a3d4bd1dfa8",
+      "corrections": [
+        "S.O.382(E), 19 February 2008, is corroborated by an exact-URL archival copy of an official 2023 Gazette recital; older S.O.383(E)/S.O.453(E) reference is removed as unsupported for this instrument.",
+        "Correct Table A/Table B orientation.",
+        "Correct all 2008 Schedule numbering; Schedule III is composite Andhra Pradesh, Schedule XXXI is Delhi, Schedule XXXII is Puducherry, J&K ACs are in the Annexure."
+      ],
+      "unresolved": [
+        "Original Gazette of India 2008 issue and certified physical copy/metadata.",
+        "Gazette of India issue O.N.55(E) of 22 September 2018.",
+        "Andhra Pradesh State Gazette counterpart or certified copy.",
+        "Complete legal chain and effective date reconciliation for all jurisdictions."
+      ]
+    }
+  ]
 }
