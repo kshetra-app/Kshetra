@@ -385,6 +385,14 @@ manifest = {
     "htmlSources": [],
 }
 session = requests.Session(impersonate="chrome124")
+# Prefer the Ubuntu runner's system CA bundle for certificate-verified HTTPS.
+# This does not disable TLS verification and is not a WAF/access-control bypass.
+SYSTEM_CA_BUNDLE = Path("/etc/ssl/certs/ca-certificates.crt")
+TLS_VERIFY = str(SYSTEM_CA_BUNDLE) if SYSTEM_CA_BUNDLE.is_file() else True
+
+def verified_get(url: str, *, headers: dict, timeout: int = 10):
+    return session.get(url, headers=headers, timeout=timeout, allow_redirects=True, verify=TLS_VERIFY)
+
 required_failures = []
 for src in SOURCES:
     row = {
@@ -400,7 +408,7 @@ for src in SOURCES:
             parsed = urlparse(url)
             if parsed.scheme != "https" or parsed.hostname not in ALLOWED_HOSTS:
                 raise RuntimeError("URL_HOST_NOT_ALLOWLISTED")
-            response = session.get(url, headers=HEADERS, timeout=10, allow_redirects=True)
+            response = verified_get(url, headers=HEADERS, timeout=10)
             final = urlparse(response.url)
             if final.scheme != "https" or final.hostname not in ALLOWED_HOSTS:
                 raise RuntimeError("REDIRECT_HOST_NOT_ALLOWLISTED:" + str(response.url))
@@ -464,7 +472,7 @@ for src in HTML_SOURCES:
         parsed = urlparse(src["url"])
         if parsed.scheme != "https" or parsed.hostname not in ALLOWED_HOSTS:
             raise RuntimeError("URL_HOST_NOT_ALLOWLISTED")
-        response = session.get(src["url"], headers=HEADERS, timeout=10, allow_redirects=True)
+        response = verified_get(src["url"], headers=HEADERS, timeout=10)
         final = urlparse(response.url)
         if final.scheme != "https" or final.hostname not in ALLOWED_HOSTS:
             raise RuntimeError("REDIRECT_HOST_NOT_ALLOWLISTED:" + response.url)
