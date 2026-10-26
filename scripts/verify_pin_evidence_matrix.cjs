@@ -30,12 +30,11 @@ function normalizeConstituencyName(value) {
   return String(value || '')
     .normalize('NFKD')
     .toLowerCase()
-    .replace(/\\bsecunderabad\\s+cantt\\.?\\s*\\(sc\\)?\\b/g, 'secunderabad cantonment')
-    .replace(/\\bsecunderabad\\s+cantt\\.?\\b/g, 'secunderabad cantonment')
-    .replace(/\\bkukatpalle\\b/g, 'kukatpally')
+    .replace(/\bsecunderabad\s+cantt\.?(?:\s*\(sc\))?/g, 'secunderabad cantonment')
+    .replace(/\bkukatpalle\b/g, 'kukatpally')
     .replace(/[^a-z0-9]+/g, ' ')
     .trim()
-    .replace(/\\s+/g, ' ');
+    .replace(/\s+/g, ' ');
 }
 
 const TS_TABLE_B_EXTRACT_REL = 'data/evidence/w021_5/authoritative/ap_reorganisation_act_2014_schedule_xxvii_telangana_table_a_extract.txt';
