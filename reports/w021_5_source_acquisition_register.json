@@ -2111,6 +2111,121 @@
         "The evidence package is committed to the evidence-only branch and has not been merged to master while Stage B overall acceptance remains blocked."
       ],
       "plannedUse": "Use as an independently validated jurisdictional pilot for the national polling-station crosswalk pipeline, then acquire equivalent official CEO/ECI source snapshots for all remaining states/UTs without generalizing Delhi data."
+    },
+    {
+      "sourceId": "SRC-MARMA-FINTECH-INDIA-ELECTORAL-BOUNDARIES-CANDIDATE-2026-10-26",
+      "subject": "Pinned nationwide Assembly Constituency GeoJSON candidate snapshot acquired for forensic coverage, provenance, topology and comparison audit",
+      "publisher": "Marma-Fintech-Organization/india-electoral-boundaries (third-party public repository; not an official election authority)",
+      "url": "https://github.com/Marma-Fintech-Organization/india-electoral-boundaries",
+      "sourceCommit": "3e4e9f347b260040278c36f563fb2efa28e2a476",
+      "sourceTreeSha": "50d978efe1ff2d4cf450147967f2168994d5b84f",
+      "retrievedAt": "2026-10-26",
+      "format": "Git-archived upstream repository snapshot plus per-file SHA-256/Git-blob inventory and independent Shapely topology audit",
+      "authority": "THIRD_PARTY_NON_OFFICIAL_CANDIDATE_ONLY",
+      "status": "ACQUIRED_HASHED_AND_AUDITED; 4129_FILES; INVALID_GEOMETRIES_AND_UNRESOLVED_LINEAGE; NOT_CANONICAL",
+      "sha256": "ba58ce09b5722daf464b4f827cff06423da39b2d421e326b02e5cb40b4043035",
+      "fileBytes": 18551699,
+      "artifactPath": "data/evidence/w021_5/national_candidate_boundaries/india_electoral_boundaries_source_snapshot.tar.gz",
+      "repositoryBranch": "cto/w0215-stage-b-evidence-20261025",
+      "repositoryCommit": "32dc58769af29b2e8233db87873824b548836cf6",
+      "auditPath": "data/evidence/w021_5/national_candidate_boundaries/candidate_geometry_audit.json",
+      "auditSha256": "db681fcc0a0ff7d06882ad6e9165aae60d8e4b9463111f4fc47bf97f67589da1",
+      "auditBytes": 206073,
+      "inventoryPath": "data/evidence/w021_5/national_candidate_boundaries/source_file_inventory.json.gz",
+      "inventorySha256": "9ed6003316ebd47a713a5e9d3bb9dfc5e6bc4917458b62783dc628899c46df36",
+      "inventoryBytes": 510309,
+      "inventoryUncompressedBytes": 3751887,
+      "upstreamDeclaredLicense": "CC BY-SA 4.0 for data/documentation and MIT for code per upstream materials; GitHub API reports Other / SPDX NOASSERTION; individual feature-source/licence review remains required.",
+      "auditMetrics": {
+        "geojsonFeatureFiles": 4129,
+        "stateOrUTCodes": 36,
+        "stateFeatureCounts": {
+          "an": 1,
+          "ap": 175,
+          "ar": 60,
+          "as": 126,
+          "br": 243,
+          "cg": 90,
+          "ch": 1,
+          "dh": 2,
+          "dl": 70,
+          "ga": 40,
+          "gj": 182,
+          "hp": 68,
+          "hr": 90,
+          "jh": 81,
+          "jk": 90,
+          "ka": 224,
+          "kl": 140,
+          "la": 1,
+          "ld": 1,
+          "mh": 288,
+          "ml": 60,
+          "mn": 60,
+          "mp": 230,
+          "mz": 40,
+          "nl": 60,
+          "od": 147,
+          "pb": 117,
+          "py": 30,
+          "rj": 200,
+          "sk": 32,
+          "tn": 234,
+          "tr": 60,
+          "ts": 119,
+          "uk": 70,
+          "up": 403,
+          "wb": 294
+        },
+        "invalidGeometries": 65,
+        "unresolvedSourceFiles": 4129,
+        "materialPositiveAreaOverlapPairsOver1m2": 154,
+        "tgracComparisonStatus": "DOWNLOADED_HASHED_OFFICIAL_GIS_CANDIDATE",
+        "candidateDisposition": "NOT OFFICIAL; NOT CANONICAL; no legal acceptance"
+      },
+      "limitations": [
+        "Upstream README explicitly describes this dataset as non-official and not 100% accurate.",
+        "The upstream source inventory marks per-feature source attribution unresolved/TBD; this audit found the unresolved source count equals the full feature-file count in this snapshot.",
+        "The geometry audit found invalid polygons and positive-area overlap pairs; neither the data nor any repaired form may be imported as canonical.",
+        "GitHub repository licence metadata is Other / NOASSERTION although upstream documents state CC BY-SA 4.0 for data and MIT for code; per-feature source and redistribution rights remain unresolved.",
+        "The TGRAC comparison is geometrical screening only; its official GIS candidate has no independently verified legal effective date or reuse licence and includes invalid Dornakal geometry.",
+        "The snapshot is committed only to the evidence-only branch, not master product data."
+      ],
+      "plannedUse": "Use only to prioritize legal/source-custodian questions, quantify coverage and compare against official source candidates. Do not treat as official boundary geometry."
+    },
+    {
+      "sourceId": "SRC-TGRAC-MASTER-AC-RESPONSE-REFERENCE-2026-10-26",
+      "subject": "Raw TGRAC Master Administrative Boundary layer response acquired during the pinned third-party AC candidate comparison",
+      "publisher": "Telangana State Remote Sensing Applications Centre (TGRAC)",
+      "url": "https://tgrac.telangana.gov.in/arcgis/rest/services/Master_Administrative_Folder/Master_Administrative_Boundary/MapServer/0/query?where=1%3D1&outFields=%2A&returnGeometry=true&outSR=4326&f=json",
+      "retrievedAt": "2026-10-26T13:23:08.953393+00:00",
+      "format": "ArcGIS REST JSON FeatureSet; exact raw response archived unchanged",
+      "authority": "OFFICIAL_STATE_GIS_SOURCE_CANDIDATE_NOT_LEGALLY_ACCEPTED",
+      "status": "DOWNLOADED_HASHED_RESPONSE_USED_AS_COMPARATOR_ONLY",
+      "sha256": "c5d0cbf55f5079cd91b0ce3a8733ce11701a70f0ea474cdd96025ec8c651e444",
+      "fileBytes": 12469989,
+      "artifactPath": "data/evidence/w021_5/national_candidate_boundaries/tgrac_master_ac_response.json",
+      "httpStatus": 200,
+      "etag": "1760440268",
+      "lastModified": null,
+      "featureCount": 119,
+      "comparison": {
+        "candidateAcFeatureCount": 119,
+        "tgracFeatureCount": 119,
+        "matchedByNormalizedName": 108,
+        "thresholdCounts": {
+          "symdiffOver1m2": 108,
+          "symdiffOver10kM2": 91,
+          "symdiffOver100kM2": 31,
+          "hausdorffOver100m": 21
+        }
+      },
+      "limitations": [
+        "Raw response snapshot only; service title and public availability do not establish legal effective date, source-owner lineage or reuse licence.",
+        "This master TGRAC layer contains a known invalid Dornakal polygon; any repair was only in-memory for diagnostic comparison and is not the retained source geometry.",
+        "A similarity/difference calculation is not proof of statutory boundary correctness and does not resolve the Telangana geometry-family disagreement."
+      ],
+      "plannedUse": "Cross-source forensic comparison only; independently adjudicate every discrepancy against primary legal extents and the source custodian before acceptance."
     }
   ],
   "unresolvedGates": [
@@ -2666,6 +2781,44 @@
         }
       },
       "overallW0215StageBAcceptance": "NOT_ACCEPTED; DELHI SLICE ONLY; NATIONAL CROSSWALK STILL OPEN"
+    },
+    {
+      "runId": 40329997952,
+      "workflowUrl": "https://github.com/kshetra-app/Kshetra/actions/runs/40329997952",
+      "status": "CANDIDATE_SNAPSHOT_ACQUIRED_AND_AUDITED_NOT_CANONICAL",
+      "branch": "cto/w0215-stage-b-evidence-20261025",
+      "sourceRepo": "https://github.com/Marma-Fintech-Organization/india-electoral-boundaries.git",
+      "sourceCommit": "3e4e9f347b260040278c36f563fb2efa28e2a476",
+      "sourceTreeSha": "50d978efe1ff2d4cf450147967f2168994d5b84f",
+      "artifactId": 12653752333,
+      "artifactName": "w0215-national-ac-candidate-audit-40329997952",
+      "artifactBytes": 23156794,
+      "artifactSha256": "sha256:2a004f0e2bca4bc937a016b2e4f2699123beac3ab6d1945e60a6fc4211bb3830",
+      "sourceFiles": 4129,
+      "stateCodeCount": 36,
+      "invalidGeometryCount": 65,
+      "unresolvedSourceCount": 4129,
+      "overlapPairsOver1m2": 154,
+      "tgracStatus": "DOWNLOADED_HASHED_OFFICIAL_GIS_CANDIDATE",
+      "outputs": {
+        "snapshot": {
+          "path": "data/evidence/w021_5/national_candidate_boundaries/india_electoral_boundaries_source_snapshot.tar.gz",
+          "bytes": 18551699,
+          "sha256": "ba58ce09b5722daf464b4f827cff06423da39b2d421e326b02e5cb40b4043035"
+        },
+        "audit": {
+          "path": "data/evidence/w021_5/national_candidate_boundaries/candidate_geometry_audit.json",
+          "bytes": 206073,
+          "sha256": "db681fcc0a0ff7d06882ad6e9165aae60d8e4b9463111f4fc47bf97f67589da1"
+        },
+        "inventory": {
+          "path": "data/evidence/w021_5/national_candidate_boundaries/source_file_inventory.json.gz",
+          "bytes": 510309,
+          "uncompressedBytes": 3751887,
+          "sha256": "9ed6003316ebd47a713a5e9d3bb9dfc5e6bc4917458b62783dc628899c46df36"
+        }
+      },
+      "disposition": "NOT_OFFICIAL_NOT_CANONICAL; candidate forensic comparison only"
     }
   ],
   "updatedAt": "2026-10-26",
@@ -2687,7 +2840,8 @@
     "Enhanced ECI PDF retrieval used a persistent Chrome-impersonated session, homepage-cookie attempt, three URL variants and browser headers; all returned HTTP 406 with 1,035-byte HTML bodies. The legal PDF remains readable through the web PDF reader, but its binary bytes/hash are unavailable from this acquisition route.",
     "Evidence-only branch created from master to isolate W021.5 Stage B source research, legal acquisition, and geometry-probe evidence from the broader PR #25 implementation.",
     "Additional 2026-10-26 official-source exploration: official ECI 2008-order catalogue plus IndiaCode index reviewed; 2008 Order binary still blocked/unacquired. Official 2023 Gazette recital identifies the original publication as S.O.382(E), 19 February 2008, which is a stronger exact-issue search key but not the 2008 Gazette itself. India Post manual indexed text describes local postal-map/delivery-beat-list books prepared by postmasters; direct PDF URL returned 404 in this session, so no hash or bytes claimed. NIC Bharat Maps identified as national GIS custodian route but no public AC layer was verified. Esri India identifies an AC-boundary commercial dataset sourced from ECI, but licence/data bytes/version were not acquired. CEO Delhi offers AC/PC maps and polling-location GIS, but is a jurisdiction-only candidate.",
-    "2026-10-26 audit reconciliation: found internal inconsistency between reports/w021_5_official_gazette_inventory.json (S.O.383(E)/S.O.453(E)) and the S.O.382(E) references in the 2008 legal dossier / Gazette recital discovery. Keep all as conflicting references pending original Gazette/ECI binary verification rather than choosing one from secondary internal text. Also flagged reports/w021_5_india_post_geography_assessment.json custodianStatus.inquiryLogged/finding: no custodian-issued response or sent-request receipt is present in the evidence inventory; this is not an independently verified Department of Posts statement."
+    "2026-10-26 audit reconciliation: found internal inconsistency between reports/w021_5_official_gazette_inventory.json (S.O.383(E)/S.O.453(E)) and the S.O.382(E) references in the 2008 legal dossier / Gazette recital discovery. Keep all as conflicting references pending original Gazette/ECI binary verification rather than choosing one from secondary internal text. Also flagged reports/w021_5_india_post_geography_assessment.json custodianStatus.inquiryLogged/finding: no custodian-issued response or sent-request receipt is present in the evidence inventory; this is not an independently verified Department of Posts statement.",
+    "2026-10-26 pinned nationwide non-official AC boundary candidate acquired and audited in workflow run 40329997952. Public upstream commit 3e4e9f347b260040278c36f563fb2efa28e2a476 contains 4129 per-AC GeoJSON files across 36 state/UT codes. Audit found 65 invalid geometries, 4129 files with unresolved/TBD provenance and 154 valid-polygon positive-area overlap pairs over 1 m². Candidate snapshot and per-file raw hashes are durable only on evidence branch cto/w0215-stage-b-evidence-20261025 at commit 32dc58769af29b2e8233db87873824b548836cf6. This is a non-official candidate, not national canonical geometry."
   ],
   "secondaryGeometryAudit": {
     "sourceRepository": "https://github.com/saisantoshv3/assemnbly_gis_files",
@@ -2729,7 +2883,7 @@
     ],
     "acceptedAsCanonical": false
   },
-  "lastDecision": "A genuine evidence milestone is now durable: the official CEO Delhi index and all 70 linked 2024 AC polling-station tables were acquired, hashed, independently validated and archived on evidence branch commit 0ac13e0312035c8b5374750dc5cefdab91427a81. The derived crosswalk contains 14,947 unique AC/station pairs; zero pages failed and zero per-row source hash links mismatched. Raw HTML archive (2,831,391 bytes, SHA-256 b24fe2ff24981289f2588a7c3188e5557ecd32348b861119c74728a3e68735f5), normalized crosswalk gzip (494,591 bytes, SHA-256 f4ab4319b5809e8946a53219980623f544983c80bd80733288a7321766af5368), uncompressed JSON (13,760,029 bytes, SHA-256 d4d882a8abae8136b8f25f4e2a0a2ae08eb3e48a12d0d81b7c731c5b2a5602fa) and per-AC source manifest are recorded. This closes only the Delhi slice; nationwide EB-05 remains open and no national canonical AC geometry is accepted. Exact 2008 order/Gazette issue, AP Gazette counterpart, national legal chain, remaining CEO polling crosswalks, national geometry validation and India Post delivery-beat evidence remain open.",
+  "lastDecision": "A pinned third-party nationwide AC GeoJSON snapshot has now been acquired and independently audited as a candidate only: upstream commit 3e4e9f347b260040278c36f563fb2efa28e2a476, 4129 files across 36 state/UT codes; 65 invalid polygons, 4129 unresolved/TBD source-attribution records, and 154 positive-area overlap pairs >1 m². The full source snapshot, per-file hashes/Git blobs, audit report and a raw TGRAC comparator response (if successful) are archived on the evidence-only branch. It is expressly not official and is rejected for canonical use. Delhi's 70/70 polling-station slice is accepted only as a jurisdictional evidence slice; nationwide EB-05 remains open. Gazette, original 2008 Order, national legal geometry and India Post delivery-beat evidence remain unresolved.",
   "latestRouteAdjudication": {
     "recordedAt": "2026-10-26",
     "reportPath": "reports/w021_5_stage_b_evidence_route_adjudication_2026-10-26.md",
