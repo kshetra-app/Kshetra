@@ -42,19 +42,11 @@ describe('userAuth decision branches: explicit harness, bearer validation and fa
 
   it('accepts header identity only in explicit harness and sanitizes header roles', async () => {
     expect(isExplicitTestHarnessActive()).toBe(true);
-    const accepted = await app.inject({
-      method: 'GET',
-      url: '/auth-probe',
-      headers: { 'x-user-id': ' fixture-user ', 'x-test-role': ' ADMIN ' },
-    });
+    const accepted = await app.inject({ method: 'GET', url: '/auth-probe', headers: { 'x-user-id': ' fixture-user ', 'x-test-role': ' ADMIN ' } });
     expect(accepted.statusCode).toBe(200);
     expect(JSON.parse(accepted.payload)).toMatchObject({ authenticated: true, userId: 'fixture-user', role: 'admin' });
 
-    const unknownRole = await app.inject({
-      method: 'GET',
-      url: '/auth-probe',
-      headers: { 'x-user-id': 'fixture-user', 'x-user-role': 'owner' },
-    });
+    const unknownRole = await app.inject({ method: 'GET', url: '/auth-probe', headers: { 'x-user-id': 'fixture-user', 'x-user-role': 'owner' } });
     expect(JSON.parse(unknownRole.payload).role).toBe('citizen');
 
     process.env.TEST_HARNESS_ACTIVE = 'false';
@@ -64,11 +56,12 @@ describe('userAuth decision branches: explicit harness, bearer validation and fa
   });
 
   it('rejects malformed and empty bearer credentials before provider lookup', async () => {
+    const getUserSpy = jest.spyOn(supabase.auth, 'getUser');
     for (const authorization of ['Basic token', 'Bearer ', 'Bearer invalid-token', 'Bearer expired-token']) {
       const response = await app.inject({ method: 'GET', url: '/auth-probe', headers: { authorization } });
       expect(response.statusCode).toBe(401);
     }
-    expect(supabase.auth.getUser).not.toHaveBeenCalled();
+    expect(getUserSpy).not.toHaveBeenCalled();
   });
 
   it('validates test tokens, sanitizes roles, rejects null identity and fails closed on validator exceptions', async () => {
@@ -113,8 +106,6 @@ describe('userAuth decision branches: explicit harness, bearer validation and fa
     expect(extractAuthoritativeRole({ app_metadata: { role: ' ADMIN ' } })).toBe('admin');
     expect(extractAuthoritativeRole({ app_metadata: { role: 7 } })).toBe('citizen');
 
-    const reply = app.inject; // Keep this assertion focused on the exported pure identity guard.
-    expect(typeof reply).toBe('function');
     const fakeReply: any = { code: jest.fn().mockReturnThis(), status: jest.fn().mockReturnThis(), send: jest.fn().mockReturnThis() };
     const fakeRequest: any = { id: 'request-1', log: { error: jest.fn() } };
     expect(assertActingUserMatch(fakeReply, fakeRequest, 'user-1', undefined)).toBe(true);
