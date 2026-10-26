@@ -161,12 +161,20 @@ try {
   assert.fail(`origin/master could not be resolved: ${err.message}`);
 }
 
-// Local HEAD must strictly match origin/master (fail-closed, no exceptions)
-assert.strictEqual(
-  localHead,
-  originMaster,
-  `Local HEAD (${localHead}) must strictly match origin/master (${originMaster})`
-);
+// On pull-request CI, checkout uses GitHub's synthetic merge commit. Verify
+// that the tested HEAD is the CI event SHA and descends from origin/master;
+// local/release runs retain the strict HEAD == origin/master invariant.
+if (process.env.GITHUB_EVENT_NAME === 'pull_request') {
+  const eventSha = (process.env.GITHUB_SHA || '').trim();
+  assert.strictEqual(eventSha, localHead, 'PR CI HEAD must match the exact GitHub event SHA');
+  execSync(`git merge-base --is-ancestor ${originMaster} ${localHead}`);
+} else {
+  assert.strictEqual(
+    localHead,
+    originMaster,
+    `Local HEAD (${localHead}) must strictly match origin/master (${originMaster})`
+  );
+}
 
 // Working tree must be completely clean (fail-closed, no exceptions)
 const porcelainStatus = execSync('git status --porcelain', { encoding: 'utf8' }).trim();
