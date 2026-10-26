@@ -1,0 +1,75 @@
+name: W021.5 Focused Exact Gazette Candidate Probe
+
+on:
+  push:
+    branches:
+      - cto/w0215-stage-b-evidence-20261025
+    paths:
+      - "scripts/probe_w0215_exact_gazette_candidates.py"
+      - ".github/workflows/w0215-exact-gazette-candidate-probe.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: w0215-exact-gazette-candidate-probe
+  cancel-in-progress: false
+
+jobs:
+  probe:
+    name: Fetch exact Gazette candidates and verify printed metadata
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - name: Checkout authorized evidence-only branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: true
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install pinned PDF and HTTP parsers
+        run: python -m pip install --disable-pip-version-check "requests==2.32.5" "PyMuPDF==1.26.5"
+      - name: Probe exact legal identifiers and observed official Gazette URLs
+        id: probe
+        continue-on-error: true
+        run: |
+          python -m py_compile scripts/probe_w0215_exact_gazette_candidates.py
+          python scripts/probe_w0215_exact_gazette_candidates.py
+      - name: Upload manifest, source hashes and matched candidate bytes
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: w0215-exact-gazette-candidates-${{ github.run_id }}
+          path: stage_b_exact_gazette_probe/
+          if-no-files-found: warn
+          retention-days: 30
+      - name: Persist raw candidate bytes and manifests to evidence-only branch
+        if: steps.probe.outcome == 'success'
+        env:
+          BRANCH_NAME: ${{ github.ref_name }}
+        run: |
+          set -eu
+          test "$GITHUB_REF" = "refs/heads/cto/w0215-stage-b-evidence-20261025"
+          test -s stage_b_exact_gazette_probe/manifest.json
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          mkdir -p data/evidence/w021_5/exact_gazette_candidates
+          cp -R stage_b_exact_gazette_probe/. data/evidence/w021_5/exact_gazette_candidates/
+          git add data/evidence/w021_5/exact_gazette_candidates/
+          if git diff --cached --quiet; then
+            echo "Exact Gazette candidate evidence unchanged."
+          else
+            git commit -m "evidence(w0215): preserve exact Gazette candidate findings"
+            git fetch origin "$BRANCH_NAME"
+            git rebase "origin/$BRANCH_NAME"
+            git push origin "HEAD:$BRANCH_NAME"
+          fi
+      - name: Enforce successful probe execution without overclaiming source acceptance
+        if: steps.probe.outcome != 'success'
+        run: |
+          echo "Focused Gazette probe failed to execute; inspect the uploaded raw manifest and job log."
+          exit 1
