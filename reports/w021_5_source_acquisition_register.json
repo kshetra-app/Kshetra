@@ -5,7 +5,7 @@
   "baselineCommit": "33945d20f318ae1aa0d9aba35052246599c5bbae",
   "branch": "cto/w0215-stage-b-evidence-20261025",
   "createdAt": "2026-10-25",
-  "retrievalMethod": "Web discovery plus repository connector review. A discovered page is not equivalent to a downloaded, hashed source artifact. Additional official TGRAC service discovery and raw-geometry probe executed 2026-10-26 through a read-only GitHub Actions workflow. Expanded TGRAC service-family probe completed 2026-10-26; duplicate/near-duplicate candidate responses are recorded separately and not counted as independent corroboration.",
+  "retrievalMethod": "Web discovery plus repository connector review. A discovered page is not equivalent to a downloaded, hashed source artifact. Additional official TGRAC service discovery and raw-geometry probe executed 2026-10-26 through a read-only GitHub Actions workflow. Expanded TGRAC service-family probe completed 2026-10-26; duplicate/near-duplicate candidate responses are recorded separately and not counted as independent corroboration. Legal source acquisition run 40260777545 acquired and hashed the APSeeds-hosted AP Reorganisation Act copy and two official PIB HTML variants; the exact ECI 2018 notification returned HTTP 406 and the CEO/ECI PDFs timed out. Hashes are assigned only to actual source bytes, never to error pages as if they were documents.",
   "rules": {
     "hashPolicy": "SHA-256 must be computed over exact downloaded bytes; never use a Git blob SHA as a file SHA-256.",
     "authorityPolicy": "Government sources are primary only for the specific subject they publish. Community GIS is candidate/secondary data until reconciled to primary source.",
@@ -996,9 +996,9 @@
       "retrievedAt": "2026-10-25",
       "format": "PDF",
       "authority": "PRIMARY_OFFICIAL_LEGAL_SOURCE",
-      "status": "DOWNLOADED_HASHED_GOVERNMENT_HOSTED_GAZETTE_COPY; STATUTORY_ROSTER_PARSE_WORKFLOW_ADDED",
-      "sha256": "84cd566b917f9a3f600c47f6540520c950166b424a964ad37d64dc3c968114aa",
-      "fileBytes": 231596,
+      "status": "INDIACODE_URL_NOT_ACQUIRED; ALTERNATE_AP_GOVERNMENT_COPY_ACQUIRED_AS_SEPARATE_SOURCE",
+      "sha256": null,
+      "fileBytes": null,
       "version": "Act No. 6 of 2014",
       "limitations": [
         "Must be reconciled with the 2008 order and later ECI notifications/Gazette instruments.",
@@ -1019,7 +1019,7 @@
       },
       "nextProbe": "workflow run 40218632258 — retries government-hosted Gazette copy from APSeeds/TGERC first; IndiaCode and ECI press note are fallback/corroborative candidates.",
       "selectedUrl": "https://apseeds.ap.gov.in/PDF/apreorg/APRegACT2014.pdf",
-      "pdfPageCount": 71,
+      "pdfPageCount": null,
       "evidenceReport": "reports/evidence/w021_5_ap_reorganisation_act_acquisition_40218632258.json",
       "sourceAuthority": "GAZETTE_OF_INDIA_COPY_HOSTED_ON_AP_GOVERNMENT_DOMAIN",
       "canonicalByteIdentityComparedToIndiaCode": false,
@@ -1051,17 +1051,25 @@
         "crosswalkJsonSha256": "c30e088eae279b9c2e9d71106e00f638f13a25ec3ff3b062ef874e14dd1a4ac6",
         "summary": "119/119 matched by 107 exact + 12 inferred aliases in Admin_2026; 108 exact + 11 inferred aliases in older AdministrativeInfoSystem; zero unresolved after aliases."
       },
-      "crosswalkReport": "reports/evidence/w021_5_telanganaschedule_tgrac_name_crosswalk_40219308671.json"
+      "crosswalkReport": "reports/evidence/w021_5_telanganaschedule_tgrac_name_crosswalk_40219308671.json",
+      "provenanceCorrection": {
+        "correctedAt": "2026-10-26",
+        "reason": "The previously recorded hash belongs to the APSeeds-hosted copy, not bytes fetched from the IndiaCode URL. The source identity and hash must not be conflated.",
+        "actualDownloadedSourceId": "SRC-APSEEDS-AP-REORG-2014",
+        "actualDownloadedUrl": "https://apseeds.ap.gov.in/PDF/apreorg/APRegACT2014.pdf",
+        "actualDownloadedSha256": "84cd566b917f9a3f600c47f6540520c950166b424a964ad37d64dc3c968114aa",
+        "status": "IndiaCode bytes remain unacquired; APSeeds copy is independently recorded and hashed."
+      }
     },
     {
       "sourceId": "SRC-ECI-GE-2024-PRESS-NOTE-23",
       "subject": "Official ECI press note confirming delimitation basis and AP/Telangana constituency counts",
       "publisher": "Election Commission of India",
       "url": "https://elections24.eci.gov.in/docs/press-note-no-23.pdf",
-      "retrievedAt": "2026-10-25",
+      "retrievedAt": "2026-10-26",
       "format": "PDF",
       "authority": "PRIMARY_OFFICIAL_CORROBORATIVE_SOURCE",
-      "status": "ACQUISITION_WORKFLOW_ADDED_PENDING_RESULT",
+      "status": "NO_BYTES_ACQUIRED_TIMEOUT",
       "sha256": null,
       "fileBytes": null,
       "version": "General Elections 2024 Press Note No. 23",
@@ -1069,42 +1077,74 @@
         "Corroborative election administration evidence; not a replacement for the legal order or 2018 notification.",
         "PDF acquisition/hash pending workflow evidence."
       ],
-      "plannedUse": "Corroborate current legal regime references and AP/Telangana seat totals."
+      "plannedUse": "Corroborate current legal regime references and AP/Telangana seat totals.",
+      "lastProbe": {
+        "workflowRunId": 40260777545,
+        "workflowUrl": "https://github.com/kshetra-app/Kshetra/actions/runs/40260777545",
+        "timeoutSeconds": 25,
+        "documentBytesAcquired": false
+      }
     },
     {
       "sourceId": "SRC-ECI-NOTIFICATION-282-AP-2018-DEL",
       "subject": "ECI Notification No. 282/AP/2018(DEL), dated 22 September 2018, concerning AP/Telangana constituency allocation and legal chain",
       "publisher": "Election Commission of India",
       "url": "https://www.eci.gov.in/eci-backend/public/api/download?url=LMAhAK6sOPBp%2FNFF0iRfXbEB1EVSLT41NNLRjYNJJP1KivrUxbfqkDatmHy12e%2FzVx8fLfn2ReU7TfrqYobgIsVIzE4H7zCkL60TDPfde3hSidsZ4fuGUaZAjsPMK3mFe%2FOayCb%2Bc1mgC3WIErfdO%2BA072J7HtGm2kYfstpL5XIZTWrH2JWU7UfZrKWF1BUsH9xccKER%2BJMZVGi7SrzX57%2FMm24zs1eyK2AB5zsjcWKzrILRQG%2FBbbQ%2Fx5bNYVaCn7kX4xoHNibbBVAsqukcOQ%3D%3D",
-      "retrievedAt": "2026-10-25",
+      "retrievedAt": "2026-10-26",
       "format": "ECI official backend download endpoint",
       "authority": "PRIMARY_OFFICIAL_SOURCE",
-      "status": "OFFICIAL_TEXT_DISCOVERED_BINARY_FETCH_FAILED_HTTP_406",
+      "status": "OFFICIAL_BINARY_HTTP_406_ON_BOTH_HOST_VARIANTS; ERROR_BODY_NOT_SOURCE_DOCUMENT",
       "sha256": null,
       "fileBytes": null,
       "version": "No. 282/AP/2018(DEL), 2018-09-22",
       "limitations": [
         "Official indexed text found through ECI search result; exact binary could not be downloaded (HTTP 406).",
-        "Do not claim binary SHA-256 or close Gazette authenticity/effective-date gates based on search-rendered text."
+        "Do not claim binary SHA-256 or close Gazette authenticity/effective-date gates based on search-rendered text.",
+        "Run 40260777545 retried the exact official API endpoint on both www and bare host; both returned the same HTTP 406 error body. No source-document SHA-256 is available."
       ],
-      "plannedUse": "Resolve statutory crosswalk and legal effective-date chain once exact notification/Gazette bytes or custodian-certified copy is obtained."
+      "plannedUse": "Resolve statutory crosswalk and legal effective-date chain once exact notification/Gazette bytes or custodian-certified copy is obtained.",
+      "lastProbe": {
+        "workflowRunId": 40260777545,
+        "workflowUrl": "https://github.com/kshetra-app/Kshetra/actions/runs/40260777545",
+        "attempts": [
+          {
+            "host": "www.eci.gov.in",
+            "status": 406,
+            "errorBodyBytes": 1035,
+            "errorBodySha256": "8f14ef818fea5334fa7bc2ed40e6808c3227dc36a413fb67f326d1591e03675a"
+          },
+          {
+            "host": "eci.gov.in",
+            "status": 406,
+            "errorBodyBytes": 1035,
+            "errorBodySha256": "8f14ef818fea5334fa7bc2ed40e6808c3227dc36a413fb67f326d1591e03675a"
+          }
+        ],
+        "documentBytesAcquired": false
+      }
     },
     {
       "sourceId": "SRC-INDIACODE-AP-REMOVAL-DIFFICULTIES-ORDERS",
       "subject": "Andhra Pradesh Reorganisation (Removal of Difficulties) First, Second and Third Orders",
       "publisher": "India Code, Government of India",
       "url": "https://upload.indiacode.nic.in/showfile?actid=AC_CEN_5_5_00058_201406_1517807327989&filename=Andhra+Pradesh+Reorganisation+%28Removal+of+Difficulties%29+First%2C+Second+and+Third+Order.pdf&type=order",
-      "retrievedAt": "2026-10-25",
+      "retrievedAt": "2026-10-26",
       "format": "PDF",
       "authority": "PRIMARY_OFFICIAL_LEGAL_SOURCE_CANDIDATE",
-      "status": "ACQUISITION_WORKFLOW_ADDED_OPTIONAL_PENDING_RESULT",
+      "status": "NO_BYTES_ACQUIRED_TIMEOUT",
       "sha256": null,
       "fileBytes": null,
       "limitations": [
         "Applicability to Assembly Constituency extent must be established from the document text.",
         "Not accepted as a direct AC-boundary source."
       ],
-      "plannedUse": "Check the post-2014 legal chain for any instrument relevant to AP/Telangana geography and distinguish AC from Legislative Council delimitation."
+      "plannedUse": "Check the post-2014 legal chain for any instrument relevant to AP/Telangana geography and distinguish AC from Legislative Council delimitation.",
+      "lastProbe": {
+        "workflowRunId": 40260777545,
+        "workflowUrl": "https://github.com/kshetra-app/Kshetra/actions/runs/40260777545",
+        "timeoutSeconds": 25,
+        "documentBytesAcquired": false
+      }
     },
     {
       "sourceId": "SRC-BIHAR-BEGIS-ASSEMBLY-AND-PIN-LAYERS",
@@ -1186,12 +1226,24 @@
       "publisher": "Chief Electoral Officer, Telangana",
       "url": "https://ceotelangana.nic.in/HOP-2024/11301_25-%20Ge%20to%20the%20HoP%202024-%20Schedule%20of%20Election_11zon.pdf",
       "sourceAuthority": "PRIMARY_STATE_ELECTION_OFFICE_CORROBORATIVE_PDF",
-      "status": "OFFICIAL_SOURCE_DISCOVERED_WEB_INDEXED_RAW_BYTES_NOT_YET_ACQUIRED",
+      "status": "NO_BYTES_ACQUIRED_TIMEOUT_ON_BOTH_OFFICIAL_URL_VARIANTS",
       "sha256": null,
       "fileBytes": null,
       "limitations": [
         "This is a 2024 election schedule, not the full 2018 notification itself.",
         "Must be downloaded and hashed before treating it as acquired source bytes."
+      ],
+      "retrievedAt": "2026-10-26",
+      "lastProbe": {
+        "workflowRunId": 40260777545,
+        "workflowUrl": "https://github.com/kshetra-app/Kshetra/actions/runs/40260777545",
+        "attempts": 2,
+        "eachTimeoutSeconds": 25,
+        "selectedBytes": false
+      },
+      "alternativeUrlCandidates": [
+        "https://ceotelangana.nic.in/HOP-2024/11301_25-%20Ge%20to%20the%20HoP%202024-%20Schedule%20of%20Election_11zon.pdf",
+        "https://ceotelangana.nic.in/HOP-2024/11301_25-%20Ge%20to%20the%20HoP%202024-%20Schedule%20of%20Election.pdf"
       ]
     },
     {
@@ -1200,12 +1252,39 @@
       "publisher": "Press Information Bureau, Government of India",
       "url": "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2015227&lang=2&reg=48",
       "sourceAuthority": "PRIMARY_GOVERNMENT_PRESS_RELEASE",
-      "status": "OFFICIAL_HTML_SOURCE_DISCOVERED_WEB_INDEXED_RAW_BYTES_NOT_YET_ACQUIRED",
+      "status": "OFFICIAL_HTML_DOWNLOADED_HASHED; CORROBORATIVE_ONLY",
       "sha256": null,
       "fileBytes": null,
       "limitations": [
         "Corroborative press release, not a substitute for the Gazette/ECI notification."
-      ]
+      ],
+      "retrievedAt": "2026-10-26",
+      "downloadedVariants": [
+        {
+          "sourceId": "PIB_AP_TELANGANA_DELIMITATION_LEGAL_CHAIN",
+          "url": "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2015227&lang=2&reg=48",
+          "httpStatus": 200,
+          "rawBytes": 1211607,
+          "rawSha256": "4eef52437040ca8f083d9c839e65a4a431f85e0fb5d437c8a1fb89b272eb4066",
+          "textBytes": 255420,
+          "textSha256": "7da8c4a644191375567f638e9edfd6d88b88de9cd4f976fc84d06ba164c2da43",
+          "termsAllPresent": true
+        },
+        {
+          "sourceId": "PIB_AP_TELANGANA_DELIMITATION_LEGAL_CHAIN_IFRAME",
+          "url": "https://www.pib.gov.in/PressReleaseIframePage.aspx?PRID=2015227&lang=2&reg=48",
+          "httpStatus": 200,
+          "rawBytes": 1212709,
+          "rawSha256": "fc43efff8bc9d341cff190d5135ea1825ce484f92a896ef0353c99a388e00bf6",
+          "textBytes": 256873,
+          "textSha256": "9154b8e3036401ad80a40680e3642d44380ba635971b3ea6790b00f492a8ef73",
+          "termsAllPresent": true
+        }
+      ],
+      "workflowRunId": 40260777545,
+      "workflowUrl": "https://github.com/kshetra-app/Kshetra/actions/runs/40260777545",
+      "artifactId": 12623479706,
+      "artifactSha256": "db87f8074cac8039c8302f5ed7d2c1a806e411a79e8c1340879aa9fec3db9c9f"
     },
     {
       "sourceId": "SRC-TGRAC-MASTER-AC-2026-10-26",
@@ -1336,6 +1415,41 @@
         "Dornakal self-intersection remains."
       ],
       "plannedUse": "Retain as a duplicate/near-duplicate comparison candidate only; do not promote as canonical."
+    },
+    {
+      "sourceId": "SRC-APSEEDS-AP-REORG-2014",
+      "subject": "Andhra Pradesh Reorganisation Act, 2014 (Act No. 6 of 2014), Schedule XXVII — Telangana Table A",
+      "publisher": "Government of Andhra Pradesh-hosted copy of Gazette/Act",
+      "url": "https://apseeds.ap.gov.in/PDF/apreorg/APRegACT2014.pdf",
+      "retrievedAt": "2026-10-26",
+      "format": "PDF",
+      "authority": "GOVERNMENT_HOSTED_LEGAL_COPY",
+      "status": "DOWNLOADED_HASHED_PDF; STATUTORY_ROSTER_PARSE_PASS; NOT_CANONICAL_BYTE_IDENTITY_VERIFIED",
+      "sha256": "84cd566b917f9a3f600c47f6540520c950166b424a964ad37d64dc3c968114aa",
+      "fileBytes": 231596,
+      "pdfPageCount": 71,
+      "sourceAuthority": "GAZETTE_OF_INDIA_COPY_HOSTED_ON_AP_GOVERNMENT_DOMAIN",
+      "canonicalByteIdentityComparedToIndiaCode": false,
+      "evidenceReport": "reports/evidence/w021_5_legal_crosswalk_source_probe_40260777545.json",
+      "workflowRunId": 40260777545,
+      "workflowUrl": "https://github.com/kshetra-app/Kshetra/actions/runs/40260777545",
+      "artifactId": 12623479706,
+      "artifactSha256": "db87f8074cac8039c8302f5ed7d2c1a806e411a79e8c1340879aa9fec3db9c9f",
+      "rosterParse": {
+        "pathInsideArtifact": "stage_b_legal_crosswalk/telangana_statutory_ac_roster.json",
+        "sha256": "2be8b75f595a80b089a6d88337e3b51951aaeae185c40de143b99b6642e55350",
+        "parsedCount": 119,
+        "sequencePass": true,
+        "districtCount": 10,
+        "semanticChecksPass": 7,
+        "status": "PASS"
+      },
+      "limitations": [
+        "This is a government-hosted copy, not a certified physical Gazette copy.",
+        "Its byte identity with the IndiaCode-hosted PDF is not established.",
+        "It establishes a 119-row statutory roster but does not validate AC polygons or close EB-01/EB-02."
+      ],
+      "plannedUse": "Statutory name/extent reference for Schedule XXVII and source for a candidate name crosswalk; retain provenance and do not treat as authenticated physical Gazette."
     }
   ],
   "unresolvedGates": [
