@@ -721,7 +721,7 @@ function validateEvidenceMatrix({ directory, manifest, seedNames }) {
 
   for (const entry of manifestEntries) {
     const doc = entry.referenceDocument || '';
-    if (!doc.includes('Delimitation Order 2008') && !doc.includes('Delimitation of Parliamentary and Assembly Constituencies Order, 2008')) {
+    if (!doc.includes('Andhra Pradesh Reorganisation Act, 2014') && !doc.includes('Delimitation Order 2008') && !doc.includes('Delimitation of Parliamentary and Assembly Constituencies Order, 2008')) {
       sourceResolutionPassed = false;
       results.errors.push(`PIN ${entry.pinCode} references unrecognized or nonexistent document: '${doc}'`);
     }
@@ -936,15 +936,15 @@ function validateEvidenceMatrix({ directory, manifest, seedNames }) {
       results.errors.push(`PIN ${entry.pinCode} propositionSupported is '${entry.propositionSupported}', expected '${expectedProposition}'`);
     }
 
-    // State code vs Schedule concordance: TS must cite Schedule XXXI, AP must cite Schedule II
+    // Successor-state schedule concordance: TS must cite Schedule XXVII/Table A; AP must cite Schedule III/Table A
     const locator = entry.sourceLocator || '';
-    if (entry.stateCode === 'TS' && locator.includes('Schedule II')) {
+    if (entry.stateCode === 'TS' && locator.includes('Schedule III')) {
       claimSupportPassed = false;
-      results.errors.push(`PIN ${entry.pinCode} (state TS) cites Andhra Pradesh Schedule II locator instead of Telangana Schedule XXXI`);
+      results.errors.push(`PIN ${entry.pinCode} (state TS) cites Andhra Pradesh Schedule III locator instead of Telangana Schedule XXVII`);
     }
-    if (entry.stateCode === 'AP' && locator.includes('Schedule XXXI')) {
+    if (entry.stateCode === 'AP' && locator.includes('Schedule XXVII')) {
       claimSupportPassed = false;
-      results.errors.push(`PIN ${entry.pinCode} (state AP) cites Telangana Schedule XXXI locator instead of Andhra Pradesh Schedule II`);
+      results.errors.push(`PIN ${entry.pinCode} (state AP) cites Telangana Schedule XXVII locator instead of Andhra Pradesh Schedule III`);
     }
 
     // Spatial containment must not be claimed because statutory orders define administrative units, not postal delivery beats
@@ -1005,13 +1005,13 @@ function validateEvidenceMatrix({ directory, manifest, seedNames }) {
               results.errors.push(`PIN ${entry.pinCode} ${field} does not match verified source extent '${sourceEntry.extent}'`);
             }
             // Passage must not be from a discordant schedule
-            if (entry.stateCode === 'AP' && passage.includes('Schedule XXXI')) {
+            if (entry.stateCode === 'AP' && passage.includes('Schedule XXVII')) {
               claimSupportPassed = false;
-              results.errors.push(`PIN ${entry.pinCode} (state AP) presents passage extract from Schedule XXXI (TS)`);
+              results.errors.push(`PIN ${entry.pinCode} (state AP) presents passage extract from Schedule XXVII (TS)`);
             }
-            if (entry.stateCode === 'TS' && passage.includes('Schedule II')) {
+            if (entry.stateCode === 'TS' && passage.includes('Schedule III')) {
               claimSupportPassed = false;
-              results.errors.push(`PIN ${entry.pinCode} (state TS) presents passage extract from Schedule II (AP)`);
+              results.errors.push(`PIN ${entry.pinCode} (state TS) presents passage extract from Schedule III (AP)`);
             }
             // Workstream D.6: Passage must not make unsupported postal-geography assertions
             if (/postal delivery beat (is )?wholly contained|spatial containment verified/i.test(passage)) {
