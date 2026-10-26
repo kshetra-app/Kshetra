@@ -1053,7 +1053,7 @@ describe('CTO Directive 123 — Residual Electoral Data-Truth & Provisional Look
       const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
       const seedNames = validatorModule.parseSeedConstituencyNames();
 
-      const corruptEntries = manifest.entries.map((e: any) => e.pinCode === '500002' ? { ...e, referenceDocumentPath: 'data/evidence/w015_b2/eci_delimitation_2008_schedule_xxxi.txt', sourceLocator: 'Schedule XXXI, Table B, Entry 999 (Nonexistent)' } : e);
+      const corruptEntries = manifest.entries.map((e: any) => e.pinCode === '500002' ? { ...e, referenceDocumentPath: 'data/evidence/w021_5/authoritative/ap_reorganisation_act_2014_schedule_xxvii_telangana_table_a_extract.txt', sourceLocator: 'Schedule XXVII, Table A, Entry 999 (Nonexistent)' } : e);
       const corruptManifest = { ...manifest, entries: corruptEntries };
       const validation = validatorModule.validateEvidenceMatrix({ directory, manifest: corruptManifest, seedNames });
 
