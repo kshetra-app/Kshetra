@@ -335,7 +335,7 @@ def acquire_one_ac_postback(item: dict, form_state: dict) -> tuple[dict, dict | 
         option_text = options.get(str(ac_no))
         if not option_text:
             raise ValueError(f"AC_OPTION_NOT_PRESENT_IN_OFFICIAL_FORM:{ac_no}")
-        selected_label = re.sub(r"^\\s*\\d+\\s*[-–:]\\s*", "", option_text).strip()
+        selected_label = re.sub(r"^\s*\d+\s*[-–:]\s*", "", option_text).strip()
         if normalized_name(selected_label) != normalized_name(item["acName"]):
             raise ValueError(f"INDEX_DROPDOWN_AC_NAME_MISMATCH:{item['acName']}!={selected_label}")
         post_url = urljoin(form_state["url"], form.get("action") or form_state["url"])
@@ -404,7 +404,7 @@ else:
     observed_dropdown = []
     for ac_no in range(1, 71):
         label = option_map.get(str(ac_no))
-        observed_dropdown.append({"acNo": ac_no, "label": label, "matchesIndex": normalized_name(re.sub(r"^\\s*\\d+\\s*[-–:]\\s*", "", label or "")) == normalized_name(next((x["acName"] for x in selected if x["acNo"] == ac_no), ""))})
+        observed_dropdown.append({"acNo": ac_no, "label": label, "matchesIndex": normalized_name(re.sub(r"^\s*\d+\s*[-–:]\s*", "", label or "")) == normalized_name(next((x["acName"] for x in selected if x["acNo"] == ac_no), ""))})
     manifest["formPostback"] = {
         "status": "OFFICIAL_FORM_DISCOVERED",
         "formUrl": psl_form_state["url"],
