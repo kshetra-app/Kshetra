@@ -5,7 +5,7 @@
   "baselineCommit": "33945d20f318ae1aa0d9aba35052246599c5bbae",
   "branch": "cto/w0215-stage-b-evidence-20261025",
   "createdAt": "2026-10-25",
-  "retrievalMethod": "Web discovery plus repository connector review. A discovered page is not equivalent to a downloaded, hashed source artifact. Additional official TGRAC service discovery and raw-geometry probe executed 2026-10-26 through a read-only GitHub Actions workflow. Expanded TGRAC service-family probe completed 2026-10-26; duplicate/near-duplicate candidate responses are recorded separately and not counted as independent corroboration. Legal source acquisition run 40260777545 acquired and hashed the APSeeds-hosted AP Reorganisation Act copy and two official PIB HTML variants; the exact ECI 2018 notification returned HTTP 406 and the CEO/ECI PDFs timed out. Hashes are assigned only to actual source bytes, never to error pages as if they were documents. Reproducible TGRAC family comparison run 40261390903 succeeded: 8 candidate layers, 28 pairwise comparisons, 3 duplicate raw-response groups; generated report variant_comparison.json SHA-256 76b1565e7b2308c3e4fe1288a7ed198d05d35e65aa8566ddb67d8bcd7ff6bc35 inside artifact ZIP SHA-256 a2752bb4906e33d826fe4e5ce4292c1d46ea5a0f32172937d34c91893ecea3ee.",
+  "retrievalMethod": "Web discovery plus repository connector review. A discovered page is not equivalent to a downloaded, hashed source artifact. Additional official TGRAC service discovery and raw-geometry probe executed 2026-10-26 through a read-only GitHub Actions workflow. Expanded TGRAC service-family probe completed 2026-10-26; duplicate/near-duplicate candidate responses are recorded separately and not counted as independent corroboration. Legal source acquisition run 40260777545 acquired and hashed the APSeeds-hosted AP Reorganisation Act copy and two official PIB HTML variants; the exact ECI 2018 notification returned HTTP 406 and the CEO/ECI PDFs timed out. Hashes are assigned only to actual source bytes, never to error pages as if they were documents. Reproducible TGRAC family comparison run 40261390903 succeeded: 8 candidate layers, 28 pairwise comparisons, 3 duplicate raw-response groups; generated report variant_comparison.json SHA-256 76b1565e7b2308c3e4fe1288a7ed198d05d35e65aa8566ddb67d8bcd7ff6bc35 inside artifact ZIP SHA-256 a2752bb4906e33d826fe4e5ce4292c1d46ea5a0f32172937d34c91893ecea3ee. Supplemental discovery sweep on 2026-10-26 reviewed the ECI publications index, ECI delimitation landing page, IndiaCode-hosted 2008 order URL, India Geodata candidate index and NIC admin2024 GIS metadata. These are recorded as discovery-only unless raw source bytes were actually acquired; no hashes or byte sizes are claimed for page-only leads. Direct IndiaCode download attempt in this session failed; exact URL is queued for a controlled read-only retry.",
   "rules": {
     "hashPolicy": "SHA-256 must be computed over exact downloaded bytes; never use a Git blob SHA as a file SHA-256.",
     "authorityPolicy": "Government sources are primary only for the specific subject they publish. Community GIS is candidate/secondary data until reconciled to primary source.",
@@ -1467,6 +1467,83 @@
         "It establishes a 119-row statutory roster but does not validate AC polygons or close EB-01/EB-02."
       ],
       "plannedUse": "Statutory name/extent reference for Schedule XXVII and source for a candidate name crosswalk; retain provenance and do not treat as authenticated physical Gazette."
+    },
+    {
+      "sourceId": "SRC-INDIACODE-DELIMITATION-ORDER-2008-DISCOVERY-2026-10-26",
+      "subject": "IndiaCode-hosted Delimitation of Parliamentary and Assembly Constituencies Order, 2008 PDF — alternate official-host retrieval lead",
+      "publisher": "IndiaCode / Government of India legal information host",
+      "url": "https://upload.indiacode.nic.in/showfile?actid=AC_CEN_3_20_00030_200233_1517807324510&filename=Delimitation+Order%2C2008.pdf&type=order",
+      "retrievedAt": "2026-10-26",
+      "format": "PDF URL discovered through indexed source metadata; raw binary NOT acquired in supplemental sweep",
+      "authority": "OFFICIAL_HOST_DISCOVERY_ONLY",
+      "status": "DISCOVERY_ONLY_NOT_ACQUIRED",
+      "sha256": null,
+      "fileBytes": null,
+      "version": "2008 order; current applicability must be jurisdiction-specific",
+      "scope": "Potential alternate legal-source byte retrieval for statutory schedules; not a national geometry package",
+      "limitations": [
+        "Search index exposed title/text, but this session's direct download attempt failed.",
+        "No raw PDF bytes or binary SHA-256 acquired in this sweep.",
+        "Not a certified physical Gazette copy; later jurisdiction-specific instruments/corrigenda must be reconciled."
+      ],
+      "retrievalError": "Direct container download attempt failed; indexed page/text is discovery evidence only. Retry exact URL in controlled read-only acquisition workflow and validate PDF bytes.",
+      "plannedUse": "Next bounded retrieval experiment before custodian escalation; do not claim acquired until valid PDF bytes, byte size and SHA-256 are captured."
+    },
+    {
+      "sourceId": "SRC-ECI-PUBLICATIONS-DELIMITATION-INDEX-2026-10-26",
+      "subject": "ECI official publications catalogue and exact links to delimitation PDFs",
+      "publisher": "Election Commission of India",
+      "url": "https://www.eci.gov.in/eci-publication/",
+      "retrievedAt": "2026-10-26",
+      "format": "HTML discovery page with links to PDFs",
+      "authority": "OFFICIAL_LEGAL_SOURCE_INDEX",
+      "status": "DISCOVERY_INDEX_ONLY_RAW_INSTRUMENT_BYTES_NOT_ACQUIRED_IN_THIS_SWEEP",
+      "sha256": null,
+      "fileBytes": null,
+      "scope": "Discovery of the 2008 order and jurisdiction-specific legal publications/corrigenda",
+      "limitations": [
+        "Page listing is not a raw legal instrument.",
+        "Exact PDF link variants and binary bytes must be independently acquired and hashed.",
+        "Each jurisdiction requires its applicable order, amendments/corrigenda and effective-date chain."
+      ],
+      "plannedUse": "Enumerate exact links from the live official page and retry only those URLs; preserve per-URL transport results."
+    },
+    {
+      "sourceId": "SRC-INDIA-GEODATA-AC-INDEX-2026-10-26",
+      "subject": "India Geodata electoral-boundary repository — secondary Assembly Constituency candidate index",
+      "publisher": "India Geodata project (third-party aggregation of ECI/DataMeet-labelled files)",
+      "url": "https://yashveeeeeer.github.io/india-geodata/",
+      "retrievedAt": "2026-10-26",
+      "format": "Web catalogue linking to state-wise shapefile/Parquet/PMTiles/GeoJSONL archives",
+      "authority": "SECONDARY_COMPARISON_SOURCE",
+      "status": "DISCOVERY_ONLY_NOT_ACQUIRED_PER_FILE",
+      "sha256": null,
+      "fileBytes": null,
+      "scope": "National completeness index and discrepancy detection only",
+      "limitations": [
+        "Top-level licence labels do not establish per-file rights or provenance.",
+        "Prior repository review notes some statewise files explicitly pre-2014; advertised 'latest' labels do not establish effective legal vintage.",
+        "No raw per-jurisdiction file acquired or validated in this supplemental sweep."
+      ],
+      "plannedUse": "Use only as a secondary comparison index; pin exact commit, inspect per-file metadata/licence and hash each raw file before comparing against legal and official GIS sources."
+    },
+    {
+      "sourceId": "SRC-NIC-ADMIN2024-GIS-LAYERS-2026-10-26",
+      "subject": "NIC admin2024 administrative GIS service layers",
+      "publisher": "National Informatics Centre GIS service",
+      "url": "https://webgis1.nic.in/nicstreet/rest/services/admin2024/MapServer/layers",
+      "retrievedAt": "2026-10-26",
+      "format": "ArcGIS REST service metadata",
+      "authority": "OFFICIAL_ADMINISTRATIVE_CONTEXT_ONLY",
+      "status": "NOT_ASSEMBLY_CONSTITUENCY_EVIDENCE",
+      "sha256": null,
+      "fileBytes": null,
+      "scope": "State/district administrative context and coverage diagnostics only",
+      "limitations": [
+        "Discovered layer is State Boundary (EPSG:3857), not AC legal geometry.",
+        "Administrative boundaries cannot establish statutory AC extents."
+      ],
+      "plannedUse": "Exclude from AC geometry acceptance unless a distinct AC-specific layer with explicit source lineage is found."
     }
   ],
   "unresolvedGates": [
@@ -1924,7 +2001,7 @@
       "scope": "Repeat four-service Telangana probe after changing the runner to report optional ECI 404/timeouts as warnings while keeping both primary Telangana geometry source checks strict."
     }
   ],
-  "updatedAt": "2026-10-25",
+  "updatedAt": "2026-10-26",
   "notes": [
     "Actual public source artifacts were downloaded in GitHub Actions run 40209022405 and SHA-256 hashed; detailed geometry findings are in reports/w021_5_datameet_ac_geometry_forensic_audit.json.",
     "Survey of India official ABDB page, Vector Data Catalog 2025 PDF and Metadata_ABDB.zip were downloaded and hashed. The metadata covers state, district, subdistrict and village boundaries, not statutory Assembly Constituency polygons.",
@@ -1983,7 +2060,7 @@
     ],
     "acceptedAsCanonical": false
   },
-  "lastDecision": "Statutory roster name crosswalk passed against two TGRAC candidate layers with 12/11 provisional aliases, but no polygon extent acceptance. CEO Telangana's official 2024 schedule and PIB's official HTML are additional legal-chain corroboration candidates; raw bytes/hash still needed.",
+  "lastDecision": "The statutory roster crosswalk and geometry-family probes remain candidate evidence only. Supplemental sweep selected an exact IndiaCode-hosted 2008-order retry plus exact-link enumeration from ECI's official publications page, in parallel with custodian requests and jurisdiction-by-jurisdiction official GIS. IndiaCode PDF raw bytes were not acquired in this sweep; do not claim binary acquisition or hash. Stage B remains PARTIAL / NOT ACCEPTED.",
   "latestRouteAdjudication": {
     "recordedAt": "2026-10-26",
     "reportPath": "reports/w021_5_stage_b_evidence_route_adjudication_2026-10-26.md",
@@ -2046,6 +2123,27 @@
       "EB-06",
       "W021.5-B1-04"
     ],
-    "safety": "No staging/production database access or mutation; no WAF bypass; no inferred polygons."
+    "safety": "No staging/production database access or mutation; no WAF bypass; no inferred polygons.",
+    "supplementalSweep": {
+      "recordedAt": "2026-10-26",
+      "reportPath": "reports/w021_5_stage_b_supplemental_evidence_sweep_2026-10-26.md",
+      "reportCommit": "6a0d3e59aa447595aaec5d3ca9698612297af7fb",
+      "status": "DISCOVERY_SWEEP_RECORDED_NO_NEW_RAW_SOURCE_BYTES_ACQUIRED",
+      "selectedNextRetrieval": "Retry exact IndiaCode-hosted 2008 order URL through read-only acquisition workflow; enumerate exact ECI publication-page PDF links; validate actual PDF bytes and SHA-256.",
+      "newDiscoverySourceIds": [
+        "SRC-INDIACODE-DELIMITATION-ORDER-2008-DISCOVERY-2026-10-26",
+        "SRC-ECI-PUBLICATIONS-DELIMITATION-INDEX-2026-10-26",
+        "SRC-INDIA-GEODATA-AC-INDEX-2026-10-26",
+        "SRC-NIC-ADMIN2024-GIS-LAYERS-2026-10-26"
+      ],
+      "controls": [
+        "No WAF bypass",
+        "No guessed URL patterns",
+        "No hash claim without exact source bytes",
+        "No inferred polygons",
+        "No staging/production database access",
+        "Stage C remains unauthorized"
+      ]
+    }
   }
 }
