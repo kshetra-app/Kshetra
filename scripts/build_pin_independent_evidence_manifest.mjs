@@ -974,13 +974,13 @@ export function buildManifest() {
       }
     } else if (isMultiAc) {
       if (entry.pinCode === '500001') {
-        sourcePassageExtract = `Schedule XXVII, Table A: AC 65 (${tsEntries[65]?.name || 'Goshamahal'}) covers ${tsEntries[65]?.extent || ''}; AC 63 (${tsEntries[63]?.name || 'Nampally'}) covers ${tsEntries[63]?.extent || ''}; AC 58 (${tsEntries[58]?.name || 'Malakpet'}) covers ${tsEntries[58]?.extent || ''}. Hyderabad GPO delivery beat spans across these ward divisions.`;
+        sourcePassageExtract = `Schedule XXVII, Table A: AC 65 (${tsEntries[65]?.name || 'Goshamahal'}) covers ${tsEntries[65]?.extent || ''}; AC 63 (${tsEntries[63]?.name || 'Nampally'}) covers ${tsEntries[63]?.extent || ''}; AC 58 (${tsEntries[58]?.name || 'Malakpet'}) covers ${tsEntries[58]?.extent || ''}. These are statutory candidate extents only; the source does not establish the postal delivery beat's geographic coverage.`;
       } else if (entry.pinCode === '500028') {
-        sourcePassageExtract = `Schedule XXVII, Table A: AC 64 (${tsEntries[64]?.name || 'Karwan'}) covers ${tsEntries[64]?.extent || ''}; AC 63 (${tsEntries[63]?.name || 'Nampally'}) covers ${tsEntries[63]?.extent || ''}. Mehdipatnam delivery beat spans across Karwan and Nampally.`;
+        sourcePassageExtract = `Schedule XXVII, Table A: AC 64 (${tsEntries[64]?.name || 'Karwan'}) covers ${tsEntries[64]?.extent || ''}; AC 63 (${tsEntries[63]?.name || 'Nampally'}) covers ${tsEntries[63]?.extent || ''}. These are statutory candidate extents only; the source does not establish the postal delivery beat's geographic coverage.`;
       } else if (entry.pinCode === '500034') {
-        sourcePassageExtract = `Schedule XXVII, Table A: AC 60 (${tsEntries[60]?.name || 'Khairatabad'}) covers ${tsEntries[60]?.extent || ''}; AC 61 (${tsEntries[61]?.name || 'Jubilee Hills'}) covers ${tsEntries[61]?.extent || ''}. Banjara Hills delivery beat spans across Khairatabad and Jubilee Hills.`;
+        sourcePassageExtract = `Schedule XXVII, Table A: AC 60 (${tsEntries[60]?.name || 'Khairatabad'}) covers ${tsEntries[60]?.extent || ''}; AC 61 (${tsEntries[61]?.name || 'Jubilee Hills'}) covers ${tsEntries[61]?.extent || ''}. These are statutory candidate extents only; the source does not establish the postal delivery beat's geographic coverage.`;
       } else if (entry.pinCode === '500056') {
-        sourcePassageExtract = `Schedule XXVII, Table A: AC 71 (${tsEntries[71]?.name || 'Secunderabad Cantonment'}) covers ${tsEntries[71]?.extent || ''}; AC 46 (${tsEntries[46]?.name || 'Kukatpally'}) covers ${tsEntries[46]?.extent || ''}. Bowenpally delivery beat spans across Secunderabad Cantonment and Kukatpally.`;
+        sourcePassageExtract = `Schedule XXVII, Table A: AC 71 (${tsEntries[71]?.name || 'Secunderabad Cantonment'}) covers ${tsEntries[71]?.extent || ''}; AC 46 (${tsEntries[46]?.name || 'Kukatpally'}) covers ${tsEntries[46]?.extent || ''}. These are statutory candidate extents only; the source does not establish the postal delivery beat's geographic coverage.`;
       }
     }
 
@@ -1005,6 +1005,8 @@ export function buildManifest() {
       sourcePublicationDate: '2014-03-01',
       sourceEffectiveDate: '2014-06-02',
       sourceLocator,
+      assignedAcName: parsedAssigned ? parsedAssigned.name : entry.assignedAcName,
+      candidateAcNames: isMultiAc ? (entry.candidateAcNumbers || []).map((number) => parsedSource[number]?.name).filter(Boolean) : [],
       referenceDocumentPath: sourceRelPath,
       sourceArtifactSha256: sourceSha256,
       sourceInspectionStatus: "IN_REPO_STATUTORY_EXTRACT_INSPECTED",
