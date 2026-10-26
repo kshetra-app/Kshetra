@@ -1,28 +1,27 @@
-AUTHORITATIVE STATUTORY EXTRACT: ECI DELIMITATION ORDER 2008
-==============================================================================
-Source Authority: Delimitation Commission of India / Election Commission of India
-Document: Delimitation of Parliamentary and Assembly Constituencies Order, 2008
-Statutory Enactment:
-  - Schedule II (State of Andhra Pradesh), Promulgated 19 February 2008
-  - Published in The Gazette of India, Extraordinary, Notification No. 282/AP/2008
-Source URL: https://eci.gov.in/files/file/3931-delimitation-of-parliamentary-assembly-constituencies-order-2008/
-Retrieval Date: 2026-09-22
-Effective Date: 2008-02-19
-Publication Date: 2008-02-19
+STATUS: INVALIDATED — DO NOT USE AS AN AUTHORITATIVE AC EXTENT EXTRACT
+Invalidated on: 2026-10-26
 
-SCHEDULE II: ANDHRA PRADESH
-TABLE B — ASSEMBLY CONSTITUENCIES
-------------------------------------------------------------------------------
-Serial No. & Name of Constituency | Extent of the Constituency
-------------------------------------------------------------------------------
-22. Visakhapatnam South            | Visakhapatnam (Urban) Mandal (Part), Visakhapatnam (M.Corp.) (Part) - Ward No. 12 to 34, 42 to 43 and 46 to 48.
-------------------------------------------------------------------------------
-79. Vijayawada West                | Vijayawada (Urban) Mandal (Part), Vijayawada (M.Corp.) (Part) - Ward No. 1 to 14, 16 to 22 and 42 to 44.
-------------------------------------------------------------------------------
-80. Vijayawada Central             | Vijayawada (Urban) Mandal (Part), Vijayawada (M.Corp.) (Part) - Ward No. 15, 23 to 34, 45 to 48 and 50 to 53.
-------------------------------------------------------------------------------
-137. Kurnool                       | Kurnool Mandal (Part), Kurnool (M.Corp.) (Part) - Ward No. 1 to 48.
-------------------------------------------------------------------------------
-167. Tirupati                      | Tirupati (Urban) Mandal (Part), Tirupati (M) (Part) - Ward No. 1 to 30.
-------------------------------------------------------------------------------
-==============================================================================
+Reason: this file incorrectly labelled Andhra Pradesh Assembly Constituency extents as “Schedule II / Table B”. The hash-verified 572-page ECI Delimitation Order, 2008 archival copy shows:
+- Schedule I (pages 4–5): Lok Sabha seat-allocation summary.
+- Schedule II (pages 6–7): Legislative Assembly seat-allocation summary.
+- Schedule III (pages 8–32): ANDHRA PRADESH (the composite, pre-2014 state).
+- Schedule III, Table A: ASSEMBLY CONSTITUENCIES and territorial extents.
+- Schedule III, Table B: PARLIAMENTARY CONSTITUENCIES.
+- Schedule XXXI (pages 543–556): DELHI.
+- Schedule XXXII (pages 557–560): PUDUCHERRY.
+- Jammu and Kashmir Assembly Constituency extents appear in the Annexure (pages 561–571), not Schedule XII.
+- The 2008 order has no separate Telangana schedule. The 2014 successor-state split into 175 Andhra Pradesh and 119 Telangana Assembly Constituencies is a later legal regime and must be traced through the Reorganisation Act and subsequent instruments.
+
+Replacement source identity:
+Title: Delimitation of Parliamentary and Assembly Constituencies Order, 2008 (ECI consolidated PDF)
+Exact original ECI URL: https://www.eci.gov.in/Documents/Delimitation/DelimitationofParliamentaryAssemblyConstituenciesOrder-2008%28English%29.pdf
+Archived capture URL: https://web.archive.org/web/20260804161908id_/https://www.eci.gov.in/Documents/Delimitation/DelimitationofParliamentaryAssemblyConstituenciesOrder-2008(English).pdf
+Capture timestamp: 2026-08-04T16:19:08Z
+Archived PDF raw bytes: 1,340,728
+SHA-256: 9e1ac49aa952febc8e4f57ed23abd28218a21887f355f8dad1502ab5c0d65e69
+PDF pages: 572
+Workflow evidence: https://github.com/kshetra-app/Kshetra/actions/runs/40335906727
+Evidence-only branch commit: b0e825de6b1c5870f95c5a8ca46d2a3d4bd1dfa8
+Raw archived PDF path: stage_b_archival_recovery/raw/ECI_2008_ORDER_CURRENT_URL_wayback_20260804161908.pdf
+
+The original Gazette of India issue/certified copy for S.O.382(E) is still open. This archived ECI PDF is not itself the Gazette issue and does not satisfy the physical authenticity gate. Prior illustrative rows are not retained as authoritative data because their schedule/table provenance was wrong.
