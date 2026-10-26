@@ -1,0 +1,2677 @@
+{
+  "schemaVersion": 1,
+  "title": "Official CEO Delhi 2024 Assembly Constituency to polling-station evidence archive",
+  "authority": "Chief Electoral Officer, Government of NCT of Delhi; public index and same-host polling-station list.",
+  "scope": "Delhi only; not national polling-station coverage and not canonical AC geometry acceptance.",
+  "workflow": {
+    "runId": "40327184603",
+    "sourceCommit": "9a2dcec8169c0fb7e7a0218c7d7d6ec0fca6c6d7",
+    "workflowUrl": "https://github.com/kshetra-app/Kshetra/actions/runs/40327184603",
+    "completedAtUtc": "2026-10-26T13:03:58.519649+00:00",
+    "rawResponseZipSha256": null,
+    "note": "The run ZIP artifact has its own hash in the workflow run metadata; this repository archive independently stores and verifies all raw HTML bodies."
+  },
+  "index": {
+    "url": "https://ceodelhinet.nic.in/ceodelhiweb/ListofPollingStation.aspx",
+    "finalUrl": "https://ceodelhinet.nic.in/ceodelhiweb/ListofPollingStation.aspx",
+    "retrievedAtUtc": "2026-10-26T13:02:35.851943+00:00",
+    "httpStatus": 200,
+    "byteLength": 84517,
+    "sha256": "765f6a915862415634ec2ed31fcc5d0518bd73d418d8771dc9c52bf2745ae4cb",
+    "distinctAcLinks": 70,
+    "rawArchiveMember": "raw/CEO_DELHI_POLLING_STATION_INDEX.html"
+  },
+  "form": {
+    "url": "https://ceodelhinet.nic.in/ceodelhiweb/PSL.aspx",
+    "rawArchiveMember": "raw/CEO_DELHI_PSL_1.html",
+    "byteLength": 58023,
+    "sha256": "c334114462061dfa9933d98b71b264464e3b1f6378706871e686c32ae8683f3d",
+    "httpStatus": 200,
+    "requestMethod": "post",
+    "selectField": "ctl00$ContentPlaceHolder1$DropDownListDistNO",
+    "detailMethod": "Same-host ASP.NET POST using source-provided viewstate/eventvalidation; no access-control bypass."
+  },
+  "crosswalk": {
+    "gzipPath": "data/evidence/w021_5/delhi_2024/polling_station_crosswalk_2024.json.gz",
+    "gzipByteLength": 494591,
+    "gzipSha256": "f4ab4319b5809e8946a53219980623f544983c80bd80733288a7321766af5368",
+    "jsonByteLength": 13760029,
+    "jsonSha256": "d4d882a8abae8136b8f25f4e2a0a2ae08eb3e48a12d0d81b7c731c5b2a5602fa",
+    "records": 14947,
+    "uniqueAcStationPairs": 14947,
+    "acCount": 70,
+    "jsonParse": "PASS",
+    "rowSourceHashLinks": "PASS",
+    "missingAcNumbers": [],
+    "duplicatePairs": 0
+  },
+  "rawHtmlArchive": {
+    "path": "data/evidence/w021_5/delhi_2024/ceo_delhi_polling_source_html_2024.tar.gz",
+    "byteLength": 2831391,
+    "sha256": "b24fe2ff24981289f2588a7c3188e5557ecd32348b861119c74728a3e68735f5",
+    "memberCount": 72,
+    "members": [
+      {
+        "name": "raw/CEO_DELHI_POLLING_STATIONS_AC_01_POSTBACK.html",
+        "byteLength": 773866,
+        "sha256": "45f761fd88c4d16054f89a418a9ae67dfdf4e0213fb76251bf3279fc76eb442c"
+      },
+      {
+        "name": "raw/CEO_DELHI_POLLING_STATIONS_AC_02_POSTBACK.html",
+        "byteLength": 969978,
+        "sha256": "78b51b1a49bf6d0dc7931e2722db226a4ed4f4ffad12ca31d4b17a6b8734852d"
+      },
+      {
+        "name": "raw/CEO_DELHI_POLLING_STATIONS_AC_03_POSTBACK.html",
+        "byteLength": 501351,
+        "sha256": "8cdeed436e5d3819c1599365bf0690dace248243e7b6ea0a1dea488f2bdee4f0"
+      },
+      {
+        "name": "raw/CEO_DELHI_POLLING_STATIONS_AC_04_POSTBACK.html",
+        "byteLength": 403455,
+        "sha256": "fb3cc5c0ab4a0d561b63d8fac91e5130b339b5cf281e8830ba670b5ad154f8bb"
+      },
+      {
+        "name": "raw/CEO_DELHI_POLLING_STATIONS_AC_05_POSTBACK.html",
+        "byteLength": 592806,
+        "sha256": "f5d34748b0549a11a74e9b59ab94bd6cb3dfb7bb4f52ef55743a7b2e5eae860f"
+      },
+      {
+        "name": "raw/CEO_DELHI_POLLING_STATIONS_AC_06_POSTBACK.html",
+        "byteLength": 753146,
+        "sha256": "5e86a7225974d8327ba1f630082e40edb4fbea715053dae141a295f8a21649f3"
+      },
+      {
+        "name": "raw/CEO_DELHI_POLLING_STATIONS_AC_07_POSTBACK.html",
+        "byteLength": 889162,
+        "sha256": "39b5b7b092b0ab0d53380fe3fd1dde3d515cfcaf3be67b616eb2621c41ef82ee"
+      },
+      {
+        "name": "raw/CEO_DELHI_POLLING_STATIONS_AC_08_POSTBACK.html",
+        "byteLength": 761281,
+        "sha256": "8de0f8126afc27c033de0aec5c040b7f83dcd95cfea90bc799ea68c0cbd2cc97"
+      },
+      {
+        "name": "raw/CEO_DELHI_POLLING_STATIONS_AC_09_POSTBACK.html",
+        "byteLength": 782091,
+        "sha256": "0eb846e0e0a7bcc0e712ee6e63062728fea27778be958b95e7222ca578bee63c"
+      },
+      {
+        "name": "raw/CEO_DELHI_POLLING_STATIONS_AC_10_POSTBACK.html",
+        "byteLength": 434945,
+        "sha256": "795a0011a6e4b87a5cf22c8c05c66471ff41efb541396c4175d205aa40ba3ba7"
+      },
+      {
+        "name": "raw/CEO_DELHI_POLLING_STATIONS_AC_11_POSTBACK.html",
+        "byteLength": 634622,
+        "sha256": "91004e19bc707f5a6178737cf89f5d47d1c17df804e428519972cd9a947f02c2"
+      },
+      {
+        "name": "raw/CEO_DELHI_POLLING_STATIONS_AC_12_POSTBACK.html",
+        "byteLength": 454430,
+        "sha256": "95d69c09c364045b4229c7431e73dda013dc13976353cdb8f58abc31b7209405"
+      },
+      {
+        "name": "raw/CEO_DELHI_POLLING_STATIONS_AC_13_POSTBACK.html",
+        "byteLength": 477337,
+        "sha256": "b4c7bb44a44272698ea03f3b9c4f32e0163eab73cb1f82f0002949b383b7300f"
+      },
+      {
+        "name": "raw/CEO_DELHI_POLLING_STATIONS_AC_14_POSTBACK.html",
+        "byteLength": 487826,
+        "sha256": "4b33fdfcf9bf0c552a6c196f6c447e4a593a110b29e847f34c84f040435e38df"
+      },
+      {
+        "name": "raw/CEO_DELHI_POLLING_STATIONS_AC_15_POSTBACK.html",
+        "byteLength": 411016,
+        "sha256": "780b465f777152cabd2e7e5e5e65aafff893358d010363b9ef44488edacc0aff"
+      },
+      {
+        "name": "raw/CEO_DELHI_POLLING_STATIONS_AC_16_POSTBACK.html",
+        "byteLength": 453109,
+        "sha256": "561f3be336ac55f003c87fa5a4c28639fcb5d3247b4e450b8d4c7d4939dc7b0d"
+      },
+      {
+        "name": "raw/CEO_DELHI_POLLING_STATIONS_AC_17_POSTBACK.html",
+        "byteLength": 474243,
+        "sha256": "71e5888195fc98f1d481ed77e7e4df15bc4c7cfbb51b0ffaa13d68e210daa972"
+      },
+      {
+        "name": "raw/CEO_DELHI_POLLING_STATIONS_AC_18_POSTBACK.html",
+        "byteLength": 465166,
+        "sha256": "0dd5aaa668ce61445b52c6d33370757c5381d0fb58e8358aa8ae0448182b1171"
+      },
+      {
+        "name": "raw/CEO_DELHI_POLLING_STATIONS_AC_19_POSTBACK.html",
+        "byteLength": 507557,
+        "sha256": "d0ac9aee267682be3a7a70a4acdd938e4ae6eeb584127bd2272e8d616b14f5df"
+      },
+      {
+        "name": "raw/CEO_DELHI_POLLING_STATIONS_AC_20_POSTBACK.html",
+        "byteLength": 398199,
+        "sha256": "404f43bc0ce437f39beb80f949e3ed534790613eb433b5f75e155de5fba187da"
+      },
+      {
+        "name": "raw/CEO_DELHI_POLLING_STATIONS_AC_21_POSTBACK.html",
+        "byteLength": 425325,
+        "sha256": "536ccac62dae94533fa02a09597df66a6dafb922fba727983cbbb62c47d88ffc"
+      },
+      {
+        "name": "raw/CEO_DELHI_POLLING_STATIONS_AC_22_POSTBACK.html",
+        "byteLength": 459847,
+        "sha256": "b99629b236770ee89d1c05a0017f9db5f8e07a801900ee59d566a8222102f418"
+      },
+      {
+        "name": "raw/CEO_DELHI_POLLING_STATIONS_AC_23_POSTBACK.html",
+        "byteLength": 498554,
+        "sha256": "1a0ed5f731e4542dc8f6f7c36a453bdee9065e28d4e7ac93495d268d2e2c49f7"
+      },
+      {
+        "name": "raw/CEO_DELHI_POLLING_STATIONS_AC_24_POSTBACK.html",
+        "byteLength": 515223,
+        "sha256": "7ed22e5c036a5157b4c99abb99f4a49340c9fd1cc93b17bb20a7c54c7a618024"
+      },
+      {
+        "name": "raw/CEO_DELHI_POLLING_STATIONS_AC_25_POSTBACK.html",
+        "byteLength": 473562,
+        "sha256": "7478e9bda79dcfa02ef752d59a56064dea510810d583d762569456ad51b34261"
+      },
+      {
+        "name": "raw/CEO_DELHI_POLLING_STATIONS_AC_26_POSTBACK.html",
+        "byteLength": 423611,
+        "sha256": "f70713ccf5a392d210b90095e80cf2e0df245c65a54b2ddd31e32f70e97655e3"
+      },
+      {
+        "name": "raw/CEO_DELHI_POLLING_STATIONS_AC_27_POSTBACK.html",
+        "byteLength": 455430,
+        "sha256": "36ecfc8068654cd3eefea49fbdc8be2884e204a18a7900dc60679bddc1321f48"
+      },
+      {
+        "name": "raw/CEO_DELHI_POLLING_STATIONS_AC_28_POSTBACK.html",
+        "byteLength": 441845,
+        "sha256": "f06c464ee488b473c1398e0ed75888cd308ae3622bb63323524a7436f6bd7cc1"
+      },
+      {
+        "name": "raw/CEO_DELHI_POLLING_STATIONS_AC_29_POSTBACK.html",
+        "byteLength": 413732,
+        "sha256": "39aba59810365431ec77b8c3c524a27045a891933ee2a83c953f79654de13bae"
+      },
+      {
+        "name": "raw/CEO_DELHI_POLLING_STATIONS_AC_30_POSTBACK.html",
+        "byteLength": 532484,
+        "sha256": "6274f6770ff0a6ed7d5a06aad03ca3b26448465c23f04bfce5485843d1f721d9"
+      },
+      {
+        "name": "raw/CEO_DELHI_POLLING_STATIONS_AC_31_POSTBACK.html",
+        "byteLength": 1031253,
+        "sha256": "9e7227bf8707de2b473357bfd16560bab2535d6b6be9fc9eb36ff09ceb5b6c59"
+      },
+      {
+        "name": "raw/CEO_DELHI_POLLING_STATIONS_AC_32_POSTBACK.html",
+        "byteLength": 659291,
+        "sha256": "331af4df57da98cc0af2596b77cc1b1adca65749a85e0753fbe5192b1a72f37c"
+      },
+      {
+        "name": "raw/CEO_DELHI_POLLING_STATIONS_AC_33_POSTBACK.html",
+        "byteLength": 530062,
+        "sha256": "6bcd149f160b653247f9df3c2533f76e286a67163346e3390dc15e25a4664cd6"
+      },
+      {
+        "name": "raw/CEO_DELHI_POLLING_STATIONS_AC_34_POSTBACK.html",
+        "byteLength": 1065096,
+        "sha256": "81bca0d3af9b97e475075bd4e22efe2443a3d9a05aaf5c875af9357cb5e89178"
+      },
+      {
+        "name": "raw/CEO_DELHI_POLLING_STATIONS_AC_35_POSTBACK.html",
+        "byteLength": 719774,
+        "sha256": "569e1b014fc63c7bbb48d132d7a30d2d66f2ac7c924ecb3360a399c7d0bffd29"
+      },
+      {
+        "name": "raw/CEO_DELHI_POLLING_STATIONS_AC_36_POSTBACK.html",
+        "byteLength": 540605,
+        "sha256": "bb2b7b62e7747f2bb564cacca6f1ed06d19b280a1735175e0234abb055842729"
+      },
+      {
+        "name": "raw/CEO_DELHI_POLLING_STATIONS_AC_37_POSTBACK.html",
+        "byteLength": 597344,
+        "sha256": "fef0858d9bd7366d8b94f63623b0790cf6507033f5d46399d789a6e8399caa5b"
+      },
+      {
+        "name": "raw/CEO_DELHI_POLLING_STATIONS_AC_38_POSTBACK.html",
+        "byteLength": 308764,
+        "sha256": "dfb5ad1c06a4468ef38220df486aaaf0afef103aee4f60b1a8e84a28cce52063"
+      },
+      {
+        "name": "raw/CEO_DELHI_POLLING_STATIONS_AC_39_POSTBACK.html",
+        "byteLength": 420678,
+        "sha256": "05adf58aefe79e79ccd14671cc13e1850ee9896d45ad615ec76e24418725af7f"
+      },
+      {
+        "name": "raw/CEO_DELHI_POLLING_STATIONS_AC_40_POSTBACK.html",
+        "byteLength": 457933,
+        "sha256": "93861d2351c06d43aeffae253c8059866aad3963ddd3b26fcff31d8aa4ffead6"
+      },
+      {
+        "name": "raw/CEO_DELHI_POLLING_STATIONS_AC_41_POSTBACK.html",
+        "byteLength": 416570,
+        "sha256": "05ef56b16b4557293fc981e04e2cc70bbbbc67a3012f278f0247a5ab75302f38"
+      },
+      {
+        "name": "raw/CEO_DELHI_POLLING_STATIONS_AC_42_POSTBACK.html",
+        "byteLength": 422046,
+        "sha256": "c5dff29581e964a64ff6095e20ba2c7d3c633bb985bd06356d2f2c5a2cc8833c"
+      },
+      {
+        "name": "raw/CEO_DELHI_POLLING_STATIONS_AC_43_POSTBACK.html",
+        "byteLength": 422374,
+        "sha256": "6e49767f7a1d15fbfa115baafdddc099ed69fbc4068f65b8846959938f8fa949"
+      },
+      {
+        "name": "raw/CEO_DELHI_POLLING_STATIONS_AC_44_POSTBACK.html",
+        "byteLength": 449856,
+        "sha256": "0f190e2a86324e177cf29e441f8c9c6d03a3d0309a24fa88a2244544b82090df"
+      },
+      {
+        "name": "raw/CEO_DELHI_POLLING_STATIONS_AC_45_POSTBACK.html",
+        "byteLength": 526522,
+        "sha256": "3f82a50a2cb6e0a6f1d7a7cb51cb528ee2f2fea4b65af4fbfa22827ae461439e"
+      },
+      {
+        "name": "raw/CEO_DELHI_POLLING_STATIONS_AC_46_POSTBACK.html",
+        "byteLength": 595460,
+        "sha256": "d4fd8c73ab9fc320485179760b09f1e6a1ecf64dfd4d800d103321de21606ee9"
+      },
+      {
+        "name": "raw/CEO_DELHI_POLLING_STATIONS_AC_47_POSTBACK.html",
+        "byteLength": 670821,
+        "sha256": "69e186483aef06b30fefae582a4c87257d66467f6f5f7163e30062029aa3f887"
+      },
+      {
+        "name": "raw/CEO_DELHI_POLLING_STATIONS_AC_48_POSTBACK.html",
+        "byteLength": 435652,
+        "sha256": "6c51527da2e2f9335e82cd93b76628cb00f392d922c8074a98d2376963727401"
+      },
+      {
+        "name": "raw/CEO_DELHI_POLLING_STATIONS_AC_49_POSTBACK.html",
+        "byteLength": 513861,
+        "sha256": "46d07a47805449d80f9522c1bf4d15eb0eceb15ab03671749fe54e6ebedf7b11"
+      },
+      {
+        "name": "raw/CEO_DELHI_POLLING_STATIONS_AC_50_POSTBACK.html",
+        "byteLength": 509625,
+        "sha256": "7019a2d2d7e9c4537f1380558648e1ed9c3ca9152911929b5f483d7bc079c2dc"
+      },
+      {
+        "name": "raw/CEO_DELHI_POLLING_STATIONS_AC_51_POSTBACK.html",
+        "byteLength": 465074,
+        "sha256": "f62e3ff799c4da8653e1549bf279f2273e1b5ebe7009163ccb482228dd4bf0f3"
+      },
+      {
+        "name": "raw/CEO_DELHI_POLLING_STATIONS_AC_52_POSTBACK.html",
+        "byteLength": 532872,
+        "sha256": "e7a4f0fd50bc2a6c83bae04e47393ddc83053145ed1956585c8c16c580c169c1"
+      },
+      {
+        "name": "raw/CEO_DELHI_POLLING_STATIONS_AC_53_POSTBACK.html",
+        "byteLength": 792381,
+        "sha256": "8974bd1d4114b5bec057c7fcd42f7f77dfe0e3477cf62744b37804e4bc4ad66c"
+      },
+      {
+        "name": "raw/CEO_DELHI_POLLING_STATIONS_AC_54_POSTBACK.html",
+        "byteLength": 828504,
+        "sha256": "3a962e262fce82a559d6dc4d6a0981d456b5f736d34e046c6c967eb1971aa79f"
+      },
+      {
+        "name": "raw/CEO_DELHI_POLLING_STATIONS_AC_55_POSTBACK.html",
+        "byteLength": 461382,
+        "sha256": "4f60ade50bd4f94ca9435b0f4b990c26607972f8250b14cfa6dd5f677f29f9d6"
+      },
+      {
+        "name": "raw/CEO_DELHI_POLLING_STATIONS_AC_56_POSTBACK.html",
+        "byteLength": 490975,
+        "sha256": "60114f4f9243d15573c7611a097e1dc486b40e662a7d7578b6237a3e89fa1812"
+      },
+      {
+        "name": "raw/CEO_DELHI_POLLING_STATIONS_AC_57_POSTBACK.html",
+        "byteLength": 509746,
+        "sha256": "97751c1b29ad974e7d7f8b6433fca2b130d43bbf85f5690e75c8066fa205168e"
+      },
+      {
+        "name": "raw/CEO_DELHI_POLLING_STATIONS_AC_58_POSTBACK.html",
+        "byteLength": 465540,
+        "sha256": "0b2ce03c2dd055913e4a426af5b65853c0fe11fb7581f8080c5e315d0bfc48f7"
+      },
+      {
+        "name": "raw/CEO_DELHI_POLLING_STATIONS_AC_59_POSTBACK.html",
+        "byteLength": 512031,
+        "sha256": "27c99d3e7b6c74b15bfd7943a585310781fd97e69abfe2eb13e5e246dcb26894"
+      },
+      {
+        "name": "raw/CEO_DELHI_POLLING_STATIONS_AC_60_POSTBACK.html",
+        "byteLength": 604826,
+        "sha256": "438cade5004bfb96bbb1f3bbd63b4f1878397be8ce94e9ae626af1201e1e649c"
+      },
+      {
+        "name": "raw/CEO_DELHI_POLLING_STATIONS_AC_61_POSTBACK.html",
+        "byteLength": 498240,
+        "sha256": "99c9c3e68f0f61f3058cf7b29860bbc66d15c66177d1e2efc8201fd1fa826b36"
+      },
+      {
+        "name": "raw/CEO_DELHI_POLLING_STATIONS_AC_62_POSTBACK.html",
+        "byteLength": 530609,
+        "sha256": "dd20afa41937c38e5b059f26c4c3958180cc1762032e20fa21fa957300e21651"
+      },
+      {
+        "name": "raw/CEO_DELHI_POLLING_STATIONS_AC_63_POSTBACK.html",
+        "byteLength": 501929,
+        "sha256": "a8d42f1433ac6d02ba988d19026bd5d33e71d3e48303290c42aa8d969f31a51d"
+      },
+      {
+        "name": "raw/CEO_DELHI_POLLING_STATIONS_AC_64_POSTBACK.html",
+        "byteLength": 574661,
+        "sha256": "a37909458e277dee6e8d2bd6887c5572d1afcb558b0816e443693fa8ae69e7b3"
+      },
+      {
+        "name": "raw/CEO_DELHI_POLLING_STATIONS_AC_65_POSTBACK.html",
+        "byteLength": 492006,
+        "sha256": "b4d4724a90e31506c600aa38190d43c9ae959c00b501dcb76c05eed9a8b5275d"
+      },
+      {
+        "name": "raw/CEO_DELHI_POLLING_STATIONS_AC_66_POSTBACK.html",
+        "byteLength": 558459,
+        "sha256": "f9d0bcd02fafc976ebf8b4902ec907d74159dcb5ff38f20b719900986cd9266b"
+      },
+      {
+        "name": "raw/CEO_DELHI_POLLING_STATIONS_AC_67_POSTBACK.html",
+        "byteLength": 562200,
+        "sha256": "367d9e309042e128d6fdc1225f4380d73e0f517fe549dc6805386fa31332d863"
+      },
+      {
+        "name": "raw/CEO_DELHI_POLLING_STATIONS_AC_68_POSTBACK.html",
+        "byteLength": 605031,
+        "sha256": "3e0a4ca2843713c7750aba2f18231c0c0e74c9855d1d6f0038901f6e75a3c664"
+      },
+      {
+        "name": "raw/CEO_DELHI_POLLING_STATIONS_AC_69_POSTBACK.html",
+        "byteLength": 783589,
+        "sha256": "0997c2721b04858cec86098be65f9e5029bc0ce3f2e6444475cf4efe61dc48b1"
+      },
+      {
+        "name": "raw/CEO_DELHI_POLLING_STATIONS_AC_70_POSTBACK.html",
+        "byteLength": 796241,
+        "sha256": "384b4d212a12d28d2c51f9bc30c0267b783a41bb0c6398ecab1e268476b05838"
+      },
+      {
+        "name": "raw/CEO_DELHI_POLLING_STATION_INDEX.html",
+        "byteLength": 84517,
+        "sha256": "765f6a915862415634ec2ed31fcc5d0518bd73d418d8771dc9c52bf2745ae4cb"
+      },
+      {
+        "name": "raw/CEO_DELHI_PSL_1.html",
+        "byteLength": 58023,
+        "sha256": "c334114462061dfa9933d98b71b264464e3b1f6378706871e686c32ae8683f3d"
+      }
+    ]
+  },
+  "summary": {
+    "status": "PASS_70_OF_70_OFFICIAL_AC_POSTBACKS_ACQUIRED_AND_VALIDATED",
+    "acCount": 70,
+    "pagesDownloaded": 70,
+    "pagesIndependentlyValidated": 70,
+    "pageFailures": 0,
+    "stationRecords": 14947,
+    "stationPairsUnique": true,
+    "perAcStationCounts": [
+      {
+        "acNo": 1,
+        "acName": "NERELA",
+        "count": 288
+      },
+      {
+        "acNo": 2,
+        "acName": "BURARI",
+        "count": 409
+      },
+      {
+        "acNo": 3,
+        "acName": "TIMARPUR",
+        "count": 184
+      },
+      {
+        "acNo": 4,
+        "acName": "ADARSH NAGAR",
+        "count": 145
+      },
+      {
+        "acNo": 5,
+        "acName": "BADLI",
+        "count": 233
+      },
+      {
+        "acNo": 6,
+        "acName": "RITHALA",
+        "count": 305
+      },
+      {
+        "acNo": 7,
+        "acName": "BAWANA",
+        "count": 367
+      },
+      {
+        "acNo": 8,
+        "acName": "MUNDKA",
+        "count": 320
+      },
+      {
+        "acNo": 9,
+        "acName": "KIRARI",
+        "count": 319
+      },
+      {
+        "acNo": 10,
+        "acName": "SULTANPUR MAJRA",
+        "count": 165
+      },
+      {
+        "acNo": 11,
+        "acName": "NANGLOI JAT",
+        "count": 253
+      },
+      {
+        "acNo": 12,
+        "acName": "MANGOL PURI",
+        "count": 177
+      },
+      {
+        "acNo": 13,
+        "acName": "ROHINI",
+        "count": 184
+      },
+      {
+        "acNo": 14,
+        "acName": "SHALIMAR BAGH",
+        "count": 189
+      },
+      {
+        "acNo": 15,
+        "acName": "SHAKUR BASTI",
+        "count": 154
+      },
+      {
+        "acNo": 16,
+        "acName": "TRI NAGAR",
+        "count": 163
+      },
+      {
+        "acNo": 17,
+        "acName": "WAZIRPUR",
+        "count": 181
+      },
+      {
+        "acNo": 18,
+        "acName": "MODEL TOWN",
+        "count": 176
+      },
+      {
+        "acNo": 19,
+        "acName": "SADAR BAZAR",
+        "count": 192
+      },
+      {
+        "acNo": 20,
+        "acName": "CHANDNI CHOWK",
+        "count": 132
+      },
+      {
+        "acNo": 21,
+        "acName": "MATIA MAHAL",
+        "count": 147
+      },
+      {
+        "acNo": 22,
+        "acName": "BALLIMARAN",
+        "count": 171
+      },
+      {
+        "acNo": 23,
+        "acName": "KAROL BAGH",
+        "count": 173
+      },
+      {
+        "acNo": 24,
+        "acName": "PATEL NAGAR",
+        "count": 190
+      },
+      {
+        "acNo": 25,
+        "acName": "MOTI NAGAR",
+        "count": 168
+      },
+      {
+        "acNo": 26,
+        "acName": "MADIPUR",
+        "count": 156
+      },
+      {
+        "acNo": 27,
+        "acName": "RAJOURI GARDEN",
+        "count": 178
+      },
+      {
+        "acNo": 28,
+        "acName": "HARI NAGAR",
+        "count": 165
+      },
+      {
+        "acNo": 29,
+        "acName": "TILAK NAGAR",
+        "count": 151
+      },
+      {
+        "acNo": 30,
+        "acName": "JANAKPURI",
+        "count": 201
+      },
+      {
+        "acNo": 31,
+        "acName": "VIKASPURI",
+        "count": 421
+      },
+      {
+        "acNo": 32,
+        "acName": "UTTAM NAGAR",
+        "count": 271
+      },
+      {
+        "acNo": 33,
+        "acName": "DWARKA",
+        "count": 190
+      },
+      {
+        "acNo": 34,
+        "acName": "MATIALA",
+        "count": 430
+      },
+      {
+        "acNo": 35,
+        "acName": "NAJAFGARH",
+        "count": 290
+      },
+      {
+        "acNo": 36,
+        "acName": "BIJWASAN",
+        "count": 211
+      },
+      {
+        "acNo": 37,
+        "acName": "PALAM",
+        "count": 230
+      },
+      {
+        "acNo": 38,
+        "acName": "DELHI CANTT",
+        "count": 90
+      },
+      {
+        "acNo": 39,
+        "acName": "RAJINDER NAGAR",
+        "count": 151
+      },
+      {
+        "acNo": 40,
+        "acName": "NEW DELHI",
+        "count": 124
+      },
+      {
+        "acNo": 41,
+        "acName": "JANGPURA",
+        "count": 153
+      },
+      {
+        "acNo": 42,
+        "acName": "KASTURBA NAGAR",
+        "count": 146
+      },
+      {
+        "acNo": 43,
+        "acName": "MALVIYA NAGAR",
+        "count": 149
+      },
+      {
+        "acNo": 44,
+        "acName": "R K PURAM",
+        "count": 153
+      },
+      {
+        "acNo": 45,
+        "acName": "MEHRAULI",
+        "count": 204
+      },
+      {
+        "acNo": 46,
+        "acName": "CHHATARPUR",
+        "count": 241
+      },
+      {
+        "acNo": 47,
+        "acName": "DEOLI",
+        "count": 277
+      },
+      {
+        "acNo": 48,
+        "acName": "AMBEDKAR NAGAR",
+        "count": 156
+      },
+      {
+        "acNo": 49,
+        "acName": "SANGAM VIHAR",
+        "count": 207
+      },
+      {
+        "acNo": 50,
+        "acName": "GREATER KAILASH",
+        "count": 187
+      },
+      {
+        "acNo": 51,
+        "acName": "KALKAJI",
+        "count": 176
+      },
+      {
+        "acNo": 52,
+        "acName": "TUGHLAKABAD",
+        "count": 210
+      },
+      {
+        "acNo": 53,
+        "acName": "BADARPUR",
+        "count": 327
+      },
+      {
+        "acNo": 54,
+        "acName": "OKHLA",
+        "count": 345
+      },
+      {
+        "acNo": 55,
+        "acName": "TRILOKPURI",
+        "count": 182
+      },
+      {
+        "acNo": 56,
+        "acName": "KONDLI",
+        "count": 190
+      },
+      {
+        "acNo": 57,
+        "acName": "PATPARGANJ",
+        "count": 203
+      },
+      {
+        "acNo": 58,
+        "acName": "LAXMI NAGAR",
+        "count": 180
+      },
+      {
+        "acNo": 59,
+        "acName": "VISHWAS NAGAR",
+        "count": 196
+      },
+      {
+        "acNo": 60,
+        "acName": "KRISHNA NAGAR",
+        "count": 224
+      },
+      {
+        "acNo": 61,
+        "acName": "GANDHI NAGAR",
+        "count": 171
+      },
+      {
+        "acNo": 62,
+        "acName": "SHAHDARA",
+        "count": 197
+      },
+      {
+        "acNo": 63,
+        "acName": "SEEMA PURI",
+        "count": 200
+      },
+      {
+        "acNo": 64,
+        "acName": "ROHTAS NAGAR",
+        "count": 207
+      },
+      {
+        "acNo": 65,
+        "acName": "SEELAMPUR",
+        "count": 182
+      },
+      {
+        "acNo": 66,
+        "acName": "GHONDA",
+        "count": 211
+      },
+      {
+        "acNo": 67,
+        "acName": "BABARPUR",
+        "count": 208
+      },
+      {
+        "acNo": 68,
+        "acName": "GOKALPUR",
+        "count": 229
+      },
+      {
+        "acNo": 69,
+        "acName": "MUSTAFABAD",
+        "count": 294
+      },
+      {
+        "acNo": 70,
+        "acName": "KARAWAL NAGAR",
+        "count": 298
+      }
+    ]
+  },
+  "perACSourceProvenance": [
+    {
+      "acNo": 1,
+      "acName": "NERELA",
+      "requestUrl": "https://ceodelhinet.nic.in/ceodelhiweb/PSL.aspx",
+      "finalUrl": "https://ceodelhinet.nic.in/ceodelhiweb/PSL.aspx",
+      "retrievedAtUtc": "2026-10-26T13:02:36.217095+00:00",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8",
+      "byteLength": 773866,
+      "sha256": "45f761fd88c4d16054f89a418a9ae67dfdf4e0213fb76251bf3279fc76eb442c",
+      "rawArchiveMember": "raw/CEO_DELHI_POLLING_STATIONS_AC_01_POSTBACK.html",
+      "pollingStationCount": 288,
+      "stationNumberRange": [
+        1,
+        288
+      ],
+      "validationStatus": "PASS",
+      "validationChecks": {
+        "gridPresent": true,
+        "headerMatch": true,
+        "allRowsExpectedWidth": true,
+        "allRowsMatchACNumber": true,
+        "allRowsMatchACName": true,
+        "allStationNumbersParseAsIntegers": true,
+        "stationNumbersUnique": true
+      }
+    },
+    {
+      "acNo": 2,
+      "acName": "BURARI",
+      "requestUrl": "https://ceodelhinet.nic.in/ceodelhiweb/PSL.aspx",
+      "finalUrl": "https://ceodelhinet.nic.in/ceodelhiweb/PSL.aspx",
+      "retrievedAtUtc": "2026-10-26T13:02:37.528998+00:00",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8",
+      "byteLength": 969978,
+      "sha256": "78b51b1a49bf6d0dc7931e2722db226a4ed4f4ffad12ca31d4b17a6b8734852d",
+      "rawArchiveMember": "raw/CEO_DELHI_POLLING_STATIONS_AC_02_POSTBACK.html",
+      "pollingStationCount": 409,
+      "stationNumberRange": [
+        1,
+        409
+      ],
+      "validationStatus": "PASS",
+      "validationChecks": {
+        "gridPresent": true,
+        "headerMatch": true,
+        "allRowsExpectedWidth": true,
+        "allRowsMatchACNumber": true,
+        "allRowsMatchACName": true,
+        "allStationNumbersParseAsIntegers": true,
+        "stationNumbersUnique": true
+      }
+    },
+    {
+      "acNo": 3,
+      "acName": "TIMARPUR",
+      "requestUrl": "https://ceodelhinet.nic.in/ceodelhiweb/PSL.aspx",
+      "finalUrl": "https://ceodelhinet.nic.in/ceodelhiweb/PSL.aspx",
+      "retrievedAtUtc": "2026-10-26T13:02:39.544630+00:00",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8",
+      "byteLength": 501351,
+      "sha256": "8cdeed436e5d3819c1599365bf0690dace248243e7b6ea0a1dea488f2bdee4f0",
+      "rawArchiveMember": "raw/CEO_DELHI_POLLING_STATIONS_AC_03_POSTBACK.html",
+      "pollingStationCount": 184,
+      "stationNumberRange": [
+        1,
+        184
+      ],
+      "validationStatus": "PASS",
+      "validationChecks": {
+        "gridPresent": true,
+        "headerMatch": true,
+        "allRowsExpectedWidth": true,
+        "allRowsMatchACNumber": true,
+        "allRowsMatchACName": true,
+        "allStationNumbersParseAsIntegers": true,
+        "stationNumbersUnique": true
+      }
+    },
+    {
+      "acNo": 4,
+      "acName": "ADARSH NAGAR",
+      "requestUrl": "https://ceodelhinet.nic.in/ceodelhiweb/PSL.aspx",
+      "finalUrl": "https://ceodelhinet.nic.in/ceodelhiweb/PSL.aspx",
+      "retrievedAtUtc": "2026-10-26T13:02:40.695722+00:00",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8",
+      "byteLength": 403455,
+      "sha256": "fb3cc5c0ab4a0d561b63d8fac91e5130b339b5cf281e8830ba670b5ad154f8bb",
+      "rawArchiveMember": "raw/CEO_DELHI_POLLING_STATIONS_AC_04_POSTBACK.html",
+      "pollingStationCount": 145,
+      "stationNumberRange": [
+        1,
+        145
+      ],
+      "validationStatus": "PASS",
+      "validationChecks": {
+        "gridPresent": true,
+        "headerMatch": true,
+        "allRowsExpectedWidth": true,
+        "allRowsMatchACNumber": true,
+        "allRowsMatchACName": true,
+        "allStationNumbersParseAsIntegers": true,
+        "stationNumbersUnique": true
+      }
+    },
+    {
+      "acNo": 5,
+      "acName": "BADLI",
+      "requestUrl": "https://ceodelhinet.nic.in/ceodelhiweb/PSL.aspx",
+      "finalUrl": "https://ceodelhinet.nic.in/ceodelhiweb/PSL.aspx",
+      "retrievedAtUtc": "2026-10-26T13:02:41.305007+00:00",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8",
+      "byteLength": 592806,
+      "sha256": "f5d34748b0549a11a74e9b59ab94bd6cb3dfb7bb4f52ef55743a7b2e5eae860f",
+      "rawArchiveMember": "raw/CEO_DELHI_POLLING_STATIONS_AC_05_POSTBACK.html",
+      "pollingStationCount": 233,
+      "stationNumberRange": [
+        1,
+        233
+      ],
+      "validationStatus": "PASS",
+      "validationChecks": {
+        "gridPresent": true,
+        "headerMatch": true,
+        "allRowsExpectedWidth": true,
+        "allRowsMatchACNumber": true,
+        "allRowsMatchACName": true,
+        "allStationNumbersParseAsIntegers": true,
+        "stationNumbersUnique": true
+      }
+    },
+    {
+      "acNo": 6,
+      "acName": "RITHALA",
+      "requestUrl": "https://ceodelhinet.nic.in/ceodelhiweb/PSL.aspx",
+      "finalUrl": "https://ceodelhinet.nic.in/ceodelhiweb/PSL.aspx",
+      "retrievedAtUtc": "2026-10-26T13:02:42.201178+00:00",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8",
+      "byteLength": 753146,
+      "sha256": "5e86a7225974d8327ba1f630082e40edb4fbea715053dae141a295f8a21649f3",
+      "rawArchiveMember": "raw/CEO_DELHI_POLLING_STATIONS_AC_06_POSTBACK.html",
+      "pollingStationCount": 305,
+      "stationNumberRange": [
+        1,
+        305
+      ],
+      "validationStatus": "PASS",
+      "validationChecks": {
+        "gridPresent": true,
+        "headerMatch": true,
+        "allRowsExpectedWidth": true,
+        "allRowsMatchACNumber": true,
+        "allRowsMatchACName": true,
+        "allStationNumbersParseAsIntegers": true,
+        "stationNumbersUnique": true
+      }
+    },
+    {
+      "acNo": 7,
+      "acName": "BAWANA",
+      "requestUrl": "https://ceodelhinet.nic.in/ceodelhiweb/PSL.aspx",
+      "finalUrl": "https://ceodelhinet.nic.in/ceodelhiweb/PSL.aspx",
+      "retrievedAtUtc": "2026-10-26T13:02:43.396953+00:00",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8",
+      "byteLength": 889162,
+      "sha256": "39b5b7b092b0ab0d53380fe3fd1dde3d515cfcaf3be67b616eb2621c41ef82ee",
+      "rawArchiveMember": "raw/CEO_DELHI_POLLING_STATIONS_AC_07_POSTBACK.html",
+      "pollingStationCount": 367,
+      "stationNumberRange": [
+        1,
+        367
+      ],
+      "validationStatus": "PASS",
+      "validationChecks": {
+        "gridPresent": true,
+        "headerMatch": true,
+        "allRowsExpectedWidth": true,
+        "allRowsMatchACNumber": true,
+        "allRowsMatchACName": true,
+        "allStationNumbersParseAsIntegers": true,
+        "stationNumbersUnique": true
+      }
+    },
+    {
+      "acNo": 8,
+      "acName": "MUNDKA",
+      "requestUrl": "https://ceodelhinet.nic.in/ceodelhiweb/PSL.aspx",
+      "finalUrl": "https://ceodelhinet.nic.in/ceodelhiweb/PSL.aspx",
+      "retrievedAtUtc": "2026-10-26T13:02:44.859168+00:00",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8",
+      "byteLength": 761281,
+      "sha256": "8de0f8126afc27c033de0aec5c040b7f83dcd95cfea90bc799ea68c0cbd2cc97",
+      "rawArchiveMember": "raw/CEO_DELHI_POLLING_STATIONS_AC_08_POSTBACK.html",
+      "pollingStationCount": 320,
+      "stationNumberRange": [
+        1,
+        320
+      ],
+      "validationStatus": "PASS",
+      "validationChecks": {
+        "gridPresent": true,
+        "headerMatch": true,
+        "allRowsExpectedWidth": true,
+        "allRowsMatchACNumber": true,
+        "allRowsMatchACName": true,
+        "allStationNumbersParseAsIntegers": true,
+        "stationNumbersUnique": true
+      }
+    },
+    {
+      "acNo": 9,
+      "acName": "KIRARI",
+      "requestUrl": "https://ceodelhinet.nic.in/ceodelhiweb/PSL.aspx",
+      "finalUrl": "https://ceodelhinet.nic.in/ceodelhiweb/PSL.aspx",
+      "retrievedAtUtc": "2026-10-26T13:02:46.340213+00:00",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8",
+      "byteLength": 782091,
+      "sha256": "0eb846e0e0a7bcc0e712ee6e63062728fea27778be958b95e7222ca578bee63c",
+      "rawArchiveMember": "raw/CEO_DELHI_POLLING_STATIONS_AC_09_POSTBACK.html",
+      "pollingStationCount": 319,
+      "stationNumberRange": [
+        1,
+        319
+      ],
+      "validationStatus": "PASS",
+      "validationChecks": {
+        "gridPresent": true,
+        "headerMatch": true,
+        "allRowsExpectedWidth": true,
+        "allRowsMatchACNumber": true,
+        "allRowsMatchACName": true,
+        "allStationNumbersParseAsIntegers": true,
+        "stationNumbersUnique": true
+      }
+    },
+    {
+      "acNo": 10,
+      "acName": "SULTANPUR MAJRA",
+      "requestUrl": "https://ceodelhinet.nic.in/ceodelhiweb/PSL.aspx",
+      "finalUrl": "https://ceodelhinet.nic.in/ceodelhiweb/PSL.aspx",
+      "retrievedAtUtc": "2026-10-26T13:02:47.776827+00:00",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8",
+      "byteLength": 434945,
+      "sha256": "795a0011a6e4b87a5cf22c8c05c66471ff41efb541396c4175d205aa40ba3ba7",
+      "rawArchiveMember": "raw/CEO_DELHI_POLLING_STATIONS_AC_10_POSTBACK.html",
+      "pollingStationCount": 165,
+      "stationNumberRange": [
+        1,
+        165
+      ],
+      "validationStatus": "PASS",
+      "validationChecks": {
+        "gridPresent": true,
+        "headerMatch": true,
+        "allRowsExpectedWidth": true,
+        "allRowsMatchACNumber": true,
+        "allRowsMatchACName": true,
+        "allStationNumbersParseAsIntegers": true,
+        "stationNumbersUnique": true
+      }
+    },
+    {
+      "acNo": 11,
+      "acName": "NANGLOI JAT",
+      "requestUrl": "https://ceodelhinet.nic.in/ceodelhiweb/PSL.aspx",
+      "finalUrl": "https://ceodelhinet.nic.in/ceodelhiweb/PSL.aspx",
+      "retrievedAtUtc": "2026-10-26T13:02:49.179674+00:00",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8",
+      "byteLength": 634622,
+      "sha256": "91004e19bc707f5a6178737cf89f5d47d1c17df804e428519972cd9a947f02c2",
+      "rawArchiveMember": "raw/CEO_DELHI_POLLING_STATIONS_AC_11_POSTBACK.html",
+      "pollingStationCount": 253,
+      "stationNumberRange": [
+        1,
+        253
+      ],
+      "validationStatus": "PASS",
+      "validationChecks": {
+        "gridPresent": true,
+        "headerMatch": true,
+        "allRowsExpectedWidth": true,
+        "allRowsMatchACNumber": true,
+        "allRowsMatchACName": true,
+        "allStationNumbersParseAsIntegers": true,
+        "stationNumbersUnique": true
+      }
+    },
+    {
+      "acNo": 12,
+      "acName": "MANGOL PURI",
+      "requestUrl": "https://ceodelhinet.nic.in/ceodelhiweb/PSL.aspx",
+      "finalUrl": "https://ceodelhinet.nic.in/ceodelhiweb/PSL.aspx",
+      "retrievedAtUtc": "2026-10-26T13:02:50.570176+00:00",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8",
+      "byteLength": 454430,
+      "sha256": "95d69c09c364045b4229c7431e73dda013dc13976353cdb8f58abc31b7209405",
+      "rawArchiveMember": "raw/CEO_DELHI_POLLING_STATIONS_AC_12_POSTBACK.html",
+      "pollingStationCount": 177,
+      "stationNumberRange": [
+        1,
+        177
+      ],
+      "validationStatus": "PASS",
+      "validationChecks": {
+        "gridPresent": true,
+        "headerMatch": true,
+        "allRowsExpectedWidth": true,
+        "allRowsMatchACNumber": true,
+        "allRowsMatchACName": true,
+        "allStationNumbersParseAsIntegers": true,
+        "stationNumbersUnique": true
+      }
+    },
+    {
+      "acNo": 13,
+      "acName": "ROHINI",
+      "requestUrl": "https://ceodelhinet.nic.in/ceodelhiweb/PSL.aspx",
+      "finalUrl": "https://ceodelhinet.nic.in/ceodelhiweb/PSL.aspx",
+      "retrievedAtUtc": "2026-10-26T13:02:52.692340+00:00",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8",
+      "byteLength": 477337,
+      "sha256": "b4c7bb44a44272698ea03f3b9c4f32e0163eab73cb1f82f0002949b383b7300f",
+      "rawArchiveMember": "raw/CEO_DELHI_POLLING_STATIONS_AC_13_POSTBACK.html",
+      "pollingStationCount": 184,
+      "stationNumberRange": [
+        1,
+        184
+      ],
+      "validationStatus": "PASS",
+      "validationChecks": {
+        "gridPresent": true,
+        "headerMatch": true,
+        "allRowsExpectedWidth": true,
+        "allRowsMatchACNumber": true,
+        "allRowsMatchACName": true,
+        "allStationNumbersParseAsIntegers": true,
+        "stationNumbersUnique": true
+      }
+    },
+    {
+      "acNo": 14,
+      "acName": "SHALIMAR BAGH",
+      "requestUrl": "https://ceodelhinet.nic.in/ceodelhiweb/PSL.aspx",
+      "finalUrl": "https://ceodelhinet.nic.in/ceodelhiweb/PSL.aspx",
+      "retrievedAtUtc": "2026-10-26T13:02:54.337742+00:00",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8",
+      "byteLength": 487826,
+      "sha256": "4b33fdfcf9bf0c552a6c196f6c447e4a593a110b29e847f34c84f040435e38df",
+      "rawArchiveMember": "raw/CEO_DELHI_POLLING_STATIONS_AC_14_POSTBACK.html",
+      "pollingStationCount": 189,
+      "stationNumberRange": [
+        1,
+        189
+      ],
+      "validationStatus": "PASS",
+      "validationChecks": {
+        "gridPresent": true,
+        "headerMatch": true,
+        "allRowsExpectedWidth": true,
+        "allRowsMatchACNumber": true,
+        "allRowsMatchACName": true,
+        "allStationNumbersParseAsIntegers": true,
+        "stationNumbersUnique": true
+      }
+    },
+    {
+      "acNo": 15,
+      "acName": "SHAKUR BASTI",
+      "requestUrl": "https://ceodelhinet.nic.in/ceodelhiweb/PSL.aspx",
+      "finalUrl": "https://ceodelhinet.nic.in/ceodelhiweb/PSL.aspx",
+      "retrievedAtUtc": "2026-10-26T13:02:55.989139+00:00",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8",
+      "byteLength": 411016,
+      "sha256": "780b465f777152cabd2e7e5e5e65aafff893358d010363b9ef44488edacc0aff",
+      "rawArchiveMember": "raw/CEO_DELHI_POLLING_STATIONS_AC_15_POSTBACK.html",
+      "pollingStationCount": 154,
+      "stationNumberRange": [
+        1,
+        154
+      ],
+      "validationStatus": "PASS",
+      "validationChecks": {
+        "gridPresent": true,
+        "headerMatch": true,
+        "allRowsExpectedWidth": true,
+        "allRowsMatchACNumber": true,
+        "allRowsMatchACName": true,
+        "allStationNumbersParseAsIntegers": true,
+        "stationNumbersUnique": true
+      }
+    },
+    {
+      "acNo": 16,
+      "acName": "TRI NAGAR",
+      "requestUrl": "https://ceodelhinet.nic.in/ceodelhiweb/PSL.aspx",
+      "finalUrl": "https://ceodelhinet.nic.in/ceodelhiweb/PSL.aspx",
+      "retrievedAtUtc": "2026-10-26T13:02:57.588718+00:00",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8",
+      "byteLength": 453109,
+      "sha256": "561f3be336ac55f003c87fa5a4c28639fcb5d3247b4e450b8d4c7d4939dc7b0d",
+      "rawArchiveMember": "raw/CEO_DELHI_POLLING_STATIONS_AC_16_POSTBACK.html",
+      "pollingStationCount": 163,
+      "stationNumberRange": [
+        1,
+        163
+      ],
+      "validationStatus": "PASS",
+      "validationChecks": {
+        "gridPresent": true,
+        "headerMatch": true,
+        "allRowsExpectedWidth": true,
+        "allRowsMatchACNumber": true,
+        "allRowsMatchACName": true,
+        "allStationNumbersParseAsIntegers": true,
+        "stationNumbersUnique": true
+      }
+    },
+    {
+      "acNo": 17,
+      "acName": "WAZIRPUR",
+      "requestUrl": "https://ceodelhinet.nic.in/ceodelhiweb/PSL.aspx",
+      "finalUrl": "https://ceodelhinet.nic.in/ceodelhiweb/PSL.aspx",
+      "retrievedAtUtc": "2026-10-26T13:02:58.984402+00:00",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8",
+      "byteLength": 474243,
+      "sha256": "71e5888195fc98f1d481ed77e7e4df15bc4c7cfbb51b0ffaa13d68e210daa972",
+      "rawArchiveMember": "raw/CEO_DELHI_POLLING_STATIONS_AC_17_POSTBACK.html",
+      "pollingStationCount": 181,
+      "stationNumberRange": [
+        1,
+        181
+      ],
+      "validationStatus": "PASS",
+      "validationChecks": {
+        "gridPresent": true,
+        "headerMatch": true,
+        "allRowsExpectedWidth": true,
+        "allRowsMatchACNumber": true,
+        "allRowsMatchACName": true,
+        "allStationNumbersParseAsIntegers": true,
+        "stationNumbersUnique": true
+      }
+    },
+    {
+      "acNo": 18,
+      "acName": "MODEL TOWN",
+      "requestUrl": "https://ceodelhinet.nic.in/ceodelhiweb/PSL.aspx",
+      "finalUrl": "https://ceodelhinet.nic.in/ceodelhiweb/PSL.aspx",
+      "retrievedAtUtc": "2026-10-26T13:03:00.644063+00:00",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8",
+      "byteLength": 465166,
+      "sha256": "0dd5aaa668ce61445b52c6d33370757c5381d0fb58e8358aa8ae0448182b1171",
+      "rawArchiveMember": "raw/CEO_DELHI_POLLING_STATIONS_AC_18_POSTBACK.html",
+      "pollingStationCount": 176,
+      "stationNumberRange": [
+        1,
+        176
+      ],
+      "validationStatus": "PASS",
+      "validationChecks": {
+        "gridPresent": true,
+        "headerMatch": true,
+        "allRowsExpectedWidth": true,
+        "allRowsMatchACNumber": true,
+        "allRowsMatchACName": true,
+        "allStationNumbersParseAsIntegers": true,
+        "stationNumbersUnique": true
+      }
+    },
+    {
+      "acNo": 19,
+      "acName": "SADAR BAZAR",
+      "requestUrl": "https://ceodelhinet.nic.in/ceodelhiweb/PSL.aspx",
+      "finalUrl": "https://ceodelhinet.nic.in/ceodelhiweb/PSL.aspx",
+      "retrievedAtUtc": "2026-10-26T13:03:02.291920+00:00",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8",
+      "byteLength": 507557,
+      "sha256": "d0ac9aee267682be3a7a70a4acdd938e4ae6eeb584127bd2272e8d616b14f5df",
+      "rawArchiveMember": "raw/CEO_DELHI_POLLING_STATIONS_AC_19_POSTBACK.html",
+      "pollingStationCount": 192,
+      "stationNumberRange": [
+        1,
+        192
+      ],
+      "validationStatus": "PASS",
+      "validationChecks": {
+        "gridPresent": true,
+        "headerMatch": true,
+        "allRowsExpectedWidth": true,
+        "allRowsMatchACNumber": true,
+        "allRowsMatchACName": true,
+        "allStationNumbersParseAsIntegers": true,
+        "stationNumbersUnique": true
+      }
+    },
+    {
+      "acNo": 20,
+      "acName": "CHANDNI CHOWK",
+      "requestUrl": "https://ceodelhinet.nic.in/ceodelhiweb/PSL.aspx",
+      "finalUrl": "https://ceodelhinet.nic.in/ceodelhiweb/PSL.aspx",
+      "retrievedAtUtc": "2026-10-26T13:03:05.394104+00:00",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8",
+      "byteLength": 398199,
+      "sha256": "404f43bc0ce437f39beb80f949e3ed534790613eb433b5f75e155de5fba187da",
+      "rawArchiveMember": "raw/CEO_DELHI_POLLING_STATIONS_AC_20_POSTBACK.html",
+      "pollingStationCount": 132,
+      "stationNumberRange": [
+        1,
+        132
+      ],
+      "validationStatus": "PASS",
+      "validationChecks": {
+        "gridPresent": true,
+        "headerMatch": true,
+        "allRowsExpectedWidth": true,
+        "allRowsMatchACNumber": true,
+        "allRowsMatchACName": true,
+        "allStationNumbersParseAsIntegers": true,
+        "stationNumbersUnique": true
+      }
+    },
+    {
+      "acNo": 21,
+      "acName": "MATIA MAHAL",
+      "requestUrl": "https://ceodelhinet.nic.in/ceodelhiweb/PSL.aspx",
+      "finalUrl": "https://ceodelhinet.nic.in/ceodelhiweb/PSL.aspx",
+      "retrievedAtUtc": "2026-10-26T13:03:06.572555+00:00",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8",
+      "byteLength": 425325,
+      "sha256": "536ccac62dae94533fa02a09597df66a6dafb922fba727983cbbb62c47d88ffc",
+      "rawArchiveMember": "raw/CEO_DELHI_POLLING_STATIONS_AC_21_POSTBACK.html",
+      "pollingStationCount": 147,
+      "stationNumberRange": [
+        1,
+        147
+      ],
+      "validationStatus": "PASS",
+      "validationChecks": {
+        "gridPresent": true,
+        "headerMatch": true,
+        "allRowsExpectedWidth": true,
+        "allRowsMatchACNumber": true,
+        "allRowsMatchACName": true,
+        "allStationNumbersParseAsIntegers": true,
+        "stationNumbersUnique": true
+      }
+    },
+    {
+      "acNo": 22,
+      "acName": "BALLIMARAN",
+      "requestUrl": "https://ceodelhinet.nic.in/ceodelhiweb/PSL.aspx",
+      "finalUrl": "https://ceodelhinet.nic.in/ceodelhiweb/PSL.aspx",
+      "retrievedAtUtc": "2026-10-26T13:03:07.430653+00:00",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8",
+      "byteLength": 459847,
+      "sha256": "b99629b236770ee89d1c05a0017f9db5f8e07a801900ee59d566a8222102f418",
+      "rawArchiveMember": "raw/CEO_DELHI_POLLING_STATIONS_AC_22_POSTBACK.html",
+      "pollingStationCount": 171,
+      "stationNumberRange": [
+        1,
+        171
+      ],
+      "validationStatus": "PASS",
+      "validationChecks": {
+        "gridPresent": true,
+        "headerMatch": true,
+        "allRowsExpectedWidth": true,
+        "allRowsMatchACNumber": true,
+        "allRowsMatchACName": true,
+        "allStationNumbersParseAsIntegers": true,
+        "stationNumbersUnique": true
+      }
+    },
+    {
+      "acNo": 23,
+      "acName": "KAROL BAGH",
+      "requestUrl": "https://ceodelhinet.nic.in/ceodelhiweb/PSL.aspx",
+      "finalUrl": "https://ceodelhinet.nic.in/ceodelhiweb/PSL.aspx",
+      "retrievedAtUtc": "2026-10-26T13:03:08.338395+00:00",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8",
+      "byteLength": 498554,
+      "sha256": "1a0ed5f731e4542dc8f6f7c36a453bdee9065e28d4e7ac93495d268d2e2c49f7",
+      "rawArchiveMember": "raw/CEO_DELHI_POLLING_STATIONS_AC_23_POSTBACK.html",
+      "pollingStationCount": 173,
+      "stationNumberRange": [
+        1,
+        173
+      ],
+      "validationStatus": "PASS",
+      "validationChecks": {
+        "gridPresent": true,
+        "headerMatch": true,
+        "allRowsExpectedWidth": true,
+        "allRowsMatchACNumber": true,
+        "allRowsMatchACName": true,
+        "allStationNumbersParseAsIntegers": true,
+        "stationNumbersUnique": true
+      }
+    },
+    {
+      "acNo": 24,
+      "acName": "PATEL NAGAR",
+      "requestUrl": "https://ceodelhinet.nic.in/ceodelhiweb/PSL.aspx",
+      "finalUrl": "https://ceodelhinet.nic.in/ceodelhiweb/PSL.aspx",
+      "retrievedAtUtc": "2026-10-26T13:03:09.240920+00:00",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8",
+      "byteLength": 515223,
+      "sha256": "7ed22e5c036a5157b4c99abb99f4a49340c9fd1cc93b17bb20a7c54c7a618024",
+      "rawArchiveMember": "raw/CEO_DELHI_POLLING_STATIONS_AC_24_POSTBACK.html",
+      "pollingStationCount": 190,
+      "stationNumberRange": [
+        1,
+        190
+      ],
+      "validationStatus": "PASS",
+      "validationChecks": {
+        "gridPresent": true,
+        "headerMatch": true,
+        "allRowsExpectedWidth": true,
+        "allRowsMatchACNumber": true,
+        "allRowsMatchACName": true,
+        "allStationNumbersParseAsIntegers": true,
+        "stationNumbersUnique": true
+      }
+    },
+    {
+      "acNo": 25,
+      "acName": "MOTI NAGAR",
+      "requestUrl": "https://ceodelhinet.nic.in/ceodelhiweb/PSL.aspx",
+      "finalUrl": "https://ceodelhinet.nic.in/ceodelhiweb/PSL.aspx",
+      "retrievedAtUtc": "2026-10-26T13:03:10.149804+00:00",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8",
+      "byteLength": 473562,
+      "sha256": "7478e9bda79dcfa02ef752d59a56064dea510810d583d762569456ad51b34261",
+      "rawArchiveMember": "raw/CEO_DELHI_POLLING_STATIONS_AC_25_POSTBACK.html",
+      "pollingStationCount": 168,
+      "stationNumberRange": [
+        1,
+        168
+      ],
+      "validationStatus": "PASS",
+      "validationChecks": {
+        "gridPresent": true,
+        "headerMatch": true,
+        "allRowsExpectedWidth": true,
+        "allRowsMatchACNumber": true,
+        "allRowsMatchACName": true,
+        "allStationNumbersParseAsIntegers": true,
+        "stationNumbersUnique": true
+      }
+    },
+    {
+      "acNo": 26,
+      "acName": "MADIPUR",
+      "requestUrl": "https://ceodelhinet.nic.in/ceodelhiweb/PSL.aspx",
+      "finalUrl": "https://ceodelhinet.nic.in/ceodelhiweb/PSL.aspx",
+      "retrievedAtUtc": "2026-10-26T13:03:11.038513+00:00",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8",
+      "byteLength": 423611,
+      "sha256": "f70713ccf5a392d210b90095e80cf2e0df245c65a54b2ddd31e32f70e97655e3",
+      "rawArchiveMember": "raw/CEO_DELHI_POLLING_STATIONS_AC_26_POSTBACK.html",
+      "pollingStationCount": 156,
+      "stationNumberRange": [
+        1,
+        156
+      ],
+      "validationStatus": "PASS",
+      "validationChecks": {
+        "gridPresent": true,
+        "headerMatch": true,
+        "allRowsExpectedWidth": true,
+        "allRowsMatchACNumber": true,
+        "allRowsMatchACName": true,
+        "allStationNumbersParseAsIntegers": true,
+        "stationNumbersUnique": true
+      }
+    },
+    {
+      "acNo": 27,
+      "acName": "RAJOURI GARDEN",
+      "requestUrl": "https://ceodelhinet.nic.in/ceodelhiweb/PSL.aspx",
+      "finalUrl": "https://ceodelhinet.nic.in/ceodelhiweb/PSL.aspx",
+      "retrievedAtUtc": "2026-10-26T13:03:11.683620+00:00",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8",
+      "byteLength": 455430,
+      "sha256": "36ecfc8068654cd3eefea49fbdc8be2884e204a18a7900dc60679bddc1321f48",
+      "rawArchiveMember": "raw/CEO_DELHI_POLLING_STATIONS_AC_27_POSTBACK.html",
+      "pollingStationCount": 178,
+      "stationNumberRange": [
+        1,
+        178
+      ],
+      "validationStatus": "PASS",
+      "validationChecks": {
+        "gridPresent": true,
+        "headerMatch": true,
+        "allRowsExpectedWidth": true,
+        "allRowsMatchACNumber": true,
+        "allRowsMatchACName": true,
+        "allStationNumbersParseAsIntegers": true,
+        "stationNumbersUnique": true
+      }
+    },
+    {
+      "acNo": 28,
+      "acName": "HARI NAGAR",
+      "requestUrl": "https://ceodelhinet.nic.in/ceodelhiweb/PSL.aspx",
+      "finalUrl": "https://ceodelhinet.nic.in/ceodelhiweb/PSL.aspx",
+      "retrievedAtUtc": "2026-10-26T13:03:12.342405+00:00",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8",
+      "byteLength": 441845,
+      "sha256": "f06c464ee488b473c1398e0ed75888cd308ae3622bb63323524a7436f6bd7cc1",
+      "rawArchiveMember": "raw/CEO_DELHI_POLLING_STATIONS_AC_28_POSTBACK.html",
+      "pollingStationCount": 165,
+      "stationNumberRange": [
+        1,
+        165
+      ],
+      "validationStatus": "PASS",
+      "validationChecks": {
+        "gridPresent": true,
+        "headerMatch": true,
+        "allRowsExpectedWidth": true,
+        "allRowsMatchACNumber": true,
+        "allRowsMatchACName": true,
+        "allStationNumbersParseAsIntegers": true,
+        "stationNumbersUnique": true
+      }
+    },
+    {
+      "acNo": 29,
+      "acName": "TILAK NAGAR",
+      "requestUrl": "https://ceodelhinet.nic.in/ceodelhiweb/PSL.aspx",
+      "finalUrl": "https://ceodelhinet.nic.in/ceodelhiweb/PSL.aspx",
+      "retrievedAtUtc": "2026-10-26T13:03:12.986603+00:00",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8",
+      "byteLength": 413732,
+      "sha256": "39aba59810365431ec77b8c3c524a27045a891933ee2a83c953f79654de13bae",
+      "rawArchiveMember": "raw/CEO_DELHI_POLLING_STATIONS_AC_29_POSTBACK.html",
+      "pollingStationCount": 151,
+      "stationNumberRange": [
+        1,
+        151
+      ],
+      "validationStatus": "PASS",
+      "validationChecks": {
+        "gridPresent": true,
+        "headerMatch": true,
+        "allRowsExpectedWidth": true,
+        "allRowsMatchACNumber": true,
+        "allRowsMatchACName": true,
+        "allStationNumbersParseAsIntegers": true,
+        "stationNumbersUnique": true
+      }
+    },
+    {
+      "acNo": 30,
+      "acName": "JANAKPURI",
+      "requestUrl": "https://ceodelhinet.nic.in/ceodelhiweb/PSL.aspx",
+      "finalUrl": "https://ceodelhinet.nic.in/ceodelhiweb/PSL.aspx",
+      "retrievedAtUtc": "2026-10-26T13:03:13.880414+00:00",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8",
+      "byteLength": 532484,
+      "sha256": "6274f6770ff0a6ed7d5a06aad03ca3b26448465c23f04bfce5485843d1f721d9",
+      "rawArchiveMember": "raw/CEO_DELHI_POLLING_STATIONS_AC_30_POSTBACK.html",
+      "pollingStationCount": 201,
+      "stationNumberRange": [
+        1,
+        201
+      ],
+      "validationStatus": "PASS",
+      "validationChecks": {
+        "gridPresent": true,
+        "headerMatch": true,
+        "allRowsExpectedWidth": true,
+        "allRowsMatchACNumber": true,
+        "allRowsMatchACName": true,
+        "allStationNumbersParseAsIntegers": true,
+        "stationNumbersUnique": true
+      }
+    },
+    {
+      "acNo": 31,
+      "acName": "VIKASPURI",
+      "requestUrl": "https://ceodelhinet.nic.in/ceodelhiweb/PSL.aspx",
+      "finalUrl": "https://ceodelhinet.nic.in/ceodelhiweb/PSL.aspx",
+      "retrievedAtUtc": "2026-10-26T13:03:14.751396+00:00",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8",
+      "byteLength": 1031253,
+      "sha256": "9e7227bf8707de2b473357bfd16560bab2535d6b6be9fc9eb36ff09ceb5b6c59",
+      "rawArchiveMember": "raw/CEO_DELHI_POLLING_STATIONS_AC_31_POSTBACK.html",
+      "pollingStationCount": 421,
+      "stationNumberRange": [
+        1,
+        421
+      ],
+      "validationStatus": "PASS",
+      "validationChecks": {
+        "gridPresent": true,
+        "headerMatch": true,
+        "allRowsExpectedWidth": true,
+        "allRowsMatchACNumber": true,
+        "allRowsMatchACName": true,
+        "allStationNumbersParseAsIntegers": true,
+        "stationNumbersUnique": true
+      }
+    },
+    {
+      "acNo": 32,
+      "acName": "UTTAM NAGAR",
+      "requestUrl": "https://ceodelhinet.nic.in/ceodelhiweb/PSL.aspx",
+      "finalUrl": "https://ceodelhinet.nic.in/ceodelhiweb/PSL.aspx",
+      "retrievedAtUtc": "2026-10-26T13:03:16.286281+00:00",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8",
+      "byteLength": 659291,
+      "sha256": "331af4df57da98cc0af2596b77cc1b1adca65749a85e0753fbe5192b1a72f37c",
+      "rawArchiveMember": "raw/CEO_DELHI_POLLING_STATIONS_AC_32_POSTBACK.html",
+      "pollingStationCount": 271,
+      "stationNumberRange": [
+        1,
+        271
+      ],
+      "validationStatus": "PASS",
+      "validationChecks": {
+        "gridPresent": true,
+        "headerMatch": true,
+        "allRowsExpectedWidth": true,
+        "allRowsMatchACNumber": true,
+        "allRowsMatchACName": true,
+        "allStationNumbersParseAsIntegers": true,
+        "stationNumbersUnique": true
+      }
+    },
+    {
+      "acNo": 33,
+      "acName": "DWARKA",
+      "requestUrl": "https://ceodelhinet.nic.in/ceodelhiweb/PSL.aspx",
+      "finalUrl": "https://ceodelhinet.nic.in/ceodelhiweb/PSL.aspx",
+      "retrievedAtUtc": "2026-10-26T13:03:17.723175+00:00",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8",
+      "byteLength": 530062,
+      "sha256": "6bcd149f160b653247f9df3c2533f76e286a67163346e3390dc15e25a4664cd6",
+      "rawArchiveMember": "raw/CEO_DELHI_POLLING_STATIONS_AC_33_POSTBACK.html",
+      "pollingStationCount": 190,
+      "stationNumberRange": [
+        1,
+        190
+      ],
+      "validationStatus": "PASS",
+      "validationChecks": {
+        "gridPresent": true,
+        "headerMatch": true,
+        "allRowsExpectedWidth": true,
+        "allRowsMatchACNumber": true,
+        "allRowsMatchACName": true,
+        "allStationNumbersParseAsIntegers": true,
+        "stationNumbersUnique": true
+      }
+    },
+    {
+      "acNo": 34,
+      "acName": "MATIALA",
+      "requestUrl": "https://ceodelhinet.nic.in/ceodelhiweb/PSL.aspx",
+      "finalUrl": "https://ceodelhinet.nic.in/ceodelhiweb/PSL.aspx",
+      "retrievedAtUtc": "2026-10-26T13:03:18.853938+00:00",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8",
+      "byteLength": 1065096,
+      "sha256": "81bca0d3af9b97e475075bd4e22efe2443a3d9a05aaf5c875af9357cb5e89178",
+      "rawArchiveMember": "raw/CEO_DELHI_POLLING_STATIONS_AC_34_POSTBACK.html",
+      "pollingStationCount": 430,
+      "stationNumberRange": [
+        1,
+        430
+      ],
+      "validationStatus": "PASS",
+      "validationChecks": {
+        "gridPresent": true,
+        "headerMatch": true,
+        "allRowsExpectedWidth": true,
+        "allRowsMatchACNumber": true,
+        "allRowsMatchACName": true,
+        "allStationNumbersParseAsIntegers": true,
+        "stationNumbersUnique": true
+      }
+    },
+    {
+      "acNo": 35,
+      "acName": "NAJAFGARH",
+      "requestUrl": "https://ceodelhinet.nic.in/ceodelhiweb/PSL.aspx",
+      "finalUrl": "https://ceodelhinet.nic.in/ceodelhiweb/PSL.aspx",
+      "retrievedAtUtc": "2026-10-26T13:03:20.626324+00:00",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8",
+      "byteLength": 719774,
+      "sha256": "569e1b014fc63c7bbb48d132d7a30d2d66f2ac7c924ecb3360a399c7d0bffd29",
+      "rawArchiveMember": "raw/CEO_DELHI_POLLING_STATIONS_AC_35_POSTBACK.html",
+      "pollingStationCount": 290,
+      "stationNumberRange": [
+        1,
+        290
+      ],
+      "validationStatus": "PASS",
+      "validationChecks": {
+        "gridPresent": true,
+        "headerMatch": true,
+        "allRowsExpectedWidth": true,
+        "allRowsMatchACNumber": true,
+        "allRowsMatchACName": true,
+        "allStationNumbersParseAsIntegers": true,
+        "stationNumbersUnique": true
+      }
+    },
+    {
+      "acNo": 36,
+      "acName": "BIJWASAN",
+      "requestUrl": "https://ceodelhinet.nic.in/ceodelhiweb/PSL.aspx",
+      "finalUrl": "https://ceodelhinet.nic.in/ceodelhiweb/PSL.aspx",
+      "retrievedAtUtc": "2026-10-26T13:03:22.341402+00:00",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8",
+      "byteLength": 540605,
+      "sha256": "bb2b7b62e7747f2bb564cacca6f1ed06d19b280a1735175e0234abb055842729",
+      "rawArchiveMember": "raw/CEO_DELHI_POLLING_STATIONS_AC_36_POSTBACK.html",
+      "pollingStationCount": 211,
+      "stationNumberRange": [
+        1,
+        211
+      ],
+      "validationStatus": "PASS",
+      "validationChecks": {
+        "gridPresent": true,
+        "headerMatch": true,
+        "allRowsExpectedWidth": true,
+        "allRowsMatchACNumber": true,
+        "allRowsMatchACName": true,
+        "allStationNumbersParseAsIntegers": true,
+        "stationNumbersUnique": true
+      }
+    },
+    {
+      "acNo": 37,
+      "acName": "PALAM",
+      "requestUrl": "https://ceodelhinet.nic.in/ceodelhiweb/PSL.aspx",
+      "finalUrl": "https://ceodelhinet.nic.in/ceodelhiweb/PSL.aspx",
+      "retrievedAtUtc": "2026-10-26T13:03:23.475513+00:00",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8",
+      "byteLength": 597344,
+      "sha256": "fef0858d9bd7366d8b94f63623b0790cf6507033f5d46399d789a6e8399caa5b",
+      "rawArchiveMember": "raw/CEO_DELHI_POLLING_STATIONS_AC_37_POSTBACK.html",
+      "pollingStationCount": 230,
+      "stationNumberRange": [
+        1,
+        230
+      ],
+      "validationStatus": "PASS",
+      "validationChecks": {
+        "gridPresent": true,
+        "headerMatch": true,
+        "allRowsExpectedWidth": true,
+        "allRowsMatchACNumber": true,
+        "allRowsMatchACName": true,
+        "allStationNumbersParseAsIntegers": true,
+        "stationNumbersUnique": true
+      }
+    },
+    {
+      "acNo": 38,
+      "acName": "DELHI CANTT",
+      "requestUrl": "https://ceodelhinet.nic.in/ceodelhiweb/PSL.aspx",
+      "finalUrl": "https://ceodelhinet.nic.in/ceodelhiweb/PSL.aspx",
+      "retrievedAtUtc": "2026-10-26T13:03:24.616167+00:00",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8",
+      "byteLength": 308764,
+      "sha256": "dfb5ad1c06a4468ef38220df486aaaf0afef103aee4f60b1a8e84a28cce52063",
+      "rawArchiveMember": "raw/CEO_DELHI_POLLING_STATIONS_AC_38_POSTBACK.html",
+      "pollingStationCount": 90,
+      "stationNumberRange": [
+        1,
+        90
+      ],
+      "validationStatus": "PASS",
+      "validationChecks": {
+        "gridPresent": true,
+        "headerMatch": true,
+        "allRowsExpectedWidth": true,
+        "allRowsMatchACNumber": true,
+        "allRowsMatchACName": true,
+        "allStationNumbersParseAsIntegers": true,
+        "stationNumbersUnique": true
+      }
+    },
+    {
+      "acNo": 39,
+      "acName": "RAJINDER NAGAR",
+      "requestUrl": "https://ceodelhinet.nic.in/ceodelhiweb/PSL.aspx",
+      "finalUrl": "https://ceodelhinet.nic.in/ceodelhiweb/PSL.aspx",
+      "retrievedAtUtc": "2026-10-26T13:03:25.701048+00:00",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8",
+      "byteLength": 420678,
+      "sha256": "05adf58aefe79e79ccd14671cc13e1850ee9896d45ad615ec76e24418725af7f",
+      "rawArchiveMember": "raw/CEO_DELHI_POLLING_STATIONS_AC_39_POSTBACK.html",
+      "pollingStationCount": 151,
+      "stationNumberRange": [
+        1,
+        151
+      ],
+      "validationStatus": "PASS",
+      "validationChecks": {
+        "gridPresent": true,
+        "headerMatch": true,
+        "allRowsExpectedWidth": true,
+        "allRowsMatchACNumber": true,
+        "allRowsMatchACName": true,
+        "allStationNumbersParseAsIntegers": true,
+        "stationNumbersUnique": true
+      }
+    },
+    {
+      "acNo": 40,
+      "acName": "NEW DELHI",
+      "requestUrl": "https://ceodelhinet.nic.in/ceodelhiweb/PSL.aspx",
+      "finalUrl": "https://ceodelhinet.nic.in/ceodelhiweb/PSL.aspx",
+      "retrievedAtUtc": "2026-10-26T13:03:26.332320+00:00",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8",
+      "byteLength": 457933,
+      "sha256": "93861d2351c06d43aeffae253c8059866aad3963ddd3b26fcff31d8aa4ffead6",
+      "rawArchiveMember": "raw/CEO_DELHI_POLLING_STATIONS_AC_40_POSTBACK.html",
+      "pollingStationCount": 124,
+      "stationNumberRange": [
+        1,
+        124
+      ],
+      "validationStatus": "PASS",
+      "validationChecks": {
+        "gridPresent": true,
+        "headerMatch": true,
+        "allRowsExpectedWidth": true,
+        "allRowsMatchACNumber": true,
+        "allRowsMatchACName": true,
+        "allStationNumbersParseAsIntegers": true,
+        "stationNumbersUnique": true
+      }
+    },
+    {
+      "acNo": 41,
+      "acName": "JANGPURA",
+      "requestUrl": "https://ceodelhinet.nic.in/ceodelhiweb/PSL.aspx",
+      "finalUrl": "https://ceodelhinet.nic.in/ceodelhiweb/PSL.aspx",
+      "retrievedAtUtc": "2026-10-26T13:03:27.220042+00:00",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8",
+      "byteLength": 416570,
+      "sha256": "05ef56b16b4557293fc981e04e2cc70bbbbc67a3012f278f0247a5ab75302f38",
+      "rawArchiveMember": "raw/CEO_DELHI_POLLING_STATIONS_AC_41_POSTBACK.html",
+      "pollingStationCount": 153,
+      "stationNumberRange": [
+        1,
+        153
+      ],
+      "validationStatus": "PASS",
+      "validationChecks": {
+        "gridPresent": true,
+        "headerMatch": true,
+        "allRowsExpectedWidth": true,
+        "allRowsMatchACNumber": true,
+        "allRowsMatchACName": true,
+        "allStationNumbersParseAsIntegers": true,
+        "stationNumbersUnique": true
+      }
+    },
+    {
+      "acNo": 42,
+      "acName": "KASTURBA NAGAR",
+      "requestUrl": "https://ceodelhinet.nic.in/ceodelhiweb/PSL.aspx",
+      "finalUrl": "https://ceodelhinet.nic.in/ceodelhiweb/PSL.aspx",
+      "retrievedAtUtc": "2026-10-26T13:03:28.124625+00:00",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8",
+      "byteLength": 422046,
+      "sha256": "c5dff29581e964a64ff6095e20ba2c7d3c633bb985bd06356d2f2c5a2cc8833c",
+      "rawArchiveMember": "raw/CEO_DELHI_POLLING_STATIONS_AC_42_POSTBACK.html",
+      "pollingStationCount": 146,
+      "stationNumberRange": [
+        1,
+        146
+      ],
+      "validationStatus": "PASS",
+      "validationChecks": {
+        "gridPresent": true,
+        "headerMatch": true,
+        "allRowsExpectedWidth": true,
+        "allRowsMatchACNumber": true,
+        "allRowsMatchACName": true,
+        "allStationNumbersParseAsIntegers": true,
+        "stationNumbersUnique": true
+      }
+    },
+    {
+      "acNo": 43,
+      "acName": "MALVIYA NAGAR",
+      "requestUrl": "https://ceodelhinet.nic.in/ceodelhiweb/PSL.aspx",
+      "finalUrl": "https://ceodelhinet.nic.in/ceodelhiweb/PSL.aspx",
+      "retrievedAtUtc": "2026-10-26T13:03:28.772211+00:00",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8",
+      "byteLength": 422374,
+      "sha256": "6e49767f7a1d15fbfa115baafdddc099ed69fbc4068f65b8846959938f8fa949",
+      "rawArchiveMember": "raw/CEO_DELHI_POLLING_STATIONS_AC_43_POSTBACK.html",
+      "pollingStationCount": 149,
+      "stationNumberRange": [
+        1,
+        149
+      ],
+      "validationStatus": "PASS",
+      "validationChecks": {
+        "gridPresent": true,
+        "headerMatch": true,
+        "allRowsExpectedWidth": true,
+        "allRowsMatchACNumber": true,
+        "allRowsMatchACName": true,
+        "allStationNumbersParseAsIntegers": true,
+        "stationNumbersUnique": true
+      }
+    },
+    {
+      "acNo": 44,
+      "acName": "R K PURAM",
+      "requestUrl": "https://ceodelhinet.nic.in/ceodelhiweb/PSL.aspx",
+      "finalUrl": "https://ceodelhinet.nic.in/ceodelhiweb/PSL.aspx",
+      "retrievedAtUtc": "2026-10-26T13:03:29.630863+00:00",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8",
+      "byteLength": 449856,
+      "sha256": "0f190e2a86324e177cf29e441f8c9c6d03a3d0309a24fa88a2244544b82090df",
+      "rawArchiveMember": "raw/CEO_DELHI_POLLING_STATIONS_AC_44_POSTBACK.html",
+      "pollingStationCount": 153,
+      "stationNumberRange": [
+        1,
+        153
+      ],
+      "validationStatus": "PASS",
+      "validationChecks": {
+        "gridPresent": true,
+        "headerMatch": true,
+        "allRowsExpectedWidth": true,
+        "allRowsMatchACNumber": true,
+        "allRowsMatchACName": true,
+        "allStationNumbersParseAsIntegers": true,
+        "stationNumbersUnique": true
+      }
+    },
+    {
+      "acNo": 45,
+      "acName": "MEHRAULI",
+      "requestUrl": "https://ceodelhinet.nic.in/ceodelhiweb/PSL.aspx",
+      "finalUrl": "https://ceodelhinet.nic.in/ceodelhiweb/PSL.aspx",
+      "retrievedAtUtc": "2026-10-26T13:03:30.532773+00:00",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8",
+      "byteLength": 526522,
+      "sha256": "3f82a50a2cb6e0a6f1d7a7cb51cb528ee2f2fea4b65af4fbfa22827ae461439e",
+      "rawArchiveMember": "raw/CEO_DELHI_POLLING_STATIONS_AC_45_POSTBACK.html",
+      "pollingStationCount": 204,
+      "stationNumberRange": [
+        1,
+        204
+      ],
+      "validationStatus": "PASS",
+      "validationChecks": {
+        "gridPresent": true,
+        "headerMatch": true,
+        "allRowsExpectedWidth": true,
+        "allRowsMatchACNumber": true,
+        "allRowsMatchACName": true,
+        "allStationNumbersParseAsIntegers": true,
+        "stationNumbersUnique": true
+      }
+    },
+    {
+      "acNo": 46,
+      "acName": "CHHATARPUR",
+      "requestUrl": "https://ceodelhinet.nic.in/ceodelhiweb/PSL.aspx",
+      "finalUrl": "https://ceodelhinet.nic.in/ceodelhiweb/PSL.aspx",
+      "retrievedAtUtc": "2026-10-26T13:03:31.653620+00:00",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8",
+      "byteLength": 595460,
+      "sha256": "d4fd8c73ab9fc320485179760b09f1e6a1ecf64dfd4d800d103321de21606ee9",
+      "rawArchiveMember": "raw/CEO_DELHI_POLLING_STATIONS_AC_46_POSTBACK.html",
+      "pollingStationCount": 241,
+      "stationNumberRange": [
+        1,
+        241
+      ],
+      "validationStatus": "PASS",
+      "validationChecks": {
+        "gridPresent": true,
+        "headerMatch": true,
+        "allRowsExpectedWidth": true,
+        "allRowsMatchACNumber": true,
+        "allRowsMatchACName": true,
+        "allStationNumbersParseAsIntegers": true,
+        "stationNumbersUnique": true
+      }
+    },
+    {
+      "acNo": 47,
+      "acName": "DEOLI",
+      "requestUrl": "https://ceodelhinet.nic.in/ceodelhiweb/PSL.aspx",
+      "finalUrl": "https://ceodelhinet.nic.in/ceodelhiweb/PSL.aspx",
+      "retrievedAtUtc": "2026-10-26T13:03:32.796094+00:00",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8",
+      "byteLength": 670821,
+      "sha256": "69e186483aef06b30fefae582a4c87257d66467f6f5f7163e30062029aa3f887",
+      "rawArchiveMember": "raw/CEO_DELHI_POLLING_STATIONS_AC_47_POSTBACK.html",
+      "pollingStationCount": 277,
+      "stationNumberRange": [
+        1,
+        277
+      ],
+      "validationStatus": "PASS",
+      "validationChecks": {
+        "gridPresent": true,
+        "headerMatch": true,
+        "allRowsExpectedWidth": true,
+        "allRowsMatchACNumber": true,
+        "allRowsMatchACName": true,
+        "allStationNumbersParseAsIntegers": true,
+        "stationNumbersUnique": true
+      }
+    },
+    {
+      "acNo": 48,
+      "acName": "AMBEDKAR NAGAR",
+      "requestUrl": "https://ceodelhinet.nic.in/ceodelhiweb/PSL.aspx",
+      "finalUrl": "https://ceodelhinet.nic.in/ceodelhiweb/PSL.aspx",
+      "retrievedAtUtc": "2026-10-26T13:03:33.978398+00:00",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8",
+      "byteLength": 435652,
+      "sha256": "6c51527da2e2f9335e82cd93b76628cb00f392d922c8074a98d2376963727401",
+      "rawArchiveMember": "raw/CEO_DELHI_POLLING_STATIONS_AC_48_POSTBACK.html",
+      "pollingStationCount": 156,
+      "stationNumberRange": [
+        1,
+        156
+      ],
+      "validationStatus": "PASS",
+      "validationChecks": {
+        "gridPresent": true,
+        "headerMatch": true,
+        "allRowsExpectedWidth": true,
+        "allRowsMatchACNumber": true,
+        "allRowsMatchACName": true,
+        "allStationNumbersParseAsIntegers": true,
+        "stationNumbersUnique": true
+      }
+    },
+    {
+      "acNo": 49,
+      "acName": "SANGAM VIHAR",
+      "requestUrl": "https://ceodelhinet.nic.in/ceodelhiweb/PSL.aspx",
+      "finalUrl": "https://ceodelhinet.nic.in/ceodelhiweb/PSL.aspx",
+      "retrievedAtUtc": "2026-10-26T13:03:35.126833+00:00",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8",
+      "byteLength": 513861,
+      "sha256": "46d07a47805449d80f9522c1bf4d15eb0eceb15ab03671749fe54e6ebedf7b11",
+      "rawArchiveMember": "raw/CEO_DELHI_POLLING_STATIONS_AC_49_POSTBACK.html",
+      "pollingStationCount": 207,
+      "stationNumberRange": [
+        1,
+        207
+      ],
+      "validationStatus": "PASS",
+      "validationChecks": {
+        "gridPresent": true,
+        "headerMatch": true,
+        "allRowsExpectedWidth": true,
+        "allRowsMatchACNumber": true,
+        "allRowsMatchACName": true,
+        "allStationNumbersParseAsIntegers": true,
+        "stationNumbersUnique": true
+      }
+    },
+    {
+      "acNo": 50,
+      "acName": "GREATER KAILASH",
+      "requestUrl": "https://ceodelhinet.nic.in/ceodelhiweb/PSL.aspx",
+      "finalUrl": "https://ceodelhinet.nic.in/ceodelhiweb/PSL.aspx",
+      "retrievedAtUtc": "2026-10-26T13:03:36.055658+00:00",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8",
+      "byteLength": 509625,
+      "sha256": "7019a2d2d7e9c4537f1380558648e1ed9c3ca9152911929b5f483d7bc079c2dc",
+      "rawArchiveMember": "raw/CEO_DELHI_POLLING_STATIONS_AC_50_POSTBACK.html",
+      "pollingStationCount": 187,
+      "stationNumberRange": [
+        1,
+        187
+      ],
+      "validationStatus": "PASS",
+      "validationChecks": {
+        "gridPresent": true,
+        "headerMatch": true,
+        "allRowsExpectedWidth": true,
+        "allRowsMatchACNumber": true,
+        "allRowsMatchACName": true,
+        "allStationNumbersParseAsIntegers": true,
+        "stationNumbersUnique": true
+      }
+    },
+    {
+      "acNo": 51,
+      "acName": "KALKAJI",
+      "requestUrl": "https://ceodelhinet.nic.in/ceodelhiweb/PSL.aspx",
+      "finalUrl": "https://ceodelhinet.nic.in/ceodelhiweb/PSL.aspx",
+      "retrievedAtUtc": "2026-10-26T13:03:36.946079+00:00",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8",
+      "byteLength": 465074,
+      "sha256": "f62e3ff799c4da8653e1549bf279f2273e1b5ebe7009163ccb482228dd4bf0f3",
+      "rawArchiveMember": "raw/CEO_DELHI_POLLING_STATIONS_AC_51_POSTBACK.html",
+      "pollingStationCount": 176,
+      "stationNumberRange": [
+        1,
+        176
+      ],
+      "validationStatus": "PASS",
+      "validationChecks": {
+        "gridPresent": true,
+        "headerMatch": true,
+        "allRowsExpectedWidth": true,
+        "allRowsMatchACNumber": true,
+        "allRowsMatchACName": true,
+        "allStationNumbersParseAsIntegers": true,
+        "stationNumbersUnique": true
+      }
+    },
+    {
+      "acNo": 52,
+      "acName": "TUGHLAKABAD",
+      "requestUrl": "https://ceodelhinet.nic.in/ceodelhiweb/PSL.aspx",
+      "finalUrl": "https://ceodelhinet.nic.in/ceodelhiweb/PSL.aspx",
+      "retrievedAtUtc": "2026-10-26T13:03:37.840790+00:00",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8",
+      "byteLength": 532872,
+      "sha256": "e7a4f0fd50bc2a6c83bae04e47393ddc83053145ed1956585c8c16c580c169c1",
+      "rawArchiveMember": "raw/CEO_DELHI_POLLING_STATIONS_AC_52_POSTBACK.html",
+      "pollingStationCount": 210,
+      "stationNumberRange": [
+        1,
+        210
+      ],
+      "validationStatus": "PASS",
+      "validationChecks": {
+        "gridPresent": true,
+        "headerMatch": true,
+        "allRowsExpectedWidth": true,
+        "allRowsMatchACNumber": true,
+        "allRowsMatchACName": true,
+        "allStationNumbersParseAsIntegers": true,
+        "stationNumbersUnique": true
+      }
+    },
+    {
+      "acNo": 53,
+      "acName": "BADARPUR",
+      "requestUrl": "https://ceodelhinet.nic.in/ceodelhiweb/PSL.aspx",
+      "finalUrl": "https://ceodelhinet.nic.in/ceodelhiweb/PSL.aspx",
+      "retrievedAtUtc": "2026-10-26T13:03:38.722768+00:00",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8",
+      "byteLength": 792381,
+      "sha256": "8974bd1d4114b5bec057c7fcd42f7f77dfe0e3477cf62744b37804e4bc4ad66c",
+      "rawArchiveMember": "raw/CEO_DELHI_POLLING_STATIONS_AC_53_POSTBACK.html",
+      "pollingStationCount": 327,
+      "stationNumberRange": [
+        1,
+        327
+      ],
+      "validationStatus": "PASS",
+      "validationChecks": {
+        "gridPresent": true,
+        "headerMatch": true,
+        "allRowsExpectedWidth": true,
+        "allRowsMatchACNumber": true,
+        "allRowsMatchACName": true,
+        "allStationNumbersParseAsIntegers": true,
+        "stationNumbersUnique": true
+      }
+    },
+    {
+      "acNo": 54,
+      "acName": "OKHLA",
+      "requestUrl": "https://ceodelhinet.nic.in/ceodelhiweb/PSL.aspx",
+      "finalUrl": "https://ceodelhinet.nic.in/ceodelhiweb/PSL.aspx",
+      "retrievedAtUtc": "2026-10-26T13:03:40.148081+00:00",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8",
+      "byteLength": 828504,
+      "sha256": "3a962e262fce82a559d6dc4d6a0981d456b5f736d34e046c6c967eb1971aa79f",
+      "rawArchiveMember": "raw/CEO_DELHI_POLLING_STATIONS_AC_54_POSTBACK.html",
+      "pollingStationCount": 345,
+      "stationNumberRange": [
+        1,
+        345
+      ],
+      "validationStatus": "PASS",
+      "validationChecks": {
+        "gridPresent": true,
+        "headerMatch": true,
+        "allRowsExpectedWidth": true,
+        "allRowsMatchACNumber": true,
+        "allRowsMatchACName": true,
+        "allStationNumbersParseAsIntegers": true,
+        "stationNumbersUnique": true
+      }
+    },
+    {
+      "acNo": 55,
+      "acName": "TRILOKPURI",
+      "requestUrl": "https://ceodelhinet.nic.in/ceodelhiweb/PSL.aspx",
+      "finalUrl": "https://ceodelhinet.nic.in/ceodelhiweb/PSL.aspx",
+      "retrievedAtUtc": "2026-10-26T13:03:41.836433+00:00",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8",
+      "byteLength": 461382,
+      "sha256": "4f60ade50bd4f94ca9435b0f4b990c26607972f8250b14cfa6dd5f677f29f9d6",
+      "rawArchiveMember": "raw/CEO_DELHI_POLLING_STATIONS_AC_55_POSTBACK.html",
+      "pollingStationCount": 182,
+      "stationNumberRange": [
+        1,
+        182
+      ],
+      "validationStatus": "PASS",
+      "validationChecks": {
+        "gridPresent": true,
+        "headerMatch": true,
+        "allRowsExpectedWidth": true,
+        "allRowsMatchACNumber": true,
+        "allRowsMatchACName": true,
+        "allStationNumbersParseAsIntegers": true,
+        "stationNumbersUnique": true
+      }
+    },
+    {
+      "acNo": 56,
+      "acName": "KONDLI",
+      "requestUrl": "https://ceodelhinet.nic.in/ceodelhiweb/PSL.aspx",
+      "finalUrl": "https://ceodelhinet.nic.in/ceodelhiweb/PSL.aspx",
+      "retrievedAtUtc": "2026-10-26T13:03:42.993426+00:00",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8",
+      "byteLength": 490975,
+      "sha256": "60114f4f9243d15573c7611a097e1dc486b40e662a7d7578b6237a3e89fa1812",
+      "rawArchiveMember": "raw/CEO_DELHI_POLLING_STATIONS_AC_56_POSTBACK.html",
+      "pollingStationCount": 190,
+      "stationNumberRange": [
+        1,
+        190
+      ],
+      "validationStatus": "PASS",
+      "validationChecks": {
+        "gridPresent": true,
+        "headerMatch": true,
+        "allRowsExpectedWidth": true,
+        "allRowsMatchACNumber": true,
+        "allRowsMatchACName": true,
+        "allStationNumbersParseAsIntegers": true,
+        "stationNumbersUnique": true
+      }
+    },
+    {
+      "acNo": 57,
+      "acName": "PATPARGANJ",
+      "requestUrl": "https://ceodelhinet.nic.in/ceodelhiweb/PSL.aspx",
+      "finalUrl": "https://ceodelhinet.nic.in/ceodelhiweb/PSL.aspx",
+      "retrievedAtUtc": "2026-10-26T13:03:43.648337+00:00",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8",
+      "byteLength": 509746,
+      "sha256": "97751c1b29ad974e7d7f8b6433fca2b130d43bbf85f5690e75c8066fa205168e",
+      "rawArchiveMember": "raw/CEO_DELHI_POLLING_STATIONS_AC_57_POSTBACK.html",
+      "pollingStationCount": 203,
+      "stationNumberRange": [
+        1,
+        203
+      ],
+      "validationStatus": "PASS",
+      "validationChecks": {
+        "gridPresent": true,
+        "headerMatch": true,
+        "allRowsExpectedWidth": true,
+        "allRowsMatchACNumber": true,
+        "allRowsMatchACName": true,
+        "allStationNumbersParseAsIntegers": true,
+        "stationNumbersUnique": true
+      }
+    },
+    {
+      "acNo": 58,
+      "acName": "LAXMI NAGAR",
+      "requestUrl": "https://ceodelhinet.nic.in/ceodelhiweb/PSL.aspx",
+      "finalUrl": "https://ceodelhinet.nic.in/ceodelhiweb/PSL.aspx",
+      "retrievedAtUtc": "2026-10-26T13:03:44.552957+00:00",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8",
+      "byteLength": 465540,
+      "sha256": "0b2ce03c2dd055913e4a426af5b65853c0fe11fb7581f8080c5e315d0bfc48f7",
+      "rawArchiveMember": "raw/CEO_DELHI_POLLING_STATIONS_AC_58_POSTBACK.html",
+      "pollingStationCount": 180,
+      "stationNumberRange": [
+        1,
+        180
+      ],
+      "validationStatus": "PASS",
+      "validationChecks": {
+        "gridPresent": true,
+        "headerMatch": true,
+        "allRowsExpectedWidth": true,
+        "allRowsMatchACNumber": true,
+        "allRowsMatchACName": true,
+        "allStationNumbersParseAsIntegers": true,
+        "stationNumbersUnique": true
+      }
+    },
+    {
+      "acNo": 59,
+      "acName": "VISHWAS NAGAR",
+      "requestUrl": "https://ceodelhinet.nic.in/ceodelhiweb/PSL.aspx",
+      "finalUrl": "https://ceodelhinet.nic.in/ceodelhiweb/PSL.aspx",
+      "retrievedAtUtc": "2026-10-26T13:03:45.442944+00:00",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8",
+      "byteLength": 512031,
+      "sha256": "27c99d3e7b6c74b15bfd7943a585310781fd97e69abfe2eb13e5e246dcb26894",
+      "rawArchiveMember": "raw/CEO_DELHI_POLLING_STATIONS_AC_59_POSTBACK.html",
+      "pollingStationCount": 196,
+      "stationNumberRange": [
+        1,
+        196
+      ],
+      "validationStatus": "PASS",
+      "validationChecks": {
+        "gridPresent": true,
+        "headerMatch": true,
+        "allRowsExpectedWidth": true,
+        "allRowsMatchACNumber": true,
+        "allRowsMatchACName": true,
+        "allStationNumbersParseAsIntegers": true,
+        "stationNumbersUnique": true
+      }
+    },
+    {
+      "acNo": 60,
+      "acName": "KRISHNA NAGAR",
+      "requestUrl": "https://ceodelhinet.nic.in/ceodelhiweb/PSL.aspx",
+      "finalUrl": "https://ceodelhinet.nic.in/ceodelhiweb/PSL.aspx",
+      "retrievedAtUtc": "2026-10-26T13:03:46.100374+00:00",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8",
+      "byteLength": 604826,
+      "sha256": "438cade5004bfb96bbb1f3bbd63b4f1878397be8ce94e9ae626af1201e1e649c",
+      "rawArchiveMember": "raw/CEO_DELHI_POLLING_STATIONS_AC_60_POSTBACK.html",
+      "pollingStationCount": 224,
+      "stationNumberRange": [
+        1,
+        224
+      ],
+      "validationStatus": "PASS",
+      "validationChecks": {
+        "gridPresent": true,
+        "headerMatch": true,
+        "allRowsExpectedWidth": true,
+        "allRowsMatchACNumber": true,
+        "allRowsMatchACName": true,
+        "allStationNumbersParseAsIntegers": true,
+        "stationNumbersUnique": true
+      }
+    },
+    {
+      "acNo": 61,
+      "acName": "GANDHI NAGAR",
+      "requestUrl": "https://ceodelhinet.nic.in/ceodelhiweb/PSL.aspx",
+      "finalUrl": "https://ceodelhinet.nic.in/ceodelhiweb/PSL.aspx",
+      "retrievedAtUtc": "2026-10-26T13:03:47.249744+00:00",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8",
+      "byteLength": 498240,
+      "sha256": "99c9c3e68f0f61f3058cf7b29860bbc66d15c66177d1e2efc8201fd1fa826b36",
+      "rawArchiveMember": "raw/CEO_DELHI_POLLING_STATIONS_AC_61_POSTBACK.html",
+      "pollingStationCount": 171,
+      "stationNumberRange": [
+        1,
+        171
+      ],
+      "validationStatus": "PASS",
+      "validationChecks": {
+        "gridPresent": true,
+        "headerMatch": true,
+        "allRowsExpectedWidth": true,
+        "allRowsMatchACNumber": true,
+        "allRowsMatchACName": true,
+        "allStationNumbersParseAsIntegers": true,
+        "stationNumbersUnique": true
+      }
+    },
+    {
+      "acNo": 62,
+      "acName": "SHAHDARA",
+      "requestUrl": "https://ceodelhinet.nic.in/ceodelhiweb/PSL.aspx",
+      "finalUrl": "https://ceodelhinet.nic.in/ceodelhiweb/PSL.aspx",
+      "retrievedAtUtc": "2026-10-26T13:03:48.139291+00:00",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8",
+      "byteLength": 530609,
+      "sha256": "dd20afa41937c38e5b059f26c4c3958180cc1762032e20fa21fa957300e21651",
+      "rawArchiveMember": "raw/CEO_DELHI_POLLING_STATIONS_AC_62_POSTBACK.html",
+      "pollingStationCount": 197,
+      "stationNumberRange": [
+        1,
+        197
+      ],
+      "validationStatus": "PASS",
+      "validationChecks": {
+        "gridPresent": true,
+        "headerMatch": true,
+        "allRowsExpectedWidth": true,
+        "allRowsMatchACNumber": true,
+        "allRowsMatchACName": true,
+        "allStationNumbersParseAsIntegers": true,
+        "stationNumbersUnique": true
+      }
+    },
+    {
+      "acNo": 63,
+      "acName": "SEEMA PURI",
+      "requestUrl": "https://ceodelhinet.nic.in/ceodelhiweb/PSL.aspx",
+      "finalUrl": "https://ceodelhinet.nic.in/ceodelhiweb/PSL.aspx",
+      "retrievedAtUtc": "2026-10-26T13:03:49.258257+00:00",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8",
+      "byteLength": 501929,
+      "sha256": "a8d42f1433ac6d02ba988d19026bd5d33e71d3e48303290c42aa8d969f31a51d",
+      "rawArchiveMember": "raw/CEO_DELHI_POLLING_STATIONS_AC_63_POSTBACK.html",
+      "pollingStationCount": 200,
+      "stationNumberRange": [
+        1,
+        200
+      ],
+      "validationStatus": "PASS",
+      "validationChecks": {
+        "gridPresent": true,
+        "headerMatch": true,
+        "allRowsExpectedWidth": true,
+        "allRowsMatchACNumber": true,
+        "allRowsMatchACName": true,
+        "allStationNumbersParseAsIntegers": true,
+        "stationNumbersUnique": true
+      }
+    },
+    {
+      "acNo": 64,
+      "acName": "ROHTAS NAGAR",
+      "requestUrl": "https://ceodelhinet.nic.in/ceodelhiweb/PSL.aspx",
+      "finalUrl": "https://ceodelhinet.nic.in/ceodelhiweb/PSL.aspx",
+      "retrievedAtUtc": "2026-10-26T13:03:50.152280+00:00",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8",
+      "byteLength": 574661,
+      "sha256": "a37909458e277dee6e8d2bd6887c5572d1afcb558b0816e443693fa8ae69e7b3",
+      "rawArchiveMember": "raw/CEO_DELHI_POLLING_STATIONS_AC_64_POSTBACK.html",
+      "pollingStationCount": 207,
+      "stationNumberRange": [
+        1,
+        207
+      ],
+      "validationStatus": "PASS",
+      "validationChecks": {
+        "gridPresent": true,
+        "headerMatch": true,
+        "allRowsExpectedWidth": true,
+        "allRowsMatchACNumber": true,
+        "allRowsMatchACName": true,
+        "allStationNumbersParseAsIntegers": true,
+        "stationNumbersUnique": true
+      }
+    },
+    {
+      "acNo": 65,
+      "acName": "SEELAMPUR",
+      "requestUrl": "https://ceodelhinet.nic.in/ceodelhiweb/PSL.aspx",
+      "finalUrl": "https://ceodelhinet.nic.in/ceodelhiweb/PSL.aspx",
+      "retrievedAtUtc": "2026-10-26T13:03:51.034123+00:00",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8",
+      "byteLength": 492006,
+      "sha256": "b4d4724a90e31506c600aa38190d43c9ae959c00b501dcb76c05eed9a8b5275d",
+      "rawArchiveMember": "raw/CEO_DELHI_POLLING_STATIONS_AC_65_POSTBACK.html",
+      "pollingStationCount": 182,
+      "stationNumberRange": [
+        1,
+        182
+      ],
+      "validationStatus": "PASS",
+      "validationChecks": {
+        "gridPresent": true,
+        "headerMatch": true,
+        "allRowsExpectedWidth": true,
+        "allRowsMatchACNumber": true,
+        "allRowsMatchACName": true,
+        "allStationNumbersParseAsIntegers": true,
+        "stationNumbersUnique": true
+      }
+    },
+    {
+      "acNo": 66,
+      "acName": "GHONDA",
+      "requestUrl": "https://ceodelhinet.nic.in/ceodelhiweb/PSL.aspx",
+      "finalUrl": "https://ceodelhinet.nic.in/ceodelhiweb/PSL.aspx",
+      "retrievedAtUtc": "2026-10-26T13:03:51.944662+00:00",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8",
+      "byteLength": 558459,
+      "sha256": "f9d0bcd02fafc976ebf8b4902ec907d74159dcb5ff38f20b719900986cd9266b",
+      "rawArchiveMember": "raw/CEO_DELHI_POLLING_STATIONS_AC_66_POSTBACK.html",
+      "pollingStationCount": 211,
+      "stationNumberRange": [
+        1,
+        211
+      ],
+      "validationStatus": "PASS",
+      "validationChecks": {
+        "gridPresent": true,
+        "headerMatch": true,
+        "allRowsExpectedWidth": true,
+        "allRowsMatchACNumber": true,
+        "allRowsMatchACName": true,
+        "allStationNumbersParseAsIntegers": true,
+        "stationNumbersUnique": true
+      }
+    },
+    {
+      "acNo": 67,
+      "acName": "BABARPUR",
+      "requestUrl": "https://ceodelhinet.nic.in/ceodelhiweb/PSL.aspx",
+      "finalUrl": "https://ceodelhinet.nic.in/ceodelhiweb/PSL.aspx",
+      "retrievedAtUtc": "2026-10-26T13:03:52.871623+00:00",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8",
+      "byteLength": 562200,
+      "sha256": "367d9e309042e128d6fdc1225f4380d73e0f517fe549dc6805386fa31332d863",
+      "rawArchiveMember": "raw/CEO_DELHI_POLLING_STATIONS_AC_67_POSTBACK.html",
+      "pollingStationCount": 208,
+      "stationNumberRange": [
+        1,
+        208
+      ],
+      "validationStatus": "PASS",
+      "validationChecks": {
+        "gridPresent": true,
+        "headerMatch": true,
+        "allRowsExpectedWidth": true,
+        "allRowsMatchACNumber": true,
+        "allRowsMatchACName": true,
+        "allStationNumbersParseAsIntegers": true,
+        "stationNumbersUnique": true
+      }
+    },
+    {
+      "acNo": 68,
+      "acName": "GOKALPUR",
+      "requestUrl": "https://ceodelhinet.nic.in/ceodelhiweb/PSL.aspx",
+      "finalUrl": "https://ceodelhinet.nic.in/ceodelhiweb/PSL.aspx",
+      "retrievedAtUtc": "2026-10-26T13:03:53.997333+00:00",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8",
+      "byteLength": 605031,
+      "sha256": "3e0a4ca2843713c7750aba2f18231c0c0e74c9855d1d6f0038901f6e75a3c664",
+      "rawArchiveMember": "raw/CEO_DELHI_POLLING_STATIONS_AC_68_POSTBACK.html",
+      "pollingStationCount": 229,
+      "stationNumberRange": [
+        1,
+        229
+      ],
+      "validationStatus": "PASS",
+      "validationChecks": {
+        "gridPresent": true,
+        "headerMatch": true,
+        "allRowsExpectedWidth": true,
+        "allRowsMatchACNumber": true,
+        "allRowsMatchACName": true,
+        "allStationNumbersParseAsIntegers": true,
+        "stationNumbersUnique": true
+      }
+    },
+    {
+      "acNo": 69,
+      "acName": "MUSTAFABAD",
+      "requestUrl": "https://ceodelhinet.nic.in/ceodelhiweb/PSL.aspx",
+      "finalUrl": "https://ceodelhinet.nic.in/ceodelhiweb/PSL.aspx",
+      "retrievedAtUtc": "2026-10-26T13:03:55.140520+00:00",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8",
+      "byteLength": 783589,
+      "sha256": "0997c2721b04858cec86098be65f9e5029bc0ce3f2e6444475cf4efe61dc48b1",
+      "rawArchiveMember": "raw/CEO_DELHI_POLLING_STATIONS_AC_69_POSTBACK.html",
+      "pollingStationCount": 294,
+      "stationNumberRange": [
+        1,
+        294
+      ],
+      "validationStatus": "PASS",
+      "validationChecks": {
+        "gridPresent": true,
+        "headerMatch": true,
+        "allRowsExpectedWidth": true,
+        "allRowsMatchACNumber": true,
+        "allRowsMatchACName": true,
+        "allStationNumbersParseAsIntegers": true,
+        "stationNumbersUnique": true
+      }
+    },
+    {
+      "acNo": 70,
+      "acName": "KARAWAL NAGAR",
+      "requestUrl": "https://ceodelhinet.nic.in/ceodelhiweb/PSL.aspx",
+      "finalUrl": "https://ceodelhinet.nic.in/ceodelhiweb/PSL.aspx",
+      "retrievedAtUtc": "2026-10-26T13:03:56.564637+00:00",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8",
+      "byteLength": 796241,
+      "sha256": "384b4d212a12d28d2c51f9bc30c0267b783a41bb0c6398ecab1e268476b05838",
+      "rawArchiveMember": "raw/CEO_DELHI_POLLING_STATIONS_AC_70_POSTBACK.html",
+      "pollingStationCount": 298,
+      "stationNumberRange": [
+        1,
+        298
+      ],
+      "validationStatus": "PASS",
+      "validationChecks": {
+        "gridPresent": true,
+        "headerMatch": true,
+        "allRowsExpectedWidth": true,
+        "allRowsMatchACNumber": true,
+        "allRowsMatchACName": true,
+        "allStationNumbersParseAsIntegers": true,
+        "stationNumbersUnique": true
+      }
+    }
+  ],
+  "limitations": [
+    "This is only a Delhi jurisdictional source slice.",
+    "No national polling station crosswalk or Assembly Constituency geometry acceptance is implied.",
+    "Only public polling-station table fields were acquired; no elector-level records were fetched.",
+    "The normalized crosswalk is derived from the exact archived raw HTML tables and each row points to the source page hash.",
+    "Hashes identify this exact snapshot; the official service may change in later retrievals."
+  ],
+  "generatedAtUtc": "2026-10-26T13:04:01.724331+00:00"
+}
