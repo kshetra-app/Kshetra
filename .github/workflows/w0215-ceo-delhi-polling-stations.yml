@@ -1,0 +1,52 @@
+name: W021.5 Official CEO Delhi Polling Station Evidence
+
+on:
+  push:
+    branches:
+      - cto/w0215-stage-b-evidence-20261025
+    paths:
+      - "scripts/acquire_w0215_ceo_delhi_polling_stations.py"
+      - ".github/workflows/w0215-ceo-delhi-polling-stations.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: w0215-ceo-delhi-polling-stations
+  cancel-in-progress: false
+
+jobs:
+  acquire:
+    name: Acquire official Delhi AC-to-polling-station source pages
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout authorized W021.5 Stage B evidence branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install pinned HTTP acquisition dependency
+        run: python -m pip install --disable-pip-version-check "curl_cffi==0.13.0"
+      - name: Acquire and validate official polling station pages
+        id: acquisition
+        continue-on-error: true
+        run: python scripts/acquire_w0215_ceo_delhi_polling_stations.py
+      - name: Upload source bytes and page-by-page provenance manifest
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: w0215-ceo-delhi-polling-stations-${{ github.run_id }}
+          path: stage_b_ceo_delhi_polling_stations/
+          if-no-files-found: warn
+          retention-days: 30
+      - name: Enforce complete jurisdictional slice
+        if: steps.acquisition.outcome != 'success'
+        run: |
+          echo "Delhi polling-station evidence is partial; review source-byte manifest and retain missing AC pages as open."
+          exit 1
