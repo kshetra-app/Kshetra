@@ -908,7 +908,7 @@ describe('CTO Directive 123 — Residual Electoral Data-Truth & Provisional Look
       expect(validation.errors.some((err: string) => err.includes('invalid documentary locator'))).toBe(true);
     });
 
-    it('genuine negative test (Scenario 12): validator rejects locator not supporting claim (state TS cites AP Schedule II)', () => {
+    it('genuine negative test (Scenario 12): rejects a state-mismatched locator at the locator-resolution gate', () => {
       const directory = validatorModule.parseDelimitationServiceCuratedPins();
       const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
       const seedNames = validatorModule.parseSeedConstituencyNames();
@@ -918,8 +918,8 @@ describe('CTO Directive 123 — Residual Electoral Data-Truth & Provisional Look
       const validation = validatorModule.validateEvidenceMatrix({ directory, manifest: corruptedManifest, seedNames });
 
       expect(validation.allPassed).toBe(false);
-      const check8 = validation.checks.find((c: any) => c.checkId === 'CHECK_8_CLAIM_SUPPORT');
-      expect(check8).toBeDefined();
+      const check7 = validation.checks.find((c: any) => c.checkId === 'CHECK_7_LOCATOR_RESOLUTION');
+      expect(check7).toBeDefined();
       expect(check7.passed).toBe(false);
       expect(validation.errors.some((err: string) => err.includes('expected Schedule XXVII, Table A'))).toBe(true);
     });
