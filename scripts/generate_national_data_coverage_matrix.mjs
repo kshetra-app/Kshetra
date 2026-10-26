@@ -929,7 +929,7 @@ Under **CTO Directive 085 / 086 / 087 / 088** and **Rule IV-001 (Non-Self-Accept
 - **Total Malformed Constituency Records:** ${reportJson.summary.totalMalformedConstituencyRecords}
 - **Tier 0 (Canonical Full Production):** ${reportJson.summary.canonicalFullStatesCount} states (Strictly 0; live DB and complete affidavits pending)
 - **Tier 1 (Seeded Rich Local + GeoJSON + Historical + Sample Affidavits):** ${reportJson.summary.partialLocalWithGeoCount} states (TS GeoJSON clean mapping blocked by duplicate AC 119 features)
-- **Tier 2 (Seeded Historical + Profiles, GeoJSON & Complete Affidavits Pending):** ${reportJson.summary.partialHistoricalNoGeoCount} states (TS, AP, KA, MH, TN, KL, WB, UP)
+- **Tier 2 (Seeded Historical + Profiles, GeoJSON & Complete Affidavits Pending):** ${reportJson.summary.partialHistoricalNoGeoCount} states (${inventory.filter((s) => s.dataTier === 'SEEDED_HISTORICAL_NO_GEO').map((s) => s.stateCode).join(', ') || 'None'})
 - **Tier 3 (Seeded Single-Term Constituencies + Profiles, Affidavits & Geo Pending):** ${reportJson.summary.seededSingleTermCount} states/UTs
 
 ---
