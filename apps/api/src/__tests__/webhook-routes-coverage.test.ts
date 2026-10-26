@@ -2,6 +2,19 @@ import Fastify, { type FastifyInstance } from 'fastify';
 import { webhookRoutes } from '../modules/webhooks/routes';
 import { webhookService } from '../modules/webhooks/webhookService';
 
+jest.mock('../modules/webhooks/webhookService', () => ({
+  webhookService: {
+    createSubscription: jest.fn(),
+    listSubscriptions: jest.fn(),
+    getSubscription: jest.fn(),
+    updateSubscription: jest.fn(),
+    disableSubscription: jest.fn(),
+    rotateSecret: jest.fn(),
+    testDelivery: jest.fn(),
+    publishEvent: jest.fn(),
+  },
+}));
+
 const webhookId = '123e4567-e89b-12d3-a456-426614174000';
 const subscription = {
   id: webhookId,
