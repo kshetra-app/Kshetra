@@ -72,6 +72,17 @@ SOURCES = [
         "purpose": "Primary historical delimitation order; acquire original PDF bytes if the exact official host permits access. Must be reconciled with later jurisdiction-specific orders and amendments; not alone proof of present legal extent."
     },
     {
+        "id": "GOI_GAZETTE_2023_SO382E_RECITAL",
+        "urlCandidates": [
+            "https://egazette.gov.in/WriteReadData/2023/248113.pdf"
+        ],
+        "publisher": "Government of India, Gazette of India — official 2023 issue",
+        "documentTitle": "2023 Gazette item reciting the publication reference for the Delimitation Order, 2008",
+        "required": False,
+        "terms": ["S.O.382(E)", "19th February, 2008", "Delimitation of Parliamentary and Assembly Constituencies Order, 2008"],
+        "purpose": "Acquire the specific official Gazette PDF that recites the 2008 Order's publication identifier. This is secondary legal recitation, not the original 2008 Gazette issue and must not close that missing-original gate."
+    },
+    {
         "id": "AP_REORGANISATION_REMOVAL_DIFFICULTIES_ORDERS",
         "urlCandidates": [
             "https://upload.indiacode.nic.in/showfile?actid=AC_CEN_5_5_00058_201406_1517807327989&filename=Andhra+Pradesh+Reorganisation+%28Removal+of+Difficulties%29+First%2C+Second+and+Third+Order.pdf&type=order"
