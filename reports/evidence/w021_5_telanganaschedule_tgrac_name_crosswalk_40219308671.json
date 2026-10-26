@@ -1,0 +1,146 @@
+{
+  "schemaVersion": 1,
+  "title": "Telangana Schedule XXVII vs TGRAC GIS candidate name crosswalk",
+  "workflowRunId": 40219308671,
+  "workflowUrl": "https://github.com/kshetra-app/Kshetra/actions/runs/40219308671",
+  "artifactId": 12608482581,
+  "artifactName": "w0215-legal-crosswalk-sources-40219308671",
+  "artifactZipBytes": 10230451,
+  "artifactZipSha256": "8439368e86d5c6179c35a6bd8525cc430e4897aa6705b0df8fc815da54d3220e",
+  "crosswalkJsonArtifactPath": "stage_b_telanganaschedule_crosswalk/telangana_statutory_vs_tgrac_crosswalk.json",
+  "crosswalkJsonBytes": 113541,
+  "crosswalkJsonSha256": "c30e088eae279b9c2e9d71106e00f638f13a25ec3ff3b062ef874e14dd1a4ac6",
+  "statutorySource": {
+    "document": "Andhra Pradesh Reorganisation Act, 2014, Schedule XXVII — Telangana, Table A",
+    "url": "https://apseeds.ap.gov.in/PDF/apreorg/APRegACT2014.pdf",
+    "sha256": "84cd566b917f9a3f600c47f6540520c950166b424a964ad37d64dc3c968114aa",
+    "byteLength": 231596,
+    "sourceStatus": "Government-hosted copy of Gazette of India; not byte-compared with India Code copy",
+    "rosterCount": 119,
+    "rosterParserRun": 40218995782,
+    "rosterParserStatus": "PASS"
+  },
+  "gisSources": [
+    {
+      "sourceId": "TGRAC_ENDOWMENT_ADMIN_2026",
+      "url": "https://tgrac.telangana.gov.in/arcgis/rest/services/EndowmentLands_Folder/EndowmentLands_Admin_2026/MapServer/12/query?where=1%3D1&outFields=%2A&returnGeometry=true&outSR=4326&f=json",
+      "bytes": 12463409,
+      "sha256": "ca8cfdc695366d9f04ee6a9fdbf9c52eeefe61d69bc79c9d26d15baa7b84aa03",
+      "featureCount": 119,
+      "uniqueNameCount": 119,
+      "crs": "EPSG:4326"
+    },
+    {
+      "sourceId": "TGRAC_ADMINISTRATIVE_INFO_SYSTEM",
+      "url": "https://tgrac.telangana.gov.in/arcgis/rest/services/AdministrativeInfoSystem_Folder/Administrative_Information_System/MapServer/24/query?where=1%3D1&outFields=%2A&returnGeometry=true&outSR=4326&f=json",
+      "bytes": 12465346,
+      "sha256": "91cd791317836d8a6a8729b03f08fd3aee8c727c82e123b1659972d949d32f27",
+      "featureCount": 119,
+      "uniqueNameCount": 119,
+      "crs": "EPSG:4326"
+    }
+  ],
+  "results": [
+    {
+      "sourceId": "TGRAC_ENDOWMENT_ADMIN_2026",
+      "statutoryRecords": 119,
+      "gisFeatures": 119,
+      "exactNormalizedNameMatches": 107,
+      "inferredAliasMatches": 12,
+      "unresolved": 0
+    },
+    {
+      "sourceId": "TGRAC_ADMINISTRATIVE_INFO_SYSTEM",
+      "statutoryRecords": 119,
+      "gisFeatures": 119,
+      "exactNormalizedNameMatches": 108,
+      "inferredAliasMatches": 11,
+      "unresolved": 0
+    }
+  ],
+  "inferredAliasPairs": [
+    {
+      "ac": 3,
+      "statutory": "Bellampalli (SC)",
+      "gis2026": "Bellampalle (SC)",
+      "gisOld": "Bellampalle (SC)"
+    },
+    {
+      "ac": 11,
+      "statutory": "Armur",
+      "gis2026": "Armoor",
+      "gisOld": "Armoor"
+    },
+    {
+      "ac": 21,
+      "statutory": "Jagtial",
+      "gis2026": "Jagatial",
+      "gisOld": "Jagatial"
+    },
+    {
+      "ac": 29,
+      "statutory": "Sircilla",
+      "gis2026": "Sirisilla",
+      "gisOld": "Sirisilla"
+    },
+    {
+      "ac": 31,
+      "statutory": "Huzurabad",
+      "gis2026": "Huzarabad",
+      "gisOld": "Huzarabad"
+    },
+    {
+      "ac": 55,
+      "statutory": "Vicarabad (SC)",
+      "gis2026": "Vikarabad (SC)",
+      "gisOld": "Vikarabad (SC)"
+    },
+    {
+      "ac": 71,
+      "statutory": "Secunderabad Cantt. (SC)",
+      "gis2026": "Secunderabad Cont (SC)",
+      "gisOld": "Secunderabad Cont (SC)"
+    },
+    {
+      "ac": 74,
+      "statutory": "Mahbubnagar",
+      "gis2026": "Mahabubnagar",
+      "gisOld": "Mahabubnagar"
+    },
+    {
+      "ac": 76,
+      "statutory": "Devarkadra",
+      "gis2026": "Devarakdra",
+      "gisOld": "Devarakdra"
+    },
+    {
+      "ac": 87,
+      "statutory": "Nagarjuna Sagar",
+      "gis2026": "Nagarjunasagar",
+      "gisOld": "Nagarjunasagar"
+    },
+    {
+      "ac": 89,
+      "statutory": "Huzurnagar",
+      "gis2026": "Huzuranagar",
+      "gisOld": "Huzuranagar"
+    },
+    {
+      "ac": 98,
+      "statutory": "Jangaon",
+      "gis2026": "Jangoan",
+      "gisOld": "Jangaon",
+      "note": "The older AdministrativeInfoSystem layer matches this name exactly; the 2026 layer uses Jangoan."
+    }
+  ],
+  "interpretation": [
+    "Both candidate layers contain 119 unique names and can be associated to the statutory roster by exact normalized spelling plus explicit provisional aliases.",
+    "The alias mappings are inferred candidates, not authoritative aliases. Do not rewrite source names or treat alias matches as proof of legal identity.",
+    "TGRAC OBJECTID is not a canonical Assembly Constituency number. The statutory Schedule XXVII serial number is preserved separately.",
+    "This is a roster/name crosswalk only. No statutory extent-to-polygon comparison was performed.",
+    "The Schedule XXVII extent note references administrative units as of 15 February 2004 and Census 2001 municipal wards; historical administrative-unit geometry is required to validate extents.",
+    "Separate geometry audits found material disagreement for seven ACs between GIS source families and a shared invalid Dornakal polygon. Name matching does not resolve those defects."
+  ],
+  "disposition": "NAME CROSSWALK PASS WITH PROVISIONAL ALIASES; LEGAL EXTENT-TO-POLYGON VALIDATION OPEN; NO GIS LAYER ACCEPTED AS CANONICAL",
+  "databaseAccess": "NONE"
+}

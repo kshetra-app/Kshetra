@@ -1,0 +1,49 @@
+{
+  "schemaVersion": 1,
+  "title": "Telangana Schedule XXVII statutory AC roster parse evidence",
+  "workflowRunId": 40218995782,
+  "workflowUrl": "https://github.com/kshetra-app/Kshetra/actions/runs/40218995782",
+  "artifactId": 12609460380,
+  "artifactName": "w0215-legal-crosswalk-sources-40218995782",
+  "artifactZipBytes": 254097,
+  "artifactZipSha256": "b5c186012f5240015a004960a7c5330d927d761bf4c5cd33694e68afbee10cc8",
+  "rosterArtifactPath": "telangana_statutory_ac_roster.json",
+  "rosterArtifactBytes": 34415,
+  "rosterArtifactSha256": "4a162263c05bfaaae70013830205d97ffd009a2285c113e8ff03b82b796665e9",
+  "overallStatus": "PASS",
+  "parsedRosterCount": 119,
+  "expectedRosterCount": 119,
+  "serialSequence": "1..119 PASS",
+  "districtCount": 10,
+  "semanticRegressionChecks": {
+    "count": 7,
+    "passed": 7,
+    "anchors": [
+      "AC 18 extent contains Nizamabad Mandal (Part) and Dichpalle",
+      "AC 46 extent contains Ward No. 5 to 16",
+      "AC 50 extent contains Meerpet (CT)",
+      "AC 71 name equals Secunderabad Cantt. (SC)",
+      "AC 71 extent contains Secunderabad Cantonment Board",
+      "AC 119 extent contains V.R. Puram Mandals"
+    ]
+  },
+  "source": {
+    "url": "https://apseeds.ap.gov.in/PDF/apreorg/APRegACT2014.pdf",
+    "title": "Andhra Pradesh Reorganisation Act, 2014 (Act No. 6 of 2014)",
+    "sourceSha256": "84cd566b917f9a3f600c47f6540520c950166b424a964ad37d64dc3c968114aa",
+    "sourceBytes": 231596,
+    "pdfPages": 71,
+    "schedule": "Schedule XXVII — Telangana — Table A, Assembly Constituencies",
+    "scheduleStartPdfPageIndex": 39,
+    "gazetteDate": "2014-03-01",
+    "territorialReferenceNote": "CT/OG/Mandal/villages/territorial divisions as on 15 February 2004; municipal wards per Census of India 2001 Report.",
+    "canonicalByteIdentityComparedToIndiaCode": false
+  },
+  "limitations": [
+    "Roster extraction validates serial sequence and selected semantic anchors; it does not prove every extent phrase is semantically complete.",
+    "This is a government-hosted Gazette copy; byte identity with India Code is not verified.",
+    "The roster is not polygon geometry. Extent-to-polygon validation requires historical administrative-unit geometries and legal provenance.",
+    "The ECI 2018 notification and subsequent Gazette/corrigendum chain remain open."
+  ],
+  "databaseAccess": "NONE"
+}

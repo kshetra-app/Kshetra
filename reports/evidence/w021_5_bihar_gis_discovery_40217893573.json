@@ -1,0 +1,44 @@
+{
+  "schemaVersion": 1,
+  "title": "W021.5 Bihar BEGIS endpoint discovery attempt 1",
+  "workflowRunId": 40217893573,
+  "workflowUrl": "https://github.com/kshetra-app/Kshetra/actions/runs/40217893573",
+  "artifactId": 12608228156,
+  "artifactName": "w0215-bihar-gis-discovery-40217893573",
+  "artifactZipBytes": 273458,
+  "artifactZipSha256": "974bed3362a4e3e8b9fe5233081b24dff3c63eaa6ac00865f9f038266b9ab1d8",
+  "sourcePage": {
+    "url": "https://gis.bihar.gov.in/DEPTS/ElectionNew.aspx",
+    "status": 200,
+    "bytes": 125006,
+    "sha256": "0048f8d36f1adc5819b52de935d455a363794e02940a603a22193f2d0d3e8d0c"
+  },
+  "linkedScript": {
+    "url": "https://gis.bihar.gov.in/DEPTS/deptjs/ElectionNewMapScript.js",
+    "status": 200,
+    "bytes": 161592,
+    "sha256": "00b482b594e7af9dd5450a2a7d761c0fcb29537943bfd046ecda44f35d8a0469",
+    "exactPublishedServiceRoot": "http://gisserver.bihar.gov.in/arcgis/rest/services/",
+    "publishedLayerPaths": [
+      "ELECTION/AC/MapServer",
+      "AdministrativrBoundaries/PIN_Code_Boundary/MapServer"
+    ]
+  },
+  "probeResult": {
+    "pagesAndScriptsFetched": 25,
+    "discoveredServiceUrlsByFirstProbe": 0,
+    "reason": "The first discovery script only matched absolute MapServer/FeatureServer URLs and did not combine the service-root variable with relative layer paths in the official JavaScript.",
+    "classification": "PROBE_IMPLEMENTATION_GAP_NOT_EXTERNAL_SOURCE_FAILURE",
+    "correction": "Updated the probe to construct the two explicitly published service URLs, try HTTPS first, and use public HTTP only as a documented read-only fallback if the official service is not available over HTTPS.",
+    "nextRun": "A rerun is queued after the discovery-script correction."
+  },
+  "acceptance": {
+    "officialPortalSource": "DISCOVERED",
+    "rawACGeometry": "NOT_YET_ACQUIRED",
+    "pinBoundary": "NOT_YET_ACQUIRED",
+    "topology": "NOT_RUN",
+    "legalVintage": "NOT_VERIFIED",
+    "canonicalStatus": "CANDIDATE_ONLY",
+    "databaseAccess": "NONE"
+  }
+}

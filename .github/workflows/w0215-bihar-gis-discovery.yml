@@ -1,0 +1,61 @@
+name: W021.5 Bihar Official GIS Discovery
+
+on:
+  push:
+    branches:
+      - cto/w0215-stage-b-evidence-20261025
+    paths:
+      - "scripts/discover_w0215_bihar_election_gis.py"
+      - "scripts/audit_w0215_bihar_ac_geometry.py"
+      - ".github/workflows/w0215-bihar-gis-discovery.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: w0215-bihar-gis-discovery
+  cancel-in-progress: false
+
+jobs:
+  discover:
+    name: Discover public Bihar election GIS endpoints
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - name: Checkout evidence-only branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install pinned HTTP client
+        run: python -m pip install --disable-pip-version-check "curl_cffi==0.13.0"
+      - name: Discover official page, linked scripts, service metadata and candidate geometry
+        id: discovery
+        continue-on-error: true
+        run: python scripts/discover_w0215_bihar_election_gis.py
+      - name: Install pinned geometry audit dependencies
+        if: always()
+        run: python -m pip install --disable-pip-version-check "shapely==2.1.2" "pyproj==3.7.2"
+      - name: Run reproducible AC topology and state-coverage screening
+        id: topology
+        if: always()
+        continue-on-error: true
+        run: python scripts/audit_w0215_bihar_ac_geometry.py
+      - name: Upload raw page/service bytes, manifests and topology report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: w0215-bihar-gis-discovery-${{ github.run_id }}
+          path: stage_b_bihar_gis/
+          if-no-files-found: warn
+          retention-days: 30
+      - name: Enforce endpoint discovery result
+        if: steps.discovery.outcome != 'success' || steps.topology.outcome != 'success'
+        run: |
+          echo "No same-host public service endpoint was discovered; inspect manifest and use official custodian route."
+          exit 1

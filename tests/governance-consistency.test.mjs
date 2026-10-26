@@ -161,12 +161,39 @@ try {
   assert.fail(`origin/master could not be resolved: ${err.message}`);
 }
 
-// Local HEAD must strictly match origin/master (fail-closed, no exceptions)
-assert.strictEqual(
-  localHead,
-  originMaster,
-  `Local HEAD (${localHead}) must strictly match origin/master (${originMaster})`
-);
+// Preserve strict provenance while accounting for GitHub's synthetic merge commit on pull_request events.
+// On a push, HEAD must equal the pushed branch's remote head. On a PR, the merge commit must have
+// origin/<base> as first parent and origin/<head> as second parent; the merge SHA must equal GITHUB_SHA.
+const eventName = process.env.GITHUB_EVENT_NAME || '';
+const githubRef = process.env.GITHUB_REF || '';
+const githubSha = process.env.GITHUB_SHA || '';
+const baseRef = process.env.GITHUB_BASE_REF || '';
+const headRef = process.env.GITHUB_HEAD_REF || '';
+
+if (eventName === 'pull_request') {
+  assert.ok(['master', 'main', 'develop'].includes(baseRef), `PR base branch is not an allowed CI base: ${baseRef}`);
+  assert.match(headRef, /^[A-Za-z0-9._/-]+$/, `PR head branch name is not safe to resolve: ${headRef}`);
+  assert.ok(!headRef.includes('..'), `PR head branch contains a forbidden path segment: ${headRef}`);
+  assert.strictEqual(localHead, githubSha, `PR checkout HEAD (${localHead}) must match GITHUB_SHA (${githubSha})`);
+
+  const firstParent = execSync('git rev-parse HEAD^1', { encoding: 'utf8' }).trim();
+  const secondParent = execSync('git rev-parse HEAD^2', { encoding: 'utf8' }).trim();
+  const originBase = execSync(`git rev-parse "origin/${baseRef}"`, { encoding: 'utf8' }).trim();
+  const originHead = execSync(`git rev-parse "origin/${headRef}"`, { encoding: 'utf8' }).trim();
+
+  assert.strictEqual(firstParent, originBase, `PR merge first parent (${firstParent}) must match origin/${baseRef} (${originBase})`);
+  assert.strictEqual(secondParent, originHead, `PR merge second parent (${secondParent}) must match origin/${headRef} (${originHead})`);
+  console.log(`[PASS] Check 8: PR merge lineage verified (base ${originBase}, head ${originHead}, merge ${localHead}); clean working tree required.`);
+} else {
+  const pushBranch = githubRef.startsWith('refs/heads/') ? githubRef.slice('refs/heads/'.length) : '';
+  assert.ok(['master', 'main', 'develop'].includes(pushBranch), `Push ref is not an allowed branch: ${githubRef}`);
+  const originPush = execSync(`git rev-parse "origin/${pushBranch}"`, { encoding: 'utf8' }).trim();
+  assert.strictEqual(localHead, originPush, `Local HEAD (${localHead}) must strictly match origin/${pushBranch} (${originPush})`);
+  if (pushBranch === 'master') {
+    assert.strictEqual(localHead, originMaster, `Master push HEAD (${localHead}) must strictly match origin/master (${originMaster})`);
+  }
+  console.log(`[PASS] Check 8: pushed HEAD ${localHead} matches origin/${pushBranch}; master equality enforced for master pushes.`);
+}
 
 // Working tree must be completely clean (fail-closed, no exceptions)
 const porcelainStatus = execSync('git status --porcelain', { encoding: 'utf8' }).trim();

@@ -1,0 +1,49 @@
+{
+  "schemaVersion": 1,
+  "title": "Bihar AC-union versus official state-boundary coverage screening",
+  "workflowRunId": 40218257634,
+  "workflowUrl": "https://github.com/kshetra-app/Kshetra/actions/runs/40218257634",
+  "artifactId": 12608445168,
+  "artifactName": "w0215-bihar-gis-discovery-40218257634",
+  "artifactZipBytes": 4121006,
+  "artifactZipSha256": "c391b5ce4de977bbe13e04c08820f761c5ba51f5f44ac85b9514e2bd35679600",
+  "acGeometry": {
+    "url": "https://gisserver.bihar.gov.in/arcgis/rest/services/ELECTION/AC/MapServer/0/query?where=1%3D1&outFields=%2A&returnGeometry=true&outSR=4326&f=json&resultRecordCount=1000",
+    "bytes": 10958178,
+    "sha256": "3ab79c2942f27296b08a93bb07fed1fc63bd665a9db66ddaf8fe6ece3fc70b0e",
+    "featureCount": 243,
+    "uniqueConsCodes": 243
+  },
+  "stateBoundary": {
+    "url": "https://gisserver.bihar.gov.in/arcgis/rest/services/AdministrativrBoundaries/StateBoundary/MapServer/0/query?where=1%3D1&outFields=%2A&returnGeometry=true&outSR=4326&f=json&resultRecordCount=100",
+    "bytes": 784840,
+    "sha256": "fce67b09df40e4ca62a54bf58d2caaa2609631eccce00ea0f2b07b6b9be6e446",
+    "featureCount": 1,
+    "stateNameField": "State_Name",
+    "stateName": "Bihar"
+  },
+  "computation": {
+    "status": "PRELIMINARY_LOCAL_SCREEN",
+    "method": "Shapely 2.1.2; ArcGIS ring orientation used to group exterior/hole rings; invalid polygons make_valid only for union/coverage comparison; transformed from EPSG:4326 to EPSG:32645; raw source bytes unchanged.",
+    "stateAreaM2": 94228358523.73073,
+    "acUnionAreaM2": 94227954615.44035,
+    "acOutsideStateM2": 2881.9138108641555,
+    "stateUncoveredByAcM2": 406790.2045589393,
+    "symmetricDifferenceM2": 409672.1183698035,
+    "coveragePercent": 99.99956829322835,
+    "note": "This is a coverage screening comparison against the portal's own state polygon, not legal-boundary acceptance. It does not negate the separate invalid-feature and overlap findings."
+  },
+  "relatedTopologyAudit": {
+    "evidenceReport": "reports/evidence/w021_5_bihar_ac_geometry_audit_40218024380.json",
+    "invalidFeatureGeometryCount": 3,
+    "positiveOverlapPairsOver1m2": 76
+  },
+  "limitations": [
+    "State boundary and AC layers share the same government GIS system and may share lineage/generalization; this is not independent legal validation.",
+    "Geometry ring grouping and make_valid comparison need independent review.",
+    "The workflow audit initially missed the State_Name attribute; the selector was corrected in commit 46380877e0d27d6f10d6bc827ef27246416bf377 and a rerun is required for fully reproducible CI evidence.",
+    "Legal vintage, licence, Gazette chain, and source-owner confirmation remain open."
+  ],
+  "disposition": "CANDIDATE COVERAGE SCREEN ONLY; TOPOLOGY DEFECTS REMAIN; NOT CANONICAL",
+  "databaseAccess": "NONE"
+}
