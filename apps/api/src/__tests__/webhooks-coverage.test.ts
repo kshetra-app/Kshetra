@@ -33,9 +33,10 @@ import {
   parseBytea,
 } from '../modules/webhooks/queueProvider';
 import { SourceRegistry } from '../modules/delimitationWatch/sourceRegistry';
+import { BaselineComparator } from '../modules/delimitationWatch/comparator';
 import { Versioner } from '../modules/delimitationWatch/versioner';
 import { Publisher } from '../modules/delimitationWatch/publisher';
-import { parseAlternateIpv4, validateSourceUrl } from '../modules/delimitationWatch/ssrfGuard';
+import { parseAlternateIpv4, validateSourceUrl, validateAndPinSourceUrl } from '../modules/delimitationWatch/ssrfGuard';
 
 const KEY = '0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef';
 const TENANT = '11111111-1111-1111-1111-111111111111';
@@ -641,5 +642,114 @@ describe('webhook dispatcher transport branches', () => {
     });
     expect(refused.success).toBe(false);
     expect(refused.errorMessage).toBeTruthy();
+  });
+});
+
+
+describe('delimitation-watch pinned source validation branches', () => {
+  test('normalizes alternate IPv4 forms and blocks private aliases before egress', () => {
+    expect(parseAlternateIpv4('127.1')).toBe('127.0.0.1');
+    expect(parseAlternateIpv4('0177.0.0.1')).toBe('127.0.0.1');
+    expect(parseAlternateIpv4('0x7f.0.0.1')).toBe('127.0.0.1');
+    expect(parseAlternateIpv4('[::1]')).toBeNull();
+    expect(() => validateSourceUrl('https://0x7f000001')).toThrow(/SSRF Blocked/);
+    expect(() => validateSourceUrl('https://host.internal')).toThrow(/Local and loopback/);
+  });
+
+  test('validates all DNS answers and returns a socket-pinned public destination', async () => {
+    await expect(validateAndPinSourceUrl('https://example.com', {
+      mockDnsResolver: async () => ['93.184.216.34', '10.0.0.1'],
+    })).rejects.toThrow(/SSRF Blocked|prohibited/);
+
+    const result = await validateAndPinSourceUrl('https://example.com/path?q=1', {
+      mockDnsResolver: async () => ['93.184.216.34', '1.1.1.1'],
+    });
+    expect(result.hostname).toBe('example.com');
+    expect(result.pinnedIp).toBe('93.184.216.34');
+    expect(result.resolvedIps).toEqual(['93.184.216.34', '1.1.1.1']);
+    expect(result.isHttps).toBe(true);
+    expect(result.agent).toBeDefined();
+
+    await expect(validateAndPinSourceUrl('ftp://example.com')).rejects.toThrow(/Forbidden URL protocol/);
+    await expect(validateAndPinSourceUrl('https://u:p@example.com')).rejects.toThrow(/userinfo/);
+    await expect(validateAndPinSourceUrl('https://example.com:70000')).rejects.toThrow();
+    await expect(validateAndPinSourceUrl('https://example.com', {
+      mockDnsResolver: async () => [],
+    })).rejects.toThrow(/DNS|zero|resolution/i);
+  });
+});
+
+describe('delimitation baseline comparator branches', () => {
+  const makeCandidate = (overrides: any = {}) => ({
+    id: 'candidate-current',
+    proposalData: {
+      proposedSeats: 10, proposedScSeats: 2, proposedStSeats: 1, status: 'PROPOSED',
+      stateCode: 'TS',
+    },
+    constituencyMappings: [
+      { newAcNo: 1, oldAcNo: 11, newName: 'Alpha', overlapPercentage: 90 },
+      { newAcNo: 2, oldAcNo: 12, newName: 'Beta', overlapPercentage: 80 },
+    ],
+    ...overrides,
+  });
+
+  test('creates initial baseline with proposal and all mappings as additions', async () => {
+    const repo: any = { saveComparison: jest.fn(async (value: any) => value) };
+    const comparison = await new BaselineComparator(repo).compare(makeCandidate() as any, null);
+    expect(comparison.classification).toBe('MATERIAL_CHANGE');
+    expect(comparison.addedRecords).toHaveLength(3);
+    expect(comparison.removedRecords).toHaveLength(0);
+    expect(repo.saveComparison).toHaveBeenCalledWith(comparison);
+  });
+
+  test('classifies unchanged records and records added, removed, seat, reservation and status changes', async () => {
+    const previous = makeCandidate({
+      id: 'candidate-previous',
+      proposalData: {
+        proposedSeats: 9, proposedScSeats: 1, proposedStSeats: 1, status: 'DRAFT',
+        stateCode: 'TS',
+      },
+      constituencyMappings: [
+        { newAcNo: 1, oldAcNo: 11, newName: 'Alpha', overlapPercentage: 90 },
+        { newAcNo: 3, oldAcNo: 13, newName: 'Gamma', overlapPercentage: 70 },
+      ],
+    });
+    const repo: any = {
+      getCandidate: jest.fn(async () => previous),
+      saveComparison: jest.fn(async (value: any) => value),
+    };
+    const changed = makeCandidate({
+      proposalData: {
+        proposedSeats: 10, proposedScSeats: 2, proposedStSeats: 3, status: 'ENACTED',
+        stateCode: 'TS',
+      },
+      constituencyMappings: [
+        { newAcNo: 1, oldAcNo: 11, newName: 'Alpha', overlapPercentage: 90 },
+        { newAcNo: 2, oldAcNo: 12, newName: 'Beta', overlapPercentage: 80 },
+      ],
+    });
+    const result = await new BaselineComparator(repo).compare(changed as any, {
+      id: 'baseline-1', candidateId: 'candidate-previous',
+    } as any);
+    expect(result.classification).toBe('MATERIAL_CHANGE');
+    expect(result.changedRecords.map((record: any) => record.key)).toEqual(
+      expect.arrayContaining(['proposedSeats', 'reservationSeats', 'proposalStatus']),
+    );
+    expect(result.addedRecords.some((record: any) => record.key === 'mapping:2')).toBe(true);
+    expect(result.removedRecords.some((record: any) => record.key === 'mapping:3')).toBe(true);
+    expect(result.unchangedRecords.some((record: any) => record.key === 'mapping:1')).toBe(true);
+  });
+
+  test('handles missing previous candidate and reports no-change comparison when records match', async () => {
+    const repo: any = {
+      getCandidate: jest.fn(async () => null),
+      saveComparison: jest.fn(async (value: any) => value),
+    };
+    const candidate = makeCandidate();
+    const result = await new BaselineComparator(repo).compare(candidate as any, {
+      id: 'baseline-2', candidateId: 'missing',
+    } as any);
+    expect(result.classification).toBe('NO_CHANGE');
+    expect(result.comparisonSummary).toContain('Zero substantive or material changes');
   });
 });
