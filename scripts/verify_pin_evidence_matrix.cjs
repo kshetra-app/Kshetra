@@ -3120,12 +3120,12 @@ function runConcordanceRegressionBattery(options = {}) {
 
   if (baseMatrixMd) {
     // Case 9: Unescaped pipe inside an extent
-    const corruptMd9 = baseMatrixMd.replace(
-      /Schedule XXVII, Table A, Entries 65, 63, 58; Extents: AC 65: Hyderabad \(M\.Corp\.\) \(Part\) - Ward No\. 4, 14, 15 and 21\. \\\| AC 63/,
-      'Schedule XXVII, Table A, Entries 65, 63, 58; Extents: AC 65: Hyderabad (M.Corp.) (Part) - Ward No. 4, 14, 15 and 21. | AC 63'
-    );
+    const extentNeedle = 'Ward No. 4, 14, 15 and 21';
+    const corruptMd9 = baseMatrixMd.includes(extentNeedle)
+      ? baseMatrixMd.replace(extentNeedle, extentNeedle + ' |')
+      : baseMatrixMd.replace(/(Extent: [^|;]+)(;|\|)/, '$1 |$2');
     const res9 = verifyConcordanceAcrossArtifacts({ manifest: baseManifest, directory, matrixMd: corruptMd9, reportDir });
-    const c9Passed = !res9.allPassed && res9.errors.some(err => err.includes('COLUMN_COUNT_MISMATCH') || err.includes('matrixMd'));
+    const c9Passed = corruptMd9 !== baseMatrixMd && !res9.allPassed && res9.errors.some(err => err.includes('COLUMN_COUNT_MISMATCH') || err.includes('matrixMd'));
     cases.push({
       caseId: 'CONC_CASE_9_UNESCAPED_PIPE_INSIDE_EXTENT',
       description: 'Concordance engine rejects unescaped pipe inside extent column in Markdown table with COLUMN_COUNT_MISMATCH',
