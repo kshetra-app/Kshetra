@@ -425,7 +425,7 @@ export async function moderationRoutes(app: FastifyInstance) {
               .update({ is_deleted: true, content: '[Removed by Moderator: Policy Violation]' })
               .eq('id', payload.targetPostId);
             if (postErr) {
-              if (process.env.NODE_ENV === 'production') {
+              if (!isExplicitTestHarnessActive()) {
                 app.log.error({ err: postErr.message }, 'Failed to soft-delete post in Supabase');
                 return sendApiError(reply, request, 500, 'Internal Server Error', 'Failed to persist moderation action', { code: 'PERSISTENCE_ERROR' });
               }
@@ -437,7 +437,7 @@ export async function moderationRoutes(app: FastifyInstance) {
               .update({ is_deleted: true, content: '[Removed by Moderator]' })
               .eq('id', payload.targetCommentId);
             if (commentErr) {
-              if (process.env.NODE_ENV === 'production') {
+              if (!isExplicitTestHarnessActive()) {
                 app.log.error({ err: commentErr.message }, 'Failed to soft-delete comment in Supabase');
                 return sendApiError(reply, request, 500, 'Internal Server Error', 'Failed to persist moderation action', { code: 'PERSISTENCE_ERROR' });
               }
@@ -458,7 +458,7 @@ export async function moderationRoutes(app: FastifyInstance) {
             })
             .eq('id', payload.reportId);
           if (reportErr) {
-            if (process.env.NODE_ENV === 'production') {
+            if (!isExplicitTestHarnessActive()) {
               app.log.error({ err: reportErr.message }, 'Failed to update report status in Supabase');
               return sendApiError(reply, request, 500, 'Internal Server Error', 'Failed to persist moderation action', { code: 'PERSISTENCE_ERROR' });
             }
@@ -466,7 +466,7 @@ export async function moderationRoutes(app: FastifyInstance) {
           }
         }
       } catch (err: any) {
-        if (process.env.NODE_ENV === 'production') {
+        if (!isExplicitTestHarnessActive()) {
           app.log.error({ err: err?.message }, 'Exception persisting moderation action in Supabase');
           return sendApiError(reply, request, 500, 'Internal Server Error', 'Failed to persist moderation action', { code: 'PERSISTENCE_ERROR' });
         }
@@ -559,7 +559,7 @@ export async function moderationRoutes(app: FastifyInstance) {
           .limit(50);
 
         if (error) {
-          if (process.env.NODE_ENV !== 'production') {
+          if (isExplicitTestHarnessActive()) {
             return reply.send({
               success: true,
               data: {
@@ -594,7 +594,7 @@ export async function moderationRoutes(app: FastifyInstance) {
           });
         }
       } catch (err: any) {
-        if (process.env.NODE_ENV !== 'production') {
+        if (isExplicitTestHarnessActive()) {
           return reply.send({
             success: true,
             data: {
@@ -609,7 +609,7 @@ export async function moderationRoutes(app: FastifyInstance) {
       }
     }
 
-    if (process.env.NODE_ENV === 'test') {
+    if (isExplicitTestHarnessActive()) {
       return reply.send({
         success: true,
         data: {
@@ -704,7 +704,7 @@ export async function moderationRoutes(app: FastifyInstance) {
           .single();
 
         if (error) {
-          if (process.env.NODE_ENV !== 'production') {
+          if (isExplicitTestHarnessActive()) {
             return reply.send({
               success: true,
               data: {
@@ -732,7 +732,7 @@ export async function moderationRoutes(app: FastifyInstance) {
           },
         });
       } catch (err: any) {
-        if (process.env.NODE_ENV !== 'production') {
+        if (isExplicitTestHarnessActive()) {
           return reply.send({
             success: true,
             data: {
@@ -793,7 +793,7 @@ export async function moderationRoutes(app: FastifyInstance) {
         }, { onConflict: 'blocker_id,blocked_id' });
 
       if (error) {
-        if (process.env.NODE_ENV !== 'production') {
+        if (isExplicitTestHarnessActive()) {
           return reply.send({
             success: true,
             data: { blockerId: userId, blockedId: blockedUserId },
@@ -803,7 +803,7 @@ export async function moderationRoutes(app: FastifyInstance) {
         return sendApiError(reply, request, 500, 'Internal Server Error', 'Failed to block user', { code: 'DATABASE_ERROR' });
       }
     } catch (err: any) {
-      if (process.env.NODE_ENV !== 'production') {
+      if (isExplicitTestHarnessActive()) {
         return reply.send({
           success: true,
           data: { blockerId: userId, blockedId: blockedUserId },
@@ -853,7 +853,7 @@ export async function moderationRoutes(app: FastifyInstance) {
         .eq('blocked_id', targetUserId);
 
       if (error) {
-        if (process.env.NODE_ENV !== 'production') {
+        if (isExplicitTestHarnessActive()) {
           return reply.send({
             success: true,
             data: { unblocked: targetUserId },
@@ -863,7 +863,7 @@ export async function moderationRoutes(app: FastifyInstance) {
         return sendApiError(reply, request, 500, 'Internal Server Error', 'Failed to unblock user', { code: 'DATABASE_ERROR' });
       }
     } catch (err: any) {
-      if (process.env.NODE_ENV !== 'production') {
+      if (isExplicitTestHarnessActive()) {
         return reply.send({
           success: true,
           data: { unblocked: targetUserId },
