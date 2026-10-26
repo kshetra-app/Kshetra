@@ -812,9 +812,9 @@
       "publisher": "Election Commission of India",
       "url": "https://www.eci.gov.in/Documents/Delimitation/DelimitationofParliamentaryAssemblyConstituenciesOrder-2008%28English%29.pdf",
       "version": "Order dated 17 December 2008; ECI PDF lists Andhra Pradesh Schedule III on PDF pages 8–32",
-      "retrievalStatus": "READ_VIA_WEB_PDF_TEXT; BINARY_NOT_DOWNLOADED_OR_SHA256_VERIFIED",
+      "retrievalStatus": "RAW_PDF_ACQUIRED_FROM_INTERNET_ARCHIVE_CAPTURE_OF_EXACT_ECI_OFFICIAL_URL; CURRENT_DIRECT_ECI_RESPONSE_HTTP_406",
       "authority": "OFFICIAL_STATUTORY_BASELINE",
-      "status": "OFFICIAL_ECI_AND_INDIACODE_TEXT_INDEXED; RAW_PDF_BYTES_NOT_ACQUIRED",
+      "status": "ARCHIVED_EXACT_OFFICIAL_URL_PDF_BYTES_ACQUIRED_HASH_VERIFIED; ORIGINAL_GAZETTE_ISSUE_STILL_OPEN",
       "partialCrosswalk": {
         "report": "reports/evidence/w021_5_telangana_layer_comparison_2026-10-25.json",
         "constituencies": [
@@ -857,11 +857,10 @@
         ]
       },
       "limitations": [
-        "Official ECI publication catalogue lists the document under Delimitation Documents as 'Delimitation of Parliamentary & Assembly Constituencies Order - 2008' with the main PDF listed as 1 MB.",
-        "Search indexing exposes the full ECI order and Schedule structure; India Code also indexes the consolidated PDF text.",
-        "Direct retrieval of the ECI PDF returned HTTP 406; the India Code direct URL timed out. Raw original PDF bytes, byte length, page count, and SHA-256 remain unacquired.",
-        "Official Gazette of India 2023 document at https://egazette.gov.in/WriteReadData/2023/248113.pdf states that the 2008 Order was published via notification S.O.382(E), dated 19 February 2008. This is authoritative secondary Gazette recitation of the publication reference, not the original 2008 issue.",
-        "No binary hash is claimed for the 2008 Order."
+        "The recovered PDF is an exact-URL archival copy of the ECI-hosted consolidated order. Direct current ECI retrieval returned HTTP 406, so this is not a direct live-host response.",
+        "It is the ECI consolidated Order PDF, not the original Gazette of India issue/certified paper copy for S.O.382(E).",
+        "Original Gazette issue number/Part/Section/page range and physical/certified authenticity remain OPEN.",
+        "The 2008 Order covers the historical composite Andhra Pradesh in Schedule III; it does not contain a separate Telangana schedule. Successor-state legal effect requires the 2014 Act and later notification chain."
       ],
       "probeWorkflowRunId": 40213536854,
       "probeWorkflowUrl": "https://github.com/kshetra-app/Kshetra/actions/runs/40213536854",
@@ -917,7 +916,61 @@
         "evidenceKind": "Official 2023 Gazette recital identifies the 2008 Order's publication reference; this is not the 2008 Gazette issue itself."
       },
       "lastExplorationAt": "2026-10-26",
-      "lastExplorationOutcome": "OFFICIAL_ECI_CATALOGUE_AND_INDIACODE_SEARCH_INDEX_CONFIRMED; DIRECT_ORIGINAL_BINARY_DOWNLOAD_STILL_BLOCKED"
+      "lastExplorationOutcome": "ARCHIVED_OFFICIAL_URL_PDF_BYTES_ACQUIRED_AND_HASH_VERIFIED; SEPARATE_ORIGINAL_GAZETTE_ISSUE_REMAINS_OPEN",
+      "sha256": "9e1ac49aa952febc8e4f57ed23abd28218a21887f355f8dad1502ab5c0d65e69",
+      "fileBytes": 1340728,
+      "pdfVersion": "1.5",
+      "pdfPageCount": 572,
+      "rawArtifact": "stage_b_archival_recovery/raw/ECI_2008_ORDER_CURRENT_URL_wayback_20260804161908.pdf",
+      "originalOfficialUrl": "https://www.eci.gov.in/Documents/Delimitation/DelimitationofParliamentaryAssemblyConstituenciesOrder-2008%28English%29.pdf",
+      "archiveCaptureUrl": "https://web.archive.org/web/20260804161908id_/https://www.eci.gov.in/Documents/Delimitation/DelimitationofParliamentaryAssemblyConstituenciesOrder-2008(English).pdf",
+      "archiveCaptureTimestampUtc": "2026-08-04T16:19:08Z",
+      "archiveCdxDigest": "3X3E4WORPFSSTLFSDZN7CVB7LDWUYXDN",
+      "archiveCdxCompressedLength": 1130459,
+      "archiveVerification": {
+        "workflowRunId": 40335906727,
+        "workflowUrl": "https://github.com/kshetra-app/Kshetra/actions/runs/40335906727",
+        "workflowArtifactId": 12655404407,
+        "workflowArtifactBytes": 8227705,
+        "workflowArtifactSha256": "009c7f5270187c3cd8bfe3639c042979d35f8be3d390beea2bac289ed489a70f",
+        "pageParser": "PyMuPDF 1.26.4",
+        "pdfMagic": "%PDF-1.5",
+        "parseStatus": "PASS_572_PAGES",
+        "sameBytesConfirmedAcross": [
+          {
+            "url": "https://www.eci.gov.in/Documents/Delimitation/DelimitationofParliamentaryAssemblyConstituenciesOrder-2008%28English%29.pdf",
+            "capture": "2026-08-04T16:19:08Z"
+          },
+          {
+            "url": "https://www.eci.gov.in/Documents/Delimitation/DelimitationofParliamentaryAssemblyConstituenciesOrder-2008(English).pdf",
+            "capture": "2026-08-04T16:19:08Z"
+          },
+          {
+            "url": "http://eci.nic.in/eci_main/CurrentElections/CONSOLIDATED_ORDER%20_ECI%20.pdf",
+            "capture": "2010-10-05T18:08:21Z"
+          }
+        ],
+        "directLiveResponse": {
+          "httpStatus": 406,
+          "responseBytes": 1038,
+          "responseSha256": "995cb9c175d320bb0db264c5b4cf70cd6dad5d3d2964b6e5035af81c72b40685",
+          "isPdf": false
+        },
+        "contentsVerified": [
+          "Schedule I pages 4–5: Lok Sabha seat allocation",
+          "Schedule II pages 6–7: Assembly seat allocation",
+          "Schedule III pages 8–32: composite Andhra Pradesh",
+          "Schedule XXXI pages 543–556: Delhi",
+          "Schedule XXXII pages 557–560: Puducherry",
+          "Jammu and Kashmir Assembly constituencies appear in Annexure pages 561–571"
+        ]
+      },
+      "facts": [
+        "A raw 1,340,728-byte PDF was acquired from an Internet Archive capture of the exact official ECI URL and parsed successfully as 572 pages.",
+        "Raw PDF SHA-256 is 9e1ac49aa952febc8e4f57ed23abd28218a21887f355f8dad1502ab5c0d65e69; same bytes/hash recurred in two additional official/legacy URL captures.",
+        "The PDF contents establish the correct 2008 schedule map: composite Andhra Pradesh is Schedule III/Table A for AC extents and Table B for PC extents; Schedule XXXI is Delhi; Schedule XXXII is Puducherry; J&K Assembly extents are in Annexure.",
+        "The original Gazette issue and its certified/physical authentication remain separate evidence requirements."
+      ]
     },
     {
       "sourceId": "SRC-TELANGANA-ADMIN-NEW-LAYER",
@@ -1611,20 +1664,22 @@
       "retrievedAt": "2026-10-26",
       "format": "Official PDF endpoint with search-indexed text; raw notification bytes not acquired",
       "authority": "OFFICIAL_SOURCE_TEXT_DISCOVERY",
-      "status": "INDEXED_TEXT_DISCOVERY_SUPERSEDED_FOR_BYTE_AVAILABILITY_BY_MASTER_ARTIFACT",
-      "sha256": null,
-      "fileBytes": null,
+      "status": "MASTER_REPOSITORY_ECI_NOTIFICATION_PDF_BYTES_RECORDED_HASH_VERIFICATION_PENDING_IN_THIS_RUN; GAZETTE_ISSUE_OPEN",
+      "sha256": "13201bb665a5d29853862d0bc0c07175c319a61d5b39b2c838fd0ec3882737da",
+      "fileBytes": 102133,
       "scope": "2018 legal amendment lineage for Andhra Pradesh/Telangana AC schedule",
       "limitations": [
-        "The search engine exposes substantial notification text, including date and schedule context, but raw bytes remain unavailable because direct ECI requests return HTTP 406.",
-        "Indexed text is not the original Gazette binary and cannot close EB-01 or EB-02.",
-        "No hash is claimed for the notification."
+        "A repository-retained ECI Notification No. 282/AP/2018(DEL) PDF is distinct from the original Gazette of India O.N.55(E) issue and the Andhra Pradesh State Gazette counterpart.",
+        "The latest archive sweep did not find an exact Wayback PDF capture for the ECI download endpoint; direct live endpoint returned HTTP 406 error HTML.",
+        "The repository dossier records Schedule III, Table A and date 22 September 2018; this does not close the Gazette-byte requirement."
       ],
       "plannedUse": "Use text to target legal cross-checks while continuing exact-byte retrieval via official hosts and custodians.",
       "rawArtifactPath": "data/evidence/delimitation/authoritative/eci_notification_282_ap_2018_del.pdf",
       "rawSha256": "13201bb665a5d29853862d0bc0c07175c319a61d5b39b2c838fd0ec3882737da",
       "rawFileBytes": 102133,
-      "notes": "Original indexed-text discovery remains a valid discovery record, but a retained PDF artifact is now verified in master; see canonical source record SRC-ECI-NOTIFICATION-282-AP-2018-DEL."
+      "notes": "Original indexed-text discovery remains a valid discovery record, but a retained PDF artifact is now verified in master; see canonical source record SRC-ECI-NOTIFICATION-282-AP-2018-DEL.",
+      "rawArtifact": "data/evidence/delimitation/authoritative/eci_notification_282_ap_2018_del.pdf",
+      "provenanceNote": "The primary ECI notification PDF is retained at this repository path. The accompanying dossier records byte size, SHA-256 and retrieval timestamp 2026-10-25T17:42:55Z. The exact-URL archive recovery workflow did not obtain a second independent archival capture of this ECI backend URL (no exact Wayback PDF capture found); direct current URL returned HTTP 406 error HTML."
     },
     {
       "sourceId": "SRC-TSHC-DELIMITATION-2018-JUDGMENT-INDEX-2026-10-26",
@@ -1729,21 +1784,35 @@
       "retrievedAt": "2026-10-26",
       "format": "Official parliamentary proceedings PDF; corroborates Gazette notification identifier and publication date",
       "authority": "OFFICIAL_PARLIAMENTARY_CORROBORATION_NOT_GAZETTE_SOURCE",
-      "status": "GAZETTE_ITEM_IDENTIFIER_CORROBORATED_RAW_GAZETTE_BYTES_NOT_ACQUIRED",
-      "sha256": null,
-      "fileBytes": null,
+      "status": "OFFICIAL_LOK_SABHA_PROCEEDINGS_PDF_BYTES_ACQUIRED_HASH_VERIFIED; GAZETTE_ITEM_ITSELF_OPEN",
+      "sha256": "e4be3f9256b1b1db9fe74fdb6e3f19985b2bca355a1df686b822cb97cf89b1a1",
+      "fileBytes": 638561,
       "pageReference": "Printed page 36; PDF page 35 (zero-based page index 35)",
       "facts": [
-        "Notification identified as O.N.55(E)",
-        "Gazette of India publication date 22 September 2018",
-        "Concern: delimitation of constituencies in Andhra Pradesh and update to Schedule III of Delimitation of Parliamentary and Assembly Constituencies Order, 2008"
+        "The official Sansad proceedings PDF was directly downloaded over HTTPS (HTTP 200), 638,561 bytes, SHA-256 e4be3f9256b1b1db9fe74fdb6e3f19985b2bca355a1df686b822cb97cf89b1a1, 136 pages.",
+        "Printed page 36 (PDF page index 35) records that O.N.55(E), Hindi and English versions, was published in the Gazette of India dated 22 September 2018 and concerns Andhra Pradesh constituency delimitation and update to Schedule III of the 2008 Order.",
+        "The proceedings record provides the Lok Sabha Library accession reference LT 10017/16/18 for the laid-paper copy."
       ],
       "limitations": [
-        "Parliamentary proceedings are corroborative evidence of the Gazette reference, not the Gazette itself.",
-        "Exact eGazette issue/record identifier, Gazette PDF bytes, and certified Andhra Pradesh State Gazette counterpart remain unacquired.",
-        "No raw PDF bytes were downloaded or hashed in this pass."
+        "This is a parliamentary proceedings copy corroborating the Gazette identifier/date, not the Gazette issue PDF itself.",
+        "The exact Gazette issue identity/part-section metadata and original Gazette bytes remain unacquired.",
+        "Andhra Pradesh State Gazette counterpart/certified copy remains unacquired."
       ],
-      "plannedUse": "Use O.N.55(E), publication date, Part II Section 3(iii), and subject as search keys in the official Gazette of India directory; preserve the Gazette itself as a separate required source."
+      "plannedUse": "Use O.N.55(E), publication date, Part II Section 3(iii), and subject as search keys in the official Gazette of India directory; preserve the Gazette itself as a separate required source.",
+      "pdfPageCount": 136,
+      "pdfVersion": "1.7",
+      "rawArtifact": "stage_b_archival_recovery/raw/LOK_SABHA_ON55E_PROCEEDINGS_live.pdf",
+      "retrievalStatus": "DIRECT_LIVE_OFFICIAL_SANSAD_PDF_HTTP_200; MATCHING_ARCHIVE_COPY_HASH_IDENTICAL",
+      "archiveVerification": {
+        "workflowRunId": 40335906727,
+        "workflowUrl": "https://github.com/kshetra-app/Kshetra/actions/runs/40335906727",
+        "artifactId": 12655404407,
+        "artifactZipBytes": 8227705,
+        "artifactZipSha256": "009c7f5270187c3cd8bfe3639c042979d35f8be3d390beea2bac289ed489a70f",
+        "liveHttpStatus": 200,
+        "liveSha256": "e4be3f9256b1b1db9fe74fdb6e3f19985b2bca355a1df686b822cb97cf89b1a1",
+        "archiveSha256": "e4be3f9256b1b1db9fe74fdb6e3f19985b2bca355a1df686b822cb97cf89b1a1"
+      }
     },
     {
       "sourceId": "SRC-GOI-SO382E-2008-ORDER-PUBLICATION-REFERENCE",
@@ -1753,18 +1822,46 @@
       "retrievedAt": "2026-10-26",
       "format": "Official 2023 Gazette PDF containing the legal recital of the 2008 Order's publication reference",
       "authority": "OFFICIAL_GAZETTE_RECITAL_CORROBORATION_NOT_ORIGINAL_2008_GAZETTE",
-      "status": "PUBLICATION_REFERENCE_CORROBORATED_ORIGINAL_2008_ISSUE_BYTES_NOT_ACQUIRED",
-      "sha256": null,
-      "fileBytes": null,
-      "rawArtifact": null,
+      "status": "ARCHIVED_OFFICIAL_2023_GAZETTE_RECITAL_BYTES_ACQUIRED_HASH_VERIFIED; ORIGINAL_2008_ISSUE_OPEN",
+      "sha256": "43d99d7ba5d23cc033752637ac7f55ce11133fc27346f1cad9ac5223f77501c5",
+      "fileBytes": 1204886,
+      "rawArtifact": "stage_b_archival_recovery/raw/GOI_GAZETTE_2023_SO382E_RECITAL_wayback_20231224180839.pdf",
       "facts": [
-        "Delimitation Order, 2008 for all states except Assam, Arunachal Pradesh, Manipur and Nagaland was published via notification number S.O.382(E), dated 19 February 2008."
+        "Raw 1,204,886-byte three-page PDF captured from the exact official eGazette URL and hash-verified.",
+        "The 2023 Gazette text explicitly says the 2008 Delimitation Order for states other than Assam, Arunachal Pradesh, Manipur and Nagaland was published vide S.O.382(E), dated 19 February 2008.",
+        "This corroborates the 2008 publication reference, but is not the original 2008 Gazette issue."
       ],
       "limitations": [
-        "This is a 2023 Gazette document and only recites the 2008 Order's publication reference; it is not the original 2008 Gazette issue and has not been downloaded as raw bytes in this pass.",
-        "No SHA-256 or byte count claimed."
+        "The bytes represent an Internet Archive capture of an official 2023 Gazette PDF, not a live response from the current eGazette host.",
+        "A second 2024 archive capture of this URL returned a 1,048,576-byte truncated/invalid PDF and was rejected; it is not the selected source.",
+        "The original 2008 Gazette issue remains OPEN."
       ],
-      "plannedUse": "Locate the original Gazette issue by exact notification number/date through the official eGazette directory and compare it against the official ECI PDF."
+      "plannedUse": "Locate the original Gazette issue by exact notification number/date through the official eGazette directory and compare it against the official ECI PDF.",
+      "pdfPageCount": 3,
+      "pdfVersion": "1.6",
+      "originalOfficialUrl": "https://egazette.gov.in/WriteReadData/2023/248113.pdf",
+      "archiveCaptureUrl": "https://web.archive.org/web/20231224180839id_/https://egazette.gov.in/WriteReadData/2023/248113.pdf",
+      "archiveCaptureTimestampUtc": "2023-12-24T18:08:39Z",
+      "issueMetadata": {
+        "gazetteRegistration": "Regd. No. D.L.-33004/99",
+        "gazetteId": "CG-DL-E-16082023-248113",
+        "publicationDate": "2023-08-16",
+        "issueNumber": "3502",
+        "part": "II",
+        "section": "3",
+        "subsection": "(ii)",
+        "ministry": "Ministry of Law and Justice (Legislative Department)",
+        "notificationNumber": "S.O.3661(E)",
+        "note": "This is a 2023 Gazette issue containing the historical recital, not the original 2008 Gazette issue."
+      },
+      "archiveVerification": {
+        "workflowRunId": 40335906727,
+        "workflowUrl": "https://github.com/kshetra-app/Kshetra/actions/runs/40335906727",
+        "artifactId": 12655404407,
+        "artifactSha256": "009c7f5270187c3cd8bfe3639c042979d35f8be3d390beea2bac289ed489a70f",
+        "pdfParseStatus": "PASS_3_PAGES",
+        "liveDirectRetrievalStatus": "TLS verification failed in automated environment"
+      }
     },
     {
       "sourceId": "SRC-POSTS-TELEGRAPHS-MANUAL-DELIVERY-BEAT-LISTS-2026-10-26",
@@ -1893,8 +1990,14 @@
             "reports/w021_5_source_acquisition_register.json: SRC-GOI-SO382E-2008-ORDER-PUBLICATION-REFERENCE"
           ],
           "conflict": "The Gazette inventory identifies the 2008 Order's Gazette notification numbers as S.O.383(E) and S.O.453(E), while the legal dossier separately identifies S.O.382(E) as the President's commencement order and the Gazette-recital discovery cites S.O.382(E) as publication reference. The W020 dossier also conflates the 2007 Delimitation Commission Order No.46/Notification No.282/AP/2007-III with the 2008 Presidential commencement order.",
-          "disposition": "DO_NOT_SELECT_OR_NORMALIZE_A_NUMBER_FROM_INTERNAL_TEXT_ALONE. Acquire the original Gazette issue(s), ECI consolidated Order PDF and any corrigenda/commencement notification; reconcile issuer, date, part/section, Gazette serial and instrument text independently.",
-          "rawExternalBytesAcquired": false
+          "disposition": "PARTIALLY RESOLVED by new exact-URL ECI PDF archive capture and later official Gazette recital: S.O.382(E), dated 19 February 2008, is the supported publication reference for the 2008 Delimitation Order. Previous internal attribution of S.O.383(E)/S.O.453(E) as the Order's publication number is unsupported and has been removed from the corrected Gazette inventory. Do not infer what those other numbers represent without their own primary Gazette issues. Original Gazette issue bytes/certified copy, issue number, part, section and page range remain open.",
+          "rawExternalBytesAcquired": false,
+          "confirmingEvidence": [
+            "stage_b_archival_recovery/raw/ECI_2008_ORDER_CURRENT_URL_wayback_20260804161908.pdf",
+            "stage_b_archival_recovery/raw/GOI_GAZETTE_2023_SO382E_RECITAL_wayback_20231224180839.pdf",
+            "reports/w021_5_official_gazette_inventory.json"
+          ],
+          "status": "PUBLICATION_REFERENCE_S_O_382E_CORROBORATED_ORIGINAL_2008_GAZETTE_ISSUE_STILL_OPEN"
         },
         {
           "id": "INDIAPOST-CUSTODIAN-RESPONSE-PROVENANCE-GAP",
@@ -1921,6 +2024,17 @@
           "disposition": "Treat the ECI 2018 notification's exact wording as verified for that notification only. Do not assume that internal Schedule II/XXXI extracts are valid references to the same version of the Order. Acquire the original consolidated ECI Order and relevant 2007/2008 Gazette issues, then reconcile the exact schedule/table enumeration by instrument date and legal version.",
           "primaryDocumentByteBasis": "The 2018 notification PDF is retained in master and its raw bytes independently hash-verified; the original 2008 Order PDF and original Gazette issues remain unavailable.",
           "raw2008OrderBytesAcquired": false
+        },
+        {
+          "id": "LEGAL-2008-PRIMARY-CONSOLIDATED-PDF-RECOVERY",
+          "recordsCompared": [
+            "stage_b_archival_recovery/manifest.json",
+            "data/evidence/w021_5/authoritative/eci_delimitation_2008_schedule_ii_table_b_extract.txt",
+            "data/evidence/w021_5/authoritative/eci_delimitation_2008_schedule_xxxi_table_b_extract.txt",
+            "data/evidence/w015_b2/eci_delimitation_2008_schedule_xxxi.txt"
+          ],
+          "finding": "The exact-URL archived ECI consolidated PDF is now available (1,340,728 bytes; SHA-256 9e1ac49aa952febc8e4f57ed23abd28218a21887f355f8dad1502ab5c0d65e69; 572 pages). It establishes Schedule III (pages 8–32) as composite Andhra Pradesh, Schedule XXXI (pages 543–556) as Delhi, Schedule XXXII (pages 557–560) as Puducherry, and J&K assembly extents in the Annexure. Prior Schedule II/Table B and Schedule XXXI/Telangana extracts have been explicitly invalidated in W021.5, but the older W015 B2 extract still carries false 'authoritative' labeling and must be invalidated/reconciled.",
+          "disposition": "Use the archived ECI PDF as the hash-verified historical ECI consolidated-order source. Do not promote it as an original Gazette copy. Keep the original 2008 Gazette issue/physical authenticity gate open. Correct or invalidate every derivative source transcription that labels schedule/table orientation wrongly; require explicit new reconciliation under the current legal period."
         }
       ],
       "limitations": [
@@ -2819,6 +2933,35 @@
         }
       },
       "disposition": "NOT_OFFICIAL_NOT_CANONICAL; candidate forensic comparison only"
+    },
+    {
+      "runId": 40335906727,
+      "workflowUrl": "https://github.com/kshetra-app/Kshetra/actions/runs/40335906727",
+      "artifactId": 12655404407,
+      "artifactBytes": 8227705,
+      "artifactSha256": "009c7f5270187c3cd8bfe3639c042979d35f8be3d390beea2bac289ed489a70f",
+      "outcome": "SUCCESS_ARCHIVED_EXACT_ECI_2008_PDF_AND_OFFICIAL_2023_GAZETTE_RECITAL; NO_O_N_55E_GAZETTE_PDF; NO_INDIA_POST_MANUAL_PDF",
+      "branch": "cto/w0215-stage-b-evidence-20261025",
+      "persistedEvidenceCommit": "b0e825de6b1c5870f95c5a8ca46d2a3d4bd1dfa8",
+      "sourceFindings": {
+        "eci2008": {
+          "bytes": 1340728,
+          "sha256": "9e1ac49aa952febc8e4f57ed23abd28218a21887f355f8dad1502ab5c0d65e69",
+          "pages": 572
+        },
+        "gazetteRecital2023": {
+          "bytes": 1204886,
+          "sha256": "43d99d7ba5d23cc033752637ac7f55ce11133fc27346f1cad9ac5223f77501c5",
+          "pages": 3
+        },
+        "lokSabhaO_N_55E": {
+          "bytes": 638561,
+          "sha256": "e4be3f9256b1b1db9fe74fdb6e3f19985b2bca355a1df686b822cb97cf89b1a1",
+          "pages": 136
+        },
+        "eci2018NotificationArchiveSearch": "NO_EXACT_URL_PDF_CAPTURE; direct ECI response is HTTP 406; repo dossier records an ECI notification PDF",
+        "indiaPostManual": "NO_EXACT_URL_PDF_CAPTURE; direct document API returned HTTP 400"
+      }
     }
   ],
   "updatedAt": "2026-10-26",
@@ -2883,7 +3026,7 @@
     ],
     "acceptedAsCanonical": false
   },
-  "lastDecision": "A pinned third-party nationwide AC GeoJSON snapshot has now been acquired and independently audited as a candidate only: upstream commit 3e4e9f347b260040278c36f563fb2efa28e2a476, 4129 files across 36 state/UT codes; 65 invalid polygons, 4129 unresolved/TBD source-attribution records, and 154 positive-area overlap pairs >1 m². The full source snapshot, per-file hashes/Git blobs, audit report and a raw TGRAC comparator response (if successful) are archived on the evidence-only branch. It is expressly not official and is rejected for canonical use. Delhi's 70/70 polling-station slice is accepted only as a jurisdictional evidence slice; nationwide EB-05 remains open. Gazette, original 2008 Order, national legal geometry and India Post delivery-beat evidence remain unresolved.",
+  "lastDecision": "The exact 572-page ECI consolidated Delimitation Order PDF has now been acquired from a Wayback capture of the exact official ECI URL, parsed, and hash-verified (1,340,728 bytes; SHA-256 9e1ac49aa952febc8e4f57ed23abd28218a21887f355f8dad1502ab5c0d65e69). Two additional ECI/legacy URL captures returned identical bytes. A later official Gazette recital PDF (3 pages; 1,204,886 bytes; SHA-256 43d99d7ba5d23cc033752637ac7f55ce11133fc27346f1cad9ac5223f77501c5) confirms publication reference S.O.382(E), dated 19 February 2008. Official Lok Sabha proceedings PDF is also captured from the live official Sansad host (638,561 bytes; SHA-256 e4be3f9256b1b1db9fe74fdb6e3f19985b2bca355a1df686b822cb97cf89b1a1) and corroborates O.N.55(E) dated 22 September 2018, Library ref LT 10017/16/18. These are now hash-verified records; the original 2008 Gazette issue, actual O.N.55(E) Gazette issue PDF, AP State Gazette counterpart/certified copy, and authenticated India Post delivery-beat evidence remain open. The 2008 PDF is not itself a Gazette copy. Delhi polling evidence is closed only for Delhi; national geometry candidate rejected. Stage B remains PARTIAL / NOT ACCEPTED.",
   "latestRouteAdjudication": {
     "recordedAt": "2026-10-26",
     "reportPath": "reports/w021_5_stage_b_evidence_route_adjudication_2026-10-26.md",
