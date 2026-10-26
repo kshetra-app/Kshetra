@@ -1,48 +1,30 @@
-AUTHORITATIVE STATUTORY EXTRACT: ECI DELIMITATION ORDER 2008
-==============================================================================
-Source Authority: Delimitation Commission of India / Election Commission of India
-Document: Delimitation of Parliamentary and Assembly Constituencies Order, 2008
-Statutory Enactment:
-  - Originally Schedule II (State of Andhra Pradesh), Promulgated 19 February 2008
-  - Re-enacted as Schedule XXXI (State of Telangana) under Section 15 of the
-    Andhra Pradesh Reorganisation Act, 2014 (Act No. 6 of 2014)
-Source URL: https://eci.gov.in/files/file/3931-delimitation-of-parliamentary-assembly-constituencies-order-2008/
-Retrieval Date: 2026-09-22
-Effective Date: 2008-02-19
+STATUS: INVALIDATED — DO NOT USE AS AUTHORITATIVE STATUTORY AC EXTENTS
 
-SCHEDULE XXXI: TELANGANA
-TABLE B — ASSEMBLY CONSTITUENCIES
-------------------------------------------------------------------------------
-Serial No. & Name of Constituency | Extent of the Constituency
-------------------------------------------------------------------------------
-1. Sirpur                         | Kouthala, Bejjur, Kagaznagar, Sirpur (T)
-                                  | and Dahegaon Mandals.
-------------------------------------------------------------------------------
-2. Chennur (SC)                   | Jaipur, Chennur, Kotapalli and
-                                  | Mandamarri Mandals.
-------------------------------------------------------------------------------
-3. Bellampalli (SC)               | Kasipet, Tandur, Bellampalli, Bhimini,
-                                  | Nennal and Vemanpalli Mandals.
-------------------------------------------------------------------------------
-4. Mancherial                     | Luxettipet, Mancherial and Dandepalli
-                                  | Mandals.
-------------------------------------------------------------------------------
-5. Asifabad (ST)                  | Kerameri, Wankdi, Sirpur (U), Asifabad,
-                                  | Jainoor, Narnoor, Tiryani and Rebbana
-                                  | Mandals.
-==============================================================================
-STATUTORY OBSERVATIONS:
-1. AC 1 (Sirpur): Contains 100% of Sirpur (T), Kagaznagar, Dahegaon Mandals.
-2. AC 2 (Chennur SC): Contains 100% of Chennur and Kotapalli Mandals.
-   Kotapalli is FULLY inside AC 2 under the 2008 Delimitation Order.
-3. AC 3 (Bellampalli SC): Contains Kasipet, Tandur, Bellampalli, Bhimini,
-   Nennal, and Vemanpalli Mandals.
-   Hajipur is NOT part of AC 3.
-4. AC 4 (Mancherial): Contains strictly Luxettipet, Mancherial, and Dandepalli.
-   Kotapalli is NOT part of AC 4.
-5. AC 5 (Asifabad ST): Contains 100% of Asifabad and Tiryani Mandals.
-6. Hajipur Mandal did NOT exist in 2008. Its constituent territory was carved
-   out of Mancherial Mandal in October 2016. Because Mancherial Mandal was
-   wholly in AC 4, Hajipur's containment in AC 4 is a DERIVED SUCCESSOR
-   relationship under W014 temporal lineage.
-==============================================================================
+Invalidated: 2026-10-26
+Reason: This historical extract incorrectly labels the combined Andhra Pradesh assembly roster as “Schedule XXXI / Telangana”. The hash-verified 572-page ECI consolidated Order PDF recovered from an archived capture of the exact ECI official URL establishes the following:
+
+- Schedule I (PDF pages 4–5): Lok Sabha seat allocation summary.
+- Schedule II (PDF pages 6–7): Legislative Assembly seat allocation summary.
+- Schedule III (PDF pages 8–32): Andhra Pradesh as the composite pre-2014 state.
+- Schedule III, Table A: Assembly constituencies and their territorial extents.
+- Schedule III, Table B: Parliamentary constituencies and their territorial extents.
+- Schedule XXXI (PDF pages 543–556): Delhi, not Telangana.
+- Schedule XXXII (PDF pages 557–560): Puducherry.
+- Jammu and Kashmir assembly-constituency extents are in the Annexure (PDF pages 561–571).
+- The 2008 ECI Order does not contain a separate Telangana schedule. The modern Telangana 119-AC regime must be reconciled through the Andhra Pradesh Reorganisation Act, 2014 and subsequent applicable legal instruments.
+
+Replacement historical-source identity:
+Title: Delimitation of Parliamentary and Assembly Constituencies Order, 2008 (ECI consolidated historical PDF)
+Exact ECI URL: https://www.eci.gov.in/Documents/Delimitation/DelimitationofParliamentaryAssemblyConstituenciesOrder-2008%28English%29.pdf
+Archived exact-URL capture: https://web.archive.org/web/20260804161908id_/https://www.eci.gov.in/Documents/Delimitation/DelimitationofParliamentaryAssemblyConstituenciesOrder-2008(English).pdf
+Capture timestamp: 2026-08-04T16:19:08Z
+Archived PDF bytes: 1,340,728
+SHA-256: 9e1ac49aa952febc8e4f57ed23abd28218a21887f355f8dad1502ab5c0d65e69
+PDF pages: 572
+Recovery workflow: https://github.com/kshetra-app/Kshetra/actions/runs/40335906727
+Raw archived PDF: stage_b_archival_recovery/raw/ECI_2008_ORDER_CURRENT_URL_wayback_20260804161908.pdf
+Evidence-only commit: b0e825de6b1c5870f95c5a8ca46d2a3d4bd1dfa8
+
+The previous rows in this file must not be used as current Telangana AC numbers or as an authoritative Telangana legal extent crosswalk. Their historical composite-state serials may not be mapped to current Telangana AC numbers by name alone. A new valid current-regime crosswalk requires primary legal instruments, the AP Reorganisation Act schedule, later amendments/corrigenda, and independent identity/extent checks.
+
+Important limitation: the ECI PDF is an archival copy of the official consolidated-order URL, not the original Gazette of India issue or a certified physical copy. The original Gazette issue for S.O.382(E), including issue number, Part/Section/page metadata and physical/certified provenance, remains OPEN.
