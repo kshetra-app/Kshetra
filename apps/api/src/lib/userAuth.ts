@@ -31,12 +31,6 @@ export const VALID_ROLES = new Set([
 ]);
 
 /**
- * Extracts the authoritative role for a user.
- * Privileged roles must derive ONLY from server-managed app_metadata.role or server-side authoritative lookup.
- * user_metadata is caller-supplied and must NEVER be trusted for role authority.
- * Unknown or malformed roles fail closed to 'citizen'.
- */
-/**
  * Header-based identity/role shortcuts are available only inside an explicitly enabled
  * Jest/test harness. NODE_ENV alone is not a sufficient trust boundary.
  */
@@ -44,6 +38,12 @@ export function isExplicitTestHarnessActive(): boolean {
   return process.env.NODE_ENV === 'test' && process.env.TEST_HARNESS_ACTIVE === 'true';
 }
 
+/**
+ * Extracts the authoritative role for a user.
+ * Privileged roles must derive ONLY from server-managed app_metadata.role or server-side authoritative lookup.
+ * user_metadata is caller-supplied and must NEVER be trusted for role authority.
+ * Unknown or malformed roles fail closed to 'citizen'.
+ */
 export function extractAuthoritativeRole(user: any): string {
   const roleCandidate = typeof user?.app_metadata?.role === 'string'
     ? user.app_metadata.role.trim().toLowerCase()
