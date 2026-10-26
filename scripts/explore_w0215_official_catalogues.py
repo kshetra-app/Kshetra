@@ -230,21 +230,32 @@ def cdx_query(label: str, params: dict) -> dict:
         if r.status_code != 200:
             row["status"] = "CDX_HTTP_FAILURE"
             return row, []
-        lines = r.text.splitlines()
-        if len(lines) < 2:
+        # CDX output=json is a JSON array-of-arrays, not JSONL.
+        # Parse the entire response first; do not silently degrade to whitespace-split records.
+        data = None
+        try:
+            data = json.loads(r.text.strip().rstrip(","))
+        except Exception:
+            try:
+                data = r.json()
+            except Exception:
+                data = None
+        if not isinstance(data, list) or len(data) < 2:
             row["status"] = "NO_CDX_RECORDS"
             row["recordCount"] = 0
+            row["parseError"] = "NO_VALID_JSON_ARRAY"
             return row, []
-        try:
-            header = json.loads(lines[0])
-        except Exception:
-            header = lines[0].split()
+        header = data[0]
         records = []
-        for line in lines[1:]:
+        for cells in data[1:]:
             try:
-                cells = json.loads(line)
-                item = dict(zip(header, cells))
-                if item.get("statuscode") == "200":
+                if isinstance(cells, dict):
+                    item = cells
+                elif isinstance(header, list) and isinstance(cells, list):
+                    item = dict(zip(header, cells))
+                else:
+                    continue
+                if str(item.get("statuscode")) == "200":
                     records.append(item)
             except Exception:
                 continue
