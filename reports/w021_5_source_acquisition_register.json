@@ -1637,6 +1637,30 @@
         "No exact relevant Gazette bytes acquired."
       ],
       "plannedUse": "Custodian discovery only; prioritize Gazette of India and Andhra Pradesh State Gazette sources."
+    },
+    {
+      "sourceId": "SRC-GOI-EGAZETTE-PORTAL-2026-10-26",
+      "publisher": "Government of India, Department of Publication / eGazette",
+      "title": "Official Gazette of India search portal",
+      "url": "https://egazette.gov.in/",
+      "retrievedAt": "2026-10-26",
+      "status": "OFFICIAL_CUSTODIAN_PORTAL_DISCOVERY_EXACT_ISSUE_NOT_ACQUIRED",
+      "byteLength": null,
+      "sha256": null,
+      "rawArtifact": null,
+      "notes": "Official portal identified via web search. This is a search/custodian lead only; exact Gazette issue carrying ECI Notification 282/AP/2018(DEL) not identified or acquired. No raw-byte hash claimed."
+    },
+    {
+      "sourceId": "SRC-GOI-DEPT-PUBLICATION-GAZETTE-CATALOGUE-2026-10-26",
+      "publisher": "Government of India, Department of Publication",
+      "title": "Official Department of Publication Gazette catalogue",
+      "url": "https://deptpub.gov.in/document-category/gazett/",
+      "retrievedAt": "2026-10-26",
+      "status": "OFFICIAL_CATALOGUE_DISCOVERY_EXACT_ISSUE_NOT_ACQUIRED",
+      "byteLength": null,
+      "sha256": null,
+      "rawArtifact": null,
+      "notes": "Official Gazette catalogue lead for exact-issue discovery. Not the notification or certified Gazette itself; no raw source bytes or hash acquired."
     }
   ],
   "unresolvedGates": [
