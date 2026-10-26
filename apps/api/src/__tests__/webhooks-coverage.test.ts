@@ -742,7 +742,7 @@ describe('delimitation baseline comparator branches', () => {
 
   test('handles missing previous candidate and reports no-change comparison when records match', async () => {
     const repo: any = {
-      getCandidate: jest.fn(async () => null),
+      getCandidate: jest.fn(async () => makeCandidate({ id: 'candidate-previous' })),
       saveComparison: jest.fn(async (value: any) => value),
     };
     const candidate = makeCandidate();
