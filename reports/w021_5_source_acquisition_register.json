@@ -1645,16 +1645,28 @@
       "retrievedAt": "2026-10-26",
       "format": "Official PDF URL with search-indexed text; raw PDF bytes not acquired in this session",
       "authority": "OFFICIAL_SOURCE_TEXT_DISCOVERY",
-      "status": "INDEXED_TEXT_DISCOVERY_RAW_BYTES_NOT_ACQUIRED",
+      "status": "SUPERSEDED_BY_HASH_VERIFIED_ARCHIVAL_CAPTURE_OF_EXACT_OFFICIAL_ECI_PDF_URL",
       "sha256": null,
       "fileBytes": null,
       "scope": "Historical legal schedule and source for jurisdiction-specific legal chain",
       "limitations": [
-        "Web search returned extracted text from the official PDF, but direct page fetch failed HTTP 406 and no raw PDF bytes were obtained here.",
-        "The order is not a universal current-geometry source: subsequent jurisdiction-specific orders, amendments and corrigenda must be reconciled.",
-        "No binary SHA-256 is claimed."
+        "This record now remains only as discovery evidence for indexed text, superseded for raw PDF byte availability by SRC-ECI-DELIMITATION-ORDER-2008.",
+        "The archived consolidated ECI Order PDF bytes are recovered and hash-verified; the original Gazette issue(s) and certified publication metadata remain separate open requirements.",
+        "The Internet Archive capture is not a live download from the current ECI host; provenance is tied to an exact official-host URL and independent byte-identical archived captures."
       ],
-      "plannedUse": "The exact URL is included in the W021.5 acquisition script on draft PR #27 for a controlled retry; use indexed text only as a discovery aid, not binary evidence."
+      "plannedUse": "The exact URL is included in the W021.5 acquisition script on draft PR #27 for a controlled retry; use indexed text only as a discovery aid, not binary evidence.",
+      "rawArtifact": null,
+      "supersededBy": {
+        "sourceId": "SRC-ECI-DELIMITATION-ORDER-2008",
+        "officialUrl": "https://www.eci.gov.in/Documents/Delimitation/DelimitationofParliamentaryAssemblyConstituenciesOrder-2008%28English%29.pdf",
+        "archiveCaptureUrl": "https://web.archive.org/web/20260804161908id_/https://www.eci.gov.in/Documents/Delimitation/DelimitationofParliamentaryAssemblyConstituenciesOrder-2008(English).pdf",
+        "retrievalMethod": "Internet Archive capture of the exact official ECI source URL; current ECI response returns HTTP 406",
+        "bytes": 1340728,
+        "sha256": "9e1ac49aa952febc8e4f57ed23abd28218a21887f355f8dad1502ab5c0d65e69",
+        "pdfVersion": "1.5",
+        "pdfPageCount": 572,
+        "archiveVerification": "Three independent archive capture URL variants byte-identical; content signature, PDF parser and page count verified."
+      }
     },
     {
       "sourceId": "SRC-ECI-NOTIFICATION-282-AP-2018-INDEXED-TEXT-2026-10-26",
@@ -2824,6 +2836,82 @@
         "PIN-code boundary data is not equivalent to delivery-beat geometry."
       ],
       "plannedUse": "Use the exact Rule 309/310 and fixed/unfixed village-beat passages from Vol. VIII to refine a formal custodian request for current local and national operational records; do not mark the national GIS gate closed."
+    },
+    {
+      "sourceId": "SRC-CEO-PORTAL-ROOT-DISCOVERY-2026-10-26",
+      "subject": "Bounded discovery sweep across 32 state/UT Chief Electoral Officer portal roots for separately published polling-station lists",
+      "publisher": "State/UT Chief Electoral Officers, Government of India / State Governments; source sweep run by PANIN/Kshetra",
+      "url": "https://github.com/kshetra-app/Kshetra/actions/runs/40363331945",
+      "retrievedAt": "2026-10-26",
+      "format": "Manifest of official-root HTML fetches, raw-response bytes and SHA-256; no national station crosswalk produced",
+      "authority": "OFFICIAL_PORTAL_DISCOVERY_ONLY_NO_NATIONAL_CROSSWALK",
+      "status": "DISCOVERY_SWEEP_PASS_EXECUTION; 5_OF_32_ROOT_HTML_ACQUIRED; 0_STATIC_POLLING_LIST_LINKS_ACCEPTED",
+      "workflowRunId": 40363331945,
+      "workflowUrl": "https://github.com/kshetra-app/Kshetra/actions/runs/40363331945",
+      "workflowArtifactId": 12668803402,
+      "workflowArtifactBytes": 87280,
+      "workflowArtifactSha256": "bc5e9ee2ba61758660ffd9751fb1f7940aa8b722daaa57b817076031639be869",
+      "repositoryBranch": "cto/w0215-stage-b-evidence-20261025",
+      "repositoryCommit": "c843234b59868f6bdf77166ac6530a5822ae8240",
+      "manifestPath": "data/evidence/w021_5/ceo_portal_discovery/manifest.json",
+      "manifestGitBlobSha": "efd94a4995f4cfb6136dd684b21a03835d3d662a",
+      "pageCounts": {
+        "officialRootsProbed": 32,
+        "rawRootHtmlDownloaded": 5,
+        "rootFetchFailures": 27,
+        "qualifyingStaticPollingStationListLinksDiscovered": 0,
+        "candidatePagesDownloaded": 0,
+        "nationalCrosswalkProduced": false
+      },
+      "acquiredRootPages": [
+        {
+          "stateCode": "AR",
+          "url": "https://ceoarunachal.nic.in/",
+          "bytes": 81512,
+          "sha256": "0a99993b2b6cacb7bd080b216b2f50a08fb0165b42e7146fae5ea7ebcb81d16d",
+          "title": "Home - CEOAP",
+          "identityMarkersVerified": true
+        },
+        {
+          "stateCode": "GA",
+          "url": "https://ceogoa.nic.in/",
+          "bytes": 158086,
+          "sha256": "6d18491266d70ce6e2488219d5068050c66e3fd46826448e71a9ebb3a1968dd9",
+          "title": "CHIEF ELECTORAL OFFICER GOA",
+          "identityMarkersVerified": true
+        },
+        {
+          "stateCode": "ML",
+          "url": "https://ceomeghalaya.nic.in/",
+          "bytes": 27500,
+          "sha256": "12f20637e74f3fcd9dc9f530d1342483b858e006330f97d72265c8610565a70d",
+          "title": "Homepage: Office of the Chief Electoral Officer, Meghalaya",
+          "identityMarkersVerified": true
+        },
+        {
+          "stateCode": "MN",
+          "url": "https://ceomanipur.nic.in/",
+          "bytes": 216665,
+          "sha256": "c089a1ea18af41f18d1c2c8cd37b2b4b6e6a0bec76fa777025021c587604b318",
+          "title": "Chief Electoral Officer, Manipur - Official Website",
+          "identityMarkersVerified": true
+        },
+        {
+          "stateCode": "PY",
+          "url": "https://ceopuducherry.py.gov.in/",
+          "bytes": 58556,
+          "sha256": "ab40733f8db08909bb51b58cd21e011c49b17cddf9686cc9a1d86d276b8f8976",
+          "title": "Welcome to the Official Website of the Chief Electoral Officer, Puducherry!",
+          "identityMarkersVerified": true
+        }
+      ],
+      "limitations": [
+        "This first-pass root list was derived from legacy/static portal names and is not a verified current official directory. 27 roots failed due DNS, TLS certificate, timeout or network errors; failures are not evidence of absence.",
+        "The first-pass filter excluded electoral-roll PDFs and voter-level search. No CAPTCHA or authentication was bypassed and no voter personal data was acquired.",
+        "The source portal HTML and link strings do not establish that a static polling-station-to-AC list is available; no crosswalk records were produced.",
+        "A corrected follow-up sweep now updates current portal variants for Kerala, Maharashtra, Karnataka, Jharkhand and West Bengal, and records the public ECI polling-station lookup as discovery-only without submitting it. Workflow run 40364834268 is pending at the time this master record was written."
+      ],
+      "plannedUse": "Use the manifest as a negative discovery log only. Continue with corrected current portal roots and separately obtain official, non-elector polling-station lists from each jurisdiction; maintain per-source hashes and validate station-to-AC identity before any crosswalk acceptance."
     }
   ],
   "unresolvedGates": [
@@ -3490,6 +3578,20 @@
           "displayedCatalogueDate": "01-04-1979"
         }
       }
+    },
+    {
+      "runId": 40363331945,
+      "workflowUrl": "https://github.com/kshetra-app/Kshetra/actions/runs/40363331945",
+      "status": "PASS_DISCOVERY_EXECUTION_PARTIAL_PORTAL_ACCESS",
+      "workflowArtifactId": 12668803402,
+      "workflowArtifactBytes": 87280,
+      "workflowArtifactSha256": "bc5e9ee2ba61758660ffd9751fb1f7940aa8b722daaa57b817076031639be869",
+      "rootsAttempted": 32,
+      "rootsDownloaded": 5,
+      "candidateListLinks": 0,
+      "stationPagesDownloaded": 0,
+      "branchCommit": "c843234b59868f6bdf77166ac6530a5822ae8240",
+      "disposition": "Negative discovery only; not proof sources do not exist"
     }
   ],
   "updatedAt": "2026-10-26",
@@ -3513,7 +3615,8 @@
     "Additional 2026-10-26 official-source exploration: official ECI 2008-order catalogue plus IndiaCode index reviewed; 2008 Order binary still blocked/unacquired. Official 2023 Gazette recital identifies the original publication as S.O.382(E), 19 February 2008, which is a stronger exact-issue search key but not the 2008 Gazette itself. India Post manual indexed text describes local postal-map/delivery-beat-list books prepared by postmasters; direct PDF URL returned 404 in this session, so no hash or bytes claimed. NIC Bharat Maps identified as national GIS custodian route but no public AC layer was verified. Esri India identifies an AC-boundary commercial dataset sourced from ECI, but licence/data bytes/version were not acquired. CEO Delhi offers AC/PC maps and polling-location GIS, but is a jurisdiction-only candidate.",
     "2026-10-26 audit reconciliation: found internal inconsistency between reports/w021_5_official_gazette_inventory.json (S.O.383(E)/S.O.453(E)) and the S.O.382(E) references in the 2008 legal dossier / Gazette recital discovery. Keep all as conflicting references pending original Gazette/ECI binary verification rather than choosing one from secondary internal text. Also flagged reports/w021_5_india_post_geography_assessment.json custodianStatus.inquiryLogged/finding: no custodian-issued response or sent-request receipt is present in the evidence inventory; this is not an independently verified Department of Posts statement.",
     "2026-10-26 pinned nationwide non-official AC boundary candidate acquired and audited in workflow run 40329997952. Public upstream commit 3e4e9f347b260040278c36f563fb2efa28e2a476 contains 4129 per-AC GeoJSON files across 36 state/UT codes. Audit found 65 invalid geometries, 4129 files with unresolved/TBD provenance and 154 valid-polygon positive-area overlap pairs over 1 m². Candidate snapshot and per-file raw hashes are durable only on evidence branch cto/w0215-stage-b-evidence-20261025 at commit 32dc58769af29b2e8233db87873824b548836cf6. This is a non-official candidate, not national canonical geometry.",
-    "2026-10-26 official India Post catalogue acquisition run 40350138447: verified 8/8 retained India Post catalogue HTML pages and acquired/parsed 8/8 exact linked postal-manual PDFs; no failures. Postal Manual Vol. VIII (catalogue date 01-04-1979) 833,948 bytes SHA-256 c373de5e152d9dd0599358594f5ea9eb488dbd4b630dea3023879e27a043ff6e, 317 pages; Rules 309/310 describe local town postal maps and delivery-beat list books with streets/quarters and an alphabetical street-to-beat index; Rules 274/275 describe fixed/unfixed village postman beats and routes. This is official operational documentation, not national vector geometry. No India Post custodian reply is retained; the old assessment custodianStatus.inquiryLogged/finding assertion remains unsupported and must be corrected. Source package lives on evidence branch abe518b925ef7193b543d6a1c012dada51cbbb3f. National delivery-beat geometry remains OPEN."
+    "2026-10-26 official India Post catalogue acquisition run 40350138447: verified 8/8 retained India Post catalogue HTML pages and acquired/parsed 8/8 exact linked postal-manual PDFs; no failures. Postal Manual Vol. VIII (catalogue date 01-04-1979) 833,948 bytes SHA-256 c373de5e152d9dd0599358594f5ea9eb488dbd4b630dea3023879e27a043ff6e, 317 pages; Rules 309/310 describe local town postal maps and delivery-beat list books with streets/quarters and an alphabetical street-to-beat index; Rules 274/275 describe fixed/unfixed village postman beats and routes. This is official operational documentation, not national vector geometry. No India Post custodian reply is retained; the old assessment custodianStatus.inquiryLogged/finding assertion remains unsupported and must be corrected. Source package lives on evidence branch abe518b925ef7193b543d6a1c012dada51cbbb3f. National delivery-beat geometry remains OPEN.",
+    "2026-10-26 execution correction: the ECI 2008 consolidated Order raw bytes were already recovered by exact-URL Internet Archive recovery run 40335906727 (three byte-identical captures, 1,340,728 bytes, SHA-256 9e1ac49aa952febc8e4f57ed23abd28218a21887f355f8dad1502ab5c0d65e69, PDF 1.5, 572 pages). The older indexed-text source record is now explicitly superseded for raw-byte availability; this does not satisfy the separate original Gazette issue requirement. Also recorded the bounded CEO portal discovery run 40363331945: 5/32 historic roots downloaded and hashed, zero qualifying static station-list links under first-pass filtering; corrected current-root retry run 40364834268 was pending at register update time. These failures are not evidence that official station lists do not exist."
   ],
   "secondaryGeometryAudit": {
     "sourceRepository": "https://github.com/saisantoshv3/assemnbly_gis_files",
