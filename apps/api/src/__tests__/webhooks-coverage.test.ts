@@ -19,6 +19,13 @@ import {
   validateAndPinEgressTarget,
 } from '../modules/webhooks/antiSsrfGuard';
 import { validateEventPayload } from '../modules/webhooks/schemas';
+import http from 'node:http';
+import {
+  dispatchWebhook,
+  MAX_RESPONSE_SAMPLE_BYTES,
+  MAX_RESPONSE_STREAM_BYTES,
+  MAX_WEBHOOK_PAYLOAD_BYTES,
+} from '../modules/webhooks/webhookDispatcher';
 import {
   calculateBackoffDelaySeconds,
   calculateNextRetryAt,
@@ -513,5 +520,126 @@ describe('webhook queue state machine branch coverage', () => {
     expect(purged).toEqual({ purgedDeliveries: 1, purgedEvents: 1 });
     expect(queue.deliveries.has('old-delivery')).toBe(false);
     expect(queue.events.has('old-event')).toBe(false);
+  });
+});
+
+
+describe('webhook dispatcher transport branches', () => {
+  let server: http.Server;
+  let baseUrl = '';
+  let mode: 'ok' | 'redirect' | 'large' | 'overflow' | 'failure' = 'ok';
+
+  beforeAll(async () => {
+    server = http.createServer((_req, res) => {
+      if (mode === 'redirect') {
+        res.writeHead(302, { location: '/elsewhere', 'x-array-header': ['a', 'b'] as any });
+        res.end();
+        return;
+      }
+      if (mode === 'large') {
+        res.writeHead(200, { 'content-type': 'text/plain' });
+        res.end('x'.repeat(5000));
+        return;
+      }
+      if (mode === 'overflow') {
+        res.writeHead(200, { 'content-type': 'text/plain' });
+        res.end('x'.repeat(MAX_RESPONSE_STREAM_BYTES + 1024));
+        return;
+      }
+      if (mode === 'failure') {
+        res.writeHead(503, { 'content-type': 'text/plain' });
+        res.end('unavailable');
+        return;
+      }
+      res.writeHead(204, { 'content-type': 'application/json' });
+      res.end();
+    });
+    await new Promise<void>((resolve) => server.listen(0, '127.0.0.1', resolve));
+    const address = server.address() as { port: number };
+    baseUrl = `http://127.0.0.1:${address.port}`;
+  });
+
+  afterAll(async () => {
+    await new Promise<void>((resolve, reject) => server.close((error) => error ? reject(error) : resolve()));
+  });
+
+  const send = (overrides: any = {}) => dispatchWebhook({
+    endpointUrl: `${baseUrl}/hook?x=1`,
+    secret: 'whsec_test_secret',
+    eventId: 'event-1',
+    deliveryId: 'delivery-1',
+    payloadRaw: '{"ok":true}',
+    allowLocalhostInTest: true,
+    ...overrides,
+  });
+
+  test('rejects oversized payload before attempting egress and returns payload integrity headers', async () => {
+    const result = await send({ payloadRaw: 'x'.repeat(MAX_WEBHOOK_PAYLOAD_BYTES + 1) });
+    expect(result.success).toBe(false);
+    expect(result.httpStatus).toBeNull();
+    expect(result.errorMessage).toMatch(/PAYLOAD_SIZE_LIMIT_EXCEEDED/);
+    expect(result.requestHeaders).toEqual({});
+  });
+
+  test('returns SSRF validation errors without opening a request', async () => {
+    const result = await dispatchWebhook({
+      endpointUrl: 'http://127.0.0.1:8080/hook', secret: 'secret',
+      eventId: 'event-2', deliveryId: 'delivery-2', payloadRaw: '{}',
+      allowLocalhostInTest: false,
+    });
+    expect(result.success).toBe(false);
+    expect(result.httpStatus).toBeNull();
+    expect(result.errorMessage).toMatch(/HTTPS_REQUIRED|blocked/i);
+    expect(result.requestHeaders['X-PanIN-Payload-SHA256']).toHaveLength(64);
+  });
+
+  test('transmits canonical bytes, computes hash, signs with previous secret, and handles success', async () => {
+    mode = 'ok';
+    const result = await send({ previousSecret: 'whsec_previous' });
+    expect(result.success).toBe(true);
+    expect(result.httpStatus).toBe(204);
+    expect(result.requestHeaders['X-PanIN-Signature']).toContain(',v1=');
+    expect(result.requestHeaders['X-PanIN-Payload-SHA256']).toHaveLength(64);
+    expect(result.requestHeaders['Content-Length']).toBe(String(Buffer.byteLength('{"ok":true}')));
+  });
+
+  test('rejects redirects and normalizes response headers', async () => {
+    mode = 'redirect';
+    const result = await send();
+    expect(result.success).toBe(false);
+    expect(result.httpStatus).toBe(302);
+    expect(result.errorMessage).toMatch(/REDIRECTS_FORBIDDEN/);
+    expect(result.responseHeaders.location).toBe('/elsewhere');
+    expect(result.responseHeaders['x-array-header']).toBe('a, b');
+  });
+
+  test('bounds response samples and reports non-2xx statuses', async () => {
+    mode = 'large';
+    const large = await send();
+    expect(large.success).toBe(true);
+    expect(large.responseBodySample).toHaveLength(MAX_RESPONSE_SAMPLE_BYTES);
+
+    mode = 'failure';
+    const failed = await send();
+    expect(failed.success).toBe(false);
+    expect(failed.httpStatus).toBe(503);
+    expect(failed.errorMessage).toBe('HTTP_STATUS_503');
+    expect(failed.responseBodySample).toBe('unavailable');
+  });
+
+  test('aborts responses exceeding stream cap and handles refused connections', async () => {
+    mode = 'overflow';
+    const overflow = await send();
+    expect(overflow.success).toBe(false);
+    expect(overflow.errorMessage).toMatch(/RESPONSE_STREAM_OVERFLOW/);
+
+    const address = server.address() as { port: number };
+    const refused = await dispatchWebhook({
+      endpointUrl: `http://127.0.0.1:${address.port + 1}/hook`,
+      secret: 'secret', eventId: 'event-3', deliveryId: 'delivery-3', payloadRaw: '{}',
+      allowLocalhostInTest: true,
+    });
+    expect(refused.success).toBe(false);
+    expect(refused.errorMessage).toBeTruthy();
   });
 });
