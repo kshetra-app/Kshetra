@@ -28,7 +28,7 @@ describe('Webhook anti-SSRF egress guard', () => {
     ['224.0.0.1', true],
     ['8.8.8.8', false],
     ['1.1.1.1', false],
-  ])('classifies IPv4 %s as blocked=%s', (ip, blocked) => {
+  ] as Array<[string, boolean]>)('classifies IPv4 %s as blocked=%s', (ip, blocked) => {
     expect(isBlockedIpv4(ip).blocked).toBe(blocked);
   });
 
@@ -44,7 +44,7 @@ describe('Webhook anti-SSRF egress guard', () => {
     ['::ffff:192.168.1.1', true],
     ['::ffff:8.8.8.8', false],
     ['2606:4700:4700::1111', false],
-  ])('classifies IPv6 %s as blocked=%s', (ip, blocked) => {
+  ] as Array<[string, boolean]>)('classifies IPv6 %s as blocked=%s', (ip, blocked) => {
     expect(isBlockedIpv6(ip).blocked).toBe(blocked);
   });
 
