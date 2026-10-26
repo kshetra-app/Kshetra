@@ -1634,16 +1634,32 @@
       "retrievedAt": "2026-10-26",
       "format": "Search-indexed HTML reproduction of judicial decision",
       "authority": "JUDICIAL_CORROBORATION_SECONDARY_HOST",
-      "status": "DISCOVERY_ONLY_RAW_JUDGMENT_BYTES_NOT_ACQUIRED",
+      "status": "SECONDARY_JUDGMENT_REPRODUCTION_HTML_BYTES_ACQUIRED_NOT_CERTIFIED",
       "sha256": null,
       "fileBytes": null,
       "scope": "Independent legal-context check of ECI Notification 282/AP/2018(DEL) and territorial scope",
       "limitations": [
         "Third-party text reproduction, not a certified court copy or the Gazette/ECI notification.",
         "The judgment text states the 2018 notification amended extents of 53-Rampachodavaram and 67-Polavaram in Andhra Pradesh and did not alter Telangana AC names/extents; this is contextual legal corroboration, not polygon proof.",
-        "No raw file/hash acquired."
+        "No raw file/hash acquired.",
+        "A raw HTML snapshot was acquired via the public reproduction host and hashed in workflow artifact run 40320265206; it remains secondary legal context only, not a certified judgment or primary ECI/Gazette source."
       ],
-      "plannedUse": "Cross-check statutory interpretation and ensure the 2018 notification is not incorrectly treated as changing Telangana AC geometry; obtain official/certified judgment if needed."
+      "plannedUse": "Cross-check statutory interpretation and ensure the 2018 notification is not incorrectly treated as changing Telangana AC geometry; obtain official/certified judgment if needed.",
+      "rawArtifactSnapshot": {
+        "workflowRunId": 40320265206,
+        "workflowArtifactId": 12647819336,
+        "workflowArtifactSha256": "d2124127bcae9c43bf3f89a061fc4c883f08e28db9a3537a32dfb4fceefe9cdf",
+        "rawPath": "stage_b_legal_crosswalk/raw/TELANGANA_HIGH_COURT_2018_DELIMITATION_JUDGMENT.html",
+        "requestedUrl": "https://indiankanoon.org/doc/71192582/",
+        "httpStatus": 200,
+        "byteLength": 51540,
+        "sha256": "3adf8e25e4a2adbb59d98bdec65dbcd79685b4cb1173f5f324fcb6d298bd1717",
+        "capturedAtUtc": "2026-10-26T12:15:21.992730+00:00",
+        "limitations": [
+          "Unofficial text reproduction, not certified judgment PDF or original court repository file.",
+          "Retained in Actions artifact, not yet promoted to canonical evidence."
+        ]
+      }
     },
     {
       "sourceId": "SRC-AP-EGAZETTE-PORTAL-DISCOVERY-2026-10-26",
@@ -1826,7 +1842,7 @@
       "retrievedAt": "2026-10-26",
       "format": "Official state CEO maps portal",
       "authority": "OFFICIAL_JURISDICTIONAL_MAP_DISCOVERY",
-      "status": "OFFICIAL_DELHI_ONLY_MAPS_DISCOVERED_DIGITAL_GEOMETRY_NOT_ACQUIRED",
+      "status": "OFFICIAL_DELHI_POLLING_STATION_INDEX_BYTES_ACQUIRED_70_AC_LINKS; DETAIL_PAGE_ACQUISITION_IN_PROGRESS",
       "sha256": null,
       "fileBytes": null,
       "rawArtifact": null,
@@ -1835,9 +1851,27 @@
       ],
       "limitations": [
         "Delhi-only; map portal discovery is not a download of raw geometry nor proof of nationwide coverage.",
-        "Published maps may be cartographic documents rather than structured polygons; inspect each asset and its licence/version before acceptance."
+        "Published maps may be cartographic documents rather than structured polygons; inspect each asset and its licence/version before acceptance.",
+        "Only the official Delhi polling-station index HTML is acquired at this point; its 70 AC detail pages are being separately downloaded and hashed. Delhi-only coverage is not national polling-station-to-AC crosswalk completion."
       ],
-      "plannedUse": "Acquire and audit Delhi official map assets and polling-location list as one jurisdictional test slice; do not generalize to national acceptance."
+      "plannedUse": "Acquire and audit Delhi official map assets and polling-location list as one jurisdictional test slice; do not generalize to national acceptance.",
+      "indexArtifact": {
+        "workflowRunId": 40320265206,
+        "workflowUrl": "https://github.com/kshetra-app/Kshetra/actions/runs/40320265206",
+        "workflowArtifactId": 12647819336,
+        "workflowArtifactSha256": "d2124127bcae9c43bf3f89a061fc4c883f08e28db9a3537a32dfb4fceefe9cdf",
+        "workflowArtifactBytes": 12634762,
+        "rawPagePath": "stage_b_legal_crosswalk/raw/CEO_DELHI_POLLING_STATION_LIST_INDEX.html",
+        "requestedUrl": "https://ceodelhinet.nic.in/ceodelhiweb/ListofPollingStation.aspx",
+        "finalUrl": "https://ceodelhinet.nic.in/ceodelhiweb/ListofPollingStation.aspx",
+        "rawPageBytes": 84517,
+        "rawPageSha256": "765f6a915862415634ec2ed31fcc5d0518bd73d418d8771dc9c52bf2745ae4cb",
+        "httpStatus": 200,
+        "observedDistinctAcLinks": 70,
+        "observedAcNumbers": "1..70 (complete set)",
+        "observedTargetTemplate": "https://ceodelhi.gov.in/LoksabhaPollingStation-2024.aspx?ac_no=<observed AC number>&Ac_Name=<observed official AC name>",
+        "note": "Observed links were extracted from the exact downloaded official index HTML. The index itself is now acquired and hashed; detail-page acquisition is running separately in run 40321161890. Do not upgrade national EB-05 status from this Delhi-only slice."
+      }
     },
     {
       "sourceId": "SRC-W0215-LEGAL-PROVENANCE-CONFLICT-AUDIT-2026-10-26",
@@ -1897,6 +1931,91 @@
         "Additional schedule enumeration conflict confirmed by the primary 2018 ECI notification PDF, which expressly refers to Schedule III/Table A for Andhra Pradesh; internal Schedule II/XXXI source extracts remain untrusted until checked against original 2008 Order bytes and applicable 2014 reorganisation instruments."
       ],
       "plannedUse": "Prevent legal instrument metadata and custodian findings from being promoted to OFFICIAL without a verifiable primary source."
+    },
+    {
+      "sourceId": "SRC-CEO-DELHI-PS-INDEX-2024",
+      "subject": "Official CEO Delhi index linking the 2024 polling-station/polling-location page for each Assembly Constituency",
+      "publisher": "Chief Electoral Officer, Government of NCT of Delhi",
+      "url": "https://ceodelhinet.nic.in/ceodelhiweb/ListofPollingStation.aspx",
+      "retrievedAt": "2026-10-26",
+      "format": "Raw official HTML index acquired from GitHub Actions artifact",
+      "authority": "OFFICIAL_JURISDICTIONAL_PRIMARY_INDEX_NOT_NATIONAL_CROSSWALK",
+      "status": "DOWNLOADED_HASHED_HTML_200; 70_DISTINCT_AC_LINKS_OBSERVED",
+      "sha256": "765f6a915862415634ec2ed31fcc5d0518bd73d418d8771dc9c52bf2745ae4cb",
+      "fileBytes": 84517,
+      "artifactPath": "stage_b_legal_crosswalk/raw/CEO_DELHI_POLLING_STATION_LIST_INDEX.html",
+      "workflowRunId": 40320265206,
+      "workflowUrl": "https://github.com/kshetra-app/Kshetra/actions/runs/40320265206",
+      "workflowArtifactId": 12647819336,
+      "workflowArtifactSha256": "d2124127bcae9c43bf3f89a061fc4c883f08e28db9a3537a32dfb4fceefe9cdf",
+      "facts": [
+        "HTTP 200; raw HTML bytes retained in workflow artifact and SHA-256 computed from the downloaded bytes.",
+        "Observed 70 distinct AC-specific page links, with AC numbers 1 through 70, each pointing to an official 2024 polling station page.",
+        "The exact downstream page URLs were derived from actual hrefs found in the downloaded index; no AC URL template was used to invent source evidence."
+      ],
+      "limitations": [
+        "This is a Delhi-only index, not nationwide polling-station coverage.",
+        "The detailed AC pages are being fetched and hashed by workflow run 40321161890; this record only attests to the index HTML and observed links.",
+        "The 30-day workflow artifact is the immediate raw-byte retention channel; durable repository retention still needs to be completed/reviewed."
+      ],
+      "plannedUse": "Acquire the 70 linked detail pages, validate that each page's AC number/name matches its official index link, parse station identifiers/counts and permitted non-sensitive metadata, preserve raw HTML and per-page hashes; then expand the same procedure to other state/UT CEOs."
+    },
+    {
+      "sourceId": "SRC-DEPT-PUBLICATION-EXACT-LEGAL-IDENTIFIER-SEARCH-2026-10-26",
+      "subject": "Official Department of Publication query pages tested for O.N.55(E), Delimitation Order 2008, S.O.382(E), and 282/AP/2018",
+      "publisher": "Government of India, Department of Publication",
+      "url": "https://deptpub.gov.in/",
+      "retrievedAt": "2026-10-26",
+      "format": "Four raw official HTML search response snapshots acquired by read-only workflow",
+      "authority": "OFFICIAL_CATALOG_SEARCH_OUTPUT_NO_MATCHING_GAZETTE_ITEM_IDENTIFIED",
+      "status": "DOWNLOADED_HASHED_QUERY_HTML_NO_EXACT_GAZETTE_RESULT",
+      "sha256": null,
+      "fileBytes": null,
+      "artifactPath": null,
+      "workflowRunId": 40320265206,
+      "workflowUrl": "https://github.com/kshetra-app/Kshetra/actions/runs/40320265206",
+      "workflowArtifactId": 12647819336,
+      "workflowArtifactSha256": "d2124127bcae9c43bf3f89a061fc4c883f08e28db9a3537a32dfb4fceefe9cdf",
+      "querySnapshots": [
+        {
+          "query": "O.N.55(E)",
+          "url": "https://deptpub.gov.in/?s=O.N.55%28E%29",
+          "httpStatus": 200,
+          "fileBytes": 86489,
+          "sha256": "086e676ac9fca006dd58850c7c1a92a52ac1b88150a3c620f7b250f60e624634",
+          "result": "Query term appears in page/search field; 22 September 2018/Andhra Pradesh/Delimitation not present in extracted page text."
+        },
+        {
+          "query": "Delimitation Order 2008",
+          "url": "https://deptpub.gov.in/?s=Delimitation%20Order%202008",
+          "httpStatus": 200,
+          "fileBytes": 86597,
+          "sha256": "3cc676395abf66ba4fbca84714cc373e4f477042282a6d0ed1d2ef64ae92d9f4",
+          "result": "Query term appears but S.O.382(E)/19 February 2008 not found in extracted result text."
+        },
+        {
+          "query": "S.O.382(E)",
+          "url": "https://deptpub.gov.in/?s=S.O.%20382%28E%29",
+          "httpStatus": 200,
+          "fileBytes": 86505,
+          "sha256": "f5a825e3c4393b7935ef3288e9c0679e64b491c20e80518fe5f93f4c21f7b6cb",
+          "result": "No exact matching publication text returned."
+        },
+        {
+          "query": "282/AP/2018",
+          "url": "https://deptpub.gov.in/?s=282%2FAP%2F2018",
+          "httpStatus": 200,
+          "fileBytes": 86501,
+          "sha256": "2685bc8fa8890c58e68cfa6477a659f14d4ac40130110b1e3bd47ff270a1f0b5",
+          "result": "Search query is present in page/search input, but 2018 notification identifiers/date are not in extracted result text."
+        }
+      ],
+      "limitations": [
+        "HTTP 200 and hashes verify the four HTML response bodies only; they do not prove that the catalog search engine returned complete/functional search results.",
+        "No exact Gazette issue, original 2008 Gazette, or certified Andhra Pradesh Gazette bytes were obtained.",
+        "Raw query-response pages are retained in the workflow artifact; no Gazette-document hash is claimed."
+      ],
+      "plannedUse": "Retain query evidence as documented negative discovery; continue with custodian certification and alternate verified publication indexes rather than repeatedly treating these nonmatching query responses as Gazette evidence."
     }
   ],
   "unresolvedGates": [
@@ -2352,6 +2471,62 @@
       "artifactSha256": null,
       "status": "IN_PROGRESS_AT_LAST_CHECK",
       "scope": "Repeat four-service Telangana probe after changing the runner to report optional ECI 404/timeouts as warnings while keeping both primary Telangana geometry source checks strict."
+    },
+    {
+      "runId": 40320265206,
+      "workflowUrl": "https://github.com/kshetra-app/Kshetra/actions/runs/40320265206",
+      "artifactId": 12647819336,
+      "artifactName": "w0215-legal-crosswalk-sources-40320265206",
+      "artifactSha256": "d2124127bcae9c43bf3f89a061fc4c883f08e28db9a3537a32dfb4fceefe9cdf",
+      "artifactBytes": 12634762,
+      "status": "COMPLETED_WITH_CRITICAL_SOURCE_FAILURES; ARTIFACT_RETAINED_AND_INSPECTED",
+      "branch": "cto/w0215-stage-b-evidence-20261025",
+      "commit": "797256a271df2f86b0c1abd9722d8bd6c6c83046",
+      "manifestSummary": {
+        "overallStatus": "PARTIAL_CRITICAL_SOURCE_FAILURES",
+        "requiredFailures": [],
+        "criticalFailures": [
+          "ECI_NOTIFICATION_282_AP_2018_DEL",
+          "ECI_DELIMITATION_ORDER_2008"
+        ],
+        "telanganaRoster": "PASS_119_OF_119",
+        "tgracCrosswalk": "PASS_WITH_CANDIDATE_ALIASES"
+      },
+      "acquiredSources": [
+        {
+          "id": "AP_REORGANISATION_ACT_2014_GAZETTE_COPY",
+          "bytes": 231596,
+          "sha256": "84cd566b917f9a3f600c47f6540520c950166b424a964ad37d64dc3c968114aa",
+          "status": "PDF_BYTES_ACQUIRED"
+        },
+        {
+          "id": "CEO_DELHI_POLLING_STATION_INDEX",
+          "bytes": 84517,
+          "sha256": "765f6a915862415634ec2ed31fcc5d0518bd73d418d8771dc9c52bf2745ae4cb",
+          "status": "HTML_BYTES_ACQUIRED_70_AC_LINKS"
+        },
+        {
+          "id": "TELANGANA_GAZETTE_CATALOGUE",
+          "bytes": 142364,
+          "sha256": "4dee6450559980c7c87d3beebe4eb40d17c761240b5c691fe3e8c240ad55fc1d",
+          "status": "HTML_BYTES_ACQUIRED_DISCOVERY_ONLY"
+        },
+        {
+          "id": "TELANGANA_HIGH_COURT_2018_JUDGMENT_REPRODUCTION",
+          "bytes": 51540,
+          "sha256": "3adf8e25e4a2adbb59d98bdec65dbcd79685b4cb1173f5f324fcb6d298bd1717",
+          "status": "SECONDARY_HTML_BYTES_ACQUIRED"
+        },
+        {
+          "id": "DEPARTMENT_OF_PUBLICATION_QUERY_SNAPSHOTS",
+          "status": "FOUR_HTML_RESPONSE_SNAPSHOTS_ACQUIRED_NO_EXACT_GAZETTE_RESULT"
+        }
+      ],
+      "failureSummary": {
+        "eciNotification": "HTTP 406 error HTML, not notification bytes; a hash-verified ECI PDF exists in master from an earlier acquisition",
+        "eci2008Order": "IndiaCode variants timed out; ECI direct PDF returned HTTP 406 error HTML; no original 2008 PDF bytes"
+      },
+      "completedAtUtc": "2026-10-26T12:15:21.992730+00:00"
     }
   ],
   "updatedAt": "2026-10-26",
@@ -2415,7 +2590,7 @@
     ],
     "acceptedAsCanonical": false
   },
-  "lastDecision": "ECI Notification 282/AP/2018(DEL) PDF bytes are present in master and independently hash-verified (102,133 bytes; SHA-256 13201bb665a5d29853862d0bc0c07175c319a61d5b39b2c838fd0ec3882737da). Official Lok Sabha proceedings further corroborate Gazette item identifier O.N.55(E), Gazette of India publication date 22 September 2018, and subject. The actual Gazette issue/certified AP Gazette counterpart and the 2008 Order PDF remain unacquired; national AC geometry and other Stage B gates remain open.",
+  "lastDecision": "Acquisition run 40320265206 completed with critical-source failures but acquired and hashed the official CEO Delhi polling-station index HTML (84,517 bytes, SHA-256 765f6a915862415634ec2ed31fcc5d0518bd73d418d8771dc9c52bf2745ae4cb) showing 70 distinct 2024 AC-specific polling-station links, the official Telangana Gazette information page HTML, four Department of Publication query response snapshots, and secondary judgment HTML. A second workflow 40321161890 is acquiring the 70 observed Delhi detail pages; no page coverage is claimed until its manifest is inspected. Neither the 2008 Order PDF nor actual Gazette issue was acquired in run 40320265206. ECI 2018 binary remains available/hash-verified on master from earlier source acquisition.",
   "latestRouteAdjudication": {
     "recordedAt": "2026-10-26",
     "reportPath": "reports/w021_5_stage_b_evidence_route_adjudication_2026-10-26.md",
