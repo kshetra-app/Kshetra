@@ -281,7 +281,7 @@ const realAuthorizationScope = parseExecutionStateField('IMPLEMENTATION_AUTHORIZ
 const realDirectivePath = parseExecutionStateField('W021_5_CTO_DIRECTIVE') || '';
 const realImplementationCommit = parseExecutionStateField('IMPLEMENTATION_COMMIT') || '';
 const realVerificationCommit = parseExecutionStateField('VERIFICATION_COMMIT') || '';
-const realAcceptanceCommit = parseExecutionStateField('ACCEPTANCE_COMMIT') || '';
+const realAcceptanceCommit = parseExecutionStateField('ACCEPTANCE_COMMIT');
 const frozenState =
   realImplAuth === 'NO' &&
   (realAuthJob === 'NONE' || realAuthJob.includes('NOT Authorized') || realAuthJob.includes('Planning Only')) &&
