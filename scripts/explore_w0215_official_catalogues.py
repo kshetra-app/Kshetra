@@ -270,7 +270,7 @@ def cdx_query(label: str, params: dict) -> dict:
 
 def gazette_2008_order_match(txt: str) -> dict:
     # Normalize whitespace before exact literal checks, avoiding OCR line-wrap differences.
-    compact = re.sub(r"\\s+", "", txt.casefold())
+    compact = re.sub(r"\s+", "", txt.casefold())
     so382 = "s.o.382(e)" in compact or "s.o382(e)" in compact
     date = any(x in compact for x in ("19thfebruary,2008", "19february,2008", "19thfebruary2008", "19february2008", "19/02/2008", "19-02-2008", "19.02.2008"))
     delimitation = "delimitation" in txt.casefold()
