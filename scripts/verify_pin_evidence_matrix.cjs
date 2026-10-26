@@ -103,7 +103,7 @@ const MULTI_AC_PIN_SPECS = {
   '500001': { candidates: [65, 63, 58], names: ["Goshamahal", "Nampally", "Malakpet"], locality: 'Hyderabad GPO / Abids / Koti / Gunfoundry' },
   '500028': { candidates: [64, 63], names: ["Karwan", "Nampally"], locality: 'Mehdipatnam / Gudimalkapur / Murad Nagar' },
   '500034': { candidates: [60, 61], names: ["Khairatabad", "Jubilee Hills"], locality: 'Banjara Hills / Somajiguda / Punjagutta' },
-  '500056': { candidates: [71, 46], names: ["Secunderabad Cantt.", "Kukatpalle"], locality: 'Bowenpally / Hasmathpet / Manovikas Nagar' },
+  '500056': { candidates: [71, 46], names: ["Secunderabad Cantonment", "Kukatpally"], locality: 'Bowenpally / Hasmathpet / Manovikas Nagar' },
 };
 
 // ─── CANONICAL 6 EXTERNAL BLOCKERS (CTO DIRECTIVE 133 WORKSTREAM E) ────────
@@ -909,7 +909,7 @@ function validateEvidenceMatrix({ directory, manifest, seedNames }) {
           locatorResolutionPassed = false;
           results.errors.push(`Multi-AC PIN ${entry.pinCode} candidate AC ${candAc} does not exist in resolved Table B extract`);
         } else {
-          if (candName && candSource.name !== candName && candSource.statutoryName !== candName) {
+          if (candName && normalizeConstituencyName(candSource.name) !== normalizeConstituencyName(candName) && normalizeConstituencyName(candSource.statutoryName) !== normalizeConstituencyName(candName)) {
             locatorResolutionPassed = false;
             results.errors.push(`Multi-AC PIN ${entry.pinCode} candidate AC ${candAc} name '${candName}' does not match source '${candSource.name}'`);
           }
