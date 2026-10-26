@@ -1991,8 +1991,8 @@ describe('CTO Directive 123 — Residual Electoral Data-Truth & Provisional Look
       const apPath = path.resolve(__dirname, '../../../../data/evidence/w021_5/authoritative/eci_delimitation_2008_schedule_ii_table_b_extract.txt');
       const tsBytes = fs.readFileSync(tsPath, 'utf8').slice(0, 2048);
       const apBytes = fs.readFileSync(apPath, 'utf8').slice(0, 2048);
-      expect(tsBytes).toMatch(/STATUS:\\s*INVALIDATED/i);
-      expect(apBytes).toMatch(/STATUS:\\s*INVALIDATED/i);
+      expect(tsBytes).toMatch(/STATUS:\s*INVALIDATED/i);
+      expect(apBytes).toMatch(/STATUS:\s*INVALIDATED/i);
 
       const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
       const validation = validatorModule.validateEvidenceMatrix({
