@@ -3,11 +3,15 @@
 **Governing Framework:** Master Execution Framework Amendment v1.6 / Rule IV-001 Non-Self-Acceptance  
 **Stage Boundary:** STOP at Stage B Gate (Stages C–I Strictly Unauthorized)  
 **Formal Acceptance:** Strictly `0.0% — PENDING INDEPENDENT ADJUDICATION`  
-**Generated At:** `2026-10-24T06:12:30.023Z`  
+**Generated At:** `2026-10-26T16:22:00Z` (status correction; not a regenerated positive validation run)  
 **Total Curated Entries Audited:** `36`  
-**Overall Validation Status:** `100% PASS`  
-**Gate Recommendation:** `SUBMIT_FOR_INDEPENDENT_STAGE_B_ADJUDICATION_WITH_DOCUMENTED_EXTERNAL_BLOCKERS`  
+**Overall Validation Status:** `BLOCKED — INVALIDATED STATUTORY SOURCE`  
+**Gate Recommendation:** `STOP_INVALIDATED_SOURCE_REQUIRES_LEGALLY_APPLICABLE_REPLACEMENT`  
 **Evidence Closure Status:** `PENDING_EXTERNAL_OFFICIAL_GAZETTE_AND_GIS_DELIVERY_BEAT_EVIDENCE`  
+
+---
+
+> **SOURCE-TRUTH INVALIDATION NOTICE (2026-10-26): THIS REPORT'S PREVIOUS PASS CLAIMS ARE SUPERSEDED.** Both referenced extracts now explicitly state `STATUS: INVALIDATED`: the alleged Telangana Schedule XXXI extract is actually misattributed to Delhi, and the alleged Andhra Pradesh Schedule II extract misidentifies the 2008 Order's schedule structure. A matching SHA-256 proves only that the checked-in bytes match a digest; it does not establish legal applicability. Do not rely on the positive checks, correction claims, or negative-battery pass rates below until the pipeline is rebuilt and independently rerun against legally applicable source instruments. Stage B remains **STOP / NOT ACCEPTED**.
 
 ---
 
@@ -47,11 +51,11 @@ Under CTO Directive 131, all 36 postal lookup entries in `CURATED_PROVISIONAL_PI
 
 ## 2. Independent Positive Validation Checks (Workstreams A–G)
 
-All validation outcomes and summary flags are computed dynamically at runtime with zero hardcoded booleans:
+The following table is historical output and is **not accepted as current verification** because the source baseline was subsequently invalidated. All source-dependent PASS labels below are superseded pending a clean rerun against legally applicable source instruments.
 
 | Check ID | Description | Status | Details |
 |---|---|---|---|
-| `CHECK_1_EXACT_INVENTORY_PARITY` | Directory and independent evidence manifest have exact 36-entry inventory parity with zero duplicate PINs | **PASS** | Directory: 36, Manifest: 36, Duplicates: 0 |
+| `CHECK_1_EXACT_INVENTORY_PARITY` | Directory and independent evidence manifest have exact 36-entry inventory parity with zero duplicate PINs | **SUPERSEDED — NOT ACCEPTED** | Directory: 36, Manifest: 36, Duplicates: 0 |
 | `CHECK_2_MULTI_AC_FAIL_CLOSED_AMBIGUITY` | All 4 multi-AC records fail closed (canonicalAcNo undefined, candidates >= 2, status AMBIGUOUS_MULTI_CONSTITUENCY) | **PASS** | Verified PINs: 500001, 500028, 500034, 500056 |
 | `CHECK_3_TAXONOMY_ENFORCEMENT_AND_DISTRIBUTION` | Enforces complete 4-tier mutually exclusive taxonomy: 32 provisional, 4 ambiguous, 0 authoritative, 0 unverified | **PASS** | Provisional: 32/32, Ambiguous: 4/4, Authoritative: 0/0, Unverified: 0/0 |
 | `CHECK_4_CORRECTION_CONSISTENCY_AND_SOURCE_EVIDENCE` | All 8 reported AC corrections verified against parsed source content on disk with separate Identity (A) and Postal Linkage (B) conclusions and exact extents | **PASS** | Verified 8 corrections strictly across AP (5) and TS (3); Kurnool 137 verified as existing single-AC provisional record |
