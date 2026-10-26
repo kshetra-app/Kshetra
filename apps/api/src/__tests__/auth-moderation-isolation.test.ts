@@ -1,4 +1,4 @@
-import Fastify from 'fastify';
+import Fastify, { type FastifyReply, type FastifyRequest } from 'fastify';
 import { moderationRoutes } from '../routes/moderation';
 import { supabase, setSupabaseConfiguredForTesting } from '../lib/supabase';
 import { resolveAuthenticatedUser } from '../lib/userAuth';
@@ -21,7 +21,7 @@ describe('Authentication and moderation test-harness isolation', () => {
     process.env.NODE_ENV = 'test';
     process.env.TEST_HARNESS_ACTIVE = 'true';
     app = Fastify();
-    app.get('/identity', async (request, reply) => {
+    app.get('/identity', async (request: FastifyRequest, reply: FastifyReply) => {
       const user = await resolveAuthenticatedUser(request, reply);
       return user ? { userId: user.userId, role: user.role } : undefined;
     });
