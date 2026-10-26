@@ -86,7 +86,7 @@ SOURCES = [
 ALLOWED_HOSTS = {
     "apseeds.ap.gov.in", "tgerc.telangana.gov.in",
     "www.indiacode.nic.in", "indiacode.nic.in", "upload.indiacode.nic.in",
-    "elections24.eci.gov.in", "www.eci.gov.in", "eci.gov.in", "ceotelangana.nic.in", "www.pib.gov.in", "pib.gov.in", "apegazette.cgg.gov.in", "www.telangana.gov.in", "tggazette.cgg.gov.in", "indiankanoon.org",
+    "elections24.eci.gov.in", "www.eci.gov.in", "eci.gov.in", "ceotelangana.nic.in", "www.pib.gov.in", "pib.gov.in", "apegazette.cgg.gov.in", "www.telangana.gov.in", "tggazette.cgg.gov.in", "indiankanoon.org", "egazette.gov.in", "www.egazette.gov.in", "deptpub.gov.in", "www.deptpub.gov.in",
 }
 HEADERS = {
     "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/129.0.0.0 Safari/537.36",
@@ -152,6 +152,22 @@ HTML_SOURCES = [
         "documentTitle": "PIB press release corroborating the AP/Telangana delimitation legal chain",
         "terms": ["282/AP/2018(DEL)", "Removal of Difficulties", "119", "175", "Andhra Pradesh Reorganisation"],
         "purpose": "Official HTML corroboration; not a substitute for the Act, Gazette, or ECI notification."
+    },
+    {
+        "id": "GAZETTE_OF_INDIA_OFFICIAL_PORTAL",
+        "url": "https://egazette.gov.in/",
+        "publisher": "Government of India, Department of Publication / eGazette",
+        "documentTitle": "Official Gazette of India search portal — exact issue discovery",
+        "terms": ["Gazette Directory", "Election", "Extra Ordinary Gazettes", "22 September 2018"],
+        "purpose": "Official custodian discovery route for locating the exact Gazette of India issue carrying Notification No. 282/AP/2018(DEL); homepage acquisition alone is not the notification or certified Gazette."
+    },
+    {
+        "id": "DEPARTMENT_OF_PUBLICATION_GAZETTE_CATALOGUE",
+        "url": "https://deptpub.gov.in/document-category/gazett/",
+        "publisher": "Government of India, Department of Publication",
+        "documentTitle": "Official Department of Publication Gazette catalogue",
+        "terms": ["Gazettes", "View", "Download"],
+        "purpose": "Official index/custodian route to corroborate Gazette publication and locate the issue; catalogue text alone is not the original instrument."
     }
 ]
 
