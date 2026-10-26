@@ -236,3 +236,75 @@ describe('Moderation route persistence and authorization decision branches', () 
     expect(allowed.json().data).toMatchObject({ entries: [], total: 0 });
   });
 });
+
+  it('covers moderation action authentication, role gates, attribution, and admin-only action gates', async () => {
+    const payload = { moderatorId: 'actor-1', actionType: 'warn', reason: 'policy violation', targetUserId: 'user-9' };
+    const unauthenticated = await app.inject({ method: 'POST', url: '/api/v1/moderation/action', payload });
+    expect(unauthenticated.statusCode).toBe(401);
+
+    const citizen = await app.inject({
+      method: 'POST', url: '/api/v1/moderation/action',
+      headers: { 'x-user-id': 'citizen-1', 'x-test-role': 'citizen' },
+      payload: { ...payload, moderatorId: 'citizen-1' },
+    });
+    expect(citizen.statusCode).toBe(403);
+    expect(citizen.json().code).toBe('FORBIDDEN');
+
+    const spoofed = await app.inject({
+      method: 'POST', url: '/api/v1/moderation/action', headers: actor,
+      payload: { ...payload, moderatorId: 'someone-else' },
+    });
+    expect(spoofed.statusCode).toBe(400);
+    expect(spoofed.json().code).toBe('VALIDATION_ERROR');
+
+    const adminOnly = await app.inject({
+      method: 'POST', url: '/api/v1/moderation/action', headers: actor,
+      payload: { ...payload, actionType: 'ban' },
+    });
+    expect(adminOnly.statusCode).toBe(403);
+
+    const allowed = await app.inject({
+      method: 'POST', url: '/api/v1/moderation/action', headers: actor,
+      payload,
+    });
+    expect(allowed.statusCode).toBe(200);
+    expect(allowed.json().data).toMatchObject({ actionType: 'warn', moderatorId: 'actor-1', reason: 'policy violation' });
+  });
+
+  it('covers moderation action post/comment removal and dismissed/action-taken report status branches', async () => {
+    const calls: Array<{ table: string; q: any }> = [];
+    jest.spyOn(supabase, 'from').mockImplementation(((table: string) => {
+      const q = query({ data: null, error: null });
+      calls.push({ table, q });
+      return q;
+    }) as any);
+
+    const post = await app.inject({
+      method: 'POST', url: '/api/v1/moderation/action', headers: actor,
+      payload: { moderatorId: 'actor-1', actionType: 'delete_content', reason: 'policy violation', targetPostId: 'post-1', reportId: 'report-1' },
+    });
+    expect(post.statusCode).toBe(200);
+    expect(calls.map(c => c.table)).toEqual(['posts', 'reports']);
+    expect(calls[0].q.update).toHaveBeenCalledWith({ is_deleted: true, content: '[Removed by Moderator: Policy Violation]' });
+    expect(calls[1].q.update).toHaveBeenCalledWith(expect.objectContaining({ status: 'action_taken', reviewed_by: 'actor-1' }));
+
+    calls.length = 0;
+    const comment = await app.inject({
+      method: 'POST', url: '/api/v1/moderation/action', headers: actor,
+      payload: { moderatorId: 'actor-1', actionType: 'hide_content', reason: 'policy violation', targetCommentId: 'comment-1', reportId: 'report-2' },
+    });
+    expect(comment.statusCode).toBe(200);
+    expect(calls.map(c => c.table)).toEqual(['comments', 'reports']);
+    expect(calls[0].q.update).toHaveBeenCalledWith({ is_deleted: true, content: '[Removed by Moderator]' });
+    expect(calls[1].q.update).toHaveBeenCalledWith(expect.objectContaining({ status: 'action_taken' }));
+
+    calls.length = 0;
+    const dismissed = await app.inject({
+      method: 'POST', url: '/api/v1/moderation/action', headers: actor,
+      payload: { moderatorId: 'actor-1', actionType: 'dismiss', reason: 'not a violation', reportId: 'report-3' },
+    });
+    expect(dismissed.statusCode).toBe(200);
+    expect(calls).toHaveLength(1);
+    expect(calls[0].q.update).toHaveBeenCalledWith(expect.objectContaining({ status: 'dismissed' }));
+  });
+
