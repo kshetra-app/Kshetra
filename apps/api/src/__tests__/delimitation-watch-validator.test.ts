@@ -181,7 +181,7 @@ describe('CandidateValidator data-truth and legal evidence gates', () => {
       },
     });
     const result = await validator.validate(base, source({ canonicalUrl: 'https://wrong.example/source' }));
-    expect(result.errors.join(' ')).toContain('not ENACTED_COMMENCED');
+    expect(result.errors.join(' ')).toContain("not 'ENACTED_COMMENCED'");
     expect(result.errors.join(' ')).toContain('does not match authoritative date');
     expect(result.errors.join(' ')).toContain('does not match official authoritative source URL');
   });
