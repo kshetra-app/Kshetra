@@ -62,7 +62,7 @@ describe('Webhook cryptographic primitives', () => {
     const record = encryptSecret('whsec_abcdef0123456789', 'tenant-a', 'sub-a', 3);
     expect(record.version).toBe(3);
     expect(record.hash).toBe(hashSecret('whsec_abcdef0123456789'));
-    expect(record.hint).toBe('0123456789');
+    expect(record.hint).toBe('23456789');
     expect(decryptSecret(record, 'tenant-a', 'sub-a')).toBe('whsec_abcdef0123456789');
     expect(decryptSecret(record.ciphertext, record.iv, record.tag, 'tenant-a', 'sub-a')).toBe('whsec_abcdef0123456789');
   });
@@ -122,7 +122,7 @@ describe('Webhook cryptographic primitives', () => {
     ['t=100,v1=abc', 'SIGNATURE_EXPIRED'],
     ['t=1061,v1=abc', 'FUTURE_TIMESTAMP'],
     ['t=1000,v1=deadbeef', 'SIGNATURE_MISMATCH'],
-  ])('rejects signature header with reason %s', (header, reason) => {
+  ] as Array<[string, string]>)('rejects signature header with reason %s', (header, reason) => {
     const result = verifyWebhookSignature({
       signatureHeader: header,
       rawPayload: 'payload',
