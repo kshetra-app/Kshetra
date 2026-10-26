@@ -44,6 +44,10 @@ SESSION.headers.update({
     "Accept": "application/pdf,text/html,application/xhtml+xml,application/json,*/*;q=0.8",
     "Accept-Language": "en-IN,en;q=0.9",
 })
+# Keep normal certificate validation while using the runner's system trust store.
+# This does not disable TLS verification or bypass site access controls.
+SYSTEM_CA_BUNDLE = Path("/etc/ssl/certs/ca-certificates.crt")
+TLS_VERIFY = str(SYSTEM_CA_BUNDLE) if SYSTEM_CA_BUNDLE.is_file() else True
 
 def now() -> str:
     return datetime.now(timezone.utc).isoformat()
@@ -146,7 +150,7 @@ def probe_live_page(url: str, label: str) -> dict:
         row.update({"status": "REJECTED_UNAPPROVED_HOST_OR_SCHEME"})
         return row
     try:
-        r = SESSION.get(url, timeout=TIMEOUT, allow_redirects=True, verify=True)
+        r = SESSION.get(url, timeout=TIMEOUT, allow_redirects=True, verify=TLS_VERIFY)
         final = r.url
         if not approved_live_url(final):
             row.update({"status": "REJECTED_REDIRECT_HOST_OR_SCHEME", "httpStatus": r.status_code, "finalUrl": final})
@@ -245,7 +249,7 @@ def cdx_query(label: str, params: dict) -> dict:
     url = "https://web.archive.org/cdx/search/cdx?" + urlencode(params, doseq=True)
     row = {"label":label,"cdxUrl":url,"queriedAtUtc":now(),"status":"NOT_ATTEMPTED"}
     try:
-        r = SESSION.get(url, timeout=(10,40), allow_redirects=True, verify=True)
+        r = SESSION.get(url, timeout=(10,40), allow_redirects=True, verify=TLS_VERIFY)
         raw = r.content
         row.update({"httpStatus":r.status_code,"byteLength":len(raw),"sha256":sha(raw) if raw else None})
         name = safe(label) + "_cdx.txt"
@@ -315,7 +319,7 @@ def archived_pdf_probe(item: dict, query_label: str) -> dict:
     archive_url = f"https://web.archive.org/web/{ts}id_/{original}"
     row["archiveUrl"] = archive_url
     try:
-        r = SESSION.get(archive_url, timeout=TIMEOUT, allow_redirects=True, verify=True)
+        r = SESSION.get(archive_url, timeout=TIMEOUT, allow_redirects=True, verify=TLS_VERIFY)
         raw = r.content
         row.update({"httpStatus":r.status_code,"finalUrl":r.url,"contentType":r.headers.get("Content-Type"),"byteLength":len(raw),"sha256":sha(raw) if raw else None,"pdfMagic":raw.startswith(b"%PDF-")})
         if r.status_code != 200 or not raw.startswith(b"%PDF-"):
@@ -468,7 +472,7 @@ def main():
                 original=str(rec.get("original") or "")
                 try:
                     url=f"https://web.archive.org/web/{ts}id_/{original}"
-                    rr=SESSION.get(url,timeout=TIMEOUT,allow_redirects=True,verify=True)
+                    rr=SESSION.get(url,timeout=TIMEOUT,allow_redirects=True,verify=TLS_VERIFY)
                     body=rr.content
                     item={"queryLabel":label,"timestamp":ts,"originalUrl":original,"archiveUrl":url,"httpStatus":rr.status_code,"byteLength":len(body),"sha256":sha(body) if body else None}
                     if rr.status_code==200 and body:
@@ -545,7 +549,7 @@ def main():
             p=urlparse(url)
             if p.scheme!="https" or p.hostname not in ("www.indiapost.gov.in","indiapost.gov.in"):
                 row["status"]="REJECTED_UNAPPROVED_POSTAL_DOCUMENT_URL";return row
-            r=SESSION.get(url,timeout=TIMEOUT,allow_redirects=True,verify=True)
+            r=SESSION.get(url,timeout=TIMEOUT,allow_redirects=True,verify=TLS_VERIFY)
             if not approved_live_url(r.url):
                 row.update({"status":"REJECTED_REDIRECT_HOST","httpStatus":r.status_code,"finalUrl":r.url});return row
             raw=r.content
