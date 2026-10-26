@@ -65,9 +65,9 @@ describe('webhook allowlisted payload validation', () => {
     expect(validateEventPayload('election.results.published', payload).error).toContain("Property 'summary.voter_phone' is prohibited");
   });
 
-  it('requires summary to be present before nested checks but permits validation to defer absent nested values', () => {
+  it('rejects a null nested summary as a missing required root field', () => {
     const payload = { ...validPayloads['election.results.published'], summary: null };
-    expect(validateEventPayload('election.results.published', payload).valid).toBe(true);
+    expect(validateEventPayload('election.results.published', payload).error).toContain("Field 'summary' is required");
   });
 
   it('exposes strict additional-properties schemas and endpoint URL constraints', () => {
