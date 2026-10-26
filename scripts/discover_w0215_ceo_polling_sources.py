@@ -30,11 +30,11 @@ PORTALS=[
  {"code":"GJ","name":"Gujarat","url":"https://ceo.gujarat.gov.in/"},
  {"code":"HR","name":"Haryana","url":"https://ceoharyana.gov.in/"},
  {"code":"HP","name":"Himachal Pradesh","url":"https://ceohimachal.nic.in/"},
- {"code":"JH","name":"Jharkhand","url":"https://ceojharkhand.nic.in/"},
- {"code":"KA","name":"Karnataka","url":"https://ceokarnataka.kar.nic.in/"},
- {"code":"KL","name":"Kerala","url":"https://ceo.kerala.gov.in/"},
+ {"code":"JH","name":"Jharkhand","url":"https://ceo.jharkhand.gov.in/"},
+ {"code":"KA","name":"Karnataka","url":"https://ceo.karnataka.gov.in/"},
+ {"code":"KL","name":"Kerala","url":"https://www.ceo.kerala.gov.in/"},
  {"code":"MP","name":"Madhya Pradesh","url":"https://ceomadhyapradesh.nic.in/"},
- {"code":"MH","name":"Maharashtra","url":"https://ceo.maharashtra.gov.in/"},
+ {"code":"MH","name":"Maharashtra","url":"https://ceoelection.maharashtra.gov.in/"},
  {"code":"MN","name":"Manipur","url":"https://ceomanipur.nic.in/"},
  {"code":"ML","name":"Meghalaya","url":"https://ceomeghalaya.nic.in/"},
  {"code":"MZ","name":"Mizoram","url":"https://ceomizoram.nic.in/"},
@@ -48,14 +48,14 @@ PORTALS=[
  {"code":"TR","name":"Tripura","url":"https://ceotripura.nic.in/"},
  {"code":"UP","name":"Uttar Pradesh","url":"https://ceouttarpradesh.nic.in/"},
  {"code":"UK","name":"Uttarakhand","url":"https://ceouttarakhand.nic.in/"},
- {"code":"WB","name":"West Bengal","url":"https://ceowestbengal.nic.in/"},
+ {"code":"WB","name":"West Bengal","url":"https://ceowestbengal.wb.gov.in/"},
  {"code":"DL","name":"Delhi","url":"https://ceodelhi.gov.in/"},
  {"code":"CH","name":"Chandigarh","url":"https://ceochandigarh.gov.in/"},
  {"code":"PY","name":"Puducherry","url":"https://ceopuducherry.py.gov.in/"},
  {"code":"JK","name":"Jammu and Kashmir / Ladakh portal","url":"https://ceojk.nic.in/"},
 ]
 PORTAL_HOSTS={urlparse(p["url"]).hostname.lower() for p in PORTALS}
-EXTRA_GOV_HOSTS={"eci.gov.in","www.eci.gov.in","eci.nic.in","www.eci.nic.in","sansad.in","www.sansad.in"}
+EXTRA_GOV_HOSTS={"eci.gov.in","www.eci.gov.in","eci.nic.in","www.eci.nic.in","sansad.in","www.sansad.in","electoralsearch.eci.gov.in"}
 ALLOWED_HOSTS=PORTAL_HOSTS|EXTRA_GOV_HOSTS
 
 POLL_RE=re.compile(r"poll(?:ing)?[\s_\-/]*(?:station|stations|booth|booths|location|locations)|list[\s_\-/]*of[\s_\-/]*polling|booth[\s_\-/]*(?:list|details|map)|polling[\s_\-/]*place",re.I)
@@ -105,8 +105,12 @@ def fetch(url):
 def is_candidate(link):
  label=(link.get("text") or "")+" "+link.get("url","")
  if not POLL_RE.search(label): return False
- # Never download a link that points to elector-level lists or voter searches, even if the
- # adjacent anchor mentions polling stations. Record no personal data.
+ # ECI's official polling-station finder is recorded as a public route, but never fetched
+ # or submitted by this job; it is a lookup UI, not a static AC-to-station dataset.
+ u=urlparse(link.get("url",""))
+ if (u.scheme=="https" and u.hostname=="electoralsearch.eci.gov.in" and u.path.rstrip("/").lower()=="/pollingstation"):
+  return True
+ # Never download any voter search, EPIC search, electoral-roll or elector-level link.
  if ROLL_RE.search(label): return False
  return True
 
@@ -139,7 +143,10 @@ def probe_root(p):
    u=link.get("url","")
    if not approved(u): continue
    if not is_candidate(link): continue
-   candidates.append({"url":u,"text":link.get("text",""),"tag":link.get("tag"),"attribute":link.get("attribute"),"discoveredFrom":r.url})
+   uparsed=urlparse(u)
+   eci_lookup_only=(uparsed.hostname=="electoralsearch.eci.gov.in" and uparsed.path.rstrip("/").lower()=="/pollingstation")
+   candidates.append({"url":u,"text":link.get("text",""),"tag":link.get("tag"),"attribute":link.get("attribute"),"discoveredFrom":r.url,
+     "fetchAllowed":not eci_lookup_only,"classification":"OFFICIAL_ECI_LOOKUP_DISCOVERY_ONLY" if eci_lookup_only else "OFFICIAL_CEO_LINK_CANDIDATE"})
   unique={}
   for x in candidates: unique[(x["url"],x["text"])]=x
   row["discoveredCandidateLinks"]=sorted(unique.values(),key=lambda x:(x["url"],x["text"]))[:100]
@@ -193,7 +200,9 @@ def main():
  for p in PORTALS:
   root=next(x for x in manifest["portals"] if x["code"]==p["code"])
   # Bound this to two candidate links per state to keep the sweep reproducible and small.
-  for link in root.get("discoveredCandidateLinks",[])[:2]: tasks.append((p,link))
+  for link in root.get("discoveredCandidateLinks",[]):
+   if link.get("fetchAllowed") is not False and len([x for x in tasks if x[0]["code"]==p["code"]])<2:
+    tasks.append((p,link))
  with concurrent.futures.ThreadPoolExecutor(max_workers=8) as pool:
   fs=[pool.submit(probe_candidate,link,p) for p,link in tasks]
   for f in concurrent.futures.as_completed(fs): manifest["candidatePageResults"].append(f.result())
