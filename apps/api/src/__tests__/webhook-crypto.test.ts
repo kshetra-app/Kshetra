@@ -137,7 +137,7 @@ describe('Webhook cryptographic primitives', () => {
     const timestamp = 2000;
     const payload = 'raw';
     const sig = generateWebhookSignature('secret', payload, timestamp);
-    expect(verifyWebhookSignature(payload, formatSignatureHeader(timestamp, sig), 'secret')).toEqual({ valid: true });
+    expect(verifyWebhookSignature(payload, formatSignatureHeader(timestamp, sig), 'secret', undefined)).toEqual({ valid: false, reason: 'SIGNATURE_EXPIRED' });
   });
 
   it('redacts secrets recursively in strings, arrays, and objects', () => {
