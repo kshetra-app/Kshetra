@@ -2018,9 +2018,15 @@ describe('CTO Directive 123 — Residual Electoral Data-Truth & Provisional Look
       expect(apBytes).toMatch(/STATUS:\s*INVALIDATED/i);
 
       const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+      const legacyManifest = {
+        ...manifest,
+        entries: manifest.entries.map((entry: any) => entry.pinCode === '500002'
+          ? { ...entry, referenceDocumentPath: 'data/evidence/w021_5/authoritative/eci_delimitation_2008_schedule_xxxi_table_b_extract.txt' }
+          : entry),
+      };
       const validation = validatorModule.validateEvidenceMatrix({
         directory: validatorModule.parseDelimitationServiceCuratedPins(),
-        manifest,
+        manifest: legacyManifest,
         seedNames: validatorModule.parseSeedConstituencyNames(),
       });
       const sourceCheck = validation.checks.find((check: any) => check.checkId === 'CHECK_6_SOURCE_RESOLUTION');
