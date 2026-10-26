@@ -1,5 +1,5 @@
 # DECISION LOG: PANIN / KSHETRA
-**Last Updated:** 2026-10-25
+**Last Updated:** 2026-10-26
 **Standard:** AI Agent Master Execution Job Book (Section 0.9, 0.10, Part 12)
 
 ---
@@ -3755,7 +3755,7 @@
 - **Status:** REMEDIATED / TESTED / READY FOR INDEPENDENT CTO ADJUDICATION (ROUND 2)
 - **Authority:** CTO DIRECTIVE — JOB 023 REMEDIATION ROUND 2 / Rule IV-001 Non-Self-Acceptance
 - **Baseline Commit:** `ca919ce362d200407ad253848a2611982cb9872a` (incorporating previous remediation commit `a9d468680111b70f53f006bc2c56c64825639fef`)
-- **Remediation Head Commit:** `760094d93ee43e62a12260173669c5e7b415a77c`
+- **Remediation Head Commit:** `760094d5aa06635920ce72f9f656ef82532f2980` (Implementation) / `85ba860269a43fcfa6ab588e514096525272cfe7` (Round 2 Governance)
 - **Context:** Independent CTO review in Round 2 mandated: (1) investigation and correction of conflated legal instruments in the delimitation fixture; (2) evidence-based OFFICIAL classification backed by authoritative legal corpus and anti-spoofing tests; (3) independent closure of SSRF security claims via socket pinning with TLS SNI/certificate hostname verification and streaming/deadline bounds; (4) durable persistence verification on a separate PostgreSQL 16 server including container restart and concurrent lease locking; (5) governance reconciliation.
 - **Decisions & Implementation Measures:**
   1. **Disentanglement of Legal Instruments & Primary Provenance:**
@@ -3779,3 +3779,85 @@
 - **Verification Evidence:** 81/81 automated tests pass across 8 test suites (7 Route Unit, 10 Truth Adversarial, 16 Hardened SSRF, 5 Persistence Lifecycle, 19 Invariants, 5 PGlite Integration, 7 Dedicated PostgreSQL 16 Server Integration, 12 Controlled Acceptance Steps).
 - **Environment Isolation:** Staging database (`fkpigozcqnmcvofuksar`) and Production database (`ehfafcnimmjusyvplbah`) remain 100% untouched and air-gapped (0 queries, 0 mutations).
 - **Submission:** Formally submitted under Rule IV-001 Non-Self-Acceptance as REMEDIATED / TESTED / READY FOR INDEPENDENT CTO ADJUDICATION (ROUND 2).
+
+---
+
+### DEC-157: Job 023 Round 3 Acceptance Blocker Closure (Commit Lineage, 2018 ECI Legal Dossier, TLS Transport Verification, PostgreSQL Test Safety Guard, and Battery Closure)
+- **Date:** 2026-10-25
+- **Status:** REMEDIATED / TESTED / READY FOR INDEPENDENT CTO ADJUDICATION (ROUND 3)
+- **Authority:** CTO DIRECTIVE — JOB 023 ROUND 3: CLOSE REMAINING ACCEPTANCE BLOCKERS / Rule IV-001 Non-Self-Acceptance
+- **Implementation Commit:** `760094d5aa06635920ce72f9f656ef82532f2980`
+- **Round 2 Governance Head:** `85ba860269a43fcfa6ab588e514096525272cfe7`
+- **Current Remote Master Head:** `b51301f5557d8e2f7902d532a8996d6f7ab834ff` (tree: `c02fd849a58a282121474d2a2cccf5c9fd42d333`)
+- **Context:** Independent CTO review of Job 023 Round 2 identified five remaining acceptance blockers:
+  1. Commit identity error: Truncated Git log output was recorded as false SHA `760094d93ee43e62a12260173669c5e7b415a77c`.
+  2. 2018 corpus discrepancy: ECI Notification No. 282/AP/2018(DEL) was recorded with publication/effective date 2018-09-24 instead of official statutory date 22.09.2018; generic ECI homepage URL stored instead of primary source; boundary-only scope lacked constituency/seat constraints; APRA 2014 entry cited non-existent "Schedule XXXI".
+  3. TLS verification path: Testing standalone `tls.checkServerIdentity` did not prove the real transport path (TCP connect to pinned IP + TLS SNI + root CA verification + hostname check).
+  4. PostgreSQL test safety: `tests/delimitation-watch-postgres-server-integration.test.mjs` lacked safety by construction against running destructive SQL on non-test or cloud databases.
+  5. Verification battery execution: Battery required re-execution tying all test receipts to the verified tree.
+- **Decisions & Implementation Measures:**
+  1. **Commit Lineage & Identity Correction (Finding 1):**
+     - Expunged false SHA `760094d93ee43e62a12260173669c5e7b415a77c` across all registers and manifests.
+     - Formally distinguished actual implementation commit `760094d5aa06635920ce72f9f656ef82532f2980`, Round 2 governance head `85ba860269a43fcfa6ab588e514096525272cfe7`, and remote master head `b51301f5557d8e2f7902d532a8996d6f7ab834ff`.
+  2. **ECI 2018 Legal Primary Source Acquisition & Corpus Hardening (Finding 2):**
+     - Discovered exact official ECI download API endpoint and downloaded primary signed statutory PDF: `data/evidence/delimitation/authoritative/eci_notification_282_ap_2018_del.pdf` (artifact SHA-256 `13201bb665a5d29853862d0bc0c07175c319a61d5b39b2c838fd0ec3882737da`).
+     - Reconciled date discrepancy: Notification is dated 22 September 2018 (`2018-09-22`) for Gazette publication on 22.09.2018; 2018-09-24 was the Microsoft Word export metadata timestamp.
+     - Documented legal scope in `data/evidence/delimitation/authoritative/eci_notification_282_ap_2018_polavaram_dossier.md`: operates under RP Act 1950 § 9(1)(b) as a boundary-only amendment for AC-53 (Rampachodavaram) and AC-67 (Polavaram) transferring Polavaram mandals without altering total assembly seats (residual AP seats: 175, SC 29, ST 7).
+     - Encoded boundary constraints in `AUTHORITATIVE_LEGAL_CORPUS` and Check 12 in `validator.ts`.
+     - Corrected APRA 2014 entry to cite Section 15 read with Second Schedule (Schedule XXXI does not exist).
+     - Added adversarial tests TRUTH-11 to TRUTH-15 covering wrong date, generic URL, boundary seat alteration claims, fake schedules, and authentic qualification (15/15 PASS).
+  3. **End-to-End TLS Hostname Verification over Pinned IP Transport (Finding 3):**
+     - Generated controlled test certificate fixtures (`ca.crt`, `ca.key`, `server.crt`, `server.key`) signed by `CN=DelimitationTestRootCA` with SAN `DNS:valid.delimitation.gov.in`.
+     - Enhanced `tests/delimitation-watch-ssrf-hardened.test.mjs` with an isolated HTTPS test server.
+     - Replaced SSRF-15 with SSRF-15A through SSRF-15F proving: agent callback verification, end-to-end HTTPS success when hostname matches cert over pinned socket, rejection with `ERR_TLS_CERT_ALTNAME_INVALID` on hostname mismatch over pinned socket, rejection of untrusted CA, and fail-closed capture adapter behavior (21/21 PASS).
+  4. **PostgreSQL Test Safety Guard by Construction (Finding 4):**
+     - Implemented `assertPostgresIntegrationSafe` helper in `tests/helpers/postgresTestSafety.mjs`.
+     - Refuses destructive SQL unless: (1) explicit opt-in `ENABLE_JOB023_POSTGRES_INTEGRATION=true` is set, (2) host is strictly loopback (`127.0.0.1`), (3) database matches dedicated test pattern (`job023_delimitation_test` or `job023_disposable_*`), (4) live database identity query (`SELECT current_database(), inet_server_addr()`) matches before any DDL or DROP TABLE.
+     - Rejects all cloud managed databases (Supabase, AWS RDS, Railway, Neon, etc.) and production database names (`postgres`, `kshetra`, `production`, etc.).
+     - Built dedicated negative test suite `tests/delimitation-watch-postgres-server-safety.test.mjs` (8/8 PASS).
+  5. **Full Battery Verification & Evidence Closure (Finding 5):**
+     - Full verification battery executed: 99/99 automated tests PASS (100%) across 9 suites.
+     - Package TypeScript builds (`packages/shared`, `apps/api`) verified clean (0 errors).
+     - API contract drift verified (9/9 matched, 100% parity).
+     - Updated portable acceptance manifest `reports/evidence/JOB_023_ACCEPTANCE_MANIFEST.json`.
+- **Verification Evidence:** 99/99 automated tests pass across 9 test suites:
+  1. `delimitation-watch-routes.test.ts`: 7/7 PASS
+  2. `delimitation-watch-data-truth-adversarial.test.mjs`: 15/15 PASS
+  3. `delimitation-watch-ssrf-hardened.test.mjs`: 21/21 PASS
+  4. `delimitation-watch-postgres-server-safety.test.mjs`: 8/8 PASS
+  5. `delimitation-watch-postgres-server-integration.test.mjs` (PostgreSQL 16 Server): 7/7 PASS
+  6. `delimitation-watch-persistence-lifecycle.test.mjs`: 5/5 PASS
+  7. `delimitation-watch-mandatory-invariants.test.mjs`: 19/19 PASS
+  8. `delimitation-watch-postgres-integration.test.mjs` (PGlite): 5/5 PASS
+  9. `delimitation-watch-controlled-e2e.test.mjs`: 12/12 PASS
+- **Environment Isolation:** Staging database (`fkpigozcqnmcvofuksar`) and Production database (`ehfafcnimmjusyvplbah`) remain strictly air-gapped (0 queries, 0 mutations).
+- **Submission:** Formally submitted under Rule IV-001 Non-Self-Acceptance as REMEDIATED / TESTED / READY FOR INDEPENDENT CTO ADJUDICATION (ROUND 3).
+
+---
+
+### DEC-158: W021.5 Stage B Acquisition Route Adjudication and Additional Official TGRAC Probe
+- **Date:** 2026-10-26
+- **Status:** ACTIVE — STAGE B PARTIAL / NOT ACCEPTED
+- **Authority:** CTO Directive 154; explicit project-owner request to exhaust evidence-acquisition routes and reconcile records
+- **Decision:** Use a layered, jurisdiction-by-jurisdiction pipeline. Legal truth comes from the applicable ECI delimitation order, amendments/corrigenda, and Central/State Gazette publication/effective-date chain. Geometry should be acquired as raw bytes from official ECI/CEO/state-GIS services where the endpoint is discoverable and downloadable. Official result pages/scripts are discovery and corroboration sources until legal vintage and source lineage are proven. Community/mirror geometry is comparison-only and cannot close statutory acceptance.
+- **Evidence considered:** Official Bihar BEGIS layer acquired with 243 AC features/unique codes, but audit fails on 3 invalid geometries and 76 positive-area overlap pairs; TGRAC candidate layers have 119-feature name crosswalks but 11/12 inferred aliases and no legal extent validation; TGRAC variants materially disagree for seven ACs and share invalid Dornakal geometry; direct ECI PDF attempts returned HTTP 406 WAF HTML and guessed result-portal geometry paths returned 404. Error responses must not be recorded as source-document hashes and no WAF bypass is authorized.
+- **Additional acquisition route and result:** The official TGRAC Master_Administrative_Folder/Master_Administrative_Boundary/MapServer/0 Assembly Constituency Boundary layer was acquired in successful read-only run [40259741110](https://github.com/kshetra-app/Kshetra/actions/runs/40259741110). Raw ESRI JSON: 12,469,989 bytes, SHA-256 c5d0cbf55f5079cd91b0ce3a8733ce11701a70f0ea474cdd96025ec8c651e444; metadata SHA-256 78130181060c9fb1a0eeba400748cf285ba7e973db75d1600b82ca2ab9135988. Structural checks pass for 119 polygons, but topology finds one invalid Dornakal self-intersection (118 valid, 1 invalid, zero positive-area overlaps). The layer has no statutory AC ID field; effective date, licence, lineage and legal extent validation remain unresolved. Evidence report: reports/evidence/w021_5_telangana_master_geometry_probe_40259741110.json; artifact ZIP SHA-256 6d274d901e622c34252d010c1e41913bea1c7bab883a1af7f128e065b37eea87 (expires 2026-11-25). Candidate-only, not canonical.
+- **Expanded service-family adjudication:** Successful run [40259909774](https://github.com/kshetra-app/Kshetra/actions/runs/40259909774) acquired Query layer 1, RnB layer 8 and MusiRiver layer 59. Query is byte-identical to the older AdministrativeInfoSystem layer; RnB and MusiRiver are byte-identical to each other and near-identical to the newer Admin_2026/Admin_New family. The Master layer aligns with the older geometry family to sub-millimetre coordinate precision. Six matched ACs have different ring structures against the newer family and Jangaon/Jangoan remains a name mismatch, so the known seven-AC discrepancy persists. Every candidate has one invalid Dornakal polygon; no independent legal source or canonical geometry was established. Evidence: reports/evidence/w021_5_telangana_variant_family_comparison_20261026.json; artifact ZIP SHA-256 c7b587e7591983cd81b527b8a3824229f812bed94a123e4e68b5a824932e3629 (expires 2026-11-25).
+- **Operational rule:** If public official bytes or legal lineage are unavailable, issue a narrowly scoped official custodian request (and RTI where appropriate) for vector format, source/version/effective date, CRS, data dictionary, licence, legal instrument, correction history and request/response identifiers. Do not infer/fabricate polygons, treat PIN-code polygons as India Post delivery beats, or substitute centroid containment for polygon evidence.
+- **Postal geography source distinction:** The official OGD catalog lists All India Pincode Boundary Geo JSON (Department of Posts, published 2025-05-09, GODL), but no raw resource bytes were acquired and PIN-code service areas are not postman delivery beats. EB-03/EB-04 remain OPEN. The selected next route is a written Department of Posts/CEPT CDO request to gmcept@indiapost.gov.in for actual beat polygons and metadata, or written confirmation that no shareable dataset exists.
+- **Custodian request artifact:** Six specific request drafts are recorded in reports/w021_5_stage_b_custodian_request_pack_2026-10-26.md for the Controller of Publications, ECI/CEO Telangana, TGRAC, Department of Posts/CEPT, ECI/State CEOs/DEOs and independent transcription/adjudication. They are DRAFTED_NOT_SENT; no submission IDs or agency responses are claimed.
+- **Official legal source probe:** Successful read-only run [40260777545](https://github.com/kshetra-app/Kshetra/actions/runs/40260777545) acquired a 231,596-byte APSeeds-hosted copy of the AP Reorganisation Act (SHA-256 84cd566b917f9a3f600c47f6540520c950166b424a964ad37d64dc3c968114aa), parsed Schedule XXVII to a 119/119 statutory roster, and acquired two official PIB HTML variants with raw SHA-256 4eef52437040ca8f083d9c839e65a4a431f85e0fb5d437c8a1fb89b272eb4066 and fc43efff8bc9d341cff190d5135ea1825ce484f92a896ef0353c99a388e00bf6. Crosswalk is PASS_WITH_CANDIDATE_ALIASES, not canonical acceptance. ECI Notification 282/AP/2018(DEL) still returns HTTP 406 on both official host variants; CEO Telangana schedule and ECI 2024 press-note PDFs timed out. Evidence: reports/evidence/w021_5_legal_crosswalk_source_probe_40260777545.json. APSeeds bytes are separately registered from the still-unacquired IndiaCode URL; no hash is attributed to the IndiaCode source.
+- **Reproducible TGRAC candidate comparison:** run [40261390903](https://github.com/kshetra-app/Kshetra/actions/runs/40261390903) succeeded with 8 candidate layers and 28 pairwise comparisons; 3 groups are raw-response duplicates. Artifact ZIP SHA-256 a2752bb4906e33d826fe4e5ce4292c1d46ea5a0f32172937d34c91893ecea3ee; generated comparison report SHA-256 76b1565e7b2308c3e4fe1288a7ed198d05d35e65aa8566ddb67d8bcd7ff6bc35. Summary is reports/evidence/w021_5_telangana_variant_family_comparison_20261026.json. This is a candidate-family screen only; invalid Dornakal and the seven-AC discrepancy remain.
+- **Acceptance boundary:** W021.5-B1-04 and evidence gates EB-01..EB-05 remain OPEN; EB-06 (independent Stage B adjudication/authorization) remains PENDING. No national canonical AC geometry has been accepted. Stage C+ remains unauthorized; production remains air-gapped; no database access/mutation was performed.
+
+
+---
+
+### DEC-159: Scoped Stage B Authorization and PR-Lineage Governance Test Reconciliation
+- **Date:** 2026-10-26
+- **Status:** ACTIVE — Stage B only; independent acceptance remains pending
+- **Authority:** CTO Directive 154; Rule IV-001; explicit project-owner request to resume Stage B evidence acquisition
+- **Problem:** The v1.6 governance regression test assumed the repository must always be globally frozen and that the active branch must always be named master. Those assertions conflicted with the explicitly authorized, evidence-only W021.5 Stage B scope and GitHub's detached synthetic merge commit for pull-request CI.
+- **Decision:** Keep the default global-freeze requirement fail-closed. Permit the sole active exception only when the committed state explicitly references CTO Directive 154 and its approved W021.5 Stage B plan, states Stage B repository/evidence acquisition only, prohibits product code/migrations and staging/production DB access, stops before Stage C, and records no implementation, verification or acceptance commit. For pull-request CI, verify the merge SHA and both parents against origin/master and origin/<head>; for push CI, preserve strict active-branch and remote-head equality.
+- **Non-waiver:** This does not authorize PR #25 product/migration changes, does not waive API tests, does not bypass branch protection, and does not grant independent Stage B acceptance. The API suite's 53 failures remain an open CI blocker until separately remediated.
+- **Evidence:** `governance/directives/CTO-DIRECTIVE-154-W021.5-RESUMPTION.md`; `governance/plans/W021.5-RESUMPTION-REV-1.0.md`; `tests/governance-v16.test.mjs`; `tests/governance-consistency.test.mjs` (PR branch); CI run 40262523134 and subsequent rerun.
