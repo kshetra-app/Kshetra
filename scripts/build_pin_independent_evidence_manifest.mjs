@@ -989,14 +989,18 @@ export function buildManifest() {
       ? 'Andhra Pradesh Reorganisation Act, 2014 (Second Schedule; substituted Schedule III, Table A — Andhra Pradesh Assembly Constituencies)'
       : 'Andhra Pradesh Reorganisation Act, 2014 (Second Schedule; inserted Schedule XXVII, Table A — Telangana Assembly Constituencies)';
     const parsedAssigned = entry.assignedAcNumber ? parsedSource[entry.assignedAcNumber] : null;
+    const selectedSourceEntries = isMultiAc
+      ? (entry.candidateAcNumbers || []).map((number) => parsedSource[number]).filter(Boolean)
+      : parsedAssigned ? [parsedAssigned] : [];
     const sourceLocator = isMultiAc
-      ? scheduleName + ', Table A, Entries: ' + (entry.candidateAcNumbers || []).map((number) => {
-          const candidate = parsedSource[number];
-          return candidate ? candidate.entryNo + ' (' + candidate.name + ') — ' + candidate.extent : number + ' (ENTRY_NOT_FOUND)';
-        }).join('; ')
+      ? scheduleName + ', Table A, Entries: ' + selectedSourceEntries.map((candidate) => candidate.entryNo + ' (' + candidate.name + ') — ' + candidate.extent).join('; ')
       : parsedAssigned
         ? scheduleName + ', Table A, Entry ' + parsedAssigned.entryNo + ' (' + parsedAssigned.name + '), Extent: ' + parsedAssigned.extent
         : 'ENTRY_NOT_FOUND_IN_SOURCE_ARTIFACT: Entry ' + entry.assignedAcNumber;
+    const whatSourceEstablishes = selectedSourceEntries.length === 1
+      ? 'The Andhra Pradesh Reorganisation Act, 2014 successor-state schedule identifies Assembly Constituency ' + selectedSourceEntries[0].entryNo + ' (' + selectedSourceEntries[0].name + ') and its administrative extent: ' + selectedSourceEntries[0].extent + '. It does not establish postal delivery-beat containment.'
+      : 'The successor-state schedule defines these candidate Assembly Constituency extents: ' + selectedSourceEntries.map((candidate) => candidate.entryNo + ' (' + candidate.name + '): ' + candidate.extent).join('; ') + '. It does not establish postal delivery-beat coverage or a unique PIN-to-AC assignment.';
+    const whatSourceDoesNotEstablish = 'Does not establish the geographic boundary of a Department of Posts delivery beat, a 1:1 PIN-to-AC relationship, or spatial containment of this postal PIN within any constituency.';
 
     return {
       ...entry,
@@ -1005,6 +1009,9 @@ export function buildManifest() {
       sourcePublicationDate: '2014-03-01',
       sourceEffectiveDate: '2014-06-02',
       sourceLocator,
+      whatSourceEstablishes,
+      whatSourceDoesNotEstablish,
+      manuallyAuthoredSummary: whatSourceEstablishes,
       assignedAcName: parsedAssigned ? parsedAssigned.name : entry.assignedAcName,
       candidateAcNames: isMultiAc ? (entry.candidateAcNumbers || []).map((number) => parsedSource[number]?.name).filter(Boolean) : [],
       referenceDocumentPath: sourceRelPath,
@@ -1015,11 +1022,11 @@ export function buildManifest() {
       claimSupportStatus: "PARTIALLY_SUPPORTED",
       sourcePassageExtract: sourcePassageExtract,
       inspectedPassageExtract: sourcePassageExtract,
-      manuallyAuthoredSummary: entry.whatSourceEstablishes,
+      manuallyAuthoredSummary: whatSourceEstablishes,
       evidentiaryRoleLabel: "VERBATIM_STATUTORY_EXTRACT_REPRESENTS_ASSEMBLY_EXTENT_NOT_POSTAL_CONTAINMENT",
       directEvidenceVsInference: isMultiAc
-        ? "Direct statutory delimitation evidence establishes that the delivery beat spans multiple municipal wards across distinct assembly constituencies. Single-constituency assignment is factually unsupportable."
-        : "Direct statutory delimitation evidence establishes the constituency name, number, and ward extent. The association of postal PIN delivery beat with this constituency is an administrative-locality inference based on office/locality centroid; spatial containment is NOT directly proven.",
+        ? "Direct statutory evidence establishes candidate constituency extents only. It does not prove the postal delivery beat intersects those candidates; keep the mapping ambiguous until independent postal geography is acquired."
+        : "Direct statutory evidence establishes constituency name, number, and administrative extent. Association of a postal PIN with this constituency remains a provisional locality inference; spatial containment is unproven.",
       unsupportedOrInaccessibleClaims: "Statutory 6-digit postal delivery beat boundary polygons are unpublished by India Post and inaccessible. Full multi-hundred page gazette scan is an external publication not checked into git.",
       sourceResolutionOutcome: "SOURCE_RESOLVED_CHECKED_IN_AUTHORITATIVE_EXTRACT",
       locatorResolutionOutcome: "EXACT_ENTRY_AND_WARD_COORDINATES_VERIFIED_AGAINST_SOURCE_ARTIFACT",
