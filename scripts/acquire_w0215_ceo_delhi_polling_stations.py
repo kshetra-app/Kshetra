@@ -339,6 +339,19 @@ def validate_station_table(raw: bytes, ac_no: int, ac_name: str, encoding: str =
         and not wrong_ac_name_rows and not invalid_station_number_rows
         and not duplicate_numbers and len(station_numbers) == len(data_rows)
     )
+    station_records = []
+    if pass_checks:
+        for row in data_rows:
+            station_records.append({
+                "districtNumber": row[0].get("text", "").strip(),
+                "districtName": row[1].get("text", "").strip(),
+                "assemblyConstituencyNumber": int(row[2].get("text", "").strip()),
+                "assemblyConstituencyName": row[3].get("text", "").strip(),
+                "pollingStationNumber": int(row[4].get("text", "").strip()),
+                "locality": row[5].get("text", "").strip(),
+                "pollingArea": row[6].get("text", "").strip(),
+                "pollingStationAddress": row[7].get("text", "").strip(),
+            })
     return {
         "status": "PASS" if pass_checks else "FAIL",
         "checks": {
@@ -356,6 +369,7 @@ def validate_station_table(raw: bytes, ac_no: int, ac_name: str, encoding: str =
         "wrongACNumberRowNumbers": wrong_ac_number_rows[:50],
         "wrongACNameRowNumbers": wrong_ac_name_rows[:50],
         "invalidStationNumberRowNumbers": invalid_station_number_rows[:50],
+        "stationRecords": station_records,
     }
 
 def hidden_payload(form: dict, select_name: str, ac_no: int) -> dict[str, str]:
@@ -436,6 +450,7 @@ def acquire_one_ac_postback(item: dict, form_state: dict) -> tuple[dict, dict | 
             record["tableCount"] = len(record["tables"])
             record["tableDataRowCount"] = sum(t["dataRowCount"] for t in record["tables"])
             record["independentTableValidation"] = validate_station_table(raw, ac_no, selected_label, response.encoding or "utf-8")
+            record["stationRecordCount"] = len(record["independentTableValidation"].get("stationRecords", []))
             # A selected AC returning its own form state is the minimum proof that the
             # controlled same-host ASP.NET postback worked. Keep new state for next AC.
             new_forms = parse_form(raw, response.encoding or "utf-8")
@@ -503,6 +518,50 @@ manifest["summary"] = {
     "missingSuccessfulACNumbers": sorted(set(range(1, 71)) - {r["acNo"] for r in success}),
     "postbackRowsObserved": sum(r.get("independentTableValidation", {}).get("dataRowCount", 0) for r in success),
     "recordsWithUpdatedFormState": sum(1 for r in success if r.get("updatedFormStatePresent")),
+}
+# Produce a deterministic flattened AC-to-polling-station crosswalk. Each row
+# retains the original source-page URL, raw SHA-256, file size, and retrieval time.
+normalized_rows = []
+for page in manifest["records"]:
+    validation = page.get("independentTableValidation") or {}
+    for row in validation.get("stationRecords", []):
+        normalized_rows.append({
+            **row,
+            "sourceId": page["sourceId"],
+            "assemblyConstituencyNo": page["acNo"],
+            "sourcePageUrl": page.get("finalUrl") or page.get("requestedUrl"),
+            "sourcePageSha256": page.get("sha256"),
+            "sourcePageByteLength": page.get("byteLength"),
+            "sourceRetrievedAtUtc": page.get("requestedAtUtc"),
+            "sourceRawArtifact": page.get("rawArtifact"),
+            "validationStatus": validation.get("status"),
+        })
+normalized_rows.sort(key=lambda r: (r["assemblyConstituencyNo"], r["pollingStationNumber"]))
+crosswalk = {
+    "schemaVersion": 1,
+    "title": "CEO Delhi official 2024 Assembly Constituency to polling-station crosswalk",
+    "sourceIndexUrl": INDEX_URL,
+    "scope": "Delhi only; do not interpret as national coverage",
+    "generatedAtUtc": datetime.now(timezone.utc).isoformat(),
+    "sourceIndex": manifest.get("index"),
+    "sourceForm": manifest.get("formPostback"),
+    "summary": {
+        "uniqueACCount": len({r["assemblyConstituencyNo"] for r in normalized_rows}),
+        "pollingStationRecordCount": len(normalized_rows),
+        "uniqueACStationPairs": len({(r["assemblyConstituencyNo"], r["pollingStationNumber"]) for r in normalized_rows}),
+        "pagesIncluded": len(success),
+        "pagesIndependentlyValidated": len(accepted),
+        "missingACNumbers": sorted(set(range(1, 71)) - {r["assemblyConstituencyNo"] for r in normalized_rows}),
+    },
+    "records": normalized_rows,
+}
+(OUT / "polling_station_crosswalk.json").write_text(json.dumps(crosswalk, indent=2, ensure_ascii=False) + "\\n", encoding="utf-8")
+manifest["normalizedCrosswalk"] = {
+    "path": "polling_station_crosswalk.json",
+    "recordCount": len(normalized_rows),
+    "sha256": sha((OUT / "polling_station_crosswalk.json").read_bytes()),
+    "byteLength": (OUT / "polling_station_crosswalk.json").stat().st_size,
+    "description": "Flattened official station-to-AC rows linked to raw official HTML page hashes.",
 }
 manifest["overallStatus"] = (
     "PASS_70_OF_70_OFFICIAL_AC_POSTBACKS_ACQUIRED_AND_VALIDATED"
