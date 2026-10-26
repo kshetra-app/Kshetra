@@ -17,7 +17,6 @@ IMPLEMENTATION_AUTHORIZATION_SCOPE: W021.5 Stage B repository/evidence acquisiti
 IMPLEMENTATION_AUTHORIZATION_COMMIT: e2d44d029a9539466ae8cef2d472aec1e57548c1
 IMPLEMENTATION_COMMIT: NONE — no product implementation authorized or performed under Directive 154
 VERIFICATION_COMMIT: NONE — independent Stage B adjudication pending
-ACCEPTANCE_COMMIT: NONE — independent CTO acceptance pending
 W021_5_STAGE_B_STATUS: PARTIAL / NOT ACCEPTED — NO CANONICAL NATIONAL AC GEOMETRY
 W021_5_STAGE_B_EVIDENCE: MASTER — reports/w021_5_stage_b_source_research_2026-10-25.md (committed 2026-10-26)
 W021_5_STAGE_B_SOURCE_REGISTER: MASTER — reports/w021_5_source_acquisition_register.json (source-specific raw hashes, failed attempts, licensing/vintage gaps and next actions recorded)
