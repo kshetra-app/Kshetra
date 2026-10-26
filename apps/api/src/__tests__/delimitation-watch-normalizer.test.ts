@@ -113,7 +113,7 @@ describe('Delimitation Watch Normalizer', () => {
     expect(result.normalizedDataStatus).toBe('UNVERIFIED');
     expect(result.isProposed).toBe(true);
     expect(result.hasLegalEvidence).toBe(false);
-    expect(result.legalEvidencePackage.decisionRecord.isOfficialEligible).toBe(false);
+    expect(result.legalEvidencePackage!.decisionRecord.isOfficialEligible).toBe(false);
     expect(await repo.getCandidate(result.id)).toMatchObject({ sourceId: 'source-1' });
   });
 
@@ -131,7 +131,7 @@ describe('Delimitation Watch Normalizer', () => {
     });
     expect(result.constituencyMappings).toEqual([]);
     expect(result.normalizedDataStatus).toBe('UNVERIFIED');
-    expect(result.metadata.rawKeysCount).toBe(1);
+    expect(result.metadata!.rawKeysCount).toBe(1);
   });
 
   it('uses snapshot-declared publication and effective dates when raw data omits them', async () => {
@@ -152,7 +152,7 @@ describe('Delimitation Watch Normalizer', () => {
     }));
     expect(synthetic.normalizedDataStatus).toBe('SCENARIO');
     expect(synthetic.isProposed).toBe(true);
-    expect(synthetic.legalEvidenceRecord.ruleApplied).toBe('RULE_SYNTHETIC_MODEL_CLASSIFIED_SCENARIO');
+    expect(synthetic.legalEvidenceRecord!.ruleApplied).toBe('RULE_SYNTHETIC_MODEL_CLASSIFIED_SCENARIO');
 
     const scenario = await normalizer.normalize(snapshot(JSON.stringify({ proposal: { stateCode: 'TG', isScenario: true } })), source({
       authorityClassification: 'statutory',
@@ -173,7 +173,7 @@ describe('Delimitation Watch Normalizer', () => {
         source(overrides),
       );
       expect(result.normalizedDataStatus).toBe('UNVERIFIED');
-      expect(result.legalEvidencePackage.decisionRecord.isOfficialEligible).toBe(false);
+      expect(result.legalEvidencePackage!.decisionRecord.isOfficialEligible).toBe(false);
     }
   });
 
@@ -188,11 +188,11 @@ describe('Delimitation Watch Normalizer', () => {
     expect(result.normalizedDataStatus).toBe('OFFICIAL');
     expect(result.isProposed).toBe(false);
     expect(result.hasLegalEvidence).toBe(true);
-    expect(result.legalEvidencePackage.decisionRecord).toMatchObject({
+    expect(result.legalEvidencePackage!.decisionRecord).toMatchObject({
       isOfficialEligible: true,
       ruleApplied: 'RULE_STATUTORY_ENACTED_LEGAL_EVIDENCE_PASSED',
     });
-    expect(result.legalEvidencePackage.sourceVerificationDigest).toBe(
+    expect(result.legalEvidencePackage!.sourceVerificationDigest).toBe(
       'e86b2401f822b395ad625c276b91cbf7a6a4c28a573752e50529e87515cf5ec0',
     );
   });
