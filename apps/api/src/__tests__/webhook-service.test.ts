@@ -129,7 +129,7 @@ describe('WebhookService in-memory subscription and event lifecycle', () => {
       tenantId: 'tenant-a', applicationId: 'app-a', eventType: 'test.ping', idempotencyKey: 'ping-1', payload,
     });
     expect(result).toMatchObject({ deduplicated: false, enqueuedDeliveries: 1 });
-    expect(queue.events.get(result.eventId)?.payloadRaw).toBe(JSON.stringify(payload));
+    expect(queue.events.get(result.eventId)?.payloadRaw).toBe('{"event_id":"123e4567-e89b-12d3-a456-426614174000","message":"hello","timestamp":"2026-10-26T00:00:00.000Z"}');
     await expect(service.publishEvent({
       tenantId: 'tenant-a', applicationId: 'app-a', eventType: 'not.allowed', payload,
     })).rejects.toThrow('UNSUPPORTED_EVENT_TYPE');
