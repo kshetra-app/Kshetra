@@ -713,12 +713,15 @@ describe('Moderation Routes Unit Tests (Direct Route Injection)', () => {
       const origEnv = process.env.NODE_ENV;
       process.env.NODE_ENV = 'development';
       try {
+        jest.spyOn(supabase.auth, 'getUser').mockResolvedValue({
+          data: { user: { id: 'mod-user', app_metadata: { role: 'moderator' } } },
+          error: null,
+        } as any);
         const res = await app.inject({
           method: 'GET',
           url: '/api/v1/moderation/queue',
           headers: {
-            'x-user-id': 'mod-user',
-            'x-test-role': 'moderator',
+            authorization: 'Bearer valid-test-token',
           },
         });
         expect(res.statusCode).toBe(503);
