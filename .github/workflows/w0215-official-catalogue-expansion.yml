@@ -60,6 +60,10 @@ jobs:
             echo "No new catalogue artifacts to persist."
           else
             git commit -m "evidence(w0215): persist expanded Gazette and postal catalogue probe"
+            # Other W021.5 evidence workflows may advance this branch during this job.
+            # Rebase the evidence-only commit onto the latest authorized branch before push.
+            git fetch origin "$BRANCH_NAME"
+            git rebase "origin/$BRANCH_NAME"
             git push origin "HEAD:$BRANCH_NAME"
           fi
       - name: Enforce successful probe execution (not a data-availability assertion)
