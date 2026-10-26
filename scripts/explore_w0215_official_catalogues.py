@@ -236,7 +236,7 @@ def probe_live_page(url: str, label: str) -> dict:
         ctype = (r.headers.get("Content-Type") or "").lower()
         if raw.startswith(b"%PDF-") or "application/pdf" in ctype:
             pdf = parse_pdf(raw)
-            row.update({k:v for k,v in pdf.items() if k != "text"})
+            row.update({k:v for k,v in pdf.items() if k not in ("text", "firstPageText")})
             if pdf.get("pdfParseStatus") == "PASS":
                 name = safe(label) + "_live.pdf"
                 row["rawArtifact"] = save_bytes(name, raw)
@@ -392,7 +392,7 @@ def archived_pdf_probe(item: dict, query_label: str) -> dict:
             row["status"] = "ARCHIVED_RESPONSE_NOT_PDF"
             return row
         pdf = parse_pdf(raw)
-        row.update({k:v for k,v in pdf.items() if k != "text"})
+        row.update({k:v for k,v in pdf.items() if k not in ("text", "firstPageText")})
         if pdf.get("pdfParseStatus") != "PASS":
             row["status"] = "ARCHIVED_PDF_PARSE_FAILED"
             return row
