@@ -222,14 +222,37 @@
       "retrievedAt": "2026-10-25",
       "format": "Portal / lookup resources",
       "authority": "PRIMARY_OFFICIAL_SOURCE",
-      "status": "DATASET_NOT_FOUND",
+      "status": "OFFICIAL_PIN_BOUNDARY_CATALOG_FOUND_NO_RAW_RESOURCE_BYTES; NOT_DELIVERY_BEATS",
       "sha256": null,
       "fileBytes": null,
       "scope": "Postal PIN lookup / office metadata discovery",
       "limitations": [
-        "No public authoritative national vector polygon dataset for delivery beats was located in the sources checked. PIN centroids or post-office points are not delivery-beat polygons."
+        "The official OGD catalog is discoverable, but no raw downloadable GeoJSON or shapefile bytes, resource SHA-256, feature count, or geometry audit have been acquired yet.",
+        "PIN-code service-area polygons are not individual India Post postman delivery-beat polygons and cannot close EB-03 or justify strict PIN-to-AC containment.",
+        "Do not use PIN centroids or PIN polygons as a substitute for delivery-beat geometry."
       ],
-      "plannedUse": "Search further for official downloadable data or obtain written data release; keep EB-03 and EB-04 open until genuine polygon data is obtained."
+      "plannedUse": "Acquire the catalog's actual ZIP/download resource and audit it only as an ancillary PIN-code service-area layer. For EB-03, request actual delivery-beat geometry and metadata from Department of Posts/CEPT custodian; keep the gate open if no such public dataset exists.",
+      "relatedCatalogUrl": "https://sikkim.data.gov.in/catalog/all-india-pincode-boundary-geo-json",
+      "relatedPrimaryCatalogUrl": "https://www.data.gov.in/catalog/all-india-pincode-boundary-geo-json",
+      "catalogPublisher": "Open Government Data (OGD) Platform India; contributor: Ministry of Communications, Department of Posts",
+      "catalogTitle": "All India Pincode Boundary Geo JSON",
+      "catalogPublishedOn": "2025-05-09",
+      "catalogUpdatedOn": "2025-05-09",
+      "catalogLicence": "Government Open Data License - India (GODL)",
+      "catalogDescription": "PIN-code boundaries of post offices in GeoJSON format. This is PIN service-area geometry, not individual postman delivery-beat polygons.",
+      "downloadStatus": "NO_RAW_GEOJSON_BYTES_ACQUIRED; mirror catalog page returned 'No Result Found' and direct data.gov.in page timed out in web reader",
+      "doesNotSatisfyEB03": true,
+      "custodianRoute": {
+        "office": "Department of Posts, Centre for Excellence in Postal Technology (CEPT), Bengaluru",
+        "role": "Chief Data Officer / General Manager, CEPT",
+        "email": "gmcept@indiapost.gov.in",
+        "address": "Centre for Excellence in Postal Technology, Bengaluru - 560001",
+        "requestItems": [
+          "confirm whether a national delivery-beat polygon dataset exists and is shareable",
+          "if yes, provide vector format, version/effective date, CRS, data dictionary, licence, change history and download/API endpoint",
+          "if no, provide written confirmation and identify authoritative alternative operational geography"
+        ]
+      }
     },
     {
       "sourceId": "SRC-ECI-2026-AC-GEO",
