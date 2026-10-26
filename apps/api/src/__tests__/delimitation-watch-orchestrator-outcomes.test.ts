@@ -64,8 +64,10 @@ describe('Delimitation Watch orchestrator early exits and failure semantics', ()
   });
 
   it('rejects an unknown source and releases its lock', async () => {
-    await expect(orchestrator.runPipeline('missing-source')).rejects.toThrow('SOURCE_NOT_FOUND');
-    expect(await repo.listRunsForSource('missing-source')).toHaveLength(0);
+    const result = await orchestrator.runPipeline('missing-source');
+    expect(result.outcome).toBe('FAILED');
+    expect(result.errorMessage).toContain('SOURCE_NOT_FOUND');
+    expect(await repo.listRunsForSource('missing-source')).toHaveLength(1);
   });
 
   it('rejects inactive sources without attempting capture', async () => {
@@ -80,8 +82,9 @@ describe('Delimitation Watch orchestrator early exits and failure semantics', ()
   it('fails immediately when a source lock is already held', async () => {
     await repo.saveSource(source());
     jest.spyOn(repo, 'acquireSourceLock').mockResolvedValueOnce(false);
+    const release = jest.spyOn(repo, 'releaseSourceLock');
     await expect(orchestrator.runPipeline('source-1')).rejects.toThrow('CONCURRENT_RUN_CONFLICT');
-    expect(repo.releaseSourceLock).not.toHaveBeenCalled();
+    expect(release).not.toHaveBeenCalled();
   });
 
   it.each([
