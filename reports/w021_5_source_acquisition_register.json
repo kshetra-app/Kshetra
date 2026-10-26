@@ -1690,6 +1690,30 @@
       "sha256": null,
       "rawArtifact": null,
       "notes": "Official Gazette catalogue lead for exact-issue discovery. Not the notification or certified Gazette itself; no raw source bytes or hash acquired."
+    },
+    {
+      "sourceId": "SRC-LOKSABHA-GAZETTE-ON-55E-REFERENCE-2018-12-19",
+      "subject": "Official Lok Sabha proceedings record identifying Notification O.N.55(E), published in Gazette of India dated 22 September 2018, concerning AP delimitation and amendment to Schedule III of the 2008 Order",
+      "publisher": "Lok Sabha Secretariat / Parliament of India",
+      "url": "https://sansad.in/getFile/debatestextmk/16/XVI/19.12.2018.pdf?source=loksabhadocs",
+      "retrievedAt": "2026-10-26",
+      "format": "Official parliamentary proceedings PDF; corroborates Gazette notification identifier and publication date",
+      "authority": "OFFICIAL_PARLIAMENTARY_CORROBORATION_NOT_GAZETTE_SOURCE",
+      "status": "GAZETTE_ITEM_IDENTIFIER_CORROBORATED_RAW_GAZETTE_BYTES_NOT_ACQUIRED",
+      "sha256": null,
+      "fileBytes": null,
+      "pageReference": "Printed page 36; PDF page 35 (zero-based page index 35)",
+      "facts": [
+        "Notification identified as O.N.55(E)",
+        "Gazette of India publication date 22 September 2018",
+        "Concern: delimitation of constituencies in Andhra Pradesh and update to Schedule III of Delimitation of Parliamentary and Assembly Constituencies Order, 2008"
+      ],
+      "limitations": [
+        "Parliamentary proceedings are corroborative evidence of the Gazette reference, not the Gazette itself.",
+        "Exact eGazette issue/record identifier, Gazette PDF bytes, and certified Andhra Pradesh State Gazette counterpart remain unacquired.",
+        "No raw PDF bytes were downloaded or hashed in this pass."
+      ],
+      "plannedUse": "Use O.N.55(E), publication date, Part II Section 3(iii), and subject as search keys in the official Gazette of India directory; preserve the Gazette itself as a separate required source."
     }
   ],
   "unresolvedGates": [
@@ -2206,7 +2230,7 @@
     ],
     "acceptedAsCanonical": false
   },
-  "lastDecision": "Correction after repository-wide evidence reinspection: the original ECI Notification 282/AP/2018(DEL) PDF is already retained in master at data/evidence/delimitation/authoritative/eci_notification_282_ap_2018_del.pdf. Repository bytes were independently decoded and hashed: 102,133 bytes, SHA-256 13201bb665a5d29853862d0bc0c07175c319a61d5b39b2c838fd0ec3882737da; PDF magic/EOF and three page objects verified. Dossier records official ECI URL and retrieval timestamp 2026-10-25T17:42:55Z, and its recorded digest matches. Exact Gazette issue and 2008 Order PDF remain unacquired; national AC geometry remains unaccepted.",
+  "lastDecision": "ECI Notification 282/AP/2018(DEL) PDF bytes are present in master and independently hash-verified (102,133 bytes; SHA-256 13201bb665a5d29853862d0bc0c07175c319a61d5b39b2c838fd0ec3882737da). Official Lok Sabha proceedings further corroborate Gazette item identifier O.N.55(E), Gazette of India publication date 22 September 2018, and subject. The actual Gazette issue/certified AP Gazette counterpart and the 2008 Order PDF remain unacquired; national AC geometry and other Stage B gates remain open.",
   "latestRouteAdjudication": {
     "recordedAt": "2026-10-26",
     "reportPath": "reports/w021_5_stage_b_evidence_route_adjudication_2026-10-26.md",
