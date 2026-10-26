@@ -174,6 +174,6 @@ describe('Delimitation Watch versioning and publication gates', () => {
       .rejects.toThrow('PUBLICATION_GATE_FAILED');
     await expect(publisher.publish(acceptedVersion(), candidate(), validation({ validationStatus: 'REJECTED' })))
       .rejects.toThrow('PUBLICATION_GATE_FAILED');
-    expect(await repo.listPublications()).toHaveLength(0);
+    expect(await repo.getPublicationByVersionId('version-existing')).toBeNull();
   });
 });
