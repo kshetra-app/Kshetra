@@ -5,7 +5,7 @@
   "baselineCommit": "33945d20f318ae1aa0d9aba35052246599c5bbae",
   "branch": "cto/w0215-stage-b-evidence-20261025",
   "createdAt": "2026-10-25",
-  "retrievalMethod": "Web discovery plus repository connector review. A discovered page is not equivalent to a downloaded, hashed source artifact. Additional official TGRAC service discovery and raw-geometry probe executed 2026-10-26 through a read-only GitHub Actions workflow. Expanded TGRAC service-family probe completed 2026-10-26; duplicate/near-duplicate candidate responses are recorded separately and not counted as independent corroboration. Legal source acquisition run 40260777545 acquired and hashed the APSeeds-hosted AP Reorganisation Act copy and two official PIB HTML variants; the exact ECI 2018 notification returned HTTP 406 and the CEO/ECI PDFs timed out. Hashes are assigned only to actual source bytes, never to error pages as if they were documents.",
+  "retrievalMethod": "Web discovery plus repository connector review. A discovered page is not equivalent to a downloaded, hashed source artifact. Additional official TGRAC service discovery and raw-geometry probe executed 2026-10-26 through a read-only GitHub Actions workflow. Expanded TGRAC service-family probe completed 2026-10-26; duplicate/near-duplicate candidate responses are recorded separately and not counted as independent corroboration. Legal source acquisition run 40260777545 acquired and hashed the APSeeds-hosted AP Reorganisation Act copy and two official PIB HTML variants; the exact ECI 2018 notification returned HTTP 406 and the CEO/ECI PDFs timed out. Hashes are assigned only to actual source bytes, never to error pages as if they were documents. Reproducible TGRAC family comparison run 40261390903 succeeded: 8 candidate layers, 28 pairwise comparisons, 3 duplicate raw-response groups; generated report variant_comparison.json SHA-256 76b1565e7b2308c3e4fe1288a7ed198d05d35e65aa8566ddb67d8bcd7ff6bc35 inside artifact ZIP SHA-256 a2752bb4906e33d826fe4e5ce4292c1d46ea5a0f32172937d34c91893ecea3ee.",
   "rules": {
     "hashPolicy": "SHA-256 must be computed over exact downloaded bytes; never use a Git blob SHA as a file SHA-256.",
     "authorityPolicy": "Government sources are primary only for the specific subject they publish. Community GIS is candidate/secondary data until reconciled to primary source.",
@@ -1324,7 +1324,24 @@
         "State-boundary coverage and legal extent-to-polygon comparison not checked."
       ],
       "plannedUse": "Compare against existing TGRAC variants, establish source lineage and legal vintage, reconcile to statutory roster, and test national coverage. Do not import as canonical.",
-      "retrievalMethod": "Read-only GitHub Actions run 40259741110; raw source bytes preserved in artifact w0215-official-geometry-probe-40259741110 (artifact expires 2026-11-25)."
+      "retrievalMethod": "Read-only GitHub Actions run 40259741110; raw source bytes preserved in artifact w0215-official-geometry-probe-40259741110 (artifact expires 2026-11-25).",
+      "crossVariantComparator": {
+        "workflowRunId": 40261390903,
+        "workflowUrl": "https://github.com/kshetra-app/Kshetra/actions/runs/40261390903",
+        "status": "SUCCESS",
+        "candidateLayers": 8,
+        "pairwiseComparisons": 28,
+        "duplicateRawResponseGroups": 3,
+        "artifactId": 12624637729,
+        "artifactSha256": "a2752bb4906e33d826fe4e5ce4292c1d46ea5a0f32172937d34c91893ecea3ee",
+        "comparisonReportSha256": "76b1565e7b2308c3e4fe1288a7ed198d05d35e65aa8566ddb67d8bcd7ff6bc35",
+        "comparisonReportPath": "variant_comparison.json (inside artifact); summary report in repository: reports/evidence/w021_5_telangana_variant_family_comparison_20261026.json",
+        "limitations": [
+          "Candidate-family screen only, not a legal boundary validator.",
+          "Source lineage and licence not established.",
+          "Dornakal self-intersection and seven-AC discrepancy remain."
+        ]
+      }
     },
     {
       "sourceId": "SRC-TGRAC-QUERY-AC-2026-10-26",
