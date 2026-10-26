@@ -1,0 +1,71 @@
+name: W021.5 Official CEO Polling-Station Source Discovery
+
+on:
+  push:
+    branches:
+      - cto/w0215-stage-b-evidence-20261025
+    paths:
+      - "scripts/discover_w0215_ceo_polling_sources.py"
+      - ".github/workflows/w0215-ceo-polling-source-discovery.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: w0215-ceo-polling-source-discovery
+  cancel-in-progress: false
+
+jobs:
+  discover:
+    name: Discover and hash official polling-station source pages
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - name: Checkout authorized evidence-only branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: true
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install pinned source parsing libraries
+        run: python -m pip install --disable-pip-version-check "requests==2.32.5" "PyMuPDF==1.26.5"
+      - name: Probe official CEO portal roots and observed polling-station links
+        id: probe
+        continue-on-error: true
+        run: python scripts/discover_w0215_ceo_polling_sources.py
+      - name: Upload source responses and provenance manifest
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: w0215-ceo-polling-source-discovery-${{ github.run_id }}
+          path: stage_b_ceo_portal_discovery/
+          if-no-files-found: warn
+          retention-days: 30
+      - name: Persist source discovery evidence on evidence-only branch
+        if: steps.probe.outcome == 'success'
+        env:
+          BRANCH_NAME: ${{ github.ref_name }}
+        run: |
+          set -eu
+          test "$GITHUB_REF" = "refs/heads/cto/w0215-stage-b-evidence-20261025"
+          test -s stage_b_ceo_portal_discovery/manifest.json
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          mkdir -p data/evidence/w021_5/ceo_portal_discovery
+          cp -R stage_b_ceo_portal_discovery/. data/evidence/w021_5/ceo_portal_discovery/
+          git add data/evidence/w021_5/ceo_portal_discovery/
+          if git diff --cached --quiet; then
+            echo "Discovery evidence unchanged."
+          else
+            git commit -m "evidence(w0215): retain official CEO polling source discovery"
+            git push origin "HEAD:$BRANCH_NAME"
+          fi
+      - name: Report probe failure without promoting partial evidence
+        if: steps.probe.outcome != 'success'
+        run: |
+          echo "CEO source discovery did not complete; inspect artifact/logs. No national crosswalk acceptance is implied."
+          exit 1
