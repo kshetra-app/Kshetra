@@ -1661,7 +1661,7 @@ describe('CTO Directive 123 — Residual Electoral Data-Truth & Provisional Look
       const e500056 = manifest.entries.find((e: any) => e.pinCode === '500056');
       expect(e500056).toBeDefined();
       expect(e500056.candidateAcNumbers).toEqual([71, 46]);
-      expect(e500056.candidateAcNames).toEqual(['Secunderabad Cantonment', 'Kukatpalle']);
+      expect(e500056.candidateAcNames).toEqual(['Secunderabad Cantonment', 'Kukatpally']);
       expect(e500056.assignedAcNumber == null).toBe(true);
       expect(tableBEntries[71].name).toBe('Secunderabad Cantonment');
       expect(tableBEntries[46].name).toBe('Kukatpalle');

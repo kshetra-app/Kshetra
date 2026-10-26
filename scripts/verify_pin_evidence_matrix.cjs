@@ -23,6 +23,21 @@ const crypto = require('crypto');
 
 const REPO_ROOT = path.resolve(__dirname, '..');
 
+// Explicit statutory spelling aliases to the canonical seed display names.
+// Preserve source spelling in sourceLocator/sourcePassageExtract; only compare identities
+// through these documented aliases rather than silently rewriting statutory evidence.
+function normalizeConstituencyName(value) {
+  return String(value || '')
+    .normalize('NFKD')
+    .toLowerCase()
+    .replace(/\\bsecunderabad\\s+cantt\\.?\\s*\\(sc\\)?\\b/g, 'secunderabad cantonment')
+    .replace(/\\bsecunderabad\\s+cantt\\.?\\b/g, 'secunderabad cantonment')
+    .replace(/\\bkukatpalle\\b/g, 'kukatpally')
+    .replace(/[^a-z0-9]+/g, ' ')
+    .trim()
+    .replace(/\\s+/g, ' ');
+}
+
 const TS_TABLE_B_EXTRACT_REL = 'data/evidence/w021_5/authoritative/ap_reorganisation_act_2014_schedule_xxvii_telangana_table_a_extract.txt';
 const AP_TABLE_B_EXTRACT_REL = 'data/evidence/w021_5/authoritative/ap_reorganisation_act_2014_schedule_iii_andhra_pradesh_table_a_extract.txt';
 
@@ -865,7 +880,7 @@ function validateEvidenceMatrix({ directory, manifest, seedNames }) {
         locatorResolutionPassed = false;
         results.errors.push(`PIN ${entry.pinCode} cites Entry ${entry.assignedAcNumber} which does not exist in resolved ${entry.stateCode} Table B extract`);
       } else {
-        if (entry.assignedAcName && sourceEntry.name !== entry.assignedAcName && sourceEntry.statutoryName !== entry.assignedAcName) {
+        if (entry.assignedAcName && normalizeConstituencyName(sourceEntry.name) !== normalizeConstituencyName(entry.assignedAcName) && normalizeConstituencyName(sourceEntry.statutoryName) !== normalizeConstituencyName(entry.assignedAcName)) {
           locatorResolutionPassed = false;
           results.errors.push(`PIN ${entry.pinCode} assignedAcName '${entry.assignedAcName}' does not match resolved source name '${sourceEntry.name}'`);
         }
@@ -967,7 +982,7 @@ function validateEvidenceMatrix({ directory, manifest, seedNames }) {
 
     // Passage extract concordance: if passage is provided, it must not contradict the assigned constituency
     if (entry.assignedAcName && entry.inspectedPassageExtract) {
-      if (!entry.inspectedPassageExtract.includes(entry.assignedAcName)) {
+      if (!normalizeConstituencyName(entry.inspectedPassageExtract).includes(normalizeConstituencyName(entry.assignedAcName))) {
         claimSupportPassed = false;
         results.errors.push(`PIN ${entry.pinCode} inspected passage extract contradicts assigned AC '${entry.assignedAcName}'`);
       }
@@ -976,7 +991,7 @@ function validateEvidenceMatrix({ directory, manifest, seedNames }) {
     // Substantive claim concordance: assigned name must match seed name
     if (entry.assignedAcNumber && seedNames?.[entry.stateCode]?.[entry.assignedAcNumber]) {
       const seedName = seedNames[entry.stateCode][entry.assignedAcNumber];
-      if (entry.assignedAcName && entry.assignedAcName !== seedName) {
+      if (entry.assignedAcName && normalizeConstituencyName(entry.assignedAcName) !== normalizeConstituencyName(seedName)) {
         claimSupportPassed = false;
         results.errors.push(`PIN ${entry.pinCode} assignedAcName '${entry.assignedAcName}' contradicts seed name '${seedName}'`);
       }
@@ -2688,7 +2703,7 @@ function verifyConcordanceAcrossArtifacts(options = {}) {
         if (!src) {
           errors.push(`[CONCORDANCE_ERROR][PIN ${pin}][assignedAcNumber] AC ${entry.assignedAcNumber} not found in Table B extract for state ${state}`);
         } else {
-          if (entry.assignedAcName && src.name !== entry.assignedAcName && src.statutoryName !== entry.assignedAcName) {
+          if (entry.assignedAcName && normalizeConstituencyName(src.name) !== normalizeConstituencyName(entry.assignedAcName) && normalizeConstituencyName(src.statutoryName) !== normalizeConstituencyName(entry.assignedAcName)) {
             errors.push(`[CONCORDANCE_ERROR][PIN ${pin}][assignedAcName] Source name '${src.name}' != manifest '${entry.assignedAcName}'`);
           }
           if (!entry.sourceLocator || !entry.sourceLocator.includes(src.extent)) {
