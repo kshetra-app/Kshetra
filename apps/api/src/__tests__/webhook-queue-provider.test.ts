@@ -36,7 +36,7 @@ describe('webhook queue provider helpers', () => {
     const bytes = Buffer.from('cafe', 'hex');
     expect(parseBytea(bytes)).toBe(bytes);
     expect(parseBytea(new Uint8Array([1, 2]))).toEqual(Buffer.from([1, 2]));
-    expect(parseBytea('\\\\xcafe')).toEqual(bytes);
+    expect(parseBytea('\\xcafe')).toEqual(bytes);
     expect(parseBytea('0xcafe')).toEqual(bytes);
     expect(parseBytea('cafe')).toEqual(bytes);
   });
