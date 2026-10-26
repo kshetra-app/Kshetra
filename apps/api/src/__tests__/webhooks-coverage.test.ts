@@ -19,6 +19,12 @@ import {
   validateAndPinEgressTarget,
 } from '../modules/webhooks/antiSsrfGuard';
 import { validateEventPayload } from '../modules/webhooks/schemas';
+import {
+  calculateBackoffDelaySeconds,
+  calculateNextRetryAt,
+  InMemoryQueueProvider,
+  parseBytea,
+} from '../modules/webhooks/queueProvider';
 import { SourceRegistry } from '../modules/delimitationWatch/sourceRegistry';
 import { Versioner } from '../modules/delimitationWatch/versioner';
 import { Publisher } from '../modules/delimitationWatch/publisher';
@@ -375,5 +381,137 @@ describe('delimitation-watch version acceptance and publication gates', () => {
     const duplicate = await publisher.publish(version, candidate, validation);
     expect(duplicate.created).toBe(false);
     expect(duplicate.publication.id).toBe(estimate.publication.id);
+  });
+});
+
+
+describe('webhook queue state machine branch coverage', () => {
+  const params: any = {
+    tenantId: TENANT,
+    applicationId: 'app-a',
+    eventType: 'test.ping',
+    idempotencyKey: 'idem-1',
+    payload: { ok: true },
+    payloadRaw: '{"ok":true}',
+    payloadSha256: 'a'.repeat(64),
+  };
+
+  const subscription = (overrides: any = {}) => ({
+    id: 'sub-1', tenantId: TENANT, applicationId: 'app-a',
+    endpointUrl: 'https://example.com/hook', secretHint: '12345678', secretHash: 'b'.repeat(64),
+    subscribedEvents: ['test.ping'], status: 'active', consecutiveFailureCount: 0,
+    createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(), ...overrides,
+  });
+
+  const dispatchResult = (overrides: any = {}) => ({
+    success: true, httpStatus: 200, executionDurationMs: 12,
+    requestHeaders: {}, responseHeaders: {}, responseBodySample: 'ok', ...overrides,
+  });
+
+  test('parses supported bytea forms and rejects unsupported values', () => {
+    expect(parseBytea(Buffer.from([1, 2]))).toEqual(Buffer.from([1, 2]));
+    expect(parseBytea(new Uint8Array([1, 2]))).toEqual(Buffer.from([1, 2]));
+    expect(parseBytea('0x0102')).toEqual(Buffer.from([1, 2]));
+    expect(parseBytea('\\x0102')).toEqual(Buffer.from([1, 2]));
+    expect(parseBytea('0102')).toEqual(Buffer.from([1, 2]));
+    expect(() => parseBytea(42)).toThrow(/INVALID_BYTEA/);
+    expect(calculateBackoffDelaySeconds(1)).toBe(30);
+    expect(calculateBackoffDelaySeconds(0)).toBe(30);
+    expect(calculateBackoffDelaySeconds(99)).toBe(7200);
+    expect(calculateNextRetryAt(5)).toBeNull();
+    expect(calculateNextRetryAt(1, new Date(0))?.getTime()).toBe(30000);
+  });
+
+  test('fans out only to matching active subscriptions and deduplicates within tenant/application scope', async () => {
+    const queue = new InMemoryQueueProvider();
+    queue.subscriptions.set('sub-1', subscription());
+    queue.subscriptions.set('sub-wildcard', subscription({
+      id: 'sub-wildcard', subscribedEvents: ['*'],
+    }));
+    queue.subscriptions.set('sub-other-app', subscription({ id: 'sub-other-app', applicationId: 'app-b' }));
+    queue.subscriptions.set('sub-paused', subscription({ id: 'sub-paused', status: 'paused' }));
+    queue.subscriptions.set('sub-other-event', subscription({ id: 'sub-other-event', subscribedEvents: ['candidate.nomination.updated'] }));
+
+    const first = await queue.enqueueEvent(params);
+    expect(first.deduplicated).toBe(false);
+    expect(first.enqueuedDeliveries).toBe(2);
+    const duplicate = await queue.enqueueEvent(params);
+    expect(duplicate.deduplicated).toBe(true);
+    expect(duplicate.eventId).toBe(first.eventId);
+    expect(duplicate.enqueuedDeliveries).toBe(2);
+
+    const secondApp = await queue.enqueueEvent({ ...params, applicationId: 'app-b' });
+    expect(secondApp.deduplicated).toBe(false);
+    expect(secondApp.enqueuedDeliveries).toBe(0);
+  });
+
+  test('claims deliveries, fences stale leases, retries failures and completes successful delivery', async () => {
+    const queue = new InMemoryQueueProvider();
+    queue.subscriptions.set('sub-1', subscription());
+    const enqueued = await queue.enqueueEvent(params);
+    expect(await queue.claimBatch(0)).toEqual([]);
+    const [job] = await queue.claimBatch(1);
+    expect(job.event.id).toBe(enqueued.eventId);
+    expect(job.delivery.status).toBe('leased');
+
+    expect(await queue.completeDelivery(job.delivery.id, 'stale-token', dispatchResult())).toEqual({ updated: false });
+    const failed = await queue.completeDelivery(job.delivery.id, job.leaseToken, dispatchResult({
+      success: false, httpStatus: 503, errorMessage: 'temporary outage',
+    }));
+    expect(failed).toEqual({ updated: true, terminalStatus: 'retrying' });
+    expect(job.delivery.status).toBe('retrying');
+    expect(job.delivery.attemptCount).toBe(2);
+    expect(job.delivery.nextRetryAt).toBeTruthy();
+
+    job.delivery.status = 'queued';
+    const [retryJob] = await queue.claimBatch(1);
+    const delivered = await queue.completeDelivery(retryJob.delivery.id, retryJob.leaseToken, dispatchResult());
+    expect(delivered.terminalStatus).toBe('delivered');
+    expect(retryJob.delivery.status).toBe('delivered');
+    expect(queue.subscriptions.get('sub-1')?.consecutiveFailureCount).toBe(0);
+    expect(await queue.completeDelivery('missing', 'token', dispatchResult())).toEqual({ updated: false });
+  });
+
+  test('dead-letters exhausted deliveries, marks repeated failures, and recovers expired leases', async () => {
+    const queue = new InMemoryQueueProvider();
+    queue.subscriptions.set('sub-1', subscription({ consecutiveFailureCount: 19 }));
+    const { eventId } = await queue.enqueueEvent(params);
+    const [job] = await queue.claimBatch(1);
+    job.delivery.attemptCount = 5;
+    const failed = await queue.completeDelivery(job.delivery.id, job.leaseToken, dispatchResult({
+      success: false, httpStatus: 500, errorMessage: 'permanent failure',
+    }));
+    expect(failed.terminalStatus).toBe('dead_letter');
+    expect(job.delivery.status).toBe('dead_letter');
+    expect(queue.subscriptions.get('sub-1')?.status).toBe('failed');
+
+    const [recoveryJob] = await queue.claimBatch(1);
+    expect(recoveryJob).toBeUndefined();
+    const delivery = {
+      id: 'expired-delivery', tenantId: TENANT, subscriptionId: 'sub-1', eventId,
+      attemptCount: 1, status: 'leased', createdAt: '2000-01-01T00:00:00.000Z',
+      leaseToken: 'expired', leasedUntil: new Date(0),
+    } as any;
+    queue.deliveries.set(delivery.id, delivery);
+    expect(await queue.recoverExpiredLeases()).toBe(1);
+    expect(delivery.status).toBe('queued');
+    expect(delivery.leaseToken).toBeUndefined();
+  });
+
+  test('purges old terminal deliveries and old orphan events in bounded batches', async () => {
+    const queue = new InMemoryQueueProvider();
+    queue.events.set('old-event', {
+      id: 'old-event', tenantId: TENANT, applicationId: 'app-a', eventType: 'test.ping',
+      payload: {}, payloadRaw: '{}', payloadSha256: 'c'.repeat(64), createdAt: '2000-01-01T00:00:00.000Z',
+    } as any);
+    queue.deliveries.set('old-delivery', {
+      id: 'old-delivery', tenantId: TENANT, subscriptionId: 'sub-1', eventId: 'old-event',
+      attemptCount: 1, status: 'delivered', createdAt: '2000-01-01T00:00:00.000Z',
+      completedAt: '2000-01-02T00:00:00.000Z',
+    } as any);
+    const purged = await queue.purgeExpiredData(30, 10);
+    expect(purged).toEqual({ purgedDeliveries: 1, purgedEvents: 1 });
+    expect(queue.deliveries.has('old-delivery')).toBe(false);
+    expect(queue.events.has('old-event')).toBe(false);
   });
 });
