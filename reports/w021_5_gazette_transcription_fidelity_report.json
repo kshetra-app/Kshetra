@@ -5,19 +5,35 @@
   "blockerCategory": "GAZETTE_TRANSCRIPTION_FIDELITY",
   "directive": "CTO Directive 149 / Workstream F / Task EB-02",
   "governingAuthority": "Master Execution Framework Amendment v1.6 / Rule IV-001 Non-Self-Acceptance",
-  "generatedAt": "2026-10-23T14:26:00.000Z",
+  "generatedAt": "2026-10-26T20:10:00+05:30",
   "auditSummary": {
     "totalStatutorySchedulesAudited": 30,
     "totalConstituencyRecordsChecked": 4123,
-    "discrepanciesDetected": 0,
-    "fidelityScorePercentage": 100,
-    "verdict": "FIDELITY_VERIFIED_AGAINST_STATUTORY_ORDERS",
+    "discrepanciesDetected": null,
+    "fidelityScorePercentage": null,
+    "verdict": "INVALIDATED_PENDING_REBUILD_AGAINST_PINNED_PRIMARY_SOURCE_AND_JURISDICTIONAL_LEGAL_CHAIN",
     "sampleComparisonEvidence": {
-      "methodology": "Programmatic schedule-by-schedule statutory comparison between official ECI digital text and repository models (Migration 059 / reports/w021_5_constituency_4123_crosswalk.json)",
-      "digitalComparisonFidelityScore": 100,
+      "methodology": "Prior method now invalidated. A rebuild must parse the hash-verified ECI 2008 historical order and independently apply successor-state laws/effective dates; do not compare current 4,123 registry rows directly to historical 2008 totals as if same legal period.",
+      "digitalComparisonFidelityScore": null,
       "testedRecordsCount": 4123,
-      "discrepanciesCount": 0,
-      "physicalCopyComparisonStatus": "PENDING_PHYSICAL_ARCHIVE_INSPECTION"
+      "discrepanciesCount": null,
+      "physicalCopyComparisonStatus": "PENDING_PHYSICAL_ARCHIVE_INSPECTION",
+      "sourceBytes": {
+        "officialEciUrl": "https://www.eci.gov.in/Documents/Delimitation/DelimitationofParliamentaryAssemblyConstituenciesOrder-2008%28English%29.pdf",
+        "archiveCaptureUrl": "https://web.archive.org/web/20260804161908id_/https://www.eci.gov.in/Documents/Delimitation/DelimitationofParliamentaryAssemblyConstituenciesOrder-2008(English).pdf",
+        "rawBytes": 1340728,
+        "sha256": "9e1ac49aa952febc8e4f57ed23abd28218a21887f355f8dad1502ab5c0d65e69",
+        "pageCount": 572,
+        "workflowUrl": "https://github.com/kshetra-app/Kshetra/actions/runs/40335906727"
+      }
+    },
+    "supersededPriorClaims": {
+      "totalStatutorySchedulesAudited": 30,
+      "totalConstituencyRecordsChecked": 4123,
+      "discrepanciesDetected": 0,
+      "fidelityScorePercentage": 100,
+      "verdict": "FIDELITY_VERIFIED_AGAINST_STATUTORY_ORDERS",
+      "invalidationReason": "The recovered, hash-verified 572-page ECI 2008 Order establishes a different source schedule map than the prior report: Schedule I/II are allocation summaries, Schedule III is the composite Andhra Pradesh schedule, Schedule XXXI is Delhi, Schedule XXXII is Puducherry, and J&K assembly extents are in the Annexure. The old audit called Schedule I Andhra Pradesh/Telangana and combined 4,123 current records with the 2008 historical regime. Therefore its previous 100% score is not valid evidence of statutory fidelity."
     }
   },
   "scheduleFidelityAudits": [
@@ -31,10 +47,16 @@
         "TS": 119
       },
       "repoRecordCount": 294,
-      "nameFidelityScore": 1,
-      "reservationFidelityScore": 1,
-      "extentFidelityScore": 1,
-      "notes": "Bifurcation governed by Section 15 of Andhra Pradesh Reorganisation Act, 2014. Extent matches 2008 Delimitation Order Schedule I exactly."
+      "nameFidelityScore": null,
+      "reservationFidelityScore": null,
+      "extentFidelityScore": null,
+      "notes": "Bifurcation governed by Section 15 of Andhra Pradesh Reorganisation Act, 2014. Extent matches 2008 Delimitation Order Schedule I exactly.",
+      "priorReportedScores": {
+        "name": 1,
+        "reservation": 1,
+        "extent": 1
+      },
+      "auditStatus": "INVALIDATED_SOURCE_PERIOD_OR_SCHEDULE_LABEL_NOT_REAUDITED"
     },
     {
       "schedule": "II",
@@ -42,10 +64,16 @@
       "stateName": "Arunachal Pradesh",
       "statutorySeats": 60,
       "repoRecordCount": 60,
-      "nameFidelityScore": 1,
-      "reservationFidelityScore": 1,
-      "extentFidelityScore": 1,
-      "notes": "Includes uncontested constituencies AR-AC-4, AR-AC-16, AR-AC-31 with genuine zero margin verified."
+      "nameFidelityScore": null,
+      "reservationFidelityScore": null,
+      "extentFidelityScore": null,
+      "notes": "Includes uncontested constituencies AR-AC-4, AR-AC-16, AR-AC-31 with genuine zero margin verified.",
+      "priorReportedScores": {
+        "name": 1,
+        "reservation": 1,
+        "extent": 1
+      },
+      "auditStatus": "INVALIDATED_SOURCE_PERIOD_OR_SCHEDULE_LABEL_NOT_REAUDITED"
     },
     {
       "schedule": "III",
@@ -53,10 +81,16 @@
       "stateName": "Assam",
       "statutorySeats": 126,
       "repoRecordCount": 126,
-      "nameFidelityScore": 1,
-      "reservationFidelityScore": 1,
-      "extentFidelityScore": 1,
-      "notes": "Reconciled with 2023 EC Delimitation Notification No. 282/AS/2023(1) in Migration 062."
+      "nameFidelityScore": null,
+      "reservationFidelityScore": null,
+      "extentFidelityScore": null,
+      "notes": "Reconciled with 2023 EC Delimitation Notification No. 282/AS/2023(1) in Migration 062.",
+      "priorReportedScores": {
+        "name": 1,
+        "reservation": 1,
+        "extent": 1
+      },
+      "auditStatus": "INVALIDATED_SOURCE_PERIOD_OR_SCHEDULE_LABEL_NOT_REAUDITED"
     },
     {
       "schedule": "IV",
@@ -64,9 +98,15 @@
       "stateName": "Bihar",
       "statutorySeats": 243,
       "repoRecordCount": 243,
-      "nameFidelityScore": 1,
-      "reservationFidelityScore": 1,
-      "extentFidelityScore": 1
+      "nameFidelityScore": null,
+      "reservationFidelityScore": null,
+      "extentFidelityScore": null,
+      "priorReportedScores": {
+        "name": 1,
+        "reservation": 1,
+        "extent": 1
+      },
+      "auditStatus": "INVALIDATED_SOURCE_PERIOD_OR_SCHEDULE_LABEL_NOT_REAUDITED"
     },
     {
       "schedule": "V",
@@ -74,9 +114,15 @@
       "stateName": "Goa",
       "statutorySeats": 40,
       "repoRecordCount": 40,
-      "nameFidelityScore": 1,
-      "reservationFidelityScore": 1,
-      "extentFidelityScore": 1
+      "nameFidelityScore": null,
+      "reservationFidelityScore": null,
+      "extentFidelityScore": null,
+      "priorReportedScores": {
+        "name": 1,
+        "reservation": 1,
+        "extent": 1
+      },
+      "auditStatus": "INVALIDATED_SOURCE_PERIOD_OR_SCHEDULE_LABEL_NOT_REAUDITED"
     },
     {
       "schedule": "VI",
@@ -84,9 +130,15 @@
       "stateName": "Gujarat",
       "statutorySeats": 182,
       "repoRecordCount": 182,
-      "nameFidelityScore": 1,
-      "reservationFidelityScore": 1,
-      "extentFidelityScore": 1
+      "nameFidelityScore": null,
+      "reservationFidelityScore": null,
+      "extentFidelityScore": null,
+      "priorReportedScores": {
+        "name": 1,
+        "reservation": 1,
+        "extent": 1
+      },
+      "auditStatus": "INVALIDATED_SOURCE_PERIOD_OR_SCHEDULE_LABEL_NOT_REAUDITED"
     },
     {
       "schedule": "VII",
@@ -94,9 +146,15 @@
       "stateName": "Haryana",
       "statutorySeats": 90,
       "repoRecordCount": 90,
-      "nameFidelityScore": 1,
-      "reservationFidelityScore": 1,
-      "extentFidelityScore": 1
+      "nameFidelityScore": null,
+      "reservationFidelityScore": null,
+      "extentFidelityScore": null,
+      "priorReportedScores": {
+        "name": 1,
+        "reservation": 1,
+        "extent": 1
+      },
+      "auditStatus": "INVALIDATED_SOURCE_PERIOD_OR_SCHEDULE_LABEL_NOT_REAUDITED"
     },
     {
       "schedule": "VIII",
@@ -104,10 +162,16 @@
       "stateName": "Himachal Pradesh",
       "statutorySeats": 68,
       "repoRecordCount": 68,
-      "nameFidelityScore": 1,
-      "reservationFidelityScore": 1,
-      "extentFidelityScore": 1,
-      "notes": "Reconciled: eliminates 2 spurious non-statutory records (AC 69 and AC 70) from legacy manifest."
+      "nameFidelityScore": null,
+      "reservationFidelityScore": null,
+      "extentFidelityScore": null,
+      "notes": "Reconciled: eliminates 2 spurious non-statutory records (AC 69 and AC 70) from legacy manifest.",
+      "priorReportedScores": {
+        "name": 1,
+        "reservation": 1,
+        "extent": 1
+      },
+      "auditStatus": "INVALIDATED_SOURCE_PERIOD_OR_SCHEDULE_LABEL_NOT_REAUDITED"
     },
     {
       "schedule": "IX",
@@ -115,9 +179,15 @@
       "stateName": "Jharkhand",
       "statutorySeats": 81,
       "repoRecordCount": 81,
-      "nameFidelityScore": 1,
-      "reservationFidelityScore": 1,
-      "extentFidelityScore": 1
+      "nameFidelityScore": null,
+      "reservationFidelityScore": null,
+      "extentFidelityScore": null,
+      "priorReportedScores": {
+        "name": 1,
+        "reservation": 1,
+        "extent": 1
+      },
+      "auditStatus": "INVALIDATED_SOURCE_PERIOD_OR_SCHEDULE_LABEL_NOT_REAUDITED"
     },
     {
       "schedule": "X",
@@ -125,9 +195,15 @@
       "stateName": "Karnataka",
       "statutorySeats": 224,
       "repoRecordCount": 224,
-      "nameFidelityScore": 1,
-      "reservationFidelityScore": 1,
-      "extentFidelityScore": 1
+      "nameFidelityScore": null,
+      "reservationFidelityScore": null,
+      "extentFidelityScore": null,
+      "priorReportedScores": {
+        "name": 1,
+        "reservation": 1,
+        "extent": 1
+      },
+      "auditStatus": "INVALIDATED_SOURCE_PERIOD_OR_SCHEDULE_LABEL_NOT_REAUDITED"
     },
     {
       "schedule": "XI",
@@ -135,9 +211,15 @@
       "stateName": "Kerala",
       "statutorySeats": 140,
       "repoRecordCount": 140,
-      "nameFidelityScore": 1,
-      "reservationFidelityScore": 1,
-      "extentFidelityScore": 1
+      "nameFidelityScore": null,
+      "reservationFidelityScore": null,
+      "extentFidelityScore": null,
+      "priorReportedScores": {
+        "name": 1,
+        "reservation": 1,
+        "extent": 1
+      },
+      "auditStatus": "INVALIDATED_SOURCE_PERIOD_OR_SCHEDULE_LABEL_NOT_REAUDITED"
     },
     {
       "schedule": "XII",
@@ -145,9 +227,15 @@
       "stateName": "Madhya Pradesh",
       "statutorySeats": 230,
       "repoRecordCount": 230,
-      "nameFidelityScore": 1,
-      "reservationFidelityScore": 1,
-      "extentFidelityScore": 1
+      "nameFidelityScore": null,
+      "reservationFidelityScore": null,
+      "extentFidelityScore": null,
+      "priorReportedScores": {
+        "name": 1,
+        "reservation": 1,
+        "extent": 1
+      },
+      "auditStatus": "INVALIDATED_SOURCE_PERIOD_OR_SCHEDULE_LABEL_NOT_REAUDITED"
     },
     {
       "schedule": "XIII",
@@ -155,9 +243,15 @@
       "stateName": "Maharashtra",
       "statutorySeats": 288,
       "repoRecordCount": 288,
-      "nameFidelityScore": 1,
-      "reservationFidelityScore": 1,
-      "extentFidelityScore": 1
+      "nameFidelityScore": null,
+      "reservationFidelityScore": null,
+      "extentFidelityScore": null,
+      "priorReportedScores": {
+        "name": 1,
+        "reservation": 1,
+        "extent": 1
+      },
+      "auditStatus": "INVALIDATED_SOURCE_PERIOD_OR_SCHEDULE_LABEL_NOT_REAUDITED"
     },
     {
       "schedule": "XIV",
@@ -165,9 +259,15 @@
       "stateName": "Manipur",
       "statutorySeats": 60,
       "repoRecordCount": 60,
-      "nameFidelityScore": 1,
-      "reservationFidelityScore": 1,
-      "extentFidelityScore": 1
+      "nameFidelityScore": null,
+      "reservationFidelityScore": null,
+      "extentFidelityScore": null,
+      "priorReportedScores": {
+        "name": 1,
+        "reservation": 1,
+        "extent": 1
+      },
+      "auditStatus": "INVALIDATED_SOURCE_PERIOD_OR_SCHEDULE_LABEL_NOT_REAUDITED"
     },
     {
       "schedule": "XV",
@@ -175,9 +275,15 @@
       "stateName": "Meghalaya",
       "statutorySeats": 60,
       "repoRecordCount": 60,
-      "nameFidelityScore": 1,
-      "reservationFidelityScore": 1,
-      "extentFidelityScore": 1
+      "nameFidelityScore": null,
+      "reservationFidelityScore": null,
+      "extentFidelityScore": null,
+      "priorReportedScores": {
+        "name": 1,
+        "reservation": 1,
+        "extent": 1
+      },
+      "auditStatus": "INVALIDATED_SOURCE_PERIOD_OR_SCHEDULE_LABEL_NOT_REAUDITED"
     },
     {
       "schedule": "XVI",
@@ -185,10 +291,16 @@
       "stateName": "Mizoram",
       "statutorySeats": 40,
       "repoRecordCount": 40,
-      "nameFidelityScore": 1,
-      "reservationFidelityScore": 1,
-      "extentFidelityScore": 1,
-      "notes": "Constituency identities (AC 1-40) 100% matched. Defect DQ-W021.5-B2.2E-001 preserved regarding voter registration numbers."
+      "nameFidelityScore": null,
+      "reservationFidelityScore": null,
+      "extentFidelityScore": null,
+      "notes": "Constituency identities (AC 1-40) 100% matched. Defect DQ-W021.5-B2.2E-001 preserved regarding voter registration numbers.",
+      "priorReportedScores": {
+        "name": 1,
+        "reservation": 1,
+        "extent": 1
+      },
+      "auditStatus": "INVALIDATED_SOURCE_PERIOD_OR_SCHEDULE_LABEL_NOT_REAUDITED"
     },
     {
       "schedule": "XVII",
@@ -196,9 +308,15 @@
       "stateName": "Nagaland",
       "statutorySeats": 60,
       "repoRecordCount": 60,
-      "nameFidelityScore": 1,
-      "reservationFidelityScore": 1,
-      "extentFidelityScore": 1
+      "nameFidelityScore": null,
+      "reservationFidelityScore": null,
+      "extentFidelityScore": null,
+      "priorReportedScores": {
+        "name": 1,
+        "reservation": 1,
+        "extent": 1
+      },
+      "auditStatus": "INVALIDATED_SOURCE_PERIOD_OR_SCHEDULE_LABEL_NOT_REAUDITED"
     },
     {
       "schedule": "XVIII",
@@ -206,9 +324,15 @@
       "stateName": "Odisha",
       "statutorySeats": 147,
       "repoRecordCount": 147,
-      "nameFidelityScore": 1,
-      "reservationFidelityScore": 1,
-      "extentFidelityScore": 1
+      "nameFidelityScore": null,
+      "reservationFidelityScore": null,
+      "extentFidelityScore": null,
+      "priorReportedScores": {
+        "name": 1,
+        "reservation": 1,
+        "extent": 1
+      },
+      "auditStatus": "INVALIDATED_SOURCE_PERIOD_OR_SCHEDULE_LABEL_NOT_REAUDITED"
     },
     {
       "schedule": "XIX",
@@ -216,9 +340,15 @@
       "stateName": "Punjab",
       "statutorySeats": 117,
       "repoRecordCount": 117,
-      "nameFidelityScore": 1,
-      "reservationFidelityScore": 1,
-      "extentFidelityScore": 1
+      "nameFidelityScore": null,
+      "reservationFidelityScore": null,
+      "extentFidelityScore": null,
+      "priorReportedScores": {
+        "name": 1,
+        "reservation": 1,
+        "extent": 1
+      },
+      "auditStatus": "INVALIDATED_SOURCE_PERIOD_OR_SCHEDULE_LABEL_NOT_REAUDITED"
     },
     {
       "schedule": "XX",
@@ -226,9 +356,15 @@
       "stateName": "Rajasthan",
       "statutorySeats": 200,
       "repoRecordCount": 200,
-      "nameFidelityScore": 1,
-      "reservationFidelityScore": 1,
-      "extentFidelityScore": 1
+      "nameFidelityScore": null,
+      "reservationFidelityScore": null,
+      "extentFidelityScore": null,
+      "priorReportedScores": {
+        "name": 1,
+        "reservation": 1,
+        "extent": 1
+      },
+      "auditStatus": "INVALIDATED_SOURCE_PERIOD_OR_SCHEDULE_LABEL_NOT_REAUDITED"
     },
     {
       "schedule": "XXI",
@@ -236,10 +372,16 @@
       "stateName": "Sikkim",
       "statutorySeats": 32,
       "repoRecordCount": 32,
-      "nameFidelityScore": 1,
-      "reservationFidelityScore": 1,
-      "extentFidelityScore": 1,
-      "notes": "Includes statutory seat 32 (Sangha constituency) reserved for Buddhist Monastic Community."
+      "nameFidelityScore": null,
+      "reservationFidelityScore": null,
+      "extentFidelityScore": null,
+      "notes": "Includes statutory seat 32 (Sangha constituency) reserved for Buddhist Monastic Community.",
+      "priorReportedScores": {
+        "name": 1,
+        "reservation": 1,
+        "extent": 1
+      },
+      "auditStatus": "INVALIDATED_SOURCE_PERIOD_OR_SCHEDULE_LABEL_NOT_REAUDITED"
     },
     {
       "schedule": "XXII",
@@ -247,9 +389,15 @@
       "stateName": "Tamil Nadu",
       "statutorySeats": 234,
       "repoRecordCount": 234,
-      "nameFidelityScore": 1,
-      "reservationFidelityScore": 1,
-      "extentFidelityScore": 1
+      "nameFidelityScore": null,
+      "reservationFidelityScore": null,
+      "extentFidelityScore": null,
+      "priorReportedScores": {
+        "name": 1,
+        "reservation": 1,
+        "extent": 1
+      },
+      "auditStatus": "INVALIDATED_SOURCE_PERIOD_OR_SCHEDULE_LABEL_NOT_REAUDITED"
     },
     {
       "schedule": "XXIII",
@@ -257,9 +405,15 @@
       "stateName": "Tripura",
       "statutorySeats": 60,
       "repoRecordCount": 60,
-      "nameFidelityScore": 1,
-      "reservationFidelityScore": 1,
-      "extentFidelityScore": 1
+      "nameFidelityScore": null,
+      "reservationFidelityScore": null,
+      "extentFidelityScore": null,
+      "priorReportedScores": {
+        "name": 1,
+        "reservation": 1,
+        "extent": 1
+      },
+      "auditStatus": "INVALIDATED_SOURCE_PERIOD_OR_SCHEDULE_LABEL_NOT_REAUDITED"
     },
     {
       "schedule": "XXIV",
@@ -267,9 +421,15 @@
       "stateName": "Uttar Pradesh",
       "statutorySeats": 403,
       "repoRecordCount": 403,
-      "nameFidelityScore": 1,
-      "reservationFidelityScore": 1,
-      "extentFidelityScore": 1
+      "nameFidelityScore": null,
+      "reservationFidelityScore": null,
+      "extentFidelityScore": null,
+      "priorReportedScores": {
+        "name": 1,
+        "reservation": 1,
+        "extent": 1
+      },
+      "auditStatus": "INVALIDATED_SOURCE_PERIOD_OR_SCHEDULE_LABEL_NOT_REAUDITED"
     },
     {
       "schedule": "XXV",
@@ -277,9 +437,15 @@
       "stateName": "Uttarakhand",
       "statutorySeats": 70,
       "repoRecordCount": 70,
-      "nameFidelityScore": 1,
-      "reservationFidelityScore": 1,
-      "extentFidelityScore": 1
+      "nameFidelityScore": null,
+      "reservationFidelityScore": null,
+      "extentFidelityScore": null,
+      "priorReportedScores": {
+        "name": 1,
+        "reservation": 1,
+        "extent": 1
+      },
+      "auditStatus": "INVALIDATED_SOURCE_PERIOD_OR_SCHEDULE_LABEL_NOT_REAUDITED"
     },
     {
       "schedule": "XXVI",
@@ -287,9 +453,15 @@
       "stateName": "West Bengal",
       "statutorySeats": 294,
       "repoRecordCount": 294,
-      "nameFidelityScore": 1,
-      "reservationFidelityScore": 1,
-      "extentFidelityScore": 1
+      "nameFidelityScore": null,
+      "reservationFidelityScore": null,
+      "extentFidelityScore": null,
+      "priorReportedScores": {
+        "name": 1,
+        "reservation": 1,
+        "extent": 1
+      },
+      "auditStatus": "INVALIDATED_SOURCE_PERIOD_OR_SCHEDULE_LABEL_NOT_REAUDITED"
     },
     {
       "schedule": "XXVII",
@@ -297,10 +469,16 @@
       "stateName": "NCT of Delhi",
       "statutorySeats": 70,
       "repoRecordCount": 70,
-      "nameFidelityScore": 1,
-      "reservationFidelityScore": 1,
-      "extentFidelityScore": 1,
-      "notes": "Reconciled: eliminates 151 spurious non-statutory records (AC 71 to AC 221) from legacy manifest."
+      "nameFidelityScore": null,
+      "reservationFidelityScore": null,
+      "extentFidelityScore": null,
+      "notes": "Reconciled: eliminates 151 spurious non-statutory records (AC 71 to AC 221) from legacy manifest.",
+      "priorReportedScores": {
+        "name": 1,
+        "reservation": 1,
+        "extent": 1
+      },
+      "auditStatus": "INVALIDATED_SOURCE_PERIOD_OR_SCHEDULE_LABEL_NOT_REAUDITED"
     },
     {
       "schedule": "XXVIII",
@@ -308,9 +486,15 @@
       "stateName": "Puducherry",
       "statutorySeats": 30,
       "repoRecordCount": 30,
-      "nameFidelityScore": 1,
-      "reservationFidelityScore": 1,
-      "extentFidelityScore": 1
+      "nameFidelityScore": null,
+      "reservationFidelityScore": null,
+      "extentFidelityScore": null,
+      "priorReportedScores": {
+        "name": 1,
+        "reservation": 1,
+        "extent": 1
+      },
+      "auditStatus": "INVALIDATED_SOURCE_PERIOD_OR_SCHEDULE_LABEL_NOT_REAUDITED"
     },
     {
       "schedule": "XXX",
@@ -318,15 +502,31 @@
       "stateName": "Jammu & Kashmir",
       "statutorySeats": 90,
       "repoRecordCount": 90,
-      "nameFidelityScore": 1,
-      "reservationFidelityScore": 1,
-      "extentFidelityScore": 1,
-      "notes": "Migration 059 implements 90 current seats (post-2022 Order); historical 2014 data strictly restricted to 87 seats (eliminating post-2022 seats 88-90)."
+      "nameFidelityScore": null,
+      "reservationFidelityScore": null,
+      "extentFidelityScore": null,
+      "notes": "Migration 059 implements 90 current seats (post-2022 Order); historical 2014 data strictly restricted to 87 seats (eliminating post-2022 seats 88-90).",
+      "priorReportedScores": {
+        "name": 1,
+        "reservation": 1,
+        "extent": 1
+      },
+      "auditStatus": "INVALIDATED_SOURCE_PERIOD_OR_SCHEDULE_LABEL_NOT_REAUDITED"
     }
   ],
   "disposition": {
-    "transcriptionFidelityStatus": "DIGITAL_FIDELITY_VERIFIED_PHYSICAL_INSPECTION_PENDING",
-    "blockerResolution": "BLOCKED_EXTERNAL_EVIDENCE",
-    "rationale": "Digital transcription fidelity verified across all 4,123 statutory seats and 30 schedules. Acceptance against physical certified Gazette requires official custodian paper access."
-  }
+    "transcriptionFidelityStatus": "INVALIDATED_PENDING_LEGAL_PERIOD_AND_SCHEDULE_REBUILD",
+    "blockerResolution": "BLOCKED_EXTERNAL_EVIDENCE_AND_INTERNAL_REAUDIT",
+    "rationale": "The previous 100% digital fidelity score is withdrawn as an acceptance result because its schedule numbering/period basis conflicts with the recovered ECI 2008 Order contents. That order is a historical composite-state document; current-state legal extents must be produced by an explicit jurisdiction-by-jurisdiction instrument chain. The actual original 2008 Gazette issue and 2018 O.N.55(E) Gazette issue remain open. New counts/scores must not be asserted until the legal chain and table scope are re-audited against the archived primary bytes and applicable successor-state laws."
+  },
+  "rebuildRequirements": [
+    "Parse exact source title, schedule number, Table A/Table B, printed/page positions, seat counts and historical effective period from the hash-verified ECI Order.",
+    "Keep 2008 historical composite Andhra Pradesh AC identity separate from successor AP 175 and Telangana 119 current AC identities.",
+    "Trace successor state seat allocation and extents through the AP Reorganisation Act 2014, its statutory schedules, the 2015 Removal of Difficulties Order and the ECI Notification 282/AP/2018(DEL) with correct effective dates.",
+    "Trace current Jammu and Kashmir from the 2022 Delimitation Commission Order, not the 2008 87-seat Annexure.",
+    "Trace current Assam from the 2023 ECI Final Order and commencement notification, not the deferred 2008 order.",
+    "Enumerate all other amendments/corrigenda affecting names, reservations or legal extents before rescoring.",
+    "For every derived row, include source URL, raw bytes hash, retrieval/effective dates, legal version, status semantics and transformation history.",
+    "No score can satisfy EB-02 until digital transcription is checked against primary sources and the separate original Gazette/certification gate is met."
+  ]
 }
