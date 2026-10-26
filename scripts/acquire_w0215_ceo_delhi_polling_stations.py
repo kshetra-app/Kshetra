@@ -94,6 +94,41 @@ class TableParser(HTMLParser):
             self.tables.append(self._table)
             self._table = None
 
+class FormOptionParser(HTMLParser):
+    """Record non-sensitive form controls and select-option labels for official public indexes."""
+    def __init__(self):
+        super().__init__(convert_charrefs=True)
+        self.forms = []
+        self._form = None
+        self._select = None
+        self._option = None
+    def handle_starttag(self, tag, attrs):
+        tag = tag.lower()
+        a = dict(attrs)
+        if tag == "form":
+            self._form = {"action": a.get("action"), "method": (a.get("method") or "get").lower(), "inputs": [], "selects": []}
+            self.forms.append(self._form)
+        elif self._form is not None and tag == "input":
+            self._form["inputs"].append({"name": a.get("name"), "type": a.get("type"), "value": a.get("value"), "id": a.get("id")})
+        elif self._form is not None and tag == "select":
+            self._select = {"name": a.get("name"), "id": a.get("id"), "options": []}
+            self._form["selects"].append(self._select)
+        elif self._select is not None and tag == "option":
+            self._option = {"value": a.get("value"), "textParts": []}
+    def handle_data(self, data):
+        if self._option is not None and data and data.strip():
+            self._option["textParts"].append(data.strip())
+    def handle_endtag(self, tag):
+        tag = tag.lower()
+        if tag == "option" and self._option is not None and self._select is not None:
+            self._option["text"] = " ".join(self._option.pop("textParts"))
+            self._select["options"].append(self._option)
+            self._option = None
+        elif tag == "select":
+            self._select = None
+        elif tag == "form":
+            self._form = None
+
 def validate_url(url: str, require_detail: bool = False) -> None:
     u = urlparse(url)
     if u.scheme != "https" or u.hostname not in ALLOWED_HOSTS:
@@ -181,6 +216,38 @@ try:
             selected.append({"acNo": ac_no, **next(iter(unique.values()))})
 
     manifest["index"]["observedLinkCount"] = len(parser.links)
+    # Follow the exact same-host relative polling-station list link observed in the index.
+    # It is a discovered URL, not a guessed endpoint.
+    psl_links = []
+    for link in parser.links:
+        u = urlparse(link["url"])
+        if u.scheme == "https" and u.hostname in ALLOWED_HOSTS and u.path.rstrip("/").lower() == "/ceodelhiweb/psl.aspx":
+            psl_links.append(link)
+    manifest["auxiliaryPages"] = []
+    for i, link in enumerate({x["url"]: x for x in psl_links}.values(), 1):
+        aux = {"sourceId": "CEO_DELHI_PSL_RELATIVE_LINK", "requestedUrl": link["url"], "indexLinkText": link.get("text", ""), "retrievedAtUtc": datetime.now(timezone.utc).isoformat()}
+        try:
+            aux_response, aux_raw = get_html(link["url"])
+            aux.update({"finalUrl": aux_response.url, "httpStatus": aux_response.status_code, "contentType": aux_response.headers.get("Content-Type"), "byteLength": len(aux_raw), "sha256": sha(aux_raw) if aux_raw else None})
+            if aux_response.status_code == 200 and aux_raw:
+                filename = f"CEO_DELHI_PSL_{i}.html"
+                (RAW / filename).write_bytes(aux_raw)
+                aux["status"] = "DOWNLOADED_HASHED_HTML"
+                aux["rawArtifact"] = f"raw/{filename}"
+                page_parser = PageLinkParser(aux_response.url)
+                page_parser.feed(aux_raw.decode(aux_response.encoding or "utf-8", errors="replace"))
+                aux["observedLinks"] = page_parser.links
+                form_parser = FormOptionParser()
+                form_parser.feed(aux_raw.decode(aux_response.encoding or "utf-8", errors="replace"))
+                aux["forms"] = form_parser.forms
+                table_parser = TableParser()
+                table_parser.feed(aux_raw.decode(aux_response.encoding or "utf-8", errors="replace"))
+                aux["tables"] = [{"rowCount": len(t["rows"]), "sampleRows": [[cell["text"] for cell in row] for row in t["rows"][:4]]} for t in table_parser.tables]
+            else:
+                aux["status"] = "HTTP_FAILURE"
+        except Exception as exc:
+            aux.update({"status": "FETCH_FAILED", "error": f"{type(exc).__name__}: {exc}"})
+        manifest["auxiliaryPages"].append(aux)
     manifest["index"]["distinctAssemblyConstituencyLinks"] = len(selected)
     manifest["index"]["rejectedRelevantLinks"] = rejected_links
     manifest["index"]["duplicateUrlConflicts"] = conflicts
