@@ -235,7 +235,6 @@ describe('Moderation route persistence and authorization decision branches', () 
     expect(allowed.statusCode).toBe(200);
     expect(allowed.json().data).toMatchObject({ entries: [], total: 0 });
   });
-});
 
   it('covers moderation action authentication, role gates, attribution, and admin-only action gates', async () => {
     const payload = { moderatorId: 'actor-1', actionType: 'warn', reason: 'policy violation', targetUserId: 'user-9' };
@@ -307,4 +306,4 @@ describe('Moderation route persistence and authorization decision branches', () 
     expect(calls).toHaveLength(1);
     expect(calls[0].q.update).toHaveBeenCalledWith(expect.objectContaining({ status: 'dismissed' }));
   });
-
+});
