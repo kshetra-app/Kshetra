@@ -268,6 +268,19 @@ def cdx_query(label: str, params: dict) -> dict:
         row.update({"status":"CDX_FETCH_FAILED_TLS_VERIFICATION_RETAINED","error":f"{type(e).__name__}: {e}"})
         return row, []
 
+def gazette_2008_order_match(txt: str) -> dict:
+    folded = re.sub(r"\\s+", " ", txt).casefold()
+    so382 = bool(re.search(r"S\\.?\\s*O\\.?\\s*382\\s*\\(\\s*E\\s*\\)", txt, re.I))
+    date = bool(re.search(r"19(?:th)?\\s+February,?\\s+2008|19\\s*[-/]\\s*02\\s*[-/]\\s*2008|19\\.02\\.2008", txt, re.I))
+    delimitation = "delimitation" in folded
+    gazette = "gazette of india" in folded or "भारत का राजपत्र" in txt
+    return {
+        "so382EMarker": so382,
+        "publicationDateMarker": date,
+        "delimitationOrderMarker": delimitation,
+        "gazetteOfIndiaMarker": gazette,
+        "strict2008GazetteCandidate": bool(so382 and date and delimitation and gazette),
+    }
 def archived_pdf_probe(item: dict, query_label: str) -> dict:
     ts = str(item.get("timestamp") or "")
     original = str(item.get("original") or "")
@@ -369,6 +382,16 @@ def main():
         "fl":"timestamp,original,statuscode,mimetype,digest,length","filter":["statuscode:200","mimetype:application/pdf"],
         "collapse":"urlkey","limit":"4000"
       }),
+      ("EGazetteGovIn2008PdfsAllCaptures",{
+        "url":"https://egazette.gov.in/WriteReadData/2008/","matchType":"prefix",
+        "output":"json","fl":"timestamp,original,statuscode,mimetype,digest,length",
+        "filter":["statuscode:200","mimetype:application/pdf"],"collapse":"urlkey","limit":"4000"
+      }),
+      ("EGazetteNicIn2008PdfsAllCaptures",{
+        "url":"https://egazette.nic.in/WriteReadData/2008/","matchType":"prefix",
+        "output":"json","fl":"timestamp,original,statuscode,mimetype,digest,length",
+        "filter":["statuscode:200","mimetype:application/pdf"],"collapse":"urlkey","limit":"4000"
+      }),
       ("EGazetteExtraordinarySearchHtmlArchive",{
         "url":"https://egazette.gov.in/SearchResult.aspx?Category=extraordinary",
         "from":"20180101","to":"20261231","output":"json","fl":"timestamp,original,statuscode,mimetype,digest,length",
@@ -385,7 +408,7 @@ def main():
         row, records = cdx_query(label,params)
         row["candidatesLimitedByRun"] = min(len(records), MAX_GAZETTE_PDF_ATTEMPTS)
         manifest["cdxQueries"].append(row)
-        if "2018Pdfs" in label:
+        if "2018Pdfs" in label or "2008Pdfs" in label:
             cdx_rows.extend((label,x) for x in records if str(x.get("mimetype","")).lower()=="application/pdf")
         elif "SearchHtmlArchive" in label and records:
             # Search-page captures are valuable discovery only; preserve up to 40 snapshot responses.
