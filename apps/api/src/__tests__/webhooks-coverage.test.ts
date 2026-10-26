@@ -15,7 +15,6 @@ import {
 import {
   isBlockedIp,
   isBlockedIpv4,
-  isBlockedIpv6,
   validateAndPinEgressTarget,
 } from '../modules/webhooks/antiSsrfGuard';
 import { validateEventPayload } from '../modules/webhooks/schemas';
@@ -159,7 +158,7 @@ describe('webhook egress guard branch coverage', () => {
     ['203.0.113.1', true],
     ['224.0.0.1', true],
     ['255.255.255.255', true],
-  ])('IPv4 classification for %s', (ip, blocked) => {
+  ] as Array<[string, boolean]>)('IPv4 classification for %s', (ip: string, blocked: boolean) => {
     expect(isBlockedIpv4(ip).blocked).toBe(blocked);
   });
 
@@ -175,7 +174,7 @@ describe('webhook egress guard branch coverage', () => {
     ['::ffff:8.8.8.8', false],
     ['2606:4700:4700::1111', false],
     ['not-an-ip', true],
-  ])('IP classification for %s', (ip, blocked) => {
+  ] as Array<[string, boolean]>)('IP classification for %s', (ip: string, blocked: boolean) => {
     expect(isBlockedIp(ip).blocked).toBe(blocked);
   });
 
