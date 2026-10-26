@@ -708,7 +708,7 @@ describe('Moderation Routes Unit Tests (Direct Route Injection)', () => {
       expect(res.statusCode).toBe(200);
     });
 
-    it('handles unconfigured database outside test mode with 503', async () => {
+    it('fails closed with 503 when the auth provider is unconfigured outside test mode', async () => {
       setSupabaseConfiguredForTesting(false);
       const origEnv = process.env.NODE_ENV;
       process.env.NODE_ENV = 'development';
@@ -725,7 +725,7 @@ describe('Moderation Routes Unit Tests (Direct Route Injection)', () => {
           },
         });
         expect(res.statusCode).toBe(503);
-        expect(JSON.parse(res.payload).code).toBe('DATABASE_UNAVAILABLE');
+        expect(JSON.parse(res.payload).code).toBe('AUTH_PROVIDER_UNAVAILABLE');
       } finally {
         process.env.NODE_ENV = origEnv;
       }
