@@ -1,6 +1,5 @@
 import { EventEmitter } from 'node:events';
 import https from 'node:https';
-import http from 'node:http';
 import * as egress from '../modules/webhooks/antiSsrfGuard';
 import {
   dispatchWebhook,
@@ -140,9 +139,8 @@ describe('webhook HTTP dispatcher', () => {
   });
 
   it('reports non-2xx status as failed delivery', async () => {
-    const resultPromise = dispatchWebhook(params);
     installRequestMock({ statusCode: 503, chunks: [Buffer.from('unavailable')] });
-    const result = await resultPromise;
+    const result = await dispatchWebhook(params);
     expect(result.success).toBe(false);
     expect(result.httpStatus).toBe(503);
     expect(result.errorMessage).toBe('HTTP_STATUS_503');
