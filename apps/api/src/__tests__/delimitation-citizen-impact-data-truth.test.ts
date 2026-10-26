@@ -1566,7 +1566,7 @@ describe('CTO Directive 123 — Residual Electoral Data-Truth & Provisional Look
       // TS entry declaring AP extract path
       const corruptEntries = manifest.entries.map((e: any) => e.pinCode === '500002' ? {
         ...e,
-        referenceDocumentPath: 'data/evidence/w021_5/authoritative/eci_delimitation_2008_schedule_ii_table_b_extract.txt'
+        referenceDocumentPath: 'data/evidence/w021_5/authoritative/ap_reorganisation_act_2014_schedule_iii_andhra_pradesh_table_a_extract.txt'
       } : e);
       const corruptManifest = { ...manifest, entries: corruptEntries };
       const validation = validatorModule.validateEvidenceMatrix({ directory, manifest: corruptManifest, seedNames });
