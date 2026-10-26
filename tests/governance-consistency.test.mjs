@@ -161,13 +161,24 @@ try {
   assert.fail(`origin/master could not be resolved: ${err.message}`);
 }
 
-// On pull-request CI, checkout uses GitHub's synthetic merge commit. Verify
-// that the tested HEAD is the CI event SHA and descends from origin/master;
-// local/release runs retain the strict HEAD == origin/master invariant.
+// On pull-request CI, GitHub checks out a synthetic merge commit. Validate
+// its exact two parents against the event payload (PR head + PR base), rather
+// than comparing against origin/master, which can point at a newer or different
+// fetched ref than the immutable base SHA for this particular PR run.
 if (process.env.GITHUB_EVENT_NAME === 'pull_request') {
   const eventSha = (process.env.GITHUB_SHA || '').trim();
   assert.strictEqual(eventSha, localHead, 'PR CI HEAD must match the exact GitHub event SHA');
-  execSync(`git merge-base --is-ancestor ${originMaster} ${localHead}`);
+  const eventPath = process.env.GITHUB_EVENT_PATH;
+  assert.ok(eventPath && fs.existsSync(eventPath), 'PR CI must provide its GitHub event payload');
+  const event = JSON.parse(fs.readFileSync(eventPath, 'utf8'));
+  const expectedHead = event.pull_request?.head?.sha;
+  const expectedBase = event.pull_request?.base?.sha;
+  assert.match(expectedHead || '', /^[0-9a-f]{40}$/i, 'PR event must contain an exact head SHA');
+  assert.match(expectedBase || '', /^[0-9a-f]{40}$/i, 'PR event must contain an exact base SHA');
+  const parents = execSync('git rev-list --parents -n 1 HEAD', { encoding: 'utf8' }).trim().split(/\\s+/).slice(1);
+  assert.strictEqual(parents.length, 2, 'PR CI HEAD must be a two-parent synthetic merge commit');
+  assert.ok(parents.includes(expectedHead), 'Synthetic merge commit must include the exact PR head SHA as a parent');
+  assert.ok(parents.includes(expectedBase), 'Synthetic merge commit must include the exact PR base SHA as a parent');
 } else {
   assert.strictEqual(
     localHead,
