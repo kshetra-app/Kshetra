@@ -42,7 +42,7 @@ describe('Delimitation Watch source registry', () => {
 
   it('allows explicit active/default authority settings and toggles an existing source', async () => {
     const existing: any = { id: 's1', name: 'Gazette', isActive: true, updatedAt: 'old' };
-    repository.getSource.mockResolvedValue(existing);
+    repository.getSource.mockResolvedValueOnce(existing);
     const registry = new SourceRegistry(repository as any);
     const result = await registry.registerSource({
       id: 's2', name: 'Fixture', publisher: 'Test', canonicalUrl: './fixture.json',
@@ -52,6 +52,7 @@ describe('Delimitation Watch source registry', () => {
     expect(result).toMatchObject({ authorityClassification: 'secondary', isActive: false });
     await registry.setSourceActive('s1', false);
     expect(repository.saveSource).toHaveBeenLastCalledWith(expect.objectContaining({ id: 's1', isActive: false }));
+    repository.getSource.mockResolvedValueOnce(null);
     await expect(registry.setSourceActive('missing', true)).rejects.toThrow('NOT_FOUND');
   });
 });
@@ -113,7 +114,9 @@ describe('Delimitation Watch baseline comparator', () => {
   it('handles a missing prior candidate without inventing a prior proposal', async () => {
     const comparator = new BaselineComparator(repository as any);
     const result = await comparator.compare(candidate('new-candidate'), { id: 'version-1', candidateId: 'missing' } as any);
-    expect(result.classification).toBe('NO_CHANGE');
+    expect(result.classification).toBe('MATERIAL_CHANGE');
+    expect(result.isMaterialChange).toBe(true);
+    expect(result.addedRecords.map((record) => record.key)).toEqual(['mapping:1']);
     expect(result.changedRecords).toEqual([]);
   });
 });
