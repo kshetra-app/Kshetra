@@ -19,7 +19,7 @@ const successResult: DispatchResult = {
   requestHeaders: { 'content-type': 'application/json' },
   responseHeaders: {},
   responseBodySample: '',
-  errorMessage: null,
+  errorMessage: undefined,
 };
 
 function makeJob(overrides: Record<string, unknown> = {}): LeasedDeliveryJob {
