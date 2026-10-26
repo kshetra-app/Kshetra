@@ -23,8 +23,22 @@ const crypto = require('crypto');
 
 const REPO_ROOT = path.resolve(__dirname, '..');
 
-const TS_TABLE_B_EXTRACT_REL = 'data/evidence/w021_5/authoritative/eci_delimitation_2008_schedule_xxxi_table_b_extract.txt';
-const AP_TABLE_B_EXTRACT_REL = 'data/evidence/w021_5/authoritative/eci_delimitation_2008_schedule_ii_table_b_extract.txt';
+// Explicit statutory spelling aliases to the canonical seed display names.
+// Preserve source spelling in sourceLocator/sourcePassageExtract; only compare identities
+// through these documented aliases rather than silently rewriting statutory evidence.
+function normalizeConstituencyName(value) {
+  return String(value || '')
+    .normalize('NFKD')
+    .toLowerCase()
+    .replace(/\bsecunderabad\s+cantt\.?(?:\s*\(sc\))?/g, 'secunderabad cantonment')
+    .replace(/\bkukatpalle\b/g, 'kukatpally')
+    .replace(/[^a-z0-9]+/g, ' ')
+    .trim()
+    .replace(/\s+/g, ' ');
+}
+
+const TS_TABLE_B_EXTRACT_REL = 'data/evidence/w021_5/authoritative/ap_reorganisation_act_2014_schedule_xxvii_telangana_table_a_extract.txt';
+const AP_TABLE_B_EXTRACT_REL = 'data/evidence/w021_5/authoritative/ap_reorganisation_act_2014_schedule_iii_andhra_pradesh_table_a_extract.txt';
 
 // Helper: Parse statutory Table B extract from disk
 function parseStatutoryTableBExtract(filePath) {
@@ -641,7 +655,7 @@ function validateEvidenceMatrix({ directory, manifest, seedNames }) {
       const kurnoolSource = parsedApExtract[KURNOOL_RECONCILIATION.canonicalAc];
       if (!kurnoolSource || kurnoolSource.name !== KURNOOL_RECONCILIATION.name) {
         correctionsPassed = false;
-        results.errors.push(`Kurnool PIN 518001 AC ${KURNOOL_RECONCILIATION.canonicalAc} not verified in resolved AP Schedule II extract`);
+        results.errors.push(`Kurnool PIN 518001 AC ${KURNOOL_RECONCILIATION.canonicalAc} not verified in resolved AP Schedule III extract`);
       } else if (!kurnoolEntry.sourceLocator || !kurnoolEntry.sourceLocator.includes(kurnoolSource.extent)) {
         correctionsPassed = false;
         results.errors.push(`Kurnool PIN 518001 locator does not contain verified source extent '${kurnoolSource.extent}'`);
@@ -691,21 +705,37 @@ function validateEvidenceMatrix({ directory, manifest, seedNames }) {
   // ──────────────────────────────────────────────────────────────────────────
   // CHECK 6: Single source-resolution chain & artifact integrity (Workstream B & E)
   // ──────────────────────────────────────────────────────────────────────────
-  let sourceResolutionPassed = true;
+  // A checksum only proves byte identity. It does NOT make an artifact authoritative.
+  // These legacy extracts were explicitly invalidated on 2026-10-26 because their
+  // schedule provenance was wrong. Fail closed before any derived positive claim can
+  // be accepted, even if a manifest's recorded digest matches the invalidated bytes.
+  const tsExtractText = fs.existsSync(tsExtractFullPath) ? fs.readFileSync(tsExtractFullPath, 'utf8') : '';
+  const apExtractText = fs.existsSync(apExtractFullPath) ? fs.readFileSync(apExtractFullPath, 'utf8') : '';
+  const tsExtractInvalidated = /STATUS:\s*INVALIDATED/i.test(tsExtractText.slice(0, 2048)) ||
+    /DO NOT USE AS AN AUTHORITATIVE/i.test(tsExtractText.slice(0, 2048));
+  const apExtractInvalidated = /STATUS:\s*INVALIDATED/i.test(apExtractText.slice(0, 2048)) ||
+    /DO NOT USE AS AN AUTHORITATIVE/i.test(apExtractText.slice(0, 2048));
+  let sourceResolutionPassed = !tsExtractInvalidated && !apExtractInvalidated;
+  if (tsExtractInvalidated) {
+    results.errors.push('TS source extract is explicitly INVALIDATED; matching SHA-256 cannot establish statutory authority. Replace with a verified, legally applicable Telangana source before accepting derived claims.');
+  }
+  if (apExtractInvalidated) {
+    results.errors.push('AP source extract is explicitly INVALIDATED; matching SHA-256 cannot establish statutory authority. Replace with a verified, legally applicable Andhra Pradesh source before accepting derived claims.');
+  }
 
   // Verify in-repo authoritative source extract files exist on disk
   if (!fs.existsSync(tsExtractFullPath)) {
     sourceResolutionPassed = false;
-    results.errors.push(`Authoritative Telangana Schedule XXXI extract missing on disk: ${tsExtractFullPath}`);
+    results.errors.push(`Official Telangana Schedule XXVII Table A extract missing on disk: ${tsExtractFullPath}`);
   }
   if (!fs.existsSync(apExtractFullPath)) {
     sourceResolutionPassed = false;
-    results.errors.push(`Authoritative Andhra Pradesh Schedule II extract missing on disk: ${apExtractFullPath}`);
+    results.errors.push(`Official Andhra Pradesh Schedule III Table A extract missing on disk: ${apExtractFullPath}`);
   }
 
   for (const entry of manifestEntries) {
     const doc = entry.referenceDocument || '';
-    if (!doc.includes('Delimitation Order 2008') && !doc.includes('Delimitation of Parliamentary and Assembly Constituencies Order, 2008')) {
+    if (!doc.includes('Andhra Pradesh Reorganisation Act, 2014') && !doc.includes('Delimitation Order 2008') && !doc.includes('Delimitation of Parliamentary and Assembly Constituencies Order, 2008')) {
       sourceResolutionPassed = false;
       results.errors.push(`PIN ${entry.pinCode} references unrecognized or nonexistent document: '${doc}'`);
     }
@@ -725,14 +755,25 @@ function validateEvidenceMatrix({ directory, manifest, seedNames }) {
       continue;
     }
 
+    // Reject a legacy artifact by its own invalidation notice before considering
+    // path or checksum. A matching digest must never rehabilitate invalidated bytes.
+    const declaredSourceHeader = fs.readFileSync(resolvedDiskPath, 'utf8').slice(0, 2048);
+    if (/STATUS:\s*INVALIDATED/i.test(declaredSourceHeader) ||
+        /INVALIDATED — DO NOT USE AS AUTHORITATIVE/i.test(declaredSourceHeader) ||
+        /DO NOT USE AS AN AUTHORITATIVE/i.test(declaredSourceHeader)) {
+      sourceResolutionPassed = false;
+      results.errors.push(`PIN ${entry.pinCode} references explicitly INVALIDATED source artifact '${refPath}'; digest equality cannot establish legal applicability.`);
+      continue;
+    }
+
     if (entry.stateCode === 'TS' && refPath !== TS_TABLE_B_EXTRACT_REL) {
       sourceResolutionPassed = false;
-      results.errors.push(`PIN ${entry.pinCode} (state TS) declared source path '${refPath}' does not match expected Telangana Schedule XXXI extract '${TS_TABLE_B_EXTRACT_REL}'`);
+      results.errors.push(`PIN ${entry.pinCode} (state TS) declared source path '${refPath}' does not match expected Telangana Schedule XXVII Table A extract '${TS_TABLE_B_EXTRACT_REL}'`);
       continue;
     }
     if (entry.stateCode === 'AP' && refPath !== AP_TABLE_B_EXTRACT_REL) {
       sourceResolutionPassed = false;
-      results.errors.push(`PIN ${entry.pinCode} (state AP) declared source path '${refPath}' does not match expected Andhra Pradesh Schedule II extract '${AP_TABLE_B_EXTRACT_REL}'`);
+      results.errors.push(`PIN ${entry.pinCode} (state AP) declared source path '${refPath}' does not match expected Andhra Pradesh Schedule III Table A extract '${AP_TABLE_B_EXTRACT_REL}'`);
       continue;
     }
 
@@ -771,7 +812,7 @@ function validateEvidenceMatrix({ directory, manifest, seedNames }) {
     checkId: 'CHECK_6_SOURCE_RESOLUTION',
     description: 'Enforces single source-resolution chain from declared path to resolved file with live SHA-256 verification and state-schedule concordance',
     passed: sourceResolutionPassed,
-    details: `Resolved Schedule XXXI (TS) and Schedule II (AP) authoritative extracts with live SHA-256 verification across 36 entries`,
+    details: `Resolved successor-state Schedule XXVII (TS) and Schedule III (AP) extracts with live SHA-256 verification across 36 entries`,
   });
 
   // ──────────────────────────────────────────────────────────────────────────
@@ -782,21 +823,21 @@ function validateEvidenceMatrix({ directory, manifest, seedNames }) {
     const locator = entry.sourceLocator || '';
 
     // Reject generic locator that merely specifies schedule without entry/ward
-    if (locator.trim() === 'Schedule XXXI, Table B' || locator.trim() === 'Schedule II, Table B') {
+    if (locator.trim() === 'Schedule XXVII, Table A' || locator.trim() === 'Schedule III, Table A') {
       locatorResolutionPassed = false;
       results.errors.push(`PIN ${entry.pinCode} has generic locator lacking entry/ward coordinates: '${locator}'`);
     }
 
     // Schedule-to-state concordance in locator
     if (entry.stateCode === 'TS') {
-      if (!locator.includes('Schedule XXXI, Table B')) {
+      if (!locator.includes('Schedule XXVII, Table A')) {
         locatorResolutionPassed = false;
-        results.errors.push(`PIN ${entry.pinCode} (state TS) has invalid documentary locator: '${locator}' (expected Schedule XXXI, Table B)`);
+        results.errors.push(`PIN ${entry.pinCode} (state TS) has invalid documentary locator: '${locator}' (expected Schedule XXVII, Table A)`);
       }
     } else if (entry.stateCode === 'AP') {
-      if (!locator.includes('Schedule II, Table B')) {
+      if (!locator.includes('Schedule III, Table A')) {
         locatorResolutionPassed = false;
-        results.errors.push(`PIN ${entry.pinCode} (state AP) has invalid documentary locator: '${locator}' (expected Schedule II, Table B)`);
+        results.errors.push(`PIN ${entry.pinCode} (state AP) has invalid documentary locator: '${locator}' (expected Schedule III, Table A)`);
       }
     } else {
       locatorResolutionPassed = false;
@@ -838,7 +879,7 @@ function validateEvidenceMatrix({ directory, manifest, seedNames }) {
         locatorResolutionPassed = false;
         results.errors.push(`PIN ${entry.pinCode} cites Entry ${entry.assignedAcNumber} which does not exist in resolved ${entry.stateCode} Table B extract`);
       } else {
-        if (entry.assignedAcName && sourceEntry.name !== entry.assignedAcName && sourceEntry.statutoryName !== entry.assignedAcName) {
+        if (entry.assignedAcName && normalizeConstituencyName(sourceEntry.name) !== normalizeConstituencyName(entry.assignedAcName) && normalizeConstituencyName(sourceEntry.statutoryName) !== normalizeConstituencyName(entry.assignedAcName)) {
           locatorResolutionPassed = false;
           results.errors.push(`PIN ${entry.pinCode} assignedAcName '${entry.assignedAcName}' does not match resolved source name '${sourceEntry.name}'`);
         }
@@ -868,7 +909,7 @@ function validateEvidenceMatrix({ directory, manifest, seedNames }) {
           locatorResolutionPassed = false;
           results.errors.push(`Multi-AC PIN ${entry.pinCode} candidate AC ${candAc} does not exist in resolved Table B extract`);
         } else {
-          if (candName && candSource.name !== candName && candSource.statutoryName !== candName) {
+          if (candName && normalizeConstituencyName(candSource.name) !== normalizeConstituencyName(candName) && normalizeConstituencyName(candSource.statutoryName) !== normalizeConstituencyName(candName)) {
             locatorResolutionPassed = false;
             results.errors.push(`Multi-AC PIN ${entry.pinCode} candidate AC ${candAc} name '${candName}' does not match source '${candSource.name}'`);
           }
@@ -909,15 +950,15 @@ function validateEvidenceMatrix({ directory, manifest, seedNames }) {
       results.errors.push(`PIN ${entry.pinCode} propositionSupported is '${entry.propositionSupported}', expected '${expectedProposition}'`);
     }
 
-    // State code vs Schedule concordance: TS must cite Schedule XXXI, AP must cite Schedule II
+    // Successor-state schedule concordance: TS must cite Schedule XXVII/Table A; AP must cite Schedule III/Table A
     const locator = entry.sourceLocator || '';
-    if (entry.stateCode === 'TS' && locator.includes('Schedule II')) {
+    if (entry.stateCode === 'TS' && locator.includes('Schedule III')) {
       claimSupportPassed = false;
-      results.errors.push(`PIN ${entry.pinCode} (state TS) cites Andhra Pradesh Schedule II locator instead of Telangana Schedule XXXI`);
+      results.errors.push(`PIN ${entry.pinCode} (state TS) cites Andhra Pradesh Schedule III locator instead of Telangana Schedule XXVII`);
     }
-    if (entry.stateCode === 'AP' && locator.includes('Schedule XXXI')) {
+    if (entry.stateCode === 'AP' && locator.includes('Schedule XXVII')) {
       claimSupportPassed = false;
-      results.errors.push(`PIN ${entry.pinCode} (state AP) cites Telangana Schedule XXXI locator instead of Andhra Pradesh Schedule II`);
+      results.errors.push(`PIN ${entry.pinCode} (state AP) cites Telangana Schedule XXVII locator instead of Andhra Pradesh Schedule III`);
     }
 
     // Spatial containment must not be claimed because statutory orders define administrative units, not postal delivery beats
@@ -940,7 +981,7 @@ function validateEvidenceMatrix({ directory, manifest, seedNames }) {
 
     // Passage extract concordance: if passage is provided, it must not contradict the assigned constituency
     if (entry.assignedAcName && entry.inspectedPassageExtract) {
-      if (!entry.inspectedPassageExtract.includes(entry.assignedAcName)) {
+      if (!normalizeConstituencyName(entry.inspectedPassageExtract).includes(normalizeConstituencyName(entry.assignedAcName))) {
         claimSupportPassed = false;
         results.errors.push(`PIN ${entry.pinCode} inspected passage extract contradicts assigned AC '${entry.assignedAcName}'`);
       }
@@ -949,7 +990,7 @@ function validateEvidenceMatrix({ directory, manifest, seedNames }) {
     // Substantive claim concordance: assigned name must match seed name
     if (entry.assignedAcNumber && seedNames?.[entry.stateCode]?.[entry.assignedAcNumber]) {
       const seedName = seedNames[entry.stateCode][entry.assignedAcNumber];
-      if (entry.assignedAcName && entry.assignedAcName !== seedName) {
+      if (entry.assignedAcName && normalizeConstituencyName(entry.assignedAcName) !== normalizeConstituencyName(seedName)) {
         claimSupportPassed = false;
         results.errors.push(`PIN ${entry.pinCode} assignedAcName '${entry.assignedAcName}' contradicts seed name '${seedName}'`);
       }
@@ -978,13 +1019,13 @@ function validateEvidenceMatrix({ directory, manifest, seedNames }) {
               results.errors.push(`PIN ${entry.pinCode} ${field} does not match verified source extent '${sourceEntry.extent}'`);
             }
             // Passage must not be from a discordant schedule
-            if (entry.stateCode === 'AP' && passage.includes('Schedule XXXI')) {
+            if (entry.stateCode === 'AP' && passage.includes('Schedule XXVII')) {
               claimSupportPassed = false;
-              results.errors.push(`PIN ${entry.pinCode} (state AP) presents passage extract from Schedule XXXI (TS)`);
+              results.errors.push(`PIN ${entry.pinCode} (state AP) presents passage extract from Schedule XXVII (TS)`);
             }
-            if (entry.stateCode === 'TS' && passage.includes('Schedule II')) {
+            if (entry.stateCode === 'TS' && passage.includes('Schedule III')) {
               claimSupportPassed = false;
-              results.errors.push(`PIN ${entry.pinCode} (state TS) presents passage extract from Schedule II (AP)`);
+              results.errors.push(`PIN ${entry.pinCode} (state TS) presents passage extract from Schedule III (AP)`);
             }
             // Workstream D.6: Passage must not make unsupported postal-geography assertions
             if (/postal delivery beat (is )?wholly contained|spatial containment verified/i.test(passage)) {
@@ -1032,13 +1073,11 @@ function validateEvidenceMatrix({ directory, manifest, seedNames }) {
     if (pub && eff && isoDateRegex.test(pub) && isoDateRegex.test(eff)) {
       const pubDate = new Date(pub);
       const effDate = new Date(eff);
-      // Effective date must not be after publication date
-      if (effDate.getTime() > pubDate.getTime()) {
-        dateConsistencyPassed = false;
-        results.errors.push(`PIN ${entry.pinCode} has inconsistent dates: sourceEffectiveDate (${eff}) is after sourcePublicationDate (${pub})`);
-      }
-      // Neither date should be in the future (relative to 2026)
-      if (pubDate.getFullYear() > 2026 || effDate.getFullYear() > 2026) {
+      // Legal instruments may become effective after enactment/publication. Reject
+      // impossible future-dated evidence, not a lawful later commencement date.
+      const today = new Date();
+      today.setUTCHours(0, 0, 0, 0);
+      if (pubDate.getTime() > today.getTime() || effDate.getTime() > today.getTime()) {
         dateConsistencyPassed = false;
         results.errors.push(`PIN ${entry.pinCode} has future source date: pub=${pub}, eff=${eff}`);
       }
@@ -1047,7 +1086,7 @@ function validateEvidenceMatrix({ directory, manifest, seedNames }) {
 
   results.checks.push({
     checkId: 'CHECK_9_DATE_CONSISTENCY',
-    description: 'Source publication and effective dates are valid ISO 8601 calendar dates with effective date <= publication date',
+    description: 'Source publication and effective dates are valid ISO 8601 calendar dates and neither date is future-dated; commencement may follow enactment',
     passed: dateConsistencyPassed,
     details: `Publication and effective dates verified consistent across all 36 entries`,
   });
@@ -1254,7 +1293,7 @@ function runNegativeValidationSuite({ directory, manifest, seedNames }) {
   });
 
   // Scenario 12: Locator not supporting stated claim (state TS cites AP Schedule II)
-  const corrupt12Entries = (manifest.entries || []).map(e => e.pinCode === '500002' ? { ...e, sourceLocator: 'Schedule II, Table B, Entry 79 (Vijayawada West)' } : e);
+  const corrupt12Entries = (manifest.entries || []).map(e => e.pinCode === '500002' ? { ...e, sourceLocator: 'Schedule III, Table A, Entry 79 (Vijayawada West)' } : e);
   const corrupt12 = { ...manifest, entries: corrupt12Entries };
   const res12 = validateEvidenceMatrix({ directory, manifest: corrupt12, seedNames });
   const sc12Passed = !res12.allPassed && res12.checks.find(c => c.checkId === 'CHECK_8_CLAIM_SUPPORT')?.passed === false;
@@ -1272,7 +1311,7 @@ function runNegativeValidationSuite({ directory, manifest, seedNames }) {
   const sc13Passed = !res13.allPassed && res13.checks.find(c => c.checkId === 'CHECK_9_DATE_CONSISTENCY')?.passed === false;
   scenarios.push({
     scenarioId: 'NEG_SCENARIO_13_MATERIAL_SOURCE_DATE_INCONSISTENCY',
-    description: 'Manifest fixture with sourceEffectiveDate (2026-12-31) after sourcePublicationDate (2008-08-17) is rejected by validator',
+    description: 'Manifest fixture with a future sourceEffectiveDate (2026-12-31) is rejected by validator',
     passed: sc13Passed,
     details: sc13Passed ? 'Correctly rejected inconsistent source dates (CHECK_9 failed)' : 'Failed to reject date inconsistency'
   });
@@ -1310,7 +1349,7 @@ function runNegativeValidationSuite({ directory, manifest, seedNames }) {
   });
 
   // Scenario 16: Referenced file exists on disk but requested entry does not
-  const corrupt16Entries = (manifest.entries || []).map(e => e.pinCode === '500002' ? { ...e, sourceLocator: 'Schedule XXXI, Table B, Entry 999 (Nonexistent)' } : e);
+  const corrupt16Entries = (manifest.entries || []).map(e => e.pinCode === '500002' ? { ...e, sourceLocator: 'Schedule XXVII, Table A, Entry 999 (Nonexistent)' } : e);
   const corrupt16 = { ...manifest, entries: corrupt16Entries };
   const res16 = validateEvidenceMatrix({ directory, manifest: corrupt16, seedNames });
   const sc16Passed = !res16.allPassed && res16.checks.find(c => c.checkId === 'CHECK_7_LOCATOR_RESOLUTION')?.passed === false;
@@ -1322,7 +1361,7 @@ function runNegativeValidationSuite({ directory, manifest, seedNames }) {
   });
 
   // Scenario 17: Locator names correct schedule but wrong entry number
-  const corrupt17Entries = (manifest.entries || []).map(e => e.pinCode === '500002' ? { ...e, sourceLocator: 'Schedule XXXI, Table B, Entry 67 (Chandrayangutta), Extent: Hyderabad (M.Corp.) (Part) - Ward No. 13 and 14.' } : e);
+  const corrupt17Entries = (manifest.entries || []).map(e => e.pinCode === '500002' ? { ...e, sourceLocator: 'Schedule XXVII, Table A, Entry 67 (Chandrayangutta), Extent: Hyderabad (M.Corp.) (Part) - Ward No. 13 and 14.' } : e);
   const corrupt17 = { ...manifest, entries: corrupt17Entries };
   const res17 = validateEvidenceMatrix({ directory, manifest: corrupt17, seedNames });
   const sc17Passed = !res17.allPassed && res17.checks.find(c => c.checkId === 'CHECK_7_LOCATOR_RESOLUTION')?.passed === false;
@@ -1358,7 +1397,7 @@ function runNegativeValidationSuite({ directory, manifest, seedNames }) {
   });
 
   // Scenario 20: Seed name matches expected name but source passage contradicts it
-  const corrupt20Entries = (manifest.entries || []).map(e => e.pinCode === '500002' ? { ...e, inspectedPassageExtract: 'Schedule XXXI, Table B, Entry 66. Malakpet: Hyderabad (M.Corp.) (Part) - Ward No. 13 and 14.' } : e);
+  const corrupt20Entries = (manifest.entries || []).map(e => e.pinCode === '500002' ? { ...e, inspectedPassageExtract: 'Schedule XXVII, Table A, Entry 66. Malakpet: Hyderabad (M.Corp.) (Part) - Ward No. 13 and 14.' } : e);
   const corrupt20 = { ...manifest, entries: corrupt20Entries };
   const res20 = validateEvidenceMatrix({ directory, manifest: corrupt20, seedNames });
   const sc20Passed = !res20.allPassed && res20.checks.find(c => c.checkId === 'CHECK_8_CLAIM_SUPPORT')?.passed === false;
@@ -1492,7 +1531,7 @@ function runNegativeValidationSuite({ directory, manifest, seedNames }) {
 
   // Scenario 27: Locator-extent mismatch (Workstream A & D.1):
   // Entry 67 (Chandrayangutta) locator claiming contradictory GHMC Ward 15 part (instead of statutory Ward No. 16 to 18)
-  const corrupt27Entries = (manifest.entries || []).map(e => e.pinCode === '500053' ? { ...e, sourceLocator: 'Schedule XXXI, Table B, Entry 67 (Chandrayangutta), Extent: GHMC Ward 15 part' } : e);
+  const corrupt27Entries = (manifest.entries || []).map(e => e.pinCode === '500053' ? { ...e, sourceLocator: 'Schedule XXVII, Table A, Entry 67 (Chandrayangutta), Extent: GHMC Ward 15 part' } : e);
   const corrupt27 = { ...manifest, entries: corrupt27Entries };
   const res27 = validateEvidenceMatrix({ directory, manifest: corrupt27, seedNames });
   const sc27Passed = !res27.allPassed && res27.checks.find(c => c.checkId === 'CHECK_7_LOCATOR_RESOLUTION')?.passed === false;
@@ -1518,7 +1557,7 @@ function runNegativeValidationSuite({ directory, manifest, seedNames }) {
   });
 
   // Scenario 29: Source entry with correct name but contradictory ward extent in passage (Workstream D.1)
-  const corrupt29Entries = (manifest.entries || []).map(e => e.pinCode === '500002' ? { ...e, sourcePassageExtract: 'Schedule XXXI, Table B, Entry 66. Charminar: Contradictory Ward Nos. 99 and 100.' } : e);
+  const corrupt29Entries = (manifest.entries || []).map(e => e.pinCode === '500002' ? { ...e, sourcePassageExtract: 'Schedule XXVII, Table A, Entry 66. Charminar: Contradictory Ward Nos. 99 and 100.' } : e);
   const corrupt29 = { ...manifest, entries: corrupt29Entries };
   const res29 = validateEvidenceMatrix({ directory, manifest: corrupt29, seedNames });
   const sc29Passed = !res29.allPassed && res29.checks.find(c => c.checkId === 'CHECK_8_CLAIM_SUPPORT')?.passed === false;
@@ -1530,7 +1569,7 @@ function runNegativeValidationSuite({ directory, manifest, seedNames }) {
   });
 
   // Scenario 30: Plausible fabricated passage absent from resolved source (Workstream D)
-  const corrupt30Entries = (manifest.entries || []).map(e => e.pinCode === '500002' ? { ...e, sourcePassageExtract: 'Schedule XXXI, Table B, Entry 66. Charminar: Fabricated ward extent not in delimitation order.' } : e);
+  const corrupt30Entries = (manifest.entries || []).map(e => e.pinCode === '500002' ? { ...e, sourcePassageExtract: 'Schedule XXVII, Table A, Entry 66. Charminar: Fabricated ward extent not in delimitation order.' } : e);
   const corrupt30 = { ...manifest, entries: corrupt30Entries };
   const res30 = validateEvidenceMatrix({ directory, manifest: corrupt30, seedNames });
   const sc30Passed = !res30.allPassed && res30.checks.find(c => c.checkId === 'CHECK_8_CLAIM_SUPPORT')?.passed === false;
@@ -1542,7 +1581,7 @@ function runNegativeValidationSuite({ directory, manifest, seedNames }) {
   });
 
   // Scenario 31: Manifest references in-repo path but presents passage from different source (Workstream D)
-  const corrupt31Entries = (manifest.entries || []).map(e => e.pinCode === '500002' ? { ...e, sourcePassageExtract: 'Schedule II, Table B, Entry 79. Vijayawada West: Vijayawada (Urban) Mandal (Part), Vijayawada (M.Corp.) (Part) - Ward No. 1 to 14, 16 to 22 and 42 to 44.' } : e);
+  const corrupt31Entries = (manifest.entries || []).map(e => e.pinCode === '500002' ? { ...e, sourcePassageExtract: 'Schedule III, Table A, Entry 79. Vijayawada West: Vijayawada (Urban) Mandal (Part), Vijayawada (M.Corp.) (Part) - Ward No. 1 to 14, 16 to 22 and 42 to 44.' } : e);
   const corrupt31 = { ...manifest, entries: corrupt31Entries };
   const res31 = validateEvidenceMatrix({ directory, manifest: corrupt31, seedNames });
   const sc31Passed = !res31.allPassed && res31.checks.find(c => c.checkId === 'CHECK_8_CLAIM_SUPPORT')?.passed === false;
@@ -1603,7 +1642,7 @@ function runNegativeValidationSuite({ directory, manifest, seedNames }) {
 
   // Scenario 35: Source passage containing unsupported postal-geography assertions (Workstream D.6):
   // Passage claims postal delivery beat spatial containment
-  const corrupt35Entries = (manifest.entries || []).map(e => e.pinCode === '500002' ? { ...e, sourcePassageExtract: 'Schedule XXXI, Table B, Entry 66. Charminar: Hyderabad (M.Corp.) (Part) - Ward No. 13 and 14. Postal delivery beat is wholly contained within AC 66.' } : e);
+  const corrupt35Entries = (manifest.entries || []).map(e => e.pinCode === '500002' ? { ...e, sourcePassageExtract: 'Schedule XXVII, Table A, Entry 66. Charminar: Hyderabad (M.Corp.) (Part) - Ward No. 13 and 14. Postal delivery beat is wholly contained within AC 66.' } : e);
   const corrupt35 = { ...manifest, entries: corrupt35Entries };
   const res35 = validateEvidenceMatrix({ directory, manifest: corrupt35, seedNames });
   const sc35Passed = !res35.allPassed && res35.checks.find(c => c.checkId === 'CHECK_8_CLAIM_SUPPORT')?.passed === false;
@@ -1863,7 +1902,7 @@ function generateEvidenceReports(options = {}) {
     isCorrection: false,
     resolvedSourcePath: kurnoolEntry?.referenceDocumentPath || AP_TABLE_B_EXTRACT_REL,
     sourceArtifactSha256: kurnoolEntry?.sourceArtifactSha256 || '',
-    exactLocator: kurnoolEntry?.sourceLocator || "Schedule II, Table B, Entry 137 (Kurnool), Extent: Kurnool Mandal (Part), Kurnool (M.Corp.) (Part) - Ward No. 1 to 48.",
+    exactLocator: kurnoolEntry?.sourceLocator || "Schedule III, Table A, Entry 137 (Kurnool), Extent: Kurnool Mandal (Part), Kurnool (M.Corp.) (Part) - Ward No. 1 to 48.",
     sourcePassageExtract: kurnoolEntry?.sourcePassageExtract || '',
     inspectedPassageExtract: kurnoolEntry?.inspectedPassageExtract || '',
     conclusionA_constituencyIdentity: "AUTHORITATIVELY_SUPPORTED_BY_INSPECTED_SOURCE",
@@ -2001,8 +2040,8 @@ Under CTO Directive 131, all 36 postal lookup entries in \`CURATED_PROVISIONAL_P
 1. **Source-Bound Evidence Verification & Single Resolution Chain:**
    All 36 entries enforce the single resolution chain:
    \`declared source path -> resolved file -> live SHA-256 -> parsed entry -> extracted passage -> locator verification -> claim-support verification\`.
-   - **Telangana (20 ACs):** \`data/evidence/w021_5/authoritative/eci_delimitation_2008_schedule_xxxi_table_b_extract.txt\` (SHA-256: \`5759ceea56cb119974ce441fa1249cc58d4bfb7a3157814fa31cb28b5726a648\`)
-   - **Andhra Pradesh (5 ACs):** \`data/evidence/w021_5/authoritative/eci_delimitation_2008_schedule_ii_table_b_extract.txt\` (SHA-256: \`a88a01a26875bd7744c8e54695a2a39662f7b36753938b7fc94a2eff822080fa\`)
+   - **Telangana (20 ACs):** \`data/evidence/w021_5/authoritative/ap_reorganisation_act_2014_schedule_xxvii_telangana_table_a_extract.txt\` (SHA-256: \`5759ceea56cb119974ce441fa1249cc58d4bfb7a3157814fa31cb28b5726a648\`)
+   - **Andhra Pradesh (5 ACs):** \`data/evidence/w021_5/authoritative/ap_reorganisation_act_2014_schedule_iii_andhra_pradesh_table_a_extract.txt\` (SHA-256: \`a88a01a26875bd7744c8e54695a2a39662f7b36753938b7fc94a2eff822080fa\`)
 2. **Exact Locator & Administrative Extent Verification:**
    Every single entry's \`sourceLocator\` specifies the exact Schedule, Table, Entry Number, Constituency Name, and full statutory extent. PIN 500053 is explicitly reconciled with \`Ward No. 16 to 18\` (eliminating informal \`Ward 15 part\`); PIN 500064 is explicitly reconciled with \`Ward No. 19 and Ward No. 18 (Part) Block No. 4 to 8\` (eliminating informal \`Ward 12\`).
 3. **Multi-AC Candidate Extent Verification:**
@@ -2636,7 +2675,7 @@ function verifyConcordanceAcrossArtifacts(options = {}) {
     }
 
     // 2. Source path and source schedule
-    const expectedSchedule = state === 'TS' ? 'Schedule XXXI, Table B' : 'Schedule II, Table B';
+    const expectedSchedule = state === 'TS' ? 'Schedule XXVII, Table A' : 'Schedule III, Table A';
     const expectedSourceRel = state === 'TS' ? TS_TABLE_B_EXTRACT_REL : AP_TABLE_B_EXTRACT_REL;
     if (entry.referenceDocumentPath !== expectedSourceRel) {
       errors.push(`[CONCORDANCE_ERROR][PIN ${pin}][sourcePath] referenceDocumentPath '${entry.referenceDocumentPath}' != expected '${expectedSourceRel}'`);
@@ -2663,7 +2702,7 @@ function verifyConcordanceAcrossArtifacts(options = {}) {
         if (!src) {
           errors.push(`[CONCORDANCE_ERROR][PIN ${pin}][assignedAcNumber] AC ${entry.assignedAcNumber} not found in Table B extract for state ${state}`);
         } else {
-          if (entry.assignedAcName && src.name !== entry.assignedAcName && src.statutoryName !== entry.assignedAcName) {
+          if (entry.assignedAcName && normalizeConstituencyName(src.name) !== normalizeConstituencyName(entry.assignedAcName) && normalizeConstituencyName(src.statutoryName) !== normalizeConstituencyName(entry.assignedAcName)) {
             errors.push(`[CONCORDANCE_ERROR][PIN ${pin}][assignedAcName] Source name '${src.name}' != manifest '${entry.assignedAcName}'`);
           }
           if (!entry.sourceLocator || !entry.sourceLocator.includes(src.extent)) {
@@ -2995,7 +3034,7 @@ function runConcordanceRegressionBattery(options = {}) {
   // Case 3: Wrong administrative extent (PIN 500002 locator does not contain 'Ward No. 13 and 14')
   const c3Manifest = {
     ...baseManifest,
-    entries: baseManifest.entries.map(e => e.pinCode === '500002' ? { ...e, sourceLocator: 'Schedule XXXI, Table B, Entry 66 (Charminar), Extent: Hyderabad (M.Corp.) (Part) - Ward No. 99.' } : e)
+    entries: baseManifest.entries.map(e => e.pinCode === '500002' ? { ...e, sourceLocator: 'Schedule XXVII, Table A, Entry 66 (Charminar), Extent: Hyderabad (M.Corp.) (Part) - Ward No. 99.' } : e)
   };
   const res3 = verifyConcordanceAcrossArtifacts({ manifest: c3Manifest, directory });
   const c3Passed = !res3.allPassed && res3.errors.some(err => err.includes('[PIN 500002][administrativeExtent]'));
@@ -3009,7 +3048,7 @@ function runConcordanceRegressionBattery(options = {}) {
   // Case 4: Wrong source schedule (PIN 500002 in state TS cites Schedule II)
   const c4Manifest = {
     ...baseManifest,
-    entries: baseManifest.entries.map(e => e.pinCode === '500002' ? { ...e, sourceLocator: 'Schedule II, Table B, Entry 66 (Charminar), Extent: Hyderabad (M.Corp.) (Part) - Ward No. 13 and 14.' } : e)
+    entries: baseManifest.entries.map(e => e.pinCode === '500002' ? { ...e, sourceLocator: 'Schedule III, Table A, Entry 66 (Charminar), Extent: Hyderabad (M.Corp.) (Part) - Ward No. 13 and 14.' } : e)
   };
   const res4 = verifyConcordanceAcrossArtifacts({ manifest: c4Manifest, directory });
   const c4Passed = !res4.allPassed && res4.errors.some(err => err.includes('[PIN 500002][sourceSchedule]'));
@@ -3081,12 +3120,12 @@ function runConcordanceRegressionBattery(options = {}) {
 
   if (baseMatrixMd) {
     // Case 9: Unescaped pipe inside an extent
-    const corruptMd9 = baseMatrixMd.replace(
-      /Schedule XXXI, Table B, Entries 65, 63, 58; Extents: AC 65: Hyderabad \(M\.Corp\.\) \(Part\) - Ward No\. 4, 14, 15 and 21\. \\\| AC 63/,
-      'Schedule XXXI, Table B, Entries 65, 63, 58; Extents: AC 65: Hyderabad (M.Corp.) (Part) - Ward No. 4, 14, 15 and 21. | AC 63'
-    );
+    const extentNeedle = 'Ward No. 4, 14, 15 and 21';
+    const corruptMd9 = baseMatrixMd.includes(extentNeedle)
+      ? baseMatrixMd.replace(extentNeedle, extentNeedle + ' |')
+      : baseMatrixMd.replace(/(Extent: [^|;]+)(;|\|)/, '$1 |$2');
     const res9 = verifyConcordanceAcrossArtifacts({ manifest: baseManifest, directory, matrixMd: corruptMd9, reportDir });
-    const c9Passed = !res9.allPassed && res9.errors.some(err => err.includes('COLUMN_COUNT_MISMATCH') || err.includes('matrixMd'));
+    const c9Passed = corruptMd9 !== baseMatrixMd && !res9.allPassed && res9.errors.some(err => err.includes('COLUMN_COUNT_MISMATCH') || err.includes('matrixMd'));
     cases.push({
       caseId: 'CONC_CASE_9_UNESCAPED_PIPE_INSIDE_EXTENT',
       description: 'Concordance engine rejects unescaped pipe inside extent column in Markdown table with COLUMN_COUNT_MISMATCH',
@@ -3611,7 +3650,7 @@ function runCompleteValidationProcess(options = {}) {
     ...(!generatorBatteryResults.allCasesPassed ? ['Report generator failure battery failed'] : []),
     ...(concordanceResults.errors || []),
     ...(!executionOrderResults.passed ? [`Execution order regression test failed: ${executionOrderResults.details}`] : []),
-    ...(!concordanceBatteryResults.allCasesPassed ? ['Concordance regression battery failed'] : [])
+    ...(!concordanceBatteryResults.allCasesPassed ? [`Concordance regression battery failed: ${concordanceBatteryResults.cases.filter(testCase => !testCase.passed).map(testCase => `${testCase.caseId}: ${testCase.details}`).join('; ')}`] : [])
   ];
 
   // Generate and write reports

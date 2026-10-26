@@ -256,10 +256,11 @@ console.log('[PASS] [REPOSITORY INTEGRATION] Test R1: Scope chain of custody ver
 const stateRaw = fs.readFileSync('EXECUTION_STATE.md', 'utf8');
 
 function parseExecutionStateField(fieldKey) {
-  const match = stateRaw.match(new RegExp(`^${fieldKey}:\\s*(.+)`, 'm'));
-  return match ? match[1].trim() : null;
+  // Parse only true top-level coordinates. Avoid accidentally matching historical
+  // references or quoted Markdown when checking current authorization state.
+  const line = stateRaw.split(/\r?\n/).find((candidate) => candidate.startsWith(`${fieldKey}:`));
+  return line ? line.slice(fieldKey.length + 1).trim() : null;
 }
-
 const realCurrentJob = parseExecutionStateField('CURRENT_JOB');
 const realPlanStatus = parseExecutionStateField('PLAN_STATUS');
 const realImplAuth = parseExecutionStateField('IMPLEMENTATION_AUTHORIZATION');
@@ -280,7 +281,7 @@ const realAuthorizationScope = parseExecutionStateField('IMPLEMENTATION_AUTHORIZ
 const realDirectivePath = parseExecutionStateField('W021_5_CTO_DIRECTIVE') || '';
 const realImplementationCommit = parseExecutionStateField('IMPLEMENTATION_COMMIT') || '';
 const realVerificationCommit = parseExecutionStateField('VERIFICATION_COMMIT') || '';
-const realAcceptanceCommit = parseExecutionStateField('ACCEPTANCE_COMMIT') || '';
+const realAcceptanceCommit = parseExecutionStateField('ACCEPTANCE_COMMIT');
 const frozenState =
   realImplAuth === 'NO' &&
   (realAuthJob === 'NONE' || realAuthJob.includes('NOT Authorized') || realAuthJob.includes('Planning Only')) &&

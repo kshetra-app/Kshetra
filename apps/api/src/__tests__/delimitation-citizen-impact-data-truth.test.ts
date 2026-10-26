@@ -36,6 +36,9 @@ import {
 } from '../services/delimitationService';
 import * as stateDataModule from '../services/stateData';
 
+// Shared absolute path for evidence assertions across Directive 125–133 test scopes.
+const manifestPath = path.resolve(__dirname, '../../../../data/evidence/w021_5/pin_independent_evidence_manifest.json');
+
 describe('CTO Directive 123 — Residual Electoral Data-Truth & Provisional Lookup Integrity', () => {
   let app: FastifyInstance;
 
@@ -468,7 +471,8 @@ describe('CTO Directive 123 — Residual Electoral Data-Truth & Provisional Look
 
     it('fails closed when artifact content is tampered with (digest mismatch simulation)', () => {
       const fakeCorruptedBuffer = Buffer.from('TAMPERED_STATUTORY_EVIDENCE');
-      const expectedSha256 = '9123ecb5f9ea5414ee8b4e8cce92aed9e008f352a8924edb7dcb9c27d621737d'; // real Schedule XXXI hash
+      const currentSourcePath = path.resolve(__dirname, '../../../../data/evidence/w021_5/authoritative/ap_reorganisation_act_2014_schedule_xxvii_telangana_table_a_extract.txt');
+      const expectedSha256 = crypto.createHash('sha256').update(fs.readFileSync(currentSourcePath)).digest('hex');
       const actualCorruptedSha256 = crypto.createHash('sha256').update(fakeCorruptedBuffer).digest('hex');
 
       expect(actualCorruptedSha256).not.toBe(expectedSha256);
@@ -486,7 +490,7 @@ describe('CTO Directive 123 — Residual Electoral Data-Truth & Provisional Look
 
     it('verifies independent PIN evidence manifest exists with exact 36 entries and complete traceability', () => {
       expect(fs.existsSync(manifestPath)).toBe(true);
-      const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+      const manifest = JSON.parse(fs.readFileSync(path.resolve(__dirname, '../../../../data/evidence/w021_5/pin_independent_evidence_manifest.json'), 'utf8'));
       expect(manifest.entries).toHaveLength(36);
 
       for (const entry of manifest.entries) {
@@ -904,7 +908,7 @@ describe('CTO Directive 123 — Residual Electoral Data-Truth & Provisional Look
       expect(validation.errors.some((err: string) => err.includes('invalid documentary locator'))).toBe(true);
     });
 
-    it('genuine negative test (Scenario 12): validator rejects locator not supporting claim (state TS cites AP Schedule II)', () => {
+    it('genuine negative test (Scenario 12): rejects a state-mismatched locator at the locator-resolution gate', () => {
       const directory = validatorModule.parseDelimitationServiceCuratedPins();
       const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
       const seedNames = validatorModule.parseSeedConstituencyNames();
@@ -914,10 +918,10 @@ describe('CTO Directive 123 — Residual Electoral Data-Truth & Provisional Look
       const validation = validatorModule.validateEvidenceMatrix({ directory, manifest: corruptedManifest, seedNames });
 
       expect(validation.allPassed).toBe(false);
-      const check8 = validation.checks.find((c: any) => c.checkId === 'CHECK_8_CLAIM_SUPPORT');
-      expect(check8).toBeDefined();
-      expect(check8.passed).toBe(false);
-      expect(validation.errors.some((err: string) => err.includes('cites Andhra Pradesh Schedule II locator instead of Telangana Schedule XXXI'))).toBe(true);
+      const check7 = validation.checks.find((c: any) => c.checkId === 'CHECK_7_LOCATOR_RESOLUTION');
+      expect(check7).toBeDefined();
+      expect(check7.passed).toBe(false);
+      expect(validation.errors.some((err: string) => err.includes('expected Schedule XXVII, Table A'))).toBe(true);
     });
 
     it('genuine negative test (Scenario 13): validator rejects material source date inconsistency', () => {
@@ -933,7 +937,7 @@ describe('CTO Directive 123 — Residual Electoral Data-Truth & Provisional Look
       const check9 = validation.checks.find((c: any) => c.checkId === 'CHECK_9_DATE_CONSISTENCY');
       expect(check9).toBeDefined();
       expect(check9.passed).toBe(false);
-      expect(validation.errors.some((err: string) => err.includes('sourceEffectiveDate (2026-12-31) is after sourcePublicationDate'))).toBe(true);
+      expect(validation.errors.some((err: string) => err.includes('future source date: pub=2014-03-01, eff=2026-12-31'))).toBe(true);
     });
 
     it('genuine negative test (Scenario 14): validator rejects tampered metadata summary assertion', () => {
@@ -1049,7 +1053,7 @@ describe('CTO Directive 123 — Residual Electoral Data-Truth & Provisional Look
       const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
       const seedNames = validatorModule.parseSeedConstituencyNames();
 
-      const corruptEntries = manifest.entries.map((e: any) => e.pinCode === '500002' ? { ...e, referenceDocumentPath: 'data/evidence/w015_b2/eci_delimitation_2008_schedule_xxxi.txt', sourceLocator: 'Schedule XXXI, Table B, Entry 999 (Nonexistent)' } : e);
+      const corruptEntries = manifest.entries.map((e: any) => e.pinCode === '500002' ? { ...e, referenceDocumentPath: 'data/evidence/w021_5/authoritative/ap_reorganisation_act_2014_schedule_xxvii_telangana_table_a_extract.txt', sourceLocator: 'Schedule XXVII, Table A, Entry 999 (Nonexistent)' } : e);
       const corruptManifest = { ...manifest, entries: corruptEntries };
       const validation = validatorModule.validateEvidenceMatrix({ directory, manifest: corruptManifest, seedNames });
 
@@ -1247,8 +1251,8 @@ describe('CTO Directive 123 — Residual Electoral Data-Truth & Provisional Look
 
   describe('CTO Directive 129 — Source-Bound Statutory Evidence Verification, Independent Correction Audit, and Stage B Adjudication Integrity', () => {
     const manifestPath = path.resolve(__dirname, '../../../../data/evidence/w021_5/pin_independent_evidence_manifest.json');
-    const tsExtractPath = path.resolve(__dirname, '../../../../data/evidence/w021_5/authoritative/eci_delimitation_2008_schedule_xxxi_table_b_extract.txt');
-    const apExtractPath = path.resolve(__dirname, '../../../../data/evidence/w021_5/authoritative/eci_delimitation_2008_schedule_ii_table_b_extract.txt');
+    const tsExtractPath = path.resolve(__dirname, '../../../../data/evidence/w021_5/authoritative/ap_reorganisation_act_2014_schedule_xxvii_telangana_table_a_extract.txt');
+    const apExtractPath = path.resolve(__dirname, '../../../../data/evidence/w021_5/authoritative/ap_reorganisation_act_2014_schedule_iii_andhra_pradesh_table_a_extract.txt');
     let validatorModule: any;
 
     beforeAll(() => {
@@ -1262,8 +1266,11 @@ describe('CTO Directive 123 — Residual Electoral Data-Truth & Provisional Look
 
       const tsSha = validatorModule.computeFileSha256(tsExtractPath);
       const apSha = validatorModule.computeFileSha256(apExtractPath);
-      expect(tsSha).toBe('5759ceea56cb119974ce441fa1249cc58d4bfb7a3157814fa31cb28b5726a648');
-      expect(apSha).toBe('a88a01a26875bd7744c8e54695a2a39662f7b36753938b7fc94a2eff822080fa');
+      const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+      const expectedTsSha = manifest.entries.find((entry: any) => entry.stateCode === 'TS')?.sourceArtifactSha256;
+      const expectedApSha = manifest.entries.find((entry: any) => entry.stateCode === 'AP')?.sourceArtifactSha256;
+      expect(tsSha).toBe(expectedTsSha);
+      expect(apSha).toBe(expectedApSha);
     });
 
     it('pure validation engine passes all 10 checks under Directive 129 check semantics', () => {
@@ -1304,11 +1311,11 @@ describe('CTO Directive 123 — Residual Electoral Data-Truth & Provisional Look
 
       // Verify TS AC 66 Charminar
       expect(tsParsed[66].name).toBe('Charminar');
-      expect(tsParsed[66].extent).toContain('Ward No. 13 and 14');
+      expect(tsParsed[66].extent).toContain('Ward No. 20 to 23');
 
       // Verify AP AC 79 Vijayawada West
       expect(apParsed[79].name).toBe('Vijayawada West');
-      expect(apParsed[79].extent).toContain('Ward No. 1 to 14');
+      expect(apParsed[79].extent).toContain('Ward No. 1 to 13, 15 to 19, 75 and 76');
     });
 
     it('reconciles all eight corrections and Kurnool 137 with separate Conclusion A (Identity) and Conclusion B (Postal Linkage)', () => {
@@ -1541,14 +1548,14 @@ describe('CTO Directive 123 — Residual Electoral Data-Truth & Provisional Look
       const e500053 = manifest.entries.find((e: any) => e.pinCode === '500053');
       expect(e500053).toBeDefined();
       expect(e500053.assignedAcNumber).toBe(67);
-      expect(e500053.sourceLocator).toContain('Ward No. 16 to 18');
+      expect(e500053.sourceLocator).toContain('Ward No. 18 (Part), Block No. 1 to 3 and 8 to 14');
       expect(e500053.sourceLocator).not.toContain('Ward 15 part');
 
-      // Reconciled PIN 500064: Entry 69 (Bahadurpura), statutory extent: Ward No. 19 and Ward No. 18 (Part) Block No. 4 to 8 (NOT Ward 12)
+      // Reconciled PIN 500064: Entry 69 (Bahadurpura), statutory extent: Ward No. 18 (Part), Blocks 4 and 5; Ward 19 (NOT Ward 12)
       const e500064 = manifest.entries.find((e: any) => e.pinCode === '500064');
       expect(e500064).toBeDefined();
       expect(e500064.assignedAcNumber).toBe(69);
-      expect(e500064.sourceLocator).toContain('Ward No. 19 and Ward No. 18 (Part) Block No. 4 to 8');
+      expect(e500064.sourceLocator).toContain('Ward No. 18 (Part), Block No. 4 and 5; Ward No. 19');
       expect(e500064.sourceLocator).not.toContain('GHMC Ward 12');
     });
 
@@ -1560,7 +1567,7 @@ describe('CTO Directive 123 — Residual Electoral Data-Truth & Provisional Look
       // TS entry declaring AP extract path
       const corruptEntries = manifest.entries.map((e: any) => e.pinCode === '500002' ? {
         ...e,
-        referenceDocumentPath: 'data/evidence/w021_5/authoritative/eci_delimitation_2008_schedule_ii_table_b_extract.txt'
+        referenceDocumentPath: 'data/evidence/w021_5/authoritative/ap_reorganisation_act_2014_schedule_iii_andhra_pradesh_table_a_extract.txt'
       } : e);
       const corruptManifest = { ...manifest, entries: corruptEntries };
       const validation = validatorModule.validateEvidenceMatrix({ directory, manifest: corruptManifest, seedNames });
@@ -1568,7 +1575,7 @@ describe('CTO Directive 123 — Residual Electoral Data-Truth & Provisional Look
       expect(validation.allPassed).toBe(false);
       const check6 = validation.checks.find((c: any) => c.checkId === 'CHECK_6_SOURCE_RESOLUTION');
       expect(check6.passed).toBe(false);
-      expect(validation.errors.some((err: string) => err.includes('does not match expected Telangana Schedule XXXI extract'))).toBe(true);
+      expect(validation.errors.some((err: string) => err.includes('does not match expected Telangana Schedule XXVII Table A extract'))).toBe(true);
     });
 
     it('Workstream C: validates multi-AC records fail closed with candidate numbers, names and extents verified', () => {
@@ -1627,7 +1634,7 @@ describe('CTO Directive 123 — Residual Electoral Data-Truth & Provisional Look
 
     it('Workstream A: verifies 100% report-to-evidence concordance across all 36 records including reconciled PINs 500001, 500028, and 500056', () => {
       const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
-      const tableBExtractPath = path.resolve(__dirname, '../../../../data/evidence/w021_5/authoritative/eci_delimitation_2008_schedule_xxxi_table_b_extract.txt');
+      const tableBExtractPath = path.resolve(__dirname, '../../../../data/evidence/w021_5/authoritative/ap_reorganisation_act_2014_schedule_xxvii_telangana_table_a_extract.txt');
       const tableBEntries = validatorModule.parseStatutoryTableBExtract(tableBExtractPath);
 
       // Reconciled PIN 500001: AC 65 is Goshamahal (Ward 4, 14, 15, 21), AC 63 is Nampally, AC 58 is Malakpet
@@ -1637,7 +1644,7 @@ describe('CTO Directive 123 — Residual Electoral Data-Truth & Provisional Look
       expect(e500001.candidateAcNames).toEqual(['Goshamahal', 'Nampally', 'Malakpet']);
       expect(e500001.assignedAcNumber == null).toBe(true);
       expect(tableBEntries[65].name).toBe('Goshamahal');
-      expect(tableBEntries[65].extent).toContain('Ward No. 4, 14, 15 and 21');
+      expect(tableBEntries[65].extent).toContain('Ward No. 4, 14 and 15');
       expect(tableBEntries[63].name).toBe('Nampally');
       expect(tableBEntries[58].name).toBe('Malakpet');
 
@@ -1648,7 +1655,7 @@ describe('CTO Directive 123 — Residual Electoral Data-Truth & Provisional Look
       expect(e500028.candidateAcNames).toEqual(['Karwan', 'Nampally']);
       expect(e500028.assignedAcNumber == null).toBe(true);
       expect(tableBEntries[64].name).toBe('Karwan');
-      expect(tableBEntries[64].extent).toContain('Ward No. 9 and 13 (Part)');
+      expect(tableBEntries[64].extent).toContain('Ward No. 9; Ward No. 13 (Part)');
 
       // Reconciled PIN 500056: candidates are [71, 46] (Secunderabad Cantonment, Kukatpally)
       const e500056 = manifest.entries.find((e: any) => e.pinCode === '500056');
@@ -1656,8 +1663,8 @@ describe('CTO Directive 123 — Residual Electoral Data-Truth & Provisional Look
       expect(e500056.candidateAcNumbers).toEqual([71, 46]);
       expect(e500056.candidateAcNames).toEqual(['Secunderabad Cantonment', 'Kukatpally']);
       expect(e500056.assignedAcNumber == null).toBe(true);
-      expect(tableBEntries[71].name).toBe('Secunderabad Cantonment');
-      expect(tableBEntries[46].name).toBe('Kukatpally');
+      expect(tableBEntries[71].name).toBe('Secunderabad Cantt.');
+      expect(tableBEntries[46].name).toBe('Kukatpalle');
     });
 
     it('Workstream B: executes the full 8-case report-generator failure battery and verifies fail-closed outputs', () => {
@@ -1984,6 +1991,56 @@ describe('CTO Directive 123 — Residual Electoral Data-Truth & Provisional Look
         expect(blocker.description).toBeDefined();
         expect(blocker.status).toBeDefined();
       }
+    });
+
+    it('binds the manifest to successor-state Schedule XXVII/III extracts and corrects stale statutory extents', () => {
+      const tsPath = path.resolve(__dirname, '../../../../data/evidence/w021_5/authoritative/ap_reorganisation_act_2014_schedule_xxvii_telangana_table_a_extract.txt');
+      const apPath = path.resolve(__dirname, '../../../../data/evidence/w021_5/authoritative/ap_reorganisation_act_2014_schedule_iii_andhra_pradesh_table_a_extract.txt');
+      const ts = validatorModule.parseStatutoryTableBExtract(tsPath);
+      const ap = validatorModule.parseStatutoryTableBExtract(apPath);
+      expect(Object.keys(ts)).toHaveLength(20);
+      expect(Object.keys(ap)).toHaveLength(5);
+      expect(ts[66].name).toBe('Charminar');
+      expect(ts[66].extent).toContain('Ward No. 20 to 23');
+      expect(ts[67].extent).toContain('Ward No. 18 (Part), Block No. 1 to 3 and 8 to 14');
+      expect(ts[69].extent).toContain('Ward No. 18 (Part), Block No. 4 and 5');
+      expect(ap[79].extent).toContain('Ward No. 1 to 13, 15 to 19, 75 and 76');
+      expect(ap[80].extent).toContain('Ward No. 14, 20 to 31, 33 to 35, 42 to 44, 49, 77 and 78');
+
+      const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+      for (const entry of manifest.entries) {
+        const expectedPath = entry.stateCode === 'TS' ? 'data/evidence/w021_5/authoritative/ap_reorganisation_act_2014_schedule_xxvii_telangana_table_a_extract.txt' : 'data/evidence/w021_5/authoritative/ap_reorganisation_act_2014_schedule_iii_andhra_pradesh_table_a_extract.txt';
+        expect(entry.referenceDocumentPath).toBe(expectedPath);
+        expect(entry.sourceArtifactSha256).toBe(validatorModule.computeFileSha256(path.resolve(__dirname, '../../../../' + expectedPath)));
+        expect(entry.sourceLocator).not.toMatch(/Schedule II, Table B|Schedule XXXI, Table B/);
+      }
+    });
+
+    it('fails closed when a referenced statutory extract is explicitly invalidated, even if its digest matches the manifest', () => {
+      const tsPath = path.resolve(__dirname, '../../../../data/evidence/w021_5/authoritative/eci_delimitation_2008_schedule_xxxi_table_b_extract.txt');
+      const apPath = path.resolve(__dirname, '../../../../data/evidence/w021_5/authoritative/eci_delimitation_2008_schedule_ii_table_b_extract.txt');
+      const tsBytes = fs.readFileSync(tsPath, 'utf8').slice(0, 2048);
+      const apBytes = fs.readFileSync(apPath, 'utf8').slice(0, 2048);
+      expect(tsBytes).toMatch(/STATUS:\s*INVALIDATED/i);
+      expect(apBytes).toMatch(/STATUS:\s*INVALIDATED/i);
+
+      const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+      const legacyManifest = {
+        ...manifest,
+        entries: manifest.entries.map((entry: any) => entry.pinCode === '500002'
+          ? { ...entry, referenceDocumentPath: 'data/evidence/w021_5/authoritative/eci_delimitation_2008_schedule_xxxi_table_b_extract.txt' }
+          : entry),
+      };
+      const validation = validatorModule.validateEvidenceMatrix({
+        directory: validatorModule.parseDelimitationServiceCuratedPins(),
+        manifest: legacyManifest,
+        seedNames: validatorModule.parseSeedConstituencyNames(),
+      });
+      const sourceCheck = validation.checks.find((check: any) => check.checkId === 'CHECK_6_SOURCE_RESOLUTION');
+      expect(sourceCheck).toBeDefined();
+      expect(sourceCheck.passed).toBe(false);
+      expect(validation.allPassed).toBe(false);
+      expect(validation.errors.some((error: string) => /explicitly INVALIDATED/i.test(error))).toBe(true);
     });
 
     it('Workstream F: verifies 8 historical corrections and Kurnool baseline preserved across all artifacts', () => {

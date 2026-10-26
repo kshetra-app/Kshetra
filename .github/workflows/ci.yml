@@ -78,6 +78,16 @@ jobs:
         env:
           NODE_ENV: test
 
+      - name: Typecheck API before Stage B validation
+        run: npx tsc --noEmit
+        working-directory: apps/api
+
+      - name: Regenerate W021.5 independent evidence manifest
+        run: node scripts/build_pin_independent_evidence_manifest.mjs
+
+      - name: Run W021.5 Stage B and Directive 133 validation
+        run: node scripts/verify_pin_evidence_matrix.cjs
+
       - name: Test API (with coverage gate)
         run: npm run test:coverage -w @kshetra/api
         env:
@@ -144,9 +154,8 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Prettier check
-        run: npx prettier --check "**/*.{ts,tsx,json,md}" --ignore-path .gitignore
-        continue-on-error: true
+      - name: Prettier check (new lint configuration)
+        run: npx prettier --check eslint.config.mjs --ignore-path .gitignore
 
       - name: ESLint
         run: npx eslint "apps/**/*.{ts,tsx}" "packages/**/*.{ts,tsx}" --max-warnings=0

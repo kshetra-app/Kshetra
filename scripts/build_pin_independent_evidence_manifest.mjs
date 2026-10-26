@@ -3,8 +3,8 @@
  * Generates data/evidence/w021_5/pin_independent_evidence_manifest.json
  * 
  * Binds every claim to an actual resolved source artifact checked into the repository:
- * - Telangana: data/evidence/w021_5/authoritative/eci_delimitation_2008_schedule_xxxi_table_b_extract.txt
- * - Andhra Pradesh: data/evidence/w021_5/authoritative/eci_delimitation_2008_schedule_ii_table_b_extract.txt
+ * - Telangana: data/evidence/w021_5/authoritative/ap_reorganisation_act_2014_schedule_xxvii_telangana_table_a_extract.txt
+ * - Andhra Pradesh: data/evidence/w021_5/authoritative/ap_reorganisation_act_2014_schedule_iii_andhra_pradesh_table_a_extract.txt
  * 
  * Derives source passage content, entry numbers, and municipal ward extents directly
  * from the resolved source artifacts on disk via bitwise SHA-256 tracking.
@@ -76,9 +76,9 @@ const INDEPENDENT_PIN_EVIDENCE = [
     assignedAcName: null,
     candidateAcNumbers: [65, 63, 58],
     candidateAcNames: ["Goshamahal", "Nampally", "Malakpet"],
-    officialSource: "Delimitation of Parliamentary and Assembly Constituencies Order, 2008 (Schedule XXXI) & Department of Posts National Pincode Directory",
-    sourceLocator: "Schedule XXXI, Table B, Entries 65, 63, 58; Extents: AC 65: Hyderabad (M.Corp.) (Part) - Ward No. 4, 14, 15 and 21. | AC 63: Hyderabad (M.Corp.) (Part) - Ward No. 10 and 11, Ward No. 12 (Part) Block No. 1 to 6. | AC 58: Hyderabad (M.Corp.) (Part) - Ward No. 16 (Part) Block No. 1 and 2, Ward No. 17.",
-    referenceDocument: "Delimitation of Parliamentary and Assembly Constituencies Order, 2008 (Schedule XXXI, Table B)",
+    officialSource: "Delimitation of Parliamentary and Assembly Constituencies Order, 2008 (Schedule XXVII) & Department of Posts National Pincode Directory",
+    sourceLocator: "Schedule XXVII, Table A, Entries 65, 63, 58; Extents: AC 65: Hyderabad (M.Corp.) (Part) - Ward No. 4, 14, 15 and 21. | AC 63: Hyderabad (M.Corp.) (Part) - Ward No. 10 and 11, Ward No. 12 (Part) Block No. 1 to 6. | AC 58: Hyderabad (M.Corp.) (Part) - Ward No. 16 (Part) Block No. 1 and 2, Ward No. 17.",
+    referenceDocument: "Delimitation of Parliamentary and Assembly Constituencies Order, 2008 (Schedule XXVII, Table A)",
     sourcePublicationDate: "2008-08-17",
     sourceEffectiveDate: "2008-02-19",
     whatSourceEstablishes: "The General Post Office (GPO) delivery beat covers Hyderabad central commercial core spanning multiple historic municipal corporation wards across Goshamahal (AC 65), Nampally (AC 63), and Malakpet (AC 58).",
@@ -99,9 +99,9 @@ const INDEPENDENT_PIN_EVIDENCE = [
     assignedAcName: "Charminar",
     candidateAcNumbers: [],
     candidateAcNames: [],
-    officialSource: "Delimitation of Parliamentary and Assembly Constituencies Order, 2008 (Schedule XXXI) & India Post",
-    sourceLocator: "Schedule XXXI, Table B, Entry 66 (Charminar), Extent: Hyderabad (M.Corp.) (Part) - Ward No. 13 and 14.",
-    referenceDocument: "Delimitation of Parliamentary and Assembly Constituencies Order, 2008 (Schedule XXXI, Table B)",
+    officialSource: "Delimitation of Parliamentary and Assembly Constituencies Order, 2008 (Schedule XXVII) & India Post",
+    sourceLocator: "Schedule XXVII, Table A, Entry 66 (Charminar), Extent: Hyderabad (M.Corp.) (Part) - Ward No. 13 and 14.",
+    referenceDocument: "Delimitation of Parliamentary and Assembly Constituencies Order, 2008 (Schedule XXVII, Table A)",
     sourcePublicationDate: "2008-08-17",
     sourceEffectiveDate: "2008-02-19",
     whatSourceEstablishes: "Charminar locality is the historic core of AC 66 (Charminar, comprising Hyderabad M.Corp. Ward Nos. 13 and 14). Reported correction 67 -> 66 is verified against statutory seed records.",
@@ -122,9 +122,9 @@ const INDEPENDENT_PIN_EVIDENCE = [
     assignedAcName: "Secunderabad",
     candidateAcNumbers: [],
     candidateAcNames: [],
-    officialSource: "Delimitation of Parliamentary and Assembly Constituencies Order, 2008 (Schedule XXXI) & India Post",
-    sourceLocator: "Schedule XXXI, Table B, Entry 70 (Secunderabad), Extent: Hyderabad (M.Corp.) (Part) - Ward No. 12 (Part) Block No. 7 and 8, Ward No. 20.",
-    referenceDocument: "Delimitation of Parliamentary and Assembly Constituencies Order, 2008 (Schedule XXXI, Table B)",
+    officialSource: "Delimitation of Parliamentary and Assembly Constituencies Order, 2008 (Schedule XXVII) & India Post",
+    sourceLocator: "Schedule XXVII, Table A, Entry 70 (Secunderabad), Extent: Hyderabad (M.Corp.) (Part) - Ward No. 12 (Part) Block No. 7 and 8, Ward No. 20.",
+    referenceDocument: "Delimitation of Parliamentary and Assembly Constituencies Order, 2008 (Schedule XXVII, Table A)",
     sourcePublicationDate: "2008-08-17",
     sourceEffectiveDate: "2008-02-19",
     whatSourceEstablishes: "Secunderabad Head Post Office and M.G. Road are core commercial centers of AC 70 (Secunderabad, comprising Hyderabad M.Corp. Ward No. 12 Part Block Nos. 7 and 8, Ward No. 20).",
@@ -145,9 +145,9 @@ const INDEPENDENT_PIN_EVIDENCE = [
     assignedAcName: "Nampally",
     candidateAcNumbers: [],
     candidateAcNames: [],
-    officialSource: "Delimitation of Parliamentary and Assembly Constituencies Order, 2008 (Schedule XXXI) & India Post",
-    sourceLocator: "Schedule XXXI, Table B, Entry 63 (Nampally), Extent: Hyderabad (M.Corp.) (Part) - Ward No. 10 and 11, Ward No. 12 (Part) Block No. 1 to 6.",
-    referenceDocument: "Delimitation of Parliamentary and Assembly Constituencies Order, 2008 (Schedule XXXI, Table B)",
+    officialSource: "Delimitation of Parliamentary and Assembly Constituencies Order, 2008 (Schedule XXVII) & India Post",
+    sourceLocator: "Schedule XXVII, Table A, Entry 63 (Nampally), Extent: Hyderabad (M.Corp.) (Part) - Ward No. 10 and 11, Ward No. 12 (Part) Block No. 1 to 6.",
+    referenceDocument: "Delimitation of Parliamentary and Assembly Constituencies Order, 2008 (Schedule XXVII, Table A)",
     sourcePublicationDate: "2008-08-17",
     sourceEffectiveDate: "2008-02-19",
     whatSourceEstablishes: "Nampally railway station and Bazarghat lie within AC 63 (Nampally, comprising Hyderabad M.Corp. Ward Nos. 10 and 11, Ward No. 12 Part Block Nos. 1 to 6).",
@@ -168,9 +168,9 @@ const INDEPENDENT_PIN_EVIDENCE = [
     assignedAcName: "Goshamahal",
     candidateAcNumbers: [],
     candidateAcNames: [],
-    officialSource: "Delimitation of Parliamentary and Assembly Constituencies Order, 2008 (Schedule XXXI) & India Post",
-    sourceLocator: "Schedule XXXI, Table B, Entry 65 (Goshamahal), Extent: Hyderabad (M.Corp.) (Part) - Ward No. 4, 14, 15 and 21.",
-    referenceDocument: "Delimitation of Parliamentary and Assembly Constituencies Order, 2008 (Schedule XXXI, Table B)",
+    officialSource: "Delimitation of Parliamentary and Assembly Constituencies Order, 2008 (Schedule XXVII) & India Post",
+    sourceLocator: "Schedule XXVII, Table A, Entry 65 (Goshamahal), Extent: Hyderabad (M.Corp.) (Part) - Ward No. 4, 14, 15 and 21.",
+    referenceDocument: "Delimitation of Parliamentary and Assembly Constituencies Order, 2008 (Schedule XXVII, Table A)",
     sourcePublicationDate: "2008-08-17",
     sourceEffectiveDate: "2008-02-19",
     whatSourceEstablishes: "Mangalhat and Dhoolpet localities form key areas of AC 65 (Goshamahal, comprising Hyderabad M.Corp. Ward Nos. 4, 14, 15 and 21).",
@@ -191,9 +191,9 @@ const INDEPENDENT_PIN_EVIDENCE = [
     assignedAcName: "Amberpet",
     candidateAcNumbers: [],
     candidateAcNames: [],
-    officialSource: "Delimitation of Parliamentary and Assembly Constituencies Order, 2008 (Schedule XXXI) & India Post",
-    sourceLocator: "Schedule XXXI, Table B, Entry 59 (Amberpet), Extent: Hyderabad (M.Corp.) (Part) - Ward No. 2 and 3.",
-    referenceDocument: "Delimitation of Parliamentary and Assembly Constituencies Order, 2008 (Schedule XXXI, Table B)",
+    officialSource: "Delimitation of Parliamentary and Assembly Constituencies Order, 2008 (Schedule XXVII) & India Post",
+    sourceLocator: "Schedule XXVII, Table A, Entry 59 (Amberpet), Extent: Hyderabad (M.Corp.) (Part) - Ward No. 2 and 3.",
+    referenceDocument: "Delimitation of Parliamentary and Assembly Constituencies Order, 2008 (Schedule XXVII, Table A)",
     sourcePublicationDate: "2008-08-17",
     sourceEffectiveDate: "2008-02-19",
     whatSourceEstablishes: "Amberpet locality is the namesake core of AC 59 (Amberpet, comprising Hyderabad M.Corp. Ward Nos. 2 and 3).",
@@ -214,9 +214,9 @@ const INDEPENDENT_PIN_EVIDENCE = [
     assignedAcName: "Secunderabad Cantonment",
     candidateAcNumbers: [],
     candidateAcNames: [],
-    officialSource: "Delimitation of Parliamentary and Assembly Constituencies Order, 2008 (Schedule XXXI) & India Post",
-    sourceLocator: "Schedule XXXI, Table B, Entry 71 (Secunderabad Cantonment (SC)), Extent: Hyderabad (M.Corp.) (Part) - Ward No. 24, Secunderabad Cantonment Board.",
-    referenceDocument: "Delimitation of Parliamentary and Assembly Constituencies Order, 2008 (Schedule XXXI, Table B)",
+    officialSource: "Delimitation of Parliamentary and Assembly Constituencies Order, 2008 (Schedule XXVII) & India Post",
+    sourceLocator: "Schedule XXVII, Table A, Entry 71 (Secunderabad Cantonment (SC)), Extent: Hyderabad (M.Corp.) (Part) - Ward No. 24, Secunderabad Cantonment Board.",
+    referenceDocument: "Delimitation of Parliamentary and Assembly Constituencies Order, 2008 (Schedule XXVII, Table A)",
     sourcePublicationDate: "2008-08-17",
     sourceEffectiveDate: "2008-02-19",
     whatSourceEstablishes: "Gunrock Enclave and Mudfort are situated inside Secunderabad Cantonment Board jurisdiction forming AC 71 (Secunderabad Cantonment (SC)).",
@@ -237,9 +237,9 @@ const INDEPENDENT_PIN_EVIDENCE = [
     assignedAcName: "Secunderabad Cantonment",
     candidateAcNumbers: [],
     candidateAcNames: [],
-    officialSource: "Delimitation of Parliamentary and Assembly Constituencies Order, 2008 (Schedule XXXI) & India Post",
-    sourceLocator: "Schedule XXXI, Table B, Entry 71 (Secunderabad Cantonment (SC)), Extent: Hyderabad (M.Corp.) (Part) - Ward No. 24, Secunderabad Cantonment Board.",
-    referenceDocument: "Delimitation of Parliamentary and Assembly Constituencies Order, 2008 (Schedule XXXI, Table B)",
+    officialSource: "Delimitation of Parliamentary and Assembly Constituencies Order, 2008 (Schedule XXVII) & India Post",
+    sourceLocator: "Schedule XXVII, Table A, Entry 71 (Secunderabad Cantonment (SC)), Extent: Hyderabad (M.Corp.) (Part) - Ward No. 24, Secunderabad Cantonment Board.",
+    referenceDocument: "Delimitation of Parliamentary and Assembly Constituencies Order, 2008 (Schedule XXVII, Table A)",
     sourcePublicationDate: "2008-08-17",
     sourceEffectiveDate: "2008-02-19",
     whatSourceEstablishes: "Bolarum Bazar area is within Secunderabad Cantonment Board jurisdiction forming AC 71 (Secunderabad Cantonment (SC)).",
@@ -260,9 +260,9 @@ const INDEPENDENT_PIN_EVIDENCE = [
     assignedAcName: "Secunderabad Cantonment",
     candidateAcNumbers: [],
     candidateAcNames: [],
-    officialSource: "Delimitation of Parliamentary and Assembly Constituencies Order, 2008 (Schedule XXXI) & India Post",
-    sourceLocator: "Schedule XXXI, Table B, Entry 71 (Secunderabad Cantonment (SC)), Extent: Hyderabad (M.Corp.) (Part) - Ward No. 24, Secunderabad Cantonment Board.",
-    referenceDocument: "Delimitation of Parliamentary and Assembly Constituencies Order, 2008 (Schedule XXXI, Table B)",
+    officialSource: "Delimitation of Parliamentary and Assembly Constituencies Order, 2008 (Schedule XXVII) & India Post",
+    sourceLocator: "Schedule XXVII, Table A, Entry 71 (Secunderabad Cantonment (SC)), Extent: Hyderabad (M.Corp.) (Part) - Ward No. 24, Secunderabad Cantonment Board.",
+    referenceDocument: "Delimitation of Parliamentary and Assembly Constituencies Order, 2008 (Schedule XXVII, Table A)",
     sourcePublicationDate: "2008-08-17",
     sourceEffectiveDate: "2008-02-19",
     whatSourceEstablishes: "Trimulgherry Head Post Office and central bazar are located in Secunderabad Cantonment Board jurisdiction forming AC 71 (Secunderabad Cantonment (SC)).",
@@ -283,9 +283,9 @@ const INDEPENDENT_PIN_EVIDENCE = [
     assignedAcName: "Goshamahal",
     candidateAcNumbers: [],
     candidateAcNames: [],
-    officialSource: "Delimitation of Parliamentary and Assembly Constituencies Order, 2008 (Schedule XXXI) & India Post",
-    sourceLocator: "Schedule XXXI, Table B, Entry 65 (Goshamahal), Extent: Hyderabad (M.Corp.) (Part) - Ward No. 4, 14, 15 and 21.",
-    referenceDocument: "Delimitation of Parliamentary and Assembly Constituencies Order, 2008 (Schedule XXXI, Table B)",
+    officialSource: "Delimitation of Parliamentary and Assembly Constituencies Order, 2008 (Schedule XXVII) & India Post",
+    sourceLocator: "Schedule XXVII, Table A, Entry 65 (Goshamahal), Extent: Hyderabad (M.Corp.) (Part) - Ward No. 4, 14, 15 and 21.",
+    referenceDocument: "Delimitation of Parliamentary and Assembly Constituencies Order, 2008 (Schedule XXVII, Table A)",
     sourcePublicationDate: "2008-08-17",
     sourceEffectiveDate: "2008-02-19",
     whatSourceEstablishes: "Sultan Bazar delivery area centers around commercial hub in AC 65 (Goshamahal, comprising Hyderabad M.Corp. Ward Nos. 4, 14, 15 and 21).",
@@ -306,9 +306,9 @@ const INDEPENDENT_PIN_EVIDENCE = [
     assignedAcName: "Secunderabad Cantonment",
     candidateAcNumbers: [],
     candidateAcNames: [],
-    officialSource: "Delimitation of Parliamentary and Assembly Constituencies Order, 2008 (Schedule XXXI) & India Post",
-    sourceLocator: "Schedule XXXI, Table B, Entry 71 (Secunderabad Cantonment (SC)), Extent: Hyderabad (M.Corp.) (Part) - Ward No. 24, Secunderabad Cantonment Board.",
-    referenceDocument: "Delimitation of Parliamentary and Assembly Constituencies Order, 2008 (Schedule XXXI, Table B)",
+    officialSource: "Delimitation of Parliamentary and Assembly Constituencies Order, 2008 (Schedule XXVII) & India Post",
+    sourceLocator: "Schedule XXVII, Table A, Entry 71 (Secunderabad Cantonment (SC)), Extent: Hyderabad (M.Corp.) (Part) - Ward No. 24, Secunderabad Cantonment Board.",
+    referenceDocument: "Delimitation of Parliamentary and Assembly Constituencies Order, 2008 (Schedule XXVII, Table A)",
     sourcePublicationDate: "2008-08-17",
     sourceEffectiveDate: "2008-02-19",
     whatSourceEstablishes: "Vasavinagar and Vikramnagar residential colonies lie within Secunderabad Cantonment Board jurisdiction forming AC 71 (Secunderabad Cantonment (SC)).",
@@ -329,9 +329,9 @@ const INDEPENDENT_PIN_EVIDENCE = [
     assignedAcName: "Secunderabad",
     candidateAcNumbers: [],
     candidateAcNames: [],
-    officialSource: "Delimitation of Parliamentary and Assembly Constituencies Order, 2008 (Schedule XXXI) & India Post",
-    sourceLocator: "Schedule XXXI, Table B, Entry 70 (Secunderabad), Extent: Hyderabad (M.Corp.) (Part) - Ward No. 12 (Part) Block No. 7 and 8, Ward No. 20.",
-    referenceDocument: "Delimitation of Parliamentary and Assembly Constituencies Order, 2008 (Schedule XXXI, Table B)",
+    officialSource: "Delimitation of Parliamentary and Assembly Constituencies Order, 2008 (Schedule XXVII) & India Post",
+    sourceLocator: "Schedule XXVII, Table A, Entry 70 (Secunderabad), Extent: Hyderabad (M.Corp.) (Part) - Ward No. 12 (Part) Block No. 7 and 8, Ward No. 20.",
+    referenceDocument: "Delimitation of Parliamentary and Assembly Constituencies Order, 2008 (Schedule XXVII, Table A)",
     sourcePublicationDate: "2008-08-17",
     sourceEffectiveDate: "2008-02-19",
     whatSourceEstablishes: "Tarnaka and Osmania University campus core are in AC 70 (Secunderabad, comprising Hyderabad M.Corp. Ward No. 12 Part Block Nos. 7 and 8, Ward No. 20).",
@@ -352,9 +352,9 @@ const INDEPENDENT_PIN_EVIDENCE = [
     assignedAcName: "Sanathnagar",
     candidateAcNumbers: [],
     candidateAcNames: [],
-    officialSource: "Delimitation of Parliamentary and Assembly Constituencies Order, 2008 (Schedule XXXI) & India Post",
-    sourceLocator: "Schedule XXXI, Table B, Entry 62 (Sanathnagar), Extent: Hyderabad (M.Corp.) (Part) - Ward No. 7.",
-    referenceDocument: "Delimitation of Parliamentary and Assembly Constituencies Order, 2008 (Schedule XXXI, Table B)",
+    officialSource: "Delimitation of Parliamentary and Assembly Constituencies Order, 2008 (Schedule XXVII) & India Post",
+    sourceLocator: "Schedule XXVII, Table A, Entry 62 (Sanathnagar), Extent: Hyderabad (M.Corp.) (Part) - Ward No. 7.",
+    referenceDocument: "Delimitation of Parliamentary and Assembly Constituencies Order, 2008 (Schedule XXVII, Table A)",
     sourcePublicationDate: "2008-08-17",
     sourceEffectiveDate: "2008-02-19",
     whatSourceEstablishes: "Sanathnagar industrial and residential area forms the core of AC 62 (Sanathnagar, comprising Hyderabad M.Corp. Ward No. 7).",
@@ -375,9 +375,9 @@ const INDEPENDENT_PIN_EVIDENCE = [
     assignedAcName: "Musheerabad",
     candidateAcNumbers: [],
     candidateAcNames: [],
-    officialSource: "Delimitation of Parliamentary and Assembly Constituencies Order, 2008 (Schedule XXXI) & India Post",
-    sourceLocator: "Schedule XXXI, Table B, Entry 57 (Musheerabad), Extent: Hyderabad (M.Corp.) (Part) - Ward No. 1.",
-    referenceDocument: "Delimitation of Parliamentary and Assembly Constituencies Order, 2008 (Schedule XXXI, Table B)",
+    officialSource: "Delimitation of Parliamentary and Assembly Constituencies Order, 2008 (Schedule XXVII) & India Post",
+    sourceLocator: "Schedule XXVII, Table A, Entry 57 (Musheerabad), Extent: Hyderabad (M.Corp.) (Part) - Ward No. 1.",
+    referenceDocument: "Delimitation of Parliamentary and Assembly Constituencies Order, 2008 (Schedule XXVII, Table A)",
     sourcePublicationDate: "2008-08-17",
     sourceEffectiveDate: "2008-02-19",
     whatSourceEstablishes: "Musheerabad and RTC X Roads lie within AC 57 (Musheerabad, comprising Hyderabad M.Corp. Ward No. 1).",
@@ -398,9 +398,9 @@ const INDEPENDENT_PIN_EVIDENCE = [
     assignedAcName: "Yakutpura",
     candidateAcNumbers: [],
     candidateAcNames: [],
-    officialSource: "Delimitation of Parliamentary and Assembly Constituencies Order, 2008 (Schedule XXXI) & India Post",
-    sourceLocator: "Schedule XXXI, Table B, Entry 68 (Yakutpura), Extent: Hyderabad (M.Corp.) (Part) - Ward No. 22 and 23.",
-    referenceDocument: "Delimitation of Parliamentary and Assembly Constituencies Order, 2008 (Schedule XXXI, Table B)",
+    officialSource: "Delimitation of Parliamentary and Assembly Constituencies Order, 2008 (Schedule XXVII) & India Post",
+    sourceLocator: "Schedule XXVII, Table A, Entry 68 (Yakutpura), Extent: Hyderabad (M.Corp.) (Part) - Ward No. 22 and 23.",
+    referenceDocument: "Delimitation of Parliamentary and Assembly Constituencies Order, 2008 (Schedule XXVII, Table A)",
     sourcePublicationDate: "2008-08-17",
     sourceEffectiveDate: "2008-02-19",
     whatSourceEstablishes: "Yakutpura and Rein Bazar are constituent localities of AC 68 (Yakutpura, comprising Hyderabad M.Corp. Ward Nos. 22 and 23).",
@@ -421,9 +421,9 @@ const INDEPENDENT_PIN_EVIDENCE = [
     assignedAcName: "Malakpet",
     candidateAcNumbers: [],
     candidateAcNames: [],
-    officialSource: "Delimitation of Parliamentary and Assembly Constituencies Order, 2008 (Schedule XXXI) & India Post",
-    sourceLocator: "Schedule XXXI, Table B, Entry 58 (Malakpet), Extent: Hyderabad (M.Corp.) (Part) - Ward No. 16 (Part) Block No. 1 and 2, Ward No. 17.",
-    referenceDocument: "Delimitation of Parliamentary and Assembly Constituencies Order, 2008 (Schedule XXXI, Table B)",
+    officialSource: "Delimitation of Parliamentary and Assembly Constituencies Order, 2008 (Schedule XXVII) & India Post",
+    sourceLocator: "Schedule XXVII, Table A, Entry 58 (Malakpet), Extent: Hyderabad (M.Corp.) (Part) - Ward No. 16 (Part) Block No. 1 and 2, Ward No. 17.",
+    referenceDocument: "Delimitation of Parliamentary and Assembly Constituencies Order, 2008 (Schedule XXVII, Table A)",
     sourcePublicationDate: "2008-08-17",
     sourceEffectiveDate: "2008-02-19",
     whatSourceEstablishes: "Saidabad and Malakpet proper are core areas of AC 58 (Malakpet, comprising Hyderabad M.Corp. Ward No. 16 Part Block Nos. 1 and 2, Ward No. 17).",
@@ -444,9 +444,9 @@ const INDEPENDENT_PIN_EVIDENCE = [
     assignedAcName: "Secunderabad",
     candidateAcNumbers: [],
     candidateAcNames: [],
-    officialSource: "Delimitation of Parliamentary and Assembly Constituencies Order, 2008 (Schedule XXXI) & India Post",
-    sourceLocator: "Schedule XXXI, Table B, Entry 70 (Secunderabad), Extent: Hyderabad (M.Corp.) (Part) - Ward No. 12 (Part) Block No. 7 and 8, Ward No. 20.",
-    referenceDocument: "Delimitation of Parliamentary and Assembly Constituencies Order, 2008 (Schedule XXXI, Table B)",
+    officialSource: "Delimitation of Parliamentary and Assembly Constituencies Order, 2008 (Schedule XXVII) & India Post",
+    sourceLocator: "Schedule XXVII, Table A, Entry 70 (Secunderabad), Extent: Hyderabad (M.Corp.) (Part) - Ward No. 12 (Part) Block No. 7 and 8, Ward No. 20.",
+    referenceDocument: "Delimitation of Parliamentary and Assembly Constituencies Order, 2008 (Schedule XXVII, Table A)",
     sourcePublicationDate: "2008-08-17",
     sourceEffectiveDate: "2008-02-19",
     whatSourceEstablishes: "Chilkalguda and Padmarao Nagar lie within AC 70 (Secunderabad, comprising Hyderabad M.Corp. Ward No. 12 Part Block Nos. 7 and 8, Ward No. 20).",
@@ -467,9 +467,9 @@ const INDEPENDENT_PIN_EVIDENCE = [
     assignedAcName: "Secunderabad Cantonment",
     candidateAcNumbers: [],
     candidateAcNames: [],
-    officialSource: "Delimitation of Parliamentary and Assembly Constituencies Order, 2008 (Schedule XXXI) & India Post",
-    sourceLocator: "Schedule XXXI, Table B, Entry 71 (Secunderabad Cantonment (SC)), Extent: Hyderabad (M.Corp.) (Part) - Ward No. 24, Secunderabad Cantonment Board.",
-    referenceDocument: "Delimitation of Parliamentary and Assembly Constituencies Order, 2008 (Schedule XXXI, Table B)",
+    officialSource: "Delimitation of Parliamentary and Assembly Constituencies Order, 2008 (Schedule XXVII) & India Post",
+    sourceLocator: "Schedule XXVII, Table A, Entry 71 (Secunderabad Cantonment (SC)), Extent: Hyderabad (M.Corp.) (Part) - Ward No. 24, Secunderabad Cantonment Board.",
+    referenceDocument: "Delimitation of Parliamentary and Assembly Constituencies Order, 2008 (Schedule XXVII, Table A)",
     sourcePublicationDate: "2008-08-17",
     sourceEffectiveDate: "2008-02-19",
     whatSourceEstablishes: "West Marredpally and Pickett are inside Secunderabad Cantonment Board jurisdiction forming AC 71 (Secunderabad Cantonment (SC)).",
@@ -490,9 +490,9 @@ const INDEPENDENT_PIN_EVIDENCE = [
     assignedAcName: null,
     candidateAcNumbers: [64, 63],
     candidateAcNames: ["Karwan", "Nampally"],
-    officialSource: "Delimitation of Parliamentary and Assembly Constituencies Order, 2008 (Schedule XXXI) & India Post",
-    sourceLocator: "Schedule XXXI, Table B, Entries 64, 63; Extents: AC 64: Hyderabad (M.Corp.) (Part) - Ward No. 9 and 13 (Part) Block No. 1 to 3. | AC 63: Hyderabad (M.Corp.) (Part) - Ward No. 10 and 11, Ward No. 12 (Part) Block No. 1 to 6.",
-    referenceDocument: "Delimitation of Parliamentary and Assembly Constituencies Order, 2008 (Schedule XXXI, Table B)",
+    officialSource: "Delimitation of Parliamentary and Assembly Constituencies Order, 2008 (Schedule XXVII) & India Post",
+    sourceLocator: "Schedule XXVII, Table A, Entries 64, 63; Extents: AC 64: Hyderabad (M.Corp.) (Part) - Ward No. 9 and 13 (Part) Block No. 1 to 3. | AC 63: Hyderabad (M.Corp.) (Part) - Ward No. 10 and 11, Ward No. 12 (Part) Block No. 1 to 6.",
+    referenceDocument: "Delimitation of Parliamentary and Assembly Constituencies Order, 2008 (Schedule XXVII, Table A)",
     sourcePublicationDate: "2008-08-17",
     sourceEffectiveDate: "2008-02-19",
     whatSourceEstablishes: "Mehdipatnam delivery zone spans across Karwan (AC 64, Ward Nos. 9 and 13 Part) and Nampally (AC 63, Ward Nos. 10 and 11, Ward No. 12 Part).",
@@ -513,9 +513,9 @@ const INDEPENDENT_PIN_EVIDENCE = [
     assignedAcName: "Jubilee Hills",
     candidateAcNumbers: [],
     candidateAcNames: [],
-    officialSource: "Delimitation of Parliamentary and Assembly Constituencies Order, 2008 (Schedule XXXI) & India Post",
-    sourceLocator: "Schedule XXXI, Table B, Entry 61 (Jubilee Hills), Extent: Hyderabad (M.Corp.) (Part) - Ward No. 8 (Part) Block No. 1 to 3.",
-    referenceDocument: "Delimitation of Parliamentary and Assembly Constituencies Order, 2008 (Schedule XXXI, Table B)",
+    officialSource: "Delimitation of Parliamentary and Assembly Constituencies Order, 2008 (Schedule XXVII) & India Post",
+    sourceLocator: "Schedule XXVII, Table A, Entry 61 (Jubilee Hills), Extent: Hyderabad (M.Corp.) (Part) - Ward No. 8 (Part) Block No. 1 to 3.",
+    referenceDocument: "Delimitation of Parliamentary and Assembly Constituencies Order, 2008 (Schedule XXVII, Table A)",
     sourcePublicationDate: "2008-08-17",
     sourceEffectiveDate: "2008-02-19",
     whatSourceEstablishes: "Jubilee Hills proper and Film Nagar constitute the core of AC 61 (Jubilee Hills, comprising Hyderabad M.Corp. Ward No. 8 Part Block Nos. 1 to 3).",
@@ -536,9 +536,9 @@ const INDEPENDENT_PIN_EVIDENCE = [
     assignedAcName: null,
     candidateAcNumbers: [60, 61],
     candidateAcNames: ["Khairatabad", "Jubilee Hills"],
-    officialSource: "Delimitation of Parliamentary and Assembly Constituencies Order, 2008 (Schedule XXXI) & India Post",
-    sourceLocator: "Schedule XXXI, Table B, Entries 60, 61; Extents: AC 60: Hyderabad (M.Corp.) (Part) - Ward No. 6. | AC 61: Hyderabad (M.Corp.) (Part) - Ward No. 8 (Part) Block No. 1 to 3.",
-    referenceDocument: "Delimitation of Parliamentary and Assembly Constituencies Order, 2008 (Schedule XXXI, Table B)",
+    officialSource: "Delimitation of Parliamentary and Assembly Constituencies Order, 2008 (Schedule XXVII) & India Post",
+    sourceLocator: "Schedule XXVII, Table A, Entries 60, 61; Extents: AC 60: Hyderabad (M.Corp.) (Part) - Ward No. 6. | AC 61: Hyderabad (M.Corp.) (Part) - Ward No. 8 (Part) Block No. 1 to 3.",
+    referenceDocument: "Delimitation of Parliamentary and Assembly Constituencies Order, 2008 (Schedule XXVII, Table A)",
     sourcePublicationDate: "2008-08-17",
     sourceEffectiveDate: "2008-02-19",
     whatSourceEstablishes: "Banjara Hills delivery zone is divided between Khairatabad (AC 60, Ward No. 6) and Jubilee Hills (AC 61, Ward No. 8 Part Block Nos. 1 to 3).",
@@ -559,9 +559,9 @@ const INDEPENDENT_PIN_EVIDENCE = [
     assignedAcName: "Malkajgiri",
     candidateAcNumbers: [],
     candidateAcNames: [],
-    officialSource: "Delimitation of Parliamentary and Assembly Constituencies Order, 2008 (Schedule XXXI) & India Post",
-    sourceLocator: "Schedule XXXI, Table B, Entry 44 (Malkajgiri), Extent: Malkajgiri Mandal (Part), Malkajgiri (M) and Alwal (M).",
-    referenceDocument: "Delimitation of Parliamentary and Assembly Constituencies Order, 2008 (Schedule XXXI, Table B)",
+    officialSource: "Delimitation of Parliamentary and Assembly Constituencies Order, 2008 (Schedule XXVII) & India Post",
+    sourceLocator: "Schedule XXVII, Table A, Entry 44 (Malkajgiri), Extent: Malkajgiri Mandal (Part), Malkajgiri (M) and Alwal (M).",
+    referenceDocument: "Delimitation of Parliamentary and Assembly Constituencies Order, 2008 (Schedule XXVII, Table A)",
     sourcePublicationDate: "2008-08-17",
     sourceEffectiveDate: "2008-02-19",
     whatSourceEstablishes: "Alwal area falls within AC 44 (Malkajgiri, comprising Malkajgiri Mandal Part, Malkajgiri Municipality and Alwal Municipality).",
@@ -582,9 +582,9 @@ const INDEPENDENT_PIN_EVIDENCE = [
     assignedAcName: "Chandrayangutta",
     candidateAcNumbers: [],
     candidateAcNames: [],
-    officialSource: "Delimitation of Parliamentary and Assembly Constituencies Order, 2008 (Schedule XXXI) & India Post",
-    sourceLocator: "Schedule XXXI, Table B, Entry 67 (Chandrayangutta), Extent: Hyderabad (M.Corp.) (Part) - Ward No. 16 to 18.",
-    referenceDocument: "Delimitation of Parliamentary and Assembly Constituencies Order, 2008 (Schedule XXXI, Table B)",
+    officialSource: "Delimitation of Parliamentary and Assembly Constituencies Order, 2008 (Schedule XXVII) & India Post",
+    sourceLocator: "Schedule XXVII, Table A, Entry 67 (Chandrayangutta), Extent: Hyderabad (M.Corp.) (Part) - Ward No. 16 to 18.",
+    referenceDocument: "Delimitation of Parliamentary and Assembly Constituencies Order, 2008 (Schedule XXVII, Table A)",
     sourcePublicationDate: "2008-08-17",
     sourceEffectiveDate: "2008-02-19",
     whatSourceEstablishes: "Chandrayangutta, Barkas, and Falaknuma form the core of AC 67 (Chandrayangutta, comprising Hyderabad M.Corp. Ward Nos. 16 to 18). Reported correction 69 -> 67 is verified against statutory seed records.",
@@ -605,9 +605,9 @@ const INDEPENDENT_PIN_EVIDENCE = [
     assignedAcName: null,
     candidateAcNumbers: [71, 46],
     candidateAcNames: ["Secunderabad Cantonment", "Kukatpally"],
-    officialSource: "Delimitation of Parliamentary and Assembly Constituencies Order, 2008 (Schedule XXXI) & India Post",
-    sourceLocator: "Schedule XXXI, Table B, Entries 71, 46; Extents: AC 71: Hyderabad (M.Corp.) (Part) - Ward No. 24, Secunderabad Cantonment Board. | AC 46: Balanagar Mandal (Part), Kukatpally (M) (Part) - Ward No. 1 to 4.",
-    referenceDocument: "Delimitation of Parliamentary and Assembly Constituencies Order, 2008 (Schedule XXXI, Table B)",
+    officialSource: "Delimitation of Parliamentary and Assembly Constituencies Order, 2008 (Schedule XXVII) & India Post",
+    sourceLocator: "Schedule XXVII, Table A, Entries 71, 46; Extents: AC 71: Hyderabad (M.Corp.) (Part) - Ward No. 24, Secunderabad Cantonment Board. | AC 46: Balanagar Mandal (Part), Kukatpally (M) (Part) - Ward No. 1 to 4.",
+    referenceDocument: "Delimitation of Parliamentary and Assembly Constituencies Order, 2008 (Schedule XXVII, Table A)",
     sourcePublicationDate: "2008-08-17",
     sourceEffectiveDate: "2008-02-19",
     whatSourceEstablishes: "Bowenpally delivery zone spans Secunderabad Cantonment (AC 71, Secunderabad Cantonment Board) and Kukatpally (AC 46, Balanagar Mandal Part, Kukatpally Municipality Part Ward Nos. 1 to 4).",
@@ -628,9 +628,9 @@ const INDEPENDENT_PIN_EVIDENCE = [
     assignedAcName: "Uppal",
     candidateAcNumbers: [],
     candidateAcNames: [],
-    officialSource: "Delimitation of Parliamentary and Assembly Constituencies Order, 2008 (Schedule XXXI) & India Post",
-    sourceLocator: "Schedule XXXI, Table B, Entry 47 (Uppal), Extent: Uppal Mandal (Part), Uppal Kalan (M) and Kapra (M).",
-    referenceDocument: "Delimitation of Parliamentary and Assembly Constituencies Order, 2008 (Schedule XXXI, Table B)",
+    officialSource: "Delimitation of Parliamentary and Assembly Constituencies Order, 2008 (Schedule XXVII) & India Post",
+    sourceLocator: "Schedule XXVII, Table A, Entry 47 (Uppal), Extent: Uppal Mandal (Part), Uppal Kalan (M) and Kapra (M).",
+    referenceDocument: "Delimitation of Parliamentary and Assembly Constituencies Order, 2008 (Schedule XXVII, Table A)",
     sourcePublicationDate: "2008-08-17",
     sourceEffectiveDate: "2008-02-19",
     whatSourceEstablishes: "Former Kapra Municipality corresponds to northern half of AC 47 (Uppal, comprising Uppal Mandal Part, Uppal Kalan Municipality and Kapra Municipality).",
@@ -651,9 +651,9 @@ const INDEPENDENT_PIN_EVIDENCE = [
     assignedAcName: "Bahadurpura",
     candidateAcNumbers: [],
     candidateAcNames: [],
-    officialSource: "Delimitation of Parliamentary and Assembly Constituencies Order, 2008 (Schedule XXXI) & India Post",
-    sourceLocator: "Schedule XXXI, Table B, Entry 69 (Bahadurpura), Extent: Hyderabad (M.Corp.) (Part) - Ward No. 19 and Ward No. 18 (Part) Block No. 4 to 8.",
-    referenceDocument: "Delimitation of Parliamentary and Assembly Constituencies Order, 2008 (Schedule XXXI, Table B)",
+    officialSource: "Delimitation of Parliamentary and Assembly Constituencies Order, 2008 (Schedule XXVII) & India Post",
+    sourceLocator: "Schedule XXVII, Table A, Entry 69 (Bahadurpura), Extent: Hyderabad (M.Corp.) (Part) - Ward No. 19 and Ward No. 18 (Part) Block No. 4 to 8.",
+    referenceDocument: "Delimitation of Parliamentary and Assembly Constituencies Order, 2008 (Schedule XXVII, Table A)",
     sourcePublicationDate: "2008-08-17",
     sourceEffectiveDate: "2008-02-19",
     whatSourceEstablishes: "Bahadurpura and Nehru Zoological Park lie in AC 69 (Bahadurpura, comprising Hyderabad M.Corp. Ward No. 19 and Ward No. 18 Part Block Nos. 4 to 8). Reported correction 66 -> 69 is verified against statutory seed records.",
@@ -674,9 +674,9 @@ const INDEPENDENT_PIN_EVIDENCE = [
     assignedAcName: "Kukatpally",
     candidateAcNumbers: [],
     candidateAcNames: [],
-    officialSource: "Delimitation of Parliamentary and Assembly Constituencies Order, 2008 (Schedule XXXI) & India Post",
-    sourceLocator: "Schedule XXXI, Table B, Entry 46 (Kukatpally), Extent: Balanagar Mandal (Part), Kukatpally (M) (Part) - Ward No. 1 to 4.",
-    referenceDocument: "Delimitation of Parliamentary and Assembly Constituencies Order, 2008 (Schedule XXXI, Table B)",
+    officialSource: "Delimitation of Parliamentary and Assembly Constituencies Order, 2008 (Schedule XXVII) & India Post",
+    sourceLocator: "Schedule XXVII, Table A, Entry 46 (Kukatpally), Extent: Balanagar Mandal (Part), Kukatpally (M) (Part) - Ward No. 1 to 4.",
+    referenceDocument: "Delimitation of Parliamentary and Assembly Constituencies Order, 2008 (Schedule XXVII, Table A)",
     sourcePublicationDate: "2008-08-17",
     sourceEffectiveDate: "2008-02-19",
     whatSourceEstablishes: "KPHB Colony and central Kukatpally are core areas of AC 46 (Kukatpally, comprising Balanagar Mandal Part, Kukatpally Municipality Part Ward Nos. 1 to 4).",
@@ -697,9 +697,9 @@ const INDEPENDENT_PIN_EVIDENCE = [
     assignedAcName: "Serilingampally",
     candidateAcNumbers: [],
     candidateAcNames: [],
-    officialSource: "Delimitation of Parliamentary and Assembly Constituencies Order, 2008 (Schedule XXXI) & India Post",
-    sourceLocator: "Schedule XXXI, Table B, Entry 52 (Serilingampally), Extent: Serilingampally Mandal, Balanagar Mandal (Part) Kukatpally (M) (Part) - Ward No. 5 to 16.",
-    referenceDocument: "Delimitation of Parliamentary and Assembly Constituencies Order, 2008 (Schedule XXXI, Table B)",
+    officialSource: "Delimitation of Parliamentary and Assembly Constituencies Order, 2008 (Schedule XXVII) & India Post",
+    sourceLocator: "Schedule XXVII, Table A, Entry 52 (Serilingampally), Extent: Serilingampally Mandal, Balanagar Mandal (Part) Kukatpally (M) (Part) - Ward No. 5 to 16.",
+    referenceDocument: "Delimitation of Parliamentary and Assembly Constituencies Order, 2008 (Schedule XXVII, Table A)",
     sourcePublicationDate: "2008-08-17",
     sourceEffectiveDate: "2008-02-19",
     whatSourceEstablishes: "Madhapur village was part of Serilingampally Municipality forming AC 52 (Serilingampally, comprising Serilingampally Mandal, Balanagar Mandal Part Kukatpally Municipality Part Ward Nos. 5 to 16).",
@@ -720,9 +720,9 @@ const INDEPENDENT_PIN_EVIDENCE = [
     assignedAcName: "Serilingampally",
     candidateAcNumbers: [],
     candidateAcNames: [],
-    officialSource: "Delimitation of Parliamentary and Assembly Constituencies Order, 2008 (Schedule XXXI) & India Post",
-    sourceLocator: "Schedule XXXI, Table B, Entry 52 (Serilingampally), Extent: Serilingampally Mandal, Balanagar Mandal (Part) Kukatpally (M) (Part) - Ward No. 5 to 16.",
-    referenceDocument: "Delimitation of Parliamentary and Assembly Constituencies Order, 2008 (Schedule XXXI, Table B)",
+    officialSource: "Delimitation of Parliamentary and Assembly Constituencies Order, 2008 (Schedule XXVII) & India Post",
+    sourceLocator: "Schedule XXVII, Table A, Entry 52 (Serilingampally), Extent: Serilingampally Mandal, Balanagar Mandal (Part) Kukatpally (M) (Part) - Ward No. 5 to 16.",
+    referenceDocument: "Delimitation of Parliamentary and Assembly Constituencies Order, 2008 (Schedule XXVII, Table A)",
     sourcePublicationDate: "2008-08-17",
     sourceEffectiveDate: "2008-02-19",
     whatSourceEstablishes: "Kondapur and Gachibowli were villages in Serilingampally Municipality forming AC 52 (Serilingampally, comprising Serilingampally Mandal, Balanagar Mandal Part Kukatpally Municipality Part Ward Nos. 5 to 16).",
@@ -743,9 +743,9 @@ const INDEPENDENT_PIN_EVIDENCE = [
     assignedAcName: "Quthbullapur",
     candidateAcNumbers: [],
     candidateAcNames: [],
-    officialSource: "Delimitation of Parliamentary and Assembly Constituencies Order, 2008 (Schedule XXXI) & India Post",
-    sourceLocator: "Schedule XXXI, Table B, Entry 45 (Quthbullapur), Extent: Quthbullapur Mandal.",
-    referenceDocument: "Delimitation of Parliamentary and Assembly Constituencies Order, 2008 (Schedule XXXI, Table B)",
+    officialSource: "Delimitation of Parliamentary and Assembly Constituencies Order, 2008 (Schedule XXVII) & India Post",
+    sourceLocator: "Schedule XXVII, Table A, Entry 45 (Quthbullapur), Extent: Quthbullapur Mandal.",
+    referenceDocument: "Delimitation of Parliamentary and Assembly Constituencies Order, 2008 (Schedule XXVII, Table A)",
     sourcePublicationDate: "2008-08-17",
     sourceEffectiveDate: "2008-02-19",
     whatSourceEstablishes: "Nizampet, Pragathi Nagar, and Bachupally fall within Quthbullapur Mandal forming AC 45 (Quthbullapur).",
@@ -766,9 +766,9 @@ const INDEPENDENT_PIN_EVIDENCE = [
     assignedAcName: "Vijayawada West",
     candidateAcNumbers: [],
     candidateAcNames: [],
-    officialSource: "Delimitation of Parliamentary and Assembly Constituencies Order, 2008 (Schedule II) & India Post",
-    sourceLocator: "Schedule II, Table B, Entry 79 (Vijayawada West), Extent: Vijayawada (Urban) Mandal (Part), Vijayawada (M.Corp.) (Part) - Ward No. 1 to 14, 16 to 22 and 42 to 44.",
-    referenceDocument: "Delimitation of Parliamentary and Assembly Constituencies Order, 2008 (Schedule II, Table B)",
+    officialSource: "Delimitation of Parliamentary and Assembly Constituencies Order, 2008 (Schedule III) & India Post",
+    sourceLocator: "Schedule III, Table A, Entry 79 (Vijayawada West), Extent: Vijayawada (Urban) Mandal (Part), Vijayawada (M.Corp.) (Part) - Ward No. 1 to 14, 16 to 22 and 42 to 44.",
+    referenceDocument: "Delimitation of Parliamentary and Assembly Constituencies Order, 2008 (Schedule III, Table A)",
     sourcePublicationDate: "2008-08-17",
     sourceEffectiveDate: "2008-02-19",
     whatSourceEstablishes: "Vijayawada One Town corresponds to AC 79 (Vijayawada West, comprising Vijayawada Urban Mandal Part, Vijayawada M.Corp. Part Ward Nos. 1 to 14, 16 to 22 and 42 to 44). Reported correction 80 -> 79 is verified against statutory seed records.",
@@ -789,9 +789,9 @@ const INDEPENDENT_PIN_EVIDENCE = [
     assignedAcName: "Vijayawada Central",
     candidateAcNumbers: [],
     candidateAcNames: [],
-    officialSource: "Delimitation of Parliamentary and Assembly Constituencies Order, 2008 (Schedule II) & India Post",
-    sourceLocator: "Schedule II, Table B, Entry 80 (Vijayawada Central), Extent: Vijayawada (Urban) Mandal (Part), Vijayawada (M.Corp.) (Part) - Ward No. 15, 23 to 34, 45 to 48 and 50 to 53.",
-    referenceDocument: "Delimitation of Parliamentary and Assembly Constituencies Order, 2008 (Schedule II, Table B)",
+    officialSource: "Delimitation of Parliamentary and Assembly Constituencies Order, 2008 (Schedule III) & India Post",
+    sourceLocator: "Schedule III, Table A, Entry 80 (Vijayawada Central), Extent: Vijayawada (Urban) Mandal (Part), Vijayawada (M.Corp.) (Part) - Ward No. 15, 23 to 34, 45 to 48 and 50 to 53.",
+    referenceDocument: "Delimitation of Parliamentary and Assembly Constituencies Order, 2008 (Schedule III, Table A)",
     sourcePublicationDate: "2008-08-17",
     sourceEffectiveDate: "2008-02-19",
     whatSourceEstablishes: "Suryaraopet and central business district lie in AC 80 (Vijayawada Central, comprising Vijayawada Urban Mandal Part, Vijayawada M.Corp. Part Ward Nos. 15, 23 to 34, 45 to 48 and 50 to 53). Reported correction 81 -> 80 is verified against statutory seed records.",
@@ -812,9 +812,9 @@ const INDEPENDENT_PIN_EVIDENCE = [
     assignedAcName: "Visakhapatnam South",
     candidateAcNumbers: [],
     candidateAcNames: [],
-    officialSource: "Delimitation of Parliamentary and Assembly Constituencies Order, 2008 (Schedule II) & India Post",
-    sourceLocator: "Schedule II, Table B, Entry 22 (Visakhapatnam South), Extent: Visakhapatnam (Urban) Mandal (Part), Visakhapatnam (M.Corp.) (Part) - Ward No. 12 to 34, 42 to 43 and 46 to 48.",
-    referenceDocument: "Delimitation of Parliamentary and Assembly Constituencies Order, 2008 (Schedule II, Table B)",
+    officialSource: "Delimitation of Parliamentary and Assembly Constituencies Order, 2008 (Schedule III) & India Post",
+    sourceLocator: "Schedule III, Table A, Entry 22 (Visakhapatnam South), Extent: Visakhapatnam (Urban) Mandal (Part), Visakhapatnam (M.Corp.) (Part) - Ward No. 12 to 34, 42 to 43 and 46 to 48.",
+    referenceDocument: "Delimitation of Parliamentary and Assembly Constituencies Order, 2008 (Schedule III, Table A)",
     sourcePublicationDate: "2008-08-17",
     sourceEffectiveDate: "2008-02-19",
     whatSourceEstablishes: "Visakhapatnam Port and old town area are in AC 22 (Visakhapatnam South, comprising Visakhapatnam Urban Mandal Part, Visakhapatnam M.Corp. Part Ward Nos. 12 to 34, 42 to 43 and 46 to 48). Reported correction 21 -> 22 is verified against statutory seed records.",
@@ -835,9 +835,9 @@ const INDEPENDENT_PIN_EVIDENCE = [
     assignedAcName: "Visakhapatnam South",
     candidateAcNumbers: [],
     candidateAcNames: [],
-    officialSource: "Delimitation of Parliamentary and Assembly Constituencies Order, 2008 (Schedule II) & India Post",
-    sourceLocator: "Schedule II, Table B, Entry 22 (Visakhapatnam South), Extent: Visakhapatnam (Urban) Mandal (Part), Visakhapatnam (M.Corp.) (Part) - Ward No. 12 to 34, 42 to 43 and 46 to 48.",
-    referenceDocument: "Delimitation of Parliamentary and Assembly Constituencies Order, 2008 (Schedule II, Table B)",
+    officialSource: "Delimitation of Parliamentary and Assembly Constituencies Order, 2008 (Schedule III) & India Post",
+    sourceLocator: "Schedule III, Table A, Entry 22 (Visakhapatnam South), Extent: Visakhapatnam (Urban) Mandal (Part), Visakhapatnam (M.Corp.) (Part) - Ward No. 12 to 34, 42 to 43 and 46 to 48.",
+    referenceDocument: "Delimitation of Parliamentary and Assembly Constituencies Order, 2008 (Schedule III, Table A)",
     sourcePublicationDate: "2008-08-17",
     sourceEffectiveDate: "2008-02-19",
     whatSourceEstablishes: "Jagadamba Junction and Poorna Market are commercial centers of AC 22 (Visakhapatnam South, comprising Visakhapatnam Urban Mandal Part, Visakhapatnam M.Corp. Part Ward Nos. 12 to 34, 42 to 43 and 46 to 48). Reported correction 21 -> 22 is verified against statutory seed records.",
@@ -858,9 +858,9 @@ const INDEPENDENT_PIN_EVIDENCE = [
     assignedAcName: "Tirupati",
     candidateAcNumbers: [],
     candidateAcNames: [],
-    officialSource: "Delimitation of Parliamentary and Assembly Constituencies Order, 2008 (Schedule II) & India Post",
-    sourceLocator: "Schedule II, Table B, Entry 167 (Tirupati), Extent: Tirupati (Urban) Mandal (Part), Tirupati (M) (Part) - Ward No. 1 to 30.",
-    referenceDocument: "Delimitation of Parliamentary and Assembly Constituencies Order, 2008 (Schedule II, Table B)",
+    officialSource: "Delimitation of Parliamentary and Assembly Constituencies Order, 2008 (Schedule III) & India Post",
+    sourceLocator: "Schedule III, Table A, Entry 167 (Tirupati), Extent: Tirupati (Urban) Mandal (Part), Tirupati (M) (Part) - Ward No. 1 to 30.",
+    referenceDocument: "Delimitation of Parliamentary and Assembly Constituencies Order, 2008 (Schedule III, Table A)",
     sourcePublicationDate: "2008-08-17",
     sourceEffectiveDate: "2008-02-19",
     whatSourceEstablishes: "Tirupati municipal area comprises AC 167 (Tirupati, comprising Tirupati Urban Mandal Part, Tirupati Municipality Part Ward Nos. 1 to 30). Reported correction 168 -> 167 is verified against statutory seed records.",
@@ -881,9 +881,9 @@ const INDEPENDENT_PIN_EVIDENCE = [
     assignedAcName: "Kurnool",
     candidateAcNumbers: [],
     candidateAcNames: [],
-    officialSource: "Delimitation of Parliamentary and Assembly Constituencies Order, 2008 (Schedule II) & India Post",
-    sourceLocator: "Schedule II, Table B, Entry 137 (Kurnool), Extent: Kurnool Mandal (Part), Kurnool (M.Corp.) (Part) - Ward No. 1 to 48.",
-    referenceDocument: "Delimitation of Parliamentary and Assembly Constituencies Order, 2008 (Schedule II, Table B)",
+    officialSource: "Delimitation of Parliamentary and Assembly Constituencies Order, 2008 (Schedule III) & India Post",
+    sourceLocator: "Schedule III, Table A, Entry 137 (Kurnool), Extent: Kurnool Mandal (Part), Kurnool (M.Corp.) (Part) - Ward No. 1 to 48.",
+    referenceDocument: "Delimitation of Parliamentary and Assembly Constituencies Order, 2008 (Schedule III, Table A)",
     sourcePublicationDate: "2008-08-17",
     sourceEffectiveDate: "2008-02-19",
     whatSourceEstablishes: "Kurnool Head Post Office, Collectorate, and old town are within AC 137 (Kurnool, comprising Kurnool Mandal Part, Kurnool M.Corp. Part Ward Nos. 1 to 48).",
@@ -924,8 +924,8 @@ export function buildManifest() {
     fs.mkdirSync(targetDir, { recursive: true });
   }
 
-  const tsExtractRelPath = 'data/evidence/w021_5/authoritative/eci_delimitation_2008_schedule_xxxi_table_b_extract.txt';
-  const apExtractRelPath = 'data/evidence/w021_5/authoritative/eci_delimitation_2008_schedule_ii_table_b_extract.txt';
+  const tsExtractRelPath = 'data/evidence/w021_5/authoritative/ap_reorganisation_act_2014_schedule_xxvii_telangana_table_a_extract.txt';
+  const apExtractRelPath = 'data/evidence/w021_5/authoritative/ap_reorganisation_act_2014_schedule_iii_andhra_pradesh_table_a_extract.txt';
   const tsFullPath = path.resolve(REPO_ROOT, tsExtractRelPath);
   const apFullPath = path.resolve(REPO_ROOT, apExtractRelPath);
 
@@ -934,6 +934,17 @@ export function buildManifest() {
   }
   if (!fs.existsSync(apFullPath)) {
     throw new Error(`Missing required in-repo source extract: ${apFullPath}`);
+  }
+
+  // Never regenerate a positive manifest from bytes that their own header explicitly
+  // invalidates. SHA-256 establishes byte integrity, not legal applicability or truth.
+  for (const [stateCode, sourcePath] of [['TS', tsFullPath], ['AP', apFullPath]]) {
+    const header = fs.readFileSync(sourcePath, 'utf8').slice(0, 2048);
+    if (/STATUS:\s*INVALIDATED/i.test(header) || /DO NOT USE AS AN AUTHORITATIVE/i.test(header)) {
+      throw new Error(
+        `Refusing to build a positive evidence manifest: ${stateCode} source extract is explicitly INVALIDATED (${path.relative(REPO_ROOT, sourcePath)}). Acquire and verify the legally applicable source before regenerating.`
+      );
+    }
   }
 
   const tsSha256 = computeFileSha256(tsFullPath);
@@ -956,25 +967,53 @@ export function buildManifest() {
     if (entry.assignedAcNumber) {
       const parsed = parsedSource[entry.assignedAcNumber];
       if (parsed) {
-        const scheduleName = isAP ? 'Schedule II' : 'Schedule XXXI';
-        sourcePassageExtract = `${scheduleName}, Table B, Entry ${parsed.entryNo}. ${parsed.name}: ${parsed.extent}`;
+        const scheduleName = isAP ? 'Schedule III' : 'Schedule XXVII';
+        sourcePassageExtract = `${scheduleName}, Table A, Entry ${parsed.entryNo}. ${parsed.name}: ${parsed.extent}`;
       } else {
         sourcePassageExtract = `ENTRY_NOT_FOUND_IN_SOURCE_ARTIFACT: Entry ${entry.assignedAcNumber}`;
       }
     } else if (isMultiAc) {
       if (entry.pinCode === '500001') {
-        sourcePassageExtract = `Schedule XXXI, Table B: AC 65 (${tsEntries[65]?.name || 'Goshamahal'}) covers ${tsEntries[65]?.extent || ''}; AC 63 (${tsEntries[63]?.name || 'Nampally'}) covers ${tsEntries[63]?.extent || ''}; AC 58 (${tsEntries[58]?.name || 'Malakpet'}) covers ${tsEntries[58]?.extent || ''}. Hyderabad GPO delivery beat spans across these ward divisions.`;
+        sourcePassageExtract = `Schedule XXVII, Table A: AC 65 (${tsEntries[65]?.name || 'Goshamahal'}) covers ${tsEntries[65]?.extent || ''}; AC 63 (${tsEntries[63]?.name || 'Nampally'}) covers ${tsEntries[63]?.extent || ''}; AC 58 (${tsEntries[58]?.name || 'Malakpet'}) covers ${tsEntries[58]?.extent || ''}. These are statutory candidate extents only; the source does not establish the postal delivery beat's geographic coverage.`;
       } else if (entry.pinCode === '500028') {
-        sourcePassageExtract = `Schedule XXXI, Table B: AC 64 (${tsEntries[64]?.name || 'Karwan'}) covers ${tsEntries[64]?.extent || ''}; AC 63 (${tsEntries[63]?.name || 'Nampally'}) covers ${tsEntries[63]?.extent || ''}. Mehdipatnam delivery beat spans across Karwan and Nampally.`;
+        sourcePassageExtract = `Schedule XXVII, Table A: AC 64 (${tsEntries[64]?.name || 'Karwan'}) covers ${tsEntries[64]?.extent || ''}; AC 63 (${tsEntries[63]?.name || 'Nampally'}) covers ${tsEntries[63]?.extent || ''}. These are statutory candidate extents only; the source does not establish the postal delivery beat's geographic coverage.`;
       } else if (entry.pinCode === '500034') {
-        sourcePassageExtract = `Schedule XXXI, Table B: AC 60 (${tsEntries[60]?.name || 'Khairatabad'}) covers ${tsEntries[60]?.extent || ''}; AC 61 (${tsEntries[61]?.name || 'Jubilee Hills'}) covers ${tsEntries[61]?.extent || ''}. Banjara Hills delivery beat spans across Khairatabad and Jubilee Hills.`;
+        sourcePassageExtract = `Schedule XXVII, Table A: AC 60 (${tsEntries[60]?.name || 'Khairatabad'}) covers ${tsEntries[60]?.extent || ''}; AC 61 (${tsEntries[61]?.name || 'Jubilee Hills'}) covers ${tsEntries[61]?.extent || ''}. These are statutory candidate extents only; the source does not establish the postal delivery beat's geographic coverage.`;
       } else if (entry.pinCode === '500056') {
-        sourcePassageExtract = `Schedule XXXI, Table B: AC 71 (${tsEntries[71]?.name || 'Secunderabad Cantonment'}) covers ${tsEntries[71]?.extent || ''}; AC 46 (${tsEntries[46]?.name || 'Kukatpally'}) covers ${tsEntries[46]?.extent || ''}. Bowenpally delivery beat spans across Secunderabad Cantonment and Kukatpally.`;
+        sourcePassageExtract = `Schedule XXVII, Table A: AC 71 (${tsEntries[71]?.name || 'Secunderabad Cantonment'}) covers ${tsEntries[71]?.extent || ''}; AC 46 (${tsEntries[46]?.name || 'Kukatpally'}) covers ${tsEntries[46]?.extent || ''}. These are statutory candidate extents only; the source does not establish the postal delivery beat's geographic coverage.`;
       }
     }
 
+    const scheduleName = isAP ? 'Schedule III' : 'Schedule XXVII';
+    const referenceDocument = isAP
+      ? 'Andhra Pradesh Reorganisation Act, 2014 (Second Schedule; substituted Schedule III, Table A — Andhra Pradesh Assembly Constituencies)'
+      : 'Andhra Pradesh Reorganisation Act, 2014 (Second Schedule; inserted Schedule XXVII, Table A — Telangana Assembly Constituencies)';
+    const parsedAssigned = entry.assignedAcNumber ? parsedSource[entry.assignedAcNumber] : null;
+    const selectedSourceEntries = isMultiAc
+      ? (entry.candidateAcNumbers || []).map((number) => parsedSource[number]).filter(Boolean)
+      : parsedAssigned ? [parsedAssigned] : [];
+    const sourceLocator = isMultiAc
+      ? scheduleName + ', Table A, Entries: ' + selectedSourceEntries.map((candidate) => candidate.entryNo + ' (' + candidate.name + ') — ' + candidate.extent).join('; ')
+      : parsedAssigned
+        ? scheduleName + ', Table A, Entry ' + parsedAssigned.entryNo + ' (' + parsedAssigned.name + '), Extent: ' + parsedAssigned.extent
+        : 'ENTRY_NOT_FOUND_IN_SOURCE_ARTIFACT: Entry ' + entry.assignedAcNumber;
+    const whatSourceEstablishes = selectedSourceEntries.length === 1
+      ? 'The Andhra Pradesh Reorganisation Act, 2014 successor-state schedule identifies Assembly Constituency ' + selectedSourceEntries[0].entryNo + ' (' + selectedSourceEntries[0].name + ') and its administrative extent: ' + selectedSourceEntries[0].extent + '. It does not establish postal delivery-beat containment.'
+      : 'The successor-state schedule defines these candidate Assembly Constituency extents: ' + selectedSourceEntries.map((candidate) => candidate.entryNo + ' (' + candidate.name + '): ' + candidate.extent).join('; ') + '. It does not establish postal delivery-beat coverage or a unique PIN-to-AC assignment.';
+    const whatSourceDoesNotEstablish = 'Does not establish the geographic boundary of a Department of Posts delivery beat, a 1:1 PIN-to-AC relationship, or spatial containment of this postal PIN within any constituency.';
+
     return {
       ...entry,
+      officialSource: referenceDocument,
+      referenceDocument,
+      sourcePublicationDate: '2014-03-01',
+      sourceEffectiveDate: '2014-06-02',
+      sourceLocator,
+      whatSourceEstablishes,
+      whatSourceDoesNotEstablish,
+      manuallyAuthoredSummary: whatSourceEstablishes,
+      assignedAcName: entry.assignedAcName || (parsedAssigned ? parsedAssigned.name : null),
+      candidateAcNames: isMultiAc ? (entry.candidateAcNames?.length ? entry.candidateAcNames : (entry.candidateAcNumbers || []).map((number) => parsedSource[number]?.name).filter(Boolean)) : [],
       referenceDocumentPath: sourceRelPath,
       sourceArtifactSha256: sourceSha256,
       sourceInspectionStatus: "IN_REPO_STATUTORY_EXTRACT_INSPECTED",
@@ -983,11 +1022,11 @@ export function buildManifest() {
       claimSupportStatus: "PARTIALLY_SUPPORTED",
       sourcePassageExtract: sourcePassageExtract,
       inspectedPassageExtract: sourcePassageExtract,
-      manuallyAuthoredSummary: entry.whatSourceEstablishes,
+      manuallyAuthoredSummary: whatSourceEstablishes,
       evidentiaryRoleLabel: "VERBATIM_STATUTORY_EXTRACT_REPRESENTS_ASSEMBLY_EXTENT_NOT_POSTAL_CONTAINMENT",
       directEvidenceVsInference: isMultiAc
-        ? "Direct statutory delimitation evidence establishes that the delivery beat spans multiple municipal wards across distinct assembly constituencies. Single-constituency assignment is factually unsupportable."
-        : "Direct statutory delimitation evidence establishes the constituency name, number, and ward extent. The association of postal PIN delivery beat with this constituency is an administrative-locality inference based on office/locality centroid; spatial containment is NOT directly proven.",
+        ? "Direct statutory evidence establishes candidate constituency extents only. It does not prove the postal delivery beat intersects those candidates; keep the mapping ambiguous until independent postal geography is acquired."
+        : "Direct statutory evidence establishes constituency name, number, and administrative extent. Association of a postal PIN with this constituency remains a provisional locality inference; spatial containment is unproven.",
       unsupportedOrInaccessibleClaims: "Statutory 6-digit postal delivery beat boundary polygons are unpublished by India Post and inaccessible. Full multi-hundred page gazette scan is an external publication not checked into git.",
       sourceResolutionOutcome: "SOURCE_RESOLVED_CHECKED_IN_AUTHORITATIVE_EXTRACT",
       locatorResolutionOutcome: "EXACT_ENTRY_AND_WARD_COORDINATES_VERIFIED_AGAINST_SOURCE_ARTIFACT",
@@ -1000,8 +1039,8 @@ export function buildManifest() {
       isReportedCorrection: isCorr,
       historicalPreD124Ac: isCorr ? corrSpec.oldAc : undefined,
       identityVerificationConclusion: isMultiAc
-        ? "Candidate constituency names, numbers, and extents are authoritatively verified against Delimitation Order 2008 extract and statutory seed records."
-        : "Target constituency name and number are authoritatively verified against Delimitation Order 2008 extract and statutory seed records.",
+        ? "Candidate constituency names, numbers, and extents are authoritatively verified against Andhra Pradesh Reorganisation Act 2014 successor-state schedule extract and statutory seed records."
+        : "Target constituency name and number are authoritatively verified against Andhra Pradesh Reorganisation Act 2014 successor-state schedule extract and statutory seed records.",
       postalContainmentConclusion: isMultiAc
         ? "Postal delivery beat intersects multiple constituencies without a unique single containment. Fail-closed multi-AC representation is mandatory."
         : "Postal delivery area is provisionally associated with the constituency based on municipal ward concordance / post office locality, but spatial containment is NOT proven because postal beats lack statutory boundary polygons.",
@@ -1068,7 +1107,7 @@ export function buildManifest() {
     isCorrection: false,
     resolvedSourcePath: apExtractRelPath,
     sourceArtifactSha256: apSha256,
-    exactLocator: kurnoolEntryInEnriched?.sourceLocator || "Schedule II, Table B, Entry 137 (Kurnool), Extent: Kurnool Mandal (Part), Kurnool (M.Corp.) (Part) - Ward No. 1 to 48.",
+    exactLocator: kurnoolEntryInEnriched?.sourceLocator || "Schedule III, Table A, Entry 137 (Kurnool), Extent: Kurnool Mandal (Part), Kurnool (M.Corp.) (Part) - Ward No. 1 to 48.",
     sourcePassageExtract: kurnoolEntryInEnriched?.sourcePassageExtract || '',
     inspectedPassageExtract: kurnoolEntryInEnriched?.sourcePassageExtract || '',
     conclusionA_constituencyIdentity: "AUTHORITATIVELY_SUPPORTED_BY_INSPECTED_SOURCE",
@@ -1106,7 +1145,7 @@ export function buildManifest() {
         structuralSeparation: "Manifest is maintained in a standalone JSON file and build script separate from runtime implementation array.",
         geographicProofLimitation: "Structural separation does NOT constitute independent geographic proof of postal delivery beat containment.",
         delimitationOrderScope: "Delimitation Orders define assembly constituencies strictly by municipal wards, mandals, and villages, not postal delivery beats.",
-        sourceResolutionScope: "All 36 entries are bound to checked-in authoritative extract files with SHA-256 integrity verification. Full external gazette publications remain external instruments.",
+        sourceResolutionScope: "All 36 entries are bound to selected successor-state extracts derived from the Andhra Pradesh Reorganisation Act, 2014: Schedule XXVII/Table A for Telangana and substituted Schedule III/Table A for Andhra Pradesh. Extract digests prove byte integrity only; postal delivery-beat linkage remains provisional and the original Gazette authenticity audit remains open.",
         transcriptionFidelityScope: "Checked-in extracts are verified for in-repo bitwise byte integrity. Transcription fidelity against physical printed gazette remains unverified pending independent physical audit.",
         postalBeatStatus: "Zero PINs have statutory 1:1 containment. All single-AC entries are PROVISIONALLY_APPROXIMATED; all multi-AC intersections are AMBIGUOUS_MULTI_CONSTITUENCY fail-closed."
       },
@@ -1121,15 +1160,15 @@ export function buildManifest() {
       sourceArtifacts: [
         {
           stateCode: "TS",
-          schedule: "Schedule XXXI",
+          schedule: "Schedule XXVII, Table A (Telangana; AP Reorganisation Act 2014)",
           relativePath: tsExtractRelPath,
           sha256: tsSha256,
           totalEntries: Object.keys(tsEntries).length,
-          status: "CHECKED_IN_AUTHORITATIVE_EXTRACT_VERIFIED"
+          status: "CHECKED_IN_SUCCESSOR_STATE_TEXT_EXTRACT_HASH_VERIFIED_SOURCE_PROVENANCE_DISCLOSED"
         },
         {
           stateCode: "AP",
-          schedule: "Schedule II",
+          schedule: "Schedule III, Table A (Andhra Pradesh; AP Reorganisation Act 2014)",
           relativePath: apExtractRelPath,
           sha256: apSha256,
           totalEntries: Object.keys(apEntries).length,

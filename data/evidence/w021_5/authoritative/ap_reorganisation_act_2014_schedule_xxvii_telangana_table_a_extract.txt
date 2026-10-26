@@ -1,0 +1,27 @@
+# SOURCE-BOUND TEXT EXTRACT — NOT THE ORIGINAL PDF BYTES
+# Legal instrument: Andhra Pradesh Reorganisation Act, 2014 (Act 6 of 2014), Second Schedule, inserted Schedule XXVII, Telangana, Table A — Assembly Constituencies.
+# Source (government-hosted Act): https://upload.indiacode.nic.in/showfile?actid=AC_CEN_5_5_00058_201406_1517807327989&filename=201406.pdf&type=actfile
+# Cross-check source (CEO Telangana): https://ceotelangana.nic.in/Delimitation/English.pdf
+# Scope: selected entries used by the 36-PIN evidence matrix; not a complete transcription of all 119 constituencies.
+# Extraction status: text transcribed from the official successor-state schedule; original Gazette authenticity and independent full-source transcription audit remain separate open gates.
+# SHA-256 of this checked-in extract is calculated by the manifest builder at runtime. This digest proves only the extract's bytes, not the postal PIN-to-AC relationship.
+44. Malkajgiri|Malkajgiri Mandal.
+45. Quthbullapur|Quthbullapur Mandal.
+46. Kukatpalle|Hyderabad (M Corp.) (Part); Hyderabad (M Corp.)—Ward No. 24 (Part) (area in Balanagar Mandal); Kukatpalle (M) (Part)—Ward No. 5 to 16.
+47. Uppal|Uppal Municipality, Kapra Municipality.
+52. Serilingampally|Serilingampally Mandal; Balanagar Mandal (Part); Kukatpally (M) (Part); Kukatpally (M)—Ward No. 1 to 4.
+57. Musheerabad|Hyderabad (M Corp.+OG) (Part); Hyderabad (M Corp.) (Part)—Ward No. 1.
+58. Malakpet|Hyderabad (M Corp.+OG) (Part); Hyderabad (M Corp.) (Part)—Ward No. 16; Ward No. 17 (Part), Block No. 8 and 9.
+59. Amberpet|Hyderabad (M Corp.+OG) (Part); Hyderabad (M Corp.) (Part)—Ward No. 2; Ward No. 3 (Part), Block No. 1 to 4.
+60. Khairatabad|Hyderabad (M Corp.+OG) (Part); Hyderabad (M Corp.) (Part)—Ward No. 6; Ward No. 3 (Part), Block No. 5 and 6; Ward No. 8 (Part), Block No. 2; Ward No. 5 (Part), Block No. 10.
+61. Jubilee Hills|Hyderabad (M Corp.+OG) (Part); Hyderabad (M Corp.) (Part)—Ward No. 8 (Part), Block No. 1, 3 and 4.
+62. Sanathnagar|Hyderabad (M Corp.+OG) (Part); Hyderabad (M Corp.) (Part)—Ward No. 7, 24 (excluding the area in AC—46 Kukatpalle) and 25 to 30.
+63. Nampally|Hyderabad (M Corp.+OG) (Part); Hyderabad (M Corp.) (Part)—Ward No. 10 to 12.
+64. Karwan|Hyderabad (M Corp.+OG) (Part); Hyderabad (M Corp.) (Part)—Ward No. 9; Ward No. 13 (Part), Block No. 3 to 6.
+65. Goshamahal|Hyderabad (M Corp.+OG) (Part); Hyderabad (M Corp.) (Part)—Ward No. 4, 14 and 15; Ward No. 5 (Part), Block No. 1 to 9; Ward No. 13 (Part), Block No. 1 and 2.
+66. Charminar|Hyderabad (M Corp.+OG) (Part); Hyderabad (M Corp.) (Part)—Ward No. 20 to 23.
+67. Chandrayangutta|Hyderabad (M Corp.+OG) (Part); Hyderabad (M Corp.) (Part)—Ward No. 18 (Part), Block No. 1 to 3 and 8 to 14.
+68. Yakutpura|Hyderabad (M Corp.+OG) (Part); Hyderabad (M Corp.) (Part)—Ward No. 17 (Part), Block No. 1 to 7; Ward No. 18 (Part), Block No. 6 and 7.
+69. Bahadurpura|Hyderabad (M Corp.+OG) (Part); Hyderabad (M Corp.) (Part)—Ward No. 18 (Part), Block No. 4 and 5; Ward No. 19.
+70. Secunderabad|Hyderabad (M Corp.+OG) (Part); Hyderabad (M Corp.) (Part)—Ward No. 33 (Part), Block No. 4 to 7; Ward No. 34 and 35; Osmania University Area.
+71. Secunderabad Cantt. (SC)|Hyderabad (M Corp.+OG) (Part); Hyderabad (M Corp.) (Part)—Ward No. 31 and 32; Ward No. 33 (Part), Block No. 1 to 3; Secunderabad Cantonment Board.
