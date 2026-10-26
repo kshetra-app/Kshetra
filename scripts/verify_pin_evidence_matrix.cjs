@@ -1059,13 +1059,11 @@ function validateEvidenceMatrix({ directory, manifest, seedNames }) {
     if (pub && eff && isoDateRegex.test(pub) && isoDateRegex.test(eff)) {
       const pubDate = new Date(pub);
       const effDate = new Date(eff);
-      // Effective date must not be after publication date
-      if (effDate.getTime() > pubDate.getTime()) {
-        dateConsistencyPassed = false;
-        results.errors.push(`PIN ${entry.pinCode} has inconsistent dates: sourceEffectiveDate (${eff}) is after sourcePublicationDate (${pub})`);
-      }
-      // Neither date should be in the future (relative to 2026)
-      if (pubDate.getFullYear() > 2026 || effDate.getFullYear() > 2026) {
+      // Legal instruments may become effective after enactment/publication. Reject
+      // impossible future-dated evidence, not a lawful later commencement date.
+      const today = new Date();
+      today.setUTCHours(0, 0, 0, 0);
+      if (pubDate.getTime() > today.getTime() || effDate.getTime() > today.getTime()) {
         dateConsistencyPassed = false;
         results.errors.push(`PIN ${entry.pinCode} has future source date: pub=${pub}, eff=${eff}`);
       }
@@ -1074,7 +1072,7 @@ function validateEvidenceMatrix({ directory, manifest, seedNames }) {
 
   results.checks.push({
     checkId: 'CHECK_9_DATE_CONSISTENCY',
-    description: 'Source publication and effective dates are valid ISO 8601 calendar dates with effective date <= publication date',
+    description: 'Source publication and effective dates are valid ISO 8601 calendar dates and neither date is future-dated; commencement may follow enactment',
     passed: dateConsistencyPassed,
     details: `Publication and effective dates verified consistent across all 36 entries`,
   });
@@ -1299,7 +1297,7 @@ function runNegativeValidationSuite({ directory, manifest, seedNames }) {
   const sc13Passed = !res13.allPassed && res13.checks.find(c => c.checkId === 'CHECK_9_DATE_CONSISTENCY')?.passed === false;
   scenarios.push({
     scenarioId: 'NEG_SCENARIO_13_MATERIAL_SOURCE_DATE_INCONSISTENCY',
-    description: 'Manifest fixture with sourceEffectiveDate (2026-12-31) after sourcePublicationDate (2008-08-17) is rejected by validator',
+    description: 'Manifest fixture with a future sourceEffectiveDate (2026-12-31) is rejected by validator',
     passed: sc13Passed,
     details: sc13Passed ? 'Correctly rejected inconsistent source dates (CHECK_9 failed)' : 'Failed to reject date inconsistency'
   });
