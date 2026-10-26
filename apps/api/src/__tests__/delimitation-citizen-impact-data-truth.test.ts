@@ -1315,7 +1315,7 @@ describe('CTO Directive 123 — Residual Electoral Data-Truth & Provisional Look
 
       // Verify AP AC 79 Vijayawada West
       expect(apParsed[79].name).toBe('Vijayawada West');
-      expect(apParsed[79].extent).toContain('Ward No. 1 to 14');
+      expect(apParsed[79].extent).toContain('Ward No. 1 to 13, 15 to 19, 75 and 76');
     });
 
     it('reconciles all eight corrections and Kurnool 137 with separate Conclusion A (Identity) and Conclusion B (Postal Linkage)', () => {
@@ -1551,11 +1551,11 @@ describe('CTO Directive 123 — Residual Electoral Data-Truth & Provisional Look
       expect(e500053.sourceLocator).toContain('Ward No. 18 (Part), Block No. 1 to 3 and 8 to 14');
       expect(e500053.sourceLocator).not.toContain('Ward 15 part');
 
-      // Reconciled PIN 500064: Entry 69 (Bahadurpura), statutory extent: Ward No. 19 and Ward No. 18 (Part) Block No. 4 to 8 (NOT Ward 12)
+      // Reconciled PIN 500064: Entry 69 (Bahadurpura), statutory extent: Ward No. 18 (Part), Blocks 4 and 5; Ward 19 (NOT Ward 12)
       const e500064 = manifest.entries.find((e: any) => e.pinCode === '500064');
       expect(e500064).toBeDefined();
       expect(e500064.assignedAcNumber).toBe(69);
-      expect(e500064.sourceLocator).toContain('Ward No. 19 and Ward No. 18 (Part) Block No. 4 to 8');
+      expect(e500064.sourceLocator).toContain('Ward No. 18 (Part), Block No. 4 and 5; Ward No. 19');
       expect(e500064.sourceLocator).not.toContain('GHMC Ward 12');
     });
 
@@ -1644,7 +1644,7 @@ describe('CTO Directive 123 — Residual Electoral Data-Truth & Provisional Look
       expect(e500001.candidateAcNames).toEqual(['Goshamahal', 'Nampally', 'Malakpet']);
       expect(e500001.assignedAcNumber == null).toBe(true);
       expect(tableBEntries[65].name).toBe('Goshamahal');
-      expect(tableBEntries[65].extent).toContain('Ward No. 4 and 15');
+      expect(tableBEntries[65].extent).toContain('Ward No. 4, 14 and 15');
       expect(tableBEntries[63].name).toBe('Nampally');
       expect(tableBEntries[58].name).toBe('Malakpet');
 
