@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "title": "Official state/UT CEO portal polling-station source discovery",
-  "retrievedAtUtc": "2026-10-26T16:53:10.644689+00:00",
+  "retrievedAtUtc": "2026-10-26T17:02:38.719101+00:00",
   "databaseAccess": "NONE",
   "TLSVerification": "ENABLED",
   "scope": "Official-root HTML discovery and bounded acquisition of explicitly linked non-elector polling-station list pages only; not a national crosswalk.",
@@ -19,7 +19,7 @@
       "code": "AP",
       "name": "Andhra Pradesh",
       "url": "https://ceoandhra.nic.in/",
-      "requestedAtUtc": "2026-10-26T16:53:10.656171+00:00",
+      "requestedAtUtc": "2026-10-26T17:02:38.721654+00:00",
       "status": "ROOT_FETCH_FAILED_TLS_VERIFICATION_RETAINED",
       "discoveredCandidateCount": 0,
       "discoveredCandidateLinks": [],
@@ -29,7 +29,7 @@
       "code": "AR",
       "name": "Arunachal Pradesh",
       "url": "https://ceoarunachal.nic.in/",
-      "requestedAtUtc": "2026-10-26T16:53:10.656540+00:00",
+      "requestedAtUtc": "2026-10-26T17:02:38.722019+00:00",
       "status": "DOWNLOADED_HASHED_ROOT_HTML",
       "discoveredCandidateCount": 0,
       "discoveredCandidateLinks": [],
@@ -37,7 +37,7 @@
       "httpStatus": 200,
       "contentType": "text/html; charset=utf-8",
       "byteLength": 81512,
-      "sha256": "0a99993b2b6cacb7bd080b216b2f50a08fb0165b42e7146fae5ea7ebcb81d16d",
+      "sha256": "27f4a4e88193c9ffef28ea38d95d9b8c8e57010f1714bcd14e03197645369ca2",
       "rawArtifact": "raw/AR_official_ceo_root.html",
       "titleSnippet": "Home - CEOAP",
       "identityMarkers": {
@@ -73,7 +73,7 @@
               "name": "__RequestVerificationToken",
               "id": null,
               "type": "hidden",
-              "value": "CfDJ8ILLvh0CGQdForBXH4VxJAXfhEZ_qAhIMTymWphkd1RwFnx34UKQZcWyiIKP4b8aqcH-WWcTX9XNhLWoEm4Cz6YoxxrnqAeoi8r6AOSoJd6oOggl4Vsp5AinCJ2ePAKMgwlrh_haLUz1kokmnBQb72I"
+              "value": "CfDJ8ILLvh0CGQdForBXH4VxJAU2j7Ydg05rQWtExvebz0WU5YdZf_tTFoWdLh57sC5c9NBKiRm8ajdd796ORgcDrmXNyTFb7hPzkc0o042VKclJ3FbcYcRzGWA8ZBJh5FNIxUEbQaxSiKoH3Z0QAvXAJkk"
             }
           ]
         },
@@ -103,7 +103,7 @@
               "name": "__RequestVerificationToken",
               "id": null,
               "type": "hidden",
-              "value": "CfDJ8ILLvh0CGQdForBXH4VxJAXfhEZ_qAhIMTymWphkd1RwFnx34UKQZcWyiIKP4b8aqcH-WWcTX9XNhLWoEm4Cz6YoxxrnqAeoi8r6AOSoJd6oOggl4Vsp5AinCJ2ePAKMgwlrh_haLUz1kokmnBQb72I"
+              "value": "CfDJ8ILLvh0CGQdForBXH4VxJAU2j7Ydg05rQWtExvebz0WU5YdZf_tTFoWdLh57sC5c9NBKiRm8ajdd796ORgcDrmXNyTFb7hPzkc0o042VKclJ3FbcYcRzGWA8ZBJh5FNIxUEbQaxSiKoH3Z0QAvXAJkk"
             }
           ]
         }
@@ -113,17 +113,17 @@
       "code": "AS",
       "name": "Assam",
       "url": "https://ceoassam.nic.in/",
-      "requestedAtUtc": "2026-10-26T16:53:10.656785+00:00",
+      "requestedAtUtc": "2026-10-26T17:02:38.722894+00:00",
       "status": "ROOT_FETCH_FAILED_TLS_VERIFICATION_RETAINED",
       "discoveredCandidateCount": 0,
       "discoveredCandidateLinks": [],
-      "error": "ConnectTimeout: HTTPSConnectionPool(host='ceoassam.nic.in', port=443): Max retries exceeded with url: / (Caused by ConnectTimeoutError(<HTTPSConnection(host='ceoassam.nic.in', port=443) at 0x7fcc1cdcf920>, 'Connection to ceoassam.nic.in timed out. (connect timeout=8)'))"
+      "error": "ConnectTimeout: HTTPSConnectionPool(host='ceoassam.nic.in', port=443): Max retries exceeded with url: / (Caused by ConnectTimeoutError(<HTTPSConnection(host='ceoassam.nic.in', port=443) at 0x7f663dfc73b0>, 'Connection to ceoassam.nic.in timed out. (connect timeout=8)'))"
     },
     {
       "code": "BR",
       "name": "Bihar",
       "url": "https://ceobihar.nic.in/",
-      "requestedAtUtc": "2026-10-26T16:53:10.658754+00:00",
+      "requestedAtUtc": "2026-10-26T17:02:38.724145+00:00",
       "status": "ROOT_FETCH_FAILED_TLS_VERIFICATION_RETAINED",
       "discoveredCandidateCount": 0,
       "discoveredCandidateLinks": [],
@@ -133,37 +133,37 @@
       "code": "CG",
       "name": "Chhattisgarh",
       "url": "https://ceochhattisgarh.nic.in/",
-      "requestedAtUtc": "2026-10-26T16:53:10.660273+00:00",
+      "requestedAtUtc": "2026-10-26T17:02:38.725058+00:00",
       "status": "ROOT_FETCH_FAILED_TLS_VERIFICATION_RETAINED",
       "discoveredCandidateCount": 0,
       "discoveredCandidateLinks": [],
-      "error": "ConnectTimeout: HTTPSConnectionPool(host='ceochhattisgarh.nic.in', port=443): Max retries exceeded with url: / (Caused by ConnectTimeoutError(<HTTPSConnection(host='ceochhattisgarh.nic.in', port=443) at 0x7fcc1cdec200>, 'Connection to ceochhattisgarh.nic.in timed out. (connect timeout=8)'))"
+      "error": "ConnectTimeout: HTTPSConnectionPool(host='ceochhattisgarh.nic.in', port=443): Max retries exceeded with url: / (Caused by ConnectTimeoutError(<HTTPSConnection(host='ceochhattisgarh.nic.in', port=443) at 0x7f663dfe8c50>, 'Connection to ceochhattisgarh.nic.in timed out. (connect timeout=8)'))"
     },
     {
       "code": "CH",
       "name": "Chandigarh",
       "url": "https://ceochandigarh.gov.in/",
-      "requestedAtUtc": "2026-10-26T16:53:19.737985+00:00",
+      "requestedAtUtc": "2026-10-26T17:02:51.046768+00:00",
       "status": "ROOT_FETCH_FAILED_TLS_VERIFICATION_RETAINED",
       "discoveredCandidateCount": 0,
       "discoveredCandidateLinks": [],
-      "error": "ConnectTimeout: HTTPSConnectionPool(host='ceochandigarh.gov.in', port=443): Max retries exceeded with url: / (Caused by ConnectTimeoutError(<HTTPSConnection(host='ceochandigarh.gov.in', port=443) at 0x7fcc1cd67830>, 'Connection to ceochandigarh.gov.in timed out. (connect timeout=8)'))"
+      "error": "ConnectTimeout: HTTPSConnectionPool(host='ceochandigarh.gov.in', port=443): Max retries exceeded with url: / (Caused by ConnectTimeoutError(<HTTPSConnection(host='ceochandigarh.gov.in', port=443) at 0x7f663dfef8f0>, 'Connection to ceochandigarh.gov.in timed out. (connect timeout=8)'))"
     },
     {
       "code": "DL",
       "name": "Delhi",
       "url": "https://ceodelhi.gov.in/",
-      "requestedAtUtc": "2026-10-26T16:53:19.142377+00:00",
+      "requestedAtUtc": "2026-10-26T17:02:48.017079+00:00",
       "status": "ROOT_FETCH_FAILED_TLS_VERIFICATION_RETAINED",
       "discoveredCandidateCount": 0,
       "discoveredCandidateLinks": [],
-      "error": "ConnectTimeout: HTTPSConnectionPool(host='ceodelhi.gov.in', port=443): Max retries exceeded with url: / (Caused by ConnectTimeoutError(<HTTPSConnection(host='ceodelhi.gov.in', port=443) at 0x7fcc1bb0bf20>, 'Connection to ceodelhi.gov.in timed out. (connect timeout=8)'))"
+      "error": "ConnectTimeout: HTTPSConnectionPool(host='ceodelhi.gov.in', port=443): Max retries exceeded with url: / (Caused by ConnectTimeoutError(<HTTPSConnection(host='ceodelhi.gov.in', port=443) at 0x7f663dfed460>, 'Connection to ceodelhi.gov.in timed out. (connect timeout=8)'))"
     },
     {
       "code": "GA",
       "name": "Goa",
       "url": "https://ceogoa.nic.in/",
-      "requestedAtUtc": "2026-10-26T16:53:10.661145+00:00",
+      "requestedAtUtc": "2026-10-26T17:02:38.725276+00:00",
       "status": "DOWNLOADED_HASHED_ROOT_HTML",
       "discoveredCandidateCount": 0,
       "discoveredCandidateLinks": [],
@@ -223,7 +223,7 @@
       "code": "GJ",
       "name": "Gujarat",
       "url": "https://ceo.gujarat.gov.in/",
-      "requestedAtUtc": "2026-10-26T16:53:10.662022+00:00",
+      "requestedAtUtc": "2026-10-26T17:02:38.725889+00:00",
       "status": "ROOT_FETCH_FAILED_TLS_VERIFICATION_RETAINED",
       "discoveredCandidateCount": 0,
       "discoveredCandidateLinks": [],
@@ -233,7 +233,7 @@
       "code": "HP",
       "name": "Himachal Pradesh",
       "url": "https://ceohimachal.nic.in/",
-      "requestedAtUtc": "2026-10-26T16:53:10.895371+00:00",
+      "requestedAtUtc": "2026-10-26T17:02:39.020178+00:00",
       "status": "ROOT_FETCH_FAILED_TLS_VERIFICATION_RETAINED",
       "discoveredCandidateCount": 0,
       "discoveredCandidateLinks": [],
@@ -243,7 +243,7 @@
       "code": "HR",
       "name": "Haryana",
       "url": "https://ceoharyana.gov.in/",
-      "requestedAtUtc": "2026-10-26T16:53:10.662888+00:00",
+      "requestedAtUtc": "2026-10-26T17:02:38.727106+00:00",
       "status": "ROOT_FETCH_FAILED_TLS_VERIFICATION_RETAINED",
       "discoveredCandidateCount": 0,
       "discoveredCandidateLinks": [],
@@ -252,58 +252,90 @@
     {
       "code": "JH",
       "name": "Jharkhand",
-      "url": "https://ceojharkhand.nic.in/",
-      "requestedAtUtc": "2026-10-26T16:53:11.136376+00:00",
+      "url": "https://ceo.jharkhand.gov.in/",
+      "requestedAtUtc": "2026-10-26T17:02:39.284104+00:00",
       "status": "ROOT_FETCH_FAILED_TLS_VERIFICATION_RETAINED",
       "discoveredCandidateCount": 0,
       "discoveredCandidateLinks": [],
-      "error": "ConnectionError: HTTPSConnectionPool(host='ceojharkhand.nic.in', port=443): Max retries exceeded with url: / (Caused by NameResolutionError(\"HTTPSConnection(host='ceojharkhand.nic.in', port=443): Failed to resolve 'ceojharkhand.nic.in' ([Errno -2] Name or service not known)\"))"
+      "error": "ConnectTimeout: HTTPSConnectionPool(host='ceo.jharkhand.gov.in', port=443): Max retries exceeded with url: / (Caused by ConnectTimeoutError(<HTTPSConnection(host='ceo.jharkhand.gov.in', port=443) at 0x7f663dfeb3b0>, 'Connection to ceo.jharkhand.gov.in timed out. (connect timeout=8)'))"
     },
     {
       "code": "JK",
       "name": "Jammu and Kashmir / Ladakh portal",
       "url": "https://ceojk.nic.in/",
-      "requestedAtUtc": "2026-10-26T16:53:21.769090+00:00",
+      "requestedAtUtc": "2026-10-26T17:02:51.750994+00:00",
       "status": "ROOT_FETCH_FAILED_TLS_VERIFICATION_RETAINED",
       "discoveredCandidateCount": 0,
       "discoveredCandidateLinks": [],
-      "error": "ConnectTimeout: HTTPSConnectionPool(host='ceojk.nic.in', port=443): Max retries exceeded with url: / (Caused by ConnectTimeoutError(<HTTPSConnection(host='ceojk.nic.in', port=443) at 0x7fcc1bb09190>, 'Connection to ceojk.nic.in timed out. (connect timeout=8)'))"
+      "error": "ConnectTimeout: HTTPSConnectionPool(host='ceojk.nic.in', port=443): Max retries exceeded with url: / (Caused by ConnectTimeoutError(<HTTPSConnection(host='ceojk.nic.in', port=443) at 0x7f663dfee660>, 'Connection to ceojk.nic.in timed out. (connect timeout=8)'))"
     },
     {
       "code": "KA",
       "name": "Karnataka",
-      "url": "https://ceokarnataka.kar.nic.in/",
-      "requestedAtUtc": "2026-10-26T16:53:11.378991+00:00",
+      "url": "https://ceo.karnataka.gov.in/",
+      "requestedAtUtc": "2026-10-26T17:02:39.463381+00:00",
       "status": "ROOT_FETCH_FAILED_TLS_VERIFICATION_RETAINED",
       "discoveredCandidateCount": 0,
       "discoveredCandidateLinks": [],
-      "error": "ConnectionError: HTTPSConnectionPool(host='ceokarnataka.kar.nic.in', port=443): Max retries exceeded with url: / (Caused by NameResolutionError(\"HTTPSConnection(host='ceokarnataka.kar.nic.in', port=443): Failed to resolve 'ceokarnataka.kar.nic.in' ([Errno -5] No address associated with hostname)\"))"
+      "error": "ConnectTimeout: HTTPSConnectionPool(host='ceo.karnataka.gov.in', port=443): Max retries exceeded with url: / (Caused by ConnectTimeoutError(<HTTPSConnection(host='ceo.karnataka.gov.in', port=443) at 0x7f663dfeb860>, 'Connection to ceo.karnataka.gov.in timed out. (connect timeout=8)'))"
     },
     {
       "code": "KL",
       "name": "Kerala",
-      "url": "https://ceo.kerala.gov.in/",
-      "requestedAtUtc": "2026-10-26T16:53:11.382088+00:00",
-      "status": "ROOT_FETCH_FAILED_TLS_VERIFICATION_RETAINED",
+      "url": "https://www.ceo.kerala.gov.in/",
+      "requestedAtUtc": "2026-10-26T17:02:39.495380+00:00",
+      "status": "DOWNLOADED_HASHED_ROOT_HTML",
       "discoveredCandidateCount": 0,
       "discoveredCandidateLinks": [],
-      "error": "ValueError: REDIRECT_TO_UNAPPROVED_HOST:https://www.ceo.kerala.gov.in/"
+      "finalUrl": "https://www.ceo.kerala.gov.in/",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=UTF-8",
+      "byteLength": 74090,
+      "sha256": "e9735782ae05f476e93cf6e4227db3e2a93171339a6e19d69eaa59b74fce87f6",
+      "rawArtifact": "raw/KL_official_ceo_root.html",
+      "titleSnippet": "Chief Electoral Officer | Kerala",
+      "identityMarkers": {
+        "Kerala": true,
+        "Chief Electoral Officer": true,
+        "Election Commission": true,
+        "CEO": true
+      },
+      "formsObserved": [
+        {
+          "action": "https://www.ceo.kerala.gov.in/search-results",
+          "method": "get",
+          "inputs": [
+            {
+              "name": null,
+              "id": "searchKeyword",
+              "type": "text",
+              "value": null
+            },
+            {
+              "name": null,
+              "id": "basic-addon2",
+              "type": "button",
+              "value": null
+            }
+          ]
+        }
+      ]
     },
     {
       "code": "MH",
       "name": "Maharashtra",
-      "url": "https://ceo.maharashtra.gov.in/",
-      "requestedAtUtc": "2026-10-26T16:53:11.619053+00:00",
+      "url": "https://ceoelection.maharashtra.gov.in/",
+      "requestedAtUtc": "2026-10-26T17:02:40.821672+00:00",
       "status": "ROOT_FETCH_FAILED_TLS_VERIFICATION_RETAINED",
       "discoveredCandidateCount": 0,
       "discoveredCandidateLinks": [],
-      "error": "ConnectionError: HTTPSConnectionPool(host='ceo.maharashtra.gov.in', port=443): Max retries exceeded with url: / (Caused by NameResolutionError(\"HTTPSConnection(host='ceo.maharashtra.gov.in', port=443): Failed to resolve 'ceo.maharashtra.gov.in' ([Errno -5] No address associated with hostname)\"))"
+      "error": "SSLError: HTTPSConnectionPool(host='ceoelection.maharashtra.gov.in', port=443): Max retries exceeded with url: / (Caused by SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1010)')))"
     },
     {
       "code": "ML",
       "name": "Meghalaya",
       "url": "https://ceomeghalaya.nic.in/",
-      "requestedAtUtc": "2026-10-26T16:53:12.414924+00:00",
+      "requestedAtUtc": "2026-10-26T17:02:41.488534+00:00",
       "status": "DOWNLOADED_HASHED_ROOT_HTML",
       "discoveredCandidateCount": 0,
       "discoveredCandidateLinks": [],
@@ -351,15 +383,15 @@
       "code": "MN",
       "name": "Manipur",
       "url": "https://ceomanipur.nic.in/",
-      "requestedAtUtc": "2026-10-26T16:53:11.695269+00:00",
+      "requestedAtUtc": "2026-10-26T17:02:41.363270+00:00",
       "status": "DOWNLOADED_HASHED_ROOT_HTML",
       "discoveredCandidateCount": 0,
       "discoveredCandidateLinks": [],
       "finalUrl": "https://ceomanipur.nic.in/",
       "httpStatus": 200,
       "contentType": "text/html; charset=utf-8",
-      "byteLength": 216665,
-      "sha256": "c089a1ea18af41f18d1c2c8cd37b2b4b6e6a0bec76fa777025021c587604b318",
+      "byteLength": 216663,
+      "sha256": "741d4365f7d516dcc72dd03b057436d37e016fb96cb42fd83f29d7aa65b755aa",
       "rawArtifact": "raw/MN_official_ceo_root.html",
       "titleSnippet": "Chief Electoral Officer, Manipur - Official Website",
       "identityMarkers": {
@@ -374,7 +406,7 @@
       "code": "MP",
       "name": "Madhya Pradesh",
       "url": "https://ceomadhyapradesh.nic.in/",
-      "requestedAtUtc": "2026-10-26T16:53:11.456686+00:00",
+      "requestedAtUtc": "2026-10-26T17:02:40.573421+00:00",
       "status": "ROOT_FETCH_FAILED_TLS_VERIFICATION_RETAINED",
       "discoveredCandidateCount": 0,
       "discoveredCandidateLinks": [],
@@ -384,7 +416,7 @@
       "code": "MZ",
       "name": "Mizoram",
       "url": "https://ceomizoram.nic.in/",
-      "requestedAtUtc": "2026-10-26T16:53:13.174623+00:00",
+      "requestedAtUtc": "2026-10-26T17:02:42.562395+00:00",
       "status": "ROOT_FETCH_FAILED_TLS_VERIFICATION_RETAINED",
       "discoveredCandidateCount": 0,
       "discoveredCandidateLinks": [],
@@ -394,7 +426,7 @@
       "code": "NL",
       "name": "Nagaland",
       "url": "https://ceonagaland.nic.in/",
-      "requestedAtUtc": "2026-10-26T16:53:13.291093+00:00",
+      "requestedAtUtc": "2026-10-26T17:02:42.727451+00:00",
       "status": "ROOT_FETCH_FAILED_TLS_VERIFICATION_RETAINED",
       "discoveredCandidateCount": 0,
       "discoveredCandidateLinks": [],
@@ -404,27 +436,27 @@
       "code": "OD",
       "name": "Odisha",
       "url": "https://ceoodisha.nic.in/",
-      "requestedAtUtc": "2026-10-26T16:53:13.412638+00:00",
+      "requestedAtUtc": "2026-10-26T17:02:42.785173+00:00",
       "status": "ROOT_FETCH_FAILED_TLS_VERIFICATION_RETAINED",
       "discoveredCandidateCount": 0,
       "discoveredCandidateLinks": [],
-      "error": "ConnectTimeout: HTTPSConnectionPool(host='ceoodisha.nic.in', port=443): Max retries exceeded with url: / (Caused by ConnectTimeoutError(<HTTPSConnection(host='ceoodisha.nic.in', port=443) at 0x7fcc1bb09ca0>, 'Connection to ceoodisha.nic.in timed out. (connect timeout=8)'))"
+      "error": "ConnectTimeout: HTTPSConnectionPool(host='ceoodisha.nic.in', port=443): Max retries exceeded with url: / (Caused by ConnectTimeoutError(<HTTPSConnection(host='ceoodisha.nic.in', port=443) at 0x7f663dfef1a0>, 'Connection to ceoodisha.nic.in timed out. (connect timeout=8)'))"
     },
     {
       "code": "PB",
       "name": "Punjab",
       "url": "https://ceopunjab.nic.in/",
-      "requestedAtUtc": "2026-10-26T16:53:13.528764+00:00",
+      "requestedAtUtc": "2026-10-26T17:02:42.834920+00:00",
       "status": "ROOT_FETCH_FAILED_TLS_VERIFICATION_RETAINED",
       "discoveredCandidateCount": 0,
       "discoveredCandidateLinks": [],
-      "error": "ConnectTimeout: HTTPSConnectionPool(host='ceopunjab.nic.in', port=443): Max retries exceeded with url: / (Caused by ConnectTimeoutError(<HTTPSConnection(host='ceopunjab.nic.in', port=443) at 0x7fcc1bb08fe0>, 'Connection to ceopunjab.nic.in timed out. (connect timeout=8)'))"
+      "error": "ConnectTimeout: HTTPSConnectionPool(host='ceopunjab.nic.in', port=443): Max retries exceeded with url: / (Caused by ConnectTimeoutError(<HTTPSConnection(host='ceopunjab.nic.in', port=443) at 0x7f663dfeda00>, 'Connection to ceopunjab.nic.in timed out. (connect timeout=8)'))"
     },
     {
       "code": "PY",
       "name": "Puducherry",
       "url": "https://ceopuducherry.py.gov.in/",
-      "requestedAtUtc": "2026-10-26T16:53:21.655029+00:00",
+      "requestedAtUtc": "2026-10-26T17:02:51.073426+00:00",
       "status": "DOWNLOADED_HASHED_ROOT_HTML",
       "discoveredCandidateCount": 0,
       "discoveredCandidateLinks": [],
@@ -432,7 +464,7 @@
       "httpStatus": 200,
       "contentType": "text/html; charset=UTF-8",
       "byteLength": 58556,
-      "sha256": "ab40733f8db08909bb51b58cd21e011c49b17cddf9686cc9a1d86d276b8f8976",
+      "sha256": "a7db15766849ab0d06b14d5a1d9e08ffaa3b113ce8f49ca20e630ef2838dd67f",
       "rawArtifact": "raw/PY_official_ceo_root.html",
       "titleSnippet": "Welcome to the Official Website of the Chief Electoral Officer, Puducherry!",
       "identityMarkers": {
@@ -447,7 +479,7 @@
       "code": "RJ",
       "name": "Rajasthan",
       "url": "https://ceorajasthan.nic.in/",
-      "requestedAtUtc": "2026-10-26T16:53:13.749651+00:00",
+      "requestedAtUtc": "2026-10-26T17:02:42.987199+00:00",
       "status": "ROOT_FETCH_FAILED_TLS_VERIFICATION_RETAINED",
       "discoveredCandidateCount": 0,
       "discoveredCandidateLinks": [],
@@ -457,7 +489,7 @@
       "code": "SK",
       "name": "Sikkim",
       "url": "https://ceosikkim.nic.in/",
-      "requestedAtUtc": "2026-10-26T16:53:13.828797+00:00",
+      "requestedAtUtc": "2026-10-26T17:02:43.228840+00:00",
       "status": "ROOT_FETCH_FAILED_TLS_VERIFICATION_RETAINED",
       "discoveredCandidateCount": 0,
       "discoveredCandidateLinks": [],
@@ -467,37 +499,37 @@
       "code": "TN",
       "name": "Tamil Nadu",
       "url": "https://elections.tn.gov.in/",
-      "requestedAtUtc": "2026-10-26T16:53:13.994440+00:00",
+      "requestedAtUtc": "2026-10-26T17:02:43.482466+00:00",
       "status": "ROOT_FETCH_FAILED_TLS_VERIFICATION_RETAINED",
       "discoveredCandidateCount": 0,
       "discoveredCandidateLinks": [],
-      "error": "ConnectTimeout: HTTPSConnectionPool(host='elections.tn.gov.in', port=443): Max retries exceeded with url: / (Caused by ConnectTimeoutError(<HTTPSConnection(host='elections.tn.gov.in', port=443) at 0x7fcc1bb0b980>, 'Connection to elections.tn.gov.in timed out. (connect timeout=8)'))"
+      "error": "ConnectTimeout: HTTPSConnectionPool(host='elections.tn.gov.in', port=443): Max retries exceeded with url: / (Caused by ConnectTimeoutError(<HTTPSConnection(host='elections.tn.gov.in', port=443) at 0x7f663dfef350>, 'Connection to elections.tn.gov.in timed out. (connect timeout=8)'))"
     },
     {
       "code": "TR",
       "name": "Tripura",
       "url": "https://ceotripura.nic.in/",
-      "requestedAtUtc": "2026-10-26T16:53:14.626284+00:00",
+      "requestedAtUtc": "2026-10-26T17:02:47.021344+00:00",
       "status": "ROOT_FETCH_FAILED_TLS_VERIFICATION_RETAINED",
       "discoveredCandidateCount": 0,
       "discoveredCandidateLinks": [],
-      "error": "ConnectTimeout: HTTPSConnectionPool(host='ceotripura.nic.in', port=443): Max retries exceeded with url: / (Caused by ConnectTimeoutError(<HTTPSConnection(host='ceotripura.nic.in', port=443) at 0x7fcc1bb08ec0>, 'Connection to ceotripura.nic.in timed out. (connect timeout=8)'))"
+      "error": "ConnectTimeout: HTTPSConnectionPool(host='ceotripura.nic.in', port=443): Max retries exceeded with url: / (Caused by ConnectTimeoutError(<HTTPSConnection(host='ceotripura.nic.in', port=443) at 0x7f663dfc7380>, 'Connection to ceotripura.nic.in timed out. (connect timeout=8)'))"
     },
     {
       "code": "TS",
       "name": "Telangana",
       "url": "https://ceotelangana.nic.in/",
-      "requestedAtUtc": "2026-10-26T16:53:14.089007+00:00",
+      "requestedAtUtc": "2026-10-26T17:02:46.956374+00:00",
       "status": "ROOT_FETCH_FAILED_TLS_VERIFICATION_RETAINED",
       "discoveredCandidateCount": 0,
       "discoveredCandidateLinks": [],
-      "error": "ConnectTimeout: HTTPSConnectionPool(host='ceotelangana.nic.in', port=443): Max retries exceeded with url: / (Caused by ConnectTimeoutError(<HTTPSConnection(host='ceotelangana.nic.in', port=443) at 0x7fcc1bb08410>, 'Connection to ceotelangana.nic.in timed out. (connect timeout=8)'))"
+      "error": "ConnectTimeout: HTTPSConnectionPool(host='ceotelangana.nic.in', port=443): Max retries exceeded with url: / (Caused by ConnectTimeoutError(<HTTPSConnection(host='ceotelangana.nic.in', port=443) at 0x7f663dfed400>, 'Connection to ceotelangana.nic.in timed out. (connect timeout=8)'))"
     },
     {
       "code": "UK",
       "name": "Uttarakhand",
       "url": "https://ceouttarakhand.nic.in/",
-      "requestedAtUtc": "2026-10-26T16:53:18.903358+00:00",
+      "requestedAtUtc": "2026-10-26T17:02:47.586023+00:00",
       "status": "ROOT_FETCH_FAILED_TLS_VERIFICATION_RETAINED",
       "discoveredCandidateCount": 0,
       "discoveredCandidateLinks": [],
@@ -507,28 +539,28 @@
       "code": "UP",
       "name": "Uttar Pradesh",
       "url": "https://ceouttarpradesh.nic.in/",
-      "requestedAtUtc": "2026-10-26T16:53:18.901465+00:00",
+      "requestedAtUtc": "2026-10-26T17:02:47.025922+00:00",
       "status": "ROOT_FETCH_FAILED_TLS_VERIFICATION_RETAINED",
       "discoveredCandidateCount": 0,
       "discoveredCandidateLinks": [],
-      "error": "ConnectTimeout: HTTPSConnectionPool(host='ceouttarpradesh.nic.in', port=443): Max retries exceeded with url: / (Caused by ConnectTimeoutError(<HTTPSConnection(host='ceouttarpradesh.nic.in', port=443) at 0x7fcc1bb09790>, 'Connection to ceouttarpradesh.nic.in timed out. (connect timeout=8)'))"
+      "error": "ConnectTimeout: HTTPSConnectionPool(host='ceouttarpradesh.nic.in', port=443): Max retries exceeded with url: / (Caused by ConnectTimeoutError(<HTTPSConnection(host='ceouttarpradesh.nic.in', port=443) at 0x7f663dfc7a40>, 'Connection to ceouttarpradesh.nic.in timed out. (connect timeout=8)'))"
     },
     {
       "code": "WB",
       "name": "West Bengal",
-      "url": "https://ceowestbengal.nic.in/",
-      "requestedAtUtc": "2026-10-26T16:53:18.971131+00:00",
+      "url": "https://ceowestbengal.wb.gov.in/",
+      "requestedAtUtc": "2026-10-26T17:02:47.842079+00:00",
       "status": "ROOT_FETCH_FAILED_TLS_VERIFICATION_RETAINED",
       "discoveredCandidateCount": 0,
       "discoveredCandidateLinks": [],
-      "error": "SSLError: HTTPSConnectionPool(host='ceowestbengal.nic.in', port=443): Max retries exceeded with url: / (Caused by SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1010)')))"
+      "error": "ConnectTimeout: HTTPSConnectionPool(host='ceowestbengal.wb.gov.in', port=443): Max retries exceeded with url: / (Caused by ConnectTimeoutError(<HTTPSConnection(host='ceowestbengal.wb.gov.in', port=443) at 0x7f663dfc6b70>, 'Connection to ceowestbengal.wb.gov.in timed out. (connect timeout=8)'))"
     }
   ],
   "candidatePageResults": [],
   "summary": {
     "officialPortalRootCount": 32,
-    "rootHtmlDownloaded": 5,
-    "rootFetchFailures": 27,
+    "rootHtmlDownloaded": 6,
+    "rootFetchFailures": 26,
     "rootsWithPollingStationCandidateLinks": 0,
     "exactCandidateLinksDiscovered": 0,
     "candidatePagesAttempted": 0,
@@ -538,5 +570,5 @@
     "candidatePageFailures": 0,
     "status": "DISCOVERY_ONLY_NO_NATIONAL_CROSSWALK_ACCEPTANCE"
   },
-  "completedAtUtc": "2026-10-26T16:53:30.013716+00:00"
+  "completedAtUtc": "2026-10-26T17:03:00.026333+00:00"
 }
