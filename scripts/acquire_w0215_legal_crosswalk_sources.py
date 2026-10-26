@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """Acquire official/government-hosted legal source bytes for W021.5 Stage B crosswalk."""
 from __future__ import annotations
-import hashlib, json, re, sys\nfrom html.parser import HTMLParser
+import hashlib, json, re, sys
+from html.parser import HTMLParser
 from datetime import datetime, timezone
 from pathlib import Path
 from urllib.parse import urlparse
@@ -115,7 +116,8 @@ manifest = {
     "retrievedAtUtc": datetime.now(timezone.utc).isoformat(),
     "directive": "CTO Directive 154 — Stage B only",
     "databaseAccess": "NONE",
-    "sources": [],\n    "htmlSources": [],
+    "sources": [],
+    "htmlSources": [],
 }
 session = requests.Session(impersonate="chrome124")
 required_failures = []
