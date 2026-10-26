@@ -1,0 +1,78 @@
+name: W021.5 Exact-URL Legal Source Archival Recovery
+
+on:
+  push:
+    branches:
+      - cto/w0215-stage-b-evidence-20261025
+    paths:
+      - "scripts/recover_w0215_legal_sources_from_exact_archives.py"
+      - ".github/workflows/w0215-legal-archive-recovery.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: w0215-legal-archive-recovery
+  cancel-in-progress: false
+
+jobs:
+  recover:
+    name: Recover and hash exact official-source URL captures
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Checkout W021.5 evidence-only branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: true
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install pinned response and PDF parsers
+        run: python -m pip install --disable-pip-version-check "requests==2.32.5" "PyMuPDF==1.26.4"
+      - name: Probe direct official URLs and Wayback exact-URL captures
+        id: recovery
+        continue-on-error: true
+        run: python scripts/recover_w0215_legal_sources_from_exact_archives.py
+      - name: Upload every acquired source byte and response manifest
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: w0215-legal-archive-recovery-${{ github.run_id }}
+          path: stage_b_archival_recovery/
+          if-no-files-found: warn
+          retention-days: 30
+      - name: Persist recovery evidence and failed attempts to evidence-only branch
+        if: always() && hashFiles('stage_b_archival_recovery/manifest.json') != ''
+        env:
+          BRANCH_NAME: ${{ github.ref_name }}
+        run: |
+          set -eu
+          test "$GITHUB_REF" = "refs/heads/cto/w0215-stage-b-evidence-20261025"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add stage_b_archival_recovery/
+          git add -f stage_b_archival_recovery/raw/ stage_b_archival_recovery/text/ 2>/dev/null || true
+          git add stage_b_archival_recovery/
+          if git diff --cached --quiet; then
+            echo "No new archival recovery evidence to persist."
+          else
+            git commit -m "evidence(w0215): preserve exact-source legal archival recovery"
+            git push origin "HEAD:$BRANCH_NAME"
+          fi
+      - name: Require recovery of the exact 2008 Order PDF from an official-URL archive
+        if: always() && hashFiles('stage_b_archival_recovery/manifest.json') != ''
+        run: |
+          python - <<'PY'
+          import json, sys
+          p='stage_b_archival_recovery/manifest.json'
+          d=json.load(open(p,encoding='utf-8'))
+          s=d.get('summary',{})
+          print(json.dumps(s,indent=2))
+          if not s.get('eci2008OrderArchiveCopyAcquired'):
+              print('BLOCKED: exact official ECI 2008 Order archival PDF was not acquired/validated.')
+              sys.exit(1)
+          PY
