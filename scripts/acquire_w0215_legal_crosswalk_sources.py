@@ -86,7 +86,7 @@ SOURCES = [
 ALLOWED_HOSTS = {
     "apseeds.ap.gov.in", "tgerc.telangana.gov.in",
     "www.indiacode.nic.in", "indiacode.nic.in", "upload.indiacode.nic.in",
-    "elections24.eci.gov.in", "www.eci.gov.in", "eci.gov.in", "ceotelangana.nic.in", "www.pib.gov.in", "pib.gov.in", "apegazette.cgg.gov.in", "www.telangana.gov.in", "tggazette.cgg.gov.in", "indiankanoon.org", "egazette.gov.in", "www.egazette.gov.in", "deptpub.gov.in", "www.deptpub.gov.in",
+    "elections24.eci.gov.in", "www.eci.gov.in", "eci.gov.in", "ceotelangana.nic.in", "www.pib.gov.in", "pib.gov.in", "apegazette.cgg.gov.in", "www.telangana.gov.in", "tggazette.cgg.gov.in", "indiankanoon.org", "egazette.gov.in", "www.egazette.gov.in", "deptpub.gov.in", "www.deptpub.gov.in", "old.eci.gov.in", "ceodelhi.gov.in", "ceodelhinet.nic.in",
 }
 HEADERS = {
     "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/129.0.0.0 Safari/537.36",
@@ -128,6 +128,78 @@ HTML_SOURCES = [
         "documentTitle": "Official Telangana Gazette catalogue information page",
         "terms": ["tggazette.cgg.gov.in", "extraordinary", "authentic", "Gazette"],
         "purpose": "Custodian/portal discovery only; target notification is stated to be in the Andhra Pradesh State Gazette and Gazette of India, so do not substitute Telangana Gazette without evidence."
+    },
+    {
+        "id": "ECI_LEGACY_DELIMITATION_ORDER_2008_PAGE",
+        "url": "https://old.eci.gov.in/files/file/3931-delimitation-2008-order-issued-by-eci/",
+        "publisher": "Election Commission of India — legacy official file library",
+        "documentTitle": "Legacy ECI official file-library entry for Delimitation Order, 2008",
+        "terms": ["Delimitation Order 2008", "PDF", "download", "Schedule II", "Schedule XXXI"],
+        "purpose": "Discover the exact official attachment/download link and compare its bytes with the pre-existing claimed source digest; HTML page is discovery only."
+    },
+    {
+        "id": "ECI_CURRENT_DELIMITATION_ORDER_2008_ARCHIVE_PAGE",
+        "url": "https://eci.gov.in/files/file/3931-delimitation-of-parliamentary-and-assembly-constituencies-order-2008/",
+        "publisher": "Election Commission of India — official file archive",
+        "documentTitle": "Official ECI file archive for the 2008 Delimitation Order",
+        "terms": ["Delimitation Order 2008", "PDF", "download", "Schedule II", "Schedule XXXI"],
+        "purpose": "Second official archive route cited by repository dossiers; capture exact links and asset metadata without assuming a guessed file URL."
+    },
+    {
+        "id": "ECI_DELIMITATION_ORDER_2008_LANDING_PAGE",
+        "url": "https://eci.gov.in/delimitation/delimitation-order-2008/",
+        "publisher": "Election Commission of India",
+        "documentTitle": "Official ECI delimitation-order landing page",
+        "terms": ["Delimitation Order 2008", "Schedules", "Gazette", "Assembly Constituencies"],
+        "purpose": "Official landing-page discovery route named in the existing Gazette inventory; direct assets must be acquired and hashed separately."
+    },
+    {
+        "id": "DEPT_PUBLICATION_SEARCH_GAZETTE_ON55E",
+        "url": "https://deptpub.gov.in/?s=O.N.55%28E%29",
+        "publisher": "Government of India, Department of Publication",
+        "documentTitle": "Official catalogue search for Gazette identifier O.N.55(E)",
+        "terms": ["O.N.55(E)", "22 September 2018", "Andhra Pradesh", "Delimitation"],
+        "purpose": "Search the observed Department of Publication search form for the precise official Gazette item corroborated by Lok Sabha proceedings."
+    },
+    {
+        "id": "DEPT_PUBLICATION_SEARCH_DELIMITATION_2008",
+        "url": "https://deptpub.gov.in/?s=Delimitation%20Order%202008",
+        "publisher": "Government of India, Department of Publication",
+        "documentTitle": "Official catalogue search for Delimitation Order 2008",
+        "terms": ["Delimitation Order 2008", "S.O.382(E)", "19 February 2008"],
+        "purpose": "Search official publication catalogue using exact instrument wording; any result is a discovery lead until document bytes and identifier are verified."
+    },
+    {
+        "id": "DEPT_PUBLICATION_SEARCH_SO382E",
+        "url": "https://deptpub.gov.in/?s=S.O.%20382%28E%29",
+        "publisher": "Government of India, Department of Publication",
+        "documentTitle": "Official catalogue search for S.O.382(E), dated 19 February 2008",
+        "terms": ["S.O.382(E)", "19 February 2008", "Delimitation"],
+        "purpose": "Search exact commencement Gazette identifier; distinguish Presidential commencement order from the consolidated ECI schedule document."
+    },
+    {
+        "id": "DEPT_PUBLICATION_SEARCH_AP_NOTIFICATION_2018",
+        "url": "https://deptpub.gov.in/?s=282%2FAP%2F2018",
+        "publisher": "Government of India, Department of Publication",
+        "documentTitle": "Official catalogue search for ECI Notification 282/AP/2018(DEL)",
+        "terms": ["282/AP/2018", "O.N.55(E)", "22 September 2018", "Andhra Pradesh"],
+        "purpose": "Search exact ECI notification number against official publication catalogue; record whether an indexed or downloadable Gazette counterpart is exposed."
+    },
+    {
+        "id": "CEO_DELHI_POLLING_STATION_LIST_INDEX",
+        "url": "https://ceodelhinet.nic.in/ceodelhiweb/ListofPollingStation.aspx",
+        "publisher": "Chief Electoral Officer, Government of NCT of Delhi",
+        "documentTitle": "Official Delhi AC-organized polling station listing index",
+        "terms": ["Assembly Constituency", "Polling Station", "List of Polling Station", "Part Number"],
+        "purpose": "Investigate a jurisdictional pilot source for official AC/PS mapping. Do not claim national completeness from a Delhi-only list."
+    },
+    {
+        "id": "CEO_DELHI_AC_MAPS_AND_POLLING_LOCATION_INDEX",
+        "url": "https://ceodelhi.gov.in/MapPage.aspx",
+        "publisher": "Chief Electoral Officer, Government of NCT of Delhi",
+        "documentTitle": "Official Delhi GIS, Assembly Constituency maps and polling-location index",
+        "terms": ["GIS Map with Polling Locations", "AC maps", "constituency map", "Polling Stations"],
+        "purpose": "Discover exact official map and polling-location asset links; map links are not raw vector geometries unless the underlying file format proves that."
     },
     {
         "id": "TELANGANA_HIGH_COURT_2018_DELIMITATION_JUDGMENT",
