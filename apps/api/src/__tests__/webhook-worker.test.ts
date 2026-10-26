@@ -1,4 +1,4 @@
-import { WebhookWorker, type WebhookWorkerOptions } from '../workers/webhookWorker';
+import { WebhookWorker } from '../workers/webhookWorker';
 import type { LeasedDeliveryJob, WebhookQueueProvider } from '../modules/webhooks/queueProvider';
 import type { DispatchResult } from '../modules/webhooks/webhookDispatcher';
 import { decryptSecret, getMasterEncryptionKey } from '../modules/webhooks/crypto';
