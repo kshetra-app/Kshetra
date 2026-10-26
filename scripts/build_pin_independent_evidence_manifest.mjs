@@ -984,8 +984,27 @@ export function buildManifest() {
       }
     }
 
+    const scheduleName = isAP ? 'Schedule III' : 'Schedule XXVII';
+    const referenceDocument = isAP
+      ? 'Andhra Pradesh Reorganisation Act, 2014 (Second Schedule; substituted Schedule III, Table A — Andhra Pradesh Assembly Constituencies)'
+      : 'Andhra Pradesh Reorganisation Act, 2014 (Second Schedule; inserted Schedule XXVII, Table A — Telangana Assembly Constituencies)';
+    const parsedAssigned = entry.assignedAcNumber ? parsedSource[entry.assignedAcNumber] : null;
+    const sourceLocator = isMultiAc
+      ? scheduleName + ', Table A, Entries: ' + (entry.candidateAcNumbers || []).map((number) => {
+          const candidate = parsedSource[number];
+          return candidate ? candidate.entryNo + ' (' + candidate.name + ') — ' + candidate.extent : number + ' (ENTRY_NOT_FOUND)';
+        }).join('; ')
+      : parsedAssigned
+        ? scheduleName + ', Table A, Entry ' + parsedAssigned.entryNo + ' (' + parsedAssigned.name + '), Extent: ' + parsedAssigned.extent
+        : 'ENTRY_NOT_FOUND_IN_SOURCE_ARTIFACT: Entry ' + entry.assignedAcNumber;
+
     return {
       ...entry,
+      officialSource: referenceDocument,
+      referenceDocument,
+      sourcePublicationDate: '2014-03-01',
+      sourceEffectiveDate: '2014-06-02',
+      sourceLocator,
       referenceDocumentPath: sourceRelPath,
       sourceArtifactSha256: sourceSha256,
       sourceInspectionStatus: "IN_REPO_STATUTORY_EXTRACT_INSPECTED",
@@ -1117,7 +1136,7 @@ export function buildManifest() {
         structuralSeparation: "Manifest is maintained in a standalone JSON file and build script separate from runtime implementation array.",
         geographicProofLimitation: "Structural separation does NOT constitute independent geographic proof of postal delivery beat containment.",
         delimitationOrderScope: "Delimitation Orders define assembly constituencies strictly by municipal wards, mandals, and villages, not postal delivery beats.",
-        sourceResolutionScope: "All 36 entries are bound to checked-in authoritative extract files with SHA-256 integrity verification. Full external gazette publications remain external instruments.",
+        sourceResolutionScope: "All 36 entries are bound to selected successor-state extracts derived from the Andhra Pradesh Reorganisation Act, 2014: Schedule XXVII/Table A for Telangana and substituted Schedule III/Table A for Andhra Pradesh. Extract digests prove byte integrity only; postal delivery-beat linkage remains provisional and the original Gazette authenticity audit remains open.",
         transcriptionFidelityScope: "Checked-in extracts are verified for in-repo bitwise byte integrity. Transcription fidelity against physical printed gazette remains unverified pending independent physical audit.",
         postalBeatStatus: "Zero PINs have statutory 1:1 containment. All single-AC entries are PROVISIONALLY_APPROXIMATED; all multi-AC intersections are AMBIGUOUS_MULTI_CONSTITUENCY fail-closed."
       },
@@ -1132,15 +1151,15 @@ export function buildManifest() {
       sourceArtifacts: [
         {
           stateCode: "TS",
-          schedule: "Schedule XXVII",
+          schedule: "Schedule XXVII, Table A (Telangana; AP Reorganisation Act 2014)",
           relativePath: tsExtractRelPath,
           sha256: tsSha256,
           totalEntries: Object.keys(tsEntries).length,
-          status: "CHECKED_IN_AUTHORITATIVE_EXTRACT_VERIFIED"
+          status: "CHECKED_IN_SUCCESSOR_STATE_TEXT_EXTRACT_HASH_VERIFIED_SOURCE_PROVENANCE_DISCLOSED"
         },
         {
           stateCode: "AP",
-          schedule: "Schedule III",
+          schedule: "Schedule III, Table A (Andhra Pradesh; AP Reorganisation Act 2014)",
           relativePath: apExtractRelPath,
           sha256: apSha256,
           totalEntries: Object.keys(apEntries).length,
