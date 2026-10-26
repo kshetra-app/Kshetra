@@ -45,3 +45,12 @@ Both records intentionally have null byte length, null SHA-256, and null raw-art
 ## Disposition
 
 W021.5 Stage B remains **PARTIAL / NOT ACCEPTED**. EB-01–EB-05 and W021.5-B1-04 remain open; EB-06 remains pending independent adjudication. No national canonical AC geometry is accepted. No Stage C or database access is authorized.
+
+## Acquisition harness hardening (evidence-only branch)
+
+After the initial route expansion, the source probe was further updated on branch cto/w0215-stage-b-evidence-20261025:
+- Commit 3df568754b7724a0763c3de4d1d3f2b1268cd076 records anchor links and HTML form/search fields from downloaded official portal pages, so the eGazette directory can be followed from observed page metadata rather than guessed URLs.
+- Commit cafad3ff6328de616ef9aa0726dff1e25c8c922d corrects whitespace normalization in extracted HTML text and makes the acquisition job fail closed if either the 2008 Delimitation Order or the 2018 ECI notification is absent as a valid downloaded PDF. This prevents a successful AP Reorganisation Act download alone from masking missing critical legal instruments.
+- The updated source file was re-fetched from GitHub and its blob SHA verified as 5dadfe7351287601a70eb625eda4fb84e3d17bc4.
+
+No workflow run or artifact is verified for these latest branch commits. These are source-code changes only; they do not establish that the portal was queried or that any Gazette bytes were acquired.
