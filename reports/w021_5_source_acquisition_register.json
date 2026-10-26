@@ -1983,5 +1983,69 @@
     ],
     "acceptedAsCanonical": false
   },
-  "lastDecision": "Statutory roster name crosswalk passed against two TGRAC candidate layers with 12/11 provisional aliases, but no polygon extent acceptance. CEO Telangana's official 2024 schedule and PIB's official HTML are additional legal-chain corroboration candidates; raw bytes/hash still needed."
+  "lastDecision": "Statutory roster name crosswalk passed against two TGRAC candidate layers with 12/11 provisional aliases, but no polygon extent acceptance. CEO Telangana's official 2024 schedule and PIB's official HTML are additional legal-chain corroboration candidates; raw bytes/hash still needed.",
+  "latestRouteAdjudication": {
+    "recordedAt": "2026-10-26",
+    "reportPath": "reports/w021_5_stage_b_evidence_route_adjudication_2026-10-26.md",
+    "reportCommit": "d680cfe1b5c216cdf4debe598b2c2a8e46a6034d",
+    "decision": "CUSTODIAN_LED_JURISDICTION_BY_JURISDICTION_OFFICIAL_SOURCE_PIPELINE",
+    "stageStatus": "PARTIAL_NOT_ACCEPTED",
+    "officialNationalACVectorAccepted": false,
+    "latestReviewedRuns": [
+      {
+        "runId": 40261390903,
+        "subject": "TGRAC candidate geometry family comparison",
+        "conclusion": "success",
+        "artifactSha256": "a2752bb4906e33d826fe4e5ce4292c1d46ea5a0f32172937d34c91893ecea3ee",
+        "interpretation": "reproducible source-family comparison only; no legal extent acceptance"
+      },
+      {
+        "runId": 40260777545,
+        "subject": "legal crosswalk source acquisition",
+        "conclusion": "success",
+        "artifactSha256": "db87f8074cac8039c8302f5ed7d2c1a806e411a79e8c1340879aa9fec3db9c9f",
+        "interpretation": "AP Reorganisation Act mirror bytes acquired; ECI notification/Gazette chain remains open"
+      },
+      {
+        "runId": 40218393964,
+        "subject": "Bihar official GIS geometry audit",
+        "conclusion": "success",
+        "artifactSha256": "05531bc8037dca81eb4af0ba93cf7e397594a02643b1bb311cb463abd78cfdfa",
+        "interpretation": "candidate rejected pending 3 invalid geometries and 76 positive-area overlap pairs"
+      }
+    ],
+    "newlyReviewedOfficialDiscoverySources": [
+      {
+        "name": "TGRAC Master Administrative Boundary MapServer",
+        "url": "https://tgrac.telangana.gov.in/arcgis/rest/services/Master_Administrative_Folder/Master_Administrative_Boundary/MapServer",
+        "disposition": "candidate-only; existing raw acquisition/comparison; invalid Dornakal and legal lineage/licence gaps remain"
+      },
+      {
+        "name": "TGRAC Administrative Information System Query layer 1",
+        "url": "https://tgrac.telangana.gov.in/arcgis/rest/services/AdministrativeInfoSystem_Folder/Administrative_Information_System_Query/MapServer/1",
+        "disposition": "candidate-only; duplicate/older geometry family, not independent corroboration"
+      },
+      {
+        "name": "NIC State GIS Portal Telangana",
+        "url": "https://stategisportal.nic.in/stategisportal/Home/State/36",
+        "disposition": "discovery lead only; no national AC source verified"
+      },
+      {
+        "name": "Department of Posts OGD All India Pincode Boundary Geo JSON",
+        "url": "https://sikkim.data.gov.in/catalog/all-india-pincode-boundary-geo-json",
+        "disposition": "PIN-code boundary only; not delivery-beat geometry"
+      }
+    ],
+    "custodianRequestPackStatus": "DRAFTED_NOT_SENT",
+    "openGates": [
+      "EB-01",
+      "EB-02",
+      "EB-03",
+      "EB-04",
+      "EB-05",
+      "EB-06",
+      "W021.5-B1-04"
+    ],
+    "safety": "No staging/production database access or mutation; no WAF bypass; no inferred polygons."
+  }
 }
