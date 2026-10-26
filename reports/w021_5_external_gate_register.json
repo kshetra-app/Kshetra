@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "Kshetra W021.5 — Canonical External Gate Register & Custodian Handoff",
-  "directive": "CTO Directive 153: Terminal W021.5 Closeout, Defect Disposition and Development Freeze",
+  "directive": "CTO Directive 153 remains historical; CTO Directive 154 prospectively supersedes its development freeze for Stage B only. External gate definitions and statuses are preserved; no Stage C+ authorization.",
   "governingAuthority": "Master Execution Framework Amendment v1.6 / Rule IV-001 Non-Self-Acceptance",
   "timestamp": "2026-10-24T06:00:00.000Z",
   "baselineCommit": "6f20cb02a4fd2f71db8aec4422f178274d229273",
@@ -14,7 +14,7 @@
       "gateId": "EB-01",
       "canonicalCode": "OFFICIAL_PHYSICAL_GAZETTE_AUTHENTICITY",
       "targetStage": "Stage B (W021.5-B1-01..03)",
-      "weightPercent": 4.0,
+      "weightPercent": 4,
       "owner": "Controller of Publications, Government of India / Legal Custodian",
       "description": "Full physical printed gazette publication of ECI Delimitation Order 2008 with official seal and watermark is an external physical instrument not stored in git repository.",
       "missingArtifacts": [
@@ -29,7 +29,7 @@
       "gateId": "EB-02",
       "canonicalCode": "PHYSICAL_GAZETTE_TRANSCRIPTION_FIDELITY_AUDIT",
       "targetStage": "Stage B (W021.5-B1-01..03)",
-      "weightPercent": 4.0,
+      "weightPercent": 4,
       "owner": "Independent Legal & Forensic Notary Authority",
       "description": "Independent physical notary/third-party audit comparing checked-in text extracts against the physical printed gazette remains pending.",
       "missingArtifacts": [
@@ -45,7 +45,7 @@
       "gateId": "EB-03",
       "canonicalCode": "INDIA_POST_DELIVERY_BEAT_GIS_BOUNDARIES",
       "targetStage": "Stage B (W021.5-B1-04)",
-      "weightPercent": 4.0,
+      "weightPercent": 4,
       "owner": "Department of Posts / Survey of India (National Spatial Data Infrastructure)",
       "description": "Authoritative vector polygon GIS boundaries for Department of Posts 6-digit PIN delivery beats are not published or made available by India Post.",
       "missingArtifacts": [
@@ -104,11 +104,11 @@
     }
   ],
   "accountingSummary": {
-    "repositoryVerifiedEarned": 67.0,
+    "repositoryVerifiedEarned": 67,
     "unexecutedDatabasePending": 10.5,
     "blockedOnExternalGates": 22.5,
-    "totalMilestoneAllocation": 100.0,
-    "formalCtcAcceptance": 0.0
+    "totalMilestoneAllocation": 100,
+    "formalCtcAcceptance": 0
   },
   "freezeDeclaration": {
     "developmentFrozen": true,
