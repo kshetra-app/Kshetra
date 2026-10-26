@@ -1,0 +1,2253 @@
+{
+  "schemaVersion": 1,
+  "title": "W021.5 verified-HTTPS exact-URL archival recovery",
+  "retrievedAtUtc": "2026-10-26T14:02:41.655704+00:00",
+  "archiveIntermediary": "Internet Archive Wayback Machine",
+  "TLSVerification": "ENABLED for all live and archive requests; no verify=False, no WAF or CAPTCHA bypass",
+  "databaseAccess": "NONE",
+  "liveProbes": [
+    {
+      "sourceId": "ECI_2008_ORDER_LEGACY_URL",
+      "url": "http://eci.nic.in/eci_main/CurrentElections/CONSOLIDATED_ORDER%20_ECI%20.pdf",
+      "probedAtUtc": "2026-10-26T14:02:41.659421+00:00",
+      "status": "DIRECT_FETCH_FAILED_TLS_VERIFICATION_RETAINED",
+      "error": "ConnectionError: HTTPConnectionPool(host='eci.nic.in', port=80): Max retries exceeded with url: /eci_main/CurrentElections/CONSOLIDATED_ORDER%20_ECI%20.pdf (Caused by NameResolutionError(\"HTTPConnection(host='eci.nic.in', port=80): Failed to resolve 'eci.nic.in' ([Errno -5] No address associated with hostname)\"))"
+    },
+    {
+      "sourceId": "GOI_GAZETTE_2023_SO382E_RECITAL",
+      "url": "https://egazette.gov.in/WriteReadData/2023/248113.pdf",
+      "probedAtUtc": "2026-10-26T14:02:41.660951+00:00",
+      "status": "DIRECT_FETCH_FAILED_TLS_VERIFICATION_RETAINED",
+      "error": "SSLError: HTTPSConnectionPool(host='egazette.gov.in', port=443): Max retries exceeded with url: /WriteReadData/2023/248113.pdf (Caused by SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1010)')))"
+    },
+    {
+      "sourceId": "ECI_2008_ORDER_FILENAME_VARIANT",
+      "url": "https://www.eci.gov.in/Documents/Delimitation/DelimitationofParliamentaryAssemblyConstituenciesOrder-2008(English).pdf",
+      "probedAtUtc": "2026-10-26T14:02:41.659700+00:00",
+      "httpStatus": 406,
+      "finalUrl": "https://www.eci.gov.in/Documents/Delimitation/DelimitationofParliamentaryAssemblyConstituenciesOrder-2008(English).pdf",
+      "contentType": "text/html",
+      "byteLength": 1038,
+      "sha256": "378483b196131611a00f71141bdca86f104cce06267567004655a71fd95a159a",
+      "pdfMagic": false,
+      "status": "DIRECT_HTTP_FAILURE_NOT_SOURCE_BYTES"
+    },
+    {
+      "sourceId": "ECI_NOTIFICATION_282_AP_2018_DEL",
+      "url": "https://www.eci.gov.in/eci-backend/public/api/download?url=LMAhAK6sOPBp%2FNFF0iRfXbEB1EVSLT41NNLRjYNJJP1KivrUxbfqkDatmHy12e%2FzVx8fLfn2ReU7TfrqYobgIsVIzE4H7zCkL60TDPfde3hSidsZ4fuGUaZAjsPMK3mFe%2FOayCb%2Bc1mgC3WIErfdO%2BA072J7HtGm2kYfstpL5XIZTWrH2JWU7UfZrKWF1BUsH9xccKER%2BJMZVGi7SrzX57%2FMm24zs1eyK2AB5zsjcWKzrILRQG%2FBbbQ%2Fx5bNYVaCn7kX4xoHNibbBVAsqukcOQ%3D%3D",
+      "probedAtUtc": "2026-10-26T14:02:41.925391+00:00",
+      "httpStatus": 406,
+      "finalUrl": "https://www.eci.gov.in/eci-backend/public/api/download?url=LMAhAK6sOPBp%2FNFF0iRfXbEB1EVSLT41NNLRjYNJJP1KivrUxbfqkDatmHy12e%2FzVx8fLfn2ReU7TfrqYobgIsVIzE4H7zCkL60TDPfde3hSidsZ4fuGUaZAjsPMK3mFe%2FOayCb%2Bc1mgC3WIErfdO%2BA072J7HtGm2kYfstpL5XIZTWrH2JWU7UfZrKWF1BUsH9xccKER%2BJMZVGi7SrzX57%2FMm24zs1eyK2AB5zsjcWKzrILRQG%2FBbbQ%2Fx5bNYVaCn7kX4xoHNibbBVAsqukcOQ%3D%3D",
+      "contentType": "text/html",
+      "byteLength": 1038,
+      "sha256": "4818eae9cebf1a7e66d3d9a269355c15364e9351a692cac6acb2e0484560c2b8",
+      "pdfMagic": false,
+      "status": "DIRECT_HTTP_FAILURE_NOT_SOURCE_BYTES"
+    },
+    {
+      "sourceId": "ECI_2008_ORDER_CURRENT_URL",
+      "url": "https://www.eci.gov.in/Documents/Delimitation/DelimitationofParliamentaryAssemblyConstituenciesOrder-2008%28English%29.pdf",
+      "probedAtUtc": "2026-10-26T14:02:41.659103+00:00",
+      "httpStatus": 406,
+      "finalUrl": "https://www.eci.gov.in/Documents/Delimitation/DelimitationofParliamentaryAssemblyConstituenciesOrder-2008%28English%29.pdf",
+      "contentType": "text/html",
+      "byteLength": 1038,
+      "sha256": "995cb9c175d320bb0db264c5b4cf70cd6dad5d3d2964b6e5035af81c72b40685",
+      "pdfMagic": false,
+      "status": "DIRECT_HTTP_FAILURE_NOT_SOURCE_BYTES"
+    },
+    {
+      "sourceId": "INDIAPOST_MANUAL_DELIVERY_BEAT_CANDIDATE",
+      "url": "https://www.indiapost.gov.in/api/documents/file/U2FsdGVkX1--RhFaZrEZAs1p9vK78fGNgHXTbWx5f6en9hkrtRenRd6UW-nwfFIdx9zUCzn-sgveKpkmb8zqZw",
+      "probedAtUtc": "2026-10-26T14:02:43.055609+00:00",
+      "httpStatus": 400,
+      "finalUrl": "https://www.indiapost.gov.in/api/documents/file/U2FsdGVkX1--RhFaZrEZAs1p9vK78fGNgHXTbWx5f6en9hkrtRenRd6UW-nwfFIdx9zUCzn-sgveKpkmb8zqZw",
+      "contentType": "application/json",
+      "byteLength": 49,
+      "sha256": "5831764610c2bc85204d9fa9a7a5cc5256684f83ad90a5fedbff0797c238c2ed",
+      "pdfMagic": false,
+      "status": "DIRECT_HTTP_FAILURE_NOT_SOURCE_BYTES"
+    },
+    {
+      "sourceId": "LOK_SABHA_ON55E_PROCEEDINGS",
+      "url": "https://sansad.in/getFile/debatestextmk/16/XVI/19.12.2018.pdf?source=loksabhadocs",
+      "probedAtUtc": "2026-10-26T14:02:42.421746+00:00",
+      "httpStatus": 200,
+      "finalUrl": "https://sansad.in/getFile/debatestextmk/16/XVI/19.12.2018.pdf?source=loksabhadocs",
+      "contentType": "application/pdf",
+      "byteLength": 638561,
+      "sha256": "e4be3f9256b1b1db9fe74fdb6e3f19985b2bca355a1df686b822cb97cf89b1a1",
+      "pdfMagic": true,
+      "status": "DIRECT_PDF_BYTES_ACQUIRED",
+      "rawArtifact": "raw/LOK_SABHA_ON55E_PROCEEDINGS_live.pdf",
+      "pdfPageCount": 136,
+      "textArtifact": "text/LOK_SABHA_ON55E_PROCEEDINGS_live.txt",
+      "textSha256": "7673375647daf38fd690daecbded345e40d9e6bd5928ff6781a1b9e2f8b89a0b",
+      "termFindings": {
+        "O.N.55(E)": true,
+        "22 September 2018": false,
+        "delimitation": true
+      }
+    }
+  ],
+  "archiveSearches": [
+    {
+      "sourceId": "GOI_GAZETTE_2023_SO382E_RECITAL",
+      "originalUrl": "https://egazette.gov.in/WriteReadData/2023/248113.pdf",
+      "checkedAtUtc": "2026-10-26T14:02:46.165552+00:00",
+      "status": "ARCHIVED_PDF_ACQUIRED",
+      "snapshots": [
+        {
+          "timestamp": "20240227031304",
+          "original": "https://egazette.gov.in/WriteReadData/2023/248113.pdf",
+          "statuscode": "200",
+          "mimetype": "application/pdf",
+          "cdxDigest": "XTACGUP5CBCWYAOKUXZW4QLFMI4DRT4C",
+          "cdxLength": 1040438,
+          "archiveUrl": "https://web.archive.org/web/20240227031304id_/https://egazette.gov.in/WriteReadData/2023/248113.pdf",
+          "retrievedAtUtc": "2026-10-26T14:02:46.661150+00:00",
+          "httpStatus": 200,
+          "finalUrl": "https://web.archive.org/web/20240227031304id_/https://egazette.gov.in/WriteReadData/2023/248113.pdf",
+          "contentType": "application/pdf",
+          "byteLength": 1048576,
+          "sha256": "4019c1e3f71347c90cedc27983a9b094cd2cf269bccb6e20f4888ba28a8d0a3e",
+          "pdfMagic": true,
+          "pdfParseStatus": "PASS",
+          "pdfPageCount": 0,
+          "rawArtifact": "raw/GOI_GAZETTE_2023_SO382E_RECITAL_wayback_20240227031304.pdf",
+          "textArtifact": "text/GOI_GAZETTE_2023_SO382E_RECITAL_wayback_20240227031304.txt",
+          "textSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "termFindings": {
+            "S.O.382(E)": false,
+            "19th February, 2008": false
+          },
+          "sourceClassification": "OFFICIAL_GAZETTE_2023_RECITAL_NOT_ORIGINAL_2008_ISSUE",
+          "archiveProvenance": "Internet Archive CDX record for exact original URL; not a current direct government-host response"
+        },
+        {
+          "timestamp": "20231224180839",
+          "original": "https://egazette.gov.in/WriteReadData/2023/248113.pdf",
+          "statuscode": "200",
+          "mimetype": "application/pdf",
+          "cdxDigest": "N27QWGH2GBBGA2TW6XIJ7KJXZXBA2FHR",
+          "cdxLength": 1177305,
+          "archiveUrl": "https://web.archive.org/web/20231224180839id_/https://egazette.gov.in/WriteReadData/2023/248113.pdf",
+          "retrievedAtUtc": "2026-10-26T14:02:50.342852+00:00",
+          "httpStatus": 200,
+          "finalUrl": "https://web.archive.org/web/20231224180839id_/https://egazette.gov.in/WriteReadData/2023/248113.pdf",
+          "contentType": "application/pdf",
+          "byteLength": 1204886,
+          "sha256": "43d99d7ba5d23cc033752637ac7f55ce11133fc27346f1cad9ac5223f77501c5",
+          "pdfMagic": true,
+          "pdfParseStatus": "PASS",
+          "pdfPageCount": 3,
+          "rawArtifact": "raw/GOI_GAZETTE_2023_SO382E_RECITAL_wayback_20231224180839.pdf",
+          "textArtifact": "text/GOI_GAZETTE_2023_SO382E_RECITAL_wayback_20231224180839.txt",
+          "textSha256": "43e983cb9c3a4ef25d5e23aaca3af068685ce00619a46661ac4b14b6ef90db28",
+          "termFindings": {
+            "S.O.382(E)": true,
+            "19th February, 2008": true
+          },
+          "sourceClassification": "OFFICIAL_GAZETTE_2023_RECITAL_NOT_ORIGINAL_2008_ISSUE",
+          "archiveProvenance": "Internet Archive CDX record for exact original URL; not a current direct government-host response"
+        }
+      ],
+      "cdxUrl": "https://web.archive.org/cdx/search/cdx?url=https%3A%2F%2Fegazette.gov.in%2FWriteReadData%2F2023%2F248113.pdf&output=json&fl=timestamp%2Coriginal%2Cstatuscode%2Cmimetype%2Cdigest%2Clength&filter=statuscode%3A200&filter=mimetype%3Aapplication%2Fpdf&collapse=digest",
+      "cdxHttpStatus": 200,
+      "cdxBytes": 359,
+      "cdxSha256": "9b658b2c798159df9645454958223ade7bb1d538caa2d1756437b5610b42d04f",
+      "selectedSnapshot": {
+        "timestamp": "20231224180839",
+        "original": "https://egazette.gov.in/WriteReadData/2023/248113.pdf",
+        "statuscode": "200",
+        "mimetype": "application/pdf",
+        "cdxDigest": "N27QWGH2GBBGA2TW6XIJ7KJXZXBA2FHR",
+        "cdxLength": 1177305,
+        "archiveUrl": "https://web.archive.org/web/20231224180839id_/https://egazette.gov.in/WriteReadData/2023/248113.pdf",
+        "retrievedAtUtc": "2026-10-26T14:02:50.342852+00:00",
+        "httpStatus": 200,
+        "finalUrl": "https://web.archive.org/web/20231224180839id_/https://egazette.gov.in/WriteReadData/2023/248113.pdf",
+        "contentType": "application/pdf",
+        "byteLength": 1204886,
+        "sha256": "43d99d7ba5d23cc033752637ac7f55ce11133fc27346f1cad9ac5223f77501c5",
+        "pdfMagic": true,
+        "pdfParseStatus": "PASS",
+        "pdfPageCount": 3,
+        "rawArtifact": "raw/GOI_GAZETTE_2023_SO382E_RECITAL_wayback_20231224180839.pdf",
+        "textArtifact": "text/GOI_GAZETTE_2023_SO382E_RECITAL_wayback_20231224180839.txt",
+        "textSha256": "43e983cb9c3a4ef25d5e23aaca3af068685ce00619a46661ac4b14b6ef90db28",
+        "termFindings": {
+          "S.O.382(E)": true,
+          "19th February, 2008": true
+        },
+        "sourceClassification": "OFFICIAL_GAZETTE_2023_RECITAL_NOT_ORIGINAL_2008_ISSUE",
+        "archiveProvenance": "Internet Archive CDX record for exact original URL; not a current direct government-host response"
+      }
+    },
+    {
+      "sourceId": "ECI_NOTIFICATION_282_AP_2018_DEL",
+      "originalUrl": "https://www.eci.gov.in/eci-backend/public/api/download?url=LMAhAK6sOPBp%2FNFF0iRfXbEB1EVSLT41NNLRjYNJJP1KivrUxbfqkDatmHy12e%2FzVx8fLfn2ReU7TfrqYobgIsVIzE4H7zCkL60TDPfde3hSidsZ4fuGUaZAjsPMK3mFe%2FOayCb%2Bc1mgC3WIErfdO%2BA072J7HtGm2kYfstpL5XIZTWrH2JWU7UfZrKWF1BUsH9xccKER%2BJMZVGi7SrzX57%2FMm24zs1eyK2AB5zsjcWKzrILRQG%2FBbbQ%2Fx5bNYVaCn7kX4xoHNibbBVAsqukcOQ%3D%3D",
+      "checkedAtUtc": "2026-10-26T14:02:52.755939+00:00",
+      "status": "NO_EXACT_URL_PDF_CAPTURE",
+      "snapshots": [],
+      "cdxUrl": "https://web.archive.org/cdx/search/cdx?url=https%3A%2F%2Fwww.eci.gov.in%2Feci-backend%2Fpublic%2Fapi%2Fdownload%3Furl%3DLMAhAK6sOPBp%252FNFF0iRfXbEB1EVSLT41NNLRjYNJJP1KivrUxbfqkDatmHy12e%252FzVx8fLfn2ReU7TfrqYobgIsVIzE4H7zCkL60TDPfde3hSidsZ4fuGUaZAjsPMK3mFe%252FOayCb%252Bc1mgC3WIErfdO%252BA072J7HtGm2kYfstpL5XIZTWrH2JWU7UfZrKWF1BUsH9xccKER%252BJMZVGi7SrzX57%252FMm24zs1eyK2AB5zsjcWKzrILRQG%252FBbbQ%252Fx5bNYVaCn7kX4xoHNibbBVAsqukcOQ%253D%253D&output=json&fl=timestamp%2Coriginal%2Cstatuscode%2Cmimetype%2Cdigest%2Clength&filter=statuscode%3A200&filter=mimetype%3Aapplication%2Fpdf&collapse=digest",
+      "cdxHttpStatus": 200,
+      "cdxBytes": 3,
+      "cdxSha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+    },
+    {
+      "sourceId": "ECI_2008_ORDER_FILENAME_VARIANT",
+      "originalUrl": "https://www.eci.gov.in/Documents/Delimitation/DelimitationofParliamentaryAssemblyConstituenciesOrder-2008(English).pdf",
+      "checkedAtUtc": "2026-10-26T14:02:46.164401+00:00",
+      "status": "ARCHIVED_PDF_ACQUIRED",
+      "snapshots": [
+        {
+          "timestamp": "20260804161908",
+          "original": "https://www.eci.gov.in/Documents/Delimitation/DelimitationofParliamentaryAssemblyConstituenciesOrder-2008(English).pdf",
+          "statuscode": "200",
+          "mimetype": "application/pdf",
+          "cdxDigest": "3X3E4WORPFSSTLFSDZN7CVB7LDWUYXDN",
+          "cdxLength": 1130459,
+          "archiveUrl": "https://web.archive.org/web/20260804161908id_/https://www.eci.gov.in/Documents/Delimitation/DelimitationofParliamentaryAssemblyConstituenciesOrder-2008(English).pdf",
+          "retrievedAtUtc": "2026-10-26T14:02:46.490608+00:00",
+          "httpStatus": 200,
+          "finalUrl": "https://web.archive.org/web/20260804161908id_/https://www.eci.gov.in/Documents/Delimitation/DelimitationofParliamentaryAssemblyConstituenciesOrder-2008(English).pdf",
+          "contentType": "application/pdf",
+          "byteLength": 1340728,
+          "sha256": "9e1ac49aa952febc8e4f57ed23abd28218a21887f355f8dad1502ab5c0d65e69",
+          "pdfMagic": true,
+          "pdfParseStatus": "PASS",
+          "pdfPageCount": 572,
+          "rawArtifact": "raw/ECI_2008_ORDER_FILENAME_VARIANT_wayback_20260804161908.pdf",
+          "textArtifact": "text/ECI_2008_ORDER_FILENAME_VARIANT_wayback_20260804161908.txt",
+          "textSha256": "aa3028b0e015297a050b8307efe10ebc4317239f73d89e5e3c624ccddb11e217",
+          "termFindings": {
+            "Delimitation of Parliamentary and Assembly Constituencies Order, 2008": false,
+            "TABLE B": true
+          },
+          "sourceClassification": "PRIMARY_ECI_ORDER_ARCHIVE_COPY",
+          "archiveProvenance": "Internet Archive CDX record for exact original URL; not a current direct government-host response"
+        }
+      ],
+      "cdxUrl": "https://web.archive.org/cdx/search/cdx?url=https%3A%2F%2Fwww.eci.gov.in%2FDocuments%2FDelimitation%2FDelimitationofParliamentaryAssemblyConstituenciesOrder-2008%28English%29.pdf&output=json&fl=timestamp%2Coriginal%2Cstatuscode%2Cmimetype%2Cdigest%2Clength&filter=statuscode%3A200&filter=mimetype%3Aapplication%2Fpdf&collapse=digest",
+      "cdxHttpStatus": 200,
+      "cdxBytes": 279,
+      "cdxSha256": "be27fb5f1e22cd45f2efdef37a32b1e9deacddd6118285a4ab69169a1f0092c5",
+      "selectedSnapshot": {
+        "timestamp": "20260804161908",
+        "original": "https://www.eci.gov.in/Documents/Delimitation/DelimitationofParliamentaryAssemblyConstituenciesOrder-2008(English).pdf",
+        "statuscode": "200",
+        "mimetype": "application/pdf",
+        "cdxDigest": "3X3E4WORPFSSTLFSDZN7CVB7LDWUYXDN",
+        "cdxLength": 1130459,
+        "archiveUrl": "https://web.archive.org/web/20260804161908id_/https://www.eci.gov.in/Documents/Delimitation/DelimitationofParliamentaryAssemblyConstituenciesOrder-2008(English).pdf",
+        "retrievedAtUtc": "2026-10-26T14:02:46.490608+00:00",
+        "httpStatus": 200,
+        "finalUrl": "https://web.archive.org/web/20260804161908id_/https://www.eci.gov.in/Documents/Delimitation/DelimitationofParliamentaryAssemblyConstituenciesOrder-2008(English).pdf",
+        "contentType": "application/pdf",
+        "byteLength": 1340728,
+        "sha256": "9e1ac49aa952febc8e4f57ed23abd28218a21887f355f8dad1502ab5c0d65e69",
+        "pdfMagic": true,
+        "pdfParseStatus": "PASS",
+        "pdfPageCount": 572,
+        "rawArtifact": "raw/ECI_2008_ORDER_FILENAME_VARIANT_wayback_20260804161908.pdf",
+        "textArtifact": "text/ECI_2008_ORDER_FILENAME_VARIANT_wayback_20260804161908.txt",
+        "textSha256": "aa3028b0e015297a050b8307efe10ebc4317239f73d89e5e3c624ccddb11e217",
+        "termFindings": {
+          "Delimitation of Parliamentary and Assembly Constituencies Order, 2008": false,
+          "TABLE B": true
+        },
+        "sourceClassification": "PRIMARY_ECI_ORDER_ARCHIVE_COPY",
+        "archiveProvenance": "Internet Archive CDX record for exact original URL; not a current direct government-host response"
+      }
+    },
+    {
+      "sourceId": "LOK_SABHA_ON55E_PROCEEDINGS",
+      "originalUrl": "https://sansad.in/getFile/debatestextmk/16/XVI/19.12.2018.pdf?source=loksabhadocs",
+      "checkedAtUtc": "2026-10-26T14:02:53.445965+00:00",
+      "status": "ARCHIVED_PDF_ACQUIRED",
+      "snapshots": [
+        {
+          "timestamp": "20240422201720",
+          "original": "https://sansad.in/getFile/debatestextmk/16/XVI/19.12.2018.pdf?source=loksabhadocs",
+          "statuscode": "200",
+          "mimetype": "application/pdf",
+          "cdxDigest": "TLZKT7IQ5WGCJ6VEOH7NWD2RHRYLR26V",
+          "cdxLength": 593298,
+          "archiveUrl": "https://web.archive.org/web/20240422201720id_/https://sansad.in/getFile/debatestextmk/16/XVI/19.12.2018.pdf?source=loksabhadocs",
+          "retrievedAtUtc": "2026-10-26T14:02:53.846980+00:00",
+          "httpStatus": 200,
+          "finalUrl": "https://web.archive.org/web/20240422201720id_/https://sansad.in/getFile/debatestextmk/16/XVI/19.12.2018.pdf?source=loksabhadocs",
+          "contentType": "application/pdf",
+          "byteLength": 638561,
+          "sha256": "e4be3f9256b1b1db9fe74fdb6e3f19985b2bca355a1df686b822cb97cf89b1a1",
+          "pdfMagic": true,
+          "pdfParseStatus": "PASS",
+          "pdfPageCount": 136,
+          "rawArtifact": "raw/LOK_SABHA_ON55E_PROCEEDINGS_wayback_20240422201720.pdf",
+          "textArtifact": "text/LOK_SABHA_ON55E_PROCEEDINGS_wayback_20240422201720.txt",
+          "textSha256": "7673375647daf38fd690daecbded345e40d9e6bd5928ff6781a1b9e2f8b89a0b",
+          "termFindings": {
+            "O.N.55(E)": true,
+            "22 September 2018": false,
+            "delimitation": true
+          },
+          "sourceClassification": "OFFICIAL_PARLIAMENTARY_CORROBORATION_NOT_GAZETTE",
+          "archiveProvenance": "Internet Archive CDX record for exact original URL; not a current direct government-host response"
+        }
+      ],
+      "cdxUrl": "https://web.archive.org/cdx/search/cdx?url=https%3A%2F%2Fsansad.in%2FgetFile%2Fdebatestextmk%2F16%2FXVI%2F19.12.2018.pdf%3Fsource%3Dloksabhadocs&output=json&fl=timestamp%2Coriginal%2Cstatuscode%2Cmimetype%2Cdigest%2Clength&filter=statuscode%3A200&filter=mimetype%3Aapplication%2Fpdf&collapse=digest",
+      "cdxHttpStatus": 200,
+      "cdxBytes": 241,
+      "cdxSha256": "40e30d2bf1efb7c60b653ef4367696a12eae8302c67a22936735d699fcc6ca5b",
+      "selectedSnapshot": {
+        "timestamp": "20240422201720",
+        "original": "https://sansad.in/getFile/debatestextmk/16/XVI/19.12.2018.pdf?source=loksabhadocs",
+        "statuscode": "200",
+        "mimetype": "application/pdf",
+        "cdxDigest": "TLZKT7IQ5WGCJ6VEOH7NWD2RHRYLR26V",
+        "cdxLength": 593298,
+        "archiveUrl": "https://web.archive.org/web/20240422201720id_/https://sansad.in/getFile/debatestextmk/16/XVI/19.12.2018.pdf?source=loksabhadocs",
+        "retrievedAtUtc": "2026-10-26T14:02:53.846980+00:00",
+        "httpStatus": 200,
+        "finalUrl": "https://web.archive.org/web/20240422201720id_/https://sansad.in/getFile/debatestextmk/16/XVI/19.12.2018.pdf?source=loksabhadocs",
+        "contentType": "application/pdf",
+        "byteLength": 638561,
+        "sha256": "e4be3f9256b1b1db9fe74fdb6e3f19985b2bca355a1df686b822cb97cf89b1a1",
+        "pdfMagic": true,
+        "pdfParseStatus": "PASS",
+        "pdfPageCount": 136,
+        "rawArtifact": "raw/LOK_SABHA_ON55E_PROCEEDINGS_wayback_20240422201720.pdf",
+        "textArtifact": "text/LOK_SABHA_ON55E_PROCEEDINGS_wayback_20240422201720.txt",
+        "textSha256": "7673375647daf38fd690daecbded345e40d9e6bd5928ff6781a1b9e2f8b89a0b",
+        "termFindings": {
+          "O.N.55(E)": true,
+          "22 September 2018": false,
+          "delimitation": true
+        },
+        "sourceClassification": "OFFICIAL_PARLIAMENTARY_CORROBORATION_NOT_GAZETTE",
+        "archiveProvenance": "Internet Archive CDX record for exact original URL; not a current direct government-host response"
+      }
+    },
+    {
+      "sourceId": "INDIAPOST_MANUAL_DELIVERY_BEAT_CANDIDATE",
+      "originalUrl": "https://www.indiapost.gov.in/api/documents/file/U2FsdGVkX1--RhFaZrEZAs1p9vK78fGNgHXTbWx5f6en9hkrtRenRd6UW-nwfFIdx9zUCzn-sgveKpkmb8zqZw",
+      "checkedAtUtc": "2026-10-26T14:02:59.292211+00:00",
+      "status": "NO_EXACT_URL_PDF_CAPTURE",
+      "snapshots": [],
+      "cdxUrl": "https://web.archive.org/cdx/search/cdx?url=https%3A%2F%2Fwww.indiapost.gov.in%2Fapi%2Fdocuments%2Ffile%2FU2FsdGVkX1--RhFaZrEZAs1p9vK78fGNgHXTbWx5f6en9hkrtRenRd6UW-nwfFIdx9zUCzn-sgveKpkmb8zqZw&output=json&fl=timestamp%2Coriginal%2Cstatuscode%2Cmimetype%2Cdigest%2Clength&filter=statuscode%3A200&filter=mimetype%3Aapplication%2Fpdf&collapse=digest",
+      "cdxHttpStatus": 200,
+      "cdxBytes": 3,
+      "cdxSha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+    },
+    {
+      "sourceId": "ECI_2008_ORDER_CURRENT_URL",
+      "originalUrl": "https://www.eci.gov.in/Documents/Delimitation/DelimitationofParliamentaryAssemblyConstituenciesOrder-2008%28English%29.pdf",
+      "checkedAtUtc": "2026-10-26T14:02:46.163402+00:00",
+      "status": "ARCHIVED_PDF_ACQUIRED",
+      "snapshots": [
+        {
+          "timestamp": "20260804161908",
+          "original": "https://www.eci.gov.in/Documents/Delimitation/DelimitationofParliamentaryAssemblyConstituenciesOrder-2008(English).pdf",
+          "statuscode": "200",
+          "mimetype": "application/pdf",
+          "cdxDigest": "3X3E4WORPFSSTLFSDZN7CVB7LDWUYXDN",
+          "cdxLength": 1130459,
+          "archiveUrl": "https://web.archive.org/web/20260804161908id_/https://www.eci.gov.in/Documents/Delimitation/DelimitationofParliamentaryAssemblyConstituenciesOrder-2008(English).pdf",
+          "retrievedAtUtc": "2026-10-26T14:02:46.552878+00:00",
+          "httpStatus": 200,
+          "finalUrl": "https://web.archive.org/web/20260804161908id_/https://www.eci.gov.in/Documents/Delimitation/DelimitationofParliamentaryAssemblyConstituenciesOrder-2008(English).pdf",
+          "contentType": "application/pdf",
+          "byteLength": 1340728,
+          "sha256": "9e1ac49aa952febc8e4f57ed23abd28218a21887f355f8dad1502ab5c0d65e69",
+          "pdfMagic": true,
+          "pdfParseStatus": "PASS",
+          "pdfPageCount": 572,
+          "rawArtifact": "raw/ECI_2008_ORDER_CURRENT_URL_wayback_20260804161908.pdf",
+          "textArtifact": "text/ECI_2008_ORDER_CURRENT_URL_wayback_20260804161908.txt",
+          "textSha256": "aa3028b0e015297a050b8307efe10ebc4317239f73d89e5e3c624ccddb11e217",
+          "termFindings": {
+            "Delimitation of Parliamentary and Assembly Constituencies Order, 2008": false,
+            "TABLE B": true,
+            "ANDHRA PRADESH": true
+          },
+          "sourceClassification": "PRIMARY_ECI_ORDER_ARCHIVE_COPY",
+          "archiveProvenance": "Internet Archive CDX record for exact original URL; not a current direct government-host response"
+        }
+      ],
+      "cdxUrl": "https://web.archive.org/cdx/search/cdx?url=https%3A%2F%2Fwww.eci.gov.in%2FDocuments%2FDelimitation%2FDelimitationofParliamentaryAssemblyConstituenciesOrder-2008%2528English%2529.pdf&output=json&fl=timestamp%2Coriginal%2Cstatuscode%2Cmimetype%2Cdigest%2Clength&filter=statuscode%3A200&filter=mimetype%3Aapplication%2Fpdf&collapse=digest",
+      "cdxHttpStatus": 200,
+      "cdxBytes": 279,
+      "cdxSha256": "be27fb5f1e22cd45f2efdef37a32b1e9deacddd6118285a4ab69169a1f0092c5",
+      "selectedSnapshot": {
+        "timestamp": "20260804161908",
+        "original": "https://www.eci.gov.in/Documents/Delimitation/DelimitationofParliamentaryAssemblyConstituenciesOrder-2008(English).pdf",
+        "statuscode": "200",
+        "mimetype": "application/pdf",
+        "cdxDigest": "3X3E4WORPFSSTLFSDZN7CVB7LDWUYXDN",
+        "cdxLength": 1130459,
+        "archiveUrl": "https://web.archive.org/web/20260804161908id_/https://www.eci.gov.in/Documents/Delimitation/DelimitationofParliamentaryAssemblyConstituenciesOrder-2008(English).pdf",
+        "retrievedAtUtc": "2026-10-26T14:02:46.552878+00:00",
+        "httpStatus": 200,
+        "finalUrl": "https://web.archive.org/web/20260804161908id_/https://www.eci.gov.in/Documents/Delimitation/DelimitationofParliamentaryAssemblyConstituenciesOrder-2008(English).pdf",
+        "contentType": "application/pdf",
+        "byteLength": 1340728,
+        "sha256": "9e1ac49aa952febc8e4f57ed23abd28218a21887f355f8dad1502ab5c0d65e69",
+        "pdfMagic": true,
+        "pdfParseStatus": "PASS",
+        "pdfPageCount": 572,
+        "rawArtifact": "raw/ECI_2008_ORDER_CURRENT_URL_wayback_20260804161908.pdf",
+        "textArtifact": "text/ECI_2008_ORDER_CURRENT_URL_wayback_20260804161908.txt",
+        "textSha256": "aa3028b0e015297a050b8307efe10ebc4317239f73d89e5e3c624ccddb11e217",
+        "termFindings": {
+          "Delimitation of Parliamentary and Assembly Constituencies Order, 2008": false,
+          "TABLE B": true,
+          "ANDHRA PRADESH": true
+        },
+        "sourceClassification": "PRIMARY_ECI_ORDER_ARCHIVE_COPY",
+        "archiveProvenance": "Internet Archive CDX record for exact original URL; not a current direct government-host response"
+      }
+    },
+    {
+      "sourceId": "ECI_2008_ORDER_LEGACY_URL",
+      "originalUrl": "http://eci.nic.in/eci_main/CurrentElections/CONSOLIDATED_ORDER%20_ECI%20.pdf",
+      "checkedAtUtc": "2026-10-26T14:02:46.163674+00:00",
+      "status": "ARCHIVED_PDF_ACQUIRED",
+      "snapshots": [
+        {
+          "timestamp": "20101005180821",
+          "original": "http://eci.nic.in/eci_main/CurrentElections/CONSOLIDATED_ORDER%20_ECI%20.pdf",
+          "statuscode": "200",
+          "mimetype": "application/pdf",
+          "cdxDigest": "3X3E4WORPFSSTLFSDZN7CVB7LDWUYXDN",
+          "cdxLength": 1132303,
+          "archiveUrl": "https://web.archive.org/web/20101005180821id_/http://eci.nic.in/eci_main/CurrentElections/CONSOLIDATED_ORDER%20_ECI%20.pdf",
+          "retrievedAtUtc": "2026-10-26T14:02:46.574100+00:00",
+          "httpStatus": 200,
+          "finalUrl": "https://web.archive.org/web/20101005180821id_/http://eci.nic.in/eci_main/CurrentElections/CONSOLIDATED_ORDER%20_ECI%20.pdf",
+          "contentType": "application/pdf",
+          "byteLength": 1340728,
+          "sha256": "9e1ac49aa952febc8e4f57ed23abd28218a21887f355f8dad1502ab5c0d65e69",
+          "pdfMagic": true,
+          "pdfParseStatus": "PASS",
+          "pdfPageCount": 572,
+          "rawArtifact": "raw/ECI_2008_ORDER_LEGACY_URL_wayback_20101005180821.pdf",
+          "textArtifact": "text/ECI_2008_ORDER_LEGACY_URL_wayback_20101005180821.txt",
+          "textSha256": "aa3028b0e015297a050b8307efe10ebc4317239f73d89e5e3c624ccddb11e217",
+          "termFindings": {
+            "Delimitation of Parliamentary and Assembly Constituencies Order, 2008": false,
+            "TABLE B": true
+          },
+          "sourceClassification": "PRIMARY_ECI_ORDER_LEGACY_ARCHIVE_COPY",
+          "archiveProvenance": "Internet Archive CDX record for exact original URL; not a current direct government-host response"
+        }
+      ],
+      "cdxUrl": "https://web.archive.org/cdx/search/cdx?url=http%3A%2F%2Feci.nic.in%2Feci_main%2FCurrentElections%2FCONSOLIDATED_ORDER%2520_ECI%2520.pdf&output=json&fl=timestamp%2Coriginal%2Cstatuscode%2Cmimetype%2Cdigest%2Clength&filter=statuscode%3A200&filter=mimetype%3Aapplication%2Fpdf&collapse=digest",
+      "cdxHttpStatus": 200,
+      "cdxBytes": 237,
+      "cdxSha256": "6e74b3c24248f5328b51047e7778d81a79a0f9fd405900d777d34e131357ef6a",
+      "selectedSnapshot": {
+        "timestamp": "20101005180821",
+        "original": "http://eci.nic.in/eci_main/CurrentElections/CONSOLIDATED_ORDER%20_ECI%20.pdf",
+        "statuscode": "200",
+        "mimetype": "application/pdf",
+        "cdxDigest": "3X3E4WORPFSSTLFSDZN7CVB7LDWUYXDN",
+        "cdxLength": 1132303,
+        "archiveUrl": "https://web.archive.org/web/20101005180821id_/http://eci.nic.in/eci_main/CurrentElections/CONSOLIDATED_ORDER%20_ECI%20.pdf",
+        "retrievedAtUtc": "2026-10-26T14:02:46.574100+00:00",
+        "httpStatus": 200,
+        "finalUrl": "https://web.archive.org/web/20101005180821id_/http://eci.nic.in/eci_main/CurrentElections/CONSOLIDATED_ORDER%20_ECI%20.pdf",
+        "contentType": "application/pdf",
+        "byteLength": 1340728,
+        "sha256": "9e1ac49aa952febc8e4f57ed23abd28218a21887f355f8dad1502ab5c0d65e69",
+        "pdfMagic": true,
+        "pdfParseStatus": "PASS",
+        "pdfPageCount": 572,
+        "rawArtifact": "raw/ECI_2008_ORDER_LEGACY_URL_wayback_20101005180821.pdf",
+        "textArtifact": "text/ECI_2008_ORDER_LEGACY_URL_wayback_20101005180821.txt",
+        "textSha256": "aa3028b0e015297a050b8307efe10ebc4317239f73d89e5e3c624ccddb11e217",
+        "termFindings": {
+          "Delimitation of Parliamentary and Assembly Constituencies Order, 2008": false,
+          "TABLE B": true
+        },
+        "sourceClassification": "PRIMARY_ECI_ORDER_LEGACY_ARCHIVE_COPY",
+        "archiveProvenance": "Internet Archive CDX record for exact original URL; not a current direct government-host response"
+      }
+    }
+  ],
+  "portalProbes": [
+    {
+      "url": "https://apegazette.cgg.gov.in/",
+      "probedAtUtc": "2026-10-26T14:03:01.684488+00:00",
+      "httpStatus": 403,
+      "finalUrl": "https://apegazette.cgg.gov.in/",
+      "contentType": "text/html; charset=UTF-8",
+      "byteLength": 312,
+      "sha256": "f8a3e5c86819662a1d8d1883e82c9bf64a3f124b90f094c50696ae9a11575776",
+      "status": "HTTP_FAILURE_OR_EMPTY"
+    },
+    {
+      "url": "https://egazette.gov.in/",
+      "probedAtUtc": "2026-10-26T14:03:01.683290+00:00",
+      "status": "FETCH_FAILED_TLS_VERIFICATION_RETAINED",
+      "error": "SSLError: HTTPSConnectionPool(host='egazette.gov.in', port=443): Max retries exceeded with url: / (Caused by SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1010)')))"
+    },
+    {
+      "url": "https://www.egazette.gov.in/",
+      "probedAtUtc": "2026-10-26T14:03:01.683525+00:00",
+      "status": "FETCH_FAILED_TLS_VERIFICATION_RETAINED",
+      "error": "SSLError: HTTPSConnectionPool(host='www.egazette.gov.in', port=443): Max retries exceeded with url: / (Caused by SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1010)')))"
+    },
+    {
+      "url": "https://www.indiapost.gov.in/",
+      "probedAtUtc": "2026-10-26T14:03:02.437575+00:00",
+      "httpStatus": 200,
+      "finalUrl": "https://www.indiapost.gov.in/",
+      "contentType": "text/html; charset=utf-8",
+      "byteLength": 399773,
+      "sha256": "033278921d179aa58697172006bcfbe99e4ecbbfb7bd415eb0c9867542151505",
+      "status": "DOWNLOADED_HASHED_HTML_DISCOVERY_ONLY",
+      "rawArtifact": "raw/www.indiapost.gov.in.html",
+      "links": [
+        {
+          "tag": "link",
+          "attribute": "href",
+          "url": "https://www.indiapost.gov.in/images/Logo.png"
+        },
+        {
+          "tag": "link",
+          "attribute": "href",
+          "url": "https://www.indiapost.gov.in/images/home/GovtLinks/myScheme.png"
+        },
+        {
+          "tag": "link",
+          "attribute": "href",
+          "url": "https://www.indiapost.gov.in/images/home/GovtLinks/nationalportal.png"
+        },
+        {
+          "tag": "link",
+          "attribute": "href",
+          "url": "https://www.indiapost.gov.in/images/home/GovtLinks/singlesignon.png"
+        },
+        {
+          "tag": "link",
+          "attribute": "href",
+          "url": "https://www.indiapost.gov.in/images/home/GovtLinks/GEM.png"
+        },
+        {
+          "tag": "link",
+          "attribute": "href",
+          "url": "https://www.indiapost.gov.in/images/home/GovtLinks/ONDC.png"
+        },
+        {
+          "tag": "link",
+          "attribute": "href",
+          "url": "https://www.indiapost.gov.in/images/home/GovtLinks/digital.png"
+        },
+        {
+          "tag": "link",
+          "attribute": "href",
+          "url": "https://www.indiapost.gov.in/_next/static/css/a25cbbfef58db175.css"
+        },
+        {
+          "tag": "link",
+          "attribute": "href",
+          "url": "https://www.indiapost.gov.in/_next/static/css/47227777536a0672.css"
+        },
+        {
+          "tag": "link",
+          "attribute": "href",
+          "url": "https://www.indiapost.gov.in/_next/static/css/a28a9a33feb11f1f.css"
+        },
+        {
+          "tag": "link",
+          "attribute": "href",
+          "url": "https://www.indiapost.gov.in/_next/static/chunks/webpack-68a162324850c332.js"
+        },
+        {
+          "tag": "script",
+          "attribute": "src",
+          "url": "https://www.indiapost.gov.in/_next/static/chunks/4bd1b696-100b9d70ed4e49c1.js"
+        },
+        {
+          "tag": "script",
+          "attribute": "src",
+          "url": "https://www.indiapost.gov.in/_next/static/chunks/1255-32f706bb4bbbeeda.js"
+        },
+        {
+          "tag": "script",
+          "attribute": "src",
+          "url": "https://www.indiapost.gov.in/_next/static/chunks/main-app-f3336e172256d2ab.js"
+        },
+        {
+          "tag": "script",
+          "attribute": "src",
+          "url": "https://www.indiapost.gov.in/_next/static/chunks/1356-5c8c2e2fb753b8c7.js"
+        },
+        {
+          "tag": "script",
+          "attribute": "src",
+          "url": "https://www.indiapost.gov.in/_next/static/chunks/2619-b8db57ac19da49ac.js"
+        },
+        {
+          "tag": "script",
+          "attribute": "src",
+          "url": "https://www.indiapost.gov.in/_next/static/chunks/661-78a1c2ad9809de65.js"
+        },
+        {
+          "tag": "script",
+          "attribute": "src",
+          "url": "https://www.indiapost.gov.in/_next/static/chunks/app/layout-59f63863ca9e1af9.js"
+        },
+        {
+          "tag": "script",
+          "attribute": "src",
+          "url": "https://www.indiapost.gov.in/_next/static/chunks/app/not-found-5163a5bb6051949d.js"
+        },
+        {
+          "tag": "script",
+          "attribute": "src",
+          "url": "https://www.indiapost.gov.in/_next/static/chunks/1725-c54cdba11c00b751.js"
+        },
+        {
+          "tag": "script",
+          "attribute": "src",
+          "url": "https://www.indiapost.gov.in/_next/static/chunks/21-dd696d7cde82a333.js"
+        },
+        {
+          "tag": "script",
+          "attribute": "src",
+          "url": "https://www.indiapost.gov.in/_next/static/chunks/5213-3da5086f4a1612ce.js"
+        },
+        {
+          "tag": "script",
+          "attribute": "src",
+          "url": "https://www.indiapost.gov.in/_next/static/chunks/5962-8c54fcfac434b6ec.js"
+        },
+        {
+          "tag": "script",
+          "attribute": "src",
+          "url": "https://www.indiapost.gov.in/_next/static/chunks/888-867cdb4a398f1f6b.js"
+        },
+        {
+          "tag": "script",
+          "attribute": "src",
+          "url": "https://www.indiapost.gov.in/_next/static/chunks/5008-ec20e1a72744de3d.js"
+        },
+        {
+          "tag": "script",
+          "attribute": "src",
+          "url": "https://www.indiapost.gov.in/_next/static/chunks/4426-7160439b170f1025.js"
+        },
+        {
+          "tag": "script",
+          "attribute": "src",
+          "url": "https://www.indiapost.gov.in/_next/static/chunks/app/page-dc29a6bfaa68193b.js"
+        },
+        {
+          "tag": "link",
+          "attribute": "href",
+          "url": "https://www.googletagmanager.com/gtag/js?id=G-X3HX4PKM2P"
+        },
+        {
+          "tag": "link",
+          "attribute": "href",
+          "url": "https://www.googletagmanager.com/gtag/js?id=AW-414438318"
+        },
+        {
+          "tag": "link",
+          "attribute": "href",
+          "url": "https://www.indiapost.gov.in/_next/static/chunks/9303.f6065ff87765ea66.js"
+        },
+        {
+          "tag": "link",
+          "attribute": "href",
+          "url": "https://www.indiapost.gov.in/images/home/GovtLinks/digilocker.png"
+        },
+        {
+          "tag": "link",
+          "attribute": "href",
+          "url": "https://www.indiapost.gov.in/images/home/GovtLinks/meity.png"
+        },
+        {
+          "tag": "link",
+          "attribute": "href",
+          "url": "https://www.indiapost.gov.in/images/home/GovtLinks/bhashini.png"
+        },
+        {
+          "tag": "link",
+          "attribute": "href",
+          "url": "https://www.indiapost.gov.in/images/home/GovtLinks/datagov.png"
+        },
+        {
+          "tag": "link",
+          "attribute": "href",
+          "url": "https://www.indiapost.gov.in/images/home/GovtLinks/indiasemicondmission.png"
+        },
+        {
+          "tag": "link",
+          "attribute": "href",
+          "url": "https://www.indiapost.gov.in/images/home/GovtLinks/aadhar.png"
+        },
+        {
+          "tag": "link",
+          "attribute": "href",
+          "url": "https://www.indiapost.gov.in/images/home/GovtLinks/myGov.png"
+        },
+        {
+          "tag": "link",
+          "attribute": "href",
+          "url": "https://www.indiapost.gov.in/favicon.ico"
+        },
+        {
+          "tag": "link",
+          "attribute": "href",
+          "url": "https://www.indiapost.gov.in/favicon.ico"
+        },
+        {
+          "tag": "link",
+          "attribute": "href",
+          "url": "https://www.indiapost.gov.in/icon.png"
+        },
+        {
+          "tag": "script",
+          "attribute": "src",
+          "url": "https://www.indiapost.gov.in/_next/static/chunks/polyfills-42372ed130431b0a.js"
+        },
+        {
+          "tag": "a",
+          "attribute": "href",
+          "url": "https://www.indiapost.gov.in/#main-content"
+        },
+        {
+          "url": "https://www.indiapost.gov.in/#main-content",
+          "text": "Skip to main content"
+        },
+        {
+          "tag": "a",
+          "attribute": "href",
+          "url": "https://www.indiapost.gov.in/"
+        },
+        {
+          "url": "https://www.indiapost.gov.in/",
+          "text": "Government of India Ministry of Communications Department of Posts"
+        },
+        {
+          "tag": "a",
+          "attribute": "href",
+          "url": "https://www.digitalindia.gov.in/"
+        },
+        {
+          "url": "https://www.digitalindia.gov.in/",
+          "text": ""
+        },
+        {
+          "tag": "a",
+          "attribute": "href",
+          "url": "https://www.इंडिया.सरकार.भारत/"
+        },
+        {
+          "url": "https://www.इंडिया.सरकार.भारत/",
+          "text": "भारत सरकार"
+        },
+        {
+          "tag": "a",
+          "attribute": "href",
+          "url": "https://www.india.gov.in/"
+        },
+        {
+          "url": "https://www.india.gov.in/",
+          "text": "Government of India"
+        },
+        {
+          "tag": "a",
+          "attribute": "href",
+          "url": "https://www.indiapost.gov.in/help&Support/contactus"
+        },
+        {
+          "url": "https://www.indiapost.gov.in/help&Support/contactus",
+          "text": ""
+        },
+        {
+          "tag": "a",
+          "attribute": "href",
+          "url": "https://www.indiapost.gov.in/"
+        },
+        {
+          "url": "https://www.indiapost.gov.in/",
+          "text": "Home"
+        },
+        {
+          "tag": "a",
+          "attribute": "href",
+          "url": "https://www.indiapost.gov.in/"
+        },
+        {
+          "url": "https://www.indiapost.gov.in/",
+          "text": "Ministry"
+        },
+        {
+          "tag": "a",
+          "attribute": "href",
+          "url": "https://www.indiapost.gov.in/ministry/aboutus"
+        },
+        {
+          "url": "https://www.indiapost.gov.in/ministry/aboutus",
+          "text": "About Us About Us"
+        },
+        {
+          "tag": "a",
+          "attribute": "href",
+          "url": "https://www.indiapost.gov.in/ministry/ourteam"
+        },
+        {
+          "url": "https://www.indiapost.gov.in/ministry/ourteam",
+          "text": "Our Team Our Team"
+        },
+        {
+          "tag": "a",
+          "attribute": "href",
+          "url": "https://www.indiapost.gov.in/ministry/ourorganisation"
+        },
+        {
+          "url": "https://www.indiapost.gov.in/ministry/ourorganisation",
+          "text": "Our Organisation Our Organisation"
+        },
+        {
+          "tag": "a",
+          "attribute": "href",
+          "url": "https://www.indiapost.gov.in/ministry/ourperformance"
+        },
+        {
+          "url": "https://www.indiapost.gov.in/ministry/ourperformance",
+          "text": "Our Performance Our Performance"
+        },
+        {
+          "tag": "a",
+          "attribute": "href",
+          "url": "https://www.indiapost.gov.in/ministry/directory"
+        },
+        {
+          "url": "https://www.indiapost.gov.in/ministry/directory",
+          "text": "Organogram Organogram"
+        },
+        {
+          "tag": "a",
+          "attribute": "href",
+          "url": "https://www.indiapost.gov.in/"
+        },
+        {
+          "url": "https://www.indiapost.gov.in/",
+          "text": "Offerings"
+        },
+        {
+          "tag": "a",
+          "attribute": "href",
+          "url": "https://www.indiapost.gov.in/mail&Parcel/mailproducts"
+        },
+        {
+          "url": "https://www.indiapost.gov.in/mail&Parcel/mailproducts",
+          "text": "Mail Products Mail Products"
+        },
+        {
+          "tag": "a",
+          "attribute": "href",
+          "url": "https://www.indiapost.gov.in/speedpost/homepage"
+        },
+        {
+          "url": "https://www.indiapost.gov.in/speedpost/homepage",
+          "text": "24/48 Speed Post 24/48 Speed Post"
+        },
+        {
+          "tag": "a",
+          "attribute": "href",
+          "url": "https://www.indiapost.gov.in/business-services"
+        },
+        {
+          "url": "https://www.indiapost.gov.in/business-services",
+          "text": "Business Services Business Services"
+        },
+        {
+          "tag": "a",
+          "attribute": "href",
+          "url": "https://www.indiapost.gov.in/banking-services/savings"
+        },
+        {
+          "url": "https://www.indiapost.gov.in/banking-services/savings",
+          "text": "Saving Schemes Saving Schemes"
+        },
+        {
+          "tag": "a",
+          "attribute": "href",
+          "url": "https://www.indiapost.gov.in/banking-services/ippb"
+        },
+        {
+          "url": "https://www.indiapost.gov.in/banking-services/ippb",
+          "text": "India Post Payments Bank India Post Payments Bank"
+        },
+        {
+          "tag": "a",
+          "attribute": "href",
+          "url": "https://www.indiapost.gov.in/banking-services/netbanking"
+        },
+        {
+          "url": "https://www.indiapost.gov.in/banking-services/netbanking",
+          "text": "Net Banking Net Banking"
+        },
+        {
+          "tag": "a",
+          "attribute": "href",
+          "url": "https://www.indiapost.gov.in/banking-services/handbooks"
+        },
+        {
+          "url": "https://www.indiapost.gov.in/banking-services/handbooks",
+          "text": "Handbooks Handbooks"
+        },
+        {
+          "tag": "a",
+          "attribute": "href",
+          "url": "https://www.indiapost.gov.in/banking-services/moneyremittance"
+        },
+        {
+          "url": "https://www.indiapost.gov.in/banking-services/moneyremittance",
+          "text": "Money Remittance Services Money Remittance Services"
+        },
+        {
+          "tag": "a",
+          "attribute": "href",
+          "url": "https://www.indiapost.gov.in/insurance-services/pli"
+        },
+        {
+          "url": "https://www.indiapost.gov.in/insurance-services/pli",
+          "text": "Postal Life Insurance Postal Life Insurance"
+        },
+        {
+          "tag": "a",
+          "attribute": "href",
+          "url": "https://www.indiapost.gov.in/insurance-services/rpli"
+        },
+        {
+          "url": "https://www.indiapost.gov.in/insurance-services/rpli",
+          "text": "Rural Postal Life Insurance Rural Postal Life Insurance"
+        },
+        {
+          "tag": "a",
+          "attribute": "href",
+          "url": "https://www.indiapost.gov.in/insurance-services/pmsby"
+        },
+        {
+          "url": "https://www.indiapost.gov.in/insurance-services/pmsby",
+          "text": "Pradhan Mantri Suraksha Bima Yojana Pradhan Mantri Suraksha Bima Yojana"
+        },
+        {
+          "tag": "a",
+          "attribute": "href",
+          "url": "https://www.indiapost.gov.in/insurance-services/pmjjby"
+        },
+        {
+          "url": "https://www.indiapost.gov.in/insurance-services/pmjjby",
+          "text": "Pradhan Mantri Jeevan Jyoti Bima Yojana Pradhan Mantri Jeevan Jyoti Bima Yojana"
+        },
+        {
+          "tag": "a",
+          "attribute": "href",
+          "url": "https://www.indiapost.gov.in/insurance-services/apy"
+        },
+        {
+          "url": "https://www.indiapost.gov.in/insurance-services/apy",
+          "text": "Atal Pension Yojana Atal Pension Yojana"
+        },
+        {
+          "tag": "a",
+          "attribute": "href",
+          "url": "https://www.indiapost.gov.in/otheronlineservices/aadhaar-updation"
+        },
+        {
+          "url": "https://www.indiapost.gov.in/otheronlineservices/aadhaar-updation",
+          "text": "Aadhaar Services Aadhaar Services"
+        },
+        {
+          "tag": "a",
+          "attribute": "href",
+          "url": "https://www.indiapost.gov.in/otheronlineservices/prs"
+        },
+        {
+          "url": "https://www.indiapost.gov.in/otheronlineservices/prs",
+          "text": "India Post Passenger Reservation System India Post Passenger Reservation System"
+        },
+        {
+          "tag": "a",
+          "attribute": "href",
+          "url": "https://www.indiapost.gov.in/otheronlineservices/popsk"
+        },
+        {
+          "url": "https://www.indiapost.gov.in/otheronlineservices/popsk",
+          "text": "Post Office Passport Seva Kendra Post Office Passport Seva Kendra"
+        },
+        {
+          "tag": "a",
+          "attribute": "href",
+          "url": "https://www.indiapost.gov.in/featuredservices/self-service-portal"
+        },
+        {
+          "url": "https://www.indiapost.gov.in/featuredservices/self-service-portal",
+          "text": "Self Service Portal Self Service Portal"
+        },
+        {
+          "tag": "a",
+          "attribute": "href",
+          "url": "https://www.indiapost.gov.in/featuredservices/gangajal-services"
+        },
+        {
+          "url": "https://www.indiapost.gov.in/featuredservices/gangajal-services",
+          "text": "Gangajal Services Gangajal Services"
+        },
+        {
+          "tag": "a",
+          "attribute": "href",
+          "url": "https://www.indiapost.gov.in/featuredservices/holy-blessings"
+        },
+        {
+          "url": "https://www.indiapost.gov.in/featuredservices/holy-blessings",
+          "text": "Holy Blessings Holy Blessings"
+        },
+        {
+          "tag": "a",
+          "attribute": "href",
+          "url": "https://www.indiapost.gov.in/featuredservices/philately"
+        },
+        {
+          "url": "https://www.indiapost.gov.in/featuredservices/philately",
+          "text": "Philately Philately"
+        },
+        {
+          "tag": "a",
+          "attribute": "href",
+          "url": "https://www.indiapost.gov.in/vacancies"
+        },
+        {
+          "url": "https://www.indiapost.gov.in/vacancies",
+          "text": "Vacancies Vacancies"
+        },
+        {
+          "tag": "a",
+          "attribute": "href",
+          "url": "https://www.indiapost.gov.in/tenders"
+        },
+        {
+          "url": "https://www.indiapost.gov.in/tenders",
+          "text": "Tenders Tenders"
+        },
+        {
+          "tag": "a",
+          "attribute": "href",
+          "url": "https://www.indiapost.gov.in/digipin"
+        },
+        {
+          "url": "https://www.indiapost.gov.in/digipin",
+          "text": "DIGIPIN DIGIPIN"
+        },
+        {
+          "tag": "a",
+          "attribute": "href",
+          "url": "https://www.indiapost.gov.in/sparsh-philately"
+        },
+        {
+          "url": "https://www.indiapost.gov.in/sparsh-philately",
+          "text": "SPARSH / Philately SPARSH / Philately"
+        },
+        {
+          "tag": "a",
+          "attribute": "href",
+          "url": "https://www.indiapost.gov.in/"
+        },
+        {
+          "url": "https://www.indiapost.gov.in/",
+          "text": "Documents"
+        },
+        {
+          "tag": "a",
+          "attribute": "href",
+          "url": "https://www.indiapost.gov.in/documents/actsandpolicies"
+        },
+        {
+          "url": "https://www.indiapost.gov.in/documents/actsandpolicies",
+          "text": "Acts and Policies Acts and Policies"
+        },
+        {
+          "tag": "a",
+          "attribute": "href",
+          "url": "https://www.indiapost.gov.in/documents/reports/annual-reports"
+        },
+        {
+          "url": "https://www.indiapost.gov.in/documents/reports/annual-reports",
+          "text": "Annual Reports Annual Reports"
+        },
+        {
+          "tag": "a",
+          "attribute": "href",
+          "url": "https://www.indiapost.gov.in/documents/reports/customs-declaration"
+        },
+        {
+          "url": "https://www.indiapost.gov.in/documents/reports/customs-declaration",
+          "text": "Customs Declaration Customs Declaration"
+        },
+        {
+          "tag": "a",
+          "attribute": "href",
+          "url": "https://www.indiapost.gov.in/documents/reports/ddfg"
+        },
+        {
+          "url": "https://www.indiapost.gov.in/documents/reports/ddfg",
+          "text": "Detailed Demands for Grants Detailed Demands for Grants"
+        },
+        {
+          "tag": "a",
+          "attribute": "href",
+          "url": "https://www.indiapost.gov.in/documents/ebooks"
+        },
+        {
+          "url": "https://www.indiapost.gov.in/documents/ebooks",
+          "text": "e-Books e-Books"
+        },
+        {
+          "tag": "a",
+          "attribute": "href",
+          "url": "https://www.indiapost.gov.in/documents/reports/forms"
+        },
+        {
+          "url": "https://www.indiapost.gov.in/documents/reports/forms",
+          "text": "Forms Forms"
+        },
+        {
+          "tag": "a",
+          "attribute": "href",
+          "url": "https://www.indiapost.gov.in/documents/gazzettenotifications"
+        },
+        {
+          "url": "https://www.indiapost.gov.in/documents/gazzettenotifications",
+          "text": "Gazette Notifications Gazette Notifications"
+        },
+        {
+          "tag": "a",
+          "attribute": "href",
+          "url": "https://www.indiapost.gov.in/documents/guidelines"
+        },
+        {
+          "url": "https://www.indiapost.gov.in/documents/guidelines",
+          "text": "Guidelines Guidelines"
+        },
+        {
+          "tag": "a",
+          "attribute": "href",
+          "url": "https://www.indiapost.gov.in/documents/ordersandnotices"
+        },
+        {
+          "url": "https://www.indiapost.gov.in/documents/ordersandnotices",
+          "text": "Orders and Notices Orders and Notices"
+        },
+        {
+          "tag": "a",
+          "attribute": "href",
+          "url": "https://www.indiapost.gov.in/documents/pressreleases"
+        },
+        {
+          "url": "https://www.indiapost.gov.in/documents/pressreleases",
+          "text": "Press Releases Press Releases"
+        },
+        {
+          "tag": "a",
+          "attribute": "href",
+          "url": "https://www.indiapost.gov.in/documents/publications"
+        },
+        {
+          "url": "https://www.indiapost.gov.in/documents/publications",
+          "text": "Publications Publications"
+        },
+        {
+          "tag": "a",
+          "attribute": "href",
+          "url": "https://www.indiapost.gov.in/documents/recruitmentrules"
+        },
+        {
+          "url": "https://www.indiapost.gov.in/documents/recruitmentrules",
+          "text": "Recruitment Rules Recruitment Rules"
+        },
+        {
+          "tag": "a",
+          "attribute": "href",
+          "url": "https://www.indiapost.gov.in/"
+        },
+        {
+          "url": "https://www.indiapost.gov.in/",
+          "text": "Media"
+        },
+        {
+          "tag": "a",
+          "attribute": "href",
+          "url": "https://www.indiapost.gov.in/media/photos"
+        },
+        {
+          "url": "https://www.indiapost.gov.in/media/photos",
+          "text": "Photos Photos"
+        },
+        {
+          "tag": "a",
+          "attribute": "href",
+          "url": "https://www.indiapost.gov.in/media/videos"
+        },
+        {
+          "url": "https://www.indiapost.gov.in/media/videos",
+          "text": "Videos Videos"
+        },
+        {
+          "tag": "a",
+          "attribute": "href",
+          "url": "https://www.indiapost.gov.in/media/brochures"
+        },
+        {
+          "url": "https://www.indiapost.gov.in/media/brochures",
+          "text": "Brochures Brochures"
+        },
+        {
+          "tag": "a",
+          "attribute": "href",
+          "url": "https://www.indiapost.gov.in/media/newsandupdates"
+        },
+        {
+          "url": "https://www.indiapost.gov.in/media/newsandupdates",
+          "text": "News and Updates News and Updates"
+        },
+        {
+          "tag": "a",
+          "attribute": "href",
+          "url": "https://www.indiapost.gov.in/"
+        },
+        {
+          "url": "https://www.indiapost.gov.in/",
+          "text": "Connect"
+        },
+        {
+          "tag": "a",
+          "attribute": "href",
+          "url": "https://www.indiapost.gov.in/help&Support/contactus"
+        },
+        {
+          "url": "https://www.indiapost.gov.in/help&Support/contactus",
+          "text": "Contact Us Contact Us"
+        },
+        {
+          "tag": "a",
+          "attribute": "href",
+          "url": "https://www.indiapost.gov.in/grievance-redressal/file-a-complaint"
+        },
+        {
+          "url": "https://www.indiapost.gov.in/grievance-redressal/file-a-complaint",
+          "text": "Grievance Redressal Grievance Redressal"
+        },
+        {
+          "tag": "a",
+          "attribute": "href",
+          "url": "https://www.indiapost.gov.in/grievance-redressal/guidelines"
+        },
+        {
+          "url": "https://www.indiapost.gov.in/grievance-redressal/guidelines",
+          "text": "Complaint Guidelines Complaint Guidelines"
+        },
+        {
+          "tag": "a",
+          "attribute": "href",
+          "url": "https://www.indiapost.gov.in/grievance-redressal/corporate-complaints"
+        },
+        {
+          "url": "https://www.indiapost.gov.in/grievance-redressal/corporate-complaints",
+          "text": "Corporate Complaints Corporate Complaints"
+        },
+        {
+          "tag": "a",
+          "attribute": "href",
+          "url": "https://www.indiapost.gov.in/grievance-redressal/help-faq"
+        },
+        {
+          "url": "https://www.indiapost.gov.in/grievance-redressal/help-faq",
+          "text": "Help and FAQs Help and FAQs"
+        },
+        {
+          "tag": "a",
+          "attribute": "href",
+          "url": "https://www.indiapost.gov.in/rti/rti-information/rti"
+        },
+        {
+          "url": "https://www.indiapost.gov.in/rti/rti-information/rti",
+          "text": "RTI RTI"
+        },
+        {
+          "tag": "a",
+          "attribute": "href",
+          "url": "https://www.mygov.in/group-issue/inviting-ideas-mann-ki-baat-prime-minister-narendra-modi-25th-october-2026?target=inapp&type=group_issue&nid=5934"
+        },
+        {
+          "url": "https://www.mygov.in/group-issue/inviting-ideas-mann-ki-baat-prime-minister-narendra-modi-25th-october-2026?target=inapp&type=group_issue&nid=5934",
+          "text": ""
+        },
+        {
+          "tag": "a",
+          "attribute": "href",
+          "url": "https://www.indiapost.gov.in/locate-postoffice"
+        },
+        {
+          "url": "https://www.indiapost.gov.in/locate-postoffice",
+          "text": "Locate Post Office"
+        },
+        {
+          "tag": "a",
+          "attribute": "href",
+          "url": "https://www.indiapost.gov.in/calculate-postage"
+        },
+        {
+          "url": "https://www.indiapost.gov.in/calculate-postage",
+          "text": "Calculate Postage"
+        },
+        {
+          "tag": "a",
+          "attribute": "href",
+          "url": "https://www.indiapost.gov.in/download-ereceipt"
+        },
+        {
+          "url": "https://www.indiapost.gov.in/download-ereceipt",
+          "text": "Download e-Receipt"
+        },
+        {
+          "tag": "a",
+          "attribute": "href",
+          "url": "https://app.indiapost.gov.in/customer-selfservice"
+        },
+        {
+          "url": "https://app.indiapost.gov.in/customer-selfservice",
+          "text": "Mail & Parcel"
+        },
+        {
+          "tag": "a",
+          "attribute": "href",
+          "url": "https://www.indiapost.gov.in/insurance-services/pli"
+        },
+        {
+          "url": "https://www.indiapost.gov.in/insurance-services/pli",
+          "text": "Insurance"
+        },
+        {
+          "tag": "a",
+          "attribute": "href",
+          "url": "https://www.indiapost.gov.in/banking-services/savings"
+        },
+        {
+          "url": "https://www.indiapost.gov.in/banking-services/savings",
+          "text": "Banking"
+        },
+        {
+          "tag": "a",
+          "attribute": "href",
+          "url": "https://www.indiapost.gov.in/featuredservices/philately"
+        },
+        {
+          "url": "https://www.indiapost.gov.in/featuredservices/philately",
+          "text": "Philately"
+        },
+        {
+          "tag": "a",
+          "attribute": "href",
+          "url": "https://www.indiapost.gov.in/documents/ebooks"
+        },
+        {
+          "url": "https://www.indiapost.gov.in/documents/ebooks",
+          "text": ""
+        },
+        {
+          "tag": "a",
+          "attribute": "href",
+          "url": "https://www.indiapost.gov.in/documents/ebooks"
+        },
+        {
+          "url": "https://www.indiapost.gov.in/documents/ebooks",
+          "text": ""
+        },
+        {
+          "tag": "a",
+          "attribute": "href",
+          "url": "https://www.indiapost.gov.in/speedpost/homepage"
+        },
+        {
+          "url": "https://www.indiapost.gov.in/speedpost/homepage",
+          "text": ""
+        },
+        {
+          "tag": "a",
+          "attribute": "href",
+          "url": "https://postagestamps.gov.in/Stamps.aspx"
+        },
+        {
+          "url": "https://postagestamps.gov.in/Stamps.aspx",
+          "text": ""
+        },
+        {
+          "tag": "a",
+          "attribute": "href",
+          "url": "https://www.indiapost.gov.in/digipin"
+        },
+        {
+          "url": "https://www.indiapost.gov.in/digipin",
+          "text": ""
+        },
+        {
+          "tag": "a",
+          "attribute": "href",
+          "url": "https://www.indiapost.gov.in/grievance-redressal/file-a-complaint"
+        },
+        {
+          "url": "https://www.indiapost.gov.in/grievance-redressal/file-a-complaint",
+          "text": "Click here to contact us for any issue related to postal services"
+        },
+        {
+          "tag": "a",
+          "attribute": "href",
+          "url": "https://www.indiapost.gov.in/grievance-redressal/file-a-complaint"
+        },
+        {
+          "url": "https://www.indiapost.gov.in/grievance-redressal/file-a-complaint",
+          "text": "Click here to contact us for any issue related to postal services"
+        },
+        {
+          "tag": "a",
+          "attribute": "href",
+          "url": "https://x.com/narendramodi/status/1314472421672452096"
+        },
+        {
+          "url": "https://x.com/narendramodi/status/1314472421672452096",
+          "text": "View More (opens in a new tab)"
+        },
+        {
+          "tag": "a",
+          "attribute": "href",
+          "url": "https://www.indiapost.gov.in/ministry/ourteam"
+        },
+        {
+          "url": "https://www.indiapost.gov.in/ministry/ourteam",
+          "text": "Our Team"
+        },
+        {
+          "tag": "a",
+          "attribute": "href",
+          "url": "https://www.indiapost.gov.in/ministry/ourorganisation"
+        },
+        {
+          "url": "https://www.indiapost.gov.in/ministry/ourorganisation",
+          "text": "Our Organisation"
+        },
+        {
+          "tag": "a",
+          "attribute": "href",
+          "url": "https://www.indiapost.gov.in/ministry/ourperformance"
+        },
+        {
+          "url": "https://www.indiapost.gov.in/ministry/ourperformance",
+          "text": "Our Performance"
+        },
+        {
+          "tag": "a",
+          "attribute": "href",
+          "url": "https://www.indiapost.gov.in/#home-banner"
+        },
+        {
+          "url": "https://www.indiapost.gov.in/#home-banner",
+          "text": "Track your shipment status and delivery"
+        },
+        {
+          "tag": "a",
+          "attribute": "href",
+          "url": "https://www.indiapost.gov.in/mail&Parcel/mailproducts/mailservices"
+        },
+        {
+          "url": "https://www.indiapost.gov.in/mail&Parcel/mailproducts/mailservices",
+          "text": "Explore mail products and offerings"
+        },
+        {
+          "tag": "a",
+          "attribute": "href",
+          "url": "https://www.indiapost.gov.in/banking-services/savings"
+        },
+        {
+          "url": "https://www.indiapost.gov.in/banking-services/savings",
+          "text": "Post office saving schemes"
+        },
+        {
+          "tag": "a",
+          "attribute": "href",
+          "url": "https://www.indiapost.gov.in/insurance-services/pli"
+        },
+        {
+          "url": "https://www.indiapost.gov.in/insurance-services/pli",
+          "text": "Post Life Insurance schemes"
+        },
+        {
+          "tag": "a",
+          "attribute": "href",
+          "url": "https://www.indiapost.gov.in/personas/customers"
+        },
+        {
+          "url": "https://www.indiapost.gov.in/personas/customers",
+          "text": "VIEW MORE"
+        },
+        {
+          "tag": "a",
+          "attribute": "href",
+          "url": "https://www.indiapost.gov.in/api/documents/file/103bfgl2hx4x0bqjd3e7h20abd23e9sf0s5jf3hhsb0aady08w9m0d3b734fer"
+        },
+        {
+          "url": "https://www.indiapost.gov.in/api/documents/file/103bfgl2hx4x0bqjd3e7h20abd23e9sf0s5jf3hhsb0aady08w9m0d3b734fer",
+          "text": "Request for Empanelment (RFE) for Empanelment of Artists for “Designing of Postage Stamps and other Philatelic items”"
+        },
+        {
+          "tag": "a",
+          "attribute": "href",
+          "url": "https://www.indiapost.gov.in/api/documents/file/103epdt0uwk03iwih3a0oz08wsm038y60s5je35uff0493q0eiqh0eiqi38lj6"
+        },
+        {
+          "url": "https://www.indiapost.gov.in/api/documents/file/103epdt0uwk03iwih3a0oz08wsm038y60s5je35uff0493q0eiqh0eiqi38lj6",
+          "text": "Revision of Discount Structure for International Mail/Parcel Services"
+        },
+        {
+          "tag": "a",
+          "attribute": "href",
+          "url": "https://www.indiapost.gov.in/api/documents/file/1036a1g2nk040k6553kavf03aiu05onj0s5ed0iamj3db1204oyj3n3ob0e22t"
+        },
+        {
+          "url": "https://www.indiapost.gov.in/api/documents/file/1036a1g2nk040k6553kavf03aiu05onj0s5ed0iamj3db1204oyj3n3ob0e22t",
+          "text": "Message from Hon’ble Minister of Communications (September, 2026)"
+        },
+        {
+          "tag": "a",
+          "attribute": "href",
+          "url": "https://www.indiapost.gov.in/api/documents/file/1003b6e2xd923mn1505n9i34uti0e4bf0s5j435s9737n6900h233lamc38lj6"
+        },
+        {
+          "url": "https://www.indiapost.gov.in/api/documents/file/1003b6e2xd923mn1505n9i34uti0e4bf0s5j435s9737n6900h233lamc38lj6",
+          "text": "Message from Hon’ble Minister of Communications (September,2026)"
+        },
+        {
+          "tag": "a",
+          "attribute": "href",
+          "url": "https://www.indiapost.gov.in/media/newsandupdates"
+        },
+        {
+          "url": "https://www.indiapost.gov.in/media/newsandupdates",
+          "text": "VIEW MORE"
+        },
+        {
+          "tag": "a",
+          "attribute": "href",
+          "url": "https://www.indiapost.gov.in/api/documents/file/103daog2qdzl3mot53eoe80abd2048wf0s5j634fuz3ju3605ngp0boeu072vl"
+        },
+        {
+          "url": "https://www.indiapost.gov.in/api/documents/file/103daog2qdzl3mot53eoe80abd2048wf0s5j634fuz3ju3605ngp0boeu072vl",
+          "text": "Orders And Notices SB Order 11/2026- Revised Procedure for Interest Adjustment through HIARM Menu in Finacle CBS (opens in a new tab)"
+        },
+        {
+          "tag": "a",
+          "attribute": "href",
+          "url": "https://www.indiapost.gov.in/api/documents/file/103e8v02oyfl0brbt3afpm3bvnq34dn10sj810i9mz04o5n03a7001ufl039xo"
+        },
+        {
+          "url": "https://www.indiapost.gov.in/api/documents/file/103e8v02oyfl0brbt3afpm3bvnq34dn10sj810i9mz04o5n03a7001ufl039xo",
+          "text": "Guideline F.H.B. Vol. II (opens in a new tab)"
+        },
+        {
+          "tag": "a",
+          "attribute": "href",
+          "url": "https://www.indiapost.gov.in/api/documents/file/10062510wdat0d4ih05og034uti0fimk0s5le34taj3afx108wlr00h8w3e8gl"
+        },
+        {
+          "url": "https://www.indiapost.gov.in/api/documents/file/10062510wdat0d4ih05og034uti0fimk0s5le34taj3afx108wlr00h8w3e8gl",
+          "text": "Act And Policies List of Acceptable Documents for Aadhaar Enrolment and Update (opens in a new tab)"
+        },
+        {
+          "tag": "a",
+          "attribute": "href",
+          "url": "https://www.indiapost.gov.in/api/documents/file/103cu360mya20l4wp3buq901vye3794x0sj630e1qj08w910fif400h6u01vfa"
+        },
+        {
+          "url": "https://www.indiapost.gov.in/api/documents/file/103cu360mya20l4wp3buq901vye3794x0sj630e1qj08w910fif400h6u01vfa",
+          "text": "Forms Combined Money Order Form (opens in a new tab)"
+        },
+        {
+          "tag": "a",
+          "attribute": "href",
+          "url": "https://www.indiapost.gov.in/documents/reports/forms"
+        },
+        {
+          "url": "https://www.indiapost.gov.in/documents/reports/forms",
+          "text": "View More"
+        },
+        {
+          "tag": "a",
+          "attribute": "href",
+          "url": "https://www.indiapost.gov.in/personas/customers"
+        },
+        {
+          "url": "https://www.indiapost.gov.in/personas/customers",
+          "text": "For Customers"
+        },
+        {
+          "tag": "a",
+          "attribute": "href",
+          "url": "https://crm.indiapost.gov.in/customer/home"
+        },
+        {
+          "url": "https://crm.indiapost.gov.in/customer/home",
+          "text": "Grievance Management (opens in a new tab)"
+        },
+        {
+          "tag": "a",
+          "attribute": "href",
+          "url": "https://pli.indiapost.gov.in/CustomerPortal/Home.action"
+        },
+        {
+          "url": "https://pli.indiapost.gov.in/CustomerPortal/Home.action",
+          "text": "PLI Portal (opens in a new tab)"
+        },
+        {
+          "tag": "a",
+          "attribute": "href",
+          "url": "https://www.indiapost.gov.in/banking-services/ippb"
+        },
+        {
+          "url": "https://www.indiapost.gov.in/banking-services/ippb",
+          "text": "IPPB"
+        },
+        {
+          "tag": "a",
+          "attribute": "href",
+          "url": "https://www.indiapost.gov.in/banking-services/netbanking"
+        },
+        {
+          "url": "https://www.indiapost.gov.in/banking-services/netbanking",
+          "text": "Netbanking"
+        },
+        {
+          "tag": "a",
+          "attribute": "href",
+          "url": "https://app.indiapost.gov.in/customer-selfservice/login"
+        },
+        {
+          "url": "https://app.indiapost.gov.in/customer-selfservice/login",
+          "text": "DakGhar Niryat Kendra Portal (New) (opens in a new tab)"
+        },
+        {
+          "tag": "a",
+          "attribute": "href",
+          "url": "https://dnk.cept.gov.in/customers.web/"
+        },
+        {
+          "url": "https://dnk.cept.gov.in/customers.web/",
+          "text": "DakGhar Niryat Kendra Portal (Old) (opens in a new tab)"
+        },
+        {
+          "tag": "a",
+          "attribute": "href",
+          "url": "https://www.indiapost.gov.in/featuredservices/philately"
+        },
+        {
+          "url": "https://www.indiapost.gov.in/featuredservices/philately",
+          "text": "Buy Stamps"
+        },
+        {
+          "tag": "a",
+          "attribute": "href",
+          "url": "https://app.indiapost.gov.in/circleportal"
+        },
+        {
+          "url": "https://app.indiapost.gov.in/circleportal",
+          "text": "Circle Portals (opens in a new tab)"
+        },
+        {
+          "tag": "a",
+          "attribute": "href",
+          "url": "https://www.indiapost.gov.in/others-links"
+        },
+        {
+          "url": "https://www.indiapost.gov.in/others-links",
+          "text": "Other Links"
+        },
+        {
+          "tag": "iframe",
+          "attribute": "src",
+          "url": "https://platform.twitter.com/embed/Tweet.html?id=1925916779013967932&dnt=true&lang=en"
+        },
+        {
+          "tag": "iframe",
+          "attribute": "src",
+          "url": "https://platform.twitter.com/embed/Tweet.html?id=1925776012270350817&dnt=true&lang=en"
+        },
+        {
+          "tag": "iframe",
+          "attribute": "src",
+          "url": "https://platform.twitter.com/embed/Tweet.html?id=1925558863262019741&dnt=true&lang=en"
+        },
+        {
+          "tag": "iframe",
+          "attribute": "src",
+          "url": "https://platform.twitter.com/embed/Tweet.html?id=1925529581198459045&dnt=true&lang=en"
+        },
+        {
+          "tag": "iframe",
+          "attribute": "src",
+          "url": "https://platform.twitter.com/embed/Tweet.html?id=1925485688885256649&dnt=true&lang=en"
+        },
+        {
+          "tag": "iframe",
+          "attribute": "src",
+          "url": "https://platform.twitter.com/embed/Tweet.html?id=1925205809232744763&dnt=true&lang=en"
+        },
+        {
+          "tag": "iframe",
+          "attribute": "src",
+          "url": "https://www.youtube-nocookie.com/embed/q_amHnaNJ1Q"
+        },
+        {
+          "tag": "iframe",
+          "attribute": "src",
+          "url": "https://www.youtube-nocookie.com/embed/JxvhaDDh4wM"
+        },
+        {
+          "tag": "iframe",
+          "attribute": "src",
+          "url": "https://www.youtube-nocookie.com/embed/7g0jOZKXtvI"
+        },
+        {
+          "tag": "iframe",
+          "attribute": "src",
+          "url": "https://www.facebook.com/plugins/post.php?href=https%3A%2F%2Fwww.facebook.com%2Fcpmgandhra%2Fposts%2Fpfbid02Tc4QDYq9HuFNtyku7gJmdVkuSytYfe4qBdY3VRkLgY8WuFrAs8Jec1KyGygPToycl&show_text=true&width=350"
+        },
+        {
+          "tag": "iframe",
+          "attribute": "src",
+          "url": "https://www.facebook.com/plugins/post.php?href=https%3A%2F%2Fwww.facebook.com%2Fcpmgandhra%2Fposts%2Fpfbid02St1mGku1iBdhVZNrTZaTQYX4fLYcLZwMi7SkbgbBkgVCTp4MPFNGCqLPBmfYQdfvl&show_text=true&width=350"
+        },
+        {
+          "tag": "iframe",
+          "attribute": "src",
+          "url": "https://www.facebook.com/plugins/post.php?href=https%3A%2F%2Fwww.facebook.com%2Fcpmgandhra%2Fposts%2Fpfbid02JaPyfksom8BCgUWpPQdYpvoUvC6NbEPqf7qGXZFL7f1m4xD5KGATqNBn2R17jcecl&show_text=true&width=350"
+        },
+        {
+          "tag": "iframe",
+          "attribute": "src",
+          "url": "https://www.facebook.com/plugins/post.php?href=https%3A%2F%2Fwww.facebook.com%2Fcpmgandhra%2Fposts%2Fpfbid0UKzngbYmDiEULaVxTMuQwkQ5GKDFsK4cvXgeN3Msyu1wUHccQMdZMB1edvLPa963l&show_text=true&width=350"
+        },
+        {
+          "tag": "iframe",
+          "attribute": "src",
+          "url": "https://www.instagram.com/p/DJgHOJiRm0Z/embed/"
+        },
+        {
+          "tag": "iframe",
+          "attribute": "src",
+          "url": "https://www.instagram.com/p/DJ1LybqRZGB/embed/"
+        },
+        {
+          "tag": "iframe",
+          "attribute": "src",
+          "url": "https://www.instagram.com/p/DH-Cfkuy_G8/embed/"
+        },
+        {
+          "tag": "iframe",
+          "attribute": "src",
+          "url": "https://www.instagram.com/p/DJ-7UMBxKRe/embed/"
+        },
+        {
+          "tag": "iframe",
+          "attribute": "src",
+          "url": "https://www.instagram.com/p/DJ9MgHaIpDX/embed/"
+        },
+        {
+          "tag": "a",
+          "attribute": "href",
+          "url": "https://crm.indiapost.gov.in/customer/home"
+        },
+        {
+          "url": "https://crm.indiapost.gov.in/customer/home",
+          "text": "Register your complaint (opens in a new tab)"
+        },
+        {
+          "tag": "a",
+          "attribute": "href",
+          "url": "https://www.myscheme.gov.in"
+        },
+        {
+          "url": "https://www.myscheme.gov.in",
+          "text": ""
+        },
+        {
+          "tag": "a",
+          "attribute": "href",
+          "url": "https://www.india.gov.in"
+        },
+        {
+          "url": "https://www.india.gov.in",
+          "text": ""
+        },
+        {
+          "tag": "a",
+          "attribute": "href",
+          "url": "https://meripehchaan.gov.in/"
+        },
+        {
+          "url": "https://meripehchaan.gov.in/",
+          "text": ""
+        },
+        {
+          "tag": "a",
+          "attribute": "href",
+          "url": "https://gem.gov.in/"
+        },
+        {
+          "url": "https://gem.gov.in/",
+          "text": ""
+        },
+        {
+          "tag": "a",
+          "attribute": "href",
+          "url": "https://ondc.org/"
+        },
+        {
+          "url": "https://ondc.org/",
+          "text": ""
+        },
+        {
+          "tag": "a",
+          "attribute": "href",
+          "url": "https://www.digitalindia.gov.in"
+        },
+        {
+          "url": "https://www.digitalindia.gov.in",
+          "text": ""
+        },
+        {
+          "tag": "a",
+          "attribute": "href",
+          "url": "https://www.digilocker.gov.in"
+        },
+        {
+          "url": "https://www.digilocker.gov.in",
+          "text": ""
+        },
+        {
+          "tag": "a",
+          "attribute": "href",
+          "url": "https://www.meity.gov.in"
+        },
+        {
+          "url": "https://www.meity.gov.in",
+          "text": ""
+        },
+        {
+          "tag": "a",
+          "attribute": "href",
+          "url": "https://bhashini.gov.in"
+        },
+        {
+          "url": "https://bhashini.gov.in",
+          "text": ""
+        },
+        {
+          "tag": "a",
+          "attribute": "href",
+          "url": "https://data.gov.in"
+        },
+        {
+          "url": "https://data.gov.in",
+          "text": ""
+        },
+        {
+          "tag": "a",
+          "attribute": "href",
+          "url": "https://www.ism.gov.in"
+        },
+        {
+          "url": "https://www.ism.gov.in",
+          "text": ""
+        },
+        {
+          "tag": "a",
+          "attribute": "href",
+          "url": "https://uidai.gov.in"
+        },
+        {
+          "url": "https://uidai.gov.in",
+          "text": ""
+        },
+        {
+          "tag": "a",
+          "attribute": "href",
+          "url": "https://www.mygov.in"
+        },
+        {
+          "url": "https://www.mygov.in",
+          "text": ""
+        },
+        {
+          "tag": "a",
+          "attribute": "href",
+          "url": "https://www.myscheme.gov.in"
+        },
+        {
+          "url": "https://www.myscheme.gov.in",
+          "text": ""
+        },
+        {
+          "tag": "a",
+          "attribute": "href",
+          "url": "https://www.india.gov.in"
+        },
+        {
+          "url": "https://www.india.gov.in",
+          "text": ""
+        },
+        {
+          "tag": "a",
+          "attribute": "href",
+          "url": "https://meripehchaan.gov.in/"
+        },
+        {
+          "url": "https://meripehchaan.gov.in/",
+          "text": ""
+        },
+        {
+          "tag": "a",
+          "attribute": "href",
+          "url": "https://gem.gov.in/"
+        },
+        {
+          "url": "https://gem.gov.in/",
+          "text": ""
+        },
+        {
+          "tag": "a",
+          "attribute": "href",
+          "url": "https://ondc.org/"
+        },
+        {
+          "url": "https://ondc.org/",
+          "text": ""
+        },
+        {
+          "tag": "a",
+          "attribute": "href",
+          "url": "https://www.digitalindia.gov.in"
+        },
+        {
+          "url": "https://www.digitalindia.gov.in",
+          "text": ""
+        },
+        {
+          "tag": "a",
+          "attribute": "href",
+          "url": "https://www.digilocker.gov.in"
+        },
+        {
+          "url": "https://www.digilocker.gov.in",
+          "text": ""
+        },
+        {
+          "tag": "a",
+          "attribute": "href",
+          "url": "https://www.meity.gov.in"
+        },
+        {
+          "url": "https://www.meity.gov.in",
+          "text": ""
+        },
+        {
+          "tag": "a",
+          "attribute": "href",
+          "url": "https://bhashini.gov.in"
+        },
+        {
+          "url": "https://bhashini.gov.in",
+          "text": ""
+        },
+        {
+          "tag": "a",
+          "attribute": "href",
+          "url": "https://data.gov.in"
+        },
+        {
+          "url": "https://data.gov.in",
+          "text": ""
+        },
+        {
+          "tag": "a",
+          "attribute": "href",
+          "url": "https://www.ism.gov.in"
+        },
+        {
+          "url": "https://www.ism.gov.in",
+          "text": ""
+        },
+        {
+          "tag": "a",
+          "attribute": "href",
+          "url": "https://uidai.gov.in"
+        },
+        {
+          "url": "https://uidai.gov.in",
+          "text": ""
+        },
+        {
+          "tag": "a",
+          "attribute": "href",
+          "url": "https://www.mygov.in"
+        },
+        {
+          "url": "https://www.mygov.in",
+          "text": ""
+        },
+        {
+          "tag": "a",
+          "attribute": "href",
+          "url": "https://www.myscheme.gov.in"
+        },
+        {
+          "url": "https://www.myscheme.gov.in",
+          "text": ""
+        },
+        {
+          "tag": "a",
+          "attribute": "href",
+          "url": "https://www.india.gov.in"
+        },
+        {
+          "url": "https://www.india.gov.in",
+          "text": ""
+        },
+        {
+          "tag": "a",
+          "attribute": "href",
+          "url": "https://meripehchaan.gov.in/"
+        },
+        {
+          "url": "https://meripehchaan.gov.in/",
+          "text": ""
+        },
+        {
+          "tag": "a",
+          "attribute": "href",
+          "url": "https://gem.gov.in/"
+        },
+        {
+          "url": "https://gem.gov.in/",
+          "text": ""
+        },
+        {
+          "tag": "a",
+          "attribute": "href",
+          "url": "https://ondc.org/"
+        },
+        {
+          "url": "https://ondc.org/",
+          "text": ""
+        },
+        {
+          "tag": "a",
+          "attribute": "href",
+          "url": "https://www.indiapost.gov.in/ministry/aboutus"
+        },
+        {
+          "url": "https://www.indiapost.gov.in/ministry/aboutus",
+          "text": "› About Us"
+        },
+        {
+          "tag": "a",
+          "attribute": "href",
+          "url": "https://www.indiapost.gov.in/help&Support/contactus"
+        },
+        {
+          "url": "https://www.indiapost.gov.in/help&Support/contactus",
+          "text": "› Contact Us"
+        },
+        {
+          "tag": "a",
+          "attribute": "href",
+          "url": "https://www.indiapost.gov.in/website-policy?tab=privacy"
+        },
+        {
+          "url": "https://www.indiapost.gov.in/website-policy?tab=privacy",
+          "text": "› Privacy Policy"
+        },
+        {
+          "tag": "a",
+          "attribute": "href",
+          "url": "https://www.indiapost.gov.in/website-policy?tab=terms"
+        },
+        {
+          "url": "https://www.indiapost.gov.in/website-policy?tab=terms",
+          "text": "› Terms & Condition"
+        },
+        {
+          "tag": "a",
+          "attribute": "href",
+          "url": "https://www.indiapost.gov.in/help&Support/contactus"
+        },
+        {
+          "url": "https://www.indiapost.gov.in/help&Support/contactus",
+          "text": "› Feedback"
+        },
+        {
+          "tag": "a",
+          "attribute": "href",
+          "url": "https://www.indiapost.gov.in/grievance-redressal/help-faq"
+        },
+        {
+          "url": "https://www.indiapost.gov.in/grievance-redressal/help-faq",
+          "text": "› Help & FAQs"
+        },
+        {
+          "tag": "a",
+          "attribute": "href",
+          "url": "https://www.indiapost.gov.in/sitemap"
+        },
+        {
+          "url": "https://www.indiapost.gov.in/sitemap",
+          "text": "› Sitemap"
+        },
+        {
+          "tag": "a",
+          "attribute": "href",
+          "url": "https://www.indiapost.gov.in/documents/CABE_Accessibility_Conformance_Certificate.pdf"
+        },
+        {
+          "url": "https://www.indiapost.gov.in/documents/CABE_Accessibility_Conformance_Certificate.pdf",
+          "text": ""
+        },
+        {
+          "tag": "a",
+          "attribute": "href",
+          "url": "https://x.com/IndiaPostOffice"
+        },
+        {
+          "url": "https://x.com/IndiaPostOffice",
+          "text": ""
+        },
+        {
+          "tag": "a",
+          "attribute": "href",
+          "url": "https://www.youtube.com/indiapost_dop"
+        },
+        {
+          "url": "https://www.youtube.com/indiapost_dop",
+          "text": ""
+        },
+        {
+          "tag": "a",
+          "attribute": "href",
+          "url": "https://www.facebook.com/PostOffice.IN/?ref=hl"
+        },
+        {
+          "url": "https://www.facebook.com/PostOffice.IN/?ref=hl",
+          "text": ""
+        },
+        {
+          "tag": "a",
+          "attribute": "href",
+          "url": "https://www.instagram.com/indiapost_dop/"
+        },
+        {
+          "url": "https://www.instagram.com/indiapost_dop/",
+          "text": ""
+        },
+        {
+          "tag": "a",
+          "attribute": "href",
+          "url": "https://www.mygov.in"
+        },
+        {
+          "url": "https://www.mygov.in",
+          "text": ""
+        },
+        {
+          "tag": "a",
+          "attribute": "href",
+          "url": "https://www.india.gov.in"
+        },
+        {
+          "url": "https://www.india.gov.in",
+          "text": ""
+        },
+        {
+          "tag": "script",
+          "attribute": "src",
+          "url": "https://www.indiapost.gov.in/_next/static/chunks/webpack-68a162324850c332.js"
+        }
+      ],
+      "forms": [
+        {
+          "action": "https://www.indiapost.gov.in/",
+          "method": "get",
+          "controls": [
+            {
+              "name": null,
+              "id": "hero-track-input",
+              "type": "text",
+              "value": ""
+            },
+            {
+              "name": null,
+              "id": null,
+              "type": "text",
+              "value": null
+            },
+            {
+              "name": null,
+              "id": null,
+              "type": "submit",
+              "value": null
+            },
+            {
+              "name": null,
+              "id": null,
+              "type": "submit",
+              "value": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "url": "https://deptpub.gov.in/search/O.N.55%28E%29/feed/rss2/",
+      "probedAtUtc": "2026-10-26T14:03:01.685332+00:00",
+      "httpStatus": 500,
+      "finalUrl": "https://deptpub.gov.in/search/O.N.55%28E%29/feed/rss2/",
+      "contentType": "application/json; charset=UTF-8",
+      "byteLength": 93,
+      "sha256": "f1c4c2c183e71d457bbc2d802cd5a6253d10249b859a84ebec4c4535be216020",
+      "status": "HTTP_FAILURE_OR_EMPTY"
+    },
+    {
+      "url": "https://deptpub.gov.in/search/Delimitation+Order+2008/feed/rss2/",
+      "probedAtUtc": "2026-10-26T14:03:02.093491+00:00",
+      "httpStatus": 500,
+      "finalUrl": "https://deptpub.gov.in/search/Delimitation+Order+2008/feed/rss2/",
+      "contentType": "application/json; charset=UTF-8",
+      "byteLength": 93,
+      "sha256": "f1c4c2c183e71d457bbc2d802cd5a6253d10249b859a84ebec4c4535be216020",
+      "status": "HTTP_FAILURE_OR_EMPTY"
+    }
+  ],
+  "completedAtUtc": "2026-10-26T14:03:04.920282+00:00",
+  "summary": {
+    "eci2008OrderArchiveCopyAcquired": true,
+    "gazette2023RecitalArchiveCopyAcquired": true,
+    "eci2018NotificationIndependentArchiveCopyAcquired": false,
+    "lokSabhaProceedingsCopyAcquired": true,
+    "indiaPostManualArchiveCopyAcquired": false,
+    "note": "Archive copies retain original-URL and capture-time provenance. They are not automatically equivalent to a certified Gazette issue."
+  }
+}
