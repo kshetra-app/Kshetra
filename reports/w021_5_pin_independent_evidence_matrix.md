@@ -3,7 +3,7 @@
 **Governing Framework:** Master Execution Framework Amendment v1.6 / Rule IV-001 Non-Self-Acceptance  
 **Stage Boundary:** STOP at Stage B Gate (Stages C–I Strictly Unauthorized)  
 **Formal Acceptance:** Strictly `0.0% — PENDING INDEPENDENT ADJUDICATION`  
-**Generated At:** `2026-10-26T16:22:00Z` (status correction; not a regenerated positive validation run)  
+**Generated At:** `2026-10-26T16:29:30Z` (historical blocked report; not regenerated against replacement sources)  
 **Total Curated Entries Audited:** `36`  
 **Overall Validation Status:** `BLOCKED — INVALIDATED STATUTORY SOURCE`  
 **Gate Recommendation:** `STOP_INVALIDATED_SOURCE_REQUIRES_LEGALLY_APPLICABLE_REPLACEMENT`  
@@ -11,7 +11,7 @@
 
 ---
 
-> **SOURCE-TRUTH INVALIDATION NOTICE (2026-10-26): THIS REPORT'S PREVIOUS PASS CLAIMS ARE SUPERSEDED.** Both referenced extracts now explicitly state `STATUS: INVALIDATED`: the alleged Telangana Schedule XXXI extract is actually misattributed to Delhi, and the alleged Andhra Pradesh Schedule II extract misidentifies the 2008 Order's schedule structure. A matching SHA-256 proves only that the checked-in bytes match a digest; it does not establish legal applicability. Do not rely on the positive checks, correction claims, or negative-battery pass rates below until the pipeline is rebuilt and independently rerun against legally applicable source instruments. Stage B remains **STOP / NOT ACCEPTED**.
+> **SOURCE-TRUTH INVALIDATION NOTICE (2026-10-26): THIS REPORT'S PREVIOUS PASS CLAIMS ARE SUPERSEDED.** The legacy extracts originally used by this report were explicitly invalidated because their schedule provenance was wrong. Replacement successor-state text extracts derived from the Andhra Pradesh Reorganisation Act, 2014 (Schedule XXVII/Table A for Telangana; substituted Schedule III/Table A for Andhra Pradesh) have since been added and the 36-record manifest rebound to them. This report has **not yet been regenerated or revalidated** against those replacement extracts. A matching SHA-256 proves only checked-in text integrity, not postal delivery-beat containment or original Gazette authenticity. Do not rely on the positive checks, correction claims, or negative-battery pass rates below until a fresh validation and concordance run completes. Stage B remains **STOP / NOT ACCEPTED**.
 
 ---
 
