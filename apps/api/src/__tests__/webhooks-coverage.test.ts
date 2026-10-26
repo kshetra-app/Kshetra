@@ -19,6 +19,10 @@ import {
   validateAndPinEgressTarget,
 } from '../modules/webhooks/antiSsrfGuard';
 import { validateEventPayload } from '../modules/webhooks/schemas';
+import { SourceRegistry } from '../modules/delimitationWatch/sourceRegistry';
+import { Versioner } from '../modules/delimitationWatch/versioner';
+import { Publisher } from '../modules/delimitationWatch/publisher';
+import { parseAlternateIpv4, validateSourceUrl } from '../modules/delimitationWatch/ssrfGuard';
 
 const KEY = '0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef';
 const TENANT = '11111111-1111-1111-1111-111111111111';
@@ -236,5 +240,140 @@ describe('webhook payload schema branch coverage', () => {
     expect(validateEventPayload('election.results.published', {
       ...baseElection, extra: true,
     }).error).toMatch(/UNRECOGNIZED_PAYLOAD_FIELD/);
+  });
+});
+
+
+describe('delimitation-watch source registry and URL guard branches', () => {
+  const repo = {
+    saveSource: jest.fn(async (source: any) => source),
+    getSource: jest.fn(async (id: string) => id === 'source-1' ? {
+      id: 'source-1', name: 'ECI', publisher: 'ECI', sourceType: 'eci_notification',
+      canonicalUrl: 'https://eci.gov.in/source.pdf', geographicScope: 'IN', subjectScope: 'delimitation',
+      authorityClassification: 'statutory', retrievalMethod: 'http_get', isActive: true,
+      consecutiveFailures: 0, metadata: {}, createdAt: '2026-01-01T00:00:00.000Z', updatedAt: '2026-01-01T00:00:00.000Z',
+    } : null),
+    listSources: jest.fn(async () => []),
+  };
+
+  beforeEach(() => jest.clearAllMocks());
+
+  test('rejects missing source identity, validates URL safety, and persists defaulted source metadata', async () => {
+    const registry = new SourceRegistry(repo as any);
+    await expect(registry.registerSource({} as any)).rejects.toThrow(/VALIDATION_ERROR/);
+    expect(() => validateSourceUrl('file:///etc/passwd')).toThrow(/Forbidden URL protocol/);
+    expect(() => validateSourceUrl('https://user:pass@example.com')).toThrow(/userinfo/);
+    expect(() => validateSourceUrl('https://localhost')).toThrow(/Local and loopback/);
+    expect(() => validateSourceUrl('https://127.0.0.1')).toThrow(/prohibited range|Address/);
+    expect(parseAlternateIpv4('2130706433')).toBe('127.0.0.1');
+    expect(parseAlternateIpv4('0x7f000001')).toBe('127.0.0.1');
+    expect(parseAlternateIpv4('not-an-ip')).toBeNull();
+
+    const source = await registry.registerSource({
+      id: 'source-1', name: 'ECI', publisher: 'ECI', sourceType: 'eci_notification',
+      canonicalUrl: 'not-an-http-url', geographicScope: 'IN', subjectScope: 'delimitation',
+      retrievalMethod: 'manual_upload',
+    } as any);
+    expect(source.authorityClassification).toBe('statutory');
+    expect(source.isActive).toBe(true);
+    expect(source.metadata).toEqual({});
+    expect(repo.saveSource).toHaveBeenCalledTimes(1);
+  });
+
+  test('covers source read/list and activation lifecycle including missing records', async () => {
+    const registry = new SourceRegistry(repo as any);
+    expect((await registry.getSource('source-1'))?.id).toBe('source-1');
+    expect(await registry.getSource('missing')).toBeNull();
+    expect(await registry.listSources()).toEqual([]);
+    await registry.setSourceActive('source-1', false);
+    expect(repo.saveSource).toHaveBeenCalledWith(expect.objectContaining({ isActive: false }));
+    await expect(registry.setSourceActive('missing', true)).rejects.toThrow(/NOT_FOUND/);
+  });
+});
+
+describe('delimitation-watch version acceptance and publication gates', () => {
+  const candidate: any = {
+    id: 'candidate-1',
+    sourceId: 'source-1',
+    parserVersion: 'parser-1',
+    normalizedDataStatus: 'ESTIMATE',
+    isProposed: false,
+    proposalData: { stateCode: 'TS', effectiveDate: '2026-01-01', instrumentType: 'notification', instrumentIdentifier: 'TEST-1', legalEnactmentStatus: 'UNVERIFIED' },
+    metadata: { sourceType: 'eci_notification' },
+  };
+  const snapshot: any = { id: 'snapshot-1', contentSha256: 'a'.repeat(64), declaredEffectiveDate: '2026-01-01' };
+  const validation: any = { id: 'validation-1', validationStatus: 'PASSED', errors: [] };
+  const comparison: any = { id: 'comparison-1', isMaterialChange: true, comparisonSummary: 'changed' };
+
+  test('blocks rejected/unqualified official candidates, returns idempotent version, and creates a new version', async () => {
+    const repo: any = {
+      getAcceptedVersionByHash: jest.fn().mockResolvedValue(null),
+      saveAcceptedVersion: jest.fn().mockResolvedValue(undefined),
+    };
+    const versioner = new Versioner(repo);
+    await expect(versioner.acceptVersion(candidate, snapshot, { ...validation, validationStatus: 'REJECTED' }, comparison))
+      .rejects.toThrow(/was REJECTED/);
+    await expect(versioner.acceptVersion({
+      ...candidate, normalizedDataStatus: 'OFFICIAL', isProposed: true,
+    }, snapshot, validation, comparison)).rejects.toThrow(/legal evidence gate/);
+
+    const created = await versioner.acceptVersion(candidate, snapshot, validation, comparison, null, 'reviewer');
+    expect(created.created).toBe(true);
+    expect(created.version.versionTag).toMatch(/^v1\.0\.0-TS-/);
+    expect(created.version.acceptedBy).toBe('reviewer');
+    expect(repo.saveAcceptedVersion).toHaveBeenCalledTimes(1);
+
+    repo.getAcceptedVersionByHash.mockResolvedValue(created.version);
+    const duplicate = await versioner.acceptVersion(candidate, snapshot, validation, comparison);
+    expect(duplicate.created).toBe(false);
+    expect(duplicate.version.id).toBe(created.version.id);
+    expect(repo.saveAcceptedVersion).toHaveBeenCalledTimes(1);
+  });
+
+  test('increments a parseable baseline sequence and falls back for malformed baseline tags', async () => {
+    const repo: any = {
+      getAcceptedVersionByHash: jest.fn().mockResolvedValue(null),
+      saveAcceptedVersion: jest.fn().mockResolvedValue(undefined),
+    };
+    const versioner = new Versioner(repo);
+    const v3 = await versioner.acceptVersion(candidate, snapshot, validation, comparison, {
+      id: 'old', versionTag: 'v2.4.0-TS-20250101-deadbeef',
+    } as any);
+    expect(v3.version.versionTag).toMatch(/^v3\.0\.0-TS-/);
+    const fallback = await versioner.acceptVersion(candidate, { ...snapshot, contentSha256: 'b'.repeat(64) }, validation, comparison, {
+      id: 'old2', versionTag: 'invalid-tag',
+    } as any);
+    expect(fallback.version.versionTag).toMatch(/^v1\.0\.0-TS-/);
+  });
+
+  test('publication blocks unsafe states and classifies official, proposal, scenario and unverified records', async () => {
+    const repo: any = {
+      getPublicationByVersionId: jest.fn().mockResolvedValue(null),
+      savePublication: jest.fn(async (publication: any) => publication),
+    };
+    const publisher = new Publisher(repo);
+    const version: any = { id: 'version-1', dataStatus: 'ESTIMATE', contentSha256: 'a'.repeat(64) };
+    await expect(publisher.publish(version, candidate, { ...validation, validationStatus: 'REJECTED' }))
+      .rejects.toThrow(/PUBLICATION_GATE_FAILED/);
+    await expect(publisher.publish(version, candidate, { ...validation, validationStatus: 'REVIEW_REQUIRED' }))
+      .rejects.toThrow(/PUBLICATION_GATE_FAILED/);
+
+    const estimate = await publisher.publish(version, candidate, validation);
+    expect(estimate.created).toBe(true);
+    expect(estimate.publication.publicationType).toBe('UNVERIFIED_NOTICE');
+
+    const proposal = await publisher.publish(version, { ...candidate, isProposed: true }, validation);
+    expect(proposal.publication.publicationType).toBe('PROPOSAL');
+
+    const scenario = await publisher.publish({ ...version, id: 'version-2', dataStatus: 'SCENARIO' }, candidate, validation);
+    expect(scenario.publication.publicationType).toBe('SCENARIO_ESTIMATE');
+
+    await expect(publisher.publish({ ...version, dataStatus: 'OFFICIAL' }, { ...candidate, isProposed: true }, validation))
+      .rejects.toThrow(/CANONICAL_MUTATION_RESTRICTED/);
+
+    repo.getPublicationByVersionId.mockResolvedValue(estimate.publication);
+    const duplicate = await publisher.publish(version, candidate, validation);
+    expect(duplicate.created).toBe(false);
+    expect(duplicate.publication.id).toBe(estimate.publication.id);
   });
 });
