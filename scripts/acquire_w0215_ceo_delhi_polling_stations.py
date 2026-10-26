@@ -298,6 +298,66 @@ def parse_form(raw: bytes, encoding: str = "utf-8") -> list[dict]:
     parser.feed(raw.decode(encoding or "utf-8", errors="replace"))
     return parser.forms
 
+def validate_station_table(raw: bytes, ac_no: int, ac_name: str, encoding: str = "utf-8") -> dict:
+    parser = TableParser()
+    parser.feed(raw.decode(encoding or "utf-8", errors="replace"))
+    grid = next((t for t in parser.tables if (t.get("id") or "").lower() == "ctl00_contentplaceholder1_gridvieweroll"), None)
+    if grid is None:
+        return {"status": "FAIL", "reason": "OFFICIAL_POLLING_STATION_GRID_NOT_FOUND"}
+    rows = grid.get("rows", [])
+    header_index = next((i for i, row in enumerate(rows) if row and all(cell.get("tag") == "th" for cell in row)), None)
+    if header_index is None:
+        return {"status": "FAIL", "reason": "GRID_HEADER_ROW_NOT_FOUND", "rawTableRowCount": len(rows)}
+    header = [cell.get("text", "").strip() for cell in rows[header_index]]
+    expected_header = ["Dist. No.", "Dist. Name", "AC No", "AC Name", "P.S No.", "Locality", "Polling Area", "Address of Polling Station"]
+    header_match = [normalized_name(x.rstrip(".")) for x in header] == [normalized_name(x.rstrip(".")) for x in expected_header]
+    data_rows = [row for row in rows[header_index + 1:] if any(cell.get("text", "").strip() for cell in row)]
+    if not data_rows:
+        return {"status": "FAIL", "reason": "NO_POLLING_STATION_DATA_ROWS", "headers": header, "headerMatch": header_match, "rawTableRowCount": len(rows)}
+    wrong_width_rows = [i + 1 for i, row in enumerate(data_rows) if len(row) != len(expected_header)]
+    ac_numbers = sorted({row[2].get("text", "").strip() for row in data_rows if len(row) > 2})
+    ac_names = sorted({row[3].get("text", "").strip() for row in data_rows if len(row) > 3})
+    wrong_ac_number_rows = [i + 1 for i, row in enumerate(data_rows) if len(row) <= 2 or row[2].get("text", "").strip() != str(ac_no)]
+    wrong_ac_name_rows = [i + 1 for i, row in enumerate(data_rows) if len(row) <= 3 or normalized_name(row[3].get("text", "")) != normalized_name(ac_name)]
+    station_numbers = []
+    invalid_station_number_rows = []
+    for i, row in enumerate(data_rows, 1):
+        try:
+            station_numbers.append(int(row[4].get("text", "").strip()))
+        except (ValueError, IndexError):
+            invalid_station_number_rows.append(i)
+    unique_numbers = set(station_numbers)
+    duplicate_numbers = sorted(n for n in unique_numbers if station_numbers.count(n) > 1)
+    number_range = None
+    missing_numbers = []
+    if station_numbers:
+        lo, hi = min(station_numbers), max(station_numbers)
+        number_range = [lo, hi]
+        missing_numbers = sorted(set(range(lo, hi + 1)) - unique_numbers)
+    pass_checks = (
+        header_match and not wrong_width_rows and not wrong_ac_number_rows
+        and not wrong_ac_name_rows and not invalid_station_number_rows
+        and not duplicate_numbers and len(station_numbers) == len(data_rows)
+    )
+    return {
+        "status": "PASS" if pass_checks else "FAIL",
+        "checks": {
+            "gridPresent": True, "headerMatch": header_match, "allRowsExpectedWidth": not wrong_width_rows,
+            "allRowsMatchACNumber": not wrong_ac_number_rows, "allRowsMatchACName": not wrong_ac_name_rows,
+            "allStationNumbersParseAsIntegers": not invalid_station_number_rows,
+            "stationNumbersUnique": not duplicate_numbers,
+        },
+        "headers": header, "dataRowCount": len(data_rows), "rawTableRowCount": len(rows),
+        "acNumbersInRows": ac_numbers, "acNamesInRows": ac_names,
+        "stationNumberCount": len(station_numbers), "stationNumberRange": number_range,
+        "missingStationNumbersWithinObservedRange": missing_numbers,
+        "duplicateStationNumbers": duplicate_numbers,
+        "wrongWidthRowNumbers": wrong_width_rows[:50],
+        "wrongACNumberRowNumbers": wrong_ac_number_rows[:50],
+        "wrongACNameRowNumbers": wrong_ac_name_rows[:50],
+        "invalidStationNumberRowNumbers": invalid_station_number_rows[:50],
+    }
+
 def hidden_payload(form: dict, select_name: str, ac_no: int) -> dict[str, str]:
     fields = {}
     for item in form.get("inputs", []):
@@ -375,6 +435,7 @@ def acquire_one_ac_postback(item: dict, form_state: dict) -> tuple[dict, dict | 
             record["tables"] = parse_tables(raw, response.encoding or "utf-8")
             record["tableCount"] = len(record["tables"])
             record["tableDataRowCount"] = sum(t["dataRowCount"] for t in record["tables"])
+            record["independentTableValidation"] = validate_station_table(raw, ac_no, selected_label, response.encoding or "utf-8")
             # A selected AC returning its own form state is the minimum proof that the
             # controlled same-host ASP.NET postback worked. Keep new state for next AC.
             new_forms = parse_form(raw, response.encoding or "utf-8")
@@ -430,19 +491,25 @@ else:
 
 manifest["records"].sort(key=lambda r: r["acNo"])
 success = [r for r in manifest["records"] if r.get("status") == "DOWNLOADED_HASHED_OFFICIAL_POSTBACK_HTML"]
+accepted = [r for r in success if r.get("independentTableValidation", {}).get("status") == "PASS"]
 manifest["summary"] = {
     "distinctACLinksObserved": len(selected),
     "distinctACPagesAttempted": len(manifest["records"]),
     "pagesDownloadedHashed": len(success),
+    "pagesIndependentlyValidated": len(accepted),
     "pagesFailed": len(manifest["records"]) - len(success),
+    "validationFailedACNumbers": sorted(r["acNo"] for r in success if r.get("independentTableValidation", {}).get("status") != "PASS"),
     "uniqueSuccessfulACNumbers": sorted({r["acNo"] for r in success}),
     "missingSuccessfulACNumbers": sorted(set(range(1, 71)) - {r["acNo"] for r in success}),
-    "postbackRowsObserved": sum(r.get("tableDataRowCount", 0) for r in success),
+    "postbackRowsObserved": sum(r.get("independentTableValidation", {}).get("dataRowCount", 0) for r in success),
     "recordsWithUpdatedFormState": sum(1 for r in success if r.get("updatedFormStatePresent")),
 }
 manifest["overallStatus"] = (
-    "PASS_70_OF_70_OFFICIAL_AC_POSTBACKS_ACQUIRED"
-    if len(success) == 70 and len(manifest["index"].get("acNumbersObserved", [])) == 70
+    "PASS_70_OF_70_OFFICIAL_AC_POSTBACKS_ACQUIRED_AND_VALIDATED"
+    if len(success) == 70 and len(accepted) == 70
+        and len(manifest["index"].get("acNumbersObserved", [])) == 70
+        and not manifest["index"].get("missingACNumbers")
+        and not manifest["index"].get("duplicateUrlConflicts")
         and manifest["formPostback"].get("status") == "OFFICIAL_FORM_DISCOVERED"
         and manifest["summary"]["recordsWithUpdatedFormState"] == 70
     else "PARTIAL_OFFICIAL_DELHI_POLLING_STATION_ACQUISITION"
@@ -450,5 +517,5 @@ manifest["overallStatus"] = (
 manifest["completedAtUtc"] = datetime.now(timezone.utc).isoformat()
 (OUT / "manifest.json").write_text(json.dumps(manifest, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
 print(json.dumps(manifest, indent=2, ensure_ascii=False))
-if manifest["overallStatus"] != "PASS_70_OF_70_OFFICIAL_AC_POSTBACKS_ACQUIRED":
+if manifest["overallStatus"] != "PASS_70_OF_70_OFFICIAL_AC_POSTBACKS_ACQUIRED_AND_VALIDATED":
     sys.exit(1)
