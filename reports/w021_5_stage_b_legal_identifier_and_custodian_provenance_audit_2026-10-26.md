@@ -49,3 +49,7 @@ A bounded-timeout variant of the same acquisition script was committed next on t
 ## 6. Disposition
 
 Stage B remains **PARTIAL / NOT ACCEPTED**. EB-01 through EB-05 and W021.5-B1-04 remain open; EB-06 remains pending independent adjudication. No national canonical AC geometry has been accepted. No staging/production database access or mutation occurred; Stage C remains unauthorized.
+
+## 1A. Schedule numbering conflict found in the retained primary 2018 notification
+
+The hash-verified ECI Notification No. 282/AP/2018(DEL) PDF retained in master expressly states that it amends **Schedule III, Table A** of the Delimitation of Parliamentary and Assembly Constituencies Order, 2008 for Andhra Pradesh. In contrast, internal sources such as `data/evidence/delimitation/authoritative/delcom_order_46_2007_and_presidential_order_2008.md` and the Schedule II / Schedule XXXI extracts describe other numbering. The 2018 instrument's wording is verified for the 2018 amendment; this does not by itself settle the numbering of every earlier consolidated/order version or the Telangana schedule following the 2014 reorganisation. Until the actual 2008 Order PDF and relevant original Gazette/reorganisation instruments are acquired, internal Schedule II / XXXI crosswalk extracts must not be taken as proven references to the same legal version. This finding was added to source record `SRC-W0215-LEGAL-PROVENANCE-CONFLICT-AUDIT-2026-10-26` in register commit `e87ca7e1e2407f51b71d2258f9c02979ec75c292`.
