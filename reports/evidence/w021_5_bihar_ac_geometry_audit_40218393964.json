@@ -1,0 +1,91 @@
+{
+  "schemaVersion": 1,
+  "title": "Reproducible Bihar BEGIS AC geometry and state-coverage audit",
+  "workflowRunId": 40218393964,
+  "workflowUrl": "https://github.com/kshetra-app/Kshetra/actions/runs/40218393964",
+  "artifactId": 12608465910,
+  "artifactName": "w0215-bihar-gis-discovery-40218393964",
+  "artifactZipBytes": 4123627,
+  "artifactZipSha256": "befc11117a50a8b0ea33f294f87593b1f81839818eb65957a9873cddb1a24abe",
+  "auditJsonBytes": 6602,
+  "auditJsonSha256": "68e89b9db34d4b3c33e55e7c4a23ebcfd19bab92627576518771341a01db98a1",
+  "sourceACGeometry": {
+    "url": "https://gisserver.bihar.gov.in/arcgis/rest/services/ELECTION/AC/MapServer/0/query?where=1%3D1&outFields=%2A&returnGeometry=true&outSR=4326&f=json&resultRecordCount=1000",
+    "bytes": 10958178,
+    "sha256": "3ab79c2942f27296b08a93bb07fed1fc63bd665a9db66ddaf8fe6ece3fc70b0e",
+    "featureCount": 243,
+    "uniqueConsCodeCount": 243,
+    "codeRange": [
+      1,
+      243
+    ],
+    "crs": "EPSG:4326"
+  },
+  "sourceStateBoundary": {
+    "url": "https://gisserver.bihar.gov.in/arcgis/rest/services/AdministrativrBoundaries/StateBoundary/MapServer/0/query?where=1%3D1&outFields=%2A&returnGeometry=true&outSR=4326&f=json&resultRecordCount=100",
+    "bytes": 784840,
+    "sha256": "fce67b09df40e4ca62a54bf58d2caaa2609631eccce00ea0f2b07b6b9be6e446",
+    "featureCount": 1,
+    "stateName": "Bihar",
+    "crs": "EPSG:4326"
+  },
+  "pinBoundary": {
+    "serviceUrl": "https://gisserver.bihar.gov.in/arcgis/rest/services/AdministrativrBoundaries/PIN_Code_Boundary/MapServer",
+    "featureCount": 884,
+    "fullGeometryAcquired": false,
+    "equivalenceToIndiaPostDeliveryBeats": "NOT_ESTABLISHED"
+  },
+  "topology": {
+    "method": "Shapely 2.1.2; ArcGIS ring orientation for exterior/hole classification; EPSG:32645 for area screening; >1m² overlap threshold; make_valid only for comparison union, not source repair",
+    "invalidFeatureGeometryCount": 3,
+    "invalidFeatureGeometry": [
+      {
+        "code": 215,
+        "name": "KURTHA",
+        "reason": "Ring Self-intersection[84.803413183 25.2206802850001]"
+      },
+      {
+        "code": 145,
+        "name": "SAHEBPUR KAMAL",
+        "reason": "Ring Self-intersection[86.3216093200001 25.452861225]"
+      },
+      {
+        "code": 41,
+        "name": "NIRMALI",
+        "reason": "Ring Self-intersection[86.647804374 26.298913913]"
+      }
+    ],
+    "unclosedOrShortRingCount": 0,
+    "orphanHoleRingCount": 0,
+    "multipleExteriorPartsFeatureCount": 21,
+    "positiveOverlapPairsOver1m2": 76,
+    "largestOverlap": {
+      "a": 232,
+      "an": "BELAGANJ",
+      "b": 218,
+      "bn": "MAKHDUMPUR (SC)",
+      "areaM2": 144494.75007424326
+    },
+    "duplicateNames": {
+      "PIPRA": 2
+    }
+  },
+  "stateCoverageScreen": {
+    "status": "SCREENING_ONLY",
+    "stateAreaM2": 94228358523.73056,
+    "acUnionAreaM2": 94227954615.44035,
+    "acOutsideStateM2": 2881.9138108641555,
+    "stateUncoveredByAcM2": 406790.2045589393,
+    "symmetricDifferenceM2": 409672.1183698035,
+    "coveragePercent": 99.99956829322835,
+    "geometryRepairUsedForComparisonOnly": true
+  },
+  "limitations": [
+    "The StateBoundary layer may share lineage/generalization with the AC layer; this is not independent legal validation.",
+    "ArcGIS ring orientation and multipart polygon conversion require independent review.",
+    "Three invalid geometries and 76 positive-area overlap pairs remain unresolved.",
+    "Legal vintage, licence, Gazette chain, and source-owner confirmation remain open."
+  ],
+  "disposition": "OFFICIAL GOVERNMENT GEOMETRY CANDIDATE ACQUIRED; TOPOLOGY SCREEN FAILS; NOT CANONICAL; DO NOT PROMOTE TO PRODUCTION",
+  "databaseAccess": "NONE"
+}
