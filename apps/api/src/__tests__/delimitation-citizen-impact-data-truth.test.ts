@@ -1655,7 +1655,7 @@ describe('CTO Directive 123 — Residual Electoral Data-Truth & Provisional Look
       expect(e500028.candidateAcNames).toEqual(['Karwan', 'Nampally']);
       expect(e500028.assignedAcNumber == null).toBe(true);
       expect(tableBEntries[64].name).toBe('Karwan');
-      expect(tableBEntries[64].extent).toContain('Ward No. 9 and 13 (Part)');
+      expect(tableBEntries[64].extent).toContain('Ward No. 9; Ward No. 13 (Part)');
 
       // Reconciled PIN 500056: candidates are [71, 46] (Secunderabad Cantonment, Kukatpally)
       const e500056 = manifest.entries.find((e: any) => e.pinCode === '500056');
