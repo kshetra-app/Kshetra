@@ -188,26 +188,59 @@ def gazette_2008_order_match(txt: str, first_page_text: str = "") -> dict:
     first = first_page_text or (txt or "")[:12000]
     first_compact = re.sub(r"\s+", "", first.casefold())
     first_identifier = _first_gazette_identifier(first)
-    so382_anywhere = ("s.o.382(e)" in full_compact or "s.o382(e)" in full_compact)
-    so382_on_first_page = ("s.o.382(e)" in first_compact or "s.o382(e)" in first_compact)
+    marker_forms = {
+        "SO382E": (r"s\.?\s*o\.?\s*382\s*\(\s*e\s*\)",),
+        "SO383E": (r"s\.?\s*o\.?\s*383\s*\(\s*e\s*\)",),
+        "SO453E": (r"s\.?\s*o\.?\s*453\s*\(\s*e\s*\)",),
+    }
+    ids_anywhere = {
+        key: any(re.search(pattern, txt or "", re.I) for pattern in patterns)
+        for key, patterns in marker_forms.items()
+    }
+    ids_first_page = {
+        key: any(re.search(pattern, first, re.I) for pattern in patterns)
+        for key, patterns in marker_forms.items()
+    }
     date_first = any(x in first_compact for x in (
         "19thfebruary,2008", "19february,2008", "19thfebruary2008",
         "19february2008", "19/02/2008", "19-02-2008", "19.02.2008"
     ))
-    delimitation = "delimitation" in (txt or "").casefold()
+    issue_71_first = bool(re.search(r"\bno\.?\s*71\b", first, re.I))
+    delimitation_any = bool(re.search(r"delimitation.{0,100}(parliamentary|assembly)|(?:parliamentary|assembly).{0,100}delimitation", txt or "", re.I | re.S))
     gazette_first = ("gazetteofindia" in first_compact or "भारतकाराजपत्र" in first)
-    primary_id_is_so382 = first_identifier.get("primaryIdentifierNormalized") == "SO382E"
+    part_section_first = bool(
+        re.search(r"part\s*ii", first, re.I)
+        and re.search(r"section\s*3", first, re.I)
+        and re.search(r"sub[\s-]*section|sub[\s-]*section\s*\(?iii", first, re.I)
+    )
+    target_id_any = any(ids_anywhere.values())
+    issue71_metadata_complete = bool(issue_71_first and date_first and gazette_first and part_section_first)
+    strict_issue_candidate = bool(
+        date_first and gazette_first and part_section_first
+        and (issue_71_first or target_id_any)
+        and (target_id_any or delimitation_any)
+    )
     return {
-        "so382EMarkerOnFirstPage": so382_on_first_page,
-        "so382EMarkerAnywhere": so382_anywhere,
         "primaryPageOneIdentifier": first_identifier.get("primaryIdentifier"),
         "primaryPageOneIdentifierNormalized": first_identifier.get("primaryIdentifierNormalized"),
-        "pageOnePrimaryIdentifierIsSO382E": primary_id_is_so382,
+        "targetIdentifierMarkersOnFirstPage": ids_first_page,
+        "targetIdentifierMarkersAnywhere": ids_anywhere,
+        "issueNumber71MarkerOnFirstPage": issue_71_first,
         "publicationDateMarkerOnFirstPage": date_first,
-        "delimitationOrderMarkerAnywhere": delimitation,
+        "delimitationOrderMarkerAnywhere": delimitation_any,
         "gazetteOfIndiaMarkerOnFirstPage": gazette_first,
-        "strict2008GazetteCandidate": bool(primary_id_is_so382 and so382_on_first_page and date_first and delimitation and gazette_first),
-        "recitalOnlyOrDifferentPrimaryInstrument": bool(so382_anywhere and not primary_id_is_so382),
+        "partSectionMetadataMarkerOnFirstPage": part_section_first,
+        "issue71MetadataCompleteOnFirstPage": issue71_metadata_complete,
+        "strict2008GazetteCandidate": strict_issue_candidate,
+        "candidateReason": (
+            "ISSUE_NO_71_DATE_PART_SECTION_GAZETTE_MARKERS"
+            if issue71_metadata_complete else
+            "TARGET_S_O_IDENTIFIER_AND_DATE_PART_SECTION_GAZETTE_MARKERS"
+            if strict_issue_candidate else None
+        ),
+        "recitalOnlyOrDifferentPrimaryInstrument": bool(
+            any(ids_anywhere.values()) and not strict_issue_candidate
+        ),
     }
 
 def probe_live_page(url: str, label: str) -> dict:
@@ -408,6 +441,12 @@ def archived_pdf_probe(item: dict, query_label: str) -> dict:
             row["relatedGazetteRecitalRawArtifact"] = save_bytes(raw_name, raw)
             row["relatedGazetteRecitalTextArtifact"] = save_text(text_name, pdf["text"])
             row["status"] = "GAZETTE_RECITES_SO382E_BUT_PRIMARY_ISSUE_IS_DIFFERENT"
+        elif old_findings.get("issue71MetadataCompleteOnFirstPage"):
+            raw_name = safe(f"GAZETTE_2008_ISSUE71_CANDIDATE_{ts}") + ".pdf"
+            text_name = safe(f"GAZETTE_2008_ISSUE71_CANDIDATE_{ts}") + ".txt"
+            row["rawArtifact"] = save_bytes(raw_name, raw)
+            row["textArtifact"] = save_text(text_name, pdf["text"])
+            row["status"] = "GAZETTE_2008_ISSUE71_METADATA_CANDIDATE_NEEDS_LEGAL_REVIEW"
         elif findings["on55EExactMarkerOnFirstPage"] or findings["eci2018NotificationNumberMarker"]:
             raw_name = safe(f"GAZETTE_LEGAL_IDENTIFIER_NEAR_MATCH_{ts}") + ".pdf"
             row["candidateRawArtifact"] = save_bytes(raw_name, raw)
@@ -550,6 +589,51 @@ def main():
         "url":"https://egazette.gov.in/WriteReadData/2008/E_250_2008_","matchType":"prefix",
         "output":"json","fl":"timestamp,original,statuscode,mimetype,digest,length",
         "filter":["statuscode:200","mimetype:application/pdf"],"collapse":"urlkey","limit":"100"
+      }),
+      ("EGazetteNicIn2008ExactIssue71E001",{
+        "url":"http://egazette.nic.in/WriteReadData/2008/E_71_2008_001.pdf",
+        "output":"json","fl":"timestamp,original,statuscode,mimetype,digest,length",
+        "filter":["statuscode:200","mimetype:application/pdf"],"limit":"20"
+      }),
+      ("EGazetteGovIn2008ExactIssue71E001",{
+        "url":"https://egazette.gov.in/WriteReadData/2008/E_71_2008_001.pdf",
+        "output":"json","fl":"timestamp,original,statuscode,mimetype,digest,length",
+        "filter":["statuscode:200","mimetype:application/pdf"],"limit":"20"
+      }),
+      ("EGazetteNicIn2008ExactIssue71E002",{
+        "url":"http://egazette.nic.in/WriteReadData/2008/E_71_2008_002.pdf",
+        "output":"json","fl":"timestamp,original,statuscode,mimetype,digest,length",
+        "filter":["statuscode:200","mimetype:application/pdf"],"limit":"20"
+      }),
+      ("EGazetteNicIn2008ExactIdentifier382",{
+        "url":"http://egazette.nic.in/WriteReadData/2008/E_382_2008_001.pdf",
+        "output":"json","fl":"timestamp,original,statuscode,mimetype,digest,length",
+        "filter":["statuscode:200","mimetype:application/pdf"],"limit":"20"
+      }),
+      ("EGazetteNicIn2008ExactIdentifier383",{
+        "url":"http://egazette.nic.in/WriteReadData/2008/E_383_2008_001.pdf",
+        "output":"json","fl":"timestamp,original,statuscode,mimetype,digest,length",
+        "filter":["statuscode:200","mimetype:application/pdf"],"limit":"20"
+      }),
+      ("EGazetteNicIn2008ExactIdentifier453",{
+        "url":"http://egazette.nic.in/WriteReadData/2008/E_453_2008_001.pdf",
+        "output":"json","fl":"timestamp,original,statuscode,mimetype,digest,length",
+        "filter":["statuscode:200","mimetype:application/pdf"],"limit":"20"
+      }),
+      ("EGazetteNicIn2008KnownObservedE248",{
+        "url":"http://egazette.nic.in:80/WriteReadData/2008/E_248_2008_001.pdf",
+        "output":"json","fl":"timestamp,original,statuscode,mimetype,digest,length",
+        "filter":["statuscode:200","mimetype:application/pdf"],"limit":"20"
+      }),
+      ("EGazetteGovIn2018KnownObservedWeekly190018",{
+        "url":"https://egazette.gov.in/WriteReadData/2018/190018.pdf",
+        "output":"json","fl":"timestamp,original,statuscode,mimetype,digest,length",
+        "filter":["statuscode:200","mimetype:application/pdf"],"limit":"20"
+      }),
+      ("EGazetteNicIn2018KnownObservedWeekly190018",{
+        "url":"http://egazette.nic.in/WriteReadData/2018/190018.pdf",
+        "output":"json","fl":"timestamp,original,statuscode,mimetype,digest,length",
+        "filter":["statuscode:200","mimetype:application/pdf"],"limit":"20"
       }),
       ("APGazette2018PdfsCaptured",{
         "url":"https://apegazette.cgg.gov.in/","matchType":"prefix",
