@@ -1874,12 +1874,27 @@
           "conflict": "The internal India Post assessment states `custodianStatus.inquiryLogged: true` and attributes a finding to the Department that no standardized delivery-beat cadastral GIS layer is maintained. The evidence inventory available in the repository does not include a custodian-issued reply, correspondence reference, submission acknowledgement, signed note, or source bytes supporting that as a direct official response; the custodian request pack remains drafted/not sent.",
           "disposition": "Treat the no-standardized-layer statement as an internal working hypothesis only, not a verified Department of Posts reply. Preserve the distinction between operational beat records, postal maps, PIN-code areas and geospatial polygon availability. No custodian response is claimed until a real reply/acknowledgement and its provenance are retained.",
           "rawExternalBytesAcquired": false
+        },
+        {
+          "id": "LEGAL-2008-SCHEDULE-ENUMERATION-CONFLICT",
+          "recordsCompared": [
+            "data/evidence/delimitation/authoritative/eci_notification_282_ap_2018_polavaram_dossier.md",
+            "data/evidence/delimitation/authoritative/delcom_order_46_2007_and_presidential_order_2008.md",
+            "data/evidence/w021_5/authoritative/eci_delimitation_2008_schedule_ii_table_b_extract.txt",
+            "data/evidence/w021_5/authoritative/eci_delimitation_2008_schedule_xxxi_table_b_extract.txt",
+            "reports/w021_5_official_gazette_inventory.json"
+          ],
+          "conflict": "The retained, hash-verified ECI Notification 282/AP/2018(DEL) states that it amends Schedule III and Table A of the Delimitation Order, 2008 for Andhra Pradesh. Existing internal dossiers/extracts variously assert Schedule II for the original composite Andhra Pradesh roster and Schedule XXXI for Telangana; the Gazette inventory assigns still other schedule numbers in its jurisdiction listing. The same repository therefore contains conflicting schedule numbering for the legal instruments/versions.",
+          "disposition": "Treat the ECI 2018 notification's exact wording as verified for that notification only. Do not assume that internal Schedule II/XXXI extracts are valid references to the same version of the Order. Acquire the original consolidated ECI Order and relevant 2007/2008 Gazette issues, then reconcile the exact schedule/table enumeration by instrument date and legal version.",
+          "primaryDocumentByteBasis": "The 2018 notification PDF is retained in master and its raw bytes independently hash-verified; the original 2008 Order PDF and original Gazette issues remain unavailable.",
+          "raw2008OrderBytesAcquired": false
         }
       ],
       "limitations": [
         "This audit does not establish which 2008 notification number is correct; it identifies a conflict requiring primary-source reconciliation.",
         "No original 2008 Gazette issue was acquired or hashed in this audit.",
-        "No Department of Posts response was acquired or hashed in this audit."
+        "No Department of Posts response was acquired or hashed in this audit.",
+        "Additional schedule enumeration conflict confirmed by the primary 2018 ECI notification PDF, which expressly refers to Schedule III/Table A for Andhra Pradesh; internal Schedule II/XXXI source extracts remain untrusted until checked against original 2008 Order bytes and applicable 2014 reorganisation instruments."
       ],
       "plannedUse": "Prevent legal instrument metadata and custodian findings from being promoted to OFFICIAL without a verifiable primary source."
     }
