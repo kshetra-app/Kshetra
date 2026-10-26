@@ -237,7 +237,7 @@
       "publisher": "Election Commission of India results portal; discovery via third-party extraction repository",
       "url": "https://results.eci.gov.in/ResultAcGenMay2026/",
       "relatedUrl": "https://github.com/saisantoshv3/assemnbly_gis_files",
-      "retrievedAt": "2026-10-25",
+      "retrievedAt": "2026-10-26",
       "format": "JavaScript-wrapped GeoJSON by state election portal",
       "authority": "PRIMARY_PORTAL_DATA_CANDIDATE",
       "status": "DIRECT_JS_URLS_404; SECONDARY_MIRROR_BUNDLE_ACQUIRED_AND_AUDITED",
@@ -248,12 +248,16 @@
         "Initial acquisition run returned HTTP 404 for guessed JavaScript URLs; direct retry with browser headers and pinned third-party GeoJSON candidates is in progress.",
         "Election-cycle-specific geometry is not a universal 31-state current boundary release and must be checked for temporal/statutory applicability.",
         "Focused probe 40212122850 returned HTTP 404 for all five /ac/{STATE_CODE}.js URLs; no raw official geometry was acquired.",
-        "All five direct ECI /ac/{STATE_CODE}.js URLs returned HTTP 404. Pinned third-party mirror GeoJSONs were acquired and audited; 824 features and AC_NO sequences match expected counts, but 23 raw geometries are invalid and 1,337 positive-area overlap pairs were detected after diagnostic make_valid. Not accepted for canonical geometry."
+        "All five direct ECI /ac/{STATE_CODE}.js URLs returned HTTP 404. Pinned third-party mirror GeoJSONs were acquired and audited; 824 features and AC_NO sequences match expected counts, but 23 raw geometries are invalid and 1,337 positive-area overlap pairs were detected after diagnostic make_valid. Not accepted for canonical geometry.",
+        "Expanded read-only probe run 40259909774 repeated all five guessed direct JS endpoints and received HTTP 404 for each (196-byte identical error body SHA-256 80c3fe2ae1062abf56456f52518bd670f9ec3917b7f85e152b347ac6b6faf880); no official geometry bytes acquired. Do not repeat these exact guessed endpoints."
       ],
       "plannedUse": "Investigate portal-native geometry and provenance for the covered jurisdictions only.",
       "lastProbe": {
-        "workflowRunId": 40212122850,
-        "manifest": "reports/evidence/w021_5_official_geometry_probe_40212122850.json",
+        "workflowRunId": 40259909774,
+        "workflowUrl": "https://github.com/kshetra-app/Kshetra/actions/runs/40259909774",
+        "artifactId": 12624382089,
+        "artifactZipSha256": "c7b587e7591983cd81b527b8a3824229f812bed94a123e4e68b5a824932e3629",
+        "manifest": "reports/evidence/w021_5_telangana_variant_family_comparison_20261026.json",
         "statusByCode": {
           "S03": 404,
           "U07": 404,
@@ -263,7 +267,7 @@
         },
         "errorBodyBytes": 196,
         "errorBodySha256": "80c3fe2ae1062abf56456f52518bd670f9ec3917b7f85e152b347ac6b6faf880",
-        "conclusion": "Do not repeat these exact URLs as a presumed source; investigate current ECI portal HTML/routes or request source from ECI/CEO custodians."
+        "conclusion": "Repeated 404s confirmed. Portal-native endpoint discovery or formal ECI/CEO custodian request is the next route; no official geometry bytes were acquired."
       },
       "secondaryBundleAudit": "reports/evidence/w021_5_eci_mirror_geometry_audit_2026-10-25.json",
       "secondaryBundleFiles": [
