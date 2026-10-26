@@ -313,7 +313,7 @@ if (realImplAuth === 'YES') {
   assert.ok(authRecord.includes('CTO Decision'), 'Authorization commit must preserve explicit CTO decision authority');
   assert.ok(realImplementationCommit.startsWith('NONE'), 'Scoped evidence authorization must not claim product implementation');
   assert.ok(realVerificationCommit.startsWith('NONE'), 'Independent verification must remain pending');
-  assert.ok(realAcceptanceCommit.startsWith('NONE'), 'Formal acceptance must remain pending');
+  assert.ok(realAcceptanceCommit === null || realAcceptanceCommit === undefined || realAcceptanceCommit.startsWith('NONE'), 'Formal acceptance must remain pending and must not introduce a top-level acceptance coordinate');
   scopedStageBAuthorization = true;
 }
 
