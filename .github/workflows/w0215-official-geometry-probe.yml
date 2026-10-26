@@ -16,7 +16,7 @@ permissions:
 
 concurrency:
   group: w0215-official-geometry-probe
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   acquire:
