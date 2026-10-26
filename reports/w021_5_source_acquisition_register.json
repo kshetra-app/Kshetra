@@ -5,7 +5,7 @@
   "baselineCommit": "33945d20f318ae1aa0d9aba35052246599c5bbae",
   "branch": "cto/w0215-stage-b-evidence-20261025",
   "createdAt": "2026-10-25",
-  "retrievalMethod": "Web discovery plus repository connector review. A discovered page is not equivalent to a downloaded, hashed source artifact.",
+  "retrievalMethod": "Web discovery plus repository connector review. A discovered page is not equivalent to a downloaded, hashed source artifact. Additional official TGRAC service discovery and raw-geometry probe executed 2026-10-26 through a read-only GitHub Actions workflow.",
   "rules": {
     "hashPolicy": "SHA-256 must be computed over exact downloaded bytes; never use a Git blob SHA as a file SHA-256.",
     "authorityPolicy": "Government sources are primary only for the specific subject they publish. Community GIS is candidate/secondary data until reconciled to primary source.",
@@ -1179,6 +1179,46 @@
       "limitations": [
         "Corroborative press release, not a substitute for the Gazette/ECI notification."
       ]
+    },
+    {
+      "sourceId": "SRC-TGRAC-MASTER-AC-2026-10-26",
+      "subject": "Telangana Assembly Constituency polygon candidate from TGRAC Master Administrative Boundary service",
+      "publisher": "Telangana State Remote Sensing Applications Centre (TGRAC)",
+      "url": "https://tgrac.telangana.gov.in/arcgis/rest/services/Master_Administrative_Folder/Master_Administrative_Boundary/MapServer/0/query?where=1%3D1&outFields=%2A&returnGeometry=true&outSR=4326&f=json",
+      "metadataUrl": "https://tgrac.telangana.gov.in/arcgis/rest/services/Master_Administrative_Folder/Master_Administrative_Boundary/MapServer/0?f=pjson",
+      "retrievedAt": "2026-10-26T02:35:08.900312Z",
+      "format": "ArcGIS REST ESRI JSON",
+      "authority": "OFFICIAL_STATE_GIS_CANDIDATE",
+      "status": "CANDIDATE_ONLY",
+      "sha256": "c5d0cbf55f5079cd91b0ce3a8733ce11701a70f0ea474cdd96025ec8c651e444",
+      "fileBytes": 12469989,
+      "version": "NOT_DECLARED_IN_LAYER_METADATA",
+      "legalEffectiveDate": "NOT_DECLARED_OR_NOT_VERIFIED",
+      "sourceCRS": "EPSG:4326",
+      "reuseLicence": "NOT_ESTABLISHED",
+      "featureCount": 119,
+      "uniqueAssemblyNames": 119,
+      "uniqueObjectIds": 119,
+      "structuralStatus": "PASS",
+      "topologyStatus": "FAIL — 1 invalid geometry (Dornakal self-intersection); 0 positive-area overlap pairs",
+      "metadataBytes": 3709,
+      "metadataSha256": "78130181060c9fb1a0eeba400748cf285ba7e973db75d1600b82ca2ab9135988",
+      "workflowRunId": 40259741110,
+      "workflowUrl": "https://github.com/kshetra-app/Kshetra/actions/runs/40259741110",
+      "artifactId": 12624067291,
+      "artifactName": "w0215-official-geometry-probe-40259741110",
+      "artifactZipSha256": "6d274d901e622c34252d010c1e41913bea1c7bab883a1af7f128e065b37eea87",
+      "evidenceReport": "reports/evidence/w021_5_telangana_master_geometry_probe_40259741110.json",
+      "limitations": [
+        "OBJECTID is not a statutory AC number; no canonical AC ID field is exposed.",
+        "No applicable delimitation/Gazette effective-date reconciliation has been performed.",
+        "No source-owner confirmation of lineage, version or reuse licence.",
+        "No full cross-variant per-AC geometry comparison yet.",
+        "Dornakal (ST) Assembly has a ring self-intersection at [79.9488866560001, 17.514169436].",
+        "State-boundary coverage and legal extent-to-polygon comparison not checked."
+      ],
+      "plannedUse": "Compare against existing TGRAC variants, establish source lineage and legal vintage, reconcile to statutory roster, and test national coverage. Do not import as canonical.",
+      "retrievalMethod": "Read-only GitHub Actions run 40259741110; raw source bytes preserved in artifact w0215-official-geometry-probe-40259741110 (artifact expires 2026-11-25)."
     }
   ],
   "unresolvedGates": [
