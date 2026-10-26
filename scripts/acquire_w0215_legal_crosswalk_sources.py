@@ -261,6 +261,10 @@ class LinkAndFormCollector(HTMLParser):
         self._link = None
     def handle_starttag(self, tag, attrs):
         a = dict(attrs)
+        for attr in ("href", "src", "data-href", "data-url", "data-file", "action"):
+            value = a.get(attr)
+            if value and (tag.lower() in ("a", "iframe", "frame", "object", "embed", "source", "link", "script") or attr in ("data-href", "data-url", "data-file")):
+                self.links.append({"tag": tag.lower(), "attribute": attr, "href": value, "text": "", "discoveredFrom": "HTML_ATTRIBUTE"})
         if tag.lower() == "a" and a.get("href"):
             self._link = {"href": a["href"], "textParts": []}
         elif tag.lower() == "form":
@@ -305,7 +309,7 @@ for src in SOURCES:
             parsed = urlparse(url)
             if parsed.scheme != "https" or parsed.hostname not in ALLOWED_HOSTS:
                 raise RuntimeError("URL_HOST_NOT_ALLOWLISTED")
-            response = session.get(url, headers=HEADERS, timeout=25, allow_redirects=True)
+            response = session.get(url, headers=HEADERS, timeout=10, allow_redirects=True)
             final = urlparse(response.url)
             if final.scheme != "https" or final.hostname not in ALLOWED_HOSTS:
                 raise RuntimeError("REDIRECT_HOST_NOT_ALLOWLISTED:" + str(response.url))
@@ -369,7 +373,7 @@ for src in HTML_SOURCES:
         parsed = urlparse(src["url"])
         if parsed.scheme != "https" or parsed.hostname not in ALLOWED_HOSTS:
             raise RuntimeError("URL_HOST_NOT_ALLOWLISTED")
-        response = session.get(src["url"], headers=HEADERS, timeout=25, allow_redirects=True)
+        response = session.get(src["url"], headers=HEADERS, timeout=10, allow_redirects=True)
         final = urlparse(response.url)
         if final.scheme != "https" or final.hostname not in ALLOWED_HOSTS:
             raise RuntimeError("REDIRECT_HOST_NOT_ALLOWLISTED:" + response.url)
