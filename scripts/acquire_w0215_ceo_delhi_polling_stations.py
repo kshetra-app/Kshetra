@@ -555,13 +555,53 @@ crosswalk = {
     },
     "records": normalized_rows,
 }
-(OUT / "polling_station_crosswalk.json").write_text(json.dumps(crosswalk, indent=2, ensure_ascii=False) + "\\n", encoding="utf-8")
+(OUT / "polling_station_crosswalk.json").write_text(json.dumps(crosswalk, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+crosswalk_bytes = (OUT / "polling_station_crosswalk.json").read_bytes()
+crosswalk_sha256 = sha(crosswalk_bytes)
+crosswalk_integrity = {"status": "PASS", "sha256": crosswalk_sha256, "byteLength": len(crosswalk_bytes)}
+try:
+    parsed_crosswalk = json.loads(crosswalk_bytes)
+except Exception as exc:
+    parsed_crosswalk = None
+    crosswalk_integrity.update({"status": "FAIL", "jsonParseError": f"{type(exc).__name__}: {exc}"})
+if parsed_crosswalk is not None:
+    parsed_rows = parsed_crosswalk.get("records", [])
+    pairs = [(row.get("assemblyConstituencyNumber"), row.get("pollingStationNumber")) for row in parsed_rows]
+    pair_set = set(pairs)
+    observed_ac_numbers = sorted({row.get("assemblyConstituencyNumber") for row in parsed_rows if isinstance(row.get("assemblyConstituencyNumber"), int)})
+    source_by_ac = {row.get("acNo"): row for row in success}
+    hash_mismatches = [
+        row.get("assemblyConstituencyNumber") for row in parsed_rows
+        if row.get("sourcePageSha256") != (source_by_ac.get(row.get("assemblyConstituencyNumber")) or {}).get("sha256")
+    ]
+    crosswalk_integrity.update({
+        "status": "PASS" if (
+            len(parsed_rows) == len(normalized_rows)
+            and len(pair_set) == len(parsed_rows)
+            and observed_ac_numbers == list(range(1, 71))
+            and not hash_mismatches
+            and parsed_crosswalk.get("summary", {}).get("pollingStationRecordCount") == len(parsed_rows)
+            and parsed_crosswalk.get("summary", {}).get("uniqueACStationPairs") == len(pair_set)
+        ) else "FAIL",
+        "jsonParseValidation": "PASS",
+        "recordCount": len(parsed_rows),
+        "expectedRecordCount": len(normalized_rows),
+        "uniqueACStationPairCount": len(pair_set),
+        "observedACNumbers": observed_ac_numbers,
+        "missingACNumbers": sorted(set(range(1,71)) - set(observed_ac_numbers)),
+        "duplicatePairCount": len(pairs) - len(pair_set),
+        "sourcePageHashMismatchCount": len(hash_mismatches),
+        "sourcePageHashMismatchACNumbers": sorted(set(hash_mismatches)),
+        "summaryCountsMatch": parsed_crosswalk.get("summary", {}).get("pollingStationRecordCount") == len(parsed_rows)
+            and parsed_crosswalk.get("summary", {}).get("uniqueACStationPairs") == len(pair_set),
+    })
 manifest["normalizedCrosswalk"] = {
     "path": "polling_station_crosswalk.json",
     "recordCount": len(normalized_rows),
-    "sha256": sha((OUT / "polling_station_crosswalk.json").read_bytes()),
-    "byteLength": (OUT / "polling_station_crosswalk.json").stat().st_size,
+    "sha256": crosswalk_sha256,
+    "byteLength": len(crosswalk_bytes),
     "description": "Flattened official station-to-AC rows linked to raw official HTML page hashes.",
+    "integrityValidation": crosswalk_integrity,
 }
 manifest["overallStatus"] = (
     "PASS_70_OF_70_OFFICIAL_AC_POSTBACKS_ACQUIRED_AND_VALIDATED"
@@ -571,6 +611,7 @@ manifest["overallStatus"] = (
         and not manifest["index"].get("duplicateUrlConflicts")
         and manifest["formPostback"].get("status") == "OFFICIAL_FORM_DISCOVERED"
         and manifest["summary"]["recordsWithUpdatedFormState"] == 70
+        and crosswalk_integrity.get("status") == "PASS"
     else "PARTIAL_OFFICIAL_DELHI_POLLING_STATION_ACQUISITION"
 )
 manifest["completedAtUtc"] = datetime.now(timezone.utc).isoformat()
