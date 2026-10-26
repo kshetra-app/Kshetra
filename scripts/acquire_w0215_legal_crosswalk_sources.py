@@ -72,6 +72,18 @@ SOURCES = [
         "purpose": "Primary historical delimitation order; acquire original PDF bytes if the exact official host permits access. Must be reconciled with later jurisdiction-specific orders and amendments; not alone proof of present legal extent."
     },
     {
+        "id": "INDIAPOST_MANUAL_DELIVERY_BEAT_RULES",
+        "urlCandidates": [
+            "https://www.indiapost.gov.in/api/documents/file/U2FsdGVkX1--RhFaZrEZAs1p9vK78fGNgHXTbWx5f6en9hkrtRenRd6UW-nwfFIdx9zUCzn-sgveKpkmb8zqZw",
+            "https://www.indiapost.gov.in/api/documents/file/U2FsdGVkX1-31j0trfGI5vDmpEsjVxN2Xv-3Jie_3Cs0-Tpl_k886_ydGwGAImacVButzBzrxqQaOpTPEhakEw"
+        ],
+        "publisher": "Department of Posts, Ministry of Communications, Government of India",
+        "documentTitle": "Official postal operations manual discussing postal maps and delivery-beat list books",
+        "required": False,
+        "terms": ["delivery beat", "postal map", "Town Inspector", "postmaster", "beat list"],
+        "purpose": "Acquire the official operational manual bytes if available, independently hash and extract its applicable edition/paragraphs. A manual describing beat lists is not evidence that national delivery-beat GIS polygons exist."
+    },
+    {
         "id": "GOI_GAZETTE_2023_SO382E_RECITAL",
         "urlCandidates": [
             "https://egazette.gov.in/WriteReadData/2023/248113.pdf"
@@ -97,7 +109,7 @@ SOURCES = [
 ALLOWED_HOSTS = {
     "apseeds.ap.gov.in", "tgerc.telangana.gov.in",
     "www.indiacode.nic.in", "indiacode.nic.in", "upload.indiacode.nic.in",
-    "elections24.eci.gov.in", "www.eci.gov.in", "eci.gov.in", "ceotelangana.nic.in", "www.pib.gov.in", "pib.gov.in", "apegazette.cgg.gov.in", "www.telangana.gov.in", "tggazette.cgg.gov.in", "indiankanoon.org", "egazette.gov.in", "www.egazette.gov.in", "deptpub.gov.in", "www.deptpub.gov.in", "old.eci.gov.in", "ceodelhi.gov.in", "ceodelhinet.nic.in",
+    "elections24.eci.gov.in", "www.eci.gov.in", "eci.gov.in", "ceotelangana.nic.in", "www.pib.gov.in", "pib.gov.in", "apegazette.cgg.gov.in", "www.telangana.gov.in", "tggazette.cgg.gov.in", "indiankanoon.org", "egazette.gov.in", "www.egazette.gov.in", "deptpub.gov.in", "www.deptpub.gov.in", "old.eci.gov.in", "ceodelhi.gov.in", "ceodelhinet.nic.in", "indiapost.gov.in", "www.indiapost.gov.in", "data.gov.in", "www.data.gov.in",
 }
 HEADERS = {
     "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/129.0.0.0 Safari/537.36",
@@ -108,6 +120,14 @@ def sha(data: bytes) -> str:
     return hashlib.sha256(data).hexdigest()
 
 HTML_SOURCES = [
+    {
+        "id": "INDIAPOST_PIN_BOUNDARY_OGD_CATALOGUE",
+        "url": "https://data.gov.in/resource/all-india-pincode-boundary-geojson",
+        "publisher": "Open Government Data Platform India / Department of Posts",
+        "documentTitle": "Official All India PIN Code Boundary GeoJSON resource catalogue",
+        "terms": ["Pincode Boundary", "GeoJSON", "Download", "Government Open Data License - India"],
+        "purpose": "Discover the exact official PIN-code polygon download resource and licence. PIN polygons are an ancillary postal-area layer and must not be used as delivery-beat polygons."
+    },
     {
         "id": "ECI_PUBLICATIONS_CATALOGUE",
         "url": "https://www.eci.gov.in/eci-publication/",
