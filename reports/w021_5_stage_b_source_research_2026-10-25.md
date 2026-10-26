@@ -76,3 +76,10 @@ The DataMeet component SHA-256 values recorded in the forensic audit are: SHP `0
 - DataMeet: https://github.com/datameet/maps/tree/master/assembly-constituencies
 - ECI statistical reports: https://www.eci.gov.in/statistical-reports
 - OGD Lok Sabha 2024 statistical reports: https://data.gov.in/catalog/general-election-lok-sabha-2024-statistical-reports-data
+
+## Update — 2026-10-26 additional official route
+
+- TGRAC service index discovered: https://tgrac.telangana.gov.in/arcgis/rest/services/Master_Administrative_Folder/Master_Administrative_Boundary/MapServer . It advertises layer 0 as Assembly_Constituency_Boundary in EPSG:4326 with JSON query support. The connected web reader could not retrieve the feature-query response; raw geometry and hashes are not yet available from that route.
+- A candidate-only acquisition probe was added on evidence branch commit 00c8e589978c66d58ca5f47e3dfb833a0a637ffe; run 40259741110 was triggered to acquire the service metadata and feature bytes and run existing checks. Do not treat the layer's name as proof of authority or current legal extent.
+- ECI official publications list 2026 election publications for Assam, Kerala, Tamil Nadu, West Bengal and Puducherry at https://www.eci.gov.in/eci-publication/ . Their official maps/rosters help establish current election context, but maps marked not-to-scale are not canonical vector geometry.
+- Disposition unchanged until probe artifacts are reviewed: Stage B PARTIAL / NOT ACCEPTED; B1-04 and EB-01..EB-05 OPEN.
