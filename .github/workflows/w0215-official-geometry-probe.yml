@@ -7,6 +7,7 @@ on:
     paths:
       - "scripts/w0215_acquire_official_geometry.py"
       - "scripts/audit_w0215_telangana_candidate_geometry.py"
+      - "scripts/compare_w0215_telangana_candidate_variants.py"
       - ".github/workflows/w0215-official-geometry-probe.yml"
   workflow_dispatch:
 
@@ -49,6 +50,10 @@ jobs:
       - name: Run reproducible topology audit on acquired Telangana layers
         if: always()
         run: python scripts/audit_w0215_telangana_candidate_geometry.py
+
+      - name: Compare acquired Telangana candidate geometry families
+        if: always()
+        run: python scripts/compare_w0215_telangana_candidate_variants.py
 
       - name: Upload raw responses and manifest even on failure
         if: always()
