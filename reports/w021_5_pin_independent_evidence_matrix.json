@@ -5,7 +5,7 @@
     "governingFramework": "Master Execution Framework Amendment v1.6 / Rule IV-001 Non-Self-Acceptance",
     "stageBoundary": "Stage B Gate — STOP",
     "formalAcceptance": "0.0% — PENDING INDEPENDENT ADJUDICATION",
-    "generatedAt": "2026-10-26T16:22:32.832Z",
+    "generatedAt": "2026-10-26T16:29:30.000Z",
     "canonicalExternalBlockers": [
       {
         "id": "EB-01",
@@ -311,7 +311,7 @@
       "unverifiedOrBlockedCount": 0,
       "structuralValidationStatus": "BLOCKED_INVALIDATED_STATUTORY_SOURCE",
       "evidenceClosureStatus": "PENDING_EXTERNAL_OFFICIAL_GAZETTE_AND_GIS_DELIVERY_BEAT_EVIDENCE",
-      "sourceResolutionStatus": "FAILED_INVALIDATED_EXTRACTS",
+      "sourceResolutionStatus": "PENDING_REGENERATION_AGAINST_SUCCESSOR_STATE_EXTRACTS",
       "locatorResolutionStatus": "NOT_ACCEPTED_SOURCE_INVALIDATED",
       "substantiveSourceClaimStatus": "UNVERIFIED_SOURCE_INVALIDATED",
       "externalPublicationAuthenticityStatus": "UNVERIFIED_EXTERNAL_PUBLICATION_NOT_CHECKED_IN",
@@ -385,7 +385,7 @@
         "EB-05 (VOTER_ROLL_POLLING_STATION_ELECTORAL_CROSSWALK): Empirical crosswalk linking voter registration addresses and polling station locations to 6-digit PIN codes has not been ingested or verified against official electoral rolls.",
         "EB-06 (INDEPENDENT_STAGE_B_ADJUDICATION_AUTHORIZATION): Formal Stage B adjudication verdict and explicit CTO authorization required before any Stage C migration or runtime code modifications can proceed (Rule IV-001)."
       ],
-      "sourceInvalidationNotice": "This report's previous positive results are superseded: both source extracts now declare STATUS: INVALIDATED. Historical negative-battery results are not accepted as evidence until rerun against a valid baseline."
+      "sourceInvalidationNotice": "Historical report output was generated against the now-invalidated legacy extracts. Replacement successor-state Schedule XXVII/Table A and Schedule III/Table A text extracts have since been added and the manifest rebound, but this report has not yet been regenerated or revalidated; prior positive results remain superseded."
     },
     "validationChecks": [
       {
