@@ -110,7 +110,9 @@ describe('webhook crypto branch coverage', () => {
       signatureHeader: formatSignatureHeader(1000, '0'.repeat(64), oldSig),
       rawPayload: payload, secret: 'primary', previousSecret: 'old', currentTimestampSeconds: 1000,
     })).toEqual({ valid: true });
-    expect(verifyWebhookSignature(payload, header, 'primary')).toEqual({ valid: true });
+    const freshTimestamp = Math.floor(Date.now() / 1000);
+    const freshHeader = formatSignatureHeader(freshTimestamp, generateWebhookSignature('primary', payload, freshTimestamp));
+    expect(verifyWebhookSignature(payload, freshHeader, 'primary')).toEqual({ valid: true });
     expect(verifyWebhookSignature({ signatureHeader: '', rawPayload: payload, secret: 'primary' }).reason).toBe('MISSING_SIGNATURE_HEADER');
     expect(verifyWebhookSignature({ signatureHeader: 'v1=abc', rawPayload: payload, secret: 'primary' }).reason).toBe('MALFORMED_SIGNATURE_HEADER');
     expect(verifyWebhookSignature({ signatureHeader: 't=nope,v1=abc', rawPayload: payload, secret: 'primary' }).reason).toBe('INVALID_TIMESTAMP');
