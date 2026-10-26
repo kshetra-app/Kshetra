@@ -940,7 +940,7 @@ export function buildManifest() {
   // invalidates. SHA-256 establishes byte integrity, not legal applicability or truth.
   for (const [stateCode, sourcePath] of [['TS', tsFullPath], ['AP', apFullPath]]) {
     const header = fs.readFileSync(sourcePath, 'utf8').slice(0, 2048);
-    if (/STATUS:\\s*INVALIDATED/i.test(header) || /DO NOT USE AS AN AUTHORITATIVE/i.test(header)) {
+    if (/STATUS:\s*INVALIDATED/i.test(header) || /DO NOT USE AS AN AUTHORITATIVE/i.test(header)) {
       throw new Error(
         `Refusing to build a positive evidence manifest: ${stateCode} source extract is explicitly INVALIDATED (${path.relative(REPO_ROOT, sourcePath)}). Acquire and verify the legally applicable source before regenerating.`
       );
