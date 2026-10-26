@@ -697,9 +697,9 @@ function validateEvidenceMatrix({ directory, manifest, seedNames }) {
   // be accepted, even if a manifest's recorded digest matches the invalidated bytes.
   const tsExtractText = fs.existsSync(tsExtractFullPath) ? fs.readFileSync(tsExtractFullPath, 'utf8') : '';
   const apExtractText = fs.existsSync(apExtractFullPath) ? fs.readFileSync(apExtractFullPath, 'utf8') : '';
-  const tsExtractInvalidated = /STATUS:\\s*INVALIDATED/i.test(tsExtractText.slice(0, 2048)) ||
+  const tsExtractInvalidated = /STATUS:\s*INVALIDATED/i.test(tsExtractText.slice(0, 2048)) ||
     /DO NOT USE AS AN AUTHORITATIVE/i.test(tsExtractText.slice(0, 2048));
-  const apExtractInvalidated = /STATUS:\\s*INVALIDATED/i.test(apExtractText.slice(0, 2048)) ||
+  const apExtractInvalidated = /STATUS:\s*INVALIDATED/i.test(apExtractText.slice(0, 2048)) ||
     /DO NOT USE AS AN AUTHORITATIVE/i.test(apExtractText.slice(0, 2048));
   let sourceResolutionPassed = !tsExtractInvalidated && !apExtractInvalidated;
   if (tsExtractInvalidated) {
