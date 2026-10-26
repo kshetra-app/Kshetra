@@ -175,5 +175,38 @@
   "disposition": "EXPANDED OFFICIAL SERVICE SEARCH FOUND DUPLICATE / NEAR-DUPLICATE SOURCE FAMILIES, NOT AN INDEPENDENT LEGAL TRUTH SOURCE. TGRAC MASTER SERVICE MATCHES THE OLDER GEOMETRY FAMILY TO SUB-MILLIMETRE PRECISION; THE NEWER FAMILY HAS THE EXISTING SEVEN-AC DISCREPANCY. ALL CANDIDATES REMAIN NON-CANONICAL DUE TO DORNAKAL INVALID GEOMETRY AND MISSING LEGAL/VERSION/LICENCE EVIDENCE.",
   "productionDatabaseAccess": "NONE",
   "stagingDatabaseAccess": "NONE",
-  "acceptance": "STAGE_B_PARTIAL_NOT_ACCEPTED"
+  "acceptance": "STAGE_B_PARTIAL_NOT_ACCEPTED",
+  "reproducibility": {
+    "workflowRunId": 40261390903,
+    "workflowUrl": "https://github.com/kshetra-app/Kshetra/actions/runs/40261390903",
+    "workflowConclusion": "success",
+    "artifactId": 12624637729,
+    "artifactName": "w0215-official-geometry-probe-40261390903",
+    "artifactBytes": 38242577,
+    "artifactSha256": "a2752bb4906e33d826fe4e5ce4292c1d46ea5a0f32172937d34c91893ecea3ee",
+    "artifactSha256RecomputedLocally": true,
+    "artifactExpiresAt": "2026-11-25T02:58:24Z",
+    "generatedReportPathInsideArtifact": "variant_comparison.json",
+    "generatedReportBytes": 41227,
+    "generatedReportSha256": "76b1565e7b2308c3e4fe1288a7ed198d05d35e65aa8566ddb67d8bcd7ff6bc35",
+    "generatedReportSchema": "8 candidate layers; 28 pairwise comparisons; 3 duplicate raw-response groups",
+    "comparatorScript": "scripts/compare_w0215_telangana_candidate_variants.py",
+    "comparatorScriptLocation": "PR #27 branch cto/w0215-stage-b-evidence-20261025; not merged as of this record update",
+    "manifestPathInsideArtifact": "manifest.json",
+    "manifestBytes": 26073,
+    "manifestSha256": "fda7b02ac907ac5e50a6d42201656a1aa21155639271dfb1e9fc78c527d4acbc",
+    "geometryAuditPathInsideArtifact": "geometry_audit.json",
+    "geometryAuditBytes": 21432,
+    "geometryAuditSha256": "10fd5e5bf7f795d642afbf773ea0ceab6d7f3e6adbd431e17217358ec49a704f",
+    "manifestStatus": "ACQUIRED_WITH_WARNINGS",
+    "failedSourceIds": [],
+    "warningSourceIds": [
+      "eci-result-S03",
+      "eci-result-U07",
+      "eci-result-S11",
+      "eci-result-S22",
+      "eci-result-S25"
+    ],
+    "note": "The reproducible script compares raw hashes, names, ring structures, point counts, bounding boxes and aligned pointwise coordinate deltas. It is not a full polygon overlay or legal extent validator."
+  }
 }
