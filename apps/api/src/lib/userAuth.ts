@@ -31,6 +31,14 @@ export const VALID_ROLES = new Set([
 ]);
 
 /**
+ * Header-based identity/role shortcuts are available only inside an explicitly enabled
+ * Jest/test harness. NODE_ENV alone is not a sufficient trust boundary.
+ */
+export function isExplicitTestHarnessActive(): boolean {
+  return process.env.NODE_ENV === 'test' && process.env.TEST_HARNESS_ACTIVE === 'true';
+}
+
+/**
  * Extracts the authoritative role for a user.
  * Privileged roles must derive ONLY from server-managed app_metadata.role or server-side authoritative lookup.
  * user_metadata is caller-supplied and must NEVER be trusted for role authority.
@@ -49,7 +57,7 @@ export function extractAuthoritativeRole(user: any): string {
  */
 export function setTestTokenValidator(validator: TestTokenValidator | null): void {
   if (validator !== null) {
-    if (process.env.NODE_ENV !== 'test' || process.env.TEST_HARNESS_ACTIVE !== 'true') {
+    if (!isExplicitTestHarnessActive()) {
       throw new Error('SECURITY VIOLATION: Test token validator can only be registered when NODE_ENV === "test" and TEST_HARNESS_ACTIVE === "true".');
     }
   }
@@ -67,8 +75,8 @@ export async function resolveAuthenticatedUser(
   const authHeader = request.headers.authorization;
 
   if (!authHeader) {
-    // In non-production test/development environments, resolve authenticated identity if x-user-id is explicitly passed
-    if (process.env.NODE_ENV !== 'production' && request.headers['x-user-id']) {
+    // Header identity is a test fixture only; development/staging must use verified Bearer tokens.
+    if (isExplicitTestHarnessActive() && request.headers['x-user-id']) {
       const userId = String(request.headers['x-user-id']).trim();
       const testRole = (request.headers['x-test-role'] as string) || (request.headers['x-user-role'] as string) || 'citizen';
       const roleCandidate = testRole.trim().toLowerCase();

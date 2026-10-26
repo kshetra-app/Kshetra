@@ -708,21 +708,24 @@ describe('Moderation Routes Unit Tests (Direct Route Injection)', () => {
       expect(res.statusCode).toBe(200);
     });
 
-    it('handles unconfigured database outside test mode with 503', async () => {
+    it('fails closed with 503 when the auth provider is unconfigured outside test mode', async () => {
       setSupabaseConfiguredForTesting(false);
       const origEnv = process.env.NODE_ENV;
       process.env.NODE_ENV = 'development';
       try {
+        jest.spyOn(supabase.auth, 'getUser').mockResolvedValue({
+          data: { user: { id: 'mod-user', app_metadata: { role: 'moderator' } } },
+          error: null,
+        } as any);
         const res = await app.inject({
           method: 'GET',
           url: '/api/v1/moderation/queue',
           headers: {
-            'x-user-id': 'mod-user',
-            'x-test-role': 'moderator',
+            authorization: 'Bearer valid-test-token',
           },
         });
         expect(res.statusCode).toBe(503);
-        expect(JSON.parse(res.payload).code).toBe('DATABASE_UNAVAILABLE');
+        expect(JSON.parse(res.payload).code).toBe('AUTH_PROVIDER_UNAVAILABLE');
       } finally {
         process.env.NODE_ENV = origEnv;
       }
