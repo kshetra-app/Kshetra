@@ -471,7 +471,8 @@ describe('CTO Directive 123 — Residual Electoral Data-Truth & Provisional Look
 
     it('fails closed when artifact content is tampered with (digest mismatch simulation)', () => {
       const fakeCorruptedBuffer = Buffer.from('TAMPERED_STATUTORY_EVIDENCE');
-      const expectedSha256 = '9123ecb5f9ea5414ee8b4e8cce92aed9e008f352a8924edb7dcb9c27d621737d'; // real Schedule XXXI hash
+      const currentSourcePath = path.resolve(__dirname, '../../../../data/evidence/w021_5/authoritative/ap_reorganisation_act_2014_schedule_xxvii_telangana_table_a_extract.txt');
+      const expectedSha256 = crypto.createHash('sha256').update(fs.readFileSync(currentSourcePath)).digest('hex');
       const actualCorruptedSha256 = crypto.createHash('sha256').update(fakeCorruptedBuffer).digest('hex');
 
       expect(actualCorruptedSha256).not.toBe(expectedSha256);
@@ -920,7 +921,7 @@ describe('CTO Directive 123 — Residual Electoral Data-Truth & Provisional Look
       const check8 = validation.checks.find((c: any) => c.checkId === 'CHECK_8_CLAIM_SUPPORT');
       expect(check8).toBeDefined();
       expect(check8.passed).toBe(false);
-      expect(validation.errors.some((err: string) => err.includes('cites Andhra Pradesh Schedule II locator instead of Telangana Schedule XXXI'))).toBe(true);
+      expect(validation.errors.some((err: string) => err.includes('expected Schedule XXVII, Table A'))).toBe(true);
     });
 
     it('genuine negative test (Scenario 13): validator rejects material source date inconsistency', () => {
@@ -1660,10 +1661,10 @@ describe('CTO Directive 123 — Residual Electoral Data-Truth & Provisional Look
       const e500056 = manifest.entries.find((e: any) => e.pinCode === '500056');
       expect(e500056).toBeDefined();
       expect(e500056.candidateAcNumbers).toEqual([71, 46]);
-      expect(e500056.candidateAcNames).toEqual(['Secunderabad Cantonment', 'Kukatpally']);
+      expect(e500056.candidateAcNames).toEqual(['Secunderabad Cantonment', 'Kukatpalle']);
       expect(e500056.assignedAcNumber == null).toBe(true);
       expect(tableBEntries[71].name).toBe('Secunderabad Cantonment');
-      expect(tableBEntries[46].name).toBe('Kukatpally');
+      expect(tableBEntries[46].name).toBe('Kukatpalle');
     });
 
     it('Workstream B: executes the full 8-case report-generator failure battery and verifies fail-closed outputs', () => {
