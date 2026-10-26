@@ -1,0 +1,179 @@
+{
+  "schemaVersion": 1,
+  "title": "W021.5 Stage B — Telangana TGRAC Candidate Geometry Family Comparison",
+  "capturedAtUtc": "2026-10-26T02:39:04Z",
+  "workflow": {
+    "runId": 40259909774,
+    "url": "https://github.com/kshetra-app/Kshetra/actions/runs/40259909774",
+    "conclusion": "success",
+    "artifactId": 12624382089,
+    "artifactName": "w0215-official-geometry-probe-40259909774",
+    "artifactBytes": 38240490,
+    "artifactSha256": "c7b587e7591983cd81b527b8a3824229f812bed94a123e4e68b5a824932e3629",
+    "artifactSha256RecomputedLocally": true,
+    "artifactExpiresAt": "2026-11-25T02:39:04Z"
+  },
+  "sources": [
+    {
+      "id": "TGRAC_ADMINISTRATIVE_INFO_SYSTEM_LAYER_24",
+      "bytes": 12465346,
+      "sha256": "91cd791317836d8a6a8729b03f08fd3aee8c727c82e123b1659972d949d32f27",
+      "features": 119,
+      "metadataBytes": 4756,
+      "metadataSha256": "fd91d7803f39a8cc9ae9f2f486224cea777c7127ef5659dd2d073b088dbfb26a",
+      "url": "https://tgrac.telangana.gov.in/arcgis/rest/services/AdministrativeInfoSystem_Folder/Administrative_Information_System/MapServer/24/query?where=1%3D1&outFields=%2A&returnGeometry=true&outSR=4326&f=json"
+    },
+    {
+      "id": "TGRAC_QUERY_LAYER_1",
+      "bytes": 12465346,
+      "sha256": "91cd791317836d8a6a8729b03f08fd3aee8c727c82e123b1659972d949d32f27",
+      "features": 119,
+      "metadataBytes": 4715,
+      "metadataSha256": "dafcfe10774f431ad13031b3098ff5bf5e6dee8b2e8589431af9b6238990dc7a",
+      "url": "https://tgrac.telangana.gov.in/arcgis/rest/services/AdministrativeInfoSystem_Folder/Administrative_Information_System_Query/MapServer/1/query?where=1%3D1&outFields=%2A&returnGeometry=true&outSR=4326&f=json"
+    },
+    {
+      "id": "TGRAC_ADMIN_2026_LAYER_12",
+      "bytes": 12463409,
+      "sha256": "ca8cfdc695366d9f04ee6a9fdbf9c52eeefe61d69bc79c9d26d15baa7b84aa03",
+      "features": 119,
+      "metadataBytes": 4683,
+      "metadataSha256": "850ba55a5017c7b8eeef0967aa2a073057a1fe9396abc54066c3719ddb451737",
+      "url": "https://tgrac.telangana.gov.in/arcgis/rest/services/EndowmentLands_Folder/EndowmentLands_Admin_2026/MapServer/12/query?where=1%3D1&outFields=%2A&returnGeometry=true&outSR=4326&f=json"
+    },
+    {
+      "id": "TGRAC_ADMIN_NEW_LAYER_12",
+      "bytes": 12463409,
+      "sha256": "ca8cfdc695366d9f04ee6a9fdbf9c52eeefe61d69bc79c9d26d15baa7b84aa03",
+      "features": 119,
+      "metadataBytes": 4683,
+      "metadataSha256": "850ba55a5017c7b8eeef0967aa2a073057a1fe9396abc54066c3719ddb451737",
+      "url": "https://tgrac.telangana.gov.in/arcgis/rest/services/EndowmentLands_Folder/Endowment_Lands_Admin_New/MapServer/12/query?where=1%3D1&outFields=%2A&returnGeometry=true&outSR=4326&f=json"
+    },
+    {
+      "id": "TGRAC_ADMIN_OLD_LAYER_13",
+      "bytes": 12461961,
+      "sha256": "6e33ebf7eba139a0f754e5b56f3e3bc155ab2d9b6c9e571b03dc57e77e418b4c",
+      "features": 119,
+      "metadataBytes": 4668,
+      "metadataSha256": "9e025e3f13bcb77c25fcc5dbee57e82bea364e52dd94518f01b1b7c780c89493",
+      "url": "https://tgrac.telangana.gov.in/arcgis/rest/services/EndowmentLands_Folder/Endowment_Lands_Old/MapServer/13/query?where=1%3D1&outFields=%2A&returnGeometry=true&outSR=4326&f=json"
+    },
+    {
+      "id": "TGRAC_MASTER_ADMIN_LAYER_0",
+      "bytes": 12469989,
+      "sha256": "c5d0cbf55f5079cd91b0ce3a8733ce11701a70f0ea474cdd96025ec8c651e444",
+      "features": 119,
+      "metadataBytes": 3709,
+      "metadataSha256": "78130181060c9fb1a0eeba400748cf285ba7e973db75d1600b82ca2ab9135988",
+      "url": "https://tgrac.telangana.gov.in/arcgis/rest/services/Master_Administrative_Folder/Master_Administrative_Boundary/MapServer/0/query?where=1%3D1&outFields=%2A&returnGeometry=true&outSR=4326&f=json"
+    },
+    {
+      "id": "TGRAC_RNB_LAYER_8",
+      "bytes": 12463409,
+      "sha256": "c6d0d8725e157cbb7d4b140ad91514d0f4be532d35879f6d0f654072b58d285f",
+      "features": 119,
+      "metadataBytes": 4672,
+      "metadataSha256": "fd2419a63a20016cbc83cf2eefddde0951adf5d17f9a569e712b89f358269be1",
+      "url": "https://tgrac.telangana.gov.in/arcgis/rest/services/RnB_Folder/RnB_Admin/MapServer/8/query?where=1%3D1&outFields=%2A&returnGeometry=true&outSR=4326&f=json"
+    },
+    {
+      "id": "TGRAC_MUSIRIVER_LAYER_59",
+      "bytes": 12463409,
+      "sha256": "c6d0d8725e157cbb7d4b140ad91514d0f4be532d35879f6d0f654072b58d285f",
+      "features": 119,
+      "metadataBytes": 5161,
+      "metadataSha256": "5285c6478a6372f1363af0691fce4c23f294bcef0c24aea5bb173fef2d15aab2",
+      "url": "https://tgrac.telangana.gov.in/arcgis/rest/services/MusiRiver/Musi_Basin_Web_Publication_vector/MapServer/59/query?where=1%3D1&outFields=%2A&returnGeometry=true&outSR=4326&f=json"
+    }
+  ],
+  "method": {
+    "input": "Raw ESRI JSON responses from workflow artifact 12624382089",
+    "identity": "Normalized service name field (Assembly_Name / Assembly / ASSEMBLY_N / Ass_Name), case-folded, whitespace collapsed, suffix ' Assembly' removed; known Jangaon/Jangoan spelling mismatch was not silently merged.",
+    "geometryScreen": "Per-feature ring vertex counts, total point counts, bounding boxes, and pointwise coordinate deltas were compared where ring structures aligned. This is a source-family screen, not a complete polygon overlay or legal boundary test.",
+    "noRepair": "Raw source geometry was not repaired or rewritten."
+  },
+  "comparisons": [
+    {
+      "pair": "Master layer 0 vs older AdministrativeInfoSystem layer 24",
+      "commonNames": 119,
+      "sameRingLengthVectors": 119,
+      "samePointCounts": 119,
+      "maxAbsolutePointwiseCoordinateDeltaDegrees": 4.913403017781093e-10,
+      "medianPerFeatureMaxDeltaDegrees": 4.743725412481581e-10,
+      "interpretation": "Same geometry family to sub-millimetre coordinate precision; master service does not independently resolve the previously observed seven-AC disagreement with the newer layer family."
+    },
+    {
+      "pair": "Master layer 0 vs Admin_2026 layer 12",
+      "commonNames": 118,
+      "unmatchedNames": [
+        "Jangaon",
+        "Jangoan"
+      ],
+      "sameRingLengthVectors": 112,
+      "samePointCounts": 112,
+      "maxAbsolutePointwiseCoordinateDeltaDegrees": 4.8260062612826e-10,
+      "featuresWithDifferentRingLengthVectorsAmongMatched": 6,
+      "interpretation": "Six matched ACs differ in ring structure, plus the Jangaon/Jangoan name mismatch; this corresponds to the existing seven-AC source-family discrepancy requiring legal adjudication."
+    },
+    {
+      "pair": "Admin_2026 layer 12 vs Admin_New layer 12",
+      "commonNames": 119,
+      "sameRingLengthVectors": 119,
+      "samePointCounts": 119,
+      "exactRawRingArrayMatches": 119,
+      "interpretation": "Geometry ring arrays identical; raw response bodies also byte-identical."
+    },
+    {
+      "pair": "AdministrativeInfoSystem layer 24 vs AdministrativeInfoSystem_Query layer 1",
+      "commonNames": 119,
+      "sameRingLengthVectors": 119,
+      "samePointCounts": 119,
+      "exactRawResponseBytesMatch": true,
+      "interpretation": "Duplicate response family; not independent corroboration."
+    },
+    {
+      "pair": "Admin_2026 layer 12 vs RnB layer 8",
+      "commonNames": 119,
+      "sameRingLengthVectors": 119,
+      "samePointCounts": 119,
+      "exactBoundingBoxMatches": 119,
+      "maxAbsolutePointwiseCoordinateDeltaDegrees": 9.527951760901487e-10,
+      "medianPerFeatureMaxDeltaDegrees": 0,
+      "interpretation": "Near-identical geometry to sub-millimetre coordinate precision; source lineage/independence unverified."
+    },
+    {
+      "pair": "RnB layer 8 vs MusiRiver layer 59",
+      "commonNames": 119,
+      "sameRingLengthVectors": 119,
+      "samePointCounts": 119,
+      "exactRawResponseBytesMatch": true,
+      "interpretation": "Duplicate response family; not independent corroboration."
+    },
+    {
+      "pair": "Admin_2026 layer 12 vs Admin_Old layer 13",
+      "commonNames": 118,
+      "unmatchedNames": [
+        "Jangaon",
+        "Jangoan"
+      ],
+      "sameRingLengthVectors": 112,
+      "featuresWithDifferentRingLengthVectorsAmongMatched": 6,
+      "interpretation": "Consistent with prior report of seven material differences when the spelling alias is included."
+    }
+  ],
+  "topology": {
+    "eachCandidateExpectedFeatureCount": 119,
+    "eachCandidateObservedFeatureCount": 119,
+    "allCandidateLayersStructurallyPass": true,
+    "commonInvalidGeometry": "Dornakal (ST) self-intersection appears in all compared variants",
+    "positiveAreaOverlapPairs": "0 reported by per-layer audits; this does not establish absence of gaps or legal correctness",
+    "stateBoundaryCoverage": "NOT CHECKED",
+    "statutoryExtentValidation": "NOT PERFORMED",
+    "sourceOwnerLineageAndLicence": "NOT ESTABLISHED"
+  },
+  "disposition": "EXPANDED OFFICIAL SERVICE SEARCH FOUND DUPLICATE / NEAR-DUPLICATE SOURCE FAMILIES, NOT AN INDEPENDENT LEGAL TRUTH SOURCE. TGRAC MASTER SERVICE MATCHES THE OLDER GEOMETRY FAMILY TO SUB-MILLIMETRE PRECISION; THE NEWER FAMILY HAS THE EXISTING SEVEN-AC DISCREPANCY. ALL CANDIDATES REMAIN NON-CANONICAL DUE TO DORNAKAL INVALID GEOMETRY AND MISSING LEGAL/VERSION/LICENCE EVIDENCE.",
+  "productionDatabaseAccess": "NONE",
+  "stagingDatabaseAccess": "NONE",
+  "acceptance": "STAGE_B_PARTIAL_NOT_ACCEPTED"
+}
