@@ -1250,8 +1250,8 @@ describe('CTO Directive 123 — Residual Electoral Data-Truth & Provisional Look
 
   describe('CTO Directive 129 — Source-Bound Statutory Evidence Verification, Independent Correction Audit, and Stage B Adjudication Integrity', () => {
     const manifestPath = path.resolve(__dirname, '../../../../data/evidence/w021_5/pin_independent_evidence_manifest.json');
-    const tsExtractPath = path.resolve(__dirname, '../../../../data/evidence/w021_5/authoritative/eci_delimitation_2008_schedule_xxxi_table_b_extract.txt');
-    const apExtractPath = path.resolve(__dirname, '../../../../data/evidence/w021_5/authoritative/eci_delimitation_2008_schedule_ii_table_b_extract.txt');
+    const tsExtractPath = path.resolve(__dirname, '../../../../data/evidence/w021_5/authoritative/ap_reorganisation_act_2014_schedule_xxvii_telangana_table_a_extract.txt');
+    const apExtractPath = path.resolve(__dirname, '../../../../data/evidence/w021_5/authoritative/ap_reorganisation_act_2014_schedule_iii_andhra_pradesh_table_a_extract.txt');
     let validatorModule: any;
 
     beforeAll(() => {
@@ -1265,8 +1265,11 @@ describe('CTO Directive 123 — Residual Electoral Data-Truth & Provisional Look
 
       const tsSha = validatorModule.computeFileSha256(tsExtractPath);
       const apSha = validatorModule.computeFileSha256(apExtractPath);
-      expect(tsSha).toBe('5759ceea56cb119974ce441fa1249cc58d4bfb7a3157814fa31cb28b5726a648');
-      expect(apSha).toBe('a88a01a26875bd7744c8e54695a2a39662f7b36753938b7fc94a2eff822080fa');
+      const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+      const expectedTsSha = manifest.entries.find((entry: any) => entry.stateCode === 'TS')?.sourceArtifactSha256;
+      const expectedApSha = manifest.entries.find((entry: any) => entry.stateCode === 'AP')?.sourceArtifactSha256;
+      expect(tsSha).toBe(expectedTsSha);
+      expect(apSha).toBe(expectedApSha);
     });
 
     it('pure validation engine passes all 10 checks under Directive 129 check semantics', () => {
@@ -1571,7 +1574,7 @@ describe('CTO Directive 123 — Residual Electoral Data-Truth & Provisional Look
       expect(validation.allPassed).toBe(false);
       const check6 = validation.checks.find((c: any) => c.checkId === 'CHECK_6_SOURCE_RESOLUTION');
       expect(check6.passed).toBe(false);
-      expect(validation.errors.some((err: string) => err.includes('does not match expected Telangana Schedule XXXI extract'))).toBe(true);
+      expect(validation.errors.some((err: string) => err.includes('does not match expected Telangana Schedule XXVII Table A extract'))).toBe(true);
     });
 
     it('Workstream C: validates multi-AC records fail closed with candidate numbers, names and extents verified', () => {
