@@ -12,8 +12,8 @@ describe('InMemoryDelimitationWatchRepository', () => {
     const source = await repository.getSource('s1');
     expect(source?.name).toBe('source');
     expect(await repository.listSources()).toHaveLength(1);
-    source!.metadata.revision = 2;
-    expect((await repository.getSource('s1'))?.metadata.revision).toBe(1);
+    source!.metadata!.revision = 2;
+    expect((await repository.getSource('s1'))?.metadata?.revision).toBe(1);
     await repository.updateSourceHealth('s1', { lastHttpStatus: 200, consecutiveFailures: 0, lastError: '' });
     expect(await repository.getSource('missing')).toBeNull();
     await repository.updateSourceHealth('missing', { lastHttpStatus: 500 });
