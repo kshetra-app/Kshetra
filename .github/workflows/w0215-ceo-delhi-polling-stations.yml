@@ -36,7 +36,7 @@ jobs:
       - name: Acquire and validate official polling station pages
         id: acquisition
         continue-on-error: true
-        run: python scripts/acquire_w0215_ceo_delhi_polling_stations.py --pilot-one-ac
+        run: python scripts/acquire_w0215_ceo_delhi_polling_stations.py
       - name: Upload source bytes and page-by-page provenance manifest
         if: always()
         uses: actions/upload-artifact@v4
