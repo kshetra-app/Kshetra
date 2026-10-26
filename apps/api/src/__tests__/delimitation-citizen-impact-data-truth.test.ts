@@ -1663,7 +1663,7 @@ describe('CTO Directive 123 — Residual Electoral Data-Truth & Provisional Look
       expect(e500056.candidateAcNumbers).toEqual([71, 46]);
       expect(e500056.candidateAcNames).toEqual(['Secunderabad Cantonment', 'Kukatpally']);
       expect(e500056.assignedAcNumber == null).toBe(true);
-      expect(tableBEntries[71].name).toBe('Secunderabad Cantonment');
+      expect(tableBEntries[71].name).toBe('Secunderabad Cantt.');
       expect(tableBEntries[46].name).toBe('Kukatpalle');
     });
 
