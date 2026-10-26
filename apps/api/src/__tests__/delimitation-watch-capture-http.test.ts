@@ -158,7 +158,7 @@ describe('Delimitation Watch hardened HTTP capture', () => {
   ])('fails closed for unsafe redirect path %s', async (path, expectedError) => {
     const result = await capture(path);
     expect(result.captureOutcome).toBe('FETCH_ERROR');
-    expect(result.diagnostics.error).toContain(expectedError);
+    expect(result.diagnostics!.error).toContain(expectedError);
     expect(repository.updateSourceHealth).toHaveBeenCalledWith('http-source', expect.objectContaining({
       consecutiveFailures: 1,
     }));
@@ -167,7 +167,7 @@ describe('Delimitation Watch hardened HTTP capture', () => {
   it('rejects responses exceeding the configured streaming byte limit', async () => {
     const result = await capture('/large', {}, { maxResponseBytes: 128 });
     expect(result.captureOutcome).toBe('FETCH_ERROR');
-    expect(result.diagnostics.error).toContain('RESPONSE_SIZE_EXCEEDED');
+    expect(result.diagnostics!.error).toContain('RESPONSE_SIZE_EXCEEDED');
   });
 
   it.each([
@@ -183,7 +183,7 @@ describe('Delimitation Watch hardened HTTP capture', () => {
   it('classifies an overall HTTP deadline as TIMEOUT', async () => {
     const result = await capture('/slow', { consecutiveFailures: 2 }, { timeoutMs: 40 });
     expect(result.captureOutcome).toBe('TIMEOUT');
-    expect(result.diagnostics.error).toContain('DEADLINE_EXCEEDED');
+    expect(result.diagnostics!.error).toContain('DEADLINE_EXCEEDED');
     expect(repository.updateSourceHealth).toHaveBeenCalledWith('http-source', expect.objectContaining({
       consecutiveFailures: 3,
     }));
