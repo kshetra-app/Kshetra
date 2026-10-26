@@ -259,4 +259,89 @@ describe('Delimitation Watch HTTP Routes (/api/v1/delimitation/watch/*)', () => 
     expect(versions.statusCode).toBe(500);
   });
 
+
+  test('all endpoints fail closed when deployed persistence is unconfigured', async () => {
+    const oldNodeEnv = process.env.NODE_ENV;
+    const oldDatabaseUrl = process.env.DATABASE_URL;
+    process.env.NODE_ENV = 'production';
+    delete process.env.DATABASE_URL;
+    setWatchRepositoryForTesting(null);
+    try {
+      const requests = [
+        { method: 'GET', url: '/api/v1/delimitation/watch/health' },
+        { method: 'GET', url: '/api/v1/delimitation/watch/sources' },
+        { method: 'POST', url: '/api/v1/delimitation/watch/sources', payload: { id: 'x' } },
+        { method: 'POST', url: '/api/v1/delimitation/watch/trigger/source-1' },
+        { method: 'POST', url: '/api/v1/delimitation/watch/replay/snapshot-1' },
+        { method: 'GET', url: '/api/v1/delimitation/watch/runs/source-1' },
+        { method: 'GET', url: '/api/v1/delimitation/watch/versions/source-1' },
+      ] as const;
+      for (const request of requests) {
+        const response = await app.inject({ ...request, headers: { authorization: 'Bearer test-delim-secret-8f29' } } as any);
+        expect(response.statusCode).toBe(503);
+        expect(response.body).toContain('PERSISTENCE_CONFIGURATION_ERROR');
+      }
+    } finally {
+      process.env.NODE_ENV = oldNodeEnv;
+      if (oldDatabaseUrl === undefined) delete process.env.DATABASE_URL;
+      else process.env.DATABASE_URL = oldDatabaseUrl;
+      setWatchRepositoryForTesting(testRepo);
+    }
+  });
+
+  test('supports each documented monitor-secret fallback and denies access when no secret is configured', async () => {
+    const oldKshetra = process.env.KSHETRA_MONITOR_SECRET;
+    const oldMonitor = process.env.MONITOR_WEBHOOK_SECRET;
+    const oldDelimitation = process.env.DELIMITATION_WATCH_SECRET;
+    try {
+      delete process.env.KSHETRA_MONITOR_SECRET;
+      process.env.MONITOR_WEBHOOK_SECRET = 'monitor-fallback-secret';
+      delete process.env.DELIMITATION_WATCH_SECRET;
+      const monitorFallback = await app.inject({
+        method: 'POST',
+        url: '/api/v1/delimitation/watch/sources',
+        headers: { authorization: 'Bearer monitor-fallback-secret' },
+        payload: {
+          id: 'SRC-MONITOR-FALLBACK', name: 'Monitor fallback', publisher: 'Test',
+          sourceType: 'gazette_extraordinary', canonicalUrl: fixturePath,
+          geographicScope: 'IN-TG', subjectScope: 'delimitation_order',
+        },
+      });
+      expect(monitorFallback.statusCode).toBe(201);
+
+      delete process.env.MONITOR_WEBHOOK_SECRET;
+      process.env.DELIMITATION_WATCH_SECRET = 'delimitation-fallback-secret';
+      const delimitationFallback = await app.inject({
+        method: 'POST',
+        url: '/api/v1/delimitation/watch/sources',
+        headers: { authorization: 'Bearer delimitation-fallback-secret' },
+        payload: {
+          id: 'SRC-DELIM-FALLBACK', name: 'Delimitation fallback', publisher: 'Test',
+          sourceType: 'gazette_extraordinary', canonicalUrl: fixturePath,
+          geographicScope: 'IN-TG', subjectScope: 'delimitation_order',
+        },
+      });
+      expect(delimitationFallback.statusCode).toBe(201);
+
+      delete process.env.DELIMITATION_WATCH_SECRET;
+      const denied = await app.inject({
+        method: 'POST',
+        url: '/api/v1/delimitation/watch/sources',
+        payload: {
+          id: 'SRC-NO-SECRET', name: 'No secret', publisher: 'Test',
+          sourceType: 'gazette_extraordinary', canonicalUrl: fixturePath,
+          geographicScope: 'IN-TG', subjectScope: 'delimitation_order',
+        },
+      });
+      expect(denied.statusCode).toBe(401);
+    } finally {
+      if (oldKshetra === undefined) delete process.env.KSHETRA_MONITOR_SECRET;
+      else process.env.KSHETRA_MONITOR_SECRET = oldKshetra;
+      if (oldMonitor === undefined) delete process.env.MONITOR_WEBHOOK_SECRET;
+      else process.env.MONITOR_WEBHOOK_SECRET = oldMonitor;
+      if (oldDelimitation === undefined) delete process.env.DELIMITATION_WATCH_SECRET;
+      else process.env.DELIMITATION_WATCH_SECRET = oldDelimitation;
+    }
+  });
+
 });
