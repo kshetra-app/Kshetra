@@ -1093,14 +1093,15 @@
       "retrievedAt": "2026-10-26",
       "format": "ECI official backend download endpoint",
       "authority": "PRIMARY_OFFICIAL_SOURCE",
-      "status": "OFFICIAL_BINARY_HTTP_406_ON_BOTH_HOST_VARIANTS; ERROR_BODY_NOT_SOURCE_DOCUMENT",
-      "sha256": null,
-      "fileBytes": null,
+      "status": "OFFICIAL_ECI_PDF_BYTES_PRESENT_IN_MASTER_AND_HASH_VERIFIED",
+      "sha256": "13201bb665a5d29853862d0bc0c07175c319a61d5b39b2c838fd0ec3882737da",
+      "fileBytes": 102133,
       "version": "No. 282/AP/2018(DEL), 2018-09-22",
       "limitations": [
-        "Official indexed text found through ECI search result; exact binary could not be downloaded (HTTP 406).",
-        "Do not claim binary SHA-256 or close Gazette authenticity/effective-date gates based on search-rendered text.",
-        "Run 40260777545 retried the exact official API endpoint on both www and bare host; both returned the same HTTP 406 error body. No source-document SHA-256 is available."
+        "Official ECI notification PDF bytes are present in master and byte/hash integrity was independently recomputed from the repository content.",
+        "The exact Gazette of India and Andhra Pradesh State Gazette issue/certified counterpart is still not acquired or identified.",
+        "Source host provenance is supported by the repository dossier's recorded URL/timestamp and matching digest; this pass independently verified the retained bytes but did not re-fetch the source URL.",
+        "Notification scope is limited to AP AC-53 and AC-67 boundary extents; it does not validate Telangana polygons or national AC geometry."
       ],
       "plannedUse": "Resolve statutory crosswalk and legal effective-date chain once exact notification/Gazette bytes or custodian-certified copy is obtained.",
       "lastProbe": {
@@ -1120,7 +1121,31 @@
             "errorBodySha256": "8f14ef818fea5334fa7bc2ed40e6808c3227dc36a413fb67f326d1591e03675a"
           }
         ],
-        "documentBytesAcquired": false
+        "documentBytesAcquired": true,
+        "repositoryArtifactVerifiedAt": "2026-10-26",
+        "repositoryArtifactPath": "data/evidence/delimitation/authoritative/eci_notification_282_ap_2018_del.pdf",
+        "repositoryGitBlobSha": "9e89a57a136249cbc523f5d3125bdb4741a62859",
+        "sha256": "13201bb665a5d29853862d0bc0c07175c319a61d5b39b2c838fd0ec3882737da",
+        "fileBytes": 102133,
+        "pdfPageCount": 3,
+        "previousHttp406AttemptsRetained": true
+      },
+      "artifactPath": "data/evidence/delimitation/authoritative/eci_notification_282_ap_2018_del.pdf",
+      "pdfPageCount": 3,
+      "sourceArtifactVerification": {
+        "checkedAt": "2026-10-26",
+        "repositoryRef": "master",
+        "repositoryFileUrl": "https://github.com/kshetra-app/Kshetra/blob/master/data/evidence/delimitation/authoritative/eci_notification_282_ap_2018_del.pdf",
+        "gitBlobSha": "9e89a57a136249cbc523f5d3125bdb4741a62859",
+        "independentlyComputedSha256": "13201bb665a5d29853862d0bc0c07175c319a61d5b39b2c838fd0ec3882737da",
+        "checks": [
+          "base64-decoded repository bytes",
+          "PDF magic %PDF- verified",
+          "%%EOF marker verified",
+          "3 /Type /Page objects counted",
+          "computed SHA-256 matches dossier's recorded digest"
+        ],
+        "provenanceNote": "Dossier records original official ECI backend URL and retrieval timestamp 2026-10-25T17:42:55Z. This pass verified the repository-retained bytes against that recorded digest; it did not independently repeat the original HTTP retrieval."
       }
     },
     {
@@ -1572,7 +1597,7 @@
       "retrievedAt": "2026-10-26",
       "format": "Official PDF endpoint with search-indexed text; raw notification bytes not acquired",
       "authority": "OFFICIAL_SOURCE_TEXT_DISCOVERY",
-      "status": "INDEXED_TEXT_DISCOVERY_RAW_BYTES_NOT_ACQUIRED",
+      "status": "INDEXED_TEXT_DISCOVERY_SUPERSEDED_FOR_BYTE_AVAILABILITY_BY_MASTER_ARTIFACT",
       "sha256": null,
       "fileBytes": null,
       "scope": "2018 legal amendment lineage for Andhra Pradesh/Telangana AC schedule",
@@ -1581,7 +1606,11 @@
         "Indexed text is not the original Gazette binary and cannot close EB-01 or EB-02.",
         "No hash is claimed for the notification."
       ],
-      "plannedUse": "Use text to target legal cross-checks while continuing exact-byte retrieval via official hosts and custodians."
+      "plannedUse": "Use text to target legal cross-checks while continuing exact-byte retrieval via official hosts and custodians.",
+      "rawArtifactPath": "data/evidence/delimitation/authoritative/eci_notification_282_ap_2018_del.pdf",
+      "rawSha256": "13201bb665a5d29853862d0bc0c07175c319a61d5b39b2c838fd0ec3882737da",
+      "rawFileBytes": 102133,
+      "notes": "Original indexed-text discovery remains a valid discovery record, but a retained PDF artifact is now verified in master; see canonical source record SRC-ECI-NOTIFICATION-282-AP-2018-DEL."
     },
     {
       "sourceId": "SRC-TSHC-DELIMITATION-2018-JUDGMENT-INDEX-2026-10-26",
@@ -2177,7 +2206,7 @@
     ],
     "acceptedAsCanonical": false
   },
-  "lastDecision": "The exact official ECI 2008 order and 2018 notification texts are discoverable in search indexing, but original PDF bytes remain unacquired. A court judgment text reproduction states the 2018 notification amended two Andhra Pradesh AC extents and did not change Telangana AC extents; use only as independent legal context, not as substitute for original notification/Gazette. Next priority: controlled acquisition of ECI order/notification bytes, exact-issue search at Andhra Pradesh e-Gazette, and custodian certified copy if those routes fail. Stage B remains PARTIAL / NOT ACCEPTED.",
+  "lastDecision": "Correction after repository-wide evidence reinspection: the original ECI Notification 282/AP/2018(DEL) PDF is already retained in master at data/evidence/delimitation/authoritative/eci_notification_282_ap_2018_del.pdf. Repository bytes were independently decoded and hashed: 102,133 bytes, SHA-256 13201bb665a5d29853862d0bc0c07175c319a61d5b39b2c838fd0ec3882737da; PDF magic/EOF and three page objects verified. Dossier records official ECI URL and retrieval timestamp 2026-10-25T17:42:55Z, and its recorded digest matches. Exact Gazette issue and 2008 Order PDF remain unacquired; national AC geometry remains unaccepted.",
   "latestRouteAdjudication": {
     "recordedAt": "2026-10-26",
     "reportPath": "reports/w021_5_stage_b_evidence_route_adjudication_2026-10-26.md",
