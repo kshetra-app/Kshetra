@@ -1,48 +1,10 @@
-AUTHORITATIVE STATUTORY EXTRACT: ECI DELIMITATION ORDER 2008
-==============================================================================
-Source Authority: Delimitation Commission of India / Election Commission of India
-Document: Delimitation of Parliamentary and Assembly Constituencies Order, 2008
-Statutory Enactment:
-  - Originally Schedule II (State of Andhra Pradesh), Promulgated 19 February 2008
-  - Re-enacted as Schedule XXXI (State of Telangana) under Section 15 of the
-    Andhra Pradesh Reorganisation Act, 2014 (Act No. 6 of 2014)
-Source URL: https://eci.gov.in/files/file/3931-delimitation-of-parliamentary-assembly-constituencies-order-2008/
-Retrieval Date: 2026-09-22
-Effective Date: 2008-02-19
+INVALIDATED — DO NOT USE AS AUTHORITATIVE TELANGANA SCHEDULE
+===========================================================
 
-SCHEDULE XXXI: TELANGANA
-TABLE B — ASSEMBLY CONSTITUENCIES
-------------------------------------------------------------------------------
-Serial No. & Name of Constituency | Extent of the Constituency
-------------------------------------------------------------------------------
-1. Sirpur                         | Kouthala, Bejjur, Kagaznagar, Sirpur (T)
-                                  | and Dahegaon Mandals.
-------------------------------------------------------------------------------
-2. Chennur (SC)                   | Jaipur, Chennur, Kotapalli and
-                                  | Mandamarri Mandals.
-------------------------------------------------------------------------------
-3. Bellampalli (SC)               | Kasipet, Tandur, Bellampalli, Bhimini,
-                                  | Nennal and Vemanpalli Mandals.
-------------------------------------------------------------------------------
-4. Mancherial                     | Luxettipet, Mancherial and Dandepalli
-                                  | Mandals.
-------------------------------------------------------------------------------
-5. Asifabad (ST)                  | Kerameri, Wankdi, Sirpur (U), Asifabad,
-                                  | Jainoor, Narnoor, Tiryani and Rebbana
-                                  | Mandals.
-==============================================================================
-STATUTORY OBSERVATIONS:
-1. AC 1 (Sirpur): Contains 100% of Sirpur (T), Kagaznagar, Dahegaon Mandals.
-2. AC 2 (Chennur SC): Contains 100% of Chennur and Kotapalli Mandals.
-   Kotapalli is FULLY inside AC 2 under the 2008 Delimitation Order.
-3. AC 3 (Bellampalli SC): Contains Kasipet, Tandur, Bellampalli, Bhimini,
-   Nennal, and Vemanpalli Mandals.
-   Hajipur is NOT part of AC 3.
-4. AC 4 (Mancherial): Contains strictly Luxettipet, Mancherial, and Dandepalli.
-   Kotapalli is NOT part of AC 4.
-5. AC 5 (Asifabad ST): Contains 100% of Asifabad and Tiryani Mandals.
-6. Hajipur Mandal did NOT exist in 2008. Its constituent territory was carved
-   out of Mancherial Mandal in October 2016. Because Mancherial Mandal was
-   wholly in AC 4, Hajipur's containment in AC 4 is a DERIVED SUCCESSOR
-   relationship under W014 temporal lineage.
-==============================================================================
+The original ECI Order PDF shows Schedule XXXI = Delhi in the unamended 2008 Order. The 2014 AP Reorganisation Act, Section 15 / Second Schedule inserts Schedule XXVII — Telangana and replaces Schedule III — Andhra Pradesh. This old W015 extract labels Telangana as Schedule XXXI and makes unsupported downstream containment assertions. It must not be consumed as legal truth or used to accept a geometry/crosswalk.
+
+Primary source record:
+- ECI Order PDF: 1,340,728 bytes; SHA-256 9e1ac49aa952febc8e4f57ed23abd28218a21887f355f8dad1502ab5c0d65e69.
+- AP Reorganisation Act 2014 source PDF: 231,596 bytes; SHA-256 84cd566b917f9a3f600c47f6540520c950166b424a964ad37d64dc3c968114aa.
+
+The old Git blob is retained in history: df6aac02d5e678b803e82fe032cbd0a229ecc815.
