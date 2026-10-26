@@ -269,11 +269,12 @@ def cdx_query(label: str, params: dict) -> dict:
         return row, []
 
 def gazette_2008_order_match(txt: str) -> dict:
-    folded = re.sub(r"\\s+", " ", txt).casefold()
-    so382 = bool(re.search(r"S\\.?\\s*O\\.?\\s*382\\s*\\(\\s*E\\s*\\)", txt, re.I))
-    date = bool(re.search(r"19(?:th)?\\s+February,?\\s+2008|19\\s*[-/]\\s*02\\s*[-/]\\s*2008|19\\.02\\.2008", txt, re.I))
-    delimitation = "delimitation" in folded
-    gazette = "gazette of india" in folded or "भारत का राजपत्र" in txt
+    # Normalize whitespace before exact literal checks, avoiding OCR line-wrap differences.
+    compact = re.sub(r"\\s+", "", txt.casefold())
+    so382 = "s.o.382(e)" in compact or "s.o382(e)" in compact
+    date = any(x in compact for x in ("19thfebruary,2008", "19february,2008", "19thfebruary2008", "19february2008", "19/02/2008", "19-02-2008", "19.02.2008"))
+    delimitation = "delimitation" in txt.casefold()
+    gazette = "gazetteofindia" in compact or "भारतकाराजपत्र" in compact
     return {
         "so382EMarker": so382,
         "publicationDateMarker": date,
