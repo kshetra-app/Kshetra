@@ -179,6 +179,35 @@ class PlainText(HTMLParser):
         if data and data.strip():
             self.parts.append(data.strip())
 
+class LinkAndFormCollector(HTMLParser):
+    """Capture links and search-form metadata from official portal HTML for reproducible follow-up."""
+    def __init__(self):
+        super().__init__()
+        self.links = []
+        self.forms = []
+        self._form = None
+        self._link = None
+    def handle_starttag(self, tag, attrs):
+        a = dict(attrs)
+        if tag.lower() == "a" and a.get("href"):
+            self._link = {"href": a["href"], "textParts": []}
+        elif tag.lower() == "form":
+            self._form = {"action": a.get("action"), "method": (a.get("method") or "get").lower(), "inputs": []}
+            self.forms.append(self._form)
+        elif tag.lower() in ("input", "select", "button", "textarea") and self._form is not None:
+            item = {"tag": tag.lower(), "name": a.get("name"), "type": a.get("type"), "value": a.get("value"), "id": a.get("id")}
+            self._form["inputs"].append(item)
+    def handle_data(self, data):
+        if self._link is not None and data and data.strip():
+            self._link["textParts"].append(data.strip())
+    def handle_endtag(self, tag):
+        if tag.lower() == "a" and self._link is not None:
+            self._link["text"] = " ".join(self._link.pop("textParts"))
+            self.links.append(self._link)
+            self._link = None
+        elif tag.lower() == "form":
+            self._form = None
+
 manifest = {
     "schemaVersion": 2,
     "title": "W021.5 Stage B official legal crosswalk source acquisition",
@@ -279,13 +308,18 @@ for src in HTML_SOURCES:
             safe = re.sub(r"[^A-Za-z0-9_.-]", "_", src["id"])
             raw_path = RAW / f"{safe}.html"
             raw_path.write_bytes(raw)
+            decoded_html = raw.decode(response.encoding or "utf-8", errors="replace")
             parser = PlainText()
-            parser.feed(raw.decode(response.encoding or "utf-8", errors="replace"))
+            parser.feed(decoded_html)
             text_value = re.sub(r"\\s+", " ", " ".join(parser.parts)).strip()
             text_path = OUT / f"{safe}.txt"
             text_path.write_text(text_value, encoding="utf-8")
+            collector = LinkAndFormCollector()
+            collector.feed(decoded_html)
             row.update({"status":"DOWNLOADED_HASHED_HTML","rawArtifact":f"raw/{raw_path.name}",
                         "textArtifact":text_path.name,"textSha256":sha(text_value.encode("utf-8")),
+                        "discoveredLinks":collector.links,
+                        "searchForms":collector.forms,
                         "termFindings":{term:term.casefold() in text_value.casefold() for term in src["terms"]}})
         else:
             row["status"] = "HTTP_FAILURE"
