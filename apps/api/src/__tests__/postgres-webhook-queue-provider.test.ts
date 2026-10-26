@@ -28,6 +28,7 @@ const dispatchResult = (success: boolean) => ({
   success,
   httpStatus: success ? 204 : 503,
   executionDurationMs: 10,
+  requestHeaders: {},
   responseHeaders: {},
   responseBodySample: '',
   errorMessage: success ? undefined : 'provider unavailable',
