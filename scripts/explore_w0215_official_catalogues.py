@@ -113,35 +113,101 @@ def parse_pdf(raw: bytes) -> dict:
         return {"pdfMagic": False, "pdfParseStatus": "NOT_PDF"}
     try:
         doc = fitz.open(stream=raw, filetype="pdf")
-        pages = doc.page_count
-        text_value = "\n".join(p.get_text("text", sort=True) for p in doc)
+        pages_text = [p.get_text("text", sort=True) for p in doc]
+        text_value = "\n".join(pages_text)
+        first_page = pages_text[0] if pages_text else ""
+        m = re.match(rb"%PDF-([0-9.]+)", raw)
         return {
             "pdfMagic": True,
             "pdfParseStatus": "PASS",
-            "pdfVersion": re.match(rb"%PDF-([0-9.]+)", raw).group(1).decode() if re.match(rb"%PDF-([0-9.]+)", raw) else None,
-            "pdfPageCount": pages,
+            "pdfVersion": m.group(1).decode() if m else None,
+            "pdfPageCount": doc.page_count,
             "text": text_value,
+            "firstPageText": first_page[:12000],
+            "firstPageTextSha256": sha(first_page.encode("utf-8")),
             "textSha256": sha(text_value.encode("utf-8")),
         }
     except Exception as e:
         return {"pdfMagic": True, "pdfParseStatus": "FAIL", "pdfParseError": f"{type(e).__name__}: {e}"}
 
-def gazette_match(txt: str) -> dict:
-    folded = re.sub(r"\s+", " ", txt).casefold()
-    on55 = bool(re.search(r"\bo\.?\s*n\.?\s*55\s*\(\s*e\s*\)", txt, re.I))
-    notice = bool(re.search(r"282\s*/\s*AP\s*/\s*2018\s*\(\s*DEL\s*\)", txt, re.I))
-    date = bool(re.search(r"22(?:nd)?\s+September,?\s+2018|22\s*[-/]\s*09\s*[-/]\s*2018|22\.09\.2018", txt, re.I))
-    constituency = any(x in folded for x in ("rampachodavaram", "polavaram", "andhra pradesh"))
-    gazette = ("gazette of india" in folded or "भारत का राजपत्र" in txt)
-    score = sum([on55, notice, date, constituency, gazette])
+def _normalise_identifier(value: str) -> str:
+    return re.sub(r"[^A-Z0-9]", "", (value or "").upper())
+
+def _first_gazette_identifier(first_page_text: str) -> dict:
+    # A Gazette text may quote an older instrument in its body. The first legal
+    # notification identifier on page 1 is therefore the primary-issue discriminator.
+    pattern = re.compile(
+        r"\b(S\.?\s*O\.?|O\.?\s*N\.?|G\.?\s*S\.?\s*R\.?)\s*([0-9]+)\s*\(\s*E\s*\)",
+        re.I,
+    )
+    m = pattern.search(first_page_text or "")
+    if not m:
+        return {"identifierFound": False, "primaryIdentifier": None, "primaryIdentifierNormalized": None}
+    identifier = re.sub(r"\s+", "", m.group(0)).upper().replace("S.O.", "S.O.").replace("O.N.", "O.N.")
     return {
-        "on55EExactMarker": on55,
-        "eci2018NotificationNumberMarker": notice,
-        "publicationDateMarker": date,
+        "identifierFound": True,
+        "primaryIdentifier": identifier,
+        "primaryIdentifierNormalized": _normalise_identifier(identifier),
+        "identifierTextSnippet": (first_page_text or "")[max(0, m.start()-120):m.end()+180],
+    }
+
+def gazette_match(txt: str, first_page_text: str = "") -> dict:
+    folded = re.sub(r"\s+", " ", txt).casefold()
+    first = first_page_text or (txt or "")[:12000]
+    first_folded = re.sub(r"\s+", " ", first).casefold()
+    # Required Gazette item must be identified on the issue's first page; a later
+    # quotation of O.N.55(E) in unrelated legal text is not an issue match.
+    on55_first = bool(re.search(r"\bo\.?\s*n\.?\s*55\s*\(\s*e\s*\)", first, re.I))
+    on55_any = bool(re.search(r"\bo\.?\s*n\.?\s*55\s*\(\s*e\s*\)", txt, re.I))
+    notice_any = bool(re.search(r"282\s*/\s*AP\s*/\s*2018\s*\(\s*DEL\s*\)", txt, re.I))
+    date_first = bool(re.search(r"22(?:nd)?\s+September,?\s+2018|22\s*[-/]\s*09\s*[-/]\s*2018|22\.09\.2018", first, re.I))
+    date_any = bool(re.search(r"22(?:nd)?\s+September,?\s+2018|22\s*[-/]\s*09\s*[-/]\s*2018|22\.09\.2018", txt, re.I))
+    constituency = any(x in folded for x in ("rampachodavaram", "polavaram", "andhra pradesh"))
+    gazette_first = ("gazette of india" in first_folded or "भारत का राजपत्र" in first)
+    part_section_first = bool(re.search(r"part\s*ii.{0,100}section\s*3|section\s*3.{0,100}sub[- ]section", first, re.I | re.S))
+    score = sum([on55_first, date_first, constituency, gazette_first, part_section_first])
+    return {
+        "on55EExactMarkerOnFirstPage": on55_first,
+        "on55EAnyTextMarker": on55_any,
+        "eci2018NotificationNumberMarker": notice_any,
+        "publicationDateMarkerOnFirstPage": date_first,
+        "publicationDateMarkerAnywhere": date_any,
         "andhraPradeshConstituencyContext": constituency,
-        "gazetteOfIndiaMarker": gazette,
+        "gazetteOfIndiaMarkerOnFirstPage": gazette_first,
+        "partSectionMetadataMarkerOnFirstPage": part_section_first,
         "gazetteCandidateScore": score,
-        "strictGazetteCandidate": bool(on55 and date and constituency and gazette),
+        "strictGazetteCandidate": bool(on55_first and date_first and constituency and gazette_first),
+        "issueIdentityWarning": (
+            "O.N.55(E) appears only in body text or context is incomplete; not accepted as the Gazette issue."
+            if on55_any and not on55_first else None
+        ),
+    }
+
+def gazette_2008_order_match(txt: str, first_page_text: str = "") -> dict:
+    full_compact = re.sub(r"\s+", "", (txt or "").casefold())
+    first = first_page_text or (txt or "")[:12000]
+    first_compact = re.sub(r"\s+", "", first.casefold())
+    first_identifier = _first_gazette_identifier(first)
+    so382_anywhere = ("s.o.382(e)" in full_compact or "s.o382(e)" in full_compact)
+    so382_on_first_page = ("s.o.382(e)" in first_compact or "s.o382(e)" in first_compact)
+    date_first = any(x in first_compact for x in (
+        "19thfebruary,2008", "19february,2008", "19thfebruary2008",
+        "19february2008", "19/02/2008", "19-02-2008", "19.02.2008"
+    ))
+    delimitation = "delimitation" in (txt or "").casefold()
+    gazette_first = ("gazetteofindia" in first_compact or "भारतकाराजपत्र" in first)
+    primary_id_is_so382 = first_identifier.get("primaryIdentifierNormalized") == "SO382E"
+    return {
+        "so382EMarkerOnFirstPage": so382_on_first_page,
+        "so382EMarkerAnywhere": so382_anywhere,
+        "primaryPageOneIdentifier": first_identifier.get("primaryIdentifier"),
+        "primaryPageOneIdentifierNormalized": first_identifier.get("primaryIdentifierNormalized"),
+        "pageOnePrimaryIdentifierIsSO382E": primary_id_is_so382,
+        "publicationDateMarkerOnFirstPage": date_first,
+        "delimitationOrderMarkerAnywhere": delimitation,
+        "gazetteOfIndiaMarkerOnFirstPage": gazette_first,
+        "strict2008GazetteCandidate": bool(primary_id_is_so382 and so382_on_first_page and date_first and delimitation and gazette_first),
+        "recitalOnlyOrDifferentPrimaryInstrument": bool(so382_anywhere and not primary_id_is_so382),
     }
 
 def probe_live_page(url: str, label: str) -> dict:
@@ -330,8 +396,8 @@ def archived_pdf_probe(item: dict, query_label: str) -> dict:
         if pdf.get("pdfParseStatus") != "PASS":
             row["status"] = "ARCHIVED_PDF_PARSE_FAILED"
             return row
-        findings = gazette_match(pdf["text"])
-        old_findings = gazette_2008_order_match(pdf["text"])
+        findings = gazette_match(pdf["text"], pdf.get("firstPageText", ""))
+        old_findings = gazette_2008_order_match(pdf["text"], pdf.get("firstPageText", ""))
         row["termFindings"] = findings
         row["2008GazetteTermFindings"] = old_findings
         row["textPreview"] = pdf["text"][:1200]
@@ -347,7 +413,16 @@ def archived_pdf_probe(item: dict, query_label: str) -> dict:
             row["rawArtifact"] = save_bytes(raw_name, raw)
             row["textArtifact"] = save_text(text_name, pdf["text"])
             row["status"] = "STRICT_GAZETTE_SO382E_2008_CANDIDATE_ACQUIRED"
-        elif findings["on55EExactMarker"] or findings["eci2018NotificationNumberMarker"] or old_findings["so382EMarker"]:
+        elif old_findings.get("recitalOnlyOrDifferentPrimaryInstrument"):
+            # Example: Gazette O.S.1204(E) dated 23 May 2008 recites S.O.382(E).
+            # Preserve it as a related Gazette recital, never as the original S.O.382(E) issue.
+            primary = old_findings.get("primaryPageOneIdentifierNormalized") or "UNKNOWN"
+            raw_name = safe(f"GAZETTE_RECITAL_SO382E_PRIMARY_{primary}_{ts}") + ".pdf"
+            text_name = safe(f"GAZETTE_RECITAL_SO382E_PRIMARY_{primary}_{ts}") + ".txt"
+            row["relatedGazetteRecitalRawArtifact"] = save_bytes(raw_name, raw)
+            row["relatedGazetteRecitalTextArtifact"] = save_text(text_name, pdf["text"])
+            row["status"] = "GAZETTE_RECITES_SO382E_BUT_PRIMARY_ISSUE_IS_DIFFERENT"
+        elif findings["on55EExactMarkerOnFirstPage"] or findings["eci2018NotificationNumberMarker"]:
             raw_name = safe(f"GAZETTE_LEGAL_IDENTIFIER_NEAR_MATCH_{ts}") + ".pdf"
             row["candidateRawArtifact"] = save_bytes(raw_name, raw)
             row["status"] = "LEGAL_IDENTIFIER_NEAR_MATCH_NOT_ACCEPTED_AS_GAZETTE"
@@ -382,6 +457,10 @@ def main():
         ("ECI_Delimitation_Landing","https://www.eci.gov.in/delimitation/"),
         ("ECI_Publications_Catalogue","https://www.eci.gov.in/eci-publication/"),
         ("AP_EGazette_Home","https://apegazette.cgg.gov.in/"),
+        ("EGazette_2008_SO382E_IssueNo250_Candidate","https://egazette.gov.in/WriteReadData/2008/E_250_2008_001.pdf"),
+        ("EGazette_2008_SO382E_IssueNo250_Candidate_2","https://egazette.gov.in/WriteReadData/2008/E_250_2008_002.pdf"),
+        ("EGazette_2018_ON55E_Candidate","https://egazette.gov.in/WriteReadData/2018/E_55_2018_001.pdf"),
+        ("EGazette_2018_ON55E_Candidate_2","https://egazette.gov.in/WriteReadData/2018/E_55_2018_002.pdf"),
         ("IndiaPost_Home","https://www.indiapost.gov.in/"),
         ("IndiaPost_Ebooks","https://www.indiapost.gov.in/documents/ebooks"),
         ("IndiaPost_ActsAndPolicies","https://www.indiapost.gov.in/documents/actsandpolicies"),
@@ -455,6 +534,46 @@ def main():
         "url":"https://egazette.nic.in/SearchResult.aspx?Category=extraordinary",
         "from":"20180101","to":"20261231","output":"json","fl":"timestamp,original,statuscode,mimetype,digest,length",
         "filter":["statuscode:200","mimetype:text/html"],"collapse":"timestamp:6","limit":"200"
+      }),
+      ("EGazetteNicIn2018PdfsE_NamedPrefix",{
+        "url":"http://egazette.nic.in/WriteReadData/2018/E_","matchType":"prefix",
+        "output":"json","fl":"timestamp,original,statuscode,mimetype,digest,length",
+        "filter":["statuscode:200","mimetype:application/pdf"],"collapse":"urlkey","limit":"2000"
+      }),
+      ("EGazetteGovIn2018PdfsE_NamedPrefix",{
+        "url":"https://egazette.gov.in/WriteReadData/2018/E_","matchType":"prefix",
+        "output":"json","fl":"timestamp,original,statuscode,mimetype,digest,length",
+        "filter":["statuscode:200","mimetype:application/pdf"],"collapse":"urlkey","limit":"2000"
+      }),
+      ("EGazetteNicIn2018PdfsExactON55E001",{
+        "url":"http://egazette.nic.in/WriteReadData/2018/E_55_2018_001.pdf",
+        "output":"json","fl":"timestamp,original,statuscode,mimetype,digest,length",
+        "filter":["statuscode:200","mimetype:application/pdf"],"limit":"20"
+      }),
+      ("EGazetteNicIn2018PdfsExactON55E002",{
+        "url":"http://egazette.nic.in/WriteReadData/2018/E_55_2018_002.pdf",
+        "output":"json","fl":"timestamp,original,statuscode,mimetype,digest,length",
+        "filter":["statuscode:200","mimetype:application/pdf"],"limit":"20"
+      }),
+      ("EGazetteNicIn2008PdfsIssue250Prefix",{
+        "url":"http://egazette.nic.in/WriteReadData/2008/E_250_2008_","matchType":"prefix",
+        "output":"json","fl":"timestamp,original,statuscode,mimetype,digest,length",
+        "filter":["statuscode:200","mimetype:application/pdf"],"collapse":"urlkey","limit":"100"
+      }),
+      ("EGazetteGovIn2008PdfsIssue250Prefix",{
+        "url":"https://egazette.gov.in/WriteReadData/2008/E_250_2008_","matchType":"prefix",
+        "output":"json","fl":"timestamp,original,statuscode,mimetype,digest,length",
+        "filter":["statuscode:200","mimetype:application/pdf"],"collapse":"urlkey","limit":"100"
+      }),
+      ("APGazette2018PdfsCaptured",{
+        "url":"https://apegazette.cgg.gov.in/","matchType":"prefix",
+        "from":"20180920","to":"20181231","output":"json","fl":"timestamp,original,statuscode,mimetype,digest,length",
+        "filter":["statuscode:200","mimetype:application/pdf"],"collapse":"urlkey","limit":"1500"
+      }),
+      ("APGazetteLegacy2018PdfsCaptured",{
+        "url":"http://apegazette.cgg.gov.in/","matchType":"prefix",
+        "from":"20180920","to":"20181231","output":"json","fl":"timestamp,original,statuscode,mimetype,digest,length",
+        "filter":["statuscode:200","mimetype:application/pdf"],"collapse":"urlkey","limit":"1500"
       }),
     ]
     cdx_rows = []
