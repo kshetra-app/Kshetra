@@ -1,0 +1,1970 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "W021.5 Source Acquisition Register — Resumption R1",
+  "milestone": "W021.5",
+  "baselineCommit": "33945d20f318ae1aa0d9aba35052246599c5bbae",
+  "branch": "cto/w0215-stage-b-evidence-20261025",
+  "createdAt": "2026-10-25",
+  "retrievalMethod": "Web discovery plus repository connector review. A discovered page is not equivalent to a downloaded, hashed source artifact. Additional official TGRAC service discovery and raw-geometry probe executed 2026-10-26 through a read-only GitHub Actions workflow. Expanded TGRAC service-family probe completed 2026-10-26; duplicate/near-duplicate candidate responses are recorded separately and not counted as independent corroboration. Legal source acquisition run 40260777545 acquired and hashed the APSeeds-hosted AP Reorganisation Act copy and two official PIB HTML variants; the exact ECI 2018 notification returned HTTP 406 and the CEO/ECI PDFs timed out. Hashes are assigned only to actual source bytes, never to error pages as if they were documents.",
+  "rules": {
+    "hashPolicy": "SHA-256 must be computed over exact downloaded bytes; never use a Git blob SHA as a file SHA-256.",
+    "authorityPolicy": "Government sources are primary only for the specific subject they publish. Community GIS is candidate/secondary data until reconciled to primary source.",
+    "missingDataPolicy": "Missing values remain NULL/UNKNOWN; no fabricated election result, geometry, PIN crosswalk, or financial disclosure.",
+    "statusVocabulary": [
+      "DISCOVERED_NOT_DOWNLOADED",
+      "PRIMARY_SOURCE_PAGE_FOUND",
+      "CANDIDATE_SECONDARY_SOURCE",
+      "DATASET_NOT_FOUND",
+      "NEEDS_MANUAL_OR_AUTHORITY_ARTIFACT",
+      "DOWNLOADED_HASHED",
+      "VALIDATED",
+      "REJECTED",
+      "FETCH_FAILED",
+      "FETCH_FAILED_HTTP_406",
+      "FETCH_FAILED_HTTP_404",
+      "FETCH_FAILED_TIMEOUT",
+      "CANDIDATE_ONLY",
+      "REJECTED_FOR_PRODUCTION_USE"
+    ]
+  },
+  "sources": [
+    {
+      "sourceId": "SRC-ECI-DELIM-2008",
+      "subject": "Statutory Assembly/Parliamentary constituency descriptions and schedules",
+      "publisher": "Election Commission of India",
+      "url": "https://www.eci.gov.in/Documents/Delimitation/DelimitationofParliamentaryAssemblyConstituenciesOrder-2008%28English%29.pdf",
+      "publicationDate": "2008-11-26",
+      "retrievedAt": "2026-10-25",
+      "format": "PDF",
+      "authority": "PRIMARY_OFFICIAL_DIGITAL_PUBLICATION",
+      "status": "FETCH_FAILED_HTTP_406_WAF_BLOCKED_AFTER_FOUR_OFFICIAL_URL_VARIANTS",
+      "sha256": null,
+      "fileBytes": null,
+      "version": "Delimitation of Parliamentary and Assembly Constituencies Order, 2008",
+      "scope": "2008 delimitation schedules; document itself notes exceptions including deferred states and Jharkhand legal-effect treatment",
+      "limitations": [
+        "Digital ECI publication does not satisfy the separate physical Gazette authenticity and notarized transcription gates."
+      ],
+      "plannedUse": "Cross-check canonical constituency names, statutory numbers, reservations, extents and effective regimes.",
+      "retrievalError": "ECI origin returned HTTP 406 AppTrana WAF HTML ('Request was blocked due to suspicious behavior') for three PDF URL variants and the alternate official backend URL. Response hashes are hashes of error HTML, not legal-source hashes.",
+      "lastAttemptRunId": 40217392689,
+      "evidenceReport": "reports/evidence/w021_5_eci_legal_order_probe_40217392689.json"
+    },
+    {
+      "sourceId": "SRC-ECI-STAT-REPORTS",
+      "subject": "General election and state assembly statistical reports / Form 20 links",
+      "publisher": "Election Commission of India",
+      "url": "https://www.eci.gov.in/statistical-reports",
+      "relatedUrl": "https://www.eci.gov.in/election-management",
+      "retrievedAt": "2026-10-25",
+      "format": "HTML index linking PDFs and election-year resources",
+      "authority": "PRIMARY_OFFICIAL_SOURCE_INDEX",
+      "status": "FETCH_FAILED_HTTP_406",
+      "sha256": null,
+      "fileBytes": null,
+      "scope": "National parliamentary reports and state assembly results across multiple election years",
+      "limitations": [
+        "Each target state/election report must be individually downloaded, hashed, parsed and reconciled; index presence does not prove every target record is available in machine-readable form."
+      ],
+      "plannedUse": "Backfill only source-backed historical results and record exact election year/type.",
+      "retrievalError": "HTTP_406",
+      "lastAttemptRunId": 40211792541
+    },
+    {
+      "sourceId": "SRC-ECI-AFFIDAVIT",
+      "subject": "Candidate nomination and sworn affidavit documents",
+      "publisher": "Election Commission of India",
+      "url": "https://www.eci.gov.in/affidavitt-portal",
+      "relatedUrl": "https://affidavit.eci.gov.in/",
+      "retrievedAt": "2026-10-25",
+      "format": "Web portal / candidate documents",
+      "authority": "PRIMARY_OFFICIAL_SOURCE",
+      "status": "FETCH_FAILED_HTTP_406",
+      "sha256": null,
+      "fileBytes": null,
+      "scope": "Candidate nominations and affidavits published through the ECI ENCORE affidavit portal from 2019 onward, as described by ECI",
+      "limitations": [
+        "Candidate-level documents must be individually captured and linked; portal existence does not prove bulk-download availability or completeness of older records."
+      ],
+      "plannedUse": "Source-backed financial disclosure ingestion; do not infer a missing amount as zero.",
+      "retrievalError": "HTTP_406",
+      "lastAttemptRunId": 40211792541
+    },
+    {
+      "sourceId": "SRC-CENSUS-PCA-SD-2011",
+      "subject": "Census 2011 Primary Census Abstract state/district aggregates",
+      "publisher": "Office of the Registrar General & Census Commissioner, India",
+      "url": "https://censusindia.gov.in/nada/index.php/catalog/6191",
+      "relatedUrl": "https://censusindia.gov.in/census.website/en/data/population-finder",
+      "retrievedAt": "2026-10-25",
+      "format": "XLSX / web data catalogue",
+      "authority": "PRIMARY_OFFICIAL_SOURCE",
+      "status": "FETCH_FAILED",
+      "sha256": null,
+      "fileBytes": null,
+      "version": "PC11_PCA-SD; 2011",
+      "scope": "Population indicators at India/state/district level; broader PCA catalogue also includes subdistrict, town, village and ward levels",
+      "limitations": [
+        "These administrative-level aggregates are not automatically constituency-level values. Any spatial allocation would be DERIVED/ESTIMATE and must not be labelled official AC population."
+      ],
+      "plannedUse": "Use exact published administrative-level aggregates and document crosswalk/aggregation limits.",
+      "retrievalError": "Direct catalogue and XLSX download failed in GitHub Actions fetch; exact bytes not acquired.",
+      "lastAttemptRunId": 40211792541
+    },
+    {
+      "sourceId": "SRC-SOI-ABDB",
+      "subject": "Official administrative boundary database",
+      "publisher": "Survey of India",
+      "url": "https://surveyofindia.gov.in/pages/administrative-boundary-data-base-abdb-",
+      "relatedUrl": "https://onlinemaps.surveyofindia.gov.in/Digital_Products.aspx",
+      "retrievedAt": "2026-10-25",
+      "format": "Shapefile / ZIP or product download",
+      "authority": "PRIMARY_OFFICIAL_SOURCE",
+      "status": "DOWNLOADED_HASHED",
+      "sha256": "088d924ab66d62f6873f851574c89c5b23e6aa61a1b09e803154b948afad14c1",
+      "fileBytes": 113855,
+      "scope": "State, district, subdistrict and village administrative boundaries",
+      "limitations": [
+        "Administrative boundaries do not substitute for statutory Assembly constituency boundaries or India Post delivery-beat polygons."
+      ],
+      "plannedUse": "Reference administrative geography only after checking product version, metadata, terms and exact hashes.",
+      "lastAttemptRunId": 40211792541
+    },
+    {
+      "sourceId": "SRC-SOI-VECTOR-CATALOG",
+      "subject": "Survey of India vector data catalogue",
+      "publisher": "Survey of India",
+      "url": "https://www.surveyofindia.gov.in/UserFiles/files/Vector%20Data%20Catalog%202025%281%29.pdf",
+      "retrievedAt": "2026-10-25",
+      "format": "PDF",
+      "authority": "PRIMARY_OFFICIAL_METADATA",
+      "status": "PRIMARY_SOURCE_PAGE_FOUND",
+      "sha256": null,
+      "fileBytes": null,
+      "scope": "Catalogue describes available state/UT, district, subdistrict and village vector boundaries",
+      "limitations": [
+        "Catalogue metadata is not itself the boundary data file."
+      ],
+      "plannedUse": "Identify appropriate administrative boundary products and verify state/UT coverage."
+    },
+    {
+      "sourceId": "SRC-DATAMEET-AC",
+      "subject": "India assembly constituency polygons",
+      "publisher": "DataMeet community maps project",
+      "url": "https://github.com/datameet/maps/tree/7a1c21c2e3f059a19aba1023f64ed7e174462ca4/assembly-constituencies",
+      "relatedUrl": "https://github.com/datameet/maps/blob/b2f56f6bd8fdead64f0210c133ab467d26e3621e/assembly-constituencies/README.md",
+      "retrievedAt": "2026-10-25",
+      "format": "Shapefile set: India_AC.shp, .shx, .dbf, .prj",
+      "authority": "SECONDARY_CANDIDATE_GIS",
+      "status": "DOWNLOADED_HASHED_AND_AUDITED_AS_SECONDARY_CANDIDATE",
+      "sha256": null,
+      "fileBytes": null,
+      "upstreamFiles": [
+        {
+          "name": "India_AC.shp",
+          "bytes": 6263460,
+          "url": "https://raw.githubusercontent.com/datameet/maps/master/assembly-constituencies/India_AC.shp"
+        },
+        {
+          "name": "India_AC.dbf",
+          "bytes": 5721425,
+          "url": "https://raw.githubusercontent.com/datameet/maps/master/assembly-constituencies/India_AC.dbf"
+        },
+        {
+          "name": "India_AC.shx",
+          "bytes": 33556,
+          "url": "https://raw.githubusercontent.com/datameet/maps/master/assembly-constituencies/India_AC.shx"
+        },
+        {
+          "name": "India_AC.prj",
+          "bytes": 143,
+          "url": "https://raw.githubusercontent.com/datameet/maps/master/assembly-constituencies/India_AC.prj"
+        }
+      ],
+      "licenseClaim": "Creative Commons Attribution 2.5 India per dataset README.",
+      "limitations": [
+        "The source README says boundaries for Jammu and Kashmir, Jharkhand, Assam, Manipur, Nagaland and Arunachal Pradesh appear pre-delimitation.",
+        "The source README warns of geometry shifts and missing/incorrect constituency names.",
+        "The source README says Telangana features remain labeled as Andhra Pradesh.",
+        "Forensic audit found 4,182 features, 4,102 unique state-code/AC-number pairs, 80 extra duplicate rows, 6 invalid geometries, 34 missing AC names and only 30 source state names for 31 expected jurisdictions."
+      ],
+      "plannedUse": "Candidate geometry source for forensic comparison only; not accepted directly as statutory truth.",
+      "sourceCommit": "7a1c21c2e3f059a19aba1023f64ed7e174462ca4",
+      "readmeCommit": "b2f56f6bd8fdead64f0210c133ab467d26e3621e",
+      "sourceFiles": [
+        {
+          "name": "India_AC.shp",
+          "bytes": 6263460,
+          "sha256": "0e89b00a228b5500d0f7802492c615c34dcb67f72acaf6ec4a66575df0e31e70"
+        },
+        {
+          "name": "India_AC.dbf",
+          "bytes": 5721425,
+          "sha256": "687d2487d4aec89a7371bd06e2a7f9566dd2df1dd6e6d8289adc4a0501b2c1fd"
+        },
+        {
+          "name": "India_AC.shx",
+          "bytes": 33556,
+          "sha256": "a3149ac8f825771df09a6a956a485059cbba7d28eabfdf35b8b02d41c6d88561"
+        },
+        {
+          "name": "India_AC.prj",
+          "bytes": 143,
+          "sha256": "98aaf3d1c0ecadf1a424a4536de261c3daf4e373697cb86c40c43b989daf52eb"
+        }
+      ]
+    },
+    {
+      "sourceId": "SRC-INDIAPOST-PIN",
+      "subject": "Postal PIN code metadata and delivery beat polygons",
+      "publisher": "Department of Posts, India Post",
+      "url": "https://www.indiapost.gov.in/",
+      "retrievedAt": "2026-10-25",
+      "format": "Portal / lookup resources",
+      "authority": "PRIMARY_OFFICIAL_SOURCE",
+      "status": "OFFICIAL_PIN_BOUNDARY_CATALOG_FOUND_NO_RAW_RESOURCE_BYTES; NOT_DELIVERY_BEATS",
+      "sha256": null,
+      "fileBytes": null,
+      "scope": "Postal PIN lookup / office metadata discovery",
+      "limitations": [
+        "The official OGD catalog is discoverable, but no raw downloadable GeoJSON or shapefile bytes, resource SHA-256, feature count, or geometry audit have been acquired yet.",
+        "PIN-code service-area polygons are not individual India Post postman delivery-beat polygons and cannot close EB-03 or justify strict PIN-to-AC containment.",
+        "Do not use PIN centroids or PIN polygons as a substitute for delivery-beat geometry."
+      ],
+      "plannedUse": "Acquire the catalog's actual ZIP/download resource and audit it only as an ancillary PIN-code service-area layer. For EB-03, request actual delivery-beat geometry and metadata from Department of Posts/CEPT custodian; keep the gate open if no such public dataset exists.",
+      "relatedCatalogUrl": "https://sikkim.data.gov.in/catalog/all-india-pincode-boundary-geo-json",
+      "relatedPrimaryCatalogUrl": "https://www.data.gov.in/catalog/all-india-pincode-boundary-geo-json",
+      "catalogPublisher": "Open Government Data (OGD) Platform India; contributor: Ministry of Communications, Department of Posts",
+      "catalogTitle": "All India Pincode Boundary Geo JSON",
+      "catalogPublishedOn": "2025-05-09",
+      "catalogUpdatedOn": "2025-05-09",
+      "catalogLicence": "Government Open Data License - India (GODL)",
+      "catalogDescription": "PIN-code boundaries of post offices in GeoJSON format. This is PIN service-area geometry, not individual postman delivery-beat polygons.",
+      "downloadStatus": "NO_RAW_GEOJSON_BYTES_ACQUIRED; mirror catalog page returned 'No Result Found' and direct data.gov.in page timed out in web reader",
+      "doesNotSatisfyEB03": true,
+      "custodianRoute": {
+        "office": "Department of Posts, Centre for Excellence in Postal Technology (CEPT), Bengaluru",
+        "role": "Chief Data Officer / General Manager, CEPT",
+        "email": "gmcept@indiapost.gov.in",
+        "address": "Centre for Excellence in Postal Technology, Bengaluru - 560001",
+        "requestItems": [
+          "confirm whether a national delivery-beat polygon dataset exists and is shareable",
+          "if yes, provide vector format, version/effective date, CRS, data dictionary, licence, change history and download/API endpoint",
+          "if no, provide written confirmation and identify authoritative alternative operational geography"
+        ]
+      }
+    },
+    {
+      "sourceId": "SRC-ECI-2026-AC-GEO",
+      "subject": "Assembly election portal geometry for selected 2026 elections",
+      "publisher": "Election Commission of India results portal; discovery via third-party extraction repository",
+      "url": "https://results.eci.gov.in/ResultAcGenMay2026/",
+      "relatedUrl": "https://github.com/saisantoshv3/assemnbly_gis_files",
+      "retrievedAt": "2026-10-26",
+      "format": "JavaScript-wrapped GeoJSON by state election portal",
+      "authority": "PRIMARY_PORTAL_DATA_CANDIDATE",
+      "status": "DIRECT_JS_URLS_404; SECONDARY_MIRROR_BUNDLE_ACQUIRED_AND_AUDITED",
+      "sha256": null,
+      "fileBytes": null,
+      "scope": "Repository documents five state/UT files for Assam, Puducherry, Kerala, Tamil Nadu and West Bengal for the May 2026 election context",
+      "limitations": [
+        "Initial acquisition run returned HTTP 404 for guessed JavaScript URLs; direct retry with browser headers and pinned third-party GeoJSON candidates is in progress.",
+        "Election-cycle-specific geometry is not a universal 31-state current boundary release and must be checked for temporal/statutory applicability.",
+        "Focused probe 40212122850 returned HTTP 404 for all five /ac/{STATE_CODE}.js URLs; no raw official geometry was acquired.",
+        "All five direct ECI /ac/{STATE_CODE}.js URLs returned HTTP 404. Pinned third-party mirror GeoJSONs were acquired and audited; 824 features and AC_NO sequences match expected counts, but 23 raw geometries are invalid and 1,337 positive-area overlap pairs were detected after diagnostic make_valid. Not accepted for canonical geometry.",
+        "Expanded read-only probe run 40259909774 repeated all five guessed direct JS endpoints and received HTTP 404 for each (196-byte identical error body SHA-256 80c3fe2ae1062abf56456f52518bd670f9ec3917b7f85e152b347ac6b6faf880); no official geometry bytes acquired. Do not repeat these exact guessed endpoints."
+      ],
+      "plannedUse": "Investigate portal-native geometry and provenance for the covered jurisdictions only.",
+      "lastProbe": {
+        "workflowRunId": 40259909774,
+        "workflowUrl": "https://github.com/kshetra-app/Kshetra/actions/runs/40259909774",
+        "artifactId": 12624382089,
+        "artifactZipSha256": "c7b587e7591983cd81b527b8a3824229f812bed94a123e4e68b5a824932e3629",
+        "manifest": "reports/evidence/w021_5_telangana_variant_family_comparison_20261026.json",
+        "statusByCode": {
+          "S03": 404,
+          "U07": 404,
+          "S11": 404,
+          "S22": 404,
+          "S25": 404
+        },
+        "errorBodyBytes": 196,
+        "errorBodySha256": "80c3fe2ae1062abf56456f52518bd670f9ec3917b7f85e152b347ac6b6faf880",
+        "conclusion": "Repeated 404s confirmed. Portal-native endpoint discovery or formal ECI/CEO custodian request is the next route; no official geometry bytes were acquired."
+      },
+      "secondaryBundleAudit": "reports/evidence/w021_5_eci_mirror_geometry_audit_2026-10-25.json",
+      "secondaryBundleFiles": [
+        {
+          "code": "S03",
+          "name": "Assam",
+          "bytes": 11431537,
+          "sha256": "2b3efc17aea2adedf25bb598dd0256f878ed01f74de5299a2e0b02790536fb25",
+          "features": 126,
+          "invalid": 20,
+          "overlapPairs": 133,
+          "url": "https://raw.githubusercontent.com/saisantoshv3/assemnbly_gis_files/730263a08afa3cf7a0cd12db68bcddc90aefcc03/2026_assembly_election/assam_S03/assam.geojson"
+        },
+        {
+          "code": "U07",
+          "name": "Puducherry",
+          "bytes": 835011,
+          "sha256": "2786e744aa7394c85d977a317a1d1e33cb3eb78dbea45a272375fc9a48e54338",
+          "features": 30,
+          "invalid": 0,
+          "overlapPairs": 26,
+          "url": "https://raw.githubusercontent.com/saisantoshv3/assemnbly_gis_files/730263a08afa3cf7a0cd12db68bcddc90aefcc03/2026_assembly_election/puducherry_U07/puducherry.geojson"
+        },
+        {
+          "code": "S11",
+          "name": "Kerala",
+          "bytes": 3111688,
+          "sha256": "5077be94e655e748322a0089a94b70f253dcbf856c747b2583530e575dc9aac5",
+          "features": 140,
+          "invalid": 1,
+          "overlapPairs": 171,
+          "url": "https://raw.githubusercontent.com/saisantoshv3/assemnbly_gis_files/730263a08afa3cf7a0cd12db68bcddc90aefcc03/2026_assembly_election/kerala_S11/kerala.geojson"
+        },
+        {
+          "code": "S22",
+          "name": "Tamil Nadu",
+          "bytes": 5258525,
+          "sha256": "410d0d16df7fe8397691ea3c2c47d875ce6dc17a9c9dbcd588786d0b36339611",
+          "features": 234,
+          "invalid": 2,
+          "overlapPairs": 484,
+          "url": "https://raw.githubusercontent.com/saisantoshv3/assemnbly_gis_files/730263a08afa3cf7a0cd12db68bcddc90aefcc03/2026_assembly_election/tamil_nadu_S22/tamil_nadu.geojson"
+        },
+        {
+          "code": "S25",
+          "name": "West Bengal",
+          "bytes": 8825360,
+          "sha256": "62755085e5d904d0985e06bdccbe664b7ba22de5bda5c671735a54d19e6eaf2c",
+          "features": 294,
+          "invalid": 0,
+          "overlapPairs": 523,
+          "url": "https://raw.githubusercontent.com/saisantoshv3/assemnbly_gis_files/730263a08afa3cf7a0cd12db68bcddc90aefcc03/2026_assembly_election/west_bengal_S25/west_bengal.geojson"
+        }
+      ]
+    },
+    {
+      "sourceId": "SRC-SOI-ABDB-ARCHIVE",
+      "subject": "Official India-wide state/district/subdistrict boundary archive",
+      "publisher": "Survey of India",
+      "url": "https://surveyofindia.gov.in/documents/State_District_Subdistrict_PAN%20INDIA.rar",
+      "retrievedAt": "2026-10-25",
+      "format": "RAR archive",
+      "authority": "PRIMARY_OFFICIAL_SOURCE",
+      "status": "DISCOVERED_RETRYING_IN_CURRENT_ACQUISITION_RUN",
+      "sha256": null,
+      "fileBytes": null,
+      "limitations": [
+        "Administrative boundaries are not statutory Assembly Constituency boundaries."
+      ],
+      "plannedUse": "Inspect exact archive contents, metadata, coverage and terms; do not substitute for AC polygons."
+    },
+    {
+      "sourceId": "SRC-SOI-VILLAGE-BOUNDARIES",
+      "subject": "Official national village boundary data base",
+      "publisher": "Survey of India",
+      "url": "https://surveyofindia.gov.in/pages/village-boundary-data-base-of-entire-india",
+      "retrievedAt": "2026-10-25",
+      "format": "Official data index / linked archive",
+      "authority": "PRIMARY_OFFICIAL_SOURCE",
+      "status": "PARTIAL_14_OF_27_ARCHIVES_DOWNLOADED_AND_AUDITED",
+      "sha256": "013965f98dc51a6dc0cf2b5a35c4c578d5d4ec5d2e86b1cf61a2bb9f80527f0a",
+      "fileBytes": 115971,
+      "limitations": [
+        "Village boundaries can support administrative crosswalks but are not AC boundaries; any population overlay would be DERIVED and depends on accepted AC geometry.",
+        "These are village/administrative boundary polygons, not AC polygons or India Post delivery-beat polygons. 13/27 archives remain missing; the 14 audited archives contain 37 invalid geometries and one CRS metadata conflict."
+      ],
+      "plannedUse": "Acquire and inspect archive/metadata; use only for documented administrative spatial joins.",
+      "lastAttemptRunId": 40211792541,
+      "acquisitionRunId": 40211792541,
+      "auditSummary": {
+        "expectedArchives": 27,
+        "downloadedAndAuditedArchives": 14,
+        "missingArchives": 13,
+        "auditFailures": 0,
+        "totalFeatures": 71484,
+        "invalidGeometries": 37,
+        "crsMetadataConflicts": 1,
+        "acceptedAsAssemblyConstituencyGeometry": false
+      },
+      "downloadedArchives": [
+        {
+          "state": "Andaman and Nicobar Islands",
+          "slug": "ANB",
+          "bytes": 2520239,
+          "sha256": "c0dd58a5d37c2b70ece91848da229b60c132b27394c012aec12e8ce4164f70ae",
+          "url": "https://surveyofindia.gov.in/documents/ANDAMAN_%26_NICOBAR_ISLANDS.zip"
+        },
+        {
+          "state": "Chandigarh",
+          "slug": "CHD",
+          "bytes": 162993,
+          "sha256": "957912107568f261c234396faeca4703dfc80768085dc32c53ea29479d2c2db4",
+          "url": "https://surveyofindia.gov.in/documents/CHANDIGARH.zip"
+        },
+        {
+          "state": "Dadra Nagar Haveli and Daman Diu",
+          "slug": "DNHDD",
+          "bytes": 110827,
+          "sha256": "52620001ecca83b3a6fb9cb5fb712602936dffafb59d587891b92fb8e05dfbc2",
+          "url": "https://surveyofindia.gov.in/documents/Dadra%20Nagar%20Haveli%20%26%20Daman%20Diu.zip"
+        },
+        {
+          "state": "Delhi",
+          "slug": "DEL",
+          "bytes": 2009187,
+          "sha256": "2668ca29a5f16c4b1f6bcd06f51e0d4aee0b1a5c1d24cfe885764ce225edf2bc",
+          "url": "https://surveyofindia.gov.in/documents/DELHI.zip"
+        },
+        {
+          "state": "Goa",
+          "slug": "GOA",
+          "bytes": 1078822,
+          "sha256": "dec00aa615023ecba2815c14aa9ffe5dacdcd30780caf38c84e7a8eef6d58d3e",
+          "url": "https://surveyofindia.gov.in/documents/GOA.zip"
+        },
+        {
+          "state": "Haryana",
+          "slug": "HAR",
+          "bytes": 9667232,
+          "sha256": "26cbd66f2f6b3217417b182157b96e4bf2956516789c027668193162076740af",
+          "url": "https://surveyofindia.gov.in/documents/HARYANA.zip"
+        },
+        {
+          "state": "Jharkhand",
+          "slug": "JHA",
+          "bytes": 19134070,
+          "sha256": "6c4840611e0f06381c5fa5d1f32add1ec51ce8f5ba50f7fac9e2f2cd9c3852f0",
+          "url": "https://surveyofindia.gov.in/documents/JHARKHAND.zip"
+        },
+        {
+          "state": "Kerala",
+          "slug": "KER",
+          "bytes": 4182966,
+          "sha256": "d022f7ac68639b1c4ce663bd95eaf3130f72a61502ff75d46b1122bee141d32c",
+          "url": "https://surveyofindia.gov.in/documents/KERALA.zip"
+        },
+        {
+          "state": "Lakshadweep",
+          "slug": "LAK",
+          "bytes": 25823,
+          "sha256": "5d99655f345b51ed92bcb629a5aa34098fd3d66b4299f74f0c920fc55f7e405d",
+          "url": "https://surveyofindia.gov.in/documents/LAKSHYADWEEP.zip"
+        },
+        {
+          "state": "Puducherry",
+          "slug": "PY",
+          "bytes": 485176,
+          "sha256": "a9861f28aba9a57b348fcf98b2c3452f7eb69e01da8249fab6b9aea222c6601f",
+          "url": "https://surveyofindia.gov.in/documents/PUNDUCHERRY.zip"
+        },
+        {
+          "state": "Sikkim",
+          "slug": "SKM",
+          "bytes": 5017958,
+          "sha256": "c2eb3722157e89bce0c5dbce932f3821472d2744915ad7a52224e04947ae91be",
+          "url": "https://surveyofindia.gov.in/documents/SIKKIM.zip"
+        },
+        {
+          "state": "Telangana",
+          "slug": "TS",
+          "bytes": 13253610,
+          "sha256": "7549e9ebd84b7bc2ec36265afcd2077a97f12d8d73a65aa3968f137f8958b9ea",
+          "url": "https://surveyofindia.gov.in/documents/TELANGANA.zip"
+        },
+        {
+          "state": "Tripura",
+          "slug": "TRI",
+          "bytes": 19775520,
+          "sha256": "f8759d866f8712462b7838c847b7175e29d76547721f010ab5b9e5944a15b0a8",
+          "url": "https://surveyofindia.gov.in/documents/TRIPURA.zip"
+        },
+        {
+          "state": "Uttarakhand",
+          "slug": "UK",
+          "bytes": 16256209,
+          "sha256": "82e03667949eeb8810f8cc2e3a846b284be940c74b057e21354e236119576b14",
+          "url": "https://surveyofindia.gov.in/documents/UTTARAKHAND.zip"
+        }
+      ]
+    },
+    {
+      "sourceId": "SRC-SECONDARY-ECI-2026-AC-U07-CONNECTOR-PROBE",
+      "subject": "Puducherry 2026 Assembly Constituency candidate geometry",
+      "publisher": "Third-party GitHub mirror repository (saisantoshv3/assemnbly_gis_files)",
+      "url": "https://raw.githubusercontent.com/saisantoshv3/assemnbly_gis_files/730263a08afa3cf7a0cd12db68bcddc90aefcc03/2026_assembly_election/puducherry_U07/puducherry.geojson",
+      "retrievedAt": "2026-10-25",
+      "format": "GeoJSON",
+      "authority": "SECONDARY_DERIVED_FROM_ECI_PORTAL",
+      "status": "DOWNLOADED_HASHED_STRUCTURAL_SANITY_ONLY",
+      "sha256": "2786e744aa7394c85d977a317a1d1e33cb3eb78dbea45a272375fc9a48e54338",
+      "fileBytes": 835011,
+      "version": "Upstream repository commit 730263a08afa3cf7a0cd12db68bcddc90aefcc03; Git blob d08bddb2ed68014428696cbcf4bec3a9b7b97cd4",
+      "scope": "Puducherry U07; 30 GeoJSON features",
+      "limitations": [
+        "Third-party mirror states its data is derived from the ECI May 2026 result portal; raw official ECI .js bytes were not acquired in this probe.",
+        "No licence file was found in the reviewed source repository root; do not redistribute or vendor until reuse rights are established.",
+        "Structural sanity checks only: 30 unique AC_NO values/names, 19 Polygon + 11 MultiPolygon, no empty geometries, unclosed rings or non-finite coordinates.",
+        "No full topology, overlap/gap, legal instrument/effective-date, or national coverage validation was performed."
+      ],
+      "plannedUse": "Discrepancy detection and reproducibility probe only; compare to direct ECI response and applicable legal instrument before any authoritative use."
+    },
+    {
+      "sourceId": "SRC-TELANGANA-AC-LAYER",
+      "subject": "Telangana Assembly Constituency Boundary polygon layer",
+      "publisher": "Telangana State Remote Sensing Applications Centre GIS",
+      "url": "https://tgrac.telangana.gov.in/arcgis/rest/services/AdministrativeInfoSystem_Folder/Administrative_Information_System/MapServer/24?f=pjson",
+      "retrievedAt": "2026-10-25",
+      "format": "ArcGIS REST Feature Layer (ESRI JSON query required)",
+      "authority": "OFFICIAL_STATE_GIS_CANDIDATE",
+      "status": "ROSTER_NAME_CROSSWALK_PASS_WITH_ALIASES_GEOMETRY_NOT_ACCEPTED",
+      "sha256": "fd91d7803f39a8cc9ae9f2f486224cea777c7127ef5659dd2d073b088dbfb26a",
+      "fileBytes": 4756,
+      "geometryQueryInitial": {
+        "url": "https://tgrac.telangana.gov.in/arcgis/rest/services/AdministrativeInfoSystem_Folder/Administrative_Information_System/MapServer/24/query?where=1%3D1&outFields=%2A&returnGeometry=true&outSR=4326&f=geojson",
+        "httpStatus": 400,
+        "responseBytes": 602,
+        "responseBodySha256": "078ce75da3d26b3bd38f567b920f290dab72cbeebe6e49b277ef782332fd80da",
+        "reason": "Output format not supported; corrected to f=json."
+      },
+      "geometryQueryRetryRunId": 40212257196,
+      "limitations": [
+        "Geometry payload not yet acquired.",
+        "Service metadata is not proof of legal effective date or authoritative boundary completeness.",
+        "No topology or Gazette reconciliation has been performed.",
+        "The layer has no canonical AC number field in the exposed schema and its legally effective date is not stated; 119 feature count alone does not prove current legal geometry.",
+        "Statutory Schedule XXVII name crosswalk uses provisional spelling aliases; source field OBJECTID is not a canonical AC number.",
+        "Name crosswalk does not validate legal extents against polygons."
+      ],
+      "geometryBytes": 12465346,
+      "geometrySha256": "91cd791317836d8a6a8729b03f08fd3aee8c727c82e123b1659972d949d32f27",
+      "geometryWorkflowRunId": 40212257196,
+      "geometryFeatureCount": 119,
+      "geometryStructuralStatus": "PASS",
+      "topologyAudit": {
+        "auditReport": "reports/evidence/w021_5_telangana_arcgis_geometry_audit_2026-10-25.json",
+        "invalidGeometries": 1,
+        "invalidFeature": "Dornakal (ST) Assembly / OBJECTID 89",
+        "invalidReason": "Ring Self-intersection[79.948886655805 17.5141694363122]",
+        "positiveAreaOverlapPairs": 0,
+        "zeroAreaIntersectionPairs": 314,
+        "authoritativeStateBoundaryCoverage": "NOT_CHECKED",
+        "canonicalAcNumberCrosswalk": "NOT_PERFORMED"
+      },
+      "comparisonReport": "reports/evidence/w021_5_telangana_layer_comparison_2026-10-25.json",
+      "comparisonFinding": "Six material boundary differences vs EndowmentLands family: Warangal West/East, Ibrahimpatnam, Munugode, Peddapalle, Manthani; Sirpur difference is negligible sub-millimetre precision. Full legal adjudication remains open.",
+      "rawGeometryBytes": 12465346,
+      "rawGeometrySha256": "91cd791317836d8a6a8729b03f08fd3aee8c727c82e123b1659972d949d32f27",
+      "featureCount": 119,
+      "crs": "EPSG:4326",
+      "nameCrosswalkStatus": "PASS_WITH_PROVISIONAL_ALIASES_NOT_CANONICAL",
+      "nameCrosswalk": {
+        "report": "reports/evidence/w021_5_telanganaschedule_tgrac_name_crosswalk_40219308671.json",
+        "exactNormalizedNameMatches": 108,
+        "candidateAliasMatches": 11,
+        "unresolved": 0,
+        "sourceLayer": "Administrative_Information_System MapServer layer 24",
+        "workflowRunId": 40219308671
+      },
+      "canonicalIdFieldPresent": false
+    },
+    {
+      "sourceId": "SRC-TELANGANA-2026-AC-LAYER",
+      "subject": "Telangana Assembly Constituency Boundary layer in EndowmentLands_Admin_2026 service",
+      "publisher": "Telangana State Remote Sensing Applications Centre GIS",
+      "url": "https://tgrac.telangana.gov.in/arcgis/rest/services/EndowmentLands_Folder/EndowmentLands_Admin_2026/MapServer/12?f=pjson",
+      "retrievedAt": "2026-10-25",
+      "format": "ArcGIS REST Feature Layer / ESRI JSON",
+      "authority": "OFFICIAL_STATE_GIS_CANDIDATE",
+      "status": "ROSTER_NAME_CROSSWALK_PASS_WITH_ALIASES_GEOMETRY_NOT_ACCEPTED",
+      "geometryQueryUrl": "https://tgrac.telangana.gov.in/arcgis/rest/services/EndowmentLands_Folder/EndowmentLands_Admin_2026/MapServer/12/query?where=1%3D1&outFields=%2A&returnGeometry=true&outSR=4326&f=json",
+      "workflowRunId": 40212441232,
+      "limitations": [
+        "The service name includes 2026 but effective date, ownership of AC boundary data, reuse terms, and legal alignment are unverified.",
+        "Do not treat as authoritative until compared with the 119-seat statutory roster and the older service layer.",
+        "Statutory Schedule XXVII name crosswalk uses provisional spelling aliases; source field OBJECTID is not a canonical AC number.",
+        "Name crosswalk does not validate legal extents against polygons."
+      ],
+      "metadataBytes": 4683,
+      "metadataSha256": "850ba55a5017c7b8eeef0967aa2a073057a1fe9396abc54066c3719ddb451737",
+      "geometryBytes": 12463409,
+      "geometrySha256": "ca8cfdc695366d9f04ee6a9fdbf9c52eeefe61d69bc79c9d26d15baa7b84aa03",
+      "featureCount": 119,
+      "expectedFeatureCount": 119,
+      "invalidGeometryCount": 1,
+      "invalidFeature": "Dornakal (ST) / OBJECTID 89",
+      "positiveAreaOverlapPairs": 0,
+      "topologyAudit": "reports/evidence/w021_5_telangana_arcgis_geometry_audit_2026-10-25.json",
+      "comparisonReport": "reports/evidence/w021_5_telangana_layer_comparison_2026-10-25.json",
+      "comparisonFinding": "Byte-identical to Endowment_Lands_Admin_New layer 12; Admin_Old layer 13 differs only by sub-millimetre coordinate precision. One invalid Dornakal polygon remains; legal effective date and statutory crosswalk remain open.",
+      "rawGeometryBytes": 12463409,
+      "rawGeometrySha256": "ca8cfdc695366d9f04ee6a9fdbf9c52eeefe61d69bc79c9d26d15baa7b84aa03",
+      "crs": "EPSG:4326",
+      "nameCrosswalkStatus": "PASS_WITH_PROVISIONAL_ALIASES_NOT_CANONICAL",
+      "nameCrosswalk": {
+        "report": "reports/evidence/w021_5_telanganaschedule_tgrac_name_crosswalk_40219308671.json",
+        "exactNormalizedNameMatches": 107,
+        "candidateAliasMatches": 12,
+        "unresolved": 0,
+        "sourceLayer": "EndowmentLands_Admin_2026 MapServer layer 12",
+        "workflowRunId": 40219308671
+      },
+      "canonicalIdFieldPresent": false
+    },
+    {
+      "sourceId": "SRC-SECONDARY-ECI-2026-AC-GEO-BUNDLE",
+      "subject": "Five 2026 assembly constituency GeoJSON mirror files for Assam, Puducherry, Kerala, Tamil Nadu and West Bengal",
+      "publisher": "saisantoshv3/assemnbly_gis_files, pinned commit 730263a08afa3cf7a0cd12db68bcddc90aefcc03",
+      "authority": "SECONDARY_DERIVED_FROM_ECI_RESULT_PORTAL",
+      "status": "DOWNLOADED_HASHED_AND_FORENSICALLY_AUDITED_NOT_ACCEPTED",
+      "sourceRepositoryCommit": "730263a08afa3cf7a0cd12db68bcddc90aefcc03",
+      "files": [
+        {
+          "code": "S03",
+          "name": "Assam",
+          "bytes": 11431537,
+          "sha256": "2b3efc17aea2adedf25bb598dd0256f878ed01f74de5299a2e0b02790536fb25",
+          "features": 126,
+          "invalid": 20,
+          "overlapPairs": 133,
+          "url": "https://raw.githubusercontent.com/saisantoshv3/assemnbly_gis_files/730263a08afa3cf7a0cd12db68bcddc90aefcc03/2026_assembly_election/assam_S03/assam.geojson"
+        },
+        {
+          "code": "U07",
+          "name": "Puducherry",
+          "bytes": 835011,
+          "sha256": "2786e744aa7394c85d977a317a1d1e33cb3eb78dbea45a272375fc9a48e54338",
+          "features": 30,
+          "invalid": 0,
+          "overlapPairs": 26,
+          "url": "https://raw.githubusercontent.com/saisantoshv3/assemnbly_gis_files/730263a08afa3cf7a0cd12db68bcddc90aefcc03/2026_assembly_election/puducherry_U07/puducherry.geojson"
+        },
+        {
+          "code": "S11",
+          "name": "Kerala",
+          "bytes": 3111688,
+          "sha256": "5077be94e655e748322a0089a94b70f253dcbf856c747b2583530e575dc9aac5",
+          "features": 140,
+          "invalid": 1,
+          "overlapPairs": 171,
+          "url": "https://raw.githubusercontent.com/saisantoshv3/assemnbly_gis_files/730263a08afa3cf7a0cd12db68bcddc90aefcc03/2026_assembly_election/kerala_S11/kerala.geojson"
+        },
+        {
+          "code": "S22",
+          "name": "Tamil Nadu",
+          "bytes": 5258525,
+          "sha256": "410d0d16df7fe8397691ea3c2c47d875ce6dc17a9c9dbcd588786d0b36339611",
+          "features": 234,
+          "invalid": 2,
+          "overlapPairs": 484,
+          "url": "https://raw.githubusercontent.com/saisantoshv3/assemnbly_gis_files/730263a08afa3cf7a0cd12db68bcddc90aefcc03/2026_assembly_election/tamil_nadu_S22/tamil_nadu.geojson"
+        },
+        {
+          "code": "S25",
+          "name": "West Bengal",
+          "bytes": 8825360,
+          "sha256": "62755085e5d904d0985e06bdccbe664b7ba22de5bda5c671735a54d19e6eaf2c",
+          "features": 294,
+          "invalid": 0,
+          "overlapPairs": 523,
+          "url": "https://raw.githubusercontent.com/saisantoshv3/assemnbly_gis_files/730263a08afa3cf7a0cd12db68bcddc90aefcc03/2026_assembly_election/west_bengal_S25/west_bengal.geojson"
+        }
+      ],
+      "auditReport": "reports/evidence/w021_5_eci_mirror_geometry_audit_2026-10-25.json",
+      "aggregateAudit": {
+        "expectedFeatures": 824,
+        "acNoUnique": 824,
+        "acNoSequencesContiguous": true,
+        "rawInvalidGeometries": 23,
+        "positiveAreaOverlapPairsAfterMakeValid": 1337,
+        "officialRawEciBytesAcquired": false
+      },
+      "licenseStatus": "NO_LICENSE_FILE_FOUND_IN_REVIEWED_SOURCE_REPOSITORY_ROOT; DO NOT VENDOR UNTIL REUSE RIGHTS ARE ESTABLISHED",
+      "plannedUse": "Secondary discrepancy/reference layer only; no canonical import."
+    },
+    {
+      "sourceId": "SRC-SOI-VILLAGE-ARCHIVES-PARTIAL-2026",
+      "subject": "Survey of India official village boundary archives — partial national acquisition",
+      "publisher": "Survey of India",
+      "authority": "OFFICIAL_ADMINISTRATIVE_GEOMETRY_NOT_AC_GEOMETRY",
+      "status": "PARTIAL_14_OF_27_DOWNLOADED_AND_AUDITED",
+      "files": [
+        {
+          "state": "Andaman and Nicobar Islands",
+          "slug": "ANB",
+          "bytes": 2520239,
+          "sha256": "c0dd58a5d37c2b70ece91848da229b60c132b27394c012aec12e8ce4164f70ae",
+          "url": "https://surveyofindia.gov.in/documents/ANDAMAN_%26_NICOBAR_ISLANDS.zip"
+        },
+        {
+          "state": "Chandigarh",
+          "slug": "CHD",
+          "bytes": 162993,
+          "sha256": "957912107568f261c234396faeca4703dfc80768085dc32c53ea29479d2c2db4",
+          "url": "https://surveyofindia.gov.in/documents/CHANDIGARH.zip"
+        },
+        {
+          "state": "Dadra Nagar Haveli and Daman Diu",
+          "slug": "DNHDD",
+          "bytes": 110827,
+          "sha256": "52620001ecca83b3a6fb9cb5fb712602936dffafb59d587891b92fb8e05dfbc2",
+          "url": "https://surveyofindia.gov.in/documents/Dadra%20Nagar%20Haveli%20%26%20Daman%20Diu.zip"
+        },
+        {
+          "state": "Delhi",
+          "slug": "DEL",
+          "bytes": 2009187,
+          "sha256": "2668ca29a5f16c4b1f6bcd06f51e0d4aee0b1a5c1d24cfe885764ce225edf2bc",
+          "url": "https://surveyofindia.gov.in/documents/DELHI.zip"
+        },
+        {
+          "state": "Goa",
+          "slug": "GOA",
+          "bytes": 1078822,
+          "sha256": "dec00aa615023ecba2815c14aa9ffe5dacdcd30780caf38c84e7a8eef6d58d3e",
+          "url": "https://surveyofindia.gov.in/documents/GOA.zip"
+        },
+        {
+          "state": "Haryana",
+          "slug": "HAR",
+          "bytes": 9667232,
+          "sha256": "26cbd66f2f6b3217417b182157b96e4bf2956516789c027668193162076740af",
+          "url": "https://surveyofindia.gov.in/documents/HARYANA.zip"
+        },
+        {
+          "state": "Jharkhand",
+          "slug": "JHA",
+          "bytes": 19134070,
+          "sha256": "6c4840611e0f06381c5fa5d1f32add1ec51ce8f5ba50f7fac9e2f2cd9c3852f0",
+          "url": "https://surveyofindia.gov.in/documents/JHARKHAND.zip"
+        },
+        {
+          "state": "Kerala",
+          "slug": "KER",
+          "bytes": 4182966,
+          "sha256": "d022f7ac68639b1c4ce663bd95eaf3130f72a61502ff75d46b1122bee141d32c",
+          "url": "https://surveyofindia.gov.in/documents/KERALA.zip"
+        },
+        {
+          "state": "Lakshadweep",
+          "slug": "LAK",
+          "bytes": 25823,
+          "sha256": "5d99655f345b51ed92bcb629a5aa34098fd3d66b4299f74f0c920fc55f7e405d",
+          "url": "https://surveyofindia.gov.in/documents/LAKSHYADWEEP.zip"
+        },
+        {
+          "state": "Puducherry",
+          "slug": "PY",
+          "bytes": 485176,
+          "sha256": "a9861f28aba9a57b348fcf98b2c3452f7eb69e01da8249fab6b9aea222c6601f",
+          "url": "https://surveyofindia.gov.in/documents/PUNDUCHERRY.zip"
+        },
+        {
+          "state": "Sikkim",
+          "slug": "SKM",
+          "bytes": 5017958,
+          "sha256": "c2eb3722157e89bce0c5dbce932f3821472d2744915ad7a52224e04947ae91be",
+          "url": "https://surveyofindia.gov.in/documents/SIKKIM.zip"
+        },
+        {
+          "state": "Telangana",
+          "slug": "TS",
+          "bytes": 13253610,
+          "sha256": "7549e9ebd84b7bc2ec36265afcd2077a97f12d8d73a65aa3968f137f8958b9ea",
+          "url": "https://surveyofindia.gov.in/documents/TELANGANA.zip"
+        },
+        {
+          "state": "Tripura",
+          "slug": "TRI",
+          "bytes": 19775520,
+          "sha256": "f8759d866f8712462b7838c847b7175e29d76547721f010ab5b9e5944a15b0a8",
+          "url": "https://surveyofindia.gov.in/documents/TRIPURA.zip"
+        },
+        {
+          "state": "Uttarakhand",
+          "slug": "UK",
+          "bytes": 16256209,
+          "sha256": "82e03667949eeb8810f8cc2e3a846b284be940c74b057e21354e236119576b14",
+          "url": "https://surveyofindia.gov.in/documents/UTTARAKHAND.zip"
+        }
+      ],
+      "auditReportArtifact": "w0215-source-acquisition-40211792541/soi-village-boundary-audit.json",
+      "summary": {
+        "expectedArchives": 27,
+        "downloadedAndAuditedArchives": 14,
+        "missingArchives": 13,
+        "auditFailures": 0,
+        "totalFeatures": 71484,
+        "invalidGeometries": 37,
+        "crsMetadataConflicts": 1
+      },
+      "limitations": [
+        "Village boundaries are not AC boundaries or India Post delivery-beat polygons.",
+        "The source is incomplete and has geometry/CRS defects; no AC containment conclusion is supported."
+      ]
+    },
+    {
+      "sourceId": "SRC-ECI-DELIMITATION-ORDER-2008",
+      "subject": "Delimitation of Parliamentary and Assembly Constituencies Order, 2008 — Schedule III, Andhra Pradesh Assembly Constituencies",
+      "publisher": "Election Commission of India",
+      "url": "https://www.eci.gov.in/Documents/Delimitation/DelimitationofParliamentaryAssemblyConstituenciesOrder-2008%28English%29.pdf",
+      "version": "Order dated 17 December 2008; ECI PDF lists Andhra Pradesh Schedule III on PDF pages 8–32",
+      "retrievalStatus": "READ_VIA_WEB_PDF_TEXT; BINARY_NOT_DOWNLOADED_OR_SHA256_VERIFIED",
+      "authority": "OFFICIAL_STATUTORY_BASELINE",
+      "status": "WEB_PDF_TEXT_REVIEWED; BINARY_RETRIEVAL_BLOCKED_HTTP_406_AFTER_SESSION_AND_URL_VARIANTS",
+      "partialCrosswalk": {
+        "report": "reports/evidence/w021_5_telangana_layer_comparison_2026-10-25.json",
+        "constituencies": [
+          {
+            "name": "Sirpur",
+            "acNumber": 1
+          },
+          {
+            "name": "Ibrahimpatnam",
+            "acNumber": 48
+          },
+          {
+            "name": "Dornakal (ST)",
+            "acNumber": 101
+          },
+          {
+            "name": "Warangal West",
+            "acNumber": 105
+          },
+          {
+            "name": "Warangal East",
+            "acNumber": 106
+          },
+          {
+            "name": "Manthani",
+            "acNumber": 24
+          },
+          {
+            "name": "Peddapalle",
+            "acNumber": 25
+          },
+          {
+            "name": "Munugode",
+            "acNumber": 93
+          },
+          {
+            "name": "Jangaon",
+            "acNumber": 98
+          }
+        ]
+      },
+      "limitations": [
+        "Full 119-name/number/extent crosswalk not completed.",
+        "Post-2014 State Reorganisation instrument chain and currently effective Gazette/date not fully reconciled.",
+        "No raw PDF binary SHA-256 claimed."
+      ],
+      "probeWorkflowRunId": 40213536854,
+      "probeWorkflowUrl": "https://github.com/kshetra-app/Kshetra/actions/runs/40213536854",
+      "binaryProbe": {
+        "httpStatus": 406,
+        "responseBytes": 1035,
+        "responseBodySha256": "7f512a23553028d1fa2006932589acb1a66dc61f6c18be51c9e03b154ef7a4e5",
+        "artifactZipSha256": "b8bfdf3d5016144bf37726462a161dedd38f7cf349a3c4fe7fecef1c82e07e3f",
+        "result": "NO_PDF_BINARY; NO_PDF_SHA256; official PDF text was reviewed via web reader"
+      },
+      "retryWorkflowRunId": 40213895574,
+      "retryWorkflowUrl": "https://github.com/kshetra-app/Kshetra/actions/runs/40213895574",
+      "binaryProbeRetry": {
+        "workflowRunId": 40213895574,
+        "artifactId": 12606029313,
+        "artifactSha256": "b8b4ab582062b1b2cab192a86940aded57cdd015ae2db214e25635beb20f32a2",
+        "compressedBytes": 2870,
+        "attempts": [
+          {
+            "url": "https://www.eci.gov.in/Documents/Delimitation/DelimitationofParliamentaryAssemblyConstituenciesOrder-2008%28English%29.pdf",
+            "httpStatus": 406,
+            "responseBytes": 1035,
+            "responseSha256": "c83cd2587ece5e0602574662fe67bd6132b5b28dd5cc586b637dd689b6bf95f4"
+          },
+          {
+            "url": "https://www.eci.gov.in/Documents/Delimitation/DelimitationofParliamentaryAssemblyConstituenciesOrder-2008(English).pdf",
+            "httpStatus": 406,
+            "responseBytes": 1035,
+            "responseSha256": "5bdf132d80fc63be3d74e1861efc18ecb9ecac5103c3ab7b11a5c4f46d2b9f56"
+          },
+          {
+            "url": "https://www.eci.gov.in/Documents/Delimitation/DelimitationofParliamentaryAssemblyConstituenciesOrder-2008%28English%29.pdf?download=1",
+            "httpStatus": 406,
+            "responseBytes": 1035,
+            "responseSha256": "919a6384a741c7f515e9fe5229e7d5dfd86981876133efaecbfa853c358311b2"
+          }
+        ],
+        "homepageRequest": {
+          "httpStatus": 406,
+          "bodySha256": "c83cd2587ece5e0602574662fe67bd6132b5b28dd5cc586b637dd689b6bf95f4"
+        },
+        "pdfAcquired": false,
+        "pdfBinarySha256": null
+      }
+    },
+    {
+      "sourceId": "SRC-TELANGANA-ADMIN-NEW-LAYER",
+      "subject": "Assembly Constituency Boundary — Endowment_Lands_Admin_New MapServer layer 12",
+      "publisher": "Telangana State Remote Sensing Applications Centre GIS",
+      "url": "https://tgrac.telangana.gov.in/arcgis/rest/services/EndowmentLands_Folder/Endowment_Lands_Admin_New/MapServer/12?f=pjson",
+      "format": "ArcGIS REST Feature Layer / ESRI JSON",
+      "authority": "OFFICIAL_STATE_GIS_CANDIDATE",
+      "status": "ROSTER_NAME_CROSSWALK_PASS_WITH_ALIASES_GEOMETRY_NOT_ACCEPTED",
+      "layerId": 12,
+      "workflowRunId": 40213331746,
+      "limitations": [
+        "Service name/metadata do not establish legally effective boundary version.",
+        "No canonical AC-number crosswalk, effective date, or legal instrument reconciliation is complete.",
+        "Statutory Schedule XXVII name crosswalk uses provisional spelling aliases; source field OBJECTID is not a canonical AC number.",
+        "Name crosswalk does not validate legal extents against polygons."
+      ],
+      "metadataBytes": 4683,
+      "metadataSha256": "850ba55a5017c7b8eeef0967aa2a073057a1fe9396abc54066c3719ddb451737",
+      "geometryBytes": 12463409,
+      "geometrySha256": "ca8cfdc695366d9f04ee6a9fdbf9c52eeefe61d69bc79c9d26d15baa7b84aa03",
+      "featureCount": 119,
+      "invalidGeometryCount": 1,
+      "positiveAreaOverlapPairs": 0,
+      "unionPartCount": 1,
+      "topologyAudit": "reports/evidence/w021_5_telangana_arcgis_geometry_audit_2026-10-25.json",
+      "comparisonReport": "reports/evidence/w021_5_telangana_layer_comparison_2026-10-25.json",
+      "note": "Byte-for-byte identical to EndowmentLands_Admin_2026 layer 12; this is a duplicated service payload, not an independent boundary version.",
+      "rawGeometryBytes": 12463409,
+      "rawGeometrySha256": "ca8cfdc695366d9f04ee6a9fdbf9c52eeefe61d69bc79c9d26d15baa7b84aa03",
+      "crs": "EPSG:4326",
+      "nameCrosswalkStatus": "PASS_WITH_PROVISIONAL_ALIASES_NOT_CANONICAL",
+      "nameCrosswalk": {
+        "report": "reports/evidence/w021_5_telanganaschedule_tgrac_name_crosswalk_40219308671.json",
+        "exactNormalizedNameMatches": 107,
+        "candidateAliasMatches": 12,
+        "unresolved": 0,
+        "sourceLayer": "Endowment_Lands_Admin_New MapServer layer 12",
+        "workflowRunId": 40219308671
+      },
+      "canonicalIdFieldPresent": false
+    },
+    {
+      "sourceId": "SRC-TELANGANA-ADMIN-OLD-LAYER",
+      "subject": "Assembly Constituency Boundary — Endowment_Lands_Old MapServer layer 13",
+      "publisher": "Telangana State Remote Sensing Applications Centre GIS",
+      "url": "https://tgrac.telangana.gov.in/arcgis/rest/services/EndowmentLands_Folder/Endowment_Lands_Old/MapServer/13?f=pjson",
+      "format": "ArcGIS REST Feature Layer / ESRI JSON",
+      "authority": "OFFICIAL_STATE_GIS_CANDIDATE",
+      "status": "ROSTER_NAME_CROSSWALK_PASS_WITH_ALIASES_GEOMETRY_NOT_ACCEPTED",
+      "layerId": 13,
+      "workflowRunId": 40213331746,
+      "limitations": [
+        "Service name/metadata do not establish legally effective boundary version.",
+        "No canonical AC-number crosswalk, effective date, or legal instrument reconciliation is complete.",
+        "Statutory Schedule XXVII name crosswalk uses provisional spelling aliases; source field OBJECTID is not a canonical AC number.",
+        "Name crosswalk does not validate legal extents against polygons."
+      ],
+      "metadataBytes": 4668,
+      "metadataSha256": "9e025e3f13bcb77c25fcc5dbee57e82bea364e52dd94518f01b1b7c780c89493",
+      "geometryBytes": 12461961,
+      "geometrySha256": "6e33ebf7eba139a0f754e5b56f3e3bc155ab2d9b6c9e571b03dc57e77e418b4c",
+      "featureCount": 119,
+      "invalidGeometryCount": 1,
+      "invalidFeature": "Dornakal (ST) / OBJECTID 89",
+      "positiveAreaOverlapPairs": 0,
+      "unionPartCount": 2,
+      "topologyAudit": "reports/evidence/w021_5_telangana_arcgis_geometry_audit_2026-10-25.json",
+      "comparisonStatus": "No material boundary shifts identified relative to new family; all 119 names and ring vertex counts match, max vertex delta ~6.52e-10 degrees. Union has two parts due Bhadrachalam (ST) ring not merging under lower coordinate precision; normalize and verify against authoritative state boundary.",
+      "note": "Distinct geometry payload. Union of 119 candidate polygons has two disconnected components; this requires investigation against an authoritative Telangana state boundary.",
+      "rawGeometryBytes": 12461961,
+      "rawGeometrySha256": "6e33ebf7eba139a0f754e5b56f3e3bc155ab2d9b6c9e571b03dc57e77e418b4c",
+      "crs": "EPSG:4326",
+      "nameCrosswalkStatus": "PASS_WITH_PROVISIONAL_ALIASES_NOT_CANONICAL",
+      "nameCrosswalk": {
+        "report": "reports/evidence/w021_5_telanganaschedule_tgrac_name_crosswalk_40219308671.json",
+        "exactNormalizedNameMatches": 107,
+        "candidateAliasMatches": 12,
+        "unresolved": 0,
+        "sourceLayer": "Endowment_Lands_Old MapServer layer 13",
+        "workflowRunId": 40219308671
+      },
+      "canonicalIdFieldPresent": false
+    },
+    {
+      "sourceId": "SRC-INDIACODE-AP-REORG-2014",
+      "subject": "Andhra Pradesh Reorganisation Act, 2014; Section 15 and Second Schedule for AP/Telangana AC crosswalk",
+      "publisher": "India Code, Legislative Department, Government of India",
+      "url": "https://www.indiacode.nic.in/bitstream/123456789/2123/1/A2014-6E.pdf",
+      "retrievedAt": "2026-10-25",
+      "format": "PDF",
+      "authority": "PRIMARY_OFFICIAL_LEGAL_SOURCE",
+      "status": "INDIACODE_URL_NOT_ACQUIRED; ALTERNATE_AP_GOVERNMENT_COPY_ACQUIRED_AS_SEPARATE_SOURCE",
+      "sha256": null,
+      "fileBytes": null,
+      "version": "Act No. 6 of 2014",
+      "limitations": [
+        "Must be reconciled with the 2008 order and later ECI notifications/Gazette instruments.",
+        "PDF acquisition/hash and page-level extraction pending workflow evidence.",
+        "The PDF is a government-hosted copy of the Gazette of India; exact byte identity with the India Code-hosted copy has not been compared."
+      ],
+      "plannedUse": "Establish AP/Telangana statutory partition and source the Second Schedule crosswalk.",
+      "alternativeGovernmentHostedCopies": [
+        "https://apseeds.ap.gov.in/PDF/apreorg/APRegACT2014.pdf",
+        "https://tgerc.telangana.gov.in/file_upload/uploads/Acts%20and%20Polices/Acts%20and%20Rules/A.P.Reorganisation%20act%202014.pdf"
+      ],
+      "lastFailedProbe": {
+        "workflowRunId": 40218092567,
+        "workflowUrl": "https://github.com/kshetra-app/Kshetra/actions/runs/40218092567",
+        "artifactId": 12608825080,
+        "artifactSha256": "7c01c54d21f87ff5038b1cd0120462eb0f822845b396a2f9808aecf20e6285d7",
+        "result": "India Code, ECI 2024 PDF, and optional IndiaCode order URL each timed out after 60 seconds with zero bytes. No source bytes or source SHA-256 acquired."
+      },
+      "nextProbe": "workflow run 40218632258 — retries government-hosted Gazette copy from APSeeds/TGERC first; IndiaCode and ECI press note are fallback/corroborative candidates.",
+      "selectedUrl": "https://apseeds.ap.gov.in/PDF/apreorg/APRegACT2014.pdf",
+      "pdfPageCount": null,
+      "evidenceReport": "reports/evidence/w021_5_ap_reorganisation_act_acquisition_40218632258.json",
+      "sourceAuthority": "GAZETTE_OF_INDIA_COPY_HOSTED_ON_AP_GOVERNMENT_DOMAIN",
+      "canonicalByteIdentityComparedToIndiaCode": false,
+      "lastSuccessfulProbe": {
+        "workflowRunId": 40218632258,
+        "workflowUrl": "https://github.com/kshetra-app/Kshetra/actions/runs/40218632258",
+        "artifactId": 12609010429,
+        "artifactSha256": "ca42d6ecc1492656f09bc6406f699ed64541f064bf77d37e42a32c0ba1bda031",
+        "result": "HTTP 200 PDF; 231596 bytes; SHA-256 recorded; 71 pages; Schedule XXVII located on zero-based page index 39; roster parse added to next workflow."
+      },
+      "rosterParseEvidence": "reports/evidence/w021_5_telanganaschedule_roster_parse_40218995782.json",
+      "rosterParse": {
+        "workflowRunId": 40218995782,
+        "artifactId": 12609460380,
+        "artifactSha256": "b5c186012f5240015a004960a7c5330d927d761bf4c5cd33694e68afbee10cc8",
+        "rosterSha256": "4a162263c05bfaaae70013830205d97ffd009a2285c113e8ff03b82b796665e9",
+        "parsedCount": 119,
+        "sequencePass": true,
+        "districtCount": 10,
+        "semanticChecksPass": 7,
+        "status": "PASS"
+      },
+      "statutoryToGisCrosswalkWorkflow": {
+        "runId": 40219308671,
+        "url": "https://github.com/kshetra-app/Kshetra/actions/runs/40219308671",
+        "status": "PASS_WITH_CANDIDATE_ALIASES",
+        "artifactId": 12608482581,
+        "artifactSha256": "8439368e86d5c6179c35a6bd8525cc430e4897aa6705b0df8fc815da54d3220e",
+        "crosswalkJsonSha256": "c30e088eae279b9c2e9d71106e00f638f13a25ec3ff3b062ef874e14dd1a4ac6",
+        "summary": "119/119 matched by 107 exact + 12 inferred aliases in Admin_2026; 108 exact + 11 inferred aliases in older AdministrativeInfoSystem; zero unresolved after aliases."
+      },
+      "crosswalkReport": "reports/evidence/w021_5_telanganaschedule_tgrac_name_crosswalk_40219308671.json",
+      "provenanceCorrection": {
+        "correctedAt": "2026-10-26",
+        "reason": "The previously recorded hash belongs to the APSeeds-hosted copy, not bytes fetched from the IndiaCode URL. The source identity and hash must not be conflated.",
+        "actualDownloadedSourceId": "SRC-APSEEDS-AP-REORG-2014",
+        "actualDownloadedUrl": "https://apseeds.ap.gov.in/PDF/apreorg/APRegACT2014.pdf",
+        "actualDownloadedSha256": "84cd566b917f9a3f600c47f6540520c950166b424a964ad37d64dc3c968114aa",
+        "status": "IndiaCode bytes remain unacquired; APSeeds copy is independently recorded and hashed."
+      }
+    },
+    {
+      "sourceId": "SRC-ECI-GE-2024-PRESS-NOTE-23",
+      "subject": "Official ECI press note confirming delimitation basis and AP/Telangana constituency counts",
+      "publisher": "Election Commission of India",
+      "url": "https://elections24.eci.gov.in/docs/press-note-no-23.pdf",
+      "retrievedAt": "2026-10-26",
+      "format": "PDF",
+      "authority": "PRIMARY_OFFICIAL_CORROBORATIVE_SOURCE",
+      "status": "NO_BYTES_ACQUIRED_TIMEOUT",
+      "sha256": null,
+      "fileBytes": null,
+      "version": "General Elections 2024 Press Note No. 23",
+      "limitations": [
+        "Corroborative election administration evidence; not a replacement for the legal order or 2018 notification.",
+        "PDF acquisition/hash pending workflow evidence."
+      ],
+      "plannedUse": "Corroborate current legal regime references and AP/Telangana seat totals.",
+      "lastProbe": {
+        "workflowRunId": 40260777545,
+        "workflowUrl": "https://github.com/kshetra-app/Kshetra/actions/runs/40260777545",
+        "timeoutSeconds": 25,
+        "documentBytesAcquired": false
+      }
+    },
+    {
+      "sourceId": "SRC-ECI-NOTIFICATION-282-AP-2018-DEL",
+      "subject": "ECI Notification No. 282/AP/2018(DEL), dated 22 September 2018, concerning AP/Telangana constituency allocation and legal chain",
+      "publisher": "Election Commission of India",
+      "url": "https://www.eci.gov.in/eci-backend/public/api/download?url=LMAhAK6sOPBp%2FNFF0iRfXbEB1EVSLT41NNLRjYNJJP1KivrUxbfqkDatmHy12e%2FzVx8fLfn2ReU7TfrqYobgIsVIzE4H7zCkL60TDPfde3hSidsZ4fuGUaZAjsPMK3mFe%2FOayCb%2Bc1mgC3WIErfdO%2BA072J7HtGm2kYfstpL5XIZTWrH2JWU7UfZrKWF1BUsH9xccKER%2BJMZVGi7SrzX57%2FMm24zs1eyK2AB5zsjcWKzrILRQG%2FBbbQ%2Fx5bNYVaCn7kX4xoHNibbBVAsqukcOQ%3D%3D",
+      "retrievedAt": "2026-10-26",
+      "format": "ECI official backend download endpoint",
+      "authority": "PRIMARY_OFFICIAL_SOURCE",
+      "status": "OFFICIAL_BINARY_HTTP_406_ON_BOTH_HOST_VARIANTS; ERROR_BODY_NOT_SOURCE_DOCUMENT",
+      "sha256": null,
+      "fileBytes": null,
+      "version": "No. 282/AP/2018(DEL), 2018-09-22",
+      "limitations": [
+        "Official indexed text found through ECI search result; exact binary could not be downloaded (HTTP 406).",
+        "Do not claim binary SHA-256 or close Gazette authenticity/effective-date gates based on search-rendered text.",
+        "Run 40260777545 retried the exact official API endpoint on both www and bare host; both returned the same HTTP 406 error body. No source-document SHA-256 is available."
+      ],
+      "plannedUse": "Resolve statutory crosswalk and legal effective-date chain once exact notification/Gazette bytes or custodian-certified copy is obtained.",
+      "lastProbe": {
+        "workflowRunId": 40260777545,
+        "workflowUrl": "https://github.com/kshetra-app/Kshetra/actions/runs/40260777545",
+        "attempts": [
+          {
+            "host": "www.eci.gov.in",
+            "status": 406,
+            "errorBodyBytes": 1035,
+            "errorBodySha256": "8f14ef818fea5334fa7bc2ed40e6808c3227dc36a413fb67f326d1591e03675a"
+          },
+          {
+            "host": "eci.gov.in",
+            "status": 406,
+            "errorBodyBytes": 1035,
+            "errorBodySha256": "8f14ef818fea5334fa7bc2ed40e6808c3227dc36a413fb67f326d1591e03675a"
+          }
+        ],
+        "documentBytesAcquired": false
+      }
+    },
+    {
+      "sourceId": "SRC-INDIACODE-AP-REMOVAL-DIFFICULTIES-ORDERS",
+      "subject": "Andhra Pradesh Reorganisation (Removal of Difficulties) First, Second and Third Orders",
+      "publisher": "India Code, Government of India",
+      "url": "https://upload.indiacode.nic.in/showfile?actid=AC_CEN_5_5_00058_201406_1517807327989&filename=Andhra+Pradesh+Reorganisation+%28Removal+of+Difficulties%29+First%2C+Second+and+Third+Order.pdf&type=order",
+      "retrievedAt": "2026-10-26",
+      "format": "PDF",
+      "authority": "PRIMARY_OFFICIAL_LEGAL_SOURCE_CANDIDATE",
+      "status": "NO_BYTES_ACQUIRED_TIMEOUT",
+      "sha256": null,
+      "fileBytes": null,
+      "limitations": [
+        "Applicability to Assembly Constituency extent must be established from the document text.",
+        "Not accepted as a direct AC-boundary source."
+      ],
+      "plannedUse": "Check the post-2014 legal chain for any instrument relevant to AP/Telangana geography and distinguish AC from Legislative Council delimitation.",
+      "lastProbe": {
+        "workflowRunId": 40260777545,
+        "workflowUrl": "https://github.com/kshetra-app/Kshetra/actions/runs/40260777545",
+        "timeoutSeconds": 25,
+        "documentBytesAcquired": false
+      }
+    },
+    {
+      "sourceId": "SRC-BIHAR-BEGIS-ASSEMBLY-AND-PIN-LAYERS",
+      "subject": "Bihar official election GIS Assembly layer and Pin Code Boundary layer; endpoint discovery for official AC geometry and separate PIN-boundary evidence",
+      "publisher": "Bihar Election Geo-Intelligence System / Government of Bihar",
+      "url": "https://gis.bihar.gov.in/DEPTS/ElectionNew.aspx",
+      "relatedUrl": "https://gisserver.bihar.gov.in/arcgis/rest/services/ELECTION/AC/MapServer",
+      "retrievedAt": "2026-10-25",
+      "format": "Public web GIS portal; vector service format/endpoints not yet confirmed",
+      "authority": "PRIMARY_STATE_GOVERNMENT_GIS_CANDIDATE",
+      "status": "RAW_AC_GEOMETRY_ACQUIRED_PRELIMINARY_TOPOLOGY_SCREEN_FAILS_NOT_CANONICAL",
+      "sha256": null,
+      "fileBytes": null,
+      "limitations": [
+        "Portal page advertises an Assembly election layer and Pin Code Boundary layer, but exact service endpoint, source owner, CRS, licence, geometry bytes and effective date are not yet established.",
+        "A PIN code boundary is not automatically an India Post delivery-beat polygon.",
+        "Bihar geometry alone does not close national coverage or W021.5-B1-04.",
+        "The published service root is HTTP in the official JS; probe will try HTTPS first and record transport. Do not accept HTTP-only bytes as canonical without corroboration.",
+        "Preliminary topology screen is not independently adjudicated; current layer is not canonical. A state-boundary coverage comparison is being added."
+      ],
+      "plannedUse": "Discover and acquire official Bihar AC geometry and investigate whether the portal's PIN layer is a defensible postal geography source.",
+      "pinBoundaryUrl": "https://gisserver.bihar.gov.in/arcgis/rest/services/AdministrativrBoundaries/PIN_Code_Boundary/MapServer",
+      "evidenceReport": "reports/evidence/w021_5_bihar_gis_discovery_40217893573.json",
+      "lastProbe": {
+        "workflowRunId": 40218393964,
+        "workflowUrl": "https://github.com/kshetra-app/Kshetra/actions/runs/40218393964",
+        "artifactId": 12608465910,
+        "artifactSha256": "befc11117a50a8b0ea33f294f87593b1f81839818eb65957a9873cddb1a24abe",
+        "auditJsonSha256": "68e89b9db34d4b3c33e55e7c4a23ebcfd19bab92627576518771341a01db98a1",
+        "result": "Reproducible CI audit now detects State_Name correctly; 243 AC features, 3 invalid geometries, 76 overlap pairs >1m², 99.999568% state coverage screen; not canonical."
+      },
+      "geometryQueryUrl": "https://gisserver.bihar.gov.in/arcgis/rest/services/ELECTION/AC/MapServer/0/query?where=1%3D1&outFields=%2A&returnGeometry=true&outSR=4326&f=json&resultRecordCount=1000",
+      "geometryBytes": 10958178,
+      "geometrySha256": "3ab79c2942f27296b08a93bb07fed1fc63bd665a9db66ddaf8fe6ece3fc70b0e",
+      "geometryFeatureCount": 243,
+      "uniqueACCodeCount": 243,
+      "acCodeRange": "1..243",
+      "crs": "EPSG:4326",
+      "topologyAudit": {
+        "method": "Preliminary Shapely 2.1.2; ArcGIS ring orientation conversion; overlap areas screened in EPSG:32645 with >1 m² threshold",
+        "invalidFeatureCount": 3,
+        "invalidFeatures": [
+          {
+            "code": 215,
+            "name": "KURTHA"
+          },
+          {
+            "code": 145,
+            "name": "SAHEBPUR KAMAL"
+          },
+          {
+            "code": 41,
+            "name": "NIRMALI"
+          }
+        ],
+        "overlapPairsOver1m2": 76,
+        "duplicateNames": {
+          "PIPRA": 2
+        },
+        "stateBoundaryComparison": "PENDING_NEW_PROBE",
+        "stateCoverageScreen": {
+          "coveragePercent": 99.99956829322835,
+          "uncoveredAreaM2": 406790.2045589393,
+          "outsideAreaM2": 2881.9138108641555,
+          "status": "REPRODUCED_IN_CI_SCREENING_ONLY",
+          "workflowRunId": 40218393964
+        }
+      },
+      "pinBoundaryFeatureCount": 884,
+      "auditReport": "reports/evidence/w021_5_bihar_ac_geometry_audit_40218393964.json",
+      "coverageReport": "reports/evidence/w021_5_bihar_ac_geometry_audit_40218393964.json",
+      "stateBoundaryUrl": "https://gisserver.bihar.gov.in/arcgis/rest/services/AdministrativrBoundaries/StateBoundary/MapServer/0/query?where=1%3D1&outFields=%2A&returnGeometry=true&outSR=4326&f=json&resultRecordCount=100",
+      "stateBoundaryBytes": 784840,
+      "stateBoundarySha256": "fce67b09df40e4ca62a54bf58d2caaa2609631eccce00ea0f2b07b6b9be6e446"
+    },
+    {
+      "sourceId": "SRC-CEO-TELANGANA-HOP-2024-SCHEDULE",
+      "subject": "Chief Electoral Officer Telangana, 2024 House of People Schedule of Election; corroborates the AP Reorganisation Act, Removal of Difficulties Order, and 2018 ECI notification chain",
+      "publisher": "Chief Electoral Officer, Telangana",
+      "url": "https://ceotelangana.nic.in/HOP-2024/11301_25-%20Ge%20to%20the%20HoP%202024-%20Schedule%20of%20Election_11zon.pdf",
+      "sourceAuthority": "PRIMARY_STATE_ELECTION_OFFICE_CORROBORATIVE_PDF",
+      "status": "NO_BYTES_ACQUIRED_TIMEOUT_ON_BOTH_OFFICIAL_URL_VARIANTS",
+      "sha256": null,
+      "fileBytes": null,
+      "limitations": [
+        "This is a 2024 election schedule, not the full 2018 notification itself.",
+        "Must be downloaded and hashed before treating it as acquired source bytes."
+      ],
+      "retrievedAt": "2026-10-26",
+      "lastProbe": {
+        "workflowRunId": 40260777545,
+        "workflowUrl": "https://github.com/kshetra-app/Kshetra/actions/runs/40260777545",
+        "attempts": 2,
+        "eachTimeoutSeconds": 25,
+        "selectedBytes": false
+      },
+      "alternativeUrlCandidates": [
+        "https://ceotelangana.nic.in/HOP-2024/11301_25-%20Ge%20to%20the%20HoP%202024-%20Schedule%20of%20Election_11zon.pdf",
+        "https://ceotelangana.nic.in/HOP-2024/11301_25-%20Ge%20to%20the%20HoP%202024-%20Schedule%20of%20Election.pdf"
+      ]
+    },
+    {
+      "sourceId": "SRC-PIB-2015227-DELIMITATION-CHAIN",
+      "subject": "PIB official HTML corroboration of 2014 Act, 2015 Removal of Difficulties Order, 2018 ECI notification, and AP/Telangana seat counts",
+      "publisher": "Press Information Bureau, Government of India",
+      "url": "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2015227&lang=2&reg=48",
+      "sourceAuthority": "PRIMARY_GOVERNMENT_PRESS_RELEASE",
+      "status": "OFFICIAL_HTML_DOWNLOADED_HASHED; CORROBORATIVE_ONLY",
+      "sha256": null,
+      "fileBytes": null,
+      "limitations": [
+        "Corroborative press release, not a substitute for the Gazette/ECI notification."
+      ],
+      "retrievedAt": "2026-10-26",
+      "downloadedVariants": [
+        {
+          "sourceId": "PIB_AP_TELANGANA_DELIMITATION_LEGAL_CHAIN",
+          "url": "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2015227&lang=2&reg=48",
+          "httpStatus": 200,
+          "rawBytes": 1211607,
+          "rawSha256": "4eef52437040ca8f083d9c839e65a4a431f85e0fb5d437c8a1fb89b272eb4066",
+          "textBytes": 255420,
+          "textSha256": "7da8c4a644191375567f638e9edfd6d88b88de9cd4f976fc84d06ba164c2da43",
+          "termsAllPresent": true
+        },
+        {
+          "sourceId": "PIB_AP_TELANGANA_DELIMITATION_LEGAL_CHAIN_IFRAME",
+          "url": "https://www.pib.gov.in/PressReleaseIframePage.aspx?PRID=2015227&lang=2&reg=48",
+          "httpStatus": 200,
+          "rawBytes": 1212709,
+          "rawSha256": "fc43efff8bc9d341cff190d5135ea1825ce484f92a896ef0353c99a388e00bf6",
+          "textBytes": 256873,
+          "textSha256": "9154b8e3036401ad80a40680e3642d44380ba635971b3ea6790b00f492a8ef73",
+          "termsAllPresent": true
+        }
+      ],
+      "workflowRunId": 40260777545,
+      "workflowUrl": "https://github.com/kshetra-app/Kshetra/actions/runs/40260777545",
+      "artifactId": 12623479706,
+      "artifactSha256": "db87f8074cac8039c8302f5ed7d2c1a806e411a79e8c1340879aa9fec3db9c9f"
+    },
+    {
+      "sourceId": "SRC-TGRAC-MASTER-AC-2026-10-26",
+      "subject": "Telangana Assembly Constituency polygon candidate from TGRAC Master Administrative Boundary service",
+      "publisher": "Telangana State Remote Sensing Applications Centre (TGRAC)",
+      "url": "https://tgrac.telangana.gov.in/arcgis/rest/services/Master_Administrative_Folder/Master_Administrative_Boundary/MapServer/0/query?where=1%3D1&outFields=%2A&returnGeometry=true&outSR=4326&f=json",
+      "metadataUrl": "https://tgrac.telangana.gov.in/arcgis/rest/services/Master_Administrative_Folder/Master_Administrative_Boundary/MapServer/0?f=pjson",
+      "retrievedAt": "2026-10-26T02:35:08.900312Z",
+      "format": "ArcGIS REST ESRI JSON",
+      "authority": "OFFICIAL_STATE_GIS_CANDIDATE",
+      "status": "CANDIDATE_ONLY",
+      "sha256": "c5d0cbf55f5079cd91b0ce3a8733ce11701a70f0ea474cdd96025ec8c651e444",
+      "fileBytes": 12469989,
+      "version": "NOT_DECLARED_IN_LAYER_METADATA",
+      "legalEffectiveDate": "NOT_DECLARED_OR_NOT_VERIFIED",
+      "sourceCRS": "EPSG:4326",
+      "reuseLicence": "NOT_ESTABLISHED",
+      "featureCount": 119,
+      "uniqueAssemblyNames": 119,
+      "uniqueObjectIds": 119,
+      "structuralStatus": "PASS",
+      "topologyStatus": "FAIL — 1 invalid geometry (Dornakal self-intersection); 0 positive-area overlap pairs",
+      "metadataBytes": 3709,
+      "metadataSha256": "78130181060c9fb1a0eeba400748cf285ba7e973db75d1600b82ca2ab9135988",
+      "workflowRunId": 40259741110,
+      "workflowUrl": "https://github.com/kshetra-app/Kshetra/actions/runs/40259741110",
+      "artifactId": 12624067291,
+      "artifactName": "w0215-official-geometry-probe-40259741110",
+      "artifactZipSha256": "6d274d901e622c34252d010c1e41913bea1c7bab883a1af7f128e065b37eea87",
+      "evidenceReport": "reports/evidence/w021_5_telangana_master_geometry_probe_40259741110.json",
+      "limitations": [
+        "OBJECTID is not a statutory AC number; no canonical AC ID field is exposed.",
+        "No applicable delimitation/Gazette effective-date reconciliation has been performed.",
+        "No source-owner confirmation of lineage, version or reuse licence.",
+        "No full cross-variant per-AC geometry comparison yet.",
+        "Dornakal (ST) Assembly has a ring self-intersection at [79.9488866560001, 17.514169436].",
+        "State-boundary coverage and legal extent-to-polygon comparison not checked."
+      ],
+      "plannedUse": "Compare against existing TGRAC variants, establish source lineage and legal vintage, reconcile to statutory roster, and test national coverage. Do not import as canonical.",
+      "retrievalMethod": "Read-only GitHub Actions run 40259741110; raw source bytes preserved in artifact w0215-official-geometry-probe-40259741110 (artifact expires 2026-11-25)."
+    },
+    {
+      "sourceId": "SRC-TGRAC-QUERY-AC-2026-10-26",
+      "subject": "Telangana AC polygons from TGRAC AdministrativeInfoSystem_Query layer 1",
+      "publisher": "TGRAC",
+      "url": "https://tgrac.telangana.gov.in/arcgis/rest/services/AdministrativeInfoSystem_Folder/Administrative_Information_System_Query/MapServer/1/query?where=1%3D1&outFields=%2A&returnGeometry=true&outSR=4326&f=json",
+      "metadataUrl": "https://tgrac.telangana.gov.in/arcgis/rest/services/AdministrativeInfoSystem_Folder/Administrative_Information_System_Query/MapServer/1?f=pjson",
+      "retrievedAt": "2026-10-26T02:37:28.684180Z",
+      "format": "ArcGIS REST ESRI JSON",
+      "authority": "OFFICIAL_STATE_GIS_CANDIDATE",
+      "status": "CANDIDATE_ONLY_DUPLICATE_RAW_RESPONSE",
+      "sha256": "91cd791317836d8a6a8729b03f08fd3aee8c727c82e123b1659972d949d32f27",
+      "fileBytes": 12465346,
+      "metadataBytes": 4715,
+      "metadataSha256": "dafcfe10774f431ad13031b3098ff5bf5e6dee8b2e8589431af9b6238990dc7a",
+      "featureCount": 119,
+      "crs": "EPSG:4326",
+      "structuralStatus": "PASS",
+      "topologyStatus": "FAIL — one invalid Dornakal polygon",
+      "workflowRunId": 40259909774,
+      "workflowUrl": "https://github.com/kshetra-app/Kshetra/actions/runs/40259909774",
+      "artifactId": 12624382089,
+      "artifactZipSha256": "c7b587e7591983cd81b527b8a3824229f812bed94a123e4e68b5a824932e3629",
+      "evidenceReport": "reports/evidence/w021_5_telangana_variant_family_comparison_20261026.json",
+      "limitations": [
+        "Raw response is byte-identical to older AdministrativeInfoSystem layer 24; not independent corroboration.",
+        "No statutory AC number, legal vintage, licence or legal extent validation.",
+        "Dornakal self-intersection remains."
+      ],
+      "plannedUse": "Retain only for source-family comparison and lineage discovery; do not promote as canonical."
+    },
+    {
+      "sourceId": "SRC-TGRAC-RNB-AC-2026-10-26",
+      "subject": "Telangana AC polygons exposed by TGRAC RnB_Admin layer 8",
+      "publisher": "TGRAC",
+      "url": "https://tgrac.telangana.gov.in/arcgis/rest/services/RnB_Folder/RnB_Admin/MapServer/8/query?where=1%3D1&outFields=%2A&returnGeometry=true&outSR=4326&f=json",
+      "metadataUrl": "https://tgrac.telangana.gov.in/arcgis/rest/services/RnB_Folder/RnB_Admin/MapServer/8?f=pjson",
+      "retrievedAt": "2026-10-26T02:37:45.523893Z",
+      "format": "ArcGIS REST ESRI JSON",
+      "authority": "OFFICIAL_STATE_GIS_CANDIDATE",
+      "status": "CANDIDATE_ONLY_NEAR_DUPLICATE_FAMILY",
+      "sha256": "c6d0d8725e157cbb7d4b140ad91514d0f4be532d35879f6d0f654072b58d285f",
+      "fileBytes": 12463409,
+      "metadataBytes": 4672,
+      "metadataSha256": "fd2419a63a20016cbc83cf2eefddde0951adf5d17f9a569e712b89f358269be1",
+      "featureCount": 119,
+      "crs": "EPSG:4326",
+      "structuralStatus": "PASS",
+      "topologyStatus": "FAIL — one invalid Dornakal polygon",
+      "workflowRunId": 40259909774,
+      "workflowUrl": "https://github.com/kshetra-app/Kshetra/actions/runs/40259909774",
+      "artifactId": 12624382089,
+      "artifactZipSha256": "c7b587e7591983cd81b527b8a3824229f812bed94a123e4e68b5a824932e3629",
+      "evidenceReport": "reports/evidence/w021_5_telangana_variant_family_comparison_20261026.json",
+      "limitations": [
+        "Raw response is byte-identical to MusiRiver layer 59 and near-identical to the Admin_2026 geometry family at sub-millimetre coordinate precision; independence not established.",
+        "No statutory AC number, legal vintage, licence or legal extent validation.",
+        "Dornakal self-intersection remains."
+      ],
+      "plannedUse": "Retain as a duplicate/near-duplicate comparison candidate only; do not promote as canonical."
+    },
+    {
+      "sourceId": "SRC-TGRAC-MUSIRIVER-AC-2026-10-26",
+      "subject": "Telangana AC polygons embedded in TGRAC MusiRiver project service layer 59",
+      "publisher": "TGRAC",
+      "url": "https://tgrac.telangana.gov.in/arcgis/rest/services/MusiRiver/Musi_Basin_Web_Publication_vector/MapServer/59/query?where=1%3D1&outFields=%2A&returnGeometry=true&outSR=4326&f=json",
+      "metadataUrl": "https://tgrac.telangana.gov.in/arcgis/rest/services/MusiRiver/Musi_Basin_Web_Publication_vector/MapServer/59?f=pjson",
+      "retrievedAt": "2026-10-26T02:38:02.472706Z",
+      "format": "ArcGIS REST ESRI JSON",
+      "authority": "OFFICIAL_STATE_GIS_PROJECT_CANDIDATE",
+      "status": "CANDIDATE_ONLY_DUPLICATE_RAW_RESPONSE",
+      "sha256": "c6d0d8725e157cbb7d4b140ad91514d0f4be532d35879f6d0f654072b58d285f",
+      "fileBytes": 12463409,
+      "metadataBytes": 5161,
+      "metadataSha256": "5285c6478a6372f1363af0691fce4c23f294bcef0c24aea5bb173fef2d15aab2",
+      "featureCount": 119,
+      "crs": "EPSG:4326",
+      "structuralStatus": "PASS",
+      "topologyStatus": "FAIL — one invalid Dornakal polygon",
+      "workflowRunId": 40259909774,
+      "workflowUrl": "https://github.com/kshetra-app/Kshetra/actions/runs/40259909774",
+      "artifactId": 12624382089,
+      "artifactZipSha256": "c7b587e7591983cd81b527b8a3824229f812bed94a123e4e68b5a824932e3629",
+      "evidenceReport": "reports/evidence/w021_5_telangana_variant_family_comparison_20261026.json",
+      "limitations": [
+        "Raw response is byte-identical to RnB layer 8; project-service location does not establish legal authority or independent source lineage.",
+        "No statutory AC number, legal vintage, licence or legal extent validation.",
+        "Dornakal self-intersection remains."
+      ],
+      "plannedUse": "Retain as a duplicate/near-duplicate comparison candidate only; do not promote as canonical."
+    },
+    {
+      "sourceId": "SRC-APSEEDS-AP-REORG-2014",
+      "subject": "Andhra Pradesh Reorganisation Act, 2014 (Act No. 6 of 2014), Schedule XXVII — Telangana Table A",
+      "publisher": "Government of Andhra Pradesh-hosted copy of Gazette/Act",
+      "url": "https://apseeds.ap.gov.in/PDF/apreorg/APRegACT2014.pdf",
+      "retrievedAt": "2026-10-26",
+      "format": "PDF",
+      "authority": "GOVERNMENT_HOSTED_LEGAL_COPY",
+      "status": "DOWNLOADED_HASHED_PDF; STATUTORY_ROSTER_PARSE_PASS; NOT_CANONICAL_BYTE_IDENTITY_VERIFIED",
+      "sha256": "84cd566b917f9a3f600c47f6540520c950166b424a964ad37d64dc3c968114aa",
+      "fileBytes": 231596,
+      "pdfPageCount": 71,
+      "sourceAuthority": "GAZETTE_OF_INDIA_COPY_HOSTED_ON_AP_GOVERNMENT_DOMAIN",
+      "canonicalByteIdentityComparedToIndiaCode": false,
+      "evidenceReport": "reports/evidence/w021_5_legal_crosswalk_source_probe_40260777545.json",
+      "workflowRunId": 40260777545,
+      "workflowUrl": "https://github.com/kshetra-app/Kshetra/actions/runs/40260777545",
+      "artifactId": 12623479706,
+      "artifactSha256": "db87f8074cac8039c8302f5ed7d2c1a806e411a79e8c1340879aa9fec3db9c9f",
+      "rosterParse": {
+        "pathInsideArtifact": "stage_b_legal_crosswalk/telangana_statutory_ac_roster.json",
+        "sha256": "2be8b75f595a80b089a6d88337e3b51951aaeae185c40de143b99b6642e55350",
+        "parsedCount": 119,
+        "sequencePass": true,
+        "districtCount": 10,
+        "semanticChecksPass": 7,
+        "status": "PASS"
+      },
+      "limitations": [
+        "This is a government-hosted copy, not a certified physical Gazette copy.",
+        "Its byte identity with the IndiaCode-hosted PDF is not established.",
+        "It establishes a 119-row statutory roster but does not validate AC polygons or close EB-01/EB-02."
+      ],
+      "plannedUse": "Statutory name/extent reference for Schedule XXVII and source for a candidate name crosswalk; retain provenance and do not treat as authenticated physical Gazette."
+    }
+  ],
+  "unresolvedGates": [
+    {
+      "gateId": "EB-01",
+      "status": "OPEN",
+      "reason": "Physical sealed Gazette inspection/custody evidence not digitally substitutable."
+    },
+    {
+      "gateId": "EB-02",
+      "status": "OPEN",
+      "reason": "Independent physical-gazette transcription fidelity audit not available online."
+    },
+    {
+      "gateId": "EB-03",
+      "status": "OPEN",
+      "reason": "Authoritative national India Post delivery-beat polygons not located."
+    },
+    {
+      "gateId": "EB-04",
+      "status": "OPEN",
+      "reason": "Cannot prove polygon containment without EB-03 geometry."
+    },
+    {
+      "gateId": "EB-05",
+      "status": "OPEN",
+      "reason": "Need state CEO polling-station address/PIN datasets and verified electoral crosswalk."
+    }
+  ],
+  "acquisitionRuns": [
+    {
+      "runId": 40209022405,
+      "workflowUrl": "https://github.com/kshetra-app/Kshetra/actions/runs/40209022405",
+      "artifactId": 12604953125,
+      "artifactName": "w0215-source-acquisition-40209022405",
+      "artifactSha256": "87c31c94d7eb302ecba5a966167cb849f114a685d7ebad146721d04a95e69163",
+      "uncompressedBytes": 16343731,
+      "manifestSummary": {
+        "downloaded": 8,
+        "failed": 10,
+        "officialDownloads": 4,
+        "secondaryCandidateDownloads": 4
+      },
+      "status": "PARTIAL_ACQUISITION_COMPLETE; OFFICIAL ECI SOURCE RETRY PENDING",
+      "artifactZipIntegrity": "INDEPENDENTLY_REHASHED_MATCH",
+      "artifactZipSha256Verified": "87c31c94d7eb302ecba5a966167cb849f114a685d7ebad146721d04a95e69163",
+      "localSourceVerification": {
+        "environment": "GeoPandas 1.1.2 / Shapely 2.1.2 / Fiona 1.10.1 / PyProj 3.7.2",
+        "crs": "EPSG:4326",
+        "features": 4182,
+        "uniqueStateAcNumberPairs": 4102,
+        "duplicateExtraRows": 80,
+        "invalidGeometries": 6,
+        "emptyGeometries": 0,
+        "nullConstituencyNames": 34,
+        "distinctSourceStateNames": 30,
+        "status": "CONFIRMED_REJECTED_AS_PRODUCTION_GEOMETRY"
+      }
+    },
+    {
+      "runId": 40211792541,
+      "workflowUrl": "https://github.com/kshetra-app/Kshetra/actions/runs/40211792541",
+      "artifactId": 12606480050,
+      "artifactName": "w0215-source-acquisition-40211792541",
+      "artifactSha256": "05531bc8037dca81eb4af0ba93cf7e397594a02643b1bb311cb463abd78cfdfa",
+      "uncompressedBytes": 142327256,
+      "manifestSummary": {
+        "totalSources": 61,
+        "downloaded": 31,
+        "failed": 24,
+        "totalDownloadedBytes": 142219649,
+        "officialDownloads": 21,
+        "secondaryCandidateDownloads": 10,
+        "derivedGeometryAcceptedAsOfficial": 0
+      },
+      "status": "COMPLETED_SUCCESS_WITH_PARTIAL_SOURCE_COVERAGE",
+      "scope": "Retry of allowlisted public-source acquisition with browser headers, pinned DataMeet components, official ECI result-portal geometry URLs, Survey of India administrative/village boundary resources, and bounded ECI statistical-report discovery.",
+      "compressedBytes": 113470251,
+      "artifactExpiresAt": "2026-11-08T16:35:47Z",
+      "downloadedFiles": {
+        "eciMirrorGeoJSON": [
+          {
+            "code": "S03",
+            "name": "Assam",
+            "bytes": 11431537,
+            "sha256": "2b3efc17aea2adedf25bb598dd0256f878ed01f74de5299a2e0b02790536fb25",
+            "features": 126,
+            "invalid": 20,
+            "overlapPairs": 133,
+            "url": "https://raw.githubusercontent.com/saisantoshv3/assemnbly_gis_files/730263a08afa3cf7a0cd12db68bcddc90aefcc03/2026_assembly_election/assam_S03/assam.geojson"
+          },
+          {
+            "code": "U07",
+            "name": "Puducherry",
+            "bytes": 835011,
+            "sha256": "2786e744aa7394c85d977a317a1d1e33cb3eb78dbea45a272375fc9a48e54338",
+            "features": 30,
+            "invalid": 0,
+            "overlapPairs": 26,
+            "url": "https://raw.githubusercontent.com/saisantoshv3/assemnbly_gis_files/730263a08afa3cf7a0cd12db68bcddc90aefcc03/2026_assembly_election/puducherry_U07/puducherry.geojson"
+          },
+          {
+            "code": "S11",
+            "name": "Kerala",
+            "bytes": 3111688,
+            "sha256": "5077be94e655e748322a0089a94b70f253dcbf856c747b2583530e575dc9aac5",
+            "features": 140,
+            "invalid": 1,
+            "overlapPairs": 171,
+            "url": "https://raw.githubusercontent.com/saisantoshv3/assemnbly_gis_files/730263a08afa3cf7a0cd12db68bcddc90aefcc03/2026_assembly_election/kerala_S11/kerala.geojson"
+          },
+          {
+            "code": "S22",
+            "name": "Tamil Nadu",
+            "bytes": 5258525,
+            "sha256": "410d0d16df7fe8397691ea3c2c47d875ce6dc17a9c9dbcd588786d0b36339611",
+            "features": 234,
+            "invalid": 2,
+            "overlapPairs": 484,
+            "url": "https://raw.githubusercontent.com/saisantoshv3/assemnbly_gis_files/730263a08afa3cf7a0cd12db68bcddc90aefcc03/2026_assembly_election/tamil_nadu_S22/tamil_nadu.geojson"
+          },
+          {
+            "code": "S25",
+            "name": "West Bengal",
+            "bytes": 8825360,
+            "sha256": "62755085e5d904d0985e06bdccbe664b7ba22de5bda5c671735a54d19e6eaf2c",
+            "features": 294,
+            "invalid": 0,
+            "overlapPairs": 523,
+            "url": "https://raw.githubusercontent.com/saisantoshv3/assemnbly_gis_files/730263a08afa3cf7a0cd12db68bcddc90aefcc03/2026_assembly_election/west_bengal_S25/west_bengal.geojson"
+          }
+        ],
+        "soiVillageArchives": [
+          {
+            "state": "Andaman and Nicobar Islands",
+            "slug": "ANB",
+            "bytes": 2520239,
+            "sha256": "c0dd58a5d37c2b70ece91848da229b60c132b27394c012aec12e8ce4164f70ae",
+            "url": "https://surveyofindia.gov.in/documents/ANDAMAN_%26_NICOBAR_ISLANDS.zip"
+          },
+          {
+            "state": "Chandigarh",
+            "slug": "CHD",
+            "bytes": 162993,
+            "sha256": "957912107568f261c234396faeca4703dfc80768085dc32c53ea29479d2c2db4",
+            "url": "https://surveyofindia.gov.in/documents/CHANDIGARH.zip"
+          },
+          {
+            "state": "Dadra Nagar Haveli and Daman Diu",
+            "slug": "DNHDD",
+            "bytes": 110827,
+            "sha256": "52620001ecca83b3a6fb9cb5fb712602936dffafb59d587891b92fb8e05dfbc2",
+            "url": "https://surveyofindia.gov.in/documents/Dadra%20Nagar%20Haveli%20%26%20Daman%20Diu.zip"
+          },
+          {
+            "state": "Delhi",
+            "slug": "DEL",
+            "bytes": 2009187,
+            "sha256": "2668ca29a5f16c4b1f6bcd06f51e0d4aee0b1a5c1d24cfe885764ce225edf2bc",
+            "url": "https://surveyofindia.gov.in/documents/DELHI.zip"
+          },
+          {
+            "state": "Goa",
+            "slug": "GOA",
+            "bytes": 1078822,
+            "sha256": "dec00aa615023ecba2815c14aa9ffe5dacdcd30780caf38c84e7a8eef6d58d3e",
+            "url": "https://surveyofindia.gov.in/documents/GOA.zip"
+          },
+          {
+            "state": "Haryana",
+            "slug": "HAR",
+            "bytes": 9667232,
+            "sha256": "26cbd66f2f6b3217417b182157b96e4bf2956516789c027668193162076740af",
+            "url": "https://surveyofindia.gov.in/documents/HARYANA.zip"
+          },
+          {
+            "state": "Jharkhand",
+            "slug": "JHA",
+            "bytes": 19134070,
+            "sha256": "6c4840611e0f06381c5fa5d1f32add1ec51ce8f5ba50f7fac9e2f2cd9c3852f0",
+            "url": "https://surveyofindia.gov.in/documents/JHARKHAND.zip"
+          },
+          {
+            "state": "Kerala",
+            "slug": "KER",
+            "bytes": 4182966,
+            "sha256": "d022f7ac68639b1c4ce663bd95eaf3130f72a61502ff75d46b1122bee141d32c",
+            "url": "https://surveyofindia.gov.in/documents/KERALA.zip"
+          },
+          {
+            "state": "Lakshadweep",
+            "slug": "LAK",
+            "bytes": 25823,
+            "sha256": "5d99655f345b51ed92bcb629a5aa34098fd3d66b4299f74f0c920fc55f7e405d",
+            "url": "https://surveyofindia.gov.in/documents/LAKSHYADWEEP.zip"
+          },
+          {
+            "state": "Puducherry",
+            "slug": "PY",
+            "bytes": 485176,
+            "sha256": "a9861f28aba9a57b348fcf98b2c3452f7eb69e01da8249fab6b9aea222c6601f",
+            "url": "https://surveyofindia.gov.in/documents/PUNDUCHERRY.zip"
+          },
+          {
+            "state": "Sikkim",
+            "slug": "SKM",
+            "bytes": 5017958,
+            "sha256": "c2eb3722157e89bce0c5dbce932f3821472d2744915ad7a52224e04947ae91be",
+            "url": "https://surveyofindia.gov.in/documents/SIKKIM.zip"
+          },
+          {
+            "state": "Telangana",
+            "slug": "TS",
+            "bytes": 13253610,
+            "sha256": "7549e9ebd84b7bc2ec36265afcd2077a97f12d8d73a65aa3968f137f8958b9ea",
+            "url": "https://surveyofindia.gov.in/documents/TELANGANA.zip"
+          },
+          {
+            "state": "Tripura",
+            "slug": "TRI",
+            "bytes": 19775520,
+            "sha256": "f8759d866f8712462b7838c847b7175e29d76547721f010ab5b9e5944a15b0a8",
+            "url": "https://surveyofindia.gov.in/documents/TRIPURA.zip"
+          },
+          {
+            "state": "Uttarakhand",
+            "slug": "UK",
+            "bytes": 16256209,
+            "sha256": "82e03667949eeb8810f8cc2e3a846b284be940c74b057e21354e236119576b14",
+            "url": "https://surveyofindia.gov.in/documents/UTTARAKHAND.zip"
+          }
+        ]
+      }
+    },
+    {
+      "runId": 40212122850,
+      "workflowUrl": "https://github.com/kshetra-app/Kshetra/actions/runs/40212122850",
+      "artifactId": null,
+      "artifactName": null,
+      "artifactSha256": null,
+      "uncompressedBytes": null,
+      "manifestSummary": null,
+      "status": "QUEUED_AT_LAST_CHECK",
+      "scope": "Focused read-only probe of the five official ECI May-2026 AC geometry endpoints plus Telangana official ArcGIS layer metadata and geometry query. Raw response bytes and failed-response bodies are hashed/preserved in the artifact; structural checks are not legal/topology acceptance."
+    },
+    {
+      "runId": 40212122850,
+      "workflowUrl": "https://github.com/kshetra-app/Kshetra/actions/runs/40212122850",
+      "artifactId": 12605509052,
+      "artifactName": "w0215-official-geometry-probe-40212122850",
+      "artifactSha256": "e30baeff7c4ba94b0eee8d0e3fda41ddd7262a9880f7f4ac8e6ad9b9d7ce270e",
+      "uncompressedBytes": 12426,
+      "manifestSummary": {
+        "directEciGeometryUrls": 5,
+        "eciHttp404": 5,
+        "telanganaMetadataHttp200": 1,
+        "telanganaGeometryQueryHttp400": 1
+      },
+      "status": "COMPLETED_WITH_FAILURES; RAW RESPONSE HASHES VERIFIED; CORRECTED TELANGANA QUERY RETRY QUEUED"
+    },
+    {
+      "runId": 40212257196,
+      "workflowUrl": "https://github.com/kshetra-app/Kshetra/actions/runs/40212257196",
+      "artifactId": null,
+      "artifactName": null,
+      "artifactSha256": null,
+      "uncompressedBytes": null,
+      "manifestSummary": null,
+      "status": "QUEUED_AT_LAST_CHECK",
+      "scope": "Retry Telangana official ArcGIS polygon query using supported f=json format and structural ring checks."
+    },
+    {
+      "runId": 40211792541,
+      "workflow": "W021.5 Official Source Acquisition",
+      "status": "COMPLETED_WITH_SOURCE_FAILURES",
+      "branch": "w0215-resumption-2026-10-25",
+      "commit": "69bbba485187131f6bacf04a3ef9520c7a83c232",
+      "artifactId": 12606480050,
+      "artifactSha256": "05531bc8037dca81eb4af0ba93cf7e397594a02643b1bb311cb463abd78cfdfa",
+      "artifactBytes": 113470251,
+      "manifestSha256": "0cea961dda70f0268cea930ed665e4bc6bfd734567b7c77b42460e1472d3024a",
+      "downloadedBytes": 142219649,
+      "totalManifestRecords": 61,
+      "downloadedRecords": 31,
+      "failedRecords": 24,
+      "officialDownloads": 21,
+      "secondaryCandidateDownloads": 10,
+      "derivedGeometryCandidates": 0,
+      "derivedGeometryAcceptedAsOfficial": 0,
+      "villageBoundaryArchives": {
+        "expected": 27,
+        "downloadedAndAudited": 14,
+        "missing": 13,
+        "totalFeatures": 71484,
+        "invalidGeometries": 37,
+        "crsMetadataConflicts": 1
+      },
+      "eci": {
+        "indexStatus": "HTTP_406",
+        "directGeometryEndpointsStatus": "HTTP_404",
+        "officialHistoricalResultsDownloaded": 0
+      },
+      "census": {
+        "catalogAndPcaWorkbookStatus": "FETCH_FAILED",
+        "sha256": null
+      },
+      "auditReports": [
+        "reports/w021_5_soi_village_boundary_source_audit.json",
+        "reports/w021_5_eci_geojson_candidate_audit.json",
+        "reports/w021_5_datameet_ac_geometry_forensic_audit.json",
+        "reports/w021_5_telangana_arcgis_layer_audit.json"
+      ],
+      "productionWrites": 0,
+      "stagingWrites": 0
+    },
+    {
+      "runId": 40212441232,
+      "workflowUrl": "https://github.com/kshetra-app/Kshetra/actions/runs/40212441232",
+      "artifactId": 12606470712,
+      "artifactName": "w0215-official-geometry-probe-40212441232",
+      "artifactSha256": "299b259082ba51f36b9f9a4c05e94021eaa89d6cba737e9395f3182095f8a056",
+      "compressedBytes": 9968653,
+      "artifactExpiresAt": "2026-11-24T16:39:42Z",
+      "status": "COMPLETED_WITH_FAILURES; BOTH TELANGANA LAYERS ACQUIRED AND AUDITED; DIRECT ECI ENDPOINTS FAILED",
+      "manifestSummary": {
+        "eciDirect404": 3,
+        "eciDirectTimeout": 2,
+        "telanganaMetadataAcquired": 2,
+        "telanganaGeometryAcquired": 2,
+        "featureCountPerTelanganaLayer": 119,
+        "invalidGeometryPerLayer": 1
+      },
+      "downloadedFiles": [
+        {
+          "id": "telangana-layer-metadata",
+          "bytes": 4756,
+          "sha256": "fd91d7803f39a8cc9ae9f2f486224cea777c7127ef5659dd2d073b088dbfb26a"
+        },
+        {
+          "id": "telangana-ac-geometry",
+          "bytes": 12465346,
+          "sha256": "91cd791317836d8a6a8729b03f08fd3aee8c727c82e123b1659972d949d32f27"
+        },
+        {
+          "id": "telangana-2026-layer-metadata",
+          "bytes": 4683,
+          "sha256": "850ba55a5017c7b8eeef0967aa2a073057a1fe9396abc54066c3719ddb451737"
+        },
+        {
+          "id": "telangana-2026-ac-geometry",
+          "bytes": 12463409,
+          "sha256": "ca8cfdc695366d9f04ee6a9fdbf9c52eeefe61d69bc79c9d26d15baa7b84aa03"
+        }
+      ],
+      "auditReport": "reports/evidence/w021_5_telangana_arcgis_geometry_audit_2026-10-25.json",
+      "comparisonReport": "reports/evidence/w021_5_telangana_layer_comparison_2026-10-25.json"
+    },
+    {
+      "runId": 40213242722,
+      "workflowUrl": "https://github.com/kshetra-app/Kshetra/actions/runs/40213242722",
+      "artifactId": null,
+      "artifactName": null,
+      "artifactSha256": null,
+      "status": "CANCELLED_BEFORE_JOB_START_DUE_TO_CONCURRENT_BRANCH_PUSH",
+      "scope": "Compare two additional TGRAC services Endowment_Lands_Admin_New/MapServer/12 and Endowment_Lands_Old/MapServer/13 against the two previously acquired Telangana layers."
+    },
+    {
+      "runId": 40213331746,
+      "workflowUrl": "https://github.com/kshetra-app/Kshetra/actions/runs/40213331746",
+      "artifactId": 12606726593,
+      "artifactName": "w0215-official-geometry-probe-40213331746",
+      "artifactSha256": "71f19cdde380eed19da92817521f6e55b622c690c70174b4222a0214a4be7b88",
+      "status": "COMPLETED_WITH_FAILURES; FOUR TELANGANA SERVICE LAYERS ACQUIRED AND AUDITED",
+      "scope": "Probe TGRAC Endowment_Lands_Admin_New/MapServer/12 and Endowment_Lands_Old/MapServer/13 metadata and geometry, then audit all acquired Telangana AC layers.",
+      "compressedBytes": 19223889,
+      "artifactExpiresAt": "2026-11-24T16:50:05Z",
+      "manifestSummary": {
+        "eciDirect404": 5,
+        "telanganaGeometryLayersAcquired": 4,
+        "featureCountPerLayer": 119,
+        "invalidGeometryPerLayer": 1,
+        "positiveAreaOverlapPairsPerLayer": 0,
+        "unionPartCounts": {
+          "olderLayer24": 1,
+          "endowment2026Layer12": 1,
+          "adminNewLayer12": 1,
+          "adminOldLayer13": 2
+        }
+      },
+      "downloadedFiles": [
+        {
+          "id": "telangana-ac-geometry",
+          "bytes": 12465346,
+          "sha256": "91cd791317836d8a6a8729b03f08fd3aee8c727c82e123b1659972d949d32f27"
+        },
+        {
+          "id": "telangana-2026-ac-geometry",
+          "bytes": 12463409,
+          "sha256": "ca8cfdc695366d9f04ee6a9fdbf9c52eeefe61d69bc79c9d26d15baa7b84aa03"
+        },
+        {
+          "id": "telangana-admin-new-ac-geometry",
+          "bytes": 12463409,
+          "sha256": "ca8cfdc695366d9f04ee6a9fdbf9c52eeefe61d69bc79c9d26d15baa7b84aa03"
+        },
+        {
+          "id": "telangana-admin-old-ac-geometry",
+          "bytes": 12461961,
+          "sha256": "6e33ebf7eba139a0f754e5b56f3e3bc155ab2d9b6c9e571b03dc57e77e418b4c"
+        }
+      ]
+    },
+    {
+      "runId": 40213536854,
+      "workflowUrl": "https://github.com/kshetra-app/Kshetra/actions/runs/40213536854",
+      "artifactId": 12605978917,
+      "artifactName": "w0215-eci-legal-order-40213536854",
+      "artifactSha256": "b8bfdf3d5016144bf37726462a161dedd38f7cf349a3c4fe7fecef1c82e07e3f",
+      "status": "COMPLETED_WITH_SOURCE_UNAVAILABLE; ECI HTTP 406",
+      "scope": "Attempt browser-impersonated raw PDF acquisition and extract Schedule III AC-number/name roster candidate with PyMuPDF.",
+      "compressedBytes": 1381,
+      "manifestSummary": {
+        "httpStatus": 406,
+        "responseBytes": 1035,
+        "responseBodySha256": "7f512a23553028d1fa2006932589acb1a66dc61f6c18be51c9e03b154ef7a4e5",
+        "pdfAcquired": false,
+        "webTextReviewed": true
+      }
+    },
+    {
+      "runId": 40213895574,
+      "workflowUrl": "https://github.com/kshetra-app/Kshetra/actions/runs/40213895574",
+      "artifactId": 12606029313,
+      "artifactName": "w0215-eci-legal-order-40213895574",
+      "artifactSha256": "b8b4ab582062b1b2cab192a86940aded57cdd015ae2db214e25635beb20f32a2",
+      "status": "COMPLETED_SOURCE_HTTP_UNAVAILABLE; ALL_THREE_URL_VARIANTS_HTTP_406",
+      "scope": "Retry official ECI 2008 order PDF using a persistent browser-impersonated session, homepage cookies and URL-encoding variants; extract Schedule III roster if acquired.",
+      "compressedBytes": 2870,
+      "artifactExpiresAt": "2026-11-24T16:54:39Z",
+      "manifestSummary": {
+        "urlVariantsTried": 3,
+        "httpStatusEach": 406,
+        "responseBytesEach": 1035,
+        "pdfAcquired": false,
+        "webPdfTextReviewed": true
+      }
+    },
+    {
+      "runId": 40213959324,
+      "workflowUrl": "https://github.com/kshetra-app/Kshetra/actions/runs/40213959324",
+      "artifactId": null,
+      "artifactName": null,
+      "artifactSha256": null,
+      "status": "IN_PROGRESS_AT_LAST_CHECK",
+      "scope": "Repeat four-service Telangana probe after changing the runner to report optional ECI 404/timeouts as warnings while keeping both primary Telangana geometry source checks strict."
+    }
+  ],
+  "updatedAt": "2026-10-25",
+  "notes": [
+    "Actual public source artifacts were downloaded in GitHub Actions run 40209022405 and SHA-256 hashed; detailed geometry findings are in reports/w021_5_datameet_ac_geometry_forensic_audit.json.",
+    "Survey of India official ABDB page, Vector Data Catalog 2025 PDF and Metadata_ABDB.zip were downloaded and hashed. The metadata covers state, district, subdistrict and village boundaries, not statutory Assembly Constituency polygons.",
+    "The first ECI direct downloads failed (HTTP 406/404); a retry with browser headers and pinned third-party ECI-portal-derived GeoJSON candidates is running. Do not claim these ECI geometry files downloaded until the second artifact manifest confirms it.",
+    "Additional connected-source probe: a 835,011-byte Puducherry GeoJSON mirror was acquired and SHA-256 hashed (2786e744aa7394c85d977a317a1d1e33cb3eb78dbea45a272375fc9a48e54338); its structural checks are documented in reports/evidence/w021_5_stage_b_acquisition_probe_2026-10-25.json. It is secondary, licence status is unconfirmed, and it does not close any external gate.",
+    "Retry workflow 40211792541 is currently in progress; no artifact has been published at last check. The prior completed run 40209022405 remains the only workflow artifact reviewed so far. Do not assume the retry succeeded.",
+    "Focused official geometry probe 40212122850 was queued to prioritize the five direct ECI endpoints and Telangana state GIS layer; it is separate from the broad source-acquisition retry 40211792541. Inspect its uploaded manifest before making claims.",
+    "Focused geometry probe run 40212122850 independently confirmed all five ECI .js URLs return 404 and the Telangana ArcGIS metadata endpoint is reachable. The initial f=geojson query was unsupported; corrected f=json query is queued in 40212257196. The probe ZIP SHA-256 was independently verified as e30baeff7c4ba94b0eee8d0e3fda41ddd7262a9880f7f4ac8e6ad9b9d7ce270e.",
+    "Telangana layer 24 geometry was acquired in run 40212257196 (119 features; SHA-256 91cd791317836d8a6a8729b03f08fd3aee8c727c82e123b1659972d949d32f27). Independent Shapely audit found one self-intersection in Dornakal (ST) Assembly; this candidate is not accepted. A second service EndowmentLands_Admin_2026/MapServer/12 is under probe in run 40212441232.",
+    "Broad source-acquisition run 40211792541 completed successfully: 31/61 source artifacts downloaded and hashed (142,219,649 source bytes), 24 failed. Five ECI-derived mirror GeoJSONs were acquired but rejected for canonical use after topology audit. Survey of India village boundaries were acquired for 14/27 jurisdictions, with 71,484 features, 37 invalid geometries, one CRS metadata conflict; they are not AC polygons or delivery-beat polygons.",
+    "Focused run 40212441232 acquired both the older Telangana Assembly Constituency Boundary layer and the EndowmentLands_Admin_2026 layer (119 features each). Both contain the same invalid Dornakal polygon and zero positive-area overlaps. Cross-layer comparison found 7 geometries differing above 0.01 m² and a maximum Hausdorff distance of about 3.04 km; neither layer can be selected without legal/source-owner adjudication.",
+    "Official ECI 2008 Delimitation Order PDF was read through the web PDF reader. Schedule III lists Andhra Pradesh Assembly constituencies and their territorial extents; a partial crosswalk for nine disputed/defective Telangana ACs is recorded in reports/evidence/w021_5_telangana_layer_comparison_2026-10-25.json. The PDF binary was not downloaded in this session, so no binary SHA-256 is claimed.",
+    "Additional official Telangana GIS service variants Admin_New layer 12 and Admin_Old layer 13 were discovered in the TGRAC service catalog and queued for comparison in run 40213242722. Do not choose among service names until geometry and legal effective-date evidence are reconciled.",
+    "The TGRAC Admin_New layer is byte-for-byte identical to the EndowmentLands_Admin_2026 layer (same 12,463,409-byte payload and SHA-256). Admin_Old is a distinct 12,461,961-byte payload; its 119-feature union has two disconnected components and one invalid Dornakal polygon. The official ECI 2008 PDF binary endpoint returned HTTP 406 (1,035-byte error body, SHA-256 7f512a...); web PDF text was reviewed, but no PDF binary hash is claimed.",
+    "Four Telangana GIS service variants are now acquired. Three EndowmentLands variants form one geometry family; the Admin_New and Admin_2026 payloads are byte-identical, while Admin_Old differs only at sub-millimetre coordinate precision. The older AdministrativeInfoSystem layer is the outlier with six material AC geometry shifts. Prefer the newer family for legal validation, not canonical import.",
+    "Enhanced ECI PDF retrieval used a persistent Chrome-impersonated session, homepage-cookie attempt, three URL variants and browser headers; all returned HTTP 406 with 1,035-byte HTML bodies. The legal PDF remains readable through the web PDF reader, but its binary bytes/hash are unavailable from this acquisition route.",
+    "Evidence-only branch created from master to isolate W021.5 Stage B source research, legal acquisition, and geometry-probe evidence from the broader PR #25 implementation."
+  ],
+  "secondaryGeometryAudit": {
+    "sourceRepository": "https://github.com/saisantoshv3/assemnbly_gis_files",
+    "sourceCommit": "730263a08afa3cf7a0cd12db68bcddc90aefcc03",
+    "candidateCount": 5,
+    "features": 824,
+    "invalidGeometries": 23,
+    "acceptedAsOfficial": 0,
+    "report": "reports/w021_5_eci_geojson_candidate_audit.json"
+  },
+  "officialTelanganaLayerAudit": {
+    "source": "https://tgrac.telangana.gov.in/arcgis/rest/services/AdministrativeInfoSystem_Folder/Administrative_Information_System/MapServer/24",
+    "features": 119,
+    "invalidGeometries": 1,
+    "allRowsHaveZeroTOT_P_TOT_M_TOT_F": true,
+    "disposition": "GEOMETRY_CANDIDATE_ONLY; DEMOGRAPHIC ATTRIBUTES REJECTED",
+    "report": "reports/w021_5_telangana_arcgis_layer_audit.json"
+  },
+  "nationalCoverageStatus": "INCOMPLETE — 14/27 SOI village archives downloaded; no primary national Assembly Constituency geometry or national official historical-results backfill acquired.",
+  "layerFamilyComparison": {
+    "report": "reports/evidence/w021_5_telangana_layer_comparison_2026-10-25.json",
+    "leadingCandidateFamily": [
+      "EndowmentLands_Admin_2026/MapServer/12",
+      "Endowment_Lands_Admin_New/MapServer/12",
+      "Endowment_Lands_Old/MapServer/13"
+    ],
+    "familyFinding": "First two payloads byte-identical; third differs only by sub-millimetre coordinate precision; all three have 119 features and the same invalid Dornakal polygon.",
+    "outlier": "AdministrativeInfoSystem_Folder/Administrative_Information_System/MapServer/24",
+    "outlierDifferences": [
+      "Warangal West",
+      "Warangal East",
+      "Ibrahimpatnam",
+      "Munugode",
+      "Peddapalle",
+      "Manthani"
+    ],
+    "negligiblePrecisionDifference": [
+      "Sirpur"
+    ],
+    "acceptedAsCanonical": false
+  },
+  "lastDecision": "Statutory roster name crosswalk passed against two TGRAC candidate layers with 12/11 provisional aliases, but no polygon extent acceptance. CEO Telangana's official 2024 schedule and PIB's official HTML are additional legal-chain corroboration candidates; raw bytes/hash still needed."
+}
