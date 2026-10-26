@@ -1986,6 +1986,29 @@ describe('CTO Directive 123 — Residual Electoral Data-Truth & Provisional Look
       }
     });
 
+    it('binds the manifest to successor-state Schedule XXVII/III extracts and corrects stale statutory extents', () => {
+      const tsPath = path.resolve(__dirname, '../../../../data/evidence/w021_5/authoritative/ap_reorganisation_act_2014_schedule_xxvii_telangana_table_a_extract.txt');
+      const apPath = path.resolve(__dirname, '../../../../data/evidence/w021_5/authoritative/ap_reorganisation_act_2014_schedule_iii_andhra_pradesh_table_a_extract.txt');
+      const ts = validatorModule.parseStatutoryTableBExtract(tsPath);
+      const ap = validatorModule.parseStatutoryTableBExtract(apPath);
+      expect(Object.keys(ts)).toHaveLength(20);
+      expect(Object.keys(ap)).toHaveLength(5);
+      expect(ts[66].name).toBe('Charminar');
+      expect(ts[66].extent).toContain('Ward No. 20 to 23');
+      expect(ts[67].extent).toContain('Ward No. 18 (Part), Block No. 1 to 3 and 8 to 14');
+      expect(ts[69].extent).toContain('Ward No. 18 (Part), Block No. 4 and 5');
+      expect(ap[79].extent).toContain('Ward No. 1 to 13, 15 to 19, 75 and 76');
+      expect(ap[80].extent).toContain('Ward No. 14, 20 to 31, 33 to 35, 42 to 44, 49, 77 and 78');
+
+      const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+      for (const entry of manifest.entries) {
+        const expectedPath = entry.stateCode === 'TS' ? 'data/evidence/w021_5/authoritative/ap_reorganisation_act_2014_schedule_xxvii_telangana_table_a_extract.txt' : 'data/evidence/w021_5/authoritative/ap_reorganisation_act_2014_schedule_iii_andhra_pradesh_table_a_extract.txt';
+        expect(entry.referenceDocumentPath).toBe(expectedPath);
+        expect(entry.sourceArtifactSha256).toBe(validatorModule.computeFileSha256(path.resolve(__dirname, '../../../../' + expectedPath)));
+        expect(entry.sourceLocator).not.toMatch(/Schedule II, Table B|Schedule XXXI, Table B/);
+      }
+    });
+
     it('fails closed when a referenced statutory extract is explicitly invalidated, even if its digest matches the manifest', () => {
       const tsPath = path.resolve(__dirname, '../../../../data/evidence/w021_5/authoritative/eci_delimitation_2008_schedule_xxxi_table_b_extract.txt');
       const apPath = path.resolve(__dirname, '../../../../data/evidence/w021_5/authoritative/eci_delimitation_2008_schedule_ii_table_b_extract.txt');
