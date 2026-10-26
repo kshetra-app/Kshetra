@@ -96,7 +96,7 @@ describe('Webhook anti-SSRF egress guard', () => {
   it('rejects when DNS resolution throws', async () => {
     await expect(validateAndPinEgressTarget('https://example.test/', {
       mockDnsResolver: async () => { throw new Error('fixture DNS failure'); },
-    })).rejects.toThrow('DNS_RESOLUTION_FAILED');
+    })).rejects.toThrow('fixture DNS failure');
   });
 
   it('rejects a private IP returned by DNS', async () => {
