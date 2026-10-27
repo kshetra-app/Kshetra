@@ -141,4 +141,77 @@ export async function userRoutes(app: FastifyInstance) {
       unfollowed: true,
     });
   });
+  /**
+   * 3. PATCH /api/v1/user/profile — Update user profile (Class B Methods 46/47)
+   */
+  app.patch<{
+    Body: {
+      displayName?: string;
+      avatarUrl?: string;
+      bio?: string;
+      constituencyId?: string;
+      preferredLanguage?: string;
+      stateCode?: string;
+      userId?: string;
+    };
+  }>('/api/v1/user/profile', {
+    schema: {
+      body: {
+        type: 'object',
+        properties: {
+          displayName: { type: 'string', minLength: 1, maxLength: 100 },
+          avatarUrl: { type: 'string' },
+          bio: { type: 'string', maxLength: 500 },
+          constituencyId: { type: 'string' },
+          preferredLanguage: { type: 'string' },
+          stateCode: { type: 'string' },
+          userId: { type: 'string' },
+        },
+      },
+    },
+  }, async (request, reply) => {
+    const auth = await resolveAuthenticatedUser(request, reply);
+    if (!auth) return;
+
+    if (!assertActingUserMatch(reply, request, auth.userId, request.body?.userId, 'userId')) {
+      return;
+    }
+
+    if (!isSupabaseConfigured) {
+      return sendApiError(reply, request, 503, 'Service Unavailable', 'Database service is not configured', {
+        code: 'DATABASE_UNAVAILABLE',
+      });
+    }
+
+    const { displayName, avatarUrl, bio, constituencyId, preferredLanguage, stateCode } = request.body;
+    const updates: Record<string, any> = { updated_at: new Date().toISOString() };
+    if (displayName !== undefined) updates.display_name = displayName;
+    if (avatarUrl !== undefined) updates.avatar_url = avatarUrl;
+    if (bio !== undefined) updates.bio = bio;
+    if (constituencyId !== undefined) updates.constituency_id = constituencyId;
+    if (preferredLanguage !== undefined) updates.preferred_language = preferredLanguage;
+    if (stateCode !== undefined) updates.state_code = stateCode;
+
+    try {
+      const { data, error } = await supabase
+        .from('user_profiles')
+        .update(updates)
+        .eq('user_id', auth.userId)
+        .select('*')
+        .maybeSingle();
+
+      if (error) {
+        return sendApiError(reply, request, 500, 'Internal Server Error', error.message, {
+          code: 'DATABASE_ERROR',
+        });
+      }
+
+      return reply.send({ success: true, profile: data });
+    } catch (err: any) {
+      return sendApiError(reply, request, 500, 'Internal Server Error', 'Database error updating profile', {
+        code: 'DATABASE_ERROR',
+      });
+    }
+  });
+
 }

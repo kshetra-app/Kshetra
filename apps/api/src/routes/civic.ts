@@ -1000,4 +1000,96 @@ export async function civicRoutes(app: FastifyInstance) {
     }
     return { success: true, id: data.id, issueId: id, message: 'Comment added successfully' };
   });
+  /** 18. POST /api/v1/civic/issues/:id/tag-mla — tag MLA on civic issue */
+  app.post<{
+    Params: { id: string };
+  }>('/api/v1/civic/issues/:id/tag-mla', {
+    schema: {
+      params: {
+        type: 'object',
+        required: ['id'],
+        properties: { id: { type: 'string' } },
+      },
+    },
+  }, async (request, reply) => {
+    const auth = await resolveAuthUser(request);
+    if (!auth) {
+      return sendApiError(reply, request, 401, 'Unauthorized', 'Authentication required to tag MLA', {
+        code: 'UNAUTHORIZED',
+      });
+    }
+    if (!isSupabaseConfigured) {
+      return sendApiError(reply, request, 503, 'Service Unavailable', 'Database is unavailable', {
+        code: 'DATABASE_UNAVAILABLE',
+      });
+    }
+    const { id } = request.params;
+    const { error } = await supabase
+      .from('civic_issues')
+      .update({ mla_tagged: true })
+      .eq('id', id);
+
+    if (error) {
+      return sendApiError(reply, request, 500, 'Internal Server Error', error.message, {
+        code: 'DATABASE_ERROR',
+      });
+    }
+    return { success: true, issueId: id, mlaTagged: true };
+  });
+
+  /** 19. POST /api/v1/civic/issues/:id/dispute — dispute issue resolution */
+  app.post<{
+    Params: { id: string };
+    Body: { reason: string; userId?: string };
+  }>('/api/v1/civic/issues/:id/dispute', {
+    schema: {
+      params: {
+        type: 'object',
+        required: ['id'],
+        properties: { id: { type: 'string' } },
+      },
+      body: {
+        type: 'object',
+        required: ['reason'],
+        properties: {
+          reason: { type: 'string', minLength: 1, maxLength: 1000 },
+          userId: { type: 'string' },
+        },
+      },
+    },
+  }, async (request, reply) => {
+    const auth = await resolveAuthUser(request);
+    if (!auth) {
+      return sendApiError(reply, request, 401, 'Unauthorized', 'Authentication required to dispute issue', {
+        code: 'UNAUTHORIZED',
+      });
+    }
+    if (request.body?.userId && request.body.userId !== auth.userId) {
+      return sendApiError(reply, request, 403, 'Forbidden', 'Identity spoofing rejected: userId does not match authenticated user', {
+        code: 'FORBIDDEN',
+      });
+    }
+    if (!isSupabaseConfigured) {
+      return sendApiError(reply, request, 503, 'Service Unavailable', 'Database is unavailable', {
+        code: 'DATABASE_UNAVAILABLE',
+      });
+    }
+    const { id } = request.params;
+    const { reason } = request.body;
+    const { error } = await supabase
+      .from('issue_disputes')
+      .upsert({
+        issue_id: id,
+        user_id: auth.userId,
+        reason,
+      }, { onConflict: 'issue_id,user_id' });
+
+    if (error) {
+      return sendApiError(reply, request, 500, 'Internal Server Error', error.message, {
+        code: 'DATABASE_ERROR',
+      });
+    }
+    return { success: true, issueId: id, disputed: true };
+  });
+
 }

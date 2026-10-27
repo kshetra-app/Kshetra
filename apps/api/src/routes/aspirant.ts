@@ -105,7 +105,7 @@ export async function aspirantRoutes(app: FastifyInstance) {
         properties: { id: { type: 'string' } },
       },
       body: {
-        type: 'object',
+        type: ['object', 'null'],
         properties: { userId: { type: 'string' } },
       },
     },
@@ -224,4 +224,127 @@ export async function aspirantRoutes(app: FastifyInstance) {
       endorsedAt: now,
     });
   });
+  /**
+   * 4. POST /api/v1/aspirant/register — Register candidate profile
+   */
+  app.post<{
+    Body: {
+      userId?: string;
+      targetConstituencyId?: string;
+      partyAffiliation?: string;
+      manifestoUrl?: string;
+      visionSummary?: string;
+    };
+  }>('/api/v1/aspirant/register', {
+    schema: {
+      body: {
+        type: ['object', 'null'],
+        properties: {
+          userId: { type: 'string' },
+          targetConstituencyId: { type: 'string' },
+          partyAffiliation: { type: 'string' },
+          manifestoUrl: { type: 'string' },
+          visionSummary: { type: 'string', maxLength: 2000 },
+        },
+      },
+    },
+  }, async (request, reply) => {
+    const auth = await resolveAuthenticatedUser(request, reply);
+    if (!auth) return;
+
+    if (!assertActingUserMatch(reply, request, auth.userId, request.body?.userId, 'userId')) {
+      return;
+    }
+
+    if (!isSupabaseConfigured) {
+      return sendApiError(reply, request, 503, 'Service Unavailable', 'Database service is not configured', {
+        code: 'DATABASE_UNAVAILABLE',
+      });
+    }
+
+    const { targetConstituencyId, partyAffiliation, manifestoUrl, visionSummary } = request.body;
+    try {
+      const { data, error } = await supabase
+        .from('aspirant_profiles')
+        .upsert({
+          user_id: auth.userId,
+          target_constituency_id: targetConstituencyId || null,
+          party_affiliation: partyAffiliation || null,
+          manifesto_url: manifestoUrl || null,
+          vision_summary: visionSummary || null,
+          created_at: new Date().toISOString(),
+        }, { onConflict: 'user_id' })
+        .select('*')
+        .single();
+
+      if (error) {
+        return sendApiError(reply, request, 500, 'Internal Server Error', error.message, {
+          code: 'DATABASE_ERROR',
+        });
+      }
+
+      return reply.status(201).send({ success: true, profile: data });
+    } catch (err: any) {
+      return sendApiError(reply, request, 500, 'Internal Server Error', 'Database error registering aspirant', {
+        code: 'DATABASE_ERROR',
+      });
+    }
+  });
+
+  /**
+   * 5. POST /api/v1/aspirant/modules/:id/start — Start module
+   */
+  app.post<{
+    Params: { id: string };
+    Body: { userId?: string };
+  }>('/api/v1/aspirant/modules/:id/start', {
+    schema: {
+      params: {
+        type: 'object',
+        required: ['id'],
+        properties: { id: { type: 'string' } },
+      },
+      body: {
+        type: ['object', 'null'],
+        properties: { userId: { type: 'string' } },
+      },
+    },
+  }, async (request, reply) => {
+    const auth = await resolveAuthenticatedUser(request, reply);
+    if (!auth) return;
+
+    if (!assertActingUserMatch(reply, request, auth.userId, request.body?.userId, 'userId')) {
+      return;
+    }
+
+    if (!isSupabaseConfigured) {
+      return sendApiError(reply, request, 503, 'Service Unavailable', 'Database service is not configured', {
+        code: 'DATABASE_UNAVAILABLE',
+      });
+    }
+
+    const { id: moduleId } = request.params;
+    try {
+      const { error } = await supabase
+        .from('module_progress')
+        .upsert({
+          user_id: auth.userId,
+          module_id: moduleId,
+          started_at: new Date().toISOString(),
+        }, { onConflict: 'user_id,module_id' });
+
+      if (error) {
+        return sendApiError(reply, request, 500, 'Internal Server Error', error.message, {
+          code: 'DATABASE_ERROR',
+        });
+      }
+
+      return reply.send({ success: true, moduleId, userId: auth.userId, started: true });
+    } catch (err: any) {
+      return sendApiError(reply, request, 500, 'Internal Server Error', 'Database error starting module', {
+        code: 'DATABASE_ERROR',
+      });
+    }
+  });
+
 }

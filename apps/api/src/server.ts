@@ -35,6 +35,8 @@ import { contributorRoutes } from './routes/contributor';
 import { userRoutes } from './routes/users';
 import { analyticsRoutes } from './routes/analytics';
 import { shortsRoutes } from './routes/shorts';
+import { feedRoutes } from './routes/feed';
+import { promiseRoutes } from './routes/promises';
 import { metricsRoutes } from './routes/metrics';
 import { debugRoutes } from './routes/debug';
 import { metricsCollector } from './lib/metrics';
@@ -253,6 +255,8 @@ export async function buildApp() {
   await app.register(userRoutes);
   await app.register(analyticsRoutes);
   await app.register(shortsRoutes);
+  await app.register(feedRoutes);
+  await app.register(promiseRoutes);
   await app.register(metricsRoutes, { prefix: '/api' });
   await app.register(debugRoutes, { prefix: '/api' });
   await app.register(saasAuthPlugin);

@@ -173,12 +173,8 @@ export async function tagMLAOnIssue(issueId: string): Promise<boolean> {
   if (!guard()) return false;
   try {
     addBreadcrumb('civic', 'tag_mla', { issueId });
-    const { error } = await supabase
-      .from('civic_issues')
-      .update({ mla_tagged: true })
-      .eq('id', issueId);
-    if (error) throw error;
-    return true;
+    const res = await apiClient.civic.tagMLAOnIssue(issueId);
+    return res.success;
   } catch (err) {
     captureException(err as Error, { op: 'tag_mla', issueId });
     return false;
@@ -187,21 +183,15 @@ export async function tagMLAOnIssue(issueId: string): Promise<boolean> {
 
 export async function disputeIssueResolution(
   issueId: string,
-  userId: string,
-  reason: string,
+  reasonOrUserId: string,
+  maybeReason?: string,
 ): Promise<boolean> {
   if (!guard()) return false;
+  const reason = maybeReason ?? reasonOrUserId;
   try {
     addBreadcrumb('civic', 'dispute_resolution', { issueId });
-    const { error } = await supabase
-      .from('issue_disputes')
-      .upsert({
-        issue_id: issueId,
-        user_id: userId,
-        reason,
-      }, { onConflict: 'issue_id,user_id' });
-    if (error) throw error;
-    return true;
+    const res = await apiClient.civic.disputeIssueResolution(issueId, reason);
+    return res.success;
   } catch (err) {
     captureException(err as Error, { op: 'dispute_resolution', issueId });
     return false;
@@ -229,56 +219,24 @@ export async function updateIssueStatus(
 
 // ─── Feed / Posts ────────────────────────────────────────────────────
 
-export async function reactToPost(postId: string, userId: string, reaction: string): Promise<boolean> {
+export async function reactToPost(postId: string, _userId: string, reaction: string): Promise<boolean> {
   if (!guard()) return false;
   try {
     addBreadcrumb('feed', 'react_post', { postId, reaction });
-    const { error } = await supabase
-      .from('reactions')
-      .upsert(
-        { post_id: postId, user_id: userId, type: reaction },
-        { onConflict: 'user_id,post_id' },
-      );
-    if (error) throw error;
-
-    // Log notification for post author (if not reacting to own post)
-    supabase
-      .from('posts')
-      .select('author_id')
-      .eq('id', postId)
-      .maybeSingle()
-      .then(({ data: postData }) => {
-        if (postData?.author_id && postData.author_id !== userId) {
-          supabase.from('notification_log').insert({
-            user_id: postData.author_id,
-            trigger_type: 'reaction',
-            title: 'New Reaction',
-            body: `Someone reacted with ${reaction} to your post.`,
-            source_post_id: postId,
-            read: false,
-          }).then(({ error: notifErr }) => {
-            if (notifErr) console.warn('[Notification] Failed to log reaction notification:', notifErr.message);
-          });
-        }
-      });
-
-    return true;
+    const res = await apiClient.feed.reactToPost(postId, reaction);
+    return res.success;
   } catch (err) {
     captureException(err as Error, { op: 'react_post', postId });
     return false;
   }
 }
 
-export async function removeReaction(postId: string, userId: string): Promise<boolean> {
+export async function removeReaction(postId: string, _userId?: string): Promise<boolean> {
   if (!guard()) return false;
   try {
     addBreadcrumb('feed', 'remove_reaction', { postId });
-    const { error } = await supabase
-      .from('reactions')
-      .delete()
-      .match({ post_id: postId, user_id: userId });
-    if (error) throw error;
-    return true;
+    const res = await apiClient.feed.removeReaction(postId);
+    return res.success;
   } catch (err) {
     captureException(err as Error, { op: 'remove_reaction', postId });
     return false;
@@ -296,69 +254,43 @@ export async function composePost(post: {
   language?: string;
 }): Promise<{ id: string | null; success: boolean }> {
   if (!guard()) return { id: null, success: false };
-
-  // Moderate content before insertion
-  const modCheck = await checkContentModeration(post.content);
-  if (modCheck.flagged) {
-    throw new Error(`This content could not be posted — it violates community guidelines (${modCheck.reason || 'moderation policy'}).`);
-  }
   try {
     addBreadcrumb('feed', 'compose_post', { type: post.type });
-    const { data, error } = await supabase
-      .from('posts')
-      .insert({
-        content: post.content,
-        type: post.type,
-        state_code: post.stateCode,
-        author_id: post.authorId,
-        constituency_id: post.constituencyId ?? null,
-        parent_id: post.parentId ?? null,
-        language: post.language ?? 'en',
-      })
-      .select('id')
-      .single();
-    if (error) throw error;
-
-    // Insert hashtags if present
-    if (post.hashtags && post.hashtags.length > 0 && data?.id) {
-      await syncHashtags(data.id, post.hashtags);
-    }
-
-    return { id: data?.id ?? null, success: true };
+    const res = await apiClient.feed.composePost({
+      content: post.content,
+      type: post.type as any,
+      stateCode: post.stateCode,
+      authorId: post.authorId,
+      constituencyId: post.constituencyId,
+      parentId: post.parentId,
+      language: post.language,
+      hashtags: post.hashtags,
+    });
+    return { id: res.id ?? null, success: res.success };
   } catch (err) {
     captureException(err as Error, { op: 'compose_post' });
     return { id: null, success: false };
   }
 }
 
-export async function editPost(postId: string, content: string, userId: string): Promise<boolean> {
+export async function editPost(postId: string, content: string, _userId?: string): Promise<boolean> {
   if (!guard()) return false;
   try {
     addBreadcrumb('feed', 'edit_post', { postId });
-    const { error } = await supabase
-      .from('posts')
-      .update({ content, updated_at: new Date().toISOString() })
-      .eq('id', postId)
-      .eq('author_id', userId);
-    if (error) throw error;
-    return true;
+    const res = await apiClient.feed.editPost(postId, content);
+    return res.success;
   } catch (err) {
     captureException(err as Error, { op: 'edit_post', postId });
     return false;
   }
 }
 
-export async function deletePost(postId: string, userId: string): Promise<boolean> {
+export async function deletePost(postId: string, _userId?: string): Promise<boolean> {
   if (!guard()) return false;
   try {
     addBreadcrumb('feed', 'delete_post', { postId });
-    const { error } = await supabase
-      .from('posts')
-      .update({ is_deleted: true, content: '[Deleted]' })
-      .eq('id', postId)
-      .eq('author_id', userId);
-    if (error) throw error;
-    return true;
+    const res = await apiClient.feed.deletePost(postId);
+    return res.success;
   } catch (err) {
     captureException(err as Error, { op: 'delete_post', postId });
     return false;
@@ -368,16 +300,13 @@ export async function deletePost(postId: string, userId: string): Promise<boolea
 export async function votePoll(
   pollId: string,
   optionId: string,
-  userId: string,
+  _userId?: string,
 ): Promise<boolean> {
   if (!guard()) return false;
   try {
     addBreadcrumb('feed', 'vote_poll', { pollId, optionId });
-    const { error } = await supabase
-      .from('poll_votes')
-      .insert({ poll_id: pollId, option_id: optionId, user_id: userId });
-    if (error) throw error;
-    return true;
+    const res = await apiClient.feed.votePoll(pollId, optionId);
+    return res.success;
   } catch (err) {
     captureException(err as Error, { op: 'vote_poll', pollId });
     return false;
@@ -386,49 +315,15 @@ export async function votePoll(
 
 export async function addPostComment(
   postId: string,
-  userId: string,
+  _userId: string,
   content: string,
   language?: string,
 ): Promise<{ id: string | null; success: boolean }> {
-  // Moderate content before insertion
-  const modCheck = await checkContentModeration(content);
-  if (modCheck.flagged) {
-    throw new Error(`This content could not be posted — it violates community guidelines (${modCheck.reason || 'moderation policy'}).`);
-  }
-
   if (!guard()) return { id: null, success: false };
   try {
     addBreadcrumb('feed', 'add_comment', { postId });
-    const { data, error } = await supabase
-      .from('comments')
-      .insert({ post_id: postId, author_id: userId, content, language: language ?? 'en' })
-      .select('id')
-      .single();
-    if (error) throw error;
-
-    // Log notification for post author (if not commenting on own post)
-    supabase
-      .from('posts')
-      .select('author_id')
-      .eq('id', postId)
-      .maybeSingle()
-      .then(({ data: postData }) => {
-        if (postData?.author_id && postData.author_id !== userId) {
-          supabase.from('notification_log').insert({
-            user_id: postData.author_id,
-            trigger_type: 'comment_reply',
-            title: 'New Comment',
-            body: content.slice(0, 100),
-            source_post_id: postId,
-            source_comment_id: data?.id ?? null,
-            read: false,
-          }).then(({ error: notifErr }) => {
-            if (notifErr) console.warn('[Notification] Failed to log comment notification:', notifErr.message);
-          });
-        }
-      });
-
-    return { id: data?.id ?? null, success: true };
+    const res = await apiClient.feed.addPostComment(postId, content, language);
+    return { id: res.id ?? null, success: res.success };
   } catch (err) {
     captureException(err as Error, { op: 'add_comment', postId });
     return { id: null, success: false };
@@ -437,20 +332,14 @@ export async function addPostComment(
 
 export async function reactToComment(
   commentId: string,
-  userId: string,
+  _userId: string,
   reaction: string,
 ): Promise<boolean> {
   if (!guard()) return false;
   try {
     addBreadcrumb('feed', 'react_comment', { commentId, reaction });
-    const { error } = await supabase
-      .from('reactions')
-      .upsert(
-        { comment_id: commentId, user_id: userId, type: reaction },
-        { onConflict: 'user_id,comment_id' },
-      );
-    if (error) throw error;
-    return true;
+    const res = await apiClient.feed.reactToComment(commentId, reaction);
+    return res.success;
   } catch (err) {
     captureException(err as Error, { op: 'react_comment', commentId });
     return false;
@@ -459,17 +348,13 @@ export async function reactToComment(
 
 export async function removeCommentReaction(
   commentId: string,
-  userId: string,
+  _userId?: string,
 ): Promise<boolean> {
   if (!guard()) return false;
   try {
     addBreadcrumb('feed', 'remove_comment_reaction', { commentId });
-    const { error } = await supabase
-      .from('reactions')
-      .delete()
-      .match({ comment_id: commentId, user_id: userId });
-    if (error) throw error;
-    return true;
+    const res = await apiClient.feed.removeCommentReaction(commentId);
+    return res.success;
   } catch (err) {
     captureException(err as Error, { op: 'remove_comment_reaction', commentId });
     return false;
@@ -478,60 +363,31 @@ export async function removeCommentReaction(
 
 export async function deletePostComment(
   commentId: string,
-  userId: string,
+  _userId?: string,
 ): Promise<boolean> {
   if (!guard()) return false;
   try {
     addBreadcrumb('feed', 'delete_comment', { commentId });
-    const { error } = await supabase
-      .from('comments')
-      .update({ is_deleted: true, content: '[Deleted]' })
-      .eq('id', commentId)
-      .eq('author_id', userId);
-    if (error) throw error;
-    return true;
+    const res = await apiClient.feed.deletePostComment(commentId);
+    return res.success;
   } catch (err) {
     captureException(err as Error, { op: 'delete_comment', commentId });
     return false;
   }
 }
 
-async function syncHashtags(postId: string, tags: string[]): Promise<void> {
-  for (const tag of tags) {
-    const normalized = tag.toLowerCase().replace(/^#/, '');
-    // Upsert hashtag
-    const { data } = await supabase
-      .from('hashtags')
-      .upsert({ tag: normalized }, { onConflict: 'tag' })
-      .select('id')
-      .single();
-    if (data?.id) {
-      await supabase
-        .from('post_hashtags')
-        .upsert({ post_id: postId, hashtag_id: data.id }, { onConflict: 'post_id,hashtag_id' });
-    }
-  }
-}
-
 // ─── Promises ────────────────────────────────────────────────────────
 
-export async function followPromise(promiseId: string, userId: string, follow: boolean): Promise<boolean> {
+export async function followPromise(
+  promiseId: string,
+  _userId: string,
+  follow: boolean,
+): Promise<boolean> {
   if (!guard()) return false;
   try {
     addBreadcrumb('promises', follow ? 'follow_promise' : 'unfollow_promise', { promiseId });
-    if (follow) {
-      const { error } = await supabase
-        .from('promise_follows')
-        .upsert({ promise_id: promiseId, user_id: userId }, { onConflict: 'promise_id,user_id' });
-      if (error) throw error;
-    } else {
-      const { error } = await supabase
-        .from('promise_follows')
-        .delete()
-        .match({ promise_id: promiseId, user_id: userId });
-      if (error) throw error;
-    }
-    return true;
+    const res = await apiClient.promises.followPromise(promiseId, follow);
+    return res.success;
   } catch (err) {
     captureException(err as Error, { op: 'follow_promise', promiseId });
     return false;
@@ -548,17 +404,14 @@ export async function submitEvidence(evidence: {
   if (!guard()) return false;
   try {
     addBreadcrumb('promises', 'submit_evidence', { promiseId: evidence.promiseId });
-    const { error } = await supabase
-      .from('promise_evidence')
-      .insert({
-        promise_id: evidence.promiseId,
-        user_id: evidence.userId,
-        evidence_type: evidence.type,
-        description: evidence.description,
-        url: evidence.url,
-      });
-    if (error) throw error;
-    return true;
+    const res = await apiClient.promises.submitEvidence(evidence.promiseId, {
+      title: evidence.description || 'Promise Evidence',
+      description: evidence.description,
+      type: evidence.type,
+      url: evidence.url,
+      userId: evidence.userId,
+    });
+    return res.success;
   } catch (err) {
     captureException(err as Error, { op: 'submit_evidence', promiseId: evidence.promiseId });
     return false;
@@ -575,22 +428,8 @@ export async function toggleFavorite(
   if (!guard()) return false;
   try {
     addBreadcrumb('favorites', isFavorite ? 'add' : 'remove', { constituencyId });
-    if (isFavorite) {
-      const { error } = await supabase
-        .from('favorites')
-        .upsert(
-          { constituency_id: constituencyId, user_id: userId },
-          { onConflict: 'constituency_id,user_id' },
-        );
-      if (error) throw error;
-    } else {
-      const { error } = await supabase
-        .from('favorites')
-        .delete()
-        .match({ constituency_id: constituencyId, user_id: userId });
-      if (error) throw error;
-    }
-    return true;
+    const res = await apiClient.promises.toggleFavorite(constituencyId, userId, isFavorite);
+    return res.success;
   } catch (err) {
     captureException(err as Error, { op: 'toggle_favorite', constituencyId });
     return false;
@@ -614,169 +453,123 @@ export async function uploadShort(short: {
   stateAccent?: string;
 }): Promise<{ id: string | null; success: boolean }> {
   if (!guard()) return { id: null, success: false };
-  if (!isValidUuid(short.uploadedBy)) {
-    return { id: null, success: false };
-  }
   try {
     addBreadcrumb('shorts', 'upload', { title: short.title });
-    const { data, error } = await supabase
-      .from('political_shorts')
-      .insert({
-        title: short.title,
-        video_url: short.videoUrl,
-        channel_name: short.channelName,
-        uploaded_by: short.uploadedBy,
-        state_code: short.stateCode,
-        state_name: short.stateName ?? null,
-        constituency_id: short.constituencyId ?? null,
-        district_name: short.districtName ?? null,
-        duration: short.duration,
-        hashtags: short.hashtags ?? [],
-        gradient_colors: short.gradientColors ?? [],
-        state_accent: short.stateAccent ?? null,
-        status: 'pending',
-      })
-      .select('id')
-      .single();
-    if (error) throw error;
-    if (!data?.id || !isValidUuid(data.id)) {
-      return { id: null, success: false };
-    }
-    return { id: data.id, success: true };
+    const res = await apiClient.shorts.uploadShort({
+      title: short.title,
+      videoUrl: short.videoUrl,
+      channelName: short.channelName,
+      uploadedBy: short.uploadedBy,
+      stateCode: short.stateCode,
+      constituencyId: short.constituencyId,
+      duration: short.duration,
+      durationSeconds: short.duration,
+    });
+    return { id: res.id ?? null, success: res.success };
   } catch (err) {
     captureException(err as Error, { op: 'upload_short' });
     return { id: null, success: false };
   }
 }
 
-export async function approveShort(shortId: string, userId: string, constituencyId?: string): Promise<boolean> {
+export async function approveShort(
+  shortId: string,
+  _userId: string,
+  constituencyId?: string,
+): Promise<boolean> {
   if (!guard()) return false;
-  if (!isValidUuid(shortId) || !isValidUuid(userId)) return false;
   try {
     addBreadcrumb('shorts', 'approve', { shortId });
-    const { error } = await supabase
-      .from('short_approvals')
-      .insert({ short_id: shortId, user_id: userId, constituency_id: constituencyId ?? null });
-    if (error) throw error;
-    return true;
+    const res = await apiClient.shorts.approveShort(shortId, constituencyId);
+    return res.success;
   } catch (err) {
     captureException(err as Error, { op: 'approve_short', shortId });
     return false;
   }
 }
 
-export async function flagShort(shortId: string, userId: string, reason?: string): Promise<boolean> {
+export async function flagShort(
+  shortId: string,
+  _userId: string,
+  reason?: string,
+): Promise<boolean> {
   if (!guard()) return false;
-  if (!isValidUuid(shortId) || !isValidUuid(userId)) return false;
   try {
     addBreadcrumb('shorts', 'flag', { shortId });
-    const { error } = await supabase
-      .from('short_flags')
-      .insert({ short_id: shortId, user_id: userId, reason: reason ?? null });
-    if (error) throw error;
-    return true;
+    const res = await apiClient.shorts.flagShort(shortId, reason);
+    return res.success;
   } catch (err) {
     captureException(err as Error, { op: 'flag_short', shortId });
     return false;
   }
 }
 
-
 // ─── User Profile ────────────────────────────────────────────────────
 
-export async function updateUserProfile(userId: string, updates: {
-  displayName?: string;
-  bio?: string;
-  avatarUrl?: string;
-  role?: string;
-  stateCode?: string;
-  constituencyId?: string;
-}): Promise<boolean> {
+export async function updateUserProfile(
+  userId: string,
+  updates: {
+    displayName?: string;
+    bio?: string;
+    avatarUrl?: string;
+    role?: string;
+    stateCode?: string;
+    constituencyId?: string;
+  },
+): Promise<boolean> {
   if (!guard()) return false;
   try {
     addBreadcrumb('profile', 'update', { userId });
-    const row: Record<string, unknown> = {};
-    if (updates.displayName !== undefined) row.display_name = updates.displayName;
-    if (updates.bio !== undefined) row.bio = updates.bio;
-    if (updates.avatarUrl !== undefined) row.avatar_url = updates.avatarUrl;
-    if (updates.role !== undefined) row.role = updates.role;
-    if (updates.stateCode !== undefined) row.state_code = updates.stateCode;
-    if (updates.constituencyId !== undefined) row.constituency_id = updates.constituencyId;
-
-    const { error } = await supabase
-      .from('user_profiles')
-      .update(row)
-      .eq('user_id', userId);
-    if (error) throw error;
-    return true;
+    const res = await apiClient.users.updateProfile(updates);
+    return res.success;
   } catch (err) {
     captureException(err as Error, { op: 'update_profile', userId });
     return false;
   }
 }
 
-export async function updateMyProfile(userId: string, updates: { displayName?: string; bio?: string }): Promise<void> {
+export async function updateMyProfile(
+  userId: string,
+  updates: { displayName?: string; bio?: string },
+): Promise<void> {
   if (!guard()) return;
-  const { error } = await supabase
-    .from('user_profiles')
-    .update({
-      display_name: updates.displayName,
-      bio: updates.bio,
-    })
-    .eq('user_id', userId);
-
-  if (error) throw error;
+  await updateUserProfile(userId, updates);
 }
 
 // ─── Aspirant / Leadership Academy ───────────────────────────────────
 
-export async function registerAspirant(userId: string, profile: {
-  displayName: string;
-  bio?: string;
-  stateCode: string;
-  targetConstituencyAcNo?: number;
-  targetConstituencyName?: string;
-  partyAffiliation?: string;
-  isIndependent?: boolean;
-}): Promise<{ id: string | null; success: boolean }> {
+export async function registerAspirant(
+  userId: string,
+  profile: {
+    displayName: string;
+    bio?: string;
+    stateCode: string;
+    targetConstituencyAcNo?: number;
+    targetConstituencyName?: string;
+    partyAffiliation?: string;
+    isIndependent?: boolean;
+  },
+): Promise<{ id: string | null; success: boolean }> {
   if (!guard()) return { id: null, success: false };
   try {
     addBreadcrumb('aspirant', 'register', { userId });
-    const { data, error } = await supabase
-      .from('aspirant_profiles')
-      .upsert({
-        user_id: userId,
-        display_name: profile.displayName,
-        bio: profile.bio ?? null,
-        state_code: profile.stateCode,
-        target_constituency_ac_no: profile.targetConstituencyAcNo ?? null,
-        target_constituency_name: profile.targetConstituencyName ?? null,
-        party_affiliation: profile.partyAffiliation ?? null,
-        is_independent: profile.isIndependent ?? true,
-      }, { onConflict: 'user_id' })
-      .select('id')
-      .single();
-    if (error) throw error;
-    return { id: data?.id ?? null, success: true };
+    const res = await apiClient.aspirant.register(userId, profile);
+    return { id: res.profile?.id ?? null, success: res.success };
   } catch (err) {
     captureException(err as Error, { op: 'register_aspirant' });
     return { id: null, success: false };
   }
 }
 
-export async function startModule(userId: string, moduleId: string): Promise<boolean> {
+export async function startModule(
+  _userId: string,
+  moduleId: string,
+): Promise<boolean> {
   if (!guard()) return false;
   try {
     addBreadcrumb('academy', 'start_module', { moduleId });
-    const { error } = await supabase
-      .from('module_progress')
-      .upsert({
-        user_id: userId,
-        module_id: moduleId,
-        started_at: new Date().toISOString(),
-      }, { onConflict: 'user_id,module_id' });
-    if (error) throw error;
-    return true;
+    const res = await apiClient.aspirant.startModule(moduleId);
+    return res.success;
   } catch (err) {
     captureException(err as Error, { op: 'start_module', moduleId });
     return false;
@@ -867,6 +660,7 @@ export async function submitKYC(userId: string, kyc: {
   termsAcceptedAt?: string;
   termsVersion?: string;
 }): Promise<{ id: string | null; success: boolean }> {
+  if (!guard()) return { id: null, success: false };
   try {
     addBreadcrumb('kyc', 'submit', { userId });
     const res = await fetch(`${API_BASE_URL}/api/v1/contributor/kyc`, {

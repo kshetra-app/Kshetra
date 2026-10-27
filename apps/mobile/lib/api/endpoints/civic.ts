@@ -238,4 +238,34 @@ export class CivicEndpoint {
       rtiId: response.data.rtiId,
     };
   }
+
+  /**
+   * 13. Tag MLA on issue.
+   */
+  async tagMLAOnIssue(issueId: string): Promise<{ success: boolean; issueId: string }> {
+    if (!issueId) {
+      throw new ApiValidationError('Invalid issueId: must be a non-empty string');
+    }
+    const response = await this.client.post<{ success: boolean; issueId: string }>(
+      `/api/v1/civic/issues/${encodeURIComponent(issueId)}/tag-mla`,
+      {},
+      { authPolicy: 'authenticated' },
+    );
+    return response.data;
+  }
+
+  /**
+   * 14. Dispute issue resolution.
+   */
+  async disputeIssueResolution(issueId: string, reason: string): Promise<{ success: boolean; issueId: string }> {
+    if (!issueId || !reason) {
+      throw new ApiValidationError('Invalid dispute: issueId and reason are required');
+    }
+    const response = await this.client.post<{ success: boolean; issueId: string }>(
+      `/api/v1/civic/issues/${encodeURIComponent(issueId)}/dispute`,
+      { reason },
+      { authPolicy: 'authenticated' },
+    );
+    return response.data;
+  }
 }

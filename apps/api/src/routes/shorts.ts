@@ -168,4 +168,202 @@ export async function shortsRoutes(app: FastifyInstance) {
       createdAt: now,
     });
   });
+  /**
+   * 3. POST /api/v1/shorts — Upload political short (Class B Method 41)
+   */
+  app.post<{
+    Body: {
+      title: string;
+      videoUrl: string;
+      thumbnailUrl?: string;
+      description?: string;
+      stateCode: string;
+      constituencyId?: string;
+      authorId?: string;
+      durationSeconds?: number;
+    };
+  }>('/api/v1/shorts', {
+    schema: {
+      body: {
+        type: 'object',
+        required: ['title', 'videoUrl', 'stateCode'],
+        properties: {
+          title: { type: 'string', minLength: 1, maxLength: 300 },
+          videoUrl: { type: 'string', minLength: 1 },
+          thumbnailUrl: { type: 'string' },
+          description: { type: 'string' },
+          stateCode: { type: 'string', minLength: 2, maxLength: 2 },
+          constituencyId: { type: 'string' },
+          authorId: { type: 'string' },
+          durationSeconds: { type: 'number' },
+        },
+      },
+    },
+  }, async (request, reply) => {
+    const auth = await resolveAuthenticatedUser(request, reply);
+    if (!auth) return;
+
+    if (!assertActingUserMatch(reply, request, auth.userId, request.body?.authorId, 'authorId')) {
+      return;
+    }
+
+    if (!isSupabaseConfigured) {
+      return sendApiError(reply, request, 503, 'Service Unavailable', 'Database service is not configured', {
+        code: 'DATABASE_UNAVAILABLE',
+      });
+    }
+
+    const body = request.body;
+    try {
+      const { data, error } = await supabase
+        .from('political_shorts')
+        .insert({
+          title: body.title,
+          video_url: body.videoUrl,
+          thumbnail_url: body.thumbnailUrl || null,
+          description: body.description || null,
+          state_code: body.stateCode,
+          constituency_id: body.constituencyId || null,
+          author_id: auth.userId,
+          duration_seconds: body.durationSeconds || 0,
+        })
+        .select('*')
+        .single();
+
+      if (error || !data) {
+        return sendApiError(reply, request, 500, 'Internal Server Error', error?.message || 'Failed to upload short', {
+          code: 'DATABASE_ERROR',
+        });
+      }
+
+      return reply.status(201).send({ success: true, id: data.id, short: data });
+    } catch (err: any) {
+      return sendApiError(reply, request, 500, 'Internal Server Error', 'Database error uploading short', {
+        code: 'DATABASE_ERROR',
+      });
+    }
+  });
+
+  /**
+   * 4. POST /api/v1/shorts/:id/approve — Community approve short (Class B Method 42)
+   */
+  app.post<{
+    Params: { id: string };
+    Body: { constituencyId?: string; userId?: string };
+  }>('/api/v1/shorts/:id/approve', {
+    schema: {
+      params: {
+        type: 'object',
+        required: ['id'],
+        properties: { id: { type: 'string' } },
+      },
+      body: {
+        type: 'object',
+        properties: {
+          constituencyId: { type: 'string' },
+          userId: { type: 'string' },
+        },
+      },
+    },
+  }, async (request, reply) => {
+    const auth = await resolveAuthenticatedUser(request, reply);
+    if (!auth) return;
+
+    if (!assertActingUserMatch(reply, request, auth.userId, request.body?.userId, 'userId')) {
+      return;
+    }
+
+    if (!isSupabaseConfigured) {
+      return sendApiError(reply, request, 503, 'Service Unavailable', 'Database service is not configured', {
+        code: 'DATABASE_UNAVAILABLE',
+      });
+    }
+
+    const { id: shortId } = request.params;
+    const { constituencyId } = request.body || {};
+
+    try {
+      const { error } = await supabase
+        .from('short_approvals')
+        .insert({
+          short_id: shortId,
+          user_id: auth.userId,
+          constituency_id: constituencyId ?? null,
+        });
+
+      if (error) {
+        return sendApiError(reply, request, 500, 'Internal Server Error', error.message, {
+          code: 'DATABASE_ERROR',
+        });
+      }
+
+      return reply.send({ success: true, shortId, approved: true });
+    } catch (err: any) {
+      return sendApiError(reply, request, 500, 'Internal Server Error', 'Database error approving short', {
+        code: 'DATABASE_ERROR',
+      });
+    }
+  });
+
+  /**
+   * 5. POST /api/v1/shorts/:id/flag — Flag short (Class B Method 43)
+   */
+  app.post<{
+    Params: { id: string };
+    Body: { reason?: string; userId?: string };
+  }>('/api/v1/shorts/:id/flag', {
+    schema: {
+      params: {
+        type: 'object',
+        required: ['id'],
+        properties: { id: { type: 'string' } },
+      },
+      body: {
+        type: 'object',
+        properties: {
+          reason: { type: 'string', maxLength: 500 },
+          userId: { type: 'string' },
+        },
+      },
+    },
+  }, async (request, reply) => {
+    const auth = await resolveAuthenticatedUser(request, reply);
+    if (!auth) return;
+
+    if (!assertActingUserMatch(reply, request, auth.userId, request.body?.userId, 'userId')) {
+      return;
+    }
+
+    if (!isSupabaseConfigured) {
+      return sendApiError(reply, request, 503, 'Service Unavailable', 'Database service is not configured', {
+        code: 'DATABASE_UNAVAILABLE',
+      });
+    }
+
+    const { id: shortId } = request.params;
+    const { reason } = request.body || {};
+
+    try {
+      const { error } = await supabase
+        .from('short_flags')
+        .insert({
+          short_id: shortId,
+          user_id: auth.userId,
+          reason: reason || null,
+        });
+
+      if (error) {
+        return sendApiError(reply, request, 500, 'Internal Server Error', error.message, {
+          code: 'DATABASE_ERROR',
+        });
+      }
+
+      return reply.send({ success: true, shortId, flagged: true });
+    } catch (err: any) {
+      return sendApiError(reply, request, 500, 'Internal Server Error', 'Database error flagging short', {
+        code: 'DATABASE_ERROR',
+      });
+    }
+  });
+
 }
