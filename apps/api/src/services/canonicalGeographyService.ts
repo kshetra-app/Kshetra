@@ -181,21 +181,23 @@ export class CanonicalGeographyService {
       .select('code, name, total_seats, ruling_party, centroid_lat, centroid_lng, lgd_code, census_code_2011, internal_id')
       .order('name');
 
-    if (error || !data) {
+    if (error || !data || !Array.isArray(data)) {
       return [];
     }
 
-    return data.map((row: any) => ({
-      code: row.code,
-      name: row.name,
-      totalSeats: row.total_seats ?? 0,
-      rulingParty: row.ruling_party ?? null,
-      centroidLat: row.centroid_lat ?? null,
-      centroidLng: row.centroid_lng ?? null,
-      lgdCode: row.lgd_code ?? null,
-      censusCode2011: row.census_code_2011 ?? null,
-      internalId: row.internal_id ?? null,
-    }));
+    return data
+      .filter((row: any) => row && row.code && row.name)
+      .map((row: any) => ({
+        code: row.code,
+        name: row.name,
+        totalSeats: row.total_seats ?? 0,
+        rulingParty: row.ruling_party ?? null,
+        centroidLat: row.centroid_lat ?? null,
+        centroidLng: row.centroid_lng ?? null,
+        lgdCode: row.lgd_code ?? null,
+        censusCode2011: row.census_code_2011 ?? null,
+        internalId: row.internal_id ?? null,
+      }));
   }
 
   /**
@@ -211,7 +213,7 @@ export class CanonicalGeographyService {
       .eq('code', cleanCode)
       .maybeSingle();
 
-    if (error || !data) {
+    if (error || !data || !data.code || !data.name) {
       return null;
     }
 
@@ -243,19 +245,21 @@ export class CanonicalGeographyService {
     }
 
     const { data, error } = await query.order('pc_number');
-    if (error || !data) {
+    if (error || !data || !Array.isArray(data)) {
       return [];
     }
 
-    return data.map((row: any) => ({
-      id: row.id,
-      code: row.code,
-      stateCode: row.state_code,
-      pcNumber: row.pc_number,
-      name: row.name,
-      reservation: row.reservation || 'general',
-      eciPcCode: row.eci_pc_code ?? null,
-    }));
+    return data
+      .filter((row: any) => row && row.code && row.name)
+      .map((row: any) => ({
+        id: row.id,
+        code: row.code,
+        stateCode: row.state_code,
+        pcNumber: row.pc_number,
+        name: row.name,
+        reservation: row.reservation || 'general',
+        eciPcCode: row.eci_pc_code ?? null,
+      }));
   }
 
   /**
@@ -275,7 +279,7 @@ export class CanonicalGeographyService {
     }
 
     const { data, error } = await query.maybeSingle();
-    if (error || !data) return null;
+    if (error || !data || !data.code || !data.name) return null;
 
     return {
       id: data.id,
@@ -303,13 +307,47 @@ export class CanonicalGeographyService {
       .eq('state_code', code)
       .order('ac_no');
 
-    if (error || !data || data.length === 0) {
+    if (error || !data || !Array.isArray(data) || data.length === 0) {
       return [];
     }
 
-    return data.map((row: any) => {
+    const validRows = data.filter((row: any) => row && row.name && typeof row.ac_no === 'number');
+    if (validRows.length === 0) {
+      return [];
+    }
+
+    // Enrich with elected_tenures if available
+    const tenureMap = new Map<string, { currentParty: string; currentMLA: string }>();
+    try {
+      const { data: tenures } = await supabase
+        .from('elected_tenures')
+        .select('jurisdiction_id, current_party, canonical_persons(name)')
+        .eq('jurisdiction_type', 'assembly_constituency')
+        .eq('is_current', true);
+
+      if (tenures && Array.isArray(tenures)) {
+        for (const t of tenures as any[]) {
+          if (t && t.jurisdiction_id) {
+            tenureMap.set(t.jurisdiction_id, {
+              currentParty: t.current_party || '',
+              currentMLA: t.canonical_persons?.name || '',
+            });
+          }
+        }
+      }
+    } catch {
+      // Graceful fallback if elected_tenures is unmigrated or unpopulated
+    }
+
+    return validRows.map((row: any) => {
       let currentParty = row.current_party || '';
       let currentMLA = row.current_mla || '';
+
+      const tenure = tenureMap.get(row.id);
+      if (tenure) {
+        if (!currentParty && tenure.currentParty) currentParty = tenure.currentParty;
+        if (!currentMLA && tenure.currentMLA) currentMLA = tenure.currentMLA;
+      }
 
       const override = resolveByElectionOverride(code, row.ac_no, row.name);
       if (override) {
@@ -344,7 +382,7 @@ export class CanonicalGeographyService {
       .eq('ac_no', acNo)
       .maybeSingle();
 
-    if (error || !data) {
+    if (error || !data || !data.name || typeof data.ac_no !== 'number') {
       return null;
     }
 
@@ -385,11 +423,13 @@ export class CanonicalGeographyService {
       .or(`name.ilike.%${q}%,district.ilike.%${q}%`)
       .order('ac_no');
 
-    if (error || !data) {
+    if (error || !data || !Array.isArray(data)) {
       return [];
     }
 
-    return data.map((row: any) => {
+    const validRows = data.filter((row: any) => row && row.name && typeof row.ac_no === 'number');
+
+    return validRows.map((row: any) => {
       let currentParty = row.current_party || '';
       let currentMLA = row.current_mla || '';
 

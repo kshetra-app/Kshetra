@@ -47,6 +47,7 @@ import { PromisesEndpoint } from './endpoints/promises';
 import { ShortsEndpoint } from './endpoints/shorts';
 import { AspirantEndpoint } from './endpoints/aspirant';
 import { UsersEndpoint } from './endpoints/users';
+import { NotificationsEndpoint } from './endpoints/notifications';
 
 export class ApiClient {
   readonly baseUrl: string;
@@ -68,6 +69,7 @@ export class ApiClient {
   readonly shorts: ShortsEndpoint;
   readonly aspirant: AspirantEndpoint;
   readonly users: UsersEndpoint;
+  readonly notifications: NotificationsEndpoint;
 
   constructor(config: ApiClientConfig) {
     this.baseUrl = config.baseUrl.replace(/\/+$/, '');
@@ -89,6 +91,7 @@ export class ApiClient {
     this.shorts = new ShortsEndpoint(this);
     this.aspirant = new AspirantEndpoint(this);
     this.users = new UsersEndpoint(this);
+    this.notifications = new NotificationsEndpoint(this);
   }
 
   /**

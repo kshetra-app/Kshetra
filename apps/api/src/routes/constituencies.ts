@@ -22,6 +22,10 @@ import {
   getStateInfo,
   searchConstituencies,
   getConstituencyElectionData,
+  canonicalGeographyService,
+  getCanonicalConstituencies,
+  getCanonicalConstituency,
+  getCanonicalConstituencyElectionData,
 } from '../services/stateData';
 import { sendApiError } from '../lib/replyHelper';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
@@ -397,38 +401,15 @@ export async function constituencyRoutes(app: FastifyInstance) {
     const { stateCode } = request.params as { stateCode: string };
     const code = stateCode.toUpperCase();
 
-    // Strangler pattern: Query live database when Supabase is configured (fail-closed on error)
+    // Strangler pattern: Query canonical geography when Supabase is configured (fail-closed on error)
     if (isSupabaseConfigured) {
       try {
-        const { data: dbData, error } = await supabase
-          .from('constituencies')
-          .select('id, name, ac_no, state_code, district, reservation_status, current_party, current_mla')
-          .eq('state_code', code)
-          .order('ac_no', { ascending: true });
-
-        if (error) {
-          app.log.error({ err: error.message, stateCode: code }, 'Database query error retrieving constituencies');
-          return sendApiError(reply, request, 500, 'Internal Server Error', 'Database error retrieving constituencies', {
-            code: 'DATABASE_ERROR',
-          });
-        }
-
-        if (dbData && dbData.length > 0) {
-          const mapped: ConstituencyBrief[] = dbData.map((row: any) => ({
-            id: row.id || `${code}-AC-${row.ac_no}`,
-            name: row.name,
-            acNo: row.ac_no,
-            stateCode: row.state_code || code,
-            district: row.district || '',
-            reservationStatus: (row.reservation_status as 'GEN' | 'SC' | 'ST') || 'GEN',
-            currentParty: row.current_party || '',
-            currentMLA: row.current_mla || '',
-          }));
-
+        const dbConstituencies = await canonicalGeographyService.getConstituencies(code);
+        if (dbConstituencies && dbConstituencies.length > 0) {
           return {
             state: code,
-            count: mapped.length,
-            data: mapped,
+            count: dbConstituencies.length,
+            data: dbConstituencies,
           };
         }
       } catch (err: any) {
@@ -471,47 +452,39 @@ export async function constituencyRoutes(app: FastifyInstance) {
         acNo = parseInt(parts[1], 10);
       }
 
-      // Strangler pattern: Query live database when Supabase is configured (fail-closed on error)
+      // Strangler pattern: Query canonical geography when Supabase is configured (fail-closed on error)
       if (isSupabaseConfigured && !isNaN(acNo)) {
         try {
-          const { data: row, error } = await supabase
-            .from('constituencies')
-            .select('*')
-            .eq('state_code', code)
-            .eq('ac_no', acNo)
-            .maybeSingle();
-
-          if (error) {
-            app.log.error({ err: error.message, stateCode: code, acNo }, 'Database query error retrieving constituency detail');
-            return sendApiError(reply, request, 500, 'Internal Server Error', 'Database error retrieving constituency detail', {
-              code: 'DATABASE_ERROR',
-            });
-          }
-
+          const row = await canonicalGeographyService.getConstituency(code, acNo);
           if (row) {
-            const electionData = getConstituencyElectionData(code, acNo);
+            const electionData = await getCanonicalConstituencyElectionData(code, acNo);
             const recentElection = electionData?.recentElection ?? {
               electionYear: null,
               electionType: 'GENERAL' as const,
-              winner: row.current_party || '',
-              winnerName: row.current_mla || '',
+              winner: row.currentParty || '',
+              winnerName: row.currentMLA || '',
               winnerVotes: null,
               runnerUp: '',
               margin: null,
               marginPercent: null,
             };
 
+            const elections = electionData?.elections ?? [recentElection];
+
+            const election2023 = {
+              winner: recentElection.winner,
+              winnerName: recentElection.winnerName,
+              winnerVotes: recentElection.winnerVotes ?? 0,
+              runnerUp: recentElection.runnerUp,
+              margin: recentElection.margin ?? 0,
+              marginPercent: recentElection.marginPercent ?? 0,
+            };
+
             return {
-              id: row.id || `${code}-AC-${row.ac_no}`,
-              name: row.name,
-              acNo: row.ac_no,
-              stateCode: row.state_code || code,
-              district: row.district || '',
-              reservationStatus: (row.reservation_status as 'GEN' | 'SC' | 'ST') || 'GEN',
-              currentParty: row.current_party || '',
-              currentMLA: row.current_mla || '',
+              ...row,
               recentElection,
-              elections: electionData?.elections ?? [recentElection],
+              elections,
+              election2023,
             };
           }
         } catch (err: any) {
@@ -589,7 +562,17 @@ export async function constituencyRoutes(app: FastifyInstance) {
     const { stateCode } = request.params;
     const { q, party, district, type, minMargin, maxMargin, sort } = request.query;
     const code = stateCode.toUpperCase();
-    const allBriefs = getConstituencies(code);
+    let allBriefs = getConstituencies(code);
+    if (isSupabaseConfigured) {
+      try {
+        const dbAcs = await canonicalGeographyService.getConstituencies(code);
+        if (dbAcs && dbAcs.length > 0) {
+          allBriefs = dbAcs;
+        }
+      } catch {
+        // Fall back to seed data
+      }
+    }
 
     if (allBriefs.length === 0) {
       return { state: code, count: 0, data: [] };

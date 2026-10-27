@@ -36,6 +36,7 @@ export * from './endpoints/promises';
 export * from './endpoints/shorts';
 export * from './endpoints/aspirant';
 export * from './endpoints/users';
+export * from './endpoints/notifications';
 export * from '../staleResponseGuard';
 export {
   resolveRequestId,

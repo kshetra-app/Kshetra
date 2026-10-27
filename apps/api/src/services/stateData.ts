@@ -695,11 +695,11 @@ export async function getCanonicalStateInfo(stateCode: string): Promise<StateDat
   if (canonicalGeographyService.isAvailable()) {
     try {
       const dbState = await canonicalGeographyService.getState(stateCode);
-      if (dbState) {
+      if (dbState && dbState.name) {
         return {
           ...baseInfo,
           name: dbState.name,
-          totalSeats: dbState.totalSeats,
+          totalSeats: dbState.totalSeats > 0 ? dbState.totalSeats : baseInfo.totalSeats,
         };
       }
     } catch {
@@ -721,11 +721,11 @@ export async function getAllCanonicalStatesInfo(): Promise<StateDataInfo[]> {
         const dbStateMap = new Map(dbStates.map((s) => [s.code.toUpperCase(), s]));
         return baseList.map((info) => {
           const match = dbStateMap.get(info.code);
-          if (match) {
+          if (match && match.name) {
             return {
               ...info,
               name: match.name,
-              totalSeats: match.totalSeats,
+              totalSeats: match.totalSeats > 0 ? match.totalSeats : info.totalSeats,
             };
           }
           return info;
