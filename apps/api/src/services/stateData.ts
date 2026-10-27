@@ -106,28 +106,119 @@ const HISTORICAL_GETTERS: Record<string, (acNo: number) => { year?: number; part
   JK: getJK2014Result,
 };
 
+import * as canonicalGeoModule from './canonicalGeographyService';
+import type {
+  CanonicalStateRecord,
+  CanonicalParliamentaryConstituencyRecord,
+  CanonicalConstituencyRecord,
+  ByElectionScheduleItem,
+} from './canonicalGeographyService';
+
+// ─── DYNAMIC BY-ELECTION SCHEDULE REGISTRY ───
+
+export const CONFIRMED_BY_ELECTIONS: ByElectionScheduleItem[] = [
+  {
+    stateCode: 'TN',
+    acNo: 35,
+    constituencyName: 'Madurantakam',
+    party: 'TVK',
+    mlaName: 'K. Maragatham Kumaravel',
+    status: 'CONFIRMED',
+    termYear: 2026,
+    gazetteReference: 'ECI By-Election Notification October 2026',
+  },
+  {
+    stateCode: 'TN',
+    acNo: 101,
+    constituencyName: 'Dharapuram',
+    party: 'TVK',
+    mlaName: 'P. Sathyabama',
+    status: 'CONFIRMED',
+    termYear: 2026,
+    gazetteReference: 'ECI By-Election Notification October 2026',
+  },
+  {
+    stateCode: 'WB',
+    acNo: 210,
+    constituencyName: 'Nandigram',
+    party: 'BJP',
+    mlaName: 'Hasi Rani Rath',
+    status: 'CONFIRMED',
+    termYear: 2026,
+    gazetteReference: 'ECI By-Election Notification October 2026',
+  },
+  {
+    stateCode: 'WB',
+    acNo: 70,
+    constituencyName: 'Swarupnagar',
+    party: 'BJP',
+    mlaName: 'Shankharavh Sarkar',
+    status: 'CONFIRMED',
+    termYear: 2026,
+    gazetteReference: 'ECI By-Election Notification October 2026',
+  },
+  {
+    stateCode: 'PY',
+    acNo: 9,
+    constituencyName: 'Thattanchavady',
+    party: 'AINRC',
+    mlaName: 'Ashok Anand',
+    status: 'CONFIRMED',
+    termYear: 2026,
+    gazetteReference: 'ECI By-Election Notification October 2026',
+  },
+];
+
+export function resolveByElectionOverride(
+  stateCode: string,
+  acNo: number,
+  constituencyName?: string,
+): { currentParty: string; currentMLA: string; status: string } | null {
+  if (typeof canonicalGeoModule?.resolveByElectionOverride === 'function') {
+    return canonicalGeoModule.resolveByElectionOverride(stateCode, acNo, constituencyName);
+  }
+  if (!stateCode) return null;
+  const code = stateCode.toUpperCase();
+  const found = CONFIRMED_BY_ELECTIONS.find((e) => {
+    if (e.stateCode !== code) return false;
+    if (e.acNo === acNo) return true;
+    if (constituencyName && e.constituencyName.toLowerCase() === constituencyName.toLowerCase()) return true;
+    return false;
+  });
+  if (!found) return null;
+  return {
+    currentParty: found.party,
+    currentMLA: found.mlaName,
+    status: found.status,
+  };
+}
+
+export const canonicalGeographyService =
+  canonicalGeoModule?.canonicalGeographyService ??
+  new (class FallbackCanonicalGeographyService {
+    isAvailable() { return false; }
+    async getStates() { return []; }
+    async getState() { return null; }
+    async getParliamentaryConstituencies() { return []; }
+    async getParliamentaryConstituency() { return null; }
+    async getConstituencies() { return []; }
+    async getConstituency() { return null; }
+    async searchConstituencies() { return []; }
+    async getConstituencyElectionData() { return null; }
+    getConfirmedByElections() { return CONFIRMED_BY_ELECTIONS; }
+  })();
+
 // Generic Mapper
 function genericToBrief(stateCode: string, c: any): ConstituencyBrief {
   const code = stateCode.toUpperCase();
   let currentParty = c.winner2025 ?? c.winner2024 ?? c.winner2023 ?? c.winner2022 ?? c.winner2021 ?? c.winner ?? '';
   let currentMLA = c.winnerName2025 ?? c.winnerName2024 ?? c.winnerName2023 ?? c.winnerName2022 ?? c.winnerName2021 ?? c.winnerName ?? '';
 
-  // By-election overrides for confirmed October 2026 by-elections
-  if (code === 'TN' && c.acNo === 35) {
-    currentParty = 'TVK';
-    currentMLA = 'K. Maragatham Kumaravel';
-  } else if (code === 'TN' && c.acNo === 101) {
-    currentParty = 'TVK';
-    currentMLA = 'P. Sathyabama';
-  } else if (code === 'WB' && c.acNo === 210) {
-    currentParty = 'BJP';
-    currentMLA = 'Hasi Rani Rath';
-  } else if (code === 'WB' && c.acNo === 70) {
-    currentParty = 'BJP';
-    currentMLA = 'Shankharavh Sarkar';
-  } else if (code === 'PY' && (c.acNo === 9 || c.name === 'Thattanchavady')) {
-    currentParty = 'AINRC';
-    currentMLA = 'Ashok Anand';
+  // By-election overrides resolved dynamically via canonicalGeographyService schedule
+  const override = resolveByElectionOverride(code, c.acNo, c.name);
+  if (override) {
+    currentParty = override.currentParty;
+    currentMLA = override.currentMLA;
   }
 
   return {
@@ -463,11 +554,15 @@ export function getConstituencyElectionData(stateCode: string, acNo: number): Co
 
   const elections: ConstituencyElectionSummary[] = [recentElection];
 
-  // Attach verified historical per-constituency election records
-  if (code === 'TS') {
+const MULTI_CYCLE_HISTORICAL_GETTERS: Record<
+  string,
+  (acNo: number) => ConstituencyElectionSummary[]
+> = {
+  TS: (acNo: number) => {
+    const list: ConstituencyElectionSummary[] = [];
     const h2018 = TELANGANA_2018_RESULTS.find((r) => r.acNo === acNo);
     if (h2018) {
-      elections.push({
+      list.push({
         electionYear: 2018,
         electionType: 'GENERAL',
         winner: h2018.party,
@@ -480,7 +575,7 @@ export function getConstituencyElectionData(stateCode: string, acNo: number): Co
     }
     const h2014 = TELANGANA_2014_RESULTS.find((r) => r.acNo === acNo);
     if (h2014) {
-      elections.push({
+      list.push({
         electionYear: 2014,
         electionType: 'GENERAL',
         winner: h2014.party,
@@ -491,10 +586,13 @@ export function getConstituencyElectionData(stateCode: string, acNo: number): Co
         marginPercent: null,
       });
     }
-  } else if (code === 'AP') {
+    return list;
+  },
+  AP: (acNo: number) => {
+    const list: ConstituencyElectionSummary[] = [];
     const h2019 = AP_2019_RESULTS.find((r) => r.acNo === acNo);
     if (h2019) {
-      elections.push({
+      list.push({
         electionYear: 2019,
         electionType: 'GENERAL',
         winner: h2019.party,
@@ -505,6 +603,14 @@ export function getConstituencyElectionData(stateCode: string, acNo: number): Co
         marginPercent: null,
       });
     }
+    return list;
+  },
+};
+
+  // Attach verified historical per-constituency election records via data-driven registry
+  const multiGetter = MULTI_CYCLE_HISTORICAL_GETTERS[code];
+  if (multiGetter) {
+    elections.push(...multiGetter(acNo));
   } else if (HISTORICAL_GETTERS[code]) {
     const hist = HISTORICAL_GETTERS[code](acNo);
     if (hist && hist.year) {
@@ -533,4 +639,116 @@ export function getConstituencyElectionData(stateCode: string, acNo: number): Co
     recentElection,
     elections,
   };
+}
+
+// ─── CANONICAL ASYNC ADAPTER DELEGATES (W021.5) ───
+
+export type {
+  CanonicalStateRecord,
+  CanonicalParliamentaryConstituencyRecord,
+  CanonicalConstituencyRecord,
+  ByElectionScheduleItem,
+};
+
+/**
+ * Asynchronous canonical constituency fetch.
+ * Queries PostgreSQL public.constituencies via canonicalGeographyService when database is configured;
+ * falls back seamlessly to in-memory seed data when offline.
+ */
+export async function getCanonicalConstituencies(stateCode: string): Promise<ConstituencyBrief[]> {
+  if (canonicalGeographyService.isAvailable()) {
+    try {
+      const dbResults = await canonicalGeographyService.getConstituencies(stateCode);
+      if (dbResults && dbResults.length > 0) return dbResults;
+    } catch {
+      // Fall back to seed data on database query exception
+    }
+  }
+  return getConstituencies(stateCode);
+}
+
+/**
+ * Asynchronous canonical single constituency fetch.
+ * Queries PostgreSQL public.constituencies via canonicalGeographyService when database is configured;
+ * falls back seamlessly to in-memory seed data when offline.
+ */
+export async function getCanonicalConstituency(stateCode: string, acNo: number): Promise<ConstituencyBrief | null> {
+  if (canonicalGeographyService.isAvailable()) {
+    try {
+      const dbResult = await canonicalGeographyService.getConstituency(stateCode, acNo);
+      if (dbResult) return dbResult;
+    } catch {
+      // Fall back to seed data on database query exception
+    }
+  }
+  return getConstituency(stateCode, acNo);
+}
+
+/**
+ * Asynchronous canonical state metadata fetch.
+ * Queries PostgreSQL public.states via canonicalGeographyService when database is configured;
+ * falls back to in-memory seed metadata when offline.
+ */
+export async function getCanonicalStateInfo(stateCode: string): Promise<StateDataInfo | null> {
+  const baseInfo = getStateInfo(stateCode);
+  if (!baseInfo) return null;
+  if (canonicalGeographyService.isAvailable()) {
+    try {
+      const dbState = await canonicalGeographyService.getState(stateCode);
+      if (dbState) {
+        return {
+          ...baseInfo,
+          name: dbState.name,
+          totalSeats: dbState.totalSeats,
+        };
+      }
+    } catch {
+      // Fall back to seed info
+    }
+  }
+  return baseInfo;
+}
+
+/**
+ * Asynchronous canonical multi-state metadata fetch.
+ */
+export async function getAllCanonicalStatesInfo(): Promise<StateDataInfo[]> {
+  const baseList = getAllStatesInfo();
+  if (canonicalGeographyService.isAvailable()) {
+    try {
+      const dbStates = await canonicalGeographyService.getStates();
+      if (dbStates && dbStates.length > 0) {
+        const dbStateMap = new Map(dbStates.map((s) => [s.code.toUpperCase(), s]));
+        return baseList.map((info) => {
+          const match = dbStateMap.get(info.code);
+          if (match) {
+            return {
+              ...info,
+              name: match.name,
+              totalSeats: match.totalSeats,
+            };
+          }
+          return info;
+        });
+      }
+    } catch {
+      // Fall back to seed list
+    }
+  }
+  return baseList;
+}
+
+/**
+ * Asynchronous canonical election data fetch.
+ */
+export async function getCanonicalConstituencyElectionData(stateCode: string, acNo: number): Promise<ConstituencyElectionData | null> {
+  if (canonicalGeographyService.isAvailable()) {
+    try {
+      const dbData = await canonicalGeographyService.getConstituencyElectionData(stateCode, acNo);
+      if (dbData && dbData.elections.length > 0) return dbData;
+    } catch {
+      // Fall back to seed
+    }
+  }
+  return getConstituencyElectionData(stateCode, acNo);
 }
