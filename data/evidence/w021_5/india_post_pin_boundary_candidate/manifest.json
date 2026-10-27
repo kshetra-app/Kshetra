@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "title": "Official OGD India All India PIN Boundary resource acquisition (not delivery-beat geometry)",
-  "generatedAtUtc": "2026-10-27T02:56:35.641948+00:00",
+  "generatedAtUtc": "2026-10-27T03:03:12.949215+00:00",
   "databaseAccess": "NONE",
   "TLSVerification": "ENABLED",
   "targetResource": "https://data.gov.in/resource/all-india-pincode-boundary-geojson",
@@ -9,31 +9,31 @@
   "probes": [
     {
       "requestedUrl": "https://data.gov.in/resource/all-india-pincode-boundary-geojson",
-      "attemptedAtUtc": "2026-10-27T02:56:35.641960+00:00",
+      "attemptedAtUtc": "2026-10-27T03:03:12.949229+00:00",
       "status": "FETCH_FAILED_TLS_VERIFICATION_RETAINED",
       "error": "ConnectionError: HTTPSConnectionPool(host='data.gov.in', port=443): Max retries exceeded with url: /resource/all-india-pincode-boundary-geojson (Caused by NewConnectionError(\"HTTPSConnection(host='data.gov.in', port=443): Failed to establish a new connection: [Errno 111] Connection refused\"))"
     },
     {
-      "requestedUrl": "https://api.data.gov.in/resource/all-india-pincode-boundary-geojson",
-      "attemptedAtUtc": "2026-10-27T02:56:36.456576+00:00",
-      "status": "FETCH_FAILED_TLS_VERIFICATION_RETAINED",
-      "error": "ConnectionError: HTTPSConnectionPool(host='api.data.gov.in', port=443): Max retries exceeded with url: /resource/all-india-pincode-boundary-geojson (Caused by NewConnectionError(\"HTTPSConnection(host='api.data.gov.in', port=443): Failed to establish a new connection: [Errno 111] Connection refused\"))"
-    },
-    {
-      "requestedUrl": "https://data.gov.in/api/3/action/package_show?id=all-india-pincode-boundary-geojson",
-      "attemptedAtUtc": "2026-10-27T02:56:36.454540+00:00",
-      "status": "FETCH_FAILED_TLS_VERIFICATION_RETAINED",
-      "error": "ConnectionError: HTTPSConnectionPool(host='data.gov.in', port=443): Max retries exceeded with url: /api/3/action/package_show?id=all-india-pincode-boundary-geojson (Caused by NewConnectionError(\"HTTPSConnection(host='data.gov.in', port=443): Failed to establish a new connection: [Errno 111] Connection refused\"))"
-    },
-    {
       "requestedUrl": "https://data.gov.in/api/3/action/package_search?q=all%20india%20pincode%20boundary",
-      "attemptedAtUtc": "2026-10-27T02:56:36.455278+00:00",
+      "attemptedAtUtc": "2026-10-27T03:03:16.976611+00:00",
       "status": "FETCH_FAILED_TLS_VERIFICATION_RETAINED",
       "error": "ConnectionError: HTTPSConnectionPool(host='data.gov.in', port=443): Max retries exceeded with url: /api/3/action/package_search?q=all%20india%20pincode%20boundary (Caused by NewConnectionError(\"HTTPSConnection(host='data.gov.in', port=443): Failed to establish a new connection: [Errno 111] Connection refused\"))"
     },
     {
+      "requestedUrl": "https://data.gov.in/api/3/action/package_show?id=all-india-pincode-boundary-geojson",
+      "attemptedAtUtc": "2026-10-27T03:03:16.975598+00:00",
+      "status": "FETCH_FAILED_TLS_VERIFICATION_RETAINED",
+      "error": "ConnectionError: HTTPSConnectionPool(host='data.gov.in', port=443): Max retries exceeded with url: /api/3/action/package_show?id=all-india-pincode-boundary-geojson (Caused by NewConnectionError(\"HTTPSConnection(host='data.gov.in', port=443): Failed to establish a new connection: [Errno 111] Connection refused\"))"
+    },
+    {
+      "requestedUrl": "https://api.data.gov.in/resource/all-india-pincode-boundary-geojson",
+      "attemptedAtUtc": "2026-10-27T03:03:16.977831+00:00",
+      "status": "FETCH_FAILED_TLS_VERIFICATION_RETAINED",
+      "error": "ConnectionError: HTTPSConnectionPool(host='api.data.gov.in', port=443): Max retries exceeded with url: /resource/all-india-pincode-boundary-geojson (Caused by NewConnectionError(\"HTTPSConnection(host='api.data.gov.in', port=443): Failed to establish a new connection: [Errno 111] Connection refused\"))"
+    },
+    {
       "requestedUrl": "https://www.data.gov.in/api/3/action/package_show?id=all-india-pincode-boundary-geojson",
-      "attemptedAtUtc": "2026-10-27T02:56:36.456013+00:00",
+      "attemptedAtUtc": "2026-10-27T03:03:16.977503+00:00",
       "finalUrl": "https://www.data.gov.in/api/3/action/package_show?id=all-india-pincode-boundary-geojson",
       "httpStatus": 503,
       "contentType": "text/html",
@@ -41,7 +41,7 @@
       "etag": null,
       "lastModified": null,
       "byteLength": 280,
-      "sha256": "52b65e5e1486aca36a2925fcfdf5e8e7c26e8cbfd0188f3fb0d241ae10d6057f",
+      "sha256": "fc8dcf6cd521e71802b97f387e7c3739f1f44d7f9ad5ca990cc9cd927d3cee17",
       "status": "HTTP_FAILURE_NO_SOURCE_ACCEPTED"
     }
   ],
@@ -59,5 +59,84 @@
     "deliveryBeatGate": "OPEN: actual beat polygons or an authenticated custodian response still required",
     "interpretation": "The PIN dataset is retained only as a distinct postal-area candidate and cannot close EB-03."
   },
-  "completedAtUtc": "2026-10-27T02:56:39.153227+00:00"
+  "archiveCDXQueries": [
+    {
+      "label": "OGD_PIN_RESOURCE_PAGE_CAPTURE",
+      "targetUrl": "https://data.gov.in/resource/all-india-pincode-boundary-geojson",
+      "attemptedAtUtc": "2026-10-27T03:03:13.475938+00:00",
+      "finalUrl": "https://web.archive.org/cdx/search/cdx?url=https%3A%2F%2Fdata.gov.in%2Fresource%2Fall-india-pincode-boundary-geojson&output=json&fl=timestamp%2Coriginal%2Cstatuscode%2Cmimetype%2Cdigest%2Clength&filter=statuscode%3A200&collapse=urlkey&limit=100",
+      "httpStatus": 200,
+      "byteLength": 3,
+      "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+      "status": "NO_CAPTURE_RECORDS",
+      "captureCount": 0
+    },
+    {
+      "label": "OGD_PIN_RESOURCE_PAGE_CAPTURE",
+      "targetUrl": "https://www.data.gov.in/resource/all-india-pincode-boundary-geojson",
+      "attemptedAtUtc": "2026-10-27T03:03:14.061376+00:00",
+      "finalUrl": "https://web.archive.org/cdx/search/cdx?url=https%3A%2F%2Fwww.data.gov.in%2Fresource%2Fall-india-pincode-boundary-geojson&output=json&fl=timestamp%2Coriginal%2Cstatuscode%2Cmimetype%2Cdigest%2Clength&filter=statuscode%3A200&collapse=urlkey&limit=100",
+      "httpStatus": 200,
+      "byteLength": 3,
+      "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+      "status": "NO_CAPTURE_RECORDS",
+      "captureCount": 0
+    },
+    {
+      "label": "OGD_PIN_RESOURCE_PAGE_CAPTURE",
+      "targetUrl": "http://data.gov.in/resource/all-india-pincode-boundary-geojson",
+      "attemptedAtUtc": "2026-10-27T03:03:14.581866+00:00",
+      "finalUrl": "https://web.archive.org/cdx/search/cdx?url=http%3A%2F%2Fdata.gov.in%2Fresource%2Fall-india-pincode-boundary-geojson&output=json&fl=timestamp%2Coriginal%2Cstatuscode%2Cmimetype%2Cdigest%2Clength&filter=statuscode%3A200&collapse=urlkey&limit=100",
+      "httpStatus": 200,
+      "byteLength": 3,
+      "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+      "status": "NO_CAPTURE_RECORDS",
+      "captureCount": 0
+    },
+    {
+      "label": "OBSERVED_RESOURCE_LINK_CAPTURE",
+      "targetUrl": "https://data.gov.in/api/3/action/package_show?id=all-india-pincode-boundary-geojson",
+      "attemptedAtUtc": "2026-10-27T03:03:15.135064+00:00",
+      "finalUrl": "https://web.archive.org/cdx/search/cdx?url=https%3A%2F%2Fdata.gov.in%2Fapi%2F3%2Faction%2Fpackage_show%3Fid%3Dall-india-pincode-boundary-geojson&output=json&fl=timestamp%2Coriginal%2Cstatuscode%2Cmimetype%2Cdigest%2Clength&filter=statuscode%3A200&collapse=urlkey&limit=100",
+      "httpStatus": 200,
+      "byteLength": 3,
+      "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+      "status": "NO_CAPTURE_RECORDS",
+      "captureCount": 0
+    },
+    {
+      "label": "OBSERVED_RESOURCE_LINK_CAPTURE",
+      "targetUrl": "https://data.gov.in/api/3/action/package_search?q=all%20india%20pincode%20boundary",
+      "attemptedAtUtc": "2026-10-27T03:03:15.560489+00:00",
+      "finalUrl": "https://web.archive.org/cdx/search/cdx?url=https%3A%2F%2Fdata.gov.in%2Fapi%2F3%2Faction%2Fpackage_search%3Fq%3Dall%2520india%2520pincode%2520boundary&output=json&fl=timestamp%2Coriginal%2Cstatuscode%2Cmimetype%2Cdigest%2Clength&filter=statuscode%3A200&collapse=urlkey&limit=100",
+      "httpStatus": 200,
+      "byteLength": 3,
+      "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+      "status": "NO_CAPTURE_RECORDS",
+      "captureCount": 0
+    },
+    {
+      "label": "OBSERVED_RESOURCE_LINK_CAPTURE",
+      "targetUrl": "https://www.data.gov.in/api/3/action/package_show?id=all-india-pincode-boundary-geojson",
+      "attemptedAtUtc": "2026-10-27T03:03:16.026982+00:00",
+      "finalUrl": "https://web.archive.org/cdx/search/cdx?url=https%3A%2F%2Fwww.data.gov.in%2Fapi%2F3%2Faction%2Fpackage_show%3Fid%3Dall-india-pincode-boundary-geojson&output=json&fl=timestamp%2Coriginal%2Cstatuscode%2Cmimetype%2Cdigest%2Clength&filter=statuscode%3A200&collapse=urlkey&limit=100",
+      "httpStatus": 200,
+      "byteLength": 3,
+      "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+      "status": "NO_CAPTURE_RECORDS",
+      "captureCount": 0
+    },
+    {
+      "label": "OBSERVED_RESOURCE_LINK_CAPTURE",
+      "targetUrl": "https://api.data.gov.in/resource/all-india-pincode-boundary-geojson",
+      "attemptedAtUtc": "2026-10-27T03:03:16.487147+00:00",
+      "finalUrl": "https://web.archive.org/cdx/search/cdx?url=https%3A%2F%2Fapi.data.gov.in%2Fresource%2Fall-india-pincode-boundary-geojson&output=json&fl=timestamp%2Coriginal%2Cstatuscode%2Cmimetype%2Cdigest%2Clength&filter=statuscode%3A200&collapse=urlkey&limit=100",
+      "httpStatus": 200,
+      "byteLength": 3,
+      "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+      "status": "NO_CAPTURE_RECORDS",
+      "captureCount": 0
+    }
+  ],
+  "completedAtUtc": "2026-10-27T03:03:19.524822+00:00"
 }
