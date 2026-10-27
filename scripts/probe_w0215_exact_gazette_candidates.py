@@ -9,6 +9,7 @@ candidate; the manifest records hashes/statuses for every fetch attempt.
 """
 from __future__ import annotations
 import concurrent.futures, gzip, hashlib, html, json, re, shutil, subprocess
+from collections import Counter
 from datetime import datetime, timezone
 from pathlib import Path
 from urllib.parse import urlencode, urlparse
