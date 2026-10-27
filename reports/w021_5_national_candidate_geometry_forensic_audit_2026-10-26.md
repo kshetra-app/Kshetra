@@ -60,3 +60,23 @@ This audit does **not** close:
 - Actual India Post delivery-beat geometry/data or an authenticated Department of Posts response. PIN-code boundaries and manually described beat lists are not equivalent to verified national delivery-beat polygons.
 
 **Final disposition:** This closes the acquisition and forensic screening of one third-party national candidate, not the national geometry acceptance gate. W021.5 Stage B remains PARTIAL / NOT ACCEPTED; EB-01–EB-05 and W021.5-B1-04 remain open, EB-06 awaits independent adjudication, and Stage C/database access remain unauthorized.
+
+## 6. Additional source/schema anomaly: six non-AC features stored in the candidate's AC directory (2026-10-27)
+
+A feature-level review of the pinned source files exposed an additional categorical data-truth failure not apparent from the aggregate invalid-geometry count. Six features are stored under the repository path pattern `data/states/<code>/ac/<number>.geojson` despite their own properties not supporting the claim that they are Assembly Constituency polygons:
+
+| Repository feature | Feature property | Candidate classification |
+|---|---|---|
+| `data/states/an/ac/1.geojson` | `seatType=LOK_SABHA`, PC name “Andaman and Nicobar Islands”, `sources=["TBD"]` | Parliamentary feature stored as an AC |
+| `data/states/ch/ac/1.geojson` | `seatType=LOK_SABHA`, PC name “Chandigarh”, `sources=["TBD"]` | Parliamentary feature stored as an AC |
+| `data/states/dh/ac/1.geojson` | `seatType=LOK_SABHA`, PC name “Dadra and Nagar Haveli”, `sources=["TBD"]` | Parliamentary feature stored as an AC |
+| `data/states/dh/ac/2.geojson` | `seatType=LOK_SABHA`, PC name “Daman and Diu”, `sources=["TBD"]` | Parliamentary feature stored as an AC |
+| `data/states/la/ac/1.geojson` | `seatType=null`, `pcNo=null`, `pcName=null`, `sources=["TBD"]` | Unclassified, unsourced feature stored as an AC |
+| `data/states/ld/ac/1.geojson` | `seatType=LOK_SABHA`, PC name “Lakshadweep”, `sources=["TBD"]` | Parliamentary feature stored as an AC |
+
+Pinned Git blob IDs for these features were independently retrieved and recorded in source register record `SRC-NATIONAL-AC-CANDIDATE-UT-LEGACY-MIXING-AUDIT-2026-10-27`, master register commit `f511feab581882864e87bde2f21c55f5e33f7771`. The IDs are Git blob IDs, not represented as SHA-256 file digests. The original byte SHA-256 values remain in the candidate's compressed per-file inventory.
+
+These are **schema/feature-identity defects independent of polygon topology**. A file path containing `/ac/` is not evidence that the feature is an Assembly Constituency. The five explicit `LOK_SABHA` values are affirmative evidence that the feature is described as parliamentary geography; the Ladakh feature is unclassified and has no source. All six have `TBD` source attribution. They must all be excluded from an Assembly Constituency geometry acceptance candidate until the source provider establishes valid jurisdiction, feature type, lineage, and legal effective date. This finding further invalidates any assertion that the third-party candidate's 4,129 files form a valid national AC set.
+
+No raw candidate file was changed and no feature was promoted to production. The overall disposition remains unchanged: **candidate only, not official, not canonical, not accepted**.
+
