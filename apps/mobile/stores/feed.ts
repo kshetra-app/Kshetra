@@ -9,7 +9,10 @@ import type {
   SortOrder,
 } from '../lib/feedTypes';
 import * as dataService from '../lib/supabaseDataService';
-import { enqueue } from '../lib/offlineSync';
+import { enqueue, type SyncStatus, retryFailedOp } from '../lib/offlineSync';
+import { rankPostsV1 } from '../lib/feedRanking';
+import { isOnline } from '../lib/networkStatus';
+import { isSupabaseConfigured } from '../lib/supabase';
 import { useAuthStore } from './auth';
 
 /**
@@ -1289,6 +1292,9 @@ interface FeedState {
   receiveRealtimeComment: (serverComment: any) => void;
   receiveRealtimeReaction: (payload: any) => void;
   receiveRealtimeVote: (payload: any) => void;
+  reconcilePostSync: (clientToken: string, status: SyncStatus, serverId?: string | null) => void;
+  reconcileCommentSync: (clientToken: string, status: SyncStatus, serverId?: string | null) => void;
+  retryPost: (clientToken: string) => Promise<boolean>;
 
   // Reliability & Throttling (Ticket 1.2)
   lastError: string | null;
@@ -1369,7 +1375,7 @@ export const useFeedStore = create<FeedState>()((set, get) => ({
             ),
           }));
         } else {
-          // Rollback optimistic addition if server explicitly fails
+          // Explicit failure while online: rollback optimistic addition
           set((state) => ({
             posts: state.posts.filter((p) => p.id !== post.id),
             lastError: 'Could not submit post. Please try again.',
@@ -1392,7 +1398,8 @@ export const useFeedStore = create<FeedState>()((set, get) => ({
             hashtags: post.hashtags ?? [],
             constituencyId: post.constituencyId,
             language: post.language ?? 'en',
-          });
+            clientToken: post.clientToken ?? post.id,
+          }, post.clientToken ?? post.id);
           set((state) => ({
             posts: state.posts.map((p) =>
               p.id === post.id ? { ...p, syncStatus: 'QUEUED' } : p,
@@ -1735,10 +1742,17 @@ export const useFeedStore = create<FeedState>()((set, get) => ({
           hashtags: p.hashtags ?? [],
           userReaction: p.user_reaction,
         }));
-        const localOnly = get().posts.filter((p) => p.id.startsWith('local-'));
-        set({ posts: [...transformed, ...localOnly], isLive: true });
+        const ranked = rankPostsV1(transformed, { constituencyId, stateCode });
+        const localPending = get().posts.filter((p) => p.syncStatus && p.syncStatus !== 'SYNCED');
+        const seen = new Set<string>();
+        const deduped = [...localPending, ...ranked].filter((p) => {
+          if (seen.has(p.id)) return false;
+          seen.add(p.id);
+          return true;
+        });
+        set({ posts: deduped, isLive: true });
       } else {
-        // Offline / demo fallback: blend followed authors + constituency posts, ranked by recency
+        // Offline / demo fallback: blend followed authors + constituency posts, ranked by Feed Ranking V1
         const followed = new Set(get().followedUserIds);
         const seenIds = new Set<string>();
         const candidatePool = [...get().posts, ...SEED_POSTS].filter((p) => {
@@ -1747,16 +1761,17 @@ export const useFeedStore = create<FeedState>()((set, get) => ({
           return true;
         });
 
-        const blended = candidatePool.filter((p) => {
+        const filteredCandidates = candidatePool.filter((p) => {
           if (followed.has(p.author.id)) return true;
           if (constituencyId && p.constituencyId === constituencyId) return true;
           if (!constituencyId && (!p.stateCode || p.stateCode === stateCode)) return true;
           return false;
-        }).sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+        });
+        const ranked = rankPostsV1(filteredCandidates, { constituencyId, stateCode });
 
-        const localOnly = get().posts.filter((p) => p.id.startsWith('local-'));
-        const seen = new Set();
-        const deduped = [...blended, ...localOnly].filter((p) => {
+        const localPending = get().posts.filter((p) => p.syncStatus && p.syncStatus !== 'SYNCED');
+        const seen = new Set<string>();
+        const deduped = [...localPending, ...ranked].filter((p) => {
           if (seen.has(p.id)) return false;
           seen.add(p.id);
           return true;
@@ -1764,7 +1779,7 @@ export const useFeedStore = create<FeedState>()((set, get) => ({
         set({ posts: deduped });
       }
     } catch (_) {
-      // Offline fallback: blend followed authors + constituency posts, ranked by recency
+      // Offline fallback: blend followed authors + constituency posts, ranked by Feed Ranking V1
       const followed = new Set(get().followedUserIds);
       const seenIds = new Set<string>();
       const candidatePool = [...get().posts, ...SEED_POSTS].filter((p) => {
@@ -1773,16 +1788,17 @@ export const useFeedStore = create<FeedState>()((set, get) => ({
         return true;
       });
 
-      const blended = candidatePool.filter((p) => {
+      const filteredCandidates = candidatePool.filter((p) => {
         if (followed.has(p.author.id)) return true;
         if (constituencyId && p.constituencyId === constituencyId) return true;
         if (!constituencyId && (!p.stateCode || p.stateCode === stateCode)) return true;
         return false;
-      }).sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+      });
+      const ranked = rankPostsV1(filteredCandidates, { constituencyId, stateCode });
 
-      const localOnly = get().posts.filter((p) => p.id.startsWith('local-'));
-      const seen = new Set();
-      const deduped = [...blended, ...localOnly].filter((p) => {
+      const localPending = get().posts.filter((p) => p.syncStatus && p.syncStatus !== 'SYNCED');
+      const seen = new Set<string>();
+      const deduped = [...localPending, ...ranked].filter((p) => {
         if (seen.has(p.id)) return false;
         seen.add(p.id);
         return true;
@@ -1961,5 +1977,50 @@ export const useFeedStore = create<FeedState>()((set, get) => ({
         };
       }),
     }));
+  },
+
+  reconcilePostSync: (clientToken: string, status: SyncStatus, serverId?: string | null) => {
+    set((state) => ({
+      posts: state.posts.map((p) => {
+        if (p.clientToken === clientToken || p.id === clientToken) {
+          return {
+            ...p,
+            id: (status === 'SYNCED' && serverId) ? serverId : p.id,
+            syncStatus: status,
+          };
+        }
+        return p;
+      }),
+    }));
+  },
+
+  reconcileCommentSync: (clientToken: string, status: SyncStatus, serverId?: string | null) => {
+    set((state) => {
+      const nextComments: Record<string, Comment[]> = {};
+      for (const [postId, comments] of Object.entries(state.comments)) {
+        nextComments[postId] = comments.map((c) => {
+          if (c.clientToken === clientToken || c.id === clientToken) {
+            return {
+              ...c,
+              id: (status === 'SYNCED' && serverId) ? serverId : c.id,
+              syncStatus: status,
+            };
+          }
+          return c;
+        });
+      }
+      return { comments: nextComments };
+    });
+  },
+
+  retryPost: async (clientToken: string) => {
+    set((state) => ({
+      posts: state.posts.map((p) =>
+        (p.clientToken === clientToken || p.id === clientToken)
+          ? { ...p, syncStatus: 'SYNCING' }
+          : p
+      ),
+    }));
+    return retryFailedOp(clientToken);
   },
 }));

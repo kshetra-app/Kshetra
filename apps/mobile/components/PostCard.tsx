@@ -4,6 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '../lib/theme';
+import { useFeedStore } from '../stores/feed';
 import type { Post, ReactionType } from '../lib/feedTypes';
 import { REACTION_CONFIG } from '../lib/feedTypes';
 import ContentGateActions from './ContentGateActions';
@@ -134,6 +135,49 @@ export default function PostCard({
           </View>
 
           <View style={styles.headerRight}>
+            {displayPost.syncStatus && displayPost.syncStatus !== 'SYNCED' && (
+              <View
+                style={[
+                  styles.syncBadge,
+                  displayPost.syncStatus === 'SYNCING' && styles.syncBadgeSyncing,
+                  displayPost.syncStatus === 'QUEUED' && styles.syncBadgeQueued,
+                  displayPost.syncStatus === 'FAILED' && styles.syncBadgeFailed,
+                ]}
+              >
+                {displayPost.syncStatus === 'SYNCING' && (
+                  <>
+                    <Ionicons name="sync" size={10} color="#3B82F6" />
+                    <Text style={[styles.syncBadgeText, { color: '#3B82F6' }]}>
+                      {t('sync.syncing', 'Syncing...')}
+                    </Text>
+                  </>
+                )}
+                {displayPost.syncStatus === 'QUEUED' && (
+                  <>
+                    <Ionicons name="time-outline" size={10} color="#F59E0B" />
+                    <Text style={[styles.syncBadgeText, { color: '#F59E0B' }]}>
+                      {t('sync.queued', 'Queued')}
+                    </Text>
+                  </>
+                )}
+                {displayPost.syncStatus === 'FAILED' && (
+                  <Pressable
+                    style={styles.retryPressable}
+                    onPress={() => {
+                      if (displayPost.clientToken || displayPost.id) {
+                        useFeedStore.getState().retryPost?.(displayPost.clientToken ?? displayPost.id);
+                      }
+                    }}
+                    hitSlop={6}
+                  >
+                    <Ionicons name="alert-circle-outline" size={10} color="#EF4444" />
+                    <Text style={[styles.syncBadgeText, { color: '#EF4444' }]}>
+                      {t('sync.failedRetry', 'Failed · Tap to retry')}
+                    </Text>
+                  </Pressable>
+                )}
+              </View>
+            )}
             <View style={[styles.typeBadge, { backgroundColor: typeInfo.color + '18' }]}>
               <Ionicons name={typeInfo.icon as any} size={11} color={typeInfo.color} />
               <Text style={[styles.typeLabel, { color: typeInfo.color }]}>
@@ -384,5 +428,31 @@ const styles = StyleSheet.create({
   actionText: {
     fontSize: 13,
     fontWeight: '600',
+  },
+  syncBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 8,
+  },
+  syncBadgeSyncing: {
+    backgroundColor: '#3B82F618',
+  },
+  syncBadgeQueued: {
+    backgroundColor: '#F59E0B18',
+  },
+  syncBadgeFailed: {
+    backgroundColor: '#EF444418',
+  },
+  syncBadgeText: {
+    fontSize: 10,
+    fontWeight: '600',
+  },
+  retryPressable: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
   },
 });

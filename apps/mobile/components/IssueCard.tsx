@@ -4,6 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '../lib/theme';
+import { useCivicStore } from '../stores/civic';
 import type { CivicIssue } from '../lib/civicTypes';
 import {
   ISSUE_CATEGORY_CONFIG,
@@ -65,6 +66,43 @@ export default function IssueCard({ issue, onUpvote, onPress, onFollow, onShare 
           <Ionicons name={statusConfig.icon as any} size={11} color={statusConfig.color} style={{ marginRight: 3 }} />
           <Text style={[styles.statusText, { color: statusConfig.color }]}>{statusLabel}</Text>
         </View>
+        {issue.syncStatus && issue.syncStatus !== 'SYNCED' && (
+          <View
+            style={[
+              styles.syncBadge,
+              issue.syncStatus === 'SYNCING' && styles.syncBadgeSyncing,
+              issue.syncStatus === 'QUEUED' && styles.syncBadgeQueued,
+              issue.syncStatus === 'FAILED' && styles.syncBadgeFailed,
+            ]}
+          >
+            {issue.syncStatus === 'SYNCING' && (
+              <>
+                <Ionicons name="sync" size={10} color="#3B82F6" />
+                <Text style={[styles.syncBadgeText, { color: '#3B82F6' }]}>{t('sync.syncing', 'Syncing...')}</Text>
+              </>
+            )}
+            {issue.syncStatus === 'QUEUED' && (
+              <>
+                <Ionicons name="time-outline" size={10} color="#F59E0B" />
+                <Text style={[styles.syncBadgeText, { color: '#F59E0B' }]}>{t('sync.queued', 'Queued')}</Text>
+              </>
+            )}
+            {issue.syncStatus === 'FAILED' && (
+              <Pressable
+                style={styles.retryPressable}
+                onPress={() => {
+                  if (issue.clientToken || issue.id) {
+                    useCivicStore.getState().retryIssue?.(issue.clientToken ?? issue.id);
+                  }
+                }}
+                hitSlop={6}
+              >
+                <Ionicons name="alert-circle-outline" size={10} color="#EF4444" />
+                <Text style={[styles.syncBadgeText, { color: '#EF4444' }]}>{t('sync.failedRetry', 'Failed · Tap to retry')}</Text>
+              </Pressable>
+            )}
+          </View>
+        )}
       </View>
 
       {/* Title */}
@@ -305,5 +343,32 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: '#F59E0B',
     flex: 1,
+  },
+  syncBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 8,
+    marginLeft: 'auto',
+  },
+  syncBadgeSyncing: {
+    backgroundColor: '#3B82F618',
+  },
+  syncBadgeQueued: {
+    backgroundColor: '#F59E0B18',
+  },
+  syncBadgeFailed: {
+    backgroundColor: '#EF444418',
+  },
+  syncBadgeText: {
+    fontSize: 10,
+    fontWeight: '600',
+  },
+  retryPressable: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
   },
 });

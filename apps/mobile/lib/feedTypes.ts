@@ -10,7 +10,7 @@ export type PostType = 'discussion' | 'news' | 'opinion' | 'question' | 'alert' 
 
 export type ReactionType = 'like' | 'insightful' | 'disagree' | 'celebrate';
 
-export type SortOrder = 'latest' | 'top' | 'discussed' | 'polls';
+export type SortOrder = 'latest' | 'ranked' | 'top' | 'discussed' | 'polls';
 
 export const REACTION_CONFIG: Record<
   ReactionType,

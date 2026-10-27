@@ -12,7 +12,7 @@ import type {
 } from '../lib/civicTypes';
 import { MILESTONE_THRESHOLDS, HEADLINE_PROMOTION_THRESHOLD } from '../lib/civicTypes';
 import * as dataService from '../lib/supabaseDataService';
-import { enqueue } from '../lib/offlineSync';
+import { enqueue, type SyncStatus, retryFailedOp } from '../lib/offlineSync';
 import { useAuthStore } from './auth';
 
 // ─── Seed Issues (multi-state, full lifecycle showcase) ───
@@ -727,6 +727,8 @@ interface CivicState {
   updateIssueStatus: (issueId: string, newStatus: IssueStatus, note?: string, changedByName?: string) => Promise<boolean>;
   shareIssue: (issueId: string) => string; // returns share text
   hydrateFromServer: (serverIssues: any[]) => void;
+  reconcileIssueSync: (clientToken: string, status: SyncStatus, serverId?: string | null) => void;
+  retryIssue: (clientToken: string) => Promise<boolean>;
 }
 
 export const useCivicStore = create<CivicState>()((set, get) => ({
@@ -1012,7 +1014,8 @@ export const useCivicStore = create<CivicState>()((set, get) => ({
             reporterId: userId,
             reporterName: issue.reporterName ?? 'Anonymous',
             mediaUrls: issue.mediaUrls ?? [],
-          });
+            clientToken: issue.clientToken ?? issue.id,
+          }, issue.clientToken ?? issue.id);
           set((state) => ({
             issues: state.issues.map((i) =>
               i.id === issue.id ? { ...i, syncStatus: 'QUEUED' } : i
@@ -1030,7 +1033,8 @@ export const useCivicStore = create<CivicState>()((set, get) => ({
           reporterId: userId,
           reporterName: issue.reporterName ?? 'Anonymous',
           mediaUrls: issue.mediaUrls ?? [],
-        });
+          clientToken: issue.clientToken ?? issue.id,
+        }, issue.clientToken ?? issue.id);
         set((state) => ({
           issues: state.issues.map((i) =>
             i.id === issue.id ? { ...i, syncStatus: 'QUEUED' } : i
@@ -1091,5 +1095,31 @@ export const useCivicStore = create<CivicState>()((set, get) => ({
       userFollowing: i.user_following ?? false,
     }));
     set({ issues: [...transformed, ...localOnly] });
+  },
+
+  reconcileIssueSync: (clientToken: string, status: SyncStatus, serverId?: string | null) => {
+    set((state) => ({
+      issues: state.issues.map((i) => {
+        if (i.clientToken === clientToken || i.id === clientToken) {
+          return {
+            ...i,
+            id: (status === 'SYNCED' && serverId) ? serverId : i.id,
+            syncStatus: status,
+          };
+        }
+        return i;
+      }),
+    }));
+  },
+
+  retryIssue: async (clientToken: string) => {
+    set((state) => ({
+      issues: state.issues.map((i) =>
+        (i.clientToken === clientToken || i.id === clientToken)
+          ? { ...i, syncStatus: 'SYNCING' }
+          : i
+      ),
+    }));
+    return retryFailedOp(clientToken);
   },
 }));

@@ -34,6 +34,7 @@ import {
   getLocalizedHashtag,
 } from '../../lib/seedTranslations';
 import type { Post, PostType, FeedScope, SortOrder } from '../../lib/feedTypes';
+import { rankPostsV1 } from '../../lib/feedRanking';
 import { useTranslation } from 'react-i18next';
 import { STATES } from '@kshetra/shared';
 import { useContentPromotionStore } from '../../stores/contentPromotion';
@@ -57,6 +58,7 @@ const SCOPE_OPTIONS: { key: FeedScope; icon: string; tKey: string }[] = [
 ];
 
 const SORT_OPTIONS: { key: SortOrder; icon: string; tKey: string }[] = [
+  { key: 'ranked', icon: 'sparkles-outline', tKey: 'feed.sort.forYou' },
   { key: 'latest', icon: 'time-outline', tKey: 'feed.sort.latest' },
   { key: 'top', icon: 'flame-outline', tKey: 'feed.sort.top' },
   { key: 'discussed', icon: 'chatbubbles-outline', tKey: 'feed.sort.discussed' },
@@ -195,25 +197,33 @@ export default function FeedScreen({ hideHeader = false }: FeedScreenProps = {})
     }
 
     // 6. Sorting
-    const sorted = filtered.sort((a, b) => {
-      // Pinned posts always remain at the top
-      if (a.isPinned && !b.isPinned) return -1;
-      if (!a.isPinned && b.isPinned) return 1;
+    let sorted: Post[];
+    if (sortBy === 'ranked') {
+      sorted = rankPostsV1(filtered, {
+        constituencyId: effectiveConstituencyId,
+        stateCode,
+      });
+    } else {
+      sorted = filtered.sort((a, b) => {
+        // Pinned posts always remain at the top
+        if (a.isPinned && !b.isPinned) return -1;
+        if (!a.isPinned && b.isPinned) return 1;
 
-      if (sortBy === 'top') {
-        return b.reactionCount - a.reactionCount;
-      }
-      if (sortBy === 'discussed') {
-        return b.replyCount - a.replyCount;
-      }
-      if (sortBy === 'polls') {
-        const votesA = a.poll?.totalVotes ?? 0;
-        const votesB = b.poll?.totalVotes ?? 0;
-        return votesB - votesA;
-      }
-      // Default: latest timestamp
-      return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
-    });
+        if (sortBy === 'top') {
+          return b.reactionCount - a.reactionCount;
+        }
+        if (sortBy === 'discussed') {
+          return b.replyCount - a.replyCount;
+        }
+        if (sortBy === 'polls') {
+          const votesA = a.poll?.totalVotes ?? 0;
+          const votesB = b.poll?.totalVotes ?? 0;
+          return votesB - votesA;
+        }
+        // Default: latest timestamp
+        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+      });
+    }
 
     return getLocalizedPosts(sorted, i18n.language);
   }, [
