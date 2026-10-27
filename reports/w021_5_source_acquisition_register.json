@@ -814,7 +814,7 @@
       "version": "Order dated 17 December 2008; ECI PDF lists Andhra Pradesh Schedule III on PDF pages 8–32",
       "retrievalStatus": "RAW_PDF_ACQUIRED_FROM_INTERNET_ARCHIVE_CAPTURE_OF_EXACT_ECI_OFFICIAL_URL; CURRENT_DIRECT_ECI_RESPONSE_HTTP_406",
       "authority": "OFFICIAL_STATUTORY_BASELINE",
-      "status": "ARCHIVED_EXACT_OFFICIAL_URL_PDF_BYTES_ACQUIRED_HASH_VERIFIED; ORIGINAL_GAZETTE_ISSUE_STILL_OPEN",
+      "status": "PDF_ASSET_BYTES_ACQUIRED_FROM_ARCHIVAL_CAPTURE_OF_EXACT_OFFICIAL_ECI_URL_HASH_VERIFIED; CERTIFIED_GAZETTE_ISSUE_STILL_OPEN",
       "partialCrosswalk": {
         "report": "reports/evidence/w021_5_telangana_layer_comparison_2026-10-25.json",
         "constituencies": [
@@ -915,8 +915,8 @@
         "evidenceUrl": "https://egazette.gov.in/WriteReadData/2023/248113.pdf",
         "evidenceKind": "Official 2023 Gazette recital identifies the 2008 Order's publication reference; this is not the 2008 Gazette issue itself."
       },
-      "lastExplorationAt": "2026-10-26",
-      "lastExplorationOutcome": "ARCHIVED_OFFICIAL_URL_PDF_BYTES_ACQUIRED_AND_HASH_VERIFIED; SEPARATE_ORIGINAL_GAZETTE_ISSUE_REMAINS_OPEN",
+      "lastExplorationAt": "2026-10-27",
+      "lastExplorationOutcome": "Exact official ECI PDF asset bytes were acquired from Internet Archive capture of the exact ECI URL and verified as a valid 572-page PDF. Identical byte length/SHA-256 recurs across current ECI URL variants and the legacy ECI URL captured in 2010. Direct live ECI host still returns HTTP 406; the separate original Gazette of India issue/certified-copy gate remains open.",
       "sha256": "9e1ac49aa952febc8e4f57ed23abd28218a21887f355f8dad1502ab5c0d65e69",
       "fileBytes": 1340728,
       "pdfVersion": "1.5",
@@ -969,7 +969,8 @@
         "A raw 1,340,728-byte PDF was acquired from an Internet Archive capture of the exact official ECI URL and parsed successfully as 572 pages.",
         "Raw PDF SHA-256 is 9e1ac49aa952febc8e4f57ed23abd28218a21887f355f8dad1502ab5c0d65e69; same bytes/hash recurred in two additional official/legacy URL captures.",
         "The PDF contents establish the correct 2008 schedule map: composite Andhra Pradesh is Schedule III/Table A for AC extents and Table B for PC extents; Schedule XXXI is Delhi; Schedule XXXII is Puducherry; J&K Assembly extents are in Annexure.",
-        "The original Gazette issue and its certified/physical authentication remain separate evidence requirements."
+        "The original Gazette issue and its certified/physical authentication remain separate evidence requirements.",
+        "2026-10-27 status correction: the exact ECI PDF asset bytes are no longer classified as unacquired. A 1,340,728-byte, PDF-1.5, 572-page archival capture of the exact official ECI URL has SHA-256 9e1ac49aa952febc8e4f57ed23abd28218a21887f355f8dad1502ab5c0d65e69; matching bytes/hash are independently observed from the same normalized current ECI URL path, filename spelling variant, and legacy ECI URL archive capture. This fulfills binary asset acquisition/provenance to the archived official URL, but it is not a certified paper copy or the original Gazette of India issue."
       ]
     },
     {
@@ -3848,7 +3849,8 @@
     "2026-10-26 official India Post catalogue acquisition run 40350138447: verified 8/8 retained India Post catalogue HTML pages and acquired/parsed 8/8 exact linked postal-manual PDFs; no failures. Postal Manual Vol. VIII (catalogue date 01-04-1979) 833,948 bytes SHA-256 c373de5e152d9dd0599358594f5ea9eb488dbd4b630dea3023879e27a043ff6e, 317 pages; Rules 309/310 describe local town postal maps and delivery-beat list books with streets/quarters and an alphabetical street-to-beat index; Rules 274/275 describe fixed/unfixed village postman beats and routes. This is official operational documentation, not national vector geometry. No India Post custodian reply is retained; the old assessment custodianStatus.inquiryLogged/finding assertion remains unsupported and must be corrected. Source package lives on evidence branch abe518b925ef7193b543d6a1c012dada51cbbb3f. National delivery-beat geometry remains OPEN.",
     "2026-10-26 execution correction: the ECI 2008 consolidated Order raw bytes were already recovered by exact-URL Internet Archive recovery run 40335906727 (three byte-identical captures, 1,340,728 bytes, SHA-256 9e1ac49aa952febc8e4f57ed23abd28218a21887f355f8dad1502ab5c0d65e69, PDF 1.5, 572 pages). The older indexed-text source record is now explicitly superseded for raw-byte availability; this does not satisfy the separate original Gazette issue requirement. Also recorded the bounded CEO portal discovery run 40363331945: 5/32 historic roots downloaded and hashed, zero qualifying static station-list links under first-pass filtering; corrected current-root retry run 40364834268 was pending at register update time. These failures are not evidence that official station lists do not exist.",
     "2026-10-27 feature-level review of the pinned national AC candidate identified six records stored under data/states/*/ac/*.geojson that are not valid assembly-boundary candidates by their own properties: AN, CH, DH×2 and LD explicitly say seatType=LOK_SABHA; LA/Ladakh has null seatType and no source. All six source fields are TBD. Do not treat the 4,129 files as a complete/valid national AC set; see SRC-NATIONAL-AC-CANDIDATE-UT-LEGACY-MIXING-AUDIT-2026-10-27.",
-    "2026-10-27 full captured-cohort Gazette probe run 40441693194: parsed 378 central 2018 Gazette PDF captures, 22 AP Gazette PDF captures, 51 legacy central 2008 PDF captures and 6 current-host 2008 PDF captures; 478 candidates attempted, 453 valid PDFs, 0 strict original 2008 issue-71 or 2018 O.N.55(E) matches. Retained/rejected candidates include Gazette No.551 (30 May 2008; O.N.62(E), Delhi) and Gazette No.706 (23 May 2008; later Delhi order reciting S.O.382(E)), neither target. AP upload-time-window and exact issue-number CDX queries timed out and remain unsearched rather than classified as absent. Manifest SHA-256 9cb495455409989c709248cf39c4341e78a7a9aaab53bba47e9c84016c8725d5."
+    "2026-10-27 full captured-cohort Gazette probe run 40441693194: parsed 378 central 2018 Gazette PDF captures, 22 AP Gazette PDF captures, 51 legacy central 2008 PDF captures and 6 current-host 2008 PDF captures; 478 candidates attempted, 453 valid PDFs, 0 strict original 2008 issue-71 or 2018 O.N.55(E) matches. Retained/rejected candidates include Gazette No.551 (30 May 2008; O.N.62(E), Delhi) and Gazette No.706 (23 May 2008; later Delhi order reciting S.O.382(E)), neither target. AP upload-time-window and exact issue-number CDX queries timed out and remain unsearched rather than classified as absent. Manifest SHA-256 9cb495455409989c709248cf39c4341e78a7a9aaab53bba47e9c84016c8725d5.",
+    "2026-10-27 evidence reconciliation: correct earlier statements that the ECI 2008 Order PDF bytes were wholly unacquired. Exact official ECI asset bytes are already archived/verified as an archival capture with hash 9e1ac49aa952febc8e4f57ed23abd28218a21887f355f8dad1502ab5c0d65e69. Keep direct live host HTTP 406 and the original Gazette issue/certification status separately stated; do not conflate these distinct evidence requirements."
   ],
   "secondaryGeometryAudit": {
     "sourceRepository": "https://github.com/saisantoshv3/assemnbly_gis_files",
