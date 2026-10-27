@@ -12,7 +12,7 @@ OUT=Path("stage_b_india_post_pin_boundary_probe")
 RAW=OUT/"raw"
 RAW.mkdir(parents=True,exist_ok=True)
 RESOURCE_URL="https://data.gov.in/resource/all-india-pincode-boundary-geojson"
-ALLOWED={"data.gov.in","www.data.gov.in","api.data.gov.in","indiapost.gov.in","www.indiapost.gov.in"}
+ALLOWED={"data.gov.in","www.data.gov.in","api.data.gov.in","indiapost.gov.in","www.indiapost.gov.in","web.archive.org"}
 USER_AGENT="PANIN-W021.5-Official-Postal-Resource-Acquisition/1.0"
 CA=Path("/etc/ssl/certs/ca-certificates.crt")
 VERIFY=str(CA) if CA.is_file() else True
@@ -77,6 +77,51 @@ def inspect_geojson(obj):
     return {"status":"COMPLETED","featureCount":len(obj.get("features",[])),"geometryTypes":types,
             "invalidGeometryCount":len(invalid),"emptyGeometryCount":empty,"invalidExamples":invalid[:100],
             "overallBounds":all_bounds,"sampleProperties":[f.get("properties") for f in obj.get("features",[])[:5]]}
+
+
+def cdx_captures(target_url, manifest, label, limit=100):
+    """Fetch a CDX index for one exact observed official URL; hashes the CDX response separately."""
+    params={"url":target_url,"output":"json","fl":"timestamp,original,statuscode,mimetype,digest,length",
+            "filter":["statuscode:200"],"collapse":"urlkey","limit":str(limit)}
+    record={"label":label,"targetUrl":target_url,"attemptedAtUtc":now()}
+    try:
+        r=requests.get("https://web.archive.org/cdx/search/cdx",params=params,
+                       headers={"User-Agent":USER_AGENT,"Accept":"application/json"},
+                       timeout=TIMEOUT,allow_redirects=True,verify=VERIFY)
+        body=r.content
+        record.update({"finalUrl":r.url,"httpStatus":r.status_code,"byteLength":len(body),"sha256":sha(body)})
+        if r.status_code!=200:
+            record["status"]="CDX_HTTP_FAILURE"
+            manifest.setdefault("archiveCDXQueries",[]).append(record)
+            return []
+        try:
+            obj=json.loads(r.text.strip().rstrip(","))
+        except Exception as exc:
+            record.update({"status":"CDX_JSON_PARSE_FAILED","error":f"{type(exc).__name__}: {exc}"})
+            manifest.setdefault("archiveCDXQueries",[]).append(record)
+            return []
+        if not isinstance(obj,list) or len(obj)<2 or not isinstance(obj[0],list):
+            record.update({"status":"NO_CAPTURE_RECORDS","captureCount":0})
+            manifest.setdefault("archiveCDXQueries",[]).append(record)
+            return []
+        header=obj[0]; rows=[]
+        for arr in obj[1:]:
+            if not isinstance(arr,list):continue
+            item=dict(zip(header,arr))
+            if str(item.get("statuscode"))=="200":
+                rows.append(item)
+        record.update({"status":"CDX_CAPTURE_INDEX_ACQUIRED","captureCount":len(rows),"sampleCaptures":rows[:10]})
+        manifest.setdefault("archiveCDXQueries",[]).append(record)
+        return rows
+    except Exception as exc:
+        record.update({"status":"CDX_FETCH_FAILED_TLS_VERIFICATION_RETAINED","error":f"{type(exc).__name__}: {exc}"})
+        manifest.setdefault("archiveCDXQueries",[]).append(record)
+        return []
+
+def wayback_url(item):
+    ts=str(item.get("timestamp") or "")
+    original=str(item.get("original") or "")
+    return f"https://web.archive.org/web/{ts}id_/{original}" if ts and original else None
 
 def fetch_one(url):
     rec={"requestedUrl":url,"attemptedAtUtc":now()}
@@ -154,15 +199,41 @@ def main():
       "generatedAtUtc":now(),"databaseAccess":"NONE","TLSVerification":"ENABLED",
       "targetResource":RESOURCE_URL,"scope":"Acquire the official PIN-boundary resource if its exact download is exposed; explicitly do not equate PIN polygons with postman delivery beats.",
       "probes":[],"acquiredResources":[],"disposition":{}}
-    # First obtain the official catalog page and extract real links and resource identifiers.
+    # First obtain the official catalog page. If the current host is unavailable from
+    # this execution environment, query the Internet Archive for captures of that exact URL.
+    # An archive capture is labelled historical evidence, never a live response.
     base,body,links=fetch_one(RESOURCE_URL)
     manifest["probes"].append(base)
     discovered=[]
+    page_context_url=base.get("finalUrl") or RESOURCE_URL
+    if not body:
+        captures=[]
+        for target in (
+            RESOURCE_URL,
+            "https://www.data.gov.in/resource/all-india-pincode-boundary-geojson",
+            "http://data.gov.in/resource/all-india-pincode-boundary-geojson",
+        ):
+            captures.extend(cdx_captures(target,manifest,"OGD_PIN_RESOURCE_PAGE_CAPTURE"))
+        captures.sort(key=lambda x:str(x.get("timestamp") or ""),reverse=True)
+        seen_archives=set()
+        for cap in captures:
+            archive=wayback_url(cap)
+            if not archive or archive in seen_archives:continue
+            seen_archives.add(archive)
+            rec,archived_body,archived_links=fetch_one(archive)
+            rec.update({"originalOfficialUrl":cap.get("original"),"captureTimestamp":cap.get("timestamp"),
+                        "archivalDisposition":"ARCHIVED_RESOURCE_PAGE_NOT_LIVE_RESPONSE"})
+            manifest["probes"].append(rec)
+            if archived_body and rec.get("status")=="OFFICIAL_HTML_RESPONSE_ACQUIRED":
+                base,body,links=rec,archived_body,archived_links
+                page_context_url=archive
+                break
     if body:
-        parser=Links(base.get("finalUrl") or RESOURCE_URL);parser.feed(body.decode("utf-8","replace"))
+        parser=Links(page_context_url);parser.feed(body.decode("utf-8","replace"))
         textpage="\n".join(parser.page_text)
         (OUT/"resource_page_text.txt").write_text(textpage,encoding="utf-8")
-        manifest["cataloguePageText"]={"path":"resource_page_text.txt","byteLength":len(textpage.encode()),"sha256":sha(textpage.encode()),"title":base.get("title")}
+        manifest["cataloguePageText"]={"path":"resource_page_text.txt","byteLength":len(textpage.encode()),"sha256":sha(textpage.encode()),"title":base.get("title"),
+              "sourcePageUrl":page_context_url,"snapshotType":"ARCHIVED_SNAPSHOT_NOT_LIVE" if "web.archive.org" in page_context_url else "LIVE_RESPONSE"}
         for x in parser.links:
             u=x["url"]
             if not approved(u):continue
@@ -181,12 +252,25 @@ def main():
       "https://www.data.gov.in/api/3/action/package_show?id=all-india-pincode-boundary-geojson",
       "https://api.data.gov.in/resource/all-india-pincode-boundary-geojson",
     ])
-    # Crawl official catalogue links to at most two levels; candidate links must come from
-    # observed official HTML or the documented official API probes above.
+    # For each observed same-host download/resource link, query the archive for that
+    # exact URL and enqueue the raw archived response as a separate capture, if one exists.
+    archive_links=[]
+    for original in list(dict.fromkeys(discovered)):
+        if not approved(original) or urlparse(original).hostname=="web.archive.org":continue
+        caps=cdx_captures(original,manifest,"OBSERVED_RESOURCE_LINK_CAPTURE")
+        caps.sort(key=lambda x:str(x.get("timestamp") or ""),reverse=True)
+        for cap in caps[:3]:
+            archive=wayback_url(cap)
+            if archive:archive_links.append((archive,original,cap.get("timestamp")))
+    # Crawl official catalogue links and archive candidates in a bounded number of requests.
     visited=set();queue=[]
     for u in discovered:
         if u not in visited:queue.append((u,1))
-    max_requests=90
+    archive_metadata={url:(original,ts) for url,original,ts in archive_links}
+    for archived_url,original,ts in archive_links:
+        if archived_url not in visited and all(x[0]!=archived_url for x in queue):
+            queue.append((archived_url,1))
+    max_requests=120
     while queue and len(visited)<max_requests:
         batch=[]
         while queue and len(batch)<10 and len(visited)+len(batch)<max_requests:
@@ -198,6 +282,10 @@ def main():
             for future in concurrent.futures.as_completed(futures):
                 url,depth=futures[future]
                 rec,b,rel=future.result()
+                if url in archive_metadata:
+                    original,ts=archive_metadata[url]
+                    rec.update({"originalOfficialResourceUrl":original,"captureTimestamp":ts,
+                                "archivalDisposition":"ARCHIVED_RESOURCE_BYTES_NOT_LIVE_DOWNLOAD"})
                 manifest["probes"].append(rec)
                 if b and rec.get("status") in ("GEOJSON_FEATURE_COLLECTION_ACQUIRED","ZIP_RESOURCE_ACQUIRED","NON_HTML_NON_GEOJSON_RESOURCE_ACQUIRED"):
                     manifest["acquiredResources"].append({k:rec.get(k) for k in ("requestedUrl","finalUrl","httpStatus","contentType","contentDisposition","byteLength","sha256","rawArtifact","status","geojsonAudit","zipMembers","embeddedGeoJSON") if k in rec})
