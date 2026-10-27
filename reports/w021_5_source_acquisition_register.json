@@ -3123,6 +3123,60 @@
         "This does not close EB-01 or the O.N.55(E)/Andhra Pradesh State Gazette requirement."
       ],
       "plannedUse": "Preserve the exact rejected candidates and covered-index inventory, then continue via an independent archival index (e.g. Common Crawl) and authenticated publication-custodian request; do not claim absence from timed-out queries."
+    },
+    {
+      "sourceId": "SRC-OGD-INDIA-PIN-BOUNDARY-RESOURCE-2026-10-27",
+      "subject": "Official Open Government Data India resource page for All India PIN Code Boundary GeoJSON — acquisition attempt and archival fallback outcome",
+      "publisher": "Open Government Data Platform India / Department of Posts (resource catalogue metadata not acquired in this execution)",
+      "url": "https://data.gov.in/resource/all-india-pincode-boundary-geojson",
+      "retrievedAt": "2026-10-27",
+      "format": "Read-only source discovery manifest with exact URL probes, response hashes for failures, and Internet Archive CDX queries",
+      "authority": "OFFICIAL_RESOURCE_DISCOVERY_NOT_ACQUIRED_DATA",
+      "status": "NO_PIN_BOUNDARY_DATA_BYTES_ACQUIRED; EXACT_RESOURCE_REMAINS_UNVERIFIED",
+      "workflowRunId": 40441944926,
+      "workflowUrl": "https://github.com/kshetra-app/Kshetra/actions/runs/40441944926",
+      "evidenceBranch": "cto/w0215-stage-b-evidence-20261025",
+      "evidenceCommit": "b02546e25d09085dbe2974220c2fd851aa8ff92b",
+      "manifestPath": "data/evidence/w021_5/india_post_pin_boundary_candidate/manifest.json",
+      "archiveArtifactId": 12706656241,
+      "archiveArtifactBytes": 1729,
+      "archiveArtifactSha256": "aec95edf7c30e3742bf7bda9c0f99830f5fa0eeeb662318823d25e25995d7b68",
+      "findings": {
+        "directOfficialHostnameRequests": [
+          {
+            "host": "data.gov.in",
+            "status": "CONNECTION_REFUSED"
+          },
+          {
+            "host": "api.data.gov.in",
+            "status": "CONNECTION_REFUSED"
+          }
+        ],
+        "wwwDataGovPackageShow": {
+          "url": "https://www.data.gov.in/api/3/action/package_show?id=all-india-pincode-boundary-geojson",
+          "httpStatus": 503,
+          "byteLength": 280,
+          "sha256": "fc8dcf6cd521e71802b97f387e7c3739f1f44d7f9ad5ca990cc9cd927d3cee17",
+          "classification": "ERROR_RESPONSE_ONLY_NOT_DATASET_BYTES"
+        },
+        "exactUrlArchiveQueries": {
+          "attempted": 3,
+          "httpStatus": 200,
+          "responseBytes": 3,
+          "responseSha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+          "results": 0
+        },
+        "geojsonResourcesAcquired": 0,
+        "zipResourcesAcquired": 0,
+        "nonHtmlDataResourcesAcquired": 0
+      },
+      "limitations": [
+        "This is a failed retrieval record, not proof that the resource does not exist.",
+        "The official OGD hosts refused or did not complete direct connections in the workflow environment; the archive index produced empty responses for the exact URLs queried.",
+        "No PIN polygon bytes, catalogue metadata sufficient to establish resource identity, licence file, feature count, or coverage statistics were acquired.",
+        "Even if acquired later, PIN-code areas are not equivalent to postman delivery-beat polygons and cannot close EB-03."
+      ],
+      "plannedUse": "Retry via a genuinely different source route (independent crawl index, official GIS/API catalogue, or custodian disclosure) and maintain a separate evidence lineage from actual postman delivery-beat polygons."
     }
   ],
   "unresolvedGates": [
@@ -3823,6 +3877,43 @@
         "strict2018RelatedContextMatches": 0,
         "directOrArchiveFetchErrors": 24
       }
+    },
+    {
+      "runId": 40441944926,
+      "workflowUrl": "https://github.com/kshetra-app/Kshetra/actions/runs/40441944926",
+      "status": "NO_DATA_RESOURCE_BYTES_ACQUIRED",
+      "artifactId": 12706656241,
+      "artifactBytes": 1729,
+      "artifactSha256": "aec95edf7c30e3742bf7bda9c0f99830f5fa0eeeb662318823d25e25995d7b68",
+      "disposition": {
+        "directOfficialHostnameRequests": [
+          {
+            "host": "data.gov.in",
+            "status": "CONNECTION_REFUSED"
+          },
+          {
+            "host": "api.data.gov.in",
+            "status": "CONNECTION_REFUSED"
+          }
+        ],
+        "wwwDataGovPackageShow": {
+          "url": "https://www.data.gov.in/api/3/action/package_show?id=all-india-pincode-boundary-geojson",
+          "httpStatus": 503,
+          "byteLength": 280,
+          "sha256": "fc8dcf6cd521e71802b97f387e7c3739f1f44d7f9ad5ca990cc9cd927d3cee17",
+          "classification": "ERROR_RESPONSE_ONLY_NOT_DATASET_BYTES"
+        },
+        "exactUrlArchiveQueries": {
+          "attempted": 3,
+          "httpStatus": 200,
+          "responseBytes": 3,
+          "responseSha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+          "results": 0
+        },
+        "geojsonResourcesAcquired": 0,
+        "zipResourcesAcquired": 0,
+        "nonHtmlDataResourcesAcquired": 0
+      }
     }
   ],
   "updatedAt": "2026-10-27",
@@ -3850,7 +3941,8 @@
     "2026-10-26 execution correction: the ECI 2008 consolidated Order raw bytes were already recovered by exact-URL Internet Archive recovery run 40335906727 (three byte-identical captures, 1,340,728 bytes, SHA-256 9e1ac49aa952febc8e4f57ed23abd28218a21887f355f8dad1502ab5c0d65e69, PDF 1.5, 572 pages). The older indexed-text source record is now explicitly superseded for raw-byte availability; this does not satisfy the separate original Gazette issue requirement. Also recorded the bounded CEO portal discovery run 40363331945: 5/32 historic roots downloaded and hashed, zero qualifying static station-list links under first-pass filtering; corrected current-root retry run 40364834268 was pending at register update time. These failures are not evidence that official station lists do not exist.",
     "2026-10-27 feature-level review of the pinned national AC candidate identified six records stored under data/states/*/ac/*.geojson that are not valid assembly-boundary candidates by their own properties: AN, CH, DH×2 and LD explicitly say seatType=LOK_SABHA; LA/Ladakh has null seatType and no source. All six source fields are TBD. Do not treat the 4,129 files as a complete/valid national AC set; see SRC-NATIONAL-AC-CANDIDATE-UT-LEGACY-MIXING-AUDIT-2026-10-27.",
     "2026-10-27 full captured-cohort Gazette probe run 40441693194: parsed 378 central 2018 Gazette PDF captures, 22 AP Gazette PDF captures, 51 legacy central 2008 PDF captures and 6 current-host 2008 PDF captures; 478 candidates attempted, 453 valid PDFs, 0 strict original 2008 issue-71 or 2018 O.N.55(E) matches. Retained/rejected candidates include Gazette No.551 (30 May 2008; O.N.62(E), Delhi) and Gazette No.706 (23 May 2008; later Delhi order reciting S.O.382(E)), neither target. AP upload-time-window and exact issue-number CDX queries timed out and remain unsearched rather than classified as absent. Manifest SHA-256 9cb495455409989c709248cf39c4341e78a7a9aaab53bba47e9c84016c8725d5.",
-    "2026-10-27 evidence reconciliation: correct earlier statements that the ECI 2008 Order PDF bytes were wholly unacquired. Exact official ECI asset bytes are already archived/verified as an archival capture with hash 9e1ac49aa952febc8e4f57ed23abd28218a21887f355f8dad1502ab5c0d65e69. Keep direct live host HTTP 406 and the original Gazette issue/certification status separately stated; do not conflate these distinct evidence requirements."
+    "2026-10-27 evidence reconciliation: correct earlier statements that the ECI 2008 Order PDF bytes were wholly unacquired. Exact official ECI asset bytes are already archived/verified as an archival capture with hash 9e1ac49aa952febc8e4f57ed23abd28218a21887f355f8dad1502ab5c0d65e69. Keep direct live host HTTP 406 and the original Gazette issue/certification status separately stated; do not conflate these distinct evidence requirements.",
+    "2026-10-27 OGD PIN-boundary attempt run 40441944926: no dataset bytes obtained. data.gov.in/api.data.gov.in connection refused; www.data.gov.in package_show returned a 280-byte HTTP 503 error body (SHA-256 fc8dcf6cd521e71802b97f387e7c3739f1f44d7f9ad5ca990cc9cd927d3cee17); exact URL Wayback CDX calls returned 3-byte empty lists (SHA-256 37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570). This is not proof that the resource does not exist, and cannot close delivery-beat evidence."
   ],
   "secondaryGeometryAudit": {
     "sourceRepository": "https://github.com/saisantoshv3/assemnbly_gis_files",
