@@ -1,6 +1,7 @@
 /**
  * Custom Babel plugin that replaces process.env.EXPO_ROUTER_APP_ROOT
- * with the absolute path to the app/ directory at build time.
+ * with the absolute path to the app/ directory at build time,
+ * and inlines process.env.EXPO_ROUTER_IMPORT_MODE.
  * 
  * This solves the monorepo problem where the env var value gets inlined
  * into node_modules/expo-router/_ctx.android.js and must resolve relative
@@ -21,6 +22,11 @@ module.exports = function ({ types: t }) {
           nodePath.matchesPattern('process.env.EXPO_ROUTER_APP_ROOT')
         ) {
           nodePath.replaceWith(t.stringLiteral(appRoot));
+        }
+        if (
+          nodePath.matchesPattern('process.env.EXPO_ROUTER_IMPORT_MODE')
+        ) {
+          nodePath.replaceWith(t.stringLiteral(process.env.EXPO_ROUTER_IMPORT_MODE || 'sync'));
         }
       },
     },
