@@ -2912,6 +2912,109 @@
         "A corrected follow-up sweep now updates current portal variants for Kerala, Maharashtra, Karnataka, Jharkhand and West Bengal, and records the public ECI polling-station lookup as discovery-only without submitting it. Workflow run 40364834268 is pending at the time this master record was written."
       ],
       "plannedUse": "Use the manifest as a negative discovery log only. Continue with corrected current portal roots and separately obtain official, non-elector polling-station lists from each jurisdiction; maintain per-source hashes and validate station-to-AC identity before any crosswalk acceptance."
+    },
+    {
+      "sourceId": "SRC-NATIONAL-AC-CANDIDATE-UT-LEGACY-MIXING-AUDIT-2026-10-27",
+      "subject": "Forensic audit of non-official national AC GeoJSON candidate showing six Lok Sabha/UT-shape files misrepresented under the Assembly Constituency directory",
+      "publisher": "Internal PANIN/Kshetra source-forensics audit of pinned Marma-Fintech-Organization/india-electoral-boundaries commit 3e4e9f347b260040278c36f563fb2efa28e2a476",
+      "sourceRepository": "https://github.com/Marma-Fintech-Organization/india-electoral-boundaries",
+      "sourceCommit": "3e4e9f347b260040278c36f563fb2efa28e2a476",
+      "retrievedAt": "2026-10-27",
+      "format": "Feature-level property audit of six repository GeoJSON files; existing pinned upstream snapshot and source inventory remain primary raw-byte/hash preservation",
+      "authority": "INTERNAL_FORENSIC_FINDING_ON_THIRD_PARTY_CANDIDATE_NOT_PRIMARY_LEGAL_EVIDENCE",
+      "status": "SIX_NON_AC_FEATURES_IDENTIFIED_AS_LOK_SABHA_OR_UNCLASSIFIED; CANDIDATE_REJECTED_FOR_CANONICAL_GEOMETRY",
+      "evidenceBranch": "cto/w0215-stage-b-evidence-20261025",
+      "evidenceCommit": "32dc58769af29b2e8233db87873824b548836cf6",
+      "auditReportPath": "reports/w021_5_national_candidate_geometry_forensic_audit_2026-10-26.md",
+      "findings": [
+        {
+          "path": "data/states/an/ac/1.geojson",
+          "gitBlobSha": "a1aa0fbd6f396ab7d0d6d7586068a95ae00e9f5b",
+          "featureId": "AN-AC-1",
+          "stateCode": "AN",
+          "acNo": 1,
+          "acName": "Andaman and Nicobar Islands",
+          "seatType": "LOK_SABHA",
+          "pcName": "Andaman and Nicobar Islands",
+          "sourceValue": "TBD",
+          "classification": "PARLIAMENTARY_SHAPE_STORED_AS_AC"
+        },
+        {
+          "path": "data/states/ch/ac/1.geojson",
+          "gitBlobSha": "7290f8596dee6be830b15c3d7a010eff3befb0dc",
+          "featureId": "CH-AC-1",
+          "stateCode": "CH",
+          "acNo": 1,
+          "acName": "Chandigarh",
+          "seatType": "LOK_SABHA",
+          "pcName": "Chandigarh",
+          "sourceValue": "TBD",
+          "classification": "PARLIAMENTARY_SHAPE_STORED_AS_AC"
+        },
+        {
+          "path": "data/states/dh/ac/1.geojson",
+          "gitBlobSha": "8bfa83b6f978fd86a0d93f1b1b5dd7796d8e0e34",
+          "featureId": "DH-AC-1",
+          "stateCode": "DH",
+          "acNo": 1,
+          "acName": "Dadra and Nagar Haveli",
+          "seatType": "LOK_SABHA",
+          "pcName": "Dadra and Nagar Haveli",
+          "sourceValue": "TBD",
+          "classification": "PARLIAMENTARY_SHAPE_STORED_AS_AC"
+        },
+        {
+          "path": "data/states/dh/ac/2.geojson",
+          "gitBlobSha": "fb6c531eddf7032cfaf001ec25d11c49bd640edf",
+          "featureId": "DH-AC-2",
+          "stateCode": "DH",
+          "acNo": 2,
+          "acName": "Daman and Diu",
+          "seatType": "LOK_SABHA",
+          "pcName": "Daman and Diu",
+          "sourceValue": "TBD",
+          "classification": "PARLIAMENTARY_SHAPE_STORED_AS_AC"
+        },
+        {
+          "path": "data/states/la/ac/1.geojson",
+          "gitBlobSha": "5080771e258ed2990f6b0594e54f2df80eff0ecc",
+          "featureId": "LA-AC-1",
+          "stateCode": "LA",
+          "acNo": 1,
+          "acName": "Ladakh",
+          "seatType": null,
+          "pcName": null,
+          "sourceValue": "TBD",
+          "classification": "UNCLASSIFIED_SINGLE_UT_GEOMETRY_STORED_AS_AC_WITHOUT_SOURCE"
+        },
+        {
+          "path": "data/states/ld/ac/1.geojson",
+          "gitBlobSha": "b57fa987197a84325265ce458b909aecea90975a",
+          "featureId": "LD-AC-1",
+          "stateCode": "LD",
+          "acNo": 1,
+          "acName": "Lakshadweep",
+          "seatType": "LOK_SABHA",
+          "pcName": "Lakshadweep",
+          "sourceValue": "TBD",
+          "classification": "PARLIAMENTARY_SHAPE_STORED_AS_AC"
+        }
+      ],
+      "metrics": {
+        "candidateAcFeatureFiles": 4129,
+        "expectedHistoricalOrCurrentLegislativeAssemblyGeometryCountRequiresIndependentRosterDefinition": true,
+        "invalidDirectoryMisclassificationCount": 6,
+        "recordsWithExplicitLOK_SABHAType": 5,
+        "recordsWithSeatTypeNull": 1,
+        "recordsSourceTBD": 6
+      },
+      "limitations": [
+        "These records come from an expressly non-official candidate repository and are not evidence of the statutory Assembly Constituency register.",
+        "This finding classifies the six stored GeoJSON features from their own properties; it does not establish a nationwide canonical polygon source.",
+        "Git blob identifiers are recorded, not mislabeled as SHA-256 digests. Raw-byte SHA-256 values remain in the pinned source_file_inventory.json.gz.",
+        "No source geometry was modified or repaired."
+      ],
+      "plannedUse": "Block any automated claim that the 4,129-file candidate is a canonical national AC set; require a source-to-legislature roster comparison before geometry acceptance."
     }
   ],
   "unresolvedGates": [
@@ -3594,7 +3697,7 @@
       "disposition": "Negative discovery only; not proof sources do not exist"
     }
   ],
-  "updatedAt": "2026-10-26",
+  "updatedAt": "2026-10-27",
   "notes": [
     "Actual public source artifacts were downloaded in GitHub Actions run 40209022405 and SHA-256 hashed; detailed geometry findings are in reports/w021_5_datameet_ac_geometry_forensic_audit.json.",
     "Survey of India official ABDB page, Vector Data Catalog 2025 PDF and Metadata_ABDB.zip were downloaded and hashed. The metadata covers state, district, subdistrict and village boundaries, not statutory Assembly Constituency polygons.",
@@ -3616,7 +3719,8 @@
     "2026-10-26 audit reconciliation: found internal inconsistency between reports/w021_5_official_gazette_inventory.json (S.O.383(E)/S.O.453(E)) and the S.O.382(E) references in the 2008 legal dossier / Gazette recital discovery. Keep all as conflicting references pending original Gazette/ECI binary verification rather than choosing one from secondary internal text. Also flagged reports/w021_5_india_post_geography_assessment.json custodianStatus.inquiryLogged/finding: no custodian-issued response or sent-request receipt is present in the evidence inventory; this is not an independently verified Department of Posts statement.",
     "2026-10-26 pinned nationwide non-official AC boundary candidate acquired and audited in workflow run 40329997952. Public upstream commit 3e4e9f347b260040278c36f563fb2efa28e2a476 contains 4129 per-AC GeoJSON files across 36 state/UT codes. Audit found 65 invalid geometries, 4129 files with unresolved/TBD provenance and 154 valid-polygon positive-area overlap pairs over 1 m². Candidate snapshot and per-file raw hashes are durable only on evidence branch cto/w0215-stage-b-evidence-20261025 at commit 32dc58769af29b2e8233db87873824b548836cf6. This is a non-official candidate, not national canonical geometry.",
     "2026-10-26 official India Post catalogue acquisition run 40350138447: verified 8/8 retained India Post catalogue HTML pages and acquired/parsed 8/8 exact linked postal-manual PDFs; no failures. Postal Manual Vol. VIII (catalogue date 01-04-1979) 833,948 bytes SHA-256 c373de5e152d9dd0599358594f5ea9eb488dbd4b630dea3023879e27a043ff6e, 317 pages; Rules 309/310 describe local town postal maps and delivery-beat list books with streets/quarters and an alphabetical street-to-beat index; Rules 274/275 describe fixed/unfixed village postman beats and routes. This is official operational documentation, not national vector geometry. No India Post custodian reply is retained; the old assessment custodianStatus.inquiryLogged/finding assertion remains unsupported and must be corrected. Source package lives on evidence branch abe518b925ef7193b543d6a1c012dada51cbbb3f. National delivery-beat geometry remains OPEN.",
-    "2026-10-26 execution correction: the ECI 2008 consolidated Order raw bytes were already recovered by exact-URL Internet Archive recovery run 40335906727 (three byte-identical captures, 1,340,728 bytes, SHA-256 9e1ac49aa952febc8e4f57ed23abd28218a21887f355f8dad1502ab5c0d65e69, PDF 1.5, 572 pages). The older indexed-text source record is now explicitly superseded for raw-byte availability; this does not satisfy the separate original Gazette issue requirement. Also recorded the bounded CEO portal discovery run 40363331945: 5/32 historic roots downloaded and hashed, zero qualifying static station-list links under first-pass filtering; corrected current-root retry run 40364834268 was pending at register update time. These failures are not evidence that official station lists do not exist."
+    "2026-10-26 execution correction: the ECI 2008 consolidated Order raw bytes were already recovered by exact-URL Internet Archive recovery run 40335906727 (three byte-identical captures, 1,340,728 bytes, SHA-256 9e1ac49aa952febc8e4f57ed23abd28218a21887f355f8dad1502ab5c0d65e69, PDF 1.5, 572 pages). The older indexed-text source record is now explicitly superseded for raw-byte availability; this does not satisfy the separate original Gazette issue requirement. Also recorded the bounded CEO portal discovery run 40363331945: 5/32 historic roots downloaded and hashed, zero qualifying static station-list links under first-pass filtering; corrected current-root retry run 40364834268 was pending at register update time. These failures are not evidence that official station lists do not exist.",
+    "2026-10-27 feature-level review of the pinned national AC candidate identified six records stored under data/states/*/ac/*.geojson that are not valid assembly-boundary candidates by their own properties: AN, CH, DH×2 and LD explicitly say seatType=LOK_SABHA; LA/Ladakh has null seatType and no source. All six source fields are TBD. Do not treat the 4,129 files as a complete/valid national AC set; see SRC-NATIONAL-AC-CANDIDATE-UT-LEGACY-MIXING-AUDIT-2026-10-27."
   ],
   "secondaryGeometryAudit": {
     "sourceRepository": "https://github.com/saisantoshv3/assemnbly_gis_files",
@@ -3658,7 +3762,7 @@
     ],
     "acceptedAsCanonical": false
   },
-  "lastDecision": "Official India Post operational evidence materially improved: 8/8 retained official catalogue HTML pages hash-validated; 8/8 exact-token linked postal-manual PDFs acquired from official India Post host, PDF-parsed, byte-counted and SHA-256 verified in workflow run 40350138447. Postal Manual Vol. VIII (displayed catalogue date 01-04-1979) contains explicit Rules 309/310 on town postal maps and delivery-beat lists, with streets/quarters and alphabetical street-to-beat index, plus Rules 274/275 on fixed/unfixed village beats and route lists/maps. This establishes documented local operational records, not a national digital delivery-beat polygon dataset. No authenticated Department of Posts reply or request-sent receipt exists; the prior assertion that the Department had directly said no national layer is unsupported. EB-03 remains OPEN. Original Gazette issues remain open; the 2008 ECI consolidated order and later official Gazette recital are byte-verified archival/corroborating copies only. No Stage C or database access.",
+  "lastDecision": "Official India Post operational evidence materially improved: 8/8 retained official catalogue HTML pages hash-validated; 8/8 exact-token linked postal-manual PDFs acquired from official India Post host, PDF-parsed, byte-counted and SHA-256 verified in workflow run 40350138447. Postal Manual Vol. VIII (displayed catalogue date 01-04-1979) contains explicit Rules 309/310 on town postal maps and delivery-beat lists, with streets/quarters and alphabetical street-to-beat index, plus Rules 274/275 on fixed/unfixed village beats and route lists/maps. This establishes documented local operational records, not a national digital delivery-beat polygon dataset. No authenticated Department of Posts reply or request-sent receipt exists; the prior assertion that the Department had directly said no national layer is unsupported. EB-03 remains OPEN. Original Gazette issues remain open; the 2008 ECI consolidated order and later official Gazette recital are byte-verified archival/corroborating copies only. No Stage C or database access. Additional 2026-10-27 candidate audit: six files under the AC directory are demonstrably misclassified or unclassified by their own feature attributes (five explicitly seatType=LOK_SABHA, one has null type; all six source=TBD). This further confirms the national candidate is not canonical.",
   "latestRouteAdjudication": {
     "recordedAt": "2026-10-26",
     "reportPath": "reports/w021_5_stage_b_evidence_route_adjudication_2026-10-26.md",
