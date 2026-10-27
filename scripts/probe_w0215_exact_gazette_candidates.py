@@ -17,7 +17,7 @@ import requests, fitz
 OUT=Path("stage_b_exact_gazette_probe")
 RAW=OUT/"raw"; TEXT=OUT/"text"
 RAW.mkdir(parents=True,exist_ok=True); TEXT.mkdir(parents=True,exist_ok=True)
-TIMEOUT=(10,24)
+TIMEOUT=(8,18)
 USER_AGENT="PANIN-W021.5-Exact-Gazette-Source-Forensic-Probe/1.0"
 CA=Path("/etc/ssl/certs/ca-certificates.crt")
 TLS_VERIFY=str(CA) if CA.is_file() else True
@@ -191,6 +191,29 @@ def probe_live_page(url,label,manifest):
  except Exception as e:rec.update({"status":"LIVE_PROBE_FAILED_TLS_VERIFICATION_RETAINED","error":f"{type(e).__name__}: {e}"})
  manifest["livePages"].append(rec)
 
+def load_cdx_snapshot(path: Path, manifest: dict) -> list:
+ """Load previously captured CDX bytes without replacing them with derived records."""
+ rec={"path":str(path),"loadedAtUtc":now()}
+ try:
+  raw=path.read_bytes()
+  rec.update({"byteLength":len(raw),"sha256":sha(raw)})
+  data=json.loads(raw.decode("utf-8").strip().rstrip(","))
+  if not isinstance(data,list) or len(data)<2 or not isinstance(data[0],list):
+   raise ValueError("CDX snapshot is not a JSON header/rows array")
+  header=data[0]; rows=[]
+  for cells in data[1:]:
+   if not isinstance(cells,list): continue
+   item=dict(zip(header,cells))
+   if str(item.get("statuscode"))=="200" and str(item.get("mimetype","")).startswith("application/pdf") and item.get("timestamp") and item.get("original"):
+    rows.append(item)
+  rec.update({"status":"COMMITTED_CDX_SNAPSHOT_PARSED","recordCount":len(rows),"header":header})
+  manifest.setdefault("loadedCdxSnapshots",[]).append(rec)
+  return rows
+ except Exception as e:
+  rec.update({"status":"CDX_SNAPSHOT_LOAD_FAILED","error":f"{type(e).__name__}: {e}"})
+  manifest.setdefault("loadedCdxSnapshots",[]).append(rec)
+  return []
+
 def main():
  manifest={
   "schemaVersion":1,"title":"W021.5 focused Gazette issue and exact legal identifier probe",
@@ -246,10 +269,42 @@ def main():
   "output":"json","fl":"timestamp,original,statuscode,mimetype,digest,length",
   "filter":["statuscode:200","mimetype:application/pdf"],"collapse":"urlkey","limit":"4000"
  },manifest)
- # This is a broader, exact observed directory prefix. It may return unrelated PDFs;
- # classify from bytes and printed metadata, not filename.
- for item in cdx2008[:120]:
-  tasks.append((item,"EGazette2008DirectoryCapture","2008"))
+ # Archive lookups for exact issue-71/legal-identifier file variants. A URL hit is only
+ # a discovery lead; PDF bytes and printed issue metadata determine whether it is relevant.
+ exact_2008_urls = [
+  "http://egazette.nic.in:80/WriteReadData/2008/E_71_2008_001.pdf",
+  "http://egazette.nic.in/WriteReadData/2008/E_71_2008_001.pdf",
+  "https://egazette.nic.in/WriteReadData/2008/E_71_2008_001.pdf",
+  "https://egazette.gov.in/WriteReadData/2008/E_71_2008_001.pdf",
+  "http://egazette.nic.in:80/WriteReadData/2008/E_71_2008_002.pdf",
+  "https://egazette.gov.in/WriteReadData/2008/E_71_2008_002.pdf",
+  "https://egazette.gov.in/WriteReadData/2008/E_382_2008_001.pdf",
+  "https://egazette.gov.in/WriteReadData/2008/E_383_2008_001.pdf",
+  "https://egazette.gov.in/WriteReadData/2008/E_453_2008_001.pdf"
+ ]
+ for exact_url in exact_2008_urls:
+  label="CDX_EXACT_"+safe(urlparse(exact_url).path.split("/")[-1])+"_"+str(len(manifest["cdxQueries"])+1)
+  exact_rows=query_cdx(label,{
+   "url":exact_url,"output":"json","fl":"timestamp,original,statuscode,mimetype,digest,length",
+   "filter":["statuscode:200","mimetype:application/pdf"],"collapse":"urlkey","limit":"100"
+  },manifest)
+  for item in exact_rows:
+   item=dict(item);item["archiveUrl"]=capture_url(str(item.get("timestamp") or ""),str(item.get("original") or ""))
+   tasks.append((item,"Exact2008IdentifierArchiveCapture","2008"))
+ # These committed CDX responses already enumerate previously discovered, byte-verified
+ # archive indexes. Scan every row, not a first-page sample, to find the actual issue/date.
+ committed_indexes = [
+  ("stage_b_catalogue_expansion/raw/EGazetteNicIn2018PdfsCaptured2018To2026_cdx.txt","EGazetteNIC2018FullCapturedDirectory","2018"),
+  ("stage_b_catalogue_expansion/raw/APGazette2018PdfsCaptured_cdx.txt","APGazette2018FullCapturedDirectory","2018"),
+  ("stage_b_catalogue_expansion/raw/EGazetteNicIn2008PdfsAllCaptures_cdx.txt","EGazetteNIC2008FullCapturedDirectory","2008"),
+  ("stage_b_catalogue_expansion/raw/EGazetteGovIn2008PdfsAllCaptures_cdx.txt","EGazetteGOV2008FullCapturedDirectory","2008")
+ ]
+ for snapshot_path,cohort,kind in committed_indexes:
+  rows=load_cdx_snapshot(Path(snapshot_path),manifest)
+  manifest.setdefault("coverageInventory",[]).append({"cdxPath":snapshot_path,"cohort":cohort,"kind":kind,"rowsQueued":len(rows)})
+  for item in rows:
+   item=dict(item);item["archiveUrl"]=capture_url(str(item.get("timestamp") or ""),str(item.get("original") or ""))
+   tasks.append((item,cohort,kind))
  # Known timestamp-bound captures are included only as exact candidates and will be parsed again.
  known=[
   ("EGazetteE248Capture","http://egazette.nic.in:80/WriteReadData/2008/E_248_2008_001.pdf","20220325121427","2008"),
@@ -269,7 +324,7 @@ def main():
   dedup[key]=(item,cohort,kind)
  tasks=list(dedup.values())
  results=[]
- with concurrent.futures.ThreadPoolExecutor(max_workers=8) as pool:
+ with concurrent.futures.ThreadPoolExecutor(max_workers=16) as pool:
   futures=[pool.submit(probe_candidate,item,cohort,kind) for item,cohort,kind in tasks]
   for f in concurrent.futures.as_completed(futures):
    try:results.append(f.result())
