@@ -1,0 +1,11 @@
+[["timestamp","original","statuscode","mimetype","digest","length"],
+["20181104144728","http://apegazette.cgg.gov.in:80/gazettes/1538560683091.pdf","200","application/pdf","3D3JSSMGEJP24ONMDIDINBJBHOSO7J3H","572545"],
+["20181104144733","http://apegazette.cgg.gov.in:80/gazettes/1538560892470.pdf","200","application/pdf","RCXIXPEJ3GDKUOCXUMHFRC3SGAS2INBE","100673"],
+["20181104144739","http://apegazette.cgg.gov.in:80/gazettes/1538561106178.pdf","200","application/pdf","D2BH7V5U3TNKC4MGGW5YQXKIMP5YREER","101850"],
+["20181104144744","http://apegazette.cgg.gov.in:80/gazettes/1538641136020.pdf","200","application/pdf","CWAPZXAUEGY4NYA34Q2UVIMCGYWGLIGY","540338"],
+["20181104144748","http://apegazette.cgg.gov.in:80/gazettes/1538647052079.pdf","200","application/pdf","CAVGKCZEWXB74NPEMYL6HI7HH7WWSTPD","103478"],
+["20181104144757","http://apegazette.cgg.gov.in:80/gazettes/1538731708771.pdf","200","application/pdf","STGBPQ4PYT33LWMJP67WNI5XV2MELGT5","1677475"],
+["20181104144802","http://apegazette.cgg.gov.in:80/gazettes/1538733380470.pdf","200","application/pdf","RISFU3G6VJPFEN3I7L3RGDROWCOFPQ5A","199626"],
+["20181104144808","http://apegazette.cgg.gov.in:80/gazettes/1538735201552.pdf","200","application/pdf","H2WE4UAMICABFHE4DFOU7LBY6OF6QP7V","99581"],
+["20181104144814","http://apegazette.cgg.gov.in:80/gazettes/1538739829470.pdf","200","application/pdf","FEZJVH2A2C7PQAVTAETYI2L5LHN23OQY","369221"],
+["20190819024155","http://apegazette.cgg.gov.in:80/gazettes/1539930890787.pdf","200","application/pdf","YNA6ATFN7AUBYEE2CWNDCQYO4LYUMCGS","104935"]]
