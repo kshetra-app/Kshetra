@@ -3015,6 +3015,113 @@
         "No source geometry was modified or repaired."
       ],
       "plannedUse": "Block any automated claim that the 4,129-file candidate is a canonical national AC set; require a source-to-legislature roster comparison before geometry acceptance."
+    },
+    {
+      "sourceId": "SRC-W0215-EXHAUSTIVE-GAZETTE-CANDIDATE-SWEEP-2026-10-27",
+      "subject": "Exhaustive text-and-printed-metadata audit of archived Government of India Gazette PDF candidates for original 2008 Delimitation Order issue 71 and 2018 O.N.55(E), including current Andhra Pradesh Gazette candidate cohort",
+      "publisher": "Official eGazette/legacy eGazette and Andhra Pradesh e-Gazette URL snapshots accessed through Internet Archive CDX index; audit run by PANIN/Kshetra evidence workflow",
+      "retrievedAt": "2026-10-27",
+      "format": "478 candidate retrieval records, parsed PDF text/printed metadata, per-response hashes; archive index and raw candidate artifacts retained in evidence-only branch",
+      "authority": "ARCHIVAL_CANDIDATE_DISCOVERY_NOT_ORIGINAL_GAZETTE_AUTHENTICATION",
+      "status": "COMPLETED_FULL_CAPTURED_COHORT_SWEEP_NO_STRICT_2008_OR_2018_MATCH; ORIGINAL_ISSUES_STILL_OPEN",
+      "workflowRunId": 40441693194,
+      "workflowUrl": "https://github.com/kshetra-app/Kshetra/actions/runs/40441693194",
+      "branch": "cto/w0215-stage-b-evidence-20261025",
+      "workflowHeadCommit": "bb063ebe2a60e881c6f32aefebc956a1bcdf0071",
+      "repositoryEvidenceCommit": "70394137889f01c0d39c0e01dde3681492704c1e",
+      "artifactId": 12707415406,
+      "artifactName": "w0215-exact-gazette-candidates-40441693194",
+      "artifactZipBytes": 751331,
+      "artifactZipSha256": "1d18e9b47fa48c486be0bed0d4441e004a40d0e3c5fad37c870f5748f1b665e7",
+      "manifestPath": "data/evidence/w021_5/exact_gazette_candidates/manifest.json",
+      "manifestBytes": 2784999,
+      "manifestSha256": "9cb495455409989c709248cf39c4341e78a7a9aaab53bba47e9c84016c8725d5",
+      "searchCoverage": [
+        {
+          "indexPath": "stage_b_catalogue_expansion/raw/EGazetteNicIn2018PdfsCaptured2018To2026_cdx.txt",
+          "bytes": 54852,
+          "sourceSha256": "a8c3265db04a1280a70b2a490f33e7ef6018c2dc",
+          "candidateRowsParsed": 378
+        },
+        {
+          "indexPath": "stage_b_catalogue_expansion/raw/APGazette2018PdfsCaptured_cdx.txt",
+          "bytes": 3349,
+          "sourceSha256": "f0dcdbc081b82923b54d0e8009390efe62b4379c",
+          "candidateRowsParsed": 22
+        },
+        {
+          "indexPath": "stage_b_catalogue_expansion/raw/EGazetteNicIn2008PdfsAllCaptures_cdx.txt",
+          "bytes": 7781,
+          "sourceSha256": "213de224dd9c3369bc7d2778b01be0e0aacf0514",
+          "candidateRowsParsed": 51
+        },
+        {
+          "indexPath": "stage_b_catalogue_expansion/raw/EGazetteGovIn2008PdfsAllCaptures_cdx.txt",
+          "bytes": 978,
+          "sourceSha256": "89503c768e04a8c5c3d7ce7a5279d31178ea2686",
+          "candidateRowsParsed": 6
+        }
+      ],
+      "auditMetrics": {
+        "candidatesAttempted": 478,
+        "validPdfResponses": 453,
+        "rawCandidatePdfFilesRetained": 3,
+        "distinctTarget2008Issue71Matches": 0,
+        "strict2008GazetteLegalContentMatches": 0,
+        "strict2018ON55EGazetteMatches": 0,
+        "strict2018RelatedContextMatches": 0,
+        "directOrArchiveFetchErrors": 24
+      },
+      "nearMatches": [
+        {
+          "name": "E_55_2008_002.pdf — Gazette of India No. 551, 30 May 2008",
+          "bytes": 205737,
+          "sha256": "084ee63af78e5eb040cc57a8272bb491b14d20db7b4449a35e66b493596b04ec",
+          "status": "REJECTED_NOT_TARGET",
+          "reason": "Parsed printed metadata says Gazette No. 551, 30 May 2008; document text is Delimitation Commission Order No. 60 / O.N. 62(E), a Delhi-related order. Not Gazette issue 71 on 19 February 2008 and not O.N.55(E) dated 22 September 2018."
+        },
+        {
+          "name": "E_706_2008_001.pdf — Gazette of India No. 706, 23 May 2008",
+          "bytes": 94723,
+          "sha256": "bc33aca9f7743bacc6ae360450e796ee41db24b962265809f8a17166db3c24cb",
+          "status": "REJECTED_NOT_TARGET",
+          "reason": "Printed page says Gazette No.706, Friday 23 May 2008. It recites S.O.382(E), 19 February 2008, but is a later Delhi delimitation-related document, not the original 19 February Gazette issue or the consolidated ECI Order."
+        }
+      ],
+      "blockedQueryEvidence": [
+        {
+          "label": "APGazette2018PdfsCaptured",
+          "status": "CDX_FETCH_FAILED_TLS_VERIFICATION_RETAINED",
+          "errorClass": "ReadTimeout",
+          "disposition": "No AP candidate records returned by this query; cannot infer no AP Gazette issue exists."
+        },
+        {
+          "label": "APGazetteUploadIdsSepNov2018_HTTP",
+          "status": "CDX_FETCH_FAILED_TLS_VERIFICATION_RETAINED",
+          "errorClass": "ReadTimeout",
+          "disposition": "Upload-millisecond filename-window follow-up timed out; original query not resolved."
+        },
+        {
+          "label": "APGazetteUploadIdsSepNov2018_HTTPS",
+          "status": "CDX_FETCH_FAILED_TLS_VERIFICATION_RETAINED",
+          "errorClass": "ReadTimeout",
+          "disposition": "Upload-millisecond filename-window follow-up timed out; original query not resolved."
+        },
+        {
+          "label": "EGazetteNic2008ExactIssue71AndLegalIds plus seven exact-URL CDX queries",
+          "status": "CDX_FETCH_FAILED_TLS_VERIFICATION_RETAINED",
+          "errorClass": "ConnectTimeout",
+          "disposition": "No result list obtained for exact E_71/E_382/E_383/E_453 variants; this does not prove absence."
+        }
+      ],
+      "limitations": [
+        "The captured cohort sweep is bounded to available committed CDX lists and does not cover every file ever published by either Gazette service.",
+        "The AP Gazette upload-time-window CDX queries timed out, so that additional candidate range remains unsearched.",
+        "Internet Archive copies are archival captures, not physical/certified Gazette copies. The actual Gazette issue must still be identified by printed metadata, issue/part/section/page information and legal text.",
+        "Zero strict matches among the scanned candidates is a search result, not proof that the original issues do not exist.",
+        "This does not close EB-01 or the O.N.55(E)/Andhra Pradesh State Gazette requirement."
+      ],
+      "plannedUse": "Preserve the exact rejected candidates and covered-index inventory, then continue via an independent archival index (e.g. Common Crawl) and authenticated publication-custodian request; do not claim absence from timed-out queries."
     }
   ],
   "unresolvedGates": [
@@ -3695,6 +3802,26 @@
       "stationPagesDownloaded": 0,
       "branchCommit": "c843234b59868f6bdf77166ac6530a5822ae8240",
       "disposition": "Negative discovery only; not proof sources do not exist"
+    },
+    {
+      "runId": 40441693194,
+      "workflowUrl": "https://github.com/kshetra-app/Kshetra/actions/runs/40441693194",
+      "artifactId": 12707415406,
+      "artifactBytes": 751331,
+      "artifactSha256": "1d18e9b47fa48c486be0bed0d4441e004a40d0e3c5fad37c870f5748f1b665e7",
+      "manifestBytes": 2784999,
+      "manifestSha256": "9cb495455409989c709248cf39c4341e78a7a9aaab53bba47e9c84016c8725d5",
+      "status": "COMPLETED_478_CANDIDATE_SCAN_ZERO_STRICT_MATCH; AP_UPLOAD_WINDOW_AND_EXACT_ISSUE_CDX_QUERIES_TIMED_OUT",
+      "summary": {
+        "candidatesAttempted": 478,
+        "validPdfResponses": 453,
+        "rawCandidatePdfFilesRetained": 3,
+        "distinctTarget2008Issue71Matches": 0,
+        "strict2008GazetteLegalContentMatches": 0,
+        "strict2018ON55EGazetteMatches": 0,
+        "strict2018RelatedContextMatches": 0,
+        "directOrArchiveFetchErrors": 24
+      }
     }
   ],
   "updatedAt": "2026-10-27",
@@ -3720,7 +3847,8 @@
     "2026-10-26 pinned nationwide non-official AC boundary candidate acquired and audited in workflow run 40329997952. Public upstream commit 3e4e9f347b260040278c36f563fb2efa28e2a476 contains 4129 per-AC GeoJSON files across 36 state/UT codes. Audit found 65 invalid geometries, 4129 files with unresolved/TBD provenance and 154 valid-polygon positive-area overlap pairs over 1 m². Candidate snapshot and per-file raw hashes are durable only on evidence branch cto/w0215-stage-b-evidence-20261025 at commit 32dc58769af29b2e8233db87873824b548836cf6. This is a non-official candidate, not national canonical geometry.",
     "2026-10-26 official India Post catalogue acquisition run 40350138447: verified 8/8 retained India Post catalogue HTML pages and acquired/parsed 8/8 exact linked postal-manual PDFs; no failures. Postal Manual Vol. VIII (catalogue date 01-04-1979) 833,948 bytes SHA-256 c373de5e152d9dd0599358594f5ea9eb488dbd4b630dea3023879e27a043ff6e, 317 pages; Rules 309/310 describe local town postal maps and delivery-beat list books with streets/quarters and an alphabetical street-to-beat index; Rules 274/275 describe fixed/unfixed village postman beats and routes. This is official operational documentation, not national vector geometry. No India Post custodian reply is retained; the old assessment custodianStatus.inquiryLogged/finding assertion remains unsupported and must be corrected. Source package lives on evidence branch abe518b925ef7193b543d6a1c012dada51cbbb3f. National delivery-beat geometry remains OPEN.",
     "2026-10-26 execution correction: the ECI 2008 consolidated Order raw bytes were already recovered by exact-URL Internet Archive recovery run 40335906727 (three byte-identical captures, 1,340,728 bytes, SHA-256 9e1ac49aa952febc8e4f57ed23abd28218a21887f355f8dad1502ab5c0d65e69, PDF 1.5, 572 pages). The older indexed-text source record is now explicitly superseded for raw-byte availability; this does not satisfy the separate original Gazette issue requirement. Also recorded the bounded CEO portal discovery run 40363331945: 5/32 historic roots downloaded and hashed, zero qualifying static station-list links under first-pass filtering; corrected current-root retry run 40364834268 was pending at register update time. These failures are not evidence that official station lists do not exist.",
-    "2026-10-27 feature-level review of the pinned national AC candidate identified six records stored under data/states/*/ac/*.geojson that are not valid assembly-boundary candidates by their own properties: AN, CH, DH×2 and LD explicitly say seatType=LOK_SABHA; LA/Ladakh has null seatType and no source. All six source fields are TBD. Do not treat the 4,129 files as a complete/valid national AC set; see SRC-NATIONAL-AC-CANDIDATE-UT-LEGACY-MIXING-AUDIT-2026-10-27."
+    "2026-10-27 feature-level review of the pinned national AC candidate identified six records stored under data/states/*/ac/*.geojson that are not valid assembly-boundary candidates by their own properties: AN, CH, DH×2 and LD explicitly say seatType=LOK_SABHA; LA/Ladakh has null seatType and no source. All six source fields are TBD. Do not treat the 4,129 files as a complete/valid national AC set; see SRC-NATIONAL-AC-CANDIDATE-UT-LEGACY-MIXING-AUDIT-2026-10-27.",
+    "2026-10-27 full captured-cohort Gazette probe run 40441693194: parsed 378 central 2018 Gazette PDF captures, 22 AP Gazette PDF captures, 51 legacy central 2008 PDF captures and 6 current-host 2008 PDF captures; 478 candidates attempted, 453 valid PDFs, 0 strict original 2008 issue-71 or 2018 O.N.55(E) matches. Retained/rejected candidates include Gazette No.551 (30 May 2008; O.N.62(E), Delhi) and Gazette No.706 (23 May 2008; later Delhi order reciting S.O.382(E)), neither target. AP upload-time-window and exact issue-number CDX queries timed out and remain unsearched rather than classified as absent. Manifest SHA-256 9cb495455409989c709248cf39c4341e78a7a9aaab53bba47e9c84016c8725d5."
   ],
   "secondaryGeometryAudit": {
     "sourceRepository": "https://github.com/saisantoshv3/assemnbly_gis_files",
@@ -3762,7 +3890,7 @@
     ],
     "acceptedAsCanonical": false
   },
-  "lastDecision": "Official India Post operational evidence materially improved: 8/8 retained official catalogue HTML pages hash-validated; 8/8 exact-token linked postal-manual PDFs acquired from official India Post host, PDF-parsed, byte-counted and SHA-256 verified in workflow run 40350138447. Postal Manual Vol. VIII (displayed catalogue date 01-04-1979) contains explicit Rules 309/310 on town postal maps and delivery-beat lists, with streets/quarters and alphabetical street-to-beat index, plus Rules 274/275 on fixed/unfixed village beats and route lists/maps. This establishes documented local operational records, not a national digital delivery-beat polygon dataset. No authenticated Department of Posts reply or request-sent receipt exists; the prior assertion that the Department had directly said no national layer is unsupported. EB-03 remains OPEN. Original Gazette issues remain open; the 2008 ECI consolidated order and later official Gazette recital are byte-verified archival/corroborating copies only. No Stage C or database access. Additional 2026-10-27 candidate audit: six files under the AC directory are demonstrably misclassified or unclassified by their own feature attributes (five explicitly seatType=LOK_SABHA, one has null type; all six source=TBD). This further confirms the national candidate is not canonical.",
+  "lastDecision": "Most recent legal search (run 40441693194, completed 2026-10-27) parsed 478 archived Gazette PDF candidates: 453 valid PDF responses, zero strict original 2008 Gazette issue-71 matches and zero strict 2018 O.N.55(E) matches. Two legally unrelated near-matches were raw-byte hashed and explicitly rejected. Follow-up CDX queries for the AP Gazette upload-time window and exact E_71/E_382/E_383/E_453 filenames timed out, so those windows are not treated as exhaustively searched. Actual original Gazette issue bytes remain OPEN. The OGD PIN boundary run 40441944926 also acquired zero resource bytes; official data.gov.in requests were refused and Archive CDX showed zero captures for the exact resource URLs. Stage B remains PARTIAL / NOT ACCEPTED.",
   "latestRouteAdjudication": {
     "recordedAt": "2026-10-26",
     "reportPath": "reports/w021_5_stage_b_evidence_route_adjudication_2026-10-26.md",
