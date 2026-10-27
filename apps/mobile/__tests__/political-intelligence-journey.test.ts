@@ -510,8 +510,8 @@ describe('CTO Directive 083 — Political Intelligence Vertical Slice', () => {
       expect(matrix.totalStatesAudited).toBe(31);
       expect(matrix.summary.totalStatutorySeats).toBe(4123);
       expect(matrix.summary.partialLocalWithGeoCount).toBe(0); // TS geo blocked by AC 119 duplicate defect
-      expect(matrix.summary.partialHistoricalNoGeoCount).toBe(8); // TS, AP, KA, MH, TN, KL, WB, UP
-      expect(matrix.summary.seededSingleTermCount).toBe(23); // Remaining 23 states/UTs
+      expect(matrix.summary.partialHistoricalNoGeoCount).toBe(31); // All 31 states have seeded historical results (Directives 090-092)
+      expect(matrix.summary.seededSingleTermCount).toBe(0);
       expect(matrix.states.length).toBe(31);
 
       // Verify DL has 70 seats
