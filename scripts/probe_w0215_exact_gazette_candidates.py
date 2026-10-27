@@ -259,11 +259,30 @@ def main():
   "output":"json","fl":"timestamp,original,statuscode,mimetype,digest,length",
   "filter":["statuscode:200","mimetype:application/pdf"],"collapse":"urlkey","limit":"1500"
  },manifest)
+ # Expand beyond archive captures made during Sep-Dec 2018. Andhra Pradesh Gazette document
+ # filenames encode upload-time milliseconds; query the official gazettes/ prefix and filter
+ # exact original URLs by an upload-time range covering 20 Sep–30 Nov 2018, independent of
+ # when the Wayback capture occurred. Both HTTP-origin spellings are explicit source variants.
+ ap_filename_rows=[]
+ for label,prefix in [
+  ("APGazetteUploadIdsSepNov2018_HTTP","http://apegazette.cgg.gov.in:80/gazettes/"),
+  ("APGazetteUploadIdsSepNov2018_HTTPS","https://apegazette.cgg.gov.in/gazettes/")
+ ]:
+  rows=query_cdx(label,{
+   "url":prefix,"matchType":"prefix","output":"json",
+   "fl":"timestamp,original,statuscode,mimetype,digest,length",
+   "filter":["statuscode:200","mimetype:application/pdf","original:.*(1537[4-9][0-9]{8}|1538[0-9]{9}|1539[0-9]{9}|154[0-3][0-9]{8})[.]pdf$"],
+   "collapse":"urlkey","limit":"1500"
+  },manifest)
+  ap_filename_rows.extend(rows)
  # A previous evidence manifest already enumerated these exact Wayback AP Gazette URLs; this
  # CDX retry refreshes that set. Never infer the document from a random file identifier.
  for item in cdx_ap[:40]:
   item=dict(item);item["archiveUrl"]=capture_url(str(item.get("timestamp") or ""),str(item.get("original") or ""))
   tasks.append((item,"APGazetteArchiveCapture","2018"))
+ for item in ap_filename_rows:
+  item=dict(item);item["archiveUrl"]=capture_url(str(item.get("timestamp") or ""),str(item.get("original") or ""))
+  tasks.append((item,"APGazette2018FilenameWindowArchiveCapture","2018"))
  cdx2008=query_cdx("EGazetteNic2008ExactIssue71AndLegalIds",{
   "url":"http://egazette.nic.in/WriteReadData/2008/E_","matchType":"prefix",
   "output":"json","fl":"timestamp,original,statuscode,mimetype,digest,length",
