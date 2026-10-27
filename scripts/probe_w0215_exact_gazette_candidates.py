@@ -8,7 +8,7 @@ capture alone. Raw PDFs are retained only when their text/metadata is a material
 candidate; the manifest records hashes/statuses for every fetch attempt.
 """
 from __future__ import annotations
-import concurrent.futures, hashlib, html, json, re, shutil, subprocess
+import concurrent.futures, gzip, hashlib, html, json, re, shutil, subprocess
 from datetime import datetime, timezone
 from pathlib import Path
 from urllib.parse import urlencode, urlparse
@@ -23,7 +23,7 @@ CA=Path("/etc/ssl/certs/ca-certificates.crt")
 TLS_VERIFY=str(CA) if CA.is_file() else True
 S=requests.Session()
 S.headers.update({"User-Agent":USER_AGENT,"Accept":"application/pdf,text/html,application/xhtml+xml,*/*;q=0.8","Accept-Language":"en-IN,en;q=0.9"})
-ALLOWED={"web.archive.org","egazette.gov.in","www.egazette.gov.in","egazette.nic.in","www.egazette.nic.in","apegazette.cgg.gov.in","www.apegazette.cgg.gov.in","deptpub.gov.in","www.deptpub.gov.in"}
+ALLOWED={"web.archive.org","index.commoncrawl.org","data.commoncrawl.org","egazette.gov.in","www.egazette.gov.in","egazette.nic.in","www.egazette.nic.in","apegazette.cgg.gov.in","www.apegazette.cgg.gov.in","deptpub.gov.in","www.deptpub.gov.in"}
 
 def now(): return datetime.now(timezone.utc).isoformat()
 def sha(b): return hashlib.sha256(b).hexdigest()
@@ -214,6 +214,212 @@ def load_cdx_snapshot(path: Path, manifest: dict) -> list:
   manifest.setdefault("loadedCdxSnapshots",[]).append(rec)
   return []
 
+
+CC_INDEX_PRIORITY=["CC-MAIN-2018-39","CC-MAIN-2018-43","CC-MAIN-2018-47","CC-MAIN-2018-51","CC-MAIN-2019-04","CC-MAIN-2019-13"]
+CC_SOURCE_HOSTS={"apegazette.cgg.gov.in","www.apegazette.cgg.gov.in","egazette.gov.in","www.egazette.gov.in","egazette.nic.in","www.egazette.nic.in"}
+
+def commoncrawl_collection_list(manifest):
+    url="https://index.commoncrawl.org/collinfo.json"
+    record={"requestedUrl":url,"attemptedAtUtc":now()}
+    try:
+        if not approved(url):raise ValueError("Common Crawl index host not approved")
+        r=S.get(url,timeout=TIMEOUT,allow_redirects=True,verify=TLS_VERIFY)
+        b=r.content
+        record.update({"finalUrl":r.url,"httpStatus":r.status_code,"byteLength":len(b),"sha256":sha(b)})
+        if r.status_code!=200:
+            record.update({"status":"COLLECTION_LIST_HTTP_FAILURE"});manifest["commonCrawlCollections"]=record;return []
+        (RAW/"CommonCrawl_collinfo.json").write_bytes(b)
+        data=json.loads(b)
+        ids={x.get("id"):x for x in data if isinstance(x,dict) and x.get("id")}
+        chosen=[ids[x] for x in CC_INDEX_PRIORITY if x in ids]
+        if len(chosen)<4:
+            fallback=[x for k,x in ids.items() if re.match(r"CC-MAIN-(2018|2019)-",k or "")]
+            fallback.sort(key=lambda x:x.get("id",""))
+            for item in fallback:
+                if item not in chosen:chosen.append(item)
+                if len(chosen)>=6:break
+        record.update({"status":"COLLECTION_LIST_ACQUIRED","collectionCount":len(data),"selectedIndexes":[x.get("id") for x in chosen]})
+        manifest["commonCrawlCollections"]=record
+        return chosen
+    except Exception as e:
+        record.update({"status":"COLLECTION_LIST_FETCH_FAILED_TLS_VERIFICATION_RETAINED","error":f"{type(e).__name__}: {e}"})
+        manifest["commonCrawlCollections"]=record
+        return []
+
+def query_commoncrawl_index(index_info, label, target_url, url_filter=None, limit=500, manifest=None):
+    api=index_info.get("cdx-api") or f"https://index.commoncrawl.org/{index_info.get('id')}-index"
+    rec={"label":label,"collection":index_info.get("id"),"indexUrl":api,"targetUrl":target_url,"attemptedAtUtc":now()}
+    if not approved(api):
+        rec["status"]="REJECTED_UNAPPROVED_INDEX_URL"
+        manifest.setdefault("commonCrawlQueries",[]).append(rec)
+        return []
+    params={"url":target_url,"matchType":"prefix","output":"json",
+            "filter":["status:200","mime:application/pdf"],"limit":str(limit)}
+    if url_filter:params["filter"].append("url:"+url_filter)
+    try:
+        r=S.get(api,params=params,timeout=TIMEOUT,allow_redirects=True,verify=TLS_VERIFY)
+        b=r.content
+        rec.update({"finalUrl":r.url,"httpStatus":r.status_code,"byteLength":len(b),"sha256":sha(b)})
+        if r.status_code!=200:
+            rec.update({"status":"COMMONCRAWL_INDEX_HTTP_FAILURE","errorBodySha256":sha(b) if b else None})
+            manifest.setdefault("commonCrawlQueries",[]).append(rec)
+            return []
+        name=safe(f"CommonCrawl_{index_info.get('id')}_{label}")+"_index.jsonl"
+        (RAW/name).write_bytes(b);rec["rawIndexArtifact"]="raw/"+name
+        rows=[]
+        for line in b.splitlines():
+            if not line.strip():continue
+            try: item=json.loads(line)
+            except Exception:continue
+            if str(item.get("status"))=="200" and str(item.get("mime","")).lower().startswith("application/pdf"):
+                if item.get("url") and item.get("filename") and item.get("offset") and item.get("length"):
+                    rows.append(item)
+        rec.update({"status":"COMMONCRAWL_INDEX_RESULTS_ACQUIRED","recordCount":len(rows),
+                    "sampleRecords":[{k:x.get(k) for k in ("url","timestamp","status","mime","filename","offset","length","digest")} for x in rows[:8]]})
+        manifest.setdefault("commonCrawlQueries",[]).append(rec)
+        return rows
+    except Exception as e:
+        rec.update({"status":"COMMONCRAWL_INDEX_QUERY_FAILED_TLS_VERIFICATION_RETAINED","error":f"{type(e).__name__}: {e}"})
+        manifest.setdefault("commonCrawlQueries",[]).append(rec)
+        return []
+
+def probe_commoncrawl_warc_record(item, cohort, gazette_kind):
+    original=str(item.get("url") or "")
+    host=(urlparse(original).hostname or "").lower()
+    rec={"cohort":cohort,"gazetteKind":gazette_kind,"originalUrl":original,"captureTimestamp":item.get("timestamp"),
+         "commonCrawlCollection":item.get("_collection"),"commonCrawlDigest":item.get("digest"),
+         "warcFilename":item.get("filename"),"warcOffset":item.get("offset"),"warcRecordLength":item.get("length"),
+         "attemptedAtUtc":now(),"status":"NOT_ATTEMPTED"}
+    if host not in CC_SOURCE_HOSTS or urlparse(original).scheme not in ("http","https"):
+        rec["status"]="REJECTED_NON_OFFICIAL_SOURCE_HOST"
+        return rec
+    try:
+        offset=int(item["offset"]); length=int(item["length"])
+        if length<=0 or length>12_000_000:
+            rec.update({"status":"REJECTED_WARC_RECORD_LENGTH_OUT_OF_BOUNDS","warcRecordLength":length})
+            return rec
+        filename=str(item["filename"]).lstrip("/")
+        warc_url="https://data.commoncrawl.org/"+filename
+        if not approved(warc_url):raise ValueError("WARC host is not approved")
+        response=S.get(warc_url,headers={**S.headers,"Range":f"bytes={offset}-{offset+length-1}"},
+                       timeout=TIMEOUT,allow_redirects=True,verify=TLS_VERIFY)
+        compressed=response.content
+        rec.update({"warcRequestUrl":warc_url,"warcHttpStatus":response.status_code,"warcReturnedBytes":len(compressed),
+                    "warcResponseSha256":sha(compressed),"warcContentRange":response.headers.get("Content-Range")})
+        if response.status_code!=206 or len(compressed)!=length:
+            rec.update({"status":"WARC_RANGE_NOT_SERVED_EXACTLY"})
+            return rec
+        try:warc=gzip.decompress(compressed)
+        except Exception as e:
+            rec.update({"status":"WARC_GZIP_DECOMPRESSION_FAILED","error":f"{type(e).__name__}: {e}"})
+            return rec
+        warc_header_end=warc.find(b"\r\n\r\n")
+        if warc_header_end<0:
+            rec["status"]="WARC_HEADER_SEPARATOR_NOT_FOUND";return rec
+        warc_header=warc[:warc_header_end]
+        payload=warc[warc_header_end+4:]
+        if b"WARC-Type: response" not in warc_header and b"WARC-Type: revisit" not in warc_header:
+            rec["status"]="WARC_RECORD_NOT_HTTP_RESPONSE";return rec
+        http_header_end=payload.find(b"\r\n\r\n")
+        if http_header_end<0 or not payload[:http_header_end].startswith(b"HTTP/"):
+            rec["status"]="WARC_HTTP_HEADER_NOT_FOUND";return rec
+        http_header=payload[:http_header_end]
+        pdf_bytes=payload[http_header_end+4:]
+        length_match=re.search(rb"(?im)^Content-Length:\s*(\d+)\s*$",http_header)
+        if length_match:
+            pdf_bytes=pdf_bytes[:int(length_match.group(1))]
+        rec.update({"warcRecordSha256":sha(warc),"httpResponseHeaders":http_header.decode("latin-1","replace")[:2000],
+                    "httpBodyByteLength":len(pdf_bytes),"httpBodySha256":sha(pdf_bytes),"pdfMagic":pdf_bytes.startswith(b"%PDF-")})
+        if not pdf_bytes.startswith(b"%PDF-"):
+            rec["status"]="COMMONCRAWL_BODY_NOT_PDF";return rec
+        try:
+            doc=fitz.open(stream=pdf_bytes,filetype="pdf")
+            pages=[p.get_text("text",sort=True) for p in doc]
+            full="\n".join(pages);first=pages[0] if pages else ""
+            findings=markers(full,first,gazette_kind)
+            rec.update({"pdfParseStatus":"PASS","pdfVersion":re.match(rb"%PDF-([0-9.]+)",pdf_bytes).group(1).decode() if re.match(rb"%PDF-([0-9.]+)",pdf_bytes) else None,
+                        "pdfPageCount":doc.page_count,"firstPageTextBytes":len(first.encode()),"firstPageTextSha256":sha(first.encode()),
+                        "fullTextBytes":len(full.encode()),"fullTextSha256":sha(full.encode()),"findings":findings,
+                        "firstPagePreview":first[:1800],"fullTextPreview":full[:1000],"status":"COMMONCRAWL_CAPTURE_PDF_PARSED"})
+        except Exception as e:
+            rec.update({"status":"COMMONCRAWL_CAPTURE_PDF_PARSE_FAILED","error":f"{type(e).__name__}: {e}"})
+            return rec
+        urlsuff=urlparse(original).path.lower()
+        target_url=bool(re.search(r"E[_-]?71[_-]?2008|E[_-]?(382|383|453)[_-]?2008|O\.?N\.?55|282.?AP.?2018",urlsuff,re.I))
+        f=findings
+        material=bool(target_url or f.get("issue71Candidate") or f.get("strictLegalContentCandidate") or f.get("strictON55EGazetteCandidate") or
+                      f.get("issueDateAndRelatedContextCandidate") or f.get("publicationDate19Feb2008OnFirstPage") or
+                      f.get("publicationDate22Sep2018OnFirstPage") or any((f.get("targetNotificationMarkersAnywhere") or {}).values()) or
+                      f.get("on55EAnywhere") or f.get("eciNotification282AP2018Anywhere"))
+        if material:
+            name=safe(f"CommonCrawl_{cohort}_{item.get('timestamp')}_{Path(urlparse(original).path).name}")+".pdf"
+            (RAW/name).write_bytes(pdf_bytes)
+            textname=Path(name).stem+".txt"
+            (TEXT/textname).write_text(full,encoding="utf-8")
+            rec["rawArtifact"]="raw/"+name;rec["textArtifact"]="text/"+textname
+            if f.get("strictLegalContentCandidate"):rec["status"]="COMMONCRAWL_STRICT_2008_GAZETTE_CANDIDATE_NEEDS_AUTHENTICATION"
+            elif f.get("strictON55EGazetteCandidate"):rec["status"]="COMMONCRAWL_STRICT_ON55E_CANDIDATE_NEEDS_AUTHENTICATION"
+            else:rec["status"]="COMMONCRAWL_NEAR_MATCH_RETAINED_NOT_ACCEPTED"
+        return rec
+    except Exception as e:
+        rec.update({"status":"COMMONCRAWL_WARC_FETCH_FAILED_TLS_VERIFICATION_RETAINED","error":f"{type(e).__name__}: {e}"})
+        return rec
+
+def run_commoncrawl_archive_scan(manifest, previously_seen_urls):
+    """Second independent web archive; only its WARC response bytes are inspected, never trusted from filename alone."""
+    indexes=commoncrawl_collection_list(manifest)
+    target_specs=[
+      ("APGazetteUploadWindow","http://apegazette.cgg.gov.in/gazettes/",r".*/gazettes/(1537[4-9][0-9]{8}|1538[0-9]{9}|1539[0-9]{9}|154[0-3][0-9]{8})[.]pdf$","2018"),
+      ("CentralGazette2018","http://egazette.nic.in/WriteReadData/2018/",r".*/WriteReadData/2018/.*[.]pdf$","2018"),
+      ("CentralGazette2008","http://egazette.nic.in/WriteReadData/2008/",r".*/WriteReadData/2008/.*[.]pdf$","2008")
+    ]
+    # Query the 4 crawl indexes closest to the legal publication/republication window, plus one 2019 follow-up.
+    if len(indexes)>5:indexes=indexes[:5]
+    jobs=[]
+    for idx in indexes:
+        for label,prefix,regex,kind in target_specs:
+            jobs.append((idx,label,prefix,regex,kind))
+    query_rows=[]
+    with concurrent.futures.ThreadPoolExecutor(max_workers=10) as pool:
+        futs={pool.submit(query_commoncrawl_index,idx,label,prefix,regex,500,manifest):(idx,label,kind) for idx,label,prefix,regex,kind in jobs}
+        for future in concurrent.futures.as_completed(futs):
+            idx,label,kind=futs[future]
+            try:
+                rows=future.result()
+                for row in rows:
+                    row["_collection"]=idx.get("id")
+                    row["_queryLabel"]=label
+                    row["_kind"]=kind
+                    query_rows.append(row)
+            except Exception as e:
+                manifest.setdefault("commonCrawlWorkerFailures",[]).append({"collection":idx.get("id"),"label":label,"error":f"{type(e).__name__}: {e}"})
+    # Prefer newest indexed capture per exact source URL and do not waste requests on URLs already
+    # byte-audited in the archived CDX cohorts. Retain up to 240 new unique URLs for bounded work.
+    by_url={}
+    for row in query_rows:
+        url=str(row.get("url") or "")
+        if not url or url in previously_seen_urls:continue
+        old=by_url.get(url)
+        if old is None or str(row.get("timestamp") or "")>str(old.get("timestamp") or ""):by_url[url]=row
+    selected=sorted(by_url.values(),key=lambda x:(x.get("_kind",""),x.get("_queryLabel",""),x.get("url","")))[:240]
+    manifest["commonCrawlCoverage"]={"collectionsQueried":[x.get("id") for x in indexes],"indexQueries":len(jobs),
+        "indexRowsReturned":len(query_rows),"uniqueNewSourceUrls":len(by_url),"warcRecordsSelected":len(selected),
+        "previouslySeenUrlsExcluded":True,"cap":240}
+    results=[]
+    with concurrent.futures.ThreadPoolExecutor(max_workers=12) as pool:
+        futs=[pool.submit(probe_commoncrawl_warc_record,row,row.get("_queryLabel","CommonCrawl"),row.get("_kind","2018")) for row in selected]
+        for future in concurrent.futures.as_completed(futs):
+            try:results.append(future.result())
+            except Exception as e:results.append({"status":"COMMONCRAWL_WARC_WORKER_FAILURE","error":f"{type(e).__name__}: {e}"})
+    manifest["commonCrawlCoverage"]["warcRecordsProcessed"]=len(results)
+    manifest["commonCrawlCoverage"]["warcPdfMagicCount"]=sum(1 for x in results if x.get("pdfMagic"))
+    manifest["commonCrawlCoverage"]["warcPdfParsedCount"]=sum(1 for x in results if x.get("pdfParseStatus")=="PASS")
+    manifest["commonCrawlCoverage"]["rawNearMatchPdfsRetained"]=sum(1 for x in results if x.get("rawArtifact"))
+    manifest["commonCrawlCoverage"]["strict2008Candidates"]=sum(1 for x in results if x.get("findings",{}).get("strictLegalContentCandidate"))
+    manifest["commonCrawlCoverage"]["strictON55ECandidates"]=sum(1 for x in results if x.get("findings",{}).get("strictON55EGazetteCandidate"))
+    manifest["commonCrawlCoverage"]["statusCounts"]=dict(Counter(x.get("status","UNKNOWN") for x in results))
+    return results
+
 def main():
  manifest={
   "schemaVersion":1,"title":"W021.5 focused Gazette issue and exact legal identifier probe",
@@ -348,6 +554,17 @@ def main():
   for f in concurrent.futures.as_completed(futures):
    try:results.append(f.result())
    except Exception as e:results.append({"status":"PROBE_WORKER_FAILURE","error":f"{type(e).__name__}: {e}"})
+ # Run a second independent archive after the original CDX cohort scan. It excludes exact source
+ # URLs already present in committed/queried archive indexes, but retrieves and hashes WARC payloads
+ # to discover pages missing from Internet Archive's captured set.
+ previously_seen=set()
+ for x in results:
+  u=str(x.get("originalUrl") or "")
+  if u:previously_seen.add(u)
+ for rows in manifest.get("loadedCdxSnapshots",[]):
+  pass
+ commoncrawl_results=run_commoncrawl_archive_scan(manifest,previously_seen)
+ results.extend(commoncrawl_results)
  results.sort(key=lambda x:(x.get("gazetteKind",""),x.get("cohort",""),x.get("captureTimestamp") or "",x.get("originalUrl","")))
  manifest["candidates"]=results
  manifest["disposition"]={
