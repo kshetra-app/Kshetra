@@ -1,0 +1,63 @@
+{
+  "schemaVersion": 1,
+  "title": "Official OGD India All India PIN Boundary resource acquisition (not delivery-beat geometry)",
+  "generatedAtUtc": "2026-10-27T02:56:35.641948+00:00",
+  "databaseAccess": "NONE",
+  "TLSVerification": "ENABLED",
+  "targetResource": "https://data.gov.in/resource/all-india-pincode-boundary-geojson",
+  "scope": "Acquire the official PIN-boundary resource if its exact download is exposed; explicitly do not equate PIN polygons with postman delivery beats.",
+  "probes": [
+    {
+      "requestedUrl": "https://data.gov.in/resource/all-india-pincode-boundary-geojson",
+      "attemptedAtUtc": "2026-10-27T02:56:35.641960+00:00",
+      "status": "FETCH_FAILED_TLS_VERIFICATION_RETAINED",
+      "error": "ConnectionError: HTTPSConnectionPool(host='data.gov.in', port=443): Max retries exceeded with url: /resource/all-india-pincode-boundary-geojson (Caused by NewConnectionError(\"HTTPSConnection(host='data.gov.in', port=443): Failed to establish a new connection: [Errno 111] Connection refused\"))"
+    },
+    {
+      "requestedUrl": "https://api.data.gov.in/resource/all-india-pincode-boundary-geojson",
+      "attemptedAtUtc": "2026-10-27T02:56:36.456576+00:00",
+      "status": "FETCH_FAILED_TLS_VERIFICATION_RETAINED",
+      "error": "ConnectionError: HTTPSConnectionPool(host='api.data.gov.in', port=443): Max retries exceeded with url: /resource/all-india-pincode-boundary-geojson (Caused by NewConnectionError(\"HTTPSConnection(host='api.data.gov.in', port=443): Failed to establish a new connection: [Errno 111] Connection refused\"))"
+    },
+    {
+      "requestedUrl": "https://data.gov.in/api/3/action/package_show?id=all-india-pincode-boundary-geojson",
+      "attemptedAtUtc": "2026-10-27T02:56:36.454540+00:00",
+      "status": "FETCH_FAILED_TLS_VERIFICATION_RETAINED",
+      "error": "ConnectionError: HTTPSConnectionPool(host='data.gov.in', port=443): Max retries exceeded with url: /api/3/action/package_show?id=all-india-pincode-boundary-geojson (Caused by NewConnectionError(\"HTTPSConnection(host='data.gov.in', port=443): Failed to establish a new connection: [Errno 111] Connection refused\"))"
+    },
+    {
+      "requestedUrl": "https://data.gov.in/api/3/action/package_search?q=all%20india%20pincode%20boundary",
+      "attemptedAtUtc": "2026-10-27T02:56:36.455278+00:00",
+      "status": "FETCH_FAILED_TLS_VERIFICATION_RETAINED",
+      "error": "ConnectionError: HTTPSConnectionPool(host='data.gov.in', port=443): Max retries exceeded with url: /api/3/action/package_search?q=all%20india%20pincode%20boundary (Caused by NewConnectionError(\"HTTPSConnection(host='data.gov.in', port=443): Failed to establish a new connection: [Errno 111] Connection refused\"))"
+    },
+    {
+      "requestedUrl": "https://www.data.gov.in/api/3/action/package_show?id=all-india-pincode-boundary-geojson",
+      "attemptedAtUtc": "2026-10-27T02:56:36.456013+00:00",
+      "finalUrl": "https://www.data.gov.in/api/3/action/package_show?id=all-india-pincode-boundary-geojson",
+      "httpStatus": 503,
+      "contentType": "text/html",
+      "contentDisposition": null,
+      "etag": null,
+      "lastModified": null,
+      "byteLength": 280,
+      "sha256": "52b65e5e1486aca36a2925fcfdf5e8e7c26e8cbfd0188f3fb0d241ae10d6057f",
+      "status": "HTTP_FAILURE_NO_SOURCE_ACCEPTED"
+    }
+  ],
+  "acquiredResources": [],
+  "disposition": {
+    "officialCataloguePageStatus": "FETCH_FAILED_TLS_VERIFICATION_RETAINED",
+    "officialCatalogueRawBytesAcquired": false,
+    "candidateURLsDiscovered": 4,
+    "distinctCandidateRequestsMade": 4,
+    "nonHtmlResourceBytesAcquired": 0,
+    "geojsonFeatureCollectionsAcquired": 0,
+    "zipResourcesAcquired": 0,
+    "candidateResourceFiles": 0,
+    "pinBoundaryIsNotDeliveryBeatGeometry": true,
+    "deliveryBeatGate": "OPEN: actual beat polygons or an authenticated custodian response still required",
+    "interpretation": "The PIN dataset is retained only as a distinct postal-area candidate and cannot close EB-03."
+  },
+  "completedAtUtc": "2026-10-27T02:56:39.153227+00:00"
+}
