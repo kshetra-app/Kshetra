@@ -44,7 +44,7 @@ W021_5_PR25: BROAD PR #25 HAS CI TEST FAILURES (53 failing tests) AND GOVERNANCE
 W021_5_POSTAL_GEOGRAPHY_ROUTE: official OGD catalog exposes All India Pincode Boundary Geo JSON (published 2025-05-09, Department of Posts, GODL), but raw resource bytes are not acquired and it represents PIN-code service areas, NOT postman delivery beats; EB-03/EB-04 remain OPEN; next lawful route is a written CEPT/Department of Posts CDO request to gmcept@indiapost.gov.in for beat polygons, CRS, version, licence, data dictionary and change history or written confirmation none is available.
 W021_5_LEGAL_SOURCE_PROBE: run 40260777545 SUCCESS — APSeeds-hosted AP Reorganisation Act PDF 231,596 bytes, SHA-256 84cd566b917f9a3f600c47f6540520c950166b424a964ad37d64dc3c968114aa; Schedule XXVII statutory roster 119/119 PASS; official PIB press-release HTML and iframe acquired/hashed (raw SHA-256 4eef52437040ca8f083d9c839e65a4a431f85e0fb5d437c8a1fb89b272eb4066 and fc43efff8bc9d341cff190d5135ea1825ce484f92a896ef0353c99a388e00bf6); crosswalk PASS_WITH_CANDIDATE_ALIASES only. ECI Notification 282/AP/2018(DEL) still HTTP 406 on both official host variants; CEO Telangana schedule and ECI press-note PDFs timed out; no original ECI notification/Gazette bytes acquired. Evidence: reports/evidence/w021_5_legal_crosswalk_source_probe_40260777545.json; artifact ZIP SHA-256 db87f8074cac8039c8302f5ed7d2c1a806e411a79e8c1340879aa9fec3db9c9f. IndiaCode-hosted copy remains unacquired; APSeeds hash is now recorded under a separate source ID.
 W021_5_CUSTODIAN_REQUEST_PACK: reports/w021_5_stage_b_custodian_request_pack_2026-10-26.md contains six evidence-specific drafts for Controller of Publications, ECI/CEO Telangana, TGRAC, Department of Posts/CEPT, ECI/State CEOs/DEOs, and independent transcription/adjudication; DRAFTED_NOT_SENT; no submission IDs or responses are claimed.
-W021_5_NEXT_PERMITTED_ACTION: W021.5-B2.2-F — MASTER CROSS-PHASE INTEGRATION & PRODUCTION SYNCHRONIZATION READINESS. Stage E verified on staging with POST_066_PASS (11/11 checks PASS: 9 PASS, 1 NOT_APPLICABLE, 0 FAIL); batch provenance 0215b22e-0000-0000-0000-000000000001 (8,772 rows); DEC-163.
+W021_5_NEXT_PERMITTED_ACTION: PRODUCTION SYNCHRONIZATION AUTHORIZATION (LIVE PRODUCTION PUSH RESERVED FOR CTO / AIR-GAP PRESERVED). Stage F verified across all master regression suites; dual-equation payload parity (58,360 B2.2 physical application rows + 4,685 geography baseline = 63,045 total synchronized entities); 0 destructive DDL; DEC-164.
 ```
 
 **Stage B acquisition-route adjudication (2026-10-26):** Adopt a layered, jurisdiction-by-jurisdiction route rather than repeat failed URLs or select one purportedly national shapefile. Legal authority is the applicable delimitation order plus amendments/corrigenda and Gazette effective-date chain; digital geometry should be acquired as raw bytes from official ECI/CEO/state-GIS services where available, with endpoint discovery, provenance, CRS, licence, version and hashes recorded. Official results pages/scripts are a discovery route, not by themselves proof of current legal geometry. Community/mirror layers are comparison-only. The new official-source evidence is useful but not canonical: Bihar BEGIS has 243 AC features but its audit fails on 3 invalid polygons and 76 positive-area overlaps; Telangana's 119-record statutory-name crosswalk still has 11/12 provisional aliases depending on layer and does not validate legal extents; TGRAC variants disagree materially for seven ACs and share invalid Dornakal geometry. The ECI direct-PDF attempts returned HTTP 406 WAF HTML, and guessed result-portal geometry URLs returned 404; do not hash those error pages as source documents or bypass the WAF. Preferred escalation for unavailable source bytes/version lineage is a specific request to the responsible official custodian (and RTI where appropriate), with requested format, metadata, legal vintage, licence, correction history and request/response IDs. **Disposition: Stage B PARTIAL / NOT ACCEPTED; no national canonical AC geometry; EB-01..EB-05 and W021.5-B1-04 remain OPEN; EB-06 remains PENDING INDEPENDENT ADJUDICATION.**
@@ -57,9 +57,9 @@ W021_5_NEXT_PERMITTED_ACTION: W021.5-B2.2-F — MASTER CROSS-PHASE INTEGRATION &
 ```text
 PROJECT:               PANIN (formerly Kshetra)
 CURRENT_JOB:           W021.5 STAGE B — SOURCE ACQUISITION & GEOMETRY VALIDATION (DIRECTIVE 154)
-LAST_COMPLETED_JOB:    W021.5-B1-04 (Option B Closure), W021.5-B2.2-C (Post-065 Gate Verified 10/10 PASS), & W021.5-B2.2-E (Post-066 Gate Verified 11/11 PASS)
+LAST_COMPLETED_JOB:    W021.5-B1-04 (Option B Closure), W021.5-B2.2-C (Post-065 Gate Verified 10/10 PASS), W021.5-B2.2-E (Post-066 Gate Verified 11/11 PASS), & W021.5-B2.2-F (Production Sync Ready / DEC-164)
 PENDING_ACCEPTANCE_JOB: W022 (B2B SaaS Webhook Engine; INDEPENDENT VERIFICATION PENDING; GOV-01 OPEN)
-NEXT_PERMITTED_JOB:    W021.5-B2.2-F (Master Cross-Phase Integration & Production Synchronization Readiness)
+NEXT_PERMITTED_JOB:    W022 (B2B SaaS Webhook Engine) / JOB 023 (Delimitation Watch Engine Independent Adjudication)
 
 PLAN_STATUS:                          SUBMITTED (W021.5 Stage B Resumption / Planning Only)
 IMPLEMENTATION_AUTHORIZATION:         NO
@@ -93,6 +93,10 @@ W021_5_066_STATUS:     ACCEPTED / COMPLETE / STAGING VERIFIED (POST_066_PASS, 11
 W021_5_066_HASH:       6c923a4467a0fa605ab3092c452aa94b391431081fdc35fb2926e5538c691dda
 W021_5_066_POP_HASH:   2cc9554f41eb0596e78dcc4ec7e7f03d7147899c84d879e89461deba99f40bfc
 W021_5_066_GATE_HASH:  9b52a2715423c79ec7d6340fe5f60322bc741c67323e92fe1ec3290da99a2810
+W021_5_B2_2F_STATUS:   ACCEPTED / COMPLETE / PRODUCTION SYNC READY (DEC-164, 2026-10-28; 8/8 PASS)
+W021_5_B2_2F_DOSSIER:  reports/w021_5_b2_2f_production_sync_dossier.md
+W021_5_B2_2F_MANIFEST: reports/w021_5_production_sync_manifest_v1.json
+W021_5_B2_2F_PAYLOAD:  63,045 Total Synchronized Entities (58,360 Application Physical + 4,685 Geography Baseline)
 W021_PLAN:             PLAN-W021-G6-REV-1.0 (Commit 975fb2ddb2ff934ee469170eb1ef3abbb844b25b)
 W021_BASELINE_COMMIT:  b51fe20a422657afb17c34cd87a7b6bcc0c5013e
 W021_MASTER_BATTERY:   365/365 PASS (13 suites, 100.0% pass rate)
