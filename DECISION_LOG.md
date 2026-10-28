@@ -3947,3 +3947,33 @@
      - W021.5 Stage C is formally recorded as `COMPLETE / VERIFIED ON STAGING (POST_065_PASS)`.
      - `NEXT_PERMITTED_JOB` advanced to **W021.5-B2.2-E / Migration 066 (Downstream Civic Extensions & Demographic/Affidavit Population)**.
      - Production database (`ehfafcnimmjusyvplbah`) remains strictly air-gapped (0 queries, 0 mutations).
+
+---
+
+### DEC-163: W021.5 Stage E Staging Acceptance & Downstream Civic Extensions Verification
+- **Date:** 2026-10-28
+- **Status:** APPROVED & EMPIRICALLY VERIFIED — STAGE E STAGING ACCEPTANCE ACHIEVED
+- **Authority:** Project Owner Direction / Live Staging Execution on panIN-staging (`fkpigozcqnmcvofuksar`) / Rule IV-001 Non-Self-Acceptance
+- **Context:** Following the staging acceptance of Stage C (DEC-162) and baseline verification of Stages C, D, and E prerequisites, Migration 066 (Schema Extensions) and the downstream civic population packages (Affidavits, Demographics, Delimitation Lineage) were executed against Supabase Staging (`fkpigozcqnmcvofuksar`). The Post-066 Consolidated Gate Checkpoint (`supabase/staging_checkpoints/w021_5_post_066_consolidated_gate.sql`) was executed in read-only mode to evaluate data completeness, FK integrity, RLS policy enforcement, and anti-leakage invariants.
+- **Architectural & Governance Determinations:**
+  1. **Consolidated Staging Gate Verification (`POST_066_PASS`):**
+     - Executed [`supabase/staging_checkpoints/w021_5_post_066_consolidated_gate.sql`](file:///C:/Users/Laven/OneDrive/Desktop/Kshetra/supabase/staging_checkpoints/w021_5_post_066_consolidated_gate.sql) against `fkpigozcqnmcvofuksar`.
+     - Confirmed all 9 applicable checks return `PASS` and 1 capability returns `NOT_APPLICABLE` (0 failures):
+       - `check_01`: Datasets (3) & Dataset Versions (3) registered with valid attributes (`PASS`).
+       - `check_02`: Batch Provenance Anchor `0215b22e-0000-0000-0000-000000000001` present and linked (`PASS`).
+       - `check_03`: Candidate Affidavits foreign keys to canonical persons and candidacies (4,523 rows, 0 orphans) (`PASS`).
+       - `check_04`: Demographics foreign keys to canonical constituencies via `internal_id` (4,123 distinct ACs, 0 orphans) (`PASS`).
+       - `check_05`: Delhi AC coverage (exactly 70 ACs) and zero municipal ward contamination (`PASS`).
+       - `check_06`: Candidate Affidavits batch count (4,523 rows) and 100% `OFFICIAL` status integrity (`PASS`).
+       - `check_07`: Delimitation Lineage succession records count (126 Assam 2008 $\rightarrow$ 2023 transitions, 0 invalid) (`PASS`).
+       - `check_08`: State Election Turnout capability status: decoupled and DEFERRED per Option 2 (`NOT_APPLICABLE`).
+       - `check_09`: Zero synthetic independent organizations leakage (0/0) (`PASS`).
+       - `check_10`: Row-Level Security actively enabled on `constituency_demographics` and `candidate_affidavits` with verified policies (`PASS`).
+       - `check_11`: Aggregate gate verdict: 9 passed, 1 N/A, 0 failed -> `POST_066_PASS` (`PASS`).
+  2. **Data Quality & Forensic Deduplication:**
+     - Formally accepted resolution of `DQ-W021.5-B2.2E-001` (Basavaraj Bommai duplicate affidavit deduplication), establishing the exact 4,523 candidate affidavit baseline (3,980 Vidhan Sabha MLAs + 543 Lok Sabha MPs).
+     - Confirmed 4,123 assembly constituency demographics ($4,142 - 153 + 134 = 4,123$) across all 31 States/UTs with assemblies, purging HP AC 69/70 and Delhi municipal wards.
+  3. **Milestone Transition & Downstream Authorization:**
+     - W021.5 Stage E is formally recorded as `COMPLETE / VERIFIED ON STAGING (POST_066_PASS)`.
+     - `NEXT_PERMITTED_JOB` advanced to **W021.5-B2.2-F (Master Cross-Phase Integration & Production Synchronization Readiness)**.
+     - Production database (`ehfafcnimmjusyvplbah`) remains strictly air-gapped (0 queries, 0 mutations).
