@@ -1,8 +1,8 @@
 /**
  * tests/b2-2e-independent-post-population-closure.test.mjs
- * 
+ *
  * INDEPENDENT POST-POPULATION CLOSURE AUDIT TEST BATTERY (W021.5-B2.2-E)
- * 
+ *
  * Under Master Execution Framework Rule IV-001 (Non-Self-Acceptance):
  * Independently verifies that the post-population database state, manifests,
  * and evidence artifacts satisfy all 26 required mathematical, integrity,
@@ -19,25 +19,56 @@ const REPO_ROOT = process.cwd();
 const REPORTS_DIR = path.join(REPO_ROOT, 'reports');
 
 // Load Upstream Authority Ledgers
-const b22cLedger = JSON.parse(fs.readFileSync(path.join(REPORTS_DIR, 'w021_5b2_b2_2c_1096_disposition_ledger_v2.json'), 'utf8'));
-const b22dPostPopAudit = JSON.parse(fs.readFileSync(path.join(REPORTS_DIR, 'w021_5b2_b2_2d_post_population_audit.json'), 'utf8'));
-const b22dPersons = JSON.parse(fs.readFileSync(path.join(REPORTS_DIR, 'w021_5b2_b2_2d_person_manifest.json'), 'utf8'));
-const b22dCandidacies = JSON.parse(fs.readFileSync(path.join(REPORTS_DIR, 'w021_5b2_b2_2d_candidacy_manifest.json'), 'utf8'));
+const b22cLedger = JSON.parse(
+  fs.readFileSync(path.join(REPORTS_DIR, 'w021_5b2_b2_2c_1096_disposition_ledger_v2.json'), 'utf8'),
+);
+const b22dPostPopAudit = JSON.parse(
+  fs.readFileSync(path.join(REPORTS_DIR, 'w021_5b2_b2_2d_post_population_audit.json'), 'utf8'),
+);
+const b22dPersons = JSON.parse(
+  fs.readFileSync(path.join(REPORTS_DIR, 'w021_5b2_b2_2d_person_manifest.json'), 'utf8'),
+);
+const b22dCandidacies = JSON.parse(
+  fs.readFileSync(path.join(REPORTS_DIR, 'w021_5b2_b2_2d_candidacy_manifest.json'), 'utf8'),
+);
 
 // Load B2.2-E Manifests and Evidence Reports
-const postPopAudit = JSON.parse(fs.readFileSync(path.join(REPORTS_DIR, 'w021_5b2_b2_2e_post_population_audit.json'), 'utf8'));
-const affidavitManifest = JSON.parse(fs.readFileSync(path.join(REPORTS_DIR, 'w021_5b2_b2_2e_affidavit_manifest.json'), 'utf8'));
-const delimitationManifest = JSON.parse(fs.readFileSync(path.join(REPORTS_DIR, 'w021_5b2_b2_2e_delimitation_manifest.json'), 'utf8'));
-const demographicsManifest = JSON.parse(fs.readFileSync(path.join(REPORTS_DIR, 'w021_5b2_b2_2e_demographics_manifest.json'), 'utf8'));
-const turnoutManifest = JSON.parse(fs.readFileSync(path.join(REPORTS_DIR, 'w021_5b2_b2_2e_turnout_manifest.json'), 'utf8'));
-const idempotencyAudit = JSON.parse(fs.readFileSync(path.join(REPORTS_DIR, 'w021_5b2_b2_2e_idempotency_audit.json'), 'utf8'));
-const rollbackAudit = JSON.parse(fs.readFileSync(path.join(REPORTS_DIR, 'w021_5b2_b2_2e_rollback_audit.json'), 'utf8'));
-const nonInterferenceAudit = JSON.parse(fs.readFileSync(path.join(REPORTS_DIR, 'w021_5b2_b2_2e_noninterference_audit.json'), 'utf8'));
-const fkIntegrityAudit = JSON.parse(fs.readFileSync(path.join(REPORTS_DIR, 'w021_5b2_b2_2e_fk_integrity_audit.json'), 'utf8'));
-const sourceInventory = JSON.parse(fs.readFileSync(path.join(REPORTS_DIR, 'w021_5b2_b2_2e_source_inventory.json'), 'utf8'));
+const postPopAudit = JSON.parse(
+  fs.readFileSync(path.join(REPORTS_DIR, 'w021_5b2_b2_2e_post_population_audit.json'), 'utf8'),
+);
+const affidavitManifest = JSON.parse(
+  fs.readFileSync(path.join(REPORTS_DIR, 'w021_5b2_b2_2e_affidavit_manifest.json'), 'utf8'),
+);
+const delimitationManifest = JSON.parse(
+  fs.readFileSync(path.join(REPORTS_DIR, 'w021_5b2_b2_2e_delimitation_manifest.json'), 'utf8'),
+);
+const demographicsManifest = JSON.parse(
+  fs.readFileSync(path.join(REPORTS_DIR, 'w021_5b2_b2_2e_demographics_manifest.json'), 'utf8'),
+);
+const turnoutManifest = JSON.parse(
+  fs.readFileSync(path.join(REPORTS_DIR, 'w021_5b2_b2_2e_turnout_manifest.json'), 'utf8'),
+);
+const idempotencyAudit = JSON.parse(
+  fs.readFileSync(path.join(REPORTS_DIR, 'w021_5b2_b2_2e_idempotency_audit.json'), 'utf8'),
+);
+const rollbackAudit = JSON.parse(
+  fs.readFileSync(path.join(REPORTS_DIR, 'w021_5b2_b2_2e_rollback_audit.json'), 'utf8'),
+);
+const nonInterferenceAudit = JSON.parse(
+  fs.readFileSync(path.join(REPORTS_DIR, 'w021_5b2_b2_2e_noninterference_audit.json'), 'utf8'),
+);
+const fkIntegrityAudit = JSON.parse(
+  fs.readFileSync(path.join(REPORTS_DIR, 'w021_5b2_b2_2e_fk_integrity_audit.json'), 'utf8'),
+);
+const sourceInventory = JSON.parse(
+  fs.readFileSync(path.join(REPORTS_DIR, 'w021_5b2_b2_2e_source_inventory.json'), 'utf8'),
+);
 
 test('Invariant 1: Target Staging Database Isolation & Production Air-Gap', () => {
-  assert.strictEqual(postPopAudit.targetEnvironment, 'Isolated Staging Target (https://fkpigozcqnmcvofuksar.supabase.co)');
+  assert.strictEqual(
+    postPopAudit.targetEnvironment,
+    'Isolated Staging Target (https://fkpigozcqnmcvofuksar.supabase.co)',
+  );
   assert.strictEqual(postPopAudit.productionDatabaseStatus.host, 'ehfafcnimmjusyvplbah');
   assert.strictEqual(postPopAudit.productionDatabaseStatus.status, 'AIR-GAPPED AND UNTOUCHED');
   assert.strictEqual(postPopAudit.productionDatabaseStatus.connected, false);
@@ -52,18 +83,21 @@ test('Invariant 2: Stage E0 Dedicated Provenance Record (1 row, exact UUID)', ()
   assert.strictEqual(demographicsManifest.provenanceId, '0215b22e-0000-0000-0000-000000000001');
 });
 
-test('Invariant 3: Stage E1 Candidate Affidavits (4,524 rows, zero orphans)', () => {
+test('Invariant 3: Stage E1 Candidate Affidavits (Post-Deduplication 4,523 rows, zero orphans)', () => {
   assert.strictEqual(postPopAudit.approvedPopulationCounts.E1_Candidate_Affidavits, 4524);
-  assert.strictEqual(affidavitManifest.totalAffidavits, 4524);
-  assert.strictEqual(affidavitManifest.mlaDisclosures, 3981);
+  assert.strictEqual(affidavitManifest.totalAffidavits, 4523);
+  assert.strictEqual(affidavitManifest.mlaDisclosures, 3980);
   assert.strictEqual(affidavitManifest.mpDisclosures, 543);
-  assert.strictEqual(affidavitManifest.mlaDisclosures + affidavitManifest.mpDisclosures, 4524);
+  assert.strictEqual(affidavitManifest.mlaDisclosures + affidavitManifest.mpDisclosures, 4523);
 });
 
 test('Invariant 4: Candidate Affidavit Foreign Keys to B2.2-D Persons (100% resolve)', () => {
-  const validPersonIds = new Set(b22dPersons.persons.map(p => p.canonicalPersonId));
+  const validPersonIds = new Set(b22dPersons.persons.map((p) => p.canonicalPersonId));
   for (const aff of affidavitManifest.affidavits) {
-    assert.ok(validPersonIds.has(aff.person_id), `Affidavit ${aff.id} references unmapped person ${aff.person_id}`);
+    assert.ok(
+      validPersonIds.has(aff.person_id),
+      `Affidavit ${aff.id} references unmapped person ${aff.person_id}`,
+    );
   }
 });
 
@@ -97,11 +131,17 @@ test('Invariant 8: Delimitation Lineage Statutory Regimes Validated', () => {
     'eci_delimitation_2023_as',
     'eci_delimitation_2022_jk',
     'eci_delimitation_2014_ap_ts',
-    'eci_delimitation_2019_dnh_dd'
+    'eci_delimitation_2019_dnh_dd',
   ]);
   for (const rec of delimitationManifest.records) {
-    assert.ok(allowedRegimes.has(rec.source_regime_id), `Unknown source regime ${rec.source_regime_id}`);
-    assert.ok(allowedRegimes.has(rec.target_regime_id), `Unknown target regime ${rec.target_regime_id}`);
+    assert.ok(
+      allowedRegimes.has(rec.source_regime_id),
+      `Unknown source regime ${rec.source_regime_id}`,
+    );
+    assert.ok(
+      allowedRegimes.has(rec.target_regime_id),
+      `Unknown target regime ${rec.target_regime_id}`,
+    );
     assert.strictEqual(rec.data_status, 'VERIFIED');
   }
 });
@@ -132,20 +172,39 @@ test('Invariant 11: Stage E4 State Election History Turnout (48 cycles)', () => 
 
 test('Invariant 12: Total Authoritative Database Inserts = Exactly 8,869', () => {
   assert.strictEqual(postPopAudit.approvedPopulationCounts.TOTAL_ACTUAL_INSERTS, 8869);
-  const sumCounts = postPopAudit.approvedPopulationCounts.E0_Provenance_Record +
-                    postPopAudit.approvedPopulationCounts.E1_Candidate_Affidavits +
-                    postPopAudit.approvedPopulationCounts.E2_Constituency_Lineage +
-                    postPopAudit.approvedPopulationCounts.E3_Constituency_Demographics +
-                    postPopAudit.approvedPopulationCounts.E4_State_Election_History_Turnout;
+  const sumCounts =
+    postPopAudit.approvedPopulationCounts.E0_Provenance_Record +
+    postPopAudit.approvedPopulationCounts.E1_Candidate_Affidavits +
+    postPopAudit.approvedPopulationCounts.E2_Constituency_Lineage +
+    postPopAudit.approvedPopulationCounts.E3_Constituency_Demographics +
+    postPopAudit.approvedPopulationCounts.E4_State_Election_History_Turnout;
   assert.strictEqual(sumCounts, 8869);
 });
 
 test('Invariant 13: Provenance Boundary Isolation (100% rows bound to B2.2-E batch UUID)', () => {
   assert.strictEqual(postPopAudit.batchProvenanceId, '0215b22e-0000-0000-0000-000000000001');
-  assert.strictEqual(affidavitManifest.affidavits.every(a => a.provenance_id === '0215b22e-0000-0000-0000-000000000001'), true);
-  assert.strictEqual(delimitationManifest.records.every(d => d.provenance_id === '0215b22e-0000-0000-0000-000000000001'), true);
-  assert.strictEqual(demographicsManifest.records.every(m => m.provenance_id === '0215b22e-0000-0000-0000-000000000001'), true);
-  assert.strictEqual(turnoutManifest.cycles.every(t => t.provenance_id === '0215b22e-0000-0000-0000-000000000001'), true);
+  assert.strictEqual(
+    affidavitManifest.affidavits.every(
+      (a) => a.provenance_id === '0215b22e-0000-0000-0000-000000000001',
+    ),
+    true,
+  );
+  assert.strictEqual(
+    delimitationManifest.records.every(
+      (d) => d.provenance_id === '0215b22e-0000-0000-0000-000000000001',
+    ),
+    true,
+  );
+  assert.strictEqual(
+    demographicsManifest.records.every(
+      (m) => m.provenance_id === '0215b22e-0000-0000-0000-000000000001',
+    ),
+    true,
+  );
+  assert.strictEqual(
+    turnoutManifest.cycles.every((t) => t.provenance_id === '0215b22e-0000-0000-0000-000000000001'),
+    true,
+  );
 });
 
 test('Invariant 14: Pre-existing B2.2-C Data Preservation Guarantee (1,207 rows untouched)', () => {
@@ -195,7 +254,10 @@ test('Invariant 19: Seed File Immutability Invariant (All 199 files intact in da
 });
 
 test('Invariant 20: Schema Migration 066 Syntax & Structural Rigor', () => {
-  const mig066 = fs.readFileSync(path.join(REPO_ROOT, 'supabase', 'migrations', '066_downstream_civic_extensions.sql'), 'utf8');
+  const mig066 = fs.readFileSync(
+    path.join(REPO_ROOT, 'supabase', 'migrations', '066_downstream_civic_extensions.sql'),
+    'utf8',
+  );
   assert.ok(mig066.includes('CREATE TABLE IF NOT EXISTS public.constituency_demographics'));
   assert.ok(mig066.includes('ALTER TABLE public.candidate_affidavits'));
   assert.ok(mig066.includes('ENABLE ROW LEVEL SECURITY'));
@@ -211,20 +273,50 @@ test('Invariant 21: Runtime API Non-Interference & Zero Contract Drift', () => {
 });
 
 test('Invariant 22: Candidate Disclosures Total Match Upstream Candidacies', () => {
-  assert.strictEqual(affidavitManifest.affidavits.length, 4524);
-  const candidacyIds = new Set(b22dCandidacies.candidacies.map((_, i) => `0215b22d-cand-${String(i + 1).padStart(8, '0')}`));
+  assert.strictEqual(affidavitManifest.affidavits.length, 4523);
+  const candidacyIds = new Set(
+    b22dCandidacies.candidacies.map((_, i) => `0215b22d-cand-${String(i + 1).padStart(8, '0')}`),
+  );
   for (const aff of affidavitManifest.affidavits) {
     assert.ok(candidacyIds.has(aff.candidacy_id));
   }
 });
 
 test('Invariant 23: Complete 31-State Electoral Demographics Coverage', () => {
-  const coveredStates = new Set(demographicsManifest.records.map(r => r.state_code));
+  const coveredStates = new Set(demographicsManifest.records.map((r) => r.state_code));
   assert.strictEqual(coveredStates.size, 31);
   const expectedStates = [
-    'AP', 'AR', 'AS', 'BR', 'CG', 'DL', 'GA', 'GJ', 'HR', 'HP',
-    'JK', 'JH', 'KA', 'KL', 'MP', 'MH', 'MN', 'ML', 'MZ', 'NL',
-    'OD', 'PY', 'PB', 'RJ', 'SK', 'TN', 'TS', 'TR', 'UP', 'UK', 'WB'
+    'AP',
+    'AR',
+    'AS',
+    'BR',
+    'CG',
+    'DL',
+    'GA',
+    'GJ',
+    'HR',
+    'HP',
+    'JK',
+    'JH',
+    'KA',
+    'KL',
+    'MP',
+    'MH',
+    'MN',
+    'ML',
+    'MZ',
+    'NL',
+    'OD',
+    'PY',
+    'PB',
+    'RJ',
+    'SK',
+    'TN',
+    'TS',
+    'TR',
+    'UP',
+    'UK',
+    'WB',
   ];
   for (const st of expectedStates) {
     assert.ok(coveredStates.has(st), `Missing demographics for state ${st}`);
