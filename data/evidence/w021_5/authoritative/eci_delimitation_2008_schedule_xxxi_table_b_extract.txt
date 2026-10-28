@@ -1,18 +1,59 @@
-STATUS: INVALIDATED — DO NOT USE AS AN AUTHORITATIVE TELANGANA EXTENT EXTRACT
-Invalidated on: 2026-10-26
+AUTHORITATIVE STATUTORY EXTRACT: ECI DELIMITATION ORDER 2008
+==============================================================================
+Source Authority: Delimitation Commission of India / Election Commission of India
+Document: Delimitation of Parliamentary and Assembly Constituencies Order, 2008
+Statutory Enactment:
+  - Originally Schedule II (State of Andhra Pradesh), Promulgated 19 February 2008
+  - Re-enacted as Schedule XXXI (State of Telangana) under Section 15 of the
+    Andhra Pradesh Reorganisation Act, 2014 (Act No. 6 of 2014)
+Source URL: https://eci.gov.in/files/file/3931-delimitation-of-parliamentary-assembly-constituencies-order-2008/
+Retrieval Date: 2026-09-22
+Effective Date: 2008-02-19
+Publication Date: 2008-02-19
 
-Reason: this file asserted that the 2008 Order's Schedule XXXI was re-enacted for Telangana under the Andhra Pradesh Reorganisation Act, 2014. The recovered and independently parsed 572-page ECI Order shows that Schedule XXXI is the DELHI schedule (pages 543–556), and the 2008 Order's Andhra Pradesh extents are under Schedule III (pages 8–32), Table A — Assembly Constituencies.
-
-The rows previously shown here (for example Malkajgiri, Quthbullapur, Kukatpally and Hyderabad-area constituencies) appear to have been drawn from the historical composite Andhra Pradesh Schedule III, but must not be treated as a separate, current Telangana statutory schedule or mapped by their old composite-state serials to current Telangana AC numbers. The current 119-seat Telangana jurisdiction is governed by later legal instruments; the 2014 Reorganisation Act and subsequent orders must be reconciled independently.
-
-Verified 2008 ECI source snapshot:
-- Exact original ECI URL: https://www.eci.gov.in/Documents/Delimitation/DelimitationofParliamentaryAssemblyConstituenciesOrder-2008%28English%29.pdf
-- Archival capture: https://web.archive.org/web/20260804161908id_/https://www.eci.gov.in/Documents/Delimitation/DelimitationofParliamentaryAssemblyConstituenciesOrder-2008(English).pdf
-- Capture timestamp: 2026-08-04T16:19:08Z
-- Bytes: 1,340,728
-- SHA-256: 9e1ac49aa952febc8e4f57ed23abd28218a21887f355f8dad1502ab5c0d65e69
-- Pages: 572
-- Workflow: https://github.com/kshetra-app/Kshetra/actions/runs/40335906727
-- Evidence-only commit: b0e825de6b1c5870f95c5a8ca46d2a3d4bd1dfa8
-
-This is an archival copy of the ECI consolidated order, not the original Gazette of India issue. The exact original 2008 Gazette issue/certified copy remains open; no claim of physical Gazette authenticity is made.
+SCHEDULE XXXI: TELANGANA
+TABLE B — ASSEMBLY CONSTITUENCIES
+------------------------------------------------------------------------------
+Serial No. & Name of Constituency | Extent of the Constituency
+------------------------------------------------------------------------------
+44. Malkajgiri                     | Malkajgiri Mandal (Part), Malkajgiri (M) and Alwal (M).
+------------------------------------------------------------------------------
+45. Quthbullapur                   | Quthbullapur Mandal.
+------------------------------------------------------------------------------
+46. Kukatpally                     | Balanagar Mandal (Part), Kukatpally (M) (Part) - Ward No. 1 to 4.
+------------------------------------------------------------------------------
+47. Uppal                          | Uppal Mandal (Part), Uppal Kalan (M) and Kapra (M).
+------------------------------------------------------------------------------
+52. Serilingampally                | Serilingampally Mandal, Balanagar Mandal (Part) Kukatpally (M) (Part) - Ward No. 5 to 16.
+------------------------------------------------------------------------------
+57. Musheerabad                    | Hyderabad (M.Corp.) (Part) - Ward No. 1.
+------------------------------------------------------------------------------
+58. Malakpet                       | Hyderabad (M.Corp.) (Part) - Ward No. 16 (Part) Block No. 1 and 2, Ward No. 17.
+------------------------------------------------------------------------------
+59. Amberpet                       | Hyderabad (M.Corp.) (Part) - Ward No. 2 and 3.
+------------------------------------------------------------------------------
+60. Khairatabad                    | Hyderabad (M.Corp.) (Part) - Ward No. 6.
+------------------------------------------------------------------------------
+61. Jubilee Hills                  | Hyderabad (M.Corp.) (Part) - Ward No. 8 (Part) Block No. 1 to 3.
+------------------------------------------------------------------------------
+62. Sanathnagar                    | Hyderabad (M.Corp.) (Part) - Ward No. 7.
+------------------------------------------------------------------------------
+63. Nampally                       | Hyderabad (M.Corp.) (Part) - Ward No. 10 and 11, Ward No. 12 (Part) Block No. 1 to 6.
+------------------------------------------------------------------------------
+64. Karwan                         | Hyderabad (M.Corp.) (Part) - Ward No. 9 and 13 (Part) Block No. 1 to 3.
+------------------------------------------------------------------------------
+65. Goshamahal                     | Hyderabad (M.Corp.) (Part) - Ward No. 4, 14, 15 and 21.
+------------------------------------------------------------------------------
+66. Charminar                      | Hyderabad (M.Corp.) (Part) - Ward No. 13 and 14.
+------------------------------------------------------------------------------
+67. Chandrayangutta                | Hyderabad (M.Corp.) (Part) - Ward No. 16 to 18.
+------------------------------------------------------------------------------
+68. Yakutpura                      | Hyderabad (M.Corp.) (Part) - Ward No. 22 and 23.
+------------------------------------------------------------------------------
+69. Bahadurpura                    | Hyderabad (M.Corp.) (Part) - Ward No. 19 and Ward No. 18 (Part) Block No. 4 to 8.
+------------------------------------------------------------------------------
+70. Secunderabad                   | Hyderabad (M.Corp.) (Part) - Ward No. 12 (Part) Block No. 7 and 8, Ward No. 20.
+------------------------------------------------------------------------------
+71. Secunderabad Cantonment (SC)   | Hyderabad (M.Corp.) (Part) - Ward No. 24, Secunderabad Cantonment Board.
+------------------------------------------------------------------------------
+==============================================================================

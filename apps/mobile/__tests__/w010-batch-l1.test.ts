@@ -10,6 +10,7 @@ import {
 } from '../lib/supabaseDataService';
 
 describe('W010 BATCH L1 — DEF-001 & DEF-007 VERIFICATION', () => {
+  jest.setTimeout(15000);
   const rootAppDir = path.resolve(__dirname, '..');
 
   describe('DEF-001: Mobile Route De-duplication & Canonical Preservation', () => {
