@@ -1,0 +1,102 @@
+{
+  "milestone": "W021.5 Stage C",
+  "title": "1,207 Canonical Political Organization Registry Staging Verification Report",
+  "targetEnvironment": "panIN-staging (fkpigozcqnmcvofuksar.supabase.co)",
+  "productionDatabaseStatus": {
+    "host": "ehfafcnimmjusyvplbah",
+    "status": "AIR-GAPPED AND UNTOUCHED",
+    "connected": false,
+    "modified": false
+  },
+  "verificationTimestamp": "2026-10-28T23:26:36+05:30",
+  "provenanceAnchor": "0215b22c-0000-0000-0000-000000000001",
+  "gateCheckpointScript": "supabase/staging_checkpoints/w021_5_post_065_consolidated_gate.sql",
+  "gateCheckpointSha256": "d28249b74e63d35df29c05a1a9f18e8a7ac568eb20c2e62797d1f24e8162702c",
+  "remediationPatchApplied": "supabase/staging_packages/064_065_organization_relationships_dedup_and_constraint.sql",
+  "aggregateVerdict": "POST_065_PASS",
+  "totalChecks": 10,
+  "passedChecks": 10,
+  "failedChecks": 0,
+  "checkResults": [
+    {
+      "check_id": "check_01",
+      "check_name": "dataset, version and provenance anchor integrity for W021.5-B2.2-C batch",
+      "actual_value": "ds_match: 1, ver_match: 1, prov_match: 1",
+      "expected_value": "ds_match: 1, ver_match: 1, prov_match: 1",
+      "status": "PASS",
+      "details": "Canonical eci_political_parties dataset, 2024_v1 snapshot, NOT NULL FK constraint and provenance anchor verified"
+    },
+    {
+      "check_id": "check_02",
+      "check_name": "political_organizations canonical registry row count",
+      "actual_value": "batch_orgs: 107, total_orgs: 107",
+      "expected_value": "batch_orgs: 107, total_orgs: >=107",
+      "status": "PASS",
+      "details": "Exactly 107 canonical organizations registered under batch provenance"
+    },
+    {
+      "check_id": "check_03",
+      "check_name": "organization_relationships lineage row count and taxonomy",
+      "actual_value": "batch_rels: 10, rel_types: 4",
+      "expected_value": "batch_rels: 10, rel_types: >=3",
+      "status": "PASS",
+      "details": "Exactly 10 lineage relationships registered (splits, renamings, mergers)"
+    },
+    {
+      "check_id": "check_04",
+      "check_name": "organization_multilingual_names row count and language breadth",
+      "actual_value": "batch_multi: 27, lang_count: 11",
+      "expected_value": "batch_multi: 27, lang_count: >=9",
+      "status": "PASS",
+      "details": "Exactly 27 multilingual identities populated across major Indian languages"
+    },
+    {
+      "check_id": "check_05",
+      "check_name": "organization_symbols statutory symbols row count and status",
+      "actual_value": "batch_syms: 19, active_syms: 16",
+      "expected_value": "batch_syms: 19, active_syms: 16",
+      "status": "PASS",
+      "details": "Exactly 19 statutory symbols registered with 16 active and 3 historical symbols"
+    },
+    {
+      "check_id": "check_06",
+      "check_name": "organization_aliases deterministic alias registry row count",
+      "actual_value": "batch_aliases: 1043, distinct_orgs: 107",
+      "expected_value": "batch_aliases: 1043, distinct_orgs: 107",
+      "status": "PASS",
+      "details": "Exactly 1,043 aliases registered covering all 107 canonical organizations"
+    },
+    {
+      "check_id": "check_07",
+      "check_name": "total database records under W021.5-B2.2-C batch provenance (1,207 rows)",
+      "actual_value": "total_batch_rows: 1207/1207",
+      "expected_value": "total_batch_rows: 1207/1207",
+      "status": "PASS",
+      "details": "Exact 1,207 authoritative records verified: C0(1) + C1(107) + C2(10) + C3(27) + C4(19) + C5(1043)"
+    },
+    {
+      "check_id": "check_08",
+      "check_name": "complete prohibition of synthetic independent entities across registries",
+      "actual_value": "synth_orgs: 0, synth_aliases: 0",
+      "expected_value": "synth_orgs: 0, synth_aliases: 0",
+      "status": "PASS",
+      "details": "Zero synthetic independent entries in political_organizations or organization_aliases"
+    },
+    {
+      "check_id": "check_09",
+      "check_name": "row level security enabled on political organization registry child tables",
+      "actual_value": "rls_enabled_tables: 3/3",
+      "expected_value": "rls_enabled_tables: 3/3",
+      "status": "PASS",
+      "details": "RLS actively enabled on organization_multilingual_names, organization_symbols, and organization_aliases"
+    },
+    {
+      "check_id": "check_10",
+      "check_name": "post-065 consolidated gate aggregate verdict (checks 01-09 all pass)",
+      "actual_value": "passed: 9/9 (failed: 0)",
+      "expected_value": "passed: 9/9 (failed: 0)",
+      "status": "PASS",
+      "details": "POST_065_PASS: All 9 canonical organization registry and child integrity gates PASSED"
+    }
+  ]
+}

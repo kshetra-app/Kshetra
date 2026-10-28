@@ -3916,3 +3916,34 @@
      - Unblocked progression into **W021.5 STAGE C — 1,207 POLITICAL ORGANIZATION CATALOG INGESTION & STAGING VERIFICATION**.
      - Production database (`ehfafcnimmjusyvplbah`) remains strictly air-gapped (0 queries, 0 mutations).
      - Staging database (`fkpigozcqnmcvofuksar`) operations remain subject to explicit staging SQL packet authorization.
+
+
+---
+
+### DEC-162: W021.5 Stage C Staging Acceptance & Political Organization Relationships Idempotency Guard
+- **Date:** 2026-10-28
+- **Status:** APPROVED & EMPIRICALLY VERIFIED — STAGE C STAGING ACCEPTANCE ACHIEVED
+- **Authority:** Project Owner Direction / Live Staging Execution on panIN-staging (`fkpigozcqnmcvofuksar`) / Rule IV-001 Non-Self-Acceptance
+- **Context:** Following the Option B engineering closure of Stage B under DEC-161, W021.5 Stage C (1,207 Canonical Political Organizations Catalog Ingestion & Staging Verification) was executed against Supabase Staging (`fkpigozcqnmcvofuksar`). Staging execution of Migration 064 and Migration 065 revealed an idempotency defect in `public.organization_relationships` where repeated execution doubled the 10 statutory relationships to 20 due to database-generated UUIDs without natural key uniqueness. A dedicated remediation patch was applied to deduplicate the table and enforce a permanent natural key unique constraint, after which the Post-065 Consolidated Gate executed with 10/10 PASS (`POST_065_PASS`).
+- **Architectural & Governance Determinations:**
+  1. **Permanent Idempotency Guard on Organization Relationships:**
+     - Deployed [`supabase/staging_packages/064_065_organization_relationships_dedup_and_constraint.sql`](file:///C:/Users/Laven/OneDrive/Desktop/Kshetra/supabase/staging_packages/064_065_organization_relationships_dedup_and_constraint.sql) on staging.
+     - Deduplicated redundant tuples under batch provenance `0215b22c-0000-0000-0000-000000000001` via `ctid` order, restoring the exact 10 statutory lineage rows.
+     - Established permanent unique constraint `uq_org_rel_natural_key` on `public.organization_relationships(source_org_id, target_org_id, relationship_type, valid_from)` to ensure safe, idempotent repeat-writes.
+  2. **Staging Gate Verification (10/10 PASS):**
+     - Executed [`supabase/staging_checkpoints/w021_5_post_065_consolidated_gate.sql`](file:///C:/Users/Laven/OneDrive/Desktop/Kshetra/supabase/staging_checkpoints/w021_5_post_065_consolidated_gate.sql) on `fkpigozcqnmcvofuksar`.
+     - Confirmed all 10 checks return `PASS`:
+       - `check_01`: Dataset, version & provenance anchor integrity (PASS).
+       - `check_02`: Canonical political organizations count: 107/107 (PASS).
+       - `check_03`: Organization relationships lineage count: 10/10 across 4 types (PASS).
+       - `check_04`: Multilingual names breadth: 27/27 across 11 languages (PASS).
+       - `check_05`: Statutory election symbols: 19/19 (16 active, 3 historical) (PASS).
+       - `check_06`: Deterministic organization aliases: 1,043/1,043 across all 107 orgs (PASS).
+       - `check_07`: Total batch records: exactly 1,207/1,207 rows (PASS).
+       - `check_08`: Prohibition of synthetic independent entities: 0/0 (PASS).
+       - `check_09`: Row-Level Security enabled on all 3 child tables (PASS).
+       - `check_10`: Consolidated gate verdict: `POST_065_PASS` (PASS).
+  3. **Milestone Transition & Downstream Unblocking:**
+     - W021.5 Stage C is formally recorded as `COMPLETE / VERIFIED ON STAGING (POST_065_PASS)`.
+     - `NEXT_PERMITTED_JOB` advanced to **W021.5-B2.2-E / Migration 066 (Downstream Civic Extensions & Demographic/Affidavit Population)**.
+     - Production database (`ehfafcnimmjusyvplbah`) remains strictly air-gapped (0 queries, 0 mutations).
