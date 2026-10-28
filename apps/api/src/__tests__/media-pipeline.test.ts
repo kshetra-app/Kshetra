@@ -249,7 +249,9 @@ describe('Media Pipeline Router (mediaPipeline.ts)', () => {
 
       const pipeline = selectPipeline(signals, selfHostedHosts);
       expect(pipeline.tier).toBe('llhls');
-      expect(pipeline.playbackHls).toBe('https://edge.test.com/llhls/app/emergency-stream-101/llhls.m3u8');
+      expect(pipeline.playbackHls).toBe(
+        'https://edge.test.com/llhls/app/emergency-stream-101/llhls.m3u8',
+      );
       expect(pipeline.playbackWebrtc).toBe('wss://ome.test.com:3333/app/emergency-stream-101');
     });
 
@@ -264,7 +266,9 @@ describe('Media Pipeline Router (mediaPipeline.ts)', () => {
       const pipeline = selectPipeline(signals, selfHostedHosts);
       expect(pipeline.tier).toBe('broadcast');
       expect(pipeline.playbackHls).toBe('https://edge.test.com/live/broadcast-stream-202.m3u8');
-      expect(pipeline.playbackWebrtc).toBe('https://srs.test.com:8000/rtc/v1/whep/?app=live&stream=broadcast-stream-202');
+      expect(pipeline.playbackWebrtc).toBe(
+        'https://srs.test.com:8000/rtc/v1/whep/?app=live&stream=broadcast-stream-202',
+      );
     });
   });
 });

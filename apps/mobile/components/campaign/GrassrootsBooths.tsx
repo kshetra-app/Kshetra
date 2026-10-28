@@ -87,14 +87,14 @@ export default function GrassrootsBooths() {
       Alert.alert(
         t('campaignManager.inviteToKshetraTitle', { defaultValue: 'In-charge Appointed' }),
         t('campaignManager.inviteToKshetraDesc', {
-          defaultValue: 'This worker is not yet registered on Kshetra. Invite them via WhatsApp so they can access the voter list and booth survey tool?',
+          defaultValue: 'This worker is not yet registered on Poligram. Invite them via WhatsApp so they can access the voter list and booth survey tool?',
         }),
         [
           { text: t('common.later', { defaultValue: 'Later' }), style: 'cancel' },
           {
             text: t('campaignManager.sendWhatsAppInvite', { defaultValue: 'Send WhatsApp Invite' }),
             onPress: () => {
-              const text = `Namaste ${inchargeName}, you have been appointed as the In-charge for Polling Booth #${selectedBooth.boothNumber}. Please download Kshetra to view your booth voter list: https://kshetra.app/download`;
+              const text = `Namaste ${inchargeName}, you have been appointed as the In-charge for Polling Booth #${selectedBooth.boothNumber}. Please download Poligram to view your booth voter list: https://kshetra.app/download`;
               Linking.openURL(`whatsapp://send?phone=91${inchargePhone.replace(/\D/g, '').slice(-10)}&text=${encodeURIComponent(text)}`).catch(() => {});
             },
           },
@@ -219,7 +219,7 @@ export default function GrassrootsBooths() {
                         {b.isKshetraUser && (
                           <View style={styles.kshetraBadge}>
                             <Ionicons name="checkmark-circle" size={12} color="#10B981" />
-                            <Text style={styles.kshetraBadgeText}>Kshetra</Text>
+                            <Text style={styles.kshetraBadgeText}>Poligram</Text>
                           </View>
                         )}
                       </View>
@@ -348,8 +348,8 @@ export default function GrassrootsBooths() {
                   ]}
                 >
                   {kshetraCheckResult.isKshetraUser
-                    ? t('campaignManager.verifiedKshetraUser', { defaultValue: '✓ Registered Kshetra User' })
-                    : t('campaignManager.notYetOnKshetra', { defaultValue: 'Not registered on Kshetra yet (Will send WhatsApp invite)' })}
+                    ? t('campaignManager.verifiedKshetraUser', { defaultValue: '✓ Registered Poligram User' })
+                    : t('campaignManager.notYetOnKshetra', { defaultValue: 'Not registered on Poligram yet (Will send WhatsApp invite)' })}
                 </Text>
               </View>
             )}

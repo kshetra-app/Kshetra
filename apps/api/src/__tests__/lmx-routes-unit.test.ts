@@ -115,7 +115,8 @@ describe('LMX (Live Media Exchange) Routes Unit Tests', () => {
                   order: () => ({
                     order: () => ({
                       limit: () => ({
-                        then: (resolve: any) => resolve({ data: null, error: new Error('DB connection failure') }),
+                        then: (resolve: any) =>
+                          resolve({ data: null, error: new Error('DB connection failure') }),
                       }),
                     }),
                   }),
@@ -754,7 +755,9 @@ describe('LMX (Live Media Exchange) Routes Unit Tests', () => {
       // Error
       jest.spyOn(supabase, 'from').mockImplementation(((table: string) => {
         if (table === 'live_events') {
-          return { update: () => ({ eq: async () => ({ error: { message: 'Mod lock error' } }) }) } as any;
+          return {
+            update: () => ({ eq: async () => ({ error: { message: 'Mod lock error' } }) }),
+          } as any;
         }
         return {} as any;
       }) as any);
@@ -769,7 +772,13 @@ describe('LMX (Live Media Exchange) Routes Unit Tests', () => {
       // Exception
       jest.spyOn(supabase, 'from').mockImplementation(((table: string) => {
         if (table === 'live_events') {
-          return { update: () => ({ eq: () => { throw new Error('Network timeout'); } }) } as any;
+          return {
+            update: () => ({
+              eq: () => {
+                throw new Error('Network timeout');
+              },
+            }),
+          } as any;
         }
         return {} as any;
       }) as any);
@@ -786,7 +795,9 @@ describe('LMX (Live Media Exchange) Routes Unit Tests', () => {
       // Error
       jest.spyOn(supabase, 'from').mockImplementation(((table: string) => {
         if (table === 'live_events') {
-          return { update: () => ({ eq: async () => ({ error: { message: 'End fail' } }) }) } as any;
+          return {
+            update: () => ({ eq: async () => ({ error: { message: 'End fail' } }) }),
+          } as any;
         }
         return {} as any;
       }) as any);
@@ -801,7 +812,13 @@ describe('LMX (Live Media Exchange) Routes Unit Tests', () => {
       // Exception
       jest.spyOn(supabase, 'from').mockImplementation(((table: string) => {
         if (table === 'live_events') {
-          return { update: () => ({ eq: () => { throw new Error('End exception'); } }) } as any;
+          return {
+            update: () => ({
+              eq: () => {
+                throw new Error('End exception');
+              },
+            }),
+          } as any;
         }
         return {} as any;
       }) as any);
@@ -818,7 +835,11 @@ describe('LMX (Live Media Exchange) Routes Unit Tests', () => {
       // Alert insert error
       jest.spyOn(supabase, 'from').mockImplementation(((table: string) => {
         if (table === 'lmx_department_alerts') {
-          return { insert: () => ({ select: () => ({ single: async () => ({ error: { message: 'Alert error' } }) }) }) } as any;
+          return {
+            insert: () => ({
+              select: () => ({ single: async () => ({ error: { message: 'Alert error' } }) }),
+            }),
+          } as any;
         }
         return {} as any;
       }) as any);
@@ -833,7 +854,11 @@ describe('LMX (Live Media Exchange) Routes Unit Tests', () => {
       // Alert insert exception
       jest.spyOn(supabase, 'from').mockImplementation(((table: string) => {
         if (table === 'lmx_department_alerts') {
-          return { insert: () => { throw new Error('Insert crash'); } } as any;
+          return {
+            insert: () => {
+              throw new Error('Insert crash');
+            },
+          } as any;
         }
         return {} as any;
       }) as any);
@@ -848,7 +873,9 @@ describe('LMX (Live Media Exchange) Routes Unit Tests', () => {
       // Alert acknowledge error
       jest.spyOn(supabase, 'from').mockImplementation(((table: string) => {
         if (table === 'lmx_department_alerts') {
-          return { update: () => ({ eq: async () => ({ error: { message: 'Ack error' } }) }) } as any;
+          return {
+            update: () => ({ eq: async () => ({ error: { message: 'Ack error' } }) }),
+          } as any;
         }
         return {} as any;
       }) as any);
@@ -863,7 +890,11 @@ describe('LMX (Live Media Exchange) Routes Unit Tests', () => {
       // Alert acknowledge exception
       jest.spyOn(supabase, 'from').mockImplementation(((table: string) => {
         if (table === 'lmx_department_alerts') {
-          return { update: () => { throw new Error('Ack exception'); } } as any;
+          return {
+            update: () => {
+              throw new Error('Ack exception');
+            },
+          } as any;
         }
         return {} as any;
       }) as any);
@@ -880,7 +911,11 @@ describe('LMX (Live Media Exchange) Routes Unit Tests', () => {
       // Distribution insert error
       jest.spyOn(supabase, 'from').mockImplementation(((table: string) => {
         if (table === 'lmx_distribution_destinations') {
-          return { insert: () => ({ select: () => ({ single: async () => ({ error: { message: 'Dist error' } }) }) }) } as any;
+          return {
+            insert: () => ({
+              select: () => ({ single: async () => ({ error: { message: 'Dist error' } }) }),
+            }),
+          } as any;
         }
         return {} as any;
       }) as any);
@@ -895,7 +930,11 @@ describe('LMX (Live Media Exchange) Routes Unit Tests', () => {
       // Distribution insert exception
       jest.spyOn(supabase, 'from').mockImplementation(((table: string) => {
         if (table === 'lmx_distribution_destinations') {
-          return { insert: () => { throw new Error('Dist exception'); } } as any;
+          return {
+            insert: () => {
+              throw new Error('Dist exception');
+            },
+          } as any;
         }
         return {} as any;
       }) as any);
@@ -948,7 +987,10 @@ describe('LMX (Live Media Exchange) Routes Unit Tests', () => {
             eq: () => q,
             order: () => q,
             limit: () => q,
-            then: (resolve: any) => Promise.resolve({ data: [{ id: 'live-1', status: 'ended' }], error: null }).then(resolve),
+            then: (resolve: any) =>
+              Promise.resolve({ data: [{ id: 'live-1', status: 'ended' }], error: null }).then(
+                resolve,
+              ),
           };
           return q;
         }

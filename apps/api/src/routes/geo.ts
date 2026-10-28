@@ -97,21 +97,25 @@ function sendFile(
 export async function geoRoutes(app: FastifyInstance) {
   // Manifest is small and changes every build → short cache, revalidate.
   app.get('/geo/manifest.json', { schema: geoManifestSchema }, (request, reply) =>
-    sendFile(request, reply, 'manifest.json', false)
+    sendFile(request, reply, 'manifest.json', false),
   );
 
-  app.get<{ Params: { file: string } }>('/geo/:file', { schema: geoFileSchema }, (request, reply) => {
-    const { file } = request.params;
-    if (!SAFE_FILE.test(file)) {
-      return sendApiError(reply, request, 400, 'Bad Request', 'Invalid boundary file name', {
-        code: 'FST_ERR_VALIDATION',
-      });
-    }
-    // Versioned URLs (?v=<hash>) are immutable; bare URLs revalidate daily.
-    const immutable =
-      typeof request.query === 'object' &&
-      request.query !== null &&
-      'v' in (request.query as Record<string, unknown>);
-    return sendFile(request, reply, file, immutable);
-  });
+  app.get<{ Params: { file: string } }>(
+    '/geo/:file',
+    { schema: geoFileSchema },
+    (request, reply) => {
+      const { file } = request.params;
+      if (!SAFE_FILE.test(file)) {
+        return sendApiError(reply, request, 400, 'Bad Request', 'Invalid boundary file name', {
+          code: 'FST_ERR_VALIDATION',
+        });
+      }
+      // Versioned URLs (?v=<hash>) are immutable; bare URLs revalidate daily.
+      const immutable =
+        typeof request.query === 'object' &&
+        request.query !== null &&
+        'v' in (request.query as Record<string, unknown>);
+      return sendFile(request, reply, file, immutable);
+    },
+  );
 }

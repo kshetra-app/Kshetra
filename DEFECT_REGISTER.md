@@ -1,5 +1,5 @@
 # DEFECT REGISTER: PANIN / KSHETRA
-**Last Updated:** 2026-10-26
+**Last Updated:** 2026-10-28
 
 ## GOV-01 — W022 Authorization / Repository-State Conflict
 - **Severity:** P0

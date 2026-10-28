@@ -4,7 +4,7 @@ import path from 'path';
 const localesDir = path.join(process.cwd(), 'apps', 'mobile', 'i18n', 'locales');
 const languages = ['en', 'te', 'hi', 'ta', 'kn', 'ml', 'mr', 'bn', 'gu', 'or', 'pa', 'as', 'ne'];
 
-console.log('=== 13-LANGUAGE SEMANTIC & TOKEN INTEGRITY VALIDATOR (DEF-012) ===\n');
+console.log('=== 13-LANGUAGE SEMANTIC & BIDIRECTIONAL TOKEN INTEGRITY VALIDATOR (DEF-012) ===\n');
 
 function loadLocale(filePath) {
   const content = fs.readFileSync(filePath, 'utf8');
@@ -70,16 +70,30 @@ languages.forEach(lang => {
   const extraKeys = keys.filter(k => !(k in enFlat));
   const tokenMismatches = [];
 
-  for (const [k, requiredTokens] of Object.entries(tokensByKey)) {
-    const val = flat[k];
-    if (typeof val !== 'string') {
-      tokenMismatches.push({ key: k, reason: 'NOT_A_STRING', expectedTokens: requiredTokens });
-    } else {
-      for (const t of requiredTokens) {
-        if (!val.includes(t)) {
-          tokenMismatches.push({ key: k, missingToken: t, actualValue: val });
-        }
+  for (const k of enKeys) {
+    const expectedVal = enFlat[k];
+    const actualVal = flat[k];
+    if (typeof actualVal !== 'string') {
+      if (typeof expectedVal === 'string') {
+        tokenMismatches.push({ key: k, reason: 'NOT_A_STRING', expectedTokens: extractTokens(expectedVal) });
       }
+      continue;
+    }
+    const expectedTokens = extractTokens(expectedVal).sort();
+    const actualTokens = extractTokens(actualVal).sort();
+
+    const isMatch =
+      expectedTokens.length === actualTokens.length &&
+      expectedTokens.every((t, i) => t === actualTokens[i]);
+
+    if (!isMatch) {
+      tokenMismatches.push({
+        key: k,
+        reason: 'TOKEN_SET_MISMATCH',
+        expectedTokens,
+        actualTokens,
+        actualValue: actualVal
+      });
     }
   }
 
@@ -100,13 +114,13 @@ languages.forEach(lang => {
   });
 
   console.log(
-    `[i18n] ${lang.padEnd(5)}: ${String(keys.length).padStart(4)}/${enKeys.length} keys | Missing: ${String(missingKeys.length).padStart(3)} | Extra: ${String(extraKeys.length).padStart(3)} | Token Mismatches: ${String(tokenMismatches.length).padStart(3)} | Status: ${isPass ? 'PASS' : 'FAIL'}`
+    `[i18n] ${lang.padEnd(5)}: ${String(keys.length).padStart(4)}/${enKeys.length} keys | Missing: ${String(missingKeys.length).padStart(3)} | Extra: ${String(extraKeys.length).padStart(3)} | Bidirectional Token Mismatches: ${String(tokenMismatches.length).padStart(3)} | Status: ${isPass ? 'PASS' : 'FAIL'}`
   );
 });
 
 const report = {
   evidenceMetadata: {
-    mandate: 'DEF-012 Locale Closure: 100% semantic parity & token integrity across all 13 official languages',
+    mandate: 'DEF-012 Locale Closure: 100% semantic parity & bidirectional token integrity across all 13 official languages',
     verifiedBy: 'SEMANTIC_TOKEN_INTEGRITY_VALIDATOR',
     timestamp: new Date().toISOString()
   },
@@ -119,8 +133,8 @@ const report = {
 const reportPath = path.join(process.cwd(), 'reports', 'w010_def012_locale_closure.json');
 fs.writeFileSync(reportPath, JSON.stringify(report, null, 2));
 console.log(`\nEvidence written to: ${reportPath}`);
-console.log(`DEF-012 Final Gate Verdict: ${allPass ? 'PASSED (100% dual parity & token integrity across 13/13 locales)' : 'FAILED'}`);
+console.log(`DEF-012 Final Gate Verdict: ${allPass ? 'PASSED (100% dual parity & bidirectional token integrity across 13/13 locales)' : 'FAILED'}`);
 
-if (process.argv.includes('--strict') && !allPass) {
+if (!allPass) {
   process.exit(1);
 }

@@ -9,9 +9,9 @@ export type SpatialSelectionMode = 'current' | 'as_of' | 'version' | 'future' | 
 
 export interface SpatialSelectionCriteria {
   mode: SpatialSelectionMode;
-  asOfDate?: string;       // Required if mode === 'as_of' (YYYY-MM-DD)
-  versionId?: string;      // Required if mode === 'version' (UUID)
-  scenarioId?: string;     // Required if mode === 'scenario' (UUID)
+  asOfDate?: string; // Required if mode === 'as_of' (YYYY-MM-DD)
+  versionId?: string; // Required if mode === 'version' (UUID)
+  scenarioId?: string; // Required if mode === 'scenario' (UUID)
   futureRegimeId?: string; // Required if mode === 'future' (e.g. 'delimitation_post2026_draft')
 }
 

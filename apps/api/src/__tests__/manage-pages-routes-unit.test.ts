@@ -313,7 +313,9 @@ describe('Manage & Pages Routes Comprehensive Unit Tests', () => {
       jest.spyOn(supabase, 'from').mockReturnValueOnce({
         select: jest.fn().mockReturnThis(),
         eq: jest.fn().mockReturnThis(),
-        maybeSingle: jest.fn().mockResolvedValueOnce({ data: null, error: { message: 'Database query error' } }),
+        maybeSingle: jest
+          .fn()
+          .mockResolvedValueOnce({ data: null, error: { message: 'Database query error' } }),
       } as any);
 
       const resNonProd = await app.inject({
@@ -330,7 +332,9 @@ describe('Manage & Pages Routes Comprehensive Unit Tests', () => {
         jest.spyOn(supabase, 'from').mockReturnValueOnce({
           select: jest.fn().mockReturnThis(),
           eq: jest.fn().mockReturnThis(),
-          maybeSingle: jest.fn().mockResolvedValueOnce({ data: null, error: { message: 'Database query error' } }),
+          maybeSingle: jest
+            .fn()
+            .mockResolvedValueOnce({ data: null, error: { message: 'Database query error' } }),
         } as any);
 
         const resProd = await app.inject({
@@ -1227,7 +1231,11 @@ describe('Manage & Pages Routes Comprehensive Unit Tests', () => {
         method: 'POST',
         url: `/api/v1/pages/${pageId}/pro/verify`,
         headers: { authorization: 'Bearer token-owner' },
-        payload: { razorpay_order_id: 'ord_mem_1', razorpay_payment_id: 'pay_123', sandboxBypass: true },
+        payload: {
+          razorpay_order_id: 'ord_mem_1',
+          razorpay_payment_id: 'pay_123',
+          sandboxBypass: true,
+        },
       });
       expect(resPageMismatch.statusCode).toBe(400);
       expect(JSON.parse(resPageMismatch.payload).code).toBe('PAGE_ORDER_MISMATCH');
@@ -1253,7 +1261,11 @@ describe('Manage & Pages Routes Comprehensive Unit Tests', () => {
         method: 'POST',
         url: `/api/v1/pages/${pageId}/pro/verify`,
         headers: { authorization: 'Bearer token-owner' },
-        payload: { razorpay_order_id: 'ord_mem_2', razorpay_payment_id: 'pay_123', sandboxBypass: true },
+        payload: {
+          razorpay_order_id: 'ord_mem_2',
+          razorpay_payment_id: 'pay_123',
+          sandboxBypass: true,
+        },
       });
       expect(resPrincipalMismatch.statusCode).toBe(403);
       expect(JSON.parse(resPrincipalMismatch.payload).code).toBe('ORDER_PRINCIPAL_MISMATCH');
@@ -1401,7 +1413,11 @@ describe('Manage & Pages Routes Comprehensive Unit Tests', () => {
           method: 'POST',
           url: `/api/v1/pages/${pageId}/pro/verify`,
           headers: { authorization: 'Bearer token-owner' },
-          payload: { razorpay_order_id: 'ord_unconf', razorpay_payment_id: 'pay_unconf', sandboxBypass: true },
+          payload: {
+            razorpay_order_id: 'ord_unconf',
+            razorpay_payment_id: 'pay_unconf',
+            sandboxBypass: true,
+          },
         });
         expect(resUnavail.statusCode).toBe(404);
         expect(JSON.parse(resUnavail.payload).code).toBe('NOT_FOUND');

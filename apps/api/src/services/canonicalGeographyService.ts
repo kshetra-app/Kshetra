@@ -149,7 +149,8 @@ export function resolveByElectionOverride(
   const entry = CONFIRMED_BY_ELECTIONS.find((e) => {
     if (e.stateCode !== code) return false;
     if (e.acNo === acNo) return true;
-    if (constituencyName && e.constituencyName.toLowerCase() === constituencyName.toLowerCase()) return true;
+    if (constituencyName && e.constituencyName.toLowerCase() === constituencyName.toLowerCase())
+      return true;
     return false;
   });
   if (!entry) return null;
@@ -178,7 +179,9 @@ export class CanonicalGeographyService {
 
     const { data, error } = await supabase
       .from('states')
-      .select('code, name, total_seats, ruling_party, centroid_lat, centroid_lng, lgd_code, census_code_2011, internal_id')
+      .select(
+        'code, name, total_seats, ruling_party, centroid_lat, centroid_lng, lgd_code, census_code_2011, internal_id',
+      )
       .order('name');
 
     if (error || !data || !Array.isArray(data)) {
@@ -209,7 +212,9 @@ export class CanonicalGeographyService {
 
     const { data, error } = await supabase
       .from('states')
-      .select('code, name, total_seats, ruling_party, centroid_lat, centroid_lng, lgd_code, census_code_2011, internal_id')
+      .select(
+        'code, name, total_seats, ruling_party, centroid_lat, centroid_lng, lgd_code, census_code_2011, internal_id',
+      )
       .eq('code', cleanCode)
       .maybeSingle();
 
@@ -233,7 +238,9 @@ export class CanonicalGeographyService {
   /**
    * Fetch Lok Sabha parliamentary constituencies from PostgreSQL public.parliamentary_constituencies.
    */
-  async getParliamentaryConstituencies(stateCode?: string): Promise<CanonicalParliamentaryConstituencyRecord[]> {
+  async getParliamentaryConstituencies(
+    stateCode?: string,
+  ): Promise<CanonicalParliamentaryConstituencyRecord[]> {
     if (!this.isAvailable()) return [];
 
     let query = supabase
@@ -265,7 +272,9 @@ export class CanonicalGeographyService {
   /**
    * Fetch a single Lok Sabha constituency by code or UUID.
    */
-  async getParliamentaryConstituency(codeOrId: string): Promise<CanonicalParliamentaryConstituencyRecord | null> {
+  async getParliamentaryConstituency(
+    codeOrId: string,
+  ): Promise<CanonicalParliamentaryConstituencyRecord | null> {
     if (!this.isAvailable() || !codeOrId) return null;
 
     let query = supabase
@@ -303,7 +312,9 @@ export class CanonicalGeographyService {
 
     const { data, error } = await supabase
       .from('constituencies')
-      .select('id, ac_no, name, state_code, district, reservation_status, current_party, current_mla')
+      .select(
+        'id, ac_no, name, state_code, district, reservation_status, current_party, current_mla',
+      )
       .eq('state_code', code)
       .order('ac_no');
 
@@ -377,7 +388,9 @@ export class CanonicalGeographyService {
 
     const { data, error } = await supabase
       .from('constituencies')
-      .select('id, ac_no, name, state_code, district, reservation_status, current_party, current_mla')
+      .select(
+        'id, ac_no, name, state_code, district, reservation_status, current_party, current_mla',
+      )
       .eq('state_code', code)
       .eq('ac_no', acNo)
       .maybeSingle();
@@ -418,7 +431,9 @@ export class CanonicalGeographyService {
 
     const { data, error } = await supabase
       .from('constituencies')
-      .select('id, ac_no, name, state_code, district, reservation_status, current_party, current_mla')
+      .select(
+        'id, ac_no, name, state_code, district, reservation_status, current_party, current_mla',
+      )
       .eq('state_code', code)
       .or(`name.ilike.%${q}%,district.ilike.%${q}%`)
       .order('ac_no');
@@ -455,7 +470,10 @@ export class CanonicalGeographyService {
   /**
    * Query normalized election contests and events from PostgreSQL for a constituency.
    */
-  async getConstituencyElectionData(stateCode: string, acNo: number): Promise<ConstituencyElectionData | null> {
+  async getConstituencyElectionData(
+    stateCode: string,
+    acNo: number,
+  ): Promise<ConstituencyElectionData | null> {
     if (!this.isAvailable() || !stateCode || acNo == null) return null;
     const code = stateCode.toUpperCase();
     const constituencyId = `${code}-AC-${acNo}`;
@@ -463,7 +481,8 @@ export class CanonicalGeographyService {
     // Query election contests for this constituency joined with election events
     const { data: contests, error } = await supabase
       .from('election_contests')
-      .select(`
+      .select(
+        `
         id,
         contest_code,
         constituency_id,
@@ -481,7 +500,8 @@ export class CanonicalGeographyService {
           election_year,
           title
         )
-      `)
+      `,
+      )
       .eq('constituency_id', constituencyId);
 
     if (error || !contests || contests.length === 0) {
@@ -497,7 +517,8 @@ export class CanonicalGeographyService {
       const electionType: 'GENERAL' | 'BYPOLL' | null =
         rawType === 'by_election' ? 'BYPOLL' : rawType === 'assembly' ? 'GENERAL' : null;
 
-      const votes = typeof contest.total_votes_polled === 'number' ? contest.total_votes_polled : null;
+      const votes =
+        typeof contest.total_votes_polled === 'number' ? contest.total_votes_polled : null;
       const margin = typeof contest.victory_margin === 'number' ? contest.victory_margin : null;
       const marginPercent =
         votes != null && votes > 0 && margin != null && margin >= 0

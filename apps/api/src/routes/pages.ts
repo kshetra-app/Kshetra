@@ -46,7 +46,7 @@ export type AuthResolver = (request: any) => Promise<{ userId: string; role: str
 export type PageAuthorityResolver = (
   auth: { userId: string; role: string },
   pageId: string,
-  request?: any
+  request?: any,
 ) => Promise<{ authorized: boolean; notFound: boolean; page?: any }>;
 
 let testAuthResolver: AuthResolver | null = null;
@@ -112,7 +112,9 @@ export const pagesRoutes: FastifyPluginAsync = async (app) => {
       }
 
       if (process.env.NODE_ENV !== 'production' && testPageAuthorityResolver) {
-        const testAuth = testAuthResolver ? await testAuthResolver(request) : { userId: 'user-1', role: 'politician' };
+        const testAuth = testAuthResolver
+          ? await testAuthResolver(request)
+          : { userId: 'user-1', role: 'politician' };
         if (testAuth) {
           try {
             const authRes = await testPageAuthorityResolver(testAuth, pageId, request);
@@ -144,9 +146,7 @@ export const pagesRoutes: FastifyPluginAsync = async (app) => {
 
       // Read directly from Supabase pages table (supports query by UUID id or unique handle)
       const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(pageId);
-      let query = supabase
-        .from('pages')
-        .select('id, is_pro, pro_expires_at, role, title, handle');
+      let query = supabase.from('pages').select('id, is_pro, pro_expires_at, role, title, handle');
 
       if (isUuid) {
         query = query.eq('id', pageId);
@@ -176,7 +176,7 @@ export const pagesRoutes: FastifyPluginAsync = async (app) => {
       }
 
       const isProActive = Boolean(
-        page?.is_pro && (!page?.pro_expires_at || new Date(page.pro_expires_at) > new Date())
+        page?.is_pro && (!page?.pro_expires_at || new Date(page.pro_expires_at) > new Date()),
       );
 
       const result: PageEntitlement = {
@@ -315,7 +315,10 @@ export const pagesRoutes: FastifyPluginAsync = async (app) => {
       return null;
     }
 
-    const { data: { user }, error } = await supabase.auth.getUser(token);
+    const {
+      data: { user },
+      error,
+    } = await supabase.auth.getUser(token);
     if (error || !user) {
       return null;
     }
@@ -340,7 +343,7 @@ export const pagesRoutes: FastifyPluginAsync = async (app) => {
   async function verifyPageAuthority(
     auth: { userId: string; role: string },
     pageId: string,
-    request: any
+    request: any,
   ): Promise<{ authorized: boolean; notFound: boolean; page?: any }> {
     if (process.env.NODE_ENV === 'test' && testPageAuthorityResolver) {
       return testPageAuthorityResolver(auth, pageId, request);
@@ -376,103 +379,105 @@ export const pagesRoutes: FastifyPluginAsync = async (app) => {
    * POST /api/v1/pages/:pageId/pro/order
    * Razorpay order creation for Page Pro subscription (Monthly: ₹499, Annual: ₹4,999).
    */
-  app.post<{ Params: { pageId: string }; Body: { amount?: number; currency?: string; billingCycle?: string } }>(
-    '/api/v1/pages/:pageId/pro/order',
-    { schema: proOrderSchema },
-    async (request, reply) => {
-      const auth = await resolveAuthUser(request);
-      if (!auth) {
-        return sendApiError(
-          reply,
-          request,
-          401,
-          'Unauthorized',
-          'Authentication required to create Page Pro order',
-          { code: 'UNAUTHORIZED' }
-        );
-      }
+  app.post<{
+    Params: { pageId: string };
+    Body: { amount?: number; currency?: string; billingCycle?: string };
+  }>('/api/v1/pages/:pageId/pro/order', { schema: proOrderSchema }, async (request, reply) => {
+    const auth = await resolveAuthUser(request);
+    if (!auth) {
+      return sendApiError(
+        reply,
+        request,
+        401,
+        'Unauthorized',
+        'Authentication required to create Page Pro order',
+        { code: 'UNAUTHORIZED' },
+      );
+    }
 
-      const { pageId } = request.params;
-      const authority = await verifyPageAuthority(auth, pageId, request);
-      if (authority.notFound) {
-        return sendApiError(reply, request, 404, 'Not Found', 'Page not found', {
-          code: 'NOT_FOUND',
-        });
-      }
-      if (!authority.authorized) {
-        return sendApiError(
-          reply,
-          request,
-          403,
-          'Forbidden',
-          'Only the page owner or an admin may manage Page Pro subscription',
-          { code: 'FORBIDDEN' }
-        );
-      }
-
-      const billingCycle = request.body?.billingCycle === 'annual' ? 'annual' : 'monthly';
-      const amount = request.body?.amount ?? (billingCycle === 'annual' ? 499900 : 49900); // ₹4,999 or ₹499 in paise
-      const currency = request.body?.currency ?? 'INR';
-
-      const orderResult = await paymentProvider.createOrder({
-        amountINR: Math.round(amount / 100),
-        currency,
-        pageId,
-        billingCycle,
+    const { pageId } = request.params;
+    const authority = await verifyPageAuthority(auth, pageId, request);
+    if (authority.notFound) {
+      return sendApiError(reply, request, 404, 'Not Found', 'Page not found', {
+        code: 'NOT_FOUND',
       });
+    }
+    if (!authority.authorized) {
+      return sendApiError(
+        reply,
+        request,
+        403,
+        'Forbidden',
+        'Only the page owner or an admin may manage Page Pro subscription',
+        { code: 'FORBIDDEN' },
+      );
+    }
 
-      const targetPageId = authority.page?.id || pageId;
+    const billingCycle = request.body?.billingCycle === 'annual' ? 'annual' : 'monthly';
+    const amount = request.body?.amount ?? (billingCycle === 'annual' ? 499900 : 49900); // ₹4,999 or ₹499 in paise
+    const currency = request.body?.currency ?? 'INR';
 
-      if (isSupabaseConfigured) {
-        const { error: insertError } = await supabase.from('page_pro_orders').insert({
-          provider_order_id: orderResult.orderId,
-          page_id: targetPageId,
-          user_id: auth.userId,
-          product: 'pages_pro',
-          billing_cycle: billingCycle,
-          amount_paise: amount,
-          currency,
-          status: 'created',
-        });
+    const orderResult = await paymentProvider.createOrder({
+      amountINR: Math.round(amount / 100),
+      currency,
+      pageId,
+      billingCycle,
+    });
 
-        if (insertError) {
-          if (process.env.NODE_ENV === 'production') {
-            return sendApiError(
-              reply,
-              request,
-              500,
-              'Internal Server Error',
-              `Failed to persist Page Pro order: ${insertError.message}`,
-              { code: 'DATABASE_ERROR' }
-            );
-          }
-          app.log.warn({ err: insertError.message }, 'Failed to persist Page Pro order in DB, proceeding with in-memory fallback');
-        }
-      }
+    const targetPageId = authority.page?.id || pageId;
 
-      // Memory cache for fast lookups & backwards compatibility in non-DB tests
-      PRO_ORDER_REGISTRY.set(orderResult.orderId, {
-        orderId: orderResult.orderId,
-        pageId: targetPageId,
-        userId: auth.userId,
-        billingCycle,
-        amount,
+    if (isSupabaseConfigured) {
+      const { error: insertError } = await supabase.from('page_pro_orders').insert({
+        provider_order_id: orderResult.orderId,
+        page_id: targetPageId,
+        user_id: auth.userId,
         product: 'pages_pro',
-        createdAt: Date.now(),
+        billing_cycle: billingCycle,
+        amount_paise: amount,
+        currency,
         status: 'created',
       });
 
-      return reply.send({
-        success: true,
-        orderId: orderResult.orderId,
-        amount,
-        currency,
-        billingCycle,
-        key: orderResult.key,
-        isSandbox: orderResult.isSandbox,
-      });
-    },
-  );
+      if (insertError) {
+        if (process.env.NODE_ENV === 'production') {
+          return sendApiError(
+            reply,
+            request,
+            500,
+            'Internal Server Error',
+            `Failed to persist Page Pro order: ${insertError.message}`,
+            { code: 'DATABASE_ERROR' },
+          );
+        }
+        app.log.warn(
+          { err: insertError.message },
+          'Failed to persist Page Pro order in DB, proceeding with in-memory fallback',
+        );
+      }
+    }
+
+    // Memory cache for fast lookups & backwards compatibility in non-DB tests
+    PRO_ORDER_REGISTRY.set(orderResult.orderId, {
+      orderId: orderResult.orderId,
+      pageId: targetPageId,
+      userId: auth.userId,
+      billingCycle,
+      amount,
+      product: 'pages_pro',
+      createdAt: Date.now(),
+      status: 'created',
+    });
+
+    return reply.send({
+      success: true,
+      orderId: orderResult.orderId,
+      amount,
+      currency,
+      billingCycle,
+      key: orderResult.key,
+      isSandbox: orderResult.isSandbox,
+    });
+  });
 
   /**
    * POST /api/v1/pages/:pageId/pro/verify
@@ -496,7 +501,7 @@ export const pagesRoutes: FastifyPluginAsync = async (app) => {
         401,
         'Unauthorized',
         'Authentication required to verify Page Pro payment',
-        { code: 'UNAUTHORIZED' }
+        { code: 'UNAUTHORIZED' },
       );
     }
 
@@ -514,7 +519,7 @@ export const pagesRoutes: FastifyPluginAsync = async (app) => {
         403,
         'Forbidden',
         'Only the page owner or an admin may manage Page Pro subscription',
-        { code: 'FORBIDDEN' }
+        { code: 'FORBIDDEN' },
       );
     }
 
@@ -527,7 +532,7 @@ export const pagesRoutes: FastifyPluginAsync = async (app) => {
         400,
         'Bad Request',
         'Missing required payment identifiers (razorpay_order_id, razorpay_payment_id)',
-        { code: 'INVALID_PAYMENT_PAYLOAD' }
+        { code: 'INVALID_PAYMENT_PAYLOAD' },
       );
     }
 
@@ -542,7 +547,7 @@ export const pagesRoutes: FastifyPluginAsync = async (app) => {
         400,
         'Bad Request',
         'Missing payment verification signature',
-        { code: 'MISSING_SIGNATURE' }
+        { code: 'MISSING_SIGNATURE' },
       );
     }
 
@@ -560,7 +565,7 @@ export const pagesRoutes: FastifyPluginAsync = async (app) => {
             400,
             'Bad Request',
             'Invalid payment verification signature',
-            { code: verifyResult.reason || 'INVALID_SIGNATURE' }
+            { code: verifyResult.reason || 'INVALID_SIGNATURE' },
           );
         }
       } catch (err: any) {
@@ -571,7 +576,7 @@ export const pagesRoutes: FastifyPluginAsync = async (app) => {
             500,
             'Internal Server Error',
             'Payment verification service configuration missing (RAZORPAY_KEY_SECRET)',
-            { code: 'PROVIDER_CONFIG_ERROR' }
+            { code: 'PROVIDER_CONFIG_ERROR' },
           );
         }
         return sendApiError(
@@ -580,7 +585,7 @@ export const pagesRoutes: FastifyPluginAsync = async (app) => {
           400,
           'Bad Request',
           'Invalid payment verification signature',
-          { code: 'INVALID_SIGNATURE' }
+          { code: 'INVALID_SIGNATURE' },
         );
       }
     }
@@ -616,7 +621,7 @@ export const pagesRoutes: FastifyPluginAsync = async (app) => {
             500,
             'Internal Server Error',
             `Database error querying payment order: ${orderFetchErr.message}`,
-            { code: 'DATABASE_ERROR' }
+            { code: 'DATABASE_ERROR' },
           );
         }
 
@@ -631,7 +636,7 @@ export const pagesRoutes: FastifyPluginAsync = async (app) => {
               400,
               'Bad Request',
               'Payment order was not created for this page',
-              { code: 'PAGE_ORDER_MISMATCH' }
+              { code: 'PAGE_ORDER_MISMATCH' },
             );
           }
 
@@ -643,7 +648,7 @@ export const pagesRoutes: FastifyPluginAsync = async (app) => {
               403,
               'Forbidden',
               'Payment order was created by a different user',
-              { code: 'ORDER_PRINCIPAL_MISMATCH' }
+              { code: 'ORDER_PRINCIPAL_MISMATCH' },
             );
           }
 
@@ -655,25 +660,35 @@ export const pagesRoutes: FastifyPluginAsync = async (app) => {
               400,
               'Bad Request',
               'Billing cycle does not match the created order',
-              { code: 'BILLING_CYCLE_MISMATCH' }
+              { code: 'BILLING_CYCLE_MISMATCH' },
             );
           }
 
           // 4. Idempotency / replay check
-          if (dbOrder.status === 'completed' && dbOrder.provider_payment_id !== body.razorpay_payment_id) {
+          if (
+            dbOrder.status === 'completed' &&
+            dbOrder.provider_payment_id !== body.razorpay_payment_id
+          ) {
             return sendApiError(
               reply,
               request,
               400,
               'Bad Request',
               'Payment order has already been verified with a different payment',
-              { code: 'ORDER_ALREADY_CONSUMED' }
+              { code: 'ORDER_ALREADY_CONSUMED' },
             );
           }
         }
       } catch (err: any) {
         if (process.env.NODE_ENV === 'production') {
-          return sendApiError(reply, request, 500, 'Internal Server Error', 'Database error querying payment order', { code: 'DATABASE_ERROR' });
+          return sendApiError(
+            reply,
+            request,
+            500,
+            'Internal Server Error',
+            'Database error querying payment order',
+            { code: 'DATABASE_ERROR' },
+          );
         }
       }
     }
@@ -690,7 +705,7 @@ export const pagesRoutes: FastifyPluginAsync = async (app) => {
             400,
             'Bad Request',
             'Payment order was not created for this page',
-            { code: 'PAGE_ORDER_MISMATCH' }
+            { code: 'PAGE_ORDER_MISMATCH' },
           );
         }
 
@@ -702,7 +717,7 @@ export const pagesRoutes: FastifyPluginAsync = async (app) => {
             403,
             'Forbidden',
             'Payment order was created by a different user',
-            { code: 'ORDER_PRINCIPAL_MISMATCH' }
+            { code: 'ORDER_PRINCIPAL_MISMATCH' },
           );
         }
 
@@ -714,19 +729,22 @@ export const pagesRoutes: FastifyPluginAsync = async (app) => {
             400,
             'Bad Request',
             'Billing cycle does not match the created order',
-            { code: 'BILLING_CYCLE_MISMATCH' }
+            { code: 'BILLING_CYCLE_MISMATCH' },
           );
         }
 
         // 4. Idempotency / replay check
-        if (registeredOrder.status === 'verified' && registeredOrder.paymentId !== body.razorpay_payment_id) {
+        if (
+          registeredOrder.status === 'verified' &&
+          registeredOrder.paymentId !== body.razorpay_payment_id
+        ) {
           return sendApiError(
             reply,
             request,
             400,
             'Bad Request',
             'Payment order has already been verified with a different payment',
-            { code: 'ORDER_ALREADY_CONSUMED' }
+            { code: 'ORDER_ALREADY_CONSUMED' },
           );
         }
       } else {
@@ -736,7 +754,7 @@ export const pagesRoutes: FastifyPluginAsync = async (app) => {
           400,
           'Bad Request',
           'Payment order was not found for verification',
-          { code: 'ORDER_NOT_FOUND' }
+          { code: 'ORDER_NOT_FOUND' },
         );
       }
     }
@@ -749,22 +767,25 @@ export const pagesRoutes: FastifyPluginAsync = async (app) => {
         503,
         'Service Unavailable',
         'Database service unavailable. Cannot persist Pro entitlement.',
-        { code: 'DATABASE_UNAVAILABLE' }
+        { code: 'DATABASE_UNAVAILABLE' },
       );
     }
 
     let finalExpiresAt: string;
 
     if (isSupabaseConfigured) {
-      const { data: rpcResult, error: rpcError } = await supabase.rpc('verify_and_activate_page_pro', {
-        p_provider_order_id: body.razorpay_order_id,
-        p_page_id: targetPageId,
-        p_user_id: auth.userId,
-        p_provider_payment_id: body.razorpay_payment_id,
-        p_signature: body.razorpay_signature,
-        p_billing_cycle: body.billingCycle || dbOrder?.billing_cycle || 'monthly',
-        p_is_admin: auth.role === 'admin',
-      });
+      const { data: rpcResult, error: rpcError } = await supabase.rpc(
+        'verify_and_activate_page_pro',
+        {
+          p_provider_order_id: body.razorpay_order_id,
+          p_page_id: targetPageId,
+          p_user_id: auth.userId,
+          p_provider_payment_id: body.razorpay_payment_id,
+          p_signature: body.razorpay_signature,
+          p_billing_cycle: body.billingCycle || dbOrder?.billing_cycle || 'monthly',
+          p_is_admin: auth.role === 'admin',
+        },
+      );
 
       if (rpcError) {
         if (process.env.NODE_ENV !== 'production') {
@@ -782,7 +803,7 @@ export const pagesRoutes: FastifyPluginAsync = async (app) => {
             500,
             'Internal Server Error',
             `Failed to persist Pro entitlement to database: ${rpcError.message}`,
-            { code: 'DATABASE_ERROR' }
+            { code: 'DATABASE_ERROR' },
           );
         }
       } else if (!rpcResult?.success) {
@@ -793,7 +814,7 @@ export const pagesRoutes: FastifyPluginAsync = async (app) => {
           statusCode,
           statusCode === 403 ? 'Forbidden' : 'Bad Request',
           rpcResult?.message || 'Failed to activate Page Pro entitlement',
-          { code: rpcResult?.code || 'ACTIVATION_FAILED' }
+          { code: rpcResult?.code || 'ACTIVATION_FAILED' },
         );
       } else {
         finalExpiresAt = rpcResult.expiresAt;
@@ -833,5 +854,3 @@ export const pagesRoutes: FastifyPluginAsync = async (app) => {
     });
   });
 };
-
-

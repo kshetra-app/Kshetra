@@ -64,7 +64,9 @@ describe('W021-G3 Remediation: Durable Monthly Quota Verification', () => {
               return queryObj;
             },
             gte: (col: string, val: any) => {
-              filtered = filtered.filter((r: any) => new Date(r[col]).getTime() >= new Date(val).getTime());
+              filtered = filtered.filter(
+                (r: any) => new Date(r[col]).getTime() >= new Date(val).getTime(),
+              );
               return queryObj;
             },
             is: (col: string, val: any) => {
@@ -77,7 +79,10 @@ describe('W021-G3 Remediation: Durable Monthly Quota Verification', () => {
               return { data: filtered.length > 0 ? { ...filtered[0] } : null, error: null };
             },
             then: (resolve: any) => {
-              resolve({ data: filtered.map((r) => ({ request_count: r.request_count })), error: null });
+              resolve({
+                data: filtered.map((r) => ({ request_count: r.request_count })),
+                error: null,
+              });
             },
           };
           return queryObj;
@@ -88,10 +93,12 @@ describe('W021-G3 Remediation: Durable Monthly Quota Verification', () => {
             (r) =>
               r.tenant_id === row.tenant_id &&
               (r.api_key_id ?? null) === (row.api_key_id ?? null) &&
-              r.hour_bucket === row.hour_bucket
+              r.hour_bucket === row.hour_bucket,
           );
           if (conflict) {
-            return { error: { code: '23505', message: 'duplicate key value violates unique constraint' } };
+            return {
+              error: { code: '23505', message: 'duplicate key value violates unique constraint' },
+            };
           }
           const newRow: UsageRow = {
             id: `row-${Math.random()}`,
@@ -139,7 +146,11 @@ describe('W021-G3 Remediation: Durable Monthly Quota Verification', () => {
 
       // 2. Sum current monthly usage
       const currentUsage = dbRows
-        .filter((r) => r.tenant_id === p_tenant_id && new Date(r.hour_bucket).getTime() >= new Date(p_month_start).getTime())
+        .filter(
+          (r) =>
+            r.tenant_id === p_tenant_id &&
+            new Date(r.hour_bucket).getTime() >= new Date(p_month_start).getTime(),
+        )
         .reduce((sum, r) => sum + r.request_count, 0);
 
       // 3. Invariant check: IF U + 1 > C -> reject without increment
@@ -161,7 +172,7 @@ describe('W021-G3 Remediation: Durable Monthly Quota Verification', () => {
         (r) =>
           r.tenant_id === p_tenant_id &&
           (r.api_key_id ?? null) === (p_api_key_id ?? null) &&
-          r.hour_bucket === p_hour_bucket
+          r.hour_bucket === p_hour_bucket,
       );
 
       if (existing) {
@@ -207,7 +218,7 @@ describe('W021-G3 Remediation: Durable Monthly Quota Verification', () => {
   test('Scenario 1: Durable usage increment creates and increments records in saas_usage_ledger', async () => {
     const res1 = await rateLimiter.checkAndRecordDurableUsage(
       { tenantId: tenantA, apiKeyId: apiKeyA1, tier: 'free' },
-      mockDbClient
+      mockDbClient,
     );
 
     expect(res1.allowed).toBe(true);
@@ -219,7 +230,7 @@ describe('W021-G3 Remediation: Durable Monthly Quota Verification', () => {
     // Second call in same hour bucket increments the existing record
     const res2 = await rateLimiter.checkAndRecordDurableUsage(
       { tenantId: tenantA, apiKeyId: apiKeyA1, tier: 'free' },
-      mockDbClient
+      mockDbClient,
     );
     expect(res2.allowed).toBe(true);
     expect(res2.currentMonthlyUsage).toBe(2);
@@ -262,7 +273,7 @@ describe('W021-G3 Remediation: Durable Monthly Quota Verification', () => {
     // Increment in current hour
     const res = await rateLimiter.checkAndRecordDurableUsage(
       { tenantId: tenantA, apiKeyId: apiKeyA1, tier: 'pro' },
-      mockDbClient
+      mockDbClient,
     );
 
     expect(res.allowed).toBe(true);
@@ -287,7 +298,7 @@ describe('W021-G3 Remediation: Durable Monthly Quota Verification', () => {
     // 1 request remaining before hitting boundary
     const res1 = await rateLimiter.checkAndRecordDurableUsage(
       { tenantId: tenantA, apiKeyId: apiKeyA1, tier: 'free' },
-      mockDbClient
+      mockDbClient,
     );
     expect(res1.allowed).toBe(true);
     expect(res1.currentMonthlyUsage).toBe(freeCeiling);
@@ -310,7 +321,7 @@ describe('W021-G3 Remediation: Durable Monthly Quota Verification', () => {
 
     const res = await rateLimiter.checkAndRecordDurableUsage(
       { tenantId: tenantA, apiKeyId: apiKeyA1, tier: 'free' },
-      mockDbClient
+      mockDbClient,
     );
 
     expect(res.allowed).toBe(false);
@@ -324,14 +335,17 @@ describe('W021-G3 Remediation: Durable Monthly Quota Verification', () => {
     // 1. First request creates the row
     const res1 = await rateLimiter.checkAndRecordDurableUsage(
       { tenantId: tenantA, apiKeyId: apiKeyA1, tier: 'pro' },
-      mockDbClient
+      mockDbClient,
     );
     expect(res1.allowed).toBe(true);
 
     // 2. Simulate concurrent collision: another process attempts insert that hits 23505 duplicate key
     // The retry fallback in checkAndRecordDurableUsage catches 23505 and updates the existing row
     const collisionParams = { tenantId: tenantA, apiKeyId: apiKeyA1, tier: 'pro' as const };
-    const resCollision = await rateLimiter.checkAndRecordDurableUsage(collisionParams, mockDbClient);
+    const resCollision = await rateLimiter.checkAndRecordDurableUsage(
+      collisionParams,
+      mockDbClient,
+    );
     expect(resCollision.allowed).toBe(true);
 
     // 3. Batch of successive requests increment accurately
@@ -348,7 +362,7 @@ describe('W021-G3 Remediation: Durable Monthly Quota Verification', () => {
     const instance1 = new SaasRateLimiter();
     await instance1.checkAndRecordDurableUsage(
       { tenantId: tenantA, apiKeyId: apiKeyA1, tier: 'free' },
-      mockDbClient
+      mockDbClient,
     );
 
     // Process / Instance 2 (completely separate in-memory object) queries DB
@@ -358,7 +372,7 @@ describe('W021-G3 Remediation: Durable Monthly Quota Verification', () => {
 
     const res2 = await instance2.checkAndRecordDurableUsage(
       { tenantId: tenantA, apiKeyId: apiKeyA1, tier: 'free' },
-      mockDbClient
+      mockDbClient,
     );
     expect(res2.currentMonthlyUsage).toBe(2);
   });
@@ -367,19 +381,22 @@ describe('W021-G3 Remediation: Durable Monthly Quota Verification', () => {
     // Record initial usage
     await rateLimiter.checkAndRecordDurableUsage(
       { tenantId: tenantA, apiKeyId: apiKeyA1, tier: 'free' },
-      mockDbClient
+      mockDbClient,
     );
 
     // Simulate process crash / redeployment
     rateLimiter.resetForTesting();
     const freshProcessLimiter = new SaasRateLimiter();
 
-    const usageAfterRestart = await freshProcessLimiter.getDurableMonthlyUsage(tenantA, mockDbClient);
+    const usageAfterRestart = await freshProcessLimiter.getDurableMonthlyUsage(
+      tenantA,
+      mockDbClient,
+    );
     expect(usageAfterRestart).toBe(1);
 
     const resAfterRestart = await freshProcessLimiter.checkAndRecordDurableUsage(
       { tenantId: tenantA, apiKeyId: apiKeyA1, tier: 'free' },
-      mockDbClient
+      mockDbClient,
     );
     expect(resAfterRestart.currentMonthlyUsage).toBe(2);
   });
@@ -406,7 +423,7 @@ describe('W021-G3 Remediation: Durable Monthly Quota Verification', () => {
     // Increment Tenant B
     const resB = await rateLimiter.checkAndRecordDurableUsage(
       { tenantId: tenantB, apiKeyId: null, tier: 'free' },
-      mockDbClient
+      mockDbClient,
     );
     expect(resB.currentMonthlyUsage).toBe(1);
     expect(await rateLimiter.getDurableMonthlyUsage(tenantA, mockDbClient)).toBe(100);

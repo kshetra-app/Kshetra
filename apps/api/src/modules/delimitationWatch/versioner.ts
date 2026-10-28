@@ -36,18 +36,28 @@ export class Versioner {
   ): Promise<{ version: DelimitationAcceptedVersion; created: boolean }> {
     // 1. Validation Gate
     if (validation.validationStatus === 'REJECTED') {
-      throw new Error(`VERSION_ACCEPTANCE_BLOCKED: Candidate ${candidate.id} was REJECTED during validation: ${validation.errors.join(', ')}`);
+      throw new Error(
+        `VERSION_ACCEPTANCE_BLOCKED: Candidate ${candidate.id} was REJECTED during validation: ${validation.errors.join(', ')}`,
+      );
     }
 
     // Invariant: Unverified or proposed candidate cannot be accepted as OFFICIAL
     if (candidate.normalizedDataStatus === 'OFFICIAL') {
-      if (candidate.isProposed || !candidate.legalEvidencePackage?.decisionRecord.isOfficialEligible) {
-        throw new Error(`VERSION_ACCEPTANCE_BLOCKED: Candidate ${candidate.id} cannot be accepted as OFFICIAL without passing legal evidence gate`);
+      if (
+        candidate.isProposed ||
+        !candidate.legalEvidencePackage?.decisionRecord.isOfficialEligible
+      ) {
+        throw new Error(
+          `VERSION_ACCEPTANCE_BLOCKED: Candidate ${candidate.id} cannot be accepted as OFFICIAL without passing legal evidence gate`,
+        );
       }
     }
 
     // 2. Idempotency Check: (sourceId, contentSha256)
-    const existing = await this.repo.getAcceptedVersionByHash(candidate.sourceId, snapshot.contentSha256);
+    const existing = await this.repo.getAcceptedVersionByHash(
+      candidate.sourceId,
+      snapshot.contentSha256,
+    );
     if (existing) {
       // Idempotent hit: return existing version without creating duplicate
       return { version: existing, created: false };

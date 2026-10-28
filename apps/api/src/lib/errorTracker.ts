@@ -1,6 +1,6 @@
 /**
  * Operational Error Tracker & Classification Engine (JOB W004-R1 / Amendment v1.4)
- * 
+ *
  * Provides production-grade error categorization and routing:
  * - Structured log events via Fastify/Pino (standard Railway/cloud ingestion destination)
  * - Sentry / external error sink seam (if SENTRY_DSN configured)
@@ -193,9 +193,10 @@ class ErrorTracker {
 
       // Log event via logger with structured error telemetry tags
       if (params.logger) {
-        const logMethod = classification.severity === 'critical' || classification.severity === 'error'
-          ? params.logger.error.bind(params.logger)
-          : params.logger.warn.bind(params.logger);
+        const logMethod =
+          classification.severity === 'critical' || classification.severity === 'error'
+            ? params.logger.error.bind(params.logger)
+            : params.logger.warn.bind(params.logger);
 
         logMethod({
           event: 'APPLICATION_ERROR_EVENT',

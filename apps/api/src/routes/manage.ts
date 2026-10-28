@@ -20,7 +20,10 @@ export const manageRoutes: FastifyPluginAsync = async (app) => {
         return null;
       }
       if (isSupabaseConfigured) {
-        const { data: { user }, error } = await supabase.auth.getUser(token);
+        const {
+          data: { user },
+          error,
+        } = await supabase.auth.getUser(token);
         if (!error && user) {
           userId = user.id;
         }
@@ -60,15 +63,23 @@ export const manageRoutes: FastifyPluginAsync = async (app) => {
     const authHeader = request.headers.authorization;
     const userIdHeader = request.headers['x-user-id'];
     const roleHeader = request.headers['x-user-role'];
-    const isApiRequest = request.headers.accept && request.headers.accept.includes('application/json');
+    const isApiRequest =
+      request.headers.accept && request.headers.accept.includes('application/json');
 
     // If explicit authorization or identity is provided, verify it strictly
     if (authHeader || userIdHeader || roleHeader) {
       const auth = await resolveAuthUser(request);
       if (!auth) {
-        return sendApiError(reply, request, 401, 'Unauthorized', 'Authentication required to access Web Page Manager', {
-          code: 'UNAUTHORIZED',
-        });
+        return sendApiError(
+          reply,
+          request,
+          401,
+          'Unauthorized',
+          'Authentication required to access Web Page Manager',
+          {
+            code: 'UNAUTHORIZED',
+          },
+        );
       }
       if (!ALLOWED_MANAGE_ROLES.has(auth.role)) {
         return sendApiError(
@@ -77,14 +88,21 @@ export const manageRoutes: FastifyPluginAsync = async (app) => {
           403,
           'Forbidden',
           'Access restricted to authorized page administrators and compliance reviewers',
-          { code: 'FORBIDDEN' }
+          { code: 'FORBIDDEN' },
         );
       }
     } else if (isApiRequest) {
       // API consumers requesting JSON must authenticate
-      return sendApiError(reply, request, 401, 'Unauthorized', 'Authentication required to access Web Page Manager', {
-        code: 'UNAUTHORIZED',
-      });
+      return sendApiError(
+        reply,
+        request,
+        401,
+        'Unauthorized',
+        'Authentication required to access Web Page Manager',
+        {
+          code: 'UNAUTHORIZED',
+        },
+      );
     }
 
     reply.header('Content-Type', 'text/html; charset=utf-8');
@@ -178,7 +196,9 @@ export const manageRoutes: FastifyPluginAsync = async (app) => {
       <h2>⚖️ Promote Post (Lane 2 Political Promotion)</h2>
       <p>ECI & Media Certification & Monitoring Committee (MCMC) compliant ad campaigns. Every political ad requires an authorized MCMC clearance certificate and manual compliance review.</p>
 
-      ${enablePoliticalAds ? `
+      ${
+        enablePoliticalAds
+          ? `
       <div id="ad-submit-form">
         <div class="form-grid">
           <div class="form-group">
@@ -244,7 +264,8 @@ export const manageRoutes: FastifyPluginAsync = async (app) => {
           <!-- Populated dynamically -->
         </div>
       </div>
-      ` : `
+      `
+          : `
       <div style="padding: 24px; text-align: center; background: #F8FAFC; border: 1px dashed #CBD5E1; border-radius: 8px;">
         <div style="font-size: 32px; margin-bottom: 8px;">⏳</div>
         <h3 style="font-size: 16px; font-weight: 700; color: var(--text); margin-bottom: 6px;">Political Ad Promotion — Coming Soon</h3>
@@ -252,7 +273,8 @@ export const manageRoutes: FastifyPluginAsync = async (app) => {
           In strict compliance with statutory regulations and the Election Commission of India (ECI) MCMC certification guidelines, candidate ad promotions and campaign broadcasts will be activated in upcoming election phases.
         </p>
       </div>
-      `}
+      `
+      }
     </div>
 
     <!-- Page Pro Subscription (Razorpay) -->

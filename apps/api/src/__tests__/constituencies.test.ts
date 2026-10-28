@@ -221,10 +221,7 @@ describe('Constituency Routes', () => {
 
     // Each election should have seats summing to 119
     for (const election of body.elections) {
-      const totalWon = election.partyResults.reduce(
-        (s: number, p: any) => s + p.seatsWon,
-        0,
-      );
+      const totalWon = election.partyResults.reduce((s: number, p: any) => s + p.seatsWon, 0);
       expect(totalWon).toBe(119);
     }
   });

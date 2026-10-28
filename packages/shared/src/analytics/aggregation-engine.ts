@@ -323,17 +323,14 @@ export function aggregateBoothResults(
     // Accumulate party-wise votes from the candidate vote array
     const boothPartyVotes: Record<string, number> = {};
     for (const cv of result.candidateVotes) {
-      entity.partyVotes[cv.party] =
-        (entity.partyVotes[cv.party] ?? 0) + cv.votes;
-      boothPartyVotes[cv.party] =
-        (boothPartyVotes[cv.party] ?? 0) + cv.votes;
+      entity.partyVotes[cv.party] = (entity.partyVotes[cv.party] ?? 0) + cv.votes;
+      boothPartyVotes[cv.party] = (boothPartyVotes[cv.party] ?? 0) + cv.votes;
     }
 
     // Determine booth winner (party with max votes at this booth)
     const boothWinnerParty = determineBoothWinner(boothPartyVotes);
     if (boothWinnerParty) {
-      entity.boothsWon[boothWinnerParty] =
-        (entity.boothsWon[boothWinnerParty] ?? 0) + 1;
+      entity.boothsWon[boothWinnerParty] = (entity.boothsWon[boothWinnerParty] ?? 0) + 1;
     }
 
     entity.totalVotesPolled += result.votesPolled;
@@ -355,12 +352,7 @@ export function aggregateBoothResults(
   for (const [entityId, entity] of resultMap) {
     const turnout =
       entity.totalRegisteredVoters > 0
-        ? parseFloat(
-            (
-              (entity.totalVotesPolled / entity.totalRegisteredVoters) *
-              100
-            ).toFixed(2),
-          )
+        ? parseFloat(((entity.totalVotesPolled / entity.totalRegisteredVoters) * 100).toFixed(2))
         : 0;
 
     finalMap.set(entityId, {
@@ -404,15 +396,10 @@ export function buildHierarchyTree(
   booths: PollingBooth[],
 ): HierarchyNode {
   // Filter booths belonging to this constituency
-  const constituencyBooths = booths.filter(
-    (b) => b.constituencyId === constituencyId,
-  );
+  const constituencyBooths = booths.filter((b) => b.constituencyId === constituencyId);
 
   // Group booths by panchayat
-  const boothsByPanchayat = groupBy(
-    constituencyBooths,
-    (b) => b.panchayatId ?? 'UNMAPPED',
-  );
+  const boothsByPanchayat = groupBy(constituencyBooths, (b) => b.panchayatId ?? 'UNMAPPED');
 
   // Group panchayats by mandal
   const panchayatsByMandal = groupBy(panchayats, (p) => p.mandalId);
@@ -424,41 +411,31 @@ export function buildHierarchyTree(
     const mandalPanchayats = panchayatsByMandal.get(mandal.id) ?? [];
 
     // Build panchayat nodes
-    const panchayatNodes: HierarchyNode[] = mandalPanchayats.map(
-      (panchayat) => {
-        const panchayatBooths = boothsByPanchayat.get(panchayat.id) ?? [];
+    const panchayatNodes: HierarchyNode[] = mandalPanchayats.map((panchayat) => {
+      const panchayatBooths = boothsByPanchayat.get(panchayat.id) ?? [];
 
-        // Build booth nodes (leaf level)
-        const boothNodes: HierarchyNode[] = panchayatBooths.map((booth) =>
-          createBoothNode(booth),
-        );
+      // Build booth nodes (leaf level)
+      const boothNodes: HierarchyNode[] = panchayatBooths.map((booth) => createBoothNode(booth));
 
-        const panchayatData = aggregateBoothsToPanchayat(
-          panchayatBooths,
-          stateCode,
-        );
-        panchayatData.entityName = panchayat.name;
+      const panchayatData = aggregateBoothsToPanchayat(panchayatBooths, stateCode);
+      panchayatData.entityName = panchayat.name;
 
-        return {
-          id: panchayat.id,
-          name: panchayat.name,
-          level: 'panchayat' as HierarchyLevel,
-          data: panchayatData,
-          children: boothNodes,
-          totalVoters: panchayatData.totalVoters,
-          totalBooths: panchayatData.totalBooths,
-          childCount: boothNodes.length,
-        };
-      },
-    );
+      return {
+        id: panchayat.id,
+        name: panchayat.name,
+        level: 'panchayat' as HierarchyLevel,
+        data: panchayatData,
+        children: boothNodes,
+        totalVoters: panchayatData.totalVoters,
+        totalBooths: panchayatData.totalBooths,
+        childCount: boothNodes.length,
+      };
+    });
 
     // Aggregate panchayat data to mandal level
     const mandalBoothsByPanchayat = new Map<string, PollingBooth[]>();
     for (const p of mandalPanchayats) {
-      mandalBoothsByPanchayat.set(
-        p.id,
-        boothsByPanchayat.get(p.id) ?? [],
-      );
+      mandalBoothsByPanchayat.set(p.id, boothsByPanchayat.get(p.id) ?? []);
     }
     const mandalData = aggregatePanchayatsToMandal(
       mandalPanchayats,
@@ -480,10 +457,7 @@ export function buildHierarchyTree(
   });
 
   // Build constituency root node
-  const allConstituencyData = aggregateBoothsToPanchayat(
-    constituencyBooths,
-    stateCode,
-  );
+  const allConstituencyData = aggregateBoothsToPanchayat(constituencyBooths, stateCode);
   allConstituencyData.level = 'constituency';
   allConstituencyData.entityId = constituencyId;
   allConstituencyData.totalMandals = mandals.length;
@@ -543,14 +517,10 @@ export function validateAggregation(
   const warnings: string[] = [];
 
   // ── Check 1: Voter total match ───────────────────────────────────
-  const computedVoterTotal = booths.reduce(
-    (sum, b) => sum + b.totalVoters,
-    0,
-  );
+  const computedVoterTotal = booths.reduce((sum, b) => sum + b.totalVoters, 0);
   const voterDeviation =
     officialVoterTotal > 0
-      ? ((computedVoterTotal - officialVoterTotal) / officialVoterTotal) *
-        100
+      ? ((computedVoterTotal - officialVoterTotal) / officialVoterTotal) * 100
       : 0;
   const absVoterDeviation = Math.abs(voterDeviation);
 
@@ -563,15 +533,10 @@ export function validateAggregation(
     expected: officialVoterTotal,
     actual: computedVoterTotal,
     deviationPercent: parseFloat(voterDeviation.toFixed(4)),
-    message:
-      voterTotalMatch
-        ? `Voter totals match within tolerance (${absVoterDeviation.toFixed(4)}% deviation)`
-        : `MISMATCH: booth sum ${computedVoterTotal} vs official ${officialVoterTotal} (${absVoterDeviation.toFixed(4)}% deviation)`,
-    severity: voterTotalMatch
-      ? 'info'
-      : absVoterDeviation <= 1
-        ? 'warning'
-        : 'critical',
+    message: voterTotalMatch
+      ? `Voter totals match within tolerance (${absVoterDeviation.toFixed(4)}% deviation)`
+      : `MISMATCH: booth sum ${computedVoterTotal} vs official ${officialVoterTotal} (${absVoterDeviation.toFixed(4)}% deviation)`,
+    severity: voterTotalMatch ? 'info' : absVoterDeviation <= 1 ? 'warning' : 'critical',
   });
 
   if (!voterTotalMatch) {
@@ -589,8 +554,7 @@ export function validateAggregation(
   // ── Check 2: Gender sum consistency ──────────────────────────────
   const genderMismatches: string[] = [];
   for (const booth of booths) {
-    const genderSum =
-      booth.maleVoters + booth.femaleVoters + booth.thirdGenderVoters;
+    const genderSum = booth.maleVoters + booth.femaleVoters + booth.thirdGenderVoters;
     if (genderSum !== booth.totalVoters) {
       genderMismatches.push(
         `Booth ${booth.id}: male(${booth.maleVoters}) + female(${booth.femaleVoters}) + thirdGender(${booth.thirdGenderVoters}) = ${genderSum} ≠ total(${booth.totalVoters})`,
@@ -600,8 +564,7 @@ export function validateAggregation(
 
   internalChecks.push({
     checkName: 'gender_sum_consistency',
-    description:
-      'Male + female + thirdGender voters equals total for every booth',
+    description: 'Male + female + thirdGender voters equals total for every booth',
     passed: genderMismatches.length === 0,
     expected: 0,
     actual: genderMismatches.length,
@@ -636,7 +599,10 @@ export function validateAggregation(
 
   if (emptyBooths.length > 0) {
     warnings.push(
-      `${emptyBooths.length} booth(s) have zero voters: ${emptyBooths.slice(0, 5).map((b) => b.id).join(', ')}`,
+      `${emptyBooths.length} booth(s) have zero voters: ${emptyBooths
+        .slice(0, 5)
+        .map((b) => b.id)
+        .join(', ')}`,
     );
   }
 
@@ -663,9 +629,7 @@ export function validateAggregation(
   }
 
   // ── Check 5: All booths map to this constituency ─────────────────
-  const wrongConstituency = booths.filter(
-    (b) => b.constituencyId !== constituencyId,
-  );
+  const wrongConstituency = booths.filter((b) => b.constituencyId !== constituencyId);
   const allBoothsMapped = wrongConstituency.length === 0;
 
   internalChecks.push({
@@ -681,9 +645,7 @@ export function validateAggregation(
   });
 
   if (!allBoothsMapped) {
-    errors.push(
-      `${wrongConstituency.length} booth(s) mapped to wrong constituency`,
-    );
+    errors.push(`${wrongConstituency.length} booth(s) mapped to wrong constituency`);
   }
 
   // ── Check 6: Panchayat mapping ───────────────────────────────────
@@ -705,15 +667,11 @@ export function validateAggregation(
   });
 
   if (!allPanchayatsMapped) {
-    warnings.push(
-      `${unmappedPanchayat.length} booth(s) missing panchayatId`,
-    );
+    warnings.push(`${unmappedPanchayat.length} booth(s) missing panchayatId`);
   }
 
   // ── Check 7: Mandal mapping ──────────────────────────────────────
-  const unmappedMandal = booths.filter(
-    (b) => b.mandalId === undefined || b.mandalId === '',
-  );
+  const unmappedMandal = booths.filter((b) => b.mandalId === undefined || b.mandalId === '');
   const allMandalsMapped = unmappedMandal.length === 0;
 
   internalChecks.push({
@@ -737,10 +695,7 @@ export function validateAggregation(
     const voteMismatches: string[] = [];
 
     for (const result of boothResults) {
-      const candidateVoteSum = result.candidateVotes.reduce(
-        (sum, cv) => sum + cv.votes,
-        0,
-      );
+      const candidateVoteSum = result.candidateVotes.reduce((sum, cv) => sum + cv.votes, 0);
       // candidateVotes should sum to validVotes
       if (candidateVoteSum !== result.validVotes) {
         voteMismatches.push(
@@ -751,8 +706,7 @@ export function validateAggregation(
 
     internalChecks.push({
       checkName: 'candidate_vote_sum',
-      description:
-        'Sum of candidate votes matches validVotes for each booth',
+      description: 'Sum of candidate votes matches validVotes for each booth',
       passed: voteMismatches.length === 0,
       expected: 0,
       actual: voteMismatches.length,
@@ -771,22 +725,15 @@ export function validateAggregation(
 
     // ── Check 9 (optional): Cross-level vote count consistency ──────
     if (officialVoteCount !== undefined) {
-      const computedVoteCount = boothResults.reduce(
-        (sum, r) => sum + r.votesPolled,
-        0,
-      );
+      const computedVoteCount = boothResults.reduce((sum, r) => sum + r.votesPolled, 0);
       const voteDeviation =
         officialVoteCount > 0
-          ? Math.abs(
-              ((computedVoteCount - officialVoteCount) / officialVoteCount) *
-                100,
-            )
+          ? Math.abs(((computedVoteCount - officialVoteCount) / officialVoteCount) * 100)
           : 0;
 
       internalChecks.push({
         checkName: 'vote_count_match',
-        description:
-          'Sum of booth votes polled matches official total votes polled',
+        description: 'Sum of booth votes polled matches official total votes polled',
         passed: voteDeviation <= 0.1,
         expected: officialVoteCount,
         actual: computedVoteCount,
@@ -795,12 +742,7 @@ export function validateAggregation(
           voteDeviation <= 0.1
             ? `Vote totals match within tolerance (${voteDeviation.toFixed(4)}% deviation)`
             : `MISMATCH: booth vote sum ${computedVoteCount} vs official ${officialVoteCount} (${voteDeviation.toFixed(4)}% deviation)`,
-        severity:
-          voteDeviation <= 0.1
-            ? 'info'
-            : voteDeviation <= 1
-              ? 'warning'
-              : 'critical',
+        severity: voteDeviation <= 0.1 ? 'info' : voteDeviation <= 1 ? 'warning' : 'critical',
       });
 
       if (voteDeviation > 0.1) {
@@ -935,30 +877,19 @@ export function computeDataIntegrityScore(
   officialVoterTotal: number,
 ): number {
   // ── Factor 1: Voter count accuracy (40 points) ──────────────────
-  const constituencyBooths = booths.filter(
-    (b) => b.constituencyId === constituencyId,
-  );
-  const computedTotal = constituencyBooths.reduce(
-    (sum, b) => sum + b.totalVoters,
-    0,
-  );
+  const constituencyBooths = booths.filter((b) => b.constituencyId === constituencyId);
+  const computedTotal = constituencyBooths.reduce((sum, b) => sum + b.totalVoters, 0);
   const deviation =
     officialVoterTotal > 0
-      ? Math.abs(
-          (computedTotal - officialVoterTotal) / officialVoterTotal,
-        )
+      ? Math.abs((computedTotal - officialVoterTotal) / officialVoterTotal)
       : 1; // If no official total, worst case
   // Linear decay: 0% deviation → 40 pts, 5% deviation → 0 pts
   const voterAccuracyScore = Math.max(0, 40 * (1 - deviation / 0.05));
 
   // ── Factor 2: Booth coverage (25 points) ────────────────────────
-  const nonEmptyBooths = constituencyBooths.filter(
-    (b) => b.totalVoters > 0,
-  ).length;
+  const nonEmptyBooths = constituencyBooths.filter((b) => b.totalVoters > 0).length;
   const boothCoverage =
-    constituencyBooths.length > 0
-      ? nonEmptyBooths / constituencyBooths.length
-      : 0;
+    constituencyBooths.length > 0 ? nonEmptyBooths / constituencyBooths.length : 0;
   const boothCoverageScore = 25 * boothCoverage;
 
   // ── Factor 3: Panchayat mapping (20 points) ─────────────────────
@@ -968,9 +899,7 @@ export function computeDataIntegrityScore(
     (b) => b.panchayatId !== undefined && panchayatIds.has(b.panchayatId),
   ).length;
   const panchayatMapping =
-    constituencyBooths.length > 0
-      ? mappedBoothCount / constituencyBooths.length
-      : 0;
+    constituencyBooths.length > 0 ? mappedBoothCount / constituencyBooths.length : 0;
   const panchayatScore = 20 * panchayatMapping;
 
   // ── Factor 4: Mandal mapping (15 points) ────────────────────────
@@ -980,13 +909,10 @@ export function computeDataIntegrityScore(
     (b) => b.mandalId !== undefined && mandalIds.has(b.mandalId),
   ).length;
   const mandalMapping =
-    constituencyBooths.length > 0
-      ? mandalMappedCount / constituencyBooths.length
-      : 0;
+    constituencyBooths.length > 0 ? mandalMappedCount / constituencyBooths.length : 0;
   const mandalScore = 15 * mandalMapping;
 
-  const totalScore =
-    voterAccuracyScore + boothCoverageScore + panchayatScore + mandalScore;
+  const totalScore = voterAccuracyScore + boothCoverageScore + panchayatScore + mandalScore;
 
   return parseFloat(Math.min(100, Math.max(0, totalScore)).toFixed(1));
 }
@@ -1055,9 +981,7 @@ function createBoothNode(booth: PollingBooth): HierarchyNode {
  * Returns the party code with the highest vote count, or null if empty.
  * @internal
  */
-function determineBoothWinner(
-  partyVotes: Record<string, number>,
-): string | null {
+function determineBoothWinner(partyVotes: Record<string, number>): string | null {
   const entries = Object.entries(partyVotes);
   if (entries.length === 0) return null;
 
@@ -1123,7 +1047,5 @@ function computeIntegrityScoreFromChecks(checks: ValidationCheck[]): number {
     }
   }
 
-  return totalWeight > 0
-    ? parseFloat(((earnedWeight / totalWeight) * 100).toFixed(1))
-    : 100;
+  return totalWeight > 0 ? parseFloat(((earnedWeight / totalWeight) * 100).toFixed(1)) : 100;
 }

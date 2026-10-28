@@ -134,7 +134,7 @@ export default function UserProfileScreen() {
         <Pressable
           onPress={() => {
             Share.share({
-              message: `Check out ${userProfile?.display_name || 'this profile'} on Kshetra!`,
+              message: `Check out ${userProfile?.display_name || 'this profile'} on Poligram!`,
             });
           }}
           hitSlop={10}
@@ -233,7 +233,7 @@ export default function UserProfileScreen() {
                       currentUserId || 'anon',
                       {
                         id: userId ?? '',
-                        displayName: userProfile?.display_name || 'Kshetra Citizen',
+                        displayName: userProfile?.display_name || 'Poligram Citizen',
                         role: userProfile?.role,
                         isVerified,
                       },

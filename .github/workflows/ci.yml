@@ -47,6 +47,9 @@ jobs:
       - name: Audit 13-Language i18n Parity (DEF-012 Monitoring)
         run: node scripts/verify-13-locales.mjs
 
+      - name: Verify 13-Language Semantic & Bidirectional Token Integrity (DEF-012 Gate)
+        run: node scripts/verify-locale-semantic-integrity.mjs
+
   test:
     name: Test
     runs-on: ubuntu-latest
@@ -145,9 +148,7 @@ jobs:
         run: npm ci
 
       - name: Prettier check
-        run: npx prettier --check "**/*.{ts,tsx,json,md}" --ignore-path .gitignore
-        continue-on-error: true
+        run: npx prettier --check "apps/**/*.{ts,tsx}" "packages/**/*.{ts,tsx}" --ignore-path .prettierignore
 
       - name: ESLint
-        run: npx eslint "apps/**/*.{ts,tsx}" "packages/**/*.{ts,tsx}" --max-warnings=0
-        continue-on-error: true
+        run: npx eslint "apps/**/*.{ts,tsx}" "packages/**/*.{ts,tsx}" --quiet

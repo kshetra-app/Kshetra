@@ -1,4 +1,8 @@
-import { resolveEnvironment, getEnvironmentConfig, ENVIRONMENT_CONFIGS } from '../config/environments';
+import {
+  resolveEnvironment,
+  getEnvironmentConfig,
+  ENVIRONMENT_CONFIGS,
+} from '../config/environments';
 import { representativeToProfile, OFFICE_TYPE_CONFIG } from '../types/hierarchy';
 import type { Representative } from '../types/hierarchy';
 

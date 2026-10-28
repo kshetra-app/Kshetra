@@ -11,7 +11,10 @@ import { InMemoryDelimitationWatchRepository } from '../modules/delimitationWatc
 describe('Delimitation Watch HTTP Routes (/api/v1/delimitation/watch/*)', () => {
   let app: FastifyInstance;
   let testRepo: InMemoryDelimitationWatchRepository;
-  const fixturePath = path.resolve(__dirname, '../../../../tests/fixtures/delimitation/initial_delimitation_source_fixture.json');
+  const fixturePath = path.resolve(
+    __dirname,
+    '../../../../tests/fixtures/delimitation/initial_delimitation_source_fixture.json',
+  );
 
   beforeAll(async () => {
     testRepo = new InMemoryDelimitationWatchRepository();

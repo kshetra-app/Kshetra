@@ -27,88 +27,133 @@ export async function analyticsRoutes(app: FastifyInstance) {
       durationSeconds?: number;
       [key: string]: any;
     };
-  }>('/api/v1/analytics/sessions', {
-    schema: {
-      body: {
-        type: 'object',
-        properties: {
-          userId: { type: 'string' },
-          sessionId: { type: 'string' },
-          action: { type: 'string', enum: ['start', 'end', 'heartbeat'] },
-          durationSeconds: { type: 'number' },
+  }>(
+    '/api/v1/analytics/sessions',
+    {
+      schema: {
+        body: {
+          type: 'object',
+          properties: {
+            userId: { type: 'string' },
+            sessionId: { type: 'string' },
+            action: { type: 'string', enum: ['start', 'end', 'heartbeat'] },
+            durationSeconds: { type: 'number' },
+          },
         },
       },
     },
-  }, async (request, reply) => {
-    let resolvedUserId: string;
+    async (request, reply) => {
+      let resolvedUserId: string;
 
-    if (request.headers.authorization || request.body?.userId) {
-      const auth = await resolveAuthenticatedUser(request, reply);
-      if (!auth) return;
-      if (!assertActingUserMatch(reply, request, auth.userId, request.body?.userId, 'userId')) {
-        return;
-      }
-      resolvedUserId = auth.userId;
-    } else {
-      resolvedUserId = 'anonymous';
-    }
-
-    const body = request.body || {};
-    const sessionId = body.sessionId || `sess_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
-    const action = body.action || 'start';
-    const now = new Date().toISOString();
-
-    if (!isSupabaseConfigured) {
-      return sendApiError(reply, request, 503, 'Service Unavailable', 'Database service is not configured', {
-        code: 'SERVICE_UNAVAILABLE',
-      });
-    }
-
-    try {
-      if (action === 'start') {
-        const { error } = await supabase.from('client_sessions').insert({
-          session_id: sessionId,
-          user_id: resolvedUserId,
-          device_brand: body.deviceBrand ?? null,
-          device_model: body.deviceModel ?? null,
-          device_os: body.deviceOs ?? null,
-          device_os_version: body.deviceOsVersion ?? null,
-          network_type: body.networkType ?? null,
-          started_at: now,
-        });
-
-        if (error) {
-          app.log.error({ err: error.message, sessionId, action }, 'Failed to record session in DB');
-          return sendApiError(reply, request, 500, 'Internal Server Error', 'Database error recording session', {
-            code: 'DATABASE_ERROR',
-          });
+      if (request.headers.authorization || request.body?.userId) {
+        const auth = await resolveAuthenticatedUser(request, reply);
+        if (!auth) return;
+        if (!assertActingUserMatch(reply, request, auth.userId, request.body?.userId, 'userId')) {
+          return;
         }
-      } else if (action === 'end') {
-        const { error } = await supabase.from('client_sessions').update({
-          ended_at: now,
-          duration_seconds: body.durationSeconds ?? null,
-        }).eq('session_id', sessionId);
-
-        if (error) {
-          app.log.error({ err: error.message, sessionId, action }, 'Failed to record session end in DB');
-          return sendApiError(reply, request, 500, 'Internal Server Error', 'Database error recording session', {
-            code: 'DATABASE_ERROR',
-          });
-        }
+        resolvedUserId = auth.userId;
+      } else {
+        resolvedUserId = 'anonymous';
       }
-    } catch (err: any) {
-      app.log.error({ err: err?.message, sessionId, action }, 'Exception recording session in DB');
-      return sendApiError(reply, request, 500, 'Internal Server Error', 'Database error recording session', {
-        code: 'DATABASE_ERROR',
-      });
-    }
 
-    return reply.status(action === 'start' ? 201 : 200).send({
-      success: true,
-      sessionId,
-      userId: resolvedUserId,
-      action,
-      timestamp: now,
-    });
-  });
+      const body = request.body || {};
+      const sessionId =
+        body.sessionId || `sess_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
+      const action = body.action || 'start';
+      const now = new Date().toISOString();
+
+      if (!isSupabaseConfigured) {
+        return sendApiError(
+          reply,
+          request,
+          503,
+          'Service Unavailable',
+          'Database service is not configured',
+          {
+            code: 'SERVICE_UNAVAILABLE',
+          },
+        );
+      }
+
+      try {
+        if (action === 'start') {
+          const { error } = await supabase.from('client_sessions').insert({
+            session_id: sessionId,
+            user_id: resolvedUserId,
+            device_brand: body.deviceBrand ?? null,
+            device_model: body.deviceModel ?? null,
+            device_os: body.deviceOs ?? null,
+            device_os_version: body.deviceOsVersion ?? null,
+            network_type: body.networkType ?? null,
+            started_at: now,
+          });
+
+          if (error) {
+            app.log.error(
+              { err: error.message, sessionId, action },
+              'Failed to record session in DB',
+            );
+            return sendApiError(
+              reply,
+              request,
+              500,
+              'Internal Server Error',
+              'Database error recording session',
+              {
+                code: 'DATABASE_ERROR',
+              },
+            );
+          }
+        } else if (action === 'end') {
+          const { error } = await supabase
+            .from('client_sessions')
+            .update({
+              ended_at: now,
+              duration_seconds: body.durationSeconds ?? null,
+            })
+            .eq('session_id', sessionId);
+
+          if (error) {
+            app.log.error(
+              { err: error.message, sessionId, action },
+              'Failed to record session end in DB',
+            );
+            return sendApiError(
+              reply,
+              request,
+              500,
+              'Internal Server Error',
+              'Database error recording session',
+              {
+                code: 'DATABASE_ERROR',
+              },
+            );
+          }
+        }
+      } catch (err: any) {
+        app.log.error(
+          { err: err?.message, sessionId, action },
+          'Exception recording session in DB',
+        );
+        return sendApiError(
+          reply,
+          request,
+          500,
+          'Internal Server Error',
+          'Database error recording session',
+          {
+            code: 'DATABASE_ERROR',
+          },
+        );
+      }
+
+      return reply.status(action === 'start' ? 201 : 200).send({
+        success: true,
+        sessionId,
+        userId: resolvedUserId,
+        action,
+        timestamp: now,
+      });
+    },
+  );
 }

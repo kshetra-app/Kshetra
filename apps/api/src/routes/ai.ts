@@ -55,7 +55,10 @@ const smartSearchBodySchema = z.object({
 });
 
 const summarizeIssuesBodySchema = z.object({
-  constituencyName: z.string().min(1, 'constituencyName and issues array required').max(MAX_NAME_LENGTH),
+  constituencyName: z
+    .string()
+    .min(1, 'constituencyName and issues array required')
+    .max(MAX_NAME_LENGTH),
   issues: z
     .array(z.string().min(1).max(MAX_ISSUE_LENGTH))
     .min(1, 'constituencyName and issues array required')
@@ -63,9 +66,18 @@ const summarizeIssuesBodySchema = z.object({
 });
 
 const campaignCopyBodySchema = z.object({
-  candidateName: z.string().min(1, 'candidateName, constituencyName, and topic are required').max(MAX_NAME_LENGTH),
-  constituencyName: z.string().min(1, 'candidateName, constituencyName, and topic are required').max(MAX_NAME_LENGTH),
-  topic: z.string().min(1, 'candidateName, constituencyName, and topic are required').max(MAX_TOPIC_LENGTH),
+  candidateName: z
+    .string()
+    .min(1, 'candidateName, constituencyName, and topic are required')
+    .max(MAX_NAME_LENGTH),
+  constituencyName: z
+    .string()
+    .min(1, 'candidateName, constituencyName, and topic are required')
+    .max(MAX_NAME_LENGTH),
+  topic: z
+    .string()
+    .min(1, 'candidateName, constituencyName, and topic are required')
+    .max(MAX_TOPIC_LENGTH),
   format: z.enum(['whatsapp', 'press_release', 'speech']).optional(),
   language: z.enum(['english', 'telugu', 'hindi']).optional(),
   isPro: z.boolean().optional(),
@@ -90,9 +102,16 @@ export async function aiRoutes(app: FastifyInstance) {
       return { response };
     } catch (err: unknown) {
       request.log.error({ err }, 'AI chat processing failed');
-      return sendApiError(reply, request, 500, 'Internal Server Error', 'Failed to process AI chat request', {
-        code: 'AI_PROVIDER_ERROR',
-      });
+      return sendApiError(
+        reply,
+        request,
+        500,
+        'Internal Server Error',
+        'Failed to process AI chat request',
+        {
+          code: 'AI_PROVIDER_ERROR',
+        },
+      );
     }
   });
 
@@ -100,22 +119,39 @@ export async function aiRoutes(app: FastifyInstance) {
   app.get('/api/v1/ai/analyze/constituency/:acNo', async (request, reply) => {
     const parsed = validate(acNoParamSchema, request.params);
     if (!parsed.ok) {
-      return sendApiError(reply, request, 400, 'Bad Request', 'Invalid AC number. Expected integer between 1 and 500.', {
-        code: 'FST_ERR_VALIDATION',
-      });
+      return sendApiError(
+        reply,
+        request,
+        400,
+        'Bad Request',
+        'Invalid AC number. Expected integer between 1 and 500.',
+        {
+          code: 'FST_ERR_VALIDATION',
+        },
+      );
     }
 
     const queryParsed = validate(constituencyQuerySchema, request.query);
-    const stateCode = queryParsed.ok && queryParsed.data?.stateCode ? queryParsed.data.stateCode.toUpperCase() : 'TS';
+    const stateCode =
+      queryParsed.ok && queryParsed.data?.stateCode
+        ? queryParsed.data.stateCode.toUpperCase()
+        : 'TS';
     const num = parsed.data.acNo;
     try {
       const analysis = await analyzeConstituency(num, stateCode);
       return { acNo: num, stateCode, analysis };
     } catch (err: unknown) {
       request.log.error({ err, acNo: num, stateCode }, 'AI constituency analysis failed');
-      return sendApiError(reply, request, 500, 'Internal Server Error', 'Failed to analyze constituency', {
-        code: 'AI_PROVIDER_ERROR',
-      });
+      return sendApiError(
+        reply,
+        request,
+        500,
+        'Internal Server Error',
+        'Failed to analyze constituency',
+        {
+          code: 'AI_PROVIDER_ERROR',
+        },
+      );
     }
   });
 
@@ -126,9 +162,16 @@ export async function aiRoutes(app: FastifyInstance) {
       return { analysis };
     } catch (err: unknown) {
       request.log.error({ err }, 'AI trend analysis failed');
-      return sendApiError(reply, request, 500, 'Internal Server Error', 'Failed to analyze election trends', {
-        code: 'AI_PROVIDER_ERROR',
-      });
+      return sendApiError(
+        reply,
+        request,
+        500,
+        'Internal Server Error',
+        'Failed to analyze election trends',
+        {
+          code: 'AI_PROVIDER_ERROR',
+        },
+      );
     }
   });
 
@@ -146,9 +189,16 @@ export async function aiRoutes(app: FastifyInstance) {
       return { results };
     } catch (err: unknown) {
       request.log.error({ err }, 'AI smart search failed');
-      return sendApiError(reply, request, 500, 'Internal Server Error', 'Failed to perform smart search', {
-        code: 'AI_PROVIDER_ERROR',
-      });
+      return sendApiError(
+        reply,
+        request,
+        500,
+        'Internal Server Error',
+        'Failed to perform smart search',
+        {
+          code: 'AI_PROVIDER_ERROR',
+        },
+      );
     }
   });
 
@@ -162,16 +212,20 @@ export async function aiRoutes(app: FastifyInstance) {
     }
 
     try {
-      const summary = await summarizeIssues(
-        parsed.data.constituencyName,
-        parsed.data.issues,
-      );
+      const summary = await summarizeIssues(parsed.data.constituencyName, parsed.data.issues);
       return { summary };
     } catch (err: unknown) {
       request.log.error({ err }, 'AI issue summarization failed');
-      return sendApiError(reply, request, 500, 'Internal Server Error', 'Failed to summarize issues', {
-        code: 'AI_PROVIDER_ERROR',
-      });
+      return sendApiError(
+        reply,
+        request,
+        500,
+        'Internal Server Error',
+        'Failed to summarize issues',
+        {
+          code: 'AI_PROVIDER_ERROR',
+        },
+      );
     }
   });
 
@@ -184,7 +238,13 @@ export async function aiRoutes(app: FastifyInstance) {
       });
     }
 
-    const { candidateName, constituencyName, topic, format = 'whatsapp', language = 'english' } = parsed.data;
+    const {
+      candidateName,
+      constituencyName,
+      topic,
+      format = 'whatsapp',
+      language = 'english',
+    } = parsed.data;
 
     try {
       const copy = await generateCampaignCopy({
@@ -203,16 +263,24 @@ export async function aiRoutes(app: FastifyInstance) {
       };
     } catch (err: unknown) {
       request.log.error({ err }, 'AI campaign copy generation failed');
-      return sendApiError(reply, request, 500, 'Internal Server Error', 'Failed to generate campaign copy', {
-        code: 'AI_PROVIDER_ERROR',
-      });
+      return sendApiError(
+        reply,
+        request,
+        500,
+        'Internal Server Error',
+        'Failed to generate campaign copy',
+        {
+          code: 'AI_PROVIDER_ERROR',
+        },
+      );
     }
   });
 
   /** GET /api/v1/ai/status — check if AI is configured */
   app.get('/api/v1/ai/status', async () => {
     const isConfigured = !!process.env.GEMINI_API_KEY || !!process.env.OPENAI_API_KEY;
-    const provider = process.env.OPENAI_API_KEY && !process.env.GEMINI_API_KEY ? 'openai' : 'gemini';
+    const provider =
+      process.env.OPENAI_API_KEY && !process.env.GEMINI_API_KEY ? 'openai' : 'gemini';
     return {
       configured: isConfigured,
       model: provider === 'gemini' ? 'gemini-flash-lite-latest' : 'gpt-4o-mini',

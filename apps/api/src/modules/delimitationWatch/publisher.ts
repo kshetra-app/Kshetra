@@ -34,8 +34,13 @@ export class Publisher {
     publishedBy: string = 'system_delimitation_watch',
   ): Promise<{ publication: DelimitationPublication; created: boolean }> {
     // 1. Validation Gate Enforcement
-    if (validation.validationStatus === 'REJECTED' || validation.validationStatus === 'REVIEW_REQUIRED') {
-      throw new Error(`PUBLICATION_GATE_FAILED: Cannot publish candidate ${candidate.id} in state '${validation.validationStatus}'`);
+    if (
+      validation.validationStatus === 'REJECTED' ||
+      validation.validationStatus === 'REVIEW_REQUIRED'
+    ) {
+      throw new Error(
+        `PUBLICATION_GATE_FAILED: Cannot publish candidate ${candidate.id} in state '${validation.validationStatus}'`,
+      );
     }
 
     // Determine honest publication type
@@ -52,10 +57,17 @@ export class Publisher {
 
     // Invariant: Proposed or unverified candidate cannot be published as OFFICIAL
     if (version.dataStatus === 'OFFICIAL' && candidate.isProposed) {
-      throw new Error(`CANONICAL_MUTATION_RESTRICTED: Proposed or unverified candidate cannot be published as ENACTED_OFFICIAL`);
+      throw new Error(
+        `CANONICAL_MUTATION_RESTRICTED: Proposed or unverified candidate cannot be published as ENACTED_OFFICIAL`,
+      );
     }
-    if (publicationType === 'ENACTED_OFFICIAL' && (candidate.isProposed || version.dataStatus !== 'OFFICIAL')) {
-      throw new Error(`CANONICAL_MUTATION_RESTRICTED: Proposed or unverified candidate cannot be published as ENACTED_OFFICIAL`);
+    if (
+      publicationType === 'ENACTED_OFFICIAL' &&
+      (candidate.isProposed || version.dataStatus !== 'OFFICIAL')
+    ) {
+      throw new Error(
+        `CANONICAL_MUTATION_RESTRICTED: Proposed or unverified candidate cannot be published as ENACTED_OFFICIAL`,
+      );
     }
 
     // 2. Check existing publication for this version (Idempotency)

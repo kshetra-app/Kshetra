@@ -168,7 +168,8 @@ export async function dispatchWebhook(params: DispatchParams): Promise<DispatchR
           requestHeaders,
           responseHeaders,
           responseBodySample: '',
-          errorMessage: 'REDIRECTS_FORBIDDEN: Endpoint returned redirect. Webhook dispatcher does not follow redirects.',
+          errorMessage:
+            'REDIRECTS_FORBIDDEN: Endpoint returned redirect. Webhook dispatcher does not follow redirects.',
         });
       }
 

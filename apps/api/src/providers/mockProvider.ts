@@ -23,7 +23,9 @@ import type {
 
 function assertNotProduction(context: string): void {
   if (process.env.NODE_ENV === 'production') {
-    throw new Error(`SECURITY_VIOLATION: Mock provider '${context}' cannot be instantiated or used in production environment!`);
+    throw new Error(
+      `SECURITY_VIOLATION: Mock provider '${context}' cannot be instantiated or used in production environment!`,
+    );
   }
 }
 
@@ -64,10 +66,14 @@ export class MockPaymentProvider implements PaymentProvider {
     };
   }
 
-  async verifyPaymentSignature(input: PaymentVerificationInput): Promise<PaymentVerificationResult> {
+  async verifyPaymentSignature(
+    input: PaymentVerificationInput,
+  ): Promise<PaymentVerificationResult> {
     assertNotProduction('verifyPaymentSignature');
     if (this.simulateConfigError) {
-      throw new Error('PROVIDER_CONFIG_ERROR: Payment verification service configuration missing (RAZORPAY_KEY_SECRET)');
+      throw new Error(
+        'PROVIDER_CONFIG_ERROR: Payment verification service configuration missing (RAZORPAY_KEY_SECRET)',
+      );
     }
 
     if (input.sandboxBypass) {
@@ -110,13 +116,14 @@ export class MockPaymentProvider implements PaymentProvider {
     };
   }
 
-  verifyWebhookSignature(rawBody: string | Buffer, signature: string, secretOverride?: string): boolean {
+  verifyWebhookSignature(
+    rawBody: string | Buffer,
+    signature: string,
+    secretOverride?: string,
+  ): boolean {
     assertNotProduction('verifyWebhookSignature');
     const secret = secretOverride || this.secret;
-    const expected = crypto
-      .createHmac('sha256', secret)
-      .update(rawBody)
-      .digest('hex');
+    const expected = crypto.createHmac('sha256', secret).update(rawBody).digest('hex');
     return expected === signature;
   }
 }

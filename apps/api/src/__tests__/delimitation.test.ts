@@ -382,7 +382,10 @@ describe('Delimitation Engine Foundation Routes (W020-G5)', () => {
       expect(resv.scReserved + resv.stReserved + resv.general).toBe(119);
 
       // Check district breakdown conservation
-      const districtSeatsSum = json.data.districtBreakdown.reduce((s: number, d: any) => s + d.projectedSeats, 0);
+      const districtSeatsSum = json.data.districtBreakdown.reduce(
+        (s: number, d: any) => s + d.projectedSeats,
+        0,
+      );
       expect(districtSeatsSum).toBe(119);
     });
 
@@ -587,8 +590,12 @@ describe('Delimitation Engine Foundation Routes (W020-G5)', () => {
       const json = JSON.parse(res.payload);
       expect(json.success).toBe(true);
       expect(json.data.constitutionalArticles.length).toBe(4);
-      expect(json.data.computationalSafetyPolicy.maxSafeRequestedSeats).toBe(MAX_SAFE_REQUESTED_SEATS);
-      expect(json.data.computationalSafetyPolicy.statement).toContain('NO constitutional, statutory, electoral, geographic, or legal meaning');
+      expect(json.data.computationalSafetyPolicy.maxSafeRequestedSeats).toBe(
+        MAX_SAFE_REQUESTED_SEATS,
+      );
+      expect(json.data.computationalSafetyPolicy.statement).toContain(
+        'NO constitutional, statutory, electoral, geographic, or legal meaning',
+      );
       expect(json.data.provenance.outputClassification).toBe('STATUTORY_FACT');
       expect(json.data.provenance.dataStatus).toBe('OFFICIAL');
     });
@@ -636,9 +643,16 @@ describe('Delimitation Engine Foundation Routes (W020-G5)', () => {
         'SCENARIO_PROJECTION',
         'SCENARIO',
         [],
-        'SCENARIO_PROPOSED_REGIME'
+        'SCENARIO_PROPOSED_REGIME',
       );
-      const encTrue = delimitationService.buildScenarioEnclosure('s1', 'N', 'D', {}, provScenario, {});
+      const encTrue = delimitationService.buildScenarioEnclosure(
+        's1',
+        'N',
+        'D',
+        {},
+        provScenario,
+        {},
+      );
       expect(encTrue.isScenario).toBe(true);
       expect(encTrue.provenance.legalStatus).toBe('SCENARIO_PROPOSED_REGIME');
 
@@ -655,9 +669,16 @@ describe('Delimitation Engine Foundation Routes (W020-G5)', () => {
           'DETERMINISTIC_DERIVED',
           'DERIVED',
           [],
-          regime
+          regime,
         );
-        const encFalse = delimitationService.buildScenarioEnclosure('s2', 'N', 'D', {}, provNonScenario, {});
+        const encFalse = delimitationService.buildScenarioEnclosure(
+          's2',
+          'N',
+          'D',
+          {},
+          provNonScenario,
+          {},
+        );
         expect(encFalse.isScenario).toBe(false);
         expect(encFalse.provenance.legalStatus).toBe(regime);
       }
@@ -672,7 +693,9 @@ describe('Delimitation Engine Foundation Routes (W020-G5)', () => {
       expect(res.statusCode).toBe(200);
       const json = JSON.parse(res.payload);
       const algoText = json.data.formulas.article332Algorithm;
-      expect(algoText).toContain('PANIN deterministic Hamilton/Largest Remainder allocation applied to the Article 332 proportionality principle');
+      expect(algoText).toContain(
+        'PANIN deterministic Hamilton/Largest Remainder allocation applied to the Article 332 proportionality principle',
+      );
       expect(algoText).not.toContain('Article 332 mandates');
     });
 

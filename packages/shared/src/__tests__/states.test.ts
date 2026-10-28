@@ -144,4 +144,3 @@ describe('State Configuration', () => {
     });
   });
 });
-

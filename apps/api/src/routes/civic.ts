@@ -363,9 +363,18 @@ const createIssueSchema = {
       category: {
         type: 'string',
         enum: [
-          'roads', 'water', 'electricity', 'sanitation', 'healthcare',
-          'education', 'public_safety', 'transport', 'housing',
-          'environment', 'corruption', 'other',
+          'roads',
+          'water',
+          'electricity',
+          'sanitation',
+          'healthcare',
+          'education',
+          'public_safety',
+          'transport',
+          'housing',
+          'environment',
+          'corruption',
+          'other',
         ],
       },
       severity: { type: 'string', enum: ['low', 'medium', 'high', 'critical'] },
@@ -451,9 +460,7 @@ const addIssueCommentSchema = {
   },
 };
 
-async function resolveAuthUser(
-  request: any
-): Promise<{ userId: string; role: string } | null> {
+async function resolveAuthUser(request: any): Promise<{ userId: string; role: string } | null> {
   let userId: string | null = null;
   const authHeader = request.headers.authorization;
 
@@ -463,7 +470,10 @@ async function resolveAuthUser(
       return null;
     }
     if (isSupabaseConfigured) {
-      const { data: { user }, error } = await supabase.auth.getUser(token);
+      const {
+        data: { user },
+        error,
+      } = await supabase.auth.getUser(token);
       if (!error && user) {
         userId = user.id;
       }
@@ -481,359 +491,435 @@ async function resolveAuthUser(
 
 export async function civicRoutes(app: FastifyInstance) {
   /** 1. GET /api/v1/civic/budget/:stateCode — state budget summary */
-  app.get<{ Params: { stateCode: string } }>('/api/v1/civic/budget/:stateCode', {
-    schema: budgetSchema,
-  }, async (request) => {
-    const { stateCode } = request.params;
-    return {
-      stateCode,
-      message: 'Budget endpoint — connect to Supabase for live data',
-    };
-  });
+  app.get<{ Params: { stateCode: string } }>(
+    '/api/v1/civic/budget/:stateCode',
+    {
+      schema: budgetSchema,
+    },
+    async (request) => {
+      const { stateCode } = request.params;
+      return {
+        stateCode,
+        message: 'Budget endpoint — connect to Supabase for live data',
+      };
+    },
+  );
 
   /** 2. GET /api/v1/civic/attendance — legislator attendance */
   app.get<{
     Querystring: { state?: string; sessionYear?: string; page?: number; limit?: number };
-  }>('/api/v1/civic/attendance', {
-    schema: attendanceSchema,
-  }, async (request) => {
-    const { state, sessionYear } = request.query;
-    return {
-      attendance: [],
-      total: 0,
-      filters: { state, sessionYear },
-    };
-  });
+  }>(
+    '/api/v1/civic/attendance',
+    {
+      schema: attendanceSchema,
+    },
+    async (request) => {
+      const { state, sessionYear } = request.query;
+      return {
+        attendance: [],
+        total: 0,
+        filters: { state, sessionYear },
+      };
+    },
+  );
 
   /** 3. GET /api/v1/civic/bills — bills and legislation */
   app.get<{
     Querystring: { state?: string; status?: string; type?: string; page?: number; limit?: number };
-  }>('/api/v1/civic/bills', {
-    schema: billsSchema,
-  }, async (request) => {
-    const { state, status, type } = request.query;
-    return {
-      bills: [],
-      total: 0,
-      filters: { state, status, type },
-    };
-  });
+  }>(
+    '/api/v1/civic/bills',
+    {
+      schema: billsSchema,
+    },
+    async (request) => {
+      const { state, status, type } = request.query;
+      return {
+        bills: [],
+        total: 0,
+        filters: { state, status, type },
+      };
+    },
+  );
 
   /** 4. POST /api/v1/civic/bills/:id/opinion — support/oppose a bill */
   app.post<{
     Params: { id: string };
     Body: { support: boolean };
-  }>('/api/v1/civic/bills/:id/opinion', {
-    schema: billOpinionSchema,
-  }, async (request, reply) => {
-    const auth = await resolveAuthUser(request);
-    if (!auth) {
-      return sendApiError(reply, request, 401, 'Unauthorized', 'Authentication required to record opinion', {
-        code: 'UNAUTHORIZED',
-      });
-    }
-    if (!isSupabaseConfigured) {
-      return sendApiError(reply, request, 503, 'Service Unavailable', 'Database is unavailable', {
-        code: 'DATABASE_UNAVAILABLE',
-      });
-    }
-    const { id } = request.params;
-    const { support } = request.body;
-    const { data: bill, error: fetchErr } = await supabase
-      .from('bills')
-      .select('public_opinion')
-      .eq('id', id)
-      .maybeSingle();
-    if (fetchErr) {
-      if (process.env.NODE_ENV !== 'production') {
-        return { success: true, billId: id, support, message: 'Opinion recorded' };
+  }>(
+    '/api/v1/civic/bills/:id/opinion',
+    {
+      schema: billOpinionSchema,
+    },
+    async (request, reply) => {
+      const auth = await resolveAuthUser(request);
+      if (!auth) {
+        return sendApiError(
+          reply,
+          request,
+          401,
+          'Unauthorized',
+          'Authentication required to record opinion',
+          {
+            code: 'UNAUTHORIZED',
+          },
+        );
       }
-      return sendApiError(reply, request, 500, 'Internal Server Error', fetchErr.message, {
-        code: 'DATABASE_ERROR',
-      });
-    }
-    if (!bill) {
-      if (process.env.NODE_ENV !== 'production') {
-        return { success: true, billId: id, support, message: 'Opinion recorded' };
+      if (!isSupabaseConfigured) {
+        return sendApiError(reply, request, 503, 'Service Unavailable', 'Database is unavailable', {
+          code: 'DATABASE_UNAVAILABLE',
+        });
       }
-      return sendApiError(reply, request, 404, 'Not Found', `Bill ${id} not found`, {
-        code: 'NOT_FOUND',
-      });
-    }
-    const opinion = bill.public_opinion || { support: 0, oppose: 0, neutral: 0 };
-    if (support) opinion.support = (opinion.support || 0) + 1;
-    else opinion.oppose = (opinion.oppose || 0) + 1;
-    const { error: updateErr } = await supabase
-      .from('bills')
-      .update({ public_opinion: opinion, updated_at: new Date().toISOString() })
-      .eq('id', id);
-    if (updateErr) {
-      if (process.env.NODE_ENV !== 'production') {
-        return { success: true, billId: id, support, message: 'Opinion recorded' };
+      const { id } = request.params;
+      const { support } = request.body;
+      const { data: bill, error: fetchErr } = await supabase
+        .from('bills')
+        .select('public_opinion')
+        .eq('id', id)
+        .maybeSingle();
+      if (fetchErr) {
+        if (process.env.NODE_ENV !== 'production') {
+          return { success: true, billId: id, support, message: 'Opinion recorded' };
+        }
+        return sendApiError(reply, request, 500, 'Internal Server Error', fetchErr.message, {
+          code: 'DATABASE_ERROR',
+        });
       }
-      return sendApiError(reply, request, 500, 'Internal Server Error', updateErr.message, {
-        code: 'DATABASE_ERROR',
-      });
-    }
-    return { success: true, billId: id, support, message: 'Opinion recorded' };
-  });
+      if (!bill) {
+        if (process.env.NODE_ENV !== 'production') {
+          return { success: true, billId: id, support, message: 'Opinion recorded' };
+        }
+        return sendApiError(reply, request, 404, 'Not Found', `Bill ${id} not found`, {
+          code: 'NOT_FOUND',
+        });
+      }
+      const opinion = bill.public_opinion || { support: 0, oppose: 0, neutral: 0 };
+      if (support) opinion.support = (opinion.support || 0) + 1;
+      else opinion.oppose = (opinion.oppose || 0) + 1;
+      const { error: updateErr } = await supabase
+        .from('bills')
+        .update({ public_opinion: opinion, updated_at: new Date().toISOString() })
+        .eq('id', id);
+      if (updateErr) {
+        if (process.env.NODE_ENV !== 'production') {
+          return { success: true, billId: id, support, message: 'Opinion recorded' };
+        }
+        return sendApiError(reply, request, 500, 'Internal Server Error', updateErr.message, {
+          code: 'DATABASE_ERROR',
+        });
+      }
+      return { success: true, billId: id, support, message: 'Opinion recorded' };
+    },
+  );
 
   /** 5. GET /api/v1/civic/schemes — government schemes */
   app.get<{
-    Querystring: { state?: string; category?: string; level?: string; page?: number; limit?: number };
-  }>('/api/v1/civic/schemes', {
-    schema: schemesSchema,
-  }, async (request) => {
-    const { state, category, level } = request.query;
-    return {
-      schemes: [],
-      total: 0,
-      filters: { state, category, level },
+    Querystring: {
+      state?: string;
+      category?: string;
+      level?: string;
+      page?: number;
+      limit?: number;
     };
-  });
+  }>(
+    '/api/v1/civic/schemes',
+    {
+      schema: schemesSchema,
+    },
+    async (request) => {
+      const { state, category, level } = request.query;
+      return {
+        schemes: [],
+        total: 0,
+        filters: { state, category, level },
+      };
+    },
+  );
 
   /** 6. GET /api/v1/civic/projects — development projects */
   app.get<{
-    Querystring: { state?: string; phase?: string; category?: string; constituency?: string; page?: number; limit?: number };
-  }>('/api/v1/civic/projects', {
-    schema: projectsSchema,
-  }, async (request) => {
-    const { state, phase, category, constituency } = request.query;
-    return {
-      projects: [],
-      total: 0,
-      filters: { state, phase, category, constituency },
+    Querystring: {
+      state?: string;
+      phase?: string;
+      category?: string;
+      constituency?: string;
+      page?: number;
+      limit?: number;
     };
-  });
+  }>(
+    '/api/v1/civic/projects',
+    {
+      schema: projectsSchema,
+    },
+    async (request) => {
+      const { state, phase, category, constituency } = request.query;
+      return {
+        projects: [],
+        total: 0,
+        filters: { state, phase, category, constituency },
+      };
+    },
+  );
 
   /** 7. GET /api/v1/civic/rti — public RTI requests */
   app.get<{
-    Querystring: { state?: string; status?: string; department?: string; page?: number; limit?: number };
-  }>('/api/v1/civic/rti', {
-    schema: rtiListSchema,
-  }, async (request) => {
-    const { state, status, department } = request.query;
-    return {
-      rtiRequests: [],
-      total: 0,
-      filters: { state, status, department },
+    Querystring: {
+      state?: string;
+      status?: string;
+      department?: string;
+      page?: number;
+      limit?: number;
     };
-  });
+  }>(
+    '/api/v1/civic/rti',
+    {
+      schema: rtiListSchema,
+    },
+    async (request) => {
+      const { state, status, department } = request.query;
+      return {
+        rtiRequests: [],
+        total: 0,
+        filters: { state, status, department },
+      };
+    },
+  );
 
   /** 8. POST /api/v1/civic/rti — file new RTI request */
   app.post<{
     Body: Record<string, unknown>;
-  }>('/api/v1/civic/rti', {
-    schema: createRtiSchema,
-  }, async (request, reply) => {
-    const auth = await resolveAuthUser(request);
-    if (!auth) {
-      return sendApiError(reply, request, 401, 'Unauthorized', 'Authentication required to file RTI', {
-        code: 'UNAUTHORIZED',
-      });
-    }
-    if (!isSupabaseConfigured) {
-      return sendApiError(reply, request, 503, 'Service Unavailable', 'Database is unavailable', {
-        code: 'DATABASE_UNAVAILABLE',
-      });
-    }
-    const body = request.body;
-    const { data, error } = await supabase
-      .from('rti_requests')
-      .insert({
-        user_id: auth.userId,
-        subject: (body.subject as string) || 'RTI Query',
-        department: (body.department as string) || 'General Administration',
-        authority: (body.authority as string) || 'Public Information Officer',
-        question_text: (body.description as string) || (body.subject as string) || 'Information requested',
-        state_code: (body.state as string) || (body.stateCode as string) || 'TS',
-        status: 'draft',
-      })
-      .select('id')
-      .single();
-    if (error || !data) {
-      if (process.env.NODE_ENV !== 'production') {
-        return { success: true, id: 'rti-test-1', message: 'RTI request filed', data: body };
+  }>(
+    '/api/v1/civic/rti',
+    {
+      schema: createRtiSchema,
+    },
+    async (request, reply) => {
+      const auth = await resolveAuthUser(request);
+      if (!auth) {
+        return sendApiError(
+          reply,
+          request,
+          401,
+          'Unauthorized',
+          'Authentication required to file RTI',
+          {
+            code: 'UNAUTHORIZED',
+          },
+        );
       }
-      return sendApiError(reply, request, 500, 'Internal Server Error', error?.message || 'Failed to file RTI', {
-        code: 'DATABASE_ERROR',
-      });
-    }
-    return { success: true, id: data.id, message: 'RTI request filed', data: body };
-  });
+      if (!isSupabaseConfigured) {
+        return sendApiError(reply, request, 503, 'Service Unavailable', 'Database is unavailable', {
+          code: 'DATABASE_UNAVAILABLE',
+        });
+      }
+      const body = request.body;
+      const { data, error } = await supabase
+        .from('rti_requests')
+        .insert({
+          user_id: auth.userId,
+          subject: (body.subject as string) || 'RTI Query',
+          department: (body.department as string) || 'General Administration',
+          authority: (body.authority as string) || 'Public Information Officer',
+          question_text:
+            (body.description as string) || (body.subject as string) || 'Information requested',
+          state_code: (body.state as string) || (body.stateCode as string) || 'TS',
+          status: 'draft',
+        })
+        .select('id')
+        .single();
+      if (error || !data) {
+        if (process.env.NODE_ENV !== 'production') {
+          return { success: true, id: 'rti-test-1', message: 'RTI request filed', data: body };
+        }
+        return sendApiError(
+          reply,
+          request,
+          500,
+          'Internal Server Error',
+          error?.message || 'Failed to file RTI',
+          {
+            code: 'DATABASE_ERROR',
+          },
+        );
+      }
+      return { success: true, id: data.id, message: 'RTI request filed', data: body };
+    },
+  );
 
   /** 9. POST /api/v1/civic/rti/:id/upvote — upvote a public RTI */
   app.post<{
     Params: { id: string };
-  }>('/api/v1/civic/rti/:id/upvote', {
-    schema: upvoteRtiSchema,
-  }, async (request, reply) => {
-    const auth = await resolveAuthUser(request);
-    if (!auth) {
-      return sendApiError(reply, request, 401, 'Unauthorized', 'Authentication required to upvote RTI', {
-        code: 'UNAUTHORIZED',
-      });
-    }
-    if (!isSupabaseConfigured) {
-      return sendApiError(reply, request, 503, 'Service Unavailable', 'Database is unavailable', {
-        code: 'DATABASE_UNAVAILABLE',
-      });
-    }
-    const { id } = request.params;
-    const { data: rti, error: fetchErr } = await supabase
-      .from('rti_requests')
-      .select('upvotes')
-      .eq('id', id)
-      .maybeSingle();
-    if (fetchErr) {
-      if (process.env.NODE_ENV !== 'production') {
-        return { success: true, rtiId: id, message: 'RTI request upvoted' };
+  }>(
+    '/api/v1/civic/rti/:id/upvote',
+    {
+      schema: upvoteRtiSchema,
+    },
+    async (request, reply) => {
+      const auth = await resolveAuthUser(request);
+      if (!auth) {
+        return sendApiError(
+          reply,
+          request,
+          401,
+          'Unauthorized',
+          'Authentication required to upvote RTI',
+          {
+            code: 'UNAUTHORIZED',
+          },
+        );
       }
-      return sendApiError(reply, request, 500, 'Internal Server Error', fetchErr.message, {
-        code: 'DATABASE_ERROR',
-      });
-    }
-    if (!rti) {
-      if (process.env.NODE_ENV !== 'production') {
-        return { success: true, rtiId: id, message: 'RTI request upvoted' };
+      if (!isSupabaseConfigured) {
+        return sendApiError(reply, request, 503, 'Service Unavailable', 'Database is unavailable', {
+          code: 'DATABASE_UNAVAILABLE',
+        });
       }
-      return sendApiError(reply, request, 404, 'Not Found', `RTI request ${id} not found`, {
-        code: 'NOT_FOUND',
-      });
-    }
-    const newUpvotes = (rti.upvotes || 0) + 1;
-    const { error: updateErr } = await supabase
-      .from('rti_requests')
-      .update({ upvotes: newUpvotes, updated_at: new Date().toISOString() })
-      .eq('id', id);
-    if (updateErr) {
-      if (process.env.NODE_ENV !== 'production') {
-        return { success: true, rtiId: id, message: 'Upvote recorded' };
+      const { id } = request.params;
+      const { data: rti, error: fetchErr } = await supabase
+        .from('rti_requests')
+        .select('upvotes')
+        .eq('id', id)
+        .maybeSingle();
+      if (fetchErr) {
+        if (process.env.NODE_ENV !== 'production') {
+          return { success: true, rtiId: id, message: 'RTI request upvoted' };
+        }
+        return sendApiError(reply, request, 500, 'Internal Server Error', fetchErr.message, {
+          code: 'DATABASE_ERROR',
+        });
       }
-      return sendApiError(reply, request, 500, 'Internal Server Error', updateErr.message, {
-        code: 'DATABASE_ERROR',
-      });
-    }
-    return { success: true, rtiId: id, message: 'Upvote recorded' };
-  });
+      if (!rti) {
+        if (process.env.NODE_ENV !== 'production') {
+          return { success: true, rtiId: id, message: 'RTI request upvoted' };
+        }
+        return sendApiError(reply, request, 404, 'Not Found', `RTI request ${id} not found`, {
+          code: 'NOT_FOUND',
+        });
+      }
+      const newUpvotes = (rti.upvotes || 0) + 1;
+      const { error: updateErr } = await supabase
+        .from('rti_requests')
+        .update({ upvotes: newUpvotes, updated_at: new Date().toISOString() })
+        .eq('id', id);
+      if (updateErr) {
+        if (process.env.NODE_ENV !== 'production') {
+          return { success: true, rtiId: id, message: 'Upvote recorded' };
+        }
+        return sendApiError(reply, request, 500, 'Internal Server Error', updateErr.message, {
+          code: 'DATABASE_ERROR',
+        });
+      }
+      return { success: true, rtiId: id, message: 'Upvote recorded' };
+    },
+  );
 
   /** 10. GET /api/v1/civic/hearings — public hearings */
   app.get<{
-    Querystring: { state?: string; type?: string; upcoming?: string; page?: number; limit?: number };
-  }>('/api/v1/civic/hearings', {
-    schema: hearingsSchema,
-  }, async (request) => {
-    const { state, type, upcoming } = request.query;
-    return {
-      hearings: [],
-      total: 0,
-      filters: { state, type, upcoming },
+    Querystring: {
+      state?: string;
+      type?: string;
+      upcoming?: string;
+      page?: number;
+      limit?: number;
     };
-  });
+  }>(
+    '/api/v1/civic/hearings',
+    {
+      schema: hearingsSchema,
+    },
+    async (request) => {
+      const { state, type, upcoming } = request.query;
+      return {
+        hearings: [],
+        total: 0,
+        filters: { state, type, upcoming },
+      };
+    },
+  );
 
   /** 11. GET /api/v1/civic/cdi/:constituencyId — constituency development index */
-  app.get<{ Params: { constituencyId: string } }>('/api/v1/civic/cdi/:constituencyId', {
-    schema: cdiSchema,
-  }, async (request) => {
-    const { constituencyId } = request.params;
-    return {
-      constituencyId,
-      message: 'CDI endpoint — connect to Supabase for live data',
-    };
-  });
+  app.get<{ Params: { constituencyId: string } }>(
+    '/api/v1/civic/cdi/:constituencyId',
+    {
+      schema: cdiSchema,
+    },
+    async (request) => {
+      const { constituencyId } = request.params;
+      return {
+        constituencyId,
+        message: 'CDI endpoint — connect to Supabase for live data',
+      };
+    },
+  );
 
   /** 12. POST /api/v1/civic/issues/:id/upvote — upvote civic issue */
   app.post<{
     Params: { id: string };
-  }>('/api/v1/civic/issues/:id/upvote', {
-    schema: issueUpvoteSchema,
-  }, async (request, reply) => {
-    const auth = await resolveAuthUser(request);
-    if (!auth) {
-      return sendApiError(reply, request, 401, 'Unauthorized', 'Authentication required to upvote issue', {
-        code: 'UNAUTHORIZED',
-      });
-    }
-    if (!isSupabaseConfigured) {
-      return sendApiError(reply, request, 503, 'Service Unavailable', 'Database is unavailable', {
-        code: 'DATABASE_UNAVAILABLE',
-      });
-    }
-    const { id } = request.params;
-    const { error } = await supabase
-      .from('issue_upvotes')
-      .upsert({ issue_id: id, user_id: auth.userId }, { onConflict: 'issue_id,user_id' });
-    if (error) {
-      return sendApiError(reply, request, 500, 'Internal Server Error', error.message, {
-        code: 'DATABASE_ERROR',
-      });
-    }
-    return { success: true, issueId: id, message: 'Issue upvoted successfully' };
-  });
-
-  /** 13. DELETE /api/v1/civic/issues/:id/upvote — remove upvote from civic issue */
-  app.delete<{
-    Params: { id: string };
-  }>('/api/v1/civic/issues/:id/upvote', {
-    schema: issueUpvoteSchema,
-  }, async (request, reply) => {
-    const auth = await resolveAuthUser(request);
-    if (!auth) {
-      return sendApiError(reply, request, 401, 'Unauthorized', 'Authentication required to remove upvote', {
-        code: 'UNAUTHORIZED',
-      });
-    }
-    if (!isSupabaseConfigured) {
-      return sendApiError(reply, request, 503, 'Service Unavailable', 'Database is unavailable', {
-        code: 'DATABASE_UNAVAILABLE',
-      });
-    }
-    const { id } = request.params;
-    const { error } = await supabase
-      .from('issue_upvotes')
-      .delete()
-      .eq('issue_id', id)
-      .eq('user_id', auth.userId);
-    if (error) {
-      return sendApiError(reply, request, 500, 'Internal Server Error', error.message, {
-        code: 'DATABASE_ERROR',
-      });
-    }
-    return { success: true, issueId: id, message: 'Issue upvote removed successfully' };
-  });
-
-  /** 14. POST /api/v1/civic/issues/:id/follow — follow or unfollow civic issue */
-  app.post<{
-    Params: { id: string };
-    Body: { follow?: boolean };
-  }>('/api/v1/civic/issues/:id/follow', {
-    schema: issueFollowSchema,
-  }, async (request, reply) => {
-    const auth = await resolveAuthUser(request);
-    if (!auth) {
-      return sendApiError(reply, request, 401, 'Unauthorized', 'Authentication required to follow issue', {
-        code: 'UNAUTHORIZED',
-      });
-    }
-    if (!isSupabaseConfigured) {
-      return sendApiError(reply, request, 503, 'Service Unavailable', 'Database is unavailable', {
-        code: 'DATABASE_UNAVAILABLE',
-      });
-    }
-    const { id } = request.params;
-    const follow = request.body?.follow !== false;
-    if (follow) {
+  }>(
+    '/api/v1/civic/issues/:id/upvote',
+    {
+      schema: issueUpvoteSchema,
+    },
+    async (request, reply) => {
+      const auth = await resolveAuthUser(request);
+      if (!auth) {
+        return sendApiError(
+          reply,
+          request,
+          401,
+          'Unauthorized',
+          'Authentication required to upvote issue',
+          {
+            code: 'UNAUTHORIZED',
+          },
+        );
+      }
+      if (!isSupabaseConfigured) {
+        return sendApiError(reply, request, 503, 'Service Unavailable', 'Database is unavailable', {
+          code: 'DATABASE_UNAVAILABLE',
+        });
+      }
+      const { id } = request.params;
       const { error } = await supabase
-        .from('issue_follows')
+        .from('issue_upvotes')
         .upsert({ issue_id: id, user_id: auth.userId }, { onConflict: 'issue_id,user_id' });
       if (error) {
         return sendApiError(reply, request, 500, 'Internal Server Error', error.message, {
           code: 'DATABASE_ERROR',
         });
       }
-    } else {
+      return { success: true, issueId: id, message: 'Issue upvoted successfully' };
+    },
+  );
+
+  /** 13. DELETE /api/v1/civic/issues/:id/upvote — remove upvote from civic issue */
+  app.delete<{
+    Params: { id: string };
+  }>(
+    '/api/v1/civic/issues/:id/upvote',
+    {
+      schema: issueUpvoteSchema,
+    },
+    async (request, reply) => {
+      const auth = await resolveAuthUser(request);
+      if (!auth) {
+        return sendApiError(
+          reply,
+          request,
+          401,
+          'Unauthorized',
+          'Authentication required to remove upvote',
+          {
+            code: 'UNAUTHORIZED',
+          },
+        );
+      }
+      if (!isSupabaseConfigured) {
+        return sendApiError(reply, request, 503, 'Service Unavailable', 'Database is unavailable', {
+          code: 'DATABASE_UNAVAILABLE',
+        });
+      }
+      const { id } = request.params;
       const { error } = await supabase
-        .from('issue_follows')
+        .from('issue_upvotes')
         .delete()
         .eq('issue_id', id)
         .eq('user_id', auth.userId);
@@ -842,9 +928,69 @@ export async function civicRoutes(app: FastifyInstance) {
           code: 'DATABASE_ERROR',
         });
       }
-    }
-    return { success: true, issueId: id, following: follow, message: follow ? 'Issue followed' : 'Issue unfollowed' };
-  });
+      return { success: true, issueId: id, message: 'Issue upvote removed successfully' };
+    },
+  );
+
+  /** 14. POST /api/v1/civic/issues/:id/follow — follow or unfollow civic issue */
+  app.post<{
+    Params: { id: string };
+    Body: { follow?: boolean };
+  }>(
+    '/api/v1/civic/issues/:id/follow',
+    {
+      schema: issueFollowSchema,
+    },
+    async (request, reply) => {
+      const auth = await resolveAuthUser(request);
+      if (!auth) {
+        return sendApiError(
+          reply,
+          request,
+          401,
+          'Unauthorized',
+          'Authentication required to follow issue',
+          {
+            code: 'UNAUTHORIZED',
+          },
+        );
+      }
+      if (!isSupabaseConfigured) {
+        return sendApiError(reply, request, 503, 'Service Unavailable', 'Database is unavailable', {
+          code: 'DATABASE_UNAVAILABLE',
+        });
+      }
+      const { id } = request.params;
+      const follow = request.body?.follow !== false;
+      if (follow) {
+        const { error } = await supabase
+          .from('issue_follows')
+          .upsert({ issue_id: id, user_id: auth.userId }, { onConflict: 'issue_id,user_id' });
+        if (error) {
+          return sendApiError(reply, request, 500, 'Internal Server Error', error.message, {
+            code: 'DATABASE_ERROR',
+          });
+        }
+      } else {
+        const { error } = await supabase
+          .from('issue_follows')
+          .delete()
+          .eq('issue_id', id)
+          .eq('user_id', auth.userId);
+        if (error) {
+          return sendApiError(reply, request, 500, 'Internal Server Error', error.message, {
+            code: 'DATABASE_ERROR',
+          });
+        }
+      }
+      return {
+        success: true,
+        issueId: id,
+        following: follow,
+        message: follow ? 'Issue followed' : 'Issue unfollowed',
+      };
+    },
+  );
 
   /** 15. POST /api/v1/civic/issues — report a civic issue */
   app.post<{
@@ -857,239 +1003,324 @@ export async function civicRoutes(app: FastifyInstance) {
       stateCode: string;
       mediaUrls?: string[];
     };
-  }>('/api/v1/civic/issues', {
-    schema: createIssueSchema,
-  }, async (request, reply) => {
-    const auth = await resolveAuthUser(request);
-    if (!auth) {
-      return sendApiError(reply, request, 401, 'Unauthorized', 'Authentication required to report issue', {
-        code: 'UNAUTHORIZED',
-      });
-    }
-    if (!isSupabaseConfigured) {
-      return sendApiError(reply, request, 503, 'Service Unavailable', 'Database is unavailable', {
-        code: 'DATABASE_UNAVAILABLE',
-      });
-    }
-    const body = request.body;
-    const { data, error } = await supabase
-      .from('civic_issues')
-      .insert({
-        title: body.title,
-        description: body.description || '',
-        category: body.category,
-        severity: body.severity || 'medium',
-        constituency_id: body.constituencyId,
-        state_code: body.stateCode,
-        reporter_id: auth.userId,
-        media_urls: body.mediaUrls || [],
-        status: 'open',
-      })
-      .select('id')
-      .single();
-    if (error || !data) {
-      return sendApiError(reply, request, 500, 'Internal Server Error', error?.message || 'Failed to report issue', {
-        code: 'DATABASE_ERROR',
-      });
-    }
-    return { success: true, id: data.id, message: 'Civic issue reported successfully' };
-  });
+  }>(
+    '/api/v1/civic/issues',
+    {
+      schema: createIssueSchema,
+    },
+    async (request, reply) => {
+      const auth = await resolveAuthUser(request);
+      if (!auth) {
+        return sendApiError(
+          reply,
+          request,
+          401,
+          'Unauthorized',
+          'Authentication required to report issue',
+          {
+            code: 'UNAUTHORIZED',
+          },
+        );
+      }
+      if (!isSupabaseConfigured) {
+        return sendApiError(reply, request, 503, 'Service Unavailable', 'Database is unavailable', {
+          code: 'DATABASE_UNAVAILABLE',
+        });
+      }
+      const body = request.body;
+      const { data, error } = await supabase
+        .from('civic_issues')
+        .insert({
+          title: body.title,
+          description: body.description || '',
+          category: body.category,
+          severity: body.severity || 'medium',
+          constituency_id: body.constituencyId,
+          state_code: body.stateCode,
+          reporter_id: auth.userId,
+          media_urls: body.mediaUrls || [],
+          status: 'open',
+        })
+        .select('id')
+        .single();
+      if (error || !data) {
+        return sendApiError(
+          reply,
+          request,
+          500,
+          'Internal Server Error',
+          error?.message || 'Failed to report issue',
+          {
+            code: 'DATABASE_ERROR',
+          },
+        );
+      }
+      return { success: true, id: data.id, message: 'Civic issue reported successfully' };
+    },
+  );
 
   /** 16. PATCH /api/v1/civic/issues/:id/status — update civic issue status */
   app.patch<{
     Params: { id: string };
     Body: { status: string; note?: string };
-  }>('/api/v1/civic/issues/:id/status', {
-    schema: updateIssueStatusSchema,
-  }, async (request, reply) => {
-    const auth = await resolveAuthUser(request);
-    if (!auth) {
-      return sendApiError(reply, request, 401, 'Unauthorized', 'Authentication required to update issue status', {
-        code: 'UNAUTHORIZED',
-      });
-    }
-    if (!isSupabaseConfigured) {
-      return sendApiError(reply, request, 503, 'Service Unavailable', 'Database is unavailable', {
-        code: 'DATABASE_UNAVAILABLE',
-      });
-    }
-    const { id } = request.params;
-    const { status, note } = request.body;
+  }>(
+    '/api/v1/civic/issues/:id/status',
+    {
+      schema: updateIssueStatusSchema,
+    },
+    async (request, reply) => {
+      const auth = await resolveAuthUser(request);
+      if (!auth) {
+        return sendApiError(
+          reply,
+          request,
+          401,
+          'Unauthorized',
+          'Authentication required to update issue status',
+          {
+            code: 'UNAUTHORIZED',
+          },
+        );
+      }
+      if (!isSupabaseConfigured) {
+        return sendApiError(reply, request, 503, 'Service Unavailable', 'Database is unavailable', {
+          code: 'DATABASE_UNAVAILABLE',
+        });
+      }
+      const { id } = request.params;
+      const { status, note } = request.body;
 
-    const { data: issue, error: fetchErr } = await supabase
-      .from('civic_issues')
-      .select('reporter_id, status')
-      .eq('id', id)
-      .maybeSingle();
-    if (fetchErr) {
-      return sendApiError(reply, request, 500, 'Internal Server Error', fetchErr.message, {
-        code: 'DATABASE_ERROR',
-      });
-    }
-    if (!issue) {
-      return sendApiError(reply, request, 404, 'Not Found', `Civic issue ${id} not found`, {
-        code: 'NOT_FOUND',
-      });
-    }
+      const { data: issue, error: fetchErr } = await supabase
+        .from('civic_issues')
+        .select('reporter_id, status')
+        .eq('id', id)
+        .maybeSingle();
+      if (fetchErr) {
+        return sendApiError(reply, request, 500, 'Internal Server Error', fetchErr.message, {
+          code: 'DATABASE_ERROR',
+        });
+      }
+      if (!issue) {
+        return sendApiError(reply, request, 404, 'Not Found', `Civic issue ${id} not found`, {
+          code: 'NOT_FOUND',
+        });
+      }
 
-    const isAuthor = issue.reporter_id === auth.userId;
-    const hasPrivilegedRole = ['admin', 'moderator', 'official', 'politician'].includes(auth.role);
-    if (!isAuthor && !hasPrivilegedRole) {
-      return sendApiError(reply, request, 403, 'Forbidden', 'Only the issue reporter or an authorized official may update issue status', {
-        code: 'FORBIDDEN',
+      const isAuthor = issue.reporter_id === auth.userId;
+      const hasPrivilegedRole = ['admin', 'moderator', 'official', 'politician'].includes(
+        auth.role,
+      );
+      if (!isAuthor && !hasPrivilegedRole) {
+        return sendApiError(
+          reply,
+          request,
+          403,
+          'Forbidden',
+          'Only the issue reporter or an authorized official may update issue status',
+          {
+            code: 'FORBIDDEN',
+          },
+        );
+      }
+
+      const { error: updateErr } = await supabase
+        .from('civic_issues')
+        .update({ status, updated_at: new Date().toISOString() })
+        .eq('id', id);
+      if (updateErr) {
+        return sendApiError(reply, request, 500, 'Internal Server Error', updateErr.message, {
+          code: 'DATABASE_ERROR',
+        });
+      }
+
+      await supabase.from('issue_status_history').insert({
+        issue_id: id,
+        from_status: issue.status,
+        to_status: status,
+        changed_by: auth.userId,
+        note: note || null,
       });
-    }
 
-    const { error: updateErr } = await supabase
-      .from('civic_issues')
-      .update({ status, updated_at: new Date().toISOString() })
-      .eq('id', id);
-    if (updateErr) {
-      return sendApiError(reply, request, 500, 'Internal Server Error', updateErr.message, {
-        code: 'DATABASE_ERROR',
-      });
-    }
-
-    await supabase.from('issue_status_history').insert({
-      issue_id: id,
-      from_status: issue.status,
-      to_status: status,
-      changed_by: auth.userId,
-      note: note || null,
-    });
-
-    return { success: true, issueId: id, status, message: `Status updated to ${status}` };
-  });
+      return { success: true, issueId: id, status, message: `Status updated to ${status}` };
+    },
+  );
 
   /** 17. POST /api/v1/civic/issues/:id/comments — add comment to civic issue */
   app.post<{
     Params: { id: string };
     Body: { body: string; userName?: string; imageUrl?: string };
-  }>('/api/v1/civic/issues/:id/comments', {
-    schema: addIssueCommentSchema,
-  }, async (request, reply) => {
-    const auth = await resolveAuthUser(request);
-    if (!auth) {
-      return sendApiError(reply, request, 401, 'Unauthorized', 'Authentication required to comment on issue', {
-        code: 'UNAUTHORIZED',
-      });
-    }
-    if (!isSupabaseConfigured) {
-      return sendApiError(reply, request, 503, 'Service Unavailable', 'Database is unavailable', {
-        code: 'DATABASE_UNAVAILABLE',
-      });
-    }
-    const { id } = request.params;
-    const { body, userName, imageUrl } = request.body;
+  }>(
+    '/api/v1/civic/issues/:id/comments',
+    {
+      schema: addIssueCommentSchema,
+    },
+    async (request, reply) => {
+      const auth = await resolveAuthUser(request);
+      if (!auth) {
+        return sendApiError(
+          reply,
+          request,
+          401,
+          'Unauthorized',
+          'Authentication required to comment on issue',
+          {
+            code: 'UNAUTHORIZED',
+          },
+        );
+      }
+      if (!isSupabaseConfigured) {
+        return sendApiError(reply, request, 503, 'Service Unavailable', 'Database is unavailable', {
+          code: 'DATABASE_UNAVAILABLE',
+        });
+      }
+      const { id } = request.params;
+      const { body, userName, imageUrl } = request.body;
 
-    const { data, error } = await supabase
-      .from('issue_comments')
-      .insert({
-        issue_id: id,
-        user_id: auth.userId,
-        user_name: userName || 'Anonymous',
-        body,
-        image_url: imageUrl || null,
-      })
-      .select('id')
-      .single();
-    if (error || !data) {
-      return sendApiError(reply, request, 500, 'Internal Server Error', error?.message || 'Failed to add comment', {
-        code: 'DATABASE_ERROR',
-      });
-    }
-    return { success: true, id: data.id, issueId: id, message: 'Comment added successfully' };
-  });
+      const { data, error } = await supabase
+        .from('issue_comments')
+        .insert({
+          issue_id: id,
+          user_id: auth.userId,
+          user_name: userName || 'Anonymous',
+          body,
+          image_url: imageUrl || null,
+        })
+        .select('id')
+        .single();
+      if (error || !data) {
+        return sendApiError(
+          reply,
+          request,
+          500,
+          'Internal Server Error',
+          error?.message || 'Failed to add comment',
+          {
+            code: 'DATABASE_ERROR',
+          },
+        );
+      }
+      return { success: true, id: data.id, issueId: id, message: 'Comment added successfully' };
+    },
+  );
   /** 18. POST /api/v1/civic/issues/:id/tag-mla — tag MLA on civic issue */
   app.post<{
     Params: { id: string };
-  }>('/api/v1/civic/issues/:id/tag-mla', {
-    schema: {
-      params: {
-        type: 'object',
-        required: ['id'],
-        properties: { id: { type: 'string' } },
+  }>(
+    '/api/v1/civic/issues/:id/tag-mla',
+    {
+      schema: {
+        params: {
+          type: 'object',
+          required: ['id'],
+          properties: { id: { type: 'string' } },
+        },
       },
     },
-  }, async (request, reply) => {
-    const auth = await resolveAuthUser(request);
-    if (!auth) {
-      return sendApiError(reply, request, 401, 'Unauthorized', 'Authentication required to tag MLA', {
-        code: 'UNAUTHORIZED',
-      });
-    }
-    if (!isSupabaseConfigured) {
-      return sendApiError(reply, request, 503, 'Service Unavailable', 'Database is unavailable', {
-        code: 'DATABASE_UNAVAILABLE',
-      });
-    }
-    const { id } = request.params;
-    const { error } = await supabase
-      .from('civic_issues')
-      .update({ mla_tagged: true })
-      .eq('id', id);
+    async (request, reply) => {
+      const auth = await resolveAuthUser(request);
+      if (!auth) {
+        return sendApiError(
+          reply,
+          request,
+          401,
+          'Unauthorized',
+          'Authentication required to tag MLA',
+          {
+            code: 'UNAUTHORIZED',
+          },
+        );
+      }
+      if (!isSupabaseConfigured) {
+        return sendApiError(reply, request, 503, 'Service Unavailable', 'Database is unavailable', {
+          code: 'DATABASE_UNAVAILABLE',
+        });
+      }
+      const { id } = request.params;
+      const { error } = await supabase
+        .from('civic_issues')
+        .update({ mla_tagged: true })
+        .eq('id', id);
 
-    if (error) {
-      return sendApiError(reply, request, 500, 'Internal Server Error', error.message, {
-        code: 'DATABASE_ERROR',
-      });
-    }
-    return { success: true, issueId: id, mlaTagged: true };
-  });
+      if (error) {
+        return sendApiError(reply, request, 500, 'Internal Server Error', error.message, {
+          code: 'DATABASE_ERROR',
+        });
+      }
+      return { success: true, issueId: id, mlaTagged: true };
+    },
+  );
 
   /** 19. POST /api/v1/civic/issues/:id/dispute — dispute issue resolution */
   app.post<{
     Params: { id: string };
     Body: { reason: string; userId?: string };
-  }>('/api/v1/civic/issues/:id/dispute', {
-    schema: {
-      params: {
-        type: 'object',
-        required: ['id'],
-        properties: { id: { type: 'string' } },
-      },
-      body: {
-        type: 'object',
-        required: ['reason'],
-        properties: {
-          reason: { type: 'string', minLength: 1, maxLength: 1000 },
-          userId: { type: 'string' },
+  }>(
+    '/api/v1/civic/issues/:id/dispute',
+    {
+      schema: {
+        params: {
+          type: 'object',
+          required: ['id'],
+          properties: { id: { type: 'string' } },
+        },
+        body: {
+          type: 'object',
+          required: ['reason'],
+          properties: {
+            reason: { type: 'string', minLength: 1, maxLength: 1000 },
+            userId: { type: 'string' },
+          },
         },
       },
     },
-  }, async (request, reply) => {
-    const auth = await resolveAuthUser(request);
-    if (!auth) {
-      return sendApiError(reply, request, 401, 'Unauthorized', 'Authentication required to dispute issue', {
-        code: 'UNAUTHORIZED',
-      });
-    }
-    if (request.body?.userId && request.body.userId !== auth.userId) {
-      return sendApiError(reply, request, 403, 'Forbidden', 'Identity spoofing rejected: userId does not match authenticated user', {
-        code: 'FORBIDDEN',
-      });
-    }
-    if (!isSupabaseConfigured) {
-      return sendApiError(reply, request, 503, 'Service Unavailable', 'Database is unavailable', {
-        code: 'DATABASE_UNAVAILABLE',
-      });
-    }
-    const { id } = request.params;
-    const { reason } = request.body;
-    const { error } = await supabase
-      .from('issue_disputes')
-      .upsert({
-        issue_id: id,
-        user_id: auth.userId,
-        reason,
-      }, { onConflict: 'issue_id,user_id' });
+    async (request, reply) => {
+      const auth = await resolveAuthUser(request);
+      if (!auth) {
+        return sendApiError(
+          reply,
+          request,
+          401,
+          'Unauthorized',
+          'Authentication required to dispute issue',
+          {
+            code: 'UNAUTHORIZED',
+          },
+        );
+      }
+      if (request.body?.userId && request.body.userId !== auth.userId) {
+        return sendApiError(
+          reply,
+          request,
+          403,
+          'Forbidden',
+          'Identity spoofing rejected: userId does not match authenticated user',
+          {
+            code: 'FORBIDDEN',
+          },
+        );
+      }
+      if (!isSupabaseConfigured) {
+        return sendApiError(reply, request, 503, 'Service Unavailable', 'Database is unavailable', {
+          code: 'DATABASE_UNAVAILABLE',
+        });
+      }
+      const { id } = request.params;
+      const { reason } = request.body;
+      const { error } = await supabase.from('issue_disputes').upsert(
+        {
+          issue_id: id,
+          user_id: auth.userId,
+          reason,
+        },
+        { onConflict: 'issue_id,user_id' },
+      );
 
-    if (error) {
-      return sendApiError(reply, request, 500, 'Internal Server Error', error.message, {
-        code: 'DATABASE_ERROR',
-      });
-    }
-    return { success: true, issueId: id, disputed: true };
-  });
-
+      if (error) {
+        return sendApiError(reply, request, 500, 'Internal Server Error', error.message, {
+          code: 'DATABASE_ERROR',
+        });
+      }
+      return { success: true, issueId: id, disputed: true };
+    },
+  );
 }

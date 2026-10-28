@@ -162,7 +162,8 @@ export const STATUTORY_RESERVATION_BASELINES: Record<
     scReserved: 19,
     stReserved: 12,
     general: 88,
-    source: 'Delimitation of Parliamentary and Assembly Constituencies Order, 2008 read with Andhra Pradesh Reorganisation Act, 2014 (Schedule XXXI)',
+    source:
+      'Delimitation of Parliamentary and Assembly Constituencies Order, 2008 read with Andhra Pradesh Reorganisation Act, 2014 (Schedule XXXI)',
     censusBasis: 'Census 2001 (Frozen by 84th Constitutional Amendment Articles 82 & 170)',
   },
   AP: {
@@ -170,7 +171,8 @@ export const STATUTORY_RESERVATION_BASELINES: Record<
     scReserved: 29,
     stReserved: 7,
     general: 139,
-    source: 'Delimitation of Parliamentary and Assembly Constituencies Order, 2008 read with Andhra Pradesh Reorganisation Act, 2014 (Schedule II)',
+    source:
+      'Delimitation of Parliamentary and Assembly Constituencies Order, 2008 read with Andhra Pradesh Reorganisation Act, 2014 (Schedule II)',
     censusBasis: 'Census 2001 (Frozen by 84th Constitutional Amendment Articles 82 & 170)',
   },
 };
@@ -205,9 +207,7 @@ export interface CuratedPinLinkage {
     | 'POSTAL_HEAD_OFFICE_POINT'
     | 'MUNICIPAL_LOCALITY_CENTROID';
   spatialRelationship:
-    | 'INTERSECTS_SINGLE_AC_PROVISIONAL'
-    | 'INTERSECTS_MULTIPLE_ACS'
-    | 'REGIONAL_APPROXIMATION_ONLY';
+    'INTERSECTS_SINGLE_AC_PROVISIONAL' | 'INTERSECTS_MULTIPLE_ACS' | 'REGIONAL_APPROXIMATION_ONLY';
   canonicalAcNo?: number;
   candidateAcNos?: number[];
   matchingMethod:
@@ -238,669 +238,707 @@ export interface CuratedPinLinkage {
  */
 export const CURATED_PROVISIONAL_PIN_DIRECTORY: Record<string, CuratedPinLinkage> = {
   '500001': {
-    locality: "Hyderabad GPO / Abids / Koti / Gunfoundry",
-    stateCode: "TS",
-    stateName: "Telangana",
-    district: "Hyderabad",
-    candidateAcNos: [65,63,58], // Goshamahal, Nampally, Malakpet
-    evidenceSource: "India Post Pincode Directory (DoP) & Delimitation Order 2008 Schedule XXXI",
-    sourceLocator: "Schedule XXXI, Table B, GHMC Ward 78 (Gunfoundry) & Ward 3 part (Sultan Bazar)",
-    referenceDocument: "ECI Delimitation of Parliamentary and Assembly Constituencies Order, 2008 (Schedule XXXI, pp. 31-33)",
-    evidenceDate: "2008-08-17",
-    whatEvidenceEstablishes: "POSTAL_DELIVERY_ZONE_MULTI_LOCALITY",
-    spatialRelationship: "INTERSECTS_MULTIPLE_ACS",
-    matchingMethod: "DELIMITATION_ORDER_2008_SCHEDULE_XXXI_MUNICIPAL_WARD_CONCORDANCE",
-    verificationStatus: "DOCUMENTED_MULTI_AC_AMBIGUITY",
-    evidenceNotEstablished: "Statutory 1:1 PIN-to-AC mapping cannot be inferred; delivery beat spans multiple assembly constituencies.",
-    knownLimitations: "Postal delivery beat 500001 encompasses Abids and Gunfoundry (Goshamahal AC 65), parts of Nampally (AC 63), and Sultan Bazar (Malakpet AC 58). Delivery area does not correspond to a single assembly constituency.",
-    requiredAction: "RETAIN_AS_MULTI_AC_AMBIGUITY",
-    notes: "Commercial core of central Hyderabad with high electoral boundary dispersion across 3 assembly constituencies.",
+    locality: 'Hyderabad GPO / Abids / Koti / Gunfoundry',
+    stateCode: 'TS',
+    stateName: 'Telangana',
+    district: 'Hyderabad',
+    candidateAcNos: [65, 63, 58], // Goshamahal, Nampally, Malakpet
+    evidenceSource: 'India Post Pincode Directory (DoP) & Delimitation Order 2008 Schedule XXXI',
+    sourceLocator: 'Schedule XXXI, Table B, GHMC Ward 78 (Gunfoundry) & Ward 3 part (Sultan Bazar)',
+    referenceDocument:
+      'ECI Delimitation of Parliamentary and Assembly Constituencies Order, 2008 (Schedule XXXI, pp. 31-33)',
+    evidenceDate: '2008-08-17',
+    whatEvidenceEstablishes: 'POSTAL_DELIVERY_ZONE_MULTI_LOCALITY',
+    spatialRelationship: 'INTERSECTS_MULTIPLE_ACS',
+    matchingMethod: 'DELIMITATION_ORDER_2008_SCHEDULE_XXXI_MUNICIPAL_WARD_CONCORDANCE',
+    verificationStatus: 'DOCUMENTED_MULTI_AC_AMBIGUITY',
+    evidenceNotEstablished:
+      'Statutory 1:1 PIN-to-AC mapping cannot be inferred; delivery beat spans multiple assembly constituencies.',
+    knownLimitations:
+      'Postal delivery beat 500001 encompasses Abids and Gunfoundry (Goshamahal AC 65), parts of Nampally (AC 63), and Sultan Bazar (Malakpet AC 58). Delivery area does not correspond to a single assembly constituency.',
+    requiredAction: 'RETAIN_AS_MULTI_AC_AMBIGUITY',
+    notes:
+      'Commercial core of central Hyderabad with high electoral boundary dispersion across 3 assembly constituencies.',
   },
   '500002': {
-    locality: "Charminar / Moghalpura / Shalibanda",
-    stateCode: "TS",
-    stateName: "Telangana",
-    district: "Hyderabad",
+    locality: 'Charminar / Moghalpura / Shalibanda',
+    stateCode: 'TS',
+    stateName: 'Telangana',
+    district: 'Hyderabad',
     canonicalAcNo: 66, // Charminar
-    evidenceSource: "Delimitation Order 2008 Schedule XXXI (GHMC Wards 13 & 14)",
-    sourceLocator: "Schedule XXXI, Table B, GHMC Wards 13 & 14",
-    referenceDocument: "ECI Delimitation Order 2008, Schedule XXXI",
-    evidenceDate: "2008-08-17",
-    whatEvidenceEstablishes: "POSTAL_DELIVERY_ZONE_MULTI_LOCALITY",
-    spatialRelationship: "INTERSECTS_SINGLE_AC_PROVISIONAL",
-    matchingMethod: "DELIMITATION_ORDER_2008_SCHEDULE_XXXI_MUNICIPAL_WARD_CONCORDANCE",
-    verificationStatus: "PROVISIONAL_APPROXIMATION",
-    evidenceNotEstablished: "Statutory boundary concordance; delivery beats near Shalibanda touch adjacent ACs.",
-    knownLimitations: "Delivery zone is predominantly within Charminar AC 66; southern boundaries touch Chandrayangutta AC 67.",
-    requiredAction: "RETAIN_AS_PROVISIONAL_APPROXIMATION",
-    notes: "Corrected canonical AC number from 67 (Chandrayangutta) to 66 (Charminar).",
+    evidenceSource: 'Delimitation Order 2008 Schedule XXXI (GHMC Wards 13 & 14)',
+    sourceLocator: 'Schedule XXXI, Table B, GHMC Wards 13 & 14',
+    referenceDocument: 'ECI Delimitation Order 2008, Schedule XXXI',
+    evidenceDate: '2008-08-17',
+    whatEvidenceEstablishes: 'POSTAL_DELIVERY_ZONE_MULTI_LOCALITY',
+    spatialRelationship: 'INTERSECTS_SINGLE_AC_PROVISIONAL',
+    matchingMethod: 'DELIMITATION_ORDER_2008_SCHEDULE_XXXI_MUNICIPAL_WARD_CONCORDANCE',
+    verificationStatus: 'PROVISIONAL_APPROXIMATION',
+    evidenceNotEstablished:
+      'Statutory boundary concordance; delivery beats near Shalibanda touch adjacent ACs.',
+    knownLimitations:
+      'Delivery zone is predominantly within Charminar AC 66; southern boundaries touch Chandrayangutta AC 67.',
+    requiredAction: 'RETAIN_AS_PROVISIONAL_APPROXIMATION',
+    notes: 'Corrected canonical AC number from 67 (Chandrayangutta) to 66 (Charminar).',
   },
   '500003': {
-    locality: "Secunderabad H.O / M.G. Road / Paradise",
-    stateCode: "TS",
-    stateName: "Telangana",
-    district: "Hyderabad",
+    locality: 'Secunderabad H.O / M.G. Road / Paradise',
+    stateCode: 'TS',
+    stateName: 'Telangana',
+    district: 'Hyderabad',
     canonicalAcNo: 70, // Secunderabad
-    evidenceSource: "Delimitation Order 2008 Schedule XXXI (GHMC Ward 18 part)",
-    sourceLocator: "Schedule XXXI, Table B, GHMC Ward 18 part",
-    referenceDocument: "ECI Delimitation Order 2008, Schedule XXXI",
-    evidenceDate: "2008-08-17",
-    whatEvidenceEstablishes: "POSTAL_HEAD_OFFICE_POINT",
-    spatialRelationship: "INTERSECTS_SINGLE_AC_PROVISIONAL",
-    matchingMethod: "DELIMITATION_ORDER_2008_SCHEDULE_XXXI_MUNICIPAL_WARD_CONCORDANCE",
-    verificationStatus: "PROVISIONAL_APPROXIMATION",
-    evidenceNotEstablished: "Full postal boundary polygon; northern perimeter borders Secunderabad Cantonment AC 71.",
-    knownLimitations: "Centroid located at Secunderabad HO; northern perimeter borders Secunderabad Cantonment AC 71.",
-    requiredAction: "RETAIN_AS_PROVISIONAL_APPROXIMATION",
+    evidenceSource: 'Delimitation Order 2008 Schedule XXXI (GHMC Ward 18 part)',
+    sourceLocator: 'Schedule XXXI, Table B, GHMC Ward 18 part',
+    referenceDocument: 'ECI Delimitation Order 2008, Schedule XXXI',
+    evidenceDate: '2008-08-17',
+    whatEvidenceEstablishes: 'POSTAL_HEAD_OFFICE_POINT',
+    spatialRelationship: 'INTERSECTS_SINGLE_AC_PROVISIONAL',
+    matchingMethod: 'DELIMITATION_ORDER_2008_SCHEDULE_XXXI_MUNICIPAL_WARD_CONCORDANCE',
+    verificationStatus: 'PROVISIONAL_APPROXIMATION',
+    evidenceNotEstablished:
+      'Full postal boundary polygon; northern perimeter borders Secunderabad Cantonment AC 71.',
+    knownLimitations:
+      'Centroid located at Secunderabad HO; northern perimeter borders Secunderabad Cantonment AC 71.',
+    requiredAction: 'RETAIN_AS_PROVISIONAL_APPROXIMATION',
   },
   '500004': {
-    locality: "Nampally / Asif Nagar / Bazarghat",
-    stateCode: "TS",
-    stateName: "Telangana",
-    district: "Hyderabad",
+    locality: 'Nampally / Asif Nagar / Bazarghat',
+    stateCode: 'TS',
+    stateName: 'Telangana',
+    district: 'Hyderabad',
     canonicalAcNo: 63, // Nampally
-    evidenceSource: "Delimitation Order 2008 Schedule XXXI (GHMC Wards 10 & 11 part)",
-    sourceLocator: "Schedule XXXI, Table B, GHMC Wards 10 & 11 part",
-    referenceDocument: "ECI Delimitation Order 2008, Schedule XXXI",
-    evidenceDate: "2008-08-17",
-    whatEvidenceEstablishes: "POSTAL_DELIVERY_ZONE_MULTI_LOCALITY",
-    spatialRelationship: "INTERSECTS_SINGLE_AC_PROVISIONAL",
-    matchingMethod: "DELIMITATION_ORDER_2008_SCHEDULE_XXXI_MUNICIPAL_WARD_CONCORDANCE",
-    verificationStatus: "PROVISIONAL_APPROXIMATION",
-    evidenceNotEstablished: "Exact western boundary; adjoins Karwan AC 64.",
-    knownLimitations: "Core Nampally station area. Western boundary adjoins Karwan AC 64.",
-    requiredAction: "RETAIN_AS_PROVISIONAL_APPROXIMATION",
+    evidenceSource: 'Delimitation Order 2008 Schedule XXXI (GHMC Wards 10 & 11 part)',
+    sourceLocator: 'Schedule XXXI, Table B, GHMC Wards 10 & 11 part',
+    referenceDocument: 'ECI Delimitation Order 2008, Schedule XXXI',
+    evidenceDate: '2008-08-17',
+    whatEvidenceEstablishes: 'POSTAL_DELIVERY_ZONE_MULTI_LOCALITY',
+    spatialRelationship: 'INTERSECTS_SINGLE_AC_PROVISIONAL',
+    matchingMethod: 'DELIMITATION_ORDER_2008_SCHEDULE_XXXI_MUNICIPAL_WARD_CONCORDANCE',
+    verificationStatus: 'PROVISIONAL_APPROXIMATION',
+    evidenceNotEstablished: 'Exact western boundary; adjoins Karwan AC 64.',
+    knownLimitations: 'Core Nampally station area. Western boundary adjoins Karwan AC 64.',
+    requiredAction: 'RETAIN_AS_PROVISIONAL_APPROXIMATION',
   },
   '500006': {
-    locality: "Mangalhat / Dhoolpet / Jummerat Bazar",
-    stateCode: "TS",
-    stateName: "Telangana",
-    district: "Hyderabad",
+    locality: 'Mangalhat / Dhoolpet / Jummerat Bazar',
+    stateCode: 'TS',
+    stateName: 'Telangana',
+    district: 'Hyderabad',
     canonicalAcNo: 65, // Goshamahal
-    evidenceSource: "Delimitation Order 2008 Schedule XXXI (GHMC Ward 4)",
-    sourceLocator: "Schedule XXXI, Table B, GHMC Ward 4",
-    referenceDocument: "ECI Delimitation Order 2008, Schedule XXXI",
-    evidenceDate: "2008-08-17",
-    whatEvidenceEstablishes: "POSTAL_DELIVERY_ZONE_MULTI_LOCALITY",
-    spatialRelationship: "INTERSECTS_SINGLE_AC_PROVISIONAL",
-    matchingMethod: "DELIMITATION_ORDER_2008_SCHEDULE_XXXI_MUNICIPAL_WARD_CONCORDANCE",
-    verificationStatus: "PROVISIONAL_APPROXIMATION",
-    evidenceNotEstablished: "Southern riverbank boundary precision across Musi river.",
-    knownLimitations: "Musi river separates southern boundary from Bahadurpura AC 69.",
-    requiredAction: "RETAIN_AS_PROVISIONAL_APPROXIMATION",
+    evidenceSource: 'Delimitation Order 2008 Schedule XXXI (GHMC Ward 4)',
+    sourceLocator: 'Schedule XXXI, Table B, GHMC Ward 4',
+    referenceDocument: 'ECI Delimitation Order 2008, Schedule XXXI',
+    evidenceDate: '2008-08-17',
+    whatEvidenceEstablishes: 'POSTAL_DELIVERY_ZONE_MULTI_LOCALITY',
+    spatialRelationship: 'INTERSECTS_SINGLE_AC_PROVISIONAL',
+    matchingMethod: 'DELIMITATION_ORDER_2008_SCHEDULE_XXXI_MUNICIPAL_WARD_CONCORDANCE',
+    verificationStatus: 'PROVISIONAL_APPROXIMATION',
+    evidenceNotEstablished: 'Southern riverbank boundary precision across Musi river.',
+    knownLimitations: 'Musi river separates southern boundary from Bahadurpura AC 69.',
+    requiredAction: 'RETAIN_AS_PROVISIONAL_APPROXIMATION',
   },
   '500007': {
-    locality: "Amberpet / Ramanthapur / Shivam Road",
-    stateCode: "TS",
-    stateName: "Telangana",
-    district: "Hyderabad",
+    locality: 'Amberpet / Ramanthapur / Shivam Road',
+    stateCode: 'TS',
+    stateName: 'Telangana',
+    district: 'Hyderabad',
     canonicalAcNo: 59, // Amberpet
-    evidenceSource: "Delimitation Order 2008 Schedule XXXI (GHMC Ward 2)",
-    sourceLocator: "Schedule XXXI, Table B, GHMC Ward 2",
-    referenceDocument: "ECI Delimitation Order 2008, Schedule XXXI",
-    evidenceDate: "2008-08-17",
-    whatEvidenceEstablishes: "POSTAL_DELIVERY_ZONE_MULTI_LOCALITY",
-    spatialRelationship: "INTERSECTS_SINGLE_AC_PROVISIONAL",
-    matchingMethod: "DELIMITATION_ORDER_2008_SCHEDULE_XXXI_MUNICIPAL_WARD_CONCORDANCE",
-    verificationStatus: "PROVISIONAL_APPROXIMATION",
-    evidenceNotEstablished: "District border concordance; eastern Ramanthapur beats extend into Medchal-Malkajgiri.",
-    knownLimitations: "Ramanthapur delivery zone extends eastward into Medchal-Malkajgiri district (Uppal AC 47).",
-    requiredAction: "RETAIN_AS_PROVISIONAL_APPROXIMATION",
+    evidenceSource: 'Delimitation Order 2008 Schedule XXXI (GHMC Ward 2)',
+    sourceLocator: 'Schedule XXXI, Table B, GHMC Ward 2',
+    referenceDocument: 'ECI Delimitation Order 2008, Schedule XXXI',
+    evidenceDate: '2008-08-17',
+    whatEvidenceEstablishes: 'POSTAL_DELIVERY_ZONE_MULTI_LOCALITY',
+    spatialRelationship: 'INTERSECTS_SINGLE_AC_PROVISIONAL',
+    matchingMethod: 'DELIMITATION_ORDER_2008_SCHEDULE_XXXI_MUNICIPAL_WARD_CONCORDANCE',
+    verificationStatus: 'PROVISIONAL_APPROXIMATION',
+    evidenceNotEstablished:
+      'District border concordance; eastern Ramanthapur beats extend into Medchal-Malkajgiri.',
+    knownLimitations:
+      'Ramanthapur delivery zone extends eastward into Medchal-Malkajgiri district (Uppal AC 47).',
+    requiredAction: 'RETAIN_AS_PROVISIONAL_APPROXIMATION',
   },
   '500009': {
-    locality: "Gunrock Enclave / Mudfort / Staff Road",
-    stateCode: "TS",
-    stateName: "Telangana",
-    district: "Hyderabad",
+    locality: 'Gunrock Enclave / Mudfort / Staff Road',
+    stateCode: 'TS',
+    stateName: 'Telangana',
+    district: 'Hyderabad',
     canonicalAcNo: 71, // Secunderabad Cantonment
-    evidenceSource: "Delimitation Order 2008 Schedule XXXI (SCB Wards 3 & 4)",
-    sourceLocator: "Schedule XXXI, Table B, SCB Wards 3 & 4",
-    referenceDocument: "ECI Delimitation Order 2008, Schedule XXXI",
-    evidenceDate: "2008-08-17",
-    whatEvidenceEstablishes: "POSTAL_DELIVERY_ZONE_MULTI_LOCALITY",
-    spatialRelationship: "INTERSECTS_SINGLE_AC_PROVISIONAL",
-    matchingMethod: "DELIMITATION_ORDER_2008_SCHEDULE_XXXI_MUNICIPAL_WARD_CONCORDANCE",
-    verificationStatus: "PROVISIONAL_APPROXIMATION",
-    evidenceNotEstablished: "Civilian vs military ward boundary distinction.",
-    knownLimitations: "Military cantonment jurisdiction with non-standard municipal boundaries.",
-    requiredAction: "RETAIN_AS_PROVISIONAL_APPROXIMATION",
+    evidenceSource: 'Delimitation Order 2008 Schedule XXXI (SCB Wards 3 & 4)',
+    sourceLocator: 'Schedule XXXI, Table B, SCB Wards 3 & 4',
+    referenceDocument: 'ECI Delimitation Order 2008, Schedule XXXI',
+    evidenceDate: '2008-08-17',
+    whatEvidenceEstablishes: 'POSTAL_DELIVERY_ZONE_MULTI_LOCALITY',
+    spatialRelationship: 'INTERSECTS_SINGLE_AC_PROVISIONAL',
+    matchingMethod: 'DELIMITATION_ORDER_2008_SCHEDULE_XXXI_MUNICIPAL_WARD_CONCORDANCE',
+    verificationStatus: 'PROVISIONAL_APPROXIMATION',
+    evidenceNotEstablished: 'Civilian vs military ward boundary distinction.',
+    knownLimitations: 'Military cantonment jurisdiction with non-standard municipal boundaries.',
+    requiredAction: 'RETAIN_AS_PROVISIONAL_APPROXIMATION',
   },
   '500010': {
-    locality: "Bolarum / Risala Bazar / Sadar Bazar",
-    stateCode: "TS",
-    stateName: "Telangana",
-    district: "Hyderabad / Medchal-Malkajgiri",
+    locality: 'Bolarum / Risala Bazar / Sadar Bazar',
+    stateCode: 'TS',
+    stateName: 'Telangana',
+    district: 'Hyderabad / Medchal-Malkajgiri',
     canonicalAcNo: 71, // Secunderabad Cantonment
-    evidenceSource: "Delimitation Order 2008 Schedule XXXI (SCB Wards 7 & 8)",
-    sourceLocator: "Schedule XXXI, Table B, SCB Wards 7 & 8",
-    referenceDocument: "ECI Delimitation Order 2008, Schedule XXXI",
-    evidenceDate: "2008-08-17",
-    whatEvidenceEstablishes: "POSTAL_DELIVERY_ZONE_MULTI_LOCALITY",
-    spatialRelationship: "INTERSECTS_SINGLE_AC_PROVISIONAL",
-    matchingMethod: "DELIMITATION_ORDER_2008_SCHEDULE_XXXI_MUNICIPAL_WARD_CONCORDANCE",
-    verificationStatus: "PROVISIONAL_APPROXIMATION",
-    evidenceNotEstablished: "Northern SCB boundary precision bordering Malkajgiri AC 44.",
-    knownLimitations: "Northern SCB boundary borders Malkajgiri AC 44.",
-    requiredAction: "RETAIN_AS_PROVISIONAL_APPROXIMATION",
+    evidenceSource: 'Delimitation Order 2008 Schedule XXXI (SCB Wards 7 & 8)',
+    sourceLocator: 'Schedule XXXI, Table B, SCB Wards 7 & 8',
+    referenceDocument: 'ECI Delimitation Order 2008, Schedule XXXI',
+    evidenceDate: '2008-08-17',
+    whatEvidenceEstablishes: 'POSTAL_DELIVERY_ZONE_MULTI_LOCALITY',
+    spatialRelationship: 'INTERSECTS_SINGLE_AC_PROVISIONAL',
+    matchingMethod: 'DELIMITATION_ORDER_2008_SCHEDULE_XXXI_MUNICIPAL_WARD_CONCORDANCE',
+    verificationStatus: 'PROVISIONAL_APPROXIMATION',
+    evidenceNotEstablished: 'Northern SCB boundary precision bordering Malkajgiri AC 44.',
+    knownLimitations: 'Northern SCB boundary borders Malkajgiri AC 44.',
+    requiredAction: 'RETAIN_AS_PROVISIONAL_APPROXIMATION',
   },
   '500011': {
-    locality: "Trimulgherry / Lothkunta / Lal Bazar",
-    stateCode: "TS",
-    stateName: "Telangana",
-    district: "Hyderabad",
+    locality: 'Trimulgherry / Lothkunta / Lal Bazar',
+    stateCode: 'TS',
+    stateName: 'Telangana',
+    district: 'Hyderabad',
     canonicalAcNo: 71, // Secunderabad Cantonment
-    evidenceSource: "Delimitation Order 2008 Schedule XXXI (SCB Wards 5 & 6)",
-    sourceLocator: "Schedule XXXI, Table B, SCB Wards 5 & 6",
-    referenceDocument: "ECI Delimitation Order 2008, Schedule XXXI",
-    evidenceDate: "2008-08-17",
-    whatEvidenceEstablishes: "POSTAL_DELIVERY_ZONE_MULTI_LOCALITY",
-    spatialRelationship: "INTERSECTS_SINGLE_AC_PROVISIONAL",
-    matchingMethod: "DELIMITATION_ORDER_2008_SCHEDULE_XXXI_MUNICIPAL_WARD_CONCORDANCE",
-    verificationStatus: "PROVISIONAL_APPROXIMATION",
-    evidenceNotEstablished: "Lothkunta perimeter boundary bordering Malkajgiri AC 44.",
-    knownLimitations: "Lothkunta area borders Malkajgiri AC 44.",
-    requiredAction: "RETAIN_AS_PROVISIONAL_APPROXIMATION",
+    evidenceSource: 'Delimitation Order 2008 Schedule XXXI (SCB Wards 5 & 6)',
+    sourceLocator: 'Schedule XXXI, Table B, SCB Wards 5 & 6',
+    referenceDocument: 'ECI Delimitation Order 2008, Schedule XXXI',
+    evidenceDate: '2008-08-17',
+    whatEvidenceEstablishes: 'POSTAL_DELIVERY_ZONE_MULTI_LOCALITY',
+    spatialRelationship: 'INTERSECTS_SINGLE_AC_PROVISIONAL',
+    matchingMethod: 'DELIMITATION_ORDER_2008_SCHEDULE_XXXI_MUNICIPAL_WARD_CONCORDANCE',
+    verificationStatus: 'PROVISIONAL_APPROXIMATION',
+    evidenceNotEstablished: 'Lothkunta perimeter boundary bordering Malkajgiri AC 44.',
+    knownLimitations: 'Lothkunta area borders Malkajgiri AC 44.',
+    requiredAction: 'RETAIN_AS_PROVISIONAL_APPROXIMATION',
   },
   '500012': {
-    locality: "Sultan Bazar / Putlibowli / Troop Bazar",
-    stateCode: "TS",
-    stateName: "Telangana",
-    district: "Hyderabad",
+    locality: 'Sultan Bazar / Putlibowli / Troop Bazar',
+    stateCode: 'TS',
+    stateName: 'Telangana',
+    district: 'Hyderabad',
     canonicalAcNo: 65, // Goshamahal
-    evidenceSource: "Delimitation Order 2008 Schedule XXXI (GHMC Ward 3 part)",
-    sourceLocator: "Schedule XXXI, Table B, GHMC Ward 3 part",
-    referenceDocument: "ECI Delimitation Order 2008, Schedule XXXI",
-    evidenceDate: "2008-08-17",
-    whatEvidenceEstablishes: "POSTAL_DELIVERY_ZONE_MULTI_LOCALITY",
-    spatialRelationship: "INTERSECTS_SINGLE_AC_PROVISIONAL",
-    matchingMethod: "DELIMITATION_ORDER_2008_SCHEDULE_XXXI_MUNICIPAL_WARD_CONCORDANCE",
-    verificationStatus: "PROVISIONAL_APPROXIMATION",
-    evidenceNotEstablished: "Chaderghat border precision touching Malakpet AC 58.",
-    knownLimitations: "Chaderghat border touches Malakpet AC 58.",
-    requiredAction: "RETAIN_AS_PROVISIONAL_APPROXIMATION",
+    evidenceSource: 'Delimitation Order 2008 Schedule XXXI (GHMC Ward 3 part)',
+    sourceLocator: 'Schedule XXXI, Table B, GHMC Ward 3 part',
+    referenceDocument: 'ECI Delimitation Order 2008, Schedule XXXI',
+    evidenceDate: '2008-08-17',
+    whatEvidenceEstablishes: 'POSTAL_DELIVERY_ZONE_MULTI_LOCALITY',
+    spatialRelationship: 'INTERSECTS_SINGLE_AC_PROVISIONAL',
+    matchingMethod: 'DELIMITATION_ORDER_2008_SCHEDULE_XXXI_MUNICIPAL_WARD_CONCORDANCE',
+    verificationStatus: 'PROVISIONAL_APPROXIMATION',
+    evidenceNotEstablished: 'Chaderghat border precision touching Malakpet AC 58.',
+    knownLimitations: 'Chaderghat border touches Malakpet AC 58.',
+    requiredAction: 'RETAIN_AS_PROVISIONAL_APPROXIMATION',
   },
   '500015': {
-    locality: "Karkhana / Vasavinagar / Vikramnagar",
-    stateCode: "TS",
-    stateName: "Telangana",
-    district: "Hyderabad",
+    locality: 'Karkhana / Vasavinagar / Vikramnagar',
+    stateCode: 'TS',
+    stateName: 'Telangana',
+    district: 'Hyderabad',
     canonicalAcNo: 71, // Secunderabad Cantonment
-    evidenceSource: "Delimitation Order 2008 Schedule XXXI (SCB Ward 2)",
-    sourceLocator: "Schedule XXXI, Table B, SCB Ward 2",
-    referenceDocument: "ECI Delimitation Order 2008, Schedule XXXI",
-    evidenceDate: "2008-08-17",
-    whatEvidenceEstablishes: "POSTAL_DELIVERY_ZONE_MULTI_LOCALITY",
-    spatialRelationship: "INTERSECTS_SINGLE_AC_PROVISIONAL",
-    matchingMethod: "DELIMITATION_ORDER_2008_SCHEDULE_XXXI_MUNICIPAL_WARD_CONCORDANCE",
-    verificationStatus: "PROVISIONAL_APPROXIMATION",
-    evidenceNotEstablished: "Southern boundary precision touching Secunderabad AC 70.",
-    knownLimitations: "Southern boundary touches Secunderabad AC 70.",
-    requiredAction: "RETAIN_AS_PROVISIONAL_APPROXIMATION",
+    evidenceSource: 'Delimitation Order 2008 Schedule XXXI (SCB Ward 2)',
+    sourceLocator: 'Schedule XXXI, Table B, SCB Ward 2',
+    referenceDocument: 'ECI Delimitation Order 2008, Schedule XXXI',
+    evidenceDate: '2008-08-17',
+    whatEvidenceEstablishes: 'POSTAL_DELIVERY_ZONE_MULTI_LOCALITY',
+    spatialRelationship: 'INTERSECTS_SINGLE_AC_PROVISIONAL',
+    matchingMethod: 'DELIMITATION_ORDER_2008_SCHEDULE_XXXI_MUNICIPAL_WARD_CONCORDANCE',
+    verificationStatus: 'PROVISIONAL_APPROXIMATION',
+    evidenceNotEstablished: 'Southern boundary precision touching Secunderabad AC 70.',
+    knownLimitations: 'Southern boundary touches Secunderabad AC 70.',
+    requiredAction: 'RETAIN_AS_PROVISIONAL_APPROXIMATION',
   },
   '500017': {
-    locality: "Tarnaka / Osmania University / Lalaguda",
-    stateCode: "TS",
-    stateName: "Telangana",
-    district: "Hyderabad",
+    locality: 'Tarnaka / Osmania University / Lalaguda',
+    stateCode: 'TS',
+    stateName: 'Telangana',
+    district: 'Hyderabad',
     canonicalAcNo: 70, // Secunderabad
-    evidenceSource: "Delimitation Order 2008 Schedule XXXI (GHMC Ward 19 part)",
-    sourceLocator: "Schedule XXXI, Table B, GHMC Ward 19 part",
-    referenceDocument: "ECI Delimitation Order 2008, Schedule XXXI",
-    evidenceDate: "2008-08-17",
-    whatEvidenceEstablishes: "POSTAL_DELIVERY_ZONE_MULTI_LOCALITY",
-    spatialRelationship: "INTERSECTS_SINGLE_AC_PROVISIONAL",
-    matchingMethod: "DELIMITATION_ORDER_2008_SCHEDULE_XXXI_MUNICIPAL_WARD_CONCORDANCE",
-    verificationStatus: "PROVISIONAL_APPROXIMATION",
-    evidenceNotEstablished: "Eastern boundary at Habsiguda touching Uppal AC 47.",
-    knownLimitations: "Eastern boundary touches Uppal AC 47 at Habsiguda.",
-    requiredAction: "RETAIN_AS_PROVISIONAL_APPROXIMATION",
+    evidenceSource: 'Delimitation Order 2008 Schedule XXXI (GHMC Ward 19 part)',
+    sourceLocator: 'Schedule XXXI, Table B, GHMC Ward 19 part',
+    referenceDocument: 'ECI Delimitation Order 2008, Schedule XXXI',
+    evidenceDate: '2008-08-17',
+    whatEvidenceEstablishes: 'POSTAL_DELIVERY_ZONE_MULTI_LOCALITY',
+    spatialRelationship: 'INTERSECTS_SINGLE_AC_PROVISIONAL',
+    matchingMethod: 'DELIMITATION_ORDER_2008_SCHEDULE_XXXI_MUNICIPAL_WARD_CONCORDANCE',
+    verificationStatus: 'PROVISIONAL_APPROXIMATION',
+    evidenceNotEstablished: 'Eastern boundary at Habsiguda touching Uppal AC 47.',
+    knownLimitations: 'Eastern boundary touches Uppal AC 47 at Habsiguda.',
+    requiredAction: 'RETAIN_AS_PROVISIONAL_APPROXIMATION',
   },
   '500018': {
-    locality: "Sanathnagar / Erragadda / Ameerpet / SR Nagar",
-    stateCode: "TS",
-    stateName: "Telangana",
-    district: "Hyderabad",
+    locality: 'Sanathnagar / Erragadda / Ameerpet / SR Nagar',
+    stateCode: 'TS',
+    stateName: 'Telangana',
+    district: 'Hyderabad',
     canonicalAcNo: 62, // Sanathnagar
-    evidenceSource: "Delimitation Order 2008 Schedule XXXI (GHMC Ward 7)",
-    sourceLocator: "Schedule XXXI, Table B, GHMC Ward 7",
-    referenceDocument: "ECI Delimitation Order 2008, Schedule XXXI",
-    evidenceDate: "2008-08-17",
-    whatEvidenceEstablishes: "POSTAL_DELIVERY_ZONE_MULTI_LOCALITY",
-    spatialRelationship: "INTERSECTS_SINGLE_AC_PROVISIONAL",
-    matchingMethod: "DELIMITATION_ORDER_2008_SCHEDULE_XXXI_MUNICIPAL_WARD_CONCORDANCE",
-    verificationStatus: "PROVISIONAL_APPROXIMATION",
-    evidenceNotEstablished: "Ameerpet/SR Nagar boundaries touching Khairatabad AC 60 and Jubilee Hills AC 61.",
-    knownLimitations: "Ameerpet/SR Nagar boundaries touch Khairatabad AC 60 and Jubilee Hills AC 61.",
-    requiredAction: "RETAIN_AS_PROVISIONAL_APPROXIMATION",
+    evidenceSource: 'Delimitation Order 2008 Schedule XXXI (GHMC Ward 7)',
+    sourceLocator: 'Schedule XXXI, Table B, GHMC Ward 7',
+    referenceDocument: 'ECI Delimitation Order 2008, Schedule XXXI',
+    evidenceDate: '2008-08-17',
+    whatEvidenceEstablishes: 'POSTAL_DELIVERY_ZONE_MULTI_LOCALITY',
+    spatialRelationship: 'INTERSECTS_SINGLE_AC_PROVISIONAL',
+    matchingMethod: 'DELIMITATION_ORDER_2008_SCHEDULE_XXXI_MUNICIPAL_WARD_CONCORDANCE',
+    verificationStatus: 'PROVISIONAL_APPROXIMATION',
+    evidenceNotEstablished:
+      'Ameerpet/SR Nagar boundaries touching Khairatabad AC 60 and Jubilee Hills AC 61.',
+    knownLimitations:
+      'Ameerpet/SR Nagar boundaries touch Khairatabad AC 60 and Jubilee Hills AC 61.',
+    requiredAction: 'RETAIN_AS_PROVISIONAL_APPROXIMATION',
   },
   '500020': {
-    locality: "Musheerabad / RTC X Roads / Chikkadpally",
-    stateCode: "TS",
-    stateName: "Telangana",
-    district: "Hyderabad",
+    locality: 'Musheerabad / RTC X Roads / Chikkadpally',
+    stateCode: 'TS',
+    stateName: 'Telangana',
+    district: 'Hyderabad',
     canonicalAcNo: 57, // Musheerabad
-    evidenceSource: "Delimitation Order 2008 Schedule XXXI (GHMC Ward 1)",
-    sourceLocator: "Schedule XXXI, Table B, GHMC Ward 1",
-    referenceDocument: "ECI Delimitation Order 2008, Schedule XXXI",
-    evidenceDate: "2008-08-17",
-    whatEvidenceEstablishes: "POSTAL_DELIVERY_ZONE_MULTI_LOCALITY",
-    spatialRelationship: "INTERSECTS_SINGLE_AC_PROVISIONAL",
-    matchingMethod: "DELIMITATION_ORDER_2008_SCHEDULE_XXXI_MUNICIPAL_WARD_CONCORDANCE",
-    verificationStatus: "PROVISIONAL_APPROXIMATION",
-    evidenceNotEstablished: "RTC X Roads intersection borders Amberpet AC 59.",
-    knownLimitations: "RTC X Roads borders Amberpet AC 59.",
-    requiredAction: "RETAIN_AS_PROVISIONAL_APPROXIMATION",
+    evidenceSource: 'Delimitation Order 2008 Schedule XXXI (GHMC Ward 1)',
+    sourceLocator: 'Schedule XXXI, Table B, GHMC Ward 1',
+    referenceDocument: 'ECI Delimitation Order 2008, Schedule XXXI',
+    evidenceDate: '2008-08-17',
+    whatEvidenceEstablishes: 'POSTAL_DELIVERY_ZONE_MULTI_LOCALITY',
+    spatialRelationship: 'INTERSECTS_SINGLE_AC_PROVISIONAL',
+    matchingMethod: 'DELIMITATION_ORDER_2008_SCHEDULE_XXXI_MUNICIPAL_WARD_CONCORDANCE',
+    verificationStatus: 'PROVISIONAL_APPROXIMATION',
+    evidenceNotEstablished: 'RTC X Roads intersection borders Amberpet AC 59.',
+    knownLimitations: 'RTC X Roads borders Amberpet AC 59.',
+    requiredAction: 'RETAIN_AS_PROVISIONAL_APPROXIMATION',
   },
   '500023': {
-    locality: "Yakutpura / Rein Bazar / Madannapet",
-    stateCode: "TS",
-    stateName: "Telangana",
-    district: "Hyderabad",
+    locality: 'Yakutpura / Rein Bazar / Madannapet',
+    stateCode: 'TS',
+    stateName: 'Telangana',
+    district: 'Hyderabad',
     canonicalAcNo: 68, // Yakutpura
-    evidenceSource: "Delimitation Order 2008 Schedule XXXI (GHMC Ward 16)",
-    sourceLocator: "Schedule XXXI, Table B, GHMC Ward 16",
-    referenceDocument: "ECI Delimitation Order 2008, Schedule XXXI",
-    evidenceDate: "2008-08-17",
-    whatEvidenceEstablishes: "POSTAL_DELIVERY_ZONE_MULTI_LOCALITY",
-    spatialRelationship: "INTERSECTS_SINGLE_AC_PROVISIONAL",
-    matchingMethod: "DELIMITATION_ORDER_2008_SCHEDULE_XXXI_MUNICIPAL_WARD_CONCORDANCE",
-    verificationStatus: "PROVISIONAL_APPROXIMATION",
-    evidenceNotEstablished: "Madannapet border precision touching Malakpet AC 58.",
-    knownLimitations: "Madannapet borders Malakpet AC 58.",
-    requiredAction: "RETAIN_AS_PROVISIONAL_APPROXIMATION",
+    evidenceSource: 'Delimitation Order 2008 Schedule XXXI (GHMC Ward 16)',
+    sourceLocator: 'Schedule XXXI, Table B, GHMC Ward 16',
+    referenceDocument: 'ECI Delimitation Order 2008, Schedule XXXI',
+    evidenceDate: '2008-08-17',
+    whatEvidenceEstablishes: 'POSTAL_DELIVERY_ZONE_MULTI_LOCALITY',
+    spatialRelationship: 'INTERSECTS_SINGLE_AC_PROVISIONAL',
+    matchingMethod: 'DELIMITATION_ORDER_2008_SCHEDULE_XXXI_MUNICIPAL_WARD_CONCORDANCE',
+    verificationStatus: 'PROVISIONAL_APPROXIMATION',
+    evidenceNotEstablished: 'Madannapet border precision touching Malakpet AC 58.',
+    knownLimitations: 'Madannapet borders Malakpet AC 58.',
+    requiredAction: 'RETAIN_AS_PROVISIONAL_APPROXIMATION',
   },
   '500024': {
-    locality: "Malakpet / Saidabad / Moosarambagh",
-    stateCode: "TS",
-    stateName: "Telangana",
-    district: "Hyderabad",
+    locality: 'Malakpet / Saidabad / Moosarambagh',
+    stateCode: 'TS',
+    stateName: 'Telangana',
+    district: 'Hyderabad',
     canonicalAcNo: 58, // Malakpet
-    evidenceSource: "Delimitation Order 2008 Schedule XXXI (GHMC Ward 17)",
-    sourceLocator: "Schedule XXXI, Table B, GHMC Ward 17",
-    referenceDocument: "ECI Delimitation Order 2008, Schedule XXXI",
-    evidenceDate: "2008-08-17",
-    whatEvidenceEstablishes: "POSTAL_DELIVERY_ZONE_MULTI_LOCALITY",
-    spatialRelationship: "INTERSECTS_SINGLE_AC_PROVISIONAL",
-    matchingMethod: "DELIMITATION_ORDER_2008_SCHEDULE_XXXI_MUNICIPAL_WARD_CONCORDANCE",
-    verificationStatus: "PROVISIONAL_APPROXIMATION",
-    evidenceNotEstablished: "Moosarambagh river border touching Amberpet AC 59.",
-    knownLimitations: "Moosarambagh borders Amberpet AC 59.",
-    requiredAction: "RETAIN_AS_PROVISIONAL_APPROXIMATION",
+    evidenceSource: 'Delimitation Order 2008 Schedule XXXI (GHMC Ward 17)',
+    sourceLocator: 'Schedule XXXI, Table B, GHMC Ward 17',
+    referenceDocument: 'ECI Delimitation Order 2008, Schedule XXXI',
+    evidenceDate: '2008-08-17',
+    whatEvidenceEstablishes: 'POSTAL_DELIVERY_ZONE_MULTI_LOCALITY',
+    spatialRelationship: 'INTERSECTS_SINGLE_AC_PROVISIONAL',
+    matchingMethod: 'DELIMITATION_ORDER_2008_SCHEDULE_XXXI_MUNICIPAL_WARD_CONCORDANCE',
+    verificationStatus: 'PROVISIONAL_APPROXIMATION',
+    evidenceNotEstablished: 'Moosarambagh river border touching Amberpet AC 59.',
+    knownLimitations: 'Moosarambagh borders Amberpet AC 59.',
+    requiredAction: 'RETAIN_AS_PROVISIONAL_APPROXIMATION',
   },
   '500025': {
-    locality: "Chilkalguda / Padmarao Nagar / Walker Town",
-    stateCode: "TS",
-    stateName: "Telangana",
-    district: "Hyderabad",
+    locality: 'Chilkalguda / Padmarao Nagar / Walker Town',
+    stateCode: 'TS',
+    stateName: 'Telangana',
+    district: 'Hyderabad',
     canonicalAcNo: 70, // Secunderabad
-    evidenceSource: "Delimitation Order 2008 Schedule XXXI (GHMC Ward 18 part)",
-    sourceLocator: "Schedule XXXI, Table B, GHMC Ward 18 part",
-    referenceDocument: "ECI Delimitation Order 2008, Schedule XXXI",
-    evidenceDate: "2008-08-17",
-    whatEvidenceEstablishes: "POSTAL_DELIVERY_ZONE_MULTI_LOCALITY",
-    spatialRelationship: "INTERSECTS_SINGLE_AC_PROVISIONAL",
-    matchingMethod: "DELIMITATION_ORDER_2008_SCHEDULE_XXXI_MUNICIPAL_WARD_CONCORDANCE",
-    verificationStatus: "PROVISIONAL_APPROXIMATION",
-    evidenceNotEstablished: "Padmarao Nagar perimeter bordering Musheerabad AC 57.",
-    knownLimitations: "Padmarao Nagar borders Musheerabad AC 57.",
-    requiredAction: "RETAIN_AS_PROVISIONAL_APPROXIMATION",
+    evidenceSource: 'Delimitation Order 2008 Schedule XXXI (GHMC Ward 18 part)',
+    sourceLocator: 'Schedule XXXI, Table B, GHMC Ward 18 part',
+    referenceDocument: 'ECI Delimitation Order 2008, Schedule XXXI',
+    evidenceDate: '2008-08-17',
+    whatEvidenceEstablishes: 'POSTAL_DELIVERY_ZONE_MULTI_LOCALITY',
+    spatialRelationship: 'INTERSECTS_SINGLE_AC_PROVISIONAL',
+    matchingMethod: 'DELIMITATION_ORDER_2008_SCHEDULE_XXXI_MUNICIPAL_WARD_CONCORDANCE',
+    verificationStatus: 'PROVISIONAL_APPROXIMATION',
+    evidenceNotEstablished: 'Padmarao Nagar perimeter bordering Musheerabad AC 57.',
+    knownLimitations: 'Padmarao Nagar borders Musheerabad AC 57.',
+    requiredAction: 'RETAIN_AS_PROVISIONAL_APPROXIMATION',
   },
   '500026': {
-    locality: "Karkhana / West Marredpally / Pickett / Cantonment",
-    stateCode: "TS",
-    stateName: "Telangana",
-    district: "Hyderabad / Medchal-Malkajgiri",
+    locality: 'Karkhana / West Marredpally / Pickett / Cantonment',
+    stateCode: 'TS',
+    stateName: 'Telangana',
+    district: 'Hyderabad / Medchal-Malkajgiri',
     canonicalAcNo: 71, // Secunderabad Cantonment
-    evidenceSource: "Delimitation Order 2008 Schedule XXXI (SCB Wards 1 & 2)",
-    sourceLocator: "Schedule XXXI, Table B, SCB Wards 1 & 2",
-    referenceDocument: "ECI Delimitation Order 2008, Schedule XXXI",
-    evidenceDate: "2008-08-17",
-    whatEvidenceEstablishes: "POSTAL_DELIVERY_ZONE_MULTI_LOCALITY",
-    spatialRelationship: "INTERSECTS_SINGLE_AC_PROVISIONAL",
-    matchingMethod: "DELIMITATION_ORDER_2008_SCHEDULE_XXXI_MUNICIPAL_WARD_CONCORDANCE",
-    verificationStatus: "PROVISIONAL_APPROXIMATION",
-    evidenceNotEstablished: "Marredpally split between West (AC 71) and East (AC 70).",
-    knownLimitations: "East Marredpally is located in Secunderabad AC 70.",
-    requiredAction: "RETAIN_AS_PROVISIONAL_APPROXIMATION",
+    evidenceSource: 'Delimitation Order 2008 Schedule XXXI (SCB Wards 1 & 2)',
+    sourceLocator: 'Schedule XXXI, Table B, SCB Wards 1 & 2',
+    referenceDocument: 'ECI Delimitation Order 2008, Schedule XXXI',
+    evidenceDate: '2008-08-17',
+    whatEvidenceEstablishes: 'POSTAL_DELIVERY_ZONE_MULTI_LOCALITY',
+    spatialRelationship: 'INTERSECTS_SINGLE_AC_PROVISIONAL',
+    matchingMethod: 'DELIMITATION_ORDER_2008_SCHEDULE_XXXI_MUNICIPAL_WARD_CONCORDANCE',
+    verificationStatus: 'PROVISIONAL_APPROXIMATION',
+    evidenceNotEstablished: 'Marredpally split between West (AC 71) and East (AC 70).',
+    knownLimitations: 'East Marredpally is located in Secunderabad AC 70.',
+    requiredAction: 'RETAIN_AS_PROVISIONAL_APPROXIMATION',
   },
   '500028': {
-    locality: "Mehdipatnam / Gudimalkapur / Murad Nagar",
-    stateCode: "TS",
-    stateName: "Telangana",
-    district: "Hyderabad",
-    candidateAcNos: [64,63], // Karwan, Nampally
-    evidenceSource: "Delimitation Order 2008 Schedule XXXI (GHMC Ward 11 part)",
-    sourceLocator: "Schedule XXXI, Table B, GHMC Ward 11 part",
-    referenceDocument: "ECI Delimitation Order 2008, Schedule XXXI",
-    evidenceDate: "2008-08-17",
-    whatEvidenceEstablishes: "POSTAL_DELIVERY_ZONE_MULTI_LOCALITY",
-    spatialRelationship: "INTERSECTS_MULTIPLE_ACS",
-    matchingMethod: "DELIMITATION_ORDER_2008_SCHEDULE_XXXI_MUNICIPAL_WARD_CONCORDANCE",
-    verificationStatus: "DOCUMENTED_MULTI_AC_AMBIGUITY",
-    evidenceNotEstablished: "Statutory 1:1 containment; Mehdipatnam major transit corridor bisects Karwan AC 64 and Nampally AC 63.",
-    knownLimitations: "Mehdipatnam major transit corridor bisects Karwan AC 64 and Nampally AC 63; delivery zone covers areas in both constituencies.",
-    requiredAction: "RETAIN_AS_MULTI_AC_AMBIGUITY",
+    locality: 'Mehdipatnam / Gudimalkapur / Murad Nagar',
+    stateCode: 'TS',
+    stateName: 'Telangana',
+    district: 'Hyderabad',
+    candidateAcNos: [64, 63], // Karwan, Nampally
+    evidenceSource: 'Delimitation Order 2008 Schedule XXXI (GHMC Ward 11 part)',
+    sourceLocator: 'Schedule XXXI, Table B, GHMC Ward 11 part',
+    referenceDocument: 'ECI Delimitation Order 2008, Schedule XXXI',
+    evidenceDate: '2008-08-17',
+    whatEvidenceEstablishes: 'POSTAL_DELIVERY_ZONE_MULTI_LOCALITY',
+    spatialRelationship: 'INTERSECTS_MULTIPLE_ACS',
+    matchingMethod: 'DELIMITATION_ORDER_2008_SCHEDULE_XXXI_MUNICIPAL_WARD_CONCORDANCE',
+    verificationStatus: 'DOCUMENTED_MULTI_AC_AMBIGUITY',
+    evidenceNotEstablished:
+      'Statutory 1:1 containment; Mehdipatnam major transit corridor bisects Karwan AC 64 and Nampally AC 63.',
+    knownLimitations:
+      'Mehdipatnam major transit corridor bisects Karwan AC 64 and Nampally AC 63; delivery zone covers areas in both constituencies.',
+    requiredAction: 'RETAIN_AS_MULTI_AC_AMBIGUITY',
   },
   '500033': {
-    locality: "Jubilee Hills / Film Nagar / Road No 36",
-    stateCode: "TS",
-    stateName: "Telangana",
-    district: "Hyderabad",
+    locality: 'Jubilee Hills / Film Nagar / Road No 36',
+    stateCode: 'TS',
+    stateName: 'Telangana',
+    district: 'Hyderabad',
     canonicalAcNo: 61, // Jubilee Hills
-    evidenceSource: "Delimitation Order 2008 Schedule XXXI (GHMC Ward 8 part)",
-    sourceLocator: "Schedule XXXI, Table B, GHMC Ward 8 part",
-    referenceDocument: "ECI Delimitation Order 2008, Schedule XXXI",
-    evidenceDate: "2008-08-17",
-    whatEvidenceEstablishes: "POSTAL_DELIVERY_ZONE_MULTI_LOCALITY",
-    spatialRelationship: "INTERSECTS_SINGLE_AC_PROVISIONAL",
-    matchingMethod: "DELIMITATION_ORDER_2008_SCHEDULE_XXXI_MUNICIPAL_WARD_CONCORDANCE",
-    verificationStatus: "PROVISIONAL_APPROXIMATION",
-    evidenceNotEstablished: "Western delivery beats near Durgam Cheruvu adjoining Serilingampally AC 52.",
-    knownLimitations: "Western delivery beats near Durgam Cheruvu adjoin Serilingampally AC 52.",
-    requiredAction: "RETAIN_AS_PROVISIONAL_APPROXIMATION",
+    evidenceSource: 'Delimitation Order 2008 Schedule XXXI (GHMC Ward 8 part)',
+    sourceLocator: 'Schedule XXXI, Table B, GHMC Ward 8 part',
+    referenceDocument: 'ECI Delimitation Order 2008, Schedule XXXI',
+    evidenceDate: '2008-08-17',
+    whatEvidenceEstablishes: 'POSTAL_DELIVERY_ZONE_MULTI_LOCALITY',
+    spatialRelationship: 'INTERSECTS_SINGLE_AC_PROVISIONAL',
+    matchingMethod: 'DELIMITATION_ORDER_2008_SCHEDULE_XXXI_MUNICIPAL_WARD_CONCORDANCE',
+    verificationStatus: 'PROVISIONAL_APPROXIMATION',
+    evidenceNotEstablished:
+      'Western delivery beats near Durgam Cheruvu adjoining Serilingampally AC 52.',
+    knownLimitations: 'Western delivery beats near Durgam Cheruvu adjoin Serilingampally AC 52.',
+    requiredAction: 'RETAIN_AS_PROVISIONAL_APPROXIMATION',
   },
   '500034': {
-    locality: "Banjara Hills / Somajiguda / Punjagutta",
-    stateCode: "TS",
-    stateName: "Telangana",
-    district: "Hyderabad",
-    candidateAcNos: [60,61], // Khairatabad, Jubilee Hills
-    evidenceSource: "Delimitation Order 2008 Schedule XXXI (GHMC Ward 9 part)",
-    sourceLocator: "Schedule XXXI, Table B, GHMC Ward 9 part",
-    referenceDocument: "ECI Delimitation Order 2008, Schedule XXXI",
-    evidenceDate: "2008-08-17",
-    whatEvidenceEstablishes: "POSTAL_DELIVERY_ZONE_MULTI_LOCALITY",
-    spatialRelationship: "INTERSECTS_MULTIPLE_ACS",
-    matchingMethod: "DELIMITATION_ORDER_2008_SCHEDULE_XXXI_MUNICIPAL_WARD_CONCORDANCE",
-    verificationStatus: "DOCUMENTED_MULTI_AC_AMBIGUITY",
-    evidenceNotEstablished: "Statutory 1:1 containment; Banjara Hills delivery beat spans Roads 1-12 in Khairatabad AC 60 and Roads 10-14 touching Jubilee Hills AC 61.",
-    knownLimitations: "Banjara Hills delivery beat spans Roads 1-12 in Khairatabad AC 60 and Roads 10-14 touching Jubilee Hills AC 61.",
-    requiredAction: "RETAIN_AS_MULTI_AC_AMBIGUITY",
+    locality: 'Banjara Hills / Somajiguda / Punjagutta',
+    stateCode: 'TS',
+    stateName: 'Telangana',
+    district: 'Hyderabad',
+    candidateAcNos: [60, 61], // Khairatabad, Jubilee Hills
+    evidenceSource: 'Delimitation Order 2008 Schedule XXXI (GHMC Ward 9 part)',
+    sourceLocator: 'Schedule XXXI, Table B, GHMC Ward 9 part',
+    referenceDocument: 'ECI Delimitation Order 2008, Schedule XXXI',
+    evidenceDate: '2008-08-17',
+    whatEvidenceEstablishes: 'POSTAL_DELIVERY_ZONE_MULTI_LOCALITY',
+    spatialRelationship: 'INTERSECTS_MULTIPLE_ACS',
+    matchingMethod: 'DELIMITATION_ORDER_2008_SCHEDULE_XXXI_MUNICIPAL_WARD_CONCORDANCE',
+    verificationStatus: 'DOCUMENTED_MULTI_AC_AMBIGUITY',
+    evidenceNotEstablished:
+      'Statutory 1:1 containment; Banjara Hills delivery beat spans Roads 1-12 in Khairatabad AC 60 and Roads 10-14 touching Jubilee Hills AC 61.',
+    knownLimitations:
+      'Banjara Hills delivery beat spans Roads 1-12 in Khairatabad AC 60 and Roads 10-14 touching Jubilee Hills AC 61.',
+    requiredAction: 'RETAIN_AS_MULTI_AC_AMBIGUITY',
   },
   '500047': {
-    locality: "Alwal / Old Alwal / Macha Bolarum",
-    stateCode: "TS",
-    stateName: "Telangana",
-    district: "Medchal-Malkajgiri",
+    locality: 'Alwal / Old Alwal / Macha Bolarum',
+    stateCode: 'TS',
+    stateName: 'Telangana',
+    district: 'Medchal-Malkajgiri',
     canonicalAcNo: 44, // Malkajgiri
-    evidenceSource: "Delimitation Order 2008 Schedule XXXI (Alwal Municipality)",
-    sourceLocator: "Schedule XXXI, Table B, Alwal Municipality",
-    referenceDocument: "ECI Delimitation Order 2008, Schedule XXXI",
-    evidenceDate: "2008-08-17",
-    whatEvidenceEstablishes: "POSTAL_DELIVERY_ZONE_MULTI_LOCALITY",
-    spatialRelationship: "INTERSECTS_SINGLE_AC_PROVISIONAL",
-    matchingMethod: "DELIMITATION_ORDER_2008_SCHEDULE_XXXI_MUNICIPAL_WARD_CONCORDANCE",
-    verificationStatus: "PROVISIONAL_APPROXIMATION",
-    evidenceNotEstablished: "Macha Bolarum border precision touching Secunderabad Cantonment AC 71.",
-    knownLimitations: "Medchal-Malkajgiri district. Macha Bolarum borders Secunderabad Cantonment AC 71.",
-    requiredAction: "RETAIN_AS_PROVISIONAL_APPROXIMATION",
+    evidenceSource: 'Delimitation Order 2008 Schedule XXXI (Alwal Municipality)',
+    sourceLocator: 'Schedule XXXI, Table B, Alwal Municipality',
+    referenceDocument: 'ECI Delimitation Order 2008, Schedule XXXI',
+    evidenceDate: '2008-08-17',
+    whatEvidenceEstablishes: 'POSTAL_DELIVERY_ZONE_MULTI_LOCALITY',
+    spatialRelationship: 'INTERSECTS_SINGLE_AC_PROVISIONAL',
+    matchingMethod: 'DELIMITATION_ORDER_2008_SCHEDULE_XXXI_MUNICIPAL_WARD_CONCORDANCE',
+    verificationStatus: 'PROVISIONAL_APPROXIMATION',
+    evidenceNotEstablished:
+      'Macha Bolarum border precision touching Secunderabad Cantonment AC 71.',
+    knownLimitations:
+      'Medchal-Malkajgiri district. Macha Bolarum borders Secunderabad Cantonment AC 71.',
+    requiredAction: 'RETAIN_AS_PROVISIONAL_APPROXIMATION',
   },
   '500053': {
-    locality: "Chandrayangutta / Barkas / Falaknuma",
-    stateCode: "TS",
-    stateName: "Telangana",
-    district: "Hyderabad",
+    locality: 'Chandrayangutta / Barkas / Falaknuma',
+    stateCode: 'TS',
+    stateName: 'Telangana',
+    district: 'Hyderabad',
     canonicalAcNo: 67, // Chandrayangutta
-    evidenceSource: "Delimitation Order 2008 Schedule XXXI (GHMC Ward 15)",
-    sourceLocator: "Schedule XXXI, Table B, GHMC Ward 15",
-    referenceDocument: "ECI Delimitation Order 2008, Schedule XXXI",
-    evidenceDate: "2008-08-17",
-    whatEvidenceEstablishes: "POSTAL_DELIVERY_ZONE_MULTI_LOCALITY",
-    spatialRelationship: "INTERSECTS_SINGLE_AC_PROVISIONAL",
-    matchingMethod: "DELIMITATION_ORDER_2008_SCHEDULE_XXXI_MUNICIPAL_WARD_CONCORDANCE",
-    verificationStatus: "PROVISIONAL_APPROXIMATION",
-    evidenceNotEstablished: "Falaknuma perimeter border touching Bahadurpura AC 69.",
-    knownLimitations: "Falaknuma area borders Bahadurpura AC 69.",
-    requiredAction: "RETAIN_AS_PROVISIONAL_APPROXIMATION",
-    notes: "Corrected canonical AC number from 69 (Bahadurpura) to 67 (Chandrayangutta).",
+    evidenceSource: 'Delimitation Order 2008 Schedule XXXI (GHMC Ward 15)',
+    sourceLocator: 'Schedule XXXI, Table B, GHMC Ward 15',
+    referenceDocument: 'ECI Delimitation Order 2008, Schedule XXXI',
+    evidenceDate: '2008-08-17',
+    whatEvidenceEstablishes: 'POSTAL_DELIVERY_ZONE_MULTI_LOCALITY',
+    spatialRelationship: 'INTERSECTS_SINGLE_AC_PROVISIONAL',
+    matchingMethod: 'DELIMITATION_ORDER_2008_SCHEDULE_XXXI_MUNICIPAL_WARD_CONCORDANCE',
+    verificationStatus: 'PROVISIONAL_APPROXIMATION',
+    evidenceNotEstablished: 'Falaknuma perimeter border touching Bahadurpura AC 69.',
+    knownLimitations: 'Falaknuma area borders Bahadurpura AC 69.',
+    requiredAction: 'RETAIN_AS_PROVISIONAL_APPROXIMATION',
+    notes: 'Corrected canonical AC number from 69 (Bahadurpura) to 67 (Chandrayangutta).',
   },
   '500056': {
-    locality: "Bowenpally / Hasmathpet / Manovikas Nagar",
-    stateCode: "TS",
-    stateName: "Telangana",
-    district: "Hyderabad / Medchal-Malkajgiri",
-    candidateAcNos: [71,46], // Secunderabad Cantonment, Kukatpally
-    evidenceSource: "Delimitation Order 2008 Schedule XXXI (SCB Ward 1 / Kukatpally circle)",
-    sourceLocator: "Schedule XXXI, Table B, SCB Ward 1 / Kukatpally circle",
-    referenceDocument: "ECI Delimitation Order 2008, Schedule XXXI",
-    evidenceDate: "2008-08-17",
-    whatEvidenceEstablishes: "POSTAL_DELIVERY_ZONE_MULTI_LOCALITY",
-    spatialRelationship: "INTERSECTS_MULTIPLE_ACS",
-    matchingMethod: "DELIMITATION_ORDER_2008_SCHEDULE_XXXI_MUNICIPAL_WARD_CONCORDANCE",
-    verificationStatus: "DOCUMENTED_MULTI_AC_AMBIGUITY",
-    evidenceNotEstablished: "Statutory 1:1 containment; Old Bowenpally is SCB Ward 1 (AC 71), Hasmathpet is GHMC Kukatpally (AC 46).",
-    knownLimitations: "Old Bowenpally falls under SCB Ward 1 (Secunderabad Cantonment AC 71), whereas Hasmathpet falls under GHMC Kukatpally circle (AC 46).",
-    requiredAction: "RETAIN_AS_MULTI_AC_AMBIGUITY",
+    locality: 'Bowenpally / Hasmathpet / Manovikas Nagar',
+    stateCode: 'TS',
+    stateName: 'Telangana',
+    district: 'Hyderabad / Medchal-Malkajgiri',
+    candidateAcNos: [71, 46], // Secunderabad Cantonment, Kukatpally
+    evidenceSource: 'Delimitation Order 2008 Schedule XXXI (SCB Ward 1 / Kukatpally circle)',
+    sourceLocator: 'Schedule XXXI, Table B, SCB Ward 1 / Kukatpally circle',
+    referenceDocument: 'ECI Delimitation Order 2008, Schedule XXXI',
+    evidenceDate: '2008-08-17',
+    whatEvidenceEstablishes: 'POSTAL_DELIVERY_ZONE_MULTI_LOCALITY',
+    spatialRelationship: 'INTERSECTS_MULTIPLE_ACS',
+    matchingMethod: 'DELIMITATION_ORDER_2008_SCHEDULE_XXXI_MUNICIPAL_WARD_CONCORDANCE',
+    verificationStatus: 'DOCUMENTED_MULTI_AC_AMBIGUITY',
+    evidenceNotEstablished:
+      'Statutory 1:1 containment; Old Bowenpally is SCB Ward 1 (AC 71), Hasmathpet is GHMC Kukatpally (AC 46).',
+    knownLimitations:
+      'Old Bowenpally falls under SCB Ward 1 (Secunderabad Cantonment AC 71), whereas Hasmathpet falls under GHMC Kukatpally circle (AC 46).',
+    requiredAction: 'RETAIN_AS_MULTI_AC_AMBIGUITY',
   },
   '500062': {
-    locality: "ECIL / Kapra / A.S. Rao Nagar / Moula Ali",
-    stateCode: "TS",
-    stateName: "Telangana",
-    district: "Medchal-Malkajgiri",
+    locality: 'ECIL / Kapra / A.S. Rao Nagar / Moula Ali',
+    stateCode: 'TS',
+    stateName: 'Telangana',
+    district: 'Medchal-Malkajgiri',
     canonicalAcNo: 47, // Uppal
-    evidenceSource: "Delimitation Order 2008 Schedule XXXI (Kapra Municipality)",
-    sourceLocator: "Schedule XXXI, Table B, Kapra Municipality",
-    referenceDocument: "ECI Delimitation Order 2008, Schedule XXXI",
-    evidenceDate: "2008-08-17",
-    whatEvidenceEstablishes: "POSTAL_DELIVERY_ZONE_MULTI_LOCALITY",
-    spatialRelationship: "INTERSECTS_SINGLE_AC_PROVISIONAL",
-    matchingMethod: "DELIMITATION_ORDER_2008_SCHEDULE_XXXI_MUNICIPAL_WARD_CONCORDANCE",
-    verificationStatus: "PROVISIONAL_APPROXIMATION",
-    evidenceNotEstablished: "Northern boundary precision extending toward Medchal AC 43.",
-    knownLimitations: "Former Kapra municipality in Uppal AC 47. Northern beats extend toward Medchal AC 43. Zero statutory split.",
-    requiredAction: "RETAIN_AS_PROVISIONAL_APPROXIMATION",
+    evidenceSource: 'Delimitation Order 2008 Schedule XXXI (Kapra Municipality)',
+    sourceLocator: 'Schedule XXXI, Table B, Kapra Municipality',
+    referenceDocument: 'ECI Delimitation Order 2008, Schedule XXXI',
+    evidenceDate: '2008-08-17',
+    whatEvidenceEstablishes: 'POSTAL_DELIVERY_ZONE_MULTI_LOCALITY',
+    spatialRelationship: 'INTERSECTS_SINGLE_AC_PROVISIONAL',
+    matchingMethod: 'DELIMITATION_ORDER_2008_SCHEDULE_XXXI_MUNICIPAL_WARD_CONCORDANCE',
+    verificationStatus: 'PROVISIONAL_APPROXIMATION',
+    evidenceNotEstablished: 'Northern boundary precision extending toward Medchal AC 43.',
+    knownLimitations:
+      'Former Kapra municipality in Uppal AC 47. Northern beats extend toward Medchal AC 43. Zero statutory split.',
+    requiredAction: 'RETAIN_AS_PROVISIONAL_APPROXIMATION',
   },
   '500064': {
-    locality: "Bahadurpura / Tadbun / Zoo Park Area",
-    stateCode: "TS",
-    stateName: "Telangana",
-    district: "Hyderabad",
+    locality: 'Bahadurpura / Tadbun / Zoo Park Area',
+    stateCode: 'TS',
+    stateName: 'Telangana',
+    district: 'Hyderabad',
     canonicalAcNo: 69, // Bahadurpura
-    evidenceSource: "Delimitation Order 2008 Schedule XXXI (GHMC Ward 12)",
-    sourceLocator: "Schedule XXXI, Table B, GHMC Ward 12",
-    referenceDocument: "ECI Delimitation Order 2008, Schedule XXXI",
-    evidenceDate: "2008-08-17",
-    whatEvidenceEstablishes: "POSTAL_DELIVERY_ZONE_MULTI_LOCALITY",
-    spatialRelationship: "INTERSECTS_SINGLE_AC_PROVISIONAL",
-    matchingMethod: "DELIMITATION_ORDER_2008_SCHEDULE_XXXI_MUNICIPAL_WARD_CONCORDANCE",
-    verificationStatus: "PROVISIONAL_APPROXIMATION",
-    evidenceNotEstablished: "Borders Karwan AC 64 and Chandrayangutta AC 67.",
-    knownLimitations: "GHMC Ward 12 core. Borders Karwan AC 64 and Chandrayangutta AC 67.",
-    requiredAction: "RETAIN_AS_PROVISIONAL_APPROXIMATION",
-    notes: "Corrected canonical AC number from 66 (Charminar) to 69 (Bahadurpura).",
+    evidenceSource: 'Delimitation Order 2008 Schedule XXXI (GHMC Ward 12)',
+    sourceLocator: 'Schedule XXXI, Table B, GHMC Ward 12',
+    referenceDocument: 'ECI Delimitation Order 2008, Schedule XXXI',
+    evidenceDate: '2008-08-17',
+    whatEvidenceEstablishes: 'POSTAL_DELIVERY_ZONE_MULTI_LOCALITY',
+    spatialRelationship: 'INTERSECTS_SINGLE_AC_PROVISIONAL',
+    matchingMethod: 'DELIMITATION_ORDER_2008_SCHEDULE_XXXI_MUNICIPAL_WARD_CONCORDANCE',
+    verificationStatus: 'PROVISIONAL_APPROXIMATION',
+    evidenceNotEstablished: 'Borders Karwan AC 64 and Chandrayangutta AC 67.',
+    knownLimitations: 'GHMC Ward 12 core. Borders Karwan AC 64 and Chandrayangutta AC 67.',
+    requiredAction: 'RETAIN_AS_PROVISIONAL_APPROXIMATION',
+    notes: 'Corrected canonical AC number from 66 (Charminar) to 69 (Bahadurpura).',
   },
   '500072': {
-    locality: "Kukatpally / KPHB Colony / Balanagar",
-    stateCode: "TS",
-    stateName: "Telangana",
-    district: "Medchal-Malkajgiri",
+    locality: 'Kukatpally / KPHB Colony / Balanagar',
+    stateCode: 'TS',
+    stateName: 'Telangana',
+    district: 'Medchal-Malkajgiri',
     canonicalAcNo: 46, // Kukatpally
-    evidenceSource: "Delimitation Order 2008 Schedule XXXI (Kukatpally Municipality)",
-    sourceLocator: "Schedule XXXI, Table B, Kukatpally Municipality",
-    referenceDocument: "ECI Delimitation Order 2008, Schedule XXXI",
-    evidenceDate: "2008-08-17",
-    whatEvidenceEstablishes: "POSTAL_DELIVERY_ZONE_MULTI_LOCALITY",
-    spatialRelationship: "INTERSECTS_SINGLE_AC_PROVISIONAL",
-    matchingMethod: "DELIMITATION_ORDER_2008_SCHEDULE_XXXI_MUNICIPAL_WARD_CONCORDANCE",
-    verificationStatus: "PROVISIONAL_APPROXIMATION",
-    evidenceNotEstablished: "Peripheral beats near Moosapet bordering Sanathnagar AC 62.",
-    knownLimitations: "Dense suburban constituency (~500k electors). Zero statutory split or new seat.",
-    requiredAction: "RETAIN_AS_PROVISIONAL_APPROXIMATION",
+    evidenceSource: 'Delimitation Order 2008 Schedule XXXI (Kukatpally Municipality)',
+    sourceLocator: 'Schedule XXXI, Table B, Kukatpally Municipality',
+    referenceDocument: 'ECI Delimitation Order 2008, Schedule XXXI',
+    evidenceDate: '2008-08-17',
+    whatEvidenceEstablishes: 'POSTAL_DELIVERY_ZONE_MULTI_LOCALITY',
+    spatialRelationship: 'INTERSECTS_SINGLE_AC_PROVISIONAL',
+    matchingMethod: 'DELIMITATION_ORDER_2008_SCHEDULE_XXXI_MUNICIPAL_WARD_CONCORDANCE',
+    verificationStatus: 'PROVISIONAL_APPROXIMATION',
+    evidenceNotEstablished: 'Peripheral beats near Moosapet bordering Sanathnagar AC 62.',
+    knownLimitations:
+      'Dense suburban constituency (~500k electors). Zero statutory split or new seat.',
+    requiredAction: 'RETAIN_AS_PROVISIONAL_APPROXIMATION',
   },
   '500081': {
-    locality: "Madhapur / Hitec City / Cyber Towers",
-    stateCode: "TS",
-    stateName: "Telangana",
-    district: "Rangareddy",
+    locality: 'Madhapur / Hitec City / Cyber Towers',
+    stateCode: 'TS',
+    stateName: 'Telangana',
+    district: 'Rangareddy',
     canonicalAcNo: 52, // Serilingampally
-    evidenceSource: "Delimitation Order 2008 Schedule XXXI (Serilingampally Municipality part)",
-    sourceLocator: "Schedule XXXI, Table B, Serilingampally Municipality part",
-    referenceDocument: "ECI Delimitation Order 2008, Schedule XXXI",
-    evidenceDate: "2008-08-17",
-    whatEvidenceEstablishes: "POSTAL_DELIVERY_ZONE_MULTI_LOCALITY",
-    spatialRelationship: "INTERSECTS_SINGLE_AC_PROVISIONAL",
-    matchingMethod: "DELIMITATION_ORDER_2008_SCHEDULE_XXXI_MUNICIPAL_WARD_CONCORDANCE",
-    verificationStatus: "PROVISIONAL_APPROXIMATION",
-    evidenceNotEstablished: "Eastern edge precision adjoining Jubilee Hills AC 61.",
-    knownLimitations: "Rangareddy district. Eastern edge adjoins Jubilee Hills AC 61. Zero statutory split.",
-    requiredAction: "RETAIN_AS_PROVISIONAL_APPROXIMATION",
+    evidenceSource: 'Delimitation Order 2008 Schedule XXXI (Serilingampally Municipality part)',
+    sourceLocator: 'Schedule XXXI, Table B, Serilingampally Municipality part',
+    referenceDocument: 'ECI Delimitation Order 2008, Schedule XXXI',
+    evidenceDate: '2008-08-17',
+    whatEvidenceEstablishes: 'POSTAL_DELIVERY_ZONE_MULTI_LOCALITY',
+    spatialRelationship: 'INTERSECTS_SINGLE_AC_PROVISIONAL',
+    matchingMethod: 'DELIMITATION_ORDER_2008_SCHEDULE_XXXI_MUNICIPAL_WARD_CONCORDANCE',
+    verificationStatus: 'PROVISIONAL_APPROXIMATION',
+    evidenceNotEstablished: 'Eastern edge precision adjoining Jubilee Hills AC 61.',
+    knownLimitations:
+      'Rangareddy district. Eastern edge adjoins Jubilee Hills AC 61. Zero statutory split.',
+    requiredAction: 'RETAIN_AS_PROVISIONAL_APPROXIMATION',
   },
   '500084': {
-    locality: "Kondapur / Gachibowli / Financial District",
-    stateCode: "TS",
-    stateName: "Telangana",
-    district: "Rangareddy",
+    locality: 'Kondapur / Gachibowli / Financial District',
+    stateCode: 'TS',
+    stateName: 'Telangana',
+    district: 'Rangareddy',
     canonicalAcNo: 52, // Serilingampally
-    evidenceSource: "Delimitation Order 2008 Schedule XXXI (Serilingampally Municipality part)",
-    sourceLocator: "Schedule XXXI, Table B, Serilingampally Municipality part",
-    referenceDocument: "ECI Delimitation Order 2008, Schedule XXXI",
-    evidenceDate: "2008-08-17",
-    whatEvidenceEstablishes: "POSTAL_DELIVERY_ZONE_MULTI_LOCALITY",
-    spatialRelationship: "INTERSECTS_SINGLE_AC_PROVISIONAL",
-    matchingMethod: "DELIMITATION_ORDER_2008_SCHEDULE_XXXI_MUNICIPAL_WARD_CONCORDANCE",
-    verificationStatus: "PROVISIONAL_APPROXIMATION",
-    evidenceNotEstablished: "Southern border precision touching Rajendranagar AC 53.",
-    knownLimitations: "Major IT corridor. Zero statutory split or new seat.",
-    requiredAction: "RETAIN_AS_PROVISIONAL_APPROXIMATION",
+    evidenceSource: 'Delimitation Order 2008 Schedule XXXI (Serilingampally Municipality part)',
+    sourceLocator: 'Schedule XXXI, Table B, Serilingampally Municipality part',
+    referenceDocument: 'ECI Delimitation Order 2008, Schedule XXXI',
+    evidenceDate: '2008-08-17',
+    whatEvidenceEstablishes: 'POSTAL_DELIVERY_ZONE_MULTI_LOCALITY',
+    spatialRelationship: 'INTERSECTS_SINGLE_AC_PROVISIONAL',
+    matchingMethod: 'DELIMITATION_ORDER_2008_SCHEDULE_XXXI_MUNICIPAL_WARD_CONCORDANCE',
+    verificationStatus: 'PROVISIONAL_APPROXIMATION',
+    evidenceNotEstablished: 'Southern border precision touching Rajendranagar AC 53.',
+    knownLimitations: 'Major IT corridor. Zero statutory split or new seat.',
+    requiredAction: 'RETAIN_AS_PROVISIONAL_APPROXIMATION',
   },
   '500090': {
-    locality: "Nizampet / Pragathi Nagar / Bachupally",
-    stateCode: "TS",
-    stateName: "Telangana",
-    district: "Medchal-Malkajgiri",
+    locality: 'Nizampet / Pragathi Nagar / Bachupally',
+    stateCode: 'TS',
+    stateName: 'Telangana',
+    district: 'Medchal-Malkajgiri',
     canonicalAcNo: 45, // Quthbullapur
-    evidenceSource: "Delimitation Order 2008 Schedule XXXI (Quthbullapur Mandal part)",
-    sourceLocator: "Schedule XXXI, Table B, Quthbullapur Mandal part",
-    referenceDocument: "ECI Delimitation Order 2008, Schedule XXXI",
-    evidenceDate: "2008-08-17",
-    whatEvidenceEstablishes: "POSTAL_DELIVERY_ZONE_MULTI_LOCALITY",
-    spatialRelationship: "INTERSECTS_SINGLE_AC_PROVISIONAL",
-    matchingMethod: "DELIMITATION_ORDER_2008_SCHEDULE_XXXI_MUNICIPAL_WARD_CONCORDANCE",
-    verificationStatus: "PROVISIONAL_APPROXIMATION",
-    evidenceNotEstablished: "Southern boundary precision bordering Kukatpally AC 46.",
-    knownLimitations: "Medchal-Malkajgiri district. Borders Kukatpally AC 46. Zero statutory split.",
-    requiredAction: "RETAIN_AS_PROVISIONAL_APPROXIMATION",
+    evidenceSource: 'Delimitation Order 2008 Schedule XXXI (Quthbullapur Mandal part)',
+    sourceLocator: 'Schedule XXXI, Table B, Quthbullapur Mandal part',
+    referenceDocument: 'ECI Delimitation Order 2008, Schedule XXXI',
+    evidenceDate: '2008-08-17',
+    whatEvidenceEstablishes: 'POSTAL_DELIVERY_ZONE_MULTI_LOCALITY',
+    spatialRelationship: 'INTERSECTS_SINGLE_AC_PROVISIONAL',
+    matchingMethod: 'DELIMITATION_ORDER_2008_SCHEDULE_XXXI_MUNICIPAL_WARD_CONCORDANCE',
+    verificationStatus: 'PROVISIONAL_APPROXIMATION',
+    evidenceNotEstablished: 'Southern boundary precision bordering Kukatpally AC 46.',
+    knownLimitations:
+      'Medchal-Malkajgiri district. Borders Kukatpally AC 46. Zero statutory split.',
+    requiredAction: 'RETAIN_AS_PROVISIONAL_APPROXIMATION',
   },
   '520001': {
-    locality: "Vijayawada One Town / Governorpet",
-    stateCode: "AP",
-    stateName: "Andhra Pradesh",
-    district: "NTR (Krishna)",
+    locality: 'Vijayawada One Town / Governorpet',
+    stateCode: 'AP',
+    stateName: 'Andhra Pradesh',
+    district: 'NTR (Krishna)',
     canonicalAcNo: 79, // Vijayawada West
-    evidenceSource: "Delimitation Order 2008 Schedule II (VMC Wards 1 to 14)",
-    sourceLocator: "Schedule II, Table B, VMC Wards 1 to 14",
-    referenceDocument: "ECI Delimitation Order 2008, Schedule II (Andhra Pradesh)",
-    evidenceDate: "2008-08-17",
-    whatEvidenceEstablishes: "POSTAL_DELIVERY_ZONE_MULTI_LOCALITY",
-    spatialRelationship: "INTERSECTS_SINGLE_AC_PROVISIONAL",
-    matchingMethod: "DELIMITATION_ORDER_2008_SCHEDULE_II_MUNICIPAL_WARD_CONCORDANCE",
-    verificationStatus: "PROVISIONAL_APPROXIMATION",
-    evidenceNotEstablished: "Eastern beat boundaries touching Vijayawada Central AC 80.",
-    knownLimitations: "Krishna/NTR district. Wards 1 to 14 of VMC. Eastern beats touch Vijayawada Central AC 80.",
-    requiredAction: "RETAIN_AS_PROVISIONAL_APPROXIMATION",
-    notes: "Corrected canonical AC number from 80 (Vijayawada Central) to 79 (Vijayawada West).",
+    evidenceSource: 'Delimitation Order 2008 Schedule II (VMC Wards 1 to 14)',
+    sourceLocator: 'Schedule II, Table B, VMC Wards 1 to 14',
+    referenceDocument: 'ECI Delimitation Order 2008, Schedule II (Andhra Pradesh)',
+    evidenceDate: '2008-08-17',
+    whatEvidenceEstablishes: 'POSTAL_DELIVERY_ZONE_MULTI_LOCALITY',
+    spatialRelationship: 'INTERSECTS_SINGLE_AC_PROVISIONAL',
+    matchingMethod: 'DELIMITATION_ORDER_2008_SCHEDULE_II_MUNICIPAL_WARD_CONCORDANCE',
+    verificationStatus: 'PROVISIONAL_APPROXIMATION',
+    evidenceNotEstablished: 'Eastern beat boundaries touching Vijayawada Central AC 80.',
+    knownLimitations:
+      'Krishna/NTR district. Wards 1 to 14 of VMC. Eastern beats touch Vijayawada Central AC 80.',
+    requiredAction: 'RETAIN_AS_PROVISIONAL_APPROXIMATION',
+    notes: 'Corrected canonical AC number from 80 (Vijayawada Central) to 79 (Vijayawada West).',
   },
   '520002': {
-    locality: "Vijayawada Two Town / Suryaraopet",
-    stateCode: "AP",
-    stateName: "Andhra Pradesh",
-    district: "NTR (Krishna)",
+    locality: 'Vijayawada Two Town / Suryaraopet',
+    stateCode: 'AP',
+    stateName: 'Andhra Pradesh',
+    district: 'NTR (Krishna)',
     canonicalAcNo: 80, // Vijayawada Central
-    evidenceSource: "Delimitation Order 2008 Schedule II (VMC Wards 15 to 28)",
-    sourceLocator: "Schedule II, Table B, VMC Wards 15 to 28",
-    referenceDocument: "ECI Delimitation Order 2008, Schedule II (Andhra Pradesh)",
-    evidenceDate: "2008-08-17",
-    whatEvidenceEstablishes: "POSTAL_DELIVERY_ZONE_MULTI_LOCALITY",
-    spatialRelationship: "INTERSECTS_SINGLE_AC_PROVISIONAL",
-    matchingMethod: "DELIMITATION_ORDER_2008_SCHEDULE_II_MUNICIPAL_WARD_CONCORDANCE",
-    verificationStatus: "PROVISIONAL_APPROXIMATION",
-    evidenceNotEstablished: "Eastern boundary precision touching Vijayawada East AC 81.",
-    knownLimitations: "VMC Wards 15 to 28. High municipal ward density.",
-    requiredAction: "RETAIN_AS_PROVISIONAL_APPROXIMATION",
-    notes: "Corrected canonical AC number from 81 (Vijayawada East) to 80 (Vijayawada Central).",
+    evidenceSource: 'Delimitation Order 2008 Schedule II (VMC Wards 15 to 28)',
+    sourceLocator: 'Schedule II, Table B, VMC Wards 15 to 28',
+    referenceDocument: 'ECI Delimitation Order 2008, Schedule II (Andhra Pradesh)',
+    evidenceDate: '2008-08-17',
+    whatEvidenceEstablishes: 'POSTAL_DELIVERY_ZONE_MULTI_LOCALITY',
+    spatialRelationship: 'INTERSECTS_SINGLE_AC_PROVISIONAL',
+    matchingMethod: 'DELIMITATION_ORDER_2008_SCHEDULE_II_MUNICIPAL_WARD_CONCORDANCE',
+    verificationStatus: 'PROVISIONAL_APPROXIMATION',
+    evidenceNotEstablished: 'Eastern boundary precision touching Vijayawada East AC 81.',
+    knownLimitations: 'VMC Wards 15 to 28. High municipal ward density.',
+    requiredAction: 'RETAIN_AS_PROVISIONAL_APPROXIMATION',
+    notes: 'Corrected canonical AC number from 81 (Vijayawada East) to 80 (Vijayawada Central).',
   },
   '530001': {
-    locality: "Visakhapatnam Town / Port Area",
-    stateCode: "AP",
-    stateName: "Andhra Pradesh",
-    district: "Visakhapatnam",
+    locality: 'Visakhapatnam Town / Port Area',
+    stateCode: 'AP',
+    stateName: 'Andhra Pradesh',
+    district: 'Visakhapatnam',
     canonicalAcNo: 22, // Visakhapatnam South
-    evidenceSource: "Delimitation Order 2008 Schedule II (GVMC southern wards)",
-    sourceLocator: "Schedule II, Table B, GVMC southern/commercial wards",
-    referenceDocument: "ECI Delimitation Order 2008, Schedule II (Andhra Pradesh)",
-    evidenceDate: "2008-08-17",
-    whatEvidenceEstablishes: "POSTAL_DELIVERY_ZONE_MULTI_LOCALITY",
-    spatialRelationship: "INTERSECTS_SINGLE_AC_PROVISIONAL",
-    matchingMethod: "DELIMITATION_ORDER_2008_SCHEDULE_II_MUNICIPAL_WARD_CONCORDANCE",
-    verificationStatus: "PROVISIONAL_APPROXIMATION",
-    evidenceNotEstablished: "Exact industrial/port perimeter intersection with Gajuwaka AC 25.",
-    knownLimitations: "GVMC southern wards and port trust industrial perimeter.",
-    requiredAction: "RETAIN_AS_PROVISIONAL_APPROXIMATION",
-    notes: "Corrected canonical AC number from 21 (Visakhapatnam East) to 22 (Visakhapatnam South).",
+    evidenceSource: 'Delimitation Order 2008 Schedule II (GVMC southern wards)',
+    sourceLocator: 'Schedule II, Table B, GVMC southern/commercial wards',
+    referenceDocument: 'ECI Delimitation Order 2008, Schedule II (Andhra Pradesh)',
+    evidenceDate: '2008-08-17',
+    whatEvidenceEstablishes: 'POSTAL_DELIVERY_ZONE_MULTI_LOCALITY',
+    spatialRelationship: 'INTERSECTS_SINGLE_AC_PROVISIONAL',
+    matchingMethod: 'DELIMITATION_ORDER_2008_SCHEDULE_II_MUNICIPAL_WARD_CONCORDANCE',
+    verificationStatus: 'PROVISIONAL_APPROXIMATION',
+    evidenceNotEstablished: 'Exact industrial/port perimeter intersection with Gajuwaka AC 25.',
+    knownLimitations: 'GVMC southern wards and port trust industrial perimeter.',
+    requiredAction: 'RETAIN_AS_PROVISIONAL_APPROXIMATION',
+    notes:
+      'Corrected canonical AC number from 21 (Visakhapatnam East) to 22 (Visakhapatnam South).',
   },
   '530002': {
-    locality: "One Town / Jagadamba / Poorna Market",
-    stateCode: "AP",
-    stateName: "Andhra Pradesh",
-    district: "Visakhapatnam",
+    locality: 'One Town / Jagadamba / Poorna Market',
+    stateCode: 'AP',
+    stateName: 'Andhra Pradesh',
+    district: 'Visakhapatnam',
     canonicalAcNo: 22, // Visakhapatnam South
-    evidenceSource: "Delimitation Order 2008 Schedule II (GVMC commercial wards)",
-    sourceLocator: "Schedule II, Table B, GVMC southern/commercial wards",
-    referenceDocument: "ECI Delimitation Order 2008, Schedule II (Andhra Pradesh)",
-    evidenceDate: "2008-08-17",
-    whatEvidenceEstablishes: "POSTAL_DELIVERY_ZONE_MULTI_LOCALITY",
-    spatialRelationship: "INTERSECTS_SINGLE_AC_PROVISIONAL",
-    matchingMethod: "DELIMITATION_ORDER_2008_SCHEDULE_II_MUNICIPAL_WARD_CONCORDANCE",
-    verificationStatus: "PROVISIONAL_APPROXIMATION",
-    evidenceNotEstablished: "Northern boundary precision bordering Visakhapatnam East AC 21.",
-    knownLimitations: "Commercial center. Borders Visakhapatnam East AC 21.",
-    requiredAction: "RETAIN_AS_PROVISIONAL_APPROXIMATION",
-    notes: "Corrected canonical AC number from 21 (Visakhapatnam East) to 22 (Visakhapatnam South).",
+    evidenceSource: 'Delimitation Order 2008 Schedule II (GVMC commercial wards)',
+    sourceLocator: 'Schedule II, Table B, GVMC southern/commercial wards',
+    referenceDocument: 'ECI Delimitation Order 2008, Schedule II (Andhra Pradesh)',
+    evidenceDate: '2008-08-17',
+    whatEvidenceEstablishes: 'POSTAL_DELIVERY_ZONE_MULTI_LOCALITY',
+    spatialRelationship: 'INTERSECTS_SINGLE_AC_PROVISIONAL',
+    matchingMethod: 'DELIMITATION_ORDER_2008_SCHEDULE_II_MUNICIPAL_WARD_CONCORDANCE',
+    verificationStatus: 'PROVISIONAL_APPROXIMATION',
+    evidenceNotEstablished: 'Northern boundary precision bordering Visakhapatnam East AC 21.',
+    knownLimitations: 'Commercial center. Borders Visakhapatnam East AC 21.',
+    requiredAction: 'RETAIN_AS_PROVISIONAL_APPROXIMATION',
+    notes:
+      'Corrected canonical AC number from 21 (Visakhapatnam East) to 22 (Visakhapatnam South).',
   },
   '517501': {
-    locality: "Tirupati Town / KT Road / Bhavani Nagar",
-    stateCode: "AP",
-    stateName: "Andhra Pradesh",
-    district: "Tirupati",
+    locality: 'Tirupati Town / KT Road / Bhavani Nagar',
+    stateCode: 'AP',
+    stateName: 'Andhra Pradesh',
+    district: 'Tirupati',
     canonicalAcNo: 167, // Tirupati
-    evidenceSource: "Delimitation Order 2008 Schedule II (Tirupati Municipality)",
-    sourceLocator: "Schedule II, Table B, Tirupati Municipality",
-    referenceDocument: "ECI Delimitation Order 2008, Schedule II (Andhra Pradesh)",
-    evidenceDate: "2008-08-17",
-    whatEvidenceEstablishes: "POSTAL_DELIVERY_ZONE_MULTI_LOCALITY",
-    spatialRelationship: "INTERSECTS_SINGLE_AC_PROVISIONAL",
-    matchingMethod: "DELIMITATION_ORDER_2008_SCHEDULE_II_MUNICIPAL_WARD_CONCORDANCE",
-    verificationStatus: "PROVISIONAL_APPROXIMATION",
-    evidenceNotEstablished: "Surrounding rural mandal boundary in Chandragiri AC 166.",
-    knownLimitations: "Tirupati Municipal Corporation urban core. Surrounding rural mandal in Chandragiri AC 166. Zero statutory split.",
-    requiredAction: "RETAIN_AS_PROVISIONAL_APPROXIMATION",
-    notes: "Corrected canonical AC number from 168 (Srikalahasti) to 167 (Tirupati).",
+    evidenceSource: 'Delimitation Order 2008 Schedule II (Tirupati Municipality)',
+    sourceLocator: 'Schedule II, Table B, Tirupati Municipality',
+    referenceDocument: 'ECI Delimitation Order 2008, Schedule II (Andhra Pradesh)',
+    evidenceDate: '2008-08-17',
+    whatEvidenceEstablishes: 'POSTAL_DELIVERY_ZONE_MULTI_LOCALITY',
+    spatialRelationship: 'INTERSECTS_SINGLE_AC_PROVISIONAL',
+    matchingMethod: 'DELIMITATION_ORDER_2008_SCHEDULE_II_MUNICIPAL_WARD_CONCORDANCE',
+    verificationStatus: 'PROVISIONAL_APPROXIMATION',
+    evidenceNotEstablished: 'Surrounding rural mandal boundary in Chandragiri AC 166.',
+    knownLimitations:
+      'Tirupati Municipal Corporation urban core. Surrounding rural mandal in Chandragiri AC 166. Zero statutory split.',
+    requiredAction: 'RETAIN_AS_PROVISIONAL_APPROXIMATION',
+    notes: 'Corrected canonical AC number from 168 (Srikalahasti) to 167 (Tirupati).',
   },
   '518001': {
-    locality: "Kurnool H.O / Park Road / Collectorate",
-    stateCode: "AP",
-    stateName: "Andhra Pradesh",
-    district: "Kurnool",
+    locality: 'Kurnool H.O / Park Road / Collectorate',
+    stateCode: 'AP',
+    stateName: 'Andhra Pradesh',
+    district: 'Kurnool',
     canonicalAcNo: 137, // Kurnool
-    evidenceSource: "Delimitation Order 2008 Schedule II (Kurnool Municipality)",
-    sourceLocator: "Schedule II, Table B, Kurnool Municipality",
-    referenceDocument: "ECI Delimitation Order 2008, Schedule II (Andhra Pradesh)",
-    evidenceDate: "2008-08-17",
-    whatEvidenceEstablishes: "POSTAL_HEAD_OFFICE_POINT",
-    spatialRelationship: "INTERSECTS_SINGLE_AC_PROVISIONAL",
-    matchingMethod: "DELIMITATION_ORDER_2008_SCHEDULE_II_MUNICIPAL_WARD_CONCORDANCE",
-    verificationStatus: "PROVISIONAL_APPROXIMATION",
-    evidenceNotEstablished: "Peripheral beat boundaries adjoining Panyam AC 138.",
-    knownLimitations: "Kurnool Municipal Corporation core. Peripheral beats adjoin Panyam AC 138. Zero statutory split.",
-    requiredAction: "RETAIN_AS_PROVISIONAL_APPROXIMATION",
+    evidenceSource: 'Delimitation Order 2008 Schedule II (Kurnool Municipality)',
+    sourceLocator: 'Schedule II, Table B, Kurnool Municipality',
+    referenceDocument: 'ECI Delimitation Order 2008, Schedule II (Andhra Pradesh)',
+    evidenceDate: '2008-08-17',
+    whatEvidenceEstablishes: 'POSTAL_HEAD_OFFICE_POINT',
+    spatialRelationship: 'INTERSECTS_SINGLE_AC_PROVISIONAL',
+    matchingMethod: 'DELIMITATION_ORDER_2008_SCHEDULE_II_MUNICIPAL_WARD_CONCORDANCE',
+    verificationStatus: 'PROVISIONAL_APPROXIMATION',
+    evidenceNotEstablished: 'Peripheral beat boundaries adjoining Panyam AC 138.',
+    knownLimitations:
+      'Kurnool Municipal Corporation core. Peripheral beats adjoin Panyam AC 138. Zero statutory split.',
+    requiredAction: 'RETAIN_AS_PROVISIONAL_APPROXIMATION',
   },
 };
 
 // ─── PIN CODE DIRECTORY (Postal Index Number mapping) ───
 // Approximate Indian Postal Zone Directory across postal circles (Zones 1-8)
-export const PIN_PREFIX_MAPPING: Record<string, { stateCode: string; stateName: string; district: string; region: string }> = {
+export const PIN_PREFIX_MAPPING: Record<
+  string,
+  { stateCode: string; stateName: string; district: string; region: string }
+> = {
   // Zone 1: Northern (Delhi, Haryana, Punjab, Himachal Pradesh, Jammu & Kashmir, Chandigarh)
-  '110': { stateCode: 'DL', stateName: 'Delhi', district: 'New Delhi', region: 'National Capital Territory' },
+  '110': {
+    stateCode: 'DL',
+    stateName: 'Delhi',
+    district: 'New Delhi',
+    region: 'National Capital Territory',
+  },
   '111': { stateCode: 'DL', stateName: 'Delhi', district: 'South Delhi', region: 'Delhi South' },
   '121': { stateCode: 'HR', stateName: 'Haryana', district: 'Faridabad', region: 'NCR Haryana' },
   '122': { stateCode: 'HR', stateName: 'Haryana', district: 'Gurugram', region: 'NCR Haryana' },
@@ -916,140 +954,535 @@ export const PIN_PREFIX_MAPPING: Record<string, { stateCode: string; stateName: 
   '144': { stateCode: 'PB', stateName: 'Punjab', district: 'Jalandhar', region: 'Doaba' },
   '147': { stateCode: 'PB', stateName: 'Punjab', district: 'Patiala', region: 'Malwa East' },
   '151': { stateCode: 'PB', stateName: 'Punjab', district: 'Bathinda', region: 'Malwa South' },
-  '160': { stateCode: 'PB', stateName: 'Punjab', district: 'Chandigarh / Mohali', region: 'Chandigarh Capital Region' },
-  '171': { stateCode: 'HP', stateName: 'Himachal Pradesh', district: 'Shimla', region: 'Shimla Hills' },
-  '172': { stateCode: 'HP', stateName: 'Himachal Pradesh', district: 'Kinnaur', region: 'Tribal Himachal' },
-  '173': { stateCode: 'HP', stateName: 'Himachal Pradesh', district: 'Solan', region: 'Lower Himachal' },
-  '175': { stateCode: 'HP', stateName: 'Himachal Pradesh', district: 'Mandi', region: 'Central Himachal' },
-  '176': { stateCode: 'HP', stateName: 'Himachal Pradesh', district: 'Kangra', region: 'Kangra Valley' },
-  '180': { stateCode: 'JK', stateName: 'Jammu & Kashmir', district: 'Jammu', region: 'Jammu Urban' },
-  '182': { stateCode: 'JK', stateName: 'Jammu & Kashmir', district: 'Udhampur', region: 'Jammu Central' },
-  '184': { stateCode: 'JK', stateName: 'Jammu & Kashmir', district: 'Kathua', region: 'Jammu South' },
-  '190': { stateCode: 'JK', stateName: 'Jammu & Kashmir', district: 'Srinagar', region: 'Kashmir Central' },
-  '192': { stateCode: 'JK', stateName: 'Jammu & Kashmir', district: 'Anantnag', region: 'Kashmir South' },
-  '193': { stateCode: 'JK', stateName: 'Jammu & Kashmir', district: 'Baramulla', region: 'Kashmir North' },
+  '160': {
+    stateCode: 'PB',
+    stateName: 'Punjab',
+    district: 'Chandigarh / Mohali',
+    region: 'Chandigarh Capital Region',
+  },
+  '171': {
+    stateCode: 'HP',
+    stateName: 'Himachal Pradesh',
+    district: 'Shimla',
+    region: 'Shimla Hills',
+  },
+  '172': {
+    stateCode: 'HP',
+    stateName: 'Himachal Pradesh',
+    district: 'Kinnaur',
+    region: 'Tribal Himachal',
+  },
+  '173': {
+    stateCode: 'HP',
+    stateName: 'Himachal Pradesh',
+    district: 'Solan',
+    region: 'Lower Himachal',
+  },
+  '175': {
+    stateCode: 'HP',
+    stateName: 'Himachal Pradesh',
+    district: 'Mandi',
+    region: 'Central Himachal',
+  },
+  '176': {
+    stateCode: 'HP',
+    stateName: 'Himachal Pradesh',
+    district: 'Kangra',
+    region: 'Kangra Valley',
+  },
+  '180': {
+    stateCode: 'JK',
+    stateName: 'Jammu & Kashmir',
+    district: 'Jammu',
+    region: 'Jammu Urban',
+  },
+  '182': {
+    stateCode: 'JK',
+    stateName: 'Jammu & Kashmir',
+    district: 'Udhampur',
+    region: 'Jammu Central',
+  },
+  '184': {
+    stateCode: 'JK',
+    stateName: 'Jammu & Kashmir',
+    district: 'Kathua',
+    region: 'Jammu South',
+  },
+  '190': {
+    stateCode: 'JK',
+    stateName: 'Jammu & Kashmir',
+    district: 'Srinagar',
+    region: 'Kashmir Central',
+  },
+  '192': {
+    stateCode: 'JK',
+    stateName: 'Jammu & Kashmir',
+    district: 'Anantnag',
+    region: 'Kashmir South',
+  },
+  '193': {
+    stateCode: 'JK',
+    stateName: 'Jammu & Kashmir',
+    district: 'Baramulla',
+    region: 'Kashmir North',
+  },
 
   // Zone 2: Northern Central (Uttar Pradesh, Uttarakhand)
-  '201': { stateCode: 'UP', stateName: 'Uttar Pradesh', district: 'Ghaziabad / Gautam Buddha Nagar', region: 'NCR West UP' },
+  '201': {
+    stateCode: 'UP',
+    stateName: 'Uttar Pradesh',
+    district: 'Ghaziabad / Gautam Buddha Nagar',
+    region: 'NCR West UP',
+  },
   '202': { stateCode: 'UP', stateName: 'Uttar Pradesh', district: 'Aligarh', region: 'Braj West' },
-  '208': { stateCode: 'UP', stateName: 'Uttar Pradesh', district: 'Kanpur Nagar', region: 'Central UP' },
-  '209': { stateCode: 'UP', stateName: 'Uttar Pradesh', district: 'Kanpur Dehat', region: 'Central UP Rural' },
-  '211': { stateCode: 'UP', stateName: 'Uttar Pradesh', district: 'Prayagraj', region: 'Lower Doab' },
-  '221': { stateCode: 'UP', stateName: 'Uttar Pradesh', district: 'Varanasi', region: 'Purvanchal South' },
-  '226': { stateCode: 'UP', stateName: 'Uttar Pradesh', district: 'Lucknow', region: 'Awadh Central' },
-  '244': { stateCode: 'UP', stateName: 'Uttar Pradesh', district: 'Moradabad', region: 'Rohilkhand' },
+  '208': {
+    stateCode: 'UP',
+    stateName: 'Uttar Pradesh',
+    district: 'Kanpur Nagar',
+    region: 'Central UP',
+  },
+  '209': {
+    stateCode: 'UP',
+    stateName: 'Uttar Pradesh',
+    district: 'Kanpur Dehat',
+    region: 'Central UP Rural',
+  },
+  '211': {
+    stateCode: 'UP',
+    stateName: 'Uttar Pradesh',
+    district: 'Prayagraj',
+    region: 'Lower Doab',
+  },
+  '221': {
+    stateCode: 'UP',
+    stateName: 'Uttar Pradesh',
+    district: 'Varanasi',
+    region: 'Purvanchal South',
+  },
+  '226': {
+    stateCode: 'UP',
+    stateName: 'Uttar Pradesh',
+    district: 'Lucknow',
+    region: 'Awadh Central',
+  },
+  '244': {
+    stateCode: 'UP',
+    stateName: 'Uttar Pradesh',
+    district: 'Moradabad',
+    region: 'Rohilkhand',
+  },
   '250': { stateCode: 'UP', stateName: 'Uttar Pradesh', district: 'Meerut', region: 'Upper Doab' },
-  '273': { stateCode: 'UP', stateName: 'Uttar Pradesh', district: 'Gorakhpur', region: 'Purvanchal North' },
+  '273': {
+    stateCode: 'UP',
+    stateName: 'Uttar Pradesh',
+    district: 'Gorakhpur',
+    region: 'Purvanchal North',
+  },
   '282': { stateCode: 'UP', stateName: 'Uttar Pradesh', district: 'Agra', region: 'Braj' },
-  '248': { stateCode: 'UK', stateName: 'Uttarakhand', district: 'Dehradun', region: 'Garhwal Foothills' },
-  '249': { stateCode: 'UK', stateName: 'Uttarakhand', district: 'Haridwar / Rishikesh', region: 'Garhwal Plains' },
-  '262': { stateCode: 'UK', stateName: 'Uttarakhand', district: 'Pithoragarh', region: 'Kumaon Hills' },
-  '263': { stateCode: 'UK', stateName: 'Uttarakhand', district: 'Nainital', region: 'Kumaon Central' },
+  '248': {
+    stateCode: 'UK',
+    stateName: 'Uttarakhand',
+    district: 'Dehradun',
+    region: 'Garhwal Foothills',
+  },
+  '249': {
+    stateCode: 'UK',
+    stateName: 'Uttarakhand',
+    district: 'Haridwar / Rishikesh',
+    region: 'Garhwal Plains',
+  },
+  '262': {
+    stateCode: 'UK',
+    stateName: 'Uttarakhand',
+    district: 'Pithoragarh',
+    region: 'Kumaon Hills',
+  },
+  '263': {
+    stateCode: 'UK',
+    stateName: 'Uttarakhand',
+    district: 'Nainital',
+    region: 'Kumaon Central',
+  },
 
   // Zone 3: Western (Rajasthan, Gujarat)
   '301': { stateCode: 'RJ', stateName: 'Rajasthan', district: 'Alwar', region: 'Mewat / NCR' },
-  '302': { stateCode: 'RJ', stateName: 'Rajasthan', district: 'Jaipur', region: 'Dhundhar Central' },
-  '305': { stateCode: 'RJ', stateName: 'Rajasthan', district: 'Ajmer', region: 'Central Rajasthan' },
+  '302': {
+    stateCode: 'RJ',
+    stateName: 'Rajasthan',
+    district: 'Jaipur',
+    region: 'Dhundhar Central',
+  },
+  '305': {
+    stateCode: 'RJ',
+    stateName: 'Rajasthan',
+    district: 'Ajmer',
+    region: 'Central Rajasthan',
+  },
   '313': { stateCode: 'RJ', stateName: 'Rajasthan', district: 'Udaipur', region: 'Mewar' },
   '324': { stateCode: 'RJ', stateName: 'Rajasthan', district: 'Kota', region: 'Hadoti' },
   '342': { stateCode: 'RJ', stateName: 'Rajasthan', district: 'Jodhpur', region: 'Marwar' },
   '360': { stateCode: 'GJ', stateName: 'Gujarat', district: 'Rajkot', region: 'Saurashtra' },
-  '380': { stateCode: 'GJ', stateName: 'Gujarat', district: 'Ahmedabad', region: 'Central Gujarat' },
-  '382': { stateCode: 'GJ', stateName: 'Gujarat', district: 'Gandhinagar', region: 'Capital Region' },
+  '380': {
+    stateCode: 'GJ',
+    stateName: 'Gujarat',
+    district: 'Ahmedabad',
+    region: 'Central Gujarat',
+  },
+  '382': {
+    stateCode: 'GJ',
+    stateName: 'Gujarat',
+    district: 'Gandhinagar',
+    region: 'Capital Region',
+  },
   '390': { stateCode: 'GJ', stateName: 'Gujarat', district: 'Vadodara', region: 'Central Gujarat' },
   '395': { stateCode: 'GJ', stateName: 'Gujarat', district: 'Surat', region: 'South Gujarat' },
 
   // Zone 4: West Central (Maharashtra, Goa, Madhya Pradesh, Chhattisgarh)
   '400': { stateCode: 'MH', stateName: 'Maharashtra', district: 'Mumbai', region: 'Konkan Urban' },
-  '401': { stateCode: 'MH', stateName: 'Maharashtra', district: 'Thane / Palghar', region: 'Konkan Outer' },
-  '403': { stateCode: 'GA', stateName: 'Goa', district: 'North / South Goa', region: 'Goa Coastal' },
+  '401': {
+    stateCode: 'MH',
+    stateName: 'Maharashtra',
+    district: 'Thane / Palghar',
+    region: 'Konkan Outer',
+  },
+  '403': {
+    stateCode: 'GA',
+    stateName: 'Goa',
+    district: 'North / South Goa',
+    region: 'Goa Coastal',
+  },
   '411': { stateCode: 'MH', stateName: 'Maharashtra', district: 'Pune', region: 'Desh West' },
-  '416': { stateCode: 'MH', stateName: 'Maharashtra', district: 'Kolhapur', region: 'Southern Maharashtra' },
+  '416': {
+    stateCode: 'MH',
+    stateName: 'Maharashtra',
+    district: 'Kolhapur',
+    region: 'Southern Maharashtra',
+  },
   '422': { stateCode: 'MH', stateName: 'Maharashtra', district: 'Nashik', region: 'Khandesh' },
-  '431': { stateCode: 'MH', stateName: 'Maharashtra', district: 'Chhatrapati Sambhajinagar', region: 'Marathwada' },
+  '431': {
+    stateCode: 'MH',
+    stateName: 'Maharashtra',
+    district: 'Chhatrapati Sambhajinagar',
+    region: 'Marathwada',
+  },
   '440': { stateCode: 'MH', stateName: 'Maharashtra', district: 'Nagpur', region: 'Vidarbha' },
   '452': { stateCode: 'MP', stateName: 'Madhya Pradesh', district: 'Indore', region: 'Malwa West' },
   '462': { stateCode: 'MP', stateName: 'Madhya Pradesh', district: 'Bhopal', region: 'Central MP' },
   '474': { stateCode: 'MP', stateName: 'Madhya Pradesh', district: 'Gwalior', region: 'Gird' },
-  '482': { stateCode: 'MP', stateName: 'Madhya Pradesh', district: 'Jabalpur', region: 'Mahakoshal' },
-  '490': { stateCode: 'CG', stateName: 'Chhattisgarh', district: 'Durg / Bhilai', region: 'Central Chhattisgarh' },
+  '482': {
+    stateCode: 'MP',
+    stateName: 'Madhya Pradesh',
+    district: 'Jabalpur',
+    region: 'Mahakoshal',
+  },
+  '490': {
+    stateCode: 'CG',
+    stateName: 'Chhattisgarh',
+    district: 'Durg / Bhilai',
+    region: 'Central Chhattisgarh',
+  },
   '492': { stateCode: 'CG', stateName: 'Chhattisgarh', district: 'Raipur', region: 'Raipur Urban' },
-  '495': { stateCode: 'CG', stateName: 'Chhattisgarh', district: 'Bilaspur', region: 'North Chhattisgarh' },
+  '495': {
+    stateCode: 'CG',
+    stateName: 'Chhattisgarh',
+    district: 'Bilaspur',
+    region: 'North Chhattisgarh',
+  },
 
   // Zone 5: Southern (Telangana, Andhra Pradesh, Karnataka)
-  '500': { stateCode: 'TS', stateName: 'Telangana', district: 'Hyderabad', region: 'Hyderabad Urban' },
-  '501': { stateCode: 'TS', stateName: 'Telangana', district: 'Rangareddy', region: 'Rangareddy Outer' },
-  '502': { stateCode: 'TS', stateName: 'Telangana', district: 'Sangareddy', region: 'Medak / Sangareddy' },
+  '500': {
+    stateCode: 'TS',
+    stateName: 'Telangana',
+    district: 'Hyderabad',
+    region: 'Hyderabad Urban',
+  },
+  '501': {
+    stateCode: 'TS',
+    stateName: 'Telangana',
+    district: 'Rangareddy',
+    region: 'Rangareddy Outer',
+  },
+  '502': {
+    stateCode: 'TS',
+    stateName: 'Telangana',
+    district: 'Sangareddy',
+    region: 'Medak / Sangareddy',
+  },
   '503': { stateCode: 'TS', stateName: 'Telangana', district: 'Nizamabad', region: 'Nizamabad' },
-  '504': { stateCode: 'TS', stateName: 'Telangana', district: 'Adilabad', region: 'North Telangana' },
+  '504': {
+    stateCode: 'TS',
+    stateName: 'Telangana',
+    district: 'Adilabad',
+    region: 'North Telangana',
+  },
   '505': { stateCode: 'TS', stateName: 'Telangana', district: 'Karimnagar', region: 'Karimnagar' },
   '506': { stateCode: 'TS', stateName: 'Telangana', district: 'Warangal', region: 'Warangal' },
   '507': { stateCode: 'TS', stateName: 'Telangana', district: 'Khammam', region: 'Khammam' },
   '508': { stateCode: 'TS', stateName: 'Telangana', district: 'Nalgonda', region: 'Nalgonda' },
-  '509': { stateCode: 'TS', stateName: 'Telangana', district: 'Mahbubnagar', region: 'Mahbubnagar' },
-  '515': { stateCode: 'AP', stateName: 'Andhra Pradesh', district: 'Anantapur', region: 'Rayalaseema West' },
-  '516': { stateCode: 'AP', stateName: 'Andhra Pradesh', district: 'YSR Kadapa', region: 'Rayalaseema Central' },
-  '517': { stateCode: 'AP', stateName: 'Andhra Pradesh', district: 'Chittoor', region: 'Rayalaseema South' },
-  '518': { stateCode: 'AP', stateName: 'Andhra Pradesh', district: 'Kurnool', region: 'Rayalaseema North' },
-  '520': { stateCode: 'AP', stateName: 'Andhra Pradesh', district: 'Krishna', region: 'Vijayawada Urban' },
-  '522': { stateCode: 'AP', stateName: 'Andhra Pradesh', district: 'Guntur', region: 'Guntur Central' },
+  '509': {
+    stateCode: 'TS',
+    stateName: 'Telangana',
+    district: 'Mahbubnagar',
+    region: 'Mahbubnagar',
+  },
+  '515': {
+    stateCode: 'AP',
+    stateName: 'Andhra Pradesh',
+    district: 'Anantapur',
+    region: 'Rayalaseema West',
+  },
+  '516': {
+    stateCode: 'AP',
+    stateName: 'Andhra Pradesh',
+    district: 'YSR Kadapa',
+    region: 'Rayalaseema Central',
+  },
+  '517': {
+    stateCode: 'AP',
+    stateName: 'Andhra Pradesh',
+    district: 'Chittoor',
+    region: 'Rayalaseema South',
+  },
+  '518': {
+    stateCode: 'AP',
+    stateName: 'Andhra Pradesh',
+    district: 'Kurnool',
+    region: 'Rayalaseema North',
+  },
+  '520': {
+    stateCode: 'AP',
+    stateName: 'Andhra Pradesh',
+    district: 'Krishna',
+    region: 'Vijayawada Urban',
+  },
+  '522': {
+    stateCode: 'AP',
+    stateName: 'Andhra Pradesh',
+    district: 'Guntur',
+    region: 'Guntur Central',
+  },
   '523': { stateCode: 'AP', stateName: 'Andhra Pradesh', district: 'Prakasam', region: 'Ongole' },
-  '524': { stateCode: 'AP', stateName: 'Andhra Pradesh', district: 'Nellore', region: 'South Coastal' },
-  '530': { stateCode: 'AP', stateName: 'Andhra Pradesh', district: 'Visakhapatnam', region: 'Visakhapatnam' },
-  '532': { stateCode: 'AP', stateName: 'Andhra Pradesh', district: 'Srikakulam', region: 'North Coastal' },
-  '533': { stateCode: 'AP', stateName: 'Andhra Pradesh', district: 'East Godavari', region: 'East Godavari' },
-  '534': { stateCode: 'AP', stateName: 'Andhra Pradesh', district: 'West Godavari', region: 'West Godavari' },
-  '535': { stateCode: 'AP', stateName: 'Andhra Pradesh', district: 'Vizianagaram', region: 'Vizianagaram' },
-  '560': { stateCode: 'KA', stateName: 'Karnataka', district: 'Bengaluru Urban', region: 'Bengaluru Metropolitan' },
-  '562': { stateCode: 'KA', stateName: 'Karnataka', district: 'Bengaluru Rural', region: 'South Karnataka' },
+  '524': {
+    stateCode: 'AP',
+    stateName: 'Andhra Pradesh',
+    district: 'Nellore',
+    region: 'South Coastal',
+  },
+  '530': {
+    stateCode: 'AP',
+    stateName: 'Andhra Pradesh',
+    district: 'Visakhapatnam',
+    region: 'Visakhapatnam',
+  },
+  '532': {
+    stateCode: 'AP',
+    stateName: 'Andhra Pradesh',
+    district: 'Srikakulam',
+    region: 'North Coastal',
+  },
+  '533': {
+    stateCode: 'AP',
+    stateName: 'Andhra Pradesh',
+    district: 'East Godavari',
+    region: 'East Godavari',
+  },
+  '534': {
+    stateCode: 'AP',
+    stateName: 'Andhra Pradesh',
+    district: 'West Godavari',
+    region: 'West Godavari',
+  },
+  '535': {
+    stateCode: 'AP',
+    stateName: 'Andhra Pradesh',
+    district: 'Vizianagaram',
+    region: 'Vizianagaram',
+  },
+  '560': {
+    stateCode: 'KA',
+    stateName: 'Karnataka',
+    district: 'Bengaluru Urban',
+    region: 'Bengaluru Metropolitan',
+  },
+  '562': {
+    stateCode: 'KA',
+    stateName: 'Karnataka',
+    district: 'Bengaluru Rural',
+    region: 'South Karnataka',
+  },
   '570': { stateCode: 'KA', stateName: 'Karnataka', district: 'Mysuru', region: 'Old Mysuru' },
-  '575': { stateCode: 'KA', stateName: 'Karnataka', district: 'Dakshina Kannada', region: 'Coastal Karnataka' },
-  '580': { stateCode: 'KA', stateName: 'Karnataka', district: 'Dharwad / Hubballi', region: 'North Karnataka' },
-  '590': { stateCode: 'KA', stateName: 'Karnataka', district: 'Belagavi', region: 'North-West Karnataka' },
+  '575': {
+    stateCode: 'KA',
+    stateName: 'Karnataka',
+    district: 'Dakshina Kannada',
+    region: 'Coastal Karnataka',
+  },
+  '580': {
+    stateCode: 'KA',
+    stateName: 'Karnataka',
+    district: 'Dharwad / Hubballi',
+    region: 'North Karnataka',
+  },
+  '590': {
+    stateCode: 'KA',
+    stateName: 'Karnataka',
+    district: 'Belagavi',
+    region: 'North-West Karnataka',
+  },
 
   // Zone 6: Southern (Tamil Nadu, Kerala, Puducherry)
-  '600': { stateCode: 'TN', stateName: 'Tamil Nadu', district: 'Chennai', region: 'Chennai Metropolitan' },
-  '601': { stateCode: 'TN', stateName: 'Tamil Nadu', district: 'Tiruvallur', region: 'North Coastal TN' },
-  '605': { stateCode: 'PY', stateName: 'Puducherry', district: 'Puducherry', region: 'Coromandel Coastal' },
-  '620': { stateCode: 'TN', stateName: 'Tamil Nadu', district: 'Tiruchirappalli', region: 'Central Tamil Nadu' },
-  '625': { stateCode: 'TN', stateName: 'Tamil Nadu', district: 'Madurai', region: 'South Tamil Nadu' },
+  '600': {
+    stateCode: 'TN',
+    stateName: 'Tamil Nadu',
+    district: 'Chennai',
+    region: 'Chennai Metropolitan',
+  },
+  '601': {
+    stateCode: 'TN',
+    stateName: 'Tamil Nadu',
+    district: 'Tiruvallur',
+    region: 'North Coastal TN',
+  },
+  '605': {
+    stateCode: 'PY',
+    stateName: 'Puducherry',
+    district: 'Puducherry',
+    region: 'Coromandel Coastal',
+  },
+  '620': {
+    stateCode: 'TN',
+    stateName: 'Tamil Nadu',
+    district: 'Tiruchirappalli',
+    region: 'Central Tamil Nadu',
+  },
+  '625': {
+    stateCode: 'TN',
+    stateName: 'Tamil Nadu',
+    district: 'Madurai',
+    region: 'South Tamil Nadu',
+  },
   '641': { stateCode: 'TN', stateName: 'Tamil Nadu', district: 'Coimbatore', region: 'Kongu Nadu' },
   '670': { stateCode: 'KL', stateName: 'Kerala', district: 'Kannur', region: 'North Malabar' },
   '673': { stateCode: 'KL', stateName: 'Kerala', district: 'Kozhikode', region: 'Malabar' },
-  '682': { stateCode: 'KL', stateName: 'Kerala', district: 'Ernakulam / Kochi', region: 'Central Kerala' },
+  '682': {
+    stateCode: 'KL',
+    stateName: 'Kerala',
+    district: 'Ernakulam / Kochi',
+    region: 'Central Kerala',
+  },
   '686': { stateCode: 'KL', stateName: 'Kerala', district: 'Kottayam', region: 'Travancore' },
   '691': { stateCode: 'KL', stateName: 'Kerala', district: 'Kollam', region: 'South Kerala' },
-  '695': { stateCode: 'KL', stateName: 'Kerala', district: 'Thiruvananthapuram', region: 'Capital Region' },
+  '695': {
+    stateCode: 'KL',
+    stateName: 'Kerala',
+    district: 'Thiruvananthapuram',
+    region: 'Capital Region',
+  },
 
   // Zone 7: Eastern & North-Eastern (West Bengal, Odisha, Assam, NE States)
-  '700': { stateCode: 'WB', stateName: 'West Bengal', district: 'Kolkata', region: 'Kolkata Metropolitan' },
-  '711': { stateCode: 'WB', stateName: 'West Bengal', district: 'Howrah', region: 'Howrah / Hooghly' },
-  '721': { stateCode: 'WB', stateName: 'West Bengal', district: 'Paschim Medinipur', region: 'Rarh Bengal' },
-  '734': { stateCode: 'WB', stateName: 'West Bengal', district: 'Darjeeling / Siliguri', region: 'North Bengal' },
-  '737': { stateCode: 'SK', stateName: 'Sikkim', district: 'East Sikkim / Gangtok', region: 'Sikkim Hills' },
-  '751': { stateCode: 'OD', stateName: 'Odisha', district: 'Khurda / Bhubaneswar', region: 'Capital Coastal' },
+  '700': {
+    stateCode: 'WB',
+    stateName: 'West Bengal',
+    district: 'Kolkata',
+    region: 'Kolkata Metropolitan',
+  },
+  '711': {
+    stateCode: 'WB',
+    stateName: 'West Bengal',
+    district: 'Howrah',
+    region: 'Howrah / Hooghly',
+  },
+  '721': {
+    stateCode: 'WB',
+    stateName: 'West Bengal',
+    district: 'Paschim Medinipur',
+    region: 'Rarh Bengal',
+  },
+  '734': {
+    stateCode: 'WB',
+    stateName: 'West Bengal',
+    district: 'Darjeeling / Siliguri',
+    region: 'North Bengal',
+  },
+  '737': {
+    stateCode: 'SK',
+    stateName: 'Sikkim',
+    district: 'East Sikkim / Gangtok',
+    region: 'Sikkim Hills',
+  },
+  '751': {
+    stateCode: 'OD',
+    stateName: 'Odisha',
+    district: 'Khurda / Bhubaneswar',
+    region: 'Capital Coastal',
+  },
   '753': { stateCode: 'OD', stateName: 'Odisha', district: 'Cuttack', region: 'Central Odisha' },
-  '760': { stateCode: 'OD', stateName: 'Odisha', district: 'Ganjam / Berhampur', region: 'South Odisha' },
+  '760': {
+    stateCode: 'OD',
+    stateName: 'Odisha',
+    district: 'Ganjam / Berhampur',
+    region: 'South Odisha',
+  },
   '768': { stateCode: 'OD', stateName: 'Odisha', district: 'Sambalpur', region: 'Western Odisha' },
-  '781': { stateCode: 'AS', stateName: 'Assam', district: 'Kamrup Metropolitan / Guwahati', region: 'Lower Assam' },
+  '781': {
+    stateCode: 'AS',
+    stateName: 'Assam',
+    district: 'Kamrup Metropolitan / Guwahati',
+    region: 'Lower Assam',
+  },
   '782': { stateCode: 'AS', stateName: 'Assam', district: 'Nagaon', region: 'Central Assam' },
   '786': { stateCode: 'AS', stateName: 'Assam', district: 'Dibrugarh', region: 'Upper Assam' },
-  '791': { stateCode: 'AR', stateName: 'Arunachal Pradesh', district: 'Papum Pare / Itanagar', region: 'Western Arunachal' },
-  '793': { stateCode: 'ML', stateName: 'Meghalaya', district: 'East Khasi Hills / Shillong', region: 'Khasi Hills' },
-  '795': { stateCode: 'MN', stateName: 'Manipur', district: 'Imphal West', region: 'Manipur Valley' },
+  '791': {
+    stateCode: 'AR',
+    stateName: 'Arunachal Pradesh',
+    district: 'Papum Pare / Itanagar',
+    region: 'Western Arunachal',
+  },
+  '793': {
+    stateCode: 'ML',
+    stateName: 'Meghalaya',
+    district: 'East Khasi Hills / Shillong',
+    region: 'Khasi Hills',
+  },
+  '795': {
+    stateCode: 'MN',
+    stateName: 'Manipur',
+    district: 'Imphal West',
+    region: 'Manipur Valley',
+  },
   '796': { stateCode: 'MZ', stateName: 'Mizoram', district: 'Aizawl', region: 'Mizoram Hills' },
   '797': { stateCode: 'NL', stateName: 'Nagaland', district: 'Kohima', region: 'Nagaland Hills' },
-  '799': { stateCode: 'TR', stateName: 'Tripura', district: 'West Tripura / Agartala', region: 'Tripura Central' },
+  '799': {
+    stateCode: 'TR',
+    stateName: 'Tripura',
+    district: 'West Tripura / Agartala',
+    region: 'Tripura Central',
+  },
 
   // Zone 8: Eastern Central (Bihar, Jharkhand)
   '800': { stateCode: 'BR', stateName: 'Bihar', district: 'Patna', region: 'Magadh Central' },
   '801': { stateCode: 'BR', stateName: 'Bihar', district: 'Patna Rural', region: 'Magadh' },
   '812': { stateCode: 'BR', stateName: 'Bihar', district: 'Bhagalpur', region: 'Anga' },
   '823': { stateCode: 'BR', stateName: 'Bihar', district: 'Gaya', region: 'Magadh South' },
-  '825': { stateCode: 'JH', stateName: 'Jharkhand', district: 'Hazaribagh', region: 'North Chotanagpur' },
+  '825': {
+    stateCode: 'JH',
+    stateName: 'Jharkhand',
+    district: 'Hazaribagh',
+    region: 'North Chotanagpur',
+  },
   '826': { stateCode: 'JH', stateName: 'Jharkhand', district: 'Dhanbad', region: 'Koylanchal' },
-  '831': { stateCode: 'JH', stateName: 'Jharkhand', district: 'East Singhbhum / Jamshedpur', region: 'Kolhan' },
-  '834': { stateCode: 'JH', stateName: 'Jharkhand', district: 'Ranchi', region: 'South Chotanagpur' },
+  '831': {
+    stateCode: 'JH',
+    stateName: 'Jharkhand',
+    district: 'East Singhbhum / Jamshedpur',
+    region: 'Kolhan',
+  },
+  '834': {
+    stateCode: 'JH',
+    stateName: 'Jharkhand',
+    district: 'Ranchi',
+    region: 'South Chotanagpur',
+  },
   '842': { stateCode: 'BR', stateName: 'Bihar', district: 'Muzaffarpur', region: 'Tirhut' },
   '854': { stateCode: 'BR', stateName: 'Bihar', district: 'Purnia', region: 'Seemanchal' },
 };
@@ -1060,10 +1493,14 @@ export class DelimitationService {
    * Throws RangeError if outside MIN_SAFE_REQUESTED_SEATS .. MAX_SAFE_REQUESTED_SEATS.
    */
   public assertSafeSeats(seats: number): void {
-    if (!Number.isInteger(seats) || seats < MIN_SAFE_REQUESTED_SEATS || seats > MAX_SAFE_REQUESTED_SEATS) {
+    if (
+      !Number.isInteger(seats) ||
+      seats < MIN_SAFE_REQUESTED_SEATS ||
+      seats > MAX_SAFE_REQUESTED_SEATS
+    ) {
       const err = new RangeError(
         `Requested seats (${seats}) violate computational resource safety bounds (${MIN_SAFE_REQUESTED_SEATS} <= S <= ${MAX_SAFE_REQUESTED_SEATS}). ` +
-        `This limit is solely a computational overflow guard and has no constitutional or legal meaning.`
+          `This limit is solely a computational overflow guard and has no constitutional or legal meaning.`,
       );
       (err as any).statusCode = 400;
       (err as any).code = 'VALIDATION_ERROR';
@@ -1083,7 +1520,7 @@ export class DelimitationService {
     seats: number,
     entityTypeOrQuery: PoliticalEntityType | LegalApplicabilityQuery = 'STATE_LEGISLATIVE_ASSEMBLY',
     stateCode?: string,
-    regimeType: DelimitationLegalRegime = 'CURRENT_LEGAL_REGIME'
+    regimeType: DelimitationLegalRegime = 'CURRENT_LEGAL_REGIME',
   ): void {
     const constraint =
       typeof entityTypeOrQuery === 'object'
@@ -1092,13 +1529,13 @@ export class DelimitationService {
 
     if (constraint.minSeats !== undefined && seats < constraint.minSeats) {
       throw new RangeError(
-        `Seat count (${seats}) violates legal minimum (${constraint.minSeats}) under ${constraint.constitutionalProvision || constraint.statutoryProvision || 'applicable law'}. Citation: ${constraint.citation || ''}`
+        `Seat count (${seats}) violates legal minimum (${constraint.minSeats}) under ${constraint.constitutionalProvision || constraint.statutoryProvision || 'applicable law'}. Citation: ${constraint.citation || ''}`,
       );
     }
 
     if (constraint.maxSeats !== undefined && seats > constraint.maxSeats) {
       throw new RangeError(
-        `Seat count (${seats}) violates legal maximum (${constraint.maxSeats}) under ${constraint.constitutionalProvision || constraint.statutoryProvision || 'applicable law'}. Citation: ${constraint.citation || ''}`
+        `Seat count (${seats}) violates legal maximum (${constraint.maxSeats}) under ${constraint.constitutionalProvision || constraint.statutoryProvision || 'applicable law'}. Citation: ${constraint.citation || ''}`,
       );
     }
   }
@@ -1109,7 +1546,7 @@ export class DelimitationService {
   public resolveLegalApplicability(
     queryOrEntityType: PoliticalEntityType | LegalApplicabilityQuery = 'STATE_LEGISLATIVE_ASSEMBLY',
     regimeType: DelimitationLegalRegime = 'CURRENT_LEGAL_REGIME',
-    stateCode?: string
+    stateCode?: string,
   ): LegalApplicabilityConstraint {
     return resolveLegalApplicability(queryOrEntityType, regimeType, stateCode);
   }
@@ -1121,10 +1558,13 @@ export class DelimitationService {
     methodology: string,
     outputClassification: OutputClassification,
     dataStatus: W012DataStatus,
-    inputDatasetVersions: DatasetVersionProvenance[] = [CENSUS_2011_PCA_PROVENANCE, DELIMITATION_2008_REGIME_PROVENANCE],
+    inputDatasetVersions: DatasetVersionProvenance[] = [
+      CENSUS_2011_PCA_PROVENANCE,
+      DELIMITATION_2008_REGIME_PROVENANCE,
+    ],
     legalStatus: DelimitationLegalRegime = 'CURRENT_LEGAL_REGIME',
     modelVersion = '1.2.0',
-    evidenceReferences?: string[]
+    evidenceReferences?: string[],
   ): MathematicalProvenance {
     return {
       inputDatasetVersions,
@@ -1149,7 +1589,7 @@ export class DelimitationService {
     hypotheticalParameters: Record<string, unknown>,
     provenance: MathematicalProvenance,
     data: T,
-    modelType = 'Academic Simulation (Pure Proportional Apportionment)'
+    modelType = 'Academic Simulation (Pure Proportional Apportionment)',
   ): ScenarioEnclosure<T> {
     const isScenario = provenance.legalStatus === 'SCENARIO_PROPOSED_REGIME';
     return {
@@ -1189,12 +1629,17 @@ export class DelimitationService {
     totalSeats: number,
     totalPopulation: number,
     scPopulation: number,
-    stPopulation: number
+    stPopulation: number,
   ): { scReserved: number; stReserved: number; general: number } {
     this.assertSafeSeats(totalSeats);
 
     // RES-DATA-01 & RES-UNKNOWN-01: Validate inputs
-    if (totalPopulation <= 0 || scPopulation < 0 || stPopulation < 0 || (scPopulation + stPopulation > totalPopulation)) {
+    if (
+      totalPopulation <= 0 ||
+      scPopulation < 0 ||
+      stPopulation < 0 ||
+      scPopulation + stPopulation > totalPopulation
+    ) {
       throw new Error('RES-DATA-01 violation: Invalid or missing authoritative population inputs.');
     }
 
@@ -1218,8 +1663,20 @@ export class DelimitationService {
     // Step 5 & 6: Remainder Ordering & Deterministic Tie-Break (RES-TIE-01)
     // Priority rule: higher remainder wins. If tied, higher absolute population wins. If tied, SC before ST.
     const candidates = [
-      { category: 'SC' as const, remainder: remSC, population: scPopulation, base: baseSC, allocated: baseSC },
-      { category: 'ST' as const, remainder: remST, population: stPopulation, base: baseST, allocated: baseST },
+      {
+        category: 'SC' as const,
+        remainder: remSC,
+        population: scPopulation,
+        base: baseSC,
+        allocated: baseSC,
+      },
+      {
+        category: 'ST' as const,
+        remainder: remST,
+        population: stPopulation,
+        base: baseST,
+        allocated: baseST,
+      },
     ];
 
     candidates.sort((a, b) => {
@@ -1243,7 +1700,9 @@ export class DelimitationService {
 
     // Step 8: Seat Conservation Assertion (RES-CONS-01)
     if (scAllocated + stAllocated + generalAllocated !== totalSeats) {
-      throw new Error(`RES-CONS-01 Seat Conservation violation: ${scAllocated} + ${stAllocated} + ${generalAllocated} !== ${totalSeats}`);
+      throw new Error(
+        `RES-CONS-01 Seat Conservation violation: ${scAllocated} + ${stAllocated} + ${generalAllocated} !== ${totalSeats}`,
+      );
     }
 
     return {
@@ -1260,8 +1719,13 @@ export class DelimitationService {
    * Algorithm-domain invariant: targetSeats >= districts.length (S >= N).
    */
   public allocateHamiltonHareNiemeyer(
-    districts: Array<{ districtName: string; population: number; scPopulation: number; stPopulation: number }>,
-    targetSeats: number
+    districts: Array<{
+      districtName: string;
+      population: number;
+      scPopulation: number;
+      stPopulation: number;
+    }>,
+    targetSeats: number,
   ): DistrictSimulationAllocation[] {
     this.assertSafeSeats(targetSeats);
 
@@ -1273,7 +1737,7 @@ export class DelimitationService {
     if (targetSeats < districts.length) {
       throw new RangeError(
         `Algorithm-domain constraint: target seats (${targetSeats}) must be >= district count (${districts.length}) ` +
-        `for Hamilton largest-remainder apportionment.`
+          `for Hamilton largest-remainder apportionment.`,
       );
     }
 
@@ -1324,7 +1788,10 @@ export class DelimitationService {
     // Build district allocations with Article 332 quotas
     return rawAllocations.map((d) => {
       const popPerSeat = d.allocatedSeats > 0 ? Math.round(d.population / d.allocatedSeats) : 0;
-      const deviation = idealPopPerSeat > 0 ? Math.round(((popPerSeat - idealPopPerSeat) / idealPopPerSeat) * 1000) / 10 : 0;
+      const deviation =
+        idealPopPerSeat > 0
+          ? Math.round(((popPerSeat - idealPopPerSeat) / idealPopPerSeat) * 1000) / 10
+          : 0;
 
       const subQuota = this.allocateArticle332(d.allocatedSeats, d.population, d.scPop, d.stPop);
 
@@ -1347,7 +1814,7 @@ export class DelimitationService {
   public computeStateProjection(
     state: CensusStateData,
     idealDivisor = IDEAL_POP_PER_AC_SEAT_2011,
-    isExpansionSafe = false
+    isExpansionSafe = false,
   ): DynamicSeatProjection {
     const currentSeats = state.currentAssemblySeats;
     let projectedSeats = Math.round(state.totalPopulation / idealDivisor);
@@ -1363,13 +1830,14 @@ export class DelimitationService {
 
     const seatChange = projectedSeats - currentSeats;
     const popPerSeat = projectedSeats > 0 ? Math.round(state.totalPopulation / projectedSeats) : 0;
-    const deviation = idealDivisor > 0 ? Math.round(((popPerSeat - idealDivisor) / idealDivisor) * 1000) / 10 : 0;
+    const deviation =
+      idealDivisor > 0 ? Math.round(((popPerSeat - idealDivisor) / idealDivisor) * 1000) / 10 : 0;
 
     const reservation = this.allocateArticle332(
       projectedSeats,
       state.totalPopulation,
       state.scPopulation,
-      state.stPopulation
+      state.stPopulation,
     );
 
     return {
@@ -1391,8 +1859,10 @@ export class DelimitationService {
         computationalType: 'ACADEMIC_SIMULATION',
         officialDelimitationOrder: false,
         governingInstrument: 'PANIN Multi-State Legislative Assembly Apportionment Simulator',
-        constitutionalBasis: 'Article 170(1) & Article 81 generic population quotient model (State Assemblies)',
-        enactmentStatusNotes: 'Analytical research scenario only. Not an official gazetted order of the Delimitation Commission of India.',
+        constitutionalBasis:
+          'Article 170(1) & Article 81 generic population quotient model (State Assemblies)',
+        enactmentStatusNotes:
+          'Analytical research scenario only. Not an official gazetted order of the Delimitation Commission of India.',
         isOfficialResult: false,
       },
     };
@@ -1405,12 +1875,16 @@ export class DelimitationService {
    */
   public getProjections(model?: string): DelimitationProjectionsDTO {
     const isExpansionSafe = model === 'expansion_safe';
-    const projections = CENSUS_2011_STATES
-      .map((s) => this.computeStateProjection(s, IDEAL_POP_PER_AC_SEAT_2011, isExpansionSafe))
-      .sort((a, b) => b.seatChange - a.seatChange);
+    const projections = CENSUS_2011_STATES.map((s) =>
+      this.computeStateProjection(s, IDEAL_POP_PER_AC_SEAT_2011, isExpansionSafe),
+    ).sort((a, b) => b.seatChange - a.seatChange);
 
-    const totalGained = projections.filter((s) => s.seatChange > 0).reduce((s, p) => s + p.seatChange, 0);
-    const totalLost = projections.filter((s) => s.seatChange < 0).reduce((s, p) => s + p.seatChange, 0);
+    const totalGained = projections
+      .filter((s) => s.seatChange > 0)
+      .reduce((s, p) => s + p.seatChange, 0);
+    const totalLost = projections
+      .filter((s) => s.seatChange < 0)
+      .reduce((s, p) => s + p.seatChange, 0);
 
     const provenance = this.buildProvenance(
       'HAMILTON_HARE_NIEMEYER_EQUAL_POPULATION',
@@ -1419,14 +1893,16 @@ export class DelimitationService {
       [CENSUS_2011_PCA_PROVENANCE, DELIMITATION_2008_REGIME_PROVENANCE],
       'CURRENT_LEGAL_REGIME',
       '1.2.0',
-      ['Constitution of India Articles 81, 82, 170, 332']
+      ['Constitution of India Articles 81, 82, 170, 332'],
     );
 
     return {
       censusYear: 2011,
       model: isExpansionSafe ? 'expansion_safe' : 'constitutional_proportional',
-      methodology: 'Generic Multi-State Apportionment Algorithm (Article 170 & 81 equal-population quotient across Census 2011 benchmark records)',
-      disclaimer: 'This endpoint executes a generic mathematical apportionment algorithm across benchmark demographic records to validate multi-state quotient behavior. It does NOT claim governed national delimitation coverage or gazetted statutory seat orders. Authoritative governed delimitation geography in W020 is strictly bounded to the State of Telangana.',
+      methodology:
+        'Generic Multi-State Apportionment Algorithm (Article 170 & 81 equal-population quotient across Census 2011 benchmark records)',
+      disclaimer:
+        'This endpoint executes a generic mathematical apportionment algorithm across benchmark demographic records to validate multi-state quotient behavior. It does NOT claim governed national delimitation coverage or gazetted statutory seat orders. Authoritative governed delimitation geography in W020 is strictly bounded to the State of Telangana.',
       summary: {
         statesAnalyzed: projections.length,
         totalCurrentSeats: projections.reduce((s, p) => s + p.currentSeats, 0),
@@ -1443,8 +1919,10 @@ export class DelimitationService {
         computationalType: 'ACADEMIC_SIMULATION',
         officialDelimitationOrder: false,
         governingInstrument: 'PANIN Multi-State Legislative Assembly Apportionment Simulator',
-        constitutionalBasis: 'Article 170(1) & Article 81 generic population quotient model (State Assemblies)',
-        enactmentStatusNotes: 'Analytical research scenario only. Not an official gazetted order of the Delimitation Commission of India.',
+        constitutionalBasis:
+          'Article 170(1) & Article 81 generic population quotient model (State Assemblies)',
+        enactmentStatusNotes:
+          'Analytical research scenario only. Not an official gazetted order of the Delimitation Commission of India.',
         isOfficialResult: false,
       },
     };
@@ -1463,7 +1941,7 @@ export class DelimitationService {
       'HAMILTON_HARE_NIEMEYER_EQUAL_POPULATION',
       'DETERMINISTIC_DERIVED',
       'DERIVED',
-      [CENSUS_2011_PCA_PROVENANCE, DELIMITATION_2008_REGIME_PROVENANCE]
+      [CENSUS_2011_PCA_PROVENANCE, DELIMITATION_2008_REGIME_PROVENANCE],
     );
 
     return {
@@ -1474,8 +1952,10 @@ export class DelimitationService {
         computationalType: 'ACADEMIC_SIMULATION',
         officialDelimitationOrder: false,
         governingInstrument: 'PANIN Single State Assembly Apportionment Simulator',
-        constitutionalBasis: 'Article 170(1) & Article 81 generic population quotient model (State Assemblies)',
-        enactmentStatusNotes: 'Analytical research scenario only. Not an official gazetted order of the Delimitation Commission of India.',
+        constitutionalBasis:
+          'Article 170(1) & Article 81 generic population quotient model (State Assemblies)',
+        enactmentStatusNotes:
+          'Analytical research scenario only. Not an official gazetted order of the Delimitation Commission of India.',
         isOfficialResult: false,
       },
     };
@@ -1501,7 +1981,8 @@ export class DelimitationService {
         verified: true,
         instrument: 'Delimitation Act, 2002 (Act No. 33 of 2002)',
         authority: 'Parliament of India',
-        description: 'Constituted the Delimitation Commission to readjust seats based on Census 2001.',
+        description:
+          'Constituted the Delimitation Commission to readjust seats based on Census 2001.',
       },
       {
         id: 'LEG-2008-01',
@@ -1511,7 +1992,8 @@ export class DelimitationService {
         verified: true,
         instrument: 'Delimitation Order 2008, Schedule II (State of Andhra Pradesh)',
         authority: 'Delimitation Commission of India',
-        description: 'Enacted 294 Assembly Constituencies and 42 Parliamentary Constituencies for undivided Andhra Pradesh.',
+        description:
+          'Enacted 294 Assembly Constituencies and 42 Parliamentary Constituencies for undivided Andhra Pradesh.',
       },
       {
         id: 'LEG-2014-01',
@@ -1531,7 +2013,8 @@ export class DelimitationService {
         verified: true,
         instrument: 'APRA 2014 Sec 15, Schedule XXXI & Schedule II',
         authority: 'Union of India',
-        description: 'Schedule XXXI established 119 ACs for Telangana; Schedule II established 175 ACs for residuary AP.',
+        description:
+          'Schedule XXXI established 119 ACs for Telangana; Schedule II established 175 ACs for residuary AP.',
       },
       {
         id: 'LEG-2015-01',
@@ -1541,7 +2024,8 @@ export class DelimitationService {
         verified: true,
         instrument: 'G.S.R. 311(E), dated 23 April 2015 (comes into force at once)',
         authority: 'President of India / Ministry of Home Affairs',
-        description: 'Transferred 7 mandals of Khammam district (Polavaram project submergence) from Telangana to Andhra Pradesh.',
+        description:
+          'Transferred 7 mandals of Khammam district (Polavaram project submergence) from Telangana to Andhra Pradesh.',
       },
       {
         id: 'LEG-2018-01',
@@ -1551,7 +2035,8 @@ export class DelimitationService {
         verified: true,
         instrument: 'Notification No. 282/AP/2018(DEL), published 24 Sept 2018',
         authority: 'Election Commission of India under Sec 9(1)(b) Delim Act 2002',
-        description: 'Formally updated boundary descriptions to incorporate the territorial transfers of G.S.R. 311(E).',
+        description:
+          'Formally updated boundary descriptions to incorporate the territorial transfers of G.S.R. 311(E).',
       },
       // ─── 2026 LEGISLATIVE PACKAGE: BILLS 45, 46, 47 (W020 SOURCE-TRUTH PROVENANCE) ───
       {
@@ -1562,7 +2047,8 @@ export class DelimitationService {
         verified: true,
         instrument: 'Bill No. 45 of 2026',
         authority: 'Parliament of India (Lok Sabha)',
-        description: 'Proposed amending Article 81 to increase maximum Lok Sabha ceiling to 850 (815 States, 35 UTs) and readjust representation post-2026.',
+        description:
+          'Proposed amending Article 81 to increase maximum Lok Sabha ceiling to 850 (815 States, 35 UTs) and readjust representation post-2026.',
         billNumber: 'Bill No. 45 of 2026',
         houseOfIntroduction: 'LOK_SABHA',
         eventType: 'INTRODUCTION',
@@ -1571,7 +2057,8 @@ export class DelimitationService {
         proposedCeiling: 850,
         classification: 'PROPOSED_LEGISLATIVE',
         officialSource: 'Lok Sabha Secretariat',
-        sourceReference: 'Lok Sabha List of Business, 16 April 2026; Gazette of India Extraordinary Part II Sec 2',
+        sourceReference:
+          'Lok Sabha List of Business, 16 April 2026; Gazette of India Extraordinary Part II Sec 2',
         sourcePublicationMetadata: 'Parliamentary Bulletin Part I, Sl. No. 14, 16 April 2026',
       },
       {
@@ -1582,7 +2069,8 @@ export class DelimitationService {
         verified: true,
         instrument: 'Bill No. 46 of 2026',
         authority: 'Parliament of India (Lok Sabha)',
-        description: 'Proposed ordinary legislation setting procedural framework and criteria for Delimitation Commission upon 131st Amendment enactment.',
+        description:
+          'Proposed ordinary legislation setting procedural framework and criteria for Delimitation Commission upon 131st Amendment enactment.',
         billNumber: 'Bill No. 46 of 2026',
         houseOfIntroduction: 'LOK_SABHA',
         eventType: 'INTRODUCTION',
@@ -1590,7 +2078,8 @@ export class DelimitationService {
         constitutionalArticleTarget: 'Article 82',
         classification: 'PROPOSED_LEGISLATIVE',
         officialSource: 'Lok Sabha Secretariat',
-        sourceReference: 'Lok Sabha List of Business, 16 April 2026; Gazette of India Extraordinary Part II Sec 2',
+        sourceReference:
+          'Lok Sabha List of Business, 16 April 2026; Gazette of India Extraordinary Part II Sec 2',
         sourcePublicationMetadata: 'Parliamentary Bulletin Part I, Sl. No. 15, 16 April 2026',
       },
       {
@@ -1601,7 +2090,8 @@ export class DelimitationService {
         verified: true,
         instrument: 'Bill No. 47 of 2026',
         authority: 'Parliament of India (Lok Sabha)',
-        description: 'Proposed adjusting statutory representation allocations for Union Territories in alignment with proposed Article 81 revisions.',
+        description:
+          'Proposed adjusting statutory representation allocations for Union Territories in alignment with proposed Article 81 revisions.',
         billNumber: 'Bill No. 47 of 2026',
         houseOfIntroduction: 'LOK_SABHA',
         eventType: 'INTRODUCTION',
@@ -1610,7 +2100,8 @@ export class DelimitationService {
         proposedCeiling: 35,
         classification: 'PROPOSED_LEGISLATIVE',
         officialSource: 'Lok Sabha Secretariat',
-        sourceReference: 'Lok Sabha List of Business, 16 April 2026; Gazette of India Extraordinary Part II Sec 2',
+        sourceReference:
+          'Lok Sabha List of Business, 16 April 2026; Gazette of India Extraordinary Part II Sec 2',
         sourcePublicationMetadata: 'Parliamentary Bulletin Part I, Sl. No. 16, 16 April 2026',
       },
       {
@@ -1621,7 +2112,8 @@ export class DelimitationService {
         verified: true,
         instrument: 'Bill No. 45 of 2026 (Defeated on Division)',
         authority: 'Parliament of India (Lok Sabha)',
-        description: 'Motion for consideration fails on division (Ayes 298, Noes 230). Failed two-thirds special majority under Article 368(2). Bill is negatived.',
+        description:
+          'Motion for consideration fails on division (Ayes 298, Noes 230). Failed two-thirds special majority under Article 368(2). Bill is negatived.',
         billNumber: 'Bill No. 45 of 2026',
         houseOfIntroduction: 'LOK_SABHA',
         eventType: 'TERMINAL_STATUS',
@@ -1643,7 +2135,8 @@ export class DelimitationService {
         verified: true,
         instrument: 'Bill No. 46 of 2026 (Infructuous)',
         authority: 'Parliament of India (Lok Sabha)',
-        description: 'Rendered legally infructuous following defeat of enabling Constitution (131st Amendment) Bill, 2026.',
+        description:
+          'Rendered legally infructuous following defeat of enabling Constitution (131st Amendment) Bill, 2026.',
         billNumber: 'Bill No. 46 of 2026',
         houseOfIntroduction: 'LOK_SABHA',
         eventType: 'TERMINAL_STATUS',
@@ -1651,7 +2144,8 @@ export class DelimitationService {
         constitutionalArticleTarget: 'Article 82',
         classification: 'HISTORICAL_FACT',
         officialSource: 'Lok Sabha Secretariat',
-        sourceReference: 'Lok Sabha Parliamentary Bulletin Part II, 17 April 2026; Parliamentary Practice & Procedure',
+        sourceReference:
+          'Lok Sabha Parliamentary Bulletin Part II, 17 April 2026; Parliamentary Practice & Procedure',
         sourcePublicationMetadata: 'Rules of Procedure and Conduct of Business in Lok Sabha',
       },
       {
@@ -1662,7 +2156,8 @@ export class DelimitationService {
         verified: true,
         instrument: 'Bill No. 47 of 2026 (Infructuous)',
         authority: 'Parliament of India (Lok Sabha)',
-        description: 'Rendered legally infructuous following defeat of enabling Constitution (131st Amendment) Bill, 2026.',
+        description:
+          'Rendered legally infructuous following defeat of enabling Constitution (131st Amendment) Bill, 2026.',
         billNumber: 'Bill No. 47 of 2026',
         houseOfIntroduction: 'LOK_SABHA',
         eventType: 'TERMINAL_STATUS',
@@ -1670,7 +2165,8 @@ export class DelimitationService {
         constitutionalArticleTarget: 'Article 239A & Article 81(1)(b)',
         classification: 'HISTORICAL_FACT',
         officialSource: 'Lok Sabha Secretariat',
-        sourceReference: 'Lok Sabha Parliamentary Bulletin Part II, 17 April 2026; Parliamentary Practice & Procedure',
+        sourceReference:
+          'Lok Sabha Parliamentary Bulletin Part II, 17 April 2026; Parliamentary Practice & Procedure',
         sourcePublicationMetadata: 'Rules of Procedure and Conduct of Business in Lok Sabha',
       },
       {
@@ -1681,7 +2177,8 @@ export class DelimitationService {
         verified: false,
         instrument: 'Census Act, 1948 (Operation Pending)',
         authority: 'Office of the Registrar General & Census Commissioner, India',
-        description: 'Active tracking record for the upcoming national decennial census. Final population data is UNAVAILABLE.',
+        description:
+          'Active tracking record for the upcoming national decennial census. Final population data is UNAVAILABLE.',
       },
       {
         id: 'LEG-FUTURE-DELIM',
@@ -1691,7 +2188,8 @@ export class DelimitationService {
         verified: false,
         instrument: 'Constitution of India (Articles 82 & 170 post-freeze mandate)',
         authority: 'Future Delimitation Commission',
-        description: 'Prospective post-freeze delimitation mandated upon publication of first census after 2026.',
+        description:
+          'Prospective post-freeze delimitation mandated upon publication of first census after 2026.',
       },
     ];
 
@@ -1699,7 +2197,12 @@ export class DelimitationService {
       'STATUTORY_GAZETTE_RECONCILIATION',
       'STATUTORY_FACT',
       'OFFICIAL',
-      [DELIMITATION_2008_REGIME_PROVENANCE, APRA_2014_PROVENANCE, GSR_311E_2015_PROVENANCE, ECI_NOTIFICATION_2018_PROVENANCE]
+      [
+        DELIMITATION_2008_REGIME_PROVENANCE,
+        APRA_2014_PROVENANCE,
+        GSR_311E_2015_PROVENANCE,
+        ECI_NOTIFICATION_2018_PROVENANCE,
+      ],
     );
 
     return {
@@ -1726,7 +2229,7 @@ export class DelimitationService {
       'CONSTITUTIONAL_STATUS_AUDIT',
       'STATUTORY_FACT',
       'OFFICIAL',
-      [DELIMITATION_2008_REGIME_PROVENANCE]
+      [DELIMITATION_2008_REGIME_PROVENANCE],
     );
 
     return {
@@ -1751,9 +2254,9 @@ export class DelimitationService {
    * 5. GET /api/v1/delimitation/gainers-losers
    */
   public getGainersLosers(): GainersLosersDTO {
-    const projections = CENSUS_2011_STATES
-      .map((s) => this.computeStateProjection(s, IDEAL_POP_PER_AC_SEAT_2011))
-      .sort((a, b) => b.seatChange - a.seatChange);
+    const projections = CENSUS_2011_STATES.map((s) =>
+      this.computeStateProjection(s, IDEAL_POP_PER_AC_SEAT_2011),
+    ).sort((a, b) => b.seatChange - a.seatChange);
 
     const gainers = projections
       .filter((p) => p.seatChange > 0)
@@ -1779,7 +2282,7 @@ export class DelimitationService {
     const provenance = this.buildProvenance(
       'PROJECTION_DIFFERENTIAL_RANKING',
       'DETERMINISTIC_DERIVED',
-      'DERIVED'
+      'DERIVED',
     );
 
     return { gainers, losers, provenance };
@@ -1788,7 +2291,10 @@ export class DelimitationService {
   /**
    * 6. POST /api/v1/delimitation/monitor-webhook (Directive G5-09)
    */
-  public processMonitorWebhook(payload: MonitorWebhookPayloadDTO, authHeader?: string): MonitorWebhookResponseDTO {
+  public processMonitorWebhook(
+    payload: MonitorWebhookPayloadDTO,
+    authHeader?: string,
+  ): MonitorWebhookResponseDTO {
     const expectedSecret = process.env.KSHETRA_MONITOR_SECRET || process.env.MONITOR_WEBHOOK_SECRET;
 
     if (expectedSecret && authHeader !== `Bearer ${expectedSecret}`) {
@@ -1830,7 +2336,10 @@ export class DelimitationService {
    * - Preserves fail-closed behavior for unknown PIN prefixes (404 PIN_NOT_FOUND) and invalid PIN syntax (400).
    * - Non-statutory provisional scenarios remain strictly distinguished from canonical data and omit ungrounded impacts.
    */
-  public getCitizenImpact(pinCode: string, options?: { scenarioId?: string; proposalId?: string }): CitizenImpactDTO {
+  public getCitizenImpact(
+    pinCode: string,
+    options?: { scenarioId?: string; proposalId?: string },
+  ): CitizenImpactDTO {
     if (!/^\d{6}$/.test(pinCode)) {
       const err = new Error('Invalid PIN code. Must be exactly 6 digits.');
       (err as any).statusCode = 400;
@@ -1848,18 +2357,23 @@ export class DelimitationService {
         [CENSUS_2011_PCA_PROVENANCE, DELIMITATION_2008_REGIME_PROVENANCE],
         'CURRENT_LEGAL_REGIME',
         '1.3.0',
-        exact.referenceDocument ? [exact.referenceDocument] : undefined
+        exact.referenceDocument ? [exact.referenceDocument] : undefined,
       );
 
       // Subcase C1: Documented multi-AC intersection (e.g. 500001, 500028, 500034, 500056)
-      if (exact.spatialRelationship === 'INTERSECTS_MULTIPLE_ACS' && exact.candidateAcNos && exact.candidateAcNos.length > 0) {
+      if (
+        exact.spatialRelationship === 'INTERSECTS_MULTIPLE_ACS' &&
+        exact.candidateAcNos &&
+        exact.candidateAcNos.length > 0
+      ) {
         const candidateList = exact.candidateAcNos.map((acNo) => {
           const c = getConstituency(exact.stateCode, acNo);
           return {
             acNo,
             name: c ? c.name : `AC-${acNo}`,
             district: c ? c.district : exact.district,
-            reservation: c && c.reservationStatus ? (c.reservationStatus as 'GEN' | 'SC' | 'ST') : undefined,
+            reservation:
+              c && c.reservationStatus ? (c.reservationStatus as 'GEN' | 'SC' | 'ST') : undefined,
           };
         });
 
@@ -1888,7 +2402,9 @@ export class DelimitationService {
         // Case D: Reuse canonical lookup service (stateData.getConstituency)
         const canonicalAC = getConstituency(exact.stateCode, exact.canonicalAcNo);
         if (!canonicalAC) {
-          const err = new Error(`Canonical constituency ${exact.stateCode}-AC-${exact.canonicalAcNo} not found in state data.`);
+          const err = new Error(
+            `Canonical constituency ${exact.stateCode}-AC-${exact.canonicalAcNo} not found in state data.`,
+          );
           (err as any).statusCode = 500;
           (err as any).code = 'CONSTITUENCY_LOOKUP_ERROR';
           throw err;
@@ -1899,7 +2415,9 @@ export class DelimitationService {
         // Strict preservation of absence: no fabricated 'Sitting Legislator', 'INC', or default 'GEN'
         const sittingMLA = canonicalAC.currentMLA ? canonicalAC.currentMLA : undefined;
         const party = canonicalAC.currentParty ? canonicalAC.currentParty : undefined;
-        const reservation = canonicalAC.reservationStatus ? (canonicalAC.reservationStatus as 'GEN' | 'SC' | 'ST') : undefined;
+        const reservation = canonicalAC.reservationStatus
+          ? (canonicalAC.reservationStatus as 'GEN' | 'SC' | 'ST')
+          : undefined;
 
         // If an explicit scenario simulation is requested, provide scenario-scoped hypothetical data
         let proposedConstituency: CitizenImpactDTO['proposedConstituency'] = undefined;
@@ -1954,7 +2472,9 @@ export class DelimitationService {
 
     // Case A: Unmapped PIN prefix fails closed
     if (!matched) {
-      const err = new Error(`PIN code prefix '${prefix3}' is not mapped to a known postal division or state.`);
+      const err = new Error(
+        `PIN code prefix '${prefix3}' is not mapped to a known postal division or state.`,
+      );
       (err as any).statusCode = 404;
       (err as any).code = 'PIN_NOT_FOUND';
       throw err;
@@ -1966,7 +2486,7 @@ export class DelimitationService {
       'ESTIMATE',
       [CENSUS_2011_PCA_PROVENANCE, DELIMITATION_2008_REGIME_PROVENANCE],
       'CURRENT_LEGAL_REGIME',
-      '1.3.0'
+      '1.3.0',
     );
 
     // Case B: Return supported regional info ONLY without assigning arbitrary AC or falling back to state-wide candidate list
@@ -1995,13 +2515,22 @@ export class DelimitationService {
    */
   public simulateBoundaries(
     stateCode: string,
-    options: { mode?: string; seats?: string; maxDeviation?: string; regimeId?: string; proposalId?: string; date?: string }
+    options: {
+      mode?: string;
+      seats?: string;
+      maxDeviation?: string;
+      regimeId?: string;
+      proposalId?: string;
+      date?: string;
+    },
   ): BoundarySimulationDTO {
     const code = stateCode.toUpperCase();
     const state = CENSUS_2011_STATES.find((s) => s.stateCode === code);
 
     if (!state) {
-      const err = new Error(`Jurisdiction ${stateCode} is not registered in governed delimitation baselines.`);
+      const err = new Error(
+        `Jurisdiction ${stateCode} is not registered in governed delimitation baselines.`,
+      );
       (err as any).statusCode = 404;
       (err as any).code = 'UNSUPPORTED_GEOGRAPHY';
       throw err;
@@ -2009,14 +2538,22 @@ export class DelimitationService {
 
     // Regime / Scenario consistency check
     if (options.regimeId) {
-      if (options.regimeId === 'eci_delimitation_2008' && options.seats !== undefined && parseInt(options.seats, 10) !== state.currentAssemblySeats) {
-        const err = new Error(`Cannot override statutory seat allocation on CURRENT_LEGAL_REGIME 'eci_delimitation_2008'. Simulations must use a SCENARIO regime.`);
+      if (
+        options.regimeId === 'eci_delimitation_2008' &&
+        options.seats !== undefined &&
+        parseInt(options.seats, 10) !== state.currentAssemblySeats
+      ) {
+        const err = new Error(
+          `Cannot override statutory seat allocation on CURRENT_LEGAL_REGIME 'eci_delimitation_2008'. Simulations must use a SCENARIO regime.`,
+        );
         (err as any).statusCode = 400;
         (err as any).code = 'REGIME_SIMULATION_CONFLICT';
         throw err;
       }
       if (options.regimeId === 'eci_delimitation_1976') {
-        const err = new Error(`Cannot override historical seat allocation on HISTORICAL_LEGAL_REGIME 'eci_delimitation_1976'.`);
+        const err = new Error(
+          `Cannot override historical seat allocation on HISTORICAL_LEGAL_REGIME 'eci_delimitation_1976'.`,
+        );
         (err as any).statusCode = 400;
         (err as any).code = 'REGIME_SIMULATION_CONFLICT';
         throw err;
@@ -2049,7 +2586,7 @@ export class DelimitationService {
         scPopulation: d.scPopulation,
         stPopulation: d.stPopulation,
       })),
-      targetSeats
+      targetSeats,
     );
 
     // Overall State Article 332 Reservation Allocation
@@ -2065,12 +2602,16 @@ export class DelimitationService {
         targetSeats,
         state.totalPopulation,
         state.scPopulation,
-        state.stPopulation
+        state.stPopulation,
       );
     }
 
-    const legalStatus: DelimitationLegalRegime = isCurrentMode ? 'CURRENT_LEGAL_REGIME' : 'SCENARIO_PROPOSED_REGIME';
-    const outputClassification: OutputClassification = isCurrentMode ? 'STATUTORY_BENCHMARK' : 'SCENARIO_PROJECTION';
+    const legalStatus: DelimitationLegalRegime = isCurrentMode
+      ? 'CURRENT_LEGAL_REGIME'
+      : 'SCENARIO_PROPOSED_REGIME';
+    const outputClassification: OutputClassification = isCurrentMode
+      ? 'STATUTORY_BENCHMARK'
+      : 'SCENARIO_PROJECTION';
     const dataStatus: W012DataStatus = isCurrentMode ? 'OFFICIAL' : 'SCENARIO';
 
     const provenance = this.buildProvenance(
@@ -2078,7 +2619,7 @@ export class DelimitationService {
       outputClassification,
       dataStatus,
       [CENSUS_2011_PCA_PROVENANCE, DELIMITATION_2008_REGIME_PROVENANCE],
-      legalStatus
+      legalStatus,
     );
 
     const simulationData = {
@@ -2098,10 +2639,12 @@ export class DelimitationService {
       qualityScore: 94,
       districtBreakdown,
       methodology: {
-        formula: 'Hare-Niemeyer Largest Remainder method with PANIN deterministic Hamilton allocation applied to the Article 332 proportionality principle',
+        formula:
+          'Hare-Niemeyer Largest Remainder method with PANIN deterministic Hamilton allocation applied to the Article 332 proportionality principle',
         idealPopPerSeat,
         maxDeviationAllowedPercent: 10,
-        withinDeviationCount: districtBreakdown.filter((d) => Math.abs(d.deviationPercent) <= 10).length,
+        withinDeviationCount: districtBreakdown.filter((d) => Math.abs(d.deviationPercent) <= 10)
+          .length,
       },
     };
 
@@ -2111,7 +2654,7 @@ export class DelimitationService {
       `Hypothetical district-level boundary apportionment for ${state.stateName} using Hare-Niemeyer method and Census 2011 population.`,
       { targetSeats, mode, idealPopPerSeat },
       provenance,
-      simulationData
+      simulationData,
     );
 
     return {
@@ -2124,7 +2667,9 @@ export class DelimitationService {
    * 9. GET /api/v1/delimitation/reservation (National Reservation Analysis)
    */
   public getNationalReservations(): NationalReservationDTO {
-    const projections = CENSUS_2011_STATES.map((s) => this.computeStateProjection(s, IDEAL_POP_PER_AC_SEAT_2011));
+    const projections = CENSUS_2011_STATES.map((s) =>
+      this.computeStateProjection(s, IDEAL_POP_PER_AC_SEAT_2011),
+    );
     const profiles = projections.map((p) => ({
       stateCode: p.stateCode,
       stateName: p.stateName,
@@ -2133,8 +2678,10 @@ export class DelimitationService {
       scReserved: p.reservedSC,
       stReserved: p.reservedST,
       general: p.general,
-      scPercent: p.projectedSeats > 0 ? Math.round((p.reservedSC / p.projectedSeats) * 1000) / 10 : 0,
-      stPercent: p.projectedSeats > 0 ? Math.round((p.reservedST / p.projectedSeats) * 1000) / 10 : 0,
+      scPercent:
+        p.projectedSeats > 0 ? Math.round((p.reservedSC / p.projectedSeats) * 1000) / 10 : 0,
+      stPercent:
+        p.projectedSeats > 0 ? Math.round((p.reservedST / p.projectedSeats) * 1000) / 10 : 0,
     }));
 
     const provenance = this.buildProvenance(
@@ -2147,7 +2694,7 @@ export class DelimitationService {
       [
         'PANIN deterministic Hamilton/Largest Remainder allocation applied to the Article 332 proportionality principle (Generic Algorithm Multi-State Simulation)',
         'Authoritative governed delimitation scope in W020 is strictly bounded to the State of Telangana',
-      ]
+      ],
     );
 
     return {
@@ -2199,7 +2746,7 @@ export class DelimitationService {
       statutory.total,
       state.totalPopulation,
       state.scPopulation,
-      state.stPopulation
+      state.stPopulation,
     );
 
     const baseSC = Math.floor(qSC);
@@ -2218,17 +2765,19 @@ export class DelimitationService {
       remainderST: Math.round((qST - baseST) * 10000) / 10000,
       surplusSeatsDistributed: surplusDistributed,
       censusBasis: 'Census 2011 (Demographic totals from Registrar General & Census Commissioner)',
-      methodology: 'PANIN deterministic Hamilton/Largest Remainder allocation applied to the Article 332 proportionality principle on Census 2011 demographics',
+      methodology:
+        'PANIN deterministic Hamilton/Largest Remainder allocation applied to the Article 332 proportionality principle on Census 2011 demographics',
       outputClassification: 'DETERMINISTIC_DERIVED',
       dataStatus: 'DERIVED',
-      disclaimer: 'This value is a PANIN academic mathematical derivation applying Article 332 proportionality principle to Census 2011 demographics. It does NOT represent the gazetted current statutory reservation baseline.',
+      disclaimer:
+        'This value is a PANIN academic mathematical derivation applying Article 332 proportionality principle to Census 2011 demographics. It does NOT represent the gazetted current statutory reservation baseline.',
     };
 
     const provenance = this.buildProvenance(
       'ARTICLE_332_STATUTORY_VS_DERIVED_RESERVATION_ANALYSIS',
       'STATUTORY_FACT',
       'OFFICIAL',
-      [DELIMITATION_2008_REGIME_PROVENANCE, APRA_2014_PROVENANCE, CENSUS_2011_PCA_PROVENANCE]
+      [DELIMITATION_2008_REGIME_PROVENANCE, APRA_2014_PROVENANCE, CENSUS_2011_PCA_PROVENANCE],
     );
 
     return {
@@ -2267,7 +2816,7 @@ export class DelimitationService {
     const provenance = this.buildProvenance(
       'MULTI_STATE_PROJECTION_COMPARISON',
       'DETERMINISTIC_DERIVED',
-      'DERIVED'
+      'DERIVED',
     );
 
     return {
@@ -2294,7 +2843,8 @@ export class DelimitationService {
       let mlaName = c.winnerName2023 || c.winnerName || 'UNKNOWN';
       let party = c.winner2023 || c.currentParty || 'UNKNOWN';
       let margin = c.margin2023 || 12000;
-      let marginPct = Math.round((margin / (c.winnerVotes2023 ? c.winnerVotes2023 * 1.8 : 180000)) * 1000) / 10;
+      let marginPct =
+        Math.round((margin / (c.winnerVotes2023 ? c.winnerVotes2023 * 1.8 : 180000)) * 1000) / 10;
       let personId: string | null = null;
       let contestId: string | null = null;
 
@@ -2317,11 +2867,20 @@ export class DelimitationService {
         contestId = 'TS_LA_2023_GEN_TS-AC-040';
       }
 
-      const isUrban = ['hyderabad', 'rangareddy', 'medchal', 'bengaluru', 'mumbai', 'pune', 'chennai', 'delhi'].some((city) => (c.district || '').toLowerCase().includes(city));
+      const isUrban = [
+        'hyderabad',
+        'rangareddy',
+        'medchal',
+        'bengaluru',
+        'mumbai',
+        'pune',
+        'chennai',
+        'delhi',
+      ].some((city) => (c.district || '').toLowerCase().includes(city));
 
       let changeType = 'minor_adjust';
       let riskScore = 15;
-      if (isUrban && (acNo % 2 === 0)) {
+      if (isUrban && acNo % 2 === 0) {
         changeType = 'split';
         riskScore = 65;
       } else if (acNo % 5 === 0) {
@@ -2334,7 +2893,13 @@ export class DelimitationService {
 
       riskScore = Math.max(5, Math.min(95, riskScore));
       const rating: 'critical_risk' | 'high_risk' | 'moderate_risk' | 'safe' =
-        riskScore > 75 ? 'critical_risk' : riskScore > 55 ? 'high_risk' : riskScore > 35 ? 'moderate_risk' : 'safe';
+        riskScore > 75
+          ? 'critical_risk'
+          : riskScore > 55
+            ? 'high_risk'
+            : riskScore > 35
+              ? 'moderate_risk'
+              : 'safe';
 
       return {
         mlaName,
@@ -2355,13 +2920,15 @@ export class DelimitationService {
     const provenance = this.buildProvenance(
       'MARGIN_BASED_VULNERABILITY_HEURISTIC',
       'POLITICAL_HEURISTIC',
-      'INFERRED'
+      'INFERRED',
     );
 
     return {
       stateCode: code,
       totalMLAsAnalyzed: mlaProfiles.length,
-      highRiskCount: mlaProfiles.filter((m) => m.riskRating === 'critical_risk' || m.riskRating === 'high_risk').length,
+      highRiskCount: mlaProfiles.filter(
+        (m) => m.riskRating === 'critical_risk' || m.riskRating === 'high_risk',
+      ).length,
       safeCount: mlaProfiles.filter((m) => m.riskRating === 'safe').length,
       mlaProfiles,
       provenance,
@@ -2407,7 +2974,7 @@ export class DelimitationService {
     const provenance = this.buildProvenance(
       'PARTY_PROJECTION_GROWTH_RATIO_HEURISTIC',
       'POLITICAL_HEURISTIC',
-      'INFERRED'
+      'INFERRED',
     );
 
     return {
@@ -2427,7 +2994,7 @@ export class DelimitationService {
     const provenance = this.buildProvenance(
       'CONSTITUTIONAL_DELIMITATION_METHODOLOGY_DOCUMENTATION',
       'STATUTORY_FACT',
-      'OFFICIAL'
+      'OFFICIAL',
     );
 
     return {
@@ -2441,29 +3008,35 @@ export class DelimitationService {
         {
           article: 'Article 81',
           title: 'Composition of the House of the People',
-          description: 'Allocates seats to states proportionally so that the ratio between seats and population is as nearly as practicable the same.',
+          description:
+            'Allocates seats to states proportionally so that the ratio between seats and population is as nearly as practicable the same.',
         },
         {
           article: 'Article 82',
           title: 'Readjustment after each census',
-          description: 'Mandates delimitation of constituencies upon the publication of the relevant figures of each census.',
+          description:
+            'Mandates delimitation of constituencies upon the publication of the relevant figures of each census.',
         },
         {
           article: 'Article 170',
           title: 'Composition of Legislative Assemblies',
-          description: 'State assembly seats partitioned into territorial constituencies of equal population.',
+          description:
+            'State assembly seats partitioned into territorial constituencies of equal population.',
         },
         {
           article: 'Article 330 & 332',
           title: 'SC/ST Proportional Reservation',
-          description: 'Seats reserved for Scheduled Castes and Scheduled Tribes in the House of the People and Legislative Assemblies proportional to their population share in the state.',
+          description:
+            'Seats reserved for Scheduled Castes and Scheduled Tribes in the House of the People and Legislative Assemblies proportional to their population share in the state.',
         },
       ],
       formulas: {
         idealPopulation: 'IdealPop = StatePopulation / TotalSeats',
         deviation: 'Deviation = ((DistrictPopPerSeat - IdealPop) / IdealPop) * 100',
-        hareNiemeyer: 'Seats allocated by base floor(quota), surplus seats distributed in descending order of fractional remainders.',
-        article332Algorithm: 'PANIN deterministic Hamilton/Largest Remainder allocation applied to the Article 332 proportionality principle, ensuring exact seat conservation.',
+        hareNiemeyer:
+          'Seats allocated by base floor(quota), surplus seats distributed in descending order of fractional remainders.',
+        article332Algorithm:
+          'PANIN deterministic Hamilton/Largest Remainder allocation applied to the Article 332 proportionality principle, ensuring exact seat conservation.',
       },
       provenance,
     };

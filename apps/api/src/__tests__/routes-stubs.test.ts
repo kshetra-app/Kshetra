@@ -47,8 +47,16 @@ describe('Public route contracts', () => {
   });
 
   const get = (url: string, headers: Record<string, string> = {}) =>
-    app.inject({ method: 'GET', url, headers: { 'x-user-id': 'test-user', 'x-user-role': 'citizen', ...headers } });
-  const post = (url: string, payload: Record<string, unknown>, headers: Record<string, string> = {}) =>
+    app.inject({
+      method: 'GET',
+      url,
+      headers: { 'x-user-id': 'test-user', 'x-user-role': 'citizen', ...headers },
+    });
+  const post = (
+    url: string,
+    payload: Record<string, unknown>,
+    headers: Record<string, string> = {},
+  ) =>
     app.inject({
       method: 'POST',
       url,
@@ -109,7 +117,9 @@ describe('Public route contracts', () => {
     });
 
     it('records bill opinion, files & upvotes RTI', async () => {
-      expect((await post('/api/v1/civic/bills/b1/opinion', { support: true })).statusCode).toBe(200);
+      expect((await post('/api/v1/civic/bills/b1/opinion', { support: true })).statusCode).toBe(
+        200,
+      );
       expect((await post('/api/v1/civic/rti', { subject: 'x' })).statusCode).toBe(200);
       expect((await post('/api/v1/civic/rti/r1/upvote', {})).statusCode).toBe(200);
     });
@@ -127,11 +137,19 @@ describe('Public route contracts', () => {
 
     it('accepts vouch, flag and tip', async () => {
       expect((await post('/api/v1/journalist/articles/a1/vouch', {})).statusCode).toBe(200);
-      expect((await post('/api/v1/journalist/articles/a1/flag', { reason: 'x' })).statusCode).toBe(200);
-      expect((await post('/api/v1/journalist/articles/a1/tip', { amountINR: 100 })).statusCode).toBe(200);
+      expect((await post('/api/v1/journalist/articles/a1/flag', { reason: 'x' })).statusCode).toBe(
+        200,
+      );
+      expect(
+        (await post('/api/v1/journalist/articles/a1/tip', { amountINR: 100 })).statusCode,
+      ).toBe(200);
       expect((await post('/api/v1/journalist/articles/missing/vouch', {})).statusCode).toBe(404);
-      expect((await post('/api/v1/journalist/articles/missing/flag', { reason: 'x' })).statusCode).toBe(404);
-      expect((await post('/api/v1/journalist/articles/missing/tip', { amountINR: 100 })).statusCode).toBe(404);
+      expect(
+        (await post('/api/v1/journalist/articles/missing/flag', { reason: 'x' })).statusCode,
+      ).toBe(404);
+      expect(
+        (await post('/api/v1/journalist/articles/missing/tip', { amountINR: 100 })).statusCode,
+      ).toBe(404);
     });
   });
 
@@ -147,9 +165,23 @@ describe('Public route contracts', () => {
 
     it('accepts rsvp, manifesto vote, survey response and grievance', async () => {
       expect((await post('/api/v1/politician/events/e1/rsvp', {})).statusCode).toBe(200);
-      expect((await post('/api/v1/politician/manifestos/m1/items/i1/vote', { support: true })).statusCode).toBe(501);
-      expect((await post('/api/v1/politician/surveys/s1/respond', { answers: {} })).statusCode).toBe(200);
-      expect((await post('/api/v1/politician/grievances', { politicianId: 'p1', subject: 's', description: 'd', category: 'c' })).statusCode).toBe(501);
+      expect(
+        (await post('/api/v1/politician/manifestos/m1/items/i1/vote', { support: true }))
+          .statusCode,
+      ).toBe(501);
+      expect(
+        (await post('/api/v1/politician/surveys/s1/respond', { answers: {} })).statusCode,
+      ).toBe(200);
+      expect(
+        (
+          await post('/api/v1/politician/grievances', {
+            politicianId: 'p1',
+            subject: 's',
+            description: 'd',
+            category: 'c',
+          })
+        ).statusCode,
+      ).toBe(501);
     });
   });
 
@@ -161,7 +193,9 @@ describe('Public route contracts', () => {
       expect((await get('/api/v1/campaign/volunteers')).statusCode).toBe(200);
       expect((await get('/api/v1/campaign/pricing')).statusCode).toBe(200);
       expect((await get('/api/v1/campaign/obd/trai-status')).statusCode).toBe(200);
-      expect((await get('/api/v1/campaign/users/check-kshetra?phone=9876543210')).statusCode).toBe(200);
+      expect((await get('/api/v1/campaign/users/check-kshetra?phone=9876543210')).statusCode).toBe(
+        200,
+      );
     });
   });
 
@@ -180,7 +214,9 @@ describe('Public route contracts', () => {
     });
 
     it('simulates and compares states', async () => {
-      expect((await get('/api/v1/delimitation/simulate/MH?seats=400&mode=equal_population')).statusCode).toBe(200);
+      expect(
+        (await get('/api/v1/delimitation/simulate/MH?seats=400&mode=equal_population')).statusCode,
+      ).toBe(200);
       expect((await get('/api/v1/delimitation/simulate/ZZ')).statusCode).toBe(404);
       expect((await get('/api/v1/delimitation/compare?states=TS,AP')).statusCode).toBe(200);
       expect((await get('/api/v1/delimitation/compare')).statusCode).toBe(400);
@@ -209,7 +245,7 @@ describe('Public route contracts', () => {
       const missing = await post(
         '/api/v1/delimitation/monitor-webhook',
         { type: 'gazette' },
-        { authorization: 'Bearer test-secret' }
+        { authorization: 'Bearer test-secret' },
       );
       expect(missing.statusCode).toBe(400);
 
@@ -220,7 +256,7 @@ describe('Public route contracts', () => {
           type: 'gazette',
           entries: [{ id: '1', title: 't', date: '2025-01-01', relevanceScore: 80 }],
         },
-        { authorization: 'Bearer test-secret' }
+        { authorization: 'Bearer test-secret' },
       );
       expect(ok.statusCode).toBe(200);
       const okBody = JSON.parse(ok.payload);

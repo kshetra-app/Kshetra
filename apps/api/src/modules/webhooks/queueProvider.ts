@@ -51,18 +51,27 @@ export interface LeasedDeliveryJob {
 }
 
 export interface WebhookQueueProvider {
-  enqueueEvent(params: EnqueueEventParams): Promise<{ eventId: string; deduplicated: boolean; enqueuedDeliveries: number }>;
+  enqueueEvent(
+    params: EnqueueEventParams,
+  ): Promise<{ eventId: string; deduplicated: boolean; enqueuedDeliveries: number }>;
   claimBatch(batchSize: number): Promise<LeasedDeliveryJob[]>;
-  completeDelivery(deliveryId: string, leaseToken: string, result: DispatchResult): Promise<{ updated: boolean; terminalStatus?: string }>;
+  completeDelivery(
+    deliveryId: string,
+    leaseToken: string,
+    result: DispatchResult,
+  ): Promise<{ updated: boolean; terminalStatus?: string }>;
   recoverExpiredLeases(): Promise<number>;
-  purgeExpiredData(retentionDays?: number, batchSize?: number): Promise<{ purgedDeliveries: number; purgedEvents: number }>;
+  purgeExpiredData(
+    retentionDays?: number,
+    batchSize?: number,
+  ): Promise<{ purgedDeliveries: number; purgedEvents: number }>;
 }
 
 export const RETRY_INTERVALS_SECONDS = [
-  30,     // After attempt 1 fails (Retry 1)
-  300,    // After attempt 2 fails (Retry 2: 5 min)
-  1800,   // After attempt 3 fails (Retry 3: 30 min)
-  7200,   // After attempt 4 fails (Retry 4: 2 hours)
+  30, // After attempt 1 fails (Retry 1)
+  300, // After attempt 2 fails (Retry 2: 5 min)
+  1800, // After attempt 3 fails (Retry 3: 30 min)
+  7200, // After attempt 4 fails (Retry 4: 2 hours)
 ] as const;
 
 export const BACKOFF_SCHEDULE_SECONDS = RETRY_INTERVALS_SECONDS;
@@ -87,11 +96,30 @@ export function calculateNextRetryAt(attemptCount: number, baseDate = new Date()
 export class InMemoryQueueProvider implements WebhookQueueProvider {
   public subscriptions = new Map<string, WebhookSubscriptionModel>();
   public events = new Map<string, WebhookEventModel>();
-  public deliveries = new Map<string, WebhookDeliveryModel & { leaseToken?: string; leasedUntil?: Date; responseBodySample?: string; responseHeaders?: any; requestHeaders?: any }>();
+  public deliveries = new Map<
+    string,
+    WebhookDeliveryModel & {
+      leaseToken?: string;
+      leasedUntil?: Date;
+      responseBodySample?: string;
+      responseHeaders?: any;
+      requestHeaders?: any;
+    }
+  >();
   public tenantIdempotencyIndex = new Set<string>();
 
-  async enqueueEvent(params: EnqueueEventParams): Promise<{ eventId: string; deduplicated: boolean; enqueuedDeliveries: number }> {
-    const { tenantId, applicationId, eventType, idempotencyKey, payload, payloadRaw, payloadSha256 } = params;
+  async enqueueEvent(
+    params: EnqueueEventParams,
+  ): Promise<{ eventId: string; deduplicated: boolean; enqueuedDeliveries: number }> {
+    const {
+      tenantId,
+      applicationId,
+      eventType,
+      idempotencyKey,
+      payload,
+      payloadRaw,
+      payloadSha256,
+    } = params;
 
     // Check scoped tenant and application idempotency
     if (idempotencyKey) {
@@ -99,12 +127,20 @@ export class InMemoryQueueProvider implements WebhookQueueProvider {
       if (this.tenantIdempotencyIndex.has(scopedKey)) {
         // Find existing event
         for (const evt of this.events.values()) {
-          if (evt.tenantId === tenantId && evt.applicationId === applicationId && evt.idempotencyKey === idempotencyKey) {
+          if (
+            evt.tenantId === tenantId &&
+            evt.applicationId === applicationId &&
+            evt.idempotencyKey === idempotencyKey
+          ) {
             let existingDeliveriesCount = 0;
             for (const d of this.deliveries.values()) {
               if (d.eventId === evt.id) existingDeliveriesCount++;
             }
-            return { eventId: evt.id, deduplicated: true, enqueuedDeliveries: existingDeliveriesCount };
+            return {
+              eventId: evt.id,
+              deduplicated: true,
+              enqueuedDeliveries: existingDeliveriesCount,
+            };
           }
         }
       }
@@ -128,8 +164,13 @@ export class InMemoryQueueProvider implements WebhookQueueProvider {
     // Fan out to matching active subscriptions under this tenant and application
     let enqueued = 0;
     for (const sub of this.subscriptions.values()) {
-      if (sub.tenantId === tenantId && sub.applicationId === applicationId && sub.status === 'active') {
-        const matchesEvent = sub.subscribedEvents.includes('*') || sub.subscribedEvents.includes(eventType);
+      if (
+        sub.tenantId === tenantId &&
+        sub.applicationId === applicationId &&
+        sub.status === 'active'
+      ) {
+        const matchesEvent =
+          sub.subscribedEvents.includes('*') || sub.subscribedEvents.includes(eventType);
         if (matchesEvent) {
           const deliveryId = crypto.randomUUID();
           this.deliveries.set(deliveryId, {
@@ -158,7 +199,9 @@ export class InMemoryQueueProvider implements WebhookQueueProvider {
 
       const isClaimable =
         delivery.status === 'queued' ||
-        (delivery.status === 'retrying' && delivery.nextRetryAt && new Date(delivery.nextRetryAt) <= now) ||
+        (delivery.status === 'retrying' &&
+          delivery.nextRetryAt &&
+          new Date(delivery.nextRetryAt) <= now) ||
         (delivery.status === 'leased' && delivery.leasedUntil && delivery.leasedUntil < now);
 
       if (isClaimable) {
@@ -188,7 +231,7 @@ export class InMemoryQueueProvider implements WebhookQueueProvider {
   async completeDelivery(
     deliveryId: string,
     leaseToken: string,
-    result: DispatchResult
+    result: DispatchResult,
   ): Promise<{ updated: boolean; terminalStatus?: string }> {
     const delivery = this.deliveries.get(deliveryId);
     if (!delivery) return { updated: false };
@@ -268,7 +311,10 @@ export class InMemoryQueueProvider implements WebhookQueueProvider {
     return recovered;
   }
 
-  async purgeExpiredData(retentionDays = 30, batchSize = 1000): Promise<{ purgedDeliveries: number; purgedEvents: number }> {
+  async purgeExpiredData(
+    retentionDays = 30,
+    batchSize = 1000,
+  ): Promise<{ purgedDeliveries: number; purgedEvents: number }> {
     const cutoff = new Date(Date.now() - retentionDays * 86400000);
     let purgedDeliv = 0;
     let purgedEvt = 0;
@@ -276,7 +322,11 @@ export class InMemoryQueueProvider implements WebhookQueueProvider {
     // Purge terminal deliveries first
     for (const [id, d] of this.deliveries.entries()) {
       if (purgedDeliv >= batchSize) break;
-      if ((d.status === 'delivered' || d.status === 'dead_letter') && d.completedAt && new Date(d.completedAt) < cutoff) {
+      if (
+        (d.status === 'delivered' || d.status === 'dead_letter') &&
+        d.completedAt &&
+        new Date(d.completedAt) < cutoff
+      ) {
         this.deliveries.delete(id);
         purgedDeliv++;
       }
@@ -309,8 +359,18 @@ export class InMemoryQueueProvider implements WebhookQueueProvider {
 export class PostgresQueueProvider implements WebhookQueueProvider {
   constructor(private readonly supabaseClient: SupabaseClient) {}
 
-  async enqueueEvent(params: EnqueueEventParams): Promise<{ eventId: string; deduplicated: boolean; enqueuedDeliveries: number }> {
-    const { tenantId, applicationId, eventType, idempotencyKey, payload, payloadRaw, payloadSha256 } = params;
+  async enqueueEvent(
+    params: EnqueueEventParams,
+  ): Promise<{ eventId: string; deduplicated: boolean; enqueuedDeliveries: number }> {
+    const {
+      tenantId,
+      applicationId,
+      eventType,
+      idempotencyKey,
+      payload,
+      payloadRaw,
+      payloadSha256,
+    } = params;
 
     const { data, error } = await this.supabaseClient.rpc('fn_publish_webhook_event', {
       p_tenant_id: tenantId,
@@ -353,8 +413,16 @@ export class PostgresQueueProvider implements WebhookQueueProvider {
     }
 
     return data.map((row: any) => {
-      if (!row.delivery_id || !row.tenant_id || !row.subscription_id || !row.event_id || !row.lease_token) {
-        throw new Error(`MALFORMED_CLAIM_BATCH_ROW: Required field missing from fn_claim_webhook_batch row: ${JSON.stringify(row)}`);
+      if (
+        !row.delivery_id ||
+        !row.tenant_id ||
+        !row.subscription_id ||
+        !row.event_id ||
+        !row.lease_token
+      ) {
+        throw new Error(
+          `MALFORMED_CLAIM_BATCH_ROW: Required field missing from fn_claim_webhook_batch row: ${JSON.stringify(row)}`,
+        );
       }
 
       const delivery: WebhookDeliveryModel = {
@@ -392,7 +460,9 @@ export class PostgresQueueProvider implements WebhookQueueProvider {
         secretIv: parseBytea(row.secret_iv),
         secretTag: parseBytea(row.secret_tag),
         secretKeyVersion: row.secret_key_version,
-        previousSecretCiphertext: row.previous_secret_ciphertext ? parseBytea(row.previous_secret_ciphertext) : null,
+        previousSecretCiphertext: row.previous_secret_ciphertext
+          ? parseBytea(row.previous_secret_ciphertext)
+          : null,
         previousSecretIv: row.previous_secret_iv ? parseBytea(row.previous_secret_iv) : null,
         previousSecretTag: row.previous_secret_tag ? parseBytea(row.previous_secret_tag) : null,
         previousSecretExpiresAt: row.previous_secret_expires_at || null,
@@ -428,7 +498,7 @@ export class PostgresQueueProvider implements WebhookQueueProvider {
   async completeDelivery(
     deliveryId: string,
     leaseToken: string,
-    result: DispatchResult
+    result: DispatchResult,
   ): Promise<{ updated: boolean; terminalStatus?: string }> {
     // 1. Fetch existing delivery with lease token verification
     const { data: existing, error: fetchErr } = await this.supabaseClient
@@ -524,7 +594,10 @@ export class PostgresQueueProvider implements WebhookQueueProvider {
     return (data || []).length;
   }
 
-  async purgeExpiredData(retentionDays = 30, batchSize = 1000): Promise<{ purgedDeliveries: number; purgedEvents: number }> {
+  async purgeExpiredData(
+    retentionDays = 30,
+    batchSize = 1000,
+  ): Promise<{ purgedDeliveries: number; purgedEvents: number }> {
     const { data, error } = await this.supabaseClient.rpc('fn_purge_expired_webhook_data', {
       p_retention_days: retentionDays,
       p_batch_size: batchSize,

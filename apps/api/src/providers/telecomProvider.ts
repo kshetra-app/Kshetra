@@ -74,7 +74,8 @@ export class TelecomProvider implements VoiceObdProvider {
       return {
         success: true,
         providerRef: `sim_${Date.now().toString(36)}`,
-        warning: 'TELECOM_CREDENTIALS_REQUIRED: Exotel API credentials are not configured in environment. Call recorded in queued state.',
+        warning:
+          'TELECOM_CREDENTIALS_REQUIRED: Exotel API credentials are not configured in environment. Call recorded in queued state.',
       };
     }
 
@@ -113,7 +114,7 @@ export class TelecomProvider implements VoiceObdProvider {
       });
 
       clearTimeout(timeoutId);
-      const data = await res.json() as any;
+      const data = (await res.json()) as any;
       if (res.ok && data?.Call?.Sid) {
         return { success: true, callSid: data.Call.Sid, providerRef: data.Call.Sid };
       }
@@ -126,7 +127,9 @@ export class TelecomProvider implements VoiceObdProvider {
       const isTimeout = err?.name === 'AbortError';
       return {
         success: false,
-        error: isTimeout ? 'CARRIER_TIMEOUT: Carrier response timed out after 10000ms' : (err?.message || 'Network error calling Exotel API'),
+        error: isTimeout
+          ? 'CARRIER_TIMEOUT: Carrier response timed out after 10000ms'
+          : err?.message || 'Network error calling Exotel API',
       };
     }
   }

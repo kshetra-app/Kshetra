@@ -70,7 +70,12 @@ export async function geoRuntimeRoutes(app: FastifyInstance) {
    */
   app.get<{
     Params: { layer: string; z: number; x: number; y: number };
-    Querystring: { regime?: 'current' | 'historical' | 'version'; as_of?: string; version_id?: string; bypass_adapter?: boolean };
+    Querystring: {
+      regime?: 'current' | 'historical' | 'version';
+      as_of?: string;
+      version_id?: string;
+      bypass_adapter?: boolean;
+    };
   }>(
     '/geo/tiles/:layer/:z/:x/:y',
     {
@@ -155,8 +160,16 @@ export async function geoRuntimeRoutes(app: FastifyInstance) {
       },
     },
     async (request, reply) => {
-      const { lat, lng, layer = 'mandals', regime, as_of, version_id, bypass_adapter } = request.query;
-      const effectiveRegime = version_id && !regime ? 'version' : (regime || 'historical');
+      const {
+        lat,
+        lng,
+        layer = 'mandals',
+        regime,
+        as_of,
+        version_id,
+        bypass_adapter,
+      } = request.query;
+      const effectiveRegime = version_id && !regime ? 'version' : regime || 'historical';
 
       if (layer !== 'mandals' && layer !== 'mandal') {
         return sendApiError(reply, request, 404, 'Not Found', `Unknown spatial layer: ${layer}`, {
@@ -205,7 +218,11 @@ export async function geoRuntimeRoutes(app: FastifyInstance) {
    */
   app.get<{
     Params: { layer: string; id: string };
-    Querystring: { regime?: 'current' | 'historical' | 'version'; as_of?: string; bypass_adapter?: boolean };
+    Querystring: {
+      regime?: 'current' | 'historical' | 'version';
+      as_of?: string;
+      bypass_adapter?: boolean;
+    };
   }>(
     '/geo/features/:layer/:id',
     {

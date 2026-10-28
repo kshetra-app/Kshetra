@@ -94,7 +94,8 @@ export async function buildApp() {
     logger: envToLogger[env] ?? true,
     genReqId: (req: any) => {
       const headers = req?.headers;
-      const incomingId = (headers?.['x-request-id'] as string) || (headers?.['x-correlation-id'] as string);
+      const incomingId =
+        (headers?.['x-request-id'] as string) || (headers?.['x-correlation-id'] as string);
       if (typeof incomingId === 'string') {
         const trimmed = incomingId.trim();
         // Enforce max length 128 chars and safe identifier character set [a-zA-Z0-9_-]
@@ -123,14 +124,14 @@ export async function buildApp() {
       const elapsedNs = process.hrtime.bigint() - startTime;
       durationMs = Number(elapsedNs) / 1_000_000;
     }
-    
+
     metricsCollector.onRequestEnd(reply.statusCode, durationMs);
   });
 
   // Inject x-request-id and x-response-time headers on all outgoing responses
   app.addHook('onSend', async (request: FastifyRequest, reply: FastifyReply, payload) => {
     reply.header('x-request-id', request.id);
-    
+
     const startTime = (request as any).startTime as bigint | undefined;
     if (startTime) {
       const elapsedNs = process.hrtime.bigint() - startTime;
@@ -182,9 +183,11 @@ export async function buildApp() {
     });
 
     const exposeDetail = env !== 'production';
-    const validationErrors = (error as any).validation as Array<{ instancePath?: string; message?: string; params?: any }> | undefined;
+    const validationErrors = (error as any).validation as
+      Array<{ instancePath?: string; message?: string; params?: any }> | undefined;
     const details = validationErrors?.map((v) => ({
-      path: v.instancePath || (v.params?.missingProperty ? `.${v.params.missingProperty}` : '') || '',
+      path:
+        v.instancePath || (v.params?.missingProperty ? `.${v.params.missingProperty}` : '') || '',
       message: v.message || 'Validation error',
     }));
 
@@ -193,10 +196,10 @@ export async function buildApp() {
         statusCode >= 500
           ? 'Internal Server Error'
           : statusCode === 400
-          ? 'Bad Request'
-          : error.name && error.name !== 'Error'
-          ? error.name
-          : 'Bad Request',
+            ? 'Bad Request'
+            : error.name && error.name !== 'Error'
+              ? error.name
+              : 'Bad Request',
       message:
         statusCode >= 500 && !exposeDetail
           ? 'An unexpected error occurred. Please try again later.'
@@ -291,4 +294,3 @@ if (process.env.NODE_ENV !== 'test' && (process.env.START_SERVER === 'true' || i
     process.exit(1);
   });
 }
-

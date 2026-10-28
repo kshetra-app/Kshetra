@@ -53,7 +53,16 @@ const newsFeedSchema = {
               constituencyId: { type: 'string' },
               publishedAt: { type: 'string' },
             },
-            required: ['id', 'title', 'sourceUrl', 'source', 'language', 'category', 'scope', 'publishedAt'],
+            required: [
+              'id',
+              'title',
+              'sourceUrl',
+              'source',
+              'language',
+              'category',
+              'scope',
+              'publishedAt',
+            ],
           },
         },
       },
@@ -103,7 +112,12 @@ export async function newsRoutes(app: FastifyInstance) {
   app.post('/api/v1/news/refresh', { schema: newsRefreshSchema }, async (request, reply) => {
     try {
       const feed = await refreshNews();
-      return { ok: true, generatedAt: feed.generatedAt, items: feed.items.length, sources: feed.sources.length };
+      return {
+        ok: true,
+        generatedAt: feed.generatedAt,
+        items: feed.items.length,
+        sources: feed.sources.length,
+      };
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Internal news refresh error';
       return sendApiError(reply, request, 500, 'Internal Server Error', message, {

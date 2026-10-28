@@ -27,7 +27,14 @@ describe('Election Routes Unit Tests (Direct Route Injection)', () => {
     ...mockContest,
     candidates: [
       { id: 'cand-1', name: 'Revanth Reddy', party: 'INC', votes: 107429, rank: 1, result: 'WON' },
-      { id: 'cand-2', name: 'Patnam Narender Reddy', party: 'BRS', votes: 74897, rank: 2, result: 'LOST' },
+      {
+        id: 'cand-2',
+        name: 'Patnam Narender Reddy',
+        party: 'BRS',
+        votes: 74897,
+        rank: 2,
+        result: 'LOST',
+      },
     ],
     winner: { candidateId: 'cand-1', name: 'Revanth Reddy' },
     runnerUp: { candidateId: 'cand-2', name: 'Patnam Narender Reddy' },
@@ -102,7 +109,9 @@ describe('Election Routes Unit Tests (Direct Route Injection)', () => {
   });
 
   it('GET /api/v1/elections returns 500 when electionService fails', async () => {
-    jest.spyOn(electionService, 'listElectionEvents').mockRejectedValue(new Error('PostgreSQL timeout'));
+    jest
+      .spyOn(electionService, 'listElectionEvents')
+      .mockRejectedValue(new Error('PostgreSQL timeout'));
 
     const res = await app.inject({
       method: 'GET',
@@ -158,7 +167,9 @@ describe('Election Routes Unit Tests (Direct Route Injection)', () => {
   });
 
   it('GET /api/v1/elections/:id returns 500 when service throws', async () => {
-    jest.spyOn(electionService, 'getElectionEventById').mockRejectedValue(new Error('Database offline'));
+    jest
+      .spyOn(electionService, 'getElectionEventById')
+      .mockRejectedValue(new Error('Database offline'));
 
     const res = await app.inject({
       method: 'GET',
@@ -227,7 +238,9 @@ describe('Election Routes Unit Tests (Direct Route Injection)', () => {
   });
 
   it('GET /api/v1/elections/:id/contests returns 500 when service throws', async () => {
-    jest.spyOn(electionService, 'listElectionContests').mockRejectedValue(new Error('Contest query failed'));
+    jest
+      .spyOn(electionService, 'listElectionContests')
+      .mockRejectedValue(new Error('Contest query failed'));
 
     const res = await app.inject({
       method: 'GET',
@@ -282,7 +295,9 @@ describe('Election Routes Unit Tests (Direct Route Injection)', () => {
   });
 
   it('GET /api/v1/elections/:id/contests/:constituencyId returns 500 when service throws', async () => {
-    jest.spyOn(electionService, 'getContestDetail').mockRejectedValue(new Error('Detail fetch error'));
+    jest
+      .spyOn(electionService, 'getContestDetail')
+      .mockRejectedValue(new Error('Detail fetch error'));
 
     const res = await app.inject({
       method: 'GET',

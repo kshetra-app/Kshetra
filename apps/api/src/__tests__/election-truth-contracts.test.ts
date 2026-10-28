@@ -1,4 +1,8 @@
-import { getConstituencyElectionData, getRawConstituency, getConstituency } from '../services/stateData';
+import {
+  getConstituencyElectionData,
+  getRawConstituency,
+  getConstituency,
+} from '../services/stateData';
 
 describe('Election Truth Service & Contract Behavior (CTO Directive 087)', () => {
   describe('getConstituencyElectionData behavior invariants on real seed data', () => {

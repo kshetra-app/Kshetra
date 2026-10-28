@@ -158,7 +158,7 @@ export async function broadcastRoutes(app: FastifyInstance) {
         standings,
         constituencies,
       };
-    }
+    },
   );
 
   /** 3. GET /api/v1/broadcast/state/:code/constituency/:acNo — specific assembly constituency in state */
@@ -188,11 +188,11 @@ export async function broadcastRoutes(app: FastifyInstance) {
           `Constituency #${acNo} not found in state ${code}`,
           {
             code: 'NOT_FOUND',
-          }
+          },
         );
       }
 
       return constituency;
-    }
+    },
   );
 }

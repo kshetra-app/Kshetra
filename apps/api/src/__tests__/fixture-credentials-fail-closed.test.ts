@@ -15,7 +15,12 @@
  */
 
 import { buildApp } from '../server';
-import { supabase, isSupabaseConfigured, isValidSupabaseKey, setSupabaseConfiguredForTesting } from '../lib/supabase';
+import {
+  supabase,
+  isSupabaseConfigured,
+  isValidSupabaseKey,
+  setSupabaseConfiguredForTesting,
+} from '../lib/supabase';
 import { isLocalDatabaseAvailable } from './testDbProbe';
 import type { FastifyInstance } from 'fastify';
 
@@ -99,7 +104,8 @@ describe('CTO Directive 119: Fixture Credentials & Fail-Closed Behavior', () => 
       } finally {
         if (savedCI !== undefined) process.env.CI = savedCI;
         else delete process.env.CI;
-        if (savedIntegration !== undefined) process.env.INTEGRATION_TESTS_ENABLED = savedIntegration;
+        if (savedIntegration !== undefined)
+          process.env.INTEGRATION_TESTS_ENABLED = savedIntegration;
         else delete process.env.INTEGRATION_TESTS_ENABLED;
       }
     });
@@ -110,7 +116,11 @@ describe('CTO Directive 119: Fixture Credentials & Fail-Closed Behavior', () => 
       select: () => ({
         eq: () => ({
           maybeSingle: async () => ({
-            data: { role: 'citizen', verification_status: 'unverified', created_at: new Date().toISOString() },
+            data: {
+              role: 'citizen',
+              verification_status: 'unverified',
+              created_at: new Date().toISOString(),
+            },
             error: null,
           }),
         }),
@@ -145,7 +155,10 @@ describe('CTO Directive 119: Fixture Credentials & Fail-Closed Behavior', () => 
               eq: () => ({
                 or: async () => ({
                   data: null,
-                  error: { message: 'Connection refused: database container unreachable', code: 'ECONNREFUSED' },
+                  error: {
+                    message: 'Connection refused: database container unreachable',
+                    code: 'ECONNREFUSED',
+                  },
                 }),
               }),
             }),

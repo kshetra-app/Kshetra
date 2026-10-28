@@ -128,7 +128,7 @@ export default memo(function CandidateAvatar({
           source={{
             uri: imageUri,
             headers: {
-              'User-Agent': 'KshetraApp/1.0 (https://kshetra.app; contact@kshetra.app)',
+              'User-Agent': 'PoligramApp/1.0 (https://kshetra.app; contact@kshetra.app)',
             },
           }}
           style={{

@@ -24,8 +24,7 @@ export function pointInRing(point: Position, ring: Ring): boolean {
     const [xi, yi] = ring[i];
     const [xj, yj] = ring[j];
 
-    const intersect =
-      yi > y !== yj > y && x < ((xj - xi) * (y - yi)) / (yj - yi) + xi;
+    const intersect = yi > y !== yj > y && x < ((xj - xi) * (y - yi)) / (yj - yi) + xi;
 
     if (intersect) inside = !inside;
   }
@@ -37,10 +36,7 @@ export function pointInRing(point: Position, ring: Ring): boolean {
  * Checks if a point lies inside a GeoJSON Polygon geometry.
  * Handles exterior ring + optional hole rings.
  */
-export function pointInPolygon(
-  point: Position,
-  coordinates: Ring[],
-): boolean {
+export function pointInPolygon(point: Position, coordinates: Ring[]): boolean {
   // Must be inside exterior ring
   if (!pointInRing(point, coordinates[0])) return false;
 
@@ -55,10 +51,7 @@ export function pointInPolygon(
 /**
  * Checks if a point lies inside a GeoJSON MultiPolygon geometry.
  */
-export function pointInMultiPolygon(
-  point: Position,
-  coordinates: Ring[][],
-): boolean {
+export function pointInMultiPolygon(point: Position, coordinates: Ring[][]): boolean {
   for (const polygon of coordinates) {
     if (pointInPolygon(point, polygon)) return true;
   }

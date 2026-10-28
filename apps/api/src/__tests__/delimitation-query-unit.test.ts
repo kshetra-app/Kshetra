@@ -78,17 +78,11 @@ describe('Delimitation Query Service & Legal Applicability (W020-G8/G9) Unit Tes
         const invalidEntity1: any = 'VILLAGE_PANCHAYAT';
         const invalidEntity2: any = 'MUNICIPAL_CORPORATION';
         expect(() => {
-          resolveLegalApplicability(
-            invalidEntity1,
-            'CURRENT_LEGAL_REGIME',
-          );
+          resolveLegalApplicability(invalidEntity1, 'CURRENT_LEGAL_REGIME');
         }).toThrow(DelimitationQueryError);
 
         try {
-          resolveLegalApplicability(
-            invalidEntity2,
-            'CURRENT_LEGAL_REGIME',
-          );
+          resolveLegalApplicability(invalidEntity2, 'CURRENT_LEGAL_REGIME');
         } catch (err: any) {
           expect(err.code).toBe('INVALID_ENTITY_TYPE');
           expect(err.statusCode).toBe(400);

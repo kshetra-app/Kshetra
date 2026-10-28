@@ -17,7 +17,11 @@ export interface SaasAuthPluginOptions {
   enforceRateLimit?: boolean;
   requiredScopes?: string[];
   mockLookup?: (keyHash: string) => Promise<any | null>;
-  mockUsageRecorder?: (params: { tenantId: string; apiKeyId?: string | null; tier: SaasTenantTier }) => Promise<{
+  mockUsageRecorder?: (params: {
+    tenantId: string;
+    apiKeyId?: string | null;
+    tier: SaasTenantTier;
+  }) => Promise<{
     allowed: boolean;
     currentMonthlyUsage: number;
     monthlyRemaining: number;
@@ -56,32 +60,52 @@ export function extractRawApiKey(req: FastifyRequest): string | null {
 export async function authenticateSaasRequest(
   request: FastifyRequest,
   reply: FastifyReply,
-  options?: SaasAuthPluginOptions
+  options?: SaasAuthPluginOptions,
 ): Promise<void> {
   const rawKey = extractRawApiKey(request);
 
   if (!rawKey) {
-    request.log.warn({
-      event: 'SAAS_AUTH_MISSING_CREDENTIALS',
-      url: request.url,
-      method: request.method,
-    }, 'Missing API key credentials in SaaS request');
-    return sendApiError(reply, request, 401, 'Unauthorized', 'Invalid or inactive API key provided.', {
-      code: 'UNAUTHORIZED',
-    });
+    request.log.warn(
+      {
+        event: 'SAAS_AUTH_MISSING_CREDENTIALS',
+        url: request.url,
+        method: request.method,
+      },
+      'Missing API key credentials in SaaS request',
+    );
+    return sendApiError(
+      reply,
+      request,
+      401,
+      'Unauthorized',
+      'Invalid or inactive API key provided.',
+      {
+        code: 'UNAUTHORIZED',
+      },
+    );
   }
 
   // 1. Parse and validate syntax format
   const parsedKey = parseAndValidateApiKeyFormat(rawKey);
   if (!parsedKey) {
-    request.log.warn({
-      event: 'SAAS_AUTH_MALFORMED_KEY',
-      url: request.url,
-      method: request.method,
-    }, 'Malformed API key format presented');
-    return sendApiError(reply, request, 401, 'Unauthorized', 'Invalid or inactive API key provided.', {
-      code: 'UNAUTHORIZED',
-    });
+    request.log.warn(
+      {
+        event: 'SAAS_AUTH_MALFORMED_KEY',
+        url: request.url,
+        method: request.method,
+      },
+      'Malformed API key format presented',
+    );
+    return sendApiError(
+      reply,
+      request,
+      401,
+      'Unauthorized',
+      'Invalid or inactive API key provided.',
+      {
+        code: 'UNAUTHORIZED',
+      },
+    );
   }
 
   // 2. Lookup key record in database
@@ -92,7 +116,8 @@ export async function authenticateSaasRequest(
     } else {
       const { data, error } = await supabase
         .from('saas_api_keys')
-        .select(`
+        .select(
+          `
           id,
           tenant_id,
           application_id,
@@ -114,111 +139,192 @@ export async function authenticateSaasRequest(
             tenant_id,
             environment
           )
-        `)
+        `,
+        )
         .eq('key_hash', parsedKey.keyHash)
         .maybeSingle();
 
       if (error) {
-        request.log.error({
-          event: 'SAAS_AUTH_DATABASE_ERROR',
-          errorMessage: error.message,
-          url: request.url,
-        }, 'Database lookup failed during SaaS API key authentication');
-        return sendApiError(reply, request, 500, 'Internal Server Error', 'An unexpected error occurred. Please try again later.', {
-          code: 'AUTH_DEPENDENCY_FAILURE',
-        });
+        request.log.error(
+          {
+            event: 'SAAS_AUTH_DATABASE_ERROR',
+            errorMessage: error.message,
+            url: request.url,
+          },
+          'Database lookup failed during SaaS API key authentication',
+        );
+        return sendApiError(
+          reply,
+          request,
+          500,
+          'Internal Server Error',
+          'An unexpected error occurred. Please try again later.',
+          {
+            code: 'AUTH_DEPENDENCY_FAILURE',
+          },
+        );
       }
       keyRecord = data;
     }
   } catch (err: any) {
-    request.log.error({
-      event: 'SAAS_AUTH_EXCEPTION',
-      errorMessage: err.message,
-      url: request.url,
-    }, 'Unexpected exception during SaaS key lookup');
-    return sendApiError(reply, request, 500, 'Internal Server Error', 'An unexpected error occurred. Please try again later.', {
-      code: 'AUTH_DEPENDENCY_FAILURE',
-    });
+    request.log.error(
+      {
+        event: 'SAAS_AUTH_EXCEPTION',
+        errorMessage: err.message,
+        url: request.url,
+      },
+      'Unexpected exception during SaaS key lookup',
+    );
+    return sendApiError(
+      reply,
+      request,
+      500,
+      'Internal Server Error',
+      'An unexpected error occurred. Please try again later.',
+      {
+        code: 'AUTH_DEPENDENCY_FAILURE',
+      },
+    );
   }
 
   if (!keyRecord) {
-    request.log.warn({
-      event: 'SAAS_AUTH_KEY_NOT_FOUND',
-      keyPrefix: parsedKey.keyPrefix,
-      keyHint: parsedKey.keyHint,
-      url: request.url,
-    }, 'API key record not found for presented hash');
-    return sendApiError(reply, request, 401, 'Unauthorized', 'Invalid or inactive API key provided.', {
-      code: 'UNAUTHORIZED',
-    });
+    request.log.warn(
+      {
+        event: 'SAAS_AUTH_KEY_NOT_FOUND',
+        keyPrefix: parsedKey.keyPrefix,
+        keyHint: parsedKey.keyHint,
+        url: request.url,
+      },
+      'API key record not found for presented hash',
+    );
+    return sendApiError(
+      reply,
+      request,
+      401,
+      'Unauthorized',
+      'Invalid or inactive API key provided.',
+      {
+        code: 'UNAUTHORIZED',
+      },
+    );
   }
 
   // 3. Constant-time hash verification
   const isHashMatch = verifyApiKeyHashConstantTime(keyRecord.key_hash, parsedKey.keyHash);
   if (!isHashMatch) {
-    request.log.warn({
-      event: 'SAAS_AUTH_HASH_MISMATCH',
-      url: request.url,
-    }, 'Constant-time hash comparison failed');
-    return sendApiError(reply, request, 401, 'Unauthorized', 'Invalid or inactive API key provided.', {
-      code: 'UNAUTHORIZED',
-    });
+    request.log.warn(
+      {
+        event: 'SAAS_AUTH_HASH_MISMATCH',
+        url: request.url,
+      },
+      'Constant-time hash comparison failed',
+    );
+    return sendApiError(
+      reply,
+      request,
+      401,
+      'Unauthorized',
+      'Invalid or inactive API key provided.',
+      {
+        code: 'UNAUTHORIZED',
+      },
+    );
   }
 
   // 4. Enforce Key Status (active vs revoked vs compromised)
   if (keyRecord.status !== 'active') {
-    request.log.warn({
-      event: 'SAAS_AUTH_INACTIVE_KEY',
-      keyStatus: keyRecord.status,
-      keyHint: parsedKey.keyHint,
-      url: request.url,
-    }, `API key has inactive status: ${keyRecord.status}`);
-    return sendApiError(reply, request, 401, 'Unauthorized', 'Invalid or inactive API key provided.', {
-      code: 'UNAUTHORIZED',
-    });
+    request.log.warn(
+      {
+        event: 'SAAS_AUTH_INACTIVE_KEY',
+        keyStatus: keyRecord.status,
+        keyHint: parsedKey.keyHint,
+        url: request.url,
+      },
+      `API key has inactive status: ${keyRecord.status}`,
+    );
+    return sendApiError(
+      reply,
+      request,
+      401,
+      'Unauthorized',
+      'Invalid or inactive API key provided.',
+      {
+        code: 'UNAUTHORIZED',
+      },
+    );
   }
 
   // 5. Enforce Expiration
   if (keyRecord.expires_at) {
     const expiresAt = new Date(keyRecord.expires_at).getTime();
     if (expiresAt < Date.now()) {
-      request.log.warn({
-        event: 'SAAS_AUTH_EXPIRED_KEY',
-        keyHint: parsedKey.keyHint,
-        expiresAt: keyRecord.expires_at,
-        url: request.url,
-      }, 'API key has expired');
-      return sendApiError(reply, request, 401, 'Unauthorized', 'Invalid or inactive API key provided.', {
-        code: 'UNAUTHORIZED',
-      });
+      request.log.warn(
+        {
+          event: 'SAAS_AUTH_EXPIRED_KEY',
+          keyHint: parsedKey.keyHint,
+          expiresAt: keyRecord.expires_at,
+          url: request.url,
+        },
+        'API key has expired',
+      );
+      return sendApiError(
+        reply,
+        request,
+        401,
+        'Unauthorized',
+        'Invalid or inactive API key provided.',
+        {
+          code: 'UNAUTHORIZED',
+        },
+      );
     }
   }
 
   // 6. Enforce Tenant Status
   const tenant = keyRecord.saas_tenants;
   if (!tenant || tenant.status !== 'active') {
-    request.log.warn({
-      event: 'SAAS_AUTH_INACTIVE_TENANT',
-      tenantStatus: tenant?.status,
-      url: request.url,
-    }, 'SaaS tenant is inactive or suspended');
-    return sendApiError(reply, request, 401, 'Unauthorized', 'Invalid or inactive API key provided.', {
-      code: 'UNAUTHORIZED',
-    });
+    request.log.warn(
+      {
+        event: 'SAAS_AUTH_INACTIVE_TENANT',
+        tenantStatus: tenant?.status,
+        url: request.url,
+      },
+      'SaaS tenant is inactive or suspended',
+    );
+    return sendApiError(
+      reply,
+      request,
+      401,
+      'Unauthorized',
+      'Invalid or inactive API key provided.',
+      {
+        code: 'UNAUTHORIZED',
+      },
+    );
   }
 
   // 7. Enforce Tenant / Application Composite Isolation
   const application = keyRecord.saas_applications;
   if (!application || application.tenant_id !== tenant.id) {
-    request.log.error({
-      event: 'SAAS_AUTH_TENANT_ISOLATION_BREACH_ATTEMPT',
-      appTenantId: application?.tenant_id,
-      expectedTenantId: tenant.id,
-      url: request.url,
-    }, 'CRITICAL: Tenant isolation mismatch detected in key record');
-    return sendApiError(reply, request, 401, 'Unauthorized', 'Invalid or inactive API key provided.', {
-      code: 'UNAUTHORIZED',
-    });
+    request.log.error(
+      {
+        event: 'SAAS_AUTH_TENANT_ISOLATION_BREACH_ATTEMPT',
+        appTenantId: application?.tenant_id,
+        expectedTenantId: tenant.id,
+        url: request.url,
+      },
+      'CRITICAL: Tenant isolation mismatch detected in key record',
+    );
+    return sendApiError(
+      reply,
+      request,
+      401,
+      'Unauthorized',
+      'Invalid or inactive API key provided.',
+      {
+        code: 'UNAUTHORIZED',
+      },
+    );
   }
 
   // 8. Scope checking if required
@@ -226,12 +332,15 @@ export async function authenticateSaasRequest(
     const keyScopes = (keyRecord.scopes || []) as string[];
     const hasAllScopes = options.requiredScopes.every((s) => keyScopes.includes(s));
     if (!hasAllScopes) {
-      request.log.warn({
-        event: 'SAAS_AUTH_INSUFFICIENT_SCOPES',
-        requiredScopes: options.requiredScopes,
-        keyScopes,
-        url: request.url,
-      }, 'API key lacks required scopes for requested operation');
+      request.log.warn(
+        {
+          event: 'SAAS_AUTH_INSUFFICIENT_SCOPES',
+          requiredScopes: options.requiredScopes,
+          keyScopes,
+          url: request.url,
+        },
+        'API key lacks required scopes for requested operation',
+      );
       return sendApiError(reply, request, 403, 'Forbidden', 'API key lacks required permissions.', {
         code: 'FORBIDDEN',
       });
@@ -249,17 +358,27 @@ export async function authenticateSaasRequest(
   reply.header('x-ratelimit-reset', burstResult.resetSeconds);
 
   if (options?.enforceRateLimit !== false && !burstResult.allowed) {
-    request.log.warn({
-      event: 'SAAS_AUTH_BURST_RATE_LIMIT_EXCEEDED',
-      tenantId: tenant.id,
-      tier,
-      url: request.url,
-    }, `Minute burst limit exceeded for tenant ${tenant.id}`);
+    request.log.warn(
+      {
+        event: 'SAAS_AUTH_BURST_RATE_LIMIT_EXCEEDED',
+        tenantId: tenant.id,
+        tier,
+        url: request.url,
+      },
+      `Minute burst limit exceeded for tenant ${tenant.id}`,
+    );
 
     reply.header('Retry-After', burstResult.resetSeconds);
-    return sendApiError(reply, request, 429, 'Too Many Requests', 'Rate limit exceeded. Please retry after the designated cooldown window.', {
-      code: 'RATE_LIMIT_EXCEEDED',
-    });
+    return sendApiError(
+      reply,
+      request,
+      429,
+      'Too Many Requests',
+      'Rate limit exceeded. Please retry after the designated cooldown window.',
+      {
+        code: 'RATE_LIMIT_EXCEEDED',
+      },
+    );
   }
 
   // 9B. Authoritative Durable Monthly Quota Check & Ledger Increment
@@ -273,40 +392,63 @@ export async function authenticateSaasRequest(
           tier,
         });
       } else {
-        durableResult = await saasRateLimiter.checkAndRecordDurableUsage({
-          tenantId: tenant.id,
-          apiKeyId: keyRecord.id,
-          tier,
-        }, dbClient);
+        durableResult = await saasRateLimiter.checkAndRecordDurableUsage(
+          {
+            tenantId: tenant.id,
+            apiKeyId: keyRecord.id,
+            tier,
+          },
+          dbClient,
+        );
       }
 
       reply.header('x-monthly-quota-limit', durableResult.monthlyCeiling);
       reply.header('x-monthly-quota-remaining', durableResult.monthlyRemaining);
 
       if (!durableResult.allowed) {
-        request.log.warn({
-          event: 'SAAS_AUTH_MONTHLY_QUOTA_EXCEEDED',
-          tenantId: tenant.id,
-          tier,
-          monthlyUsage: durableResult.currentMonthlyUsage,
-          ceiling: durableResult.monthlyCeiling,
-          url: request.url,
-        }, `Authoritative monthly quota exceeded for tenant ${tenant.id}`);
+        request.log.warn(
+          {
+            event: 'SAAS_AUTH_MONTHLY_QUOTA_EXCEEDED',
+            tenantId: tenant.id,
+            tier,
+            monthlyUsage: durableResult.currentMonthlyUsage,
+            ceiling: durableResult.monthlyCeiling,
+            url: request.url,
+          },
+          `Authoritative monthly quota exceeded for tenant ${tenant.id}`,
+        );
 
         reply.header('Retry-After', durableResult.resetSeconds);
-        return sendApiError(reply, request, 429, 'Too Many Requests', 'Monthly quota exceeded. Please upgrade tier or await monthly window reset.', {
-          code: 'RATE_LIMIT_EXCEEDED',
-        });
+        return sendApiError(
+          reply,
+          request,
+          429,
+          'Too Many Requests',
+          'Monthly quota exceeded. Please upgrade tier or await monthly window reset.',
+          {
+            code: 'RATE_LIMIT_EXCEEDED',
+          },
+        );
       }
     } catch (err: any) {
-      request.log.error({
-        event: 'SAAS_AUTH_USAGE_LEDGER_ERROR',
-        errorMessage: err.message,
-        url: request.url,
-      }, 'Failed to record durable usage in saas_usage_ledger; failing closed');
-      return sendApiError(reply, request, 500, 'Internal Server Error', 'An unexpected error occurred. Please try again later.', {
-        code: 'AUTH_DEPENDENCY_FAILURE',
-      });
+      request.log.error(
+        {
+          event: 'SAAS_AUTH_USAGE_LEDGER_ERROR',
+          errorMessage: err.message,
+          url: request.url,
+        },
+        'Failed to record durable usage in saas_usage_ledger; failing closed',
+      );
+      return sendApiError(
+        reply,
+        request,
+        500,
+        'Internal Server Error',
+        'An unexpected error occurred. Please try again later.',
+        {
+          code: 'AUTH_DEPENDENCY_FAILURE',
+        },
+      );
     }
   }
 
@@ -326,13 +468,16 @@ export async function authenticateSaasRequest(
 
   request.saasAuth = authContext;
 
-  request.log.info({
-    event: 'SAAS_AUTH_SUCCESS',
-    tenantId: authContext.tenantId,
-    appId: authContext.applicationId,
-    tier: authContext.tenantTier,
-    keyHint: authContext.keyHint,
-  }, 'SaaS request authenticated successfully');
+  request.log.info(
+    {
+      event: 'SAAS_AUTH_SUCCESS',
+      tenantId: authContext.tenantId,
+      appId: authContext.applicationId,
+      tier: authContext.tenantTier,
+      keyHint: authContext.keyHint,
+    },
+    'SaaS request authenticated successfully',
+  );
 }
 
 /**

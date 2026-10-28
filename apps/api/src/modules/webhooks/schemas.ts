@@ -97,13 +97,23 @@ export const EVENT_PAYLOAD_SCHEMAS: Record<string, Record<string, unknown>> = {
   'candidate.nomination.updated': {
     type: 'object',
     additionalProperties: false,
-    required: ['event_id', 'timestamp', 'candidate_id', 'election_id', 'nomination_status', 'affidavit_hash'],
+    required: [
+      'event_id',
+      'timestamp',
+      'candidate_id',
+      'election_id',
+      'nomination_status',
+      'affidavit_hash',
+    ],
     properties: {
       event_id: { type: 'string', pattern: '^[0-9a-fA-F-]{36}$' },
       timestamp: { type: 'string' },
       candidate_id: { type: 'string', pattern: '^[0-9a-fA-F-]{36}$' },
       election_id: { type: 'string', pattern: '^[a-z0-9_-]+$' },
-      nomination_status: { type: 'string', enum: ['submitted', 'scrutinized_valid', 'rejected', 'withdrawn'] },
+      nomination_status: {
+        type: 'string',
+        enum: ['submitted', 'scrutinized_valid', 'rejected', 'withdrawn'],
+      },
       affidavit_hash: { type: 'string', pattern: '^[a-f0-9]{64}$' },
     },
   },
@@ -111,7 +121,14 @@ export const EVENT_PAYLOAD_SCHEMAS: Record<string, Record<string, unknown>> = {
   'boundary.delimitation.updated': {
     type: 'object',
     additionalProperties: false,
-    required: ['event_id', 'timestamp', 'state_code', 'constituency_code', 'gazette_notification_number', 'boundary_geojson_sha256'],
+    required: [
+      'event_id',
+      'timestamp',
+      'state_code',
+      'constituency_code',
+      'gazette_notification_number',
+      'boundary_geojson_sha256',
+    ],
     properties: {
       event_id: { type: 'string', pattern: '^[0-9a-fA-F-]{36}$' },
       timestamp: { type: 'string' },
@@ -140,15 +157,21 @@ export const EVENT_PAYLOAD_SCHEMAS: Record<string, Record<string, unknown>> = {
  */
 export function validateEventPayload(
   eventType: string,
-  payload: unknown
+  payload: unknown,
 ): { valid: boolean; error?: string } {
   if (!ALLOWED_EVENT_TYPES.includes(eventType as AllowedEventType)) {
-    return { valid: false, error: `UNSUPPORTED_EVENT_TYPE: Event '${eventType}' is not an authorized webhook event.` };
+    return {
+      valid: false,
+      error: `UNSUPPORTED_EVENT_TYPE: Event '${eventType}' is not an authorized webhook event.`,
+    };
   }
 
   const schema = EVENT_PAYLOAD_SCHEMAS[eventType];
   if (!schema) {
-    return { valid: false, error: `SCHEMA_MISSING: No schema registered for event '${eventType}'.` };
+    return {
+      valid: false,
+      error: `SCHEMA_MISSING: No schema registered for event '${eventType}'.`,
+    };
   }
 
   if (payload === null || typeof payload !== 'object' || Array.isArray(payload)) {
@@ -169,7 +192,10 @@ export function validateEventPayload(
   const allowedProperties = schema.properties as Record<string, any>;
   for (const key of Object.keys(record)) {
     if (!allowedProperties[key]) {
-      return { valid: false, error: `UNRECOGNIZED_PAYLOAD_FIELD: Property '${key}' is prohibited by allowlisted schema.` };
+      return {
+        valid: false,
+        error: `UNRECOGNIZED_PAYLOAD_FIELD: Property '${key}' is prohibited by allowlisted schema.`,
+      };
     }
   }
 
@@ -186,7 +212,10 @@ export function validateEventPayload(
     const allowedSummaryProps = summarySchema.properties as Record<string, any>;
     for (const key of Object.keys(summary)) {
       if (!allowedSummaryProps[key]) {
-        return { valid: false, error: `UNRECOGNIZED_PAYLOAD_FIELD: Property 'summary.${key}' is prohibited.` };
+        return {
+          valid: false,
+          error: `UNRECOGNIZED_PAYLOAD_FIELD: Property 'summary.${key}' is prohibited.`,
+        };
       }
     }
   }

@@ -370,7 +370,12 @@ describe('Campaign Routes Unit Test Suite (Direct Route Injection)', () => {
     });
 
     it('PATCH /api/v1/campaign/booths/:id successfully updates booth for admin/owner', async () => {
-      const mockUpdated = { id: 'b-54', campaign_id: 'c1', priority: 'critical', notes: 'Updated notes' };
+      const mockUpdated = {
+        id: 'b-54',
+        campaign_id: 'c1',
+        priority: 'critical',
+        notes: 'Updated notes',
+      };
 
       jest.spyOn(supabase, 'from').mockImplementation(((table: string) => {
         if (table === 'user_profiles') {
@@ -501,7 +506,10 @@ describe('Campaign Routes Unit Test Suite (Direct Route Injection)', () => {
           return {
             select: () => ({
               eq: () => ({
-                maybeSingle: async () => ({ data: { id: 'c1', politician_id: 'pol-owner-different' }, error: null }),
+                maybeSingle: async () => ({
+                  data: { id: 'c1', politician_id: 'pol-owner-different' },
+                  error: null,
+                }),
               }),
             }),
           } as any;
@@ -513,7 +521,12 @@ describe('Campaign Routes Unit Test Suite (Direct Route Injection)', () => {
         method: 'POST',
         url: '/api/v1/campaign/volunteers',
         headers: { 'x-user-id': 'coordinator-user' },
-        payload: { name: 'Promoted Coord', phone: '9876543210', role: 'coordinator', campaignId: 'c1' },
+        payload: {
+          name: 'Promoted Coord',
+          phone: '9876543210',
+          role: 'coordinator',
+          campaignId: 'c1',
+        },
       });
 
       expect(res.statusCode).toBe(403);
@@ -544,7 +557,10 @@ describe('Campaign Routes Unit Test Suite (Direct Route Injection)', () => {
           return {
             select: () => ({
               eq: () => ({
-                maybeSingle: async () => ({ data: { id: 'c1', politician_id: 'pol-1' }, error: null }),
+                maybeSingle: async () => ({
+                  data: { id: 'c1', politician_id: 'pol-1' },
+                  error: null,
+                }),
               }),
             }),
           } as any;
@@ -569,7 +585,12 @@ describe('Campaign Routes Unit Test Suite (Direct Route Injection)', () => {
         method: 'POST',
         url: '/api/v1/campaign/volunteers',
         headers: { 'x-user-id': 'usr-admin-1' },
-        payload: { name: 'Suresh Varma', phone: '9876543210', role: 'booth_agent', campaignId: 'c1' },
+        payload: {
+          name: 'Suresh Varma',
+          phone: '9876543210',
+          role: 'booth_agent',
+          campaignId: 'c1',
+        },
       });
 
       expect(res.statusCode).toBe(201);
@@ -1176,7 +1197,10 @@ describe('Campaign Routes Unit Test Suite (Direct Route Injection)', () => {
           return {
             select: () => ({
               eq: () => ({
-                maybeSingle: async () => ({ data: { id: 'c1', politician_id: 'pol-owner-different' }, error: null }),
+                maybeSingle: async () => ({
+                  data: { id: 'c1', politician_id: 'pol-owner-different' },
+                  error: null,
+                }),
               }),
             }),
           } as any;
@@ -1216,7 +1240,10 @@ describe('Campaign Routes Unit Test Suite (Direct Route Injection)', () => {
           return {
             select: () => ({
               eq: () => ({
-                maybeSingle: async () => ({ data: { id: 'c1', politician_id: 'my-pol-id' }, error: null }),
+                maybeSingle: async () => ({
+                  data: { id: 'c1', politician_id: 'my-pol-id' },
+                  error: null,
+                }),
               }),
             }),
           } as any;
@@ -1252,7 +1279,10 @@ describe('Campaign Routes Unit Test Suite (Direct Route Injection)', () => {
           return {
             select: () => ({
               eq: () => ({
-                maybeSingle: async () => ({ data: { id: 'c1', politician_id: 'my-pol-id' }, error: null }),
+                maybeSingle: async () => ({
+                  data: { id: 'c1', politician_id: 'my-pol-id' },
+                  error: null,
+                }),
               }),
             }),
           } as any;
@@ -1296,7 +1326,10 @@ describe('Campaign Routes Unit Test Suite (Direct Route Injection)', () => {
           return {
             select: () => ({
               eq: () => ({
-                maybeSingle: async () => ({ data: { id: 'c1', politician_id: 'my-pol-id' }, error: null }),
+                maybeSingle: async () => ({
+                  data: { id: 'c1', politician_id: 'my-pol-id' },
+                  error: null,
+                }),
               }),
             }),
           } as any;
@@ -1309,9 +1342,11 @@ describe('Campaign Routes Unit Test Suite (Direct Route Injection)', () => {
         currentISTHour: 10,
       });
 
-      jest.spyOn(walletService, 'deductWalletForService').mockRejectedValueOnce(
-        new Error('Insufficient balance in campaign wallet: required ₹300, available ₹50')
-      );
+      jest
+        .spyOn(walletService, 'deductWalletForService')
+        .mockRejectedValueOnce(
+          new Error('Insufficient balance in campaign wallet: required ₹300, available ₹50'),
+        );
 
       const res = await app.inject({
         method: 'POST',
@@ -1343,7 +1378,10 @@ describe('Campaign Routes Unit Test Suite (Direct Route Injection)', () => {
           return {
             select: () => ({
               eq: () => ({
-                maybeSingle: async () => ({ data: { id: 'c1', politician_id: 'my-pol-id' }, error: null }),
+                maybeSingle: async () => ({
+                  data: { id: 'c1', politician_id: 'my-pol-id' },
+                  error: null,
+                }),
               }),
             }),
           } as any;
@@ -1513,7 +1551,10 @@ describe('Campaign Routes Unit Test Suite (Direct Route Injection)', () => {
           return {
             select: () => ({
               eq: () => ({
-                maybeSingle: async () => ({ data: { id: 'c1', politician_id: 'usr-admin' }, error: null }),
+                maybeSingle: async () => ({
+                  data: { id: 'c1', politician_id: 'usr-admin' },
+                  error: null,
+                }),
               }),
             }),
           } as any;
@@ -1565,13 +1606,19 @@ describe('Campaign Routes Unit Test Suite (Direct Route Injection)', () => {
           return {
             select: () => ({
               eq: () => ({
-                maybeSingle: async () => ({ data: { id: 'bth-err-1', campaign_id: 'c1' }, error: null }),
+                maybeSingle: async () => ({
+                  data: { id: 'bth-err-1', campaign_id: 'c1' },
+                  error: null,
+                }),
               }),
             }),
             update: () => ({
               eq: () => ({
                 select: () => ({
-                  single: async () => ({ data: null, error: { message: 'Database connection reset' } }),
+                  single: async () => ({
+                    data: null,
+                    error: { message: 'Database connection reset' },
+                  }),
                 }),
               }),
             }),
@@ -1607,7 +1654,10 @@ describe('Campaign Routes Unit Test Suite (Direct Route Injection)', () => {
           return {
             select: () => ({
               eq: () => ({
-                maybeSingle: async () => ({ data: { id: 'bth-err-2', campaign_id: 'c1' }, error: null }),
+                maybeSingle: async () => ({
+                  data: { id: 'bth-err-2', campaign_id: 'c1' },
+                  error: null,
+                }),
               }),
             }),
             update: () => {
@@ -1764,7 +1814,10 @@ describe('Campaign Routes Unit Test Suite (Direct Route Injection)', () => {
           return {
             select: () => ({
               eq: () => ({
-                maybeSingle: async () => ({ data: { id: 'c1', politician_id: 'pol-owner-1' }, error: null }),
+                maybeSingle: async () => ({
+                  data: { id: 'c1', politician_id: 'pol-owner-1' },
+                  error: null,
+                }),
               }),
             }),
           } as any;
@@ -1792,10 +1845,20 @@ describe('Campaign Routes Unit Test Suite (Direct Route Injection)', () => {
       // 1. Non-existent campaign
       jest.spyOn(supabase, 'from').mockImplementation(((table: string) => {
         if (table === 'user_profiles') {
-          return { select: () => ({ eq: () => ({ maybeSingle: async () => ({ data: { role: 'politician' }, error: null }) }) }) } as any;
+          return {
+            select: () => ({
+              eq: () => ({
+                maybeSingle: async () => ({ data: { role: 'politician' }, error: null }),
+              }),
+            }),
+          } as any;
         }
         if (table === 'campaigns') {
-          return { select: () => ({ eq: () => ({ maybeSingle: async () => ({ data: null, error: null }) }) }) } as any;
+          return {
+            select: () => ({
+              eq: () => ({ maybeSingle: async () => ({ data: null, error: null }) }),
+            }),
+          } as any;
         }
         return {} as any;
       }) as any);
@@ -1811,10 +1874,25 @@ describe('Campaign Routes Unit Test Suite (Direct Route Injection)', () => {
       // 2. DB volunteer is coordinator
       jest.spyOn(supabase, 'from').mockImplementation(((table: string) => {
         if (table === 'user_profiles') {
-          return { select: () => ({ eq: () => ({ maybeSingle: async () => ({ data: { role: 'volunteer' }, error: null }) }) }) } as any;
+          return {
+            select: () => ({
+              eq: () => ({
+                maybeSingle: async () => ({ data: { role: 'volunteer' }, error: null }),
+              }),
+            }),
+          } as any;
         }
         if (table === 'campaigns') {
-          return { select: () => ({ eq: () => ({ maybeSingle: async () => ({ data: { id: 'c1', politician_id: 'owner-pol' }, error: null }) }) }) } as any;
+          return {
+            select: () => ({
+              eq: () => ({
+                maybeSingle: async () => ({
+                  data: { id: 'c1', politician_id: 'owner-pol' },
+                  error: null,
+                }),
+              }),
+            }),
+          } as any;
         }
         if (table === 'campaign_volunteers') {
           return {
@@ -1822,7 +1900,10 @@ describe('Campaign Routes Unit Test Suite (Direct Route Injection)', () => {
               eq: () => ({
                 eq: () => ({
                   eq: () => ({
-                    maybeSingle: async () => ({ data: { role: 'coordinator', status: 'active' }, error: null }),
+                    maybeSingle: async () => ({
+                      data: { role: 'coordinator', status: 'active' },
+                      error: null,
+                    }),
                   }),
                 }),
               }),
@@ -1865,14 +1946,31 @@ describe('Campaign Routes Unit Test Suite (Direct Route Injection)', () => {
       // POST volunteer DB insert error (500)
       jest.spyOn(supabase, 'from').mockImplementation(((table: string) => {
         if (table === 'user_profiles') {
-          return { select: () => ({ eq: () => ({ maybeSingle: async () => ({ data: { role: 'admin' }, error: null }) }) }) } as any;
+          return {
+            select: () => ({
+              eq: () => ({ maybeSingle: async () => ({ data: { role: 'admin' }, error: null }) }),
+            }),
+          } as any;
         }
         if (table === 'campaigns') {
-          return { select: () => ({ eq: () => ({ maybeSingle: async () => ({ data: { id: 'c1', politician_id: 'pol-1' }, error: null }) }) }) } as any;
+          return {
+            select: () => ({
+              eq: () => ({
+                maybeSingle: async () => ({
+                  data: { id: 'c1', politician_id: 'pol-1' },
+                  error: null,
+                }),
+              }),
+            }),
+          } as any;
         }
         if (table === 'campaign_volunteers') {
           return {
-            insert: () => ({ select: () => ({ single: async () => ({ data: null, error: { message: 'Insert failed' } }) }) }),
+            insert: () => ({
+              select: () => ({
+                single: async () => ({ data: null, error: { message: 'Insert failed' } }),
+              }),
+            }),
           } as any;
         }
         return {} as any;
@@ -1889,14 +1987,29 @@ describe('Campaign Routes Unit Test Suite (Direct Route Injection)', () => {
       // POST volunteer exception (500)
       jest.spyOn(supabase, 'from').mockImplementation(((table: string) => {
         if (table === 'user_profiles') {
-          return { select: () => ({ eq: () => ({ maybeSingle: async () => ({ data: { role: 'admin' }, error: null }) }) }) } as any;
+          return {
+            select: () => ({
+              eq: () => ({ maybeSingle: async () => ({ data: { role: 'admin' }, error: null }) }),
+            }),
+          } as any;
         }
         if (table === 'campaigns') {
-          return { select: () => ({ eq: () => ({ maybeSingle: async () => ({ data: { id: 'c1', politician_id: 'pol-1' }, error: null }) }) }) } as any;
+          return {
+            select: () => ({
+              eq: () => ({
+                maybeSingle: async () => ({
+                  data: { id: 'c1', politician_id: 'pol-1' },
+                  error: null,
+                }),
+              }),
+            }),
+          } as any;
         }
         if (table === 'campaign_volunteers') {
           return {
-            insert: () => { throw new Error('Crash in volunteer insert'); },
+            insert: () => {
+              throw new Error('Crash in volunteer insert');
+            },
           } as any;
         }
         return {} as any;
@@ -1914,7 +2027,13 @@ describe('Campaign Routes Unit Test Suite (Direct Route Injection)', () => {
     it('exercises POST /api/v1/campaign/wallet/recharge/verify missing ids, DB errors, and signatures', async () => {
       jest.spyOn(supabase, 'from').mockImplementation(((table: string) => {
         if (table === 'user_profiles') {
-          return { select: () => ({ eq: () => ({ maybeSingle: async () => ({ data: { role: 'politician' }, error: null }) }) }) } as any;
+          return {
+            select: () => ({
+              eq: () => ({
+                maybeSingle: async () => ({ data: { role: 'politician' }, error: null }),
+              }),
+            }),
+          } as any;
         }
         return {} as any;
       }) as any);
@@ -1951,13 +2070,22 @@ describe('Campaign Routes Unit Test Suite (Direct Route Injection)', () => {
       // DB error in order lookup
       jest.spyOn(supabase, 'from').mockImplementation(((table: string) => {
         if (table === 'user_profiles') {
-          return { select: () => ({ eq: () => ({ maybeSingle: async () => ({ data: { role: 'politician' }, error: null }) }) }) } as any;
+          return {
+            select: () => ({
+              eq: () => ({
+                maybeSingle: async () => ({ data: { role: 'politician' }, error: null }),
+              }),
+            }),
+          } as any;
         }
         if (table === 'campaign_recharge_orders') {
           return {
             select: () => ({
               or: () => ({
-                maybeSingle: async () => ({ data: null, error: { message: 'Order lookup failed' } }),
+                maybeSingle: async () => ({
+                  data: null,
+                  error: { message: 'Order lookup failed' },
+                }),
               }),
             }),
           } as any;
@@ -1982,12 +2110,20 @@ describe('Campaign Routes Unit Test Suite (Direct Route Injection)', () => {
       // DB exception in order lookup
       jest.spyOn(supabase, 'from').mockImplementation(((table: string) => {
         if (table === 'user_profiles') {
-          return { select: () => ({ eq: () => ({ maybeSingle: async () => ({ data: { role: 'politician' }, error: null }) }) }) } as any;
+          return {
+            select: () => ({
+              eq: () => ({
+                maybeSingle: async () => ({ data: { role: 'politician' }, error: null }),
+              }),
+            }),
+          } as any;
         }
         if (table === 'campaign_recharge_orders') {
           return {
             select: () => ({
-              or: () => { throw new Error('Order lookup exception'); },
+              or: () => {
+                throw new Error('Order lookup exception');
+              },
             }),
           } as any;
         }
@@ -2019,7 +2155,13 @@ describe('Campaign Routes Unit Test Suite (Direct Route Injection)', () => {
 
       jest.spyOn(supabase, 'from').mockImplementation(((table: string) => {
         if (table === 'user_profiles') {
-          return { select: () => ({ eq: () => ({ maybeSingle: async () => ({ data: { role: 'politician' }, error: null }) }) }) } as any;
+          return {
+            select: () => ({
+              eq: () => ({
+                maybeSingle: async () => ({ data: { role: 'politician' }, error: null }),
+              }),
+            }),
+          } as any;
         }
         if (table === 'campaign_recharge_orders') {
           return {
@@ -2034,12 +2176,18 @@ describe('Campaign Routes Unit Test Suite (Direct Route Injection)', () => {
       }) as any);
 
       // RPC error (500)
-      jest.spyOn(supabase, 'rpc').mockResolvedValueOnce({ data: null, error: { message: 'RPC err' } } as any);
+      jest
+        .spyOn(supabase, 'rpc')
+        .mockResolvedValueOnce({ data: null, error: { message: 'RPC err' } } as any);
       const resRpcErr = await app.inject({
         method: 'POST',
         url: '/api/v1/campaign/wallet/recharge/verify',
         headers: { 'x-user-id': 'pol-1', 'x-test-bypass-signature': 'true' },
-        payload: { amountINR: 1000, paymentReference: 'ref_123', razorpay_order_id: 'order_test_rpc' },
+        payload: {
+          amountINR: 1000,
+          paymentReference: 'ref_123',
+          razorpay_order_id: 'order_test_rpc',
+        },
       });
       expect(resRpcErr.statusCode).toBe(500);
 
@@ -2052,20 +2200,33 @@ describe('Campaign Routes Unit Test Suite (Direct Route Injection)', () => {
         method: 'POST',
         url: '/api/v1/campaign/wallet/recharge/verify',
         headers: { 'x-user-id': 'pol-1', 'x-test-bypass-signature': 'true' },
-        payload: { amountINR: 1000, paymentReference: 'ref_123', razorpay_order_id: 'order_test_rpc' },
+        payload: {
+          amountINR: 1000,
+          paymentReference: 'ref_123',
+          razorpay_order_id: 'order_test_rpc',
+        },
       });
       expect(resRpcForbidden.statusCode).toBe(403);
 
       // RPC idempotent (200)
       jest.spyOn(supabase, 'rpc').mockResolvedValueOnce({
-        data: { success: true, idempotent: true, wallet: { balanceINR: 5000 }, message: 'Already credited' },
+        data: {
+          success: true,
+          idempotent: true,
+          wallet: { balanceINR: 5000 },
+          message: 'Already credited',
+        },
         error: null,
       } as any);
       const resIdempotent = await app.inject({
         method: 'POST',
         url: '/api/v1/campaign/wallet/recharge/verify',
         headers: { 'x-user-id': 'pol-1', 'x-test-bypass-signature': 'true' },
-        payload: { amountINR: 1000, paymentReference: 'ref_123', razorpay_order_id: 'order_test_rpc' },
+        payload: {
+          amountINR: 1000,
+          paymentReference: 'ref_123',
+          razorpay_order_id: 'order_test_rpc',
+        },
       });
       expect(resIdempotent.statusCode).toBe(200);
       expect(JSON.parse(resIdempotent.payload).idempotent).toBe(true);
@@ -2076,7 +2237,11 @@ describe('Campaign Routes Unit Test Suite (Direct Route Injection)', () => {
         method: 'POST',
         url: '/api/v1/campaign/wallet/recharge/verify',
         headers: { 'x-user-id': 'pol-1', 'x-test-bypass-signature': 'true' },
-        payload: { amountINR: 1000, paymentReference: 'ref_123', razorpay_order_id: 'order_test_rpc' },
+        payload: {
+          amountINR: 1000,
+          paymentReference: 'ref_123',
+          razorpay_order_id: 'order_test_rpc',
+        },
       });
       expect(resRpcEx.statusCode).toBe(500);
     });
@@ -2085,10 +2250,25 @@ describe('Campaign Routes Unit Test Suite (Direct Route Injection)', () => {
       // Missing voterCount
       jest.spyOn(supabase, 'from').mockImplementation(((table: string) => {
         if (table === 'user_profiles') {
-          return { select: () => ({ eq: () => ({ maybeSingle: async () => ({ data: { role: 'politician' }, error: null }) }) }) } as any;
+          return {
+            select: () => ({
+              eq: () => ({
+                maybeSingle: async () => ({ data: { role: 'politician' }, error: null }),
+              }),
+            }),
+          } as any;
         }
         if (table === 'campaigns') {
-          return { select: () => ({ eq: () => ({ maybeSingle: async () => ({ data: { id: 'c1', politician_id: 'pol-1' }, error: null }) }) }) } as any;
+          return {
+            select: () => ({
+              eq: () => ({
+                maybeSingle: async () => ({
+                  data: { id: 'c1', politician_id: 'pol-1' },
+                  error: null,
+                }),
+              }),
+            }),
+          } as any;
         }
         return {} as any;
       }) as any);
@@ -2113,7 +2293,10 @@ describe('Campaign Routes Unit Test Suite (Direct Route Injection)', () => {
           return {
             select: () => ({
               eq: () => ({
-                eq: async () => ({ data: [{ id: 'b-db-1', booth_number: '101', priority: 'critical' }], error: null }),
+                eq: async () => ({
+                  data: [{ id: 'b-db-1', booth_number: '101', priority: 'critical' }],
+                  error: null,
+                }),
               }),
             }),
           } as any;
@@ -2130,7 +2313,11 @@ describe('Campaign Routes Unit Test Suite (Direct Route Injection)', () => {
       // 2. Admin role delegation with requestedPoliticianId (line 598)
       jest.spyOn(supabase, 'from').mockImplementation(((table: string) => {
         if (table === 'user_profiles') {
-          return { select: () => ({ eq: () => ({ maybeSingle: async () => ({ data: { role: 'admin' }, error: null }) }) }) } as any;
+          return {
+            select: () => ({
+              eq: () => ({ maybeSingle: async () => ({ data: { role: 'admin' }, error: null }) }),
+            }),
+          } as any;
         }
         return {} as any;
       }) as any);
@@ -2152,10 +2339,25 @@ describe('Campaign Routes Unit Test Suite (Direct Route Injection)', () => {
       // 4. In-memory volunteer coordinator authority fallback (lines 580-583)
       jest.spyOn(supabase, 'from').mockImplementation(((table: string) => {
         if (table === 'user_profiles') {
-          return { select: () => ({ eq: () => ({ maybeSingle: async () => ({ data: { role: 'volunteer' }, error: null }) }) }) } as any;
+          return {
+            select: () => ({
+              eq: () => ({
+                maybeSingle: async () => ({ data: { role: 'volunteer' }, error: null }),
+              }),
+            }),
+          } as any;
         }
         if (table === 'campaigns') {
-          return { select: () => ({ eq: () => ({ maybeSingle: async () => ({ data: { id: 'c1', politician_id: 'pp1' }, error: null }) }) }) } as any;
+          return {
+            select: () => ({
+              eq: () => ({
+                maybeSingle: async () => ({
+                  data: { id: 'c1', politician_id: 'pp1' },
+                  error: null,
+                }),
+              }),
+            }),
+          } as any;
         }
         if (table === 'campaign_volunteers') {
           return {
@@ -2180,7 +2382,12 @@ describe('Campaign Routes Unit Test Suite (Direct Route Injection)', () => {
         method: 'POST',
         url: '/api/v1/campaign/volunteers',
         headers: { 'x-user-id': 'v-3' },
-        payload: { name: 'Ground Worker', phone: '9123456789', role: 'volunteer', campaignId: 'c1' },
+        payload: {
+          name: 'Ground Worker',
+          phone: '9123456789',
+          role: 'volunteer',
+          campaignId: 'c1',
+        },
       });
       expect(resMemCoord.statusCode).toBe(201);
     });
@@ -2189,11 +2396,19 @@ describe('Campaign Routes Unit Test Suite (Direct Route Injection)', () => {
       // 1. POST /api/v1/campaign/wallet/recharge/order when createOrder throws (line 1109)
       jest.spyOn(supabase, 'from').mockImplementation(((table: string) => {
         if (table === 'user_profiles') {
-          return { select: () => ({ eq: () => ({ maybeSingle: async () => ({ data: { role: 'politician' }, error: null }) }) }) } as any;
+          return {
+            select: () => ({
+              eq: () => ({
+                maybeSingle: async () => ({ data: { role: 'politician' }, error: null }),
+              }),
+            }),
+          } as any;
         }
         return {} as any;
       }) as any);
-      jest.spyOn(RazorpayProvider.prototype, 'createOrder').mockRejectedValueOnce(new Error('Gateway Outage'));
+      jest
+        .spyOn(RazorpayProvider.prototype, 'createOrder')
+        .mockRejectedValueOnce(new Error('Gateway Outage'));
       const resOrderFail = await app.inject({
         method: 'POST',
         url: '/api/v1/campaign/wallet/recharge/order',
@@ -2215,14 +2430,26 @@ describe('Campaign Routes Unit Test Suite (Direct Route Injection)', () => {
       // 3. Cross-wallet recharge verification rejected (line 1262)
       jest.spyOn(supabase, 'from').mockImplementation(((table: string) => {
         if (table === 'user_profiles') {
-          return { select: () => ({ eq: () => ({ maybeSingle: async () => ({ data: { role: 'politician' }, error: null }) }) }) } as any;
+          return {
+            select: () => ({
+              eq: () => ({
+                maybeSingle: async () => ({ data: { role: 'politician' }, error: null }),
+              }),
+            }),
+          } as any;
         }
         if (table === 'campaign_recharge_orders') {
           return {
             select: () => ({
               or: () => ({
                 maybeSingle: async () => ({
-                  data: { id: 'order_cross', provider_order_id: 'order_cross', politician_id: 'pol-other', amount_inr: 1000, status: 'pending' },
+                  data: {
+                    id: 'order_cross',
+                    provider_order_id: 'order_cross',
+                    politician_id: 'pol-other',
+                    amount_inr: 1000,
+                    status: 'pending',
+                  },
                   error: null,
                 }),
               }),
@@ -2244,14 +2471,26 @@ describe('Campaign Routes Unit Test Suite (Direct Route Injection)', () => {
       delete process.env.RAZORPAY_KEY_SECRET;
       jest.spyOn(supabase, 'from').mockImplementation(((table: string) => {
         if (table === 'user_profiles') {
-          return { select: () => ({ eq: () => ({ maybeSingle: async () => ({ data: { role: 'politician' }, error: null }) }) }) } as any;
+          return {
+            select: () => ({
+              eq: () => ({
+                maybeSingle: async () => ({ data: { role: 'politician' }, error: null }),
+              }),
+            }),
+          } as any;
         }
         if (table === 'campaign_recharge_orders') {
           return {
             select: () => ({
               or: () => ({
                 maybeSingle: async () => ({
-                  data: { id: 'order_sig', provider_order_id: 'order_sig', politician_id: 'pol-1', amount_inr: 1000, status: 'pending' },
+                  data: {
+                    id: 'order_sig',
+                    provider_order_id: 'order_sig',
+                    politician_id: 'pol-1',
+                    amount_inr: 1000,
+                    status: 'pending',
+                  },
                   error: null,
                 }),
               }),
@@ -2294,7 +2533,9 @@ describe('Campaign Routes Unit Test Suite (Direct Route Injection)', () => {
       expect(JSON.parse(resBadSig.payload).code).toBe('INVALID_SIGNATURE');
 
       // 6. Signature verification: Generic verification error (lines 1307-1309)
-      jest.spyOn(RazorpayProvider.prototype, 'verifyPaymentSignature').mockRejectedValueOnce(new Error('Generic Verification Error'));
+      jest
+        .spyOn(RazorpayProvider.prototype, 'verifyPaymentSignature')
+        .mockRejectedValueOnce(new Error('Generic Verification Error'));
       const resSigEx = await app.inject({
         method: 'POST',
         url: '/api/v1/campaign/wallet/recharge/verify',
@@ -2333,7 +2574,12 @@ describe('Campaign Routes Unit Test Suite (Direct Route Injection)', () => {
           method: 'POST',
           url: '/api/v1/campaign/volunteers',
           headers: { 'x-user-id': 'usr-admin-1', 'x-user-role': 'admin' },
-          payload: { name: 'Ground Member', phone: '9848012345', isKshetraUser: true, campaignId: 'c1' },
+          payload: {
+            name: 'Ground Member',
+            phone: '9848012345',
+            isKshetraUser: true,
+            campaignId: 'c1',
+          },
         });
         expect(resVolOffline.statusCode).toBe(503);
 
@@ -2381,4 +2627,3 @@ describe('Campaign Routes Unit Test Suite (Direct Route Injection)', () => {
     });
   });
 });
-

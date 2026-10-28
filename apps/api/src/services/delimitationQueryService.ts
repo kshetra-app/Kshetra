@@ -55,22 +55,19 @@ const UNKNOWN_LINEAGE_CLAIMS: Record<string, { name: string; citation: string; n
     name: 'Pinapaka',
     citation:
       'Statutory territorial transfer of specified mandals/villages under the Andhra Pradesh Reorganisation (Removal of Difficulties) Order, 2015 (G.S.R. 311(E), 23 April 2015).',
-    note:
-      'Within the authoritative sources and legal instruments examined for W020, no constituency-level predecessor/successor evidence was identified for Telangana AC-110 Pinapaka. Lineage status is strictly UNKNOWN.',
+    note: 'Within the authoritative sources and legal instruments examined for W020, no constituency-level predecessor/successor evidence was identified for Telangana AC-110 Pinapaka. Lineage status is strictly UNKNOWN.',
   },
   '118': {
     name: 'Aswaraopeta',
     citation:
       'Statutory territorial transfer of specified mandals/villages under the Andhra Pradesh Reorganisation (Removal of Difficulties) Order, 2015 (G.S.R. 311(E), 23 April 2015).',
-    note:
-      'Within the authoritative sources and legal instruments examined for W020, no constituency-level predecessor/successor evidence was identified for Telangana AC-118 Aswaraopeta. Lineage status is strictly UNKNOWN.',
+    note: 'Within the authoritative sources and legal instruments examined for W020, no constituency-level predecessor/successor evidence was identified for Telangana AC-118 Aswaraopeta. Lineage status is strictly UNKNOWN.',
   },
   '119': {
     name: 'Bhadrachalam',
     citation:
       'Statutory territorial transfer of specified mandals/villages under the Andhra Pradesh Reorganisation (Removal of Difficulties) Order, 2015 (G.S.R. 311(E), 23 April 2015).',
-    note:
-      'Within the authoritative sources and legal instruments examined for W020, no constituency-level predecessor/successor evidence was identified for Telangana AC-119 Bhadrachalam. Lineage status is strictly UNKNOWN.',
+    note: 'Within the authoritative sources and legal instruments examined for W020, no constituency-level predecessor/successor evidence was identified for Telangana AC-119 Bhadrachalam. Lineage status is strictly UNKNOWN.',
   },
 };
 
@@ -93,13 +90,17 @@ function mapDbRegime(row: any): DelimitationRegimeRecord {
 
 function mapDbProposal(row: any): DelimitationProposalRecord {
   const meta = row.metadata || {};
-  const legalStatus = (row.legal_status ?? meta.legalStatus ?? 'SCENARIO_PROPOSED_REGIME') as DelimitationLegalRegime;
-  const outputClassification = (row.output_classification ?? meta.outputClassification ?? 'STATUTORY_FACT') as OutputClassification;
+  const legalStatus = (row.legal_status ??
+    meta.legalStatus ??
+    'SCENARIO_PROPOSED_REGIME') as DelimitationLegalRegime;
+  const outputClassification = (row.output_classification ??
+    meta.outputClassification ??
+    'STATUTORY_FACT') as OutputClassification;
   const dataStatus = (row.data_status ?? meta.dataStatus ?? 'OFFICIAL') as W012DataStatus;
   const sc = row.proposed_sc_seats ?? row.reserved_sc_seats ?? 0;
   const st = row.proposed_st_seats ?? row.reserved_st_seats ?? 0;
   const total = row.proposed_seats ?? row.current_seats ?? 0;
-  const gen = row.general_seats ?? (total - sc - st);
+  const gen = row.general_seats ?? total - sc - st;
   const regimeId = row.delimitation_regime_id ?? row.regime_id ?? null;
   const provenanceId = row.provenance_id ?? row.provenance_record_id ?? null;
 
@@ -110,7 +111,7 @@ function mapDbProposal(row: any): DelimitationProposalRecord {
     description: row.description || '',
     currentSeats: row.current_seats,
     proposedSeats: row.proposed_seats,
-    seatChange: row.seat_change ?? (row.proposed_seats - row.current_seats),
+    seatChange: row.seat_change ?? row.proposed_seats - row.current_seats,
     reservedScSeats: sc,
     reservedStSeats: st,
     generalSeats: gen,
@@ -147,11 +148,17 @@ function mapDbProvenance(row: any): ProvenanceDetailRecord {
   const meta = row.metadata || {};
   const srcId = row.source_record_id || meta.sourceId || '';
   const instr = row.citation || row.source_citation || meta.citation || meta.instrument || '';
-  const citation = srcId && instr && !instr.includes(srcId) ? `${srcId}: ${instr}` : (instr || srcId);
+  const citation = srcId && instr && !instr.includes(srcId) ? `${srcId}: ${instr}` : instr || srcId;
 
   return {
     id: row.id,
-    sourceAuthority: row.source_authority || row.source_name || meta.sourceAuthority || meta.authority || row.operator || '',
+    sourceAuthority:
+      row.source_authority ||
+      row.source_name ||
+      meta.sourceAuthority ||
+      meta.authority ||
+      row.operator ||
+      '',
     methodology: row.methodology || meta.methodology || meta.role || '',
     citation,
     verificationNotes: row.verification_notes || meta.verificationNotes || undefined,
@@ -237,7 +244,11 @@ export class DelimitationQueryService {
       .order('effective_from', { ascending: true });
 
     if (error) {
-      throw new DelimitationQueryError('REGIME_QUERY_FAILED', 500, `Failed to query delimitation regimes: ${error.message}`);
+      throw new DelimitationQueryError(
+        'REGIME_QUERY_FAILED',
+        500,
+        `Failed to query delimitation regimes: ${error.message}`,
+      );
     }
 
     return (data || []).map(mapDbRegime);
@@ -246,7 +257,10 @@ export class DelimitationQueryService {
   /**
    * Retrieves all canonical proposals, optionally filtered by stateCode or regimeId.
    */
-  async getProposals(filters?: { stateCode?: string; regimeId?: string }): Promise<DelimitationProposalRecord[]> {
+  async getProposals(filters?: {
+    stateCode?: string;
+    regimeId?: string;
+  }): Promise<DelimitationProposalRecord[]> {
     let records: DelimitationProposalRecord[] = [];
     try {
       let query = supabase.from('delimitation_proposals').select('*');
@@ -268,10 +282,12 @@ export class DelimitationQueryService {
     }
 
     if (filters?.stateCode) {
-      records = records.filter(p => p.stateCode.toUpperCase() === filters.stateCode!.toUpperCase());
+      records = records.filter(
+        (p) => p.stateCode.toUpperCase() === filters.stateCode!.toUpperCase(),
+      );
     }
     if (filters?.regimeId) {
-      records = records.filter(p => p.regimeId === filters.regimeId);
+      records = records.filter((p) => p.regimeId === filters.regimeId);
     }
 
     return records;
@@ -280,7 +296,10 @@ export class DelimitationQueryService {
   /**
    * Retrieves a single proposal by primary key UUID, resolving its associated provenance record.
    */
-  async getProposalById(id: string): Promise<{ proposal: DelimitationProposalRecord; provenance: ProvenanceDetailRecord | null } | null> {
+  async getProposalById(id: string): Promise<{
+    proposal: DelimitationProposalRecord;
+    provenance: ProvenanceDetailRecord | null;
+  } | null> {
     const { data: row, error } = await supabase
       .from('delimitation_proposals')
       .select('*')
@@ -288,12 +307,16 @@ export class DelimitationQueryService {
       .maybeSingle();
 
     if (error) {
-      throw new DelimitationQueryError('PROPOSAL_QUERY_FAILED', 500, `Failed to query proposal by id: ${error.message}`);
+      throw new DelimitationQueryError(
+        'PROPOSAL_QUERY_FAILED',
+        500,
+        `Failed to query proposal by id: ${error.message}`,
+      );
     }
 
     let proposal = row ? mapDbProposal(row) : null;
     if (!proposal) {
-      proposal = CANONICAL_PROPOSALS.find(p => p.id === id) || null;
+      proposal = CANONICAL_PROPOSALS.find((p) => p.id === id) || null;
     }
 
     if (!proposal) {
@@ -320,25 +343,35 @@ export class DelimitationQueryService {
    * Queries constituency mappings. Enforces the strict evidence-gated invariant:
    * public.constituency_mapping = 0 rows; returns statutory UNKNOWN claims register.
    */
-  async getConstituencyMappings(): Promise<{ mappings: ConstituencyMappingRecord[]; claims: ConstituencyLineageClaim[]; count: number }> {
+  async getConstituencyMappings(): Promise<{
+    mappings: ConstituencyMappingRecord[];
+    claims: ConstituencyLineageClaim[];
+    count: number;
+  }> {
     const { data, error, count } = await supabase
       .from('constituency_mapping')
       .select('*', { count: 'exact' });
 
     if (error) {
-      throw new DelimitationQueryError('MAPPING_QUERY_FAILED', 500, `Failed to query constituency mappings: ${error.message}`);
+      throw new DelimitationQueryError(
+        'MAPPING_QUERY_FAILED',
+        500,
+        `Failed to query constituency mappings: ${error.message}`,
+      );
     }
 
     const mappings = (data || []).map(mapDbMapping);
 
-    const claims: ConstituencyLineageClaim[] = Object.entries(UNKNOWN_LINEAGE_CLAIMS).map(([acCode, item]) => ({
-      constituencyCode: `AC-${acCode}`,
-      constituencyName: item.name,
-      lineageStatus: 'UNKNOWN',
-      statutoryTransferCitation: item.citation,
-      mappingCount: 0,
-      evidenceNote: item.note,
-    }));
+    const claims: ConstituencyLineageClaim[] = Object.entries(UNKNOWN_LINEAGE_CLAIMS).map(
+      ([acCode, item]) => ({
+        constituencyCode: `AC-${acCode}`,
+        constituencyName: item.name,
+        lineageStatus: 'UNKNOWN',
+        statutoryTransferCitation: item.citation,
+        mappingCount: 0,
+        evidenceNote: item.note,
+      }),
+    );
 
     return {
       mappings,
@@ -379,7 +412,9 @@ export class DelimitationQueryService {
     // ─── A. CURRENT REGIME RESOLUTION ───
     if (query.mode === 'current') {
       // Invariant Check 1: Prevent invalid regimes from masquerading as current via is_active
-      const invalidActiveRegimes = regimes.filter(r => r.isActive && r.regimeType !== 'CURRENT_LEGAL_REGIME');
+      const invalidActiveRegimes = regimes.filter(
+        (r) => r.isActive && r.regimeType !== 'CURRENT_LEGAL_REGIME',
+      );
       if (invalidActiveRegimes.length > 0) {
         throw new DelimitationQueryError(
           'INVALID_CURRENT_REGIME_STATE',
@@ -389,9 +424,13 @@ export class DelimitationQueryService {
       }
 
       // Invariant Check 2: Must resolve canonical CURRENT_LEGAL_REGIME
-      const currentRegime = regimes.find(r => r.regimeType === 'CURRENT_LEGAL_REGIME');
+      const currentRegime = regimes.find((r) => r.regimeType === 'CURRENT_LEGAL_REGIME');
       if (!currentRegime) {
-        throw new DelimitationQueryError('REGIME_NOT_FOUND', 404, 'No canonical CURRENT_LEGAL_REGIME found in database');
+        throw new DelimitationQueryError(
+          'REGIME_NOT_FOUND',
+          404,
+          'No canonical CURRENT_LEGAL_REGIME found in database',
+        );
       }
 
       // Temporal Validity Check
@@ -429,18 +468,26 @@ export class DelimitationQueryService {
     if (query.mode === 'as_of') {
       const { date } = query;
       if (!date || typeof date !== 'string') {
-        throw new DelimitationQueryError('INVALID_TEMPORAL_PARAMETER', 400, 'Temporal query mode requires a valid date string');
+        throw new DelimitationQueryError(
+          'INVALID_TEMPORAL_PARAMETER',
+          400,
+          'Temporal query mode requires a valid date string',
+        );
       }
 
       const isoDatePattern = /^\d{4}-\d{2}-\d{2}(?:T[\d:.]+Z?)?$/;
       if (!isoDatePattern.test(date) || isNaN(Date.parse(date))) {
-        throw new DelimitationQueryError('INVALID_TEMPORAL_PARAMETER', 400, `Invalid ISO date format provided for as_of evaluation: '${date}'`);
+        throw new DelimitationQueryError(
+          'INVALID_TEMPORAL_PARAMETER',
+          400,
+          `Invalid ISO date format provided for as_of evaluation: '${date}'`,
+        );
       }
 
       const targetTime = new Date(date).getTime();
 
       // Find statutory regime in force on target date
-      const matched = regimes.find(r => {
+      const matched = regimes.find((r) => {
         // Only statutory historical or current regimes participate in temporal as_of
         if (r.regimeType !== 'HISTORICAL_LEGAL_REGIME' && r.regimeType !== 'CURRENT_LEGAL_REGIME') {
           return false;
@@ -451,7 +498,11 @@ export class DelimitationQueryService {
       });
 
       if (!matched) {
-        throw new DelimitationQueryError('REGIME_NOT_FOUND', 404, `No legal delimitation regime was in force on specified date: ${date}`);
+        throw new DelimitationQueryError(
+          'REGIME_NOT_FOUND',
+          404,
+          `No legal delimitation regime was in force on specified date: ${date}`,
+        );
       }
 
       const proposals = await this.getProposals({ regimeId: matched.id });
@@ -477,7 +528,11 @@ export class DelimitationQueryService {
     if (query.mode === 'explicit') {
       const { regimeId } = query;
       if (!regimeId || typeof regimeId !== 'string') {
-        throw new DelimitationQueryError('INVALID_REGIME_IDENTIFIER', 400, 'Explicit regime query requires a non-empty regimeId string');
+        throw new DelimitationQueryError(
+          'INVALID_REGIME_IDENTIFIER',
+          400,
+          'Explicit regime query requires a non-empty regimeId string',
+        );
       }
 
       // Prohibit illegal/forbidden regime identifiers
@@ -489,9 +544,13 @@ export class DelimitationQueryService {
         );
       }
 
-      const matched = regimes.find(r => r.id === regimeId);
+      const matched = regimes.find((r) => r.id === regimeId);
       if (!matched) {
-        throw new DelimitationQueryError('REGIME_NOT_FOUND', 404, `Explicit delimitation regime not found: '${regimeId}'`);
+        throw new DelimitationQueryError(
+          'REGIME_NOT_FOUND',
+          404,
+          `Explicit delimitation regime not found: '${regimeId}'`,
+        );
       }
 
       const proposals = await this.getProposals({ regimeId: matched.id });
@@ -515,9 +574,13 @@ export class DelimitationQueryService {
 
     // ─── D. FUTURE ANTICIPATED REGIME RESOLUTION ───
     if (query.mode === 'future_anticipated') {
-      const futureRegime = regimes.find(r => r.regimeType === 'FUTURE_ANTICIPATED_REGIME');
+      const futureRegime = regimes.find((r) => r.regimeType === 'FUTURE_ANTICIPATED_REGIME');
       if (!futureRegime) {
-        throw new DelimitationQueryError('REGIME_NOT_FOUND', 404, 'No FUTURE_ANTICIPATED_REGIME is registered in canonical catalog');
+        throw new DelimitationQueryError(
+          'REGIME_NOT_FOUND',
+          404,
+          'No FUTURE_ANTICIPATED_REGIME is registered in canonical catalog',
+        );
       }
 
       return {
@@ -543,12 +606,20 @@ export class DelimitationQueryService {
       if (selector.type === 'proposal_id') {
         const { proposalId } = selector;
         if (!proposalId) {
-          throw new DelimitationQueryError('INVALID_SCENARIO_SELECTOR', 400, 'Scenario proposal_id selector requires a valid UUID string');
+          throw new DelimitationQueryError(
+            'INVALID_SCENARIO_SELECTOR',
+            400,
+            'Scenario proposal_id selector requires a valid UUID string',
+          );
         }
 
         const proposalResult = await this.getProposalById(proposalId);
         if (!proposalResult) {
-          throw new DelimitationQueryError('SCENARIO_NOT_FOUND', 404, `Scenario proposal not found: '${proposalId}'`);
+          throw new DelimitationQueryError(
+            'SCENARIO_NOT_FOUND',
+            404,
+            `Scenario proposal not found: '${proposalId}'`,
+          );
         }
 
         const { proposal, provenance } = proposalResult;
@@ -571,7 +642,7 @@ export class DelimitationQueryService {
           );
         }
 
-        const linkedRegime = regimes.find(r => r.id === proposal.regimeId);
+        const linkedRegime = regimes.find((r) => r.id === proposal.regimeId);
         if (!linkedRegime) {
           throw new DelimitationQueryError(
             'SCENARIO_COHERENCE_VIOLATION',
@@ -601,12 +672,20 @@ export class DelimitationQueryService {
       if (selector.type === 'regime_id') {
         const { regimeId } = selector;
         if (!regimeId) {
-          throw new DelimitationQueryError('INVALID_SCENARIO_SELECTOR', 400, 'Scenario regime_id selector requires a valid identifier string');
+          throw new DelimitationQueryError(
+            'INVALID_SCENARIO_SELECTOR',
+            400,
+            'Scenario regime_id selector requires a valid identifier string',
+          );
         }
 
-        const matchedRegime = regimes.find(r => r.id === regimeId);
+        const matchedRegime = regimes.find((r) => r.id === regimeId);
         if (!matchedRegime) {
-          throw new DelimitationQueryError('SCENARIO_NOT_FOUND', 404, `Scenario regime not found: '${regimeId}'`);
+          throw new DelimitationQueryError(
+            'SCENARIO_NOT_FOUND',
+            404,
+            `Scenario regime not found: '${regimeId}'`,
+          );
         }
 
         // Critical Coherence Check: A current, historical, or future regime MUST NOT resolve through scenario selector
@@ -620,7 +699,9 @@ export class DelimitationQueryService {
 
         // Only scenario-compatible proposals may be returned
         const allProposals = await this.getProposals({ regimeId: matchedRegime.id });
-        const scenarioProposals = allProposals.filter(p => p.legalStatus === 'SCENARIO_PROPOSED_REGIME');
+        const scenarioProposals = allProposals.filter(
+          (p) => p.legalStatus === 'SCENARIO_PROPOSED_REGIME',
+        );
 
         let provenance: ProvenanceDetailRecord | null = null;
         if (scenarioProposals[0]?.provenanceId) {
@@ -647,7 +728,11 @@ export class DelimitationQueryService {
       );
     }
 
-    throw new DelimitationQueryError('INVALID_REGIME_SELECTION_MODE', 400, `Unknown regime selection mode: '${(query as any).mode}'`);
+    throw new DelimitationQueryError(
+      'INVALID_REGIME_SELECTION_MODE',
+      400,
+      `Unknown regime selection mode: '${(query as any).mode}'`,
+    );
   }
 
   // ─── GOVERNED LEGAL APPLICABILITY RULE CATALOG (W020-G8 / PLAN-W020-G8-REV-1.2) ───
@@ -738,7 +823,8 @@ export class DelimitationQueryService {
       jurisdictionCode: 'GA',
       regimeApplicability: ['CURRENT_LEGAL_REGIME', 'HISTORICAL_LEGAL_REGIME'],
       constitutionalProvision: 'Article 371-I',
-      statutoryProvision: 'Goa, Daman and Diu Reorganisation Act, 1987 (Act No. 18 of 1987), Section 12',
+      statutoryProvision:
+        'Goa, Daman and Diu Reorganisation Act, 1987 (Act No. 18 of 1987), Section 12',
       temporalValidity: { validFrom: '1987-05-30', isCurrent: true },
       provenance: {
         sourceAuthority: 'Parliament of India / Ministry of Law and Justice',
@@ -803,7 +889,8 @@ export class DelimitationQueryService {
       temporalValidity: { validFrom: '2008-02-19', validTo: '2014-06-02', isCurrent: false },
       provenance: {
         sourceAuthority: 'Delimitation Commission of India',
-        citation: 'Delimitation Order 2008, Schedule II (State of Andhra Pradesh), published 19 February 2008.',
+        citation:
+          'Delimitation Order 2008, Schedule II (State of Andhra Pradesh), published 19 February 2008.',
         instrumentTitle: 'Delimitation Order 2008, Schedule II',
         evidenceReference: 'ECI-DELIM-2008-AP',
       },
@@ -819,7 +906,8 @@ export class DelimitationQueryService {
       jurisdictionCode: 'TS',
       regimeApplicability: ['CURRENT_LEGAL_REGIME'],
       constitutionalProvision: 'Article 170(1)',
-      statutoryProvision: 'Andhra Pradesh Reorganisation Act, 2014 (Section 17 read with Schedule XXXI)',
+      statutoryProvision:
+        'Andhra Pradesh Reorganisation Act, 2014 (Section 17 read with Schedule XXXI)',
       temporalValidity: { validFrom: '2014-06-02', isCurrent: true },
       provenance: {
         sourceAuthority: 'Parliament of India / Ministry of Home Affairs',
@@ -881,7 +969,7 @@ export class DelimitationQueryService {
   resolveLegalApplicability(
     queryOrEntityType: PoliticalEntityType | LegalApplicabilityQuery = 'STATE_LEGISLATIVE_ASSEMBLY',
     regimeTypeArg: DelimitationLegalRegime = 'CURRENT_LEGAL_REGIME',
-    jurisdictionCodeArg?: string
+    jurisdictionCodeArg?: string,
   ): LegalApplicabilityConstraint {
     const query: LegalApplicabilityQuery =
       typeof queryOrEntityType === 'object'
@@ -907,7 +995,8 @@ export class DelimitationQueryService {
         temporalValidity: { validFrom: asOfDate || new Date().toISOString(), isCurrent: false },
         provenance: {
           sourceAuthority: 'PANIN Delimitation Simulation Engine (Scenario Research Mode)',
-          citation: 'Non-statutory exploratory scenario projection. Carries zero legal or constitutional force.',
+          citation:
+            'Non-statutory exploratory scenario projection. Carries zero legal or constitutional force.',
           evidenceReference: evidenceReference || 'PANIN-SIM-SCENARIO',
           instrumentTitle: 'PANIN Scenario Simulation',
         },
@@ -945,11 +1034,19 @@ export class DelimitationQueryService {
 
     // Check for invalid entity / regime combination (Case J)
     if (
-      !['STATE_LEGISLATIVE_ASSEMBLY', 'UNION_TERRITORY_ASSEMBLY', 'HOUSE_OF_THE_PEOPLE', 'COUNCIL_OF_STATES', 'LEGISLATIVE_COUNCIL'].includes(
-        entityType
-      )
+      ![
+        'STATE_LEGISLATIVE_ASSEMBLY',
+        'UNION_TERRITORY_ASSEMBLY',
+        'HOUSE_OF_THE_PEOPLE',
+        'COUNCIL_OF_STATES',
+        'LEGISLATIVE_COUNCIL',
+      ].includes(entityType)
     ) {
-      throw new DelimitationQueryError('INVALID_ENTITY_TYPE', 400, `Unsupported political entity type: '${entityType}'`);
+      throw new DelimitationQueryError(
+        'INVALID_ENTITY_TYPE',
+        400,
+        `Unsupported political entity type: '${entityType}'`,
+      );
     }
 
     // Lookup matching rule from the Governed Legal Rules Catalog by legal context
@@ -979,7 +1076,7 @@ export class DelimitationQueryService {
         404,
         `No authoritative legal rule evidenced for entity '${entityType}' under regime '${regimeType}'${
           normJurisdiction ? ` in jurisdiction '${normJurisdiction}'` : ''
-        }`
+        }`,
       );
     }
 
@@ -999,7 +1096,7 @@ export class DelimitationQueryService {
           400,
           `Legal rule '${matchedRule.ruleId}' is not temporally applicable as of '${asOfDate}'. Canonical half-open valid range: [${
             matchedRule.temporalValidity.validFrom
-          }, ${matchedRule.temporalValidity.validTo || 'present'}).`
+          }, ${matchedRule.temporalValidity.validTo || 'present'}).`,
         );
       }
     }
@@ -1009,7 +1106,7 @@ export class DelimitationQueryService {
       throw new DelimitationQueryError(
         'EVIDENCE_PROVENANCE_MISMATCH',
         400,
-        `Requested evidence reference '${evidenceReference}' does not match governing rule provenance '${matchedRule.provenance.evidenceReference}'.`
+        `Requested evidence reference '${evidenceReference}' does not match governing rule provenance '${matchedRule.provenance.evidenceReference}'.`,
       );
     }
 
@@ -1053,7 +1150,8 @@ export class DelimitationQueryService {
     try {
       const { data: tenures, error: tErr } = await supabase
         .from('elected_tenures')
-        .select(`
+        .select(
+          `
           id,
           person_id,
           organization_id,
@@ -1062,7 +1160,8 @@ export class DelimitationQueryService {
           party_at_election,
           canonical_persons ( id, canonical_name ),
           political_organizations ( id, short_name )
-        `)
+        `,
+        )
         .eq('is_current', true);
 
       if (!tErr && tenures && tenures.length > 0) {
@@ -1102,7 +1201,8 @@ export class DelimitationQueryService {
       let mlaName = c.winnerName2023 || c.winnerName || 'UNKNOWN';
       let party = c.winner2023 || c.currentParty || 'UNKNOWN';
       let margin = c.margin2023 || 12000;
-      let marginPct = Math.round((margin / (c.winnerVotes2023 ? c.winnerVotes2023 * 1.8 : 180000)) * 1000) / 10;
+      let marginPct =
+        Math.round((margin / (c.winnerVotes2023 ? c.winnerVotes2023 * 1.8 : 180000)) * 1000) / 10;
       let personId: string | null = null;
       let contestId: string | null = null;
 
@@ -1125,7 +1225,9 @@ export class DelimitationQueryService {
         contestId = 'TS_LA_2023_GEN_TS-AC-040';
       }
 
-      const isUrban = ['hyderabad', 'rangareddy', 'medchal'].some((city) => (c.district || '').toLowerCase().includes(city));
+      const isUrban = ['hyderabad', 'rangareddy', 'medchal'].some((city) =>
+        (c.district || '').toLowerCase().includes(city),
+      );
 
       let changeType = 'minor_adjust';
       let riskScore = 20;
@@ -1142,7 +1244,13 @@ export class DelimitationQueryService {
 
       riskScore = Math.max(5, Math.min(95, riskScore));
       const rating: 'critical_risk' | 'high_risk' | 'moderate_risk' | 'safe' =
-        riskScore > 75 ? 'critical_risk' : riskScore > 55 ? 'high_risk' : riskScore > 35 ? 'moderate_risk' : 'safe';
+        riskScore > 75
+          ? 'critical_risk'
+          : riskScore > 55
+            ? 'high_risk'
+            : riskScore > 35
+              ? 'moderate_risk'
+              : 'safe';
 
       return {
         mlaName,
@@ -1174,7 +1282,13 @@ export class DelimitationQueryService {
     // INC: 64, BRS: 39, BJP: 8, AIMIM: 7, CPI: 1
     return [
       { party: 'INC', currentSeats: 64, projectedSeats: 64, seatChange: 0, voteSharePercent: 39.4 },
-      { party: 'BRS', currentSeats: 39, projectedSeats: 39, seatChange: 0, voteSharePercent: 37.35 },
+      {
+        party: 'BRS',
+        currentSeats: 39,
+        projectedSeats: 39,
+        seatChange: 0,
+        voteSharePercent: 37.35,
+      },
       { party: 'BJP', currentSeats: 8, projectedSeats: 8, seatChange: 0, voteSharePercent: 13.9 },
       { party: 'AIMIM', currentSeats: 7, projectedSeats: 7, seatChange: 0, voteSharePercent: 2.22 },
       { party: 'CPI', currentSeats: 1, projectedSeats: 1, seatChange: 0, voteSharePercent: 0.34 },
@@ -1194,7 +1308,8 @@ export class DelimitationQueryService {
         verified: true,
         instrument: 'Delimitation Act, 2002 (Act No. 33 of 2002)',
         authority: 'Parliament of India',
-        description: 'Constituted the Delimitation Commission to readjust seats based on Census 2001.',
+        description:
+          'Constituted the Delimitation Commission to readjust seats based on Census 2001.',
       },
       {
         id: 'LEG-2008-01',
@@ -1204,7 +1319,8 @@ export class DelimitationQueryService {
         verified: true,
         instrument: 'Delimitation Order 2008, Schedule II (State of Andhra Pradesh)',
         authority: 'Delimitation Commission of India',
-        description: 'Enacted 294 Assembly Constituencies and 42 Parliamentary Constituencies for undivided Andhra Pradesh.',
+        description:
+          'Enacted 294 Assembly Constituencies and 42 Parliamentary Constituencies for undivided Andhra Pradesh.',
       },
       {
         id: 'LEG-2014-01',
@@ -1224,7 +1340,8 @@ export class DelimitationQueryService {
         verified: true,
         instrument: 'APRA 2014 Sec 15, Schedule XXXI & Schedule II',
         authority: 'Union of India',
-        description: 'Schedule XXXI established 119 ACs for Telangana; Schedule II established 175 ACs for residuary AP.',
+        description:
+          'Schedule XXXI established 119 ACs for Telangana; Schedule II established 175 ACs for residuary AP.',
       },
       {
         id: 'LEG-2015-01',
@@ -1234,7 +1351,8 @@ export class DelimitationQueryService {
         verified: true,
         instrument: 'G.S.R. 311(E), dated 23 April 2015 (comes into force at once)',
         authority: 'President of India / Ministry of Home Affairs',
-        description: 'Transferred 7 mandals of Khammam district (Polavaram project submergence) from Telangana to Andhra Pradesh.',
+        description:
+          'Transferred 7 mandals of Khammam district (Polavaram project submergence) from Telangana to Andhra Pradesh.',
       },
       {
         id: 'LEG-2018-01',
@@ -1244,7 +1362,8 @@ export class DelimitationQueryService {
         verified: true,
         instrument: 'Notification No. 282/AP/2018(DEL), published 24 Sept 2018',
         authority: 'Election Commission of India under Sec 9(1)(b) Delim Act 2002',
-        description: 'Formally updated boundary descriptions to incorporate the territorial transfers of G.S.R. 311(E).',
+        description:
+          'Formally updated boundary descriptions to incorporate the territorial transfers of G.S.R. 311(E).',
       },
       {
         id: 'LEG-CENSUS-2027',
@@ -1254,7 +1373,8 @@ export class DelimitationQueryService {
         verified: false,
         instrument: 'Census Act, 1948 (Operation Pending)',
         authority: 'Office of the Registrar General & Census Commissioner, India',
-        description: 'Active tracking record for the upcoming national decennial census. Final population data is UNAVAILABLE.',
+        description:
+          'Active tracking record for the upcoming national decennial census. Final population data is UNAVAILABLE.',
       },
       {
         id: 'LEG-FUTURE-DELIM',
@@ -1264,7 +1384,8 @@ export class DelimitationQueryService {
         verified: false,
         instrument: 'Constitution of India (Articles 82 & 170 post-freeze mandate)',
         authority: 'Future Delimitation Commission',
-        description: 'Prospective post-freeze delimitation mandated upon publication of first census after 2026.',
+        description:
+          'Prospective post-freeze delimitation mandated upon publication of first census after 2026.',
       },
     ];
 
@@ -1286,7 +1407,8 @@ export class DelimitationQueryService {
           sourceAuthority: 'Delimitation Commission of India / Election Commission of India',
           publicationDate: '2008-02-19',
           checksum: undefined, // External statutory gazette; raw ECI order PDF not stored in repo (dossier: data/evidence/w020/authoritative/eci_delimitation_order_2008_source_dossier.md)
-          artifactPath: 'data/evidence/w020/authoritative/eci_delimitation_order_2008_source_dossier.md',
+          artifactPath:
+            'data/evidence/w020/authoritative/eci_delimitation_order_2008_source_dossier.md',
           dossierIntegrityStatus: 'BITWISE_IN_REPO_VERIFIED' as const,
           statutorySourceStatus: 'EXTERNAL_STATUTORY_PUBLICATION_NOT_CHECKED_IN' as const,
           substantiveVerificationStatus: 'PENDING_OFFICIAL_GAZETTE_BITWISE_AUDIT' as const,
@@ -1321,5 +1443,5 @@ export class DelimitationQueryService {
 }
 
 export const delimitationQueryService = new DelimitationQueryService();
-export const resolveLegalApplicability = delimitationQueryService.resolveLegalApplicability.bind(delimitationQueryService);
-
+export const resolveLegalApplicability =
+  delimitationQueryService.resolveLegalApplicability.bind(delimitationQueryService);

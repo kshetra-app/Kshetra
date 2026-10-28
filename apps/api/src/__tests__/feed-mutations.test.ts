@@ -148,7 +148,11 @@ describe('Track 3: Fastify Strangler Mutations API', () => {
       const res = await app.inject({
         method: 'POST',
         url: '/api/v1/shorts',
-        payload: { title: 'Townhall Highlight', videoUrl: 'https://video.example.com/1', stateCode: 'TS' },
+        payload: {
+          title: 'Townhall Highlight',
+          videoUrl: 'https://video.example.com/1',
+          stateCode: 'TS',
+        },
       });
       expect(res.statusCode).toBe(401);
     });

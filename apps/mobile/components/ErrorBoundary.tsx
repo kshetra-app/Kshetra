@@ -50,7 +50,7 @@ export default class ErrorBoundary extends React.Component<Props, State> {
   handleShareLog = async () => {
     const { error, errorInfo } = this.state;
     const logDetails = [
-      `=== KSHETRA RUNTIME ERROR LOG ===`,
+      `=== POLIGRAM RUNTIME ERROR LOG ===`,
       `Time: ${new Date().toISOString()}`,
       `Error: ${error?.name || 'Error'}: ${error?.message || 'Unknown error'}`,
       `\n--- JS Stack Trace ---`,
@@ -62,7 +62,7 @@ export default class ErrorBoundary extends React.Component<Props, State> {
     try {
       await Share.share({
         message: logDetails,
-        title: 'Kshetra Crash Diagnostics',
+        title: 'Poligram Crash Diagnostics',
       });
     } catch {
       Alert.alert('Error Log', logDetails);
@@ -86,7 +86,7 @@ export default class ErrorBoundary extends React.Component<Props, State> {
             <Ionicons name="warning" size={40} color="#EF4444" />
             <Text style={styles.title}>Something went wrong</Text>
             <Text style={styles.subtitle}>
-              Kshetra encountered an issue while loading this screen.
+              Poligram encountered an issue while loading this screen.
             </Text>
           </View>
 

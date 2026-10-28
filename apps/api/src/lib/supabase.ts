@@ -21,7 +21,11 @@ export const isValidSupabaseKey = (token: string, type: 'service' | 'anon'): boo
   const trimmed = token.trim();
   if (trimmed.length === 0) return false;
   if (type === 'service' && trimmed.startsWith('sb_secret_')) return true;
-  if (type === 'anon' && (trimmed.startsWith('sb_publishable_') || trimmed.startsWith('sb_secret_'))) return true;
+  if (
+    type === 'anon' &&
+    (trimmed.startsWith('sb_publishable_') || trimmed.startsWith('sb_secret_'))
+  )
+    return true;
   return trimmed.split('.').length === 3;
 };
 
@@ -31,7 +35,9 @@ const hasValidAnonKey = isValidSupabaseKey(rawAnonKey, 'anon');
 // Prefer service_role key if valid (JWT or sb_secret_); fall back to anon key to prevent total DB outage
 const resolvedKey = hasValidServiceKey
   ? rawServiceKey
-  : (hasValidAnonKey ? rawAnonKey : (rawServiceKey || 'placeholder-key'));
+  : hasValidAnonKey
+    ? rawAnonKey
+    : rawServiceKey || 'placeholder-key';
 
 export let isSupabaseConfigured = !!(supabaseUrl && (hasValidServiceKey || hasValidAnonKey));
 export const isUsingServiceRole = hasValidServiceKey;
@@ -56,4 +62,3 @@ export const supabase: SupabaseClient = createClient(
     },
   },
 );
-

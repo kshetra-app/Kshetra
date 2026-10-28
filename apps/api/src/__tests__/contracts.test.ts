@@ -1,7 +1,7 @@
 /**
  * API Contract Standardization & Negative Path Test Suite (JOB W008)
  * Master Execution Framework — Amendment v1.5-A / DEC-041
- * 
+ *
  * Verifies:
  * - NP-01, NP-02, NP-03: Config flags schema rejects non-boolean values with 400 ApiErrorEnvelope
  * - NP-04, NP-05, NP-06, NP-07: News feed schema rejects invalid query parameters with 400 ApiErrorEnvelope
@@ -585,5 +585,3 @@ describe('W008 API Contract Standardization & Schema Envelopes', () => {
     });
   });
 });
-
-

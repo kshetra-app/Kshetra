@@ -82,7 +82,10 @@ export async function politicalEntityRoutes(app: FastifyInstance): Promise<void>
 
     if (process.env.NODE_ENV === 'test' && testRole) {
       if (testRole === 'service_role' || testRole === 'authenticated') {
-        return { role: testRole as 'service_role' | 'authenticated', userId: testUserId || 'test-user-id' };
+        return {
+          role: testRole as 'service_role' | 'authenticated',
+          userId: testUserId || 'test-user-id',
+        };
       }
     }
 
@@ -136,7 +139,7 @@ export async function politicalEntityRoutes(app: FastifyInstance): Promise<void>
           code: err.code || 'ENTITY_SEARCH_ERROR',
         });
       }
-    }
+    },
   );
 
   /**
@@ -160,10 +163,10 @@ export async function politicalEntityRoutes(app: FastifyInstance): Promise<void>
           statusCode,
           statusCode === 404 ? 'Not Found' : 'Internal Server Error',
           err.message,
-          { code: err.code || 'PERSON_FETCH_ERROR' }
+          { code: err.code || 'PERSON_FETCH_ERROR' },
         );
       }
-    }
+    },
   );
 
   /**
@@ -187,10 +190,10 @@ export async function politicalEntityRoutes(app: FastifyInstance): Promise<void>
           statusCode,
           statusCode === 404 ? 'Not Found' : 'Internal Server Error',
           err.message,
-          { code: err.code || 'TIMELINE_FETCH_ERROR' }
+          { code: err.code || 'TIMELINE_FETCH_ERROR' },
         );
       }
-    }
+    },
   );
 
   /**
@@ -214,10 +217,10 @@ export async function politicalEntityRoutes(app: FastifyInstance): Promise<void>
           statusCode,
           statusCode === 404 ? 'Not Found' : 'Internal Server Error',
           err.message,
-          { code: err.code || 'ORGANIZATION_FETCH_ERROR' }
+          { code: err.code || 'ORGANIZATION_FETCH_ERROR' },
         );
       }
-    }
+    },
   );
 
   /**
@@ -243,7 +246,7 @@ export async function politicalEntityRoutes(app: FastifyInstance): Promise<void>
           code: err.code || 'LEGISLATORS_QUERY_ERROR',
         });
       }
-    }
+    },
   );
 
   /**
@@ -270,7 +273,7 @@ export async function politicalEntityRoutes(app: FastifyInstance): Promise<void>
           401,
           'Unauthorized',
           'Authentication required to claim a political person identity.',
-          { code: 'AUTHENTICATION_REQUIRED' }
+          { code: 'AUTHENTICATION_REQUIRED' },
         );
       }
 
@@ -280,7 +283,7 @@ export async function politicalEntityRoutes(app: FastifyInstance): Promise<void>
           request.params.id,
           caller.userId || 'unknown-user',
           request.body,
-          isServiceRole
+          isServiceRole,
         );
         return reply.status(200).send({ data: result });
       } catch (err: any) {
@@ -289,11 +292,15 @@ export async function politicalEntityRoutes(app: FastifyInstance): Promise<void>
           reply,
           request,
           statusCode,
-          statusCode === 404 ? 'Not Found' : statusCode === 409 ? 'Conflict' : 'Internal Server Error',
+          statusCode === 404
+            ? 'Not Found'
+            : statusCode === 409
+              ? 'Conflict'
+              : 'Internal Server Error',
           err.message,
-          { code: err.code || 'CLAIM_ERROR' }
+          { code: err.code || 'CLAIM_ERROR' },
         );
       }
-    }
+    },
   );
 }

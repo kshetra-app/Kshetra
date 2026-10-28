@@ -6,7 +6,7 @@ export async function metricsRoutes(app: FastifyInstance) {
    * GET /api/metrics
    * Exposes operational telemetry, latency distributions, status code breakdowns,
    * process resource consumption, and database connectivity metrics.
-   * 
+   *
    * PRODUCTION PROTECTION MANDATE (W004-R1A / DEC-021):
    * Operational telemetry exposes internal memory, process IDs, and health statistics.
    * In PRODUCTION, access requires a dedicated monitoring token (Bearer token or x-metrics-token header)

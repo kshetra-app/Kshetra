@@ -1,23 +1,110 @@
-import {
-  computeElectionAnalytics,
-  type ConstituencyRecord,
-} from '../analytics/election-analytics';
+import { computeElectionAnalytics, type ConstituencyRecord } from '../analytics/election-analytics';
 
 /**
  * Inline test fixtures — avoids importing from data/seed which is
  * outside @kshetra/shared rootDir and breaks tsc build.
  */
 const MOCK_RECORDS: ConstituencyRecord[] = [
-  { acNo: 1, name: 'Sirpur', district: 'Adilabad', type: 'GEN', winner: 'INC', winnerVotes: 82415, runnerUp: 'BRS', margin: 15234 },
-  { acNo: 2, name: 'Chennur', district: 'Adilabad', type: 'SC', winner: 'INC', winnerVotes: 89764, runnerUp: 'BRS', margin: 21456 },
-  { acNo: 3, name: 'Bellampalle', district: 'Adilabad', type: 'SC', winner: 'INC', winnerVotes: 78543, runnerUp: 'BRS', margin: 12345 },
-  { acNo: 4, name: 'Mancherial', district: 'Adilabad', type: 'GEN', winner: 'BRS', winnerVotes: 92345, runnerUp: 'INC', margin: 8765 },
-  { acNo: 5, name: 'Adilabad', district: 'Adilabad', type: 'ST', winner: 'INC', winnerVotes: 75432, runnerUp: 'BRS', margin: 18765 },
-  { acNo: 6, name: 'Hyderabad Central', district: 'Hyderabad', type: 'GEN', winner: 'AIMIM', winnerVotes: 95000, runnerUp: 'INC', margin: 40000 },
-  { acNo: 7, name: 'Hyderabad South', district: 'Hyderabad', type: 'GEN', winner: 'AIMIM', winnerVotes: 91000, runnerUp: 'INC', margin: 35000 },
-  { acNo: 8, name: 'Warangal', district: 'Warangal', type: 'GEN', winner: 'BRS', winnerVotes: 88000, runnerUp: 'INC', margin: 5000 },
-  { acNo: 9, name: 'Nalgonda', district: 'Nalgonda', type: 'GEN', winner: 'INC', winnerVotes: 79000, runnerUp: 'BRS', margin: 22000 },
-  { acNo: 10, name: 'Goshamahal', district: 'Hyderabad', type: 'GEN', winner: 'BJP', winnerVotes: 98000, runnerUp: 'INC', margin: 18000 },
+  {
+    acNo: 1,
+    name: 'Sirpur',
+    district: 'Adilabad',
+    type: 'GEN',
+    winner: 'INC',
+    winnerVotes: 82415,
+    runnerUp: 'BRS',
+    margin: 15234,
+  },
+  {
+    acNo: 2,
+    name: 'Chennur',
+    district: 'Adilabad',
+    type: 'SC',
+    winner: 'INC',
+    winnerVotes: 89764,
+    runnerUp: 'BRS',
+    margin: 21456,
+  },
+  {
+    acNo: 3,
+    name: 'Bellampalle',
+    district: 'Adilabad',
+    type: 'SC',
+    winner: 'INC',
+    winnerVotes: 78543,
+    runnerUp: 'BRS',
+    margin: 12345,
+  },
+  {
+    acNo: 4,
+    name: 'Mancherial',
+    district: 'Adilabad',
+    type: 'GEN',
+    winner: 'BRS',
+    winnerVotes: 92345,
+    runnerUp: 'INC',
+    margin: 8765,
+  },
+  {
+    acNo: 5,
+    name: 'Adilabad',
+    district: 'Adilabad',
+    type: 'ST',
+    winner: 'INC',
+    winnerVotes: 75432,
+    runnerUp: 'BRS',
+    margin: 18765,
+  },
+  {
+    acNo: 6,
+    name: 'Hyderabad Central',
+    district: 'Hyderabad',
+    type: 'GEN',
+    winner: 'AIMIM',
+    winnerVotes: 95000,
+    runnerUp: 'INC',
+    margin: 40000,
+  },
+  {
+    acNo: 7,
+    name: 'Hyderabad South',
+    district: 'Hyderabad',
+    type: 'GEN',
+    winner: 'AIMIM',
+    winnerVotes: 91000,
+    runnerUp: 'INC',
+    margin: 35000,
+  },
+  {
+    acNo: 8,
+    name: 'Warangal',
+    district: 'Warangal',
+    type: 'GEN',
+    winner: 'BRS',
+    winnerVotes: 88000,
+    runnerUp: 'INC',
+    margin: 5000,
+  },
+  {
+    acNo: 9,
+    name: 'Nalgonda',
+    district: 'Nalgonda',
+    type: 'GEN',
+    winner: 'INC',
+    winnerVotes: 79000,
+    runnerUp: 'BRS',
+    margin: 22000,
+  },
+  {
+    acNo: 10,
+    name: 'Goshamahal',
+    district: 'Hyderabad',
+    type: 'GEN',
+    winner: 'BJP',
+    winnerVotes: 98000,
+    runnerUp: 'INC',
+    margin: 18000,
+  },
 ];
 
 describe('computeElectionAnalytics', () => {
@@ -64,9 +151,7 @@ describe('computeElectionAnalytics', () => {
   });
 
   it('should have biggest margin > closest margin', () => {
-    expect(analytics.margins.biggest.margin).toBeGreaterThan(
-      analytics.margins.closest.margin,
-    );
+    expect(analytics.margins.biggest.margin).toBeGreaterThan(analytics.margins.closest.margin);
   });
 
   it('should have non-empty constituency names in margins', () => {

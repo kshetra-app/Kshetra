@@ -58,7 +58,9 @@ export function getMediaHosts(): MediaHosts {
     omeHost: env('EXPO_PUBLIC_MEDIA_OME_HOST', 'ome.kshetra.example'),
     livekitHost: env('EXPO_PUBLIC_MEDIA_LIVEKIT_HOST', 'livekit.kshetra.example'),
     edgeHost: env('EXPO_PUBLIC_MEDIA_EDGE_HOST', 'edge.kshetra.example'),
-    ingestProtocol: (['rtmp', 'srt', 'whip'].includes(protocol) ? protocol : 'rtmp') as IngestProtocol,
+    ingestProtocol: (['rtmp', 'srt', 'whip'].includes(protocol)
+      ? protocol
+      : 'rtmp') as IngestProtocol,
     mode: (mode === 'self_hosted' ? 'self_hosted' : 'demo') as MediaMode,
   };
 }
@@ -76,7 +78,10 @@ export function selectTier(signals: PipelineSignals): { tier: MediaTier; reason:
       signals.alertDepartments.length > 0
         ? `${signals.alertDepartments.length} department alert(s)`
         : `category ${signals.issueCategory}`;
-    return { tier: 'llhls', reason: `Low-latency needed (${why}) → OvenMediaEngine LL-HLS + WebRTC` };
+    return {
+      tier: 'llhls',
+      reason: `Low-latency needed (${why}) → OvenMediaEngine LL-HLS + WebRTC`,
+    };
   }
   return { tier: 'broadcast', reason: 'General public → SRS HLS + edge CDN' };
 }
@@ -103,7 +108,10 @@ export function buildWhipPublishUrl(streamId: string, hosts: MediaHosts = getMed
   return `${hosts.scheme}://${hosts.ingestHost}:8889/live/${streamId}/whip`;
 }
 
-export function selectPipeline(signals: PipelineSignals, hosts: MediaHosts = getMediaHosts()): MediaPipeline {
+export function selectPipeline(
+  signals: PipelineSignals,
+  hosts: MediaHosts = getMediaHosts(),
+): MediaPipeline {
   const { tier, reason } = selectTier(signals);
   const { streamId } = signals;
   const { scheme, srsHost, omeHost, livekitHost, edgeHost, mode } = hosts;

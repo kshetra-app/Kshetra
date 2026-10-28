@@ -17,11 +17,7 @@ export type GovernanceDataStatus =
   | 'UNKNOWN';
 
 export type PoliticalOrgType =
-  | 'political_party'
-  | 'media_organization'
-  | 'civic_organization'
-  | 'political_alliance'
-  | 'other';
+  'political_party' | 'media_organization' | 'civic_organization' | 'political_alliance' | 'other';
 
 export type PoliticalRoleType =
   | 'mp'
@@ -34,10 +30,7 @@ export type PoliticalRoleType =
   | 'party_official';
 
 export type PersonOrgRelationshipType =
-  | 'member_of'
-  | 'affiliated_with'
-  | 'contested_for'
-  | 'employed_by';
+  'member_of' | 'affiliated_with' | 'contested_for' | 'employed_by';
 
 export type OrganizationRelationshipType =
   | 'alliance_with'
@@ -63,19 +56,10 @@ export type OfficeTypeEnum =
   | 'mptc_member'
   | 'zptc_member';
 
-export type ElectionTypeEnum =
-  | 'parliamentary'
-  | 'assembly'
-  | 'local_body'
-  | 'by_election';
+export type ElectionTypeEnum = 'parliamentary' | 'assembly' | 'local_body' | 'by_election';
 
 export type ElectionResultEnum =
-  | 'won'
-  | 'lost'
-  | 'forfeited_deposit'
-  | 'withdrawn'
-  | 'pending'
-  | 'won_uncontested';
+  'won' | 'lost' | 'forfeited_deposit' | 'withdrawn' | 'pending' | 'won_uncontested';
 
 export type IdentityMatchMethod =
   | 'exact_eci_id'
@@ -161,7 +145,8 @@ export interface PersonPartyAffiliation {
   validFrom: string;
   validTo?: string | null;
   isCurrent: boolean;
-  affiliationType: 'primary_member' | 'office_bearer' | 'associated' | 'expelled' | 'resigned' | 'suspended';
+  affiliationType:
+    'primary_member' | 'office_bearer' | 'associated' | 'expelled' | 'resigned' | 'suspended';
   notes?: string | null;
   dataStatus: GovernanceDataStatus;
   provenanceId?: string | null;
@@ -242,7 +227,8 @@ export interface PersonMultilingualIdentity {
   personId: string;
   languageCode: string;
   scriptCode: string;
-  representationType: 'OFFICIAL' | 'PREFERRED' | 'SOURCE_NATIVE' | 'TRANSLITERATION' | 'ALIAS' | 'HISTORICAL';
+  representationType:
+    'OFFICIAL' | 'PREFERRED' | 'SOURCE_NATIVE' | 'TRANSLITERATION' | 'ALIAS' | 'HISTORICAL';
   representationValue: string;
   isPreferred: boolean;
   isOfficial: boolean;
@@ -259,7 +245,14 @@ export interface TenureVacancy {
   id: string;
   tenureId: string;
   personId: string;
-  vacancyReason: 'DEATH' | 'RESIGNATION' | 'DISQUALIFICATION_TENTH_SCHEDULE' | 'DISQUALIFICATION_RPA_SEC_8' | 'ELECTION_ANNULLED_COURT_ORDER' | 'EXPULSION' | 'VACANCY_GAZETTED';
+  vacancyReason:
+    | 'DEATH'
+    | 'RESIGNATION'
+    | 'DISQUALIFICATION_TENTH_SCHEDULE'
+    | 'DISQUALIFICATION_RPA_SEC_8'
+    | 'ELECTION_ANNULLED_COURT_ORDER'
+    | 'EXPULSION'
+    | 'VACANCY_GAZETTED';
   effectiveDate: string;
   notifyingAuthority: string;
   gazetteNotificationRef?: string | null;
@@ -289,7 +282,8 @@ export interface OrganizationMultilingualName {
   organizationId: string;
   languageCode: string;
   scriptCode: string;
-  representationType: 'OFFICIAL' | 'PREFERRED' | 'SOURCE_NATIVE' | 'TRANSLITERATION' | 'ALIAS' | 'HISTORICAL';
+  representationType:
+    'OFFICIAL' | 'PREFERRED' | 'SOURCE_NATIVE' | 'TRANSLITERATION' | 'ALIAS' | 'HISTORICAL';
   nameValue: string;
   shortNameValue?: string | null;
   isPreferred: boolean;
@@ -308,7 +302,13 @@ export interface OrganizationAlias {
   rawLookupKey: string;
   rawOriginalString: string;
   organizationId: string;
-  aliasType: 'STANDARD_ABBREVIATION' | 'TYPOGRAPHIC_VARIANT' | 'HISTORICAL_PREDECESSOR' | 'ECI_PARTY_CODE' | 'REGIONAL_VARIANT' | 'POPULAR_NAME';
+  aliasType:
+    | 'STANDARD_ABBREVIATION'
+    | 'TYPOGRAPHIC_VARIANT'
+    | 'HISTORICAL_PREDECESSOR'
+    | 'ECI_PARTY_CODE'
+    | 'REGIONAL_VARIANT'
+    | 'POPULAR_NAME';
   jurisdictionScope?: string | null;
   validFrom: string;
   validTo?: string | null;
@@ -345,5 +345,3 @@ export interface PoliticalCareerTimeline {
   multilingualIdentities?: PersonMultilingualIdentity[];
   vacancies?: TenureVacancy[];
 }
-
-

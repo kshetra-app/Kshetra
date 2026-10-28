@@ -110,7 +110,10 @@ const anomaliesQuerySchema = {
   required: ['layer', 'bbox'],
   properties: {
     layer: { type: 'string', pattern: '^[a-z_]+$' },
-    bbox: { type: 'string', pattern: '^-?\\d+(\\.\\d+)?,-?\\d+(\\.\\d+)?,-?\\d+(\\.\\d+)?,-?\\d+(\\.\\d+)?$' },
+    bbox: {
+      type: 'string',
+      pattern: '^-?\\d+(\\.\\d+)?,-?\\d+(\\.\\d+)?,-?\\d+(\\.\\d+)?,-?\\d+(\\.\\d+)?$',
+    },
     profile: { type: 'string' },
   },
 };
@@ -120,7 +123,9 @@ export async function spatialAnalyticsRoutes(app: FastifyInstance): Promise<void
    * Helper: Resolve caller role (anon, authenticated, service_role).
    * Honors Bearer token inspection or test headers in non-production test environments.
    */
-  async function resolveCaller(request: FastifyRequest): Promise<{ role: 'anon' | 'authenticated' | 'service_role'; userId?: string }> {
+  async function resolveCaller(
+    request: FastifyRequest,
+  ): Promise<{ role: 'anon' | 'authenticated' | 'service_role'; userId?: string }> {
     const authHeader = request.headers.authorization;
     const testRole = request.headers['x-test-role'] as string | undefined;
 
@@ -146,9 +151,13 @@ export async function spatialAnalyticsRoutes(app: FastifyInstance): Promise<void
 
     if (isSupabaseConfigured) {
       try {
-        const { data: { user }, error } = await supabase.auth.getUser(token);
+        const {
+          data: { user },
+          error,
+        } = await supabase.auth.getUser(token);
         if (!error && user) {
-          const role = (user.app_metadata?.role === 'service_role') ? 'service_role' : 'authenticated';
+          const role =
+            user.app_metadata?.role === 'service_role' ? 'service_role' : 'authenticated';
           return { role, userId: user.id };
         }
       } catch {
@@ -172,25 +181,35 @@ export async function spatialAnalyticsRoutes(app: FastifyInstance): Promise<void
   }>(
     '/api/v1/spatial/analytics/overlap',
     { schema: { body: overlapBodySchema } },
-    async (request: FastifyRequest<{
-      Body: {
-        baseEntity: SpatialEntityReference;
-        comparisonEntity: SpatialEntityReference;
-        options?: SpatialOverlapOptions;
-      };
-    }>, reply: FastifyReply) => {
+    async (
+      request: FastifyRequest<{
+        Body: {
+          baseEntity: SpatialEntityReference;
+          comparisonEntity: SpatialEntityReference;
+          options?: SpatialOverlapOptions;
+        };
+      }>,
+      reply: FastifyReply,
+    ) => {
       const caller = await resolveCaller(request);
       if (caller.role === 'anon') {
-        return sendApiError(reply, request, 401, 'Unauthorized', 'Authentication required for spatial analytical calculations.', {
-          code: 'AUTHENTICATION_REQUIRED',
-        });
+        return sendApiError(
+          reply,
+          request,
+          401,
+          'Unauthorized',
+          'Authentication required for spatial analytical calculations.',
+          {
+            code: 'AUTHENTICATION_REQUIRED',
+          },
+        );
       }
 
       try {
         const result = await spatialAnalyticsService.calculateOverlap(
           request.body.baseEntity,
           request.body.comparisonEntity,
-          request.body.options
+          request.body.options,
         );
         if (result.regimeContext.isCrossRegime) {
           reply.header('x-spatial-cross-regime', 'true');
@@ -199,9 +218,16 @@ export async function spatialAnalyticsRoutes(app: FastifyInstance): Promise<void
       } catch (err: any) {
         const statusCode = err.statusCode || 500;
         const code = err.code || 'SPATIAL_CALCULATION_ERROR';
-        return sendApiError(reply, request, statusCode, statusCode === 404 ? 'Not Found' : 'Internal Server Error', err.message, { code });
+        return sendApiError(
+          reply,
+          request,
+          statusCode,
+          statusCode === 404 ? 'Not Found' : 'Internal Server Error',
+          err.message,
+          { code },
+        );
       }
-    }
+    },
   );
 
   /**
@@ -219,20 +245,30 @@ export async function spatialAnalyticsRoutes(app: FastifyInstance): Promise<void
   }>(
     '/api/v1/spatial/analytics/boundary-diff',
     { schema: { body: boundaryDiffBodySchema } },
-    async (request: FastifyRequest<{
-      Body: {
-        entityId: string;
-        sourceSelection: SpatialSelectionCriteria;
-        targetSelection: SpatialSelectionCriteria;
-        toleranceMeters?: number;
-        includeDiffGeoJson?: boolean;
-      };
-    }>, reply: FastifyReply) => {
+    async (
+      request: FastifyRequest<{
+        Body: {
+          entityId: string;
+          sourceSelection: SpatialSelectionCriteria;
+          targetSelection: SpatialSelectionCriteria;
+          toleranceMeters?: number;
+          includeDiffGeoJson?: boolean;
+        };
+      }>,
+      reply: FastifyReply,
+    ) => {
       const caller = await resolveCaller(request);
       if (caller.role === 'anon') {
-        return sendApiError(reply, request, 401, 'Unauthorized', 'Authentication required for spatial boundary diff.', {
-          code: 'AUTHENTICATION_REQUIRED',
-        });
+        return sendApiError(
+          reply,
+          request,
+          401,
+          'Unauthorized',
+          'Authentication required for spatial boundary diff.',
+          {
+            code: 'AUTHENTICATION_REQUIRED',
+          },
+        );
       }
 
       try {
@@ -243,7 +279,7 @@ export async function spatialAnalyticsRoutes(app: FastifyInstance): Promise<void
           {
             toleranceMeters: request.body.toleranceMeters,
             includeDiffGeoJson: request.body.includeDiffGeoJson,
-          }
+          },
         );
         if (result.regimeContext.isCrossRegime) {
           reply.header('x-spatial-cross-regime', 'true');
@@ -252,9 +288,16 @@ export async function spatialAnalyticsRoutes(app: FastifyInstance): Promise<void
       } catch (err: any) {
         const statusCode = err.statusCode || 500;
         const code = err.code || 'BOUNDARY_DIFF_ERROR';
-        return sendApiError(reply, request, statusCode, statusCode === 404 ? 'Not Found' : 'Internal Server Error', err.message, { code });
+        return sendApiError(
+          reply,
+          request,
+          statusCode,
+          statusCode === 404 ? 'Not Found' : 'Internal Server Error',
+          err.message,
+          { code },
+        );
       }
-    }
+    },
   );
 
   /**
@@ -271,24 +314,41 @@ export async function spatialAnalyticsRoutes(app: FastifyInstance): Promise<void
   }>(
     '/api/v1/spatial/quality/anomalies',
     { schema: { querystring: anomaliesQuerySchema } },
-    async (request: FastifyRequest<{
-      Querystring: {
-        layer: string;
-        bbox: string;
-        profile?: string;
-      };
-    }>, reply: FastifyReply) => {
+    async (
+      request: FastifyRequest<{
+        Querystring: {
+          layer: string;
+          bbox: string;
+          profile?: string;
+        };
+      }>,
+      reply: FastifyReply,
+    ) => {
       const caller = await resolveCaller(request);
       if (caller.role === 'anon') {
-        return sendApiError(reply, request, 401, 'Unauthorized', 'Authentication required for spatial quality diagnostics.', {
-          code: 'AUTHENTICATION_REQUIRED',
-        });
+        return sendApiError(
+          reply,
+          request,
+          401,
+          'Unauthorized',
+          'Authentication required for spatial quality diagnostics.',
+          {
+            code: 'AUTHENTICATION_REQUIRED',
+          },
+        );
       }
 
       if (caller.role !== 'service_role') {
-        return sendApiError(reply, request, 403, 'Forbidden', 'Topological anomaly diagnostic scans are restricted to service_role callers.', {
-          code: 'INSUFFICIENT_ROLE_PERMISSIONS',
-        });
+        return sendApiError(
+          reply,
+          request,
+          403,
+          'Forbidden',
+          'Topological anomaly diagnostic scans are restricted to service_role callers.',
+          {
+            code: 'INSUFFICIENT_ROLE_PERMISSIONS',
+          },
+        );
       }
 
       const { layer, bbox, profile } = request.query;
@@ -301,8 +361,15 @@ export async function spatialAnalyticsRoutes(app: FastifyInstance): Promise<void
       } catch (err: any) {
         const statusCode = err.statusCode || 500;
         const code = err.code || 'SPATIAL_ANOMALY_SCAN_ERROR';
-        return sendApiError(reply, request, statusCode, statusCode === 413 ? 'Payload Too Large' : 'Internal Server Error', err.message, { code });
+        return sendApiError(
+          reply,
+          request,
+          statusCode,
+          statusCode === 413 ? 'Payload Too Large' : 'Internal Server Error',
+          err.message,
+          { code },
+        );
       }
-    }
+    },
   );
 }

@@ -29,9 +29,42 @@ import { AUTHORITATIVE_LEGAL_CORPUS } from './normalizer';
 
 // Approved canonical 2-letter Indian state / UT codes
 const CANONICAL_STATE_CODES = new Set([
-  'AP', 'AR', 'AS', 'BR', 'CG', 'GA', 'GJ', 'HR', 'HP', 'JH', 'KA', 'KL', 'MP',
-  'MH', 'MN', 'ML', 'MZ', 'NL', 'OD', 'PB', 'RJ', 'SK', 'TN', 'TG', 'TR', 'UP',
-  'UK', 'WB', 'AN', 'CH', 'DH', 'DL', 'JK', 'LA', 'LD', 'PY'
+  'AP',
+  'AR',
+  'AS',
+  'BR',
+  'CG',
+  'GA',
+  'GJ',
+  'HR',
+  'HP',
+  'JH',
+  'KA',
+  'KL',
+  'MP',
+  'MH',
+  'MN',
+  'ML',
+  'MZ',
+  'NL',
+  'OD',
+  'PB',
+  'RJ',
+  'SK',
+  'TN',
+  'TG',
+  'TR',
+  'UP',
+  'UK',
+  'WB',
+  'AN',
+  'CH',
+  'DH',
+  'DL',
+  'JK',
+  'LA',
+  'LD',
+  'PY',
 ]);
 
 export class CandidateValidator {
@@ -58,7 +91,9 @@ export class CandidateValidator {
     checksRun.push({
       checkName: 'CHECK_SOURCE_IDENTITY',
       passed: check1Passed,
-      details: check1Passed ? 'Source identity and snapshot reference verified' : 'Missing snapshotId or mismatched sourceId',
+      details: check1Passed
+        ? 'Source identity and snapshot reference verified'
+        : 'Missing snapshotId or mismatched sourceId',
     });
     if (!check1Passed) {
       errors.push('Candidate does not reference valid snapshot and source identity');
@@ -73,7 +108,9 @@ export class CandidateValidator {
     checksRun.push({
       checkName: 'CHECK_PROVENANCE',
       passed: check2Passed,
-      details: check2Passed ? `Parser version ${candidate.parserVersion} registered` : 'Missing parser version or timestamp',
+      details: check2Passed
+        ? `Parser version ${candidate.parserVersion} registered`
+        : 'Missing parser version or timestamp',
     });
     if (!check2Passed) {
       errors.push('Required provenance fields (parserVersion, normalizedAt) missing');
@@ -81,20 +118,27 @@ export class CandidateValidator {
 
     // ─── 3. Schema and type correctness ───
     const prop = candidate.proposalData;
-    const hasTitle = Boolean(prop && typeof prop.title === 'string' && prop.title.trim().length > 0);
-    const hasNumericSeats = typeof prop.currentSeats === 'number' && typeof prop.proposedSeats === 'number';
+    const hasTitle = Boolean(
+      prop && typeof prop.title === 'string' && prop.title.trim().length > 0,
+    );
+    const hasNumericSeats =
+      typeof prop.currentSeats === 'number' && typeof prop.proposedSeats === 'number';
     const check3Passed = Boolean(prop && hasTitle && hasNumericSeats);
     checksRun.push({
       checkName: 'CHECK_SCHEMA_TYPES',
       passed: check3Passed,
-      details: check3Passed ? 'Proposal structure and required types valid' : 'Invalid schema: title missing or seat counts non-numeric',
+      details: check3Passed
+        ? 'Proposal structure and required types valid'
+        : 'Invalid schema: title missing or seat counts non-numeric',
     });
     if (!check3Passed) {
       errors.push('Schema validation failed: title required and seat counts must be numbers');
     }
 
     // ─── 4. Canonical geography ID validity ───
-    const stateCodeValid = Boolean(prop && prop.stateCode && CANONICAL_STATE_CODES.has(prop.stateCode));
+    const stateCodeValid = Boolean(
+      prop && prop.stateCode && CANONICAL_STATE_CODES.has(prop.stateCode),
+    );
     let acNumbersValid = true;
     for (const m of candidate.constituencyMappings) {
       if (m.newAcNo <= 0 || m.newAcNo > 500 || m.oldAcNo < 0 || m.oldAcNo > 500) {
@@ -111,7 +155,9 @@ export class CandidateValidator {
         : `Unknown or invalid canonical geography ID: state '${prop?.stateCode}' or AC number out of range`,
     });
     if (!check4Passed) {
-      errors.push(`Invalid canonical geography: stateCode '${prop?.stateCode}' is unknown or AC number out of bounds [1..500]`);
+      errors.push(
+        `Invalid canonical geography: stateCode '${prop?.stateCode}' is unknown or AC number out of bounds [1..500]`,
+      );
     }
 
     // ─── 5. Referential integrity & parent-child relationships ───
@@ -119,14 +165,18 @@ export class CandidateValidator {
     for (const m of candidate.constituencyMappings) {
       if (m.stateCode !== prop.stateCode) {
         refIntegrityValid = false;
-        errors.push(`Mapping stateCode '${m.stateCode}' does not match proposal stateCode '${prop.stateCode}'`);
+        errors.push(
+          `Mapping stateCode '${m.stateCode}' does not match proposal stateCode '${prop.stateCode}'`,
+        );
         break;
       }
     }
     checksRun.push({
       checkName: 'CHECK_REFERENTIAL_INTEGRITY',
       passed: refIntegrityValid,
-      details: refIntegrityValid ? 'Referential integrity between proposal and mappings verified' : 'Mismatched stateCode in mappings',
+      details: refIntegrityValid
+        ? 'Referential integrity between proposal and mappings verified'
+        : 'Mismatched stateCode in mappings',
     });
 
     // ─── 6. Duplicate records & conflicting identifiers ───
@@ -143,7 +193,9 @@ export class CandidateValidator {
     checksRun.push({
       checkName: 'CHECK_DUPLICATE_IDENTIFIERS',
       passed: check6Passed,
-      details: check6Passed ? 'No duplicate new AC identifiers in mappings' : 'Duplicate new AC numbers detected in candidate mappings',
+      details: check6Passed
+        ? 'No duplicate new AC identifiers in mappings'
+        : 'Duplicate new AC numbers detected in candidate mappings',
     });
 
     // ─── 7. Version & effective-date constraints ───
@@ -158,7 +210,9 @@ export class CandidateValidator {
     checksRun.push({
       checkName: 'CHECK_TEMPORAL_CONSTRAINTS',
       passed: dateConstraintsValid,
-      details: dateConstraintsValid ? 'Temporal date formats and constraints valid' : 'Invalid date format in temporal constraints',
+      details: dateConstraintsValid
+        ? 'Temporal date formats and constraints valid'
+        : 'Invalid date format in temporal constraints',
     });
 
     // ─── 8. Numeric, count, and domain invariants ───
@@ -179,7 +233,9 @@ export class CandidateValidator {
         : `Numeric invariant violated: proposed seats must be > 0 and SC (${proposedSc}) + ST (${proposedSt}) <= total (${proposedSeats})`,
     });
     if (!check8Passed) {
-      errors.push(`Invariant violated: proposed seats (${proposedSeats}) must exceed 0 and SC (${proposedSc}) + ST (${proposedSt}) <= total`);
+      errors.push(
+        `Invariant violated: proposed seats (${proposedSeats}) must exceed 0 and SC (${proposedSc}) + ST (${proposedSt}) <= total`,
+      );
     }
 
     // ─── 9. Consistency with accepted baseline ───
@@ -207,19 +263,30 @@ export class CandidateValidator {
     if (candidate.normalizedDataStatus === 'OFFICIAL') {
       if (candidate.isProposed || prop.status !== 'final') {
         statusSemanticsValid = false;
-        errors.push("DATA_STATUS_VIOLATION: Candidate claims 'OFFICIAL' status but is marked as proposed/draft");
+        errors.push(
+          "DATA_STATUS_VIOLATION: Candidate claims 'OFFICIAL' status but is marked as proposed/draft",
+        );
       }
-      if (source.authorityClassification !== 'statutory' && source.authorityClassification !== 'constitutional') {
+      if (
+        source.authorityClassification !== 'statutory' &&
+        source.authorityClassification !== 'constitutional'
+      ) {
         statusSemanticsValid = false;
-        errors.push(`DATA_STATUS_VIOLATION: Source authority '${source.authorityClassification}' cannot grant 'OFFICIAL' data status`);
+        errors.push(
+          `DATA_STATUS_VIOLATION: Source authority '${source.authorityClassification}' cannot grant 'OFFICIAL' data status`,
+        );
       }
       if (source.sourceType === 'synthetic_fixture' || source.retrievalMethod === 'file_fixture') {
         statusSemanticsValid = false;
-        errors.push("DATA_STATUS_VIOLATION: Synthetic test fixture cannot produce 'OFFICIAL' data status");
+        errors.push(
+          "DATA_STATUS_VIOLATION: Synthetic test fixture cannot produce 'OFFICIAL' data status",
+        );
       }
       if (!candidate.legalEvidencePackage?.decisionRecord.isOfficialEligible) {
         statusSemanticsValid = false;
-        errors.push("DATA_STATUS_VIOLATION: Candidate failed legal evidence gate and cannot claim 'OFFICIAL' data status");
+        errors.push(
+          "DATA_STATUS_VIOLATION: Candidate failed legal evidence gate and cannot claim 'OFFICIAL' data status",
+        );
       }
     }
     checksRun.push({
@@ -235,14 +302,18 @@ export class CandidateValidator {
     for (const m of candidate.constituencyMappings) {
       if (m.overlapPercentage < 0 || m.overlapPercentage > 100) {
         overlapValid = false;
-        errors.push(`Mapping ${m.oldName} -> ${m.newName} has invalid overlap percentage ${m.overlapPercentage} (must be [0..100])`);
+        errors.push(
+          `Mapping ${m.oldName} -> ${m.newName} has invalid overlap percentage ${m.overlapPercentage} (must be [0..100])`,
+        );
         break;
       }
     }
     checksRun.push({
       checkName: 'CHECK_BOUNDARY_INVARIANTS',
       passed: overlapValid,
-      details: overlapValid ? 'Constituency mapping overlap percentages valid in [0..100] range' : 'Invalid overlap percentage',
+      details: overlapValid
+        ? 'Constituency mapping overlap percentages valid in [0..100] range'
+        : 'Invalid overlap percentage',
     });
 
     // ─── 12. Legal Evidence Gate Verification (Finding A) ───
@@ -262,63 +333,99 @@ export class CandidateValidator {
       }
       if (!effectiveDate || isNaN(new Date(effectiveDate).getTime())) {
         legalGatePassed = false;
-        errors.push('LEGAL_EVIDENCE_ERROR: Candidate claims OFFICIAL status with missing or invalid legal effective date');
+        errors.push(
+          'LEGAL_EVIDENCE_ERROR: Candidate claims OFFICIAL status with missing or invalid legal effective date',
+        );
       }
-      if (!instrumentId || instrumentId.trim().length === 0 || instrumentId === 'UNSPECIFIED_INSTRUMENT') {
+      if (
+        !instrumentId ||
+        instrumentId.trim().length === 0 ||
+        instrumentId === 'UNSPECIFIED_INSTRUMENT'
+      ) {
         legalGatePassed = false;
-        errors.push('LEGAL_EVIDENCE_ERROR: Candidate claims OFFICIAL status with missing statutory legal instrument identifier');
+        errors.push(
+          'LEGAL_EVIDENCE_ERROR: Candidate claims OFFICIAL status with missing statutory legal instrument identifier',
+        );
       }
       if (enactmentStatus !== 'ENACTED_COMMENCED') {
         legalGatePassed = false;
-        errors.push(`LEGAL_EVIDENCE_ERROR: Candidate enactment status is '${enactmentStatus}', must be 'ENACTED_COMMENCED' for OFFICIAL status`);
+        errors.push(
+          `LEGAL_EVIDENCE_ERROR: Candidate enactment status is '${enactmentStatus}', must be 'ENACTED_COMMENCED' for OFFICIAL status`,
+        );
       }
       // Authoritative Legal Corpus Verification Check
       const corpusEntry = instrumentId ? AUTHORITATIVE_LEGAL_CORPUS[instrumentId] : undefined;
       if (!corpusEntry) {
         legalGatePassed = false;
-        errors.push(`LEGAL_EVIDENCE_ERROR: Instrument '${instrumentId}' is unverified in Authoritative Legal Corpus`);
+        errors.push(
+          `LEGAL_EVIDENCE_ERROR: Instrument '${instrumentId}' is unverified in Authoritative Legal Corpus`,
+        );
       } else {
         if (corpusEntry.status !== 'ENACTED_COMMENCED') {
           legalGatePassed = false;
-          errors.push(`LEGAL_EVIDENCE_ERROR: Authoritative status of '${instrumentId}' is '${corpusEntry.status}', not 'ENACTED_COMMENCED'`);
+          errors.push(
+            `LEGAL_EVIDENCE_ERROR: Authoritative status of '${instrumentId}' is '${corpusEntry.status}', not 'ENACTED_COMMENCED'`,
+          );
         }
         if (effectiveDate && !effectiveDate.startsWith(corpusEntry.effectiveDate)) {
           legalGatePassed = false;
-          errors.push(`LEGAL_EVIDENCE_ERROR: Effective date '${effectiveDate}' does not match authoritative date '${corpusEntry.effectiveDate}'`);
+          errors.push(
+            `LEGAL_EVIDENCE_ERROR: Effective date '${effectiveDate}' does not match authoritative date '${corpusEntry.effectiveDate}'`,
+          );
         }
-        const pubDate = candidate.proposalData?.publishedAt || (candidate.proposalData as any)?.publicationDate;
+        const pubDate =
+          candidate.proposalData?.publishedAt || (candidate.proposalData as any)?.publicationDate;
         if (pubDate && !String(pubDate).startsWith(corpusEntry.publicationDate)) {
           legalGatePassed = false;
-          errors.push(`LEGAL_EVIDENCE_ERROR: Publication date '${pubDate}' does not match authoritative date '${corpusEntry.publicationDate}'`);
+          errors.push(
+            `LEGAL_EVIDENCE_ERROR: Publication date '${pubDate}' does not match authoritative date '${corpusEntry.publicationDate}'`,
+          );
         }
-        if (source.canonicalUrl && !source.canonicalUrl.startsWith('file:') && !source.canonicalUrl.includes('fixtures/delimitation') && source.canonicalUrl !== corpusEntry.officialSourceUrl) {
+        if (
+          source.canonicalUrl &&
+          !source.canonicalUrl.startsWith('file:') &&
+          !source.canonicalUrl.includes('fixtures/delimitation') &&
+          source.canonicalUrl !== corpusEntry.officialSourceUrl
+        ) {
           legalGatePassed = false;
-          errors.push(`LEGAL_EVIDENCE_ERROR: Source URL '${source.canonicalUrl}' does not match official authoritative source URL '${corpusEntry.officialSourceUrl}'`);
+          errors.push(
+            `LEGAL_EVIDENCE_ERROR: Source URL '${source.canonicalUrl}' does not match official authoritative source URL '${corpusEntry.officialSourceUrl}'`,
+          );
         }
         if (corpusEntry.isBoundaryOnly) {
-          if (candidate.proposalData?.currentSeats !== candidate.proposalData?.proposedSeats ||
-              candidate.proposalData?.currentScSeats !== candidate.proposalData?.proposedScSeats ||
-              candidate.proposalData?.currentStSeats !== candidate.proposalData?.proposedStSeats) {
+          if (
+            candidate.proposalData?.currentSeats !== candidate.proposalData?.proposedSeats ||
+            candidate.proposalData?.currentScSeats !== candidate.proposalData?.proposedScSeats ||
+            candidate.proposalData?.currentStSeats !== candidate.proposalData?.proposedStSeats
+          ) {
             legalGatePassed = false;
-            errors.push(`LEGAL_EVIDENCE_ERROR: Boundary-only amendment '${instrumentId}' cannot alter seat totals`);
+            errors.push(
+              `LEGAL_EVIDENCE_ERROR: Boundary-only amendment '${instrumentId}' cannot alter seat totals`,
+            );
           }
           if (corpusEntry.allowedConstituencies && candidate.constituencyMappings.length > 0) {
             const invalidAcs = candidate.constituencyMappings.filter(
-              (m: any) => !corpusEntry.allowedConstituencies!.includes(m.newAcNo)
+              (m: any) => !corpusEntry.allowedConstituencies!.includes(m.newAcNo),
             );
             if (invalidAcs.length > 0) {
               legalGatePassed = false;
-              errors.push(`LEGAL_EVIDENCE_ERROR: Boundary-only amendment '${instrumentId}' alters constituencies outside permitted set [${corpusEntry.allowedConstituencies.join(', ')}]`);
+              errors.push(
+                `LEGAL_EVIDENCE_ERROR: Boundary-only amendment '${instrumentId}' alters constituencies outside permitted set [${corpusEntry.allowedConstituencies.join(', ')}]`,
+              );
             }
           }
         }
         if (corpusEntry.seatConstraints) {
           const sc = corpusEntry.seatConstraints;
-          if (candidate.proposalData?.proposedSeats !== sc.totalSeats ||
-              candidate.proposalData?.proposedScSeats !== sc.scSeats ||
-              candidate.proposalData?.proposedStSeats !== sc.stSeats) {
+          if (
+            candidate.proposalData?.proposedSeats !== sc.totalSeats ||
+            candidate.proposalData?.proposedScSeats !== sc.scSeats ||
+            candidate.proposalData?.proposedStSeats !== sc.stSeats
+          ) {
             legalGatePassed = false;
-            errors.push(`LEGAL_EVIDENCE_ERROR: Seat allocation conflicts with statutory allocation (${sc.totalSeats}/${sc.scSeats}/${sc.stSeats})`);
+            errors.push(
+              `LEGAL_EVIDENCE_ERROR: Seat allocation conflicts with statutory allocation (${sc.totalSeats}/${sc.scSeats}/${sc.stSeats})`,
+            );
           }
         }
       }

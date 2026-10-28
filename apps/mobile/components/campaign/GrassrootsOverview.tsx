@@ -207,7 +207,7 @@ export default function GrassrootsOverview({ onNavigateTab }: GrassrootsOverview
           </View>
           <Text style={styles.alertBody}>
             {t('campaignManager.boothsNeedingAttentionDesc', {
-              defaultValue: 'Appoint verified Kshetra users as Booth In-charges to track local voters and lead door-to-door canvassing.',
+              defaultValue: 'Appoint verified Poligram users as Booth In-charges to track local voters and lead door-to-door canvassing.',
             })}
           </Text>
           <View style={styles.alertButton}>

@@ -89,7 +89,9 @@ describe('News Service (newsService.ts)', () => {
       expect(nationalFeed.items.every((i) => i.scope === 'national')).toBe(true);
 
       const stateFeed = getFeed({ scope: 'state', state: 'TS' });
-      expect(stateFeed.items.every((i) => i.scope === 'national' || i.stateCode === 'TS')).toBe(true);
+      expect(stateFeed.items.every((i) => i.scope === 'national' || i.stateCode === 'TS')).toBe(
+        true,
+      );
 
       const limitedFeed = getFeed({ limit: 1 });
       expect(limitedFeed.items.length).toBeLessThanOrEqual(1);

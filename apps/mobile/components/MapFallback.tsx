@@ -47,7 +47,7 @@ export default function MapFallback() {
       {/* Header */}
       <View style={[styles.header, { paddingTop: insets.top + 8 }]}>
         <View style={styles.headerTop}>
-          <Text style={styles.headerTitle}>KSHETRA</Text>
+          <Text style={styles.headerTitle}>POLIGRAM</Text>
           <StateSwitcher />
         </View>
         <Text style={styles.headerSubtitle}>

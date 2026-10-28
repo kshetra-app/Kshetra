@@ -48,15 +48,15 @@ export function geoJsonToWkt(geom: any): string {
   if (!geom || !geom.type) return '';
   const type = String(geom.type).toUpperCase();
   if (type === 'POLYGON' && Array.isArray(geom.coordinates)) {
-    const rings = geom.coordinates.map((ring: number[][]) =>
-      `(${ring.map(([lng, lat]: number[]) => `${lng} ${lat}`).join(', ')})`
+    const rings = geom.coordinates.map(
+      (ring: number[][]) => `(${ring.map(([lng, lat]: number[]) => `${lng} ${lat}`).join(', ')})`,
     );
     return `SRID=4326;POLYGON(${rings.join(', ')})`;
   }
   if (type === 'MULTIPOLYGON' && Array.isArray(geom.coordinates)) {
     const polys = geom.coordinates.map((poly: number[][][]) => {
-      const rings = poly.map((ring: number[][]) =>
-        `(${ring.map(([lng, lat]: number[]) => `${lng} ${lat}`).join(', ')})`
+      const rings = poly.map(
+        (ring: number[][]) => `(${ring.map(([lng, lat]: number[]) => `${lng} ${lat}`).join(', ')})`,
       );
       return `(${rings.join(', ')})`;
     });
@@ -76,14 +76,18 @@ export class SpatialAnalyticsService {
 
     // Fail closed on missing required parameters
     if (mode === 'as_of' && !asOfDate) {
-      const err = new Error('TEMPORAL_SELECTION_INVALID: asOfDate (YYYY-MM-DD) is required for as_of mode.');
+      const err = new Error(
+        'TEMPORAL_SELECTION_INVALID: asOfDate (YYYY-MM-DD) is required for as_of mode.',
+      );
       (err as any).statusCode = 400;
       (err as any).code = 'INVALID_SELECTION_PARAMETERS';
       throw err;
     }
 
     if (mode === 'version' && !versionId) {
-      const err = new Error('TEMPORAL_SELECTION_INVALID: versionId (UUID) is required for version mode.');
+      const err = new Error(
+        'TEMPORAL_SELECTION_INVALID: versionId (UUID) is required for version mode.',
+      );
       (err as any).statusCode = 400;
       (err as any).code = 'INVALID_SELECTION_PARAMETERS';
       throw err;
@@ -93,13 +97,17 @@ export class SpatialAnalyticsService {
     if (mode === 'version' && versionId) {
       const { data, error } = await supabase
         .from('entity_geometries')
-        .select('id, mandal_version_id, source_feature_id, geometry, is_current, valid_from, valid_to, temporal_classification')
+        .select(
+          'id, mandal_version_id, source_feature_id, geometry, is_current, valid_from, valid_to, temporal_classification',
+        )
         .or(`mandal_version_id.eq.${versionId},id.eq.${versionId}`)
         .limit(1)
         .maybeSingle();
 
       if (error || !data) {
-        const err = new Error(`SPATIAL_GEOMETRY_NOT_FOUND: Version ${versionId} geometry not found in database.`);
+        const err = new Error(
+          `SPATIAL_GEOMETRY_NOT_FOUND: Version ${versionId} geometry not found in database.`,
+        );
         (err as any).statusCode = 404;
         (err as any).code = 'ENTITY_GEOMETRY_MISSING';
         throw err;
@@ -123,7 +131,9 @@ export class SpatialAnalyticsService {
       // First check if an is_current = true row exists directly in entity_geometries
       let query = supabase
         .from('entity_geometries')
-        .select('id, mandal_version_id, source_feature_id, geometry, is_current, valid_from, valid_to, temporal_classification')
+        .select(
+          'id, mandal_version_id, source_feature_id, geometry, is_current, valid_from, valid_to, temporal_classification',
+        )
         .eq('is_current', true);
 
       if (/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(entityId)) {
@@ -136,7 +146,9 @@ export class SpatialAnalyticsService {
 
       if (error || !data) {
         // Fail closed: historical 2016 baseline geometries have is_current = false and MUST NOT masquerade as current
-        const err = new Error(`SPATIAL_CURRENT_GEOMETRY_UNAVAILABLE: Active legal geometry not available for entity '${entityId}'. Historical baseline cannot masquerade as current.`);
+        const err = new Error(
+          `SPATIAL_CURRENT_GEOMETRY_UNAVAILABLE: Active legal geometry not available for entity '${entityId}'. Historical baseline cannot masquerade as current.`,
+        );
         (err as any).statusCode = 404;
         (err as any).code = 'CURRENT_GEOMETRY_UNAVAILABLE';
         throw err;
@@ -159,7 +171,9 @@ export class SpatialAnalyticsService {
     if (mode === 'as_of' && asOfDate) {
       let query = supabase
         .from('entity_geometries')
-        .select('id, mandal_version_id, source_feature_id, geometry, is_current, valid_from, valid_to, temporal_classification')
+        .select(
+          'id, mandal_version_id, source_feature_id, geometry, is_current, valid_from, valid_to, temporal_classification',
+        )
         .lte('valid_from', asOfDate)
         .or(`valid_to.is.null,valid_to.gt.${asOfDate}`);
 
@@ -172,7 +186,9 @@ export class SpatialAnalyticsService {
       const { data, error } = await query.limit(1).maybeSingle();
 
       if (error || !data) {
-        const err = new Error(`SPATIAL_GEOMETRY_NOT_FOUND: Entity '${entityId}' not found for statutory snapshot as_of '${asOfDate}'.`);
+        const err = new Error(
+          `SPATIAL_GEOMETRY_NOT_FOUND: Entity '${entityId}' not found for statutory snapshot as_of '${asOfDate}'.`,
+        );
         (err as any).statusCode = 404;
         (err as any).code = 'ENTITY_GEOMETRY_MISSING';
         throw err;
@@ -194,7 +210,9 @@ export class SpatialAnalyticsService {
     // 4. Future / Scenario mode
     let fallbackQuery = supabase
       .from('entity_geometries')
-      .select('id, mandal_version_id, source_feature_id, geometry, is_current, valid_from, valid_to, temporal_classification');
+      .select(
+        'id, mandal_version_id, source_feature_id, geometry, is_current, valid_from, valid_to, temporal_classification',
+      );
 
     if (/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(entityId)) {
       fallbackQuery = fallbackQuery.or(`id.eq.${entityId},mandal_version_id.eq.${entityId}`);
@@ -204,7 +222,9 @@ export class SpatialAnalyticsService {
 
     const { data: fbData, error: fbErr } = await fallbackQuery.limit(1).maybeSingle();
     if (fbErr || !fbData) {
-      const err = new Error(`SPATIAL_GEOMETRY_NOT_FOUND: Entity '${entityId}' not found for regime '${mode}'.`);
+      const err = new Error(
+        `SPATIAL_GEOMETRY_NOT_FOUND: Entity '${entityId}' not found for regime '${mode}'.`,
+      );
       (err as any).statusCode = 404;
       (err as any).code = 'ENTITY_GEOMETRY_MISSING';
       throw err;
@@ -230,7 +250,7 @@ export class SpatialAnalyticsService {
   async calculateOverlap(
     baseRef: SpatialEntityReference,
     compRef: SpatialEntityReference,
-    options: SpatialOverlapOptions = {}
+    options: SpatialOverlapOptions = {},
   ): Promise<SpatialOverlapResult> {
     const [baseGeom, compGeom] = await Promise.all([
       this.resolveGeometry(baseRef),
@@ -307,7 +327,9 @@ export class SpatialAnalyticsService {
     let dimension = 0;
 
     if (!interErr && intersectionGeom) {
-      const { data: interArea } = await supabase.rpc('st_area', { geog: JSON.stringify(intersectionGeom) });
+      const { data: interArea } = await supabase.rpc('st_area', {
+        geog: JSON.stringify(intersectionGeom),
+      });
       if (typeof interArea === 'number' && interArea > 0) {
         intersectionArea = interArea;
         isDisjoint = false;
@@ -339,7 +361,7 @@ export class SpatialAnalyticsService {
     entityId: string,
     sourceSelection: SpatialSelectionCriteria,
     targetSelection: SpatialSelectionCriteria,
-    options: SpatialBoundaryDiffOptions = {}
+    options: SpatialBoundaryDiffOptions = {},
   ): Promise<SpatialBoundaryDiffResult> {
     const [sourceGeom, targetGeom] = await Promise.all([
       this.resolveGeometry({ entityId, selection: sourceSelection }),
@@ -409,9 +431,18 @@ export class SpatialAnalyticsService {
 
     const { data: srcAreaVal } = await supabase.rpc('st_area', { geog: geomSrc });
     const { data: tgtAreaVal } = await supabase.rpc('st_area', { geog: geomTgt });
-    const { data: diffAdded } = await supabase.rpc('st_difference', { geom1: geomTgt, geom2: geomSrc });
-    const { data: diffRemoved } = await supabase.rpc('st_difference', { geom1: geomSrc, geom2: geomTgt });
-    const { data: interGeom } = await supabase.rpc('st_intersection', { geom1: geomSrc, geom2: geomTgt });
+    const { data: diffAdded } = await supabase.rpc('st_difference', {
+      geom1: geomTgt,
+      geom2: geomSrc,
+    });
+    const { data: diffRemoved } = await supabase.rpc('st_difference', {
+      geom1: geomSrc,
+      geom2: geomTgt,
+    });
+    const { data: interGeom } = await supabase.rpc('st_intersection', {
+      geom1: geomSrc,
+      geom2: geomTgt,
+    });
 
     const srcArea = typeof srcAreaVal === 'number' ? srcAreaVal : 0.0;
     const tgtArea = typeof tgtAreaVal === 'number' ? tgtAreaVal : 0.0;
@@ -458,14 +489,16 @@ export class SpatialAnalyticsService {
   async detectAnomalies(
     layer: string,
     bbox: { minLng: number; minLat: number; maxLng: number; maxLat: number },
-    profile = 'v1.0-standard'
+    profile = 'v1.0-standard',
   ): Promise<SpatialAnomalyReport> {
     const width = bbox.maxLng - bbox.minLng;
     const height = bbox.maxLat - bbox.minLat;
 
     // Enforce complexity ceiling
     if (width > 2.01 || height > 2.01) {
-      const err = new Error(`SPATIAL_QUERY_LIMIT_EXCEEDED: Bounding box exceeds maximum allowed dimensions of 2.0 x 2.0 degrees (width: ${width}, height: ${height}).`);
+      const err = new Error(
+        `SPATIAL_QUERY_LIMIT_EXCEEDED: Bounding box exceeds maximum allowed dimensions of 2.0 x 2.0 degrees (width: ${width}, height: ${height}).`,
+      );
       (err as any).statusCode = 413;
       (err as any).code = 'SPATIAL_QUERY_LIMIT_EXCEEDED';
       throw err;
@@ -496,7 +529,8 @@ export class SpatialAnalyticsService {
           diagnosticDetails: r.diagnostic_details || {},
           actionRequired: 'HUMAN_CARTOGRAPHIC_REVIEW',
         })),
-        governanceNotice: 'NON_JUDICIAL_DIAGNOSTIC: Heuristic screening only. Does not modify canonical boundaries.',
+        governanceNotice:
+          'NON_JUDICIAL_DIAGNOSTIC: Heuristic screening only. Does not modify canonical boundaries.',
       };
     }
 
@@ -512,7 +546,9 @@ export class SpatialAnalyticsService {
 
     // Check for invalid geometries using PostGIS st_isvaliddetail
     for (const item of candidates) {
-      const { data: detail } = await supabase.rpc('st_isvaliddetail', { geom: JSON.stringify(item.geometry) });
+      const { data: detail } = await supabase.rpc('st_isvaliddetail', {
+        geom: JSON.stringify(item.geometry),
+      });
       if (detail && detail.valid === false) {
         anomalies.push({
           type: 'INVALID_GEOMETRY',
@@ -533,7 +569,8 @@ export class SpatialAnalyticsService {
       scannedFeatureCount: candidates.length,
       anomalyCount: anomalies.length,
       anomalies,
-      governanceNotice: 'NON_JUDICIAL_DIAGNOSTIC: Heuristic screening only. Does not modify canonical boundaries.',
+      governanceNotice:
+        'NON_JUDICIAL_DIAGNOSTIC: Heuristic screening only. Does not modify canonical boundaries.',
     };
   }
 }

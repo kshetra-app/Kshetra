@@ -395,7 +395,10 @@ describe('Civic Routes Unit Tests (Direct Route Injection)', () => {
           return {
             select: () => ({
               eq: () => ({
-                maybeSingle: async () => ({ data: { public_opinion: { support: 1 } }, error: null }),
+                maybeSingle: async () => ({
+                  data: { public_opinion: { support: 1 } },
+                  error: null,
+                }),
               }),
             }),
             update: () => ({

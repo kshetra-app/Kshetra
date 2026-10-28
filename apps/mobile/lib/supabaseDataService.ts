@@ -1694,7 +1694,7 @@ export async function fetchUserConversations(userId: string): Promise<DMConversa
         ...c,
         otherUser: {
           id: otherId,
-          displayName: profile?.display_name || 'Kshetra Citizen',
+          displayName: profile?.display_name || 'Poligram Citizen',
           avatarUrl: profile?.avatar_url || null,
           role: profile?.role || 'citizen',
           isVerified: profile?.verification_status === 'verified',

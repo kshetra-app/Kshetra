@@ -74,10 +74,12 @@ export function resolveEnvironment(envStr?: string): Environment {
   const norm = (
     envStr ??
     (typeof process !== 'undefined'
-      ? process.env.EXPO_PUBLIC_APP_ENV ?? process.env.APP_ENV ?? process.env.NODE_ENV
+      ? (process.env.EXPO_PUBLIC_APP_ENV ?? process.env.APP_ENV ?? process.env.NODE_ENV)
       : undefined) ??
     'development'
-  ).toLowerCase().trim();
+  )
+    .toLowerCase()
+    .trim();
 
   if (norm === 'prod' || norm === 'production') return 'production';
   // Explicit EAS Preview Profile mapping: preview builds map strictly to staging

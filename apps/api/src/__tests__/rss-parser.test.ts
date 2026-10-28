@@ -160,7 +160,7 @@ describe('RSS / Atom Parser (rssParser.ts)', () => {
           headers: expect.objectContaining({
             'User-Agent': 'KshetraNewsBot/1.0 (+https://kshetra.app)',
           }),
-        })
+        }),
       );
     });
 

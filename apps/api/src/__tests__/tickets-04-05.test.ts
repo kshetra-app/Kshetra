@@ -1,6 +1,10 @@
 import { buildApp } from '../server';
 import type { FastifyInstance } from 'fastify';
-import { setTestAuthResolver, setTestPageAuthorityResolver, resetPagesTestResolvers } from '../routes/pages';
+import {
+  setTestAuthResolver,
+  setTestPageAuthorityResolver,
+  resetPagesTestResolvers,
+} from '../routes/pages';
 import { supabase } from '../lib/supabase';
 
 describe('Tickets 0.4 & 0.5: Web Page Manager & Grievance Policy Routes', () => {

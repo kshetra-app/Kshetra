@@ -182,7 +182,8 @@ export async function lmxRoutes(app: FastifyInstance) {
 
       if (category && category !== 'all') query = query.eq('issue_category', category);
       if (state) query = query.eq('state_code', state);
-      if (status && status !== 'all') query = query.eq('status', status === 'live' ? 'live' : 'ended');
+      if (status && status !== 'all')
+        query = query.eq('status', status === 'live' ? 'live' : 'ended');
 
       const { data, error } = await query;
       if (error) {
@@ -192,9 +193,16 @@ export async function lmxRoutes(app: FastifyInstance) {
       }
       return reply.send(data ?? []);
     } catch (err: any) {
-      return sendApiError(reply, request, 500, 'Internal Server Error', err?.message || 'Failed to fetch live events', {
-        code: 'DATABASE_ERROR',
-      });
+      return sendApiError(
+        reply,
+        request,
+        500,
+        'Internal Server Error',
+        err?.message || 'Failed to fetch live events',
+        {
+          code: 'DATABASE_ERROR',
+        },
+      );
     }
   });
 
@@ -228,7 +236,7 @@ export async function lmxRoutes(app: FastifyInstance) {
           code: 'NOT_FOUND',
         });
       }
-    }
+    },
   );
 
   /** 4. POST /api/v1/lmx/live — create (go-live) Live Event Object with server-side gating */
@@ -245,7 +253,10 @@ export async function lmxRoutes(app: FastifyInstance) {
       if (authHeader && authHeader.startsWith('Bearer ')) {
         const token = authHeader.replace('Bearer ', '').trim();
         try {
-          const { data: { user }, error: authErr } = await supabase.auth.getUser(token);
+          const {
+            data: { user },
+            error: authErr,
+          } = await supabase.auth.getUser(token);
           if (!authErr && user) {
             userId = user.id;
           }
@@ -255,14 +266,25 @@ export async function lmxRoutes(app: FastifyInstance) {
       }
 
       // Accept explicit x-user-id header only in non-production environments
-      if (!userId && process.env.NODE_ENV !== 'production' && typeof request.headers['x-user-id'] === 'string') {
+      if (
+        !userId &&
+        process.env.NODE_ENV !== 'production' &&
+        typeof request.headers['x-user-id'] === 'string'
+      ) {
         userId = request.headers['x-user-id'];
       }
 
       if (!userId) {
-        return sendApiError(reply, request, 401, 'Unauthorized', 'Unauthorized: Authentication required to create a live broadcast.', {
-          code: 'UNAUTHORIZED',
-        });
+        return sendApiError(
+          reply,
+          request,
+          401,
+          'Unauthorized',
+          'Unauthorized: Authentication required to create a live broadcast.',
+          {
+            code: 'UNAUTHORIZED',
+          },
+        );
       }
 
       // 2. Query user's real profile from Supabase user_profiles table
@@ -275,29 +297,57 @@ export async function lmxRoutes(app: FastifyInstance) {
           .maybeSingle();
 
         if (profileErr || !data) {
-          return sendApiError(reply, request, 403, 'Forbidden', 'Forbidden: User profile not found.', {
-            code: 'PROFILE_NOT_FOUND',
-          });
+          return sendApiError(
+            reply,
+            request,
+            403,
+            'Forbidden',
+            'Forbidden: User profile not found.',
+            {
+              code: 'PROFILE_NOT_FOUND',
+            },
+          );
         }
         profile = data;
       } catch {
-        return sendApiError(reply, request, 403, 'Forbidden', 'Forbidden: User profile not found.', {
-          code: 'PROFILE_NOT_FOUND',
-        });
+        return sendApiError(
+          reply,
+          request,
+          403,
+          'Forbidden',
+          'Forbidden: User profile not found.',
+          {
+            code: 'PROFILE_NOT_FOUND',
+          },
+        );
       }
 
       // 3. Role & KYC verification gating
       const allowedRoles = ['aspirant', 'politician', 'party', 'journalist', 'admin'];
       if (!profile.role || !allowedRoles.includes(profile.role)) {
-        return sendApiError(reply, request, 403, 'Forbidden', 'Forbidden: Live broadcasting is restricted to candidates, parties, and accredited journalists.', {
-          code: 'INELIGIBLE_ROLE',
-        });
+        return sendApiError(
+          reply,
+          request,
+          403,
+          'Forbidden',
+          'Forbidden: Live broadcasting is restricted to candidates, parties, and accredited journalists.',
+          {
+            code: 'INELIGIBLE_ROLE',
+          },
+        );
       }
 
       if (profile.verification_status !== 'verified') {
-        return sendApiError(reply, request, 403, 'Forbidden', 'Forbidden: Live broadcasting requires a verified contributor profile (KYC verification).', {
-          code: 'UNVERIFIED',
-        });
+        return sendApiError(
+          reply,
+          request,
+          403,
+          'Forbidden',
+          'Forbidden: Live broadcasting requires a verified contributor profile (KYC verification).',
+          {
+            code: 'UNVERIFIED',
+          },
+        );
       }
 
       const { creator_role: _cr, role: _r, verification_status: _vs, ...safeBody } = body;
@@ -322,55 +372,75 @@ export async function lmxRoutes(app: FastifyInstance) {
         }
         return reply.status(201).send(data);
       } catch (err: any) {
-        return sendApiError(reply, request, 500, 'Internal Server Error', err?.message || 'Failed to create live event', {
-          code: 'DATABASE_ERROR',
-        });
+        return sendApiError(
+          reply,
+          request,
+          500,
+          'Internal Server Error',
+          err?.message || 'Failed to create live event',
+          {
+            code: 'DATABASE_ERROR',
+          },
+        );
       }
-    }
+    },
   );
 
   /** 5. POST /api/v1/lmx/live/:streamId/moderate — moderator action (allow/mute/cut/escalate) */
   app.post<{
     Params: { streamId: string };
-    Body: { decision: 'allow' | 'mute' | 'cut' | 'escalate'; reason?: string; moderatorId?: string };
-  }>('/api/v1/lmx/live/:streamId/moderate', { schema: moderateStreamSchema }, async (request, reply) => {
-    const { streamId } = request.params;
-    const { decision } = request.body;
-
-    const updates: Record<string, any> = {
-      buffer_state: decision === 'cut' ? 'rejected' : decision === 'allow' ? 'cleared' : 'buffered',
-      updated_at: new Date().toISOString(),
+    Body: {
+      decision: 'allow' | 'mute' | 'cut' | 'escalate';
+      reason?: string;
+      moderatorId?: string;
     };
+  }>(
+    '/api/v1/lmx/live/:streamId/moderate',
+    { schema: moderateStreamSchema },
+    async (request, reply) => {
+      const { streamId } = request.params;
+      const { decision } = request.body;
 
-    if (decision === 'cut') {
-      updates.status = 'ended';
-      updates.ended_at = new Date().toISOString();
-    }
+      const updates: Record<string, any> = {
+        buffer_state:
+          decision === 'cut' ? 'rejected' : decision === 'allow' ? 'cleared' : 'buffered',
+        updated_at: new Date().toISOString(),
+      };
 
-    try {
-      const { error } = await supabase
-        .from('live_events')
-        .update(updates)
-        .eq('id', streamId);
-
-      if (error) {
-        return sendApiError(reply, request, 500, 'Internal Server Error', error.message, {
-          code: 'DATABASE_ERROR',
-        });
+      if (decision === 'cut') {
+        updates.status = 'ended';
+        updates.ended_at = new Date().toISOString();
       }
 
-      return reply.send({
-        success: true,
-        streamId,
-        decision,
-        message: `Stream buffer decision applied: ${decision}`,
-      });
-    } catch (err: any) {
-      return sendApiError(reply, request, 500, 'Internal Server Error', err?.message || 'Failed to apply moderation decision', {
-        code: 'DATABASE_ERROR',
-      });
-    }
-  });
+      try {
+        const { error } = await supabase.from('live_events').update(updates).eq('id', streamId);
+
+        if (error) {
+          return sendApiError(reply, request, 500, 'Internal Server Error', error.message, {
+            code: 'DATABASE_ERROR',
+          });
+        }
+
+        return reply.send({
+          success: true,
+          streamId,
+          decision,
+          message: `Stream buffer decision applied: ${decision}`,
+        });
+      } catch (err: any) {
+        return sendApiError(
+          reply,
+          request,
+          500,
+          'Internal Server Error',
+          err?.message || 'Failed to apply moderation decision',
+          {
+            code: 'DATABASE_ERROR',
+          },
+        );
+      }
+    },
+  );
 
   /** 6. POST /api/v1/lmx/live/:streamId/end — close out live event */
   app.post<{
@@ -399,9 +469,16 @@ export async function lmxRoutes(app: FastifyInstance) {
 
       return reply.send({ success: true });
     } catch (err: any) {
-      return sendApiError(reply, request, 500, 'Internal Server Error', err?.message || 'Failed to end stream', {
-        code: 'DATABASE_ERROR',
-      });
+      return sendApiError(
+        reply,
+        request,
+        500,
+        'Internal Server Error',
+        err?.message || 'Failed to end stream',
+        {
+          code: 'DATABASE_ERROR',
+        },
+      );
     }
   });
 
@@ -444,45 +521,63 @@ export async function lmxRoutes(app: FastifyInstance) {
         }
         return reply.status(201).send(data);
       } catch (err: any) {
-        return sendApiError(reply, request, 500, 'Internal Server Error', err?.message || 'Failed to create department alert', {
-          code: 'DATABASE_ERROR',
-        });
+        return sendApiError(
+          reply,
+          request,
+          500,
+          'Internal Server Error',
+          err?.message || 'Failed to create department alert',
+          {
+            code: 'DATABASE_ERROR',
+          },
+        );
       }
-    }
+    },
   );
 
   /** 10. POST /api/v1/lmx/alerts/:id/acknowledge — dept acknowledges alert */
   app.post<{
     Params: { id: string };
     Body: { acknowledgment: string; acknowledged_by: string };
-  }>('/api/v1/lmx/alerts/:id/acknowledge', { schema: acknowledgeAlertSchema }, async (request, reply) => {
-    const { id } = request.params;
-    const { acknowledgment, acknowledged_by } = request.body;
+  }>(
+    '/api/v1/lmx/alerts/:id/acknowledge',
+    { schema: acknowledgeAlertSchema },
+    async (request, reply) => {
+      const { id } = request.params;
+      const { acknowledgment, acknowledged_by } = request.body;
 
-    try {
-      const { error } = await supabase
-        .from('lmx_department_alerts')
-        .update({
-          acknowledgment,
-          acknowledged_at: new Date().toISOString(),
-          acknowledged_by,
-          delivery_status: 'delivered',
-        })
-        .eq('id', id);
+      try {
+        const { error } = await supabase
+          .from('lmx_department_alerts')
+          .update({
+            acknowledgment,
+            acknowledged_at: new Date().toISOString(),
+            acknowledged_by,
+            delivery_status: 'delivered',
+          })
+          .eq('id', id);
 
-      if (error) {
-        return sendApiError(reply, request, 500, 'Internal Server Error', error.message, {
-          code: 'DATABASE_ERROR',
-        });
+        if (error) {
+          return sendApiError(reply, request, 500, 'Internal Server Error', error.message, {
+            code: 'DATABASE_ERROR',
+          });
+        }
+
+        return reply.send({ success: true });
+      } catch (err: any) {
+        return sendApiError(
+          reply,
+          request,
+          500,
+          'Internal Server Error',
+          err?.message || 'Failed to acknowledge alert',
+          {
+            code: 'DATABASE_ERROR',
+          },
+        );
       }
-
-      return reply.send({ success: true });
-    } catch (err: any) {
-      return sendApiError(reply, request, 500, 'Internal Server Error', err?.message || 'Failed to acknowledge alert', {
-        code: 'DATABASE_ERROR',
-      });
-    }
-  });
+    },
+  );
 
   /** 11. POST /api/v1/lmx/distribution — add output branch */
   app.post<{ Body: Record<string, any> }>(
@@ -504,11 +599,18 @@ export async function lmxRoutes(app: FastifyInstance) {
         }
         return reply.status(201).send(data);
       } catch (err: any) {
-        return sendApiError(reply, request, 500, 'Internal Server Error', err?.message || 'Failed to add distribution destination', {
-          code: 'DATABASE_ERROR',
-        });
+        return sendApiError(
+          reply,
+          request,
+          500,
+          'Internal Server Error',
+          err?.message || 'Failed to add distribution destination',
+          {
+            code: 'DATABASE_ERROR',
+          },
+        );
       }
-    }
+    },
   );
 
   /** 12. POST /api/v1/lmx/credibility — update reporter credibility (Class B Method 52) */
@@ -530,26 +632,47 @@ export async function lmxRoutes(app: FastifyInstance) {
     async (request, reply) => {
       const body = request.body;
       if (!isSupabaseConfigured) {
-        return sendApiError(reply, request, 503, 'Service Unavailable', 'Database service is currently unconfigured or unavailable', {
-          code: 'SERVICE_UNAVAILABLE',
-        });
+        return sendApiError(
+          reply,
+          request,
+          503,
+          'Service Unavailable',
+          'Database service is currently unconfigured or unavailable',
+          {
+            code: 'SERVICE_UNAVAILABLE',
+          },
+        );
       }
       try {
         const { error } = await supabase.from('lmx_credibility').upsert(body);
         if (error) {
           app.log.error({ err: error.message }, 'Failed to persist credibility update');
-          return sendApiError(reply, request, 500, 'Internal Server Error', 'Database error updating credibility', {
-            code: 'DATABASE_ERROR',
-          });
+          return sendApiError(
+            reply,
+            request,
+            500,
+            'Internal Server Error',
+            'Database error updating credibility',
+            {
+              code: 'DATABASE_ERROR',
+            },
+          );
         }
       } catch (err: any) {
         app.log.error({ err: err?.message }, 'Exception persisting credibility update');
-        return sendApiError(reply, request, 500, 'Internal Server Error', 'Database error updating credibility', {
-          code: 'DATABASE_ERROR',
-        });
+        return sendApiError(
+          reply,
+          request,
+          500,
+          'Internal Server Error',
+          'Database error updating credibility',
+          {
+            code: 'DATABASE_ERROR',
+          },
+        );
       }
       return reply.send({ success: true, reporterId: body.reporter_id, updated: true });
-    }
+    },
   );
 
   /** 13. POST /api/v1/lmx/live/:id/viewers — increment viewer count (Class B Method 55) */
@@ -575,9 +698,16 @@ export async function lmxRoutes(app: FastifyInstance) {
       let viewerCount = Math.max(0, delta);
 
       if (!isSupabaseConfigured) {
-        return sendApiError(reply, request, 503, 'Service Unavailable', 'Database service is currently unconfigured or unavailable', {
-          code: 'SERVICE_UNAVAILABLE',
-        });
+        return sendApiError(
+          reply,
+          request,
+          503,
+          'Service Unavailable',
+          'Database service is currently unconfigured or unavailable',
+          {
+            code: 'SERVICE_UNAVAILABLE',
+          },
+        );
       }
 
       try {
@@ -588,10 +718,20 @@ export async function lmxRoutes(app: FastifyInstance) {
           .single();
 
         if (fetchErr) {
-          app.log.error({ err: fetchErr.message, id }, 'Failed to fetch live event for viewers update');
-          return sendApiError(reply, request, 500, 'Internal Server Error', 'Database error updating viewer count', {
-            code: 'DATABASE_ERROR',
-          });
+          app.log.error(
+            { err: fetchErr.message, id },
+            'Failed to fetch live event for viewers update',
+          );
+          return sendApiError(
+            reply,
+            request,
+            500,
+            'Internal Server Error',
+            'Database error updating viewer count',
+            {
+              code: 'DATABASE_ERROR',
+            },
+          );
         }
 
         if (current) {
@@ -604,20 +744,34 @@ export async function lmxRoutes(app: FastifyInstance) {
 
           if (updateErr) {
             app.log.error({ err: updateErr.message, id }, 'Failed to update viewer count in DB');
-            return sendApiError(reply, request, 500, 'Internal Server Error', 'Database error updating viewer count', {
-              code: 'DATABASE_ERROR',
-            });
+            return sendApiError(
+              reply,
+              request,
+              500,
+              'Internal Server Error',
+              'Database error updating viewer count',
+              {
+                code: 'DATABASE_ERROR',
+              },
+            );
           }
         }
       } catch (err: any) {
         app.log.error({ err: err?.message, id }, 'Exception updating viewer count in DB');
-        return sendApiError(reply, request, 500, 'Internal Server Error', 'Database error updating viewer count', {
-          code: 'DATABASE_ERROR',
-        });
+        return sendApiError(
+          reply,
+          request,
+          500,
+          'Internal Server Error',
+          'Database error updating viewer count',
+          {
+            code: 'DATABASE_ERROR',
+          },
+        );
       }
 
       return reply.send({ success: true, eventId: id, viewerCount });
-    }
+    },
   );
 
   /** 14. POST /api/v1/lmx/moderation-events — log moderation event (Class B Method 54) */
@@ -626,63 +780,102 @@ export async function lmxRoutes(app: FastifyInstance) {
     async (request, reply) => {
       const event = request.body || {};
       if (!isSupabaseConfigured) {
-        return sendApiError(reply, request, 503, 'Service Unavailable', 'Database service is currently unconfigured or unavailable', {
-          code: 'SERVICE_UNAVAILABLE',
-        });
+        return sendApiError(
+          reply,
+          request,
+          503,
+          'Service Unavailable',
+          'Database service is currently unconfigured or unavailable',
+          {
+            code: 'SERVICE_UNAVAILABLE',
+          },
+        );
       }
       try {
         const { error } = await supabase.from('lmx_moderation_events').insert(event);
         if (error) {
           app.log.error({ err: error.message }, 'Failed to log moderation event in DB');
-          return sendApiError(reply, request, 500, 'Internal Server Error', 'Database error recording moderation event', {
-            code: 'DATABASE_ERROR',
-          });
+          return sendApiError(
+            reply,
+            request,
+            500,
+            'Internal Server Error',
+            'Database error recording moderation event',
+            {
+              code: 'DATABASE_ERROR',
+            },
+          );
         }
       } catch (err: any) {
         app.log.error({ err: err?.message }, 'Exception logging moderation event in DB');
-        return sendApiError(reply, request, 500, 'Internal Server Error', 'Database error recording moderation event', {
-          code: 'DATABASE_ERROR',
-        });
+        return sendApiError(
+          reply,
+          request,
+          500,
+          'Internal Server Error',
+          'Database error recording moderation event',
+          {
+            code: 'DATABASE_ERROR',
+          },
+        );
       }
       return reply.status(201).send({ success: true, loggedAt: new Date().toISOString() });
-    }
+    },
   );
 
   /** 15. POST /api/v1/lmx/alerts/content — create content alert (Class B Method 50) */
-  app.post<{ Body: Record<string, any> }>(
-    '/api/v1/lmx/alerts/content',
-    async (request, reply) => {
-      const alert = request.body || {};
-      let id = `alert_${Date.now()}`;
-      if (!isSupabaseConfigured) {
-        return sendApiError(reply, request, 503, 'Service Unavailable', 'Database service is currently unconfigured or unavailable', {
+  app.post<{ Body: Record<string, any> }>('/api/v1/lmx/alerts/content', async (request, reply) => {
+    const alert = request.body || {};
+    let id = `alert_${Date.now()}`;
+    if (!isSupabaseConfigured) {
+      return sendApiError(
+        reply,
+        request,
+        503,
+        'Service Unavailable',
+        'Database service is currently unconfigured or unavailable',
+        {
           code: 'SERVICE_UNAVAILABLE',
-        });
-      }
-      try {
-        const { data, error } = await supabase
-          .from('content_alerts')
-          .insert(alert)
-          .select('id')
-          .single();
-
-        if (error) {
-          app.log.error({ err: error.message }, 'Failed to insert content alert in DB');
-          return sendApiError(reply, request, 500, 'Internal Server Error', 'Database error creating content alert', {
-            code: 'DATABASE_ERROR',
-          });
-        }
-
-        if (data?.id) id = data.id;
-      } catch (err: any) {
-        app.log.error({ err: err?.message }, 'Exception inserting content alert in DB');
-        return sendApiError(reply, request, 500, 'Internal Server Error', 'Database error creating content alert', {
-          code: 'DATABASE_ERROR',
-        });
-      }
-      return reply.status(201).send({ id, success: true });
+        },
+      );
     }
-  );
+    try {
+      const { data, error } = await supabase
+        .from('content_alerts')
+        .insert(alert)
+        .select('id')
+        .single();
+
+      if (error) {
+        app.log.error({ err: error.message }, 'Failed to insert content alert in DB');
+        return sendApiError(
+          reply,
+          request,
+          500,
+          'Internal Server Error',
+          'Database error creating content alert',
+          {
+            code: 'DATABASE_ERROR',
+          },
+        );
+      }
+
+      if (data?.id) id = data.id;
+    } catch (err: any) {
+      app.log.error({ err: err?.message }, 'Exception inserting content alert in DB');
+      return sendApiError(
+        reply,
+        request,
+        500,
+        'Internal Server Error',
+        'Database error creating content alert',
+        {
+          code: 'DATABASE_ERROR',
+        },
+      );
+    }
+    return reply.status(201).send({ id, success: true });
+  });
 
   /** 16. POST /api/v1/lmx/alerts/content/:id/acknowledge — acknowledge content alert (Class B Method 51) */
   app.post<{ Params: { id: string }; Body: { acknowledgedBy: string; actionTaken: string } }>(
@@ -693,9 +886,16 @@ export async function lmxRoutes(app: FastifyInstance) {
       const now = new Date().toISOString();
 
       if (!isSupabaseConfigured) {
-        return sendApiError(reply, request, 503, 'Service Unavailable', 'Database service is currently unconfigured or unavailable', {
-          code: 'SERVICE_UNAVAILABLE',
-        });
+        return sendApiError(
+          reply,
+          request,
+          503,
+          'Service Unavailable',
+          'Database service is currently unconfigured or unavailable',
+          {
+            code: 'SERVICE_UNAVAILABLE',
+          },
+        );
       }
 
       try {
@@ -711,19 +911,32 @@ export async function lmxRoutes(app: FastifyInstance) {
 
         if (error) {
           app.log.error({ err: error.message, id }, 'Failed to acknowledge content alert in DB');
-          return sendApiError(reply, request, 500, 'Internal Server Error', 'Database error acknowledging content alert', {
-            code: 'DATABASE_ERROR',
-          });
+          return sendApiError(
+            reply,
+            request,
+            500,
+            'Internal Server Error',
+            'Database error acknowledging content alert',
+            {
+              code: 'DATABASE_ERROR',
+            },
+          );
         }
       } catch (err: any) {
         app.log.error({ err: err?.message, id }, 'Exception acknowledging content alert in DB');
-        return sendApiError(reply, request, 500, 'Internal Server Error', 'Database error acknowledging content alert', {
-          code: 'DATABASE_ERROR',
-        });
+        return sendApiError(
+          reply,
+          request,
+          500,
+          'Internal Server Error',
+          'Database error acknowledging content alert',
+          {
+            code: 'DATABASE_ERROR',
+          },
+        );
       }
 
       return reply.send({ success: true, alertId: id, acknowledgedAt: now });
-    }
+    },
   );
 }
-

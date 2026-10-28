@@ -10,10 +10,7 @@ describe('Geolocation Integration — Telangana Constituencies', () => {
   let geojson: GeoJSON.FeatureCollection;
 
   beforeAll(() => {
-    const filePath = path.resolve(
-      __dirname,
-      '../../../../data/geo/telangana-assembly.geojson',
-    );
+    const filePath = path.resolve(__dirname, '../../../../data/geo/telangana-assembly.geojson');
     const raw = fs.readFileSync(filePath, 'utf-8');
     geojson = JSON.parse(raw);
   });
@@ -46,7 +43,7 @@ describe('Geolocation Integration — Telangana Constituencies', () => {
 
   it('should find Sircilla for KTR constituency', () => {
     // Rajanna Sircilla town area
-    const result = findConstituencyAtPoint(78.8380, 18.3866, geojson);
+    const result = findConstituencyAtPoint(78.838, 18.3866, geojson);
     expect(result).not.toBeNull();
     expect(result!.properties.AC_NAME).toBe('Sircilla');
   });

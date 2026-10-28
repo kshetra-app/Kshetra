@@ -95,7 +95,7 @@ describe('W009-B2 Provider Abstraction & Security Gates', () => {
           orderId: 'order_123',
           paymentId: 'pay_123',
           signature: 'some_sig',
-        })
+        }),
       ).rejects.toThrow('PROVIDER_CONFIG_ERROR');
     });
 
@@ -165,14 +165,18 @@ describe('W009-B2 Provider Abstraction & Security Gates', () => {
       const checkEarly = provider.isWithinTraiCallingWindow(earlyMorning);
       expect(checkEarly.permitted).toBe(false);
       expect(checkEarly.currentISTHour).toBe(7);
-      expect(checkEarly.message).toContain('TRAI regulations restrict automated political calls to 8:00 AM – 9:00 PM IST');
+      expect(checkEarly.message).toContain(
+        'TRAI regulations restrict automated political calls to 8:00 AM – 9:00 PM IST',
+      );
 
       // 21:15 IST is 15:45 UTC
       const lateNight = new Date('2026-09-18T15:45:00.000Z');
       const checkLate = provider.isWithinTraiCallingWindow(lateNight);
       expect(checkLate.permitted).toBe(false);
       expect(checkLate.currentISTHour).toBe(21);
-      expect(checkLate.message).toContain('TRAI regulations restrict automated political calls to 8:00 AM – 9:00 PM IST');
+      expect(checkLate.message).toContain(
+        'TRAI regulations restrict automated political calls to 8:00 AM – 9:00 PM IST',
+      );
 
       // 01:00 IST is 19:30 UTC (prev day)
       const midnight = new Date('2026-09-18T19:30:00.000Z');

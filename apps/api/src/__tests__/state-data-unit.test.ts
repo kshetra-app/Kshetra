@@ -68,9 +68,36 @@ describe('State Data Service (stateData.ts) Unit Tests', () => {
       expect(tsInfo?.geographicCapability.boundaryStatus).toBe('CONFLICT_PENDING');
 
       const OTHER_30_STATES = [
-        'AP', 'KA', 'MH', 'TN', 'KL', 'WB', 'UP', 'RJ', 'GJ', 'JH',
-        'OD', 'DL', 'PB', 'HR', 'CG', 'MP', 'BR', 'AS', 'GA', 'HP',
-        'MN', 'ML', 'MZ', 'NL', 'TR', 'SK', 'AR', 'UK', 'PY', 'JK'
+        'AP',
+        'KA',
+        'MH',
+        'TN',
+        'KL',
+        'WB',
+        'UP',
+        'RJ',
+        'GJ',
+        'JH',
+        'OD',
+        'DL',
+        'PB',
+        'HR',
+        'CG',
+        'MP',
+        'BR',
+        'AS',
+        'GA',
+        'HP',
+        'MN',
+        'ML',
+        'MZ',
+        'NL',
+        'TR',
+        'SK',
+        'AR',
+        'UK',
+        'PY',
+        'JK',
       ];
 
       for (const code of OTHER_30_STATES) {
@@ -496,7 +523,9 @@ describe('State Data Service (stateData.ts) Unit Tests', () => {
     it('computes marginPercent accurately when votes and margin exist', () => {
       const ts1 = getConstituencyElectionData('TS', 1);
       if (ts1?.recentElection.winnerVotes && ts1.recentElection.margin) {
-        const expected = parseFloat(((ts1.recentElection.margin / ts1.recentElection.winnerVotes) * 100).toFixed(1));
+        const expected = parseFloat(
+          ((ts1.recentElection.margin / ts1.recentElection.winnerVotes) * 100).toFixed(1),
+        );
         expect(ts1.recentElection.marginPercent).toBe(expected);
       }
     });

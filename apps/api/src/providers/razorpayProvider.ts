@@ -61,7 +61,9 @@ export class RazorpayProvider implements PaymentProvider {
     };
   }
 
-  async verifyPaymentSignature(input: PaymentVerificationInput): Promise<PaymentVerificationResult> {
+  async verifyPaymentSignature(
+    input: PaymentVerificationInput,
+  ): Promise<PaymentVerificationResult> {
     if (input.sandboxBypass) {
       return {
         valid: true,
@@ -81,7 +83,9 @@ export class RazorpayProvider implements PaymentProvider {
 
     const secret = this.getKeySecret();
     if (!secret) {
-      throw new Error('PROVIDER_CONFIG_ERROR: Payment verification service configuration missing (RAZORPAY_KEY_SECRET)');
+      throw new Error(
+        'PROVIDER_CONFIG_ERROR: Payment verification service configuration missing (RAZORPAY_KEY_SECRET)',
+      );
     }
 
     const expectedSignature = crypto
@@ -105,16 +109,17 @@ export class RazorpayProvider implements PaymentProvider {
     };
   }
 
-  verifyWebhookSignature(rawBody: string | Buffer, signature: string, secretOverride?: string): boolean {
+  verifyWebhookSignature(
+    rawBody: string | Buffer,
+    signature: string,
+    secretOverride?: string,
+  ): boolean {
     const secret = secretOverride || process.env.RAZORPAY_WEBHOOK_SECRET || this.getKeySecret();
     if (!secret || !signature) {
       return false;
     }
 
-    const expected = crypto
-      .createHmac('sha256', secret)
-      .update(rawBody)
-      .digest('hex');
+    const expected = crypto.createHmac('sha256', secret).update(rawBody).digest('hex');
 
     const expectedBuffer = Buffer.from(expected, 'utf-8');
     const actualBuffer = Buffer.from(signature, 'utf-8');

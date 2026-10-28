@@ -56,7 +56,7 @@ export default function MessagesInboxScreen() {
   const renderConversationItem = ({ item }: { item: DMConversationItem }) => {
     const other = item.otherUser || {
       id: item.participant_two,
-      displayName: 'Kshetra User',
+      displayName: 'Poligram User',
       role: 'citizen',
       isVerified: false,
     };

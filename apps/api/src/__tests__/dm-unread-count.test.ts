@@ -39,7 +39,11 @@ describe('CTO Directive 117: DM Unread-Count Contract & Error Behavior', () => {
     select: () => ({
       eq: () => ({
         maybeSingle: async () => ({
-          data: { role: 'citizen', verification_status: 'unverified', created_at: new Date().toISOString() },
+          data: {
+            role: 'citizen',
+            verification_status: 'unverified',
+            created_at: new Date().toISOString(),
+          },
           error: null,
         }),
       }),
@@ -181,7 +185,10 @@ describe('CTO Directive 117: DM Unread-Count Contract & Error Behavior', () => {
               neq: () => ({
                 is: async () => ({
                   count: null,
-                  error: { message: 'query execution cancelled by statement timeout', code: '57014' },
+                  error: {
+                    message: 'query execution cancelled by statement timeout',
+                    code: '57014',
+                  },
                 }),
               }),
             }),

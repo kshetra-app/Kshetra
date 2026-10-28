@@ -102,7 +102,7 @@ describe('Providers Comprehensive Unit Tests', () => {
           orderId: 'ord_1',
           paymentId: 'pay_1',
           signature: 'sig',
-        })
+        }),
       ).rejects.toThrow('PROVIDER_CONFIG_ERROR');
     });
 
@@ -201,35 +201,43 @@ describe('Providers Comprehensive Unit Tests', () => {
 
       // Case 1: Outside TRAI window
       provider.simulatedISTHour = 4;
-      const outsideResult = await provider.dispatchBroadcast(makeDispatchParams({
-        campaignId: 'cmp_1',
-      }));
+      const outsideResult = await provider.dispatchBroadcast(
+        makeDispatchParams({
+          campaignId: 'cmp_1',
+        }),
+      );
       expect(outsideResult.success).toBe(false);
       expect(outsideResult.error).toBe('OUTSIDE_TRAI_WINDOW');
 
       // Case 2: Inside window, simulateTimeout
       provider.simulatedISTHour = 12;
       provider.simulateTimeout = true;
-      const timeoutResult = await provider.dispatchBroadcast(makeDispatchParams({
-        campaignId: 'cmp_1',
-      }));
+      const timeoutResult = await provider.dispatchBroadcast(
+        makeDispatchParams({
+          campaignId: 'cmp_1',
+        }),
+      );
       expect(timeoutResult.success).toBe(false);
       expect(timeoutResult.error).toContain('CARRIER_TIMEOUT');
 
       // Case 3: Inside window, simulateCarrierError
       provider.simulateTimeout = false;
       provider.simulateCarrierError = true;
-      const carrierErrResult = await provider.dispatchBroadcast(makeDispatchParams({
-        campaignId: 'cmp_1',
-      }));
+      const carrierErrResult = await provider.dispatchBroadcast(
+        makeDispatchParams({
+          campaignId: 'cmp_1',
+        }),
+      );
       expect(carrierErrResult.success).toBe(false);
       expect(carrierErrResult.error).toContain('CARRIER_ERROR');
 
       // Case 4: Inside window, normal success
       provider.simulateCarrierError = false;
-      const successResult = await provider.dispatchBroadcast(makeDispatchParams({
-        campaignId: 'cmp_1',
-      }));
+      const successResult = await provider.dispatchBroadcast(
+        makeDispatchParams({
+          campaignId: 'cmp_1',
+        }),
+      );
       expect(successResult.success).toBe(true);
       expect(successResult.callSid).toMatch(/^mock_call_/);
       expect(successResult.providerRef).toBe('mock_exo_cmp_1');
@@ -334,7 +342,11 @@ describe('Providers Comprehensive Unit Tests', () => {
     it('parses delivery report for completed, busy, and in-progress statuses', () => {
       const provider = new TelecomProvider();
 
-      const completed = provider.parseDeliveryReport({ Status: 'completed', CallSid: 'c_comp', Duration: '45' });
+      const completed = provider.parseDeliveryReport({
+        Status: 'completed',
+        CallSid: 'c_comp',
+        Duration: '45',
+      });
       expect(completed.status).toBe('completed');
       expect(completed.duration).toBe(45);
 
@@ -371,14 +383,16 @@ describe('Providers Comprehensive Unit Tests', () => {
 
       jest.spyOn(obdTelecomService, 'isNumberOptedOut').mockResolvedValue(true);
 
-      const result = await provider.dispatchBroadcast(makeDispatchParams({
-        campaignId: 'cmp_opt',
-        targetSegment: {
-          type: 'ward',
-          voterCount: 1,
-          phoneNumbers: ['919999999999'],
-        },
-      }));
+      const result = await provider.dispatchBroadcast(
+        makeDispatchParams({
+          campaignId: 'cmp_opt',
+          targetSegment: {
+            type: 'ward',
+            voterCount: 1,
+            phoneNumbers: ['919999999999'],
+          },
+        }),
+      );
 
       expect(result.success).toBe(true);
       expect(result.warning).toContain('Recipient has opted out under TRAI regulations');
@@ -409,14 +423,16 @@ describe('Providers Comprehensive Unit Tests', () => {
         }),
       } as any);
 
-      const result = await provider.dispatchBroadcast(makeDispatchParams({
-        campaignId: 'cmp_live',
-        targetSegment: {
-          type: 'ward',
-          voterCount: 1,
-          phoneNumbers: ['919876543210'],
-        },
-      }));
+      const result = await provider.dispatchBroadcast(
+        makeDispatchParams({
+          campaignId: 'cmp_live',
+          targetSegment: {
+            type: 'ward',
+            voterCount: 1,
+            phoneNumbers: ['919876543210'],
+          },
+        }),
+      );
 
       expect(result.success).toBe(true);
       expect(result.callSid).toBe('call_exotel_live_999');
@@ -448,14 +464,16 @@ describe('Providers Comprehensive Unit Tests', () => {
         }),
       } as any);
 
-      const result = await provider.dispatchBroadcast(makeDispatchParams({
-        campaignId: 'cmp_fail',
-        targetSegment: {
-          type: 'ward',
-          voterCount: 0,
-          phoneNumbers: [],
-        },
-      }));
+      const result = await provider.dispatchBroadcast(
+        makeDispatchParams({
+          campaignId: 'cmp_fail',
+          targetSegment: {
+            type: 'ward',
+            voterCount: 0,
+            phoneNumbers: [],
+          },
+        }),
+      );
 
       expect(result.success).toBe(false);
       expect(result.error).toBe('Authentication credentials rejected by carrier');
@@ -481,14 +499,16 @@ describe('Providers Comprehensive Unit Tests', () => {
 
       const fetchSpy = jest.spyOn(global, 'fetch' as any).mockRejectedValue(abortError);
 
-      const result = await provider.dispatchBroadcast(makeDispatchParams({
-        campaignId: 'cmp_timeout',
-        targetSegment: {
-          type: 'ward',
-          voterCount: 1,
-          phoneNumbers: ['919876543210'],
-        },
-      }));
+      const result = await provider.dispatchBroadcast(
+        makeDispatchParams({
+          campaignId: 'cmp_timeout',
+          targetSegment: {
+            type: 'ward',
+            voterCount: 1,
+            phoneNumbers: ['919876543210'],
+          },
+        }),
+      );
 
       expect(result.success).toBe(false);
       expect(result.error).toContain('CARRIER_TIMEOUT');

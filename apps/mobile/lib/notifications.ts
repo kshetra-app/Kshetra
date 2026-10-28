@@ -43,7 +43,7 @@ export async function requestPermissions(): Promise<boolean> {
 
   if (Platform.OS === 'android') {
     await Notifications.setNotificationChannelAsync('default', {
-      name: 'Kshetra Alerts',
+      name: 'Poligram Alerts',
       importance: Notifications.AndroidImportance.HIGH,
       vibrationPattern: [0, 250, 250, 250],
       lightColor: '#4F8EF7',

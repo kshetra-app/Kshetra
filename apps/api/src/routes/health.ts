@@ -103,9 +103,8 @@ export async function healthRoutes(app: FastifyInstance) {
    * ALIAS FOR READINESS
    */
   app.get('/health/ready', async (request, reply) => {
-    return app.inject({ method: 'GET', url: '/api/health/db' }).then(res => {
+    return app.inject({ method: 'GET', url: '/api/health/db' }).then((res) => {
       reply.status(res.statusCode).send(JSON.parse(res.payload));
     });
   });
 }
-

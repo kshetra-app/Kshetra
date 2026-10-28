@@ -98,7 +98,7 @@ describe('SpatialAnalyticsService & Routes Unit Tests (W017)', () => {
         spatialAnalyticsService.resolveGeometry({
           entityId: 'TS-MDL-5001',
           selection: { mode: 'as_of' },
-        })
+        }),
       ).rejects.toThrow('TEMPORAL_SELECTION_INVALID');
     });
 
@@ -107,7 +107,7 @@ describe('SpatialAnalyticsService & Routes Unit Tests (W017)', () => {
         spatialAnalyticsService.resolveGeometry({
           entityId: 'TS-MDL-5001',
           selection: { mode: 'version' },
-        })
+        }),
       ).rejects.toThrow('TEMPORAL_SELECTION_INVALID');
     });
 
@@ -143,7 +143,7 @@ describe('SpatialAnalyticsService & Routes Unit Tests (W017)', () => {
         spatialAnalyticsService.resolveGeometry({
           entityId: 'TS-MDL-9999',
           selection: { mode: 'current' },
-        })
+        }),
       ).rejects.toThrow('CURRENT_GEOMETRY_UNAVAILABLE');
     });
 
@@ -228,7 +228,7 @@ describe('SpatialAnalyticsService & Routes Unit Tests (W017)', () => {
 
       const res = await spatialAnalyticsService.calculateOverlap(
         { entityId: 'E1', selection: { mode: 'current' } },
-        { entityId: 'E2', selection: { mode: 'current' } }
+        { entityId: 'E2', selection: { mode: 'current' } },
       );
 
       expect(res.baseEntityAreaM2).toBe(1000000);
@@ -261,7 +261,7 @@ describe('SpatialAnalyticsService & Routes Unit Tests (W017)', () => {
 
       const res = await spatialAnalyticsService.calculateOverlap(
         { entityId: 'E1', selection: { mode: 'current' } },
-        { entityId: 'E1', selection: { mode: 'current' } }
+        { entityId: 'E1', selection: { mode: 'current' } },
       );
 
       expect(res.baseOverlapPercentage).toBe(100.0);
@@ -279,7 +279,26 @@ describe('SpatialAnalyticsService & Routes Unit Tests (W017)', () => {
           sourceFeatureId: `F${callCount}`,
           geometry: {
             type: 'Polygon',
-            coordinates: callCount === 1 ? [[[0, 0], [0, 1], [1, 1], [1, 0], [0, 0]]] : [[[0.5, 0.5], [0.5, 1.5], [1.5, 1.5], [1.5, 0.5], [0.5, 0.5]]],
+            coordinates:
+              callCount === 1
+                ? [
+                    [
+                      [0, 0],
+                      [0, 1],
+                      [1, 1],
+                      [1, 0],
+                      [0, 0],
+                    ],
+                  ]
+                : [
+                    [
+                      [0.5, 0.5],
+                      [0.5, 1.5],
+                      [1.5, 1.5],
+                      [1.5, 0.5],
+                      [0.5, 0.5],
+                    ],
+                  ],
           },
           isCurrent: true,
           validFrom: '2016-10-11',
@@ -303,7 +322,7 @@ describe('SpatialAnalyticsService & Routes Unit Tests (W017)', () => {
 
       const res = await spatialAnalyticsService.calculateOverlap(
         { entityId: 'E1', selection: { mode: 'current' } },
-        { entityId: 'E2', selection: { mode: 'current' } }
+        { entityId: 'E2', selection: { mode: 'current' } },
       );
 
       expect(res.baseOverlapPercentage).toBe(100.0);
@@ -344,7 +363,7 @@ describe('SpatialAnalyticsService & Routes Unit Tests (W017)', () => {
       const res = await spatialAnalyticsService.calculateBoundaryDiff(
         'TS-MDL-5001',
         { mode: 'current' },
-        { mode: 'version', versionId: 'V2' }
+        { mode: 'version', versionId: 'V2' },
       );
 
       expect(res.similarityIndex).toBe(0.92);
@@ -362,7 +381,26 @@ describe('SpatialAnalyticsService & Routes Unit Tests (W017)', () => {
           sourceFeatureId: `F${callCount}`,
           geometry: {
             type: 'Polygon',
-            coordinates: callCount === 1 ? [[[0, 0], [0, 1], [1, 1], [1, 0], [0, 0]]] : [[[1, 1], [1, 2], [2, 2], [2, 1], [1, 1]]],
+            coordinates:
+              callCount === 1
+                ? [
+                    [
+                      [0, 0],
+                      [0, 1],
+                      [1, 1],
+                      [1, 0],
+                      [0, 0],
+                    ],
+                  ]
+                : [
+                    [
+                      [1, 1],
+                      [1, 2],
+                      [2, 2],
+                      [2, 1],
+                      [1, 1],
+                    ],
+                  ],
           },
           isCurrent: true,
           validFrom: '2016-10-11',
@@ -390,7 +428,7 @@ describe('SpatialAnalyticsService & Routes Unit Tests (W017)', () => {
       const res = await spatialAnalyticsService.calculateBoundaryDiff(
         'TS-MDL-5001',
         { mode: 'current' },
-        { mode: 'version', versionId: 'V2' }
+        { mode: 'version', versionId: 'V2' },
       );
 
       expect(res.sourceAreaM2).toBe(500000);
@@ -406,7 +444,7 @@ describe('SpatialAnalyticsService & Routes Unit Tests (W017)', () => {
           minLat: 10.0,
           maxLng: 75.0,
           maxLat: 15.0,
-        })
+        }),
       ).rejects.toThrow('SPATIAL_QUERY_LIMIT_EXCEEDED');
     });
 
@@ -507,7 +545,11 @@ describe('SpatialAnalyticsService & Routes Unit Tests (W017)', () => {
         comparisonOverlapPercentage: 50.0,
         intersectionDimension: 2,
         isDisjoint: false,
-        regimeContext: { isCrossRegime: false, baseSelection: { mode: 'current' }, comparisonSelection: { mode: 'current' } },
+        regimeContext: {
+          isCrossRegime: false,
+          baseSelection: { mode: 'current' },
+          comparisonSelection: { mode: 'current' },
+        },
       });
 
       const res = await app.inject({
@@ -538,7 +580,11 @@ describe('SpatialAnalyticsService & Routes Unit Tests (W017)', () => {
         removedAreaM2: 50000,
         unmodifiedAreaM2: 950000,
         similarityIndex: 0.95,
-        regimeContext: { isCrossRegime: false, baseSelection: { mode: 'current' }, comparisonSelection: { mode: 'version' } },
+        regimeContext: {
+          isCrossRegime: false,
+          baseSelection: { mode: 'current' },
+          comparisonSelection: { mode: 'version' },
+        },
         addedGeoJson: null,
         removedGeoJson: null,
       });
@@ -669,7 +715,11 @@ describe('SpatialAnalyticsService & Routes Unit Tests (W017)', () => {
           comparisonOverlapPercentage: 50.0,
           intersectionDimension: 2,
           isDisjoint: false,
-          regimeContext: { isCrossRegime: false, baseSelection: { mode: 'current' }, comparisonSelection: { mode: 'current' } },
+          regimeContext: {
+            isCrossRegime: false,
+            baseSelection: { mode: 'current' },
+            comparisonSelection: { mode: 'current' },
+          },
         });
         const resAuthUser = await app.inject({
           method: 'POST',
@@ -703,7 +753,9 @@ describe('SpatialAnalyticsService & Routes Unit Tests (W017)', () => {
         expect(resServiceUser.statusCode).toBe(200);
 
         // 7. Bearer token where supabase.auth.getUser throws exception (catches and falls back to authenticated)
-        jest.spyOn(supabase.auth, 'getUser').mockRejectedValueOnce(new Error('Network error on auth'));
+        jest
+          .spyOn(supabase.auth, 'getUser')
+          .mockRejectedValueOnce(new Error('Network error on auth'));
         jest.spyOn(spatialAnalyticsService, 'calculateOverlap').mockResolvedValueOnce({
           baseEntityAreaM2: 1000000,
           comparisonEntityAreaM2: 1000000,
@@ -712,7 +764,11 @@ describe('SpatialAnalyticsService & Routes Unit Tests (W017)', () => {
           comparisonOverlapPercentage: 50.0,
           intersectionDimension: 2,
           isDisjoint: false,
-          regimeContext: { isCrossRegime: false, baseSelection: { mode: 'current' }, comparisonSelection: { mode: 'current' } },
+          regimeContext: {
+            isCrossRegime: false,
+            baseSelection: { mode: 'current' },
+            comparisonSelection: { mode: 'current' },
+          },
         });
         const resFallbackUser = await app.inject({
           method: 'POST',
@@ -739,7 +795,11 @@ describe('SpatialAnalyticsService & Routes Unit Tests (W017)', () => {
         comparisonOverlapPercentage: 50.0,
         intersectionDimension: 2,
         isDisjoint: false,
-        regimeContext: { isCrossRegime: true, baseSelection: { mode: 'current' }, comparisonSelection: { mode: 'as_of', asOfDate: '2016-10-10' } },
+        regimeContext: {
+          isCrossRegime: true,
+          baseSelection: { mode: 'current' },
+          comparisonSelection: { mode: 'as_of', asOfDate: '2016-10-10' },
+        },
       });
       const resOverlapCross = await app.inject({
         method: 'POST',
@@ -747,7 +807,10 @@ describe('SpatialAnalyticsService & Routes Unit Tests (W017)', () => {
         headers: { 'x-test-role': 'authenticated' },
         payload: {
           baseEntity: { entityId: 'E1', selection: { mode: 'current' } },
-          comparisonEntity: { entityId: 'E2', selection: { mode: 'as_of', asOfDate: '2016-10-10' } },
+          comparisonEntity: {
+            entityId: 'E2',
+            selection: { mode: 'as_of', asOfDate: '2016-10-10' },
+          },
         },
       });
       expect(resOverlapCross.statusCode).toBe(200);
@@ -810,7 +873,11 @@ describe('SpatialAnalyticsService & Routes Unit Tests (W017)', () => {
         removedAreaM2: 50000,
         unmodifiedAreaM2: 950000,
         similarityIndex: 0.95,
-        regimeContext: { isCrossRegime: true, baseSelection: { mode: 'current' }, comparisonSelection: { mode: 'version' } },
+        regimeContext: {
+          isCrossRegime: true,
+          baseSelection: { mode: 'current' },
+          comparisonSelection: { mode: 'version' },
+        },
         addedGeoJson: null,
         removedGeoJson: null,
       });
@@ -828,12 +895,14 @@ describe('SpatialAnalyticsService & Routes Unit Tests (W017)', () => {
       expect(resDiffCross.headers['x-spatial-cross-regime']).toBe('true');
 
       // 6. POST /boundary-diff 404 error envelope
-      jest.spyOn(spatialAnalyticsService, 'calculateBoundaryDiff').mockImplementationOnce(async () => {
-        const err: any = new Error('Boundary entity not found');
-        err.statusCode = 404;
-        err.code = 'ENTITY_NOT_FOUND';
-        throw err;
-      });
+      jest
+        .spyOn(spatialAnalyticsService, 'calculateBoundaryDiff')
+        .mockImplementationOnce(async () => {
+          const err: any = new Error('Boundary entity not found');
+          err.statusCode = 404;
+          err.code = 'ENTITY_NOT_FOUND';
+          throw err;
+        });
       const resDiff404 = await app.inject({
         method: 'POST',
         url: '/api/v1/spatial/analytics/boundary-diff',
@@ -848,9 +917,11 @@ describe('SpatialAnalyticsService & Routes Unit Tests (W017)', () => {
       expect(JSON.parse(resDiff404.payload).code).toBe('ENTITY_NOT_FOUND');
 
       // 7. POST /boundary-diff 500 default error envelope
-      jest.spyOn(spatialAnalyticsService, 'calculateBoundaryDiff').mockImplementationOnce(async () => {
-        throw new Error('Boundary calculation engine failed');
-      });
+      jest
+        .spyOn(spatialAnalyticsService, 'calculateBoundaryDiff')
+        .mockImplementationOnce(async () => {
+          throw new Error('Boundary calculation engine failed');
+        });
       const resDiff500 = await app.inject({
         method: 'POST',
         url: '/api/v1/spatial/analytics/boundary-diff',

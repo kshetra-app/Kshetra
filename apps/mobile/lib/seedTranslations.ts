@@ -3,7 +3,7 @@ import { STATE_TRANSLATIONS } from './stateTranslations';
 
 /**
  * Multi-Language Translation Engine for Seed Content, Posts, Comments, Polls, and UI Metadata.
- * Supports all 13 official Kshetra application languages:
+ * Supports all 13 official Poligram application languages:
  * 'en' | 'te' | 'hi' | 'ta' | 'kn' | 'mr' | 'bn' | 'gu' | 'ml' | 'pa' | 'or' | 'as' | 'ne'
  */
 

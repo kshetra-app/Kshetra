@@ -18,13 +18,17 @@ export function getMasterEncryptionKey(): Buffer {
     if (/^[0-9a-fA-F]{64}$/.test(trimmed)) {
       return Buffer.from(trimmed, 'hex');
     }
-    throw new Error('CONFIG_ERROR: WEBHOOK_SECRETS_ENCRYPTION_KEY must be exactly 64 hexadecimal characters (32 bytes).');
+    throw new Error(
+      'CONFIG_ERROR: WEBHOOK_SECRETS_ENCRYPTION_KEY must be exactly 64 hexadecimal characters (32 bytes).',
+    );
   }
   // Allow test fallback strictly when NODE_ENV is explicitly 'test'
   if (process.env.NODE_ENV === 'test') {
     return Buffer.from(DEFAULT_TEST_MASTER_KEY, 'hex');
   }
-  throw new Error('CONFIG_ERROR: WEBHOOK_SECRETS_ENCRYPTION_KEY missing or invalid in deployed environment');
+  throw new Error(
+    'CONFIG_ERROR: WEBHOOK_SECRETS_ENCRYPTION_KEY missing or invalid in deployed environment',
+  );
 }
 
 export interface EncryptedSecretRecord {
@@ -70,7 +74,7 @@ export function encryptSecret(
   secret: string,
   tenantId: string,
   subscriptionId: string,
-  keyVersion = 1
+  keyVersion = 1,
 ): EncryptedSecretRecord {
   const masterKey = getMasterEncryptionKey();
   const iv = crypto.randomBytes(12);
@@ -101,7 +105,7 @@ export function decryptSecret(
   ivOrTenantId: Buffer | string,
   tagOrSubscriptionId?: Buffer | string,
   maybeTenantId?: string,
-  maybeSubscriptionId?: string
+  maybeSubscriptionId?: string,
 ): string {
   let ciphertext: Buffer;
   let iv: Buffer;
@@ -186,7 +190,7 @@ export function computePayloadSha256(rawBytesOrString: string | Buffer): string 
 export function generateWebhookSignature(
   secret: string,
   arg2: string | Buffer | number,
-  arg3: number | string | Buffer
+  arg3: number | string | Buffer,
 ): string {
   let rawPayload: string | Buffer;
   let timestampSeconds: number;
@@ -212,7 +216,7 @@ export function generateWebhookSignature(
 export function formatSignatureHeader(
   timestampSeconds: number,
   primarySignature: string,
-  previousSignature?: string | null
+  previousSignature?: string | null,
 ): string {
   let header = `t=${timestampSeconds},v1=${primarySignature}`;
   if (previousSignature) {
@@ -240,7 +244,7 @@ export function verifyWebhookSignature(
     | Buffer,
   maybeSignatureHeader?: string,
   maybeSecret?: string,
-  maybePreviousSecret?: string | null
+  maybePreviousSecret?: string | null,
 ): { valid: boolean; reason?: string } {
   let signatureHeader: string;
   let rawPayload: string | Buffer;
@@ -310,7 +314,10 @@ export function verifyWebhookSignature(
   for (const receivedSig of signatures) {
     if (receivedSig.length === expectedPrimary.length) {
       const receivedBuf = Buffer.from(receivedSig, 'hex');
-      if (receivedBuf.length === expectedPrimaryBuf.length && crypto.timingSafeEqual(expectedPrimaryBuf, receivedBuf)) {
+      if (
+        receivedBuf.length === expectedPrimaryBuf.length &&
+        crypto.timingSafeEqual(expectedPrimaryBuf, receivedBuf)
+      ) {
         return { valid: true };
       }
     }
@@ -324,7 +331,10 @@ export function verifyWebhookSignature(
     for (const receivedSig of signatures) {
       if (receivedSig.length === expectedPrevious.length) {
         const receivedBuf = Buffer.from(receivedSig, 'hex');
-        if (receivedBuf.length === expectedPreviousBuf.length && crypto.timingSafeEqual(expectedPreviousBuf, receivedBuf)) {
+        if (
+          receivedBuf.length === expectedPreviousBuf.length &&
+          crypto.timingSafeEqual(expectedPreviousBuf, receivedBuf)
+        ) {
           return { valid: true };
         }
       }

@@ -112,68 +112,72 @@ describe('W021-G4: Public/Partner SaaS API Routes (/api/vsaas/v1/...) Test Suite
       } as any;
     });
 
-    jest.spyOn(electionService, 'listElectionContests').mockImplementation(async (electionId: string) => {
-      return {
-        contests: [
-          {
-            id: 'c1111111-1111-1111-1111-111111111111',
-            electionId,
-            constituencyId: 'ac-65',
-            constituencyName: 'Kodangal',
-            acNo: 65,
-            totalElectors: 245000,
-            totalVotesPolled: 195000,
-            turnoutPercentage: 79.59,
-            margin: 32532,
-            dataStatus: 'OFFICIAL',
-          },
-        ],
-        total: 1,
-      } as any;
-    });
+    jest
+      .spyOn(electionService, 'listElectionContests')
+      .mockImplementation(async (electionId: string) => {
+        return {
+          contests: [
+            {
+              id: 'c1111111-1111-1111-1111-111111111111',
+              electionId,
+              constituencyId: 'ac-65',
+              constituencyName: 'Kodangal',
+              acNo: 65,
+              totalElectors: 245000,
+              totalVotesPolled: 195000,
+              turnoutPercentage: 79.59,
+              margin: 32532,
+              dataStatus: 'OFFICIAL',
+            },
+          ],
+          total: 1,
+        } as any;
+      });
 
-    jest.spyOn(electionService, 'getContestDetail').mockImplementation(async (electionId: string, constituencyId: string) => {
-      if (constituencyId.startsWith('non-existent') || constituencyId === 'ac-999') return null;
-      return {
-        id: 'c1111111-1111-1111-1111-111111111111',
-        electionId,
-        constituencyId,
-        constituencyName: 'Kodangal',
-        acNo: 65,
-        stateCode: 'TG',
-        totalElectors: 245000,
-        totalVotesPolled: 195000,
-        turnoutPercentage: 79.59,
-        margin: 32532,
-        dataStatus: 'OFFICIAL',
-        candidates: [
-          {
-            id: 'cand-1',
-            person: { canonicalName: 'Anumula Revanth Reddy' },
-            party: { name: 'Indian National Congress', shortName: 'INC' },
-            partyId: 'p-inc',
-            partyAtElection: 'INC',
-            votesReceived: 107429,
-            voteShare: 55.09,
-            rank: 1,
-            result: 'won',
-            evmVotes: 106000,
-            postalVotes: 1429,
-            dataStatus: 'OFFICIAL',
+    jest
+      .spyOn(electionService, 'getContestDetail')
+      .mockImplementation(async (electionId: string, constituencyId: string) => {
+        if (constituencyId.startsWith('non-existent') || constituencyId === 'ac-999') return null;
+        return {
+          id: 'c1111111-1111-1111-1111-111111111111',
+          electionId,
+          constituencyId,
+          constituencyName: 'Kodangal',
+          acNo: 65,
+          stateCode: 'TG',
+          totalElectors: 245000,
+          totalVotesPolled: 195000,
+          turnoutPercentage: 79.59,
+          margin: 32532,
+          dataStatus: 'OFFICIAL',
+          candidates: [
+            {
+              id: 'cand-1',
+              person: { canonicalName: 'Anumula Revanth Reddy' },
+              party: { name: 'Indian National Congress', shortName: 'INC' },
+              partyId: 'p-inc',
+              partyAtElection: 'INC',
+              votesReceived: 107429,
+              voteShare: 55.09,
+              rank: 1,
+              result: 'won',
+              evmVotes: 106000,
+              postalVotes: 1429,
+              dataStatus: 'OFFICIAL',
+            },
+          ],
+          winner: {
+            candidateName: 'Anumula Revanth Reddy',
+            party: 'INC',
+            votes: 107429,
           },
-        ],
-        winner: {
-          candidateName: 'Anumula Revanth Reddy',
-          party: 'INC',
-          votes: 107429,
-        },
-        runnerUp: {
-          candidateName: 'Patnam Narender Reddy',
-          party: 'BRS',
-          votes: 74897,
-        },
-      } as any;
-    });
+          runnerUp: {
+            candidateName: 'Patnam Narender Reddy',
+            party: 'BRS',
+            votes: 74897,
+          },
+        } as any;
+      });
 
     jest.spyOn(politicalEntityService, 'searchEntities').mockResolvedValue({
       persons: [
@@ -223,25 +227,27 @@ describe('W021-G4: Public/Partner SaaS API Routes (/api/vsaas/v1/...) Test Suite
       } as any;
     });
 
-    jest.spyOn(politicalEntityService, 'getOrganizationById').mockImplementation(async (id: string) => {
-      if (id === '00000000-0000-0000-0000-000000000000') {
-        const err: any = new Error(`Organization with id '${id}' not found`);
-        err.statusCode = 404;
-        err.code = 'ORGANIZATION_NOT_FOUND';
-        throw err;
-      }
-      return {
-        id,
-        name: 'Indian National Congress',
-        shortName: 'INC',
-        orgType: 'party',
-        ecPartyCode: 'INC',
-        recognitionLevel: 'national',
-        headquartersState: 'DL',
-        symbolUrl: null,
-        dataStatus: 'OFFICIAL',
-      } as any;
-    });
+    jest
+      .spyOn(politicalEntityService, 'getOrganizationById')
+      .mockImplementation(async (id: string) => {
+        if (id === '00000000-0000-0000-0000-000000000000') {
+          const err: any = new Error(`Organization with id '${id}' not found`);
+          err.statusCode = 404;
+          err.code = 'ORGANIZATION_NOT_FOUND';
+          throw err;
+        }
+        return {
+          id,
+          name: 'Indian National Congress',
+          shortName: 'INC',
+          orgType: 'party',
+          ecPartyCode: 'INC',
+          recognitionLevel: 'national',
+          headquartersState: 'DL',
+          symbolUrl: null,
+          dataStatus: 'OFFICIAL',
+        } as any;
+      });
 
     jest.spyOn(politicalEntityService, 'listCurrentLegislators').mockResolvedValue({
       legislators: [
@@ -831,7 +837,9 @@ describe('W021-G4: Public/Partner SaaS API Routes (/api/vsaas/v1/...) Test Suite
 
     it('handles unexpected service exceptions across routes gracefully with 500', async () => {
       // 1. Election events search failure
-      jest.spyOn(electionService, 'listElectionEvents').mockRejectedValueOnce(new Error('DB failure'));
+      jest
+        .spyOn(electionService, 'listElectionEvents')
+        .mockRejectedValueOnce(new Error('DB failure'));
       const resElecErr = await app.inject({
         method: 'GET',
         url: '/api/vsaas/v1/elections',
@@ -840,7 +848,9 @@ describe('W021-G4: Public/Partner SaaS API Routes (/api/vsaas/v1/...) Test Suite
       expect(resElecErr.statusCode).toBe(500);
 
       // 2. Election event get failure
-      jest.spyOn(electionService, 'getElectionEventById').mockRejectedValueOnce(new Error('DB failure'));
+      jest
+        .spyOn(electionService, 'getElectionEventById')
+        .mockRejectedValueOnce(new Error('DB failure'));
       const resEventErr = await app.inject({
         method: 'GET',
         url: '/api/vsaas/v1/elections/e1',
@@ -849,8 +859,12 @@ describe('W021-G4: Public/Partner SaaS API Routes (/api/vsaas/v1/...) Test Suite
       expect(resEventErr.statusCode).toBe(500);
 
       // 3. Contests list failure
-      jest.spyOn(electionService, 'getElectionEventById').mockResolvedValueOnce({ id: 'e1' } as any);
-      jest.spyOn(electionService, 'listElectionContests').mockRejectedValueOnce(new Error('DB failure'));
+      jest
+        .spyOn(electionService, 'getElectionEventById')
+        .mockResolvedValueOnce({ id: 'e1' } as any);
+      jest
+        .spyOn(electionService, 'listElectionContests')
+        .mockRejectedValueOnce(new Error('DB failure'));
       const resContestsErr = await app.inject({
         method: 'GET',
         url: '/api/vsaas/v1/elections/e1/contests',
@@ -859,7 +873,9 @@ describe('W021-G4: Public/Partner SaaS API Routes (/api/vsaas/v1/...) Test Suite
       expect(resContestsErr.statusCode).toBe(500);
 
       // 4. Contest detail failure
-      jest.spyOn(electionService, 'getContestDetail').mockRejectedValueOnce(new Error('DB failure'));
+      jest
+        .spyOn(electionService, 'getContestDetail')
+        .mockRejectedValueOnce(new Error('DB failure'));
       const resContestErr = await app.inject({
         method: 'GET',
         url: '/api/vsaas/v1/elections/e1/contests/ac-1',
@@ -868,7 +884,9 @@ describe('W021-G4: Public/Partner SaaS API Routes (/api/vsaas/v1/...) Test Suite
       expect(resContestErr.statusCode).toBe(500);
 
       // 5. Entity search failure
-      jest.spyOn(politicalEntityService, 'searchEntities').mockRejectedValueOnce(new Error('DB failure'));
+      jest
+        .spyOn(politicalEntityService, 'searchEntities')
+        .mockRejectedValueOnce(new Error('DB failure'));
       const resSearchErr = await app.inject({
         method: 'GET',
         url: '/api/vsaas/v1/entities/search',
@@ -877,7 +895,9 @@ describe('W021-G4: Public/Partner SaaS API Routes (/api/vsaas/v1/...) Test Suite
       expect(resSearchErr.statusCode).toBe(500);
 
       // 6. Person lookup unexpected 500
-      jest.spyOn(politicalEntityService, 'getPersonById').mockRejectedValueOnce(new Error('Unexpected DB timeout'));
+      jest
+        .spyOn(politicalEntityService, 'getPersonById')
+        .mockRejectedValueOnce(new Error('Unexpected DB timeout'));
       const resPersonErr = await app.inject({
         method: 'GET',
         url: '/api/vsaas/v1/entities/persons/p1',
@@ -886,7 +906,9 @@ describe('W021-G4: Public/Partner SaaS API Routes (/api/vsaas/v1/...) Test Suite
       expect(resPersonErr.statusCode).toBe(500);
 
       // 7. Organization lookup unexpected 500
-      jest.spyOn(politicalEntityService, 'getOrganizationById').mockRejectedValueOnce(new Error('Unexpected DB timeout'));
+      jest
+        .spyOn(politicalEntityService, 'getOrganizationById')
+        .mockRejectedValueOnce(new Error('Unexpected DB timeout'));
       const resOrgErr = await app.inject({
         method: 'GET',
         url: '/api/vsaas/v1/entities/organizations/o1',
@@ -895,7 +917,9 @@ describe('W021-G4: Public/Partner SaaS API Routes (/api/vsaas/v1/...) Test Suite
       expect(resOrgErr.statusCode).toBe(500);
 
       // 8. Legislators lookup failure
-      jest.spyOn(politicalEntityService, 'listCurrentLegislators').mockRejectedValueOnce(new Error('DB failure'));
+      jest
+        .spyOn(politicalEntityService, 'listCurrentLegislators')
+        .mockRejectedValueOnce(new Error('DB failure'));
       const resLegErr = await app.inject({
         method: 'GET',
         url: '/api/vsaas/v1/entities/legislators',

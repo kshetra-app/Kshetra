@@ -90,12 +90,7 @@ export type PanchayatType =
  * - `corporation`  — Municipal corporation ward election
  */
 export type LocalElectionType =
-  | 'sarpanch'
-  | 'ward_member'
-  | 'municipality'
-  | 'zptc'
-  | 'mptc'
-  | 'corporation';
+  'sarpanch' | 'ward_member' | 'municipality' | 'zptc' | 'mptc' | 'corporation';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // Local-Body Representatives (migration 023) — Urban / Rural sub-tiers
@@ -105,19 +100,13 @@ export type LocalElectionType =
  * Classification of an urban local body. Rural bodies remain in
  * {@link GramPanchayat}; this covers the urban tier as a first-class entity.
  */
-export type UrbanLocalBodyType =
-  | 'corporation'
-  | 'municipality'
-  | 'nagar_panchayat'
-  | 'cantonment';
+export type UrbanLocalBodyType = 'corporation' | 'municipality' | 'nagar_panchayat' | 'cantonment';
 
 /**
  * Seat reservation category (incl. woman-reserved `-W` variants) used by
  * State Election Commissions for ward / division rotation each cycle.
  */
-export type ReservationCategory =
-  | 'GEN' | 'SC' | 'ST' | 'BC'
-  | 'GEN-W' | 'SC-W' | 'ST-W' | 'BC-W';
+export type ReservationCategory = 'GEN' | 'SC' | 'ST' | 'BC' | 'GEN-W' | 'SC-W' | 'ST-W' | 'BC-W';
 
 /**
  * Every local-body elected office modelled by the unified
@@ -155,8 +144,16 @@ export type JurisdictionType =
  * Origin of a representative record or a crowdsourced edit.
  */
 export type RepresentativeSourceType =
-  | 'lgd' | 'sec' | 'lok_dhaba' | 'opencity' | 'wikipedia'
-  | 'eci' | 'myneta' | 'news' | 'curated' | 'crowdsourced';
+  | 'lgd'
+  | 'sec'
+  | 'lok_dhaba'
+  | 'opencity'
+  | 'wikipedia'
+  | 'eci'
+  | 'myneta'
+  | 'news'
+  | 'curated'
+  | 'crowdsourced';
 
 /**
  * Honest data-availability state — the backbone of the zero-fabrication policy.
@@ -426,19 +423,34 @@ export interface RepresentativeProfile {
 }
 
 /** Human-readable label + icon for each {@link OfficeType}. */
-export const OFFICE_TYPE_CONFIG: Record<OfficeType, { label: string; short: string; category: 'urban' | 'rural' }> = {
-  mayor:                       { label: 'Mayor',                        short: 'Mayor',      category: 'urban' },
-  deputy_mayor:                { label: 'Deputy Mayor',                 short: 'Dy. Mayor',  category: 'urban' },
-  corporator:                  { label: 'Corporator',                   short: 'Corporator', category: 'urban' },
-  ulb_chairperson:             { label: 'Municipal Chairperson',        short: 'Chairperson',category: 'urban' },
-  ulb_vice_chairperson:        { label: 'Municipal Vice-Chairperson',   short: 'Vice-Chair', category: 'urban' },
-  ward_member:                 { label: 'Ward Member',                  short: 'Ward Member',category: 'urban' },
-  sarpanch:                    { label: 'Sarpanch',                     short: 'Sarpanch',   category: 'rural' },
-  gp_ward_member:              { label: 'GP Ward Member',               short: 'Ward Member',category: 'rural' },
-  mptc_member:                 { label: 'MPTC Member',                  short: 'MPTC',       category: 'rural' },
-  mandal_parishad_president:   { label: 'Mandal Parishad President',    short: 'MPP',        category: 'rural' },
-  zptc_member:                 { label: 'ZPTC Member',                  short: 'ZPTC',       category: 'rural' },
-  zilla_parishad_chairperson:  { label: 'Zilla Parishad Chairperson',   short: 'ZP Chair',   category: 'rural' },
+export const OFFICE_TYPE_CONFIG: Record<
+  OfficeType,
+  { label: string; short: string; category: 'urban' | 'rural' }
+> = {
+  mayor: { label: 'Mayor', short: 'Mayor', category: 'urban' },
+  deputy_mayor: { label: 'Deputy Mayor', short: 'Dy. Mayor', category: 'urban' },
+  corporator: { label: 'Corporator', short: 'Corporator', category: 'urban' },
+  ulb_chairperson: { label: 'Municipal Chairperson', short: 'Chairperson', category: 'urban' },
+  ulb_vice_chairperson: {
+    label: 'Municipal Vice-Chairperson',
+    short: 'Vice-Chair',
+    category: 'urban',
+  },
+  ward_member: { label: 'Ward Member', short: 'Ward Member', category: 'urban' },
+  sarpanch: { label: 'Sarpanch', short: 'Sarpanch', category: 'rural' },
+  gp_ward_member: { label: 'GP Ward Member', short: 'Ward Member', category: 'rural' },
+  mptc_member: { label: 'MPTC Member', short: 'MPTC', category: 'rural' },
+  mandal_parishad_president: {
+    label: 'Mandal Parishad President',
+    short: 'MPP',
+    category: 'rural',
+  },
+  zptc_member: { label: 'ZPTC Member', short: 'ZPTC', category: 'rural' },
+  zilla_parishad_chairperson: {
+    label: 'Zilla Parishad Chairperson',
+    short: 'ZP Chair',
+    category: 'rural',
+  },
 };
 
 /** Map a {@link Representative} row to the unified {@link RepresentativeProfile}. */

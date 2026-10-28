@@ -106,7 +106,7 @@ export default function SimulatorScreen() {
     if (!currentAlloc || !quickSim) return;
     const modeLabel = t(MODE_CONFIG[mode].labelKey, { defaultValue: MODE_CONFIG[mode].defaultLabel });
     const text = [
-      `KSHETRA Delimitation Simulator`,
+      `POLIGRAM Delimitation Simulator`,
       `State: ${currentAlloc.stateName}`,
       `Mode: ${modeLabel}`,
       `Current Seats: ${currentSeats}`,
@@ -121,7 +121,7 @@ export default function SimulatorScreen() {
       `Reservation:`,
       `  SC: ${quickSim.totals.scReserved} | ST: ${quickSim.totals.stReserved} | General: ${quickSim.totals.general}`,
       ``,
-      `Based on Census 2011 | Powered by KSHETRA`,
+      `Based on Census 2011 | Powered by POLIGRAM`,
     ].join('\n');
 
     await Share.share({ message: text });

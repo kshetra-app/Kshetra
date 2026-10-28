@@ -85,7 +85,7 @@ export default function PagesScreen() {
   const handleInviteEndorsements = useCallback(async () => {
     try {
       await Share.share({
-        message: `Support my civic journey as an aspirant on Kshetra! Check out my profile and endorse my vision for ${aspirantProfile?.targetConstituencyName || 'our community'}: https://kshetra.app/aspirant/${aspirantProfile?.id || ''}`,
+        message: `Support my civic journey as an aspirant on Poligram! Check out my profile and endorse my vision for ${aspirantProfile?.targetConstituencyName || 'our community'}: https://kshetra.app/aspirant/${aspirantProfile?.id || ''}`,
       });
     } catch {
       // User cancelled or share dismissed
@@ -344,7 +344,7 @@ export default function PagesScreen() {
                 </Text>
                 <Text style={[styles.promptDesc, { color: colors.textMuted }]}>
                   {t('pages.noPoliticiansDesc', {
-                    defaultValue: 'Official elected representatives and verified party leaders will appear here once authenticated on Kshetra. Real public figures require KYC verification.',
+                    defaultValue: 'Official elected representatives and verified party leaders will appear here once authenticated on Poligram. Real public figures require KYC verification.',
                   })}
                 </Text>
               </View>
@@ -455,7 +455,7 @@ export default function PagesScreen() {
                     </Text>
                     <Text style={[styles.promptDesc, { color: colors.textSecondary }]}>
                       {t('pages.claimPageDesc', {
-                        defaultValue: 'You are eligible to create an official candidate or public representative page on Kshetra.',
+                        defaultValue: 'You are eligible to create an official candidate or public representative page on Poligram.',
                       })}
                     </Text>
                     <Pressable

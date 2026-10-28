@@ -321,7 +321,7 @@ export async function moderationRoutes(app: FastifyInstance) {
   /**
    * Helper: Securely resolve authenticated user and their verified role from database.
    * Eliminates insecure client-supplied role headers (FIX-7 / FIX-3b pattern).
-   * 
+   *
    * Distinct states:
    * A. Invalid/missing authentication -> state: 'UNAUTHENTICATED'
    * B. Authenticated user + profile lookup failure -> state: 'DB_ERROR' (MUST NOT downgrade to citizen!)
@@ -344,7 +344,9 @@ export async function moderationRoutes(app: FastifyInstance) {
       if (process.env.NODE_ENV === 'production') {
         return { state: 'DB_ERROR' };
       }
-      const testRole = (request.headers['x-test-role'] as UserRole) || (request.headers['x-user-role'] as UserRole);
+      const testRole =
+        (request.headers['x-test-role'] as UserRole) ||
+        (request.headers['x-user-role'] as UserRole);
       return { state: 'RESOLVED', userId, role: testRole || 'moderator' };
     }
 
@@ -361,9 +363,17 @@ export async function moderationRoutes(app: FastifyInstance) {
 
       if (error) {
         if (process.env.NODE_ENV !== 'production') {
-          return { state: 'RESOLVED', userId, role: (request.headers['x-user-role'] as UserRole) || (auth.role as UserRole) || 'citizen' };
+          return {
+            state: 'RESOLVED',
+            userId,
+            role:
+              (request.headers['x-user-role'] as UserRole) || (auth.role as UserRole) || 'citizen',
+          };
         }
-        app.log.error({ err: error.message, userId }, 'Failed to query user_profiles for role resolution');
+        app.log.error(
+          { err: error.message, userId },
+          'Failed to query user_profiles for role resolution',
+        );
         return { state: 'DB_ERROR' };
       }
 
@@ -371,9 +381,17 @@ export async function moderationRoutes(app: FastifyInstance) {
       return { state: 'RESOLVED', userId, role: verifiedRole };
     } catch (err: any) {
       if (process.env.NODE_ENV !== 'production') {
-        return { state: 'RESOLVED', userId, role: (request.headers['x-user-role'] as UserRole) || (auth.role as UserRole) || 'citizen' };
+        return {
+          state: 'RESOLVED',
+          userId,
+          role:
+            (request.headers['x-user-role'] as UserRole) || (auth.role as UserRole) || 'citizen',
+        };
       }
-      app.log.error({ err: err?.message, userId }, 'Exception querying user_profiles for role resolution');
+      app.log.error(
+        { err: err?.message, userId },
+        'Exception querying user_profiles for role resolution',
+      );
       return { state: 'DB_ERROR' };
     }
   }
@@ -381,187 +399,330 @@ export async function moderationRoutes(app: FastifyInstance) {
   // 1. Perform moderation action
   app.post<{
     Body: ModerationActionPayload;
-  }>('/api/v1/moderation/action', {
-    schema: moderationActionSchema,
-  }, async (request, reply) => {
-    const auth = await resolveModeratorRole(request, reply);
-    if (auth.state === 'UNAUTHENTICATED') {
-      if (!reply.sent) {
-        return sendApiError(reply, request, 401, 'Unauthorized', 'Authentication required', { code: 'UNAUTHORIZED' });
+  }>(
+    '/api/v1/moderation/action',
+    {
+      schema: moderationActionSchema,
+    },
+    async (request, reply) => {
+      const auth = await resolveModeratorRole(request, reply);
+      if (auth.state === 'UNAUTHENTICATED') {
+        if (!reply.sent) {
+          return sendApiError(reply, request, 401, 'Unauthorized', 'Authentication required', {
+            code: 'UNAUTHORIZED',
+          });
+        }
+        return;
       }
-      return;
-    }
-    if (auth.state === 'DB_ERROR') {
-      return sendApiError(reply, request, 500, 'Internal Server Error', 'Failed to verify moderator role', { code: 'DATABASE_ERROR' });
-    }
+      if (auth.state === 'DB_ERROR') {
+        return sendApiError(
+          reply,
+          request,
+          500,
+          'Internal Server Error',
+          'Failed to verify moderator role',
+          { code: 'DATABASE_ERROR' },
+        );
+      }
 
-    if (!canModerate(auth.role)) {
-      return sendApiError(reply, request, 403, 'Forbidden', 'Insufficient permissions', { code: 'FORBIDDEN' });
-    }
+      if (!canModerate(auth.role)) {
+        return sendApiError(reply, request, 403, 'Forbidden', 'Insufficient permissions', {
+          code: 'FORBIDDEN',
+        });
+      }
 
-    const payload = request.body;
+      const payload = request.body;
 
-    // Invariant: Authenticated identity MUST be authoritative. Client-supplied moderatorId cannot spoof another moderator.
-    if (payload.moderatorId && payload.moderatorId !== auth.userId) {
-      return sendApiError(
-        reply,
-        request,
-        400,
-        'Bad Request',
-        'Invalid moderator attribution: moderatorId must match authenticated identity',
-        { code: 'VALIDATION_ERROR' },
+      // Invariant: Authenticated identity MUST be authoritative. Client-supplied moderatorId cannot spoof another moderator.
+      if (payload.moderatorId && payload.moderatorId !== auth.userId) {
+        return sendApiError(
+          reply,
+          request,
+          400,
+          'Bad Request',
+          'Invalid moderator attribution: moderatorId must match authenticated identity',
+          { code: 'VALIDATION_ERROR' },
+        );
+      }
+
+      const moderatorRole = auth.role;
+      if (!canPerformAction(moderatorRole, payload.actionType)) {
+        return sendApiError(
+          reply,
+          request,
+          403,
+          'Forbidden',
+          `Action '${payload.actionType}' requires admin role`,
+          { code: 'FORBIDDEN' },
+        );
+      }
+
+      if (isSupabaseConfigured) {
+        try {
+          // If removing content: soft-delete post or comment
+          if (payload.actionType === 'delete_content' || payload.actionType === 'hide_content') {
+            if (payload.targetPostId) {
+              const { error: postErr } = await supabase
+                .from('posts')
+                .update({ is_deleted: true, content: '[Removed by Moderator: Policy Violation]' })
+                .eq('id', payload.targetPostId);
+              if (postErr) {
+                if (process.env.NODE_ENV === 'production') {
+                  app.log.error({ err: postErr.message }, 'Failed to soft-delete post in Supabase');
+                  return sendApiError(
+                    reply,
+                    request,
+                    500,
+                    'Internal Server Error',
+                    'Failed to persist moderation action',
+                    { code: 'PERSISTENCE_ERROR' },
+                  );
+                }
+                app.log.warn(
+                  { err: postErr.message },
+                  'Supabase unreachable for soft-delete post, falling back to mock',
+                );
+              }
+            } else if (payload.targetCommentId) {
+              const { error: commentErr } = await supabase
+                .from('comments')
+                .update({ is_deleted: true, content: '[Removed by Moderator]' })
+                .eq('id', payload.targetCommentId);
+              if (commentErr) {
+                if (process.env.NODE_ENV === 'production') {
+                  app.log.error(
+                    { err: commentErr.message },
+                    'Failed to soft-delete comment in Supabase',
+                  );
+                  return sendApiError(
+                    reply,
+                    request,
+                    500,
+                    'Internal Server Error',
+                    'Failed to persist moderation action',
+                    { code: 'PERSISTENCE_ERROR' },
+                  );
+                }
+                app.log.warn(
+                  { err: commentErr.message },
+                  'Supabase unreachable for soft-delete comment, falling back to mock',
+                );
+              }
+            }
+          }
+
+          // Update report status
+          if (payload.reportId) {
+            const newStatus = payload.actionType === 'dismiss' ? 'dismissed' : 'action_taken';
+            const { error: reportErr } = await supabase
+              .from('reports')
+              .update({
+                status: newStatus,
+                reviewed_by: auth.userId,
+                reviewed_at: new Date().toISOString(),
+              })
+              .eq('id', payload.reportId);
+            if (reportErr) {
+              if (process.env.NODE_ENV === 'production') {
+                app.log.error(
+                  { err: reportErr.message },
+                  'Failed to update report status in Supabase',
+                );
+                return sendApiError(
+                  reply,
+                  request,
+                  500,
+                  'Internal Server Error',
+                  'Failed to persist moderation action',
+                  { code: 'PERSISTENCE_ERROR' },
+                );
+              }
+              app.log.warn(
+                { err: reportErr.message },
+                'Supabase unreachable for report update, falling back to mock',
+              );
+            }
+          }
+        } catch (err: any) {
+          if (process.env.NODE_ENV === 'production') {
+            app.log.error(
+              { err: err?.message },
+              'Exception persisting moderation action in Supabase',
+            );
+            return sendApiError(
+              reply,
+              request,
+              500,
+              'Internal Server Error',
+              'Failed to persist moderation action',
+              { code: 'PERSISTENCE_ERROR' },
+            );
+          }
+          app.log.warn(
+            { err: err?.message },
+            'Exception persisting moderation action, falling back to mock',
+          );
+        }
+      }
+
+      // Always update mock queue in case of in-memory testing
+      if (payload.reportId) {
+        MOCK_REPORTS_QUEUE = MOCK_REPORTS_QUEUE.filter((r) => r.id !== payload.reportId);
+      }
+
+      app.log.info(
+        {
+          moderator: auth.userId,
+          action: payload.actionType,
+          target: payload.targetUserId || payload.targetPostId,
+        },
+        'Moderation action executed',
       );
-    }
 
-    const moderatorRole = auth.role;
-    if (!canPerformAction(moderatorRole, payload.actionType)) {
-      return sendApiError(reply, request, 403, 'Forbidden', `Action '${payload.actionType}' requires admin role`, { code: 'FORBIDDEN' });
-    }
-
-    if (isSupabaseConfigured) {
-      try {
-        // If removing content: soft-delete post or comment
-        if (payload.actionType === 'delete_content' || payload.actionType === 'hide_content') {
-          if (payload.targetPostId) {
-            const { error: postErr } = await supabase
-              .from('posts')
-              .update({ is_deleted: true, content: '[Removed by Moderator: Policy Violation]' })
-              .eq('id', payload.targetPostId);
-            if (postErr) {
-              if (process.env.NODE_ENV === 'production') {
-                app.log.error({ err: postErr.message }, 'Failed to soft-delete post in Supabase');
-                return sendApiError(reply, request, 500, 'Internal Server Error', 'Failed to persist moderation action', { code: 'PERSISTENCE_ERROR' });
-              }
-              app.log.warn({ err: postErr.message }, 'Supabase unreachable for soft-delete post, falling back to mock');
-            }
-          } else if (payload.targetCommentId) {
-            const { error: commentErr } = await supabase
-              .from('comments')
-              .update({ is_deleted: true, content: '[Removed by Moderator]' })
-              .eq('id', payload.targetCommentId);
-            if (commentErr) {
-              if (process.env.NODE_ENV === 'production') {
-                app.log.error({ err: commentErr.message }, 'Failed to soft-delete comment in Supabase');
-                return sendApiError(reply, request, 500, 'Internal Server Error', 'Failed to persist moderation action', { code: 'PERSISTENCE_ERROR' });
-              }
-              app.log.warn({ err: commentErr.message }, 'Supabase unreachable for soft-delete comment, falling back to mock');
-            }
-          }
-        }
-
-        // Update report status
-        if (payload.reportId) {
-          const newStatus = payload.actionType === 'dismiss' ? 'dismissed' : 'action_taken';
-          const { error: reportErr } = await supabase
-            .from('reports')
-            .update({
-              status: newStatus,
-              reviewed_by: auth.userId,
-              reviewed_at: new Date().toISOString(),
-            })
-            .eq('id', payload.reportId);
-          if (reportErr) {
-            if (process.env.NODE_ENV === 'production') {
-              app.log.error({ err: reportErr.message }, 'Failed to update report status in Supabase');
-              return sendApiError(reply, request, 500, 'Internal Server Error', 'Failed to persist moderation action', { code: 'PERSISTENCE_ERROR' });
-            }
-            app.log.warn({ err: reportErr.message }, 'Supabase unreachable for report update, falling back to mock');
-          }
-        }
-      } catch (err: any) {
-        if (process.env.NODE_ENV === 'production') {
-          app.log.error({ err: err?.message }, 'Exception persisting moderation action in Supabase');
-          return sendApiError(reply, request, 500, 'Internal Server Error', 'Failed to persist moderation action', { code: 'PERSISTENCE_ERROR' });
-        }
-        app.log.warn({ err: err?.message }, 'Exception persisting moderation action, falling back to mock');
-      }
-    }
-
-    // Always update mock queue in case of in-memory testing
-    if (payload.reportId) {
-      MOCK_REPORTS_QUEUE = MOCK_REPORTS_QUEUE.filter((r) => r.id !== payload.reportId);
-    }
-
-    app.log.info(
-      { moderator: auth.userId, action: payload.actionType, target: payload.targetUserId || payload.targetPostId },
-      'Moderation action executed',
-    );
-
-    return reply.send({
-      success: true,
-      data: {
-        actionType: payload.actionType,
-        reason: payload.reason,
-        moderatorId: auth.userId,
-        reportId: payload.reportId,
-        timestamp: new Date().toISOString(),
-      },
-    });
-  });
+      return reply.send({
+        success: true,
+        data: {
+          actionType: payload.actionType,
+          reason: payload.reason,
+          moderatorId: auth.userId,
+          reportId: payload.reportId,
+          timestamp: new Date().toISOString(),
+        },
+      });
+    },
+  );
 
   // 2. Check content for policy violations (automated OpenAI moderation + rule engine fallback)
   // DEF-004: Fail-closed semantics. Network/provider failure != content violation.
   // When automated moderation is unavailable, return HTTP 503 with canonical code MODERATION_UNAVAILABLE.
   app.post<{
     Body: { content: string };
-  }>('/api/v1/moderation/check-content', {
-    schema: checkContentSchema,
-  }, async (request, reply) => {
-    try {
-      const result = await moderateContent(request.body.content);
-      return reply.send({ success: true, data: result });
-    } catch (err: any) {
-      if (err instanceof ModerationUnavailableError) {
+  }>(
+    '/api/v1/moderation/check-content',
+    {
+      schema: checkContentSchema,
+    },
+    async (request, reply) => {
+      try {
+        const result = await moderateContent(request.body.content);
+        return reply.send({ success: true, data: result });
+      } catch (err: any) {
+        if (err instanceof ModerationUnavailableError) {
+          return sendApiError(
+            reply,
+            request,
+            503,
+            'Service Unavailable',
+            err.message || 'Content moderation service is temporarily unavailable',
+            { code: 'MODERATION_UNAVAILABLE' },
+          );
+        }
+        app.log.error(
+          { err: err?.message || err },
+          'Unexpected moderation failure in check-content',
+        );
         return sendApiError(
           reply,
           request,
           503,
           'Service Unavailable',
-          err.message || 'Content moderation service is temporarily unavailable',
-          { code: 'MODERATION_UNAVAILABLE' }
+          'Content moderation service is temporarily unavailable',
+          { code: 'MODERATION_UNAVAILABLE' },
         );
       }
-      app.log.error({ err: err?.message || err }, 'Unexpected moderation failure in check-content');
-      return sendApiError(
-        reply,
-        request,
-        503,
-        'Service Unavailable',
-        'Content moderation service is temporarily unavailable',
-        { code: 'MODERATION_UNAVAILABLE' }
-      );
-    }
-  });
+    },
+  );
 
   // 3. Get pending reports queue (moderator+)
-  app.get('/api/v1/moderation/queue', {
-    schema: moderationQueueSchema,
-  }, async (request, reply) => {
-    const auth = await resolveModeratorRole(request, reply);
-    if (auth.state === 'UNAUTHENTICATED') {
-      if (!reply.sent) {
-        return sendApiError(reply, request, 401, 'Unauthorized', 'Authentication required', { code: 'UNAUTHORIZED' });
+  app.get(
+    '/api/v1/moderation/queue',
+    {
+      schema: moderationQueueSchema,
+    },
+    async (request, reply) => {
+      const auth = await resolveModeratorRole(request, reply);
+      if (auth.state === 'UNAUTHENTICATED') {
+        if (!reply.sent) {
+          return sendApiError(reply, request, 401, 'Unauthorized', 'Authentication required', {
+            code: 'UNAUTHORIZED',
+          });
+        }
+        return;
       }
-      return;
-    }
-    if (auth.state === 'DB_ERROR') {
-      return sendApiError(reply, request, 500, 'Internal Server Error', 'Failed to verify moderator role', { code: 'DATABASE_ERROR' });
-    }
+      if (auth.state === 'DB_ERROR') {
+        return sendApiError(
+          reply,
+          request,
+          500,
+          'Internal Server Error',
+          'Failed to verify moderator role',
+          { code: 'DATABASE_ERROR' },
+        );
+      }
 
-    if (!canModerate(auth.role)) {
-      return sendApiError(reply, request, 403, 'Forbidden', 'Insufficient permissions', { code: 'FORBIDDEN' });
-    }
+      if (!canModerate(auth.role)) {
+        return sendApiError(reply, request, 403, 'Forbidden', 'Insufficient permissions', {
+          code: 'FORBIDDEN',
+        });
+      }
 
-    if (isSupabaseConfigured) {
-      try {
-        const { data, error } = await supabase
-          .from('reports')
-          .select('*, post:posts(id, content, author_name:author_id), comment:comments(id, content), reported_user:user_profiles!reported_user_id(user_id, display_name, avatar_url, role)')
-          .eq('status', 'pending')
-          .order('created_at', { ascending: false })
-          .limit(50);
+      if (isSupabaseConfigured) {
+        try {
+          const { data, error } = await supabase
+            .from('reports')
+            .select(
+              '*, post:posts(id, content, author_name:author_id), comment:comments(id, content), reported_user:user_profiles!reported_user_id(user_id, display_name, avatar_url, role)',
+            )
+            .eq('status', 'pending')
+            .order('created_at', { ascending: false })
+            .limit(50);
 
-        if (error) {
+          if (error) {
+            if (process.env.NODE_ENV !== 'production') {
+              return reply.send({
+                success: true,
+                data: {
+                  queue: MOCK_REPORTS_QUEUE,
+                  totalPending: MOCK_REPORTS_QUEUE.length,
+                  message: 'Report queue served from test fixtures in test mode',
+                },
+              });
+            }
+            app.log.error(
+              { err: error.message },
+              'Failed to retrieve moderation queue from Supabase',
+            );
+            return sendApiError(
+              reply,
+              request,
+              500,
+              'Internal Server Error',
+              'Failed to retrieve moderation queue',
+              { code: 'DATABASE_ERROR' },
+            );
+          }
+
+          // Legitimate empty result from database -> MUST NOT return mock reports!
+          if (data && data.length === 0) {
+            return reply.send({
+              success: true,
+              data: {
+                queue: [],
+                totalPending: 0,
+              },
+            });
+          }
+
+          if (data && data.length > 0) {
+            return reply.send({
+              success: true,
+              data: {
+                queue: data,
+                totalPending: data.length,
+              },
+            });
+          }
+        } catch (err: any) {
           if (process.env.NODE_ENV !== 'production') {
             return reply.send({
               success: true,
@@ -572,141 +733,193 @@ export async function moderationRoutes(app: FastifyInstance) {
               },
             });
           }
-          app.log.error({ err: error.message }, 'Failed to retrieve moderation queue from Supabase');
-          return sendApiError(reply, request, 500, 'Internal Server Error', 'Failed to retrieve moderation queue', { code: 'DATABASE_ERROR' });
+          app.log.error({ err: err?.message }, 'Exception querying moderation queue from Supabase');
+          return sendApiError(
+            reply,
+            request,
+            500,
+            'Internal Server Error',
+            'Failed to retrieve moderation queue',
+            { code: 'DATABASE_ERROR' },
+          );
         }
-
-        // Legitimate empty result from database -> MUST NOT return mock reports!
-        if (data && data.length === 0) {
-          return reply.send({
-            success: true,
-            data: {
-              queue: [],
-              totalPending: 0,
-            },
-          });
-        }
-
-        if (data && data.length > 0) {
-          return reply.send({
-            success: true,
-            data: {
-              queue: data,
-              totalPending: data.length,
-            },
-          });
-        }
-      } catch (err: any) {
-        if (process.env.NODE_ENV !== 'production') {
-          return reply.send({
-            success: true,
-            data: {
-              queue: MOCK_REPORTS_QUEUE,
-              totalPending: MOCK_REPORTS_QUEUE.length,
-              message: 'Report queue served from test fixtures in test mode',
-            },
-          });
-        }
-        app.log.error({ err: err?.message }, 'Exception querying moderation queue from Supabase');
-        return sendApiError(reply, request, 500, 'Internal Server Error', 'Failed to retrieve moderation queue', { code: 'DATABASE_ERROR' });
       }
-    }
 
-    if (process.env.NODE_ENV === 'test') {
-      return reply.send({
-        success: true,
-        data: {
-          queue: MOCK_REPORTS_QUEUE,
-          totalPending: MOCK_REPORTS_QUEUE.length,
-          message: 'Report queue served from test fixtures in test mode',
+      if (process.env.NODE_ENV === 'test') {
+        return reply.send({
+          success: true,
+          data: {
+            queue: MOCK_REPORTS_QUEUE,
+            totalPending: MOCK_REPORTS_QUEUE.length,
+            message: 'Report queue served from test fixtures in test mode',
+          },
+        });
+      }
+
+      return sendApiError(
+        reply,
+        request,
+        503,
+        'Service Unavailable',
+        'Database service unavailable. Moderation queue unavailable.',
+        {
+          code: 'DATABASE_UNAVAILABLE',
         },
-      });
-    }
-
-    return sendApiError(reply, request, 503, 'Service Unavailable', 'Database service unavailable. Moderation queue unavailable.', {
-      code: 'DATABASE_UNAVAILABLE',
-    });
-  });
+      );
+    },
+  );
 
   // 4. List available moderation actions
-  app.get('/api/v1/moderation/actions', {
-    schema: moderationActionsSchema,
-  }, async (_request, reply) => {
-    const actions = Object.entries(ACTION_CONFIG).map(([key, config]) => ({
-      action: key,
-      ...config,
-    }));
-    return reply.send({ success: true, data: actions });
-  });
+  app.get(
+    '/api/v1/moderation/actions',
+    {
+      schema: moderationActionsSchema,
+    },
+    async (_request, reply) => {
+      const actions = Object.entries(ACTION_CONFIG).map(([key, config]) => ({
+        action: key,
+        ...config,
+      }));
+      return reply.send({ success: true, data: actions });
+    },
+  );
 
   // 5. View audit log (admin only)
   app.get<{
     Querystring: { limit?: number; offset?: number; entityType?: string };
-  }>('/api/v1/moderation/audit-log', {
-    schema: auditLogSchema,
-  }, async (request, reply) => {
-    const auth = await resolveModeratorRole(request, reply);
-    if (auth.state === 'UNAUTHENTICATED') {
-      if (!reply.sent) {
-        return sendApiError(reply, request, 401, 'Unauthorized', 'Authentication required', { code: 'UNAUTHORIZED' });
+  }>(
+    '/api/v1/moderation/audit-log',
+    {
+      schema: auditLogSchema,
+    },
+    async (request, reply) => {
+      const auth = await resolveModeratorRole(request, reply);
+      if (auth.state === 'UNAUTHENTICATED') {
+        if (!reply.sent) {
+          return sendApiError(reply, request, 401, 'Unauthorized', 'Authentication required', {
+            code: 'UNAUTHORIZED',
+          });
+        }
+        return;
       }
-      return;
-    }
-    if (auth.state === 'DB_ERROR') {
-      return sendApiError(reply, request, 500, 'Internal Server Error', 'Failed to verify admin role', { code: 'DATABASE_ERROR' });
-    }
+      if (auth.state === 'DB_ERROR') {
+        return sendApiError(
+          reply,
+          request,
+          500,
+          'Internal Server Error',
+          'Failed to verify admin role',
+          { code: 'DATABASE_ERROR' },
+        );
+      }
 
-    if (auth.role !== 'admin') {
-      return sendApiError(reply, request, 403, 'Forbidden', 'Admin access required', { code: 'FORBIDDEN' });
-    }
+      if (auth.role !== 'admin') {
+        return sendApiError(reply, request, 403, 'Forbidden', 'Admin access required', {
+          code: 'FORBIDDEN',
+        });
+      }
 
-    // In production: fetch from audit_log with pagination
-    return reply.send({
-      success: true,
-      data: {
-        entries: [],
-        total: 0,
-        message: 'Audit log will be populated when Supabase is connected',
-      },
-    });
-  });
+      // In production: fetch from audit_log with pagination
+      return reply.send({
+        success: true,
+        data: {
+          entries: [],
+          total: 0,
+          message: 'Audit log will be populated when Supabase is connected',
+        },
+      });
+    },
+  );
 
   // 6. Submit verification request
   app.post<{
     Body: { verificationType: string; documentUrl?: string; notes?: string };
-  }>('/api/v1/moderation/verify-request', {
-    schema: verifyRequestSchema,
-  }, async (request, reply) => {
-    const auth = await resolveModeratorRole(request, reply);
-    if (auth.state === 'UNAUTHENTICATED') {
-      if (!reply.sent) {
-        return sendApiError(reply, request, 401, 'Unauthorized', 'Authentication required', { code: 'UNAUTHORIZED' });
+  }>(
+    '/api/v1/moderation/verify-request',
+    {
+      schema: verifyRequestSchema,
+    },
+    async (request, reply) => {
+      const auth = await resolveModeratorRole(request, reply);
+      if (auth.state === 'UNAUTHENTICATED') {
+        if (!reply.sent) {
+          return sendApiError(reply, request, 401, 'Unauthorized', 'Authentication required', {
+            code: 'UNAUTHORIZED',
+          });
+        }
+        return;
       }
-      return;
-    }
-    if (auth.state === 'DB_ERROR') {
-      return sendApiError(reply, request, 500, 'Internal Server Error', 'Failed to resolve user session', { code: 'DATABASE_ERROR' });
-    }
+      if (auth.state === 'DB_ERROR') {
+        return sendApiError(
+          reply,
+          request,
+          500,
+          'Internal Server Error',
+          'Failed to resolve user session',
+          { code: 'DATABASE_ERROR' },
+        );
+      }
 
-    const userId = auth.userId;
-    const { verificationType, documentUrl, notes } = request.body;
+      const userId = auth.userId;
+      const { verificationType, documentUrl, notes } = request.body;
 
-    if (isSupabaseConfigured) {
-      try {
-        const { data, error } = await supabase
-          .from('user_verification')
-          .upsert({
-            user_id: userId,
-            verification_type: verificationType,
-            status: 'pending',
-            document_url: documentUrl || null,
-            notes: notes || null,
-            updated_at: new Date().toISOString(),
-          }, { onConflict: 'user_id,verification_type' })
-          .select()
-          .single();
+      if (isSupabaseConfigured) {
+        try {
+          const { data, error } = await supabase
+            .from('user_verification')
+            .upsert(
+              {
+                user_id: userId,
+                verification_type: verificationType,
+                status: 'pending',
+                document_url: documentUrl || null,
+                notes: notes || null,
+                updated_at: new Date().toISOString(),
+              },
+              { onConflict: 'user_id,verification_type' },
+            )
+            .select()
+            .single();
 
-        if (error) {
+          if (error) {
+            if (process.env.NODE_ENV !== 'production') {
+              return reply.send({
+                success: true,
+                data: {
+                  id: 'vr-mock-1',
+                  userId,
+                  verificationType,
+                  status: 'pending',
+                  submittedAt: new Date().toISOString(),
+                },
+              });
+            }
+            app.log.error({ err: error.message }, 'Failed to persist user verification request');
+            return sendApiError(
+              reply,
+              request,
+              500,
+              'Internal Server Error',
+              'Failed to record verification request',
+              { code: 'DATABASE_ERROR' },
+            );
+          }
+
+          app.log.info(
+            { userId, verificationType, id: data.id },
+            'Verification request persisted to database',
+          );
+          return reply.send({
+            success: true,
+            data: {
+              id: data.id,
+              userId,
+              verificationType: data.verification_type,
+              status: data.status,
+              submittedAt: data.created_at || new Date().toISOString(),
+            },
+          });
+        } catch (err: any) {
           if (process.env.NODE_ENV !== 'production') {
             return reply.send({
               success: true,
@@ -719,180 +932,242 @@ export async function moderationRoutes(app: FastifyInstance) {
               },
             });
           }
-          app.log.error({ err: error.message }, 'Failed to persist user verification request');
-          return sendApiError(reply, request, 500, 'Internal Server Error', 'Failed to record verification request', { code: 'DATABASE_ERROR' });
+          app.log.error({ err: err?.message }, 'Unexpected error in verify-request');
+          return sendApiError(
+            reply,
+            request,
+            500,
+            'Internal Server Error',
+            'Internal server error processing verification request',
+            { code: 'DATABASE_ERROR' },
+          );
         }
-
-        app.log.info({ userId, verificationType, id: data.id }, 'Verification request persisted to database');
-        return reply.send({
-          success: true,
-          data: {
-            id: data.id,
-            userId,
-            verificationType: data.verification_type,
-            status: data.status,
-            submittedAt: data.created_at || new Date().toISOString(),
-          },
-        });
-      } catch (err: any) {
-        if (process.env.NODE_ENV !== 'production') {
-          return reply.send({
-            success: true,
-            data: {
-              id: 'vr-mock-1',
-              userId,
-              verificationType,
-              status: 'pending',
-              submittedAt: new Date().toISOString(),
-            },
-          });
-        }
-        app.log.error({ err: err?.message }, 'Unexpected error in verify-request');
-        return sendApiError(reply, request, 500, 'Internal Server Error', 'Internal server error processing verification request', { code: 'DATABASE_ERROR' });
       }
-    }
 
-    return sendApiError(reply, request, 503, 'Service Unavailable', 'Database service unavailable. Cannot record verification request.', {
-      code: 'DATABASE_UNAVAILABLE',
-    });
-  });
+      return sendApiError(
+        reply,
+        request,
+        503,
+        'Service Unavailable',
+        'Database service unavailable. Cannot record verification request.',
+        {
+          code: 'DATABASE_UNAVAILABLE',
+        },
+      );
+    },
+  );
 
   // 7. Block a user
   app.post<{
     Body: { blockedUserId: string };
-  }>('/api/v1/moderation/block', {
-    schema: blockUserSchema,
-  }, async (request, reply) => {
-    const auth = await resolveModeratorRole(request, reply);
-    if (auth.state === 'UNAUTHENTICATED') {
-      if (!reply.sent) {
-        return sendApiError(reply, request, 401, 'Unauthorized', 'Authentication required', { code: 'UNAUTHORIZED' });
+  }>(
+    '/api/v1/moderation/block',
+    {
+      schema: blockUserSchema,
+    },
+    async (request, reply) => {
+      const auth = await resolveModeratorRole(request, reply);
+      if (auth.state === 'UNAUTHENTICATED') {
+        if (!reply.sent) {
+          return sendApiError(reply, request, 401, 'Unauthorized', 'Authentication required', {
+            code: 'UNAUTHORIZED',
+          });
+        }
+        return;
       }
-      return;
-    }
-    if (auth.state === 'DB_ERROR') {
-      return sendApiError(reply, request, 500, 'Internal Server Error', 'Failed to resolve user session', { code: 'DATABASE_ERROR' });
-    }
+      if (auth.state === 'DB_ERROR') {
+        return sendApiError(
+          reply,
+          request,
+          500,
+          'Internal Server Error',
+          'Failed to resolve user session',
+          { code: 'DATABASE_ERROR' },
+        );
+      }
 
-    const userId = auth.userId;
-    const { blockedUserId } = request.body;
-    if (userId === blockedUserId) {
-      return sendApiError(reply, request, 400, 'Bad Request', 'Cannot block yourself', { code: 'VALIDATION_ERROR' });
-    }
+      const userId = auth.userId;
+      const { blockedUserId } = request.body;
+      if (userId === blockedUserId) {
+        return sendApiError(reply, request, 400, 'Bad Request', 'Cannot block yourself', {
+          code: 'VALIDATION_ERROR',
+        });
+      }
 
-    if (!isSupabaseConfigured) {
-      return sendApiError(reply, request, 503, 'Service Unavailable', 'Database service unavailable. Cannot block user.', {
-        code: 'DATABASE_UNAVAILABLE',
-      });
-    }
+      if (!isSupabaseConfigured) {
+        return sendApiError(
+          reply,
+          request,
+          503,
+          'Service Unavailable',
+          'Database service unavailable. Cannot block user.',
+          {
+            code: 'DATABASE_UNAVAILABLE',
+          },
+        );
+      }
 
-    try {
-      const { error } = await supabase
-        .from('blocked_users')
-        .upsert({
-          blocker_id: userId,
-          blocked_id: blockedUserId,
-          created_at: new Date().toISOString(),
-        }, { onConflict: 'blocker_id,blocked_id' });
+      try {
+        const { error } = await supabase.from('blocked_users').upsert(
+          {
+            blocker_id: userId,
+            blocked_id: blockedUserId,
+            created_at: new Date().toISOString(),
+          },
+          { onConflict: 'blocker_id,blocked_id' },
+        );
 
-      if (error) {
+        if (error) {
+          if (process.env.NODE_ENV !== 'production') {
+            return reply.send({
+              success: true,
+              data: { blockerId: userId, blockedId: blockedUserId },
+            });
+          }
+          app.log.error({ err: error.message }, 'Failed to insert blocked user in Supabase');
+          return sendApiError(
+            reply,
+            request,
+            500,
+            'Internal Server Error',
+            'Failed to block user',
+            { code: 'DATABASE_ERROR' },
+          );
+        }
+      } catch (err: any) {
         if (process.env.NODE_ENV !== 'production') {
           return reply.send({
             success: true,
             data: { blockerId: userId, blockedId: blockedUserId },
           });
         }
-        app.log.error({ err: error.message }, 'Failed to insert blocked user in Supabase');
-        return sendApiError(reply, request, 500, 'Internal Server Error', 'Failed to block user', { code: 'DATABASE_ERROR' });
+        app.log.error({ err: err?.message }, 'Unexpected error blocking user');
+        return sendApiError(
+          reply,
+          request,
+          500,
+          'Internal Server Error',
+          'Internal server error blocking user',
+          { code: 'DATABASE_ERROR' },
+        );
       }
-    } catch (err: any) {
-      if (process.env.NODE_ENV !== 'production') {
-        return reply.send({
-          success: true,
-          data: { blockerId: userId, blockedId: blockedUserId },
-        });
-      }
-      app.log.error({ err: err?.message }, 'Unexpected error blocking user');
-      return sendApiError(reply, request, 500, 'Internal Server Error', 'Internal server error blocking user', { code: 'DATABASE_ERROR' });
-    }
 
-    return reply.send({
-      success: true,
-      data: { blockerId: userId, blockedId: blockedUserId },
-    });
-  });
+      return reply.send({
+        success: true,
+        data: { blockerId: userId, blockedId: blockedUserId },
+      });
+    },
+  );
 
   // 8. Unblock a user
   app.delete<{
     Params: { userId: string };
-  }>('/api/v1/moderation/block/:userId', {
-    schema: unblockUserSchema,
-  }, async (request, reply) => {
-    const auth = await resolveModeratorRole(request, reply);
-    if (auth.state === 'UNAUTHENTICATED') {
-      if (!reply.sent) {
-        return sendApiError(reply, request, 401, 'Unauthorized', 'Authentication required', { code: 'UNAUTHORIZED' });
+  }>(
+    '/api/v1/moderation/block/:userId',
+    {
+      schema: unblockUserSchema,
+    },
+    async (request, reply) => {
+      const auth = await resolveModeratorRole(request, reply);
+      if (auth.state === 'UNAUTHENTICATED') {
+        if (!reply.sent) {
+          return sendApiError(reply, request, 401, 'Unauthorized', 'Authentication required', {
+            code: 'UNAUTHORIZED',
+          });
+        }
+        return;
       }
-      return;
-    }
-    if (auth.state === 'DB_ERROR') {
-      return sendApiError(reply, request, 500, 'Internal Server Error', 'Failed to resolve user session', { code: 'DATABASE_ERROR' });
-    }
+      if (auth.state === 'DB_ERROR') {
+        return sendApiError(
+          reply,
+          request,
+          500,
+          'Internal Server Error',
+          'Failed to resolve user session',
+          { code: 'DATABASE_ERROR' },
+        );
+      }
 
-    const currentUserId = auth.userId;
-    const targetUserId = request.params.userId;
+      const currentUserId = auth.userId;
+      const targetUserId = request.params.userId;
 
-    if (!isSupabaseConfigured) {
-      return sendApiError(reply, request, 503, 'Service Unavailable', 'Database service unavailable. Cannot unblock user.', {
-        code: 'DATABASE_UNAVAILABLE',
-      });
-    }
+      if (!isSupabaseConfigured) {
+        return sendApiError(
+          reply,
+          request,
+          503,
+          'Service Unavailable',
+          'Database service unavailable. Cannot unblock user.',
+          {
+            code: 'DATABASE_UNAVAILABLE',
+          },
+        );
+      }
 
-    try {
-      const { error } = await supabase
-        .from('blocked_users')
-        .delete()
-        .eq('blocker_id', currentUserId)
-        .eq('blocked_id', targetUserId);
+      try {
+        const { error } = await supabase
+          .from('blocked_users')
+          .delete()
+          .eq('blocker_id', currentUserId)
+          .eq('blocked_id', targetUserId);
 
-      if (error) {
+        if (error) {
+          if (process.env.NODE_ENV !== 'production') {
+            return reply.send({
+              success: true,
+              data: { unblocked: targetUserId },
+            });
+          }
+          app.log.error({ err: error.message }, 'Failed to remove blocked user in Supabase');
+          return sendApiError(
+            reply,
+            request,
+            500,
+            'Internal Server Error',
+            'Failed to unblock user',
+            { code: 'DATABASE_ERROR' },
+          );
+        }
+      } catch (err: any) {
         if (process.env.NODE_ENV !== 'production') {
           return reply.send({
             success: true,
             data: { unblocked: targetUserId },
           });
         }
-        app.log.error({ err: error.message }, 'Failed to remove blocked user in Supabase');
-        return sendApiError(reply, request, 500, 'Internal Server Error', 'Failed to unblock user', { code: 'DATABASE_ERROR' });
+        app.log.error({ err: err?.message }, 'Unexpected error unblocking user');
+        return sendApiError(
+          reply,
+          request,
+          500,
+          'Internal Server Error',
+          'Internal server error unblocking user',
+          { code: 'DATABASE_ERROR' },
+        );
       }
-    } catch (err: any) {
-      if (process.env.NODE_ENV !== 'production') {
-        return reply.send({
-          success: true,
-          data: { unblocked: targetUserId },
-        });
-      }
-      app.log.error({ err: err?.message }, 'Unexpected error unblocking user');
-      return sendApiError(reply, request, 500, 'Internal Server Error', 'Internal server error unblocking user', { code: 'DATABASE_ERROR' });
-    }
 
-    return reply.send({
-      success: true,
-      data: { unblocked: targetUserId },
-    });
-  });
+      return reply.send({
+        success: true,
+        data: { unblocked: targetUserId },
+      });
+    },
+  );
 
   // 9. Get reputation rules (public)
-  app.get('/api/v1/moderation/reputation-rules', {
-    schema: reputationRulesSchema,
-  }, async (_request, reply) => {
-    const rules = Object.entries(REPUTATION_RULES).map(([action, points]) => ({
-      action,
-      points,
-      effect: points > 0 ? 'positive' : 'negative',
-    }));
-    return reply.send({ success: true, data: rules });
-  });
+  app.get(
+    '/api/v1/moderation/reputation-rules',
+    {
+      schema: reputationRulesSchema,
+    },
+    async (_request, reply) => {
+      const rules = Object.entries(REPUTATION_RULES).map(([action, points]) => ({
+        action,
+        points,
+        effect: points > 0 ? 'positive' : 'negative',
+      }));
+      return reply.send({ success: true, data: rules });
+    },
+  );
 
   // 10. Submit content report (Strangler Migration — Class B Method 40)
   app.post<{
@@ -903,77 +1178,109 @@ export async function moderationRoutes(app: FastifyInstance) {
       reason: string;
       description?: string;
     };
-  }>('/api/v1/moderation/report', {
-    schema: {
-      body: {
-        type: 'object',
-        required: ['contentId', 'contentType', 'reason'],
-        properties: {
-          reporterId: { type: 'string' },
-          contentId: { type: 'string', minLength: 1 },
-          contentType: { type: 'string', minLength: 1 },
-          reason: { type: 'string', minLength: 1 },
-          description: { type: 'string' },
+  }>(
+    '/api/v1/moderation/report',
+    {
+      schema: {
+        body: {
+          type: 'object',
+          required: ['contentId', 'contentType', 'reason'],
+          properties: {
+            reporterId: { type: 'string' },
+            contentId: { type: 'string', minLength: 1 },
+            contentType: { type: 'string', minLength: 1 },
+            reason: { type: 'string', minLength: 1 },
+            description: { type: 'string' },
+          },
         },
       },
     },
-  }, async (request, reply) => {
-    let reporterId: string;
+    async (request, reply) => {
+      let reporterId: string;
 
-    if (request.headers.authorization || request.body.reporterId) {
-      const auth = await resolveAuthenticatedUser(request, reply);
-      if (!auth) return;
-      if (!assertActingUserMatch(reply, request, auth.userId, request.body.reporterId, 'reporterId')) {
-        return;
+      if (request.headers.authorization || request.body.reporterId) {
+        const auth = await resolveAuthenticatedUser(request, reply);
+        if (!auth) return;
+        if (
+          !assertActingUserMatch(reply, request, auth.userId, request.body.reporterId, 'reporterId')
+        ) {
+          return;
+        }
+        reporterId = auth.userId;
+      } else {
+        reporterId = 'anonymous';
       }
-      reporterId = auth.userId;
-    } else {
-      reporterId = 'anonymous';
-    }
 
-    const { contentId, contentType, reason, description } = request.body;
-    const reportId = `rep_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
+      const { contentId, contentType, reason, description } = request.body;
+      const reportId = `rep_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
 
-    if (!isSupabaseConfigured) {
-      return sendApiError(reply, request, 503, 'Service Unavailable', 'Database service is currently unconfigured or unavailable', {
-        code: 'SERVICE_UNAVAILABLE',
-      });
-    }
+      if (!isSupabaseConfigured) {
+        return sendApiError(
+          reply,
+          request,
+          503,
+          'Service Unavailable',
+          'Database service is currently unconfigured or unavailable',
+          {
+            code: 'SERVICE_UNAVAILABLE',
+          },
+        );
+      }
 
-    try {
-      const { error } = await supabase.from('reports').insert({
-        id: reportId,
-        reporter_id: reporterId,
-        post_id: contentType === 'post' ? contentId : null,
-        comment_id: contentType === 'comment' ? contentId : null,
-        reason,
-        description: description || null,
-        status: 'pending',
-        created_at: new Date().toISOString(),
-      });
-
-      if (error) {
-        app.log.error({ err: error.message, reportId, reporterId }, 'Failed to persist report to DB');
-        return sendApiError(reply, request, 500, 'Internal Server Error', 'Database error persisting report', {
-          code: 'DATABASE_ERROR',
+      try {
+        const { error } = await supabase.from('reports').insert({
+          id: reportId,
+          reporter_id: reporterId,
+          post_id: contentType === 'post' ? contentId : null,
+          comment_id: contentType === 'comment' ? contentId : null,
+          reason,
+          description: description || null,
+          status: 'pending',
+          created_at: new Date().toISOString(),
         });
+
+        if (error) {
+          app.log.error(
+            { err: error.message, reportId, reporterId },
+            'Failed to persist report to DB',
+          );
+          return sendApiError(
+            reply,
+            request,
+            500,
+            'Internal Server Error',
+            'Database error persisting report',
+            {
+              code: 'DATABASE_ERROR',
+            },
+          );
+        }
+      } catch (err: any) {
+        app.log.error(
+          { err: err?.message, reportId, reporterId },
+          'Exception persisting report to DB',
+        );
+        return sendApiError(
+          reply,
+          request,
+          500,
+          'Internal Server Error',
+          'Database error persisting report',
+          {
+            code: 'DATABASE_ERROR',
+          },
+        );
       }
-    } catch (err: any) {
-      app.log.error({ err: err?.message, reportId, reporterId }, 'Exception persisting report to DB');
-      return sendApiError(reply, request, 500, 'Internal Server Error', 'Database error persisting report', {
-        code: 'DATABASE_ERROR',
+
+      return reply.status(201).send({
+        success: true,
+        data: {
+          reportId,
+          contentId,
+          contentType,
+          status: 'pending',
+        },
       });
-    }
-
-    return reply.status(201).send({
-      success: true,
-      data: {
-        reportId,
-        contentId,
-        contentType,
-        status: 'pending',
-      },
-    });
-  });
+    },
+  );
 }
-

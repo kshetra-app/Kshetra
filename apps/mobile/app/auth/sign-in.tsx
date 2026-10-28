@@ -61,7 +61,7 @@ export default function SignInScreen() {
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       >
         <View style={styles.logoContainer}>
-          <Text style={[styles.brand, { color: colors.primary }]}>KSHETRA</Text>
+          <Text style={[styles.brand, { color: colors.primary }]}>POLIGRAM</Text>
           <Text style={[styles.tagline, { color: colors.textMuted }]}>
             {isSignUp
               ? 'Create your account'

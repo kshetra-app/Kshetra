@@ -55,7 +55,14 @@ function encodeValue(val: unknown): Buffer {
   return encodeStringField(1, String(val));
 }
 
-function projectPoint(lon: number, lat: number, z: number, x: number, y: number, extent = 4096): [number, number] {
+function projectPoint(
+  lon: number,
+  lat: number,
+  z: number,
+  x: number,
+  y: number,
+  extent = 4096,
+): [number, number] {
   const n = Math.pow(2, z);
   const tileX = ((lon + 180) / 360) * n;
   const sinLat = Math.sin((lat * Math.PI) / 180);
@@ -67,7 +74,13 @@ function projectPoint(lon: number, lat: number, z: number, x: number, y: number,
   return [px, py];
 }
 
-function encodePolygonGeometry(coordinates: number[][][], z: number, x: number, y: number, extent = 4096): Buffer {
+function encodePolygonGeometry(
+  coordinates: number[][][],
+  z: number,
+  x: number,
+  y: number,
+  extent = 4096,
+): Buffer {
   const geomCmds: number[] = [];
   let cursorX = 0;
   let cursorY = 0;
@@ -75,7 +88,11 @@ function encodePolygonGeometry(coordinates: number[][][], z: number, x: number, 
   for (const ring of coordinates) {
     if (!ring || ring.length < 3) continue;
     const pts = ring.slice();
-    if (pts.length > 3 && pts[0][0] === pts[pts.length - 1][0] && pts[0][1] === pts[pts.length - 1][1]) {
+    if (
+      pts.length > 3 &&
+      pts[0][0] === pts[pts.length - 1][0] &&
+      pts[0][1] === pts[pts.length - 1][1]
+    ) {
       pts.pop();
     }
     if (pts.length < 3) continue;
@@ -154,7 +171,9 @@ export function encodeMVTLayer(
       tags.push(writeVarint(getValueIndex(v)));
     }
     const packedTags = Buffer.concat(tags);
-    featureParts.push(encodeField(2, 2, Buffer.concat([writeVarint(packedTags.length), packedTags])));
+    featureParts.push(
+      encodeField(2, 2, Buffer.concat([writeVarint(packedTags.length), packedTags])),
+    );
     featureParts.push(encodeVarintField(3, 3)); // 3 = POLYGON
 
     const geom = f.geometry;
@@ -166,7 +185,9 @@ export function encodeMVTLayer(
     featureParts.push(Buffer.concat(geomParts));
 
     const featureBuf = Buffer.concat(featureParts);
-    encodedFeatures.push(encodeField(2, 2, Buffer.concat([writeVarint(featureBuf.length), featureBuf])));
+    encodedFeatures.push(
+      encodeField(2, 2, Buffer.concat([writeVarint(featureBuf.length), featureBuf])),
+    );
   }
 
   const layerParts: Buffer[] = [];
@@ -221,7 +242,10 @@ export function pointInBBox(lng: number, lat: number, bbox: BoundingBox): boolea
 }
 
 export function computeGeometryBBox(geom: any): BoundingBox {
-  let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+  let minX = Infinity,
+    minY = Infinity,
+    maxX = -Infinity,
+    maxY = -Infinity;
   const polys = geom.type === 'MultiPolygon' ? geom.coordinates : [geom.coordinates];
   for (const poly of polys) {
     for (const ring of poly) {
@@ -362,8 +386,17 @@ export class SpatialRuntimeService {
     asOf?: string;
     versionId?: string;
   }): Promise<Array<{ geometry: any; properties: GovernedFeatureProperties }>> {
-    const { entityType, tileBBox, point, id, regime = 'historical', asOf = '2016-10-11', versionId } = params;
-    const expectedType = (entityType === 'mandals' || entityType === 'mandal') ? 'mandal' : entityType;
+    const {
+      entityType,
+      tileBBox,
+      point,
+      id,
+      regime = 'historical',
+      asOf = '2016-10-11',
+      versionId,
+    } = params;
+    const expectedType =
+      entityType === 'mandals' || entityType === 'mandal' ? 'mandal' : entityType;
 
     // Fail closed on unsupported or invalid regime
     if (regime !== 'current' && regime !== 'historical' && regime !== 'version') {
@@ -372,7 +405,9 @@ export class SpatialRuntimeService {
 
     let query = supabase
       .from('entity_geometries')
-      .select('id, mandal_version_id, source_feature_id, entity_type, status, is_current, temporal_classification, authority_classification, valid_from, valid_to, geometry')
+      .select(
+        'id, mandal_version_id, source_feature_id, entity_type, status, is_current, temporal_classification, authority_classification, valid_from, valid_to, geometry',
+      )
       .eq('entity_type', expectedType);
 
     // 1. Database-Side Temporal Filtering
@@ -490,7 +525,7 @@ export class SpatialRuntimeService {
     // Optional Post-Selection Metadata Enrichment
     let enrichedFeatures = genericFeatures;
     if (!bypassAdapter) {
-      const expectedType = (layer === 'mandals' || layer === 'mandal') ? 'mandal' : layer;
+      const expectedType = layer === 'mandals' || layer === 'mandal' ? 'mandal' : layer;
       const adapter = this.adapters.get(layer) || this.adapters.get(expectedType);
       if (adapter) {
         if (adapter instanceof MandalMetadataAdapter) {
@@ -518,11 +553,21 @@ export class SpatialRuntimeService {
    * Operation B: LOCATE Point
    */
   async locatePoint(req: LocateRequest): Promise<GovernedFeatureProperties | null> {
-    const { lat, lng, layer = 'mandals', regime = 'historical', asOf, versionId, bypassAdapter = false } = req;
+    const {
+      lat,
+      lng,
+      layer = 'mandals',
+      regime = 'historical',
+      asOf,
+      versionId,
+      bypassAdapter = false,
+    } = req;
 
     // Validate coordinates range
     if (isNaN(lat) || isNaN(lng) || lat < -90 || lat > 90 || lng < -180 || lng > 180) {
-      throw new Error('INVALID_COORDINATES: Latitude must be between -90 and 90, Longitude between -180 and 180');
+      throw new Error(
+        'INVALID_COORDINATES: Latitude must be between -90 and 90, Longitude between -180 and 180',
+      );
     }
 
     const genericFeatures = await this.selectGenericSpatialFeatures({
@@ -541,7 +586,7 @@ export class SpatialRuntimeService {
 
     // Optional Post-Selection Metadata Enrichment
     if (!bypassAdapter) {
-      const expectedType = (layer === 'mandals' || layer === 'mandal') ? 'mandal' : layer;
+      const expectedType = layer === 'mandals' || layer === 'mandal' ? 'mandal' : layer;
       const adapter = this.adapters.get(layer) || this.adapters.get(expectedType);
       if (adapter) {
         if (adapter instanceof MandalMetadataAdapter) {
@@ -575,7 +620,7 @@ export class SpatialRuntimeService {
 
     // Optional Post-Selection Metadata Enrichment
     if (!bypassAdapter) {
-      const expectedType = (layer === 'mandals' || layer === 'mandal') ? 'mandal' : layer;
+      const expectedType = layer === 'mandals' || layer === 'mandal' ? 'mandal' : layer;
       const adapter = this.adapters.get(layer) || this.adapters.get(expectedType);
       if (adapter) {
         if (adapter instanceof MandalMetadataAdapter) {

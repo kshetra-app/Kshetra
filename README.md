@@ -1,10 +1,10 @@
-# KSHETRA — India's Political Operating System
+# POLIGRAM — India's Political Operating System
 
 > India's integrated political intelligence and civic technology platform built for the post-delimitation era.
 
 ## Vision
 
-KSHETRA is being built as a national political intelligence and civic platform covering India's states and Union Territories, their political geography, elections, representatives, political organizations, local governance, public information, civic participation, and AI-powered intelligence.
+POLIGRAM is being built as a national political intelligence and civic platform covering India's states and Union Territories, their political geography, elections, representatives, political organizations, local governance, public information, civic participation, and AI-powered intelligence.
 
 The platform is designed around continuously updated, evidence-backed political and geographic data rather than a single-state implementation. National coverage, temporal correctness, provenance, multilingual access, and backend-driven updates are core architectural requirements.
 

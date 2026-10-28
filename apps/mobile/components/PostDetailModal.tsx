@@ -110,7 +110,7 @@ export default function PostDetailModal({
     if (!post) return;
     try {
       await Share.share({
-        message: `${post.content.slice(0, 200)}${post.content.length > 200 ? '...' : ''}\n\n— via Kshetra App`,
+        message: `${post.content.slice(0, 200)}${post.content.length > 200 ? '...' : ''}\n\n— via Poligram App`,
       });
     } catch (_) {}
   }, [post]);

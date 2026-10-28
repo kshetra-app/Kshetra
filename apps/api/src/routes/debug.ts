@@ -4,7 +4,7 @@ export async function debugRoutes(app: FastifyInstance) {
   /**
    * CONTROLLED ERROR GENERATOR (JOB W004-R1 / Observability Evidence)
    * GET /api/debug/error?type=unhandled | db_failure | bad_request | unauthorized
-   * 
+   *
    * PRODUCTION PROTECTION MANDATE (W004-R1 Task 1):
    * In PRODUCTION, this route is disabled and returns 404 Not Found (or 403 Forbidden).
    * In TEST, DEVELOPMENT, or STAGING, it remains active as a diagnostic test seam.
@@ -17,7 +17,11 @@ export async function debugRoutes(app: FastifyInstance) {
 
     // In production, strictly reject unless authorized via explicit debug bypass secret
     if (env === 'production') {
-      const isAuthorized = bypassSecret && incomingSecret && bypassSecret.length >= 16 && incomingSecret === bypassSecret;
+      const isAuthorized =
+        bypassSecret &&
+        incomingSecret &&
+        bypassSecret.length >= 16 &&
+        incomingSecret === bypassSecret;
       if (!isAuthorized) {
         request.log.warn({
           msg: 'Unauthorized production attempt to access /api/debug/error rejected',
@@ -67,7 +71,9 @@ export async function debugRoutes(app: FastifyInstance) {
       }
       case 'unhandled':
       default: {
-        throw new Error('Controlled synthetic internal server error for W004 observability evidence');
+        throw new Error(
+          'Controlled synthetic internal server error for W004 observability evidence',
+        );
       }
     }
   });

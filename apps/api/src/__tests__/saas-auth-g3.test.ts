@@ -29,10 +29,7 @@
 
 import Fastify from 'fastify';
 import type { FastifyInstance } from 'fastify';
-import {
-  saasAuthPlugin,
-  extractRawApiKey,
-} from '../lib/saasAuthPlugin';
+import { saasAuthPlugin, extractRawApiKey } from '../lib/saasAuthPlugin';
 import {
   generateCryptographicApiKey,
   parseAndValidateApiKeyFormat,
@@ -500,7 +497,9 @@ describe('W021-G3: SaaS API Key Authentication & Security Gate', () => {
       };
 
       // Mock parse to return the trigger hash
-      jest.spyOn(require('../lib/saasCrypto'), 'parseAndValidateApiKeyFormat').mockReturnValueOnce(triggerHashKey);
+      jest
+        .spyOn(require('../lib/saasCrypto'), 'parseAndValidateApiKeyFormat')
+        .mockReturnValueOnce(triggerHashKey);
 
       const res = await app.inject({
         method: 'GET',

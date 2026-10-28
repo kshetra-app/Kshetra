@@ -77,7 +77,10 @@ function mapDbElectionContest(row: any): ElectionContest {
     totalElectors: row.total_electors ?? 0,
     totalVotesPolled: row.total_votes_polled ?? 0,
     totalValidVotes: row.total_valid_votes ?? 0,
-    totalRejectedVotes: row.total_rejected_votes === null || row.total_rejected_votes === undefined ? null : Number(row.total_rejected_votes),
+    totalRejectedVotes:
+      row.total_rejected_votes === null || row.total_rejected_votes === undefined
+        ? null
+        : Number(row.total_rejected_votes),
     totalNotaVotes: row.total_nota_votes ?? 0,
     turnoutPercentage: Number(row.turnout_percentage ?? 0),
     victoryMargin: row.victory_margin ?? 0,
@@ -107,13 +110,13 @@ export class ElectionService {
   /**
    * List macro election events
    */
-  async listElectionEvents(options: ListElectionsOptions = {}): Promise<{ events: ElectionEvent[]; total: number }> {
+  async listElectionEvents(
+    options: ListElectionsOptions = {},
+  ): Promise<{ events: ElectionEvent[]; total: number }> {
     const limit = Math.min(Math.max(options.limit ?? 20, 1), 50);
     const offset = Math.max(options.offset ?? 0, 0);
 
-    let query = supabase
-      .from('election_events')
-      .select('*', { count: 'exact' });
+    let query = supabase.from('election_events').select('*', { count: 'exact' });
 
     if (options.state) {
       query = query.eq('state_code', options.state);
@@ -125,9 +128,7 @@ export class ElectionService {
       query = query.eq('election_type', options.type);
     }
 
-    query = query
-      .order('polling_date', { ascending: false })
-      .range(offset, offset + limit - 1);
+    query = query.order('polling_date', { ascending: false }).range(offset, offset + limit - 1);
 
     const { data, count, error } = await query;
     if (error) {
@@ -166,7 +167,7 @@ export class ElectionService {
    */
   async listElectionContests(
     electionIdOrCode: string,
-    options: ListContestsOptions = {}
+    options: ListContestsOptions = {},
   ): Promise<{ contests: ElectionContest[]; total: number }> {
     const election = await this.getElectionEventById(electionIdOrCode);
     if (!election) {
@@ -182,12 +183,12 @@ export class ElectionService {
       .eq('election_id', election.id);
 
     if (options.search) {
-      query = query.or(`constituency_name.ilike.%${options.search}%,constituency_id.ilike.%${options.search}%`);
+      query = query.or(
+        `constituency_name.ilike.%${options.search}%,constituency_id.ilike.%${options.search}%`,
+      );
     }
 
-    query = query
-      .order('constituency_name', { ascending: true })
-      .range(offset, offset + limit - 1);
+    query = query.order('constituency_name', { ascending: true }).range(offset, offset + limit - 1);
 
     const { data, count, error } = await query;
     if (error) {
@@ -203,7 +204,10 @@ export class ElectionService {
   /**
    * Get full contest return (candidates, NOTA, winner, runner-up)
    */
-  async getContestDetail(electionIdOrCode: string, constituencyId: string): Promise<ContestDetail | null> {
+  async getContestDetail(
+    electionIdOrCode: string,
+    constituencyId: string,
+  ): Promise<ContestDetail | null> {
     const election = await this.getElectionEventById(electionIdOrCode);
     if (!election) return null;
 
@@ -225,11 +229,13 @@ export class ElectionService {
     // Fetch candidates with persons and parties
     const { data: candidatesData, error: candError } = await supabase
       .from('candidacies')
-      .select(`
+      .select(
+        `
         *,
         canonical_persons (*),
         political_organizations (*)
-      `)
+      `,
+      )
       .eq('contest_id', contest.id)
       .order('rank', { ascending: true });
 
@@ -260,58 +266,74 @@ export class ElectionService {
       isIndependent: Boolean(row.is_independent),
       result: row.result,
       votesReceived: row.votes_received ?? 0,
-      evmVotes: row.evm_votes === null || row.evm_votes === undefined ? null : Number(row.evm_votes),
-      postalVotes: row.postal_votes === null || row.postal_votes === undefined ? null : Number(row.postal_votes),
+      evmVotes:
+        row.evm_votes === null || row.evm_votes === undefined ? null : Number(row.evm_votes),
+      postalVotes:
+        row.postal_votes === null || row.postal_votes === undefined
+          ? null
+          : Number(row.postal_votes),
       voteShare: Number(row.vote_share ?? 0),
       rank: row.rank ?? 0,
       affidavitId: row.affidavit_id ?? null,
       dataStatus: row.data_status,
       createdAt: row.created_at,
       updatedAt: row.updated_at,
-      person: row.canonical_persons ? {
-        id: row.canonical_persons.id,
-        canonicalName: row.canonical_persons.canonical_name,
-        aliases: row.canonical_persons.aliases || [],
-        dataStatus: row.canonical_persons.data_status,
-        photoUrl: row.canonical_persons.photo_url ?? null,
-        metadata: row.canonical_persons.metadata || {},
-        createdAt: row.canonical_persons.created_at,
-        updatedAt: row.canonical_persons.updated_at,
-        dobEstimated: Boolean(row.canonical_persons.dob_estimated),
-      } : null,
-      party: row.political_organizations ? {
-        id: row.political_organizations.id,
-        orgType: row.political_organizations.org_type,
-        name: row.political_organizations.name,
-        shortName: row.political_organizations.short_name,
-        symbolUrl: row.political_organizations.symbol_url ?? null,
-        brandColors: row.political_organizations.brand_colors || {},
-        dataStatus: row.political_organizations.data_status,
-        createdAt: row.political_organizations.created_at,
-        updatedAt: row.political_organizations.updated_at,
-      } : null,
+      person: row.canonical_persons
+        ? {
+            id: row.canonical_persons.id,
+            canonicalName: row.canonical_persons.canonical_name,
+            aliases: row.canonical_persons.aliases || [],
+            dataStatus: row.canonical_persons.data_status,
+            photoUrl: row.canonical_persons.photo_url ?? null,
+            metadata: row.canonical_persons.metadata || {},
+            createdAt: row.canonical_persons.created_at,
+            updatedAt: row.canonical_persons.updated_at,
+            dobEstimated: Boolean(row.canonical_persons.dob_estimated),
+          }
+        : null,
+      party: row.political_organizations
+        ? {
+            id: row.political_organizations.id,
+            orgType: row.political_organizations.org_type,
+            name: row.political_organizations.name,
+            shortName: row.political_organizations.short_name,
+            symbolUrl: row.political_organizations.symbol_url ?? null,
+            brandColors: row.political_organizations.brand_colors || {},
+            dataStatus: row.political_organizations.data_status,
+            createdAt: row.political_organizations.created_at,
+            updatedAt: row.political_organizations.updated_at,
+          }
+        : null,
     }));
 
     const ballotChoices = (ballotData || []).map(mapDbBallotChoice);
 
-    const winnerCand = candidates.find(c => c.id === contest.winningCandidacyId) || candidates[0] || null;
-    const runnerUpCand = candidates.find(c => c.id === contest.runnerUpCandidacyId) || candidates[1] || null;
+    const winnerCand =
+      candidates.find((c) => c.id === contest.winningCandidacyId) || candidates[0] || null;
+    const runnerUpCand =
+      candidates.find((c) => c.id === contest.runnerUpCandidacyId) || candidates[1] || null;
 
     return {
       ...contest,
       election,
       candidates,
       ballotChoices,
-      winner: winnerCand && winnerCand.person ? {
-        candidacy: winnerCand,
-        person: winnerCand.person,
-        party: winnerCand.party,
-      } : null,
-      runnerUp: runnerUpCand && runnerUpCand.person ? {
-        candidacy: runnerUpCand,
-        person: runnerUpCand.person,
-        party: runnerUpCand.party,
-      } : null,
+      winner:
+        winnerCand && winnerCand.person
+          ? {
+              candidacy: winnerCand,
+              person: winnerCand.person,
+              party: winnerCand.party,
+            }
+          : null,
+      runnerUp:
+        runnerUpCand && runnerUpCand.person
+          ? {
+              candidacy: runnerUpCand,
+              person: runnerUpCand.person,
+              party: runnerUpCand.party,
+            }
+          : null,
     };
   }
 
@@ -321,11 +343,13 @@ export class ElectionService {
   async getPersonElections(personId: string): Promise<Candidacy[]> {
     const { data, error } = await supabase
       .from('candidacies')
-      .select(`
+      .select(
+        `
         *,
         election_contests!candidacies_contest_id_fkey (*),
         political_organizations (*)
-      `)
+      `,
+      )
       .eq('person_id', personId)
       .order('election_year', { ascending: false });
 
@@ -345,8 +369,12 @@ export class ElectionService {
       isIndependent: Boolean(row.is_independent),
       result: row.result,
       votesReceived: row.votes_received ?? 0,
-      evmVotes: row.evm_votes === null || row.evm_votes === undefined ? null : Number(row.evm_votes),
-      postalVotes: row.postal_votes === null || row.postal_votes === undefined ? null : Number(row.postal_votes),
+      evmVotes:
+        row.evm_votes === null || row.evm_votes === undefined ? null : Number(row.evm_votes),
+      postalVotes:
+        row.postal_votes === null || row.postal_votes === undefined
+          ? null
+          : Number(row.postal_votes),
       voteShare: Number(row.vote_share ?? 0),
       rank: row.rank ?? 0,
       affidavitId: row.affidavit_id ?? null,

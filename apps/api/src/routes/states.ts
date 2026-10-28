@@ -1,8 +1,5 @@
 import type { FastifyInstance } from 'fastify';
-import {
-  getAllCanonicalStatesInfo,
-  getCanonicalStateInfo,
-} from '../services/stateData';
+import { getAllCanonicalStatesInfo, getCanonicalStateInfo } from '../services/stateData';
 import { sendApiError } from '../lib/replyHelper';
 
 const listStatesSchema = {
@@ -64,14 +61,18 @@ export async function stateRoutes(app: FastifyInstance) {
   });
 
   /** GET /api/v1/states/:code — single state info */
-  app.get<{ Params: { code: string } }>('/api/v1/states/:code', { schema: getStateSchema }, async (request, reply) => {
-    const { code } = request.params;
-    const info = await getCanonicalStateInfo(code);
+  app.get<{ Params: { code: string } }>(
+    '/api/v1/states/:code',
+    { schema: getStateSchema },
+    async (request, reply) => {
+      const { code } = request.params;
+      const info = await getCanonicalStateInfo(code);
 
-    if (!info) {
-      return sendApiError(reply, request, 404, 'Not Found', `State ${code} not found`);
-    }
+      if (!info) {
+        return sendApiError(reply, request, 404, 'Not Found', `State ${code} not found`);
+      }
 
-    return info;
-  });
+      return info;
+    },
+  );
 }

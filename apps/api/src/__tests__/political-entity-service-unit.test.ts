@@ -1,8 +1,5 @@
 import Fastify, { FastifyInstance } from 'fastify';
-import {
-  PoliticalEntityService,
-  politicalEntityService,
-} from '../services/politicalEntityService';
+import { PoliticalEntityService, politicalEntityService } from '../services/politicalEntityService';
 import { politicalEntityRoutes } from '../routes/politicalEntities';
 import { supabase } from '../lib/supabase';
 
@@ -131,7 +128,10 @@ describe('PoliticalEntityService & Routes Unit Tests (W018)', () => {
         return { select: jest.fn().mockReturnThis() };
       }) as any);
 
-      const resOrg = await politicalEntityService.searchEntities({ type: 'organization', state: 'DL' });
+      const resOrg = await politicalEntityService.searchEntities({
+        type: 'organization',
+        state: 'DL',
+      });
       expect(resOrg.persons.length).toBe(0);
       expect(resOrg.organizations.length).toBe(1);
     });
@@ -142,10 +142,11 @@ describe('PoliticalEntityService & Routes Unit Tests (W018)', () => {
           return {
             select: jest.fn().mockReturnThis(),
             eq: jest.fn().mockReturnThis(),
-            then: (resolve: any) => resolve({
-              data: [{ person_id: '01900000-0000-0000-0000-000000000011' }],
-              error: null,
-            }),
+            then: (resolve: any) =>
+              resolve({
+                data: [{ person_id: '01900000-0000-0000-0000-000000000011' }],
+                error: null,
+              }),
           };
         }
         if (table === 'canonical_persons') {
@@ -204,14 +205,17 @@ describe('PoliticalEntityService & Routes Unit Tests (W018)', () => {
         if (table === 'canonical_persons') {
           return {
             select: jest.fn().mockReturnThis(),
-            range: jest.fn().mockResolvedValue({ data: null, error: { message: 'DB connection dead' } }),
+            range: jest
+              .fn()
+              .mockResolvedValue({ data: null, error: { message: 'DB connection dead' } }),
           };
         }
         return { select: jest.fn().mockReturnThis() };
       }) as any);
 
-      await expect(politicalEntityService.searchEntities({ type: 'person' }))
-        .rejects.toThrow('PERSON_SEARCH_ERROR: DB connection dead');
+      await expect(politicalEntityService.searchEntities({ type: 'person' })).rejects.toThrow(
+        'PERSON_SEARCH_ERROR: DB connection dead',
+      );
 
       jest.spyOn(supabase, 'from').mockImplementation(((table: string) => {
         if (table === 'political_organizations') {
@@ -223,8 +227,9 @@ describe('PoliticalEntityService & Routes Unit Tests (W018)', () => {
         return { select: jest.fn().mockReturnThis() };
       }) as any);
 
-      await expect(politicalEntityService.searchEntities({ type: 'organization' }))
-        .rejects.toThrow('ORGANIZATION_SEARCH_ERROR: Org timeout');
+      await expect(politicalEntityService.searchEntities({ type: 'organization' })).rejects.toThrow(
+        'ORGANIZATION_SEARCH_ERROR: Org timeout',
+      );
     });
   });
 
@@ -248,19 +253,23 @@ describe('PoliticalEntityService & Routes Unit Tests (W018)', () => {
         maybeSingle: jest.fn().mockResolvedValue({ data: null, error: null }),
       })) as any);
 
-      await expect(politicalEntityService.getPersonById('missing-uuid'))
-        .rejects.toThrow('PERSON_NOT_FOUND');
+      await expect(politicalEntityService.getPersonById('missing-uuid')).rejects.toThrow(
+        'PERSON_NOT_FOUND',
+      );
     });
 
     it('throws 500 when database query encounters an error', async () => {
       jest.spyOn(supabase, 'from').mockImplementation((() => ({
         select: jest.fn().mockReturnThis(),
         eq: jest.fn().mockReturnThis(),
-        maybeSingle: jest.fn().mockResolvedValue({ data: null, error: { message: 'Disk failure' } }),
+        maybeSingle: jest
+          .fn()
+          .mockResolvedValue({ data: null, error: { message: 'Disk failure' } }),
       })) as any);
 
-      await expect(politicalEntityService.getPersonById(mockPersonRow.id))
-        .rejects.toThrow('DATABASE_ERROR: Disk failure');
+      await expect(politicalEntityService.getPersonById(mockPersonRow.id)).rejects.toThrow(
+        'DATABASE_ERROR: Disk failure',
+      );
     });
   });
 
@@ -269,12 +278,32 @@ describe('PoliticalEntityService & Routes Unit Tests (W018)', () => {
       jest.spyOn(politicalEntityService, 'getPersonById').mockResolvedValue(mockPersonRow as any);
 
       jest.spyOn(supabase, 'from').mockImplementation(((table: string) => {
-        const rows = table === 'person_roles' ? [{ id: 'R1', person_id: mockPersonRow.id, role_type: 'MLA' }]
-          : table === 'person_party_affiliations' ? [{ id: 'A1', person_id: mockPersonRow.id, party_id: 'INC' }]
-          : table === 'elected_tenures' ? [mockTenureRow]
-          : table === 'tenure_party_switches' ? [{ id: 'S1', person_id: mockPersonRow.id, from_party_id: 'TDP', to_party_id: 'INC' }]
-          : table === 'candidacies' ? [{ id: 'C1', person_id: mockPersonRow.id, election_year: 2023, election_type: 'assembly' }]
-          : [];
+        const rows =
+          table === 'person_roles'
+            ? [{ id: 'R1', person_id: mockPersonRow.id, role_type: 'MLA' }]
+            : table === 'person_party_affiliations'
+              ? [{ id: 'A1', person_id: mockPersonRow.id, party_id: 'INC' }]
+              : table === 'elected_tenures'
+                ? [mockTenureRow]
+                : table === 'tenure_party_switches'
+                  ? [
+                      {
+                        id: 'S1',
+                        person_id: mockPersonRow.id,
+                        from_party_id: 'TDP',
+                        to_party_id: 'INC',
+                      },
+                    ]
+                  : table === 'candidacies'
+                    ? [
+                        {
+                          id: 'C1',
+                          person_id: mockPersonRow.id,
+                          election_year: 2023,
+                          election_type: 'assembly',
+                        },
+                      ]
+                    : [];
         return {
           select: jest.fn().mockReturnThis(),
           eq: jest.fn().mockReturnThis(),
@@ -309,8 +338,9 @@ describe('PoliticalEntityService & Routes Unit Tests (W018)', () => {
         };
       }) as any);
 
-      await expect(politicalEntityService.getPersonCareerTimeline(mockPersonRow.id))
-        .rejects.toThrow('TIMELINE_ROLES_ERROR: roles failed');
+      await expect(
+        politicalEntityService.getPersonCareerTimeline(mockPersonRow.id),
+      ).rejects.toThrow('TIMELINE_ROLES_ERROR: roles failed');
     });
   });
 
@@ -334,19 +364,23 @@ describe('PoliticalEntityService & Routes Unit Tests (W018)', () => {
         maybeSingle: jest.fn().mockResolvedValue({ data: null, error: null }),
       })) as any);
 
-      await expect(politicalEntityService.getOrganizationById('ORG-NONEXISTENT'))
-        .rejects.toThrow('ORGANIZATION_NOT_FOUND');
+      await expect(politicalEntityService.getOrganizationById('ORG-NONEXISTENT')).rejects.toThrow(
+        'ORGANIZATION_NOT_FOUND',
+      );
     });
 
     it('throws 500 when database error occurs', async () => {
       jest.spyOn(supabase, 'from').mockImplementation((() => ({
         select: jest.fn().mockReturnThis(),
         eq: jest.fn().mockReturnThis(),
-        maybeSingle: jest.fn().mockResolvedValue({ data: null, error: { message: 'Network reset' } }),
+        maybeSingle: jest
+          .fn()
+          .mockResolvedValue({ data: null, error: { message: 'Network reset' } }),
       })) as any);
 
-      await expect(politicalEntityService.getOrganizationById('ORG-PARTY-INC'))
-        .rejects.toThrow('DATABASE_ERROR: Network reset');
+      await expect(politicalEntityService.getOrganizationById('ORG-PARTY-INC')).rejects.toThrow(
+        'DATABASE_ERROR: Network reset',
+      );
     });
   });
 
@@ -415,8 +449,9 @@ describe('PoliticalEntityService & Routes Unit Tests (W018)', () => {
         return { select: jest.fn().mockReturnThis() };
       }) as any);
 
-      await expect(politicalEntityService.listCurrentLegislators())
-        .rejects.toThrow('LEGISLATOR_QUERY_ERROR: tenures failed');
+      await expect(politicalEntityService.listCurrentLegislators()).rejects.toThrow(
+        'LEGISLATOR_QUERY_ERROR: tenures failed',
+      );
     });
   });
 
@@ -432,8 +467,8 @@ describe('PoliticalEntityService & Routes Unit Tests (W018)', () => {
           mockPersonRow.id,
           'my-user-id',
           { verificationType: 'official_id' },
-          false
-        )
+          false,
+        ),
       ).rejects.toThrow('IDENTITY_ALREADY_CLAIMED');
     });
 
@@ -448,7 +483,7 @@ describe('PoliticalEntityService & Routes Unit Tests (W018)', () => {
         mockPersonRow.id,
         'my-user-id',
         { verificationType: 'official_id' },
-        true
+        true,
       );
 
       expect(res.status).toBe('approved');
@@ -466,7 +501,7 @@ describe('PoliticalEntityService & Routes Unit Tests (W018)', () => {
         mockPersonRow.id,
         'my-user-id',
         { verificationType: 'official_id', notes: 'Verification request' },
-        false
+        false,
       );
 
       expect(res.status).toBe('pending_review');
@@ -476,15 +511,21 @@ describe('PoliticalEntityService & Routes Unit Tests (W018)', () => {
 
   describe('resolveCanonicalPerson & linkPersonIdentity', () => {
     it('resolves canonical person via RPC or fallback', async () => {
-      jest.spyOn(supabase, 'rpc').mockResolvedValue({ data: 'canonical-uuid-123', error: null } as any);
+      jest
+        .spyOn(supabase, 'rpc')
+        .mockResolvedValue({ data: 'canonical-uuid-123', error: null } as any);
       const res1 = await politicalEntityService.resolveCanonicalPerson('ECI', 'REC-001');
       expect(res1).toBe('canonical-uuid-123');
 
-      jest.spyOn(supabase, 'rpc').mockResolvedValue({ data: null, error: { message: 'no rpc' } } as any);
+      jest
+        .spyOn(supabase, 'rpc')
+        .mockResolvedValue({ data: null, error: { message: 'no rpc' } } as any);
       jest.spyOn(supabase, 'from').mockImplementation((() => ({
         select: jest.fn().mockReturnThis(),
         eq: jest.fn().mockReturnThis(),
-        maybeSingle: jest.fn().mockResolvedValue({ data: { person_id: 'fallback-uuid-456' }, error: null }),
+        maybeSingle: jest
+          .fn()
+          .mockResolvedValue({ data: { person_id: 'fallback-uuid-456' }, error: null }),
       })) as any);
       const res2 = await politicalEntityService.resolveCanonicalPerson('ECI', 'REC-002');
       expect(res2).toBe('fallback-uuid-456');
@@ -500,7 +541,9 @@ describe('PoliticalEntityService & Routes Unit Tests (W018)', () => {
       });
       expect(link1).toBe('linkage-id-1');
 
-      jest.spyOn(supabase, 'rpc').mockResolvedValue({ data: null, error: { message: 'no rpc' } } as any);
+      jest
+        .spyOn(supabase, 'rpc')
+        .mockResolvedValue({ data: null, error: { message: 'no rpc' } } as any);
       jest.spyOn(supabase, 'from').mockImplementation((() => ({
         upsert: jest.fn().mockReturnThis(),
         select: jest.fn().mockReturnThis(),
@@ -568,7 +611,9 @@ describe('PoliticalEntityService & Routes Unit Tests (W018)', () => {
     });
 
     it('GET /api/v1/entities/organizations/:id returns organization', async () => {
-      jest.spyOn(politicalEntityService, 'getOrganizationById').mockResolvedValue(mockOrgRow as any);
+      jest
+        .spyOn(politicalEntityService, 'getOrganizationById')
+        .mockResolvedValue(mockOrgRow as any);
 
       const res = await app.inject({
         method: 'GET',
@@ -655,7 +700,9 @@ describe('PoliticalEntityService & Routes Unit Tests (W018)', () => {
     });
 
     it('GET /api/v1/entities/search handles service errors gracefully', async () => {
-      jest.spyOn(politicalEntityService, 'searchEntities').mockRejectedValue(new Error('Search failed'));
+      jest
+        .spyOn(politicalEntityService, 'searchEntities')
+        .mockRejectedValue(new Error('Search failed'));
       const res = await app.inject({
         method: 'GET',
         url: '/api/v1/entities/search?q=Revanth',
@@ -703,7 +750,9 @@ describe('PoliticalEntityService & Routes Unit Tests (W018)', () => {
     });
 
     it('GET /api/v1/entities/legislators handles service error', async () => {
-      jest.spyOn(politicalEntityService, 'listCurrentLegislators').mockRejectedValue(new Error('DB failure'));
+      jest
+        .spyOn(politicalEntityService, 'listCurrentLegislators')
+        .mockRejectedValue(new Error('DB failure'));
       const res = await app.inject({
         method: 'GET',
         url: '/api/v1/entities/legislators?state=TS',

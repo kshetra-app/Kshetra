@@ -39,62 +39,78 @@ export async function configRoutes(app: FastifyInstance) {
    */
   app.patch<{
     Body: Partial<AppFeatureFlags>;
-  }>('/api/v1/config/flags', {
-    schema: {
-      body: {
-        type: 'object',
-        additionalProperties: { type: 'boolean' },
-      },
-      response: {
-        200: {
+  }>(
+    '/api/v1/config/flags',
+    {
+      schema: {
+        body: {
           type: 'object',
-          properties: {
-            status: { type: 'string' },
-            flags: { type: 'object', additionalProperties: { type: 'boolean' } },
-            updatedAt: { type: 'string' },
+          additionalProperties: { type: 'boolean' },
+        },
+        response: {
+          200: {
+            type: 'object',
+            properties: {
+              status: { type: 'string' },
+              flags: { type: 'object', additionalProperties: { type: 'boolean' } },
+              updatedAt: { type: 'string' },
+            },
+            required: ['status', 'flags'],
           },
-          required: ['status', 'flags'],
         },
       },
-    },
-    preValidation: async (request, reply) => {
-      const body = request.body;
-      if (!body || typeof body !== 'object' || Array.isArray(body)) {
-        return sendApiError(reply, request, 400, 'Bad Request', 'Invalid feature flags payload: expected object', {
-          code: 'FST_ERR_VALIDATION',
-        });
-      }
-      for (const [key, value] of Object.entries(body as Record<string, unknown>)) {
-        if (typeof value !== 'boolean') {
+      preValidation: async (request, reply) => {
+        const body = request.body;
+        if (!body || typeof body !== 'object' || Array.isArray(body)) {
           return sendApiError(
             reply,
             request,
             400,
             'Bad Request',
-            `Flag "${key}" must be a boolean`,
+            'Invalid feature flags payload: expected object',
             {
               code: 'FST_ERR_VALIDATION',
-              details: [{ path: `.${key}`, message: `must be boolean, received ${value === null ? 'null' : typeof value}` }],
             },
           );
         }
-      }
+        for (const [key, value] of Object.entries(body as Record<string, unknown>)) {
+          if (typeof value !== 'boolean') {
+            return sendApiError(
+              reply,
+              request,
+              400,
+              'Bad Request',
+              `Flag "${key}" must be a boolean`,
+              {
+                code: 'FST_ERR_VALIDATION',
+                details: [
+                  {
+                    path: `.${key}`,
+                    message: `must be boolean, received ${value === null ? 'null' : typeof value}`,
+                  },
+                ],
+              },
+            );
+          }
+        }
+      },
     },
-  }, async (request, reply) => {
-    const updates = request.body;
-    if (!updates || typeof updates !== 'object') {
-      return sendApiError(reply, request, 400, 'Bad Request', 'Invalid feature flags payload');
-    }
+    async (request, reply) => {
+      const updates = request.body;
+      if (!updates || typeof updates !== 'object') {
+        return sendApiError(reply, request, 400, 'Bad Request', 'Invalid feature flags payload');
+      }
 
-    currentFlags = {
-      ...currentFlags,
-      ...updates,
-    };
+      currentFlags = {
+        ...currentFlags,
+        ...updates,
+      };
 
-    return {
-      status: 'updated',
-      flags: currentFlags,
-      updatedAt: new Date().toISOString(),
-    };
-  });
+      return {
+        status: 'updated',
+        flags: currentFlags,
+        updatedAt: new Date().toISOString(),
+      };
+    },
+  );
 }

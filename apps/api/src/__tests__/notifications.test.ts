@@ -31,7 +31,11 @@ describe('Notification Routes', () => {
         method: 'POST',
         url: '/api/v1/notifications/register-token',
         headers: { 'x-user-id': 'u1' },
-        payload: { token: 'ExponentPushToken[abcdefghijklmnop]', platform: 'android', deviceName: 'Pixel' },
+        payload: {
+          token: 'ExponentPushToken[abcdefghijklmnop]',
+          platform: 'android',
+          deviceName: 'Pixel',
+        },
       });
       expect(res.statusCode).toBe(200);
       expect(JSON.parse(res.payload).data.platform).toBe('android');
@@ -70,7 +74,9 @@ describe('Notification Routes', () => {
 
   describe('preferences', () => {
     it('GET requires authentication, returns defaults when authed', async () => {
-      expect((await app.inject({ method: 'GET', url: '/api/v1/notifications/preferences' })).statusCode).toBe(401);
+      expect(
+        (await app.inject({ method: 'GET', url: '/api/v1/notifications/preferences' })).statusCode,
+      ).toBe(401);
       const ok = await app.inject({
         method: 'GET',
         url: '/api/v1/notifications/preferences',
@@ -82,7 +88,13 @@ describe('Notification Routes', () => {
 
     it('PUT updates a preference when authed', async () => {
       expect(
-        (await app.inject({ method: 'PUT', url: '/api/v1/notifications/preferences', payload: { trigger: 'post_reply', pushEnabled: false, inAppEnabled: true } })).statusCode,
+        (
+          await app.inject({
+            method: 'PUT',
+            url: '/api/v1/notifications/preferences',
+            payload: { trigger: 'post_reply', pushEnabled: false, inAppEnabled: true },
+          })
+        ).statusCode,
       ).toBe(401);
       const ok = await app.inject({
         method: 'PUT',

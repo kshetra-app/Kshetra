@@ -9,7 +9,12 @@
  * - Controlled test fixtures
  */
 
-import type { DelimitationWatchSource, DelimitationSourceType, DelimitationAuthorityClassification, RetrievalMethod } from '@kshetra/shared';
+import type {
+  DelimitationWatchSource,
+  DelimitationSourceType,
+  DelimitationAuthorityClassification,
+  RetrievalMethod,
+} from '@kshetra/shared';
 import type { IDelimitationWatchRepository } from './persistence';
 import { validateSourceUrl } from './ssrfGuard';
 

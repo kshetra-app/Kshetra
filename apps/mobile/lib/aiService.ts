@@ -15,7 +15,7 @@ const FALLBACK_MODELS = [
   'gemini-3.6-flash',
 ];
 
-const SYSTEM_PROMPT = `You are KSHETRA AI — an expert political analyst specializing in Indian state assembly and parliamentary elections.
+const SYSTEM_PROMPT = `You are POLIGRAM AI — an expert political analyst specializing in Indian state assembly and parliamentary elections.
 
 Your knowledge covers:
 - All Indian state assembly elections (Vidhan Sabha) — results, margins, party performance, demographics
@@ -99,7 +99,7 @@ export async function sendAIChat(
     const startTime = Date.now();
 
     try {
-      console.log(`[KSHETRA AI] Querying Gemini model: ${modelName}`);
+      console.log(`[POLIGRAM AI] Querying Gemini model: ${modelName}`);
       const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${GEMINI_API_KEY}`;
       const res = await fetch(endpoint, {
         method: 'POST',
@@ -123,7 +123,7 @@ export async function sendAIChat(
         const data = await res.json();
         const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
         if (text) {
-          console.log(`[KSHETRA AI] Response received from ${modelName} in ${Date.now() - startTime}ms`);
+          console.log(`[POLIGRAM AI] Response received from ${modelName} in ${Date.now() - startTime}ms`);
           return {
             response: text,
             model: modelName,
@@ -140,13 +140,13 @@ export async function sendAIChat(
 
       lastStatus = res.status;
       lastError = await res.text();
-      console.warn(`[KSHETRA AI] Model ${modelName} error (${res.status}): ${lastError.slice(0, 150)}`);
+      console.warn(`[POLIGRAM AI] Model ${modelName} error (${res.status}): ${lastError.slice(0, 150)}`);
       // Fall through to next model in chain
       continue;
     } catch (err: any) {
       clearTimeout(timeoutId);
       lastError = err?.name === 'AbortError' ? 'Request timed out after 12s' : (err?.message ?? 'Network error');
-      console.warn(`[KSHETRA AI] Model ${modelName} exception: ${lastError}`);
+      console.warn(`[POLIGRAM AI] Model ${modelName} exception: ${lastError}`);
     }
   }
 

@@ -292,7 +292,9 @@ export class PoliticalEntityService {
     }
 
     if (!data) {
-      const err = new Error(`PERSON_NOT_FOUND: Canonical person with ID ${personId} does not exist.`);
+      const err = new Error(
+        `PERSON_NOT_FOUND: Canonical person with ID ${personId} does not exist.`,
+      );
       (err as any).statusCode = 404;
       (err as any).code = 'PERSON_NOT_FOUND';
       throw err;
@@ -308,18 +310,39 @@ export class PoliticalEntityService {
     const person = await this.getPersonById(personId);
 
     const [rolesRes, affilsRes, tenuresRes, switchesRes, candidaciesRes] = await Promise.all([
-      supabase.from('person_roles').select('*').eq('person_id', personId).order('valid_from', { ascending: false }),
-      supabase.from('person_party_affiliations').select('*').eq('person_id', personId).order('valid_from', { ascending: false }),
-      supabase.from('elected_tenures').select('*').eq('person_id', personId).order('term_start', { ascending: false }),
-      supabase.from('tenure_party_switches').select('*').eq('person_id', personId).order('effective_date', { ascending: false }),
-      supabase.from('candidacies').select('*').eq('person_id', personId).order('election_year', { ascending: false }),
+      supabase
+        .from('person_roles')
+        .select('*')
+        .eq('person_id', personId)
+        .order('valid_from', { ascending: false }),
+      supabase
+        .from('person_party_affiliations')
+        .select('*')
+        .eq('person_id', personId)
+        .order('valid_from', { ascending: false }),
+      supabase
+        .from('elected_tenures')
+        .select('*')
+        .eq('person_id', personId)
+        .order('term_start', { ascending: false }),
+      supabase
+        .from('tenure_party_switches')
+        .select('*')
+        .eq('person_id', personId)
+        .order('effective_date', { ascending: false }),
+      supabase
+        .from('candidacies')
+        .select('*')
+        .eq('person_id', personId)
+        .order('election_year', { ascending: false }),
     ]);
 
     if (rolesRes.error) throw new Error(`TIMELINE_ROLES_ERROR: ${rolesRes.error.message}`);
     if (affilsRes.error) throw new Error(`TIMELINE_AFFILIATIONS_ERROR: ${affilsRes.error.message}`);
     if (tenuresRes.error) throw new Error(`TIMELINE_TENURES_ERROR: ${tenuresRes.error.message}`);
     if (switchesRes.error) throw new Error(`TIMELINE_SWITCHES_ERROR: ${switchesRes.error.message}`);
-    if (candidaciesRes.error) throw new Error(`TIMELINE_CANDIDACIES_ERROR: ${candidaciesRes.error.message}`);
+    if (candidaciesRes.error)
+      throw new Error(`TIMELINE_CANDIDACIES_ERROR: ${candidaciesRes.error.message}`);
 
     return {
       person,
@@ -346,7 +369,9 @@ export class PoliticalEntityService {
     }
 
     if (!data) {
-      const err = new Error(`ORGANIZATION_NOT_FOUND: Political organization ${orgId} does not exist.`);
+      const err = new Error(
+        `ORGANIZATION_NOT_FOUND: Political organization ${orgId} does not exist.`,
+      );
       (err as any).statusCode = 404;
       (err as any).code = 'ORGANIZATION_NOT_FOUND';
       throw err;
@@ -358,11 +383,13 @@ export class PoliticalEntityService {
   /**
    * List currently elected legislators (MLAs, MPs) with office tenures.
    */
-  async listCurrentLegislators(options: {
-    state?: string;
-    house?: 'assembly' | 'parliament';
-    currentOnly?: boolean;
-  } = {}): Promise<{ legislators: LegislatorRosterItem[]; total: number }> {
+  async listCurrentLegislators(
+    options: {
+      state?: string;
+      house?: 'assembly' | 'parliament';
+      currentOnly?: boolean;
+    } = {},
+  ): Promise<{ legislators: LegislatorRosterItem[]; total: number }> {
     const { state, house, currentOnly = true } = options;
 
     let query = supabase.from('elected_tenures').select('*');
@@ -388,11 +415,15 @@ export class PoliticalEntityService {
 
     // Collect unique person IDs and party IDs
     const personIds = Array.from(new Set(tenures.map((t) => t.person_id)));
-    const partyIds = Array.from(new Set(tenures.map((t) => t.current_party || t.party_at_election).filter(Boolean)));
+    const partyIds = Array.from(
+      new Set(tenures.map((t) => t.current_party || t.party_at_election).filter(Boolean)),
+    );
 
     const [personsRes, orgsRes] = await Promise.all([
       supabase.from('canonical_persons').select('*').in('id', personIds),
-      partyIds.length > 0 ? supabase.from('political_organizations').select('*').in('id', partyIds) : Promise.resolve({ data: [] }),
+      partyIds.length > 0
+        ? supabase.from('political_organizations').select('*').in('id', partyIds)
+        : Promise.resolve({ data: [] }),
     ]);
 
     const personMap = new Map<string, CanonicalPerson>();
@@ -416,7 +447,8 @@ export class PoliticalEntityService {
       // Optional state filter based on organization headquarters or jurisdiction prefix
       if (state) {
         const matchesState =
-          (organization?.headquartersState && organization.headquartersState.toUpperCase() === state.toUpperCase()) ||
+          (organization?.headquartersState &&
+            organization.headquartersState.toUpperCase() === state.toUpperCase()) ||
           t.jurisdiction_id.toUpperCase().startsWith(state.toUpperCase());
         if (!matchesState) continue;
       }
@@ -440,13 +472,20 @@ export class PoliticalEntityService {
     personId: string,
     userId: string,
     claimData: { verificationType: string; evidenceUrl?: string; notes?: string },
-    isServiceRole: boolean
-  ): Promise<{ status: 'approved' | 'pending_review'; personId: string; userId: string; message: string }> {
+    isServiceRole: boolean,
+  ): Promise<{
+    status: 'approved' | 'pending_review';
+    personId: string;
+    userId: string;
+    message: string;
+  }> {
     const person = await this.getPersonById(personId);
 
     // If already bound to another user, conflict fail-closed
     if (person.primaryUserId && person.primaryUserId !== userId) {
-      const err = new Error('IDENTITY_ALREADY_CLAIMED: This canonical person is already claimed by another account.');
+      const err = new Error(
+        'IDENTITY_ALREADY_CLAIMED: This canonical person is already claimed by another account.',
+      );
       (err as any).statusCode = 409;
       (err as any).code = 'IDENTITY_ALREADY_CLAIMED';
       throw err;
@@ -509,14 +548,18 @@ export class PoliticalEntityService {
       status: 'pending_review',
       personId,
       userId,
-      message: 'Identity claim submitted. Trust & Safety review is required before verification is granted.',
+      message:
+        'Identity claim submitted. Trust & Safety review is required before verification is granted.',
     };
   }
 
   /**
    * Resolve an external or legacy record ID to its canonical person UUID.
    */
-  async resolveCanonicalPerson(sourceSystem: string, sourceRecordId: string): Promise<string | null> {
+  async resolveCanonicalPerson(
+    sourceSystem: string,
+    sourceRecordId: string,
+  ): Promise<string | null> {
     const { data, error } = await supabase.rpc('fn_resolve_canonical_person', {
       p_source_system: sourceSystem,
       p_source_record_id: sourceRecordId,
@@ -572,7 +615,7 @@ export class PoliticalEntityService {
             curated_by: params.curatedBy ?? 'system',
             is_active: true,
           },
-          { onConflict: 'source_system,source_record_id' }
+          { onConflict: 'source_system,source_record_id' },
         )
         .select('id')
         .single();

@@ -59,11 +59,11 @@ export function Sidebar() {
       <div className="p-5 border-b border-slate-800/80 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 via-indigo-600 to-violet-700 flex items-center justify-center shadow-lg shadow-blue-500/20 font-black text-white text-lg tracking-wider">
-            K
+            P
           </div>
           <div>
             <div className="flex items-center gap-1.5">
-              <span className="font-extrabold text-slate-100 text-lg tracking-tight">KSHETRA</span>
+              <span className="font-extrabold text-slate-100 text-lg tracking-tight">POLIGRAM</span>
               <span className="text-[10px] uppercase font-bold tracking-widest px-1.5 py-0.5 rounded bg-blue-500/20 text-blue-400 border border-blue-500/30">Admin</span>
             </div>
             <p className="text-xs text-slate-400 font-medium">Governance & Command</p>

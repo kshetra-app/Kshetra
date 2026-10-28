@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "Kshetra",
+    "name": "Poligram",
     "slug": "kshetra",
     "version": "0.1.0",
     "orientation": "portrait",
@@ -17,13 +17,13 @@
       "supportsTablet": true,
       "bundleIdentifier": "in.kshetra.app",
       "infoPlist": {
-        "NSLocationWhenInUseUsageDescription": "Kshetra uses your location to find which constituency you are in."
+        "NSLocationWhenInUseUsageDescription": "Poligram uses your location to find which constituency you are in."
       }
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#540912"
+        "backgroundColor": "#FFFFFF"
       },
       "package": "in.kshetra.app",
       "permissions": [
@@ -50,8 +50,8 @@
       [
         "expo-image-picker",
         {
-          "photosPermission": "Kshetra uses your photos to attach evidence to civic issue reports.",
-          "cameraPermission": "Kshetra uses your camera to capture evidence for civic issue reports."
+          "photosPermission": "Poligram uses your photos to attach evidence to civic issue reports.",
+          "cameraPermission": "Poligram uses your camera to capture evidence for civic issue reports."
         }
       ]
     ],

@@ -3,7 +3,7 @@
  */
 const en =  {
   "common": {
-    "appName": "Kshetra",
+    "appName": "Poligram",
     "loading": "Loading…",
     "error": "Something went wrong",
     "retry": "Retry",
@@ -93,7 +93,7 @@ const en =  {
   "map": {
     "loadingBoundaries": "Loading map…",
     "boundariesFailed": "Couldn't load this map",
-    "title": "Kshetra",
+    "title": "Poligram",
     "searchPlaceholder": "Search constituencies…",
     "tapToExplore": "Tap a constituency to explore",
     "locateMe": "Locate Me",
@@ -422,7 +422,7 @@ const en =  {
     "notifications": "Notification Settings",
     "favorites": "Favorites",
     "language": "Language",
-    "about": "About Kshetra",
+    "about": "About Poligram",
     "version": "Version",
     "settings": "Settings",
     "appearance": "Appearance",
@@ -518,7 +518,7 @@ const en =  {
     }
   },
   "onboarding": {
-    "welcome": "Welcome to Kshetra",
+    "welcome": "Welcome to Poligram",
     "welcomeSubtitle": "India's political intelligence platform",
     "getStarted": "Get Started",
     "nameStep": "What's your name?",
@@ -530,7 +530,7 @@ const en =  {
     "interestsSubtitle": "Pick at least 2 topics",
     "doneStep": "You're all set!",
     "doneSubtitle": "Your personalized political feed is ready",
-    "finish": "Enter Kshetra",
+    "finish": "Enter Poligram",
     "skip": "Skip",
     "interests": {
       "elections": "Elections",
@@ -548,7 +548,7 @@ const en =  {
     }
   },
   "ai": {
-    "title": "Kshetra AI Assistant",
+    "title": "Poligram AI Assistant",
     "askAboutConstituency": "Ask anything about {{name}} elections, candidates, and demographics",
     "askAboutState": "Ask anything about elections, parties, and politics in {{state}}",
     "suggestedQuestions": "Suggested Questions",
@@ -577,9 +577,9 @@ const en =  {
     "searchFailed": "Search failed. Check your connection.",
     "searchPlaceholder": "Ask anything about politics...",
     "tryAsking": "Try asking",
-    "thinkingSearch": "KSHETRA AI is thinking...",
+    "thinkingSearch": "POLIGRAM AI is thinking...",
     "noResponse": "No response received. Try a different query.",
-    "poweredBy": "Powered by KSHETRA AI • Google Gemini",
+    "poweredBy": "Powered by POLIGRAM AI • Google Gemini",
     "qWinner2023": "Who won {{name}} in 2023?",
     "qMarginTrend": "What is the margin trend in {{name}}?",
     "qTellAboutMLA": "Tell me about the MLA of {{name}}",
@@ -963,7 +963,7 @@ const en =  {
   },
   "seedPosts": {
     "seed-ts-1": {
-      "content": "Welcome to Kshetra! This is the community feed for political discussions in Telangana. Share your views on local governance, ask questions about your constituency, and stay informed."
+      "content": "Welcome to Poligram! This is the community feed for political discussions in Telangana. Share your views on local governance, ask questions about your constituency, and stay informed."
     },
     "seed-ts-2": {
       "content": "Road construction on ORR service road near Gachibowli has been stalled for 3 months. Which department should we escalate to? The MLA office says GHMC, GHMC says NHAI. Classic runaround. #infrastructure #serilingampally"
@@ -1529,7 +1529,7 @@ const en =  {
     "whatsappStatusTitle": "WhatsApp Status Poster",
     "whatsappStatusDesc": "1-tap share branded card to Status & Groups",
     "boothsNeedingAttention": "{{count}} Polling Booths Have No In-charge Assigned!",
-    "boothsNeedingAttentionDesc": "Appoint verified Kshetra users as Booth In-charges to track local voters and lead door-to-door canvassing.",
+    "boothsNeedingAttentionDesc": "Appoint verified Poligram users as Booth In-charges to track local voters and lead door-to-door canvassing.",
     "appointInchargeNow": "Assign In-charges Now →",
     "serviceWhatsApp": "WhatsApp",
     "serviceVoice": "Voice Call (OBD)",
@@ -1573,12 +1573,12 @@ const en =  {
     "call": "Call",
     "appointInchargeModalTitle": "Appoint Booth In-charge",
     "workerPhone": "Worker Mobile Phone (10 digits)",
-    "verifiedKshetraUser": "✓ Registered Kshetra User",
-    "notYetOnKshetra": "Not registered on Kshetra yet (Will send WhatsApp invite)",
+    "verifiedKshetraUser": "✓ Registered Poligram User",
+    "notYetOnKshetra": "Not registered on Poligram yet (Will send WhatsApp invite)",
     "workerName": "Full Name",
     "saveInchargeBtn": "Confirm & Assign In-charge",
     "inviteToKshetraTitle": "In-charge Appointed",
-    "inviteToKshetraDesc": "This worker is not yet registered on Kshetra. Invite them via WhatsApp so they can access the voter list and booth survey tool?",
+    "inviteToKshetraDesc": "This worker is not yet registered on Poligram. Invite them via WhatsApp so they can access the voter list and booth survey tool?",
     "sendWhatsAppInvite": "Send WhatsApp Invite",
     "searchWorkerPlaceholder": "Search by name, phone or booth #...",
     "addWorker": "Add Cadre",
@@ -1715,7 +1715,7 @@ const en =  {
     "daysDelayed": "{{n}} days delayed"
   },
   "lmx": {
-    "screenTitle": "Kshetra Live",
+    "screenTitle": "Poligram Live",
     "liveNow": "{{count}} live now",
     "liveNow_one": "{{count}} live now",
     "liveNow_other": "{{count}} live now",
@@ -1743,7 +1743,7 @@ const en =  {
       "clipRecorded": "Clip recorded",
       "broadcastingAs": "Broadcasting as",
       "independent": "Independent",
-      "neutralWatermark": "Neutral Kshetra watermark",
+      "neutralWatermark": "Neutral Poligram watermark",
       "visibility": "Visibility",
       "alertDepartment": "Alert a government department",
       "alertDepartmentDesc": "Your live feed will be routed directly to the selected departments.",
@@ -1800,9 +1800,9 @@ const en =  {
       "selectStream": "Select a stream to distribute",
       "noActiveStreams": "No active streams available for distribution.",
       "youtubeRelay": "YouTube / Digital Relay",
-      "youtubeRelayDesc": "Push your branded, moderated Kshetra stream directly to YouTube Live or any custom RTMP endpoint.",
+      "youtubeRelayDesc": "Push your branded, moderated Poligram stream directly to YouTube Live or any custom RTMP endpoint.",
       "embeddablePlayer": "Embeddable Player",
-      "embeddablePlayerDesc": "Drop this responsive snippet into any website or CMS to embed a live Kshetra player.",
+      "embeddablePlayerDesc": "Drop this responsive snippet into any website or CMS to embed a live Poligram player.",
       "srtEndpoint": "SRT Endpoint (broadcasters)",
       "srtEndpointDesc": "Broadcast-grade SRT for TV newsroom SDI/NDI ingest. Sub-second latency.",
       "webReceiver": "Universal Web Receiver",
@@ -1847,7 +1847,7 @@ const en =  {
     "visibility": {
       "public": "Public",
       "publicShort": "Public",
-      "publicDesc": "Appears on the Kshetra Live tab and is eligible for media/broadcast distribution.",
+      "publicDesc": "Appears on the Poligram Live tab and is eligible for media/broadcast distribution.",
       "exclusivePartner": "Exclusive to Partner",
       "exclusivePartnerShort": "Exclusive",
       "exclusivePartnerDesc": "Only your affiliated organization receives it. Not shown on the Live tab.",
@@ -2293,7 +2293,7 @@ const en =  {
     "errorTitle": "Could not create profile",
     "errorMsg": "Something went wrong. Please try again.",
     "letsGo": "Let’s go",
-    "disclaimer": "This profile is for civic engagement on Kshetra and is not a nomination or registration with the Election Commission of India. Filing an actual nomination follows the legal process covered in the Leadership Academy."
+    "disclaimer": "This profile is for civic engagement on Poligram and is not a nomination or registration with the Election Commission of India. Filing an actual nomination follows the legal process covered in the Leadership Academy."
   },
   "compare": {
     "title": "Compare",
@@ -2758,7 +2758,7 @@ const en =  {
       "leadershipAcademy": "Leadership Academy",
       "candidateXRay": "Candidate X-Ray",
       "goLive": "Go Live",
-      "kshetraLive": "Kshetra Live",
+      "kshetraLive": "Poligram Live",
       "deptConsole": "Dept. Console",
       "moderation": "Moderation",
       "distribution": "Distribution",

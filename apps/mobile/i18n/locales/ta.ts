@@ -530,7 +530,7 @@ const ta = {
     "interestsSubtitle": "Pick at least 2 topics",
     "doneStep": "நீங்கள் தயாராகிவிட்டீர்கள்!",
     "doneSubtitle": "Your personalized political feed is ready",
-    "finish": "Enter Kshetra",
+    "finish": "Enter Poligram",
     "skip": "Skip",
     "interests": {
       "elections": "தேர்தல்கள்",
@@ -1573,12 +1573,12 @@ const ta = {
     "call": "கால்",
     "appointInchargeModalTitle": "பூத் இந்-சார்ஜ் நியாமகம்",
     "workerPhone": "கார்யகர்த மொபைல் நம்பர் (10 அம்கெலு)",
-    "verifiedKshetraUser": "✓ திருவீகரிம்சபடிந க்ஷேத்ர விநியோகதாருடு",
-    "notYetOnKshetra": "இம்கா க்ஷேத்ரலோ நமோது காலேது (வாட்ஸாப் ஆஹ்வாநம் பம்பபடுதும்தி)",
+    "verifiedKshetraUser": "✓ திருவீகரிம்சபடிந பாலிகிராம் விநியோகதாருடு",
+    "notYetOnKshetra": "இம்கா பாலிகிராமிலோ நமோது காலேது (வாட்ஸாப் ஆஹ்வாநம் பம்பபடுதும்தி)",
     "workerName": "பூர்தி பேரு",
     "saveInchargeBtn": "திருவீகரிம்சி இந்-சார்ஜ்‌கா நியமிம்சம்டி",
     "inviteToKshetraTitle": "இந்-சார்ஜ் நியமிம்சபட்டாரு",
-    "inviteToKshetraDesc": "ஈ கார்யகர்த இம்கா க்ஷேத்ர யாப்‌லோ நமோது காலேது. ஓடர்ல ஜாபிதாநு சூஸேம்துகு வாட்ஸாப் த்வாரா ஆஹ்வாநம் பம்பமம்டாரா?",
+    "inviteToKshetraDesc": "ஈ கார்யகர்த இம்கா பாலிகிராம் யாப்‌லோ நமோது காலேது. ஓடர்ல ஜாபிதாநு சூஸேம்துகு வாட்ஸாப் த்வாரா ஆஹ்வாநம் பம்பமம்டாரா?",
     "sendWhatsAppInvite": "வாட்ஸாப் ஆஹ்வாநம் பம்பம்டி",
     "searchWorkerPlaceholder": "பேரு, போந் லேதா பூத் நம்பர் த்வாரா வெதகம்டி...",
     "addWorker": "கார்யகர்தநு சேர்சம்டி",
@@ -2293,7 +2293,7 @@ const ta = {
     "errorTitle": "ப்ரொபைல் ஸிருஷ்டிம்சடம் ஸாத்யம் காலேது",
     "errorMsg": "ஏதோ தப்பு ஜரிகிம்தி. தயசேஸி மள்லீ ப்ரயத்நிம்சம்டி.",
     "letsGo": "தொடங்குவோம்",
-    "disclaimer": "ஈ ப்ரொபைல் க்ஷேத்ரலோ பௌர பாகஸ்வாம்யம் கோஸம் மாத்ரமே."
+    "disclaimer": "ஈ ப்ரொபைல் பாலிகிராமிலோ பௌர பாகஸ்வாம்யம் கோஸம் மாத்ரமே."
   },
   "compare": {
     "title": "ஒப்பிடுக",
@@ -2758,7 +2758,7 @@ const ta = {
       "leadershipAcademy": "தலைமைத்துவ அகாடமி",
       "candidateXRay": "வேட்பாளர் எக்ஸ்-ரே",
       "goLive": "நேரலை தொடங்கு",
-      "kshetraLive": "க்ஷேத்ரா லைவ்",
+      "kshetraLive": "பாலிகிராம் லைவ்",
       "deptConsole": "துறை பணியகம்",
       "moderation": "மதிப்பாய்வு",
       "distribution": "விநியோகம்",

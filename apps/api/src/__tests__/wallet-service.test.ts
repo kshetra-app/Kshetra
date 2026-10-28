@@ -46,7 +46,9 @@ describe('Campaign Wallet Service (walletService.ts)', () => {
     });
 
     it('validates recharge orders with minimum amounts', async () => {
-      await expect(createWalletRechargeOrder('pol-1', 400)).rejects.toThrow('Minimum wallet recharge is ₹500');
+      await expect(createWalletRechargeOrder('pol-1', 400)).rejects.toThrow(
+        'Minimum wallet recharge is ₹500',
+      );
 
       const order = await createWalletRechargeOrder('pol-1', 1500);
       expect(order.orderId).toMatch(/^order_/);
@@ -81,7 +83,7 @@ describe('Campaign Wallet Service (walletService.ts)', () => {
         500,
         'voice_obd',
         'obd_call_101',
-        'Voice blast Ward 4'
+        'Voice blast Ward 4',
       );
 
       expect(updated.balanceINR).toBe(balance - 500);
@@ -98,7 +100,13 @@ describe('Campaign Wallet Service (walletService.ts)', () => {
       const hugeAmount = wallet.balanceINR + 50000;
 
       await expect(
-        deductWalletForService('pol-insufficient-test', hugeAmount, 'meta_boost', 'meta_ad_99', 'Ad campaign')
+        deductWalletForService(
+          'pol-insufficient-test',
+          hugeAmount,
+          'meta_boost',
+          'meta_ad_99',
+          'Ad campaign',
+        ),
       ).rejects.toThrow(/Insufficient wallet balance/);
     });
   });

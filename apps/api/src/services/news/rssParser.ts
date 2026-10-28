@@ -51,7 +51,10 @@ function decodeEntities(input: string): string {
 }
 
 function stripHtml(input: string): string {
-  return decodeEntities(input).replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+  return decodeEntities(input)
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
 }
 
 function firstMatch(block: string, patterns: RegExp[]): string | undefined {

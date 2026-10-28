@@ -41,8 +41,14 @@ import { PY_CONSTITUENCIES } from '../../../../data/seed/puducherry-constituenci
 import { JK_CONSTITUENCIES } from '../../../../data/seed/jammu-kashmir-constituencies';
 
 import { TELANGANA_ELECTION_HISTORY } from '../../../../data/seed/telangana-election-history';
-import { TELANGANA_MLA_PROFILES, getMLAProfile } from '../../../../data/seed/telangana-mla-profiles';
-import { TELANGANA_2014_RESULTS, TELANGANA_2018_RESULTS } from '../../../../data/seed/telangana-historical-results';
+import {
+  TELANGANA_MLA_PROFILES,
+  getMLAProfile,
+} from '../../../../data/seed/telangana-mla-profiles';
+import {
+  TELANGANA_2014_RESULTS,
+  TELANGANA_2018_RESULTS,
+} from '../../../../data/seed/telangana-historical-results';
 import { AP_2019_RESULTS } from '../../../../data/seed/andhra-pradesh-historical-results';
 import { getKA2018Result } from '../../../../data/seed/karnataka-historical-results';
 import { getMH2019Result } from '../../../../data/seed/maharashtra-historical-results';
@@ -74,7 +80,19 @@ import { getPY2016Result } from '../../../../data/seed/puducherry-historical-res
 import { getHP2017Result } from '../../../../data/seed/himachal-pradesh-historical-results';
 import { getJK2014Result } from '../../../../data/seed/jammu-kashmir-historical-results';
 
-const HISTORICAL_GETTERS: Record<string, (acNo: number) => { year?: number; party: string; winner: string; votes?: number; margin?: number; runnerUp?: string } | undefined> = {
+const HISTORICAL_GETTERS: Record<
+  string,
+  (acNo: number) =>
+    | {
+        year?: number;
+        party: string;
+        winner: string;
+        votes?: number;
+        margin?: number;
+        runnerUp?: string;
+      }
+    | undefined
+> = {
   KA: getKA2018Result,
   MH: getMH2019Result,
   TN: getTN2016Result,
@@ -182,7 +200,8 @@ export function resolveByElectionOverride(
   const found = CONFIRMED_BY_ELECTIONS.find((e) => {
     if (e.stateCode !== code) return false;
     if (e.acNo === acNo) return true;
-    if (constituencyName && e.constituencyName.toLowerCase() === constituencyName.toLowerCase()) return true;
+    if (constituencyName && e.constituencyName.toLowerCase() === constituencyName.toLowerCase())
+      return true;
     return false;
   });
   if (!found) return null;
@@ -196,23 +215,51 @@ export function resolveByElectionOverride(
 export const canonicalGeographyService =
   canonicalGeoModule?.canonicalGeographyService ??
   new (class FallbackCanonicalGeographyService {
-    isAvailable() { return false; }
-    async getStates() { return []; }
-    async getState() { return null; }
-    async getParliamentaryConstituencies() { return []; }
-    async getParliamentaryConstituency() { return null; }
-    async getConstituencies() { return []; }
-    async getConstituency() { return null; }
-    async searchConstituencies() { return []; }
-    async getConstituencyElectionData() { return null; }
-    getConfirmedByElections() { return CONFIRMED_BY_ELECTIONS; }
+    isAvailable() {
+      return false;
+    }
+    async getStates() {
+      return [];
+    }
+    async getState() {
+      return null;
+    }
+    async getParliamentaryConstituencies() {
+      return [];
+    }
+    async getParliamentaryConstituency() {
+      return null;
+    }
+    async getConstituencies() {
+      return [];
+    }
+    async getConstituency() {
+      return null;
+    }
+    async searchConstituencies() {
+      return [];
+    }
+    async getConstituencyElectionData() {
+      return null;
+    }
+    getConfirmedByElections() {
+      return CONFIRMED_BY_ELECTIONS;
+    }
   })();
 
 // Generic Mapper
 function genericToBrief(stateCode: string, c: any): ConstituencyBrief {
   const code = stateCode.toUpperCase();
-  let currentParty = c.winner2025 ?? c.winner2024 ?? c.winner2023 ?? c.winner2022 ?? c.winner2021 ?? c.winner ?? '';
-  let currentMLA = c.winnerName2025 ?? c.winnerName2024 ?? c.winnerName2023 ?? c.winnerName2022 ?? c.winnerName2021 ?? c.winnerName ?? '';
+  let currentParty =
+    c.winner2025 ?? c.winner2024 ?? c.winner2023 ?? c.winner2022 ?? c.winner2021 ?? c.winner ?? '';
+  let currentMLA =
+    c.winnerName2025 ??
+    c.winnerName2024 ??
+    c.winnerName2023 ??
+    c.winnerName2022 ??
+    c.winnerName2021 ??
+    c.winnerName ??
+    '';
 
   // By-election overrides resolved dynamically via canonicalGeographyService schedule
   const override = resolveByElectionOverride(code, c.acNo, c.name);
@@ -323,7 +370,8 @@ export function getGeographicCapability(stateCode: string): GeographicCapability
       hasCleanConstituencyMapping: false,
       isAuthoritativeAccepted: false,
       activeDefects: ['DEF-W021-01'],
-      notes: 'Telangana has local boundary asset data/geo/telangana-assembly.geojson with 120 features for 119 statutory seats. AC 119 contains 2 distinct polygon features (FID 4159 & 4160). Blocked pending official CEO Telangana gazette consolidation.',
+      notes:
+        'Telangana has local boundary asset data/geo/telangana-assembly.geojson with 120 features for 119 statutory seats. AC 119 contains 2 distinct polygon features (FID 4159 & 4160). Blocked pending official CEO Telangana gazette consolidation.',
     };
   }
 
@@ -334,7 +382,8 @@ export function getGeographicCapability(stateCode: string): GeographicCapability
     hasCleanConstituencyMapping: false,
     isAuthoritativeAccepted: false,
     activeDefects: ['DEF-W021-03'],
-    notes: 'Statutory boundary asset unavailable in canonical data/geo/. Ingestion blocked pending verified survey feeds.',
+    notes:
+      'Statutory boundary asset unavailable in canonical data/geo/. Ingestion blocked pending verified survey feeds.',
   };
 }
 
@@ -398,10 +447,7 @@ export function getRawConstituency(stateCode: string, acNo: number): any | null 
 }
 
 /** Search constituencies across a state */
-export function searchConstituencies(
-  stateCode: string,
-  query: string,
-): ConstituencyBrief[] {
+export function searchConstituencies(stateCode: string, query: string): ConstituencyBrief[] {
   const all = getConstituencies(stateCode);
   const q = query.toLowerCase();
   return all.filter(
@@ -448,7 +494,10 @@ export interface ConstituencyElectionData {
  * Preserves actual election years from explicit record evidence.
  * Preserves null for missing vote totals, margins, or unknown election years without state-code guessing or zero/2024 coercion.
  */
-export function getConstituencyElectionData(stateCode: string, acNo: number): ConstituencyElectionData | null {
+export function getConstituencyElectionData(
+  stateCode: string,
+  acNo: number,
+): ConstituencyElectionData | null {
   if (!stateCode || typeof stateCode !== 'string' || acNo == null) return null;
   const code = stateCode.toUpperCase();
   const raw = getRawConstituency(code, acNo);
@@ -554,58 +603,58 @@ export function getConstituencyElectionData(stateCode: string, acNo: number): Co
 
   const elections: ConstituencyElectionSummary[] = [recentElection];
 
-const MULTI_CYCLE_HISTORICAL_GETTERS: Record<
-  string,
-  (acNo: number) => ConstituencyElectionSummary[]
-> = {
-  TS: (acNo: number) => {
-    const list: ConstituencyElectionSummary[] = [];
-    const h2018 = TELANGANA_2018_RESULTS.find((r) => r.acNo === acNo);
-    if (h2018) {
-      list.push({
-        electionYear: 2018,
-        electionType: 'GENERAL',
-        winner: h2018.party,
-        winnerName: h2018.winner,
-        winnerVotes: null,
-        runnerUp: '',
-        margin: null,
-        marginPercent: null,
-      });
-    }
-    const h2014 = TELANGANA_2014_RESULTS.find((r) => r.acNo === acNo);
-    if (h2014) {
-      list.push({
-        electionYear: 2014,
-        electionType: 'GENERAL',
-        winner: h2014.party,
-        winnerName: h2014.winner,
-        winnerVotes: null,
-        runnerUp: '',
-        margin: null,
-        marginPercent: null,
-      });
-    }
-    return list;
-  },
-  AP: (acNo: number) => {
-    const list: ConstituencyElectionSummary[] = [];
-    const h2019 = AP_2019_RESULTS.find((r) => r.acNo === acNo);
-    if (h2019) {
-      list.push({
-        electionYear: 2019,
-        electionType: 'GENERAL',
-        winner: h2019.party,
-        winnerName: h2019.winner,
-        winnerVotes: null,
-        runnerUp: '',
-        margin: null,
-        marginPercent: null,
-      });
-    }
-    return list;
-  },
-};
+  const MULTI_CYCLE_HISTORICAL_GETTERS: Record<
+    string,
+    (acNo: number) => ConstituencyElectionSummary[]
+  > = {
+    TS: (acNo: number) => {
+      const list: ConstituencyElectionSummary[] = [];
+      const h2018 = TELANGANA_2018_RESULTS.find((r) => r.acNo === acNo);
+      if (h2018) {
+        list.push({
+          electionYear: 2018,
+          electionType: 'GENERAL',
+          winner: h2018.party,
+          winnerName: h2018.winner,
+          winnerVotes: null,
+          runnerUp: '',
+          margin: null,
+          marginPercent: null,
+        });
+      }
+      const h2014 = TELANGANA_2014_RESULTS.find((r) => r.acNo === acNo);
+      if (h2014) {
+        list.push({
+          electionYear: 2014,
+          electionType: 'GENERAL',
+          winner: h2014.party,
+          winnerName: h2014.winner,
+          winnerVotes: null,
+          runnerUp: '',
+          margin: null,
+          marginPercent: null,
+        });
+      }
+      return list;
+    },
+    AP: (acNo: number) => {
+      const list: ConstituencyElectionSummary[] = [];
+      const h2019 = AP_2019_RESULTS.find((r) => r.acNo === acNo);
+      if (h2019) {
+        list.push({
+          electionYear: 2019,
+          electionType: 'GENERAL',
+          winner: h2019.party,
+          winnerName: h2019.winner,
+          winnerVotes: null,
+          runnerUp: '',
+          margin: null,
+          marginPercent: null,
+        });
+      }
+      return list;
+    },
+  };
 
   // Attach verified historical per-constituency election records via data-driven registry
   const multiGetter = MULTI_CYCLE_HISTORICAL_GETTERS[code];
@@ -672,7 +721,10 @@ export async function getCanonicalConstituencies(stateCode: string): Promise<Con
  * Queries PostgreSQL public.constituencies via canonicalGeographyService when database is configured;
  * falls back seamlessly to in-memory seed data when offline.
  */
-export async function getCanonicalConstituency(stateCode: string, acNo: number): Promise<ConstituencyBrief | null> {
+export async function getCanonicalConstituency(
+  stateCode: string,
+  acNo: number,
+): Promise<ConstituencyBrief | null> {
   if (canonicalGeographyService.isAvailable()) {
     try {
       const dbResult = await canonicalGeographyService.getConstituency(stateCode, acNo);
@@ -741,7 +793,10 @@ export async function getAllCanonicalStatesInfo(): Promise<StateDataInfo[]> {
 /**
  * Asynchronous canonical election data fetch.
  */
-export async function getCanonicalConstituencyElectionData(stateCode: string, acNo: number): Promise<ConstituencyElectionData | null> {
+export async function getCanonicalConstituencyElectionData(
+  stateCode: string,
+  acNo: number,
+): Promise<ConstituencyElectionData | null> {
   if (canonicalGeographyService.isAvailable()) {
     try {
       const dbData = await canonicalGeographyService.getConstituencyElectionData(stateCode, acNo);

@@ -26,9 +26,7 @@ export interface ValidatedEgressTarget {
 // ─── IP PARSING & CIDR RANGE HELPERS ───
 
 function ipv4ToInt(ip: string): number {
-  return ip
-    .split('.')
-    .reduce((acc, octet) => ((acc << 8) + Number.parseInt(octet, 10)) >>> 0, 0);
+  return ip.split('.').reduce((acc, octet) => ((acc << 8) + Number.parseInt(octet, 10)) >>> 0, 0);
 }
 
 function isIpv4InCidr(ipInt: number, cidrBase: string, prefixLength: number): boolean {
@@ -76,7 +74,12 @@ export function isBlockedIpv6(ip: string): { blocked: boolean; reason?: string }
   const lower = ip.toLowerCase();
 
   // Loopback / Unspecified
-  if (lower === '::1' || lower === '::' || lower === '0:0:0:0:0:0:0:1' || lower === '0:0:0:0:0:0:0:0') {
+  if (
+    lower === '::1' ||
+    lower === '::' ||
+    lower === '0:0:0:0:0:0:0:1' ||
+    lower === '0:0:0:0:0:0:0:0'
+  ) {
     return { blocked: true, reason: 'IPv6 Loopback/Unspecified' };
   }
 
@@ -91,7 +94,12 @@ export function isBlockedIpv6(ip: string): { blocked: boolean; reason?: string }
   }
 
   // Link-Local (fe80::/10)
-  if (lower.startsWith('fe8') || lower.startsWith('fe9') || lower.startsWith('fea') || lower.startsWith('feb')) {
+  if (
+    lower.startsWith('fe8') ||
+    lower.startsWith('fe9') ||
+    lower.startsWith('fea') ||
+    lower.startsWith('feb')
+  ) {
     return { blocked: true, reason: 'IPv6 Link-Local' };
   }
 
@@ -145,7 +153,7 @@ export async function validateAndPinEgressTarget(
   options: {
     mockDnsResolver?: (hostname: string) => Promise<string[]>;
     allowLocalhostInTest?: boolean;
-  } = {}
+  } = {},
 ): Promise<ValidatedEgressTarget> {
   let parsed: URL;
   try {
@@ -160,7 +168,9 @@ export async function validateAndPinEgressTarget(
 
   // Userinfo forbidden (https://user:pass@host/)
   if (parsed.username || parsed.password) {
-    throw new Error('USERINFO_PROHIBITED: Webhook URLs must not contain embedded username or password credentials.');
+    throw new Error(
+      'USERINFO_PROHIBITED: Webhook URLs must not contain embedded username or password credentials.',
+    );
   }
 
   const hostname = parsed.hostname;
@@ -169,7 +179,7 @@ export async function validateAndPinEgressTarget(
   }
 
   // Port restrictions: 443 default, 80 only in test mode
-  let port = parsed.port ? Number.parseInt(parsed.port, 10) : (isHttps ? 443 : 80);
+  let port = parsed.port ? Number.parseInt(parsed.port, 10) : isHttps ? 443 : 80;
   if (Number.isNaN(port)) {
     port = isHttps ? 443 : 80;
   }
@@ -177,12 +187,15 @@ export async function validateAndPinEgressTarget(
   // Localhost test override validation
   const isLocalhost = hostname === 'localhost' || hostname === '127.0.0.1' || hostname === '::1';
   const allowLocalhost =
-    (options.allowLocalhostInTest || process.env.ALLOW_LOCALHOST_TEST_ONLY === 'true') && isLocalhost;
+    (options.allowLocalhostInTest || process.env.ALLOW_LOCALHOST_TEST_ONLY === 'true') &&
+    isLocalhost;
 
   if (allowLocalhost) {
     // Fail-closed gate: Localhost testing is strictly forbidden outside NODE_ENV === 'test'
     if (process.env.NODE_ENV !== 'test') {
-      throw new Error('FATAL_SSRF_CONFIGURATION_VIOLATION: Localhost override attempted outside NODE_ENV=test');
+      throw new Error(
+        'FATAL_SSRF_CONFIGURATION_VIOLATION: Localhost override attempted outside NODE_ENV=test',
+      );
     }
 
     // Return mock local test target
@@ -204,12 +217,16 @@ export async function validateAndPinEgressTarget(
 
   // In production / non-test: Plain HTTP is strictly forbidden
   if (!isHttps) {
-    throw new Error('INVALID_PROTOCOL_HTTPS_REQUIRED: Webhooks must use encrypted https:// protocol.');
+    throw new Error(
+      'INVALID_PROTOCOL_HTTPS_REQUIRED: Webhooks must use encrypted https:// protocol.',
+    );
   }
 
   // Port must be 443
   if (port !== 443) {
-    throw new Error(`INVALID_PORT_FORBIDDEN: Webhooks are restricted to standard HTTPS port 443. Port ${port} is prohibited.`);
+    throw new Error(
+      `INVALID_PORT_FORBIDDEN: Webhooks are restricted to standard HTTPS port 443. Port ${port} is prohibited.`,
+    );
   }
 
   // Pre-connect DNS resolution
@@ -223,7 +240,9 @@ export async function validateAndPinEgressTarget(
       const records = await dns.lookup(hostname, { all: true, verbatim: true });
       resolvedIps = records.map((r) => r.address);
     } catch (err: any) {
-      throw new Error(`DNS_RESOLUTION_FAILED: Failed to resolve hostname '${hostname}': ${err.message}`);
+      throw new Error(
+        `DNS_RESOLUTION_FAILED: Failed to resolve hostname '${hostname}': ${err.message}`,
+      );
     }
   }
 
@@ -236,7 +255,7 @@ export async function validateAndPinEgressTarget(
     const check = isBlockedIp(ip);
     if (check.blocked) {
       throw new Error(
-        `BLOCKED_PRIVATE_IP_ADDRESS: Destination '${hostname}' resolved to blocked private or reserved IP address (${ip} - ${check.reason}). Outbound dispatch aborted.`
+        `BLOCKED_PRIVATE_IP_ADDRESS: Destination '${hostname}' resolved to blocked private or reserved IP address (${ip} - ${check.reason}). Outbound dispatch aborted.`,
       );
     }
   }

@@ -39,10 +39,19 @@
 import type { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 import type { ApiSuccessEnvelope } from '@kshetra/shared';
 import { sendApiError } from '../lib/replyHelper';
-import { getAllStatesInfo, getStateInfo, getConstituencies, getConstituency } from '../services/stateData';
+import {
+  getAllStatesInfo,
+  getStateInfo,
+  getConstituencies,
+  getConstituency,
+} from '../services/stateData';
 import { electionService } from '../services/electionService';
 import { politicalEntityService } from '../services/politicalEntityService';
-import { delimitationService, MIN_SAFE_REQUESTED_SEATS, MAX_SAFE_REQUESTED_SEATS } from '../services/delimitationService';
+import {
+  delimitationService,
+  MIN_SAFE_REQUESTED_SEATS,
+  MAX_SAFE_REQUESTED_SEATS,
+} from '../services/delimitationService';
 import { webhookRoutes } from '../modules/webhooks';
 
 // ─── CANONICAL RESPONSE ENVELOPE HELPER ───
@@ -147,7 +156,10 @@ const delimSimulationQuerySchema = {
   properties: {
     seats: { type: 'string' },
     maxDeviation: { type: 'string' },
-    mode: { type: 'string', enum: ['current', 'as_of', 'explicit', 'future_anticipated', 'scenario'] },
+    mode: {
+      type: 'string',
+      enum: ['current', 'as_of', 'explicit', 'future_anticipated', 'scenario'],
+    },
     regimeId: { type: 'string' },
     proposalId: { type: 'string' },
     date: { type: 'string' },
@@ -168,7 +180,7 @@ export async function saasV1Routes(app: FastifyInstance): Promise<void> {
         400,
         'Bad Request',
         'Direct provision or override of isScenario or simulation boolean is strictly forbidden. Provenance is derived exclusively by the server.',
-        { code: 'SCENARIO_INPUT_FORBIDDEN' }
+        { code: 'SCENARIO_INPUT_FORBIDDEN' },
       );
     }
   });
@@ -191,15 +203,23 @@ export async function saasV1Routes(app: FastifyInstance): Promise<void> {
         provenance: {
           authorityLayer: 'STATUTORY_FACT',
           dataStatus: 'OFFICIAL',
-          sourceReference: 'ECI Schedule XXXI / Delimitation of Parliamentary and Assembly Constituencies Order, 2008',
+          sourceReference:
+            'ECI Schedule XXXI / Delimitation of Parliamentary and Assembly Constituencies Order, 2008',
         },
       }));
 
       return sendSaasSuccess(reply, request, { states, total: states.length });
     } catch (err: any) {
-      return sendApiError(reply, request, 500, 'Internal Server Error', 'Failed to retrieve states list', {
-        code: 'GEO_LOOKUP_FAILURE',
-      });
+      return sendApiError(
+        reply,
+        request,
+        500,
+        'Internal Server Error',
+        'Failed to retrieve states list',
+        {
+          code: 'GEO_LOOKUP_FAILURE',
+        },
+      );
     }
   });
 
@@ -215,9 +235,16 @@ export async function saasV1Routes(app: FastifyInstance): Promise<void> {
       const info = getStateInfo(stateCode);
 
       if (!info) {
-        return sendApiError(reply, request, 404, 'Not Found', `State with code '${request.params.stateCode}' is not supported or not found.`, {
-          code: 'STATE_NOT_FOUND',
-        });
+        return sendApiError(
+          reply,
+          request,
+          404,
+          'Not Found',
+          `State with code '${request.params.stateCode}' is not supported or not found.`,
+          {
+            code: 'STATE_NOT_FOUND',
+          },
+        );
       }
 
       const responseData = {
@@ -230,12 +257,13 @@ export async function saasV1Routes(app: FastifyInstance): Promise<void> {
         provenance: {
           authorityLayer: 'STATUTORY_FACT',
           dataStatus: 'OFFICIAL',
-          sourceReference: 'ECI Schedule XXXI / Delimitation of Parliamentary and Assembly Constituencies Order, 2008',
+          sourceReference:
+            'ECI Schedule XXXI / Delimitation of Parliamentary and Assembly Constituencies Order, 2008',
         },
       };
 
       return sendSaasSuccess(reply, request, responseData);
-    }
+    },
   );
 
   /**
@@ -250,9 +278,16 @@ export async function saasV1Routes(app: FastifyInstance): Promise<void> {
       const info = getStateInfo(stateCode);
 
       if (!info) {
-        return sendApiError(reply, request, 404, 'Not Found', `State with code '${request.params.stateCode}' is not supported or not found.`, {
-          code: 'STATE_NOT_FOUND',
-        });
+        return sendApiError(
+          reply,
+          request,
+          404,
+          'Not Found',
+          `State with code '${request.params.stateCode}' is not supported or not found.`,
+          {
+            code: 'STATE_NOT_FOUND',
+          },
+        );
       }
 
       const list = getConstituencies(stateCode).map((c) => ({
@@ -277,7 +312,7 @@ export async function saasV1Routes(app: FastifyInstance): Promise<void> {
         count: list.length,
         constituencies: list,
       });
-    }
+    },
   );
 
   /**
@@ -293,9 +328,16 @@ export async function saasV1Routes(app: FastifyInstance): Promise<void> {
 
       const info = getStateInfo(stateCode);
       if (!info) {
-        return sendApiError(reply, request, 404, 'Not Found', `State with code '${request.params.stateCode}' not found.`, {
-          code: 'STATE_NOT_FOUND',
-        });
+        return sendApiError(
+          reply,
+          request,
+          404,
+          'Not Found',
+          `State with code '${request.params.stateCode}' not found.`,
+          {
+            code: 'STATE_NOT_FOUND',
+          },
+        );
       }
 
       const c = getConstituency(stateCode, acNo);
@@ -306,7 +348,7 @@ export async function saasV1Routes(app: FastifyInstance): Promise<void> {
           404,
           'Not Found',
           `Constituency AC-${acNo} not found in state '${request.params.stateCode}'.`,
-          { code: 'CONSTITUENCY_NOT_FOUND' }
+          { code: 'CONSTITUENCY_NOT_FOUND' },
         );
       }
 
@@ -327,7 +369,7 @@ export async function saasV1Routes(app: FastifyInstance): Promise<void> {
       };
 
       return sendSaasSuccess(reply, request, responseData);
-    }
+    },
   );
 
   // ════════════════════════════════════════════════════════════════════════════
@@ -370,11 +412,18 @@ export async function saasV1Routes(app: FastifyInstance): Promise<void> {
           events: sanitizedEvents,
         });
       } catch (err: any) {
-        return sendApiError(reply, request, 500, 'Internal Server Error', 'Failed to retrieve elections list', {
-          code: 'ELECTION_LOOKUP_FAILURE',
-        });
+        return sendApiError(
+          reply,
+          request,
+          500,
+          'Internal Server Error',
+          'Failed to retrieve elections list',
+          {
+            code: 'ELECTION_LOOKUP_FAILURE',
+          },
+        );
       }
-    }
+    },
   );
 
   /**
@@ -388,9 +437,16 @@ export async function saasV1Routes(app: FastifyInstance): Promise<void> {
       try {
         const event = await electionService.getElectionEventById(request.params.id);
         if (!event) {
-          return sendApiError(reply, request, 404, 'Not Found', `Election event '${request.params.id}' not found.`, {
-            code: 'ELECTION_NOT_FOUND',
-          });
+          return sendApiError(
+            reply,
+            request,
+            404,
+            'Not Found',
+            `Election event '${request.params.id}' not found.`,
+            {
+              code: 'ELECTION_NOT_FOUND',
+            },
+          );
         }
 
         return sendSaasSuccess(reply, request, {
@@ -402,11 +458,18 @@ export async function saasV1Routes(app: FastifyInstance): Promise<void> {
           },
         });
       } catch (err: any) {
-        return sendApiError(reply, request, 500, 'Internal Server Error', 'Failed to retrieve election event', {
-          code: 'ELECTION_LOOKUP_FAILURE',
-        });
+        return sendApiError(
+          reply,
+          request,
+          500,
+          'Internal Server Error',
+          'Failed to retrieve election event',
+          {
+            code: 'ELECTION_LOOKUP_FAILURE',
+          },
+        );
       }
-    }
+    },
   );
 
   /**
@@ -426,9 +489,16 @@ export async function saasV1Routes(app: FastifyInstance): Promise<void> {
 
         const event = await electionService.getElectionEventById(id);
         if (!event) {
-          return sendApiError(reply, request, 404, 'Not Found', `Election event '${id}' not found.`, {
-            code: 'ELECTION_NOT_FOUND',
-          });
+          return sendApiError(
+            reply,
+            request,
+            404,
+            'Not Found',
+            `Election event '${id}' not found.`,
+            {
+              code: 'ELECTION_NOT_FOUND',
+            },
+          );
         }
 
         const result = await electionService.listElectionContests(id, {
@@ -455,11 +525,18 @@ export async function saasV1Routes(app: FastifyInstance): Promise<void> {
           contests: contestsWithProv,
         });
       } catch (err: any) {
-        return sendApiError(reply, request, 500, 'Internal Server Error', 'Failed to retrieve election contests', {
-          code: 'CONTESTS_LOOKUP_FAILURE',
-        });
+        return sendApiError(
+          reply,
+          request,
+          500,
+          'Internal Server Error',
+          'Failed to retrieve election contests',
+          {
+            code: 'CONTESTS_LOOKUP_FAILURE',
+          },
+        );
       }
-    }
+    },
   );
 
   /**
@@ -481,7 +558,7 @@ export async function saasV1Routes(app: FastifyInstance): Promise<void> {
             404,
             'Not Found',
             `Contest for constituency '${constituencyId}' in election '${id}' not found.`,
-            { code: 'CONTEST_NOT_FOUND' }
+            { code: 'CONTEST_NOT_FOUND' },
           );
         }
 
@@ -522,11 +599,18 @@ export async function saasV1Routes(app: FastifyInstance): Promise<void> {
           runnerUp: runnerUp || null,
         });
       } catch (err: any) {
-        return sendApiError(reply, request, 500, 'Internal Server Error', 'Failed to retrieve contest details', {
-          code: 'CONTEST_DETAIL_FAILURE',
-        });
+        return sendApiError(
+          reply,
+          request,
+          500,
+          'Internal Server Error',
+          'Failed to retrieve contest details',
+          {
+            code: 'CONTEST_DETAIL_FAILURE',
+          },
+        );
       }
-    }
+    },
   );
 
   // ════════════════════════════════════════════════════════════════════════════
@@ -538,7 +622,14 @@ export async function saasV1Routes(app: FastifyInstance): Promise<void> {
    * Search canonical political persons and recognized organizations.
    */
   app.get<{
-    Querystring: { q?: string; type?: 'person' | 'organization'; state?: string; role?: string; limit?: number; offset?: number };
+    Querystring: {
+      q?: string;
+      type?: 'person' | 'organization';
+      state?: string;
+      role?: string;
+      limit?: number;
+      offset?: number;
+    };
   }>(
     '/api/vsaas/v1/entities/search',
     { schema: { querystring: entitySearchQuerySchema } },
@@ -594,11 +685,18 @@ export async function saasV1Routes(app: FastifyInstance): Promise<void> {
           organizations: sanitizedOrgs,
         });
       } catch (err: any) {
-        return sendApiError(reply, request, 500, 'Internal Server Error', 'Failed to execute entity search', {
-          code: 'ENTITY_SEARCH_FAILURE',
-        });
+        return sendApiError(
+          reply,
+          request,
+          500,
+          'Internal Server Error',
+          'Failed to execute entity search',
+          {
+            code: 'ENTITY_SEARCH_FAILURE',
+          },
+        );
       }
-    }
+    },
   );
 
   /**
@@ -612,9 +710,16 @@ export async function saasV1Routes(app: FastifyInstance): Promise<void> {
       try {
         const person = await politicalEntityService.getPersonById(request.params.id);
         if (!person) {
-          return sendApiError(reply, request, 404, 'Not Found', `Political person '${request.params.id}' not found.`, {
-            code: 'PERSON_NOT_FOUND',
-          });
+          return sendApiError(
+            reply,
+            request,
+            404,
+            'Not Found',
+            `Political person '${request.params.id}' not found.`,
+            {
+              code: 'PERSON_NOT_FOUND',
+            },
+          );
         }
 
         const sanitizedPerson = {
@@ -641,10 +746,10 @@ export async function saasV1Routes(app: FastifyInstance): Promise<void> {
           statusCode,
           statusCode === 404 ? 'Not Found' : 'Internal Server Error',
           err.message || 'Failed to retrieve person profile',
-          { code: err.code || 'PERSON_LOOKUP_FAILURE' }
+          { code: err.code || 'PERSON_LOOKUP_FAILURE' },
         );
       }
-    }
+    },
   );
 
   /**
@@ -664,7 +769,7 @@ export async function saasV1Routes(app: FastifyInstance): Promise<void> {
             404,
             'Not Found',
             `Political organization '${request.params.id}' not found.`,
-            { code: 'ORGANIZATION_NOT_FOUND' }
+            { code: 'ORGANIZATION_NOT_FOUND' },
           );
         }
 
@@ -680,7 +785,8 @@ export async function saasV1Routes(app: FastifyInstance): Promise<void> {
           provenance: {
             authorityLayer: 'STATUTORY_FACT',
             dataStatus: org.dataStatus || 'OFFICIAL',
-            sourceReference: 'ECI Notification of Recognized Political Parties and Election Symbols',
+            sourceReference:
+              'ECI Notification of Recognized Political Parties and Election Symbols',
           },
         };
 
@@ -693,10 +799,10 @@ export async function saasV1Routes(app: FastifyInstance): Promise<void> {
           statusCode,
           statusCode === 404 ? 'Not Found' : 'Internal Server Error',
           err.message || 'Failed to retrieve organization profile',
-          { code: err.code || 'ORGANIZATION_LOOKUP_FAILURE' }
+          { code: err.code || 'ORGANIZATION_LOOKUP_FAILURE' },
         );
       }
-    }
+    },
   );
 
   /**
@@ -749,11 +855,18 @@ export async function saasV1Routes(app: FastifyInstance): Promise<void> {
           legislators: sanitizedRoster,
         });
       } catch (err: any) {
-        return sendApiError(reply, request, 500, 'Internal Server Error', 'Failed to retrieve legislators roster', {
-          code: 'LEGISLATORS_LOOKUP_FAILURE',
-        });
+        return sendApiError(
+          reply,
+          request,
+          500,
+          'Internal Server Error',
+          'Failed to retrieve legislators roster',
+          {
+            code: 'LEGISLATORS_LOOKUP_FAILURE',
+          },
+        );
       }
-    }
+    },
   );
 
   // ════════════════════════════════════════════════════════════════════════════
@@ -774,20 +887,29 @@ export async function saasV1Routes(app: FastifyInstance): Promise<void> {
           regimeId: 'eci_delimitation_2008',
           legalStatus: 'CURRENT_LEGAL_REGIME',
           orderName: 'Delimitation of Parliamentary and Assembly Constituencies Order, 2008',
-          constitutionalFreeze: 'Article 82 & 170 (84th Constitutional Amendment freeze until first census after 2026)',
+          constitutionalFreeze:
+            'Article 82 & 170 (84th Constitutional Amendment freeze until first census after 2026)',
         },
         constitutionalStatus: status,
         timelineEvents: timeline.events,
         provenance: {
           authorityLayer: 'STATUTORY_FACT',
           dataStatus: 'OFFICIAL',
-          sourceReference: 'Constitution of India (Articles 81, 82, 170, 330, 332) & Delimitation Acts',
+          sourceReference:
+            'Constitution of India (Articles 81, 82, 170, 330, 332) & Delimitation Acts',
         },
       });
     } catch (err: any) {
-      return sendApiError(reply, request, 500, 'Internal Server Error', 'Failed to retrieve delimitation regimes', {
-        code: 'DELIMITATION_REGIMES_FAILURE',
-      });
+      return sendApiError(
+        reply,
+        request,
+        500,
+        'Internal Server Error',
+        'Failed to retrieve delimitation regimes',
+        {
+          code: 'DELIMITATION_REGIMES_FAILURE',
+        },
+      );
     }
   });
 
@@ -817,11 +939,18 @@ export async function saasV1Routes(app: FastifyInstance): Promise<void> {
           },
         });
       } catch (err: any) {
-        return sendApiError(reply, request, 500, 'Internal Server Error', 'Failed to compute seat projections', {
-          code: 'PROJECTIONS_FAILURE',
-        });
+        return sendApiError(
+          reply,
+          request,
+          500,
+          'Internal Server Error',
+          'Failed to compute seat projections',
+          {
+            code: 'PROJECTIONS_FAILURE',
+          },
+        );
       }
-    }
+    },
   );
 
   /**
@@ -831,7 +960,14 @@ export async function saasV1Routes(app: FastifyInstance): Promise<void> {
    */
   app.get<{
     Params: { stateCode: string };
-    Querystring: { seats?: string; maxDeviation?: string; mode?: string; regimeId?: string; proposalId?: string; date?: string };
+    Querystring: {
+      seats?: string;
+      maxDeviation?: string;
+      mode?: string;
+      regimeId?: string;
+      proposalId?: string;
+      date?: string;
+    };
   }>(
     '/api/vsaas/v1/delim/simulate/:stateCode',
     { schema: { params: stateCodeParamSchema, querystring: delimSimulationQuerySchema } },
@@ -842,14 +978,18 @@ export async function saasV1Routes(app: FastifyInstance): Promise<void> {
       // Computational bounds validation
       if (query.seats !== undefined) {
         const parsedSeats = parseInt(query.seats, 10);
-        if (isNaN(parsedSeats) || parsedSeats < MIN_SAFE_REQUESTED_SEATS || parsedSeats > MAX_SAFE_REQUESTED_SEATS) {
+        if (
+          isNaN(parsedSeats) ||
+          parsedSeats < MIN_SAFE_REQUESTED_SEATS ||
+          parsedSeats > MAX_SAFE_REQUESTED_SEATS
+        ) {
           return sendApiError(
             reply,
             request,
             400,
             'Bad Request',
             `Requested seats must be an integer between ${MIN_SAFE_REQUESTED_SEATS} and ${MAX_SAFE_REQUESTED_SEATS}. (Note: MAX_SAFE_REQUESTED_SEATS is an ingress computational protection, not a constitutional limit).`,
-            { code: 'VALIDATION_ERROR' }
+            { code: 'VALIDATION_ERROR' },
           );
         }
       }
@@ -891,10 +1031,17 @@ export async function saasV1Routes(app: FastifyInstance): Promise<void> {
             code: 'UNSUPPORTED_GEOGRAPHY',
           });
         }
-        return sendApiError(reply, request, err.statusCode || 400, 'Bad Request', err.message || 'Simulation error', {
-          code: err.code || 'SIMULATION_ERROR',
-        });
+        return sendApiError(
+          reply,
+          request,
+          err.statusCode || 400,
+          'Bad Request',
+          err.message || 'Simulation error',
+          {
+            code: err.code || 'SIMULATION_ERROR',
+          },
+        );
       }
-    }
+    },
   );
 }

@@ -307,11 +307,16 @@ describe('OBD Telecom Service (obdTelecomService.ts)', () => {
       } finally {
         jest.useRealTimers();
         global.fetch = origFetch;
-        if (origApiKey) process.env.EXOTEL_API_KEY = origApiKey; else delete process.env.EXOTEL_API_KEY;
-        if (origApiToken) process.env.EXOTEL_API_TOKEN = origApiToken; else delete process.env.EXOTEL_API_TOKEN;
-        if (origAccountSid) process.env.EXOTEL_ACCOUNT_SID = origAccountSid; else delete process.env.EXOTEL_ACCOUNT_SID;
-        if (origCallerId) process.env.EXOTEL_CALLER_ID = origCallerId; else delete process.env.EXOTEL_CALLER_ID;
-        if (origCallback) process.env.EXOTEL_STATUS_CALLBACK_URL = origCallback; else delete process.env.EXOTEL_STATUS_CALLBACK_URL;
+        if (origApiKey) process.env.EXOTEL_API_KEY = origApiKey;
+        else delete process.env.EXOTEL_API_KEY;
+        if (origApiToken) process.env.EXOTEL_API_TOKEN = origApiToken;
+        else delete process.env.EXOTEL_API_TOKEN;
+        if (origAccountSid) process.env.EXOTEL_ACCOUNT_SID = origAccountSid;
+        else delete process.env.EXOTEL_ACCOUNT_SID;
+        if (origCallerId) process.env.EXOTEL_CALLER_ID = origCallerId;
+        else delete process.env.EXOTEL_CALLER_ID;
+        if (origCallback) process.env.EXOTEL_STATUS_CALLBACK_URL = origCallback;
+        else delete process.env.EXOTEL_STATUS_CALLBACK_URL;
       }
     });
 
@@ -329,18 +334,24 @@ describe('OBD Telecom Service (obdTelecomService.ts)', () => {
           };
         }
         return {
-          insert: async () => ({ error: { message: 'Disk quota exceeded on voice_obd_broadcasts' } }),
+          insert: async () => ({
+            error: { message: 'Disk quota exceeded on voice_obd_broadcasts' },
+          }),
         };
       }) as any);
 
-      await expect(dispatchOBDBroadcast({
-        campaignId: 'c1',
-        politicianId: 'p1',
-        title: 'Failing DB Insert',
-        audioUrl: 'https://example.com/audio.mp3',
-        targetSegment: { type: 'ward', voterCount: 10 },
-        ratePerCallINR: 1.0,
-      })).rejects.toThrow('OBD Dispatch failed to persist to Supabase: Disk quota exceeded on voice_obd_broadcasts');
+      await expect(
+        dispatchOBDBroadcast({
+          campaignId: 'c1',
+          politicianId: 'p1',
+          title: 'Failing DB Insert',
+          audioUrl: 'https://example.com/audio.mp3',
+          targetSegment: { type: 'ward', voterCount: 10 },
+          ratePerCallINR: 1.0,
+        }),
+      ).rejects.toThrow(
+        'OBD Dispatch failed to persist to Supabase: Disk quota exceeded on voice_obd_broadcasts',
+      );
     });
 
     it('returns empty array when getOBDBroadcasts is called with unconfigured database', async () => {
@@ -359,7 +370,9 @@ describe('OBD Telecom Service (obdTelecomService.ts)', () => {
         }),
       } as any);
 
-      await expect(getOBDBroadcasts('pol-1')).rejects.toThrow('Failed to retrieve OBD broadcasts from Supabase: Query failed');
+      await expect(getOBDBroadcasts('pol-1')).rejects.toThrow(
+        'Failed to retrieve OBD broadcasts from Supabase: Query failed',
+      );
     });
 
     it('retrieves broadcasts when database is configured', async () => {
@@ -400,7 +413,10 @@ describe('OBD Telecom Service (obdTelecomService.ts)', () => {
 
       // 2. Ignored when unconfigured
       setSupabaseConfiguredForTesting(false);
-      const ignoredUnconf = await processTelecomWebhook({ CustomField: 'obd-123', Status: 'completed' });
+      const ignoredUnconf = await processTelecomWebhook({
+        CustomField: 'obd-123',
+        Status: 'completed',
+      });
       expect(ignoredUnconf).toEqual({ ok: true, ignored: true });
 
       // 3. Database configured: completed status
@@ -426,7 +442,10 @@ describe('OBD Telecom Service (obdTelecomService.ts)', () => {
         } as any;
       }) as any);
 
-      const resCompleted = await processTelecomWebhook({ CustomField: 'obd-123', Status: 'completed' });
+      const resCompleted = await processTelecomWebhook({
+        CustomField: 'obd-123',
+        Status: 'completed',
+      });
       expect(resCompleted).toEqual({ ok: true, updated: true });
       expect(updatedData.answered_count).toBe(6);
 
@@ -436,7 +455,10 @@ describe('OBD Telecom Service (obdTelecomService.ts)', () => {
       expect(updatedData.busy_count).toBe(3);
 
       // 5. Unreachable status (failed / no-answer)
-      const resUnreachable = await processTelecomWebhook({ CustomField: 'obd-123', Status: 'no-answer' });
+      const resUnreachable = await processTelecomWebhook({
+        CustomField: 'obd-123',
+        Status: 'no-answer',
+      });
       expect(resUnreachable).toEqual({ ok: true, updated: true });
       expect(updatedData.unreachable_count).toBe(2);
 
@@ -448,7 +470,10 @@ describe('OBD Telecom Service (obdTelecomService.ts)', () => {
           }),
         }),
       } as any);
-      const resNotFound = await processTelecomWebhook({ CustomField: 'obd-nonexistent', Status: 'completed' });
+      const resNotFound = await processTelecomWebhook({
+        CustomField: 'obd-nonexistent',
+        Status: 'completed',
+      });
       expect(resNotFound).toEqual({ ok: true, updated: true });
     });
 

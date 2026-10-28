@@ -79,6 +79,6 @@ export function shareableConstituencyText(
     `📍 ${name} (AC ${acNo}), ${stateCode}`,
     `🏛️ MLA: ${mla} (${party})`,
     ``,
-    `View on Kshetra: ${constituencyLink(stateCode, acNo)}`,
+    `View on Poligram: ${constituencyLink(stateCode, acNo)}`,
   ].join('\n');
 }

@@ -12,7 +12,14 @@ interface GrievanceRecord {
   complainantName: string;
   email: string;
   phone?: string;
-  category: 'copyright' | 'defamation' | 'harassment' | 'misinformation' | 'hate_speech' | 'impersonation' | 'other';
+  category:
+    | 'copyright'
+    | 'defamation'
+    | 'harassment'
+    | 'misinformation'
+    | 'hate_speech'
+    | 'impersonation'
+    | 'other';
   contentUrl: string;
   description: string;
   status: 'acknowledged' | 'under_review' | 'resolved' | 'rejected';
@@ -227,7 +234,15 @@ export const policyRoutes: FastifyPluginAsync = async (app) => {
         phone: { type: 'string', maxLength: 30 },
         category: {
           type: 'string',
-          enum: ['copyright', 'defamation', 'harassment', 'misinformation', 'hate_speech', 'impersonation', 'other'],
+          enum: [
+            'copyright',
+            'defamation',
+            'harassment',
+            'misinformation',
+            'hate_speech',
+            'impersonation',
+            'other',
+          ],
         },
         contentUrl: { type: 'string', minLength: 1, maxLength: 2000 },
         description: { type: 'string', minLength: 1, maxLength: 10000 },
@@ -251,7 +266,13 @@ export const policyRoutes: FastifyPluginAsync = async (app) => {
             required: ['name', 'email', 'title'],
           },
         },
-        required: ['success', 'ticketNumber', 'message', 'estimatedResolutionDays', 'grievanceOfficer'],
+        required: [
+          'success',
+          'ticketNumber',
+          'message',
+          'estimatedResolutionDays',
+          'grievanceOfficer',
+        ],
       },
     },
   };
@@ -261,48 +282,67 @@ export const policyRoutes: FastifyPluginAsync = async (app) => {
       complainantName: string;
       email: string;
       phone?: string;
-      category?: 'copyright' | 'defamation' | 'harassment' | 'misinformation' | 'hate_speech' | 'impersonation' | 'other';
+      category?:
+        | 'copyright'
+        | 'defamation'
+        | 'harassment'
+        | 'misinformation'
+        | 'hate_speech'
+        | 'impersonation'
+        | 'other';
       contentUrl: string;
       description: string;
     };
-  }>('/api/v1/grievances/intake', {
-    schema: grievanceIntakeSchema,
-  }, async (request, reply) => {
-    const { complainantName, email, phone, category, contentUrl, description } = request.body ?? {};
+  }>(
+    '/api/v1/grievances/intake',
+    {
+      schema: grievanceIntakeSchema,
+    },
+    async (request, reply) => {
+      const { complainantName, email, phone, category, contentUrl, description } =
+        request.body ?? {};
 
-    if (!complainantName || !email || !contentUrl || !description) {
-      return sendApiError(reply, request, 400, 'Bad Request', 'complainantName, email, contentUrl, and description are required', {
-        code: 'FST_ERR_VALIDATION',
+      if (!complainantName || !email || !contentUrl || !description) {
+        return sendApiError(
+          reply,
+          request,
+          400,
+          'Bad Request',
+          'complainantName, email, contentUrl, and description are required',
+          {
+            code: 'FST_ERR_VALIDATION',
+          },
+        );
+      }
+
+      const ticketNumber = `GRV-${Date.now().toString().slice(-6)}-${Math.random().toString(36).substring(2, 5).toUpperCase()}`;
+
+      const record: GrievanceRecord = {
+        id: `grv_${Date.now()}`,
+        complainantName,
+        email,
+        phone,
+        category: category ?? 'other',
+        contentUrl,
+        description,
+        status: 'acknowledged',
+        submittedAt: new Date().toISOString(),
+        ticketNumber,
+      };
+
+      GRIEVANCE_RECORDS.push(record);
+
+      return reply.send({
+        success: true,
+        ticketNumber,
+        message: 'Grievance acknowledged. An acknowledgement receipt has been registered.',
+        estimatedResolutionDays: 15,
+        grievanceOfficer: {
+          name: 'Srikanth Varma',
+          email: 'grievance@kshetra.app',
+          title: 'Head of Trust & Safety',
+        },
       });
-    }
-
-    const ticketNumber = `GRV-${Date.now().toString().slice(-6)}-${Math.random().toString(36).substring(2, 5).toUpperCase()}`;
-
-    const record: GrievanceRecord = {
-      id: `grv_${Date.now()}`,
-      complainantName,
-      email,
-      phone,
-      category: category ?? 'other',
-      contentUrl,
-      description,
-      status: 'acknowledged',
-      submittedAt: new Date().toISOString(),
-      ticketNumber,
-    };
-
-    GRIEVANCE_RECORDS.push(record);
-
-    return reply.send({
-      success: true,
-      ticketNumber,
-      message: 'Grievance acknowledged. An acknowledgement receipt has been registered.',
-      estimatedResolutionDays: 15,
-      grievanceOfficer: {
-        name: 'Srikanth Varma',
-        email: 'grievance@kshetra.app',
-        title: 'Head of Trust & Safety',
-      },
-    });
-  });
+    },
+  );
 };

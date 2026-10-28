@@ -154,7 +154,8 @@ describe('Moderation Routes', () => {
 
     it('TEST-W009-B3-08: Required moderation provider absent/unconfigured returns HTTP 503 MODERATION_UNAVAILABLE', async () => {
       // Ensure no mock provider and no external provider API key configured
-      const { setMockModerationProvider, moderateContent } = await import('../services/contentModeration');
+      const { setMockModerationProvider, moderateContent } =
+        await import('../services/contentModeration');
       setMockModerationProvider(null);
       const originalApiKey = process.env.OPENAI_API_KEY;
       delete process.env.OPENAI_API_KEY;
@@ -163,7 +164,9 @@ describe('Moderation Routes', () => {
         const res = await app.inject({
           method: 'POST',
           url: '/api/v1/moderation/check-content',
-          payload: { content: 'Benign content submitted when no external moderation provider is configured.' },
+          payload: {
+            content: 'Benign content submitted when no external moderation provider is configured.',
+          },
         });
 
         // 1. Moderation does NOT return flagged: false (silent compliance prevented)
@@ -180,7 +183,9 @@ describe('Moderation Routes', () => {
         expect(body.error).toBe('Service Unavailable');
 
         // 5. The content is NOT treated as a content violation merely because provider is unavailable
-        expect(body.message).toContain('Content moderation provider is not configured or unavailable');
+        expect(body.message).toContain(
+          'Content moderation provider is not configured or unavailable',
+        );
 
         // 6. Publication is not permitted when required moderation cannot be performed
         let publicationAllowed = false;
@@ -242,7 +247,8 @@ describe('Moderation Routes', () => {
     });
 
     it('TEST-W009-B3-04: Provider timeout returns HTTP 503 MODERATION_UNAVAILABLE', async () => {
-      const { setMockModerationProvider, ModerationUnavailableError } = await import('../services/contentModeration');
+      const { setMockModerationProvider, ModerationUnavailableError } =
+        await import('../services/contentModeration');
       setMockModerationProvider(async () => {
         throw new ModerationUnavailableError('Content moderation request timed out after 5000ms');
       });
@@ -314,7 +320,8 @@ describe('Moderation Routes', () => {
 
     it('TEST-W009-B3-07: Publication safety - fail closed when moderation unavailable', async () => {
       // Simulates an application flow that checks content before publishing
-      const { moderateContent, setMockModerationProvider } = await import('../services/contentModeration');
+      const { moderateContent, setMockModerationProvider } =
+        await import('../services/contentModeration');
       setMockModerationProvider(async () => {
         throw new Error('Connection refused to moderation service');
       });
@@ -340,7 +347,9 @@ describe('Moderation Routes', () => {
 
   describe('authorization guards', () => {
     it('queue requires moderator', async () => {
-      expect((await app.inject({ method: 'GET', url: '/api/v1/moderation/queue' })).statusCode).toBe(401);
+      expect(
+        (await app.inject({ method: 'GET', url: '/api/v1/moderation/queue' })).statusCode,
+      ).toBe(401);
       const forbidden = await app.inject({
         method: 'GET',
         url: '/api/v1/moderation/queue',
@@ -364,30 +373,50 @@ describe('Moderation Routes', () => {
 
     it('audit-log requires admin', async () => {
       expect(
-        (await app.inject({
-          method: 'GET',
-          url: '/api/v1/moderation/audit-log',
-          headers: {
-            'x-user-id': 'mod-1',
-            'x-test-role': 'moderator',
-          },
-        })).statusCode,
+        (
+          await app.inject({
+            method: 'GET',
+            url: '/api/v1/moderation/audit-log',
+            headers: {
+              'x-user-id': 'mod-1',
+              'x-test-role': 'moderator',
+            },
+          })
+        ).statusCode,
       ).toBe(403);
       expect(
-        (await app.inject({
-          method: 'GET',
-          url: '/api/v1/moderation/audit-log',
-          headers: {
-            'x-user-id': 'admin-1',
-            'x-test-role': 'admin',
-          },
-        })).statusCode,
+        (
+          await app.inject({
+            method: 'GET',
+            url: '/api/v1/moderation/audit-log',
+            headers: {
+              'x-user-id': 'admin-1',
+              'x-test-role': 'admin',
+            },
+          })
+        ).statusCode,
       ).toBe(200);
     });
 
     it('verify-request and block require authentication', async () => {
-      expect((await app.inject({ method: 'POST', url: '/api/v1/moderation/verify-request', payload: { verificationType: 'identity' } })).statusCode).toBe(401);
-      expect((await app.inject({ method: 'POST', url: '/api/v1/moderation/block', payload: { blockedUserId: 'u2' } })).statusCode).toBe(401);
+      expect(
+        (
+          await app.inject({
+            method: 'POST',
+            url: '/api/v1/moderation/verify-request',
+            payload: { verificationType: 'identity' },
+          })
+        ).statusCode,
+      ).toBe(401);
+      expect(
+        (
+          await app.inject({
+            method: 'POST',
+            url: '/api/v1/moderation/block',
+            payload: { blockedUserId: 'u2' },
+          })
+        ).statusCode,
+      ).toBe(401);
     });
 
     it('blocks another user but not oneself', async () => {
@@ -409,7 +438,9 @@ describe('Moderation Routes', () => {
     });
 
     it('unblock requires authentication', async () => {
-      expect((await app.inject({ method: 'DELETE', url: '/api/v1/moderation/block/u2' })).statusCode).toBe(401);
+      expect(
+        (await app.inject({ method: 'DELETE', url: '/api/v1/moderation/block/u2' })).statusCode,
+      ).toBe(401);
       const ok = await app.inject({
         method: 'DELETE',
         url: '/api/v1/moderation/block/u2',
@@ -431,8 +462,13 @@ describe('Moderation Routes', () => {
 
   describe('public config endpoints', () => {
     it('lists actions and reputation rules', async () => {
-      expect((await app.inject({ method: 'GET', url: '/api/v1/moderation/actions' })).statusCode).toBe(200);
-      expect((await app.inject({ method: 'GET', url: '/api/v1/moderation/reputation-rules' })).statusCode).toBe(200);
+      expect(
+        (await app.inject({ method: 'GET', url: '/api/v1/moderation/actions' })).statusCode,
+      ).toBe(200);
+      expect(
+        (await app.inject({ method: 'GET', url: '/api/v1/moderation/reputation-rules' }))
+          .statusCode,
+      ).toBe(200);
     });
   });
 });

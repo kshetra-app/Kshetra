@@ -167,172 +167,227 @@ const getTriggersSchema = {
  * GET  /api/v1/notifications/triggers         — List available trigger types
  */
 export async function notificationRoutes(app: FastifyInstance) {
-
   // 1. Register push token (Non-DB logging route)
   app.post<{
     Body: { token: string; platform: 'ios' | 'android' | 'web'; deviceName?: string };
-  }>('/api/v1/notifications/register-token', {
-    schema: registerTokenSchema,
-  }, async (request, reply) => {
-    const auth = await resolveAuthenticatedUser(request, reply);
-    if (!auth) return;
-    const userId = auth.userId;
+  }>(
+    '/api/v1/notifications/register-token',
+    {
+      schema: registerTokenSchema,
+    },
+    async (request, reply) => {
+      const auth = await resolveAuthenticatedUser(request, reply);
+      if (!auth) return;
+      const userId = auth.userId;
 
-    const { token, platform, deviceName } = request.body;
+      const { token, platform, deviceName } = request.body;
 
-    // Non-DB invariant: Do NOT insert into device_tokens table. Return success with token info.
-    app.log.info({ userId, platform, deviceName }, 'Push token registered');
+      // Non-DB invariant: Do NOT insert into device_tokens table. Return success with token info.
+      app.log.info({ userId, platform, deviceName }, 'Push token registered');
 
-    return reply.send({
-      success: true,
-      data: {
-        userId,
-        token: token.slice(0, 20) + '...', // Don't echo full token
-        platform,
-        deviceName: deviceName ?? null,
-      },
-    });
-  });
+      return reply.send({
+        success: true,
+        data: {
+          userId,
+          token: token.slice(0, 20) + '...', // Don't echo full token
+          platform,
+          deviceName: deviceName ?? null,
+        },
+      });
+    },
+  );
 
   // 2. Send notification (internal / service-to-service)
   app.post<{
     Body: NotificationPayload;
-  }>('/api/v1/notifications/send', {
-    schema: sendNotificationSchema,
-  }, async (request, reply) => {
-    const apiKey = request.headers['x-api-key'] as string;
-    if (!apiKey) {
-      return sendApiError(reply, request, 401, 'Unauthorized', 'API key required', { code: 'UNAUTHORIZED' });
-    }
+  }>(
+    '/api/v1/notifications/send',
+    {
+      schema: sendNotificationSchema,
+    },
+    async (request, reply) => {
+      const apiKey = request.headers['x-api-key'] as string;
+      if (!apiKey) {
+        return sendApiError(reply, request, 401, 'Unauthorized', 'API key required', {
+          code: 'UNAUTHORIZED',
+        });
+      }
 
-    const payload = request.body;
+      const payload = request.body;
 
-    app.log.info(
-      { userId: payload.userId, trigger: payload.trigger },
-      'Notification dispatched',
-    );
+      app.log.info({ userId: payload.userId, trigger: payload.trigger }, 'Notification dispatched');
 
-    return reply.send({
-      success: true,
-      data: {
-        userId: payload.userId,
-        trigger: payload.trigger,
-        dispatched: true,
-      },
-    });
-  });
+      return reply.send({
+        success: true,
+        data: {
+          userId: payload.userId,
+          trigger: payload.trigger,
+          dispatched: true,
+        },
+      });
+    },
+  );
 
   // 3. Get notification preferences
-  app.get('/api/v1/notifications/preferences', {
-    schema: getPreferencesSchema,
-  }, async (request, reply) => {
-    const userId = request.headers['x-user-id'] as string;
-    if (!userId) {
-      return sendApiError(reply, request, 401, 'Unauthorized', 'Authentication required', { code: 'UNAUTHORIZED' });
-    }
+  app.get(
+    '/api/v1/notifications/preferences',
+    {
+      schema: getPreferencesSchema,
+    },
+    async (request, reply) => {
+      const userId = request.headers['x-user-id'] as string;
+      if (!userId) {
+        return sendApiError(reply, request, 401, 'Unauthorized', 'Authentication required', {
+          code: 'UNAUTHORIZED',
+        });
+      }
 
-    const defaults = Object.entries(TRIGGER_CONFIG).map(([trigger, config]) => ({
-      trigger,
-      label: config.label,
-      description: config.description,
-      pushEnabled: config.defaultPush,
-      inAppEnabled: config.defaultInApp,
-    }));
+      const defaults = Object.entries(TRIGGER_CONFIG).map(([trigger, config]) => ({
+        trigger,
+        label: config.label,
+        description: config.description,
+        pushEnabled: config.defaultPush,
+        inAppEnabled: config.defaultInApp,
+      }));
 
-    return reply.send({ success: true, data: defaults });
-  });
+      return reply.send({ success: true, data: defaults });
+    },
+  );
 
   // 4. Update notification preferences
   app.put<{
     Body: { trigger: NotificationTrigger; pushEnabled: boolean; inAppEnabled: boolean };
-  }>('/api/v1/notifications/preferences', {
-    schema: updatePreferencesSchema,
-  }, async (request, reply) => {
-    const userId = request.headers['x-user-id'] as string;
-    if (!userId) {
-      return sendApiError(reply, request, 401, 'Unauthorized', 'Authentication required', { code: 'UNAUTHORIZED' });
-    }
+  }>(
+    '/api/v1/notifications/preferences',
+    {
+      schema: updatePreferencesSchema,
+    },
+    async (request, reply) => {
+      const userId = request.headers['x-user-id'] as string;
+      if (!userId) {
+        return sendApiError(reply, request, 401, 'Unauthorized', 'Authentication required', {
+          code: 'UNAUTHORIZED',
+        });
+      }
 
-    const { trigger, pushEnabled, inAppEnabled } = request.body;
-    app.log.info({ userId, trigger, pushEnabled, inAppEnabled }, 'Preference updated');
+      const { trigger, pushEnabled, inAppEnabled } = request.body;
+      app.log.info({ userId, trigger, pushEnabled, inAppEnabled }, 'Preference updated');
 
-    return reply.send({
-      success: true,
-      data: { trigger, pushEnabled, inAppEnabled },
-    });
-  });
+      return reply.send({
+        success: true,
+        data: { trigger, pushEnabled, inAppEnabled },
+      });
+    },
+  );
 
   // 5. List trigger types (public)
-  app.get('/api/v1/notifications/triggers', {
-    schema: getTriggersSchema,
-  }, async (_request, reply) => {
-    const triggers = Object.entries(TRIGGER_CONFIG).map(([key, config]) => ({
-      trigger: key,
-      ...config,
-    }));
-    return reply.send({ success: true, data: triggers });
-  });
+  app.get(
+    '/api/v1/notifications/triggers',
+    {
+      schema: getTriggersSchema,
+    },
+    async (_request, reply) => {
+      const triggers = Object.entries(TRIGGER_CONFIG).map(([key, config]) => ({
+        trigger: key,
+        ...config,
+      }));
+      return reply.send({ success: true, data: triggers });
+    },
+  );
 
   // 6. Mark notification(s) as read (Strangler Migration — Class B)
   app.patch<{
     Body: { notificationId?: string; all?: boolean; userId?: string };
-  }>('/api/v1/notifications/read', {
-    schema: {
-      body: {
-        type: 'object',
-        properties: {
-          notificationId: { type: 'string' },
-          all: { type: 'boolean' },
-          userId: { type: 'string' },
+  }>(
+    '/api/v1/notifications/read',
+    {
+      schema: {
+        body: {
+          type: 'object',
+          properties: {
+            notificationId: { type: 'string' },
+            all: { type: 'boolean' },
+            userId: { type: 'string' },
+          },
         },
       },
     },
-  }, async (request, reply) => {
-    const auth = await resolveAuthenticatedUser(request, reply);
-    if (!auth) return;
+    async (request, reply) => {
+      const auth = await resolveAuthenticatedUser(request, reply);
+      if (!auth) return;
 
-    if (!assertActingUserMatch(reply, request, auth.userId, request.body?.userId, 'userId')) {
-      return;
-    }
-
-    const userId = auth.userId;
-    const { notificationId, all } = request.body || {};
-    app.log.info({ userId, notificationId, all }, 'Marking notification(s) as read');
-
-    if (!isSupabaseConfigured) {
-      return sendApiError(reply, request, 503, 'Service Unavailable', 'Database service is not configured', {
-        code: 'SERVICE_UNAVAILABLE',
-      });
-    }
-
-    try {
-      let query = supabase.from('notifications').update({ read: true, read_at: new Date().toISOString() }).eq('user_id', userId);
-      if (notificationId && !all) {
-        query = query.eq('id', notificationId);
+      if (!assertActingUserMatch(reply, request, auth.userId, request.body?.userId, 'userId')) {
+        return;
       }
-      const { error } = await query;
-      if (error) {
-        app.log.error({ err: error.message, userId, notificationId }, 'Failed to mark notification read in DB');
-        return sendApiError(reply, request, 500, 'Internal Server Error', 'Database error updating notifications', {
-          code: 'DATABASE_ERROR',
-        });
-      }
-    } catch (err: any) {
-      app.log.error({ err: err?.message, userId, notificationId }, 'Exception marking notification read in DB');
-      return sendApiError(reply, request, 500, 'Internal Server Error', 'Database error updating notifications', {
-        code: 'DATABASE_ERROR',
-      });
-    }
 
-    return reply.send({
-      success: true,
-      data: {
-        userId,
-        notificationId: notificationId || null,
-        markedAll: !!all,
-        readAt: new Date().toISOString(),
-      },
-    });
-  });
+      const userId = auth.userId;
+      const { notificationId, all } = request.body || {};
+      app.log.info({ userId, notificationId, all }, 'Marking notification(s) as read');
+
+      if (!isSupabaseConfigured) {
+        return sendApiError(
+          reply,
+          request,
+          503,
+          'Service Unavailable',
+          'Database service is not configured',
+          {
+            code: 'SERVICE_UNAVAILABLE',
+          },
+        );
+      }
+
+      try {
+        let query = supabase
+          .from('notifications')
+          .update({ read: true, read_at: new Date().toISOString() })
+          .eq('user_id', userId);
+        if (notificationId && !all) {
+          query = query.eq('id', notificationId);
+        }
+        const { error } = await query;
+        if (error) {
+          app.log.error(
+            { err: error.message, userId, notificationId },
+            'Failed to mark notification read in DB',
+          );
+          return sendApiError(
+            reply,
+            request,
+            500,
+            'Internal Server Error',
+            'Database error updating notifications',
+            {
+              code: 'DATABASE_ERROR',
+            },
+          );
+        }
+      } catch (err: any) {
+        app.log.error(
+          { err: err?.message, userId, notificationId },
+          'Exception marking notification read in DB',
+        );
+        return sendApiError(
+          reply,
+          request,
+          500,
+          'Internal Server Error',
+          'Database error updating notifications',
+          {
+            code: 'DATABASE_ERROR',
+          },
+        );
+      }
+
+      return reply.send({
+        success: true,
+        data: {
+          userId,
+          notificationId: notificationId || null,
+          markedAll: !!all,
+          readAt: new Date().toISOString(),
+        },
+      });
+    },
+  );
 }
-

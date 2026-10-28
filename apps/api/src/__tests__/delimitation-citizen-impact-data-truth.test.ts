@@ -132,7 +132,9 @@ describe('CTO Directive 123 — Residual Electoral Data-Truth & Provisional Look
     });
 
     it('proves scenario identifiers are scenario-scoped and never generated via Math.round(acNo * 1.15)', () => {
-      const res = delimitationService.getCitizenImpact('500004', { scenarioId: 'census_2026_expansion' });
+      const res = delimitationService.getCitizenImpact('500004', {
+        scenarioId: 'census_2026_expansion',
+      });
       expect(res.proposedConstituency).toBeDefined();
       // Arithmetic check: 63 * 1.15 = 72.45 -> Math.round = 72
       // Must NOT be numerical 72!
@@ -249,12 +251,14 @@ describe('CTO Directive 123 — Residual Electoral Data-Truth & Provisional Look
       const res = delimitationService.getCitizenImpact('500004', { proposalId: 'prop-ts-2026-v1' });
       expect(res.status).toBe('LINKED_PROVISIONAL');
       expect(res.proposedConstituency?.scenarioAcIdentifier).toBe('SCENARIO-TS-63P');
-      expect(res.impactAnalysis?.explanation).toContain("prop-ts-2026-v1");
+      expect(res.impactAnalysis?.explanation).toContain('prop-ts-2026-v1');
     });
 
     it('throws 500 CONSTITUENCY_LOOKUP_ERROR if canonical constituency cannot be found in stateData', () => {
       const spy = jest.spyOn(stateDataModule, 'getConstituency').mockReturnValueOnce(null);
-      expect(() => delimitationService.getCitizenImpact('500004')).toThrow('Canonical constituency TS-AC-63 not found');
+      expect(() => delimitationService.getCitizenImpact('500004')).toThrow(
+        'Canonical constituency TS-AC-63 not found',
+      );
       spy.mockRestore();
     });
   });
@@ -298,7 +302,10 @@ describe('CTO Directive 123 — Residual Electoral Data-Truth & Provisional Look
     });
 
     it('boundary simulation continues to function deterministically with Hare-Niemeyer', () => {
-      const sim = delimitationService.simulateBoundaries('TS', { mode: 'equal_population', seats: '130' });
+      const sim = delimitationService.simulateBoundaries('TS', {
+        mode: 'equal_population',
+        seats: '130',
+      });
       expect(sim.stateCode).toBe('TS');
       expect(sim.targetSeats).toBe(130);
       expect(sim.districtBreakdown.length).toBeGreaterThan(0);
@@ -323,7 +330,10 @@ describe('CTO Directive 123 — Residual Electoral Data-Truth & Provisional Look
     });
 
     it('verifies exact 36-entry inventory agreement with generated audit ledger', () => {
-      const ledgerPath = path.resolve(__dirname, '../../../../reports/w021_5_curated_pin_audit_ledger.json');
+      const ledgerPath = path.resolve(
+        __dirname,
+        '../../../../reports/w021_5_curated_pin_audit_ledger.json',
+      );
       expect(fs.existsSync(ledgerPath)).toBe(true);
 
       const ledger = JSON.parse(fs.readFileSync(ledgerPath, 'utf8'));
@@ -385,39 +395,58 @@ describe('CTO Directive 123 — Residual Electoral Data-Truth & Provisional Look
 
     it('verifies corrected AP and TS AC numbers are accurately wired and resolved', () => {
       // AP corrections
-      expect(delimitationService.getCitizenImpact('520001').currentConstituency?.name).toBe('Vijayawada West');
+      expect(delimitationService.getCitizenImpact('520001').currentConstituency?.name).toBe(
+        'Vijayawada West',
+      );
       expect(delimitationService.getCitizenImpact('520001').currentConstituency?.acNo).toBe(79);
 
-      expect(delimitationService.getCitizenImpact('520002').currentConstituency?.name).toBe('Vijayawada Central');
+      expect(delimitationService.getCitizenImpact('520002').currentConstituency?.name).toBe(
+        'Vijayawada Central',
+      );
       expect(delimitationService.getCitizenImpact('520002').currentConstituency?.acNo).toBe(80);
 
-      expect(delimitationService.getCitizenImpact('530001').currentConstituency?.name).toBe('Visakhapatnam South');
+      expect(delimitationService.getCitizenImpact('530001').currentConstituency?.name).toBe(
+        'Visakhapatnam South',
+      );
       expect(delimitationService.getCitizenImpact('530001').currentConstituency?.acNo).toBe(22);
 
-      expect(delimitationService.getCitizenImpact('530002').currentConstituency?.name).toBe('Visakhapatnam South');
+      expect(delimitationService.getCitizenImpact('530002').currentConstituency?.name).toBe(
+        'Visakhapatnam South',
+      );
       expect(delimitationService.getCitizenImpact('530002').currentConstituency?.acNo).toBe(22);
 
-      expect(delimitationService.getCitizenImpact('517501').currentConstituency?.name).toBe('Tirupati');
+      expect(delimitationService.getCitizenImpact('517501').currentConstituency?.name).toBe(
+        'Tirupati',
+      );
       expect(delimitationService.getCitizenImpact('517501').currentConstituency?.acNo).toBe(167);
 
-      expect(delimitationService.getCitizenImpact('518001').currentConstituency?.name).toBe('Kurnool');
+      expect(delimitationService.getCitizenImpact('518001').currentConstituency?.name).toBe(
+        'Kurnool',
+      );
       expect(delimitationService.getCitizenImpact('518001').currentConstituency?.acNo).toBe(137);
 
       // TS corrections
-      expect(delimitationService.getCitizenImpact('500002').currentConstituency?.name).toBe('Charminar');
+      expect(delimitationService.getCitizenImpact('500002').currentConstituency?.name).toBe(
+        'Charminar',
+      );
       expect(delimitationService.getCitizenImpact('500002').currentConstituency?.acNo).toBe(66);
 
-      expect(delimitationService.getCitizenImpact('500053').currentConstituency?.name).toBe('Chandrayangutta');
+      expect(delimitationService.getCitizenImpact('500053').currentConstituency?.name).toBe(
+        'Chandrayangutta',
+      );
       expect(delimitationService.getCitizenImpact('500053').currentConstituency?.acNo).toBe(67);
 
-      expect(delimitationService.getCitizenImpact('500064').currentConstituency?.name).toBe('Bahadurpura');
+      expect(delimitationService.getCitizenImpact('500064').currentConstituency?.name).toBe(
+        'Bahadurpura',
+      );
       expect(delimitationService.getCitizenImpact('500064').currentConstituency?.acNo).toBe(69);
     });
   });
 
   describe('CTO Directive 124 — Workstream C: Provenance Checksum Integrity', () => {
     it('verifies placeholder and empty-string digests are eradicated from service provenance constants', () => {
-      const EMPTY_STRING_SHA256 = 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855';
+      const EMPTY_STRING_SHA256 =
+        'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855';
       const PATTERN_A = 'a1b2c3d4e5f60718293a4b5c6d7e8f90123456789abcdef0123456789abcdef0';
       const PATTERN_B = 'b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3';
       const PATTERN_C = 'c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4';
@@ -452,7 +481,10 @@ describe('CTO Directive 123 — Residual Electoral Data-Truth & Provisional Look
     });
 
     it('verifies in-repository evidence files match their calculated cryptographic SHA-256 digests', () => {
-      const checksumReportPath = path.resolve(__dirname, '../../../../reports/w021_5_provenance_checksum_audit.json');
+      const checksumReportPath = path.resolve(
+        __dirname,
+        '../../../../reports/w021_5_provenance_checksum_audit.json',
+      );
       expect(fs.existsSync(checksumReportPath)).toBe(true);
 
       const audit = JSON.parse(fs.readFileSync(checksumReportPath, 'utf8'));
@@ -461,7 +493,10 @@ describe('CTO Directive 123 — Residual Electoral Data-Truth & Provisional Look
       for (const [relPath, expectedSha256] of Object.entries(recordedDigests)) {
         const fullPath = path.resolve(__dirname, '../../../../', relPath);
         expect(fs.existsSync(fullPath)).toBe(true);
-        const actualSha256 = crypto.createHash('sha256').update(fs.readFileSync(fullPath)).digest('hex');
+        const actualSha256 = crypto
+          .createHash('sha256')
+          .update(fs.readFileSync(fullPath))
+          .digest('hex');
         expect(actualSha256).toBe(expectedSha256);
       }
     });
@@ -469,7 +504,10 @@ describe('CTO Directive 123 — Residual Electoral Data-Truth & Provisional Look
     it('fails closed when artifact content is tampered with (digest mismatch simulation)', () => {
       const fakeCorruptedBuffer = Buffer.from('TAMPERED_STATUTORY_EVIDENCE');
       const expectedSha256 = '9123ecb5f9ea5414ee8b4e8cce92aed9e008f352a8924edb7dcb9c27d621737d'; // real Schedule XXXI hash
-      const actualCorruptedSha256 = crypto.createHash('sha256').update(fakeCorruptedBuffer).digest('hex');
+      const actualCorruptedSha256 = crypto
+        .createHash('sha256')
+        .update(fakeCorruptedBuffer)
+        .digest('hex');
 
       expect(actualCorruptedSha256).not.toBe(expectedSha256);
       expect(() => {
@@ -481,8 +519,14 @@ describe('CTO Directive 123 — Residual Electoral Data-Truth & Provisional Look
   });
 
   describe('CTO Directive 125 — Independent Evidence Closure, PIN Verification & Provenance Semantics', () => {
-    const manifestPath = path.resolve(__dirname, '../../../../data/evidence/w021_5/pin_independent_evidence_manifest.json');
-    const matrixReportPath = path.resolve(__dirname, '../../../../reports/w021_5_pin_independent_evidence_matrix.json');
+    const manifestPath = path.resolve(
+      __dirname,
+      '../../../../data/evidence/w021_5/pin_independent_evidence_manifest.json',
+    );
+    const matrixReportPath = path.resolve(
+      __dirname,
+      '../../../../reports/w021_5_pin_independent_evidence_matrix.json',
+    );
 
     it('verifies independent PIN evidence manifest exists with exact 36 entries and complete traceability', () => {
       expect(fs.existsSync(manifestPath)).toBe(true);
@@ -593,10 +637,18 @@ describe('CTO Directive 123 — Residual Electoral Data-Truth & Provisional Look
     it('fails closed when manifest is tampered with (negative test)', () => {
       const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
       // Simulate unauthorized promotion to AUTHORITATIVELY_VERIFIED without statutory GIS
-      const tamperedEntry = { ...manifest.entries[0], confidenceTaxonomy: 'AUTHORITATIVELY_VERIFIED' };
+      const tamperedEntry = {
+        ...manifest.entries[0],
+        confidenceTaxonomy: 'AUTHORITATIVELY_VERIFIED',
+      };
       expect(() => {
-        if (tamperedEntry.confidenceTaxonomy === 'AUTHORITATIVELY_VERIFIED' && !tamperedEntry.spatialContainmentVerified) {
-          throw new Error('EVIDENCE_CLASSIFICATION_VIOLATION: Cannot claim authoritative status without statutory GIS overlay.');
+        if (
+          tamperedEntry.confidenceTaxonomy === 'AUTHORITATIVELY_VERIFIED' &&
+          !tamperedEntry.spatialContainmentVerified
+        ) {
+          throw new Error(
+            'EVIDENCE_CLASSIFICATION_VIOLATION: Cannot claim authoritative status without statutory GIS overlay.',
+          );
         }
       }).toThrow('EVIDENCE_CLASSIFICATION_VIOLATION');
     });
@@ -611,7 +663,10 @@ describe('CTO Directive 123 — Residual Electoral Data-Truth & Provisional Look
   });
 
   describe('CTO Directive 126 — Evidence Validation Integrity, Genuine Negative Tests & 8-Correction Accounting', () => {
-    const manifestPath = path.resolve(__dirname, '../../../../data/evidence/w021_5/pin_independent_evidence_manifest.json');
+    const manifestPath = path.resolve(
+      __dirname,
+      '../../../../data/evidence/w021_5/pin_independent_evidence_manifest.json',
+    );
     const validatorModule = require('../../../../scripts/verify_pin_evidence_matrix.cjs');
 
     it('runs pure validateEvidenceMatrix against unmodified production directory and passes all positive checks', () => {
@@ -633,13 +688,23 @@ describe('CTO Directive 123 — Residual Electoral Data-Truth & Provisional Look
       const seedNames = validatorModule.parseSeedConstituencyNames();
 
       const corruptedManifest = { ...manifest, entries: manifest.entries.slice(0, 35) };
-      const validation = validatorModule.validateEvidenceMatrix({ directory, manifest: corruptedManifest, seedNames });
+      const validation = validatorModule.validateEvidenceMatrix({
+        directory,
+        manifest: corruptedManifest,
+        seedNames,
+      });
 
       expect(validation.allPassed).toBe(false);
-      const check1 = validation.checks.find((c: any) => c.checkId === 'CHECK_1_EXACT_INVENTORY_PARITY');
+      const check1 = validation.checks.find(
+        (c: any) => c.checkId === 'CHECK_1_EXACT_INVENTORY_PARITY',
+      );
       expect(check1).toBeDefined();
       expect(check1.passed).toBe(false);
-      expect(validation.errors.some((err: string) => err.includes('Manifest entry count is 35, expected 36'))).toBe(true);
+      expect(
+        validation.errors.some((err: string) =>
+          err.includes('Manifest entry count is 35, expected 36'),
+        ),
+      ).toBe(true);
     });
 
     it('genuine negative test: validator rejects manifest with duplicate PIN codes', () => {
@@ -647,15 +712,25 @@ describe('CTO Directive 123 — Residual Electoral Data-Truth & Provisional Look
       const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
       const seedNames = validatorModule.parseSeedConstituencyNames();
 
-      const corruptedEntries = manifest.entries.map((e: any, idx: number) => idx === 1 ? { ...manifest.entries[0] } : e);
+      const corruptedEntries = manifest.entries.map((e: any, idx: number) =>
+        idx === 1 ? { ...manifest.entries[0] } : e,
+      );
       const corruptedManifest = { ...manifest, entries: corruptedEntries };
-      const validation = validatorModule.validateEvidenceMatrix({ directory, manifest: corruptedManifest, seedNames });
+      const validation = validatorModule.validateEvidenceMatrix({
+        directory,
+        manifest: corruptedManifest,
+        seedNames,
+      });
 
       expect(validation.allPassed).toBe(false);
-      const check1 = validation.checks.find((c: any) => c.checkId === 'CHECK_1_EXACT_INVENTORY_PARITY');
+      const check1 = validation.checks.find(
+        (c: any) => c.checkId === 'CHECK_1_EXACT_INVENTORY_PARITY',
+      );
       expect(check1).toBeDefined();
       expect(check1.passed).toBe(false);
-      expect(validation.errors.some((err: string) => err.includes('Duplicate PIN codes detected'))).toBe(true);
+      expect(
+        validation.errors.some((err: string) => err.includes('Duplicate PIN codes detected')),
+      ).toBe(true);
     });
 
     it('genuine negative test: validator rejects contradictory AC number on corrected PIN', () => {
@@ -663,15 +738,27 @@ describe('CTO Directive 123 — Residual Electoral Data-Truth & Provisional Look
       const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
       const seedNames = validatorModule.parseSeedConstituencyNames();
 
-      const corruptedEntries = manifest.entries.map((e: any) => e.pinCode === '500002' ? { ...e, assignedAcNumber: 999 } : e);
+      const corruptedEntries = manifest.entries.map((e: any) =>
+        e.pinCode === '500002' ? { ...e, assignedAcNumber: 999 } : e,
+      );
       const corruptedManifest = { ...manifest, entries: corruptedEntries };
-      const validation = validatorModule.validateEvidenceMatrix({ directory, manifest: corruptedManifest, seedNames });
+      const validation = validatorModule.validateEvidenceMatrix({
+        directory,
+        manifest: corruptedManifest,
+        seedNames,
+      });
 
       expect(validation.allPassed).toBe(false);
-      const check4 = validation.checks.find((c: any) => c.checkId === 'CHECK_4_CORRECTION_CONSISTENCY_AND_SOURCE_EVIDENCE' || c.checkId === 'CHECK_4_EIGHT_AC_CORRECTIONS_VERIFIED');
+      const check4 = validation.checks.find(
+        (c: any) =>
+          c.checkId === 'CHECK_4_CORRECTION_CONSISTENCY_AND_SOURCE_EVIDENCE' ||
+          c.checkId === 'CHECK_4_EIGHT_AC_CORRECTIONS_VERIFIED',
+      );
       expect(check4).toBeDefined();
       expect(check4.passed).toBe(false);
-      expect(validation.errors.some((err: string) => err.includes('500002') && err.includes('999'))).toBe(true);
+      expect(
+        validation.errors.some((err: string) => err.includes('500002') && err.includes('999')),
+      ).toBe(true);
     });
 
     it('genuine negative test: validator rejects assigned canonical AC on multi-AC PIN 500001', () => {
@@ -679,15 +766,27 @@ describe('CTO Directive 123 — Residual Electoral Data-Truth & Provisional Look
       const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
       const seedNames = validatorModule.parseSeedConstituencyNames();
 
-      const corruptedEntries = manifest.entries.map((e: any) => e.pinCode === '500001' ? { ...e, assignedAcNumber: 65 } : e);
+      const corruptedEntries = manifest.entries.map((e: any) =>
+        e.pinCode === '500001' ? { ...e, assignedAcNumber: 65 } : e,
+      );
       const corruptedManifest = { ...manifest, entries: corruptedEntries };
-      const validation = validatorModule.validateEvidenceMatrix({ directory, manifest: corruptedManifest, seedNames });
+      const validation = validatorModule.validateEvidenceMatrix({
+        directory,
+        manifest: corruptedManifest,
+        seedNames,
+      });
 
       expect(validation.allPassed).toBe(false);
-      const check2 = validation.checks.find((c: any) => c.checkId === 'CHECK_2_MULTI_AC_FAIL_CLOSED_AMBIGUITY');
+      const check2 = validation.checks.find(
+        (c: any) => c.checkId === 'CHECK_2_MULTI_AC_FAIL_CLOSED_AMBIGUITY',
+      );
       expect(check2).toBeDefined();
       expect(check2.passed).toBe(false);
-      expect(validation.errors.some((err: string) => err.includes('500001') && err.includes('has assignedAcNumber'))).toBe(true);
+      expect(
+        validation.errors.some(
+          (err: string) => err.includes('500001') && err.includes('has assignedAcNumber'),
+        ),
+      ).toBe(true);
     });
 
     it('genuine negative test: validator rejects unauthorized promotion to AUTHORITATIVELY_VERIFIED', () => {
@@ -695,15 +794,29 @@ describe('CTO Directive 123 — Residual Electoral Data-Truth & Provisional Look
       const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
       const seedNames = validatorModule.parseSeedConstituencyNames();
 
-      const corruptedEntries = manifest.entries.map((e: any) => e.pinCode === '500002' ? { ...e, confidenceTaxonomy: 'AUTHORITATIVELY_VERIFIED' } : e);
+      const corruptedEntries = manifest.entries.map((e: any) =>
+        e.pinCode === '500002' ? { ...e, confidenceTaxonomy: 'AUTHORITATIVELY_VERIFIED' } : e,
+      );
       const corruptedManifest = { ...manifest, entries: corruptedEntries };
-      const validation = validatorModule.validateEvidenceMatrix({ directory, manifest: corruptedManifest, seedNames });
+      const validation = validatorModule.validateEvidenceMatrix({
+        directory,
+        manifest: corruptedManifest,
+        seedNames,
+      });
 
       expect(validation.allPassed).toBe(false);
-      const check3 = validation.checks.find((c: any) => c.checkId === 'CHECK_3_TAXONOMY_ENFORCEMENT_AND_DISTRIBUTION' || c.checkId === 'CHECK_3_PROVISIONAL_CLASSIFICATION_INTEGRITY');
+      const check3 = validation.checks.find(
+        (c: any) =>
+          c.checkId === 'CHECK_3_TAXONOMY_ENFORCEMENT_AND_DISTRIBUTION' ||
+          c.checkId === 'CHECK_3_PROVISIONAL_CLASSIFICATION_INTEGRITY',
+      );
       expect(check3).toBeDefined();
       expect(check3.passed).toBe(false);
-      expect(validation.errors.some((err: string) => err.includes('incorrectly claims AUTHORITATIVELY_VERIFIED'))).toBe(true);
+      expect(
+        validation.errors.some((err: string) =>
+          err.includes('incorrectly claims AUTHORITATIVELY_VERIFIED'),
+        ),
+      ).toBe(true);
     });
 
     it('genuine negative test: validator rejects empty documentary traceability locator', () => {
@@ -711,34 +824,62 @@ describe('CTO Directive 123 — Residual Electoral Data-Truth & Provisional Look
       const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
       const seedNames = validatorModule.parseSeedConstituencyNames();
 
-      const corruptedEntries = manifest.entries.map((e: any) => e.pinCode === '500002' ? { ...e, sourceLocator: '' } : e);
+      const corruptedEntries = manifest.entries.map((e: any) =>
+        e.pinCode === '500002' ? { ...e, sourceLocator: '' } : e,
+      );
       const corruptedManifest = { ...manifest, entries: corruptedEntries };
-      const validation = validatorModule.validateEvidenceMatrix({ directory, manifest: corruptedManifest, seedNames });
+      const validation = validatorModule.validateEvidenceMatrix({
+        directory,
+        manifest: corruptedManifest,
+        seedNames,
+      });
 
       expect(validation.allPassed).toBe(false);
-      const check5 = validation.checks.find((c: any) => c.checkId === 'CHECK_5_DOCUMENTARY_FIELD_COMPLETENESS' || c.checkId === 'CHECK_5_DOCUMENTARY_TRACEABILITY_FIELDS');
+      const check5 = validation.checks.find(
+        (c: any) =>
+          c.checkId === 'CHECK_5_DOCUMENTARY_FIELD_COMPLETENESS' ||
+          c.checkId === 'CHECK_5_DOCUMENTARY_TRACEABILITY_FIELDS',
+      );
       expect(check5).toBeDefined();
       expect(check5.passed).toBe(false);
-      expect(validation.errors.some((err: string) => err.includes('missing or empty required field \'sourceLocator\''))).toBe(true);
+      expect(
+        validation.errors.some((err: string) =>
+          err.includes("missing or empty required field 'sourceLocator'"),
+        ),
+      ).toBe(true);
     });
 
     it('reconciles the eight reported corrections strictly (3 TS, 5 AP) and confirms Kurnool 137 is not a correction', () => {
       expect(validatorModule.REPORTED_AC_CORRECTIONS).toHaveLength(8);
 
-      const tsCorrections = validatorModule.REPORTED_AC_CORRECTIONS.filter((c: any) => c.state === 'TS');
-      const apCorrections = validatorModule.REPORTED_AC_CORRECTIONS.filter((c: any) => c.state === 'AP');
+      const tsCorrections = validatorModule.REPORTED_AC_CORRECTIONS.filter(
+        (c: any) => c.state === 'TS',
+      );
+      const apCorrections = validatorModule.REPORTED_AC_CORRECTIONS.filter(
+        (c: any) => c.state === 'AP',
+      );
       expect(tsCorrections).toHaveLength(3);
       expect(apCorrections).toHaveLength(5);
 
       expect(tsCorrections.map((c: any) => c.pin)).toEqual(['500002', '500053', '500064']);
-      expect(apCorrections.map((c: any) => c.pin)).toEqual(['520001', '520002', '530001', '530002', '517501']);
+      expect(apCorrections.map((c: any) => c.pin)).toEqual([
+        '520001',
+        '520002',
+        '530001',
+        '530002',
+        '517501',
+      ]);
 
       // Kurnool PIN 518001 is NOT one of the 8 corrections
-      expect(validatorModule.REPORTED_AC_CORRECTIONS.some((c: any) => c.pin === '518001')).toBe(false);
+      expect(validatorModule.REPORTED_AC_CORRECTIONS.some((c: any) => c.pin === '518001')).toBe(
+        false,
+      );
       expect(validatorModule.KURNOOL_RECONCILIATION.pin).toBe('518001');
       expect(validatorModule.KURNOOL_RECONCILIATION.canonicalAc).toBe(137);
       expect(validatorModule.KURNOOL_RECONCILIATION.isCorrection).toBe(false);
-      expect(validatorModule.KURNOOL_RECONCILIATION.status).toBe('EXISTING_SINGLE_AC_PROVISIONAL_RECORD');
+      expect(validatorModule.KURNOOL_RECONCILIATION.status).toBe(
+        'EXISTING_SINGLE_AC_PROVISIONAL_RECORD',
+      );
     });
 
     it('asserts two distinct conclusions for each of the eight corrections: authoritative identity vs provisional postal linkage', () => {
@@ -750,12 +891,16 @@ describe('CTO Directive 123 — Residual Electoral Data-Truth & Provisional Look
 
         // Conclusion 1: Identity is verified
         expect(entry.constituencyIdentityVerified).toBe(true);
-        expect(entry.identityVerificationConclusion).toContain('Target constituency name and number are authoritatively verified');
+        expect(entry.identityVerificationConclusion).toContain(
+          'Target constituency name and number are authoritatively verified',
+        );
 
         // Conclusion 2: Postal containment is provisional / unproven GIS
         expect(entry.spatialContainmentVerified).toBe(false);
         expect(entry.confidenceTaxonomy).toBe('PROVISIONALLY_APPROXIMATED');
-        expect(entry.postalContainmentConclusion).toContain('spatial containment is NOT proven because postal beats lack statutory boundary polygons');
+        expect(entry.postalContainmentConclusion).toContain(
+          'spatial containment is NOT proven because postal beats lack statutory boundary polygons',
+        );
       }
     });
 
@@ -764,7 +909,11 @@ describe('CTO Directive 123 — Residual Electoral Data-Truth & Provisional Look
       const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
       const seedNames = validatorModule.parseSeedConstituencyNames();
 
-      const negativeResults = validatorModule.runNegativeValidationSuite({ directory, manifest, seedNames });
+      const negativeResults = validatorModule.runNegativeValidationSuite({
+        directory,
+        manifest,
+        seedNames,
+      });
       expect(negativeResults.allScenariosPassed).toBe(true);
       expect(negativeResults.scenarios.length).toBeGreaterThanOrEqual(6);
       expect(negativeResults.scenarios.every((s: any) => s.passed)).toBe(true);
@@ -772,7 +921,10 @@ describe('CTO Directive 123 — Residual Electoral Data-Truth & Provisional Look
   });
 
   describe('CTO Directive 127 — Complete Taxonomy Enforcement, Separated Traceability, 14 Negative Scenarios & Dynamic Reporting', () => {
-    const manifestPath = path.resolve(__dirname, '../../../../data/evidence/w021_5/pin_independent_evidence_manifest.json');
+    const manifestPath = path.resolve(
+      __dirname,
+      '../../../../data/evidence/w021_5/pin_independent_evidence_manifest.json',
+    );
     let validatorModule: any;
 
     beforeAll(() => {
@@ -787,7 +939,9 @@ describe('CTO Directive 123 — Residual Electoral Data-Truth & Provisional Look
       const validation = validatorModule.validateEvidenceMatrix({ directory, manifest, seedNames });
       expect(validation.allPassed).toBe(true);
 
-      const check3 = validation.checks.find((c: any) => c.checkId === 'CHECK_3_TAXONOMY_ENFORCEMENT_AND_DISTRIBUTION');
+      const check3 = validation.checks.find(
+        (c: any) => c.checkId === 'CHECK_3_TAXONOMY_ENFORCEMENT_AND_DISTRIBUTION',
+      );
       expect(check3).toBeDefined();
       expect(check3.passed).toBe(true);
       expect(check3.details).toContain('Provisional: 32/32');
@@ -818,7 +972,11 @@ describe('CTO Directive 123 — Residual Electoral Data-Truth & Provisional Look
       ];
 
       for (const checkId of expectedCheckIds) {
-        const chk = validation.checks.find((c: any) => c.checkId === checkId || (checkId.startsWith('CHECK_4_') && c.checkId.startsWith('CHECK_4_')));
+        const chk = validation.checks.find(
+          (c: any) =>
+            c.checkId === checkId ||
+            (checkId.startsWith('CHECK_4_') && c.checkId.startsWith('CHECK_4_')),
+        );
         expect(chk).toBeDefined();
         expect(chk.passed).toBe(true);
       }
@@ -829,15 +987,27 @@ describe('CTO Directive 123 — Residual Electoral Data-Truth & Provisional Look
       const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
       const seedNames = validatorModule.parseSeedConstituencyNames();
 
-      const corruptedEntries = manifest.entries.map((e: any) => e.pinCode === '500002' ? { ...e, confidenceTaxonomy: 'PROVISIONAL_GUESS' } : e);
+      const corruptedEntries = manifest.entries.map((e: any) =>
+        e.pinCode === '500002' ? { ...e, confidenceTaxonomy: 'PROVISIONAL_GUESS' } : e,
+      );
       const corruptedManifest = { ...manifest, entries: corruptedEntries };
-      const validation = validatorModule.validateEvidenceMatrix({ directory, manifest: corruptedManifest, seedNames });
+      const validation = validatorModule.validateEvidenceMatrix({
+        directory,
+        manifest: corruptedManifest,
+        seedNames,
+      });
 
       expect(validation.allPassed).toBe(false);
-      const check3 = validation.checks.find((c: any) => c.checkId === 'CHECK_3_TAXONOMY_ENFORCEMENT_AND_DISTRIBUTION');
+      const check3 = validation.checks.find(
+        (c: any) => c.checkId === 'CHECK_3_TAXONOMY_ENFORCEMENT_AND_DISTRIBUTION',
+      );
       expect(check3).toBeDefined();
       expect(check3.passed).toBe(false);
-      expect(validation.errors.some((err: string) => err.includes('invalid confidenceTaxonomy \'PROVISIONAL_GUESS\''))).toBe(true);
+      expect(
+        validation.errors.some((err: string) =>
+          err.includes("invalid confidenceTaxonomy 'PROVISIONAL_GUESS'"),
+        ),
+      ).toBe(true);
     });
 
     it('genuine negative test (Scenario 8): validator rejects inconsistent classification and assignment', () => {
@@ -845,15 +1015,25 @@ describe('CTO Directive 123 — Residual Electoral Data-Truth & Provisional Look
       const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
       const seedNames = validatorModule.parseSeedConstituencyNames();
 
-      const corruptedEntries = manifest.entries.map((e: any) => e.pinCode === '500002' ? { ...e, assignedAcNumber: null } : e);
+      const corruptedEntries = manifest.entries.map((e: any) =>
+        e.pinCode === '500002' ? { ...e, assignedAcNumber: null } : e,
+      );
       const corruptedManifest = { ...manifest, entries: corruptedEntries };
-      const validation = validatorModule.validateEvidenceMatrix({ directory, manifest: corruptedManifest, seedNames });
+      const validation = validatorModule.validateEvidenceMatrix({
+        directory,
+        manifest: corruptedManifest,
+        seedNames,
+      });
 
       expect(validation.allPassed).toBe(false);
-      const check3 = validation.checks.find((c: any) => c.checkId === 'CHECK_3_TAXONOMY_ENFORCEMENT_AND_DISTRIBUTION');
+      const check3 = validation.checks.find(
+        (c: any) => c.checkId === 'CHECK_3_TAXONOMY_ENFORCEMENT_AND_DISTRIBUTION',
+      );
       expect(check3).toBeDefined();
       expect(check3.passed).toBe(false);
-      expect(validation.errors.some((err: string) => err.includes('invalid assignedAcNumber'))).toBe(true);
+      expect(
+        validation.errors.some((err: string) => err.includes('invalid assignedAcNumber')),
+      ).toBe(true);
     });
 
     it('genuine negative test (Scenario 9): validator rejects invalid taxonomy distribution count', () => {
@@ -861,15 +1041,34 @@ describe('CTO Directive 123 — Residual Electoral Data-Truth & Provisional Look
       const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
       const seedNames = validatorModule.parseSeedConstituencyNames();
 
-      const corruptedEntries = manifest.entries.map((e: any) => e.pinCode === '500003' ? { ...e, confidenceTaxonomy: 'AMBIGUOUS_MULTI_CONSTITUENCY', assignedAcNumber: null, candidateAcNumbers: [70, 71] } : e);
+      const corruptedEntries = manifest.entries.map((e: any) =>
+        e.pinCode === '500003'
+          ? {
+              ...e,
+              confidenceTaxonomy: 'AMBIGUOUS_MULTI_CONSTITUENCY',
+              assignedAcNumber: null,
+              candidateAcNumbers: [70, 71],
+            }
+          : e,
+      );
       const corruptedManifest = { ...manifest, entries: corruptedEntries };
-      const validation = validatorModule.validateEvidenceMatrix({ directory, manifest: corruptedManifest, seedNames });
+      const validation = validatorModule.validateEvidenceMatrix({
+        directory,
+        manifest: corruptedManifest,
+        seedNames,
+      });
 
       expect(validation.allPassed).toBe(false);
-      const check3 = validation.checks.find((c: any) => c.checkId === 'CHECK_3_TAXONOMY_ENFORCEMENT_AND_DISTRIBUTION');
+      const check3 = validation.checks.find(
+        (c: any) => c.checkId === 'CHECK_3_TAXONOMY_ENFORCEMENT_AND_DISTRIBUTION',
+      );
       expect(check3).toBeDefined();
       expect(check3.passed).toBe(false);
-      expect(validation.errors.some((err: string) => err.includes('Classification distribution mismatch'))).toBe(true);
+      expect(
+        validation.errors.some((err: string) =>
+          err.includes('Classification distribution mismatch'),
+        ),
+      ).toBe(true);
     });
 
     it('genuine negative test (Scenario 10): validator rejects nonexistent source document reference', () => {
@@ -877,15 +1076,27 @@ describe('CTO Directive 123 — Residual Electoral Data-Truth & Provisional Look
       const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
       const seedNames = validatorModule.parseSeedConstituencyNames();
 
-      const corruptedEntries = manifest.entries.map((e: any) => e.pinCode === '500002' ? { ...e, referenceDocument: 'ECI Delimitation Nonexistent Document 9999' } : e);
+      const corruptedEntries = manifest.entries.map((e: any) =>
+        e.pinCode === '500002'
+          ? { ...e, referenceDocument: 'ECI Delimitation Nonexistent Document 9999' }
+          : e,
+      );
       const corruptedManifest = { ...manifest, entries: corruptedEntries };
-      const validation = validatorModule.validateEvidenceMatrix({ directory, manifest: corruptedManifest, seedNames });
+      const validation = validatorModule.validateEvidenceMatrix({
+        directory,
+        manifest: corruptedManifest,
+        seedNames,
+      });
 
       expect(validation.allPassed).toBe(false);
       const check6 = validation.checks.find((c: any) => c.checkId === 'CHECK_6_SOURCE_RESOLUTION');
       expect(check6).toBeDefined();
       expect(check6.passed).toBe(false);
-      expect(validation.errors.some((err: string) => err.includes('references unrecognized or nonexistent document'))).toBe(true);
+      expect(
+        validation.errors.some((err: string) =>
+          err.includes('references unrecognized or nonexistent document'),
+        ),
+      ).toBe(true);
     });
 
     it('genuine negative test (Scenario 11): validator rejects invalid documentary locator', () => {
@@ -893,15 +1104,23 @@ describe('CTO Directive 123 — Residual Electoral Data-Truth & Provisional Look
       const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
       const seedNames = validatorModule.parseSeedConstituencyNames();
 
-      const corruptedEntries = manifest.entries.map((e: any) => e.pinCode === '500002' ? { ...e, sourceLocator: 'Schedule XCIX, Table Z, Entry 9999' } : e);
+      const corruptedEntries = manifest.entries.map((e: any) =>
+        e.pinCode === '500002' ? { ...e, sourceLocator: 'Schedule XCIX, Table Z, Entry 9999' } : e,
+      );
       const corruptedManifest = { ...manifest, entries: corruptedEntries };
-      const validation = validatorModule.validateEvidenceMatrix({ directory, manifest: corruptedManifest, seedNames });
+      const validation = validatorModule.validateEvidenceMatrix({
+        directory,
+        manifest: corruptedManifest,
+        seedNames,
+      });
 
       expect(validation.allPassed).toBe(false);
       const check7 = validation.checks.find((c: any) => c.checkId === 'CHECK_7_LOCATOR_RESOLUTION');
       expect(check7).toBeDefined();
       expect(check7.passed).toBe(false);
-      expect(validation.errors.some((err: string) => err.includes('invalid documentary locator'))).toBe(true);
+      expect(
+        validation.errors.some((err: string) => err.includes('invalid documentary locator')),
+      ).toBe(true);
     });
 
     it('genuine negative test (Scenario 12): validator rejects locator not supporting claim (state TS cites AP Schedule II)', () => {
@@ -909,15 +1128,29 @@ describe('CTO Directive 123 — Residual Electoral Data-Truth & Provisional Look
       const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
       const seedNames = validatorModule.parseSeedConstituencyNames();
 
-      const corruptedEntries = manifest.entries.map((e: any) => e.pinCode === '500002' ? { ...e, sourceLocator: 'Schedule II, Table B, Entry 79 (Vijayawada West)' } : e);
+      const corruptedEntries = manifest.entries.map((e: any) =>
+        e.pinCode === '500002'
+          ? { ...e, sourceLocator: 'Schedule II, Table B, Entry 79 (Vijayawada West)' }
+          : e,
+      );
       const corruptedManifest = { ...manifest, entries: corruptedEntries };
-      const validation = validatorModule.validateEvidenceMatrix({ directory, manifest: corruptedManifest, seedNames });
+      const validation = validatorModule.validateEvidenceMatrix({
+        directory,
+        manifest: corruptedManifest,
+        seedNames,
+      });
 
       expect(validation.allPassed).toBe(false);
       const check8 = validation.checks.find((c: any) => c.checkId === 'CHECK_8_CLAIM_SUPPORT');
       expect(check8).toBeDefined();
       expect(check8.passed).toBe(false);
-      expect(validation.errors.some((err: string) => err.includes('cites Andhra Pradesh Schedule II locator instead of Telangana Schedule XXXI'))).toBe(true);
+      expect(
+        validation.errors.some((err: string) =>
+          err.includes(
+            'cites Andhra Pradesh Schedule II locator instead of Telangana Schedule XXXI',
+          ),
+        ),
+      ).toBe(true);
     });
 
     it('genuine negative test (Scenario 13): validator rejects material source date inconsistency', () => {
@@ -925,15 +1158,25 @@ describe('CTO Directive 123 — Residual Electoral Data-Truth & Provisional Look
       const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
       const seedNames = validatorModule.parseSeedConstituencyNames();
 
-      const corruptedEntries = manifest.entries.map((e: any) => e.pinCode === '500002' ? { ...e, sourceEffectiveDate: '2026-12-31' } : e);
+      const corruptedEntries = manifest.entries.map((e: any) =>
+        e.pinCode === '500002' ? { ...e, sourceEffectiveDate: '2026-12-31' } : e,
+      );
       const corruptedManifest = { ...manifest, entries: corruptedEntries };
-      const validation = validatorModule.validateEvidenceMatrix({ directory, manifest: corruptedManifest, seedNames });
+      const validation = validatorModule.validateEvidenceMatrix({
+        directory,
+        manifest: corruptedManifest,
+        seedNames,
+      });
 
       expect(validation.allPassed).toBe(false);
       const check9 = validation.checks.find((c: any) => c.checkId === 'CHECK_9_DATE_CONSISTENCY');
       expect(check9).toBeDefined();
       expect(check9.passed).toBe(false);
-      expect(validation.errors.some((err: string) => err.includes('sourceEffectiveDate (2026-12-31) is after sourcePublicationDate'))).toBe(true);
+      expect(
+        validation.errors.some((err: string) =>
+          err.includes('sourceEffectiveDate (2026-12-31) is after sourcePublicationDate'),
+        ),
+      ).toBe(true);
     });
 
     it('genuine negative test (Scenario 14): validator rejects tampered metadata summary assertion', () => {
@@ -948,16 +1191,28 @@ describe('CTO Directive 123 — Residual Electoral Data-Truth & Provisional Look
           confidenceTaxonomySummary: {
             ...manifest.metadata?.confidenceTaxonomySummary,
             authoritativelyVerifiedCount: 1, // Tampered: claims 1 authoritative when entry list has 0
-          }
-        }
+          },
+        },
       };
-      const validation = validatorModule.validateEvidenceMatrix({ directory, manifest: corruptedManifest, seedNames });
+      const validation = validatorModule.validateEvidenceMatrix({
+        directory,
+        manifest: corruptedManifest,
+        seedNames,
+      });
 
       expect(validation.allPassed).toBe(false);
-      const check10 = validation.checks.find((c: any) => c.checkId === 'CHECK_10_DYNAMIC_SUMMARY_INTEGRITY');
+      const check10 = validation.checks.find(
+        (c: any) => c.checkId === 'CHECK_10_DYNAMIC_SUMMARY_INTEGRITY',
+      );
       expect(check10).toBeDefined();
       expect(check10.passed).toBe(false);
-      expect(validation.errors.some((err: string) => err.includes('Metadata summary authoritativelyVerifiedCount (1) does not match actual entry count (0)'))).toBe(true);
+      expect(
+        validation.errors.some((err: string) =>
+          err.includes(
+            'Metadata summary authoritativelyVerifiedCount (1) does not match actual entry count (0)',
+          ),
+        ),
+      ).toBe(true);
     });
 
     it('verifies runNegativeValidationSuite executes all 26 negative scenarios with 100% pass rate', () => {
@@ -965,14 +1220,21 @@ describe('CTO Directive 123 — Residual Electoral Data-Truth & Provisional Look
       const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
       const seedNames = validatorModule.parseSeedConstituencyNames();
 
-      const negativeResults = validatorModule.runNegativeValidationSuite({ directory, manifest, seedNames });
+      const negativeResults = validatorModule.runNegativeValidationSuite({
+        directory,
+        manifest,
+        seedNames,
+      });
       expect(negativeResults.allScenariosPassed).toBe(true);
       expect(negativeResults.scenarios.length).toBeGreaterThanOrEqual(14);
       expect(negativeResults.scenarios.every((s: any) => s.passed)).toBe(true);
     });
 
     it('verifies dynamic report generation eliminates all hardcoded success booleans', () => {
-      const reportPath = path.resolve(__dirname, '../../../../reports/w021_5_pin_independent_evidence_matrix.json');
+      const reportPath = path.resolve(
+        __dirname,
+        '../../../../reports/w021_5_pin_independent_evidence_matrix.json',
+      );
       const report = JSON.parse(fs.readFileSync(reportPath, 'utf8'));
 
       expect(report.metadata.directive).toMatch(/CTO Directive 1(2[89]|3[0123])/);
@@ -985,18 +1247,28 @@ describe('CTO Directive 123 — Residual Electoral Data-Truth & Provisional Look
       expect(report.metadata.validationSummary.claimSupportVerified).toBe(true);
       expect(report.metadata.validationSummary.dateConsistencyVerified).toBe(true);
       expect(report.metadata.validationSummary.dynamicSummaryIntegrityVerified).toBe(true);
-      expect(report.metadata.validationSummary.negativeScenariosExecuted).toBeGreaterThanOrEqual(26);
+      expect(report.metadata.validationSummary.negativeScenariosExecuted).toBeGreaterThanOrEqual(
+        26,
+      );
       expect(report.metadata.validationSummary.negativeScenariosPassed).toBeGreaterThanOrEqual(26);
-      expect(report.metadata.validationSummary.gateRecommendation).toBe('SUBMIT_FOR_INDEPENDENT_STAGE_B_ADJUDICATION_WITH_DOCUMENTED_EXTERNAL_BLOCKERS');
+      expect(report.metadata.validationSummary.gateRecommendation).toBe(
+        'SUBMIT_FOR_INDEPENDENT_STAGE_B_ADJUDICATION_WITH_DOCUMENTED_EXTERNAL_BLOCKERS',
+      );
     });
   });
 
   describe('CTO Directive 128 — Source-Claim Verification Closure, Evidence Resolution & Substantive Negative Battery', () => {
-    const manifestPath = path.resolve(__dirname, '../../../../data/evidence/w021_5/pin_independent_evidence_manifest.json');
+    const manifestPath = path.resolve(
+      __dirname,
+      '../../../../data/evidence/w021_5/pin_independent_evidence_manifest.json',
+    );
     let validatorModule: any;
 
     beforeAll(() => {
-      const validatorPath = path.resolve(__dirname, '../../../../scripts/verify_pin_evidence_matrix.cjs');
+      const validatorPath = path.resolve(
+        __dirname,
+        '../../../../scripts/verify_pin_evidence_matrix.cjs',
+      );
       validatorModule = require(validatorPath);
     });
 
@@ -1034,14 +1306,29 @@ describe('CTO Directive 123 — Residual Electoral Data-Truth & Provisional Look
       const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
       const seedNames = validatorModule.parseSeedConstituencyNames();
 
-      const corruptEntries = manifest.entries.map((e: any) => e.pinCode === '500002' ? { ...e, referenceDocumentPath: 'data/evidence/w021_5/nonexistent_delimitation_file.txt' } : e);
+      const corruptEntries = manifest.entries.map((e: any) =>
+        e.pinCode === '500002'
+          ? {
+              ...e,
+              referenceDocumentPath: 'data/evidence/w021_5/nonexistent_delimitation_file.txt',
+            }
+          : e,
+      );
       const corruptManifest = { ...manifest, entries: corruptEntries };
-      const validation = validatorModule.validateEvidenceMatrix({ directory, manifest: corruptManifest, seedNames });
+      const validation = validatorModule.validateEvidenceMatrix({
+        directory,
+        manifest: corruptManifest,
+        seedNames,
+      });
 
       expect(validation.allPassed).toBe(false);
       const check6 = validation.checks.find((c: any) => c.checkId === 'CHECK_6_SOURCE_RESOLUTION');
       expect(check6.passed).toBe(false);
-      expect(validation.errors.some((err: string) => err.includes('references unresolvable in-repository file'))).toBe(true);
+      expect(
+        validation.errors.some((err: string) =>
+          err.includes('references unresolvable in-repository file'),
+        ),
+      ).toBe(true);
     });
 
     it('genuine negative test (Scenario 16): rejects cited entry that does not exist in resolved source extract', () => {
@@ -1049,14 +1336,31 @@ describe('CTO Directive 123 — Residual Electoral Data-Truth & Provisional Look
       const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
       const seedNames = validatorModule.parseSeedConstituencyNames();
 
-      const corruptEntries = manifest.entries.map((e: any) => e.pinCode === '500002' ? { ...e, referenceDocumentPath: 'data/evidence/w015_b2/eci_delimitation_2008_schedule_xxxi.txt', sourceLocator: 'Schedule XXXI, Table B, Entry 999 (Nonexistent)' } : e);
+      const corruptEntries = manifest.entries.map((e: any) =>
+        e.pinCode === '500002'
+          ? {
+              ...e,
+              referenceDocumentPath:
+                'data/evidence/w015_b2/eci_delimitation_2008_schedule_xxxi.txt',
+              sourceLocator: 'Schedule XXXI, Table B, Entry 999 (Nonexistent)',
+            }
+          : e,
+      );
       const corruptManifest = { ...manifest, entries: corruptEntries };
-      const validation = validatorModule.validateEvidenceMatrix({ directory, manifest: corruptManifest, seedNames });
+      const validation = validatorModule.validateEvidenceMatrix({
+        directory,
+        manifest: corruptManifest,
+        seedNames,
+      });
 
       expect(validation.allPassed).toBe(false);
       const check7 = validation.checks.find((c: any) => c.checkId === 'CHECK_7_LOCATOR_RESOLUTION');
       expect(check7.passed).toBe(false);
-      expect(validation.errors.some((err: string) => err.includes('cites Entry 999 which does not exist in in-repo extract'))).toBe(true);
+      expect(
+        validation.errors.some((err: string) =>
+          err.includes('cites Entry 999 which does not exist in in-repo extract'),
+        ),
+      ).toBe(true);
     });
 
     it('genuine negative test (Scenario 17): rejects locator naming wrong entry number in correct schedule', () => {
@@ -1064,14 +1368,30 @@ describe('CTO Directive 123 — Residual Electoral Data-Truth & Provisional Look
       const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
       const seedNames = validatorModule.parseSeedConstituencyNames();
 
-      const corruptEntries = manifest.entries.map((e: any) => e.pinCode === '500002' ? { ...e, sourceLocator: 'Schedule XXXI, Table B, Entry 67 (Chandrayangutta), GHMC Wards 13 & 14' } : e);
+      const corruptEntries = manifest.entries.map((e: any) =>
+        e.pinCode === '500002'
+          ? {
+              ...e,
+              sourceLocator:
+                'Schedule XXXI, Table B, Entry 67 (Chandrayangutta), GHMC Wards 13 & 14',
+            }
+          : e,
+      );
       const corruptManifest = { ...manifest, entries: corruptEntries };
-      const validation = validatorModule.validateEvidenceMatrix({ directory, manifest: corruptManifest, seedNames });
+      const validation = validatorModule.validateEvidenceMatrix({
+        directory,
+        manifest: corruptManifest,
+        seedNames,
+      });
 
       expect(validation.allPassed).toBe(false);
       const check7 = validation.checks.find((c: any) => c.checkId === 'CHECK_7_LOCATOR_RESOLUTION');
       expect(check7.passed).toBe(false);
-      expect(validation.errors.some((err: string) => err.includes('locator cites discordant Entry 67, expected Entry 66'))).toBe(true);
+      expect(
+        validation.errors.some((err: string) =>
+          err.includes('locator cites discordant Entry 67, expected Entry 66'),
+        ),
+      ).toBe(true);
     });
 
     it('genuine negative test (Scenario 18): rejects cited entry with discordant constituency name', () => {
@@ -1079,14 +1399,22 @@ describe('CTO Directive 123 — Residual Electoral Data-Truth & Provisional Look
       const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
       const seedNames = validatorModule.parseSeedConstituencyNames();
 
-      const corruptEntries = manifest.entries.map((e: any) => e.pinCode === '500002' ? { ...e, assignedAcName: 'Secunderabad' } : e);
+      const corruptEntries = manifest.entries.map((e: any) =>
+        e.pinCode === '500002' ? { ...e, assignedAcName: 'Secunderabad' } : e,
+      );
       const corruptManifest = { ...manifest, entries: corruptEntries };
-      const validation = validatorModule.validateEvidenceMatrix({ directory, manifest: corruptManifest, seedNames });
+      const validation = validatorModule.validateEvidenceMatrix({
+        directory,
+        manifest: corruptManifest,
+        seedNames,
+      });
 
       expect(validation.allPassed).toBe(false);
       const check8 = validation.checks.find((c: any) => c.checkId === 'CHECK_8_CLAIM_SUPPORT');
       expect(check8.passed).toBe(false);
-      expect(validation.errors.some((err: string) => err.includes('contradicts seed name'))).toBe(true);
+      expect(validation.errors.some((err: string) => err.includes('contradicts seed name'))).toBe(
+        true,
+      );
     });
 
     it('genuine negative test (Scenario 19): rejects unwarranted spatial containment assertion on administrative source', () => {
@@ -1094,14 +1422,24 @@ describe('CTO Directive 123 — Residual Electoral Data-Truth & Provisional Look
       const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
       const seedNames = validatorModule.parseSeedConstituencyNames();
 
-      const corruptEntries = manifest.entries.map((e: any) => e.pinCode === '500002' ? { ...e, spatialContainmentVerified: true } : e);
+      const corruptEntries = manifest.entries.map((e: any) =>
+        e.pinCode === '500002' ? { ...e, spatialContainmentVerified: true } : e,
+      );
       const corruptManifest = { ...manifest, entries: corruptEntries };
-      const validation = validatorModule.validateEvidenceMatrix({ directory, manifest: corruptManifest, seedNames });
+      const validation = validatorModule.validateEvidenceMatrix({
+        directory,
+        manifest: corruptManifest,
+        seedNames,
+      });
 
       expect(validation.allPassed).toBe(false);
       const check8 = validation.checks.find((c: any) => c.checkId === 'CHECK_8_CLAIM_SUPPORT');
       expect(check8.passed).toBe(false);
-      expect(validation.errors.some((err: string) => err.includes('claims spatialContainmentVerified === true, which is not supported'))).toBe(true);
+      expect(
+        validation.errors.some((err: string) =>
+          err.includes('claims spatialContainmentVerified === true, which is not supported'),
+        ),
+      ).toBe(true);
     });
 
     it('genuine negative test (Scenario 20): rejects inspected passage that contradicts assigned AC name', () => {
@@ -1109,14 +1447,30 @@ describe('CTO Directive 123 — Residual Electoral Data-Truth & Provisional Look
       const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
       const seedNames = validatorModule.parseSeedConstituencyNames();
 
-      const corruptEntries = manifest.entries.map((e: any) => e.pinCode === '500002' ? { ...e, inspectedPassageExtract: 'Schedule XXXI, Table B, Entry 66. Malakpet: Hyderabad (M.Corp) (Part) - Ward No. 16.' } : e);
+      const corruptEntries = manifest.entries.map((e: any) =>
+        e.pinCode === '500002'
+          ? {
+              ...e,
+              inspectedPassageExtract:
+                'Schedule XXXI, Table B, Entry 66. Malakpet: Hyderabad (M.Corp) (Part) - Ward No. 16.',
+            }
+          : e,
+      );
       const corruptManifest = { ...manifest, entries: corruptEntries };
-      const validation = validatorModule.validateEvidenceMatrix({ directory, manifest: corruptManifest, seedNames });
+      const validation = validatorModule.validateEvidenceMatrix({
+        directory,
+        manifest: corruptManifest,
+        seedNames,
+      });
 
       expect(validation.allPassed).toBe(false);
       const check8 = validation.checks.find((c: any) => c.checkId === 'CHECK_8_CLAIM_SUPPORT');
       expect(check8.passed).toBe(false);
-      expect(validation.errors.some((err: string) => err.includes('inspected passage extract contradicts assigned AC'))).toBe(true);
+      expect(
+        validation.errors.some((err: string) =>
+          err.includes('inspected passage extract contradicts assigned AC'),
+        ),
+      ).toBe(true);
     });
 
     it('genuine negative test (Scenario 21): rejects unverified external gazette publication authenticity claim', () => {
@@ -1124,14 +1478,29 @@ describe('CTO Directive 123 — Residual Electoral Data-Truth & Provisional Look
       const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
       const seedNames = validatorModule.parseSeedConstituencyNames();
 
-      const corruptEntries = manifest.entries.map((e: any) => e.pinCode === '500002' ? { ...e, externalPublicationAuthenticityStatus: 'AUTHORITATIVELY_VERIFIED_OFFICIAL_GAZETTE' } : e);
+      const corruptEntries = manifest.entries.map((e: any) =>
+        e.pinCode === '500002'
+          ? {
+              ...e,
+              externalPublicationAuthenticityStatus: 'AUTHORITATIVELY_VERIFIED_OFFICIAL_GAZETTE',
+            }
+          : e,
+      );
       const corruptManifest = { ...manifest, entries: corruptEntries };
-      const validation = validatorModule.validateEvidenceMatrix({ directory, manifest: corruptManifest, seedNames });
+      const validation = validatorModule.validateEvidenceMatrix({
+        directory,
+        manifest: corruptManifest,
+        seedNames,
+      });
 
       expect(validation.allPassed).toBe(false);
       const check6 = validation.checks.find((c: any) => c.checkId === 'CHECK_6_SOURCE_RESOLUTION');
       expect(check6.passed).toBe(false);
-      expect(validation.errors.some((err: string) => err.includes('incorrectly claims AUTHORITATIVELY_VERIFIED_OFFICIAL_GAZETTE'))).toBe(true);
+      expect(
+        validation.errors.some((err: string) =>
+          err.includes('incorrectly claims AUTHORITATIVELY_VERIFIED_OFFICIAL_GAZETTE'),
+        ),
+      ).toBe(true);
     });
 
     it('genuine negative test (Scenario 22): rejects claiming full source verification when statutory source is external', () => {
@@ -1139,14 +1508,32 @@ describe('CTO Directive 123 — Residual Electoral Data-Truth & Provisional Look
       const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
       const seedNames = validatorModule.parseSeedConstituencyNames();
 
-      const corruptEntries = manifest.entries.map((e: any) => e.pinCode === '500002' ? { ...e, claimSupportStatus: 'SUPPORTED_BY_INSPECTED_SOURCE', statutorySourceStatus: 'EXTERNAL_STATUTORY_PUBLICATION_NOT_CHECKED_IN' } : e);
+      const corruptEntries = manifest.entries.map((e: any) =>
+        e.pinCode === '500002'
+          ? {
+              ...e,
+              claimSupportStatus: 'SUPPORTED_BY_INSPECTED_SOURCE',
+              statutorySourceStatus: 'EXTERNAL_STATUTORY_PUBLICATION_NOT_CHECKED_IN',
+            }
+          : e,
+      );
       const corruptManifest = { ...manifest, entries: corruptEntries };
-      const validation = validatorModule.validateEvidenceMatrix({ directory, manifest: corruptManifest, seedNames });
+      const validation = validatorModule.validateEvidenceMatrix({
+        directory,
+        manifest: corruptManifest,
+        seedNames,
+      });
 
       expect(validation.allPassed).toBe(false);
       const check8 = validation.checks.find((c: any) => c.checkId === 'CHECK_8_CLAIM_SUPPORT');
       expect(check8.passed).toBe(false);
-      expect(validation.errors.some((err: string) => err.includes('claims SUPPORTED_BY_INSPECTED_SOURCE while statutory source is EXTERNAL_STATUTORY_PUBLICATION_NOT_CHECKED_IN'))).toBe(true);
+      expect(
+        validation.errors.some((err: string) =>
+          err.includes(
+            'claims SUPPORTED_BY_INSPECTED_SOURCE while statutory source is EXTERNAL_STATUTORY_PUBLICATION_NOT_CHECKED_IN',
+          ),
+        ),
+      ).toBe(true);
     });
 
     it('genuine negative test (Scenario 23): rejects premature evidenceClosureStatus === COMPLETE claim', () => {
@@ -1158,15 +1545,27 @@ describe('CTO Directive 123 — Residual Electoral Data-Truth & Provisional Look
         ...manifest,
         metadata: {
           ...manifest.metadata,
-          evidenceClosureStatus: 'COMPLETE'
-        }
+          evidenceClosureStatus: 'COMPLETE',
+        },
       };
-      const validation = validatorModule.validateEvidenceMatrix({ directory, manifest: corruptManifest, seedNames });
+      const validation = validatorModule.validateEvidenceMatrix({
+        directory,
+        manifest: corruptManifest,
+        seedNames,
+      });
 
       expect(validation.allPassed).toBe(false);
-      const check10 = validation.checks.find((c: any) => c.checkId === 'CHECK_10_DYNAMIC_SUMMARY_INTEGRITY');
+      const check10 = validation.checks.find(
+        (c: any) => c.checkId === 'CHECK_10_DYNAMIC_SUMMARY_INTEGRITY',
+      );
       expect(check10.passed).toBe(false);
-      expect(validation.errors.some((err: string) => err.includes('asserts evidenceClosureStatus === \'COMPLETE\' while external official gazette'))).toBe(true);
+      expect(
+        validation.errors.some((err: string) =>
+          err.includes(
+            "asserts evidenceClosureStatus === 'COMPLETE' while external official gazette",
+          ),
+        ),
+      ).toBe(true);
     });
 
     it('genuine negative test (Scenario 25): rejects correction passing structural check but failing claim verification', () => {
@@ -1174,14 +1573,28 @@ describe('CTO Directive 123 — Residual Electoral Data-Truth & Provisional Look
       const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
       const seedNames = validatorModule.parseSeedConstituencyNames();
 
-      const corruptEntries = manifest.entries.map((e: any) => e.pinCode === '500002' ? { ...e, claimSupportStatus: 'UNSUPPORTED_BY_INSPECTED_SOURCE' } : e);
+      const corruptEntries = manifest.entries.map((e: any) =>
+        e.pinCode === '500002'
+          ? { ...e, claimSupportStatus: 'UNSUPPORTED_BY_INSPECTED_SOURCE' }
+          : e,
+      );
       const corruptManifest = { ...manifest, entries: corruptEntries };
-      const validation = validatorModule.validateEvidenceMatrix({ directory, manifest: corruptManifest, seedNames });
+      const validation = validatorModule.validateEvidenceMatrix({
+        directory,
+        manifest: corruptManifest,
+        seedNames,
+      });
 
       expect(validation.allPassed).toBe(false);
-      const check4 = validation.checks.find((c: any) => c.checkId === 'CHECK_4_CORRECTION_CONSISTENCY_AND_SOURCE_EVIDENCE');
+      const check4 = validation.checks.find(
+        (c: any) => c.checkId === 'CHECK_4_CORRECTION_CONSISTENCY_AND_SOURCE_EVIDENCE',
+      );
       expect(check4.passed).toBe(false);
-      expect(validation.errors.some((err: string) => err.includes('documentary claim is UNSUPPORTED_BY_INSPECTED_SOURCE'))).toBe(true);
+      expect(
+        validation.errors.some((err: string) =>
+          err.includes('documentary claim is UNSUPPORTED_BY_INSPECTED_SOURCE'),
+        ),
+      ).toBe(true);
     });
 
     it('genuine negative test (Scenario 26): rejects inconsistent gate recommendation during failure', () => {
@@ -1189,21 +1602,31 @@ describe('CTO Directive 123 — Residual Electoral Data-Truth & Provisional Look
       const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
       const seedNames = validatorModule.parseSeedConstituencyNames();
 
-      const corruptEntries = manifest.entries.map((e: any) => e.pinCode === '500002' ? { ...e, claimSupportStatus: 'UNSUPPORTED_BY_INSPECTED_SOURCE' } : e);
+      const corruptEntries = manifest.entries.map((e: any) =>
+        e.pinCode === '500002'
+          ? { ...e, claimSupportStatus: 'UNSUPPORTED_BY_INSPECTED_SOURCE' }
+          : e,
+      );
       const corruptManifest = {
         ...manifest,
         entries: corruptEntries,
         metadata: {
           ...manifest.metadata,
           validationSummary: {
-            gateRecommendation: 'SUBMIT_FOR_INDEPENDENT_STAGE_B_ADJUDICATION'
-          }
-        }
+            gateRecommendation: 'SUBMIT_FOR_INDEPENDENT_STAGE_B_ADJUDICATION',
+          },
+        },
       };
-      const validation = validatorModule.validateEvidenceMatrix({ directory, manifest: corruptManifest, seedNames });
+      const validation = validatorModule.validateEvidenceMatrix({
+        directory,
+        manifest: corruptManifest,
+        seedNames,
+      });
 
       expect(validation.allPassed).toBe(false);
-      const check10 = validation.checks.find((c: any) => c.checkId === 'CHECK_10_DYNAMIC_SUMMARY_INTEGRITY');
+      const check10 = validation.checks.find(
+        (c: any) => c.checkId === 'CHECK_10_DYNAMIC_SUMMARY_INTEGRITY',
+      );
       expect(check10.passed).toBe(false);
     });
 
@@ -1212,47 +1635,91 @@ describe('CTO Directive 123 — Residual Electoral Data-Truth & Provisional Look
       const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
       const seedNames = validatorModule.parseSeedConstituencyNames();
 
-      const negativeResults = validatorModule.runNegativeValidationSuite({ directory, manifest, seedNames });
+      const negativeResults = validatorModule.runNegativeValidationSuite({
+        directory,
+        manifest,
+        seedNames,
+      });
       expect(negativeResults.allScenariosPassed).toBe(true);
       expect(negativeResults.scenarios.length).toBeGreaterThanOrEqual(26);
       expect(negativeResults.scenarios.every((s: any) => s.passed)).toBe(true);
     });
 
     it('verifies generated Directive 128 reports possess evidence-aware summaries and source-claim ledgers', () => {
-      const jsonReportPath = path.resolve(__dirname, '../../../../reports/w021_5_pin_independent_evidence_matrix.json');
-      const mdReportPath = path.resolve(__dirname, '../../../../reports/w021_5_pin_independent_evidence_matrix.md');
+      const jsonReportPath = path.resolve(
+        __dirname,
+        '../../../../reports/w021_5_pin_independent_evidence_matrix.json',
+      );
+      const mdReportPath = path.resolve(
+        __dirname,
+        '../../../../reports/w021_5_pin_independent_evidence_matrix.md',
+      );
 
       const jsonReport = JSON.parse(fs.readFileSync(jsonReportPath, 'utf8'));
       const mdReport = fs.readFileSync(mdReportPath, 'utf8');
 
       expect(jsonReport.metadata.directive).toMatch(/CTO Directive 1(2[89]|3[0123])/);
       expect(jsonReport.metadata.validationSummary.structuralValidationStatus).toBe('PASS');
-      expect(jsonReport.metadata.validationSummary.sourceResolutionStatus).toMatch(/PARTIAL_IN_REPO_DOSSIERS_EXTERNAL_GAZETTE_PENDING|VERIFIED_CHECKED_IN_EXTRACTS_SHA256_MATCH/);
-      expect(jsonReport.metadata.validationSummary.locatorResolutionStatus).toMatch(/EXACT_COORDINATES_DOCUMENTED_EXTERNAL_GAZETTE_PENDING|EXACT_ENTRY_AND_WARD_COORDINATES_VERIFIED_AGAINST_SOURCE_ARTIFACT/);
-      expect(jsonReport.metadata.validationSummary.substantiveSourceClaimStatus).toBe('PARTIALLY_SUPPORTED_IDENTITY_VERIFIED_POSTAL_UNPROVEN');
-      expect(jsonReport.metadata.validationSummary.externalPublicationAuthenticityStatus).toMatch(/PENDING_OFFICIAL_GAZETTE_PHYSICAL_COPY_AUDIT|UNVERIFIED_EXTERNAL_PUBLICATION_NOT_CHECKED_IN/);
-      expect(jsonReport.metadata.validationSummary.geographicContainmentStatus).toMatch(/UNPROVEN_GIS_DELIVERY_BEAT_BOUNDARY|UNVERIFIED_NO_GIS_DELIVERY_BEAT_POLYGON/);
-      expect(jsonReport.metadata.validationSummary.negativeScenariosExecuted).toBeGreaterThanOrEqual(26);
-      expect(jsonReport.metadata.validationSummary.negativeScenariosPassed).toBeGreaterThanOrEqual(26);
-      expect(jsonReport.metadata.validationSummary.gateRecommendation).toBe('SUBMIT_FOR_INDEPENDENT_STAGE_B_ADJUDICATION_WITH_DOCUMENTED_EXTERNAL_BLOCKERS');
-      expect(jsonReport.metadata.eightCorrectionsAccounting.reportedCorrectionsLedger).toHaveLength(8);
-      expect(jsonReport.metadata.eightCorrectionsAccounting.kurnoolLedgerEntry.pinCode).toBe('518001');
+      expect(jsonReport.metadata.validationSummary.sourceResolutionStatus).toMatch(
+        /PARTIAL_IN_REPO_DOSSIERS_EXTERNAL_GAZETTE_PENDING|VERIFIED_CHECKED_IN_EXTRACTS_SHA256_MATCH/,
+      );
+      expect(jsonReport.metadata.validationSummary.locatorResolutionStatus).toMatch(
+        /EXACT_COORDINATES_DOCUMENTED_EXTERNAL_GAZETTE_PENDING|EXACT_ENTRY_AND_WARD_COORDINATES_VERIFIED_AGAINST_SOURCE_ARTIFACT/,
+      );
+      expect(jsonReport.metadata.validationSummary.substantiveSourceClaimStatus).toBe(
+        'PARTIALLY_SUPPORTED_IDENTITY_VERIFIED_POSTAL_UNPROVEN',
+      );
+      expect(jsonReport.metadata.validationSummary.externalPublicationAuthenticityStatus).toMatch(
+        /PENDING_OFFICIAL_GAZETTE_PHYSICAL_COPY_AUDIT|UNVERIFIED_EXTERNAL_PUBLICATION_NOT_CHECKED_IN/,
+      );
+      expect(jsonReport.metadata.validationSummary.geographicContainmentStatus).toMatch(
+        /UNPROVEN_GIS_DELIVERY_BEAT_BOUNDARY|UNVERIFIED_NO_GIS_DELIVERY_BEAT_POLYGON/,
+      );
+      expect(
+        jsonReport.metadata.validationSummary.negativeScenariosExecuted,
+      ).toBeGreaterThanOrEqual(26);
+      expect(jsonReport.metadata.validationSummary.negativeScenariosPassed).toBeGreaterThanOrEqual(
+        26,
+      );
+      expect(jsonReport.metadata.validationSummary.gateRecommendation).toBe(
+        'SUBMIT_FOR_INDEPENDENT_STAGE_B_ADJUDICATION_WITH_DOCUMENTED_EXTERNAL_BLOCKERS',
+      );
+      expect(jsonReport.metadata.eightCorrectionsAccounting.reportedCorrectionsLedger).toHaveLength(
+        8,
+      );
+      expect(jsonReport.metadata.eightCorrectionsAccounting.kurnoolLedgerEntry.pinCode).toBe(
+        '518001',
+      );
 
       expect(mdReport).toMatch(/CTO Directive 1(2[89]|3[01])/);
       expect(mdReport).toMatch(/(26|38) Scenarios/);
-      expect(mdReport).toContain('SUBMIT_FOR_INDEPENDENT_STAGE_B_ADJUDICATION_WITH_DOCUMENTED_EXTERNAL_BLOCKERS');
+      expect(mdReport).toContain(
+        'SUBMIT_FOR_INDEPENDENT_STAGE_B_ADJUDICATION_WITH_DOCUMENTED_EXTERNAL_BLOCKERS',
+      );
       expect(mdReport).toContain('Reconciled Eight Corrections & Kurnool Accounting');
     });
   });
 
   describe('CTO Directive 129 — Source-Bound Statutory Evidence Verification, Independent Correction Audit, and Stage B Adjudication Integrity', () => {
-    const manifestPath = path.resolve(__dirname, '../../../../data/evidence/w021_5/pin_independent_evidence_manifest.json');
-    const tsExtractPath = path.resolve(__dirname, '../../../../data/evidence/w021_5/authoritative/eci_delimitation_2008_schedule_xxxi_table_b_extract.txt');
-    const apExtractPath = path.resolve(__dirname, '../../../../data/evidence/w021_5/authoritative/eci_delimitation_2008_schedule_ii_table_b_extract.txt');
+    const manifestPath = path.resolve(
+      __dirname,
+      '../../../../data/evidence/w021_5/pin_independent_evidence_manifest.json',
+    );
+    const tsExtractPath = path.resolve(
+      __dirname,
+      '../../../../data/evidence/w021_5/authoritative/eci_delimitation_2008_schedule_xxxi_table_b_extract.txt',
+    );
+    const apExtractPath = path.resolve(
+      __dirname,
+      '../../../../data/evidence/w021_5/authoritative/eci_delimitation_2008_schedule_ii_table_b_extract.txt',
+    );
     let validatorModule: any;
 
     beforeAll(() => {
-      const validatorPath = path.resolve(__dirname, '../../../../scripts/verify_pin_evidence_matrix.cjs');
+      const validatorPath = path.resolve(
+        __dirname,
+        '../../../../scripts/verify_pin_evidence_matrix.cjs',
+      );
       validatorModule = require(validatorPath);
     });
 
@@ -1317,7 +1784,9 @@ describe('CTO Directive 123 — Residual Electoral Data-Truth & Provisional Look
       for (const corr of validatorModule.REPORTED_AC_CORRECTIONS) {
         const entry = manifest.entries.find((e: any) => e.pinCode === corr.pin);
         expect(entry).toBeDefined();
-        expect(entry.conclusionA_constituencyIdentity).toBe('AUTHORITATIVELY_SUPPORTED_BY_INSPECTED_SOURCE');
+        expect(entry.conclusionA_constituencyIdentity).toBe(
+          'AUTHORITATIVELY_SUPPORTED_BY_INSPECTED_SOURCE',
+        );
         expect(entry.conclusionB_postalLinkage).toBe('PROVISIONALLY_APPROXIMATED_UNPROVEN_GIS');
         expect(entry.seedReconciliationOnly).toBe(false);
         expect(entry.geographicContainmentVerified).toBe(false);
@@ -1325,8 +1794,12 @@ describe('CTO Directive 123 — Residual Electoral Data-Truth & Provisional Look
 
       const kurnoolEntry = manifest.entries.find((e: any) => e.pinCode === '518001');
       expect(kurnoolEntry).toBeDefined();
-      expect(kurnoolEntry.conclusionA_constituencyIdentity).toBe('AUTHORITATIVELY_SUPPORTED_BY_INSPECTED_SOURCE');
-      expect(kurnoolEntry.conclusionB_postalLinkage).toBe('PROVISIONALLY_APPROXIMATED_UNPROVEN_GIS');
+      expect(kurnoolEntry.conclusionA_constituencyIdentity).toBe(
+        'AUTHORITATIVELY_SUPPORTED_BY_INSPECTED_SOURCE',
+      );
+      expect(kurnoolEntry.conclusionB_postalLinkage).toBe(
+        'PROVISIONALLY_APPROXIMATED_UNPROVEN_GIS',
+      );
       expect(kurnoolEntry.isReportedCorrection).toBe(false);
     });
 
@@ -1335,9 +1808,21 @@ describe('CTO Directive 123 — Residual Electoral Data-Truth & Provisional Look
       const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
       const seedNames = validatorModule.parseSeedConstituencyNames();
 
-      const corruptEntries = manifest.entries.map((e: any) => e.pinCode === '500002' ? { ...e, assignedAcNumber: 999, sourceLocator: 'Schedule XXXI, Table B, Entry 999 (Nonexistent)' } : e);
+      const corruptEntries = manifest.entries.map((e: any) =>
+        e.pinCode === '500002'
+          ? {
+              ...e,
+              assignedAcNumber: 999,
+              sourceLocator: 'Schedule XXXI, Table B, Entry 999 (Nonexistent)',
+            }
+          : e,
+      );
       const corruptManifest = { ...manifest, entries: corruptEntries };
-      const validation = validatorModule.validateEvidenceMatrix({ directory, manifest: corruptManifest, seedNames });
+      const validation = validatorModule.validateEvidenceMatrix({
+        directory,
+        manifest: corruptManifest,
+        seedNames,
+      });
 
       expect(validation.allPassed).toBe(false);
       const check7 = validation.checks.find((c: any) => c.checkId === 'CHECK_7_LOCATOR_RESOLUTION');
@@ -1349,9 +1834,15 @@ describe('CTO Directive 123 — Residual Electoral Data-Truth & Provisional Look
       const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
       const seedNames = validatorModule.parseSeedConstituencyNames();
 
-      const corruptEntries = manifest.entries.map((e: any) => e.pinCode === '500002' ? { ...e, assignedAcName: 'Kukatpally' } : e);
+      const corruptEntries = manifest.entries.map((e: any) =>
+        e.pinCode === '500002' ? { ...e, assignedAcName: 'Kukatpally' } : e,
+      );
       const corruptManifest = { ...manifest, entries: corruptEntries };
-      const validation = validatorModule.validateEvidenceMatrix({ directory, manifest: corruptManifest, seedNames });
+      const validation = validatorModule.validateEvidenceMatrix({
+        directory,
+        manifest: corruptManifest,
+        seedNames,
+      });
 
       expect(validation.allPassed).toBe(false);
       const check7 = validation.checks.find((c: any) => c.checkId === 'CHECK_7_LOCATOR_RESOLUTION');
@@ -1363,9 +1854,21 @@ describe('CTO Directive 123 — Residual Electoral Data-Truth & Provisional Look
       const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
       const seedNames = validatorModule.parseSeedConstituencyNames();
 
-      const corruptEntries = manifest.entries.map((e: any) => e.pinCode === '500002' ? { ...e, sourcePassageExtract: 'Schedule XXXI, Table B, Entry 66. Charminar: Contradictory Ward Nos. 99 and 100.' } : e);
+      const corruptEntries = manifest.entries.map((e: any) =>
+        e.pinCode === '500002'
+          ? {
+              ...e,
+              sourcePassageExtract:
+                'Schedule XXXI, Table B, Entry 66. Charminar: Contradictory Ward Nos. 99 and 100.',
+            }
+          : e,
+      );
       const corruptManifest = { ...manifest, entries: corruptEntries };
-      const validation = validatorModule.validateEvidenceMatrix({ directory, manifest: corruptManifest, seedNames });
+      const validation = validatorModule.validateEvidenceMatrix({
+        directory,
+        manifest: corruptManifest,
+        seedNames,
+      });
 
       expect(validation.allPassed).toBe(false);
       const check8 = validation.checks.find((c: any) => c.checkId === 'CHECK_8_CLAIM_SUPPORT');
@@ -1377,9 +1880,21 @@ describe('CTO Directive 123 — Residual Electoral Data-Truth & Provisional Look
       const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
       const seedNames = validatorModule.parseSeedConstituencyNames();
 
-      const corruptEntries = manifest.entries.map((e: any) => e.pinCode === '500002' ? { ...e, sourcePassageExtract: 'Schedule XXXI, Table B, Entry 66. Charminar: Fabricated ward extent not in delimitation order.' } : e);
+      const corruptEntries = manifest.entries.map((e: any) =>
+        e.pinCode === '500002'
+          ? {
+              ...e,
+              sourcePassageExtract:
+                'Schedule XXXI, Table B, Entry 66. Charminar: Fabricated ward extent not in delimitation order.',
+            }
+          : e,
+      );
       const corruptManifest = { ...manifest, entries: corruptEntries };
-      const validation = validatorModule.validateEvidenceMatrix({ directory, manifest: corruptManifest, seedNames });
+      const validation = validatorModule.validateEvidenceMatrix({
+        directory,
+        manifest: corruptManifest,
+        seedNames,
+      });
 
       expect(validation.allPassed).toBe(false);
       const check8 = validation.checks.find((c: any) => c.checkId === 'CHECK_8_CLAIM_SUPPORT');
@@ -1391,9 +1906,21 @@ describe('CTO Directive 123 — Residual Electoral Data-Truth & Provisional Look
       const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
       const seedNames = validatorModule.parseSeedConstituencyNames();
 
-      const corruptEntries = manifest.entries.map((e: any) => e.pinCode === '500002' ? { ...e, sourcePassageExtract: 'Schedule II, Table B, Entry 79. Vijayawada West: Vijayawada (M.Corp) (Part) - Ward Nos. 1 to 14.' } : e);
+      const corruptEntries = manifest.entries.map((e: any) =>
+        e.pinCode === '500002'
+          ? {
+              ...e,
+              sourcePassageExtract:
+                'Schedule II, Table B, Entry 79. Vijayawada West: Vijayawada (M.Corp) (Part) - Ward Nos. 1 to 14.',
+            }
+          : e,
+      );
       const corruptManifest = { ...manifest, entries: corruptEntries };
-      const validation = validatorModule.validateEvidenceMatrix({ directory, manifest: corruptManifest, seedNames });
+      const validation = validatorModule.validateEvidenceMatrix({
+        directory,
+        manifest: corruptManifest,
+        seedNames,
+      });
 
       expect(validation.allPassed).toBe(false);
       const check8 = validation.checks.find((c: any) => c.checkId === 'CHECK_8_CLAIM_SUPPORT');
@@ -1405,9 +1932,21 @@ describe('CTO Directive 123 — Residual Electoral Data-Truth & Provisional Look
       const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
       const seedNames = validatorModule.parseSeedConstituencyNames();
 
-      const corruptEntries = manifest.entries.map((e: any) => e.pinCode === '500002' ? { ...e, sourceArtifactSha256: '0000000000000000000000000000000000000000000000000000000000000000' } : e);
+      const corruptEntries = manifest.entries.map((e: any) =>
+        e.pinCode === '500002'
+          ? {
+              ...e,
+              sourceArtifactSha256:
+                '0000000000000000000000000000000000000000000000000000000000000000',
+            }
+          : e,
+      );
       const corruptManifest = { ...manifest, entries: corruptEntries };
-      const validation = validatorModule.validateEvidenceMatrix({ directory, manifest: corruptManifest, seedNames });
+      const validation = validatorModule.validateEvidenceMatrix({
+        directory,
+        manifest: corruptManifest,
+        seedNames,
+      });
 
       expect(validation.allPassed).toBe(false);
       const check6 = validation.checks.find((c: any) => c.checkId === 'CHECK_6_SOURCE_RESOLUTION');
@@ -1419,9 +1958,20 @@ describe('CTO Directive 123 — Residual Electoral Data-Truth & Provisional Look
       const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
       const seedNames = validatorModule.parseSeedConstituencyNames();
 
-      const corruptEntries = manifest.entries.map((e: any) => e.pinCode === '500002' ? { ...e, referenceDocumentPath: 'data/evidence/w021_5/authoritative/deleted_extract.txt' } : e);
+      const corruptEntries = manifest.entries.map((e: any) =>
+        e.pinCode === '500002'
+          ? {
+              ...e,
+              referenceDocumentPath: 'data/evidence/w021_5/authoritative/deleted_extract.txt',
+            }
+          : e,
+      );
       const corruptManifest = { ...manifest, entries: corruptEntries };
-      const validation = validatorModule.validateEvidenceMatrix({ directory, manifest: corruptManifest, seedNames });
+      const validation = validatorModule.validateEvidenceMatrix({
+        directory,
+        manifest: corruptManifest,
+        seedNames,
+      });
 
       expect(validation.allPassed).toBe(false);
       const check6 = validation.checks.find((c: any) => c.checkId === 'CHECK_6_SOURCE_RESOLUTION');
@@ -1433,9 +1983,21 @@ describe('CTO Directive 123 — Residual Electoral Data-Truth & Provisional Look
       const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
       const seedNames = validatorModule.parseSeedConstituencyNames();
 
-      const corruptEntries = manifest.entries.map((e: any) => e.pinCode === '520001' ? { ...e, assignedAcNumber: 999, sourceLocator: 'Schedule II, Table B, Entry 999 (Nonexistent)' } : e);
+      const corruptEntries = manifest.entries.map((e: any) =>
+        e.pinCode === '520001'
+          ? {
+              ...e,
+              assignedAcNumber: 999,
+              sourceLocator: 'Schedule II, Table B, Entry 999 (Nonexistent)',
+            }
+          : e,
+      );
       const corruptManifest = { ...manifest, entries: corruptEntries };
-      const validation = validatorModule.validateEvidenceMatrix({ directory, manifest: corruptManifest, seedNames });
+      const validation = validatorModule.validateEvidenceMatrix({
+        directory,
+        manifest: corruptManifest,
+        seedNames,
+      });
 
       expect(validation.allPassed).toBe(false);
       const check7 = validation.checks.find((c: any) => c.checkId === 'CHECK_7_LOCATOR_RESOLUTION');
@@ -1447,9 +2009,21 @@ describe('CTO Directive 123 — Residual Electoral Data-Truth & Provisional Look
       const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
       const seedNames = validatorModule.parseSeedConstituencyNames();
 
-      const corruptEntries = manifest.entries.map((e: any) => e.pinCode === '500002' ? { ...e, referenceDocumentPath: 'EXTERNAL_STATUTORY_PUBLICATION_NOT_CHECKED_IN', filePathResolutionStatus: 'VERIFIED_IN_REPO_FILE_RESOLVED' } : e);
+      const corruptEntries = manifest.entries.map((e: any) =>
+        e.pinCode === '500002'
+          ? {
+              ...e,
+              referenceDocumentPath: 'EXTERNAL_STATUTORY_PUBLICATION_NOT_CHECKED_IN',
+              filePathResolutionStatus: 'VERIFIED_IN_REPO_FILE_RESOLVED',
+            }
+          : e,
+      );
       const corruptManifest = { ...manifest, entries: corruptEntries };
-      const validation = validatorModule.validateEvidenceMatrix({ directory, manifest: corruptManifest, seedNames });
+      const validation = validatorModule.validateEvidenceMatrix({
+        directory,
+        manifest: corruptManifest,
+        seedNames,
+      });
 
       expect(validation.allPassed).toBe(false);
       const check6 = validation.checks.find((c: any) => c.checkId === 'CHECK_6_SOURCE_RESOLUTION');
@@ -1461,12 +2035,20 @@ describe('CTO Directive 123 — Residual Electoral Data-Truth & Provisional Look
       const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
       const seedNames = validatorModule.parseSeedConstituencyNames();
 
-      const corruptEntries = manifest.entries.map((e: any) => e.pinCode === '500053' ? { ...e, conclusionA_constituencyIdentity: 'UNSUPPORTED' } : e);
+      const corruptEntries = manifest.entries.map((e: any) =>
+        e.pinCode === '500053' ? { ...e, conclusionA_constituencyIdentity: 'UNSUPPORTED' } : e,
+      );
       const corruptManifest = { ...manifest, entries: corruptEntries };
-      const validation = validatorModule.validateEvidenceMatrix({ directory, manifest: corruptManifest, seedNames });
+      const validation = validatorModule.validateEvidenceMatrix({
+        directory,
+        manifest: corruptManifest,
+        seedNames,
+      });
 
       expect(validation.allPassed).toBe(false);
-      const check4 = validation.checks.find((c: any) => c.checkId === 'CHECK_4_CORRECTION_CONSISTENCY_AND_SOURCE_EVIDENCE');
+      const check4 = validation.checks.find(
+        (c: any) => c.checkId === 'CHECK_4_CORRECTION_CONSISTENCY_AND_SOURCE_EVIDENCE',
+      );
       expect(check4.passed).toBe(false);
     });
 
@@ -1481,14 +2063,20 @@ describe('CTO Directive 123 — Residual Electoral Data-Truth & Provisional Look
         metadata: {
           ...manifest.metadata,
           validationSummary: {
-            gateRecommendation: 'SUBMIT_FOR_INDEPENDENT_STAGE_B_ADJUDICATION'
-          }
-        }
+            gateRecommendation: 'SUBMIT_FOR_INDEPENDENT_STAGE_B_ADJUDICATION',
+          },
+        },
       };
-      const validation = validatorModule.validateEvidenceMatrix({ directory, manifest: corruptManifest, seedNames });
+      const validation = validatorModule.validateEvidenceMatrix({
+        directory,
+        manifest: corruptManifest,
+        seedNames,
+      });
 
       expect(validation.allPassed).toBe(false);
-      const check1 = validation.checks.find((c: any) => c.checkId === 'CHECK_1_EXACT_INVENTORY_PARITY');
+      const check1 = validation.checks.find(
+        (c: any) => c.checkId === 'CHECK_1_EXACT_INVENTORY_PARITY',
+      );
       expect(check1.passed).toBe(false);
     });
 
@@ -1497,41 +2085,72 @@ describe('CTO Directive 123 — Residual Electoral Data-Truth & Provisional Look
       const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
       const seedNames = validatorModule.parseSeedConstituencyNames();
 
-      const negativeResults = validatorModule.runNegativeValidationSuite({ directory, manifest, seedNames });
+      const negativeResults = validatorModule.runNegativeValidationSuite({
+        directory,
+        manifest,
+        seedNames,
+      });
       expect(negativeResults.allScenariosPassed).toBe(true);
       expect(negativeResults.scenarios).toHaveLength(38);
       expect(negativeResults.scenarios.every((s: any) => s.passed)).toBe(true);
     });
 
     it('verifies generated Directive 129 reports possess 11 orthogonal evidence dimensions, source-to-claim ledgers, and honest blocker disclosures', () => {
-      const jsonReportPath = path.resolve(__dirname, '../../../../reports/w021_5_pin_independent_evidence_matrix.json');
-      const mdReportPath = path.resolve(__dirname, '../../../../reports/w021_5_pin_independent_evidence_matrix.md');
+      const jsonReportPath = path.resolve(
+        __dirname,
+        '../../../../reports/w021_5_pin_independent_evidence_matrix.json',
+      );
+      const mdReportPath = path.resolve(
+        __dirname,
+        '../../../../reports/w021_5_pin_independent_evidence_matrix.md',
+      );
 
       const jsonReport = JSON.parse(fs.readFileSync(jsonReportPath, 'utf8'));
       const mdReport = fs.readFileSync(mdReportPath, 'utf8');
 
       expect(jsonReport.metadata.directive).toMatch(/CTO Directive 1(29|3[0123])/);
       expect(jsonReport.metadata.validationSummary.structuralValidationStatus).toBe('PASS');
-      expect(jsonReport.metadata.validationSummary.sourceResolutionStatus).toBe('VERIFIED_CHECKED_IN_EXTRACTS_SHA256_MATCH');
-      expect(jsonReport.metadata.validationSummary.locatorResolutionStatus).toBe('EXACT_ENTRY_AND_WARD_COORDINATES_VERIFIED_AGAINST_SOURCE_ARTIFACT');
-      expect(jsonReport.metadata.validationSummary.substantiveSourceClaimStatus).toBe('PARTIALLY_SUPPORTED_IDENTITY_VERIFIED_POSTAL_UNPROVEN');
-      expect(jsonReport.metadata.validationSummary.externalPublicationAuthenticityStatus).toBe('UNVERIFIED_EXTERNAL_PUBLICATION_NOT_CHECKED_IN');
-      expect(jsonReport.metadata.validationSummary.geographicContainmentStatus).toBe('UNVERIFIED_NO_GIS_DELIVERY_BEAT_POLYGON');
+      expect(jsonReport.metadata.validationSummary.sourceResolutionStatus).toBe(
+        'VERIFIED_CHECKED_IN_EXTRACTS_SHA256_MATCH',
+      );
+      expect(jsonReport.metadata.validationSummary.locatorResolutionStatus).toBe(
+        'EXACT_ENTRY_AND_WARD_COORDINATES_VERIFIED_AGAINST_SOURCE_ARTIFACT',
+      );
+      expect(jsonReport.metadata.validationSummary.substantiveSourceClaimStatus).toBe(
+        'PARTIALLY_SUPPORTED_IDENTITY_VERIFIED_POSTAL_UNPROVEN',
+      );
+      expect(jsonReport.metadata.validationSummary.externalPublicationAuthenticityStatus).toBe(
+        'UNVERIFIED_EXTERNAL_PUBLICATION_NOT_CHECKED_IN',
+      );
+      expect(jsonReport.metadata.validationSummary.geographicContainmentStatus).toBe(
+        'UNVERIFIED_NO_GIS_DELIVERY_BEAT_POLYGON',
+      );
       expect(jsonReport.metadata.validationSummary.negativeScenariosExecuted).toBe(38);
       expect(jsonReport.metadata.validationSummary.negativeScenariosPassed).toBe(38);
-      expect(jsonReport.metadata.validationSummary.gateRecommendation).toBe('SUBMIT_FOR_INDEPENDENT_STAGE_B_ADJUDICATION_WITH_DOCUMENTED_EXTERNAL_BLOCKERS');
-      expect(jsonReport.metadata.eightCorrectionsAccounting.reportedCorrectionsLedger).toHaveLength(8);
-      expect(jsonReport.metadata.eightCorrectionsAccounting.kurnoolLedgerEntry.pinCode).toBe('518001');
+      expect(jsonReport.metadata.validationSummary.gateRecommendation).toBe(
+        'SUBMIT_FOR_INDEPENDENT_STAGE_B_ADJUDICATION_WITH_DOCUMENTED_EXTERNAL_BLOCKERS',
+      );
+      expect(jsonReport.metadata.eightCorrectionsAccounting.reportedCorrectionsLedger).toHaveLength(
+        8,
+      );
+      expect(jsonReport.metadata.eightCorrectionsAccounting.kurnoolLedgerEntry.pinCode).toBe(
+        '518001',
+      );
 
       expect(mdReport).toMatch(/CTO Directive 1(29|3[01])/);
       expect(mdReport).toContain('38 Scenarios');
       expect(mdReport).toMatch(/(11|12) Orthogonal Evidence Status Dimensions/);
-      expect(mdReport).toContain('SUBMIT_FOR_INDEPENDENT_STAGE_B_ADJUDICATION_WITH_DOCUMENTED_EXTERNAL_BLOCKERS');
+      expect(mdReport).toContain(
+        'SUBMIT_FOR_INDEPENDENT_STAGE_B_ADJUDICATION_WITH_DOCUMENTED_EXTERNAL_BLOCKERS',
+      );
     });
   });
 
   describe('CTO Directive 130 — Exact Locator Extent Integrity, Source-Path Binding, Genuine Negative Tests & Stage B Gate Correctness', () => {
-    const manifestPath = path.resolve(__dirname, '../../../../data/evidence/w021_5/pin_independent_evidence_manifest.json');
+    const manifestPath = path.resolve(
+      __dirname,
+      '../../../../data/evidence/w021_5/pin_independent_evidence_manifest.json',
+    );
     const validatorModule = require('../../../../scripts/verify_pin_evidence_matrix.cjs');
 
     it('Workstream A: verifies exact parsed locator extents across all 36 records including reconciled PINs 500053 and 500064', () => {
@@ -1548,7 +2167,9 @@ describe('CTO Directive 123 — Residual Electoral Data-Truth & Provisional Look
       const e500064 = manifest.entries.find((e: any) => e.pinCode === '500064');
       expect(e500064).toBeDefined();
       expect(e500064.assignedAcNumber).toBe(69);
-      expect(e500064.sourceLocator).toContain('Ward No. 19 and Ward No. 18 (Part) Block No. 4 to 8');
+      expect(e500064.sourceLocator).toContain(
+        'Ward No. 19 and Ward No. 18 (Part) Block No. 4 to 8',
+      );
       expect(e500064.sourceLocator).not.toContain('GHMC Ward 12');
     });
 
@@ -1558,22 +2179,37 @@ describe('CTO Directive 123 — Residual Electoral Data-Truth & Provisional Look
       const seedNames = validatorModule.parseSeedConstituencyNames();
 
       // TS entry declaring AP extract path
-      const corruptEntries = manifest.entries.map((e: any) => e.pinCode === '500002' ? {
-        ...e,
-        referenceDocumentPath: 'data/evidence/w021_5/authoritative/eci_delimitation_2008_schedule_ii_table_b_extract.txt'
-      } : e);
+      const corruptEntries = manifest.entries.map((e: any) =>
+        e.pinCode === '500002'
+          ? {
+              ...e,
+              referenceDocumentPath:
+                'data/evidence/w021_5/authoritative/eci_delimitation_2008_schedule_ii_table_b_extract.txt',
+            }
+          : e,
+      );
       const corruptManifest = { ...manifest, entries: corruptEntries };
-      const validation = validatorModule.validateEvidenceMatrix({ directory, manifest: corruptManifest, seedNames });
+      const validation = validatorModule.validateEvidenceMatrix({
+        directory,
+        manifest: corruptManifest,
+        seedNames,
+      });
 
       expect(validation.allPassed).toBe(false);
       const check6 = validation.checks.find((c: any) => c.checkId === 'CHECK_6_SOURCE_RESOLUTION');
       expect(check6.passed).toBe(false);
-      expect(validation.errors.some((err: string) => err.includes('does not match expected Telangana Schedule XXXI extract'))).toBe(true);
+      expect(
+        validation.errors.some((err: string) =>
+          err.includes('does not match expected Telangana Schedule XXXI extract'),
+        ),
+      ).toBe(true);
     });
 
     it('Workstream C: validates multi-AC records fail closed with candidate numbers, names and extents verified', () => {
       const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
-      const multiAcPins = manifest.entries.filter((e: any) => e.confidenceTaxonomy === 'AMBIGUOUS_MULTI_CONSTITUENCY');
+      const multiAcPins = manifest.entries.filter(
+        (e: any) => e.confidenceTaxonomy === 'AMBIGUOUS_MULTI_CONSTITUENCY',
+      );
 
       expect(multiAcPins).toHaveLength(4);
       for (const entry of multiAcPins) {
@@ -1589,8 +2225,12 @@ describe('CTO Directive 123 — Residual Electoral Data-Truth & Provisional Look
       const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
 
       for (const entry of manifest.entries) {
-        expect(entry.transcriptionFidelityStatus).toBe('UNVERIFIED_PENDING_PHYSICAL_GAZETTE_COMPARISON');
-        expect(entry.officialPublicationAuthenticityStatus).toBe('UNVERIFIED_EXTERNAL_PUBLICATION_NOT_CHECKED_IN');
+        expect(entry.transcriptionFidelityStatus).toBe(
+          'UNVERIFIED_PENDING_PHYSICAL_GAZETTE_COMPARISON',
+        );
+        expect(entry.officialPublicationAuthenticityStatus).toBe(
+          'UNVERIFIED_EXTERNAL_PUBLICATION_NOT_CHECKED_IN',
+        );
         expect(entry.geographicContainmentStatus).toBe('UNVERIFIED_NO_GIS_DELIVERY_BEAT_POLYGON');
         expect(entry.sourceArtifactIntegrityStatus).toBe('VERIFIED_SHA256_MATCH');
         expect(entry.filePathResolutionStatus).toBe('VERIFIED_IN_REPO_FILE_RESOLVED');
@@ -1602,32 +2242,52 @@ describe('CTO Directive 123 — Residual Electoral Data-Truth & Provisional Look
       const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
       const seedNames = validatorModule.parseSeedConstituencyNames();
 
-      const negativeResults = validatorModule.runNegativeValidationSuite({ directory, manifest, seedNames });
+      const negativeResults = validatorModule.runNegativeValidationSuite({
+        directory,
+        manifest,
+        seedNames,
+      });
       expect(negativeResults.allScenariosPassed).toBe(true);
       expect(negativeResults.scenarios).toHaveLength(38);
 
-      const jsonReportPath = path.resolve(__dirname, '../../../../reports/w021_5_pin_independent_evidence_matrix.json');
-      const mdReportPath = path.resolve(__dirname, '../../../../reports/w021_5_pin_independent_evidence_matrix.md');
+      const jsonReportPath = path.resolve(
+        __dirname,
+        '../../../../reports/w021_5_pin_independent_evidence_matrix.json',
+      );
+      const mdReportPath = path.resolve(
+        __dirname,
+        '../../../../reports/w021_5_pin_independent_evidence_matrix.md',
+      );
 
       const jsonReport = JSON.parse(fs.readFileSync(jsonReportPath, 'utf8'));
       const mdReport = fs.readFileSync(mdReportPath, 'utf8');
 
       expect(jsonReport.metadata.directive).toMatch(/CTO Directive 13[0123]/);
-      expect(jsonReport.metadata.validationSummary.evidenceClosureStatus).toBe('PENDING_EXTERNAL_OFFICIAL_GAZETTE_AND_GIS_DELIVERY_BEAT_EVIDENCE');
+      expect(jsonReport.metadata.validationSummary.evidenceClosureStatus).toBe(
+        'PENDING_EXTERNAL_OFFICIAL_GAZETTE_AND_GIS_DELIVERY_BEAT_EVIDENCE',
+      );
       expect(jsonReport.metadata.validationSummary.evidenceClosureStatus).not.toBe('COMPLETE');
-      expect(jsonReport.metadata.validationSummary.transcriptionFidelityStatus).toBe('UNVERIFIED_PENDING_PHYSICAL_GAZETTE_COMPARISON');
+      expect(jsonReport.metadata.validationSummary.transcriptionFidelityStatus).toBe(
+        'UNVERIFIED_PENDING_PHYSICAL_GAZETTE_COMPARISON',
+      );
       expect(mdReport).toMatch(/CTO Directive 13[0123]/);
       expect(mdReport).toContain('12 Orthogonal Evidence Status Dimensions');
     });
   });
 
   describe('CTO Directive 131 — Report-to-Evidence Concordance, Genuine Report-Generator Anti-Override Testing, and Final Stage B Evidence Integrity', () => {
-    const manifestPath = path.resolve(__dirname, '../../../../data/evidence/w021_5/pin_independent_evidence_manifest.json');
+    const manifestPath = path.resolve(
+      __dirname,
+      '../../../../data/evidence/w021_5/pin_independent_evidence_manifest.json',
+    );
     const validatorModule = require('../../../../scripts/verify_pin_evidence_matrix.cjs');
 
     it('Workstream A: verifies 100% report-to-evidence concordance across all 36 records including reconciled PINs 500001, 500028, and 500056', () => {
       const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
-      const tableBExtractPath = path.resolve(__dirname, '../../../../data/evidence/w021_5/authoritative/eci_delimitation_2008_schedule_xxxi_table_b_extract.txt');
+      const tableBExtractPath = path.resolve(
+        __dirname,
+        '../../../../data/evidence/w021_5/authoritative/eci_delimitation_2008_schedule_xxxi_table_b_extract.txt',
+      );
       const tableBEntries = validatorModule.parseStatutoryTableBExtract(tableBExtractPath);
 
       // Reconciled PIN 500001: AC 65 is Goshamahal (Ward 4, 14, 15, 21), AC 63 is Nampally, AC 58 is Malakpet
@@ -1680,34 +2340,54 @@ describe('CTO Directive 123 — Residual Electoral Data-Truth & Provisional Look
         ...manifest,
         metadata: {
           ...manifest.metadata,
-          evidenceClosureStatus: 'COMPLETE'
-        }
+          evidenceClosureStatus: 'COMPLETE',
+        },
       };
 
       const out = validatorModule.generateEvidenceReports({
         directory,
         manifest: manifestWithComplete,
         seedNames,
-        writeFiles: false
+        writeFiles: false,
       });
 
       // Status must not be COMPLETE
       expect(out.matrixJson.metadata.validationSummary.evidenceClosureStatus).not.toBe('COMPLETE');
       expect(out.matrixJson.metadata.validationSummary.structuralValidationStatus).toBe('FAIL');
-      expect(out.matrixJson.metadata.validationSummary.gateRecommendation).toBe('GATE_REJECTED_VALIDATION_FAILURE');
-      expect(out.matrixJson.metadata.validationSummary.evidenceClosureStatus).toBe('CLOSURE_REJECTED_VALIDATION_FAILED');
+      expect(out.matrixJson.metadata.validationSummary.gateRecommendation).toBe(
+        'GATE_REJECTED_VALIDATION_FAILURE',
+      );
+      expect(out.matrixJson.metadata.validationSummary.evidenceClosureStatus).toBe(
+        'CLOSURE_REJECTED_VALIDATION_FAILED',
+      );
       expect(out.matrixMd).toContain('Overall Validation Status:** `FAILED`');
       expect(out.matrixMd).not.toContain('100% PASS');
     });
 
     it('Workstream B.4: verifies file overwrite guarantee eliminates prior PASS reports on failure', () => {
-      const tempDir = path.resolve(__dirname, '../../../../scratch', `jest_report_overwrite_${Date.now()}`);
+      const tempDir = path.resolve(
+        __dirname,
+        '../../../../scratch',
+        `jest_report_overwrite_${Date.now()}`,
+      );
       fs.mkdirSync(tempDir, { recursive: true });
 
       // Write dummy PASS files
-      const passJson = { metadata: { validationSummary: { structuralValidationStatus: 'PASS', gateRecommendation: 'SUBMIT' } } };
-      fs.writeFileSync(path.resolve(tempDir, 'w021_5_pin_independent_evidence_matrix.json'), JSON.stringify(passJson), 'utf8');
-      fs.writeFileSync(path.resolve(tempDir, 'w021_5_pin_independent_evidence_matrix.md'), 'Overall Validation Status: `100% PASS`', 'utf8');
+      const passJson = {
+        metadata: {
+          validationSummary: { structuralValidationStatus: 'PASS', gateRecommendation: 'SUBMIT' },
+        },
+      };
+      fs.writeFileSync(
+        path.resolve(tempDir, 'w021_5_pin_independent_evidence_matrix.json'),
+        JSON.stringify(passJson),
+        'utf8',
+      );
+      fs.writeFileSync(
+        path.resolve(tempDir, 'w021_5_pin_independent_evidence_matrix.md'),
+        'Overall Validation Status: `100% PASS`',
+        'utf8',
+      );
 
       const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
       const directory = validatorModule.parseDelimitationServiceCuratedPins();
@@ -1716,7 +2396,9 @@ describe('CTO Directive 123 — Residual Electoral Data-Truth & Provisional Look
       // Corrupt manifest
       const corruptManifest = {
         ...manifest,
-        entries: manifest.entries.map((e: any) => e.pinCode === '500002' ? { ...e, sourceLocator: 'CORRUPTED' } : e)
+        entries: manifest.entries.map((e: any) =>
+          e.pinCode === '500002' ? { ...e, sourceLocator: 'CORRUPTED' } : e,
+        ),
       };
 
       validatorModule.generateEvidenceReports({
@@ -1724,16 +2406,26 @@ describe('CTO Directive 123 — Residual Electoral Data-Truth & Provisional Look
         manifest: corruptManifest,
         seedNames,
         reportDir: tempDir,
-        writeFiles: true
+        writeFiles: true,
       });
 
-      const overwrittenJson = JSON.parse(fs.readFileSync(path.resolve(tempDir, 'w021_5_pin_independent_evidence_matrix.json'), 'utf8'));
-      const overwrittenMd = fs.readFileSync(path.resolve(tempDir, 'w021_5_pin_independent_evidence_matrix.md'), 'utf8');
+      const overwrittenJson = JSON.parse(
+        fs.readFileSync(
+          path.resolve(tempDir, 'w021_5_pin_independent_evidence_matrix.json'),
+          'utf8',
+        ),
+      );
+      const overwrittenMd = fs.readFileSync(
+        path.resolve(tempDir, 'w021_5_pin_independent_evidence_matrix.md'),
+        'utf8',
+      );
 
       fs.rmSync(tempDir, { recursive: true, force: true });
 
       expect(overwrittenJson.metadata.validationSummary.structuralValidationStatus).toBe('FAIL');
-      expect(overwrittenJson.metadata.validationSummary.gateRecommendation).toBe('GATE_REJECTED_VALIDATION_FAILURE');
+      expect(overwrittenJson.metadata.validationSummary.gateRecommendation).toBe(
+        'GATE_REJECTED_VALIDATION_FAILURE',
+      );
       expect(overwrittenMd).toContain('Overall Validation Status:** `FAILED`');
       expect(overwrittenMd).not.toContain('100% PASS');
     });
@@ -1743,16 +2435,25 @@ describe('CTO Directive 123 — Residual Electoral Data-Truth & Provisional Look
       const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
       const seedNames = validatorModule.parseSeedConstituencyNames();
 
-      const negativeResults = validatorModule.runNegativeValidationSuite({ directory, manifest, seedNames });
+      const negativeResults = validatorModule.runNegativeValidationSuite({
+        directory,
+        manifest,
+        seedNames,
+      });
       expect(negativeResults.allScenariosPassed).toBe(true);
       expect(negativeResults.scenarios).toHaveLength(38);
 
       // Verify Scenario 24 and Scenario 38 executed with real report generator
-      const sc24 = negativeResults.scenarios.find((s: any) => s.scenarioId === 'NEG_SCENARIO_24_FAILED_CHECK_CANNOT_RENDER_PASS');
+      const sc24 = negativeResults.scenarios.find(
+        (s: any) => s.scenarioId === 'NEG_SCENARIO_24_FAILED_CHECK_CANNOT_RENDER_PASS',
+      );
       expect(sc24).toBeDefined();
       expect(sc24.passed).toBe(true);
 
-      const sc38 = negativeResults.scenarios.find((s: any) => s.scenarioId === 'NEG_SCENARIO_38_FAILED_SOURCE_RESULT_LOST_IN_REPORT_REGENERATION');
+      const sc38 = negativeResults.scenarios.find(
+        (s: any) =>
+          s.scenarioId === 'NEG_SCENARIO_38_FAILED_SOURCE_RESULT_LOST_IN_REPORT_REGENERATION',
+      );
       expect(sc38).toBeDefined();
       expect(sc38.passed).toBe(true);
     });
@@ -1764,57 +2465,88 @@ describe('CTO Directive 123 — Residual Electoral Data-Truth & Provisional Look
       expect(validatorModule.KURNOOL_RECONCILIATION.pin).toBe('518001');
       expect(validatorModule.KURNOOL_RECONCILIATION.canonicalAc).toBe(137);
 
-      const jsonReportPath = path.resolve(__dirname, '../../../../reports/w021_5_pin_independent_evidence_matrix.json');
+      const jsonReportPath = path.resolve(
+        __dirname,
+        '../../../../reports/w021_5_pin_independent_evidence_matrix.json',
+      );
       const jsonReport = JSON.parse(fs.readFileSync(jsonReportPath, 'utf8'));
 
       expect(jsonReport.metadata.eightCorrectionsAccounting.totalReportedCorrections).toBe(8);
       expect(jsonReport.metadata.eightCorrectionsAccounting.telanganaCorrectionsCount).toBe(3);
       expect(jsonReport.metadata.eightCorrectionsAccounting.andhraPradeshCorrectionsCount).toBe(5);
-      expect(jsonReport.metadata.eightCorrectionsAccounting.kurnoolLedgerEntry.pinCode).toBe('518001');
-      expect(jsonReport.metadata.eightCorrectionsAccounting.kurnoolLedgerEntry.isCorrection).toBe(false);
+      expect(jsonReport.metadata.eightCorrectionsAccounting.kurnoolLedgerEntry.pinCode).toBe(
+        '518001',
+      );
+      expect(jsonReport.metadata.eightCorrectionsAccounting.kurnoolLedgerEntry.isCorrection).toBe(
+        false,
+      );
     });
 
     it('Workstream G: verifies regenerated evidence matrix files match CTO Directive 131 specification', () => {
-      const jsonReportPath = path.resolve(__dirname, '../../../../reports/w021_5_pin_independent_evidence_matrix.json');
-      const mdReportPath = path.resolve(__dirname, '../../../../reports/w021_5_pin_independent_evidence_matrix.md');
+      const jsonReportPath = path.resolve(
+        __dirname,
+        '../../../../reports/w021_5_pin_independent_evidence_matrix.json',
+      );
+      const mdReportPath = path.resolve(
+        __dirname,
+        '../../../../reports/w021_5_pin_independent_evidence_matrix.md',
+      );
 
       const jsonReport = JSON.parse(fs.readFileSync(jsonReportPath, 'utf8'));
       const mdReport = fs.readFileSync(mdReportPath, 'utf8');
 
       expect(jsonReport.metadata.directive).toMatch(/CTO Directive 13[123]/);
       expect(jsonReport.metadata.validationSummary.structuralValidationStatus).toBe('PASS');
-      expect(jsonReport.metadata.validationSummary.gateRecommendation).toBe('SUBMIT_FOR_INDEPENDENT_STAGE_B_ADJUDICATION_WITH_DOCUMENTED_EXTERNAL_BLOCKERS');
-      expect(jsonReport.metadata.validationSummary.evidenceClosureStatus).toBe('PENDING_EXTERNAL_OFFICIAL_GAZETTE_AND_GIS_DELIVERY_BEAT_EVIDENCE');
+      expect(jsonReport.metadata.validationSummary.gateRecommendation).toBe(
+        'SUBMIT_FOR_INDEPENDENT_STAGE_B_ADJUDICATION_WITH_DOCUMENTED_EXTERNAL_BLOCKERS',
+      );
+      expect(jsonReport.metadata.validationSummary.evidenceClosureStatus).toBe(
+        'PENDING_EXTERNAL_OFFICIAL_GAZETTE_AND_GIS_DELIVERY_BEAT_EVIDENCE',
+      );
       expect(jsonReport.metadata.validationSummary.allChecksPassed).toBe(true);
       expect(jsonReport.metadata.validationSummary.negativeScenariosExecuted).toBe(38);
       expect(jsonReport.metadata.validationSummary.negativeScenariosPassed).toBe(38);
 
       expect(mdReport).toMatch(/CTO Directive 13[123]/);
       expect(mdReport).toContain('Overall Validation Status:** `100% PASS`');
-      expect(mdReport).toContain('SUBMIT_FOR_INDEPENDENT_STAGE_B_ADJUDICATION_WITH_DOCUMENTED_EXTERNAL_BLOCKERS');
+      expect(mdReport).toContain(
+        'SUBMIT_FOR_INDEPENDENT_STAGE_B_ADJUDICATION_WITH_DOCUMENTED_EXTERNAL_BLOCKERS',
+      );
       expect(mdReport).toContain('38 Scenarios');
     });
   });
 
   describe('CTO Directive 132 — Final Validation Orchestration, Concordance & Adjudication Package Integrity', () => {
-    const manifestPath = path.resolve(__dirname, '../../../../data/evidence/w021_5/pin_independent_evidence_manifest.json');
+    const manifestPath = path.resolve(
+      __dirname,
+      '../../../../data/evidence/w021_5/pin_independent_evidence_manifest.json',
+    );
     const validatorModule = require('../../../../scripts/verify_pin_evidence_matrix.cjs');
 
     it('Workstream A: verifies fail-closed execution order and stale report overwrite regression', () => {
       const orderTest = validatorModule.runExecutionOrderRegressionTest();
       expect(orderTest.passed).toBe(true);
-      expect(orderTest.details).toContain('Fail-closed execution order and stale report overwrite verified');
+      expect(orderTest.details).toContain(
+        'Fail-closed execution order and stale report overwrite verified',
+      );
     });
 
     it('Workstream A: verifies complete validation orchestrator derives outcome strictly from all required suites', () => {
-      const result = validatorModule.runCompleteValidationProcess({ skipExit: true, writeFiles: false });
+      const result = validatorModule.runCompleteValidationProcess({
+        skipExit: true,
+        writeFiles: false,
+      });
       expect(result.allPassed).toBe(true);
       expect(result.positiveResults.allPassed).toBe(true);
       expect(result.negativeResults.allScenariosPassed).toBe(true);
       expect(result.generatorBatteryResults.allCasesPassed).toBe(true);
       expect(result.concordanceResults.allPassed).toBe(true);
-      expect(result.gateRecommendation).toBe('SUBMIT_FOR_INDEPENDENT_STAGE_B_ADJUDICATION_WITH_DOCUMENTED_EXTERNAL_BLOCKERS');
-      expect(result.evidenceClosureStatus).toBe('PENDING_EXTERNAL_OFFICIAL_GAZETTE_AND_GIS_DELIVERY_BEAT_EVIDENCE');
+      expect(result.gateRecommendation).toBe(
+        'SUBMIT_FOR_INDEPENDENT_STAGE_B_ADJUDICATION_WITH_DOCUMENTED_EXTERNAL_BLOCKERS',
+      );
+      expect(result.evidenceClosureStatus).toBe(
+        'PENDING_EXTERNAL_OFFICIAL_GAZETTE_AND_GIS_DELIVERY_BEAT_EVIDENCE',
+      );
       expect(result.structuralValidationStatus).toBe('PASS');
       expect(result.errors).toHaveLength(0);
     });
@@ -1840,11 +2572,18 @@ describe('CTO Directive 123 — Residual Electoral Data-Truth & Provisional Look
       const directory = validatorModule.parseDelimitationServiceCuratedPins();
       const corrupt = {
         ...manifest,
-        entries: manifest.entries.map((e: any) => e.pinCode === '500002' ? { ...e, assignedAcName: 'WrongConstituencyName' } : e)
+        entries: manifest.entries.map((e: any) =>
+          e.pinCode === '500002' ? { ...e, assignedAcName: 'WrongConstituencyName' } : e,
+        ),
       };
-      const res = validatorModule.verifyConcordanceAcrossArtifacts({ manifest: corrupt, directory });
+      const res = validatorModule.verifyConcordanceAcrossArtifacts({
+        manifest: corrupt,
+        directory,
+      });
       expect(res.allPassed).toBe(false);
-      expect(res.errors.some((err: string) => err.includes('[PIN 500002][assignedAcName]'))).toBe(true);
+      expect(res.errors.some((err: string) => err.includes('[PIN 500002][assignedAcName]'))).toBe(
+        true,
+      );
     });
 
     it('Workstream B (Fixture 2): verifies rejection of wrong candidate number with specific PIN and field identifiers', () => {
@@ -1852,11 +2591,18 @@ describe('CTO Directive 123 — Residual Electoral Data-Truth & Provisional Look
       const directory = validatorModule.parseDelimitationServiceCuratedPins();
       const corrupt = {
         ...manifest,
-        entries: manifest.entries.map((e: any) => e.pinCode === '500028' ? { ...e, candidateAcNumbers: [65, 63] } : e)
+        entries: manifest.entries.map((e: any) =>
+          e.pinCode === '500028' ? { ...e, candidateAcNumbers: [65, 63] } : e,
+        ),
       };
-      const res = validatorModule.verifyConcordanceAcrossArtifacts({ manifest: corrupt, directory });
+      const res = validatorModule.verifyConcordanceAcrossArtifacts({
+        manifest: corrupt,
+        directory,
+      });
       expect(res.allPassed).toBe(false);
-      expect(res.errors.some((err: string) => err.includes('[PIN 500028][candidateAcNumbers]'))).toBe(true);
+      expect(
+        res.errors.some((err: string) => err.includes('[PIN 500028][candidateAcNumbers]')),
+      ).toBe(true);
     });
 
     it('Workstream B (Fixture 3): verifies rejection of wrong administrative extent with specific PIN and field identifiers', () => {
@@ -1864,11 +2610,24 @@ describe('CTO Directive 123 — Residual Electoral Data-Truth & Provisional Look
       const directory = validatorModule.parseDelimitationServiceCuratedPins();
       const corrupt = {
         ...manifest,
-        entries: manifest.entries.map((e: any) => e.pinCode === '500002' ? { ...e, sourceLocator: 'Schedule XXXI, Table B, Entry 66 (Charminar), Extent: Hyderabad (M.Corp.) (Part) - Ward No. 99.' } : e)
+        entries: manifest.entries.map((e: any) =>
+          e.pinCode === '500002'
+            ? {
+                ...e,
+                sourceLocator:
+                  'Schedule XXXI, Table B, Entry 66 (Charminar), Extent: Hyderabad (M.Corp.) (Part) - Ward No. 99.',
+              }
+            : e,
+        ),
       };
-      const res = validatorModule.verifyConcordanceAcrossArtifacts({ manifest: corrupt, directory });
+      const res = validatorModule.verifyConcordanceAcrossArtifacts({
+        manifest: corrupt,
+        directory,
+      });
       expect(res.allPassed).toBe(false);
-      expect(res.errors.some((err: string) => err.includes('[PIN 500002][administrativeExtent]'))).toBe(true);
+      expect(
+        res.errors.some((err: string) => err.includes('[PIN 500002][administrativeExtent]')),
+      ).toBe(true);
     });
 
     it('Workstream B (Fixture 4): verifies rejection of wrong source schedule with specific PIN and field identifiers', () => {
@@ -1876,11 +2635,24 @@ describe('CTO Directive 123 — Residual Electoral Data-Truth & Provisional Look
       const directory = validatorModule.parseDelimitationServiceCuratedPins();
       const corrupt = {
         ...manifest,
-        entries: manifest.entries.map((e: any) => e.pinCode === '500002' ? { ...e, sourceLocator: 'Schedule II, Table B, Entry 66 (Charminar), Extent: Hyderabad (M.Corp.) (Part) - Ward No. 13 and 14.' } : e)
+        entries: manifest.entries.map((e: any) =>
+          e.pinCode === '500002'
+            ? {
+                ...e,
+                sourceLocator:
+                  'Schedule II, Table B, Entry 66 (Charminar), Extent: Hyderabad (M.Corp.) (Part) - Ward No. 13 and 14.',
+              }
+            : e,
+        ),
       };
-      const res = validatorModule.verifyConcordanceAcrossArtifacts({ manifest: corrupt, directory });
+      const res = validatorModule.verifyConcordanceAcrossArtifacts({
+        manifest: corrupt,
+        directory,
+      });
       expect(res.allPassed).toBe(false);
-      expect(res.errors.some((err: string) => err.includes('[PIN 500002][sourceSchedule]'))).toBe(true);
+      expect(res.errors.some((err: string) => err.includes('[PIN 500002][sourceSchedule]'))).toBe(
+        true,
+      );
     });
 
     it('Workstream B (Fixture 5): verifies rejection of incorrect single-AC assignment for ambiguous PIN', () => {
@@ -1888,9 +2660,16 @@ describe('CTO Directive 123 — Residual Electoral Data-Truth & Provisional Look
       const directory = validatorModule.parseDelimitationServiceCuratedPins();
       const corrupt = {
         ...manifest,
-        entries: manifest.entries.map((e: any) => e.pinCode === '500001' ? { ...e, assignedAcNumber: 65, confidenceTaxonomy: 'PROVISIONALLY_APPROXIMATED' } : e)
+        entries: manifest.entries.map((e: any) =>
+          e.pinCode === '500001'
+            ? { ...e, assignedAcNumber: 65, confidenceTaxonomy: 'PROVISIONALLY_APPROXIMATED' }
+            : e,
+        ),
       };
-      const res = validatorModule.verifyConcordanceAcrossArtifacts({ manifest: corrupt, directory });
+      const res = validatorModule.verifyConcordanceAcrossArtifacts({
+        manifest: corrupt,
+        directory,
+      });
       expect(res.allPassed).toBe(false);
       expect(res.errors.some((err: string) => err.includes('[PIN 500001]'))).toBe(true);
     });
@@ -1900,11 +2679,18 @@ describe('CTO Directive 123 — Residual Electoral Data-Truth & Provisional Look
       const directory = validatorModule.parseDelimitationServiceCuratedPins();
       const corrupt = {
         ...manifest,
-        entries: manifest.entries.map((e: any) => e.pinCode === '500002' ? { ...e, assignedAcNumber: 67 } : e)
+        entries: manifest.entries.map((e: any) =>
+          e.pinCode === '500002' ? { ...e, assignedAcNumber: 67 } : e,
+        ),
       };
-      const res = validatorModule.verifyConcordanceAcrossArtifacts({ manifest: corrupt, directory });
+      const res = validatorModule.verifyConcordanceAcrossArtifacts({
+        manifest: corrupt,
+        directory,
+      });
       expect(res.allPassed).toBe(false);
-      expect(res.errors.some((err: string) => err.includes('[PIN 500002][historicalCorrection]'))).toBe(true);
+      expect(
+        res.errors.some((err: string) => err.includes('[PIN 500002][historicalCorrection]')),
+      ).toBe(true);
     });
 
     it('Workstream B (Fixture 7): verifies rejection of false claim of complete geographic containment', () => {
@@ -1912,20 +2698,39 @@ describe('CTO Directive 123 — Residual Electoral Data-Truth & Provisional Look
       const directory = validatorModule.parseDelimitationServiceCuratedPins();
       const corrupt = {
         ...manifest,
-        entries: manifest.entries.map((e: any) => e.pinCode === '500002' ? { ...e, geographicContainmentStatus: 'VERIFIED_GIS_CONTAINMENT' } : e)
+        entries: manifest.entries.map((e: any) =>
+          e.pinCode === '500002'
+            ? { ...e, geographicContainmentStatus: 'VERIFIED_GIS_CONTAINMENT' }
+            : e,
+        ),
       };
-      const res = validatorModule.verifyConcordanceAcrossArtifacts({ manifest: corrupt, directory });
+      const res = validatorModule.verifyConcordanceAcrossArtifacts({
+        manifest: corrupt,
+        directory,
+      });
       expect(res.allPassed).toBe(false);
-      expect(res.errors.some((err: string) => err.includes('[PIN 500002][geographicContainmentStatus]'))).toBe(true);
+      expect(
+        res.errors.some((err: string) => err.includes('[PIN 500002][geographicContainmentStatus]')),
+      ).toBe(true);
     });
 
     it('Workstream B (Fixture 8): verifies rejection of stale or divergent implementation report table', () => {
       const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
       const directory = validatorModule.parseDelimitationServiceCuratedPins();
-      const d131ReportPath = path.resolve(__dirname, '../../../../reports/W021.5-CTO-DIRECTIVE-131-IMPLEMENTATION-REPORT.md');
+      const d131ReportPath = path.resolve(
+        __dirname,
+        '../../../../reports/W021.5-CTO-DIRECTIVE-131-IMPLEMENTATION-REPORT.md',
+      );
       const d131Original = fs.readFileSync(d131ReportPath, 'utf8');
-      const d131Corrupt = d131Original.replace('| `500056` | TS | Bowenpally / Hasmathpet / Manovikas Nagar | *(None - Ambiguous)* | [71, 46]', '| `500056` | TS | Bowenpally / Hasmathpet / Manovikas Nagar | *(None - Ambiguous)* | [67, 69]');
-      const res = validatorModule.verifyConcordanceAcrossArtifacts({ manifest, directory, d131ReportMd: d131Corrupt });
+      const d131Corrupt = d131Original.replace(
+        '| `500056` | TS | Bowenpally / Hasmathpet / Manovikas Nagar | *(None - Ambiguous)* | [71, 46]',
+        '| `500056` | TS | Bowenpally / Hasmathpet / Manovikas Nagar | *(None - Ambiguous)* | [67, 69]',
+      );
+      const res = validatorModule.verifyConcordanceAcrossArtifacts({
+        manifest,
+        directory,
+        d131ReportMd: d131Corrupt,
+      });
       expect(res.allPassed).toBe(false);
       expect(res.errors.some((err: string) => err.includes('[PIN 500056][d131Report]'))).toBe(true);
     });
@@ -1944,7 +2749,8 @@ describe('CTO Directive 123 — Residual Electoral Data-Truth & Provisional Look
     });
 
     it('Workstream B: verifies splitMarkdownRow accurately respects escaped pipes within cell values', () => {
-      const row = '| `500001` | Hyderabad | TS | *(None - Ambiguous)* | [65, 63, 58] | Extents: AC 65 \\| AC 63 \\| AC 58 | `AMBIGUOUS_MULTI_CONSTITUENCY` | `PARTIALLY_SUPPORTED` |';
+      const row =
+        '| `500001` | Hyderabad | TS | *(None - Ambiguous)* | [65, 63, 58] | Extents: AC 65 \\| AC 63 \\| AC 58 | `AMBIGUOUS_MULTI_CONSTITUENCY` | `PARTIALLY_SUPPORTED` |';
       const cells = validatorModule.splitMarkdownRow(row);
       expect(cells).toHaveLength(8);
       expect(cells[0]).toBe('`500001`');
@@ -1954,13 +2760,14 @@ describe('CTO Directive 123 — Residual Electoral Data-Truth & Provisional Look
     });
 
     it('Workstream B: verifies parseMarkdownTable rejects unescaped pipes that shift columns', () => {
-      const unescapedRow = '| `500001` | Hyderabad | TS | *(None - Ambiguous)* | [65, 63, 58] | Extents: AC 65 | AC 63 | AC 58 | `AMBIGUOUS_MULTI_CONSTITUENCY` | `PARTIALLY_SUPPORTED` |';
+      const unescapedRow =
+        '| `500001` | Hyderabad | TS | *(None - Ambiguous)* | [65, 63, 58] | Extents: AC 65 | AC 63 | AC 58 | `AMBIGUOUS_MULTI_CONSTITUENCY` | `PARTIALLY_SUPPORTED` |';
       const md = [
         '## Test Section',
         '',
         '| H1 | H2 | H3 | H4 | H5 | H6 | H7 | H8 |',
         '|---|---|---|---|---|---|---|---|',
-        unescapedRow
+        unescapedRow,
       ].join('\n');
       const parsed = validatorModule.parseMarkdownTable(md, 'Test Section');
       expect(parsed.errors.length).toBeGreaterThan(0);
@@ -1987,7 +2794,10 @@ describe('CTO Directive 123 — Residual Electoral Data-Truth & Provisional Look
     });
 
     it('Workstream F: verifies 8 historical corrections and Kurnool baseline preserved across all artifacts', () => {
-      const manifestPath = path.resolve(__dirname, '../../../../data/evidence/w021_5/pin_independent_evidence_manifest.json');
+      const manifestPath = path.resolve(
+        __dirname,
+        '../../../../data/evidence/w021_5/pin_independent_evidence_manifest.json',
+      );
       const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
       const corrections = manifest.metadata?.eightCorrectionsAccounting?.reportedCorrectionsLedger;
       expect(corrections).toHaveLength(8);

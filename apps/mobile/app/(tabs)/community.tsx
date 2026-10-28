@@ -110,7 +110,7 @@ export default function CommunityScreen() {
         ]}
       >
         <View style={styles.brandRow}>
-          <Text style={[styles.brandText, { color: colors.primary }]}>KSHETRA</Text>
+          <Text style={[styles.brandText, { color: colors.primary }]}>POLIGRAM</Text>
           <View style={[styles.communityBadge, { backgroundColor: colors.border }]}>
             <Text style={[styles.communityBadgeText, { color: colors.textSecondary }]}>
               {t('tabs.community', { defaultValue: 'Community' })}

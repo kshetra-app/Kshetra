@@ -175,5 +175,3 @@ describe('Health Route Semantics (Amendment v1.4 Part 18)', () => {
     expect(body.semanticType).toBe('DATABASE CONNECTIVITY');
   });
 });
-
-

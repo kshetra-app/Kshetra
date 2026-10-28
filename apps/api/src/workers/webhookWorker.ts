@@ -57,17 +57,20 @@ export class WebhookWorker {
       this.queueProvider = new InMemoryQueueProvider();
     } else {
       if (!process.env.DATABASE_URL) {
-        throw new Error('CONFIG_ERROR: DATABASE_URL must be configured for WebhookWorker in non-test mode');
+        throw new Error(
+          'CONFIG_ERROR: DATABASE_URL must be configured for WebhookWorker in non-test mode',
+        );
       }
       getMasterEncryptionKey();
       this.queueProvider = new PostgresQueueProvider(supabase);
     }
 
     this.batchSize = options.batchSize || Number(process.env.WEBHOOK_WORKER_BATCH_SIZE) || 10;
-    this.pollIntervalMs = options.pollIntervalMs || Number(process.env.WEBHOOK_WORKER_POLL_INTERVAL_MS) || 1000;
+    this.pollIntervalMs =
+      options.pollIntervalMs || Number(process.env.WEBHOOK_WORKER_POLL_INTERVAL_MS) || 1000;
     this.leaseSeconds = options.leaseSeconds || 30;
     this.concurrency = options.concurrency || 5;
-    this.allowLocalhostInTest = options.allowLocalhostInTest ?? (process.env.NODE_ENV === 'test');
+    this.allowLocalhostInTest = options.allowLocalhostInTest ?? process.env.NODE_ENV === 'test';
     this.onJobProcessed = options.onJobProcessed;
   }
 
@@ -91,7 +94,9 @@ export class WebhookWorker {
 
     this.isRunning = true;
     this.stopRequested = false;
-    console.log(`[WebhookWorker] Started background worker (PID: ${process.pid}, BatchSize: ${this.batchSize}, PollInterval: ${this.pollIntervalMs}ms)`);
+    console.log(
+      `[WebhookWorker] Started background worker (PID: ${process.pid}, BatchSize: ${this.batchSize}, PollInterval: ${this.pollIntervalMs}ms)`,
+    );
 
     this.loopPromise = this.runLoop();
     return Promise.resolve();
@@ -198,12 +203,14 @@ export class WebhookWorker {
             tag: subscription.secretTag,
           },
           delivery.tenantId,
-          delivery.subscriptionId
+          delivery.subscriptionId,
         );
       } else if (subscription.rawSecret) {
         primarySecret = subscription.rawSecret;
       } else {
-        throw new Error('MISSING_SECRET_CIPHERTEXT: Subscription ciphertext or rawSecret is missing');
+        throw new Error(
+          'MISSING_SECRET_CIPHERTEXT: Subscription ciphertext or rawSecret is missing',
+        );
       }
 
       // Check previous secret grace period
@@ -223,10 +230,12 @@ export class WebhookWorker {
                 tag: subscription.previousSecretTag,
               },
               delivery.tenantId,
-              delivery.subscriptionId
+              delivery.subscriptionId,
             );
           } catch (prevErr: any) {
-            console.warn(`[WebhookWorker] Failed to decrypt previous secret for sub ${subscription.id}: ${prevErr.message}`);
+            console.warn(
+              `[WebhookWorker] Failed to decrypt previous secret for sub ${subscription.id}: ${prevErr.message}`,
+            );
           }
         }
       }
@@ -244,9 +253,15 @@ export class WebhookWorker {
       });
 
       // 3. Complete delivery with lease-token fence
-      const completion = await this.queueProvider.completeDelivery(delivery.id, leaseToken, dispatchResult);
+      const completion = await this.queueProvider.completeDelivery(
+        delivery.id,
+        leaseToken,
+        dispatchResult,
+      );
       if (!completion.updated) {
-        console.warn(`[WebhookWorker] Lease token fencing dropped stale completion for delivery ${delivery.id}`);
+        console.warn(
+          `[WebhookWorker] Lease token fencing dropped stale completion for delivery ${delivery.id}`,
+        );
       }
 
       if (this.onJobProcessed) {
@@ -255,7 +270,10 @@ export class WebhookWorker {
 
       return dispatchResult;
     } catch (err: any) {
-      console.error(`[WebhookWorker] Unhandled error processing delivery ${delivery.id}:`, err.message);
+      console.error(
+        `[WebhookWorker] Unhandled error processing delivery ${delivery.id}:`,
+        err.message,
+      );
 
       const errorResult: DispatchResult = {
         success: false,
@@ -270,7 +288,10 @@ export class WebhookWorker {
       try {
         await this.queueProvider.completeDelivery(delivery.id, leaseToken, errorResult);
       } catch (completeErr: any) {
-        console.error(`[WebhookWorker] Failed to record error state for delivery ${delivery.id}:`, completeErr.message);
+        console.error(
+          `[WebhookWorker] Failed to record error state for delivery ${delivery.id}:`,
+          completeErr.message,
+        );
       }
 
       if (this.onJobProcessed) {

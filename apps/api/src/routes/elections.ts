@@ -110,9 +110,15 @@ export async function electionRoutes(app: FastifyInstance): Promise<void> {
         });
       } catch (err: any) {
         request.log.error(err, 'Failed to list elections');
-        return sendApiError(reply, request, 500, 'INTERNAL_ERROR', err.message || 'Failed to list elections');
+        return sendApiError(
+          reply,
+          request,
+          500,
+          'INTERNAL_ERROR',
+          err.message || 'Failed to list elections',
+        );
       }
-    }
+    },
   );
 
   /**
@@ -138,9 +144,15 @@ export async function electionRoutes(app: FastifyInstance): Promise<void> {
         });
       } catch (err: any) {
         request.log.error(err, 'Failed to get election event');
-        return sendApiError(reply, request, 500, 'INTERNAL_ERROR', err.message || 'Failed to get election event');
+        return sendApiError(
+          reply,
+          request,
+          500,
+          'INTERNAL_ERROR',
+          err.message || 'Failed to get election event',
+        );
       }
-    }
+    },
   );
 
   /**
@@ -152,7 +164,7 @@ export async function electionRoutes(app: FastifyInstance): Promise<void> {
     { schema: { params: electionParamsSchema, querystring: listContestsQuerySchema } },
     async (
       request: FastifyRequest<{ Params: { id: string }; Querystring: ListContestsQuery }>,
-      reply: FastifyReply
+      reply: FastifyReply,
     ) => {
       try {
         const { id } = request.params;
@@ -177,9 +189,15 @@ export async function electionRoutes(app: FastifyInstance): Promise<void> {
         });
       } catch (err: any) {
         request.log.error(err, 'Failed to list contests');
-        return sendApiError(reply, request, 500, 'INTERNAL_ERROR', err.message || 'Failed to list contests');
+        return sendApiError(
+          reply,
+          request,
+          500,
+          'INTERNAL_ERROR',
+          err.message || 'Failed to list contests',
+        );
       }
-    }
+    },
   );
 
   /**
@@ -191,7 +209,7 @@ export async function electionRoutes(app: FastifyInstance): Promise<void> {
     { schema: { params: contestParamsSchema } },
     async (
       request: FastifyRequest<{ Params: { id: string; constituencyId: string } }>,
-      reply: FastifyReply
+      reply: FastifyReply,
     ) => {
       try {
         const { id, constituencyId } = request.params;
@@ -203,7 +221,7 @@ export async function electionRoutes(app: FastifyInstance): Promise<void> {
             request,
             404,
             'NOT_FOUND',
-            `Contest not found for election '${id}' and constituency '${constituencyId}'`
+            `Contest not found for election '${id}' and constituency '${constituencyId}'`,
           );
         }
 
@@ -214,9 +232,15 @@ export async function electionRoutes(app: FastifyInstance): Promise<void> {
         });
       } catch (err: any) {
         request.log.error(err, 'Failed to get contest detail');
-        return sendApiError(reply, request, 500, 'INTERNAL_ERROR', err.message || 'Failed to get contest detail');
+        return sendApiError(
+          reply,
+          request,
+          500,
+          'INTERNAL_ERROR',
+          err.message || 'Failed to get contest detail',
+        );
       }
-    }
+    },
   );
 
   /**
@@ -241,8 +265,14 @@ export async function electionRoutes(app: FastifyInstance): Promise<void> {
         });
       } catch (err: any) {
         request.log.error(err, 'Failed to get person elections');
-        return sendApiError(reply, request, 500, 'INTERNAL_ERROR', err.message || 'Failed to get person elections');
+        return sendApiError(
+          reply,
+          request,
+          500,
+          'INTERNAL_ERROR',
+          err.message || 'Failed to get person elections',
+        );
       }
-    }
+    },
   );
 }

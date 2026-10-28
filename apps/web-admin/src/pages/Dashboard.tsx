@@ -41,7 +41,7 @@ export function Dashboard() {
             <span>Post-Delimitation Era Political Tech Suite</span>
           </div>
           <h1 className="text-2xl md:text-3xl font-extrabold text-white tracking-tight">
-            Kshetra Executive Control Center
+            Poligram Executive Control Center
           </h1>
           <p className="text-sm text-slate-300 max-w-2xl leading-relaxed">
             Real-time telemetry, master data governance, live broadcast moderation, and feature toggle management across 4,123+ Indian constituencies.

@@ -12,22 +12,12 @@ import type {
   Candidacy,
 } from './politicalEntities';
 
-export type ElectionStatusEnum =
-  | 'scheduled'
-  | 'ongoing'
-  | 'counting'
-  | 'completed'
-  | 'cancelled';
+export type ElectionStatusEnum = 'scheduled' | 'ongoing' | 'counting' | 'completed' | 'cancelled';
 
 export type ContestStatusEnum =
-  | 'scheduled'
-  | 'completed'
-  | 'countermanded'
-  | 'cancelled'
-  | 're_polled';
+  'scheduled' | 'completed' | 'countermanded' | 'cancelled' | 're_polled';
 
-export type BallotChoiceType =
-  | 'NOTA';
+export type BallotChoiceType = 'NOTA';
 
 export interface ElectionEvent {
   id: string;

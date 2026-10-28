@@ -198,7 +198,7 @@ const webhookVoiceSchema = {
  */
 async function resolveAuthUser(
   request: any,
-  contextCampaignId?: string
+  contextCampaignId?: string,
 ): Promise<{ userId: string; role: string } | null> {
   let userId: string | null = null;
   const authHeader = request.headers.authorization;
@@ -209,7 +209,10 @@ async function resolveAuthUser(
       return null;
     }
     if (isSupabaseConfigured) {
-      const { data: { user }, error } = await supabase.auth.getUser(token);
+      const {
+        data: { user },
+        error,
+      } = await supabase.auth.getUser(token);
       if (!error && user) {
         userId = user.id;
       }
@@ -223,7 +226,9 @@ async function resolveAuthUser(
   if (!userId) return null;
 
   if (!isSupabaseConfigured) {
-    const testRole = (request.headers['x-user-role'] as string) || (process.env.NODE_ENV === 'test' ? 'citizen' : undefined);
+    const testRole =
+      (request.headers['x-user-role'] as string) ||
+      (process.env.NODE_ENV === 'test' ? 'citizen' : undefined);
     return { userId, role: testRole || 'citizen' };
   }
 
@@ -264,16 +269,19 @@ let campaignPricing = {
   voiceObd: {
     serviceKey: 'voice_obd',
     serviceName: 'Voice Call (OBD) Blast',
-    description: 'Automated 30-second voice call in your own recorded voice directly to voter mobile phones.',
-    baseVendorRatePerCallINR: 0.60,
+    description:
+      'Automated 30-second voice call in your own recorded voice directly to voter mobile phones.',
+    baseVendorRatePerCallINR: 0.6,
     kshetraMarginPercent: 50,
-    finalRatePerCallINR: 0.90,
+    finalRatePerCallINR: 0.9,
     pulseSeconds: 30,
     minCalls: 500,
     currency: 'INR',
     guidance: {
-      howItWorks: 'Record or upload a 30-second audio appeal. Our telecom voice gateway calls voters in your selected ward or booth and plays your message upon pickup.',
-      prerequisites: 'Clear audio recording (WAV or MP3, under 45 seconds). Target constituency or ward selected.',
+      howItWorks:
+        'Record or upload a 30-second audio appeal. Our telecom voice gateway calls voters in your selected ward or booth and plays your message upon pickup.',
+      prerequisites:
+        'Clear audio recording (WAV or MP3, under 45 seconds). Target constituency or ward selected.',
       dos: [
         'Call strictly between 9:00 AM and 8:00 PM per TRAI norms.',
         'State your name and constituency in the first 5 seconds.',
@@ -288,7 +296,8 @@ let campaignPricing = {
   metaPublishing: {
     serviceKey: 'meta_publishing',
     serviceName: 'Facebook & Instagram Campaign',
-    description: 'Publish speeches, photo updates, and rally alerts directly to your official Facebook Page and Instagram.',
+    description:
+      'Publish speeches, photo updates, and rally alerts directly to your official Facebook Page and Instagram.',
     basePublishingINR: 0, // Organic posting is free
     currency: 'INR',
     boostPackages: [
@@ -321,8 +330,10 @@ let campaignPricing = {
       },
     ],
     guidance: {
-      howItWorks: 'Link your official Facebook Page once. Publish updates directly from Kshetra, or choose a targeted boost to reach voters in your exact constituency.',
-      prerequisites: 'Admin access to an official Facebook Page. Meta identity verification for political content.',
+      howItWorks:
+        'Link your official Facebook Page once. Publish updates directly from Kshetra, or choose a targeted boost to reach voters in your exact constituency.',
+      prerequisites:
+        'Admin access to an official Facebook Page. Meta identity verification for political content.',
       dos: [
         'Always include high-quality images or speech video clips.',
         'Ensure the "Paid for by [Party/Candidate]" disclaimer is active.',
@@ -337,12 +348,15 @@ let campaignPricing = {
   whatsappOrganic: {
     serviceKey: 'whatsapp_organic',
     serviceName: 'WhatsApp Status & Group Broadcast',
-    description: 'Generate high-resolution candidate posters and 1-tap share to your WhatsApp Status and local voter groups.',
+    description:
+      'Generate high-resolution candidate posters and 1-tap share to your WhatsApp Status and local voter groups.',
     priceINR: 0, // Always 100% Free
     currency: 'INR',
     guidance: {
-      howItWorks: 'Select a pre-designed campaign poster (photo, party symbol, key promise). Tap "Share to Status" or "Share to Groups" to open WhatsApp directly with media pre-filled.',
-      prerequisites: 'WhatsApp or WhatsApp Business installed on your device. Contact list or active colony/community groups.',
+      howItWorks:
+        'Select a pre-designed campaign poster (photo, party symbol, key promise). Tap "Share to Status" or "Share to Groups" to open WhatsApp directly with media pre-filled.',
+      prerequisites:
+        'WhatsApp or WhatsApp Business installed on your device. Contact list or active colony/community groups.',
       dos: [
         'Post 1-2 fresh campaign posters or video clips to your Status daily.',
         'Encourage all your booth workers and youth volunteers to re-share your status.',
@@ -357,15 +371,14 @@ let campaignPricing = {
   segmentationGuidance: {
     serviceName: 'Voter Segmentation & Targeting',
     guidance: {
-      howItWorks: 'Filter your audience by Geography (Constituency, Ward, Polling Booth) or Cadre Role so every message is hyper-relevant.',
+      howItWorks:
+        'Filter your audience by Geography (Constituency, Ward, Polling Booth) or Cadre Role so every message is hyper-relevant.',
       dos: [
         'Use Ward-level targeting for local civic issues (drainage, roads, water supply).',
         'Use the Cadre filter to alert booth in-charges for morning meetings or rally duties.',
         'Use Youth/First-Time voter filters for employment and education promises.',
       ],
-      donts: [
-        'Do not blast constituency-wide messages for single-ward events.',
-      ],
+      donts: ['Do not blast constituency-wide messages for single-ward events.'],
     },
   },
 };
@@ -511,7 +524,9 @@ const PENDING_RECHARGE_ORDERS = new Map<string, PendingRechargeOrder>();
 /**
  * Authoritative campaign lookup: DB first, then fallback to in-memory store.
  */
-async function findCampaignById(campaignId: string): Promise<{ id: string; politician_id: string } | null> {
+async function findCampaignById(
+  campaignId: string,
+): Promise<{ id: string; politician_id: string } | null> {
   if (isSupabaseConfigured) {
     try {
       const { data, error } = await supabase
@@ -537,8 +552,12 @@ async function findCampaignById(campaignId: string): Promise<{ id: string; polit
  */
 async function verifyCampaignAuthority(
   auth: { userId: string; role: string },
-  campaignId: string
-): Promise<{ authorized: boolean; campaign: { id: string; politician_id: string } | null; reason?: string }> {
+  campaignId: string,
+): Promise<{
+  authorized: boolean;
+  campaign: { id: string; politician_id: string } | null;
+  reason?: string;
+}> {
   const campaign = await findCampaignById(campaignId);
   if (!campaign) {
     return { authorized: false, campaign: null, reason: 'Campaign not found' };
@@ -577,7 +596,10 @@ async function verifyCampaignAuthority(
 
   // In-memory volunteer coordinator check
   const memVol = inMemoryVolunteers.find(
-    (v) => v.campaignId === campaignId && (v.id === auth.userId || v.name === auth.userId) && v.role === 'coordinator'
+    (v) =>
+      v.campaignId === campaignId &&
+      (v.id === auth.userId || v.name === auth.userId) &&
+      v.role === 'coordinator',
   );
   if (memVol) {
     return { authorized: true, campaign };
@@ -592,7 +614,7 @@ async function verifyCampaignAuthority(
  */
 function resolveEffectivePoliticianId(
   auth: { userId: string; role: string },
-  requestedPoliticianId?: string
+  requestedPoliticianId?: string,
 ): { authorized: boolean; effectivePoliticianId: string } {
   if (auth.role === 'admin') {
     return { authorized: true, effectivePoliticianId: requestedPoliticianId || auth.userId };
@@ -630,12 +652,21 @@ export async function campaignRoutes(app: FastifyInstance) {
   app.patch('/api/v1/campaign/pricing', { schema: pricingPatchSchema }, async (request, reply) => {
     const auth = await resolveAuthUser(request);
     if (!auth) {
-      return sendApiError(reply, request, 401, 'Unauthorized', 'Authentication required', { code: 'UNAUTHORIZED' });
+      return sendApiError(reply, request, 401, 'Unauthorized', 'Authentication required', {
+        code: 'UNAUTHORIZED',
+      });
     }
     if (auth.role !== 'admin') {
-      return sendApiError(reply, request, 403, 'Forbidden', 'Pricing updates require admin privileges', {
-        code: 'FORBIDDEN',
-      });
+      return sendApiError(
+        reply,
+        request,
+        403,
+        'Forbidden',
+        'Pricing updates require admin privileges',
+        {
+          code: 'FORBIDDEN',
+        },
+      );
     }
 
     const updates = request.body as Partial<typeof campaignPricing>;
@@ -661,46 +692,52 @@ export async function campaignRoutes(app: FastifyInstance) {
    * GET /api/v1/campaign/users/check-kshetra
    * Checks if a phone number belongs to an active, registered Kshetra user.
    */
-  app.get('/api/v1/campaign/users/check-kshetra', { schema: checkKshetraQuerySchema }, async (request, reply) => {
-    const { phone } = request.query as { phone?: string };
-    const cleaned = (phone || '').replace(/\D/g, '').slice(-10);
+  app.get(
+    '/api/v1/campaign/users/check-kshetra',
+    { schema: checkKshetraQuerySchema },
+    async (request, reply) => {
+      const { phone } = request.query as { phone?: string };
+      const cleaned = (phone || '').replace(/\D/g, '').slice(-10);
 
-    if (!cleaned) {
-      return sendApiError(reply, request, 400, 'Bad Request', 'Valid phone number required', {
-        code: 'VALIDATION_ERROR',
-      });
-    }
-
-    if (isSupabaseConfigured) {
-      try {
-        const { data } = await supabase
-          .from('user_profiles')
-          .select('user_id, display_name, avatar_url, role')
-          .eq('phone', cleaned)
-          .maybeSingle();
-
-        if (data) {
-          return {
-            isKshetraUser: true,
-            userId: data.user_id,
-            displayName: data.display_name,
-            avatarUrl: data.avatar_url,
-            role: data.role,
-          };
-        }
-      } catch {
-        // fall back to mock check
+      if (!cleaned) {
+        return sendApiError(reply, request, 400, 'Bad Request', 'Valid phone number required', {
+          code: 'VALIDATION_ERROR',
+        });
       }
-    }
 
-    // Check in-memory volunteers/cadre
-    const match = inMemoryVolunteers.find((v) => v.phone.replace(/\D/g, '').slice(-10) === cleaned);
-    return {
-      isKshetraUser: match ? match.isKshetraUser : false,
-      displayName: match ? match.name : undefined,
-      phone: cleaned,
-    };
-  });
+      if (isSupabaseConfigured) {
+        try {
+          const { data } = await supabase
+            .from('user_profiles')
+            .select('user_id, display_name, avatar_url, role')
+            .eq('phone', cleaned)
+            .maybeSingle();
+
+          if (data) {
+            return {
+              isKshetraUser: true,
+              userId: data.user_id,
+              displayName: data.display_name,
+              avatarUrl: data.avatar_url,
+              role: data.role,
+            };
+          }
+        } catch {
+          // fall back to mock check
+        }
+      }
+
+      // Check in-memory volunteers/cadre
+      const match = inMemoryVolunteers.find(
+        (v) => v.phone.replace(/\D/g, '').slice(-10) === cleaned,
+      );
+      return {
+        isKshetraUser: match ? match.isKshetraUser : false,
+        displayName: match ? match.name : undefined,
+        phone: cleaned,
+      };
+    },
+  );
 
   /** GET /api/v1/campaign/campaigns — list campaigns */
   app.get('/api/v1/campaign/campaigns', { schema: campaignsQuerySchema }, async (request) => {
@@ -781,9 +818,16 @@ export async function campaignRoutes(app: FastifyInstance) {
     // 1. Authenticate caller
     const auth = await resolveAuthUser(request);
     if (!auth) {
-      return sendApiError(reply, request, 401, 'Unauthorized', 'Authentication required to mutate campaign booth', {
-        code: 'UNAUTHORIZED',
-      });
+      return sendApiError(
+        reply,
+        request,
+        401,
+        'Unauthorized',
+        'Authentication required to mutate campaign booth',
+        {
+          code: 'UNAUTHORIZED',
+        },
+      );
     }
 
     // 2. Locate booth first (to verify existence and extract campaignId)
@@ -810,15 +854,24 @@ export async function campaignRoutes(app: FastifyInstance) {
     }
 
     if (!boothCampaignId && !existingDbBooth && memIdx < 0) {
-      return sendApiError(reply, request, 404, 'Not Found', 'Booth not found', { code: 'NOT_FOUND' });
+      return sendApiError(reply, request, 404, 'Not Found', 'Booth not found', {
+        code: 'NOT_FOUND',
+      });
     }
 
     // 3. Verify campaign authority
     const authCheck = await verifyCampaignAuthority(auth, boothCampaignId!);
     if (!authCheck.authorized) {
-      return sendApiError(reply, request, 403, 'Forbidden', authCheck.reason || 'Unauthorized to modify booths for this campaign', {
-        code: 'FORBIDDEN',
-      });
+      return sendApiError(
+        reply,
+        request,
+        403,
+        'Forbidden',
+        authCheck.reason || 'Unauthorized to modify booths for this campaign',
+        {
+          code: 'FORBIDDEN',
+        },
+      );
     }
 
     // 4. Perform mutation
@@ -834,21 +887,42 @@ export async function campaignRoutes(app: FastifyInstance) {
           return { success: true, booth: data };
         }
         if (error) {
-          return sendApiError(reply, request, 500, 'Internal Server Error', `Failed to update booth strategy: ${error.message}`, {
-            code: 'DATABASE_ERROR',
-          });
+          return sendApiError(
+            reply,
+            request,
+            500,
+            'Internal Server Error',
+            `Failed to update booth strategy: ${error.message}`,
+            {
+              code: 'DATABASE_ERROR',
+            },
+          );
         }
       } catch (err: any) {
-        return sendApiError(reply, request, 500, 'Internal Server Error', err?.message || 'Failed to update booth strategy', {
-          code: 'DATABASE_ERROR',
-        });
+        return sendApiError(
+          reply,
+          request,
+          500,
+          'Internal Server Error',
+          err?.message || 'Failed to update booth strategy',
+          {
+            code: 'DATABASE_ERROR',
+          },
+        );
       }
     }
 
     if (!isSupabaseConfigured) {
-      return sendApiError(reply, request, 503, 'Service Unavailable', 'Database persistence unavailable. Cannot update booth strategy.', {
-        code: 'DATABASE_UNAVAILABLE',
-      });
+      return sendApiError(
+        reply,
+        request,
+        503,
+        'Service Unavailable',
+        'Database persistence unavailable. Cannot update booth strategy.',
+        {
+          code: 'DATABASE_UNAVAILABLE',
+        },
+      );
     }
 
     return sendApiError(reply, request, 404, 'Not Found', 'Booth not found', { code: 'NOT_FOUND' });
@@ -876,130 +950,210 @@ export async function campaignRoutes(app: FastifyInstance) {
   });
 
   /** POST /api/v1/campaign/volunteers — add new cadre member */
-  app.post('/api/v1/campaign/volunteers', { schema: volunteerCreateSchema }, async (request, reply) => {
-    const body = request.body as Record<string, any>;
-    if (!body.name || !body.phone) {
-      return sendApiError(reply, request, 400, 'Bad Request', 'Name and phone are required', {
-        code: 'VALIDATION_ERROR',
-      });
-    }
-
-    const campaignId = body.campaignId || 'c1';
-
-    // 1. Authenticate caller
-    const auth = await resolveAuthUser(request, campaignId);
-    if (!auth) {
-      return sendApiError(reply, request, 401, 'Unauthorized', 'Authentication required to manage campaign cadre', {
-        code: 'UNAUTHORIZED',
-      });
-    }
-
-    // 2. Ordinary citizens cannot create cadre or manage volunteers
-    if (auth.role === 'citizen') {
-      return sendApiError(reply, request, 403, 'Forbidden', 'Ordinary citizens cannot create campaign volunteers', {
-        code: 'FORBIDDEN',
-      });
-    }
-
-    // 3. Verify campaign authority
-    const authCheck = await verifyCampaignAuthority(auth, campaignId);
-    if (!authCheck.authorized) {
-      return sendApiError(reply, request, 403, 'Forbidden', authCheck.reason || 'Unauthorized to manage cadre for this campaign', {
-        code: 'FORBIDDEN',
-      });
-    }
-
-    // 4. Privilege Controls:
-    // Only admin, moderator, or owning politician can assign 'coordinator' role
-    const assignedRole = body.role || 'booth_agent';
-    if (assignedRole === 'coordinator') {
-      const isOwner = authCheck.campaign?.politician_id === auth.userId;
-      const isAdminOrMod = auth.role === 'admin' || auth.role === 'moderator';
-      if (!isOwner && !isAdminOrMod) {
-        return sendApiError(reply, request, 403, 'Forbidden', 'Only campaign owners and administrators can appoint coordinators', {
-          code: 'PRIVILEGE_SPOOFING_REJECTED',
-        });
-      }
-    }
-
-    // 5. Verify isKshetraUser status authoritatively
-    const cleanedPhone = body.phone.replace(/\D/g, '').slice(-10);
-    let verifiedKshetraUser = false;
-
-    if (body.isKshetraUser !== undefined) {
-      if (isSupabaseConfigured) {
-        try {
-          const { data: userProfile } = await supabase
-            .from('user_profiles')
-            .select('user_id')
-            .eq('phone', cleanedPhone)
-            .maybeSingle();
-          verifiedKshetraUser = Boolean(userProfile);
-        } catch {}
-      } else {
-        const memMatch = inMemoryVolunteers.find((v) => v.phone.replace(/\D/g, '').slice(-10) === cleanedPhone);
-        verifiedKshetraUser = memMatch ? Boolean(memMatch.isKshetraUser) : false;
-      }
-
-      // If client claimed isKshetraUser: true but phone is NOT registered, reject privilege spoofing
-      if (body.isKshetraUser === true && !verifiedKshetraUser) {
-        return sendApiError(reply, request, 403, 'Forbidden', 'Unregistered user cannot be marked as verified Kshetra user', {
-          code: 'PRIVILEGE_SPOOFING_REJECTED',
-        });
-      }
-    }
-
-    if (!isSupabaseConfigured) {
-      return sendApiError(reply, request, 503, 'Service Unavailable', 'Database persistence unavailable. Cannot register volunteer.', {
-        code: 'DATABASE_UNAVAILABLE',
-      });
-    }
-
-    try {
-      const { data, error } = await supabase
-        .from('campaign_volunteers')
-        .insert({
-          campaign_id: campaignId,
-          user_id: auth.userId,
-          name: body.name || '',
-          phone: body.phone || '',
-          role: assignedRole,
-          status: 'active',
-          assigned_booths: body.assignedBooths || [],
-          assigned_wards: body.assignedWards || [],
-        })
-        .select()
-        .single();
-
-      if (error || !data) {
-        return sendApiError(reply, request, 500, 'Internal Server Error', error?.message || 'Failed to persist campaign volunteer', {
-          code: 'DATABASE_ERROR',
+  app.post(
+    '/api/v1/campaign/volunteers',
+    { schema: volunteerCreateSchema },
+    async (request, reply) => {
+      const body = request.body as Record<string, any>;
+      if (!body.name || !body.phone) {
+        return sendApiError(reply, request, 400, 'Bad Request', 'Name and phone are required', {
+          code: 'VALIDATION_ERROR',
         });
       }
 
-      return reply.status(201).send({ success: true, volunteer: data, message: 'Cadre member registered successfully' });
-    } catch (err: any) {
-      return sendApiError(reply, request, 500, 'Internal Server Error', err?.message || 'Failed to register volunteer', {
-        code: 'DATABASE_ERROR',
-      });
-    }
-  });
+      const campaignId = body.campaignId || 'c1';
+
+      // 1. Authenticate caller
+      const auth = await resolveAuthUser(request, campaignId);
+      if (!auth) {
+        return sendApiError(
+          reply,
+          request,
+          401,
+          'Unauthorized',
+          'Authentication required to manage campaign cadre',
+          {
+            code: 'UNAUTHORIZED',
+          },
+        );
+      }
+
+      // 2. Ordinary citizens cannot create cadre or manage volunteers
+      if (auth.role === 'citizen') {
+        return sendApiError(
+          reply,
+          request,
+          403,
+          'Forbidden',
+          'Ordinary citizens cannot create campaign volunteers',
+          {
+            code: 'FORBIDDEN',
+          },
+        );
+      }
+
+      // 3. Verify campaign authority
+      const authCheck = await verifyCampaignAuthority(auth, campaignId);
+      if (!authCheck.authorized) {
+        return sendApiError(
+          reply,
+          request,
+          403,
+          'Forbidden',
+          authCheck.reason || 'Unauthorized to manage cadre for this campaign',
+          {
+            code: 'FORBIDDEN',
+          },
+        );
+      }
+
+      // 4. Privilege Controls:
+      // Only admin, moderator, or owning politician can assign 'coordinator' role
+      const assignedRole = body.role || 'booth_agent';
+      if (assignedRole === 'coordinator') {
+        const isOwner = authCheck.campaign?.politician_id === auth.userId;
+        const isAdminOrMod = auth.role === 'admin' || auth.role === 'moderator';
+        if (!isOwner && !isAdminOrMod) {
+          return sendApiError(
+            reply,
+            request,
+            403,
+            'Forbidden',
+            'Only campaign owners and administrators can appoint coordinators',
+            {
+              code: 'PRIVILEGE_SPOOFING_REJECTED',
+            },
+          );
+        }
+      }
+
+      // 5. Verify isKshetraUser status authoritatively
+      const cleanedPhone = body.phone.replace(/\D/g, '').slice(-10);
+      let verifiedKshetraUser = false;
+
+      if (body.isKshetraUser !== undefined) {
+        if (isSupabaseConfigured) {
+          try {
+            const { data: userProfile } = await supabase
+              .from('user_profiles')
+              .select('user_id')
+              .eq('phone', cleanedPhone)
+              .maybeSingle();
+            verifiedKshetraUser = Boolean(userProfile);
+          } catch {}
+        } else {
+          const memMatch = inMemoryVolunteers.find(
+            (v) => v.phone.replace(/\D/g, '').slice(-10) === cleanedPhone,
+          );
+          verifiedKshetraUser = memMatch ? Boolean(memMatch.isKshetraUser) : false;
+        }
+
+        // If client claimed isKshetraUser: true but phone is NOT registered, reject privilege spoofing
+        if (body.isKshetraUser === true && !verifiedKshetraUser) {
+          return sendApiError(
+            reply,
+            request,
+            403,
+            'Forbidden',
+            'Unregistered user cannot be marked as verified Kshetra user',
+            {
+              code: 'PRIVILEGE_SPOOFING_REJECTED',
+            },
+          );
+        }
+      }
+
+      if (!isSupabaseConfigured) {
+        return sendApiError(
+          reply,
+          request,
+          503,
+          'Service Unavailable',
+          'Database persistence unavailable. Cannot register volunteer.',
+          {
+            code: 'DATABASE_UNAVAILABLE',
+          },
+        );
+      }
+
+      try {
+        const { data, error } = await supabase
+          .from('campaign_volunteers')
+          .insert({
+            campaign_id: campaignId,
+            user_id: auth.userId,
+            name: body.name || '',
+            phone: body.phone || '',
+            role: assignedRole,
+            status: 'active',
+            assigned_booths: body.assignedBooths || [],
+            assigned_wards: body.assignedWards || [],
+          })
+          .select()
+          .single();
+
+        if (error || !data) {
+          return sendApiError(
+            reply,
+            request,
+            500,
+            'Internal Server Error',
+            error?.message || 'Failed to persist campaign volunteer',
+            {
+              code: 'DATABASE_ERROR',
+            },
+          );
+        }
+
+        return reply.status(201).send({
+          success: true,
+          volunteer: data,
+          message: 'Cadre member registered successfully',
+        });
+      } catch (err: any) {
+        return sendApiError(
+          reply,
+          request,
+          500,
+          'Internal Server Error',
+          err?.message || 'Failed to register volunteer',
+          {
+            code: 'DATABASE_ERROR',
+          },
+        );
+      }
+    },
+  );
 
   /** GET /api/v1/campaign/wallet — get campaign prepaid balance */
   app.get('/api/v1/campaign/wallet', { schema: walletQuerySchema }, async (request, reply) => {
     const auth = await resolveAuthUser(request);
     if (!auth) {
-      return sendApiError(reply, request, 401, 'Unauthorized', 'Authentication required to view wallet balance', {
-        code: 'UNAUTHORIZED',
-      });
+      return sendApiError(
+        reply,
+        request,
+        401,
+        'Unauthorized',
+        'Authentication required to view wallet balance',
+        {
+          code: 'UNAUTHORIZED',
+        },
+      );
     }
 
     const { politicianId } = request.query as { politicianId?: string };
     const binding = resolveEffectivePoliticianId(auth, politicianId);
     if (!binding.authorized) {
-      return sendApiError(reply, request, 403, 'Forbidden', 'Cross-principal wallet access forbidden', {
-        code: 'FORBIDDEN',
-      });
+      return sendApiError(
+        reply,
+        request,
+        403,
+        'Forbidden',
+        'Cross-principal wallet access forbidden',
+        {
+          code: 'FORBIDDEN',
+        },
+      );
     }
 
     const wallet = await getPoliticianWallet(binding.effectivePoliticianId);
@@ -1007,81 +1161,129 @@ export async function campaignRoutes(app: FastifyInstance) {
   });
 
   /** GET /api/v1/campaign/wallet/transactions — get wallet transaction history */
-  app.get('/api/v1/campaign/wallet/transactions', { schema: walletQuerySchema }, async (request, reply) => {
-    const auth = await resolveAuthUser(request);
-    if (!auth) {
-      return sendApiError(reply, request, 401, 'Unauthorized', 'Authentication required to view wallet transactions', {
-        code: 'UNAUTHORIZED',
-      });
-    }
+  app.get(
+    '/api/v1/campaign/wallet/transactions',
+    { schema: walletQuerySchema },
+    async (request, reply) => {
+      const auth = await resolveAuthUser(request);
+      if (!auth) {
+        return sendApiError(
+          reply,
+          request,
+          401,
+          'Unauthorized',
+          'Authentication required to view wallet transactions',
+          {
+            code: 'UNAUTHORIZED',
+          },
+        );
+      }
 
-    const { politicianId } = request.query as { politicianId?: string };
-    const binding = resolveEffectivePoliticianId(auth, politicianId);
-    if (!binding.authorized) {
-      return sendApiError(reply, request, 403, 'Forbidden', 'Cross-principal wallet transaction access forbidden', {
-        code: 'FORBIDDEN',
-      });
-    }
+      const { politicianId } = request.query as { politicianId?: string };
+      const binding = resolveEffectivePoliticianId(auth, politicianId);
+      if (!binding.authorized) {
+        return sendApiError(
+          reply,
+          request,
+          403,
+          'Forbidden',
+          'Cross-principal wallet transaction access forbidden',
+          {
+            code: 'FORBIDDEN',
+          },
+        );
+      }
 
-    const transactions = await getWalletTransactions(binding.effectivePoliticianId);
-    return { status: 'ok', transactions, total: transactions.length };
-  });
+      const transactions = await getWalletTransactions(binding.effectivePoliticianId);
+      return { status: 'ok', transactions, total: transactions.length };
+    },
+  );
 
   /** POST /api/v1/campaign/wallet/recharge/order — create Razorpay / UPI recharge order */
-  app.post('/api/v1/campaign/wallet/recharge/order', { schema: rechargeOrderSchema }, async (request, reply) => {
-    const auth = await resolveAuthUser(request);
-    if (!auth) {
-      return sendApiError(reply, request, 401, 'Unauthorized', 'Authentication required to create recharge order', {
-        code: 'UNAUTHORIZED',
-      });
-    }
+  app.post(
+    '/api/v1/campaign/wallet/recharge/order',
+    { schema: rechargeOrderSchema },
+    async (request, reply) => {
+      const auth = await resolveAuthUser(request);
+      if (!auth) {
+        return sendApiError(
+          reply,
+          request,
+          401,
+          'Unauthorized',
+          'Authentication required to create recharge order',
+          {
+            code: 'UNAUTHORIZED',
+          },
+        );
+      }
 
-    const body = request.body as { politicianId?: string; amountINR?: number };
-    const binding = resolveEffectivePoliticianId(auth, body.politicianId);
-    if (!binding.authorized) {
-      return sendApiError(reply, request, 403, 'Forbidden', 'Cannot create recharge order for another principal', {
-        code: 'FORBIDDEN',
-      });
-    }
+      const body = request.body as { politicianId?: string; amountINR?: number };
+      const binding = resolveEffectivePoliticianId(auth, body.politicianId);
+      if (!binding.authorized) {
+        return sendApiError(
+          reply,
+          request,
+          403,
+          'Forbidden',
+          'Cannot create recharge order for another principal',
+          {
+            code: 'FORBIDDEN',
+          },
+        );
+      }
 
-    const amountINR = body.amountINR || 1000;
+      const amountINR = body.amountINR || 1000;
 
-    if (amountINR < 500) {
-      return sendApiError(reply, request, 400, 'Bad Request', 'Minimum wallet recharge is ₹500', {
-        code: 'PAYMENT_ORDER_ERROR',
-      });
-    }
+      if (amountINR < 500) {
+        return sendApiError(reply, request, 400, 'Bad Request', 'Minimum wallet recharge is ₹500', {
+          code: 'PAYMENT_ORDER_ERROR',
+        });
+      }
 
-    try {
-      const order = await paymentProvider.createOrder({
-        amountINR,
-        currency: 'INR',
-        politicianId: binding.effectivePoliticianId,
-      });
-
-      // 1. Production / Supabase Mode: Database is authoritative.
-      if (isSupabaseConfigured) {
-        const { error: dbErr } = await supabase.from('campaign_recharge_orders').insert({
-          provider_order_id: order.orderId,
-          politician_id: binding.effectivePoliticianId,
-          amount_inr: amountINR,
+      try {
+        const order = await paymentProvider.createOrder({
+          amountINR,
           currency: 'INR',
-          status: 'pending',
+          politicianId: binding.effectivePoliticianId,
         });
 
-        if (dbErr) {
-          // In production mode, DB failure MUST NOT fall back to in-memory order. Fail closed immediately.
-          return sendApiError(
-            reply,
-            request,
-            500,
-            'Database Error',
-            'Failed to persist durable recharge order in database. Order creation aborted.',
-            { code: 'DATABASE_ERROR' }
-          );
+        // 1. Production / Supabase Mode: Database is authoritative.
+        if (isSupabaseConfigured) {
+          const { error: dbErr } = await supabase.from('campaign_recharge_orders').insert({
+            provider_order_id: order.orderId,
+            politician_id: binding.effectivePoliticianId,
+            amount_inr: amountINR,
+            currency: 'INR',
+            status: 'pending',
+          });
+
+          if (dbErr) {
+            // In production mode, DB failure MUST NOT fall back to in-memory order. Fail closed immediately.
+            return sendApiError(
+              reply,
+              request,
+              500,
+              'Database Error',
+              'Failed to persist durable recharge order in database. Order creation aborted.',
+              { code: 'DATABASE_ERROR' },
+            );
+          }
+
+          // Cache for read performance if needed, but DB is primary
+          const orderRecord: PendingRechargeOrder = {
+            orderId: order.orderId,
+            politicianId: binding.effectivePoliticianId,
+            amountINR,
+            status: 'pending',
+            createdAt: new Date().toISOString(),
+          };
+          PENDING_RECHARGE_ORDERS.set(order.orderId, orderRecord);
+
+          return { success: true, order };
         }
 
-        // Cache for read performance if needed, but DB is primary
+        // 2. Offline / Test Mode: Only when Supabase is NOT configured
         const orderRecord: PendingRechargeOrder = {
           orderId: order.orderId,
           politicianId: binding.effectivePoliticianId,
@@ -1092,312 +1294,378 @@ export async function campaignRoutes(app: FastifyInstance) {
         PENDING_RECHARGE_ORDERS.set(order.orderId, orderRecord);
 
         return { success: true, order };
+      } catch (err: any) {
+        return sendApiError(
+          reply,
+          request,
+          400,
+          'Bad Request',
+          err.message || 'Failed to create order',
+          {
+            code: 'PAYMENT_ORDER_ERROR',
+          },
+        );
       }
-
-      // 2. Offline / Test Mode: Only when Supabase is NOT configured
-      const orderRecord: PendingRechargeOrder = {
-        orderId: order.orderId,
-        politicianId: binding.effectivePoliticianId,
-        amountINR,
-        status: 'pending',
-        createdAt: new Date().toISOString(),
-      };
-      PENDING_RECHARGE_ORDERS.set(order.orderId, orderRecord);
-
-      return { success: true, order };
-    } catch (err: any) {
-      return sendApiError(reply, request, 400, 'Bad Request', err.message || 'Failed to create order', {
-        code: 'PAYMENT_ORDER_ERROR',
-      });
-    }
-  });
+    },
+  );
 
   /** POST /api/v1/campaign/wallet/recharge/verify — verify payment and credit wallet balance */
-  app.post('/api/v1/campaign/wallet/recharge/verify', { schema: rechargeVerifySchema }, async (request, reply) => {
-    const auth = await resolveAuthUser(request);
-    if (!auth) {
-      return sendApiError(reply, request, 401, 'Unauthorized', 'Authentication required to verify recharge payment', {
-        code: 'UNAUTHORIZED',
-      });
-    }
+  app.post(
+    '/api/v1/campaign/wallet/recharge/verify',
+    { schema: rechargeVerifySchema },
+    async (request, reply) => {
+      const auth = await resolveAuthUser(request);
+      if (!auth) {
+        return sendApiError(
+          reply,
+          request,
+          401,
+          'Unauthorized',
+          'Authentication required to verify recharge payment',
+          {
+            code: 'UNAUTHORIZED',
+          },
+        );
+      }
 
-    const body = request.body as {
-      politicianId?: string;
-      amountINR: number;
-      paymentReference: string;
-      razorpay_order_id?: string;
-      razorpay_payment_id?: string;
-      razorpay_signature?: string;
-    };
+      const body = request.body as {
+        politicianId?: string;
+        amountINR: number;
+        paymentReference: string;
+        razorpay_order_id?: string;
+        razorpay_payment_id?: string;
+        razorpay_signature?: string;
+      };
 
-    if (!body.amountINR || !body.paymentReference) {
-      return sendApiError(reply, request, 400, 'Bad Request', 'amountINR and paymentReference required', {
-        code: 'VALIDATION_ERROR',
-      });
-    }
-
-    // 1. Identity binding: check caller authority
-    const binding = resolveEffectivePoliticianId(auth, body.politicianId);
-    if (!binding.authorized) {
-      return sendApiError(reply, request, 403, 'Forbidden', 'Cannot verify recharge for another principal', {
-        code: 'FORBIDDEN',
-      });
-    }
-
-    // Check test bypass header for test suites that explicitly simulate mock payments
-    const isExplicitTestBypass = request.headers['x-test-bypass-signature'] === 'true';
-
-    // 2. Strict Provider Verification Tuple Requirement (No optional signature in real mode)
-    if (!isExplicitTestBypass) {
-      if (!body.razorpay_order_id) {
+      if (!body.amountINR || !body.paymentReference) {
         return sendApiError(
           reply,
           request,
           400,
           'Bad Request',
-          'Missing provider order identity (razorpay_order_id). Payment verification rejected.',
-          { code: 'MISSING_PROVIDER_ORDER_ID' }
+          'amountINR and paymentReference required',
+          {
+            code: 'VALIDATION_ERROR',
+          },
         );
       }
-      if (!body.razorpay_payment_id) {
+
+      // 1. Identity binding: check caller authority
+      const binding = resolveEffectivePoliticianId(auth, body.politicianId);
+      if (!binding.authorized) {
         return sendApiError(
           reply,
           request,
-          400,
-          'Bad Request',
-          'Missing provider payment identity (razorpay_payment_id). Payment verification rejected.',
-          { code: 'MISSING_PROVIDER_PAYMENT_ID' }
+          403,
+          'Forbidden',
+          'Cannot verify recharge for another principal',
+          {
+            code: 'FORBIDDEN',
+          },
         );
       }
-      if (!body.razorpay_signature) {
-        return sendApiError(
-          reply,
-          request,
-          400,
-          'Bad Request',
-          'Missing cryptographic payment signature (razorpay_signature). Payment verification rejected.',
-          { code: 'MISSING_SIGNATURE' }
-        );
+
+      // Check test bypass header for test suites that explicitly simulate mock payments
+      const isExplicitTestBypass = request.headers['x-test-bypass-signature'] === 'true';
+
+      // 2. Strict Provider Verification Tuple Requirement (No optional signature in real mode)
+      if (!isExplicitTestBypass) {
+        if (!body.razorpay_order_id) {
+          return sendApiError(
+            reply,
+            request,
+            400,
+            'Bad Request',
+            'Missing provider order identity (razorpay_order_id). Payment verification rejected.',
+            { code: 'MISSING_PROVIDER_ORDER_ID' },
+          );
+        }
+        if (!body.razorpay_payment_id) {
+          return sendApiError(
+            reply,
+            request,
+            400,
+            'Bad Request',
+            'Missing provider payment identity (razorpay_payment_id). Payment verification rejected.',
+            { code: 'MISSING_PROVIDER_PAYMENT_ID' },
+          );
+        }
+        if (!body.razorpay_signature) {
+          return sendApiError(
+            reply,
+            request,
+            400,
+            'Bad Request',
+            'Missing cryptographic payment signature (razorpay_signature). Payment verification rejected.',
+            { code: 'MISSING_SIGNATURE' },
+          );
+        }
       }
-    }
 
-    const orderKey = body.razorpay_order_id || body.paymentReference;
+      const orderKey = body.razorpay_order_id || body.paymentReference;
 
-    // 3. Authoritative Order Lookup
-    let dbOrder: any = null;
-    let memOrder: PendingRechargeOrder | undefined = undefined;
+      // 3. Authoritative Order Lookup
+      let dbOrder: any = null;
+      let memOrder: PendingRechargeOrder | undefined = undefined;
 
-    if (isSupabaseConfigured) {
-      try {
-        const { data, error } = await supabase
-          .from('campaign_recharge_orders')
-          .select('*')
-          .or(`provider_order_id.eq.${orderKey},payment_reference.eq.${body.paymentReference}`)
-          .maybeSingle();
+      if (isSupabaseConfigured) {
+        try {
+          const { data, error } = await supabase
+            .from('campaign_recharge_orders')
+            .select('*')
+            .or(`provider_order_id.eq.${orderKey},payment_reference.eq.${body.paymentReference}`)
+            .maybeSingle();
 
-        if (error) {
-          // DB error during lookup: Fail closed in Supabase mode! Do NOT fall back to memory registry.
+          if (error) {
+            // DB error during lookup: Fail closed in Supabase mode! Do NOT fall back to memory registry.
+            return sendApiError(
+              reply,
+              request,
+              500,
+              'Database Error',
+              'Database error while retrieving durable recharge order. Verification aborted.',
+              { code: 'DATABASE_ERROR' },
+            );
+          }
+          dbOrder = data;
+        } catch (err: any) {
           return sendApiError(
             reply,
             request,
             500,
             'Database Error',
-            'Database error while retrieving durable recharge order. Verification aborted.',
-            { code: 'DATABASE_ERROR' }
+            'Database connection error while retrieving durable recharge order. Verification aborted.',
+            { code: 'DATABASE_ERROR' },
           );
         }
-        dbOrder = data;
-      } catch (err: any) {
-        return sendApiError(
-          reply,
-          request,
-          500,
-          'Database Error',
-          'Database connection error while retrieving durable recharge order. Verification aborted.',
-          { code: 'DATABASE_ERROR' }
-        );
-      }
 
-      // In Supabase mode, if not in DB, fail closed. Never use memory fallback as production resilience!
-      if (!dbOrder) {
-        return sendApiError(
-          reply,
-          request,
-          400,
-          'Bad Request',
-          'No matching recharge order found in database for the supplied payment reference.',
-          { code: 'PAYMENT_ORDER_NOT_FOUND' }
-        );
-      }
-    } else {
-      // Offline / Test Mode: Use in-memory map
-      memOrder = PENDING_RECHARGE_ORDERS.get(orderKey);
-      if (!memOrder) {
-        for (const ord of PENDING_RECHARGE_ORDERS.values()) {
-          if (ord.orderId === body.paymentReference || ord.paymentReference === body.paymentReference) {
-            memOrder = ord;
-            break;
+        // In Supabase mode, if not in DB, fail closed. Never use memory fallback as production resilience!
+        if (!dbOrder) {
+          return sendApiError(
+            reply,
+            request,
+            400,
+            'Bad Request',
+            'No matching recharge order found in database for the supplied payment reference.',
+            { code: 'PAYMENT_ORDER_NOT_FOUND' },
+          );
+        }
+      } else {
+        // Offline / Test Mode: Use in-memory map
+        memOrder = PENDING_RECHARGE_ORDERS.get(orderKey);
+        if (!memOrder) {
+          for (const ord of PENDING_RECHARGE_ORDERS.values()) {
+            if (
+              ord.orderId === body.paymentReference ||
+              ord.paymentReference === body.paymentReference
+            ) {
+              memOrder = ord;
+              break;
+            }
           }
         }
+
+        if (!memOrder) {
+          return sendApiError(
+            reply,
+            request,
+            400,
+            'Bad Request',
+            'No matching recharge order found for the supplied payment reference. Arbitrary wallet crediting is rejected.',
+            { code: 'PAYMENT_ORDER_NOT_FOUND' },
+          );
+        }
       }
 
-      if (!memOrder) {
+      const effectiveOrderId = dbOrder?.provider_order_id || memOrder?.orderId || orderKey;
+      const orderPoliticianId = dbOrder?.politician_id || memOrder?.politicianId;
+      const orderAmount = dbOrder ? Number(dbOrder.amount_inr) : (memOrder?.amountINR ?? 0);
+
+      // 4. Verify order ownership
+      if (orderPoliticianId !== binding.effectivePoliticianId && auth.role !== 'admin') {
+        return sendApiError(
+          reply,
+          request,
+          403,
+          'Forbidden',
+          'Cross-wallet recharge verification rejected',
+          {
+            code: 'FORBIDDEN',
+          },
+        );
+      }
+
+      // 5. Verify amount consistency
+      if (orderAmount !== body.amountINR) {
         return sendApiError(
           reply,
           request,
           400,
           'Bad Request',
-          'No matching recharge order found for the supplied payment reference. Arbitrary wallet crediting is rejected.',
-          { code: 'PAYMENT_ORDER_NOT_FOUND' }
+          `Amount mismatch. Expected ₹${orderAmount}, received ₹${body.amountINR}`,
+          { code: 'AMOUNT_MISMATCH' },
         );
       }
-    }
 
-    const effectiveOrderId = dbOrder?.provider_order_id || memOrder?.orderId || orderKey;
-    const orderPoliticianId = dbOrder?.politician_id || memOrder?.politicianId;
-    const orderAmount = dbOrder ? Number(dbOrder.amount_inr) : (memOrder?.amountINR ?? 0);
-
-    // 4. Verify order ownership
-    if (orderPoliticianId !== binding.effectivePoliticianId && auth.role !== 'admin') {
-      return sendApiError(reply, request, 403, 'Forbidden', 'Cross-wallet recharge verification rejected', {
-        code: 'FORBIDDEN',
-      });
-    }
-
-    // 5. Verify amount consistency
-    if (orderAmount !== body.amountINR) {
-      return sendApiError(
-        reply,
-        request,
-        400,
-        'Bad Request',
-        `Amount mismatch. Expected ₹${orderAmount}, received ₹${body.amountINR}`,
-        { code: 'AMOUNT_MISMATCH' }
-      );
-    }
-
-    // 6. Fail-Closed Cryptographic Verification
-    if (body.razorpay_signature) {
-      const orderIdForSig = body.razorpay_order_id || effectiveOrderId;
-      const paymentIdForSig = body.razorpay_payment_id || body.paymentReference;
-      try {
-        const verifyResult = await paymentProvider.verifyPaymentSignature({
-          orderId: orderIdForSig,
-          paymentId: paymentIdForSig,
-          signature: body.razorpay_signature,
-        });
-
-        if (!verifyResult.valid) {
-          return sendApiError(reply, request, 400, 'Bad Request', 'Invalid cryptographic payment signature', {
-            code: 'INVALID_SIGNATURE',
+      // 6. Fail-Closed Cryptographic Verification
+      if (body.razorpay_signature) {
+        const orderIdForSig = body.razorpay_order_id || effectiveOrderId;
+        const paymentIdForSig = body.razorpay_payment_id || body.paymentReference;
+        try {
+          const verifyResult = await paymentProvider.verifyPaymentSignature({
+            orderId: orderIdForSig,
+            paymentId: paymentIdForSig,
+            signature: body.razorpay_signature,
           });
+
+          if (!verifyResult.valid) {
+            return sendApiError(
+              reply,
+              request,
+              400,
+              'Bad Request',
+              'Invalid cryptographic payment signature',
+              {
+                code: 'INVALID_SIGNATURE',
+              },
+            );
+          }
+        } catch (err: any) {
+          if (err.message && err.message.includes('PROVIDER_CONFIG_ERROR')) {
+            // Fail closed: if a signature verification was requested or supplied, but secret is missing, do not credit!
+            return sendApiError(
+              reply,
+              request,
+              500,
+              'Internal Server Error',
+              'Payment verification service configuration missing (RAZORPAY_KEY_SECRET). Wallet crediting aborted.',
+              { code: 'PROVIDER_CONFIG_ERROR' },
+            );
+          }
+          return sendApiError(
+            reply,
+            request,
+            400,
+            'Bad Request',
+            'Invalid cryptographic payment signature',
+            {
+              code: 'INVALID_SIGNATURE',
+            },
+          );
         }
-      } catch (err: any) {
-        if (err.message && err.message.includes('PROVIDER_CONFIG_ERROR')) {
-          // Fail closed: if a signature verification was requested or supplied, but secret is missing, do not credit!
+      }
+
+      // 7. Atomic DB execution if Supabase is configured
+      if (isSupabaseConfigured && dbOrder) {
+        try {
+          const { data: rpcRes, error: rpcErr } = await supabase.rpc('verify_and_credit_recharge', {
+            p_provider_order_id: effectiveOrderId,
+            p_politician_id: binding.effectivePoliticianId,
+            p_amount_inr: body.amountINR,
+            p_payment_reference: body.paymentReference,
+            p_provider_payment_id: body.razorpay_payment_id || null,
+          });
+
+          if (rpcErr) {
+            return sendApiError(reply, request, 500, 'Database Error', rpcErr.message, {
+              code: 'DATABASE_ERROR',
+            });
+          }
+
+          if (!rpcRes.success) {
+            const statusMap: Record<string, number> = {
+              PAYMENT_ORDER_NOT_FOUND: 400,
+              FORBIDDEN: 403,
+              AMOUNT_MISMATCH: 400,
+            };
+            return sendApiError(
+              reply,
+              request,
+              statusMap[rpcRes.code] || 400,
+              'Bad Request',
+              rpcRes.message,
+              { code: rpcRes.code },
+            );
+          }
+
+          const cached = PENDING_RECHARGE_ORDERS.get(effectiveOrderId);
+          if (cached) {
+            cached.status = 'completed';
+            cached.completedAt = new Date().toISOString();
+            cached.paymentReference = body.paymentReference;
+          }
+
+          if (rpcRes.idempotent) {
+            return {
+              success: true,
+              wallet: rpcRes.wallet,
+              idempotent: true,
+              message:
+                rpcRes.message ||
+                'Payment already verified and credited previously. Idempotent replay acknowledged.',
+            };
+          }
+
+          return {
+            success: true,
+            wallet: rpcRes.wallet,
+            message: `Successfully added ₹${body.amountINR.toLocaleString('en-IN')} to Campaign Wallet!`,
+          };
+        } catch (err: any) {
           return sendApiError(
             reply,
             request,
             500,
             'Internal Server Error',
-            'Payment verification service configuration missing (RAZORPAY_KEY_SECRET). Wallet crediting aborted.',
-            { code: 'PROVIDER_CONFIG_ERROR' }
+            err.message || 'Atomic wallet verification failed',
+            {
+              code: 'VERIFICATION_FAILED',
+            },
           );
         }
-        return sendApiError(reply, request, 400, 'Bad Request', 'Invalid cryptographic payment signature', {
-          code: 'INVALID_SIGNATURE',
-        });
       }
-    }
 
-    // 7. Atomic DB execution if Supabase is configured
-    if (isSupabaseConfigured && dbOrder) {
-      try {
-        const { data: rpcRes, error: rpcErr } = await supabase.rpc('verify_and_credit_recharge', {
-          p_provider_order_id: effectiveOrderId,
-          p_politician_id: binding.effectivePoliticianId,
-          p_amount_inr: body.amountINR,
-          p_payment_reference: body.paymentReference,
-          p_provider_payment_id: body.razorpay_payment_id || null,
-        });
-
-        if (rpcErr) {
-          return sendApiError(reply, request, 500, 'Database Error', rpcErr.message, { code: 'DATABASE_ERROR' });
-        }
-
-        if (!rpcRes.success) {
-          const statusMap: Record<string, number> = {
-            PAYMENT_ORDER_NOT_FOUND: 400,
-            FORBIDDEN: 403,
-            AMOUNT_MISMATCH: 400,
-          };
-          return sendApiError(
-            reply,
-            request,
-            statusMap[rpcRes.code] || 400,
-            'Bad Request',
-            rpcRes.message,
-            { code: rpcRes.code }
-          );
-        }
-
-        const cached = PENDING_RECHARGE_ORDERS.get(effectiveOrderId);
-        if (cached) {
-          cached.status = 'completed';
-          cached.completedAt = new Date().toISOString();
-          cached.paymentReference = body.paymentReference;
-        }
-
-        if (rpcRes.idempotent) {
+      // 8. Concurrency-safe in-memory fallback (ONLY for offline / non-database execution)
+      if (memOrder) {
+        if (memOrder.status === 'completed') {
+          const existingWallet = await getPoliticianWallet(binding.effectivePoliticianId);
           return {
             success: true,
-            wallet: rpcRes.wallet,
+            wallet: existingWallet,
             idempotent: true,
-            message: rpcRes.message || 'Payment already verified and credited previously. Idempotent replay acknowledged.',
+            message: `Payment already verified and credited previously. Idempotent replay acknowledged.`,
           };
         }
 
+        // Re-entrancy & race condition protection: mark completed synchronously
+        memOrder.status = 'completed';
+        memOrder.completedAt = new Date().toISOString();
+        memOrder.paymentReference = body.paymentReference;
+
+        const updatedWallet = await creditWallet(
+          binding.effectivePoliticianId,
+          body.amountINR,
+          body.paymentReference,
+        );
         return {
           success: true,
-          wallet: rpcRes.wallet,
+          wallet: updatedWallet,
           message: `Successfully added ₹${body.amountINR.toLocaleString('en-IN')} to Campaign Wallet!`,
         };
-      } catch (err: any) {
-        return sendApiError(reply, request, 500, 'Internal Server Error', err.message || 'Atomic wallet verification failed', {
+      }
+
+      return sendApiError(
+        reply,
+        request,
+        400,
+        'Bad Request',
+        'Unable to complete payment verification',
+        {
           code: 'VERIFICATION_FAILED',
-        });
-      }
-    }
-
-    // 8. Concurrency-safe in-memory fallback (ONLY for offline / non-database execution)
-    if (memOrder) {
-      if (memOrder.status === 'completed') {
-        const existingWallet = await getPoliticianWallet(binding.effectivePoliticianId);
-        return {
-          success: true,
-          wallet: existingWallet,
-          idempotent: true,
-          message: `Payment already verified and credited previously. Idempotent replay acknowledged.`,
-        };
-      }
-
-      // Re-entrancy & race condition protection: mark completed synchronously
-      memOrder.status = 'completed';
-      memOrder.completedAt = new Date().toISOString();
-      memOrder.paymentReference = body.paymentReference;
-
-      const updatedWallet = await creditWallet(binding.effectivePoliticianId, body.amountINR, body.paymentReference);
-      return {
-        success: true,
-        wallet: updatedWallet,
-        message: `Successfully added ₹${body.amountINR.toLocaleString('en-IN')} to Campaign Wallet!`,
-      };
-    }
-
-    return sendApiError(reply, request, 400, 'Bad Request', 'Unable to complete payment verification', {
-      code: 'VERIFICATION_FAILED',
-    });
-  });
+        },
+      );
+    },
+  );
 
   /** GET /api/v1/campaign/obd/trai-status — check current TRAI calling window */
   app.get('/api/v1/campaign/obd/trai-status', async () => {
@@ -1406,143 +1674,212 @@ export async function campaignRoutes(app: FastifyInstance) {
   });
 
   /** GET /api/v1/campaign/obd/broadcasts — list past and active voice call broadcasts */
-  app.get('/api/v1/campaign/obd/broadcasts', { schema: walletQuerySchema }, async (request, reply) => {
-    const auth = await resolveAuthUser(request);
-    if (!auth) {
-      return sendApiError(reply, request, 401, 'Unauthorized', 'Authentication required to view OBD broadcasts', {
-        code: 'UNAUTHORIZED',
-      });
-    }
+  app.get(
+    '/api/v1/campaign/obd/broadcasts',
+    { schema: walletQuerySchema },
+    async (request, reply) => {
+      const auth = await resolveAuthUser(request);
+      if (!auth) {
+        return sendApiError(
+          reply,
+          request,
+          401,
+          'Unauthorized',
+          'Authentication required to view OBD broadcasts',
+          {
+            code: 'UNAUTHORIZED',
+          },
+        );
+      }
 
-    const { politicianId } = request.query as { politicianId?: string };
-    const binding = resolveEffectivePoliticianId(auth, politicianId);
-    if (!binding.authorized) {
-      return sendApiError(reply, request, 403, 'Forbidden', 'Cross-principal broadcast access forbidden', {
-        code: 'FORBIDDEN',
-      });
-    }
+      const { politicianId } = request.query as { politicianId?: string };
+      const binding = resolveEffectivePoliticianId(auth, politicianId);
+      if (!binding.authorized) {
+        return sendApiError(
+          reply,
+          request,
+          403,
+          'Forbidden',
+          'Cross-principal broadcast access forbidden',
+          {
+            code: 'FORBIDDEN',
+          },
+        );
+      }
 
-    const broadcasts = await getOBDBroadcasts(binding.effectivePoliticianId);
-    return { status: 'ok', broadcasts, total: broadcasts.length };
-  });
+      const broadcasts = await getOBDBroadcasts(binding.effectivePoliticianId);
+      return { status: 'ok', broadcasts, total: broadcasts.length };
+    },
+  );
 
   /** POST /api/v1/campaign/obd/dispatch — check wallet, check TRAI, deduct funds, and dispatch voice broadcast */
-  app.post('/api/v1/campaign/obd/dispatch', { schema: obdDispatchSchema }, async (request, reply) => {
-    const body = request.body as {
-      campaignId?: string;
-      politicianId?: string;
-      audioUrl?: string;
-      title?: string;
-      targetSegment?: { type: string; wardNo?: number; boothNumbers?: string[]; voterCount: number };
-    };
+  app.post(
+    '/api/v1/campaign/obd/dispatch',
+    { schema: obdDispatchSchema },
+    async (request, reply) => {
+      const body = request.body as {
+        campaignId?: string;
+        politicianId?: string;
+        audioUrl?: string;
+        title?: string;
+        targetSegment?: {
+          type: string;
+          wardNo?: number;
+          boothNumbers?: string[];
+          voterCount: number;
+        };
+      };
 
-    const campaignId = body.campaignId || 'c1';
+      const campaignId = body.campaignId || 'c1';
 
-    // 1. Authenticate caller
-    const auth = await resolveAuthUser(request, campaignId);
-    if (!auth) {
-      return sendApiError(reply, request, 401, 'Unauthorized', 'Authentication required to dispatch OBD broadcasts', {
-        code: 'UNAUTHORIZED',
+      // 1. Authenticate caller
+      const auth = await resolveAuthUser(request, campaignId);
+      if (!auth) {
+        return sendApiError(
+          reply,
+          request,
+          401,
+          'Unauthorized',
+          'Authentication required to dispatch OBD broadcasts',
+          {
+            code: 'UNAUTHORIZED',
+          },
+        );
+      }
+
+      // 2. Check campaign operational authority BEFORE financial mutation or telecom dispatch
+      const authCheck = await verifyCampaignAuthority(auth, campaignId);
+      if (!authCheck.authorized) {
+        return sendApiError(
+          reply,
+          request,
+          403,
+          'Forbidden',
+          authCheck.reason || 'Unauthorized to operate this campaign',
+          {
+            code: 'FORBIDDEN',
+          },
+        );
+      }
+
+      // 3. Resolve effective politician ID bound to authenticated principal
+      const binding = resolveEffectivePoliticianId(auth, body.politicianId);
+      if (!binding.authorized) {
+        return sendApiError(
+          reply,
+          request,
+          403,
+          'Forbidden',
+          'Cannot dispatch OBD broadcast using another politician wallet',
+          {
+            code: 'FORBIDDEN',
+          },
+        );
+      }
+
+      const effectivePoliticianId = binding.effectivePoliticianId;
+
+      if (!body.targetSegment || !body.targetSegment.voterCount) {
+        return sendApiError(
+          reply,
+          request,
+          400,
+          'Bad Request',
+          'Target segment and voter count required',
+          {
+            code: 'VALIDATION_ERROR',
+          },
+        );
+      }
+
+      const voterCount = body.targetSegment.voterCount;
+      const rate = campaignPricing.voiceObd.finalRatePerCallINR;
+      const totalCostINR = Math.round(voterCount * rate);
+
+      // 4. Statutory TRAI Calling Window Check (08:00–21:00 IST)
+      const traiCheck = voiceObdProvider.isWithinTraiCallingWindow();
+      if (!traiCheck.permitted) {
+        return sendApiError(
+          reply,
+          request,
+          400,
+          'Bad Request',
+          traiCheck.message ||
+            'Outbound voice calls are prohibited outside the TRAI window (08:00–21:00 IST)',
+          {
+            code: 'OUTSIDE_TRAI_WINDOW',
+            details: [
+              { path: 'timing', message: `Current IST hour: ${traiCheck.currentISTHour}:00` },
+            ],
+          },
+        );
+      }
+
+      // 5. Check wallet and deduct funds (Throws error if insufficient)
+      let updatedWallet;
+      try {
+        updatedWallet = await deductWalletForService(
+          effectivePoliticianId,
+          totalCostINR,
+          'voice_obd',
+          `obd_${Date.now()}`,
+          `Voice Call: ${body.title || 'Voter Appeal'} (${voterCount.toLocaleString('en-IN')} voters @ ₹${rate.toFixed(2)})`,
+        );
+      } catch (err: any) {
+        return sendApiError(reply, request, 402, 'Payment Required', err.message, {
+          code: 'INSUFFICIENT_FUNDS',
+          details: [{ path: 'wallet', message: `Required amount: ₹${totalCostINR}` }],
+        });
+      }
+
+      // 6. Dispatch via telecom gateway (with TRAI checks)
+      const result = await dispatchOBDBroadcast({
+        campaignId,
+        politicianId: effectivePoliticianId,
+        title: body.title || 'Voice Call to Voters',
+        audioUrl: body.audioUrl || 'https://assets.kshetra.app/audio/default-appeal.mp3',
+        targetSegment: body.targetSegment,
+        ratePerCallINR: rate,
       });
-    }
 
-    // 2. Check campaign operational authority BEFORE financial mutation or telecom dispatch
-    const authCheck = await verifyCampaignAuthority(auth, campaignId);
-    if (!authCheck.authorized) {
-      return sendApiError(reply, request, 403, 'Forbidden', authCheck.reason || 'Unauthorized to operate this campaign', {
-        code: 'FORBIDDEN',
-      });
-    }
-
-    // 3. Resolve effective politician ID bound to authenticated principal
-    const binding = resolveEffectivePoliticianId(auth, body.politicianId);
-    if (!binding.authorized) {
-      return sendApiError(reply, request, 403, 'Forbidden', 'Cannot dispatch OBD broadcast using another politician wallet', {
-        code: 'FORBIDDEN',
-      });
-    }
-
-    const effectivePoliticianId = binding.effectivePoliticianId;
-
-    if (!body.targetSegment || !body.targetSegment.voterCount) {
-      return sendApiError(reply, request, 400, 'Bad Request', 'Target segment and voter count required', {
-        code: 'VALIDATION_ERROR',
-      });
-    }
-
-    const voterCount = body.targetSegment.voterCount;
-    const rate = campaignPricing.voiceObd.finalRatePerCallINR;
-    const totalCostINR = Math.round(voterCount * rate);
-
-    // 4. Statutory TRAI Calling Window Check (08:00–21:00 IST)
-    const traiCheck = voiceObdProvider.isWithinTraiCallingWindow();
-    if (!traiCheck.permitted) {
-      return sendApiError(
-        reply,
-        request,
-        400,
-        'Bad Request',
-        traiCheck.message || 'Outbound voice calls are prohibited outside the TRAI window (08:00–21:00 IST)',
-        {
-          code: 'OUTSIDE_TRAI_WINDOW',
-          details: [{ path: 'timing', message: `Current IST hour: ${traiCheck.currentISTHour}:00` }],
-        }
-      );
-    }
-
-    // 5. Check wallet and deduct funds (Throws error if insufficient)
-    let updatedWallet;
-    try {
-      updatedWallet = await deductWalletForService(
-        effectivePoliticianId,
-        totalCostINR,
-        'voice_obd',
-        `obd_${Date.now()}`,
-        `Voice Call: ${body.title || 'Voter Appeal'} (${voterCount.toLocaleString('en-IN')} voters @ ₹${rate.toFixed(2)})`,
-      );
-    } catch (err: any) {
-      return sendApiError(reply, request, 402, 'Payment Required', err.message, {
-        code: 'INSUFFICIENT_FUNDS',
-        details: [{ path: 'wallet', message: `Required amount: ₹${totalCostINR}` }],
-      });
-    }
-
-    // 6. Dispatch via telecom gateway (with TRAI checks)
-    const result = await dispatchOBDBroadcast({
-      campaignId,
-      politicianId: effectivePoliticianId,
-      title: body.title || 'Voice Call to Voters',
-      audioUrl: body.audioUrl || 'https://assets.kshetra.app/audio/default-appeal.mp3',
-      targetSegment: body.targetSegment,
-      ratePerCallINR: rate,
-    });
-
-    return {
-      success: true,
-      job: result.broadcast,
-      wallet: updatedWallet,
-      warning: result.warning,
-      message: result.warning
-        ? `Voice call queued for ${voterCount.toLocaleString('en-IN')} voters. ₹${totalCostINR.toLocaleString('en-IN')} reserved. Note: ${result.warning}`
-        : `Voice call dispatched to ${voterCount.toLocaleString('en-IN')} voters. ₹${totalCostINR.toLocaleString('en-IN')} deducted from Campaign Wallet.`,
-    };
-  });
+      return {
+        success: true,
+        job: result.broadcast,
+        wallet: updatedWallet,
+        warning: result.warning,
+        message: result.warning
+          ? `Voice call queued for ${voterCount.toLocaleString('en-IN')} voters. ₹${totalCostINR.toLocaleString('en-IN')} reserved. Note: ${result.warning}`
+          : `Voice call dispatched to ${voterCount.toLocaleString('en-IN')} voters. ₹${totalCostINR.toLocaleString('en-IN')} deducted from Campaign Wallet.`,
+      };
+    },
+  );
 
   /** POST /api/v1/webhooks/voice/:provider — receive real-time telecom delivery status reports */
-  app.post('/api/v1/webhooks/voice/:provider', { schema: webhookVoiceSchema }, async (request, reply) => {
-    const isValid = voiceObdProvider.validateWebhook({
-      headers: request.headers as Record<string, any>,
-      body: request.body,
-    });
-    if (!isValid) {
-      return sendApiError(reply, request, 400, 'Bad Request', 'Invalid webhook payload structure', {
-        code: 'INVALID_WEBHOOK_PAYLOAD',
+  app.post(
+    '/api/v1/webhooks/voice/:provider',
+    { schema: webhookVoiceSchema },
+    async (request, reply) => {
+      const isValid = voiceObdProvider.validateWebhook({
+        headers: request.headers as Record<string, any>,
+        body: request.body,
       });
-    }
+      if (!isValid) {
+        return sendApiError(
+          reply,
+          request,
+          400,
+          'Bad Request',
+          'Invalid webhook payload structure',
+          {
+            code: 'INVALID_WEBHOOK_PAYLOAD',
+          },
+        );
+      }
 
-    const payload = (request.body as Record<string, any>) || {};
-    const report = voiceObdProvider.parseDeliveryReport(payload);
-    const result = await processTelecomWebhook(payload);
-    return { status: 'acknowledged', reportParsed: Boolean(report), ...result };
-  });
+      const payload = (request.body as Record<string, any>) || {};
+      const report = voiceObdProvider.parseDeliveryReport(payload);
+      const result = await processTelecomWebhook(payload);
+      return { status: 'acknowledged', reportParsed: Boolean(report), ...result };
+    },
+  );
 }

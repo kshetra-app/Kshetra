@@ -56,7 +56,9 @@ describe('Observability, Tracing & Error Interception (JOB W004 / DEC-020)', () 
 
       expect(res.statusCode).toBe(200);
       expect(res.headers['x-request-id']).not.toBe(maliciousId);
-      expect(res.headers['x-request-id']).toMatch(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i);
+      expect(res.headers['x-request-id']).toMatch(
+        /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i,
+      );
     });
 
     it('replaces oversized request IDs (>128 chars) with a UUID', async () => {
@@ -71,7 +73,9 @@ describe('Observability, Tracing & Error Interception (JOB W004 / DEC-020)', () 
 
       expect(res.statusCode).toBe(200);
       expect(res.headers['x-request-id']).not.toBe(oversizedId);
-      expect(res.headers['x-request-id']).toMatch(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i);
+      expect(res.headers['x-request-id']).toMatch(
+        /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i,
+      );
     });
   });
 
@@ -339,9 +343,15 @@ describe('Observability, Tracing & Error Interception (JOB W004 / DEC-020)', () 
       expect(classifyError(new Error('Forbidden resource'), 403).category).toBe('AUTHORIZATION');
       expect(classifyError(new Error('Rate limit exceeded'), 429).category).toBe('RATE_LIMIT');
       expect(classifyError(new Error('Resource not found'), 404).category).toBe('NOT_FOUND');
-      expect(classifyError(new Error('Database query timed out'), 503).category).toBe('DATABASE_FAILURE');
-      expect(classifyError(new Error('Upstream provider unreachable'), 502).category).toBe('UPSTREAM_PROVIDER');
-      expect(classifyError(new Error('Unhandled pointer dereference'), 500).category).toBe('UNHANDLED_SERVER_ERROR');
+      expect(classifyError(new Error('Database query timed out'), 503).category).toBe(
+        'DATABASE_FAILURE',
+      );
+      expect(classifyError(new Error('Upstream provider unreachable'), 502).category).toBe(
+        'UPSTREAM_PROVIDER',
+      );
+      expect(classifyError(new Error('Unhandled pointer dereference'), 500).category).toBe(
+        'UNHANDLED_SERVER_ERROR',
+      );
     });
 
     it('safely captures error events without throwing even if monitoring sinks fail', () => {

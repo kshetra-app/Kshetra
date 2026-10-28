@@ -9,13 +9,14 @@ import type { FastifyPluginAsync, FastifyRequest, FastifyReply } from 'fastify';
 import type { ApiSuccessEnvelope } from '@kshetra/shared';
 import { sendApiError } from '../../lib/replyHelper';
 import { webhookService } from './webhookService';
-import {
-  createWebhookBodySchema,
-  updateWebhookBodySchema,
-  webhookIdParamSchema,
-} from './schemas';
+import { createWebhookBodySchema, updateWebhookBodySchema, webhookIdParamSchema } from './schemas';
 
-function sendSaasSuccess<T>(reply: FastifyReply, request: FastifyRequest, data: T, statusCode = 200) {
+function sendSaasSuccess<T>(
+  reply: FastifyReply,
+  request: FastifyRequest,
+  data: T,
+  statusCode = 200,
+) {
   const envelope: ApiSuccessEnvelope<T> = {
     success: true,
     data,
@@ -65,12 +66,19 @@ export const webhookRoutes: FastifyPluginAsync = async (fastify) => {
 
         return sendSaasSuccess(reply, request, result, 201);
       } catch (err: any) {
-        if (err.message?.includes('BLOCKED_PRIVATE_IP_ADDRESS') || err.message?.includes('INVALID_WEBHOOK_URL')) {
-          return sendApiError(reply, request, 400, 'Bad Request', err.message, { code: 'SSRF_VALIDATION_FAILED' });
+        if (
+          err.message?.includes('BLOCKED_PRIVATE_IP_ADDRESS') ||
+          err.message?.includes('INVALID_WEBHOOK_URL')
+        ) {
+          return sendApiError(reply, request, 400, 'Bad Request', err.message, {
+            code: 'SSRF_VALIDATION_FAILED',
+          });
         }
-        return sendApiError(reply, request, 400, 'Bad Request', err.message, { code: 'WEBHOOK_CREATION_FAILED' });
+        return sendApiError(reply, request, 400, 'Bad Request', err.message, {
+          code: 'WEBHOOK_CREATION_FAILED',
+        });
       }
-    }
+    },
   );
 
   // 2. GET /api/vsaas/v1/webhooks — List subscriptions
@@ -79,10 +87,15 @@ export const webhookRoutes: FastifyPluginAsync = async (fastify) => {
     if (!auth) return;
 
     try {
-      const subscriptions = await webhookService.listSubscriptions(auth.tenantId, auth.applicationId);
+      const subscriptions = await webhookService.listSubscriptions(
+        auth.tenantId,
+        auth.applicationId,
+      );
       return sendSaasSuccess(reply, request, { subscriptions, total: subscriptions.length });
     } catch (err: any) {
-      return sendApiError(reply, request, 500, 'Internal Server Error', err.message, { code: 'QUERY_FAILED' });
+      return sendApiError(reply, request, 500, 'Internal Server Error', err.message, {
+        code: 'QUERY_FAILED',
+      });
     }
   });
 
@@ -101,7 +114,11 @@ export const webhookRoutes: FastifyPluginAsync = async (fastify) => {
       const { id } = request.params as { id: string };
 
       try {
-        const subscription = await webhookService.getSubscription(auth.tenantId, auth.applicationId, id);
+        const subscription = await webhookService.getSubscription(
+          auth.tenantId,
+          auth.applicationId,
+          id,
+        );
         if (!subscription) {
           return sendApiError(reply, request, 404, 'Not Found', 'Webhook subscription not found.', {
             code: 'WEBHOOK_NOT_FOUND',
@@ -109,9 +126,11 @@ export const webhookRoutes: FastifyPluginAsync = async (fastify) => {
         }
         return sendSaasSuccess(reply, request, { subscription });
       } catch (err: any) {
-        return sendApiError(reply, request, 500, 'Internal Server Error', err.message, { code: 'QUERY_FAILED' });
+        return sendApiError(reply, request, 500, 'Internal Server Error', err.message, {
+          code: 'QUERY_FAILED',
+        });
       }
-    }
+    },
   );
 
   // 4. PATCH /api/vsaas/v1/webhooks/:id — Update subscription
@@ -128,7 +147,11 @@ export const webhookRoutes: FastifyPluginAsync = async (fastify) => {
       if (!auth) return;
 
       const { id } = request.params as { id: string };
-      const body = request.body as { endpointUrl?: string; subscribedEvents?: string[]; status?: 'active' | 'paused' | 'disabled' };
+      const body = request.body as {
+        endpointUrl?: string;
+        subscribedEvents?: string[];
+        status?: 'active' | 'paused' | 'disabled';
+      };
 
       try {
         const updated = await webhookService.updateSubscription({
@@ -149,9 +172,11 @@ export const webhookRoutes: FastifyPluginAsync = async (fastify) => {
 
         return sendSaasSuccess(reply, request, { subscription: updated });
       } catch (err: any) {
-        return sendApiError(reply, request, 400, 'Bad Request', err.message, { code: 'UPDATE_FAILED' });
+        return sendApiError(reply, request, 400, 'Bad Request', err.message, {
+          code: 'UPDATE_FAILED',
+        });
       }
-    }
+    },
   );
 
   // 5. POST /api/vsaas/v1/webhooks/:id/disable — Disable subscription
@@ -169,7 +194,11 @@ export const webhookRoutes: FastifyPluginAsync = async (fastify) => {
       const { id } = request.params as { id: string };
 
       try {
-        const disabled = await webhookService.disableSubscription(auth.tenantId, auth.applicationId, id);
+        const disabled = await webhookService.disableSubscription(
+          auth.tenantId,
+          auth.applicationId,
+          id,
+        );
         if (!disabled) {
           return sendApiError(reply, request, 404, 'Not Found', 'Webhook subscription not found.', {
             code: 'WEBHOOK_NOT_FOUND',
@@ -177,9 +206,11 @@ export const webhookRoutes: FastifyPluginAsync = async (fastify) => {
         }
         return sendSaasSuccess(reply, request, { subscription: disabled });
       } catch (err: any) {
-        return sendApiError(reply, request, 500, 'Internal Server Error', err.message, { code: 'DISABLE_FAILED' });
+        return sendApiError(reply, request, 500, 'Internal Server Error', err.message, {
+          code: 'DISABLE_FAILED',
+        });
       }
-    }
+    },
   );
 
   // 6. POST /api/vsaas/v1/webhooks/:id/rotate-secret — Rotate signing secret
@@ -205,9 +236,11 @@ export const webhookRoutes: FastifyPluginAsync = async (fastify) => {
         }
         return sendSaasSuccess(reply, request, rotated);
       } catch (err: any) {
-        return sendApiError(reply, request, 500, 'Internal Server Error', err.message, { code: 'ROTATION_FAILED' });
+        return sendApiError(reply, request, 500, 'Internal Server Error', err.message, {
+          code: 'ROTATION_FAILED',
+        });
       }
-    }
+    },
   );
 
   // 7. POST /api/vsaas/v1/webhooks/:id/test — Synchronous test delivery
@@ -225,9 +258,14 @@ export const webhookRoutes: FastifyPluginAsync = async (fastify) => {
       const { id } = request.params as { id: string };
 
       try {
-        const deliveryResult = await webhookService.testDelivery(auth.tenantId, auth.applicationId, id, {
-          allowLocalhostInTest: process.env.NODE_ENV === 'test',
-        });
+        const deliveryResult = await webhookService.testDelivery(
+          auth.tenantId,
+          auth.applicationId,
+          id,
+          {
+            allowLocalhostInTest: process.env.NODE_ENV === 'test',
+          },
+        );
 
         if (!deliveryResult) {
           return sendApiError(reply, request, 404, 'Not Found', 'Webhook subscription not found.', {
@@ -237,9 +275,11 @@ export const webhookRoutes: FastifyPluginAsync = async (fastify) => {
 
         return sendSaasSuccess(reply, request, { delivery: deliveryResult });
       } catch (err: any) {
-        return sendApiError(reply, request, 500, 'Internal Server Error', err.message, { code: 'TEST_DELIVERY_FAILED' });
+        return sendApiError(reply, request, 500, 'Internal Server Error', err.message, {
+          code: 'TEST_DELIVERY_FAILED',
+        });
       }
-    }
+    },
   );
 
   // 8. POST /api/vsaas/v1/webhooks/events — Publish event (domain event emission)
@@ -254,9 +294,16 @@ export const webhookRoutes: FastifyPluginAsync = async (fastify) => {
     };
 
     if (!body || !body.eventType || !body.payload) {
-      return sendApiError(reply, request, 400, 'Bad Request', 'Missing required eventType or payload.', {
-        code: 'INVALID_EVENT_BODY',
-      });
+      return sendApiError(
+        reply,
+        request,
+        400,
+        'Bad Request',
+        'Missing required eventType or payload.',
+        {
+          code: 'INVALID_EVENT_BODY',
+        },
+      );
     }
 
     try {
@@ -270,12 +317,17 @@ export const webhookRoutes: FastifyPluginAsync = async (fastify) => {
 
       return sendSaasSuccess(reply, request, result, result.deduplicated ? 200 : 201);
     } catch (err: any) {
-      if (err.message?.includes('VALIDATION_ERROR') || err.message?.includes('UNRECOGNIZED_PAYLOAD_FIELD')) {
+      if (
+        err.message?.includes('VALIDATION_ERROR') ||
+        err.message?.includes('UNRECOGNIZED_PAYLOAD_FIELD')
+      ) {
         return sendApiError(reply, request, 422, 'Unprocessable Entity', err.message, {
           code: 'PAYLOAD_VALIDATION_FAILED',
         });
       }
-      return sendApiError(reply, request, 400, 'Bad Request', err.message, { code: 'EVENT_PUBLISH_FAILED' });
+      return sendApiError(reply, request, 400, 'Bad Request', err.message, {
+        code: 'EVENT_PUBLISH_FAILED',
+      });
     }
   });
 };

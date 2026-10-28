@@ -52,7 +52,7 @@ export default function ConversationThreadScreen() {
   const isPending = conv?.status === 'pending';
   const otherUser = conv?.otherUser || {
     id: conv?.participant_two || '',
-    displayName: 'Kshetra User',
+    displayName: 'Poligram User',
     role: 'citizen',
     isVerified: false,
   };
@@ -138,7 +138,7 @@ export default function ConversationThreadScreen() {
     setReportModalVisible(false);
     Alert.alert(
       t('messages.reportedTitle', { defaultValue: 'Report Submitted' }),
-      t('messages.reportedDesc', { defaultValue: 'Thank you for keeping Kshetra safe. The user has been blocked and flagged to our Trust & Safety queue.' }),
+      t('messages.reportedDesc', { defaultValue: 'Thank you for keeping Poligram safe. The user has been blocked and flagged to our Trust & Safety queue.' }),
       [{ text: t('common.ok', { defaultValue: 'OK' }), onPress: () => router.back() }],
     );
   };

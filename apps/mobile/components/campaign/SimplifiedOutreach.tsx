@@ -74,7 +74,7 @@ export default function SimplifiedOutreach() {
     const text = `🚩 ${t('campaignManager.namasteVoter', { defaultValue: 'Namaste! Greetings from your candidate.' })}\n\n` +
       `"Together for progress and integrity in our constituency."\n\n` +
       `📌 ${t('campaignManager.manifestoHighlight', { defaultValue: 'Our 3 Core Pledges: 24x7 Clean Drinking Water, Youth Employment Coaching, Ward Drainage Overhaul.' })}\n\n` +
-      `📲 Join our volunteer network on Kshetra: https://kshetra.app/campaign/c1`;
+      `📲 Join our volunteer network on Poligram: https://kshetra.app/campaign/c1`;
 
     try {
       const whatsappUrl = `whatsapp://send?text=${encodeURIComponent(text)}`;

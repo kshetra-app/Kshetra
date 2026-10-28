@@ -77,7 +77,8 @@ describe('SpatialRuntimeService & Routes Unit Tests (W016)', () => {
         gte: jest.fn().mockReturnThis(),
         lte: jest.fn().mockReturnThis(),
         or: jest.fn().mockReturnThis(),
-        then: (resolve: any) => Promise.resolve({ data: [mockFeatureRow], error: null }).then(resolve),
+        then: (resolve: any) =>
+          Promise.resolve({ data: [mockFeatureRow], error: null }).then(resolve),
       };
       return mockQueryBuilder;
     });
@@ -135,7 +136,7 @@ describe('SpatialRuntimeService & Routes Unit Tests (W016)', () => {
         ],
         10,
         500,
-        500
+        500,
       );
 
       expect(Buffer.isBuffer(buf)).toBe(true);
@@ -260,29 +261,31 @@ describe('SpatialRuntimeService & Routes Unit Tests (W016)', () => {
     });
 
     it('locatePoint finds feature containing coordinates', async () => {
-      jest.spyOn(spatialRuntimeService, 'selectGenericSpatialFeatures').mockImplementation(async (opts: any) => {
-        if (opts.point && opts.point.lat === 17.35) {
-          return [
-            {
-              geometry: mockFeatureRow.geometry,
-              properties: {
-                entity_id: null,
-                version_id: mockFeatureRow.mandal_version_id,
-                geometry_id: mockFeatureRow.id,
-                source_feature_id: mockFeatureRow.source_feature_id,
-                entity_type: mockFeatureRow.entity_type,
-                status: mockFeatureRow.status,
-                is_current: mockFeatureRow.is_current,
-                temporal_classification: mockFeatureRow.temporal_classification,
-                authority_classification: mockFeatureRow.authority_classification,
-                valid_from: mockFeatureRow.valid_from,
-                valid_to: mockFeatureRow.valid_to,
+      jest
+        .spyOn(spatialRuntimeService, 'selectGenericSpatialFeatures')
+        .mockImplementation(async (opts: any) => {
+          if (opts.point && opts.point.lat === 17.35) {
+            return [
+              {
+                geometry: mockFeatureRow.geometry,
+                properties: {
+                  entity_id: null,
+                  version_id: mockFeatureRow.mandal_version_id,
+                  geometry_id: mockFeatureRow.id,
+                  source_feature_id: mockFeatureRow.source_feature_id,
+                  entity_type: mockFeatureRow.entity_type,
+                  status: mockFeatureRow.status,
+                  is_current: mockFeatureRow.is_current,
+                  temporal_classification: mockFeatureRow.temporal_classification,
+                  authority_classification: mockFeatureRow.authority_classification,
+                  valid_from: mockFeatureRow.valid_from,
+                  valid_to: mockFeatureRow.valid_to,
+                },
               },
-            },
-          ];
-        }
-        return [];
-      });
+            ];
+          }
+          return [];
+        });
 
       const found = await spatialRuntimeService.locatePoint({
         lat: 17.35,
@@ -478,7 +481,10 @@ describe('SpatialRuntimeService & Routes Unit Tests (W016)', () => {
               [78.4, 17.3], // closed ring
             ],
             // degenerate ring with < 3 points
-            [[78.4, 17.3], [78.5, 17.3]],
+            [
+              [78.4, 17.3],
+              [78.5, 17.3],
+            ],
           ],
         ],
       };
@@ -521,7 +527,8 @@ describe('SpatialRuntimeService & Routes Unit Tests (W016)', () => {
         lte: jest.fn().mockReturnThis(),
         or: jest.fn().mockReturnThis(),
         filter: jest.fn().mockReturnThis(),
-        then: (resolve: any) => Promise.resolve({ data: [mockFeatureRow], error: null }).then(resolve),
+        then: (resolve: any) =>
+          Promise.resolve({ data: [mockFeatureRow], error: null }).then(resolve),
       };
       jest.spyOn(supabase, 'from').mockReturnValue(mockQuery);
 
@@ -548,7 +555,8 @@ describe('SpatialRuntimeService & Routes Unit Tests (W016)', () => {
         eq: jest.fn().mockReturnThis(),
         or: jest.fn().mockReturnThis(),
         filter: jest.fn().mockReturnThis(),
-        then: (resolve: any) => Promise.resolve({ data: [mockFeatureRow], error: null }).then(resolve),
+        then: (resolve: any) =>
+          Promise.resolve({ data: [mockFeatureRow], error: null }).then(resolve),
       };
       jest.spyOn(supabase, 'from').mockReturnValue(mockQuery);
 
@@ -566,7 +574,8 @@ describe('SpatialRuntimeService & Routes Unit Tests (W016)', () => {
         select: jest.fn().mockReturnThis(),
         eq: jest.fn().mockReturnThis(),
         or: jest.fn().mockReturnThis(),
-        then: (resolve: any) => Promise.resolve({ data: null, error: { message: 'DB crash' } }).then(resolve),
+        then: (resolve: any) =>
+          Promise.resolve({ data: null, error: { message: 'DB crash' } }).then(resolve),
       };
       jest.spyOn(supabase, 'from').mockReturnValue(mockQueryErr);
 
@@ -598,7 +607,8 @@ describe('SpatialRuntimeService & Routes Unit Tests (W016)', () => {
         eq: jest.fn().mockReturnThis(),
         or: jest.fn().mockReturnThis(),
         filter: jest.fn().mockReturnThis(),
-        then: (resolve: any) => Promise.resolve({ data: [mockFeatureRow], error: null }).then(resolve),
+        then: (resolve: any) =>
+          Promise.resolve({ data: [mockFeatureRow], error: null }).then(resolve),
       };
       jest.spyOn(supabase, 'from').mockReturnValue(mockQuery);
 
@@ -621,7 +631,9 @@ describe('SpatialRuntimeService & Routes Unit Tests (W016)', () => {
       expect(nonMatched.length).toBe(0);
 
       // RPC error
-      jest.spyOn(supabase, 'rpc').mockResolvedValueOnce({ data: null, error: { message: 'RPC failure' } } as any);
+      jest
+        .spyOn(supabase, 'rpc')
+        .mockResolvedValueOnce({ data: null, error: { message: 'RPC failure' } } as any);
       const rpcErrFeatures = await spatialRuntimeService.selectGenericSpatialFeatures({
         entityType: 'mandal',
         point: { lng: 78.45, lat: 17.35 },
@@ -673,17 +685,17 @@ describe('SpatialRuntimeService & Routes Unit Tests (W016)', () => {
 
     it('exercises locatePoint invalid coordinates, empty features, and bypassAdapter', async () => {
       // Invalid lat/lng
-      await expect(
-        spatialRuntimeService.locatePoint({ lat: 100, lng: 78 }),
-      ).rejects.toThrow('INVALID_COORDINATES');
+      await expect(spatialRuntimeService.locatePoint({ lat: 100, lng: 78 })).rejects.toThrow(
+        'INVALID_COORDINATES',
+      );
 
-      await expect(
-        spatialRuntimeService.locatePoint({ lat: 17, lng: 200 }),
-      ).rejects.toThrow('INVALID_COORDINATES');
+      await expect(spatialRuntimeService.locatePoint({ lat: 17, lng: 200 })).rejects.toThrow(
+        'INVALID_COORDINATES',
+      );
 
-      await expect(
-        spatialRuntimeService.locatePoint({ lat: NaN, lng: 78 }),
-      ).rejects.toThrow('INVALID_COORDINATES');
+      await expect(spatialRuntimeService.locatePoint({ lat: NaN, lng: 78 })).rejects.toThrow(
+        'INVALID_COORDINATES',
+      );
 
       // Empty features
       jest.spyOn(spatialRuntimeService, 'selectGenericSpatialFeatures').mockResolvedValueOnce([]);

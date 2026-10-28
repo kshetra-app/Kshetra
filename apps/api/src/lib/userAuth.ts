@@ -16,7 +16,7 @@ export interface AuthenticatedUser {
 
 export type TestTokenValidator = (
   token: string,
-  request: FastifyRequest
+  request: FastifyRequest,
 ) => Promise<{ id: string; role?: string } | null> | { id: string; role?: string } | null;
 
 let customTestTokenValidator: TestTokenValidator | null = null;
@@ -37,9 +37,8 @@ export const VALID_ROLES = new Set([
  * Unknown or malformed roles fail closed to 'citizen'.
  */
 export function extractAuthoritativeRole(user: any): string {
-  const roleCandidate = typeof user?.app_metadata?.role === 'string'
-    ? user.app_metadata.role.trim().toLowerCase()
-    : '';
+  const roleCandidate =
+    typeof user?.app_metadata?.role === 'string' ? user.app_metadata.role.trim().toLowerCase() : '';
   return VALID_ROLES.has(roleCandidate) ? roleCandidate : 'citizen';
 }
 
@@ -50,7 +49,9 @@ export function extractAuthoritativeRole(user: any): string {
 export function setTestTokenValidator(validator: TestTokenValidator | null): void {
   if (validator !== null) {
     if (process.env.NODE_ENV !== 'test' || process.env.TEST_HARNESS_ACTIVE !== 'true') {
-      throw new Error('SECURITY VIOLATION: Test token validator can only be registered when NODE_ENV === "test" and TEST_HARNESS_ACTIVE === "true".');
+      throw new Error(
+        'SECURITY VIOLATION: Test token validator can only be registered when NODE_ENV === "test" and TEST_HARNESS_ACTIVE === "true".',
+      );
     }
   }
   customTestTokenValidator = validator;
@@ -62,7 +63,7 @@ export function setTestTokenValidator(validator: TestTokenValidator | null): voi
  */
 export async function resolveAuthenticatedUser(
   request: FastifyRequest,
-  reply: FastifyReply
+  reply: FastifyReply,
 ): Promise<AuthenticatedUser | null> {
   const authHeader = request.headers.authorization;
 
@@ -70,7 +71,10 @@ export async function resolveAuthenticatedUser(
     // In non-production test/development environments, resolve authenticated identity if x-user-id is explicitly passed
     if (process.env.NODE_ENV !== 'production' && request.headers['x-user-id']) {
       const userId = String(request.headers['x-user-id']).trim();
-      const testRole = (request.headers['x-test-role'] as string) || (request.headers['x-user-role'] as string) || 'citizen';
+      const testRole =
+        (request.headers['x-test-role'] as string) ||
+        (request.headers['x-user-role'] as string) ||
+        'citizen';
       const roleCandidate = testRole.trim().toLowerCase();
       const role = VALID_ROLES.has(roleCandidate) ? roleCandidate : 'citizen';
       return {
@@ -79,16 +83,30 @@ export async function resolveAuthenticatedUser(
       };
     }
 
-    sendApiError(reply, request, 401, 'Unauthorized', 'Authentication required: missing or malformed Bearer token', {
-      code: 'UNAUTHORIZED',
-    });
+    sendApiError(
+      reply,
+      request,
+      401,
+      'Unauthorized',
+      'Authentication required: missing or malformed Bearer token',
+      {
+        code: 'UNAUTHORIZED',
+      },
+    );
     return null;
   }
 
   if (!authHeader.startsWith('Bearer ')) {
-    sendApiError(reply, request, 401, 'Unauthorized', 'Authentication required: missing or malformed Bearer token', {
-      code: 'UNAUTHORIZED',
-    });
+    sendApiError(
+      reply,
+      request,
+      401,
+      'Unauthorized',
+      'Authentication required: missing or malformed Bearer token',
+      {
+        code: 'UNAUTHORIZED',
+      },
+    );
     return null;
   }
 
@@ -101,13 +119,24 @@ export async function resolveAuthenticatedUser(
   }
 
   // 1. Isolated test token validator (strictly active only when registered in isolated test harness)
-  if (customTestTokenValidator && process.env.NODE_ENV === 'test' && process.env.TEST_HARNESS_ACTIVE === 'true') {
+  if (
+    customTestTokenValidator &&
+    process.env.NODE_ENV === 'test' &&
+    process.env.TEST_HARNESS_ACTIVE === 'true'
+  ) {
     try {
       const validated = await customTestTokenValidator(token, request);
       if (!validated) {
-        sendApiError(reply, request, 401, 'Unauthorized', 'Invalid or expired authorization token', {
-          code: 'UNAUTHORIZED',
-        });
+        sendApiError(
+          reply,
+          request,
+          401,
+          'Unauthorized',
+          'Invalid or expired authorization token',
+          {
+            code: 'UNAUTHORIZED',
+          },
+        );
         return null;
       }
       const rawRole = typeof validated.role === 'string' ? validated.role.trim().toLowerCase() : '';
@@ -117,18 +146,32 @@ export async function resolveAuthenticatedUser(
         role: sanitizedRole,
       };
     } catch (err: any) {
-      sendApiError(reply, request, 500, 'Internal Server Error', 'Authentication validation failure', {
-        code: 'AUTH_ERROR',
-      });
+      sendApiError(
+        reply,
+        request,
+        500,
+        'Internal Server Error',
+        'Authentication validation failure',
+        {
+          code: 'AUTH_ERROR',
+        },
+      );
       return null;
     }
   }
 
   // 2. Production-capable provider validation via Supabase Auth
   if (!isSupabaseConfigured) {
-    sendApiError(reply, request, 503, 'Service Unavailable', 'Authentication provider is unconfigured or unavailable', {
-      code: 'AUTH_PROVIDER_UNAVAILABLE',
-    });
+    sendApiError(
+      reply,
+      request,
+      503,
+      'Service Unavailable',
+      'Authentication provider is unconfigured or unavailable',
+      {
+        code: 'AUTH_PROVIDER_UNAVAILABLE',
+      },
+    );
     return null;
   }
 
@@ -148,9 +191,16 @@ export async function resolveAuthenticatedUser(
       role,
     };
   } catch (err: any) {
-    sendApiError(reply, request, 500, 'Internal Server Error', 'Authentication service unavailable', {
-      code: 'AUTH_ERROR',
-    });
+    sendApiError(
+      reply,
+      request,
+      500,
+      'Internal Server Error',
+      'Authentication service unavailable',
+      {
+        code: 'AUTH_ERROR',
+      },
+    );
     return null;
   }
 }
@@ -164,7 +214,7 @@ export function assertActingUserMatch(
   request: FastifyRequest,
   authenticatedUserId: string,
   suppliedUserId: string | undefined,
-  fieldLabel: string = 'userId'
+  fieldLabel: string = 'userId',
 ): boolean {
   if (suppliedUserId && suppliedUserId !== authenticatedUserId) {
     sendApiError(
@@ -173,7 +223,7 @@ export function assertActingUserMatch(
       403,
       'Forbidden',
       `Identity spoofing rejected: supplied ${fieldLabel} does not match authenticated user`,
-      { code: 'FORBIDDEN' }
+      { code: 'FORBIDDEN' },
     );
     return false;
   }

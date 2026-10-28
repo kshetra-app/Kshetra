@@ -45,12 +45,32 @@ export class SaasRateLimiter {
   /**
    * Helper to return UTC start of current month and current hour bucket.
    */
-  public getUtcTimeWindows(): { monthStart: Date; nextMonthStart: Date; currentHourBucket: Date; secondsUntilMonthReset: number } {
+  public getUtcTimeWindows(): {
+    monthStart: Date;
+    nextMonthStart: Date;
+    currentHourBucket: Date;
+    secondsUntilMonthReset: number;
+  } {
     const now = new Date();
     const monthStart = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1, 0, 0, 0, 0));
-    const nextMonthStart = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() + 1, 1, 0, 0, 0, 0));
-    const currentHourBucket = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), now.getUTCHours(), 0, 0, 0));
-    const secondsUntilMonthReset = Math.max(1, Math.ceil((nextMonthStart.getTime() - now.getTime()) / 1000));
+    const nextMonthStart = new Date(
+      Date.UTC(now.getUTCFullYear(), now.getUTCMonth() + 1, 1, 0, 0, 0, 0),
+    );
+    const currentHourBucket = new Date(
+      Date.UTC(
+        now.getUTCFullYear(),
+        now.getUTCMonth(),
+        now.getUTCDate(),
+        now.getUTCHours(),
+        0,
+        0,
+        0,
+      ),
+    );
+    const secondsUntilMonthReset = Math.max(
+      1,
+      Math.ceil((nextMonthStart.getTime() - now.getTime()) / 1000),
+    );
 
     return {
       monthStart,
@@ -64,7 +84,10 @@ export class SaasRateLimiter {
    * Layer 1: In-Memory Minute Burst Check.
    * Clamps microbursts with sub-millisecond overhead.
    */
-  public checkMinuteBurst(tenantId: string, tier: SaasTenantTier): { allowed: boolean; remaining: number; resetSeconds: number; limit: number } {
+  public checkMinuteBurst(
+    tenantId: string,
+    tier: SaasTenantTier,
+  ): { allowed: boolean; remaining: number; resetSeconds: number; limit: number } {
     const limits: SaasTierRateLimits = SAAS_TIER_LIMITS[tier] || SAAS_TIER_LIMITS.free;
     const now = Date.now();
 
@@ -107,10 +130,7 @@ export class SaasRateLimiter {
    * Layer 2: Authoritative Monthly Usage Lookup from public.saas_usage_ledger.
    * Sums request_count for the tenant for all hour_bucket >= start of current UTC month.
    */
-  public async getDurableMonthlyUsage(
-    tenantId: string,
-    client: any = supabase
-  ): Promise<number> {
+  public async getDurableMonthlyUsage(tenantId: string, client: any = supabase): Promise<number> {
     const { monthStart } = this.getUtcTimeWindows();
 
     const { data, error } = await client
@@ -129,7 +149,7 @@ export class SaasRateLimiter {
 
     return (data as Array<{ request_count: number }>).reduce(
       (sum, row) => sum + (Number(row.request_count) || 0),
-      0
+      0,
     );
   }
 
@@ -140,7 +160,7 @@ export class SaasRateLimiter {
    */
   public async checkAndRecordDurableUsage(
     params: UsageIncrementParams,
-    client: any = supabase
+    client: any = supabase,
   ): Promise<UsageIncrementResult> {
     const { tenantId, apiKeyId, tier } = params;
     const limits = SAAS_TIER_LIMITS[tier] || SAAS_TIER_LIMITS.free;
@@ -220,15 +240,13 @@ export class SaasRateLimiter {
         throw new Error(`Failed to update usage ledger: ${updateError.message}`);
       }
     } else {
-      const { error: insertError } = await client
-        .from('saas_usage_ledger')
-        .insert({
-          tenant_id: tenantId,
-          api_key_id: apiKeyId || null,
-          hour_bucket: hourBucketIso,
-          request_count: 1,
-          error_count: 0,
-        });
+      const { error: insertError } = await client.from('saas_usage_ledger').insert({
+        tenant_id: tenantId,
+        api_key_id: apiKeyId || null,
+        hour_bucket: hourBucketIso,
+        request_count: 1,
+        error_count: 0,
+      });
 
       if (insertError) {
         if (insertError.code === '23505') {

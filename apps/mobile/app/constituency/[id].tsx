@@ -182,7 +182,7 @@ export default function ConstituencyDetailScreen() {
   const civicToggleFollow = useCivicStore((s) => s.toggleFollow);
   const civicShareIssue = (issueId: string) => {
     const iss = civicIssues.find((i) => i.id === issueId);
-    return iss ? `${iss.title}\n\n— via Kshetra` : '';
+    return iss ? `${iss.title}\n\n— via Poligram` : '';
   };
 
   // Feed store for community posts & polls
@@ -325,7 +325,7 @@ export default function ConstituencyDetailScreen() {
                 onPress={async () => {
                   try {
                     await Share.share({
-                      message: `${effectiveConstituencyName} (AC #${acNo})\n${effectiveDistrict} District · ${effectiveReservation}\nWinner: ${effectiveWinnerName} (${effectiveWinnerParty})\nMargin: ${effectiveMargin != null ? effectiveMargin.toLocaleString() + ' votes' : 'Not Reported'}\n\nExplore more on Kshetra`,
+                      message: `${effectiveConstituencyName} (AC #${acNo})\n${effectiveDistrict} District · ${effectiveReservation}\nWinner: ${effectiveWinnerName} (${effectiveWinnerParty})\nMargin: ${effectiveMargin != null ? effectiveMargin.toLocaleString() + ' votes' : 'Not Reported'}\n\nExplore more on Poligram`,
                     });
                   } catch (_) {}
                 }}
@@ -709,7 +709,7 @@ export default function ConstituencyDetailScreen() {
                       onShare={async () => {
                         try {
                           await Share.share({
-                            message: `${post.content.slice(0, 200)}${post.content.length > 200 ? '...' : ''}\n\n— via Kshetra`,
+                            message: `${post.content.slice(0, 200)}${post.content.length > 200 ? '...' : ''}\n\n— via Poligram`,
                           });
                         } catch (_) {}
                       }}

@@ -168,14 +168,12 @@ export async function creditWallet(
 
   if (isSupabaseConfigured) {
     try {
-      await supabase
-        .from('campaign_wallets')
-        .upsert({
-          politician_id: politicianId,
-          balance_inr: newBalance,
-          total_recharged_inr: newRecharged,
-          updated_at: nowIso,
-        });
+      await supabase.from('campaign_wallets').upsert({
+        politician_id: politicianId,
+        balance_inr: newBalance,
+        total_recharged_inr: newRecharged,
+        updated_at: nowIso,
+      });
 
       await supabase.from('wallet_transactions').insert({
         wallet_id: wallet.id,

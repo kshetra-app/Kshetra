@@ -132,7 +132,11 @@ describe('TICKET 3.5 & 3.2: Direct Message Tiered Rate Limiting & Anti-Abuse', (
             select: () => ({
               eq: () => ({
                 maybeSingle: async () => ({
-                  data: { role: 'citizen', verification_status: 'unverified', created_at: new Date().toISOString() },
+                  data: {
+                    role: 'citizen',
+                    verification_status: 'unverified',
+                    created_at: new Date().toISOString(),
+                  },
                   error: null,
                 }),
               }),

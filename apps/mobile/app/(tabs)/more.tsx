@@ -45,7 +45,7 @@ export default function MoreScreen() {
     { label: t('more.tiles.campaignManager', { defaultValue: 'Campaign Manager' }), icon: 'megaphone', color: colors.primary, route: '/campaign-manager' },
     { label: t('more.tiles.candidateXRay', { defaultValue: 'Candidate X-Ray' }), icon: 'scan', color: colors.teal, route: '/candidate-xray' },
     { label: t('more.tiles.leadershipAcademy', { defaultValue: 'Leadership Academy' }), icon: 'school', color: colors.gold, route: '/leadership-academy' },
-    { label: t('more.tiles.kshetraLive', { defaultValue: 'Kshetra Live' }), icon: 'videocam', color: colors.primary, route: '/live' },
+    { label: t('more.tiles.kshetraLive', { defaultValue: 'Poligram Live' }), icon: 'videocam', color: colors.primary, route: '/live' },
   ];
 
   const account: Tile[] = [

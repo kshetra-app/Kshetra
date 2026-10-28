@@ -67,7 +67,11 @@ class MetricsCollector {
     }
   }
 
-  recordDatabaseCheck(success: boolean, durationMs: number, status: 'healthy' | 'degraded' | 'unreachable' | 'unconfigured'): void {
+  recordDatabaseCheck(
+    success: boolean,
+    durationMs: number,
+    status: 'healthy' | 'degraded' | 'unreachable' | 'unconfigured',
+  ): void {
     this.dbQueries++;
     if (!success) {
       this.dbFailures++;
@@ -82,14 +86,14 @@ class MetricsCollector {
     const sorted = [...this.latencies].sort((a, b) => a - b);
     const count = sorted.length;
 
-    const p50 = count > 0 ? sorted[Math.floor(count * 0.50)] : 0;
-    const p90 = count > 0 ? sorted[Math.floor(count * 0.90)] : 0;
+    const p50 = count > 0 ? sorted[Math.floor(count * 0.5)] : 0;
+    const p90 = count > 0 ? sorted[Math.floor(count * 0.9)] : 0;
     const p99 = count > 0 ? sorted[Math.floor(count * 0.99)] : 0;
-    const avg = count > 0 ? Number((sorted.reduce((acc, curr) => acc + curr, 0) / count).toFixed(2)) : 0;
+    const avg =
+      count > 0 ? Number((sorted.reduce((acc, curr) => acc + curr, 0) / count).toFixed(2)) : 0;
 
-    const dbAvg = this.dbQueries > 0
-      ? Number((this.dbTotalDurationMs / this.dbQueries).toFixed(2))
-      : 0;
+    const dbAvg =
+      this.dbQueries > 0 ? Number((this.dbTotalDurationMs / this.dbQueries).toFixed(2)) : 0;
 
     return {
       uptimeSeconds: Math.floor(process.uptime()),

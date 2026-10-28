@@ -6,9 +6,7 @@ import {
   TELANGANA_CONSTITUENCIES,
   type ConstituencySeed,
 } from '../../../../data/seed/telangana-constituencies';
-import {
-  TELANGANA_ELECTION_HISTORY,
-} from '../../../../data/seed/telangana-election-history';
+import { TELANGANA_ELECTION_HISTORY } from '../../../../data/seed/telangana-election-history';
 import {
   TELANGANA_MLA_PROFILES,
   getMLAProfile,
@@ -62,10 +60,7 @@ function seedToRecord(c: ConstituencySeed): ConstituencyRecord {
 let _geojson: GeoJSON.FeatureCollection | null = null;
 function getGeoJSON(): GeoJSON.FeatureCollection {
   if (!_geojson) {
-    const filePath = path.resolve(
-      __dirname,
-      '../../../../data/geo/telangana-assembly.geojson',
-    );
+    const filePath = path.resolve(__dirname, '../../../../data/geo/telangana-assembly.geojson');
     _geojson = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
   }
   return _geojson!;
@@ -85,7 +80,16 @@ const constituencyBriefSchema = {
     currentParty: { type: 'string' },
     currentMLA: { type: 'string' },
   },
-  required: ['id', 'name', 'acNo', 'stateCode', 'district', 'reservationStatus', 'currentParty', 'currentMLA'],
+  required: [
+    'id',
+    'name',
+    'acNo',
+    'stateCode',
+    'district',
+    'reservationStatus',
+    'currentParty',
+    'currentMLA',
+  ],
 };
 
 const listConstituenciesSchema = {
@@ -177,7 +181,16 @@ const getConstituencyDetailSchema = {
           required: ['winner', 'winnerName', 'winnerVotes', 'runnerUp', 'margin', 'marginPercent'],
         },
       },
-      required: ['id', 'name', 'acNo', 'stateCode', 'district', 'reservationStatus', 'currentParty', 'currentMLA'],
+      required: [
+        'id',
+        'name',
+        'acNo',
+        'stateCode',
+        'district',
+        'reservationStatus',
+        'currentParty',
+        'currentMLA',
+      ],
     },
   },
 };
@@ -290,7 +303,15 @@ const analyticsSchema = {
           required: ['closest', 'biggest'],
         },
       },
-      required: ['state', 'totalConstituencies', 'totalDistricts', 'partySummary', 'districts', 'reservationCounts', 'margins'],
+      required: [
+        'state',
+        'totalConstituencies',
+        'totalDistricts',
+        'partySummary',
+        'districts',
+        'reservationCounts',
+        'margins',
+      ],
     },
   },
 };
@@ -381,10 +402,7 @@ const locateSchema = {
         latitude: { type: 'number' },
         longitude: { type: 'number' },
         constituency: {
-          anyOf: [
-            constituencyBriefSchema,
-            { type: 'null' },
-          ],
+          anyOf: [constituencyBriefSchema, { type: 'null' }],
         },
         message: { type: 'string' },
       },
@@ -395,45 +413,66 @@ const locateSchema = {
 
 export async function constituencyRoutes(app: FastifyInstance) {
   /** 1. GET /states/:stateCode/constituencies */
-  app.get('/states/:stateCode/constituencies', {
-    schema: listConstituenciesSchema,
-  }, async (request, reply) => {
-    const { stateCode } = request.params as { stateCode: string };
-    const code = stateCode.toUpperCase();
+  app.get(
+    '/states/:stateCode/constituencies',
+    {
+      schema: listConstituenciesSchema,
+    },
+    async (request, reply) => {
+      const { stateCode } = request.params as { stateCode: string };
+      const code = stateCode.toUpperCase();
 
-    // Strangler pattern: Query canonical geography when Supabase is configured (fail-closed on error)
-    if (isSupabaseConfigured) {
-      try {
-        const dbConstituencies = await canonicalGeographyService.getConstituencies(code);
-        if (dbConstituencies && dbConstituencies.length > 0) {
-          return {
-            state: code,
-            count: dbConstituencies.length,
-            data: dbConstituencies,
-          };
+      // Strangler pattern: Query canonical geography when Supabase is configured (fail-closed on error)
+      if (isSupabaseConfigured) {
+        try {
+          const dbConstituencies = await canonicalGeographyService.getConstituencies(code);
+          if (dbConstituencies && dbConstituencies.length > 0) {
+            return {
+              state: code,
+              count: dbConstituencies.length,
+              data: dbConstituencies,
+            };
+          }
+        } catch (err: any) {
+          app.log.error(
+            { err: err?.message, stateCode: code },
+            'Exception querying database for constituencies',
+          );
+          return sendApiError(
+            reply,
+            request,
+            500,
+            'Internal Server Error',
+            'Database error retrieving constituencies',
+            {
+              code: 'DATABASE_ERROR',
+            },
+          );
         }
-      } catch (err: any) {
-        app.log.error({ err: err?.message, stateCode: code }, 'Exception querying database for constituencies');
-        return sendApiError(reply, request, 500, 'Internal Server Error', 'Database error retrieving constituencies', {
-          code: 'DATABASE_ERROR',
-        });
       }
-    }
 
-    const data = getConstituencies(code);
+      const data = getConstituencies(code);
 
-    if (data.length === 0) {
-      return sendApiError(reply, request, 404, 'Not Found', `State ${code} has no constituency data available`, {
-        code: 'NOT_FOUND',
-      });
-    }
+      if (data.length === 0) {
+        return sendApiError(
+          reply,
+          request,
+          404,
+          'Not Found',
+          `State ${code} has no constituency data available`,
+          {
+            code: 'NOT_FOUND',
+          },
+        );
+      }
 
-    return {
-      state: code,
-      count: data.length,
-      data,
-    };
-  });
+      return {
+        state: code,
+        count: data.length,
+        data,
+      };
+    },
+  );
 
   /** 2. GET /states/:stateCode/constituencies/:constituencyId */
   app.get<{
@@ -488,10 +527,20 @@ export async function constituencyRoutes(app: FastifyInstance) {
             };
           }
         } catch (err: any) {
-          app.log.error({ err: err?.message, stateCode: code, acNo }, 'Exception querying database for constituency detail');
-          return sendApiError(reply, request, 500, 'Internal Server Error', 'Database error retrieving constituency detail', {
-            code: 'DATABASE_ERROR',
-          });
+          app.log.error(
+            { err: err?.message, stateCode: code, acNo },
+            'Exception querying database for constituency detail',
+          );
+          return sendApiError(
+            reply,
+            request,
+            500,
+            'Internal Server Error',
+            'Database error retrieving constituency detail',
+            {
+              code: 'DATABASE_ERROR',
+            },
+          );
         }
       }
 
@@ -504,9 +553,16 @@ export async function constituencyRoutes(app: FastifyInstance) {
           );
 
       if (!brief) {
-        return sendApiError(reply, request, 404, 'Not Found', `Constituency ${constituencyId} in ${code} not found`, {
-          code: 'NOT_FOUND',
-        });
+        return sendApiError(
+          reply,
+          request,
+          404,
+          'Not Found',
+          `Constituency ${constituencyId} in ${code} not found`,
+          {
+            code: 'NOT_FOUND',
+          },
+        );
       }
 
       const electionData = getConstituencyElectionData(code, brief.acNo);
@@ -556,228 +612,325 @@ export async function constituencyRoutes(app: FastifyInstance) {
       maxMargin?: string;
       sort?: 'name' | 'margin_asc' | 'margin_desc' | 'acNo';
     };
-  }>('/states/:stateCode/constituencies/search', {
-    schema: searchConstituenciesSchema,
-  }, async (request) => {
-    const { stateCode } = request.params;
-    const { q, party, district, type, minMargin, maxMargin, sort } = request.query;
-    const code = stateCode.toUpperCase();
-    let allBriefs = getConstituencies(code);
-    if (isSupabaseConfigured) {
-      try {
-        const dbAcs = await canonicalGeographyService.getConstituencies(code);
-        if (dbAcs && dbAcs.length > 0) {
-          allBriefs = dbAcs;
+  }>(
+    '/states/:stateCode/constituencies/search',
+    {
+      schema: searchConstituenciesSchema,
+    },
+    async (request) => {
+      const { stateCode } = request.params;
+      const { q, party, district, type, minMargin, maxMargin, sort } = request.query;
+      const code = stateCode.toUpperCase();
+      let allBriefs = getConstituencies(code);
+      if (isSupabaseConfigured) {
+        try {
+          const dbAcs = await canonicalGeographyService.getConstituencies(code);
+          if (dbAcs && dbAcs.length > 0) {
+            allBriefs = dbAcs;
+          }
+        } catch {
+          // Fall back to seed data
         }
-      } catch {
-        // Fall back to seed data
       }
-    }
 
-    if (allBriefs.length === 0) {
-      return { state: code, count: 0, data: [] };
-    }
+      if (allBriefs.length === 0) {
+        return { state: code, count: 0, data: [] };
+      }
 
-    let results = allBriefs;
+      let results = allBriefs;
 
-    if (q) {
-      const lower = q.toLowerCase();
-      results = results.filter(
-        (c) =>
-          c.name.toLowerCase().includes(lower) ||
-          c.district.toLowerCase().includes(lower) ||
-          c.currentMLA.toLowerCase().includes(lower) ||
-          c.id.toLowerCase().includes(lower) ||
-          String(c.acNo).includes(lower),
-      );
-    }
-    if (party) {
-      const p = party.toUpperCase();
-      results = results.filter((c) => c.currentParty.toUpperCase() === p);
-    }
-    if (district) {
-      const d = district.toLowerCase();
-      results = results.filter((c) => c.district.toLowerCase() === d);
-    }
-    if (type) {
-      const t = type.toUpperCase();
-      results = results.filter((c) => c.reservationStatus === t);
-    }
-    if (minMargin || maxMargin) {
-      const min = minMargin ? parseInt(minMargin, 10) : -Infinity;
-      const max = maxMargin ? parseInt(maxMargin, 10) : Infinity;
-      results = results.filter((c) => {
-        const raw = getRawConstituency(code, c.acNo);
-        const m = raw?.margin2025 ?? raw?.margin2024 ?? raw?.margin2023 ?? raw?.margin2022 ?? raw?.margin2021 ?? raw?.margin ?? 0;
-        return m >= min && m <= max;
-      });
-    }
-
-    const sorted = [...results];
-    switch (sort) {
-      case 'name':
-        sorted.sort((a, b) => a.name.localeCompare(b.name));
-        break;
-      case 'margin_asc':
-        sorted.sort((a, b) => {
-          const rawA = getRawConstituency(code, a.acNo);
-          const rawB = getRawConstituency(code, b.acNo);
-          const mA = rawA?.margin2025 ?? rawA?.margin2024 ?? rawA?.margin2023 ?? rawA?.margin2022 ?? rawA?.margin ?? 0;
-          const mB = rawB?.margin2025 ?? rawB?.margin2024 ?? rawB?.margin2023 ?? rawB?.margin2022 ?? rawB?.margin ?? 0;
-          return mA - mB;
+      if (q) {
+        const lower = q.toLowerCase();
+        results = results.filter(
+          (c) =>
+            c.name.toLowerCase().includes(lower) ||
+            c.district.toLowerCase().includes(lower) ||
+            c.currentMLA.toLowerCase().includes(lower) ||
+            c.id.toLowerCase().includes(lower) ||
+            String(c.acNo).includes(lower),
+        );
+      }
+      if (party) {
+        const p = party.toUpperCase();
+        results = results.filter((c) => c.currentParty.toUpperCase() === p);
+      }
+      if (district) {
+        const d = district.toLowerCase();
+        results = results.filter((c) => c.district.toLowerCase() === d);
+      }
+      if (type) {
+        const t = type.toUpperCase();
+        results = results.filter((c) => c.reservationStatus === t);
+      }
+      if (minMargin || maxMargin) {
+        const min = minMargin ? parseInt(minMargin, 10) : -Infinity;
+        const max = maxMargin ? parseInt(maxMargin, 10) : Infinity;
+        results = results.filter((c) => {
+          const raw = getRawConstituency(code, c.acNo);
+          const m =
+            raw?.margin2025 ??
+            raw?.margin2024 ??
+            raw?.margin2023 ??
+            raw?.margin2022 ??
+            raw?.margin2021 ??
+            raw?.margin ??
+            0;
+          return m >= min && m <= max;
         });
-        break;
-      case 'margin_desc':
-        sorted.sort((a, b) => {
-          const rawA = getRawConstituency(code, a.acNo);
-          const rawB = getRawConstituency(code, b.acNo);
-          const mA = rawA?.margin2025 ?? rawA?.margin2024 ?? rawA?.margin2023 ?? rawA?.margin2022 ?? rawA?.margin ?? 0;
-          const mB = rawB?.margin2025 ?? rawB?.margin2024 ?? rawB?.margin2023 ?? rawB?.margin2022 ?? rawB?.margin ?? 0;
-          return mB - mA;
-        });
-        break;
-      default:
-        sorted.sort((a, b) => a.acNo - b.acNo);
-    }
+      }
 
-    return {
-      state: code,
-      count: sorted.length,
-      data: sorted,
-    };
-  });
+      const sorted = [...results];
+      switch (sort) {
+        case 'name':
+          sorted.sort((a, b) => a.name.localeCompare(b.name));
+          break;
+        case 'margin_asc':
+          sorted.sort((a, b) => {
+            const rawA = getRawConstituency(code, a.acNo);
+            const rawB = getRawConstituency(code, b.acNo);
+            const mA =
+              rawA?.margin2025 ??
+              rawA?.margin2024 ??
+              rawA?.margin2023 ??
+              rawA?.margin2022 ??
+              rawA?.margin ??
+              0;
+            const mB =
+              rawB?.margin2025 ??
+              rawB?.margin2024 ??
+              rawB?.margin2023 ??
+              rawB?.margin2022 ??
+              rawB?.margin ??
+              0;
+            return mA - mB;
+          });
+          break;
+        case 'margin_desc':
+          sorted.sort((a, b) => {
+            const rawA = getRawConstituency(code, a.acNo);
+            const rawB = getRawConstituency(code, b.acNo);
+            const mA =
+              rawA?.margin2025 ??
+              rawA?.margin2024 ??
+              rawA?.margin2023 ??
+              rawA?.margin2022 ??
+              rawA?.margin ??
+              0;
+            const mB =
+              rawB?.margin2025 ??
+              rawB?.margin2024 ??
+              rawB?.margin2023 ??
+              rawB?.margin2022 ??
+              rawB?.margin ??
+              0;
+            return mB - mA;
+          });
+          break;
+        default:
+          sorted.sort((a, b) => a.acNo - b.acNo);
+      }
+
+      return {
+        state: code,
+        count: sorted.length,
+        data: sorted,
+      };
+    },
+  );
 
   /** 4. GET /states/:stateCode/analytics */
-  app.get<{ Params: { stateCode: string } }>('/states/:stateCode/analytics', {
-    schema: analyticsSchema,
-  }, async (request, reply) => {
-    const { stateCode } = request.params;
-    const code = stateCode.toUpperCase();
+  app.get<{ Params: { stateCode: string } }>(
+    '/states/:stateCode/analytics',
+    {
+      schema: analyticsSchema,
+    },
+    async (request, reply) => {
+      const { stateCode } = request.params;
+      const code = stateCode.toUpperCase();
 
-    if (code !== 'TS') {
-      return sendApiError(reply, request, 404, 'Not Found', `State ${stateCode} not supported yet`, {
-        code: 'NOT_FOUND',
-      });
-    }
+      if (code !== 'TS') {
+        return sendApiError(
+          reply,
+          request,
+          404,
+          'Not Found',
+          `State ${stateCode} not supported yet`,
+          {
+            code: 'NOT_FOUND',
+          },
+        );
+      }
 
-    const records = TELANGANA_CONSTITUENCIES.map(seedToRecord);
-    const analytics = computeElectionAnalytics(records);
+      const records = TELANGANA_CONSTITUENCIES.map(seedToRecord);
+      const analytics = computeElectionAnalytics(records);
 
-    return {
-      state: 'TS',
-      ...analytics,
-    };
-  });
+      return {
+        state: 'TS',
+        ...analytics,
+      };
+    },
+  );
 
   /** 5. GET /states/:stateCode/mla/:acNo */
   app.get<{
     Params: { stateCode: string; acNo: string };
-  }>('/states/:stateCode/mla/:acNo', {
-    schema: mlaProfileSchema,
-  }, async (request, reply) => {
-    const { stateCode, acNo } = request.params;
-    const code = stateCode.toUpperCase();
+  }>(
+    '/states/:stateCode/mla/:acNo',
+    {
+      schema: mlaProfileSchema,
+    },
+    async (request, reply) => {
+      const { stateCode, acNo } = request.params;
+      const code = stateCode.toUpperCase();
 
-    if (code !== 'TS') {
-      return sendApiError(reply, request, 404, 'Not Found', `State ${stateCode} not supported yet`, {
-        code: 'NOT_FOUND',
-      });
-    }
+      if (code !== 'TS') {
+        return sendApiError(
+          reply,
+          request,
+          404,
+          'Not Found',
+          `State ${stateCode} not supported yet`,
+          {
+            code: 'NOT_FOUND',
+          },
+        );
+      }
 
-    const num = parseInt(acNo, 10);
-    if (isNaN(num) || num < 1 || num > 119) {
-      return sendApiError(reply, request, 400, 'Bad Request', 'Invalid AC number', {
-        code: 'FST_ERR_VALIDATION',
-      });
-    }
+      const num = parseInt(acNo, 10);
+      if (isNaN(num) || num < 1 || num > 119) {
+        return sendApiError(reply, request, 400, 'Bad Request', 'Invalid AC number', {
+          code: 'FST_ERR_VALIDATION',
+        });
+      }
 
-    const profile = getMLAProfile(num);
-    if (!profile) {
-      return sendApiError(reply, request, 404, 'Not Found', `MLA profile for AC #${num} not available yet`, {
-        code: 'NOT_FOUND',
-      });
-    }
+      const profile = getMLAProfile(num);
+      if (!profile) {
+        return sendApiError(
+          reply,
+          request,
+          404,
+          'Not Found',
+          `MLA profile for AC #${num} not available yet`,
+          {
+            code: 'NOT_FOUND',
+          },
+        );
+      }
 
-    return { state: 'TS', acNo: num, profile };
-  });
+      return { state: 'TS', acNo: num, profile };
+    },
+  );
 
   /** 6. GET /states/:stateCode/mla */
-  app.get<{ Params: { stateCode: string } }>('/states/:stateCode/mla', {
-    schema: mlaListSchema,
-  }, async (request, reply) => {
-    const { stateCode } = request.params;
-    const code = stateCode.toUpperCase();
+  app.get<{ Params: { stateCode: string } }>(
+    '/states/:stateCode/mla',
+    {
+      schema: mlaListSchema,
+    },
+    async (request, reply) => {
+      const { stateCode } = request.params;
+      const code = stateCode.toUpperCase();
 
-    if (code !== 'TS') {
-      return sendApiError(reply, request, 404, 'Not Found', `State ${stateCode} not supported yet`, {
-        code: 'NOT_FOUND',
-      });
-    }
+      if (code !== 'TS') {
+        return sendApiError(
+          reply,
+          request,
+          404,
+          'Not Found',
+          `State ${stateCode} not supported yet`,
+          {
+            code: 'NOT_FOUND',
+          },
+        );
+      }
 
-    return {
-      state: 'TS',
-      count: TELANGANA_MLA_PROFILES.length,
-      profiles: TELANGANA_MLA_PROFILES,
-    };
-  });
+      return {
+        state: 'TS',
+        count: TELANGANA_MLA_PROFILES.length,
+        profiles: TELANGANA_MLA_PROFILES,
+      };
+    },
+  );
 
   /** 7. GET /states/:stateCode/elections */
-  app.get<{ Params: { stateCode: string } }>('/states/:stateCode/elections', {
-    schema: electionsSchema,
-  }, async (request, reply) => {
-    const { stateCode } = request.params;
-    const code = stateCode.toUpperCase();
+  app.get<{ Params: { stateCode: string } }>(
+    '/states/:stateCode/elections',
+    {
+      schema: electionsSchema,
+    },
+    async (request, reply) => {
+      const { stateCode } = request.params;
+      const code = stateCode.toUpperCase();
 
-    if (code !== 'TS') {
-      return sendApiError(reply, request, 404, 'Not Found', `State ${stateCode} not supported yet`, {
-        code: 'NOT_FOUND',
-      });
-    }
+      if (code !== 'TS') {
+        return sendApiError(
+          reply,
+          request,
+          404,
+          'Not Found',
+          `State ${stateCode} not supported yet`,
+          {
+            code: 'NOT_FOUND',
+          },
+        );
+      }
 
-    return {
-      state: 'TS',
-      count: TELANGANA_ELECTION_HISTORY.length,
-      elections: TELANGANA_ELECTION_HISTORY,
-    };
-  });
+      return {
+        state: 'TS',
+        count: TELANGANA_ELECTION_HISTORY.length,
+        elections: TELANGANA_ELECTION_HISTORY,
+      };
+    },
+  );
 
   /** 8. GET /constituencies/locate */
   app.get<{
     Querystring: { lat: string; lng: string };
-  }>('/constituencies/locate', {
-    schema: locateSchema,
-  }, async (request, reply) => {
-    const { lat, lng } = request.query;
+  }>(
+    '/constituencies/locate',
+    {
+      schema: locateSchema,
+    },
+    async (request, reply) => {
+      const { lat, lng } = request.query;
 
-    const latitude = parseFloat(lat);
-    const longitude = parseFloat(lng);
+      const latitude = parseFloat(lat);
+      const longitude = parseFloat(lng);
 
-    if (isNaN(latitude) || isNaN(longitude)) {
-      return sendApiError(reply, request, 400, 'Bad Request', 'lat and lng must be valid numbers', {
-        code: 'FST_ERR_VALIDATION',
-      });
-    }
+      if (isNaN(latitude) || isNaN(longitude)) {
+        return sendApiError(
+          reply,
+          request,
+          400,
+          'Bad Request',
+          'lat and lng must be valid numbers',
+          {
+            code: 'FST_ERR_VALIDATION',
+          },
+        );
+      }
 
-    const geojson = getGeoJSON();
-    const found = findConstituencyAtPoint(longitude, latitude, geojson);
+      const geojson = getGeoJSON();
+      const found = findConstituencyAtPoint(longitude, latitude, geojson);
 
-    if (!found) {
+      if (!found) {
+        return {
+          latitude,
+          longitude,
+          constituency: null,
+          message: 'No constituency found at this location',
+        };
+      }
+
+      const acNo = found.properties.AC_NO;
+      const seed = TELANGANA_CONSTITUENCIES.find((c) => c.acNo === acNo);
+
       return {
         latitude,
         longitude,
-        constituency: null,
-        message: 'No constituency found at this location',
+        constituency: seed ? seedToBrief(seed) : null,
+        message: 'Constituency located',
       };
-    }
-
-    const acNo = found.properties.AC_NO;
-    const seed = TELANGANA_CONSTITUENCIES.find((c) => c.acNo === acNo);
-
-    return {
-      latitude,
-      longitude,
-      constituency: seed ? seedToBrief(seed) : null,
-      message: 'Constituency located',
-    };
-  });
+    },
+  );
 }

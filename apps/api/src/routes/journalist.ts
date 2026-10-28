@@ -112,10 +112,17 @@ export async function journalistRoutes(app: FastifyInstance) {
     { schema: articleIdParamSchema },
     async (request, reply) => {
       const { id } = request.params;
-      return sendApiError(reply, request, 404, 'Not Found', `Article ${id} not found — connect to Supabase`, {
-        code: 'NOT_FOUND',
-      });
-    }
+      return sendApiError(
+        reply,
+        request,
+        404,
+        'Not Found',
+        `Article ${id} not found — connect to Supabase`,
+        {
+          code: 'NOT_FOUND',
+        },
+      );
+    },
   );
 
   /** 3. GET /api/v1/journalist/fact-checks — list fact checks */
@@ -158,12 +165,19 @@ export async function journalistRoutes(app: FastifyInstance) {
     async (request, reply) => {
       const { id } = request.params;
       if (id === 'missing') {
-        return sendApiError(reply, request, 404, 'Not Found', `Article ${id} not found — connect to Supabase`, {
-          code: 'NOT_FOUND',
-        });
+        return sendApiError(
+          reply,
+          request,
+          404,
+          'Not Found',
+          `Article ${id} not found — connect to Supabase`,
+          {
+            code: 'NOT_FOUND',
+          },
+        );
       }
       return { success: true, articleId: id, message: 'Article vouched' };
-    }
+    },
   );
 
   /** 7. POST /api/v1/journalist/articles/:id/flag — flag an article */
@@ -173,9 +187,16 @@ export async function journalistRoutes(app: FastifyInstance) {
   }>('/api/v1/journalist/articles/:id/flag', { schema: flagSchema }, async (request, reply) => {
     const { id } = request.params;
     if (id === 'missing') {
-      return sendApiError(reply, request, 404, 'Not Found', `Article ${id} not found — connect to Supabase`, {
-        code: 'NOT_FOUND',
-      });
+      return sendApiError(
+        reply,
+        request,
+        404,
+        'Not Found',
+        `Article ${id} not found — connect to Supabase`,
+        {
+          code: 'NOT_FOUND',
+        },
+      );
     }
     const { reason } = request.body;
     return { success: true, articleId: id, reason, message: 'Article flagged for review' };
@@ -188,9 +209,16 @@ export async function journalistRoutes(app: FastifyInstance) {
   }>('/api/v1/journalist/articles/:id/tip', { schema: tipSchema }, async (request, reply) => {
     const { id } = request.params;
     if (id === 'missing') {
-      return sendApiError(reply, request, 404, 'Not Found', `Article ${id} not found — connect to Supabase`, {
-        code: 'NOT_FOUND',
-      });
+      return sendApiError(
+        reply,
+        request,
+        404,
+        'Not Found',
+        `Article ${id} not found — connect to Supabase`,
+        {
+          code: 'NOT_FOUND',
+        },
+      );
     }
     const { amountINR } = request.body;
     return {

@@ -60,7 +60,10 @@ export interface IDelimitationWatchRepository {
   // Stage 5: Accepted Versions
   saveAcceptedVersion(version: DelimitationAcceptedVersion): Promise<void>;
   getAcceptedVersion(versionId: string): Promise<DelimitationAcceptedVersion | null>;
-  getAcceptedVersionByHash(sourceId: string, contentSha256: string): Promise<DelimitationAcceptedVersion | null>;
+  getAcceptedVersionByHash(
+    sourceId: string,
+    contentSha256: string,
+  ): Promise<DelimitationAcceptedVersion | null>;
   getLatestAcceptedVersionForSource(sourceId: string): Promise<DelimitationAcceptedVersion | null>;
   listAcceptedVersionsForSource(sourceId: string): Promise<DelimitationAcceptedVersion[]>;
 
@@ -176,7 +179,9 @@ export class InMemoryDelimitationWatchRepository implements IDelimitationWatchRe
   }
 
   async getValidationByCandidateId(candidateId: string): Promise<DelimitationValidation | null> {
-    const forCandidate = Array.from(this.validations.values()).find((v) => v.candidateId === candidateId);
+    const forCandidate = Array.from(this.validations.values()).find(
+      (v) => v.candidateId === candidateId,
+    );
     return forCandidate ? { ...forCandidate } : null;
   }
 
@@ -193,7 +198,9 @@ export class InMemoryDelimitationWatchRepository implements IDelimitationWatchRe
     // Unique check (sourceId, contentSha256)
     const existing = await this.getAcceptedVersionByHash(version.sourceId, version.contentSha256);
     if (existing && existing.id !== version.id) {
-      throw new Error(`UNIQUE_CONSTRAINT_VIOLATION: Version with hash ${version.contentSha256} already exists for source ${version.sourceId}`);
+      throw new Error(
+        `UNIQUE_CONSTRAINT_VIOLATION: Version with hash ${version.contentSha256} already exists for source ${version.sourceId}`,
+      );
     }
     this.acceptedVersions.set(version.id, { ...version });
   }
@@ -203,22 +210,31 @@ export class InMemoryDelimitationWatchRepository implements IDelimitationWatchRe
     return v ? { ...v } : null;
   }
 
-  async getAcceptedVersionByHash(sourceId: string, contentSha256: string): Promise<DelimitationAcceptedVersion | null> {
+  async getAcceptedVersionByHash(
+    sourceId: string,
+    contentSha256: string,
+  ): Promise<DelimitationAcceptedVersion | null> {
     const found = Array.from(this.acceptedVersions.values()).find(
       (v) => v.sourceId === sourceId && v.contentSha256 === contentSha256,
     );
     return found ? { ...found } : null;
   }
 
-  async getLatestAcceptedVersionForSource(sourceId: string): Promise<DelimitationAcceptedVersion | null> {
-    const forSource = Array.from(this.acceptedVersions.values()).filter((v) => v.sourceId === sourceId);
+  async getLatestAcceptedVersionForSource(
+    sourceId: string,
+  ): Promise<DelimitationAcceptedVersion | null> {
+    const forSource = Array.from(this.acceptedVersions.values()).filter(
+      (v) => v.sourceId === sourceId,
+    );
     if (forSource.length === 0) return null;
     forSource.sort((a, b) => new Date(b.acceptedAt).getTime() - new Date(a.acceptedAt).getTime());
     return { ...forSource[0] };
   }
 
   async listAcceptedVersionsForSource(sourceId: string): Promise<DelimitationAcceptedVersion[]> {
-    const forSource = Array.from(this.acceptedVersions.values()).filter((v) => v.sourceId === sourceId);
+    const forSource = Array.from(this.acceptedVersions.values()).filter(
+      (v) => v.sourceId === sourceId,
+    );
     forSource.sort((a, b) => new Date(b.acceptedAt).getTime() - new Date(a.acceptedAt).getTime());
     return forSource.map((v) => ({ ...v }));
   }
@@ -226,7 +242,9 @@ export class InMemoryDelimitationWatchRepository implements IDelimitationWatchRe
   async saveNotificationEvent(event: DelimitationNotificationEvent): Promise<void> {
     const existing = await this.getNotificationEventByDedupKey(event.deduplicationKey);
     if (existing && existing.id !== event.id) {
-      throw new Error(`UNIQUE_CONSTRAINT_VIOLATION: Event with deduplication key ${event.deduplicationKey} already exists`);
+      throw new Error(
+        `UNIQUE_CONSTRAINT_VIOLATION: Event with deduplication key ${event.deduplicationKey} already exists`,
+      );
     }
     this.notificationEvents.set(event.id, { ...event });
   }
@@ -236,8 +254,12 @@ export class InMemoryDelimitationWatchRepository implements IDelimitationWatchRe
     return e ? { ...e } : null;
   }
 
-  async getNotificationEventByDedupKey(dedupKey: string): Promise<DelimitationNotificationEvent | null> {
-    const found = Array.from(this.notificationEvents.values()).find((e) => e.deduplicationKey === dedupKey);
+  async getNotificationEventByDedupKey(
+    dedupKey: string,
+  ): Promise<DelimitationNotificationEvent | null> {
+    const found = Array.from(this.notificationEvents.values()).find(
+      (e) => e.deduplicationKey === dedupKey,
+    );
     return found ? { ...found } : null;
   }
 
@@ -261,7 +283,9 @@ export class InMemoryDelimitationWatchRepository implements IDelimitationWatchRe
   async savePublication(publication: DelimitationPublication): Promise<void> {
     const existing = await this.getPublicationByVersionId(publication.versionId);
     if (existing && existing.id !== publication.id) {
-      throw new Error(`UNIQUE_CONSTRAINT_VIOLATION: Publication already exists for version ${publication.versionId}`);
+      throw new Error(
+        `UNIQUE_CONSTRAINT_VIOLATION: Publication already exists for version ${publication.versionId}`,
+      );
     }
     this.publications.set(publication.id, { ...publication });
   }
@@ -410,7 +434,9 @@ export class PostgresDelimitationWatchRepository implements IDelimitationWatchRe
   }
 
   async getSource(sourceId: string): Promise<DelimitationWatchSource | null> {
-    const res = await this.db.query(`SELECT * FROM delimitation_watch_sources WHERE id = $1`, [sourceId]);
+    const res = await this.db.query(`SELECT * FROM delimitation_watch_sources WHERE id = $1`, [
+      sourceId,
+    ]);
     if (res.rows.length === 0) return null;
     return this.mapSourceRow(res.rows[0]);
   }
@@ -488,7 +514,9 @@ export class PostgresDelimitationWatchRepository implements IDelimitationWatchRe
   }
 
   async getSnapshot(snapshotId: string): Promise<DelimitationSnapshot | null> {
-    const res = await this.db.query(`SELECT * FROM delimitation_snapshots WHERE id = $1`, [snapshotId]);
+    const res = await this.db.query(`SELECT * FROM delimitation_snapshots WHERE id = $1`, [
+      snapshotId,
+    ]);
     if (res.rows.length === 0) return null;
     return this.mapSnapshotRow(res.rows[0]);
   }
@@ -524,7 +552,11 @@ export class PostgresDelimitationWatchRepository implements IDelimitationWatchRe
       c.proposalData?.instrumentIdentifier || c.legalEvidencePackage?.instrumentIdentifier || null,
       c.proposalData?.legalEnactmentStatus || c.legalEvidencePackage?.enactmentStatus || null,
       c.proposalData?.effectiveDate || c.legalEvidencePackage?.effectiveDate || null,
-      c.legalEvidenceRecord ? JSON.stringify(c.legalEvidenceRecord) : (c.legalEvidencePackage ? JSON.stringify(c.legalEvidencePackage) : null),
+      c.legalEvidenceRecord
+        ? JSON.stringify(c.legalEvidenceRecord)
+        : c.legalEvidencePackage
+          ? JSON.stringify(c.legalEvidencePackage)
+          : null,
       c.provenanceId || null,
       JSON.stringify(c.metadata || {}),
       c.normalizedAt,
@@ -532,7 +564,9 @@ export class PostgresDelimitationWatchRepository implements IDelimitationWatchRe
   }
 
   async getCandidate(candidateId: string): Promise<DelimitationCandidate | null> {
-    const res = await this.db.query(`SELECT * FROM delimitation_candidates WHERE id = $1`, [candidateId]);
+    const res = await this.db.query(`SELECT * FROM delimitation_candidates WHERE id = $1`, [
+      candidateId,
+    ]);
     if (res.rows.length === 0) return null;
     return this.mapCandidateRow(res.rows[0]);
   }
@@ -557,7 +591,9 @@ export class PostgresDelimitationWatchRepository implements IDelimitationWatchRe
   }
 
   async getValidation(validationId: string): Promise<DelimitationValidation | null> {
-    const res = await this.db.query(`SELECT * FROM delimitation_validations WHERE id = $1`, [validationId]);
+    const res = await this.db.query(`SELECT * FROM delimitation_validations WHERE id = $1`, [
+      validationId,
+    ]);
     if (res.rows.length === 0) return null;
     return this.mapValidationRow(res.rows[0]);
   }
@@ -596,7 +632,9 @@ export class PostgresDelimitationWatchRepository implements IDelimitationWatchRe
   }
 
   async getComparison(comparisonId: string): Promise<DelimitationComparison | null> {
-    const res = await this.db.query(`SELECT * FROM delimitation_comparisons WHERE id = $1`, [comparisonId]);
+    const res = await this.db.query(`SELECT * FROM delimitation_comparisons WHERE id = $1`, [
+      comparisonId,
+    ]);
     if (res.rows.length === 0) return null;
     return this.mapComparisonRow(res.rows[0]);
   }
@@ -635,12 +673,17 @@ export class PostgresDelimitationWatchRepository implements IDelimitationWatchRe
   }
 
   async getAcceptedVersion(versionId: string): Promise<DelimitationAcceptedVersion | null> {
-    const res = await this.db.query(`SELECT * FROM delimitation_accepted_versions WHERE id = $1`, [versionId]);
+    const res = await this.db.query(`SELECT * FROM delimitation_accepted_versions WHERE id = $1`, [
+      versionId,
+    ]);
     if (res.rows.length === 0) return null;
     return this.mapAcceptedVersionRow(res.rows[0]);
   }
 
-  async getAcceptedVersionByHash(sourceId: string, contentSha256: string): Promise<DelimitationAcceptedVersion | null> {
+  async getAcceptedVersionByHash(
+    sourceId: string,
+    contentSha256: string,
+  ): Promise<DelimitationAcceptedVersion | null> {
     const res = await this.db.query(
       `SELECT * FROM delimitation_accepted_versions WHERE source_id = $1 AND content_sha256 = $2 LIMIT 1`,
       [sourceId, contentSha256],
@@ -649,7 +692,9 @@ export class PostgresDelimitationWatchRepository implements IDelimitationWatchRe
     return this.mapAcceptedVersionRow(res.rows[0]);
   }
 
-  async getLatestAcceptedVersionForSource(sourceId: string): Promise<DelimitationAcceptedVersion | null> {
+  async getLatestAcceptedVersionForSource(
+    sourceId: string,
+  ): Promise<DelimitationAcceptedVersion | null> {
     const res = await this.db.query(
       `SELECT * FROM delimitation_accepted_versions WHERE source_id = $1 ORDER BY accepted_at DESC LIMIT 1`,
       [sourceId],
@@ -697,12 +742,17 @@ export class PostgresDelimitationWatchRepository implements IDelimitationWatchRe
   }
 
   async getNotificationEvent(eventId: string): Promise<DelimitationNotificationEvent | null> {
-    const res = await this.db.query(`SELECT * FROM delimitation_notification_events WHERE id = $1`, [eventId]);
+    const res = await this.db.query(
+      `SELECT * FROM delimitation_notification_events WHERE id = $1`,
+      [eventId],
+    );
     if (res.rows.length === 0) return null;
     return this.mapNotificationRow(res.rows[0]);
   }
 
-  async getNotificationEventByDedupKey(dedupKey: string): Promise<DelimitationNotificationEvent | null> {
+  async getNotificationEventByDedupKey(
+    dedupKey: string,
+  ): Promise<DelimitationNotificationEvent | null> {
     const res = await this.db.query(
       `SELECT * FROM delimitation_notification_events WHERE deduplication_key = $1 LIMIT 1`,
       [dedupKey],
@@ -756,7 +806,10 @@ export class PostgresDelimitationWatchRepository implements IDelimitationWatchRe
   }
 
   async getPublicationByVersionId(versionId: string): Promise<DelimitationPublication | null> {
-    const res = await this.db.query(`SELECT * FROM delimitation_publications WHERE version_id = $1`, [versionId]);
+    const res = await this.db.query(
+      `SELECT * FROM delimitation_publications WHERE version_id = $1`,
+      [versionId],
+    );
     if (res.rows.length === 0) return null;
     return this.mapPublicationRow(res.rows[0]);
   }
@@ -816,8 +869,12 @@ export class PostgresDelimitationWatchRepository implements IDelimitationWatchRe
       retrievalMethod: row.retrieval_method,
       pollingSchedule: row.polling_schedule || undefined,
       isActive: row.is_active,
-      lastAttemptedAt: row.last_attempted_at ? new Date(row.last_attempted_at).toISOString() : undefined,
-      lastSuccessfulAt: row.last_successful_at ? new Date(row.last_successful_at).toISOString() : undefined,
+      lastAttemptedAt: row.last_attempted_at
+        ? new Date(row.last_attempted_at).toISOString()
+        : undefined,
+      lastSuccessfulAt: row.last_successful_at
+        ? new Date(row.last_successful_at).toISOString()
+        : undefined,
       lastHttpStatus: row.last_http_status || undefined,
       lastEtag: row.last_etag || undefined,
       lastModifiedHeader: row.last_modified_header || undefined,
@@ -845,7 +902,8 @@ export class PostgresDelimitationWatchRepository implements IDelimitationWatchRe
       declaredPublicationDate: row.declared_publication_date || undefined,
       declaredEffectiveDate: row.declared_effective_date || undefined,
       captureOutcome: row.capture_outcome,
-      diagnostics: typeof row.diagnostics === 'string' ? JSON.parse(row.diagnostics) : row.diagnostics || {},
+      diagnostics:
+        typeof row.diagnostics === 'string' ? JSON.parse(row.diagnostics) : row.diagnostics || {},
       createdAt: new Date(row.created_at).toISOString(),
     };
   }
@@ -856,16 +914,27 @@ export class PostgresDelimitationWatchRepository implements IDelimitationWatchRe
       snapshotId: row.snapshot_id,
       sourceId: row.source_id,
       parserVersion: row.parser_version,
-      proposalData: typeof row.proposal_data === 'string' ? JSON.parse(row.proposal_data) : row.proposal_data,
-      constituencyMappings: typeof row.constituency_mappings === 'string' ? JSON.parse(row.constituency_mappings) : row.constituency_mappings || [],
+      proposalData:
+        typeof row.proposal_data === 'string' ? JSON.parse(row.proposal_data) : row.proposal_data,
+      constituencyMappings:
+        typeof row.constituency_mappings === 'string'
+          ? JSON.parse(row.constituency_mappings)
+          : row.constituency_mappings || [],
       normalizedDataStatus: row.normalized_data_status,
       isProposed: row.is_proposed,
       provenanceId: row.provenance_id || undefined,
       metadata: typeof row.metadata === 'string' ? JSON.parse(row.metadata) : row.metadata || {},
       normalizedAt: new Date(row.normalized_at).toISOString(),
       hasLegalEvidence: Boolean(row.instrument_identifier && row.effective_date),
-      legalEvidenceDecision: row.official_decision_record ? (typeof row.official_decision_record === 'string' ? JSON.parse(row.official_decision_record).decisionRationale : row.official_decision_record.decisionRationale) : undefined,
-      legalEvidenceRecord: typeof row.official_decision_record === 'string' ? JSON.parse(row.official_decision_record) : row.official_decision_record || undefined,
+      legalEvidenceDecision: row.official_decision_record
+        ? typeof row.official_decision_record === 'string'
+          ? JSON.parse(row.official_decision_record).decisionRationale
+          : row.official_decision_record.decisionRationale
+        : undefined,
+      legalEvidenceRecord:
+        typeof row.official_decision_record === 'string'
+          ? JSON.parse(row.official_decision_record)
+          : row.official_decision_record || undefined,
     };
   }
 
@@ -877,7 +946,10 @@ export class PostgresDelimitationWatchRepository implements IDelimitationWatchRe
       checksRun: typeof row.checks_run === 'string' ? JSON.parse(row.checks_run) : row.checks_run,
       errors: typeof row.errors === 'string' ? JSON.parse(row.errors) : row.errors || [],
       warnings: typeof row.warnings === 'string' ? JSON.parse(row.warnings) : row.warnings || [],
-      evidenceReferences: typeof row.evidence_references === 'string' ? JSON.parse(row.evidence_references) : row.evidence_references || [],
+      evidenceReferences:
+        typeof row.evidence_references === 'string'
+          ? JSON.parse(row.evidence_references)
+          : row.evidence_references || [],
       validatedAt: new Date(row.validated_at).toISOString(),
     };
   }
@@ -889,11 +961,26 @@ export class PostgresDelimitationWatchRepository implements IDelimitationWatchRe
       baselineVersionId: row.baseline_version_id || undefined,
       isMaterialChange: row.is_material_change,
       classification: row.classification,
-      addedRecords: typeof row.added_records === 'string' ? JSON.parse(row.added_records) : row.added_records || [],
-      removedRecords: typeof row.removed_records === 'string' ? JSON.parse(row.removed_records) : row.removed_records || [],
-      changedRecords: typeof row.changed_records === 'string' ? JSON.parse(row.changed_records) : row.changed_records || [],
-      unchangedRecords: typeof row.unchanged_records === 'string' ? JSON.parse(row.unchanged_records) : row.unchanged_records || [],
-      metadataDiff: typeof row.metadata_diff === 'string' ? JSON.parse(row.metadata_diff) : row.metadata_diff || {},
+      addedRecords:
+        typeof row.added_records === 'string'
+          ? JSON.parse(row.added_records)
+          : row.added_records || [],
+      removedRecords:
+        typeof row.removed_records === 'string'
+          ? JSON.parse(row.removed_records)
+          : row.removed_records || [],
+      changedRecords:
+        typeof row.changed_records === 'string'
+          ? JSON.parse(row.changed_records)
+          : row.changed_records || [],
+      unchangedRecords:
+        typeof row.unchanged_records === 'string'
+          ? JSON.parse(row.unchanged_records)
+          : row.unchanged_records || [],
+      metadataDiff:
+        typeof row.metadata_diff === 'string'
+          ? JSON.parse(row.metadata_diff)
+          : row.metadata_diff || {},
       comparisonSummary: row.comparison_summary,
       comparedAt: new Date(row.compared_at).toISOString(),
     };
@@ -912,7 +999,9 @@ export class PostgresDelimitationWatchRepository implements IDelimitationWatchRe
       contentSha256: row.content_sha256,
       parserVersion: row.parser_version,
       dataStatus: row.data_status,
-      effectiveDate: row.effective_date ? new Date(row.effective_date).toISOString().split('T')[0] : undefined,
+      effectiveDate: row.effective_date
+        ? new Date(row.effective_date).toISOString().split('T')[0]
+        : undefined,
       instrumentType: row.instrument_type || undefined,
       instrumentIdentifier: row.instrument_identifier || undefined,
       legalEnactmentStatus: row.legal_enactment_status || undefined,
@@ -932,7 +1021,10 @@ export class PostgresDelimitationWatchRepository implements IDelimitationWatchRe
       eventCategory: row.event_category,
       deduplicationKey: row.deduplication_key,
       stateCode: row.state_code,
-      affectedGeographyIds: typeof row.affected_geography_ids === 'string' ? JSON.parse(row.affected_geography_ids) : row.affected_geography_ids || [],
+      affectedGeographyIds:
+        typeof row.affected_geography_ids === 'string'
+          ? JSON.parse(row.affected_geography_ids)
+          : row.affected_geography_ids || [],
       title: row.title,
       body: row.body,
       deepLink: row.deep_link,
@@ -976,7 +1068,10 @@ export class PostgresDelimitationWatchRepository implements IDelimitationWatchRe
       eventId: row.event_id || undefined,
       publicationId: row.publication_id || undefined,
       outcome: row.outcome,
-      stageDurationsMs: typeof row.stage_durations_ms === 'string' ? JSON.parse(row.stage_durations_ms) : row.stage_durations_ms || {},
+      stageDurationsMs:
+        typeof row.stage_durations_ms === 'string'
+          ? JSON.parse(row.stage_durations_ms)
+          : row.stage_durations_ms || {},
       totalDurationMs: row.total_duration_ms,
       errorDetails: row.error_details || undefined,
       createdAt: new Date(row.created_at).toISOString(),

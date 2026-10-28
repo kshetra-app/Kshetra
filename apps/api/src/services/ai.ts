@@ -3,8 +3,15 @@ import { TELANGANA_CONSTITUENCIES } from '../../../../data/seed/telangana-consti
 import { TELANGANA_ELECTION_HISTORY } from '../../../../data/seed/telangana-election-history';
 import { getMLAProfile } from '../../../../data/seed/telangana-mla-profiles';
 import { getConstituencyDemographics } from '../../../../data/seed/telangana-demographics';
-import { getConstituencyHistory, isPartyStronghold } from '../../../../data/seed/telangana-historical-results';
-import { getConstituencyTimeline, getDefectionSummary, computePartyStrength } from '../../../../data/seed/telangana-political-timeline';
+import {
+  getConstituencyHistory,
+  isPartyStronghold,
+} from '../../../../data/seed/telangana-historical-results';
+import {
+  getConstituencyTimeline,
+  getDefectionSummary,
+  computePartyStrength,
+} from '../../../../data/seed/telangana-political-timeline';
 import {
   getConstituency,
   getConstituencyElectionData,
@@ -233,7 +240,9 @@ export async function analyzeElectionTrends(): Promise<string> {
   const strength = computePartyStrength();
   const defections = getDefectionSummary();
   let extraCtx = '\n\nCurrent Party Strength (post-defections):';
-  const partyKeys = Object.keys(strength.parties).sort((a, b) => strength.parties[b] - strength.parties[a]);
+  const partyKeys = Object.keys(strength.parties).sort(
+    (a, b) => strength.parties[b] - strength.parties[a],
+  );
   for (const party of partyKeys) {
     const seats = strength.parties[party];
     if (seats > 0) extraCtx += `\n  ${party}: ${seats}`;
@@ -293,7 +302,10 @@ export async function smartSearch(
 
   try {
     const raw = completion.choices[0]?.message?.content ?? '[]';
-    const cleaned = raw.replace(/```json?\n?/g, '').replace(/```/g, '').trim();
+    const cleaned = raw
+      .replace(/```json?\n?/g, '')
+      .replace(/```/g, '')
+      .trim();
     return JSON.parse(cleaned);
   } catch {
     return [];
@@ -327,8 +339,8 @@ export async function generateCampaignCopy(params: {
     params.format === 'whatsapp'
       ? 'A concise, engaging WhatsApp message (under 120 words) with clear bullet points and emojis suitable for local voter groups.'
       : params.format === 'speech'
-      ? 'A structured 2-minute public rally opening address (around 250 words), engaging the audience, mentioning local issues, and offering solutions.'
-      : 'A professional press release headline and 2 paragraphs for local journalists.';
+        ? 'A structured 2-minute public rally opening address (around 250 words), engaging the audience, mentioning local issues, and offering solutions.'
+        : 'A professional press release headline and 2 paragraphs for local journalists.';
 
   return chatWithAI({
     messages: [

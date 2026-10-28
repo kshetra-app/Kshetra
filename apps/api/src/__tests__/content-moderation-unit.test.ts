@@ -91,9 +91,7 @@ describe('Content Moderation Unit Tests', () => {
       const unavail = new ModerationUnavailableError('Direct upstream failure');
       setMockModerationProvider(jest.fn().mockRejectedValue(unavail));
 
-      await expect(
-        moderateContent('Neutral text for moderation check')
-      ).rejects.toThrow(unavail);
+      await expect(moderateContent('Neutral text for moderation check')).rejects.toThrow(unavail);
     });
 
     it('wraps generic Error from mock provider in ModerationUnavailableError', async () => {
@@ -115,13 +113,13 @@ describe('Content Moderation Unit Tests', () => {
     it('throws ModerationUnavailableError when OPENAI_API_KEY is not set', async () => {
       delete process.env.OPENAI_API_KEY;
 
-      await expect(
-        moderateContent('Neutral text with no API key')
-      ).rejects.toThrow(ModerationUnavailableError);
+      await expect(moderateContent('Neutral text with no API key')).rejects.toThrow(
+        ModerationUnavailableError,
+      );
 
-      await expect(
-        moderateContent('Neutral text with no API key')
-      ).rejects.toThrow('Content moderation provider is not configured or unavailable');
+      await expect(moderateContent('Neutral text with no API key')).rejects.toThrow(
+        'Content moderation provider is not configured or unavailable',
+      );
     });
 
     it('successfully processes flagged content from OpenAI moderation API', async () => {
@@ -224,9 +222,9 @@ describe('Content Moderation Unit Tests', () => {
         });
       });
 
-      await expect(
-        moderateContent('Timeout trigger text', { timeoutMs: 10 })
-      ).rejects.toThrow(ModerationUnavailableError);
+      await expect(moderateContent('Timeout trigger text', { timeoutMs: 10 })).rejects.toThrow(
+        ModerationUnavailableError,
+      );
     });
   });
 });

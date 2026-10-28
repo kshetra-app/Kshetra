@@ -13,7 +13,7 @@ export interface ContentModerationResult {
  * ModerationUnavailableError
  * Thrown when an automated moderation provider or infrastructure dependency
  * fails, times out, or encounters a network error.
- * 
+ *
  * Semantic rule (DEF-004):
  * Network/provider failure != content violation.
  * Failing closed means the action/publication cannot proceed, but the content
@@ -24,7 +24,10 @@ export class ModerationUnavailableError extends Error {
   public readonly statusCode: number = 503;
   public readonly cause?: unknown;
 
-  constructor(message: string = 'Content moderation service is temporarily unavailable', cause?: unknown) {
+  constructor(
+    message: string = 'Content moderation service is temporarily unavailable',
+    cause?: unknown,
+  ) {
     super(message);
     this.name = 'ModerationUnavailableError';
     this.cause = cause;
@@ -61,7 +64,10 @@ function getOpenAI(): OpenAI | null {
  * If the external moderation provider fails or times out, it throws ModerationUnavailableError
  * (fail-closed, DEF-004) instead of silently treating unflagged content as compliant.
  */
-export async function moderateContent(text: string, options?: { timeoutMs?: number }): Promise<ContentModerationResult> {
+export async function moderateContent(
+  text: string,
+  options?: { timeoutMs?: number },
+): Promise<ContentModerationResult> {
   // Step 1: Run local safety pattern check first
   const localCheck = flagContent(text);
   if (localCheck.flagged) {
@@ -82,7 +88,7 @@ export async function moderateContent(text: string, options?: { timeoutMs?: numb
       }
       throw new ModerationUnavailableError(
         'Content moderation service is temporarily unavailable',
-        err
+        err,
       );
     }
   }
@@ -95,10 +101,7 @@ export async function moderateContent(text: string, options?: { timeoutMs?: numb
     const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
 
     try {
-      const response = await ai.moderations.create(
-        { input: text },
-        { signal: controller.signal }
-      );
+      const response = await ai.moderations.create({ input: text }, { signal: controller.signal });
 
       clearTimeout(timeoutId);
 
@@ -124,12 +127,15 @@ export async function moderateContent(text: string, options?: { timeoutMs?: numb
       };
     } catch (err: any) {
       clearTimeout(timeoutId);
-      console.warn('[ModerationService] External moderation provider failed or timed out:', err?.message || err);
+      console.warn(
+        '[ModerationService] External moderation provider failed or timed out:',
+        err?.message || err,
+      );
       // DEF-004: Network/provider failure != content violation.
       // Must NOT swallow exception and return flagged: false.
       throw new ModerationUnavailableError(
         'Content moderation service is temporarily unavailable',
-        err
+        err,
       );
     }
   }
@@ -138,6 +144,6 @@ export async function moderateContent(text: string, options?: { timeoutMs?: numb
   // DEF-004 Remediation: No required moderation decision may silently resolve to compliant!
   // Failing closed means the action/publication cannot proceed without required moderation.
   throw new ModerationUnavailableError(
-    'Content moderation provider is not configured or unavailable'
+    'Content moderation provider is not configured or unavailable',
   );
 }

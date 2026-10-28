@@ -44,7 +44,9 @@ export class BaselineComparator {
     if (!baselineVersion) {
       isMaterialChange = true;
       classification = 'MATERIAL_CHANGE';
-      summaryParts.push('Initial baseline establishment: newly registered delimitation proposal and mappings');
+      summaryParts.push(
+        'Initial baseline establishment: newly registered delimitation proposal and mappings',
+      );
 
       addedRecords.push({
         key: 'proposal',
@@ -88,7 +90,10 @@ export class BaselineComparator {
             key: 'reservationSeats',
             changeType: 'MODIFIED',
             oldValue: { sc: prevProposal.proposedScSeats, st: prevProposal.proposedStSeats },
-            newValue: { sc: candidate.proposalData.proposedScSeats, st: candidate.proposalData.proposedStSeats },
+            newValue: {
+              sc: candidate.proposalData.proposedScSeats,
+              st: candidate.proposalData.proposedStSeats,
+            },
           });
           summaryParts.push(
             `Reservation breakdown modified: SC ${prevProposal.proposedScSeats}->${candidate.proposalData.proposedScSeats}, ST ${prevProposal.proposedStSeats}->${candidate.proposalData.proposedStSeats}`,
@@ -103,7 +108,9 @@ export class BaselineComparator {
             oldValue: prevProposal.status,
             newValue: candidate.proposalData.status,
           });
-          summaryParts.push(`Proposal legal status transitioned from '${prevProposal.status}' to '${candidate.proposalData.status}'`);
+          summaryParts.push(
+            `Proposal legal status transitioned from '${prevProposal.status}' to '${candidate.proposalData.status}'`,
+          );
         }
       }
 
@@ -144,7 +151,9 @@ export class BaselineComparator {
               oldValue: prevM,
               newValue: currentM,
             });
-            summaryParts.push(`Modified AC-${newAcNo}: oldAc ${prevM.oldAcNo}->${currentM.oldAcNo}, name '${prevM.newName}'->'${currentM.newName}', overlap ${prevM.overlapPercentage}%->${currentM.overlapPercentage}%`);
+            summaryParts.push(
+              `Modified AC-${newAcNo}: oldAc ${prevM.oldAcNo}->${currentM.oldAcNo}, name '${prevM.newName}'->'${currentM.newName}', overlap ${prevM.overlapPercentage}%->${currentM.overlapPercentage}%`,
+            );
           } else {
             unchangedRecords.push({
               key: `mapping:${newAcNo}`,

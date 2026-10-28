@@ -1,5 +1,5 @@
 /**
- * Kshetra Theme System - Raja Ravi Varma Heritage Edition
+ * Poligram Theme System - Raja Ravi Varma Heritage Edition
  *
  * Infuses the visual depth, warm chiaroscuro, natural pigments (sindoori vermilion,
  * kasavu gold, peacock teal, aged rosewood, ivory parchment) of Raja Ravi Varma's

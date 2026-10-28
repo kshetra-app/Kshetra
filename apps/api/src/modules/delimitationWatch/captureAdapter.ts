@@ -17,7 +17,11 @@ import * as path from 'path';
 import http from 'node:http';
 import https from 'node:https';
 import { createHash, randomUUID } from 'crypto';
-import type { DelimitationWatchSource, DelimitationSnapshot, CaptureOutcome } from '@kshetra/shared';
+import type {
+  DelimitationWatchSource,
+  DelimitationSnapshot,
+  CaptureOutcome,
+} from '@kshetra/shared';
 import type { IDelimitationWatchRepository } from './persistence';
 import { validateAndPinSourceUrl, SsrfSecurityError } from './ssrfGuard';
 
@@ -31,7 +35,9 @@ export interface CaptureOptions {
   allowInsecureInTest?: boolean;
   ca?: string | Buffer | Array<string | Buffer>;
   mockDnsResolver?: (hostname: string) => Promise<string[]>;
-  mockPayloadProvider?: (source: DelimitationWatchSource) => Promise<{ status: number; body: string; headers?: Record<string, string> }>;
+  mockPayloadProvider?: (
+    source: DelimitationWatchSource,
+  ) => Promise<{ status: number; body: string; headers?: Record<string, string> }>;
 }
 
 export class CaptureAdapter {
@@ -41,7 +47,10 @@ export class CaptureAdapter {
     this.repo = repo;
   }
 
-  async capture(source: DelimitationWatchSource, options: CaptureOptions = {}): Promise<DelimitationSnapshot> {
+  async capture(
+    source: DelimitationWatchSource,
+    options: CaptureOptions = {},
+  ): Promise<DelimitationSnapshot> {
     const timeoutMs = options.timeoutMs ?? 15000;
     const maxBytes = options.maxResponseBytes ?? MAX_CAPTURE_RESPONSE_BYTES;
     const now = new Date().toISOString();
@@ -123,7 +132,11 @@ export class CaptureAdapter {
       const contentHash = createHash('sha256').update(rawContent, 'utf8').digest('hex');
 
       // 4. Compare with last known hash
-      if (source.lastContentHash && source.lastContentHash === contentHash && captureOutcome !== 'UNCHANGED') {
+      if (
+        source.lastContentHash &&
+        source.lastContentHash === contentHash &&
+        captureOutcome !== 'UNCHANGED'
+      ) {
         captureOutcome = 'UNCHANGED';
       }
 
@@ -169,8 +182,8 @@ export class CaptureAdapter {
         err.message?.includes('DEADLINE_EXCEEDED')
           ? 'TIMEOUT'
           : err.message?.includes('404')
-          ? 'NOT_FOUND'
-          : 'FETCH_ERROR';
+            ? 'NOT_FOUND'
+            : 'FETCH_ERROR';
 
       const failureSnapshot: DelimitationSnapshot = {
         id: randomUUID(),
@@ -217,7 +230,7 @@ export class CaptureAdapter {
       mockDnsResolver?: (host: string) => Promise<string[]>;
       lastEtag?: string;
       lastModifiedHeader?: string;
-    }
+    },
   ): Promise<{
     status: number;
     etag?: string;
@@ -253,19 +266,25 @@ export class CaptureAdapter {
       if ([301, 302, 303, 307, 308].includes(response.statusCode)) {
         redirectCount++;
         if (redirectCount > MAX_REDIRECT_DEPTH) {
-          throw new SsrfSecurityError(`REDIRECT_LIMIT_EXCEEDED (MAX_REDIRECTS_EXCEEDED): Redirect depth exceeded maximum allowed (${MAX_REDIRECT_DEPTH})`);
+          throw new SsrfSecurityError(
+            `REDIRECT_LIMIT_EXCEEDED (MAX_REDIRECTS_EXCEEDED): Redirect depth exceeded maximum allowed (${MAX_REDIRECT_DEPTH})`,
+          );
         }
 
         const locationHeader = response.headers.location;
         if (!locationHeader) {
-          throw new SsrfSecurityError(`INVALID_REDIRECT: Received HTTP ${response.statusCode} without Location header`);
+          throw new SsrfSecurityError(
+            `INVALID_REDIRECT: Received HTTP ${response.statusCode} without Location header`,
+          );
         }
 
         const nextUrl = new URL(locationHeader, currentUrl).toString();
 
         // Prevent redirect loops
         if (visitedUrls.has(nextUrl)) {
-          throw new SsrfSecurityError(`REDIRECT_LOOP_DETECTED: Target '${nextUrl}' previously encountered in redirect chain`);
+          throw new SsrfSecurityError(
+            `REDIRECT_LOOP_DETECTED: Target '${nextUrl}' previously encountered in redirect chain`,
+          );
         }
         visitedUrls.add(nextUrl);
 
@@ -273,7 +292,9 @@ export class CaptureAdapter {
         const currentIsHttps = currentUrl.startsWith('https:');
         const nextIsHttps = nextUrl.startsWith('https:');
         if (currentIsHttps && !nextIsHttps && !opts.allowLocalhost) {
-          throw new SsrfSecurityError(`PROTOCOL_DOWNGRADE_FORBIDDEN: Redirect from HTTPS to plain HTTP is prohibited ('${nextUrl}')`);
+          throw new SsrfSecurityError(
+            `PROTOCOL_DOWNGRADE_FORBIDDEN: Redirect from HTTPS to plain HTTP is prohibited ('${nextUrl}')`,
+          );
         }
 
         currentUrl = nextUrl;
@@ -304,7 +325,7 @@ export class CaptureAdapter {
       maxBytes: number;
       lastEtag?: string;
       lastModifiedHeader?: string;
-    }
+    },
   ): Promise<{
     statusCode: number;
     headers: http.IncomingHttpHeaders;
@@ -315,8 +336,8 @@ export class CaptureAdapter {
 
       const headers: Record<string, string> = {
         'User-Agent': 'Kshetra-Delimitation-Watch/1.0 (authoritative; civic-tech; anti-ssrf)',
-        'Accept': 'application/json, text/html, text/plain;q=0.9',
-        'Host': destination.hostname,
+        Accept: 'application/json, text/html, text/plain;q=0.9',
+        Host: destination.hostname,
       };
 
       if (opts.lastEtag) {
@@ -336,7 +357,11 @@ export class CaptureAdapter {
 
       const deadlineTimer = setTimeout(() => {
         cleanup();
-        req.destroy(new Error(`DEADLINE_EXCEEDED: Overall HTTP request exceeded deadline of ${opts.timeoutMs}ms`));
+        req.destroy(
+          new Error(
+            `DEADLINE_EXCEEDED: Overall HTTP request exceeded deadline of ${opts.timeoutMs}ms`,
+          ),
+        );
       }, opts.timeoutMs);
 
       const req = client.request(
@@ -368,7 +393,11 @@ export class CaptureAdapter {
               cleanup();
               req.destroy();
               res.destroy();
-              reject(new Error(`RESPONSE_SIZE_EXCEEDED (PAYLOAD_TOO_LARGE): Response exceeded maximum allowed size of ${opts.maxBytes} bytes`));
+              reject(
+                new Error(
+                  `RESPONSE_SIZE_EXCEEDED (PAYLOAD_TOO_LARGE): Response exceeded maximum allowed size of ${opts.maxBytes} bytes`,
+                ),
+              );
               return;
             }
             chunks.push(chunk);
@@ -388,7 +417,7 @@ export class CaptureAdapter {
             cleanup();
             reject(err);
           });
-        }
+        },
       );
 
       req.on('socket', (socket) => {

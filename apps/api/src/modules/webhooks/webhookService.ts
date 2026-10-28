@@ -52,7 +52,7 @@ export class WebhookService {
 
   constructor(
     private readonly client: SupabaseClient = supabase,
-    queueProvider?: WebhookQueueProvider
+    queueProvider?: WebhookQueueProvider,
   ) {
     if (queueProvider) {
       this.queueProvider = queueProvider;
@@ -62,7 +62,9 @@ export class WebhookService {
       // In deployed/production/staging runtimes, require valid database configuration
       const dbUrl = process.env.DATABASE_URL;
       if (!dbUrl || dbUrl.trim() === '') {
-        throw new Error('CONFIG_ERROR: DATABASE_URL must be configured for WebhookService in deployed environment.');
+        throw new Error(
+          'CONFIG_ERROR: DATABASE_URL must be configured for WebhookService in deployed environment.',
+        );
       }
       // Require WEBHOOK_SECRETS_ENCRYPTION_KEY to be present and valid
       getMasterEncryptionKey();
@@ -89,7 +91,13 @@ export class WebhookService {
     subscribedEvents?: string[];
     allowLocalhostInTest?: boolean;
   }): Promise<{ subscription: WebhookSubscriptionModel; secret: string }> {
-    const { tenantId, applicationId, endpointUrl, subscribedEvents = ['*'], allowLocalhostInTest } = params;
+    const {
+      tenantId,
+      applicationId,
+      endpointUrl,
+      subscribedEvents = ['*'],
+      allowLocalhostInTest,
+    } = params;
 
     // 1. SSRF preflight validation
     await validateAndPinEgressTarget(endpointUrl, { allowLocalhostInTest });
@@ -142,7 +150,9 @@ export class WebhookService {
       .single();
 
     if (error || !data) {
-      throw new Error(`DATABASE_INSERT_ERROR: Failed to create webhook subscription: ${error?.message}`);
+      throw new Error(
+        `DATABASE_INSERT_ERROR: Failed to create webhook subscription: ${error?.message}`,
+      );
     }
 
     const subscription: WebhookSubscriptionModel = {
@@ -165,7 +175,10 @@ export class WebhookService {
   /**
    * Lists webhook subscriptions owned by the authenticated tenant & application.
    */
-  async listSubscriptions(tenantId: string, applicationId: string): Promise<WebhookSubscriptionModel[]> {
+  async listSubscriptions(
+    tenantId: string,
+    applicationId: string,
+  ): Promise<WebhookSubscriptionModel[]> {
     if (this.queueProvider instanceof InMemoryQueueProvider) {
       const list: WebhookSubscriptionModel[] = [];
       for (const sub of this.queueProvider.subscriptions.values()) {
@@ -178,7 +191,9 @@ export class WebhookService {
 
     const { data, error } = await this.client
       .from('webhook_subscriptions')
-      .select('id, tenant_id, application_id, endpoint_url, secret_hint, secret_hash, subscribed_events, status, consecutive_failure_count, created_at, updated_at')
+      .select(
+        'id, tenant_id, application_id, endpoint_url, secret_hint, secret_hash, subscribed_events, status, consecutive_failure_count, created_at, updated_at',
+      )
       .eq('tenant_id', tenantId)
       .eq('application_id', applicationId)
       .order('created_at', { ascending: false });
@@ -205,7 +220,11 @@ export class WebhookService {
   /**
    * Retrieves a single subscription by ID with strict tenant and application ownership enforcement.
    */
-  async getSubscription(tenantId: string, applicationId: string, subscriptionId: string): Promise<WebhookSubscriptionModel | null> {
+  async getSubscription(
+    tenantId: string,
+    applicationId: string,
+    subscriptionId: string,
+  ): Promise<WebhookSubscriptionModel | null> {
     if (this.queueProvider instanceof InMemoryQueueProvider) {
       const sub = this.queueProvider.subscriptions.get(subscriptionId);
       if (sub && sub.tenantId === tenantId && sub.applicationId === applicationId) {
@@ -216,7 +235,9 @@ export class WebhookService {
 
     const { data, error } = await this.client
       .from('webhook_subscriptions')
-      .select('id, tenant_id, application_id, endpoint_url, secret_hint, secret_hash, subscribed_events, status, consecutive_failure_count, created_at, updated_at')
+      .select(
+        'id, tenant_id, application_id, endpoint_url, secret_hint, secret_hash, subscribed_events, status, consecutive_failure_count, created_at, updated_at',
+      )
       .eq('tenant_id', tenantId)
       .eq('application_id', applicationId)
       .eq('id', subscriptionId)
@@ -253,7 +274,15 @@ export class WebhookService {
     status?: 'active' | 'paused' | 'disabled';
     allowLocalhostInTest?: boolean;
   }): Promise<WebhookSubscriptionModel | null> {
-    const { tenantId, applicationId, subscriptionId, endpointUrl, subscribedEvents, status, allowLocalhostInTest } = params;
+    const {
+      tenantId,
+      applicationId,
+      subscriptionId,
+      endpointUrl,
+      subscribedEvents,
+      status,
+      allowLocalhostInTest,
+    } = params;
 
     const existing = await this.getSubscription(tenantId, applicationId, subscriptionId);
     if (!existing) return null;
@@ -310,7 +339,11 @@ export class WebhookService {
   /**
    * Disables a webhook subscription.
    */
-  async disableSubscription(tenantId: string, applicationId: string, subscriptionId: string): Promise<WebhookSubscriptionModel | null> {
+  async disableSubscription(
+    tenantId: string,
+    applicationId: string,
+    subscriptionId: string,
+  ): Promise<WebhookSubscriptionModel | null> {
     return this.updateSubscription({
       tenantId,
       applicationId,
@@ -323,7 +356,11 @@ export class WebhookService {
    * Rotates signing secret with a 24-hour dual-secret transition window.
    * Returns newly generated secret (one-time disclosure).
    */
-  async rotateSecret(tenantId: string, applicationId: string, subscriptionId: string): Promise<{ newSecret: string; secretHint: string; gracePeriodExpiresAt: string } | null> {
+  async rotateSecret(
+    tenantId: string,
+    applicationId: string,
+    subscriptionId: string,
+  ): Promise<{ newSecret: string; secretHint: string; gracePeriodExpiresAt: string } | null> {
     const existing = await this.getSubscription(tenantId, applicationId, subscriptionId);
     if (!existing) return null;
 
@@ -388,7 +425,12 @@ export class WebhookService {
   /**
    * Dispatches a synchronous test ping delivery to an active subscription endpoint.
    */
-  async testDelivery(tenantId: string, applicationId: string, subscriptionId: string, options: { allowLocalhostInTest?: boolean } = {}): Promise<any> {
+  async testDelivery(
+    tenantId: string,
+    applicationId: string,
+    subscriptionId: string,
+    options: { allowLocalhostInTest?: boolean } = {},
+  ): Promise<any> {
     const sub = await this.getSubscription(tenantId, applicationId, subscriptionId);
     if (!sub) return null;
 
@@ -415,7 +457,9 @@ export class WebhookService {
     } else {
       const { data } = await this.client
         .from('webhook_subscriptions')
-        .select('secret_ciphertext, secret_iv, secret_tag, previous_secret_ciphertext, previous_secret_iv, previous_secret_tag')
+        .select(
+          'secret_ciphertext, secret_iv, secret_tag, previous_secret_ciphertext, previous_secret_iv, previous_secret_tag',
+        )
         .eq('tenant_id', tenantId)
         .eq('id', subscriptionId)
         .single();
@@ -423,13 +467,17 @@ export class WebhookService {
         rawSecret = decryptSecret(
           { ciphertext: data.secret_ciphertext, iv: data.secret_iv, tag: data.secret_tag },
           tenantId,
-          subscriptionId
+          subscriptionId,
         );
         if (data.previous_secret_ciphertext) {
           previousSecret = decryptSecret(
-            { ciphertext: data.previous_secret_ciphertext, iv: data.previous_secret_iv, tag: data.previous_secret_tag },
+            {
+              ciphertext: data.previous_secret_ciphertext,
+              iv: data.previous_secret_iv,
+              tag: data.previous_secret_tag,
+            },
             tenantId,
-            subscriptionId
+            subscriptionId,
           );
         }
       }

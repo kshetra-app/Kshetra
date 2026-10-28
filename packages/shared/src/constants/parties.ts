@@ -172,14 +172,14 @@ export const PARTY_CONFIG: Record<PartyCode, PartyInfo> = {
   },
   NPP: {
     code: 'NPP',
-    name: 'National People\'s Party',
+    name: "National People's Party",
     shortName: 'NPP',
     color: '#E8B004',
     secondaryColor: '#F0C84D',
   },
   ZPM: {
     code: 'ZPM',
-    name: 'Zoram People\'s Movement',
+    name: "Zoram People's Movement",
     shortName: 'ZPM',
     color: '#1E90FF',
     secondaryColor: '#63B3FF',
@@ -214,7 +214,7 @@ export const PARTY_CONFIG: Record<PartyCode, PartyInfo> = {
   },
   BPF: {
     code: 'BPF',
-    name: 'Bodoland People\'s Front',
+    name: "Bodoland People's Front",
     shortName: 'BPF',
     color: '#FF8C00',
     secondaryColor: '#FFB347',
@@ -240,63 +240,63 @@ export const PARTY_CONFIG: Record<PartyCode, PartyInfo> = {
     color: '#FF8C00',
     secondaryColor: '#FFB347',
   },
-  'ADSL': {
+  ADSL: {
     code: 'ADSL',
     name: 'Azad Samaj Party (Kanshi Ram)',
     shortName: 'ASP',
     color: '#0F52BA',
     secondaryColor: '#4D85D6',
   },
-  'AIADMK': {
+  AIADMK: {
     code: 'AIADMK',
     name: 'All India Anna Dravida Munnetra Kazhagam',
     shortName: 'AIADMK',
     color: '#009933',
     secondaryColor: '#33B35C',
   },
-  'AIFB': {
+  AIFB: {
     code: 'AIFB',
     name: 'All India Forward Bloc',
     shortName: 'AIFB',
     color: '#E32636',
     secondaryColor: '#EB6B76',
   },
-  'AIMM': {
+  AIMM: {
     code: 'AIMM',
     name: 'All India Majlis-e-Ittehadul Muslimeen',
     shortName: 'AIMIM',
     color: '#008000',
     secondaryColor: '#33B333',
   },
-  'AINRC': {
+  AINRC: {
     code: 'AINRC',
     name: 'All India N.R. Congress',
     shortName: 'AINRC',
     color: '#FFB300',
     secondaryColor: '#FFC94D',
   },
-  'AJU': {
+  AJU: {
     code: 'AJU',
     name: 'regional (West Bengal)',
     shortName: 'AJU',
     color: '#7B68EE',
     secondaryColor: '#A293F2',
   },
-  'AMMK': {
+  AMMK: {
     code: 'AMMK',
     name: 'Amma Makkal Munnetra Kazhagam',
     shortName: 'AMMK',
     color: '#1B998B',
     secondaryColor: '#4DBFB3',
   },
-  'AP': {
+  AP: {
     code: 'AP',
     name: 'regional (Jharkhand)',
     shortName: 'AP',
     color: '#7E5109',
     secondaryColor: '#A87A33',
   },
-  'BAP': {
+  BAP: {
     code: 'BAP',
     name: 'Bharat Adivasi Party',
     shortName: 'BAP',
@@ -310,7 +310,7 @@ export const PARTY_CONFIG: Record<PartyCode, PartyInfo> = {
     color: '#B22222',
     secondaryColor: '#D45D5D',
   },
-  'CONS': {
+  CONS: {
     code: 'CONS',
     name: 'Conservative / regional',
     shortName: 'CONS',
@@ -331,70 +331,70 @@ export const PARTY_CONFIG: Record<PartyCode, PartyInfo> = {
     color: '#D2122E',
     secondaryColor: '#E0596B',
   },
-  'GFP': {
+  GFP: {
     code: 'GFP',
     name: 'Goa Forward Party',
     shortName: 'GFP',
     color: '#FF6700',
     secondaryColor: '#FF9447',
   },
-  'GGP': {
+  GGP: {
     code: 'GGP',
     name: 'Gondwana Gantantra Party',
     shortName: 'GGP',
     color: '#1E5631',
     secondaryColor: '#4D8366',
   },
-  'GNC': {
+  GNC: {
     code: 'GNC',
     name: 'Garo National Council',
     shortName: 'GNC',
     color: '#2E8B57',
     secondaryColor: '#5CB88A',
   },
-  'HAMS': {
+  HAMS: {
     code: 'HAMS',
     name: 'Hindustani Awam Morcha (Secular)',
     shortName: 'HAM(S)',
     color: '#7A3E9D',
     secondaryColor: '#A06BC0',
   },
-  'HSPDP': {
+  HSPDP: {
     code: 'HSPDP',
-    name: 'Hill State People\'s Democratic Party',
+    name: "Hill State People's Democratic Party",
     shortName: 'HSPDP',
     color: '#8B4513',
     secondaryColor: '#B5703A',
   },
-  'INL': {
+  INL: {
     code: 'INL',
     name: 'Indian National League',
     shortName: 'INL',
     color: '#1B7A3D',
     secondaryColor: '#4D9E68',
   },
-  'INLD': {
+  INLD: {
     code: 'INLD',
     name: 'Indian National Lok Dal',
     shortName: 'INLD',
     color: '#138808',
     secondaryColor: '#4DAE4D',
   },
-  'IPFT': {
+  IPFT: {
     code: 'IPFT',
-    name: 'Indigenous People\'s Front of Tripura',
+    name: "Indigenous People's Front of Tripura",
     shortName: 'IPFT',
     color: '#FF7F00',
     secondaryColor: '#FFA64D',
   },
-  'ISF': {
+  ISF: {
     code: 'ISF',
     name: 'Indian Secular Front',
     shortName: 'ISF',
     color: '#1C6EA4',
     secondaryColor: '#4D97C4',
   },
-  'IUML': {
+  IUML: {
     code: 'IUML',
     name: 'Indian Union Muslim League',
     shortName: 'IUML',
@@ -408,35 +408,35 @@ export const PARTY_CONFIG: Record<PartyCode, PartyInfo> = {
     color: '#006400',
     secondaryColor: '#009700',
   },
-  'JKC': {
+  JKC: {
     code: 'JKC',
     name: 'J&K regional',
     shortName: 'JKC',
     color: '#3A7CA5',
     secondaryColor: '#6FA3C4',
   },
-  'JKNPP': {
+  JKNPP: {
     code: 'JKNPP',
     name: 'J&K National Panthers Party',
     shortName: 'JKNPP',
     color: '#FFD700',
     secondaryColor: '#FFE34D',
   },
-  'JKPC': {
+  JKPC: {
     code: 'JKPC',
-    name: 'J&K People\'s Conference',
+    name: "J&K People's Conference",
     shortName: 'JKPC',
     color: '#2E8B57',
     secondaryColor: '#5CB88A',
   },
-  'JKPDP': {
+  JKPDP: {
     code: 'JKPDP',
     name: 'J&K Peoples Democratic Party',
     shortName: 'PDP',
     color: '#1B7A3D',
     secondaryColor: '#4D9E68',
   },
-  'KC': {
+  KC: {
     code: 'KC',
     name: 'Kerala Congress',
     shortName: 'KC',
@@ -457,224 +457,224 @@ export const PARTY_CONFIG: Record<PartyCode, PartyInfo> = {
     color: '#0B6E4F',
     secondaryColor: '#3E9374',
   },
-  'KCJ': {
+  KCJ: {
     code: 'KCJ',
     name: 'Kerala Congress (Jacob)',
     shortName: 'KCJ',
     color: '#0B6E4F',
     secondaryColor: '#3E9374',
   },
-  'KCM': {
+  KCM: {
     code: 'KCM',
     name: 'Kerala Congress (M)',
     shortName: 'KC(M)',
     color: '#0B6E4F',
     secondaryColor: '#3E9374',
   },
-  'KPA': {
+  KPA: {
     code: 'KPA',
-    name: 'Kuki People\'s Alliance',
+    name: "Kuki People's Alliance",
     shortName: 'KPA',
     color: '#B8860B',
     secondaryColor: '#D4AA3A',
   },
-  'LJD': {
+  LJD: {
     code: 'LJD',
     name: 'Loktantrik Janata Dal',
     shortName: 'LJD',
     color: '#138808',
     secondaryColor: '#4DAE4D',
   },
-  'LJK': {
+  LJK: {
     code: 'LJK',
     name: 'Lok Jananayaga Katchi',
     shortName: 'LJK',
     color: '#C71585',
     secondaryColor: '#D957A5',
   },
-  'LJPRV': {
+  LJPRV: {
     code: 'LJPRV',
     name: 'Lok Janshakti Party (Ram Vilas)',
     shortName: 'LJP(RV)',
     color: '#6A0DAD',
     secondaryColor: '#9B4DD6',
   },
-  'LJPV': {
+  LJPV: {
     code: 'LJPV',
     name: 'Lok Janshakti Party (Ram Vilas)',
     shortName: 'LJP(RV)',
     color: '#6A0DAD',
     secondaryColor: '#9B4DD6',
   },
-  'MG': {
+  MG: {
     code: 'MG',
     name: 'Maharashtrawadi Gomantak Party',
     shortName: 'MGP',
     color: '#1F6FB2',
     secondaryColor: '#4D95C9',
   },
-  'MNF': {
+  MNF: {
     code: 'MNF',
     name: 'Mizo National Front',
     shortName: 'MNF',
     color: '#006400',
     secondaryColor: '#2E8B2E',
   },
-  'MNM': {
+  MNM: {
     code: 'MNM',
     name: 'Makkal Needhi Maiam',
     shortName: 'MNM',
     color: '#D81E5B',
     secondaryColor: '#E55D8A',
   },
-  'NISHAD': {
+  NISHAD: {
     code: 'NISHAD',
     name: 'Nishad Party',
     shortName: 'NISHAD',
     color: '#1CA9C9',
     secondaryColor: '#5DC4D9',
   },
-  'NMK': {
+  NMK: {
     code: 'NMK',
     name: 'Nam Tamilar / regional (Puducherry)',
     shortName: 'NMK',
     color: '#9932CC',
     secondaryColor: '#B566D6',
   },
-  'NPF': {
+  NPF: {
     code: 'NPF',
-    name: 'Naga People\'s Front',
+    name: "Naga People's Front",
     shortName: 'NPF',
     color: '#1B5E20',
     secondaryColor: '#4D8453',
   },
-  'NSC': {
+  NSC: {
     code: 'NSC',
     name: 'Nationalist Party (Kerala)',
     shortName: 'NSC',
     color: '#4682B4',
     secondaryColor: '#79A6CC',
   },
-  'PDF': {
+  PDF: {
     code: 'PDF',
-    name: 'People\'s Democratic Front',
+    name: "People's Democratic Front",
     shortName: 'PDF',
     color: '#607D8B',
     secondaryColor: '#8AA1AC',
   },
-  'PMK': {
+  PMK: {
     code: 'PMK',
     name: 'Pattali Makkal Katchi',
     shortName: 'PMK',
     color: '#FFE135',
     secondaryColor: '#FFEB6B',
   },
-  'PPA': {
+  PPA: {
     code: 'PPA',
-    name: 'People\'s Party of Arunachal',
+    name: "People's Party of Arunachal",
     shortName: 'PPA',
     color: '#FF8C00',
     secondaryColor: '#FFB347',
   },
-  'RD': {
+  RD: {
     code: 'RD',
     name: 'Raijor Dal',
     shortName: 'RD',
     color: '#C8102E',
     secondaryColor: '#D9536B',
   },
-  'RGP': {
+  RGP: {
     code: 'RGP',
     name: 'Revolutionary Goans Party',
     shortName: 'RGP',
     color: '#8B0000',
     secondaryColor: '#B33A3A',
   },
-  'RLD': {
+  RLD: {
     code: 'RLD',
     name: 'Rashtriya Lok Dal',
     shortName: 'RLD',
     color: '#007A33',
     secondaryColor: '#33A05C',
   },
-  'RMPI': {
+  RMPI: {
     code: 'RMPI',
     name: 'Revolutionary Marxist Party of India',
     shortName: 'RMPI',
     color: '#CC0000',
     secondaryColor: '#E64D4D',
   },
-  'RPIA': {
+  RPIA: {
     code: 'RPIA',
     name: 'Republican Party of India (Athawale)',
     shortName: 'RPI(A)',
     color: '#0000CD',
     secondaryColor: '#4D4DDB',
   },
-  'RSP': {
+  RSP: {
     code: 'RSP',
     name: 'Revolutionary Socialist Party',
     shortName: 'RSP',
     color: '#D2122E',
     secondaryColor: '#E0596B',
   },
-  'SBSP': {
+  SBSP: {
     code: 'SBSP',
     name: 'Suheldev Bharatiya Samaj Party',
     shortName: 'SBSP',
     color: '#FFA500',
     secondaryColor: '#FFC04D',
   },
-  'SDF': {
+  SDF: {
     code: 'SDF',
     name: 'Sikkim Democratic Front',
     shortName: 'SDF',
     color: '#20B2AA',
     secondaryColor: '#5CC7C1',
   },
-  'TMP': {
+  TMP: {
     code: 'TMP',
     name: 'Tipra Motha Party',
     shortName: 'TMP',
     color: '#2F4FAF',
     secondaryColor: '#5E77C5',
   },
-  'UDP': {
+  UDP: {
     code: 'UDP',
     name: 'United Democratic Party',
     shortName: 'UDP',
     color: '#00688B',
     secondaryColor: '#3A8FAC',
   },
-  'UJP': {
+  UJP: {
     code: 'UJP',
     name: 'Uttarakhand Janata Party',
     shortName: 'UJP',
     color: '#556B2F',
     secondaryColor: '#7E9152',
   },
-  'UKD': {
+  UKD: {
     code: 'UKD',
     name: 'Uttarakhand Kranti Dal',
     shortName: 'UKD',
     color: '#228B22',
     secondaryColor: '#52A852',
   },
-  'VCK': {
+  VCK: {
     code: 'VCK',
     name: 'Viduthalai Chiruthaigal Katchi',
     shortName: 'VCK',
     color: '#D32F2F',
     secondaryColor: '#E06B6B',
   },
-  'VIP': {
+  VIP: {
     code: 'VIP',
     name: 'Vikassheel Insaan Party',
     shortName: 'VIP',
     color: '#1E88E5',
     secondaryColor: '#5BA8ED',
   },
-  'VPP': {
+  VPP: {
     code: 'VPP',
     name: 'Voice of the People Party',
     shortName: 'VPP',
@@ -711,8 +711,6 @@ export const PARTY_CONFIG: Record<PartyCode, PartyInfo> = {
   },
 };
 
-export const getPartyColor = (party: PartyCode): string =>
-  PARTY_CONFIG[party]?.color ?? '#666666';
+export const getPartyColor = (party: PartyCode): string => PARTY_CONFIG[party]?.color ?? '#666666';
 
-export const getPartyName = (party: PartyCode): string =>
-  PARTY_CONFIG[party]?.shortName ?? party;
+export const getPartyName = (party: PartyCode): string => PARTY_CONFIG[party]?.shortName ?? party;

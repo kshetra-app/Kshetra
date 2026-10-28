@@ -39,10 +39,7 @@ export class Notifier {
   private readonly repo: IDelimitationWatchRepository;
   private readonly dispatchProvider?: NotificationDispatchProvider;
 
-  constructor(
-    repo: IDelimitationWatchRepository,
-    dispatchProvider?: NotificationDispatchProvider,
-  ) {
+  constructor(repo: IDelimitationWatchRepository, dispatchProvider?: NotificationDispatchProvider) {
     this.repo = repo;
     this.dispatchProvider = dispatchProvider;
   }
@@ -86,7 +83,9 @@ export class Notifier {
       new Set(candidate.constituencyMappings.map((m) => `${m.stateCode}-AC-${m.newAcNo}`)),
     );
 
-    const body = comparison.comparisonSummary || `Delimitation version ${version.versionTag} accepted with ${candidate.proposalData.proposedSeats} seats.`;
+    const body =
+      comparison.comparisonSummary ||
+      `Delimitation version ${version.versionTag} accepted with ${candidate.proposalData.proposedSeats} seats.`;
     const deepLink = `/delimitation/proposals/${version.id}`;
 
     const event: DelimitationNotificationEvent = {
@@ -158,7 +157,8 @@ export class Notifier {
         });
       }
 
-      const status: NotificationDispatchStatus = pushRes.failedCount > 0 && pushRes.deliveredCount === 0 ? 'FAILED' : 'SENT';
+      const status: NotificationDispatchStatus =
+        pushRes.failedCount > 0 && pushRes.deliveredCount === 0 ? 'FAILED' : 'SENT';
       await this.repo.updateNotificationDispatchStatus(eventId, status, {
         deliveredCount: pushRes.deliveredCount,
         failedCount: pushRes.failedCount,

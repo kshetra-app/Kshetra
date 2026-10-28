@@ -261,7 +261,7 @@ function ShortPageItem({
   const handleNativeShare = useCallback(async () => {
     try {
       await Share.share({
-        message: `${item.title}\n${item.videoUrl}\n\n— via Kshetra Shorts`,
+        message: `${item.title}\n${item.videoUrl}\n\n— via Poligram Shorts`,
       });
     } catch (_) {}
   }, [item.title, item.videoUrl]);

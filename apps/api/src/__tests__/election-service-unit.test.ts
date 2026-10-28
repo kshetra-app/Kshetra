@@ -199,7 +199,7 @@ describe('ElectionService & Routes Unit Tests (W019)', () => {
       })) as any);
 
       await expect(electionService.listElectionEvents()).rejects.toThrow(
-        'Failed to list election events: Database timeout'
+        'Failed to list election events: Database timeout',
       );
     });
   });
@@ -212,7 +212,9 @@ describe('ElectionService & Routes Unit Tests (W019)', () => {
         maybeSingle: jest.fn().mockResolvedValue({ data: mockElectionEvent, error: null }),
       })) as any);
 
-      const res = await electionService.getElectionEventById('01900000-0000-0000-0000-000000000001');
+      const res = await electionService.getElectionEventById(
+        '01900000-0000-0000-0000-000000000001',
+      );
       expect(res?.electionCode).toBe('TS_LA_2023');
     });
 
@@ -242,11 +244,13 @@ describe('ElectionService & Routes Unit Tests (W019)', () => {
       jest.spyOn(supabase, 'from').mockImplementation((() => ({
         select: jest.fn().mockReturnThis(),
         eq: jest.fn().mockReturnThis(),
-        maybeSingle: jest.fn().mockResolvedValue({ data: null, error: { message: 'Connection reset' } }),
+        maybeSingle: jest
+          .fn()
+          .mockResolvedValue({ data: null, error: { message: 'Connection reset' } }),
       })) as any);
 
       await expect(electionService.getElectionEventById('TS_LA_2023')).rejects.toThrow(
-        'Failed to get election event: Connection reset'
+        'Failed to get election event: Connection reset',
       );
     });
   });
@@ -261,7 +265,9 @@ describe('ElectionService & Routes Unit Tests (W019)', () => {
     });
 
     it('lists contests matching search query', async () => {
-      jest.spyOn(electionService, 'getElectionEventById').mockResolvedValue(mockElectionEvent as any);
+      jest
+        .spyOn(electionService, 'getElectionEventById')
+        .mockResolvedValue(mockElectionEvent as any);
 
       jest.spyOn(supabase, 'from').mockImplementation((() => ({
         select: jest.fn().mockReturnThis(),
@@ -281,7 +287,9 @@ describe('ElectionService & Routes Unit Tests (W019)', () => {
     });
 
     it('throws error when contest query fails', async () => {
-      jest.spyOn(electionService, 'getElectionEventById').mockResolvedValue(mockElectionEvent as any);
+      jest
+        .spyOn(electionService, 'getElectionEventById')
+        .mockResolvedValue(mockElectionEvent as any);
 
       jest.spyOn(supabase, 'from').mockImplementation((() => ({
         select: jest.fn().mockReturnThis(),
@@ -295,14 +303,16 @@ describe('ElectionService & Routes Unit Tests (W019)', () => {
       })) as any);
 
       await expect(electionService.listElectionContests('TS_LA_2023')).rejects.toThrow(
-        'Failed to list election contests: Contests query error'
+        'Failed to list election contests: Contests query error',
       );
     });
   });
 
   describe('getContestDetail', () => {
     it('returns full contest detail with candidates, winner, and ballot choices', async () => {
-      jest.spyOn(electionService, 'getElectionEventById').mockResolvedValue(mockElectionEvent as any);
+      jest
+        .spyOn(electionService, 'getElectionEventById')
+        .mockResolvedValue(mockElectionEvent as any);
 
       jest.spyOn(supabase, 'from').mockImplementation(((table: string) => {
         if (table === 'election_contests') {
@@ -356,7 +366,9 @@ describe('ElectionService & Routes Unit Tests (W019)', () => {
       const res1 = await electionService.getContestDetail('NONEXISTENT', 'TS-AC-001');
       expect(res1).toBeNull();
 
-      jest.spyOn(electionService, 'getElectionEventById').mockResolvedValue(mockElectionEvent as any);
+      jest
+        .spyOn(electionService, 'getElectionEventById')
+        .mockResolvedValue(mockElectionEvent as any);
       jest.spyOn(supabase, 'from').mockImplementation((() => ({
         select: jest.fn().mockReturnThis(),
         eq: jest.fn().mockReturnThis(),
@@ -368,7 +380,9 @@ describe('ElectionService & Routes Unit Tests (W019)', () => {
     });
 
     it('handles database errors in subqueries gracefully', async () => {
-      jest.spyOn(electionService, 'getElectionEventById').mockResolvedValue(mockElectionEvent as any);
+      jest
+        .spyOn(electionService, 'getElectionEventById')
+        .mockResolvedValue(mockElectionEvent as any);
 
       jest.spyOn(supabase, 'from').mockImplementation(((table: string) => {
         if (table === 'election_contests') {
@@ -382,14 +396,16 @@ describe('ElectionService & Routes Unit Tests (W019)', () => {
           return {
             select: jest.fn().mockReturnThis(),
             eq: jest.fn().mockReturnThis(),
-            order: jest.fn().mockResolvedValue({ data: null, error: { message: 'Candidacies failed' } }),
+            order: jest
+              .fn()
+              .mockResolvedValue({ data: null, error: { message: 'Candidacies failed' } }),
           };
         }
         return { select: jest.fn().mockReturnThis() };
       }) as any);
 
       await expect(electionService.getContestDetail('TS_LA_2023', 'TS-AC-065')).rejects.toThrow(
-        'Failed to get contest candidates: Candidacies failed'
+        'Failed to get contest candidates: Candidacies failed',
       );
     });
   });
@@ -415,36 +431,38 @@ describe('ElectionService & Routes Unit Tests (W019)', () => {
         order: jest.fn().mockResolvedValue({ data: null, error: { message: 'Query aborted' } }),
       })) as any);
 
-      await expect(electionService.getPersonElections('01900000-0000-0000-0000-000000000011')).rejects.toThrow(
-        'Failed to get person elections: Query aborted'
-      );
+      await expect(
+        electionService.getPersonElections('01900000-0000-0000-0000-000000000011'),
+      ).rejects.toThrow('Failed to get person elections: Query aborted');
     });
   });
 
   describe('Election Fastify HTTP Routes', () => {
     it('GET /api/v1/elections lists election events', async () => {
       jest.spyOn(electionService, 'listElectionEvents').mockResolvedValue({
-        events: [{
-          id: mockElectionEvent.id,
-          electionCode: mockElectionEvent.election_code,
-          stateCode: mockElectionEvent.state_code,
-          electionType: mockElectionEvent.election_type,
-          electionYear: mockElectionEvent.election_year,
-          title: mockElectionEvent.title,
-          notificationDate: mockElectionEvent.notification_date,
-          pollingDate: mockElectionEvent.polling_date,
-          countingDate: mockElectionEvent.counting_date,
-          status: mockElectionEvent.status,
-          totalConstituencies: mockElectionEvent.total_constituencies,
-          totalElectors: mockElectionEvent.total_electors,
-          totalVotesPolled: mockElectionEvent.total_votes_polled,
-          turnoutPercentage: mockElectionEvent.turnout_percentage,
-          dataStatus: mockElectionEvent.data_status,
-          provenanceId: mockElectionEvent.provenance_id,
-          metadata: mockElectionEvent.metadata,
-          createdAt: mockElectionEvent.created_at,
-          updatedAt: mockElectionEvent.updated_at,
-        } as any],
+        events: [
+          {
+            id: mockElectionEvent.id,
+            electionCode: mockElectionEvent.election_code,
+            stateCode: mockElectionEvent.state_code,
+            electionType: mockElectionEvent.election_type,
+            electionYear: mockElectionEvent.election_year,
+            title: mockElectionEvent.title,
+            notificationDate: mockElectionEvent.notification_date,
+            pollingDate: mockElectionEvent.polling_date,
+            countingDate: mockElectionEvent.counting_date,
+            status: mockElectionEvent.status,
+            totalConstituencies: mockElectionEvent.total_constituencies,
+            totalElectors: mockElectionEvent.total_electors,
+            totalVotesPolled: mockElectionEvent.total_votes_polled,
+            turnoutPercentage: mockElectionEvent.turnout_percentage,
+            dataStatus: mockElectionEvent.data_status,
+            provenanceId: mockElectionEvent.provenance_id,
+            metadata: mockElectionEvent.metadata,
+            createdAt: mockElectionEvent.created_at,
+            updatedAt: mockElectionEvent.updated_at,
+          } as any,
+        ],
         total: 1,
       });
 
@@ -490,10 +508,12 @@ describe('ElectionService & Routes Unit Tests (W019)', () => {
 
     it('GET /api/v1/elections/:id/contests lists contests', async () => {
       jest.spyOn(electionService, 'listElectionContests').mockResolvedValue({
-        contests: [{
-          id: mockContest.id,
-          constituencyName: 'Kodangal',
-        } as any],
+        contests: [
+          {
+            id: mockContest.id,
+            constituencyName: 'Kodangal',
+          } as any,
+        ],
         total: 1,
       });
 
@@ -586,7 +606,9 @@ describe('ElectionService & Routes Unit Tests (W019)', () => {
     });
 
     it('covers all clamp boundaries and null fallbacks in listElectionContests', async () => {
-      jest.spyOn(electionService, 'getElectionEventById').mockResolvedValue(mockElectionEvent as any);
+      jest
+        .spyOn(electionService, 'getElectionEventById')
+        .mockResolvedValue(mockElectionEvent as any);
 
       jest.spyOn(supabase, 'from').mockImplementation((() => ({
         select: jest.fn().mockReturnThis(),
@@ -595,7 +617,10 @@ describe('ElectionService & Routes Unit Tests (W019)', () => {
         range: jest.fn().mockResolvedValue({ data: null, count: null, error: null }),
       })) as any);
 
-      const resCapped = await electionService.listElectionContests('TS_LA_2023', { limit: 200, offset: -10 });
+      const resCapped = await electionService.listElectionContests('TS_LA_2023', {
+        limit: 200,
+        offset: -10,
+      });
       expect(resCapped.contests).toEqual([]);
       expect(resCapped.total).toBe(0);
 
@@ -605,26 +630,32 @@ describe('ElectionService & Routes Unit Tests (W019)', () => {
     });
 
     it('throws when election_contests query errors in getContestDetail (line 219)', async () => {
-      jest.spyOn(electionService, 'getElectionEventById').mockResolvedValue(mockElectionEvent as any);
+      jest
+        .spyOn(electionService, 'getElectionEventById')
+        .mockResolvedValue(mockElectionEvent as any);
 
       jest.spyOn(supabase, 'from').mockImplementation(((table: string) => {
         if (table === 'election_contests') {
           return {
             select: jest.fn().mockReturnThis(),
             eq: jest.fn().mockReturnThis(),
-            maybeSingle: jest.fn().mockResolvedValue({ data: null, error: { message: 'Contest table failure' } }),
+            maybeSingle: jest
+              .fn()
+              .mockResolvedValue({ data: null, error: { message: 'Contest table failure' } }),
           };
         }
         return { select: jest.fn().mockReturnThis() };
       }) as any);
 
       await expect(electionService.getContestDetail('TS_LA_2023', 'TS-AC-065')).rejects.toThrow(
-        'Failed to get contest: Contest table failure'
+        'Failed to get contest: Contest table failure',
       );
     });
 
     it('throws when ballot_choices query errors in getContestDetail (line 248)', async () => {
-      jest.spyOn(electionService, 'getElectionEventById').mockResolvedValue(mockElectionEvent as any);
+      jest
+        .spyOn(electionService, 'getElectionEventById')
+        .mockResolvedValue(mockElectionEvent as any);
 
       jest.spyOn(supabase, 'from').mockImplementation(((table: string) => {
         if (table === 'election_contests') {
@@ -645,14 +676,16 @@ describe('ElectionService & Routes Unit Tests (W019)', () => {
           return {
             select: jest.fn().mockReturnThis(),
             eq: jest.fn().mockReturnThis(),
-            order: jest.fn().mockResolvedValue({ data: null, error: { message: 'Ballot table failure' } }),
+            order: jest
+              .fn()
+              .mockResolvedValue({ data: null, error: { message: 'Ballot table failure' } }),
           };
         }
         return { select: jest.fn().mockReturnThis() };
       }) as any);
 
       await expect(electionService.getContestDetail('TS_LA_2023', 'TS-AC-065')).rejects.toThrow(
-        'Failed to get ballot choices: Ballot table failure'
+        'Failed to get ballot choices: Ballot table failure',
       );
     });
 
@@ -785,7 +818,9 @@ describe('ElectionService & Routes Unit Tests (W019)', () => {
     });
 
     it('handles empty candidates array in getContestDetail and null in getPersonElections', async () => {
-      jest.spyOn(electionService, 'getElectionEventById').mockResolvedValue(mockElectionEvent as any);
+      jest
+        .spyOn(electionService, 'getElectionEventById')
+        .mockResolvedValue(mockElectionEvent as any);
 
       jest.spyOn(supabase, 'from').mockImplementation(((table: string) => {
         if (table === 'election_contests') {

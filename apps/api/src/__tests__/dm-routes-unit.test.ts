@@ -26,7 +26,11 @@ describe('DM Routes & Rate Limiting Unit Tests (Direct Route Injection)', () => 
           select: () => ({
             eq: () => ({
               maybeSingle: async () => ({
-                data: { role: 'citizen', verification_status: 'unverified', created_at: new Date().toISOString() },
+                data: {
+                  role: 'citizen',
+                  verification_status: 'unverified',
+                  created_at: new Date().toISOString(),
+                },
                 error: null,
               }),
             }),
@@ -107,7 +111,8 @@ describe('DM Routes & Rate Limiting Unit Tests (Direct Route Injection)', () => 
             select: () => ({
               eq: () => ({
                 or: () => ({
-                  then: (resolve: any) => resolve({ data: [{ id: 'conv-1' }, { id: 'conv-2' }], error: null }),
+                  then: (resolve: any) =>
+                    resolve({ data: [{ id: 'conv-1' }, { id: 'conv-2' }], error: null }),
                 }),
               }),
             }),
@@ -194,7 +199,8 @@ describe('DM Routes & Rate Limiting Unit Tests (Direct Route Injection)', () => 
             select: () => ({
               eq: () => ({
                 or: () => ({
-                  then: (resolve: any) => resolve({ data: null, error: new Error('Postgres query failure') }),
+                  then: (resolve: any) =>
+                    resolve({ data: null, error: new Error('Postgres query failure') }),
                 }),
               }),
             }),
@@ -341,7 +347,11 @@ describe('DM Routes & Rate Limiting Unit Tests (Direct Route Injection)', () => 
             select: () => ({
               eq: () => ({
                 maybeSingle: async () => ({
-                  data: { role: 'citizen', verification_status: 'unverified', created_at: createdNow.toISOString() },
+                  data: {
+                    role: 'citizen',
+                    verification_status: 'unverified',
+                    created_at: createdNow.toISOString(),
+                  },
                   error: null,
                 }),
               }),
@@ -906,7 +916,11 @@ describe('DM Routes & Rate Limiting Unit Tests (Direct Route Injection)', () => 
             insert: () => ({
               select: () => ({
                 single: async () => ({
-                  data: { id: 'msg-first-1', conversation_id: 'conv-first-pending', content: 'Hello stranger' },
+                  data: {
+                    id: 'msg-first-1',
+                    conversation_id: 'conv-first-pending',
+                    content: 'Hello stranger',
+                  },
                   error: null,
                 }),
               }),
@@ -1011,7 +1025,11 @@ describe('DM Routes & Rate Limiting Unit Tests (Direct Route Injection)', () => 
             select: () => ({
               eq: () => ({
                 maybeSingle: async () => ({
-                  data: { role: 'citizen', verification_status: 'verified', created_at: new Date().toISOString() },
+                  data: {
+                    role: 'citizen',
+                    verification_status: 'verified',
+                    created_at: new Date().toISOString(),
+                  },
                   error: null,
                 }),
               }),
@@ -1101,19 +1119,30 @@ describe('DM Routes & Rate Limiting Unit Tests (Direct Route Injection)', () => 
 
       // Error branches for /accept:
       // Case 1: unauthenticated
-      expect((await app.inject({ method: 'POST', url: '/api/v1/dm/conversations/c/accept' })).statusCode).toBe(401);
+      expect(
+        (await app.inject({ method: 'POST', url: '/api/v1/dm/conversations/c/accept' })).statusCode,
+      ).toBe(401);
       // Case 2: unauthenticated decline
-      expect((await app.inject({ method: 'POST', url: '/api/v1/dm/conversations/c/decline' })).statusCode).toBe(401);
+      expect(
+        (await app.inject({ method: 'POST', url: '/api/v1/dm/conversations/c/decline' }))
+          .statusCode,
+      ).toBe(401);
 
       // Case 3: accept when conversation not found
       jest.spyOn(supabase, 'from').mockImplementation(((table: string) => {
         if (table === 'user_profiles') {
-          return { select: () => ({ eq: () => ({ maybeSingle: async () => ({ data: { role: 'citizen' } }) }) }) } as any;
+          return {
+            select: () => ({
+              eq: () => ({ maybeSingle: async () => ({ data: { role: 'citizen' } }) }),
+            }),
+          } as any;
         }
         if (table === 'conversations') {
           return {
             select: () => ({ eq: () => ({ maybeSingle: async () => ({ data: null }) }) }),
-            update: () => ({ eq: () => ({ or: async () => ({ error: { message: 'Decline DB fail' } }) }) }),
+            update: () => ({
+              eq: () => ({ or: async () => ({ error: { message: 'Decline DB fail' } }) }),
+            }),
           } as any;
         }
         return {} as any;
@@ -1129,7 +1158,11 @@ describe('DM Routes & Rate Limiting Unit Tests (Direct Route Injection)', () => 
       // Case 4: accept when update fails
       jest.spyOn(supabase, 'from').mockImplementation(((table: string) => {
         if (table === 'user_profiles') {
-          return { select: () => ({ eq: () => ({ maybeSingle: async () => ({ data: { role: 'citizen' } }) }) }) } as any;
+          return {
+            select: () => ({
+              eq: () => ({ maybeSingle: async () => ({ data: { role: 'citizen' } }) }),
+            }),
+          } as any;
         }
         if (table === 'conversations') {
           return {
@@ -1156,7 +1189,11 @@ describe('DM Routes & Rate Limiting Unit Tests (Direct Route Injection)', () => 
       // Case 5: decline when update fails
       jest.spyOn(supabase, 'from').mockImplementation(((table: string) => {
         if (table === 'user_profiles') {
-          return { select: () => ({ eq: () => ({ maybeSingle: async () => ({ data: { role: 'citizen' } }) }) }) } as any;
+          return {
+            select: () => ({
+              eq: () => ({ maybeSingle: async () => ({ data: { role: 'citizen' } }) }),
+            }),
+          } as any;
         }
         if (table === 'conversations') {
           return {
@@ -1196,8 +1233,12 @@ describe('DM Routes & Rate Limiting Unit Tests (Direct Route Injection)', () => 
       // 8th hour: 2 more requests = 100 total
       time += 3601 * 1000;
       dateSpy.mockReturnValue(time);
-      expect(checkConversationRateLimit(verifiedPageUser, createdNow, true, false).allowed).toBe(true);
-      expect(checkConversationRateLimit(verifiedPageUser, createdNow, true, false).allowed).toBe(true);
+      expect(checkConversationRateLimit(verifiedPageUser, createdNow, true, false).allowed).toBe(
+        true,
+      );
+      expect(checkConversationRateLimit(verifiedPageUser, createdNow, true, false).allowed).toBe(
+        true,
+      );
 
       // 101st request: blocked by daily limit of 100!
       const blocked = checkConversationRateLimit(verifiedPageUser, createdNow, true, false);
@@ -1227,7 +1268,11 @@ describe('DM Routes & Rate Limiting Unit Tests (Direct Route Injection)', () => 
     it('handles countError in unread-count with 500', async () => {
       jest.spyOn(supabase, 'from').mockImplementation(((table: string) => {
         if (table === 'user_profiles') {
-          return { select: () => ({ eq: () => ({ maybeSingle: async () => ({ data: { role: 'citizen' } }) }) }) } as any;
+          return {
+            select: () => ({
+              eq: () => ({ maybeSingle: async () => ({ data: { role: 'citizen' } }) }),
+            }),
+          } as any;
         }
         if (table === 'conversations') {
           return {
@@ -1304,7 +1349,11 @@ describe('DM Routes & Rate Limiting Unit Tests (Direct Route Injection)', () => 
     it('rejects sending message when user is blocked', async () => {
       jest.spyOn(supabase, 'from').mockImplementation(((table: string) => {
         if (table === 'user_profiles') {
-          return { select: () => ({ eq: () => ({ maybeSingle: async () => ({ data: { role: 'citizen' } }) }) }) } as any;
+          return {
+            select: () => ({
+              eq: () => ({ maybeSingle: async () => ({ data: { role: 'citizen' } }) }),
+            }),
+          } as any;
         }
         if (table === 'conversations') {
           return {
@@ -1344,10 +1393,16 @@ describe('DM Routes & Rate Limiting Unit Tests (Direct Route Injection)', () => 
     it('returns mock conversation on create error in test/dev environment', async () => {
       jest.spyOn(supabase, 'from').mockImplementation(((table: string) => {
         if (table === 'user_profiles') {
-          return { select: () => ({ eq: () => ({ maybeSingle: async () => ({ data: { role: 'citizen' } }) }) }) } as any;
+          return {
+            select: () => ({
+              eq: () => ({ maybeSingle: async () => ({ data: { role: 'citizen' } }) }),
+            }),
+          } as any;
         }
         if (table === 'blocked_users') {
-          return { select: () => ({ or: () => ({ maybeSingle: async () => ({ data: null }) }) }) } as any;
+          return {
+            select: () => ({ or: () => ({ maybeSingle: async () => ({ data: null }) }) }),
+          } as any;
         }
         if (table === 'conversations') {
           return {
@@ -1366,7 +1421,11 @@ describe('DM Routes & Rate Limiting Unit Tests (Direct Route Injection)', () => 
           } as any;
         }
         if (table === 'user_follows') {
-          return { select: () => ({ eq: () => ({ eq: () => ({ maybeSingle: async () => ({ data: null }) }) }) }) } as any;
+          return {
+            select: () => ({
+              eq: () => ({ eq: () => ({ maybeSingle: async () => ({ data: null }) }) }),
+            }),
+          } as any;
         }
         return {} as any;
       }) as any);

@@ -16,7 +16,7 @@ export function sendApiError(
   statusCode: number,
   error: string,
   message: string,
-  options?: SendErrorOptions
+  options?: SendErrorOptions,
 ) {
   const envelope: ApiErrorEnvelope = {
     error,

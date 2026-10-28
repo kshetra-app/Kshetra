@@ -105,9 +105,9 @@ describe('Hierarchy Aggregation Engine', () => {
 
   describe('aggregateBoothsToPanchayat', () => {
     it('should aggregate voter counts and booth counts correctly', () => {
-      const panchayat1Booths = mockBooths.filter(b => b.panchayatId === 'TS-GP-101');
+      const panchayat1Booths = mockBooths.filter((b) => b.panchayatId === 'TS-GP-101');
       const result = aggregateBoothsToPanchayat(panchayat1Booths, 'TS');
-      
+
       expect(result.level).toBe('panchayat');
       expect(result.entityId).toBe('TS-GP-101');
       expect(result.totalVoters).toBe(2200);
@@ -126,8 +126,14 @@ describe('Hierarchy Aggregation Engine', () => {
   describe('aggregatePanchayatsToMandal', () => {
     it('should aggregate panchayat-level data up to mandal level', () => {
       const boothsByPanchayat = new Map<string, PollingBooth[]>();
-      boothsByPanchayat.set('TS-GP-101', mockBooths.filter(b => b.panchayatId === 'TS-GP-101'));
-      boothsByPanchayat.set('TS-GP-102', mockBooths.filter(b => b.panchayatId === 'TS-GP-102'));
+      boothsByPanchayat.set(
+        'TS-GP-101',
+        mockBooths.filter((b) => b.panchayatId === 'TS-GP-101'),
+      );
+      boothsByPanchayat.set(
+        'TS-GP-102',
+        mockBooths.filter((b) => b.panchayatId === 'TS-GP-102'),
+      );
 
       const result = aggregatePanchayatsToMandal(mockPanchayats, boothsByPanchayat, 'TS');
 
@@ -142,11 +148,20 @@ describe('Hierarchy Aggregation Engine', () => {
   describe('aggregateMandalsToConstituency', () => {
     it('should scale mandal data according to overlap percentages', () => {
       const boothsByPanchayat = new Map<string, PollingBooth[]>();
-      boothsByPanchayat.set('TS-GP-101', mockBooths.filter(b => b.panchayatId === 'TS-GP-101'));
-      boothsByPanchayat.set('TS-GP-102', mockBooths.filter(b => b.panchayatId === 'TS-GP-102'));
+      boothsByPanchayat.set(
+        'TS-GP-101',
+        mockBooths.filter((b) => b.panchayatId === 'TS-GP-101'),
+      );
+      boothsByPanchayat.set(
+        'TS-GP-102',
+        mockBooths.filter((b) => b.panchayatId === 'TS-GP-102'),
+      );
 
       const mandalDataMap = new Map();
-      mandalDataMap.set('TS-MDL-10', aggregatePanchayatsToMandal(mockPanchayats, boothsByPanchayat, 'TS'));
+      mandalDataMap.set(
+        'TS-MDL-10',
+        aggregatePanchayatsToMandal(mockPanchayats, boothsByPanchayat, 'TS'),
+      );
 
       const result = aggregateMandalsToConstituency(mockOverlaps, mandalDataMap);
 
@@ -194,7 +209,7 @@ describe('Hierarchy Aggregation Engine', () => {
 
     it('should aggregate election results by grouping entity ID', () => {
       const byGP = aggregateBoothResults(mockResults, 'panchayat', (boothId) => {
-        const b = mockBooths.find(x => x.id === boothId);
+        const b = mockBooths.find((x) => x.id === boothId);
         return b?.panchayatId ?? 'UNKNOWN';
       });
 
@@ -212,7 +227,7 @@ describe('Hierarchy Aggregation Engine', () => {
   describe('buildHierarchyTree & drillDown & computeDataIntegrityScore & validateAggregation', () => {
     it('should build hierarchy tree and perform validation', () => {
       const tree = buildHierarchyTree('TS-AC-1', mockMandals, mockPanchayats, mockBooths);
-      
+
       expect(tree.id).toBe('TS-AC-1');
       expect(tree.level).toBe('constituency');
       expect(tree.children?.length).toBe(1); // 1 Mandal
@@ -221,7 +236,13 @@ describe('Hierarchy Aggregation Engine', () => {
       const boothsDrill = drillDown('TS-AC-1', 'booth', mockMandals, mockPanchayats, mockBooths);
       expect(boothsDrill.length).toBe(3);
 
-      const integrityScore = computeDataIntegrityScore('TS-AC-1', mockBooths, mockPanchayats, mockMandals, 3000);
+      const integrityScore = computeDataIntegrityScore(
+        'TS-AC-1',
+        mockBooths,
+        mockPanchayats,
+        mockMandals,
+        3000,
+      );
       expect(integrityScore).toBeGreaterThan(90);
 
       const validation = validateAggregation('TS-AC-1', mockBooths, 3000);
@@ -231,7 +252,13 @@ describe('Hierarchy Aggregation Engine', () => {
     });
 
     it('covers all drillDown target levels', () => {
-      const constituencyDrill = drillDown('TS-AC-1', 'constituency', mockMandals, mockPanchayats, mockBooths);
+      const constituencyDrill = drillDown(
+        'TS-AC-1',
+        'constituency',
+        mockMandals,
+        mockPanchayats,
+        mockBooths,
+      );
       expect(constituencyDrill.length).toBe(1);
       expect(constituencyDrill[0].id).toBe('TS-AC-1');
 
@@ -239,10 +266,22 @@ describe('Hierarchy Aggregation Engine', () => {
       expect(mandalDrill.length).toBe(1);
       expect(mandalDrill[0].id).toBe('TS-MDL-10');
 
-      const panchayatDrill = drillDown('TS-AC-1', 'panchayat', mockMandals, mockPanchayats, mockBooths);
+      const panchayatDrill = drillDown(
+        'TS-AC-1',
+        'panchayat',
+        mockMandals,
+        mockPanchayats,
+        mockBooths,
+      );
       expect(panchayatDrill.length).toBe(2);
 
-      const districtDrill = drillDown('TS-AC-1', 'district', mockMandals, mockPanchayats, mockBooths);
+      const districtDrill = drillDown(
+        'TS-AC-1',
+        'district',
+        mockMandals,
+        mockPanchayats,
+        mockBooths,
+      );
       expect(districtDrill.length).toBe(1);
 
       const stateDrill = drillDown('TS-AC-1', 'state', mockMandals, mockPanchayats, mockBooths);
@@ -341,7 +380,7 @@ describe('Hierarchy Aggregation Engine', () => {
 
       // 2. Severe deviation (> 1%) -> Critical Error
       const errVal = validateAggregation('AC-1', warnBooths, 800);
-      expect(errVal.errors.some(e => e.includes('MISMATCH'))).toBe(true);
+      expect(errVal.errors.some((e) => e.includes('MISMATCH'))).toBe(true);
 
       // 3. Gender sum mismatch, zero voters, wrong constituency, missing panchayat/mandal
       const defectiveBooths: PollingBooth[] = [
@@ -373,11 +412,11 @@ describe('Hierarchy Aggregation Engine', () => {
         },
       ];
       const defVal = validateAggregation('AC-1', defectiveBooths, 100);
-      expect(defVal.errors.some(e => e.includes('gender sum mismatches'))).toBe(true);
-      expect(defVal.errors.some(e => e.includes('wrong constituency'))).toBe(true);
-      expect(defVal.warnings.some(e => e.includes('zero voters'))).toBe(true);
-      expect(defVal.warnings.some(e => e.includes('missing panchayatId'))).toBe(true);
-      expect(defVal.warnings.some(e => e.includes('missing mandalId'))).toBe(true);
+      expect(defVal.errors.some((e) => e.includes('gender sum mismatches'))).toBe(true);
+      expect(defVal.errors.some((e) => e.includes('wrong constituency'))).toBe(true);
+      expect(defVal.warnings.some((e) => e.includes('zero voters'))).toBe(true);
+      expect(defVal.warnings.some((e) => e.includes('missing panchayatId'))).toBe(true);
+      expect(defVal.warnings.some((e) => e.includes('missing mandalId'))).toBe(true);
 
       // 4. Election results: candidate vote mismatch and vote count deviation checks
       const badResults: BoothElectionResult[] = [
@@ -398,17 +437,23 @@ describe('Hierarchy Aggregation Engine', () => {
       ];
       // Vote count match warning (deviation between 0.1% and 1%)
       const resValWarn = validateAggregation('AC-1', warnBooths, 1007, badResults, 805);
-      expect(resValWarn.errors.some(e => e.includes('candidate vote sum'))).toBe(true);
-      expect(resValWarn.warnings.some(e => e.includes('Vote total deviation'))).toBe(true);
+      expect(resValWarn.errors.some((e) => e.includes('candidate vote sum'))).toBe(true);
+      expect(resValWarn.warnings.some((e) => e.includes('Vote total deviation'))).toBe(true);
 
       // Vote count match error (deviation > 1%)
       const resValErr = validateAggregation('AC-1', warnBooths, 1007, badResults, 900);
-      expect(resValErr.errors.some(e => e.includes('Vote total MISMATCH'))).toBe(true);
+      expect(resValErr.errors.some((e) => e.includes('Vote total MISMATCH'))).toBe(true);
     });
 
     it('covers computeDataIntegrityScore edge cases', () => {
       // Official voter total = 0
-      const scoreZero = computeDataIntegrityScore('TS-AC-1', mockBooths, mockPanchayats, mockMandals, 0);
+      const scoreZero = computeDataIntegrityScore(
+        'TS-AC-1',
+        mockBooths,
+        mockPanchayats,
+        mockMandals,
+        0,
+      );
       expect(scoreZero).toBeDefined();
 
       // Zero booths in constituency

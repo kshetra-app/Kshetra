@@ -2,9 +2,7 @@ import type { FastifyInstance } from 'fastify';
 import { sendApiError } from '../lib/replyHelper';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 
-async function resolveAuthUser(
-  request: any
-): Promise<{ userId: string; role: string } | null> {
+async function resolveAuthUser(request: any): Promise<{ userId: string; role: string } | null> {
   let userId: string | null = null;
   const authHeader = request.headers.authorization;
 
@@ -14,7 +12,10 @@ async function resolveAuthUser(
       return null;
     }
     if (isSupabaseConfigured) {
-      const { data: { user }, error } = await supabase.auth.getUser(token);
+      const {
+        data: { user },
+        error,
+      } = await supabase.auth.getUser(token);
       if (!error && user) {
         userId = user.id;
       }
@@ -329,159 +330,205 @@ export async function politicianRoutes(app: FastifyInstance) {
   /** 1. GET /api/v1/politician/profiles — list politicians on the portal */
   app.get<{
     Querystring: { state?: string; tier?: string; party?: string };
-  }>('/api/v1/politician/profiles', {
-    schema: profilesListSchema,
-  }, async (request) => {
-    const { state, tier, party } = request.query;
-    return {
-      politicians: [],
-      total: 0,
-      filters: { state, tier, party },
-    };
-  });
+  }>(
+    '/api/v1/politician/profiles',
+    {
+      schema: profilesListSchema,
+    },
+    async (request) => {
+      const { state, tier, party } = request.query;
+      return {
+        politicians: [],
+        total: 0,
+        filters: { state, tier, party },
+      };
+    },
+  );
 
   /** 2. GET /api/v1/politician/profiles/:id — single politician portal profile */
   app.get<{
     Params: { id: string };
-  }>('/api/v1/politician/profiles/:id', {
-    schema: profileDetailSchema,
-  }, async (request, reply) => {
-    const { id } = request.params;
-    return sendApiError(reply, request, 404, 'Not Found', `Politician ${id} not found`, {
-      code: 'NOT_FOUND',
-    });
-  });
+  }>(
+    '/api/v1/politician/profiles/:id',
+    {
+      schema: profileDetailSchema,
+    },
+    async (request, reply) => {
+      const { id } = request.params;
+      return sendApiError(reply, request, 404, 'Not Found', `Politician ${id} not found`, {
+        code: 'NOT_FOUND',
+      });
+    },
+  );
 
   /** 3. GET /api/v1/politician/events — upcoming political events */
   app.get<{
     Querystring: { state?: string; type?: string; upcoming?: string };
-  }>('/api/v1/politician/events', {
-    schema: eventsListSchema,
-  }, async (request) => {
-    const { state, type, upcoming } = request.query;
-    return {
-      events: [],
-      total: 0,
-      filters: { state, type, upcoming },
-    };
-  });
+  }>(
+    '/api/v1/politician/events',
+    {
+      schema: eventsListSchema,
+    },
+    async (request) => {
+      const { state, type, upcoming } = request.query;
+      return {
+        events: [],
+        total: 0,
+        filters: { state, type, upcoming },
+      };
+    },
+  );
 
   /** 4. POST /api/v1/politician/events/:id/rsvp — RSVP to event */
   app.post<{
     Params: { id: string };
-  }>('/api/v1/politician/events/:id/rsvp', {
-    schema: rsvpSchema,
-  }, async (request, reply) => {
-    const auth = await resolveAuthUser(request);
-    if (!auth) {
-      return sendApiError(reply, request, 401, 'Unauthorized', 'Authentication required to RSVP', {
-        code: 'UNAUTHORIZED',
-      });
-    }
-    if (!isSupabaseConfigured) {
-      return sendApiError(reply, request, 503, 'Service Unavailable', 'Database is unavailable', {
-        code: 'DATABASE_UNAVAILABLE',
-      });
-    }
-    const { id } = request.params;
-    const { error } = await supabase
-      .from('event_rsvps')
-      .upsert(
-        { event_id: id, user_id: auth.userId, status: 'going' },
-        { onConflict: 'event_id,user_id' }
-      );
-    if (error) {
-      if (process.env.NODE_ENV !== 'production') {
-        return { success: true, eventId: id, message: 'RSVP recorded' };
+  }>(
+    '/api/v1/politician/events/:id/rsvp',
+    {
+      schema: rsvpSchema,
+    },
+    async (request, reply) => {
+      const auth = await resolveAuthUser(request);
+      if (!auth) {
+        return sendApiError(
+          reply,
+          request,
+          401,
+          'Unauthorized',
+          'Authentication required to RSVP',
+          {
+            code: 'UNAUTHORIZED',
+          },
+        );
       }
-      return sendApiError(reply, request, 500, 'Internal Server Error', error.message, {
-        code: 'DATABASE_ERROR',
-      });
-    }
-    return { success: true, eventId: id, message: 'RSVP recorded' };
-  });
+      if (!isSupabaseConfigured) {
+        return sendApiError(reply, request, 503, 'Service Unavailable', 'Database is unavailable', {
+          code: 'DATABASE_UNAVAILABLE',
+        });
+      }
+      const { id } = request.params;
+      const { error } = await supabase
+        .from('event_rsvps')
+        .upsert(
+          { event_id: id, user_id: auth.userId, status: 'going' },
+          { onConflict: 'event_id,user_id' },
+        );
+      if (error) {
+        if (process.env.NODE_ENV !== 'production') {
+          return { success: true, eventId: id, message: 'RSVP recorded' };
+        }
+        return sendApiError(reply, request, 500, 'Internal Server Error', error.message, {
+          code: 'DATABASE_ERROR',
+        });
+      }
+      return { success: true, eventId: id, message: 'RSVP recorded' };
+    },
+  );
 
   /** 5. GET /api/v1/politician/manifestos — e-manifestos */
   app.get<{
     Querystring: { politicianId?: string; state?: string };
-  }>('/api/v1/politician/manifestos', {
-    schema: manifestosListSchema,
-  }, async (request) => {
-    const { politicianId, state } = request.query;
-    return {
-      manifestos: [],
-      total: 0,
-      filters: { politicianId, state },
-    };
-  });
+  }>(
+    '/api/v1/politician/manifestos',
+    {
+      schema: manifestosListSchema,
+    },
+    async (request) => {
+      const { politicianId, state } = request.query;
+      return {
+        manifestos: [],
+        total: 0,
+        filters: { politicianId, state },
+      };
+    },
+  );
 
   /** 6. POST /api/v1/politician/manifestos/:manifestoId/items/:itemId/vote — vote on manifesto item (BLOCKED in B4 per CTO directive: no persistence table) */
   app.post<{
     Params: { manifestoId: string; itemId: string };
     Body: { support: boolean };
-  }>('/api/v1/politician/manifestos/:manifestoId/items/:itemId/vote', {
-    schema: manifestoVoteSchema,
-  }, async (request, reply) => {
-    return sendApiError(
-      reply,
-      request,
-      501,
-      'Not Implemented',
-      'Manifesto item voting persistence target is not available in current database schema (Operation 8 blocked in W009-B4)',
-      { code: 'PERSISTENCE_TARGET_UNAVAILABLE' }
-    );
-  });
+  }>(
+    '/api/v1/politician/manifestos/:manifestoId/items/:itemId/vote',
+    {
+      schema: manifestoVoteSchema,
+    },
+    async (request, reply) => {
+      return sendApiError(
+        reply,
+        request,
+        501,
+        'Not Implemented',
+        'Manifesto item voting persistence target is not available in current database schema (Operation 8 blocked in W009-B4)',
+        { code: 'PERSISTENCE_TARGET_UNAVAILABLE' },
+      );
+    },
+  );
 
   /** 7. GET /api/v1/politician/surveys — opinion surveys */
   app.get<{
     Querystring: { state?: string; status?: string };
-  }>('/api/v1/politician/surveys', {
-    schema: surveysListSchema,
-  }, async (request) => {
-    const { state, status } = request.query;
-    return {
-      surveys: [],
-      total: 0,
-      filters: { state, status },
-    };
-  });
+  }>(
+    '/api/v1/politician/surveys',
+    {
+      schema: surveysListSchema,
+    },
+    async (request) => {
+      const { state, status } = request.query;
+      return {
+        surveys: [],
+        total: 0,
+        filters: { state, status },
+      };
+    },
+  );
 
   /** 8. POST /api/v1/politician/surveys/:id/respond — submit survey response */
   app.post<{
     Params: { id: string };
     Body: { answers: Record<string, string> };
-  }>('/api/v1/politician/surveys/:id/respond', {
-    schema: surveyRespondSchema,
-  }, async (request, reply) => {
-    const auth = await resolveAuthUser(request);
-    if (!auth) {
-      return sendApiError(reply, request, 401, 'Unauthorized', 'Authentication required to respond to survey', {
-        code: 'UNAUTHORIZED',
-      });
-    }
-    if (!isSupabaseConfigured) {
-      return sendApiError(reply, request, 503, 'Service Unavailable', 'Database is unavailable', {
-        code: 'DATABASE_UNAVAILABLE',
-      });
-    }
-    const { id } = request.params;
-    const { answers } = request.body;
-    const { error } = await supabase
-      .from('survey_responses')
-      .upsert(
-        { survey_id: id, user_id: auth.userId, answers },
-        { onConflict: 'survey_id,user_id' }
-      );
-    if (error) {
-      if (process.env.NODE_ENV !== 'production') {
-        return { success: true, surveyId: id, message: 'Response submitted' };
+  }>(
+    '/api/v1/politician/surveys/:id/respond',
+    {
+      schema: surveyRespondSchema,
+    },
+    async (request, reply) => {
+      const auth = await resolveAuthUser(request);
+      if (!auth) {
+        return sendApiError(
+          reply,
+          request,
+          401,
+          'Unauthorized',
+          'Authentication required to respond to survey',
+          {
+            code: 'UNAUTHORIZED',
+          },
+        );
       }
-      return sendApiError(reply, request, 500, 'Internal Server Error', error.message, {
-        code: 'DATABASE_ERROR',
-      });
-    }
-    return { success: true, surveyId: id, message: 'Response submitted' };
-  });
+      if (!isSupabaseConfigured) {
+        return sendApiError(reply, request, 503, 'Service Unavailable', 'Database is unavailable', {
+          code: 'DATABASE_UNAVAILABLE',
+        });
+      }
+      const { id } = request.params;
+      const { answers } = request.body;
+      const { error } = await supabase
+        .from('survey_responses')
+        .upsert(
+          { survey_id: id, user_id: auth.userId, answers },
+          { onConflict: 'survey_id,user_id' },
+        );
+      if (error) {
+        if (process.env.NODE_ENV !== 'production') {
+          return { success: true, surveyId: id, message: 'Response submitted' };
+        }
+        return sendApiError(reply, request, 500, 'Internal Server Error', error.message, {
+          code: 'DATABASE_ERROR',
+        });
+      }
+      return { success: true, surveyId: id, message: 'Response submitted' };
+    },
+  );
 
   /** 9. POST /api/v1/politician/grievances — file a grievance (BLOCKED in B4 per CTO directive: no persistence table) */
   app.post<{
@@ -491,16 +538,20 @@ export async function politicianRoutes(app: FastifyInstance) {
       description: string;
       category: string;
     };
-  }>('/api/v1/politician/grievances', {
-    schema: politicianGrievanceSchema,
-  }, async (request, reply) => {
-    return sendApiError(
-      reply,
-      request,
-      501,
-      'Not Implemented',
-      'Politician grievance persistence target is not available in current database schema (Operation 10 blocked in W009-B4)',
-      { code: 'PERSISTENCE_TARGET_UNAVAILABLE' }
-    );
-  });
+  }>(
+    '/api/v1/politician/grievances',
+    {
+      schema: politicianGrievanceSchema,
+    },
+    async (request, reply) => {
+      return sendApiError(
+        reply,
+        request,
+        501,
+        'Not Implemented',
+        'Politician grievance persistence target is not available in current database schema (Operation 10 blocked in W009-B4)',
+        { code: 'PERSISTENCE_TARGET_UNAVAILABLE' },
+      );
+    },
+  );
 }

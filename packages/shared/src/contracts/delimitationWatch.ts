@@ -20,11 +20,7 @@ export type LegalInstrumentType =
   | 'UNKNOWN';
 
 export type LegalEnactmentStatus =
-  | 'ENACTED_COMMENCED'
-  | 'ENACTED_FUTURE_EFFECTIVE'
-  | 'PROPOSED_DRAFT'
-  | 'SUPERSEDED'
-  | 'UNVERIFIED';
+  'ENACTED_COMMENCED' | 'ENACTED_FUTURE_EFFECTIVE' | 'PROPOSED_DRAFT' | 'SUPERSEDED' | 'UNVERIFIED';
 
 export interface LegalEvidenceDecisionRecord {
   ruleApplied: string;
@@ -55,12 +51,7 @@ export type DelimitationSourceType =
   | 'synthetic_fixture';
 
 export type DelimitationAuthorityClassification =
-  | 'constitutional'
-  | 'statutory'
-  | 'academic'
-  | 'media_ngo'
-  | 'crowdsourced'
-  | 'synthetic_model';
+  'constitutional' | 'statutory' | 'academic' | 'media_ngo' | 'crowdsourced' | 'synthetic_model';
 
 export type RetrievalMethod = 'http_get' | 'file_fixture' | 'mock_api';
 
@@ -71,7 +62,7 @@ export interface DelimitationWatchSource {
   sourceType: DelimitationSourceType;
   canonicalUrl: string;
   geographicScope: string; // e.g. 'NATIONAL', 'IN-TG', 'IN-AS'
-  subjectScope: string;    // e.g. 'delimitation_order', 'draft_proposal'
+  subjectScope: string; // e.g. 'delimitation_order', 'draft_proposal'
   authorityClassification: DelimitationAuthorityClassification;
   retrievalMethod: RetrievalMethod;
   pollingSchedule?: string;
@@ -271,7 +262,8 @@ export interface DelimitationNotificationEvent {
 }
 
 export type PublicationStatus = 'PUBLISHED' | 'FAILED' | 'RETRY_PENDING';
-export type DelimitationPublicationType = 'ENACTED_OFFICIAL' | 'PROPOSAL' | 'SCENARIO_ESTIMATE' | 'UNVERIFIED_NOTICE';
+export type DelimitationPublicationType =
+  'ENACTED_OFFICIAL' | 'PROPOSAL' | 'SCENARIO_ESTIMATE' | 'UNVERIFIED_NOTICE';
 
 export interface DelimitationPublication {
   id: string;
@@ -287,12 +279,7 @@ export interface DelimitationPublication {
 }
 
 export type RunOutcome =
-  | 'SUCCESS'
-  | 'NO_CHANGE'
-  | 'REJECTED'
-  | 'REVIEW_REQUIRED'
-  | 'RETRY_PENDING'
-  | 'FAILED';
+  'SUCCESS' | 'NO_CHANGE' | 'REJECTED' | 'REVIEW_REQUIRED' | 'RETRY_PENDING' | 'FAILED';
 
 export interface DelimitationWatchRun {
   id: string;

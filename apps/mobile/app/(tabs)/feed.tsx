@@ -258,7 +258,7 @@ export default function FeedScreen({ hideHeader = false }: FeedScreenProps = {})
   const handleShare = useCallback(async (post: Post) => {
     try {
       await Share.share({
-        message: `${post.content.slice(0, 200)}${post.content.length > 200 ? '...' : ''}\n\n— via Kshetra`,
+        message: `${post.content.slice(0, 200)}${post.content.length > 200 ? '...' : ''}\n\n— via Poligram`,
       });
     } catch (_) {}
   }, []);

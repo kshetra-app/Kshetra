@@ -92,7 +92,7 @@ export const VISIBILITY_CONFIG: Record<
     label: 'Public',
     shortLabel: 'Public',
     descriptionKey: 'lmx.visibility.publicDesc',
-    description: 'Appears on the Kshetra Live tab and is eligible for media/broadcast distribution.',
+    description: 'Appears on the Poligram Live tab and is eligible for media/broadcast distribution.',
     icon: 'earth',
     color: '#10B981',
   },

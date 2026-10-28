@@ -95,7 +95,7 @@ export default function RepresentativeProfileScreen() {
   const handleShare = async () => {
     try {
       await Share.share({
-        message: `${profile.name || profile.officeLabel} — ${profile.officeLabel}\n${profile.jurisdictionName}, ${profile.stateCode}\n\nExplore on Kshetra`,
+        message: `${profile.name || profile.officeLabel} — ${profile.officeLabel}\n${profile.jurisdictionName}, ${profile.stateCode}\n\nExplore on Poligram`,
       });
     } catch { /* noop */ }
   };

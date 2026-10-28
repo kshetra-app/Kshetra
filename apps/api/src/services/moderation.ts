@@ -5,7 +5,8 @@
  * reputation scoring, and audit logging.
  */
 
-export type UserRole = 'citizen' | 'journalist' | 'activist' | 'politician' | 'official' | 'moderator' | 'admin';
+export type UserRole =
+  'citizen' | 'journalist' | 'activist' | 'politician' | 'official' | 'moderator' | 'admin';
 
 export type ModerationAction =
   | 'warn'
@@ -23,7 +24,8 @@ export type ModerationAction =
 
 export type VerificationStatus = 'pending' | 'approved' | 'rejected' | 'revoked';
 
-export type VerificationType = 'identity' | 'journalist' | 'politician' | 'government_official' | 'organization';
+export type VerificationType =
+  'identity' | 'journalist' | 'politician' | 'government_official' | 'organization';
 
 export interface ModerationActionPayload {
   moderatorId: string;
@@ -92,10 +94,7 @@ export function canPerformAction(role: UserRole, action: ModerationAction): bool
  * Content filtering: basic keyword-based check.
  * In production, this would use ML-based classification.
  */
-const FLAGGED_PATTERNS = [
-  /\b(kill|murder|assault|bomb|attack)\b/i,
-  /\b(hate|slur)\b/i,
-];
+const FLAGGED_PATTERNS = [/\b(kill|murder|assault|bomb|attack)\b/i, /\b(hate|slur)\b/i];
 
 export function flagContent(text: string): { flagged: boolean; reasons: string[] } {
   const reasons: string[] = [];
@@ -123,14 +122,17 @@ export function flagContent(text: string): { flagged: boolean; reasons: string[]
 /**
  * Moderation action config for the admin UI.
  */
-export const ACTION_CONFIG: Record<ModerationAction, {
-  label: string;
-  description: string;
-  icon: string;
-  color: string;
-  requiresReason: boolean;
-  requiresDuration: boolean;
-}> = {
+export const ACTION_CONFIG: Record<
+  ModerationAction,
+  {
+    label: string;
+    description: string;
+    icon: string;
+    color: string;
+    requiresReason: boolean;
+    requiresDuration: boolean;
+  }
+> = {
   warn: {
     label: 'Warn',
     description: 'Send a warning to the user',

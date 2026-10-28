@@ -456,9 +456,11 @@ describe('Comprehensive Delimitation Unit & Route Tests', () => {
       expect(json.success).toBe(true);
 
       // DelimitationQueryError
-      jest.spyOn(delimitationQueryService, 'getRegimes').mockRejectedValueOnce(
-        new DelimitationQueryError('REGIME_QUERY_FAILED', 500, 'Query failed')
-      );
+      jest
+        .spyOn(delimitationQueryService, 'getRegimes')
+        .mockRejectedValueOnce(
+          new DelimitationQueryError('REGIME_QUERY_FAILED', 500, 'Query failed'),
+        );
       const errRes1 = await app.inject({
         method: 'GET',
         url: '/api/v1/delimitation/regimes',
@@ -566,16 +568,20 @@ describe('Comprehensive Delimitation Unit & Route Tests', () => {
       });
 
       it('handles DelimitationQueryError and generic error in /regimes/resolve', async () => {
-        jest.spyOn(delimitationQueryService, 'resolveRegime').mockRejectedValueOnce(
-          new DelimitationQueryError('TEST_QUERY_ERROR', 400, 'Test error message')
-        );
+        jest
+          .spyOn(delimitationQueryService, 'resolveRegime')
+          .mockRejectedValueOnce(
+            new DelimitationQueryError('TEST_QUERY_ERROR', 400, 'Test error message'),
+          );
         const resErr1 = await app.inject({
           method: 'GET',
           url: '/api/v1/delimitation/regimes/resolve',
         });
         expect(resErr1.statusCode).toBe(400);
 
-        jest.spyOn(delimitationQueryService, 'resolveRegime').mockRejectedValueOnce(new Error('Fatal'));
+        jest
+          .spyOn(delimitationQueryService, 'resolveRegime')
+          .mockRejectedValueOnce(new Error('Fatal'));
         const resErr2 = await app.inject({
           method: 'GET',
           url: '/api/v1/delimitation/regimes/resolve',
@@ -595,16 +601,18 @@ describe('Comprehensive Delimitation Unit & Route Tests', () => {
         const json = JSON.parse(res.payload);
         expect(json.success).toBe(true);
 
-        jest.spyOn(delimitationQueryService, 'getProposals').mockRejectedValueOnce(
-          new DelimitationQueryError('PROP_ERROR', 400, 'Query error')
-        );
+        jest
+          .spyOn(delimitationQueryService, 'getProposals')
+          .mockRejectedValueOnce(new DelimitationQueryError('PROP_ERROR', 400, 'Query error'));
         const errRes1 = await app.inject({
           method: 'GET',
           url: '/api/v1/delimitation/proposals',
         });
         expect(errRes1.statusCode).toBe(400);
 
-        jest.spyOn(delimitationQueryService, 'getProposals').mockRejectedValueOnce(new Error('Fatal'));
+        jest
+          .spyOn(delimitationQueryService, 'getProposals')
+          .mockRejectedValueOnce(new Error('Fatal'));
         const errRes2 = await app.inject({
           method: 'GET',
           url: '/api/v1/delimitation/proposals',
@@ -628,16 +636,18 @@ describe('Comprehensive Delimitation Unit & Route Tests', () => {
         expect(res404.statusCode).toBe(404);
         expect(JSON.parse(res404.payload).code).toBe('PROPOSAL_NOT_FOUND');
 
-        jest.spyOn(delimitationQueryService, 'getProposalById').mockRejectedValueOnce(
-          new DelimitationQueryError('PROP_ERR', 400, 'Proposal error')
-        );
+        jest
+          .spyOn(delimitationQueryService, 'getProposalById')
+          .mockRejectedValueOnce(new DelimitationQueryError('PROP_ERR', 400, 'Proposal error'));
         const errRes = await app.inject({
           method: 'GET',
           url: '/api/v1/delimitation/proposals/02010000-0000-0000-0000-000000000001',
         });
         expect(errRes.statusCode).toBe(400);
 
-        jest.spyOn(delimitationQueryService, 'getProposalById').mockRejectedValueOnce(new Error('Fatal'));
+        jest
+          .spyOn(delimitationQueryService, 'getProposalById')
+          .mockRejectedValueOnce(new Error('Fatal'));
         const errRes2 = await app.inject({
           method: 'GET',
           url: '/api/v1/delimitation/proposals/02010000-0000-0000-0000-000000000001',
@@ -656,16 +666,18 @@ describe('Comprehensive Delimitation Unit & Route Tests', () => {
         const json = JSON.parse(res.payload);
         expect(json.data.claims).toBeDefined();
 
-        jest.spyOn(delimitationQueryService, 'getConstituencyMappings').mockRejectedValueOnce(
-          new DelimitationQueryError('MAP_ERR', 500, 'Error')
-        );
+        jest
+          .spyOn(delimitationQueryService, 'getConstituencyMappings')
+          .mockRejectedValueOnce(new DelimitationQueryError('MAP_ERR', 500, 'Error'));
         const errRes = await app.inject({
           method: 'GET',
           url: '/api/v1/delimitation/mapping',
         });
         expect(errRes.statusCode).toBe(500);
 
-        jest.spyOn(delimitationQueryService, 'getConstituencyMappings').mockRejectedValueOnce(new Error('Fatal'));
+        jest
+          .spyOn(delimitationQueryService, 'getConstituencyMappings')
+          .mockRejectedValueOnce(new Error('Fatal'));
         const errRes2 = await app.inject({
           method: 'GET',
           url: '/api/v1/delimitation/mapping',
@@ -694,16 +706,18 @@ describe('Comprehensive Delimitation Unit & Route Tests', () => {
         expect(JSON.parse(res404.payload).code).toBe('CONSTITUENCY_NOT_FOUND');
 
         // Error handling
-        jest.spyOn(delimitationQueryService, 'getConstituencyLineage').mockRejectedValueOnce(
-          new DelimitationQueryError('LIN_ERR', 400, 'Error')
-        );
+        jest
+          .spyOn(delimitationQueryService, 'getConstituencyLineage')
+          .mockRejectedValueOnce(new DelimitationQueryError('LIN_ERR', 400, 'Error'));
         const errRes = await app.inject({
           method: 'GET',
           url: '/api/v1/delimitation/lineage/119',
         });
         expect(errRes.statusCode).toBe(400);
 
-        jest.spyOn(delimitationQueryService, 'getConstituencyLineage').mockRejectedValueOnce(new Error('Fatal'));
+        jest
+          .spyOn(delimitationQueryService, 'getConstituencyLineage')
+          .mockRejectedValueOnce(new Error('Fatal'));
         const errRes2 = await app.inject({
           method: 'GET',
           url: '/api/v1/delimitation/lineage/119',
@@ -721,7 +735,9 @@ describe('Comprehensive Delimitation Unit & Route Tests', () => {
       // Supabase error
       jest.spyOn(supabase, 'from').mockReturnValueOnce({
         select: jest.fn().mockReturnThis(),
-        order: jest.fn().mockResolvedValueOnce({ data: null, error: { message: 'DB connection error' } }),
+        order: jest
+          .fn()
+          .mockResolvedValueOnce({ data: null, error: { message: 'DB connection error' } }),
       } as any);
 
       await expect(delimitationQueryService.getRegimes()).rejects.toThrow(DelimitationQueryError);
@@ -797,13 +813,18 @@ describe('Comprehensive Delimitation Unit & Route Tests', () => {
       jest.spyOn(supabase, 'from').mockReturnValueOnce({
         select: jest.fn().mockReturnThis(),
         eq: jest.fn().mockReturnThis(),
-        maybeSingle: jest.fn().mockResolvedValueOnce({ data: null, error: { message: 'DB error' } }),
+        maybeSingle: jest
+          .fn()
+          .mockResolvedValueOnce({ data: null, error: { message: 'DB error' } }),
       } as any);
 
-      await expect(delimitationQueryService.getProposalById('some_id')).rejects.toThrow(DelimitationQueryError);
+      await expect(delimitationQueryService.getProposalById('some_id')).rejects.toThrow(
+        DelimitationQueryError,
+      );
 
       // Proposal with provenanceId -> resolves provenance record via mapDbProvenance
-      jest.spyOn(supabase, 'from')
+      jest
+        .spyOn(supabase, 'from')
         .mockReturnValueOnce({
           select: jest.fn().mockReturnThis(),
           eq: jest.fn().mockReturnThis(),
@@ -845,10 +866,16 @@ describe('Comprehensive Delimitation Unit & Route Tests', () => {
 
     it('getConstituencyMappings throws on DB error and maps rows via mapDbMapping', async () => {
       jest.spyOn(supabase, 'from').mockReturnValueOnce({
-        select: jest.fn().mockResolvedValueOnce({ data: null, error: { message: 'Mapping query error' }, count: 0 }),
+        select: jest.fn().mockResolvedValueOnce({
+          data: null,
+          error: { message: 'Mapping query error' },
+          count: 0,
+        }),
       } as any);
 
-      await expect(delimitationQueryService.getConstituencyMappings()).rejects.toThrow(DelimitationQueryError);
+      await expect(delimitationQueryService.getConstituencyMappings()).rejects.toThrow(
+        DelimitationQueryError,
+      );
 
       jest.spyOn(supabase, 'from').mockReturnValueOnce({
         select: jest.fn().mockResolvedValueOnce({
@@ -922,7 +949,9 @@ describe('Comprehensive Delimitation Unit & Route Tests', () => {
           },
         ]);
 
-        await expect(delimitationQueryService.resolveRegime({ mode: 'current' })).rejects.toMatchObject({
+        await expect(
+          delimitationQueryService.resolveRegime({ mode: 'current' }),
+        ).rejects.toMatchObject({
           code: 'INVALID_CURRENT_REGIME_STATE',
         });
       });
@@ -930,7 +959,9 @@ describe('Comprehensive Delimitation Unit & Route Tests', () => {
       it('mode=current throws when no CURRENT_LEGAL_REGIME exists', async () => {
         jest.spyOn(delimitationQueryService, 'getRegimes').mockResolvedValueOnce([]);
 
-        await expect(delimitationQueryService.resolveRegime({ mode: 'current' })).rejects.toMatchObject({
+        await expect(
+          delimitationQueryService.resolveRegime({ mode: 'current' }),
+        ).rejects.toMatchObject({
           code: 'REGIME_NOT_FOUND',
         });
       });
@@ -951,34 +982,48 @@ describe('Comprehensive Delimitation Unit & Route Tests', () => {
           },
         ]);
 
-        await expect(delimitationQueryService.resolveRegime({ mode: 'current' })).rejects.toMatchObject({
+        await expect(
+          delimitationQueryService.resolveRegime({ mode: 'current' }),
+        ).rejects.toMatchObject({
           code: 'INVALID_CURRENT_REGIME_STATE',
         });
       });
 
       it('mode=as_of throws on invalid date formats or missing regime', async () => {
-        await expect(delimitationQueryService.resolveRegime({ mode: 'as_of', date: 'invalid-date' })).rejects.toMatchObject({
+        await expect(
+          delimitationQueryService.resolveRegime({ mode: 'as_of', date: 'invalid-date' }),
+        ).rejects.toMatchObject({
           code: 'INVALID_TEMPORAL_PARAMETER',
         });
 
-        await expect(delimitationQueryService.resolveRegime({ mode: 'as_of', date: '1950-01-01' })).rejects.toMatchObject({
+        await expect(
+          delimitationQueryService.resolveRegime({ mode: 'as_of', date: '1950-01-01' }),
+        ).rejects.toMatchObject({
           code: 'REGIME_NOT_FOUND',
         });
       });
 
       it('mode=explicit throws on forbidden or missing regime identifiers', async () => {
         await expect(
-          delimitationQueryService.resolveRegime({ mode: 'explicit', regimeId: 'SIMULATION_PROPOSED' })
+          delimitationQueryService.resolveRegime({
+            mode: 'explicit',
+            regimeId: 'SIMULATION_PROPOSED',
+          }),
         ).rejects.toMatchObject({ code: 'INVALID_REGIME_IDENTIFIER' });
 
         await expect(
-          delimitationQueryService.resolveRegime({ mode: 'explicit', regimeId: 'unregistered_regime_xyz' })
+          delimitationQueryService.resolveRegime({
+            mode: 'explicit',
+            regimeId: 'unregistered_regime_xyz',
+          }),
         ).rejects.toMatchObject({ code: 'REGIME_NOT_FOUND' });
       });
 
       it('mode=future_anticipated throws when regime not found', async () => {
         jest.spyOn(delimitationQueryService, 'getRegimes').mockResolvedValueOnce([]);
-        await expect(delimitationQueryService.resolveRegime({ mode: 'future_anticipated' })).rejects.toMatchObject({
+        await expect(
+          delimitationQueryService.resolveRegime({ mode: 'future_anticipated' }),
+        ).rejects.toMatchObject({
           code: 'REGIME_NOT_FOUND',
         });
       });
@@ -986,7 +1031,7 @@ describe('Comprehensive Delimitation Unit & Route Tests', () => {
       it('mode=scenario fails closed on coherence violations', async () => {
         // Missing selector
         await expect(
-          delimitationQueryService.resolveRegime({ mode: 'scenario', selector: null as any })
+          delimitationQueryService.resolveRegime({ mode: 'scenario', selector: null as any }),
         ).rejects.toMatchObject({ code: 'INVALID_SCENARIO_SELECTOR' });
 
         // Proposal not found
@@ -994,7 +1039,7 @@ describe('Comprehensive Delimitation Unit & Route Tests', () => {
           delimitationQueryService.resolveRegime({
             mode: 'scenario',
             selector: { type: 'proposal_id', proposalId: '00000000-0000-0000-0000-000000000000' },
-          })
+          }),
         ).rejects.toMatchObject({ code: 'SCENARIO_NOT_FOUND' });
 
         // Proposal is not SCENARIO_PROPOSED_REGIME
@@ -1028,7 +1073,7 @@ describe('Comprehensive Delimitation Unit & Route Tests', () => {
           delimitationQueryService.resolveRegime({
             mode: 'scenario',
             selector: { type: 'proposal_id', proposalId: 'prop_statutory' },
-          })
+          }),
         ).rejects.toMatchObject({ code: 'SCENARIO_COHERENCE_VIOLATION' });
 
         // Scenario proposal missing regimeId
@@ -1062,7 +1107,7 @@ describe('Comprehensive Delimitation Unit & Route Tests', () => {
           delimitationQueryService.resolveRegime({
             mode: 'scenario',
             selector: { type: 'proposal_id', proposalId: 'prop_no_regime' },
-          })
+          }),
         ).rejects.toMatchObject({ code: 'SCENARIO_COHERENCE_VIOLATION' });
 
         // Scenario regime_id not found
@@ -1070,7 +1115,7 @@ describe('Comprehensive Delimitation Unit & Route Tests', () => {
           delimitationQueryService.resolveRegime({
             mode: 'scenario',
             selector: { type: 'regime_id', regimeId: 'unregistered_regime_999' },
-          })
+          }),
         ).rejects.toMatchObject({ code: 'SCENARIO_NOT_FOUND' });
 
         // Scenario regime_id resolves a non-scenario regime
@@ -1078,7 +1123,7 @@ describe('Comprehensive Delimitation Unit & Route Tests', () => {
           delimitationQueryService.resolveRegime({
             mode: 'scenario',
             selector: { type: 'regime_id', regimeId: 'eci_delimitation_2008' },
-          })
+          }),
         ).rejects.toMatchObject({ code: 'SCENARIO_COHERENCE_VIOLATION' });
 
         // Unknown selector type
@@ -1086,7 +1131,7 @@ describe('Comprehensive Delimitation Unit & Route Tests', () => {
           delimitationQueryService.resolveRegime({
             mode: 'scenario',
             selector: { type: 'invalid_type' } as any,
-          })
+          }),
         ).rejects.toMatchObject({ code: 'INVALID_SCENARIO_SELECTOR' });
 
         // Empty proposalId
@@ -1094,7 +1139,7 @@ describe('Comprehensive Delimitation Unit & Route Tests', () => {
           delimitationQueryService.resolveRegime({
             mode: 'scenario',
             selector: { type: 'proposal_id', proposalId: '' },
-          })
+          }),
         ).rejects.toMatchObject({ code: 'INVALID_SCENARIO_SELECTOR' });
 
         // Proposal links to unregistered regime
@@ -1128,7 +1173,7 @@ describe('Comprehensive Delimitation Unit & Route Tests', () => {
           delimitationQueryService.resolveRegime({
             mode: 'scenario',
             selector: { type: 'proposal_id', proposalId: 'prop_unreg_regime' },
-          })
+          }),
         ).rejects.toMatchObject({ code: 'SCENARIO_COHERENCE_VIOLATION' });
 
         // Proposal links to non-scenario regime (e.g. eci_delimitation_2008)
@@ -1162,7 +1207,7 @@ describe('Comprehensive Delimitation Unit & Route Tests', () => {
           delimitationQueryService.resolveRegime({
             mode: 'scenario',
             selector: { type: 'proposal_id', proposalId: 'prop_non_scen_regime' },
-          })
+          }),
         ).rejects.toMatchObject({ code: 'SCENARIO_COHERENCE_VIOLATION' });
 
         // Empty regimeId in scenario selector
@@ -1170,7 +1215,7 @@ describe('Comprehensive Delimitation Unit & Route Tests', () => {
           delimitationQueryService.resolveRegime({
             mode: 'scenario',
             selector: { type: 'regime_id', regimeId: '' },
-          })
+          }),
         ).rejects.toMatchObject({ code: 'INVALID_SCENARIO_SELECTOR' });
 
         // Scenario regime with proposal having provenance
@@ -1207,17 +1252,17 @@ describe('Comprehensive Delimitation Unit & Route Tests', () => {
 
         // Unknown selection mode
         await expect(
-          delimitationQueryService.resolveRegime({ mode: 'completely_unknown_mode' as any })
+          delimitationQueryService.resolveRegime({ mode: 'completely_unknown_mode' as any }),
         ).rejects.toMatchObject({ code: 'INVALID_REGIME_SELECTION_MODE' });
 
         // as_of with non-string date
         await expect(
-          delimitationQueryService.resolveRegime({ mode: 'as_of', date: 12345 as any })
+          delimitationQueryService.resolveRegime({ mode: 'as_of', date: 12345 as any }),
         ).rejects.toMatchObject({ code: 'INVALID_TEMPORAL_PARAMETER' });
 
         // explicit with non-string regimeId
         await expect(
-          delimitationQueryService.resolveRegime({ mode: 'explicit', regimeId: 12345 as any })
+          delimitationQueryService.resolveRegime({ mode: 'explicit', regimeId: 12345 as any }),
         ).rejects.toMatchObject({ code: 'INVALID_REGIME_IDENTIFIER' });
       });
     });
@@ -1236,36 +1281,46 @@ describe('Comprehensive Delimitation Unit & Route Tests', () => {
 
     it('assertLegalAssemblyBounds asserts constitutional constraints', () => {
       // Direct resolveLegalApplicability on service
-      const constraint = delimitationService.resolveLegalApplicability('STATE_LEGISLATIVE_ASSEMBLY', 'CURRENT_LEGAL_REGIME', 'TS');
+      const constraint = delimitationService.resolveLegalApplicability(
+        'STATE_LEGISLATIVE_ASSEMBLY',
+        'CURRENT_LEGAL_REGIME',
+        'TS',
+      );
       expect(constraint.minSeats).toBe(60);
       expect(constraint.maxSeats).toBe(500);
 
       // Below Article 170 min 60 seats for standard state
       expect(() =>
-        delimitationService.assertLegalAssemblyBounds(50, 'STATE_LEGISLATIVE_ASSEMBLY', 'TS')
+        delimitationService.assertLegalAssemblyBounds(50, 'STATE_LEGISLATIVE_ASSEMBLY', 'TS'),
       ).toThrow(RangeError);
 
       // Above Article 170 max 500 seats for standard state
       expect(() =>
-        delimitationService.assertLegalAssemblyBounds(550, 'STATE_LEGISLATIVE_ASSEMBLY', 'TS')
+        delimitationService.assertLegalAssemblyBounds(550, 'STATE_LEGISLATIVE_ASSEMBLY', 'TS'),
       ).toThrow(RangeError);
 
       // Within bounds
       expect(() =>
-        delimitationService.assertLegalAssemblyBounds(119, 'STATE_LEGISLATIVE_ASSEMBLY', 'TS')
+        delimitationService.assertLegalAssemblyBounds(119, 'STATE_LEGISLATIVE_ASSEMBLY', 'TS'),
       ).not.toThrow();
 
       // Special regime Sikkim min 30 seats
       expect(() =>
-        delimitationService.assertLegalAssemblyBounds(32, 'STATE_LEGISLATIVE_ASSEMBLY', 'SK')
+        delimitationService.assertLegalAssemblyBounds(32, 'STATE_LEGISLATIVE_ASSEMBLY', 'SK'),
       ).not.toThrow();
     });
 
     it('allocateArticle332 validates inputs and tie-breaks deterministically', () => {
       // Invalid populations
-      expect(() => delimitationService.allocateArticle332(100, 0, 10, 10)).toThrow('RES-DATA-01 violation');
-      expect(() => delimitationService.allocateArticle332(100, 1000, -5, 10)).toThrow('RES-DATA-01 violation');
-      expect(() => delimitationService.allocateArticle332(100, 1000, 600, 500)).toThrow('RES-DATA-01 violation');
+      expect(() => delimitationService.allocateArticle332(100, 0, 10, 10)).toThrow(
+        'RES-DATA-01 violation',
+      );
+      expect(() => delimitationService.allocateArticle332(100, 1000, -5, 10)).toThrow(
+        'RES-DATA-01 violation',
+      );
+      expect(() => delimitationService.allocateArticle332(100, 1000, 600, 500)).toThrow(
+        'RES-DATA-01 violation',
+      );
 
       // Tie-break scenario where remainders are identical and populations differ
       const resDiffPop = delimitationService.allocateArticle332(3, 10000, 1500, 3500);
@@ -1285,7 +1340,9 @@ describe('Comprehensive Delimitation Unit & Route Tests', () => {
         { districtName: 'D1', population: 100, scPopulation: 10, stPopulation: 10 },
         { districtName: 'D2', population: 200, scPopulation: 20, stPopulation: 20 },
       ];
-      expect(() => delimitationService.allocateHamiltonHareNiemeyer(districts, 1)).toThrow(RangeError);
+      expect(() => delimitationService.allocateHamiltonHareNiemeyer(districts, 1)).toThrow(
+        RangeError,
+      );
 
       // Apportionment with tie-break on population and district name
       const distsForTie = [
@@ -1304,24 +1361,22 @@ describe('Comprehensive Delimitation Unit & Route Tests', () => {
       expect(() =>
         delimitationService.processMonitorWebhook(
           { type: 'test' } as any,
-          'Bearer test-monitor-secret-123'
-        )
+          'Bearer test-monitor-secret-123',
+        ),
       ).toThrow('type and entries required');
 
       // Wrong auth
       expect(() =>
         delimitationService.processMonitorWebhook(
           { type: 'test', entries: [] },
-          'Bearer wrong-secret'
-        )
+          'Bearer wrong-secret',
+        ),
       ).toThrow('Unauthorized monitor webhook access');
     });
 
     it('getCitizenImpact validates PIN and calculates severity accurately', () => {
       // Invalid PIN
-      expect(() => delimitationService.getCitizenImpact('invalid')).toThrow(
-        'Invalid PIN code'
-      );
+      expect(() => delimitationService.getCitizenImpact('invalid')).toThrow('Invalid PIN code');
 
       // Curated PIN with multi-AC intersection (500001)
       const impact1 = delimitationService.getCitizenImpact('500001');
@@ -1361,14 +1416,14 @@ describe('Comprehensive Delimitation Unit & Route Tests', () => {
         delimitationService.simulateBoundaries('TS', {
           regimeId: 'eci_delimitation_2008',
           seats: '150',
-        })
+        }),
       ).toThrow('Cannot override statutory seat allocation on CURRENT_LEGAL_REGIME');
 
       // Conflict on 1976 historical regime
       expect(() =>
         delimitationService.simulateBoundaries('TS', {
           regimeId: 'eci_delimitation_1976',
-        })
+        }),
       ).toThrow('Cannot override historical seat allocation on HISTORICAL_LEGAL_REGIME');
 
       // Default projection when seats is omitted

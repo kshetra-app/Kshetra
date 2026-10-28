@@ -143,19 +143,31 @@ export const dmRoutes: FastifyPluginAsync = async (app) => {
   /**
    * Helper: Resolve authenticated user from Bearer token or non-production x-user-id
    */
-  async function resolveAuthUser(request: any): Promise<{ userId: string; role?: string; verificationStatus?: string; createdAt?: Date } | null> {
+  async function resolveAuthUser(request: any): Promise<{
+    userId: string;
+    role?: string;
+    verificationStatus?: string;
+    createdAt?: Date;
+  } | null> {
     let userId: string | null = null;
     const authHeader = request.headers.authorization;
 
     if (authHeader && authHeader.startsWith('Bearer ')) {
       const token = authHeader.replace('Bearer ', '').trim();
-      const { data: { user }, error } = await supabase.auth.getUser(token);
+      const {
+        data: { user },
+        error,
+      } = await supabase.auth.getUser(token);
       if (!error && user) {
         userId = user.id;
       }
     }
 
-    if (!userId && process.env.NODE_ENV !== 'production' && (request.headers['x-user-id'] as string)) {
+    if (
+      !userId &&
+      process.env.NODE_ENV !== 'production' &&
+      (request.headers['x-user-id'] as string)
+    ) {
       userId = request.headers['x-user-id'] as string;
     }
 
@@ -187,13 +199,22 @@ export const dmRoutes: FastifyPluginAsync = async (app) => {
   app.get('/api/v1/dm/unread-count', async (request, reply) => {
     const auth = await resolveAuthUser(request);
     if (!auth) {
-      return sendApiError(reply, request, 401, 'Unauthorized', 'Authentication required', { code: 'UNAUTHORIZED' });
+      return sendApiError(reply, request, 401, 'Unauthorized', 'Authentication required', {
+        code: 'UNAUTHORIZED',
+      });
     }
 
     if (!isSupabaseConfigured) {
-      return sendApiError(reply, request, 503, 'Service Unavailable', 'Database service unavailable', {
-        code: 'DATABASE_UNAVAILABLE',
-      });
+      return sendApiError(
+        reply,
+        request,
+        503,
+        'Service Unavailable',
+        'Database service unavailable',
+        {
+          code: 'DATABASE_UNAVAILABLE',
+        },
+      );
     }
 
     try {
@@ -228,9 +249,16 @@ export const dmRoutes: FastifyPluginAsync = async (app) => {
       return reply.send({ success: true, count: count ?? 0 });
     } catch (err: any) {
       app.log.error({ err: err?.message }, 'Failed to compute DM unread count');
-      return sendApiError(reply, request, 500, 'Internal Server Error', 'Failed to retrieve unread count', {
-        code: 'DATABASE_ERROR',
-      });
+      return sendApiError(
+        reply,
+        request,
+        500,
+        'Internal Server Error',
+        'Failed to retrieve unread count',
+        {
+          code: 'DATABASE_ERROR',
+        },
+      );
     }
   });
 
@@ -243,14 +271,23 @@ export const dmRoutes: FastifyPluginAsync = async (app) => {
   }>('/api/v1/dm/conversations', { schema: createConversationSchema }, async (request, reply) => {
     const auth = await resolveAuthUser(request);
     if (!auth) {
-      return sendApiError(reply, request, 401, 'Unauthorized', 'Authentication required', { code: 'UNAUTHORIZED' });
+      return sendApiError(reply, request, 401, 'Unauthorized', 'Authentication required', {
+        code: 'UNAUTHORIZED',
+      });
     }
 
     const { recipientId, initialMessage } = request.body || {};
     if (!recipientId || recipientId === auth.userId) {
-      return sendApiError(reply, request, 400, 'Bad Request', 'Valid recipientId is required and cannot be self', {
-        code: 'VALIDATION_ERROR',
-      });
+      return sendApiError(
+        reply,
+        request,
+        400,
+        'Bad Request',
+        'Valid recipientId is required and cannot be self',
+        {
+          code: 'VALIDATION_ERROR',
+        },
+      );
     }
 
     if (!isSupabaseConfigured) {
@@ -272,7 +309,9 @@ export const dmRoutes: FastifyPluginAsync = async (app) => {
     const { data: isBlocked } = await supabase
       .from('blocked_users')
       .select('blocker_id')
-      .or(`and(blocker_id.eq.${auth.userId},blocked_id.eq.${recipientId}),and(blocker_id.eq.${recipientId},blocked_id.eq.${auth.userId})`)
+      .or(
+        `and(blocker_id.eq.${auth.userId},blocked_id.eq.${recipientId}),and(blocker_id.eq.${recipientId},blocked_id.eq.${auth.userId})`,
+      )
       .maybeSingle();
 
     if (isBlocked) {
@@ -312,7 +351,8 @@ export const dmRoutes: FastifyPluginAsync = async (app) => {
     const isMutualFollow = !!followRel;
 
     // 3. Enforce Tiered Rate Limits (Ticket 3.5)
-    const isVerifiedPage = ['politician', 'party', 'journalist'].includes(auth.role || '') &&
+    const isVerifiedPage =
+      ['politician', 'party', 'journalist'].includes(auth.role || '') &&
       auth.verificationStatus === 'verified';
 
     const rateCheck = checkConversationRateLimit(
@@ -332,7 +372,10 @@ export const dmRoutes: FastifyPluginAsync = async (app) => {
         429,
         'Too Many Requests',
         rateCheck.error || 'Rate limit exceeded',
-        { code: 'RATE_LIMIT_EXCEEDED', details: [{ path: 'rate_limit', message: `Retry after ${rateCheck.retryAfterSeconds}s` }] },
+        {
+          code: 'RATE_LIMIT_EXCEEDED',
+          details: [{ path: 'rate_limit', message: `Retry after ${rateCheck.retryAfterSeconds}s` }],
+        },
       );
     }
 
@@ -365,7 +408,9 @@ export const dmRoutes: FastifyPluginAsync = async (app) => {
           },
         });
       }
-      return sendApiError(reply, request, 500, 'Internal Server Error', createErr.message, { code: 'DATABASE_ERROR' });
+      return sendApiError(reply, request, 500, 'Internal Server Error', createErr.message, {
+        code: 'DATABASE_ERROR',
+      });
     }
 
     // If initial message provided, insert it
@@ -386,117 +431,143 @@ export const dmRoutes: FastifyPluginAsync = async (app) => {
    */
   app.post<{
     Params: { id: string };
-    Body: { content: string; mediaUrl?: string; mediaType?: 'image' | 'video' | 'audio' | 'document' };
-  }>('/api/v1/dm/conversations/:id/messages', { schema: sendMessageSchema }, async (request, reply) => {
-    const auth = await resolveAuthUser(request);
-    if (!auth) {
-      return sendApiError(reply, request, 401, 'Unauthorized', 'Authentication required', { code: 'UNAUTHORIZED' });
-    }
+    Body: {
+      content: string;
+      mediaUrl?: string;
+      mediaType?: 'image' | 'video' | 'audio' | 'document';
+    };
+  }>(
+    '/api/v1/dm/conversations/:id/messages',
+    { schema: sendMessageSchema },
+    async (request, reply) => {
+      const auth = await resolveAuthUser(request);
+      if (!auth) {
+        return sendApiError(reply, request, 401, 'Unauthorized', 'Authentication required', {
+          code: 'UNAUTHORIZED',
+        });
+      }
 
-    const conversationId = request.params.id;
-    const { content, mediaUrl, mediaType } = request.body || {};
+      const conversationId = request.params.id;
+      const { content, mediaUrl, mediaType } = request.body || {};
 
-    if (!content && !mediaUrl) {
-      return sendApiError(reply, request, 400, 'Bad Request', 'Message content or media is required', {
-        code: 'VALIDATION_ERROR',
-      });
-    }
+      if (!content && !mediaUrl) {
+        return sendApiError(
+          reply,
+          request,
+          400,
+          'Bad Request',
+          'Message content or media is required',
+          {
+            code: 'VALIDATION_ERROR',
+          },
+        );
+      }
 
-    if (!isSupabaseConfigured) {
-      return reply.send({
-        success: true,
-        message: {
-          id: `msg-${Date.now()}`,
+      if (!isSupabaseConfigured) {
+        return reply.send({
+          success: true,
+          message: {
+            id: `msg-${Date.now()}`,
+            conversation_id: conversationId,
+            sender_id: auth.userId,
+            content: content || '',
+            media_url: mediaUrl,
+            media_type: mediaType,
+            is_media_locked: false,
+            created_at: new Date().toISOString(),
+          },
+        });
+      }
+
+      // Verify conversation membership
+      const { data: conv, error: convErr } = await supabase
+        .from('conversations')
+        .select('*')
+        .eq('id', conversationId)
+        .maybeSingle();
+
+      if (convErr || !conv) {
+        return sendApiError(reply, request, 404, 'Not Found', 'Conversation not found', {
+          code: 'NOT_FOUND',
+        });
+      }
+
+      if (conv.participant_one !== auth.userId && conv.participant_two !== auth.userId) {
+        return sendApiError(reply, request, 403, 'Forbidden', 'Not a conversation participant', {
+          code: 'FORBIDDEN',
+        });
+      }
+
+      const recipientId =
+        conv.participant_one === auth.userId ? conv.participant_two : conv.participant_one;
+
+      // Verify blocklist
+      const { data: isBlocked } = await supabase
+        .from('blocked_users')
+        .select('blocker_id')
+        .or(
+          `and(blocker_id.eq.${auth.userId},blocked_id.eq.${recipientId}),and(blocker_id.eq.${recipientId},blocked_id.eq.${auth.userId})`,
+        )
+        .maybeSingle();
+
+      if (isBlocked) {
+        return sendApiError(reply, request, 403, 'Forbidden', 'Cannot message a blocked user', {
+          code: 'USER_BLOCKED',
+        });
+      }
+
+      // Ticket 3.3: Mutual-accept for unsolicited media
+      // If conversation is pending OR recipient has not accepted media, lock media behind consent shield
+      const recipientAcceptedMedia =
+        conv.participant_one === recipientId
+          ? conv.media_accepted_by_one
+          : conv.media_accepted_by_two;
+
+      const isMediaLocked = !!mediaUrl && (conv.status === 'pending' || !recipientAcceptedMedia);
+
+      // Insert message
+      const { data: newMsg, error: msgErr } = await supabase
+        .from('messages')
+        .insert({
           conversation_id: conversationId,
           sender_id: auth.userId,
-          content: content || '',
+          content: content ? content.trim() : mediaUrl ? '[Media Attachment]' : '',
           media_url: mediaUrl,
           media_type: mediaType,
-          is_media_locked: false,
-          created_at: new Date().toISOString(),
-        },
-      });
-    }
+          is_media_locked: isMediaLocked,
+        })
+        .select()
+        .single();
 
-    // Verify conversation membership
-    const { data: conv, error: convErr } = await supabase
-      .from('conversations')
-      .select('*')
-      .eq('id', conversationId)
-      .maybeSingle();
+      if (msgErr) {
+        return sendApiError(reply, request, 500, 'Internal Server Error', msgErr.message, {
+          code: 'DATABASE_ERROR',
+        });
+      }
 
-    if (convErr || !conv) {
-      return sendApiError(reply, request, 404, 'Not Found', 'Conversation not found', { code: 'NOT_FOUND' });
-    }
+      // Ticket 3.6: Notification dispatch treatment
+      let shouldNotify = false;
+      let notificationTitle = 'New Message';
+      let notificationBody = content ? content.slice(0, 100) : 'Sent an attachment';
 
-    if (conv.participant_one !== auth.userId && conv.participant_two !== auth.userId) {
-      return sendApiError(reply, request, 403, 'Forbidden', 'Not a conversation participant', { code: 'FORBIDDEN' });
-    }
+      if (conv.status === 'accepted') {
+        shouldNotify = true;
+      } else if (conv.status === 'pending' && !conv.first_notification_sent) {
+        // Single push notification on first message with generic copy (no raw content preview)
+        shouldNotify = true;
+        notificationTitle = 'New Message Request';
+        notificationBody = 'You have received a new message request';
 
-    const recipientId = conv.participant_one === auth.userId ? conv.participant_two : conv.participant_one;
-
-    // Verify blocklist
-    const { data: isBlocked } = await supabase
-      .from('blocked_users')
-      .select('blocker_id')
-      .or(`and(blocker_id.eq.${auth.userId},blocked_id.eq.${recipientId}),and(blocker_id.eq.${recipientId},blocked_id.eq.${auth.userId})`)
-      .maybeSingle();
-
-    if (isBlocked) {
-      return sendApiError(reply, request, 403, 'Forbidden', 'Cannot message a blocked user', { code: 'USER_BLOCKED' });
-    }
-
-    // Ticket 3.3: Mutual-accept for unsolicited media
-    // If conversation is pending OR recipient has not accepted media, lock media behind consent shield
-    const recipientAcceptedMedia = conv.participant_one === recipientId
-      ? conv.media_accepted_by_one
-      : conv.media_accepted_by_two;
-
-    const isMediaLocked = !!mediaUrl && (conv.status === 'pending' || !recipientAcceptedMedia);
-
-    // Insert message
-    const { data: newMsg, error: msgErr } = await supabase
-      .from('messages')
-      .insert({
-        conversation_id: conversationId,
-        sender_id: auth.userId,
-        content: content ? content.trim() : (mediaUrl ? '[Media Attachment]' : ''),
-        media_url: mediaUrl,
-        media_type: mediaType,
-        is_media_locked: isMediaLocked,
-      })
-      .select()
-      .single();
-
-    if (msgErr) {
-      return sendApiError(reply, request, 500, 'Internal Server Error', msgErr.message, { code: 'DATABASE_ERROR' });
-    }
-
-    // Ticket 3.6: Notification dispatch treatment
-    let shouldNotify = false;
-    let notificationTitle = 'New Message';
-    let notificationBody = content ? content.slice(0, 100) : 'Sent an attachment';
-
-    if (conv.status === 'accepted') {
-      shouldNotify = true;
-    } else if (conv.status === 'pending' && !conv.first_notification_sent) {
-      // Single push notification on first message with generic copy (no raw content preview)
-      shouldNotify = true;
-      notificationTitle = 'New Message Request';
-      notificationBody = 'You have received a new message request';
-
-      // Mark first notification as sent so subsequent messages don't buzz
-      await supabase
-        .from('conversations')
-        .update({ first_notification_sent: true })
-        .eq('id', conversationId);
-    }
-
-    if (shouldNotify) {
-      try {
+        // Mark first notification as sent so subsequent messages don't buzz
         await supabase
-          .from('notification_log')
-          .insert({
+          .from('conversations')
+          .update({ first_notification_sent: true })
+          .eq('id', conversationId);
+      }
+
+      if (shouldNotify) {
+        try {
+          await supabase.from('notification_log').insert({
             user_id: recipientId,
             trigger_type: 'system',
             title: notificationTitle,
@@ -508,18 +579,21 @@ export const dmRoutes: FastifyPluginAsync = async (app) => {
             },
             read: false,
           });
-      } catch (notifErr) {
-        app.log.warn({ err: notifErr }, 'Failed to insert into notification_log for DM');
+        } catch (notifErr) {
+          app.log.warn({ err: notifErr }, 'Failed to insert into notification_log for DM');
+        }
       }
-    }
 
-    return reply.status(201).send({
-      success: true,
-      message: newMsg,
-      notificationTriggered: shouldNotify,
-      notificationDetails: shouldNotify ? { title: notificationTitle, body: notificationBody } : null,
-    });
-  });
+      return reply.status(201).send({
+        success: true,
+        message: newMsg,
+        notificationTriggered: shouldNotify,
+        notificationDetails: shouldNotify
+          ? { title: notificationTitle, body: notificationBody }
+          : null,
+      });
+    },
+  );
 
   /**
    * POST /api/v1/dm/conversations/:id/accept
@@ -527,53 +601,66 @@ export const dmRoutes: FastifyPluginAsync = async (app) => {
    */
   app.post<{
     Params: { id: string };
-  }>('/api/v1/dm/conversations/:id/accept', { schema: { params: conversationIdParamSchema } }, async (request, reply) => {
-    const auth = await resolveAuthUser(request);
-    if (!auth) {
-      return sendApiError(reply, request, 401, 'Unauthorized', 'Authentication required', { code: 'UNAUTHORIZED' });
-    }
+  }>(
+    '/api/v1/dm/conversations/:id/accept',
+    { schema: { params: conversationIdParamSchema } },
+    async (request, reply) => {
+      const auth = await resolveAuthUser(request);
+      if (!auth) {
+        return sendApiError(reply, request, 401, 'Unauthorized', 'Authentication required', {
+          code: 'UNAUTHORIZED',
+        });
+      }
 
-    const conversationId = request.params.id;
+      const conversationId = request.params.id;
 
-    if (!isSupabaseConfigured) {
+      if (!isSupabaseConfigured) {
+        return reply.send({ success: true, status: 'accepted' });
+      }
+
+      const { data: conv } = await supabase
+        .from('conversations')
+        .select('*')
+        .eq('id', conversationId)
+        .maybeSingle();
+
+      if (!conv || (conv.participant_one !== auth.userId && conv.participant_two !== auth.userId)) {
+        return sendApiError(reply, request, 404, 'Not Found', 'Conversation not found', {
+          code: 'NOT_FOUND',
+        });
+      }
+
+      // Move to accepted and enable media for this participant
+      const updatePayload: Record<string, any> = {
+        status: 'accepted',
+        updated_at: new Date().toISOString(),
+      };
+      if (conv.participant_one === auth.userId) {
+        updatePayload.media_accepted_by_one = true;
+      } else {
+        updatePayload.media_accepted_by_two = true;
+      }
+
+      const { error } = await supabase
+        .from('conversations')
+        .update(updatePayload)
+        .eq('id', conversationId);
+
+      if (error) {
+        return sendApiError(reply, request, 500, 'Internal Server Error', error.message, {
+          code: 'DATABASE_ERROR',
+        });
+      }
+
+      // Unlock media for messages in this thread
+      await supabase
+        .from('messages')
+        .update({ is_media_locked: false })
+        .eq('conversation_id', conversationId);
+
       return reply.send({ success: true, status: 'accepted' });
-    }
-
-    const { data: conv } = await supabase
-      .from('conversations')
-      .select('*')
-      .eq('id', conversationId)
-      .maybeSingle();
-
-    if (!conv || (conv.participant_one !== auth.userId && conv.participant_two !== auth.userId)) {
-      return sendApiError(reply, request, 404, 'Not Found', 'Conversation not found', { code: 'NOT_FOUND' });
-    }
-
-    // Move to accepted and enable media for this participant
-    const updatePayload: Record<string, any> = { status: 'accepted', updated_at: new Date().toISOString() };
-    if (conv.participant_one === auth.userId) {
-      updatePayload.media_accepted_by_one = true;
-    } else {
-      updatePayload.media_accepted_by_two = true;
-    }
-
-    const { error } = await supabase
-      .from('conversations')
-      .update(updatePayload)
-      .eq('id', conversationId);
-
-    if (error) {
-      return sendApiError(reply, request, 500, 'Internal Server Error', error.message, { code: 'DATABASE_ERROR' });
-    }
-
-    // Unlock media for messages in this thread
-    await supabase
-      .from('messages')
-      .update({ is_media_locked: false })
-      .eq('conversation_id', conversationId);
-
-    return reply.send({ success: true, status: 'accepted' });
-  });
+    },
+  );
 
   /**
    * POST /api/v1/dm/conversations/:id/decline
@@ -581,30 +668,38 @@ export const dmRoutes: FastifyPluginAsync = async (app) => {
    */
   app.post<{
     Params: { id: string };
-  }>('/api/v1/dm/conversations/:id/decline', { schema: { params: conversationIdParamSchema } }, async (request, reply) => {
-    const auth = await resolveAuthUser(request);
-    if (!auth) {
-      return sendApiError(reply, request, 401, 'Unauthorized', 'Authentication required', { code: 'UNAUTHORIZED' });
-    }
+  }>(
+    '/api/v1/dm/conversations/:id/decline',
+    { schema: { params: conversationIdParamSchema } },
+    async (request, reply) => {
+      const auth = await resolveAuthUser(request);
+      if (!auth) {
+        return sendApiError(reply, request, 401, 'Unauthorized', 'Authentication required', {
+          code: 'UNAUTHORIZED',
+        });
+      }
 
-    const conversationId = request.params.id;
+      const conversationId = request.params.id;
 
-    if (!isSupabaseConfigured) {
+      if (!isSupabaseConfigured) {
+        return reply.send({ success: true, status: 'declined' });
+      }
+
+      const { error } = await supabase
+        .from('conversations')
+        .update({ status: 'declined', updated_at: new Date().toISOString() })
+        .eq('id', conversationId)
+        .or(`participant_one.eq.${auth.userId},participant_two.eq.${auth.userId}`);
+
+      if (error) {
+        return sendApiError(reply, request, 500, 'Internal Server Error', error.message, {
+          code: 'DATABASE_ERROR',
+        });
+      }
+
       return reply.send({ success: true, status: 'declined' });
-    }
-
-    const { error } = await supabase
-      .from('conversations')
-      .update({ status: 'declined', updated_at: new Date().toISOString() })
-      .eq('id', conversationId)
-      .or(`participant_one.eq.${auth.userId},participant_two.eq.${auth.userId}`);
-
-    if (error) {
-      return sendApiError(reply, request, 500, 'Internal Server Error', error.message, { code: 'DATABASE_ERROR' });
-    }
-
-    return reply.send({ success: true, status: 'declined' });
-  });
+    },
+  );
 
   /**
    * POST /api/v1/dm/block-report
@@ -615,33 +710,43 @@ export const dmRoutes: FastifyPluginAsync = async (app) => {
   }>('/api/v1/dm/block-report', { schema: blockReportSchema }, async (request, reply) => {
     const auth = await resolveAuthUser(request);
     if (!auth) {
-      return sendApiError(reply, request, 401, 'Unauthorized', 'Authentication required', { code: 'UNAUTHORIZED' });
+      return sendApiError(reply, request, 401, 'Unauthorized', 'Authentication required', {
+        code: 'UNAUTHORIZED',
+      });
     }
 
     const { targetUserId, reason = 'harassment', description, conversationId } = request.body || {};
     if (!targetUserId || targetUserId === auth.userId) {
-      return sendApiError(reply, request, 400, 'Bad Request', 'Valid targetUserId required and cannot be self', {
-        code: 'VALIDATION_ERROR',
-      });
+      return sendApiError(
+        reply,
+        request,
+        400,
+        'Bad Request',
+        'Valid targetUserId required and cannot be self',
+        {
+          code: 'VALIDATION_ERROR',
+        },
+      );
     }
 
     if (isSupabaseConfigured) {
       // 1. Insert into blocked_users
       await supabase
         .from('blocked_users')
-        .upsert({ blocker_id: auth.userId, blocked_id: targetUserId }, { onConflict: 'blocker_id,blocked_id' });
+        .upsert(
+          { blocker_id: auth.userId, blocked_id: targetUserId },
+          { onConflict: 'blocker_id,blocked_id' },
+        );
 
       // 2. Feed into Phase 1 moderation queue as pending report awaiting human review
-      await supabase
-        .from('reports')
-        .insert({
-          reporter_id: auth.userId,
-          reported_user_id: targetUserId,
-          conversation_id: conversationId ?? null,
-          reason,
-          description: description ?? null,
-          status: 'pending',
-        });
+      await supabase.from('reports').insert({
+        reporter_id: auth.userId,
+        reported_user_id: targetUserId,
+        conversation_id: conversationId ?? null,
+        reason,
+        description: description ?? null,
+        status: 'pending',
+      });
 
       // 3. Mark conversation declined if conversationId provided
       if (conversationId) {
@@ -667,62 +772,92 @@ export const dmRoutes: FastifyPluginAsync = async (app) => {
    */
   app.post<{
     Body: { conversationId: string; userId?: string };
-  }>('/api/v1/dm/messages/read', {
-    schema: {
-      body: {
-        type: 'object',
-        required: ['conversationId'],
-        properties: {
-          conversationId: { type: 'string', minLength: 1, maxLength: 64 },
-          userId: { type: 'string', minLength: 1, maxLength: 64 },
+  }>(
+    '/api/v1/dm/messages/read',
+    {
+      schema: {
+        body: {
+          type: 'object',
+          required: ['conversationId'],
+          properties: {
+            conversationId: { type: 'string', minLength: 1, maxLength: 64 },
+            userId: { type: 'string', minLength: 1, maxLength: 64 },
+          },
         },
       },
     },
-  }, async (request, reply) => {
-    const auth = await resolveAuthenticatedUser(request, reply);
-    if (!auth) return;
+    async (request, reply) => {
+      const auth = await resolveAuthenticatedUser(request, reply);
+      if (!auth) return;
 
-    if (!assertActingUserMatch(reply, request, auth.userId, request.body?.userId, 'userId')) {
-      return;
-    }
-
-    const userId = auth.userId;
-    const { conversationId } = request.body;
-    const now = new Date().toISOString();
-
-    if (!isSupabaseConfigured) {
-      return sendApiError(reply, request, 503, 'Service Unavailable', 'Database service is currently unconfigured or unavailable', {
-        code: 'SERVICE_UNAVAILABLE',
-      });
-    }
-
-    try {
-      const { error } = await supabase
-        .from('messages')
-        .update({ read_at: now })
-        .eq('conversation_id', conversationId)
-        .neq('sender_id', userId)
-        .is('read_at', null);
-
-      if (error) {
-        app.log.error({ err: error.message, conversationId, userId }, 'Database update for read messages failed');
-        return sendApiError(reply, request, 500, 'Internal Server Error', 'Database error updating message read status', {
-          code: 'DATABASE_ERROR',
-        });
+      if (!assertActingUserMatch(reply, request, auth.userId, request.body?.userId, 'userId')) {
+        return;
       }
-    } catch (err: any) {
-      app.log.error({ err: err?.message, conversationId, userId }, 'Exception updating read messages in DB');
-      return sendApiError(reply, request, 500, 'Internal Server Error', 'Database error updating message read status', {
-        code: 'DATABASE_ERROR',
+
+      const userId = auth.userId;
+      const { conversationId } = request.body;
+      const now = new Date().toISOString();
+
+      if (!isSupabaseConfigured) {
+        return sendApiError(
+          reply,
+          request,
+          503,
+          'Service Unavailable',
+          'Database service is currently unconfigured or unavailable',
+          {
+            code: 'SERVICE_UNAVAILABLE',
+          },
+        );
+      }
+
+      try {
+        const { error } = await supabase
+          .from('messages')
+          .update({ read_at: now })
+          .eq('conversation_id', conversationId)
+          .neq('sender_id', userId)
+          .is('read_at', null);
+
+        if (error) {
+          app.log.error(
+            { err: error.message, conversationId, userId },
+            'Database update for read messages failed',
+          );
+          return sendApiError(
+            reply,
+            request,
+            500,
+            'Internal Server Error',
+            'Database error updating message read status',
+            {
+              code: 'DATABASE_ERROR',
+            },
+          );
+        }
+      } catch (err: any) {
+        app.log.error(
+          { err: err?.message, conversationId, userId },
+          'Exception updating read messages in DB',
+        );
+        return sendApiError(
+          reply,
+          request,
+          500,
+          'Internal Server Error',
+          'Database error updating message read status',
+          {
+            code: 'DATABASE_ERROR',
+          },
+        );
+      }
+
+      return reply.send({
+        success: true,
+        conversationId,
+        userId,
+        readAt: now,
       });
-    }
-
-    return reply.send({
-      success: true,
-      conversationId,
-      userId,
-      readAt: now,
-    });
-  });
+    },
+  );
 };
-

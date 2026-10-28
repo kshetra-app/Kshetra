@@ -180,7 +180,7 @@ export default function LegislatorProfileScreen() {
   const handleShare = async () => {
     try {
       await Share.share({
-        message: `${name} (${party})\n${constName}, ${district}\nMLA · ${terms} term${terms > 1 ? 's' : ''}\n\nExplore on Kshetra`,
+        message: `${name} (${party})\n${constName}, ${district}\nMLA · ${terms} term${terms > 1 ? 's' : ''}\n\nExplore on Poligram`,
       });
     } catch (_) {}
   };

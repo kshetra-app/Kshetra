@@ -52,7 +52,10 @@ const regimeResolveSchema = {
   querystring: {
     type: 'object',
     properties: {
-      mode: { type: 'string', enum: ['current', 'as_of', 'explicit', 'future_anticipated', 'scenario'] },
+      mode: {
+        type: 'string',
+        enum: ['current', 'as_of', 'explicit', 'future_anticipated', 'scenario'],
+      },
       date: { type: 'string' },
       regimeId: { type: 'string' },
       proposalId: { type: 'string' },
@@ -190,18 +193,22 @@ export async function delimitationRoutes(app: FastifyInstance) {
         400,
         'Bad Request',
         'Direct provision or override of isScenario or simulation boolean is strictly forbidden. isScenario is derived exclusively from canonical legalStatus.',
-        { code: 'SCENARIO_INPUT_FORBIDDEN' }
+        { code: 'SCENARIO_INPUT_FORBIDDEN' },
       );
     }
     const b = request.body as Record<string, unknown> | undefined;
-    if (b && typeof b === 'object' && ('isScenario' in b || 'is_scenario' in b || 'simulation' in b)) {
+    if (
+      b &&
+      typeof b === 'object' &&
+      ('isScenario' in b || 'is_scenario' in b || 'simulation' in b)
+    ) {
       return sendApiError(
         reply,
         request,
         400,
         'Bad Request',
         'Direct provision or override of isScenario or simulation boolean is strictly forbidden. isScenario is derived exclusively from canonical legalStatus.',
-        { code: 'SCENARIO_INPUT_FORBIDDEN' }
+        { code: 'SCENARIO_INPUT_FORBIDDEN' },
       );
     }
   });
@@ -210,40 +217,69 @@ export async function delimitationRoutes(app: FastifyInstance) {
    * 1. GET /api/v1/delimitation/projections
    * All state seat projections dynamically calculated from verified Census 2011 figures.
    */
-  app.get('/api/v1/delimitation/projections', { schema: projectionsQuerySchema }, async (request, reply) => {
-    try {
-      const query = request.query as { model?: string };
-      const result = delimitationService.getProjections(query.model);
-      return sendSuccess(reply, request, result);
-    } catch (err: any) {
-      return sendApiError(reply, request, 500, 'Internal Server Error', err.message || 'Error generating seat projections', {
-        code: 'PROJECTION_CALCULATION_ERROR',
-      });
-    }
-  });
+  app.get(
+    '/api/v1/delimitation/projections',
+    { schema: projectionsQuerySchema },
+    async (request, reply) => {
+      try {
+        const query = request.query as { model?: string };
+        const result = delimitationService.getProjections(query.model);
+        return sendSuccess(reply, request, result);
+      } catch (err: any) {
+        return sendApiError(
+          reply,
+          request,
+          500,
+          'Internal Server Error',
+          err.message || 'Error generating seat projections',
+          {
+            code: 'PROJECTION_CALCULATION_ERROR',
+          },
+        );
+      }
+    },
+  );
 
   /**
    * 2. GET /api/v1/delimitation/projections/:stateCode
    * Single state seat projection for a governed jurisdiction.
    */
-  app.get<{ Params: { stateCode: string } }>('/api/v1/delimitation/projections/:stateCode', { schema: stateCodeParamSchema }, async (request, reply) => {
-    try {
-      const { stateCode } = request.params;
-      const result = delimitationService.getStateProjection(stateCode);
+  app.get<{ Params: { stateCode: string } }>(
+    '/api/v1/delimitation/projections/:stateCode',
+    { schema: stateCodeParamSchema },
+    async (request, reply) => {
+      try {
+        const { stateCode } = request.params;
+        const result = delimitationService.getStateProjection(stateCode);
 
-      if (!result) {
-        return sendApiError(reply, request, 404, 'Not Found', `Jurisdiction is not registered in governed delimitation baselines: ${stateCode}`, {
-          code: 'UNSUPPORTED_GEOGRAPHY',
-        });
+        if (!result) {
+          return sendApiError(
+            reply,
+            request,
+            404,
+            'Not Found',
+            `Jurisdiction is not registered in governed delimitation baselines: ${stateCode}`,
+            {
+              code: 'UNSUPPORTED_GEOGRAPHY',
+            },
+          );
+        }
+
+        return sendSuccess(reply, request, result);
+      } catch (err: any) {
+        return sendApiError(
+          reply,
+          request,
+          500,
+          'Internal Server Error',
+          err.message || 'Error retrieving state projection',
+          {
+            code: 'STATE_PROJECTION_ERROR',
+          },
+        );
       }
-
-      return sendSuccess(reply, request, result);
-    } catch (err: any) {
-      return sendApiError(reply, request, 500, 'Internal Server Error', err.message || 'Error retrieving state projection', {
-        code: 'STATE_PROJECTION_ERROR',
-      });
-    }
-  });
+    },
+  );
 
   /**
    * 3. GET /api/v1/delimitation/timeline
@@ -254,9 +290,16 @@ export async function delimitationRoutes(app: FastifyInstance) {
       const result = delimitationService.getTimeline();
       return sendSuccess(reply, request, result);
     } catch (err: any) {
-      return sendApiError(reply, request, 500, 'Internal Server Error', err.message || 'Error retrieving timeline', {
-        code: 'TIMELINE_RETRIEVAL_ERROR',
-      });
+      return sendApiError(
+        reply,
+        request,
+        500,
+        'Internal Server Error',
+        err.message || 'Error retrieving timeline',
+        {
+          code: 'TIMELINE_RETRIEVAL_ERROR',
+        },
+      );
     }
   });
 
@@ -269,9 +312,16 @@ export async function delimitationRoutes(app: FastifyInstance) {
       const result = delimitationService.getStatus();
       return sendSuccess(reply, request, result);
     } catch (err: any) {
-      return sendApiError(reply, request, 500, 'Internal Server Error', err.message || 'Error retrieving status', {
-        code: 'STATUS_RETRIEVAL_ERROR',
-      });
+      return sendApiError(
+        reply,
+        request,
+        500,
+        'Internal Server Error',
+        err.message || 'Error retrieving status',
+        {
+          code: 'STATUS_RETRIEVAL_ERROR',
+        },
+      );
     }
   });
 
@@ -284,9 +334,16 @@ export async function delimitationRoutes(app: FastifyInstance) {
       const result = delimitationService.getGainersLosers();
       return sendSuccess(reply, request, result);
     } catch (err: any) {
-      return sendApiError(reply, request, 500, 'Internal Server Error', err.message || 'Error retrieving gainers and losers', {
-        code: 'GAINERS_LOSERS_ERROR',
-      });
+      return sendApiError(
+        reply,
+        request,
+        500,
+        'Internal Server Error',
+        err.message || 'Error retrieving gainers and losers',
+        {
+          code: 'GAINERS_LOSERS_ERROR',
+        },
+      );
     }
   });
 
@@ -294,56 +351,91 @@ export async function delimitationRoutes(app: FastifyInstance) {
    * 6. POST /api/v1/delimitation/monitor-webhook
    * Receive alerts from cron monitors with fail-closed Bearer authentication.
    */
-  app.post('/api/v1/delimitation/monitor-webhook', { schema: monitorWebhookSchema }, async (request, reply) => {
-    const authHeader = request.headers.authorization;
-    const expectedSecret = process.env.KSHETRA_MONITOR_SECRET || process.env.MONITOR_WEBHOOK_SECRET;
+  app.post(
+    '/api/v1/delimitation/monitor-webhook',
+    { schema: monitorWebhookSchema },
+    async (request, reply) => {
+      const authHeader = request.headers.authorization;
+      const expectedSecret =
+        process.env.KSHETRA_MONITOR_SECRET || process.env.MONITOR_WEBHOOK_SECRET;
 
-    // Fail-closed authentication guard: secret must be configured AND token must match
-    if (!expectedSecret || authHeader !== `Bearer ${expectedSecret}`) {
-      return sendApiError(reply, request, 401, 'Unauthorized', 'Unauthorized monitor webhook access', {
-        code: 'UNAUTHORIZED',
-      });
-    }
+      // Fail-closed authentication guard: secret must be configured AND token must match
+      if (!expectedSecret || authHeader !== `Bearer ${expectedSecret}`) {
+        return sendApiError(
+          reply,
+          request,
+          401,
+          'Unauthorized',
+          'Unauthorized monitor webhook access',
+          {
+            code: 'UNAUTHORIZED',
+          },
+        );
+      }
 
-    try {
-      const body = request.body as MonitorWebhookPayloadDTO;
-      const result = delimitationService.processMonitorWebhook(body, authHeader);
+      try {
+        const body = request.body as MonitorWebhookPayloadDTO;
+        const result = delimitationService.processMonitorWebhook(body, authHeader);
 
-      app.log.info({
-        msg: 'Delimitation monitor webhook processed',
-        type: body.type,
-        entryCount: body.entries.length,
-        highRelevance: result.highRelevance,
-      });
+        app.log.info({
+          msg: 'Delimitation monitor webhook processed',
+          type: body.type,
+          entryCount: body.entries.length,
+          highRelevance: result.highRelevance,
+        });
 
-      return sendSuccess(reply, request, result);
-    } catch (err: any) {
-      const status = err.statusCode || 400;
-      const errorTitle = status === 401 ? 'Unauthorized' : 'Bad Request';
-      return sendApiError(reply, request, status, errorTitle, err.message || 'Malformed webhook payload', {
-        code: err.code || 'WEBHOOK_PROCESSING_ERROR',
-      });
-    }
-  });
+        return sendSuccess(reply, request, result);
+      } catch (err: any) {
+        const status = err.statusCode || 400;
+        const errorTitle = status === 401 ? 'Unauthorized' : 'Bad Request';
+        return sendApiError(
+          reply,
+          request,
+          status,
+          errorTitle,
+          err.message || 'Malformed webhook payload',
+          {
+            code: err.code || 'WEBHOOK_PROCESSING_ERROR',
+          },
+        );
+      }
+    },
+  );
 
   /**
    * 7. GET /api/v1/delimitation/impact/:pinCode
    * Citizen personal delimitation impact lookup by PIN code.
    */
-  app.get<{ Params: { pinCode: string } }>('/api/v1/delimitation/impact/:pinCode', { schema: pinCodeParamSchema }, async (request, reply) => {
-    const { pinCode } = request.params;
+  app.get<{ Params: { pinCode: string } }>(
+    '/api/v1/delimitation/impact/:pinCode',
+    { schema: pinCodeParamSchema },
+    async (request, reply) => {
+      const { pinCode } = request.params;
 
-    try {
-      const result = delimitationService.getCitizenImpact(pinCode);
-      return sendSuccess(reply, request, result);
-    } catch (err: any) {
-      const statusCode = err.statusCode || 500;
-      const statusTitle = statusCode === 404 ? 'Not Found' : statusCode === 400 ? 'Bad Request' : 'Internal Server Error';
-      return sendApiError(reply, request, statusCode, statusTitle, err.message || 'Error resolving citizen impact', {
-        code: err.code || 'CITIZEN_IMPACT_ERROR',
-      });
-    }
-  });
+      try {
+        const result = delimitationService.getCitizenImpact(pinCode);
+        return sendSuccess(reply, request, result);
+      } catch (err: any) {
+        const statusCode = err.statusCode || 500;
+        const statusTitle =
+          statusCode === 404
+            ? 'Not Found'
+            : statusCode === 400
+              ? 'Bad Request'
+              : 'Internal Server Error';
+        return sendApiError(
+          reply,
+          request,
+          statusCode,
+          statusTitle,
+          err.message || 'Error resolving citizen impact',
+          {
+            code: err.code || 'CITIZEN_IMPACT_ERROR',
+          },
+        );
+      }
+    },
+  );
 
   /**
    * 8. GET /api/v1/delimitation/simulate/:stateCode
@@ -351,57 +443,79 @@ export async function delimitationRoutes(app: FastifyInstance) {
    */
   app.get<{
     Params: { stateCode: string };
-    Querystring: { mode?: string; seats?: string; maxDeviation?: string; regimeId?: string; proposalId?: string; date?: string };
-  }>('/api/v1/delimitation/simulate/:stateCode', { schema: simulateQuerySchema }, async (request, reply) => {
-    const { stateCode } = request.params;
-    const query = request.query;
+    Querystring: {
+      mode?: string;
+      seats?: string;
+      maxDeviation?: string;
+      regimeId?: string;
+      proposalId?: string;
+      date?: string;
+    };
+  }>(
+    '/api/v1/delimitation/simulate/:stateCode',
+    { schema: simulateQuerySchema },
+    async (request, reply) => {
+      const { stateCode } = request.params;
+      const query = request.query;
 
-    let targetSeats: number | undefined;
-    if (query.seats !== undefined) {
-      const parsed = parseInt(query.seats, 10);
-      if (isNaN(parsed) || parsed < MIN_SAFE_REQUESTED_SEATS || parsed > MAX_SAFE_REQUESTED_SEATS) {
+      let targetSeats: number | undefined;
+      if (query.seats !== undefined) {
+        const parsed = parseInt(query.seats, 10);
+        if (
+          isNaN(parsed) ||
+          parsed < MIN_SAFE_REQUESTED_SEATS ||
+          parsed > MAX_SAFE_REQUESTED_SEATS
+        ) {
+          return sendApiError(
+            reply,
+            request,
+            400,
+            'Bad Request',
+            `Requested seats must be an integer between ${MIN_SAFE_REQUESTED_SEATS} and ${MAX_SAFE_REQUESTED_SEATS}. Note: MAX_SAFE_REQUESTED_SEATS is solely an ingress computational resource protection, not a constitutional seat limit.`,
+            { code: 'VALIDATION_ERROR' },
+          );
+        }
+        targetSeats = parsed;
+      }
+
+      let maxDev: number | undefined;
+      if (query.maxDeviation !== undefined) {
+        const parsedDev = parseFloat(query.maxDeviation);
+        if (!isNaN(parsedDev)) {
+          maxDev = parsedDev;
+        }
+      }
+
+      try {
+        const result = delimitationService.simulateBoundaries(stateCode, {
+          mode: query.mode,
+          seats: query.seats,
+          maxDeviation: query.maxDeviation,
+          regimeId: query.regimeId,
+          proposalId: query.proposalId,
+          date: query.date,
+        });
+
+        return sendSuccess(reply, request, result);
+      } catch (err: any) {
+        if (err.code === 'UNSUPPORTED_GEOGRAPHY' || err.statusCode === 404) {
+          return sendApiError(reply, request, 404, 'Not Found', err.message, {
+            code: 'UNSUPPORTED_GEOGRAPHY',
+          });
+        }
         return sendApiError(
           reply,
           request,
-          400,
+          err.statusCode || 400,
           'Bad Request',
-          `Requested seats must be an integer between ${MIN_SAFE_REQUESTED_SEATS} and ${MAX_SAFE_REQUESTED_SEATS}. Note: MAX_SAFE_REQUESTED_SEATS is solely an ingress computational resource protection, not a constitutional seat limit.`,
-          { code: 'VALIDATION_ERROR' }
+          err.message || 'Simulation error',
+          {
+            code: err.code || 'SIMULATION_ERROR',
+          },
         );
       }
-      targetSeats = parsed;
-    }
-
-    let maxDev: number | undefined;
-    if (query.maxDeviation !== undefined) {
-      const parsedDev = parseFloat(query.maxDeviation);
-      if (!isNaN(parsedDev)) {
-        maxDev = parsedDev;
-      }
-    }
-
-    try {
-      const result = delimitationService.simulateBoundaries(stateCode, {
-        mode: query.mode,
-        seats: query.seats,
-        maxDeviation: query.maxDeviation,
-        regimeId: query.regimeId,
-        proposalId: query.proposalId,
-        date: query.date,
-      });
-
-      return sendSuccess(reply, request, result);
-    } catch (err: any) {
-      if (err.code === 'UNSUPPORTED_GEOGRAPHY' || err.statusCode === 404) {
-        return sendApiError(reply, request, 404, 'Not Found', err.message, {
-          code: 'UNSUPPORTED_GEOGRAPHY',
-        });
-      }
-      return sendApiError(reply, request, err.statusCode || 400, 'Bad Request', err.message || 'Simulation error', {
-        code: err.code || 'SIMULATION_ERROR',
-      });
-    }
-  });
+    },
+  );
 
   /**
    * 9. GET /api/v1/delimitation/reservation
@@ -412,9 +526,16 @@ export async function delimitationRoutes(app: FastifyInstance) {
       const result = delimitationService.getNationalReservations();
       return sendSuccess(reply, request, result);
     } catch (err: any) {
-      return sendApiError(reply, request, 500, 'Internal Server Error', err.message || 'Error generating reservation analysis', {
-        code: 'RESERVATION_ANALYSIS_ERROR',
-      });
+      return sendApiError(
+        reply,
+        request,
+        500,
+        'Internal Server Error',
+        err.message || 'Error generating reservation analysis',
+        {
+          code: 'RESERVATION_ANALYSIS_ERROR',
+        },
+      );
     }
   });
 
@@ -422,111 +543,197 @@ export async function delimitationRoutes(app: FastifyInstance) {
    * 10. GET /api/v1/delimitation/reservation/:stateCode
    * State SC/ST reservation detail and statutory comparison.
    */
-  app.get<{ Params: { stateCode: string } }>('/api/v1/delimitation/reservation/:stateCode', { schema: stateCodeParamSchema }, async (request, reply) => {
-    try {
-      const { stateCode } = request.params;
-      const result = delimitationService.getStateReservationDetail(stateCode);
+  app.get<{ Params: { stateCode: string } }>(
+    '/api/v1/delimitation/reservation/:stateCode',
+    { schema: stateCodeParamSchema },
+    async (request, reply) => {
+      try {
+        const { stateCode } = request.params;
+        const result = delimitationService.getStateReservationDetail(stateCode);
 
-      if (!result) {
-        return sendApiError(reply, request, 404, 'Not Found', `Jurisdiction is not registered in governed delimitation baselines: ${stateCode}`, {
-          code: 'UNSUPPORTED_GEOGRAPHY',
-        });
+        if (!result) {
+          return sendApiError(
+            reply,
+            request,
+            404,
+            'Not Found',
+            `Jurisdiction is not registered in governed delimitation baselines: ${stateCode}`,
+            {
+              code: 'UNSUPPORTED_GEOGRAPHY',
+            },
+          );
+        }
+
+        return sendSuccess(reply, request, result);
+      } catch (err: any) {
+        return sendApiError(
+          reply,
+          request,
+          500,
+          'Internal Server Error',
+          err.message || 'Error retrieving state reservation detail',
+          {
+            code: 'STATE_RESERVATION_ERROR',
+          },
+        );
       }
-
-      return sendSuccess(reply, request, result);
-    } catch (err: any) {
-      return sendApiError(reply, request, 500, 'Internal Server Error', err.message || 'Error retrieving state reservation detail', {
-        code: 'STATE_RESERVATION_ERROR',
-      });
-    }
-  });
+    },
+  );
 
   /**
    * 11. GET /api/v1/delimitation/compare
    * Comparative seat and reservation analysis across 1 to 4 states.
    */
-  app.get<{ Querystring: { states?: string } }>('/api/v1/delimitation/compare', { schema: compareQuerySchema }, async (request, reply) => {
-    const { states } = request.query;
-    if (!states) {
-      return sendApiError(reply, request, 400, 'Bad Request', 'Provide ?states=TS,AP (comma-separated, max 4)', {
-        code: 'FST_ERR_VALIDATION',
-      });
-    }
-
-    const codes = states
-      .split(',')
-      .map((s) => s.trim().toUpperCase())
-      .filter((s) => s.length > 0)
-      .slice(0, 4);
-
-    if (codes.length === 0) {
-      return sendApiError(reply, request, 400, 'Bad Request', 'No valid state codes provided in query', {
-        code: 'VALIDATION_ERROR',
-      });
-    }
-
-    try {
-      const result = delimitationService.compareStates(codes);
-
-      if (!result || result.statesCompared === 0) {
-        return sendApiError(reply, request, 404, 'Not Found', `None of the requested jurisdictions are registered in governed baselines: ${states}`, {
-          code: 'UNSUPPORTED_GEOGRAPHY',
-        });
+  app.get<{ Querystring: { states?: string } }>(
+    '/api/v1/delimitation/compare',
+    { schema: compareQuerySchema },
+    async (request, reply) => {
+      const { states } = request.query;
+      if (!states) {
+        return sendApiError(
+          reply,
+          request,
+          400,
+          'Bad Request',
+          'Provide ?states=TS,AP (comma-separated, max 4)',
+          {
+            code: 'FST_ERR_VALIDATION',
+          },
+        );
       }
 
-      return sendSuccess(reply, request, result);
-    } catch (err: any) {
-      return sendApiError(reply, request, 500, 'Internal Server Error', err.message || 'Error comparing states', {
-        code: 'STATE_COMPARISON_ERROR',
-      });
-    }
-  });
+      const codes = states
+        .split(',')
+        .map((s) => s.trim().toUpperCase())
+        .filter((s) => s.length > 0)
+        .slice(0, 4);
+
+      if (codes.length === 0) {
+        return sendApiError(
+          reply,
+          request,
+          400,
+          'Bad Request',
+          'No valid state codes provided in query',
+          {
+            code: 'VALIDATION_ERROR',
+          },
+        );
+      }
+
+      try {
+        const result = delimitationService.compareStates(codes);
+
+        if (!result || result.statesCompared === 0) {
+          return sendApiError(
+            reply,
+            request,
+            404,
+            'Not Found',
+            `None of the requested jurisdictions are registered in governed baselines: ${states}`,
+            {
+              code: 'UNSUPPORTED_GEOGRAPHY',
+            },
+          );
+        }
+
+        return sendSuccess(reply, request, result);
+      } catch (err: any) {
+        return sendApiError(
+          reply,
+          request,
+          500,
+          'Internal Server Error',
+          err.message || 'Error comparing states',
+          {
+            code: 'STATE_COMPARISON_ERROR',
+          },
+        );
+      }
+    },
+  );
 
   /**
    * 12. GET /api/v1/delimitation/mla-impact/:stateCode
    * Sitting MLA risk and boundary shift assessment.
    */
-  app.get<{ Params: { stateCode: string } }>('/api/v1/delimitation/mla-impact/:stateCode', { schema: stateCodeParamSchema }, async (request, reply) => {
-    try {
-      const { stateCode } = request.params;
-      const result = delimitationService.getMlaImpact(stateCode);
+  app.get<{ Params: { stateCode: string } }>(
+    '/api/v1/delimitation/mla-impact/:stateCode',
+    { schema: stateCodeParamSchema },
+    async (request, reply) => {
+      try {
+        const { stateCode } = request.params;
+        const result = delimitationService.getMlaImpact(stateCode);
 
-      if (!result) {
-        return sendApiError(reply, request, 404, 'Not Found', `No constituency records found for jurisdiction: ${stateCode}`, {
-          code: 'UNSUPPORTED_GEOGRAPHY',
-        });
+        if (!result) {
+          return sendApiError(
+            reply,
+            request,
+            404,
+            'Not Found',
+            `No constituency records found for jurisdiction: ${stateCode}`,
+            {
+              code: 'UNSUPPORTED_GEOGRAPHY',
+            },
+          );
+        }
+
+        return sendSuccess(reply, request, result);
+      } catch (err: any) {
+        return sendApiError(
+          reply,
+          request,
+          500,
+          'Internal Server Error',
+          err.message || 'Error assessing MLA impact',
+          {
+            code: 'MLA_IMPACT_ERROR',
+          },
+        );
       }
-
-      return sendSuccess(reply, request, result);
-    } catch (err: any) {
-      return sendApiError(reply, request, 500, 'Internal Server Error', err.message || 'Error assessing MLA impact', {
-        code: 'MLA_IMPACT_ERROR',
-      });
-    }
-  });
+    },
+  );
 
   /**
    * 13. GET /api/v1/delimitation/party-projections/:stateCode
    * Projected party seat share under redrawn boundaries.
    */
-  app.get<{ Params: { stateCode: string } }>('/api/v1/delimitation/party-projections/:stateCode', { schema: stateCodeParamSchema }, async (request, reply) => {
-    try {
-      const { stateCode } = request.params;
-      const result = delimitationService.getPartyProjections(stateCode);
+  app.get<{ Params: { stateCode: string } }>(
+    '/api/v1/delimitation/party-projections/:stateCode',
+    { schema: stateCodeParamSchema },
+    async (request, reply) => {
+      try {
+        const { stateCode } = request.params;
+        const result = delimitationService.getPartyProjections(stateCode);
 
-      if (!result) {
-        return sendApiError(reply, request, 404, 'Not Found', `Jurisdiction is not registered in governed delimitation baselines: ${stateCode}`, {
-          code: 'UNSUPPORTED_GEOGRAPHY',
-        });
+        if (!result) {
+          return sendApiError(
+            reply,
+            request,
+            404,
+            'Not Found',
+            `Jurisdiction is not registered in governed delimitation baselines: ${stateCode}`,
+            {
+              code: 'UNSUPPORTED_GEOGRAPHY',
+            },
+          );
+        }
+
+        return sendSuccess(reply, request, result);
+      } catch (err: any) {
+        return sendApiError(
+          reply,
+          request,
+          500,
+          'Internal Server Error',
+          err.message || 'Error computing party projections',
+          {
+            code: 'PARTY_PROJECTION_ERROR',
+          },
+        );
       }
-
-      return sendSuccess(reply, request, result);
-    } catch (err: any) {
-      return sendApiError(reply, request, 500, 'Internal Server Error', err.message || 'Error computing party projections', {
-        code: 'PARTY_PROJECTION_ERROR',
-      });
-    }
-  });
+    },
+  );
 
   /**
    * 14. GET /api/v1/delimitation/methodology
@@ -537,9 +744,16 @@ export async function delimitationRoutes(app: FastifyInstance) {
       const result = delimitationService.getMethodology();
       return sendSuccess(reply, request, result);
     } catch (err: any) {
-      return sendApiError(reply, request, 500, 'Internal Server Error', err.message || 'Error retrieving methodology', {
-        code: 'METHODOLOGY_RETRIEVAL_ERROR',
-      });
+      return sendApiError(
+        reply,
+        request,
+        500,
+        'Internal Server Error',
+        err.message || 'Error retrieving methodology',
+        {
+          code: 'METHODOLOGY_RETRIEVAL_ERROR',
+        },
+      );
     }
   });
 
@@ -553,11 +767,20 @@ export async function delimitationRoutes(app: FastifyInstance) {
       return sendSuccess(reply, request, regimes);
     } catch (err: any) {
       if (err instanceof DelimitationQueryError) {
-        return sendApiError(reply, request, err.statusCode, err.name, err.message, { code: err.code });
+        return sendApiError(reply, request, err.statusCode, err.name, err.message, {
+          code: err.code,
+        });
       }
-      return sendApiError(reply, request, 500, 'Internal Server Error', err.message || 'Error retrieving regimes', {
-        code: 'REGIME_RETRIEVAL_ERROR',
-      });
+      return sendApiError(
+        reply,
+        request,
+        500,
+        'Internal Server Error',
+        err.message || 'Error retrieving regimes',
+        {
+          code: 'REGIME_RETRIEVAL_ERROR',
+        },
+      );
     }
   });
 
@@ -566,77 +789,123 @@ export async function delimitationRoutes(app: FastifyInstance) {
    * W014 typed regime selection resolver supporting 5 modes:
    * current, as_of(date), explicit(regimeId), future_anticipated, scenario(selector).
    */
-  app.get('/api/v1/delimitation/regimes/resolve', { schema: regimeResolveSchema }, async (request, reply) => {
-    try {
-      const q = (request.query || {}) as {
-        mode?: TypedRegimeSelectionMode;
-        date?: string;
-        regimeId?: string;
-        proposalId?: string;
-      };
+  app.get(
+    '/api/v1/delimitation/regimes/resolve',
+    { schema: regimeResolveSchema },
+    async (request, reply) => {
+      try {
+        const q = (request.query || {}) as {
+          mode?: TypedRegimeSelectionMode;
+          date?: string;
+          regimeId?: string;
+          proposalId?: string;
+        };
 
-      const mode = q.mode || 'current';
-      let queryPayload: RegimeSelectionQuery;
+        const mode = q.mode || 'current';
+        let queryPayload: RegimeSelectionQuery;
 
-      if (mode === 'current') {
-        queryPayload = { mode: 'current' };
-      } else if (mode === 'as_of') {
-        if (!q.date) {
-          return sendApiError(reply, request, 400, 'Bad Request', 'Mode as_of requires date query parameter', {
-            code: 'INVALID_TEMPORAL_PARAMETER',
-          });
-        }
-        queryPayload = { mode: 'as_of', date: q.date };
-      } else if (mode === 'explicit') {
-        if (!q.regimeId) {
-          return sendApiError(reply, request, 400, 'Bad Request', 'Mode explicit requires regimeId query parameter', {
-            code: 'INVALID_REGIME_IDENTIFIER',
-          });
-        }
-        queryPayload = { mode: 'explicit', regimeId: q.regimeId };
-      } else if (mode === 'future_anticipated') {
-        queryPayload = { mode: 'future_anticipated' };
-      } else if (mode === 'scenario') {
-        if (q.proposalId && q.regimeId) {
-          return sendApiError(reply, request, 400, 'Bad Request', 'Ambiguous scenario selector: specify proposalId OR regimeId, not both', {
-            code: 'INVALID_SCENARIO_SELECTOR',
-          });
-        }
-        if (q.proposalId) {
-          queryPayload = {
-            mode: 'scenario',
-            selector: { type: 'proposal_id', proposalId: q.proposalId },
-          };
-        } else if (q.regimeId) {
-          queryPayload = {
-            mode: 'scenario',
-            selector: { type: 'regime_id', regimeId: q.regimeId },
-          };
+        if (mode === 'current') {
+          queryPayload = { mode: 'current' };
+        } else if (mode === 'as_of') {
+          if (!q.date) {
+            return sendApiError(
+              reply,
+              request,
+              400,
+              'Bad Request',
+              'Mode as_of requires date query parameter',
+              {
+                code: 'INVALID_TEMPORAL_PARAMETER',
+              },
+            );
+          }
+          queryPayload = { mode: 'as_of', date: q.date };
+        } else if (mode === 'explicit') {
+          if (!q.regimeId) {
+            return sendApiError(
+              reply,
+              request,
+              400,
+              'Bad Request',
+              'Mode explicit requires regimeId query parameter',
+              {
+                code: 'INVALID_REGIME_IDENTIFIER',
+              },
+            );
+          }
+          queryPayload = { mode: 'explicit', regimeId: q.regimeId };
+        } else if (mode === 'future_anticipated') {
+          queryPayload = { mode: 'future_anticipated' };
+        } else if (mode === 'scenario') {
+          if (q.proposalId && q.regimeId) {
+            return sendApiError(
+              reply,
+              request,
+              400,
+              'Bad Request',
+              'Ambiguous scenario selector: specify proposalId OR regimeId, not both',
+              {
+                code: 'INVALID_SCENARIO_SELECTOR',
+              },
+            );
+          }
+          if (q.proposalId) {
+            queryPayload = {
+              mode: 'scenario',
+              selector: { type: 'proposal_id', proposalId: q.proposalId },
+            };
+          } else if (q.regimeId) {
+            queryPayload = {
+              mode: 'scenario',
+              selector: { type: 'regime_id', regimeId: q.regimeId },
+            };
+          } else {
+            return sendApiError(
+              reply,
+              request,
+              400,
+              'Bad Request',
+              'Scenario selection requires proposalId or regimeId',
+              {
+                code: 'INVALID_SCENARIO_SELECTOR',
+              },
+            );
+          }
         } else {
-          return sendApiError(reply, request, 400, 'Bad Request', 'Scenario selection requires proposalId or regimeId', {
-            code: 'INVALID_SCENARIO_SELECTOR',
+          return sendApiError(
+            reply,
+            request,
+            400,
+            'Bad Request',
+            `Unknown regime selection mode: ${mode}`,
+            {
+              code: 'INVALID_REGIME_SELECTION_MODE',
+            },
+          );
+        }
+
+        const result = await delimitationQueryService.resolveRegime(queryPayload);
+        return sendSuccess(reply, request, result);
+      } catch (err: any) {
+        if (err instanceof DelimitationQueryError) {
+          return sendApiError(reply, request, err.statusCode, err.name, err.message, {
+            code: err.code,
+            details: err.details,
           });
         }
-      } else {
-        return sendApiError(reply, request, 400, 'Bad Request', `Unknown regime selection mode: ${mode}`, {
-          code: 'INVALID_REGIME_SELECTION_MODE',
-        });
+        return sendApiError(
+          reply,
+          request,
+          500,
+          'Internal Server Error',
+          err.message || 'Error resolving regime',
+          {
+            code: 'REGIME_RESOLUTION_ERROR',
+          },
+        );
       }
-
-      const result = await delimitationQueryService.resolveRegime(queryPayload);
-      return sendSuccess(reply, request, result);
-    } catch (err: any) {
-      if (err instanceof DelimitationQueryError) {
-        return sendApiError(reply, request, err.statusCode, err.name, err.message, {
-          code: err.code,
-          details: err.details,
-        });
-      }
-      return sendApiError(reply, request, 500, 'Internal Server Error', err.message || 'Error resolving regime', {
-        code: 'REGIME_RESOLUTION_ERROR',
-      });
-    }
-  });
+    },
+  );
 
   /**
    * 17. GET /api/v1/delimitation/proposals
@@ -651,11 +920,20 @@ export async function delimitationRoutes(app: FastifyInstance) {
         return sendSuccess(reply, request, proposals);
       } catch (err: any) {
         if (err instanceof DelimitationQueryError) {
-          return sendApiError(reply, request, err.statusCode, err.name, err.message, { code: err.code });
+          return sendApiError(reply, request, err.statusCode, err.name, err.message, {
+            code: err.code,
+          });
         }
-        return sendApiError(reply, request, 500, 'Internal Server Error', err.message || 'Error retrieving proposals', {
-          code: 'PROPOSALS_RETRIEVAL_ERROR',
-        });
+        return sendApiError(
+          reply,
+          request,
+          500,
+          'Internal Server Error',
+          err.message || 'Error retrieving proposals',
+          {
+            code: 'PROPOSALS_RETRIEVAL_ERROR',
+          },
+        );
       }
     },
   );
@@ -672,18 +950,34 @@ export async function delimitationRoutes(app: FastifyInstance) {
         const { id } = request.params;
         const result = await delimitationQueryService.getProposalById(id);
         if (!result) {
-          return sendApiError(reply, request, 404, 'Not Found', `Delimitation proposal not found: ${id}`, {
-            code: 'PROPOSAL_NOT_FOUND',
-          });
+          return sendApiError(
+            reply,
+            request,
+            404,
+            'Not Found',
+            `Delimitation proposal not found: ${id}`,
+            {
+              code: 'PROPOSAL_NOT_FOUND',
+            },
+          );
         }
         return sendSuccess(reply, request, result);
       } catch (err: any) {
         if (err instanceof DelimitationQueryError) {
-          return sendApiError(reply, request, err.statusCode, err.name, err.message, { code: err.code });
+          return sendApiError(reply, request, err.statusCode, err.name, err.message, {
+            code: err.code,
+          });
         }
-        return sendApiError(reply, request, 500, 'Internal Server Error', err.message || 'Error retrieving proposal', {
-          code: 'PROPOSAL_RETRIEVAL_ERROR',
-        });
+        return sendApiError(
+          reply,
+          request,
+          500,
+          'Internal Server Error',
+          err.message || 'Error retrieving proposal',
+          {
+            code: 'PROPOSAL_RETRIEVAL_ERROR',
+          },
+        );
       }
     },
   );
@@ -698,11 +992,20 @@ export async function delimitationRoutes(app: FastifyInstance) {
       return sendSuccess(reply, request, result);
     } catch (err: any) {
       if (err instanceof DelimitationQueryError) {
-        return sendApiError(reply, request, err.statusCode, err.name, err.message, { code: err.code });
+        return sendApiError(reply, request, err.statusCode, err.name, err.message, {
+          code: err.code,
+        });
       }
-      return sendApiError(reply, request, 500, 'Internal Server Error', err.message || 'Error retrieving constituency mapping', {
-        code: 'MAPPING_RETRIEVAL_ERROR',
-      });
+      return sendApiError(
+        reply,
+        request,
+        500,
+        'Internal Server Error',
+        err.message || 'Error retrieving constituency mapping',
+        {
+          code: 'MAPPING_RETRIEVAL_ERROR',
+        },
+      );
     }
   });
 
@@ -718,18 +1021,34 @@ export async function delimitationRoutes(app: FastifyInstance) {
         const { acCode } = request.params;
         const claim = await delimitationQueryService.getConstituencyLineage(acCode);
         if (!claim) {
-          return sendApiError(reply, request, 404, 'Not Found', `No delimitation lineage record or claim found for constituency: ${acCode}`, {
-            code: 'CONSTITUENCY_NOT_FOUND',
-          });
+          return sendApiError(
+            reply,
+            request,
+            404,
+            'Not Found',
+            `No delimitation lineage record or claim found for constituency: ${acCode}`,
+            {
+              code: 'CONSTITUENCY_NOT_FOUND',
+            },
+          );
         }
         return sendSuccess(reply, request, claim);
       } catch (err: any) {
         if (err instanceof DelimitationQueryError) {
-          return sendApiError(reply, request, err.statusCode, err.name, err.message, { code: err.code });
+          return sendApiError(reply, request, err.statusCode, err.name, err.message, {
+            code: err.code,
+          });
         }
-        return sendApiError(reply, request, 500, 'Internal Server Error', err.message || 'Error retrieving constituency lineage', {
-          code: 'LINEAGE_RETRIEVAL_ERROR',
-        });
+        return sendApiError(
+          reply,
+          request,
+          500,
+          'Internal Server Error',
+          err.message || 'Error retrieving constituency lineage',
+          {
+            code: 'LINEAGE_RETRIEVAL_ERROR',
+          },
+        );
       }
     },
   );

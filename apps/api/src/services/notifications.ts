@@ -164,15 +164,68 @@ export function buildNotificationMessage(
  * Notification trigger config — used by the mobile app to show
  * user-friendly names and defaults for notification preferences.
  */
-export const TRIGGER_CONFIG: Record<NotificationTrigger, { label: string; description: string; defaultPush: boolean; defaultInApp: boolean }> = {
-  post_reply: { label: 'Post Replies', description: 'When someone replies to your post', defaultPush: true, defaultInApp: true },
-  comment_reply: { label: 'Comment Replies', description: 'When someone replies to your comment', defaultPush: true, defaultInApp: true },
-  reaction: { label: 'Reactions', description: 'When someone reacts to your content', defaultPush: false, defaultInApp: true },
-  poll_closed: { label: 'Poll Results', description: 'When a poll you voted on closes', defaultPush: true, defaultInApp: true },
-  issue_status_change: { label: 'Issue Updates', description: 'When an issue you reported changes status', defaultPush: true, defaultInApp: true },
-  issue_upvote_milestone: { label: 'Issue Milestones', description: 'When your issue reaches upvote milestones', defaultPush: true, defaultInApp: true },
-  new_headline: { label: 'Headlines', description: 'Breaking news in your state', defaultPush: false, defaultInApp: true },
-  constituency_alert: { label: 'Constituency Alerts', description: 'Important updates in your constituency', defaultPush: true, defaultInApp: true },
-  delimitation_alert: { label: 'Delimitation Updates', description: 'New delimitation events, proposals, or boundary changes', defaultPush: true, defaultInApp: true },
-  system: { label: 'System Updates', description: 'App updates and announcements', defaultPush: true, defaultInApp: true },
+export const TRIGGER_CONFIG: Record<
+  NotificationTrigger,
+  { label: string; description: string; defaultPush: boolean; defaultInApp: boolean }
+> = {
+  post_reply: {
+    label: 'Post Replies',
+    description: 'When someone replies to your post',
+    defaultPush: true,
+    defaultInApp: true,
+  },
+  comment_reply: {
+    label: 'Comment Replies',
+    description: 'When someone replies to your comment',
+    defaultPush: true,
+    defaultInApp: true,
+  },
+  reaction: {
+    label: 'Reactions',
+    description: 'When someone reacts to your content',
+    defaultPush: false,
+    defaultInApp: true,
+  },
+  poll_closed: {
+    label: 'Poll Results',
+    description: 'When a poll you voted on closes',
+    defaultPush: true,
+    defaultInApp: true,
+  },
+  issue_status_change: {
+    label: 'Issue Updates',
+    description: 'When an issue you reported changes status',
+    defaultPush: true,
+    defaultInApp: true,
+  },
+  issue_upvote_milestone: {
+    label: 'Issue Milestones',
+    description: 'When your issue reaches upvote milestones',
+    defaultPush: true,
+    defaultInApp: true,
+  },
+  new_headline: {
+    label: 'Headlines',
+    description: 'Breaking news in your state',
+    defaultPush: false,
+    defaultInApp: true,
+  },
+  constituency_alert: {
+    label: 'Constituency Alerts',
+    description: 'Important updates in your constituency',
+    defaultPush: true,
+    defaultInApp: true,
+  },
+  delimitation_alert: {
+    label: 'Delimitation Updates',
+    description: 'New delimitation events, proposals, or boundary changes',
+    defaultPush: true,
+    defaultInApp: true,
+  },
+  system: {
+    label: 'System Updates',
+    description: 'App updates and announcements',
+    defaultPush: true,
+    defaultInApp: true,
+  },
 };

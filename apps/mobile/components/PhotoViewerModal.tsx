@@ -75,7 +75,7 @@ export default memo(function PhotoViewerModal({
                   source={{
                     uri: imageUri,
                     headers: {
-                      'User-Agent': 'KshetraApp/1.0 (https://kshetra.app)',
+                      'User-Agent': 'PoligramApp/1.0 (https://kshetra.app)',
                     },
                   }}
                   style={{

@@ -48,10 +48,7 @@ export class DelimitationWatchOrchestrator {
   private readonly notifier: Notifier;
   private readonly publisher: Publisher;
 
-  constructor(
-    repo: IDelimitationWatchRepository,
-    dispatchProvider?: NotificationDispatchProvider,
-  ) {
+  constructor(repo: IDelimitationWatchRepository, dispatchProvider?: NotificationDispatchProvider) {
     this.repo = repo;
     this.sourceRegistry = new SourceRegistry(this.repo);
     this.captureAdapter = new CaptureAdapter(this.repo);
@@ -80,7 +77,9 @@ export class DelimitationWatchOrchestrator {
     const lockTtlMs = 60000;
     const lockAcquired = await this.repo.acquireSourceLock(sourceId, lockToken, lockTtlMs);
     if (!lockAcquired) {
-      throw new Error(`CONCURRENT_RUN_CONFLICT: A Delimitation Watch run is already active for source '${sourceId}'`);
+      throw new Error(
+        `CONCURRENT_RUN_CONFLICT: A Delimitation Watch run is already active for source '${sourceId}'`,
+      );
     }
 
     let snapshot: DelimitationSnapshot | undefined;
@@ -107,7 +106,9 @@ export class DelimitationWatchOrchestrator {
       if (options.forceReplaySnapshotId) {
         const found = await this.repo.getSnapshot(options.forceReplaySnapshotId);
         if (!found) {
-          throw new Error(`SNAPSHOT_NOT_FOUND: Force replay snapshot '${options.forceReplaySnapshotId}' not found`);
+          throw new Error(
+            `SNAPSHOT_NOT_FOUND: Force replay snapshot '${options.forceReplaySnapshotId}' not found`,
+          );
         }
         snapshot = found;
       } else {
@@ -227,7 +228,8 @@ export class DelimitationWatchOrchestrator {
       publication = pubResult.publication;
       stageDurations['STAGE_7_PUBLISH'] = Date.now() - stage7Start;
 
-      runOutcome = validation.validationStatus === 'REVIEW_REQUIRED' ? 'REVIEW_REQUIRED' : 'SUCCESS';
+      runOutcome =
+        validation.validationStatus === 'REVIEW_REQUIRED' ? 'REVIEW_REQUIRED' : 'SUCCESS';
 
       return this.completeRun({
         runId,
@@ -271,7 +273,10 @@ export class DelimitationWatchOrchestrator {
   /**
    * Deterministic Replay: Replays an existing snapshot without fetching.
    */
-  async replaySnapshot(snapshotId: string, options: DelimitationWatchOptions = {}): Promise<DelimitationWatchPipelineResult> {
+  async replaySnapshot(
+    snapshotId: string,
+    options: DelimitationWatchOptions = {},
+  ): Promise<DelimitationWatchPipelineResult> {
     const snapshot = await this.repo.getSnapshot(snapshotId);
     if (!snapshot) {
       throw new Error(`SNAPSHOT_NOT_FOUND: Snapshot '${snapshotId}' not found for replay`);
@@ -283,7 +288,9 @@ export class DelimitationWatchOrchestrator {
     });
   }
 
-  private async completeRun(result: DelimitationWatchPipelineResult): Promise<DelimitationWatchPipelineResult> {
+  private async completeRun(
+    result: DelimitationWatchPipelineResult,
+  ): Promise<DelimitationWatchPipelineResult> {
     const runRecord: DelimitationWatchRun = {
       id: result.runId,
       correlationId: result.correlationId,

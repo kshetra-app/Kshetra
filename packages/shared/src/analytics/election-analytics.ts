@@ -46,9 +46,7 @@ export interface ElectionAnalytics {
  * Compute full election analytics from an array of constituency records.
  * Pure function — no side effects, no I/O.
  */
-export function computeElectionAnalytics(
-  records: ConstituencyRecord[],
-): ElectionAnalytics {
+export function computeElectionAnalytics(records: ConstituencyRecord[]): ElectionAnalytics {
   const total = records.length;
   const partySeats: Record<string, number> = {};
   const districtMap: Record<string, Record<string, number>> = {};
@@ -62,8 +60,7 @@ export function computeElectionAnalytics(
     partySeats[c.winner] = (partySeats[c.winner] || 0) + 1;
 
     if (!districtMap[c.district]) districtMap[c.district] = {};
-    districtMap[c.district][c.winner] =
-      (districtMap[c.district][c.winner] || 0) + 1;
+    districtMap[c.district][c.winner] = (districtMap[c.district][c.winner] || 0) + 1;
 
     reservationCounts[c.type]++;
 

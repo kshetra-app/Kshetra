@@ -43,9 +43,7 @@ export interface ValidatedDestination {
 // ─── IPV4 CIDR BLOCKED RANGES ───────────────────────────────────────────────
 
 function ipv4ToInt(ip: string): number {
-  return ip
-    .split('.')
-    .reduce((acc, octet) => ((acc << 8) + Number.parseInt(octet, 10)) >>> 0, 0);
+  return ip.split('.').reduce((acc, octet) => ((acc << 8) + Number.parseInt(octet, 10)) >>> 0, 0);
 }
 
 function isIpv4InCidr(ipInt: number, cidrBase: string, prefixLength: number): boolean {
@@ -282,7 +280,7 @@ export async function resolveAndValidateDns(
   options: {
     mockDnsResolver?: (host: string) => Promise<string[]>;
     allowLocalhostInTest?: boolean;
-  } = {}
+  } = {},
 ): Promise<{ resolvedIps: string[]; pinnedIp: string }> {
   // Check if hostname is an IP directly (including hex, octal, dword)
   const altIp = parseAlternateIpv4(hostname);
@@ -292,7 +290,9 @@ export async function resolveAndValidateDns(
       if (options.allowLocalhostInTest && (altIp === '127.0.0.1' || altIp.startsWith('127.'))) {
         return { resolvedIps: [altIp], pinnedIp: altIp };
       }
-      throw new SsrfSecurityError(`SSRF Blocked: IP address '${hostname}' (${altIp}) is in prohibited range (${check.reason})`);
+      throw new SsrfSecurityError(
+        `SSRF Blocked: IP address '${hostname}' (${altIp}) is in prohibited range (${check.reason})`,
+      );
     }
     return { resolvedIps: [altIp], pinnedIp: altIp };
   }
@@ -300,10 +300,15 @@ export async function resolveAndValidateDns(
   if (net.isIPv4(hostname)) {
     const check = isBlockedIpv4(hostname);
     if (check.blocked) {
-      if (options.allowLocalhostInTest && (hostname === '127.0.0.1' || hostname.startsWith('127.'))) {
+      if (
+        options.allowLocalhostInTest &&
+        (hostname === '127.0.0.1' || hostname.startsWith('127.'))
+      ) {
         return { resolvedIps: [hostname], pinnedIp: hostname };
       }
-      throw new SsrfSecurityError(`SSRF Blocked: IPv4 address '${hostname}' is in prohibited range (${check.reason})`);
+      throw new SsrfSecurityError(
+        `SSRF Blocked: IPv4 address '${hostname}' is in prohibited range (${check.reason})`,
+      );
     }
     return { resolvedIps: [hostname], pinnedIp: hostname };
   }
@@ -314,7 +319,9 @@ export async function resolveAndValidateDns(
       if (options.allowLocalhostInTest && (hostname === '::1' || hostname === '0:0:0:0:0:0:0:1')) {
         return { resolvedIps: [hostname], pinnedIp: hostname };
       }
-      throw new SsrfSecurityError(`SSRF Blocked: IPv6 address '${hostname}' is in prohibited range (${check.reason})`);
+      throw new SsrfSecurityError(
+        `SSRF Blocked: IPv6 address '${hostname}' is in prohibited range (${check.reason})`,
+      );
     }
     return { resolvedIps: [hostname], pinnedIp: hostname };
   }
@@ -328,12 +335,16 @@ export async function resolveAndValidateDns(
       const lookupResults = await dns.lookup(hostname, { all: true, verbatim: true });
       records = lookupResults.map((r) => r.address);
     } catch (err: any) {
-      throw new SsrfSecurityError(`DNS resolution failed for hostname '${hostname}': ${err.message}`);
+      throw new SsrfSecurityError(
+        `DNS resolution failed for hostname '${hostname}': ${err.message}`,
+      );
     }
   }
 
   if (!records || records.length === 0) {
-    throw new SsrfSecurityError(`DNS resolution failed: Hostname '${hostname}' returned zero IP addresses`);
+    throw new SsrfSecurityError(
+      `DNS resolution failed: Hostname '${hostname}' returned zero IP addresses`,
+    );
   }
 
   // Enforce: Validate EVERY returned IP. If ANY address is blocked, fail closed!
@@ -344,7 +355,7 @@ export async function resolveAndValidateDns(
         continue;
       }
       throw new SsrfSecurityError(
-        `SSRF Blocked: Hostname '${hostname}' resolved to blocked private or reserved IP address (${ip} - ${check.reason})`
+        `SSRF Blocked: Hostname '${hostname}' resolved to blocked private or reserved IP address (${ip} - ${check.reason})`,
       );
     }
   }
@@ -368,7 +379,7 @@ export function createPinnedAgent(
     timeoutMs?: number;
     allowInsecureInTest?: boolean;
     ca?: string | Buffer | Array<string | Buffer>;
-  } = {}
+  } = {},
 ): http.Agent | https.Agent {
   const timeout = options.timeoutMs ?? 15000;
 
@@ -427,7 +438,7 @@ export async function validateAndPinSourceUrl(
     mockDnsResolver?: (host: string) => Promise<string[]>;
     timeoutMs?: number;
     ca?: string | Buffer | Array<string | Buffer>;
-  } = {}
+  } = {},
 ): Promise<ValidatedDestination> {
   let parsed: URL;
   try {
@@ -439,7 +450,9 @@ export async function validateAndPinSourceUrl(
   // 1. Protocol: strictly http: or https:
   const protocol = parsed.protocol.toLowerCase();
   if (protocol !== 'http:' && protocol !== 'https:') {
-    throw new SsrfSecurityError(`Forbidden URL protocol '${parsed.protocol}'. Only 'http:' and 'https:' are permitted.`);
+    throw new SsrfSecurityError(
+      `Forbidden URL protocol '${parsed.protocol}'. Only 'http:' and 'https:' are permitted.`,
+    );
   }
 
   // 2. Reject userinfo credentials (http://user:pass@host)
@@ -469,7 +482,9 @@ export async function validateAndPinSourceUrl(
     hostname.endsWith('.home');
 
   if (isLocalhostDomain && !options.allowLocalhostForTests) {
-    throw new SsrfSecurityError(`SSRF Blocked: Local and loopback hostnames are strictly prohibited ('${hostname}')`);
+    throw new SsrfSecurityError(
+      `SSRF Blocked: Local and loopback hostnames are strictly prohibited ('${hostname}')`,
+    );
   }
 
   // 3. Pre-connect DNS resolution and destination validation
@@ -507,7 +522,9 @@ export function validateSourceUrl(targetUrl: string, allowLocalhostForTests: boo
   }
 
   if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') {
-    throw new SsrfSecurityError(`Forbidden URL protocol '${parsed.protocol}'. Only 'http:' and 'https:' are permitted.`);
+    throw new SsrfSecurityError(
+      `Forbidden URL protocol '${parsed.protocol}'. Only 'http:' and 'https:' are permitted.`,
+    );
   }
 
   if (parsed.username || parsed.password) {
@@ -519,8 +536,13 @@ export function validateSourceUrl(targetUrl: string, allowLocalhostForTests: boo
   const altIp = parseAlternateIpv4(cleanHost);
   if (altIp) {
     const check = isBlockedIpv4(altIp);
-    if (check.blocked && !(allowLocalhostForTests && (altIp === '127.0.0.1' || altIp.startsWith('127.')))) {
-      throw new SsrfSecurityError(`SSRF Blocked: IP address '${hostname}' is in prohibited range (${check.reason})`);
+    if (
+      check.blocked &&
+      !(allowLocalhostForTests && (altIp === '127.0.0.1' || altIp.startsWith('127.')))
+    ) {
+      throw new SsrfSecurityError(
+        `SSRF Blocked: IP address '${hostname}' is in prohibited range (${check.reason})`,
+      );
     }
   }
 
@@ -533,13 +555,20 @@ export function validateSourceUrl(targetUrl: string, allowLocalhostForTests: boo
     cleanHost.endsWith('.internal')
   ) {
     if (!allowLocalhostForTests) {
-      throw new SsrfSecurityError(`SSRF Blocked: Local and loopback hostnames are strictly prohibited ('${hostname}')`);
+      throw new SsrfSecurityError(
+        `SSRF Blocked: Local and loopback hostnames are strictly prohibited ('${hostname}')`,
+      );
     }
   }
 
   const ipCheck = isBlockedIp(cleanHost);
-  if (ipCheck.blocked && !(allowLocalhostForTests && (cleanHost === '127.0.0.1' || cleanHost === '::1'))) {
-    throw new SsrfSecurityError(`SSRF Blocked: Address '${hostname}' is prohibited (${ipCheck.reason})`);
+  if (
+    ipCheck.blocked &&
+    !(allowLocalhostForTests && (cleanHost === '127.0.0.1' || cleanHost === '::1'))
+  ) {
+    throw new SsrfSecurityError(
+      `SSRF Blocked: Address '${hostname}' is prohibited (${ipCheck.reason})`,
+    );
   }
 
   return parsed;

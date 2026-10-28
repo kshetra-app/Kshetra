@@ -219,7 +219,7 @@ export default function UploadShortModal({ visible, onClose }: UploadShortModalP
               <Text style={styles.kycGateTitle}>{t('uploadShort.creatorVerification')}</Text>
               
               <Text style={styles.kycGateText}>
-                To ensure content integrity, avoid legal hassles, and build community trust, Kshetra enforces strict Content Creator Accountability (CCA) norms.
+                To ensure content integrity, avoid legal hassles, and build community trust, Poligram enforces strict Content Creator Accountability (CCA) norms.
               </Text>
               
               <View style={styles.bulletList}>

@@ -26,7 +26,10 @@ describe('notifications service', () => {
   });
 
   it('uses context values when provided', () => {
-    const msg = buildNotificationMessage('post_reply', { authorName: 'Asha', preview: 'Nice point' });
+    const msg = buildNotificationMessage('post_reply', {
+      authorName: 'Asha',
+      preview: 'Nice point',
+    });
     expect(msg.title).toContain('Asha');
     expect(msg.body).toBe('Nice point');
   });
@@ -44,14 +47,12 @@ describe('notifications service', () => {
   });
 
   it('counts successes from the Expo API', async () => {
-    const fetchMock = jest
-      .spyOn(global, 'fetch')
-      .mockResolvedValue(
-        new Response(JSON.stringify({ data: [{ status: 'ok' }, { status: 'error' }] }), {
-          status: 200,
-          headers: { 'Content-Type': 'application/json' },
-        }),
-      );
+    const fetchMock = jest.spyOn(global, 'fetch').mockResolvedValue(
+      new Response(JSON.stringify({ data: [{ status: 'ok' }, { status: 'error' }] }), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' },
+      }),
+    );
     const result = await sendExpoPush(['ExponentPushToken[a]', 'ExponentPushToken[b]'], {
       title: 't',
       body: 'b',

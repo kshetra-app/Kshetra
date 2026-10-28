@@ -31,7 +31,12 @@ describe('Moderation Routes Unit Tests (Direct Route Injection)', () => {
         limit: jest.fn().mockResolvedValue({ data: [], error: null }),
         maybeSingle: jest.fn().mockResolvedValue({ data: { role: 'moderator' }, error: null }),
         single: jest.fn().mockResolvedValue({
-          data: { id: 'vr-1', verification_type: 'id_card', status: 'pending', created_at: new Date().toISOString() },
+          data: {
+            id: 'vr-1',
+            verification_type: 'id_card',
+            status: 'pending',
+            created_at: new Date().toISOString(),
+          },
           error: null,
         }),
         update: jest.fn().mockReturnThis(),
@@ -113,7 +118,9 @@ describe('Moderation Routes Unit Tests (Direct Route Injection)', () => {
         jest.spyOn(supabase, 'from').mockReturnValueOnce({
           select: jest.fn().mockReturnThis(),
           eq: jest.fn().mockReturnThis(),
-          maybeSingle: jest.fn().mockResolvedValueOnce({ data: null, error: { message: 'DB connection error' } }),
+          maybeSingle: jest
+            .fn()
+            .mockResolvedValueOnce({ data: null, error: { message: 'DB connection error' } }),
         } as any);
 
         const res = await app.inject({
@@ -518,7 +525,9 @@ describe('Moderation Routes Unit Tests (Direct Route Injection)', () => {
 
   describe('Endpoint 2: POST /api/v1/moderation/check-content', () => {
     it('handles unexpected non-unavailable error with 503 MODERATION_UNAVAILABLE', async () => {
-      jest.spyOn(contentMod, 'moderateContent').mockRejectedValueOnce(new Error('Unexpected crash'));
+      jest
+        .spyOn(contentMod, 'moderateContent')
+        .mockRejectedValueOnce(new Error('Unexpected crash'));
       const res = await app.inject({
         method: 'POST',
         url: '/api/v1/moderation/check-content',
@@ -660,7 +669,10 @@ describe('Moderation Routes Unit Tests (Direct Route Injection)', () => {
             select: () => ({
               eq: () => ({
                 order: () => ({
-                  limit: async () => ({ data: null, error: { message: 'Non-prod reports warning' } }),
+                  limit: async () => ({
+                    data: null,
+                    error: { message: 'Non-prod reports warning' },
+                  }),
                 }),
               }),
             }),
@@ -781,7 +793,10 @@ describe('Moderation Routes Unit Tests (Direct Route Injection)', () => {
             return {
               upsert: () => ({
                 select: () => ({
-                  single: async () => ({ data: null, error: { message: 'Database insert failed' } }),
+                  single: async () => ({
+                    data: null,
+                    error: { message: 'Database insert failed' },
+                  }),
                 }),
               }),
             } as any;

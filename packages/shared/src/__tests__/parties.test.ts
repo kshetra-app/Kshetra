@@ -5,9 +5,26 @@ describe('Party Configuration', () => {
   describe('PARTY_CONFIG', () => {
     it('should have entries for all defined party codes', () => {
       const expectedParties: PartyCode[] = [
-        'BJP', 'INC', 'BRS', 'TDP', 'AIMIM', 'YSRCP', 'AAP', 'DMK', 'AITC',
-        'CPI', 'CPIM', 'NCP', 'SHS', 'JDU', 'RJD', 'BSP', 'SP',
-        'NOTA', 'IND', 'OTH',
+        'BJP',
+        'INC',
+        'BRS',
+        'TDP',
+        'AIMIM',
+        'YSRCP',
+        'AAP',
+        'DMK',
+        'AITC',
+        'CPI',
+        'CPIM',
+        'NCP',
+        'SHS',
+        'JDU',
+        'RJD',
+        'BSP',
+        'SP',
+        'NOTA',
+        'IND',
+        'OTH',
       ];
       expectedParties.forEach((code) => {
         expect(PARTY_CONFIG[code]).toBeDefined();

@@ -189,7 +189,7 @@ export async function fetchWikipediaPhoto(name: string): Promise<string | null> 
           {
             headers: {
               'Accept': 'application/json',
-              'User-Agent': 'KshetraApp/1.0 (https://kshetra.app; contact@kshetra.app)',
+              'User-Agent': 'PoligramApp/1.0 (https://kshetra.app; contact@kshetra.app)',
             },
           },
         );

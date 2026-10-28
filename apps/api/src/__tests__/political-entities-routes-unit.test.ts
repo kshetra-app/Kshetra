@@ -251,7 +251,9 @@ describe('Political Entities Routes Unit Tests (Direct Route Injection)', () => 
   });
 
   it('GET /api/v1/entities/legislators returns 500 when service throws', async () => {
-    jest.spyOn(politicalEntityService, 'listCurrentLegislators').mockRejectedValue(new Error('Roster error'));
+    jest
+      .spyOn(politicalEntityService, 'listCurrentLegislators')
+      .mockRejectedValue(new Error('Roster error'));
 
     const res = await app.inject({
       method: 'GET',
@@ -320,7 +322,12 @@ describe('Political Entities Routes Unit Tests (Direct Route Injection)', () => 
     });
 
     expect(res.statusCode).toBe(200);
-    expect(claimSpy).toHaveBeenCalledWith('p-1', 'admin-service', { verificationType: 'DIRECT_AUTHORITY' }, true);
+    expect(claimSpy).toHaveBeenCalledWith(
+      'p-1',
+      'admin-service',
+      { verificationType: 'DIRECT_AUTHORITY' },
+      true,
+    );
   });
 
   it('POST /api/v1/entities/persons/:id/claim handles 404, 409, and 500 error codes', async () => {
@@ -379,7 +386,9 @@ describe('Political Entities Routes Unit Tests (Direct Route Injection)', () => 
 
     try {
       // 1. Bearer token matching SUPABASE_SERVICE_ROLE_KEY
-      jest.spyOn(politicalEntityService, 'claimPersonIdentity').mockResolvedValueOnce({ id: 'c1' } as any);
+      jest
+        .spyOn(politicalEntityService, 'claimPersonIdentity')
+        .mockResolvedValueOnce({ id: 'c1' } as any);
       const resServiceBearer = await app.inject({
         method: 'POST',
         url: '/api/v1/entities/persons/p-1/claim',
@@ -393,7 +402,9 @@ describe('Political Entities Routes Unit Tests (Direct Route Injection)', () => 
         data: { user: { id: 'supabase-jwt-user' } } as any,
         error: null,
       });
-      jest.spyOn(politicalEntityService, 'claimPersonIdentity').mockResolvedValueOnce({ id: 'c2' } as any);
+      jest
+        .spyOn(politicalEntityService, 'claimPersonIdentity')
+        .mockResolvedValueOnce({ id: 'c2' } as any);
       const resJwtBearer = await app.inject({
         method: 'POST',
         url: '/api/v1/entities/persons/p-1/claim',

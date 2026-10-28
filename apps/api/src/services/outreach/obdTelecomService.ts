@@ -78,13 +78,16 @@ export async function recordOptOut(phone: string, campaignId?: string): Promise<
   const hash = hashPhoneNumber(cleaned);
 
   if (isSupabaseConfigured) {
-    const { error } = await supabase.from('trai_opt_outs').upsert({
-      phone_number_hash: hash,
-      phone_number: cleaned,
-      channel: 'voice_press_9',
-      source_broadcast_id: campaignId ?? null,
-      opted_out_at: new Date().toISOString(),
-    }, { onConflict: 'phone_number_hash' });
+    const { error } = await supabase.from('trai_opt_outs').upsert(
+      {
+        phone_number_hash: hash,
+        phone_number: cleaned,
+        channel: 'voice_press_9',
+        source_broadcast_id: campaignId ?? null,
+        opted_out_at: new Date().toISOString(),
+      },
+      { onConflict: 'phone_number_hash' },
+    );
 
     if (error) {
       console.error('[TRAI] Failed to record opt-out in Supabase:', error.message);
@@ -98,7 +101,11 @@ export async function recordOptOut(phone: string, campaignId?: string): Promise<
  * Checks whether the current time in India (IST, UTC+5:30) is within
  * the legally permitted TRAI calling window: 9:00 AM to 8:00 PM (09:00 to 20:00).
  */
-export function isWithinTraiWindow(): { permitted: boolean; currentISTHour: number; message?: string } {
+export function isWithinTraiWindow(): {
+  permitted: boolean;
+  currentISTHour: number;
+  message?: string;
+} {
   const now = new Date();
   // Compute IST offset: UTC + 5 hours 30 mins (330 minutes)
   const istOffsetMinutes = 330;
@@ -137,7 +144,8 @@ async function initiateExotelCall(params: {
   if (!apiKey || !apiToken || !accountSid) {
     return {
       success: false,
-      error: 'TELECOM_CREDENTIALS_REQUIRED: Exotel API credentials (EXOTEL_API_KEY, EXOTEL_API_TOKEN, EXOTEL_ACCOUNT_SID) are not configured in environment.',
+      error:
+        'TELECOM_CREDENTIALS_REQUIRED: Exotel API credentials (EXOTEL_API_KEY, EXOTEL_API_TOKEN, EXOTEL_ACCOUNT_SID) are not configured in environment.',
     };
   }
 
@@ -160,7 +168,7 @@ async function initiateExotelCall(params: {
       body: form.toString(),
     });
 
-    const data = await res.json() as any;
+    const data = (await res.json()) as any;
     if (res.ok && data?.Call?.Sid) {
       return { success: true, callSid: data.Call.Sid };
     }
@@ -221,7 +229,9 @@ export async function dispatchOBDBroadcast(input: OBDBroadcastInput): Promise<{
     ratePerCallINR: input.ratePerCallINR,
     totalCostINR: totalCost,
     status: initialStatus,
-    providerRef: telecomResult.callSid || (telecomResult.error ? `err:${telecomResult.error.slice(0, 50)}` : `exo_${broadcastId}`),
+    providerRef:
+      telecomResult.callSid ||
+      (telecomResult.error ? `err:${telecomResult.error.slice(0, 50)}` : `exo_${broadcastId}`),
     answeredCount: 0,
     busyCount: 0,
     unreachableCount: 0,
@@ -295,7 +305,7 @@ export async function processTelecomWebhook(payload: {
   CustomField?: string;
   Duration?: number;
   Digits?: string; // DTMF input e.g. "9", "1", "2"
-  From?: string;   // Recipient phone number
+  From?: string; // Recipient phone number
   To?: string;
 }) {
   const broadcastId = payload.CustomField;
@@ -346,12 +356,8 @@ export async function processTelecomWebhook(payload: {
       updates.unreachable_count = (current.unreachable_count || 0) + 1;
     }
 
-    await supabase
-      .from('voice_obd_broadcasts')
-      .update(updates)
-      .eq('id', broadcastId);
+    await supabase.from('voice_obd_broadcasts').update(updates).eq('id', broadcastId);
   }
 
   return { ok: true, updated: true };
 }
-

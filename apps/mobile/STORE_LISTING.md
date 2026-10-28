@@ -1,13 +1,13 @@
-# Kshetra — Store Listing Metadata
+# Poligram — Store Listing Metadata
 
 ## App Name
-**Kshetra — India's Democracy Dashboard**
+**Poligram — India's Democracy Dashboard**
 
 ## Short Description (80 chars)
 Track elections, MLAs, civic issues, and promises across Indian states.
 
 ## Full Description (4000 chars max)
-Kshetra is India's most comprehensive democracy dashboard — putting every assembly constituency, MLA, election result, civic issue, and government promise at your fingertips.
+Poligram is India's most comprehensive democracy dashboard — putting every assembly constituency, MLA, election result, civic issue, and government promise at your fingertips.
 
 **🗺️ Interactive Election Map**
 Explore 806+ constituencies across Telangana, Andhra Pradesh, Karnataka, and Maharashtra with rich polygon maps. Color by party, margin, reservation, population, literacy, or turnout. Compare constituencies side by side.

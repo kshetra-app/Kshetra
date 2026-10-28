@@ -4,9 +4,7 @@ import type { ZodSchema } from 'zod';
  * Result of a boundary validation: either parsed, typed data or a
  * human-readable error message suitable for a 400 response.
  */
-export type ValidationResult<T> =
-  | { ok: true; data: T }
-  | { ok: false; error: string };
+export type ValidationResult<T> = { ok: true; data: T } | { ok: false; error: string };
 
 /**
  * Validate untrusted input at a service boundary using a Zod schema.

@@ -156,9 +156,9 @@ describe('SaasRateLimiter Unit Tests', () => {
         }),
       };
 
-      await expect(
-        limiter.getDurableMonthlyUsage('tenant-err', mockClient)
-      ).rejects.toThrow('Failed to query durable monthly usage: Connection terminated unexpectedly');
+      await expect(limiter.getDurableMonthlyUsage('tenant-err', mockClient)).rejects.toThrow(
+        'Failed to query durable monthly usage: Connection terminated unexpectedly',
+      );
     });
   });
 
@@ -179,7 +179,7 @@ describe('SaasRateLimiter Unit Tests', () => {
 
         const result = await limiter.checkAndRecordDurableUsage(
           { tenantId: 'tenant-rpc-1', tier: 'pro', apiKeyId: 'key-123' },
-          mockClient
+          mockClient,
         );
 
         expect(result.allowed).toBe(true);
@@ -210,7 +210,7 @@ describe('SaasRateLimiter Unit Tests', () => {
 
         const result = await limiter.checkAndRecordDurableUsage(
           { tenantId: 'tenant-rpc-exceeded', tier: 'pro' },
-          mockClient
+          mockClient,
         );
 
         expect(result.allowed).toBe(false);
@@ -232,7 +232,7 @@ describe('SaasRateLimiter Unit Tests', () => {
 
         const result = await limiter.checkAndRecordDurableUsage(
           { tenantId: 'tenant-no-ceiling', tier: 'free' },
-          mockClient
+          mockClient,
         );
 
         expect(result.monthlyCeiling).toBe(SAAS_TIER_LIMITS.free.monthlyCeiling);
@@ -249,8 +249,8 @@ describe('SaasRateLimiter Unit Tests', () => {
         await expect(
           limiter.checkAndRecordDurableUsage(
             { tenantId: 'tenant-rpc-err', tier: 'free' },
-            mockClient
-          )
+            mockClient,
+          ),
         ).rejects.toThrow('Failed to execute atomic quota check and increment');
       });
     });
@@ -273,7 +273,7 @@ describe('SaasRateLimiter Unit Tests', () => {
 
         const result = await limiter.checkAndRecordDurableUsage(
           { tenantId: 'tenant-fallback-maxed', tier: 'free' },
-          mockClient
+          mockClient,
         );
 
         expect(result.allowed).toBe(false);
@@ -316,7 +316,7 @@ describe('SaasRateLimiter Unit Tests', () => {
 
         const result = await limiter.checkAndRecordDurableUsage(
           { tenantId: 'tenant-fallback-update', tier: 'pro', apiKeyId: 'key-abc' },
-          mockClient
+          mockClient,
         );
 
         expect(result.allowed).toBe(true);
@@ -351,8 +351,8 @@ describe('SaasRateLimiter Unit Tests', () => {
         await expect(
           limiter.checkAndRecordDurableUsage(
             { tenantId: 'tenant-update-fail', tier: 'free' },
-            mockClient
-          )
+            mockClient,
+          ),
         ).rejects.toThrow('Failed to update usage ledger: Row lock deadlock');
       });
 
@@ -380,7 +380,7 @@ describe('SaasRateLimiter Unit Tests', () => {
 
         const result = await limiter.checkAndRecordDurableUsage(
           { tenantId: 'tenant-fallback-insert', tier: 'free' },
-          mockClient
+          mockClient,
         );
 
         expect(result.allowed).toBe(true);
@@ -428,7 +428,7 @@ describe('SaasRateLimiter Unit Tests', () => {
 
         const result = await limiter.checkAndRecordDurableUsage(
           { tenantId: 'tenant-race-23505', tier: 'free' },
-          mockClient
+          mockClient,
         );
 
         expect(result.allowed).toBe(true);
@@ -457,8 +457,8 @@ describe('SaasRateLimiter Unit Tests', () => {
         await expect(
           limiter.checkAndRecordDurableUsage(
             { tenantId: 'tenant-insert-err', tier: 'free' },
-            mockClient
-          )
+            mockClient,
+          ),
         ).rejects.toThrow('Failed to insert usage ledger: relation does not exist');
       });
 
@@ -484,8 +484,8 @@ describe('SaasRateLimiter Unit Tests', () => {
         await expect(
           limiter.checkAndRecordDurableUsage(
             { tenantId: 'tenant-find-err', tier: 'free' },
-            mockClient
-          )
+            mockClient,
+          ),
         ).rejects.toThrow('Failed to query existing usage bucket: Database query timeout');
       });
     });

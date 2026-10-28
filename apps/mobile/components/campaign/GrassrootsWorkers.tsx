@@ -78,14 +78,14 @@ export default function GrassrootsWorkers() {
       Alert.alert(
         t('campaignManager.inviteToKshetraTitle', { defaultValue: 'Worker Added' }),
         t('campaignManager.inviteToKshetraDesc', {
-          defaultValue: 'Invite this worker to Kshetra so they can see voter lists and log daily door-to-door visits?',
+          defaultValue: 'Invite this worker to Poligram so they can see voter lists and log daily door-to-door visits?',
         }),
         [
           { text: t('common.later', { defaultValue: 'Later' }), style: 'cancel' },
           {
             text: t('campaignManager.sendWhatsAppInvite', { defaultValue: 'Send WhatsApp Invite' }),
             onPress: () => {
-              const text = `Namaste ${newName}, you have been enrolled into our campaign team on Kshetra. Download the app to view your voter list: https://kshetra.app/download`;
+              const text = `Namaste ${newName}, you have been enrolled into our campaign team on Poligram. Download the app to view your voter list: https://kshetra.app/download`;
               Linking.openURL(`whatsapp://send?phone=91${newPhone.replace(/\D/g, '').slice(-10)}&text=${encodeURIComponent(text)}`).catch(() => {});
             },
           },
@@ -146,7 +146,7 @@ export default function GrassrootsWorkers() {
                   {v.isKshetraUser && (
                     <View style={styles.kshetraBadge}>
                       <Ionicons name="checkmark-circle" size={11} color="#10B981" />
-                      <Text style={styles.kshetraBadgeText}>Kshetra User</Text>
+                      <Text style={styles.kshetraBadgeText}>Poligram User</Text>
                     </View>
                   )}
                 </View>

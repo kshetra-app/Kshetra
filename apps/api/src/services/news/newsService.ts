@@ -9,7 +9,14 @@ export interface NewsItem {
   summary?: string;
   imageUrl?: string;
   sourceUrl: string;
-  source: { id: string; name: string; domain: string; language: NewsLanguageCode; accent?: string; verified?: boolean };
+  source: {
+    id: string;
+    name: string;
+    domain: string;
+    language: NewsLanguageCode;
+    accent?: string;
+    verified?: boolean;
+  };
   language: NewsLanguageCode;
   category: NewsCategory;
   scope: NewsScope;
@@ -109,7 +116,8 @@ export async function refreshNews(): Promise<NewsFeed> {
     const items = deduped.slice(0, MAX_ITEMS);
 
     const sourceMap = new Map<string, NewsItem['source']>();
-    for (const it of items) if (!sourceMap.has(it.source.id)) sourceMap.set(it.source.id, it.source);
+    for (const it of items)
+      if (!sourceMap.has(it.source.id)) sourceMap.set(it.source.id, it.source);
 
     cache = {
       version: 1,
@@ -128,9 +136,10 @@ export function getFeed(filters: FeedFilters = {}): NewsFeed {
   let items = cache.items;
   if (filters.lang) items = items.filter((i) => i.language === filters.lang);
   if (filters.category && filters.category !== 'top') {
-    items = filters.category === 'video'
-      ? items.filter((i) => !!i.video)
-      : items.filter((i) => i.category === filters.category);
+    items =
+      filters.category === 'video'
+        ? items.filter((i) => !!i.video)
+        : items.filter((i) => i.category === filters.category);
   }
   if (filters.scope === 'national') items = items.filter((i) => i.scope === 'national');
   else if (filters.scope === 'state' && filters.state) {
@@ -140,10 +149,15 @@ export function getFeed(filters: FeedFilters = {}): NewsFeed {
   return { ...cache, items };
 }
 
-export function startNewsScheduler(log?: { info: (msg: string) => void; error: (e: unknown) => void }) {
+export function startNewsScheduler(log?: {
+  info: (msg: string) => void;
+  error: (e: unknown) => void;
+}) {
   // Initial fetch (non-blocking) + hourly refresh.
   refreshNews()
-    .then((f) => log?.info(`News feed primed with ${f.items.length} items from ${f.sources.length} sources`))
+    .then((f) =>
+      log?.info(`News feed primed with ${f.items.length} items from ${f.sources.length} sources`),
+    )
     .catch((e) => log?.error(e));
   if (!timer) {
     timer = setInterval(() => {
