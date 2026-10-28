@@ -9,10 +9,7 @@
  */
 
 import * as SQLite from 'expo-sqlite';
-import { Asset } from 'expo-asset';
-import * as FileSystem from 'expo-file-system/legacy';
 import { useEffect, useRef } from 'react';
-import { Platform } from 'react-native';
 
 // ═════════════════════════════════════════════════════════════════════════
 // ── Types ──────────────────────────────────────────────────────────────
@@ -115,131 +112,175 @@ let dbInitPromise: Promise<SQLite.SQLiteDatabase> | null = null;
  * bookkeeping is needed when the .db is rebuilt.
  */
 const DB_NAME = 'seed-data.db';
-// Auto-derived from the DB's content hash by scripts/build-seed-db.mjs — no
-// manual bump needed. Changes whenever the bundled DB is rebuilt, which forces
-// devices to re-copy the fresh file on next launch.
+// Auto-derived version tracking
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const DB_ASSET_VERSION: string = require('../data/seed-db-version.json').version;
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const DB_ASSET_MODULE = require('../data/seed-data.db');
 
 /**
- * Copy the bundled seed database into the SQLite directory if missing or stale.
- * Produces a single self-contained file (the build checkpoints its WAL), so we
- * also clear any stray -wal/-shm before copying a fresh version.
+ * Initialize local database tables and indexes if not already present.
+ * Decoupled from static APK bundle weight (0 MB bundle footprint).
  */
-/**
- * Install the seed database to dbPath using multiple fallback strategies
- * to ensure 100% reliability across dev, test, and production release APKs.
- */
-async function copySeedDbToDestination(dbPath: string): Promise<void> {
-  const errors: string[] = [];
+async function initLocalSchema(db: SQLite.SQLiteDatabase): Promise<void> {
+  await db.execAsync(`
+    PRAGMA foreign_keys = ON;
 
-  // Strategy 1: Direct Android APK asset (`assets/seed-data.db`)
-  if (Platform.OS === 'android') {
-    try {
-      console.log('[seedDataLoader] Strategy 1: copying from asset://seed-data.db');
-      await FileSystem.copyAsync({ from: 'asset://seed-data.db', to: dbPath });
-      const stat = await FileSystem.getInfoAsync(dbPath);
-      if (stat.exists && (stat as any).size && (stat as any).size > 10_000_000) {
-        console.log('[seedDataLoader] Strategy 1 succeeded, size:', (stat as any).size);
-        return;
-      }
-    } catch (e: any) {
-      errors.push(`Strategy 1 (asset://): ${e?.message ?? e}`);
-    }
+    CREATE TABLE IF NOT EXISTS constituencies (
+      id TEXT PRIMARY KEY,
+      state_code TEXT NOT NULL,
+      ac_no INTEGER NOT NULL,
+      name TEXT NOT NULL,
+      district TEXT,
+      type TEXT,
+      winner_party TEXT,
+      winner_name TEXT,
+      winner_votes INTEGER,
+      runner_up TEXT,
+      margin INTEGER,
+      current_party TEXT,
+      election_year INTEGER,
+      UNIQUE(state_code, ac_no)
+    );
 
-    // Strategy 2: Raw resource data_seeddata
-    try {
-      console.log('[seedDataLoader] Strategy 2: copying from raw data_seeddata');
-      await FileSystem.copyAsync({ from: 'data_seeddata', to: dbPath });
-      const stat = await FileSystem.getInfoAsync(dbPath);
-      if (stat.exists && (stat as any).size && (stat as any).size > 10_000_000) {
-        console.log('[seedDataLoader] Strategy 2 succeeded, size:', (stat as any).size);
-        return;
-      }
-    } catch (e: any) {
-      errors.push(`Strategy 2 (raw data_seeddata): ${e?.message ?? e}`);
-    }
+    CREATE TABLE IF NOT EXISTS mla_profiles (
+      id TEXT PRIMARY KEY,
+      state_code TEXT NOT NULL,
+      ac_no INTEGER NOT NULL,
+      name TEXT,
+      party TEXT,
+      gender TEXT,
+      terms_served INTEGER,
+      age INTEGER,
+      dob TEXT,
+      dob_estimated INTEGER,
+      education TEXT,
+      profession TEXT,
+      criminal_cases INTEGER,
+      total_assets REAL,
+      total_liabilities REAL,
+      marital_status TEXT,
+      photo_url TEXT,
+      constituency_name TEXT,
+      district TEXT,
+      source_url TEXT,
+      UNIQUE(state_code, ac_no)
+    );
 
-    // Strategy 3: Raw resource apps_mobile_data_seeddata
-    try {
-      console.log('[seedDataLoader] Strategy 3: copying from raw apps_mobile_data_seeddata');
-      await FileSystem.copyAsync({ from: 'apps_mobile_data_seeddata', to: dbPath });
-      const stat = await FileSystem.getInfoAsync(dbPath);
-      if (stat.exists && (stat as any).size && (stat as any).size > 10_000_000) {
-        console.log('[seedDataLoader] Strategy 3 succeeded, size:', (stat as any).size);
-        return;
-      }
-    } catch (e: any) {
-      errors.push(`Strategy 3 (raw apps_mobile_data_seeddata): ${e?.message ?? e}`);
-    }
-  }
+    CREATE TABLE IF NOT EXISTS demographics (
+      id TEXT PRIMARY KEY,
+      state_code TEXT NOT NULL,
+      ac_no INTEGER NOT NULL,
+      population INTEGER,
+      total_voters INTEGER,
+      turnout_2023 REAL,
+      male_voters INTEGER,
+      female_voters INTEGER,
+      literacy REAL,
+      urban_percent REAL,
+      sc_percent REAL,
+      st_percent REAL,
+      area_sq_km REAL,
+      UNIQUE(state_code, ac_no)
+    );
 
-  // Strategy 4: Expo Asset resolver
-  try {
-    console.log('[seedDataLoader] Strategy 4: Asset.fromModule downloadAsync');
-    const asset = Asset.fromModule(DB_ASSET_MODULE);
-    await asset.downloadAsync();
-    const sourceUri = asset.localUri || asset.uri;
-    if (sourceUri) {
-      await FileSystem.copyAsync({ from: sourceUri, to: dbPath });
-      const stat = await FileSystem.getInfoAsync(dbPath);
-      if (stat.exists && (stat as any).size && (stat as any).size > 10_000_000) {
-        console.log('[seedDataLoader] Strategy 4 succeeded, size:', (stat as any).size);
-        return;
-      }
-    }
-  } catch (e: any) {
-    errors.push(`Strategy 4 (Asset.fromModule): ${e?.message ?? e}`);
-  }
+    CREATE TABLE IF NOT EXISTS historical_results (
+      id TEXT PRIMARY KEY,
+      state_code TEXT NOT NULL,
+      ac_no INTEGER NOT NULL,
+      year INTEGER NOT NULL,
+      winner TEXT,
+      party TEXT,
+      UNIQUE(state_code, ac_no, year)
+    );
 
-  const finalCheck = await FileSystem.getInfoAsync(dbPath);
-  if (!finalCheck.exists || !((finalCheck as any).size && (finalCheck as any).size > 10_000_000)) {
-    throw new Error(`[seedDataLoader] All database installation strategies failed:\n${errors.join('\n')}`);
-  }
-}
+    CREATE TABLE IF NOT EXISTS political_timeline (
+      id TEXT PRIMARY KEY,
+      state_code TEXT NOT NULL,
+      ac_no INTEGER,
+      date TEXT,
+      assembly INTEGER,
+      event_type TEXT,
+      member_names TEXT,
+      debit_party TEXT,
+      credit_party TEXT,
+      seats INTEGER,
+      explanation TEXT,
+      details TEXT,
+      legal_status TEXT,
+      verified INTEGER
+    );
 
-/**
- * Copy the bundled seed database into the SQLite directory if missing or stale.
- * Produces a single self-contained file (the build checkpoints its WAL), so we
- * also clear any stray -wal/-shm before copying a fresh version.
- */
-async function ensureBundledDbCopied(forceReinstall = false): Promise<void> {
-  const docDir = FileSystem.documentDirectory;
-  if (!docDir) {
-    // Web platform or environment without document directory
-    return;
-  }
-  const sqliteDir = `${docDir}SQLite`;
-  const dbPath = `${sqliteDir}/${DB_NAME}`;
-  const versionPath = `${dbPath}.version`;
+    CREATE TABLE IF NOT EXISTS election_history (
+      id TEXT PRIMARY KEY,
+      state_code TEXT NOT NULL,
+      year INTEGER NOT NULL,
+      type TEXT,
+      total_seats INTEGER,
+      ruling_party TEXT,
+      notes TEXT,
+      UNIQUE(state_code, year)
+    );
 
-  const dirInfo = await FileSystem.getInfoAsync(sqliteDir);
-  if (!dirInfo.exists) {
-    await FileSystem.makeDirectoryAsync(sqliteDir, { intermediates: true });
-  }
+    CREATE TABLE IF NOT EXISTS election_history_results (
+      id TEXT PRIMARY KEY,
+      election_id TEXT NOT NULL,
+      party TEXT NOT NULL,
+      seats_won INTEGER,
+      seats_contested INTEGER,
+      FOREIGN KEY(election_id) REFERENCES election_history(id)
+    );
 
-  const dbInfo = await FileSystem.getInfoAsync(dbPath);
-  const isValidDbSize = (dbInfo as any).size && (dbInfo as any).size > 10_000_000;
-  if (!forceReinstall && dbInfo.exists && isValidDbSize) {
-    let installedVersion: string | null = null;
-    try {
-      installedVersion = await FileSystem.readAsStringAsync(versionPath);
-    } catch {
-      installedVersion = null;
-    }
-    if (installedVersion === DB_ASSET_VERSION) return; // up to date and genuine DB size
-  }
+    CREATE TABLE IF NOT EXISTS seed_manifest (
+      state_code TEXT PRIMARY KEY,
+      version TEXT,
+      has_mla_profiles INTEGER,
+      has_demographics INTEGER,
+      has_historical_results INTEGER,
+      has_political_timeline INTEGER,
+      has_election_history INTEGER,
+      constituency_count INTEGER,
+      last_updated TEXT
+    );
 
-  // Remove any prior copy (and its journal siblings) before installing fresh.
-  await FileSystem.deleteAsync(dbPath, { idempotent: true });
-  await FileSystem.deleteAsync(`${dbPath}-wal`, { idempotent: true });
-  await FileSystem.deleteAsync(`${dbPath}-shm`, { idempotent: true });
+    CREATE TABLE IF NOT EXISTS representatives (
+      id TEXT PRIMARY KEY,
+      office_type TEXT NOT NULL,
+      jurisdiction_type TEXT,
+      jurisdiction_id TEXT,
+      state_code TEXT NOT NULL,
+      district TEXT,
+      district_slug TEXT,
+      mandal TEXT,
+      mandal_slug TEXT,
+      gram_panchayat TEXT,
+      gp_key TEXT,
+      ward_no TEXT,
+      constituency TEXT,
+      name TEXT NOT NULL,
+      party TEXT,
+      party_official INTEGER,
+      elected_party TEXT,
+      gender TEXT,
+      reservation TEXT,
+      votes INTEGER,
+      election_year INTEGER,
+      is_current INTEGER,
+      source_type TEXT,
+      source_url TEXT,
+      data_status TEXT
+    );
 
-  await copySeedDbToDestination(dbPath);
-  await FileSystem.writeAsStringAsync(versionPath, DB_ASSET_VERSION);
-  console.log('[seedDataLoader] Bundled seed-data.db installed into SQLite dir');
+    CREATE INDEX IF NOT EXISTS idx_constituencies_state ON constituencies(state_code);
+    CREATE INDEX IF NOT EXISTS idx_mla_profiles_state ON mla_profiles(state_code);
+    CREATE INDEX IF NOT EXISTS idx_demographics_state ON demographics(state_code);
+    CREATE INDEX IF NOT EXISTS idx_historical_results_state_year ON historical_results(state_code, year);
+    CREATE INDEX IF NOT EXISTS idx_political_timeline_state_ac ON political_timeline(state_code, ac_no);
+    CREATE INDEX IF NOT EXISTS idx_election_history_state ON election_history(state_code);
+    CREATE INDEX IF NOT EXISTS idx_reps_state_office ON representatives(state_code, office_type);
+    CREATE INDEX IF NOT EXISTS idx_reps_state_district ON representatives(state_code, district_slug);
+    CREATE INDEX IF NOT EXISTS idx_reps_state_mandal ON representatives(state_code, district_slug, mandal_slug);
+    CREATE INDEX IF NOT EXISTS idx_reps_gpkey ON representatives(state_code, gp_key);
+    CREATE INDEX IF NOT EXISTS idx_reps_jurisdiction ON representatives(jurisdiction_type, jurisdiction_id);
+  `);
 }
 
 const cache = {
@@ -260,33 +301,13 @@ async function initDB(): Promise<SQLite.SQLiteDatabase> {
 
   dbInitPromise = (async () => {
     try {
-      await ensureBundledDbCopied();
-      let db = await SQLite.openDatabaseAsync(DB_NAME);
-
-      // Self-healing validation query: ensure database has tables and records
-      let valid = false;
-      try {
-        const row = await db.getFirstAsync<{ count: number }>('SELECT count(id) as count FROM representatives');
-        if (row && row.count > 100000) {
-          valid = true;
-          console.log('[seedDataLoader] Database integrity verified. Total representatives:', row.count);
-        }
-      } catch (checkErr) {
-        console.warn('[seedDataLoader] Database verification query failed:', checkErr);
-        valid = false;
-      }
-
-      if (!valid) {
-        console.warn('[seedDataLoader] Database is empty or invalid. Forcing reinstall from APK assets...');
-        await db.closeAsync().catch(() => {});
-        await ensureBundledDbCopied(true);
-        db = await SQLite.openDatabaseAsync(DB_NAME);
-      }
-
+      const db = await SQLite.openDatabaseAsync(DB_NAME);
+      await initLocalSchema(db);
       dbInstance = db;
+      console.log('[seedDataLoader] Local SQLite database initialized with decoupled schema (version:', DB_ASSET_VERSION, ')');
       return db;
     } catch (err) {
-      console.error('[seedDataLoader] Failed to open database:', err);
+      console.error('[seedDataLoader] Failed to initialize local SQLite database:', err);
       dbInitPromise = null;
       throw err;
     }
@@ -295,9 +316,6 @@ async function initDB(): Promise<SQLite.SQLiteDatabase> {
   return dbInitPromise;
 }
 
-/**
- * Ensure DB is initialized before querying.
- */
 async function ensureDB(): Promise<SQLite.SQLiteDatabase> {
   if (!dbInstance) {
     await initDB();

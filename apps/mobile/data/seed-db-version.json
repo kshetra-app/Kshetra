@@ -1,5 +1,5 @@
 {
-  "version": "a2d827430d816ffe-v2",
-  "builtAt": "2026-08-30T14:00:00.000Z"
+  "version": "decoupled-v2",
+  "tables": 9,
+  "bundled": false
 }
-

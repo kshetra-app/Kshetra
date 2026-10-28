@@ -704,13 +704,8 @@ async function main() {
   fs.writeFileSync(versionPath, JSON.stringify({ version: hash, builtAt: new Date().toISOString() }, null, 2) + '\n');
   console.log(`✅ Version file written: ${versionPath} (${hash})`);
 
-  // If Android assets directory exists, also copy directly so it's baked into APK assets
-  const androidAssetsDir = path.resolve(rootDir, 'apps/mobile/android/app/src/main/assets');
-  if (fs.existsSync(androidAssetsDir)) {
-    const androidDbPath = path.resolve(androidAssetsDir, 'seed-data.db');
-    fs.copyFileSync(dbPath, androidDbPath);
-    console.log(`✅ Android APK asset synced: ${androidDbPath}`);
-  }
+  // Note: Decoupled architecture does NOT bundle seed-data.db directly into APK assets
+  // to maintain <=25-30 MB binary budget. Preserved for archive generation only.
 }
 
 main().catch(err => {

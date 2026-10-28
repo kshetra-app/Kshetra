@@ -16,7 +16,6 @@ const cache = new Map<string, GeoJSON.FeatureCollection>();
 /** Bundled state code → require function (Metro resolves at build time). */
 const loaders: Record<string, () => GeoJSON.FeatureCollection> = {
   IN: () => require('../data/india-states.json') as GeoJSON.FeatureCollection,
-  TS: () => require('../data/telangana-assembly.json') as GeoJSON.FeatureCollection,
 };
 
 /** A linear ring is only valid with >= 4 positions (a closed triangle). */

@@ -25,6 +25,7 @@ import { fileURLToPath } from 'node:url';
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(__dirname, '..');
 const SRC_DIR = join(ROOT, 'apps', 'mobile', 'data');
+const ARCHIVE_SRC_DIR = join(ROOT, 'data', 'archive', 'mobile-bundled-assets', 'geo');
 const OUT_DIR = join(ROOT, 'apps', 'api', 'public', 'geo');
 const MOBILE_MANIFEST = join(SRC_DIR, 'geo-manifest.json');
 
@@ -139,7 +140,10 @@ function main() {
   let gzTotal = 0;
 
   for (const [code, file] of Object.entries(FILES)) {
-    const srcPath = join(SRC_DIR, file);
+    let srcPath = join(SRC_DIR, file);
+    if (!existsSync(srcPath)) {
+      srcPath = join(ARCHIVE_SRC_DIR, file);
+    }
     if (!existsSync(srcPath)) {
       console.warn(`  ! skip ${code} — source not found: ${file}`);
       continue;
