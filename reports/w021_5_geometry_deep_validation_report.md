@@ -1,7 +1,7 @@
 # KSHETRA W021.5 — Geometry Deep Validation & Boundary Inventory Report
 **Directive:** CTO Directive 116  
 **Specification:** W021.5-B1-04  
-**Date:** 2026-10-20T06:17:07.755Z  
+**Date:** 2026-10-28T17:01:43.426Z  
 
 ## 1. Telangana Assembly GeoJSON Deep Validation
 - **Asset Path:** `data/geo/telangana-assembly.geojson` (3.66 MB)

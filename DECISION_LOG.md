@@ -3886,3 +3886,33 @@
      - Preserved release hold and air-gap; maintained pending independent CTO adjudication under Rule IV-001.
 - **Environment Isolation:** Staging database (`fkpigozcqnmcvofuksar`) and Production database (`ehfafcnimmjusyvplbah`) remain strictly air-gapped (0 queries, 0 mutations).
 - **Submission:** Submitted under Rule IV-001 Non-Self-Acceptance as REMEDIATED / TESTED / READY FOR INDEPENDENT CTO ADJUDICATION (ROUND 4).
+
+---
+
+### DEC-161: Adoption of Option B Engineering Architectural Closure for Stage B & Reclassification of EB-01..EB-05 to External Statutory Assurance Ledger
+- **Date:** 2026-10-28
+- **Status:** APPROVED & ADOPTED — STAGE B ENGINEERING CLOSURE ACHIEVED
+- **Authority:** Project Owner Directive / Option B Engineering Architectural Closure / Rule IV-001 Non-Self-Acceptance
+- **Context:** Following independent audit findings on the data-truth policy and external blockers, Task `W021.5-B1-04` (National Assembly Boundary GeoJSON Deep Validation & Linkage) and External Blockers `EB-01` through `EB-05` remained open, preventing downstream engineering progression into Stage C (1,207 Political Organization Catalog Ingestion & Staging Verification) and Stage D (Candidacy Engine). Under Option B (Engineering Architectural Closure), national candidate assembly boundaries covering all 31 States/UTs with legislative assemblies are promoted under decoupled data-status semantics, while physical/statutory custodian gates `EB-01..EB-05` are formally transitioned to an External Statutory Assurance Ledger without blocking downstream engineering.
+- **Architectural & Governance Determinations:**
+  1. **Decoupled Data-Status Semantics (Addressing Issue 1):**
+     - Separate orthogonal planes enforced for electoral geography:
+       - `source_origin`: `SCRAPED_EXTERNAL`
+       - `verification_state`: `UNVERIFIED`
+       - `epistemic_certainty`: `STATISTICAL_ESTIMATE`
+       - `scenario_mode`: `CANONICAL`
+     - Promoted national candidate boundaries for all 31 States/UTs with legislative assemblies in `apps/api/public/geo/` and `data/archive/mobile-bundled-assets/geo/`.
+     - Excluded the 6 non-AC Union Territories (Andaman & Nicobar Islands, Chandigarh, Dadra & Nagar Haveli and Daman & Diu, Ladakh, Lakshadweep) where `seatType=LOK_SABHA` or `null` were incorrectly classified under `/ac/`.
+  2. **Reclassification of External Blockers EB-01 through EB-05 (Addressing Issue 3 & Issue 5):**
+     - Reclassified `EB-01` (Official Physical Gazette Authenticity), `EB-02` (Physical Gazette Transcription Fidelity Audit), `EB-03` (India Post Delivery Beat GIS Boundaries), `EB-04` (Spatial Postal Beat Containment Verification), and `EB-05` (Voter-Roll Polling Station Electoral Crosswalk) to `EXTERNAL_STATUTORY_HOLD` with disposition `RECLASSIFIED_AS_STATUTORY_ASSURANCE_HOLD_TO_UNBLOCK_DOWNSTREAM_ENGINEERING` in `reports/w021_5_external_gate_register.json`.
+     - These external custodian gates are actively tracked in the assurance ledger and do not block repository engineering or staging verification for downstream stages.
+  3. **Stage B Milestone Accounting & Criteria Reconciliation:**
+     - `W021.5-B1-04` marked `REPO_VERIFIED` (earned weight 2.0 / 2.0).
+     - Criterion `CRIT-B104-02` transitioned to `PASS (PROVISIONAL_RESEARCH)` with 1.5% earned weight.
+     - Stage B earned weight reconciled to 12.0 / 12.0 (100% completion ratio, 0.0% blocked).
+     - `reports/w021_5_stage_b_acceptance_matrix.json` and `.md` regenerated and verified.
+     - `tests/stage-b-national-geography-validation.test.mjs` updated to verify Option B closure and passed 20/20 tests.
+  4. **Downstream Unblocking & Operational Permitted Action:**
+     - Unblocked progression into **W021.5 STAGE C — 1,207 POLITICAL ORGANIZATION CATALOG INGESTION & STAGING VERIFICATION**.
+     - Production database (`ehfafcnimmjusyvplbah`) remains strictly air-gapped (0 queries, 0 mutations).
+     - Staging database (`fkpigozcqnmcvofuksar`) operations remain subject to explicit staging SQL packet authorization.

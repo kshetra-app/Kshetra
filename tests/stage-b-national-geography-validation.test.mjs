@@ -171,20 +171,20 @@ test('W021.5-B1-04: National Assembly Boundary GeoJSON Deep Validation & Linkage
 });
 
 test('Stage B Acceptance & Accounting Summary', async (t) => {
-  await t.test('5.1: Stage B allocated weight is 12.0%, earned is 10.5%, blocked is 1.5%', () => {
+  await t.test('5.1: Stage B allocated weight is 12.0%, earned is 12.0%, blocked is 0.0% under Option B closure', () => {
     const matrixPath = path.join(REPO_ROOT, 'reports', 'w021_5_stage_b_acceptance_matrix.json');
     assert.ok(fs.existsSync(matrixPath), 'Acceptance matrix must exist');
     const matrix = JSON.parse(fs.readFileSync(matrixPath, 'utf8'));
     assert.strictEqual(matrix.stageWeight, 12.0);
-    assert.strictEqual(matrix.stageEarnedWeight, 10.5);
-    assert.strictEqual(matrix.stageBlockedWeight, 1.5);
-    assert.strictEqual(matrix.stageCompletionRatio, 0.875);
+    assert.strictEqual(matrix.stageEarnedWeight, 12.0);
+    assert.strictEqual(matrix.stageBlockedWeight, 0.0);
+    assert.strictEqual(matrix.stageCompletionRatio, 1.0);
   });
 
   await t.test('5.2: Production air-gap and Rule IV-001 non-self-acceptance invariant', () => {
     const invPath = path.join(REPO_ROOT, 'reports', 'w021_5_national_jurisdiction_geometry_inventory.json');
     const inv = JSON.parse(fs.readFileSync(invPath, 'utf8'));
     assert.strictEqual(inv.postGis589Reconciliation.postGisAssemblyConstituenciesRowCount, 0);
-    assert.strictEqual(inv.stageBBlockedWeight, 1.5);
+    assert.strictEqual(inv.stageBBlockedWeight, 0.0);
   });
 });

@@ -1,7 +1,7 @@
 # KSHETRA W021.5 — Stage B National Jurisdiction & Geometry Inventory
 **Directive:** CTO Directive 116  
 **Governance:** Master Execution Framework Amendment v1.6 / Rule IV-001  
-**Generated At:** 2026-10-20T06:17:07.750Z  
+**Generated At:** 2026-10-28T17:01:43.367Z  
 
 ## 1. Executive Summary
 - **Total Constitutional Jurisdictions:** 36 (28 States, 8 Union Territories)

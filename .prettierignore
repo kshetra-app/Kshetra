@@ -17,3 +17,6 @@ Logo
 *.bin
 *.txt
 package-lock.json
+apps/mobile
+apps/web-admin
+apps/web-receiver

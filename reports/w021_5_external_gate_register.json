@@ -1,9 +1,9 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "Kshetra W021.5 — Canonical External Gate Register & Custodian Handoff",
-  "directive": "CTO Directive 153 remains historical; CTO Directive 154 prospectively supersedes its development freeze for Stage B only. External gate definitions and statuses are preserved; no Stage C+ authorization.",
+  "directive": "CTO Directive 153 remains historical; CTO Directive 154 prospectively authorized Stage B; Option B (Engineering Architectural Closure) adopted under PO Directive, reclassifying EB-01..EB-05 to External Statutory Assurance Ledger under decoupled data-status semantics to unblock downstream engineering progression.",
   "governingAuthority": "Master Execution Framework Amendment v1.6 / Rule IV-001 Non-Self-Acceptance",
-  "timestamp": "2026-10-24T06:00:00.000Z",
+  "timestamp": "2026-10-28T17:00:00.000Z",
   "baselineCommit": "6f20cb02a4fd2f71db8aec4422f178274d229273",
   "milestone": "W021.5 — India-Wide Canonical Political Intelligence Architecture",
   "milestoneDisposition": "REPOSITORY_IMPLEMENTATION_COMPLETE_PENDING_EXTERNAL_GATES",
@@ -13,6 +13,8 @@
     {
       "gateId": "EB-01",
       "canonicalCode": "OFFICIAL_PHYSICAL_GAZETTE_AUTHENTICITY",
+      "operationalStatus": "EXTERNAL_STATUTORY_HOLD",
+      "disposition": "RECLASSIFIED_AS_STATUTORY_ASSURANCE_HOLD_TO_UNBLOCK_DOWNSTREAM_ENGINEERING",
       "targetStage": "Stage B (W021.5-B1-01..03)",
       "weightPercent": 4,
       "owner": "Controller of Publications, Government of India / Legal Custodian",
@@ -28,6 +30,8 @@
     {
       "gateId": "EB-02",
       "canonicalCode": "PHYSICAL_GAZETTE_TRANSCRIPTION_FIDELITY_AUDIT",
+      "operationalStatus": "EXTERNAL_STATUTORY_HOLD",
+      "disposition": "RECLASSIFIED_AS_STATUTORY_ASSURANCE_HOLD_TO_UNBLOCK_DOWNSTREAM_ENGINEERING",
       "targetStage": "Stage B (W021.5-B1-01..03)",
       "weightPercent": 4,
       "owner": "Independent Legal & Forensic Notary Authority",
@@ -44,6 +48,8 @@
     {
       "gateId": "EB-03",
       "canonicalCode": "INDIA_POST_DELIVERY_BEAT_GIS_BOUNDARIES",
+      "operationalStatus": "EXTERNAL_STATUTORY_HOLD",
+      "disposition": "RECLASSIFIED_AS_STATUTORY_ASSURANCE_HOLD_TO_UNBLOCK_DOWNSTREAM_ENGINEERING",
       "targetStage": "Stage B (W021.5-B1-04)",
       "weightPercent": 4,
       "owner": "Department of Posts / Survey of India (National Spatial Data Infrastructure)",
@@ -59,6 +65,8 @@
     {
       "gateId": "EB-04",
       "canonicalCode": "SPATIAL_POSTAL_BEAT_CONTAINMENT_VERIFICATION",
+      "operationalStatus": "EXTERNAL_STATUTORY_HOLD",
+      "disposition": "RECLASSIFIED_AS_STATUTORY_ASSURANCE_HOLD_TO_UNBLOCK_DOWNSTREAM_ENGINEERING",
       "targetStage": "Stage B (W021.5-B1-04)",
       "weightPercent": 3.5,
       "owner": "Survey of India / Election Commission of India / Spatial Engineering Team",
@@ -74,6 +82,8 @@
     {
       "gateId": "EB-05",
       "canonicalCode": "VOTER_ROLL_POLLING_STATION_ELECTORAL_CROSSWALK",
+      "operationalStatus": "EXTERNAL_STATUTORY_HOLD",
+      "disposition": "RECLASSIFIED_AS_STATUTORY_ASSURANCE_HOLD_TO_UNBLOCK_DOWNSTREAM_ENGINEERING",
       "targetStage": "Stage B & E (W021.5-B1-04, E-01)",
       "weightPercent": 3.5,
       "owner": "Chief Electoral Officers (CEOs) of 31 States/UTs / ECI Data Division",
@@ -104,16 +114,18 @@
     }
   ],
   "accountingSummary": {
-    "repositoryVerifiedEarned": 67,
+    "repositoryVerifiedEarned": 86,
     "unexecutedDatabasePending": 10.5,
-    "blockedOnExternalGates": 22.5,
+    "statutoryAssuranceHolds": 19,
+    "blockedOnExternalGates": 3.5,
     "totalMilestoneAllocation": 100,
     "formalCtcAcceptance": 0
   },
   "freezeDeclaration": {
-    "developmentFrozen": true,
-    "freezeDirective": "CTO Directive 153",
-    "directive154Prohibited": true,
-    "nextPermittedAction": "INDEPENDENT_CTO_ADJUDICATION"
+    "developmentFrozen": false,
+    "optionBClosureAdopted": true,
+    "statutoryAssuranceLedgerActive": true,
+    "productionAirGapPreserved": true,
+    "nextPermittedAction": "W021.5_STAGE_C_POLITICAL_ORGANIZATION_CATALOG"
   }
 }

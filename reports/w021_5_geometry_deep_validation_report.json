@@ -1,7 +1,7 @@
 {
   "title": "Stage B National Assembly Boundary GeoJSON Deep Validation",
   "directive": "CTO Directive 116",
-  "generatedAt": "2026-10-20T06:17:07.753Z",
+  "generatedAt": "2026-10-28T17:01:43.425Z",
   "telanganaAssembly": {
     "filePath": "data/geo/telangana-assembly.geojson",
     "fileSize": 3663116,
