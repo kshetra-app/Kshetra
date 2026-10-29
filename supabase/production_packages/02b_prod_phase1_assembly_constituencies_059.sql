@@ -4321,6 +4321,35 @@ WHERE c.internal_id = cv.constituency_internal_id AND cv.is_current = true;
 
 -- ─── 9. STATUTORY PROVENANCE LINKAGES ─────────────────────────────────────────
 
+-- Ensure statutory provenance records exist prior to linkage insertion
+INSERT INTO public.provenance_records (id, dataset_version_id, status, transformation_type, operator, metadata)
+VALUES
+  (
+    '00000000-0000-0000-0013-000000000001'::uuid,
+    'mha_national_jurisdictions_2024_v1',
+    'VERIFIED',
+    'raw_seed',
+    'system:w013_migration',
+    '{"description": "Seed instantiation of National Jurisdictions under MHA State Reorganisation Acts"}'::jsonb
+  ),
+  (
+    '00000000-0000-0000-0013-000000000004'::uuid,
+    'eci_national_pc_2008_v1',
+    'VERIFIED',
+    'raw_seed',
+    'system:w013_migration',
+    '{"description": "Seed instantiation of 543 Parliamentary Constituencies under ECI Delimitation Order 2008"}'::jsonb
+  ),
+  (
+    '00000000-0000-0000-0013-000000000005'::uuid,
+    'eci_national_ac_2008_v1',
+    'VERIFIED',
+    'raw_seed',
+    'system:w013_migration',
+    '{"description": "Seed instantiation of 4123 Assembly Constituencies under ECI Delimitation Order 2008"}'::jsonb
+  )
+ON CONFLICT (id) DO NOTHING;
+
 INSERT INTO public.record_provenance_linkages (domain_table, domain_record_id, provenance_id, is_canonical)
 SELECT 'states', s.code, '00000000-0000-0000-0013-000000000001'::uuid, true
 FROM public.states s
