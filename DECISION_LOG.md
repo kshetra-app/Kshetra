@@ -4187,3 +4187,22 @@
 - **Acceptance & Next Steps:**
   - **Domain 1 (JOB 012, JOB 013, JOB 016, JOB 021, JOB 022)** is formally ratified as **`ACCEPTED / COMPLETE (TESTED & VERIFIED)`**.
 
+
+### DEC-170: Formulation & Submission of Job W052 Professional Broadcast Architecture Pre-Implementation Plan
+- **Date:** 2026-10-29
+- **Status:** PLAN_SUBMITTED_FOR_REVIEW (IMPLEMENTATION_AUTHORIZATION = NO)
+- **Authority:** Master Product Blueprint, Amendment v1.2, Amendment v1.5-A Section 26 & AGENT_EXECUTION_PROTOCOL.md
+- **Context:** Following the verified completion and acceptance of Domain 1 (JOB 012, 013, 016, 021, 022 under DEC-169), the project advanced to the next permitted sequential milestone: Job W052 (Professional Broadcast Architecture). Under Amendment v1.5-A and Rule IV-001 Non-Self-Acceptance, a canonical 22-section Pre-Implementation Plan was authored and submitted for user and CTO review prior to any product code modification.
+- **Key Architectural Determinations in Ratification Plan:**
+  1. **DEF-003 Resolution & Consumer Mobile Decoupling:**
+     - Severing the creator WebRTC broadcasting pipeline from the consumer mobile application. Removing react-native-webrtc from required consumer app dependencies to eliminate ~20 MB of native binary bloat (libwebrtc.so / WebRTC.xcframework).
+     - Establishing a dedicated Web WHIP studio broadcaster and companion creator architecture, while consumer viewing remains 100% lightweight and native over HLS / LL-HLS via HlsPlayer.tsx.
+  2. **Migration 074 Professional Broadcast Schema:**
+     - Establishing 8 normalized database tables (broadcast_channels, broadcast_streams, broadcast_stream_keys, broadcast_telemetry_snapshots, broadcast_polls, broadcast_poll_options, broadcast_poll_votes, broadcast_qa_threads).
+     - Enforcing strict referential integrity to canonical_persons (Candidates), canonical_organizations (Parties), and constituencies.
+  3. **Control Plane Management & Interactive Services:**
+     - Fastify authenticated broadcast management endpoints for stream reservation, ephemeral hashed key generation, health monitoring, and lifecycle state management.
+     - Real-time interactive audience polling and moderated Q&A queues with anti-sybil protections and DPDP Act 2023 zero-PII compliance.
+- **Operational Authorization:**
+  - Plan document committed to governance/plans/PLAN-W052-PROFESSIONAL-BROADCAST-ARCHITECTURE-REV-1.0.md.
+  - Implementation authorization remains frozen (IMPLEMENTATION_AUTHORIZATION = NO) until explicit user/CTO ratification.
