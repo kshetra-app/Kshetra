@@ -8,74 +8,65 @@
 
 ---
 
-## 1. Executive Summary & Root Cause of SQL Editor Payload Limit
+## 1. Forensic Root Cause Analysis
 
-During the authorized production synchronization attempt, executing the monolithic package `supabase/w021_5_staging_master_migration_package_050_066.sql` produced the following error in the Supabase Web Dashboard:
+### A. SQL Editor Payload Ceiling
+The monolithic package `supabase/w021_5_staging_master_migration_package_050_066.sql` is **1.86 MB (1,861,557 bytes)**, which exceeded the Supabase Dashboard web editor payload ceiling (~1 MB limit).
 
+### B. Prerequisite Schema Baseline (`relation "public.state_versions" does not exist`)
+When executing Step 2A (`02a_prod_phase1_jurisdictions_and_pcs_059.sql`), the editor reported:
 ```text
-Error: Query is too large to be run via the SQL Editor
-Run this query by connecting to your database directly.
+ERROR: 42P01: relation "public.state_versions" does not exist
+QUERY: SELECT EXISTS ( SELECT 1 FROM public.state_versions WHERE version_code = 'TS-STATE-2014' AND state_code = 'TS' )
 ```
-
-### Forensic Root Cause
-1. **Payload Size Ceiling:** The Supabase Dashboard web client imposes a client-side API gateway payload threshold of approximately **1 MB (1,048,576 bytes)** for HTTP-based query execution.
-2. **Monolithic Bundle Metrics:** `w021_5_staging_master_migration_package_050_066.sql` combines 9 migrations into a single file of **1,861,557 bytes (1.86 MB)** and 13,580 lines—nearly double the web editor ceiling.
-3. **Chunking Resolution:** To enable execution entirely within the Supabase Web SQL Editor without requiring direct CLI connection strings or passwords, Phase 1 has been decomposed into **discrete, sequential packages strictly under 700 KB each** (`supabase/production_packages/`).
+- **Reason:** The production database (`ehfafcnimmjusyvplbah`) was maintained strictly air-gapped from Job W002 onward (holding baseline schema migrations 001–034).
+- Migrations 035 through 042 (Data Governance Foundation, Canonical Geography Model, State Versions, and Parliamentary Constituencies) were previously deployed to Staging during Jobs W010–W015.
+- Therefore, before Step 2A can populate the 36 national jurisdictions and 543 Parliamentary Constituencies, the three foundational schema packages (`00a`, `00b`, `00c`) must be applied to establish `public.state_versions`, `public.parliamentary_constituencies`, and `public.dataset_versions`.
 
 ---
 
-## 2. Production Synchronization 4-Phase Roadmap
+## 2. Updated Phase 1 Execution Sequence
 
-```
-Phase 1: Base Schemas & National Geography / Party Registries
-  ├── 01: Core Entity Model (Migration 050) [30 KB]
-  ├── 02a: National Jurisdictions & PCs (Migration 059-R1 Part A) [103 KB]
-  ├── 02b: National Assembly Constituencies (Migration 059-R1 Part B) [735 KB]
-  ├── 03: Electoral Geography Remediation (Migration 060) [21 KB]
-  ├── 04: Canonical AC <-> PC Mappings (Migration 061) [697 KB]
-  ├── 05: Delimitation, Identity & Org Governance (Migrations 062-064) [57 KB]
-  ├── 06: Canonical Organizations & Civic Schema (Migrations 065-066) [278 KB]
-  └── 07: Phase 1 Verification Gate [8 KB] (Must return PROD_PHASE1_PASS)
-         │
-         ▼
-Phase 2: Stage D Canonical Data Population (Persons, Candidacies, Tenures)
-  ├── Chunks 01 to 10 in supabase/staging_packages/065_b2_2d_chunked/ (< 600 KB each)
-  ├── Post-population enrichment patch
-  └── Chunk 11 Verification Gate (Must return 48,284 rows)
-         │
-         ▼
-Phase 3: Stage E Civic Data Population (Disclosures, Demographics, Lineage)
-  ├── Chunks 01 to 08 in supabase/staging_packages/066_b2_2e_chunked/ (< 420 KB each)
-  └── Post-066 Consolidated Gate (Must return 11/11 PASS)
-         │
-         ▼
-Phase 4: SaaS Foundation & Outbound Webhooks / Delimitation Watch Engine
-  ├── Consolidated Package: supabase/staging_packages/w022_job023_consolidated_staging_deployment.sql [61 KB]
-  └── Post-Staging Gate 068-071 (Must return 10/10 PASS)
-```
+All packages are located in [`supabase/production_packages/`](file:///C:/Users/Laven/OneDrive/Desktop/Kshetra/supabase/production_packages/) and are strictly **under 750 KB** (most are under 100 KB).
+
+Execute these in the **Production Supabase SQL Editor (`ehfafcnimmjusyvplbah`)**:
+
+### Step 0A: Prerequisites - Governance & Security Foundation (Migrations 035-039)
+- **File:** [`supabase/production_packages/00a_prod_prereq_governance_and_security_035_039.sql`](file:///C:/Users/Laven/OneDrive/Desktop/Kshetra/supabase/production_packages/00a_prod_prereq_governance_and_security_035_039.sql)
+- **Size:** 56,287 bytes (~56 KB)
+- **Scope:** Creates `campaign_recharge_orders`, `page_pro_orders`, hardens RLS on 21 tables, establishes `source_authority_enum`, `data_sources`, `datasets`, `dataset_versions`, `provenance_records`, and `evidence_records`.
+- **Expected Result:** `Success. No rows returned.`
+
+### Step 0B: Prerequisites - Canonical Geography Model (Migration 040)
+- **File:** [`supabase/production_packages/00b_prod_prereq_canonical_geography_040.sql`](file:///C:/Users/Laven/OneDrive/Desktop/Kshetra/supabase/production_packages/00b_prod_prereq_canonical_geography_040.sql)
+- **Size:** 69,431 bytes (~69 KB)
+- **Scope:** Adds `internal_id UUID UNIQUE` to `states` and `constituencies`, creates `districts` and `parliamentary_constituencies`, and registers W012 data sources.
+- **Expected Result:** `Success. No rows returned.`
+
+### Step 0C: Prerequisites - Geography Versioning & Relationships (Migrations 041-042)
+- **File:** [`supabase/production_packages/00c_prod_prereq_geography_versioning_041_042.sql`](file:///C:/Users/Laven/OneDrive/Desktop/Kshetra/supabase/production_packages/00c_prod_prereq_geography_versioning_041_042.sql)
+- **Size:** 87,199 bytes (~87 KB)
+- **Scope:** Enables `btree_gist`, creates `delimitation_regimes`, `state_versions` (seeding `TS-STATE-2014`), `district_versions`, `parliamentary_constituency_versions`, `constituency_versions`, `geography_entity_lineage`, and `geography_relationships`.
+- **Expected Result:** `Success. No rows returned.`
 
 ---
-
-## 3. Phase 1 Execution Sequence (Production Supabase SQL Editor)
-
-Execute the following 7 scripts sequentially in the **Supabase SQL Editor** on **Production** (`ehfafcnimmjusyvplbah`):
 
 ### Step 1: Core Political Entity Model (Migration 050)
-- **File:** [`supabase/production_packages/01_prod_phase1_core_entity_model_050.sql`](file:///C:/Users/Laven/OneDrive/Desktop/Kshetra/supabase/production_packages/01_prod_phase1_core_entity_model_050.sql)
-- **Size:** 29,933 bytes (~30 KB)
-- **Scope:** Creates `data_status_enum`, `canonical_persons`, `candidacies`, `elected_tenures`, `person_party_affiliations`, `tenure_party_switches`, `organization_relationships`, `pages`, `person_roles`, and audit triggers.
-- **Expected Result:** `Success. No rows returned.`
+- **Status:** **ALREADY COMPLETED SUCCESSFULLY BY USER** (`step 1 success`).
+- *(No need to re-run; `01_prod_phase1_core_entity_model_050.sql` is already in place).*
+
+---
 
 ### Step 2A: National Jurisdictions & Parliamentary Constituencies (Migration 059 Part A)
 - **File:** [`supabase/production_packages/02a_prod_phase1_jurisdictions_and_pcs_059.sql`](file:///C:/Users/Laven/OneDrive/Desktop/Kshetra/supabase/production_packages/02a_prod_phase1_jurisdictions_and_pcs_059.sql)
 - **Size:** 103,312 bytes (~103 KB)
-- **Scope:** Establishes national dataset versions, `migration_conflicts` table, 36 States & UTs in `public.states`, 36 State versions in `public.state_versions`, 543 Parliamentary Constituencies in `public.parliamentary_constituencies`, and 543 PC versions in `public.parliamentary_constituency_versions`.
+- **Scope:** Canonicalizes all 36 States & UTs (`public.states`), 36 state versions (`public.state_versions`), and 543 Parliamentary Constituencies with versions.
 - **Expected Result:** `Success. No rows returned.`
 
 ### Step 2B: National Assembly Constituencies (Migration 059 Part B)
 - **File:** [`supabase/production_packages/02b_prod_phase1_assembly_constituencies_059.sql`](file:///C:/Users/Laven/OneDrive/Desktop/Kshetra/supabase/production_packages/02b_prod_phase1_assembly_constituencies_059.sql)
 - **Size:** 735,089 bytes (~735 KB)
-- **Scope:** Canonicalizes 4,123 Assembly Constituencies in `public.constituencies`, 4,123 AC versions in `public.constituency_versions`, statutory provenance linkages, and conflict audit records.
+- **Scope:** Canonicalizes all 4,123 Assembly Constituencies (`public.constituencies`) and 4,123 AC versions (`public.constituency_versions`) with statutory provenance linkages.
 - **Expected Result:** `Success. No rows returned.`
 
 ### Step 3: Electoral Geography Remediation (Migration 060)
@@ -99,7 +90,7 @@ Execute the following 7 scripts sequentially in the **Supabase SQL Editor** on *
 ### Step 6: Canonical Political Organizations Registry & Civic Extensions Schema (Migrations 065-066)
 - **File:** [`supabase/production_packages/06_prod_phase1_political_organizations_and_civic_schema_065_066.sql`](file:///C:/Users/Laven/OneDrive/Desktop/Kshetra/supabase/production_packages/06_prod_phase1_political_organizations_and_civic_schema_065_066.sql)
 - **Size:** 278,306 bytes (~278 KB)
-- **Scope:** Authoritative population of 107 recognized political organizations, 1,043 aliases, 27 multilingual names, 19 symbols, 10 relationships, and batch provenance anchor `0215b22c-0000-0000-0000-000000000001` (1,207 total rows). Establishes downstream civic extensions datasets and versions, enhances `candidate_affidavits` with relational foreign keys, and deploys `constituency_demographics` with Row Level Security.
+- **Scope:** Authoritative population of 107 recognized political organizations, 1,043 aliases, multilingual names, symbols, and batch provenance anchor `0215b22c-0000-0000-0000-000000000001` (1,207 rows). Deploys downstream civic extensions schema (`constituency_demographics` and enhanced `candidate_affidavits`).
 - **Expected Result:** `Success. No rows returned.`
 
 ### Step 7: Phase 1 Verification Gate
