@@ -200,7 +200,7 @@ check_9_data AS (
     (SELECT count(*) FROM public.constituency_demographics
      WHERE provenance_id = '0215b22e-0000-0000-0000-000000000001'::uuid) AS batch_demographics,
     (SELECT count(*) FROM public.political_organizations
-     WHERE is_independent = true OR name ILIKE '%independent%') AS synth_orgs
+     WHERE id ILIKE '%indep%' OR name ILIKE '%indep%' OR (ec_party_code IS NOT NULL AND ec_party_code ILIKE '%indep%')) AS synth_orgs
 ),
 check_9_cte AS (
   SELECT
