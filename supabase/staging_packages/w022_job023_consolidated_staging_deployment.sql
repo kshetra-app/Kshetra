@@ -1,4 +1,20 @@
--- ==============================================================================\n-- KSHETRA / PANIN: CONSOLIDATED STAGING DEPLOYMENT PACKAGE (067 THROUGH 071)\n-- Target: Staging Supabase (fkpigozcqnmcvofuksar / panIN-staging)\n-- Production: STRICTLY AIR-GAPPED & UNTOUCHED (ehfafcnimmjusyvplbah)\n-- Scope:\n--   Part 1: Migration 067 - Candidate Contest Foreign Key Hardening\n--   Part 2: Migration 068 - Normalized Candidate Affidavit Disclosures Schema (DEC-134)\n--   Part 3: Migration 069 - Candidate Referential Integrity Reconciliation (CTO Directive 150/152)\n--   Part 4: Migration 070 - SaaS Outbound Webhook & Event Dispatching Engine (W022)\n--   Part 5: Migration 071 - Delimitation Watch Engine 8-Stage Lifecycle Schema (JOB 023)\n-- ==============================================================================\n\n-- ##############################################################################\n-- BEGIN COMPONENT: 067_candidate_contest_fk.sql\n-- ##############################################################################\n\n-- ==============================================================================
+-- ==============================================================================
+-- KSHETRA / PANIN: CONSOLIDATED STAGING DEPLOYMENT PACKAGE (067 THROUGH 071)
+-- Target: Staging Supabase (fkpigozcqnmcvofuksar / panIN-staging)
+-- Production: STRICTLY AIR-GAPPED & UNTOUCHED (ehfafcnimmjusyvplbah)
+-- Scope:
+--   Part 1: Migration 067 - Candidate Contest Foreign Key Hardening
+--   Part 2: Migration 068 - Normalized Candidate Affidavit Disclosures Schema (DEC-134)
+--   Part 3: Migration 069 - Candidate Referential Integrity Reconciliation (CTO Directive 150/152)
+--   Part 4: Migration 070 - SaaS Outbound Webhook & Event Dispatching Engine (W022)
+--   Part 5: Migration 071 - Delimitation Watch Engine 8-Stage Lifecycle Schema (JOB 023)
+-- ==============================================================================
+
+-- ##############################################################################
+-- BEGIN COMPONENT: 067_candidate_contest_fk.sql
+-- ##############################################################################
+
+-- ==============================================================================
 -- Migration 067: Candidate-to-Contest Foreign Key Constraint Linkage & Referential Hardening
 -- Task: W021.5-D-03 / REQ-CND-003 / CTO Directive 148 Section 4
 -- Target: Staging Supabase & Local PostgreSQL (fkpigozcqnmcvofuksar)
@@ -70,7 +86,13 @@ CREATE INDEX IF NOT EXISTS idx_candidacies_person ON public.candidacies(person_i
 CREATE INDEX IF NOT EXISTS idx_candidacies_party ON public.candidacies(party_id) WHERE party_id IS NOT NULL;
 
 COMMIT;
-\n\n-- ##############################################################################\n-- BEGIN COMPONENT: 068_affidavit_disclosures.sql\n-- ##############################################################################\n\n-- ==============================================================================
+
+
+-- ##############################################################################
+-- BEGIN COMPONENT: 068_affidavit_disclosures.sql
+-- ##############################################################################
+
+-- ==============================================================================
 -- Migration 068: Normalized Candidate Affidavit Disclosure Schema
 -- Task: W021.5-E-03 / REQ-FIN-002
 -- Authority: DEC-134 6-Rule Sworn Financial Disclosures Standard
@@ -183,7 +205,13 @@ EXCEPTION
 END $$;
 
 COMMIT;
-\n\n-- ##############################################################################\n-- BEGIN COMPONENT: 069_candidate_referential_integrity_reconciliation.sql\n-- ##############################################################################\n\n-- ==============================================================================
+
+
+-- ##############################################################################
+-- BEGIN COMPONENT: 069_candidate_referential_integrity_reconciliation.sql
+-- ##############################################################################
+
+-- ==============================================================================
 -- Migration 069: Candidate Referential Integrity & Constraint Reconciliation
 -- Task: W021.5-D-03 / REQ-CND-003 / CTO Directive 149, 150 & 152
 -- Target: Staging Supabase & Local PostgreSQL (fkpigozcqnmcvofuksar)
@@ -363,7 +391,13 @@ CREATE INDEX IF NOT EXISTS idx_candidacies_person ON public.candidacies(person_i
 CREATE INDEX IF NOT EXISTS idx_candidacies_party ON public.candidacies(party_id) WHERE party_id IS NOT NULL;
 
 COMMIT;
-\n\n-- ##############################################################################\n-- BEGIN COMPONENT: 070_saas_webhook_engine.sql\n-- ##############################################################################\n\n-- ==============================================================================
+
+
+-- ##############################################################################
+-- BEGIN COMPONENT: 070_saas_webhook_engine.sql
+-- ##############################################################################
+
+-- ==============================================================================
 -- 070_saas_webhook_engine.sql
 --
 -- Milestone: W022 — B2B SaaS Outbound Webhooks & Event Dispatching Engine
@@ -879,7 +913,13 @@ COMMIT;
 -- DROP TABLE IF EXISTS public.webhook_events;        -- Dropped second: references saas_applications
 -- DROP TABLE IF EXISTS public.webhook_subscriptions; -- Dropped third: references saas_applications
 -- COMMIT;
-\n\n-- ##############################################################################\n-- BEGIN COMPONENT: 071_delimitation_watch_engine.sql\n-- ##############################################################################\n\n-- ==============================================================================
+
+
+-- ##############################################################################
+-- BEGIN COMPONENT: 071_delimitation_watch_engine.sql
+-- ##############################################################################
+
+-- ==============================================================================
 -- 071_delimitation_watch_engine.sql
 --
 -- Milestone: JOB 023 — Delimitation Watch Engine
@@ -1262,4 +1302,4 @@ EXCEPTION
 END $$;
 
 COMMIT;
-\n\n
+
