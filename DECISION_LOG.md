@@ -4013,3 +4013,39 @@
      - Milestone `W021.5-B2.2-F` is formally marked `ACCEPTED / COMPLETE (PRODUCTION SYNC READY; PENDING LIVE CTO PUSH)`.
      - Whole W021.5 milestone series (B1 through B2.2-F) is complete.
      - `NEXT_PERMITTED_JOB` advanced to **W022 (B2B SaaS Outbound Webhooks Engine)** and **JOB 023 (Delimitation Watch Engine)**.
+
+
+---
+
+### DEC-165: W022, JOB 023 & Candidate Disclosures Staging Deployment & Verification Acceptance
+- **Date:** 2026-10-29
+- **Status:** APPROVED & ACCEPTED — STAGING DEPLOYMENT VERIFIED (10/10 PASS)
+- **Authority:** Project Owner Direction / Master Execution Framework Amendment v1.2, v1.5-A, v1.6 & Rule IV-001 Non-Self-Acceptance
+- **Context:** Following the completion of W021.5 Stage F (DEC-164), the staging deployment package `w022_job023_consolidated_staging_deployment.sql` (encompassing Migration 056 SaaS Foundation, Migration 057 Tenant Isolation, Migration 068 Candidate Disclosures Schema, Migration 070 SaaS Webhook Engine, and Migration 071 Delimitation Watch Engine) was executed on panIN-staging (`fkpigozcqnmcvofuksar`) and verified via the post-deployment consolidated checkpoint gate `post_staging_deployment_068_071_gate.sql`.
+- **Architectural & Governance Determinations:**
+  1. **Staging Deployment Execution:**
+     - Package `supabase/staging_packages/w022_job023_consolidated_staging_deployment.sql` executed cleanly in atomic transaction blocks against `fkpigozcqnmcvofuksar`.
+     - Prerequisite B2B SaaS subsystem tables (`saas_tenants`, `saas_applications`, `saas_api_keys`, `saas_usage_ledger`) established with composite unique constraint `uq_saas_applications_tenant_app`.
+     - Candidate affidavit disclosures schema (`candidate_affidavit_disclosures`) deployed with DEC-134 mathematical balance check constraints and RLS.
+     - Outbound webhook subsystem (`webhook_subscriptions`, `webhook_events`, `webhook_deliveries`, procedures `fn_publish_webhook_event`, `fn_claim_webhook_batch`, `fn_purge_expired_webhook_data`) deployed with immutability trigger and RLS.
+     - Delimitation watch subsystem (all 9 tables, enum `source_authority_enum`, public read RLS policies) deployed.
+  2. **Empirical Gate Verification (10/10 PASS):**
+     - Consolidated read-only verification gate `supabase/staging_checkpoints/post_staging_deployment_068_071_gate.sql` returned exact PASS on all 10 checks:
+       - `check_01`: `candidate_affidavit_disclosures` table schema and FK constraints (`PASS`).
+       - `check_02`: `candidate_affidavit_disclosures` DEC-134 financial balance check constraints (4/4) (`PASS`).
+       - `check_03`: `candidate_affidavit_disclosures` RLS security and public SELECT policy (`PASS`).
+       - `check_04`: SaaS webhook subscriptions and immutable events log schema (`PASS`).
+       - `check_05`: SaaS webhook events immutability trigger and table RLS (`PASS`).
+       - `check_06`: SaaS webhook deliveries queue state machine and atomic procedures (`PASS`).
+       - `check_07`: Delimitation watch engine 8-stage lifecycle persistence tables (9/9) and enum (`PASS`).
+       - `check_08`: Delimitation watch engine RLS enforcement and public read policies (3/3) (`PASS`).
+       - `check_09`: Canonical data baseline integrity and non-interference (107 orgs, 4,523 affidavits, 4,123 demographics, 0 synthetic) (`PASS`).
+       - `check_10`: Aggregate staging deployment gate verdict: 9 passed, 0 failed -> `POST_STAGING_DEPLOY_PASS` (`PASS`).
+  3. **Milestone Formal Acceptance:**
+     - **W022 (B2B SaaS Outbound Webhooks Engine)** is formally marked **`ACCEPTED / COMPLETE (STAGING VERIFIED)`**.
+     - **JOB 023 (Delimitation Watch Engine)** is formally marked **`ACCEPTED / COMPLETE (STAGING VERIFIED)`**.
+     - Verification deliverables published: [`reports/staging_deployment_068_071_verification_report.md`](file:///C:/Users/Laven/OneDrive/Desktop/Kshetra/reports/staging_deployment_068_071_verification_report.md) and [`reports/staging_deployment_068_071_verification_report.json`](file:///C:/Users/Laven/OneDrive/Desktop/Kshetra/reports/staging_deployment_068_071_verification_report.json).
+  4. **Production Air-Gap & Next Steps:**
+     - Production database (`ehfafcnimmjusyvplbah`) remained 100% air-gapped (0 queries, 0 mutations).
+     - Staging deployment phase is now 100% COMPLETE.
+     - Authorized transition to **Production Synchronization Execution** pursuant to [`docs/W021.5-PRODUCTION-SYNCHRONIZATION-RUNBOOK.md`](file:///C:/Users/Laven/OneDrive/Desktop/Kshetra/docs/W021.5-PRODUCTION-SYNCHRONIZATION-RUNBOOK.md).
