@@ -77,19 +77,25 @@ Every field in the template is mapped to exactly which source fills it.
 
 ### 1.4 Financial Disclosure (per election)
 
+> [!IMPORTANT]
+> **ECI Form 26 Sworn Financial Disclosures Standard (DEC-134 / Migration 068):**
+> Under CTO Directive 134, all asset and liability fields are **strictly nullable** (`BIGINT NULL CHECK (val >= 0)`).
+> A value of `0` strictly represents an explicitly sworn declaration of zero wealth or zero liability. Missing, unfiled, or unextracted disclosures must remain `NULL` without synthetic coercion (`DEFAULT 0`).
+> Synthetic `DEFAULT 0` masking is strictly prohibited across DDL, serializers, and presentation layers (`formatINR(null) => 'Not Disclosed'`), preventing deceptive representation of missing disclosures as zero wealth.
+
 | Field | Primary Source | Extraction Method |
 |-------|---------------|-------------------|
-| `selfMovableAssets` | MyNeta `id=movable_assets` table → self row total | Sum self rows |
-| `selfImmovableAssets` | MyNeta `id=immovable_assets` table → self row total | Sum self rows |
-| `spouseMovableAssets` | MyNeta movable table → spouse rows total | Sum spouse rows |
-| `spouseImmovableAssets` | MyNeta immovable table → spouse rows total | Sum spouse rows |
-| `dependentsAssets` | MyNeta asset tables → dependent rows total | Sum dependent rows |
-| `totalAssets` | Computed | Sum all above |
-| `totalLiabilities` | MyNeta `Liabilities:` | Direct scrape |
-| `netWorth` | Computed | `totalAssets - totalLiabilities` |
-| `selfIncome` | MyNeta ITR table → self row | Parse ITR section |
-| `spouseIncome` | MyNeta ITR table → spouse row | Parse ITR section |
-| `totalIncome` | Computed | `selfIncome + spouseIncome` |
+| `selfMovableAssets` | MyNeta `id=movable_assets` table → self row total | Sum self rows (Nullable) |
+| `selfImmovableAssets` | MyNeta `id=immovable_assets` table → self row total | Sum self rows (Nullable) |
+| `spouseMovableAssets` | MyNeta movable table → spouse rows total | Sum spouse rows (Nullable) |
+| `spouseImmovableAssets` | MyNeta immovable table → spouse rows total | Sum spouse rows (Nullable) |
+| `dependentsAssets` | MyNeta asset tables → dependent rows total | Sum dependent rows (Nullable) |
+| `totalAssets` | Computed | Sum all above (Nullable) |
+| `totalLiabilities` | MyNeta `Liabilities:` | Direct scrape (Nullable) |
+| `netWorth` | Computed | `totalAssets - totalLiabilities` (Nullable) |
+| `selfIncome` | MyNeta ITR table → self row | Parse ITR section (Nullable) |
+| `spouseIncome` | MyNeta ITR table → spouse row | Parse ITR section (Nullable) |
+| `totalIncome` | Computed | `selfIncome + spouseIncome` (Nullable) |
 | `isCrorepati` | Computed | `totalAssets >= 1,00,00,000` |
 | `wealthGrowth` | Computed | Compare across elections |
 | `sourceUrl` | MyNeta candidate URL | Constructed |
@@ -172,7 +178,7 @@ Indian name-based gender detection:
 │  ┌─────────────────────────────────────────────────────────┐ │
 │  │  legislator_profiles        (master table)              │ │
 │  │  legislator_elections       (one row per election)      │ │
-│  │  legislator_finances        (one row per election)      │ │
+│  │  candidate_affidavit_disclosures (ECI Form 26 sworn)    │ │
 │  │  legislator_criminal_cases  (one row per case)          │ │
 │  │  legislator_performance     (one row per term)          │ │
 │  │  legislator_events          (defections, deaths, etc.)  │ │
@@ -302,26 +308,77 @@ CREATE TABLE legislator_elections (
   UNIQUE(legislator_id, election_year, constituency_name)
 );
 
--- Financial history
-CREATE TABLE legislator_finances (
-  id SERIAL PRIMARY KEY,
-  legislator_id TEXT REFERENCES legislator_profiles(id),
-  election_year INTEGER NOT NULL,
-  self_movable_assets BIGINT DEFAULT 0,
-  self_immovable_assets BIGINT DEFAULT 0,
-  spouse_movable_assets BIGINT DEFAULT 0,
-  spouse_immovable_assets BIGINT DEFAULT 0,
-  dependents_assets BIGINT DEFAULT 0,
-  total_assets BIGINT GENERATED ALWAYS AS (
-    self_movable_assets + self_immovable_assets +
-    spouse_movable_assets + spouse_immovable_assets + dependents_assets
-  ) STORED,
-  total_liabilities BIGINT DEFAULT 0,
-  self_income BIGINT DEFAULT 0,
-  spouse_income BIGINT DEFAULT 0,
-  source_url TEXT,
-  affidavit_filed_date DATE,
-  UNIQUE(legislator_id, election_year)
+-- Financial & Sworn Disclosures (ECI Form 26 / DEC-134 Standard / Migration 068)
+-- Under DEC-134 Rules 1-4, all asset and liability fields are strictly NULLABLE.
+-- NO synthetic 0 defaults: missing disclosures remain NULL (rendered as 'Not Disclosed').
+-- A value of 0 strictly indicates a sworn declaration of zero wealth or zero liability.
+CREATE TABLE candidate_affidavit_disclosures (
+  id                          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  candidate_id                UUID REFERENCES candidacies(id) ON DELETE SET NULL,
+  person_id                   UUID NOT NULL REFERENCES canonical_persons(id) ON DELETE RESTRICT,
+  constituency_id             TEXT NOT NULL,
+  election_year               INTEGER NOT NULL CHECK (election_year BETWEEN 1947 AND 2030),
+  affidavit_date              DATE,
+  filing_status               TEXT NOT NULL DEFAULT 'FILED' CHECK (filing_status IN ('FILED', 'ACCEPTED', 'REJECTED', 'WITHDRAWN', 'DISPUTED')),
+
+  -- Disaggregated Asset Classes (Strict Nullability, NO synthetic 0 defaults)
+  self_movable_assets         BIGINT CHECK (self_movable_assets >= 0),
+  spouse_movable_assets       BIGINT CHECK (spouse_movable_assets >= 0),
+  dependent_movable_assets    BIGINT CHECK (dependent_movable_assets >= 0),
+  total_movable_assets        BIGINT CHECK (total_movable_assets >= 0),
+
+  self_immovable_assets       BIGINT CHECK (self_immovable_assets >= 0),
+  spouse_immovable_assets     BIGINT CHECK (spouse_immovable_assets >= 0),
+  dependent_immovable_assets  BIGINT CHECK (dependent_immovable_assets >= 0),
+  total_immovable_assets      BIGINT CHECK (total_immovable_assets >= 0),
+
+  total_gross_assets          BIGINT CHECK (total_gross_assets >= 0),
+
+  -- Distinct Liabilities (Strict Nullability, NO synthetic 0 defaults)
+  self_liabilities            BIGINT CHECK (self_liabilities >= 0),
+  spouse_liabilities          BIGINT CHECK (spouse_liabilities >= 0),
+  dependent_liabilities       BIGINT CHECK (dependent_liabilities >= 0),
+  total_liabilities           BIGINT CHECK (total_liabilities >= 0),
+
+  -- Income & Source Provenance
+  self_income                 BIGINT CHECK (self_income >= 0),
+  spouse_income               BIGINT CHECK (spouse_income >= 0),
+  source_affidavit_url        TEXT,
+  source_eci_affidavit_id     TEXT,
+  source_hash                 TEXT,
+  data_status                 TEXT NOT NULL DEFAULT 'OFFICIAL',
+  provenance_id               UUID REFERENCES provenance_records(id) ON DELETE RESTRICT,
+  created_at                  TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at                  TIMESTAMPTZ NOT NULL DEFAULT now(),
+
+  -- Mathematical Consistency Constraints (DEC-134 Rules 1 & 3: Totals verified when all parts reported)
+  CONSTRAINT chk_movable_sum CHECK (
+    total_movable_assets IS NULL OR
+    self_movable_assets IS NULL OR
+    spouse_movable_assets IS NULL OR
+    dependent_movable_assets IS NULL OR
+    total_movable_assets = (self_movable_assets + spouse_movable_assets + dependent_movable_assets)
+  ),
+  CONSTRAINT chk_immovable_sum CHECK (
+    total_immovable_assets IS NULL OR
+    self_immovable_assets IS NULL OR
+    spouse_immovable_assets IS NULL OR
+    dependent_immovable_assets IS NULL OR
+    total_immovable_assets = (self_immovable_assets + spouse_immovable_assets + dependent_immovable_assets)
+  ),
+  CONSTRAINT chk_gross_assets CHECK (
+    total_gross_assets IS NULL OR
+    total_movable_assets IS NULL OR
+    total_immovable_assets IS NULL OR
+    total_gross_assets = (total_movable_assets + total_immovable_assets)
+  ),
+  CONSTRAINT chk_liabilities_sum CHECK (
+    total_liabilities IS NULL OR
+    self_liabilities IS NULL OR
+    spouse_liabilities IS NULL OR
+    dependent_liabilities IS NULL OR
+    total_liabilities = (self_liabilities + spouse_liabilities + dependent_liabilities)
+  )
 );
 
 -- Criminal cases
@@ -525,7 +582,7 @@ Every scraper loops over the same state list → outputs the same JSON schema.
 Before any data enters Tier 1 (Supabase):
 1. **Schema validation**: Every record must pass `LegislatorProfile` type check
 2. **Name sanity**: fullName must be 3+ characters, no HTML tags
-3. **Asset sanity**: totalAssets must be non-negative integer
+3. **Asset sanity**: totalAssets must be non-negative integer when present (or `null` when undisclosed; never synthetically defaulted to `0` per DEC-134)
 4. **Age sanity**: ageAtElection must be 25-100
 5. **Party normalization**: Must match known party abbreviations
 6. **Photo validation**: URL must return 200 and be JPEG/PNG (HEAD check)

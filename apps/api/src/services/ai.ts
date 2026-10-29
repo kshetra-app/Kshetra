@@ -1,7 +1,4 @@
 import OpenAI from 'openai';
-import { TELANGANA_CONSTITUENCIES } from '../../../../data/seed/telangana-constituencies';
-import { TELANGANA_ELECTION_HISTORY } from '../../../../data/seed/telangana-election-history';
-import { getMLAProfile } from '../../../../data/seed/telangana-mla-profiles';
 import { getConstituencyDemographics } from '../../../../data/seed/telangana-demographics';
 import {
   getConstituencyHistory,
@@ -14,9 +11,13 @@ import {
 } from '../../../../data/seed/telangana-political-timeline';
 import {
   getConstituency,
+  getRawConstituency,
   getConstituencyElectionData,
   getStateInfo,
   getConstituencies,
+  getMLAProfile,
+  getMLAProfileForState,
+  getTSElectionHistory,
 } from './stateData';
 
 const SYSTEM_PROMPT = `You are KSHETRA AI — an expert, non-partisan civic & electoral intelligence assistant.
@@ -64,7 +65,7 @@ export function buildConstituencyContext(acNo?: number, stateCode = 'TS'): strin
   const code = (stateCode || 'TS').toUpperCase();
 
   if (code === 'TS') {
-    const c = TELANGANA_CONSTITUENCIES.find((x) => x.acNo === acNo);
+    const c = getRawConstituency('TS', acNo);
     if (!c) return '';
 
     let ctx = `\n\n=== CONSTITUENCY CONTEXT: AC #${c.acNo} ${c.name} (TS) ===`;
@@ -144,7 +145,7 @@ export function buildConstituencyContext(acNo?: number, stateCode = 'TS'): strin
 
 /** Build election history context */
 function buildHistoryContext(): string {
-  return TELANGANA_ELECTION_HISTORY.map((e) => {
+  return getTSElectionHistory().map((e) => {
     const topParties = e.partyResults
       .sort((a, b) => b.seatsWon - a.seatsWon)
       .slice(0, 4)
@@ -278,7 +279,7 @@ export async function smartSearch(
   // Build a compact constituency index for the AI
   const index = constituencies
     .map((c) => {
-      const mlaProfile = code === 'TS' ? getMLAProfile(c.acNo) : null;
+      const mlaProfile = getMLAProfileForState(code, c.acNo);
       const mlaName = mlaProfile?.name ?? c.currentMLA;
       return `${c.acNo}|${c.name}|${c.district}|${c.currentParty}|${c.currentMLA}|${mlaName}|${c.reservationStatus}`;
     })

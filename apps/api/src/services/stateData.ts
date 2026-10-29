@@ -40,11 +40,40 @@ import { UK_CONSTITUENCIES } from '../../../../data/seed/uttarakhand-constituenc
 import { PY_CONSTITUENCIES } from '../../../../data/seed/puducherry-constituencies';
 import { JK_CONSTITUENCIES } from '../../../../data/seed/jammu-kashmir-constituencies';
 
+// All 31 States & UTs MLA Profiles
+import { TS_MLA_PROFILES, TELANGANA_MLA_PROFILES, getMLAProfile as getTSMLAProfile } from '../../../../data/seed/telangana-mla-profiles';
+import { AP_MLA_PROFILES } from '../../../../data/seed/andhra-pradesh-mla-profiles';
+import { KA_MLA_PROFILES } from '../../../../data/seed/karnataka-mla-profiles';
+import { MH_MLA_PROFILES } from '../../../../data/seed/maharashtra-mla-profiles';
+import { TN_MLA_PROFILES } from '../../../../data/seed/tamil-nadu-mla-profiles';
+import { KL_MLA_PROFILES } from '../../../../data/seed/kerala-mla-profiles';
+import { WB_MLA_PROFILES } from '../../../../data/seed/west-bengal-mla-profiles';
+import { UP_MLA_PROFILES } from '../../../../data/seed/uttar-pradesh-mla-profiles';
+import { RJ_MLA_PROFILES } from '../../../../data/seed/rajasthan-mla-profiles';
+import { GJ_MLA_PROFILES } from '../../../../data/seed/gujarat-mla-profiles';
+import { JH_MLA_PROFILES } from '../../../../data/seed/jharkhand-mla-profiles';
+import { OD_MLA_PROFILES } from '../../../../data/seed/odisha-mla-profiles';
+import { DL_MLA_PROFILES } from '../../../../data/seed/delhi-mla-profiles';
+import { PB_MLA_PROFILES } from '../../../../data/seed/punjab-mla-profiles';
+import { HR_MLA_PROFILES } from '../../../../data/seed/haryana-mla-profiles';
+import { CG_MLA_PROFILES } from '../../../../data/seed/chhattisgarh-mla-profiles';
+import { MP_MLA_PROFILES } from '../../../../data/seed/madhya-pradesh-mla-profiles';
+import { BR_MLA_PROFILES } from '../../../../data/seed/bihar-mla-profiles';
+import { AS_MLA_PROFILES } from '../../../../data/seed/assam-mla-profiles';
+import { GA_MLA_PROFILES } from '../../../../data/seed/goa-mla-profiles';
+import { HP_MLA_PROFILES } from '../../../../data/seed/himachal-pradesh-mla-profiles';
+import { MN_MLA_PROFILES } from '../../../../data/seed/manipur-mla-profiles';
+import { ML_MLA_PROFILES } from '../../../../data/seed/meghalaya-mla-profiles';
+import { MZ_MLA_PROFILES } from '../../../../data/seed/mizoram-mla-profiles';
+import { NL_MLA_PROFILES } from '../../../../data/seed/nagaland-mla-profiles';
+import { TR_MLA_PROFILES } from '../../../../data/seed/tripura-mla-profiles';
+import { SK_MLA_PROFILES } from '../../../../data/seed/sikkim-mla-profiles';
+import { AR_MLA_PROFILES } from '../../../../data/seed/arunachal-pradesh-mla-profiles';
+import { UK_MLA_PROFILES } from '../../../../data/seed/uttarakhand-mla-profiles';
+import { PY_MLA_PROFILES } from '../../../../data/seed/puducherry-mla-profiles';
+import { JK_MLA_PROFILES } from '../../../../data/seed/jammu-kashmir-mla-profiles';
+
 import { TELANGANA_ELECTION_HISTORY } from '../../../../data/seed/telangana-election-history';
-import {
-  TELANGANA_MLA_PROFILES,
-  getMLAProfile,
-} from '../../../../data/seed/telangana-mla-profiles';
 import {
   TELANGANA_2014_RESULTS,
   TELANGANA_2018_RESULTS,
@@ -459,19 +488,120 @@ export function searchConstituencies(stateCode: string, query: string): Constitu
   );
 }
 
+export const STATE_MLA_MAP: Record<string, any[]> = {
+  TS: TS_MLA_PROFILES,
+  AP: AP_MLA_PROFILES,
+  KA: KA_MLA_PROFILES,
+  MH: MH_MLA_PROFILES,
+  TN: TN_MLA_PROFILES,
+  KL: KL_MLA_PROFILES,
+  WB: WB_MLA_PROFILES,
+  UP: UP_MLA_PROFILES,
+  RJ: RJ_MLA_PROFILES,
+  GJ: GJ_MLA_PROFILES,
+  JH: JH_MLA_PROFILES,
+  OD: OD_MLA_PROFILES,
+  DL: DL_MLA_PROFILES,
+  PB: PB_MLA_PROFILES,
+  HR: HR_MLA_PROFILES,
+  CG: CG_MLA_PROFILES,
+  MP: MP_MLA_PROFILES,
+  BR: BR_MLA_PROFILES,
+  AS: AS_MLA_PROFILES,
+  GA: GA_MLA_PROFILES,
+  HP: HP_MLA_PROFILES,
+  MN: MN_MLA_PROFILES,
+  ML: ML_MLA_PROFILES,
+  MZ: MZ_MLA_PROFILES,
+  NL: NL_MLA_PROFILES,
+  TR: TR_MLA_PROFILES,
+  SK: SK_MLA_PROFILES,
+  AR: AR_MLA_PROFILES,
+  UK: UK_MLA_PROFILES,
+  PY: PY_MLA_PROFILES,
+  JK: JK_MLA_PROFILES,
+};
+
+/** Get raw constituency seeds for any state */
+export function getStateRawSeeds(stateCode: string): any[] {
+  const code = stateCode?.toUpperCase();
+  return STATE_RAW_MAP[code]?.data ?? [];
+}
+
+/** Get MLA profiles for any state across all 31 States & UTs */
+export function getMLAProfilesForState(stateCode: string): any[] {
+  const code = stateCode?.toUpperCase();
+  return STATE_MLA_MAP[code] || [];
+}
+
+/** Get single MLA profile by state code and constituency number */
+export function getMLAProfileForState(stateCode: string, acNo: number): any | null {
+  const list = getMLAProfilesForState(stateCode);
+  return list.find((p: any) => p.acNo === acNo) ?? null;
+}
+
+/**
+ * Backward compatibility: get MLA profile.
+ * Defaults to TS when single argument is provided to satisfy existing test contracts.
+ */
+export function getMLAProfile(acNo: number, stateCode = 'TS'): any | null {
+  if (stateCode === 'TS') {
+    return getTSMLAProfile(acNo);
+  }
+  return getMLAProfileForState(stateCode, acNo);
+}
+
+/** Backward compatibility helper for TS raw seeds */
 export function getTSRawSeeds() {
   return TELANGANA_CONSTITUENCIES;
 }
 
+/** Backward compatibility helper for TS election history */
 export function getTSElectionHistory() {
   return TELANGANA_ELECTION_HISTORY;
 }
 
+/** Backward compatibility helper for TS MLA profiles */
 export function getTSMLAProfiles() {
   return TELANGANA_MLA_PROFILES;
 }
 
-export { getMLAProfile };
+/**
+ * Asynchronous canonical single MLA profile fetch.
+ * Queries PostgreSQL via canonicalGeographyService when database is configured;
+ * falls back seamlessly to in-memory state seed data.
+ */
+export async function getCanonicalMLAProfile(
+  stateCode: string,
+  acNo: number,
+): Promise<any | null> {
+  if (canonicalGeographyService.isAvailable()) {
+    try {
+      const dbMLA = await (canonicalGeographyService as any).getConstituencyMLA?.(stateCode, acNo);
+      if (dbMLA) return dbMLA;
+    } catch {
+      // Fall back to seed
+    }
+  }
+  return getMLAProfileForState(stateCode, acNo);
+}
+
+/**
+ * Asynchronous canonical state MLA profiles fetch.
+ * Queries PostgreSQL via canonicalGeographyService when database is configured;
+ * falls back to in-memory state seed data.
+ */
+export async function getCanonicalMLAProfiles(stateCode: string): Promise<any[]> {
+  if (canonicalGeographyService.isAvailable()) {
+    try {
+      const dbMLAs = await (canonicalGeographyService as any).getConstituencyMLAs?.(stateCode);
+      if (dbMLAs && dbMLAs.length > 0) return dbMLAs;
+    } catch {
+      // Fall back to seed
+    }
+  }
+  return getMLAProfilesForState(stateCode);
+}
 
 export interface ConstituencyElectionSummary {
   electionYear: number | null;

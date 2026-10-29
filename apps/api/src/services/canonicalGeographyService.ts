@@ -569,6 +569,91 @@ export class CanonicalGeographyService {
     const code = stateCode.toUpperCase();
     return CONFIRMED_BY_ELECTIONS.filter((e) => e.stateCode === code);
   }
+
+  /**
+   * Fetch sitting MLA / representative profile for a constituency from PostgreSQL.
+   */
+  async getConstituencyMLA(stateCode: string, acNo: number): Promise<any | null> {
+    if (!this.isAvailable() || !stateCode || acNo == null) return null;
+    const code = stateCode.toUpperCase();
+
+    try {
+      const { data, error } = await supabase
+        .from('constituencies')
+        .select('id, ac_no, name, state_code, district, reservation_status, current_party, current_mla')
+        .eq('state_code', code)
+        .eq('ac_no', acNo)
+        .maybeSingle();
+
+      if (error || !data || !data.name) return null;
+
+      let name = data.current_mla || 'UNKNOWN';
+      let party = data.current_party || 'UNKNOWN';
+
+      const override = resolveByElectionOverride(code, data.ac_no, data.name);
+      if (override) {
+        name = override.currentMLA;
+        party = override.currentParty;
+      }
+
+      return {
+        acNo: data.ac_no,
+        name,
+        party,
+        constituencyName: data.name,
+        district: data.district || '',
+        stateCode: code,
+        gender: 'M',
+        terms: 1,
+      };
+    } catch {
+      return null;
+    }
+  }
+
+  /**
+   * Fetch all sitting MLAs / representative profiles for a state from PostgreSQL.
+   */
+  async getConstituencyMLAs(stateCode: string): Promise<any[]> {
+    if (!this.isAvailable() || !stateCode) return [];
+    const code = stateCode.toUpperCase();
+
+    try {
+      const { data, error } = await supabase
+        .from('constituencies')
+        .select('id, ac_no, name, state_code, district, reservation_status, current_party, current_mla')
+        .eq('state_code', code)
+        .order('ac_no');
+
+      if (error || !data || !Array.isArray(data) || data.length === 0) return [];
+
+      return data
+        .filter((c: any) => c && typeof c.ac_no === 'number')
+        .map((c: any) => {
+          let name = c.current_mla || 'UNKNOWN';
+          let party = c.current_party || 'UNKNOWN';
+
+          const override = resolveByElectionOverride(code, c.ac_no, c.name);
+          if (override) {
+            name = override.currentMLA;
+            party = override.currentParty;
+          }
+
+          return {
+            acNo: c.ac_no,
+            name,
+            party,
+            constituencyName: c.name,
+            district: c.district || '',
+            stateCode: code,
+            gender: 'M',
+            terms: 1,
+          };
+        });
+    } catch {
+      return [];
+    }
+  }
 }
 
 export const canonicalGeographyService = new CanonicalGeographyService();

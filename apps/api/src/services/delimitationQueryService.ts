@@ -12,7 +12,7 @@
  */
 
 import { supabase } from '../lib/supabase';
-import { TELANGANA_CONSTITUENCIES } from '../../../../data/seed/telangana-constituencies';
+import { getConstituencies as getStateConstituencies } from './stateData';
 import type {
   DelimitationRegimeRecord,
   DelimitationProposalRecord,
@@ -1196,7 +1196,7 @@ export class DelimitationQueryService {
 
     // Canonical baseline: all 119 Telangana Assembly Constituencies
     // Incorporating W019 certified benchmarks for Kodangal (AC-065) and Gajwel (AC-040)
-    return TELANGANA_CONSTITUENCIES.map((c: any) => {
+    return getStateConstituencies('TS').map((c: any) => {
       const acNo = c.acNo;
       let mlaName = c.winnerName2023 || c.winnerName || 'UNKNOWN';
       let party = c.winner2023 || c.currentParty || 'UNKNOWN';

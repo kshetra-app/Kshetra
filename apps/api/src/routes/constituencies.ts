@@ -2,15 +2,6 @@ import type { FastifyInstance } from 'fastify';
 import type { ConstituencyBrief } from '@kshetra/shared';
 import { findConstituencyAtPoint, computeElectionAnalytics } from '@kshetra/shared';
 import type { ConstituencyRecord } from '@kshetra/shared';
-import {
-  TELANGANA_CONSTITUENCIES,
-  type ConstituencySeed,
-} from '../../../../data/seed/telangana-constituencies';
-import { TELANGANA_ELECTION_HISTORY } from '../../../../data/seed/telangana-election-history';
-import {
-  TELANGANA_MLA_PROFILES,
-  getMLAProfile,
-} from '../../../../data/seed/telangana-mla-profiles';
 import * as fs from 'fs';
 import * as path from 'path';
 import {
@@ -18,41 +9,36 @@ import {
   getConstituency,
   getRawConstituency,
   getStateInfo,
+  isStateSupported,
   searchConstituencies,
   getConstituencyElectionData,
   canonicalGeographyService,
   getCanonicalConstituencies,
   getCanonicalConstituency,
   getCanonicalConstituencyElectionData,
+  getMLAProfile,
+  getMLAProfilesForState,
+  getMLAProfileForState,
+  getCanonicalMLAProfile,
+  getCanonicalMLAProfiles,
+  getTSElectionHistory,
 } from '../services/stateData';
 import { sendApiError } from '../lib/replyHelper';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 
-/** Map seed data to ConstituencyBrief for API responses */
-function seedToBrief(c: ConstituencySeed): ConstituencyBrief {
-  return {
-    id: `TS-AC-${c.acNo}`,
-    name: c.name,
-    acNo: c.acNo,
-    stateCode: 'TS',
-    district: c.district,
-    reservationStatus: c.type,
-    currentParty: c.winner2023,
-    currentMLA: c.winnerName2023,
-  };
-}
-
-/** Map seed data to generic ConstituencyRecord for analytics */
-function seedToRecord(c: ConstituencySeed): ConstituencyRecord {
+/** Map ConstituencyBrief to generic ConstituencyRecord for analytics */
+function constituencyToRecord(c: ConstituencyBrief): ConstituencyRecord {
+  const elec = getConstituencyElectionData(c.stateCode, c.acNo);
+  const rec = elec?.recentElection;
   return {
     acNo: c.acNo,
     name: c.name,
     district: c.district,
-    type: c.type,
-    winner: c.winner2023,
-    winnerVotes: c.winnerVotes2023,
-    runnerUp: c.runnerUp2023,
-    margin: c.margin2023,
+    type: (c.reservationStatus as 'GEN' | 'SC' | 'ST') || 'GEN',
+    winner: rec?.winner || c.currentParty || 'UNKNOWN',
+    winnerVotes: rec?.winnerVotes ?? 100000,
+    runnerUp: rec?.runnerUp || '',
+    margin: rec?.margin ?? 10000,
   };
 }
 
@@ -761,7 +747,8 @@ export async function constituencyRoutes(app: FastifyInstance) {
         );
       }
 
-      const records = TELANGANA_CONSTITUENCIES.map(seedToRecord);
+      const constituencies = getConstituencies('TS');
+      const records = constituencies.map(constituencyToRecord);
       const analytics = computeElectionAnalytics(records);
 
       return {
@@ -844,10 +831,12 @@ export async function constituencyRoutes(app: FastifyInstance) {
         );
       }
 
+      const profiles = getMLAProfilesForState('TS');
+
       return {
         state: 'TS',
-        count: TELANGANA_MLA_PROFILES.length,
-        profiles: TELANGANA_MLA_PROFILES,
+        count: profiles.length,
+        profiles,
       };
     },
   );
@@ -875,10 +864,12 @@ export async function constituencyRoutes(app: FastifyInstance) {
         );
       }
 
+      const elections = getTSElectionHistory();
+
       return {
         state: 'TS',
-        count: TELANGANA_ELECTION_HISTORY.length,
-        elections: TELANGANA_ELECTION_HISTORY,
+        count: elections.length,
+        elections,
       };
     },
   );
@@ -923,12 +914,12 @@ export async function constituencyRoutes(app: FastifyInstance) {
       }
 
       const acNo = found.properties.AC_NO;
-      const seed = TELANGANA_CONSTITUENCIES.find((c) => c.acNo === acNo);
+      const constituency = getConstituency('TS', acNo);
 
       return {
         latitude,
         longitude,
-        constituency: seed ? seedToBrief(seed) : null,
+        constituency,
         message: 'Constituency located',
       };
     },

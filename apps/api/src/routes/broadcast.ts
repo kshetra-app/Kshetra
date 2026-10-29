@@ -1,8 +1,6 @@
 import type { FastifyInstance } from 'fastify';
 import { STATES } from '@kshetra/shared';
-import { TELANGANA_CONSTITUENCIES } from '../../../../data/seed/telangana-constituencies';
-import { AP_CONSTITUENCIES } from '../../../../data/seed/andhra-pradesh-constituencies';
-import { KA_CONSTITUENCIES } from '../../../../data/seed/karnataka-constituencies';
+import { getConstituencies, getConstituencyElectionData } from '../services/stateData';
 import { sendApiError } from '../lib/replyHelper';
 
 interface BroadcastConstituency {
@@ -19,49 +17,26 @@ interface BroadcastConstituency {
 }
 
 function getDetailedConstituencies(stateCode: string): BroadcastConstituency[] {
-  switch (stateCode.toUpperCase()) {
-    case 'TS':
-      return TELANGANA_CONSTITUENCIES.map((c) => ({
-        acNo: c.acNo,
-        name: c.name,
-        district: c.district,
-        type: c.type,
-        status: 'WON',
-        winnerParty: c.winner2023,
-        winnerName: c.winnerName2023,
-        winnerVotes: c.winnerVotes2023,
-        runnerUpParty: c.runnerUp2023,
-        margin: c.margin2023,
-      }));
-    case 'AP':
-      return AP_CONSTITUENCIES.map((c) => ({
-        acNo: c.acNo,
-        name: c.name,
-        district: c.district,
-        type: c.type,
-        status: 'WON',
-        winnerParty: c.winner2024,
-        winnerName: c.winnerName2024,
-        winnerVotes: c.winnerVotes2024,
-        runnerUpParty: c.runnerUp2024,
-        margin: c.margin2024,
-      }));
-    case 'KA':
-      return KA_CONSTITUENCIES.map((c) => ({
-        acNo: c.acNo,
-        name: c.name,
-        district: c.district,
-        type: c.type,
-        status: 'WON',
-        winnerParty: c.winner2023,
-        winnerName: c.winnerName2023,
-        winnerVotes: c.winnerVotes2023,
-        runnerUpParty: c.runnerUp2023,
-        margin: c.margin2023,
-      }));
-    default:
-      return [];
-  }
+  const code = stateCode?.toUpperCase();
+  const list = getConstituencies(code);
+  if (!list || list.length === 0) return [];
+
+  return list.map((c) => {
+    const election = getConstituencyElectionData(code, c.acNo);
+    const recent = election?.recentElection;
+    return {
+      acNo: c.acNo,
+      name: c.name,
+      district: c.district,
+      type: (c.reservationStatus as 'GEN' | 'SC' | 'ST') || 'GEN',
+      status: 'WON',
+      winnerParty: recent?.winner || c.currentParty || 'UNKNOWN',
+      winnerName: recent?.winnerName || c.currentMLA || 'UNKNOWN',
+      winnerVotes: recent?.winnerVotes ?? 0,
+      runnerUpParty: recent?.runnerUp || '',
+      margin: recent?.margin ?? 0,
+    };
+  });
 }
 
 // ─── AJV SCHEMAS FOR BROADCAST ROUTES ───

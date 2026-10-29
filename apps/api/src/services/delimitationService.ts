@@ -28,7 +28,6 @@ import {
   IDEAL_POP_PER_AC_SEAT_2011,
   type CensusStateData,
 } from '../../../../data/census/india-district-population-2011';
-import { TELANGANA_CONSTITUENCIES } from '../../../../data/seed/telangana-constituencies';
 import { getConstituencies as getStateConstituencies, getConstituency } from './stateData';
 import type {
   DelimitationLegalRegime,
@@ -2830,41 +2829,42 @@ export class DelimitationService {
    * 12. GET /api/v1/delimitation/mla-impact/:stateCode
    */
   public getMlaImpact(stateCode: string): MlaImpactDTO | null {
-    const code = stateCode.toUpperCase();
-    if (code !== 'TS') {
+    const code = stateCode?.toUpperCase();
+    const constituencies = getStateConstituencies(code);
+    if (!constituencies || !constituencies.length) {
       return null;
     }
 
-    const constituencies = TELANGANA_CONSTITUENCIES;
-    if (!constituencies.length) return null;
-
     const mlaProfiles = constituencies.map((c: any) => {
       const acNo = c.acNo ?? 1;
-      let mlaName = c.winnerName2023 || c.winnerName || 'UNKNOWN';
-      let party = c.winner2023 || c.currentParty || 'UNKNOWN';
-      let margin = c.margin2023 || 12000;
+      let mlaName = c.currentMLA || c.winnerName2025 || c.winnerName2024 || c.winnerName2023 || c.winnerName || 'UNKNOWN';
+      let party = c.currentParty || c.winner2025 || c.winner2024 || c.winner2023 || c.winner || 'UNKNOWN';
+      let margin = c.margin2025 ?? c.margin2024 ?? c.margin2023 ?? c.margin ?? 12000;
+      const votes = c.winnerVotes2025 ?? c.winnerVotes2024 ?? c.winnerVotes2023 ?? c.winnerVotes;
       let marginPct =
-        Math.round((margin / (c.winnerVotes2023 ? c.winnerVotes2023 * 1.8 : 180000)) * 1000) / 10;
+        Math.round((margin / (votes ? votes * 1.8 : 180000)) * 1000) / 10;
       let personId: string | null = null;
       let contestId: string | null = null;
 
-      // Authoritative W019 certified benchmarks
-      if (acNo === 65) {
-        // Kodangal AC-065
-        mlaName = 'Anumula Revanth Reddy';
-        party = 'INC';
-        margin = 32532;
-        marginPct = 16.7;
-        personId = '01900000-0000-0000-0000-000000000011';
-        contestId = 'TS_LA_2023_GEN_TS-AC-065';
-      } else if (acNo === 40) {
-        // Gajwel AC-040
-        mlaName = 'Kalvakuntla Chandrashekar Rao';
-        party = 'BRS';
-        margin = 45031;
-        marginPct = 19.8;
-        personId = '01900000-0000-0000-0000-000000000014';
-        contestId = 'TS_LA_2023_GEN_TS-AC-040';
+      // Authoritative W019 certified benchmarks for Telangana
+      if (code === 'TS') {
+        if (acNo === 65) {
+          // Kodangal AC-065
+          mlaName = 'Anumula Revanth Reddy';
+          party = 'INC';
+          margin = 32532;
+          marginPct = 16.7;
+          personId = '01900000-0000-0000-0000-000000000011';
+          contestId = 'TS_LA_2023_GEN_TS-AC-065';
+        } else if (acNo === 40) {
+          // Gajwel AC-040
+          mlaName = 'Kalvakuntla Chandrashekar Rao';
+          party = 'BRS';
+          margin = 45031;
+          marginPct = 19.8;
+          personId = '01900000-0000-0000-0000-000000000014';
+          contestId = 'TS_LA_2023_GEN_TS-AC-040';
+        }
       }
 
       const isUrban = [
