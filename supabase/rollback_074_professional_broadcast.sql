@@ -1,0 +1,9 @@
+-- ROLLBACK SCRIPT FOR MIGRATION 074
+DROP TABLE IF EXISTS public.broadcast_qa_threads CASCADE;
+DROP TABLE IF EXISTS public.broadcast_poll_votes CASCADE;
+DROP TABLE IF EXISTS public.broadcast_poll_options CASCADE;
+DROP TABLE IF EXISTS public.broadcast_polls CASCADE;
+DROP TABLE IF EXISTS public.broadcast_telemetry_snapshots CASCADE;
+DROP TABLE IF EXISTS public.broadcast_stream_keys CASCADE;
+DROP TABLE IF EXISTS public.broadcast_streams CASCADE;
+DROP TABLE IF EXISTS public.broadcast_channels CASCADE;

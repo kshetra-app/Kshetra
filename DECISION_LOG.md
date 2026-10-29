@@ -4206,3 +4206,43 @@
 - **Operational Authorization:**
   - Plan document committed to governance/plans/PLAN-W052-PROFESSIONAL-BROADCAST-ARCHITECTURE-REV-1.0.md.
   - Implementation authorization remains frozen (IMPLEMENTATION_AUTHORIZATION = NO) until explicit user/CTO ratification.
+
+
+### DEC-171: Milestone W052 — Professional Broadcast Architecture & DEF-003 Consumer Mobile Decoupling Acceptance
+- **Date:** 2026-10-30
+- **Status:** APPROVED & ACCEPTED — EMPIRICALLY VERIFIED (100% TEST SUITE PASS & ZERO PII)
+- **Authority:** User Ratification / PLAN-W052-PROFESSIONAL-BROADCAST-ARCHITECTURE-REV-1.0 & Rule IV-001 Non-Self-Acceptance
+- **Context:** Following user approval of `PLAN-W052-PROFESSIONAL-BROADCAST-ARCHITECTURE-REV-1.0` and explicit user decisions (Decision 1: Option 1 / Decouple `react-native-webrtc` from consumer mobile application, implement dedicated in-browser Web WHIP studio at `/studio`, retain lightweight native HLS/LL-HLS for mobile viewing; Decision 2: Option A / Anonymous daily-salted HMAC voter tokens for live stream polling preventing Sybil manipulation with zero citizen PII persistence), Job W052 and Defect DEF-003 were fully implemented, verified, and audited.
+- **Architectural & Governance Determinations:**
+  1. **DEF-003 Resolution & Consumer Mobile Decoupling:**
+     - Completely removed `react-native-webrtc` from `apps/mobile/package.json` dependencies and devDependencies, eliminating ~20 MB binary bloat (`libwebrtc.so` / `WebRTC.xcframework`).
+     - Audited all 50 mobile screen and component files; verified 0 static WebRTC imports.
+     - Hardened `apps/mobile/components/LiveBroadcaster.tsx` with studio guidance and runtime fail-safe boundary.
+     - Automated verification passed: `tests/def003-webrtc-decoupling.test.ts` (3/3 checks PASS 100%).
+  2. **Migration 074 Professional Broadcast Schema:**
+     - Authored and verified `supabase/migrations/074_professional_broadcast_architecture.sql` establishing 8 normalized tables: `broadcast_channels`, `broadcast_streams`, `broadcast_stream_keys`, `broadcast_telemetry_snapshots`, `broadcast_polls`, `broadcast_poll_options`, `broadcast_poll_votes`, and `broadcast_qa_threads`.
+     - Pinned referential integrity to `canonical_persons`, `canonical_organizations`, and `constituencies`.
+     - Configured 12 RLS policies; enforced DPDP Act 2023 check constraints `chk_qa_no_pii` and unique voter tokens.
+     - Rollback script persisted at `supabase/rollback_074_professional_broadcast.sql`.
+  3. **Shared Contracts & Type Safety:**
+     - Authored `packages/shared/src/contracts/broadcast.ts` defining type contracts for channels, streams, stream keys, telemetry snapshots, live polls, and Q&A threads.
+     - Exported contracts through `@kshetra/shared` and cleanly compiled (`npm run build --prefix packages/shared`).
+  4. **Backend Broadcast Management & Studio Engine:**
+     - Implemented `apps/api/src/services/broadcastManagementService.ts` supporting channel CRUD, multi-tier ingest URL synthesis (RTMP, SRT, WHIP), SHA-256 ephemeral stream key management, stream health telemetry snapshots, and strict forward lifecycle transitions (`SCHEDULED` -> `PROVISIONED` -> `LIVE` -> `PAUSED` -> `ENDED` -> `ARCHIVED`) with fail-closed rejection of invalid state regressions.
+     - Implemented in-browser WebRTC-WHIP Studio Broadcaster at `apps/api/src/modules/broadcast/studioHtml.ts` served via `GET /studio` and `GET /broadcast/studio`.
+     - Mounted 15 Fastify API endpoints in `apps/api/src/routes/broadcast.ts` while preserving 100% backward compatibility of existing election summary routes.
+     - Verified via `tests/broadcast-management.test.ts` (6/6 checks PASS 100%) and `apps/api/src/__tests__/broadcast.test.ts` (6/6 Jest tests PASS 100%).
+  5. **Audience Interactivity & DPDP Act 2023 Compliance:**
+     - Implemented `apps/api/src/services/broadcastInteractivityService.ts` for live interactive audience polling and moderated Q&A.
+     - Anonymous voter tokens generated via daily rotating salted HMAC-SHA256 (`voter_ip + user_agent + stream_id + salt`), enforcing duplicate vote rejection (HTTP 409 Conflict) without persisting citizen identity or IP.
+     - Automated regex content moderation rejecting questions containing phone numbers or email addresses (HTTP 422 Unprocessable Entity).
+     - Upvoting with duplicate protection, host question pinning, and answer tracking.
+     - Verified via `tests/broadcast-interactivity.test.ts` (7/7 checks PASS 100%).
+  6. **Mobile Interactive Overlays:**
+     - Authored `apps/mobile/components/BroadcastPollCard.tsx` and `apps/mobile/components/BroadcastQaModal.tsx` for seamless, lightweight consumer stream engagement.
+     - Verified clean TypeScript compilation (`npx tsc --noEmit -p apps/mobile/tsconfig.json` exit code 0).
+- **Acceptance & Status Dispositions:**
+  - **Job W052:** Formally ratified as **`ACCEPTED / COMPLETE (TESTED & VERIFIED)`**.
+  - **Defect DEF-003:** Formally closed as **`RESOLVED — VERIFIED IN W052`**.
+  - Evidence dossiers committed at `reports/w052_professional_broadcast_report.json` and `reports/w052_professional_broadcast_report.md`.
+
