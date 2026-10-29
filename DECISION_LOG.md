@@ -4246,3 +4246,35 @@
   - **Defect DEF-003:** Formally closed as **`RESOLVED — VERIFIED IN W052`**.
   - Evidence dossiers committed at `reports/w052_professional_broadcast_report.json` and `reports/w052_professional_broadcast_report.md`.
 
+
+### DEC-172: Formulation & Submission of Domain 2 (JOB 024–JOB 029) Mobile Performance & Bundle Optimization Pre-Implementation Plan
+- **Date:** 2026-10-30
+- **Status:** PLAN_SUBMITTED_FOR_REVIEW (IMPLEMENTATION_AUTHORIZATION = NO)
+- **Authority:** Master Product Blueprint, AI Agent Master Execution Job Book, Amendment v1.2, Amendment v1.5-A Section 26 & AGENT_EXECUTION_PROTOCOL.md
+- **Context:** Following the certified completion and acceptance of Domain 1 (JOB 012, 013, 016, 021, 022 under DEC-169) and Job W052 / DEF-003 Decoupling (under DEC-171), the user commissioned Domain 2: Mobile Client, Bundle Size & Performance (JOB 024 through JOB 029). Under Amendment v1.5-A Section 26 and Rule IV-001 Non-Self-Acceptance, a canonical 22-section Pre-Implementation Plan was authored and submitted for user and CTO review prior to any product code modification.
+- **Key Architectural Determinations in Ratification Plan:**
+  1. **JOB 024: App Size Baseline Audit & Certification:**
+     - Measured baseline Android Hermes bytecode bundle (2.46 MB) and asset catalog (~24.8 KB).
+     - Projected Android App Bundle (AAB) size (~18.4 MB) well within the $\le 30.0$ MB statutory gate (target $\le 25$ MB), and Universal APK (~34.2 MB) within the $\le 45.0$ MB gate.
+     - Scheduled formal updates to `RELEASE_REGISTER.md` upon implementation.
+  2. **JOB 025: Mobile Dependency Reduction & Tree-Shaking:**
+     - Pruning non-essential packages and reclassifying build tooling (e.g. moving `@babel/types` to devDependencies).
+     - Enforcing 0 native WebRTC dependencies and verifying modular tree-shaking across 50 mobile screens.
+  3. **JOB 026: Remote Geography & Heavy Data Decoupling:**
+     - Decoupling inlined `india-states.json` (1.02 MB) and `candidate-photo-map.json` (494 KB) from client bundles.
+     - Replacing with on-demand streaming via `/geo/IN` and local file caching with an ultra-lightweight offline fallback (~35 KB).
+     - Dynamically resolving candidate photos via the canonical API with local caching.
+  4. **JOB 027: Mobile Startup Architecture (<2.0s Cold Start):**
+     - Two-phase non-blocking startup: Phase 1 instant local MMKV hydration and immediate `SplashScreen.hideAsync()`; Phase 2 deferred non-blocking network sync via `runAfterInteractions`.
+     - Startup profiler measuring milestone latencies, certifying $< 2.0$s cold boot.
+  5. **JOB 028: Map Performance & Vector Polygon Optimization:**
+     - Douglas-Peucker polygon simplification with zoom-adaptive tolerances ($\ge 60\%$ vertex reduction at overview zoom).
+     - Bounding-box viewport filtering and memoized GPU layers ensuring smooth 60fps frame budgets ($< 16.6$ ms).
+  6. **JOB 029: Standardized Tiered Storage & Cache Architecture:**
+     - Standardizing Tier 1 (MMKV: volatile key-value), Tier 2 (SQLite: relational indexed entities), and Tier 3 (Disk: GeoJSON blobs).
+     - Unified Stale-While-Revalidate and domain TTL matrix.
+- **Operational Authorization:**
+  - Plan document committed to `governance/plans/PLAN-DOMAIN-2-MOBILE-PERFORMANCE-AND-BUNDLE-OPTIMIZATION-REV-1.0.md`.
+  - Implementation authorization remains frozen (IMPLEMENTATION_AUTHORIZATION = NO) until explicit user/CTO ratification.
+
+

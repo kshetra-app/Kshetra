@@ -26,12 +26,12 @@ Historical Stage B research was formally closed under Option B Engineering Archi
 ## 1. Project & Execution Coordinates
 ```text
 PROJECT:               PANIN (formerly Kshetra)
-CURRENT_JOB:           NONE (All Defined Master Roadmap Jobs W000–W052 Completed & Accepted)
+CURRENT_JOB:           DOMAIN 2: MOBILE CLIENT, BUNDLE SIZE & PERFORMANCE (JOB 024, 025, 026, 027, 028, 029 - Plan Submitted for Review)
 LAST_COMPLETED_JOB:    W052 (Professional Broadcast Architecture & DEF-003 Decoupling / DEC-171), DOMAIN 1: FOUNDATIONAL GEOGRAPHY & DELIMITATION (JOB 012, 013, 016, 021, 022 / DEC-169), W051.5 (Compliance, DPDP & Data Governance Readiness / DEC-168), W051 (B2B SaaS API Customer Acquisition / DEC-167), W021.5 (Live Production Synchronized & Certified 100% / DEC-166)
 PENDING_ACCEPTANCE_JOB: NONE
-NEXT_PERMITTED_JOB:    NONE (Master Execution Roadmap Fully Realized; Pre-Launch Staging & Production Verification Operations)
+NEXT_PERMITTED_JOB:    DOMAIN 2 (Mobile Client, Bundle Size & Performance - Planning Only; Implementation NOT Authorized)
 
-PLAN_STATUS:                          NOT_STARTED
+PLAN_STATUS:                          SUBMITTED_FOR_REVIEW
 IMPLEMENTATION_AUTHORIZATION:         NO
 AUTHORIZED_JOB:                       NONE (Planning Only; Implementation NOT Authorized)
 AUTHORIZED_SCOPE_HASH:                NONE
@@ -39,6 +39,9 @@ IMPLEMENTATION_AUTHORIZATION_COMMIT:  NONE
 
 W052_PLAN:                            governance/plans/PLAN-W052-PROFESSIONAL-BROADCAST-ARCHITECTURE-REV-1.0.md
 W052_STATUS:                          ACCEPTED / COMPLETE (TESTED & VERIFIED; DEC-171)
+
+DOMAIN_2_PLAN:                        governance/plans/PLAN-DOMAIN-2-MOBILE-PERFORMANCE-AND-BUNDLE-OPTIMIZATION-REV-1.0.md
+DOMAIN_2_STATUS:                      PLAN_SUBMITTED_FOR_REVIEW / AWAITING_RATIFICATION
 
 JOB_023_STATUS:        REMEDIATED / TESTED / READY FOR INDEPENDENT CTO ADJUDICATION (ROUND 4)
 JOB_023_R2_IMPL:       760094d5aa06635920ce72f9f656ef82532f2980
