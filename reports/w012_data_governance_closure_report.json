@@ -1,0 +1,51 @@
+{
+  "milestone": "W012",
+  "title": "Data Governance Foundation — Source Registry, Status Model & Immutability Verification",
+  "status": "ACCEPTED / COMPLETE",
+  "verified_at": "2026-10-29T16:57:25.412Z",
+  "git_baseline": "09ebac686462ce94a8c6b1d13d1a856c32fa05fb",
+  "metrics": {
+    "governance_tables": 6,
+    "authority_levels": 6,
+    "data_statuses": 8,
+    "immutability_triggers": 5,
+    "adversarial_probes_passed": 11,
+    "positive_paths_passed": 4,
+    "total_checks": 20,
+    "failures": 0
+  },
+  "tables_verified": [
+    "data_sources",
+    "datasets",
+    "dataset_versions",
+    "evidence_records",
+    "provenance_records",
+    "record_provenance_linkages"
+  ],
+  "authorities_verified": [
+    "constitutional",
+    "statutory",
+    "academic",
+    "media_ngo",
+    "crowdsourced",
+    "synthetic_model"
+  ],
+  "statuses_verified": [
+    "OFFICIAL",
+    "DERIVED",
+    "VERIFIED",
+    "ESTIMATE",
+    "SCENARIO",
+    "INFERRED",
+    "UNVERIFIED",
+    "UNKNOWN"
+  ],
+  "triggers_verified": [
+    "trg_prevent_evidence_mutation",
+    "trg_prevent_dataset_version_mutation",
+    "trg_check_version_status_transition",
+    "trg_prevent_provenance_mutation",
+    "trg_check_provenance_status_transition"
+  ],
+  "summary": "Migration 039 Data Governance Foundation successfully audited and proven against real PostgreSQL runtime. All append-only immutability triggers, status transition invariants, and mandatory evidence constraints verified 100%."
+}

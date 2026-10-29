@@ -1,0 +1,29 @@
+{
+  "milestone": "W013",
+  "title": "Canonical Geography Model — Sub-Constituency Hierarchy Integration",
+  "status": "ACCEPTED / COMPLETE",
+  "verified_at": "2026-10-29T17:18:28.914Z",
+  "git_baseline": "09ebac686462ce94a8c6b1d13d1a856c32fa05fb",
+  "migration": "supabase/migrations/072_canonical_sub_constituency_hierarchy.sql",
+  "metrics": {
+    "enhanced_tables": 5,
+    "immutable_uuid_columns_added": 5,
+    "referential_foreign_keys_added": 9,
+    "rls_policies_verified": 10,
+    "constitutional_ac_binding_checks": 1,
+    "traversal_services_implemented": 2,
+    "failures": 0
+  },
+  "tiers_mapped": [
+    "State (states)",
+    "District (districts)",
+    "Assembly Constituency (constituencies)",
+    "Mandal (mandals)",
+    "Urban Local Body (urban_local_bodies)",
+    "Gram Panchayat (gram_panchayats)",
+    "ULB Ward (ulb_wards)",
+    "GP Ward (gp_wards)",
+    "Polling Booth (polling_booths, 1:1 AC binding)"
+  ],
+  "summary": "Migration 072 Canonical Sub-Constituency Hierarchy Extension successfully executed and verified against PostgreSQL runtime. Local bodies, wards, and polling booths are canonically mapped with immutable UUIDs and strict AC binding."
+}

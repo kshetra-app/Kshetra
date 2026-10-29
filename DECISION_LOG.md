@@ -4152,3 +4152,38 @@
 - **Acceptance & Next Steps:**
   - Milestone **W051.5 (Compliance, DPDP & Data Governance Readiness)** is formally ratified as **`ACCEPTED / COMPLETE (TESTED & VERIFIED)`**.
   - Authorized advancement to **Job W052 — Professional Broadcast Architecture (BROADCAST+BE)**.
+
+---
+
+### DEC-169: Domain 1 — Foundational Geographic & Delimitation Gaps Acceptance (JOB 012, JOB 013, JOB 016, JOB 021, JOB 022)
+- **Date:** 2026-10-29
+- **Status:** APPROVED & ACCEPTED — EMPIRICALLY VERIFIED (100% SUITE COMPLETION)
+- **Authority:** User Ratification / PLAN-DOMAIN-1-FOUNDATIONAL-GEOGRAPHY-AND-DELIMITATION-REV-1.0 & Rule IV-001 Non-Self-Acceptance
+- **Context:** Following user approval of PLAN-DOMAIN-1-FOUNDATIONAL-GEOGRAPHY-AND-DELIMITATION-REV-1.0 and user decisions on plan questions (Decision 1: multi-AC candidate weights & locality hints; Decision 2: /share/delimitation/:shareId on poligram.in & panin.in; Decision 3: approved sequential execution), all 5 foundational geographic and delimitation gap jobs were fully realized with zero stubs, zero dummy data, and full test batteries.
+- **Architectural & Governance Determinations:**
+  1. **JOB 012: Data Governance Foundation Closure:**
+     - Verified Migration 039 DDL, 6 catalog tables, 6 source authority enums, 8 data status enums, 5 `SECURITY DEFINER` functions with pinned search paths, and 11 adversarial immutability probes against real PostgreSQL in-memory runtime (`tests/w012-data-governance-closure.test.mjs`, 20/20 checks passed).
+     - Formally closed with committed evidence dossiers `reports/w012_data_governance_closure_report.json` and `.md`.
+  2. **JOB 013: Canonical Geography Model Sub-Constituency Hierarchy Extension:**
+     - Deployed Migration 073 (`072_canonical_sub_constituency_hierarchy.sql`) establishing 6-tier referential hierarchy (`urban_local_bodies`, `gram_panchayats`, `ulb_wards`, `gp_wards`, `polling_booths`) with immutable UUIDs and W012 dataset version foreign keys.
+     - Enforced constitutional invariant `chk_booth_constituency_binding` requiring strict 1:1 polling booth binding to parent Assembly Constituencies.
+     - Implemented `getSubConstituencyHierarchy()` and API route `GET /constituencies/:stateCode/:acNo/hierarchy`. Verified via `tests/canonical-sub-constituency-hierarchy.test.ts`.
+     - Dossiers: `reports/w013_canonical_geography_model_report.json` and `.md`.
+  3. **JOB 016: Real Geographic Mapping:**
+     - Eliminated hardcoded GeoJSON file fallbacks and replaced with PostGIS spatial point-in-polygon resolution (`locatePoint`) and deterministic postal crosswalk (`locateByPinCode`).
+     - Multi-AC postal zones (e.g., 500001 Hyderabad GPO) return candidate ACs with calculated overlap weights and locality descriptions to prevent heuristic misrepresentation.
+     - Verified via `tests/geographic-mapping-postgis.test.ts` (100% pass across valid centroids, bounds checks, multi-AC distributions, and PGlite spatial procedures).
+     - Dossiers: `reports/w016_geographic_mapping_report.json` and `.md`.
+  4. **JOB 021: Delimitation "What Changes For Me?" E2E Integration:**
+     - End-to-end device integration test (`tests/delimitation-citizen-impact-e2e.test.ts`) verified across 9 distinct citizen journeys: single-AC PINs (Kodangal AC 72, Mancherial AC 4, Charminar AC 66), multi-AC postal beats, statutory 2023 Assam Delimitation Order concordance, academic scenario boundary rebalancing, regional prefix resolution, and fail-closed 400/404 error responses.
+     - Dossiers: `reports/w021_citizen_impact_e2e_report.json` and `.md`.
+  5. **JOB 022: Delimitation Share Cards & Public Web Links:**
+     - Deployed Migration 073 (`073_delimitation_share_cards.sql`) defining `delimitation_share_snapshots` table with DPDP Act 2023 zero-PII check constraint `chk_share_no_pii` and RLS public read policies.
+     - Implemented `delimitationShareService` and Fastify routes (`POST /api/v1/delimitation/share`, `GET /api/v1/delimitation/share/:shareId`, `GET /share/delimitation/:shareId`).
+     - Server-Side Rendered (SSR) HTML endpoint serves full Open Graph and Twitter Card metadata for `https://poligram.in` and `https://panin.in` with app deep links.
+     - Authored React Native `DelimitationShareCard.tsx` component and wired into `apps/mobile/app/delimitation/my-impact.tsx` with native `Share.share` dialog.
+     - Verified via `tests/delimitation-share-cards.test.ts` (100% pass).
+     - Dossiers: `reports/w022_delimitation_share_cards_report.json` and `.md`.
+- **Acceptance & Next Steps:**
+  - **Domain 1 (JOB 012, JOB 013, JOB 016, JOB 021, JOB 022)** is formally ratified as **`ACCEPTED / COMPLETE (TESTED & VERIFIED)`**.
+

@@ -1,0 +1,89 @@
+{
+  "milestone": "W021",
+  "title": "Delimitation \"What Changes For Me?\" — Personal Impact E2E Integration",
+  "status": "ACCEPTED / COMPLETE",
+  "verified_at": "2026-10-29T17:25:09.442Z",
+  "git_baseline": "09ebac686462ce94a8c6b1d13d1a856c32fa05fb",
+  "scenarios_verified": [
+    {
+      "scenario_id": "SCENARIO-01",
+      "description": "Single-AC Deterministic Impact (Mancherial AC 4)",
+      "input_pin": "504208",
+      "expected_status": "LINKED_PROVISIONAL",
+      "resolved_ac": 4,
+      "confidence": "ESTIMATE",
+      "verdict": "PASS"
+    },
+    {
+      "scenario_id": "SCENARIO-02",
+      "description": "Single-AC Deterministic Impact (Charminar AC 66)",
+      "input_pin": "500002",
+      "expected_status": "LINKED_PROVISIONAL",
+      "resolved_ac": 66,
+      "confidence": "ESTIMATE",
+      "verdict": "PASS"
+    },
+    {
+      "scenario_id": "SCENARIO-03",
+      "description": "Single-AC Deterministic Impact (Kodangal AC 72)",
+      "input_pin": "509338",
+      "expected_status": "LINKED_PROVISIONAL",
+      "resolved_ac": 72,
+      "confidence": "ESTIMATE",
+      "verdict": "PASS"
+    },
+    {
+      "scenario_id": "SCENARIO-04",
+      "description": "Multi-AC Ambiguity Resolution (Hyderabad GPO 500001)",
+      "input_pin": "500001",
+      "expected_status": "AMBIGUOUS_CANDIDATES",
+      "candidate_count": 3,
+      "candidates": [
+        "Goshamahal (65)",
+        "Nampally (63)",
+        "Malakpet (58)"
+      ],
+      "verdict": "PASS"
+    },
+    {
+      "scenario_id": "SCENARIO-05",
+      "description": "Statutory 2023 Order Concordance (Assam 781001)",
+      "input_pin": "781001",
+      "expected_status": "LINKED_PROVISIONAL",
+      "resolved_ac": 53,
+      "order_reference": "ECI Assam Delimitation Order 2023 (ECI/282/AS/2023)",
+      "verdict": "PASS"
+    },
+    {
+      "scenario_id": "SCENARIO-06",
+      "description": "Academic Scenario Boundary Projection",
+      "input_pin": "504208",
+      "scenario_id_param": "ACADEMIC_EQUAL_POP_2026",
+      "statutory_status": "NON_STATUTORY_HYPOTHETICAL_SCENARIO",
+      "verdict": "PASS"
+    },
+    {
+      "scenario_id": "SCENARIO-07",
+      "description": "Regional Prefix Approximation (Bangalore 560001)",
+      "input_pin": "560001",
+      "expected_status": "REGIONAL_ONLY",
+      "state": "Karnataka",
+      "verdict": "PASS"
+    },
+    {
+      "scenario_id": "SCENARIO-08",
+      "description": "Fail-Closed 5-Digit Ingress Rejection",
+      "input_pin": "50001",
+      "expected_error": 400,
+      "verdict": "PASS"
+    },
+    {
+      "scenario_id": "SCENARIO-09",
+      "description": "Fail-Closed Unmapped Prefix Rejection",
+      "input_pin": "001234",
+      "expected_error": 404,
+      "verdict": "PASS"
+    }
+  ],
+  "summary": "Delimitation \"What Changes For Me?\" route and underlying calculation engine rigorously verified across 9 distinct citizen journeys. Multi-constituency ambiguity, statutory 2023 revisions, and academic scenario projections adhere strictly to ECC-001 provenance and DPDP Act 2023 privacy."
+}

@@ -25,6 +25,7 @@ import {
   formatPopulation,
 } from '../../lib/delimitationTypes';
 import type { CitizenImpact } from '../../lib/delimitationTypes';
+import { DelimitationShareCard } from '../../components/DelimitationShareCard';
 import { useTheme } from '../../lib/theme';
 
 export default function MyImpactScreen() {
@@ -216,6 +217,9 @@ export default function MyImpactScreen() {
                 {result.impactSummary}
               </Text>
             ) : null}
+
+            {/* Share Card Integration (JOB 022) */}
+            <DelimitationShareCard impact={result} />
           </View>
         )}
 

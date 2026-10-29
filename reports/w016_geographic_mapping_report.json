@@ -1,0 +1,75 @@
+{
+  "milestone": "W016",
+  "title": "Real Geographic Mapping — Spatial Point-in-Polygon & Postal Crosswalk",
+  "status": "ACCEPTED / COMPLETE",
+  "verified_at": "2026-10-29T17:21:39.057Z",
+  "git_baseline": "09ebac686462ce94a8c6b1d13d1a856c32fa05fb",
+  "components_verified": {
+    "postgis_locate_point": {
+      "tested_points": [
+        {
+          "lat": 17.1105,
+          "lng": 77.6253,
+          "expected_ac": 72,
+          "resolved_ac": 72,
+          "status": "PASS"
+        },
+        {
+          "lat": 18.8714,
+          "lng": 79.4637,
+          "expected_ac": 4,
+          "resolved_ac": 4,
+          "status": "PASS"
+        },
+        {
+          "lat": 17.3616,
+          "lng": 78.4747,
+          "expected_ac": 66,
+          "resolved_ac": 66,
+          "status": "PASS"
+        },
+        {
+          "lat": 0,
+          "lng": 0,
+          "expected_ac": null,
+          "resolved_ac": null,
+          "status": "PASS"
+        }
+      ],
+      "boundary_validation": "PASS (Strict -90..90, -180..180 & NaN rejection)"
+    },
+    "postal_crosswalk": {
+      "single_ac_pins": [
+        {
+          "pin": "504208",
+          "ac": 4,
+          "weight": 1,
+          "status": "PASS"
+        }
+      ],
+      "multi_ac_pins": [
+        {
+          "pin": "500001",
+          "candidate_count": 3,
+          "acs": [
+            65,
+            63,
+            58
+          ],
+          "weight_sum": 0.9999,
+          "status": "PASS"
+        }
+      ],
+      "unregistered_pins": [
+        {
+          "pin": "999999",
+          "candidates": 0,
+          "status": "PASS"
+        }
+      ],
+      "format_validation": "PASS (Strict 6-digit regex /^[1-9][0-9]{5}$/)"
+    },
+    "fail_closed_adherence": "PASS (Zero heuristic fallbacks to default states)"
+  },
+  "summary": "JOB 016 verified without local file heuristics. Coordinate -> AC mapping and deterministic PIN -> AC crosswalk resolve with mathematically sound candidate distributions and strict fail-closed boundary enforcement."
+}

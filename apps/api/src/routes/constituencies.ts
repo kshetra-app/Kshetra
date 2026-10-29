@@ -42,15 +42,6 @@ function constituencyToRecord(c: ConstituencyBrief): ConstituencyRecord {
   };
 }
 
-/** Load the GeoJSON once at startup for locate queries */
-let _geojson: GeoJSON.FeatureCollection | null = null;
-function getGeoJSON(): GeoJSON.FeatureCollection {
-  if (!_geojson) {
-    const filePath = path.resolve(__dirname, '../../../../data/geo/telangana-assembly.geojson');
-    _geojson = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
-  }
-  return _geojson!;
-}
 
 // ─── AJV SCHEMAS FOR CONSTITUENCY ROUTES ───
 
@@ -901,27 +892,94 @@ export async function constituencyRoutes(app: FastifyInstance) {
         );
       }
 
-      const geojson = getGeoJSON();
-      const found = findConstituencyAtPoint(longitude, latitude, geojson);
-
-      if (!found) {
-        return {
-          latitude,
-          longitude,
-          constituency: null,
-          message: 'No constituency found at this location',
-        };
+      if (latitude < -90 || latitude > 90 || longitude < -180 || longitude > 180) {
+        return sendApiError(
+          reply,
+          request,
+          400,
+          'Bad Request',
+          'Latitude must be between -90 and 90, Longitude between -180 and 180',
+          {
+            code: 'FST_ERR_VALIDATION',
+          },
+        );
       }
 
-      const acNo = found.properties.AC_NO;
-      const constituency = getConstituency('TS', acNo);
+      const result = await canonicalGeographyService.locatePoint({ lat: latitude, lng: longitude });
 
       return {
-        latitude,
-        longitude,
-        constituency,
-        message: 'Constituency located',
+        latitude: result.latitude,
+        longitude: result.longitude,
+        constituency: result.constituency,
+        message: result.message,
       };
+    },
+  );
+
+  /** 9. GET /constituencies/locate/pin/:pinCode (JOB 016) */
+  app.get<{
+    Params: { pinCode: string };
+  }>(
+    '/constituencies/locate/pin/:pinCode',
+    {
+      schema: {
+        params: {
+          type: 'object',
+          properties: {
+            pinCode: { type: 'string', pattern: '^\\d{6}$' },
+          },
+          required: ['pinCode'],
+        },
+      },
+    },
+    async (request, reply) => {
+      const { pinCode } = request.params;
+      const result = await canonicalGeographyService.locateByPinCode(pinCode);
+      if (!result.singleMatch && result.candidates.length === 0) {
+        return sendApiError(
+          reply,
+          request,
+          404,
+          'Not Found',
+          result.message,
+          { code: 'PIN_NOT_FOUND' },
+        );
+      }
+      return result;
+    },
+  );
+
+  /** 10. GET /constituencies/:stateCode/:acNo/hierarchy (JOB 013) */
+  app.get<{
+    Params: { stateCode: string; acNo: string };
+  }>(
+    '/constituencies/:stateCode/:acNo/hierarchy',
+    {
+      schema: {
+        params: {
+          type: 'object',
+          properties: {
+            stateCode: { type: 'string', minLength: 2, maxLength: 5 },
+            acNo: { type: 'string', pattern: '^\\d+$' },
+          },
+          required: ['stateCode', 'acNo'],
+        },
+      },
+    },
+    async (request, reply) => {
+      const { stateCode, acNo } = request.params;
+      const hierarchy = await canonicalGeographyService.getSubConstituencyHierarchy(stateCode, parseInt(acNo, 10));
+      if (!hierarchy) {
+        return sendApiError(
+          reply,
+          request,
+          404,
+          'Not Found',
+          `Sub-constituency hierarchy not found for state ${stateCode.toUpperCase()} AC ${acNo}`,
+          { code: 'HIERARCHY_NOT_FOUND' },
+        );
+      }
+      return hierarchy;
     },
   );
 }

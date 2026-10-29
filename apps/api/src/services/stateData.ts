@@ -241,40 +241,53 @@ export function resolveByElectionOverride(
   };
 }
 
-export const canonicalGeographyService =
-  canonicalGeoModule?.canonicalGeographyService ??
-  new (class FallbackCanonicalGeographyService {
-    isAvailable() {
-      return false;
-    }
-    async getStates() {
-      return [];
-    }
-    async getState() {
-      return null;
-    }
-    async getParliamentaryConstituencies() {
-      return [];
-    }
-    async getParliamentaryConstituency() {
-      return null;
-    }
-    async getConstituencies() {
-      return [];
-    }
-    async getConstituency() {
-      return null;
-    }
-    async searchConstituencies() {
-      return [];
-    }
-    async getConstituencyElectionData() {
-      return null;
-    }
-    getConfirmedByElections() {
-      return CONFIRMED_BY_ELECTIONS;
-    }
-  })();
+export const canonicalGeographyService = {
+  isAvailable() {
+    return canonicalGeoModule?.canonicalGeographyService?.isAvailable() ?? false;
+  },
+  async getStates() {
+    return canonicalGeoModule?.canonicalGeographyService?.getStates() ?? [];
+  },
+  async getState(code: string) {
+    return canonicalGeoModule?.canonicalGeographyService?.getState(code) ?? null;
+  },
+  async getParliamentaryConstituencies(stateCode?: string) {
+    return canonicalGeoModule?.canonicalGeographyService?.getParliamentaryConstituencies(stateCode) ?? [];
+  },
+  async getParliamentaryConstituency(codeOrId: string) {
+    return canonicalGeoModule?.canonicalGeographyService?.getParliamentaryConstituency(codeOrId) ?? null;
+  },
+  async getConstituencies(stateCode: string) {
+    return canonicalGeoModule?.canonicalGeographyService?.getConstituencies(stateCode) ?? [];
+  },
+  async getConstituency(stateCode: string, acNo: number) {
+    return canonicalGeoModule?.canonicalGeographyService?.getConstituency(stateCode, acNo) ?? null;
+  },
+  async searchConstituencies(stateCode: string, query: string) {
+    return canonicalGeoModule?.canonicalGeographyService?.searchConstituencies(stateCode, query) ?? [];
+  },
+  async getConstituencyElectionData(stateCode: string, acNo: number) {
+    return canonicalGeoModule?.canonicalGeographyService?.getConstituencyElectionData(stateCode, acNo) ?? null;
+  },
+  getConfirmedByElections() {
+    return CONFIRMED_BY_ELECTIONS;
+  },
+  async getConstituencyMLA(stateCode: string, acNo: number) {
+    return (canonicalGeoModule?.canonicalGeographyService as any)?.getConstituencyMLA?.(stateCode, acNo) ?? null;
+  },
+  async getConstituencyMLAs(stateCode: string) {
+    return (canonicalGeoModule?.canonicalGeographyService as any)?.getConstituencyMLAs?.(stateCode) ?? [];
+  },
+  async getSubConstituencyHierarchy(stateCode: string, acNo: number) {
+    return (canonicalGeoModule?.canonicalGeographyService as any)?.getSubConstituencyHierarchy?.(stateCode, acNo) ?? null;
+  },
+  async locatePoint(params: { lat: number; lng: number }) {
+    return (canonicalGeoModule?.canonicalGeographyService as any)?.locatePoint?.(params) ?? null;
+  },
+  async locateByPinCode(pinCode: string) {
+    return (canonicalGeoModule?.canonicalGeographyService as any)?.locateByPinCode?.(pinCode) ?? null;
+  },
+};
 
 // Generic Mapper
 function genericToBrief(stateCode: string, c: any): ConstituencyBrief {

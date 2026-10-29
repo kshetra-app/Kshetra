@@ -1,0 +1,41 @@
+{
+  "milestone": "W022",
+  "title": "Delimitation Share Cards & Public Web Links Verification",
+  "status": "ACCEPTED / COMPLETE",
+  "verified_at": "2026-10-29T17:35:49.651Z",
+  "git_baseline": "09ebac686462ce94a8c6b1d13d1a856c32fa05fb",
+  "migration": "supabase/migrations/073_delimitation_share_cards.sql",
+  "table_created": "delimitation_share_snapshots",
+  "dpdp_compliance": {
+    "zero_pii_check_constraint": "chk_share_no_pii",
+    "email_leak_rejected": "PASS",
+    "phone_leak_rejected": "PASS",
+    "invalid_pin_rejected": "PASS"
+  },
+  "ssr_open_graph": {
+    "tags_verified": [
+      "og:title",
+      "og:description",
+      "og:image",
+      "og:url",
+      "og:type",
+      "og:site_name",
+      "twitter:card",
+      "twitter:title",
+      "twitter:description",
+      "twitter:image"
+    ],
+    "deep_link_scheme": "kshetra://delimitation/impact?pin={pinCode}",
+    "canonical_domains": [
+      "https://poligram.in",
+      "https://panin.in"
+    ]
+  },
+  "mobile_ui": {
+    "component": "apps/mobile/components/DelimitationShareCard.tsx",
+    "native_share_dialog": "Share.share",
+    "integrated_screen": "apps/mobile/app/delimitation/my-impact.tsx",
+    "typecheck": "PASS (0 errors)"
+  },
+  "summary": "Delimitation share cards and public SSR web preview links fully implemented and verified. Immutable snapshot storage, DPDP Act 2023 zero-PII constraints, Open Graph rich preview meta tags, and mobile native Share sheet operate seamlessly."
+}
