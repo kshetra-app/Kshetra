@@ -11,15 +11,15 @@ WITH master_counts AS (
     -- 1. Electoral Geography Baseline (B1)
     (SELECT count(*) FROM public.states) AS states_count,
     (SELECT count(*) FROM public.parliamentary_constituencies) AS pcs_count,
-    (SELECT count(*) FROM public.assembly_constituencies) AS acs_count,
+    (SELECT count(*) FROM public.constituencies) AS acs_count,
     (SELECT count(*) FROM public.constituency_parliamentary_mappings WHERE is_current = true) AS ac_pc_mappings_count,
 
     -- 2. Political Organizations Registry (B2.2-C)
     (SELECT count(*) FROM public.political_organizations) AS orgs_count,
-    (SELECT count(*) FROM public.political_organization_aliases) AS aliases_count,
-    (SELECT count(*) FROM public.political_organization_multilingual) AS multilingual_orgs_count,
-    (SELECT count(*) FROM public.political_organization_symbols) AS symbols_count,
-    (SELECT count(*) FROM public.political_organization_relationships) AS org_relationships_count,
+    (SELECT count(*) FROM public.organization_aliases) AS aliases_count,
+    (SELECT count(*) FROM public.organization_multilingual_names) AS multilingual_orgs_count,
+    (SELECT count(*) FROM public.organization_symbols) AS symbols_count,
+    (SELECT count(*) FROM public.organization_relationships) AS org_relationships_count,
     (SELECT count(*) FROM public.political_organizations WHERE id ILIKE '%indep%' OR name ILIKE '%indep%') AS synth_orgs_count,
 
     -- 3. Persons & Candidacies (B2.2-D)
@@ -57,6 +57,9 @@ SELECT
        AND ac_pc_mappings_count = 4123
        AND orgs_count = 107
        AND aliases_count = 1043
+       AND multilingual_orgs_count = 27
+       AND symbols_count = 19
+       AND org_relationships_count = 10
        AND persons_count = 9083
        AND candidacies_count = 11298
        AND affidavits_count = 4523
