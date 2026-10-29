@@ -28,7 +28,7 @@ check_acs AS (
 check_mappings AS (
   SELECT
     (SELECT count(*) FROM public.constituency_parliamentary_mappings WHERE is_current = true) AS current_mappings,
-    (SELECT count(DISTINCT constituency_id) FROM public.constituency_parliamentary_mappings WHERE is_current = true) AS distinct_acs_mapped
+    (SELECT count(DISTINCT assembly_constituency_version_id) FROM public.constituency_parliamentary_mappings WHERE is_current = true) AS distinct_acs_mapped
 ),
 -- 5. Political Organizations (Expected: 107 canonical orgs, 1,043 aliases, 27 multilingual, 19 symbols, 10 rels)
 check_orgs AS (
