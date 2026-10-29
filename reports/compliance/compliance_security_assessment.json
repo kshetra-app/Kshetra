@@ -1,0 +1,37 @@
+{
+  "framework": "DPDP Act 2023 Section 8(5) Technical & Organizational Security Measures",
+  "assessmentDate": "2026-10-29T12:00:00.000Z",
+  "status": "COMPLIANT",
+  "controls": {
+    "encryptionInTransit": {
+      "standard": "TLS 1.3 enforced with strict ciphers",
+      "hsts": "max-age=63072000; includeSubDomains; preload",
+      "status": "PASS"
+    },
+    "encryptionAtRest": {
+      "standard": "AES-256 transparent data encryption (TDE) on PostgreSQL & S3",
+      "keyManagement": "AWS KMS with automatic key rotation",
+      "status": "PASS"
+    },
+    "authenticationAndCredentials": {
+      "passwords": "Argon2id with per-user cryptographic salt",
+      "apiKeys": "256-bit CSPRNG Base64URL unpadded (43 chars) with SHA-256 constant-time hash comparison",
+      "status": "PASS"
+    },
+    "accessControlAndTenantIsolation": {
+      "rowLevelSecurity": "PostgreSQL RLS enabled on all sensitive application and demographic tables",
+      "tenantIsolation": "Composite foreign keys (tenant_id, application_id) enforced",
+      "status": "PASS"
+    },
+    "rateLimitingAndDenialOfService": {
+      "burstProtection": "Local token-bucket in-memory burst limiter (60 to 3,000 req/min)",
+      "durableLedgerQuota": "Authoritative monthly ceiling check in PostgreSQL saas_usage_ledger",
+      "status": "PASS"
+    },
+    "loggingAndAudit": {
+      "privacyPreservingLogs": "Zero raw passwords, API key secrets, or voter identity numbers in log streams",
+      "auditTrail": "Dedicated moderation_actions and immutable audit_log tables",
+      "status": "PASS"
+    }
+  }
+}

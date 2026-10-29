@@ -1,0 +1,86 @@
+{
+  "framework": "DPDP Act 2023 Sec 8(7) Storage Limitation & Statutory Retention Rules",
+  "auditTimestamp": "2026-10-29T12:00:00.000Z",
+  "totalRulesCount": 7,
+  "rules": [
+    {
+      "dataClass": "User Authentication Sessions & Refresh Tokens",
+      "applicableTables": ["auth.sessions", "auth.refresh_tokens"],
+      "retentionClass": "session_30_days",
+      "retentionDurationDays": 30,
+      "statutoryReference": "DPDP Act 2023 Sec 8(7) (Storage Limitation) & IT Rules 2021",
+      "deletionTrigger": "User sign-out, session timeout, or 30 days of client inactivity",
+      "deletionMethod": "hard_delete",
+      "auditRequirements": "Session termination logged with anonymized client IP and timestamp"
+    },
+    {
+      "dataClass": "Citizen User Profiles & Bookmarks",
+      "applicableTables": ["public.user_profiles", "public.user_favourites"],
+      "retentionClass": "session_30_days",
+      "retentionDurationDays": 30,
+      "statutoryReference": "DPDP Act 2023 Sec 12(3) (Right to Erasure)",
+      "deletionTrigger": "Data Principal submits account erasure request",
+      "deletionMethod": "hard_delete",
+      "auditRequirements": "Erasure certificate generated and cryptographic hash recorded in audit log"
+    },
+    {
+      "dataClass": "Identity Verification & Accreditation Documents",
+      "applicableTables": ["public.user_verification", "storage.kyc-documents"],
+      "retentionClass": "verification_90_days",
+      "retentionDurationDays": 90,
+      "statutoryReference": "DPDP Act 2023 Sec 8(7) & IT Rules 2021 Rule 3(1)(h)",
+      "deletionTrigger": "90 days post review decision (approved/rejected) or account deletion",
+      "deletionMethod": "crypto_shred",
+      "auditRequirements": "Binary file unlinked from S3; cryptographic erasure logged"
+    },
+    {
+      "dataClass": "Telecom & Voice OBD Broadcast Recordings",
+      "applicableTables": ["public.voice_obd_broadcasts", "storage.campaign-audio"],
+      "retentionClass": "operational_180_days",
+      "retentionDurationDays": 180,
+      "statutoryReference": "TRAI TCCCPR 2018 Regulation 18 & DOT Call Detail Record mandates",
+      "deletionTrigger": "180 days elapsed post broadcast completion",
+      "deletionMethod": "hard_delete",
+      "auditRequirements": "Automated retention job purges audio files and recipient phone logs"
+    },
+    {
+      "dataClass": "B2B SaaS Quota & Usage Ledger",
+      "applicableTables": ["public.saas_usage_ledger"],
+      "retentionClass": "usage_36_months",
+      "retentionDurationDays": 1095,
+      "statutoryReference": "Commercial contract dispute window & Limitation Act 1963",
+      "deletionTrigger": "Rolling 36-month monthly bucket expiration",
+      "deletionMethod": "immutable_archive",
+      "auditRequirements": "Aggregated monthly billing summary retained; granular hourly rows archived"
+    },
+    {
+      "dataClass": "Commercial Financial Ledgers & Top-up Transactions",
+      "applicableTables": ["public.campaign_wallets", "public.wallet_transactions"],
+      "retentionClass": "statutory_7_years",
+      "retentionDurationDays": 2555,
+      "statutoryReference": "Companies Act 2013 Sec 128 & Income Tax Act 1961 Sec 44AA",
+      "deletionTrigger": "7 years from end of relevant financial assessment year",
+      "deletionMethod": "immutable_archive",
+      "auditRequirements": "Zero ad-hoc deletion permitted; requires formal statutory board sign-off"
+    },
+    {
+      "dataClass": "Statutory Electoral Geography & Candidate Affidavits",
+      "applicableTables": [
+        "public.states",
+        "public.constituencies",
+        "public.canonical_persons",
+        "public.candidacies",
+        "public.candidate_affidavits",
+        "public.candidate_affidavit_disclosures",
+        "public.constituency_demographics",
+        "public.constituency_lineage"
+      ],
+      "retentionClass": "permanent_statutory_public",
+      "retentionDurationDays": null,
+      "statutoryReference": "Representation of the People Act 1950/1951, Delimitation Act 2002 & ECI Regulations",
+      "deletionTrigger": "NEVER (Statutory public records exempt from citizen erasure)",
+      "deletionMethod": "immutable_archive",
+      "auditRequirements": "Cryptographic batch provenance anchors and version snapshots preserved"
+    }
+  ]
+}

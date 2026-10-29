@@ -1,0 +1,53 @@
+{
+  "framework": "DPDP Act 2023 & DPDPR 2025 Gap & Readiness Register",
+  "auditDate": "2026-10-29T12:00:00.000Z",
+  "status": "ALL_ENGINEERING_GAPS_CLOSED",
+  "gaps": [
+    {
+      "gapId": "GAP-01",
+      "category": "Consent Architecture",
+      "finding": "Previously, consent withdrawal lacked a direct programmatic state machine and audit log.",
+      "remediation": "Implemented RightsService.processErasureRequest and consent withdrawal workflow with cryptographic certification.",
+      "status": "CLOSED",
+      "verifiedIn": "compliance-w051-5.test.ts"
+    },
+    {
+      "gapId": "GAP-02",
+      "category": "13-Language Parity",
+      "finding": "Privacy notice was historically maintained only in English and Hindi, falling short of the Pan-Indian 13-language mandate.",
+      "remediation": "Constructed complete statutory privacy notice packs across all 13 official languages: en, hi, te, ta, kn, ml, mr, bn, gu, or, pa, as, ne.",
+      "status": "CLOSED",
+      "verifiedIn": "compliance-w051-5.test.ts"
+    },
+    {
+      "gapId": "GAP-03",
+      "category": "Data Erasure vs Statutory Public Records Invariant",
+      "finding": "Lack of architectural clarity on whether a citizen deleting their account could delete statutory ECI election candidate records.",
+      "remediation": "Codified clear segregation: statutory public electoral records (canonical_persons, candidate_affidavits, delimitation_lineage) are exempt from DPDP citizen erasure under Representation of the People Act 1951.",
+      "status": "CLOSED",
+      "verifiedIn": "compliance-w051-5.test.ts"
+    },
+    {
+      "gapId": "GAP-04",
+      "category": "Breach Response SLA",
+      "finding": "Breach notification protocol had not defined the statutory 72-hour notification SLA to DPBI.",
+      "remediation": "Implemented BreachService calculating automated 72-hour statutory deadline for high/critical incidents and simulated DPBI acknowledgment.",
+      "status": "CLOSED",
+      "verifiedIn": "compliance-w051-5.test.ts"
+    }
+  ],
+  "legalReviewFlaggedItems": [
+    {
+      "itemId": "LEG-01",
+      "subject": "Commercial OBD Consent vs Election Commission Campaigning Guidelines",
+      "status": "HUMAN_LEGAL_REVIEW_REQUIRED",
+      "description": "Final legal sign-off on interplay between TRAI commercial OBD regulations and ECI silence period rules for campaign broadcasts."
+    },
+    {
+      "itemId": "LEG-02",
+      "subject": "Aadhaar Voluntary Masked Verification Retention Ceiling",
+      "status": "HUMAN_LEGAL_REVIEW_REQUIRED",
+      "description": "Confirmation with external legal counsel on whether 90-day KYC purge period complies with UIDAI regulations."
+    }
+  ]
+}

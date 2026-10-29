@@ -1,0 +1,52 @@
+{
+  "testSuite": "apps/api/src/__tests__/compliance-w051-5.test.ts",
+  "executionTimestamp": "2026-10-29T13:40:31Z",
+  "totalRightsTests": 6,
+  "passed": 6,
+  "failed": 0,
+  "status": "PASS",
+  "results": [
+    {
+      "testId": "W051.5-RIGHTS-01",
+      "right": "Authentication Gate",
+      "expectedStatus": 401,
+      "actualStatus": 401,
+      "verdict": "PASS"
+    },
+    {
+      "testId": "W051.5-RIGHTS-02",
+      "right": "Right to Access (Section 11)",
+      "expectedChecksumPattern": "^[0-9a-f]{64}$",
+      "actualChecksumVerified": true,
+      "verdict": "PASS"
+    },
+    {
+      "testId": "W051.5-RIGHTS-03",
+      "right": "Right to Correction (Section 12)",
+      "targetField": "displayName",
+      "status": "completed",
+      "verdict": "PASS"
+    },
+    {
+      "testId": "W051.5-RIGHTS-04",
+      "right": "Right to Erasure Validation (Fail-Closed)",
+      "confirmationCheck": "Enforces 'DELETE_MY_PERSONAL_DATA'",
+      "verdict": "PASS"
+    },
+    {
+      "testId": "W051.5-RIGHTS-05",
+      "right": "Right to Erasure (Section 12(3))",
+      "erasureCertificateGenerated": true,
+      "statutoryRecordsPreserved": true,
+      "verdict": "PASS"
+    },
+    {
+      "testId": "W051.5-RIGHTS-06",
+      "right": "Right of Grievance Redressal (Section 13)",
+      "dpoAssigned": "dpo@kshetra.io",
+      "statutorySlaDays": 30,
+      "ticketPersisted": true,
+      "verdict": "PASS"
+    }
+  ]
+}
