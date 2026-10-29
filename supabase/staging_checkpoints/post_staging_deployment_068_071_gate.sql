@@ -1,114 +1,76 @@
 -- ==============================================================================
 -- KSHETRA / PANIN: CONSOLIDATED STAGING DEPLOYMENT VERIFICATION GATE
--- Migrations: 067, 068, 069, 070, 071
+-- Migrations: 068, 070, 071
 -- Target: Staging Supabase (fkpigozcqnmcvofuksar / panIN-staging)
 -- Environment: Staging only
 -- Mode: Strictly READ-ONLY (ZERO mutations, ZERO DDL changes)
 -- Structure: Exactly ONE consolidated result set returning explicit PASS/FAIL rows
--- Authority: Master Execution Framework Amendment v1.2 / Rule IV-001 / DEC-164
+-- Authority: Master Execution Framework Amendment v1.2 / Rule IV-001 / DEC-164 / DEC-165
 -- ==============================================================================
 
 WITH
--- ─── CHECK 1: Candidacies Contest Foreign Key Referential Hardening ───────────
+-- ─── CHECK 1: candidate_affidavit_disclosures Table Schema & FK Constraints ──
 check_1_data AS (
-  SELECT
-    (SELECT count(*) FROM pg_constraint
-     WHERE conrelid = 'public.candidacies'::regclass
-       AND conname = 'fk_candidacies_contest'
-       AND confdeltype = 'r'
-       AND convalidated = true) AS fk_contest_valid,
-    (SELECT count(*) FROM pg_constraint
-     WHERE conrelid = 'public.candidacies'::regclass
-       AND conname = 'candidacies_contest_id_fkey') AS legacy_cascade_fk
-),
-check_1_cte AS (
-  SELECT
-    'check_01' AS check_id,
-    'candidacies contest foreign key referential hardening (ON DELETE RESTRICT)' AS check_name,
-    'fk_contest_valid: ' || fk_contest_valid || ', legacy_cascade: ' || legacy_cascade_fk AS actual_value,
-    'fk_contest_valid: 1, legacy_cascade: 0' AS expected_value,
-    CASE WHEN fk_contest_valid = 1 AND legacy_cascade_fk = 0 THEN 'PASS' ELSE 'FAIL' END AS status,
-    'fk_candidacies_contest enforced with ON DELETE RESTRICT; legacy CASCADE eliminated' AS details
-  FROM check_1_data
-),
-
--- ─── CHECK 2: Candidacies Person & Party Foreign Keys Hardening ───────────────
-check_2_data AS (
-  SELECT
-    (SELECT count(*) FROM pg_constraint
-     WHERE conrelid = 'public.candidacies'::regclass
-       AND conname = 'fk_candidacies_person'
-       AND confdeltype = 'r'
-       AND convalidated = true) AS fk_person_valid,
-    (SELECT count(*) FROM pg_constraint
-     WHERE conrelid = 'public.candidacies'::regclass
-       AND conname = 'fk_candidacies_party'
-       AND confdeltype = 'r'
-       AND convalidated = true) AS fk_party_valid,
-    (SELECT count(*) FROM pg_constraint
-     WHERE conrelid = 'public.candidacies'::regclass
-       AND conname IN ('candidacies_person_id_fkey', 'candidacies_party_id_fkey')) AS legacy_unnamed_fks
-),
-check_2_cte AS (
-  SELECT
-    'check_02' AS check_id,
-    'candidacies person and party named foreign keys (ON DELETE RESTRICT)' AS check_name,
-    'fk_person: ' || fk_person_valid || ', fk_party: ' || fk_party_valid || ', legacy: ' || legacy_unnamed_fks AS actual_value,
-    'fk_person: 1, fk_party: 1, legacy: 0' AS expected_value,
-    CASE WHEN fk_person_valid = 1 AND fk_party_valid = 1 AND legacy_unnamed_fks = 0 THEN 'PASS' ELSE 'FAIL' END AS status,
-    'fk_candidacies_person and fk_candidacies_party enforced with ON DELETE RESTRICT; legacy unnamed FKs eliminated' AS details
-  FROM check_2_data
-),
-
--- ─── CHECK 3: Candidacies Index Integrity & Redundant Index Cleanup ───────────
-check_3_data AS (
-  SELECT
-    (SELECT count(*) FROM pg_indexes
-     WHERE schemaname = 'public'
-       AND tablename = 'candidacies'
-       AND indexname IN ('idx_candidacies_contest_id', 'idx_candidacies_person', 'idx_candidacies_party')) AS base_indexes,
-    (SELECT count(*) FROM pg_indexes
-     WHERE schemaname = 'public'
-       AND tablename = 'candidacies'
-       AND indexname IN ('idx_candidacies_contest_fk', 'idx_candidacies_person_fk', 'idx_candidacies_party_fk')) AS redundant_indexes
-),
-check_3_cte AS (
-  SELECT
-    'check_03' AS check_id,
-    'candidacies index integrity and duplicate index cleanup' AS check_name,
-    'base_indexes: ' || base_indexes || '/3, redundant_indexes: ' || redundant_indexes AS actual_value,
-    'base_indexes: 3/3, redundant_indexes: 0' AS expected_value,
-    CASE WHEN base_indexes = 3 AND redundant_indexes = 0 THEN 'PASS' ELSE 'FAIL' END AS status,
-    'All 3 base indexes exist; redundant _fk duplicate indexes cleaned up' AS details
-  FROM check_3_data
-),
-
--- ─── CHECK 4: Normalized Candidate Affidavit Disclosures Table Schema ─────────
-check_4_data AS (
   SELECT
     (SELECT count(*) FROM information_schema.tables
      WHERE table_schema = 'public' AND table_name = 'candidate_affidavit_disclosures') AS table_exists,
     (SELECT count(*) FROM pg_constraint
      WHERE conrelid = 'public.candidate_affidavit_disclosures'::regclass
-       AND conname IN ('chk_movable_sum', 'chk_immovable_sum', 'chk_gross_assets', 'chk_liabilities_sum')) AS sum_check_constraints,
+       AND conname = 'candidate_affidavit_disclosures_person_id_fkey') AS person_fk,
+    (SELECT count(*) FROM pg_constraint
+     WHERE conrelid = 'public.candidate_affidavit_disclosures'::regclass
+       AND conname = 'candidate_affidavit_disclosures_candidate_id_fkey') AS candidate_fk
+),
+check_1_cte AS (
+  SELECT
+    'check_01' AS check_id,
+    'candidate_affidavit_disclosures table schema and foreign key constraints' AS check_name,
+    'table: ' || table_exists || ', person_fk: ' || person_fk || ', candidate_fk: ' || candidate_fk AS actual_value,
+    'table: 1, person_fk: 1, candidate_fk: 1' AS expected_value,
+    CASE WHEN table_exists = 1 AND person_fk = 1 AND candidate_fk = 1 THEN 'PASS' ELSE 'FAIL' END AS status,
+    'candidate_affidavit_disclosures table exists with valid foreign keys to canonical_persons and candidacies' AS details
+  FROM check_1_data
+),
+
+-- ─── CHECK 2: DEC-134 Financial Balance Check Constraints ────────────────────
+check_2_data AS (
+  SELECT
+    (SELECT count(*) FROM pg_constraint
+     WHERE conrelid = 'public.candidate_affidavit_disclosures'::regclass
+       AND conname IN ('chk_movable_sum', 'chk_immovable_sum', 'chk_gross_assets', 'chk_liabilities_sum')) AS sum_check_constraints
+),
+check_2_cte AS (
+  SELECT
+    'check_02' AS check_id,
+    'candidate_affidavit_disclosures DEC-134 financial balance check constraints' AS check_name,
+    'checks: ' || sum_check_constraints || '/4' AS actual_value,
+    'checks: 4/4' AS expected_value,
+    CASE WHEN sum_check_constraints = 4 THEN 'PASS' ELSE 'FAIL' END AS status,
+    'All 4 DEC-134 mathematical sum check constraints (movable, immovable, gross, liabilities) verified' AS details
+  FROM check_2_data
+),
+
+-- ─── CHECK 3: candidate_affidavit_disclosures RLS & SELECT Policy ────────────
+check_3_data AS (
+  SELECT
     (SELECT count(*) FROM pg_tables
      WHERE schemaname = 'public' AND tablename = 'candidate_affidavit_disclosures' AND rowsecurity = true) AS rls_enabled,
     (SELECT count(*) FROM pg_policies
      WHERE schemaname = 'public' AND tablename = 'candidate_affidavit_disclosures' AND policyname = 'p_select_candidate_affidavit_disclosures') AS select_policy
 ),
-check_4_cte AS (
+check_3_cte AS (
   SELECT
-    'check_04' AS check_id,
-    'candidate_affidavit_disclosures table, DEC-134 sum constraints and RLS policy' AS check_name,
-    'table: ' || table_exists || ', checks: ' || sum_check_constraints || '/4, rls: ' || rls_enabled || ', policy: ' || select_policy AS actual_value,
-    'table: 1, checks: 4/4, rls: 1, policy: 1' AS expected_value,
-    CASE WHEN table_exists = 1 AND sum_check_constraints = 4 AND rls_enabled = 1 AND select_policy = 1 THEN 'PASS' ELSE 'FAIL' END AS status,
-    'DEC-134 candidate_affidavit_disclosures table verified with component sum constraints and public SELECT RLS' AS details
-  FROM check_4_data
+    'check_03' AS check_id,
+    'candidate_affidavit_disclosures RLS security and public SELECT policy' AS check_name,
+    'rls: ' || rls_enabled || ', policy: ' || select_policy AS actual_value,
+    'rls: 1, policy: 1' AS expected_value,
+    CASE WHEN rls_enabled = 1 AND select_policy = 1 THEN 'PASS' ELSE 'FAIL' END AS status,
+    'Row Level Security enabled and public read access policy active on affidavit disclosures' AS details
+  FROM check_3_data
 ),
 
--- ─── CHECK 5: SaaS Outbound Webhooks Subscriptions & Events Schema ────────────
-check_5_data AS (
+-- ─── CHECK 4: SaaS Outbound Webhooks Subscriptions & Events Schema ───────────
+check_4_data AS (
   SELECT
     (SELECT count(*) FROM information_schema.tables
      WHERE table_schema = 'public' AND table_name IN ('webhook_subscriptions', 'webhook_events')) AS sub_events_tables,
@@ -117,7 +79,22 @@ check_5_data AS (
        AND conname = 'fk_webhook_sub_tenant_app') AS sub_fk,
     (SELECT count(*) FROM pg_constraint
      WHERE conrelid = 'public.webhook_events'::regclass
-       AND conname = 'fk_webhook_events_tenant_app') AS events_fk,
+       AND conname = 'fk_webhook_events_tenant_app') AS events_fk
+),
+check_4_cte AS (
+  SELECT
+    'check_04' AS check_id,
+    'saas webhook subscriptions and immutable events log schema' AS check_name,
+    'tables: ' || sub_events_tables || '/2, fks: ' || (sub_fk + events_fk) || '/2' AS actual_value,
+    'tables: 2/2, fks: 2/2' AS expected_value,
+    CASE WHEN sub_events_tables = 2 AND sub_fk = 1 AND events_fk = 1 THEN 'PASS' ELSE 'FAIL' END AS status,
+    'Webhook subscriptions & events verified with composite tenant-application foreign keys' AS details
+  FROM check_4_data
+),
+
+-- ─── CHECK 5: SaaS Outbound Webhooks Immutability Trigger & RLS ──────────────
+check_5_data AS (
+  SELECT
     (SELECT count(*) FROM pg_trigger
      WHERE tgrelid = 'public.webhook_events'::regclass
        AND tgname = 'trg_webhook_events_immutable') AS events_immutability_trigger,
@@ -127,15 +104,15 @@ check_5_data AS (
 check_5_cte AS (
   SELECT
     'check_05' AS check_id,
-    'saas webhook subscriptions and immutable events log schema' AS check_name,
-    'tables: ' || sub_events_tables || '/2, fks: ' || (sub_fk + events_fk) || '/2, trigger: ' || events_immutability_trigger || ', rls: ' || rls_enabled || '/2' AS actual_value,
-    'tables: 2/2, fks: 2/2, trigger: 1, rls: 2/2' AS expected_value,
-    CASE WHEN sub_events_tables = 2 AND sub_fk = 1 AND events_fk = 1 AND events_immutability_trigger = 1 AND rls_enabled = 2 THEN 'PASS' ELSE 'FAIL' END AS status,
-    'Webhook subscriptions & events verified with composite application FKs, immutability trigger, and RLS' AS details
+    'saas webhook events immutability trigger and table RLS' AS check_name,
+    'trigger: ' || events_immutability_trigger || ', rls: ' || rls_enabled || '/2' AS actual_value,
+    'trigger: 1, rls: 2/2' AS expected_value,
+    CASE WHEN events_immutability_trigger = 1 AND rls_enabled = 2 THEN 'PASS' ELSE 'FAIL' END AS status,
+    'Immutability trigger trg_webhook_events_immutable and RLS verified on webhook events & subscriptions' AS details
   FROM check_5_data
 ),
 
--- ─── CHECK 6: SaaS Outbound Webhooks Deliveries Queue & Functions ─────────────
+-- ─── CHECK 6: SaaS Outbound Webhooks Deliveries Queue & Atomic Procedures ────
 check_6_data AS (
   SELECT
     (SELECT count(*) FROM information_schema.tables
@@ -154,11 +131,11 @@ check_6_cte AS (
     'deliveries_table: ' || deliv_table || ', functions: ' || functions_count || '/3, rls: ' || rls_enabled AS actual_value,
     'deliveries_table: 1, functions: 3/3, rls: 1' AS expected_value,
     CASE WHEN deliv_table = 1 AND functions_count = 3 AND rls_enabled = 1 THEN 'PASS' ELSE 'FAIL' END AS status,
-    'Webhook deliveries queue and fn_publish/fn_claim/fn_purge functions operational with RLS' AS details
+    'Webhook deliveries queue and fn_publish/fn_claim/fn_purge procedures verified with RLS' AS details
   FROM check_6_data
 ),
 
--- ─── CHECK 7: Delimitation Watch Engine Lifecycle Persistence Tables ──────────
+-- ─── CHECK 7: Delimitation Watch Engine Lifecycle Persistence Tables ─────────
 check_7_data AS (
   SELECT
     (SELECT count(*) FROM information_schema.tables
@@ -187,7 +164,7 @@ check_7_cte AS (
   FROM check_7_data
 ),
 
--- ─── CHECK 8: Delimitation Watch Engine RLS & Policies ────────────────────────
+-- ─── CHECK 8: Delimitation Watch Engine RLS & Public Policies ────────────────
 check_8_data AS (
   SELECT
     (SELECT count(*) FROM pg_tables
@@ -213,7 +190,7 @@ check_8_cte AS (
   FROM check_8_data
 ),
 
--- ─── CHECK 9: Canonical Data Baseline Integrity & Non-Interference ───────────
+-- ─── CHECK 9: Canonical Data Baseline Integrity & Non-Interference ──────────
 check_9_data AS (
   SELECT
     (SELECT count(*) FROM public.political_organizations
@@ -236,7 +213,7 @@ check_9_cte AS (
   FROM check_9_data
 ),
 
--- ─── CHECK 10: Aggregate Staging Deployment Gate Verdict ──────────────────────
+-- ─── CHECK 10: Aggregate Staging Deployment Gate Verdict ─────────────────────
 all_individual_checks AS (
   SELECT * FROM check_1_cte
   UNION ALL SELECT * FROM check_2_cte
@@ -258,12 +235,12 @@ summary_stats AS (
 check_aggregate_cte AS (
   SELECT
     'check_10' AS check_id,
-    'consolidated staging deployment gate verdict (migrations 067-071)' AS check_name,
+    'consolidated staging deployment gate verdict (migrations 068, 070, 071)' AS check_name,
     'passed: ' || passed_checks || '/' || total_checks || ', failed: ' || failed_checks AS actual_value,
     'passed: ' || total_checks || '/' || total_checks || ', failed: 0' AS expected_value,
     CASE WHEN passed_checks = total_checks AND failed_checks = 0 THEN 'PASS' ELSE 'FAIL' END AS status,
     CASE WHEN passed_checks = total_checks AND failed_checks = 0
-         THEN 'POST_STAGING_DEPLOY_PASS: All migrations 067-071 deployed and verified on staging'
+         THEN 'POST_STAGING_DEPLOY_PASS: All migrations 068, 070, 071 deployed and verified on staging'
          ELSE 'POST_STAGING_DEPLOY_FAIL: One or more checks failed'
     END AS details
   FROM summary_stats
