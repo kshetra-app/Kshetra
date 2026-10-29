@@ -7,6 +7,15 @@
 
 BEGIN;
 
+-- ─── PRE-INSERTION RECONCILIATION: MAP 09B CANDIDACY DUPLICATES TO CANONICAL BASELINE IDS ───
+UPDATE public.candidacies
+SET id = '0215b22d-0002-0000-0000-000000002283'::uuid
+WHERE id = '0215b22d-0002-0000-0000-000000008662'::uuid;
+
+UPDATE public.candidacies
+SET id = '0215b22d-0002-0000-0000-000000002286'::uuid
+WHERE id = '0215b22d-0002-0000-0000-000000008702'::uuid;
+
 INSERT INTO public.candidate_affidavits (
   id, candidate_name, ac_no, constituency_name, state_code, party, election_year,
   person_id, candidacy_id, provenance_id, data_status, total_liabilities,
