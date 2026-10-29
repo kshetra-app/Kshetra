@@ -7,6 +7,37 @@
 
 BEGIN;
 
+-- ─── 0. PREREQUISITE DATA SOURCES REGISTRATION ────────────────────────────────
+INSERT INTO public.data_sources (id, name, publisher, authority_level, canonical_url, license, retrieval_method, refresh_frequency, is_active)
+VALUES
+  (
+    'myneta',
+    'National Election Watch / ADR MyNeta',
+    'Association for Democratic Reforms',
+    'media_ngo',
+    'https://www.myneta.info',
+    'Public Domain / Fair Use Reporting',
+    'html_scraper',
+    'election_cycle',
+    true
+  ),
+  (
+    'prs_india',
+    'PRS Legislative Research',
+    'PRS Legislative Research',
+    'academic',
+    'https://prsindia.org',
+    'Research / Public Reference',
+    'curated_scraper',
+    'monthly',
+    true
+  )
+ON CONFLICT (id) DO UPDATE SET
+  name = EXCLUDED.name,
+  publisher = EXCLUDED.publisher,
+  authority_level = EXCLUDED.authority_level,
+  canonical_url = EXCLUDED.canonical_url;
+
 -- ------------------------------------------------------------------------------
 -- SUB-COMPONENT: 065 Canonical Political Organization Registry
 -- ------------------------------------------------------------------------------
