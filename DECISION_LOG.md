@@ -4086,3 +4086,38 @@
      - Verification deliverables published: [`reports/production_master_synchronization_verification_report.md`](file:///C:/Users/Laven/OneDrive/Desktop/Kshetra/reports/production_master_synchronization_verification_report.md) and [`reports/production_master_synchronization_verification_report.json`](file:///C:/Users/Laven/OneDrive/Desktop/Kshetra/reports/production_master_synchronization_verification_report.json).
      - Authorized advancement of `NEXT_PERMITTED_JOB` to **Job W051 (API Customer Acquisition)** and **Job W051.5 (Compliance, DPDP & Data Governance Readiness)**.
 
+
+
+---
+
+### DEC-167: Milestone W051 — API Customer Acquisition, Commercial Monetization & Developer Portal Acceptance
+- **Date:** 2026-10-29
+- **Status:** APPROVED & ACCEPTED — EMPIRICALLY VERIFIED (111/111 PASS, 100% SUITE COMPLETION)
+- **Authority:** Project Owner Direction / Master Execution Framework Amendment v1.2 & Rule IV-001 Non-Self-Acceptance
+- **Context:** Following certified live production synchronization (DEC-166), Job W051 (API Customer Acquisition) was executed to establish the complete B2B partner commercial funnel, self-service onboarding, cryptographic key lifecycle, payment gateway integration, usage telemetry, and interactive developer portal pursuant to PLAN-W051-MASTER-REV-1.0.
+- **Architectural & Engineering Determinations:**
+  1. **Self-Service Partner Acquisition:**
+     - Deployed `POST /api/vsaas/v1/auth/signup` providing atomic organization provisioning, slug collision mitigation with deterministic hex suffixes, default test sandbox assignment, and immediate 256-bit test key issuance.
+     - Fail-closed validation via Zod schemas enforcing RFC 5322 email syntax and organization constraints.
+  2. **Cryptographic API Key Lifecycle Engine:**
+     - Strict adherence to RFC 4648 Base64URL unpadded encoding (43 characters from 256-bit CSPRNG entropy).
+     - Support for prefix segregation (`panin_live_sk_` and `panin_test_sk_`) and constant-time SHA-256 hash comparison.
+     - Active key limits enforced per subscription tier (Free: 2, Pro: 5, Enterprise: 25).
+     - Instant key revocation endpoint `DELETE /api/vsaas/v1/auth/keys/:id`.
+  3. **Commercial Monetization & Razorpay Integration:**
+     - Commercial catalog endpoint `GET /api/vsaas/v1/billing/plans` offering Community (Free), Pro (₹4,999/mo), and Enterprise (₹49,999/mo) plans.
+     - Endpoints `POST /api/vsaas/v1/billing/checkout` and `POST /api/vsaas/v1/billing/verify` facilitating automated order generation, cryptographic HMAC SHA-256 signature verification, and instant PostgreSQL tier promotion with expanded quota headers.
+     - Inbound billing webhook handler `POST /api/vsaas/v1/billing/webhook` with signature verification.
+  4. **Usage Ledger & Quota Telemetry:**
+     - Real-time consumption telemetry endpoint `GET /api/vsaas/v1/account/usage` aggregating usage from `public.saas_usage_ledger`, calculating monthly percentage consumed, and rendering 24-hour hourly trend buckets.
+  5. **Interactive Developer Portal & OpenAPI 3.1 Spec:**
+     - Deployed developer portal `GET /api/vsaas/v1/docs` with live API playground and SDK code samples.
+     - Deployed machine-readable OpenAPI specifications `GET /api/vsaas/v1/openapi.json` and `GET /api/vsaas/v1/openapi.yaml`.
+  6. **Empirical Battery & Zero Regression:**
+     - 17/17 dedicated W051 unit and integration tests passed (`saas-onboarding-w051.test.ts`).
+     - Full SaaS regression suite passed: 111/111 tests passed across 5 suites (`saas-onboarding-w051`, `saas-auth-g3`, `saas-durable-quota`, `saas-rate-limiter-unit`, `saas-v1-routes`).
+     - TypeScript compiler check exited with code 0 (`npx tsc --noEmit`).
+     - Zero citizen PII exposure invariant verified across all customer acquisition payloads.
+- **Acceptance & Next Steps:**
+  - Milestone **W051 (API Customer Acquisition)** is formally ratified as **`ACCEPTED / COMPLETE (TESTED & VERIFIED)`**.
+  - Authorized immediate advancement to sequential next job: **Job W051.5 — Compliance, DPDP & Data Governance Readiness (COMPLIANCE+ARCH+SEC)**.

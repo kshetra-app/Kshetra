@@ -34,6 +34,14 @@ tags:
     description: Canonical public records for political persons, recognized organizations, and sitting legislators.
   - name: Delimitation Regimes & Scenarios
     description: Statutory delimitation orders, constitutional timelines, and governed boundary redistricting simulations.
+  - name: Onboarding & Key Management
+    description: Partner tenant self-service registration, cryptographic API key issuance (256-bit CSPRNG Base64URL), and key revocation.
+  - name: Commercial Subscriptions & Billing
+    description: Commercial subscription plans, Razorpay payment orders, signature verification, and automated tier provisioning.
+  - name: Usage & Telemetry
+    description: Real-time API consumption metrics, monthly quota balance, and hourly usage trends from the immutable ledger.
+  - name: Developer Portal & API Specs
+    description: Interactive developer portal and machine-readable OpenAPI specifications (JSON/YAML).
 
 paths:
   # ════════════════════════════════════════════════════════════════════════════
@@ -1357,6 +1365,323 @@ paths:
           $ref: '#/components/responses/429TooManyRequests'
         '500':
           $ref: '#/components/responses/500InternalError'
+
+  # ════════════════════════════════════════════════════════════════════════════
+  # 6. PARTNER ONBOARDING, KEY LIFECYCLE, BILLING & DEVELOPER PORTAL (W051)
+  # ════════════════════════════════════════════════════════════════════════════
+
+  /api/vsaas/v1/auth/signup:
+    post:
+      operationId: partnerSignup
+      tags:
+        - Onboarding & Key Management
+      summary: Self-service partner organization registration
+      description: Registers a new partner tenant, provisions a default application sandbox, and issues an initial 256-bit cryptographic test API key.
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SaasSignupRequest'
+      responses:
+        '201':
+          description: Partner tenant successfully registered and initial API key provisioned.
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiSuccessEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/SaasSignupResponse'
+        '400':
+          $ref: '#/components/responses/400BadRequest'
+        '500':
+          $ref: '#/components/responses/500InternalError'
+
+  /api/vsaas/v1/auth/keys:
+    get:
+      operationId: listApiKeys
+      tags:
+        - Onboarding & Key Management
+      summary: List API keys for authenticated partner tenant
+      description: Returns all active and revoked API keys with metadata (prefix, hint, scopes, last used). Raw secrets and cryptographic hashes are strictly omitted.
+      responses:
+        '200':
+          description: Successfully retrieved tenant API key audit list.
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiSuccessEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/SaasApiKeyListItem'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+        '500':
+          $ref: '#/components/responses/500InternalError'
+    post:
+      operationId: createApiKey
+      tags:
+        - Onboarding & Key Management
+      summary: Generate a new cryptographic API key
+      description: Generates a new 256-bit CSPRNG API key adhering to RFC 4648 Base64URL unpadded construction. The raw secret is returned exactly once in the response.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SaasApiKeyCreateRequest'
+      responses:
+        '201':
+          description: Cryptographic API key generated successfully.
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiSuccessEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/SaasApiKeyCreateResponse'
+        '400':
+          $ref: '#/components/responses/400BadRequest'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+        '403':
+          description: Tenant tier active key limit reached.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorEnvelope'
+        '500':
+          $ref: '#/components/responses/500InternalError'
+
+  /api/vsaas/v1/auth/keys/{id}:
+    delete:
+      operationId: revokeApiKey
+      tags:
+        - Onboarding & Key Management
+      summary: Revoke an existing API key
+      description: Immediately revokes an API key. Any future request using this key will be rejected with 401 Unauthorized.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: The UUID of the API key to revoke.
+      responses:
+        '200':
+          description: API key successfully revoked.
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiSuccessEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/SaasApiKeyRevokeResponse'
+        '400':
+          $ref: '#/components/responses/400BadRequest'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+        '500':
+          $ref: '#/components/responses/500InternalError'
+
+  /api/vsaas/v1/billing/plans:
+    get:
+      operationId: listBillingPlans
+      tags:
+        - Commercial Subscriptions & Billing
+      summary: List commercial subscription plans
+      description: Publicly lists commercial tiers (Community/Free, Pro, Enterprise) with pricing in INR/USD, burst limits, monthly quota, and feature lists.
+      security: []
+      responses:
+        '200':
+          description: Commercial catalog retrieved successfully.
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiSuccessEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/SaasBillingPlan'
+
+  /api/vsaas/v1/billing/checkout:
+    post:
+      operationId: createBillingCheckout
+      tags:
+        - Commercial Subscriptions & Billing
+      summary: Initialize checkout order for tier upgrade
+      description: Generates an authoritative Razorpay payment order for upgrading from Free to Pro or Enterprise.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SaasBillingCheckoutRequest'
+      responses:
+        '200':
+          description: Checkout session and payment order initialized.
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiSuccessEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/SaasBillingCheckoutResponse'
+        '400':
+          $ref: '#/components/responses/400BadRequest'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+        '500':
+          $ref: '#/components/responses/500InternalError'
+
+  /api/vsaas/v1/billing/verify:
+    post:
+      operationId: verifyBillingPayment
+      tags:
+        - Commercial Subscriptions & Billing
+      summary: Verify payment signature and upgrade tenant subscription
+      description: Verifies cryptographic payment HMAC signature and upgrades tenant tier in PostgreSQL with expanded burst limit and monthly quota.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SaasBillingVerifyRequest'
+      responses:
+        '200':
+          description: Payment verified and tenant tier upgraded.
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiSuccessEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/SaasBillingVerifyResponse'
+        '400':
+          $ref: '#/components/responses/400BadRequest'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+        '500':
+          $ref: '#/components/responses/500InternalError'
+
+  /api/vsaas/v1/billing/webhook:
+    post:
+      operationId: receiveBillingWebhook
+      tags:
+        - Commercial Subscriptions & Billing
+      summary: Inbound payment provider webhook
+      description: Receives asynchronous events (e.g. payment.captured, subscription.charged) signed with payment provider HMAC secret.
+      security: []
+      responses:
+        '200':
+          description: Webhook received and processed.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  received:
+                    type: boolean
+                  event:
+                    type: string
+        '400':
+          $ref: '#/components/responses/400BadRequest'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+
+  /api/vsaas/v1/account/usage:
+    get:
+      operationId: getUsageSummary
+      tags:
+        - Usage & Telemetry
+      summary: Real-time quota usage and telemetry metrics
+      description: Aggregates durable usage from public.saas_usage_ledger, returning remaining monthly quota percentage and 24-hour hourly trend.
+      responses:
+        '200':
+          description: Quota telemetry successfully retrieved.
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiSuccessEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/SaasUsageSummaryResponse'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+        '500':
+          $ref: '#/components/responses/500InternalError'
+
+  /api/vsaas/v1/docs:
+    get:
+      operationId: getDeveloperPortal
+      tags:
+        - Developer Portal & API Specs
+      summary: Futuristic developer portal HTML
+      description: Interactive documentation web portal with integrated live API playground, SDK installation guides, and plan comparisons.
+      security: []
+      responses:
+        '200':
+          description: HTML developer portal rendered.
+          content:
+            text/html:
+              schema:
+                type: string
+
+  /api/vsaas/v1/openapi.json:
+    get:
+      operationId: getOpenApiJson
+      tags:
+        - Developer Portal & API Specs
+      summary: Machine-readable OpenAPI 3.1 specification (JSON)
+      description: Returns the complete OpenAPI 3.1 specification formatted as JSON.
+      security: []
+      responses:
+        '200':
+          description: OpenAPI JSON specification.
+          content:
+            application/json:
+              schema:
+                type: object
+
+  /api/vsaas/v1/openapi.yaml:
+    get:
+      operationId: getOpenApiYaml
+      tags:
+        - Developer Portal & API Specs
+      summary: Machine-readable OpenAPI 3.1 specification (YAML)
+      description: Returns the complete OpenAPI 3.1 specification formatted as YAML.
+      security: []
+      responses:
+        '200':
+          description: OpenAPI YAML specification.
+          content:
+            text/yaml:
+              schema:
+                type: string
 
 components:
   # ════════════════════════════════════════════════════════════════════════════
@@ -2697,3 +3022,428 @@ components:
         enqueuedDeliveries:
           type: integer
           example: 2
+
+    # ─── MILESTONE W051: PARTNER ONBOARDING & BILLING SCHEMAS ───
+    SaasSignupRequest:
+      type: object
+      required:
+        - name
+        - email
+        - organizationName
+      properties:
+        name:
+          type: string
+          minLength: 2
+          maxLength: 100
+          example: Vikram Sen
+        email:
+          type: string
+          format: email
+          example: vikram@delhipolicylab.org
+        organizationName:
+          type: string
+          minLength: 2
+          maxLength: 100
+          example: Delhi Policy Lab
+        useCase:
+          type: string
+          enum: [academic, media, campaign, civic_tech, commercial, other]
+          example: media
+        intendedTier:
+          type: string
+          enum: [free, pro, enterprise]
+          default: free
+          example: free
+
+    SaasSignupResponse:
+      type: object
+      required:
+        - tenant
+        - application
+        - apiKey
+      properties:
+        tenant:
+          type: object
+          properties:
+            id:
+              type: string
+              format: uuid
+            name:
+              type: string
+            slug:
+              type: string
+            tier:
+              type: string
+              enum: [free, pro, enterprise]
+            status:
+              type: string
+            contactEmail:
+              type: string
+            createdAt:
+              type: string
+              format: date-time
+        application:
+          type: object
+          properties:
+            id:
+              type: string
+              format: uuid
+            name:
+              type: string
+            environment:
+              type: string
+              enum: [test, live]
+            createdAt:
+              type: string
+              format: date-time
+        apiKey:
+          type: object
+          properties:
+            id:
+              type: string
+              format: uuid
+            name:
+              type: string
+            keyPrefix:
+              type: string
+            keyHint:
+              type: string
+            environment:
+              type: string
+            scopes:
+              type: array
+              items:
+                type: string
+            rawKey:
+              type: string
+              description: Complete raw 256-bit CSPRNG API key. Strictly displayed only once.
+            notice:
+              type: string
+
+    SaasApiKeyCreateRequest:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          minLength: 2
+          maxLength: 100
+          example: Production Ingestion Worker
+        environment:
+          type: string
+          enum: [test, live]
+          default: test
+        applicationId:
+          type: string
+          format: uuid
+        scopes:
+          type: array
+          items:
+            type: string
+          example: [geo:read, elections:read, entities:read, delim:read]
+
+    SaasApiKeyCreateResponse:
+      type: object
+      required:
+        - id
+        - name
+        - keyPrefix
+        - keyHint
+        - environment
+        - rawKey
+        - notice
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        keyPrefix:
+          type: string
+        keyHint:
+          type: string
+        environment:
+          type: string
+          enum: [test, live]
+        scopes:
+          type: array
+          items:
+            type: string
+        rawKey:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        notice:
+          type: string
+
+    SaasApiKeyListItem:
+      type: object
+      required:
+        - id
+        - name
+        - keyPrefix
+        - keyHint
+        - environment
+        - scopes
+        - status
+        - applicationId
+        - createdAt
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        keyPrefix:
+          type: string
+        keyHint:
+          type: string
+        environment:
+          type: string
+          enum: [test, live]
+        scopes:
+          type: array
+          items:
+            type: string
+        status:
+          type: string
+          enum: [active, revoked, compromised]
+        applicationId:
+          type: string
+          format: uuid
+        lastUsedAt:
+          type: string
+          format: date-time
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+
+    SaasApiKeyRevokeResponse:
+      type: object
+      required:
+        - id
+        - status
+        - revokedAt
+      properties:
+        id:
+          type: string
+          format: uuid
+        status:
+          type: string
+          enum: [revoked]
+        revokedAt:
+          type: string
+          format: date-time
+
+    SaasBillingPlan:
+      type: object
+      required:
+        - id
+        - name
+        - tagline
+        - priceINR
+        - priceUSD
+        - billingCycles
+        - rateLimits
+        - maxActiveKeys
+        - features
+      properties:
+        id:
+          type: string
+          enum: [free, pro, enterprise]
+        name:
+          type: string
+        tagline:
+          type: string
+        priceINR:
+          type: integer
+        priceUSD:
+          type: integer
+        billingCycles:
+          type: array
+          items:
+            type: string
+        annualDiscountPercentage:
+          type: integer
+        rateLimits:
+          type: object
+          properties:
+            burstLimitPerMinute:
+              type: integer
+            monthlyCeiling:
+              type: integer
+        maxActiveKeys:
+          type: integer
+        isPopular:
+          type: boolean
+        features:
+          type: array
+          items:
+            type: string
+
+    SaasBillingCheckoutRequest:
+      type: object
+      required:
+        - targetTier
+      properties:
+        targetTier:
+          type: string
+          enum: [pro, enterprise]
+        billingCycle:
+          type: string
+          enum: [monthly, annual]
+          default: monthly
+
+    SaasBillingCheckoutResponse:
+      type: object
+      required:
+        - orderId
+        - targetTier
+        - billingCycle
+        - amountINR
+        - amountPaise
+        - currency
+        - razorpayKeyId
+        - isSandbox
+        - tenantSlug
+      properties:
+        orderId:
+          type: string
+        targetTier:
+          type: string
+        billingCycle:
+          type: string
+        amountINR:
+          type: integer
+        amountPaise:
+          type: integer
+        currency:
+          type: string
+        razorpayKeyId:
+          type: string
+        isSandbox:
+          type: boolean
+        tenantSlug:
+          type: string
+        notes:
+          type: object
+
+    SaasBillingVerifyRequest:
+      type: object
+      required:
+        - orderId
+        - paymentId
+        - signature
+        - targetTier
+      properties:
+        orderId:
+          type: string
+        paymentId:
+          type: string
+        signature:
+          type: string
+        targetTier:
+          type: string
+          enum: [pro, enterprise]
+        billingCycle:
+          type: string
+          enum: [monthly, annual]
+          default: monthly
+
+    SaasBillingVerifyResponse:
+      type: object
+      required:
+        - success
+        - tenantId
+        - tenantSlug
+        - previousTier
+        - currentTier
+        - subscriptionStatus
+        - activatedAt
+        - updatedRateLimits
+      properties:
+        success:
+          type: boolean
+        tenantId:
+          type: string
+          format: uuid
+        tenantSlug:
+          type: string
+        previousTier:
+          type: string
+        currentTier:
+          type: string
+        subscriptionStatus:
+          type: string
+        activatedAt:
+          type: string
+          format: date-time
+        updatedRateLimits:
+          type: object
+          properties:
+            burstLimitPerMinute:
+              type: integer
+            monthlyCeiling:
+              type: integer
+
+    SaasHourlyUsageBucket:
+      type: object
+      required:
+        - hour
+        - requests
+      properties:
+        hour:
+          type: string
+          format: date-time
+        requests:
+          type: integer
+
+    SaasUsageSummaryResponse:
+      type: object
+      required:
+        - tenantId
+        - tenantSlug
+        - tier
+        - billingPeriod
+        - monthlyQuota
+        - hourlyTrends
+      properties:
+        tenantId:
+          type: string
+          format: uuid
+        tenantSlug:
+          type: string
+        tier:
+          type: string
+        billingPeriod:
+          type: object
+          properties:
+            currentMonthStart:
+              type: string
+              format: date-time
+            nextMonthReset:
+              type: string
+              format: date-time
+            secondsUntilReset:
+              type: integer
+        monthlyQuota:
+          type: object
+          properties:
+            currentUsage:
+              type: integer
+            ceiling:
+              type: integer
+            remaining:
+              type: integer
+            percentageConsumed:
+              type: number
+            status:
+              type: string
+              enum: [healthy, warning, exhausted]
+        hourlyTrends:
+          type: array
+          items:
+            $ref: '#/components/schemas/SaasHourlyUsageBucket'

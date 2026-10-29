@@ -53,6 +53,7 @@ import {
   MAX_SAFE_REQUESTED_SEATS,
 } from '../services/delimitationService';
 import { webhookRoutes } from '../modules/webhooks';
+import { saasOnboardingRoutes } from '../modules/saasOnboarding';
 
 // ─── CANONICAL RESPONSE ENVELOPE HELPER ───
 
@@ -169,6 +170,9 @@ const delimSimulationQuerySchema = {
 export async function saasV1Routes(app: FastifyInstance): Promise<void> {
   // Mount Milestone W022 Outbound Webhooks & Event Engine sub-routes
   await app.register(webhookRoutes, { prefix: '/api/vsaas/v1/webhooks' });
+
+  // Mount Milestone W051 Customer Acquisition, Onboarding, Key Lifecycle & Billing routes
+  await app.register(saasOnboardingRoutes);
 
   // Pre-validation guard: Strictly block client-supplied scenario overrides on all SaaS routes
   app.addHook('preValidation', async (request, reply) => {

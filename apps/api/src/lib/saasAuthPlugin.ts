@@ -480,6 +480,15 @@ export async function authenticateSaasRequest(
   );
 }
 
+export const PUBLIC_SAAS_PREFIXES = [
+  '/api/vsaas/v1/auth/signup',
+  '/api/vsaas/v1/billing/plans',
+  '/api/vsaas/v1/billing/webhook',
+  '/api/vsaas/v1/docs',
+  '/api/vsaas/v1/openapi.json',
+  '/api/vsaas/v1/openapi.yaml',
+];
+
 /**
  * Fastify plugin wrapping SaaS authentication.
  */
@@ -487,6 +496,13 @@ const saasAuthPluginAsync: FastifyPluginAsync<SaasAuthPluginOptions> = async (fa
   fastify.addHook('preHandler', async (request, reply) => {
     // Only execute on SaaS route family (/api/vsaas/...)
     if (request.url.startsWith('/api/vsaas/')) {
+      const pathname = request.url.split('?')[0];
+      const isPublic = PUBLIC_SAAS_PREFIXES.some(
+        (prefix) => pathname === prefix || pathname.startsWith(prefix + '/'),
+      );
+      if (isPublic) {
+        return;
+      }
       await authenticateSaasRequest(request, reply, options);
     }
   });
