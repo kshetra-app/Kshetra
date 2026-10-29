@@ -36,14 +36,14 @@ WITH master_counts AS (
     (SELECT count(*) FROM public.provenance_records WHERE id = '0215b22d-0000-0000-0000-000000000001'::uuid) AS anchor_d,
     (SELECT count(*) FROM public.provenance_records WHERE id = '0215b22e-0000-0000-0000-000000000001'::uuid) AS anchor_e,
 
-    -- 6. SaaS & Delimitation Tables
+    -- 6. SaaS & Delimitation Tables (Exactly 17 verified tables)
     (SELECT count(*) FROM information_schema.tables WHERE table_schema = 'public' AND table_name IN (
       'saas_tenants', 'saas_applications', 'saas_api_keys', 'saas_usage_ledger',
-      'saas_webhook_subscriptions', 'saas_webhook_events', 'saas_webhook_deliveries',
       'candidate_affidavit_disclosures',
-      'delimitation_orders', 'delimitation_notices', 'delimitation_hearings',
-      'delimitation_boundary_drafts', 'delimitation_comments', 'delimitation_impact_summaries',
-      'delimitation_notifications', 'delimitation_sync_history', 'delimitation_audit_log'
+      'webhook_subscriptions', 'webhook_events', 'webhook_deliveries',
+      'delimitation_watch_sources', 'delimitation_snapshots', 'delimitation_candidates',
+      'delimitation_validations', 'delimitation_comparisons', 'delimitation_accepted_versions',
+      'delimitation_notification_events', 'delimitation_publications', 'delimitation_watch_runs'
     )) AS saas_and_delim_tables
 )
 SELECT
