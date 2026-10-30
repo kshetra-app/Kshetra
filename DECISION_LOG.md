@@ -4633,3 +4633,18 @@
   - Regression test suites: Domain 6 (22/22 PASS), JOB 036 (14/14 PASS), JOB 051 (4/4 PASS) -> 40/40 PASS (100%).
   - Total cumulative verified tests: 55/55 PASS (100%).
   - Formal evidence dossiers committed at `reports/domain7_developer_platform_and_analytics_report.json` and `reports/domain7_developer_platform_and_analytics_report.md`.
+
+---
+
+### DEC-191: Authoring and Formal Submission of Pre-Implementation Plan for Domain 8 (AI Governance, Grounded News Intelligence & Cost Control: JOB 067–071)
+- **Date:** 2026-10-30
+- **Status:** SUBMITTED_FOR_REVIEW (Implementation Authorization: NO)
+- **Authority:** Master Product Blueprint (Jobs 067–071), Amendment v1.2, Amendment v1.5-A Section 26 & AGENT_EXECUTION_PROTOCOL.md
+- **Context:** Following the completion, verification, and certification of Domain 7 (DEC-190), the user directed progression to Domain 8: AI Governance, Grounded News Intelligence & Cost Control (JOB 067–071). The canonical 22-section Pre-Implementation Plan `PLAN-DOMAIN-8-AI-GOVERNANCE-NEWS-INTELLIGENCE-COST-CONTROL-REV-1.0.md` was authored and submitted for review.
+  - **Scope Covered:**
+    1. **JOB 067 (AI Provider Abstraction):** Tri-tier fallback architecture (Gemini 2.0 Flash -> OpenAI GPT-4o-mini -> Deterministic Offline Heuristic Provider). Clean startup invariant: system boots and operates deterministically in degraded offline mode even when cloud AI keys are omitted or invalid.
+    2. **JOB 068 (AI News Summary & Caching):** News article summarization with content-addressed SHA-256 deduplication cache (`ai_news_summary_cache`) preventing duplicate LLM API charges across news syndication feeds (PTI/ANI/PIB), and granular cost/token logging in `ai_cost_ledger`.
+    3. **JOB 069 (AI Civic Issue Classification Fallback):** High-precision regex/keyword deterministic rule classifier handling common civic issues (potholes, water leaks, streetlights, garbage) with >= 0.85 confidence at 0 AI cost; automated LLM fallback invocation only for ambiguous descriptions; fully functional offline execution.
+    4. **JOB 070 (Ask PANIN — RAG Grounded Civic QA):** Strict retrieval-augmented generation engine querying exclusively verified database entities (`canonical_constituencies`, `elected_tenures`, `election_results`, `civic_issues`). Strict anti-hallucination, mandatory statutory citations (ECI Form 20, Delimitation Orders), and robust prompt injection deflection.
+    5. **JOB 071 (AI Cost Control & Tenant Circuit Breakers):** Per-tenant daily token and spend budgets in `ai_tenant_budgets`. Automatic circuit breaker tripping on budget breach (HTTP 429 fail-closed), granular ledger telemetry, and executive cost audit reporting (`/api/v1/ai/cost-report`).
+  - **Operational State:** Coordinates set to `PLAN_STATUS: SUBMITTED_FOR_REVIEW`, `IMPLEMENTATION_AUTHORIZATION: NO`. Awaiting user review and ratification under Control M.
