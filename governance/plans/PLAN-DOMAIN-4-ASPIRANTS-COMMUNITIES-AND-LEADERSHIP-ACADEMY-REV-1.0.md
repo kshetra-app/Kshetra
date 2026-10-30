@@ -11,7 +11,7 @@
 ### Section 1: Executive Summary & Governing Authority
 This authoritative Pre-Implementation Plan governs the engineering execution of **Domain 4: Aspirants, Communities & Leadership Academy**, encompassing **JOB 046, JOB 047, JOB 048, JOB 049, and JOB 050** of the PANIN / Kshetra Master Blueprint and AI Agent Master Execution Job Book.
 
-Domain 4 transforms PANIN from a civic reporting tool into **India's political talent incubation and grassroots political leadership engine**. It creates the legal, technical, and community mechanisms for emerging political leaders (aspirants) to build a verified public identity, publish their civic vision and manifestos, engage local constituents, broadcast campaign events, organize local geographic action groups, and acquire mastery over Indian electoral laws, booth strategy, and public policy through the Leadership Academy.
+Domain 4 transforms POLIGRAM from a civic reporting tool into **India's political talent incubation and grassroots political leadership engine**. It creates the legal, technical, and community mechanisms for emerging political leaders (aspirants) to build a verified public identity, publish their civic vision and manifestos, engage local constituents, broadcast campaign events, organize local geographic action groups, and acquire mastery over Indian electoral laws, booth strategy, and public policy through the Leadership Academy.
 
 Under **Rule IV-001** and **Amendment v1.5-A Section 26**, no code changes, database mutations, or deployment operations may commence until this plan is ratified by the user and `IMPLEMENTATION_AUTHORIZATION: YES` is formally recorded.
 

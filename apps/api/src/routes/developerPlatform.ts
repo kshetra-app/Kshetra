@@ -187,7 +187,7 @@ export async function developerPlatformRoutes(app: FastifyInstance) {
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>PANIN Sovereign Developer API Docs (OpenAPI 3.1)</title>
+  <title>Poligram Sovereign Developer API Docs (OpenAPI 3.1)</title>
   <link rel="stylesheet" href="https://unpkg.com/swagger-ui-dist@5.11.0/swagger-ui.css" />
   <style>
     body { margin: 0; background: #0f172a; }

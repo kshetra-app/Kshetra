@@ -26,7 +26,7 @@ import type {
 } from '@kshetra/shared';
 
 // Cryptographic Secret for ViewToken Generation & Verification
-const VIEW_TOKEN_SECRET = process.env.AD_VIEW_TOKEN_SECRET || 'panin-ad-telemetry-secret-key-2026';
+const VIEW_TOKEN_SECRET = process.env.AD_VIEW_TOKEN_SECRET || 'poligram-ad-telemetry-secret-key-2026';
 
 // In-Memory Storage for High-Throughput Serving & Standalone Test Resilience
 const MEMORY_POLITICAL_ADS: Map<string, PoliticalAdDTO> = new Map();
@@ -576,7 +576,7 @@ export class AdService {
     billedEntityName: string;
     billedEntityGstin?: string;
   }): Promise<GstTaxInvoiceDTO> {
-    const invoiceNumber = `INV-PANIN-${Date.now().toString().slice(-6)}`;
+    const invoiceNumber = `INV-POLIGRAM-${Date.now().toString().slice(-6)}`;
     const cgst = Math.round(params.taxableAmountInr * 0.09 * 100) / 100;
     const sgst = Math.round(params.taxableAmountInr * 0.09 * 100) / 100;
     const total = Math.round((params.taxableAmountInr + cgst + sgst) * 100) / 100;

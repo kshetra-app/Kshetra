@@ -10,7 +10,7 @@ import type { DataFlowBoundary, ThirdPartyProviderRegisterEntry } from '@kshetra
 export const COMPLIANCE_DATA_FLOW_MAP: DataFlowBoundary[] = [
   {
     sourceSystem: 'Mobile Client (Android / iOS) & Web App',
-    targetSystem: 'PanIN API Gateway (Fastify on Railway)',
+    targetSystem: 'Poligram API Gateway (Fastify on Railway)',
     dataTransferred: ['Auth credentials', 'Profile inputs', 'Constituency preferences', 'Device headers'],
     purpose: 'API request dispatch, session negotiation, and civic interaction submission',
     recipientCategory: 'First-party application layer',
@@ -22,7 +22,7 @@ export const COMPLIANCE_DATA_FLOW_MAP: DataFlowBoundary[] = [
     legalSafeguard: 'First-party data fiduciary direct processing',
   },
   {
-    sourceSystem: 'PanIN API Gateway',
+    sourceSystem: 'Poligram API Gateway',
     targetSystem: 'Supabase PostgreSQL & PostGIS (AWS ap-south-1 Mumbai)',
     dataTransferred: ['User profiles', 'Authentication records', 'Ledger balances', 'Audit logs'],
     purpose: 'Canonical transactional persistence, spatial queries, and access control enforcement',
@@ -35,7 +35,7 @@ export const COMPLIANCE_DATA_FLOW_MAP: DataFlowBoundary[] = [
     legalSafeguard: 'Data Processing Agreement (DPA) with standard contractual clauses',
   },
   {
-    sourceSystem: 'PanIN API Gateway',
+    sourceSystem: 'Poligram API Gateway',
     targetSystem: 'Supabase S3 Storage (AWS ap-south-1 Mumbai)',
     dataTransferred: ['User avatars', 'Aspirant documents', 'Verification KYC proofs', 'Broadcast audio'],
     purpose: 'Unstructured binary asset storage with time-limited signed URLs',
@@ -48,7 +48,7 @@ export const COMPLIANCE_DATA_FLOW_MAP: DataFlowBoundary[] = [
     legalSafeguard: 'DPA with ISO/IEC 27001 & SOC 2 Type II certified infrastructure',
   },
   {
-    sourceSystem: 'PanIN API Gateway & Web Checkout',
+    sourceSystem: 'Poligram API Gateway & Web Checkout',
     targetSystem: 'Razorpay Payment Gateway (India)',
     dataTransferred: ['Order amounts (paise)', 'Currency', 'Customer phone/email', 'Tenant slug'],
     purpose: 'Processing credit card, UPI, and NetBanking transactions for subscriptions and wallet top-ups',
@@ -61,7 +61,7 @@ export const COMPLIANCE_DATA_FLOW_MAP: DataFlowBoundary[] = [
     legalSafeguard: 'RBI Authorized Payment Aggregator Agreement & DPA',
   },
   {
-    sourceSystem: 'PanIN API Gateway',
+    sourceSystem: 'Poligram API Gateway',
     targetSystem: 'Exotel Telecom Gateway (India)',
     dataTransferred: ['Recipient phone numbers', 'Audio asset URLs', 'Campaign IDs'],
     purpose: 'Dispatching TRAI-compliant Outbound Dialer (OBD) voice broadcasts to electors',

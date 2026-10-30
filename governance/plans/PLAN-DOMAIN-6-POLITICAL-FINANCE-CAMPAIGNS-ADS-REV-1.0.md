@@ -72,7 +72,7 @@ Domain 6 introduces an integrated, gold-standard Political Finance & Monetizatio
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│                          PANIN DOMAIN 6 ARCHITECTURE                        │
+│                          POLIGRAM DOMAIN 6 ARCHITECTURE                        │
 └─────────────────────────────────────────────────────────────────────────────┘
 
  [ Political Aspirants & Parties ]         [ Local Commercial Merchants ]

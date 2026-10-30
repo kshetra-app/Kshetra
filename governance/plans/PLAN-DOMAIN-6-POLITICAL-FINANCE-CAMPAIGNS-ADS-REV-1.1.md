@@ -78,7 +78,7 @@ Domain 6 introduces an integrated, segregated Political Finance & Monetization A
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│                   PANIN DOMAIN 6 ISOLATED DUAL ARCHITECTURE                 │
+│                   POLIGRAM DOMAIN 6 ISOLATED DUAL ARCHITECTURE                 │
 └─────────────────────────────────────────────────────────────────────────────┘
 
        [ POLITICAL DOMAIN ]                              [ COMMERCIAL DOMAIN ]

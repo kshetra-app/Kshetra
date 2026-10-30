@@ -154,7 +154,7 @@ Domain 3 covers 6 critical jobs:
 
 ```
 +-------------------------------------------------------------------------+
-│                          PANIN MOBILE CLIENT                            │
+│                          POLIGRAM MOBILE CLIENT                            │
 │  (ReportIssueSheet / IssueCard / DisputeModal / CommunityGroupsScreen)  │
 +-------------------------------------------------------------------------+
                                      │

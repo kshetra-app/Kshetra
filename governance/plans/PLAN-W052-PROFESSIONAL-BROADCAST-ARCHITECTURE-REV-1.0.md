@@ -90,7 +90,7 @@ flowchart TD
         A2[Web Creator Studio] -->|WHIP RFC Draft| B
     end
 
-    subgraph PANIN Control Plane - Fastify API
+    subgraph POLIGRAM Control Plane - Fastify API
         C[Fastify Broadcast Management API] -->|Stream Auth & Tokens| B
         C -->|State Machine & Ephemeral Keys| D[(PostgreSQL Migration 074)]
         C -->|Live Polling & Q&A Service| D

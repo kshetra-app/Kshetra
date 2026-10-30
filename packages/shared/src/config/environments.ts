@@ -37,6 +37,7 @@ export const ENVIRONMENT_CONFIGS: Record<Environment, EnvironmentConfig> = {
     supabaseUrl: 'https://fkpigozcqnmcvofuksar.supabase.co',
     allowedOrigins: [
       'https://kshetra-api-staging.up.railway.app',
+      'https://staging.poligram.in',
       'https://staging.kshetra.in',
       'https://staging.panin.in',
       'http://localhost:8081',
@@ -51,6 +52,10 @@ export const ENVIRONMENT_CONFIGS: Record<Environment, EnvironmentConfig> = {
     apiBaseUrl: 'https://kshetra-api-production-9f06.up.railway.app',
     supabaseUrl: 'https://ehfafcnimmjusyvplbah.supabase.co',
     allowedOrigins: [
+      'https://poligram.in',
+      'https://www.poligram.in',
+      'https://poligram.app',
+      'https://www.poligram.app',
       'https://kshetra.in',
       'https://www.kshetra.in',
       'https://panin.in',

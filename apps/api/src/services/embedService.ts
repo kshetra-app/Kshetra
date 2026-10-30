@@ -5,16 +5,16 @@
  * Features:
  * - 7 Sandboxed, Responsive Embed Widgets: Constituency, Delimitation, Election, Candidate, Issue, Live, Short
  * - Universal PostMessage Auto-Resize Protocol (kshetra:resize) preventing iframe scrollbars
- * - Custom Web Component (<panin-widget>) Registration (DEC-189 Option B)
+ * - Custom Web Component (<poligram-widget> and legacy <panin-widget>) Registration (DEC-189 Option B)
  * - Statutory Section 127A RPA 1951 Disclaimers
  */
 
-import type { PaninEmbedWidgetType } from '@kshetra/shared';
+import type { PoligramEmbedWidgetType } from '@kshetra/shared';
 
 export class EmbedService {
   // --- 1. EMBED HTML GENERATORS ---
 
-  static renderWidgetHtml(type: PaninEmbedWidgetType, entityId: string): string {
+  static renderWidgetHtml(type: PoligramEmbedWidgetType, entityId: string): string {
     const safeId = this.escapeHtml(entityId);
 
     let title = '';
@@ -107,7 +107,7 @@ export class EmbedService {
         break;
 
       default:
-        title = `PANIN Widget: ${safeId}`;
+        title = `POLIGRAM Widget: ${safeId}`;
         bodyContent = `<p>Verified Civic Tech Information</p>`;
     }
 
@@ -132,11 +132,11 @@ export class EmbedService {
   <div class="widget-box" id="widget-container">
     <div class="widget-header">
       <div class="widget-title">${title}</div>
-      <div style="font-size: 0.7rem; background: #0284c7; padding: 2px 6px; border-radius: 4px;">PANIN</div>
+      <div style="font-size: 0.7rem; background: #0284c7; padding: 2px 6px; border-radius: 4px;">POLIGRAM</div>
     </div>
     ${bodyContent}
     <div class="attribution-pill">
-      Powered by PANIN Civic Tech &middot; RPA 1951 Sec 127A Disclosed
+      Powered by POLIGRAM Civic Tech &middot; RPA 1951 Sec 127A Disclosed
     </div>
   </div>
   <script>
@@ -157,11 +157,11 @@ export class EmbedService {
 </html>`;
   }
 
-  // --- 2. UNIVERSAL EMBED LOADER SCRIPT (/embed/panin-widgets.js) ---
+  // --- 2. UNIVERSAL EMBED LOADER SCRIPT (/embed/poligram-widgets.js) ---
 
   static getClientLoaderScript(): string {
     return `/**
- * PANIN Universal Embeds & Web Component Loader (JOB 064)
+ * POLIGRAM Universal Embeds & Web Component Loader (JOB 064)
  * Authority: DEC-188, DEC-189
  */
 (function() {
@@ -178,9 +178,9 @@ export class EmbedService {
     }
   });
 
-  // 2. Custom Web Component Registration: <panin-widget type="..." id="..."> (DEC-189 Option B)
-  if (typeof customElements !== 'undefined' && !customElements.get('panin-widget')) {
-    class PaninWidgetElement extends HTMLElement {
+  // 2. Custom Web Component Registration: <poligram-widget> and legacy <panin-widget> (DEC-189 Option B)
+  if (typeof customElements !== 'undefined') {
+    class PoligramWidgetElement extends HTMLElement {
       connectedCallback() {
         var type = this.getAttribute('type') || 'constituency';
         var id = this.getAttribute('id') || 'TS-AC-61';
@@ -200,7 +200,12 @@ export class EmbedService {
         this.appendChild(iframe);
       }
     }
-    customElements.define('panin-widget', PaninWidgetElement);
+    if (!customElements.get('poligram-widget')) {
+      customElements.define('poligram-widget', PoligramWidgetElement);
+    }
+    if (!customElements.get('panin-widget')) {
+      customElements.define('panin-widget', PoligramWidgetElement);
+    }
   }
 })();`;
   }

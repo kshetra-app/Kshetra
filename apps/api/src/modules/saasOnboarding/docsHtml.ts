@@ -11,7 +11,7 @@ export function renderDeveloperPortalHtml(): string {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PanIN Developer Portal | Institutional Political Data & Delimitation API</title>
+  <title>Poligram Developer Portal | Institutional Political Data & Delimitation API</title>
   <meta name="description" content="Authoritative B2B Political SaaS & Public/Partner Developer API for India. 63,045 certified entities, statutory electoral geography, historical candidacies, demographics, and delimitation simulations.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -223,7 +223,7 @@ export function renderDeveloperPortalHtml(): string {
   <header>
     <a href="/" class="logo-badge">
       <div class="badge-icon">P</div>
-      <div class="logo-text">PanIN <span style="font-weight:400; color:var(--text-muted);">Developers</span></div>
+      <div class="logo-text">POLIGRAM <span style="font-weight:400; color:var(--text-muted);">Developers</span></div>
     </a>
     <div class="nav-links">
       <a href="#quickstart" class="nav-link">Quickstart</a>
@@ -267,14 +267,14 @@ export function renderDeveloperPortalHtml(): string {
       <!-- QUICKSTART SECTION -->
       <section id="quickstart" style="margin-bottom: 4rem;">
         <h2 class="section-title">Developer Quickstart</h2>
-        <p class="section-desc">Authenticate machine-to-machine requests with your 256-bit cryptographic API key via header <code>x-api-key: panin_...</code>.</p>
+        <p class="section-desc">Authenticate machine-to-machine requests with your 256-bit cryptographic API key via header <code>x-api-key: poligram_...</code>.</p>
         
         <div class="grid-2">
           <div class="card">
             <h3 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 1rem;">1. Instant Onboarding via REST</h3>
             <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 1.5rem;">Register your organization programmatically to receive an active sandbox test key immediately.</p>
             <div class="console-box">
-<pre><code>curl -X POST https://api.kshetra.io/api/vsaas/v1/auth/signup \\
+<pre><code>curl -X POST https://api.poligram.in/api/vsaas/v1/auth/signup \\
   -H "Content-Type: application/json" \\
   -d '{
     "name": "Ananya Sharma",
@@ -289,8 +289,8 @@ export function renderDeveloperPortalHtml(): string {
             <h3 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 1rem;">2. Query Assembly Constituencies</h3>
             <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 1.5rem;">Pass your key to query statutory seats, candidates, affidavits, or demographics.</p>
             <div class="console-box">
-<pre><code>curl -X GET https://api.kshetra.io/api/vsaas/v1/geo/states/TG/constituencies \\
-  -H "x-api-key: panin_test_sk_YOUR_SECRET_KEY"</code></pre>
+<pre><code>curl -X GET https://api.poligram.in/api/vsaas/v1/geo/states/TG/constituencies \\
+  -H "x-api-key: poligram_test_sk_YOUR_SECRET_KEY"</code></pre>
             </div>
           </div>
         </div>
@@ -419,7 +419,7 @@ export function renderDeveloperPortalHtml(): string {
   </main>
 
   <footer>
-    <p>© 2026 PanIN Political Platform. Governed under Master Execution Framework Amendments v1.2–v1.6 & DEC-166.</p>
+    <p>© 2026 Poligram Political Platform. Governed under Master Execution Framework Amendments v1.2–v1.6 & DEC-166.</p>
     <p style="margin-top: 0.5rem; font-size: 0.8rem; color: #64748b;">Zero citizen personal data exposed. Certified statutory provenance from Election Commission of India and Delimitation Commission orders.</p>
   </footer>
 

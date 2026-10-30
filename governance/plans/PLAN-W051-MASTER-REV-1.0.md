@@ -1,4 +1,4 @@
-# PANIN / KSHETRA
+# POLIGRAM (formerly PANIN / Kshetra)
 # MASTER IMPLEMENTATION PLAN: MILESTONE W051 (REVISION 1.0)
 ## B2B Political SaaS: API Customer Acquisition, Self-Service Onboarding, Key Lifecycle, Commercial Billing & Developer Portal
 

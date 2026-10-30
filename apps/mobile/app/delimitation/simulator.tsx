@@ -278,7 +278,7 @@ export default function SimulatorScreen() {
             <View style={[styles.provenanceCard, { backgroundColor: colors.surface, borderColor: '#3B82F6' }]}>
               <View style={styles.provenanceHeader}>
                 <Ionicons name="information-circle" size={16} color="#3B82F6" />
-                <Text style={styles.provenanceBadge}>DATA STATUS: PANIN SCENARIO</Text>
+                <Text style={styles.provenanceBadge}>DATA STATUS: POLIGRAM SCENARIO</Text>
               </View>
               <Text style={[styles.provenanceText, { color: colors.textSecondary }]}>
                 State Assembly & Intra-State District Projection — Article 170 / applicable statutory framework.

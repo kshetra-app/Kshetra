@@ -4,7 +4,7 @@
  * Authority: Master Product Blueprint & PLAN-DOMAIN-1-FOUNDATIONAL-GEOGRAPHY-AND-DELIMITATION-REV-1.0
  *
  * Provides a mobile preview card and triggers native OS sharing (Share.share)
- * with verified public web URLs (poligram.in / panin.in) and DPDP Act 2023 zero-PII privacy.
+ * with verified public web URLs (poligram.in) and DPDP Act 2023 zero-PII privacy.
  */
 
 import React, { useState } from 'react';
@@ -27,7 +27,7 @@ import { useTheme } from '../lib/theme';
 
 export interface DelimitationShareCardProps {
   impact: CitizenImpact;
-  domain?: 'poligram.in' | 'panin.in';
+  domain?: 'poligram.in';
   onShareComplete?: (shareUrl: string) => void;
 }
 
@@ -47,7 +47,7 @@ export function DelimitationShareCard({
   const handleShare = async () => {
     try {
       setSharing(true);
-      const host = domain === 'panin.in' ? 'https://panin.in' : 'https://poligram.in';
+      const host = 'https://poligram.in';
       const shareId = `share_${(impact.stateCode || 'ts').toLowerCase()}_${impact.currentAcNo}_${impact.pinCode}`;
       const shareUrl = `${host}/share/delimitation/${shareId}`;
 

@@ -72,6 +72,10 @@ const envToLogger: Record<string, object | boolean> = {
  * is omitted from container environment variables.
  */
 const DEFAULT_ALLOWED_ORIGINS = [
+  'https://poligram.in',
+  'https://www.poligram.in',
+  'https://poligram.app',
+  'https://www.poligram.app',
   'https://kshetra.in',
   'https://www.kshetra.in',
   'https://panin.in',
@@ -295,7 +299,7 @@ export async function start() {
 
   try {
     await app.listen({ port, host });
-    app.log.info(`KSHETRA API running on http://${host}:${port}`);
+    app.log.info(`POLIGRAM API running on http://${host}:${port}`);
     // Prime the news cache and refresh it hourly.
     startNewsScheduler(app.log);
   } catch (err) {

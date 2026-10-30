@@ -201,7 +201,7 @@ const CANONICAL_PROPOSALS: DelimitationProposalRecord[] = [
   {
     id: '02010000-0000-0000-0000-000000000002',
     stateCode: 'TS',
-    title: 'PANIN Article 332 Deterministic Simulation: Census 2011 Pure Proportionality',
+    title: 'POLIGRAM Article 332 Deterministic Simulation: Census 2011 Pure Proportionality',
     description:
       'Deterministic mathematical apportionment simulation applying Hamilton / Largest Remainder algorithm to the Article 332 proportionality principle using Census 2011 PCA population figures.',
     currentSeats: 119,
@@ -223,7 +223,7 @@ const CANONICAL_PROPOSALS: DelimitationProposalRecord[] = [
       legalStatus: 'SCENARIO_PROPOSED_REGIME',
       isScenario: true,
       algorithm:
-        'PANIN deterministic Hamilton/Largest Remainder allocation applied to the Article 332 proportionality principle, ensuring exact seat conservation.',
+        'POLIGRAM deterministic Hamilton/Largest Remainder allocation applied to the Article 332 proportionality principle, ensuring exact seat conservation.',
       censusBasis: 'Census 2011 Primary Census Abstract (PCA)',
     },
     createdAt: '2026-09-30T00:00:00.000Z',
@@ -964,7 +964,7 @@ export class DelimitationQueryService {
    * - Current factual seat count
    * - Historical factual seat count
    * - Scenario output
-   * - PANIN computational safety ceiling (MAX_SAFE_REQUESTED_SEATS = 10000)
+   * - POLIGRAM computational safety ceiling (MAX_SAFE_REQUESTED_SEATS = 10000)
    */
   resolveLegalApplicability(
     queryOrEntityType: PoliticalEntityType | LegalApplicabilityQuery = 'STATE_LEGISLATIVE_ASSEMBLY',
@@ -994,12 +994,13 @@ export class DelimitationQueryService {
         regimeType,
         temporalValidity: { validFrom: asOfDate || new Date().toISOString(), isCurrent: false },
         provenance: {
-          sourceAuthority: 'PANIN Delimitation Simulation Engine (Scenario Research Mode)',
+          sourceAuthority: 'POLIGRAM Delimitation Simulation Engine (Scenario Research Mode)',
           citation:
             'Non-statutory exploratory scenario projection. Carries zero legal or constitutional force.',
-          evidenceReference: evidenceReference || 'PANIN-SIM-SCENARIO',
-          instrumentTitle: 'PANIN Scenario Simulation',
+          evidenceReference: evidenceReference || 'POLIGRAM-SIM-SCENARIO',
+          instrumentTitle: 'POLIGRAM Scenario Simulation',
         },
+        poligramComputationalSafetyCeiling: paninComputationalSafetyCeiling,
         paninComputationalSafetyCeiling,
         isStatutoryFact: false,
         isScenario: true,
@@ -1433,6 +1434,7 @@ export class DelimitationQueryService {
       censusTracking: {
         constitutionalTrigger: 'First census taken after 2026 (Articles 82 & 170 proviso)',
         currentExpectedCensusOperation: 'Census 2027',
+        poligramFutureAnticipatedRegime: futureRegime?.name || 'Post-Census 2027 Operation',
         paninFutureAnticipatedRegime: futureRegime?.name || 'Post-Census 2027 Operation',
         finalPopulationAvailable: false,
       },

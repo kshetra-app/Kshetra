@@ -628,7 +628,7 @@ describe('Milestone W051: API Customer Acquisition & Developer Portal Suite', ()
 
       expect(res.statusCode).toBe(200);
       expect(res.headers['content-type']).toContain('text/html');
-      expect(res.payload).toContain('PanIN Developer Portal');
+      expect(res.payload).toContain('Poligram Developer Portal');
       expect(res.payload).toContain('Interactive API Explorer');
       expect(res.payload).toContain('Commercial Subscription Plans');
     });
@@ -642,7 +642,7 @@ describe('Milestone W051: API Customer Acquisition & Developer Portal Suite', ()
       expect(res.statusCode).toBe(200);
       const json = JSON.parse(res.payload);
       expect(json.openapi).toBe('3.1.0');
-      expect(json.info.title).toContain('PanIN B2B Political SaaS');
+      expect(json.info.title).toContain('Poligram B2B Political SaaS');
       expect(json.paths['/api/vsaas/v1/geo/states']).toBeDefined();
     });
 
@@ -654,7 +654,7 @@ describe('Milestone W051: API Customer Acquisition & Developer Portal Suite', ()
 
       expect(res.statusCode).toBe(200);
       expect(res.payload).toContain('openapi: 3.1.0');
-      expect(res.payload).toContain('PanIN B2B Political SaaS');
+      expect(res.payload).toContain('Poligram B2B Political SaaS');
     });
   });
 

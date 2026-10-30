@@ -1171,7 +1171,7 @@ export async function civicRoutes(app: FastifyInstance) {
               id: `hl_auto_${id}`,
               title: `${issueData.constituency_id || issueData.state_code}: ${issueData.title} — 500+ citizens demand immediate action`,
               summary: issueData.description || issueData.title,
-              source_name: 'Kshetra / PanIN Citizen Action',
+              source_name: 'Poligram Citizen Action',
               source_url: `https://poligram.in/issues/${id}`,
               category: issueData.category,
               state_code: issueData.state_code,

@@ -71,11 +71,16 @@ export async function dispatchWebhook(params: DispatchParams): Promise<DispatchR
   const requestHeaders: Record<string, string> = {
     'Content-Type': 'application/json; charset=utf-8',
     'Content-Length': String(bodyBuffer.length),
-    'User-Agent': 'PanIN-Webhook-Dispatcher/1.0 (+https://kshetra.app)',
+    'User-Agent': 'Poligram-Webhook-Dispatcher/1.0 (+https://poligram.in)',
+    'X-Poligram-Signature': signatureHeader,
     'X-PanIN-Signature': signatureHeader,
+    'X-Poligram-Timestamp': String(timestamp),
     'X-PanIN-Timestamp': String(timestamp),
+    'X-Poligram-Event-ID': params.eventId,
     'X-PanIN-Event-ID': params.eventId,
+    'X-Poligram-Delivery-ID': params.deliveryId,
     'X-PanIN-Delivery-ID': params.deliveryId,
+    'X-Poligram-Payload-SHA256': payloadSha256,
     'X-PanIN-Payload-SHA256': payloadSha256,
   };
 

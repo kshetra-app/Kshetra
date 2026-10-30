@@ -26,7 +26,7 @@
  * 4. Delimitation Regimes & Governed Scenarios (/api/vsaas/v1/delim/...)
  *    - GET /api/vsaas/v1/delim/regimes — Gazette orders & statutory timelines (1976, 2008)
  *    - GET /api/vsaas/v1/delim/projections — Article 170 / Census 2011 seat distributions
- *    - GET /api/vsaas/v1/delim/simulate/:stateCode — Governed simulation (PANIN_SCENARIO)
+ *    - GET /api/vsaas/v1/delim/simulate/:stateCode — Governed simulation (POLIGRAM_SCENARIO)
  *
  * Security & Governance Invariants:
  * - Executes strictly behind accepted G3 saasAuthPlugin (preHandler).
@@ -931,10 +931,10 @@ export async function saasV1Routes(app: FastifyInstance): Promise<void> {
         return sendSaasSuccess(reply, request, {
           ...projections,
           provenance: {
-            authorityLayer: 'PANIN_SCENARIO',
+            authorityLayer: 'POLIGRAM_SCENARIO',
             computationalType: 'ACADEMIC_SIMULATION',
             officialDelimitationOrder: false,
-            governingInstrument: 'PANIN Algorithmic Projection Engine (Article 170 Framework)',
+            governingInstrument: 'POLIGRAM Algorithmic Projection Engine (Article 170 Framework)',
             constitutionalBasis: 'Article 170(1)',
             legalStatus: 'SCENARIO_PROPOSED_REGIME',
             sourceReference: 'Census 2011 Primary Census Abstract (RGI)',
@@ -960,7 +960,7 @@ export async function saasV1Routes(app: FastifyInstance): Promise<void> {
   /**
    * GET /api/vsaas/v1/delim/simulate/:stateCode
    * Governed boundary redistribution simulation (Hare-Niemeyer / Hamilton method).
-   * Invariant: Returns server-owned PANIN_SCENARIO metadata and statutory disclaimers.
+   * Invariant: Returns server-owned POLIGRAM_SCENARIO metadata and statutory disclaimers.
    */
   app.get<{
     Params: { stateCode: string };
@@ -1010,14 +1010,14 @@ export async function saasV1Routes(app: FastifyInstance): Promise<void> {
 
         // Enforce strict server-owned provenance block per Section 7 of PLAN-W021-MASTER-REV-1.0
         const serverOwnedProvenance = {
-          authorityLayer: 'PANIN_SCENARIO',
+          authorityLayer: 'POLIGRAM_SCENARIO',
           computationalType: 'ACADEMIC_SIMULATION',
           officialDelimitationOrder: false,
-          governingInstrument: 'PANIN Algorithmic Simulation (Article 170 Framework)',
+          governingInstrument: 'POLIGRAM Algorithmic Simulation (Article 170 Framework)',
           constitutionalBasis: 'Article 170(1)',
           legalStatus: 'SCENARIO_PROPOSED_REGIME',
           sourceReference: 'Census 2011 Primary Census Abstract (RGI)',
-          effectiveVersion: '2026-PANIN-SIM-V1',
+          effectiveVersion: '2026-POLIGRAM-SIM-V1',
           generatedAt: new Date().toISOString(),
           statutoryDisclaimer:
             'This projection is a research simulation based on Census 2011 data and mathematical modeling. It does NOT represent an official order, draft proposal, or gazette notification of the Delimitation Commission of India or the Election Commission of India.',

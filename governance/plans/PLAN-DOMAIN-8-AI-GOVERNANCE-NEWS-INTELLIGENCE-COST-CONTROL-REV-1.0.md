@@ -22,13 +22,13 @@
 
 ## 2. Problem Statement
 
-PANIN has established core sovereign geography, mobile optimization, civic engagement, political aspirant workflows, media broadcasting, monetization, and public developer discovery across Domains 1 through 7.
+POLIGRAM has established core sovereign geography, mobile optimization, civic engagement, political aspirant workflows, media broadcasting, monetization, and public developer discovery across Domains 1 through 7.
 
 However, as an election-grade and civic data infrastructure across 4,123 Assembly Constituencies, PANIN requires a bulletproof, non-partisan, hallucination-resistant, and economically governed AI intelligence layer:
 1. **AI Provider Abstraction (JOB 067):** The existing `apps/api/src/services/ai.ts` directly instantiates OpenAI / Gemini without a clean provider interface abstraction. If API keys are missing or invalid in offline/isolated environments, startup behavior is brittle and lacks automated fallback to local deterministic heuristics.
 2. **AI News Summarization & Deduplication (JOB 068):** When processing political and legislative news feeds (PIB, ECI, regional news), redundant summaries are generated for the same source content. The platform lacks content-addressed SHA-256 caching and fine-grained per-summary token cost accounting.
 3. **AI Classification Fallback (JOB 069):** Civic issue categorization (roads, sanitation, water, electricity) and sentiment tagging must not become single-point-of-failure dependencies on external LLMs. The platform requires a strict "Deterministic Heuristic First, AI Fallback Only When Ambiguous" architecture that operates seamlessly when AI is offline.
-4. **Ask PANIN Grounded RAG (JOB 070):** Political queries regarding MLAs, MPs, delimitation boundaries, and voting statistics cannot be answered by generic ungrounded LLMs that hallucinate criminal records or speculate on corruption. The system requires strict Retrieval-Augmented Generation (RAG) restricted exclusively to verified database tables, with prompt injection deflection and official statutory citation links.
+4. **Ask Poligram Grounded RAG (JOB 070):** Political queries regarding MLAs, MPs, delimitation boundaries, and voting statistics cannot be answered by generic ungrounded LLMs that hallucinate criminal records or speculate on corruption. The system requires strict Retrieval-Augmented Generation (RAG) restricted exclusively to verified database tables, with prompt injection deflection and official statutory citation links.
 5. **AI Cost Control & Circuit Breakers (JOB 071):** Without real-time token budgeting, malicious or runaway queries can exhaust cloud budgets. The platform requires per-tenant/per-user daily token ceilings, cost ledger tracking (USD & INR), automatic circuit breaking, and cache hit metrics.
 
 ---
@@ -43,7 +43,7 @@ A comprehensive audit of the codebase reveals:
    - *Gaps:* Lacks formal `AIProvider` interface. Lacks circuit breaker. Lacks deterministic offline provider. Lacks token ledger and cost attribution.
 2. **Existing AI Routes (`apps/api/src/routes/ai.ts`):**
    - Exposes `/api/ai/chat`, `/api/ai/analyze-constituency`, `/api/ai/analyze-trends`.
-   - *Gaps:* Lacks news summarization with caching, lacks Ask Panin structured RAG pipeline, lacks cost control endpoints, and lacks tenant quota validation.
+   - *Gaps:* Lacks news summarization with caching, lacks Ask Poligram structured RAG pipeline, lacks cost control endpoints, and lacks tenant quota validation.
 3. **Civic Classification State (`apps/api/src/services/civicService.ts`):**
    - Contains deterministic category mapping for civic issues, but lacks formal fallback orchestration between heuristic rules and LLM classifiers.
 4. **Database Schema State:**
@@ -80,7 +80,7 @@ Domain 8 establishes a resilient, grounded, and cost-controlled AI Subsystem:
 |         |                       |                                |                               |
 |         v                       v                                v                               |
 |  +--------------------+  +--------------------+           +--------------------+                 |
-|  | Ask PANIN (RAG)    |  | News Summarizer    |           | Civic Classifier   |                 |
+|  | Ask Poligram (RAG)    |  | News Summarizer    |           | Civic Classifier   |                 |
 |  | (JOB 070)          |  | (JOB 068)          |           | (JOB 069)          |                 |
 |  | - Question parsing |  | - SHA-256 dedupe   |           | - Deterministic    |                 |
 |  | - DB retrieval:    |  | - Cache lookup     |           |   Keyword / Regex  |                 |
@@ -129,7 +129,7 @@ Domain 8 establishes a resilient, grounded, and cost-controlled AI Subsystem:
 2. **Rule IV-001 Non-Self-Acceptance:** Adjudication is strictly tied to automated test runs passing against origin master.
 3. **Zero Startup Failure with AI Disabled:** Missing `GEMINI_API_KEY` or `OPENAI_API_KEY` must NEVER throw unhandled exceptions or crash application boot.
 4. **Deterministic Heuristic Priority:** All civic classifications must execute the deterministic heuristic first; AI fallback is only triggered if confidence is $<0.85$.
-5. **Strict Grounded Anti-Hallucination:** Ask PANIN responses must derive exclusively from verified database context; unverified claims or criminal allegations outside official ECI affidavits must be rejected.
+5. **Strict Grounded Anti-Hallucination:** Ask Poligram responses must derive exclusively from verified database context; unverified claims or criminal allegations outside official ECI affidavits must be rejected.
 6. **Hard Cost Ceilings:** If tenant token ceiling is breached, the circuit breaker must trip immediately and reject or gracefully downgrade requests with HTTP 429 (`AI_BUDGET_EXCEEDED`).
 
 ---
@@ -172,7 +172,7 @@ The scope covers 5 sequential, interconnected jobs:
   - Step 4: If AI is disabled or fails, falls back to deterministic best-guess without throwing errors.
 - **Evidence:** Test verifies that when AI is disabled, classification succeeds with 100% test pass rate across standard civic issue samples.
 
-### JOB 070: Ask PANIN (Grounded Civic RAG)
+### JOB 070: Ask Poligram (Grounded Civic RAG)
 - **Multi-Stage Grounded Retrieval Pipeline:**
   1. *Query Analyzer:* Detects intent, target State, District, Assembly Constituency (AC No. / Name), representative, election year, or civic issue ID.
   2. *Structured Knowledge Retrieval:* Fetches verified records from `canonical_constituencies`, `elected_tenures`, `telangana-demographics`, `election_results`, and `civic_issues`.
@@ -196,7 +196,7 @@ The scope covers 5 sequential, interconnected jobs:
 
 ## 8. Explicit Out-of-Scope Boundaries
 
-1. Training custom LLM foundation models from scratch (Panin uses standard commercial models behind interfaces).
+1. Training custom LLM foundation models from scratch (Poligram uses standard commercial models behind interfaces).
 2. Image/video generative AI synthesis (Domain 8 focuses on text summarization, civic classification, grounded RAG, and cost control).
 3. Modifying underlying electoral boundary data (delimitations and gazette records remain immutable).
 
@@ -212,7 +212,7 @@ The scope covers 5 sequential, interconnected jobs:
 
 ### Stage 2: Shared TypeScript Contracts (`packages/shared/src/contracts/ai.ts`)
 1. Define `AIProvider`, `AIGenerationOptions`, `AIGenerationResult`, `AIChatOptions`, `AIChatResult`, `AIClassificationResult`, `AISummaryResult`.
-2. Define `AskPaninQueryRequest`, `AskPaninQueryResponse`, `PaninGroundedCitation`.
+2. Define `AskPoligramQueryRequest`, `AskPoligramQueryResponse`, `PoligramGroundedCitation`.
 3. Define `AINewsSummaryRequest`, `AINewsSummaryResponse`.
 4. Define `AICostReportDTO`, `AITenantBudgetDTO`.
 5. Re-export in `packages/shared/src/contracts/index.ts` and compile `@kshetra/shared`.
@@ -229,7 +229,7 @@ The scope covers 5 sequential, interconnected jobs:
    - Deterministic keyword & regex engine (Step 1).
    - AI fallback invocation (Step 2).
    - Offline fallback guarantee (Step 3).
-4. `apps/api/src/services/askPaninService.ts`:
+4. `apps/api/src/services/askPoligramService.ts`:
    - Structured RAG retrieval across verified geography, MLA, and election tables.
    - Anti-hallucination prompt generator with verified citation links.
 5. `apps/api/src/services/aiCostControlService.ts`:
@@ -237,7 +237,7 @@ The scope covers 5 sequential, interconnected jobs:
 
 ### Stage 4: API Routes & Fastify Wiring
 1. `apps/api/src/routes/aiSubsystem.ts`:
-   - `POST /api/v1/ai/ask-panin` (JOB 070)
+   - `POST /api/v1/ai/ask-poligram` (JOB 070)
    - `POST /api/v1/ai/summarize-news` (JOB 068)
    - `POST /api/v1/ai/classify-civic` (JOB 069)
    - `GET  /api/v1/ai/cost-report` (JOB 071)
@@ -261,7 +261,7 @@ A dedicated automated test suite (`tests/domain8-ai-governance-and-cost-control.
 - **JOB 067 Tests:** Verify application boots cleanly and provider orchestrator functions with AI disabled or keys missing; verify seamless fallback to deterministic heuristic.
 - **JOB 068 Tests:** Ingest news article, generate summary, assert cost logging in ledger. Submit identical article second time, assert `cache_hit = true` and 0 additional LLM tokens billed.
 - **JOB 069 Tests:** Classify standard civic grievances; verify deterministic classifier handles routine issues without invoking AI; verify ambiguous issue triggers AI fallback; verify that when AI is offline, deterministic fallback still succeeds 100%.
-- **JOB 070 Tests:** Ask Panin query regarding Jubilee Hills (TS-AC-61); verify response cites verified MLA and electorate data; verify adversarial prompt injection is safely deflected.
+- **JOB 070 Tests:** Ask Poligram query regarding Jubilee Hills (TS-AC-61); verify response cites verified MLA and electorate data; verify adversarial prompt injection is safely deflected.
 - **JOB 071 Tests:** Set daily token budget; consume tokens until ceiling breached; verify circuit breaker trips fail-closed with HTTP 429; verify executive cost report reflects accurate token and INR tallies.
 
 ---
@@ -335,7 +335,7 @@ Under Rule IV-001 Non-Self-Acceptance:
 1. **JOB 067:** Application boots cleanly and responds to healthchecks with all AI keys missing or disabled.
 2. **JOB 068:** News summarization produces structured summaries with SHA-256 caching; repeated identical article query yields cache hit with 0 cloud tokens billed.
 3. **JOB 069:** Deterministic civic classifier handles common issues without AI; ambiguous issue triggers AI fallback; offline mode executes successfully without throwing.
-4. **JOB 070:** Ask Panin answers questions grounded strictly in verified database context with official citations, safely deflecting adversarial prompt injection.
+4. **JOB 070:** Ask Poligram answers questions grounded strictly in verified database context with official citations, safely deflecting adversarial prompt injection.
 5. **JOB 071:** AI cost ledger accurately records token spend (USD/INR); daily ceiling breach trips circuit breaker fail-closed; cost report accurately reconstructs usage.
 6. **Governance Integrity:** Monorepo typecheck 100% clean, all unit and regression tests pass, and governance consistency checks pass 100%.
 
@@ -347,7 +347,7 @@ Under Rule IV-001 Non-Self-Acceptance:
 - **Pre-Implementation Plan:** `governance/plans/PLAN-DOMAIN-8-AI-GOVERNANCE-NEWS-INTELLIGENCE-COST-CONTROL-REV-1.0.md`
 - **Database Migration:** `supabase/migrations/081_domain8_ai_governance_news_intelligence_and_cost_control.sql`
 - **Shared Contracts:** `packages/shared/src/contracts/ai.ts`
-- **Backend Services:** `apps/api/src/services/aiProvider.ts`, `aiNewsSummaryService.ts`, `aiCivicClassifier.ts`, `askPaninService.ts`, `aiCostControlService.ts`
+- **Backend Services:** `apps/api/src/services/aiProvider.ts`, `aiNewsSummaryService.ts`, `aiCivicClassifier.ts`, `askPoligramService.ts`, `aiCostControlService.ts`
 - **Backend Routes:** `apps/api/src/routes/aiSubsystem.ts`
 - **Test Suite:** `tests/domain8-ai-governance-and-cost-control.test.ts`
 - **Evidence Dossier:** `reports/domain8_ai_governance_and_cost_control_report.json` and `.md`

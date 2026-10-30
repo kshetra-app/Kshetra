@@ -12,7 +12,7 @@ export interface CreateShareCardRequest {
   impactType?: string;
   headline?: string;
   summary?: string;
-  domain?: 'poligram.in' | 'panin.in' | string;
+  domain?: 'poligram.in' | string;
 }
 
 export interface ShareCardSnapshotDTO {

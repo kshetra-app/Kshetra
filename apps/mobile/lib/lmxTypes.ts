@@ -1,5 +1,5 @@
 /**
- * Kshetra Live Media Exchange (LMX) — Types
+ * Poligram Live Media Exchange (LMX) — Types
  *
  * The Live Event Object is the source of truth for every live session. Video is
  * ONE field; routing, dashboards, department alerts, archive and audit all read

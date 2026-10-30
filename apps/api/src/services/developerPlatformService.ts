@@ -509,23 +509,23 @@ export class DeveloperPlatformService {
     return {
       openapi: '3.1.0',
       info: {
-        title: 'PANIN Sovereign Civic & Delimitation Developer API',
+        title: 'Poligram Sovereign Civic & Delimitation Developer API',
         version: '1.0.0',
         description:
-          'Official Developer API for PANIN (formerly Kshetra) providing programmatic access to sovereign Indian electoral geography, 2026 delimitation scenario models, representative profiles, and live civic statistics across 4,123 Assembly Constituencies.',
+          'Official Developer API for Poligram providing programmatic access to sovereign Indian electoral geography, 2026 delimitation scenario models, representative profiles, and live civic statistics across 4,123 Assembly Constituencies.',
         contact: {
-          name: 'PANIN Developer Support',
-          email: 'developers@kshetra.in',
-          url: 'https://kshetra.in/developers',
+          name: 'Poligram Developer Support',
+          email: 'developers@poligram.in',
+          url: 'https://poligram.in/developers',
         },
         license: {
           name: 'Proprietary Commercial & Open Civic License',
-          url: 'https://kshetra.in/terms/api',
+          url: 'https://poligram.in/terms/api',
         },
       },
       servers: [
         {
-          url: 'https://api.kshetra.in',
+          url: 'https://api.poligram.in',
           description: 'Production Sovereign API Gateway',
         },
         {

@@ -5,7 +5,7 @@
  * Specification: PLAN-W020-G5-REV-1.2.md
  *
  * Implements the core domain logic, mathematical models, statutory timelines,
- * and analytical queries for PANIN's delimitation subsystem.
+ * and analytical queries for POLIGRAM's delimitation subsystem.
  *
  * Key Design Invariants:
  * 1. MAX_SAFE_REQUESTED_SEATS = 10000: Computational resource safety limit only.
@@ -13,7 +13,7 @@
  * 2. Orthogonal Status Dimensions: OUTPUT_CLASSIFICATION vs W012 DATA_STATUS with
  *    separate PROVENANCE and EVIDENCE fields.
  * 3. Article 332 SC/ST Reservation: Strict separation between constitutional proportionality
- *    (RES-LEGAL-01) and PANIN's Hamilton largest-remainder computational sequence
+ *    (RES-LEGAL-01) and POLIGRAM's Hamilton largest-remainder computational sequence
  *    (RES-ALLOC-01 through RES-UNKNOWN-01).
  * 4. Generic Engine Architecture + Governed Jurisdiction Data (Telangana scope).
  * 5. Byte-Exact Legal Chain: 2008 Order -> APRA 2014 -> G.S.R. 311(E) (23 April 2015) ->
@@ -1650,7 +1650,7 @@ export class DelimitationService {
       isScenario,
       scenarioId,
       scenarioName,
-      scenarioAuthor: 'PANIN Delimitation Research Engine',
+      scenarioAuthor: 'POLIGRAM Delimitation Research Engine',
       scenarioDescription,
       statutoryBasisDisclaimer:
         'This calculation is an analytical research simulation and does NOT constitute an official gazetted order of the Delimitation Commission of India.',
@@ -1667,7 +1667,7 @@ export class DelimitationService {
    * ARTICLE 332 SC/ST RESERVATION ALGORITHM (Directives G5-05, G5-18)
    *
    * Formally separates constitutional proportionality (RES-LEGAL-01) from
-   * PANIN's Hamilton / Largest Remainder computational implementation (RES-ALLOC-01).
+   * POLIGRAM's Hamilton / Largest Remainder computational implementation (RES-ALLOC-01).
    *
    * 8-Step Mathematical Sequence:
    * 1. Quota Calculation (RES-ALLOC-01): Q_c = S * (Pop_c / Pop_Total)
@@ -1909,10 +1909,10 @@ export class DelimitationService {
       outputClassification: 'DETERMINISTIC_DERIVED',
       dataStatus: 'DERIVED',
       seatProvenance: {
-        authorityLayer: 'PANIN_SCENARIO',
+        authorityLayer: 'POLIGRAM_SCENARIO',
         computationalType: 'ACADEMIC_SIMULATION',
         officialDelimitationOrder: false,
-        governingInstrument: 'PANIN Multi-State Legislative Assembly Apportionment Simulator',
+        governingInstrument: 'POLIGRAM Multi-State Legislative Assembly Apportionment Simulator',
         constitutionalBasis:
           'Article 170(1) & Article 81 generic population quotient model (State Assemblies)',
         enactmentStatusNotes:
@@ -1969,10 +1969,10 @@ export class DelimitationService {
       projections,
       provenance,
       seatProvenance: {
-        authorityLayer: 'PANIN_SCENARIO',
+        authorityLayer: 'POLIGRAM_SCENARIO',
         computationalType: 'ACADEMIC_SIMULATION',
         officialDelimitationOrder: false,
-        governingInstrument: 'PANIN Multi-State Legislative Assembly Apportionment Simulator',
+        governingInstrument: 'POLIGRAM Multi-State Legislative Assembly Apportionment Simulator',
         constitutionalBasis:
           'Article 170(1) & Article 81 generic population quotient model (State Assemblies)',
         enactmentStatusNotes:
@@ -2002,10 +2002,10 @@ export class DelimitationService {
       projection,
       provenance,
       seatProvenance: {
-        authorityLayer: 'PANIN_SCENARIO',
+        authorityLayer: 'POLIGRAM_SCENARIO',
         computationalType: 'ACADEMIC_SIMULATION',
         officialDelimitationOrder: false,
-        governingInstrument: 'PANIN Single State Assembly Apportionment Simulator',
+        governingInstrument: 'POLIGRAM Single State Assembly Apportionment Simulator',
         constitutionalBasis:
           'Article 170(1) & Article 81 generic population quotient model (State Assemblies)',
         enactmentStatusNotes:
@@ -2296,6 +2296,7 @@ export class DelimitationService {
       censusTracking: {
         constitutionalTrigger: 'First census taken after 2026 (Articles 82 & 170 proviso)',
         currentExpectedCensusOperation: 'Census 2027',
+        poligramFutureAnticipatedRegime: 'Post-Census 2027 Operation',
         paninFutureAnticipatedRegime: 'Post-Census 2027 Operation',
         finalPopulationAvailable: false,
       },
@@ -2694,7 +2695,7 @@ export class DelimitationService {
       districtBreakdown,
       methodology: {
         formula:
-          'Hare-Niemeyer Largest Remainder method with PANIN deterministic Hamilton allocation applied to the Article 332 proportionality principle',
+          'Hare-Niemeyer Largest Remainder method with POLIGRAM deterministic Hamilton allocation applied to the Article 332 proportionality principle',
         idealPopPerSeat,
         maxDeviationAllowedPercent: 10,
         withinDeviationCount: districtBreakdown.filter((d) => Math.abs(d.deviationPercent) <= 10)
@@ -2746,7 +2747,7 @@ export class DelimitationService {
       'CURRENT_LEGAL_REGIME',
       '1.2.0',
       [
-        'PANIN deterministic Hamilton/Largest Remainder allocation applied to the Article 332 proportionality principle (Generic Algorithm Multi-State Simulation)',
+        'POLIGRAM deterministic Hamilton/Largest Remainder allocation applied to the Article 332 proportionality principle (Generic Algorithm Multi-State Simulation)',
         'Authoritative governed delimitation scope in W020 is strictly bounded to the State of Telangana',
       ],
     );
@@ -2793,7 +2794,7 @@ export class DelimitationService {
       dataStatus: 'OFFICIAL',
     };
 
-    // 2. PANIN Census 2011 Mathematical Derivation (Hamilton Largest Remainder sequence applied to Census 2011)
+    // 2. POLIGRAM Census 2011 Mathematical Derivation (Hamilton Largest Remainder sequence applied to Census 2011)
     const qSC = statutory.total * (state.scPopulation / state.totalPopulation);
     const qST = statutory.total * (state.stPopulation / state.totalPopulation);
     const derivationQuota = this.allocateArticle332(
@@ -2820,11 +2821,11 @@ export class DelimitationService {
       surplusSeatsDistributed: surplusDistributed,
       censusBasis: 'Census 2011 (Demographic totals from Registrar General & Census Commissioner)',
       methodology:
-        'PANIN deterministic Hamilton/Largest Remainder allocation applied to the Article 332 proportionality principle on Census 2011 demographics',
+        'POLIGRAM deterministic Hamilton/Largest Remainder allocation applied to the Article 332 proportionality principle on Census 2011 demographics',
       outputClassification: 'DETERMINISTIC_DERIVED',
       dataStatus: 'DERIVED',
       disclaimer:
-        'This value is a PANIN academic mathematical derivation applying Article 332 proportionality principle to Census 2011 demographics. It does NOT represent the gazetted current statutory reservation baseline.',
+        'This value is a POLIGRAM academic mathematical derivation applying Article 332 proportionality principle to Census 2011 demographics. It does NOT represent the gazetted current statutory reservation baseline.',
     };
 
     const provenance = this.buildProvenance(
@@ -3091,7 +3092,7 @@ export class DelimitationService {
         hareNiemeyer:
           'Seats allocated by base floor(quota), surplus seats distributed in descending order of fractional remainders.',
         article332Algorithm:
-          'PANIN deterministic Hamilton/Largest Remainder allocation applied to the Article 332 proportionality principle, ensuring exact seat conservation.',
+          'POLIGRAM deterministic Hamilton/Largest Remainder allocation applied to the Article 332 proportionality principle, ensuring exact seat conservation.',
       },
       provenance,
     };

@@ -21,7 +21,7 @@ export class SdfService {
           status: 'MONITORED',
           score: 42, // Scale 0-100 (Below 75 SDF Threshold)
           rationale:
-            'PanIN maintains strict data minimization: citizen accounts require only mobile number and display name. No Aadhaar biometric storage, health data, or fine-grained financial portfolio tracking. Low volume of sensitive personal data.',
+            'Poligram maintains strict data minimization: citizen accounts require only mobile number and display name. No Aadhaar biometric storage, health data, or fine-grained financial portfolio tracking. Low volume of sensitive personal data.',
         },
         riskToHarmDataPrincipals: {
           status: 'LOW_TO_MEDIUM',
@@ -33,7 +33,7 @@ export class SdfService {
           status: 'HIGH_GOVERNANCE_CONTROLLED',
           score: 80,
           rationale:
-            'Because PanIN delivers statutory electoral geography and candidate information, its integrity impacts electoral transparency. Mitigated by statutory provenance anchors, zero synthetic independent entities, and immutable ECI gazette records.',
+            'Because Poligram delivers statutory electoral geography and candidate information, its integrity impacts electoral transparency. Mitigated by statutory provenance anchors, zero synthetic independent entities, and immutable ECI gazette records.',
         },
         publicOrderAndNationalSecurityImplications: {
           status: 'LOW',

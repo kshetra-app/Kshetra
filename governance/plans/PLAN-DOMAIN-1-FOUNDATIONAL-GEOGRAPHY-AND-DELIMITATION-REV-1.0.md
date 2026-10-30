@@ -74,7 +74,7 @@ Pursuant to the CTO Reviewer observation and the Master Product Blueprint, Domai
 
 ### 3.2 Root-Cause Interpretation
 - Historical development prioritized horizontal milestone completion (such as W021.5 national candidate boundaries and W022 B2B SaaS webhooks) while leaving lower-tier sub-constituency linkages (W013), PostGIS runtime point-in-polygon (W016), and consumer delimitation share loops (W022) partially realized or unverified.
-- Reconciling Domain 1 bridges the foundational geography gap to make Kshetra/PanIN a gold-standard, nationwide platform from polling booth to parliament.
+- Reconciling Domain 1 bridges the foundational geography gap to make Poligram (formerly PANIN / Kshetra) a gold-standard, nationwide platform from polling booth to parliament.
 
 ### 3.3 Dependency & Blocking Analysis
 - **JOB 012** is foundational and unblocks formal data governance auditability for all subsequent entities.
@@ -131,7 +131,7 @@ Pursuant to the CTO Reviewer observation and the Master Product Blueprint, Domai
     - `GET /api/v1/delimitation/share/:shareId`: Returns structured share card data.
     - `GET /share/delimitation/:shareId`: Fastify HTML route rendering rich SSR HTML with standard Open Graph (`og:title`, `og:description`, `og:image`, `og:url`, `twitter:card`) tags for social card embedding. Supported domains: `https://poligram.in`, `https://panin.in`.
   - Mobile Component in `apps/mobile/components/DelimitationShareCard.tsx` and integration into `apps/mobile/app/delimitation/my-impact.tsx`:
-    - High-contrast visual card with before/after constituency names, badges, reservation tag, and PanIN watermark.
+    - High-contrast visual card with before/after constituency names, badges, reservation tag, and Poligram watermark.
     - One-tap "Share Impact" button invoking React Native `Share.share` with deep link `https://poligram.in/share/delimitation/{shareId}` or `https://panin.in/share/delimitation/{shareId}`.
 
 ---

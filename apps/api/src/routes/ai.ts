@@ -1,5 +1,5 @@
 /**
- * POLIGRAM / KSHETRA PLATFORM
+ * POLIGRAM PLATFORM
  * AI Subsystem Routes (Domain 8: JOB 067–071)
  *
  * Authority: Master Product Blueprint, Amendment v1.2, Amendment v1.5-A & DEC-192

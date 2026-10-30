@@ -22,7 +22,7 @@
 
 ## 2. Problem Statement
 
-PANIN has established core sovereign geography, mobile performance optimization, civic issue resolution, leadership academy, media broadcasting, and political advertising/monetization across Domains 1 through 6. 
+POLIGRAM has established core sovereign geography, mobile performance optimization, civic issue resolution, leadership academy, media broadcasting, and political advertising/monetization across Domains 1 through 6. 
 
 However, to transition from an internal application into a nationwide civic data infrastructure, PANIN requires a public distribution, developer ecosystem, and data intelligence layer:
 1. **Developer Platform (JOB 062):** External civic tech developers, media houses, research institutes, and political consulting firms lack a self-serve developer portal with organization management, cryptographic API key issuance (`pk_live_...`, `pk_test_...`), tiered quota enforcement, usage telemetry, interactive OpenAPI 3.1 documentation, and subscription billing.
@@ -45,7 +45,7 @@ A comprehensive audit of the current repository reveals:
    - Fastify currently hosts API routes and one public SSR route: `GET /share/delimitation/:shareId` (`apps/api/src/routes/delimitationShare.ts`).
    - *Gaps for JOB 063:* No canonical public SSR pages for states (`/public/states/:stateCode`), districts (`/public/districts/:districtId`), constituencies (`/public/constituency/:acId`), representatives (`/public/representatives/:repId`), elections (`/public/elections/:electionId`), or delimitation (`/public/delimitation/:acId`). No XML sitemap generators (`/sitemap.xml`).
 3. **Media Embeds & Widgets:**
-   - Delimitation share cards exist, but there are no sandboxed, responsive iframe endpoints or universal JavaScript loader script for external newsrooms (`/embed/panin-widgets.js`).
+   - Delimitation share cards exist, but there are no sandboxed, responsive iframe endpoints or universal JavaScript loader script for external newsrooms (`/embed/poligram-widgets.js`).
    - *Gaps for JOB 064:* Missing all 7 required widget endpoints: constituency, delimitation diff, election, candidate, civic issue, live stream, and Short.
 4. **Analytics & Metrics:**
    - `apps/api/src/routes/analytics.ts` has a legacy `client_sessions` endpoint.
@@ -171,7 +171,7 @@ The scope covers 5 sequential, interconnected jobs:
   5. `GET /embed/issue/:issueId`: Civic issue grievance card with resolution timeline status and citizen support tally.
   6. `GET /embed/live/:channelId`: Video/HLS broadcast embed with live viewer counter.
   7. `GET /embed/short/:shortId`: Vertical video player embed with transcript preview.
-- **Universal JavaScript Loader Script (`/embed/panin-widgets.js`):**
+- **Universal JavaScript Loader Script (`/embed/poligram-widgets.js`):**
   - Seamless responsive container fitting.
   - Bidirectional `window.postMessage` auto-resizing protocol (`kshetra:resize`) preventing scrollbars.
   - Permissive framing headers (`X-Frame-Options: ALLOWALL`, CSP `frame-ancestors *`).
@@ -246,7 +246,7 @@ The scope covers 5 sequential, interconnected jobs:
 ### Stage 4: API Routes & Fastify Wiring
 1. `apps/api/src/routes/developerPlatform.ts`: Expose developer portal, API keys, usage, and OpenAPI docs.
 2. `apps/api/src/routes/publicWeb.ts`: Expose SSR public landing pages and XML sitemaps.
-3. `apps/api/src/routes/embeds.ts`: Expose the 7 widget embed endpoints and `/embed/panin-widgets.js`.
+3. `apps/api/src/routes/embeds.ts`: Expose the 7 widget embed endpoints and `/embed/poligram-widgets.js`.
 4. `apps/api/src/routes/universalAnalytics.ts`: Expose event ingestion endpoints.
 5. `apps/api/src/routes/productDashboard.ts`: Expose executive dashboard metrics.
 6. Wire all new route handlers into `apps/api/src/server.ts` and verify build.

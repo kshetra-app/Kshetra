@@ -21,7 +21,7 @@
  * 10. Empty result behavior (200 with empty array, not 404 or 500)
  * 11. Not found behavior (404 structured error)
  * 12. Database / dependency failure (500 fail-closed)
- * 13. Provenance correctness (STATUTORY_FACT for factual, PANIN_SCENARIO for simulations)
+ * 13. Provenance correctness (STATUTORY_FACT for factual, POLIGRAM_SCENARIO for simulations)
  * 14. Response schema correctness (proper shape, zero citizen PII)
  * 15. Rate-limit behavior (burst limit 429 when exhausted)
  */
@@ -951,7 +951,7 @@ describe('W021-G4: Public/Partner SaaS API Routes (/api/vsaas/v1/...) Test Suite
       expect(body.data.provenance.dataStatus).toBe('OFFICIAL');
     });
 
-    it('GET /api/vsaas/v1/delim/projections: returns national seat projection with PANIN_SCENARIO provenance', async () => {
+    it('GET /api/vsaas/v1/delim/projections: returns national seat projection with POLIGRAM_SCENARIO provenance', async () => {
       const res = await app.inject({
         method: 'GET',
         url: '/api/vsaas/v1/delim/projections',
@@ -962,7 +962,7 @@ describe('W021-G4: Public/Partner SaaS API Routes (/api/vsaas/v1/...) Test Suite
       expect(body.success).toBe(true);
       expect(body.data.summary).toBeDefined();
       expect(Array.isArray(body.data.projections)).toBe(true);
-      expect(body.data.provenance.authorityLayer).toBe('PANIN_SCENARIO');
+      expect(body.data.provenance.authorityLayer).toBe('POLIGRAM_SCENARIO');
       expect(body.data.provenance.computationalType).toBe('ACADEMIC_SIMULATION');
       expect(body.data.provenance.officialDelimitationOrder).toBe(false);
       expect(body.data.provenance.statutoryDisclaimer).toContain('algorithmic simulation');
@@ -982,11 +982,11 @@ describe('W021-G4: Public/Partner SaaS API Routes (/api/vsaas/v1/...) Test Suite
       expect(body.data.methodology.formula).toContain('Hare-Niemeyer');
       expect(Array.isArray(body.data.districtBreakdown)).toBe(true);
       // Provenance assertions
-      expect(body.data.provenance.authorityLayer).toBe('PANIN_SCENARIO');
+      expect(body.data.provenance.authorityLayer).toBe('POLIGRAM_SCENARIO');
       expect(body.data.provenance.computationalType).toBe('ACADEMIC_SIMULATION');
       expect(body.data.provenance.officialDelimitationOrder).toBe(false);
       expect(body.data.provenance.legalStatus).toBe('SCENARIO_PROPOSED_REGIME');
-      expect(body.data.provenance.effectiveVersion).toBe('2026-PANIN-SIM-V1');
+      expect(body.data.provenance.effectiveVersion).toBe('2026-POLIGRAM-SIM-V1');
       expect(body.data.provenance.statutoryDisclaimer).toBeDefined();
     });
 

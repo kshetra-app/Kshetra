@@ -1,4 +1,4 @@
-# COMPLIANCE & DPDPA READINESS DOSSIER: PANIN / KSHETRA
+# COMPLIANCE & DPDPA READINESS DOSSIER: POLIGRAM (formerly PANIN / Kshetra)
 
 **Document ID:** COMPLIANCE_DPDPA_READINESS.md  
 **Milestone:** W051.5 — Compliance, DPDP & Data Governance Readiness  
@@ -73,7 +73,7 @@ All data fields across the application have been cataloged in `scratch/complianc
                             │ TLS 1.3 (HSTS Enabled)
                             ▼
 ┌────────────────────────────────────────────────────────┐
-│      PANIN API GATEWAY (FASTIFY ON RAILWAY CLOUD)      │
+│     POLIGRAM API GATEWAY (FASTIFY ON RAILWAY CLOUD)     │
 │  - Zero raw disk logging of passwords or API keys       │
 │  - In-memory burst rate limiting (60 - 3,000 req/min)   │
 │  - Data Principal Rights State Machine & Grievance DPO │
@@ -103,7 +103,7 @@ All primary databases, file buckets, and telecom/payment processors are physical
 
 Pursuant to the mandatory 13-language rule, all privacy notices, consent dialogs, rights descriptions, DPO contact channels, and grievance redressal instructions are fully localized in:
 
-1. **English (`en`):** PanIN / Kshetra Statutory Privacy Notice & Citizen Data Charter
+1. **English (`en`):** Poligram Statutory Privacy Notice & Citizen Data Charter
 2. **हिन्दी (`hi`):** पैन-इन / क्षेत्र वैधानिक गोपनीयता सूचना एवं नागरिक डेटा घोषणापत्र
 3. **తెలుగు (`te`):** పాన్-ఇన్ / క్షేత్ర చట్టబద్ధమైన గోప్యతా నోటీసు మరియు పౌర సమాచార పత్రం
 4. **தமிழ் (`ta`):** பான்-இன் / க்ஷேத்ரா சட்டபூர்வ தனியுரிமை அறிவிப்பு & குடிமக்கள் தரவு சாசனம்
@@ -150,7 +150,7 @@ The backend implements an executable state machine for handling citizen rights:
 
 ## 6. Significant Data Fiduciary (SDF) Evaluation
 
-Pursuant to Section 10 of the DPDP Act 2023, PanIN evaluated its operations against the 5 statutory criteria:
+Pursuant to Section 10 of the DPDP Act 2023, Poligram evaluated its operations against the 5 statutory criteria:
 
 | Statutory Factor | Assessment Score | Current Status | Findings & Rationale |
 | :--- | :---: | :---: | :--- |

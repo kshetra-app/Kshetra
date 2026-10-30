@@ -733,7 +733,7 @@ export class CivicService {
       id: headlineId,
       title: `${issue.constituencyId}: ${issue.title} — 500+ citizens demand immediate action`,
       summary: issue.description,
-      sourceName: 'Kshetra / PanIN Citizen Action',
+      sourceName: 'Poligram Citizen Action',
       sourceUrl: `https://poligram.in/issues/${issue.id}`,
       category: issue.category,
       stateCode: issue.stateCode,

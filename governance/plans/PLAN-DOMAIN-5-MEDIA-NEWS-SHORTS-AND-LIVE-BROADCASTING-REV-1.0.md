@@ -10,9 +10,9 @@
 
 ### Section 1: Executive Summary & Governing Authority
 
-This authoritative Pre-Implementation Plan governs the engineering execution of **Domain 5: Media, News, Shorts & Live Broadcasting**, encompassing twelve interconnected jobs (**JOB 037 through JOB 045, and JOB 051 through JOB 053**) of the PANIN / Kshetra Master Blueprint and AI Agent Master Execution Job Book.
+This authoritative Pre-Implementation Plan governs the engineering execution of **Domain 5: Media, News, Shorts & Live Broadcasting**, encompassing twelve interconnected jobs (**JOB 037 through JOB 045, and JOB 051 through JOB 053**) of the POLIGRAM (formerly PANIN / Kshetra) Master Blueprint and AI Agent Master Execution Job Book.
 
-Domain 5 establishes the primary multimedia consumption, official accountability, political news curation, vertical video engagement, and live broadcasting infrastructure for PANIN across all 36 States/UTs and 4,123 Assembly Constituencies. It bridges the civic reporting of Domain 3 and the candidate political incubation of Domain 4 into an active, high-retention citizen information network.
+Domain 5 establishes the primary multimedia consumption, official accountability, political news curation, vertical video engagement, and live broadcasting infrastructure for POLIGRAM across all 36 States/UTs and 4,123 Assembly Constituencies. It bridges the civic reporting of Domain 3 and the candidate political incubation of Domain 4 into an active, high-retention citizen information network.
 
 Under **Rule IV-001** and **Amendment v1.5-A Section 26**, no production code modifications, database migrations, or endpoint deployments may begin until this plan is formally reviewed, architectural decisions are ratified, and `IMPLEMENTATION_AUTHORIZATION: YES` is granted by the user.
 

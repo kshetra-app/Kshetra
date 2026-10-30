@@ -439,7 +439,7 @@ export class WebhookService {
     const testPayload = {
       event_id: eventId,
       timestamp: new Date().toISOString(),
-      message: 'PanIN SaaS Webhook Verification Test Ping',
+      message: 'Poligram SaaS Webhook Verification Test Ping',
     };
 
     const payloadRaw = canonicalizeJson(testPayload);

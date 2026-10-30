@@ -72,7 +72,7 @@ export interface PublicRepresentativeProfileDTO {
 // 2. MEDIA EMBEDS CONTRACTS (JOB 064)
 // ==============================================================================
 
-export type PaninEmbedWidgetType =
+export type PoligramEmbedWidgetType =
   | 'constituency'
   | 'delimitation'
   | 'election'
@@ -81,14 +81,18 @@ export type PaninEmbedWidgetType =
   | 'live'
   | 'short';
 
-export interface PaninEmbedMetadataDTO {
-  widgetType: PaninEmbedWidgetType;
+export type PaninEmbedWidgetType = PoligramEmbedWidgetType;
+
+export interface PoligramEmbedMetadataDTO {
+  widgetType: PoligramEmbedWidgetType;
   entityId: string;
   title: string;
   attribution: string;
   canonicalUrl: string;
   minHeight: number;
 }
+
+export type PaninEmbedMetadataDTO = PoligramEmbedMetadataDTO;
 
 // ==============================================================================
 // 3. UNIVERSAL ANALYTICS CONTRACTS (JOB 065 - Canonical 10-Field Event Schema)

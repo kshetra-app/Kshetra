@@ -1,5 +1,5 @@
 /**
- * Kshetra / PanIN Broadcast Management Service
+ * Poligram Broadcast Management Service
  * Manages official channels, streams, ephemeral hashed stream keys, 
  * multi-tier ingest credentials, health telemetry, and lifecycle state machines.
  */

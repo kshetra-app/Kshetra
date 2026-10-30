@@ -1,9 +1,9 @@
 openapi: 3.1.0
 info:
-  title: PanIN B2B Political SaaS & Public/Partner Developer API
+  title: Poligram B2B Political SaaS & Public/Partner Developer API
   version: 1.0.0
   description: >
-    Canonical machine-readable contract for the PanIN B2B Political SaaS & Public/Partner Developer API.
+    Canonical machine-readable contract for the Poligram B2B Political SaaS & Public/Partner Developer API.
     Governed by Milestone W021 (Gates W021-G1 through W021-G5) under PLAN-W021-MASTER-REV-1.0.
     Provides read-only statutory factual electoral, geographical, political entity data and governed delimitation scenario simulations.
     Mixed Provenance Model: Top-level provenance certifies originating statutory authorities and legal instruments,
@@ -11,12 +11,12 @@ info:
     Current-State/Temporal Affiliations, Normalized Entities, Synthetic Identifiers, and Scenario Simulations).
     All endpoints require cryptographic API-key authentication with strict tenant isolation, burst rate limiting, and durable monthly quota enforcement.
   contact:
-    name: PanIN Partner Engineering Team
-    url: https://kshetra.io/developers
+    name: Poligram Partner Engineering Team
+    url: https://poligram.in/developers
   license:
-    name: Proprietary (PanIN Institutional SaaS License)
+    name: Proprietary (Poligram Institutional SaaS License)
 servers:
-  - url: https://api.kshetra.io
+  - url: https://api.poligram.in
     description: Production API Gateway (Isolated Fastify SaaS Service)
   - url: http://localhost:3001
     description: Local Development Server (Fastify HTTP Listener)
@@ -807,7 +807,7 @@ paths:
       tags:
         - Delimitation Regimes & Scenarios
       summary: National seat apportionment projection models
-      description: National seat redistribution models across Indian states under Article 170 / Census 2011. Classified strictly as an academic research simulation (PANIN_SCENARIO). Does NOT constitute an official gazetted order.
+      description: National seat redistribution models across Indian states under Article 170 / Census 2011. Classified strictly as an academic research simulation (POLIGRAM_SCENARIO). Does NOT constitute an official gazetted order.
       parameters:
         - name: model
           in: query
@@ -817,7 +817,7 @@ paths:
           description: Projection model identifier.
       responses:
         '200':
-          description: Seat projection model with server-owned PANIN_SCENARIO provenance and statutory disclaimer.
+          description: Seat projection model with server-owned POLIGRAM_SCENARIO provenance and statutory disclaimer.
           headers:
             x-request-id:
               $ref: '#/components/headers/XRequestId'
@@ -855,7 +855,7 @@ paths:
       summary: Governed boundary redistribution simulation
       description: >
         Executes governed algorithmic boundary redistribution simulation (Hare-Niemeyer / Hamilton quota method) for an Indian state.
-        Governed strictly by server-owned PANIN_SCENARIO provenance metadata.
+        Governed strictly by server-owned POLIGRAM_SCENARIO provenance metadata.
         Client-supplied scenario override flags (isScenario, is_scenario, simulation) are strictly rejected with 400 SCENARIO_INPUT_FORBIDDEN.
       parameters:
         - $ref: '#/components/parameters/StateCodePathParam'
@@ -898,7 +898,7 @@ paths:
           description: Historical evaluation date (YYYY-MM-DD).
       responses:
         '200':
-          description: Boundary redistribution simulation results with server-owned PANIN_SCENARIO provenance and statutory disclaimer.
+          description: Boundary redistribution simulation results with server-owned POLIGRAM_SCENARIO provenance and statutory disclaimer.
           headers:
             x-request-id:
               $ref: '#/components/headers/XRequestId'
@@ -1694,22 +1694,22 @@ components:
       name: x-api-key
       description: >
         Primary cryptographic API key header.
-        Accepted formats strictly follow the 57-character pattern:
-          - panin_live_sk_<43-char Base64URL secret> (Production live key)
-          - panin_test_sk_<43-char Base64URL secret> (Testing / sandbox key)
-        Regex pattern: ^panin_(live|test)_sk_[0-9a-zA-Z_-]{43}$
+        Accepted formats strictly follow the 60-character pattern:
+          - poligram_live_sk_<43-char Base64URL secret> (Production live key)
+          - poligram_test_sk_<43-char Base64URL secret> (Testing / sandbox key)
+        Regex pattern: ^(?:poligram|panin)_(live|test)_sk_[0-9a-zA-Z_-]{43}$
         CRITICAL: Prefixes starting with 'kshetra_live_', 'kshetra_test_', or unauthorized aliases are strictly REJECTED with 401 UNAUTHORIZED.
 
     BearerAuth:
       type: http
       scheme: bearer
-      bearerFormat: panin_api_key
+      bearerFormat: poligram_api_key
       description: >
         Standard Authorization Bearer token header.
         Value must be the exact raw API key:
-          Authorization: Bearer panin_live_sk_<43 chars>
-          Authorization: Bearer panin_test_sk_<43 chars>
-        Regex pattern: ^panin_(live|test)_sk_[0-9a-zA-Z_-]{43}$
+          Authorization: Bearer poligram_live_sk_<43 chars>
+          Authorization: Bearer poligram_test_sk_<43 chars>
+        Regex pattern: ^(?:poligram|panin)_(live|test)_sk_[0-9a-zA-Z_-]{43}$
         CRITICAL: Prefixes starting with 'kshetra_live_', 'kshetra_test_', or unauthorized aliases are strictly REJECTED with 401 UNAUTHORIZED.
 
   # ════════════════════════════════════════════════════════════════════════════
@@ -2015,7 +2015,7 @@ components:
           description: Exact statutory order, gazette publication, or constitutional schedule reference.
           example: ECI Schedule XXXI / Delimitation of Parliamentary and Assembly Constituencies Order, 2008
 
-    PaninScenarioProvenance:
+    PoligramScenarioProvenance:
       type: object
       required:
         - authorityLayer
@@ -2029,8 +2029,8 @@ components:
       properties:
         authorityLayer:
           type: string
-          enum: [PANIN_SCENARIO]
-          example: PANIN_SCENARIO
+          enum: [POLIGRAM_SCENARIO, PANIN_SCENARIO]
+          example: POLIGRAM_SCENARIO
         computationalType:
           type: string
           enum: [ACADEMIC_SIMULATION]
@@ -2041,26 +2041,28 @@ components:
           example: false
         governingInstrument:
           type: string
-          example: PANIN Algorithmic Simulation (Article 170 Framework)
+          example: Poligram Algorithmic Simulation (Article 170 Framework)
         constitutionalBasis:
           type: string
           example: Article 170(1)
         legalStatus:
           type: string
-          enum: [SCENARIO_PROPOSED_REGIME]
           example: SCENARIO_PROPOSED_REGIME
         sourceReference:
           type: string
           example: Census 2011 Primary Census Abstract (RGI)
         effectiveVersion:
           type: string
-          example: 2026-PANIN-SIM-V1
+          example: 2026-POLIGRAM-SIM-V1
         generatedAt:
           type: string
           format: date-time
         statutoryDisclaimer:
           type: string
           example: This projection is a research simulation based on Census 2011 data and mathematical modeling. It does NOT represent an official order, draft proposal, or gazette notification of the Delimitation Commission of India or the Election Commission of India.
+
+    PaninScenarioProvenance:
+      $ref: '#/components/schemas/PoligramScenarioProvenance'
 
     # ─── GEOGRAPHY ENTITIES ───
     StateListItem:
@@ -2828,7 +2830,7 @@ components:
           items:
             type: object
         provenance:
-          $ref: '#/components/schemas/PaninScenarioProvenance'
+          $ref: '#/components/schemas/PoligramScenarioProvenance'
 
     DelimitationSimulationResponse:
       type: object
@@ -2852,7 +2854,7 @@ components:
           items:
             type: object
         provenance:
-          $ref: '#/components/schemas/PaninScenarioProvenance'
+          $ref: '#/components/schemas/PoligramScenarioProvenance'
 
     WebhookSubscriptionItem:
       type: object

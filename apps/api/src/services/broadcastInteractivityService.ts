@@ -1,5 +1,5 @@
 /**
- * Kshetra / PanIN Broadcast Interactivity Service
+ * Poligram Broadcast Interactivity Service
  * Real-time Audience Engagement Engine:
  * - Live Polling with daily-salted HMAC cryptographic anti-sybil tokens (DPDP Act 2023 zero-PII)
  * - Moderated Audience Q&A queue with fail-closed safety checks and upvoting

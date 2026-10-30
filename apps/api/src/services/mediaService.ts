@@ -539,10 +539,10 @@ export class MediaService {
       speakerRole: req.speakerRole || 'aspirant',
       constituencyId: req.constituencyId,
       status: 'scheduled',
-      rtmpIngestUrl: `rtmp://live.panin.in/live/${id}`,
+      rtmpIngestUrl: `rtmp://live.poligram.in/live/${id}`,
       streamKey,
-      whipIngestUrl: `https://live.panin.in/whip/${id}`,
-      hlsPlaybackUrl: `https://cdn.panin.in/hls/${id}/index.m3u8`,
+      whipIngestUrl: `https://live.poligram.in/whip/${id}`,
+      hlsPlaybackUrl: `https://cdn.poligram.in/hls/${id}/index.m3u8`,
       currentLiveViewers: 0,
       peakLiveViewers: 0,
       startedAt: now,
@@ -567,7 +567,7 @@ export class MediaService {
 
     stream.status = 'ended';
     stream.endedAt = new Date().toISOString();
-    stream.vodArchiveUrl = `https://cdn.panin.in/vod/${sessionId}/archive.mp4`;
+    stream.vodArchiveUrl = `https://cdn.poligram.in/vod/${sessionId}/archive.mp4`;
     return stream;
   }
 

@@ -1,4 +1,4 @@
-# RUNBOOK: DISASTER RECOVERY & BACKUP VERIFICATION (PANIN / KSHETRA)
+# RUNBOOK: DISASTER RECOVERY & BACKUP VERIFICATION (POLIGRAM)
 
 **Authority:** Master Execution Framework Amendment v1.2 (Part 11 & Part 15), Amendment v1.4, AI Agent Master Execution Job Book (JOB W005)  
 **Classification:** Operational Security & Business Continuity Standard  
@@ -9,7 +9,7 @@
 
 ## 1. Executive Summary & Objectives
 
-This runbook defines the authoritative procedures for backup management, emergency failover, cold-start reconstruction, and disaster recovery (DR) across all PANIN / Kshetra environments.
+This runbook defines the authoritative procedures for backup management, emergency failover, cold-start reconstruction, and disaster recovery (DR) across all POLIGRAM (formerly PANIN / Kshetra) environments.
 
 ### Core Recovery Metrics
 
@@ -28,7 +28,7 @@ The platform backup strategy operates across four defensive layers:
 
 ```text
 ┌─────────────────────────────────────────────────────────────────────────┐
-│                      PANIN BACKUP & RECOVERY LAYERS                     │
+│                    POLIGRAM BACKUP & RECOVERY LAYERS                    │
 └─────────────────────────────────────────────────────────────────────────┘
   Layer 1: Continuous WAL Archiving (Supabase PITR - RPO ≤ 5 min)
      │

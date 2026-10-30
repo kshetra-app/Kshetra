@@ -3,7 +3,7 @@
  *
  * Checks Page subscription status via backend API.
  * Mobile app never renders in-app pricing or purchase buttons (App Store guideline compliant).
- * Subscriptions are managed strictly on the web console (kshetra.app/manage).
+ * Subscriptions are managed strictly on the web console (poligram.in/manage).
  */
 
 import { apiClient } from './api';

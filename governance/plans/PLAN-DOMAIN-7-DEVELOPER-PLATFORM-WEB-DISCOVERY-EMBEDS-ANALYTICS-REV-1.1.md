@@ -22,7 +22,7 @@
 
 ## 2. Problem Statement
 
-PANIN has established core sovereign geography, mobile performance optimization, civic issue resolution, leadership academy, media broadcasting, and political advertising/monetization across Domains 1 through 6. 
+POLIGRAM has established core sovereign geography, mobile performance optimization, civic issue resolution, leadership academy, media broadcasting, and political advertising/monetization across Domains 1 through 6. 
 
 However, to transition from an internal application into a nationwide civic data infrastructure, PANIN requires a public distribution, developer ecosystem, and data intelligence layer:
 1. **Developer Platform (JOB 062):** External civic tech developers, media houses, research institutes, and political consulting firms lack a self-serve developer portal with organization management, cryptographic API key issuance (`pk_live_...`, `pk_test_...`), tiered quota enforcement, usage telemetry, interactive OpenAPI 3.1 documentation, and subscription billing.
@@ -45,7 +45,7 @@ A comprehensive audit of the current repository reveals:
    - Fastify currently hosts API routes and one public SSR route: `GET /share/delimitation/:shareId` (`apps/api/src/routes/delimitationShare.ts`).
    - *Gaps for JOB 063:* No canonical public SSR pages for states (`/public/states/:stateCode`), districts (`/public/districts/:districtId`), constituencies (`/public/constituency/:acId`), representatives (`/public/representatives/:repId`), elections (`/public/elections/:electionId`), or delimitation (`/public/delimitation/:acId`). No XML sitemap generators (`/sitemap.xml`).
 3. **Media Embeds & Widgets:**
-   - Delimitation share cards exist, but there are no sandboxed, responsive iframe endpoints or universal JavaScript loader script for external newsrooms (`/embed/panin-widgets.js`).
+   - Delimitation share cards exist, but there are no sandboxed, responsive iframe endpoints or universal JavaScript loader script for external newsrooms (`/embed/poligram-widgets.js`).
    - *Gaps for JOB 064:* Missing all 7 required widget endpoints: constituency, delimitation diff, election, candidate, civic issue, live stream, and Short.
 4. **Analytics & Metrics:**
    - `apps/api/src/routes/analytics.ts` has a legacy `client_sessions` endpoint.
@@ -89,7 +89,7 @@ The architecture synthesizes the user's explicit ratifications in **DEC-189**:
 |  | - Usage Telemetry  |             |   /api/v1/public/* |             | - /embed/issue/:id |    |
 |  | - Stripe/Razorpay  |             | - OpenGraph/JSON-LD|             | - postMessage auto-|    |
 |  |   Billing Checkout |             | - XML Sitemaps     |             |   resize script +  |    |
-|  +--------------------+             | - Sub-50ms TTFB    |             |   <panin-widget>   |    |
+|  +--------------------+             | - Sub-50ms TTFB    |             |   <poligram-widget>   |    |
 |         |                           +--------------------+             |   Web Component    |    |
 |         |                                    |                         +--------------------+    |
 |         +------------------------------------+------------------------------------+              |
@@ -126,7 +126,7 @@ The architecture synthesizes the user's explicit ratifications in **DEC-189**:
 
 ### Specific Ratified Provisions:
 1. **Decision 1 (Public Web):** Primary Fastify SSR HTML generation for sub-50ms TTFB and crawler discoverability, PLUS twin JSON API endpoints (`/api/v1/public/...`) providing complete headless support for standalone Next.js/React frontends.
-2. **Decision 2 (Media Embeds):** Universal sandboxed iframe endpoints with `window.postMessage` auto-resizing script (`/embed/panin-widgets.js`), PLUS custom web component registration (`<panin-widget type="..." id="...">`) bundled directly into the script for zero-iframe host integration.
+2. **Decision 2 (Media Embeds):** Universal sandboxed iframe endpoints with `window.postMessage` auto-resizing script (`/embed/poligram-widgets.js`), PLUS custom web component registration (`<panin-widget type="..." id="...">`) bundled directly into the script for zero-iframe host integration.
 3. **Decision 3 (Universal Analytics):** Sovereign PostgreSQL storage in `universal_analytics_events` with DPDP 2023 IP salt-hashing, PLUS pluggable sink exporter interface (`AnalyticsSinkExporter`) enabling dual-streaming to external platforms (PostHog/Kafka) when configured.
 
 ---
@@ -180,12 +180,12 @@ The scope covers 5 sequential, interconnected jobs:
   5. `GET /embed/issue/:issueId`: Civic issue grievance card with resolution timeline status and citizen support tally.
   6. `GET /embed/live/:channelId`: Video/HLS broadcast embed with live viewer counter.
   7. `GET /embed/short/:shortId`: Vertical video player embed with transcript preview.
-- **Universal JavaScript Loader Script (`/embed/panin-widgets.js`):**
+- **Universal JavaScript Loader Script (`/embed/poligram-widgets.js`):**
   - Seamless responsive container fitting.
   - Bidirectional `window.postMessage` auto-resizing protocol (`kshetra:resize`) preventing scrollbars.
   - Permissive framing headers (`X-Frame-Options: ALLOWALL`, CSP `frame-ancestors *`).
   - Mandatory Section 127A attribution badge.
-  - Custom Web Component definition (`<panin-widget>`) for direct DOM mounting.
+  - Custom Web Component definition (`<poligram-widget>`) for direct DOM mounting.
 - **Evidence:** Automated tests verify all 7 embed endpoints render valid HTML, return correct CORS and frame headers, emit postMessage resize scripts, and third-party test container renders them seamlessly.
 
 ### JOB 065: Universal Analytics Platform
@@ -258,7 +258,7 @@ The scope covers 5 sequential, interconnected jobs:
 ### Stage 4: API Routes & Fastify Wiring
 1. `apps/api/src/routes/developerPlatform.ts`: Expose developer portal, API keys, usage, and OpenAPI docs.
 2. `apps/api/src/routes/publicWeb.ts`: Expose SSR public landing pages, twin JSON APIs, and XML sitemaps.
-3. `apps/api/src/routes/embeds.ts`: Expose the 7 widget embed endpoints and `/embed/panin-widgets.js`.
+3. `apps/api/src/routes/embeds.ts`: Expose the 7 widget embed endpoints and `/embed/poligram-widgets.js`.
 4. `apps/api/src/routes/universalAnalytics.ts`: Expose event ingestion endpoints.
 5. `apps/api/src/routes/productDashboard.ts`: Expose executive dashboard metrics.
 6. Wire all new route handlers into `apps/api/src/server.ts` and verify build.

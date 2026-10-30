@@ -27,12 +27,12 @@ Pursuant to **Amendment v1.2**, Job **W051.5** must execute before any expansion
 ## 2. Statutory Scope & Architectural Boundaries
 
 ### 2.1 Private Citizen Data vs. Statutory Public Political Records
-A foundational architectural invariant of PanIN is the strict segregation between:
+A foundational architectural invariant of Poligram is the strict segregation between:
 - **Private Citizen Personal Data:** Protected under DPDP Act 2023. Governed by purpose limitation, explicit consent, right to correction, right to erasure, and strict data minimization. Includes citizen voter IDs, mobile numbers, passwords, precise GPS locations, session tokens, and KYC documents.
 - **Statutory Public Electoral Facts:** Sourced from official gazettes, Election Commission of India (ECI) Form 20/Form 26 statutory affidavits, delimitation orders, and constitutional gazette notifications. These constitute non-derogable public records under the Representation of the People Act, 1950 & 1951. They are immutable, publicly audited, and strictly segregated from citizen account deletion workflows.
 
 ### 2.2 Ban on Inferred Political Profiling
-PanIN enforces a strict architectural ban on individual-level political belief inference. Advertising and civic recommendations are restricted to coarse **geographical and contextual targeting** (Constituency, District, State) rather than psychographic political preference profiling.
+Poligram enforces a strict architectural ban on individual-level political belief inference. Advertising and civic recommendations are restricted to coarse **geographical and contextual targeting** (Constituency, District, State) rather than psychographic political preference profiling.
 
 ---
 

@@ -49,7 +49,7 @@ elections, democracy, India, MLA, constituency, civic, voting, politics, promise
 Everyone
 
 ## Privacy Policy URL
-https://kshetra.app/privacy (to be created)
+https://poligram.in/privacy (to be created)
 
 ## Contact Email
 preetham.mallineni@gmail.com
@@ -65,4 +65,4 @@ preetham.mallineni@gmail.com
 8. Profile with Civic Score
 
 ## Feature Graphic (1024x500)
-Dark gradient background, Kshetra logo, map silhouette, tagline: "Your Democracy, Your Data"
+Dark gradient background, Poligram logo, map silhouette, tagline: "Your Democracy, Your Data"

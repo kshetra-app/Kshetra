@@ -135,7 +135,7 @@ export default function LiveBroadcaster({ whipUrl, token, onStop, streamLabel }:
         <View style={styles.errorBox}>
           <Text style={styles.errorText}>{error}</Text>
           <Text style={styles.errorHint}>
-            Consumer builds are decoupled from heavy native WebRTC binaries for lean HLS playback. To broadcast live video, use the PANIN Studio Web Client at https://studio.panin.in or connect via RTMP/SRT from OBS.
+            Consumer builds are decoupled from heavy native WebRTC binaries for lean HLS playback. To broadcast live video, use the Poligram Studio Web Client at https://studio.poligram.in or connect via RTMP/SRT from OBS.
           </Text>
         </View>
       )}

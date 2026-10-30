@@ -1,4 +1,4 @@
-# ACCEPTANCE REGISTER: PANIN / KSHETRA
+# ACCEPTANCE REGISTER: POLIGRAM (formerly PANIN / Kshetra)
 **Last Updated:** 2026-10-29
 **Standard:** AI Agent Master Execution Job Book (Section 0.5 — Definition of Done)
 

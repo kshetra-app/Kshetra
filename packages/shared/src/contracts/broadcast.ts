@@ -1,5 +1,5 @@
 /**
- * Kshetra / PanIN Professional Broadcast Architecture Contracts
+ * Poligram Professional Broadcast Architecture Contracts
  * Standard: DPDP Act 2023 Compliant (Zero Voter PII), Multi-Tier Streaming
  */
 

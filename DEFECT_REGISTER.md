@@ -1,4 +1,4 @@
-# DEFECT REGISTER: PANIN / KSHETRA
+# DEFECT REGISTER: POLIGRAM (formerly PANIN / Kshetra)
 **Last Updated:** 2026-10-29
 
 ## GOV-01 — W022 Authorization / Repository-State Conflict

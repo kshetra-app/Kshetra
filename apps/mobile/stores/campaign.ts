@@ -670,9 +670,9 @@ export const useCampaignStore = create<CampaignState>((set, get) => ({
       }
     } catch {}
 
-    // Default: If phone starts with 9848 or 9849, treat as active demo Kshetra user
+    // Default: If phone starts with 9848 or 9849, treat as active demo Poligram user
     const isMockRegistered = cleaned.startsWith('9848') || cleaned.startsWith('9876');
-    return { isKshetraUser: isMockRegistered, displayName: isMockRegistered ? 'Verified Kshetra User' : undefined };
+    return { isKshetraUser: isMockRegistered, displayName: isMockRegistered ? 'Verified Poligram User' : undefined };
   },
 
   assignBoothIncharge: async (boothId, agentName, agentPhone, isKshetraUser) => {

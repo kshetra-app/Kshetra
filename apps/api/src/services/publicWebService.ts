@@ -42,7 +42,7 @@ export class PublicWebService {
       rulingParty: data.rulingParty,
       districtsCount: data.districts,
       delimitationSeatChange: data.deltaSeats,
-      canonicalUrl: `https://kshetra.in/public/states/${upper}`,
+      canonicalUrl: `https://poligram.in/public/states/${upper}`,
     };
   }
 
@@ -84,7 +84,7 @@ export class PublicWebService {
         resolvedIssuesCount: 189,
         cdiScore: 78.4,
       },
-      canonicalUrl: `https://kshetra.in/public/constituency/${normalized}`,
+      canonicalUrl: `https://poligram.in/public/constituency/${normalized}`,
     };
   }
 
@@ -102,7 +102,7 @@ export class PublicWebService {
       debatesParticipated: 16,
       declaredAssetsINR: 145_000_000,
       criminalCasesCount: 0,
-      canonicalUrl: `https://kshetra.in/public/representatives/${repId}`,
+      canonicalUrl: `https://poligram.in/public/representatives/${repId}`,
     };
   }
 
@@ -114,7 +114,7 @@ export class PublicWebService {
       headquarters: 'Hyderabad',
       totalPopulation: 3_943_323,
       totalConstituencies: 15,
-      canonicalUrl: `https://kshetra.in/public/districts/${districtId}`,
+      canonicalUrl: `https://poligram.in/public/districts/${districtId}`,
     };
   }
 
@@ -129,7 +129,7 @@ export class PublicWebService {
       winningParty: 'INC',
       seatsWon: 64,
       turnoutPercentage: 71.34,
-      canonicalUrl: `https://kshetra.in/public/elections/${electionId}`,
+      canonicalUrl: `https://poligram.in/public/elections/${electionId}`,
     };
   }
 
@@ -144,7 +144,7 @@ export class PublicWebService {
       populationProjected2026: 412_000,
       boundaryShiftPercent: 14.8,
       seatsDelta: '+1 Proposed Sub-division',
-      canonicalUrl: `https://kshetra.in/public/delimitation/${acId}`,
+      canonicalUrl: `https://poligram.in/public/delimitation/${acId}`,
     };
   }
 
@@ -179,7 +179,7 @@ export class PublicWebService {
   <meta property="og:description" content="${this.escapeHtml(description)}">
   <meta property="og:url" content="${profile.canonicalUrl}">
   <meta property="og:type" content="article">
-  <meta property="og:site_name" content="PANIN Sovereign Civic Tech">
+  <meta property="og:site_name" content="Poligram Sovereign Civic Tech">
   <!-- Twitter Card Tags -->
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="${this.escapeHtml(title)}">
@@ -231,7 +231,7 @@ export class PublicWebService {
     </div>
 
     <div class="footer">
-      Powered by PANIN Sovereign Civic Tech Platform &middot; ECI Gazette Grounded Data &middot; Section 127A RPA 1951 Disclosed
+      Powered by Poligram Sovereign Civic Tech Platform &middot; ECI Gazette Grounded Data &middot; Section 127A RPA 1951 Disclosed
     </div>
   </div>
 </body>
@@ -298,7 +298,7 @@ export class PublicWebService {
       </div>
     </div>
     <div class="footer">
-      PANIN Civic Data Infrastructure &middot; Section 127A RPA 1951 Verified
+      Poligram Civic Data Infrastructure &middot; Section 127A RPA 1951 Verified
     </div>
   </div>
 </body>
@@ -311,7 +311,7 @@ export class PublicWebService {
     const states = Object.keys(this.STATE_DATA);
     const urls = states.map(
       (code) => `  <url>
-    <loc>https://kshetra.in/public/states/${code}</loc>
+    <loc>https://poligram.in/public/states/${code}</loc>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
   </url>`
@@ -320,7 +320,7 @@ export class PublicWebService {
     return `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://kshetra.in/</loc>
+    <loc>https://poligram.in/</loc>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
@@ -332,12 +332,12 @@ ${urls.join('\n')}
     return `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://kshetra.in/public/constituency/TS-AC-61</loc>
+    <loc>https://poligram.in/public/constituency/TS-AC-61</loc>
     <changefreq>hourly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://kshetra.in/public/constituency/JH-AC-44</loc>
+    <loc>https://poligram.in/public/constituency/JH-AC-44</loc>
     <changefreq>hourly</changefreq>
     <priority>0.8</priority>
   </url>

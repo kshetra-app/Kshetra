@@ -83,7 +83,7 @@ describe('Milestone W051.5: Compliance, DPDP & Data Governance Readiness Suite',
       const json = JSON.parse(res.payload);
       expect(json.success).toBe(true);
       expect(json.data.locale).toBe('en');
-      expect(json.data.privacyPolicyTitle).toContain('PanIN / Kshetra Statutory Privacy Notice');
+      expect(json.data.privacyPolicyTitle).toContain('Poligram Statutory Privacy Notice');
     });
   });
 

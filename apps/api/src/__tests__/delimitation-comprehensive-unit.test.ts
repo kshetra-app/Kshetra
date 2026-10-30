@@ -69,7 +69,7 @@ describe('Comprehensive Delimitation Unit & Route Tests', () => {
       id: 'scenario_delimitation_draft_prop_1',
       name: 'Delimitation Research Simulation Scenario 1',
       legal_status: 'SCENARIO_PROPOSED_REGIME',
-      authority: 'PANIN Delimitation Simulation Engine',
+      authority: 'POLIGRAM Delimitation Simulation Engine',
       legal_basis: 'Research Simulation',
       effective_from: '2026-01-01',
       effective_to: null,
@@ -1227,7 +1227,7 @@ describe('Comprehensive Delimitation Unit & Route Tests', () => {
               maybeSingle: jest.fn().mockResolvedValue({
                 data: {
                   id: 'prov_row_123',
-                  source_authority: 'PANIN Lab',
+                  source_authority: 'POLIGRAM Lab',
                   methodology: 'Article 332 Proportionality',
                   citation: 'Census 2011 PCA',
                 },

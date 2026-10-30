@@ -1,5 +1,5 @@
 /**
- * Kshetra LMX — Media Pipeline Router (control plane)
+ * Poligram LMX — Media Pipeline Router (control plane)
  *
  * Pure, framework-agnostic logic that auto-selects one of the self-hosted media
  * tiers for a live event and builds the ingest/playback URLs written onto the

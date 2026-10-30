@@ -42,9 +42,9 @@ describe('Delimitation Query Service & Legal Applicability (W020-G8/G9) Unit Tes
         );
         expect(res.isStatutoryFact).toBe(false);
         expect(res.isScenario).toBe(true);
-        expect(res.paninComputationalSafetyCeiling).toBe(10000);
+        expect(res.poligramComputationalSafetyCeiling).toBe(10000);
         expect(res.regimeType).toBe('SCENARIO_PROPOSED_REGIME');
-        expect(res.provenance.sourceAuthority).toContain('PANIN Delimitation Simulation Engine');
+        expect(res.provenance.sourceAuthority).toContain('POLIGRAM Delimitation Simulation Engine');
       });
 
       it('accepts query object format with custom evidence reference', () => {
@@ -356,7 +356,7 @@ describe('Delimitation Query Service & Legal Applicability (W020-G8/G9) Unit Tes
           description: 'Computational scenario',
           effectiveFrom: '2025-01-01T00:00:00Z',
           effectiveTo: null,
-          authority: 'PANIN Delimitation Engine',
+          authority: 'POLIGRAM Delimitation Engine',
           isActive: false,
           metadata: {},
           createdAt: '2024-01-01T00:00:00Z',

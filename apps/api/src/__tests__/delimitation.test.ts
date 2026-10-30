@@ -460,7 +460,7 @@ describe('Delimitation Engine Foundation Routes (W020-G5)', () => {
       expect(current.dataStatus).toBe('OFFICIAL');
       expect(current.censusBasis).toContain('Census 2001');
 
-      // 2. PANIN Census 2011 Mathematical Derivation (Hamilton sequence on 2011 demographics)
+      // 2. POLIGRAM Census 2011 Mathematical Derivation (Hamilton sequence on 2011 demographics)
       const derived = json.data.census2011MathematicalDerivation;
       expect(derived).toBeDefined();
       expect(derived.total).toBe(119);
@@ -470,7 +470,7 @@ describe('Delimitation Engine Foundation Routes (W020-G5)', () => {
       expect(derived.scReserved + derived.stReserved + derived.general).toBe(119);
       expect(derived.outputClassification).toBe('DETERMINISTIC_DERIVED');
       expect(derived.dataStatus).toBe('DERIVED');
-      expect(derived.disclaimer).toContain('PANIN academic mathematical derivation');
+      expect(derived.disclaimer).toContain('POLIGRAM academic mathematical derivation');
 
       // Verify mathematical derivation is NOT exposed as statutory fact
       expect(derived.outputClassification).not.toBe('STATUTORY_FACT');
@@ -684,7 +684,7 @@ describe('Delimitation Engine Foundation Routes (W020-G5)', () => {
       }
     });
 
-    it('confirms methodology formulas state Hamilton is PANIN deterministic allocation applied to Article 332, not mandated by it', async () => {
+    it('confirms methodology formulas state Hamilton is POLIGRAM deterministic allocation applied to Article 332, not mandated by it', async () => {
       const res = await app.inject({
         method: 'GET',
         url: '/api/v1/delimitation/methodology',
@@ -694,7 +694,7 @@ describe('Delimitation Engine Foundation Routes (W020-G5)', () => {
       const json = JSON.parse(res.payload);
       const algoText = json.data.formulas.article332Algorithm;
       expect(algoText).toContain(
-        'PANIN deterministic Hamilton/Largest Remainder allocation applied to the Article 332 proportionality principle',
+        'POLIGRAM deterministic Hamilton/Largest Remainder allocation applied to the Article 332 proportionality principle',
       );
       expect(algoText).not.toContain('Article 332 mandates');
     });

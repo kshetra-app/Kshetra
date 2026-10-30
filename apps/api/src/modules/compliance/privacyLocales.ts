@@ -12,7 +12,7 @@ export const COMPLIANCE_PRIVACY_LOCALES: Record<SupportedPrivacyLocale, PrivacyN
   en: {
     locale: 'en',
     languageName: 'English',
-    privacyPolicyTitle: 'PanIN / Kshetra Statutory Privacy Notice & Citizen Data Charter',
+    privacyPolicyTitle: 'Poligram Statutory Privacy Notice & Citizen Data Charter',
     purposeSummary:
       'We process personal data strictly to deliver localized civic information, authenticate user accounts, provide statutory electoral geography, and facilitate lawful civic participation under the Digital Personal Data Protection Act, 2023.',
     dataCollectedSummary:
@@ -23,8 +23,8 @@ export const COMPLIANCE_PRIVACY_LOCALES: Record<SupportedPrivacyLocale, PrivacyN
       'You may withdraw consent at any time via App Settings > Privacy Controls > Withdraw Consent, or by lodging a request directly with our Data Protection Officer.',
     dpoContact: {
       name: 'Adv. S. Ramanathan, Data Protection Officer',
-      email: 'dpo@kshetra.io',
-      address: 'PanIN Privacy & Governance Cell, Connaught Place, New Delhi 110001, India',
+      email: 'dpo@poligram.in',
+      address: 'Poligram Privacy & Governance Cell, Connaught Place, New Delhi 110001, India',
     },
     dpbiAppealNotice:
       'If your grievance is not redressed within 30 days, you have the statutory right to appeal before the Data Protection Board of India under Section 28 of the DPDP Act, 2023.',

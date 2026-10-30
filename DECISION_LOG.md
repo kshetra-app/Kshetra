@@ -4681,3 +4681,27 @@
   - Regression test suites: Domain 7 (15/15 PASS), Domain 6 (22/22 PASS), JOB 036 (14/14 PASS), JOB 051 (4/4 PASS) -> 55/55 PASS (100%).
   - Total cumulative verified tests: 72/72 PASS (100%).
   - Formal evidence dossiers committed at reports/domain8_ai_governance_and_cost_control_report.json and reports/domain8_ai_governance_and_cost_control_report.md.
+
+
+---
+
+### DEC-194: Definitive Product Brand Reconciliation to POLIGRAM Across Whole Codebase
+- **Date:** 2026-10-30
+- **Status:** RATIFIED & EXECUTED (COMPLETE)
+- **Authority:** User Directive on Brand Unification & Asset Refresh, DEC-192, DEC-193 & AGENT_EXECUTION_PROTOCOL.md
+- **Context & Objectives:**
+  Reconciliation of platform branding across all application client surfaces, mobile native binaries, asset catalogs, backend APIs, OpenAPI specifications, documentation, and governance plans. The product identity officially converges from prototype code-name `Kshetra` and intermediate blueprint `PANIN` to **`Poligram`** (in general/sentence prose) and **`POLIGRAM`** (in all official headings, logotypes, wordmarks, and uppercase brand references).
+- **Execution Scope:**
+  1. **Canonical Artwork & Assets:** Integrated official symbol (`POLIGRAM_symbol_transparent_native.png`) and wordmark (`POLIGRAM_wordmark_transparent_native.png`). Generated full multi-resolution density mipmaps and drawables for Android (`mdpi` through `xxxhdpi` for `ic_launcher`, `ic_launcher_round`, `ic_launcher_foreground`, `splashscreen_logo`), Expo application icon (`icon.png`, `adaptive-icon.png`, `splash-icon.png`, `favicon.png`), and canonical logo repository files in `Logo/`.
+  2. **Mobile App Surface & Localizations:** Updated `apps/mobile/app.json` (`name: "Poligram"`), Android `strings.xml` (`app_name: "Poligram"`), `colors.xml`, `AndroidManifest.xml` (`poligram://` scheme), `STORE_LISTING.md` (`Poligram`), and all 13 official localizations (`en.ts`, `te.ts`, `hi.ts`, `ta.ts`, `kn.ts`, `mr.ts`, `bn.ts`, `gu.ts`, `ml.ts`, `pa.ts`, `or.ts`, `as.ts`, `ne.ts`). Reconciled mobile screens (`community.tsx`, `sign-in.tsx`, `MapFallback.tsx`, `more.tsx`, `simulator.tsx`, `DelimitationShareCard.tsx`, `aiService.ts`, `exportCivicData.ts`, `notifications.ts`, `LiveBroadcaster.tsx`, `seatCalculator.ts`).
+  3. **Backend API, Web Portals & OpenAPI Contracts:**
+     - Fastify API origins updated to include `poligram.in`, `poligram.app`.
+     - Reconciled Developer Portal (`apps/api/src/modules/saasOnboarding/docsHtml.ts`), Studio broadcaster HTML (`studioHtml.ts`), Web Admin portal (`apps/web-admin/index.html`, `Sidebar.tsx`, `Dashboard.tsx`), and Web Receiver (`apps/web-receiver/index.html`).
+     - OpenAPI 3.1 contract (`openapi-saas-v1.yaml`) retitled to `Poligram B2B Political SaaS & Public/Partner Developer API`, schema updated to `PoligramScenarioProvenance` (aliasing legacy `PaninScenarioProvenance`).
+     - Shared contracts (`delimitation.ts`, `universalAnalytics.ts`, `delimitationShare.ts`) updated with `POLIGRAM_SCENARIO` and `PoligramEmbedWidgetType`.
+     - API routes (`saasV1.ts`, `embeds.ts`, `civic.ts`, `developerPlatform.ts`, `delimitationService.ts`, `delimitationQueryService.ts`, `publicWebService.ts`) updated.
+  4. **Governance & Architectural Plans:** Reconciled `governance/plans/PLAN-DOMAIN-1` through `PLAN-DOMAIN-8`, `PLAN-W051*`, `PLAN-W052*`, `ACCEPTANCE_REGISTER.md`, `COMPLIANCE_DPDPA_READINESS.md`, `DEFECT_REGISTER.md`, `EXECUTION_STATE.md`, and `RUNBOOK_BACKUP_RECOVERY.md`.
+  5. **Verification & Zero-Regression Proof:**
+     - 202 automated unit and integration tests passing across all API test suites.
+     - Mobile application TypeScript compile (`tsc --noEmit`) 100% clean with zero errors.
+     - OpenAPI 3.1 specification parsed and validated with zero YAML syntax errors.

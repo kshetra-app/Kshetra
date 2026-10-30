@@ -5,12 +5,12 @@
  * Exposes:
  * - 7 Sandboxed, Responsive Embed Widgets: Constituency, Delimitation, Election, Candidate, Issue, Live, Short
  * - Permissive Framing Headers (X-Frame-Options: ALLOWALL, CSP: frame-ancestors *)
- * - Universal PostMessage Auto-Resizing Client Loader Script (/embed/panin-widgets.js)
+ * - Universal PostMessage Auto-Resizing Client Loader Script (/embed/poligram-widgets.js & legacy /embed/panin-widgets.js)
  */
 
 import type { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 import { embedService } from '../services/embedService';
-import type { PaninEmbedWidgetType } from '@kshetra/shared';
+import type { PoligramEmbedWidgetType } from '@kshetra/shared';
 
 function setEmbedHeaders(reply: FastifyReply) {
   reply.header('X-Frame-Options', 'ALLOWALL');
@@ -21,13 +21,15 @@ function setEmbedHeaders(reply: FastifyReply) {
 }
 
 export async function embedRoutes(app: FastifyInstance) {
-  // 1. GET /embed/panin-widgets.js (Universal Loader Script & Custom Web Component)
-  app.get('/embed/panin-widgets.js', async (request, reply) => {
+  // 1. GET /embed/poligram-widgets.js & legacy /embed/panin-widgets.js
+  const handleLoader = async (_request: FastifyRequest, reply: FastifyReply) => {
     reply.header('Content-Type', 'application/javascript');
     reply.header('Access-Control-Allow-Origin', '*');
     reply.header('Cache-Control', 'public, max-age=86400');
     return reply.send(embedService.getClientLoaderScript());
-  });
+  };
+  app.get('/embed/poligram-widgets.js', handleLoader);
+  app.get('/embed/panin-widgets.js', handleLoader);
 
   // 2. GET /embed/constituency/:acId
   app.get<{ Params: { acId: string } }>(

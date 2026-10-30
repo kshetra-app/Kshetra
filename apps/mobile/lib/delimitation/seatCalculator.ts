@@ -161,10 +161,10 @@ export function computeAllSeatAllocations(
       general,
       model,
       seatProvenance: {
-        authorityLayer: 'PANIN_SCENARIO',
+        authorityLayer: 'POLIGRAM_SCENARIO',
         computationalType: 'ACADEMIC_SIMULATION',
         officialDelimitationOrder: false,
-        governingInstrument: 'PANIN State Assembly Apportionment Simulator (Articles 170 / 81 Model)',
+        governingInstrument: 'Poligram State Assembly Apportionment Simulator (Articles 170 / 81 Model)',
         constitutionalBasis: 'Article 170(1) State Legislative Assembly bounds (60-500) & Article 332 reservations',
         enactmentStatusNotes: 'Analytical research scenario only. Not an official gazetted order of the Delimitation Commission of India.',
         isOfficialResult: false,

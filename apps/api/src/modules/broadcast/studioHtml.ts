@@ -1,5 +1,5 @@
 /**
- * Kshetra / PanIN Studio Web Broadcaster
+ * Poligram Studio Web Broadcaster
  * In-browser WebRTC-WHIP Studio Ingestion Client
  * Standard: IETF WHIP RFC Draft, Zero-Native-Binary Overhead
  */
@@ -10,7 +10,7 @@ export function renderStudioHtml(): string {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PanIN Creator Studio — Professional Live Broadcaster</title>
+  <title>Poligram Creator Studio — Professional Live Broadcaster</title>
   <style>
     :root {
       --bg: #090d16;
@@ -122,7 +122,7 @@ export function renderStudioHtml(): string {
 </head>
 <body>
   <header>
-    <div class="logo">PANIN <span>STUDIO</span></div>
+    <div class="logo">POLIGRAM <span>STUDIO</span></div>
     <div id="liveBadge" class="badge-live"><div class="dot"></div>LIVE ON AIR</div>
   </header>
   <main>
