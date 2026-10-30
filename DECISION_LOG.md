@@ -4530,3 +4530,23 @@
   - Regression unit suites: 19/19 tests passing across all Domain 3 civic suites; Domain 5 media tests passing 100%.
   - Monorepo typecheck: 100% clean across `@kshetra/shared`, `@kshetra/api`, and `apps/mobile` (`tsc --noEmit`, 0 errors).
   - Evidence dossiers committed at `reports/job036_civic_issue_lifecycle_report.json` and `reports/job036_civic_issue_lifecycle_report.md`.
+
+---
+
+### DEC-185: Pre-Implementation Planning & Architectural Submission for Domain 6 (Political Finance, Campaign Management, Advertising & Monetization Engine: JOB 054–061)
+- **Date:** 2026-10-30
+- **Status:** SUBMITTED_FOR_REVIEW (Implementation Authorization: NO)
+- **Authority:** Master Product Blueprint (Jobs 054–061), Amendment v1.2, Amendment v1.5-A Section 26 & AGENT_EXECUTION_PROTOCOL.md
+- **Context:** Following the user's directive to proceed with Domain 6: Political Finance, Campaign Management, Advertising & Monetization Engine, a comprehensive 22-section Pre-Implementation Plan was authored and committed to governance/plans/PLAN-DOMAIN-6-POLITICAL-FINANCE-CAMPAIGNS-ADS-REV-1.0.md.
+- **Scope of Domain 6:**
+  - **JOB 054:** Campaign Foundation (Workspaces, RBAC 5-roles, candidate/party entity binding).
+  - **JOB 055:** Campaign Geographic Intelligence (Constituency territory analytics, civic issues heatmaps, voter sentiment).
+  - **JOB 056:** Campaign Communication & Team Workflow (Multi-channel publishing, draft-review-approval pipeline).
+  - **JOB 057:** Political Advertising & Statutory Disclosures (Advertiser KYC, ECI MCMC pre-certification gate, public transparency ledger).
+  - **JOB 058:** Commercial Ads V1 (Deterministic geo-targeted ads, local merchant slots, daily/lifetime budgets, frequency capping).
+  - **JOB 059:** Ad Measurement & Telemetry (Signed viewTokens, anti-fraud IVT click filtering, CTR & reach rollup).
+  - **JOB 060:** Ad Billing, Invoicing & Financial Ledger (Double-entry transaction ledger, 18% GST tax invoices, automated CPM/CPC wallet deductions).
+  - **JOB 061:** Commercial Self-Serve Ads Portal (End-to-end 8-stage self-serve onboarding simulation).
+- **Control M Status:**
+  - Plan document authored and submitted for review.
+  - Implementation authorization remains frozen (IMPLEMENTATION_AUTHORIZATION = NO) pending user ratification of the 3 strategic architectural decisions.
