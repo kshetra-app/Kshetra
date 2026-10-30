@@ -4757,3 +4757,25 @@
   - Dedicated automated test battery: `tests/job102-immersive-map-and-adaptive-controls.test.ts` (6/6 PASS - 100%).
   - Full TypeScript typecheck: `npx tsc --noEmit` across `apps/mobile` (0 errors, 100% clean).
   - Monorepo package builds: `packages/shared` and `apps/api` (0 errors, 100% clean).
+
+---
+
+### DEC-198: Master Pre-Implementation Plan Submission for Domain 9 (Offline Synchronization, Screen Resilience & Enterprise Admin Plane: JOB 072–JOB 076)
+- **Date:** 2026-10-30
+- **Status:** SUBMITTED_FOR_REVIEW (Awaiting User Ratification & Control M Authorization)
+- **Authority:** Master Product Blueprint, AI Agent Master Execution Job Book, Amendment v1.2, Amendment v1.5-A Section 26, Amendment v1.6 & AGENT_EXECUTION_PROTOCOL.md
+- **Context & Objectives:**
+  Following the certified completion of JOB 102 (DEC-197), authored and submitted the canonical 22-section Pre-Implementation Plan `governance/plans/PLAN-DOMAIN-9-OFFLINE-SYNC-RESILIENCE-ADMIN-PIPELINES-REV-1.0.md` for Domain 9, covering:
+  1. **JOB 072 (Offline Mode):** Formalizing the 5-state client-side mutation sync lifecycle (`LOCAL_ONLY`, `QUEUED`, `SYNCING`, `SYNCED`, `FAILED`) with optimistic store updates, persistent local queueing, and network reconnection replay.
+  2. **JOB 073 (Error State Standardization):** Universal 5-state UX resilience component (`<StateView>`) with layout-matched shimmer skeletons (`loading`), empathetic Indic civic illustrations and CTAs (`empty`), humanized error messages with correlation IDs (`error`), cooldown-gated retry dispatchers (`retry`), and offline indicator banners (`offline`) across all primary mobile surfaces.
+  3. **JOB 074 (Admin Control Plane):** Hardened Fastify administrative REST API with multi-tier RBAC (`admin`, `super_admin`) across 9 functions (`users`, `moderation`, `verification`, `data correction`, `campaigns`, `ads`, `billing`, `feature flags`, `audit`) and append-only audit ledger (`admin_audit_ledger`).
+  4. **JOB 075 (Data Ingestion Pipeline):** Canonical 8-stage robust data processing pipeline (`source -> raw snapshot -> parser -> normalization -> validation -> reconciliation -> production -> version`) with cryptographic SHA-256 snapshotting and transactional staging promotion.
+  5. **JOB 076 (Delimitation Source Pipeline):** Geographic boundary mutation pipeline with PostGIS topological integrity auditing (overlap detection, sliver elimination, state containment) and automated area delta ($\Delta km^2$), centroid displacement ($meters$), and voter crosswalk calculations.
+- **Architectural Decisions Formulated:**
+  - Decision 1 (Offline Mutation Queue & Conflict Resolution Strategy): Option A (Monotonic Idempotency Queue + LWW + Local Rollback) vs Option B (Simple optimistic store).
+  - Decision 2 (Universal Screen Resilience & State Fallback Engine): Option A (Composable `<StateView>` Layout Controller) vs Option B (Primitive ActivityIndicator).
+  - Decision 3 (Admin Control Plane RBAC & Separation of Duties): Option A (Multi-Role Tiered RBAC + Immutable HMAC Audit Ledger) vs Option B (Flat single-role flag).
+  - Decision 4 (8-Stage Data Ingestion Pipeline Architecture): Option A (Content-Addressed Staged Pipeline with Transactional Rollback) vs Option B (Direct batch scripts).
+  - Decision 5 (Delimitation Source Pipeline & Spatial Topology Invariants): Option A (Dual-Mesh PostGIS Differential Impact Engine) vs Option B (Manual boundary upload).
+- **Next Steps:**
+  Await user review, architectural decision ratification, and explicit implementation authorization under Control M before source code execution.
