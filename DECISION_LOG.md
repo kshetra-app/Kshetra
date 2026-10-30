@@ -4479,3 +4479,21 @@
   - Grand total tests: 145/145 PASS (100%).
   - Monorepo typecheck: 100% clean across `@kshetra/shared`, `@kshetra/api`, and `apps/mobile` (`tsc --noEmit`, 0 errors).
   - Evidence dossiers committed at `reports/domain5_media_broadcasting_report.json` and `reports/domain5_media_broadcasting_report.md`.
+
+
+---
+
+### DEC-182: Formulation & Submission of JOB 036 (Civic Issue Lifecycle Engine) Pre-Implementation Plan
+- **Date:** 2026-10-30
+- **Status:** PLAN_SUBMITTED_FOR_REVIEW (IMPLEMENTATION_AUTHORIZATION = NO)
+- **Authority:** Master Product Blueprint (Section 1441), Amendment v1.2, Amendment v1.5-A Section 26 & AGENT_EXECUTION_PROTOCOL.md
+- **Context:** Following the completion and closure of Domain 5 (DEC-181), architectural reconciliation identified that while civic reporting was indexed under JOB 030-035 in earlier iterations, **JOB 036 (`# CIVIC ISSUE LIFECYCLE`)** from Section 1441 of the Master Product Blueprint—specifying the mandatory 8-state transition machine (`REPORTED → REVIEW → VERIFIED → ASSIGNED → IN_PROGRESS → RESOLVED → CONFIRMED/DISPUTED → CLOSED`)—remained formally unrecorded in `ACCEPTANCE_REGISTER.md`. The user explicitly authorized proceeding with the formulation of the Pre-Implementation Plan for JOB 036.
+- **Architectural Scope of JOB 036:**
+  1. Canonical 8-Stage State Machine: `REPORTED`, `REVIEW`, `VERIFIED`, `ASSIGNED`, `IN_PROGRESS`, `RESOLVED`, `CONFIRMED`, `DISPUTED`, `CLOSED`.
+  2. Dual-stack backward-compatible state alias normalization preserving existing client integrations (`open`, `acknowledged`, `in_progress`, `resolved`, `reopened`, `closed`).
+  3. Role-based transition authority matrix (citizen reporter, community residents, municipal officials, MLA desks).
+  4. Immutable status history ledger recording actor, role, timestamp, action note, and resolution evidence.
+  5. Community consensus dispute mechanics (5 community disputes auto-reopen resolved issues to `DISPUTED`).
+- **Operational Authorization:**
+  - Plan document authored and committed to `governance/plans/PLAN-JOB-036-CIVIC-ISSUE-LIFECYCLE-REV-1.0.md`.
+  - Implementation authorization remains frozen (`IMPLEMENTATION_AUTHORIZATION = NO`) pending user ratification of the architectural decisions.
