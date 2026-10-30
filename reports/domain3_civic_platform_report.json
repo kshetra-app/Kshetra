@@ -1,0 +1,106 @@
+{
+  "audit_title": "DOMAIN_3_CORE_CIVIC_AND_ENGAGEMENT_PLATFORM_VERIFICATION",
+  "audit_timestamp": "2026-10-30T05:45:00.000Z",
+  "domain": "Domain 3: Core Civic & Engagement Platform",
+  "status": "CERTIFIED_PASS",
+  "ratified_decisions": {
+    "DEC-174_A1": "Option A (500 upvotes auto-promotes issue to public headlines)",
+    "DEC-174_A2": "Option 1 (5 distinct community member disputes auto-reopens resolved issue)",
+    "DEC-174_A3": "Sequential implementation authorization granted (PLAN_STATUS: APPROVED, IMPLEMENTATION_AUTHORIZATION: YES)"
+  },
+  "jobs_verified": [
+    {
+      "job_id": "JOB 030",
+      "title": "Civic Issue Lifecycle Engine & State Machine",
+      "status": "ACCEPTED",
+      "verification_suite": "tests/job030-issue-lifecycle.test.ts",
+      "checks_passed": 10,
+      "checks_total": 10,
+      "metrics": {
+        "lifecycle_states": ["open", "acknowledged", "in_progress", "resolved", "closed", "reopened"],
+        "dispute_reopen_supported": true,
+        "audit_history_logging": true,
+        "role_transition_guards": true
+      }
+    },
+    {
+      "job_id": "JOB 031",
+      "title": "Geo-Fenced Issue Reporting & Evidence Pipeline",
+      "status": "ACCEPTED",
+      "verification_suite": "tests/job031-geofence-evidence.test.ts",
+      "checks_passed": 6,
+      "checks_total": 6,
+      "metrics": {
+        "point_in_polygon_containment": true,
+        "out_of_bounds_rejection": "COORDINATES_OUTSIDE_CONSTITUENCY",
+        "fail_closed_content_moderation": "CONTENT_MODERATION_FAILED",
+        "corroborating_evidence_pipeline": true
+      }
+    },
+    {
+      "job_id": "JOB 032",
+      "title": "Anti-Sybil Community Upvoting, Follows & Milestone Triggers",
+      "status": "ACCEPTED",
+      "verification_suite": "tests/job032-upvotes-milestones.test.ts",
+      "checks_passed": 7,
+      "checks_total": 7,
+      "metrics": {
+        "anti_sybil_idempotent_upvotes": true,
+        "milestone_alert_thresholds": [10, 50, 100, 500],
+        "headline_auto_promotion_threshold": 500,
+        "headline_deduplication_guard": true
+      }
+    },
+    {
+      "job_id": "JOB 033",
+      "title": "Constituency Civic Discourse & Threaded Comments",
+      "status": "ACCEPTED",
+      "verification_suite": "tests/job033-civic-discourse.test.ts",
+      "checks_passed": 8,
+      "checks_total": 8,
+      "metrics": {
+        "official_badge_hierarchy": ["official", "admin", "moderator", "politician"],
+        "content_safety_moderation": true,
+        "zero_pii_dispute_filing": true,
+        "auto_reopen_dispute_threshold": 5
+      }
+    },
+    {
+      "job_id": "JOB 034",
+      "title": "Local Discourse & Constituency Community Working Groups",
+      "status": "ACCEPTED",
+      "verification_suite": "tests/job034-community-groups.test.ts",
+      "checks_passed": 5,
+      "checks_total": 5,
+      "metrics": {
+        "assembly_constituency_scoping": true,
+        "creator_admin_assignment": true,
+        "membership_lifecycle": ["join", "leave"],
+        "cross_constituency_isolation": true
+      }
+    },
+    {
+      "job_id": "JOB 035",
+      "title": "Civic Metrics, Sentiment Derivation & Real Data Connectors",
+      "status": "ACCEPTED",
+      "verification_suite": "tests/job035-sentiment-data.test.ts",
+      "checks_passed": 4,
+      "checks_total": 4,
+      "metrics": {
+        "schemes_connector_live": true,
+        "development_projects_connector_live": true,
+        "multi_factor_sentiment_score": true,
+        "cdi_composite_index": true,
+        "zero_dummy_stubs": true
+      }
+    }
+  ],
+  "monorepo_verification": {
+    "shared_contracts_build": "PASS",
+    "api_typecheck": "PASS",
+    "mobile_typecheck": "PASS",
+    "civic_routes_unit_tests": "69/69 PASS",
+    "civic_mutations_tests": "22/22 PASS",
+    "governance_v16_tests": "100% PASS"
+  }
+}

@@ -7,3 +7,4 @@ export * from './compliance';
 export * from './geography';
 export * from './delimitationShare';
 export * from './broadcast';
+export * from './civic';

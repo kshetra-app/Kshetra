@@ -1,6 +1,15 @@
 import type { FastifyInstance } from 'fastify';
 import { sendApiError } from '../lib/replyHelper';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
+import {
+  civicService,
+  InvalidCivicStatusTransitionError,
+  CoordinatesOutsideConstituencyError,
+  ContentPolicyViolationError,
+  DisputeNotAllowedError,
+} from '../services/civicService';
+import { canonicalGeographyService } from '../services/canonicalGeographyService';
+import { checkContentModeration } from '../services/contentModeration';
 
 // Schema definitions for civic endpoints
 const budgetSchema = {
@@ -17,8 +26,10 @@ const budgetSchema = {
       properties: {
         stateCode: { type: 'string' },
         message: { type: 'string' },
+        budget: { type: 'object', additionalProperties: true },
       },
       required: ['stateCode', 'message'],
+      additionalProperties: true,
     },
   },
 };
@@ -298,8 +309,21 @@ const cdiSchema = {
       properties: {
         constituencyId: { type: 'string' },
         message: { type: 'string' },
+        metrics: {
+          type: 'object',
+          properties: {
+            constituencyId: { type: 'string' },
+            overallScore: { type: 'number' },
+            openIssuesCount: { type: 'number' },
+            resolvedIssuesCount: { type: 'number' },
+            activeProjectsCount: { type: 'number' },
+            totalProjectBudgetInr: { type: 'number' },
+            sentimentScore: { type: 'number' },
+          },
+        },
       },
       required: ['constituencyId', 'message'],
+      additionalProperties: true,
     },
   },
 };
@@ -319,8 +343,11 @@ const issueUpvoteSchema = {
         success: { type: 'boolean' },
         issueId: { type: 'string' },
         message: { type: 'string' },
+        upvoteCount: { type: 'number' },
+        promotedToHeadline: { type: 'boolean' },
       },
       required: ['success', 'issueId'],
+      additionalProperties: true,
     },
   },
 };
@@ -381,6 +408,11 @@ const createIssueSchema = {
       constituencyId: { type: 'string' },
       stateCode: { type: 'string', pattern: '^[A-Z]{2}$' },
       mediaUrls: { type: 'array', items: { type: 'string' } },
+      latitude: { type: 'number' },
+      longitude: { type: 'number' },
+      locality: { type: 'string' },
+      ward: { type: 'string' },
+      mandal: { type: 'string' },
     },
   },
   response: {
@@ -390,8 +422,10 @@ const createIssueSchema = {
         success: { type: 'boolean' },
         id: { type: 'string' },
         message: { type: 'string' },
+        issue: { type: 'object', additionalProperties: true },
       },
       required: ['success', 'id'],
+      additionalProperties: true,
     },
   },
 };
@@ -410,7 +444,7 @@ const updateIssueStatusSchema = {
     properties: {
       status: {
         type: 'string',
-        enum: ['open', 'acknowledged', 'in_progress', 'resolved', 'closed'],
+        enum: ['open', 'acknowledged', 'in_progress', 'resolved', 'closed', 'reopened'],
       },
       note: { type: 'string', maxLength: 500 },
     },
@@ -425,6 +459,210 @@ const updateIssueStatusSchema = {
         message: { type: 'string' },
       },
       required: ['success', 'issueId', 'status'],
+      additionalProperties: true,
+    },
+  },
+};
+
+const listIssuesSchema = {
+  querystring: {
+    type: 'object',
+    properties: {
+      constituencyId: { type: 'string' },
+      stateCode: { type: 'string', pattern: '^[A-Z]{2}$' },
+      category: { type: 'string' },
+      status: { type: 'string' },
+      page: { type: 'integer', minimum: 1 },
+      limit: { type: 'integer', minimum: 1, maximum: 100 },
+    },
+  },
+  response: {
+    200: {
+      type: 'object',
+      properties: {
+        issues: { type: 'array' },
+        total: { type: 'number' },
+      },
+      required: ['issues', 'total'],
+      additionalProperties: true,
+    },
+  },
+};
+
+const getIssueSchema = {
+  params: {
+    type: 'object',
+    required: ['id'],
+    properties: { id: { type: 'string', minLength: 1 } },
+  },
+  response: {
+    200: {
+      type: 'object',
+      properties: {
+        success: { type: 'boolean' },
+        issue: { type: 'object', additionalProperties: true },
+      },
+      required: ['success', 'issue'],
+      additionalProperties: true,
+    },
+  },
+};
+
+const addEvidenceSchema = {
+  params: {
+    type: 'object',
+    required: ['id'],
+    properties: { id: { type: 'string', minLength: 1 } },
+  },
+  body: {
+    type: 'object',
+    required: ['mediaUrl'],
+    properties: {
+      mediaUrl: { type: 'string', minLength: 5 },
+      caption: { type: 'string', maxLength: 300 },
+    },
+  },
+  response: {
+    200: {
+      type: 'object',
+      properties: {
+        success: { type: 'boolean' },
+        id: { type: 'string' },
+        issueId: { type: 'string' },
+        mediaUrl: { type: 'string' },
+        caption: { type: 'string' },
+      },
+      required: ['success', 'id', 'issueId'],
+      additionalProperties: true,
+    },
+  },
+};
+
+const getIssueHistorySchema = {
+  params: {
+    type: 'object',
+    required: ['id'],
+    properties: { id: { type: 'string', minLength: 1 } },
+  },
+  response: {
+    200: {
+      type: 'object',
+      properties: {
+        history: { type: 'array' },
+        total: { type: 'number' },
+      },
+      required: ['history', 'total'],
+      additionalProperties: true,
+    },
+  },
+};
+
+const getIssueCommentsSchema = {
+  params: {
+    type: 'object',
+    required: ['id'],
+    properties: { id: { type: 'string', minLength: 1 } },
+  },
+  response: {
+    200: {
+      type: 'object',
+      properties: {
+        comments: { type: 'array' },
+        total: { type: 'number' },
+      },
+      required: ['comments', 'total'],
+      additionalProperties: true,
+    },
+  },
+};
+
+const getSentimentSchema = {
+  params: {
+    type: 'object',
+    required: ['constituencyId'],
+    properties: { constituencyId: { type: 'string', minLength: 1 } },
+  },
+  response: {
+    200: {
+      type: 'object',
+      properties: {
+        constituencyId: { type: 'string' },
+        constituencyName: { type: 'string' },
+        positiveCount: { type: 'number' },
+        negativeCount: { type: 'number' },
+        neutralCount: { type: 'number' },
+        totalPosts: { type: 'number' },
+        score: { type: 'number' },
+        topIssues: { type: 'array', items: { type: 'string' } },
+      },
+      required: ['constituencyId', 'score', 'totalPosts'],
+      additionalProperties: true,
+    },
+  },
+};
+
+const listGroupsSchema = {
+  querystring: {
+    type: 'object',
+    required: ['constituencyId'],
+    properties: {
+      constituencyId: { type: 'string', minLength: 1 },
+    },
+  },
+  response: {
+    200: {
+      type: 'object',
+      properties: {
+        groups: { type: 'array' },
+        total: { type: 'number' },
+      },
+      required: ['groups', 'total'],
+      additionalProperties: true,
+    },
+  },
+};
+
+const createGroupSchema = {
+  body: {
+    type: 'object',
+    required: ['name', 'constituencyId', 'category'],
+    properties: {
+      name: { type: 'string', minLength: 3, maxLength: 100 },
+      constituencyId: { type: 'string', minLength: 1 },
+      category: { type: 'string', minLength: 1 },
+      description: { type: 'string', maxLength: 500 },
+    },
+  },
+  response: {
+    200: {
+      type: 'object',
+      properties: {
+        success: { type: 'boolean' },
+        group: { type: 'object', additionalProperties: true },
+      },
+      required: ['success', 'group'],
+      additionalProperties: true,
+    },
+  },
+};
+
+const groupMembershipSchema = {
+  params: {
+    type: 'object',
+    required: ['id'],
+    properties: { id: { type: 'string', minLength: 1 } },
+  },
+  response: {
+    200: {
+      type: 'object',
+      properties: {
+        success: { type: 'boolean' },
+        groupId: { type: 'string' },
+        memberCount: { type: 'number' },
+        message: { type: 'string' },
+      },
+      required: ['success', 'groupId'],
+      additionalProperties: true,
     },
   },
 };
@@ -627,9 +865,22 @@ export async function civicRoutes(app: FastifyInstance) {
     },
     async (request) => {
       const { state, category, level } = request.query;
+      let schemesList: any[] = [];
+      if (isSupabaseConfigured) {
+        try {
+          let q = supabase.from('government_schemes').select('*');
+          if (state) q = q.or(`state_code.eq.${state},state_code.is.null`);
+          if (category) q = q.eq('category', category);
+          const { data, error } = await q;
+          if (!error && data && data.length > 0) schemesList = data;
+        } catch {}
+      }
+      if (schemesList.length === 0) {
+        schemesList = await civicService.getSchemes({ stateCode: state, category });
+      }
       return {
-        schemes: [],
-        total: 0,
+        schemes: schemesList,
+        total: schemesList.length,
         filters: { state, category, level },
       };
     },
@@ -652,9 +903,23 @@ export async function civicRoutes(app: FastifyInstance) {
     },
     async (request) => {
       const { state, phase, category, constituency } = request.query;
+      let projectsList: any[] = [];
+      if (isSupabaseConfigured) {
+        try {
+          let q = supabase.from('development_projects').select('*');
+          if (state) q = q.eq('state_code', state);
+          if (constituency) q = q.eq('constituency_id', constituency);
+          if (category) q = q.eq('category', category);
+          const { data, error } = await q;
+          if (!error && data && data.length > 0) projectsList = data;
+        } catch {}
+      }
+      if (projectsList.length === 0) {
+        projectsList = await civicService.getProjects({ constituencyId: constituency, stateCode: state });
+      }
       return {
-        projects: [],
-        total: 0,
+        projects: projectsList,
+        total: projectsList.length,
         filters: { state, phase, category, constituency },
       };
     },
@@ -843,9 +1108,11 @@ export async function civicRoutes(app: FastifyInstance) {
     },
     async (request) => {
       const { constituencyId } = request.params;
+      const metrics = await civicService.getConstituencyDevelopmentIndex(constituencyId);
       return {
         constituencyId,
         message: 'CDI endpoint — connect to Supabase for live data',
+        metrics,
       };
     },
   );
@@ -886,7 +1153,43 @@ export async function civicRoutes(app: FastifyInstance) {
           code: 'DATABASE_ERROR',
         });
       }
-      return { success: true, issueId: id, message: 'Issue upvoted successfully' };
+
+      // Check milestones & auto-promotion to headlines (Decision 1: Option A at 500 upvotes)
+      let upvoteCount = 1;
+      let promotedToHeadline = false;
+      try {
+        const { count } = await supabase
+          .from('issue_upvotes')
+          .select('*', { count: 'exact', head: true })
+          .eq('issue_id', id);
+        if (count !== null && count !== undefined) upvoteCount = count;
+
+        if (upvoteCount >= 500) {
+          const { data: issueData } = await supabase.from('civic_issues').select('*').eq('id', id).maybeSingle();
+          if (issueData) {
+            await supabase.from('headlines').upsert({
+              id: `hl_auto_${id}`,
+              title: `${issueData.constituency_id || issueData.state_code}: ${issueData.title} — 500+ citizens demand immediate action`,
+              summary: issueData.description || issueData.title,
+              source_name: 'Kshetra / PanIN Citizen Action',
+              source_url: `https://poligram.in/issues/${id}`,
+              category: issueData.category,
+              state_code: issueData.state_code,
+              constituency_id: issueData.constituency_id,
+              published_at: new Date().toISOString(),
+            });
+            promotedToHeadline = true;
+          }
+        }
+      } catch {}
+
+      return {
+        success: true,
+        issueId: id,
+        message: 'Issue upvoted successfully',
+        upvoteCount,
+        promotedToHeadline,
+      };
     },
   );
 
@@ -1002,6 +1305,11 @@ export async function civicRoutes(app: FastifyInstance) {
       constituencyId?: string;
       stateCode: string;
       mediaUrls?: string[];
+      latitude?: number;
+      longitude?: number;
+      locality?: string;
+      ward?: string;
+      mandal?: string;
     };
   }>(
     '/api/v1/civic/issues',
@@ -1028,6 +1336,43 @@ export async function civicRoutes(app: FastifyInstance) {
         });
       }
       const body = request.body;
+
+      // Fail-closed content moderation check
+      const modCheck = await checkContentModeration(`${body.title} ${body.description || ''}`);
+      if (modCheck.flagged) {
+        return sendApiError(
+          reply,
+          request,
+          422,
+          'Unprocessable Entity',
+          `Content rejected due to policy violations: ${modCheck.reasons.join(', ')}`,
+          {
+            code: 'CONTENT_MODERATION_FAILED',
+            details: modCheck.reasons.map((r) => ({ path: 'content', message: r })),
+          },
+        );
+      }
+
+      // Geo-fence point-in-polygon check if coordinates provided
+      if (body.latitude !== undefined && body.longitude !== undefined) {
+        const locateResult = await canonicalGeographyService.locatePoint({
+          lat: body.latitude,
+          lng: body.longitude,
+        });
+        if (locateResult.constituency && body.constituencyId && locateResult.constituency.id !== body.constituencyId) {
+          return sendApiError(
+            reply,
+            request,
+            400,
+            'Bad Request',
+            `Coordinates [${body.latitude}, ${body.longitude}] fall in ${locateResult.constituency.id}, outside declared constituency ${body.constituencyId}`,
+            {
+              code: 'COORDINATES_OUTSIDE_CONSTITUENCY',
+            },
+          );
+        }
+      }
+
       const { data, error } = await supabase
         .from('civic_issues')
         .insert({
@@ -1039,6 +1384,8 @@ export async function civicRoutes(app: FastifyInstance) {
           state_code: body.stateCode,
           reporter_id: auth.userId,
           media_urls: body.mediaUrls || [],
+          latitude: body.latitude,
+          longitude: body.longitude,
           status: 'open',
         })
         .select('id')
@@ -1055,6 +1402,17 @@ export async function civicRoutes(app: FastifyInstance) {
           },
         );
       }
+
+      try {
+        await supabase.from('issue_status_history').insert({
+          issue_id: data.id,
+          from_status: 'open',
+          to_status: 'open',
+          changed_by: auth.userId,
+          note: 'Issue reported',
+        });
+      } catch {}
+
       return { success: true, id: data.id, message: 'Civic issue reported successfully' };
     },
   );
@@ -1123,9 +1481,24 @@ export async function civicRoutes(app: FastifyInstance) {
         );
       }
 
+      // Lifecycle State Machine validation
+      try {
+        civicService.validateStatusTransition(issue.status as any, status as any, auth.role, isAuthor);
+      } catch (err: any) {
+        return sendApiError(reply, request, 400, 'Bad Request', err.message, {
+          code: err.code || 'INVALID_STATUS_TRANSITION',
+        });
+      }
+
       const { error: updateErr } = await supabase
         .from('civic_issues')
-        .update({ status, updated_at: new Date().toISOString() })
+        .update({
+          status,
+          resolution_note: status === 'resolved' ? note : null,
+          resolved_at: status === 'resolved' ? new Date().toISOString() : null,
+          resolved_by: status === 'resolved' ? auth.userId : null,
+          updated_at: new Date().toISOString(),
+        })
         .eq('id', id);
       if (updateErr) {
         return sendApiError(reply, request, 500, 'Internal Server Error', updateErr.message, {
@@ -1320,7 +1693,340 @@ export async function civicRoutes(app: FastifyInstance) {
           code: 'DATABASE_ERROR',
         });
       }
-      return { success: true, issueId: id, disputed: true };
+
+      // Check if disputes reach 5 to trigger auto-reopen (Decision 2: Option 1)
+      let disputeCount = 1;
+      let reopened = false;
+      try {
+        const { count } = await supabase
+          .from('issue_disputes')
+          .select('*', { count: 'exact', head: true })
+          .eq('issue_id', id);
+        if (count !== null && count !== undefined) disputeCount = count;
+
+        if (disputeCount >= 5) {
+          const { data: currentIssue } = await supabase
+            .from('civic_issues')
+            .select('status')
+            .eq('id', id)
+            .maybeSingle();
+
+          if (currentIssue && currentIssue.status === 'resolved') {
+            await supabase
+              .from('civic_issues')
+              .update({
+                status: 'reopened',
+                resolved_at: null,
+                dispute_count: disputeCount,
+                updated_at: new Date().toISOString(),
+              })
+              .eq('id', id);
+
+            await supabase.from('issue_status_history').insert({
+              issue_id: id,
+              from_status: 'resolved',
+              to_status: 'reopened',
+              changed_by: 'system_community_consensus',
+              note: `Auto-reopened: ${disputeCount} community disputes filed within resolution window`,
+            });
+            reopened = true;
+          }
+        }
+      } catch {}
+
+      return { success: true, issueId: id, disputed: true, disputeCount, reopened };
+    },
+  );
+
+  /** 20. GET /api/v1/civic/issues — list civic issues */
+  app.get<{
+    Querystring: {
+      constituencyId?: string;
+      stateCode?: string;
+      category?: string;
+      status?: string;
+      page?: number;
+      limit?: number;
+    };
+  }>(
+    '/api/v1/civic/issues',
+    {
+      schema: listIssuesSchema,
+    },
+    async (request) => {
+      const { constituencyId, stateCode, category, status } = request.query;
+      let issuesList: any[] = [];
+      if (isSupabaseConfigured) {
+        try {
+          let q = supabase.from('civic_issues').select('*');
+          if (constituencyId) q = q.eq('constituency_id', constituencyId);
+          if (stateCode) q = q.eq('state_code', stateCode);
+          if (category && category !== 'all') q = q.eq('category', category);
+          if (status && status !== 'all') q = q.eq('status', status);
+          const { data, error } = await q.order('created_at', { ascending: false });
+          if (!error && data && data.length > 0) issuesList = data;
+        } catch {}
+      }
+      if (issuesList.length === 0) {
+        issuesList = await civicService.listIssues({ constituencyId, stateCode, category, status });
+      }
+      return { issues: issuesList, total: issuesList.length };
+    },
+  );
+
+  /** 21. GET /api/v1/civic/issues/:id — get civic issue detail */
+  app.get<{
+    Params: { id: string };
+  }>(
+    '/api/v1/civic/issues/:id',
+    {
+      schema: getIssueSchema,
+    },
+    async (request, reply) => {
+      const { id } = request.params;
+      const issue = await civicService.getIssue(id);
+      if (!issue) {
+        return sendApiError(reply, request, 404, 'Not Found', `Civic issue ${id} not found`, {
+          code: 'NOT_FOUND',
+        });
+      }
+      return { success: true, issue };
+    },
+  );
+
+  /** 22. POST /api/v1/civic/issues/:id/evidence — add corroborating photo evidence */
+  app.post<{
+    Params: { id: string };
+    Body: { mediaUrl: string; caption?: string };
+  }>(
+    '/api/v1/civic/issues/:id/evidence',
+    {
+      schema: addEvidenceSchema,
+    },
+    async (request, reply) => {
+      const auth = await resolveAuthUser(request);
+      if (!auth) {
+        return sendApiError(reply, request, 401, 'Unauthorized', 'Authentication required to add evidence', {
+          code: 'UNAUTHORIZED',
+        });
+      }
+      if (!isSupabaseConfigured) {
+        return sendApiError(reply, request, 503, 'Service Unavailable', 'Database is unavailable', {
+          code: 'DATABASE_UNAVAILABLE',
+        });
+      }
+      const { id } = request.params;
+      const { mediaUrl, caption } = request.body;
+      try {
+        const evidence = await civicService.addEvidence(
+          id,
+          { mediaUrl, caption },
+          { userId: auth.userId, userName: (request.headers['x-user-name'] as string) || 'Citizen Reporter' },
+        );
+        return {
+          success: true,
+          id: evidence.id,
+          issueId: evidence.issueId,
+          mediaUrl: evidence.mediaUrl,
+          caption: evidence.caption,
+        };
+      } catch (err: any) {
+        return sendApiError(reply, request, 400, 'Bad Request', err.message, {
+          code: err.code || 'BAD_REQUEST',
+        });
+      }
+    },
+  );
+
+  /** 23. GET /api/v1/civic/issues/:id/history — get issue audit status history */
+  app.get<{
+    Params: { id: string };
+  }>(
+    '/api/v1/civic/issues/:id/history',
+    {
+      schema: getIssueHistorySchema,
+    },
+    async (request) => {
+      const { id } = request.params;
+      if (isSupabaseConfigured) {
+        try {
+          const { data, error } = await supabase
+            .from('issue_status_history')
+            .select('*')
+            .eq('issue_id', id)
+            .order('created_at', { ascending: true });
+          if (!error && data) {
+            return { history: data, total: data.length };
+          }
+        } catch {}
+      }
+      return { history: [], total: 0 };
+    },
+  );
+
+  /** 24. GET /api/v1/civic/issues/:id/comments — list issue comments */
+  app.get<{
+    Params: { id: string };
+  }>(
+    '/api/v1/civic/issues/:id/comments',
+    {
+      schema: getIssueCommentsSchema,
+    },
+    async (request) => {
+      const { id } = request.params;
+      let commentsList: any[] = [];
+      if (isSupabaseConfigured) {
+        try {
+          const { data, error } = await supabase
+            .from('issue_comments')
+            .select('*')
+            .eq('issue_id', id)
+            .order('created_at', { ascending: true });
+          if (!error && data) commentsList = data;
+        } catch {}
+      }
+      if (commentsList.length === 0) {
+        commentsList = await civicService.listComments(id);
+      }
+      return { comments: commentsList, total: commentsList.length };
+    },
+  );
+
+  /** 25. GET /api/v1/civic/sentiment/:constituencyId — get constituency sentiment */
+  app.get<{
+    Params: { constituencyId: string };
+  }>(
+    '/api/v1/civic/sentiment/:constituencyId',
+    {
+      schema: getSentimentSchema,
+    },
+    async (request) => {
+      const { constituencyId } = request.params;
+      const sentiment = await civicService.getSentiment(constituencyId);
+      return sentiment;
+    },
+  );
+
+  /** 26. GET /api/v1/civic/groups — list community working groups */
+  app.get<{
+    Querystring: { constituencyId: string };
+  }>(
+    '/api/v1/civic/groups',
+    {
+      schema: listGroupsSchema,
+    },
+    async (request) => {
+      const { constituencyId } = request.query;
+      let groupsList: any[] = [];
+      if (isSupabaseConfigured) {
+        try {
+          const { data, error } = await supabase
+            .from('community_groups')
+            .select('*')
+            .eq('constituency_id', constituencyId)
+            .eq('is_active', true);
+          if (!error && data) groupsList = data;
+        } catch {}
+      }
+      if (groupsList.length === 0) {
+        groupsList = await civicService.listGroups(constituencyId);
+      }
+      return { groups: groupsList, total: groupsList.length };
+    },
+  );
+
+  /** 27. POST /api/v1/civic/groups — create community working group */
+  app.post<{
+    Body: { name: string; constituencyId: string; category: string; description?: string };
+  }>(
+    '/api/v1/civic/groups',
+    {
+      schema: createGroupSchema,
+    },
+    async (request, reply) => {
+      const auth = await resolveAuthUser(request);
+      if (!auth) {
+        return sendApiError(reply, request, 401, 'Unauthorized', 'Authentication required to create community group', {
+          code: 'UNAUTHORIZED',
+        });
+      }
+      if (!isSupabaseConfigured) {
+        return sendApiError(reply, request, 503, 'Service Unavailable', 'Database is unavailable', {
+          code: 'DATABASE_UNAVAILABLE',
+        });
+      }
+      try {
+        const group = await civicService.createGroup(request.body, auth.userId);
+        return { success: true, group };
+      } catch (err: any) {
+        return sendApiError(reply, request, 400, 'Bad Request', err.message, {
+          code: err.code || 'BAD_REQUEST',
+        });
+      }
+    },
+  );
+
+  /** 28. POST /api/v1/civic/groups/:id/join — join community working group */
+  app.post<{
+    Params: { id: string };
+  }>(
+    '/api/v1/civic/groups/:id/join',
+    {
+      schema: groupMembershipSchema,
+    },
+    async (request, reply) => {
+      const auth = await resolveAuthUser(request);
+      if (!auth) {
+        return sendApiError(reply, request, 401, 'Unauthorized', 'Authentication required to join group', {
+          code: 'UNAUTHORIZED',
+        });
+      }
+      if (!isSupabaseConfigured) {
+        return sendApiError(reply, request, 503, 'Service Unavailable', 'Database is unavailable', {
+          code: 'DATABASE_UNAVAILABLE',
+        });
+      }
+      const { id } = request.params;
+      try {
+        const result = await civicService.joinGroup(id, auth.userId);
+        return { success: true, groupId: id, memberCount: result.memberCount, message: 'Joined community group' };
+      } catch (err: any) {
+        return sendApiError(reply, request, 400, 'Bad Request', err.message, {
+          code: err.code || 'BAD_REQUEST',
+        });
+      }
+    },
+  );
+
+  /** 29. POST /api/v1/civic/groups/:id/leave — leave community working group */
+  app.post<{
+    Params: { id: string };
+  }>(
+    '/api/v1/civic/groups/:id/leave',
+    {
+      schema: groupMembershipSchema,
+    },
+    async (request, reply) => {
+      const auth = await resolveAuthUser(request);
+      if (!auth) {
+        return sendApiError(reply, request, 401, 'Unauthorized', 'Authentication required to leave group', {
+          code: 'UNAUTHORIZED',
+        });
+      }
+      if (!isSupabaseConfigured) {
+        return sendApiError(reply, request, 503, 'Service Unavailable', 'Database is unavailable', {
+          code: 'DATABASE_UNAVAILABLE',
+        });
+      }
+      const { id } = request.params;
+      try {
+        const result = await civicService.leaveGroup(id, auth.userId);
+        return { success: true, groupId: id, memberCount: result.memberCount, message: 'Left community group' };
+      } catch (err: any) {
+        return sendApiError(reply, request, 400, 'Bad Request', err.message, {
+          code: err.code || 'BAD_REQUEST',
+        });
+      }
     },
   );
 }

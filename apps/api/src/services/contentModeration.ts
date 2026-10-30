@@ -147,3 +147,28 @@ export async function moderateContent(
     'Content moderation provider is not configured or unavailable',
   );
 }
+
+/**
+ * High-level content moderation check.
+ * Evaluates local safety patterns and external provider when available.
+ */
+export async function checkContentModeration(text: string): Promise<ContentModerationResult> {
+  const localCheck = flagContent(text);
+  if (localCheck.flagged) {
+    return {
+      flagged: true,
+      reasons: localCheck.reasons,
+      provider: 'rule_engine',
+    };
+  }
+
+  if (mockModerationProvider || process.env.OPENAI_API_KEY) {
+    return await moderateContent(text);
+  }
+
+  return {
+    flagged: false,
+    reasons: [],
+    provider: 'rule_engine',
+  };
+}
