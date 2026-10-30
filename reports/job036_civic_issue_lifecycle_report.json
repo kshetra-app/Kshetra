@@ -1,0 +1,47 @@
+{
+  "auditReference": "JOB_036_CIVIC_ISSUE_LIFECYCLE_VERIFICATION",
+  "executionState": "CERTIFIED_PASS",
+  "date": "2026-10-30",
+  "governingAuthorities": [
+    "DEC-182",
+    "DEC-183",
+    "DEC-184"
+  ],
+  "monorepoStatus": {
+    "sharedContracts": "PASS",
+    "apiBuild": "PASS",
+    "mobileTypeCheck": "PASS"
+  },
+  "job": {
+    "jobId": "JOB 036",
+    "title": "Canonical 8-Stage Civic Issue Lifecycle Engine",
+    "blueprintSection": "1441",
+    "suite": "tests/job036-civic-issue-lifecycle.test.ts",
+    "totalTests": 14,
+    "passed": 14,
+    "failed": 0,
+    "status": "ACCEPTED_VERIFIED",
+    "verifiedCapabilities": [
+      "Canonical 8-stage forward progression: REPORTED -> REVIEW -> VERIFIED -> ASSIGNED -> IN_PROGRESS -> RESOLVED -> CONFIRMED -> CLOSED",
+      "Department and officer routing metadata on ASSIGNED status",
+      "Mandatory resolution note and photo evidence URL on RESOLVED status",
+      "Citizen confirmation pipeline on CONFIRMED status",
+      "Citizen reporter dispute flow transitioning RESOLVED -> DISPUTED -> IN_PROGRESS",
+      "Community consensus dispute trigger: 5 community disputes auto-reopen to DISPUTED",
+      "7-day auto-confirmation engine for resolved issues with 0 unresolved disputes",
+      "Role-based security guards preventing unauthorized citizen self-assignment or self-resolution",
+      "Fail-closed illegal transition route protection (InvalidCivicStatusTransitionError 400)",
+      "Immutable audit status history recording chronological transitions with actorRole, note, and evidenceUrl"
+    ]
+  },
+  "backwardCompatibility": {
+    "job030LegacySuite": "PASS (10/10 checks)",
+    "dualStackStatusAliases": "VERIFIED (open <-> REPORTED, acknowledged <-> VERIFIED/ASSIGNED, resolved <-> RESOLVED, reopened <-> DISPUTED, closed <-> CONFIRMED/CLOSED)"
+  },
+  "summary": {
+    "totalTestsExecuted": 24,
+    "totalPassed": 24,
+    "totalFailed": 0,
+    "passRate": "100.0%"
+  }
+}

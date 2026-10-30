@@ -4509,3 +4509,24 @@
   - **Decision 1 (State Alias Model):** Ratified Option A (Bidirectional dual-stack support: API accepts and returns canonical 8-state uppercase strings while gracefully tolerating legacy 5-state lowercase aliases for mobile client backward compatibility).
   - **Decision 2 (Resolution Review Window):** Ratified Option A (7-day citizen review window where issue remains in `RESOLVED` state; auto-confirms to `CONFIRMED` / `CLOSED` if no dispute is filed within 7 days, or immediately upon citizen confirmation).
   - **Ratification Disposition:** Granted `PLAN_STATUS: APPROVED` and `IMPLEMENTATION_AUTHORIZATION: YES` for sequential execution of JOB 036.
+
+
+---
+
+### DEC-184: Engineering Execution, Verification, and Formal Closure of JOB 036 (Canonical 8-Stage Civic Issue Lifecycle Engine)
+- **Date:** 2026-10-30
+- **Status:** ACCEPTED / COMPLETE (TESTED & VERIFIED)
+- **Authority:** Master Product Blueprint (Section 1441), Amendment v1.2, Amendment v1.5-A Section 26 & AGENT_EXECUTION_PROTOCOL.md
+- **Context:** Following the user's explicit ratification under DEC-183, JOB 036 was completely engineered and verified:
+  1. **Canonical 8-Stage State Machine:** Fully implemented in `apps/api/src/services/civicService.ts` and `supabase/migrations/078_job036_civic_issue_lifecycle_8stage.sql` (`REPORTED → REVIEW → VERIFIED → ASSIGNED → IN_PROGRESS → RESOLVED → CONFIRMED/DISPUTED → CLOSED`).
+  2. **Dual-Stack Backward Compatibility:** Bidirectional status mapping ensuring legacy lowercase statuses (`open`, `acknowledged`, `in_progress`, `resolved`, `reopened`, `closed`) continue to function seamlessly across all clients and existing test suites.
+  3. **Assignment & Remediation Metadata:** Rich metadata persistence on `civic_issues` and `issue_status_history` (`assigned_department`, `assigned_officer_name`, `estimated_completion_date`, `resolution_evidence_url`).
+  4. **Dispute & Reopen Flow:** Citizen reporter dispute pipeline and community consensus trigger (5 distinct community member disputes automatically reopen a resolved issue to `DISPUTED`).
+  5. **7-Day Auto-Confirmation Engine:** Automatic confirmation of resolved civic complaints after 7 days without unresolved disputes.
+  6. **Immutable Audit History Ledger:** Chronological logging in `issue_status_history` recording actor role, timestamp, note, and evidence URL for every transition.
+- **Verification Summary:**
+  - Automated tests: 14/14 tests passing (100%) in `tests/job036-civic-issue-lifecycle.test.ts`.
+  - Backward compatibility: 10/10 checks passing in `tests/job030-issue-lifecycle.test.ts`.
+  - Regression unit suites: 19/19 tests passing across all Domain 3 civic suites; Domain 5 media tests passing 100%.
+  - Monorepo typecheck: 100% clean across `@kshetra/shared`, `@kshetra/api`, and `apps/mobile` (`tsc --noEmit`, 0 errors).
+  - Evidence dossiers committed at `reports/job036_civic_issue_lifecycle_report.json` and `reports/job036_civic_issue_lifecycle_report.md`.

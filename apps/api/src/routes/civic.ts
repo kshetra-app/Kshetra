@@ -1848,19 +1848,8 @@ export async function civicRoutes(app: FastifyInstance) {
     },
     async (request) => {
       const { id } = request.params;
-      if (isSupabaseConfigured) {
-        try {
-          const { data, error } = await supabase
-            .from('issue_status_history')
-            .select('*')
-            .eq('issue_id', id)
-            .order('created_at', { ascending: true });
-          if (!error && data) {
-            return { history: data, total: data.length };
-          }
-        } catch {}
-      }
-      return { history: [], total: 0 };
+      const history = await civicService.getStatusHistory(id);
+      return { history, total: history.length };
     },
   );
 

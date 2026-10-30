@@ -3,13 +3,26 @@
  * Master Product Blueprint — Domain 3
  */
 
-export type CivicIssueStatus =
+export type CanonicalCivicStatus =
+  | 'REPORTED'
+  | 'REVIEW'
+  | 'VERIFIED'
+  | 'ASSIGNED'
+  | 'IN_PROGRESS'
+  | 'RESOLVED'
+  | 'CONFIRMED'
+  | 'DISPUTED'
+  | 'CLOSED';
+
+export type LegacyCivicStatus =
   | 'open'
   | 'acknowledged'
   | 'in_progress'
   | 'resolved'
   | 'closed'
   | 'reopened';
+
+export type CivicIssueStatus = CanonicalCivicStatus | LegacyCivicStatus;
 
 export type CivicIssueSeverity = 'low' | 'medium' | 'high' | 'critical';
 
@@ -54,6 +67,13 @@ export interface CivicIssueDTO {
   isVerifiedReport: boolean;
   latitude?: number;
   longitude?: number;
+  canonicalStatus?: CanonicalCivicStatus;
+  assignedDepartment?: string;
+  assignedOfficerName?: string;
+  estimatedCompletionDate?: string;
+  resolutionEvidenceUrl?: string;
+  confirmedAt?: string;
+  disputedAt?: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -73,6 +93,24 @@ export interface CreateCivicIssueInput {
 export interface UpdateCivicIssueStatusInput {
   status: CivicIssueStatus;
   note?: string;
+  evidenceUrl?: string;
+  assignedDepartment?: string;
+  assignedOfficerName?: string;
+  estimatedCompletionDate?: string;
+}
+
+export interface IssueStatusHistoryRecordDTO {
+  id: string;
+  issueId: string;
+  fromStatus: CivicIssueStatus;
+  toStatus: CivicIssueStatus;
+  changedBy: string;
+  changedByName?: string;
+  actorRole: string;
+  note?: string;
+  evidenceUrl?: string;
+  assignedDepartment?: string;
+  createdAt: string;
 }
 
 export interface DisputeIssueInput {

@@ -15,10 +15,13 @@ import crypto from 'node:crypto';
 import type {
   CivicIssueDTO,
   CivicIssueStatus,
+  CanonicalCivicStatus,
+  LegacyCivicStatus,
   CivicIssueSeverity,
   CivicIssueCategory,
   CreateCivicIssueInput,
   UpdateCivicIssueStatusInput,
+  IssueStatusHistoryRecordDTO,
   DisputeIssueInput,
   AddCivicCommentInput,
   AddCivicEvidenceInput,
@@ -101,7 +104,10 @@ export interface StatusHistoryRecord {
   toStatus: CivicIssueStatus;
   changedBy: string;
   changedByName?: string;
+  actorRole?: string;
   note?: string;
+  evidenceUrl?: string;
+  assignedDepartment?: string;
   createdAt: string;
 }
 
@@ -182,8 +188,24 @@ export class CivicService {
   }
 
   // -------------------------------------------------------------
-  // JOB 030: Issue Lifecycle State Machine
+  // JOB 036 (formerly JOB 030): Canonical 8-Stage Civic Issue Lifecycle Engine
+  // Master Product Blueprint — Section 1441 (DEC-182, DEC-183)
+  // State Machine: REPORTED -> REVIEW -> VERIFIED -> ASSIGNED -> IN_PROGRESS -> RESOLVED -> CONFIRMED/DISPUTED -> CLOSED
   // -------------------------------------------------------------
+
+  public static normalizeStatus(status: CivicIssueStatus): CanonicalCivicStatus {
+    const s = String(status).toUpperCase();
+    if (s === 'OPEN' || s === 'REPORTED') return 'REPORTED';
+    if (s === 'REVIEW') return 'REVIEW';
+    if (s === 'ACKNOWLEDGED' || s === 'VERIFIED') return 'VERIFIED';
+    if (s === 'ASSIGNED') return 'ASSIGNED';
+    if (s === 'IN_PROGRESS') return 'IN_PROGRESS';
+    if (s === 'RESOLVED') return 'RESOLVED';
+    if (s === 'CONFIRMED') return 'CONFIRMED';
+    if (s === 'REOPENED' || s === 'DISPUTED') return 'DISPUTED';
+    if (s === 'CLOSED') return 'CLOSED';
+    return 'REPORTED';
+  }
 
   public validateStatusTransition(
     from: CivicIssueStatus,
@@ -193,21 +215,46 @@ export class CivicService {
   ): void {
     if (from === to) return;
 
-    const isPrivileged = ['admin', 'moderator', 'official', 'politician'].includes(userRole);
+    const isPrivileged = ['admin', 'moderator', 'official', 'politician', 'representative'].includes(userRole);
+    const fromNorm = CivicService.normalizeStatus(from);
+    const toNorm = CivicService.normalizeStatus(to);
 
-    if (to === 'acknowledged') {
-      if (from !== 'open' && from !== 'reopened') {
-        throw new InvalidCivicStatusTransitionError(from, to, 'Only open or reopened issues can be acknowledged');
-      }
-      if (!isPrivileged) {
-        throw new InvalidCivicStatusTransitionError(from, to, 'Only verified officials, MLAs, or moderators can acknowledge issues');
+    if (fromNorm === toNorm) return;
+
+    // 1. Transition to REVIEW (moderation / duplicate triage)
+    if (toNorm === 'REVIEW') {
+      if (fromNorm !== 'REPORTED' && fromNorm !== 'DISPUTED') {
+        throw new InvalidCivicStatusTransitionError(from, to, 'Only reported or disputed issues can be placed into review');
       }
       return;
     }
 
-    if (to === 'in_progress') {
-      if (from !== 'acknowledged' && from !== 'reopened') {
-        throw new InvalidCivicStatusTransitionError(from, to, 'Issue must be acknowledged or reopened before marking in_progress');
+    // 2. Transition to VERIFIED / acknowledged
+    if (toNorm === 'VERIFIED') {
+      if (fromNorm !== 'REPORTED' && fromNorm !== 'REVIEW' && fromNorm !== 'DISPUTED') {
+        throw new InvalidCivicStatusTransitionError(from, to, 'Only reported, under review, or disputed issues can be verified/acknowledged');
+      }
+      if (!isPrivileged) {
+        throw new InvalidCivicStatusTransitionError(from, to, 'Only verified officials, MLAs, or moderators can acknowledge/verify issues');
+      }
+      return;
+    }
+
+    // 3. Transition to ASSIGNED (department / officer routing)
+    if (toNorm === 'ASSIGNED') {
+      if (fromNorm !== 'VERIFIED' && fromNorm !== 'REPORTED' && fromNorm !== 'DISPUTED') {
+        throw new InvalidCivicStatusTransitionError(from, to, 'Issue must be verified or reported before assignment');
+      }
+      if (!isPrivileged) {
+        throw new InvalidCivicStatusTransitionError(from, to, 'Only verified officials or administrators can assign civic issues');
+      }
+      return;
+    }
+
+    // 4. Transition to IN_PROGRESS
+    if (toNorm === 'IN_PROGRESS') {
+      if (fromNorm !== 'VERIFIED' && fromNorm !== 'ASSIGNED' && fromNorm !== 'DISPUTED') {
+        throw new InvalidCivicStatusTransitionError(from, to, 'Issue must be acknowledged, assigned, or disputed before marking in_progress');
       }
       if (!isPrivileged) {
         throw new InvalidCivicStatusTransitionError(from, to, 'Only verified officials, MLAs, or moderators can mark issues in_progress');
@@ -215,9 +262,10 @@ export class CivicService {
       return;
     }
 
-    if (to === 'resolved') {
-      if (from !== 'in_progress' && from !== 'acknowledged') {
-        throw new InvalidCivicStatusTransitionError(from, to, 'Issue must be in_progress or acknowledged to be resolved');
+    // 5. Transition to RESOLVED
+    if (toNorm === 'RESOLVED') {
+      if (fromNorm !== 'IN_PROGRESS' && fromNorm !== 'ASSIGNED' && fromNorm !== 'VERIFIED') {
+        throw new InvalidCivicStatusTransitionError(from, to, 'Issue must be in_progress or assigned to be resolved');
       }
       if (!isPrivileged) {
         throw new InvalidCivicStatusTransitionError(from, to, 'Only verified officials or MLAs can resolve civic issues');
@@ -225,22 +273,35 @@ export class CivicService {
       return;
     }
 
-    if (to === 'closed') {
-      if (isAuthor && (from === 'open' || from === 'acknowledged')) {
-        return; // Author can close own unresolved issue
+    // 6. Transition to CONFIRMED (citizen reporter confirmed fix or auto-confirmed)
+    if (toNorm === 'CONFIRMED') {
+      if (fromNorm !== 'RESOLVED') {
+        throw new InvalidCivicStatusTransitionError(from, to, 'Only resolved issues can be confirmed');
       }
-      if (from === 'resolved' && isPrivileged) {
-        return; // Official/Admin can formalize closure after dispute window
+      if (!isAuthor && !isPrivileged && userRole !== 'system') {
+        throw new InvalidCivicStatusTransitionError(from, to, 'Only citizen reporter or administrative system can confirm issue resolution');
       }
-      throw new InvalidCivicStatusTransitionError(from, to, 'Cannot close issue from current state or without authority');
+      return;
     }
 
-    if (to === 'reopened') {
-      if (from !== 'resolved') {
-        throw new InvalidCivicStatusTransitionError(from, to, 'Only resolved issues can be reopened');
+    // 7. Transition to DISPUTED / reopened
+    if (toNorm === 'DISPUTED') {
+      if (fromNorm !== 'RESOLVED') {
+        throw new InvalidCivicStatusTransitionError(from, to, 'Only resolved issues can be reopened or disputed');
       }
-      // Reopening is triggered by community disputes or moderators
+      // Reopening/disputing can be initiated by citizen author, community disputes, or moderators
       return;
+    }
+
+    // 8. Transition to CLOSED
+    if (toNorm === 'CLOSED') {
+      if (isAuthor && (fromNorm === 'REPORTED' || fromNorm === 'REVIEW' || fromNorm === 'VERIFIED')) {
+        return; // Author can close own unassigned issue
+      }
+      if ((fromNorm === 'CONFIRMED' || fromNorm === 'RESOLVED') && (isPrivileged || isAuthor)) {
+        return; // Official/Admin or author can formalize closure after confirmation/review window
+      }
+      throw new InvalidCivicStatusTransitionError(from, to, 'Cannot close issue from current state or without authority');
     }
 
     throw new InvalidCivicStatusTransitionError(from, to, 'Illegal transition route');
@@ -456,28 +517,53 @@ export class CivicService {
     const isAuthor = issue.reporterId === user.userId;
     this.validateStatusTransition(issue.status, input.status, user.role, isAuthor);
 
-    if (input.status === 'resolved' && (!input.note || input.note.trim().length === 0)) {
+    const toCanonical = CivicService.normalizeStatus(input.status);
+
+    if (toCanonical === 'RESOLVED' && (!input.note || input.note.trim().length === 0)) {
       throw new Error('INVALID_RESOLUTION: Resolution note is required when marking issue resolved');
     }
 
     const now = new Date().toISOString();
+    const oldStatus = issue.status;
     issue.status = input.status;
+    issue.canonicalStatus = toCanonical;
     issue.updatedAt = now;
 
-    if (input.status === 'resolved') {
+    if (input.assignedDepartment) {
+      issue.assignedDepartment = input.assignedDepartment.trim();
+    }
+    if (input.assignedOfficerName) {
+      issue.assignedOfficerName = input.assignedOfficerName.trim();
+    }
+    if (input.estimatedCompletionDate) {
+      issue.estimatedCompletionDate = input.estimatedCompletionDate;
+    }
+    if (input.evidenceUrl) {
+      issue.resolutionEvidenceUrl = input.evidenceUrl.trim();
+    }
+
+    if (toCanonical === 'RESOLVED') {
       issue.resolutionNote = input.note?.trim();
       issue.resolvedAt = now;
       issue.resolvedBy = user.userId;
+    } else if (toCanonical === 'CONFIRMED') {
+      issue.confirmedAt = now;
+    } else if (toCanonical === 'DISPUTED') {
+      issue.disputedAt = now;
+      issue.resolvedAt = undefined;
     }
 
     const historyRecord: StatusHistoryRecord = {
       id: crypto.randomUUID(),
       issueId,
-      fromStatus: issue.status,
+      fromStatus: oldStatus,
       toStatus: input.status,
       changedBy: user.userId,
       changedByName: user.userName,
+      actorRole: user.role,
       note: input.note,
+      evidenceUrl: input.evidenceUrl,
+      assignedDepartment: input.assignedDepartment,
       createdAt: now,
     };
 
@@ -490,6 +576,12 @@ export class CivicService {
             resolution_note: issue.resolutionNote,
             resolved_at: issue.resolvedAt,
             resolved_by: issue.resolvedBy,
+            assigned_department: issue.assignedDepartment,
+            assigned_officer_name: issue.assignedOfficerName,
+            estimated_completion_date: issue.estimatedCompletionDate,
+            resolution_evidence_url: issue.resolutionEvidenceUrl,
+            confirmed_at: issue.confirmedAt,
+            disputed_at: issue.disputedAt,
             updated_at: now,
           })
           .eq('id', issueId);
@@ -500,7 +592,11 @@ export class CivicService {
           from_status: historyRecord.fromStatus,
           to_status: historyRecord.toStatus,
           changed_by: historyRecord.changedBy,
+          changed_by_name: historyRecord.changedByName,
+          actor_role: historyRecord.actorRole,
           note: historyRecord.note,
+          evidence_url: historyRecord.evidenceUrl,
+          assigned_department: historyRecord.assignedDepartment,
           created_at: now,
         });
       } catch {}
@@ -511,6 +607,68 @@ export class CivicService {
     this.inMemoryStatusHistory.set(issueId, [...existingHistory, historyRecord]);
 
     return issue;
+  }
+
+  public async getStatusHistory(issueId: string): Promise<StatusHistoryRecord[]> {
+    if (isSupabaseConfigured) {
+      try {
+        const { data, error } = await supabase
+          .from('issue_status_history')
+          .select('*')
+          .eq('issue_id', issueId)
+          .order('created_at', { ascending: true });
+        if (!error && data && data.length > 0) {
+          return data.map((d: any) => ({
+            id: d.id,
+            issueId: d.issue_id,
+            fromStatus: d.from_status,
+            toStatus: d.to_status,
+            changedBy: d.changed_by,
+            changedByName: d.changed_by_name,
+            actorRole: d.actor_role || 'citizen',
+            note: d.note,
+            evidenceUrl: d.evidence_url,
+            assignedDepartment: d.assigned_department,
+            createdAt: d.created_at,
+          }));
+        }
+      } catch {}
+    }
+    return this.inMemoryStatusHistory.get(issueId) || [];
+  }
+
+  public async autoConfirmResolvedIssues(olderThanDays: number = 7): Promise<number> {
+    const now = new Date();
+    const cutoff = new Date(now.getTime() - olderThanDays * 24 * 60 * 60 * 1000);
+    let confirmedCount = 0;
+
+    for (const [id, issue] of this.inMemoryIssues.entries()) {
+      if (CivicService.normalizeStatus(issue.status) === 'RESOLVED' && issue.resolvedAt) {
+        if (new Date(issue.resolvedAt) < cutoff) {
+          const fromStatus = issue.status;
+          issue.status = issue.status === 'RESOLVED' ? 'CONFIRMED' : 'closed';
+          issue.canonicalStatus = 'CONFIRMED';
+          issue.confirmedAt = now.toISOString();
+          issue.updatedAt = now.toISOString();
+          confirmedCount++;
+
+          const historyRecord: StatusHistoryRecord = {
+            id: crypto.randomUUID(),
+            issueId: id,
+            fromStatus,
+            toStatus: issue.status,
+            changedBy: 'system_auto_confirm',
+            changedByName: 'System Auto-Confirmation (7-Day Review Window)',
+            actorRole: 'system',
+            note: 'Automatically confirmed following conclusion of 7-day citizen review window with 0 unresolved disputes',
+            createdAt: now.toISOString(),
+          };
+          const existingHistory = this.inMemoryStatusHistory.get(id) || [];
+          this.inMemoryStatusHistory.set(id, [...existingHistory, historyRecord]);
+        }
+      }
+    }
+    return confirmedCount;
   }
 
   // -------------------------------------------------------------
@@ -777,7 +935,8 @@ export class CivicService {
       throw new Error(`NOT_FOUND: Civic issue ${issueId} not found`);
     }
 
-    if (issue.status !== 'resolved') {
+    const normStatus = CivicService.normalizeStatus(issue.status);
+    if (normStatus !== 'RESOLVED') {
       throw new DisputeNotAllowedError(`Cannot dispute issue in '${issue.status}' status. Only resolved issues can be disputed.`);
     }
 
@@ -797,16 +956,22 @@ export class CivicService {
     let reopened = false;
     // Decision 2: Option 1 — 5 distinct community member disputes auto-reopen the issue
     if (disputeCount >= 5) {
-      issue.status = 'reopened';
+      const fromStatus = issue.status;
+      const targetStatus = issue.status === 'RESOLVED' ? 'DISPUTED' : 'reopened';
+      issue.status = targetStatus;
+      issue.canonicalStatus = 'DISPUTED';
       issue.resolvedAt = undefined;
+      issue.disputedAt = new Date().toISOString();
       reopened = true;
 
       const historyRecord: StatusHistoryRecord = {
         id: crypto.randomUUID(),
         issueId,
-        fromStatus: 'resolved',
-        toStatus: 'reopened',
+        fromStatus,
+        toStatus: targetStatus,
         changedBy: 'system_community_consensus',
+        changedByName: 'Community Consensus Dispute Trigger',
+        actorRole: 'community',
         note: `Auto-reopened: ${disputeCount} community disputes filed within resolution window`,
         createdAt: new Date().toISOString(),
       };
