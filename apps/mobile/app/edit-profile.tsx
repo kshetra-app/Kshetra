@@ -17,6 +17,7 @@ import { updateMyProfile } from '../lib/supabaseDataService';
 import { ROLE_CONFIG, type UserRole } from '../lib/moderationTypes';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '../lib/theme';
+import DiscoveryHubSheet from '../components/DiscoveryHubSheet';
 
 const INTEREST_OPTIONS = [
   'Elections',
@@ -53,6 +54,7 @@ export default function EditProfileScreen() {
   const [role, setRole] = useState<UserRole>(profile?.role ?? 'citizen');
   const [interests, setInterests] = useState<string[]>(profile?.interests ?? []);
   const [isSaving, setIsSaving] = useState(false);
+  const [helpVisible, setHelpVisible] = useState(false);
 
   const toggleInterest = (interest: string) => {
     setInterests((prev) =>
@@ -96,11 +98,21 @@ export default function EditProfileScreen() {
           headerStyle: { backgroundColor: colors.surface },
           headerTintColor: colors.primary,
           headerRight: () => (
-            <Pressable onPress={handleSave} hitSlop={8} disabled={isSaving} style={{ opacity: isSaving ? 0.5 : 1 }}>
-              <Text style={[styles.saveButton, { color: colors.primary }]}>
-                {isSaving ? t('common.loading') : t('common.save')}
-              </Text>
-            </Pressable>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel={t('discovery.screenHelp', { defaultValue: 'Page guidance' })}
+                onPress={() => setHelpVisible(true)}
+                hitSlop={8}
+              >
+                <Ionicons name="help-circle-outline" size={22} color={colors.primary} />
+              </Pressable>
+              <Pressable onPress={handleSave} hitSlop={8} disabled={isSaving} style={{ opacity: isSaving ? 0.5 : 1 }}>
+                <Text style={[styles.saveButton, { color: colors.primary }]}>
+                  {isSaving ? t('common.loading') : t('common.save')}
+                </Text>
+              </Pressable>
+            </View>
           ),
         }}
       />
@@ -201,6 +213,11 @@ export default function EditProfileScreen() {
 
         <View style={styles.bottomPadding} />
       </ScrollView>
+      <DiscoveryHubSheet
+        visible={helpVisible}
+        onClose={() => setHelpVisible(false)}
+        sourceScreen="edit-profile"
+      />
     </View>
   );
 }

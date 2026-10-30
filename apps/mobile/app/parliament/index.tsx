@@ -29,6 +29,7 @@ import MPCard from '../../components/MPCard';
 import CandidateAvatar from '../../components/CandidateAvatar';
 import { useActiveStateStore } from '../../stores/activeState';
 import { useTheme } from '../../lib/theme';
+import DiscoveryHubSheet from '../../components/DiscoveryHubSheet';
 
 type TabType = 'overview' | 'lok_sabha' | 'rajya_sabha';
 
@@ -96,6 +97,7 @@ export default function ParliamentScreen() {
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [selectedPartyFilter, setSelectedPartyFilter] = useState<string>('ALL');
   const [selectedMP, setSelectedMP] = useState<MPProfile | null>(null);
+  const [helpVisible, setHelpVisible] = useState(false);
 
   const isNational = selectedScope === 'IN' || selectedScope === 'ALL';
 
@@ -214,6 +216,13 @@ export default function ParliamentScreen() {
             {isNational ? '18th Lok Sabha (543) & Rajya Sabha (142)' : `${stateSummary?.stateName || selectedScope} Parliamentary Delegation`}
           </Text>
         </View>
+        <Pressable
+          accessibilityLabel={t('discovery.pageHelp.openHelp', { defaultValue: 'Page Help' })}
+          style={[styles.backBtn, { backgroundColor: colors.surfaceElevated }]}
+          onPress={() => setHelpVisible(true)}
+        >
+          <Ionicons name="help-circle-outline" size={20} color={colors.textSecondary} />
+        </Pressable>
       </View>
 
       {/* Scope Selector (All India / States) */}
@@ -285,6 +294,39 @@ export default function ParliamentScreen() {
             </Pressable>
           )}
         </View>
+      )}
+
+      {/* Party Filter Chips for House Member lists */}
+      {tab !== 'overview' && (
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          style={{ maxHeight: 38, borderBottomWidth: 1, borderBottomColor: colors.border, backgroundColor: colors.surface }}
+          contentContainerStyle={{ paddingHorizontal: 16, gap: 6, alignItems: 'center' }}
+        >
+          {['ALL', 'BJP', 'INC', 'SP', 'AITC', 'DMK', 'TDP', 'JD(U)', 'SHS', 'AAP', 'CPI(M)'].map((p) => {
+            const isSelected = selectedPartyFilter === p;
+            return (
+              <Pressable
+                key={p}
+                style={[
+                  styles.scopeChip,
+                  {
+                    backgroundColor: isSelected ? (p === 'ALL' ? colors.primary : getPartyColor(p)) : colors.surfaceElevated,
+                    borderColor: isSelected ? (p === 'ALL' ? colors.primary : getPartyColor(p)) : colors.border,
+                    paddingVertical: 3,
+                    paddingHorizontal: 10,
+                  },
+                ]}
+                onPress={() => setSelectedPartyFilter(p)}
+              >
+                <Text style={{ fontSize: 11, fontWeight: '700', color: isSelected ? '#FFFFFF' : colors.textSecondary }}>
+                  {p}
+                </Text>
+              </Pressable>
+            );
+          })}
+        </ScrollView>
       )}
 
       <ScrollView style={styles.scroll} contentContainerStyle={[styles.scrollContent, { paddingBottom: Math.max(insets.bottom, 20) + 80 }]}>
@@ -611,6 +653,13 @@ export default function ParliamentScreen() {
           </View>
         </Modal>
       )}
+
+      {/* Contextual Guidance */}
+      <DiscoveryHubSheet
+        visible={helpVisible}
+        onClose={() => setHelpVisible(false)}
+        sourceScreen="parliament"
+      />
     </View>
   );
 }

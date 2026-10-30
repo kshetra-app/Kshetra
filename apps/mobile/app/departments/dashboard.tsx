@@ -15,6 +15,7 @@ import { useLiveExchangeStore } from '../../stores/liveExchange';
 import type { AlertAcknowledgment, DepartmentAlert } from '../../lib/lmxTypes';
 import { DEPARTMENT_CONFIG, ACK_CONFIG, TIER_CONFIG } from '../../lib/lmxTypes';
 import { useTheme } from '../../lib/theme';
+import DiscoveryHubSheet from '../../components/DiscoveryHubSheet';
 
 /**
  * Department Console — in-app simulation of the Kshetra-hosted department
@@ -36,6 +37,7 @@ export default function DepartmentDashboardScreen() {
   const hydrateAlerts = useLiveExchangeStore((s) => s.hydrateAlerts);
 
   const [departmentId, setDepartmentId] = useState<string>(departments[0]?.id ?? '');
+  const [helpVisible, setHelpVisible] = useState(false);
 
   useEffect(() => {
     hydrateAlerts(departmentId);
@@ -63,7 +65,13 @@ export default function DepartmentDashboardScreen() {
           <Ionicons name="chevron-back" size={26} color={colors.primary} />
         </Pressable>
         <Text style={[styles.title, { color: colors.text }]}>{t('departments.title', { defaultValue: 'Department Console' })}</Text>
-        <View style={{ width: 26 }} />
+        <Pressable
+          accessibilityLabel={t('discovery.pageHelp.openHelp', { defaultValue: 'Page Help' })}
+          style={{ padding: 4 }}
+          onPress={() => setHelpVisible(true)}
+        >
+          <Ionicons name="help-circle-outline" size={22} color={colors.textSecondary} />
+        </Pressable>
       </View>
 
       {/* Department picker */}
@@ -139,6 +147,13 @@ export default function DepartmentDashboardScreen() {
             <Text style={styles.emptyText}>{t('departments.noAlerts', { defaultValue: 'No alerts routed to this office yet' })}</Text>
           </View>
         }
+      />
+
+      {/* Contextual Guidance */}
+      <DiscoveryHubSheet
+        visible={helpVisible}
+        onClose={() => setHelpVisible(false)}
+        sourceScreen="departments"
       />
     </View>
   );

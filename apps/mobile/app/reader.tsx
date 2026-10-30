@@ -12,6 +12,8 @@ import { Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '../lib/theme';
+import DiscoveryHubSheet from '../components/DiscoveryHubSheet';
+import i18n from '../i18n';
 
 /**
  * In-app reader. Everything stays inside the app — articles load in a WebView
@@ -33,6 +35,7 @@ export default function ReaderScreen() {
   const webRef = useRef<WebView>(null);
   const [loading, setLoading] = useState(true);
   const [progress, setProgress] = useState(0);
+  const [helpVisible, setHelpVisible] = useState(false);
 
   const isVideo = !!params.videoId;
   const uri = params.url ?? 'about:blank';
@@ -82,9 +85,20 @@ function onYouTubeIframeAPIReady(){
             </Text>
           )}
         </View>
-        <Pressable hitSlop={10} style={[styles.iconBtn, { backgroundColor: colors.surfaceElevated || colors.surface, borderColor: colors.goldBorder || colors.border, borderWidth: 1 }]} onPress={shareLink}>
-          <Ionicons name="share-social-outline" size={20} color={colors.text} />
-        </Pressable>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={i18n.t('discovery.screenHelp')}
+            hitSlop={10}
+            style={[styles.iconBtn, { backgroundColor: colors.surfaceElevated || colors.surface, borderColor: colors.goldBorder || colors.border, borderWidth: 1 }]}
+            onPress={() => setHelpVisible(true)}
+          >
+            <Ionicons name="help-circle-outline" size={20} color={colors.text} />
+          </Pressable>
+          <Pressable hitSlop={10} style={[styles.iconBtn, { backgroundColor: colors.surfaceElevated || colors.surface, borderColor: colors.goldBorder || colors.border, borderWidth: 1 }]} onPress={shareLink}>
+            <Ionicons name="share-social-outline" size={20} color={colors.text} />
+          </Pressable>
+        </View>
       </View>
 
       {/* Thin progress bar for article loads */}
@@ -125,6 +139,11 @@ function onYouTubeIframeAPIReady(){
           </Text>
         </View>
       )}
+      <DiscoveryHubSheet
+        visible={helpVisible}
+        onClose={() => setHelpVisible(false)}
+        sourceScreen="reader"
+      />
     </View>
   );
 }

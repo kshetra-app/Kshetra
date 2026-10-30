@@ -5,6 +5,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { Stack } from 'expo-router';
 import { useResponsive } from '../../lib/responsive';
 import { useTheme } from '../../lib/theme';
+import DiscoveryHubSheet from '../../components/DiscoveryHubSheet';
 import { useCampaignStore } from '../../stores/campaign';
 
 import GrassrootsOverview from '../../components/campaign/GrassrootsOverview';
@@ -35,6 +36,7 @@ export default function CampaignManagerScreen() {
 
   const [activeTab, setActiveTab] = useState<MainCampaignTab>('overview');
   const [refreshing, setRefreshing] = useState(false);
+  const [helpVisible, setHelpVisible] = useState(false);
 
   const fetchPricing = useCampaignStore((s) => s.fetchPricing);
 
@@ -56,6 +58,15 @@ export default function CampaignManagerScreen() {
           headerStyle: { backgroundColor: colors.surface },
           headerTintColor: colors.primary,
           headerTitleStyle: { fontWeight: '800', fontSize: 17 },
+          headerRight: () => (
+            <Pressable
+              accessibilityLabel={t('discovery.pageHelp.openHelp', { defaultValue: 'Page Help' })}
+              style={{ padding: 4 }}
+              onPress={() => setHelpVisible(true)}
+            >
+              <Ionicons name="help-circle-outline" size={22} color={colors.primary} />
+            </Pressable>
+          ),
         }}
       />
 

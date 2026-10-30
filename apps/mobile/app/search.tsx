@@ -21,6 +21,8 @@ import { getMLAProfileForState } from '../lib/stateDataDispatcher';
 import { getMPById } from '../lib/data';
 import { useTheme } from '../lib/theme';
 import { searchVerifiedProfiles } from '../lib/supabaseDataService';
+import { searchDiscoveryCatalog } from '../lib/discoveryCatalog';
+import DiscoveryHubSheet from '../components/DiscoveryHubSheet';
 
 const TYPE_CONFIG: Record<SearchResultType, { icon: string; color: string; label: string }> = {
   constituency: { icon: 'location', color: '#A8201A', label: 'Constituency' },
@@ -30,6 +32,7 @@ const TYPE_CONFIG: Record<SearchResultType, { icon: string; color: string; label
   issue: { icon: 'megaphone', color: '#D3453E', label: 'Issue' },
   post: { icon: 'chatbubble', color: '#C5A059', label: 'Post' },
   promise: { icon: 'checkmark-done', color: '#C5A059', label: 'Promise' },
+  feature: { icon: 'sparkles', color: '#8B5CF6', label: 'Feature & Guide' },
 };
 
 export default function GlobalSearchScreen() {
@@ -38,6 +41,7 @@ export default function GlobalSearchScreen() {
   const { colors } = useTheme();
   const [query, setQuery] = useState('');
   const [personResults, setPersonResults] = useState<SearchResult[]>([]);
+  const [showDiscoveryHub, setShowDiscoveryHub] = useState(false);
   const inputRef = useRef<TextInput>(null);
   const recents = useRecentsStore((s) => s.recents);
   const clearRecents = useRecentsStore((s) => s.clearRecents);
@@ -73,10 +77,39 @@ export default function GlobalSearchScreen() {
   }, [query]);
 
   const localResults = useMemo(() => globalSearch(query), [query]);
+
+  // Local feature and guided goal matching without network/AI overhead (Batch 4)
+  const featureResults = useMemo<SearchResult[]>(() => {
+    if (query.trim().length < 2) return [];
+    const { features, goals } = searchDiscoveryCatalog(query, t);
+    const featMapped: SearchResult[] = features
+      .filter((f) => !f.isDynamic)
+      .slice(0, 3)
+      .map((f) => ({
+        id: `feature-${f.id}`,
+        type: 'feature',
+        title: t(f.titleKey, { defaultValue: f.id }),
+        subtitle: t(f.descKey, { defaultValue: 'Feature & Help' }),
+        route: f.route,
+        score: 85,
+      }));
+    const goalMapped: SearchResult[] = goals
+      .slice(0, 2)
+      .map((g) => ({
+        id: `goal-${g.id}`,
+        type: 'feature',
+        title: t(g.titleKey, { defaultValue: g.id }),
+        subtitle: t(g.descKey, { defaultValue: 'Guided Goal' }),
+        route: g.targetRoute || '/(tabs)',
+        score: 86,
+      }));
+    return [...goalMapped, ...featMapped];
+  }, [query, t]);
+
   const results = useMemo(() => {
-    if (personResults.length === 0) return localResults;
-    return [...personResults, ...localResults].sort((a, b) => b.score - a.score);
-  }, [personResults, localResults]);
+    const combined = [...featureResults, ...personResults, ...localResults];
+    return combined.sort((a, b) => b.score - a.score);
+  }, [featureResults, personResults, localResults]);
   const suggestions = useMemo(() => getSearchSuggestions(), []);
 
   const handleSelect = useCallback((item: SearchResult) => {
@@ -225,6 +258,28 @@ export default function GlobalSearchScreen() {
             </View>
           </View>
 
+          {/* Discovery & Guided Pathways */}
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>{t('discovery.goalsHeading', { defaultValue: 'Explore by Goal' })}</Text>
+            <Pressable
+              style={[styles.tipCard, { borderColor: colors.goldBorder || colors.border, backgroundColor: colors.surface }]}
+              onPress={() => setShowDiscoveryHub(true)}
+            >
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+                <Ionicons name="compass" size={20} color={colors.primary} />
+                <View style={{ flex: 1 }}>
+                  <Text style={[styles.tipText, { marginBottom: 2, color: colors.text }]}>
+                    {t('discovery.hubTitle', { defaultValue: 'POLIGRAM Discovery Hub' })}
+                  </Text>
+                  <Text style={{ fontSize: 11, color: colors.textMuted }}>
+                    {t('discovery.hubSubtitle', { defaultValue: 'Explore goals, all features, and page guidance' })}
+                  </Text>
+                </View>
+                <Ionicons name="chevron-forward" size={16} color={colors.textMuted} />
+              </View>
+            </Pressable>
+          </View>
+
           {/* Search tips */}
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>{t('search.tryDifferent')}</Text>
@@ -239,6 +294,12 @@ export default function GlobalSearchScreen() {
           </View>
         </View>
       )}
+
+      <DiscoveryHubSheet
+        visible={showDiscoveryHub}
+        onClose={() => setShowDiscoveryHub(false)}
+        sourceScreen="search"
+      />
     </SafeAreaView>
   );
 }

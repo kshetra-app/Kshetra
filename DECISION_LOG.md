@@ -4832,3 +4832,25 @@
      - `tests/domain9-admin-control-plane.test.ts`: 9/9 functions verified (100% PASS).
      - `tests/domain9-data-and-delimitation-pipelines.test.ts`: 5/5 pipeline checks passed (100%).
      - Zero TypeScript errors across monorepo (`packages/shared`, `apps/api`, `apps/mobile`).
+
+
+---
+
+### DEC-201: User Ratification and Implementation Authorization for Mobile UX Remediation, Discovery Hub & Contextual Page Guidance under Control M
+- **Date:** 2026-10-31
+- **Status:** RATIFIED & AUTHORIZED (Control M Token Granted)
+- **Authority:** User Directive & Explicit Control M Authorization Token (`PLAN_STATUS: APPROVED`, `IMPLEMENTATION_AUTHORIZATION: YES`), PLAN-MOBILE-UX-REMEDIATION-REV-1.1-INTEGRATED & AGENT_EXECUTION_PROTOCOL.md
+- **Execution Scope & Deliverables:**
+  1. **Batch 0 (Preflight & Baseline):** Commit 91d5c634 verified, 33/33 mobile tests passing, TypeScript 0 errors, ESLint 0 errors, 48-route inventory intact.
+  2. **Batch 1 (Discovery Catalog & Shared Hub Component):** `apps/mobile/lib/discoveryCatalog.ts` typed catalog of 6 user goals, verified feature directory, and guidance metadata for all 48 screens; `apps/mobile/components/DiscoveryHubSheet.tsx` rendering goal cards, directory, contextual guidance, and local search.
+  3. **Batch 2 (Map Discovery Entry):** Compact on-demand Help/Discovery trigger on Map screen (`apps/mobile/app/(tabs)/index.tsx`) invoking DiscoveryHubSheet with `screenKey="map"`, zero interference with MapLibre gestures or adaptive controls.
+  4. **Batch 3 (More Navigation & Route Integrity):** Reorganize `apps/mobile/app/(tabs)/more.tsx` into 4 cohesive groups (`Civic & Representation`, `Community & Media`, `Leadership & Campaigns`, `Tools & Account`), add Discovery Hub entry, disable Candidate X-Ray tile with localized explanation until valid ID source is available, preserving all existing tiles.
+  5. **Batch 4 (Local Feature/Help Search):** Local deterministic matching in `apps/mobile/app/search.tsx` over translated feature titles, keywords, and help queries without network or AI overhead.
+  6. **Batch 5 (Contextual Guidance on Primary Tabs):** Add non-obstructive contextual guidance to `explore.tsx`, `community.tsx`, `news.tsx`.
+  7. **Batch 6 (Low-Risk Duplicate Chrome Remediation):** Merge duplicate About sections in `profile.tsx` preserving all rows; establish single title ownership in `constituency/[id].tsx` and `leadership-academy.tsx`; preserve embedded child vs parent header contracts in `community.tsx`, `feed.tsx`, `shorts.tsx`, `live.tsx`.
+  8. **Batch 7 (Filter Presentation & Progressive Disclosure):** Standardize collapsible filter sheet interaction with active-filter badges, chips, and clean reset semantics across dense list screens (`explore.tsx`, `feed.tsx`, `news.tsx`, `live.tsx`, `parliament/index.tsx`, `dashboard.tsx`).
+  9. **Batch 8–13 (Dense Civic, Delimitation, Media & Account Screens):** Streamlined density, clear visual hierarchy, and provenance preservation across all remaining screens.
+  10. **Localization (13 Locales):** Complete translation coverage across `en`, `te`, `hi`, `kn`, `mr`, `ta`, `ml`, `bn`, `gu`, `pa`, `or`, `as`, `ne`.
+- **Authorization Token:**
+  `PLAN_STATUS: APPROVED`
+  `IMPLEMENTATION_AUTHORIZATION: YES`

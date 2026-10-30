@@ -3,7 +3,7 @@
  * Builds profile from existing MLA Profile data + Affidavit store.
  * Dynamically fits all device sizes via useResponsive() and safe area insets.
  */
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, Pressable, Share, Linking } from 'react-native';
 import { useLocalSearchParams, Stack, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
@@ -17,6 +17,7 @@ import CriminalRecordCard from '../../components/legislator/CriminalRecordCard';
 import PerformanceCard from '../../components/legislator/PerformanceCard';
 import RedFlagsBanner from '../../components/legislator/RedFlagsBanner';
 import DefectionJourneyCard from '../../components/legislator/DefectionJourneyCard';
+import DiscoveryHubSheet from '../../components/DiscoveryHubSheet';
 import { useTheme } from '../../lib/theme';
 import i18n from '../../i18n';
 
@@ -26,6 +27,7 @@ export default function LegislatorProfileScreen() {
   const router = useRouter();
   const { colors } = useTheme();
   const { contentPaddingBottom } = useResponsive();
+  const [helpVisible, setHelpVisible] = useState(false);
 
   // Parse ID: handles formats like:
   // - "MLA_TS_2023_Kodangal_65"
@@ -197,6 +199,16 @@ export default function LegislatorProfileScreen() {
           headerStyle: { backgroundColor: colors.surface },
           headerTintColor: colors.primary,
           headerShadowVisible: false,
+          headerRight: () => (
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel={i18n.t('discovery.screenHelp')}
+              style={{ padding: 6, marginRight: 8 }}
+              onPress={() => setHelpVisible(true)}
+            >
+              <Ionicons name="help-circle-outline" size={22} color={colors.primary} />
+            </Pressable>
+          ),
         }}
       />
       <ScrollView
@@ -355,6 +367,11 @@ export default function LegislatorProfileScreen() {
           )}
         </View>
       </ScrollView>
+      <DiscoveryHubSheet
+        visible={helpVisible}
+        onClose={() => setHelpVisible(false)}
+        sourceScreen="legislator"
+      />
     </View>
   );
 }

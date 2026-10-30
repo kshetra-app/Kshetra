@@ -61,26 +61,26 @@ describe('W011 Mobile Mutations & Lifecycle Audit', () => {
   describe('W011-B3: Canonical Four-State Synchronization Lifecycle', () => {
     it('verifies SyncStatus type is exported with all 4 states', () => {
       const offlineSync = fs.readFileSync(path.join(mobileRoot, 'lib/offlineSync.ts'), 'utf-8');
-      expect(offlineSync).toContain("export type SyncStatus = 'FAILED' | 'QUEUED' | 'SYNCING' | 'SYNCED'");
+      expect(offlineSync).toContain("export type SyncStatus = 'LOCAL_ONLY' | 'QUEUED' | 'SYNCING' | 'SYNCED' | 'FAILED'");
     });
 
     it('verifies offlineSync handles add_comment mutation operation', () => {
       const offlineSync = fs.readFileSync(path.join(mobileRoot, 'lib/offlineSync.ts'), 'utf-8');
       expect(offlineSync).toContain("case 'add_comment':");
-      expect(offlineSync).toContain('svc.addPostComment');
+      expect(offlineSync).toContain('addPostComment');
     });
 
     it('verifies entity type definitions include syncStatus and clientToken', () => {
       const feedTypes = fs.readFileSync(path.join(mobileRoot, 'lib/feedTypes.ts'), 'utf-8');
-      expect(feedTypes).toContain("syncStatus?: 'FAILED' | 'QUEUED' | 'SYNCING' | 'SYNCED'");
+      expect(feedTypes).toContain("syncStatus?: 'LOCAL_ONLY' | 'FAILED' | 'QUEUED' | 'SYNCING' | 'SYNCED'");
       expect(feedTypes).toContain('clientToken?: string');
 
       const civicTypes = fs.readFileSync(path.join(mobileRoot, 'lib/civicTypes.ts'), 'utf-8');
-      expect(civicTypes).toContain("syncStatus?: 'FAILED' | 'QUEUED' | 'SYNCING' | 'SYNCED'");
+      expect(civicTypes).toContain("syncStatus?: 'LOCAL_ONLY' | 'FAILED' | 'QUEUED' | 'SYNCING' | 'SYNCED'");
       expect(civicTypes).toContain('clientToken?: string');
 
       const promiseTypes = fs.readFileSync(path.join(mobileRoot, 'lib/promiseTypes.ts'), 'utf-8');
-      expect(promiseTypes).toContain("syncStatus?: 'FAILED' | 'QUEUED' | 'SYNCING' | 'SYNCED'");
+      expect(promiseTypes).toContain("syncStatus?: 'LOCAL_ONLY' | 'FAILED' | 'QUEUED' | 'SYNCING' | 'SYNCED'");
       expect(promiseTypes).toContain('clientToken?: string');
     });
   });

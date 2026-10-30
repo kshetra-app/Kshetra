@@ -9,6 +9,7 @@ import LiveElectionTicker from '../../components/LiveElectionTicker';
 import ConstituencyResultCard from '../../components/ConstituencyResultCard';
 import DataPipelineCard from '../../components/DataPipelineCard';
 import { useTheme } from '../../lib/theme';
+import DiscoveryHubSheet from '../../components/DiscoveryHubSheet';
 
 type Tab = 'overview' | 'constituencies' | 'pipeline';
 
@@ -25,6 +26,7 @@ export default function LiveElectionScreen() {
   const insets = useSafeAreaInsets();
   const [activeTab, setActiveTab] = useState<Tab>('overview');
   const [refreshing, setRefreshing] = useState(false);
+  const [helpVisible, setHelpVisible] = useState(false);
 
   const store = useElectionLiveStore();
   const liveElection = useMemo(() => store.getLiveElection(), [store]);
@@ -56,6 +58,13 @@ export default function LiveElectionScreen() {
             <Text style={styles.liveTextHeader}>{t('liveElection.live')}</Text>
           </View>
         )}
+        <Pressable
+          accessibilityLabel={t('discovery.pageHelp.openHelp', { defaultValue: 'Page Help' })}
+          style={[styles.backBtn, { backgroundColor: colors.surface, borderColor: colors.goldBorder || colors.border, borderWidth: 1, marginLeft: 8 }]}
+          onPress={() => setHelpVisible(true)}
+        >
+          <Ionicons name="help-circle-outline" size={20} color={colors.textSecondary} />
+        </Pressable>
       </View>
 
       {/* Tab Bar */}
@@ -146,6 +155,13 @@ export default function LiveElectionScreen() {
           </>
         )}
       </ScrollView>
+
+      {/* Contextual Guidance */}
+      <DiscoveryHubSheet
+        visible={helpVisible}
+        onClose={() => setHelpVisible(false)}
+        sourceScreen="live-election"
+      />
     </View>
   );
 }

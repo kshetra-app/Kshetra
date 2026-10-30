@@ -18,6 +18,7 @@ import { useDMStore } from '../../stores/dmStore';
 import type { DMConversationItem } from '../../lib/supabaseDataService';
 import VerificationBadge from '../../components/VerificationBadge';
 import { useTimeAgo } from '../../lib/useTimeAgo';
+import DiscoveryHubSheet from '../../components/DiscoveryHubSheet';
 
 type InboxTab = 'chats' | 'requests';
 
@@ -31,6 +32,7 @@ export default function MessagesInboxScreen() {
 
   const [activeTab, setActiveTab] = useState<InboxTab>('chats');
   const [refreshing, setRefreshing] = useState(false);
+  const [helpVisible, setHelpVisible] = useState(false);
 
   const chats = useDMStore((s) => s.chats);
   const requests = useDMStore((s) => s.requests);
@@ -122,7 +124,14 @@ export default function MessagesInboxScreen() {
         <Text style={[styles.headerTitle, { color: colors.text }]}>
           {t('messages.inbox', { defaultValue: 'Direct Messages' })}
         </Text>
-        <View style={{ width: 32 }} />
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={t('discovery.screenHelp', { defaultValue: 'Page guidance' })}
+          style={{ padding: 4 }}
+          onPress={() => setHelpVisible(true)}
+        >
+          <Ionicons name="help-circle-outline" size={22} color={colors.primary} />
+        </Pressable>
       </View>
 
       {/* Segmented Tabs (Chats vs Requests) */}
@@ -212,6 +221,11 @@ export default function MessagesInboxScreen() {
             </Text>
           </View>
         }
+      />
+      <DiscoveryHubSheet
+        visible={helpVisible}
+        onClose={() => setHelpVisible(false)}
+        sourceScreen="messages"
       />
     </View>
   );

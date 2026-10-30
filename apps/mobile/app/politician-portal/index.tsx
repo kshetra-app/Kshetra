@@ -9,6 +9,7 @@ import PoliticianPortalCard from '../../components/PoliticianPortalCard';
 import EventCard from '../../components/EventCard';
 import ManifestoCard from '../../components/ManifestoCard';
 import { useTheme } from '../../lib/theme';
+import DiscoveryHubSheet from '../../components/DiscoveryHubSheet';
 
 type Tab = 'politicians' | 'events' | 'manifestos' | 'surveys';
 
@@ -24,6 +25,7 @@ export default function PoliticianPortalScreen() {
   const { colors } = useTheme();
   const [activeTab, setActiveTab] = useState<Tab>('politicians');
   const [refreshing, setRefreshing] = useState(false);
+  const [helpVisible, setHelpVisible] = useState(false);
   const insets = useSafeAreaInsets();
 
   const politicians = usePoliticianPortalStore((s) => s.politicians);
@@ -45,7 +47,23 @@ export default function PoliticianPortalScreen() {
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
-      <Stack.Screen options={{ title: t('politicianPortal.screenTitle'), headerShown: true, headerStyle: { backgroundColor: colors.surface }, headerTintColor: colors.primary }} />
+      <Stack.Screen
+        options={{
+          title: t('politicianPortal.screenTitle'),
+          headerShown: true,
+          headerStyle: { backgroundColor: colors.surface },
+          headerTintColor: colors.primary,
+          headerRight: () => (
+            <Pressable
+              accessibilityLabel={t('discovery.pageHelp.openHelp', { defaultValue: 'Page Help' })}
+              style={{ padding: 4 }}
+              onPress={() => setHelpVisible(true)}
+            >
+              <Ionicons name="help-circle-outline" size={22} color={colors.primary} />
+            </Pressable>
+          ),
+        }}
+      />
 
       {/* Tab Bar */}
       <ScrollView horizontal showsHorizontalScrollIndicator={false} style={[styles.tabBar, { borderBottomColor: colors.border }]} contentContainerStyle={styles.tabBarContent}>
@@ -126,6 +144,13 @@ export default function PoliticianPortalScreen() {
 
         <View style={{ height: insets.bottom + 100 }} />
       </ScrollView>
+
+      {/* Contextual Guidance */}
+      <DiscoveryHubSheet
+        visible={helpVisible}
+        onClose={() => setHelpVisible(false)}
+        sourceScreen="politician-portal"
+      />
     </View>
   );
 }

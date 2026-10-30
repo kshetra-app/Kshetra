@@ -14,6 +14,7 @@ import { useAuthStore } from '../../stores/auth';
 import FeedScreen from './feed';
 import ShortsScreen from './shorts';
 import LiveTabScreen from './live';
+import DiscoveryHubSheet from '../../components/DiscoveryHubSheet';
 
 export type CommunitySegment = 'feed' | 'shorts' | 'live';
 
@@ -48,6 +49,7 @@ export default function CommunityScreen() {
 
   // In-memory state only (never persisted, resets to feed on unmount/entry)
   const [activeSegment, setActiveSegment] = useState<CommunitySegment>('feed');
+  const [showDiscoveryHub, setShowDiscoveryHub] = useState(false);
 
   // Live count for real-time red dot badge
   const liveEvents = useLiveExchangeStore(useShallow((s) => s.getLiveTabFeed()));
@@ -223,7 +225,13 @@ export default function CommunityScreen() {
         {effectiveSegment === 'shorts' && <ShortsScreen hideHeader />}
         {effectiveSegment === 'live' && <LiveTabScreen hideHeader />}
       </View>
-    </View>
+    
+      <DiscoveryHubSheet
+        visible={showDiscoveryHub}
+        onClose={() => setShowDiscoveryHub(false)}
+        sourceScreen="community"
+      />
+</View>
   );
 }
 

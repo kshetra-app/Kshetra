@@ -28,6 +28,7 @@ import {
   type MLARiskProfile,
 } from '../../lib/delimitationTypes';
 import { useTheme } from '../../lib/theme';
+import DiscoveryHubSheet from '../../components/DiscoveryHubSheet';
 
 type TabKey = 'overview' | 'projections' | 'timeline' | 'impact';
 const TABS: { key: TabKey; i18nKey: string; icon: string }[] = [
@@ -52,6 +53,7 @@ export default function DelimitationHub() {
   const insets = useSafeAreaInsets();
   const { width: screenWidth } = useWindowDimensions();
   const [activeTab, setActiveTab] = useState<TabKey>('overview');
+  const [helpVisible, setHelpVisible] = useState(false);
 
   const activeStateCode = useActiveStateStore((s) => s.stateCode);
   const [impactState, setImpactState] = useState<string>(activeStateCode || 'TS');
@@ -552,6 +554,13 @@ export default function DelimitationHub() {
             {statusConfig.label}
           </Text>
         </View>
+        <Pressable
+          accessibilityLabel={t('discovery.pageHelp.openHelp', { defaultValue: 'Page Help' })}
+          style={[styles.backBtn, { backgroundColor: colors.surfaceElevated, marginLeft: 6 }]}
+          onPress={() => setHelpVisible(true)}
+        >
+          <Ionicons name="help-circle-outline" size={20} color={colors.textSecondary} />
+        </Pressable>
       </View>
 
       {/* Tabs */}
@@ -601,6 +610,13 @@ export default function DelimitationHub() {
         {activeTab === 'timeline' && renderTimeline()}
         {activeTab === 'impact' && renderImpact()}
       </ScrollView>
+
+      {/* Contextual Guidance */}
+      <DiscoveryHubSheet
+        visible={helpVisible}
+        onClose={() => setHelpVisible(false)}
+        sourceScreen="delimitation"
+      />
     </View>
   );
 }

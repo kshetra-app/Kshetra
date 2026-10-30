@@ -16,6 +16,7 @@ import { useUserProfileStore } from '../../stores/userProfile';
 import { useAuthStore } from '../../stores/auth';
 import { useTheme } from '../../lib/theme';
 import { useFeedStore } from '../../stores/feed';
+import DiscoveryHubSheet from '../../components/DiscoveryHubSheet';
 import i18n from '../../i18n';
 
 interface ReportItem {
@@ -62,6 +63,7 @@ export default function GeneralModerationQueueScreen() {
   const [refreshing, setRefreshing] = useState(false);
   const [reports, setReports] = useState<ReportItem[]>([]);
   const [actionInProgress, setActionInProgress] = useState<string | null>(null);
+  const [helpVisible, setHelpVisible] = useState(false);
 
   const getAuthHeaders = () => {
     const headers: Record<string, string> = {};
@@ -168,9 +170,19 @@ export default function GeneralModerationQueueScreen() {
           <Ionicons name="chevron-back" size={26} color={colors.primary} />
         </Pressable>
         <Text style={[styles.title, { color: colors.text }]}>{i18n.t('moderation.contentModerationQueue')}</Text>
-        <Pressable onPress={() => { setRefreshing(true); loadQueue(); }} hitSlop={10}>
-          <Ionicons name="refresh" size={22} color={colors.primary} />
-        </Pressable>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={i18n.t('discovery.screenHelp')}
+            onPress={() => setHelpVisible(true)}
+            hitSlop={10}
+          >
+            <Ionicons name="help-circle-outline" size={22} color={colors.primary} />
+          </Pressable>
+          <Pressable onPress={() => { setRefreshing(true); loadQueue(); }} hitSlop={10}>
+            <Ionicons name="refresh" size={22} color={colors.primary} />
+          </Pressable>
+        </View>
       </View>
 
       {/* Notice Banner */}
@@ -311,6 +323,11 @@ export default function GeneralModerationQueueScreen() {
           })}
         </ScrollView>
       )}
+      <DiscoveryHubSheet
+        visible={helpVisible}
+        onClose={() => setHelpVisible(false)}
+        sourceScreen="moderation"
+      />
     </View>
   );
 }

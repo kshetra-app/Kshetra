@@ -2830,7 +2830,188 @@ const ne = {
     "resolution": "समाधान",
     "disputeFiled": "विवाद दर्ज किया गया",
     "disputeResolution": "विवाद समाधान"
+  },
+  "discovery": {
+    "hubTitle": "POLIGRAM Discovery & Guide",
+    "hubSubtitle": "Explore goals, all features, and page guidance",
+    "goalsHeading": "What would you like to do?",
+    "directoryHeading": "Feature Directory",
+    "currentScreen": "Current Screen",
+    "howToUse": "How to use this screen:",
+    "searchPlaceholder": "Search features, goals, or help...",
+    "matchedGoals": "Matched Goals",
+    "matchedFeatures": "Matched Features",
+    "selectEntityRequired": "Select entity",
+    "categories": {
+      "civic": "Civic & Representation",
+      "media": "Community & Media",
+      "leadership": "Leadership & Campaigns",
+      "tools": "Tools & Account"
+    },
+    "tabs": {
+      "goals": "Goals",
+      "directory": "Features",
+      "guide": "Page Help"
+    },
+    "goals": {
+      "understandArea": {
+        "title": "Understand my area",
+        "desc": "Explore constituencies, mandals, local representatives, and live boundaries"
+      },
+      "findRepresentatives": {
+        "title": "Find my representatives",
+        "desc": "Lookup MPs, MLAs, municipal councillors, and attendance records"
+      },
+      "stayInformed": {
+        "title": "Stay informed",
+        "desc": "Read verified news, watch civic live streams, and view policy briefs"
+      },
+      "participate": {
+        "title": "Participate in my community",
+        "desc": "Raise civic issues, engage in discussions, and vote in community polls"
+      },
+      "electionsGov": {
+        "title": "Understand elections & governance",
+        "desc": "Track live election results, delimitation forecasts, and department alerts"
+      },
+      "leadershipJourney": {
+        "title": "Build a civic leadership journey",
+        "desc": "Enroll in Leadership Academy, verify as an aspirant, and create campaigns"
+      }
+    },
+    "features": {
+      "civicDashboard": {
+        "desc": "Monitor local issues, political promises, and citizen sentiment"
+      },
+      "intelligence": {
+        "desc": "Statewide seat forecasts, party distribution, and defection analytics"
+      },
+      "parliament": {
+        "desc": "Lok Sabha and Rajya Sabha members, debates, and questions"
+      },
+      "civicMetrics": {
+        "title": "Civic Metrics",
+        "desc": "Legislative attendance, fund utilization, and RTI disclosures"
+      },
+      "localBodies": {
+        "title": "Local Bodies",
+        "desc": "Panchayats, municipal wards, and grassroots representatives"
+      },
+      "departments": {
+        "title": "Departments",
+        "desc": "Government department alerts, service delivery, and status tracking"
+      },
+      "delimitation": {
+        "desc": "Constituency boundary redrawing scenarios and demographic projections"
+      },
+      "liveElection": {
+        "desc": "Real-time vote shares, round-by-round counting, and seat leads"
+      },
+      "communityFeed": {
+        "desc": "Hyperlocal feed with discussion, polls, questions, and civic alerts"
+      },
+      "news": {
+        "desc": "Curated multilingual regional and national political news"
+      },
+      "newsroom": {
+        "title": "Journalist Newsroom",
+        "desc": "Fact checks, investigative reporting, and breaking bulletins"
+      },
+      "poligramLive": {
+        "desc": "Verified civic live streams, press briefings, and ground reports"
+      },
+      "shorts": {
+        "desc": "Short civic video updates, youth commentary, and event highlights"
+      },
+      "pagesLeaders": {
+        "desc": "Candidate profiles, election manifestos, and verified aspirant pages"
+      },
+      "leadershipAcademy": {
+        "desc": "Civic curriculum, grassroots campaign skills, and aspirant scores"
+      },
+      "politicianPortal": {
+        "title": "Politician Portal",
+        "desc": "Official statements, constituent outreach, and survey management"
+      },
+      "campaignManager": {
+        "desc": "Voter outreach, cadre coordination, and booth-level management"
+      },
+      "candidateXRay": {
+        "desc": "Electoral affidavit scanner and historical criminal/asset records"
+      },
+      "search": {
+        "desc": "Global search across constituencies, representatives, issues, and posts"
+      },
+      "aiAssistant": {
+        "desc": "Responsible AI assistant for constituency data and parliamentary questions"
+      },
+      "profile": {
+        "desc": "Personalized settings, verified credentials, and activity ledger"
+      },
+      "messages": {
+        "title": "Messages",
+        "desc": "Direct citizen and constituent messaging with safety controls"
+      },
+      "notifications": {
+        "desc": "Civic updates, emergency alerts, and legislative tracking notices"
+      },
+      "notificationSettings": {
+        "desc": "Custom notification categories, quiet hours, and frequency preferences"
+      },
+      "moderation": {
+        "desc": "Grievance officer and moderator review queue for flagged content"
+      }
+    },
+    "guides": {
+      "map": {
+        "title": "Map Discovery Guide",
+        "purpose": "Navigate constituencies, election results, and geographic boundaries across India.",
+        "step1": "Pinch or scroll to zoom into any assembly or parliamentary constituency.",
+        "step2": "Tap a constituency polygon to view representative details, victory margin, and voting trends.",
+        "step3": "Use floating adaptive controls to toggle 3D terrain, historical elections, and delimitation impact.",
+        "caveat": "All boundaries are strictly validated against official Delimitation Commission schedules."
+      },
+      "explore": {
+        "title": "Explore Constituencies Guide",
+        "purpose": "Search, filter, and compare all assembly constituencies within your active state.",
+        "step1": "Search by constituency name, AC number, or MLA candidate.",
+        "step2": "Filter by political party, district, or reservation status.",
+        "step3": "Tap any result to open its full civic intelligence and historical profile.",
+        "caveat": "State changes instantly clear invalid district and party filters to preserve data integrity."
+      },
+      "community": {
+        "title": "Community Hub Guide",
+        "purpose": "Connect with local citizens, watch civic live streams, and participate in grassroots dialogues.",
+        "step1": "Switch between Feed, Shorts, and Live broadcast segments.",
+        "step2": "Read discussions, answer polls, and report community civic issues.",
+        "step3": "Tap direct messages or notifications to interact securely with other verified citizens.",
+        "caveat": "All discussions adhere strictly to DPDP compliance and civic moderation standards."
+      },
+      "news": {
+        "title": "News Feed Guide",
+        "purpose": "Read multi-source political and civic news curated for your constituency and state.",
+        "step1": "Filter stories by language, category, or geographic scope.",
+        "step2": "Tap any story to read in the reader view or bookmark for later.",
+        "step3": "Check verified journalist badges and fact-checking disclosures.",
+        "caveat": "Stories are aggregated from verified media publishers without algorithmic bias."
+      },
+      "more": {
+        "title": "Feature Directory Guide",
+        "purpose": "Access all specialized civic modules, election tools, and account preferences.",
+        "step1": "Browse categorized feature sections: Civic, Media, Leadership, and Tools.",
+        "step2": "Tap What would you like to do to explore goal-oriented guided pathways.",
+        "step3": "Access developer switches, language options, and grievance officer queues."
+      },
+      "profile": {
+        "title": "Profile & Settings Guide",
+        "purpose": "Manage your civic identity, notification preferences, language, and verification status.",
+        "step1": "Complete Contributor Verification (KYC) to participate in candidate details editing.",
+        "step2": "Configure language preferences across 13 supported Indian languages.",
+        "step3": "Manage push notification categories and inspect your activity history.",
+        "caveat": "Your personal data is encrypted and strictly protected under DPDP Act provisions."
+      }
+    }
   }
-};
+}
 
 export default ne;

@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
   View,
   Text,
@@ -22,6 +22,7 @@ import {
   hasAI,
 } from '../../lib/lmxTypes';
 import { useTheme } from '../../lib/theme';
+import DiscoveryHubSheet from '../../components/DiscoveryHubSheet';
 import {
   localizeLocality,
   localizeDistrict,
@@ -47,6 +48,7 @@ export default function LivePlayerScreen() {
   const incrementViewers = useLiveExchangeStore((s) => s.incrementViewers);
   const endEvent = useLiveExchangeStore((s) => s.endEvent);
   const currentUserId = useAuthStore((s) => s.user?.id);
+  const [helpVisible, setHelpVisible] = useState(false);
 
   useEffect(() => {
     if (!event) return;
@@ -129,6 +131,13 @@ export default function LivePlayerScreen() {
             <Ionicons name="eye" size={12} color="#FFFFFF" />
             <Text style={styles.viewerText}>{t('lmx.player.viewers', { count: event.viewerCount })}</Text>
           </View>
+          <Pressable
+            accessibilityLabel={t('discovery.pageHelp.openHelp', { defaultValue: 'Page Help' })}
+            style={[styles.viewerBadge, { marginLeft: 4 }]}
+            onPress={() => setHelpVisible(true)}
+          >
+            <Ionicons name="help-circle-outline" size={14} color="#FFFFFF" />
+          </Pressable>
         </View>
 
         {!!orgName && (
@@ -254,6 +263,13 @@ export default function LivePlayerScreen() {
           </View>
         )}
       </ScrollView>
+
+      {/* Contextual Guidance */}
+      <DiscoveryHubSheet
+        visible={helpVisible}
+        onClose={() => setHelpVisible(false)}
+        sourceScreen="live-player"
+      />
     </View>
   );
 }

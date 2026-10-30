@@ -18,6 +18,7 @@ import { simulateStateQuick } from '../../lib/delimitation/boundarySimulator';
 import { analyzeStateReservation } from '../../lib/delimitation/reservationAnalyzer';
 import { formatPopulation } from '../../lib/delimitationTypes';
 import { useTheme } from '../../lib/theme';
+import DiscoveryHubSheet from '../../components/DiscoveryHubSheet';
 
 type SimMode = 'equal_population' | 'minimal_change' | 'political_neutral';
 
@@ -68,6 +69,7 @@ export default function SimulatorScreen() {
   const [customSeats, setCustomSeats] = useState<number | null>(null);
   // Show results
   const [showResults, setShowResults] = useState(false);
+  const [helpVisible, setHelpVisible] = useState(false);
 
   const currentAlloc = useMemo(
     () => allAllocations.find((a) => a.stateCode === selectedState),
@@ -147,6 +149,13 @@ export default function SimulatorScreen() {
             {t('delimitationExtended.simulatorSub', { defaultValue: 'Interactive Boundary Simulation' })}
           </Text>
         </View>
+        <Pressable
+          accessibilityLabel={t('discovery.pageHelp.openHelp', { defaultValue: 'Page Help' })}
+          style={[styles.backBtn, { backgroundColor: colors.surfaceElevated, marginRight: showResults ? 6 : 0 }]}
+          onPress={() => setHelpVisible(true)}
+        >
+          <Ionicons name="help-circle-outline" size={20} color={colors.textSecondary} />
+        </Pressable>
         {showResults && (
           <Pressable onPress={handleShare} style={[styles.shareBtn, { backgroundColor: colors.primaryLight }]}>
             <Ionicons name="share-outline" size={18} color={colors.primary} />
@@ -479,6 +488,13 @@ export default function SimulatorScreen() {
           </View>
         )}
       </ScrollView>
+
+      {/* Contextual Guidance */}
+      <DiscoveryHubSheet
+        visible={helpVisible}
+        onClose={() => setHelpVisible(false)}
+        sourceScreen="delimitation-simulator"
+      />
     </View>
   );
 }

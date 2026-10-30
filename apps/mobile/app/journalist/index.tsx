@@ -11,6 +11,7 @@ import BreakingNewsBanner from '../../components/BreakingNewsBanner';
 import JournalistProfileCard from '../../components/JournalistProfileCard';
 import { useResponsive } from '../../lib/responsive';
 import { useTheme } from '../../lib/theme';
+import DiscoveryHubSheet from '../../components/DiscoveryHubSheet';
 
 type JournalistTab = 'news' | 'factcheck' | 'breaking' | 'journalists';
 
@@ -27,6 +28,7 @@ export default function JournalistDashboardScreen() {
   const { colors } = useTheme();
   const [activeTab, setActiveTab] = useState<JournalistTab>('news');
   const [refreshing, setRefreshing] = useState(false);
+  const [helpVisible, setHelpVisible] = useState(false);
   const router = useRouter();
 
   const articles = useJournalistStore((s) => s.articles);
@@ -55,7 +57,23 @@ export default function JournalistDashboardScreen() {
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
-      <Stack.Screen options={{ title: t('journalist.screenTitle'), headerShown: true, headerStyle: { backgroundColor: colors.surface }, headerTintColor: colors.primary }} />
+      <Stack.Screen
+        options={{
+          title: t('journalist.screenTitle'),
+          headerShown: true,
+          headerStyle: { backgroundColor: colors.surface },
+          headerTintColor: colors.primary,
+          headerRight: () => (
+            <Pressable
+              accessibilityLabel={t('discovery.pageHelp.openHelp', { defaultValue: 'Page Help' })}
+              style={{ padding: 4 }}
+              onPress={() => setHelpVisible(true)}
+            >
+              <Ionicons name="help-circle-outline" size={22} color={colors.primary} />
+            </Pressable>
+          ),
+        }}
+      />
 
       {/* Tab Bar */}
       <ScrollView horizontal showsHorizontalScrollIndicator={false} style={[styles.tabBar, { borderBottomColor: colors.border }]} contentContainerStyle={styles.tabBarContent}>
@@ -134,6 +152,13 @@ export default function JournalistDashboardScreen() {
 
         <View style={{ height: insets.bottom + 100 }} />
       </ScrollView>
+
+      {/* Contextual Guidance */}
+      <DiscoveryHubSheet
+        visible={helpVisible}
+        onClose={() => setHelpVisible(false)}
+        sourceScreen="journalist"
+      />
     </View>
   );
 }

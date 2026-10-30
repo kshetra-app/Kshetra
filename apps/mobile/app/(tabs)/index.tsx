@@ -54,6 +54,7 @@ import TriviaCard from '../../components/TriviaCard';
 import DefectionBadge from '../../components/DefectionBadge';
 import MapColorToggle, { type MapColorMode } from '../../components/MapColorToggle';
 import MapSearch from '../../components/MapSearch';
+import DiscoveryHubSheet from '../../components/DiscoveryHubSheet';
 import { useTheme } from '../../lib/theme';
 import CompareSheet from '../../components/CompareSheet';
 import ChiefMinisterBadge from '../../components/ChiefMinisterBadge';
@@ -246,6 +247,7 @@ function FullMapScreen() {
   const [showSearch, setShowSearch] = useState(false);
   const [showCompare, setShowCompare] = useState(false);
   const [showDelimitation, setShowDelimitation] = useState(false);
+  const [showDiscoveryHub, setShowDiscoveryHub] = useState(false);
   const [photoViewer, setPhotoViewer] = useState<{ uri: string | null; name: string; party: string } | null>(null);
   const myHome = useMyConstituencyStore((s) => s.home);
 
@@ -1428,6 +1430,32 @@ function FullMapScreen() {
               </Pressable>
               <StateSwitcher />
               <LanguageSwitcher compact />
+              {/* Discovery & Guidance Hub trigger */}
+              <Pressable
+                style={{
+                  backgroundColor: colors.surfaceElevated || colors.surface,
+                  borderRadius: 14,
+                  width: 28,
+                  height: 28,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  borderWidth: 1,
+                  borderColor: colors.border,
+                  shadowColor: colors.shadowColor,
+                  shadowOffset: { width: 0, height: 2 },
+                  shadowOpacity: 0.2,
+                  shadowRadius: 3,
+                  elevation: 4,
+                }}
+                onPress={() => {
+                  tapLight();
+                  setShowDiscoveryHub(true);
+                }}
+                accessibilityRole="button"
+                accessibilityLabel={t('discovery.hubTitle', { defaultValue: 'Discovery and Guide' })}
+              >
+                <Ionicons name="help-circle" size={16} color={colors.gold || colors.primary} />
+              </Pressable>
             </View>
           </View>
 
@@ -2260,6 +2288,12 @@ function FullMapScreen() {
           </BottomSheetView>
         )}
       </BottomSheet>
+
+      <DiscoveryHubSheet
+        visible={showDiscoveryHub}
+        onClose={() => setShowDiscoveryHub(false)}
+        sourceScreen="map"
+      />
     </View>
   );
 }

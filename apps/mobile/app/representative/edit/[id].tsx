@@ -16,6 +16,8 @@ import type { Representative } from '@kshetra/shared';
 import { submitRepresentativeEdit } from '../../../lib/representativeEdits';
 import { gateContentAction, logContentAction } from '../../../lib/contentAccountability';
 import { useContributorVerificationStore } from '../../../stores/contributorVerification';
+import DiscoveryHubSheet from '../../../components/DiscoveryHubSheet';
+import i18n from '../../../i18n';
 
 const EDITABLE_FIELDS: { key: string; label: string; keyboard?: 'default' | 'phone-pad' | 'email-address' | 'url' }[] = [
   { key: 'name', label: 'Full name' },
@@ -32,6 +34,7 @@ export default function RepresentativeEditScreen() {
   const { colors } = useTheme();
 
   const [rep, setRep] = useState<Representative | null>(null);
+  const [helpVisible, setHelpVisible] = useState(false);
 
   const kyc = useContributorVerificationStore((s) => s.kycRecord);
   const editorVerified = kyc?.status === 'verified';
@@ -133,7 +136,21 @@ export default function RepresentativeEditScreen() {
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
-      <Stack.Screen options={{ title: 'Contribute Details' }} />
+      <Stack.Screen
+        options={{
+          title: 'Contribute Details',
+          headerRight: () => (
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel={i18n.t('discovery.screenHelp')}
+              style={{ padding: 6, marginRight: 8 }}
+              onPress={() => setHelpVisible(true)}
+            >
+              <Ionicons name="help-circle-outline" size={22} color={colors.primary} />
+            </Pressable>
+          ),
+        }}
+      />
       <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: insets.bottom + 32 }}>
         <View style={[styles.banner, { backgroundColor: colors.primaryLight, borderColor: colors.primary + '40' }]}>
           <Ionicons name="shield-checkmark-outline" size={16} color={colors.primary} />
@@ -193,6 +210,11 @@ export default function RepresentativeEditScreen() {
           <Text style={styles.submitText}>{submitting ? 'Submitting…' : 'Submit for moderation'}</Text>
         </Pressable>
       </ScrollView>
+      <DiscoveryHubSheet
+        visible={helpVisible}
+        onClose={() => setHelpVisible(false)}
+        sourceScreen="representative-edit"
+      />
     </View>
   );
 }

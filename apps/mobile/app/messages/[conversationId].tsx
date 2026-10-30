@@ -22,6 +22,7 @@ import { useDMStore } from '../../stores/dmStore';
 import { REPORT_REASONS, type ReportReason } from '../../lib/moderationTypes';
 import type { DMMessageItem } from '../../lib/supabaseDataService';
 import { useTimeAgo } from '../../lib/useTimeAgo';
+import DiscoveryHubSheet from '../../components/DiscoveryHubSheet';
 
 export default function ConversationThreadScreen() {
   const { conversationId } = useLocalSearchParams<{ conversationId: string }>();
@@ -47,6 +48,7 @@ export default function ConversationThreadScreen() {
   const [reportReason, setReportReason] = useState<ReportReason>('harassment');
   const [reportDescription, setReportDescription] = useState('');
   const [unlockedMediaIds, setUnlockedMediaIds] = useState<Set<string>>(new Set());
+  const [helpVisible, setHelpVisible] = useState(false);
 
   const conv = chats.find((c) => c.id === conversationId) || requests.find((c) => c.id === conversationId);
   const isPending = conv?.status === 'pending';
@@ -243,10 +245,21 @@ export default function ConversationThreadScreen() {
           )}
         </Pressable>
 
-        {/* 3-dots Safety Menu (Ticket 3.4) */}
-        <Pressable onPress={handleBlockReportPrompt} hitSlop={8} style={styles.headerBtn}>
-          <Ionicons name="shield-half" size={20} color={colors.primary} />
-        </Pressable>
+        {/* Safety & Help Menu */}
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={t('discovery.screenHelp', { defaultValue: 'Page guidance' })}
+            onPress={() => setHelpVisible(true)}
+            hitSlop={8}
+            style={styles.headerBtn}
+          >
+            <Ionicons name="help-circle-outline" size={22} color={colors.primary} />
+          </Pressable>
+          <Pressable onPress={handleBlockReportPrompt} hitSlop={8} style={styles.headerBtn}>
+            <Ionicons name="shield-half" size={20} color={colors.primary} />
+          </Pressable>
+        </View>
       </View>
 
       {/* Pending Message Request Banner (Ticket 3.6) */}
@@ -376,6 +389,11 @@ export default function ConversationThreadScreen() {
           </Pressable>
         </Pressable>
       </Modal>
+      <DiscoveryHubSheet
+        visible={helpVisible}
+        onClose={() => setHelpVisible(false)}
+        sourceScreen="message-thread"
+      />
     </KeyboardAvoidingView>
   );
 }

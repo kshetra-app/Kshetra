@@ -37,6 +37,7 @@ import {
 import LiveBroadcaster, { isBroadcastSupported } from '../../components/LiveBroadcaster';
 import { buildWhipPublishUrl } from '../../lib/mediaPipeline';
 import { useTheme } from '../../lib/theme';
+import DiscoveryHubSheet from '../../components/DiscoveryHubSheet';
 
 const CATEGORIES: IssueCategory[] = [
   'emergency',
@@ -100,6 +101,7 @@ export default function GoLiveScreen() {
   // Three orthogonal choices
   const [affiliationId, setAffiliationId] = useState<string | null>(null); // null = Independent
   const [visibility, setVisibility] = useState<VisibilityMode>('public');
+  const [helpVisible, setHelpVisible] = useState(false);
   const [alertDepts, setAlertDepts] = useState<DepartmentType[]>([]);
 
   const [category, setCategory] = useState<IssueCategory>('general');

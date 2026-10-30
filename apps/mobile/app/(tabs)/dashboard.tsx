@@ -29,6 +29,7 @@ import { PROMISE_STATUS_CONFIG, type PromiseStatus as PStatus } from '../../lib/
 import { STATES } from '@kshetra/shared';
 import i18n from '../../i18n';
 import { useTheme } from '../../lib/theme';
+import DiscoveryHubSheet from '../../components/DiscoveryHubSheet';
 import { gateContentAction, logContentAction } from '../../lib/contentAccountability';
 
 const SCOPE_OPTIONS: { key: CivicScope; icon: string; tKey: string }[] = [
@@ -97,6 +98,7 @@ function DashboardContent() {
   const [activeTab, setActiveTab] = useState<DashboardTab>('issues');
   const [reportVisible, setReportVisible] = useState(false);
   const [exportVisible, setExportVisible] = useState(false);
+  const [helpVisible, setHelpVisible] = useState(false);
 
   // Stores — select raw state, never call methods inside selectors
   const stateCode = useActiveStateStore((s) => s.stateCode);
@@ -226,6 +228,13 @@ function DashboardContent() {
           </View>
         </View>
         <View style={styles.headerActions}>
+          <Pressable
+            accessibilityLabel={t('discovery.pageHelp.openHelp', { defaultValue: 'Page Help' })}
+            style={[styles.iconButton, { backgroundColor: colors.surface, borderColor: colors.goldBorder || colors.border, borderWidth: 1 }]}
+            onPress={() => setHelpVisible(true)}
+          >
+            <Ionicons name="help-circle-outline" size={18} color={colors.textSecondary} />
+          </Pressable>
           <Pressable style={[styles.iconButton, { backgroundColor: colors.surface, borderColor: colors.goldBorder || colors.border, borderWidth: 1 }]} onPress={() => setExportVisible(true)}>
             <Ionicons name="download-outline" size={18} color={colors.teal} />
           </Pressable>
@@ -375,6 +384,41 @@ function DashboardContent() {
               })}
             </ScrollView>
 
+            {/* Active Filter Chips */}
+            {(statusFilter !== 'all' || (issueFilter && issueFilter !== 'all')) && (
+              <View style={styles.activeFiltersRow}>
+                {statusFilter !== 'all' && (
+                  <Pressable
+                    style={[styles.activeFilterChip, { backgroundColor: colors.primary + '18', borderColor: colors.primary }]}
+                    onPress={() => setStatusFilter('all')}
+                  >
+                    <Text style={[styles.activeFilterChipText, { color: colors.primary }]}>
+                      {t(`dashboard.statusFilters.${statusFilter === 'in_progress' ? 'inProgress' : statusFilter}`)} ✕
+                    </Text>
+                  </Pressable>
+                )}
+                {issueFilter && issueFilter !== 'all' && (
+                  <Pressable
+                    style={[styles.activeFilterChip, { backgroundColor: colors.gold + '18', borderColor: colors.gold }]}
+                    onPress={() => setIssueFilter('all')}
+                  >
+                    <Text style={[styles.activeFilterChipText, { color: colors.gold }]}>
+                      {ISSUE_CATEGORY_CONFIG[issueFilter]?.label || issueFilter} ✕
+                    </Text>
+                  </Pressable>
+                )}
+                <Pressable
+                  style={styles.clearAllFilterButton}
+                  onPress={() => {
+                    setStatusFilter('all');
+                    setIssueFilter('all');
+                  }}
+                >
+                  <Text style={[styles.clearAllFilterText, { color: colors.textMuted }]}>{t('common.clear', { defaultValue: 'Clear' })}</Text>
+                </Pressable>
+              </View>
+            )}
+
             {/* Issue list */}
             {issues.length === 0 ? (
               <View style={styles.emptyState}>
@@ -488,6 +532,13 @@ function DashboardContent() {
         filteredSentiment={sentiment}
         allSentiment={allSentiment}
         scopeLabel={scopeLabel}
+      />
+
+      {/* Contextual Page Guidance */}
+      <DiscoveryHubSheet
+        visible={helpVisible}
+        onClose={() => setHelpVisible(false)}
+        sourceScreen="dashboard"
       />
     </View>
   );
@@ -729,5 +780,34 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: '#8E7B6F',
     marginTop: 1,
+  },
+  activeFiltersRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    alignItems: 'center',
+    gap: 8,
+    marginHorizontal: 16,
+    marginBottom: 10,
+  },
+  activeFilterChip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 12,
+    borderWidth: 1,
+  },
+  activeFilterChipText: {
+    fontSize: 12,
+    fontWeight: '700',
+  },
+  clearAllFilterButton: {
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+  },
+  clearAllFilterText: {
+    fontSize: 12,
+    fontWeight: '600',
+    textDecorationLine: 'underline',
   },
 });

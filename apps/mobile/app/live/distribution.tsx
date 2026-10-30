@@ -15,6 +15,7 @@ import { useShallow } from 'zustand/react/shallow';
 import { useLiveExchangeStore } from '../../stores/liveExchange';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '../../lib/theme';
+import DiscoveryHubSheet from '../../components/DiscoveryHubSheet';
 
 /**
  * Recipient-side distribution config (doc Section 7a). Fastest-to-ship pieces:
@@ -36,6 +37,7 @@ export default function DistributionScreen() {
   const [selectedId, setSelectedId] = useState<string>(events[0]?.id ?? '');
   const [relayKey, setRelayKey] = useState('');
   const [relaySaved, setRelaySaved] = useState(false);
+  const [helpVisible, setHelpVisible] = useState(false);
 
   const selected = events.find((e) => e.id === selectedId);
 
@@ -154,6 +156,13 @@ export default function DistributionScreen() {
           </Text>
         </Card>
       </ScrollView>
+
+      {/* Contextual Guidance */}
+      <DiscoveryHubSheet
+        visible={helpVisible}
+        onClose={() => setHelpVisible(false)}
+        sourceScreen="live-distribution"
+      />
     </View>
   );
 }

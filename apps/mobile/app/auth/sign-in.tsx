@@ -14,6 +14,8 @@ import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAuthStore } from '../../stores/auth';
 import { useTheme } from '../../lib/theme';
+import DiscoveryHubSheet from '../../components/DiscoveryHubSheet';
+import i18n from '../../i18n';
 
 export default function SignInScreen() {
   const router = useRouter();
@@ -25,6 +27,7 @@ export default function SignInScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isSignUp, setIsSignUp] = useState(false);
+  const [helpVisible, setHelpVisible] = useState(false);
   const insets = useSafeAreaInsets();
 
   const handleSubmit = async () => {
@@ -54,6 +57,16 @@ export default function SignInScreen() {
           title: isSignUp ? 'Create Account' : 'Sign In',
           headerStyle: { backgroundColor: colors.surface },
           headerTintColor: colors.primary,
+          headerRight: () => (
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel={i18n.t('discovery.screenHelp')}
+              style={{ padding: 6, marginRight: 8 }}
+              onPress={() => setHelpVisible(true)}
+            >
+              <Ionicons name="help-circle-outline" size={22} color={colors.primary} />
+            </Pressable>
+          ),
         }}
       />
       <KeyboardAvoidingView
@@ -133,6 +146,11 @@ export default function SignInScreen() {
           </Pressable>
         </View>
       </KeyboardAvoidingView>
+      <DiscoveryHubSheet
+        visible={helpVisible}
+        onClose={() => setHelpVisible(false)}
+        sourceScreen="auth-signin"
+      />
     </View>
   );
 }

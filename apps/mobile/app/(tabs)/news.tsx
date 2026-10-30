@@ -25,10 +25,12 @@ import AdCard from '../../components/AdCard';
 import { AD_INSERT_INTERVAL } from '../../lib/adConfig';
 import { STATES } from '@kshetra/shared';
 import { useTheme } from '../../lib/theme';
+import DiscoveryHubSheet from '../../components/DiscoveryHubSheet';
 
 type NewsScopeTab = 'national' | 'state' | 'constituency';
 
 export default function NewsScreen() {
+  const [showDiscoveryHub, setShowDiscoveryHub] = useState(false);
   const { t } = useTranslation();
   const { colors } = useTheme();
   const insets = useSafeAreaInsets();
@@ -197,7 +199,13 @@ export default function NewsScreen() {
           </View>
         }
       />
-    </View>
+    
+      <DiscoveryHubSheet
+        visible={showDiscoveryHub}
+        onClose={() => setShowDiscoveryHub(false)}
+        sourceScreen="news"
+      />
+</View>
   );
 }
 

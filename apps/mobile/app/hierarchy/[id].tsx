@@ -28,6 +28,7 @@ import {
   type GramPanchayat,
 } from '../../lib/hierarchyData';
 import DataPendingCard from '../../components/DataPendingCard';
+import DiscoveryHubSheet from '../../components/DiscoveryHubSheet';
 
 type Level = 'mandals' | 'panchayats' | 'booths';
 
@@ -71,6 +72,7 @@ export default function HierarchyScreen() {
   const [level, setLevel] = useState<Level>('mandals');
   const [mandal, setMandal] = useState<MandalWithOverlap | null>(null);
   const [panchayat, setPanchayat] = useState<GramPanchayat | null>(null);
+  const [helpVisible, setHelpVisible] = useState(false);
 
   const mandals = useMemo(() => getMandalsForConstituency(stateCode, acNo), [stateCode, acNo]);
   const panchayats = useMemo(
@@ -123,7 +125,19 @@ export default function HierarchyScreen() {
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
       <Stack.Screen
-        options={{ title: `${constituency?.name ?? t('hierarchy.constituency')} — ${t('hierarchy.hierarchyLabel')}`, headerBackTitle: t('hierarchy.back') }}
+        options={{
+          title: `${constituency?.name ?? t('hierarchy.constituency')} — ${t('hierarchy.hierarchyLabel')}`,
+          headerBackTitle: t('hierarchy.back'),
+          headerRight: () => (
+            <Pressable
+              accessibilityLabel={t('discovery.pageHelp.openHelp', { defaultValue: 'Page Help' })}
+              style={{ padding: 4 }}
+              onPress={() => setHelpVisible(true)}
+            >
+              <Ionicons name="help-circle-outline" size={20} color={colors.text} />
+            </Pressable>
+          ),
+        }}
       />
 
       {/* Breadcrumb */}
@@ -242,6 +256,13 @@ export default function HierarchyScreen() {
           {t('hierarchy.footer', { stateName: config.stateName })}
         </Text>
       </ScrollView>
+
+      {/* Contextual Guidance */}
+      <DiscoveryHubSheet
+        visible={helpVisible}
+        onClose={() => setHelpVisible(false)}
+        sourceScreen="hierarchy"
+      />
     </View>
   );
 }

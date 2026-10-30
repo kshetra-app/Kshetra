@@ -14,6 +14,7 @@ import {
 import type { IssueComment, IssueStatusChange } from '../../lib/civicTypes';
 
 import { useTheme } from '../../lib/theme';
+import DiscoveryHubSheet from '../../components/DiscoveryHubSheet';
 import { gateContentAction, logContentAction } from '../../lib/contentAccountability';
 
 function timeAgo(dateStr: string): string {
@@ -64,6 +65,7 @@ export default function IssueDetailScreen() {
   const [commentError, setCommentError] = useState<string | null>(null);
   const [submittingComment, setSubmittingComment] = useState(false);
   const [showAllMedia, setShowAllMedia] = useState(false);
+  const [helpVisible, setHelpVisible] = useState(false);
   const insets = useSafeAreaInsets();
 
   if (!issue) {
@@ -179,6 +181,15 @@ export default function IssueDetailScreen() {
           headerStyle: { backgroundColor: colors.surface },
           headerTintColor: colors.primary,
           headerShadowVisible: false,
+          headerRight: () => (
+            <Pressable
+              accessibilityLabel={t('discovery.pageHelp.openHelp', { defaultValue: 'Page Help' })}
+              style={{ padding: 4 }}
+              onPress={() => setHelpVisible(true)}
+            >
+              <Ionicons name="help-circle-outline" size={22} color={colors.textSecondary} />
+            </Pressable>
+          ),
         }}
       />
 
@@ -473,6 +484,12 @@ export default function IssueDetailScreen() {
           )}
         </Pressable>
       </View>
+      {/* Contextual Guidance */}
+      <DiscoveryHubSheet
+        visible={helpVisible}
+        onClose={() => setHelpVisible(false)}
+        sourceScreen="issue"
+      />
     </KeyboardAvoidingView>
   );
 }

@@ -24,6 +24,7 @@ import {
 import { getUnifiedConstituenciesForState } from '../../../lib/stateDataAdapter';
 import { formatPopulation, type SeatCalculationModel } from '../../../lib/delimitationTypes';
 import { useTheme } from '../../../lib/theme';
+import DiscoveryHubSheet from '../../../components/DiscoveryHubSheet';
 
 export default function StateDelimitationDetail() {
   const router = useRouter();
@@ -36,6 +37,8 @@ export default function StateDelimitationDetail() {
   const [model, setModel] = useState<SeatCalculationModel>('EXPANSION_SAFE');
   const [showConstituencies, setShowConstituencies] = useState(false);
   const [showMLAs, setShowMLAs] = useState(false);
+  const [helpVisible, setHelpVisible] = useState(false);
+  const [showMethodology, setShowMethodology] = useState(false);
 
   const allocation = useMemo(() => computeStateSeatAllocation(stateCode, undefined, model), [stateCode, model]);
   const mathExplanation = useMemo(() => explainSeatCalculation(stateCode, model), [stateCode, model]);
@@ -74,6 +77,13 @@ export default function StateDelimitationDetail() {
           <Text style={[styles.headerTitle, { color: colors.text }]}>{allocation.stateName}</Text>
           <Text style={[styles.headerSubtitle, { color: colors.textSecondary }]}>{t('delimitation.stateAnalysisTitle', { defaultValue: 'State Delimitation & Constitutional Analysis' })}</Text>
         </View>
+        <Pressable
+          accessibilityLabel={t('discovery.pageHelp.openHelp', { defaultValue: 'Page Help' })}
+          style={[styles.backBtn, { backgroundColor: colors.surfaceElevated, borderWidth: 1, borderColor: colors.border, marginLeft: 8 }]}
+          onPress={() => setHelpVisible(true)}
+        >
+          <Ionicons name="help-circle-outline" size={20} color={colors.textSecondary} />
+        </Pressable>
       </View>
 
       <ScrollView style={styles.scroll} contentContainerStyle={[styles.scrollContent, { paddingBottom: insets.bottom + 60 }]} showsVerticalScrollIndicator={false}>
@@ -137,45 +147,55 @@ export default function StateDelimitationDetail() {
           </View>
         </View>
 
-        {/* Mathematical Derivation & Reasoning */}
+        {/* Mathematical Derivation & Reasoning (Progressive Disclosure) */}
         {mathExplanation && (
           <View style={[styles.section, styles.card, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-            <View style={styles.sectionHeaderRow}>
-              <Ionicons name="school" size={18} color={colors.primary} />
-              <Text style={[styles.sectionTitle, { color: colors.text, marginBottom: 0 }]}>
-                {t('delimitation.formulaBreakdown', { defaultValue: 'Constitutional Formula Breakdown' })}
-              </Text>
-            </View>
+            <Pressable
+              style={styles.sectionHeaderRow}
+              onPress={() => setShowMethodology(!showMethodology)}
+            >
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+                <Ionicons name="school" size={18} color={colors.primary} />
+                <Text style={[styles.sectionTitle, { color: colors.text, marginBottom: 0 }]}>
+                  {t('delimitation.formulaBreakdown', { defaultValue: 'Constitutional Formula Breakdown' })}
+                </Text>
+              </View>
+              <Ionicons name={showMethodology ? 'chevron-up' : 'chevron-down'} size={18} color={colors.primary} />
+            </Pressable>
             <Text style={[styles.sectionSubtitle, { color: colors.textSecondary }]}>
               {t('delimitation.exactDerivation', { article: mathExplanation.constitutionalArticles.assemblyArticle, defaultValue: `Exact mathematical derivation under ${mathExplanation.constitutionalArticles.assemblyArticle}` })}
             </Text>
 
-            <View style={styles.reasoningList}>
-              {mathExplanation.reasoningSteps.map((step, idx) => (
-                <Text key={idx} style={[styles.reasoningStepText, { color: colors.textSecondary }]}>
-                  {step}
-                </Text>
-              ))}
-            </View>
+            {showMethodology && (
+              <>
+                <View style={styles.reasoningList}>
+                  {mathExplanation.reasoningSteps.map((step, idx) => (
+                    <Text key={idx} style={[styles.reasoningStepText, { color: colors.textSecondary }]}>
+                      {step}
+                    </Text>
+                  ))}
+                </View>
 
-            <View style={[styles.equationBox, { backgroundColor: colors.surfaceElevated, borderColor: colors.border }]}>
-              <Text style={[styles.equationText, { color: colors.text }]}>
-                <Text style={{ fontWeight: '700' }}>{t('delimitation.divisorEquation')}: </Text>
-                {mathExplanation.formulas.idealPopEquation}
-              </Text>
-              <Text style={[styles.equationText, { color: colors.text }]}>
-                <Text style={{ fontWeight: '700' }}>{t('delimitation.seatQuota')}</Text>
-                {mathExplanation.formulas.seatQuotaEquation}
-              </Text>
-              <Text style={[styles.equationText, { color: colors.text }]}>
-                <Text style={{ fontWeight: '700' }}>{t('delimitation.scQuota')}: </Text>
-                {mathExplanation.formulas.scQuotaEquation}
-              </Text>
-              <Text style={[styles.equationText, { color: colors.text }]}>
-                <Text style={{ fontWeight: '700' }}>{t('delimitation.stQuota')}: </Text>
-                {mathExplanation.formulas.stQuotaEquation}
-              </Text>
-            </View>
+                <View style={[styles.equationBox, { backgroundColor: colors.surfaceElevated, borderColor: colors.border }]}>
+                  <Text style={[styles.equationText, { color: colors.text }]}>
+                    <Text style={{ fontWeight: '700' }}>{t('delimitation.divisorEquation')}: </Text>
+                    {mathExplanation.formulas.idealPopEquation}
+                  </Text>
+                  <Text style={[styles.equationText, { color: colors.text }]}>
+                    <Text style={{ fontWeight: '700' }}>{t('delimitation.seatQuota')}</Text>
+                    {mathExplanation.formulas.seatQuotaEquation}
+                  </Text>
+                  <Text style={[styles.equationText, { color: colors.text }]}>
+                    <Text style={{ fontWeight: '700' }}>{t('delimitation.scQuota')}: </Text>
+                    {mathExplanation.formulas.scQuotaEquation}
+                  </Text>
+                  <Text style={[styles.equationText, { color: colors.text }]}>
+                    <Text style={{ fontWeight: '700' }}>{t('delimitation.stQuota')}: </Text>
+                    {mathExplanation.formulas.stQuotaEquation}
+                  </Text>
+                </View>
+              </>
+            )}
           </View>
         )}
 
@@ -394,6 +414,13 @@ export default function StateDelimitationDetail() {
           </Text>
         </View>
       </ScrollView>
+
+      {/* Contextual Guidance */}
+      <DiscoveryHubSheet
+        visible={helpVisible}
+        onClose={() => setHelpVisible(false)}
+        sourceScreen="delimitation-state"
+      />
     </View>
   );
 }

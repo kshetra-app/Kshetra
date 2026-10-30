@@ -21,6 +21,7 @@ import {
 import { representativeToProfile, type RepresentativeProfile, type Representative } from '@kshetra/shared';
 import ProfileHeroCard from '../../components/legislator/ProfileHeroCard';
 import DataPendingCard, { SourceAttributionFooter } from '../../components/DataPendingCard';
+import DiscoveryHubSheet from '../../components/DiscoveryHubSheet';
 import i18n from '../../i18n';
 
 export default function RepresentativeProfileScreen() {
@@ -39,6 +40,7 @@ export default function RepresentativeProfileScreen() {
   const [rep, setRep] = useState<Representative | null>(null);
   const [profile, setProfile] = useState<RepresentativeProfile | null>(null);
   const [loading, setLoading] = useState(true);
+  const [helpVisible, setHelpVisible] = useState(false);
 
   useEffect(() => {
     let mounted = true;
@@ -109,7 +111,21 @@ export default function RepresentativeProfileScreen() {
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
-      <Stack.Screen options={{ title: profile.name || profile.officeLabel }} />
+      <Stack.Screen
+        options={{
+          title: profile.name || profile.officeLabel,
+          headerRight: () => (
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel={i18n.t('discovery.screenHelp')}
+              style={{ padding: 6, marginRight: 8 }}
+              onPress={() => setHelpVisible(true)}
+            >
+              <Ionicons name="help-circle-outline" size={22} color={colors.primary} />
+            </Pressable>
+          ),
+        }}
+      />
       <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: insets.bottom + 32 }}>
         {isPending ? (
           <>
@@ -300,6 +316,11 @@ export default function RepresentativeProfileScreen() {
           </>
         )}
       </ScrollView>
+      <DiscoveryHubSheet
+        visible={helpVisible}
+        onClose={() => setHelpVisible(false)}
+        sourceScreen="representative"
+      />
     </View>
   );
 }

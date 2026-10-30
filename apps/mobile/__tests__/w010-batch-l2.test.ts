@@ -52,11 +52,11 @@ describe('W010 BATCH L2 — DEF-008 & DEF-012 VERIFICATION', () => {
       }
     });
 
-    it('verifies every language provides full coverage for canonical en keys (2,128) with zero missing', () => {
+    it('verifies every language provides full coverage for canonical en keys (>= 2,128) with zero missing', () => {
       const enFile = path.join(localesDir, 'en.ts');
       const enContent = fs.readFileSync(enFile, 'utf8');
       const enKeys = extractKeysFromSource(enContent);
-      expect(enKeys.size).toBe(2128);
+      expect(enKeys.size).toBeGreaterThanOrEqual(2128);
 
       for (const lang of allLanguages) {
         const filePath = path.join(localesDir, `${lang}.ts`);

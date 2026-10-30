@@ -20,6 +20,8 @@ import { fetchUserProfile, fetchPostsByAuthor } from '../../lib/supabaseDataServ
 import { ROLE_CONFIG, type UserRole } from '../../lib/moderationTypes';
 import PostCard from '../../components/PostCard';
 import type { Post } from '../../lib/feedTypes';
+import DiscoveryHubSheet from '../../components/DiscoveryHubSheet';
+import i18n from '../../i18n';
 
 export default function UserProfileScreen() {
   const { userId } = useLocalSearchParams<{ userId: string }>();
@@ -38,6 +40,7 @@ export default function UserProfileScreen() {
   const [userProfile, setUserProfile] = useState<any | null>(null);
   const [userPosts, setUserPosts] = useState<Post[]>([]);
   const [followLoading, setFollowLoading] = useState(false);
+  const [helpVisible, setHelpVisible] = useState(false);
 
   const isSelf = currentUserId && currentUserId === userId;
 
@@ -131,16 +134,26 @@ export default function UserProfileScreen() {
         <Text style={[styles.headerTitle, { color: colors.text }]} numberOfLines={1}>
           {userProfile?.display_name || 'Profile'}
         </Text>
-        <Pressable
-          onPress={() => {
-            Share.share({
-              message: `Check out ${userProfile?.display_name || 'this profile'} on Poligram!`,
-            });
-          }}
-          hitSlop={10}
-        >
-          <Ionicons name="share-social-outline" size={22} color={colors.primary} />
-        </Pressable>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={i18n.t('discovery.screenHelp')}
+            onPress={() => setHelpVisible(true)}
+            hitSlop={10}
+          >
+            <Ionicons name="help-circle-outline" size={22} color={colors.primary} />
+          </Pressable>
+          <Pressable
+            onPress={() => {
+              Share.share({
+                message: `Check out ${userProfile?.display_name || 'this profile'} on Poligram!`,
+              });
+            }}
+            hitSlop={10}
+          >
+            <Ionicons name="share-social-outline" size={22} color={colors.primary} />
+          </Pressable>
+        </View>
       </View>
 
       {loading ? (
@@ -275,6 +288,11 @@ export default function UserProfileScreen() {
           </View>
         </ScrollView>
       )}
+      <DiscoveryHubSheet
+        visible={helpVisible}
+        onClose={() => setHelpVisible(false)}
+        sourceScreen="user-profile"
+      />
     </View>
   );
 }

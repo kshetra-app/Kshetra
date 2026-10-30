@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import {
   View,
   Text,
@@ -14,6 +15,7 @@ import { useLiveExchangeStore } from '../../stores/liveExchange';
 import type { HumanDecision, LiveEvent } from '../../lib/lmxTypes';
 import { ISSUE_CATEGORY_CONFIG, TIER_CONFIG, hasAI } from '../../lib/lmxTypes';
 import { useTheme } from '../../lib/theme';
+import DiscoveryHubSheet from '../../components/DiscoveryHubSheet';
 
 /**
  * Human moderation buffer triage (doc Section 13 Layer 3).
@@ -36,6 +38,7 @@ export default function ModerationQueueScreen() {
   const queue = useLiveExchangeStore(useShallow((s) => s.getModerationQueue()));
   const setHumanDecision = useLiveExchangeStore((s) => s.setHumanDecision);
   const aiServiceEnabled = useLiveExchangeStore((s) => s.aiServiceEnabled);
+  const [helpVisible, setHelpVisible] = useState(false);
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
@@ -44,7 +47,13 @@ export default function ModerationQueueScreen() {
           <Ionicons name="chevron-back" size={26} color={colors.primary} />
         </Pressable>
         <Text style={[styles.title, { color: colors.text }]}>{t('lmx.moderation.title')}</Text>
-        <View style={{ width: 26 }} />
+        <Pressable
+          accessibilityLabel={t('discovery.pageHelp.openHelp', { defaultValue: 'Page Help' })}
+          style={{ padding: 4 }}
+          onPress={() => setHelpVisible(true)}
+        >
+          <Ionicons name="help-circle-outline" size={22} color={colors.primary} />
+        </Pressable>
       </View>
 
       <View style={styles.banner}>
@@ -74,6 +83,13 @@ export default function ModerationQueueScreen() {
           ))
         )}
       </ScrollView>
+
+      {/* Contextual Guidance */}
+      <DiscoveryHubSheet
+        visible={helpVisible}
+        onClose={() => setHelpVisible(false)}
+        sourceScreen="live-moderation"
+      />
     </View>
   );
 }

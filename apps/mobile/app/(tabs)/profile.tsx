@@ -258,7 +258,19 @@ export default function ProfileScreen() {
           <SettingRow icon="map" label={t('profile.settings')} value={STATES[activeStateCode]?.name ?? activeStateCode} />
           <SettingRow icon="people" label={t('explore.constituencies')} value={String(STATES[activeStateCode]?.assemblySeats ?? '—')} />
           <SettingRow icon="server" label={t('profileExtended.data')} value={`${latestElectionYear} ${t('profileExtended.elections')}`} />
-        </View>
+                  <SettingRow
+            icon="shield-checkmark"
+            label={t('profileExtended.privacyPolicy')}
+            onPress={() => {}}
+            color="#10B981"
+          />
+          <SettingRow
+            icon="document-text"
+            label={t('profileExtended.termsOfService')}
+            onPress={() => {}}
+            color="#6B7280"
+          />
+</View>
       </View>
 
       {/* Explore Features */}
@@ -451,24 +463,7 @@ export default function ProfileScreen() {
         </View>
       </View>
 
-      {/* About */}
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>{t('profile.about')}</Text>
-        <View style={styles.card}>
-          <SettingRow
-            icon="shield-checkmark"
-            label={t('profileExtended.privacyPolicy')}
-            onPress={() => {}}
-            color="#10B981"
-          />
-          <SettingRow
-            icon="document-text"
-            label={t('profileExtended.termsOfService')}
-            onPress={() => {}}
-            color="#6B7280"
-          />
-        </View>
-      </View>
+      
 
       <TouchableOpacity
         style={styles.footer}

@@ -81,13 +81,7 @@ export default function LeadershipAcademyScreen() {
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
-      <Stack.Screen
-        options={{
-          title: t('leadershipAcademy.title'),
-          headerStyle: { backgroundColor: colors.surface },
-          headerTintColor: colors.primary,
-        }}
-      />
+      <Stack.Screen options={{ headerShown: false }} />
 
       {/* Header */}
       <View style={[styles.header, { paddingTop: insets.top + 8 }]}>

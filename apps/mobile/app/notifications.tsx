@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { View, Text, StyleSheet, Pressable, Platform, RefreshControl } from 'react-native';
 import { FlashList } from '@shopify/flash-list';
@@ -7,6 +8,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNotificationsStore, type NotificationItem } from '../stores/notifications';
 import { useAuthStore } from '../stores/auth';
 import { useTheme } from '../lib/theme';
+import DiscoveryHubSheet from '../components/DiscoveryHubSheet';
 
 const CATEGORY_ICONS: Record<string, keyof typeof Ionicons.glyphMap> = {
   election_results: 'trophy',
@@ -41,6 +43,7 @@ export default function NotificationsScreen() {
   const loading = useNotificationsStore((s) => s.loading);
   const fetchNotifications = useNotificationsStore((s) => s.fetchNotifications);
   const insets = useSafeAreaInsets();
+  const [helpVisible, setHelpVisible] = useState(false);
 
   const handlePress = (item: NotificationItem) => {
     markRead(item.id, user?.id);
@@ -91,6 +94,16 @@ export default function NotificationsScreen() {
           title: t('notifications.title', { defaultValue: 'Notifications' }),
           headerStyle: { backgroundColor: colors.surface },
           headerTintColor: colors.primary,
+          headerRight: () => (
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel={t('discovery.screenHelp', { defaultValue: 'Page guidance' })}
+              style={{ padding: 6, marginRight: 8 }}
+              onPress={() => setHelpVisible(true)}
+            >
+              <Ionicons name="help-circle-outline" size={22} color={colors.primary} />
+            </Pressable>
+          ),
         }}
       />
 
@@ -135,6 +148,11 @@ export default function NotificationsScreen() {
           }
         />
       )}
+      <DiscoveryHubSheet
+        visible={helpVisible}
+        onClose={() => setHelpVisible(false)}
+        sourceScreen="notifications"
+      />
     </View>
   );
 }

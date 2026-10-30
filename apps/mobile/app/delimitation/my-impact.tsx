@@ -27,6 +27,7 @@ import {
 import type { CitizenImpact } from '../../lib/delimitationTypes';
 import { DelimitationShareCard } from '../../components/DelimitationShareCard';
 import { useTheme } from '../../lib/theme';
+import DiscoveryHubSheet from '../../components/DiscoveryHubSheet';
 
 export default function MyImpactScreen() {
   const router = useRouter();
@@ -37,6 +38,7 @@ export default function MyImpactScreen() {
   const [searching, setSearching] = useState(false);
   const [result, setResult] = useState<CitizenImpact | null>(null);
   const [showSubscribe, setShowSubscribe] = useState(false);
+  const [helpVisible, setHelpVisible] = useState(false);
 
   const myHome = useMyConstituencyStore((s) => s.home);
   const activeState = useActiveStateStore((s) => s.stateCode);
@@ -94,6 +96,13 @@ export default function MyImpactScreen() {
             {t('delimitationExtended.personalImpact', { defaultValue: 'Personal delimitation impact' })}
           </Text>
         </View>
+        <Pressable
+          accessibilityLabel={t('discovery.pageHelp.openHelp', { defaultValue: 'Page Help' })}
+          style={[styles.backBtn, { backgroundColor: colors.surfaceElevated, marginLeft: 8 }]}
+          onPress={() => setHelpVisible(true)}
+        >
+          <Ionicons name="help-circle-outline" size={20} color={colors.textSecondary} />
+        </Pressable>
       </View>
 
       <ScrollView
@@ -362,6 +371,13 @@ export default function MyImpactScreen() {
           </Text>
         </View>
       </ScrollView>
+
+      {/* Contextual Guidance */}
+      <DiscoveryHubSheet
+        visible={helpVisible}
+        onClose={() => setHelpVisible(false)}
+        sourceScreen="delimitation-impact"
+      />
     </View>
   );
 }

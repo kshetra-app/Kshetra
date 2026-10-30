@@ -272,7 +272,7 @@ export default function ConstituencyDetailScreen() {
     <View style={[styles.container, { backgroundColor: colors.background }]}>
       <Stack.Screen
         options={{
-          title: effectiveConstituencyName,
+          title: '', // Native header provides back button; in-page hero owns primary title (Batch 6)
           headerStyle: { backgroundColor: colors.surface },
           headerTintColor: colors.primary,
         }}

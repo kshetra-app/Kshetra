@@ -19,6 +19,7 @@ import { useActiveStateStore } from '../stores/activeState';
 import { ROLE_CONFIG, type UserRole } from '../lib/moderationTypes';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '../lib/theme';
+import DiscoveryHubSheet from '../components/DiscoveryHubSheet';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -58,6 +59,7 @@ export default function OnboardingScreen() {
   const [selectedAcNo, setSelectedAcNo] = useState<number | null>(null);
   const [acSearch, setAcSearch] = useState('');
   const [interests, setInterests] = useState<string[]>([]);
+  const [helpVisible, setHelpVisible] = useState(false);
   const updateProfile = useUserProfileStore((s) => s.updateProfile);
   const setOnboarded = useUserProfileStore((s) => s.setOnboarded);
   const setHome = useMyConstituencyStore((s) => s.setHome);
@@ -267,6 +269,19 @@ export default function OnboardingScreen() {
 
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>
+      {/* Top action row */}
+      <View style={{ flexDirection: 'row', justifyContent: 'flex-end', paddingHorizontal: 16, paddingVertical: 4 }}>
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={t('discovery.screenHelp', { defaultValue: 'Page guidance' })}
+          onPress={() => setHelpVisible(true)}
+          hitSlop={8}
+          style={{ padding: 4 }}
+        >
+          <Ionicons name="help-circle-outline" size={22} color={colors.primary} />
+        </Pressable>
+      </View>
+
       {/* Progress bar */}
       <View style={styles.progressBar}>
         {STEPS.map((_, i) => (
@@ -338,6 +353,11 @@ export default function OnboardingScreen() {
           </Pressable>
         )}
       </View>
+      <DiscoveryHubSheet
+        visible={helpVisible}
+        onClose={() => setHelpVisible(false)}
+        sourceScreen="onboarding"
+      />
     </View>
   );
 }

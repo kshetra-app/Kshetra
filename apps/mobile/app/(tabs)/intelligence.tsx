@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import {
   View,
   Text,
@@ -19,6 +19,7 @@ import { useResponsive } from '../../lib/responsive';
 import PartyStrengthChart from '../../components/PartyStrengthChart';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '../../lib/theme';
+import DiscoveryHubSheet from '../../components/DiscoveryHubSheet';
 
 /** Compute analytics from seed data — recomputed when state changes */
 function useElectionAnalytics(stateCode: string) {
@@ -96,6 +97,8 @@ function useElectionAnalytics(stateCode: string) {
 
 export default function IntelligenceScreen() {
   const router = useRouter();
+  const [helpVisible, setHelpVisible] = useState(false);
+  const [showAllDistricts, setShowAllDistricts] = useState(false);
   const { t } = useTranslation();
   const { colors } = useTheme();
   const stateCode = useActiveStateStore((s) => s.stateCode);
@@ -163,6 +166,13 @@ export default function IntelligenceScreen() {
         <View style={styles.headerTop}>
           <Text style={[styles.headerTitle, { color: colors.text }]}>{t('intelligence.title', { defaultValue: 'Intelligence' })}</Text>
           <View style={styles.headerActions}>
+            <Pressable
+              accessibilityLabel={t('discovery.pageHelp.openHelp', { defaultValue: 'Page Help' })}
+              style={[styles.aiButton, { backgroundColor: colors.surface, borderColor: colors.goldBorder || colors.border, borderWidth: 1 }]}
+              onPress={() => setHelpVisible(true)}
+            >
+              <Ionicons name="help-circle-outline" size={16} color={colors.textSecondary} />
+            </Pressable>
             <Pressable
               style={[styles.aiButton, { backgroundColor: colors.surface, borderColor: colors.goldBorder || colors.border, borderWidth: 1 }]}
               onPress={() => router.push('/parliament' as any)}
@@ -263,7 +273,7 @@ export default function IntelligenceScreen() {
       {/* District Breakdown — Top 10 */}
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>{t('intelligence.districtBreakdown', { defaultValue: 'District Breakdown' })}</Text>
-        {analytics.districtBreakdown.slice(0, 10).map((d) => (
+        {(showAllDistricts ? analytics.districtBreakdown : analytics.districtBreakdown.slice(0, 5)).map((d) => (
           <View key={d.district} style={styles.districtRow}>
             <View style={styles.districtInfo}>
               <Text style={styles.districtName}>{d.district}</Text>
@@ -295,6 +305,26 @@ export default function IntelligenceScreen() {
             </View>
           </View>
         ))}
+        {analytics.districtBreakdown.length > 5 && (
+          <Pressable
+            style={{
+              paddingVertical: 10,
+              alignItems: 'center',
+              backgroundColor: colors.surface,
+              borderRadius: 8,
+              marginTop: 8,
+              borderWidth: 1,
+              borderColor: colors.border,
+            }}
+            onPress={() => setShowAllDistricts(!showAllDistricts)}
+          >
+            <Text style={{ fontSize: 13, fontWeight: '700', color: colors.primary }}>
+              {showAllDistricts
+                ? t('common.showLess', { defaultValue: 'Show Less' })
+                : t('common.showMoreCount', { count: analytics.districtBreakdown.length, defaultValue: `Show All (${analytics.districtBreakdown.length} Districts)` })}
+            </Text>
+          </Pressable>
+        )}
       </View>
 
       {/* Key Insights */}
@@ -404,6 +434,13 @@ export default function IntelligenceScreen() {
           Data: {currentState?.name ?? stateCode} State Election Commission
         </Text>
       </View>
+
+      {/* Contextual Guidance */}
+      <DiscoveryHubSheet
+        visible={helpVisible}
+        onClose={() => setHelpVisible(false)}
+        sourceScreen="intelligence"
+      />
     </ScrollView>
   );
 }

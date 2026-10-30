@@ -1,11 +1,13 @@
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { View, Text, StyleSheet, ScrollView, Switch, Platform } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Switch, Platform, Pressable } from 'react-native';
 import { Stack } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNotificationsStore } from '../stores/notifications';
 import type { AlertCategory } from '../lib/notifications';
 import { useTheme } from '../lib/theme';
+import DiscoveryHubSheet from '../components/DiscoveryHubSheet';
 
 interface NotifToggle {
   category: AlertCategory;
@@ -89,6 +91,7 @@ export default function NotificationSettingsScreen() {
   const categories = useNotificationsStore((s) => s.categories);
   const toggleCategory = useNotificationsStore((s) => s.toggleCategory);
   const insets = useSafeAreaInsets();
+  const [helpVisible, setHelpVisible] = useState(false);
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
@@ -98,6 +101,16 @@ export default function NotificationSettingsScreen() {
           title: t('notificationSettings.title', { defaultValue: 'Notification Settings' }),
           headerStyle: { backgroundColor: colors.surface },
           headerTintColor: colors.primary,
+          headerRight: () => (
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel={t('discovery.screenHelp', { defaultValue: 'Page guidance' })}
+              style={{ padding: 6, marginRight: 8 }}
+              onPress={() => setHelpVisible(true)}
+            >
+              <Ionicons name="help-circle-outline" size={22} color={colors.primary} />
+            </Pressable>
+          ),
         }}
       />
 
@@ -176,6 +189,11 @@ export default function NotificationSettingsScreen() {
         </View>
         <View style={{ height: Math.max(insets.bottom, 20) }} />
       </ScrollView>
+      <DiscoveryHubSheet
+        visible={helpVisible}
+        onClose={() => setHelpVisible(false)}
+        sourceScreen="notification-settings"
+      />
     </View>
   );
 }

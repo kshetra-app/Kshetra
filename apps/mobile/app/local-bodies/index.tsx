@@ -19,6 +19,7 @@ import { getPartyColor } from '../../lib/constants';
 import { getHierarchyConfig } from '../../lib/hierarchyData';
 import { useActiveStateStore } from '../../stores/activeState';
 import StateSwitcher from '../../components/StateSwitcher';
+import DiscoveryHubSheet from '../../components/DiscoveryHubSheet';
 import {
   getLocalBodyDistricts,
   getLocalBodyMandals,
@@ -51,6 +52,7 @@ export default function LocalBodiesScreen() {
   const [mandal, setMandal] = useState<MandalSummary | null>(null);
   const [gpKey, setGpKey] = useState<string | null>(null);
   const [query, setQuery] = useState('');
+  const [helpVisible, setHelpVisible] = useState(false);
   const [loadError, setLoadError] = useState<string | null>(null);
 
   useHasRepresentativeData(stateCode); // warms the availability cache
@@ -277,7 +279,18 @@ export default function LocalBodiesScreen() {
       <Stack.Screen
         options={{
           title: `${stateName} — ${t('localBodies.screenTitle', { defaultValue: 'Local Bodies' })}`,
-          headerRight: () => <StateSwitcher />,
+          headerRight: () => (
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+              <Pressable
+                accessibilityLabel={t('discovery.pageHelp.openHelp', { defaultValue: 'Page Help' })}
+                style={{ padding: 4 }}
+                onPress={() => setHelpVisible(true)}
+              >
+                <Ionicons name="help-circle-outline" size={20} color={colors.text} />
+              </Pressable>
+              <StateSwitcher />
+            </View>
+          ),
         }}
       />
 
@@ -508,6 +521,13 @@ export default function LocalBodiesScreen() {
           </>
         )}
       </ScrollView>
+
+      {/* Contextual Guidance */}
+      <DiscoveryHubSheet
+        visible={helpVisible}
+        onClose={() => setHelpVisible(false)}
+        sourceScreen="local-bodies"
+      />
     </View>
   );
 }

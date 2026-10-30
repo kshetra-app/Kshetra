@@ -13,6 +13,7 @@ import { Stack, useRouter, useLocalSearchParams } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '../../lib/theme';
+import DiscoveryHubSheet from '../../components/DiscoveryHubSheet';
 import { useAspirantStore } from '../../stores/aspirant';
 import { useAuthStore } from '../../stores/auth';
 import { useUserProfileStore } from '../../stores/userProfile';
@@ -39,6 +40,7 @@ export default function PagesScreen() {
   });
   const [refreshing, setRefreshing] = useState(false);
   const [registerVisible, setRegisterVisible] = useState(false);
+  const [helpVisible, setHelpVisible] = useState(false);
   const [verifiedPoliticians, setVerifiedPoliticians] = useState<any[]>([]);
   const [loadingPoliticians, setLoadingPoliticians] = useState(false);
 
@@ -100,6 +102,15 @@ export default function PagesScreen() {
           headerShown: true,
           headerStyle: { backgroundColor: colors.surface },
           headerTintColor: colors.primary,
+          headerRight: () => (
+            <Pressable
+              accessibilityLabel={t('discovery.pageHelp.openHelp', { defaultValue: 'Page Help' })}
+              style={{ padding: 4 }}
+              onPress={() => setHelpVisible(true)}
+            >
+              <Ionicons name="help-circle-outline" size={22} color={colors.primary} />
+            </Pressable>
+          ),
         }}
       />
 
@@ -499,6 +510,13 @@ export default function PagesScreen() {
       <RegisterAspirantModal
         visible={registerVisible}
         onClose={() => setRegisterVisible(false)}
+      />
+
+      {/* Contextual Guidance */}
+      <DiscoveryHubSheet
+        visible={helpVisible}
+        onClose={() => setHelpVisible(false)}
+        sourceScreen="pages"
       />
     </View>
   );

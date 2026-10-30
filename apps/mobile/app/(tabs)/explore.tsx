@@ -25,6 +25,7 @@ import PhotoViewerModal from '../../components/PhotoViewerModal';
 import { useAffidavitStore } from '../../stores/affidavits';
 import ChiefMinisterBadge from '../../components/ChiefMinisterBadge';
 import AdCard from '../../components/AdCard';
+import DiscoveryHubSheet from '../../components/DiscoveryHubSheet';
 import { AD_INSERT_INTERVAL } from '../../lib/adConfig';
 import { useTheme } from '../../lib/theme';
 
@@ -45,6 +46,7 @@ export default function ExploreScreen() {
   const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
   const [showAISearch, setShowAISearch] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
+  const [showDiscoveryHub, setShowDiscoveryHub] = useState(false);
   const [partyFilter, setPartyFilter] = useState<string | null>(null);
   const [districtFilter, setDistrictFilter] = useState<string | null>(null);
   const [typeFilter, setTypeFilter] = useState<string | null>(null);
@@ -274,6 +276,42 @@ export default function ExploreScreen() {
           )}
         </Pressable>
       </View>
+      {activeFilterCount > 0 && (
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ paddingHorizontal: 16, marginTop: 6, maxHeight: 36 }}>
+          <View style={{ flexDirection: 'row', gap: 6, alignItems: 'center' }}>
+            {partyFilter && (
+              <Pressable
+                style={[styles.activeChip, { borderColor: getPartyColor(partyFilter) }]}
+                onPress={() => setPartyFilter(null)}
+              >
+                <Text style={{ fontSize: 11, fontWeight: '700', color: getPartyColor(partyFilter) }}>{partyFilter}</Text>
+                <Ionicons name="close" size={12} color={getPartyColor(partyFilter)} />
+              </Pressable>
+            )}
+            {districtFilter && (
+              <Pressable
+                style={[styles.activeChip, { borderColor: colors.primary }]}
+                onPress={() => setDistrictFilter(null)}
+              >
+                <Text style={{ fontSize: 11, fontWeight: '700', color: colors.primary }}>{districtFilter}</Text>
+                <Ionicons name="close" size={12} color={colors.primary} />
+              </Pressable>
+            )}
+            {typeFilter && (
+              <Pressable
+                style={[styles.activeChip, { borderColor: colors.gold }]}
+                onPress={() => setTypeFilter(null)}
+              >
+                <Text style={{ fontSize: 11, fontWeight: '700', color: colors.gold }}>{typeFilter}</Text>
+                <Ionicons name="close" size={12} color={colors.gold} />
+              </Pressable>
+            )}
+            <Pressable style={styles.clearChip} onPress={clearAllFilters}>
+              <Text style={{ fontSize: 11, fontWeight: '700', color: '#EF4444' }}>{t('explore.clearFilters')}</Text>
+            </Pressable>
+          </View>
+        </ScrollView>
+      )}
 
       {showFilters && (
         <View style={styles.filtersPanel}>
@@ -410,6 +448,17 @@ export default function ExploreScreen() {
               color={showFavoritesOnly ? colors.primary : colors.textMuted}
             />
           </Pressable>
+          <Pressable
+            style={[
+              styles.favFilterButton,
+              { backgroundColor: colors.surface, borderColor: colors.goldBorder || colors.border, marginLeft: 8 },
+            ]}
+            onPress={() => setShowDiscoveryHub(true)}
+            accessibilityRole="button"
+            accessibilityLabel={t('discovery.tabs.guide', { defaultValue: 'Explore Guide' })}
+          >
+            <Ionicons name="help-circle-outline" size={18} color={colors.gold || colors.primary} />
+          </Pressable>
         </View>
       </View>
 
@@ -453,6 +502,12 @@ export default function ExploreScreen() {
           ]}
         />
       )}
+
+      <DiscoveryHubSheet
+        visible={showDiscoveryHub}
+        onClose={() => setShowDiscoveryHub(false)}
+        sourceScreen="explore"
+      />
 
       <PhotoViewerModal
         visible={!!photoViewer}
@@ -672,6 +727,21 @@ const styles = StyleSheet.create({
     fontSize: 10,
     fontWeight: '800',
     color: '#FFFFFF',
+  },
+  activeChip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 12,
+    borderWidth: 1,
+    backgroundColor: 'rgba(255,255,255,0.05)',
+  },
+  clearChip: {
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 12,
   },
   filtersPanel: {
     paddingHorizontal: 16,

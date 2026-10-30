@@ -19,6 +19,7 @@ import { sendAIChat, isAIConfigured, type AIChatMessage } from '../lib/aiService
 import { getUnifiedConstituenciesForState } from '../lib/stateDataAdapter';
 import { useActiveStateStore } from '../stores/activeState';
 import { useTheme } from '../lib/theme';
+import DiscoveryHubSheet from '../components/DiscoveryHubSheet';
 
 interface Message {
   id: string;
@@ -47,6 +48,7 @@ export default function AIChatScreen() {
   const [loading, setLoading] = useState(false);
   const [aiConfigured, setAiConfigured] = useState<boolean | null>(null);
   const [selectedAcNo, setSelectedAcNo] = useState<number | undefined>(initialAcNo);
+  const [helpVisible, setHelpVisible] = useState(false);
   const flatListRef = useRef<FlatList>(null);
   const insets = useSafeAreaInsets();
 
@@ -135,6 +137,16 @@ export default function AIChatScreen() {
           title: t('ai.chatTitle'),
           headerStyle: { backgroundColor: colors.surface },
           headerTintColor: colors.primary,
+          headerRight: () => (
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel={t('discovery.screenHelp', { defaultValue: 'Page guidance' })}
+              style={{ padding: 6, marginRight: 8 }}
+              onPress={() => setHelpVisible(true)}
+            >
+              <Ionicons name="help-circle-outline" size={22} color={colors.primary} />
+            </Pressable>
+          ),
         }}
       />
 
@@ -242,6 +254,11 @@ export default function AIChatScreen() {
           </Pressable>
         </View>
       </KeyboardAvoidingView>
+      <DiscoveryHubSheet
+        visible={helpVisible}
+        onClose={() => setHelpVisible(false)}
+        sourceScreen="ai-chat"
+      />
     </View>
   );
 }
