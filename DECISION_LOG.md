@@ -4362,6 +4362,24 @@
   - Regression unit suites: `apps/api/src/__tests__/civic-routes-unit.test.ts` (69/69 PASS), `apps/api/src/__tests__/civic-mutations.test.ts` (22/22 PASS), `tests/governance-v16.test.mjs` (100% PASS).
   - Evidence dossiers committed at `reports/domain3_civic_platform_report.json` and `reports/domain3_civic_platform_report.md`.
 
+---
+
+### DEC-176: Formulation & Submission of Domain 4 (JOB 046–JOB 050) Aspirants, Communities & Leadership Academy Pre-Implementation Plan
+- **Date:** 2026-10-30
+- **Status:** PLAN_SUBMITTED_FOR_REVIEW (IMPLEMENTATION_AUTHORIZATION = NO)
+- **Authority:** Master Product Blueprint, AI Agent Master Execution Job Book, Amendment v1.2, Amendment v1.5-A Section 26 & AGENT_EXECUTION_PROTOCOL.md
+- **Context:** Following the certified completion of Domain 3 (DEC-175), the user explicitly commissioned Domain 4: Aspirants, Communities & Leadership Academy (JOB 046 through JOB 050). In strict accordance with Amendment v1.5-A Section 26 and Rule IV-001 Non-Self-Acceptance, a canonical 22-section Pre-Implementation Plan was authored and submitted for user review prior to any product code modification.
+- **Architectural Scope of Domain 4:**
+  1. **JOB 046 (Aspirant Registration & KYC Verification Flow):** Multi-tier KYC verification model (`unverified` -> `pending_verification` -> `verified` / `rejected`), identity proof hashes, statutory criminal antecedents declarations, and target constituency binding.
+  2. **JOB 047 (Aspirant Public Profile & Aggregated Timeline):** Canonical public profile endpoint aggregating personal particulars, delimitation geographic context, civic issue track record, verified academy certifications, and upcoming events.
+  3. **JOB 048 (Aspirant Page, Followers & Event Dispatching Engine):** Entity page lifecycle, idempotent follower state machine, page event scheduling, geo-tagging, RSVP pipeline, and follower notification dispatching.
+  4. **JOB 049 (Community Groups — Geographic Membership & Role Permissions):** Geographic hierarchy scoping (AC, Mandal, Ward), role-based permissions (`admin`, `moderator`, `member`), group moderation policies, and join/leave lifecycle.
+  5. **JOB 050 (Leadership Academy — Course/Quiz Persistence & Certification):** 8 political science tracks, randomized quiz validation engine with 80% passing threshold, durable multi-tier persistence (Server PostgreSQL, Mobile SQLite/MMKV cache, offline queue), and digital badge awarding.
+- **Operational Authorization:**
+  - Plan document committed to `governance/plans/PLAN-DOMAIN-4-ASPIRANTS-COMMUNITIES-AND-LEADERSHIP-ACADEMY-REV-1.0.md`.
+  - Implementation authorization remains frozen (`IMPLEMENTATION_AUTHORIZATION = NO`) pending explicit user ratification.
+
+
 
 
 
