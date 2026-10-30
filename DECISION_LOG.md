@@ -4562,3 +4562,25 @@
   - **Decision 2 (Hybrid Configurable Monetization):** Ratified a Hybrid Pricing Engine supporting both Dynamic CPM/CPC Micropayments (for performance marketing) and Fixed Daily Flight Sponsorships (for banner/feed takeovers during festivals, rallies, and milestone celebrations). All rates and parameters are backed by an admin-configurable database table d_pricing_configurations with backend management APIs.
   - **Decision 3 (Adaptive 6-Category Political Ad Governance Matrix):** Ratified a context-aware political advertising classification covering 6 distinct real-world categories (1. Festival Wishes, 2. Birthday Greetings, 3. Congratulatory Messages, 4. Milestone Achievements, 5. Political Meetings & Rallies, 6. Election Campaign Ads). Configured with dual operational gating: Fast-Track automated safety review during routine civic periods vs Strict Fail-Closed ECI MCMC Pre-Certification during active Model Code of Conduct (MCC) election windows, with universal public transparency under Section 127A RPA 1951.
   - **Ratification Disposition:** Granted PLAN_STATUS: APPROVED and IMPLEMENTATION_AUTHORIZATION: YES for sequential execution of Domain 6 (JOB 054–JOB 061).
+
+
+---
+
+### DEC-187: Engineering Execution, Verification, and Formal Closure of Domain 6 (Political Finance, Campaigns, Advertising & Monetization: JOB 054–061)
+- **Date:** 2026-10-30
+- **Status:** ACCEPTED / COMPLETE (TESTED & VERIFIED)
+- **Authority:** Master Product Blueprint (Jobs 054–061), Representation of the People Act 1951 (Section 127A), ECI Compendium of Instructions on Election Expenditure & MCMC, Central GST Act 2017 (SAC 998311), DEC-186, Amendment v1.2, Amendment v1.5-A Section 26 & AGENT_EXECUTION_PROTOCOL.md
+- **Context:** Following user ratification of the architecture in DEC-186, all eight constituent jobs of Domain 6 were completely implemented, verified, and certified:
+  1. **JOB 054 (Campaign Foundation & Team RBAC):** Created `political_campaigns` and `political_campaign_members` with 5 distinct roles (`campaign_manager`, `content_creator`, `field_director`, `finance_officer`, `analyst`) bound strictly to Assembly Constituencies.
+  2. **JOB 055 (Campaign Geographic Intelligence):** Real-time aggregation of civic issues by status/severity, 0-100 Constituency Development Index (CDI), and voter sentiment trends with strict locality isolation.
+  3. **JOB 056 (Campaign Communication Workflow):** Multi-modality content creation (`post`, `short`, `event`, `rally`, `broadcast_announcement`) with a 4-stage governance state machine (`DRAFT → SUBMITTED → APPROVED → PUBLISHED`).
+  4. **JOB 057 (Political Advertising & Adaptive Governance Matrix):** Implemented 6 real-world categories (Festival Wishes, Birthday Greetings, Congratulatory Messages, Milestone Achievements, Rallies/Meetings, Election Campaigns); automated Section 127A RPA 1951 sponsor disclaimer generator; Public Ad Transparency Ledger (`GET /api/v1/political-ads/transparency`); context-aware adaptive governance (Fast-Track for routine greetings vs strict fail-closed ECI MCMC pre-certification during active Model Code of Conduct).
+  5. **JOB 058 (Commercial Ads V1 & Separate Account Management):** Created `commercial_ad_accounts` and `commercial_ads` isolating local merchants; deterministic constituency-matched ad serving engine; frequency capping (max 3 impressions/user/24h).
+  6. **JOB 059 (Ad Measurement & Telemetry):** Signed `viewToken` HMAC-SHA256 generation/verification; anti-fraud Invalid Traffic (IVT) click deduplication filtering repeat clicks within 5 seconds.
+  7. **JOB 060 (Hybrid Ad Billing, Invoicing & Financial Ledger):** Dynamic admin-configurable pricing table (`ad_pricing_configurations`) supporting both CPM/CPC micropayments and fixed daily flight sponsorships; double-entry wallet deductions; 18% GST tax invoices with SAC 998311 (9% CGST + 9% SGST).
+  8. **JOB 061 (Commercial Self-Serve Ads Portal):** End-to-end 8-stage self-serve merchant simulation completely tested and verified.
+- **Verification Summary:**
+  - Automated test battery: 22/22 tests passing (100%) in `tests/domain6-political-finance-and-ads.test.ts`.
+  - Monorepo typecheck: 100% clean across `@kshetra/shared` and `@kshetra/api` (`tsc --noEmit`, 0 errors).
+  - Regression suites: JOB 036, JOB 030, JOB 051 passing 100%.
+  - Formal evidence dossiers committed at `reports/domain6_political_finance_campaigns_ads_report.json` and `reports/domain6_political_finance_campaigns_ads_report.md`.

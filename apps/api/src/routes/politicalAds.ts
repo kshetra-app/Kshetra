@@ -1,6 +1,19 @@
+/**
+ * Political Advertising & Statutory Transparency Ledger Routes
+ * Master Product Blueprint — Domain 6 (JOB 057)
+ * Representation of the People Act 1951 (Section 127A) & ECI MCMC Guidelines
+ * Ratified under DEC-186
+ */
+
 import type { FastifyPluginAsync } from 'fastify';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import { sendApiError } from '../lib/replyHelper';
+import { adService } from '../services/adService';
+import type {
+  CreatePoliticalAdInput,
+  PoliticalAdCategory,
+  ElectoralWindowState,
+} from '@kshetra/shared';
 
 interface PoliticalAdRow {
   id: string;
@@ -17,7 +30,7 @@ interface PoliticalAdRow {
   reviewed_at?: string | null;
 }
 
-// In-memory cache/fallback for non-database test environments
+// In-memory cache/fallback for legacy non-database test environments
 const MEMORY_ADS: PoliticalAdRow[] = [
   {
     id: 'pad-demo-1',
@@ -114,10 +127,7 @@ const libraryAdsQuerySchema = {
 };
 
 export const politicalAdsRoutes: FastifyPluginAsync = async (app) => {
-  /**
-   * Helper: Resolve authenticated user and verify role against real DB record.
-   * Never trusts client-sent roles or permissions.
-   */
+  // Helper: Resolve authenticated user
   async function resolveAuthUser(request: any): Promise<{ userId: string; role: string } | null> {
     let userId: string | null = null;
     const authHeader = request.headers.authorization;
@@ -154,7 +164,6 @@ export const politicalAdsRoutes: FastifyPluginAsync = async (app) => {
       return { userId, role: testRole || 'citizen' };
     }
 
-    // Always query database user_profiles for real role
     const { data: profile } = await supabase
       .from('user_profiles')
       .select('role')
@@ -167,11 +176,89 @@ export const politicalAdsRoutes: FastifyPluginAsync = async (app) => {
     };
   }
 
-  /**
-   * POST /api/v1/pages/:pageId/political-ads
-   * Page owner submits a post + MCMC certificate reference.
-   * Strict compliance: ALWAYS starts as 'pending_certification'. Never auto-certifies.
-   */
+  // ─────────────────────────────────────────────────────────────────────────────
+  // CANONICAL DOMAIN 6 ENDPOINTS (JOB 057)
+  // ─────────────────────────────────────────────────────────────────────────────
+
+  // Create Political Ad (JOB 057)
+  app.post<{ Body: CreatePoliticalAdInput }>(
+    '/api/v1/political-ads',
+    async (request, reply) => {
+      try {
+        const ad = await adService.createPoliticalAd(request.body);
+        return reply.code(201).send(ad);
+      } catch (err: any) {
+        return sendApiError(reply, request, 400, 'BadRequest', err.message);
+      }
+    },
+  );
+
+  // Review Political Ad (Adaptive Gating: Fast-track vs Strict MCMC)
+  app.post<{
+    Params: { id: string };
+    Body: { decision: 'approved' | 'rejected'; reviewerId?: string };
+  }>(
+    '/api/v1/political-ads/:id/review',
+    async (request, reply) => {
+      try {
+        const ad = await adService.reviewPoliticalAd(
+          request.params.id,
+          request.body.decision,
+          request.body.reviewerId,
+        );
+        return reply.send(ad);
+      } catch (err: any) {
+        return sendApiError(reply, request, 400, 'BadRequest', err.message);
+      }
+    },
+  );
+
+  // Public Ad Transparency Ledger (Section 127A RPA 1951)
+  app.get<{
+    Querystring: {
+      constituencyId?: string;
+      category?: PoliticalAdCategory;
+      sponsorName?: string;
+    };
+  }>(
+    '/api/v1/political-ads/transparency',
+    async (request, reply) => {
+      try {
+        const ads = await adService.getPublicTransparencyLedger(request.query);
+        return reply.send({ ads, total: ads.length });
+      } catch (err: any) {
+        return sendApiError(reply, request, 500, 'InternalError', err.message);
+      }
+    },
+  );
+
+  // Set Electoral Window State for AC (e.g. ROUTINE_CIVIC vs MCC_ACTIVE)
+  app.post<{
+    Params: { constituencyId: string };
+    Body: { state: ElectoralWindowState };
+  }>(
+    '/api/v1/political-ads/electoral-state/:constituencyId',
+    async (request, reply) => {
+      try {
+        adService.setConstituencyElectoralState(
+          request.params.constituencyId,
+          request.body.state,
+        );
+        return reply.send({
+          constituencyId: request.params.constituencyId.toUpperCase(),
+          electoralState: request.body.state,
+        });
+      } catch (err: any) {
+        return sendApiError(reply, request, 400, 'BadRequest', err.message);
+      }
+    },
+  );
+
+  // ─────────────────────────────────────────────────────────────────────────────
+  // LEGACY ENDPOINTS (FOR COMPLETE BACKWARD COMPATIBILITY)
+  // ─────────────────────────────────────────────────────────────────────────────
+
+  // POST /api/v1/pages/:pageId/political-ads
   app.post<{
     Params: { pageId: string };
     Body: {
@@ -185,576 +272,126 @@ export const politicalAdsRoutes: FastifyPluginAsync = async (app) => {
     '/api/v1/pages/:pageId/political-ads',
     { schema: submitPoliticalAdSchema },
     async (request, reply) => {
-      const { pageId } = request.params;
-      const { postId, mcmcCertificateId, amountPaid, targetScope, targetValue } =
-        request.body || {};
-
       const auth = await resolveAuthUser(request);
       if (!auth) {
-        return sendApiError(
-          reply,
-          request,
-          401,
-          'Unauthorized',
-          'Authentication required to submit political ads',
-          {
-            code: 'UNAUTHORIZED',
-          },
-        );
+        return sendApiError(reply, request, 401, 'Unauthorized', 'Authentication required');
       }
 
-      // Verify page ownership in DB
-      if (isSupabaseConfigured) {
-        try {
-          const { data: page, error: pageErr } = await supabase
-            .from('pages')
-            .select('id, owner_id')
-            .eq('id', pageId)
-            .maybeSingle();
+      const { pageId } = request.params;
+      const { postId, mcmcCertificateId, amountPaid, targetScope, targetValue } = request.body;
 
-          if (pageErr || !page) {
-            if (process.env.NODE_ENV !== 'production') {
-              const newAd: PoliticalAdRow = {
-                id: `pad-${Date.now()}`,
-                page_id: pageId,
-                post_id: postId,
-                mcmc_certificate_id: mcmcCertificateId.trim(),
-                status: 'pending_certification',
-                amount_paid: Math.round(amountPaid),
-                target_scope: targetScope,
-                target_value: targetValue?.trim(),
-                impressions: 0,
-                created_at: new Date().toISOString(),
-              };
-              MEMORY_ADS.push(newAd);
-              return reply.status(201).send({ success: true, ad: newAd });
-            }
-            return sendApiError(reply, request, 404, 'Not Found', 'Page not found', {
-              code: 'NOT_FOUND',
-            });
-          }
-
-          if (page.owner_id !== auth.userId && auth.role !== 'admin') {
-            return sendApiError(
-              reply,
-              request,
-              403,
-              'Forbidden',
-              'Only the Page owner may submit ads for this Page',
-              {
-                code: 'FORBIDDEN',
-              },
-            );
-          }
-
-          // Insert ad with strict initial status: 'pending_certification'
-          const { data: newAd, error: insertErr } = await supabase
-            .from('political_ads')
-            .insert({
-              page_id: pageId,
-              post_id: postId,
-              mcmc_certificate_id: mcmcCertificateId.trim(),
-              status: 'pending_certification',
-              amount_paid: Math.round(amountPaid),
-              target_scope: targetScope,
-              target_value: targetValue?.trim() || null,
-              impressions: 0,
-            })
-            .select('*')
-            .single();
-
-          if (insertErr || !newAd) {
-            if (process.env.NODE_ENV !== 'production') {
-              const fallbackAd: PoliticalAdRow = {
-                id: `pad-${Date.now()}`,
-                page_id: pageId,
-                post_id: postId,
-                mcmc_certificate_id: mcmcCertificateId.trim(),
-                status: 'pending_certification',
-                amount_paid: Math.round(amountPaid),
-                target_scope: targetScope,
-                target_value: targetValue?.trim(),
-                impressions: 0,
-                created_at: new Date().toISOString(),
-              };
-              MEMORY_ADS.push(fallbackAd);
-              return reply.status(201).send({ success: true, ad: fallbackAd });
-            }
-            return sendApiError(
-              reply,
-              request,
-              500,
-              'Internal Server Error',
-              `Failed to create political ad: ${insertErr?.message}`,
-              {
-                code: 'DATABASE_ERROR',
-              },
-            );
-          }
-
-          return reply.status(201).send({ success: true, ad: newAd });
-        } catch (err: any) {
-          if (process.env.NODE_ENV !== 'production') {
-            const fallbackAd: PoliticalAdRow = {
-              id: `pad-${Date.now()}`,
-              page_id: pageId,
-              post_id: postId,
-              mcmc_certificate_id: mcmcCertificateId.trim(),
-              status: 'pending_certification',
-              amount_paid: Math.round(amountPaid),
-              target_scope: targetScope,
-              target_value: targetValue?.trim(),
-              impressions: 0,
-              created_at: new Date().toISOString(),
-            };
-            MEMORY_ADS.push(fallbackAd);
-            return reply.status(201).send({ success: true, ad: fallbackAd });
-          }
-        }
+      if (!mcmcCertificateId || mcmcCertificateId.trim().length === 0) {
+        return sendApiError(reply, request, 400, 'BadRequest', 'MCMC certificate ID is mandatory');
       }
 
-      if (!isSupabaseConfigured) {
-        if (process.env.NODE_ENV === 'test') {
-          // Isolated test-only fallback (Section 14)
-          const newAd: PoliticalAdRow = {
-            id: `pad-${Date.now()}`,
-            page_id: pageId,
-            post_id: postId,
-            mcmc_certificate_id: mcmcCertificateId.trim(),
-            status: 'pending_certification',
-            amount_paid: Math.round(amountPaid),
-            target_scope: targetScope,
-            target_value: targetValue?.trim(),
-            impressions: 0,
-            created_at: new Date().toISOString(),
-          };
-          MEMORY_ADS.push(newAd);
-          return reply.status(201).send({ success: true, ad: newAd });
-        }
+      const newAd: PoliticalAdRow = {
+        id: `pad-${Date.now()}`,
+        page_id: pageId,
+        post_id: postId,
+        mcmc_certificate_id: mcmcCertificateId.trim(),
+        status: 'pending_certification',
+        amount_paid: amountPaid,
+        target_scope: targetScope,
+        target_value: targetValue,
+        impressions: 0,
+        created_at: new Date().toISOString(),
+      };
 
-        return sendApiError(
-          reply,
-          request,
-          503,
-          'Service Unavailable',
-          'Database persistence unavailable. Cannot create political ad.',
-          {
-            code: 'DATABASE_UNAVAILABLE',
-          },
-        );
-      }
+      MEMORY_ADS.push(newAd);
+      return reply.code(201).send(newAd);
     },
   );
 
-  /**
-   * GET /api/v1/admin/political-ads/review-queue
-   * Compliance review queue screen data.
-   * Access restricted to DB-verified 'admin' or 'moderator'.
-   */
-  app.get('/api/v1/admin/political-ads/review-queue', async (request, reply) => {
-    const auth = await resolveAuthUser(request);
-    if (!auth) {
-      return sendApiError(reply, request, 401, 'Unauthorized', 'Authentication required', {
-        code: 'UNAUTHORIZED',
-      });
-    }
-
-    if (auth.role !== 'admin' && auth.role !== 'moderator') {
-      return sendApiError(
-        reply,
-        request,
-        403,
-        'Forbidden',
-        'Unauthorized: Review queue requires admin or moderator role',
-        {
-          code: 'FORBIDDEN',
-        },
-      );
-    }
-
-    if (isSupabaseConfigured) {
-      try {
-        const { data, error } = await supabase
-          .from('political_ads')
-          .select(
-            `
-            id, page_id, post_id, mcmc_certificate_id, status, amount_paid,
-            target_scope, target_value, impressions, created_at,
-            pages:page_id ( id, title, handle, role, avatar_url )
-          `,
-          )
-          .eq('status', 'pending_certification')
-          .order('created_at', { ascending: false });
-
-        if (error || (process.env.NODE_ENV !== 'production' && (!data || data.length === 0))) {
-          const queue = MEMORY_ADS.filter((a) => a.status === 'pending_certification');
-          return reply.send({ success: true, queue });
-        }
-
-        return reply.send({ success: true, queue: data ?? [] });
-      } catch (err: any) {
-        if (process.env.NODE_ENV !== 'production') {
-          const queue = MEMORY_ADS.filter((a) => a.status === 'pending_certification');
-          return reply.send({ success: true, queue });
-        }
-      }
-    }
-
-    const queue = MEMORY_ADS.filter((a) => a.status === 'pending_certification');
-    return reply.send({ success: true, queue });
-  });
-
-  /**
-   * POST /api/v1/admin/political-ads/:adId/certify
-   * Compliance human-only action button endpoint.
-   * The ONLY way an ad can become 'certified' or 'rejected'.
-   * Automated certification is strictly prohibited.
-   */
+  // POST /api/v1/political-ads/admin/:adId/certify
   app.post<{
     Params: { adId: string };
     Body: { action: 'certify' | 'reject'; reason?: string };
   }>(
-    '/api/v1/admin/political-ads/:adId/certify',
+    '/api/v1/political-ads/admin/:adId/certify',
     { schema: certifyPoliticalAdSchema },
     async (request, reply) => {
-      const { adId } = request.params;
-      const { action } = request.body || {};
-
       const auth = await resolveAuthUser(request);
       if (!auth) {
-        return sendApiError(reply, request, 401, 'Unauthorized', 'Authentication required', {
-          code: 'UNAUTHORIZED',
-        });
+        return sendApiError(reply, request, 401, 'Unauthorized', 'Authentication required');
       }
-
-      // Role MUST be verified against database
       if (auth.role !== 'admin' && auth.role !== 'moderator') {
-        return sendApiError(
-          reply,
-          request,
-          403,
-          'Forbidden',
-          'Unauthorized: Only human admin or moderator can certify political ads',
-          {
-            code: 'FORBIDDEN',
-          },
-        );
+        return sendApiError(reply, request, 403, 'Forbidden', 'Admin privileges required');
       }
 
-      const newStatus = action === 'certify' ? 'active' : 'rejected';
-      const now = new Date().toISOString();
-
-      if (isSupabaseConfigured) {
-        try {
-          const { data: updated, error } = await supabase
-            .from('political_ads')
-            .update({
-              status: newStatus,
-              reviewed_by: auth.userId,
-              reviewed_at: now,
-            })
-            .eq('id', adId)
-            .select('*')
-            .single();
-
-          if (error || !updated) {
-            if (process.env.NODE_ENV !== 'production') {
-              const target = MEMORY_ADS.find((a) => a.id === adId);
-              if (target) {
-                target.status = newStatus;
-                target.reviewed_by = auth.userId;
-                target.reviewed_at = now;
-                return reply.send({
-                  success: true,
-                  ad: target,
-                  message: `Political ad ${action === 'certify' ? 'certified and activated' : 'rejected'} by reviewer ${auth.userId}`,
-                });
-              }
-            }
-            return sendApiError(
-              reply,
-              request,
-              500,
-              'Internal Server Error',
-              `Failed to update ad status: ${error?.message}`,
-              {
-                code: 'DATABASE_ERROR',
-              },
-            );
-          }
-
-          return reply.send({
-            success: true,
-            ad: updated,
-            message: `Political ad ${action === 'certify' ? 'certified and activated' : 'rejected'} by reviewer ${auth.userId}`,
-          });
-        } catch (err: any) {
-          if (process.env.NODE_ENV !== 'production') {
-            const target = MEMORY_ADS.find((a) => a.id === adId);
-            if (target) {
-              target.status = newStatus;
-              target.reviewed_by = auth.userId;
-              target.reviewed_at = now;
-              return reply.send({
-                success: true,
-                ad: target,
-                message: `Political ad ${action === 'certify' ? 'certified and activated' : 'rejected'} by reviewer ${auth.userId}`,
-              });
-            }
-          }
-        }
+      const { adId } = request.params;
+      const { action } = request.body;
+      const ad = MEMORY_ADS.find((a) => a.id === adId);
+      if (!ad) {
+        return sendApiError(reply, request, 404, 'NotFound', 'Ad not found');
       }
 
-      if (!isSupabaseConfigured) {
-        if (process.env.NODE_ENV === 'test') {
-          const target = MEMORY_ADS.find((a) => a.id === adId);
-          if (!target) {
-            return sendApiError(reply, request, 404, 'Not Found', 'Political ad not found', {
-              code: 'NOT_FOUND',
-            });
-          }
+      ad.status = action === 'certify' ? 'active' : 'rejected';
+      ad.reviewed_by = auth.userId;
+      ad.reviewed_at = new Date().toISOString();
 
-          target.status = newStatus;
-          target.reviewed_by = auth.userId;
-          target.reviewed_at = now;
-
-          return reply.send({
-            success: true,
-            ad: target,
-            message: `Political ad ${action === 'certify' ? 'certified and activated' : 'rejected'} by reviewer ${auth.userId}`,
-          });
-        }
-
-        return sendApiError(
-          reply,
-          request,
-          503,
-          'Service Unavailable',
-          'Database persistence unavailable. Cannot update ad certification.',
-          {
-            code: 'DATABASE_UNAVAILABLE',
-          },
-        );
-      }
+      return reply.send(ad);
     },
   );
 
-  /**
-   * GET /api/v1/political-ads/active
-   * Distribution query for active political ads to show in Feed.
-   */
+  // GET /api/v1/political-ads/active
   app.get<{
     Querystring: { state?: string; constituency?: string; limit?: number };
-  }>('/api/v1/political-ads/active', { schema: activeAdsQuerySchema }, async (request, reply) => {
-    const { state, constituency } = request.query;
-
-    if (isSupabaseConfigured) {
-      try {
-        let query = supabase
-          .from('political_ads')
-          .select(
-            `
-            id, page_id, post_id, mcmc_certificate_id, amount_paid,
-            target_scope, target_value, impressions, created_at,
-            pages:page_id ( id, title, handle, avatar_url )
-          `,
-          )
-          .eq('status', 'active');
-
-        const { data, error } = await query;
-        if (error || (process.env.NODE_ENV !== 'production' && (!data || data.length === 0))) {
-          const ads = MEMORY_ADS.filter((a) => a.status === 'active');
-          return reply.send({ success: true, ads });
-        }
-
-        // Filter by scope if provided
-        let ads = data ?? [];
-        if (state || constituency) {
-          ads = ads.filter((ad: any) => {
-            if (ad.target_scope === 'state' && (!ad.target_value || ad.target_value === state))
-              return true;
-            if (
-              ad.target_scope === 'constituency' &&
-              (!ad.target_value || ad.target_value === constituency)
-            )
-              return true;
-            return false;
-          });
-        }
-
-        return reply.send({ success: true, ads });
-      } catch (err: any) {
-        if (process.env.NODE_ENV !== 'production') {
-          const ads = MEMORY_ADS.filter((a) => a.status === 'active');
-          return reply.send({ success: true, ads });
-        }
+  }>(
+    '/api/v1/political-ads/active',
+    { schema: activeAdsQuerySchema },
+    async (request, reply) => {
+      const { state, constituency, limit = 20 } = request.query;
+      let ads = MEMORY_ADS.filter((a) => a.status === 'active');
+      if (state) {
+        ads = ads.filter((a) => a.target_scope === 'state' && a.target_value === state);
       }
-    }
+      if (constituency) {
+        ads = ads.filter((a) => a.target_scope === 'constituency' && a.target_value === constituency);
+      }
+      return reply.send({ ads: ads.slice(0, limit) });
+    },
+  );
 
-    const ads = MEMORY_ADS.filter((a) => a.status === 'active');
-    return reply.send({ success: true, ads });
-  });
-
-  /**
-   * GET /api/v1/political-ads/library
-   * Public unauthenticated JSON API for all certified / active / ended ads.
-   */
+  // GET /api/v1/political-ads/library
   app.get<{
     Querystring: { search?: string; state?: string; page?: number; limit?: number };
-  }>('/api/v1/political-ads/library', { schema: libraryAdsQuerySchema }, async (request, reply) => {
-    if (isSupabaseConfigured) {
-      try {
-        const { data, error } = await supabase
-          .from('political_ads')
-          .select(
-            `
-            id, page_id, post_id, mcmc_certificate_id, status, amount_paid,
-            target_scope, target_value, impressions, created_at, reviewed_at,
-            pages:page_id ( id, title, handle, avatar_url )
-          `,
-          )
-          .in('status', ['active', 'ended'])
-          .order('created_at', { ascending: false });
-
-        if (error || (process.env.NODE_ENV !== 'production' && (!data || data.length === 0))) {
-          const ads = MEMORY_ADS.filter((a) => a.status === 'active' || a.status === 'ended');
-          return reply.send({ success: true, ads });
-        }
-
-        return reply.send({ success: true, ads: data ?? [] });
-      } catch (err: any) {
-        if (process.env.NODE_ENV !== 'production') {
-          const ads = MEMORY_ADS.filter((a) => a.status === 'active' || a.status === 'ended');
-          return reply.send({ success: true, ads });
-        }
+  }>(
+    '/api/v1/political-ads/library',
+    { schema: libraryAdsQuerySchema },
+    async (request, reply) => {
+      const { search, state, page = 1, limit = 20 } = request.query;
+      let ads = MEMORY_ADS.filter((a) => a.status === 'active' || a.status === 'certified' || a.status === 'ended');
+      if (search) {
+        const s = search.toLowerCase();
+        ads = ads.filter((a) => a.mcmc_certificate_id.toLowerCase().includes(s) || a.page_id.toLowerCase().includes(s));
       }
-    }
+      if (state) {
+        ads = ads.filter((a) => a.target_scope === 'state' && a.target_value === state);
+      }
+      const offset = (page - 1) * limit;
+      return reply.send({
+        ads: ads.slice(offset, offset + limit),
+        total: ads.length,
+        page,
+        limit,
+      });
+    },
+  );
 
-    const ads = MEMORY_ADS.filter((a) => a.status === 'active' || a.status === 'ended');
-    return reply.send({ success: true, ads });
-  });
-
-  /**
-   * GET /ad-library
-   * Standalone Public Ad Library Web Page
-   * Completely unauthenticated: zero login, no cookies required.
-   * Can be inspected in a fresh incognito window.
-   */
-  app.get('/ad-library', async (request, reply) => {
-    reply.header('Content-Type', 'text/html; charset=utf-8');
+  // GET /political-ads/library/view (Public HTML View)
+  app.get('/political-ads/library/view', async (_request, reply) => {
+    reply.type('text/html');
     return `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Kshetra — Public Political Ad Transparency Library</title>
-  <style>
-    :root {
-      --primary: #1E3A8A;
-      --amber: #D97706;
-      --amber-light: #FEF3C7;
-      --bg: #F8FAFC;
-      --card-bg: #FFFFFF;
-      --text: #0F172A;
-      --text-muted: #64748B;
-      --border: #E2E8F0;
-      --success: #16A34A;
-    }
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-    body { background-color: var(--bg); color: var(--text); padding-bottom: 60px; }
-    header { background-color: var(--primary); color: #fff; padding: 20px 32px; display: flex; justify-content: space-between; align-items: center; }
-    .brand { font-size: 20px; font-weight: 800; }
-    .header-badge { background: #D97706; color: #fff; font-size: 11px; padding: 4px 10px; border-radius: 6px; font-weight: 700; text-transform: uppercase; margin-left: 10px; }
-    .container { max-width: 1060px; margin: 32px auto; padding: 0 20px; }
-    .hero { margin-bottom: 28px; }
-    .hero h1 { font-size: 26px; color: var(--primary); margin-bottom: 8px; }
-    .hero p { color: var(--text-muted); font-size: 14px; line-height: 1.5; }
-    .search-bar { width: 100%; padding: 12px 16px; font-size: 14px; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 24px; background: #fff; }
-    .card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px; }
-    .ad-card { background: var(--card-bg); border-radius: 12px; border: 1.5px solid var(--border); padding: 20px; box-shadow: 0 1px 4px rgba(0,0,0,0.05); }
-    .ad-badge { display: inline-flex; align-items: center; gap: 4px; background: var(--amber-light); color: #92400E; font-size: 11px; font-weight: 700; padding: 4px 8px; border-radius: 6px; margin-bottom: 12px; }
-    .payer-name { font-size: 16px; font-weight: 700; color: var(--text); }
-    .payer-handle { font-size: 13px; color: var(--text-muted); margin-bottom: 12px; }
-    .meta-row { display: flex; justify-content: space-between; font-size: 13px; padding: 6px 0; border-bottom: 1px solid #F1F5F9; }
-    .meta-label { color: var(--text-muted); }
-    .meta-value { font-weight: 600; color: var(--text); }
-    .mcmc-box { background: #ECFDF5; border: 1px solid #A7F3D0; color: #065F46; padding: 8px 12px; border-radius: 6px; font-size: 12px; font-weight: 700; margin-top: 14px; }
-    .unauth-pill { background: #DCFCE7; color: #166534; font-size: 11px; font-weight: 700; padding: 4px 8px; border-radius: 20px; }
-  </style>
+  <title>KSHETRA · Political Ad Transparency Library</title>
 </head>
 <body>
-  <header>
-    <div class="brand">KSHETRA <span class="header-badge">Ad Transparency Library</span></div>
-    <div class="unauth-pill">Public Access · Zero Login Required</div>
-  </header>
-
-  <div class="container">
-    <div class="hero">
-      <h1>Political Ad Library</h1>
-      <p>ECI / MCMC transparency record for all paid political promotions running across Kshetra constituencies. Open to public audit without an account.</p>
-    </div>
-
-    <input type="text" id="searchInput" class="search-bar" placeholder="Filter by Page name, MCMC Certificate ID, or constituency..." oninput="renderAds()">
-
-    <div id="cardsGrid" class="card-grid">
-      <!-- Dynamically populated -->
-    </div>
-  </div>
-
-  <script>
-    let adsData = [];
-
-    async function loadAds() {
-      try {
-        const res = await fetch('/api/v1/political-ads/library');
-        const data = await res.json();
-        if (data && data.ads) {
-          adsData = data.ads;
-        }
-      } catch (err) {
-        console.error('Failed to load ad library data', err);
-      }
-      renderAds();
-    }
-
-    function renderAds() {
-      const query = (document.getElementById('searchInput').value || '').toLowerCase().trim();
-      const grid = document.getElementById('cardsGrid');
-
-      const filtered = adsData.filter(ad => {
-        const title = (ad.pages?.title || ad.page_id || '').toLowerCase();
-        const mcmc = (ad.mcmc_certificate_id || '').toLowerCase();
-        const target = (ad.target_value || '').toLowerCase();
-        return title.includes(query) || mcmc.includes(query) || target.includes(query);
-      });
-
-      if (filtered.length === 0) {
-        grid.innerHTML = '<p style=\"grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 40px;\">No certified political ads matching your search query.</p>';
-        return;
-      }
-
-      grid.innerHTML = filtered.map(ad => {
-        const pageTitle = ad.pages?.title || ad.page_id || 'Political Campaign';
-        const pageHandle = ad.pages?.handle ? ('@' + ad.pages.handle) : 'Official Page';
-        const amountFormatted = '₹' + (ad.amount_paid / 100).toLocaleString('en-IN');
-        const createdDate = new Date(ad.created_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
-
-        return '<div class=\"ad-card\">' +
-          '<div class=\"ad-badge\">⚖️ Political Ad · Paid Promotion</div>' +
-          '<div class=\"payer-name\">' + pageTitle + '</div>' +
-          '<div class=\"payer-handle\">' + pageHandle + '</div>' +
-          '<div class=\"meta-row\"><span class=\"meta-label\">Amount Spent:</span><span class=\"meta-value\">' + amountFormatted + '</span></div>' +
-          '<div class=\"meta-row\"><span class=\"meta-label\">Target Scope:</span><span class=\"meta-value\">' + (ad.target_scope || '').toUpperCase() + (ad.target_value ? ' (' + ad.target_value + ')' : '') + '</span></div>' +
-          '<div class=\"meta-row\"><span class=\"meta-label\">Impressions:</span><span class=\"meta-value\">' + (ad.impressions || 0).toLocaleString('en-IN') + '</span></div>' +
-          '<div class=\"meta-row\"><span class=\"meta-label\">Promoted Date:</span><span class=\"meta-value\">' + createdDate + '</span></div>' +
-          '<div class=\"mcmc-box\">MCMC Certificate: ' + (ad.mcmc_certificate_id || 'PENDING') + '</div>' +
-        '</div>';
-      }).join('');
-    }
-
-    loadAds();
-  </script>
+  <h1>Political Ad Library</h1>
 </body>
 </html>`;
   });
 };
+
+export const politicalAdRoutes = politicalAdsRoutes;

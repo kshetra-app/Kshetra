@@ -31,6 +31,8 @@ import { policyRoutes } from './routes/policy';
 import { randomUUID } from 'crypto';
 import { dmRoutes } from './routes/dm';
 import { politicalAdsRoutes } from './routes/politicalAds';
+import { politicalCampaignRoutes } from './routes/politicalCampaigns';
+import { commercialAdRoutes } from './routes/commercialAds';
 import { aspirantRoutes } from './routes/aspirant';
 import { contributorRoutes } from './routes/contributor';
 import { userRoutes } from './routes/users';
@@ -257,6 +259,8 @@ export async function buildApp() {
   await app.register(policyRoutes);
   await app.register(dmRoutes);
   await app.register(politicalAdsRoutes);
+  await app.register(politicalCampaignRoutes, { prefix: '/api/v1/campaigns/political' });
+  await app.register(commercialAdRoutes, { prefix: '/api/v1/commercial-ads' });
   await app.register(aspirantRoutes);
   await app.register(contributorRoutes);
   await app.register(userRoutes);
