@@ -13,3 +13,4 @@ export * from './media';
 export * from './campaign';
 export * from './developerPlatform';
 export * from './universalAnalytics';
+export * from './ai';

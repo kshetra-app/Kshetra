@@ -19,8 +19,15 @@ import {
   getMLAProfileForState,
   getTSElectionHistory,
 } from './stateData';
+import { defaultAIRegistry } from './aiProvider';
 
-const SYSTEM_PROMPT = `You are KSHETRA AI — an expert, non-partisan civic & electoral intelligence assistant.
+export * from './aiProvider';
+export * from './aiNewsSummaryService';
+export * from './aiCivicClassifier';
+export * from './askPoligramService';
+export * from './aiCostControlService';
+
+const SYSTEM_PROMPT = `You are POLIGRAM AI — an expert, non-partisan civic & electoral intelligence assistant.
 You provide objective, strictly factual answers grounded ONLY in verified public records, election commissions data, and official constituency statistics.
 
 STRICT FACTUAL GROUNDING & ANTI-HALLUCINATION RULES:
@@ -173,51 +180,49 @@ export function getAIClient(): { client: OpenAI; model: string } | null {
     return {
       client: new OpenAI({
         apiKey: geminiKey,
-        baseURL: 'https://generativelanguage.googleapis.com/v1beta/openai',
+        baseURL: process.env.GEMINI_BASE_URL || 'https://generativelanguage.googleapis.com/v1beta/openai',
       }),
-      model: 'gemini-flash-lite-latest',
+      model: process.env.GEMINI_MODEL || 'gemini-2.0-flash',
     };
   }
 
   const openaiKey = process.env.OPENAI_API_KEY;
   if (openaiKey) {
     return {
-      client: new OpenAI({ apiKey: openaiKey }),
-      model: 'gpt-4o-mini',
+      client: new OpenAI({
+        apiKey: openaiKey,
+        baseURL: process.env.OPENAI_BASE_URL || 'https://api.openai.com/v1',
+      }),
+      model: process.env.OPENAI_MODEL || 'gpt-4o-mini',
     };
   }
 
   return null;
 }
 
+/** Universal conversational AI with dynamic multi-tier fallback */
 export async function chatWithAI(options: AIChatOptions): Promise<string> {
-  const ai = getAIClient();
-  if (!ai) {
-    return 'AI features require a Gemini or OpenAI API key. Set GEMINI_API_KEY in your environment variables to enable KSHETRA AI.';
-  }
-
   const contextualPrompt =
     SYSTEM_PROMPT +
     buildConstituencyContext(options.constituencyAcNo, options.stateCode) +
     '\n\nElection History:\n' +
     buildHistoryContext();
 
-  const messages: OpenAI.ChatCompletionMessageParam[] = [
+  const messages: ChatMessage[] = [
     { role: 'system', content: contextualPrompt },
     ...options.messages.map((m) => ({
-      role: m.role as 'user' | 'assistant',
+      role: m.role as 'user' | 'assistant' | 'system',
       content: m.content,
     })),
   ];
 
-  const completion = await ai.client.chat.completions.create({
-    model: ai.model,
+  const response = await defaultAIRegistry.generateWithFallback({
     messages,
-    max_tokens: 2048,
+    maxTokens: 2048,
     temperature: 0.7,
   });
 
-  return completion.choices[0]?.message?.content ?? 'No response generated.';
+  return response.content || 'No response generated.';
 }
 
 /** Generate quick analysis for a constituency */
@@ -237,7 +242,6 @@ export async function analyzeConstituency(acNo: number, stateCode = 'TS'): Promi
 
 /** Generate election trend summary */
 export async function analyzeElectionTrends(): Promise<string> {
-  // Inject current party strength and defection summary
   const strength = computePartyStrength();
   const defections = getDefectionSummary();
   let extraCtx = '\n\nCurrent Party Strength (post-defections):';
@@ -266,7 +270,7 @@ export async function analyzeElectionTrends(): Promise<string> {
   });
 }
 
-/** Natural language constituency search — find constituency matching a query */
+/** Natural language constituency search with deterministic fallback */
 export async function smartSearch(
   query: string,
   stateCode = 'TS',
@@ -285,32 +289,44 @@ export async function smartSearch(
     })
     .join('\n');
 
-  const ai = getAIClient();
-  if (!ai) return [];
-
-  const completion = await ai.client.chat.completions.create({
-    model: ai.model,
-    messages: [
-      {
-        role: 'system',
-        content: `You are a ${stateName} constituency search engine. Given a natural language query and a pipe-delimited index (acNo|name|district|party|winnerName|mlaName|type), return a JSON array of up to 5 matching constituencies with {acNo, name, reason}. The reason should explain why this constituency matches the query in 10 words or less. Return ONLY valid JSON array, no markdown.\n\nIndex:\n${index}`,
-      },
-      { role: 'user', content: query },
-    ],
-    max_tokens: 1024,
-    temperature: 0,
-  });
-
   try {
-    const raw = completion.choices[0]?.message?.content ?? '[]';
-    const cleaned = raw
-      .replace(/```json?\n?/g, '')
-      .replace(/```/g, '')
-      .trim();
-    return JSON.parse(cleaned);
+    const response = await defaultAIRegistry.generateWithFallback({
+      messages: [
+        {
+          role: 'system',
+          content: `You are a ${stateName} constituency search engine. Given a natural language query and a pipe-delimited index (acNo|name|district|party|winnerName|mlaName|type), return a JSON array of up to 5 matching constituencies with {acNo, name, reason}. The reason should explain why this constituency matches the query in 10 words or less. Return ONLY valid JSON array, no markdown.\n\nIndex:\n${index}`,
+        },
+        { role: 'user', content: query },
+      ],
+      responseFormat: 'json',
+    });
+
+    const cleaned = response.content.replace(/```json?\n?/g, '').replace(/```/g, '').trim();
+    const parsed = JSON.parse(cleaned);
+    if (Array.isArray(parsed) && parsed.length > 0) {
+      return parsed;
+    }
   } catch {
-    return [];
+    // Deterministic fallback search
   }
+
+  // Offline deterministic fallback
+  const qLower = query.toLowerCase();
+  const matches = constituencies
+    .filter((c) =>
+      c.name.toLowerCase().includes(qLower) ||
+      c.district?.toLowerCase().includes(qLower) ||
+      c.currentMLA?.toLowerCase().includes(qLower) ||
+      c.currentParty?.toLowerCase().includes(qLower),
+    )
+    .slice(0, 5)
+    .map((c) => ({
+      acNo: c.acNo,
+      name: c.name,
+      reason: `Matches query in ${c.district} district (${c.currentParty})`,
+    }));
+
+  return matches;
 }
 
 /** Generate AI summary for civic issues in a constituency */
@@ -327,7 +343,7 @@ export async function summarizeIssues(constituencyName: string, issues: string[]
   });
 }
 
-/** Generate candidate campaign copy (press releases, WhatsApp updates, speeches) */
+/** Generate candidate campaign copy */
 export async function generateCampaignCopy(params: {
   candidateName: string;
   constituencyName: string;

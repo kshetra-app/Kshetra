@@ -4648,3 +4648,36 @@
     4. **JOB 070 (Ask PANIN — RAG Grounded Civic QA):** Strict retrieval-augmented generation engine querying exclusively verified database entities (`canonical_constituencies`, `elected_tenures`, `election_results`, `civic_issues`). Strict anti-hallucination, mandatory statutory citations (ECI Form 20, Delimitation Orders), and robust prompt injection deflection.
     5. **JOB 071 (AI Cost Control & Tenant Circuit Breakers):** Per-tenant daily token and spend budgets in `ai_tenant_budgets`. Automatic circuit breaker tripping on budget breach (HTTP 429 fail-closed), granular ledger telemetry, and executive cost audit reporting (`/api/v1/ai/cost-report`).
   - **Operational State:** Coordinates set to `PLAN_STATUS: SUBMITTED_FOR_REVIEW`, `IMPLEMENTATION_AUTHORIZATION: NO`. Awaiting user review and ratification under Control M.
+
+---
+
+### DEC-192: Architecture Ratification and Implementation Authorization for Domain 8 (AI Governance, Grounded News Intelligence & Cost Control: JOB 067–071)
+- **Date:** 2026-10-30
+- **Status:** APPROVED / AUTHORIZED FOR IMPLEMENTATION (IMPLEMENTATION_AUTHORIZATION = YES)
+- **Authority:** Master Product Blueprint (Jobs 067–071), Amendment v1.2, Amendment v1.5-A Section 26, Amendment v1.6 & AGENT_EXECUTION_PROTOCOL.md
+- **Context:** Following the submission of the Pre-Implementation Plan (PLAN-DOMAIN-8-AI-GOVERNANCE-NEWS-INTELLIGENCE-COST-CONTROL-REV-1.0.md under DEC-191), the user / CTO reviewed and explicitly ratified all five architectural decision points with tailored requirements:
+  - **Decision 1 (AI Provider Abstraction):** Ratified Option A with Tier 4 Custom LLM Provider integration (Gemini 2.0 Flash -> OpenAI GPT-4o-mini -> Custom LLM -> Deterministic Offline Heuristic) and a dynamic AIProviderRegistry with zero hardcoding. Guaranteed zero-startup crash in degraded offline mode.
+  - **Decision 2 (News Summary & Content-Addressed Caching):** Ratified Option A (Content-addressed SHA-256 deduplication cache via ai_news_summary_cache, instant 0-token cache hits, and sovereign ai_cost_ledger telemetry).
+  - **Decision 3 (Civic Classification & Taxonomy):** Ratified Option A with an expanded, comprehensive structured taxonomy dictionary across 8 municipal departments with life-safety urgency escalation (open manhole/live wire -> EMERGENCY), deterministic heuristic matching first (>= 0.85 confidence -> 0 AI cost), and seamless AI fallback.
+  - **Decision 4 (Ask POLIGRAM Grounded RAG):** Ratified Option A with official rebranding to POLIGRAM, strict SQL grounding in verified database records, mandatory statutory citations (ECI Form 20, Delimitation Orders), and robust prompt injection deflection.
+  - **Decision 5 (AI Cost Control & Tenant Quotas):** Ratified Option A (Daily token/spend quotas in ai_tenant_budgets, automatic circuit breaker tripping on budget breach returning HTTP 429 fail-closed with Retry-After, and executive cost audit reporting).
+  - **Operational Authorization:** Formally granted PLAN_STATUS: APPROVED and IMPLEMENTATION_AUTHORIZATION: YES under PLAN-DOMAIN-8-AI-GOVERNANCE-NEWS-INTELLIGENCE-COST-CONTROL-REV-1.1.md.
+
+---
+
+### DEC-193: Engineering Execution, Verification, and Formal Closure of Domain 8 (AI Governance, Grounded News Intelligence & Cost Control: JOB 067–071)
+- **Date:** 2026-10-30
+- **Status:** ACCEPTED / COMPLETE (TESTED & VERIFIED)
+- **Authority:** Master Product Blueprint (Jobs 067–071), Representation of the People Act 1951, Digital Personal Data Protection Act 2023, DEC-191, DEC-192, Amendment v1.2, Amendment v1.5-A Section 26 & AGENT_EXECUTION_PROTOCOL.md
+- **Context:** Following user ratification in DEC-192, all five constituent jobs of Domain 8 were completely implemented, verified, and certified:
+  1. **JOB 067 (AI Provider Abstraction):** Authored pluggable IAIProvider interface with 4-tier cascade: Gemini 2.0 Flash, OpenAI GPT-4o-mini, Custom LLM (configurable baseUrl/model/headers), and Deterministic Offline Heuristic. Supported dynamic registration via AIProviderRegistry with zero hardcoding. Certified clean boot in degraded offline mode without external API keys.
+  2. **JOB 068 (AI News Summary & Caching):** Deployed content-addressed SHA-256 deduplication cache (ai_news_summary_cache), instant 0-token cache hits on duplicate news feeds, and sovereign cost ledger (ai_cost_ledger) logging prompt tokens, completion tokens, USD/INR costs, and provider telemetry.
+  3. **JOB 069 (AI Civic Issue Classification):** Created comprehensive structured civic taxonomy dictionary covering 8 municipal domains (Roads, Water, Drainage, Solid Waste, Electricity, Public Health, Environment, Infrastructure) with life-safety urgency escalation (EMERGENCY on open manholes/live wires), deterministic heuristic priority (>= 0.85 confidence -> 0 AI cost), and seamless AI fallback.
+  4. **JOB 070 (Ask POLIGRAM Grounded RAG):** Grounded Q&A strictly derived from verified database tables (canonical_constituencies, elected_tenures, election_results), mandatory statutory citations (ECI Form 20, Delimitation Orders, Assembly Registers), and robust prompt injection deflection.
+  5. **JOB 071 (AI Cost Control & Circuit Breakers):** Per-tenant daily token quotas and spend limits in ai_tenant_budgets, automatic circuit breaker tripping on quota breach (HTTP 429 fail-closed with Retry-After), and executive cost audit reporting (/api/v1/ai/cost-report).
+- **Verification Summary:**
+  - Dedicated automated test battery: 17/17 tests passing (100%) in tests/domain8-ai-governance-and-cost-control.test.ts.
+  - Monorepo typecheck: 100% clean across @kshetra/shared and @kshetra/api (tsc --noEmit, 0 errors).
+  - Regression test suites: Domain 7 (15/15 PASS), Domain 6 (22/22 PASS), JOB 036 (14/14 PASS), JOB 051 (4/4 PASS) -> 55/55 PASS (100%).
+  - Total cumulative verified tests: 72/72 PASS (100%).
+  - Formal evidence dossiers committed at reports/domain8_ai_governance_and_cost_control_report.json and reports/domain8_ai_governance_and_cost_control_report.md.

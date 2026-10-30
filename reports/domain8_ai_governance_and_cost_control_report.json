@@ -1,0 +1,69 @@
+{
+  "domain": "Domain 8: AI Governance, Grounded News Intelligence & Cost Control",
+  "jobsCovered": ["JOB 067", "JOB 068", "JOB 069", "JOB 070", "JOB 071"],
+  "testSuite": "tests/domain8-ai-governance-and-cost-control.test.ts",
+  "authority": "Master Product Blueprint, Amendment v1.2, Amendment v1.5-A Section 26, Amendment v1.6 & DEC-192",
+  "timestamp": "2026-10-30T13:13:00.000Z",
+  "summary": {
+    "totalTests": 17,
+    "passed": 17,
+    "failed": 0,
+    "skipped": 0,
+    "passRate": "100%"
+  },
+  "modulesImplemented": {
+    "JOB 067": {
+      "title": "AI Provider Abstraction",
+      "status": "ACCEPTED / COMPLETE",
+      "evidence": [
+        "Pluggable IAIProvider interface with 4-tier cascade: Gemini 2.0 Flash -> OpenAI GPT-4o-mini -> Custom LLM -> Deterministic Offline Heuristic",
+        "Dynamic runtime configuration via AIProviderRegistry with zero hardcoding",
+        "Zero-startup-failure invariant: system boots cleanly in degraded_offline_safe mode without crashing when cloud API keys are missing"
+      ]
+    },
+    "JOB 068": {
+      "title": "AI News Summary & Content-Addressed Caching",
+      "status": "ACCEPTED / COMPLETE",
+      "evidence": [
+        "Content-addressed SHA-256 deduplication cache (ai_news_summary_cache)",
+        "Instant cache hit on syndicated duplicate news articles with 0 tokens and 0 cost",
+        "Sovereign cost ledger (ai_cost_ledger) logging prompt tokens, completion tokens, USD/INR costs, and provider telemetry"
+      ]
+    },
+    "JOB 069": {
+      "title": "AI Civic Issue Classification & Structured Taxonomy",
+      "status": "ACCEPTED / COMPLETE",
+      "evidence": [
+        "Comprehensive structured civic taxonomy dictionary covering 8 municipal domains (Roads, Water, Drainage, Solid Waste, Electricity, Public Health, Environment, Infrastructure)",
+        "Deterministic heuristic classification first (>= 0.85 confidence resolves instantly with 0 AI cost)",
+        "Life-safety urgency detection (open manholes and live wires automatically escalate to EMERGENCY)",
+        "Graceful AI fallback and degraded offline safety"
+      ]
+    },
+    "JOB 070": {
+      "title": "Ask POLIGRAM Grounded RAG & Statutory Citations",
+      "status": "ACCEPTED / COMPLETE",
+      "evidence": [
+        "Strict retrieval-augmented generation grounded exclusively in verified database tables (canonical_constituencies, elected_tenures, election_results)",
+        "Mandatory statutory citations including ECI Form 20 and Delimitation Commission Orders",
+        "Adversarial prompt injection deflection intercepting jailbreaks and unverified defamation with standardized neutral civic notice"
+      ]
+    },
+    "JOB 071": {
+      "title": "AI Cost Control, Tenant Quotas & Circuit Breakers",
+      "status": "ACCEPTED / COMPLETE",
+      "evidence": [
+        "Daily token and spend quotas per tenant in ai_tenant_budgets",
+        "Automatic circuit breaker tripping on quota breach with HTTP 429 fail-closed and Retry-After header",
+        "Executive AI cost audit report generating operational breakdowns, provider spend, and cache hit ratios"
+      ]
+    }
+  },
+  "regressionVerification": {
+    "domain7Tests": "15/15 PASS (100%)",
+    "domain6Tests": "22/22 PASS (100%)",
+    "job036Tests": "14/14 PASS (100%)",
+    "job051Tests": "4/4 PASS (100%)",
+    "totalPassingTests": "72/72 PASS (100%)"
+  }
+}
