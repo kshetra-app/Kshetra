@@ -43,6 +43,7 @@ export type SyncOpType =
   | 'flag_short'
   | 'register_aspirant'
   | 'start_module'
+  | 'complete_module'
   | 'join_challenge'
   | 'endorse_aspirant'
   | 'submit_kyc'
@@ -264,6 +265,8 @@ export async function executeOp(op: SyncOperation): Promise<{ success: boolean; 
       }
       case 'start_module':
         return { success: await svc.startModule(p.userId as string, p.moduleId as string) };
+      case 'complete_module':
+        return { success: await svc.completeModule(p.userId as string, p.moduleId as string, p.quizScore as number | undefined) };
       case 'join_challenge':
         return { success: await svc.joinChallenge(p.userId as string, p.challengeId as string) };
       case 'endorse_aspirant':

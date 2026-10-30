@@ -108,4 +108,58 @@ export class AspirantEndpoint {
     );
     return res.data;
   }
+
+  /**
+   * 6. Submit KYC verification document (JOB 046)
+   */
+  async submitKYC(payload: {
+    documentType: string;
+    documentHash: string;
+    documentUrl?: string;
+    statutoryDeclarationAccepted: boolean;
+  }): Promise<{ success: boolean; kyc?: any }> {
+    const res = await this.client.post<{ success: boolean; kyc?: any }>(
+      '/api/v1/aspirant/kyc/submit',
+      payload,
+      { authPolicy: 'authenticated' },
+    );
+    return res.data;
+  }
+
+  /**
+   * 7. Get KYC status (JOB 046)
+   */
+  async getKYCStatus(): Promise<{ success: boolean; records?: any[] }> {
+    const res = await this.client.get<{ success: boolean; records?: any[] }>(
+      '/api/v1/aspirant/kyc/status',
+      { authPolicy: 'authenticated' },
+    );
+    return res.data;
+  }
+
+  /**
+   * 8. Get public profile & aggregated timeline (JOB 047)
+   */
+  async getPublicProfile(idOrHandle: string): Promise<{ success: boolean; profile?: any }> {
+    const res = await this.client.get<{ success: boolean; profile?: any }>(
+      `/api/v1/aspirant/profile/${encodeURIComponent(idOrHandle)}`,
+      { authPolicy: 'public' },
+    );
+    return res.data;
+  }
+
+  /**
+   * 9. Submit quiz answers for evaluation and certification (JOB 050 - Decision 3)
+   */
+  async submitQuiz(
+    moduleId: string,
+    answers: Array<{ questionId: string; selectedIndex: number }>,
+  ): Promise<{ success: boolean; result?: any }> {
+    const res = await this.client.post<{ success: boolean; result?: any }>(
+      `/api/v1/aspirant/modules/${encodeURIComponent(moduleId)}/quiz`,
+      { answers },
+      { authPolicy: 'authenticated' },
+    );
+    return res.data;
+  }
 }

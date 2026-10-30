@@ -448,7 +448,7 @@ export const useAspirantStore = create<AspirantState>()((set, get) => ({
     }
   },
 
-  completeModule: (moduleId, quizScore) =>
+  completeModule: async (moduleId, quizScore) => {
     set((state) => ({
       moduleProgress: state.moduleProgress.map((mp) =>
         mp.moduleId === moduleId
@@ -458,7 +458,20 @@ export const useAspirantStore = create<AspirantState>()((set, get) => ({
       profile: state.profile
         ? { ...state.profile, modulesCompleted: state.profile.modulesCompleted + 1 }
         : null,
-    })),
+    }));
+
+    const userId = useAuthStore.getState().user?.id;
+    if (userId) {
+      try {
+        const ok = await dataService.completeModule(userId, moduleId, quizScore);
+        if (!ok) {
+          enqueue('complete_module', { userId, moduleId, quizScore });
+        }
+      } catch {
+        enqueue('complete_module', { userId, moduleId, quizScore });
+      }
+    }
+  },
 
   joinChallenge: async (challengeId) => {
     const exists = get().challengeProgress.find((cp) => cp.challengeId === challengeId);

@@ -863,7 +863,14 @@ export class CivicService {
   // -------------------------------------------------------------
 
   public async createGroup(
-    input: { name: string; constituencyId: string; description?: string; category: string },
+    input: {
+      name: string;
+      constituencyId: string;
+      description?: string;
+      category: string;
+      mandal?: string;
+      ward?: string;
+    },
     userId: string
   ): Promise<CommunityGroupDTO> {
     if (!input.name || input.name.trim().length < 3) {
@@ -879,6 +886,8 @@ export class CivicService {
       name: input.name.trim(),
       slug,
       constituencyId: input.constituencyId,
+      mandal: input.mandal,
+      ward: input.ward,
       description: input.description,
       category: input.category,
       createdBy: userId,
@@ -898,6 +907,8 @@ export class CivicService {
           name: group.name,
           slug: group.slug,
           constituency_id: group.constituencyId,
+          mandal: group.mandal,
+          ward: group.ward,
           description: group.description,
           category: group.category,
           created_by: group.createdBy,
@@ -919,19 +930,68 @@ export class CivicService {
     return group;
   }
 
-  public async listGroups(constituencyId: string): Promise<CommunityGroupDTO[]> {
-    return Array.from(this.inMemoryGroups.values()).filter(
-      (g) => g.constituencyId === constituencyId && g.isActive
-    );
+  public async listGroups(
+    constituencyId: string,
+    options?: { mandal?: string; ward?: string }
+  ): Promise<CommunityGroupDTO[]> {
+    return Array.from(this.inMemoryGroups.values()).filter((g) => {
+      if (g.constituencyId !== constituencyId || !g.isActive) return false;
+      if (options?.mandal && g.mandal !== options.mandal) return false;
+      if (options?.ward && g.ward !== options.ward) return false;
+      return true;
+    });
+  }
+
+  public async getMemberRole(
+    groupId: string,
+    userId: string
+  ): Promise<'admin' | 'moderator' | 'member' | null> {
+    for (const entry of this.inMemoryGroupMemberships) {
+      const [gId, uId, role] = entry.split(':');
+      if (gId === groupId && uId === userId) {
+        return role as 'admin' | 'moderator' | 'member';
+      }
+    }
+    return null;
+  }
+
+  public async updateMemberRole(
+    groupId: string,
+    targetUserId: string,
+    newRole: 'admin' | 'moderator' | 'member',
+    actingUserId: string
+  ): Promise<{ success: boolean; role: 'admin' | 'moderator' | 'member' }> {
+    const actingRole = await this.getMemberRole(groupId, actingUserId);
+    if (actingRole !== 'admin') {
+      throw new Error('FORBIDDEN: Only group admins can update member roles');
+    }
+    const currentRole = await this.getMemberRole(groupId, targetUserId);
+    if (!currentRole) {
+      throw new Error('NOT_FOUND: User is not a member of this group');
+    }
+    this.inMemoryGroupMemberships.delete(`${groupId}:${targetUserId}:${currentRole}`);
+    this.inMemoryGroupMemberships.add(`${groupId}:${targetUserId}:${newRole}`);
+
+    if (isSupabaseConfigured) {
+      try {
+        await supabase
+          .from('community_group_memberships')
+          .update({ role: newRole })
+          .eq('group_id', groupId)
+          .eq('user_id', targetUserId);
+      } catch {}
+    }
+
+    return { success: true, role: newRole };
   }
 
   public async joinGroup(groupId: string, userId: string): Promise<{ success: boolean; memberCount: number }> {
     const group = this.inMemoryGroups.get(groupId);
     if (!group) throw new Error(`NOT_FOUND: Community group ${groupId} not found`);
 
-    const membershipKey = `${groupId}:${userId}:member`;
-    if (!this.inMemoryGroupMemberships.has(membershipKey)) {
-      this.inMemoryGroupMemberships.add(membershipKey);
+    const existingRole = await this.getMemberRole(groupId, userId);
+    if (!existingRole) {
+      this.inMemoryGroupMemberships.add(`${groupId}:${userId}:member`);
       group.memberCount += 1;
       group.updatedAt = new Date().toISOString();
       this.inMemoryGroups.set(groupId, group);
@@ -954,9 +1014,9 @@ export class CivicService {
     const group = this.inMemoryGroups.get(groupId);
     if (!group) throw new Error(`NOT_FOUND: Community group ${groupId} not found`);
 
-    const membershipKey = `${groupId}:${userId}:member`;
-    if (this.inMemoryGroupMemberships.has(membershipKey)) {
-      this.inMemoryGroupMemberships.delete(membershipKey);
+    const existingRole = await this.getMemberRole(groupId, userId);
+    if (existingRole) {
+      this.inMemoryGroupMemberships.delete(`${groupId}:${userId}:${existingRole}`);
       group.memberCount = Math.max(0, group.memberCount - 1);
       group.updatedAt = new Date().toISOString();
       this.inMemoryGroups.set(groupId, group);

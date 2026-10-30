@@ -4,6 +4,9 @@ import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import { sendApiError } from '../lib/replyHelper';
 import { RazorpayProvider } from '../providers/razorpayProvider';
 import type { PaymentProvider } from '../providers/types';
+import { resolveAuthenticatedUser, assertActingUserMatch } from '../lib/userAuth';
+import { AspirantService } from '../services/aspirantService';
+import type { PageCreateRequest, PageEventCreateRequest, PageEventRsvpStatus } from '@kshetra/shared';
 
 export interface PageEntitlement {
   pageId: string;
@@ -853,4 +856,308 @@ export const pagesRoutes: FastifyPluginAsync = async (app) => {
       },
     });
   });
+
+  /**
+   * POST /api/v1/pages — Create a new political / aspirant page (JOB 048)
+   */
+  app.post<{
+    Body: PageCreateRequest & { userId?: string };
+  }>(
+    '/api/v1/pages',
+    {
+      schema: {
+        body: {
+          type: 'object',
+          required: ['title', 'handle', 'role'],
+          properties: {
+            userId: { type: 'string' },
+            title: { type: 'string', minLength: 2, maxLength: 100 },
+            handle: { type: 'string', minLength: 2, maxLength: 50 },
+            role: { type: 'string', enum: ['aspirant', 'politician', 'party', 'journalist'] },
+            category: { type: 'string' },
+            bio: { type: 'string', maxLength: 500 },
+            constituencyId: { type: 'string' },
+            stateCode: { type: 'string' },
+            avatarUrl: { type: 'string' },
+            bannerUrl: { type: 'string' },
+          },
+        },
+      },
+    },
+    async (request, reply) => {
+      const auth = await resolveAuthenticatedUser(request, reply);
+      if (!auth) return;
+
+      if (!assertActingUserMatch(reply, request, auth.userId, request.body?.userId, 'userId')) {
+        return;
+      }
+
+      try {
+        const page = await AspirantService.createPage(auth.userId, request.body);
+        return reply.status(201).send({ success: true, page });
+      } catch (err: any) {
+        if (err.message === 'PAGE_HANDLE_ALREADY_EXISTS') {
+          return sendApiError(reply, request, 409, 'Conflict', 'Handle is already taken', {
+            code: 'HANDLE_CONFLICT',
+          });
+        }
+        return sendApiError(reply, request, 500, 'Internal Server Error', err.message, {
+          code: 'DATABASE_ERROR',
+        });
+      }
+    },
+  );
+
+  /**
+   * GET /api/v1/pages/:id — Get page detail (JOB 048)
+   */
+  app.get<{
+    Params: { id: string };
+  }>(
+    '/api/v1/pages/:id',
+    {
+      schema: {
+        params: {
+          type: 'object',
+          required: ['id'],
+          properties: { id: { type: 'string' } },
+        },
+      },
+    },
+    async (request, reply) => {
+      const auth = await resolveAuthenticatedUser(request, reply).catch(() => null);
+      const { id } = request.params;
+
+      try {
+        const page = await AspirantService.getPage(id, auth?.userId);
+        if (!page) {
+          return sendApiError(reply, request, 404, 'Not Found', 'Page not found', {
+            code: 'PAGE_NOT_FOUND',
+          });
+        }
+        return reply.send({ success: true, page });
+      } catch (err: any) {
+        return sendApiError(reply, request, 500, 'Internal Server Error', err.message, {
+          code: 'DATABASE_ERROR',
+        });
+      }
+    },
+  );
+
+  /**
+   * POST /api/v1/pages/:id/follow — Follow page (JOB 048)
+   */
+  app.post<{
+    Params: { id: string };
+    Body: { userId?: string };
+  }>(
+    '/api/v1/pages/:id/follow',
+    {
+      schema: {
+        params: {
+          type: 'object',
+          required: ['id'],
+          properties: { id: { type: 'string' } },
+        },
+        body: {
+          type: ['object', 'null'],
+          properties: { userId: { type: 'string' } },
+        },
+      },
+    },
+    async (request, reply) => {
+      const auth = await resolveAuthenticatedUser(request, reply);
+      if (!auth) return;
+
+      if (!assertActingUserMatch(reply, request, auth.userId, request.body?.userId, 'userId')) {
+        return;
+      }
+
+      const { id: pageId } = request.params;
+      try {
+        const result = await AspirantService.toggleFollowPage(pageId, auth.userId, true);
+        return reply.send({ success: true, ...result });
+      } catch (err: any) {
+        return sendApiError(reply, request, 500, 'Internal Server Error', err.message, {
+          code: 'DATABASE_ERROR',
+        });
+      }
+    },
+  );
+
+  /**
+   * DELETE /api/v1/pages/:id/follow — Unfollow page (JOB 048)
+   */
+  app.delete<{
+    Params: { id: string };
+    Body: { userId?: string };
+  }>(
+    '/api/v1/pages/:id/follow',
+    {
+      schema: {
+        params: {
+          type: 'object',
+          required: ['id'],
+          properties: { id: { type: 'string' } },
+        },
+        body: {
+          type: ['object', 'null'],
+          properties: { userId: { type: 'string' } },
+        },
+      },
+    },
+    async (request, reply) => {
+      const auth = await resolveAuthenticatedUser(request, reply);
+      if (!auth) return;
+
+      if (!assertActingUserMatch(reply, request, auth.userId, request.body?.userId, 'userId')) {
+        return;
+      }
+
+      const { id: pageId } = request.params;
+      try {
+        const result = await AspirantService.toggleFollowPage(pageId, auth.userId, false);
+        return reply.send({ success: true, ...result });
+      } catch (err: any) {
+        return sendApiError(reply, request, 500, 'Internal Server Error', err.message, {
+          code: 'DATABASE_ERROR',
+        });
+      }
+    },
+  );
+
+  /**
+   * POST /api/v1/pages/:id/events — Create page event with follower dispatch (JOB 048 - DEC-177 Decision 2)
+   */
+  app.post<{
+    Params: { id: string };
+    Body: PageEventCreateRequest & { userId?: string };
+  }>(
+    '/api/v1/pages/:id/events',
+    {
+      schema: {
+        params: {
+          type: 'object',
+          required: ['id'],
+          properties: { id: { type: 'string' } },
+        },
+        body: {
+          type: 'object',
+          required: ['title', 'eventType', 'startTime'],
+          properties: {
+            userId: { type: 'string' },
+            title: { type: 'string', minLength: 3, maxLength: 150 },
+            description: { type: 'string', maxLength: 2000 },
+            eventType: {
+              type: 'string',
+              enum: ['townhall', 'rally', 'volunteer_meet', 'webinar', 'press_conference', 'door_to_door'],
+            },
+            startTime: { type: 'string' },
+            endTime: { type: 'string' },
+            venueName: { type: 'string' },
+            venueAddress: { type: 'string' },
+            constituencyId: { type: 'string' },
+            latitude: { type: 'number' },
+            longitude: { type: 'number' },
+            isVirtual: { type: 'boolean' },
+            meetingLink: { type: 'string' },
+          },
+        },
+      },
+    },
+    async (request, reply) => {
+      const auth = await resolveAuthenticatedUser(request, reply);
+      if (!auth) return;
+
+      if (!assertActingUserMatch(reply, request, auth.userId, request.body?.userId, 'userId')) {
+        return;
+      }
+
+      const { id: pageId } = request.params;
+      try {
+        const event = await AspirantService.createPageEvent(pageId, auth.userId, request.body);
+        return reply.status(201).send({ success: true, event });
+      } catch (err: any) {
+        return sendApiError(reply, request, 500, 'Internal Server Error', err.message, {
+          code: 'DATABASE_ERROR',
+        });
+      }
+    },
+  );
+
+  /**
+   * GET /api/v1/pages/:id/events — List page events (JOB 048)
+   */
+  app.get<{
+    Params: { id: string };
+  }>(
+    '/api/v1/pages/:id/events',
+    {
+      schema: {
+        params: {
+          type: 'object',
+          required: ['id'],
+          properties: { id: { type: 'string' } },
+        },
+      },
+    },
+    async (request, reply) => {
+      const auth = await resolveAuthenticatedUser(request, reply).catch(() => null);
+      const { id } = request.params;
+
+      try {
+        const events = await AspirantService.listPageEvents(id, auth?.userId);
+        return reply.send({ success: true, events });
+      } catch (err: any) {
+        return sendApiError(reply, request, 500, 'Internal Server Error', err.message, {
+          code: 'DATABASE_ERROR',
+        });
+      }
+    },
+  );
+
+  /**
+   * POST /api/v1/pages/events/:eventId/rsvp — RSVP to event (JOB 048)
+   */
+  app.post<{
+    Params: { eventId: string };
+    Body: { userId?: string; status: PageEventRsvpStatus };
+  }>(
+    '/api/v1/pages/events/:eventId/rsvp',
+    {
+      schema: {
+        params: {
+          type: 'object',
+          required: ['eventId'],
+          properties: { eventId: { type: 'string' } },
+        },
+        body: {
+          type: 'object',
+          required: ['status'],
+          properties: {
+            userId: { type: 'string' },
+            status: { type: 'string', enum: ['going', 'interested', 'cancelled'] },
+          },
+        },
+      },
+    },
+    async (request, reply) => {
+      const auth = await resolveAuthenticatedUser(request, reply);
+      if (!auth) return;
+
+      if (!assertActingUserMatch(reply, request, auth.userId, request.body?.userId, 'userId')) {
+        return;
+      }
+
+      const { eventId } = request.params;
+      try {
+        const rsvp = await AspirantService.rsvpPageEvent(eventId, auth.userId, request.body.status);
+        return reply.send({ success: true, ...rsvp });
+      } catch (err: any) {
+        return sendApiError(reply, request, 500, 'Internal Server Error', err.message, {
+          code: 'DATABASE_ERROR',
+        });
+      }
+    },
+  );
 };

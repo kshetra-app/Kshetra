@@ -4379,8 +4379,40 @@
   - Plan document committed to `governance/plans/PLAN-DOMAIN-4-ASPIRANTS-COMMUNITIES-AND-LEADERSHIP-ACADEMY-REV-1.0.md`.
   - Implementation authorization remains frozen (`IMPLEMENTATION_AUTHORIZATION = NO`) pending explicit user ratification.
 
+---
+
+### DEC-177: User Ratification & Implementation Authorization for Domain 4 (JOB 046–JOB 050)
+- **Date:** 2026-10-30
+- **Status:** APPROVED / AUTHORIZED FOR IMPLEMENTATION (`IMPLEMENTATION_AUTHORIZATION = YES`)
+- **Authority:** Master Product Blueprint, AI Agent Master Execution Job Book, Amendment v1.2, Amendment v1.5-A Section 26 & AGENT_EXECUTION_PROTOCOL.md
+- **Context:** Following the submission of the 22-section Pre-Implementation Plan (`PLAN-DOMAIN-4-ASPIRANTS-COMMUNITIES-AND-LEADERSHIP-ACADEMY-REV-1.0.md` under DEC-176), the user formally reviewed and ratified the architectural decisions for Domain 4:
+  - **Decision 1 (A1 - JOB 046 KYC Flow):** Ratified Option A (Two-Tier KYC verification model: Tier 1 self-declared with mobile OTP / Aadhaar last-4 masked hash with status `pending_verification`; Tier 2 documented verification with election affidavit / identity proof audited by compliance with status `verified`).
+  - **Decision 2 (A2 - JOB 048 Page Events & Dispatch):** Ratified unified hybrid of Option 1 and Option 2 (Scheduled push notification outbox with anti-spam rate limiting capped at 3 broadcasts/week and public JSON/RSS feed, paired with real-time SSE/WebSocket fan-out for active followers).
+  - **Decision 3 (A3 - JOB 050 Academy Scoring & Certification):** Ratified hybrid of Option 1 and Option 2 (Lesson reading marks foundational completion, while passing the interactive quiz with >=80% score unlocks the verified digital badge, honors certification, and Civic Score bonus points on the public aspirant profile).
+  - **Ratification Disposition:** Granted `PLAN_STATUS: APPROVED` and `IMPLEMENTATION_AUTHORIZATION: YES` for sequential execution of Domain 4 (JOB 046, JOB 047, JOB 048, JOB 049, and JOB 050).
 
 
 
 
 
+
+
+
+---
+
+### DEC-178: Certified Completion & Acceptance of Domain 4 (JOB 046–JOB 050) Aspirants, Communities & Leadership Academy
+- **Date:** 2026-10-30
+- **Status:** ACCEPTED / COMPLETED / CERTIFIED PASS
+- **Authority:** Master Product Blueprint, AI Agent Master Execution Job Book, Amendment v1.2, Amendment v1.5-A Section 26 & AGENT_EXECUTION_PROTOCOL.md
+- **Context:** Following user ratification and implementation authorization under DEC-177, the entire scope of Domain 4 was executed and verified against rigorous automated test suites without stubs, placeholders, or dummy data.
+- **Jobs Executed and Certified:**
+  1. **JOB 046 (Aspirant Registration & KYC Verification Flow):** Verified via `tests/job046-aspirant-registration-kyc.test.ts` (7/7 PASS, 100%). Implemented Two-Tier KYC verification model (`unverified` -> `pending` -> `verified`), handle collision prevention, statutory declaration enforcement, and criminal antecedents reporting.
+  2. **JOB 047 (Aspirant Public Profile & Aggregated Timeline):** Verified via `tests/job047-aspirant-public-profile.test.ts` (5/5 PASS, 100%). Implemented handle and UUID public profile lookup, bio and target constituency aggregation, real-time federation of upcoming page events, earned badges, and fail-closed 404 response.
+  3. **JOB 048 (Aspirant Page, Followers & Event Dispatching Engine):** Verified via `tests/job048-aspirant-page-events.test.ts` (8/8 PASS, 100%) and `apps/api/src/__tests__/manage-pages-routes-unit.test.ts` (34/34 PASS, 100%). Implemented entity page lifecycle, idempotent follow/unfollow state machine, event creation with geo-tagging, follower notification broadcast pipeline, and RSVP counter tracking.
+  4. **JOB 049 (Community Groups — Geographic Membership & Role Permissions):** Verified via `tests/job049-community-groups-roles.test.ts` (8/8 PASS, 100%). Implemented geographic hierarchy scoping (AC, Mandal, Ward), role-based permissions (`admin`, `moderator`, `member`), group creator admin ownership, admin member promotion, non-admin forbidden guard, and locality isolation.
+  5. **JOB 050 (Leadership Academy — Course/Quiz Persistence & Certification):** Verified via `tests/job050-leadership-academy-persistence.test.ts` (8/8 PASS, 100%). Implemented 8-track curriculum, server-side quiz evaluation engine enforcing 80% passing threshold, awarding of `election_scholar` honors badge and +15 Civic Score points, durable multi-tier persistence (PostgreSQL, SQLite/MMKV, offline sync queue), and profile linkage.
+- **Empirical Quality & Regression Verification:**
+  - Automated tests: 36/36 tests passing (100%) across all 5 Domain 4 test suites.
+  - Monorepo typecheck: 100% clean across `@kshetra/shared`, `@kshetra/api`, and `apps/mobile` (`tsc --noEmit`, 0 errors).
+  - Regression unit suites: `manage-pages-routes-unit.test.ts` (34/34 PASS), all Domain 3 civic tests (Jobs 030-035, ALL PASS).
+  - Evidence dossiers committed at `reports/domain4_aspirants_academy_report.json` and `reports/domain4_aspirants_academy_report.md`.

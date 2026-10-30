@@ -94,6 +94,8 @@ export interface CommunityGroupDTO {
   name: string;
   slug: string;
   constituencyId: string;
+  mandal?: string;
+  ward?: string;
   description?: string;
   category: string;
   createdBy: string;
