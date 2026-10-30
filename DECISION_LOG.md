@@ -4312,5 +4312,24 @@
   - Monorepo typecheck: 100% clean across `@kshetra/shared`, `@kshetra/api`, and `apps/mobile` (`tsc --noEmit`, 0 errors).
   - Evidence dossiers committed at `reports/domain2_mobile_performance_report.json` and `reports/domain2_mobile_performance_report.md`.
 
+---
+
+### DEC-174: Formulation & Submission of Domain 3 (JOB 030–JOB 035) Core Civic & Engagement Platform Pre-Implementation Plan
+- **Date:** 2026-10-30
+- **Status:** PLAN_SUBMITTED_FOR_REVIEW (IMPLEMENTATION_AUTHORIZATION = NO)
+- **Authority:** Master Product Blueprint, AI Agent Master Execution Job Book, Amendment v1.2, Amendment v1.5-A Section 26 & AGENT_EXECUTION_PROTOCOL.md
+- **Context:** Following the certified acceptance of Domain 1 (DEC-169) and Domain 2 (DEC-173), the user explicitly commissioned Domain 3: Core Civic & Engagement Platform (JOB 030 through JOB 035). In strict accordance with Amendment v1.5-A Section 26 and Rule IV-001 Non-Self-Acceptance, a canonical 22-section Pre-Implementation Plan was authored and submitted for user review prior to any product code modification.
+- **Architectural Scope of Domain 3:**
+  1. **JOB 030: Civic Issue Lifecycle Engine & State Machine:** 5-state lifecycle (`OPEN -> ACKNOWLEDGED -> IN_PROGRESS -> RESOLVED -> CLOSED`, with `REOPENED` on dispute), immutable audit status history, and complete elimination of non-production mock bypasses.
+  2. **JOB 031: Geo-Fenced Issue Reporting & Evidence Pipeline:** PostGIS point-in-polygon containment verification against `public.constituencies`, multi-media evidence handling, and corroborating community evidence ("I saw this too").
+  3. **JOB 032: Anti-Sybil Community Upvoting, Follows & Milestone Triggers:** Idempotent transactional upvoting, follower notifications, and automatic progression thresholds (10 upvotes = citizen alert, 50 upvotes = MLA notification, 500 upvotes = auto-promotion to public headlines).
+  4. **JOB 033: Constituency Civic Discourse & Threaded Comments:** Official verified badge hierarchy (MLA, official, moderator, citizen), real-time threaded discussion, fail-closed content moderation, and zero-PII dispute filing.
+  5. **JOB 034: Local Discourse & Constituency Community Working Groups:** Citizen civic action groups, locality-scoped discussion boards (Ward, Mandal, Assembly level), and offline-first community caching via `UnifiedCacheManager`.
+  6. **JOB 035: Civic Metrics, Sentiment Derivation & Real Data Connectors:** Eliminating fake stubs across budget, attendance, bills, schemes, projects, and RTI in `apps/api/src/routes/civic.ts`, backed by real database models and multi-factor constituency sentiment derivation.
+- **Operational Authorization:**
+  - Plan document committed to `governance/plans/PLAN-DOMAIN-3-CORE-CIVIC-AND-ENGAGEMENT-PLATFORM-REV-1.0.md`.
+  - Implementation authorization remains frozen (IMPLEMENTATION_AUTHORIZATION = NO) until explicit user ratification.
+
+
 
 
