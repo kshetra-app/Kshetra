@@ -11,3 +11,5 @@ export * from './civic';
 export * from './aspirant';
 export * from './media';
 export * from './campaign';
+export * from './developerPlatform';
+export * from './universalAnalytics';

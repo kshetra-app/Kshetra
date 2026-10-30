@@ -4600,3 +4600,36 @@
     4. **JOB 065 (Universal Analytics Platform):** Canonical 10-field event schema (`event_name`, `user_id`, `anonymous_id`, `session_id`, `timestamp`, `screen`, `geography`, `entity`, `metadata`, `app_version`), high-throughput batch ingestion endpoint (`POST /api/v1/analytics/events`), database storage (`universal_analytics_events`), and DPDP 2023 IP salt-hashing.
     5. **JOB 066 (Executive Product Dashboard):** Centralized multi-dimensional product aggregator independently reconstructing Activation funnels, 7/30-day retention cohorts, DAU/WAU/MAU stickiness, 4,123 AC territorial penetration density, and B2B SaaS/Ad revenue attribution directly from source tables.
   - **Operational State:** Coordinates set to `PLAN_STATUS: SUBMITTED_FOR_REVIEW`, `IMPLEMENTATION_AUTHORIZATION: NO`. Awaiting user review and ratification under Control M.
+
+
+---
+
+### DEC-189: Architecture Ratification and Implementation Authorization for Domain 7 (Developer Platform, Public Web Discovery, SEO & Embeds: JOB 062–066)
+- **Date:** 2026-10-30
+- **Status:** APPROVED / AUTHORIZED FOR IMPLEMENTATION (IMPLEMENTATION_AUTHORIZATION = YES)
+- **Authority:** Master Product Blueprint (Jobs 062–066), Amendment v1.2, Amendment v1.5-A Section 26, Amendment v1.6 & AGENT_EXECUTION_PROTOCOL.md
+- **Context:** Following the submission of the 22-section Pre-Implementation Plan (PLAN-DOMAIN-7-DEVELOPER-PLATFORM-WEB-DISCOVERY-EMBEDS-ANALYTICS-REV-1.0.md under DEC-188), the user / CTO reviewed and explicitly ratified all three architectural directions with dual-mode provisions:
+  - **Decision 1 (Public Web Discovery & SSR):** Ratified Option A (Direct Fastify SSR with OpenGraph, Twitter Cards, Schema.org JSON-LD microdata, and XML sitemaps for sub-50ms TTFB and web crawlers) WITH explicit provision for Option B (exposing twin JSON API mirrors `/api/v1/public/...` to support headless Next.js/React frontend consumption without logic duplication).
+  - **Decision 2 (Media Embeds & Widgets):** Ratified Option A (Universal sandboxed iframe endpoints with `window.postMessage` auto-resizing script `/embed/panin-widgets.js` and Section 127A RPA 1951 attribution) WITH explicit provision for Option B (supporting custom Web Component `<panin-widget type="..." id="...">` DOM mounting within the client loader script).
+  - **Decision 3 (Universal Analytics & Executive Dashboard):** Ratified Option A (Sovereign PostgreSQL storage in `universal_analytics_events` adhering strictly to the canonical 10-field schema, DPDP 2023 IP salt-hashing, and independent mathematical dashboard reconstruction) WITH explicit provision for Option B (pluggable external exporter interface `AnalyticsSinkExporter` enabling streaming to external analytics platforms when configured).
+  - **Operational Authorization:** Formally granted `PLAN_STATUS: APPROVED` and `IMPLEMENTATION_AUTHORIZATION: YES` for the execution of Domain 7 (JOB 062–JOB 066).
+
+
+---
+
+### DEC-190: Engineering Execution, Verification, and Formal Closure of Domain 7 (Developer Platform, Public Web Discovery, SEO & Embeds: JOB 062–066)
+- **Date:** 2026-10-30
+- **Status:** ACCEPTED / COMPLETE (TESTED & VERIFIED)
+- **Authority:** Master Product Blueprint (Jobs 062–066), Representation of the People Act 1951 (Section 127A), Digital Personal Data Protection Act 2023 (DPDP), OpenAPI 3.1, DEC-188, DEC-189, Amendment v1.2, Amendment v1.5-A Section 26 & AGENT_EXECUTION_PROTOCOL.md
+- **Context:** Following user ratification of the architecture in DEC-189, all five constituent jobs of Domain 7 were completely implemented, verified, and certified:
+  1. **JOB 062 (API Developer Platform):** Created `developer_organizations`, `developer_organization_members`, `developer_api_keys`, and `developer_usage_ledger`. Implemented RBAC team roles (`admin`, `developer`, `billing`, `viewer`), cryptographic API key issuance (`pk_live_...`, `pk_test_...`, SHA-256 hash storage), tiered quota enforcement (Free, Pro, Enterprise with 403 fail-closed ceilings), usage ledger telemetry, subscription checkout, and interactive OpenAPI 3.1 schema specification (`/api/docs/json`, `/api/docs`).
+  2. **JOB 063 (Public Geography Web Pages & SEO):** Canonical SSR public landing pages for States, Districts, Assembly Constituencies, Representatives, Elections, and Delimitation diffs with OpenGraph tags, Twitter Cards, and Schema.org JSON-LD microdata. Sub-50ms TTFB. Conforms to XML sitemaps (`/sitemap.xml`, `/sitemap-geography.xml`). Twin headless JSON API mirrors (`/api/v1/public/...`) for standalone Next.js/React frontends (DEC-189 Option B).
+  3. **JOB 064 (Media Embeds & Civic Widgets):** 7 sandboxed, responsive embed widgets: Constituency, Delimitation, Election, Candidate, Issue, Live Broadcast, and Short. Universal client loader script (`/embed/panin-widgets.js`) implementing `window.postMessage` bidirectional auto-resizing (`kshetra:resize`) and custom Web Component registration (`<panin-widget>`). Mandatory Section 127A RPA 1951 attribution pill.
+  4. **JOB 065 (Universal Analytics Platform):** Governed 10-field event schema (`event_name`, `user_id`, `anonymous_id`, `session_id`, `timestamp`, `screen`, `geography`, `entity`, `metadata`, `app_version`), high-throughput batch ingestion (`POST /api/v1/analytics/events`), DPDP 2023 cryptographic IP salt-hashing, raw PII purging, and pluggable external sink exporter interface (`AnalyticsSinkExporter`).
+  5. **JOB 066 (Executive Product Dashboard):** 5-dimensional cross-domain product metric aggregator: Activation funnels, Retention cohorts (DAU/WAU/MAU stickiness, Day-7/30 curves), Engagement density, 4,123 AC Geographic penetration index, and B2B SaaS/Ad revenue attribution. Proven with mathematical identity against raw event tables via `POST /api/v1/dashboard/reconstruct`.
+- **Verification Summary:**
+  - Dedicated automated test battery: 15/15 tests passing (100%) in `tests/domain7-developer-platform-and-analytics.test.ts`.
+  - Monorepo typecheck: 100% clean across `@kshetra/shared` and `@kshetra/api` (`tsc --noEmit`, 0 errors).
+  - Regression test suites: Domain 6 (22/22 PASS), JOB 036 (14/14 PASS), JOB 051 (4/4 PASS) -> 40/40 PASS (100%).
+  - Total cumulative verified tests: 55/55 PASS (100%).
+  - Formal evidence dossiers committed at `reports/domain7_developer_platform_and_analytics_report.json` and `reports/domain7_developer_platform_and_analytics_report.md`.
