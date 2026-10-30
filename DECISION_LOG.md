@@ -4497,3 +4497,15 @@
 - **Operational Authorization:**
   - Plan document authored and committed to `governance/plans/PLAN-JOB-036-CIVIC-ISSUE-LIFECYCLE-REV-1.0.md`.
   - Implementation authorization remains frozen (`IMPLEMENTATION_AUTHORIZATION = NO`) pending user ratification of the architectural decisions.
+
+
+---
+
+### DEC-183: User Ratification & Implementation Authorization for JOB 036 (Civic Issue Lifecycle Engine)
+- **Date:** 2026-10-30
+- **Status:** APPROVED / AUTHORIZED FOR IMPLEMENTATION (`IMPLEMENTATION_AUTHORIZATION = YES`)
+- **Authority:** Master Product Blueprint (Section 1441), Amendment v1.2, Amendment v1.5-A Section 26 & AGENT_EXECUTION_PROTOCOL.md
+- **Context:** Following the submission of the 22-section Pre-Implementation Plan (`PLAN-JOB-036-CIVIC-ISSUE-LIFECYCLE-REV-1.0.md` under DEC-182), the user formally reviewed and ratified the architectural decisions for JOB 036:
+  - **Decision 1 (State Alias Model):** Ratified Option A (Bidirectional dual-stack support: API accepts and returns canonical 8-state uppercase strings while gracefully tolerating legacy 5-state lowercase aliases for mobile client backward compatibility).
+  - **Decision 2 (Resolution Review Window):** Ratified Option A (7-day citizen review window where issue remains in `RESOLVED` state; auto-confirms to `CONFIRMED` / `CLOSED` if no dispute is filed within 7 days, or immediately upon citizen confirmation).
+  - **Ratification Disposition:** Granted `PLAN_STATUS: APPROVED` and `IMPLEMENTATION_AUTHORIZATION: YES` for sequential execution of JOB 036.
