@@ -83,7 +83,7 @@ export interface PromiseEvidence {
   isSupporting: boolean;
   upvotes: number;
   createdAt: string;
-  syncStatus?: 'FAILED' | 'QUEUED' | 'SYNCING' | 'SYNCED';
+  syncStatus?: 'LOCAL_ONLY' | 'FAILED' | 'QUEUED' | 'SYNCING' | 'SYNCED';
   clientToken?: string;
 }
 

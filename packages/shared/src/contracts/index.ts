@@ -14,3 +14,8 @@ export * from './campaign';
 export * from './developerPlatform';
 export * from './universalAnalytics';
 export * from './ai';
+export * from './offlineSync';
+export * from './screenResilience';
+export * from './adminControl';
+export * from './dataPipeline';
+export * from './delimitationPipeline';

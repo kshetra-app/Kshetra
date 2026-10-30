@@ -53,6 +53,8 @@ import { saasAuthPlugin } from './lib/saasAuthPlugin';
 import { saasV1Routes } from './routes/saasV1';
 import { complianceRoutes } from './modules/compliance';
 import { mediaRoutes } from './routes/media';
+import { adminRoutes } from './routes/admin';
+import { dataPipelineRoutes } from './routes/dataPipelines';
 import { startNewsScheduler } from './services/news/newsService';
 
 const envToLogger: Record<string, object | boolean> = {
@@ -288,6 +290,8 @@ export async function buildApp() {
   await app.register(saasV1Routes);
   await app.register(complianceRoutes);
   await app.register(mediaRoutes);
+  await app.register(adminRoutes);
+  await app.register(dataPipelineRoutes);
 
   return app;
 }

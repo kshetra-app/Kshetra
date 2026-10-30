@@ -83,7 +83,7 @@ export interface Post {
   poll?: Poll;
   userReaction?: ReactionType; // set client-side
   hashtags?: string[];
-  syncStatus?: 'FAILED' | 'QUEUED' | 'SYNCING' | 'SYNCED';
+  syncStatus?: 'LOCAL_ONLY' | 'FAILED' | 'QUEUED' | 'SYNCING' | 'SYNCED';
   clientToken?: string;
 }
 
@@ -98,7 +98,7 @@ export interface Comment {
   createdAt: string;
   updatedAt: string;
   userReaction?: ReactionType;
-  syncStatus?: 'FAILED' | 'QUEUED' | 'SYNCING' | 'SYNCED';
+  syncStatus?: 'LOCAL_ONLY' | 'FAILED' | 'QUEUED' | 'SYNCING' | 'SYNCED';
   clientToken?: string;
 }
 
