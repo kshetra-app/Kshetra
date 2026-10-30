@@ -4705,3 +4705,21 @@
      - 202 automated unit and integration tests passing across all API test suites.
      - Mobile application TypeScript compile (`tsc --noEmit`) 100% clean with zero errors.
      - OpenAPI 3.1 specification parsed and validated with zero YAML syntax errors.
+
+---
+
+### DEC-195: Master Pre-Implementation Plan Submission for JOB 102 (Interactive Immersive Map Landing Experience & Adaptive Floating Controls)
+- **Date:** 2026-10-30
+- **Status:** SUBMITTED_FOR_REVIEW (Awaiting User Ratification & Control M Authorization)
+- **Authority:** User Directive for JOB 102 Addition, Amendment v1.2, Amendment v1.5-A Section 26, Amendment v1.6 & AGENT_EXECUTION_PROTOCOL.md
+- **Context & Objectives:**
+  Authored and submitted the canonical 22-section Pre-Implementation Plan `governance/plans/PLAN-JOB-102-IMMERSIVE-MAP-AND-ADAPTIVE-CONTROLS-REV-1.0.md` for JOB 102, covering the flagship mobile landing screen UX enhancements:
+  1. Replacing text branding with the official `POLIGRAM` transparent lockup logo image in the landing header.
+  2. Eliminating arbitrary `.slice(0, 8)` party cap in `MapLegend.tsx` and adding full vertical scrollability for national and state party rosters.
+  3. Non-blocking touch gesture immersion fading all non-map UI and bottom tab bar to 100% transparent.
+  4. Automatic 7.5s inactivity revival smoothly restoring full UI visibility upon touch cessation.
+  5. Draggable floating adaptive control unit consolidating search, compare, reset, 3d view, district, density, and locate actions.
+  6. Dynamic orientation layout engine (horizontal along top/bottom edges, vertical along sides, clustered $2 \times N$ matrix in screen corners) with safe-area clamping and haptic feedback.
+  7. Looping neon amber pulse Reset button beacon in transparent immersion mode providing instant visual affordance to cancel immersion and reset the map.
+- **Next Steps:**
+  Await user review, architectural decision ratification, and explicit implementation authorization under Control M before source code execution.
