@@ -4550,3 +4550,15 @@
 - **Control M Status:**
   - Plan document authored and submitted for review.
   - Implementation authorization remains frozen (IMPLEMENTATION_AUTHORIZATION = NO) pending user ratification of the 3 strategic architectural decisions.
+
+---
+
+### DEC-186: User Ratification & Architecture Synthesis for Domain 6 (Jobs 054–061)
+- **Date:** 2026-10-30
+- **Status:** APPROVED / AUTHORIZED FOR IMPLEMENTATION (IMPLEMENTATION_AUTHORIZATION = YES)
+- **Authority:** Master Product Blueprint (Jobs 054–061), Representation of the People Act 1951 (Section 127A), ECI Compendium of Instructions, Amendment v1.2, Amendment v1.5-A Section 26 & AGENT_EXECUTION_PROTOCOL.md
+- **Context:** Following the submission of the 22-section Pre-Implementation Plan (PLAN-DOMAIN-6-POLITICAL-FINANCE-CAMPAIGNS-ADS-REV-1.0.md under DEC-185), the user provided detailed direction and architectural decisions for Domain 6:
+  - **Decision 1 (Entity Model Separation):** Ratified Option B — Separate tables and isolated API routes for political_campaigns / political_ads vs commercial_ad_accounts / commercial_ads to preserve strict legal, permission, and domain separation.
+  - **Decision 2 (Hybrid Configurable Monetization):** Ratified a Hybrid Pricing Engine supporting both Dynamic CPM/CPC Micropayments (for performance marketing) and Fixed Daily Flight Sponsorships (for banner/feed takeovers during festivals, rallies, and milestone celebrations). All rates and parameters are backed by an admin-configurable database table d_pricing_configurations with backend management APIs.
+  - **Decision 3 (Adaptive 6-Category Political Ad Governance Matrix):** Ratified a context-aware political advertising classification covering 6 distinct real-world categories (1. Festival Wishes, 2. Birthday Greetings, 3. Congratulatory Messages, 4. Milestone Achievements, 5. Political Meetings & Rallies, 6. Election Campaign Ads). Configured with dual operational gating: Fast-Track automated safety review during routine civic periods vs Strict Fail-Closed ECI MCMC Pre-Certification during active Model Code of Conduct (MCC) election windows, with universal public transparency under Section 127A RPA 1951.
+  - **Ratification Disposition:** Granted PLAN_STATUS: APPROVED and IMPLEMENTATION_AUTHORIZATION: YES for sequential execution of Domain 6 (JOB 054–JOB 061).
