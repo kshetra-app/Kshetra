@@ -4779,3 +4779,19 @@
   - Decision 5 (Delimitation Source Pipeline & Spatial Topology Invariants): Option A (Dual-Mesh PostGIS Differential Impact Engine) vs Option B (Manual boundary upload).
 - **Next Steps:**
   Await user review, architectural decision ratification, and explicit implementation authorization under Control M before source code execution.
+
+---
+
+### DEC-199: User Ratification and Implementation Authorization for Domain 9 (JOB 072–JOB 076) under Control M
+- **Date:** 2026-10-30
+- **Status:** RATIFIED & AUTHORIZED (Control M Token Granted)
+- **Authority:** User Directive & Explicit Control M Authorization Token (`PLAN_STATUS: APPROVED`, `IMPLEMENTATION_AUTHORIZATION: YES`), DEC-198 & AGENT_EXECUTION_PROTOCOL.md
+- **Architectural Ratifications:**
+  1. **Decision 1 (Offline Mutation Queue & Conflict Resolution Strategy):** Option A ratified. Monotonic Idempotency Queue with Vector-Clocked Last-Write-Wins (LWW) and Local Rollback on Server Rejection. Explicit 5-state lifecycle (`LOCAL_ONLY`, `QUEUED`, `SYNCING`, `SYNCED`, `FAILED`), monotonic sequencing, HMAC client tokens, and automatic reconnection queue replay.
+  2. **Decision 2 (Universal Screen Resilience & State Fallback Engine):** Option A ratified. Composable `<StateView>` Layout Controller standardizing 5 UX states (`loading`, `empty`, `error`, `retry`, `offline`) across primary mobile surfaces, with layout-matched shimmer skeletons, high-empathy Indic illustrations, humanized error messages with correlation IDs, and cooldown-gated retry dispatchers.
+  3. **Decision 3 (Admin Control Plane RBAC, Separation of Duties & Cryptographic Audit):** Option A ratified. Multi-Role Tiered RBAC (`admin`, `super_admin`, `compliance_officer`, `moderator`) with Two-Person Rule for Destructive Mutations and Append-Only HMAC-Chained Audit Ledger (`admin_audit_ledger`) across 9 functions (`users`, `moderation`, `verification`, `data correction`, `campaigns`, `ads`, `billing`, `feature flags`, `audit`).
+  4. **Decision 4 (8-Stage Data Ingestion Pipeline Architecture & Cryptographic Versioning):** Option A ratified. Content-Addressed Staged Pipeline with Strict Intermediate Validation Gates and Atomic Multi-Table Staging Promoters across the canonical 8 stages (`source -> raw snapshot -> parser -> normalization -> validation -> reconciliation -> production -> version`).
+  5. **Decision 5 (Delimitation Source Pipeline & Spatial Topology Invariant Verification):** Option A ratified. Dual-Mesh PostGIS Differential Impact Engine with Automated Topological Integrity Auditing (area delta, centroid shift, containment invariants, sliver/overlap rejection, and voter reallocation crosswalk).
+- **Authorization Token:**
+  `PLAN_STATUS: APPROVED`
+  `IMPLEMENTATION_AUTHORIZATION: YES`
