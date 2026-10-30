@@ -15,7 +15,6 @@
     "clean": "rm -rf .expo node_modules"
   },
   "dependencies": {
-    "@babel/types": "^7.29.0",
     "@expo/vector-icons": "^15.0.2",
     "@gorhom/bottom-sheet": "^5.1.0",
     "@kshetra/shared": "*",
@@ -64,6 +63,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.25.0",
+    "@babel/types": "^7.29.0",
     "@testing-library/react-native": "^13.2.0",
     "@types/react": "~19.1.10",
     "@types/react-test-renderer": "^19.0.0",

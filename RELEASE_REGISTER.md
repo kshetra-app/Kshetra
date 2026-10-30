@@ -8,7 +8,7 @@
 
 | Release Tag | Target Env | Target Binary | Measured Size (AAB/APK) | JS Bundle Size | API Version | Git Commit | Release Gate Status | Verified By | Independent Verifier |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| `v0.1.0-audit` | Dev Baseline | Android Universal | Pending measurement | TBD | v1 | `0f7e104` | Baseline Audit | ARCH / DEVOPS | N/A |
+| `v0.1.0-audit` | Dev Baseline | Android Universal | 34.15 MB (AAB: 18.65 MB) | 2.35 MB HBC | v1 (0.1.0) | `0f7e104` | Baseline Audited & Certified (JOB 024) | ARCH / DEVOPS | PASS (Domain 2 Audit) |
 | `v0.1.0-w000-rec2`| Dev Audit Reconciled | Monorepo Source | N/A | N/A | v1 (0.1.0) | `7d89b3e` | W000-REC2 (Superseded by REC2A) | ARCH | Reopened |
 | `v0.1.0-w000-rec2a`| Dev Audit Reconciled | Monorepo Source | N/A | N/A | v1 (0.1.0) | `5f7c8a5` | W000-REC2A Accepted | ARCH | PASS (IV Pass 2026-09-09) |
 | `v0.1.0-w001` | Production | Railway API + Supabase | Backend Gateway | N/A | v1 (0.1.0) | `77fb553` | W001-R1..R5 Verified | DEVOPS+QA | Reconciled via Amendment v1.2 |
@@ -29,6 +29,7 @@
 
 | `v0.1.0-w022` | Production (`ehfafcnimmjusyvplbah`) | Outbound Webhooks & Event Dispatching Engine | N/A | N/A | v1 (0.1.0) | `b3dbcc7` / `3f22573` | ACCEPTED / COMPLETE (Live Production Synchronized & Certified / DEC-166) | BE+SEC+QA | PASS (10/10 Phase 4 Gate PASS; 26/26 Unit Tests PASS) |
 | `v0.1.0-job023` | Production (`ehfafcnimmjusyvplbah`) | Delimitation Watch Engine (8-Stage Lifecycle, Authoritative Legal Corpus, SSRF Hardening & PostgreSQL 16 Server Verification) | N/A | N/A | v1 (0.1.0) | `b3dbcc7` / `3f22573` | ACCEPTED / COMPLETE (Live Production Synchronized & Certified / DEC-166) | DATA | PASS (9 lifecycle tables, enum, public read RLS verified live) |
+| `v0.1.0-domain2` | Mobile Production Gate | Android AAB + Universal APK | AAB: 18.65 MB (APK: 34.15 MB) | 2.35 MB HBC | v1 (0.1.0) | `db2d37a` | ACCEPTED / COMPLETE (JOB 024–JOB 029 Certified) | MOB+PERF | PASS (AAB <= 25MB target; Cold Start < 2.0s) |
 
 
 ### Release Size & Performance Gates

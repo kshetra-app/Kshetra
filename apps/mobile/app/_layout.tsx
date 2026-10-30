@@ -14,6 +14,7 @@ import OfflineBanner from '../components/OfflineBanner';
 import { useContributorVerificationStore } from '../stores/contributorVerification';
 import { bootstrapSupabase } from '../lib/supabaseBootstrap';
 import { recordSession, endSession } from '../lib/supabaseDataService';
+import { startupProfiler } from '../lib/startupProfiler';
 import '../i18n';
 
 const KYCVerificationSheet = lazy(() => import('../components/KYCVerificationSheet'));
@@ -33,13 +34,32 @@ export default function RootLayout() {
       stopNetwork = startNetworkMonitoring();
     } catch {}
 
-    // Initialize Auth first, then bootstrap Supabase data stores
+    startupProfiler.mark('phase1_instant_start');
+    // Phase 1: Initialize Auth and dismiss Splash Screen immediately
     initializeAuth()
       .catch(() => {})
       .finally(() => {
-        bootstrapSupabase().catch((err) => {
-          console.warn('[RootLayout] Supabase bootstrap warning:', err);
-        });
+        startupProfiler.mark('auth_initialized');
+        SplashScreen.hideAsync().catch(() => {});
+        startupProfiler.mark('splash_hidden');
+
+        // Phase 2: Deferred non-blocking background network bootstrap
+        const runDeferredBootstrap = () => {
+          startupProfiler.mark('phase2_deferred_start');
+          bootstrapSupabase()
+            .then(() => {
+              startupProfiler.mark('time_to_interactive');
+            })
+            .catch((err) => {
+              console.warn('[RootLayout] Supabase bootstrap warning:', err);
+            });
+        };
+
+        if (typeof requestIdleCallback === 'function') {
+          requestIdleCallback(runDeferredBootstrap);
+        } else {
+          setTimeout(runDeferredBootstrap, 50);
+        }
       });
 
     return () => {

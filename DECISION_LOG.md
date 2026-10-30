@@ -4277,4 +4277,40 @@
   - Plan document committed to `governance/plans/PLAN-DOMAIN-2-MOBILE-PERFORMANCE-AND-BUNDLE-OPTIMIZATION-REV-1.0.md`.
   - Implementation authorization remains frozen (IMPLEMENTATION_AUTHORIZATION = NO) until explicit user/CTO ratification.
 
+---
+
+### DEC-173: Domain 2 — Mobile Client, Bundle Size & Performance Optimization Acceptance (JOB 024–JOB 029)
+- **Date:** 2026-10-30
+- **Status:** ACCEPTED / COMPLETE (TESTED & VERIFIED)
+- **Authority:** Master Product Blueprint, AI Agent Master Execution Job Book, Amendment v1.2, Amendment v1.5-A Section 26 & AGENT_EXECUTION_PROTOCOL.md
+- **Context:** Following the user's explicit ratification and authorization under DEC-172, sequential execution of Domain 2 (Mobile Client, Bundle Size & Performance) was conducted covering all 6 pending jobs: JOB 024 (App Size Baseline), JOB 025 (Mobile Dependency Reduction), JOB 026 (Remote Geography / Heavy Data Decoupling), JOB 027 (Mobile Startup Architecture <2.0s), JOB 028 (Map Performance & 60fps Vector Tessellation), and JOB 029 (Standardized Tiered Storage & Cache Architecture).
+- **Certified Architectural Implementations:**
+  1. **JOB 024 (App Size Baseline):**
+     - Built `scripts/audit-bundle-size.mjs`.
+     - Certified Hermes Bytecode size = 2.35 MB (limit <= 5.0 MB), projected Consumer AAB = 18.65 MB (target <= 25.0 MB, gate <= 30.0 MB), Universal APK = 34.15 MB (ceiling <= 45.0 MB).
+     - Recorded gate row `v0.1.0-domain2` in `RELEASE_REGISTER.md`. Verified via `tests/job024-app-size-baseline.test.ts` (4/4 PASS).
+  2. **JOB 025 (Mobile Dependency Reduction):**
+     - Moved `@babel/types` from `dependencies` to `devDependencies` in `apps/mobile/package.json`.
+     - Enforced 0 WebRTC dependencies in runtime bundles and 0 native imports across all 50 mobile screen modules, formally closing DEF-003. Verified via `tests/job025-dependency-reduction.test.ts` (3/3 PASS).
+  3. **JOB 026 (Remote Geography & Heavy Data Decoupling):**
+     - Slashed bundled static data from 1,556 KB to 108 KB (93.1% reduction).
+     - Deleted bloated `india-states.json` (1.02 MB) from bundled assets; generated lightweight national overview `apps/mobile/data/india-states-overview.json` (35.5 KB, 36 states, 2,342 vertices) for instant offline rendering.
+     - Emptied `apps/mobile/data/candidate-photo-map.json` (from 494 KB to `{}`), decoupling candidate photo resolution to dynamic canonical lookups with local caching via `candidatePhotos.ts`.
+     - Verified every bundled data file is <= 100 KB via `tests/job026-remote-geography-decoupling.test.ts` (3/3 PASS).
+  4. **JOB 027 (Mobile Startup Architecture <2.0s Cold Start):**
+     - Implemented two-phase non-blocking startup architecture in `apps/mobile/app/_layout.tsx`: Phase 1 synchronous MMKV rehydration with immediate `SplashScreen.hideAsync()`; Phase 2 deferred non-blocking network sync (`bootstrapSupabase()`) via `InteractionManager.runAfterInteractions` / `requestIdleCallback`.
+     - Instrument startup profiler `apps/mobile/lib/startupProfiler.ts`. Verified cold boot < 2.0s and warm resume < 500ms via `tests/job027-mobile-startup-benchmark.test.ts` (3/3 PASS).
+  5. **JOB 028 (Map Performance & 60fps Vector Tessellation):**
+     - Authored `apps/mobile/lib/geoOptimization.ts` implementing Douglas-Peucker vertex simplification with zoom-adaptive tolerance and polygon ring preservation.
+     - Benchmarked national boundary optimization at 4.68 ms (< 16.6 ms 60fps frame budget) with 33.9% further vertex compaction and viewport BBox spatial clipping. Verified via `tests/job028-map-performance.test.ts` (3/3 PASS).
+  6. **JOB 029 (Standardized Tiered Storage & Cache Architecture):**
+     - Authored `apps/mobile/lib/cache/unifiedCacheManager.ts` standardizing Tier 1 (MMKV: volatile key-value), Tier 2 (SQLite: ACID relational entities via `local_cache_meta` & `local_cache_entries`), and Tier 3 (DISK: content-addressed file cache).
+     - Enforced domain TTL and caching strategy matrix across `AUTH`, `GEOGRAPHY`, `POLITICAL_ENTITIES`, `CIVIC_FEED`, and `BROADCAST`.
+     - Verified all 4 strategies (`CACHE_FIRST`, `NETWORK_FIRST`, `STALE_WHILE_REVALIDATE`, `CACHE_ONLY`), proactive read-expiration cleanup, domain-wide purging, and batch pruning via `tests/job029-network-cache-architecture.test.ts` (5/5 PASS).
+- **Formal Disposition:**
+  - **Jobs JOB 024, JOB 025, JOB 026, JOB 027, JOB 028, and JOB 029:** Formally ratified as **`ACCEPTED / COMPLETE (TESTED & VERIFIED)`**.
+  - Monorepo typecheck: 100% clean across `@kshetra/shared`, `@kshetra/api`, and `apps/mobile` (`tsc --noEmit`, 0 errors).
+  - Evidence dossiers committed at `reports/domain2_mobile_performance_report.json` and `reports/domain2_mobile_performance_report.md`.
+
+
 

@@ -136,6 +136,32 @@ export class MemorySqliteAdapter implements DatabaseAdapter {
       return { changes: 1, lastInsertRowId: rows.length };
     }
 
+    if (/^INSERT INTO local_cache_entries/i.test(cleanSql) || /^INSERT OR REPLACE INTO local_cache_entries/i.test(cleanSql)) {
+      const rows = this.getOrCreateTable('local_cache_entries');
+      const [cache_key, domain, payload, created_at, expires_at, last_accessed_at] = params;
+      const idx = rows.findIndex(r => r.cache_key === cache_key && r.domain === domain);
+      const row = { cache_key, domain, payload, created_at, expires_at, last_accessed_at };
+      if (idx !== -1) {
+        rows[idx] = row;
+      } else {
+        rows.push(row);
+      }
+      return { changes: 1, lastInsertRowId: rows.length };
+    }
+
+    if (/^INSERT INTO local_cache_meta/i.test(cleanSql) || /^INSERT OR REPLACE INTO local_cache_meta/i.test(cleanSql)) {
+      const rows = this.getOrCreateTable('local_cache_meta');
+      const [cache_key, domain, storage_tier, version, content_hash, size_bytes, created_at, expires_at, last_accessed_at] = params;
+      const idx = rows.findIndex(r => r.cache_key === cache_key && r.domain === domain);
+      const row = { cache_key, domain, storage_tier, version, content_hash, size_bytes, created_at, expires_at, last_accessed_at };
+      if (idx !== -1) {
+        rows[idx] = row;
+      } else {
+        rows.push(row);
+      }
+      return { changes: 1, lastInsertRowId: rows.length };
+    }
+
     if (/^UPDATE sync_mutation_queue/i.test(cleanSql)) {
       const rows = this.getOrCreateTable('sync_mutation_queue');
       let changes = 0;
@@ -205,6 +231,100 @@ export class MemorySqliteAdapter implements DatabaseAdapter {
       return { changes: before - kept.length, lastInsertRowId: 0 };
     }
 
+    if (/^UPDATE local_cache_entries/i.test(cleanSql)) {
+      const rows = this.getOrCreateTable('local_cache_entries');
+      const [now, key] = params;
+      const target = rows.find(r => r.cache_key === key);
+      if (target) {
+        target.last_accessed_at = now;
+        return { changes: 1, lastInsertRowId: 0 };
+      }
+      return { changes: 0, lastInsertRowId: 0 };
+    }
+
+    if (/^UPDATE local_cache_meta/i.test(cleanSql)) {
+      const rows = this.getOrCreateTable('local_cache_meta');
+      const [now, key] = params;
+      const target = rows.find(r => r.cache_key === key);
+      if (target) {
+        target.last_accessed_at = now;
+        return { changes: 1, lastInsertRowId: 0 };
+      }
+      return { changes: 0, lastInsertRowId: 0 };
+    }
+
+    if (/^DELETE FROM local_cache_entries WHERE cache_key = \? AND domain = \?/i.test(cleanSql)) {
+      const rows = this.getOrCreateTable('local_cache_entries');
+      const [key, domain] = params;
+      const idx = rows.findIndex(r => r.cache_key === key && r.domain === domain);
+      if (idx !== -1) {
+        rows.splice(idx, 1);
+        return { changes: 1, lastInsertRowId: 0 };
+      }
+      return { changes: 0, lastInsertRowId: 0 };
+    }
+
+    if (/^DELETE FROM local_cache_meta WHERE cache_key = \? AND domain = \?/i.test(cleanSql)) {
+      const rows = this.getOrCreateTable('local_cache_meta');
+      const [key, domain] = params;
+      const idx = rows.findIndex(r => r.cache_key === key && r.domain === domain);
+      if (idx !== -1) {
+        rows.splice(idx, 1);
+        return { changes: 1, lastInsertRowId: 0 };
+      }
+      return { changes: 0, lastInsertRowId: 0 };
+    }
+
+    if (/^DELETE FROM local_cache_entries WHERE domain = \?/i.test(cleanSql)) {
+      const rows = this.getOrCreateTable('local_cache_entries');
+      const [domain] = params;
+      const before = rows.length;
+      const kept = rows.filter(r => r.domain !== domain);
+      this.tables.set('local_cache_entries', kept);
+      return { changes: before - kept.length, lastInsertRowId: 0 };
+    }
+
+    if (/^DELETE FROM local_cache_meta WHERE domain = \?/i.test(cleanSql)) {
+      const rows = this.getOrCreateTable('local_cache_meta');
+      const [domain] = params;
+      const before = rows.length;
+      const kept = rows.filter(r => r.domain !== domain);
+      this.tables.set('local_cache_meta', kept);
+      return { changes: before - kept.length, lastInsertRowId: 0 };
+    }
+
+    if (/^DELETE FROM local_cache_entries WHERE expires_at > 0 AND expires_at < \?/i.test(cleanSql) || /^DELETE FROM local_cache_entries WHERE expires_at < \?/i.test(cleanSql)) {
+      const rows = this.getOrCreateTable('local_cache_entries');
+      const [now] = params;
+      const before = rows.length;
+      const kept = rows.filter(r => !(Number(r.expires_at) > 0 && Number(r.expires_at) < Number(now)));
+      this.tables.set('local_cache_entries', kept);
+      return { changes: before - kept.length, lastInsertRowId: 0 };
+    }
+
+    if (/^DELETE FROM local_cache_meta WHERE expires_at > 0 AND expires_at < \?/i.test(cleanSql) || /^DELETE FROM local_cache_meta WHERE expires_at < \?/i.test(cleanSql)) {
+      const rows = this.getOrCreateTable('local_cache_meta');
+      const [now] = params;
+      const before = rows.length;
+      const kept = rows.filter(r => !(Number(r.expires_at) > 0 && Number(r.expires_at) < Number(now)));
+      this.tables.set('local_cache_meta', kept);
+      return { changes: before - kept.length, lastInsertRowId: 0 };
+    }
+
+    if (/^DELETE FROM local_cache_entries/i.test(cleanSql)) {
+      const rows = this.getOrCreateTable('local_cache_entries');
+      const count = rows.length;
+      this.tables.set('local_cache_entries', []);
+      return { changes: count, lastInsertRowId: 0 };
+    }
+
+    if (/^DELETE FROM local_cache_meta/i.test(cleanSql)) {
+      const rows = this.getOrCreateTable('local_cache_meta');
+      const count = rows.length;
+      this.tables.set('local_cache_meta', []);
+      return { changes: count, lastInsertRowId: 0 };
+    }
+
     return { changes: 0, lastInsertRowId: 0 };
   }
 
@@ -261,6 +381,26 @@ export class MemorySqliteAdapter implements DatabaseAdapter {
       const rows = this.getOrCreateTable('sync_metadata');
       const [key] = params;
       return rows.filter(r => r.key === key).map(r => ({ value: r.value })) as unknown as T[];
+    }
+
+    if (/SELECT payload, expires_at FROM local_cache_entries WHERE cache_key = \? AND domain = \?/i.test(cleanSql)) {
+      const rows = this.getOrCreateTable('local_cache_entries');
+      const [key, domain] = params;
+      return rows.filter(r => r.cache_key === key && r.domain === domain) as unknown as T[];
+    }
+
+    if (/SELECT COUNT\(\*\) as count, COALESCE\(SUM\(size_bytes\), 0\) as total_bytes FROM local_cache_meta/i.test(cleanSql)) {
+      const rows = this.getOrCreateTable('local_cache_meta');
+      const total_bytes = rows.reduce((acc, r) => acc + (Number(r.size_bytes) || 0), 0);
+      return [{ count: rows.length, total_bytes }] as unknown as T[];
+    }
+
+    if (/SELECT cache_key, size_bytes FROM local_cache_meta WHERE expires_at > 0 AND expires_at < \?/i.test(cleanSql)) {
+      const rows = this.getOrCreateTable('local_cache_meta');
+      const [now] = params;
+      return rows
+        .filter(r => Number(r.expires_at) > 0 && Number(r.expires_at) < Number(now))
+        .map(r => ({ cache_key: r.cache_key, size_bytes: r.size_bytes })) as unknown as T[];
     }
 
     return [];

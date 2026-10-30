@@ -1,11 +1,11 @@
 {
   "IN": {
-    "file": "india-states.json",
+    "file": "india-states-overview.json",
     "count": 36,
     "hasPolygons": true,
-    "bytes": 528670,
-    "gzipBytes": 191227,
-    "version": "28c41cd89b90",
+    "bytes": 35577,
+    "gzipBytes": 11420,
+    "version": "domain2-opt",
     "bundled": true
   },
   "TS": {
