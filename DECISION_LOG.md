@@ -4440,3 +4440,15 @@
 - **Operational Authorization:**
   - Plan document committed to `governance/plans/PLAN-DOMAIN-5-MEDIA-NEWS-SHORTS-AND-LIVE-BROADCASTING-REV-1.0.md`.
   - Implementation authorization remains frozen (`IMPLEMENTATION_AUTHORIZATION = NO`) pending explicit user ratification.
+
+---
+
+### DEC-180: User Ratification & Implementation Authorization for Domain 5 (JOB 037–045 & JOB 051–053)
+- **Date:** 2026-10-30
+- **Status:** APPROVED / AUTHORIZED FOR IMPLEMENTATION (`IMPLEMENTATION_AUTHORIZATION = YES`)
+- **Authority:** Master Product Blueprint, AI Agent Master Execution Job Book, Amendment v1.2, Amendment v1.5-A Section 26 & AGENT_EXECUTION_PROTOCOL.md
+- **Context:** Following the submission of the 22-section Pre-Implementation Plan (`PLAN-DOMAIN-5-MEDIA-NEWS-SHORTS-AND-LIVE-BROADCASTING-REV-1.0.md` under DEC-179), the user formally reviewed and ratified the architectural decisions for Domain 5:
+  - **Decision 1 (A1 - News Ingestion & Publishing):** Ratified Option A (Hybrid Ingestion Model: Automated RSS ingestion from official government portals [ECI, PIB, State Gazettes] paired with verified accredited journalist / media house direct submissions).
+  - **Decision 2 (A2 - Shorts Storage & Transcoding):** Ratified Option A (Cloud Object Storage + CDN Streaming: Mobile uploads generate presigned URLs to Supabase/S3 Storage, and backend validates MP4/HLS manifests with automated thumbnail generation and strict AC binding).
+  - **Decision 3 (A3 - Live Streaming Architecture):** Ratified hybrid of Option A and Option B with intelligent switching of technologies and resources wherever applicable (Low-Latency HLS via CDN for mass audience streaming and zero-bloat mobile playback + WebRTC for studio ingress and real-time interactive speaker sessions).
+  - **Ratification Disposition:** Granted `PLAN_STATUS: APPROVED` and `IMPLEMENTATION_AUTHORIZATION: YES` for sequential execution of Domain 5 (JOB 037, JOB 038, JOB 039, JOB 040, JOB 041, JOB 042, JOB 043, JOB 044, JOB 045, JOB 051, JOB 052, and JOB 053).
